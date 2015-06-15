@@ -27,7 +27,7 @@
  */
 
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/encoding.h"
 #include "src/common/strutil.h"
 
@@ -58,9 +58,6 @@ void GFF4File::Header::read(Common::SeekableReadStream &gff4, uint32 version) {
 	hasSharedStrings = (stringCount > 0) || (stringOffset != 0xFFFFFFFF);
 
 	dataOffset = gff4.readUint32LE();
-
-	if (gff4.err() || gff4.eos())
-		throw Common::Exception(Common::kReadError);
 }
 
 
@@ -117,9 +114,6 @@ void GFF4File::load(uint32 type) {
 		loadHeader(type);
 		loadStructs();
 		loadStrings();
-
-		if (_stream->err() || _stream->eos())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		clear();
@@ -188,9 +182,6 @@ void GFF4File::loadStructs() {
 			field.offset = _stream->readUint32LE();
 		}
 	}
-
-	if (_stream->err() || _stream->eos())
-		throw Common::Exception(Common::kReadError);
 
 	// And load the top level struct, which itself recurses into field structs
 	_topLevelStruct = new GFF4Struct(*this, _header.dataOffset, _structTemplates[0]);

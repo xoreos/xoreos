@@ -25,7 +25,8 @@
 #include "src/common/foxpro.h"
 #include "src/common/error.h"
 #include "src/common/encoding.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
+#include "src/common/writestream.h"
 
 // boost-date_time stuff
 using boost::gregorian::date;
@@ -108,7 +109,7 @@ void FoxPro::loadHeader(SeekableReadStream &dbf, uint32 &recordSize, uint32 &rec
 void FoxPro::loadFields(SeekableReadStream &dbf, uint32 recordSize) {
 	// Read all field descriptions, 0x0D is the end marker
 	uint32 fieldsLength = 0;
-	while (!dbf.eos() && !dbf.err() && (dbf.readByte() != 0x0D)) {
+	while (!dbf.eos() && (dbf.readByte() != 0x0D)) {
 		Field field;
 
 		dbf.seek(-1, SEEK_CUR);
@@ -138,9 +139,6 @@ void FoxPro::loadFields(SeekableReadStream &dbf, uint32 recordSize) {
 
 		_fields.push_back(field);
 	}
-
-	if (dbf.eos() || dbf.err())
-		throw Exception(kReadError);
 
 	if (recordSize != (fieldsLength + 1))
 		throw Exception("Length of all fields does not equal the record size");
@@ -188,15 +186,12 @@ void FoxPro::loadMemos(SeekableReadStream &fpt) {
 
 	fpt.skip(504); // Unused
 
-	while (!fpt.eos() && !fpt.err()) {
+	while (!fpt.eos()) {
 		_memos.push_back(new byte[_memoBlockSize]);
 		byte *data = _memos.back();
 
 		fpt.read(data, _memoBlockSize);
 	}
-
-	if (fpt.err())
-		throw Exception(kReadError);
 }
 
 void FoxPro::save(WriteStream *dbf, WriteStream *cdx, WriteStream *fpt) const {
@@ -213,20 +208,17 @@ void FoxPro::save(WriteStream *dbf, WriteStream *cdx, WriteStream *fpt) const {
 	saveHeader(*dbf);
 	saveFields(*dbf);
 	saveRecords(*dbf);
-	if (!dbf->flush() || dbf->err())
-		throw Exception(kWriteError);
+	dbf->flush();
 
 	if (fpt) {
 		saveMemos(*fpt);
-
-		if (!fpt->flush() || fpt->err())
-			throw Exception(kWriteError);
+		fpt->flush();
 	}
 
 	// TODO: Write the compound index (CDX) file
 
-	if (cdx && (!cdx->flush() || cdx->err()))
-		throw Exception(kWriteError);
+	if (cdx)
+		cdx->flush();
 }
 
 void FoxPro::saveHeader(WriteStream &dbf) const {

@@ -99,20 +99,6 @@ bool File::isOpen() const {
 	return _handle != 0;
 }
 
-bool File::err() const {
-	if (!_handle)
-		return false;
-
-	return std::ferror(_handle) != 0;
-}
-
-void File::clearErr() {
-	if (!_handle)
-		return;
-
-	std::clearerr(_handle);
-}
-
 bool File::eos() const {
 	if (!_handle)
 		return true;
@@ -192,25 +178,12 @@ bool DumpFile::isOpen() const {
 	return _handle != 0;
 }
 
-bool DumpFile::err() const {
-	if (!_handle)
-		return false;
-
-	return std::ferror(_handle) != 0;
-}
-
-void DumpFile::clearErr() {
+void DumpFile::flush() {
 	if (!_handle)
 		return;
 
-	std::clearerr(_handle);
-}
-
-bool DumpFile::flush() {
-	if (!_handle)
-		return true;
-
-	return std::fflush(_handle) == 0;
+	if (std::fflush(_handle) != 0)
+		throw Exception(kWriteError);
 }
 
 uint32 DumpFile::write(const void *dataPtr, uint32 dataSize) {

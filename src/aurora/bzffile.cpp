@@ -30,7 +30,7 @@
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/file.h"
 
 #include "src/aurora/bzffile.h"
@@ -78,9 +78,6 @@ void BZFFile::load(Common::SeekableReadStream &bzf) {
 	try {
 
 		readVarResTable(bzf, offVarResTable);
-
-		if (bzf.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading BZF file");

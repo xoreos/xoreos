@@ -22,7 +22,7 @@
  *  An animation to be applied to a model.
  */
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/debug.h"
 
 #include "src/graphics/graphics.h"

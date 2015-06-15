@@ -23,7 +23,7 @@
  */
 
 #include "src/common/util.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/error.h"
 
 #include "src/graphics/images/sbm.h"
@@ -47,9 +47,6 @@ void SBM::load(Common::SeekableReadStream &sbm) {
 	try {
 
 		readData(sbm);
-
-		if (sbm.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		clear();

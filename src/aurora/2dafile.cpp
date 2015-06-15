@@ -30,7 +30,7 @@
 #include "src/common/error.h"
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/file.h"
 #include "src/common/streamtokenizer.h"
 
@@ -165,9 +165,6 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 
 		// Create the map to quickly translate headers to column indices
 		createHeaderMap();
-
-		if (twoda.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		clear();

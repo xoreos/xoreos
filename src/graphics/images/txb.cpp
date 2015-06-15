@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 
 #include "src/graphics/util.h"
 
@@ -55,9 +55,6 @@ void TXB::load(Common::SeekableReadStream &txb) {
 		txb.seek(dataSize + 128);
 
 		readTXI(txb);
-
-		if (txb.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		clear();

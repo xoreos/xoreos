@@ -27,7 +27,7 @@
 #ifndef SOUND_DECODERS_ADPCM_H
 #define SOUND_DECODERS_ADPCM_H
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 namespace Sound {
 

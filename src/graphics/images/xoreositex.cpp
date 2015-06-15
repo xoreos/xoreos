@@ -25,7 +25,7 @@
 
 #include "src/common/util.h"
 #include "src/common/strutil.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/error.h"
 
 #include "src/graphics/images/xoreositex.h"
@@ -47,9 +47,6 @@ void XEOSITEX::load(Common::SeekableReadStream &xeositex) {
 
 		readHeader(xeositex);
 		readMipMaps(xeositex);
-
-		if (xeositex.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading XEOSITEX file");

@@ -22,7 +22,7 @@
  *  Utility class for handling special data structures found in BioWare's Aurora files.
  */
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/aurorafile.h"

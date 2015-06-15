@@ -36,7 +36,8 @@
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
+#include "src/common/memwritestream.h"
 #include "src/common/encoding.h"
 
 #include "src/aurora/nsbtxfile.h"
@@ -342,9 +343,6 @@ void NSBTXFile::load(Common::SeekableSubReadStreamEndian &nsbtx) {
 		readPalettes(nsbtx);
 
 		createResourceList();
-
-		if (nsbtx.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading NSBTX file");

@@ -30,7 +30,7 @@
 #include FT_GLYPH_H
 
 #include "src/common/types.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 namespace Graphics {
 

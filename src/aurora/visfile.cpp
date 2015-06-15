@@ -22,7 +22,7 @@
  *  Handling BioWare's VISs (Visibility files).
  */
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/streamtokenizer.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
@@ -55,12 +55,12 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 		tokenizer.getTokens(vis, strings);
 
 		// Make sure we don't get any empty lines
-		while (!vis.eos() && !vis.err() && strings.empty()) {
+		while (!vis.eos() && strings.empty()) {
 			tokenizer.nextChunk(vis);
 			tokenizer.getTokens(vis, strings);
 		}
 
-		if (vis.eos() || vis.err())
+		if (vis.eos())
 			break;
 
 		if ((strings.size() == 1) && (strings[0] == "[Adjacent]"))
@@ -80,7 +80,7 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 		int realRoomCount = 0;
 
 		visibilityArray.reserve(roomCount);
-		while (!vis.eos() && !vis.err()) {
+		while (!vis.eos()) {
 			uint32 lineStart = vis.pos();
 
 			tokenizer.nextChunk(vis);

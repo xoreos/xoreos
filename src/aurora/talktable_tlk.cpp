@@ -28,7 +28,7 @@
 
 #include "src/common/util.h"
 #include "src/common/strutil.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/file.h"
 #include "src/common/error.h"
 
@@ -83,9 +83,6 @@ void TalkTable_TLK::load() {
 			readEntryTableV3();
 		else
 			readEntryTableV4();
-
-		if (_tlk->err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		delete _tlk;

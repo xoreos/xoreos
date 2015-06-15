@@ -25,7 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/filepath.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/encoding.h"
 #include "src/common/hash.h"
 
@@ -63,9 +63,6 @@ void HERFFile::load(Common::SeekableReadStream &herf) {
 
 		searchDictionary(herf, resCount);
 		readResList(herf);
-
-		if (herf.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading HERF file");

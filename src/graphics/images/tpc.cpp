@@ -25,7 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 
 #include "src/graphics/util.h"
 
@@ -52,9 +52,6 @@ void TPC::load(Common::SeekableReadStream &tpc) {
 		readHeader(tpc, needDeSwizzle);
 		readData  (tpc, needDeSwizzle);
 		readTXI   (tpc);
-
-		if (tpc.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		clear();

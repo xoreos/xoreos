@@ -25,7 +25,7 @@
 #include <cassert>
 
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/threads.h"
 
 #include "src/graphics/graphics.h"

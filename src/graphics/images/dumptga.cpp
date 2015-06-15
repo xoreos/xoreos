@@ -91,9 +91,6 @@ void dumpTGA(const Common::UString &fileName, const byte *data, int width, int h
 	for (uint32 i = 0; i < count; i++)
 		writePixel(file, data, format);
 
-	if (file.err())
-		throw Common::Exception("Write error");
-
 	file.close();
 }
 

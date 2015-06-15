@@ -26,7 +26,7 @@
 #include "src/common/error.h"
 #include "src/common/util.h"
 #include "src/common/encoding.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/file.h"
 
 #include <zlib.h>
@@ -119,9 +119,6 @@ void ZipFile::load(Common::SeekableReadStream &zip) {
 			}
 		}
 	}
-
-	if (zip.err())
-		throw Exception(kReadError);
 }
 
 const ZipFile::FileList &ZipFile::getFiles() const {
@@ -158,9 +155,6 @@ void ZipFile::getFileProperties(Common::SeekableReadStream &zip, const IFile &fi
 
 	zip.skip(nameLength);
 	zip.skip(extraLength);
-
-	if (zip.err())
-		throw Exception(kReadError);
 }
 
 uint32 ZipFile::getFileSize(uint32 index) const {
@@ -243,8 +237,6 @@ SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 meth
 #define BUFREADCOMMENT (0x400)
 uint32 ZipFile::findCentralDirectoryEnd(SeekableReadStream &zip) {
 	uint32 uSizeFile = zip.size();
-	if (zip.err())
-		return 0;
 
 	uint32 uMaxBack = MIN<uint32>(0xFFFF, uSizeFile); // Maximum size of global comment
 

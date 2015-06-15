@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/ustring.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/transmatrix.h"
 
 #include "src/graphics/graphics.h"

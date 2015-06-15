@@ -23,7 +23,7 @@
  */
 
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/encoding.h"
 #include "src/common/ustring.h"
 #include "src/common/strutil.h"

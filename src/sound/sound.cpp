@@ -29,7 +29,7 @@
 #include "src/sound/decoders/vorbis.h"
 #include "src/sound/decoders/wave.h"
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"

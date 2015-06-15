@@ -24,7 +24,7 @@
 
 #include "src/common/pe_exe.h"
 #include "src/common/encoding.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 
 namespace Common {
 

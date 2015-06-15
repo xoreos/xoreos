@@ -31,7 +31,7 @@
 #include "src/common/xml.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 namespace Common {
 

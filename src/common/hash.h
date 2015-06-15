@@ -28,7 +28,7 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 #include "src/common/encoding.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 namespace Common {
 
@@ -62,7 +62,7 @@ static inline uint32 hashStringDJB2(const UString &string, Encoding encoding) {
 	SeekableReadStream *data = convertString(string, encoding);
 	if (data) {
 		uint32 c;
-		while ((c = data->readChar()) != kEOF)
+		while ((c = data->readChar()) != ReadStream::kEOF)
 			hash = hashDJB2(hash, c);
 
 		delete data;
@@ -92,7 +92,7 @@ static inline uint32 hashStringFNV32(const UString &string, Encoding encoding) {
 	SeekableReadStream *data = convertString(string, encoding);
 	if (data) {
 		uint32 c;
-		while ((c = data->readChar()) != kEOF)
+		while ((c = data->readChar()) != ReadStream::kEOF)
 			hash = hashFNV32(hash, c);
 
 		delete data;
@@ -122,7 +122,7 @@ static inline uint32 hashStringFNV64(const UString &string, Encoding encoding) {
 	SeekableReadStream *data = convertString(string, encoding);
 	if (data) {
 		uint32 c;
-		while ((c = data->readChar()) != kEOF)
+		while ((c = data->readChar()) != ReadStream::kEOF)
 			hash = hashFNV64(hash, c);
 
 		delete data;
@@ -207,7 +207,7 @@ static inline uint32 hashStringCRC32(const UString &string, Encoding encoding) {
 	SeekableReadStream *data = convertString(string, encoding);
 	if (data) {
 		uint32 c;
-		while ((c = data->readChar()) != kEOF)
+		while ((c = data->readChar()) != ReadStream::kEOF)
 			hash = hashCRC32(hash, c);
 
 		delete data;

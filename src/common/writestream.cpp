@@ -18,29 +18,55 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Largely based on the stream implementation found in ScummVM.
+
 /** @file
- *  KotOR2 model loader.
+ *  Basic writing stream interfaces.
  */
 
-#include "src/common/error.h"
+#include "src/common/writestream.h"
 #include "src/common/readstream.h"
+#include "src/common/util.h"
+#include "src/common/ustring.h"
 
-#include "src/aurora/types.h"
+namespace Common {
 
-#include "src/graphics/aurora/model_kotor.h"
-
-#include "src/engines/kotor2/modelloader.h"
-
-namespace Engines {
-
-namespace KotOR2 {
-
-Graphics::Aurora::Model *KotOR2ModelLoader::load(const Common::UString &resref,
-		Graphics::Aurora::ModelType type, const Common::UString &texture) {
-
-	return new Graphics::Aurora::Model_KotOR(resref, true, type, texture);
+WriteStream::WriteStream() {
 }
 
-} // End of namespace KotOR2
+WriteStream::~WriteStream() {
+	try {
+		flush();
+	} catch (...) {
+	}
+}
 
-} // End of namespace Engines
+void WriteStream::flush() {
+}
+
+uint32 WriteStream::writeStream(ReadStream &stream, uint32 n) {
+	uint32 haveRead = 0;
+
+	byte buf[4096];
+	while (!stream.eos() && (n > 0)) {
+		uint32 toRead  = MIN<uint32>(4096, n);
+		uint32 bufRead = stream.read(buf, toRead);
+
+		write(buf, bufRead);
+
+		n        -= bufRead;
+		haveRead += bufRead;
+	}
+
+	return haveRead;
+}
+
+uint32 WriteStream::writeStream(ReadStream &stream) {
+	return writeStream(stream, 0xFFFFFFFF);
+}
+
+void WriteStream::writeString(const UString &str) {
+	write(str.c_str(), strlen(str.c_str()));
+}
+
+} // End of namespace Common

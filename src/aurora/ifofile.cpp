@@ -27,7 +27,7 @@
  */
 
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/aurora/ifofile.h"
 #include "src/aurora/gff3file.h"

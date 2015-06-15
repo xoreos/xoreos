@@ -22,8 +22,10 @@
  *  Parse tokens out of a stream.
  */
 
+#include <cassert>
+
 #include "src/common/streamtokenizer.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/error.h"
 
 namespace Common {
@@ -66,7 +68,7 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 
 	// Run through the stream, character by character
 	uint32 c;
-	while ((c = stream.readChar()) != kEOF) {
+	while ((c = stream.readChar()) != ReadStream::kEOF) {
 
 		if (isIn(c, _chunkEnds)) {
 			// This is a end character, seek back and break
@@ -130,7 +132,7 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 	if (!chunkEnd && (_conSepRule != kRuleHeed)) {
 		// We have to look for consecutive separators
 
-		while ((c = stream.readChar()) != kEOF) {
+		while ((c = stream.readChar()) != ReadStream::kEOF) {
 
 			// Use the rule to determine when we should abort skipping consecutive separators
 			if (((_conSepRule == kRuleIgnoreSame) && (c != separator)) ||
@@ -178,22 +180,19 @@ void StreamTokenizer::skipChunk(SeekableReadStream &stream) {
 	assert(!_chunkEnds.empty());
 
 	uint32 c;
-	while ((c = stream.readChar()) != kEOF) {
+	while ((c = stream.readChar()) != ReadStream::kEOF) {
 		if (isIn(c, _chunkEnds)) {
 			stream.seek(-1, SEEK_CUR);
 			break;
 		}
 	}
-
-	if (stream.err())
-		throw Exception(kReadError);
 }
 
 void StreamTokenizer::nextChunk(SeekableReadStream &stream) {
 	skipChunk(stream);
 
 	uint32 c = stream.readChar();
-	if (c == kEOF)
+	if (c == ReadStream::kEOF)
 		return;
 
 	if (!isIn(c, _chunkEnds))
@@ -202,7 +201,7 @@ void StreamTokenizer::nextChunk(SeekableReadStream &stream) {
 
 bool StreamTokenizer::isChunkEnd(SeekableReadStream &stream) {
 	uint32 c = stream.readChar();
-	if (c == kEOF)
+	if (c == ReadStream::kEOF)
 		return true;
 
 	bool chunkEnd = isIn(c, _chunkEnds);

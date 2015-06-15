@@ -32,7 +32,7 @@
  */
 
 #include "src/common/types.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/aurora/nitrofile.h"
 

@@ -26,7 +26,8 @@
 
 #include "src/common/error.h"
 #include "src/common/encoding.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
+#include "src/common/writestream.h"
 #include "src/common/strutil.h"
 
 #include "src/common/configfile.h"
@@ -288,7 +289,7 @@ void ConfigFile::load(SeekableReadStream &stream) {
 
 	int lineNumber = 0;
 	int domainLineNumber = 0;
-	while (!stream.eos() && !stream.err()) {
+	while (!stream.eos()) {
 		lineNumber++;
 
 		// Read a line
@@ -367,9 +368,6 @@ void ConfigFile::load(SeekableReadStream &stream) {
 		}
 
 	}
-
-	if (stream.err())
-		throw Exception(kReadError);
 
 	// Finish up the last domain
 	addDomain(domain, domainLineNumber);
@@ -547,8 +545,7 @@ void ConfigFile::save(WriteStream &stream) const {
 		stream.writeByte('\n');
 	}
 
-	if (!stream.flush() || stream.err())
-		throw Exception(kWriteError);
+	stream.flush();
 }
 
 bool ConfigFile::hasDomain(const UString &name) const {

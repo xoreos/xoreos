@@ -23,7 +23,8 @@
  */
 
 #include "src/common/ustring.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
+#include "src/common/memwritestream.h"
 
 #include "src/aurora/language.h"
 #include "src/aurora/language_strings.h"

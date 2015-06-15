@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"

@@ -27,7 +27,7 @@
  */
 
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/hash.h"
 
 #include "src/aurora/gdafile.h"

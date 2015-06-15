@@ -25,7 +25,7 @@
 #include "src/common/error.h"
 #include "src/common/util.h"
 #include "src/common/ustring.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/video/decoder.h"
 #include "src/video/actimagine.h"

@@ -33,7 +33,7 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/encoding.h"
 #include "src/common/filepath.h"
 #include "src/common/xml.h"

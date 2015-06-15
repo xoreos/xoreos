@@ -27,7 +27,7 @@
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/file.h"
 #include "src/common/encoding.h"
 
@@ -77,9 +77,6 @@ void NDSFile::load(Common::SeekableReadStream &nds) {
 
 		readNames(nds, fileNameTableOffset, fileNameTableLength);
 		readFAT(nds, fatOffset);
-
-		if (nds.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading NDS file");

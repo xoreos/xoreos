@@ -23,7 +23,7 @@
  */
 
 #include "src/common/util.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/graphics/images/s3tc.h"
 

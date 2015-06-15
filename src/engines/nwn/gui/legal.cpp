@@ -24,7 +24,7 @@
 
 #include "src/common/maths.h"
 #include "src/common/ustring.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/events/events.h"
 

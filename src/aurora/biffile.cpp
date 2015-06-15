@@ -29,7 +29,7 @@
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 
 #include "src/aurora/biffile.h"
 #include "src/aurora/keyfile.h"
@@ -77,9 +77,6 @@ void BIFFile::load(Common::SeekableReadStream &bif) {
 	try {
 
 		readVarResTable(bif, offVarResTable);
-
-		if (bif.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading BIF file");

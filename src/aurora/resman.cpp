@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/filepath.h"
 #include "src/common/file.h"
 
@@ -1028,10 +1028,6 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 	}
 
 	file.flush();
-
-	if (file.err())
-		throw Common::Exception("Write error");
-
 	file.close();
 }
 

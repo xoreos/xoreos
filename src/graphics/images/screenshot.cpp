@@ -110,9 +110,7 @@ static bool writeBMP(const Common::UString &filename, const byte *data,
 		file.write(data, width * height * 3);
 	}
 
-	if (!file.flush() || file.err())
-		return false;
-
+	file.flush();
 	file.close();
 	return true;
 }

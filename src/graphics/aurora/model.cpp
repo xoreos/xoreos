@@ -24,7 +24,7 @@
 
 #include <SDL_timer.h>
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/debug.h"
 
 #include "src/graphics/camera.h"

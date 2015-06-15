@@ -27,7 +27,7 @@
  */
 
 #include "src/common/util.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/encoding.h"
 
 #include "src/aurora/locstring.h"

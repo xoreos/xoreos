@@ -23,7 +23,7 @@
  */
 
 #include "src/common/types.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/systemfonts.h"
 
 namespace Common {

@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/graphics/images/dds.h"
 
@@ -54,9 +54,6 @@ void DDS::load(Common::SeekableReadStream &dds) {
 
 		readHeader(dds);
 		readData  (dds);
-
-		if (dds.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		clear();

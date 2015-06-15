@@ -25,7 +25,7 @@
 #include "src/common/error.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/sound/audiostream.h"
 #include "src/sound/decoders/wave.h"

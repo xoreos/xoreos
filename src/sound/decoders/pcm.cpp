@@ -24,7 +24,7 @@
  *  Decoding PCM (Pulse Code Modulation).
  */
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/sound/audiostream.h"
 #include "src/sound/decoders/pcm.h"

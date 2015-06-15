@@ -47,7 +47,10 @@ noinst_HEADERS = \
                  debug.h \
                  atomic.h \
                  uuid.h \
-                 stream.h \
+                 readstream.h \
+                 memreadstream.h \
+                 writestream.h \
+                 memwritestream.h \
                  streamtokenizer.h \
                  stringmap.h \
                  readline.h \
@@ -90,7 +93,10 @@ libcommon_la_SOURCES = \
                        debugman.cpp \
                        debug.cpp \
                        uuid.cpp \
-                       stream.cpp \
+                       readstream.cpp \
+                       memreadstream.cpp \
+                       writestream.cpp \
+                       memwritestream.cpp \
                        streamtokenizer.cpp \
                        stringmap.cpp \
                        readline.cpp \

@@ -27,7 +27,7 @@
 
 #include "src/common/types.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 namespace Common {
 
@@ -117,8 +117,6 @@ private:
 			throw Exception("BitStream::readValue(): End of bit stream reached");
 
 		_value = readData();
-		if (_stream->err() || _stream->eos())
-			throw Exception(kReadError);
 
 		// If we're reading the bits MSB first, we need to shift the value to that position
 		if (isMSB2LSB)

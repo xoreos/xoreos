@@ -26,7 +26,7 @@
  * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
  */
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -90,9 +90,6 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 	try {
 
 		readEntries(ssf, offEntryTable);
-
-		if (ssf.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading SSF file");

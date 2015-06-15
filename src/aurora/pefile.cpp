@@ -24,6 +24,8 @@
 
 #include "src/common/error.h"
 #include "src/common/pe_exe.h"
+#include "src/common/memreadstream.h"
+#include "src/common/memwritestream.h"
 
 #include "src/aurora/pefile.h"
 

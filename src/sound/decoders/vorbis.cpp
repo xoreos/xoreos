@@ -26,7 +26,7 @@
 
 #include "src/sound/decoders/vorbis.h"
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/util.h"
 
 #include "src/sound/audiostream.h"

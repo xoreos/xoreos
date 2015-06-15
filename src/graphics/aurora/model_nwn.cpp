@@ -34,7 +34,7 @@
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/debug.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/streamtokenizer.h"
@@ -288,7 +288,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 
 	newState(ctx);
 
-	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
+	while (!ctx.mdl->eos()) {
 		std::vector<Common::UString> line;
 
 		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 3);
@@ -358,7 +358,7 @@ void Model_NWN::newState(ParserContext &ctx) {
 void Model_NWN::skipAnimASCII(ParserContext &ctx) {
 	bool end = false;
 
-	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
+	while (!ctx.mdl->eos()) {
 		std::vector<Common::UString> line;
 
 		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 1);
@@ -1038,7 +1038,7 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 	Mesh mesh;
 
-	while (!ctx.mdl->eos() && !ctx.mdl->err()) {
+	while (!ctx.mdl->eos()) {
 		std::vector<Common::UString> line;
 
 		int count = ctx.tokenize->getTokens(*ctx.mdl, line, 5);

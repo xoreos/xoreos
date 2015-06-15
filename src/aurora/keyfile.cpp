@@ -29,7 +29,7 @@
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/encoding.h"
 #include "src/common/file.h"
 
@@ -80,9 +80,6 @@ void KEYFile::load(Common::SeekableReadStream &key) {
 
 		_resources.resize(resCount);
 		readResList(key, offResTable);
-
-		if (key.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading KEY file");

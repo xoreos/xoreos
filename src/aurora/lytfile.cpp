@@ -22,7 +22,7 @@
  *  Handling BioWare's LYTs (Layout files).
  */
 
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/streamtokenizer.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
@@ -53,7 +53,7 @@ void LYTFile::load(Common::SeekableReadStream &lyt) {
 	tokenizer.addChunkEnd('\n');
 	tokenizer.addIgnore('\r');
 
-	while (!lyt.eos() && !lyt.err()) {
+	while (!lyt.eos()) {
 		std::vector<Common::UString> strings;
 		tokenizer.getTokens(lyt, strings);
 

@@ -28,7 +28,8 @@
 #include <cstdio>
 
 #include "src/common/types.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
+#include "src/common/writestream.h"
 #include "src/common/noncopyable.h"
 
 namespace Common {
@@ -71,8 +72,6 @@ public:
 	 */
 	bool isOpen() const;
 
-	bool err() const; // implement abstract Stream method
-	void clearErr();  // implement abstract Stream method
 	bool eos() const; // implement abstract SeekableReadStream method
 
 	int32 pos() const;  // implement abstract SeekableReadStream method
@@ -116,10 +115,7 @@ public:
 	 */
 	bool isOpen() const;
 
-	bool err() const; // implement abstract Stream method
-	void clearErr();  // implement abstract Stream method
-
-	bool flush(); // implement abstract WriteStream method
+	void flush(); // implement abstract WriteStream method
 
 	uint32 write(const void *dataPtr, uint32 dataSize); // implement abstract WriteStream method
 

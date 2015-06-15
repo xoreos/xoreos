@@ -23,7 +23,7 @@
  */
 
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/strutil.h"
 
 #include "src/sound/audiostream.h"
@@ -415,10 +415,6 @@ void XboxMediaVideo::processData() {
 		fetchNextPacket(_curPacket);
 		queueNewAudio(_curPacket);
 	}
-
-	// Check for read errors
-	if (_xmv->err() || _xmv->eos())
-		throw Common::Exception(Common::kReadError);
 }
 
 void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream,

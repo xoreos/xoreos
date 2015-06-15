@@ -27,7 +27,7 @@
  */
 
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/encoding.h"
 #include "src/common/ustring.h"
 #include "src/common/strutil.h"
@@ -99,9 +99,6 @@ void GFF3File::load(uint32 id) {
 		loadHeader(id);
 		loadStructs();
 		loadLists();
-
-		if (_stream->err() || _stream->eos())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		clear();

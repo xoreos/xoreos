@@ -30,7 +30,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/file.h"
 #include "src/common/bitstream.h"
 #include "src/common/huffman.h"

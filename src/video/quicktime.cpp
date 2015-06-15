@@ -32,7 +32,8 @@
 
 #include "src/common/system.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
+#include "src/common/memwritestream.h"
 #include "src/common/file.h"
 
 #include "src/video/quicktime.h"

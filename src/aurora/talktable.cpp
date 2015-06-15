@@ -23,7 +23,7 @@
  */
 
 #include "src/common/util.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 
 #include "src/aurora/aurorafile.h"
 #include "src/aurora/talktable.h"

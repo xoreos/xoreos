@@ -26,7 +26,7 @@
  * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
  */
 
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/file.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
@@ -102,9 +102,6 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 
 		delete[] _header.stringTable;
 		_header.stringTable = 0;
-
-		if (erf.err())
-			throw Common::Exception(Common::kReadError);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading ERF file");

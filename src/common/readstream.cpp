@@ -21,41 +21,22 @@
 // Largely based on the stream implementation found in ScummVM.
 
 /** @file
- *  Basic stream interfaces.
+ *  Basic reading stream interfaces.
  */
 
-#include "src/common/stream.h"
+#include <cassert>
+
+#include "src/common/readstream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/error.h"
-#include "src/common/util.h"
-#include "src/common/ustring.h"
 
 namespace Common {
 
-uint32 WriteStream::writeStream(ReadStream &stream, uint32 n) {
-	uint32 haveRead = 0;
-
-	byte buf[4096];
-	while (!stream.eos() && (n > 0)) {
-		uint32 toRead  = MIN<uint32>(4096, n);
-		uint32 bufRead = stream.read(buf, toRead);
-
-		write(buf, bufRead);
-
-		n        -= bufRead;
-		haveRead += bufRead;
-	}
-
-	return haveRead;
+ReadStream::ReadStream() {
 }
 
-uint32 WriteStream::writeStream(ReadStream &stream) {
-	return writeStream(stream, 0xFFFFFFFF);
+ReadStream::~ReadStream() {
 }
-
-void WriteStream::writeString(const UString &str) {
-	write(str.c_str(), strlen(str.c_str()));
-}
-
 
 MemoryReadStream *ReadStream::readStream(uint32 dataSize) {
 	byte *buf = new byte[dataSize];
@@ -74,57 +55,25 @@ MemoryReadStream *ReadStream::readStream(uint32 dataSize) {
 }
 
 
-uint32 MemoryReadStream::read(void *dataPtr, uint32 dataSize) {
-	// Read at most as many bytes as are still available...
-	if (dataSize > _size - _pos) {
-		dataSize = _size - _pos;
-		_eos = true;
-	}
-	std::memcpy(dataPtr, _ptr, dataSize);
-
-	if (_encbyte) {
-		byte *p = (byte *)dataPtr;
-		byte *end = p + dataSize;
-		while (p < end)
-			*p++ ^= _encbyte;
-	}
-
-	_ptr += dataSize;
-	_pos += dataSize;
-
-	return dataSize;
+SeekableReadStream::SeekableReadStream() {
 }
 
-void MemoryReadStream::seek(int32 offs, int whence) {
-	assert(_pos <= _size);
+SeekableReadStream::~SeekableReadStream() {
+}
 
-	uint32 newPos = _pos;
-
+uint32 SeekableReadStream::evalSeek(int32 offset, int whence, uint32 pos, uint32 begin, int32 size) {
 	switch (whence) {
 	case SEEK_END:
-		// SEEK_END works just like SEEK_SET, only 'reversed',
-		// i.e. from the end.
-		offs = _size + offs;
-		// Fall through
+		offset = size + offset;
+		// fallthrough
 	case SEEK_SET:
-		newPos = offs;
-		break;
-
+		return begin + offset;
 	case SEEK_CUR:
-		newPos += offs;
-		break;
+		return pos + offset;
 	}
 
-	if (newPos > _size)
-		throw Exception(kSeekError);
-
-	_pos = newPos;
-	_ptr = _ptrOrig + newPos;
-
-	// Reset end-of-stream flag on a successful seek
-	_eos = false;
+	throw Exception("Invalid whence (%d)", whence);
 }
-
 
 uint32 SeekableReadStream::seekTo(uint32 offset) {
 	uint32 curPos = pos();
@@ -134,6 +83,22 @@ uint32 SeekableReadStream::seekTo(uint32 offset) {
 	return curPos;
 }
 
+
+SubReadStream::SubReadStream(ReadStream *parentStream, uint32 end, bool disposeParentStream) :
+	_parentStream(parentStream), _disposeParentStream(disposeParentStream),
+	_pos(0), _end(end), _eos(false) {
+
+	assert(parentStream);
+}
+
+SubReadStream::~SubReadStream() {
+	if (_disposeParentStream)
+		delete _parentStream;
+}
+
+bool SubReadStream::eos() const {
+	return _eos | _parentStream->eos();
+}
 
 uint32 SubReadStream::read(void *dataPtr, uint32 dataSize) {
 	if (dataSize > _end - _pos) {
@@ -147,33 +112,33 @@ uint32 SubReadStream::read(void *dataPtr, uint32 dataSize) {
 	return dataSize;
 }
 
-SeekableSubReadStream::SeekableSubReadStream(SeekableReadStream *parentStream, uint32 begin, uint32 end, bool disposeParentStream)
-	: SubReadStream(parentStream, end, disposeParentStream),
-	_parentStream(parentStream),
-	_begin(begin) {
+
+SeekableSubReadStream::SeekableSubReadStream(SeekableReadStream *parentStream, uint32 begin, uint32 end,
+                                             bool disposeParentStream) :
+	SubReadStream(parentStream, end, disposeParentStream), _parentStream(parentStream), _begin(begin) {
+
 	assert(_begin <= _end);
-	_pos = _begin;
+
+	_pos = begin;
 	_parentStream->seek(_pos);
-	_eos = false;
+}
+
+SeekableSubReadStream::~SeekableSubReadStream() {
+}
+
+int32 SeekableSubReadStream::pos() const {
+	return _pos - _begin;
+}
+
+int32 SeekableSubReadStream::size() const {
+	return _end - _begin;
 }
 
 void SeekableSubReadStream::seek(int32 offset, int whence) {
 	assert(_pos >= _begin);
 	assert(_pos <= _end);
 
-	uint32 newPos = _pos;
-
-	switch (whence) {
-	case SEEK_END:
-		offset = size() + offset;
-		// fallthrough
-	case SEEK_SET:
-		newPos = _begin + offset;
-		break;
-	case SEEK_CUR:
-		newPos += offset;
-	}
-
+	const uint32 newPos = evalSeek(offset, whence, _pos, _begin, size());
 	if ((newPos < _begin) || (newPos > _end))
 		throw Exception(kSeekError);
 
@@ -181,6 +146,16 @@ void SeekableSubReadStream::seek(int32 offset, int whence) {
 
 	_parentStream->seek(_pos);
 	_eos = false; // reset eos on successful seek
+}
+
+
+SeekableSubReadStreamEndian::SeekableSubReadStreamEndian(SeekableReadStream *parentStream,
+		uint32 begin, uint32 end, bool bigEndian, bool disposeParentStream) :
+		SeekableSubReadStream(parentStream, begin, end, disposeParentStream), _bigEndian(bigEndian) {
+
+}
+
+SeekableSubReadStreamEndian::~SeekableSubReadStreamEndian() {
 }
 
 } // End of namespace Common

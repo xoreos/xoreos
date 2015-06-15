@@ -30,7 +30,7 @@
 #include "src/common/maths.h"
 #include "src/common/sinewindows.h"
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 #include "src/common/mdct.h"
 #include "src/common/bitstream.h"
 #include "src/common/huffman.h"

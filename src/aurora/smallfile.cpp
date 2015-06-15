@@ -22,8 +22,9 @@
  *  Decompressing "small" files, Nintendo DS LZSS (types 0x00 and 0x10), found in Sonic.
  */
 
-#include "src/common/stream.h"
 #include "src/common/error.h"
+#include "src/common/memreadstream.h"
+#include "src/common/memwritestream.h"
 
 #include "src/aurora/smallfile.h"
 

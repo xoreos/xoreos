@@ -23,7 +23,7 @@
  */
 
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/file.h"
 #include "src/common/configman.h"
 
@@ -151,18 +151,21 @@ bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileN
 		return false;
 
 	uint32 pos = stream.pos();
+	try {
+		stream.seek(0);
 
-	stream.seek(0);
+		file.writeStream(stream);
+		stream.seek(pos);
 
-	file.writeStream(stream);
-	file.flush();
+		file.flush();
 
-	bool error = file.err();
+	} catch (...) {
+		stream.seek(pos);
+		return false;
+	}
 
-	stream.seek(pos);
 	file.close();
-
-	return !error;
+	return true;
 }
 
 bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::UString file) {

@@ -25,7 +25,7 @@
  */
 
 #include "src/common/error.h"
-#include "src/common/stream.h"
+#include "src/common/memreadstream.h"
 
 #include "src/sound/audiostream.h"
 #include "src/sound/decoders/aac.h"

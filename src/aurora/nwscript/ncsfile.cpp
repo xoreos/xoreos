@@ -32,7 +32,7 @@
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/ustring.h"
-#include "src/common/stream.h"
+#include "src/common/readstream.h"
 #include "src/common/encoding.h"
 #include "src/common/debug.h"
 
@@ -368,9 +368,6 @@ const Variable &NCSFile::execute(Object *owner, Object *triggerer) {
 
 	while (executeStep())
 		;
-
-	if (_script->err())
-		throw Common::Exception(Common::kReadError);
 
 	if (!_stack.empty())
 		_return = _stack.top();
