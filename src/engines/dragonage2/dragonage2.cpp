@@ -28,6 +28,7 @@
 #include "src/common/configman.h"
 
 #include "src/aurora/resman.h"
+#include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/cursorman.h"
@@ -39,7 +40,6 @@
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
-#include "src/engines/aurora/language.h"
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/model.h"
@@ -194,7 +194,7 @@ void DragonAge2Engine::init() {
 	LoadProgress progress(21);
 
 	if (evaluateLanguage(true, _language))
-		status("Setting the language to %s", Aurora::getLanguageName(_language).c_str());
+		status("Setting the language to %s", LangMan.getLanguageName(_language).c_str());
 	else
 		warning("Failed to detect this game's language");
 
@@ -202,7 +202,7 @@ void DragonAge2Engine::init() {
 	initConfig();
 
 	progress.step("Declare string encodings");
-	declareEncodings();
+	declareLanguages();
 
 	initResources(progress);
 	if (EventMan.quitRequested())
@@ -219,22 +219,22 @@ void DragonAge2Engine::init() {
 	progress.step("Successfully initialized the engine");
 }
 
-void DragonAge2Engine::declareEncodings() {
-	static const LanguageEncoding kLanguageEncodings[] = {
-		{ Aurora::kLanguageEnglish           , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageFrench            , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageGerman            , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageItalian           , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageSpanish           , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguagePolish            , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageCzech             , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageHungarian         , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageRussian           , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageKorean            , Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageJapanese          , Common::kEncodingUTF16LE }
+void DragonAge2Engine::declareLanguages() {
+	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
+		{ Aurora::kLanguageEnglish  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageFrench   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageGerman   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageItalian  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageSpanish  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguagePolish   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageCzech    , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageHungarian, Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageRussian  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageKorean   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageJapanese , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE }
 	};
 
-	Engines::declareEncodings(_game, kLanguageEncodings, ARRAYSIZE(kLanguageEncodings));
+	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
 }
 
 void DragonAge2Engine::initResources(LoadProgress &progress) {
@@ -336,7 +336,7 @@ void DragonAge2Engine::unloadLanguageFiles() {
 
 void DragonAge2Engine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
 	progress.step(Common::UString::format("Indexing language files (%s)",
-				Aurora::getLanguageName(language).c_str()));
+				LangMan.getLanguageName(language).c_str()));
 
 	loadLanguageFiles(language);
 }
@@ -353,7 +353,7 @@ void DragonAge2Engine::loadTalkTable(const Common::UString &tlk, const Common::U
 
 void DragonAge2Engine::loadLanguageFiles(Aurora::Language language) {
 	unloadLanguageFiles();
-	declareTalkLanguage(_game, language);
+	LangMan.setCurrentLanguage(language);
 
 	loadTalkTable("core_"         , ""  , language, 0);
 	loadTalkTable("core_"         , "_p", language, 1);
