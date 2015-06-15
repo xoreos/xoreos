@@ -218,7 +218,7 @@ void GameInstanceEngine::listLanguages() {
 		if (!langs.empty()) {
 			info("Available languages:");
 			for (std::vector<Aurora::Language>::iterator l = langs.begin(); l != langs.end(); ++l)
-				info("- %s", Aurora::getLanguageName(*l).c_str());
+				info("- %s", LangMan.getLanguageName(*l).c_str());
 		}
 	}
 
@@ -227,13 +227,13 @@ void GameInstanceEngine::listLanguages() {
 		if (!langsT.empty()) {
 			info("Available text languages:");
 			for (std::vector<Aurora::Language>::iterator l = langsT.begin(); l != langsT.end(); ++l)
-				info("- %s", Aurora::getLanguageName(*l).c_str());
+				info("- %s", LangMan.getLanguageName(*l).c_str());
 		}
 
 		if (!langsV.empty()) {
 			info("Available voice languages:");
 			for (std::vector<Aurora::Language>::iterator l = langsV.begin(); l != langsV.end(); ++l)
-				info("- %s", Aurora::getLanguageName(*l).c_str());
+				info("- %s", LangMan.getLanguageName(*l).c_str());
 		}
 	}
 

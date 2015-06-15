@@ -120,8 +120,8 @@ static void fiddleLangChinese(const std::vector<Aurora::Language> &langs, Aurora
 
 		if (lang != Aurora::kLanguageChinese)
 			status("Substituting %s for %s",
-					Aurora::getLanguageName(lang).c_str(),
-					Aurora::getLanguageName(Aurora::kLanguageChinese).c_str());
+					LangMan.getLanguageName(lang).c_str(),
+					LangMan.getLanguageName(Aurora::kLanguageChinese).c_str());
 	}
 
 	// Substitute simplified for traditional Chinese if necessary
@@ -132,8 +132,8 @@ static void fiddleLangChinese(const std::vector<Aurora::Language> &langs, Aurora
 
 		if (lang != Aurora::kLanguageChineseTraditional)
 			status("Substituting %s for %s",
-					Aurora::getLanguageName(Aurora::kLanguageChineseSimplified).c_str(),
-					Aurora::getLanguageName(Aurora::kLanguageChineseTraditional).c_str());
+					LangMan.getLanguageName(Aurora::kLanguageChineseSimplified).c_str(),
+					LangMan.getLanguageName(Aurora::kLanguageChineseTraditional).c_str());
 	}
 
 	// Substitute traditional for simplified Chinese if necessary
@@ -144,8 +144,8 @@ static void fiddleLangChinese(const std::vector<Aurora::Language> &langs, Aurora
 
 		if (lang != Aurora::kLanguageChineseSimplified)
 			status("Substituting %s for %s",
-					Aurora::getLanguageName(Aurora::kLanguageChineseTraditional).c_str(),
-					Aurora::getLanguageName(Aurora::kLanguageChineseSimplified).c_str());
+					LangMan.getLanguageName(Aurora::kLanguageChineseTraditional).c_str(),
+					LangMan.getLanguageName(Aurora::kLanguageChineseSimplified).c_str());
 	}
 }
 
@@ -164,7 +164,7 @@ static bool resolveLangInvalid(const std::vector<Aurora::Language> &langs, Auror
 
 	lang = langs.front();
 	status("Using the first available language (%s)%s",
-			Aurora::getLanguageName(lang).c_str(), specifier.c_str());
+			LangMan.getLanguageName(lang).c_str(), specifier.c_str());
 
 	return true;
 }
@@ -182,10 +182,10 @@ static bool resolveLangUnavailable(const std::vector<Aurora::Language> &langs, A
 
 	lang = langs.front();
 	warning("This game version does not come with %s language files%s",
-			Aurora::getLanguageName(oldLang).c_str(), specifier.c_str());
+			LangMan.getLanguageName(oldLang).c_str(), specifier.c_str());
 
 	status("Using the first available language (%s)%s",
-			Aurora::getLanguageName(lang).c_str(), specifier.c_str());
+			LangMan.getLanguageName(lang).c_str(), specifier.c_str());
 
 	return true;
 }
@@ -210,8 +210,8 @@ bool Engine::evaluateLanguage(bool find, Aurora::Language &language) const {
 		confLangVoice = confLang;
 
 	Aurora::Language lang      = Aurora::kLanguageInvalid;
-	Aurora::Language langText  = Aurora::parseLanguage(confLangText);
-	Aurora::Language langVoice = Aurora::parseLanguage(confLangVoice);
+	Aurora::Language langText  = LangMan.parseLanguage(confLangText);
+	Aurora::Language langVoice = LangMan.parseLanguage(confLangVoice);
 
 	if (langText != langVoice) {
 		if (confLangText.empty())
@@ -223,7 +223,7 @@ bool Engine::evaluateLanguage(bool find, Aurora::Language &language) const {
 			warning("Game does not support different languages for voice and text");
 
 			langText = langs.front();
-			status("Using the first available language (%s)", Aurora::getLanguageName(langText).c_str());
+			status("Using the first available language (%s)", LangMan.getLanguageName(langText).c_str());
 		}
 	}
 
@@ -263,8 +263,8 @@ bool Engine::evaluateLanguage(bool find, Aurora::Language &languageText,
 	if (confLangVoice.empty())
 		confLangVoice = confLang;
 
-	Aurora::Language langText  = Aurora::parseLanguage(confLangText);
-	Aurora::Language langVoice = Aurora::parseLanguage(confLangVoice);
+	Aurora::Language langText  = LangMan.parseLanguage(confLangText);
+	Aurora::Language langVoice = LangMan.parseLanguage(confLangVoice);
 
 	fiddleLangChinese(langsText , langText);
 	fiddleLangChinese(langsVoice, langVoice);

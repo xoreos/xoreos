@@ -1325,7 +1325,7 @@ void Console::cmdListLangs(const CommandLine &UNUSED(cl)) {
 		if (!langs.empty()) {
 			printf("Available languages:");
 			for (std::vector<Aurora::Language>::iterator l = langs.begin(); l != langs.end(); ++l)
-				printf("- %s", Aurora::getLanguageName(*l).c_str());
+				printf("- %s", LangMan.getLanguageName(*l).c_str());
 		}
 	}
 
@@ -1334,13 +1334,13 @@ void Console::cmdListLangs(const CommandLine &UNUSED(cl)) {
 		if (!langsT.empty()) {
 			printf("Available text languages:");
 			for (std::vector<Aurora::Language>::iterator l = langsT.begin(); l != langsT.end(); ++l)
-				printf("- %s", Aurora::getLanguageName(*l).c_str());
+				printf("- %s", LangMan.getLanguageName(*l).c_str());
 		}
 
 		if (!langsV.empty()) {
 			printf("Available voice languages:");
 			for (std::vector<Aurora::Language>::iterator l = langsV.begin(); l != langsV.end(); ++l)
-				printf("- %s", Aurora::getLanguageName(*l).c_str());
+				printf("- %s", LangMan.getLanguageName(*l).c_str());
 		}
 	}
 }
@@ -1348,12 +1348,12 @@ void Console::cmdListLangs(const CommandLine &UNUSED(cl)) {
 void Console::cmdGetLang(const CommandLine &UNUSED(cl)) {
 	Aurora::Language lang;
 	if (_engine->getLanguage(lang))
-		printf("%s", Aurora::getLanguageName(lang).c_str());
+		printf("%s", LangMan.getLanguageName(lang).c_str());
 
 	Aurora::Language langT, langV;
 	if (_engine->getLanguage(langT, langV))
-		printf("%s text + %s voices", Aurora::getLanguageName(langT).c_str(),
-				Aurora::getLanguageName(langV).c_str());
+		printf("%s text + %s voices", LangMan.getLanguageName(langT).c_str(),
+				LangMan.getLanguageName(langV).c_str());
 }
 
 void Console::cmdSetLang(const CommandLine &cl) {
@@ -1375,12 +1375,12 @@ void Console::cmdSetLang(const CommandLine &cl) {
 	if (_engine->changeLanguage()) {
 		Aurora::Language lang;
 		if (_engine->getLanguage(lang))
-			printf("Changed language to %s", Aurora::getLanguageName(lang).c_str());
+			printf("Changed language to %s", LangMan.getLanguageName(lang).c_str());
 
 		Aurora::Language langT, langV;
 		if (_engine->getLanguage(langT, langV))
-			printf("Change language to %s text + %s voices", Aurora::getLanguageName(langT).c_str(),
-					Aurora::getLanguageName(langV).c_str());
+			printf("Change language to %s text + %s voices", LangMan.getLanguageName(langT).c_str(),
+					LangMan.getLanguageName(langV).c_str());
 	} else
 		printf("Failed to change the language");
 }
