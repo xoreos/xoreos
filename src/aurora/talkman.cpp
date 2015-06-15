@@ -122,7 +122,7 @@ void TalkManager::addTable(const Common::UString &nameMale, const Common::UStrin
                            bool isAlt, uint32 priority, Common::ChangeID *changeID) {
 
 	TalkTable *tableMale = 0, *tableFemale = 0;
-	loadTables(nameMale, nameFemale, tableMale, tableFemale, getEncoding(_languageID));
+	loadTables(nameMale, nameFemale, tableMale, tableFemale, LangMan.getCurrentEncoding());
 
 	if (!tableMale && !tableFemale)
 		throw Common::Exception("No such talk table \"%s\"/\"%s\"", nameMale.c_str(), nameFemale.c_str());
@@ -171,8 +171,8 @@ void TalkManager::removeTable(Common::ChangeID &changeID) {
 
 static const Common::UString kEmptyString = "";
 const Common::UString &TalkManager::getString(uint32 strRef, LanguageGender gender) {
-	if (gender == ((LanguageGender) -1))
-		gender = _gender;
+	if (gender == kLanguageGenderCurrent)
+		gender = LangMan.getCurrentGender();
 
 	if (strRef == kStrRefInvalid)
 		return kEmptyString;
@@ -185,8 +185,8 @@ const Common::UString &TalkManager::getString(uint32 strRef, LanguageGender gend
 }
 
 const Common::UString &TalkManager::getSoundResRef(uint32 strRef, LanguageGender gender) {
-	if (gender == ((LanguageGender) -1))
-		gender = _gender;
+	if (gender == kLanguageGenderCurrent)
+		gender = LangMan.getCurrentGender();
 
 	if (strRef == kStrRefInvalid)
 		return kEmptyString;

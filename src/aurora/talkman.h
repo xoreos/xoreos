@@ -79,8 +79,8 @@ public:
 	/** Remove a talk table from the talk manager again. */
 	void removeTable(Common::ChangeID &changeID);
 
-	const Common::UString &getString     (uint32 strRef, LanguageGender gender = (LanguageGender) -1);
-	const Common::UString &getSoundResRef(uint32 strRef, LanguageGender gender = (LanguageGender) -1);
+	const Common::UString &getString     (uint32 strRef, LanguageGender gender = kLanguageGenderCurrent);
+	const Common::UString &getSoundResRef(uint32 strRef, LanguageGender gender = kLanguageGenderCurrent);
 
 private:
 	struct Table {
