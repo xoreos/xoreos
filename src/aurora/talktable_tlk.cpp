@@ -130,7 +130,7 @@ void TalkTable_TLK::readString(Entry &entry) const {
 		return;
 
 	Common::MemoryReadStream *data   = _tlk->readStream(length);
-	Common::MemoryReadStream *parsed = preParseColorCodes(*data);
+	Common::MemoryReadStream *parsed = LangMan.preParseColorCodes(*data);
 
 	if (_encoding != Common::kEncodingInvalid)
 		entry.text = Common::readString(*parsed, _encoding);
