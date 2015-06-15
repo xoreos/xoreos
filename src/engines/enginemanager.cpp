@@ -33,6 +33,7 @@
 
 #include "src/aurora/types.h"
 #include "src/aurora/util.h"
+#include "src/aurora/language.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/talkman.h"
 #include "src/aurora/2dareg.h"
@@ -291,6 +292,7 @@ void EngineManager::cleanup() const {
 
 		TokenMan.clear();
 
+		LangMan.clear();
 		TalkMan.clear();
 		TwoDAReg.clear();
 		ResMan.clear();

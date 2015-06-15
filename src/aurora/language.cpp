@@ -28,7 +28,288 @@
 #include "src/aurora/language.h"
 #include "src/aurora/language_strings.h"
 
+DECLARE_SINGLETON(Aurora::LanguageManager)
+
 namespace Aurora {
+
+LanguageManager::LanguageManager() :
+	_currentLanguageText(kLanguageInvalid), _currentLanguageVoice(kLanguageInvalid),
+	_currentGender(kLanguageGenderMale) {
+
+}
+
+LanguageManager::~LanguageManager() {
+}
+
+void LanguageManager::clear() {
+	_langByID.clear();
+	_langByLang.clear();
+
+	_currentLanguageText  = kLanguageInvalid;
+	_currentLanguageVoice = kLanguageInvalid;
+
+	_currentGender = kLanguageGenderMale;
+}
+
+void LanguageManager::addLanguage(Language language, uint32 id, Common::Encoding encoding) {
+	Declaration declaration;
+
+	declaration.language = language;
+	declaration.id       = id;
+	declaration.encoding = encoding;
+
+	addLanguage(declaration);
+}
+
+void LanguageManager::addLanguage(const Declaration &languageDeclaration) {
+	if (languageDeclaration.id != kLanguageInvalid)
+		_langByID[languageDeclaration.id] = languageDeclaration;
+
+	if (languageDeclaration.language != kLanguageInvalid)
+		_langByLang[languageDeclaration.language] = languageDeclaration;
+}
+
+void LanguageManager::addLanguages(const Declaration *languageDeclarations, size_t count) {
+	while (count-- > 0)
+		addLanguage(*languageDeclarations++);
+}
+
+const LanguageManager::Declaration *LanguageManager::find(Language language) const {
+	LanguageByLanguage::const_iterator l = _langByLang.find(language);
+	if (l != _langByLang.end())
+		return &l->second;
+
+	return 0;
+}
+
+const LanguageManager::Declaration *LanguageManager::find(uint32 id) const {
+	LanguageByID::const_iterator l = _langByID.find(id);
+	if (l != _langByID.end())
+		return &l->second;
+
+	return 0;
+}
+
+uint32 LanguageManager::getLanguageID(Language language) const {
+	const Declaration *l = find(language);
+	if (!l)
+		return kLanguageInvalid;
+
+	return l->id;
+}
+
+uint32 LanguageManager::getLanguageID(Language language, LanguageGender gender) const {
+	const Declaration *l = find(language);
+	if (!l)
+		return kLanguageInvalid;
+
+	return convertLanguageIDToGendered(l->id, gender);
+}
+
+Language LanguageManager::getLanguage(uint32 languageID) const {
+	const Declaration *l = find(languageID);
+	if (!l)
+		return kLanguageInvalid;
+
+	return l->language;
+}
+
+Language LanguageManager::getLanguage(uint32 languageID, LanguageGender &gender) const {
+	gender = getLanguageGender(languageID);
+
+	const Declaration *l = find(convertLanguageIDToUngendered(languageID));
+	if (!l)
+		return kLanguageInvalid;
+
+	return l->language;
+}
+
+Language LanguageManager::getLanguageGendered(uint32 languageID) const {
+	LanguageGender gender;
+	return getLanguage(languageID, gender);
+}
+
+Common::Encoding LanguageManager::getEncoding(Language language) const {
+	const Declaration *l = find(language);
+	if (!l)
+		return Common::kEncodingInvalid;
+
+	return l->encoding;
+}
+
+void LanguageManager::setCurrentLanguage(Language language) {
+	setCurrentLanguageText(language);
+	setCurrentLanguageVoice(language);
+}
+
+void LanguageManager::setCurrentLanguage(Language languageText, Language languageVoice) {
+	setCurrentLanguageText(languageText);
+	setCurrentLanguageVoice(languageVoice);
+}
+
+void LanguageManager::setCurrentGender(LanguageGender gender) {
+	_currentGender = gender;
+}
+
+Language LanguageManager::getCurrentLanguageText() const {
+	return _currentLanguageText;
+}
+
+Language LanguageManager::getCurrentLanguageVoice() const {
+	return _currentLanguageVoice;
+}
+
+void LanguageManager::setCurrentLanguageText(Language language) {
+	_currentLanguageText = language;
+}
+
+void LanguageManager::setCurrentLanguageVoice(Language language) {
+	_currentLanguageVoice = language;
+}
+
+LanguageGender LanguageManager::getCurrentGender() const {
+	return _currentGender;
+}
+
+Common::Encoding LanguageManager::getCurrentEncoding() const {
+	return getEncoding(getCurrentLanguageText());
+}
+
+uint32 LanguageManager::convertLanguageIDToGendered(uint32 languageID, LanguageGender gender) {
+	assert(((uint) gender) < kLanguageGenderMAX);
+
+	if (languageID == kLanguageInvalid)
+		return kLanguageInvalid;
+
+	// In gendered language use, the ID is:
+	// - ID * 2 + 0  for male
+	// - ID * 2 + 1  for female
+
+	return languageID * 2 + ((uint) gender);
+}
+
+uint32 LanguageManager::convertLanguageIDToUngendered(uint32 languageID) {
+	if (languageID == kLanguageInvalid)
+		return kLanguageInvalid;
+
+	return languageID / 2;
+}
+
+LanguageGender LanguageManager::getLanguageGender(uint32 languageID) {
+	if (languageID == kLanguageInvalid)
+		return kLanguageGenderMale;
+
+	return (LanguageGender) (languageID % 2);
+}
+
+uint32 LanguageManager::swapLanguageGender(uint32 languageID) {
+	if (languageID == kLanguageInvalid)
+		return kLanguageInvalid;
+
+	return languageID ^ 1;
+}
+
+Common::UString LanguageManager::getLanguageName(Language language) {
+	if (language == kLanguageChinese)
+		return "Chinese";
+
+	if (((uint32) language >= kLanguageMAX))
+		return "Invalid";
+
+	return kLanguageNames[language];
+}
+
+Language LanguageManager::parseLanguage(Common::UString str) {
+	if (str.empty())
+		return kLanguageInvalid;
+
+	str.makeLower();
+
+	for (uint i = 0; i < ARRAYSIZE(kLanguageStrings); i++) {
+		for (uint j = 0; j < ARRAYSIZE(kLanguageStrings[i].strings); j++) {
+			if (!kLanguageStrings[i].strings[j])
+				break;
+
+			if (str == kLanguageStrings[i].strings[j])
+				return kLanguageStrings[i].language;
+		}
+	}
+
+	return kLanguageInvalid;
+}
+
+Common::MemoryReadStream *LanguageManager::preParseColorCodes(Common::SeekableReadStream &stream) {
+	Common::MemoryWriteStreamDynamic output;
+
+	output.reserve(stream.size());
+
+	int state = 0;
+
+	std::vector<byte> collect;
+	collect.reserve(6);
+
+	byte color[3];
+
+	byte b;
+	while (stream.read(&b, 1) == 1) {
+		if (state == 0) {
+			if (b == '<') {
+				collect.push_back(b);
+				state = 1;
+			} else
+				output.writeByte(b);
+
+			continue;
+		}
+
+		if (state == 1) {
+			if (b == 'c') {
+				collect.push_back(b);
+				state = 2;
+			} else {
+				output.write(&collect[0], collect.size());
+				output.writeByte(b);
+				collect.clear();
+				state = 0;
+			}
+
+			continue;
+		}
+
+		if ((state == 2) || (state == 3) || (state == 4)) {
+			collect.push_back(b);
+			color[state - 2] = b;
+			state++;
+
+			continue;
+		}
+
+		if (state == 5) {
+			if (b == '>') {
+				Common::UString c = Common::UString::format("<c%02X%02X%02X%02X>",
+				                    (uint8) color[0], (uint8) color[1], (uint8) color[2], (uint8) 0xFF);
+
+				output.writeString(c);
+				collect.clear();
+				state = 0;
+
+			} else {
+				output.write(&collect[0], collect.size());
+				output.writeByte(b);
+				collect.clear();
+				state = 0;
+			}
+
+			continue;
+		}
+	}
+
+	return new Common::MemoryReadStream(output.getData(), output.size(), true);
+}
+
+
+
+
 
 uint32 getLanguageID(GameID game, Language language) {
 	switch (game) {
