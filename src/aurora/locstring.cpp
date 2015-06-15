@@ -28,9 +28,9 @@
 
 #include "src/common/util.h"
 #include "src/common/stream.h"
+#include "src/common/encoding.h"
 
 #include "src/aurora/locstring.h"
-#include "src/aurora/language.h"
 #include "src/aurora/aurorafile.h"
 #include "src/aurora/talkman.h"
 
@@ -56,8 +56,22 @@ void LocString::setID(uint32 id) {
 	_id = id;
 }
 
+bool LocString::hasString(Language language, LanguageGender gender) const {
+	if (gender == kLanguageGenderCurrent)
+		gender = LangMan.getCurrentGender();
+
+	return hasString(LangMan.getLanguageID(language, gender));
+}
+
 bool LocString::hasString(uint32 languageID) const {
 	return _strings.find(languageID) != _strings.end();
+}
+
+const Common::UString &LocString::getString(Language language, LanguageGender gender) const {
+	if (gender == kLanguageGenderCurrent)
+		gender = LangMan.getCurrentGender();
+
+	return getString(LangMan.getLanguageID(language, gender));
 }
 
 static const Common::UString kEmpty;
@@ -67,6 +81,18 @@ const Common::UString &LocString::getString(uint32 languageID) const {
 		return kEmpty;
 
 	return s->second;
+}
+
+void LocString::setString(Language language, LanguageGender gender, const Common::UString &str) {
+	if (gender == kLanguageGenderCurrent)
+		gender = LangMan.getCurrentGender();
+
+	return setString(LangMan.getLanguageID(language, gender), str);
+}
+
+void LocString::setString(Language language, const Common::UString &str) {
+	setString(language, kLanguageGenderMale  , str);
+	setString(language, kLanguageGenderFemale, str);
 }
 
 void LocString::setString(uint32 languageID, const Common::UString &str) {
@@ -88,15 +114,15 @@ const Common::UString &LocString::getFirstString() const {
 }
 
 const Common::UString &LocString::getString() const {
-	uint32 languageID = convertLanguageIDToGendered(TalkMan.getLanguageID(), TalkMan.getGender());
+	uint32 languageID = LangMan.getLanguageID(LangMan.getCurrentLanguageText(), LangMan.getCurrentGender());
 
 	// Look whether we have an internal localized string
 	if (hasString(languageID))
 		return getString(languageID);
 
 	// Try the differently gendered internal string
-	if (hasString(swapLanguageGender(languageID)))
-		return getString(swapLanguageGender(languageID));
+	if (hasString(LangMan.swapLanguageGender(languageID)))
+		return getString(LangMan.swapLanguageGender(languageID));
 
 	// Next, try the external localized one
 	const Common::UString &refString = getStrRefString();
@@ -115,9 +141,9 @@ void LocString::readString(uint32 languageID, Common::SeekableReadStream &stream
 		return;
 
 	Common::MemoryReadStream *data   = stream.readStream(length);
-	Common::MemoryReadStream *parsed = preParseColorCodes(*data);
+	Common::MemoryReadStream *parsed = LangMan.preParseColorCodes(*data);
 
-	Common::Encoding encoding = TalkMan.getEncoding(convertLanguageIDToUngendered(languageID));
+	Common::Encoding encoding = LangMan.getEncoding(LangMan.getLanguageGendered(languageID));
 	if (encoding != Common::kEncodingInvalid)
 		s.first->second = Common::readString(*parsed, encoding);
 	else

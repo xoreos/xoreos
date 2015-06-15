@@ -30,6 +30,8 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
+#include "src/aurora/language.h"
+
 namespace Common {
 	class SeekableReadStream;
 }
@@ -49,13 +51,16 @@ public:
 	/** Set the string ID / StrRef. */
 	void setID(uint32 id);
 
-	/** Does the LocString have a string of this language ID (gendered)? */
-	bool hasString(uint32 languageID) const;
+	/** Does the LocString have a string of this language? */
+	bool hasString(Language language, LanguageGender gender = kLanguageGenderCurrent) const;
 
-	/** Get the string of that language ID (gendered). */
-	const Common::UString &getString(uint32 languageID) const;
-	/** Set the string of that language ID (gendered). */
-	void setString(uint32 languageID, const Common::UString &str);
+	/** Get the string of that language. */
+	const Common::UString &getString(Language language, LanguageGender gender = kLanguageGenderCurrent) const;
+
+	/** Set the string of that language. */
+	void setString(Language language, LanguageGender gender, const Common::UString &str);
+	/** Set the string of that language (for all genders). */
+	void setString(Language language, const Common::UString &str);
 
 	/** Get the string the StrRef points to. */
 	const Common::UString &getStrRefString() const;
@@ -81,6 +86,13 @@ private:
 	uint32 _id; ///< The string's ID / StrRef. */
 
 	StringMap _strings;
+
+
+	bool hasString(uint32 languageID) const;
+
+	const Common::UString &getString(uint32 languageID) const;
+
+	void setString(uint32 languageID, const Common::UString &str);
 };
 
 } // End of namespace Aurora
