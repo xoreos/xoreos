@@ -31,7 +31,7 @@
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/readstream.h"
-#include "src/common/file.h"
+#include "src/common/writefile.h"
 #include "src/common/streamtokenizer.h"
 
 #include "src/aurora/2dafile.h"
@@ -348,7 +348,7 @@ const TwoDARow &TwoDAFile::getRow(uint32 row) const {
 }
 
 bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
-	Common::DumpFile file;
+	Common::WriteFile file;
 	if (!file.open(fileName))
 		return false;
 

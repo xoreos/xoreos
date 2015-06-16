@@ -24,7 +24,7 @@
 
 #include "src/common/error.h"
 #include "src/common/readstream.h"
-#include "src/common/file.h"
+#include "src/common/writefile.h"
 #include "src/common/configman.h"
 
 #include "src/aurora/util.h"
@@ -146,7 +146,7 @@ bool dumpResList(const Common::UString &name) {
 }
 
 bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName) {
-	Common::DumpFile file;
+	Common::WriteFile file;
 	if (!file.open(fileName))
 		return false;
 

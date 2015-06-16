@@ -28,7 +28,7 @@
 #include "src/common/ustring.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
-#include "src/common/file.h"
+#include "src/common/readfile.h"
 #include "src/common/encoding.h"
 
 #include "src/aurora/ndsrom.h"
@@ -37,7 +37,7 @@
 namespace Aurora {
 
 NDSFile::NDSFile(const Common::UString &fileName) : _nds(0) {
-	_nds = new Common::File(fileName);
+	_nds = new Common::ReadFile(fileName);
 
 	try {
 		load(*_nds);

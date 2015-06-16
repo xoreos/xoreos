@@ -54,7 +54,8 @@ noinst_HEADERS = \
                  streamtokenizer.h \
                  stringmap.h \
                  readline.h \
-                 file.h \
+                 readfile.h \
+                 writefile.h \
                  filepath.h \
                  filelist.h \
                  bitstream.h \
@@ -100,7 +101,8 @@ libcommon_la_SOURCES = \
                        streamtokenizer.cpp \
                        stringmap.cpp \
                        readline.cpp \
-                       file.cpp \
+                       readfile.cpp \
+                       writefile.cpp \
                        filepath.cpp \
                        filelist.cpp \
                        huffman.cpp \

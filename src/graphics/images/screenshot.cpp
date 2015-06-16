@@ -28,7 +28,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "src/common/ustring.h"
-#include "src/common/file.h"
+#include "src/common/writefile.h"
 #include "src/common/filepath.h"
 #include "src/common/threads.h"
 
@@ -51,7 +51,7 @@ static bool constructFilename(Common::UString &filename) {
 		(int) t.time_of_day().seconds());
 
 	filename = Common::FilePath::getUserDataFile(filename);
-	if (Common::File::exists(filename))
+	if (Common::FilePath::isRegularFile(filename))
 		// We already did a screenshot this second
 		return false;
 
@@ -64,7 +64,7 @@ static bool writeBMP(const Common::UString &filename, const byte *data,
 	if ((width <= 0) || (height <= 0) || !data)
 		return false;
 
-	Common::DumpFile file;
+	Common::WriteFile file;
 	if (!file.open(filename))
 		return false;
 

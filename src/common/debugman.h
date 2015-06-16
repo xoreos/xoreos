@@ -32,7 +32,7 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
-#include "src/common/file.h"
+#include "src/common/writefile.h"
 
 namespace Common {
 
@@ -139,7 +139,7 @@ private:
 
 	uint32 _debugLevel; ///< The current debug level.
 
-	DumpFile _logFile;
+	WriteFile _logFile;
 	bool _logFileStartLine;
 };
 

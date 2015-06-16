@@ -29,7 +29,7 @@
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/memreadstream.h"
-#include "src/common/file.h"
+#include "src/common/readfile.h"
 #include "src/common/error.h"
 
 #include "src/aurora/talktable_tlk.h"
@@ -176,7 +176,7 @@ uint32 TalkTable_TLK::getLanguageID(Common::SeekableReadStream &tlk) {
 }
 
 uint32 TalkTable_TLK::getLanguageID(const Common::UString &file) {
-	Common::File tlk;
+	Common::ReadFile tlk;
 	if (!tlk.open(file))
 		return kLanguageInvalid;
 

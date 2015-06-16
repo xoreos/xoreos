@@ -29,7 +29,6 @@
 
 #include "src/common/version.h"
 #include "src/common/util.h"
-#include "src/common/file.h"
 #include "src/common/transmatrix.h"
 
 #include "src/graphics/shader/shader.h"
@@ -101,7 +100,7 @@ void ShaderManager::deinit() {
 }
 
 ShaderObject *ShaderManager::getShaderObject(const Common::UString &name, ShaderType UNUSED(type)) {
-	// In future, this should use Common::File to load file "name" into a string, and compile a shader object from there.
+	// In future, this should use Common::ReadFile to load file "name" into a string, and compile a shader object from there.
 	Common::UString shaderString;
 	//ShaderObject *shaderObject = 0;
 	//ShaderObject *shaderObject = (ShaderObject *)(_shaderObjectMap[filename.c_str()]);

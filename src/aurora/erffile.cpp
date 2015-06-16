@@ -27,7 +27,7 @@
  */
 
 #include "src/common/memreadstream.h"
-#include "src/common/file.h"
+#include "src/common/readfile.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -525,7 +525,7 @@ LocString ERFFile::getDescription(Common::SeekableReadStream &erf) {
 }
 
 LocString ERFFile::getDescription(const Common::UString &fileName) {
-	Common::File erf(fileName);
+	Common::ReadFile erf(fileName);
 
 	return getDescription(erf);
 }

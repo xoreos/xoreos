@@ -30,7 +30,7 @@
 #include "src/common/types.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
-#include "src/common/file.h"
+#include "src/common/writefile.h"
 
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
@@ -155,8 +155,8 @@ private:
 	uint32 _highlightY;
 	 int32 _highlightLength;
 
-	Common::DumpFile _logFile;
-	Common::DumpFile _redirect;
+	Common::WriteFile _logFile;
+	Common::WriteFile _redirect;
 
 
 	void recalcCursor();

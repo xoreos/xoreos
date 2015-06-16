@@ -26,7 +26,8 @@
 
 #include "src/common/configman.h"
 #include "src/common/strutil.h"
-#include "src/common/file.h"
+#include "src/common/readfile.h"
+#include "src/common/writefile.h"
 #include "src/common/filepath.h"
 #include "src/common/configfile.h"
 
@@ -82,7 +83,7 @@ void ConfigManager::clearCommandline() {
 }
 
 bool ConfigManager::fileExists() const {
-	return File::exists(getConfigFile());
+	return FilePath::isRegularFile(getConfigFile());
 }
 
 bool ConfigManager::changed() const {
@@ -94,13 +95,13 @@ bool ConfigManager::load() {
 
 	// Check that the config file actually exists.
 	UString file = getConfigFile();
-	if (!File::exists(file))
+	if (!FilePath::isRegularFile(file))
 		return false;
 
 	try {
 
 		// Open and load the config
-		File config;
+		ReadFile config;
 		if (!config.open(file))
 			throw Exception(kOpenError);
 
@@ -130,7 +131,7 @@ bool ConfigManager::save() {
 	try {
 
 		// Open and save the config
-		DumpFile config;
+		WriteFile config;
 		if (!config.open(file))
 			throw Exception(kOpenError);
 

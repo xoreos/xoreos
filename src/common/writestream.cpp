@@ -24,6 +24,8 @@
  *  Basic writing stream interfaces.
  */
 
+#include <cstring>
+
 #include "src/common/writestream.h"
 #include "src/common/readstream.h"
 #include "src/common/util.h"

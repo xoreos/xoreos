@@ -26,7 +26,8 @@
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/filepath.h"
-#include "src/common/file.h"
+#include "src/common/readfile.h"
+#include "src/common/writefile.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/util.h"
@@ -712,7 +713,7 @@ Common::SeekableReadStream *ResourceManager::getResource(const Resource &res, bo
 
 	switch (res.source) {
 		case kSourceFile:
-			stream = new Common::File(res.path);
+			stream = new Common::ReadFile(res.path);
 			break;
 
 		case kSourceArchive:
@@ -1001,7 +1002,7 @@ const ResourceManager::Resource *ResourceManager::getRes(const Common::UString &
 }
 
 void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
-	Common::DumpFile file;
+	Common::WriteFile file;
 
 	if (!file.open(fileName))
 		throw Common::Exception(Common::kOpenError);

@@ -19,36 +19,25 @@
  */
 
 /** @file
- *  File classes implementing the stream interfaces.
+ *  Implementing the stream reading interfaces for files.
  */
 
-#include "src/common/file.h"
+#include "src/common/readfile.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
-#include "src/common/filepath.h"
 
 namespace Common {
 
-File::File() : _handle(0), _size(-1) {
+ReadFile::ReadFile() : _handle(0), _size(-1) {
 }
 
-File::File(const UString &fileName) : _handle(0), _size(-1) {
+ReadFile::ReadFile(const UString &fileName) : _handle(0), _size(-1) {
 	if (!open(fileName))
 		throw Exception("Can't open file \"%s\"", fileName.c_str());
 }
 
-File::~File() {
+ReadFile::~ReadFile() {
 	close();
-}
-
-bool File::exists(const UString &fileName) {
-	File file;
-
-	if (!file.open(fileName))
-		return false;
-
-	file.close();
-	return true;
 }
 
 static long getInitialSize(std::FILE *handle) {
@@ -66,7 +55,9 @@ static long getInitialSize(std::FILE *handle) {
 	return fileSize;
 }
 
-bool File::open(const UString &fileName) {
+bool ReadFile::open(const UString &fileName) {
+	close();
+
 	long fileSize = -1;
 	if (!(_handle  = std::fopen(fileName.c_str(), "rb")) ||
 	    ((fileSize = getInitialSize(_handle)) < 0)) {
@@ -76,7 +67,7 @@ bool File::open(const UString &fileName) {
 	}
 
 	if ((int64)fileSize > (int64)0x7FFFFFFF) {
-		warning("File \"%s\" is too big", fileName.c_str());
+		warning("ReadFile \"%s\" is too big", fileName.c_str());
 
 		close();
 		return false;
@@ -87,7 +78,7 @@ bool File::open(const UString &fileName) {
 	return true;
 }
 
-void File::close() {
+void ReadFile::close() {
 	if (_handle)
 		std::fclose(_handle);
 
@@ -95,29 +86,29 @@ void File::close() {
 	_size   = -1;
 }
 
-bool File::isOpen() const {
+bool ReadFile::isOpen() const {
 	return _handle != 0;
 }
 
-bool File::eos() const {
+bool ReadFile::eos() const {
 	if (!_handle)
 		return true;
 
 	return std::feof(_handle) != 0;
 }
 
-int32 File::pos() const {
+int32 ReadFile::pos() const {
 	if (!_handle)
 		return -1;
 
 	return std::ftell(_handle);
 }
 
-int32 File::size() const {
+int32 ReadFile::size() const {
 	return _size;
 }
 
-uint32 File::seek(int32 offs, int whence) {
+uint32 ReadFile::seek(int32 offs, int whence) {
 	if (!_handle)
 		throw Exception(kSeekError);
 
@@ -133,68 +124,11 @@ uint32 File::seek(int32 offs, int whence) {
 	return oldPos;
 }
 
-uint32 File::read(void *dataPtr, uint32 dataSize) {
+uint32 ReadFile::read(void *dataPtr, uint32 dataSize) {
 	if (!_handle)
 		return 0;
 
 	return std::fread(dataPtr, 1, dataSize, _handle);
-}
-
-
-DumpFile::DumpFile() : _handle(0), _size(-1) {
-}
-
-DumpFile::DumpFile(const UString &fileName) : _handle(0), _size(-1) {
-	if (!open(fileName))
-		throw Exception("Can't open file \"%s\" for writing", fileName.c_str());
-}
-
-DumpFile::~DumpFile() {
-	close();
-}
-
-bool DumpFile::open(const UString &fileName) {
-	UString path = FilePath::normalize(fileName);
-	if (path.empty())
-		return false;
-
-	FilePath::createDirectories(FilePath::getDirectory(path));
-
-	if (!(_handle = std::fopen(path.c_str(), "wb")))
-		return false;
-
-	_size = 0;
-
-	return true;
-}
-
-void DumpFile::close() {
-	flush();
-
-	if (_handle)
-		std::fclose(_handle);
-
-	_handle =  0;
-	_size   = -1;
-}
-
-bool DumpFile::isOpen() const {
-	return _handle != 0;
-}
-
-void DumpFile::flush() {
-	if (!_handle)
-		return;
-
-	if (std::fflush(_handle) != 0)
-		throw Exception(kWriteError);
-}
-
-uint32 DumpFile::write(const void *dataPtr, uint32 dataSize) {
-	if (!_handle)
-		return 0;
-
-	return std::fwrite(dataPtr, 1, dataSize, _handle);
 }
 
 } // End of namespace Common

@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/file.h"
+#include "src/common/readfile.h"
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
 
@@ -84,7 +84,7 @@ void Campaign::findCampaigns() {
 }
 
 bool Campaign::readCampaign(const Common::UString &camFile, CampaignDescription &desc) {
-	Common::File *file = new Common::File;
+	Common::ReadFile *file = new Common::ReadFile;
 	if (!file->open(camFile)) {
 		delete file;
 		return false;

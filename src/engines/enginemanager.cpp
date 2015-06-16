@@ -25,7 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
-#include "src/common/file.h"
+#include "src/common/readfile.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 #include "src/common/debugman.h"
@@ -154,7 +154,7 @@ bool GameInstanceEngine::probe() {
 	if (Common::FilePath::isRegularFile(_target)) {
 		// Try to probe from that file
 
-		Common::File file;
+		Common::ReadFile file;
 		if (file.open(_target))
 			return probe(file);
 	}

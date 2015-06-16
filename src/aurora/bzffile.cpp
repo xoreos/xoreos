@@ -31,7 +31,6 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
-#include "src/common/file.h"
 
 #include "src/aurora/bzffile.h"
 #include "src/aurora/keyfile.h"

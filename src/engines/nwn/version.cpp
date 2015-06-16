@@ -25,7 +25,7 @@
 #include <algorithm>
 
 #include "src/common/ustring.h"
-#include "src/common/file.h"
+#include "src/common/readfile.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 
@@ -351,7 +351,7 @@ byte *Version::readFile(const Common::UString &path, uint32 &size) {
 	if (path.empty())
 		return 0;
 
-	Common::File file;
+	Common::ReadFile file;
 	if (!file.open(path))
 		return 0;
 

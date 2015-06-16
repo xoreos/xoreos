@@ -31,7 +31,6 @@
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/encoding.h"
-#include "src/common/file.h"
 
 #include "src/aurora/keyfile.h"
 

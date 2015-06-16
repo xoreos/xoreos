@@ -24,7 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/maths.h"
-#include "src/common/file.h"
+#include "src/common/readfile.h"
 #include "src/common/configman.h"
 
 #include "src/aurora/types.h"
@@ -1032,9 +1032,9 @@ Aurora::GFF3File *Creature::openPC(const Common::UString &bic, bool local) {
 	Common::UString pcDir  = ConfigMan.getString(local ? "NWN_localPCDir" : "NWN_serverPCDir");
 	Common::UString pcFile = pcDir + "/" + bic + ".bic";
 
-	Common::File *pc = 0;
+	Common::ReadFile *pc = 0;
 	try {
-		pc = new Common::File(pcFile);
+		pc = new Common::ReadFile(pcFile);
 	} catch (...) {
 		throw;
 	}
