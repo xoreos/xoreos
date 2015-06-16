@@ -233,12 +233,12 @@ void Model_KotOR::readStrings(Common::SeekableReadStream &mdl,
 
 	strings.reserve(offsets.size());
 	for (std::vector<uint32>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
-		mdl.seekTo(offset + *o);
+		mdl.seek(offset + *o);
 
 		strings.push_back(Common::readString(mdl, Common::kEncodingASCII));
 	}
 
-	mdl.seekTo(pos);
+	mdl.seek(pos);
 }
 
 void Model_KotOR::newState(ParserContext &ctx) {
@@ -374,7 +374,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 		uint32 offset, uint32 count, std::vector<float> &data) {
 
-	uint32 pos = ctx.mdl->seekTo(offset);
+	uint32 pos = ctx.mdl->seek(offset);
 
 	// TODO: readNodeControllers: Implement this properly :P
 
@@ -410,7 +410,7 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 
 	}
 
-	ctx.mdl->seekTo(pos);
+	ctx.mdl->seek(pos);
 }
 
 void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
@@ -538,13 +538,13 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	float *v = (float *)_vertexBuffer.getData();
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
-		ctx.mdx->seekTo(offNodeData + i * mdxStructSize);
+		ctx.mdx->seek(offNodeData + i * mdxStructSize);
 		*v++ = ctx.mdx->readIEEEFloatLE();
 		*v++ = ctx.mdx->readIEEEFloatLE();
 		*v++ = ctx.mdx->readIEEEFloatLE();
 
 		// Normal
-		//ctx.mdx->seekTo(offNodeData + i * mdxStructSize + offNormals);
+		//ctx.mdx->seek(offNodeData + i * mdxStructSize + offNormals);
 		*v++ = ctx.mdx->readIEEEFloatLE();
 		*v++ = ctx.mdx->readIEEEFloatLE();
 		*v++ = ctx.mdx->readIEEEFloatLE();
@@ -552,7 +552,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 		// TexCoords
 		for (uint16 t = 0; t < textureCount; t++) {
 			if (offUV[t] != 0xFFFFFFFF) {
-				ctx.mdx->seekTo(offNodeData + i * mdxStructSize + offUV[t]);
+				ctx.mdx->seek(offNodeData + i * mdxStructSize + offUV[t]);
 				*v++ = ctx.mdx->readIEEEFloatLE();
 				*v++ = ctx.mdx->readIEEEFloatLE();
 			} else {
@@ -565,10 +565,10 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	// Read faces
 
-	ctx.mdl->seekTo(ctx.offModelData + offOffVerts);
+	ctx.mdl->seek(ctx.offModelData + offOffVerts);
 	uint32 offVerts = ctx.mdl->readUint32LE();
 
-	ctx.mdl->seekTo(ctx.offModelData + offVerts);
+	ctx.mdl->seek(ctx.offModelData + offVerts);
 
 	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
@@ -578,7 +578,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	createBound();
 
-	ctx.mdl->seekTo(endPos);
+	ctx.mdl->seek(endPos);
 }
 
 } // End of namespace Aurora

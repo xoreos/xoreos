@@ -75,14 +75,6 @@ uint32 SeekableReadStream::evalSeek(int32 offset, int whence, uint32 pos, uint32
 	throw Exception("Invalid whence (%d)", whence);
 }
 
-uint32 SeekableReadStream::seekTo(uint32 offset) {
-	uint32 curPos = pos();
-
-	seek(offset);
-
-	return curPos;
-}
-
 
 SubReadStream::SubReadStream(ReadStream *parentStream, uint32 end, bool disposeParentStream) :
 	_parentStream(parentStream), _disposeParentStream(disposeParentStream),
@@ -134,10 +126,11 @@ int32 SeekableSubReadStream::size() const {
 	return _end - _begin;
 }
 
-void SeekableSubReadStream::seek(int32 offset, int whence) {
+uint32 SeekableSubReadStream::seek(int32 offset, int whence) {
 	assert(_pos >= _begin);
 	assert(_pos <= _end);
 
+	const uint32 oldPos = _pos;
 	const uint32 newPos = evalSeek(offset, whence, _pos, _begin, size());
 	if ((newPos < _begin) || (newPos > _end))
 		throw Exception(kSeekError);
@@ -146,6 +139,8 @@ void SeekableSubReadStream::seek(int32 offset, int whence) {
 
 	_parentStream->seek(_pos);
 	_eos = false; // reset eos on successful seek
+
+	return oldPos;
 }
 
 

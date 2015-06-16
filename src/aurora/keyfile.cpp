@@ -105,11 +105,11 @@ void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 			key.skip(2); // Location of the bif (HD, CD, ...)
 		}
 
-		uint32 curPos = key.seekTo(nameOffset);
+		uint32 curPos = key.seek(nameOffset);
 
 		*bif = Common::readStringFixed(key, Common::kEncodingASCII, nameSize);
 
-		key.seekTo(curPos);
+		key.seek(curPos);
 
 		bif->replaceAll('\\', '/');
 		if (bif->beginsWith("/"))

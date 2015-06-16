@@ -419,7 +419,7 @@ void Model_NWN::addState(ParserContext &ctx) {
 }
 
 void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
-	ctx.mdl->seekTo(offset);
+	ctx.mdl->seek(offset);
 
 	ctx.mdl->skip(8); // Function pointers
 
@@ -444,7 +444,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 
 	// Associated events
 	// TODO: Save in array, then pass to animation class
-	ctx.mdl->seekTo(ctx.offModelData + eventOffset);
+	ctx.mdl->seek(ctx.offModelData + eventOffset);
 	for (uint32 i = 0; i < eventCount; i++) {
 		float after = ctx.mdl->readIEEEFloatLE();
 
@@ -770,7 +770,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	Normal n;
 	uint16 vertexCountNew = vertexCount;
 	uint16 *f = (uint16 *) _indexBuffer.getData();
-	ctx.mdl->seekTo(ctx.offModelData + facesOffset);
+	ctx.mdl->seek(ctx.offModelData + facesOffset);
 	for (uint32 i = 0; i < facesCount; i++) {
 		// Face normal
 		n.xyz[0] = ctx.mdl->readIEEEFloatLE();
@@ -821,7 +821,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	vertexDecl.push_back(vp);
 
 	assert (vertexOffset != 0xFFFFFFFF);
-	ctx.mdl->seekTo(ctx.offRawData + vertexOffset);
+	ctx.mdl->seek(ctx.offRawData + vertexOffset);
 
 	float *v = (float *) vp.pointer;
 	for (uint32 i = 0; i < vertexCount; i++) {
@@ -877,7 +877,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 		bool hasTexture = textureVertexOffset[t] != 0xFFFFFFFF;
 		if (hasTexture)
-			ctx.mdl->seekTo(ctx.offRawData + textureVertexOffset[t]);
+			ctx.mdl->seek(ctx.offRawData + textureVertexOffset[t]);
 
 		v = (float *) vt.pointer;
 		for (uint32 i = 0; i < vertexCount; i++) {
@@ -898,7 +898,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	createBound();
 
-	ctx.mdl->seekTo(endPos);
+	ctx.mdl->seek(endPos);
 }
 
 void ModelNode_NWN_Binary::readAnim(Model_NWN::ParserContext &ctx) {
@@ -923,7 +923,7 @@ void ModelNode_NWN_Binary::readAnim(Model_NWN::ParserContext &ctx) {
 void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 		uint32 offset, uint32 count, std::vector<float> &data) {
 
-	uint32 pos = ctx.mdl->seekTo(offset);
+	uint32 pos = ctx.mdl->seek(offset);
 
 	// TODO: readNodeControllers: Implement this properly :P
 
@@ -996,7 +996,7 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 
 	}
 
-	ctx.mdl->seekTo(pos);
+	ctx.mdl->seek(pos);
 }
 
 

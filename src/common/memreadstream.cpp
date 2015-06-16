@@ -58,9 +58,10 @@ uint32 MemoryReadStream::read(void *dataPtr, uint32 dataSize) {
 	return dataSize;
 }
 
-void MemoryReadStream::seek(int32 offs, int whence) {
+uint32 MemoryReadStream::seek(int32 offs, int whence) {
 	assert(_pos <= _size);
 
+	const uint32 oldPos = _pos;
 	const uint32 newPos = evalSeek(offs, whence, _pos, 0, size());
 	if (newPos > _size)
 		throw Exception(kSeekError);
@@ -70,6 +71,8 @@ void MemoryReadStream::seek(int32 offs, int whence) {
 
 	// Reset end-of-stream flag on a successful seek
 	_eos = false;
+
+	return oldPos;
 }
 
 bool MemoryReadStream::eos() const {

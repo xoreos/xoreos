@@ -53,7 +53,7 @@ public:
 	int32 pos() const;
 	int32 size() const;
 
-	void seek(int32 offs, int whence = SEEK_SET);
+	uint32 seek(int32 offs, int whence = SEEK_SET);
 
 	const byte *getData() const;
 

@@ -117,9 +117,11 @@ int32 File::size() const {
 	return _size;
 }
 
-void File::seek(int32 offs, int whence) {
+uint32 File::seek(int32 offs, int whence) {
 	if (!_handle)
 		throw Exception(kSeekError);
+
+	uint32 oldPos = pos();
 
 	if (std::fseek(_handle, offs, whence) != 0)
 		throw Exception(kSeekError);
@@ -127,6 +129,8 @@ void File::seek(int32 offs, int whence) {
 	long p = std::ftell(_handle);
 	if ((p < 0) || (p > _size))
 		throw Exception(kSeekError);
+
+	return oldPos;
 }
 
 uint32 File::read(void *dataPtr, uint32 dataSize) {

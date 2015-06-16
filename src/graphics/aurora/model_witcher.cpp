@@ -417,7 +417,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	ctx.offTextureInfo = ctx.mdb->readUint32LE();
 
-	uint32 endPos = ctx.mdb->seekTo(ctx.offRawData + offMeshArrays);
+	uint32 endPos = ctx.mdb->seek(ctx.offRawData + offMeshArrays);
 
 	ctx.mdb->skip(4);
 
@@ -448,7 +448,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 
 	if ((vertexCount == 0) || (facesCount == 0)) {
-		ctx.mdb->seekTo(endPos);
+		ctx.mdb->seek(endPos);
 		return;
 	}
 
@@ -473,7 +473,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	_vertexBuffer.setVertexDeclLinear(vertexCount, vertexDecl);
 
 	// Read vertex position
-	ctx.mdb->seekTo(ctx.offRawData + vertexOffset);
+	ctx.mdb->seek(ctx.offRawData + vertexOffset);
 	float *v = (float *) vertexDecl[0].pointer;
 	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -483,7 +483,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	// Read vertex normals
 	assert(normalsCount == vertexCount);
-	ctx.mdb->seekTo(ctx.offRawData + normalsOffset);
+	ctx.mdb->seek(ctx.offRawData + normalsOffset);
 	v = (float *) vertexDecl[1].pointer;
 	for (uint32 i = 0; i < normalsCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -494,7 +494,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	// Read texture coordinates
 	for (uint t = 0; t < texCount; t++) {
 
-		ctx.mdb->seekTo(ctx.offRawData + tVertsOffset[t]);
+		ctx.mdb->seek(ctx.offRawData + tVertsOffset[t]);
 		v = (float *) vertexDecl[2 + t].pointer;
 		for (uint32 i = 0; i < tVertsCount[t]; i++) {
 			if (i < tVertsCount[t]) {
@@ -512,7 +512,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	_indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
 
-	ctx.mdb->seekTo(ctx.offRawData + facesOffset);
+	ctx.mdb->seek(ctx.offRawData + facesOffset);
 	uint32 *f = (uint32 *) _indexBuffer.getData();
 	for (uint32 i = 0; i < facesCount; i++) {
 		ctx.mdb->skip(4 * 4 + 4);
@@ -531,7 +531,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	createBound();
 
-	ctx.mdb->seekTo(endPos);
+	ctx.mdb->seek(endPos);
 }
 
 void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
@@ -621,7 +621,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	bool enableSpecular      = ctx.mdb->readByte() == 1;
 
 
-	uint32 endPos = ctx.mdb->seekTo(ctx.offRawData + offMeshArrays);
+	uint32 endPos = ctx.mdb->seek(ctx.offRawData + offMeshArrays);
 
 	ctx.mdb->skip(4);
 
@@ -648,7 +648,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	Model::readArrayDef(*ctx.mdb, facesOffset, facesCount);
 
 	if ((vertexCount == 0) || (facesCount == 0)) {
-		ctx.mdb->seekTo(endPos);
+		ctx.mdb->seek(endPos);
 		return;
 	}
 
@@ -656,7 +656,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	layers.resize(layersCount);
 
 	for (uint32 l = 0; l < layersCount; l++) {
-		ctx.mdb->seekTo(ctx.offRawData + layersOffset + l * 52);
+		ctx.mdb->seek(ctx.offRawData + layersOffset + l * 52);
 
 		layers[l].hasTexture = ctx.mdb->readByte() == 1;
 		if (!layers[l].hasTexture)
@@ -670,7 +670,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 		uint32 weightsOffset, weightsCount;
 		Model::readArrayDef(*ctx.mdb, weightsOffset, weightsCount);
 
-		ctx.mdb->seekTo(ctx.offRawData + weightsOffset);
+		ctx.mdb->seek(ctx.offRawData + weightsOffset);
 		layers[l].weights.resize(weightsCount);
 
 		for (std::vector<float>::iterator w = layers[l].weights.begin(); w != layers[l].weights.end(); ++w)
@@ -698,7 +698,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	_vertexBuffer.setVertexDeclLinear(vertexCount, vertexDecl);
 
 	// Read vertex position
-	ctx.mdb->seekTo(ctx.offRawData + vertexOffset);
+	ctx.mdb->seek(ctx.offRawData + vertexOffset);
 	float *v = (float *) vertexDecl[0].pointer;
 	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -708,7 +708,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 
 	// Read vertex normals
 	assert(normalsCount == vertexCount);
-	ctx.mdb->seekTo(ctx.offRawData + normalsOffset);
+	ctx.mdb->seek(ctx.offRawData + normalsOffset);
 	v = (float *) vertexDecl[1].pointer;
 	for (uint32 i = 0; i < normalsCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -719,7 +719,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	// Read texture coordinates
 	for (uint t = 0; t < texCount; t++) {
 
-		ctx.mdb->seekTo(ctx.offRawData + tVertsOffset[t]);
+		ctx.mdb->seek(ctx.offRawData + tVertsOffset[t]);
 		v = (float *) vertexDecl[2 + t].pointer;
 		for (uint32 i = 0; i < tVertsCount[t]; i++) {
 			if (i < tVertsCount[t]) {
@@ -737,7 +737,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 
 	_indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
 
-	ctx.mdb->seekTo(ctx.offRawData + facesOffset);
+	ctx.mdb->seek(ctx.offRawData + facesOffset);
 	uint32 *f = (uint32 *) _indexBuffer.getData();
 	for (uint32 i = 0; i < facesCount; i++) {
 		// Vertex indices
@@ -750,7 +750,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 
 	createBound();
 
-	ctx.mdb->seekTo(endPos);
+	ctx.mdb->seek(endPos);
 }
 
 void ModelNode_Witcher::readTextures(Model_Witcher::ParserContext &ctx,
@@ -862,7 +862,7 @@ void ModelNode_Witcher::evaluateTextures(int n, std::vector<Common::UString> &te
 void ModelNode_Witcher::readNodeControllers(Model_Witcher::ParserContext &ctx,
 		uint32 offset, uint32 count, std::vector<float> &data) {
 
-	uint32 pos = ctx.mdb->seekTo(offset);
+	uint32 pos = ctx.mdb->seek(offset);
 
 	// TODO: readNodeControllers: Implement this properly :P
 
@@ -898,7 +898,7 @@ void ModelNode_Witcher::readNodeControllers(Model_Witcher::ParserContext &ctx,
 
 	}
 
-	ctx.mdb->seekTo(pos);
+	ctx.mdb->seek(pos);
 }
 
 } // End of namespace Aurora

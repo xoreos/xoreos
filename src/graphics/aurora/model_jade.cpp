@@ -234,12 +234,12 @@ void Model_Jade::readStrings(Common::SeekableReadStream &mdl,
 
 	strings.reserve(offsets.size());
 	for (std::vector<uint32>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
-		mdl.seekTo(offset + *o);
+		mdl.seek(offset + *o);
 
 		strings.push_back(Common::readString(mdl, Common::kEncodingASCII));
 	}
 
-	mdl.seekTo(pos);
+	mdl.seek(pos);
 }
 
 void Model_Jade::newState(ParserContext &ctx) {

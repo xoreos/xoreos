@@ -712,7 +712,7 @@ Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::
 	if (_parent->hasSharedStrings())
 		return _parent->getSharedString(offset);
 
-	const uint32 pos = data.seekTo(offset);
+	const uint32 pos = data.seek(offset);
 
 	Common::UString str = getString(data, encoding);
 

@@ -268,10 +268,11 @@ public:
 	 *  On error, or when trying to seek outside the stream, a kSeekError
 	 *  exception is thrown.
 	 *
-	 *  @param offset the relative offset in bytes.
-	 *  @param whence the seek reference: SEEK_SET, SEEK_CUR, or SEEK_END.
+	 *  @param  offset the relative offset in bytes.
+	 *  @param  whence the seek reference: SEEK_SET, SEEK_CUR, or SEEK_END.
+	 *  @return the previous position of the stream, before seeking.
 	 */
-	virtual void seek(int32 offset, int whence = SEEK_SET) = 0;
+	virtual uint32 seek(int32 offset, int whence = SEEK_SET) = 0;
 
 	/** Skip the specified number of bytes, adding that offset to the current
 	 *  position in the stream. A successful call to the skip() method clears
@@ -280,14 +281,12 @@ public:
 	 *  On error, or when trying to skip outside the stream, a kSeekError
 	 *  exception is thrown.
 	 *
-	 *  @param offset the number of bytes to skip.
+	 *  @param  offset the number of bytes to skip.
+	 *  @return the previous position of the stream, before skipping.
 	 */
-	virtual void skip(uint32 offset) {
+	virtual uint32 skip(uint32 offset) {
 		return seek(offset, SEEK_CUR);
 	}
-
-	/** Seek to the specified position, returning the previous position. */
-	virtual uint32 seekTo(uint32 offset);
 
 	/** Evaluate the seek offset relative to whence into a position from the beginning. */
 	static uint32 evalSeek(int32 offset, int whence, uint32 pos, uint32 begin, int32 size);
@@ -338,7 +337,7 @@ public:
 	int32 pos() const;
 	int32 size() const;
 
-	void seek(int32 offset, int whence = SEEK_SET);
+	uint32 seek(int32 offset, int whence = SEEK_SET);
 
 protected:
 	SeekableReadStream *_parentStream;
