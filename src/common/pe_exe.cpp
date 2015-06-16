@@ -92,7 +92,7 @@ UString PEResourceID::toString() const {
 		return _name;
 	else if (_idType == kIDTypeNumerical) {
 		static char name[9];
-		sprintf(name, "%08x", _id);
+		std::sprintf(name, "%08x", _id);
 		name[8] = 0;
 		return name;
 	}

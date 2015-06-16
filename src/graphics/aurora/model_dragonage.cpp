@@ -29,6 +29,8 @@
  * (<http://social.bioware.com/wiki/datoolset/index.php/Model>).
  */
 
+#include <cstdio>
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -751,14 +753,14 @@ void ModelNode_DragonAge::readMAOXML(Common::SeekableReadStream *maoStream, Mate
 			} else if ((*n)->getName() == "float") {
 
 				float value = 0.0f;
-				sscanf((*n)->getProperty("value").c_str(), "%f", &value);
+				std::sscanf((*n)->getProperty("value").c_str(), "%f", &value);
 
 				material.floats[(*n)->getProperty("name")] = value;
 
 			} else if ((*n)->getName() == "vector4f") {
 
 				float v1 = 0.0f, v2 = 0.0f, v3 = 0.0f, v4 = 0.0f;
-				sscanf((*n)->getProperty("value").c_str(), "%f %f %f %f", &v1, &v2, &v3, &v4);
+				std::sscanf((*n)->getProperty("value").c_str(), "%f %f %f %f", &v1, &v2, &v3, &v4);
 
 				material.vectors[(*n)->getProperty("name")] = Common::Vector3(v1, v2, v3, v4);
 

@@ -709,14 +709,14 @@ void ScriptFunctions::floatToInt(Aurora::NWScript::FunctionContext &ctx) {
 
 void ScriptFunctions::stringToInt(Aurora::NWScript::FunctionContext &ctx) {
 	int i;
-	sscanf(ctx.getParams()[0].getString().c_str(), "%d", &i);
+	std::sscanf(ctx.getParams()[0].getString().c_str(), "%d", &i);
 
 	ctx.getReturn() = (int32) i;
 }
 
 void ScriptFunctions::stringToFloat(Aurora::NWScript::FunctionContext &ctx) {
 	float f;
-	sscanf(ctx.getParams()[0].getString().c_str(), "%f", &f);
+	std::sscanf(ctx.getParams()[0].getString().c_str(), "%f", &f);
 
 	ctx.getReturn() = f;
 }

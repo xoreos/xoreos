@@ -411,7 +411,7 @@ double FoxPro::getDouble(const Record &record, uint32 field) const {
 		strncpy(n, (const char *) record.fields[field], f.size);
 		n[f.size] = '\0';
 
-		if (sscanf(n, "%lf", &d) != 1)
+		if (std::sscanf(n, "%lf", &d) != 1)
 			d = 0.0;
 
 	} else if (f.type == kTypeFloat) {
@@ -445,7 +445,7 @@ date FoxPro::getDate(const Record &record, uint32 field) const {
 			throw Exception("Date field size != 8 (%d)", f.size);
 
 	int year, month, day;
-	if (sscanf((const char *) record.fields[field], "%4d%2d%2d", &year, &month, &day) != 3)
+	if (std::sscanf((const char *) record.fields[field], "%4d%2d%2d", &year, &month, &day) != 3)
 		throw Exception("Failed reading the date");
 
 	return date(year, month, day);
@@ -882,7 +882,7 @@ bool FoxPro::getInt(const byte *data, uint32 size, int32 &i) {
 	strncpy(n, (const char *) data, size);
 	n[size] = '\0';
 
-	return sscanf(n, "%d", &i) == 1;
+	return std::sscanf(n, "%d", &i) == 1;
 }
 
 void FoxPro::updateUpdate() {

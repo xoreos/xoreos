@@ -195,9 +195,9 @@ void Console::cmdMove(const CommandLine &cl) {
 
 	float x, z, y;
 	if ((args.size() < 3) ||
-	    (sscanf(args[0].c_str(), "%f", &x) != 1) ||
-	    (sscanf(args[1].c_str(), "%f", &y) != 1) ||
-	    (sscanf(args[2].c_str(), "%f", &z) != 1)) {
+	    (std::sscanf(args[0].c_str(), "%f", &x) != 1) ||
+	    (std::sscanf(args[1].c_str(), "%f", &y) != 1) ||
+	    (std::sscanf(args[2].c_str(), "%f", &z) != 1)) {
 
 		printCommandHelp(cl.cmd);
 		return;

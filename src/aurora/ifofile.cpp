@@ -221,7 +221,7 @@ void IFOFile::load() {
 }
 
 void IFOFile::parseVersion(const Common::UString &version) {
-	if (sscanf(version.c_str(), "%d.%d", &_minVersionMajor, &_minVersionMinor) != 2)
+	if (std::sscanf(version.c_str(), "%d.%d", &_minVersionMajor, &_minVersionMinor) != 2)
 		_minVersionMajor = _minVersionMinor = 0;
 }
 

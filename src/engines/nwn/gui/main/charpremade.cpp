@@ -209,7 +209,7 @@ void CharPremadeMenu::initCharacterList() {
 			continue;
 		}
 
-		if (sscanf(ch.file.c_str(), "%*[^0-9]%u", &ch.number) != 1)
+		if (std::sscanf(ch.file.c_str(), "%*[^0-9]%u", &ch.number) != 1)
 			ch.number = 0;
 
 		ch.displayName = ch.name;
