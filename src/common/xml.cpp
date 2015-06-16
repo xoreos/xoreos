@@ -171,8 +171,8 @@ void XMLNode::load(_xmlNode &node, bool makeLower) {
 		_name.makeLower();
 
 	for (xmlAttrPtr attrib = node.properties; attrib; attrib = attrib->next) {
-		Common::UString name (attrib->name     ? (const char *) attrib->name              : "");
-		Common::UString value(attrib->children ? (const char *) attrib->children->content : "");
+		UString name (attrib->name     ? (const char *) attrib->name              : "");
+		UString value(attrib->children ? (const char *) attrib->children->content : "");
 
 		if (makeLower)
 			name.makeLower();

@@ -46,7 +46,7 @@ public:
 
 	typedef std::list<File> FileList;
 
-	ZipFile(Common::SeekableReadStream *zip);
+	ZipFile(SeekableReadStream *zip);
 	~ZipFile();
 
 	/** Return the list of files. */
@@ -67,7 +67,7 @@ private:
 
 	typedef std::vector<IFile> IFileList;
 
-	Common::SeekableReadStream *_zip;
+	SeekableReadStream *_zip;
 
 	/** External list of file names and types. */
 	FileList _files;
@@ -75,14 +75,14 @@ private:
 	/** Internal list of file offsets and sizes. */
 	IFileList _iFiles;
 
-	void load(Common::SeekableReadStream &zip);
+	void load(SeekableReadStream &zip);
 	uint32 findCentralDirectoryEnd(SeekableReadStream &zip);
 
 	static SeekableReadStream *decompressFile(SeekableReadStream &zip, uint32 method,
 			uint32 compSize, uint32 realSize);
 
 	const IFile &getIFile(uint32 index) const;
-	void getFileProperties(Common::SeekableReadStream &zip, const IFile &file,
+	void getFileProperties(SeekableReadStream &zip, const IFile &file,
 			uint16 &compMethod, uint32 &compSize, uint32 &realSize) const;
 };
 

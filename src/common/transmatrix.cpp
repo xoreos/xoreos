@@ -154,7 +154,7 @@ void TransformationMatrix::getAxisAngle(float &angle, float &x, float &y, float 
 		return;
 	}
 
-	angle = Common::rad2deg(acos((_elements[0] + _elements[5] + _elements[10] - 1) / 2));
+	angle = rad2deg(acos((_elements[0] + _elements[5] + _elements[10] - 1) / 2));
 
 	x = _elements[6] - _elements[9];
 	y = _elements[8] - _elements[2];

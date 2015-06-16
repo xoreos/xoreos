@@ -282,7 +282,7 @@ bool ReadLine::processKeyDown(const Events::Event &event, UString &command) {
 }
 
 bool ReadLine::processTextInput(const Events::Event &event, UString &UNUSED(command)) {
-	Common::UString text = EventMan.getTextInput(event);
+	UString text = EventMan.getTextInput(event);
 	if (text.empty())
 		return false;
 

@@ -97,7 +97,7 @@ void printDataHex(const byte *data, uint32 size) {
 	printDataHex(stream);
 }
 
-static bool tagToString(uint32 tag, bool trim, Common::UString &str) {
+static bool tagToString(uint32 tag, bool trim, UString &str) {
 	tag = TO_BE_32(tag);
 
 	const char *tS = (const char *) &tag;
@@ -112,7 +112,7 @@ static bool tagToString(uint32 tag, bool trim, Common::UString &str) {
 }
 
 UString debugTag(uint32 tag, bool trim) {
-	Common::UString str;
+	UString str;
 	if (tagToString(tag, trim, str))
 		return UString::format("0x%08X ('%s')", FROM_BE_32(tag), str.c_str());
 

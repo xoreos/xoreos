@@ -32,7 +32,7 @@
 
 namespace Common {
 
-ZipFile::ZipFile(Common::SeekableReadStream *zip) : _zip(zip) {
+ZipFile::ZipFile(SeekableReadStream *zip) : _zip(zip) {
 	assert(_zip);
 
 	try {
@@ -47,7 +47,7 @@ ZipFile::~ZipFile() {
 	delete _zip;
 }
 
-void ZipFile::load(Common::SeekableReadStream &zip) {
+void ZipFile::load(SeekableReadStream &zip) {
 	uint32 endPos = findCentralDirectoryEnd(zip);
 	if (endPos == 0)
 		throw Exception("End of central directory record not found");
@@ -131,7 +131,7 @@ const ZipFile::IFile &ZipFile::getIFile(uint32 index) const {
 	return _iFiles[index];
 }
 
-void ZipFile::getFileProperties(Common::SeekableReadStream &zip, const IFile &file,
+void ZipFile::getFileProperties(SeekableReadStream &zip, const IFile &file,
 		uint16 &compMethod, uint32 &compSize, uint32 &realSize) const {
 
 	zip.seek(file.offset);

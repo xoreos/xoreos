@@ -97,7 +97,7 @@ enum PEResourceType {
  */
 class PEResources {
 public:
-	PEResources(Common::SeekableReadStream *exe);
+	PEResources(SeekableReadStream *exe);
 	~PEResources();
 
 	/** Return a list of resource types. */
@@ -146,7 +146,7 @@ private:
 
 	bool loadFromEXE(SeekableReadStream &exe);
 
-	void parseResourceLevel(Common::SeekableReadStream &exe, Section &section, uint32 offset, int level);
+	void parseResourceLevel(SeekableReadStream &exe, Section &section, uint32 offset, int level);
 };
 
 } // End of namespace Common

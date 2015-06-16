@@ -98,12 +98,12 @@ UString PEResourceID::toString() const {
 	return "";
 }
 
-PEResources::PEResources(Common::SeekableReadStream *exe) : _exe(exe) {
+PEResources::PEResources(SeekableReadStream *exe) : _exe(exe) {
 	assert(_exe);
 
 	try {
 		if (!loadFromEXE(*_exe))
-			throw Common::Exception("Failed to parse exe");
+			throw Exception("Failed to parse exe");
 
 	} catch (...) {
 		delete _exe;
@@ -163,7 +163,7 @@ bool PEResources::loadFromEXE(SeekableReadStream &exe) {
 	return true;
 }
 
-void PEResources::parseResourceLevel(Common::SeekableReadStream &exe,
+void PEResources::parseResourceLevel(SeekableReadStream &exe,
                                      Section &section, uint32 offset, int level) {
 	exe.seek(offset + 12);
 
