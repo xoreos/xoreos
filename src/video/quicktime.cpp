@@ -416,7 +416,7 @@ int QuickTimeDecoder::readDefault(Atom atom) {
 
 		if (_parseTable[i].type == 0) {
 			// skip leaf atoms data
-			_fd->seek(a.size, SEEK_CUR);
+			_fd->skip(a.size);
 		} else {
 			uint32 start_pos = _fd->pos();
 			err = (this->*_parseTable[i].func)(a);
@@ -424,7 +424,7 @@ int QuickTimeDecoder::readDefault(Atom atom) {
 			uint32 left = a.size - _fd->pos() + start_pos;
 
 			if (left > 0) // skip garbage at atom end
-				_fd->seek(left, SEEK_CUR);
+				_fd->skip(left);
 		}
 
 		a.offset += a.size;
@@ -432,14 +432,14 @@ int QuickTimeDecoder::readDefault(Atom atom) {
 	}
 
 	if (!err && total_size < atom.size)
-		_fd->seek(atom.size - total_size, SEEK_SET);
+		_fd->seek(atom.size - total_size);
 
 	return err;
 }
 
 int QuickTimeDecoder::readLeaf(Atom atom) {
 	if (atom.size > 1)
-		_fd->seek(atom.size, SEEK_SET);
+		_fd->seek(atom.size);
 
 	return 0;
 }
@@ -528,9 +528,9 @@ int QuickTimeDecoder::readHDLR(Atom atom) {
 
 	// .mov: PASCAL string
 	byte len = _fd->readByte();
-	_fd->seek(len, SEEK_CUR);
+	_fd->skip(len);
 
-	_fd->seek(atom.size - (_fd->pos() - atom.offset), SEEK_CUR);
+	_fd->skip(atom.size - (_fd->pos() - atom.offset));
 
 	return 0;
 }
@@ -585,7 +585,7 @@ int QuickTimeDecoder::readSTSD(Atom UNUSED(atom)) {
 
 		if (!track->sampleDescs[i]) {
 			// other codec type, just skip (rtp, mp4s, tmcd ...)
-			_fd->seek(size - (_fd->pos() - start_pos), SEEK_CUR);
+			_fd->skip(size - (_fd->pos() - start_pos));
 		}
 
 		// this will read extra atoms at the end (wave, alac, damr, avcC, SMI ...)
@@ -593,7 +593,7 @@ int QuickTimeDecoder::readSTSD(Atom UNUSED(atom)) {
 		if (a.size > 8)
 			readDefault(a);
 		else if (a.size > 0)
-			_fd->seek(a.size, SEEK_CUR);
+			_fd->skip(a.size);
 	}
 
 	return 0;

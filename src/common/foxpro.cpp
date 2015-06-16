@@ -22,6 +22,8 @@
  *  A database in FoxPro format.
  */
 
+#include <cstdio>
+
 #include "src/common/foxpro.h"
 #include "src/common/error.h"
 #include "src/common/encoding.h"
@@ -112,7 +114,7 @@ void FoxPro::loadFields(SeekableReadStream &dbf, uint32 recordSize) {
 	while (!dbf.eos() && (dbf.readByte() != 0x0D)) {
 		Field field;
 
-		dbf.seek(-1, SEEK_CUR);
+		dbf.seek(-1, SeekableReadStream::kOriginCurrent);
 
 		field.name = readStringFixed(dbf, kEncodingASCII, 11);
 

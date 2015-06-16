@@ -27,8 +27,6 @@
 #ifndef COMMON_READSTREAM_H
 #define COMMON_READSTREAM_H
 
-#include <cstdio>
-
 #include "src/common/types.h"
 #include "src/common/endianness.h"
 #include "src/common/util.h"
@@ -236,12 +234,17 @@ public:
 };
 
 
-/** Interface for a seekable & readable data stream.
- *
- *  @todo Get rid of SEEK_SET, SEEK_CUR, or SEEK_END, use our own constants
- */
+/** Interface for a seekable & readable data stream. */
 class SeekableReadStream : virtual public ReadStream {
 public:
+	/** The position a seeking offset takes as a base. */
+	enum Origin {
+		kOriginBegin   = 0, ///< Seek from the begin of the stream.
+		kOriginCurrent = 1, ///< Seek from the current position of the stream.
+		kOriginEnd     = 2, ///< Seek from the end of the stream.
+		kOriginMAX          ///< For range checks.
+	};
+
 	SeekableReadStream();
 	~SeekableReadStream();
 
@@ -260,8 +263,8 @@ public:
 
 	/** Sets the stream position indicator for the stream. The new position,
 	 *  measured in bytes, is obtained by adding offset bytes to the position
-	 *  specified by whence. If whence is set to SEEK_SET, SEEK_CUR, or
-	 *  SEEK_END, the offset is relative to the start of the file, the current
+	 *  specified by whence. If whence is set to kOriginBegin, kOriginCurrent, or
+	 *  kOriginEnd, the offset is relative to the start of the file, the current
 	 *  position indicator, or end-of-file, respectively. A successful call
 	 *  to the seek() method clears the end-of-file indicator for the stream.
 	 *
@@ -269,10 +272,10 @@ public:
 	 *  exception is thrown.
 	 *
 	 *  @param  offset the relative offset in bytes.
-	 *  @param  whence the seek reference: SEEK_SET, SEEK_CUR, or SEEK_END.
+	 *  @param  whence the seek reference: kOriginBegin, kOriginCurrent or kOriginEnd.
 	 *  @return the previous position of the stream, before seeking.
 	 */
-	virtual uint32 seek(int32 offset, int whence = SEEK_SET) = 0;
+	virtual uint32 seek(int32 offset, Origin whence = kOriginBegin) = 0;
 
 	/** Skip the specified number of bytes, adding that offset to the current
 	 *  position in the stream. A successful call to the skip() method clears
@@ -285,11 +288,11 @@ public:
 	 *  @return the previous position of the stream, before skipping.
 	 */
 	virtual uint32 skip(uint32 offset) {
-		return seek(offset, SEEK_CUR);
+		return seek(offset, kOriginCurrent);
 	}
 
 	/** Evaluate the seek offset relative to whence into a position from the beginning. */
-	static uint32 evalSeek(int32 offset, int whence, uint32 pos, uint32 begin, int32 size);
+	static uint32 evalSeek(int32 offset, Origin whence, uint32 pos, uint32 begin, int32 size);
 };
 
 
@@ -337,7 +340,7 @@ public:
 	int32 pos() const;
 	int32 size() const;
 
-	uint32 seek(int32 offset, int whence = SEEK_SET);
+	uint32 seek(int32 offset, Origin whence = kOriginBegin);
 
 protected:
 	SeekableReadStream *_parentStream;

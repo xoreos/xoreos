@@ -53,7 +53,7 @@ public:
 	int32 pos() const;
 	int32 size() const;
 
-	uint32 seek(int32 offs, int whence = SEEK_SET);
+	uint32 seek(int32 offs, Origin whence = kOriginBegin);
 
 	const byte *getData() const;
 

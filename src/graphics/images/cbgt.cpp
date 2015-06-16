@@ -22,6 +22,8 @@
  *  Compressed BackGround Tiles, a BioWare image format found in Sonic.
  */
 
+#include <cstdio>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"

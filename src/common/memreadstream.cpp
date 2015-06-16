@@ -58,7 +58,7 @@ uint32 MemoryReadStream::read(void *dataPtr, uint32 dataSize) {
 	return dataSize;
 }
 
-uint32 MemoryReadStream::seek(int32 offs, int whence) {
+uint32 MemoryReadStream::seek(int32 offs, Origin whence) {
 	assert(_pos <= _size);
 
 	const uint32 oldPos = _pos;

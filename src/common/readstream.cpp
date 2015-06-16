@@ -61,18 +61,21 @@ SeekableReadStream::SeekableReadStream() {
 SeekableReadStream::~SeekableReadStream() {
 }
 
-uint32 SeekableReadStream::evalSeek(int32 offset, int whence, uint32 pos, uint32 begin, int32 size) {
+uint32 SeekableReadStream::evalSeek(int32 offset, Origin whence, uint32 pos, uint32 begin, int32 size) {
 	switch (whence) {
-	case SEEK_END:
-		offset = size + offset;
-		// fallthrough
-	case SEEK_SET:
-		return begin + offset;
-	case SEEK_CUR:
-		return pos + offset;
+		case kOriginEnd:
+			offset = size + offset;
+			// fallthrough
+		case kOriginBegin:
+			return begin + offset;
+		case kOriginCurrent:
+			return pos + offset;
+
+		default:
+			break;
 	}
 
-	throw Exception("Invalid whence (%d)", whence);
+	throw Exception("Invalid whence (%d)", (int) whence);
 }
 
 
@@ -126,7 +129,7 @@ int32 SeekableSubReadStream::size() const {
 	return _end - _begin;
 }
 
-uint32 SeekableSubReadStream::seek(int32 offset, int whence) {
+uint32 SeekableSubReadStream::seek(int32 offset, Origin whence) {
 	assert(_pos >= _begin);
 	assert(_pos <= _end);
 

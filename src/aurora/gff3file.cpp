@@ -290,8 +290,7 @@ Common::SeekableReadStream &GFF3Struct::getData(const Field &field) const {
 	assert(field.extended);
 
 	Common::SeekableReadStream &data = _parent->getFieldData();
-
-	data.seek(field.data, SEEK_CUR);
+	data.skip(field.data);
 
 	return data;
 }

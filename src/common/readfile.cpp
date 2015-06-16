@@ -108,13 +108,17 @@ int32 ReadFile::size() const {
 	return _size;
 }
 
-uint32 ReadFile::seek(int32 offs, int whence) {
+uint32 ReadFile::seek(int32 offs, Origin whence) {
+	static const int kSeekToWhence[kOriginMAX] = { SEEK_SET, SEEK_CUR, SEEK_END };
+	if (((size_t) whence) >= kOriginMAX)
+		throw Exception(kSeekError);
+
 	if (!_handle)
 		throw Exception(kSeekError);
 
 	uint32 oldPos = pos();
 
-	if (std::fseek(_handle, offs, whence) != 0)
+	if (std::fseek(_handle, offs, kSeekToWhence[whence]) != 0)
 		throw Exception(kSeekError);
 
 	long p = std::ftell(_handle);

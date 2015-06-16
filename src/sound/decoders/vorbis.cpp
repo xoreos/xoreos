@@ -47,8 +47,24 @@ static size_t read_stream_wrap(void *ptr, size_t size, size_t nmemb, void *datas
 }
 
 static int seek_stream_wrap(void *datasource, ogg_int64_t offset, int whence) {
+	Common::SeekableReadStream::Origin seekOrigin;
+	switch (whence) {
+		case SEEK_SET:
+			seekOrigin = Common::SeekableReadStream::kOriginBegin;
+			break;
+		case SEEK_CUR:
+			seekOrigin = Common::SeekableReadStream::kOriginCurrent;
+			break;
+		case SEEK_END:
+			seekOrigin = Common::SeekableReadStream::kOriginEnd;
+			break;
+		default:
+			assert(false);
+			break;
+	}
+
 	Common::SeekableReadStream *stream = (Common::SeekableReadStream *)datasource;
-	stream->seek((int32)offset, whence);
+	stream->seek((int32)offset, seekOrigin);
 	return stream->pos();
 }
 

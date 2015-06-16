@@ -26,6 +26,8 @@
  * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
  */
 
+#include <cstdio>
+
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 

@@ -884,7 +884,7 @@ void NCSFile::o_jmp(InstructionType type) {
 		throw Common::Exception("NCSFile::o_jmp(): Illegal type %d", type);
 
 	int32 offset = _script->readSint32BE();
-	_script->seek(offset - 6, SEEK_CUR);
+	_script->skip(offset - 6);
 }
 
 void NCSFile::o_jz(InstructionType type) {
@@ -894,7 +894,7 @@ void NCSFile::o_jz(InstructionType type) {
 	int32 offset = _script->readSint32BE();
 
 	if (!_stack.pop().getInt())
-		_script->seek(offset - 6, SEEK_CUR);
+		_script->skip(offset - 6);
 }
 
 void NCSFile::o_not(InstructionType type) {
@@ -929,7 +929,7 @@ void NCSFile::o_jnz(InstructionType type) {
 	int32 offset = _script->readSint32BE();
 
 	if (_stack.pop().getInt())
-		_script->seek(offset - 6, SEEK_CUR);
+		_script->skip(offset - 6);
 }
 
 void NCSFile::o_decbp(InstructionType type) {
@@ -1284,7 +1284,7 @@ void NCSFile::o_jsr(InstructionType type) {
 	// Push the current script position
 	_returnOffsets.push(_script->pos());
 
-	_script->seek(offset - 6, SEEK_CUR);
+	_script->skip(offset - 6);
 }
 
 void NCSFile::o_retn(InstructionType UNUSED(type)) {

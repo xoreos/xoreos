@@ -72,7 +72,7 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 
 		if (isIn(c, _chunkEnds)) {
 			// This is a end character, seek back and break
-			stream.seek(-1, SEEK_CUR);
+			stream.seek(-1, SeekableReadStream::kOriginCurrent);
 			chunkEnd = true;
 			break;
 		}
@@ -138,7 +138,7 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 			if (((_conSepRule == kRuleIgnoreSame) && (c != separator)) ||
 			    ((_conSepRule == kRuleIgnoreAll ) && !isIn(c, _separators))) {
 
-				stream.seek(-1, SEEK_CUR);
+				stream.seek(-1, SeekableReadStream::kOriginCurrent);
 				break;
 			}
 		}
@@ -182,7 +182,7 @@ void StreamTokenizer::skipChunk(SeekableReadStream &stream) {
 	uint32 c;
 	while ((c = stream.readChar()) != ReadStream::kEOF) {
 		if (isIn(c, _chunkEnds)) {
-			stream.seek(-1, SEEK_CUR);
+			stream.seek(-1, SeekableReadStream::kOriginCurrent);
 			break;
 		}
 	}
@@ -196,7 +196,7 @@ void StreamTokenizer::nextChunk(SeekableReadStream &stream) {
 		return;
 
 	if (!isIn(c, _chunkEnds))
-		stream.seek(-1, SEEK_CUR);
+		stream.seek(-1, SeekableReadStream::kOriginCurrent);
 }
 
 bool StreamTokenizer::isChunkEnd(SeekableReadStream &stream) {
@@ -206,7 +206,7 @@ bool StreamTokenizer::isChunkEnd(SeekableReadStream &stream) {
 
 	bool chunkEnd = isIn(c, _chunkEnds);
 
-	stream.seek(-1, SEEK_CUR);
+	stream.seek(-1, SeekableReadStream::kOriginCurrent);
 
 	return chunkEnd;
 }

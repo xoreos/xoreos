@@ -22,6 +22,8 @@
  *  Portable executable parsing.
  */
 
+#include <cstdio>
+
 #include "src/common/pe_exe.h"
 #include "src/common/encoding.h"
 #include "src/common/memreadstream.h"
