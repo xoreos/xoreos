@@ -174,16 +174,18 @@ void JadeEngine::run() {
 void JadeEngine::init() {
 	LoadProgress progress(16);
 
+	progress.step("Declare languages");
+	declareLanguages();
+
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", LangMan.getLanguageName(_language).c_str());
 	else
 		warning("Failed to detect this game's language");
 
+	LangMan.setCurrentLanguage(_language);
+
 	progress.step("Loading user game config");
 	initConfig();
-
-	progress.step("Declare string encodings");
-	declareLanguages();
 
 	initResources(progress);
 	if (EventMan.quitRequested())
@@ -215,7 +217,6 @@ void JadeEngine::declareLanguages() {
 	};
 
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
-	LangMan.setCurrentLanguage(_language);
 }
 
 void JadeEngine::initResources(LoadProgress &progress) {

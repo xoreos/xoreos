@@ -191,6 +191,9 @@ void NWNEngine::run() {
 void NWNEngine::init() {
 	LoadProgress progress(21);
 
+	progress.step("Declare languages");
+	declareLanguages();
+
 	progress.step("Detecting game version");
 	detectVersion();
 
@@ -199,15 +202,14 @@ void NWNEngine::init() {
 	else
 		warning("Failed to detect this game's language");
 
+	LangMan.setCurrentLanguage(_language);
+
 	progress.step("Loading user game config");
 	initConfig();
 	checkConfig();
 
 	if (EventMan.quitRequested())
 		return;
-
-	progress.step("Declare languages");
-	declareLanguages();
 
 	initResources(progress);
 
@@ -264,7 +266,6 @@ void NWNEngine::declareLanguages() {
 	};
 
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
-	LangMan.setCurrentLanguage(_language);
 }
 
 void NWNEngine::initResources(LoadProgress &progress) {

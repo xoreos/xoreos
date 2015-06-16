@@ -209,6 +209,9 @@ void WitcherEngine::run() {
 void WitcherEngine::init() {
 	LoadProgress progress(14);
 
+	progress.step("Declare languages");
+	declareLanguages();
+
 	if (evaluateLanguage(true, _languageText, _languageVoice))
 		status("Setting the language to %s text + %s voices",
 				LangMan.getLanguageName(_languageText).c_str(),
@@ -218,9 +221,6 @@ void WitcherEngine::init() {
 
 	progress.step("Loading user game config");
 	initConfig();
-
-	progress.step("Declare string encodings");
-	declareLanguages();
 
 	initResources(progress);
 	if (EventMan.quitRequested())

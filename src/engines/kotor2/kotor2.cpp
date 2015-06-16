@@ -190,10 +190,15 @@ void KotOR2Engine::run() {
 void KotOR2Engine::init() {
 	LoadProgress progress(17);
 
+	progress.step("Declare languages");
+	declareLanguages();
+
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", LangMan.getLanguageName(_language).c_str());
 	else
 		warning("Failed to detect this game's language");
+
+	LangMan.setCurrentLanguage(_language);
 
 	progress.step("Loading user game config");
 	initConfig();
@@ -201,9 +206,6 @@ void KotOR2Engine::init() {
 
 	if (EventMan.quitRequested())
 		return;
-
-	progress.step("Declare string encodings");
-	declareLanguages();
 
 	initResources(progress);
 
@@ -237,7 +239,6 @@ void KotOR2Engine::declareLanguages() {
 	};
 
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
-	LangMan.setCurrentLanguage(_language);
 }
 
 void KotOR2Engine::initResources(LoadProgress &progress) {

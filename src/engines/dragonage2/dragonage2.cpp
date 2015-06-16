@@ -193,6 +193,9 @@ void DragonAge2Engine::run() {
 void DragonAge2Engine::init() {
 	LoadProgress progress(21);
 
+	progress.step("Declare languages");
+	declareLanguages();
+
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", LangMan.getLanguageName(_language).c_str());
 	else
@@ -200,9 +203,6 @@ void DragonAge2Engine::init() {
 
 	progress.step("Loading user game config");
 	initConfig();
-
-	progress.step("Declare string encodings");
-	declareLanguages();
 
 	initResources(progress);
 	if (EventMan.quitRequested())
