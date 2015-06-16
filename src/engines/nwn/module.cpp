@@ -208,7 +208,7 @@ void Module::setPCTokens() {
 
 	TokenMan.set("<Deity>", _pc->getDeity());
 
-	for (int i = 0; i < ARRAYSIZE(kGenderTokens); i++) {
+	for (size_t i = 0; i < ARRAYSIZE(kGenderTokens); i++) {
 		const uint32 strRef = _pc->isFemale() ? kGenderTokens[i].female : kGenderTokens[i].male;
 
 		TokenMan.set(kGenderTokens[i].token, TalkMan.getString(strRef));
@@ -238,7 +238,7 @@ void Module::removePCTokens() {
 
 	TokenMan.remove("<Deity>");
 
-	for (int i = 0; i < ARRAYSIZE(kGenderTokens); i++)
+	for (size_t i = 0; i < ARRAYSIZE(kGenderTokens); i++)
 		TokenMan.remove(kGenderTokens[i].token);
 }
 
@@ -559,7 +559,7 @@ void Module::loadHAKs() {
 
 	_resHAKs.resize(haks.size());
 
-	for (uint i = 0; i < haks.size(); i++)
+	for (size_t i = 0; i < haks.size(); i++)
 		indexMandatoryArchive(haks[i] + ".hak", 1001 + i, &_resHAKs[i]);
 }
 
@@ -612,8 +612,8 @@ void Module::loadAreas() {
 	status("Loading areas...");
 
 	const std::vector<Common::UString> &areas = _ifo.getAreas();
-	for (uint32 i = 0; i < areas.size(); i++) {
-		status("Loading area \"%s\" (%d / %d)", areas[i].c_str(), i, (int) areas.size() - 1);
+	for (size_t i = 0; i < areas.size(); i++) {
+		status("Loading area \"%s\" (%d / %d)", areas[i].c_str(), (int)i, (int)areas.size() - 1);
 
 		std::pair<AreaMap::iterator, bool> result;
 

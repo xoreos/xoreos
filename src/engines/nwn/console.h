@@ -60,7 +60,7 @@ private:
 
 	CampaignMap _campaignModules; ///< Mapping campaign module file -> campaign module name.
 
-	uint32 _maxSizeMusic;
+	size_t _maxSizeMusic;
 
 
 	// Updating the caches

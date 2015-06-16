@@ -49,7 +49,7 @@ public:
 	/** Is the list empty? */
 	bool empty() const;
 	/** Return the number of files in the list. */
-	uint32 size() const;
+	size_t size() const;
 
 	/** Return a const_iterator pointing to the beginning of the list. */
 	const_iterator begin() const;

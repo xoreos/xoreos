@@ -94,11 +94,11 @@ private:
 
 	/** An XMV packet. */
 	struct Packet {
-		uint32 thisPacketSize; ///< The current packet's size.
-		uint32 nextPacketSize; ///< The next packet's size.
+		size_t thisPacketSize; ///< The current packet's size.
+		size_t nextPacketSize; ///< The next packet's size.
 
-		uint32 thisPacketOffset; ///< The current packet's offset within the XMV stream.
-		uint32 nextPacketOffset; ///< The next packet's offset within the XMV stream.
+		size_t thisPacketOffset; ///< The current packet's offset within the XMV stream.
+		size_t nextPacketOffset; ///< The next packet's offset within the XMV stream.
 
 		/** The video part of the packet. */
 		PacketVideo video;

@@ -351,7 +351,7 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 }
 
 void Area::loadTiles(const Aurora::GFF3List &tiles) {
-	uint32 n = 0;
+	size_t n = 0;
 	for (Aurora::GFF3List::const_iterator t = tiles.begin(); t != tiles.end(); ++t, ++n) {
 		assert(n < (_width * _height));
 

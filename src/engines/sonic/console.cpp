@@ -68,7 +68,7 @@ void Console::updateAreas() {
 	const Aurora::GDAFile &areas = TwoDAReg.getGDA("areas");
 
 	std::list<Common::UString> areaIDs;
-	for (uint32 i = 0; i < areas.getRowCount(); i++) {
+	for (size_t i = 0; i < areas.getRowCount(); i++) {
 		if (areas.getInt(i, "Name") > 0) {
 			_areas.insert(i);
 

@@ -80,7 +80,7 @@ void WriteFile::flush() {
 		throw Exception(kWriteError);
 }
 
-uint32 WriteFile::write(const void *dataPtr, uint32 dataSize) {
+size_t WriteFile::write(const void *dataPtr, size_t dataSize) {
 	if (!_handle)
 		return 0;
 

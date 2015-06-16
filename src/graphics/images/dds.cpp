@@ -169,7 +169,7 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds) {
 	dds.skip(4); // Some float
 
 	// Number of bytes left for the image data
-	uint32 fullDataSize = dds.size() - dds.pos();
+	size_t fullDataSize = dds.size() - dds.pos();
 
 	// Detect how many mip maps are in the DDS
 	do {

@@ -162,7 +162,7 @@ void Area::loadVIS() {
 
 void Area::loadRooms() {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
-	for (uint32 i = 0; i < rooms.size(); i++)
+	for (size_t i = 0; i < rooms.size(); i++)
 		_rooms.push_back(new Room(rooms[i].model, i, rooms[i].x, rooms[i].y, rooms[i].z));
 }
 
@@ -179,7 +179,7 @@ void Area::loadObject(Object &object) {
 
 void Area::loadArtPlaceables() {
 	const Aurora::LYTFile::ArtPlaceableArray &objects = _lyt.getArtPlaceables();
-	for (uint32 i = 0; i < objects.size(); i++) {
+	for (size_t i = 0; i < objects.size(); i++) {
 		ArtPlaceable *object = new ArtPlaceable(objects[i].model, i, objects[i].x, objects[i].y, objects[i].z);
 
 		loadObject(*object);

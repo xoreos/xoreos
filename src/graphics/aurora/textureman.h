@@ -83,7 +83,7 @@ public:
 	void reset();
 
 	/** Set this texture unit as the current one. */
-	void activeTexture(uint32 n);
+	void activeTexture(size_t n);
 	// '---
 
 private:

@@ -66,7 +66,7 @@ void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStre
 	//       over the whole video data and fix-up the alpha values ourselves. Or
 	//       alternatively do the YUV->BGRA conversion ourselves. We chose the latter.
 
-	int dataSize = dataStream.size();
+	size_t dataSize = dataStream.size();
 	byte *data = new byte[dataSize];
 	dataStream.read(data, dataSize);
 
@@ -84,7 +84,7 @@ void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStre
 
 	int c = xvid_decore(_decHandle, XVID_DEC_DECODE, &xvid_dec_frame, &xvid_dec_stats);
 	if ((dataSize - c) > 1)
-		warning("H263Codec::decodeFrame(): %d bytes left in frame", dataSize - c);
+		warning("H263Codec::decodeFrame(): %u bytes left in frame", (uint)(dataSize - c));
 
 	delete[] data;
 

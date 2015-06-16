@@ -459,7 +459,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	loadTextures(textures);
 
-	uint texCount = textures.size();
+	size_t texCount = textures.size();
 
 	// Read vertices
 
@@ -684,7 +684,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 
 	loadTextures(textures);
 
-	uint texCount = textures.size();
+	size_t texCount = textures.size();
 
 	// Read vertices
 

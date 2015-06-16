@@ -67,7 +67,7 @@ namespace Aurora {
 PLTFile::PLTFile(const Common::UString &name, Common::SeekableReadStream &plt) :
 	_name(name), _surface(0), _dataImage(0), _dataLayers(0) {
 
-	for (uint i = 0; i < kLayerMAX; i++)
+	for (size_t i = 0; i < kLayerMAX; i++)
 		_colors[i] = 0;
 
 	load(plt);
@@ -116,7 +116,7 @@ void PLTFile::load(Common::SeekableReadStream &plt) {
 	const uint32 width  = plt.readUint32LE();
 	const uint32 height = plt.readUint32LE();
 
-	if ((plt.size() - plt.pos()) < (int32) (2 * width * height))
+	if ((plt.size() - plt.pos()) < (2 * width * height))
 		throw Common::Exception("Not enough data");
 
 	// --- PLT layer data ---
@@ -205,7 +205,7 @@ ImageDecoder *PLTFile::getLayerPalette(uint32 layer, uint8 row) {
 }
 
 void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kLayerMAX]) {
-	for (uint i = 0; i < kLayerMAX; i++, rows += 4 * 256) {
+	for (size_t i = 0; i < kLayerMAX; i++, rows += 4 * 256) {
 		ImageDecoder *palette = 0;
 
 		try {

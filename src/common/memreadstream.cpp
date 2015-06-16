@@ -33,7 +33,7 @@
 
 namespace Common {
 
-MemoryReadStream::MemoryReadStream(const byte *dataPtr, uint32 dataSize, bool disposeMemory) :
+MemoryReadStream::MemoryReadStream(const byte *dataPtr, size_t dataSize, bool disposeMemory) :
 	_ptrOrig(dataPtr), _ptr(dataPtr), _disposeMemory(disposeMemory),
 	_size(dataSize), _pos(0), _eos(false) {
 
@@ -44,7 +44,7 @@ MemoryReadStream::~MemoryReadStream() {
 		delete[] _ptrOrig;
 }
 
-uint32 MemoryReadStream::read(void *dataPtr, uint32 dataSize) {
+size_t MemoryReadStream::read(void *dataPtr, size_t dataSize) {
 	// Read at most as many bytes as are still available...
 	if (dataSize > _size - _pos) {
 		dataSize = _size - _pos;
@@ -58,11 +58,11 @@ uint32 MemoryReadStream::read(void *dataPtr, uint32 dataSize) {
 	return dataSize;
 }
 
-uint32 MemoryReadStream::seek(int32 offs, Origin whence) {
-	assert(_pos <= _size);
+size_t MemoryReadStream::seek(ptrdiff_t offset, Origin whence) {
+	assert((size_t)_pos <= _size);
 
-	const uint32 oldPos = _pos;
-	const uint32 newPos = evalSeek(offs, whence, _pos, 0, size());
+	const size_t oldPos = _pos;
+	const size_t newPos = evalSeek(offset, whence, _pos, 0, size());
 	if (newPos > _size)
 		throw Exception(kSeekError);
 
@@ -79,11 +79,11 @@ bool MemoryReadStream::eos() const {
 	return _eos;
 }
 
-int32 MemoryReadStream::pos() const {
+size_t MemoryReadStream::pos() const {
 	return _pos;
 }
 
-int32 MemoryReadStream::size() const {
+size_t MemoryReadStream::size() const {
 	return _size;
 }
 
@@ -92,7 +92,7 @@ const byte *MemoryReadStream::getData() const {
 }
 
 
-MemoryReadStreamEndian::MemoryReadStreamEndian(const byte *buf, uint32 len, bool bigEndian) :
+MemoryReadStreamEndian::MemoryReadStreamEndian(const byte *buf, size_t len, bool bigEndian) :
 	MemoryReadStream(buf, len), _bigEndian(bigEndian) {
 
 }

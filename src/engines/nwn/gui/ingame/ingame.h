@@ -71,7 +71,7 @@ public:
 	void setArea(const Common::UString &area);
 
 	/** Update the party member. */
-	void updatePartyMember(uint partyMember, const Creature &creature, bool force = false);
+	void updatePartyMember(size_t partyMember, const Creature &creature, bool force = false);
 
 	/** Do we have a currently running conversation? */
 	bool hasRunningConversation() const;
@@ -102,20 +102,20 @@ private:
 
 
 	/** Set the party member's portrait. */
-	void setPortrait(uint partyMember, const Common::UString &portrait);
+	void setPortrait(size_t partyMember, const Common::UString &portrait);
 
 	/** Set the party member's name. */
-	void setName(uint partyMember, const Common::UString &name);
+	void setName(size_t partyMember, const Common::UString &name);
 
 	/** Set the party member's health. */
-	void setHealth(uint partyMember, uint32 current, uint32 max);
+	void setHealth(size_t partyMember, uint32 current, uint32 max);
 
 	/** Set party member to "healthy" (red health bar). */
-	void setHealthy (uint partyMember);
+	void setHealthy (size_t partyMember);
 	/** Set party member to "sick" (brown health bar). */
-	void setSick    (uint partyMember);
+	void setSick    (size_t partyMember);
 	/** Set party member to "poisoned" (green health bar). */
-	void setPoisoned(uint partyMember);
+	void setPoisoned(size_t partyMember);
 };
 
 } // End of namespace NWN

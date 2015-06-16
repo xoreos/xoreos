@@ -50,11 +50,11 @@ public:
 	void setSignature(const Signature &signature);
 	void setDefaults(const Parameters &defaults);
 
-	uint32 getParamMin() const;
-	uint32 getParamMax() const;
+	size_t getParamMin() const;
+	size_t getParamMax() const;
 
-	void setParamsSpecified(uint32 params);
-	uint32 getParamsSpecified() const;
+	void setParamsSpecified(size_t params);
+	size_t getParamsSpecified() const;
 
 	const Signature &getSignature() const;
 
@@ -88,8 +88,8 @@ private:
 
 	NCSFile *_currentScript; ///< The script executing this function.
 
-	uint32 _defaultCount;    ///< The number of default values.
-	uint32 _paramsSpecified; ///< The number of parameters specified (not defaulted).
+	size_t _defaultCount;    ///< The number of default values.
+	size_t _paramsSpecified; ///< The number of parameters specified (not defaulted).
 };
 
 } // End of namespace NWScript

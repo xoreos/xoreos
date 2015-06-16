@@ -33,7 +33,7 @@
 
 namespace Sound {
 
-LoopingAudioStream::LoopingAudioStream(RewindableAudioStream *stream, uint loops, bool disposeAfterUse)
+LoopingAudioStream::LoopingAudioStream(RewindableAudioStream *stream, size_t loops, bool disposeAfterUse)
     : _parent(stream), _disposeAfterUse(disposeAfterUse), _loops(loops), _completeIterations(0) {
 }
 
@@ -71,7 +71,7 @@ bool LoopingAudioStream::endOfData() const {
 	return (_loops != 0 && (_completeIterations == _loops));
 }
 
-AudioStream *makeLoopingAudioStream(RewindableAudioStream *stream, uint loops) {
+AudioStream *makeLoopingAudioStream(RewindableAudioStream *stream, size_t loops) {
 	if (loops != 1)
 		return new LoopingAudioStream(stream, loops);
 	else
@@ -140,7 +140,7 @@ public:
 	virtual void queueAudioStream(AudioStream *stream, bool disposeAfterUse);
 	virtual void finish() { _finished = true; }
 
-	uint32 numQueuedStreams() const {
+	size_t numQueuedStreams() const {
 		//Common::StackLock lock(_mutex);
 		return _queue.size();
 	}

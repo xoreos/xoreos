@@ -207,7 +207,6 @@ private:
 	bool _disableAudio; ///< Should the sound be disabled?
 
 	uint32 _curFrame; ///< Current Frame.
-	uint32 _audioFrame;
 
 	uint32 _startTime;     ///< Timestamp of when the video was started.
 	uint32 _lastFrameTime; ///< Timestamp of when the last frame was decoded.

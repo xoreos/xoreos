@@ -100,7 +100,7 @@ template<> inline float MAX(float a, float b) { return fmaxf(a, b); }
 /**
  * Macro which determines the number of entries in a fixed size array.
  */
-#define ARRAYSIZE(x) ((int)(sizeof(x) / sizeof(x[0])))
+#define ARRAYSIZE(x) (sizeof(x) / sizeof(x[0]))
 
 /**
 * Print a warning message to the text console (stderr).

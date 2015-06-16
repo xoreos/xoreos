@@ -122,7 +122,7 @@ void TalkTable_TLK::readString(Entry &entry) const {
 
 	_tlk->seek(entry.offset);
 
-	uint32 length = MIN<uint32>(entry.length, _tlk->size() - _tlk->pos());
+	uint32 length = MIN<size_t>(entry.length, _tlk->size() - _tlk->pos());
 	if (length == 0)
 		return;
 

@@ -42,7 +42,7 @@ namespace NWN {
 /** A button within the NWN quickbar. */
 class QuickbarButton : public NWNWidget {
 public:
-	QuickbarButton(::Engines::GUI &gui, uint n);
+	QuickbarButton(::Engines::GUI &gui, size_t n);
 	~QuickbarButton();
 
 	void show();
@@ -58,7 +58,7 @@ public:
 private:
 	Graphics::Aurora::Model *_model;
 
-	uint _buttonNumber;
+	size_t _buttonNumber;
 };
 
 /** The NWN ingame quickbar. */

@@ -69,9 +69,9 @@ public:
 	/** Construct UString from an UTF-8 string. */
 	UString(const char *str = "");
 	/** Construct UString from the first n bytes of an UTF-8 string. */
-	UString(const char *str, int n);
+	UString(const char *str, size_t n);
 	/** Construct UString by creating n copies of Unicode codepoint c. */
-	explicit UString(uint32 c, int n = 1);
+	explicit UString(uint32 c, size_t n = 1);
 	/** Construct UString by copying the characters between [sBegin,sEnd). */
 	UString(iterator sBegin, iterator sEnd);
 	~UString();
@@ -111,7 +111,7 @@ public:
 	void clear();
 
 	/** Return the size of the string, in characters. */
-	uint32 size() const;
+	size_t size() const;
 
 	/** Is the string empty? */
 	bool empty() const;
@@ -132,7 +132,7 @@ public:
 	bool contains(uint32 c) const;
 
 	void truncate(const iterator &it);
-	void truncate(uint32 n);
+	void truncate(size_t n);
 
 	void trimLeft();
 	void trimRight();
@@ -152,9 +152,9 @@ public:
 	UString toUpper() const;
 
 	/** Convert an iterator into a numerical position. */
-	iterator getPosition(uint32 n)    const;
+	iterator getPosition(size_t n)    const;
 	/** Convert a numerical position into an iterator. */
-	uint32   getPosition(iterator it) const;
+	size_t   getPosition(iterator it) const;
 
 	/** Insert character c in front of this position. */
 	void insert(iterator pos, uint32 c);
@@ -176,7 +176,7 @@ public:
 	/** Print formatted data into an UString object, similar to sprintf(). */
 	static UString format(const char *s, ...);
 
-	static uint32 split(const UString &text, uint32 delim, std::vector<UString> &texts);
+	static size_t split(const UString &text, uint32 delim, std::vector<UString> &texts);
 
 	static void splitTextTokens(const UString &text, std::vector<UString> &tokens);
 
@@ -196,7 +196,7 @@ public:
 private:
 	std::string _string; ///< Internal string holding the actual data.
 
-	uint32 _size;
+	size_t _size;
 
 	void recalculateSize();
 };
@@ -215,8 +215,8 @@ static inline UString operator+(const char *left, const UString &right) {
 // Hash functions
 
 struct hashUStringCaseSensitive {
-	std::size_t operator()(const UString &str) const {
-		std::size_t seed = 0;
+	size_t operator()(const UString &str) const {
+		size_t seed = 0;
 
 		for (UString::iterator it = str.begin(); it != str.end(); ++it)
 			boost::hash_combine<uint32>(seed, *it);
@@ -226,8 +226,8 @@ struct hashUStringCaseSensitive {
 };
 
 struct hashUStringCaseInsensitive {
-	std::size_t operator()(const UString &str) const {
-		std::size_t seed = 0;
+	size_t operator()(const UString &str) const {
+		size_t seed = 0;
 
 		for (UString::iterator it = str.begin(); it != str.end(); ++it)
 			boost::hash_combine<uint32>(seed, UString::toLower(*it));

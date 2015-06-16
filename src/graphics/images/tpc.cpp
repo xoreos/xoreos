@@ -146,7 +146,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, bool &needDeSwizzle) {
 	} else
 		throw Common::Exception("Unknown TPC encoding: %d (%d)", encoding, dataSize);
 
-	uint32 fullDataSize = tpc.size() - 128;
+	size_t fullDataSize = tpc.size() - 128;
 
 	_mipMaps.reserve(mipMapCount);
 	for (uint32 i = 0; i < mipMapCount; i++) {
@@ -218,7 +218,7 @@ void TPC::readData(Common::SeekableReadStream &tpc, bool needDeSwizzle) {
 }
 
 void TPC::readTXI(Common::SeekableReadStream &tpc) {
-	const uint32 txiDataSize = tpc.size() - tpc.pos();
+	const size_t txiDataSize = tpc.size() - tpc.pos();
 	if (txiDataSize == 0)
 		return;
 

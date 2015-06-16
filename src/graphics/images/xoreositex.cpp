@@ -93,7 +93,7 @@ void XEOSITEX::readHeader(Common::SeekableReadStream &xeositex) {
 }
 
 void XEOSITEX::readMipMaps(Common::SeekableReadStream &xeositex) {
-	for (uint32 i = 0; i < _mipMaps.size(); i++) {
+	for (size_t i = 0; i < _mipMaps.size(); i++) {
 		_mipMaps[i] = new MipMap;
 
 		_mipMaps[i]->width  = xeositex.readUint32LE();

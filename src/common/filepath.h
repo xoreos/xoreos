@@ -32,7 +32,7 @@
 
 namespace Common {
 
-static const uint32 kFileInvalid = 0xFFFFFFFF;
+static const size_t kFileInvalid = SIZE_MAX;
 
 /** Utility class for manipulating file paths. */
 class FilePath {
@@ -56,7 +56,7 @@ public:
 	 *  @param  p The file to look up.
 	 *  @return The size of the file or kFileInvalid if not a valid file.
 	 */
-	static uint32 getFileSize(const UString &p);
+	static size_t getFileSize(const UString &p);
 
 	/** Return a file name without its path.
 	 *

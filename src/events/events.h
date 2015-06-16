@@ -134,10 +134,10 @@ public:
 	// Joystick input
 
 	/** Return the number of avaiable joysticks. */
-	int getJoystickCount() const;
+	size_t getJoystickCount() const;
 
 	/** Return the joystick with that index. */
-	Joystick *getJoystickByIndex(int index) const;
+	Joystick *getJoystickByIndex(size_t index) const;
 	/** Return the first joystick with that name. */
 	Joystick *getJoystickByName(const Common::UString &name) const;
 
@@ -170,7 +170,7 @@ private:
 	EventQueue _eventQueue;
 	Common::Mutex _eventQueueMutex;
 
-	int _queueSize;
+	size_t _queueSize;
 
 	bool _fullQueue;
 	Common::Condition _queueProcessed;

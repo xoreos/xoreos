@@ -94,7 +94,7 @@ void Creature::init() {
 	_bootsVisualType = 0;
 	_bootsVariation  = 0;
 
-	for (int i = 0; i < kAbilityMAX; i++)
+	for (size_t i = 0; i < kAbilityMAX; i++)
 		_abilities[i] = 0;
 }
 

@@ -192,7 +192,7 @@ void Texture::doRebuild() {
 	if (_image->isCompressed()) {
 		// Compressed texture data
 
-		for (uint32 i = 0; i < _image->getMipMapCount(); i++) {
+		for (size_t i = 0; i < _image->getMipMapCount(); i++) {
 			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
 
 			glCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
@@ -203,7 +203,7 @@ void Texture::doRebuild() {
 	} else {
 		// Uncompressed texture data
 
-		for (uint32 i = 0; i < _image->getMipMapCount(); i++) {
+		for (size_t i = 0; i < _image->getMipMapCount(); i++) {
 			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
 
 			glTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),

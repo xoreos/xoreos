@@ -86,8 +86,8 @@ AACDecoder::~AACDecoder() {
 
 AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	// read everything into a buffer
-	uint32 inBufferPos = 0;
-	uint32 inBufferSize = stream.size();
+	size_t inBufferPos = 0;
+	size_t inBufferSize = stream.size();
 	byte *inBuffer = new byte[inBufferSize];
 	stream.read(inBuffer, inBufferSize);
 

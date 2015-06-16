@@ -86,7 +86,7 @@ void ButtonsGroup::setActive(WidgetButton *button) {
 	}
 }
 
-void ButtonsGroup::setActive(uint button) {
+void ButtonsGroup::setActive(size_t button) {
 	if (button >= _buttonsList.size())
 		error("Wrong ID buttons");
 
@@ -99,7 +99,7 @@ void ButtonsGroup::setAllInactive() {
 		(*it)->setPressed(false);
 }
 
-uint ButtonsGroup::getChoice() const {
+size_t ButtonsGroup::getChoice() const {
 	for (std::vector<WidgetButton *>::const_iterator it = _buttonsList.begin(); it != _buttonsList.end(); ++it) {
 		if ((*it)->isPressed()) {
 			return std::distance(_buttonsList.begin(), it);

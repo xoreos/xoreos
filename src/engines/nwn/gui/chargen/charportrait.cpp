@@ -166,7 +166,7 @@ const std::vector<Common::UString> CharPortrait::initPortraitList() {
 	std::vector<Common::UString> portraits;
 	std::vector<Common::UString> racePortraits;
 
-	for (uint po = 0; po < twodaPortraits.getRowCount(); ++po) {
+	for (size_t po = 0; po < twodaPortraits.getRowCount(); ++po) {
 		const Aurora::TwoDARow &rowPortrait = twodaPortraits.getRow(po);
 
 		if (rowPortrait.empty("plot"))

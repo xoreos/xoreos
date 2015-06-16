@@ -186,9 +186,9 @@ void Bink::processData() {
 
 	_bink->seek(frame.offset);
 
-	uint32 frameSize = frame.size;
+	size_t frameSize = frame.size;
 
-	for (uint32 i = 0; i < _audioTracks.size(); i++) {
+	for (size_t i = 0; i < _audioTracks.size(); i++) {
 		AudioTrack &audio = _audioTracks[i];
 
 		uint32 audioPacketLength = _bink->readUint32LE();
@@ -199,8 +199,8 @@ void Bink::processData() {
 			throw Common::Exception("Audio packet too big for the frame");
 
 		if (audioPacketLength >= 4) {
-			uint32 audioPacketStart = _bink->pos();
-			uint32 audioPacketEnd   = _bink->pos() + audioPacketLength;
+			size_t audioPacketStart = _bink->pos();
+			size_t audioPacketEnd   = _bink->pos() + audioPacketLength;
 
 			if (i == _audioTrack) {
 				// Only play one audio track
@@ -224,8 +224,8 @@ void Bink::processData() {
 		}
 	}
 
-	uint32 videoPacketStart = _bink->pos();
-	uint32 videoPacketEnd   = _bink->pos() + frameSize;
+	size_t videoPacketStart = _bink->pos();
+	size_t videoPacketEnd   = _bink->pos() + frameSize;
 
 	frame.bits =
 		new Common::BitStream32LELSB(new Common::SeekableSubReadStream(_bink,

@@ -152,7 +152,7 @@ public:
 	void removeAssociate(Creature &ssociate);
 
 	/** Get this creature's nth's associate of a specific type. */
-	Creature *getAssociate(AssociateType type, int nth = 1) const;
+	Creature *getAssociate(AssociateType type, size_t nth = 1) const;
 
 	/** Return the creature's master. */
 	Creature *getMaster() const;

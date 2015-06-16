@@ -145,8 +145,8 @@ void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
 	int curHeight = GfxMan.getScreenHeight();
 
 	// Find the max allowed resolution in the list
-	uint maxRes = 0;
-	for (uint i = 0; i < _resolutions.size(); i++) {
+	size_t maxRes = 0;
+	for (size_t i = 0; i < _resolutions.size(); i++) {
 		if ((_resolutions[i].width <= maxWidth) && (_resolutions[i].height <= maxHeight)) {
 			maxRes = i;
 			break;
@@ -154,8 +154,8 @@ void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
 	}
 
 	// Find the current resolution in the list
-	uint currentResolution = 0xFFFFFFFF;
-	for (uint i = maxRes; i < _resolutions.size(); i++) {
+	size_t currentResolution = SIZE_MAX;
+	for (size_t i = maxRes; i < _resolutions.size(); i++) {
 		if ((_resolutions[i].width == curWidth) && (_resolutions[i].height == curHeight)) {
 			currentResolution = i - maxRes;
 			break;
@@ -163,13 +163,13 @@ void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
 	}
 
 	// Doesn't exist, add it at the top
-	if (currentResolution == 0xFFFFFFFF) {
+	if (currentResolution == SIZE_MAX) {
 		currentResolution = 0;
 		_useableResolutions.push_back(Resolution(curWidth, curHeight));
 	}
 
 	// Put the rest of the useable resolutions into the list
-	for (uint i = maxRes; i < _resolutions.size(); i++)
+	for (size_t i = maxRes; i < _resolutions.size(); i++)
 		_useableResolutions.push_back(_resolutions[i]);
 
 
@@ -185,7 +185,7 @@ void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
 	resList.select(currentResolution);
 }
 
-void OptionsResolutionMenu::setResolution(uint n) {
+void OptionsResolutionMenu::setResolution(size_t n) {
 	if (n >= _useableResolutions.size())
 		return;
 

@@ -33,7 +33,7 @@ namespace Aurora {
 
 namespace NWScript {
 
-Signature createSignature(int n, ...) {
+Signature createSignature(size_t n, ...) {
 	Signature signature;
 
 	signature.reserve(n);
@@ -50,7 +50,7 @@ Signature createSignature(int n, ...) {
 	return signature;
 }
 
-Parameters createDefaults(int n, ...) {
+Parameters createDefaults(size_t n, ...) {
 	Parameters defaults;
 
 	defaults.reserve(n);

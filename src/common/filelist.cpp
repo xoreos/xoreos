@@ -63,7 +63,7 @@ bool FileList::empty() const {
 	return _files.empty();
 }
 
-uint32 FileList::size() const {
+size_t FileList::size() const {
 	return _files.size();
 }
 

@@ -59,7 +59,7 @@ public:
 
 	bool empty();
 
-	uint getLineCount() const;
+	size_t getLineCount() const;
 
 	float getWidth()  const;
 	float getHeight() const;
@@ -76,7 +76,7 @@ private:
 	float _x;
 	float _y;
 
-	uint32 _lineCount;
+	size_t _lineCount;
 
 	float _width;
 	float _height;

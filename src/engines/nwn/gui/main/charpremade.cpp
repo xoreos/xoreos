@@ -233,7 +233,7 @@ void CharPremadeMenu::initCharacterList() {
 
 static const Common::UString kStringEmpty;
 const Common::UString &CharPremadeMenu::getSelectedCharacter() {
-	uint n = getListBox("ButtonList", true)->getSelected();
+	size_t n = getListBox("ButtonList", true)->getSelected();
 	if (n >= _characters.size())
 		return kStringEmpty;
 

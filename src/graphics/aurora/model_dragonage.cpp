@@ -91,7 +91,7 @@ using ::Aurora::kFileTypeMAO;
 
 using namespace ::Aurora::GFF4FieldNamesEnum;
 
-static const GFF4Struct *getChild(const GFF4Struct &children, uint i) {
+static const GFF4Struct *getChild(const GFF4Struct &children, size_t i) {
 	bool isList;
 	GFF4Struct::FieldType type = children.getFieldType(i, isList);
 	if ((type != GFF4Struct::kFieldTypeStruct) || isList)
@@ -217,7 +217,7 @@ void Model_DragonAge::load(ParserContext &ctx) {
 	newState(ctx);
 
 	// Create root nodes
-	for (uint i = 0; i < rootNodes->getFieldCount(); i++) {
+	for (size_t i = 0; i < rootNodes->getFieldCount(); i++) {
 		const GFF4Struct *nodeGFF = getChild(*rootNodes, i);
 		if (!isType(nodeGFF, kNODEID))
 			continue;
@@ -499,7 +499,7 @@ void ModelNode_DragonAge::readTransformation(const GFF4Struct &nodeGFF) {
 	if (!children)
 		return;
 
-	for (uint i = 0; i < children->getFieldCount(); i++) {
+	for (size_t i = 0; i < children->getFieldCount(); i++) {
 		const GFF4Struct *childGFF = getChild(*children, i);
 
 		if        (isType(childGFF, kTRSLID)) {
@@ -531,7 +531,7 @@ void ModelNode_DragonAge::readChildren(Model_DragonAge::ParserContext &ctx, cons
 	if (!children)
 		return;
 
-	for (uint i = 0; i < children->getFieldCount(); i++) {
+	for (size_t i = 0; i < children->getFieldCount(); i++) {
 		const GFF4Struct *childGFF = getChild(*children, i);
 		if (!isType(childGFF, kNODEID) && !isType(childGFF, kMSHHID) && !isType(childGFF, kCRSTID))
 			continue;
@@ -620,14 +620,14 @@ void ModelNode_DragonAge::createIndexBuffer(const GFF4Struct &meshChunk,
 void ModelNode_DragonAge::createVertexBuffer(const GFF4Struct &meshChunk,
 		Common::SeekableReadStream &vertexData, const MeshDeclarations &meshDecl) {
 
-	const uint32 vertexPos    = vertexData.pos();
+	const size_t vertexPos    = vertexData.pos();
 	const uint32 vertexSize   = meshChunk.getUint(kGFF4MeshChunkVertexSize);
 	const uint32 vertexCount  = meshChunk.getUint(kGFF4MeshChunkVertexCount);
 	const uint32 vertexOffset = meshChunk.getUint(kGFF4MeshChunkVertexOffset);
 
 	VertexDecl vertexDecl;
 
-	uint textureCount = 0;
+	size_t textureCount = 0;
 	for (MeshDeclarations::const_iterator d = meshDecl.begin(); d != meshDecl.end(); ++d) {
 		switch (d->use) {
 			case kMeshDeclUsePosition:

@@ -63,7 +63,7 @@ bool DebugManager::addDebugChannel(uint32 channel, const UString &name,
 		return false;
 
 	int index = intLog2(channel);
-	if ((index < 0) || ((uint)index >= kChannelCount))
+	if ((index < 0) || ((size_t)index >= kChannelCount))
 		return false;
 
 	if (!_channels[index].name.empty())
@@ -146,7 +146,7 @@ bool DebugManager::isEnabled(uint32 level, uint32 channel) const {
 		return false;
 
 	int index = intLog2(channel);
-	if ((index < 0) || ((uint)index >= kChannelCount))
+	if ((index < 0) || ((size_t)index >= kChannelCount))
 		return false;
 
 	return _channels[index].enabled;

@@ -348,7 +348,7 @@ void XboxMediaVideo::processPacketHeader(Packet &packet) {
 	// Packet audio header
 
 	packet.audio.resize(_audioTracks.size());
-	for (uint i = 0; i < packet.audio.size(); i++) {
+	for (size_t i = 0; i < packet.audio.size(); i++) {
 		PacketAudio &audioHeader = packet.audio[i];
 
 		byte audioHeaderData[4];
@@ -367,12 +367,12 @@ void XboxMediaVideo::processPacketHeader(Packet &packet) {
 
 	// Packet data offsets
 
-	uint32 dataOffset = _xmv->pos();
+	size_t dataOffset = _xmv->pos();
 
 	packet.video.dataOffset = dataOffset;
 	dataOffset += packet.video.dataSize;
 
-	for (uint i = 0; i < packet.audio.size(); i++) {
+	for (size_t i = 0; i < packet.audio.size(); i++) {
 		packet.audio[i].dataOffset = dataOffset;
 		dataOffset += packet.audio[i].dataSize;
 	}

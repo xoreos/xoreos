@@ -97,7 +97,7 @@ void ABCFont::load(const Common::UString &name) {
 
 	try {
 		if (abc->size() != 524280)
-			throw Common::Exception("Invalid font (%d)", abc->size());
+			throw Common::Exception("Invalid font (%u)", (uint)abc->size());
 
 		_base = abc->readByte();
 

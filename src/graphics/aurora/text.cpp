@@ -122,7 +122,7 @@ bool Text::empty() {
 	return _str.empty();
 }
 
-uint32 Text::getLineCount() const {
+size_t Text::getLineCount() const {
 	return _lineCount;
 }
 

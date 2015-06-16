@@ -124,7 +124,7 @@ void IFOFile::load() {
 	ifoTop.getLocString("Mod_Description", _description);
 
 	// ID
-	uint idSize = _isSave ? 32 : 16;
+	size_t idSize = _isSave ? 32 : 16;
 	Common::SeekableReadStream *id = ifoTop.getData("Mod_ID");
 	if (id && (id->read(_id, idSize) != idSize))
 		throw Common::Exception("Can't read MOD ID");

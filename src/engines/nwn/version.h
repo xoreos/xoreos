@@ -85,8 +85,8 @@ private:
 	bool detectMacOSX (const Common::UString &directory);
 	bool detectLinux  (const Common::UString &directory);
 
-	byte *readFile(const Common::UString &directory, const Common::UString &file, uint32 &size);
-	byte *readFile(const Common::UString &path, uint32 &size);
+	byte *readFile(const Common::UString &directory, const Common::UString &file, size_t &size);
+	byte *readFile(const Common::UString &path, size_t &size);
 };
 
 } // End of namespace NWN

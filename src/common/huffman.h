@@ -36,7 +36,7 @@ class BitStream;
 
 struct HuffmanTable {
 	uint8  maxLength; ///< Maximal code length. If 0, it's searched for.
-	uint32 codeCount; ///< Number of codes.
+	size_t codeCount; ///< Number of codes.
 
 	const uint32 *codes;   ///< The actual codes.
 	const uint8  *lengths; ///< The lengths of the individual codes.
@@ -54,7 +54,7 @@ public:
 	 *  @param lengths Lengths of the individual codes.
 	 *  @param symbols The symbols. If 0, assume they are identical to the code indices.
 	 */
-	Huffman(uint8 maxLength, uint32 codeCount, const uint32 *codes,
+	Huffman(uint8 maxLength, size_t codeCount, const uint32 *codes,
 	        const uint8 *lengths, const uint32 *symbols = 0);
 	Huffman(const HuffmanTable &table);
 	~Huffman();
@@ -83,7 +83,7 @@ private:
 	/** Sorted list of pointers to the symbols. */
 	SymbolList _symbols;
 
-	void init(uint8 maxLength, uint32 codeCount, const uint32 *codes,
+	void init(uint8 maxLength, size_t codeCount, const uint32 *codes,
 	          const uint8 *lengths, const uint32 *symbols);
 };
 

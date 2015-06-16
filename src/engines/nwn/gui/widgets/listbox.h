@@ -50,14 +50,14 @@ public:
 	WidgetListItem(::Engines::GUI &gui);
 	~WidgetListItem();
 
-	void mouseUp  (uint8 state, float x, float y);
+	void mouseUp   (uint8 state, float x, float y);
 	void mouseWheel(uint8 state, int x, int y);
 
 	void mouseDblClick(uint8 state, float x, float y);
 
 	void select();
 
-	uint getItemNumber() const;
+	size_t getItemNumber() const;
 
 protected:
 	bool getState();
@@ -68,7 +68,7 @@ protected:
 	void signalGroupMemberActive();
 
 private:
-	uint _itemNumber;
+	size_t _itemNumber;
 	bool _state;
 
 	friend class WidgetListBox;
@@ -133,15 +133,15 @@ public:
 
 	void lock();
 	void clear();
-	void reserve(uint n);
+	void reserve(size_t n);
 	void add(WidgetListItem *item);
 	void unlock();
 
 	void setText(const Common::UString &font, const Common::UString &text,
 	             float spacing = 0.0);
 
-	void select(uint item);
-	uint getSelected() const;
+	void select(size_t item);
+	size_t getSelected() const;
 	WidgetListItem *getSelectedItem() const;
 
 	bool wasDblClicked();
@@ -155,8 +155,8 @@ protected:
 	virtual void updateScrollbarLength();
 	virtual void updateScrollbarPosition();
 
-	virtual void scrollUp(uint n);
-	virtual void scrollDown(uint n);
+	virtual void scrollUp(size_t n);
+	virtual void scrollDown(size_t n);
 
 	virtual void updateVisible();
 
@@ -170,8 +170,8 @@ protected:
 	std::vector<WidgetListItem *> _items;
 	std::vector<WidgetListItem *> _visibleItems;
 
-	uint _startItem;
-	uint _selectedItem;
+	size_t _startItem;
+	size_t _selectedItem;
 	WidgetButton    *_up;
 	WidgetButton    *_down;
 	WidgetScrollbar *_scrollbar;

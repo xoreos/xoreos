@@ -90,42 +90,42 @@ public:
 	bool hasIndex() const;
 	bool hasMemo () const;
 
-	uint32 getFieldCount () const;
-	uint32 getRecordCount() const;
+	size_t getFieldCount () const;
+	size_t getRecordCount() const;
 
 	const std::vector<Field>  &getFields () const;
 	const std::vector<Record> &getRecords() const;
 
-	UString getString(const Record &record, uint32 field) const;
-	int32   getInt   (const Record &record, uint32 field) const;
-	bool    getBool  (const Record &record, uint32 field) const;
-	double  getDouble(const Record &record, uint32 field) const;
+	UString getString(const Record &record, size_t field) const;
+	int32   getInt   (const Record &record, size_t field) const;
+	bool    getBool  (const Record &record, size_t field) const;
+	double  getDouble(const Record &record, size_t field) const;
 
-	boost::gregorian::date getDate(const Record &record, uint32 field) const;
+	boost::gregorian::date getDate(const Record &record, size_t field) const;
 
-	SeekableReadStream *getMemo(const Record &record, uint32 field) const;
-
-
-	void deleteRecord(uint32 record);
-
-	uint32 addFieldString(const UString &name, uint8 size);
-	uint32 addFieldNumber(const UString &name, uint8 size, uint8 decimals);
-	uint32 addFieldInt   (const UString &name);
-	uint32 addFieldBool  (const UString &name);
-	uint32 addFieldDate  (const UString &name);
-	uint32 addFieldMemo  (const UString &name);
-
-	uint32 addRecord();
+	SeekableReadStream *getMemo(const Record &record, size_t field) const;
 
 
-	void setString(uint32 record, uint32 field, const UString &value);
-	void setInt   (uint32 record, uint32 field, int32 value);
-	void setBool  (uint32 record, uint32 field, bool value);
-	void setDouble(uint32 record, uint32 field, double value);
+	void deleteRecord(size_t record);
 
-	void setDate(uint32 record, uint32 field, const boost::gregorian::date &value);
+	size_t addFieldString(const UString &name, uint8 size);
+	size_t addFieldNumber(const UString &name, uint8 size, uint8 decimals);
+	size_t addFieldInt   (const UString &name);
+	size_t addFieldBool  (const UString &name);
+	size_t addFieldDate  (const UString &name);
+	size_t addFieldMemo  (const UString &name);
 
-	void setMemo(uint32 record, uint32 field, SeekableReadStream *value = 0);
+	size_t addRecord();
+
+
+	void setString(size_t record, size_t field, const UString &value);
+	void setInt   (size_t record, size_t field, int32 value);
+	void setBool  (size_t record, size_t field, bool value);
+	void setDouble(size_t record, size_t field, double value);
+
+	void setDate(size_t record, size_t field, const boost::gregorian::date &value);
+
+	void setMemo(size_t record, size_t field, SeekableReadStream *value = 0);
 
 private:
 	boost::gregorian::date _lastUpdate;
@@ -157,7 +157,7 @@ private:
 	void addField(uint8 size);
 	void updateUpdate();
 
-	static bool getInt(const byte *data, uint32 size, int32 &i);
+	static bool getInt(const byte *data, size_t size, int32 &i);
 };
 
 } // End of namespace Common

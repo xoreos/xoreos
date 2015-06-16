@@ -49,8 +49,8 @@ static bool isBigEndian(Common::SeekableReadStream &stream) {
 }
 
 Common::SeekableSubReadStreamEndian *NitroFile::open(Common::SeekableReadStream &stream) {
-	const uint32 begin = stream.pos();
-	const uint32 end   = stream.size();
+	const size_t begin = stream.pos();
+	const size_t end   = stream.size();
 
 	const bool bigEndian = isBigEndian(stream);
 
@@ -58,8 +58,8 @@ Common::SeekableSubReadStreamEndian *NitroFile::open(Common::SeekableReadStream 
 }
 
 Common::SeekableSubReadStreamEndian *NitroFile::open(Common::SeekableReadStream *stream) {
-	const uint32 begin = stream->pos();
-	const uint32 end   = stream->size();
+	const size_t begin = stream->pos();
+	const size_t end   = stream->size();
 
 	bool bigEndian = false;
 	try {

@@ -71,8 +71,8 @@ void CharClass::hide() {
 	// Set previous choice if any.
 
 		// Get previous choice.
-		uint previousChoice = 0;
-		for (uint it = 0; it < _classesId.size(); ++it) {
+		size_t previousChoice = 0;
+		for (size_t it = 0; it < _classesId.size(); ++it) {
 			if (_classesId[it] == _choices->getClass()) {
 					previousChoice = it;
 					break;
@@ -96,7 +96,7 @@ void CharClass::createClassList() {
 	_helpTexts.clear();
 
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("classes");
-	for (uint it = 0; it < twoda.getRowCount(); ++it) {
+	for (size_t it = 0; it < twoda.getRowCount(); ++it) {
 		const Aurora::TwoDARow &row = twoda.getRow(it);
 		if (row.getInt("PlayerClass") == 0)
 			continue;

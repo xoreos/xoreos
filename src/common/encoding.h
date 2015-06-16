@@ -59,13 +59,13 @@ enum Encoding {
 UString readString(SeekableReadStream &stream, Encoding encoding);
 
 /** Read length bytes as a string with the given encoding out of a stream. */
-UString readStringFixed(SeekableReadStream &stream, Encoding encoding, uint32 length);
+UString readStringFixed(SeekableReadStream &stream, Encoding encoding, size_t length);
 
 /** Read a line with the given encoding out of a stream. */
 UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 
 /** Read a string with the given encoding from the raw buffer. */
-UString readString(const byte *data, uint32 size, Encoding encoding);
+UString readString(const byte *data, size_t size, Encoding encoding);
 
 /** Convert a string into the given encoding. */
 SeekableReadStream *convertString(const UString &str, Encoding encoding);
@@ -74,7 +74,7 @@ SeekableReadStream *convertString(const UString &str, Encoding encoding);
  *
  *  Note: This will throw on encodings with a variable number of bytes per codepoint.
  */
-uint32 getBytesPerCodepoint(Encoding encoding);
+size_t getBytesPerCodepoint(Encoding encoding);
 
 } // End of namespace Common
 

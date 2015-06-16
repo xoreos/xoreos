@@ -373,7 +373,7 @@ void NWNEngine::declareBogusTextures() {
 		"torso_g"
 	};
 
-	for (uint i = 0; i < ARRAYSIZE(kBogusTextures); i++)
+	for (size_t i = 0; i < ARRAYSIZE(kBogusTextures); i++)
 		TextureMan.addBogusTexture(kBogusTextures[i]);
 }
 

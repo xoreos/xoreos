@@ -76,7 +76,7 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 	if ((_version != kVersion1) && (_version != kVersion11))
 		throw Common::Exception("Unsupported SSF file version %s", Common::debugTag(_version).c_str());
 
-	uint32 entryCount = 0;
+	size_t entryCount = 0;
 	if (_version == kVersion1)
 		entryCount = ssf.readUint32LE();
 
@@ -111,16 +111,16 @@ void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
 	// V1.0 begins with a list of offsets to the data entries.
 	// Each data entry has a ResRef of a sound file and a StrRef of a text.
 
-	uint32 count = _sounds.size();
+	size_t count = _sounds.size();
 
 	std::vector<uint32> offsets;
 
 	offsets.resize(count);
 
-	for (uint32 i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		offsets[i] = ssf.readUint32LE();
 
-	for (uint32 i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		ssf.seek(offsets[i]);
 
 		_sounds[i].fileName = Common::readStringFixed(ssf, Common::kEncodingASCII, 16);

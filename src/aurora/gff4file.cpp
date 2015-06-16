@@ -313,7 +313,7 @@ uint32 GFF4Struct::getLabel() const {
 // --- Loader ---
 
 void GFF4Struct::load(GFF4File &parent, uint32 offset, const GFF4File::StructTemplate &tmplt) {
-	for (uint32 i = 0; i < tmplt.fields.size(); i++) {
+	for (size_t i = 0; i < tmplt.fields.size(); i++) {
 		const GFF4File::StructTemplate::Field &field = tmplt.fields[i];
 
 		// Calculate the offset for the field data, but guard against NULL pointers
@@ -404,7 +404,7 @@ void GFF4Struct::load(GFF4File &parent, const Field &genericParent) {
 
 // --- Field properties ---
 
-uint GFF4Struct::getFieldCount() const {
+size_t GFF4Struct::getFieldCount() const {
 	return _fieldCount;
 }
 
@@ -691,19 +691,19 @@ double GFF4Struct::getDouble(Common::SeekableReadStream &data, IFieldType type) 
 Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::Encoding encoding) const {
 	/* When the string is encoded in UTF-8, then length field specifies the length in bytes.
 	 * Otherwise, it's the length in characters. */
-	const uint32 lengthMult = encoding == Common::kEncodingUTF8 ? 1 : Common::getBytesPerCodepoint(encoding);
+	const size_t lengthMult = encoding == Common::kEncodingUTF8 ? 1 : Common::getBytesPerCodepoint(encoding);
 
-	const uint32 offset = data.pos();
+	const size_t offset = data.pos();
 
 	const uint32 length = data.readUint32LE();
-	const uint32 size   = length * lengthMult;
+	const size_t size   = length * lengthMult;
 
 	try {
 		return readStringFixed(data, encoding, size);
 	} catch (...) {
 	}
 
-	return Common::UString::format("GFF4: Invalid string encoding (0x%08X)", offset);
+	return Common::UString::format("GFF4: Invalid string encoding (0x%08X)", (uint) offset);
 }
 
 Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::Encoding encoding,

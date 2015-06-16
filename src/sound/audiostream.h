@@ -114,7 +114,7 @@ public:
 	 * @param loops How often to loop (0 = infinite)
 	 * @param disposeAfterUse Destroy the stream after the LoopingAudioStream has finished playback.
 	 */
-	LoopingAudioStream(RewindableAudioStream *stream, uint loops, bool disposeAfterUse = true);
+	LoopingAudioStream(RewindableAudioStream *stream, size_t loops, bool disposeAfterUse = true);
 	~LoopingAudioStream();
 
 	int readBuffer(int16 *buffer, const int numSamples);
@@ -124,13 +124,13 @@ public:
 	int getRate() const { return _parent->getRate(); }
 
 	/** Returns number of loops the stream has played. */
-	uint getCompleteIterations() const { return _completeIterations; }
+	size_t getCompleteIterations() const { return _completeIterations; }
 private:
 	RewindableAudioStream *_parent;
 	bool _disposeAfterUse;
 
-	uint _loops;
-	uint _completeIterations;
+	size_t _loops;
+	size_t _completeIterations;
 };
 
 /**
@@ -145,7 +145,7 @@ private:
  * @param loops How often to loop (0 = infinite)
  * @return A new AudioStream, which offers the desired functionality.
  */
-AudioStream *makeLoopingAudioStream(RewindableAudioStream *stream, uint loops);
+AudioStream *makeLoopingAudioStream(RewindableAudioStream *stream, size_t loops);
 
 class QueuingAudioStream : public AudioStream {
 public:
@@ -170,7 +170,7 @@ public:
 	 * Return the number of streams still queued for playback (including
 	 * the currently playing stream).
 	 */
-	virtual uint32 numQueuedStreams() const = 0;
+	virtual size_t numQueuedStreams() const = 0;
 };
 
 /**

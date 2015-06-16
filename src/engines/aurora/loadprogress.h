@@ -51,7 +51,7 @@ public:
 	 *  - Step 3:  75%
 	 *  - Step 4: 100%
 	 */
-	LoadProgress(uint steps);
+	LoadProgress(size_t steps);
 	~LoadProgress();
 
 	/** Take a step in advancing the progress. */
@@ -61,8 +61,8 @@ private:
 	/** The length of the progress bar in characters. */
 	static const int kBarLength = 50;
 
-	uint _steps;       ///< The number of total steps.
-	uint _currentStep; ///< The current step we're on.
+	size_t _steps;       ///< The number of total steps.
+	size_t _currentStep; ///< The current step we're on.
 
 	double _stepAmount;    ///< The amount to step each time.
 	double _currentAmount; ///< The accumulated amount.
@@ -79,9 +79,9 @@ private:
 	Graphics::Aurora::Text *_percent;
 
 
-	static Common::UString createProgressbar(uint length, double filled);
-	static Common::UString createProgressbarUpper(uint length);
-	static Common::UString createProgressbarLower(uint length);
+	static Common::UString createProgressbar(size_t length, double filled);
+	static Common::UString createProgressbarUpper(size_t length);
+	static Common::UString createProgressbarLower(size_t length);
 };
 
 } // End of namespace Engines

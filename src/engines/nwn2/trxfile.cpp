@@ -112,7 +112,7 @@ void TRXFile::load(Common::SeekableReadStream &trx) {
 		throw Common::Exception("Invalid version %d.%d", versionMajor, versionMinor);
 
 	uint32 packetCount = trx.readUint32LE();
-	if ((uint)(trx.size() - trx.pos()) < (packetCount * 8))
+	if ((trx.size() - trx.pos()) < (packetCount * 8))
 		throw Common::Exception("TRX won't fit the packet packets");
 
 	std::vector<Packet> packets;
@@ -127,7 +127,7 @@ void TRXFile::loadDirectory(Common::SeekableReadStream &trx, std::vector<Packet>
 		p->type   = trx.readUint32BE();
 		p->offset = trx.readUint32LE();
 
-		if (p->offset >= (uint)trx.size())
+		if (p->offset >= trx.size())
 			throw Common::Exception("Offset of 0x%08X packet too big (%d)", p->type, p->offset);
 	}
 }
@@ -141,7 +141,7 @@ void TRXFile::loadPackets(Common::SeekableReadStream &trx, std::vector<Packet> &
 			throw Common::Exception("Packet type mismatch (0x%08X vs 0x%08)", type, p->type);
 
 		p->size = trx.readUint32LE();
-		if ((uint)(trx.size() - trx.pos()) < p->size)
+		if ((trx.size() - trx.pos()) < p->size)
 			throw Common::Exception("Size of 0x%8X packet too big (%d)", p->type, p->size);
 
 		loadPacket(trx, *p);

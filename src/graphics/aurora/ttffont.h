@@ -84,7 +84,7 @@ private:
 		float tX[4], tY[4];
 		float vX[4], vY[4];
 
-		uint page;
+		size_t page;
 	};
 
 

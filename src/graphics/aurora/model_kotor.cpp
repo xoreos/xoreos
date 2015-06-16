@@ -229,7 +229,7 @@ void Model_KotOR::readStrings(Common::SeekableReadStream &mdl,
 		const std::vector<uint32> &offsets, uint32 offset,
 		std::vector<Common::UString> &strings) {
 
-	uint32 pos = mdl.pos();
+	size_t pos = mdl.pos();
 
 	strings.reserve(offsets.size());
 	for (std::vector<uint32>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
@@ -414,7 +414,7 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 }
 
 void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
-	uint32 P = ctx.mdl->pos();
+	size_t P = ctx.mdl->pos();
 
 	ctx.mdl->skip(8); // Function pointers
 

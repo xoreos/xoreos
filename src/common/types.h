@@ -29,6 +29,9 @@
 	#include "config.h"
 #endif
 
+#include <stddef.h>
+#include <limits.h>
+
 #ifdef HAVE_STDINT_H
 	#include <stdint.h>
 #endif // HAVE_STDINT_H
@@ -69,6 +72,10 @@
 #else
 	// TODO: Add a fall-back type detection to the configure script
 	#error No way to derive fixed-width variable types
+#endif
+
+#ifndef SIZE_MAX
+	#define SIZE_MAX ((size_t) -1)
 #endif
 
 typedef uint8 byte;

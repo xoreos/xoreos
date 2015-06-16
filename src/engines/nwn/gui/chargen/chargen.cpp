@@ -57,7 +57,7 @@ CharGenMenu::CharGenMenu(Module &module, ::Engines::Console *console) :
 }
 
 CharGenMenu::~CharGenMenu() {
-	for (uint it = 0; it < _chargenGuis.size(); ++it)
+	for (size_t it = 0; it < _chargenGuis.size(); ++it)
 		delete _chargenGuis[it];
 
 	delete _choices;
@@ -74,14 +74,14 @@ void CharGenMenu::reset() {
 }
 
 void CharGenMenu::callbackActive(Widget &widget) {
-	for (uint it = 0; it < _chargenGuis.size(); ++it) {
+	for (size_t it = 0; it < _chargenGuis.size(); ++it) {
 		if (widget.getTag() == _charButtons[it]->getTag()) {
 			if (sub(*_chargenGuis[it]) == 2) {
 				if (it == _chargenGuis.size() - 1)
 					return;
 				_charButtons[it + 1]->setDisabled(false);
 				_chargenGuis[it + 1]->reset();
-				for (uint next = it + 2; next < _charButtons.size(); ++next) {
+				for (size_t next = it + 2; next < _charButtons.size(); ++next) {
 					_charButtons[next]->setDisabled(true);
 					_chargenGuis[next]->reset();
 				}

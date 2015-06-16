@@ -90,7 +90,7 @@ enum RenderPass {
 };
 
 struct ColorPosition {
-	uint32 position;
+	size_t position;
 
 	bool defaultColor;
 

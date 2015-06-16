@@ -80,9 +80,9 @@ void FunctionContext::setSignature(const Signature &signature) {
 void FunctionContext::setDefaults(const Parameters &defaults) {
 	assert(defaults.size() <= _parameters.size());
 
-	int start = _parameters.size() - defaults.size();
+	size_t start = _parameters.size() - defaults.size();
 
-	for (uint i = 0; i < defaults.size(); i++, start++) {
+	for (size_t i = 0; i < defaults.size(); i++, start++) {
 		      Variable &param = _parameters[start];
 		const Variable &def   = defaults[i];
 
@@ -94,19 +94,19 @@ void FunctionContext::setDefaults(const Parameters &defaults) {
 	_defaultCount = defaults.size();
 }
 
-uint32 FunctionContext::getParamMin() const {
+size_t FunctionContext::getParamMin() const {
 	return _parameters.size() - _defaultCount;
 }
 
-uint32 FunctionContext::getParamMax() const {
+size_t FunctionContext::getParamMax() const {
 	return _parameters.size();
 }
 
-void FunctionContext::setParamsSpecified(uint32 params) {
+void FunctionContext::setParamsSpecified(size_t params) {
 	_paramsSpecified = params;
 }
 
-uint32 FunctionContext::getParamsSpecified() const {
+size_t FunctionContext::getParamsSpecified() const {
 	return _paramsSpecified;
 }
 

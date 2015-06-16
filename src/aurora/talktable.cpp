@@ -45,7 +45,7 @@ TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, Common::Encoding enc
 	if (!tlk)
 		return 0;
 
-	uint32 pos = tlk->pos();
+	size_t pos = tlk->pos();
 
 	uint32 id, version;
 	bool utf16le;

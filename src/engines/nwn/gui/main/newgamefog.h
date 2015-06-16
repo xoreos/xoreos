@@ -37,7 +37,7 @@ namespace NWN {
 
 class NewGameFogs {
 public:
-	NewGameFogs(uint count);
+	NewGameFogs(size_t count);
 	~NewGameFogs();
 
 	void show();

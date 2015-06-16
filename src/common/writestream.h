@@ -50,7 +50,7 @@ public:
 	 *  @param  dataSize number of bytes to be written.
 	 *  @return the number of bytes which were actually written.
 	 */
-	virtual uint32 write(const void *dataPtr, uint32 dataSize) = 0;
+	virtual size_t write(const void *dataPtr, size_t dataSize) = 0;
 
 	/** Commit any buffered data to the underlying channel or
 	 *  storage medium; unbuffered streams can use the default
@@ -149,10 +149,10 @@ public:
 	}
 
 	/** Copy n bytes of the given stream into the stream. */
-	uint32 writeStream(ReadStream &stream, uint32 n);
+	size_t writeStream(ReadStream &stream, size_t n);
 
 	/** Copy the complete contents of the given stream. */
-	uint32 writeStream(ReadStream &stream);
+	size_t writeStream(ReadStream &stream);
 
 	/** Write the given string to the stream. No terminating zero byte is written. */
 	void writeString(const UString &str);

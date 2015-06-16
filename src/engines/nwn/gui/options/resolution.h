@@ -62,7 +62,7 @@ private:
 	void initResolutions();
 	void initResolutionsBox(WidgetListBox &resList);
 
-	void setResolution(uint n);
+	void setResolution(size_t n);
 
 	void adoptChanges();
 	void revertChanges();

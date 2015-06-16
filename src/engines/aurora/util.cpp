@@ -150,7 +150,7 @@ bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileN
 	if (!file.open(fileName))
 		return false;
 
-	uint32 pos = stream.pos();
+	size_t pos = stream.pos();
 	try {
 		stream.seek(0);
 

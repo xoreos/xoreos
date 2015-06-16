@@ -38,8 +38,8 @@
 namespace Common {
 
 void printDataHex(SeekableReadStream &stream) {
-	uint32 pos  = stream.pos();
-	uint32 size = stream.size() - pos;
+	size_t pos  = stream.pos();
+	size_t size = stream.size() - pos;
 
 	if (size == 0)
 		return;
@@ -49,7 +49,7 @@ void printDataHex(SeekableReadStream &stream) {
 
 	while (size > 0) {
 		// At max 16 bytes printed per row
-		uint32 n = MIN<uint32>(size, 16);
+		uint32 n = MIN<size_t>(size, 16);
 		if (stream.read(rowData, n) != n)
 			throw Exception(kReadError);
 
@@ -89,7 +89,7 @@ void printDataHex(SeekableReadStream &stream) {
 	stream.seek(pos);
 }
 
-void printDataHex(const byte *data, uint32 size) {
+void printDataHex(const byte *data, size_t size) {
 	if (!data || (size == 0))
 		return;
 

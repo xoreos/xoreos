@@ -192,10 +192,10 @@ void CharAlignment::setRestrict() {
 }
 
 void CharAlignment::getAlignment() {
-	uint button = _buttons->getChoice();
+	size_t button = _buttons->getChoice();
 
-	float point[3] = { 0, 100, 50 };
-	uint  rest     = button % 3;
+	float  point[3] = { 0, 100, 50 };
+	size_t rest     = button % 3;
 	_goodness = point[rest];
 	_loyalty  = point[(button - rest) / 3];
 }

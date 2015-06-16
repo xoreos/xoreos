@@ -89,7 +89,7 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 	nds.seek(offset + 8);
 
 	uint32 index = 0;
-	while (((uint32) nds.pos()) < (offset + length)) {
+	while (((size_t)nds.pos()) < (offset + length)) {
 		Resource res;
 
 		byte nameLength = nds.readByte();

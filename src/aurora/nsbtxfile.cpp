@@ -251,7 +251,7 @@ const NSBTXFile::Palette *NSBTXFile::findPalette(const Texture &texture) const {
 void NSBTXFile::getPalette(ReadContext &ctx) const {
 	static const uint16 kPaletteSize[] = { 0, 32, 4, 16, 256, 256, 8,  0 };
 
-	const uint16 size = kPaletteSize[(int)ctx.texture->format] * 3;
+	const uint16 size = kPaletteSize[(size_t)ctx.texture->format] * 3;
 	if (size == 0)
 		return;
 

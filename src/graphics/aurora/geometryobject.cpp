@@ -173,12 +173,12 @@ void GeometryObject::render(RenderPass pass) {
 
 	const VertexDecl &vertexDecl = _vertexBuffer.getVertexDecl();
 
-	for (uint32 i = 0; i < vertexDecl.size(); i++)
+	for (size_t i = 0; i < vertexDecl.size(); i++)
 		EnableVertexAttrib(vertexDecl[i]);
 
 	glDrawElements(GL_TRIANGLES, _indexBuffer.getCount(), _indexBuffer.getType(), _indexBuffer.getData());
 
-	for (uint32 i = 0; i < vertexDecl.size(); i++)
+	for (size_t i = 0; i < vertexDecl.size(); i++)
 		DisableVertexAttrib(vertexDecl[i]);
 }
 

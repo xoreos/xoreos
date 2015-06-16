@@ -84,7 +84,7 @@ void CharGenChoices::setCharRace(uint32 race) {
 	const Aurora::TwoDAFile &twodaFeatRace = TwoDAReg.get2DA(
 		twodaRace.getRow(race).getString("FeatsTable"));
 
-	for (uint8 it = 0; it < twodaFeatRace.getRowCount(); ++it) {
+	for (size_t it = 0; it < twodaFeatRace.getRowCount(); ++it) {
 		const Aurora::TwoDARow &rowFeatRace = twodaFeatRace.getRow(it);
 		_racialFeats.push_back(rowFeatRace.getInt("FeatIndex"));
 	}
@@ -101,7 +101,7 @@ void CharGenChoices::setCharClass(uint32 classId) {
 	_classFeats.clear();
 	const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
 	const Aurora::TwoDAFile &twodaClsFeat = TwoDAReg.get2DA(twodaClasses.getRow(classId).getString("FeatsTable"));
-	for (uint it = 0; it < twodaClsFeat.getRowCount(); ++it) {
+	for (size_t it = 0; it < twodaClsFeat.getRowCount(); ++it) {
 		const Aurora::TwoDARow &rowFeat = twodaClsFeat.getRow(it);
 		if (rowFeat.getInt("List") != 3)
 			continue;
@@ -121,7 +121,7 @@ void CharGenChoices::setCharAlign(uint32 goodness, uint32 loyalty) {
 	_loyalty  = loyalty;
 }
 
-void CharGenChoices::setCharAbilities(std::vector< uint32 > abilities,
+void CharGenChoices::setCharAbilities(std::vector<uint32> abilities,
                                       std::vector<uint32> racialAbilities) {
 	_abilities = abilities;
 	_racialAbilities = racialAbilities;
@@ -155,7 +155,7 @@ uint32 CharGenChoices::getRace() const {
 	return _creature->getRace();
 }
 
-bool CharGenChoices::getAlign(uint32& goodness, uint32& loyalty) const {
+bool CharGenChoices::getAlign(uint32 &goodness, uint32 &loyalty) const {
 	// Check if alignment has been previously set.
 	if (_goodness > 100)
 		return false;

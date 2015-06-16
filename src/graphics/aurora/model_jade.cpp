@@ -230,7 +230,7 @@ void Model_Jade::readStrings(Common::SeekableReadStream &mdl,
 		const std::vector<uint32> &offsets, uint32 offset,
 		std::vector<Common::UString> &strings) {
 
-	uint32 pos = mdl.pos();
+	size_t pos = mdl.pos();
 
 	strings.reserve(offsets.size());
 	for (std::vector<uint32>::const_iterator o = offsets.begin(); o != offsets.end(); ++o) {
@@ -484,7 +484,7 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 void ModelNode_Jade::readPlainIndices(Common::SeekableReadStream &stream, std::vector<uint16> &indices,
                                       uint32 offset, uint32 count) {
 
-	uint32 pos = stream.pos();
+	size_t pos = stream.pos();
 
 	stream.seek(offset);
 
@@ -498,7 +498,7 @@ void ModelNode_Jade::readPlainIndices(Common::SeekableReadStream &stream, std::v
 void ModelNode_Jade::readChunkedIndices(Common::SeekableReadStream &stream, std::vector<uint16> &indices,
                                         uint32 offset, uint32 count) {
 
-	uint32 pos = stream.pos();
+	size_t pos = stream.pos();
 
 	stream.seek(offset);
 
@@ -559,7 +559,7 @@ void ModelNode_Jade::unfoldTriangleStrip(std::vector<uint16> &indices) {
 	std::vector<uint16> unfolded;
 	unfolded.reserve((indices.size() - 2) * 3);
 
-	for (uint i = 0; i < indices.size() - 2; i++) {
+	for (size_t i = 0; i < indices.size() - 2; i++) {
 		if (i & 1) {
 			unfolded.push_back(indices[i]);
 			unfolded.push_back(indices[i + 2]);
@@ -583,7 +583,7 @@ void ModelNode_Jade::unfoldTriangleFan(std::vector<uint16> &indices) {
 	std::vector<uint16> unfolded;
 	unfolded.reserve((indices.size() - 2) * 3);
 
-	for (uint i = 1; i < indices.size() - 1; i++) {
+	for (size_t i = 1; i < indices.size() - 1; i++) {
 		unfolded.push_back(indices[0]);
 		unfolded.push_back(indices[i]);
 		unfolded.push_back(indices[i + 1]);

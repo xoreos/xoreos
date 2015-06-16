@@ -51,7 +51,7 @@ class Engine;
 
 class ConsoleWindow : public Graphics::GUIFrontElement, public Events::Notifyable {
 public:
-	ConsoleWindow(const Common::UString &font, uint32 lines, uint32 history,
+	ConsoleWindow(const Common::UString &font, size_t lines, size_t history,
 	              int fontHeight = 0);
 	~ConsoleWindow();
 
@@ -73,14 +73,14 @@ public:
 	float getContentWidth () const;
 	float getContentHeight() const;
 
-	uint32 getLines  () const;
-	uint32 getColumns() const;
+	size_t getLines  () const;
+	size_t getColumns() const;
 
 
 	// Input
 
 	void setPrompt(const Common::UString &prompt);
-	void setInput(const Common::UString &input, uint32 cursorPos, bool overwrite);
+	void setInput(const Common::UString &input, size_t cursorPos, bool overwrite);
 
 
 	// Output
@@ -105,8 +105,8 @@ public:
 
 	// Scrolling
 
-	void scrollUp(uint32 n = 1);
-	void scrollDown(uint32 n = 1);
+	void scrollUp(size_t n = 1);
+	void scrollDown(size_t n = 1);
 	void scrollTop();
 	void scrollBottom();
 
@@ -123,18 +123,18 @@ private:
 	Graphics::Aurora::GUIQuad *_cursor;
 	Graphics::Aurora::GUIQuad *_highlight;
 
-	uint32 _historySizeMax;
-	uint32 _historySizeCurrent;
+	size_t _historySizeMax;
+	size_t _historySizeCurrent;
 	std::list<Common::UString> _history;
 
-	uint32 _historyStart;
+	size_t _historyStart;
 
 	std::vector<Graphics::Aurora::Text *> _lines;
 	Graphics::Aurora::Text *_input;
 
 
 	Common::UString _inputText;
-	uint32 _cursorPosition;
+	size_t _cursorPosition;
 	bool _overwrite;
 
 
@@ -151,9 +151,9 @@ private:
 	float _scrollbarLength;
 	float _scrollbarPosition;
 
-	uint32 _highlightX;
-	uint32 _highlightY;
-	 int32 _highlightLength;
+	size_t    _highlightX;
+	size_t    _highlightY;
+	ptrdiff_t _highlightLength;
 
 	Common::WriteFile _logFile;
 	Common::WriteFile _redirect;
@@ -170,15 +170,15 @@ private:
 
 	void updateHighlight();
 	bool getPosition(int cursorX, int cursorY, float &x, float &y);
-	void highlightClip(uint32 &x, uint32 &y) const;
+	void highlightClip(size_t &x, size_t &y) const;
 
 	void updateScrollbarLength();
 	void updateScrollbarPosition();
 
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
 
-	static uint32 findWordStart(const Common::UString &line, uint32 pos);
-	static uint32 findWordEnd  (const Common::UString &line, uint32 pos);
+	static size_t findWordStart(const Common::UString &line, size_t pos);
+	static size_t findWordEnd  (const Common::UString &line, size_t pos);
 };
 
 class Console {
@@ -193,8 +193,8 @@ public:
 
 	float  getWidth  () const;
 	float  getHeight () const;
-	uint32 getLines  () const;
-	uint32 getColumns() const;
+	size_t getLines  () const;
+	size_t getColumns() const;
 
 	bool processEvent(const Events::Event &event);
 
@@ -221,7 +221,7 @@ protected:
 	                     const Common::UString &help);
 
 	void printCommandHelp(const Common::UString &cmd);
-	void printList(const std::list<Common::UString> &list, uint32 maxSize = 0);
+	void printList(const std::list<Common::UString> &list, size_t maxSize = 0);
 
 	void setArguments(const Common::UString &cmd, const std::list<Common::UString> &args);
 	void setArguments(const Common::UString &cmd);
@@ -256,21 +256,22 @@ private:
 
 	CommandMap _commands;
 
-	uint32 _tabCount;
+	size_t _tabCount;
 	bool _printedCompleteWarning;
 
 	 int8  _lastClickCount;
 	uint8  _lastClickButton;
 	uint32 _lastClickTime;
-	 int32 _lastClickX;
-	 int32 _lastClickY;
+
+	ptrdiff_t _lastClickX;
+	ptrdiff_t _lastClickY;
 
 
 	std::list<Common::UString> _videos;
 	std::list<Common::UString> _sounds;
 
-	uint32 _maxSizeVideos;
-	uint32 _maxSizeSounds;
+	size_t _maxSizeVideos;
+	size_t _maxSizeSounds;
 
 
 	void updateVideos();

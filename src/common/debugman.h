@@ -120,9 +120,9 @@ public:
 	static UString getDefaultLogFile();
 
 private:
-	static const uint kGlobalChannelCount = 15;
-	static const uint kEngineChannelCount = 15;
-	static const uint kChannelCount       = kGlobalChannelCount + kEngineChannelCount;
+	static const size_t kGlobalChannelCount = 15;
+	static const size_t kEngineChannelCount = 15;
+	static const size_t kChannelCount       = kGlobalChannelCount + kEngineChannelCount;
 
 	/** A debug channel. */
 	struct Channel {

@@ -383,7 +383,7 @@ void FileTypeManager::buildExtensionLookup() {
 	if (!_extensionLookup.empty())
 		return;
 
-	for (int i = 0; i < ARRAYSIZE(types); i++)
+	for (size_t i = 0; i < ARRAYSIZE(types); i++)
 		_extensionLookup.insert(std::make_pair(Common::UString(types[i].extension), &types[i]));
 }
 
@@ -391,7 +391,7 @@ void FileTypeManager::buildTypeLookup() {
 	if (!_typeLookup.empty())
 		return;
 
-	for (int i = 0; i < ARRAYSIZE(types); i++)
+	for (size_t i = 0; i < ARRAYSIZE(types); i++)
 		_typeLookup.insert(std::make_pair(types[i].type, &types[i]));
 }
 
@@ -399,7 +399,7 @@ void FileTypeManager::buildHashLookup(Common::HashAlgo algo) {
 	if (!_hashLookup[algo].empty())
 		return;
 
-	for (int i = 0; i < ARRAYSIZE(types); i++) {
+	for (size_t i = 0; i < ARRAYSIZE(types); i++) {
 		const char *ext = types[i].extension;
 		if (ext[0] == '.')
 			ext++;

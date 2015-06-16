@@ -53,7 +53,7 @@ public:
 	const FileList &getFiles() const;
 
 	/** Return the size of a file. */
-	uint32 getFileSize(uint32 index) const;
+	size_t getFileSize(uint32 index) const;
 
 	/** Return a stream of the files's contents. */
 	SeekableReadStream *getFile(uint32 index, bool tryNoCopy = false) const;
@@ -76,7 +76,7 @@ private:
 	IFileList _iFiles;
 
 	void load(SeekableReadStream &zip);
-	uint32 findCentralDirectoryEnd(SeekableReadStream &zip);
+	size_t findCentralDirectoryEnd(SeekableReadStream &zip);
 
 	static SeekableReadStream *decompressFile(SeekableReadStream &zip, uint32 method,
 			uint32 compSize, uint32 realSize);

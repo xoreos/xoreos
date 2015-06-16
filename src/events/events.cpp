@@ -344,12 +344,12 @@ void EventsManager::deinitJoysticks() {
 	_joysticks.clear();
 }
 
-int EventsManager::getJoystickCount() const {
+size_t EventsManager::getJoystickCount() const {
 	return _joysticks.size();
 }
 
-Joystick *EventsManager::getJoystickByIndex(int index) const {
-	if ((index < 0) || (((uint) index) >= _joysticks.size()))
+Joystick *EventsManager::getJoystickByIndex(size_t index) const {
+	if (index >= _joysticks.size())
 		return 0;
 
 	return _joysticks[index];

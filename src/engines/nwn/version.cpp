@@ -146,21 +146,21 @@ bool Version::detect(const Common::UString &directory) {
 // In the Windows binary, read the FileVersion and PrivateBuild fields
 // from the VERSIONINFO resource. They're UTF-16LE strings.
 bool Version::detectWindows(const Common::UString &directory) {
-	uint32 size;
+	size_t size;
 	byte *binary = readFile(directory, "/nwmain.exe", size);
 	if (!binary)
 		return false;
 
 	// Search for the pattern where the version information in the binary starts
 	byte *version = std::search(binary, binary + size, kVersionWin, kVersionWin + sizeof(kVersionWin));
-	if ((size - (version - binary)) < (uint)(sizeof(kVersionWin) + 24)) {
+	if ((size - (version - binary)) < (sizeof(kVersionWin) + 24)) {
 		delete[] binary;
 		return false;
 	}
 
 	// Search for the pattern where the build information in the binary starts
 	byte *build = std::search(binary, binary + size, kBuildWin, kBuildWin + sizeof(kBuildWin));
-	if ((size - (build - binary)) < (uint)(sizeof(kBuildWin) + 10)) {
+	if ((size - (build - binary)) < (sizeof(kBuildWin) + 10)) {
 		delete[] binary;
 		return false;
 	}
@@ -231,7 +231,7 @@ bool Version::detectMacOSX(const Common::UString &directory) {
 	if (appDir.empty())
 		return false;
 
-	uint32 size;
+	size_t size;
 	byte *binary = readFile(appDir, "Neverwinter Nights", size);
 	if (!binary)
 		return false;
@@ -288,14 +288,14 @@ bool Version::detectMacOSX(const Common::UString &directory) {
 // In the Linux binaries, the version number ("1.69") and the build number ("8109")
 // follow the name "Neverwinter Nights", each field separated by a 0-byte.
 bool Version::detectLinux(const Common::UString &directory) {
-	uint32 size;
+	size_t size;
 	byte *binary = readFile(directory, "/nwmain", size);
 	if (!binary)
 		return false;
 
 	// Search for the pattern where the version information in the binary starts
 	byte *version = std::search(binary, binary + size, kVersionUnix, kVersionUnix + sizeof(kVersionUnix));
-	if ((size - (version - binary)) < (uint)(sizeof(kVersionUnix) + 21)) {
+	if ((size - (version - binary)) < (sizeof(kVersionUnix) + 21)) {
 		delete[] binary;
 		return false;
 	}
@@ -338,7 +338,7 @@ bool Version::detectLinux(const Common::UString &directory) {
 	return success;
 }
 
-byte *Version::readFile(const Common::UString &directory, const Common::UString &file, uint32 &size) {
+byte *Version::readFile(const Common::UString &directory, const Common::UString &file, size_t &size) {
 	Common::FileList files;
 
 	if (!files.addDirectory(directory))
@@ -347,7 +347,7 @@ byte *Version::readFile(const Common::UString &directory, const Common::UString 
 	return readFile(files.findFirst(file, true), size);
 }
 
-byte *Version::readFile(const Common::UString &path, uint32 &size) {
+byte *Version::readFile(const Common::UString &path, size_t &size) {
 	if (path.empty())
 		return 0;
 

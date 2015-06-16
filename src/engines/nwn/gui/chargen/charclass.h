@@ -51,7 +51,7 @@ private:
 	std::vector<Common::UString> _helpTexts;
 	std::vector<uint32> _classesId;
 
-	uint _firstPrestigeClass;
+	size_t _firstPrestigeClass;
 };
 
 } // End of namespace NWN

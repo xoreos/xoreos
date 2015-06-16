@@ -59,13 +59,13 @@ static const uint32 kDoubleClickTime = 500;
 
 static const char *kPrompt = "> ";
 
-static const uint32 kCommandHistorySize = 100;
-static const uint32 kConsoleHistory     = 500;
-static const uint32 kConsoleLines       =  25;
+static const size_t kCommandHistorySize = 100;
+static const size_t kConsoleHistory     = 500;
+static const size_t kConsoleLines       =  25;
 
 namespace Engines {
 
-ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 history,
+ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t history,
                              int fontHeight) : _font(FontMan.get(font, fontHeight)),
 	_historySizeMax(history), _historySizeCurrent(0), _historyStart(0),
 	_cursorPosition(0), _overwrite(false),
@@ -95,7 +95,7 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, uint32 lines, uint32 h
 	_highlight->setXOR(true);
 
 	_lines.reserve(lines - 1);
-	for (uint32 i = 0; i < (lines - 1); i++) {
+	for (size_t i = 0; i < (lines - 1); i++) {
 		_lines.push_back(new Graphics::Aurora::Text(_font, ""));
 		_lines.back()->disableColorTokens(true);
 	}
@@ -215,11 +215,11 @@ float ConsoleWindow::getContentHeight() const {
 	return _height - _lineHeight;
 }
 
-uint32 ConsoleWindow::getLines() const {
+size_t ConsoleWindow::getLines() const {
 	return _lines.size();
 }
 
-uint32 ConsoleWindow::getColumns() const {
+size_t ConsoleWindow::getColumns() const {
 	return floorf(getContentWidth() / _font.getFont().getWidth('m'));
 }
 
@@ -234,7 +234,7 @@ void ConsoleWindow::setPrompt(const Common::UString &prompt) {
 	GfxMan.unlockFrame();
 }
 
-void ConsoleWindow::setInput(const Common::UString &input, uint32 cursorPos,
+void ConsoleWindow::setInput(const Common::UString &input, size_t cursorPos,
 		bool overwrite) {
 
 	GfxMan.lockFrame();
@@ -359,11 +359,11 @@ void ConsoleWindow::updateHighlight() {
 
 	const float charWidth = _font.getFont().getWidth(' ');
 
-	const int32 start = _highlightX;
-	const int32 end   = _highlightX + _highlightLength;
+	const ptrdiff_t start = _highlightX;
+	const ptrdiff_t end   = _highlightX + _highlightLength;
 
-	const  int32 x      = MIN(start, end);
-	const uint32 length = ABS(start - end);
+	const ptrdiff_t x      = MIN(start, end);
+	const size_t    length = ABS(start - end);
 
 	_highlight->setWidth(length * charWidth);
 	_highlight->setPosition(_x + x * charWidth, _y + _highlightY * _lineHeight, -1002.0);
@@ -385,10 +385,10 @@ bool ConsoleWindow::getPosition(int cursorX, int cursorY, float &x, float &y) {
 	return true;
 }
 
-void ConsoleWindow::highlightClip(uint32 &x, uint32 &y) const {
-	y = CLIP<uint32>(y, 0, _lines.size());
+void ConsoleWindow::highlightClip(size_t &x, size_t &y) const {
+	y = CLIP<size_t>(y, 0, _lines.size());
 
-	uint32 minX, maxX;
+	size_t minX, maxX;
 	if        (y == 0) {
 		minX = _prompt->get().size();
 		maxX = _prompt->get().size() + _input->get().size();
@@ -420,11 +420,11 @@ void ConsoleWindow::stopHighlight(int x, int y) {
 	if (!getPosition(x, y, lineX, lineY))
 		return;
 
-	uint32 endX = floor(lineX);
+	size_t endX = floor(lineX);
 
 	highlightClip(endX, _highlightY);
 
-	_highlightLength = ((int32) endX) - ((int32) _highlightX);
+	_highlightLength = ((ptrdiff_t) endX) - ((ptrdiff_t) _highlightX);
 
 	updateHighlight();
 }
@@ -436,17 +436,17 @@ void ConsoleWindow::highlightWord(int x, int y) {
 	if (!getPosition(x, y, lineX, lineY))
 		return;
 
-	uint32 wX = floor(lineX);
-	uint32 wY = floor(lineY);
+	size_t wX = floor(lineX);
+	size_t wY = floor(lineY);
 
 	highlightClip(wX, wY);
 
 	const Common::UString &line = (wY == 0) ? _input->get() :
 	                                          _lines[_lines.size() - wY]->get();
-	const uint32 pos = (wY == 0) ? (wX - _prompt->get().size()) : wX;
+	const size_t pos = (wY == 0) ? (wX - _prompt->get().size()) : wX;
 
-	uint32 wordStart = findWordStart(line, pos);
-	uint32 wordEnd   = findWordEnd  (line, pos);
+	size_t wordStart = findWordStart(line, pos);
+	size_t wordEnd   = findWordEnd  (line, pos);
 
 	_highlightX      = (wY == 0) ? (wordStart + _prompt->get().size()) : wordStart;
 	_highlightY      =  wY;
@@ -486,8 +486,8 @@ Common::UString ConsoleWindow::getHighlight() const {
 	if ((_highlightLength == 0) || (_highlightY >= kConsoleLines))
 		return "";
 
-	int32 start = _highlightX;
-	int32 end   = _highlightX + _highlightLength;
+	ptrdiff_t start = _highlightX;
+	ptrdiff_t end   = _highlightX + _highlightLength;
 
 	if (start > end)
 		SWAP(start, end);
@@ -500,23 +500,23 @@ Common::UString ConsoleWindow::getHighlight() const {
 	} else
 		line = _lines[_lines.size() - _highlightY]->get();
 
-	start = MAX(0, start);
-	end   = MAX(0, end  );
+	start = MAX<ptrdiff_t>(0, start);
+	end   = MAX<ptrdiff_t>(0, end  );
 
 	return line.substr(line.getPosition(start), line.getPosition(end));
 }
 
-void ConsoleWindow::scrollUp(uint32 n) {
+void ConsoleWindow::scrollUp(size_t n) {
 	if ((_historyStart + _lines.size()) >= _historySizeCurrent)
 		return;
 
-	_historyStart += MIN<uint32>(n, _historySizeCurrent - _lines.size() - _historyStart);
+	_historyStart += MIN<size_t>(n, _historySizeCurrent - _lines.size() - _historyStart);
 
 	updateScrollbarPosition();
 	redrawLines();
 }
 
-void ConsoleWindow::scrollDown(uint32 n) {
+void ConsoleWindow::scrollDown(size_t n) {
 	if (_historyStart == 0)
 		return;
 
@@ -530,7 +530,7 @@ void ConsoleWindow::scrollTop() {
 	if (_historySizeCurrent <= _lines.size())
 		return;
 
-	const uint32 bottom = _historySizeCurrent - _lines.size();
+	const size_t bottom = _historySizeCurrent - _lines.size();
 	if (bottom == _historyStart)
 		return;
 
@@ -617,7 +617,7 @@ void ConsoleWindow::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
 	_y =  (newHeight / 2.0) - _height;
 
 	float textY = (newHeight / 2.0) - _lineHeight;
-	for (uint32 i = 0; i < _lines.size(); i++, textY -= _lineHeight)
+	for (size_t i = 0; i < _lines.size(); i++, textY -= _lineHeight)
 		_lines[i]->setPosition(_x, textY, -1001.0);
 
 	_prompt->setPosition(_x                      , _y, -1001.0);
@@ -626,7 +626,7 @@ void ConsoleWindow::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
 	recalcCursor();
 }
 
-uint32 ConsoleWindow::findWordStart(const Common::UString &line, uint32 pos) {
+size_t ConsoleWindow::findWordStart(const Common::UString &line, size_t pos) {
 	Common::UString::iterator it = line.getPosition(pos);
 	if ((it == line.end()) || (*it == ' '))
 		return 0;
@@ -640,7 +640,7 @@ uint32 ConsoleWindow::findWordStart(const Common::UString &line, uint32 pos) {
 	return line.getPosition(it);
 }
 
-uint32 ConsoleWindow::findWordEnd(const Common::UString &line, uint32 pos) {
+size_t ConsoleWindow::findWordEnd(const Common::UString &line, size_t pos) {
 	Common::UString::iterator it = line.getPosition(pos);
 	if ((it == line.end()) || (*it == ' '))
 		return 0;
@@ -666,7 +666,7 @@ void ConsoleWindow::redrawLines() {
 	GfxMan.lockFrame();
 
 	std::list<Common::UString>::reverse_iterator h = _history.rbegin();
-	for (uint32 i = 0; (i < _historyStart) && (h != _history.rend()); i++, ++h);
+	for (size_t i = 0; (i < _historyStart) && (h != _history.rend()); i++, ++h);
 
 	for (int i = _lines.size() - 1; (i >= 0) && (h != _history.rend()); i--, ++h)
 		_lines[i]->set(*h);
@@ -802,11 +802,11 @@ float Console::getHeight() const {
 	return _console->getContentHeight();
 }
 
-uint32 Console::getLines() const {
+size_t Console::getLines() const {
 	return _console->getLines();
 }
 
-uint32 Console::getColumns() const {
+size_t Console::getColumns() const {
 	return _console->getColumns();
 }
 
@@ -1049,15 +1049,15 @@ bool Console::printHints(const Common::UString &command) {
 	if (_tabCount < 2)
 		return false;
 
-	uint32 maxSize;
-	uint32 count;
+	size_t maxSize;
+	size_t count;
 	const std::list<Common::UString> &hints = _readLine->getCompleteHint(maxSize, count);
 	if (count == 0)
 		return false;
 
-	maxSize = MAX<uint32>(maxSize, 3) + 2;
-	uint32 lineSize = getColumns() / maxSize;
-	uint32 lines = count / lineSize;
+	maxSize = MAX<size_t>(maxSize, 3) + 2;
+	size_t lineSize = getColumns() / maxSize;
+	size_t lines = count / lineSize;
 
 	if (lines >= (kConsoleLines - 3)) {
 		if (!_printedCompleteWarning)
@@ -1415,7 +1415,7 @@ void Console::cmdGetString(const CommandLine &cl) {
 void Console::printFullHelp() {
 	print("Available commands (help <command> for further help on each command):");
 
-	uint32 maxSize = 0;
+	size_t maxSize = 0;
 	std::list<Common::UString> commands;
 	for (CommandMap::const_iterator c = _commands.begin(); c != _commands.end(); ++c) {
 		commands.push_back(c->second.cmd);
@@ -1426,26 +1426,26 @@ void Console::printFullHelp() {
 	printList(commands, maxSize);
 }
 
-void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) {
-	const uint32 columns = getColumns();
+void Console::printList(const std::list<Common::UString> &list, size_t maxSize) {
+	const size_t columns = getColumns();
 
 	// If no max size is given, go through the whole list to find it ourselves
 	if (maxSize == 0)
 		for (std::list<Common::UString>::const_iterator l = list.begin(); l != list.end(); ++l)
-			maxSize = MAX<uint32>(maxSize, l->size());
+			maxSize = MAX<size_t>(maxSize, l->size());
 
-	maxSize = MAX<uint32>(maxSize, 3);
+	maxSize = MAX<size_t>(maxSize, 3);
 
 	// Calculate the number of items per line
-	uint32 lineSize = 1;
+	size_t lineSize = 1;
 	if      (maxSize >= (columns - 2))
 		maxSize  = columns;
 	else if (maxSize > 0)
 		lineSize = columns / (maxSize + 2);
 
 	// Calculate the number of number of lines that won't fit into the history
-	uint32 toPrint  = MIN<uint32>((kConsoleHistory - 1) * lineSize, list.size());
-	uint32 linesCut = list.size() - toPrint;
+	size_t toPrint  = MIN<size_t>((kConsoleHistory - 1) * lineSize, list.size());
+	size_t linesCut = list.size() - toPrint;
 
 	// Print a message when we cut items
 	if (linesCut > 0) {
@@ -1456,7 +1456,7 @@ void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) 
 
 	// Move past the items we're cutting
 	std::list<Common::UString>::const_iterator l = list.begin();
-	for (uint32 i = 0; i < linesCut; i++)
+	for (size_t i = 0; i < linesCut; i++)
 		++l;
 
 	// Print the lines
@@ -1464,10 +1464,10 @@ void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) 
 		Common::UString line;
 
 		// Attach the items together that go onto one line
-		for (uint32 i = 0; (i < lineSize) && (l != list.end()); i++, ++l) {
+		for (size_t i = 0; (i < lineSize) && (l != list.end()); i++, ++l) {
 			Common::UString item = *l;
 
-			uint32 itemSize = item.size();
+			size_t itemSize = item.size();
 
 			if (itemSize > maxSize) {
 				item.truncate(maxSize - 3);
@@ -1475,7 +1475,7 @@ void Console::printList(const std::list<Common::UString> &list, uint32 maxSize) 
 				itemSize = maxSize;
 			}
 
-			uint32 pad = (maxSize + 2) - itemSize;
+			size_t pad = (maxSize + 2) - itemSize;
 			while (pad-- > 0)
 				item += ' ';
 

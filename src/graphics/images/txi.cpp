@@ -289,7 +289,7 @@ TXI::Features &TXI::getFeatures() {
 }
 
 TXI::Blending TXI::parseBlending(const char *str) {
-	for (int i = 0; i < ARRAYSIZE(kBlendings); i++)
+	for (size_t i = 0; i < ARRAYSIZE(kBlendings); i++)
 		if (!strcmp(str, kBlendings[i]))
 			return (Blending) i;
 

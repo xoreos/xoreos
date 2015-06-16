@@ -794,7 +794,7 @@ void Dialog::playAnimation() {
 	}
 
 	const char *anim = 0;
-	for (int i = 0; i < ARRAYSIZE(kTalkAnimations); i++) {
+	for (size_t i = 0; i < ARRAYSIZE(kTalkAnimations); i++) {
 		if (entry->animation == (uint32)kTalkAnimations[i].id) {
 			anim = kTalkAnimations[i].name;
 			break;

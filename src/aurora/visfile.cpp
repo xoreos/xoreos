@@ -81,7 +81,7 @@ void VISFile::load(Common::SeekableReadStream &vis) {
 
 		visibilityArray.reserve(roomCount);
 		while (!vis.eos()) {
-			uint32 lineStart = vis.pos();
+			size_t lineStart = vis.pos();
 
 			tokenizer.nextChunk(vis);
 

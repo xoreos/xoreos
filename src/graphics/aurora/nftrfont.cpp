@@ -137,8 +137,8 @@ void NFTRFont::readHeader(Common::SeekableSubReadStreamEndian &nftr, Header &hea
 		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
 	const uint32 fileSize = nftr.readUint32();
-	if (fileSize > (uint32)nftr.size())
-		throw Common::Exception("Size too large (%u > %u)", fileSize, nftr.size());
+	if (fileSize > nftr.size())
+		throw Common::Exception("Size too large (%u > %u)", fileSize, (uint)nftr.size());
 
 	nftr.skip(2); // Header size
 
@@ -211,7 +211,7 @@ void NFTRFont::readGlyphs(Common::SeekableSubReadStreamEndian &nftr, Header &hea
 	const uint32 count = (sectionSize - 16) / size;
 	glyphs.resize(count);
 
-	uint32 offset = nftr.pos();
+	size_t offset = nftr.pos();
 	for (uint32 i = 0; i < count; i++, offset += size) {
 		glyphs[i].data = new Common::SeekableSubReadStream(&nftr, offset, offset + size);
 
@@ -284,7 +284,7 @@ void NFTRFont::readCharMaps(Common::SeekableSubReadStreamEndian &nftr, Header &h
 	 */
 
 	uint32 nextOffset = header.offsetCMAP;
-	while ((nextOffset != 0) && (nextOffset < (uint32)nftr.size())) {
+	while ((nextOffset != 0) && (nextOffset < nftr.size())) {
 		nftr.seek(nextOffset);
 
 		const uint32 tag = nftr.readUint32();
@@ -418,7 +418,7 @@ void NFTRFont::drawGlyphs(const std::vector<Glyph> &glyphs) {
 
 	const uint32 textureLength = NEXTPOWER2((uint32) ceil(sqrt(pixels)));
 	if (textureLength > 2048)
-		throw Common::Exception("Too many glyphs (%u @ %ux%u)", glyphs.size(), width, height);
+		throw Common::Exception("Too many glyphs (%u @ %ux%u)", (uint)glyphs.size(), width, height);
 
 	assert(((textureLength / width) * (textureLength / height)) >= glyphs.size());
 

@@ -51,10 +51,10 @@ protected:
 	void updateScrollbarLength();
 	void updateVisible();
 
-	void scrollUp(uint n);
-	void scrollDown(uint n);
+	void scrollUp(size_t n);
+	void scrollDown(size_t n);
 
-	uint _itemsByRow;
+	size_t _itemsByRow;
 
 	float _innerHSpace;
 	float _innerVSpace;

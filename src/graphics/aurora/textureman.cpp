@@ -267,7 +267,7 @@ static GLenum texture[32] = {
 	GL_TEXTURE31_ARB
 };
 
-void TextureManager::activeTexture(uint32 n) {
+void TextureManager::activeTexture(size_t n) {
 	if (n >= ARRAYSIZE(texture))
 		return;
 

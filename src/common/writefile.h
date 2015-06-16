@@ -60,7 +60,7 @@ public:
 
 	void flush();
 
-	uint32 write(const void *dataPtr, uint32 dataSize);
+	size_t write(const void *dataPtr, size_t dataSize);
 
 protected:
 	std::FILE *_handle; ///< The actual file handle.

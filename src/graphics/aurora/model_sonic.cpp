@@ -227,8 +227,8 @@ void Model_Sonic::readHeader(ParserContext &ctx) {
 		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
 	const uint32 fileSize = ctx.nsbmd->readUint32();
-	if (fileSize > (uint32)ctx.nsbmd->size())
-		throw Common::Exception("Size too large (%u > %u)", fileSize, ctx.nsbmd->size());
+	if (fileSize > ctx.nsbmd->size())
+		throw Common::Exception("Size too large (%u > %u)", fileSize, (uint)ctx.nsbmd->size());
 
 	const uint16 headerSize = ctx.nsbmd->readUint16();
 	if (headerSize != 16)
@@ -352,7 +352,7 @@ void Model_Sonic::readBoneCommands(ParserContext &ctx) {
 
 		uint8 count = 0;
 		if (cmd == kBoneLoadStack) {
-			uint32 pos = ctx.nsbmd->pos();
+			size_t pos = ctx.nsbmd->pos();
 
 			ctx.nsbmd->skip(1);
 			count = ctx.nsbmd->readByte();
@@ -971,7 +971,7 @@ void Model_Sonic::createIndicesTriangles(Primitive &primitive) {
 
 	primitive.indices.resize(primitive.vertices.size());
 
-	for (uint16 i = 0; i < primitive.vertices.size(); i++)
+	for (size_t i = 0; i < primitive.vertices.size(); i++)
 		primitive.indices[i] = i;
 }
 
@@ -983,7 +983,7 @@ void Model_Sonic::createIndicesTriangleStrip(Primitive &primitive) {
 
 	primitive.indices.reserve((primitive.vertices.size() - 2) * 3);
 
-	for (uint16 i = 0; i < primitive.vertices.size() - 2; i++) {
+	for (size_t i = 0; i < primitive.vertices.size() - 2; i++) {
 		if (i & 1) {
 			primitive.indices.push_back(i);
 			primitive.indices.push_back(i + 2);
@@ -1004,7 +1004,7 @@ void Model_Sonic::createIndicesQuads(Primitive &primitive) {
 
 	primitive.indices.reserve((primitive.vertices.size() / 4) * 6);
 
-	for (uint16 i = 0; i < primitive.vertices.size() - 3; i += 4) {
+	for (size_t i = 0; i < primitive.vertices.size() - 3; i += 4) {
 		primitive.indices.push_back(i);
 		primitive.indices.push_back(i + 1);
 		primitive.indices.push_back(i + 2);
@@ -1023,7 +1023,7 @@ void Model_Sonic::createIndicesQuadStrip(Primitive &primitive) {
 
 	primitive.indices.reserve(((primitive.vertices.size() - 2) / 2) * 6);
 
-	for (uint16 i = 0; i < primitive.vertices.size() - 2; i += 2) {
+	for (size_t i = 0; i < primitive.vertices.size() - 2; i += 2) {
 		primitive.indices.push_back(i);
 		primitive.indices.push_back(i + 1);
 		primitive.indices.push_back(i + 2);

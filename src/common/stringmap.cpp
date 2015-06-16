@@ -29,12 +29,12 @@
 
 namespace Common {
 
-StringListMap::StringListMap(const char **strings, int count, bool onlyFirstWord) : _onlyFirstWord(onlyFirstWord) {
-	for (int i = 0; i < count; i++)
+StringListMap::StringListMap(const char **strings, size_t count, bool onlyFirstWord) : _onlyFirstWord(onlyFirstWord) {
+	for (size_t i = 0; i < count; i++)
 		_map.insert(std::make_pair(UString(strings[i]), i));
 }
 
-int StringListMap::find(const char *str, const char **match) const {
+size_t StringListMap::find(const char *str, const char **match) const {
 	UString sStr = str;
 
 	if (_onlyFirstWord) {
@@ -45,14 +45,14 @@ int StringListMap::find(const char *str, const char **match) const {
 
 	StrMap::const_iterator s = _map.find(sStr);
 	if (s == _map.end())
-		return -1;
+		return kInvalidIndex;
 
 	if (match)
 		*match = str + s->first.size() + 1;
 	return s->second;
 }
 
-int StringListMap::find(const UString &str, const char **match) const {
+size_t StringListMap::find(const UString &str, const char **match) const {
 	UString sStr = str;
 
 	if (_onlyFirstWord) {
@@ -63,7 +63,7 @@ int StringListMap::find(const UString &str, const char **match) const {
 
 	StrMap::const_iterator s = _map.find(sStr);
 	if (s == _map.end())
-		return -1;
+		return kInvalidIndex;
 
 	if (match)
 		*match = str.c_str() + s->first.size() + 1;

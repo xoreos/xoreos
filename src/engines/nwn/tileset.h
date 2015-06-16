@@ -52,7 +52,7 @@ public:
 
 	float getTilesHeight() const;
 
-	const Tile &getTile(uint n) const;
+	const Tile &getTile(size_t n) const;
 
 private:
 	Common::UString _resRef;

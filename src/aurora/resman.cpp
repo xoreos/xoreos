@@ -182,7 +182,7 @@ void ResourceManager::clearResources() {
 	_baseDir.clear();
 	_baseArchive.clear();
 
-	for (int i = 0; i < kArchiveMAX; i++)
+	for (size_t i = 0; i < kArchiveMAX; i++)
 		_knownArchives[i].clear();
 
 	for (OpenedArchives::iterator a = _openedArchives.begin(); a != _openedArchives.end(); ++a)
@@ -258,7 +258,7 @@ const Common::UString &ResourceManager::getDataBase() const {
 
 ResourceManager::KnownArchive *ResourceManager::findArchive(const Common::UString &file) {
 	ArchiveType archiveType = getArchiveType(file);
-	if (((uint) archiveType) >= kArchiveMAX)
+	if (((size_t) archiveType) >= kArchiveMAX)
 		return 0;
 
 	return findArchive(file, _knownArchives[archiveType]);
@@ -790,7 +790,7 @@ void ResourceManager::getAvailableResources(ResourceType type,
 }
 
 ArchiveType ResourceManager::getArchiveType(FileType type) const {
-	for (int i = 0; i < kArchiveMAX; i++)
+	for (size_t i = 0; i < kArchiveMAX; i++)
 		if (_archiveTypeTypes[i].find(type) != _archiveTypeTypes[i].end())
 			return (ArchiveType) i;
 

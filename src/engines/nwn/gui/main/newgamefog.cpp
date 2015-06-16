@@ -119,10 +119,10 @@ static Graphics::Aurora::Model *createNewGameFog() {
 }
 
 
-NewGameFogs::NewGameFogs(uint count) {
+NewGameFogs::NewGameFogs(size_t count) {
 	_fogs.reserve(count);
 
-	for (uint i = 0; i < count; i++)
+	for (size_t i = 0; i < count; i++)
 		_fogs.push_back(createNewGameFog());
 }
 

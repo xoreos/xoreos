@@ -60,15 +60,15 @@ public:
 
 	bool eos() const;
 
-	int32 pos() const;
-	int32 size() const;
+	size_t pos() const;
+	size_t size() const;
 
-	uint32 seek(int32 offs, Origin whence = kOriginBegin);
-	uint32 read(void *dataPtr, uint32 dataSize);
+	size_t seek(ptrdiff_t offset, Origin whence = kOriginBegin);
+	size_t read(void *dataPtr, size_t dataSize);
 
 protected:
 	std::FILE *_handle; ///< The actual file handle.
-	int32 _size;        ///< The file's size.
+	size_t _size;       ///< The file's size.
 };
 
 } // End of namespace Common

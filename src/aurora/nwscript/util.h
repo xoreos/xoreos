@@ -31,8 +31,8 @@ namespace Aurora {
 
 namespace NWScript {
 
-Signature createSignature(int n, ...);
-Parameters createDefaults(int n, ...);
+Signature createSignature(size_t n, ...);
+Parameters createDefaults(size_t n, ...);
 
 } // End of namespace NWScript
 

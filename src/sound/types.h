@@ -29,12 +29,14 @@
 
 namespace Sound {
 
+static const size_t kChannelInvalid = SIZE_MAX;
+
 /** A handle to a sound channel. */
 struct ChannelHandle {
-	uint16 channel;
+	size_t channel;
 	uint32 id;
 
-	ChannelHandle() : channel(0), id(0) { }
+	ChannelHandle() : channel(kChannelInvalid), id(0) { }
 };
 
 /** The type of a sound. */

@@ -44,11 +44,11 @@ void NBFS::load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nb
 
 	const byte *palette = 0;
 	try {
-		if ((uint)nbfs.size() != (width * height))
-			throw Common::Exception("Dimensions mismatch (%u * %u != %d)", width, height, nbfs.size());
+		if (nbfs.size() != (width * height))
+			throw Common::Exception("Dimensions mismatch (%u * %u != %u)", width, height, (uint)nbfs.size());
 
 		if (nbfp.size() > 512)
-			throw Common::Exception("Too much palette data (%d bytes)", nbfp.size());
+			throw Common::Exception("Too much palette data (%u bytes)", (uint)nbfp.size());
 
 		palette = readPalette(nbfp);
 		readImage(nbfs, palette, width, height);
@@ -69,7 +69,7 @@ const byte *NBFS::readPalette(Common::SeekableReadStream &nbfp) {
 
 	try {
 
-		uint32 count = MIN<uint32>(nbfp.size() / 2, 256) * 3;
+		uint32 count = MIN<size_t>(nbfp.size() / 2, 256) * 3;
 		for (uint32 i = 0; i < count; i += 3) {
 			const uint16 color = nbfp.readUint16LE();
 

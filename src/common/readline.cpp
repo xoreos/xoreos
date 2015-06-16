@@ -29,7 +29,7 @@
 
 namespace Common {
 
-ReadLine::ReadLine(uint32 historySize) :
+ReadLine::ReadLine(size_t historySize) :
 	_historySizeMax(historySize), _historySizeCurrent(0),
 	_historyIgnoreSpace(false), _historyIgnoreDups(false), _historyEraseDups(false),
 	_cursorPosition(0), _overwrite(false) {
@@ -80,7 +80,7 @@ const UString &ReadLine::getCurrentLine() const {
 	return _currentLine;
 }
 
-uint32 ReadLine::getCursorPosition() const {
+size_t ReadLine::getCursorPosition() const {
 	return _cursorPosition;
 }
 
@@ -88,7 +88,7 @@ bool ReadLine::getOverwrite() const {
 	return _overwrite;
 }
 
-const std::list<UString> &ReadLine::getCompleteHint(uint32 &maxSize, uint32 &count) const {
+const std::list<UString> &ReadLine::getCompleteHint(size_t &maxSize, size_t &count) const {
 	maxSize = _maxHintSize;
 	count   = _hintCount;
 
@@ -195,7 +195,7 @@ bool ReadLine::processKeyDown(const Events::Event &event, UString &command) {
 
 	// ALT-Backspace: Delete the last word
 	if ((key == SDLK_BACKSPACE) && (mod & KMOD_ALT)) {
-		uint32 lastWordStart = findLastWordStart();
+		size_t lastWordStart = findLastWordStart();
 
 		_currentLine.erase(_currentLine.getPosition(lastWordStart), getCurrentPosition());
 
@@ -205,7 +205,7 @@ bool ReadLine::processKeyDown(const Events::Event &event, UString &command) {
 
 	// ALT-d: Delete the next word
 	if ((key == SDLK_d) && (mod & KMOD_ALT)) {
-		uint32 nextWordEnd = findNextWordEnd();
+		size_t nextWordEnd = findNextWordEnd();
 
 		_currentLine.erase(getCurrentPosition(), _currentLine.getPosition(nextWordEnd));
 		return true;
@@ -213,7 +213,7 @@ bool ReadLine::processKeyDown(const Events::Event &event, UString &command) {
 
 	// CTRL-w: Delete the last word (but only consider spaces to be word separators)
 	if ((key == SDLK_w) && (mod & KMOD_CTRL)) {
-		uint32 lastWordStart = findLastWordStart(true);
+		size_t lastWordStart = findLastWordStart(true);
 
 		_currentLine.erase(_currentLine.getPosition(lastWordStart), getCurrentPosition());
 
@@ -481,8 +481,8 @@ void ReadLine::tabComplete(const UString &prefix, const UString &input,
 	if (lower == commands.end())
 		return;
 
-	uint32 maxSize = 0;
-	uint32 count   = 0;
+	size_t maxSize = 0;
+	size_t count   = 0;
 
 	// All commands starting with the current input are match candidates
 	std::list<UString> candidates;
@@ -526,7 +526,7 @@ UString ReadLine::findCommonSubstring(const std::list<UString> &strings) {
 	if (strings.empty())
 		return "";
 
-	uint32 minSize = strings.front().size();
+	size_t minSize = strings.front().size();
 
 	// Create iterators for all strings
 	std::list<UString::iterator> positions;
@@ -562,7 +562,7 @@ bool ReadLine::isWordCharacter(uint32 c, bool onlySpace) {
 	return !UString::isASCII(c) || UString::isAlNum(c);
 }
 
-uint32 ReadLine::findLastWordStart(bool onlySpace) const {
+size_t ReadLine::findLastWordStart(bool onlySpace) const {
 	UString::iterator pos = _currentLine.getPosition(_cursorPosition);
 	if (pos == _currentLine.begin())
 		return _currentLine.getPosition(pos);
@@ -584,7 +584,7 @@ uint32 ReadLine::findLastWordStart(bool onlySpace) const {
 	return _currentLine.getPosition(pos);
 }
 
-uint32 ReadLine::findNextWordEnd(bool onlySpace) const {
+size_t ReadLine::findNextWordEnd(bool onlySpace) const {
 	UString::iterator pos = _currentLine.getPosition(_cursorPosition);
 	if (pos == _currentLine.end())
 		return _currentLine.getPosition(pos);

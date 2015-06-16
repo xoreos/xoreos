@@ -124,7 +124,7 @@ public:
 	uint32 getID() const;
 
 	/** Return the number of fields in this struct. */
-	uint getFieldCount() const;
+	size_t getFieldCount() const;
 	/** Does this specific field exist? */
 	bool hasField(const Common::UString &field) const;
 
@@ -142,14 +142,14 @@ public:
 	void getLocString(const Common::UString &field, LocString &str) const;
 
 	void getVector     (const Common::UString &field,
-			float &x, float &y, float &z          ) const;
+	                    float &x, float &y, float &z          ) const;
 	void getOrientation(const Common::UString &field,
-			float &a, float &b, float &c, float &d) const;
+	                    float &a, float &b, float &c, float &d) const;
 
 	void getVector     (const Common::UString &field,
-			double &x, double &y, double &z           ) const;
+	                    double &x, double &y, double &z           ) const;
 	void getOrientation(const Common::UString &field,
-			double &a, double &b, double &c, double &d) const;
+	                    double &a, double &b, double &c, double &d) const;
 
 	Common::SeekableReadStream *getData(const Common::UString &field) const;
 	// '---

@@ -50,7 +50,7 @@ public:
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0);
 
 	bool isArmor() const;
-	int getArmorPart(int index) const;
+	int getArmorPart(size_t index) const;
 
 	// TODO: Use _colors array like plt file
 	uint32 _colorMetal1;   ///< The 1. color of the creature's metal armor.

@@ -42,6 +42,9 @@ public:
 	/** Return value for end-of-file. See readChar(). */
 	static const uint32 kEOF = 0xFFFFFFFF;
 
+	static const size_t kSizeInvalid     = SIZE_MAX;
+	static const size_t kPositionInvalid = SIZE_MAX;
+
 	ReadStream();
 	virtual ~ReadStream();
 
@@ -57,7 +60,7 @@ public:
 	 *  @param  dataSize number of bytes to be read.
 	 *  @return the number of bytes which were actually read.
 	 */
-	virtual uint32 read(void *dataPtr, uint32 dataSize) = 0;
+	virtual size_t read(void *dataPtr, size_t dataSize) = 0;
 
 	// --- The following methods should generally not be overloaded ---
 
@@ -230,7 +233,7 @@ public:
 	 *
 	 *  When reading fails, a kReadError exception is thrown.
 	 */
-	MemoryReadStream *readStream(uint32 dataSize);
+	MemoryReadStream *readStream(size_t dataSize);
 };
 
 
@@ -250,16 +253,16 @@ public:
 
 	/** Obtains the current value of the stream position indicator of the stream.
 	 *
-	 *  @return the current position indicator, or -1 if an error occurred.
+	 *  @return the current position indicator, or kPositionInvalid if an error occurred.
 	 */
-	virtual int32 pos() const = 0;
+	virtual size_t pos() const = 0;
 
 	/** Obtains the total size of the stream, measured in bytes.
-	 *  If this value is unknown or can not be computed, -1 is returned.
+	 *  If this value is unknown or can not be computed, kSizeInvalid is returned.
 	 *
-	 *  @return the size of the stream, or -1 if an error occurred.
+	 *  @return the size of the stream, or kSizeInvalid if an error occurred.
 	 */
-	virtual int32 size() const = 0;
+	virtual size_t size() const = 0;
 
 	/** Sets the stream position indicator for the stream. The new position,
 	 *  measured in bytes, is obtained by adding offset bytes to the position
@@ -275,7 +278,7 @@ public:
 	 *  @param  whence the seek reference: kOriginBegin, kOriginCurrent or kOriginEnd.
 	 *  @return the previous position of the stream, before seeking.
 	 */
-	virtual uint32 seek(int32 offset, Origin whence = kOriginBegin) = 0;
+	virtual size_t seek(ptrdiff_t offset, Origin whence = kOriginBegin) = 0;
 
 	/** Skip the specified number of bytes, adding that offset to the current
 	 *  position in the stream. A successful call to the skip() method clears
@@ -287,12 +290,12 @@ public:
 	 *  @param  offset the number of bytes to skip.
 	 *  @return the previous position of the stream, before skipping.
 	 */
-	virtual uint32 skip(uint32 offset) {
+	virtual size_t skip(ptrdiff_t offset) {
 		return seek(offset, kOriginCurrent);
 	}
 
 	/** Evaluate the seek offset relative to whence into a position from the beginning. */
-	static uint32 evalSeek(int32 offset, Origin whence, uint32 pos, uint32 begin, int32 size);
+	static size_t evalSeek(ptrdiff_t offset, Origin whence, size_t pos, size_t begin, size_t size);
 };
 
 
@@ -305,20 +308,20 @@ public:
  */
 class SubReadStream : virtual public ReadStream {
 public:
-	SubReadStream(ReadStream *parentStream, uint32 end, bool disposeParentStream = false);
+	SubReadStream(ReadStream *parentStream, size_t end, bool disposeParentStream = false);
 	~SubReadStream();
 
 	bool eos() const;
 
-	uint32 read(void *dataPtr, uint32 dataSize);
+	size_t read(void *dataPtr, size_t dataSize);
 
 protected:
 	ReadStream *_parentStream;
 
 	bool _disposeParentStream;
 
-	uint32 _pos;
-	uint32 _end;
+	size_t _pos;
+	size_t _end;
 
 	bool _eos;
 };
@@ -333,19 +336,19 @@ protected:
  */
 class SeekableSubReadStream : public SubReadStream, public SeekableReadStream {
 public:
-	SeekableSubReadStream(SeekableReadStream *parentStream, uint32 begin, uint32 end,
+	SeekableSubReadStream(SeekableReadStream *parentStream, size_t begin, size_t end,
 	                      bool disposeParentStream = false);
 	~SeekableSubReadStream();
 
-	int32 pos() const;
-	int32 size() const;
+	size_t pos() const;
+	size_t size() const;
 
-	uint32 seek(int32 offset, Origin whence = kOriginBegin);
+	size_t seek(ptrdiff_t offset, Origin whence = kOriginBegin);
 
 protected:
 	SeekableReadStream *_parentStream;
 
-	uint32 _begin;
+	size_t _begin;
 };
 
 
@@ -360,7 +363,7 @@ private:
 	const bool _bigEndian;
 
 public:
-	SeekableSubReadStreamEndian(SeekableReadStream *parentStream, uint32 begin, uint32 end,
+	SeekableSubReadStreamEndian(SeekableReadStream *parentStream, size_t begin, size_t end,
 	                            bool bigEndian = false, bool disposeParentStream = false);
 	~SeekableSubReadStreamEndian();
 

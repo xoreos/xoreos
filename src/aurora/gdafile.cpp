@@ -45,42 +45,42 @@ GDAFile::~GDAFile() {
 	clear();
 }
 
-uint32 GDAFile::getColumnCount() const {
+size_t GDAFile::getColumnCount() const {
 	return _columns->size();
 }
 
-uint32 GDAFile::getRowCount() const {
+size_t GDAFile::getRowCount() const {
 	return _rows->size();
 }
 
-bool GDAFile::hasRow(uint32 row) const {
+bool GDAFile::hasRow(size_t row) const {
 	return getRow(row) != 0;
 }
 
-const GFF4Struct *GDAFile::getRow(uint32 row) const {
+const GFF4Struct *GDAFile::getRow(size_t row) const {
 	if (row >= _rows->size())
 		return 0;
 
 	return (*_rows)[row];
 }
 
-uint32 GDAFile::findColumn(const Common::UString &name) const {
+size_t GDAFile::findColumn(const Common::UString &name) const {
 	ColumnNameMap::const_iterator c = _columnNameMap.find(name);
 	if (c != _columnNameMap.end())
 		return c->second;
 
-	uint32 column = findColumn(Common::hashStringCRC32(name.toLower(), Common::kEncodingUTF16LE));
+	size_t column = findColumn(Common::hashStringCRC32(name.toLower(), Common::kEncodingUTF16LE));
 	_columnNameMap[name] = column;
 
 	return column;
 }
 
-uint32 GDAFile::findColumn(uint32 hash) const {
+size_t GDAFile::findColumn(uint32 hash) const {
 	ColumnHashMap::const_iterator c = _columnHashMap.find(hash);
 	if (c != _columnHashMap.end())
 		return c->second;
 
-	for (uint32 i = 0; i < _columns->size(); i++) {
+	for (size_t i = 0; i < _columns->size(); i++) {
 		if (!(*_columns)[i])
 			continue;
 
@@ -91,28 +91,28 @@ uint32 GDAFile::findColumn(uint32 hash) const {
 		}
 	}
 
-	_columnHashMap[hash] = 0xFFFFFFFF;
-	return 0xFFFFFFFF;
+	_columnHashMap[hash] = kInvalidColumn;
+	return kInvalidColumn;
 }
 
-const GFF4Struct *GDAFile::getRowColumn(uint32 row, uint32 hash, uint32 &column) const {
+const GFF4Struct *GDAFile::getRowColumn(size_t row, uint32 hash, size_t &column) const {
 	const GFF4Struct *gdaRow = getRow(row);
-	if (!gdaRow || ((column = findColumn(hash)) == 0xFFFFFFFF))
+	if (!gdaRow || ((column = findColumn(hash)) == kInvalidColumn))
 		return 0;
 
 	return gdaRow;
 }
 
-const GFF4Struct *GDAFile::getRowColumn(uint32 row, const Common::UString &name, uint32 &column) const {
+const GFF4Struct *GDAFile::getRowColumn(size_t row, const Common::UString &name, size_t &column) const {
 	const GFF4Struct *gdaRow = getRow(row);
-	if (!gdaRow || ((column = findColumn(name)) == 0xFFFFFFFF))
+	if (!gdaRow || ((column = findColumn(name)) == kInvalidColumn))
 		return 0;
 
 	return gdaRow;
 }
 
-Common::UString GDAFile::getString(uint32 row, uint32 columnHash, const Common::UString &def) const {
-	uint32 gdaColumn;
+Common::UString GDAFile::getString(size_t row, uint32 columnHash, const Common::UString &def) const {
+	size_t gdaColumn;
 	const GFF4Struct *gdaRow = getRowColumn(row, columnHash, gdaColumn);
 	if (!gdaRow)
 		return def;
@@ -120,9 +120,9 @@ Common::UString GDAFile::getString(uint32 row, uint32 columnHash, const Common::
 	return gdaRow->getString(gdaColumn, def);
 }
 
-Common::UString GDAFile::getString(uint32 row, const Common::UString &columnName,
+Common::UString GDAFile::getString(size_t row, const Common::UString &columnName,
                                    const Common::UString &def) const {
-	uint32 gdaColumn;
+	size_t gdaColumn;
 	const GFF4Struct *gdaRow = getRowColumn(row, columnName, gdaColumn);
 	if (!gdaRow)
 		return def;
@@ -130,8 +130,8 @@ Common::UString GDAFile::getString(uint32 row, const Common::UString &columnName
 	return gdaRow->getString(gdaColumn, def);
 }
 
-int32 GDAFile::getInt(uint32 row, uint32 columnHash, int32 def) const {
-	uint32 gdaColumn;
+int32 GDAFile::getInt(size_t row, uint32 columnHash, int32 def) const {
+	size_t gdaColumn;
 	const GFF4Struct *gdaRow = getRowColumn(row, columnHash, gdaColumn);
 	if (!gdaRow)
 		return def;
@@ -139,8 +139,8 @@ int32 GDAFile::getInt(uint32 row, uint32 columnHash, int32 def) const {
 	return gdaRow->getSint(gdaColumn, def);
 }
 
-int32 GDAFile::getInt(uint32 row, const Common::UString &columnName, int32 def) const {
-	uint32 gdaColumn;
+int32 GDAFile::getInt(size_t row, const Common::UString &columnName, int32 def) const {
+	size_t gdaColumn;
 	const GFF4Struct *gdaRow = getRowColumn(row, columnName, gdaColumn);
 	if (!gdaRow)
 		return def;
@@ -148,8 +148,8 @@ int32 GDAFile::getInt(uint32 row, const Common::UString &columnName, int32 def) 
 	return gdaRow->getSint(gdaColumn, def);
 }
 
-float GDAFile::getFloat(uint32 row, uint32 columnHash, float def) const {
-	uint32 gdaColumn;
+float GDAFile::getFloat(size_t row, uint32 columnHash, float def) const {
+	size_t gdaColumn;
 	const GFF4Struct *gdaRow = getRowColumn(row, columnHash, gdaColumn);
 	if (!gdaRow)
 		return def;
@@ -157,8 +157,8 @@ float GDAFile::getFloat(uint32 row, uint32 columnHash, float def) const {
 	return gdaRow->getDouble(gdaColumn, def);
 }
 
-float GDAFile::getFloat(uint32 row, const Common::UString &columnName, float def) const {
-	uint32 gdaColumn;
+float GDAFile::getFloat(size_t row, const Common::UString &columnName, float def) const {
+	size_t gdaColumn;
 	const GFF4Struct *gdaRow = getRowColumn(row, columnName, gdaColumn);
 	if (!gdaRow)
 		return def;

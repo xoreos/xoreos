@@ -42,29 +42,31 @@ typedef boost::unordered_map<UString, UString, hashUStringCaseInsensitive> Strin
 /** A map to quickly match strings from a list. */
 class StringListMap {
 public:
+	static const size_t kInvalidIndex = SIZE_MAX;
+
 	/** Build a string map to match a list of strings against. */
-	StringListMap(const char **strings, int count, bool onlyFirstWord = false);
+	StringListMap(const char **strings, size_t count, bool onlyFirstWord = false);
 
 	/** Match a string against the map.
 	 *
 	 *  @param  str The string to match against.
 	 *  @param  match If != 0, the position after the match will be stored here.
-	 *  @return The index of the matched string in the original list, or -1 if not found.
+	 *  @return The index of the matched string in the original list, or kInvalidIndex if not found.
 	 */
-	int find(const char *str, const char **match) const;
+	size_t find(const char *str, const char **match) const;
 
 	/** Match a string against the map.
 	 *
 	 *  @param  str The string to match against.
 	 *  @param  match If != 0, the position after the match will be stored here.
-	 *  @return The index of the matched string in the original list, or -1 if not found.
+	 *  @return The index of the matched string in the original list, or kInvalidIndex if not found.
 	 */
-	int find(const UString &str, const char **match) const;
+	size_t find(const UString &str, const char **match) const;
 
 private:
 	bool _onlyFirstWord;
 
-	typedef boost::unordered_map<UString, int, hashUStringCaseInsensitive> StrMap;
+	typedef boost::unordered_map<UString, size_t, hashUStringCaseInsensitive> StrMap;
 
 	StrMap _map;
 

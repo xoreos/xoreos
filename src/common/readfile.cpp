@@ -28,10 +28,10 @@
 
 namespace Common {
 
-ReadFile::ReadFile() : _handle(0), _size(-1) {
+ReadFile::ReadFile() : _handle(0), _size(kSizeInvalid) {
 }
 
-ReadFile::ReadFile(const UString &fileName) : _handle(0), _size(-1) {
+ReadFile::ReadFile(const UString &fileName) : _handle(0), _size(kSizeInvalid) {
 	if (!open(fileName))
 		throw Exception("Can't open file \"%s\"", fileName.c_str());
 }
@@ -73,7 +73,7 @@ bool ReadFile::open(const UString &fileName) {
 		return false;
 	}
 
-	_size = (int32)fileSize;
+	_size = (size_t)fileSize;
 
 	return true;
 }
@@ -82,8 +82,8 @@ void ReadFile::close() {
 	if (_handle)
 		std::fclose(_handle);
 
-	_handle =  0;
-	_size   = -1;
+	_handle = 0;
+	_size   = kSizeInvalid;
 }
 
 bool ReadFile::isOpen() const {
@@ -97,18 +97,18 @@ bool ReadFile::eos() const {
 	return std::feof(_handle) != 0;
 }
 
-int32 ReadFile::pos() const {
+size_t ReadFile::pos() const {
 	if (!_handle)
-		return -1;
+		return kPositionInvalid;
 
-	return std::ftell(_handle);
+	return (size_t)std::ftell(_handle);
 }
 
-int32 ReadFile::size() const {
+size_t ReadFile::size() const {
 	return _size;
 }
 
-uint32 ReadFile::seek(int32 offs, Origin whence) {
+size_t ReadFile::seek(ptrdiff_t offset, Origin whence) {
 	static const int kSeekToWhence[kOriginMAX] = { SEEK_SET, SEEK_CUR, SEEK_END };
 	if (((size_t) whence) >= kOriginMAX)
 		throw Exception(kSeekError);
@@ -116,19 +116,19 @@ uint32 ReadFile::seek(int32 offs, Origin whence) {
 	if (!_handle)
 		throw Exception(kSeekError);
 
-	uint32 oldPos = pos();
+	size_t oldPos = pos();
 
-	if (std::fseek(_handle, offs, kSeekToWhence[whence]) != 0)
+	if (std::fseek(_handle, offset, kSeekToWhence[whence]) != 0)
 		throw Exception(kSeekError);
 
 	long p = std::ftell(_handle);
-	if ((p < 0) || (p > _size))
+	if ((p < 0) || ((size_t)p > _size))
 		throw Exception(kSeekError);
 
 	return oldPos;
 }
 
-uint32 ReadFile::read(void *dataPtr, uint32 dataSize) {
+size_t ReadFile::read(void *dataPtr, size_t dataSize) {
 	if (!_handle)
 		return 0;
 

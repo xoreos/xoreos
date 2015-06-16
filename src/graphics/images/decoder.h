@@ -85,10 +85,10 @@ public:
 	PixelDataType  getDataType() const;
 
 	/** Return the number of mip maps contained in the image. */
-	uint32 getMipMapCount() const;
+	size_t getMipMapCount() const;
 
 	/** Return a mip map. */
-	const MipMap &getMipMap(uint32 mipMap) const;
+	const MipMap &getMipMap(size_t mipMap) const;
 
 	/** Manually decompress the texture image data. */
 	void decompress();

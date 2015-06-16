@@ -120,7 +120,7 @@ bool WitcherEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::U
 		if (!files.addDirectory(dataDir))
 			return true;
 
-		for (uint i = 0; i < Aurora::kLanguageMAX; i++) {
+		for (size_t i = 0; i < Aurora::kLanguageMAX; i++) {
 			const uint32 langID = LangMan.getLanguageID((Aurora::Language) i);
 
 			const Common::UString v1 = Common::UString::format("lang_%d.key"  , langID);

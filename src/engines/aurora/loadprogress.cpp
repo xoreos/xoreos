@@ -34,7 +34,7 @@
 
 namespace Engines {
 
-LoadProgress::LoadProgress(uint steps) : _steps(steps), _currentStep(0), _currentAmount(0.0),
+LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0), _currentAmount(0.0),
 	_description(0), _barUpper(0), _barLower(0), _progressbar(0), _percent(0) {
 
 	assert(_steps >= 2);
@@ -117,8 +117,8 @@ void LoadProgress::step(const Common::UString &description) {
 	status("[%3d%%] %s", percentage, description.c_str());
 }
 
-Common::UString LoadProgress::createProgressbar(uint length, double filled) {
-	const uint amount = (uint) length * filled;
+Common::UString LoadProgress::createProgressbar(size_t length, double filled) {
+	const size_t amount = (size_t) length * filled;
 
 	Common::UString str;
 
@@ -134,12 +134,12 @@ Common::UString LoadProgress::createProgressbar(uint length, double filled) {
 	return str;
 }
 
-Common::UString LoadProgress::createProgressbarUpper(uint length) {
+Common::UString LoadProgress::createProgressbarUpper(size_t length) {
 	// UPPER ONE EIGHTH BLOCK
 	return Common::UString((uint32) 0x2594, length);
 }
 
-Common::UString LoadProgress::createProgressbarLower(uint length) {
+Common::UString LoadProgress::createProgressbarLower(size_t length) {
 	// LOWER ONE EIGHTH BLOCK
 	return Common::UString((uint32) 0x2581, length);
 }

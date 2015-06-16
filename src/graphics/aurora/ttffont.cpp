@@ -175,7 +175,7 @@ void TTFFont::draw(uint32 c) const {
 		}
 	}
 
-	uint page = cC->second.page;
+	size_t page = cC->second.page;
 	assert(page < _pages.size());
 
 	TextureMan.set(_pages[page]->texture);

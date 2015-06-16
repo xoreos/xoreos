@@ -51,7 +51,7 @@ TTFRenderer::TTFRenderer(Common::SeekableReadStream &ttfFile, int height) :
 	if (FT_Init_FreeType(&_library))
 		throw Common::Exception("TTFRenderer: Could not init freetype2");
 
-	const uint32 size = ttfFile.size();
+	const size_t size = ttfFile.size();
 	_fileBuffer = new uint8[size];
 	if (!_fileBuffer) {
 		FT_Done_FreeType(_library);

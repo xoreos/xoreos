@@ -141,7 +141,7 @@ bool DragonAge2Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common
 		if (!tlks.addDirectory(tlkDir))
 			return true;
 
-		for (uint i = 0; i < Aurora::kLanguageMAX; i++) {
+		for (size_t i = 0; i < Aurora::kLanguageMAX; i++) {
 			Common::UString langStr = getLanguageString((Aurora::Language) i);
 			if (langStr.empty())
 				continue;

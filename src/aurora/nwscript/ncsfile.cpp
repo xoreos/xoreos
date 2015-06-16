@@ -315,9 +315,9 @@ void NCSFile::load() {
 
 	uint32 length = _script->readUint32BE();
 	if (length > ((uint32) _script->size()))
-		throw Common::Exception("Script size %d > stream size %d", length, _script->size());
+		throw Common::Exception("Script size %u > stream size %u", length, (uint)_script->size());
 	if (length < ((uint32) _script->size()))
-		warning("TODO: NCSFile::load(): Script size %d < stream size %d", length, _script->size());
+		warning("TODO: NCSFile::load(): Script size %u < stream size %u", length, (uint)_script->size());
 
 	setupOpcodes();
 

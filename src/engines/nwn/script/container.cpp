@@ -112,14 +112,14 @@ bool ScriptContainer::hasScript(Script script) const {
 }
 
 void ScriptContainer::clearScripts() {
-	for (int i = 0; i < kScriptMAX; i++)
+	for (size_t i = 0; i < kScriptMAX; i++)
 		_scripts[i].clear();
 }
 
 void ScriptContainer::readScripts(const Aurora::GFF3Struct &gff) {
 	clearScripts();
 
-	for (int i = 0; i < ARRAYSIZE(kScriptNames); i++) {
+	for (size_t i = 0; i < ARRAYSIZE(kScriptNames); i++) {
 		const Script script = kScriptNames[i].script;
 		const char  *name   = kScriptNames[i].name;
 
@@ -128,7 +128,7 @@ void ScriptContainer::readScripts(const Aurora::GFF3Struct &gff) {
 }
 
 void ScriptContainer::readScripts(const ScriptContainer &container) {
-	for (int i = 0; i < kScriptMAX; i++)
+	for (size_t i = 0; i < kScriptMAX; i++)
 		_scripts[i] = container._scripts[i];
 }
 

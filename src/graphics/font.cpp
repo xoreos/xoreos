@@ -40,7 +40,7 @@ float Font::getLineSpacing() const {
 	return 0.0;
 }
 
-uint32 Font::getLineCount(const Common::UString &text, float maxWidth, float maxHeight) const {
+size_t Font::getLineCount(const Common::UString &text, float maxWidth, float maxHeight) const {
 	std::vector<Common::UString> lines;
 
 	split(text, lines, maxWidth, maxHeight);
@@ -55,7 +55,7 @@ float Font::getWidth(const Common::UString &text, float maxWidth) const {
 }
 
 float Font::getHeight(const Common::UString &text, float maxWidth, float maxHeight) const {
-	uint32 lines = getLineCount(text, maxWidth, maxHeight);
+	size_t lines = getLineCount(text, maxWidth, maxHeight);
 
 	if (lines == 0)
 		return 0.0;
@@ -77,7 +77,7 @@ void Font::draw(Common::UString text, const ColorPositions &colors,
 	// Move position to the top
 	glTranslatef(0.0, (lines.size() - 1) * (getHeight() + getLineSpacing()), 0.0);
 
-	uint32 position = 0;
+	size_t position = 0;
 
 	ColorPositions::const_iterator color = colors.begin();
 

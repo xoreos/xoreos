@@ -47,7 +47,7 @@ private:
 	std::list<Common::UString> _areas;   ///< All known areas in the current module.
 	std::list<Common::UString> _modules; ///< All known modules.
 
-	uint32 _maxSizeMusic;
+	size_t _maxSizeMusic;
 
 
 	// Updating the caches

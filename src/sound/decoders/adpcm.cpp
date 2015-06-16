@@ -35,8 +35,8 @@ class ADPCMStream : public RewindableAudioStream {
 protected:
 	Common::SeekableReadStream *_stream;
 	const bool _disposeAfterUse;
-	const int32 _startpos;
-	const int32 _endpos;
+	const size_t _startpos;
+	const size_t _endpos;
 	const int _channels;
 	const uint32 _blockAlign;
 	uint32 _blockPos[2];
@@ -54,7 +54,7 @@ protected:
 	int16 stepAdjust(byte);
 
 public:
-	ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign);
+	ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32 blockAlign);
 	~ADPCMStream();
 
 	virtual bool endOfData() const { return (_stream->eos() || _stream->pos() >= _endpos); }
@@ -71,7 +71,7 @@ public:
 // In addition, also MS IMA ADPCM is supported. See
 //   <http://wiki.multimedia.cx/index.php?title=Microsoft_IMA_ADPCM>.
 
-ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32 blockAlign)
 	: _stream(stream),
 		_disposeAfterUse(disposeAfterUse),
 		_startpos(stream->pos()),
@@ -130,7 +130,7 @@ int Ima_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
 class Apple_ADPCMStream : public Ima_ADPCMStream {
 protected:
 	// Apple QuickTime IMA ADPCM
-	int32 _streamPos[2];
+	size_t _streamPos[2];
 	int16 _buffer[2][2];
 	uint8 _chunkPos[2];
 
@@ -209,7 +209,7 @@ int Apple_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
 				if (_blockPos[i] == _blockAlign)
 					// We're at the end of the block.
 					// Since the channels are interleaved, skip the next block
-					_stream->skip(MIN<uint32>(_blockAlign, _endpos - _stream->pos()));
+					_stream->skip(MIN<size_t>(_blockAlign, _endpos - _stream->pos()));
 
 			_streamPos[i] = _stream->pos();
 		}

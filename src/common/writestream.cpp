@@ -46,13 +46,13 @@ WriteStream::~WriteStream() {
 void WriteStream::flush() {
 }
 
-uint32 WriteStream::writeStream(ReadStream &stream, uint32 n) {
-	uint32 haveRead = 0;
+size_t WriteStream::writeStream(ReadStream &stream, size_t n) {
+	size_t haveRead = 0;
 
 	byte buf[4096];
 	while (!stream.eos() && (n > 0)) {
-		uint32 toRead  = MIN<uint32>(4096, n);
-		uint32 bufRead = stream.read(buf, toRead);
+		size_t toRead  = MIN<size_t>(4096, n);
+		size_t bufRead = stream.read(buf, toRead);
 
 		write(buf, bufRead);
 
@@ -63,7 +63,7 @@ uint32 WriteStream::writeStream(ReadStream &stream, uint32 n) {
 	return haveRead;
 }
 
-uint32 WriteStream::writeStream(ReadStream &stream) {
+size_t WriteStream::writeStream(ReadStream &stream) {
 	return writeStream(stream, 0xFFFFFFFF);
 }
 

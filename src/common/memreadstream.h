@@ -43,17 +43,17 @@ public:
 	 *  wraps it. If disposeMemory is true, the MemoryReadStream takes ownership
 	 *  of the buffer and hence delete[]'s it when destructed.
 	 */
-	MemoryReadStream(const byte *dataPtr, uint32 dataSize, bool disposeMemory = false);
+	MemoryReadStream(const byte *dataPtr, size_t dataSize, bool disposeMemory = false);
 	~MemoryReadStream();
 
-	uint32 read(void *dataPtr, uint32 dataSize);
+	size_t read(void *dataPtr, size_t dataSize);
 
 	bool eos() const;
 
-	int32 pos() const;
-	int32 size() const;
+	size_t pos() const;
+	size_t size() const;
 
-	uint32 seek(int32 offs, Origin whence = kOriginBegin);
+	size_t seek(ptrdiff_t offset, Origin whence = kOriginBegin);
 
 	const byte *getData() const;
 
@@ -63,9 +63,9 @@ private:
 
 	bool _disposeMemory;
 
-	const uint32 _size;
+	const size_t _size;
 
-	uint32 _pos;
+	size_t _pos;
 
 	bool _eos;
 };
@@ -79,7 +79,7 @@ private:
 	const bool _bigEndian;
 
 public:
-	MemoryReadStreamEndian(const byte *buf, uint32 len, bool bigEndian = false);
+	MemoryReadStreamEndian(const byte *buf, size_t len, bool bigEndian = false);
 	~MemoryReadStreamEndian();
 
 	uint16 readUint16() {

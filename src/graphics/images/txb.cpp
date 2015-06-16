@@ -210,7 +210,7 @@ void TXB::readData(Common::SeekableReadStream &txb, bool needDeSwizzle) {
 }
 
 void TXB::readTXI(Common::SeekableReadStream &txb) {
-	const uint32 txiDataSize = txb.size() - txb.pos();
+	const size_t txiDataSize = txb.size() - txb.pos();
 	if (txiDataSize == 0)
 		return;
 

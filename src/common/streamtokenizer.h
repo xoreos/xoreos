@@ -71,11 +71,11 @@ public:
 	 *  @param  def Non-existing tokens are assigned this value.
 	 *  @return The number of existing tokens parsed.
 	 */
-	int getTokens(SeekableReadStream &stream, std::vector<UString> &list,
-			int min = 0, int max = -1, const UString &def = "");
+	size_t getTokens(SeekableReadStream &stream, std::vector<UString> &list,
+			size_t min = 0, size_t max = SIZE_MAX, const UString &def = "");
 
 	/** Skip a number of tokens. */
-	void skipToken(SeekableReadStream &stream, uint32 n = 1);
+	void skipToken(SeekableReadStream &stream, size_t n = 1);
 
 	/** Skip to the end of the chunk. */
 	void skipChunk(SeekableReadStream &stream);

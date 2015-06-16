@@ -119,7 +119,7 @@ static void readCells(ReadContext &ctx) {
 			if (size == 0)
 				continue;
 
-			uint32 pos = ctx.cdpth->pos();
+			const size_t pos = ctx.cdpth->pos();
 
 			Common::SeekableSubReadStream cellData(ctx.cdpth, offset, offset + size);
 			ctx.cells.back() = Aurora::Small::decompress(cellData);

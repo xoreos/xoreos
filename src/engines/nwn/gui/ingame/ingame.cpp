@@ -140,15 +140,15 @@ void IngameGUI::processEventQueue() {
 	_quickbar->processEventQueue();
 }
 
-void IngameGUI::setPortrait(uint partyMember, const Common::UString &portrait) {
+void IngameGUI::setPortrait(size_t partyMember, const Common::UString &portrait) {
 	_party[partyMember]->setPortrait(portrait);
 }
 
-void IngameGUI::setHealth(uint partyMember, uint32 current, uint32 max) {
+void IngameGUI::setHealth(size_t partyMember, uint32 current, uint32 max) {
 	_party[partyMember]->setHealth(current, max);
 }
 
-void IngameGUI::setName(uint partyMember, const Common::UString &name) {
+void IngameGUI::setName(size_t partyMember, const Common::UString &name) {
 	_party[partyMember]->setName(name);
 }
 
@@ -157,19 +157,19 @@ void IngameGUI::setArea(const Common::UString &area) {
 		(*p)->setArea(area);
 }
 
-void IngameGUI::setHealthy(uint partyMember) {
+void IngameGUI::setHealthy(size_t partyMember) {
 	_party[partyMember]->setHealthColor(1.0, 0.0, 0.0, 1.0);
 }
 
-void IngameGUI::setSick(uint partyMember) {
+void IngameGUI::setSick(size_t partyMember) {
 	_party[partyMember]->setHealthColor(189.0 / 255.0, 146.0 / 255.0,  74.0 / 255.0, 1.0);
 }
 
-void IngameGUI::setPoisoned(uint partyMember) {
+void IngameGUI::setPoisoned(size_t partyMember) {
 	_party[partyMember]->setHealthColor(132.0 / 255.0, 182.0 / 255.0,  74.0 / 255.0, 1.0);
 }
 
-void IngameGUI::updatePartyMember(uint partyMember, const Creature &creature, bool force) {
+void IngameGUI::updatePartyMember(size_t partyMember, const Creature &creature, bool force) {
 	assert(partyMember < _party.size());
 
 	uint32 lastPartyMemberChange = creature.lastChangedGUIDisplay();

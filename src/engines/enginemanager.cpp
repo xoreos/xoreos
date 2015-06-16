@@ -164,7 +164,7 @@ bool GameInstanceEngine::probe() {
 
 bool GameInstanceEngine::probe(const Common::FileList &rootFiles) {
 	// Try to find the first engine able to handle the directory's data
-	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
+	for (size_t i = 0; i < ARRAYSIZE(kProbes); i++) {
 		if (kProbes[i]->probe(_target, rootFiles)) {
 			_probe = kProbes[i];
 			return true;
@@ -176,7 +176,7 @@ bool GameInstanceEngine::probe(const Common::FileList &rootFiles) {
 
 bool GameInstanceEngine::probe(Common::SeekableReadStream &stream) {
 	// Try to find the first engine able to handle the stream's data
-	for (int i = 0; i < ARRAYSIZE(kProbes); i++) {
+	for (size_t i = 0; i < ARRAYSIZE(kProbes); i++) {
 		if (kProbes[i]->probe(stream)) {
 			_probe = kProbes[i];
 			return true;

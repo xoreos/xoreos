@@ -31,13 +31,13 @@
 
 namespace Common {
 
-MemoryWriteStream::MemoryWriteStream(byte *buf, uint32 len) : _ptr(buf), _bufSize(len), _pos(0) {
+MemoryWriteStream::MemoryWriteStream(byte *buf, size_t len) : _ptr(buf), _bufSize(len), _pos(0) {
 }
 
 MemoryWriteStream::~MemoryWriteStream() {
 }
 
-uint32 MemoryWriteStream::write(const void *dataPtr, uint32 dataSize) {
+size_t MemoryWriteStream::write(const void *dataPtr, size_t dataSize) {
 	// Write at most as many bytes as are still available...
 	if (dataSize > _bufSize - _pos)
 		dataSize = _bufSize - _pos;
@@ -50,16 +50,16 @@ uint32 MemoryWriteStream::write(const void *dataPtr, uint32 dataSize) {
 	return dataSize;
 }
 
-uint32 MemoryWriteStream::pos() const {
+size_t MemoryWriteStream::pos() const {
 	return _pos;
 }
 
-uint32 MemoryWriteStream::size() const {
+size_t MemoryWriteStream::size() const {
 	return _bufSize;
 }
 
 
-MemoryWriteStreamDynamic::MemoryWriteStreamDynamic(bool disposeMemory, uint32 capacity) :
+MemoryWriteStreamDynamic::MemoryWriteStreamDynamic(bool disposeMemory, size_t capacity) :
 	_data(0), _disposeMemory(disposeMemory), _ptr(0), _pos(0), _capacity(0), _size(0) {
 
 	reserve(capacity);
@@ -70,7 +70,7 @@ MemoryWriteStreamDynamic::~MemoryWriteStreamDynamic() {
 		delete[] _data;
 }
 
-void MemoryWriteStreamDynamic::reserve(uint32 s) {
+void MemoryWriteStreamDynamic::reserve(size_t s) {
 	if (s <= _capacity)
 		return;
 
@@ -87,7 +87,7 @@ void MemoryWriteStreamDynamic::reserve(uint32 s) {
 	}
 }
 
-void MemoryWriteStreamDynamic::ensureCapacity(uint32 newLen) {
+void MemoryWriteStreamDynamic::ensureCapacity(size_t newLen) {
 	if (newLen <= _capacity)
 		return;
 
@@ -96,7 +96,7 @@ void MemoryWriteStreamDynamic::ensureCapacity(uint32 newLen) {
 	_size = newLen;
 }
 
-uint32 MemoryWriteStreamDynamic::write(const void *dataPtr, uint32 dataSize) {
+size_t MemoryWriteStreamDynamic::write(const void *dataPtr, size_t dataSize) {
 	ensureCapacity(_pos + dataSize);
 
 	std::memcpy(_ptr, dataPtr, dataSize);
@@ -104,7 +104,7 @@ uint32 MemoryWriteStreamDynamic::write(const void *dataPtr, uint32 dataSize) {
 	_ptr += dataSize;
 	_pos += dataSize;
 
-	if (_pos > _size)
+	if ((size_t)_pos > _size)
 		_size = _pos;
 
 	return dataSize;
@@ -120,11 +120,11 @@ void MemoryWriteStreamDynamic::dispose() {
 	_capacity = 0;
 }
 
-uint32 MemoryWriteStreamDynamic::pos() const {
+size_t MemoryWriteStreamDynamic::pos() const {
 	return _pos;
 }
 
-uint32 MemoryWriteStreamDynamic::size() const {
+size_t MemoryWriteStreamDynamic::size() const {
 	return _size;
 }
 

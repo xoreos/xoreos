@@ -69,10 +69,10 @@ bool FilePath::isDirectory(const UString &p) {
 	return (exists(p.c_str()) && is_directory(p.c_str()));
 }
 
-uint32 FilePath::getFileSize(const UString &p) {
+size_t FilePath::getFileSize(const UString &p) {
 	uintmax_t size = file_size(p.c_str());
 
-	if (size == ((uintmax_t) -1))
+	if ((size == ((uintmax_t) -1)) || (size > 0x7FFFFFFF))
 		return kFileInvalid;
 
 	return size;
@@ -370,7 +370,7 @@ static inline UString getWindowsVariable(const wchar_t *variable) {
 	if (!length)
 		return "";
 
-	uint32 size = length * sizeof(wchar_t);
+	size_t size = length * sizeof(wchar_t);
 	byte  *data = new byte[size];
 
 	DWORD newLength = GetEnvironmentVariableW(variable, (wchar_t *) data, length);

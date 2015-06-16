@@ -38,7 +38,7 @@ namespace Common {
 
 class ReadLine {
 public:
-	ReadLine(uint32 historySize);
+	ReadLine(size_t historySize);
 	~ReadLine();
 
 	/** Don't save lines starting with a space. */
@@ -63,13 +63,13 @@ public:
 	const UString &getCurrentLine() const;
 
 	/** Return the current cursor position within the input line. */
-	uint32 getCursorPosition() const;
+	size_t getCursorPosition() const;
 
 	/** Return whether we're current in overwrite mode. */
 	bool getOverwrite() const;
 
 	/** Return the current tab-completion hints. */
-	const std::list<UString> &getCompleteHint(uint32 &maxSize, uint32 &count) const;
+	const std::list<UString> &getCompleteHint(size_t &maxSize, size_t &count) const;
 
 	/** Add that character to the current input. */
 	void addInput(uint32 c);
@@ -98,14 +98,14 @@ private:
 	typedef std::map<UString, CommandSet> ArgumentSets;
 
 
-	uint32 _historySizeMax;     ///< Max size of the history.
-	uint32 _historySizeCurrent; ///< Current size of the history.
+	size_t _historySizeMax;     ///< Max size of the history.
+	size_t _historySizeCurrent; ///< Current size of the history.
 
 	bool _historyIgnoreSpace; ///< Should we not remember input beginning with spaces?
 	bool _historyIgnoreDups;  ///< Should we not remember duplicate lines?
 	bool _historyEraseDups;   ///< Should we actively remove duplicate lines?
 
-	uint32 _cursorPosition; ///< The current cursor position.
+	size_t _cursorPosition; ///< The current cursor position.
 
 	bool _overwrite; ///< Overwrite instead of insert?
 
@@ -128,8 +128,8 @@ private:
 	/** Current possible command candidates for the input line. */
 	std::list<UString> _completeHint;
 	/** Max size of a current command candidates. */
-	uint32 _maxHintSize;
-	uint32 _hintCount;
+	size_t _maxHintSize;
+	size_t _hintCount;
 
 
 	std::list<HistorySave>::iterator findHistorySave();
@@ -152,8 +152,8 @@ private:
 
 	UString::iterator getCurrentPosition() const;
 
-	uint32 findLastWordStart(bool onlySpace = false) const;
-	uint32 findNextWordEnd(bool onlySpace = false) const;
+	size_t findLastWordStart(bool onlySpace = false) const;
+	size_t findNextWordEnd(bool onlySpace = false) const;
 
 	static bool isWordCharacter(uint32 c, bool onlySpace = false);
 	static UString findCommonSubstring(const std::list<UString> &strings);

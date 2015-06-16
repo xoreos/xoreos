@@ -99,7 +99,8 @@ namespace Graphics {
 TXICommand parseTXICommand(const Common::UString &str, Common::UString &args) {
 	const char *s = str.c_str();
 
-	TXICommand command = (TXICommand) kTXICommandMap.find(s, &s);
+	size_t commandIndex = kTXICommandMap.find(s, &s);
+	TXICommand command = (TXICommand) MIN<size_t>(commandIndex, TXICommandMAX);
 
 	args = Common::UString(s);
 

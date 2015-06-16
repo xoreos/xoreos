@@ -89,7 +89,7 @@ QuickTimeDecoder::~QuickTimeDecoder() {
 void QuickTimeDecoder::clear() {
 	VideoDecoder::deinit();
 
-	for (uint32 i = 0; i < _tracks.size(); i++)
+	for (size_t i = 0; i < _tracks.size(); i++)
 		delete _tracks[i];
 	_tracks.clear();
 
@@ -104,7 +104,7 @@ void QuickTimeDecoder::load() {
 		throw Common::Exception("Not a valid QuickTime video");
 
 	// Remove unknown/unhandled tracks
-	for (uint32 i = 0; i < _tracks.size(); i++) {
+	for (size_t i = 0; i < _tracks.size(); i++) {
 		if (_tracks[i]->codecType == CODEC_TYPE_MOV_OTHER) {
 			delete _tracks[i];
 			_tracks.erase(_tracks.begin() + i);
@@ -113,7 +113,7 @@ void QuickTimeDecoder::load() {
 	}
 
 	// Adjust time scale
-	for (uint32 i = 0; i < _tracks.size(); i++) {
+	for (size_t i = 0; i < _tracks.size(); i++) {
 		if (!_tracks[i]->timeScale)
 			_tracks[i]->timeScale = _timeScale;
 
@@ -150,7 +150,7 @@ void QuickTimeDecoder::load() {
 	initVideo(_tracks[_videoTrackIndex]->width, _tracks[_videoTrackIndex]->height);
 
 	// Initialize video codec, if present
-	for (uint32 i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
+	for (size_t i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
 		((VideoSampleDesc *) _tracks[_videoTrackIndex]->sampleDescs[i])->initCodec(*_surface);
 }
 
@@ -418,10 +418,10 @@ int QuickTimeDecoder::readDefault(Atom atom) {
 			// skip leaf atoms data
 			_fd->skip(a.size);
 		} else {
-			uint32 start_pos = _fd->pos();
+			size_t start_pos = _fd->pos();
 			err = (this->*_parseTable[i].func)(a);
 
-			uint32 left = a.size - _fd->pos() + start_pos;
+			size_t left = a.size - _fd->pos() + start_pos;
 
 			if (left > 0) // skip garbage at atom end
 				_fd->skip(left);
@@ -573,7 +573,7 @@ int QuickTimeDecoder::readSTSD(Atom UNUSED(atom)) {
 
 	for (uint32 i = 0; i < entryCount; i++) { // Parsing Sample description table
 		Atom a = { 0, 0, 0 };
-		uint32 start_pos = _fd->pos();
+		size_t start_pos = _fd->pos();
 		int size = _fd->readUint32BE(); // size
 		uint32 format = _fd->readUint32BE(); // data format
 
@@ -940,7 +940,7 @@ QuickTimeDecoder::Track::~Track() {
 	delete[] keyframes;
 	delete extraData;
 
-	for (uint32 i = 0; i < sampleDescs.size(); i++)
+	for (size_t i = 0; i < sampleDescs.size(); i++)
 		delete sampleDescs[i];
 }
 

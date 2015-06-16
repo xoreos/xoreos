@@ -137,7 +137,7 @@ void Creature::init() {
 	_model   = 0;
 	_tooltip = 0;
 
-	for (int i = 0; i < kAbilityMAX; i++)
+	for (size_t i = 0; i < kAbilityMAX; i++)
 		_abilities[i] = 0;
 
 	_bodyParts.resize(kBodyPartMAX);
@@ -267,7 +267,7 @@ void Creature::removeAssociate(Creature &henchman) {
 	}
 }
 
-Creature *Creature::getAssociate(AssociateType type, int nth) const {
+Creature *Creature::getAssociate(AssociateType type, size_t nth) const {
 	if (_associates.empty())
 		return 0;
 
@@ -398,7 +398,7 @@ void Creature::getPartModels() {
 		_partsSuperModelName = Common::UString::format("p%s%s%s",
 		                       genderChar.c_str(), raceChar.c_str(), phenoAltChar.c_str());
 
-	for (uint i = 0; i < kBodyPartMAX; i++)
+	for (size_t i = 0; i < kBodyPartMAX; i++)
 		constructModelName(kBodyPartModels[i],
 		                   _bodyParts[i].idArmor > 0 ? _bodyParts[i].idArmor : _bodyParts[i].id,
 		                   genderChar, raceChar, phenoChar, phenoAltChar,
@@ -414,7 +414,7 @@ void Creature::getArmorModels() {
 		status("Equipping armour \"%s\" on model \"%s\"", item.getName().c_str(), _tag.c_str());
 
 		// Set the body part models
-		for (uint i = 0; i < kBodyPartMAX; i++) {
+		for (size_t i = 0; i < kBodyPartMAX; i++) {
 			int id = item.getArmorPart(i);
 			if (id > 0)
 				_bodyParts[i].idArmor = id;
@@ -470,7 +470,7 @@ void Creature::loadModel() {
 		getPartModels();
 		_model = loadModelObject(_partsSuperModelName);
 
-		for (uint i = 0; i < kBodyPartMAX; i++) {
+		for (size_t i = 0; i < kBodyPartMAX; i++) {
 			if (_bodyParts[i].modelName.empty())
 				continue;
 
@@ -728,7 +728,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	_phenotype    = gff.getUint("Phenotype"      , _phenotype);
 
 	// Body parts
-	for (uint i = 0; i < kBodyPartMAX; i++) {
+	for (size_t i = 0; i < kBodyPartMAX; i++) {
 		_bodyParts[i].id      = gff.getUint(kBodyPartFields[i], _bodyParts[i].id);
 		_bodyParts[i].idArmor = 0;
 	}

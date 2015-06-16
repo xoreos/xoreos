@@ -149,29 +149,29 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 	return token;
 }
 
-int StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<UString> &list,
-		int min, int max, const UString &def) {
+size_t StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<UString> &list,
+		size_t min, size_t max, const UString &def) {
 
-	assert((min >= 0) && ((max == -1) || (max >= min)));
+	assert(max >= min);
 
 	list.clear();
 	list.reserve(min);
 
-	int realTokenCount;
-	for (realTokenCount = 0; !isChunkEnd(stream) && ((max < 0) || (realTokenCount < max)); realTokenCount++) {
+	size_t realTokenCount;
+	for (realTokenCount = 0; !isChunkEnd(stream) && (realTokenCount < max); realTokenCount++) {
 		UString token = getToken(stream);
 
 		if (!token.empty() || (_conSepRule != kRuleIgnoreAll))
 			list.push_back(token);
 	}
 
-	while (list.size() < ((uint32) min))
+	while (list.size() < min)
 		list.push_back(def);
 
 	return realTokenCount;
 }
 
-void StreamTokenizer::skipToken(SeekableReadStream &stream, uint32 n) {
+void StreamTokenizer::skipToken(SeekableReadStream &stream, size_t n) {
 	while (n-- > 0)
 		UString token = getToken(stream);
 }

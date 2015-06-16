@@ -359,7 +359,7 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 	bool hasAlpha = true;
 	bool isDecal  = true;
 
-	for (uint t = 0; t != textures.size(); t++) {
+	for (size_t t = 0; t != textures.size(); t++) {
 
 		try {
 
@@ -480,7 +480,7 @@ void ModelNode::orderChildren() {
 
 void ModelNode::renderGeometry() {
 	// Enable all needed texture units
-	for (uint32 t = 0; t < _textures.size(); t++) {
+	for (size_t t = 0; t < _textures.size(); t++) {
 		TextureMan.activeTexture(t);
 		glEnable(GL_TEXTURE_2D);
 
@@ -491,16 +491,16 @@ void ModelNode::renderGeometry() {
 
 	const VertexDecl &vertexDecl = _vertexBuffer.getVertexDecl();
 
-	for (uint32 i = 0; i < vertexDecl.size(); i++)
+	for (size_t i = 0; i < vertexDecl.size(); i++)
 		EnableVertexAttrib(vertexDecl[i]);
 
 	glDrawElements(GL_TRIANGLES, _indexBuffer.getCount(), _indexBuffer.getType(), _indexBuffer.getData());
 
-	for (uint32 i = 0; i < vertexDecl.size(); i++)
+	for (size_t i = 0; i < vertexDecl.size(); i++)
 		DisableVertexAttrib(vertexDecl[i]);
 
 	// Disable the texture units again
-	for (uint32 i = 0; i < _textures.size(); i++) {
+	for (size_t i = 0; i < _textures.size(); i++) {
 		TextureMan.activeTexture(i);
 		glDisable(GL_TEXTURE_2D);
 	}
@@ -592,8 +592,8 @@ void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) co
 		return;
 	}
 
-	uint32 lastFrame = 0;
-	for (uint32 i = 0; i < _positionFrames.size(); i++) {
+	size_t lastFrame = 0;
+	for (size_t i = 0; i < _positionFrames.size(); i++) {
 		const PositionKeyFrame &pos = _positionFrames[i];
 		if (pos.time >= time)
 			break;
@@ -624,8 +624,8 @@ void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z,
 		return;
 	}
 
-	uint32 lastFrame = 0;
-	for (uint32 i = 0; i < _orientationFrames.size(); i++) {
+	size_t lastFrame = 0;
+	for (size_t i = 0; i < _orientationFrames.size(); i++) {
 		const QuaternionKeyFrame &pos = _orientationFrames[i];
 		if (pos.time >= time)
 			break;

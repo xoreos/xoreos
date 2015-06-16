@@ -78,7 +78,7 @@ void CharPackage::callbackActive(Widget &widget) {
 		}
 
 	if (widget.getTag() == "ClassListBox") {
-		uint choice = _packageListBox->getSelected();
+		size_t choice = _packageListBox->getSelected();
 		getEditBox("HelpBox", true)->setText("fnt_galahad14", _helpTexts[choice]);
 		getEditBox("HelpBox", true)->setTitle("fnt_galahad14", _packageNames[choice]);
 	}
@@ -94,7 +94,7 @@ void CharPackage::createPackageList() {
 	_packageNames.clear();
 
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("packages");
-	for (uint16 it = 0; it < twoda.getRowCount(); ++it) {
+	for (size_t it = 0; it < twoda.getRowCount(); ++it) {
 		const Aurora::TwoDARow &row = twoda.getRow(it);
 		if (row.getInt("PlayerClass") == 0 || row.getInt("ClassID") != (int) _choices->getClass()
 		    || row.getInt("Name") == 0)
@@ -119,7 +119,7 @@ void CharPackage::createPackageList() {
 		return;
 	}
 
-	uint32 p = 0;
+	size_t p = 0;
 	for (;p < _packageID.size(); ++p) {
 		if (_packageID[p] == package)
 			break;

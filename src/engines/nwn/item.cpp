@@ -209,7 +209,7 @@ static const char *kArmorPartFields[] = {
 
 void Item::loadArmorParts(const Aurora::GFF3Struct &gff)
 {
-	for (uint i = 0; i < kArmorPartMAX; i++)
+	for (size_t i = 0; i < kArmorPartMAX; i++)
 		if (gff.hasField(kArmorPartFields[i])) {
 			_armorParts[i].id = gff.getUint(kArmorPartFields[i], _armorParts[i].id);
 		}
@@ -222,7 +222,7 @@ bool Item::isArmor() const {
 	return _armorParts[kArmorPartTorso].id > 0;
 }
 
-int Item::getArmorPart(int index) const {
+int Item::getArmorPart(size_t index) const {
 	return _armorParts[index].id;
 }
 

@@ -123,7 +123,7 @@ private:
 	Codec *createCodec();
 	AudioStream *createAudioStream();
 
-	uint32 _rewindPos;
+	size_t _rewindPos;
 	uint64 _curPacket;
 	Packet *_lastPacket;
 	Codec *_codec;
@@ -150,8 +150,8 @@ ASFStream::Packet::Packet() {
 }
 
 ASFStream::Packet::~Packet() {
-	for (uint32 i = 0; i < segments.size(); i++)
-		for (uint32 j = 0; j < segments[i].data.size(); j++)
+	for (size_t i = 0; i < segments.size(); i++)
+		for (size_t j = 0; j < segments[i].data.size(); j++)
 				delete segments[i].data[j];
 }
 
@@ -202,7 +202,7 @@ void ASFStream::load() {
 	_stream->readByte();
 
 	for (;;) {
-		uint64 startPos = _stream->pos();
+		size_t startPos = _stream->pos();
 		guid = ASFGUID(*_stream);
 		uint64 size = _stream->readUint64LE();
 
@@ -308,7 +308,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 	if (_curPacket == _packetCount)
 		throw Common::Exception("ASFStream::readPacket(): Reading too many packets");
 
-	uint32 packetStartPos = _stream->pos();
+	size_t packetStartPos = _stream->pos();
 
 	// Read a single ASF packet
 	if (_stream->readByte() != 0x82)
@@ -357,16 +357,16 @@ ASFStream::Packet *ASFStream::readPacket() {
 			//uint32 objectStartTime = fragmentOffset; // reused purpose
 			_stream->readByte(); // unknown
 
-			uint32 dataLength = (packet->segments.size() == 1) ? (_maxPacketSize - (_stream->pos() - packetStartPos) - paddingSize) : _stream->readUint16LE();
-			uint32 startObjectPos = _stream->pos();
+			size_t dataLength = (packet->segments.size() == 1) ? (_maxPacketSize - (_stream->pos() - packetStartPos) - paddingSize) : _stream->readUint16LE();
+			size_t startObjectPos = _stream->pos();
 
-			while ((uint32)_stream->pos() < dataLength + startObjectPos)
+			while (_stream->pos() < dataLength + startObjectPos)
 				segment.data.push_back(_stream->readStream(_stream->readByte()));
 		} else if (flags == 8) {
 			/* uint32 objectLength = */ _stream->readUint32LE();
 			/* uint32 objectStartTime = */ _stream->readUint32LE();
 
-			uint32 dataLength = 0;
+			size_t dataLength = 0;
 			if (packet->segments.size() == 1)
 				dataLength = _maxPacketSize - (_stream->pos() - packetStartPos) - fragmentOffset - paddingSize;
 			else if (segmentCount & 0x40)
@@ -386,8 +386,8 @@ ASFStream::Packet *ASFStream::readPacket() {
 	// We just read a packet
 	_curPacket++;
 
-	if ((uint32)_stream->pos() != packetStartPos + _maxPacketSize)
-		throw Common::Exception("ASFStream::readPacket(): Mismatching packet pos: %d (should be %d)", _stream->pos(), _maxPacketSize + packetStartPos);
+	if (_stream->pos() != packetStartPos + _maxPacketSize)
+		throw Common::Exception("ASFStream::readPacket(): Mismatching packet pos: %u (should be %u)", (uint)_stream->pos(), (uint)(_maxPacketSize + packetStartPos));
 
 	return packet;
 }

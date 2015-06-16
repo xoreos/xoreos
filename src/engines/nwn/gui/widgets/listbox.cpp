@@ -87,7 +87,7 @@ void WidgetListItem::select() {
 	activate();
 }
 
-uint WidgetListItem::getItemNumber() const {
+size_t WidgetListItem::getItemNumber() const {
 	return _itemNumber;
 }
 
@@ -392,7 +392,7 @@ void WidgetListBox::clear() {
 	updateScrollbarLength();
 }
 
-void WidgetListBox::reserve(uint n) {
+void WidgetListBox::reserve(size_t n) {
 	assert(_locked);
 
 	_items.reserve(n);
@@ -428,7 +428,7 @@ void WidgetListBox::unlock() {
 		return;
 	}
 
-	uint count = MIN<uint>(_contentHeight / _items.front()->getHeight(), _items.size());
+	size_t count = MIN<size_t>(_contentHeight / _items.front()->getHeight(), _items.size());
 	if ((count == 0) || (count == _visibleItems.size())) {
 		GfxMan.unlockFrame();
 		return;
@@ -438,7 +438,7 @@ void WidgetListBox::unlock() {
 
 	_visibleItems.reserve(count);
 
-	uint start = _startItem + _visibleItems.size();
+	size_t start = _startItem + _visibleItems.size();
 
 	float itemHeight = _items.front()->getHeight();
 	while (_visibleItems.size() < count) {
@@ -488,7 +488,7 @@ void WidgetListBox::updateScrollbarPosition() {
 	if (!_scrollbar)
 		return;
 
-	int max = _items.size() - _visibleItems.size();
+	ptrdiff_t max = _items.size() - _visibleItems.size();
 	if (max > 0)
 		_scrollbar->setState(((float) _startItem) / max);
 	else
@@ -501,12 +501,12 @@ void WidgetListBox::updateVisible() {
 
 	GfxMan.lockFrame();
 
-	for (uint i = 0; i < _visibleItems.size(); i++)
+	for (size_t i = 0; i < _visibleItems.size(); i++)
 		_visibleItems[i]->hide();
 
 	float itemHeight = _items.front()->getHeight();
 	float itemY      = _contentY;
-	for (uint i = 0; i < _visibleItems.size(); i++) {
+	for (size_t i = 0; i < _visibleItems.size(); i++) {
 		WidgetListItem *item = _items[_startItem + i];
 
 		itemY -= itemHeight;
@@ -527,33 +527,33 @@ void WidgetListBox::itemDblClicked() {
 	setActive(true);
 }
 
-void WidgetListBox::scrollUp(uint n) {
+void WidgetListBox::scrollUp(size_t n) {
 	if (_visibleItems.empty())
 		return;
 
 	if (_startItem == 0)
 		return;
 
-	_startItem -= MIN<uint>(n, _startItem);
+	_startItem -= MIN<size_t>(n, _startItem);
 
 	updateVisible();
 	updateScrollbarPosition();
 }
 
-void WidgetListBox::scrollDown(uint n) {
+void WidgetListBox::scrollDown(size_t n) {
 	if (_visibleItems.empty())
 		return;
 
 	if (_startItem + _visibleItems.size() >= _items.size())
 		return;
 
-	_startItem += MIN<uint>(n, _items.size() - _visibleItems.size() - _startItem);
+	_startItem += MIN<size_t>(n, _items.size() - _visibleItems.size() - _startItem);
 
 	updateVisible();
 	updateScrollbarPosition();
 }
 
-void WidgetListBox::select(uint item) {
+void WidgetListBox::select(size_t item) {
 	if (item >= _items.size())
 		return;
 
@@ -561,7 +561,7 @@ void WidgetListBox::select(uint item) {
 	_selectedItem = item;
 }
 
-uint WidgetListBox::getSelected() const {
+size_t WidgetListBox::getSelected() const {
 	return _selectedItem;
 }
 
@@ -589,11 +589,11 @@ void WidgetListBox::subActive(Widget &widget) {
 	}
 
 	if (widget.getTag().endsWith("#Bar")) {
-		int max = _items.size() - _visibleItems.size();
+		ptrdiff_t max = _items.size() - _visibleItems.size();
 		if (max <= 0)
 			return;
 
-		uint startItem = _scrollbar->getState() * max;
+		size_t startItem = _scrollbar->getState() * max;
 		if (startItem == _startItem)
 			return;
 

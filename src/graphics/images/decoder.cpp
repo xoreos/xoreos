@@ -154,11 +154,11 @@ PixelDataType ImageDecoder::getDataType() const {
 	return _dataType;
 }
 
-uint32 ImageDecoder::getMipMapCount() const {
+size_t ImageDecoder::getMipMapCount() const {
 	return _mipMaps.size();
 }
 
-const ImageDecoder::MipMap &ImageDecoder::getMipMap(uint32 mipMap) const {
+const ImageDecoder::MipMap &ImageDecoder::getMipMap(size_t mipMap) const {
 	assert(mipMap < _mipMaps.size());
 
 	return *_mipMaps[mipMap];

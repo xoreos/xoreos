@@ -66,7 +66,7 @@ float Tileset::getTilesHeight() const {
 	return _tilesHeight;
 }
 
-const Tileset::Tile &Tileset::getTile(uint n) const {
+const Tileset::Tile &Tileset::getTile(size_t n) const {
 	if (n >= _tiles.size())
 		throw Common::Exception("Tileset has no tile %u", n);
 
@@ -86,7 +86,7 @@ void Tileset::load(const Common::ConfigFile &set) {
 
 	_tiles.resize(tiles->getUint("Count"));
 
-	for (uint i = 0; i < _tiles.size(); i++)
+	for (size_t i = 0; i < _tiles.size(); i++)
 		loadTile(set, i, _tiles[i]);
 }
 

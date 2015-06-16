@@ -322,7 +322,7 @@ void Module::loadHAKs() {
 
 	_resHAKs.resize(haks.size());
 
-	for (uint i = 0; i < haks.size(); i++)
+	for (size_t i = 0; i < haks.size(); i++)
 		indexMandatoryArchive(haks[i] + ".hak", 1002 + i, &_resHAKs[i]);
 }
 
@@ -338,8 +338,8 @@ void Module::loadAreas() {
 	status("Loading areas...");
 
 	const std::vector<Common::UString> &areas = _ifo.getAreas();
-	for (uint32 i = 0; i < areas.size(); i++) {
-		status("Loading area \"%s\" (%d / %d)", areas[i].c_str(), i, (int) areas.size() - 1);
+	for (size_t i = 0; i < areas.size(); i++) {
+		status("Loading area \"%s\" (%d / %d)", areas[i].c_str(), (int)i, (int)areas.size() - 1);
 
 		std::pair<AreaMap::iterator, bool> result;
 

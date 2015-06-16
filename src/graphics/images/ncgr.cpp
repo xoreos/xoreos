@@ -88,7 +88,7 @@ void NCGR::load(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32 w
                 Common::SeekableReadStream &nclr) {
 
 	if ((width * height) != ncgrs.size())
-		throw Common::Exception("%u NCGRs won't fill a grid of %ux%u", ncgrs.size(), width, height);
+		throw Common::Exception("%u NCGRs won't fill a grid of %ux%u", (uint)ncgrs.size(), width, height);
 
 	ReadContext ctx;
 
@@ -98,7 +98,7 @@ void NCGR::load(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32 w
 
 	ctx.ncgrs.resize(ncgrs.size());
 
-	for (uint32 i = 0; i < ncgrs.size(); i++) {
+	for (size_t i = 0; i < ncgrs.size(); i++) {
 		if (!ncgrs[i])
 			continue;
 
@@ -133,8 +133,8 @@ void NCGR::readHeader(NCGRFile &ctx) {
 		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
 	const uint32 fileSize = ctx.ncgr->readUint32();
-	if (fileSize > (uint32)ctx.ncgr->size())
-		throw Common::Exception("Size too large (%u > %u)", fileSize, ctx.ncgr->size());
+	if (fileSize > ctx.ncgr->size())
+		throw Common::Exception("Size too large (%u > %u)", fileSize, (uint)ctx.ncgr->size());
 
 	const uint16 headerSize = ctx.ncgr->readUint16();
 	if (headerSize != 16)

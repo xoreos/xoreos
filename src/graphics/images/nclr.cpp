@@ -84,8 +84,8 @@ void NCLR::readHeader(Common::SeekableSubReadStreamEndian &nclr) {
 		throw Common::Exception("Unsupported version %u.%u", versionMajor, versionMinor);
 
 	const uint32 fileSize = nclr.readUint32();
-	if (fileSize > (uint32)nclr.size())
-		throw Common::Exception("Size too large (%u > %u)", fileSize, nclr.size());
+	if (fileSize > nclr.size())
+		throw Common::Exception("Size too large (%u > %u)", fileSize, (uint)nclr.size());
 
 	const uint16 headerSize = nclr.readUint16();
 	if (headerSize != 16)

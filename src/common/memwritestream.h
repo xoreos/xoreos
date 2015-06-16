@@ -37,19 +37,19 @@ namespace Common {
  */
 class MemoryWriteStream : public WriteStream {
 public:
-	MemoryWriteStream(byte *buf, uint32 len);
+	MemoryWriteStream(byte *buf, size_t len);
 	~MemoryWriteStream();
 
-	uint32 write(const void *dataPtr, uint32 dataSize);
+	size_t write(const void *dataPtr, size_t dataSize);
 
-	uint32 pos() const;
-	uint32 size() const;
+	size_t pos() const;
+	size_t size() const;
 
 private:
 	byte *_ptr;
 
-	const uint32 _bufSize;
-	uint32 _pos;
+	const size_t _bufSize;
+	size_t _pos;
 };
 
 /** A sort of hybrid between MemoryWriteStream and Array classes. A stream
@@ -57,17 +57,17 @@ private:
  */
 class MemoryWriteStreamDynamic : public WriteStream {
 public:
-	MemoryWriteStreamDynamic(bool disposeMemory = false, uint32 capacity = 0);
+	MemoryWriteStreamDynamic(bool disposeMemory = false, size_t capacity = 0);
 	~MemoryWriteStreamDynamic();
 
-	void reserve(uint32 s);
+	void reserve(size_t s);
 
-	uint32 write(const void *dataPtr, uint32 dataSize);
+	size_t write(const void *dataPtr, size_t dataSize);
 
 	void dispose();
 
-	uint32 pos() const;
-	uint32 size() const;
+	size_t pos() const;
+	size_t size() const;
 
 	byte *getData();
 
@@ -77,12 +77,12 @@ private:
 	bool _disposeMemory;
 
 	byte *_ptr;
-	uint32 _pos;
+	size_t _pos;
 
-	uint32 _capacity;
-	uint32 _size;
+	size_t _capacity;
+	size_t _size;
 
-	void ensureCapacity(uint32 newLen);
+	void ensureCapacity(size_t newLen);
 };
 
 } // End of namespace Common

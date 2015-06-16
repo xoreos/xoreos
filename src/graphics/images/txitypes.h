@@ -96,7 +96,9 @@ enum TXICommand {
 	TXICommandUpperLeftCoords     = 58,
 	TXICommandWaterHeight         = 59,
 	TXICommandWaterWidth          = 60,
-	TXICommandXBoxDownsample      = 61
+	TXICommandXBoxDownsample      = 61,
+
+	TXICommandMAX
 };
 
 /** Parse a TXI command from a string. */

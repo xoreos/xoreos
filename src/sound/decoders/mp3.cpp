@@ -47,7 +47,7 @@ protected:
 	Common::SeekableReadStream *_inStream;
 	bool _disposeAfterUse;
 
-	uint _posInFrame;
+	size_t _posInFrame;
 	State _state;
 
 	mad_timer_t _totalTime;
@@ -162,7 +162,7 @@ void MP3Stream::decodeMP3Data() {
 }
 
 void MP3Stream::readMP3Data() {
-	uint32 remaining = 0;
+	size_t remaining = 0;
 
 	// Give up immediately if we already used up all data in the stream
 	if (_inStream->eos()) {
@@ -180,7 +180,7 @@ void MP3Stream::readMP3Data() {
 	}
 
 	// Try to read the next block
-	uint32 size = _inStream->read(_buf + remaining, BUFFER_SIZE - remaining);
+	size_t size = _inStream->read(_buf + remaining, BUFFER_SIZE - remaining);
 	if (size <= 0) {
 		_state = MP3_STATE_EOS;
 		return;

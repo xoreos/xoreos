@@ -38,7 +38,7 @@ ReadStream::ReadStream() {
 ReadStream::~ReadStream() {
 }
 
-MemoryReadStream *ReadStream::readStream(uint32 dataSize) {
+MemoryReadStream *ReadStream::readStream(size_t dataSize) {
 	byte *buf = new byte[dataSize];
 
 	try {
@@ -61,7 +61,7 @@ SeekableReadStream::SeekableReadStream() {
 SeekableReadStream::~SeekableReadStream() {
 }
 
-uint32 SeekableReadStream::evalSeek(int32 offset, Origin whence, uint32 pos, uint32 begin, int32 size) {
+size_t SeekableReadStream::evalSeek(ptrdiff_t offset, Origin whence, size_t pos, size_t begin, size_t size) {
 	switch (whence) {
 		case kOriginEnd:
 			offset = size + offset;
@@ -79,7 +79,7 @@ uint32 SeekableReadStream::evalSeek(int32 offset, Origin whence, uint32 pos, uin
 }
 
 
-SubReadStream::SubReadStream(ReadStream *parentStream, uint32 end, bool disposeParentStream) :
+SubReadStream::SubReadStream(ReadStream *parentStream, size_t end, bool disposeParentStream) :
 	_parentStream(parentStream), _disposeParentStream(disposeParentStream),
 	_pos(0), _end(end), _eos(false) {
 
@@ -95,8 +95,8 @@ bool SubReadStream::eos() const {
 	return _eos | _parentStream->eos();
 }
 
-uint32 SubReadStream::read(void *dataPtr, uint32 dataSize) {
-	if (dataSize > _end - _pos) {
+size_t SubReadStream::read(void *dataPtr, size_t dataSize) {
+	if (dataSize > (size_t)(_end - _pos)) {
 		dataSize = _end - _pos;
 		_eos = true;
 	}
@@ -108,8 +108,8 @@ uint32 SubReadStream::read(void *dataPtr, uint32 dataSize) {
 }
 
 
-SeekableSubReadStream::SeekableSubReadStream(SeekableReadStream *parentStream, uint32 begin, uint32 end,
-                                             bool disposeParentStream) :
+SeekableSubReadStream::SeekableSubReadStream(SeekableReadStream *parentStream, size_t begin,
+                                             size_t end, bool disposeParentStream) :
 	SubReadStream(parentStream, end, disposeParentStream), _parentStream(parentStream), _begin(begin) {
 
 	assert(_begin <= _end);
@@ -121,20 +121,20 @@ SeekableSubReadStream::SeekableSubReadStream(SeekableReadStream *parentStream, u
 SeekableSubReadStream::~SeekableSubReadStream() {
 }
 
-int32 SeekableSubReadStream::pos() const {
+size_t SeekableSubReadStream::pos() const {
 	return _pos - _begin;
 }
 
-int32 SeekableSubReadStream::size() const {
+size_t SeekableSubReadStream::size() const {
 	return _end - _begin;
 }
 
-uint32 SeekableSubReadStream::seek(int32 offset, Origin whence) {
+size_t SeekableSubReadStream::seek(ptrdiff_t offset, Origin whence) {
 	assert(_pos >= _begin);
 	assert(_pos <= _end);
 
-	const uint32 oldPos = _pos;
-	const uint32 newPos = evalSeek(offset, whence, _pos, _begin, size());
+	const size_t oldPos = _pos;
+	const size_t newPos = evalSeek(offset, whence, _pos, _begin, size());
 	if ((newPos < _begin) || (newPos > _end))
 		throw Exception(kSeekError);
 
@@ -148,7 +148,7 @@ uint32 SeekableSubReadStream::seek(int32 offset, Origin whence) {
 
 
 SeekableSubReadStreamEndian::SeekableSubReadStreamEndian(SeekableReadStream *parentStream,
-		uint32 begin, uint32 end, bool bigEndian, bool disposeParentStream) :
+		size_t begin, size_t end, bool bigEndian, bool disposeParentStream) :
 		SeekableSubReadStream(parentStream, begin, end, disposeParentStream), _bigEndian(bigEndian) {
 
 }

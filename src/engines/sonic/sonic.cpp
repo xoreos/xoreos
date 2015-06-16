@@ -155,7 +155,7 @@ bool SonicEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::USt
 	try {
 		Aurora::NDSFile nds(target);
 
-		for (uint i = 0; i < Aurora::kLanguageMAX; i++) {
+		for (size_t i = 0; i < Aurora::kLanguageMAX; i++) {
 			Common::UString herf = getLanguageHERF((Aurora::Language) i);
 			Common::UString tlk  = getLanguageTLK ((Aurora::Language) i);
 			if (herf.empty() || tlk.empty())
@@ -291,7 +291,7 @@ void SonicEngine::initResources(LoadProgress &progress) {
 }
 
 void SonicEngine::declareResources() {
-	for (uint i = 0; i < ARRAYSIZE(kFiles); i++)
+	for (size_t i = 0; i < ARRAYSIZE(kFiles); i++)
 		ResMan.declareResource(kFiles[i]);
 }
 

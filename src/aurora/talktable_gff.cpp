@@ -181,11 +181,11 @@ void TalkTable_GFF::readString05(Common::SeekableReadStream *huffTree,
 	uint32 shift = startOffset & 0x1F;
 
 	do {
-		int32 e = (huffTree->size() / 8) - 1;
+		ptrdiff_t e = (huffTree->size() / 8) - 1;
 
 		while (e >= 0) {
 			bitStream->seek(index * 4);
-			const uint32 offset = (bitStream->readUint32LE() >> shift) & 1;
+			const ptrdiff_t offset = (bitStream->readUint32LE() >> shift) & 1;
 
 			huffTree->seek(((e * 2) + offset) * 4);
 			e = huffTree->readSint32LE();
@@ -201,7 +201,7 @@ void TalkTable_GFF::readString05(Common::SeekableReadStream *huffTree,
 	} while (utf16Str.back() != 0);
 
 	const byte  *data = (const byte *) &utf16Str[0];
-	const uint32 size = utf16Str.size() * 2;
+	const size_t size = utf16Str.size() * 2;
 
 	entry.text = Common::readString(data, size, Common::kEncodingUTF16LE);
 }

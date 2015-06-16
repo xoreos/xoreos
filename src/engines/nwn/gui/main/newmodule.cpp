@@ -186,7 +186,7 @@ void NewModuleMenu::callbackActive(Widget &widget) {
 }
 
 Common::UString NewModuleMenu::getSelectedModule() {
-	uint n = getListBox("ModuleListBox", true)->getSelected();
+	size_t n = getListBox("ModuleListBox", true)->getSelected();
 	if (n >= _modules.size())
 		return "";
 

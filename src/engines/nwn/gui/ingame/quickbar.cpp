@@ -40,7 +40,7 @@ namespace Engines {
 
 namespace NWN {
 
-QuickbarButton::QuickbarButton(::Engines::GUI &gui, uint n) : NWNWidget(gui, ""),
+QuickbarButton::QuickbarButton(::Engines::GUI &gui, size_t n) : NWNWidget(gui, ""),
 	_buttonNumber(n) {
 
 	Graphics::Aurora::ModelNode *invisible = 0;

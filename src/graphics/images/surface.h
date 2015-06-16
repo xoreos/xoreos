@@ -43,7 +43,7 @@ public:
 	void fill(byte r, byte g, byte b, byte a);
 
 	/** Return a mip map. */
-	const MipMap &getMipMap(uint32 mipMap) const;
+	const MipMap &getMipMap(size_t mipMap) const;
 	/** Return a mip map. */
 	const MipMap &getMipMap() const;
 	/** Return a mip map. */

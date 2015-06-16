@@ -48,7 +48,7 @@ public:
 	virtual float getLineSpacing() const;
 
 	/** Return the number of lines this text spans. */
-	uint32 getLineCount(const Common::UString &text, float maxWidth = 0.0, float maxHeight = 0.0) const;
+	size_t getLineCount(const Common::UString &text, float maxWidth = 0.0, float maxHeight = 0.0) const;
 
 	/** Return the width this string would take. */
 	float getWidth (const Common::UString &text, float maxWidth = 0.0) const;

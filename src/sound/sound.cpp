@@ -58,14 +58,13 @@ SoundManager::SoundManager() : _ready(false), _hasSound(false), _hasMultiChannel
 }
 
 void SoundManager::init() {
-	for (int i = 0; i < kChannelCount; i++)
+	for (size_t i = 0; i < kChannelCount; i++)
 		_channels[i] = 0;
 
-	for (int i = 0; i < kSoundTypeMAX; i++)
+	for (size_t i = 0; i < kSoundTypeMAX; i++)
 		_types[i].gain = 1.0;
 
-	_curChannel = 1;
-	_curID      = 1;
+	_curID = 1;
 
 	_dev = alcOpenDevice(0);
 
@@ -111,7 +110,7 @@ void SoundManager::deinit() {
 	if (!destroyThread())
 		warning("SoundManager::deinit(): Sound thread had to be killed");
 
-	for (uint16 i = 1; i < kChannelCount; i++)
+	for (size_t i = 0; i < kChannelCount; i++)
 		freeChannel(i);
 
 	if (_hasSound) {
@@ -134,7 +133,7 @@ void SoundManager::triggerUpdate() {
 }
 
 bool SoundManager::isValidChannel(const ChannelHandle &handle) const {
-	if ((handle.channel == 0) || (handle.id == 0) || !_channels[handle.channel])
+	if ((handle.channel >= kChannelCount) || (handle.id == 0) || !_channels[handle.channel])
 		return false;
 
 	if (_channels[handle.channel]->id != handle.id)
@@ -146,7 +145,7 @@ bool SoundManager::isValidChannel(const ChannelHandle &handle) const {
 bool SoundManager::isPlaying(const ChannelHandle &handle) {
 	Common::StackLock lock(_mutex);
 
-	if ((handle.channel == 0) || (handle.id == 0) || !_channels[handle.channel])
+	if ((handle.channel >= kChannelCount) || (handle.id == 0) || !_channels[handle.channel])
 		return false;
 
 	if (_channels[handle.channel]->id != handle.id)
@@ -155,8 +154,8 @@ bool SoundManager::isPlaying(const ChannelHandle &handle) {
 	return isPlaying(handle.channel);
 }
 
-bool SoundManager::isPlaying(uint16 channel) const {
-	if ((channel == 0) || !_channels[channel])
+bool SoundManager::isPlaying(size_t channel) const {
+	if ((channel >= kChannelCount) || !_channels[channel])
 		return false;
 
 	// TODO: This might pose a problem should we ever need to wait
@@ -304,7 +303,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 				throw Common::Exception("OpenAL error while generating sources: %X", error);
 
 			// Create all needed buffers
-			for (int i = 0; i < kOpenALBufferCount; i++) {
+			for (size_t i = 0; i < kOpenALBufferCount; i++) {
 				ALuint buffer;
 
 				alGenBuffers(1, &buffer);
@@ -361,7 +360,7 @@ ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream,
 }
 
 SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handle) {
-	if ((handle.channel == 0) || (handle.id == 0))
+	if ((handle.channel >= kChannelCount) || (handle.id == 0))
 		return 0;
 
 	if (!_channels[handle.channel])
@@ -404,14 +403,14 @@ void SoundManager::stopChannel(ChannelHandle &handle) {
 void SoundManager::pauseAll(bool pause) {
 	Common::StackLock lock(_mutex);
 
-	for (uint16 i = 1; i < kChannelCount; i++)
+	for (size_t i = 0; i < kChannelCount; i++)
 		pauseChannel(_channels[i], pause);
 }
 
 void SoundManager::stopAll() {
 	Common::StackLock lock(_mutex);
 
-	for (uint16 i = 1; i < kChannelCount; i++)
+	for (size_t i = 0; i < kChannelCount; i++)
 		freeChannel(i);
 }
 
@@ -545,8 +544,8 @@ bool SoundManager::fillBuffer(ALuint alBuffer, AudioStream *stream) const {
 	return true;
 }
 
-void SoundManager::bufferData(uint16 channel) {
-	if ((channel == 0) || !_channels[channel])
+void SoundManager::bufferData(size_t channel) {
+	if ((channel >= kChannelCount) || !_channels[channel])
 		return;
 
 	bufferData(*_channels[channel]);
@@ -592,7 +591,7 @@ void SoundManager::checkReady() {
 void SoundManager::update() {
 	Common::StackLock lock(_mutex);
 
-	for (int i = 1; i < kChannelCount; i++) {
+	for (size_t i = 0; i < kChannelCount; i++) {
 		if (!_channels[i])
 			continue;
 
@@ -608,17 +607,13 @@ void SoundManager::update() {
 }
 
 ChannelHandle SoundManager::newChannel() {
-	uint16 foundChannel = 0;
+	size_t foundChannel = kChannelInvalid;
 
-	for (int i = 0; (i < kChannelCount) && !foundChannel; i++) {
+	for (size_t i = 0; (i < kChannelCount) && (foundChannel == kChannelInvalid); i++)
 		if (!_channels[i])
 			foundChannel = i;
 
-		// Channel 0 is reserved for "invalid channel"
-		_curChannel = (_curChannel >= kChannelCount) ? 1 : (_curChannel + 1);
-	}
-
-	if (!foundChannel)
+	if (foundChannel == kChannelInvalid)
 		throw Common::Exception("All sound channels occupied");
 
 	ChannelHandle handle;
@@ -653,18 +648,18 @@ void SoundManager::pauseChannel(Channel *channel, bool pause) {
 }
 
 void SoundManager::freeChannel(ChannelHandle &handle) {
-	if ((handle.channel != 0) && (handle.id != 0) && _channels[handle.channel])
+	if ((handle.channel < kChannelCount) && (handle.id != 0) && _channels[handle.channel])
 		// Only free if there is a channel to free
 		if (handle.id == _channels[handle.channel]->id)
 			// Only free if the IDs match
 			freeChannel(handle.channel);
 
-	handle.channel = 0;
+	handle.channel = kChannelInvalid;
 	handle.id      = 0;
 }
 
-void SoundManager::freeChannel(uint16 channel) {
-	if (channel == 0)
+void SoundManager::freeChannel(size_t channel) {
+	if (channel >= kChannelCount)
 		return;
 
 	Channel *c = _channels[channel];

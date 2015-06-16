@@ -147,7 +147,7 @@ private:
 		const char *desc;
 	};
 	const Opcode *_opcodes;
-	uint32 _opcodeListSize;
+	size_t _opcodeListSize;
 	void setupOpcodes();
 
 	void load();
