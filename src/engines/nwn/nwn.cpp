@@ -293,7 +293,7 @@ void NWNEngine::initResources(LoadProgress &progress) {
 	indexOptionalArchive("xp1patch.key", 13);
 
 	// Expansion 2: Hordes of the Underdark (HotU)
-	_hasXP3 = ResMan.hasArchive("xp2.key");
+	_hasXP2 = ResMan.hasArchive("xp2.key");
 	indexOptionalArchive("xp2.key"     , 14);
 	indexOptionalArchive("xp2patch.key", 15);
 
