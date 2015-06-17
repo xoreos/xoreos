@@ -28,6 +28,8 @@
  * (<http://www.tbotr.net/modules.php?mod=Downloads&op=download&sid=3&ssid=3&dlid=19>).
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/readstream.h"

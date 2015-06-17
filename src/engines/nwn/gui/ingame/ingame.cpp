@@ -22,6 +22,8 @@
  *  The NWN ingame GUI elements.
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 
 #include "src/engines/nwn/module.h"

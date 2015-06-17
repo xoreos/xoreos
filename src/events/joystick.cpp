@@ -22,6 +22,8 @@
  *  Joystick/Gamepad handling.
  */
 
+#include <cassert>
+
 #include "src/events/joystick.h"
 
 namespace Events {

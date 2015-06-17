@@ -22,6 +22,8 @@
  *  Decoding Actimagine videos.
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/strutil.h"

@@ -35,6 +35,9 @@
  *   (<http://problemkaputt.de/gbatek.htm>)
  */
 
+#include <cassert>
+#include <cstring>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/strutil.h"

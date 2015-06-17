@@ -22,6 +22,8 @@
  *  The thread the game logic runs in.
  */
 
+#include <cassert>
+
 #include "src/common/version.h"
 #include "src/common/util.h"
 #include "src/common/error.h"

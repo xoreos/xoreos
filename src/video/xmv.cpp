@@ -22,6 +22,8 @@
  *  Decoding Microsoft Xbox XMV videos.
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 #include "src/common/strutil.h"

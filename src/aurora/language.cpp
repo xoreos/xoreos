@@ -22,6 +22,8 @@
  *  Types and functions related to language.
  */
 
+#include <cassert>
+
 #include "src/common/ustring.h"
 #include "src/common/memreadstream.h"
 #include "src/common/memwritestream.h"

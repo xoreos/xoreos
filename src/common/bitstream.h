@@ -25,6 +25,8 @@
 #ifndef COMMON_BITSTREAM_H
 #define COMMON_BITSTREAM_H
 
+#include <cassert>
+
 #include "src/common/types.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"

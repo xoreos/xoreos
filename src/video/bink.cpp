@@ -25,7 +25,9 @@
  *  Decoding RAD Game Tools' Bink videos.
  */
 
+#include <cassert>
 #include <cmath>
+#include <cstring>
 
 #include "src/common/util.h"
 #include "src/common/error.h"

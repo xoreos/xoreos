@@ -22,6 +22,8 @@
  *  A texture as used in the Aurora engines.
  */
 
+#include <cassert>
+
 #include "src/common/types.h"
 #include "src/common/util.h"
 #include "src/common/error.h"

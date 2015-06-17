@@ -22,6 +22,7 @@
  *  Generic Aurora engines (debug) console.
  */
 
+#include <cassert>
 #include <cstdarg>
 #include <cstdio>
 

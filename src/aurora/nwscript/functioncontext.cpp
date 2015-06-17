@@ -22,6 +22,8 @@
  *  Context of an NWScript function.
  */
 
+#include <cassert>
+
 #include "src/aurora/nwscript/functioncontext.h"
 #include "src/aurora/nwscript/ncsfile.h"
 

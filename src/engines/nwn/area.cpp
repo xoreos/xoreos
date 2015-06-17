@@ -22,6 +22,8 @@
  *  NWN area.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 

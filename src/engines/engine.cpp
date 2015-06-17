@@ -22,6 +22,8 @@
  *  Generic engine interface.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/configman.h"
 

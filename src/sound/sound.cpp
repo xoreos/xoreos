@@ -22,6 +22,9 @@
  *  The global sound manager, handling all sound output.
  */
 
+#include <cassert>
+#include <cstring>
+
 #include "src/sound/sound.h"
 #include "src/sound/audiostream.h"
 #include "src/sound/decoders/asf.h"

@@ -31,6 +31,9 @@
  * (<http://romxhack.esforos.com/fuentes-nftr-de-nds-t67>).
  */
 
+#include <cassert>
+#include <cstring>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/ustring.h"

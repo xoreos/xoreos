@@ -22,6 +22,8 @@
  *  A handle to an Aurora texture.
  */
 
+#include <cassert>
+
 #include "src/graphics/aurora/texturehandle.h"
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"

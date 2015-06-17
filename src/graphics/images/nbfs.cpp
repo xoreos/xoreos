@@ -22,6 +22,8 @@
  *  Nitro Basic File Screen, a simple raw Nintendo DS image.
  */
 
+#include <cstring>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"

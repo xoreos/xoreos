@@ -24,6 +24,9 @@
  *  Decoding MP3 (MPEG-1 Audio Layer 3).
  */
 
+#include <cassert>
+#include <cstring>
+
 #include "src/sound/decoders/mp3.h"
 
 #include "src/common/readstream.h"

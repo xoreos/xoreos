@@ -30,6 +30,9 @@
 // Seek function by Gael Chardon gael.dev@4now.net
 //
 
+#include <cassert>
+#include <cstring>
+
 #include "src/common/system.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"

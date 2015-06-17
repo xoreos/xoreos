@@ -22,6 +22,9 @@
  *  A node within a 3D model.
  */
 
+#include <cassert>
+#include <cstring>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"

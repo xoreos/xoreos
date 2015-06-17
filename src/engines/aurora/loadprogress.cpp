@@ -22,6 +22,8 @@
  *  Displaying the progress in loading a game.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 
 #include "src/graphics/graphics.h"

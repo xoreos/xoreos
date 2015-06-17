@@ -24,6 +24,8 @@
  *  The global config manager.
  */
 
+#include <cassert>
+
 #include "src/common/configman.h"
 #include "src/common/strutil.h"
 #include "src/common/readfile.h"

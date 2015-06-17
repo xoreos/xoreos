@@ -22,6 +22,8 @@
  *  A GUI.
  */
 
+#include <cassert>
+
 #include "src/common/system.h"
 #include "src/common/error.h"
 

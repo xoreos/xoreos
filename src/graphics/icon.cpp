@@ -29,6 +29,7 @@
 #endif
 
 #include <cassert>
+#include <cstring>
 
 #include "src/graphics/icon.h"
 

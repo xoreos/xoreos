@@ -24,6 +24,9 @@
  *  Decoding Ogg Vorbis.
  */
 
+#include <cassert>
+#include <cstring>
+
 #include "src/sound/decoders/vorbis.h"
 
 #include "src/common/readstream.h"

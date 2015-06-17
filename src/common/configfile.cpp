@@ -24,6 +24,8 @@
  *  A class storing a basic configuration file.
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 #include "src/common/encoding.h"
 #include "src/common/readstream.h"

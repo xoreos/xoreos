@@ -22,6 +22,8 @@
  *  Handling BioWare's RIMs (resource archives).
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/memreadstream.h"

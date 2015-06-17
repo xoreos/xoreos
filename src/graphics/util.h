@@ -25,6 +25,8 @@
 #ifndef GRAPHICS_UTIL_H
 #define GRAPHICS_UTIL_H
 
+#include <cstring>
+
 #include "src/common/types.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"

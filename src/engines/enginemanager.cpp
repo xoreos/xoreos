@@ -22,6 +22,8 @@
  *  The global engine manager, omniscient about all engines
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"

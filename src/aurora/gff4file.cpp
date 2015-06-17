@@ -26,6 +26,8 @@
  * (<http://social.bioware.com/wiki/datoolset/index.php/GFF>).
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/encoding.h"

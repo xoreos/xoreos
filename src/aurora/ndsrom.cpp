@@ -24,6 +24,8 @@
 
 // Based on http://dsibrew.org/wiki/NDS_Format
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 #include "src/common/error.h"

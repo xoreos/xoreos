@@ -25,6 +25,8 @@
 #ifndef COMMON_THREADS_H
 #define COMMON_THREADS_H
 
+#include <cassert>
+
 #include <SDL_thread.h>
 
 #include "src/common/types.h"

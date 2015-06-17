@@ -33,6 +33,8 @@
  * (<http://problemkaputt.de/gbatek.htm>).
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"

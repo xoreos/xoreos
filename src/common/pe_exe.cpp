@@ -22,6 +22,7 @@
  *  Portable executable parsing.
  */
 
+#include <cassert>
 #include <cstdio>
 
 #include "src/common/pe_exe.h"

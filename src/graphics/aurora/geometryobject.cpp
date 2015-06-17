@@ -22,6 +22,8 @@
  *  A simple 3D object.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 
 #include "src/graphics/aurora/geometryobject.h"

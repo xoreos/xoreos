@@ -22,6 +22,8 @@
  *  A 3D model of an object.
  */
 
+#include <cassert>
+
 #include <SDL_timer.h>
 
 #include "src/common/readstream.h"

@@ -24,6 +24,9 @@
  *  WMV2 video codec, XMV variant.
  */
 
+#include <cassert>
+#include <cstring>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"

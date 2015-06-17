@@ -22,6 +22,8 @@
  *  ZIP file decompresssion.
  */
 
+#include <cassert>
+
 #include "src/common/zipfile.h"
 #include "src/common/error.h"
 #include "src/common/util.h"

@@ -24,6 +24,9 @@
  *  Decoding ADPCM (Adaptive Differential Pulse Code Modulation).
  */
 
+#include <cassert>
+#include <cstring>
+
 #include "src/common/endianness.h"
 
 #include "src/sound/decoders/adpcm.h"

@@ -22,6 +22,8 @@
  *  BioWare's HERF (hashed ERF) file parsing.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/filepath.h"

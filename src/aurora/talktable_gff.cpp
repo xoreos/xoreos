@@ -26,6 +26,8 @@
  * (<http://social.bioware.com/wiki/datoolset/index.php/TLK>).
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"

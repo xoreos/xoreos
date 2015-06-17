@@ -22,6 +22,7 @@
  *  A database in FoxPro format.
  */
 
+#include <cstring>
 #include <cstdio>
 
 #include "src/common/foxpro.h"

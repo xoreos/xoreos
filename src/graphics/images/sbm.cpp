@@ -22,6 +22,8 @@
  *  Decoding SBM (font bitmap data).
  */
 
+#include <cstring>
+
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 #include "src/common/error.h"

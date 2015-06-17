@@ -22,6 +22,8 @@
  *  Compressed DePTH, found in Sonic, holding image depth values.
  */
 
+#include <cstring>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"

@@ -27,6 +27,7 @@
  */
 
 #include <cstdio>
+#include <cstring>
 
 #include "src/common/error.h"
 #include "src/common/readstream.h"

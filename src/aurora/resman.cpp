@@ -22,6 +22,8 @@
  *  The global resource manager for Aurora resources.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"

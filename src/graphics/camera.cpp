@@ -22,6 +22,8 @@
  *  Camera management.
  */
 
+#include <cstring>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 

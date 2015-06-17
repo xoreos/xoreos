@@ -22,6 +22,9 @@
  *  The global graphics manager.
  */
 
+#include <cassert>
+#include <cstring>
+
 #include <boost/bind.hpp>
 
 #include "src/common/version.h"

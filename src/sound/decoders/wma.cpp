@@ -24,6 +24,9 @@
  *  Decoding Microsoft's Windows Media Audio.
  */
 
+#include <cassert>
+#include <cstring>
+
 #include <vector>
 
 #include "src/common/util.h"

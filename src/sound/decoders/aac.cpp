@@ -24,6 +24,8 @@
  *  Decoding AAC.
  */
 
+#include <cstring>
+
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 

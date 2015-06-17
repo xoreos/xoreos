@@ -26,6 +26,8 @@
  * (<http://nwn2.wikia.com/wiki/MDB_Format>).
  */
 
+#include <cstring>
+
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/readstream.h"

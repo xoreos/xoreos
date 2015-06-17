@@ -22,6 +22,8 @@
  *  NWN creature.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/readfile.h"

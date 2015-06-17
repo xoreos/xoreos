@@ -28,6 +28,8 @@
  * a mirror (<https://github.com/xoreos/xoreos-docs>).
  */
 
+#include <cassert>
+
 #include <boost/unordered_set.hpp>
 
 #include "src/common/system.h"

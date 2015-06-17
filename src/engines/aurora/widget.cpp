@@ -22,6 +22,8 @@
  *  A widget in a GUI.
  */
 
+#include <cassert>
+
 #include "src/common/system.h"
 
 #include "src/engines/aurora/widget.h"

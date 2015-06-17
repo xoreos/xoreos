@@ -22,6 +22,8 @@
  *  The new module menu.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 
 #include "src/aurora/talkman.h"

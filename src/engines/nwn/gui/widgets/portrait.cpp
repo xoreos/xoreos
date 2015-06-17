@@ -22,6 +22,8 @@
  *  A portrait model and widget.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/ustring.h"

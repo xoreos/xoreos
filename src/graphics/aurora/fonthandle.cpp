@@ -22,6 +22,8 @@
  *  A handle to an Aurora font.
  */
 
+#include <cassert>
+
 #include "src/graphics/font.h"
 
 #include "src/graphics/aurora/fonthandle.h"

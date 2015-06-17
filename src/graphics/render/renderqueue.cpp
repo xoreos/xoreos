@@ -22,6 +22,8 @@
  *  Render queue, for efficient OpenGL render calls.
  */
 
+#include <cassert>
+
 #include "src/graphics/render/renderqueue.h"
 #include "src/common/util.h"
 

@@ -25,6 +25,8 @@
 #ifndef ENGINES_AURORA_MODEL_H
 #define ENGINES_AURORA_MODEL_H
 
+#include <cassert>
+
 #include "src/common/ustring.h"
 #include "src/common/error.h"
 
