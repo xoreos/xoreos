@@ -817,11 +817,6 @@ void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GF
 
 	sanityCheckMeshChunk(*meshChunk);
 
-	Common::SeekableReadStream *indexData  = ctx.mshTop->getData(kGFF4MeshIndexData);
-	Common::SeekableReadStream *vertexData = ctx.mshTop->getData(kGFF4MeshVertexData);
-	if (!indexData || !vertexData)
-		return;
-
 	// Read the mesh indices and vertices, and create our buffers
 
 	MeshDeclarations meshDecl;
@@ -829,23 +824,43 @@ void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GF
 	if (meshDecl.empty())
 		return;
 
-	createIndexBuffer (*meshChunk, *indexData);
-	createVertexBuffer(*meshChunk, *vertexData, meshDecl);
+	Common::SeekableReadStream *indexData = 0, *vertexData = 0;
+	try {
 
-	_render = true;
+		indexData  = ctx.mshTop->getData(kGFF4MeshIndexData);
+		if (!indexData)
+			throw Common::Exception("Mesh has mesh declaration but no index data");
 
-	// Load the material object, grab the diffuse texture and load
+		vertexData = ctx.mshTop->getData(kGFF4MeshVertexData);
+		if (!vertexData)
+			throw Common::Exception("Mesh has mesh declaration but no vertex data");
 
-	MaterialObject materialObject;
-	readMAO(materialName, materialObject);
+		createIndexBuffer (*meshChunk, *indexData);
+		createVertexBuffer(*meshChunk, *vertexData, meshDecl);
 
-	std::vector<Common::UString> textures;
-	textures.push_back(materialObject.textures["mml_tDiffuse"]);
+		_render = true;
 
-	while (!textures.empty() && textures.back().empty())
-		textures.pop_back();
+		// Load the material object, grab the diffuse texture and load
 
-	loadTextures(textures);
+		MaterialObject materialObject;
+		readMAO(materialName, materialObject);
+
+		std::vector<Common::UString> textures;
+		textures.push_back(materialObject.textures["mml_tDiffuse"]);
+
+		while (!textures.empty() && textures.back().empty())
+			textures.pop_back();
+
+		loadTextures(textures);
+
+	} catch (...) {
+		delete indexData;
+		delete vertexData;
+		throw;
+	}
+
+	delete indexData;
+	delete vertexData;
 }
 
 } // End of namespace Aurora
