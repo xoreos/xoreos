@@ -32,7 +32,7 @@ namespace Common {
 ReadLine::ReadLine(size_t historySize) :
 	_historySizeMax(historySize), _historySizeCurrent(0),
 	_historyIgnoreSpace(false), _historyIgnoreDups(false), _historyEraseDups(false),
-	_cursorPosition(0), _overwrite(false) {
+	_cursorPosition(0), _overwrite(false), _maxHintSize(0), _hintCount(0) {
 
 	_historyPosition = _history.end();
 }
