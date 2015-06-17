@@ -38,13 +38,15 @@ namespace Sound {
  */
 class AudioStream {
 public:
+	static const size_t kSizeInvalid = SIZE_MAX;
+
 	virtual ~AudioStream() {}
 
 	/**
 	 * Fill the given buffer with up to numSamples samples. Returns the actual
-	 * number of samples read, or -1 if a critical error occurred (note: you
-	 * *must* check if this value is less than what you requested, this can
-	 * happen when the stream is fully used up).
+	 * number of samples read, or kSizeInvalid if a critical error occurred
+	 * (note: you *must* check if this value is less than what you requested,
+	 * this can happen when the stream is fully used up).
 	 *
 	 * Data has to be in native endianess, 16 bit per sample, signed. For stereo
 	 * stream, buffer will be filled with interleaved left and right channel
@@ -56,7 +58,7 @@ public:
 	 * The same holds true for more channels. Channel configurations recognized:
 	 * - 5.1: front left, front right, front center, low frequency rear left, rear right
 	 */
-	virtual int readBuffer(int16 *buffer, const int numSamples) = 0;
+	virtual size_t readBuffer(int16 *buffer, size_t numSamples) = 0;
 
 	/** Return the number channels in this stream. */
 	virtual int getChannels() const = 0;
@@ -117,7 +119,7 @@ public:
 	LoopingAudioStream(RewindableAudioStream *stream, size_t loops, bool disposeAfterUse = true);
 	~LoopingAudioStream();
 
-	int readBuffer(int16 *buffer, const int numSamples);
+	size_t readBuffer(int16 *buffer, const size_t numSamples);
 	bool endOfData() const;
 
 	int getChannels() const { return _parent->getChannels(); }
@@ -156,8 +158,7 @@ public:
 	 * DisposeAfterUse::YES, then the queued stream is deleted after all data
 	 * contained in it has been played.
 	 */
-	virtual void queueAudioStream(AudioStream *audStream,
-						bool disposeAfterUse = true) = 0;
+	virtual void queueAudioStream(AudioStream *audStream, bool disposeAfterUse = true) = 0;
 
 	/**
 	 * Mark this stream as finished. That is, signal that no further data

@@ -65,7 +65,7 @@ public:
 			delete _stream;
 	}
 
-	int readBuffer(int16 *buffer, const int numSamples);
+	size_t readBuffer(int16 *buffer, const size_t numSamples);
 	int getChannels() const           { return _channels; }
 	bool endOfData() const          { return _stream->pos() >= _stream->size(); }
 	int getRate() const         { return _rate; }
@@ -73,8 +73,8 @@ public:
 };
 
 template<bool is16Bit, bool isUnsigned, bool isLE>
-int PCMStream<is16Bit, isUnsigned, isLE>::readBuffer(int16 *buffer, const int numSamples) {
-	int samples = numSamples;
+size_t PCMStream<is16Bit, isUnsigned, isLE>::readBuffer(int16 *buffer, const size_t numSamples) {
+	size_t samples = numSamples;
 
 	while (samples > 0 && !endOfData()) {
 		*buffer++ = READ_ENDIAN_SAMPLE(is16Bit, isUnsigned, _ptr, isLE);

@@ -113,11 +113,11 @@ public:
 		memset(&_status, 0, sizeof(_status));
 	}
 
-	virtual int readBuffer(int16 *buffer, const int numSamples);
+	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
 };
 
-int Ima_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
-	int samples;
+size_t Ima_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
+	size_t samples;
 	byte data;
 
 	assert(numSamples % 2 == 0);
@@ -154,19 +154,19 @@ public:
 		_streamPos[1] = _blockAlign;
 	}
 
-	virtual int readBuffer(int16 *buffer, const int numSamples);
+	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
 
 };
 
-int Apple_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
+size_t Apple_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
 	// Need to write at least one samples per channel
 	assert((numSamples % _channels) == 0);
 
 	// Current sample positions
-	int samples[2] = { 0, 0};
+	size_t samples[2] = { 0, 0};
 
 	// Number of samples per channel
-	int chanSamples = numSamples / _channels;
+	size_t chanSamples = numSamples / _channels;
 
 	for (int i = 0; i < _channels; i++) {
 		_stream->seek(_streamPos[i]);
@@ -236,7 +236,7 @@ public:
 		_samplesLeft[1] = 0;
 	}
 
-	int readBuffer(int16 *buffer, const int numSamples);
+	size_t readBuffer(int16 *buffer, const size_t numSamples);
 
 	void reset() {
 		Ima_ADPCMStream::reset();
@@ -249,11 +249,11 @@ private:
 	int _samplesLeft[2];
 };
 
-int MSIma_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
+size_t MSIma_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
 	// Need to write at least one sample per channel
 	assert((numSamples % _channels) == 0);
 
-	int samples = 0;
+	size_t samples = 0;
 
 	while (samples < numSamples && !_stream->eos() && _stream->pos() < _endpos) {
 		if (_blockPos[0] == _blockAlign) {
@@ -336,7 +336,7 @@ public:
 		memset(&_status, 0, sizeof(_status));
 	}
 
-	virtual int readBuffer(int16 *buffer, const int numSamples);
+	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
 
 protected:
 	int16 decodeMS(ADPCMChannelStatus *c, byte);
@@ -360,8 +360,8 @@ int16 MS_ADPCMStream::decodeMS(ADPCMChannelStatus *c, byte code) {
 	return (int16)predictor;
 }
 
-int MS_ADPCMStream::readBuffer(int16 *buffer, const int numSamples) {
-	int samples;
+size_t MS_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
+	size_t samples;
 	byte data;
 	int i = 0;
 

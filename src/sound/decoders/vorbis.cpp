@@ -104,7 +104,7 @@ public:
 	VorbisStream(Common::SeekableReadStream *inStream, bool dispose);
 	~VorbisStream();
 
-	int readBuffer(int16 *buffer, const int numSamples);
+	size_t readBuffer(int16 *buffer, const size_t numSamples);
 
 	bool endOfData() const		{ return _pos >= _bufferEnd; }
 	int getChannels() const		{ return _isStereo ? 2 : 1; }
@@ -142,10 +142,10 @@ VorbisStream::~VorbisStream() {
 		delete _inStream;
 }
 
-int VorbisStream::readBuffer(int16 *buffer, const int numSamples) {
-	int samples = 0;
+size_t VorbisStream::readBuffer(int16 *buffer, const size_t numSamples) {
+	size_t samples = 0;
 	while (samples < numSamples && _pos < _bufferEnd) {
-		const int len = MIN(numSamples - samples, (int)(_bufferEnd - _pos));
+		const size_t len = MIN<size_t>(numSamples - samples, _bufferEnd - _pos);
 		memcpy(buffer, _pos, len * 2);
 		buffer += len;
 		_pos += len;

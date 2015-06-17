@@ -71,7 +71,7 @@ public:
 	               bool dispose);
 	~MP3Stream();
 
-	int readBuffer(int16 *buffer, const int numSamples);
+	size_t readBuffer(int16 *buffer, const size_t numSamples);
 
 	bool endOfData() const		{ return _state == MP3_STATE_EOS; }
 	int getChannels() const		{ return MAD_NCHANNELS(&_frame.header); }
@@ -290,11 +290,11 @@ static inline int scale_sample(mad_fixed_t sample) {
 	return sample >> (MAD_F_FRACBITS + 1 - 16);
 }
 
-int MP3Stream::readBuffer(int16 *buffer, const int numSamples) {
-	int samples = 0;
+size_t MP3Stream::readBuffer(int16 *buffer, const size_t numSamples) {
+	size_t samples = 0;
 	// Keep going as long as we have input available
 	while (samples < numSamples && _state != MP3_STATE_EOS) {
-		const int len = MIN(numSamples, samples + (int)(_synth.pcm.length - _posInFrame) * MAD_NCHANNELS(&_frame.header));
+		const size_t len = MIN<size_t>(numSamples, samples + (int)(_synth.pcm.length - _posInFrame) * MAD_NCHANNELS(&_frame.header));
 		while (samples < len) {
 			*buffer++ = (int16)scale_sample(_synth.pcm.samples[0][_posInFrame]);
 			samples++;

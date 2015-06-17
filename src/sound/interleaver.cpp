@@ -39,7 +39,7 @@ public:
 	Interleaver(int rate, const std::vector<AudioStream *> &streams, bool disposeAfterUse);
 	~Interleaver();
 
-	int readBuffer(int16 *buffer, const int numSamples);
+	size_t readBuffer(int16 *buffer, const size_t numSamples);
 
 	int getChannels() const;
 	int getRate() const;
@@ -77,9 +77,9 @@ Interleaver::~Interleaver() {
 			delete *s;
 }
 
-int Interleaver::readBuffer(int16 *buffer, const int numSamples) {
-	int maxSamples = numSamples;
-	int samples    = 0;
+size_t Interleaver::readBuffer(int16 *buffer, const size_t numSamples) {
+	size_t maxSamples = numSamples;
+	size_t samples    = 0;
 
 	for (; samples < maxSamples; ) {
 		if (endOfData())
@@ -89,12 +89,15 @@ int Interleaver::readBuffer(int16 *buffer, const int numSamples) {
 		for (std::vector<AudioStream *>::iterator s = _streams.begin();
 		     s != _streams.end(); ++s) {
 
-			const int  channels = (*s)->getChannels();
-			const bool success  = (*s)->readBuffer(buffer, channels) == channels;
-			if (!success)
+			const size_t channels = (*s)->getChannels();
+			const size_t nRead    = (*s)->readBuffer(buffer, channels);
+			if (nRead == kSizeInvalid)
+				return kSizeInvalid;
+
+			if (nRead != channels)
 				memset((byte *) buffer, 0, 2 * channels);
 
-			buffer += channels;
+			buffer  += channels;
 			samples += (*s)->getChannels();
 		}
 	}

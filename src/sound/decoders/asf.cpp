@@ -82,7 +82,7 @@ public:
 	ASFStream(Common::SeekableReadStream *stream, bool dispose);
 	~ASFStream();
 
-	int readBuffer(int16 *buffer, const int numSamples);
+	size_t readBuffer(int16 *buffer, const size_t numSamples);
 
 	bool endOfData() const;
 	int getChannels() const { return _channels; }
@@ -435,12 +435,16 @@ AudioStream *ASFStream::createAudioStream() {
 	return 0;
 }
 
-int ASFStream::readBuffer(int16 *buffer, const int numSamples) {
-	int samplesDecoded = 0;
+size_t ASFStream::readBuffer(int16 *buffer, const size_t numSamples) {
+	size_t samplesDecoded = 0;
 
 	for (;;) {
 		if (_curAudioStream) {
-			samplesDecoded += _curAudioStream->readBuffer(buffer + samplesDecoded, numSamples - samplesDecoded);
+			const size_t n = _curAudioStream->readBuffer(buffer + samplesDecoded, numSamples - samplesDecoded);
+			if (n == kSizeInvalid)
+				return kSizeInvalid;
+
+			samplesDecoded += n;
 
 			if (_curAudioStream->endOfData()) {
 				delete _curAudioStream;

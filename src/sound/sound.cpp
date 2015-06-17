@@ -46,14 +46,14 @@ DECLARE_SINGLETON(Sound::SoundManager)
  *
  *  @note clone2727 says: 5 is just a safe number. Mine only reached a max of 2.
  */
-static const int kOpenALBufferCount = 5;
+static const size_t kOpenALBufferCount = 5;
 
 /** Number of bytes per OpenAL buffer.
  *
  *  @note Needs to be high enough to prevent stuttering, but low enough to
  *        prevent a noticable lag. 32768 seems to work just fine.
  */
-static const int kOpenALBufferSize = 32768;
+static const size_t kOpenALBufferSize = 32768;
 
 namespace Sound {
 
@@ -526,14 +526,20 @@ bool SoundManager::fillBuffer(ALuint alBuffer, AudioStream *stream) const {
 	}
 
 	// Read in the required amount of samples
-	uint32 numSamples = kOpenALBufferSize / 2;
+	size_t numSamples = kOpenALBufferSize / 2;
 
 	byte *buffer = new byte[kOpenALBufferSize];
 	memset(buffer, 0, kOpenALBufferSize);
+
 	numSamples = stream->readBuffer((int16 *)buffer, numSamples);
+	if (numSamples == AudioStream::kSizeInvalid) {
+		delete[] buffer;
 
-	uint32 bufferSize = numSamples * 2;
+		warning("Failed reading from stream while filling buffer");
+		return false;
+	}
 
+	const ALsizei bufferSize = (ALsizei) (numSamples * 2);
 	alBufferData(alBuffer, format, buffer, bufferSize, stream->getRate());
 
 	delete[] buffer;
