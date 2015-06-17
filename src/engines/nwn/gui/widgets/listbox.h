@@ -78,7 +78,7 @@ private:
 class WidgetListItemTextLine : public WidgetListItem {
 public:
 	WidgetListItemTextLine(::Engines::GUI &gui, const Common::UString &font,
-	                       const Common::UString &text, float spacing = 0.0);
+	                       const Common::UString &text, float spacing = 0.0f);
 	~WidgetListItemTextLine();
 
 	void show();
@@ -138,7 +138,7 @@ public:
 	void unlock();
 
 	void setText(const Common::UString &font, const Common::UString &text,
-	             float spacing = 0.0);
+	             float spacing = 0.0f);
 
 	void select(size_t item);
 	size_t getSelected() const;

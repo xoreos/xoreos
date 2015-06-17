@@ -71,7 +71,7 @@ protected:
 	virtual void mouseUp();
 	virtual void mouseDown();
 
-	void load(const Common::UString &resref, float width = 0.0, float height = 0.0);
+	void load(const Common::UString &resref, float width = 0.0f, float height = 0.0f);
 
 	virtual void initWidget(Widget &widget);
 

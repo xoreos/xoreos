@@ -48,8 +48,8 @@ class QuadWidget : public NWNWidget {
 public:
 	QuadWidget(::Engines::GUI &gui, const Common::UString &tag,
 	           const Common::UString &texture,
-	           float  x1      , float  y1      , float  x2      , float  y2,
-	           float tX1 = 0.0, float tY1 = 0.0, float tX2 = 1.0, float tY2 = 1.0);
+	           float  x1       , float  y1       , float  x2       , float  y2,
+	           float tX1 = 0.0f, float tY1 = 0.0f, float tX2 = 1.0f, float tY2 = 1.0f);
 	~QuadWidget();
 
 	void show();

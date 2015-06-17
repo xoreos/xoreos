@@ -159,7 +159,7 @@ void Placeable::load(const Aurora::GFF4Struct &placeable) {
 	}
 
 	double orientation = placeable.getDouble(Aurora::kGFF4Orientation);
-	setOrientation(0.0, Common::rad2deg(orientation), 0.0);
+	setOrientation(0.0f, Common::rad2deg(orientation), 0.0f);
 }
 
 } // End of namespace Sonic

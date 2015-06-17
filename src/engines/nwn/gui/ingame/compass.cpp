@@ -51,10 +51,10 @@ CompassWidget::~CompassWidget() {
 // TODO: The disk rotation should feel more "natural", i.e. it should
 //       be more sluggish.
 void CompassWidget::setRotation(float x, float y, float UNUSED(z)) {
-	_model->setRotation(-x, 0.0, 0.0);
+	_model->setRotation(-x, 0.0f, 0.0f);
 	Graphics::Aurora::ModelNode *pointer = _model->getNode("cmp_pointer");
 	if (pointer)
-		pointer->setRotation(0.0, 0.0, y);
+		pointer->setRotation(0.0f, 0.0f, y);
 }
 
 
@@ -66,7 +66,7 @@ Compass::Compass(float position) {
 	float panelWidth  = panel->getWidth ();
 	float panelHeight = panel->getHeight();
 
-	panel->setPosition(- panelWidth, position, 0.0);
+	panel->setPosition(- panelWidth, position, 0.0f);
 
 	addWidget(panel);
 
@@ -75,7 +75,7 @@ Compass::Compass(float position) {
 
 	_compass = new CompassWidget(*this, "Compass");
 
-	_compass->setPosition(- (panelWidth / 2.0), position + (panelHeight / 2.0), -100.0);
+	_compass->setPosition(- (panelWidth / 2.0f), position + (panelHeight / 2.0f), -100.0f);
 
 	addWidget(_compass);
 
@@ -92,13 +92,13 @@ void Compass::callbackActive(Widget &UNUSED(widget)) {
 void Compass::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
                             int newWidth, int newHeight) {
 
-	setPosition(newWidth / 2.0, - (newHeight / 2.0), -10.0);
+	setPosition(newWidth / 2.0f, - (newHeight / 2.0f), -10.0f);
 }
 
 void Compass::notifyCameraMoved() {
 	const float *orientation = CameraMan.getOrientation();
 
-	_compass->setRotation(orientation[0] + 90.0, orientation[1], orientation[2]);
+	_compass->setRotation(orientation[0] + 90.0f, orientation[1], orientation[2]);
 }
 
 } // End of namespace NWN

@@ -287,14 +287,14 @@ void ModelNode_DragonAge::read2Float32(Common::ReadStream &stream, MeshDeclType 
 
 		case kMeshDeclTypeSint16_2n:
 		case kMeshDeclTypeSint16_4n:
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0;
+			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
 			break;
 
 		case kMeshDeclTypeUint16_2n:
 		case kMeshDeclTypeUint16_4n:
-			*f++ = stream.readUint16LE() / 65535.0;
-			*f++ = stream.readUint16LE() / 65535.0;
+			*f++ = stream.readUint16LE() / 65535.0f;
+			*f++ = stream.readUint16LE() / 65535.0f;
 			break;
 
 		case kMeshDeclTypeFloat16_2:
@@ -318,9 +318,9 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeColor:
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
 			break;
 
 		case kMeshDeclTypeUint8_4:
@@ -336,21 +336,21 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeUint8_4n:
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
 			break;
 
 		case kMeshDeclTypeSint16_4n:
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0;
+			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
 			break;
 
 		case kMeshDeclTypeUint16_4n:
-			*f++ = stream.readUint16LE() / 65535.0;
-			*f++ = stream.readUint16LE() / 65535.0;
-			*f++ = stream.readUint16LE() / 65535.0;
+			*f++ = stream.readUint16LE() / 65535.0f;
+			*f++ = stream.readUint16LE() / 65535.0f;
+			*f++ = stream.readUint16LE() / 65535.0f;
 			break;
 
 		case kMeshDeclType1010102:
@@ -367,9 +367,9 @@ void ModelNode_DragonAge::read3Float32(Common::ReadStream &stream, MeshDeclType 
 			{
 				uint32 data = stream.readUint32LE();
 
-				*f++ = (uint16) ((data >> 22) & 0x3FFF) / 511.0;
-				*f++ = (uint16) ((data >> 12) & 0x3FFF) / 511.0;
-				*f++ = (uint16) ((data >>  2) & 0x3FFF) / 511.0;
+				*f++ = (uint16) ((data >> 22) & 0x3FFF) / 511.0f;
+				*f++ = (uint16) ((data >> 12) & 0x3FFF) / 511.0f;
+				*f++ = (uint16) ((data >>  2) & 0x3FFF) / 511.0f;
 			}
 			break;
 
@@ -390,7 +390,7 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 			*f++ = stream.readIEEEFloatLE();
 			*f++ = stream.readIEEEFloatLE();
 			*f++ = stream.readIEEEFloatLE();
-			*f++ = 1.0;
+			*f++ = 1.0f;
 			break;
 
 		case kMeshDeclTypeFloat32_4:
@@ -401,10 +401,10 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeColor:
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
 			break;
 
 		case kMeshDeclTypeUint8_4:
@@ -422,24 +422,24 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 			break;
 
 		case kMeshDeclTypeUint8_4n:
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
-			*f++ = stream.readByte() / 255.0;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
 			break;
 
 		case kMeshDeclTypeSint16_4n:
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0;
-			*f++ = ((int16) stream.readUint16LE()) / 32767.0;
+			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
+			*f++ = ((int16) stream.readUint16LE()) / 32767.0f;
 			break;
 
 		case kMeshDeclTypeUint16_4n:
-			*f++ = stream.readUint16LE() / 65535.0;
-			*f++ = stream.readUint16LE() / 65535.0;
-			*f++ = stream.readUint16LE() / 65535.0;
-			*f++ = stream.readUint16LE() / 65535.0;
+			*f++ = stream.readUint16LE() / 65535.0f;
+			*f++ = stream.readUint16LE() / 65535.0f;
+			*f++ = stream.readUint16LE() / 65535.0f;
+			*f++ = stream.readUint16LE() / 65535.0f;
 			break;
 
 		case kMeshDeclType1010102:
@@ -457,10 +457,10 @@ void ModelNode_DragonAge::read4Float32(Common::ReadStream &stream, MeshDeclType 
 			{
 				uint32 data = stream.readUint32LE();
 
-				*f++ = (uint16) ((data >> 22) & 0x3FFF) / 511.0;
-				*f++ = (uint16) ((data >> 12) & 0x3FFF) / 511.0;
-				*f++ = (uint16) ((data >>  2) & 0x3FFF) / 511.0;
-				*f++ = (uint16) ( data        & 0x0002) /   4.0;
+				*f++ = (uint16) ((data >> 22) & 0x3FFF) / 511.0f;
+				*f++ = (uint16) ((data >> 12) & 0x3FFF) / 511.0f;
+				*f++ = (uint16) ((data >>  2) & 0x3FFF) / 511.0f;
+				*f++ = (uint16) ( data        & 0x0002) /   4.0f;
 			}
 			break;
 

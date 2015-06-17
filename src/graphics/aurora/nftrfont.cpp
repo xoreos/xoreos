@@ -119,7 +119,7 @@ void NFTRFont::load(Common::SeekableSubReadStreamEndian &nftr) {
 
 	// Try to find the width of an m. Alternatively, take half of a line's height.
 	std::map<uint32, Char>::const_iterator m = _chars.find('m');
-	_missingWidth = (m != _chars.end()) ? m->second.width : MAX<float>(2.0, _height / 2);
+	_missingWidth = (m != _chars.end()) ? m->second.width : MAX<float>(2.0f, _height / 2);
 }
 
 void NFTRFont::readHeader(Common::SeekableSubReadStreamEndian &nftr, Header &header) {
@@ -369,16 +369,16 @@ float NFTRFont::getHeight() const {
 void NFTRFont::drawMissing() const {
 	TextureMan.set();
 
-	const float width = _missingWidth - 1.0;
+	const float width = _missingWidth - 1.0f;
 
 	glBegin(GL_QUADS);
-		glVertex2f(0.0  ,     0.0);
-		glVertex2f(width,     0.0);
+		glVertex2f(0.0f ,    0.0f);
+		glVertex2f(width,    0.0f);
 		glVertex2f(width, _height);
-		glVertex2f(0.0  , _height);
+		glVertex2f(0.0f , _height);
 	glEnd();
 
-	glTranslatef(width + 1.0, 0.0, 0.0);
+	glTranslatef(width + 1.0f, 0.0f, 0.0f);
 }
 
 void NFTRFont::draw(uint32 c) const {
@@ -397,7 +397,7 @@ void NFTRFont::draw(uint32 c) const {
 	}
 	glEnd();
 
-	glTranslatef(cC->second.width, 0.0, 0.0);
+	glTranslatef(cC->second.width, 0.0f, 0.0f);
 }
 
 void NFTRFont::drawGlyphs(const std::vector<Glyph> &glyphs) {
@@ -436,10 +436,10 @@ void NFTRFont::drawGlyphs(const std::vector<Glyph> &glyphs) {
 
 		ch.width = g->advance;
 
-		ch.vX[0] = 0.00;  ch.vY[0] = 0.00;
-		ch.vX[1] = width; ch.vY[1] = 0.00;
+		ch.vX[0] = 0.00f; ch.vY[0] = 0.00f;
+		ch.vX[1] = width; ch.vY[1] = 0.00f;
 		ch.vX[2] = width; ch.vY[2] = height;
-		ch.vX[3] = 0.00;  ch.vY[3] = height;
+		ch.vX[3] = 0.00f; ch.vY[3] = height;
 
 		const float tX = (float) x      / (float) textureLength;
 		const float tY = (float) y      / (float) textureLength;

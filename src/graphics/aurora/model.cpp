@@ -49,14 +49,14 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_currentAnimation(0), _nextAnimation(0), _drawBound(false),
 	_drawSkeleton(false), _drawSkeletonInvisible(false) {
 
-	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
-	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
+	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
+	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
 
-	_modelScale[0] = 1.0; _modelScale[1] = 1.0; _modelScale[2] = 1.0;
+	_modelScale[0] = 1.0f; _modelScale[1] = 1.0f; _modelScale[2] = 1.0f;
 
 	// TODO: Is this the same as modelScale for non-UI?
-	_animationScale = 1.0;
-	_elapsedTime = 0.0;
+	_animationScale = 1.0f;
+	_elapsedTime = 0.0f;
 
 	_loopAnimation = 0;
 
@@ -253,7 +253,7 @@ void Model::rotate(float x, float y, float z) {
 void Model::getTooltipAnchor(float &x, float &y, float &z) const {
 	Common::TransformationMatrix pos = _absolutePosition;
 
-	pos.translate(0.0, 0.0, _absoluteBoundBox.getHeight() + 0.5);
+	pos.translate(0.0f, 0.0f, _absoluteBoundBox.getHeight() + 0.5f);
 
 	pos.getPosition(x, y, z);
 }
@@ -264,13 +264,13 @@ void Model::createAbsolutePosition() {
 	_absolutePosition.scale(_modelScale[0], _modelScale[1], _modelScale[2]);
 
 	if (_type == kModelTypeObject)
-		_absolutePosition.rotate(90.0, -1.0, 0.0, 0.0);
+		_absolutePosition.rotate(90.0f, -1.0f, 0.0f, 0.0f);
 
 	_absolutePosition.translate(_position[0], _position[1], _position[2]);
 
-	_absolutePosition.rotate( _rotation[0], 1.0, 0.0, 0.0);
-	_absolutePosition.rotate( _rotation[1], 0.0, 1.0, 0.0);
-	_absolutePosition.rotate(-_rotation[2], 0.0, 0.0, 1.0);
+	_absolutePosition.rotate( _rotation[0], 1.0f, 0.0f, 0.0f);
+	_absolutePosition.rotate( _rotation[1], 0.0f, 1.0f, 0.0f);
+	_absolutePosition.rotate(-_rotation[2], 0.0f, 0.0f, 1.0f);
 
 	_absoluteBoundBox = _boundBox;
 	_absoluteBoundBox.transform(_absolutePosition);
@@ -490,13 +490,13 @@ void Model::render(RenderPass pass) {
 
 	if (_type == kModelTypeObject)
 		// Aurora world objects have a rotated axis
-		glRotatef(90.0, -1.0, 0.0, 0.0);
+		glRotatef(90.0f, -1.0f, 0.0f, 0.0f);
 
 	glTranslatef(_position[0], _position[1], _position[2]);
 
-	glRotatef( _rotation[0], 1.0, 0.0, 0.0);
-	glRotatef( _rotation[1], 0.0, 1.0, 0.0);
-	glRotatef(-_rotation[2], 0.0, 0.0, 1.0);
+	glRotatef( _rotation[0], 1.0f, 0.0f, 0.0f);
+	glRotatef( _rotation[1], 0.0f, 1.0f, 0.0f);
+	glRotatef(-_rotation[2], 0.0f, 0.0f, 1.0f);
 
 
 	// Draw the bounding box, if requested
@@ -522,8 +522,8 @@ void Model::doDrawBound() {
 	if (!_drawBound)
 		return;
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glLineWidth(1.0);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glLineWidth(1.0f);
 
 	Common::BoundingBox object = _boundBox;
 
@@ -596,9 +596,9 @@ void Model::doDrawSkeleton() {
 	if (_type == kModelTypeObject)
 		glEnable(GL_DEPTH_TEST);
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glLineWidth(1);
-	glPointSize(1);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glLineWidth(1.0f);
+	glPointSize(1.0f);
 }
 
 void Model::doRebuild() {
@@ -652,9 +652,9 @@ void Model::createBound() {
 	_boundBox.getMin(minX, minY, minZ);
 	_boundBox.getMax(maxX, maxY, maxZ);
 
-	_center[0] = minX + ((maxX - minX) / 2.0);
-	_center[1] = minY + ((maxY - minY) / 2.0);
-	_center[2] = minZ + ((maxZ - minZ) / 2.0);
+	_center[0] = minX + ((maxX - minX) / 2.0f);
+	_center[1] = minY + ((maxY - minY) / 2.0f);
+	_center[2] = minZ + ((maxZ - minZ) / 2.0f);
 
 
 	_absoluteBoundBox = _boundBox;

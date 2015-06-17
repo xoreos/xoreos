@@ -37,9 +37,9 @@ namespace NWN {
 
 TextWidget::TextWidget(::Engines::GUI &gui, const Common::UString &tag,
                        const Common::UString &font, const Common::UString &text) :
-	NWNWidget(gui, tag), _r(1.0), _g(1.0), _b(1.0), _a(1.0) {
+	NWNWidget(gui, tag), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {
 
-	_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, 0.5);
+	_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, 0.5f);
 	_text->setTag(tag);
 }
 
@@ -102,7 +102,7 @@ void TextWidget::setDisabled(bool disabled) {
 	if (disabled == isDisabled())
 		return;
 
-	_a = disabled ? (_a * 0.6) : (_a / 0.6);
+	_a = disabled ? (_a * 0.6f) : (_a / 0.6f);
 
 	_text->setColor(_r, _g, _b, _a);
 

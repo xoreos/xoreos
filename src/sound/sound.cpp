@@ -62,7 +62,7 @@ void SoundManager::init() {
 		_channels[i] = 0;
 
 	for (size_t i = 0; i < kSoundTypeMAX; i++)
-		_types[i].gain = 1.0;
+		_types[i].gain = 1.0f;
 
 	_curID = 1;
 
@@ -287,7 +287,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 	channel.disposeAfterUse = disposeAfterUse;
 	channel.type            = type;
 	channel.typeIt          = _types[channel.type].list.end();
-	channel.gain            = 1.0;
+	channel.gain            = 1.0f;
 
 	try {
 

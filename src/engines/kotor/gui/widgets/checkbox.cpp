@@ -57,28 +57,28 @@ void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
 	_width  = extend.w;
 	_height = extend.h;
 
-	Widget::setPosition(extend.x, extend.y, 0.0);
+	Widget::setPosition(extend.x, extend.y, 0.0f);
 
 	Border border = createBorder(gff);
 
 	if (!border.fill.empty()) {
-		_quad = new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0, 0.0, extend.h * .62, extend.h * .62);
+		_quad = new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.h * .62, extend.h * .62);
 	} else {
-		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.h * .62, extend.h * .62);
+		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.h * .62, extend.h * .62);
 	}
 
-	_quad->setPosition(extend.x, extend.y, 0.0);
+	_quad->setPosition(extend.x, extend.y, 0.0f);
 	_quad->setTag(getTag());
 	_quad->setClickable(true);
 
 	if (border.fill.empty())
-		_quad->setColor(0.0, 0.0, 0.0, 0.0);
+		_quad->setColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	Text text = createText(gff);
 
 	if (!text.text.empty() && !text.font.empty()) {
 		_text = new Graphics::Aurora::HighlightableText(FontMan.get(text.font), text.text,
-		                                   text.r, text.g, text.b, 1.0);
+		                                   text.r, text.g, text.b, 1.0f);
 
 		const float hspan = extend.w - _text->getWidth();
 		const float vspan = extend.h - _text->getHeight();
@@ -87,7 +87,7 @@ void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
 		const float x = extend.x + text.halign * hspan;
 		const float y = extend.y + text.valign * vspan;
 
-		_text->setPosition(x, y, -1.0);
+		_text->setPosition(x, y, -1.0f);
 		_text->setTag(getTag());
 		_text->setClickable(true);
 	}

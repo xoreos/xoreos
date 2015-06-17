@@ -101,21 +101,21 @@ void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent,
 
 	createWidget(ctx);
 
-	if (width  <= 0.0)
+	if (width  <= 0.0f)
 		width  = ctx.widget->getWidth();
-	if (height <= 0.0)
+	if (height <= 0.0f)
 		height = ctx.widget->getHeight();
 
 	float wX, wY, wZ;
 	ctx.widget->getPosition(wX, wY, wZ);
 
-	wX = wX - (width / 2.0);
-	wY = ((height - wY) - ctx.widget->getHeight()) - (height / 2.0);
+	wX = wX - (width / 2.0f);
+	wY = ((height - wY) - ctx.widget->getHeight()) - (height / 2.0f);
 	wZ = _widgetZ + wZ;
 
 	ctx.widget->setPosition(wX, wY, wZ);
 
-	_widgetZ -= 1.0;
+	_widgetZ -= 1.0f;
 
 	addWidget(ctx.widget);
 
@@ -269,9 +269,9 @@ WidgetListBox *GUI::getListBox(const Common::UString &tag, bool vital) {
 void GUI::addBackground(const Common::UString &background) {
 	WidgetPanel *backPanel =
 		new WidgetPanel(*this, "Background", "1600x1200" + background,
-		                -800.0, -600.0, 1600.0, 1200.0);
+		                -800.0f, -600.0f, 1600.0f, 1200.0f);
 
-	backPanel->movePosition(0.0, 0.0, 10.0);
+	backPanel->movePosition(0.0f, 0.0f, 10.0f);
 
 	addWidget(backPanel);
 }

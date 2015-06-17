@@ -34,11 +34,11 @@ namespace Sonic {
 static const float kScreenWidth  = 256.0f;
 static const float kScreenHeight = 192.0f;
 
-static const float kTopScreenX = -128.0;
-static const float kTopScreenY =    0.0;
+static const float kTopScreenX = -128.0f;
+static const float kTopScreenY =    0.0f;
 
-static const float kBottomScreenX = -128.0;
-static const float kBottomScreenY = -192.0;
+static const float kBottomScreenX = -128.0f;
+static const float kBottomScreenY = -192.0f;
 
 static const float kCameraHeight = 50.0f;
 static const float kCameraAngle  = 45.0f;

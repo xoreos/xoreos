@@ -150,8 +150,8 @@ void Placeable::createTooltip() {
 
 	_tooltip = new Tooltip(Tooltip::kTypeFeedback, *_model);
 
-	_tooltip->setAlign(0.5);
-	_tooltip->addLine(_name, 0.5, 0.5, 1.0, 1.0);
+	_tooltip->setAlign(0.5f);
+	_tooltip->addLine(_name, 0.5f, 0.5f, 1.0f, 1.0f);
 	_tooltip->setPortrait(_portrait);
 }
 

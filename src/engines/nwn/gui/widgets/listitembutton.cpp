@@ -109,7 +109,7 @@ bool WidgetListItemBaseButton::deactivate() {
 WidgetListItemButton::WidgetListItemButton(::Engines::GUI &gui, const Common::UString &button,
                                            const Common::UString &text, const Common::UString &icon,
                                            const Common::UString &soundClick) :
-                                           WidgetListItemBaseButton(gui, button, 1.0, soundClick) {
+                                           WidgetListItemBaseButton(gui, button, 1.0f, soundClick) {
 
 	_text = new Graphics::Aurora::Text(FontMan.get("fnt_galahad14"), text);
 
@@ -151,14 +151,14 @@ void WidgetListItemButton::setPosition(float x, float y, float z) {
 	float pX, pY, pZ;
 	if (_button->getNode("text0")) {
 		_button->getNode("text0")->getPosition(pX, pY, pZ);
-		pY -= _text->getHeight() * 1.5;
+		pY -= _text->getHeight() * 1.5f;
 	} else if (_button->getNode("text")) {
 		_button->getNode("text")->getPosition(pX, pY, pZ);
 		pY -= _text->getHeight() / 2;
 	} else {
-		pX = 0.0;
+		pX = 0.0f;
 		pY = -_text->getHeight() / 2;
-		pZ = 5.0;
+		pZ = 5.0f;
 	}
 
 	_text->setPosition(x + pX, y + pY, z - pZ);

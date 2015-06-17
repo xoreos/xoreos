@@ -37,14 +37,14 @@ static const char *kBlendings[] = { "default", "additive", "punchthrough" };
 namespace Graphics {
 
 TXI::Features::Features() {
-	alphaMean           = 0.0;
+	alphaMean           = 0.0f;
 	arturoHeight        = 0;
 	arturoWidth         = 0;
-	baselineHeight      = 0.0;
+	baselineHeight      = 0.0f;
 	blending            = kBlendingDefault;
-	bumpMapScaling      = 0.0;
+	bumpMapScaling      = 0.0f;
 	canDownsample       = true;
-	caretIndent         = 0.0;
+	caretIndent         = 0.0f;
 	channelScale        = 0;
 	channelTranslate    = 0;
 	clamp               = 0;
@@ -65,8 +65,8 @@ TXI::Features::Features() {
 	downsampleMin       = 0;
 	fileRange           = 0;
 	filter              = true;
-	fontHeight          = 0.0;
-	fontWidth           = 0.0;
+	fontHeight          = 0.0f;
+	fontWidth           = 0.0f;
 	fps                 = 0;
 	isBumpMap           = false;
 	isDoubleByte        = false;
@@ -81,13 +81,13 @@ TXI::Features::Features() {
 	numX                = 0;
 	numY                = 0;
 	onDemand            = false;
-	priority            = 0.0;
+	priority            = 0.0f;
 	rows                = 0;
-	spacingB            = 0.0;
-	spacingR            = 0.0;
+	spacingB            = 0.0f;
+	spacingR            = 0.0f;
 	speed               = 0;
 	temporary           = false;
-	textureWidth        = 0.0;
+	textureWidth        = 0.0f;
 	unique              = false;
 	waterHeight         = 0;
 	waterWidth          = 0;

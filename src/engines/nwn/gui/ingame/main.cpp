@@ -81,7 +81,7 @@ void IngameMainMenu::initWidget(Widget &widget) {
 		Common::UString version = Common::UString(XOREOS_NAMEVERSION) + " v" + _gameVersion->getVersionString();
 
 		dynamic_cast<WidgetLabel &>(widget).setText(version);
-		dynamic_cast<WidgetLabel &>(widget).setColor(0.6, 0.6, 0.6, 1.0);
+		dynamic_cast<WidgetLabel &>(widget).setColor(0.6f, 0.6f, 0.6f, 1.0f);
 		return;
 	}
 

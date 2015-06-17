@@ -42,7 +42,7 @@ OptionsSoundMenu::OptionsSoundMenu(bool isMain, ::Engines::Console *console) : G
 
 	if (isMain) {
 		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
-		backdrop->setPosition(0.0, 0.0, 100.0);
+		backdrop->setPosition(0.0f, 0.0f, 100.0f);
 		addWidget(backdrop);
 	}
 
@@ -144,19 +144,19 @@ void OptionsSoundMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "MusicSlider") {
-		_volMusic = dynamic_cast<WidgetSlider &>(widget).getState() / 20.0;
+		_volMusic = dynamic_cast<WidgetSlider &>(widget).getState() / 20.0f;
 		updateVolume(_volMusic, Sound::kSoundTypeMusic, "MusicLabel");
 		return;
 	}
 
 	if (widget.getTag() == "VoicesSlider") {
-		_volVoice = dynamic_cast<WidgetSlider &>(widget).getState() / 20.0;
+		_volVoice = dynamic_cast<WidgetSlider &>(widget).getState() / 20.0f;
 		updateVolume(_volVoice, Sound::kSoundTypeVoice, "VoicesLabel");
 		return;
 	}
 
 	if (widget.getTag() == "SoundFXSlider") {
-		_volSFX = _volVideo = dynamic_cast<WidgetSlider &>(widget).getState() / 20.0;
+		_volSFX = _volVideo = dynamic_cast<WidgetSlider &>(widget).getState() / 20.0f;
 		updateVolume(_volSFX  , Sound::kSoundTypeSFX  , "SoundFXLabel");
 		updateVolume(_volVideo, Sound::kSoundTypeVideo, "");
 		return;
@@ -169,7 +169,7 @@ void OptionsSoundMenu::updateVolume(double volume, Sound::SoundType type,
 	SoundMan.setTypeGain(type, volume);
 
 	if (!label.empty())
-		getLabel(label, true)->setText(Common::UString::format("%.0f%%", volume * 100.0));
+		getLabel(label, true)->setText(Common::UString::format("%.0f%%", volume * 100.0f));
 }
 
 void OptionsSoundMenu::adoptChanges() {

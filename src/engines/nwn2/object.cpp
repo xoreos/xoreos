@@ -51,12 +51,12 @@ Object::Object(ObjectType type) : _type(type),
 	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(true), _usable(true),
 	_area(0) {
 
-	_position   [0] = 0.0;
-	_position   [1] = 0.0;
-	_position   [2] = 0.0;
-	_orientation[0] = 0.0;
-	_orientation[1] = 0.0;
-	_orientation[2] = 0.0;
+	_position   [0] = 0.0f;
+	_position   [1] = 0.0f;
+	_position   [2] = 0.0f;
+	_orientation[0] = 0.0f;
+	_orientation[1] = 0.0f;
+	_orientation[2] = 0.0f;
 }
 
 Object::~Object() {
@@ -196,7 +196,7 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 	if (sound.empty())
 		return;
 
-	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice, false, 1.0, pitchVariance);
+	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice, false, 1.0f, pitchVariance);
 }
 
 } // End of namespace NWN2

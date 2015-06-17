@@ -58,18 +58,18 @@ private:
 		if ((now - _fadeStart) >= 10) {
 			// Get new fade value every 10ms
 
-			_fadeValue += _fadeStep * ((now - _fadeStart) / 10.0);
+			_fadeValue += _fadeStep * ((now - _fadeStart) / 10.0f);
 			_fadeStart = now;
 		}
 
-		if        (_fadeValue > 1.0) {
+		if        (_fadeValue > 1.0f) {
 			// Fade in finished
 			_fade      = false;
-			_fadeValue = 1.0;
-		} else if (_fadeValue < 0.0) {
+			_fadeValue = 1.0f;
+		} else if (_fadeValue < 0.0f) {
 			// Fade out finished
 			_fade      = false;
-			_fadeValue = 0.0;
+			_fadeValue = 0.0f;
 			hide();
 		}
 
@@ -78,7 +78,7 @@ private:
 public:
 	FadeModel(const Common::UString &name) :
 		Graphics::Aurora::Model_NWN(name, Graphics::Aurora::kModelTypeGUIFront),
-		_fade(false), _fadeStart(0), _fadeValue(1.0), _fadeStep(0.0) {
+		_fade(false), _fadeStart(0), _fadeValue(1.0f), _fadeStep(0.0f) {
 
 	}
 
@@ -90,8 +90,8 @@ public:
 
 		_fade      = true;
 		_fadeStart = EventMan.getTimestamp();
-		_fadeValue = 0.0;
-		_fadeStep  = 10.0 / length;
+		_fadeValue = 0.0f;
+		_fadeStep  = 10.0f / length;
 
 		show();
 
@@ -103,21 +103,21 @@ public:
 
 		_fade      = true;
 		_fadeStart = EventMan.getTimestamp();
-		_fadeValue = 1.0;
-		_fadeStep  = - (10.0 / length);
+		_fadeValue = 1.0f;
+		_fadeStep  = - (10.0f / length);
 
 		GfxMan.unlockFrame();
 	}
 
 	void render(Graphics::RenderPass pass) {
-		bool isTransparent = _fadeValue < 1.0;
+		bool isTransparent = _fadeValue < 1.0f;
 		if (((pass == Graphics::kRenderPassOpaque     ) &&  isTransparent) ||
 		    ((pass == Graphics::kRenderPassTransparent) && !isTransparent))
 			return;
 
-		glColor4f(1.0, 1.0, 1.0, _fadeValue);
+		glColor4f(1.0f, 1.0f, 1.0f, _fadeValue);
 		Graphics::Aurora::Model_NWN::render(Graphics::kRenderPassAll);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 		updateFade();
 	}
@@ -141,7 +141,7 @@ static FadeModel *createFade(const Common::UString &name) {
 Legal::Legal() : _billboard(0) {
 	_billboard = createFade("load_legal");
 
-	_billboard->setPosition(0.0, 0.0, -1000.0);
+	_billboard->setPosition(0.0f, 0.0f, -1000.0f);
 	_billboard->setTag("Legal");
 }
 

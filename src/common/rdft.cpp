@@ -56,8 +56,8 @@ RDFT::~RDFT() {
 void RDFT::calc(float *data) {
 	const int n = 1 << _bits;
 
-	const float k1 = 0.5;
-	const float k2 = 0.5 - (_inverse ? 1.0 : 0.0);
+	const float k1 = 0.5f;
+	const float k2 = 0.5f - (_inverse ? 1.0f : 0.0f);
 
 	if (!_inverse) {
 		_fft->permute((Complex *) data);

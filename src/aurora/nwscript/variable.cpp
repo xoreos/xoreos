@@ -105,7 +105,7 @@ void Variable::setType(Type type) {
 			break;
 
 		case kTypeFloat:
-			_value._float = 0.0;
+			_value._float = 0.0f;
 			break;
 
 		case kTypeString:
@@ -117,9 +117,9 @@ void Variable::setType(Type type) {
 			break;
 
 		case kTypeVector:
-			_value._vector[0] = 0.0;
-			_value._vector[1] = 0.0;
-			_value._vector[2] = 0.0;
+			_value._vector[0] = 0.0f;
+			_value._vector[1] = 0.0f;
+			_value._vector[2] = 0.0f;
 			break;
 
 		case kTypeEngineType:

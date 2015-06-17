@@ -87,8 +87,8 @@ void AreaMiniMap::loadMiniMap(const Common::UString &name) {
 	delete nbfs;
 	delete nbfp;
 
-	_miniMap = new Graphics::Aurora::GUIQuad(texture, 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
-	_miniMap->setPosition(kTopScreenX, kTopScreenY, 0.0);
+	_miniMap = new Graphics::Aurora::GUIQuad(texture, 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+	_miniMap->setPosition(kTopScreenX, kTopScreenY, 0.0f);
 }
 
 } // End of namespace Sonic

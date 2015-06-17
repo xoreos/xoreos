@@ -32,8 +32,8 @@ namespace Engines {
 Widget::Widget(GUI &gui, const Common::UString &tag) : _gui(&gui), _tag(tag),
 	_parent(0), _owner(0),
 	_active(false), _visible(false), _disabled(false), _invisible(false),
-	_x(0.0), _y(0.0), _z(0.0),
-	_lastClickButton(0), _lastClickTime(0), _lastClickX(0.0), _lastClickY(0.0) {
+	_x(0.0f), _y(0.0f), _z(0.0f),
+	_lastClickButton(0), _lastClickTime(0), _lastClickX(0.0f), _lastClickY(0.0f) {
 
 }
 
@@ -74,8 +74,8 @@ void Widget::show() {
 	// Reset the double-click info
 	_lastClickButton = 0;
 	_lastClickTime   = 0;
-	_lastClickX      = 0.0;
-	_lastClickY      = 0.0;
+	_lastClickX      = 0.0f;
+	_lastClickY      = 0.0f;
 
 	if (!_invisible)
 		_visible = true;
@@ -133,11 +133,11 @@ void Widget::getPosition(float &x, float &y, float &z) const {
 }
 
 float Widget::getWidth() const {
-	return 0.0;
+	return 0.0f;
 }
 
 float Widget::getHeight() const {
-	return 0.0;
+	return 0.0f;
 }
 
 void Widget::setDisabled(bool disabled) {

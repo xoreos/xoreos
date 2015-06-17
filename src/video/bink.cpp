@@ -641,7 +641,7 @@ void Bink::initAudioTrack(AudioTrack &audio) {
 
 	audio.overlapLen = audio.frameLen / 16;
 	audio.blockSize  = (audio.frameLen - audio.overlapLen) * audio.channels;
-	audio.root       = 2.0 / sqrt((float) audio.frameLen);
+	audio.root       = 2.0 / sqrt((double) audio.frameLen);
 
 	uint32 sampleRateHalf = (audio.sampleRate + 1) / 2;
 
@@ -1451,12 +1451,12 @@ void Bink::audioBlockDCT(AudioTrack &audio) {
 
 		readAudioCoeffs(audio, coeffs);
 
-		coeffs[0] /= 0.5;
+		coeffs[0] /= 0.5f;
 
 		audio.dct->calc(coeffs);
 
 		for (uint32 j = 0; j < audio.frameLen; j++)
-			coeffs[j] *= (audio.frameLen / 2.0);
+			coeffs[j] *= (audio.frameLen / 2.0f);
 	}
 
 }
@@ -1488,7 +1488,7 @@ void Bink::readAudioCoeffs(AudioTrack &audio, float *coeffs) {
 		quant[i] = expf(MIN(value, 95) * 0.15289164787221953823f) * audio.root;
 	}
 
-	float q = 0.0;
+	float q = 0.0f;
 
 	// Find band (k)
 	int k;
@@ -1530,7 +1530,7 @@ void Bink::readAudioCoeffs(AudioTrack &audio, float *coeffs) {
 						coeffs[i] =  q * coeff;
 
 				} else {
-					coeffs[i] = 0.0;
+					coeffs[i] = 0.0f;
 				}
 				i++;
 			}

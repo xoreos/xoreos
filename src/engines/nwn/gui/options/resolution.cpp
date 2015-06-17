@@ -44,7 +44,7 @@ OptionsResolutionMenu::OptionsResolutionMenu(bool isMain, ::Engines::Console *co
 
 	if (isMain) {
 		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
-		backdrop->setPosition(0.0, 0.0, 100.0);
+		backdrop->setPosition(0.0f, 0.0f, 100.0f);
 		addWidget(backdrop);
 	}
 
@@ -178,7 +178,7 @@ void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
 	resList.clear();
 	for (std::vector<Resolution>::const_iterator r = _useableResolutions.begin(); r != _useableResolutions.end(); ++r)
 		resList.add(new WidgetListItemTextLine(*this, "fnt_dialog16x16",
-					Common::UString::format("%dx%d", r->width, r->height), 0.0));
+					Common::UString::format("%dx%d", r->width, r->height), 0.0f));
 
 	resList.unlock();
 

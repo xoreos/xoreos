@@ -87,11 +87,11 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 	_input->disableColorTokens(true);
 
 	const float cursorHeight = _font.getFont().getHeight();
-	_cursor = new Graphics::Aurora::GUIQuad("", 0.0, 1.0, 0.0, cursorHeight);
+	_cursor = new Graphics::Aurora::GUIQuad("", 0.0f, 1.0f, 0.0f, cursorHeight);
 	_cursor->setXOR(true);
 
-	_highlight = new Graphics::Aurora::GUIQuad("", 0.0, 0.0, 0.0, cursorHeight);
-	_highlight->setColor(1.0, 1.0, 1.0, 0.0);
+	_highlight = new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, 0.0f, cursorHeight);
+	_highlight->setColor(1.0f, 1.0f, 1.0f, 0.0f);
 	_highlight->setXOR(true);
 
 	_lines.reserve(lines - 1);
@@ -208,7 +208,7 @@ float ConsoleWindow::getHeight() const {
 }
 
 float ConsoleWindow::getContentWidth() const {
-	return _width - 15.0;
+	return _width - 15.0f;
 }
 
 float ConsoleWindow::getContentHeight() const {
@@ -228,7 +228,7 @@ void ConsoleWindow::setPrompt(const Common::UString &prompt) {
 
 	_prompt->set(prompt);
 
-	_input->setPosition(_x + _prompt->getWidth(), _y, -1001.0);
+	_input->setPosition(_x + _prompt->getWidth(), _y, -1001.0f);
 	recalcCursor();
 
 	GfxMan.unlockFrame();
@@ -272,7 +272,7 @@ void ConsoleWindow::clear() {
 void ConsoleWindow::print(const Common::UString &line) {
 	std::vector<Common::UString> lines;
 
-	_font.getFont().split(line, lines, _width - 15.0, 0.0, false);
+	_font.getFont().split(line, lines, _width - 15.0f, 0.0f, false);
 	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l)
 		printLine(*l);
 }
@@ -353,7 +353,7 @@ void ConsoleWindow::closeLogFile() {
 
 void ConsoleWindow::updateHighlight() {
 	if ((_highlightLength == 0) || (_highlightY >= kConsoleLines)) {
-		_highlight->setColor(1.0, 1.0, 1.0, 0.0);
+		_highlight->setColor(1.0f, 1.0f, 1.0f, 0.0f);
 		return;
 	}
 
@@ -366,8 +366,8 @@ void ConsoleWindow::updateHighlight() {
 	const size_t    length = ABS(start - end);
 
 	_highlight->setWidth(length * charWidth);
-	_highlight->setPosition(_x + x * charWidth, _y + _highlightY * _lineHeight, -1002.0);
-	_highlight->setColor(1.0, 1.0, 1.0, 1.0);
+	_highlight->setPosition(_x + x * charWidth, _y + _highlightY * _lineHeight, -1002.0f);
+	_highlight->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 bool ConsoleWindow::getPosition(int cursorX, int cursorY, float &x, float &y) {
@@ -551,7 +551,7 @@ void ConsoleWindow::scrollBottom() {
 }
 
 void ConsoleWindow::calculateDistance() {
-	_distance = -1000.0;
+	_distance = -1000.0f;
 }
 
 void ConsoleWindow::render(Graphics::RenderPass pass) {
@@ -563,11 +563,11 @@ void ConsoleWindow::render(Graphics::RenderPass pass) {
 		_cursorBlinkState = !_cursorBlinkState;
 		_lastCursorBlink = now;
 
-		_cursor->setColor(1.0, 1.0, 1.0, _cursorBlinkState ? 1.0 : 0.0);
+		_cursor->setColor(1.0f, 1.0f, 1.0f, _cursorBlinkState ? 1.0f : 0.0f);
 	}
 
 	TextureMan.reset();
-	glColor4f(0.0, 0.0, 0.0, 0.75);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.75f);
 
 
 	// Backdrop
@@ -579,33 +579,33 @@ void ConsoleWindow::render(Graphics::RenderPass pass) {
 	glEnd();
 
 	// Bottom edge
-	glColor4f(0.0, 0.0, 0.0, 1.0);
+	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 	glBegin(GL_QUADS);
-		glVertex2f(_x         , _y - 3.0);
-		glVertex2f(_x + _width, _y - 3.0);
-		glVertex2f(_x + _width, _y      );
-		glVertex2f(_x         , _y      );
+		glVertex2f(_x         , _y - 3.0f);
+		glVertex2f(_x + _width, _y - 3.0f);
+		glVertex2f(_x + _width, _y       );
+		glVertex2f(_x         , _y       );
 	glEnd();
 
 	// Scrollbar background
-	glColor4f(0.0, 0.0, 0.0, 1.0);
+	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 	glBegin(GL_QUADS);
-		glVertex2f(_x + _width - 12.0, _y          );
-		glVertex2f(_x + _width       , _y          );
-		glVertex2f(_x + _width       , _y + _height);
-		glVertex2f(_x + _width - 12.0, _y + _height);
+		glVertex2f(_x + _width - 12.0f, _y          );
+		glVertex2f(_x + _width        , _y          );
+		glVertex2f(_x + _width        , _y + _height);
+		glVertex2f(_x + _width - 12.0f, _y + _height);
 	glEnd();
 
 	// Scrollbar
-	glColor4f(0.5, 0.5, 0.5, 0.5);
+	glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
 	glBegin(GL_QUADS);
-		glVertex2f(_x + _width - 10.0, _y + 2.0 + _scrollbarPosition);
-		glVertex2f(_x + _width -  2.0, _y + 2.0 + _scrollbarPosition);
-		glVertex2f(_x + _width -  2.0, _y + 2.0 + _scrollbarPosition + _scrollbarLength);
-		glVertex2f(_x + _width - 10.0, _y + 2.0 + _scrollbarPosition + _scrollbarLength);
+		glVertex2f(_x + _width - 10.0f, _y + 2.0f + _scrollbarPosition);
+		glVertex2f(_x + _width -  2.0f, _y + 2.0f + _scrollbarPosition);
+		glVertex2f(_x + _width -  2.0f, _y + 2.0f + _scrollbarPosition + _scrollbarLength);
+		glVertex2f(_x + _width - 10.0f, _y + 2.0f + _scrollbarPosition + _scrollbarLength);
 	glEnd();
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void ConsoleWindow::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
@@ -613,15 +613,15 @@ void ConsoleWindow::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
 
 	_width = newWidth;
 
-	_x = -(newWidth  / 2.0);
-	_y =  (newHeight / 2.0) - _height;
+	_x = -(newWidth  / 2.0f);
+	_y =  (newHeight / 2.0f) - _height;
 
-	float textY = (newHeight / 2.0) - _lineHeight;
+	float textY = (newHeight / 2.0f) - _lineHeight;
 	for (size_t i = 0; i < _lines.size(); i++, textY -= _lineHeight)
-		_lines[i]->setPosition(_x, textY, -1001.0);
+		_lines[i]->setPosition(_x, textY, -1001.0f);
 
-	_prompt->setPosition(_x                      , _y, -1001.0);
-	_input ->setPosition(_x + _prompt->getWidth(), _y, -1001.0);
+	_prompt->setPosition(_x                      , _y, -1001.0f);
+	_input ->setPosition(_x + _prompt->getWidth(), _y, -1001.0f);
 
 	recalcCursor();
 }
@@ -655,10 +655,10 @@ void ConsoleWindow::recalcCursor() {
 	Common::UString input = _inputText;
 	input.truncate(_cursorPosition);
 
-	const float cursorX = _x + _prompt->getWidth() + _font.getFont().getWidth(input) - 1.0;
-	_cursor->setPosition(cursorX, _y, -1002.0);
+	const float cursorX = _x + _prompt->getWidth() + _font.getFont().getWidth(input) - 1.0f;
+	_cursor->setPosition(cursorX, _y, -1002.0f);
 
-	const float cursorWidth = 1.0 + (_overwrite ? _font.getFont().getWidth(' ') : 0.0);
+	const float cursorWidth = 1.0f + (_overwrite ? _font.getFont().getWidth(' ') : 0.0f);
 	_cursor->setWidth(cursorWidth);
 }
 
@@ -675,23 +675,23 @@ void ConsoleWindow::redrawLines() {
 }
 
 void ConsoleWindow::updateScrollbarLength() {
-	float length = 1.0;
+	float length = 1.0f;
 
 	if (_historySizeCurrent > 0)
 		length = ((float) _lines.size()) / _historySizeCurrent;
 
-	const float height = _height - 4.0;
+	const float height = _height - 4.0f;
 	_scrollbarLength = floorf(CLIP(length * height, 8.0f, height));
 }
 
 void ConsoleWindow::updateScrollbarPosition() {
-	float position = 0.0;
+	float position = 0.0f;
 
 	int max = _historySizeCurrent - _lines.size();
 	if (max > 0)
 		position = ((float) _historyStart) / max;
 
-	const float span = (_height - 4.0) - _scrollbarLength;
+	const float span = (_height - 4.0f) - _scrollbarLength;
 	_scrollbarPosition = floorf(CLIP(position * span, 0.0f, span));
 }
 

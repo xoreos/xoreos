@@ -45,7 +45,7 @@ OptionsFeedbackMenu::OptionsFeedbackMenu(bool isMain, ::Engines::Console *consol
 
 	if (isMain) {
 		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
-		backdrop->setPosition(0.0, 0.0, 100.0);
+		backdrop->setPosition(0.0f, 0.0f, 100.0f);
 		addWidget(backdrop);
 	}
 
@@ -125,7 +125,7 @@ void OptionsFeedbackMenu::updateTooltipDelay(uint32 UNUSED(tooltipDelay)) {
 	WidgetLabel  &ttDelayLabel  = *getLabel ("ToolTipValue" , true);
 	WidgetSlider &ttDelaySlider = *getSlider("TooltipSlider", true);
 
-	const float ttDelay = ((float) (ttDelaySlider.getState() + 1)) / 10.0;
+	const float ttDelay = ((float) (ttDelaySlider.getState() + 1)) / 10.0f;
 
 	const Common::UString secString   = TalkMan.getString(kStringSec);
 	const Common::UString ttDelayText =

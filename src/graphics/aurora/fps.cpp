@@ -70,8 +70,8 @@ void FPS::render(RenderPass pass) {
 }
 
 void FPS::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight), int newWidth, int newHeight) {
-	float posX = -(newWidth  / 2.0);
-	float posY =  (newHeight / 2.0) - getHeight();
+	float posX = -(newWidth  / 2.0f);
+	float posY =  (newHeight / 2.0f) - getHeight();
 
 	setPosition(posX, posY);
 }

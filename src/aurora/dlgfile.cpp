@@ -295,7 +295,7 @@ bool DLGFile::runScript(const Common::UString &script) const {
 		if (retVal.getType() == NWScript::kTypeInt)
 			return retVal.getInt() != 0;
 		if (retVal.getType() == NWScript::kTypeFloat)
-			return retVal.getFloat() != 0.0;
+			return retVal.getFloat() != 0.0f;
 
 		return true;
 

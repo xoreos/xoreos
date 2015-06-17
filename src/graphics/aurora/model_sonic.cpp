@@ -570,7 +570,7 @@ void Model_Sonic::parseBoneCommands(ParserContext &ctx) {
 				for (uint32 i = 0; i < c->parameters[1]; i++) {
 					ctx.stackMix[polygonStack][i].nodeID    = c->parameters[2 + i * 3 + 0];
 					ctx.stackMix[polygonStack][i].nodeStack = c->parameters[2 + i * 3 + 1];
-					ctx.stackMix[polygonStack][i].ratio     = c->parameters[2 + i * 3 + 2] / 256.0;
+					ctx.stackMix[polygonStack][i].ratio     = c->parameters[2 + i * 3 + 2] / 256.0f;
 				}
 
 				warning("TODO: Bone command LoadStack: %u (\"%s\")", c->parameters[0], _name.c_str());
@@ -777,8 +777,8 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 
 	// Texture dimensions, to convert the texture coordinates to OpenGL notation
 
-	const double tWidth  = !geometry.texture.empty() ? geometry.texture.getTexture().getWidth()  : 1.0;
-	const double tHeight = !geometry.texture.empty() ? geometry.texture.getTexture().getHeight() : 1.0;
+	const double tWidth  = !geometry.texture.empty() ? geometry.texture.getTexture().getWidth()  : 1.0f;
+	const double tHeight = !geometry.texture.empty() ? geometry.texture.getTexture().getHeight() : 1.0f;
 
 
 	for (PolygonCommands::const_iterator c = polygon.commands.begin(); c != polygon.commands.end(); ++c) {
@@ -882,9 +882,9 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 				}
 
 				// Reset the scale
-				scale[0] = 1.0;
-				scale[1] = 1.0;
-				scale[2] = 1.0;
+				scale[0] = 1.0f;
+				scale[1] = 1.0f;
+				scale[2] = 1.0f;
 				break;
 
 			case kPolygonMatrixScale:
@@ -1061,9 +1061,9 @@ void Model_Sonic::createBound() {
 	_boundBox.getMin(minX, minY, minZ);
 	_boundBox.getMax(maxX, maxY, maxZ);
 
-	_center[0] = minX + ((maxX - minX) / 2.0);
-	_center[1] = minY + ((maxY - minY) / 2.0);
-	_center[2] = minZ + ((maxZ - minZ) / 2.0);
+	_center[0] = minX + ((maxX - minX) / 2.0f);
+	_center[1] = minY + ((maxY - minY) / 2.0f);
+	_center[2] = minZ + ((maxZ - minZ) / 2.0f);
 
 	_absoluteBoundBox = _boundBox;
 	_absoluteBoundBox.transform(_absolutePosition);
@@ -1077,9 +1077,9 @@ void Model_Sonic::createAbsolutePosition() {
 
 	_absolutePosition.translate(_position[0], _position[1], _position[2]);
 
-	_absolutePosition.rotate( _rotation[0], 1.0, 0.0, 0.0);
-	_absolutePosition.rotate( _rotation[1], 0.0, 1.0, 0.0);
-	_absolutePosition.rotate(-_rotation[2], 0.0, 0.0, 1.0);
+	_absolutePosition.rotate( _rotation[0], 1.0f, 0.0f, 0.0f);
+	_absolutePosition.rotate( _rotation[1], 0.0f, 1.0f, 0.0f);
+	_absolutePosition.rotate(-_rotation[2], 0.0f, 0.0f, 1.0f);
 
 	_absoluteBoundBox = _boundBox;
 	_absoluteBoundBox.transform(_absolutePosition);
@@ -1342,9 +1342,9 @@ void Model_Sonic::render(RenderPass pass) {
 
 	glTranslatef(_position[0], _position[1], _position[2]);
 
-	glRotatef( _rotation[0], 1.0, 0.0, 0.0);
-	glRotatef( _rotation[1], 0.0, 1.0, 0.0);
-	glRotatef(-_rotation[2], 0.0, 0.0, 1.0);
+	glRotatef( _rotation[0], 1.0f, 0.0f, 0.0f);
+	glRotatef( _rotation[1], 0.0f, 1.0f, 0.0f);
+	glRotatef(-_rotation[2], 0.0f, 0.0f, 1.0f);
 
 
 	// Draw the bounding box, if requested

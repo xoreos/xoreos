@@ -283,7 +283,7 @@ void Module::enter() {
 	_ifo.getEntryPosition(entryX, entryY, entryZ);
 
 	// Roughly head position
-	CameraMan.setPosition(entryX, entryZ + 1.8, entryY);
+	CameraMan.setPosition(entryX, entryZ + 1.8f, entryY);
 
 	float entryDirX, entryDirY;
 	_ifo.getEntryDirection(entryDirX, entryDirY);

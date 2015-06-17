@@ -42,7 +42,7 @@ CharClass::CharClass(CharGenChoices &choices, ::Engines::Console *console) :
 	_choices = &choices;
 	load("cg_class");
 
-	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(484), 1.0);
+	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(484), 1.0f);
 	_classesListBox = getListBox("ClassListBox", true);
 
 	_firstPrestigeClass = 0;
@@ -59,7 +59,7 @@ void CharClass::fixWidgetType(const Common::UString &tag, WidgetType &type) {
 
 void CharClass::reset() {
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", "");
-	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(484), 1.0);
+	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(484), 1.0f);
 
 	_classesListBox->select(0);
 }
@@ -110,7 +110,7 @@ void CharClass::createClassList() {
 
 		//TODO Implement a real check.
 		if (!row.empty("PreReqTable")) {
-			itemClass->setTextColor(0.5, 0.5, 0.5, 1.0);
+			itemClass->setTextColor(0.5f, 0.5f, 0.5f, 1.0f);
 		} else {
 			++_firstPrestigeClass;
 		}

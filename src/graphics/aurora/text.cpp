@@ -34,7 +34,7 @@ namespace Aurora {
 
 Text::Text(const FontHandle &font, const Common::UString &str,
 		float r, float g, float b, float a, float align) :
-	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0), _y(0.0), _align(align),
+	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0f), _y(0.0f), _align(align),
 	_disableColorTokens(false) {
 
 	set(str);
@@ -89,7 +89,7 @@ void Text::setColor(float r, float g, float b, float a) {
 }
 
 void Text::unsetColor() {
-	setColor(1.0, 1.0, 1.0, 1.0);
+	setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void Text::setAlign(float align) {
@@ -142,7 +142,7 @@ void Text::render(RenderPass pass) {
 	if (pass == kRenderPassOpaque)
 		return;
 
-	glTranslatef(_x, _y, 0.0);
+	glTranslatef(_x, _y, 0.0f);
 
 	_font.getFont().draw(_str, _colors, _r, _g, _b, _a, _align, _width, _height);
 }
@@ -219,10 +219,10 @@ void Text::parseColors(const Common::UString &str, Common::UString &parsed,
 			color.position     = parsed.size();
 			color.defaultColor = false;
 
-			color.r = colorValue[0] / 255.0;
-			color.g = colorValue[1] / 255.0;
-			color.b = colorValue[2] / 255.0;
-			color.a = colorValue[3] / 255.0;
+			color.r = colorValue[0] / 255.0f;
+			color.g = colorValue[1] / 255.0f;
+			color.b = colorValue[2] / 255.0f;
+			color.a = colorValue[3] / 255.0f;
 
 			colors.push_back(color);
 

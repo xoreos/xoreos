@@ -277,7 +277,7 @@ WidgetLabel *GUI::createCaption(const Aurora::GFF3Struct &strct, Widget *parent)
 
 	float pX, pY, pZ;
 	parent->getPosition(pX, pY, pZ);
-	label->setPosition(pX, pY, pZ - 5.0);
+	label->setPosition(pX, pY, pZ - 5.0f);
 
 	float r = caption.getDouble("AurString_ColorR", 1.0);
 	float g = caption.getDouble("AurString_ColorG", 1.0);

@@ -294,7 +294,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	_position   [0] = ctx.mdl->readIEEEFloatLE();
 	_position   [1] = ctx.mdl->readIEEEFloatLE();
 	_position   [2] = ctx.mdl->readIEEEFloatLE();
-	_orientation[3] = Common::rad2deg(acos(ctx.mdl->readIEEEFloatLE()) * 2.0);
+	_orientation[3] = Common::rad2deg(acos(ctx.mdl->readIEEEFloatLE()) * 2.0f);
 	_orientation[0] = ctx.mdl->readIEEEFloatLE();
 	_orientation[1] = ctx.mdl->readIEEEFloatLE();
 	_orientation[2] = ctx.mdl->readIEEEFloatLE();
@@ -556,8 +556,8 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 				*v++ = ctx.mdx->readIEEEFloatLE();
 				*v++ = ctx.mdx->readIEEEFloatLE();
 			} else {
-				*v++ = 0.0;
-				*v++ = 0.0;
+				*v++ = 0.0f;
+				*v++ = 0.0f;
 			}
 		}
 	}

@@ -141,8 +141,8 @@ void WidgetGridBox::unlock() {
 		// WORKAROUND: The x axis is shifted by 2 pixels in order to correctly render in
 		// the charportrait widget.
 		float itemY = _contentY - (row + 1) * (itemHeight + _innerVSpace) + _innerVSpace;
-		float itemX = _contentX + (column * (itemWidth + _innerHSpace)) - 2.0;
-		item->setPosition(itemX, itemY, _contentZ - 5.0);
+		float itemX = _contentX + (column * (itemWidth + _innerHSpace)) - 2.0f;
+		item->setPosition(itemX, itemY, _contentZ - 5.0f);
 		_visibleItems.push_back(item);
 
 		if (isVisible())
@@ -167,7 +167,7 @@ void WidgetGridBox::updateScrollbarLength() {
 		return;
 
 	if (_visibleItems.empty())
-		_scrollbar->setLength(1.0);
+		_scrollbar->setLength(1.0f);
 	else {
 		_scrollbar->setLength(((float) _visibleItems.size()) / (_items.size() + (_items.size() % _itemsByRow)));
 	}
@@ -205,7 +205,7 @@ void WidgetGridBox::updateVisible() {
 
 		// WORKAROUND: The x axis is shifted by 2 pixels in order to correctly render in
 		// the charportrait widget.
-		item->setPosition(_contentX + column * itemWidth - 2.0, itemY, _contentZ - 5.0);
+		item->setPosition(_contentX + column * itemWidth - 2.0f, itemY, _contentZ - 5.0f);
 		_visibleItems[i] = item;
 
 		if (isVisible())

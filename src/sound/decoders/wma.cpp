@@ -242,67 +242,67 @@ uint32 WMACodec::getNormalizedSampleRate() {
 }
 
 bool WMACodec::useNoiseCoding(float &highFreq, float &bps) {
-	highFreq = _sampleRate * 0.5;
+	highFreq = _sampleRate * 0.5f;
 
 	uint32 rateNormalized = getNormalizedSampleRate();
 
 	float bpsOrig = bps;
 	if (_channels == 2)
-		bps = bpsOrig * 1.6;
+		bps = bpsOrig * 1.6f;
 
 	if (rateNormalized == 44100) {
-		if (bps >= 0.61)
+		if (bps >= 0.61f)
 			return false;
 
-		highFreq = highFreq * 0.4;
+		highFreq = highFreq * 0.4f;
 		return true;
 	}
 
 	if (rateNormalized == 22050) {
-		if (bps >= 1.16)
+		if (bps >= 1.16f)
 			return false;
 
-		if (bps >= 0.72)
-			highFreq = highFreq * 0.7;
+		if (bps >= 0.72f)
+			highFreq = highFreq * 0.7f;
 		else
-			highFreq = highFreq * 0.6;
+			highFreq = highFreq * 0.6f;
 
 		return true;
 	}
 
 	if (rateNormalized == 16000) {
-		if (bpsOrig > 0.5)
-			highFreq = highFreq * 0.5;
+		if (bpsOrig > 0.5f)
+			highFreq = highFreq * 0.5f;
 		else
-			highFreq = highFreq * 0.3;
+			highFreq = highFreq * 0.3f;
 
 		return true;
 	}
 
 	if (rateNormalized == 11025) {
-		highFreq = highFreq * 0.7;
+		highFreq = highFreq * 0.7f;
 		return true;
 	}
 
 	if (rateNormalized == 8000) {
-		if (bpsOrig > 0.75)
+		if (bpsOrig > 0.75f)
 			return false;
 
-		if (bpsOrig <= 0.625)
-			highFreq = highFreq * 0.5;
+		if (bpsOrig <= 0.625f)
+			highFreq = highFreq * 0.5f;
 		else
-			highFreq = highFreq * 0.65;
+			highFreq = highFreq * 0.65f;
 
 		return true;
 	}
 
 
-	if (bpsOrig >= 0.8)
-		highFreq = highFreq * 0.75;
-	else if (bpsOrig >= 0.6)
-		highFreq = highFreq * 0.6;
+	if (bpsOrig >= 0.8f)
+		highFreq = highFreq * 0.75f;
+	else if (bpsOrig >= 0.6f)
+		highFreq = highFreq * 0.6f;
 	else
-		highFreq = highFreq * 0.5;
+		highFreq = highFreq * 0.5f;
 
 	return true;
 }
@@ -389,7 +389,7 @@ void WMACodec::evalMDCTScales(float highFreq) {
 		_coefsEnd[k] = (_frameLen - ((_frameLen * 9) / 100)) >> k;
 
 		// High freq computation
-		_highBandStart[k] = (int)((blockLen * 2 * highFreq) / _sampleRate + 0.5);
+		_highBandStart[k] = (int)((blockLen * 2 * highFreq) / _sampleRate + 0.5f);
 
 		int n   = _exponentSizes[k];
 		int j   = 0;
@@ -421,11 +421,11 @@ void WMACodec::initNoise() {
 	if (!_useNoiseCoding)
 		return;
 
-	_noiseMult  = _useExpHuffman ? 0.02 : 0.04;
+	_noiseMult  = _useExpHuffman ? 0.02f : 0.04f;
 	_noiseIndex = 0;
 
 	uint  seed = 1;
-	float norm = (1.0 / (float)(1LL << 31)) * sqrt(3.0f) * _noiseMult;
+	float norm = (1.0f / (float)(1LL << 31)) * sqrt(3.0) * _noiseMult;
 
 	for (int i = 0; i < kNoiseTabSize; i++) {
 		seed = seed * 314159 + 1;
@@ -441,9 +441,9 @@ void WMACodec::initCoefHuffman(float bps) {
 	// Choose the parameter table
 	int coefHuffTable = 2;
 	if (_sampleRate >= 32000) {
-		if (bps < 0.72) {
+		if (bps < 0.72f) {
 			coefHuffTable = 0;
-		} else if (bps < 1.16) {
+		} else if (bps < 1.16f) {
 			coefHuffTable = 1;
 		}
 	}
@@ -460,7 +460,7 @@ void WMACodec::initCoefHuffman(float bps) {
 void WMACodec::initMDCT() {
 	_mdct.reserve(_blockSizeCount);
 	for (int i = 0; i < _blockSizeCount; i++)
-		_mdct.push_back(new Common::MDCT(_frameLenBits - i + 1, true, 1.0));
+		_mdct.push_back(new Common::MDCT(_frameLenBits - i + 1, true, 1.0f));
 
 	// Init MDCT windows (simple sine window)
 	_mdctWindow.reserve(_blockSizeCount);
@@ -523,14 +523,14 @@ void WMACodec::initLSPToCurve() {
 	for (int i = 0; i < 256; i++) {
 		int e = i - 126;
 
-		_lspPowETable[i] = powf(2.0, e * -0.25);
+		_lspPowETable[i] = powf(2.0f, e * -0.25f);
 	}
 
 	// NOTE: These two tables are needed to avoid two operations in pow_m1_4
-	float b = 1.0;
+	float b = 1.0f;
 	for (int i = (1 << kLSPPowBits) - 1; i >= 0; i--) {
 		int   m = (1 << kLSPPowBits) + i;
-		float a = (float) m * (0.5 / (1 << kLSPPowBits));
+		float a = (float) m * (0.5f / (1 << kLSPPowBits));
 
 		a = pow(a, -0.25f);
 
@@ -1004,7 +1004,7 @@ bool WMACodec::decodeSpectralCoef(Common::BitStream &bits, bool msStereo, bool *
 float WMACodec::getNormalizedMDCTLength() const {
 	const int n4 = _blockLen / 2;
 
-	float mdctNorm = 1.0 / (float) n4;
+	float mdctNorm = 1.0f / (float) n4;
 	if (_version == 1)
 		mdctNorm *= sqrt((float) n4);
 
@@ -1024,7 +1024,7 @@ void WMACodec::calculateMDCTCoefficients(int bSize, bool *hasChannel,
 
 		const int eSize = _exponentsBSize[i];
 
-		const float mult = (pow(10, totalGain * 0.05) / _maxExponent[i]) * mdctNorm;
+		const float mult = (pow(10, totalGain * 0.05f) / _maxExponent[i]) * mdctNorm;
 
 		if (_useNoiseCoding) {
 
@@ -1077,7 +1077,7 @@ void WMACodec::calculateMDCTCoefficients(int bSize, bool *hasChannel,
 
 					float mult1 = sqrt(expPower[k] / expPower[lastHighBand]);
 
-					mult1 *= pow(10, _highBandValues[i][k] * 0.05);
+					mult1 *= pow(10, _highBandValues[i][k] * 0.05f);
 					mult1 /= _maxExponent[i] * _noiseMult;
 					mult1 *= mdctNorm;
 
@@ -1117,7 +1117,7 @@ void WMACodec::calculateMDCTCoefficients(int bSize, bool *hasChannel,
 		} else {
 
 			for (int j = 0; j < _coefsStart; j++)
-				*coefs++ = 0.0;
+				*coefs++ = 0.0f;
 
 			for (int j = 0;j < coefCount[i]; j++) {
 				*coefs = coefs1[j] * exponents[(j << bSize) >> eSize] * mult;
@@ -1126,7 +1126,7 @@ void WMACodec::calculateMDCTCoefficients(int bSize, bool *hasChannel,
 
 			int n = _blockLen - _coefsEnd[bSize];
 			for (int j = 0; j < n; j++)
-				*coefs++ = 0.0;
+				*coefs++ = 0.0f;
 
 		}
 
@@ -1135,84 +1135,84 @@ void WMACodec::calculateMDCTCoefficients(int bSize, bool *hasChannel,
 }
 
 static const float powTab[] = {
-    1.7782794100389e-04, 2.0535250264571e-04,
-    2.3713737056617e-04, 2.7384196342644e-04,
-    3.1622776601684e-04, 3.6517412725484e-04,
-    4.2169650342858e-04, 4.8696752516586e-04,
-    5.6234132519035e-04, 6.4938163157621e-04,
-    7.4989420933246e-04, 8.6596432336006e-04,
-    1.0000000000000e-03, 1.1547819846895e-03,
-    1.3335214321633e-03, 1.5399265260595e-03,
-    1.7782794100389e-03, 2.0535250264571e-03,
-    2.3713737056617e-03, 2.7384196342644e-03,
-    3.1622776601684e-03, 3.6517412725484e-03,
-    4.2169650342858e-03, 4.8696752516586e-03,
-    5.6234132519035e-03, 6.4938163157621e-03,
-    7.4989420933246e-03, 8.6596432336006e-03,
-    1.0000000000000e-02, 1.1547819846895e-02,
-    1.3335214321633e-02, 1.5399265260595e-02,
-    1.7782794100389e-02, 2.0535250264571e-02,
-    2.3713737056617e-02, 2.7384196342644e-02,
-    3.1622776601684e-02, 3.6517412725484e-02,
-    4.2169650342858e-02, 4.8696752516586e-02,
-    5.6234132519035e-02, 6.4938163157621e-02,
-    7.4989420933246e-02, 8.6596432336007e-02,
-    1.0000000000000e-01, 1.1547819846895e-01,
-    1.3335214321633e-01, 1.5399265260595e-01,
-    1.7782794100389e-01, 2.0535250264571e-01,
-    2.3713737056617e-01, 2.7384196342644e-01,
-    3.1622776601684e-01, 3.6517412725484e-01,
-    4.2169650342858e-01, 4.8696752516586e-01,
-    5.6234132519035e-01, 6.4938163157621e-01,
-    7.4989420933246e-01, 8.6596432336007e-01,
-    1.0000000000000e+00, 1.1547819846895e+00,
-    1.3335214321633e+00, 1.5399265260595e+00,
-    1.7782794100389e+00, 2.0535250264571e+00,
-    2.3713737056617e+00, 2.7384196342644e+00,
-    3.1622776601684e+00, 3.6517412725484e+00,
-    4.2169650342858e+00, 4.8696752516586e+00,
-    5.6234132519035e+00, 6.4938163157621e+00,
-    7.4989420933246e+00, 8.6596432336007e+00,
-    1.0000000000000e+01, 1.1547819846895e+01,
-    1.3335214321633e+01, 1.5399265260595e+01,
-    1.7782794100389e+01, 2.0535250264571e+01,
-    2.3713737056617e+01, 2.7384196342644e+01,
-    3.1622776601684e+01, 3.6517412725484e+01,
-    4.2169650342858e+01, 4.8696752516586e+01,
-    5.6234132519035e+01, 6.4938163157621e+01,
-    7.4989420933246e+01, 8.6596432336007e+01,
-    1.0000000000000e+02, 1.1547819846895e+02,
-    1.3335214321633e+02, 1.5399265260595e+02,
-    1.7782794100389e+02, 2.0535250264571e+02,
-    2.3713737056617e+02, 2.7384196342644e+02,
-    3.1622776601684e+02, 3.6517412725484e+02,
-    4.2169650342858e+02, 4.8696752516586e+02,
-    5.6234132519035e+02, 6.4938163157621e+02,
-    7.4989420933246e+02, 8.6596432336007e+02,
-    1.0000000000000e+03, 1.1547819846895e+03,
-    1.3335214321633e+03, 1.5399265260595e+03,
-    1.7782794100389e+03, 2.0535250264571e+03,
-    2.3713737056617e+03, 2.7384196342644e+03,
-    3.1622776601684e+03, 3.6517412725484e+03,
-    4.2169650342858e+03, 4.8696752516586e+03,
-    5.6234132519035e+03, 6.4938163157621e+03,
-    7.4989420933246e+03, 8.6596432336007e+03,
-    1.0000000000000e+04, 1.1547819846895e+04,
-    1.3335214321633e+04, 1.5399265260595e+04,
-    1.7782794100389e+04, 2.0535250264571e+04,
-    2.3713737056617e+04, 2.7384196342644e+04,
-    3.1622776601684e+04, 3.6517412725484e+04,
-    4.2169650342858e+04, 4.8696752516586e+04,
-    5.6234132519035e+04, 6.4938163157621e+04,
-    7.4989420933246e+04, 8.6596432336007e+04,
-    1.0000000000000e+05, 1.1547819846895e+05,
-    1.3335214321633e+05, 1.5399265260595e+05,
-    1.7782794100389e+05, 2.0535250264571e+05,
-    2.3713737056617e+05, 2.7384196342644e+05,
-    3.1622776601684e+05, 3.6517412725484e+05,
-    4.2169650342858e+05, 4.8696752516586e+05,
-    5.6234132519035e+05, 6.4938163157621e+05,
-    7.4989420933246e+05, 8.6596432336007e+05,
+    1.7782794100389e-04f, 2.0535250264571e-04f,
+    2.3713737056617e-04f, 2.7384196342644e-04f,
+    3.1622776601684e-04f, 3.6517412725484e-04f,
+    4.2169650342858e-04f, 4.8696752516586e-04f,
+    5.6234132519035e-04f, 6.4938163157621e-04f,
+    7.4989420933246e-04f, 8.6596432336006e-04f,
+    1.0000000000000e-03f, 1.1547819846895e-03f,
+    1.3335214321633e-03f, 1.5399265260595e-03f,
+    1.7782794100389e-03f, 2.0535250264571e-03f,
+    2.3713737056617e-03f, 2.7384196342644e-03f,
+    3.1622776601684e-03f, 3.6517412725484e-03f,
+    4.2169650342858e-03f, 4.8696752516586e-03f,
+    5.6234132519035e-03f, 6.4938163157621e-03f,
+    7.4989420933246e-03f, 8.6596432336006e-03f,
+    1.0000000000000e-02f, 1.1547819846895e-02f,
+    1.3335214321633e-02f, 1.5399265260595e-02f,
+    1.7782794100389e-02f, 2.0535250264571e-02f,
+    2.3713737056617e-02f, 2.7384196342644e-02f,
+    3.1622776601684e-02f, 3.6517412725484e-02f,
+    4.2169650342858e-02f, 4.8696752516586e-02f,
+    5.6234132519035e-02f, 6.4938163157621e-02f,
+    7.4989420933246e-02f, 8.6596432336007e-02f,
+    1.0000000000000e-01f, 1.1547819846895e-01f,
+    1.3335214321633e-01f, 1.5399265260595e-01f,
+    1.7782794100389e-01f, 2.0535250264571e-01f,
+    2.3713737056617e-01f, 2.7384196342644e-01f,
+    3.1622776601684e-01f, 3.6517412725484e-01f,
+    4.2169650342858e-01f, 4.8696752516586e-01f,
+    5.6234132519035e-01f, 6.4938163157621e-01f,
+    7.4989420933246e-01f, 8.6596432336007e-01f,
+    1.0000000000000e+00f, 1.1547819846895e+00f,
+    1.3335214321633e+00f, 1.5399265260595e+00f,
+    1.7782794100389e+00f, 2.0535250264571e+00f,
+    2.3713737056617e+00f, 2.7384196342644e+00f,
+    3.1622776601684e+00f, 3.6517412725484e+00f,
+    4.2169650342858e+00f, 4.8696752516586e+00f,
+    5.6234132519035e+00f, 6.4938163157621e+00f,
+    7.4989420933246e+00f, 8.6596432336007e+00f,
+    1.0000000000000e+01f, 1.1547819846895e+01f,
+    1.3335214321633e+01f, 1.5399265260595e+01f,
+    1.7782794100389e+01f, 2.0535250264571e+01f,
+    2.3713737056617e+01f, 2.7384196342644e+01f,
+    3.1622776601684e+01f, 3.6517412725484e+01f,
+    4.2169650342858e+01f, 4.8696752516586e+01f,
+    5.6234132519035e+01f, 6.4938163157621e+01f,
+    7.4989420933246e+01f, 8.6596432336007e+01f,
+    1.0000000000000e+02f, 1.1547819846895e+02f,
+    1.3335214321633e+02f, 1.5399265260595e+02f,
+    1.7782794100389e+02f, 2.0535250264571e+02f,
+    2.3713737056617e+02f, 2.7384196342644e+02f,
+    3.1622776601684e+02f, 3.6517412725484e+02f,
+    4.2169650342858e+02f, 4.8696752516586e+02f,
+    5.6234132519035e+02f, 6.4938163157621e+02f,
+    7.4989420933246e+02f, 8.6596432336007e+02f,
+    1.0000000000000e+03f, 1.1547819846895e+03f,
+    1.3335214321633e+03f, 1.5399265260595e+03f,
+    1.7782794100389e+03f, 2.0535250264571e+03f,
+    2.3713737056617e+03f, 2.7384196342644e+03f,
+    3.1622776601684e+03f, 3.6517412725484e+03f,
+    4.2169650342858e+03f, 4.8696752516586e+03f,
+    5.6234132519035e+03f, 6.4938163157621e+03f,
+    7.4989420933246e+03f, 8.6596432336007e+03f,
+    1.0000000000000e+04f, 1.1547819846895e+04f,
+    1.3335214321633e+04f, 1.5399265260595e+04f,
+    1.7782794100389e+04f, 2.0535250264571e+04f,
+    2.3713737056617e+04f, 2.7384196342644e+04f,
+    3.1622776601684e+04f, 3.6517412725484e+04f,
+    4.2169650342858e+04f, 4.8696752516586e+04f,
+    5.6234132519035e+04f, 6.4938163157621e+04f,
+    7.4989420933246e+04f, 8.6596432336007e+04f,
+    1.0000000000000e+05f, 1.1547819846895e+05f,
+    1.3335214321633e+05f, 1.5399265260595e+05f,
+    1.7782794100389e+05f, 2.0535250264571e+05f,
+    2.3713737056617e+05f, 2.7384196342644e+05f,
+    3.1622776601684e+05f, 3.6517412725484e+05f,
+    4.2169650342858e+05f, 4.8696752516586e+05f,
+    5.6234132519035e+05f, 6.4938163157621e+05f,
+    7.4989420933246e+05f, 8.6596432336007e+05f,
 };
 
 bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {

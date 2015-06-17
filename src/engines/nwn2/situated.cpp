@@ -178,9 +178,9 @@ void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 
 	float bearing = instance.getDouble("Bearing");
 
-	float rotX = 0.0;
+	float rotX = 0.0f;
 	float rotY = Common::rad2deg(bearing);
-	float rotZ = 0.0;
+	float rotZ = 0.0f;
 
 	if (instance.hasField("Orientation")) {
 		const Aurora::GFF3Struct &o = instance.getStruct("Orientation");

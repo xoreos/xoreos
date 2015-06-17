@@ -35,10 +35,10 @@ namespace Engines {
 
 namespace NWN {
 
-Scrollbar::Scrollbar(Type type) : _type(type), _x(0.0), _y(0.0), _z(0.0) {
+Scrollbar::Scrollbar(Type type) : _type(type), _x(0.0f), _y(0.0f), _z(0.0f) {
 	_texture = TextureMan.get("gui_scrollbar");
 
-	setLength(16.0);
+	setLength(16.0f);
 }
 
 Scrollbar::~Scrollbar() {
@@ -88,20 +88,20 @@ void Scrollbar::setLength(float length) {
 
 float Scrollbar::getWidth() const {
 	if      (_type == kTypeVertical)
-		return 10.0;
+		return 10.0f;
 	else if (_type == kTypeHorizontal)
 		return _length;
 
-	return 0.0;
+	return 0.0f;
 }
 
 float Scrollbar::getHeight() const {
 	if      (_type == kTypeVertical)
 		return _length;
 	else if (_type == kTypeHorizontal)
-		return 10.0;
+		return 10.0f;
 
-	return 0.0;
+	return 0.0f;
 }
 
 void Scrollbar::calculateDistance() {
@@ -129,125 +129,125 @@ void Scrollbar::render(Graphics::RenderPass pass) {
 
 void Scrollbar::createH() {
 	// Number of 16 pixel wide quads
-	int n = ceilf(_length / 16.0);
+	int n = ceilf(_length / 16.0f);
 
-	float x = 0.0;
-	float y = 0.0;
+	float x = 0.0f;
+	float y = 0.0f;
 
 	// Quads + caps
 	_quads.resize(n + 2);
 
 	// Left cap
-	_quads[0].tX[0] =  3.0 / 16.0; _quads[0].tY[0] = 0.0;
-	_quads[0].tX[1] =  3.0 / 16.0; _quads[0].tY[1] = 2.0 / 16.0;
-	_quads[0].tX[2] = 13.0 / 16.0; _quads[0].tY[2] = 2.0 / 16.0;
-	_quads[0].tX[3] = 13.0 / 16.0; _quads[0].tY[3] = 0.0;
+	_quads[0].tX[0] =  3.0f / 16.0f; _quads[0].tY[0] = 0.0f;
+	_quads[0].tX[1] =  3.0f / 16.0f; _quads[0].tY[1] = 2.0f / 16.0f;
+	_quads[0].tX[2] = 13.0f / 16.0f; _quads[0].tY[2] = 2.0f / 16.0f;
+	_quads[0].tX[3] = 13.0f / 16.0f; _quads[0].tY[3] = 0.0f;
 
-	_quads[0].vX[0] = x      ; _quads[0].vY[0] = y;
-	_quads[0].vX[1] = x + 2.0; _quads[0].vY[1] = y;
-	_quads[0].vX[2] = x + 2.0; _quads[0].vY[2] = y + 10.0;
-	_quads[0].vX[3] = x      ; _quads[0].vY[3] = y + 10.0;
+	_quads[0].vX[0] = x       ; _quads[0].vY[0] = y;
+	_quads[0].vX[1] = x + 2.0f; _quads[0].vY[1] = y;
+	_quads[0].vX[2] = x + 2.0f; _quads[0].vY[2] = y + 10.0f;
+	_quads[0].vX[3] = x       ; _quads[0].vY[3] = y + 10.0f;
 
-	x += 2.0;
+	x += 2.0f;
 
-	float length = _length - 4.0;
+	float length = _length - 4.0f;
 
 	// Bar
 	for (int i = 0; i < n; i++) {
 		float pLength = MIN(length, 16.0f);
-		float tLength = pLength / 16.0;
+		float tLength = pLength / 16.0f;
 
-		_quads[i + 1].tX[0] =     0.0; _quads[i + 1].tY[0] =  3.0 / 16.0;
-		_quads[i + 1].tX[1] = tLength; _quads[i + 1].tY[1] =  3.0 / 16.0;
-		_quads[i + 1].tX[2] = tLength; _quads[i + 1].tY[2] = 13.0 / 16.0;
-		_quads[i + 1].tX[3] =     0.0; _quads[i + 1].tY[3] = 13.0 / 16.0;
+		_quads[i + 1].tX[0] =    0.0f; _quads[i + 1].tY[0] =  3.0f / 16.0f;
+		_quads[i + 1].tX[1] = tLength; _quads[i + 1].tY[1] =  3.0f / 16.0f;
+		_quads[i + 1].tX[2] = tLength; _quads[i + 1].tY[2] = 13.0f / 16.0f;
+		_quads[i + 1].tX[3] =    0.0f; _quads[i + 1].tY[3] = 13.0f / 16.0f;
 
 		_quads[i + 1].vX[0] = x          ; _quads[i + 1].vY[0] = y;
 		_quads[i + 1].vX[1] = x + pLength; _quads[i + 1].vY[1] = y;
-		_quads[i + 1].vX[2] = x + pLength; _quads[i + 1].vY[2] = y + 10.0;
-		_quads[i + 1].vX[3] = x          ; _quads[i + 1].vY[3] = y + 10.0;
+		_quads[i + 1].vX[2] = x + pLength; _quads[i + 1].vY[2] = y + 10.0f;
+		_quads[i + 1].vX[3] = x          ; _quads[i + 1].vY[3] = y + 10.0f;
 
 		x      += pLength;
 		length -= pLength;
 	}
 
 	// Right cap
-	_quads[n + 1].tX[0] =  3.0 / 16.0; _quads[n + 1].tY[0] = 14.0 / 16.0;
-	_quads[n + 1].tX[1] =  3.0 / 16.0; _quads[n + 1].tY[1] = 16.0 / 16.0;
-	_quads[n + 1].tX[2] = 13.0 / 16.0; _quads[n + 1].tY[2] = 16.0 / 16.0;
-	_quads[n + 1].tX[3] = 13.0 / 16.0; _quads[n + 1].tY[3] = 14.0 / 16.0;
+	_quads[n + 1].tX[0] =  3.0f / 16.0f; _quads[n + 1].tY[0] = 14.0f / 16.0f;
+	_quads[n + 1].tX[1] =  3.0f / 16.0f; _quads[n + 1].tY[1] = 16.0f / 16.0f;
+	_quads[n + 1].tX[2] = 13.0f / 16.0f; _quads[n + 1].tY[2] = 16.0f / 16.0f;
+	_quads[n + 1].tX[3] = 13.0f / 16.0f; _quads[n + 1].tY[3] = 14.0f / 16.0f;
 
-	_quads[n + 1].vX[0] = x      ; _quads[n + 1].vY[0] = y;
-	_quads[n + 1].vX[1] = x + 2.0; _quads[n + 1].vY[1] = y;
-	_quads[n + 1].vX[2] = x + 2.0; _quads[n + 1].vY[2] = y + 10.0;
-	_quads[n + 1].vX[3] = x      ; _quads[n + 1].vY[3] = y + 10.0;
+	_quads[n + 1].vX[0] = x       ; _quads[n + 1].vY[0] = y;
+	_quads[n + 1].vX[1] = x + 2.0f; _quads[n + 1].vY[1] = y;
+	_quads[n + 1].vX[2] = x + 2.0f; _quads[n + 1].vY[2] = y + 10.0f;
+	_quads[n + 1].vX[3] = x       ; _quads[n + 1].vY[3] = y + 10.0f;
 }
 
 void Scrollbar::createV() {
 	// Number of 16 pixel wide quads
-	int n = ceilf(_length / 16.0);
+	int n = ceilf(_length / 16.0f);
 
-	float x = 0.0;
-	float y = 0.0;
+	float x = 0.0f;
+	float y = 0.0f;
 
 	// Quads + caps
 	_quads.resize(n + 2);
 
 	// Bottom cap
-	_quads[0].tX[0] =  3.0 / 16.0; _quads[0].tY[0] = 0.0;
-	_quads[0].tX[1] =  3.0 / 16.0; _quads[0].tY[1] = 2.0 / 16.0;
-	_quads[0].tX[2] = 13.0 / 16.0; _quads[0].tY[2] = 2.0 / 16.0;
-	_quads[0].tX[3] = 13.0 / 16.0; _quads[0].tY[3] = 0.0;
+	_quads[0].tX[0] =  3.0f / 16.0f; _quads[0].tY[0] = 0.0f;
+	_quads[0].tX[1] =  3.0f / 16.0f; _quads[0].tY[1] = 2.0f / 16.0f;
+	_quads[0].tX[2] = 13.0f / 16.0f; _quads[0].tY[2] = 2.0f / 16.0f;
+	_quads[0].tX[3] = 13.0f / 16.0f; _quads[0].tY[3] = 0.0f;
 
-	_quads[0].vX[0] = x       ; _quads[0].vY[0] = y;
-	_quads[0].vX[1] = x + 10.0; _quads[0].vY[1] = y;
-	_quads[0].vX[2] = x + 10.0; _quads[0].vY[2] = y + 2.0;
-	_quads[0].vX[3] = x       ; _quads[0].vY[3] = y + 2.0;
+	_quads[0].vX[0] = x        ; _quads[0].vY[0] = y;
+	_quads[0].vX[1] = x + 10.0f; _quads[0].vY[1] = y;
+	_quads[0].vX[2] = x + 10.0f; _quads[0].vY[2] = y + 2.0f;
+	_quads[0].vX[3] = x        ; _quads[0].vY[3] = y + 2.0f;
 
-	y += 2.0;
+	y += 2.0f;
 
-	float length = _length - 4.0;
+	float length = _length - 4.0f;
 
 	// Bar
 	for (int i = 0; i < n; i++) {
 		float pLength = MIN(length, 16.0f);
-		float tLength = pLength / 16.0;
+		float tLength = pLength / 16.0f;
 
-		_quads[i + 1].tX[0] =     0.0; _quads[i + 1].tY[0] =  3.0 / 16.0;
-		_quads[i + 1].tX[1] =     0.0; _quads[i + 1].tY[1] = 13.0 / 16.0;
-		_quads[i + 1].tX[2] = tLength; _quads[i + 1].tY[2] = 13.0 / 16.0;
-		_quads[i + 1].tX[3] = tLength; _quads[i + 1].tY[3] =  3.0 / 16.0;
+		_quads[i + 1].tX[0] =    0.0f; _quads[i + 1].tY[0] =  3.0f / 16.0f;
+		_quads[i + 1].tX[1] =    0.0f; _quads[i + 1].tY[1] = 13.0f / 16.0f;
+		_quads[i + 1].tX[2] = tLength; _quads[i + 1].tY[2] = 13.0f / 16.0f;
+		_quads[i + 1].tX[3] = tLength; _quads[i + 1].tY[3] =  3.0f / 16.0f;
 
-		_quads[i + 1].vX[0] = x       ; _quads[i + 1].vY[0] = y;
-		_quads[i + 1].vX[1] = x + 10.0; _quads[i + 1].vY[1] = y;
-		_quads[i + 1].vX[2] = x + 10.0; _quads[i + 1].vY[2] = y + pLength;
-		_quads[i + 1].vX[3] = x       ; _quads[i + 1].vY[3] = y + pLength;
+		_quads[i + 1].vX[0] = x        ; _quads[i + 1].vY[0] = y;
+		_quads[i + 1].vX[1] = x + 10.0f; _quads[i + 1].vY[1] = y;
+		_quads[i + 1].vX[2] = x + 10.0f; _quads[i + 1].vY[2] = y + pLength;
+		_quads[i + 1].vX[3] = x        ; _quads[i + 1].vY[3] = y + pLength;
 
 		y      += pLength;
 		length -= pLength;
 	}
 
 	// Top cap
-	_quads[n + 1].tX[0] =  3.0 / 16.0; _quads[n + 1].tY[0] = 14.0 / 16.0;
-	_quads[n + 1].tX[1] =  3.0 / 16.0; _quads[n + 1].tY[1] = 16.0 / 16.0;
-	_quads[n + 1].tX[2] = 13.0 / 16.0; _quads[n + 1].tY[2] = 16.0 / 16.0;
-	_quads[n + 1].tX[3] = 13.0 / 16.0; _quads[n + 1].tY[3] = 14.0 / 16.0;
+	_quads[n + 1].tX[0] =  3.0f / 16.0f; _quads[n + 1].tY[0] = 14.0f / 16.0f;
+	_quads[n + 1].tX[1] =  3.0f / 16.0f; _quads[n + 1].tY[1] = 16.0f / 16.0f;
+	_quads[n + 1].tX[2] = 13.0f / 16.0f; _quads[n + 1].tY[2] = 16.0f / 16.0f;
+	_quads[n + 1].tX[3] = 13.0f / 16.0f; _quads[n + 1].tY[3] = 14.0f / 16.0f;
 
-	_quads[n + 1].vX[0] = x       ; _quads[n + 1].vY[0] = y;
-	_quads[n + 1].vX[1] = x + 10.0; _quads[n + 1].vY[1] = y;
-	_quads[n + 1].vX[2] = x + 10.0; _quads[n + 1].vY[2] = y + 2.0;
-	_quads[n + 1].vX[3] = x       ; _quads[n + 1].vY[3] = y + 2.0;
+	_quads[n + 1].vX[0] = x        ; _quads[n + 1].vY[0] = y;
+	_quads[n + 1].vX[1] = x + 10.0f; _quads[n + 1].vY[1] = y;
+	_quads[n + 1].vX[2] = x + 10.0f; _quads[n + 1].vY[2] = y + 2.0f;
+	_quads[n + 1].vX[3] = x        ; _quads[n + 1].vY[3] = y + 2.0f;
 }
 
 
 WidgetScrollbar::WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag,
                                  Scrollbar::Type type, float range) :
-		NWNWidget(gui, tag), _type(type), _range(range), _state(0.0), _scrollbar(type) {
+		NWNWidget(gui, tag), _type(type), _range(range), _state(0.0f), _scrollbar(type) {
 
 	_scrollbar.setTag(tag);
 	_scrollbar.setClickable(true);
 
-	setLength(1.0);
+	setLength(1.0f);
 }
 
 WidgetScrollbar::~WidgetScrollbar() {
@@ -278,12 +278,12 @@ void WidgetScrollbar::setPosition(float x, float y, float z) {
 }
 
 void WidgetScrollbar::setLength(float percent) {
-	_full = percent >= 1.0;
+	_full = percent >= 1.0f;
 
 	// Calculate the actual length, at 2 pixel intervals
 	_length = ceilf(MAX(_range * CLIP(percent, 0.0f, 1.0f), 10.0f));
 	if ((((int) _length) % 2) == 1)
-		_length += 1.0;
+		_length += 1.0f;
 
 	if (_length > _range)
 		_length = _range;
@@ -331,7 +331,7 @@ float WidgetScrollbar::getBarPosition() const {
 	else if (_type == Scrollbar::kTypeHorizontal)
 		return x;
 
-	return 0.0;
+	return 0.0f;
 }
 
 void WidgetScrollbar::mouseDown(uint8 state, float x, float y) {
@@ -366,7 +366,7 @@ void WidgetScrollbar::mouseMove(uint8 state, float x, float y) {
 		// We only care about moves with the left mouse button pressed
 		return;
 
-	float steps = 1.0 / (_range - _length);
+	float steps = 1.0f / (_range - _length);
 
 	if      (_type == Scrollbar::kTypeVertical)
 		setState(_dragState + ((_dragY - y) * steps));

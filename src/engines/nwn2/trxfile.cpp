@@ -278,7 +278,7 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	 */
 
 	_terrain.push_back(new Graphics::Aurora::GeometryObject(vBuf, iBuf));
-	_terrain.back()->setRotation(-90.0, 0.0, 0.0);
+	_terrain.back()->setRotation(-90.0f, 0.0f, 0.0f);
 }
 
 void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
@@ -388,7 +388,7 @@ void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 	 */
 
 	_water.push_back(new Graphics::Aurora::GeometryObject(vBuf, iBuf));
-	_water.back()->setRotation(-90.0, 0.0, 0.0);
+	_water.back()->setRotation(-90.0f, 0.0f, 0.0f);
 }
 
 void TRXFile::loadASWM(Common::SeekableReadStream &UNUSED(trx), Packet &UNUSED(packet)) {

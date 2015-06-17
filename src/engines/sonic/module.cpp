@@ -158,31 +158,31 @@ void Module::handleEvents() {
 
 bool Module::handleCameraEvents(const Events::Event &event) {
 	if (event.type == Events::kEventKeyDown) {
-		float multiplier = 1.0;
+		float multiplier = 1.0f;
 		if (event.key.keysym.mod & KMOD_SHIFT)
-			multiplier = 5.0;
+			multiplier = 5.0f;
 
 		if      (event.key.keysym.sym      == SDLK_UP)
-			CameraMan.move(0.0, 0.0, multiplier *  5.0);
+			CameraMan.move(0.0f, 0.0f, multiplier *  5.0f);
 		else if (event.key.keysym.sym      == SDLK_DOWN)
-			CameraMan.move(0.0, 0.0, multiplier * -5.0);
+			CameraMan.move(0.0f, 0.0f, multiplier * -5.0f);
 		else if (event.key.keysym.sym      == SDLK_LEFT)
-			CameraMan.move(multiplier * -5.0, 0.0, 0.0);
+			CameraMan.move(multiplier * -5.0f, 0.0f, 0.0f);
 		else if (event.key.keysym.sym      == SDLK_RIGHT)
-			CameraMan.move(multiplier *  5.0, 0.0, 0.0);
+			CameraMan.move(multiplier *  5.0f, 0.0f, 0.0f);
 		else if (event.key.keysym.scancode == SDL_SCANCODE_W)
-			CameraMan.move(0.0, 0.0, multiplier *  5.0);
+			CameraMan.move(0.0f, 0.0f, multiplier *  5.0f);
 		else if (event.key.keysym.scancode == SDL_SCANCODE_S)
-			CameraMan.move(0.0, 0.0, multiplier * -5.0);
+			CameraMan.move(0.0f, 0.0f, multiplier * -5.0f);
 		else if (event.key.keysym.scancode == SDL_SCANCODE_A)
-			CameraMan.move(multiplier * -5.0, 0.0, 0.0);
+			CameraMan.move(multiplier * -5.0f, 0.0f, 0.0f);
 		else if (event.key.keysym.scancode == SDL_SCANCODE_D)
-			CameraMan.move(multiplier *  5.0, 0.0, 0.0);
+			CameraMan.move(multiplier *  5.0f, 0.0f, 0.0f);
 		else
 			return false;
 	} else if (event.type == Events::kEventMouseMove) {
 		if (event.motion.state & SDL_BUTTON(2))
-			CameraMan.move(-1.0 * event.motion.xrel, 0.0, 1.0 * event.motion.yrel);
+			CameraMan.move(-1.0f * event.motion.xrel, 0.0f, 1.0f * event.motion.yrel);
 		else
 			return false;
 	} else

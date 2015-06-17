@@ -34,12 +34,12 @@
 
 namespace Engines {
 
-LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0), _currentAmount(0.0),
+LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0), _currentAmount(0.0f),
 	_description(0), _barUpper(0), _barLower(0), _progressbar(0), _percent(0) {
 
 	assert(_steps >= 2);
 
-	_stepAmount = 1.0 / (_steps - 1);
+	_stepAmount = 1.0f / (_steps - 1);
 
 	Graphics::Aurora::FontHandle font = FontMan.get(Graphics::Aurora::kSystemFontMono, 13);
 
@@ -53,12 +53,12 @@ LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0), _curr
 	_progressbar = new Graphics::Aurora::Text(font, barStr);
 	_percent     = new Graphics::Aurora::Text(font, "");
 
-	_description->setPosition(0.0,  font.getFont().getHeight());
-	_percent    ->setPosition(0.0, -font.getFont().getHeight());
+	_description->setPosition(0.0f,  font.getFont().getHeight());
+	_percent    ->setPosition(0.0f, -font.getFont().getHeight());
 
-	_barUpper   ->setPosition(-(_barUpper   ->getWidth() / 2.0), 0.0);
-	_barLower   ->setPosition(-(_barLower   ->getWidth() / 2.0), 0.0);
-	_progressbar->setPosition(-(_progressbar->getWidth() / 2.0), 0.0);
+	_barUpper   ->setPosition(-(_barUpper   ->getWidth() / 2.0f), 0.0f);
+	_barLower   ->setPosition(-(_barLower   ->getWidth() / 2.0f), 0.0f);
+	_progressbar->setPosition(-(_progressbar->getWidth() / 2.0f), 0.0f);
 }
 
 LoadProgress::~LoadProgress() {
@@ -77,10 +77,10 @@ void LoadProgress::step(const Common::UString &description) {
 	// Take the next step and make sure we get nice, round 100% at the end
 	if (++_currentStep > (_steps - 1)) {
 		_currentStep   = _steps - 1;
-		_currentAmount = 1.0;
+		_currentAmount = 1.0f;
 	}
 
-	const int percentage = (int) (_currentAmount * 100.0);
+	const int percentage = (int) (_currentAmount * 100.0f);
 
 	// Update the text
 	{
@@ -95,12 +95,12 @@ void LoadProgress::step(const Common::UString &description) {
 		// Update the description text and center it
 		_description->getPosition(x, y, z);
 		_description->set(description);
-		_description->setPosition(-(_description->getWidth() / 2.0), y);
+		_description->setPosition(-(_description->getWidth() / 2.0f), y);
 
 		// Update the percentage text and center it
 		_percent->getPosition(x, y, z);
 		_percent->set(percentStr);
-		_percent->setPosition(-(_percent->getWidth() / 2.0), y);
+		_percent->setPosition(-(_percent->getWidth() / 2.0f), y);
 
 		_progressbar->set(barStr);
 

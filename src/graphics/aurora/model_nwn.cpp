@@ -180,8 +180,8 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 
 	if (_type == kModelTypeGUIFront) {
 		// NWN GUI objects use 0.01 units / pixel
-		_modelScale[0] = _modelScale[1] = 100.0;
-		_modelScale[2] = 1.0;
+		_modelScale[0] = _modelScale[1] = 100.0f;
+		_modelScale[2] = 1.0f;
 	}
 
 	_fileName = name;
@@ -881,8 +881,8 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 		v = (float *) vt.pointer;
 		for (uint32 i = 0; i < vertexCount; i++) {
-			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
-			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0;
+			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
+			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
 		}
 
 		// duplicate tcoords for unique norms
@@ -951,7 +951,7 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 				_positionFrames.push_back(p);
 
 				// Starting position
-				if (p.time == 0.0) {
+				if (p.time == 0.0f) {
 					_position[0] = p.x;
 					_position[1] = p.y;
 					_position[2] = p.z;
@@ -973,7 +973,7 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 				_orientationFrames.push_back(q);
 				// Starting orientation
 				// TODO: Handle animation orientation correctly
-				if (data[timeIndex + 0] == 0.0) {
+				if (data[timeIndex + 0] == 0.0f) {
 					_orientation[0] = data[dataIndex + 0];
 					_orientation[1] = data[dataIndex + 1];
 					_orientation[2] = data[dataIndex + 2];
@@ -988,8 +988,8 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 				throw Common::Exception("Alpha controller with %d values", columnCount);
 
 			// Starting alpha
-			if (data[timeIndex + 0] == 0.0)
-				if (data[dataIndex + 0] == 0.0)
+			if (data[timeIndex + 0] == 0.0f)
+				if (data[dataIndex + 0] == 0.0f)
 					// TODO: Just disabled rendering if alpha == 0.0 for now
 					_render = false;
 		}
@@ -1371,12 +1371,12 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 			*v++ = mesh.tX[i->t];
 			*v++ = mesh.tY[i->t];
 		} else {
-			*v++ = 0.0;
-			*v++ = 0.0;
+			*v++ = 0.0f;
+			*v++ = 0.0f;
 		}
 		for (uint16 t = 1; t < textureCount; t++) {
-			*v++ = 0.0;
-			*v++ = 0.0;
+			*v++ = 0.0f;
+			*v++ = 0.0f;
 		}
 	}
 

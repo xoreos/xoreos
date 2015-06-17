@@ -50,13 +50,13 @@ WidgetCheckBox::WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag,
 
 	_model->setState("checkedup");
 	if ((node = _model->getNode("XPlane")))
-		node->move(0.0, 0.0, -10.0);
+		node->move(0.0f, 0.0f, -10.0f);
 	_model->setState("checkeddown");
 	if ((node = _model->getNode("XPlane")))
-		node->move(0.0, 0.0, -10.0);
+		node->move(0.0f, 0.0f, -10.0f);
 	_model->setState("checkedhilite");
 	if ((node = _model->getNode("XPlane")))
-		node->move(0.0, 0.0, -10.0);
+		node->move(0.0f, 0.0f, -10.0f);
 
 	_state = false;
 	_down  = false;

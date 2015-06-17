@@ -71,7 +71,7 @@ void OKCancelDialog::show() {
 	float pX, pY, pZ;
 	pnl.getPosition(pX, pY, pZ);
 
-	msg.setPosition(pX - msg.getWidth() / 2.0, pY - msg.getHeight() / 2.0, pZ - 1.0);
+	msg.setPosition(pX - msg.getWidth() / 2.0f, pY - msg.getHeight() / 2.0f, pZ - 1.0f);
 
 	GUI::show();
 }

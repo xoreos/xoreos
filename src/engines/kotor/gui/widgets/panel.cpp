@@ -43,10 +43,10 @@ WidgetPanel::WidgetPanel(::Engines::GUI &gui, const Common::UString &tag,
 	_width  = w;
 	_height = h;
 
-	Widget::setPosition(x, y, 0.0);
+	Widget::setPosition(x, y, 0.0f);
 
-	_quad = new Graphics::Aurora::GUIQuad(texture, 0.0, 0.0, w, h);
-	_quad->setPosition(x, y, 0.0);
+	_quad = new Graphics::Aurora::GUIQuad(texture, 0.0f, 0.0f, w, h);
+	_quad->setPosition(x, y, 0.0f);
 }
 
 WidgetPanel::~WidgetPanel() {

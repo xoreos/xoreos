@@ -51,9 +51,9 @@ void playVideo(const Common::UString &video) {
 		return;
 
 	// Mute other sound sources
-	SoundMan.setTypeGain(Sound::kSoundTypeMusic, 0.0);
-	SoundMan.setTypeGain(Sound::kSoundTypeSFX  , 0.0);
-	SoundMan.setTypeGain(Sound::kSoundTypeVoice, 0.0);
+	SoundMan.setTypeGain(Sound::kSoundTypeMusic, 0.0f);
+	SoundMan.setTypeGain(Sound::kSoundTypeSFX  , 0.0f);
+	SoundMan.setTypeGain(Sound::kSoundTypeVoice, 0.0f);
 
 	try {
 		Video::Aurora::VideoPlayer videoPlayer(video);
@@ -87,7 +87,7 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 		SoundMan.setChannelGain(channel, volume);
 
 		if (pitchVariance) {
-			const float pitch = 1.0 + ((((std::rand() % 1001) / 1000.0) / 5.0) - 0.1);
+			const float pitch = 1.0f + ((((std::rand() % 1001) / 1000.0f) / 5.0f) - 0.1f);
 
 			SoundMan.setChannelPitch(channel, pitch);
 		}

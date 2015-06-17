@@ -129,7 +129,7 @@ void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
 		if (m != _chars.end())
 			_missingWidth = m->second.width;
 		else
-			_missingWidth = MAX<float>(2.0, _height / 2);
+			_missingWidth = MAX<float>(2.0f, _height / 2);
 
 	} else
 		_missingWidth = _missingChar->second.width;
@@ -152,16 +152,16 @@ float TTFFont::getHeight() const {
 void TTFFont::drawMissing() const {
 	TextureMan.set();
 
-	const float width = _missingWidth - 1.0;
+	const float width = _missingWidth - 1.0f;
 
 	glBegin(GL_QUADS);
-		glVertex2f(0.0  ,     0.0);
-		glVertex2f(width,     0.0);
+		glVertex2f(0.0f ,    0.0f);
+		glVertex2f(width,    0.0f);
 		glVertex2f(width, _height);
-		glVertex2f(0.0  , _height);
+		glVertex2f(0.0f , _height);
 	glEnd();
 
-	glTranslatef(width + 1.0, 0.0, 0.0);
+	glTranslatef(width + 1.0f, 0.0f, 0.0f);
 }
 
 void TTFFont::draw(uint32 c) const {
@@ -187,7 +187,7 @@ void TTFFont::draw(uint32 c) const {
 	}
 	glEnd();
 
-	glTranslatef(cC->second.width, 0.0, 0.0);
+	glTranslatef(cC->second.width, 0.0f, 0.0f);
 }
 
 void TTFFont::buildChars(const Common::UString &str) {
@@ -256,10 +256,10 @@ void TTFFont::addChar(uint32 c) {
 		ch.width = cWidth;
 		ch.page  = _pages.size() - 1;
 
-		ch.vX[0] = 0.00;   ch.vY[0] = 0.00;
-		ch.vX[1] = cWidth; ch.vY[1] = 0.00;
+		ch.vX[0] = 0.00f;  ch.vY[0] = 0.00f;
+		ch.vX[1] = cWidth; ch.vY[1] = 0.00f;
 		ch.vX[2] = cWidth; ch.vY[2] = _height;
-		ch.vX[3] = 0.00;   ch.vY[3] = _height;
+		ch.vX[3] = 0.00f;  ch.vY[3] = _height;
 
 		const float tX = (float) page.curX / (float) kPageWidth;
 		const float tY = (float) page.curY / (float) kPageHeight;

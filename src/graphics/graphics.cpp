@@ -75,7 +75,7 @@ GraphicsManager::GraphicsManager() {
 	_fsaa    = 0;
 	_fsaaMax = 0;
 
-	_gamma = 1.0;
+	_gamma = 1.0f;
 
 	_cullFaceEnabled = true;
 	_cullFaceMode    = GL_BACK;
@@ -440,8 +440,8 @@ void GraphicsManager::setupScene() {
 	glLoadIdentity();
 
 	glShadeModel(GL_SMOOTH);
-	glClearColor(0.0, 0.0, 0.0, 0.5);
-	glClearDepth(1.0);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+	glClearDepth(1.0f);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -450,7 +450,7 @@ void GraphicsManager::setupScene() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glAlphaFunc(GL_GREATER, 0.1);
+	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_ALPHA_TEST);
 
 	setCullFace(_cullFaceEnabled, _cullFaceMode);
@@ -461,7 +461,7 @@ void GraphicsManager::setupScene() {
 			break;
 
 		case kProjectTypeOrthogonal:
-			ortho(0.0, _width, 0.0, _height, _clipNear, _clipFar);
+			ortho(0.0f, _width, 0.0f, _height, _clipNear, _clipFar);
 			break;
 
 		default:
@@ -507,36 +507,36 @@ void GraphicsManager::setPerspective(float viewAngle, float clipNear, float clip
 }
 
 void GraphicsManager::perspective(float fovy, float aspect, float zNear, float zFar) {
-	assert(fabs(fovy) > 0.001);
+	assert(fabs(fovy) > 0.001f);
 	assert(zNear > 0);
 	assert(zFar > 0);
 	assert(zFar > zNear);
-	assert((zFar - zNear) > 0.001);
+	assert((zFar - zNear) > 0.001f);
 
-	const float f = 1.0 / (tanf(Common::deg2rad(fovy) / 2.0));
+	const float f = 1.0f / (tanf(Common::deg2rad(fovy) / 2.0f));
 
 	const float t1 = (zFar + zNear) / (zNear - zFar);
 	const float t2 = (2 * zFar * zNear) / (zNear - zFar);
 
 	_projection(0, 0) =  f / aspect;
-	_projection(0, 1) =  0.0;
-	_projection(0, 2) =  0.0;
-	_projection(0, 3) =  0.0;
+	_projection(0, 1) =  0.0f;
+	_projection(0, 2) =  0.0f;
+	_projection(0, 3) =  0.0f;
 
-	_projection(1, 0) =  0.0;
+	_projection(1, 0) =  0.0f;
 	_projection(1, 1) =  f;
-	_projection(1, 2) =  0.0;
-	_projection(1, 3) =  0.0;
+	_projection(1, 2) =  0.0f;
+	_projection(1, 3) =  0.0f;
 
-	_projection(2, 0) =  0.0;
-	_projection(2, 1) =  0.0;
+	_projection(2, 0) =  0.0f;
+	_projection(2, 1) =  0.0f;
 	_projection(2, 2) =  t1;
 	_projection(2, 3) =  t2;
 
-	_projection(3, 0) =  0.0;
-	_projection(3, 1) =  0.0;
-	_projection(3, 2) = -1.0;
-	_projection(3, 3) =  0.0;
+	_projection(3, 0) =  0.0f;
+	_projection(3, 1) =  0.0f;
+	_projection(3, 2) = -1.0f;
+	_projection(3, 3) =  0.0f;
 
 	_projectionInv = _projection.getInverse();
 }
@@ -549,7 +549,7 @@ void GraphicsManager::setOrthogonal(float clipNear, float clipFar) {
 		return RequestMan.callInMainThread(functor);
 	}
 
-	ortho(0.0, _width, 0.0, _height, clipNear, clipFar);
+	ortho(0.0f, _width, 0.0f, _height, clipNear, clipFar);
 
 	_projectType = kProjectTypeOrthogonal;
 
@@ -559,27 +559,27 @@ void GraphicsManager::setOrthogonal(float clipNear, float clipFar) {
 
 void GraphicsManager::ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
 	assert(zFar > zNear);
-	assert((zFar - zNear) > 0.001);
+	assert((zFar - zNear) > 0.001f);
 
-	_projection(0, 0) = 2.0 / (right - left);
-	_projection(0, 1) = 0.0;
-	_projection(0, 2) = 0.0;
+	_projection(0, 0) = 2.0f / (right - left);
+	_projection(0, 1) = 0.0f;
+	_projection(0, 2) = 0.0f;
 	_projection(0, 3) = - ((right + left) / (right - left));
 
-	_projection(1, 0) = 0.0;
-	_projection(1, 1) = 2.0 / (top - bottom);
-	_projection(1, 2) = 0.0;
+	_projection(1, 0) = 0.0f;
+	_projection(1, 1) = 2.0f / (top - bottom);
+	_projection(1, 2) = 0.0f;
 	_projection(1, 3) = - ((top + bottom) / (top - bottom));
 
-	_projection(2, 0) = 0.0;
-	_projection(2, 1) = 0.0;
-	_projection(2, 2) = - (2.0 / (zFar - zNear));
+	_projection(2, 0) = 0.0f;
+	_projection(2, 1) = 0.0f;
+	_projection(2, 2) = - (2.0f / (zFar - zNear));
 	_projection(2, 3) = - ((zFar + zNear) / (zFar - zNear));
 
-	_projection(3, 0) =  0.0;
-	_projection(3, 1) =  0.0;
-	_projection(3, 2) =  0.0;
-	_projection(3, 3) =  1.0;
+	_projection(3, 0) = 0.0f;
+	_projection(3, 1) = 0.0f;
+	_projection(3, 2) = 0.0f;
+	_projection(3, 3) = 1.0f;
 
 	_projectionInv = _projection.getInverse();
 }
@@ -600,9 +600,9 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
 
 	// Apply camera orientation
-	model.rotate(-cOrient[0], 1.0, 0.0, 0.0);
-	model.rotate( cOrient[1], 0.0, 1.0, 0.0);
-	model.rotate(-cOrient[2], 0.0, 0.0, 1.0);
+	model.rotate(-cOrient[0], 1.0f, 0.0f, 0.0f);
+	model.rotate( cOrient[1], 0.0f, 1.0f, 0.0f);
+	model.rotate(-cOrient[2], 0.0f, 0.0f, 1.0f);
 
 	// Apply camera position
 	model.translate(-cPos[0], -cPos[1], cPos[2]);
@@ -625,8 +625,8 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 
 	float view[4];
 
-	view[0] = 0.0;
-	view[1] = 0.0;
+	view[0] = 0.0f;
+	view[1] = 0.0f;
 	view[2] = _width;
 	view[3] = _height;
 
@@ -659,9 +659,9 @@ bool GraphicsManager::unproject(float x, float y,
 		model.translate(cPos[0], cPos[1], -cPos[2]);
 
 		// Apply camera orientation
-		model.rotate( cOrient[2], 0.0, 0.0, 1.0);
-		model.rotate(-cOrient[1], 0.0, 1.0, 0.0);
-		model.rotate( cOrient[0], 1.0, 0.0, 0.0);
+		model.rotate( cOrient[2], 0.0f, 0.0f, 1.0f);
+		model.rotate(-cOrient[1], 0.0f, 1.0f, 0.0f);
+		model.rotate( cOrient[0], 1.0f, 0.0f, 0.0f);
 
 
 		// Multiply with the inverse of our projection matrix
@@ -676,8 +676,8 @@ bool GraphicsManager::unproject(float x, float y,
 			 * on the x and y axes, and the clipping planes are at 0.0 and 1.0. */
 
 			const float view[4] = { 0.0f, 0.0f, (float) _width, (float) _height };
-			const float zNear   = 0.0;
-			const float zFar    = 1.0;
+			const float zNear   = 0.0f;
+			const float zFar    = 1.0f;
 
 			coordsNear._x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
 			coordsNear._y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
@@ -709,19 +709,19 @@ bool GraphicsManager::unproject(float x, float y,
 		// Unproject
 		Common::Vector3 oNear(model * coordsNear);
 		Common::Vector3 oFar (model * coordsFar );
-		if ((oNear._w == 0.0) || (oFar._w == 0.0))
+		if ((oNear._w == 0.0f) || (oFar._w == 0.0f))
 			return false; // TODO: check for close to 0.0f, not exactly 0.0f.
 
 
 		// And return the values
 
-		oNear._w = 1.0 / oNear._w;
+		oNear._w = 1.0f / oNear._w;
 
 		x1 = oNear._x * oNear._w;
 		y1 = oNear._y * oNear._w;
 		z1 = oNear._z * oNear._w;
 
-		oFar._w = 1.0 / oFar._w;
+		oFar._w = 1.0f / oFar._w;
 
 		x2 = oFar._x * oFar._w;
 		y2 = oFar._y * oFar._w;
@@ -840,8 +840,8 @@ Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
 		return 0;
 
 	// Map the screen coordinates to our OpenGL GUI screen coordinates
-	x =            x  - (_width  / 2.0);
-	y = (_height - y) - (_height / 2.0);
+	x =            x  - (_width  / 2.0f);
+	y = (_height - y) - (_height / 2.0f);
 
 	Renderable *object = 0;
 
@@ -948,7 +948,7 @@ bool GraphicsManager::playVideo() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0 / _width, 2.0 / _height, 0.0);
+	glScalef(2.0f / _width, 2.0f / _height, 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -985,17 +985,17 @@ bool GraphicsManager::renderWorld() {
 	glLoadIdentity();
 
 	// Apply camera orientation
-	glRotatef(-cOrient[0], 1.0, 0.0, 0.0);
-	glRotatef( cOrient[1], 0.0, 1.0, 0.0);
-	glRotatef(-cOrient[2], 0.0, 0.0, 1.0);
+	glRotatef(-cOrient[0], 1.0f, 0.0f, 0.0f);
+	glRotatef( cOrient[1], 0.0f, 1.0f, 0.0f);
+	glRotatef(-cOrient[2], 0.0f, 0.0f, 1.0f);
 
 	// Apply camera position
 	glTranslatef(-cPos[0], -cPos[1], cPos[2]);
 
 	_modelview.loadIdentity();
-	_modelview.rotate(-cOrient[0], 1.0, 0.0, 0.0);
-	_modelview.rotate( cOrient[1], 0.0, 1.0, 0.0);
-	_modelview.rotate(-cOrient[2], 0.0, 0.0, 1.0);
+	_modelview.rotate(-cOrient[0], 1.0f, 0.0f, 0.0f);
+	_modelview.rotate( cOrient[1], 0.0f, 1.0f, 0.0f);
+	_modelview.rotate(-cOrient[2], 0.0f, 0.0f, 1.0f);
 	_modelview.translate(-cPos[0], -cPos[1], cPos[2]);
 
 	QueueMan.lockQueue(kQueueVisibleWorldObject);
@@ -1050,7 +1050,7 @@ bool GraphicsManager::renderGUIFront() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0 / _width, 2.0 / _height, 0.0);
+	glScalef(2.0f / _width, 2.0f / _height, 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1083,7 +1083,7 @@ bool GraphicsManager::renderGUIBack() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0 / _width, 2.0 / _height, 0.0);
+	glScalef(2.0f / _width, 2.0f / _height, 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1117,8 +1117,8 @@ bool GraphicsManager::renderCursor() {
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0 / _width, 2.0 / _height, 0.0);
-	glTranslatef(- (_width / 2.0), _height / 2.0, 0.0);
+	glScalef(2.0f / _width, 2.0f / _height, 0.0f);
+	glTranslatef(- (_width / 2.0f), _height / 2.0f, 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

@@ -158,7 +158,7 @@ bool ScriptContainer::runScript(const Common::UString &script,
 		if (retVal.getType() == Aurora::NWScript::kTypeInt)
 			return retVal.getInt() != 0;
 		if (retVal.getType() == Aurora::NWScript::kTypeFloat)
-			return retVal.getFloat() != 0.0;
+			return retVal.getFloat() != 0.0f;
 
 		return true;
 

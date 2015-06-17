@@ -45,8 +45,8 @@ IngameGUI::IngameGUI(Module &module, ::Engines::Console *console) :
 	_main = new IngameMainMenu(_module->getGameVersion(), console);
 
 	_quickbar  = new Quickbar;
-	_quickchat = new Quickchat(_quickbar->getHeight() - 3.0);
-	_compass   = new Compass(_quickbar->getHeight() + _quickchat->getHeight() - 6.0);
+	_quickchat = new Quickchat(_quickbar->getHeight() - 3.0f);
+	_compass   = new Compass(_quickbar->getHeight() + _quickchat->getHeight() - 6.0f);
 
 	_party.resize(1);
 	_party[0] = new PartyLeader(module);
@@ -158,15 +158,15 @@ void IngameGUI::setArea(const Common::UString &area) {
 }
 
 void IngameGUI::setHealthy(size_t partyMember) {
-	_party[partyMember]->setHealthColor(1.0, 0.0, 0.0, 1.0);
+	_party[partyMember]->setHealthColor(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void IngameGUI::setSick(size_t partyMember) {
-	_party[partyMember]->setHealthColor(189.0 / 255.0, 146.0 / 255.0,  74.0 / 255.0, 1.0);
+	_party[partyMember]->setHealthColor(189.0f / 255.0f, 146.0f / 255.0f,  74.0f / 255.0f, 1.0f);
 }
 
 void IngameGUI::setPoisoned(size_t partyMember) {
-	_party[partyMember]->setHealthColor(132.0 / 255.0, 182.0 / 255.0,  74.0 / 255.0, 1.0);
+	_party[partyMember]->setHealthColor(132.0f / 255.0f, 182.0f / 255.0f,  74.0f / 255.0f, 1.0f);
 }
 
 void IngameGUI::updatePartyMember(size_t partyMember, const Creature &creature, bool force) {

@@ -182,7 +182,7 @@ void Module::enter() {
 	CameraMan.reset();
 
 	// Roughly head position
-	CameraMan.setPosition(entryX, entryZ + 2.0, entryY);
+	CameraMan.setPosition(entryX, entryZ + 2.0f, entryY);
 	CameraMan.setOrientation(entryDirX, entryDirY);
 	CameraMan.update();
 }
@@ -372,7 +372,7 @@ void Module::movePC(const Common::UString &area) {
 
 void Module::movePC(float x, float y, float z) {
 	// Roughly head position
-	CameraMan.setPosition(x, y + 2.0, z);
+	CameraMan.setPosition(x, y + 2.0f, z);
 	CameraMan.update();
 }
 

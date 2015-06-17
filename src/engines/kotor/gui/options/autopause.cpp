@@ -35,12 +35,12 @@ namespace KotOR {
 OptionsAutoPauseMenu::OptionsAutoPauseMenu(::Engines::Console *console) : GUI(console) {
 	load("optautopause");
 	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
-	getCheckBox("CB_ENDROUND", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_ENEMYSIGHTED", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_MINESIGHTED", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_PARTYKILLED", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_ACTIONMENU", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_TRIGGERS", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_ENDROUND", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_ENEMYSIGHTED", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_MINESIGHTED", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_PARTYKILLED", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_ACTIONMENU", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_TRIGGERS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 }
 
 OptionsAutoPauseMenu::~OptionsAutoPauseMenu() {

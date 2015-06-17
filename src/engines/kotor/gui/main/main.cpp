@@ -108,7 +108,7 @@ void MainMenu::initWidget(Widget &widget) {
 		float x, y, z;
 		widget.getPosition(x, y, z);
 
-		widget.setPosition(x, y, z - 10.0);
+		widget.setPosition(x, y, z - 10.0f);
 	}
 }
 

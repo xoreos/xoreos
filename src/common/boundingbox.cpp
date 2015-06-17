@@ -51,8 +51,8 @@ void BoundingBox::clear() {
 	_coords[6][0] = -FLT_MAX; _coords[6][1] = -FLT_MAX; _coords[6][2] =  FLT_MAX;
 	_coords[7][0] = -FLT_MAX; _coords[7][1] = -FLT_MAX; _coords[7][2] = -FLT_MAX;
 
-	_min[0] = 0.0; _min[1] = 0.0; _min[2] = 0.0;
-	_max[0] = 0.0; _max[1] = 0.0; _max[2] = 0.0;
+	_min[0] = 0.0f; _min[1] = 0.0f; _min[2] = 0.0f;
+	_max[0] = 0.0f; _max[1] = 0.0f; _max[2] = 0.0f;
 
 	_origin.loadIdentity();
 }
@@ -284,7 +284,7 @@ inline float BoundingBox::getCoordMin(int i) const {
 	if (i == 2)
 		return MIN(MIN(MIN(_coords[0][2], _coords[2][2]), _coords[4][2]), _coords[6][2]);
 
-	return 0.0;
+	return 0.0f;
 }
 
 inline float BoundingBox::getCoordMax(int i) const {
@@ -295,7 +295,7 @@ inline float BoundingBox::getCoordMax(int i) const {
 	if (i == 2)
 		return MAX(MAX(MAX(_coords[1][2], _coords[3][2]), _coords[5][2]), _coords[7][2]);
 
-	return 0.0;
+	return 0.0f;
 }
 
 void BoundingBox::absolutize() {

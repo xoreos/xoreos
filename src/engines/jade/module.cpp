@@ -190,7 +190,7 @@ void Module::enter() {
 	CameraMan.reset();
 
 	// Roughly head position
-	CameraMan.setPosition(0.0, 1.8, 0.0);
+	CameraMan.setPosition(0.0f, 1.8f, 0.0f);
 	CameraMan.update();
 
 	_area->show();

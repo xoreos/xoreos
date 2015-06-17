@@ -57,7 +57,7 @@ WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui, const Comm
                                                  WidgetListItemBaseButton(gui, "ctl_pre_btn_char",
                                                                           spacing) {
 
-	_portrait  = new Portrait(portrait, Portrait::kSizeTiny, 1.0);
+	_portrait  = new Portrait(portrait, Portrait::kSizeTiny, 1.0f);
 	_textName  = new Graphics::Aurora::Text(FontMan.get(font), name);
 	_textClass = new Graphics::Aurora::Text(FontMan.get(font), classes);
 }
@@ -89,13 +89,13 @@ void WidgetListItemCharacter::setPosition(float x, float y, float z) {
 
 	getPosition(x, y, z);
 
-	z -= 5.0;
-	_portrait->setPosition(x + 8.0, y + 7.0, z);
+	z -= 5.0f;
+	_portrait->setPosition(x + 8.0f, y + 7.0f, z);
 
-	x += 32.0;
+	x += 32.0f;
 
-	_textName->setPosition (x, y + getHeight() -     _textName->getHeight() - 4.0, z);
-	_textClass->setPosition(x, y + getHeight() - 2 * _textName->getHeight() - 4.0, z);
+	_textName->setPosition (x, y + getHeight() -     _textName->getHeight() - 4.0f, z);
+	_textClass->setPosition(x, y + getHeight() - 2 * _textName->getHeight() - 4.0f, z);
 }
 
 bool CharPremadeMenu::Character::operator<(const Character &c) const {
@@ -224,7 +224,7 @@ void CharPremadeMenu::initCharacterList() {
 	for (std::vector<Character>::iterator c = _characters.begin();
 	     c != _characters.end(); ++c)
 		charList.add(new WidgetListItemCharacter(*this, "fnt_galahad14",
-		                                         c->displayName, c->classes, c->portrait, 2.0));
+		                                         c->displayName, c->classes, c->portrait, 2.0f));
 
 	charList.unlock();
 

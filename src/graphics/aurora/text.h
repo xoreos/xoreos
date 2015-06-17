@@ -41,14 +41,14 @@ namespace Aurora {
 class Text : public GUIFrontElement {
 public:
 	Text(const FontHandle &font, const Common::UString &str,
-	     float r = 1.0, float g = 1.0, float b = 1.0, float a = 1.0, float align = 0.0);
+	     float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f, float align = 0.0f);
 	~Text();
 
 	const Common::UString &get() const;
 	void getPosition(float &x, float &y, float &z) const;
 	void getColor(float &r, float &g, float &b, float &a) const;
 
-	void set(const Common::UString &str, float maxWidth = 0.0, float maxHeight = 0.0);
+	void set(const Common::UString &str, float maxWidth = 0.0f, float maxHeight = 0.0f);
 	void setPosition(float x, float y, float z = -FLT_MAX);
 	void setColor(float r, float g, float b, float a);
 	void unsetColor();

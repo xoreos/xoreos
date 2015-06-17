@@ -53,12 +53,12 @@
 
 #include "src/engines/nwn/gui/ingame/dialog.h"
 
-static const float kDialogWidth  = 350.0;
-static const float kDialogHeight = 254.0;
+static const float kDialogWidth  = 350.0f;
+static const float kDialogHeight = 254.0f;
 
-static const float kLightBlueR = 101.0 / 255.0;
-static const float kLightBlueG = 176.0 / 255.0;
-static const float kLightBlueB = 252.0 / 255.0;
+static const float kLightBlueR = 101.0f / 255.0f;
+static const float kLightBlueG = 176.0f / 255.0f;
+static const float kLightBlueB = 252.0f / 255.0f;
 
 static const uint32 kContinue  = 1741;
 static const uint32 kEndDialog = 1742;
@@ -81,7 +81,7 @@ DialogBox::ReplyLine::ReplyLine(std::list<Reply>::const_iterator &i) :
 
 
 DialogBox::DialogBox(float width, float height) : _width(width), _height(height),
-	_x(0.0), _y(0.0), _z(0.0), _replyCount(0), _replyCountWidth(0.0) {
+	_x(0.0f), _y(0.0f), _z(0.0f), _replyCount(0), _replyCountWidth(0.0f) {
 
 	const Common::UString fontName =
 		ConfigMan.getBool("largefonts") ? "fnt_dialog_big16" : "fnt_dialog16x16";
@@ -164,15 +164,15 @@ void DialogBox::setPosition(float x, float y, float z) {
 
 	// Portrait
 
-	const float portraitX = _x + 3.0;
-	const float portraitY = _y + _height - _portrait->getHeight() - 3.0;
-	const float portraitZ = _z - 10.0;
+	const float portraitX = _x + 3.0f;
+	const float portraitY = _y + _height - _portrait->getHeight() - 3.0f;
+	const float portraitZ = _z - 10.0f;
 
 	_portrait->setPosition(portraitX, portraitY, portraitZ);
 
 	// Name
 
-	const float nameX = portraitX + _portrait->getWidth() + 5.0;
+	const float nameX = portraitX + _portrait->getWidth() + 5.0f;
 	const float nameY = portraitY + _portrait->getHeight() - _name->getHeight();
 
 	_name->setPosition(nameX, nameY, portraitZ);
@@ -180,7 +180,7 @@ void DialogBox::setPosition(float x, float y, float z) {
 	// NPC Entry
 
 	const float entryX = nameX;
-	      float entryY = nameY - 4.0;
+	      float entryY = nameY - 4.0f;
 
 	for (std::list<Graphics::Aurora::Text *>::iterator e = _entryLines.begin();
 	     e != _entryLines.end(); ++e) {
@@ -191,8 +191,8 @@ void DialogBox::setPosition(float x, float y, float z) {
 
 	// PC Replies
 
-	const float replyX = _x + 5.0;
-	      float replyY = MIN<float>(entryY, portraitY) - 4.0;
+	const float replyX = _x + 5.0f;
+	      float replyY = MIN<float>(entryY, portraitY) - 4.0f;
 
 	const float replyCountRight = replyX + _replyCountWidth;
 
@@ -278,7 +278,7 @@ void DialogBox::setEntry(const Common::UString &entry) {
 
 	// TODO: Check entry length, scrollbars
 
-	const float maxWidth = _width - 2.0 - 2.0 - _portrait->getWidth() - 5.0;
+	const float maxWidth = _width - 2.0f - 2.0f - _portrait->getWidth() - 5.0f;
 
 	std::vector<Common::UString> lines;
 	_font.getFont().split(_entry, lines, maxWidth);
@@ -329,7 +329,7 @@ void DialogBox::clearReplies() {
 	_replies.clear();
 
 	_replyCount = 0;
-	_replyCountWidth = 0.0;
+	_replyCountWidth = 0.0f;
 }
 
 void DialogBox::addReply(const Common::UString &reply, uint32 id) {
@@ -348,7 +348,7 @@ void DialogBox::finishReplies() {
 
 
 	_replyCount      = 0;
-	_replyCountWidth = 0.0;
+	_replyCountWidth = 0.0f;
 
 	// Create the reply number texts
 
@@ -364,7 +364,7 @@ void DialogBox::finishReplies() {
 
 	// Create the reply line texts
 
-	const float maxWidth = _width - 6.0 - _replyCountWidth;
+	const float maxWidth = _width - 6.0f - _replyCountWidth;
 
 	for (std::list<ReplyLine>::iterator r = _replyLines.begin(); r != _replyLines.end(); ++r) {
 		std::vector<Common::UString> lines;
@@ -450,9 +450,9 @@ void DialogBox::setHighlight(const std::list<ReplyLine>::iterator &h) {
 				continue;
 
 			if (r->count)
-				r->count->setColor(kLightBlueR, kLightBlueG, kLightBlueB, 1.0);
+				r->count->setColor(kLightBlueR, kLightBlueG, kLightBlueB, 1.0f);
 			if (r->line)
-				r->line->setColor(kLightBlueR, kLightBlueG, kLightBlueB, 1.0);
+				r->line->setColor(kLightBlueR, kLightBlueG, kLightBlueB, 1.0f);
 		}
 
 	}
@@ -461,9 +461,9 @@ void DialogBox::setHighlight(const std::list<ReplyLine>::iterator &h) {
 
 	if (_highlightedReply != _replyLines.end()) {
 		if (_highlightedReply->count)
-			_highlightedReply->count->setColor(1.0, 1.0, 1.0, 1.0);
+			_highlightedReply->count->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 		if (_highlightedReply->line)
-			_highlightedReply->line->setColor(1.0, 1.0, 1.0, 1.0);
+			_highlightedReply->line->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
 	if (_highlightedReply != _replyLines.end()) {
@@ -476,9 +476,9 @@ void DialogBox::setHighlight(const std::list<ReplyLine>::iterator &h) {
 				continue;
 
 			if (r->count)
-				r->count->setColor(1.0, 1.0, 1.0, 1.0);
+				r->count->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 			if (r->line)
-				r->line->setColor(1.0, 1.0, 1.0, 1.0);
+				r->line->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 
 	}
@@ -494,7 +494,7 @@ void DialogBox::render(Graphics::RenderPass pass) {
 		return;
 
 	TextureMan.reset();
-	glColor4f(0.0, 0.0, 0.0, 0.5);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
 
 
 	// Backdrop
@@ -506,42 +506,42 @@ void DialogBox::render(Graphics::RenderPass pass) {
 	glEnd();
 
 	// Top edge
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-		glVertex2f(_x         , _y + _height - 1.0);
-		glVertex2f(_x + _width, _y + _height - 1.0);
-		glVertex2f(_x + _width, _y + _height      );
-		glVertex2f(_x         , _y + _height      );
+		glVertex2f(_x         , _y + _height - 1.0f);
+		glVertex2f(_x + _width, _y + _height - 1.0f);
+		glVertex2f(_x + _width, _y + _height       );
+		glVertex2f(_x         , _y + _height       );
 	glEnd();
 
 	// Bottom edge
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-		glVertex2f(_x         , _y      );
-		glVertex2f(_x + _width, _y      );
-		glVertex2f(_x + _width, _y + 1.0);
-		glVertex2f(_x         , _y + 1.0);
+		glVertex2f(_x         , _y       );
+		glVertex2f(_x + _width, _y       );
+		glVertex2f(_x + _width, _y + 1.0f);
+		glVertex2f(_x         , _y + 1.0f);
 	glEnd();
 
 	// Left edge
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-		glVertex2f(_x + 1.0, _y + _height);
-		glVertex2f(_x      , _y + _height);
-		glVertex2f(_x      , _y          );
-		glVertex2f(_x + 1.0, _y          );
+		glVertex2f(_x + 1.0f, _y + _height);
+		glVertex2f(_x       , _y + _height);
+		glVertex2f(_x       , _y          );
+		glVertex2f(_x + 1.0f, _y          );
 	glEnd();
 
 	// Right edge
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glBegin(GL_QUADS);
-		glVertex2f(_x + _width      , _y + _height);
-		glVertex2f(_x + _width - 1.0, _y + _height);
-		glVertex2f(_x + _width - 1.0, _y          );
-		glVertex2f(_x + _width      , _y          );
+		glVertex2f(_x + _width       , _y + _height);
+		glVertex2f(_x + _width - 1.0f, _y + _height);
+		glVertex2f(_x + _width - 1.0f, _y          );
+		glVertex2f(_x + _width       , _y          );
 	glEnd();
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 
@@ -686,10 +686,10 @@ void Dialog::checkPicked() {
 void Dialog::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
                            int newWidth, int newHeight) {
 
-	const float x = -(newWidth  / 2.0)                        + 10.0;
-	const float y =  (newHeight / 2.0) - _dlgBox->getHeight() - 20.0;
+	const float x = -(newWidth  / 2.0f)                        + 10.0f;
+	const float y =  (newHeight / 2.0f) - _dlgBox->getHeight() - 20.0f;
 
-	_dlgBox->setPosition(x, y, 0.0);
+	_dlgBox->setPosition(x, y, 0.0f);
 }
 
 void Dialog::updateBox() {

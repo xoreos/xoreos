@@ -31,7 +31,7 @@
 
 namespace Graphics {
 
-Renderable::Renderable(RenderableType type) : _clickable(false), _distance(0.0) {
+Renderable::Renderable(RenderableType type) : _clickable(false), _distance(0.0f) {
 	switch (type) {
 		case kRenderableTypeVideo:
 			_queueExists  = kQueueVideo;

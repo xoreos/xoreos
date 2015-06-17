@@ -33,9 +33,9 @@
 
 #include "src/engines/nwn/gui/widgets/portrait.h"
 
-static const char *kSuffix[] = {"h"  , "l"  , "m"  , "s"  , "t"  ,  "i" };
-static const float kWidth [] = {256.0, 128.0,  64.0,  32.0,  16.0,  32.0};
-static const float kHeight[] = {400.0, 200.0, 100.0,  50.0,  25.0,  32.0};
+static const char *kSuffix[] = {"h"   , "l"   , "m"   , "s"   , "t"   ,  "i"  };
+static const float kWidth [] = {256.0f, 128.0f,  64.0f,  32.0f,  16.0f,  32.0f};
+static const float kHeight[] = {400.0f, 200.0f, 100.0f,  50.0f,  25.0f,  32.0f};
 
 namespace Engines {
 
@@ -50,14 +50,14 @@ Portrait::Portrait(const Common::UString &name, Size size,
 	setSize();
 	setPortrait(name);
 
-	setPosition(0.0, 0.0, -FLT_MAX);
+	setPosition(0.0f, 0.0f, -FLT_MAX);
 }
 
 Portrait::~Portrait() {
 }
 
 void Portrait::createBorder() {
-	if (_border <= 0.0)
+	if (_border <= 0.0f)
 		return;
 
 	_qBorder.clear();
@@ -145,7 +145,7 @@ void Portrait::calculateDistance() {
 }
 
 void Portrait::render(Graphics::RenderPass pass) {
-	bool isTransparent = (_bA < 1.0) ||
+	bool isTransparent = (_bA < 1.0f) ||
 	                     (!_texture.empty() && _texture.getTexture().hasAlpha());
 	if (((pass == Graphics::kRenderPassOpaque)      &&  isTransparent) ||
 			((pass == Graphics::kRenderPassTransparent) && !isTransparent))
@@ -167,7 +167,7 @@ void Portrait::render(Graphics::RenderPass pass) {
 	// Portrait
 
 	TextureMan.set(_texture);
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 	glBegin(GL_QUADS);
 	for (int i = 0; i < 4; i++) {
@@ -210,23 +210,23 @@ void Portrait::setBorderColor(float bR, float bG, float bB, float bA) {
 }
 
 void Portrait::setSize() {
-	_qPortrait.vX[0] = 0.0                ; _qPortrait.vY[0] = 0.0                 ;
-	_qPortrait.vX[1] = 0.0 + kWidth[_size]; _qPortrait.vY[1] = 0.0                 ;
-	_qPortrait.vX[2] = 0.0 + kWidth[_size]; _qPortrait.vY[2] = 0.0 + kHeight[_size];
-	_qPortrait.vX[3] = 0.0                ; _qPortrait.vY[3] = 0.0 + kHeight[_size];
+	_qPortrait.vX[0] = 0.0f                ; _qPortrait.vY[0] = 0.0f                 ;
+	_qPortrait.vX[1] = 0.0f + kWidth[_size]; _qPortrait.vY[1] = 0.0f                 ;
+	_qPortrait.vX[2] = 0.0f + kWidth[_size]; _qPortrait.vY[2] = 0.0f + kHeight[_size];
+	_qPortrait.vX[3] = 0.0f                ; _qPortrait.vY[3] = 0.0f + kHeight[_size];
 
 	// Part of the texture(the bottom) is cut for portraits but not for icons.
 	float portraitCutRatio;
 	if (_size != kSizeIcon) {
-		portraitCutRatio = 112.0 / 512.0;
+		portraitCutRatio = 112.0f / 512.0f;
 	} else {
-		portraitCutRatio = 0.0;
+		portraitCutRatio = 0.0f;
 	}
 
-	_qPortrait.tX[0] = 0.0; _qPortrait.tY[0] = portraitCutRatio;
-	_qPortrait.tX[1] = 1.0; _qPortrait.tY[1] = portraitCutRatio;
-	_qPortrait.tX[2] = 1.0; _qPortrait.tY[2] = 1.0;
-	_qPortrait.tX[3] = 0.0; _qPortrait.tY[3] = 1.0;
+	_qPortrait.tX[0] = 0.0f; _qPortrait.tY[0] = portraitCutRatio;
+	_qPortrait.tX[1] = 1.0f; _qPortrait.tY[1] = portraitCutRatio;
+	_qPortrait.tX[2] = 1.0f; _qPortrait.tY[2] = 1.0f;
+	_qPortrait.tX[3] = 0.0f; _qPortrait.tY[3] = 1.0f;
 }
 
 

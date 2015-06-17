@@ -36,9 +36,9 @@ OptionsGraphicsAdvancedMenu::OptionsGraphicsAdvancedMenu(::Engines::Console *con
 	load("optgraphicsadv");
 
 	//Hardcoded, the gui file returns incorrect values
-	getCheckBox("CB_FRAMEBUFF", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_VSYNC", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_SOFTSHADOWS", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_FRAMEBUFF", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_VSYNC", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_SOFTSHADOWS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 
 }
 

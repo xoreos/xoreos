@@ -76,7 +76,7 @@ void CubeSide::render(RenderPass pass) {
 }
 
 
-Cube::Cube(const Common::UString &texture) : _firstTime(true), _lastRotateTime(0), _rotation(0.0), _list(0) {
+Cube::Cube(const Common::UString &texture) : _firstTime(true), _lastRotateTime(0), _rotation(0.0f), _list(0) {
 	_texture = TextureMan.get(texture);
 
 	for (int i = 0; i < 6; i++)
@@ -100,26 +100,26 @@ void Cube::doRebuild() {
 
 	glNewList(_list, GL_COMPILE);
 
-		glColor4f(1.0, 1.0, 1.0, 1.0);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 		glBegin(GL_QUADS);
-			glTexCoord2f(0.0, 0.0);
-			glVertex3f(-1.00, -1.00,  0.00);
-			glTexCoord2f(1.0, 0.0);
-			glVertex3f( 1.00, -1.00,  0.00);
-			glTexCoord2f(1.0, 1.0);
-			glVertex3f( 1.00,  1.00,  0.00);
-			glTexCoord2f(0.0, 1.0);
-			glVertex3f(-1.00,  1.00,  0.00);
+			glTexCoord2f(0.0f, 0.0f);
+			glVertex3f(-1.00f, -1.00f,  0.00f);
+			glTexCoord2f(1.0f, 0.0f);
+			glVertex3f( 1.00f, -1.00f,  0.00f);
+			glTexCoord2f(1.0f, 1.0f);
+			glVertex3f( 1.00f,  1.00f,  0.00f);
+			glTexCoord2f(0.0f, 1.0f);
+			glVertex3f(-1.00f,  1.00f,  0.00f);
 
-			glTexCoord2f(0.0, 0.0);
-			glVertex3f(-1.00, -1.00,  0.00);
-			glTexCoord2f(0.0, 1.0);
-			glVertex3f(-1.00,  1.00,  0.00);
-			glTexCoord2f(1.0, 1.0);
-			glVertex3f( 1.00,  1.00,  0.00);
-			glTexCoord2f(1.0, 0.0);
-			glVertex3f( 1.00, -1.00,  0.00);
+			glTexCoord2f(0.0f, 0.0f);
+			glVertex3f(-1.00f, -1.00f,  0.00f);
+			glTexCoord2f(0.0f, 1.0f);
+			glVertex3f(-1.00f,  1.00f,  0.00f);
+			glTexCoord2f(1.0f, 1.0f);
+			glVertex3f( 1.00f,  1.00f,  0.00f);
+			glTexCoord2f(1.0f, 0.0f);
+			glVertex3f( 1.00f, -1.00f,  0.00f);
 		glEnd();
 
 	glEndList();
@@ -141,77 +141,77 @@ void Cube::newFrame() {
 	uint32 curTime  = EventMan.getTimestamp();
 	uint32 diffTime = curTime - _lastRotateTime;
 
-	_rotation = diffTime * 0.1;
+	_rotation = diffTime * 0.1f;
 	if (_rotation >= 360)
 		_lastRotateTime = curTime;
 }
 
 void Cube::applyTransformation(int n) {
-	glTranslatef(0.0, 0.0, -3.0);
+	glTranslatef(0.0f, 0.0f, -3.0f);
 
-	glRotatef(-_rotation, 1.0, 0.0, 0.0);
-	glRotatef( _rotation, 0.0, 1.0, 0.0);
-	glRotatef( _rotation, 0.0, 0.0, 1.0);
+	glRotatef(-_rotation, 1.0f, 0.0f, 0.0f);
+	glRotatef( _rotation, 0.0f, 1.0f, 0.0f);
+	glRotatef( _rotation, 0.0f, 0.0f, 1.0f);
 
-	glScalef(0.5, 0.5, 0.5);
+	glScalef(0.5f, 0.5f, 0.5f);
 
 	switch (n) {
 		case 0:
-			glTranslatef(0.0, 0.0, 1.0);
+			glTranslatef(0.0f, 0.0f, 1.0f);
 			break;
 		case 1:
-			glTranslatef(0.0, 0.0, -1.0);
+			glTranslatef(0.0f, 0.0f, -1.0f);
 			break;
 		case 2:
-			glRotatef(90.0, 0.0, 1.0, 0.0);
-			glTranslatef(0.0, 0.0, 1.0);
+			glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+			glTranslatef(0.0f, 0.0f, 1.0f);
 			break;
 		case 3:
-			glRotatef(90.0, 0.0, 1.0, 0.0);
-			glTranslatef(0.0, 0.0, -1.0);
+			glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+			glTranslatef(0.0f, 0.0f, -1.0f);
 			break;
 		case 4:
-			glRotatef(90.0, 1.0, 0.0, 0.0);
-			glTranslatef(0.0, 0.0, 1.0);
+			glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+			glTranslatef(0.0f, 0.0f, 1.0f);
 			break;
 		case 5:
-			glRotatef(90.0, 1.0, 0.0, 0.0);
-			glTranslatef(0.0, 0.0, -1.0);
+			glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+			glTranslatef(0.0f, 0.0f, -1.0f);
 			break;
 	}
 }
 
 void Cube::applyTransformation(int n, Common::TransformationMatrix &m) {
-	m.translate(0.0, 0.0, -3.0);
+	m.translate(0.0f, 0.0f, -3.0f);
 
-	m.rotate(-_rotation, 1.0, 0.0, 0.0);
-	m.rotate( _rotation, 0.0, 1.0, 0.0);
-	m.rotate( _rotation, 0.0, 0.0, 1.0);
+	m.rotate(-_rotation, 1.0f, 0.0f, 0.0f);
+	m.rotate( _rotation, 0.0f, 1.0f, 0.0f);
+	m.rotate( _rotation, 0.0f, 0.0f, 1.0f);
 
-	m.scale(0.5, 0.5, 0.5);
+	m.scale(0.5f, 0.5f, 0.5f);
 
 	switch (n) {
 		case 0:
-			m.translate(0.0, 0.0, 1.0);
+			m.translate(0.0f, 0.0f, 1.0f);
 			break;
 		case 1:
-			m.translate(0.0, 0.0, -1.0);
+			m.translate(0.0f, 0.0f, -1.0f);
 			break;
 		case 2:
-			m.rotate(90.0, 0.0, 1.0, 0.0);
-			m.translate(0.0, 0.0, 1.0);
+			m.rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			m.translate(0.0f, 0.0f, 1.0f);
 			break;
 		case 3:
-			m.rotate(90.0, 0.0, 1.0, 0.0);
-			m.translate(0.0, 0.0, -1.0);
+			m.rotate(90.0f, 0.0f, 1.0f, 0.0f);
+			m.translate(0.0f, 0.0f, -1.0f);
 			break;
 		case 4:
-			m.rotate(90.0, 1.0, 0.0, 0.0);
-			m.translate(0.0, 0.0, 1.0);
+			m.rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			m.translate(0.0f, 0.0f, 1.0f);
 			break;
 		case 5:
-			m.rotate(90.0, 1.0, 0.0, 0.0);
-			m.translate(0.0, 0.0, -1.0);
+			m.rotate(90.0f, 1.0f, 0.0f, 0.0f);
+			m.translate(0.0f, 0.0f, -1.0f);
 			break;
 	}
 }

@@ -64,7 +64,7 @@ void ButtonsGroup::setActive(WidgetButton *button) {
 	     it != _buttonsList.end(); ++it) {
 		// First we check if the button belongs to this group.
 		if (*it == button) {
-			_helpBox->setText("fnt_galahad14", _helpTexts[std::distance(_buttonsList.begin(), it)], 1.0);
+			_helpBox->setText("fnt_galahad14", _helpTexts[std::distance(_buttonsList.begin(), it)], 1.0f);
 			_helpBox->setTitle("fnt_galahad14", _helpTitles[std::distance(_buttonsList.begin(), it)]);
 
 			if ((*it)->getMode() == WidgetButton::kModeUnchanged)

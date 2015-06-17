@@ -35,7 +35,7 @@ class Portrait;
 class WidgetListItemBaseButton : public WidgetListItem {
 public:
 	WidgetListItemBaseButton(::Engines::GUI &gui, const Common::UString &button,
-	                     float spacing = 0.0, const Common::UString &soundClick = "gui_button");
+	                     float spacing = 0.0f, const Common::UString &soundClick = "gui_button");
 	~WidgetListItemBaseButton();
 
 	void show();

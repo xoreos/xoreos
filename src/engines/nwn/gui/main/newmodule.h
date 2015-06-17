@@ -42,7 +42,7 @@ class Module;
 class WidgetListItemModule : public WidgetListItem {
 public:
 	WidgetListItemModule(::Engines::GUI &gui, const Common::UString &font,
-	                     const Common::UString &text, float spacing = 0.0);
+	                     const Common::UString &text, float spacing = 0.0f);
 	~WidgetListItemModule();
 
 	void show();

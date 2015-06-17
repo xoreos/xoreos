@@ -43,7 +43,7 @@ namespace Video {
 VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
 	_started(false), _finished(false), _needCopy(false),
 	_width(0), _height(0), _surface(0), _texture(0),
-	_textureWidth(0.0), _textureHeight(0.0), _scale(kScaleNone),
+	_textureWidth(0.0f), _textureHeight(0.0f), _scale(kScaleNone),
 	_sound(0), _soundRate(0), _soundFlags(0) {
 
 }
@@ -261,19 +261,19 @@ void VideoDecoder::render(Graphics::RenderPass pass) {
 
 	// Create a textured quad with those dimensions
 
-	float hWidth  = width  / 2.0;
-	float hHeight = height / 2.0;
+	float hWidth  = width  / 2.0f;
+	float hHeight = height / 2.0f;
 
 	glBindTexture(GL_TEXTURE_2D, _texture);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-hWidth, -hHeight, -1.0);
-		glTexCoord2f(_textureWidth, 0.0);
-		glVertex3f( hWidth, -hHeight, -1.0);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex3f(-hWidth, -hHeight, -1.0f);
+		glTexCoord2f(_textureWidth, 0.0f);
+		glVertex3f( hWidth, -hHeight, -1.0f);
 		glTexCoord2f(_textureWidth, _textureHeight);
-		glVertex3f( hWidth,  hHeight, -1.0);
-		glTexCoord2f(0.0, _textureHeight);
-		glVertex3f(-hWidth,  hHeight, -1.0);
+		glVertex3f( hWidth,  hHeight, -1.0f);
+		glTexCoord2f(0.0f, _textureHeight);
+		glVertex3f(-hWidth,  hHeight, -1.0f);
 	glEnd();
 }
 

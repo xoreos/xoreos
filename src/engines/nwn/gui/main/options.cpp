@@ -46,7 +46,7 @@ OptionsMenu::OptionsMenu(const Version &gameVersion, ::Engines::Console *console
 	load("options_pregame");
 
 	WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
-	backdrop->setPosition(0.0, 0.0, 100.0);
+	backdrop->setPosition(0.0f, 0.0f, 100.0f);
 	addWidget(backdrop);
 
 	_game     = new OptionsGameMenu    (true, _console);
@@ -67,7 +67,7 @@ void OptionsMenu::initWidget(Widget &widget) {
 		Common::UString version = Common::UString(XOREOS_NAMEVERSION) + " v" + _gameVersion->getVersionString();
 
 		dynamic_cast<WidgetLabel &>(widget).setText(version);
-		dynamic_cast<WidgetLabel &>(widget).setColor(0.6, 0.6, 0.6, 1.0);
+		dynamic_cast<WidgetLabel &>(widget).setColor(0.6f, 0.6f, 0.6f, 1.0f);
 		return;
 	}
 }

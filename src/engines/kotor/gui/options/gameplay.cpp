@@ -44,13 +44,13 @@ OptionsGameplayMenu::OptionsGameplayMenu(::Engines::Console *console) : GUI(cons
 	_mousesettings = new OptionsMouseSettingsMenu(_console);
 	_keyboardconfiguration = new OptionsKeyboardConfigurationMenu(_console);
 	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
-	getButton("BTN_DIFFLEFT", true)->setColor(0, 0.658824, 0.980392, 1);
-	getButton("BTN_DIFFRIGHT", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_LEVELUP", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_INVERTCAM", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_AUTOSAVE", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_REVERSE", true)->setColor(0, 0.658824, 0.980392, 1);
-	getCheckBox("CB_DISABLEMOVE", true)->setColor(0, 0.658824, 0.980392, 1);
+	getButton("BTN_DIFFLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_DIFFRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_LEVELUP", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_INVERTCAM", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_AUTOSAVE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_REVERSE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getCheckBox("CB_DISABLEMOVE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 }
 OptionsGameplayMenu::~OptionsGameplayMenu() {
 	delete _mousesettings;

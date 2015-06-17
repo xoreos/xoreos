@@ -46,7 +46,7 @@ ABCFont::~ABCFont() {
 }
 
 float ABCFont::getHeight() const {
-	return 32.0;
+	return 32.0f;
 }
 
 float ABCFont::getWidth(uint32 c) const {
@@ -60,7 +60,7 @@ void ABCFont::draw(uint32 c) const {
 
 	const Char &cC = findChar(c);
 
-	glTranslatef(cC.spaceL, 0.0, 0.0);
+	glTranslatef(cC.spaceL, 0.0f, 0.0f);
 
 	glBegin(GL_QUADS);
 	for (int i = 0; i < 4; i++) {
@@ -69,7 +69,7 @@ void ABCFont::draw(uint32 c) const {
 	}
 	glEnd();
 
-	glTranslatef(cC.width + cC.spaceR, 0.0, 0.0);
+	glTranslatef(cC.width + cC.spaceR, 0.0f, 0.0f);
 }
 
 void ABCFont::load(const Common::UString &name) {
@@ -84,14 +84,14 @@ void ABCFont::load(const Common::UString &name) {
 	_invalid.spaceL = 0;
 	_invalid.spaceR = 0;
 
-	_invalid.tX[0] = 0.0; _invalid.tY[0] = 0.0;
-	_invalid.tX[1] = 0.0; _invalid.tY[1] = 0.0;
-	_invalid.tX[2] = 0.0; _invalid.tY[2] = 0.0;
-	_invalid.tX[3] = 0.0; _invalid.tY[3] = 0.0;
-	_invalid.vX[0] = 0.0; _invalid.vY[0] = 0.0;
-	_invalid.vX[1] = 0.0; _invalid.vY[1] = 0.0;
-	_invalid.vX[2] = 0.0; _invalid.vY[2] = 0.0;
-	_invalid.vX[3] = 0.0; _invalid.vY[3] = 0.0;
+	_invalid.tX[0] = 0.0f; _invalid.tY[0] = 0.0f;
+	_invalid.tX[1] = 0.0f; _invalid.tY[1] = 0.0f;
+	_invalid.tX[2] = 0.0f; _invalid.tY[2] = 0.0f;
+	_invalid.tX[3] = 0.0f; _invalid.tY[3] = 0.0f;
+	_invalid.vX[0] = 0.0f; _invalid.vY[0] = 0.0f;
+	_invalid.vX[1] = 0.0f; _invalid.vY[1] = 0.0f;
+	_invalid.vX[2] = 0.0f; _invalid.vY[2] = 0.0f;
+	_invalid.vX[3] = 0.0f; _invalid.vY[3] = 0.0f;
 
 	bool hasInvalid = false;
 
@@ -166,7 +166,7 @@ void ABCFont::calcCharVertices(Char &c) {
 	const float h = _texture.getTexture().getHeight();
 
 	const float vW = c.width;
-	const float vH = 32.0;
+	const float vH = 32.0f;
 	const float tW = vW / w;
 	const float tH = vH / h;
 
@@ -178,10 +178,10 @@ void ABCFont::calcCharVertices(Char &c) {
 	c.tX[2] = tX + tW; c.tY[2] = tY     ;
 	c.tX[3] = tX     ; c.tY[3] = tY     ;
 
-	c.vX[0] = 0.0     ; c.vY[0] = 0.0     ;
-	c.vX[1] = 0.0 + vW; c.vY[1] = 0.0     ;
-	c.vX[2] = 0.0 + vW; c.vY[2] = 0.0 + vH;
-	c.vX[3] = 0.0     ; c.vY[3] = 0.0 + vH;
+	c.vX[0] = 0.0f     ; c.vY[0] = 0.0f     ;
+	c.vX[1] = 0.0f + vW; c.vY[1] = 0.0f     ;
+	c.vX[2] = 0.0f + vW; c.vY[2] = 0.0f + vH;
+	c.vX[3] = 0.0f     ; c.vY[3] = 0.0f + vH;
 }
 
 const ABCFont::Char &ABCFont::findChar(uint32 c) const {

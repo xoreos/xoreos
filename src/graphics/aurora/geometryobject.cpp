@@ -163,9 +163,9 @@ void GeometryObject::render(RenderPass pass) {
 
 	glTranslatef(_position[0], _position[1], _position[2]);
 
-	glRotatef( _rotation[0], 1.0, 0.0, 0.0);
-	glRotatef( _rotation[1], 0.0, 1.0, 0.0);
-	glRotatef(-_rotation[2], 0.0, 0.0, 1.0);
+	glRotatef( _rotation[0], 1.0f, 0.0f, 0.0f);
+	glRotatef( _rotation[1], 0.0f, 1.0f, 0.0f);
+	glRotatef(-_rotation[2], 0.0f, 0.0f, 1.0f);
 
 	TextureMan.reset();
 

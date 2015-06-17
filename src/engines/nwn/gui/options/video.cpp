@@ -46,7 +46,7 @@ OptionsVideoMenu::OptionsVideoMenu(bool isMain, ::Engines::Console *console) : G
 
 	if (isMain) {
 		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
-		backdrop->setPosition(0.0, 0.0, 100.0);
+		backdrop->setPosition(0.0f, 0.0f, 100.0f);
 		addWidget(backdrop);
 	}
 
@@ -76,7 +76,7 @@ OptionsVideoMenu::~OptionsVideoMenu() {
 void OptionsVideoMenu::show() {
 	_gamma = GfxMan.getGamma();
 
-	if (_gamma == 0.0) {
+	if (_gamma == 0.0f) {
 		getWidget("GammaSlider"     , true)->setDisabled(true);
 		getWidget("GammaResetButton", true)->setDisabled(true);
 	} else {
@@ -135,9 +135,9 @@ void OptionsVideoMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "GammaSlider") {
-		float gamma = dynamic_cast<WidgetSlider &>(widget).getState() / 10.0;
+		float gamma = dynamic_cast<WidgetSlider &>(widget).getState() / 10.0f;
 
-		GfxMan.setGamma(gamma + 0.1);
+		GfxMan.setGamma(gamma + 0.1f);
 		return;
 	}
 

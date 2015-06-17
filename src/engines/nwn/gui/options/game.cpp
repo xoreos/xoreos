@@ -45,7 +45,7 @@ OptionsGameMenu::OptionsGameMenu(bool isMain, ::Engines::Console *console) : GUI
 
 	if (isMain) {
 		WidgetPanel *backdrop = new WidgetPanel(*this, "PNL_MAINMENU", "pnl_mainmenu");
-		backdrop->setPosition(0.0, 0.0, 100.0);
+		backdrop->setPosition(0.0f, 0.0f, 100.0f);
 		addWidget(backdrop);
 	}
 
@@ -135,7 +135,7 @@ void OptionsGameMenu::updateDifficulty(int difficulty) {
 	WidgetLabel   &diffLabel = *getLabel("DifficultyLabel", true);
 	WidgetListBox &diffDesc  = *getListBox("DiffEdit", true);
 
-	diffDesc.setText("fnt_galahad14", TalkMan.getString(67578 + difficulty), 1.0);
+	diffDesc.setText("fnt_galahad14", TalkMan.getString(67578 + difficulty), 1.0f);
 
 	if      (difficulty == 0)
 		diffLabel.setText(TalkMan.getString(66786));

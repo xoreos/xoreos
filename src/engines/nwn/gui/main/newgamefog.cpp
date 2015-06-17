@@ -54,18 +54,18 @@ public:
 	NewGameFog(const Common::UString &name) :
 		Graphics::Aurora::Model_NWN(name, Graphics::Aurora::kModelTypeGUIFront) {
 
-		_modelScale[0] = _modelScale[1] = 10.0;
+		_modelScale[0] = _modelScale[1] = 10.0f;
 
 		_startTime  = EventMan.getTimestamp();
 		_lastTime   = _startTime;
 		_timeRotate = _startTime - (std::rand() % 10000);
 
-		_curZoom = 0.8;
+		_curZoom = 0.8f;
 
-		_curFade  = (std::rand() % 1000) / 1000.0;
-		_fadeStep = 0.001;
+		_curFade  = (std::rand() % 1000) / 1000.0f;
+		_fadeStep = 0.001f;
 
-		_rotateSpeed = 40 + ((std::rand() % 3000) / 100.0);
+		_rotateSpeed = 40 + ((std::rand() % 3000) / 100.0f);
 	}
 
 	~NewGameFog() {
@@ -78,25 +78,25 @@ public:
 		uint32 curTime = EventMan.getTimestamp();
 
 		uint32 diffRotate = curTime - _timeRotate;
-		glRotatef(diffRotate / _rotateSpeed, 0.0, 0.0, -1.0);
+		glRotatef(diffRotate / _rotateSpeed, 0.0f, 0.0f, -1.0f);
 
-		glScalef(_curZoom, _curZoom, 1.0);
-		_curZoom += ((curTime - _lastTime) / 3000.0) * _curZoom;
+		glScalef(_curZoom, _curZoom, 1.0f);
+		_curZoom += ((curTime - _lastTime) / 3000.0f) * _curZoom;
 
-		if (_curFade >= 1.0)
-			_fadeStep = -0.0005 - (std::rand() % 100) / 100000.0;
-		if (_curFade <= 0.0)
-			_fadeStep =  0.0005 + (std::rand() % 100) / 100000.0;
+		if (_curFade >= 1.0f)
+			_fadeStep = -0.0005f - (std::rand() % 100) / 100000.0f;
+		if (_curFade <= 0.0f)
+			_fadeStep =  0.0005f + (std::rand() % 100) / 100000.0f;
 
 		_curFade += (curTime - _lastTime) * _fadeStep;
-		if (_curFade < 0.0)
-			_curZoom = 0.8;
+		if (_curFade < 0.0f)
+			_curZoom = 0.8f;
 
-		glColor4f(1.0, 1.0, 1.0, _curFade);
+		glColor4f(1.0f, 1.0f, 1.0f, _curFade);
 
 		Graphics::Aurora::Model_NWN::render(pass);
 
-		glColor4f(1.0, 1.0, 1.0, 1.0);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 		_lastTime = curTime;
 	}
@@ -113,7 +113,7 @@ static Graphics::Aurora::Model *createNewGameFog() {
 		delete model;
 	}
 
-	model->setPosition(0.0, 0.0, 100.0);
+	model->setPosition(0.0f, 0.0f, 100.0f);
 
 	return model;
 }

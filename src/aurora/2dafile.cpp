@@ -120,7 +120,7 @@ const Common::UString &TwoDARow::getCell(size_t n) const {
 
 
 TwoDAFile::TwoDAFile(Common::SeekableReadStream &twoda) :
-	_defaultInt(0), _defaultFloat(0.0), _emptyRow(*this) {
+	_defaultInt(0), _defaultFloat(0.0f), _emptyRow(*this) {
 
 	load(twoda);
 }
@@ -142,7 +142,7 @@ void TwoDAFile::clear() {
 
 	_defaultString.clear();
 	_defaultInt   = 0;
-	_defaultFloat = 0.0;
+	_defaultFloat = 0.0f;
 }
 
 void TwoDAFile::load(Common::SeekableReadStream &twoda) {
@@ -433,7 +433,7 @@ float TwoDAFile::parseFloat(const Common::UString &str) {
 	if (str.empty())
 		return 0;
 
-	float v = 0.0;
+	float v = 0.0f;
 
 	try {
 		Common::parseString(str, v);

@@ -76,7 +76,7 @@ void CharRace::reset() {
 	_buttons->setActive(getButton("HumanButton", true));
 
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(481));
-	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(485), 1.0);
+	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(485), 1.0f);
 
 	// Set human as default race.
 	_choices->setCharRace(6);

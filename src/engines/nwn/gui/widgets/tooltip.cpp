@@ -48,9 +48,9 @@ namespace NWN {
 
 Tooltip::Tooltip(Type type) : _type(type),
 	_parentWidget(0), _parentModel(0),
-	_empty(true), _visible(false), _align(0.0),
-	_bubble(0), _portrait(0), _offscreen(false), _x(0.0), _y(0.0), _z(0.0),
-	_lineHeight(0.0), _lineSpacing(0.0), _width(0.0), _height(0.0),
+	_empty(true), _visible(false), _align(0.0f),
+	_bubble(0), _portrait(0), _offscreen(false), _x(0.0f), _y(0.0f), _z(0.0f),
+	_lineHeight(0.0f), _lineSpacing(0.0f), _width(0.0f), _height(0.0f),
 	_needCamera(false), _detectEdge(false) {
 
 	getFeedbackMode(_showBubble, _showText, _showPortrait);
@@ -58,9 +58,9 @@ Tooltip::Tooltip(Type type) : _type(type),
 
 Tooltip::Tooltip(Type type, Widget &parent) : _type(type),
 	_parentWidget(&parent), _parentModel(0),
-	_empty(true), _visible(false), _align(0.0),
-	_bubble(0), _portrait(0), _offscreen(false), _x(0.0), _y(0.0), _z(0.0),
-	_lineHeight(0.0), _lineSpacing(0.0), _width(0.0), _height(0.0),
+	_empty(true), _visible(false), _align(0.0f),
+	_bubble(0), _portrait(0), _offscreen(false), _x(0.0f), _y(0.0f), _z(0.0f),
+	_lineHeight(0.0f), _lineSpacing(0.0f), _width(0.0f), _height(0.0f),
 	_needCamera(false), _detectEdge(true) {
 
 	getFeedbackMode(_showBubble, _showText, _showPortrait);
@@ -68,9 +68,9 @@ Tooltip::Tooltip(Type type, Widget &parent) : _type(type),
 
 Tooltip::Tooltip(Type type, Graphics::Aurora::Model &parent) : _type(type),
 	_parentWidget(0), _parentModel(&parent),
-	_empty(true), _visible(false), _align(0.0),
-	_bubble(0), _portrait(0), _offscreen(false), _x(0.0), _y(0.0), _z(0.0),
-	_lineHeight(0.0), _lineSpacing(0.0), _width(0.0), _height(0.0),
+	_empty(true), _visible(false), _align(0.0f),
+	_bubble(0), _portrait(0), _offscreen(false), _x(0.0f), _y(0.0f), _z(0.0f),
+	_lineHeight(0.0f), _lineSpacing(0.0f), _width(0.0f), _height(0.0f),
 	_needCamera(true), _detectEdge(false) {
 
 	getFeedbackMode(_showBubble, _showText, _showPortrait);
@@ -137,7 +137,7 @@ void Tooltip::setPortrait(const Common::UString &image) {
 	if (_portrait)
 		_portrait->setPortrait(image);
 	else
-		_portrait = new Portrait(image, Portrait::kSizeTiny, 1.0);
+		_portrait = new Portrait(image, Portrait::kSizeTiny, 1.0f);
 
 	redoLayout();
 }
@@ -154,7 +154,7 @@ void Tooltip::notifyCameraMoved() {
 }
 
 bool Tooltip::getParentPosition(float &x, float &y, float &z) const {
-	x = y = z = 0.0;
+	x = y = z = 0.0f;
 
 	bool onscreen = true;
 
@@ -168,9 +168,9 @@ bool Tooltip::getParentPosition(float &x, float &y, float &z) const {
 		if (!GfxMan.project(aX, aY, aZ, x, y, z))
 			return false;
 
-		onscreen = ((z >= 0.0) && (z <= 1.0));
+		onscreen = ((z >= 0.0f) && (z <= 1.0f));
 
-		z = 0.0;
+		z = 0.0f;
 	}
 
 	return onscreen;
@@ -196,14 +196,14 @@ void Tooltip::updatePosition() {
 
 	const bool hasBubble = _showBubble && _bubble;
 
-	const float bubbleWidth  = hasBubble ? (_bubble->getWidth () - 30.0) : _width;
-	const float bubbleHeight = hasBubble ? (_bubble->getHeight() -  8.0) : _height;
+	const float bubbleWidth  = hasBubble ? (_bubble->getWidth () - 30.0f) : _width;
+	const float bubbleHeight = hasBubble ? (_bubble->getHeight() -  8.0f) : _height;
 
-	const float bubbleWantX = pX + _x - (bubbleWidth / 2.0);
+	const float bubbleWantX = pX + _x - (bubbleWidth / 2.0f);
 	const float bubbleRight = bubbleWantX + bubbleWidth + 15.0f;
 
-	const float maxX  = _detectEdge ? GfxMan.getScreenWidth() / 2.0 : 0.0;
-	const float overX = _detectEdge ? MAX(0.0f, bubbleRight - maxX) : 0.0;
+	const float maxX  = _detectEdge ? GfxMan.getScreenWidth() / 2.0f : 0.0f;
+	const float overX = _detectEdge ? MAX(0.0f, bubbleRight - maxX)  : 0.0f;
 
 	const float bubbleX = bubbleWantX - overX;
 	const float bubbleY = pY + _y;
@@ -217,14 +217,14 @@ void Tooltip::updatePosition() {
 
 	const bool hasPortrait = _showPortrait && _portrait;
 
-	const float portraitWidth  = hasPortrait ? _portrait->getWidth () : 0.0;
-	const float portraitHeight = hasPortrait ? _portrait->getHeight() : 0.0;
+	const float portraitWidth  = hasPortrait ? _portrait->getWidth () : 0.0f;
+	const float portraitHeight = hasPortrait ? _portrait->getHeight() : 0.0f;
 
-	const float portraitBorderY = (bubbleHeight - portraitHeight) / 2.0;
+	const float portraitBorderY = (bubbleHeight - portraitHeight) / 2.0f;
 
-	const float portraitX = bubbleX + 5.0;
-	const float portraitY = bubbleY - bubbleHeight + portraitBorderY + 1.0;
-	const float portraitZ = bubbleZ - 1.0;
+	const float portraitX = bubbleX + 5.0f;
+	const float portraitY = bubbleY - bubbleHeight + portraitBorderY + 1.0f;
+	const float portraitZ = bubbleZ - 1.0f;
 
 	if (hasPortrait)
 		_portrait->setPosition(floorf(portraitX), floorf(portraitY), floorf(portraitZ));
@@ -232,17 +232,17 @@ void Tooltip::updatePosition() {
 
 	// Set text position
 
-	const float portraitSpacerWidth = portraitWidth + (_portrait ? 10.0 : 0.0);
+	const float portraitSpacerWidth = portraitWidth + (_portrait ? 10.0f : 0.0f);
 
 	const float bubbleTextWidth = bubbleWidth - portraitSpacerWidth;
 
 	const float textHeight = _lines.size() * _lineHeight + (_lines.size() - 1) * _lineSpacing;
 
-	const float textBorderY = (bubbleHeight - textHeight) / 2.0;
+	const float textBorderY = (bubbleHeight - textHeight) / 2.0f;
 
 	const float textBottomX = bubbleX + portraitSpacerWidth;
-	const float textBottomY = bubbleY - textBorderY + 1.0;
-	const float textBottomZ = bubbleZ - 1.0;
+	const float textBottomY = bubbleY - textBorderY + 1.0f;
+	const float textBottomZ = bubbleZ - 1.0f;
 
 	float textY = textBottomY;
 	for (std::vector<Line>::reverse_iterator l = _lines.rbegin(); l != _lines.rend(); ++l) {
@@ -292,15 +292,15 @@ void Tooltip::hide() {
 }
 
 void Tooltip::getSize(float &width, float &height) {
-	width = 0.0;
+	width = 0.0f;
 	for (std::vector<Line>::const_iterator l = _lines.begin(); l != _lines.end(); ++l)
 		if (l->text)
 			width = MAX(width, l->text->getWidth());
 
 	if (_portrait)
-		width += _portrait->getWidth() + 10.0;
+		width += _portrait->getWidth() + 10.0f;
 
-	height = 0.0;
+	height = 0.0f;
 	if (_lines.size() > 0)
 		height = (_lines.size() * _lineHeight) + ((_lines.size() - 1) * _lineSpacing);
 
@@ -331,8 +331,8 @@ void Tooltip::redoLines() {
 		_lineHeight  = font.getFont().getHeight();
 		_lineSpacing = font.getFont().getLineSpacing();
 
-		_width  = 0.0;
-		_height = 0.0;
+		_width  = 0.0f;
+		_height = 0.0f;
 	}
 
 	bool showBubble, showText, showPortrait;
@@ -344,8 +344,8 @@ void Tooltip::redoLines() {
 
 		needRedo = true;
 
-		_width  = 0.0;
-		_height = 0.0;
+		_width  = 0.0f;
+		_height = 0.0f;
 
 		_showBubble   = showBubble;
 		_showText     = showText;
@@ -360,7 +360,7 @@ void Tooltip::redoBubble() {
 	delete _bubble;
 	_bubble = 0;
 
-	if (!_showBubble || (_height <= 0.0))
+	if (!_showBubble || (_height <= 0.0f))
 		return;
 
 	float  height = _height - _lineHeight;
@@ -502,9 +502,9 @@ Common::UString Tooltip::getBubbleModel(uint32 lines, float width) {
 		modelLines = 32;
 
 	if ((modelLines >= 1) && (modelLines <= 3)) {
-		if      (width <= 100.0)
+		if      (width <= 100.0f)
 			modelWidth = 100;
-		else if (width <= 150.0)
+		else if (width <= 150.0f)
 			modelWidth = 150;
 		else
 			modelWidth = 300;

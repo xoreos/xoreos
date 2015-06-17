@@ -53,7 +53,7 @@ public:
 
 	void setPosition(float x, float y, float z);
 	void setColor(float r, float g, float b, float a);
-	void setText(const Common::UString &text, float align = 0.5, float maxWidth = 0.0, float maxHeight = 0.0);
+	void setText(const Common::UString &text, float align = 0.5f, float maxWidth = 0.0f, float maxHeight = 0.0f);
 	const Common::UString getText() const;
 
 	float getWidth () const;

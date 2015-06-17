@@ -68,11 +68,11 @@ void IFOFile::clear() {
 
 	_entryArea.clear();
 
-	_entryX    = 0.0;
-	_entryY    = 0.0;
-	_entryZ    = 0.0;
-	_entryDirX = 0.0;
-	_entryDirY = 0.0;
+	_entryX    = 0.0f;
+	_entryY    = 0.0f;
+	_entryZ    = 0.0f;
+	_entryDirX = 0.0f;
+	_entryDirY = 0.0f;
 
 	_haks.clear();
 	_areas.clear();
@@ -88,7 +88,7 @@ void IFOFile::clear() {
 	_startMonth = 1;
 	_startYear  = 0;
 
-	_xpScale = 1.0;
+	_xpScale = 1.0f;
 }
 
 void IFOFile::unload() {
@@ -217,7 +217,7 @@ void IFOFile::load() {
 	_snowChance          = ifoTop.getSint("Mod_SnowChance",   0);
 
 	// XP Scale
-	_xpScale = ifoTop.getUint("Mod_XPScale", 100) / 100.0;
+	_xpScale = ifoTop.getUint("Mod_XPScale", 100) / 100.0f;
 }
 
 void IFOFile::parseVersion(const Common::UString &version) {

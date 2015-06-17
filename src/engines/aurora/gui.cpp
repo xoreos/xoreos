@@ -43,7 +43,7 @@ namespace Engines {
 
 GUI::GUI(Console *console) : _console(console),
 	_currentWidget(0), _startCode(kStartCodeNone), _returnCode(kReturnCodeNone),
-	_sub(0), _x(0.0), _y(0.0), _z(0.0) {
+	_sub(0), _x(0.0f), _y(0.0f), _z(0.0f) {
 
 }
 
@@ -467,13 +467,13 @@ void GUI::mouseWheel(const Events::Event &event) {
 float GUI::toGUIX(int x) {
 	float sW = GfxMan.getScreenWidth();
 
-	return (x - (sW / 2.0));
+	return (x - (sW / 2.0f));
 }
 
 float GUI::toGUIY(int y) {
 	float sH = GfxMan.getScreenHeight();
 
-	return ((sH - y) - (sH / 2.0));
+	return ((sH - y) - (sH / 2.0f));
 }
 
 void GUI::mouseMove(Widget *widget, const Events::Event &event) {

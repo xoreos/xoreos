@@ -52,8 +52,8 @@ public:
 		kSizeMAX
 	};
 
-	Portrait(const Common::UString &name, Size size, float border = 0.0,
-	         float bR = 1.0, float bG = 1.0, float bB = 1.0, float bA = 1.0);
+	Portrait(const Common::UString &name, Size size, float border = 0.0f,
+	         float bR = 1.0f, float bG = 1.0f, float bB = 1.0f, float bA = 1.0f);
 	~Portrait();
 
 	float getWidth () const; ///< Get the scrollbar's width.
@@ -106,8 +106,8 @@ private:
 class PortraitWidget : public NWNWidget {
 public:
 	PortraitWidget(::Engines::GUI &gui, const Common::UString &tag,
-	               const Common::UString &name, Portrait::Size size, float border = 0.0,
-	               float bR = 1.0, float bG = 1.0, float bB = 1.0, float bA = 1.0);
+	               const Common::UString &name, Portrait::Size size, float border = 0.0f,
+	               float bR = 1.0f, float bG = 1.0f, float bB = 1.0f, float bA = 1.0f);
 	~PortraitWidget();
 
 	void show();

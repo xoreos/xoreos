@@ -45,11 +45,11 @@ ChatModeButton::ChatModeButton(::Engines::GUI &gui, const Common::UString &tag,
 	WidgetButton(gui, tag, model) {
 
 	_label = new WidgetLabel(*_gui, getTag() + "#Label", "fnt_dialog16x16", "");
-	_label->setColor(1.0, 1.0, 1.0, 0.6);
+	_label->setColor(1.0f, 1.0f, 1.0f, 0.6f);
 
 	setMode(mode);
 
-	setPosition(0.0, 0.0, 0.0);
+	setPosition(0.0f, 0.0f, 0.0f);
 
 	addSub(*_label);
 }
@@ -82,11 +82,11 @@ void ChatModeButton::setPosition(float x, float y, float z) {
 
 	Graphics::Aurora::ModelNode *node = 0;
 
-	float tX = 0.0, tY = 0.0, tZ = 0.0;
+	float tX = 0.0f, tY = 0.0f, tZ = 0.0f;
 	if ((node = _model->getNode("text")))
 		node->getPosition(tX, tY, tZ);
 
-	_label->setPosition(x + tX, y + tY - (_label->getHeight() / 2.0), z - tZ);
+	_label->setPosition(x + tX, y + tY - (_label->getHeight() / 2.0f), z - tZ);
 }
 
 void ChatModeButton::setTag(const Common::UString &tag) {
@@ -101,7 +101,7 @@ Quickchat::Quickchat(float position) {
 
 	_prompt = new WidgetPanel(*this, "QCPrompt", "pnl_chat_prompt");
 
-	_prompt->setPosition(0.0, position, 0.0);
+	_prompt->setPosition(0.0f, position, 0.0f);
 
 	addWidget(_prompt);
 
@@ -111,7 +111,7 @@ Quickchat::Quickchat(float position) {
 	ChatModeButton *modeButton =
 		new ChatModeButton(*this, "QCMode", "ctl_btn_chatmode", kModeTalk);
 
-	modeButton->setPosition(0.0, position, -10.0);
+	modeButton->setPosition(0.0f, position, -10.0f);
 
 	addWidget(modeButton);
 
@@ -136,7 +136,7 @@ void Quickchat::callbackActive(Widget &UNUSED(widget)) {
 void Quickchat::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
                               int newWidth, int newHeight) {
 
-	setPosition(- (newWidth / 2.0), - (newHeight / 2.0), -10.0);
+	setPosition(- (newWidth / 2.0f), - (newHeight / 2.0f), -10.0f);
 }
 
 } // End of namespace NWN

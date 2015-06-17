@@ -291,7 +291,7 @@ void Area::loadAreaModel() {
 	if (!_model)
 		throw Common::Exception("Can't load area geometry model \"%s\"", _modelName.c_str());
 
-	_model->setPosition(1500.0, 1500.0, 0.0);
+	_model->setPosition(1500.0f, 1500.0f, 0.0f);
 }
 
 void Area::unloadAreaModel() {

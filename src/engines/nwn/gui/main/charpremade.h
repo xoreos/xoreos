@@ -44,7 +44,7 @@ class WidgetListItemCharacter : public WidgetListItemBaseButton {
 public:
 	WidgetListItemCharacter(::Engines::GUI &gui, const Common::UString &font,
 	                        const Common::UString &name    , const Common::UString &classes,
-	                        const Common::UString &portrait, float spacing = 0.0);
+	                        const Common::UString &portrait, float spacing = 0.0f);
 	~WidgetListItemCharacter();
 
 	void show();

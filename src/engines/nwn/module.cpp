@@ -338,7 +338,7 @@ void Module::enter() {
 	CameraMan.reset();
 
 	// Roughly head position
-	CameraMan.setPosition(entryX, entryZ + 2.0, entryY);
+	CameraMan.setPosition(entryX, entryZ + 2.0f, entryY);
 	CameraMan.setOrientation(entryDirX, entryDirY);
 	CameraMan.update();
 }
@@ -708,7 +708,7 @@ void Module::movedPC() {
 	_pc->getPosition(x, y, z);
 
 	// Roughly head position
-	CameraMan.setPosition(x, z + 2.0, y);
+	CameraMan.setPosition(x, z + 2.0f, y);
 	CameraMan.update();
 
 	_newArea.clear();

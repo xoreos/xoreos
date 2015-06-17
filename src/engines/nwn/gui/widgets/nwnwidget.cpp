@@ -72,7 +72,7 @@ void NWNWidget::setTooltip(const Common::UString &text) {
 	createTooltip();
 
 	_tooltip->clearLines();
-	_tooltip->addLine(text, 1.0, 1.0, 1.0, 1.0);
+	_tooltip->addLine(text, 1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void NWNWidget::setTooltipPosition(float x, float y, float z) {
@@ -86,7 +86,7 @@ void NWNWidget::createTooltip() {
 		return;
 
 	_tooltip = new Tooltip(Tooltip::kTypeHelp, *this);
-	_tooltip->setAlign(0.5);
+	_tooltip->setAlign(0.5f);
 }
 
 } // End of namespace NWN

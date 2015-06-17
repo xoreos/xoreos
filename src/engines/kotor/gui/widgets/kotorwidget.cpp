@@ -40,24 +40,24 @@ namespace Engines {
 
 namespace KotOR {
 
-KotORWidget::Extend::Extend() : x(0.0), y(0.0), w(0.0), h(0.0) {
+KotORWidget::Extend::Extend() : x(0.0f), y(0.0f), w(0.0f), h(0.0f) {
 }
 
 
 KotORWidget::Border::Border() : fillStyle(0), dimension(0), innerOffset(0),
-	r(0.0), g(0.0), b(0.0), pulsing(false) {
+	r(0.0f), g(0.0f), b(0.0f), pulsing(false) {
 
 }
 
 
-KotORWidget::Text::Text() : strRef(Aurora::kStrRefInvalid), halign(0.0), valign(0.0),
-	r(1.0), g(1.0), b(1.0), pulsing(false) {
+KotORWidget::Text::Text() : strRef(Aurora::kStrRefInvalid), halign(0.0f), valign(0.0f),
+	r(1.0f), g(1.0f), b(1.0f), pulsing(false) {
 
 }
 
 
 KotORWidget::KotORWidget(::Engines::GUI &gui, const Common::UString &tag) :
-	Widget(gui, tag), _width(0.0), _height(0.0), _r(1.0), _g(1.0), _b(1.0), _a(1.0),
+	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
 	_quad(0), _text(0) {
 
 }
@@ -135,7 +135,7 @@ void KotORWidget::setFill(const Common::UString &fill) {
 		float x, y, z;
 		getPosition(x, y, z);
 
-		_quad = new Graphics::Aurora::GUIQuad("", 0.0, 0.0, _width, _height);
+		_quad = new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width, _height);
 		_quad->setPosition(x, y, z);
 		_quad->setTag(getTag());
 		_quad->setClickable(true);
@@ -145,7 +145,7 @@ void KotORWidget::setFill(const Common::UString &fill) {
 	}
 
 	_quad->setTexture(fill);
-	_quad->setColor(1.0, 1.0, 1.0, 1.0);
+	_quad->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 void KotORWidget::load(const Aurora::GFF3Struct &gff) {
@@ -157,28 +157,28 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	_width  = extend.w;
 	_height = extend.h;
 
-	Widget::setPosition(extend.x, extend.y, 0.0);
+	Widget::setPosition(extend.x, extend.y, 0.0f);
 
 	Border border = createBorder(gff);
 
 	if (!border.fill.empty()) {
-		_quad = new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
+		_quad = new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h);
 	} else {
-		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0, 0.0, extend.w, extend.h);
+		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h);
 	}
 
-	_quad->setPosition(extend.x, extend.y, 0.0);
+	_quad->setPosition(extend.x, extend.y, 0.0f);
 	_quad->setTag(getTag());
 	_quad->setClickable(true);
 
 	if (border.fill.empty())
-		_quad->setColor(0.0, 0.0, 0.0, 0.0);
+		_quad->setColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	Text text = createText(gff);
 
 	if (!text.text.empty() && !text.font.empty()) {
 		_text = new Graphics::Aurora::HighlightableText(FontMan.get(text.font), text.text,
-		                                   text.r, text.g, text.b, 1.0);
+		                                   text.r, text.g, text.b, 1.0f);
 
 		const float hspan = extend.w - _text->getWidth();
 		const float vspan = extend.h - _text->getHeight();
@@ -187,7 +187,7 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 		const float x = extend.x + text.halign * hspan;
 		const float y = extend.y + text.valign * vspan;
 
-		_text->setPosition(x, y, -1.0);
+		_text->setPosition(x, y, -1.0f);
 		_text->setTag(getTag());
 		_text->setClickable(true);
 	}
@@ -212,7 +212,7 @@ void KotORWidget::setText(const Common::UString &text) {
 		const float x = extendX + halign * hspan;
 		const float y = extendY + valign * vspan;
 
-		_text->setPosition(x, y, -1.0);
+		_text->setPosition(x, y, -1.0f);
 }
 
 KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFF3Struct &gff) {
@@ -276,8 +276,8 @@ KotORWidget::Text KotORWidget::createText(const Aurora::GFF3Struct &gff) {
 
 		// TODO: KotORWidget::getText(): Alignment
 		if (alignment == 18) {
-			text.halign = 0.5;
-			text.valign = 0.5;
+			text.halign = 0.5f;
+			text.valign = 0.5f;
 		}
 	}
 

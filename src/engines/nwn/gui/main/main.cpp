@@ -55,13 +55,13 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : GUI(console),
 
 	if (hasXP1) {
 		WidgetPanel *xp1 = new WidgetPanel(*this, "TextXP1", "ctl_xp1_text");
-		xp1->setPosition(124.0, 0.00, -50.0);
+		xp1->setPosition(124.0f, 0.00f, -50.0f);
 		addWidget(xp1);
 	}
 
 	if (hasXP2) {
 		WidgetPanel *xp2 = new WidgetPanel(*this, "TextXP2", "ctl_xp2_text");
-		xp2->setPosition(124.0, -147.0, -50.0);
+		xp2->setPosition(124.0f, -147.0f, -50.0f);
 		addWidget(xp2);
 	}
 

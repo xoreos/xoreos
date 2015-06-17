@@ -277,7 +277,7 @@ void SonicEngine::initResources(LoadProgress &progress) {
 	registerModelLoader(new SonicModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatNFTR);
 
-	GfxMan.setOrthogonal(0.0, 1000.0);
+	GfxMan.setOrthogonal(0.0f, 1000.0f);
 	GfxMan.setCullFace(false);
 
 	progress.step("Load essential fonts");
@@ -348,8 +348,8 @@ bool SonicEngine::waitClick() {
 }
 
 bool SonicEngine::showLicenseSplash() {
-	Graphics::Aurora::GUIQuad top("nintendosplash"  , 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
-	Graphics::Aurora::GUIQuad bot("actimaginesplash", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad top("nintendosplash"  , 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+	Graphics::Aurora::GUIQuad bot("actimaginesplash", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
 
 	top.setPosition(kTopScreenX   , kTopScreenY);
 	bot.setPosition(kBottomScreenX, kBottomScreenY);
@@ -370,8 +370,8 @@ bool SonicEngine::showLicenseSplash() {
 }
 
 bool SonicEngine::showTitle() {
-	Graphics::Aurora::GUIQuad top("introscr_top", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
-	Graphics::Aurora::GUIQuad bot("introscr_bot", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad top("introscr_top", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+	Graphics::Aurora::GUIQuad bot("introscr_bot", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
 
 	top.setPosition(kTopScreenX   , kTopScreenY);
 	bot.setPosition(kBottomScreenX, kBottomScreenY);
@@ -391,11 +391,11 @@ bool SonicEngine::showTitle() {
 }
 
 bool SonicEngine::showMainMenu() {
-	Graphics::Aurora::GUIQuad top("introscr_top" , 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
-	Graphics::Aurora::GUIQuad bot("startupscrbot", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad top("introscr_top" , 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+	Graphics::Aurora::GUIQuad bot("startupscrbot", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
 
-	top.setPosition(kTopScreenX   , kTopScreenY   , 0.0);
-	bot.setPosition(kBottomScreenX, kBottomScreenY, 0.0);
+	top.setPosition(kTopScreenX   , kTopScreenY   , 0.0f);
+	bot.setPosition(kBottomScreenX, kBottomScreenY, 0.0f);
 
 	top.show();
 	bot.show();
@@ -405,9 +405,9 @@ bool SonicEngine::showMainMenu() {
 			"00", "01", "02", "03", "04", (const char *) 0, (const char *) 0, (const char *) 0,
 			"10", "11", "12", "13", "14", "15", "16", "17");
 
-	Graphics::Aurora::GUIQuad button(buttonTexture, 0.0, 0.0, 240.0, 48.0, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad button(buttonTexture, 0.0f, 0.0f, 240.0f, 48.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 
-	button.setPosition(-120.0, -120.0, -1.0);
+	button.setPosition(-120.0f, -120.0f, -1.0f);
 	button.show();
 
 
@@ -416,19 +416,19 @@ bool SonicEngine::showMainMenu() {
 	float buttonX, buttonY, buttonZ;
 	button.getPosition(buttonX, buttonY, buttonZ);
 
-	const float buttonTextX = buttonX + ((button.getWidth()  - buttonText.getWidth())  / 2.0);
-	const float buttonTextY = buttonY + ((button.getHeight() - buttonText.getHeight()) / 2.0);
+	const float buttonTextX = buttonX + ((button.getWidth()  - buttonText.getWidth())  / 2.0f);
+	const float buttonTextY = buttonY + ((button.getHeight() - buttonText.getHeight()) / 2.0f);
 
-	buttonText.setPosition(buttonTextX, buttonTextY, -2.0);
+	buttonText.setPosition(buttonTextX, buttonTextY, -2.0f);
 	buttonText.show();
 
 
 	Graphics::Aurora::Text helpText(_guiFont, TalkMan.getString(18707));
 
-	const float helpTextX = kBottomScreenX + ((kScreenWidth - helpText.getWidth()) / 2.0);
+	const float helpTextX = kBottomScreenX + ((kScreenWidth - helpText.getWidth()) / 2.0f);
 	const float helpTextY = kBottomScreenY;
 
-	helpText.setPosition(helpTextX, helpTextY, -2.0);
+	helpText.setPosition(helpTextX, helpTextY, -2.0f);
 	helpText.show();
 
 
@@ -448,18 +448,18 @@ bool SonicEngine::showMainMenu() {
 }
 
 bool SonicEngine::showQuote() {
-	const float length = (_language == Aurora::kLanguageJapanese) ? 236.0 : 256.0;
-	const float align  = (_language == Aurora::kLanguageJapanese) ?   0.0 :   0.5;
+	const float length = (_language == Aurora::kLanguageJapanese) ? 236.0f : 256.0f;
+	const float align  = (_language == Aurora::kLanguageJapanese) ?   0.0f :   0.5f;
 
 	Common::UString quote = TalkMan.getString(21712);
-	_guiFont.getFont().split(quote, length, 0.0, false);
+	_guiFont.getFont().split(quote, length, 0.0f, false);
 
-	Graphics::Aurora::Text quoteText(_quoteFont, quote, 1.0, 1.0, 1.0, 1.0, align);
+	Graphics::Aurora::Text quoteText(_quoteFont, quote, 1.0f, 1.0f, 1.0f, 1.0f, align);
 
-	const float quoteTextX = kTopScreenX + ((kScreenWidth  - quoteText.getWidth())  / 2.0);
-	const float quoteTextY = kTopScreenY + ((kScreenHeight - quoteText.getHeight()) / 2.0);
+	const float quoteTextX = kTopScreenX + ((kScreenWidth  - quoteText.getWidth())  / 2.0f);
+	const float quoteTextY = kTopScreenY + ((kScreenHeight - quoteText.getHeight()) / 2.0f);
 
-	quoteText.setPosition(quoteTextX, quoteTextY, 0.0);
+	quoteText.setPosition(quoteTextX, quoteTextY, 0.0f);
 	quoteText.show();
 
 	GfxMan.unlockFrame();
@@ -474,8 +474,8 @@ bool SonicEngine::showQuote() {
 }
 
 bool SonicEngine::showChapter1() {
-	Graphics::Aurora::GUIQuad top("chap1scr_top", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
-	Graphics::Aurora::GUIQuad bot("chap1scr_bot", 0.0, 0.0, kScreenWidth, kScreenHeight, 0.0, 1.0, 1.0, 0.0);
+	Graphics::Aurora::GUIQuad top("chap1scr_top", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
+	Graphics::Aurora::GUIQuad bot("chap1scr_bot", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
 
 	top.setPosition(kTopScreenX   , kTopScreenY);
 	bot.setPosition(kBottomScreenX, kBottomScreenY);

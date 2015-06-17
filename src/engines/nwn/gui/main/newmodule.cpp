@@ -54,9 +54,9 @@ WidgetListItemModule::WidgetListItemModule(::Engines::GUI &gui,
 
 	Common::UString splitText;
 	Graphics::Aurora::FontHandle f = FontMan.get(font);
-	f.getFont().split(text, splitText, _button->getWidth() - 8.0);
+	f.getFont().split(text, splitText, _button->getWidth() - 8.0f);
 
-	_text = new Graphics::Aurora::Text(f, splitText, 1.0, 1.0, 1.0, 1.0, 0.5);
+	_text = new Graphics::Aurora::Text(f, splitText, 1.0f, 1.0f, 1.0f, 1.0f, 0.5f);
 }
 
 WidgetListItemModule::~WidgetListItemModule() {
@@ -80,10 +80,10 @@ void WidgetListItemModule::setPosition(float x, float y, float z) {
 	getPosition(x, y, z);
 	_button->setPosition(x, y, z);
 
-	x = x + (_button->getWidth () - _text->getWidth ()) / 2.0;
-	y = y + (_button->getHeight() - _text->getHeight()) / 2.0;
+	x = x + (_button->getWidth () - _text->getWidth ()) / 2.0f;
+	y = y + (_button->getHeight() - _text->getHeight()) / 2.0f;
 
-	_text->setPosition(x, y, z - 1.0);
+	_text->setPosition(x, y, z - 1.0f);
 }
 
 float WidgetListItemModule::getWidth() const {
@@ -156,7 +156,7 @@ void NewModuleMenu::initModuleList() {
 
 	moduleList.reserve(_modules.size());
 	for (std::vector<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
-		moduleList.add(new WidgetListItemModule(*this, "fnt_galahad14", *m, 2.0));
+		moduleList.add(new WidgetListItemModule(*this, "fnt_galahad14", *m, 2.0f));
 
 	moduleList.unlock();
 
@@ -198,7 +198,7 @@ void NewModuleMenu::selectedModule() {
 	if (description.empty())
 		description = TalkMan.getString(67741);
 
-	getListBox("ModDescEditBox", true)->setText("fnt_galahad14", description, 1.0);
+	getListBox("ModDescEditBox", true)->setText("fnt_galahad14", description, 1.0f);
 }
 
 void NewModuleMenu::loadModule() {

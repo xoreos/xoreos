@@ -62,25 +62,25 @@ PartyLeader::PartyLeader(Module &module) : _module(&module),
 
 	WidgetPanel *playerPanel = new WidgetPanel(*this, "LeaderPanel", "pnl_party_bar");
 
-	playerPanel->setPosition(- playerPanel->getWidth(), 0.0, 0.0);
+	playerPanel->setPosition(- playerPanel->getWidth(), 0.0f, 0.0f);
 
 	addWidget(playerPanel);
 
 
 	// Buttons
 
-	float buttonsX = - playerPanel->getWidth () +  4.0;
-	float buttonsY = - playerPanel->getHeight() + 57.0;
+	float buttonsX = - playerPanel->getWidth () +  4.0f;
+	float buttonsY = - playerPanel->getHeight() + 57.0f;
 
 	for (int i = 0; i < 8; i++) {
 		WidgetButton *button = new WidgetButton(*this, kButtonTags[i], kButtonModels[i]);
 
 		button->setTooltip(TalkMan.getString(kButtonTooltips[i]));
-		button->setTooltipPosition(0.0, -10.0, -1.0);
+		button->setTooltipPosition(0.0f, -10.0f, -1.0f);
 
-		const float x = buttonsX + ((i / 4) * 36.0);
-		const float y = buttonsY - ((i % 4) * 18.0);
-		const float z = -100.0;
+		const float x = buttonsX + ((i / 4) * 36.0f);
+		const float y = buttonsY - ((i % 4) * 18.0f);
+		const float z = -100.0f;
 
 		button->setPosition(x, y, z);
 
@@ -95,18 +95,18 @@ PartyLeader::PartyLeader(Module &module) : _module(&module),
 	_portrait =
 		new PortraitWidget(*this, "LeaderPortrait", "gui_po_nwnlogo_", Portrait::kSizeMedium);
 
-	_portrait->setPosition(-67.0, -103.0, -100.0);
-	_portrait->setTooltipPosition(-50.0, 50.0, -1.0);
+	_portrait->setPosition(-67.0f, -103.0f, -100.0f);
+	_portrait->setTooltipPosition(-50.0f, 50.0f, -1.0f);
 
 	addWidget(_portrait);
 
 
 	// Health bar
 
-	_health = new QuadWidget(*this, "LeaderHealthbar", "", 0.0, 0.0, 6.0, 100.0);
+	_health = new QuadWidget(*this, "LeaderHealthbar", "", 0.0f, 0.0f, 6.0f, 100.0f);
 
-	_health->setColor(1.0, 0.0, 0.0, 1.0);
-	_health->setPosition(-76.0, -103.0, -100.0);
+	_health->setColor(1.0f, 0.0f, 0.0f, 1.0f);
+	_health->setPosition(-76.0f, -103.0f, -100.0f);
 
 	addWidget(_health);
 
@@ -143,9 +143,9 @@ void PartyLeader::setHealth(int32 current, int32 max) {
 	_currentHP = current;
 	_maxHP     = max;
 
-	float barLength = 0.0;
+	float barLength = 0.0f;
 	if (_maxHP > 0)
-		barLength = CLIP(((float) current) / ((float) max), 0.0f, 1.0f) * 100.0;
+		barLength = CLIP(((float) current) / ((float) max), 0.0f, 1.0f) * 100.0f;
 
 	_health->setHeight(barLength);
 
@@ -172,7 +172,7 @@ void PartyLeader::updatePortraitTooltip() {
 void PartyLeader::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
                                 int newWidth, int newHeight) {
 
-	setPosition(newWidth / 2.0, newHeight / 2.0, -10.0);
+	setPosition(newWidth / 2.0f, newHeight / 2.0f, -10.0f);
 }
 
 } // End of namespace NWN

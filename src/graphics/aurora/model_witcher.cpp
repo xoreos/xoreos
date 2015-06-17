@@ -501,8 +501,8 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 				*v++ = ctx.mdb->readIEEEFloatLE();
 				*v++ = ctx.mdb->readIEEEFloatLE();
 			} else {
-				*v++ = 0.0;
-				*v++ = 0.0;
+				*v++ = 0.0f;
+				*v++ = 0.0f;
 			}
 		}
 	}
@@ -726,8 +726,8 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 				*v++ = ctx.mdb->readIEEEFloatLE();
 				*v++ = ctx.mdb->readIEEEFloatLE();
 			} else {
-				*v++ = 0.0;
-				*v++ = 0.0;
+				*v++ = 0.0f;
+				*v++ = 0.0f;
 			}
 		}
 	}

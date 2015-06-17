@@ -110,17 +110,17 @@ ModelNode::ModelNode(Model &model) :
 	_model(&model), _parent(0), _level(0),
 	_isTransparent(false), _render(false), _hasTransparencyHint(false) {
 
-	_position[0] = 0.0; _position[1] = 0.0; _position[2] = 0.0;
-	_rotation[0] = 0.0; _rotation[1] = 0.0; _rotation[2] = 0.0;
+	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
+	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
 
-	_orientation[0] = 0.0;
-	_orientation[1] = 0.0;
-	_orientation[2] = 0.0;
-	_orientation[3] = 0.0;
+	_orientation[0] = 0.0f;
+	_orientation[1] = 0.0f;
+	_orientation[2] = 0.0f;
+	_orientation[3] = 0.0f;
 
-	_scale[0] = 1.0;
-	_scale[1] = 1.0;
-	_scale[2] = 1.0;
+	_scale[0] = 1.0f;
+	_scale[1] = 1.0f;
+	_scale[2] = 1.0f;
 }
 
 ModelNode::~ModelNode() {
@@ -372,7 +372,7 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 
 				if (!_textures[t].getTexture().hasAlpha())
 					hasAlpha = false;
-				if (_textures[t].getTexture().getTXI().getFeatures().alphaMean == 1.0)
+				if (_textures[t].getTexture().getTXI().getFeatures().alphaMean == 1.0f)
 					hasAlpha = false;
 
 				if (!_textures[t].getTexture().getTXI().getFeatures().decal)
@@ -426,9 +426,9 @@ void ModelNode::createCenter() {
 	_boundBox.getMin(minX, minY, minZ);
 	_boundBox.getMax(maxX, maxY, maxZ);
 
-	_center[0] = minX + ((maxX - minX) / 2.0);
-	_center[1] = minY + ((maxY - minY) / 2.0);
-	_center[2] = minZ + ((maxZ - minZ) / 2.0);
+	_center[0] = minX + ((maxX - minX) / 2.0f);
+	_center[1] = minY + ((maxY - minY) / 2.0f);
+	_center[2] = minZ + ((maxZ - minZ) / 2.0f);
 }
 
 const Common::BoundingBox &ModelNode::getAbsoluteBound() const {
@@ -447,9 +447,9 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 	parentPosition.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
 	parentPosition.scale(_scale[0], _scale[1], _scale[2]);
 
-	parentPosition.rotate(_rotation[0], 1.0, 0.0, 0.0);
-	parentPosition.rotate(_rotation[1], 0.0, 1.0, 0.0);
-	parentPosition.rotate(_rotation[2], 0.0, 0.0, 1.0);
+	parentPosition.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
+	parentPosition.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
+	parentPosition.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
 
 
 	// That's our absolute position
@@ -513,9 +513,9 @@ void ModelNode::render(RenderPass pass) {
 	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
 	glScalef(_scale[0], _scale[1], _scale[2]);
 
-	glRotatef(_rotation[0], 1.0, 0.0, 0.0);
-	glRotatef(_rotation[1], 0.0, 1.0, 0.0);
-	glRotatef(_rotation[2], 0.0, 0.0, 1.0);
+	glRotatef(_rotation[0], 1.0f, 0.0f, 0.0f);
+	glRotatef(_rotation[1], 0.0f, 1.0f, 0.0f);
+	glRotatef(_rotation[2], 0.0f, 0.0f, 1.0f);
 
 
 	// Render the node's geometry
@@ -545,19 +545,19 @@ void ModelNode::drawSkeleton(const Common::TransformationMatrix &parent, bool sh
 	mine.scale(_scale[0], _scale[1], _scale[2]);
 
 	if (_render || showInvisible) {
-		glPointSize(5);
+		glPointSize(5.0f);
 
 		if (_render)
-			glColor4f(0.0, 1.0, 0.0, 1.0);
+			glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
 		else
-			glColor4f(1.0, 0.0, 0.0, 1.0);
+			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 
 		glBegin(GL_POINTS);
 			glVertex3f(mine.getX(), mine.getY(), mine.getZ());
 		glEnd();
 
-		glLineWidth(2);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
+		glLineWidth(2.0f);
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 		glBegin(GL_LINES);
 			glVertex3f(parent.getX(), parent.getY(), parent.getZ());

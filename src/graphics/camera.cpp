@@ -43,19 +43,19 @@ CameraManager::CameraManager() : _lastChanged(0), _needUpdate(false) {
 	_maxPosition[1] =  FLT_MAX;
 	_maxPosition[2] =  FLT_MAX;
 
-	_position   [0] = 0.0;
-	_position   [1] = 0.0;
-	_position   [2] = 0.0;
-	_orientation[0] = 0.0;
-	_orientation[1] = 0.0;
-	_orientation[2] = 0.0;
+	_position   [0] = 0.0f;
+	_position   [1] = 0.0f;
+	_position   [2] = 0.0f;
+	_orientation[0] = 0.0f;
+	_orientation[1] = 0.0f;
+	_orientation[2] = 0.0f;
 
-	_positionCache   [0] = 0.0;
-	_positionCache   [1] = 0.0;
-	_positionCache   [2] = 0.0;
-	_orientationCache[0] = 0.0;
-	_orientationCache[1] = 0.0;
-	_orientationCache[2] = 0.0;
+	_positionCache   [0] = 0.0f;
+	_positionCache   [1] = 0.0f;
+	_positionCache   [2] = 0.0f;
+	_orientationCache[0] = 0.0f;
+	_orientationCache[1] = 0.0f;
+	_orientationCache[2] = 0.0f;
 }
 
 void CameraManager::update() {
@@ -93,12 +93,12 @@ void CameraManager::reset() {
 	_maxPosition[1] =  FLT_MAX;
 	_maxPosition[2] =  FLT_MAX;
 
-	_position   [0] = 0.0;
-	_position   [1] = 0.0;
-	_position   [2] = 0.0;
-	_orientation[0] = 0.0;
-	_orientation[1] = 0.0;
-	_orientation[2] = 0.0;
+	_position   [0] = 0.0f;
+	_position   [1] = 0.0f;
+	_position   [2] = 0.0f;
+	_orientation[0] = 0.0f;
+	_orientation[1] = 0.0f;
+	_orientation[2] = 0.0f;
 
 	_lastChanged = EventMan.getTimestamp();
 
@@ -125,9 +125,9 @@ void CameraManager::setPosition(float x, float y, float z) {
 }
 
 void CameraManager::setOrientation(float x, float y, float z) {
-	_orientation[0] = fmodf(x, 360.0);
-	_orientation[1] = fmodf(y, 360.0);
-	_orientation[2] = fmodf(z, 360.0);
+	_orientation[0] = fmodf(x, 360.0f);
+	_orientation[1] = fmodf(y, 360.0f);
+	_orientation[2] = fmodf(z, 360.0f);
 
 	_lastChanged = EventMan.getTimestamp();
 
@@ -139,7 +139,7 @@ void CameraManager::setOrientation(float vX, float vY) {
 
 	Common::vector2orientation(vX, vY, x, y, z);
 
-	setOrientation(x, 360.0 - y, z);
+	setOrientation(x, 360.0f - y, z);
 }
 
 void CameraManager::turn(float x, float y, float z) {
@@ -160,19 +160,19 @@ void CameraManager::move(float n) {
 }
 
 void CameraManager::strafe(float n) {
-	float x = n * sin(Common::deg2rad(_orientation[1] + 90.0)) *
+	float x = n * sin(Common::deg2rad(_orientation[1] + 90.0f)) *
 	              cos(Common::deg2rad(_orientation[2]));
 	float y = n * sin(Common::deg2rad(_orientation[2]));
-	float z = n * cos(Common::deg2rad(_orientation[1] + 90.0));
+	float z = n * cos(Common::deg2rad(_orientation[1] + 90.0f));
 
 	move(x, y, z);
 }
 
 void CameraManager::fly(float n) {
-	float x = n * cos(Common::deg2rad(_orientation[2] + 90.0));
-	float y = n * sin(Common::deg2rad(_orientation[0] + 90.0)) *
-	              sin(Common::deg2rad(_orientation[2] + 90.0));
-	float z = n * cos(Common::deg2rad(_orientation[0] + 90.0));
+	float x = n * cos(Common::deg2rad(_orientation[2] + 90.0f));
+	float y = n * sin(Common::deg2rad(_orientation[0] + 90.0f)) *
+	              sin(Common::deg2rad(_orientation[2] + 90.0f));
+	float z = n * cos(Common::deg2rad(_orientation[0] + 90.0f));
 
 	move(x, y, z);
 }

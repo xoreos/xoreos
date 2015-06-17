@@ -36,7 +36,7 @@ OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(::Engines::Console *console) 
 	load("optsoundadv");
 
 	//Hardcoded, the gui file returns incorrect values
-	getCheckBox("CB_FORCESOFTWARE", true)->setColor(0, 0.658824, 0.980392, 1);
+	getCheckBox("CB_FORCESOFTWARE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 }
 
 OptionsSoundAdvancedMenu::~OptionsSoundAdvancedMenu() {

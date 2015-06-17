@@ -38,7 +38,7 @@ namespace Graphics {
 namespace Aurora {
 
 // TODO: Multibyte fonts?
-TextureFont::TextureFont(const Common::UString &name) : _height(1.0), _spaceR(0.0), _spaceB(0.0) {
+TextureFont::TextureFont(const Common::UString &name) : _height(1.0f), _spaceR(0.0f), _spaceB(0.0f) {
 	_texture = TextureMan.get(name);
 
 	load();
@@ -70,13 +70,13 @@ void TextureFont::drawMissing() const {
 	float width = getWidth('m') - _spaceR;
 
 	glBegin(GL_QUADS);
-		glVertex2f(0.0  ,     0.0);
-		glVertex2f(width,     0.0);
+		glVertex2f(0.0f ,    0.0f);
+		glVertex2f(width,    0.0f);
 		glVertex2f(width, _height);
-		glVertex2f(0.0  , _height);
+		glVertex2f(0.0f , _height);
 	glEnd();
 
-	glTranslatef(width + _spaceR, 0.0, 0.0);
+	glTranslatef(width + _spaceR, 0.0f, 0.0f);
 }
 
 void TextureFont::draw(uint32 c) const {
@@ -96,7 +96,7 @@ void TextureFont::draw(uint32 c) const {
 	}
 	glEnd();
 
-	glTranslatef(cC.width + _spaceR, 0.0, 0.0);
+	glTranslatef(cC.width + _spaceR, 0.0f, 0.0f);
 }
 
 void TextureFont::load() {
@@ -120,9 +120,9 @@ void TextureFont::load() {
 	double textureRatio = ((double) texture.getWidth()) / ((double) texture.getHeight());
 
 	// Get features
-	_height = txiFeatures.fontHeight * 100.0;
-	_spaceR = txiFeatures.spacingR   * 100.0;
-	_spaceB = txiFeatures.spacingB   * 100.0;
+	_height = txiFeatures.fontHeight * 100.0f;
+	_spaceR = txiFeatures.spacingR   * 100.0f;
+	_spaceB = txiFeatures.spacingB   * 100.0f;
 
 	// Build the character texture and vertex coordinates
 	_chars.resize(charCount);
@@ -139,13 +139,13 @@ void TextureFont::load() {
 
 		double height = ABS(lr.y - ul.y);
 		double width  = ABS(lr.x - ul.x);
-		double ratio  = ((height != 0.0) ? (width / height) : 0.0) * textureRatio;
+		double ratio  = ((height != 0.0f) ? (width / height) : 0.0f) * textureRatio;
 
 		// Vertex coordinates. Fixed height, width to fit the texture ratio
-		c.vX[0] = 0.00;            c.vY[0] = 0.00;
-		c.vX[1] = _height * ratio; c.vY[1] = 0.00;
+		c.vX[0] = 0.00f;           c.vY[0] = 0.00f;
+		c.vX[1] = _height * ratio; c.vY[1] = 0.00f;
 		c.vX[2] = _height * ratio; c.vY[2] = _height;
-		c.vX[3] = 0.00;            c.vY[3] = _height;
+		c.vX[3] = 0.00f;           c.vY[3] = _height;
 
 		c.width = c.vX[1] - c.vX[0];
 	}

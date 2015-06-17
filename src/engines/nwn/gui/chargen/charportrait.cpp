@@ -46,7 +46,7 @@ WidgetGridItemPortrait::WidgetGridItemPortrait(NWN::GUI &gui, const Common::UStr
 	_portrait = portrait;
 
 	_portraitWidget = new PortraitWidget(gui, "portrait#" + portrait, portrait + "m",
-	                                     Portrait::kSizeMedium, 1.0, 1.0, 1.0, 1.0, 0.0);
+	                                     Portrait::kSizeMedium, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f);
 
 	addChild(*_portraitWidget);
 	addSub(*_portraitWidget);
@@ -76,14 +76,14 @@ bool WidgetGridItemPortrait::activate() {
 	if (!WidgetListItem::activate())
 		return false;
 
-	_portraitWidget->setBorderColor(1.0, 1.0, 1.0, 1.0);
+	_portraitWidget->setBorderColor(1.0f, 1.0f, 1.0f, 1.0f);
 	return true;
 }
 bool WidgetGridItemPortrait::deactivate() {
 	if (!WidgetListItem::deactivate())
 		return false;
 
-	_portraitWidget->setBorderColor(1.0, 1.0, 1.0, 0.0);
+	_portraitWidget->setBorderColor(1.0f, 1.0f, 1.0f, 0.0f);
 	return true;
 }
 
@@ -97,13 +97,13 @@ CharPortrait::CharPortrait(CharGenChoices &choices, ::Engines::Console *console)
 	float pX, pY, pZ;
 	getPanel("PNL_CHR_GENM", true)->getNode("portraits")->getPosition(pX, pY, pZ);
 
-	_portraitsBox = new WidgetGridBox(*this, "portraitsGridBox", "ctl_cg_portraits", 5.0, 6.0);
-	_portraitsBox->setPosition(pX, pY, -200);
+	_portraitsBox = new WidgetGridBox(*this, "portraitsGridBox", "ctl_cg_portraits", 5.0f, 6.0f);
+	_portraitsBox->setPosition(pX, pY, -200.0f);
 	_portraitsBox->setMode(WidgetListBox::kModeSelectable);
 	addWidget(_portraitsBox);
 
 	// Adjust main portrait.
-	getPanel("Portrait", true)->getNode("PortraitPlane")->move(0, 0, pZ - 50);
+	getPanel("Portrait", true)->getNode("PortraitPlane")->move(0.0f, 0.0f, pZ - 50.0f);
 
 	reset();
 }

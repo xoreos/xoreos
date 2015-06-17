@@ -300,7 +300,7 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	_position   [0] = ctx.mdl->readIEEEFloatLE();
 	_position   [1] = ctx.mdl->readIEEEFloatLE();
 	_position   [2] = ctx.mdl->readIEEEFloatLE();
-	_orientation[3] = Common::rad2deg(acos(ctx.mdl->readIEEEFloatLE()) * 2.0);
+	_orientation[3] = Common::rad2deg(acos(ctx.mdl->readIEEEFloatLE()) * 2.0f);
 	_orientation[0] = ctx.mdl->readIEEEFloatLE();
 	_orientation[1] = ctx.mdl->readIEEEFloatLE();
 	_orientation[2] = ctx.mdl->readIEEEFloatLE();
@@ -464,8 +464,8 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 				ctx.texCoords[t][i * 2 + 0] = ctx.mdx->readIEEEFloatLE();
 				ctx.texCoords[t][i * 2 + 1] = ctx.mdx->readIEEEFloatLE();
 			} else {
-				ctx.texCoords[t][i * 2 + 0] = 0.0;
-				ctx.texCoords[t][i * 2 + 1] = 0.0;
+				ctx.texCoords[t][i * 2 + 0] = 0.0f;
+				ctx.texCoords[t][i * 2 + 1] = 0.0f;
 			}
 		}
 	}
