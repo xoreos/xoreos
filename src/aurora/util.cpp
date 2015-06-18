@@ -282,6 +282,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeMETA,           ".meta"},
 	{kFileTypeFXR,            ".fxr"},
 	{kFileTypeFXT,            ".fxt"},
+	{kFileTypeCIF,            ".cif"},
 
 	{kFileTypeMOV,            ".mov"},
 	{kFileTypeCURS,           ".curs"},

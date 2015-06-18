@@ -286,6 +286,7 @@ enum FileType {
 	kFileTypeMETA           = 22032, ///< Resource meta information.
 	kFileTypeFXR            = 22033, ///< Face metadata, FaceFX.
 	kFileTypeFXT            = 22033, ///< Face metadata, FaceFX.
+	kFileTypeCIF            = 22034, ///< Campaign Information File, GFF4.
 
 	// Found in KotOR Mac
 	kFileTypeMOV            = 23000, ///< Video, QuickTime/MPEG-4.
