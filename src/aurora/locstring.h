@@ -46,6 +46,9 @@ public:
 
 	void clear();
 
+	/** Is this localized string empty, without any strings whatsoever? */
+	bool empty() const;
+
 	/** Return the string ID / StrRef. */
 	uint32 getID() const;
 	/** Set the string ID / StrRef. */
