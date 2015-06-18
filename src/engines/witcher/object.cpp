@@ -68,11 +68,11 @@ const Common::UString &Object::getUniqueID() const {
 	return _uniqueID;
 }
 
-const Common::UString &Object::getName() const {
+const Aurora::LocString &Object::getName() const {
 	return _name;
 }
 
-const Common::UString &Object::getDescription() const {
+const Aurora::LocString &Object::getDescription() const {
 	return _description;
 }
 
@@ -81,8 +81,6 @@ const Common::UString &Object::getConversation() const {
 }
 
 void Object::refreshLocalized() {
-	_name        = _names.getString();
-	_description = _descriptions.getString();
 }
 
 bool Object::isStatic() const {

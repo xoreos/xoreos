@@ -71,10 +71,11 @@ public:
 
 	/** Return the object's globally unique ID. */
 	const Common::UString &getUniqueID() const;
+
 	/** Return the object's name. */
-	const Common::UString &getName() const;
+	const Aurora::LocString &getName() const;
 	/** Return the object's description. */
-	const Common::UString &getDescription() const;
+	const Aurora::LocString &getDescription() const;
 
 	/** Return the object's default conversation (DLG). */
 	const Common::UString &getConversation() const;
@@ -132,11 +133,8 @@ protected:
 
 	Common::UString _uniqueID; ///< A globally unique ID.
 
-	Common::UString _name;        ///< The object's display name.
-	Common::UString _description; ///< The object's description.
-
-	Aurora::LocString _names;        ///< The object's localized names.
-	Aurora::LocString _descriptions; ///< The object's localized descriptions.
+	Aurora::LocString _name;        ///< The object's name.
+	Aurora::LocString _description; ///< The object's description.
 
 	Common::UString _conversation; ///< The object's default conversation.
 

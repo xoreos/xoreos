@@ -46,7 +46,7 @@ public:
 	/** Does this waypoint have a map note? */
 	bool hasMapNote() const;
 	/** Return the waypoint's map note text. */
-	Common::UString getMapNote() const;
+	const Aurora::LocString &getMapNote() const;
 
 	/** Refresh all localized strings. */
 	void refreshLocalized();
@@ -55,10 +55,9 @@ public:
 	void enableMapNote(bool enabled);
 
 private:
-	bool _hasMapNote;         ///< Does this waypoint have a map note?
-	Common::UString _mapNote; ///< The waypoint's map note text.
+	bool _hasMapNote; ///< Does this waypoint have a map note?
 
-	Aurora::LocString _mapNotes; ///< The waypoint's localized map note texts.
+	Aurora::LocString _mapNote; ///< The waypoint's map note text.
 
 	/** Load from a waypoint instance. */
 	void load(const Aurora::GFF3Struct &waypoint);

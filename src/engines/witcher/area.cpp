@@ -95,32 +95,30 @@ void Area::clear() {
 	_model = 0;
 }
 
-Common::UString Area::getName(const Common::UString &resRef) {
+Aurora::LocString Area::getName(const Common::UString &resRef) {
 	try {
 		Aurora::GFF3File are(resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 
 		Aurora::LocString name;
 		are.getTopLevel().getLocString("Name", name);
 
-		return name.getString();
+		return name;
 
 	} catch (...) {
 	}
 
-	return "";
+	return Aurora::LocString();
 }
 
-const Common::UString &Area::getResRef() {
+const Common::UString &Area::getResRef() const {
 	return _resRef;
 }
 
-const Common::UString &Area::getName() {
+const Aurora::LocString &Area::getName() const {
 	return _name;
 }
 
 void Area::refreshLocalized() {
-	_name = _names.getString();
-
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->refreshLocalized();
 }
@@ -224,7 +222,7 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 
 	// Name
 
-	are.getLocString("Name", _names);
+	are.getLocString("Name", _name);
 	refreshLocalized();
 
 	// Generic properties

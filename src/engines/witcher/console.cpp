@@ -202,7 +202,7 @@ void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 	updateAreas();
 
 	for (std::list<Common::UString>::iterator a = _areas.begin(); a != _areas.end(); ++a)
-		printf("%s (\"%s\")", a->c_str(), Area::getName(*a).c_str());
+		printf("%s (\"%s\")", a->c_str(), Area::getName(*a).getString().c_str());
 }
 
 void Console::cmdGotoArea(const CommandLine &cl) {

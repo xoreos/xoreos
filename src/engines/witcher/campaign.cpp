@@ -216,12 +216,12 @@ void Campaign::replaceCampaign() {
 	loadCampaign(*campaign);
 }
 
-const Common::UString &Campaign::getName() const {
-	return _currentCampaign.name.getString();
+const Aurora::LocString&Campaign::getName() const {
+	return _currentCampaign.name;
 }
 
-const Common::UString &Campaign::getDescription() const {
-	return _currentCampaign.description.getString();
+const Aurora::LocString &Campaign::getDescription() const {
+	return _currentCampaign.description;
 }
 
 void Campaign::refreshLocalized() {

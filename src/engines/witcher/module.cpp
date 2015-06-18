@@ -188,7 +188,7 @@ void Module::enterArea() {
 	EventMan.flushEvents();
 
 	_console->printf("Entering area \"%s\" (\"%s\")", _currentArea->getResRef().c_str(),
-			_currentArea->getName().c_str());
+			_currentArea->getName().getString().c_str());
 }
 
 void Module::run() {

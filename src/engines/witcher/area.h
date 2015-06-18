@@ -57,9 +57,9 @@ public:
 	// General properties
 
 	/** Return the area's resref (resource ID). */
-	const Common::UString &getResRef();
-	/** Return the area's localized name. */
-	const Common::UString &getName();
+	const Common::UString &getResRef() const;
+	/** Return the area's name. */
+	const Aurora::LocString &getName() const;
 
 	/** Refresh all localized strings. */
 	void refreshLocalized();
@@ -95,8 +95,8 @@ public:
 	void removeFocus();
 
 
-	/** Return the localized name of an area. */
-	static Common::UString getName(const Common::UString &resRef);
+	/** Return the name of an area. */
+	static Aurora::LocString getName(const Common::UString &resRef);
 
 
 protected:
@@ -113,10 +113,8 @@ private:
 
 	bool _loaded;
 
-	Common::UString _resRef; ///< The area's resref (resource ID).
-	Common::UString _name;   ///< The area's localized name.
-
-	Aurora::LocString _names; ///< The area's localized names.
+	Common::UString   _resRef; ///< The area's resref (resource ID).
+	Aurora::LocString _name;   ///< The area's name.
 
 	uint32 _musicDayTrack;    ///< Music track ID that plays by day.
 	uint32 _musicNightTrack;  ///< Music track ID that plays by night.

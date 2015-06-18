@@ -66,14 +66,12 @@ bool Waypoint::hasMapNote() const {
 	return _hasMapNote;
 }
 
-Common::UString Waypoint::getMapNote() const {
+const Aurora::LocString &Waypoint::getMapNote() const {
 	return _mapNote;
 }
 
 void Waypoint::refreshLocalized() {
 	Object::refreshLocalized();
-
-	_mapNote = _mapNotes.getString();
 }
 
 void Waypoint::enableMapNote(bool enabled) {
@@ -114,7 +112,7 @@ void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	_hasMapNote = gff.getBool("HasMapNote", _hasMapNote);
 	if (gff.hasField("MapNote"))
-		gff.getLocString("MapNote", _mapNotes);
+		gff.getLocString("MapNote", _mapNote);
 
 	refreshLocalized();
 }

@@ -56,7 +56,7 @@ void Situated::loadModel() {
 		return;
 
 	if (_modelName.empty()) {
-		warning("Situated object \"%s\" (\"%s\") has no model", _name.c_str(), _tag.c_str());
+		warning("Situated object \"%s\" (\"%s\") has no model", _name.getString().c_str(), _tag.c_str());
 		return;
 	}
 
@@ -180,7 +180,7 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Name
 	if (gff.hasField("LocName")) {
 		try {
-			gff.getLocString("LocName", _names);
+			gff.getLocString("LocName", _name);
 		} catch (...) {
 		}
 	}
@@ -188,7 +188,7 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Description
 	if (gff.hasField("Description")) {
 		try {
-			gff.getLocString("Description", _descriptions);
+			gff.getLocString("Description", _description);
 		} catch (...) {
 		}
 	}
