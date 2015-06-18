@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file engines/witcher/module.h
+/** @file
  *  The context needed to run a Witcher module.
  */
 
