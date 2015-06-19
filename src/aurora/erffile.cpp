@@ -89,7 +89,7 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 
 		readERFHeader(erf, _header, _version);
 
-		if (_header.flags & 0xF0)
+		if (_header.encryption != kEncryptionNone)
 			throw Common::Exception("Unhandled ERF encryption");
 
 		try {
@@ -118,6 +118,8 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 	header.stringTableSize = 0;
 	header.stringTable     = 0;
 
+	uint32 flags = 0;
+
 	if        ((version == kVersion1) || (version == kVersion11)) {
 
 		header.langCount = erf.readUint32LE(); // Number of languages for the description
@@ -135,7 +137,6 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 		erf.skip(116); // Reserved
 
-		header.flags    = 0; // No flags in ERF V1.0 / V1.1
 		header.moduleID = 0; // No module ID in ERF V1.0 / V1.1
 
 	} else if (version == kVersion2) {
@@ -153,7 +154,6 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.offKeyList      = 0;    // No separate key list in ERF V2.0
 		header.offResList      = 0x20; // Resource list always starts at 0x20 in ERF V2.0
 
-		header.flags    = 0; // No flags in ERF V2.0
 		header.moduleID = 0; // No module ID in ERF V2.0
 
 	} else if (version == kVersion22) {
@@ -166,7 +166,8 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
 
-		header.flags    = erf.readUint32LE();
+		flags = erf.readUint32LE();
+
 		header.moduleID = erf.readUint32LE();
 
 		header.passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
@@ -182,7 +183,8 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.stringTableSize = erf.readUint32LE();
 		header.resCount        = erf.readUint32LE(); // Number of resources in the ERF
 
-		header.flags    = erf.readUint32LE();
+		flags = erf.readUint32LE();
+
 		header.moduleID = erf.readUint32LE();
 
 		header.passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
@@ -199,6 +201,9 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.offResList     = 0x30 + header.stringTableSize; // Resource list always starts after the string table in ERF V3.2
 
 	}
+
+	header.encryption  = (Encryption)  ((flags >>  4) & 0x0000000F);
+	header.compression = (Compression) ((flags >> 29) & 0x00000007);
 }
 
 void ERFFile::readDescription(LocString &description, Common::SeekableReadStream &erf,
@@ -382,7 +387,7 @@ uint32 ERFFile::getResourceSize(uint32 index) const {
 Common::SeekableReadStream *ERFFile::getResource(uint32 index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
-	if (tryNoCopy && (getCompressionType() == 0))
+	if (tryNoCopy && (_header.compression == kCompressionNone))
 		return new Common::SeekableSubReadStream(_erf, res.offset, res.offset + res.packedSize);
 
 	_erf->seek(res.offset);
@@ -390,31 +395,21 @@ Common::SeekableReadStream *ERFFile::getResource(uint32 index, bool tryNoCopy) c
 	return decompress(_erf->readStream(res.packedSize), res.unpackedSize);
 }
 
-uint32 ERFFile::getCompressionType() const {
-	return (_header.flags >> 29) & 0x7;
-}
-
 Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packedStream,
                                                 uint32 unpackedSize) const {
-	switch (getCompressionType()) {
-	case 0:
-		// No compression
-		return packedStream;
-	case 1:
-		// Bioware Zlib
-		return decompressBiowareZlib(packedStream, unpackedSize);
-	case 2:
-	case 3:
-		// Unknown
-		delete packedStream;
-		throw Common::Exception("Unknown ERF compression %d", getCompressionType());
-	case 7:
-		// Headerless Zlib
-		return decompressHeaderlessZlib(packedStream, unpackedSize);
-	default:
-		// Invalid
-		delete packedStream;
-		throw Common::Exception("Invalid ERF compression %d", getCompressionType());
+	switch (_header.compression) {
+		case kCompressionNone:
+			return packedStream;
+
+		case kCompressionBioWareZlib:
+			return decompressBiowareZlib(packedStream, unpackedSize);
+
+		case kCompressionHeaderlessZlib:
+			return decompressHeaderlessZlib(packedStream, unpackedSize);
+
+		default:
+			delete packedStream;
+			throw Common::Exception("Invalid ERF compression %u", (uint) _header.compression);
 	}
 }
 
