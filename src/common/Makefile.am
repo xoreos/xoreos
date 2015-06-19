@@ -39,6 +39,7 @@ noinst_HEADERS = \
                  mutex.h \
                  ustring.h \
                  hash.h \
+                 md5.h \
                  error.h \
                  util.h \
                  strutil.h \
@@ -87,6 +88,7 @@ libcommon_la_SOURCES = \
                        thread.cpp \
                        mutex.cpp \
                        ustring.cpp \
+                       md5.cpp \
                        error.cpp \
                        util.cpp \
                        strutil.cpp \
