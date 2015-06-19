@@ -28,6 +28,22 @@ Dragon Age: Inquisition, for example, uses the Frostbite 3 engine.
 Dragon Age II marks the end of an era that started with Neverwinter Nights.
 
 
+What about the Mass Effect games?
+---------------------------------
+
+Unfortunately, the Mass Effect games didn't use BioWare's own engine.
+They used the Unreal Engine instead, making support not within the
+scope of xoreos.
+
+
+What about The Witcher 2 and 3?
+-------------------------------
+
+While the first The Witcher game is heavily based on the Aurora engine of
+Neverwinter Nights, the later parts in the series aren't. They use CD Projekt
+RED's own REDengine.
+
+
 Will there be a toolset like the one that shipped with Neverwinter Nights?
 --------------------------------------------------------------------------
 
