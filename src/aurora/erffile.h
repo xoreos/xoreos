@@ -86,6 +86,8 @@ private:
 
 	/** The header of an ERF file. */
 	struct ERFHeader {
+		static const size_t kDigestLength = 16;
+
 		uint32 resCount;         ///< Number of resources in this ERF.
 
 		uint32 langCount;        ///< Number of language strings in the description.
@@ -107,7 +109,7 @@ private:
 		Compression compression; ///< The compression algorithm in use.
 
 		/** Digest of the encryption password, if any. */
-		Common::UString passwordDigest;
+		byte passwordDigest[kDigestLength];
 	};
 
 	/** Internal resource information. */

@@ -113,6 +113,8 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 }
 
 void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version) {
+	memset(header.passwordDigest, 0, ERFHeader::kDigestLength);
+
 	header.buildYear       = 0;
 	header.buildDay        = 0;
 	header.stringTableSize = 0;
@@ -170,7 +172,8 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 		header.moduleID = erf.readUint32LE();
 
-		header.passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
+		if (erf.read(header.passwordDigest, ERFHeader::kDigestLength) != ERFHeader::kDigestLength)
+			throw Common::Exception(Common::kReadError);
 
 		header.descriptionID   = 0;    // No description in ERF V2.2
 		header.offDescription  = 0;    // No description in ERF V2.2
@@ -187,7 +190,8 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 		header.moduleID = erf.readUint32LE();
 
-		header.passwordDigest = Common::readStringFixed(erf, Common::kEncodingASCII, 16);
+		if (erf.read(header.passwordDigest, ERFHeader::kDigestLength) != ERFHeader::kDigestLength)
+			throw Common::Exception(Common::kReadError);
 
 		header.stringTable = new char[header.stringTableSize];
 		if (erf.read(header.stringTable, header.stringTableSize) != header.stringTableSize) {
