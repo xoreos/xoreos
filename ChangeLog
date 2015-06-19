@@ -1,33 +1,26 @@
 Someday, ????-??-?? (Version 0.0.2)
 	- Loading resources
 	- Reading basic file formats
-	- Graphics stack
-	- Playing sounds
-		- Raw PCM, ADPCM, MP3, AAC, WMA, Vorbis
-	- Playing videos
-		- Bink, Quicktime
-		- XMV WMV (missing P-Frames)
-	- Event system
-	- NWN
+	- Graphics, sound, video, events subsystems
+	- NWN:
 		- Main menu
 		- Area loading with objects
 		- NPC animations
 		- Scripts
 		- Dialogs
-	- KOTOR/KOTOR2
+	- KOTOR/KOTOR2:
 		- Partial main menu
 		- Area loading with objects
 	- JADE:
-		- Font loading
-		- Initial GUI work
+		- Area loading with objects
 	- NWN2:
-		- Model loading
+		- Area loading with objects
 	- WITCHER:
-		- Model loading
+		- Area loading with objects
+	- SONIC:
+		- Area loading with objects
 	- DRAGONAGE/DRAGONAGE2:
-		- Textures loading
-	- SONIC
-		- Resource loading
+		- Model loading
 
 Friday, 2010-03-26 (Version 0.0.1)
 	- Initial empty frame
