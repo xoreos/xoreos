@@ -40,6 +40,7 @@ noinst_HEADERS = \
                  ustring.h \
                  hash.h \
                  md5.h \
+                 blowfish.h \
                  error.h \
                  util.h \
                  strutil.h \
@@ -89,6 +90,7 @@ libcommon_la_SOURCES = \
                        mutex.cpp \
                        ustring.cpp \
                        md5.cpp \
+                       blowfish.cpp \
                        error.cpp \
                        util.cpp \
                        strutil.cpp \
