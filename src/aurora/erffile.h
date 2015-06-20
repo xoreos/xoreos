@@ -44,7 +44,7 @@ namespace Aurora {
 /** Class to hold resource data of an ERF file. */
 class ERFFile : public Archive, public AuroraBase {
 public:
-	ERFFile(Common::SeekableReadStream *erf);
+	ERFFile(Common::SeekableReadStream *erf, const std::vector<byte> &password = std::vector<byte>());
 	~ERFFile();
 
 	/** Return the list of resources. */
@@ -86,8 +86,6 @@ private:
 
 	/** The header of an ERF file. */
 	struct ERFHeader {
-		static const size_t kDigestLength = 16;
-
 		uint32 resCount;         ///< Number of resources in this ERF.
 
 		uint32 langCount;        ///< Number of language strings in the description.
@@ -109,7 +107,7 @@ private:
 		Compression compression; ///< The compression algorithm in use.
 
 		/** Digest of the encryption password, if any. */
-		byte passwordDigest[kDigestLength];
+		std::vector<byte> passwordDigest;
 	};
 
 	/** Internal resource information. */
@@ -133,6 +131,9 @@ private:
 
 	/** Internal list of resource offsets and sizes. */
 	IResourceList _iResources;
+
+	/** The password we were given, if any. */
+	std::vector<byte> _password;
 
 	void load(Common::SeekableReadStream &erf);
 
@@ -159,6 +160,10 @@ private:
 
 	// V3.0
 	void readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+
+	// Encryption
+	void verifyPasswordDigest();
+	Common::MemoryReadStream *decrypt(Common::MemoryReadStream *cryptStream) const;
 
 	// Compression
 	Common::SeekableReadStream *decompress(Common::MemoryReadStream *packedStream, uint32 unpackedSize) const;

@@ -34,6 +34,8 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/encoding.h"
+#include "src/common/md5.h"
+#include "src/common/blowfish.h"
 
 #include "src/aurora/erffile.h"
 #include "src/aurora/util.h"
@@ -52,8 +54,8 @@ static const uint32 kVersion3  = MKTAG('V', '3', '.', '0');
 
 namespace Aurora {
 
-ERFFile::ERFFile(Common::SeekableReadStream *erf) : _erf(erf) {
-	assert(_erf);
+ERFFile::ERFFile(Common::SeekableReadStream *erf, const std::vector<byte> &password) :
+	_erf(erf), _password(password) {
 
 	try {
 		load(*_erf);
@@ -80,6 +82,64 @@ void ERFFile::verifyVersion(uint32 id, uint32 version, bool utf16le) {
 		throw Common::Exception("ERF file version 2.0+, but not UTF-16LE");
 }
 
+void ERFFile::verifyPasswordDigest() {
+	if (_header.encryption == kEncryptionNone)
+		return;
+
+	if (_password.empty())
+		throw Common::Exception("Encrypted; password required");
+
+		if (_header.encryption == kEncryptionXOR)
+			throw Common::Exception("Unsupported XOR encryption");
+
+	if (_header.encryption == kEncryptionBlowfishDAO) {
+		// The digest is the simple MD5 sum of the password
+		if (!Common::compareMD5Digest(_password, _header.passwordDigest))
+			throw Common::Exception("Password digest does not match");
+
+		// Parse the password into a number, and create an 8-byte little endian array out of it
+
+		Common::UString passwordString((const char *) &_password[0], _password.size());
+
+		uint64 passwordNumber = 0;
+		Common::parseString(passwordString, passwordNumber);
+
+		_password.resize(8);
+		for (size_t i = 0; i < 8; i++) {
+			_password[i] = passwordNumber & 0xFF;
+
+			passwordNumber >>= 8;
+		}
+
+		return;
+	}
+
+	if (_header.encryption == kEncryptionBlowfishDA2) {
+		// The digest is the MD5 sum of an [0-255] array encrypted by the password
+		byte buffer[256];
+		for (size_t i = 0; i < sizeof(buffer); i++)
+			buffer[i] = i;
+
+		Common::MemoryReadStream bufferStream(buffer, sizeof(buffer));
+		Common::SeekableReadStream *bufferEncrypted = Common::encryptBlowfishEBC(bufferStream, _password);
+
+		try {
+
+			if (!Common::compareMD5Digest(*bufferEncrypted,  _header.passwordDigest))
+				throw Common::Exception("Password digest does not match");
+
+		} catch (...) {
+			delete bufferEncrypted;
+			throw;
+		}
+
+		delete bufferEncrypted;
+		return;
+	}
+
+	throw Common::Exception("Invalid encryption type %u", (uint)_header.encryption);
+}
+
 void ERFFile::load(Common::SeekableReadStream &erf) {
 	readHeader(erf);
 
@@ -89,10 +149,9 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 
 		readERFHeader(erf, _header, _version);
 
-		if (_header.encryption != kEncryptionNone)
-			throw Common::Exception("Unhandled ERF encryption");
-
 		try {
+
+			verifyPasswordDigest();
 
 			readDescription(_description, erf, _header, _version);
 			readResources(erf, _header);
@@ -113,8 +172,6 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 }
 
 void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version) {
-	memset(header.passwordDigest, 0, ERFHeader::kDigestLength);
-
 	header.buildYear       = 0;
 	header.buildDay        = 0;
 	header.stringTableSize = 0;
@@ -172,7 +229,8 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 		header.moduleID = erf.readUint32LE();
 
-		if (erf.read(header.passwordDigest, ERFHeader::kDigestLength) != ERFHeader::kDigestLength)
+		header.passwordDigest.resize(16);
+		if (erf.read(&header.passwordDigest[0], 16) != 16)
 			throw Common::Exception(Common::kReadError);
 
 		header.descriptionID   = 0;    // No description in ERF V2.2
@@ -190,7 +248,8 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 		header.moduleID = erf.readUint32LE();
 
-		if (erf.read(header.passwordDigest, ERFHeader::kDigestLength) != ERFHeader::kDigestLength)
+		header.passwordDigest.resize(16);
+		if (erf.read(&header.passwordDigest[0], 16) != 16)
 			throw Common::Exception(Common::kReadError);
 
 		header.stringTable = new char[header.stringTableSize];
@@ -391,19 +450,46 @@ uint32 ERFFile::getResourceSize(uint32 index) const {
 Common::SeekableReadStream *ERFFile::getResource(uint32 index, bool tryNoCopy) const {
 	const IResource &res = getIResource(index);
 
-	if (tryNoCopy && (_header.compression == kCompressionNone))
+	if (tryNoCopy && (_header.encryption == kEncryptionNone) && (_header.compression == kCompressionNone))
 		return new Common::SeekableSubReadStream(_erf, res.offset, res.offset + res.packedSize);
 
 	_erf->seek(res.offset);
 
-	return decompress(_erf->readStream(res.packedSize), res.unpackedSize);
+	// Read, decrypt and decompress
+	return decompress(decrypt(_erf->readStream(res.packedSize)), res.unpackedSize);
+}
+
+Common::MemoryReadStream *ERFFile::decrypt(Common::MemoryReadStream *cryptStream) const {
+	try {
+		Common::MemoryReadStream *decryptStream = 0;
+
+		switch (_header.encryption) {
+			case kCompressionNone:
+				return cryptStream;
+
+			case kEncryptionBlowfishDAO:
+			case kEncryptionBlowfishDA2:
+				decryptStream = Common::decryptBlowfishEBC(*cryptStream, _password);
+				delete cryptStream;
+				return decryptStream;
+
+			default:
+				throw Common::Exception("Invalid ERF encryption %u", (uint) _header.encryption);
+		}
+	} catch (...) {
+		delete cryptStream;
+		throw;
+	}
 }
 
 Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packedStream,
                                                 uint32 unpackedSize) const {
 	switch (_header.compression) {
 		case kCompressionNone:
-			return packedStream;
+			if (packedStream->size() == unpackedSize)
+				return packedStream;
+
+			return new Common::SeekableSubReadStream(packedStream, 0, unpackedSize, true);
 
 		case kCompressionBioWareZlib:
 			return decompressBiowareZlib(packedStream, unpackedSize);
