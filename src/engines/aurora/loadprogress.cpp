@@ -32,12 +32,14 @@
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/fontman.h"
 
+#include "src/events/events.h"
+
 #include "src/engines/aurora/loadprogress.h"
 
 namespace Engines {
 
 LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0), _currentAmount(0.0f),
-	_description(0), _barUpper(0), _barLower(0), _progressbar(0), _percent(0) {
+	_startTime(0), _description(0), _barUpper(0), _barLower(0), _progressbar(0), _percent(0) {
 
 	assert(_steps >= 2);
 
@@ -72,6 +74,11 @@ LoadProgress::~LoadProgress() {
 }
 
 void LoadProgress::step(const Common::UString &description) {
+	const uint32 timeNow = EventMan.getTimestamp();
+
+	if (_currentStep == 0)
+		_startTime = timeNow;
+
 	// The first step is the 0% mark, so don't add to the amount yet
 	if (_currentStep > 0)
 		_currentAmount += _stepAmount;
@@ -82,7 +89,10 @@ void LoadProgress::step(const Common::UString &description) {
 		_currentAmount = 1.0f;
 	}
 
-	const int percentage = (int) (_currentAmount * 100.0f);
+	const int    percentage  = (int) (_currentAmount * 100.0f);
+	const uint32 timeElapsed = timeNow - _startTime;
+
+	const Common::UString timeStr = Common::UString::format("(%.2fs)", timeElapsed / 1000.0);
 
 	// Update the text
 	{
@@ -96,7 +106,7 @@ void LoadProgress::step(const Common::UString &description) {
 
 		// Update the description text and center it
 		_description->getPosition(x, y, z);
-		_description->set(description);
+		_description->set(description + " " + timeStr);
 		_description->setPosition(-(_description->getWidth() / 2.0f), y);
 
 		// Update the percentage text and center it
@@ -116,7 +126,7 @@ void LoadProgress::step(const Common::UString &description) {
 	}
 
 	// And also print the status
-	status("[%3d%%] %s", percentage, description.c_str());
+	status("[%3d%%] %s %s", percentage, description.c_str(), timeStr.c_str());
 }
 
 Common::UString LoadProgress::createProgressbar(size_t length, double filled) {

@@ -67,6 +67,8 @@ private:
 	double _stepAmount;    ///< The amount to step each time.
 	double _currentAmount; ///< The accumulated amount.
 
+	uint32 _startTime; ///< The timestamp the first step happened.
+
 	/** The text containing the description of the current step. */
 	Graphics::Aurora::Text *_description;
 
