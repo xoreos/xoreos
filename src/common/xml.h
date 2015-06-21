@@ -59,7 +59,7 @@ private:
 class XMLNode {
 public:
 	typedef std::map<UString, UString> Properties;
-	typedef std::list<XMLNode *> Children;
+	typedef std::list<const XMLNode *> Children;
 
 	const UString &getName() const;
 	const UString &getContent() const;
@@ -80,7 +80,7 @@ public:
 
 
 private:
-	typedef std::map<UString, XMLNode *, UString::iless> ChildMap;
+	typedef std::map<UString, const XMLNode *, UString::iless> ChildMap;
 
 	UString _name;
 	UString _content;
