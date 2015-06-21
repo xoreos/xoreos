@@ -38,6 +38,8 @@ public:
 
 	FileList();
 	FileList(const FileList &list);
+	/** Construct a list with the contents of this directory. See addDirectory(). */
+	FileList(const UString &directory, int recurseDepth = 0);
 	~FileList();
 
 	FileList &operator=(const FileList &list);

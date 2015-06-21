@@ -36,6 +36,10 @@ namespace Common {
 FileList::FileList() {
 }
 
+FileList::FileList(const UString &directory, int recurseDepth) {
+	addDirectory(directory, recurseDepth);
+}
+
 FileList::FileList(const FileList &list) {
 	*this = list;
 }
