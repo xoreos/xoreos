@@ -283,6 +283,8 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeFXR,            ".fxr"},
 	{kFileTypeFXT,            ".fxt"},
 	{kFileTypeCIF,            ".cif"},
+	{kFileTypeCUB,            ".cub"},
+	{kFileTypeDLB,            ".dlb"},
 
 	{kFileTypeMOV,            ".mov"},
 	{kFileTypeCURS,           ".curs"},
