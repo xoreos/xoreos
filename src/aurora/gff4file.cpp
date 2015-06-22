@@ -155,6 +155,7 @@ void GFF4File::loadStructs() {
 
 		// Read struct properties
 
+		strct.index = i;
 		strct.label = _stream->readUint32BE();
 
 		const uint32 fieldCount  = _stream->readUint32LE();
@@ -187,6 +188,7 @@ void GFF4File::loadStructs() {
 
 	// And load the top level struct, which itself recurses into field structs
 	_topLevelStruct = new GFF4Struct(*this, _header.dataOffset, _structTemplates[0]);
+	_topLevelStruct->_refCount++;
 }
 
 void GFF4File::loadStrings() {
@@ -202,20 +204,20 @@ void GFF4File::loadStrings() {
 
 // --- Helpers for GFF4Struct ---
 
-void GFF4File::registerStruct(uint32 offset, GFF4Struct *strct) {
+void GFF4File::registerStruct(uint64 id, GFF4Struct *strct) {
 	std::pair<StructMap::iterator, bool> result;
 
-	result = _structs.insert(std::make_pair(offset, strct));
+	result = _structs.insert(std::make_pair(id, strct));
 	if (!result.second)
 		throw Common::Exception("GFF4: Duplicate struct");
 }
 
-void GFF4File::unregisterStruct(uint32 offset) {
-	_structs.erase(offset);
+void GFF4File::unregisterStruct(uint64 id) {
+	_structs.erase(id);
 }
 
-GFF4Struct *GFF4File::findStruct(uint32 offset) {
-	StructMap::iterator s = _structs.find(offset);
+GFF4Struct *GFF4File::findStruct(uint64 id) {
+	StructMap::iterator s = _structs.find(id);
 	if (s == _structs.end())
 		return 0;
 
@@ -280,27 +282,29 @@ GFF4Struct::Field::~Field() {
 
 
 GFF4Struct::GFF4Struct(GFF4File &parent, uint32 offset, const GFF4File::StructTemplate &tmplt) :
-	_parent(&parent), _label(tmplt.label), _id(offset), _refCount(0), _fieldCount(0) {
+	_parent(&parent), _label(tmplt.label), _refCount(0), _fieldCount(0) {
 
-	parent.registerStruct(offset, this);
+	_id = generateID(offset, &tmplt);
+	parent.registerStruct(_id, this);
 
 	try {
 		load(parent, offset, tmplt);
 	} catch (...) {
-		parent.unregisterStruct(offset);
+		parent.unregisterStruct(_id);
 		throw;
 	}
 }
 
 GFF4Struct::GFF4Struct(GFF4File &parent, const Field &genericParent) :
-	_parent(&parent), _label(0), _id(genericParent.offset), _refCount(0), _fieldCount(0) {
+	_parent(&parent), _label(0), _refCount(0), _fieldCount(0) {
 
-	parent.registerStruct(genericParent.offset, this);
+	_id = generateID(genericParent.offset);
+	parent.registerStruct(_id, this);
 
 	try {
 		load(parent, genericParent);
 	} catch (...) {
-		parent.unregisterStruct(genericParent.offset);
+		parent.unregisterStruct(_id);
 		throw;
 	}
 }
@@ -352,7 +356,7 @@ void GFF4Struct::loadStructs(GFF4File &parent, Field &field) {
 		if (offset == 0xFFFFFFFF)
 			continue;
 
-		GFF4Struct *strct = parent.findStruct(offset);
+		GFF4Struct *strct = parent.findStruct(generateID(offset, &tmplt));
 		if (!strct)
 			strct = new GFF4Struct(parent, offset, tmplt);
 
@@ -367,7 +371,7 @@ void GFF4Struct::loadGeneric(GFF4File &parent, Field &field) {
 	if (field.offset == 0xFFFFFFFF)
 		return;
 
-	GFF4Struct *strct = parent.findStruct(field.offset);
+	GFF4Struct *strct = parent.findStruct(generateID(field.offset));
 	if (!strct)
 		strct = new GFF4Struct(parent, field);
 
@@ -402,6 +406,10 @@ void GFF4Struct::load(GFF4File &parent, const Field &genericParent) {
 	}
 
 	_fieldCount = genericCount;
+}
+
+uint64 GFF4Struct::generateID(uint32 offset, const GFF4File::StructTemplate *tmplt) {
+	return (((uint64) offset) << 32) | (tmplt ? tmplt->index : 0xFFFFFFFF);
 }
 
 // --- Field properties ---

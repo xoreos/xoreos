@@ -95,6 +95,7 @@ private:
 			uint32 offset;
 		};
 
+		uint32 index;
 		uint32 label;
 		uint32 size;
 
@@ -103,7 +104,7 @@ private:
 
 	typedef std::vector<StructTemplate> StructTemplates;
 	typedef std::vector<Common::UString> SharedStrings;
-	typedef std::map<uint32, GFF4Struct *> StructMap;
+	typedef std::map<uint64, GFF4Struct *> StructMap;
 
 
 
@@ -133,9 +134,9 @@ private:
 	// '---
 
 	// .--- Helper methods called by GFF4Struct
-	void registerStruct(uint32 offset, GFF4Struct *strct);
-	void unregisterStruct(uint32 offset);
-	GFF4Struct *findStruct(uint32 offset);
+	void registerStruct(uint64 id, GFF4Struct *strct);
+	void unregisterStruct(uint64 id);
+	GFF4Struct *findStruct(uint64 id);
 
 	Common::SeekableReadStream &getStream(uint32 offset) const;
 	const StructTemplate &getStructTemplate(uint32 i) const;
@@ -295,7 +296,7 @@ private:
 
 	uint32 _label;
 
-	uint32 _id;
+	uint64 _id;
 	uint32 _refCount;
 
 	size_t _fieldCount;
@@ -315,6 +316,8 @@ private:
 	void loadGeneric(GFF4File &parent, Field &field);
 
 	void load(GFF4File &parent, const Field &genericParent);
+
+	static uint64 generateID(uint32 offset, const GFF4File::StructTemplate *tmplt = 0);
 	// '---
 
 	// .--- Field and field data accessors
