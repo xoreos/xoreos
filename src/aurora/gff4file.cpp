@@ -698,6 +698,24 @@ double GFF4Struct::getDouble(Common::SeekableReadStream &data, IFieldType type) 
 	throw Common::Exception("GFF4: Field is not a float type");
 }
 
+float GFF4Struct::getFloat(Common::SeekableReadStream &data, IFieldType type) const {
+	switch (type) {
+		case kIFieldTypeFloat32:
+			return (float) data.readIEEEFloatLE();
+
+		case kIFieldTypeFloat64:
+			return (float) data.readIEEEDoubleLE();
+
+		case kIFieldTypeNDSFixed:
+			return (float) readNintendoFixedPoint(data.readUint32LE(), true, 19, 12);
+
+		default:
+			break;
+	}
+
+	throw Common::Exception("GFF4: Field is not a float type");
+}
+
 Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::Encoding encoding) const {
 	/* When the string is encoded in UTF-8, then length field specifies the length in bytes.
 	 * Otherwise, it's the length in characters. */
@@ -795,6 +813,18 @@ double GFF4Struct::getDouble(uint32 field, double def) const {
 	return getDouble(*data, f->type);
 }
 
+float GFF4Struct::getFloat(uint32 field, float def) const {
+	const Field *f;
+	Common::SeekableReadStream *data = getField(field, f);
+	if (!data)
+		return def;
+
+	if (f->isList)
+		throw Common::Exception("GFF4: Tried reading list as singular value");
+
+	return getFloat(*data, f->type);
+}
+
 Common::UString GFF4Struct::getString(uint32 field, Common::Encoding encoding,
                                       const Common::UString &def) const {
 
@@ -859,6 +889,24 @@ bool GFF4Struct::getVector3(uint32 field, double &v1, double &v2, double &v3) co
 	return true;
 }
 
+bool GFF4Struct::getVector3(uint32 field, float &v1, float &v2, float &v3) const {
+	const Field *f;
+	Common::SeekableReadStream *data = getField(field, f);
+	if (!data)
+		return false;
+
+	if (f->isList)
+		throw Common::Exception("GFF4: Tried reading list as singular value");
+
+	getVectorMatrixLength(*f, 3);
+
+	v1 = getFloat(*data, kIFieldTypeFloat32);
+	v2 = getFloat(*data, kIFieldTypeFloat32);
+	v3 = getFloat(*data, kIFieldTypeFloat32);
+
+	return true;
+}
+
 bool GFF4Struct::getVector4(uint32 field, double &v1, double &v2, double &v3, double &v4) const {
 	const Field *f;
 	Common::SeekableReadStream *data = getField(field, f);
@@ -874,6 +922,25 @@ bool GFF4Struct::getVector4(uint32 field, double &v1, double &v2, double &v3, do
 	v2 = getDouble(*data, kIFieldTypeFloat32);
 	v3 = getDouble(*data, kIFieldTypeFloat32);
 	v4 = getDouble(*data, kIFieldTypeFloat32);
+
+	return true;
+}
+
+bool GFF4Struct::getVector4(uint32 field, float &v1, float &v2, float &v3, float &v4) const {
+	const Field *f;
+	Common::SeekableReadStream *data = getField(field, f);
+	if (!data)
+		return false;
+
+	if (f->isList)
+		throw Common::Exception("GFF4: Tried reading list as singular value");
+
+	getVectorMatrixLength(*f, 4);
+
+	v1 = getFloat(*data, kIFieldTypeFloat32);
+	v2 = getFloat(*data, kIFieldTypeFloat32);
+	v3 = getFloat(*data, kIFieldTypeFloat32);
+	v4 = getFloat(*data, kIFieldTypeFloat32);
 
 	return true;
 }
@@ -894,6 +961,22 @@ bool GFF4Struct::getMatrix4x4(uint32 field, double (&m)[16]) const {
 	return true;
 }
 
+bool GFF4Struct::getMatrix4x4(uint32 field, float (&m)[16]) const {
+	const Field *f;
+	Common::SeekableReadStream *data = getField(field, f);
+	if (!data)
+		return false;
+
+	if (f->isList)
+		throw Common::Exception("GFF4: Tried reading list as singular value");
+
+	const uint32 length = getVectorMatrixLength(*f, 16);
+	for (uint32 i = 0; i < length; i++)
+		m[i] = getFloat(*data, kIFieldTypeFloat32);
+
+	return true;
+}
+
 bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<double> &vectorMatrix) const {
 	const Field *f;
 	Common::SeekableReadStream *data = getField(field, f);
@@ -908,6 +991,24 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<double> &vectorMatrix
 	vectorMatrix.resize(length);
 	for (uint32 i = 0; i < length; i++)
 		vectorMatrix[i] = getDouble(*data, kIFieldTypeFloat32);
+
+	return true;
+}
+
+bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<float> &vectorMatrix) const {
+	const Field *f;
+	Common::SeekableReadStream *data = getField(field, f);
+	if (!data)
+		return false;
+
+	if (f->isList)
+		throw Common::Exception("GFF4: Tried reading list as singular value");
+
+	const uint32 length = getVectorMatrixLength(*f, 16);
+
+	vectorMatrix.resize(length);
+	for (uint32 i = 0; i < length; i++)
+		vectorMatrix[i] = getFloat(*data, kIFieldTypeFloat32);
 
 	return true;
 }
@@ -970,6 +1071,21 @@ bool GFF4Struct::getDouble(uint32 field, std::vector<double> &list) const {
 	list.resize(count);
 	for (uint32 i = 0; i < count; i++)
 		list[i] = getDouble(*data, f->type);
+
+	return true;
+}
+
+float GFF4Struct::getFloat(uint32 field, std::vector<float> &list) const {
+	const Field *f;
+	Common::SeekableReadStream *data = getField(field, f);
+	if (!data)
+		return false;
+
+	const uint32 count = getListCount(*data, *f);
+
+	list.resize(count);
+	for (uint32 i = 0; i < count; i++)
+		list[i] = getFloat(*data, f->type);
 
 	return true;
 }
@@ -1053,6 +1169,26 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<double> 
 		list[i].resize(length);
 		for (uint32 j = 0; j < length; j++)
 			list[i][j] = getDouble(*data, kIFieldTypeFloat32);
+	}
+
+	return true;
+}
+
+bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<float> > &list) const {
+	const Field *f;
+	Common::SeekableReadStream *data = getField(field, f);
+	if (!data)
+		return false;
+
+	const uint32 length = getVectorMatrixLength(*f, 16);
+	const uint32 count  = getListCount(*data, *f);
+
+	list.resize(count);
+	for (uint32 i = 0; i < count; i++) {
+
+		list[i].resize(length);
+		for (uint32 j = 0; j < length; j++)
+			list[i][j] = getFloat(*data, kIFieldTypeFloat32);
 	}
 
 	return true;

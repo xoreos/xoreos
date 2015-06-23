@@ -185,7 +185,8 @@ public:
 	 int64 getSint(uint32 field,  int64 def = 0    ) const;
 	bool   getBool(uint32 field, bool   def = false) const;
 
-	double getDouble(uint32 field, double def = 0.0) const;
+	double getDouble(uint32 field, double def = 0.0 ) const;
+	float  getFloat (uint32 field, float  def = 0.0f) const;
 
 	/** Return a field string, read from the given encoding. */
 	Common::UString getString(uint32 field, Common::Encoding encoding, const Common::UString &def = "") const;
@@ -204,8 +205,15 @@ public:
 
 	bool getMatrix4x4(uint32 field, double (&m)[16]) const;
 
+	bool getVector3(uint32 field, float &v1, float &v2, float &v3) const;
+	bool getVector4(uint32 field, float &v1, float &v2, float &v3, float &v4) const;
+
+	bool getMatrix4x4(uint32 field, float (&m)[16]) const;
+
 	/** Return a field vector or a matrix type as a std::vector of doubles. */
 	bool getVectorMatrix(uint32 field, std::vector<double> &vectorMatrix) const;
+	/** Return a field vector or a matrix type as a std::vector of doubles. */
+	bool getVectorMatrix(uint32 field, std::vector<float > &vectorMatrix) const;
 	// '---
 
 	// .--- Lists of values
@@ -213,7 +221,8 @@ public:
 	bool getSint(uint32 field, std::vector< int64> &list) const;
 	bool getBool(uint32 field, std::vector<bool  > &list) const;
 
-	bool getDouble(uint32 field, std::vector<double> &list) const;
+	bool  getDouble(uint32 field, std::vector<double> &list) const;
+	float getFloat (uint32 field, std::vector<float > &list) const;
 
 	/** Return field strings, read from the given encoding. */
 	bool getString(uint32 field, Common::Encoding encoding, std::vector<Common::UString> &list) const;
@@ -231,6 +240,8 @@ public:
 
 	/** Return field vector or a matrix types as std::vectors of doubles. */
 	bool getVectorMatrix(uint32 field, std::vector< std::vector<double> > &list) const;
+	/** Return field vector or a matrix types as std::vectors of floats. */
+	bool getVectorMatrix(uint32 field, std::vector< std::vector<float > > &list) const;
 	// '---
 
 	// .--- Structs and lists of structs
@@ -340,6 +351,7 @@ private:
 	 int64 getSint(Common::SeekableReadStream &data, IFieldType type) const;
 
 	double getDouble(Common::SeekableReadStream &data, IFieldType type) const;
+	float  getFloat (Common::SeekableReadStream &data, IFieldType type) const;
 
 	Common::UString getString(Common::SeekableReadStream &data, Common::Encoding encoding) const;
 	Common::UString getString(Common::SeekableReadStream &data, Common::Encoding encoding,
