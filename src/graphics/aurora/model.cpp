@@ -52,8 +52,8 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_drawSkeleton(false), _drawSkeletonInvisible(false) {
 
 	_scale   [0] = 1.0f; _scale   [1] = 1.0f; _scale   [2] = 1.0f;
-	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
+	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_center  [0] = 0.0f; _center  [1] = 0.0f; _center  [2] = 0.0f;
 
 	// TODO: Is this the same as modelScale for non-UI?
@@ -94,13 +94,10 @@ const Common::UString &Model::getName() const {
 
 bool Model::isIn(float x, float y) const {
 	if (_type == kModelTypeGUIFront) {
-		x /= _scale[0];
-		y /= _scale[1];
-
 		const float minX = _position[0];
 		const float minY = _position[1];
-		const float maxX = minX + _boundBox.getWidth();
-		const float maxY = minY + _boundBox.getHeight();
+		const float maxX = minX + (_boundBox.getWidth()  * _scale[0]);
+		const float maxY = minY + (_boundBox.getHeight() * _scale[1]);
 
 		if ((x < minX) || (x > maxX))
 			return false;
@@ -183,16 +180,16 @@ void Model::getScale(float &x, float &y, float &z) const {
 	z = _scale[2];
 }
 
-void Model::getPosition(float &x, float &y, float &z) const {
-	x = _position[0] * _scale[0];
-	y = _position[1] * _scale[1];
-	z = _position[2] * _scale[2];
-}
-
 void Model::getRotation(float &x, float &y, float &z) const {
 	x = _rotation[0];
 	y = _rotation[1];
 	z = _rotation[2];
+}
+
+void Model::getPosition(float &x, float &y, float &z) const {
+	x = _position[0];
+	y = _position[1];
+	z = _position[2];
 }
 
 void Model::getAbsolutePosition(float &x, float &y, float &z) const {
@@ -201,12 +198,12 @@ void Model::getAbsolutePosition(float &x, float &y, float &z) const {
 	z = _absolutePosition.getZ();
 }
 
-void Model::setPosition(float x, float y, float z) {
+void Model::setScale(float x, float y, float z) {
 	lockFrameIfVisible();
 
-	_position[0] = x / _scale[0];
-	_position[1] = y / _scale[1];
-	_position[2] = z / _scale[2];
+	_scale[0] = x;
+	_scale[1] = y;
+	_scale[2] = z;
 
 	createAbsolutePosition();
 	calculateDistance();
@@ -231,12 +228,12 @@ void Model::setRotation(float x, float y, float z) {
 	unlockFrameIfVisible();
 }
 
-void Model::setScale(float x, float y, float z) {
+void Model::setPosition(float x, float y, float z) {
 	lockFrameIfVisible();
 
-	_scale[0] = x;
-	_scale[1] = y;
-	_scale[2] = z;
+	_position[0] = x;
+	_position[1] = y;
+	_position[2] = z;
 
 	createAbsolutePosition();
 	calculateDistance();
@@ -250,16 +247,12 @@ void Model::scale(float x, float y, float z) {
 	setScale(_scale[0] * x, _scale[1] * y, _scale[2] * z);
 }
 
-void Model::move(float x, float y, float z) {
-	x /= _scale[0];
-	y /= _scale[1];
-	z /= _scale[2];
-
-	setPosition(_position[0] + x, _position[1] + y, _position[2] + z);
-}
-
 void Model::rotate(float x, float y, float z) {
 	setRotation(_rotation[0] + x, _rotation[1] + y, _rotation[2] + z);
+}
+
+void Model::move(float x, float y, float z) {
+	setPosition(_position[0] + x, _position[1] + y, _position[2] + z);
 }
 
 void Model::getTooltipAnchor(float &x, float &y, float &z) const {
@@ -273,8 +266,6 @@ void Model::getTooltipAnchor(float &x, float &y, float &z) const {
 void Model::createAbsolutePosition() {
 	_absolutePosition.loadIdentity();
 
-	_absolutePosition.scale(_scale[0], _scale[1], _scale[2]);
-
 	if (_type == kModelTypeObject)
 		_absolutePosition.rotate(90.0f, -1.0f, 0.0f, 0.0f);
 
@@ -283,6 +274,8 @@ void Model::createAbsolutePosition() {
 	_absolutePosition.rotate( _rotation[0], 1.0f, 0.0f, 0.0f);
 	_absolutePosition.rotate( _rotation[1], 0.0f, 1.0f, 0.0f);
 	_absolutePosition.rotate(-_rotation[2], 0.0f, 0.0f, 1.0f);
+
+	_absolutePosition.scale(_scale[0], _scale[1], _scale[2]);
 
 	_absoluteBoundBox = _boundBox;
 	_absoluteBoundBox.transform(_absolutePosition);
@@ -498,7 +491,6 @@ void Model::render(RenderPass pass) {
 	}
 
 	// Apply our global model transformation
-	glScalef(_scale[0], _scale[1], _scale[2]);
 
 	if (_type == kModelTypeObject)
 		// Aurora world objects have a rotated axis
@@ -509,6 +501,8 @@ void Model::render(RenderPass pass) {
 	glRotatef( _rotation[0], 1.0f, 0.0f, 0.0f);
 	glRotatef( _rotation[1], 0.0f, 1.0f, 0.0f);
 	glRotatef(-_rotation[2], 0.0f, 0.0f, 1.0f);
+
+	glScalef(_scale[0], _scale[1], _scale[2]);
 
 
 	// Draw the bounding box, if requested

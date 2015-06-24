@@ -84,27 +84,27 @@ public:
 
 	/** Get the current scale of the model. */
 	void getScale   (float &x, float &y, float &z) const;
-	/** Get the current position of the model. */
-	void getPosition(float &x, float &y, float &z) const;
 	/** Get the current rotation of the model. */
 	void getRotation(float &x, float &y, float &z) const;
+	/** Get the current position of the model. */
+	void getPosition(float &x, float &y, float &z) const;
 
 	/** Get the position of the node after translate/rotate. */
 	void getAbsolutePosition(float &x, float &y, float &z) const;
 
 	/** Set the current scale of the model. */
 	void setScale   (float x, float y, float z);
-	/** Set the current position of the model. */
-	void setPosition(float x, float y, float z);
 	/** Set the current rotation of the model. */
 	void setRotation(float x, float y, float z);
+	/** Set the current position of the model. */
+	void setPosition(float x, float y, float z);
 
 	/** Scale the model, relative to its current scale. */
 	void scale (float x, float y, float z);
-	/** Move the model, relative to its current position. */
-	void move  (float x, float y, float z);
 	/** Rotate the model, relative to its current rotation. */
 	void rotate(float x, float y, float z);
+	/** Move the model, relative to its current position. */
+	void move  (float x, float y, float z);
 
 	/** Get the point where the feedback tooltip is anchored. */
 	void getTooltipAnchor(float &x, float &y, float &z) const;
@@ -211,8 +211,8 @@ protected:
 	DefaultAnimations _defaultAnimations;
 
 	float _scale   [3]; ///< Model's scale.
-	float _position[3]; ///< Model's position.
 	float _rotation[3]; ///< Model's rotation.
+	float _position[3]; ///< Model's position.
 	float _center  [3]; ///< Model's center.
 
 	Common::TransformationMatrix _absolutePosition;

@@ -448,12 +448,12 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 	// Transform by our position/orientation/rotation
 	parentPosition.translate(_position[0], _position[1], _position[2]);
 	parentPosition.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-	parentPosition.scale(_scale[0], _scale[1], _scale[2]);
 
 	parentPosition.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
 	parentPosition.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
 	parentPosition.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
 
+	parentPosition.scale(_scale[0], _scale[1], _scale[2]);
 
 	// That's our absolute position
 	_absolutePosition = parentPosition.getOrigin();
@@ -520,11 +520,12 @@ void ModelNode::render(RenderPass pass) {
 
 	glTranslatef(_position[0], _position[1], _position[2]);
 	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-	glScalef(_scale[0], _scale[1], _scale[2]);
 
 	glRotatef(_rotation[0], 1.0f, 0.0f, 0.0f);
 	glRotatef(_rotation[1], 0.0f, 1.0f, 0.0f);
 	glRotatef(_rotation[2], 0.0f, 0.0f, 1.0f);
+
+	glScalef(_scale[0], _scale[1], _scale[2]);
 
 
 	// Render the node's geometry
