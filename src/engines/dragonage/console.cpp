@@ -41,6 +41,8 @@ Console::Console(DragonAgeEngine &engine) :
 
 	registerCommand("listareas", boost::bind(&Console::cmdListAreas, this, _1),
 			"Usage: listareas\nList all areas in the current campaign");
+	registerCommand("loadarea" , boost::bind(&Console::cmdLoadArea, this, _1),
+			"Usage: loadarea <name>\nLoad and show a specific area in the current campaign");
 }
 
 Console::~Console() {
@@ -77,6 +79,28 @@ void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 	const Campaign::Areas &areas = campaign->getAreas();
 	for (Campaign::Areas::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		printf("%s (\"%s\")", a->tag.c_str(), a->name.getString().c_str());
+}
+
+void Console::cmdLoadArea(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	Campaign *campaign = _engine->getCampaigns().getCurrentCampaign();
+	if (!campaign)
+		return;
+
+	const Campaign::Areas &areas = campaign->getAreas();
+	for (Campaign::Areas::const_iterator a = areas.begin(); a != areas.end(); ++a) {
+		if (a->tag.equalsIgnoreCase(cl.args)) {
+			hide();
+			campaign->movePC(cl.args);
+			return;
+		}
+	}
+
+	printf("No such area \"%s\"", cl.args.c_str());
 }
 
 } // End of namespace DragonAge

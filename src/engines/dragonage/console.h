@@ -47,6 +47,7 @@ private:
 	void updateAreas();
 
 	void cmdListAreas(const CommandLine &cl);
+	void cmdLoadArea (const CommandLine &cl);
 };
 
 } // End of namespace DragonAge
