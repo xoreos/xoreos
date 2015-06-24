@@ -149,26 +149,23 @@ void Model_DragonAge::ParserContext::open(const Common::UString &name) {
 		throw Common::Exception("Unsupported MMH version %s", Common::debugTag(mmh->getTypeVersion()).c_str());
 
 	mmhTop = &mmh->getTopLevel();
+	mmhName = Common::FilePath::changeExtension(mmhTop->getString(kGFF4MMHName), "").toLower();
 
 	// Read the MSH file name
 
 	mshFile = mmhTop->getString(kGFF4MMHModelHierarchyModelDataName).toLower();
 	mshFile = Common::FilePath::changeExtension(mshFile, "");
-	if (mshFile.empty())
-		throw Common::Exception("MMH has no associated MSH");
 
 	// Open the MSH
+	if (!mshFile.empty()) {
 
-	msh = new GFF4File(mshFile, kFileTypeMSH, kMSHID);
-	if ((msh->getTypeVersion() != kVersion01) && (msh->getTypeVersion() != kVersion10))
-		throw Common::Exception("Unsupported MSH version %s", Common::debugTag(msh->getTypeVersion()).c_str());
+		msh = new GFF4File(mshFile, kFileTypeMSH, kMSHID);
+		if ((msh->getTypeVersion() != kVersion01) && (msh->getTypeVersion() != kVersion10))
+			throw Common::Exception("Unsupported MSH version %s", Common::debugTag(msh->getTypeVersion()).c_str());
 
-	mshTop = &msh->getTopLevel();
-
-	// Read the internal MMH and MSH names
-
-	mmhName = Common::FilePath::changeExtension(mmhTop->getString(kGFF4MMHName), "").toLower();
-	mshName = Common::FilePath::changeExtension(mshTop->getString(kGFF4Name)   , "").toLower();
+		mshTop = &msh->getTopLevel();
+		mshName = Common::FilePath::changeExtension(mshTop->getString(kGFF4Name), "").toLower();
+	}
 }
 
 Model_DragonAge::ParserContext::~ParserContext() {
@@ -205,9 +202,9 @@ void Model_DragonAge::load(ParserContext &ctx) {
 	_name = ctx.mmhName;
 
 	// Lax sanity checks
-	if (ctx.mmhFile != ctx.mmhName)
+	if (!ctx.mmhName.empty() && (ctx.mmhFile != ctx.mmhName))
 		warning("MMH names don't match (\"%s\" vs. \"%s\")", ctx.mmhFile.c_str(), ctx.mmhName.c_str());
-	if (ctx.mshFile != ctx.mshName)
+	if (!ctx.mshName.empty() && (ctx.mshFile != ctx.mshName))
 		warning("MSH names don't match (\"%s\" vs. \"%s\")", ctx.mshFile.c_str(), ctx.mshName.c_str());
 
 	const GFF4Struct *rootNodes = ctx.mmhTop->getGeneric(kGFF4MMHChildren);
@@ -806,6 +803,9 @@ void ModelNode_DragonAge::readMAO(const Common::UString &materialName, MaterialO
 }
 
 void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GFF4Struct &meshGFF) {
+	if (!ctx.mshTop)
+		return;
+
 	Common::UString meshGroupName = meshGFF.getString(kGFF4MMHMeshGroupName);
 	Common::UString materialName  = meshGFF.getString(kGFF4MMHMaterialObject);
 	if (meshGroupName.empty() || materialName.empty())
