@@ -45,6 +45,8 @@ class LoadProgress;
 
 namespace DragonAge {
 
+class Campaigns;
+
 class DragonAgeEngineProbe : public Engines::EngineProbe {
 public:
 	DragonAgeEngineProbe();
@@ -79,6 +81,9 @@ public:
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
 
+	/** Return the campaigns context. */
+	Campaigns &getCampaigns();
+
 
 protected:
 	void run();
@@ -88,6 +93,8 @@ private:
 	Aurora::Language _language;
 
 	std::list<Common::ChangeID> _languageTLK;
+
+	Campaigns *_campaigns;
 
 
 	void init();

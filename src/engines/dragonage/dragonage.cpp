@@ -22,7 +22,10 @@
  *  Engine class handling Dragon Age: Origins
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 #include "src/common/configman.h"
@@ -32,10 +35,7 @@
 #include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/cursorman.h"
-#include "src/graphics/aurora/cube.h"
 #include "src/graphics/aurora/fontman.h"
-
-#include "src/sound/sound.h"
 
 #include "src/events/events.h"
 
@@ -47,6 +47,8 @@
 #include "src/engines/dragonage/dragonage.h"
 #include "src/engines/dragonage/modelloader.h"
 #include "src/engines/dragonage/console.h"
+#include "src/engines/dragonage/campaigns.h"
+#include "src/engines/dragonage/campaign.h"
 
 namespace Engines {
 
@@ -89,11 +91,14 @@ Engines::Engine *DragonAgeEngineProbe::createEngine() const {
 }
 
 
-DragonAgeEngine::DragonAgeEngine() : _language(Aurora::kLanguageInvalid) {
+DragonAgeEngine::DragonAgeEngine() : _language(Aurora::kLanguageInvalid),
+	_campaigns(0) {
+
 	_console = new Console(*this);
 }
 
 DragonAgeEngine::~DragonAgeEngine() {
+	delete _campaigns;
 }
 
 Common::UString DragonAgeEngine::getLanguageString(Aurora::Language language) {
@@ -156,6 +161,12 @@ bool DragonAgeEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common:
 	}
 
 	return true;
+}
+
+Campaigns &DragonAgeEngine::getCampaigns() {
+	assert(_campaigns);
+
+	return *_campaigns;
 }
 
 bool DragonAgeEngine::getLanguage(Aurora::Language &language) const {
@@ -221,17 +232,17 @@ void DragonAgeEngine::init() {
 
 void DragonAgeEngine::declareLanguages() {
 	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
-		{ Aurora::kLanguageEnglish  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageFrench   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageGerman   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageItalian  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageSpanish  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguagePolish   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageCzech    , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageHungarian, Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageRussian  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageKorean   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageJapanese , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE }
+		{ Aurora::kLanguageEnglish  ,  0, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageFrench   ,  1, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageGerman   ,  2, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageItalian  ,  3, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageSpanish  ,  4, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguagePolish   ,  5, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageCzech    ,  6, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageHungarian,  7, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageRussian  ,  8, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageKorean   ,  9, Common::kEncodingUTF16LE },
+		{ Aurora::kLanguageJapanese , 10, Common::kEncodingUTF16LE }
 	};
 
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
@@ -352,6 +363,9 @@ void DragonAgeEngine::loadTalkTable(const Common::UString &tlk, Aurora::Language
 
 void DragonAgeEngine::loadLanguageFiles(Aurora::Language language) {
 	unloadLanguageFiles();
+	if (EventMan.quitRequested())
+		return;
+
 	LangMan.setCurrentLanguage(language);
 
 	loadTalkTable("core_"        , language, 0);
@@ -448,31 +462,17 @@ void DragonAgeEngine::playIntroVideos() {
 }
 
 void DragonAgeEngine::main() {
-	Graphics::Aurora::Cube *cube = 0;
-	try {
+	_campaigns = new Campaigns(*_console);
 
-		cube = new Graphics::Aurora::Cube("ach_abi_accomplish_rog");
+	const Campaign *singlePlayer = _campaigns->findCampaign("Single Player");
+	if (!singlePlayer)
+		throw Common::Exception("Can't find the default single player campaign");
 
-	} catch (Common::Exception &e) {
-		Common::printException(e);
-	}
+	_campaigns->load(*singlePlayer);
+	_campaigns->run();
 
-	while (!EventMan.quitRequested()) {
-		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if (_console->processEvent(event))
-				continue;
-
-			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
-				_console->show();
-				continue;
-			}
-		}
-
-		EventMan.delay(10);
-	}
-
-	delete cube;
+	delete _campaigns;
+	_campaigns = 0;
 }
 
 } // End of namespace DragonAge
