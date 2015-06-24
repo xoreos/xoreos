@@ -99,6 +99,8 @@ public:
 	/** Set the current rotation of the model. */
 	void setRotation(float x, float y, float z);
 
+	/** Scale the model, relative to its current scale. */
+	void scale (float x, float y, float z);
 	/** Move the model, relative to its current position. */
 	void move  (float x, float y, float z);
 	/** Rotate the model, relative to its current rotation. */

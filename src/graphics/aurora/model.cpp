@@ -246,6 +246,10 @@ void Model::setScale(float x, float y, float z) {
 	unlockFrameIfVisible();
 }
 
+void Model::scale(float x, float y, float z) {
+	setScale(_scale[0] * x, _scale[1] * y, _scale[2] * z);
+}
+
 void Model::move(float x, float y, float z) {
 	x /= _scale[0];
 	y /= _scale[1];
