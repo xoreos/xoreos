@@ -38,9 +38,15 @@ public:
 	Console(DragonAgeEngine &engine);
 	~Console();
 
-
 private:
 	DragonAgeEngine *_engine;
+
+
+	// Updating the caches
+	void updateCaches();
+	void updateAreas();
+
+	void cmdListAreas(const CommandLine &cl);
 };
 
 } // End of namespace DragonAge

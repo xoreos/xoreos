@@ -22,10 +22,14 @@
  *  Dragon Age (debug) console.
  */
 
+#include <boost/bind.hpp>
+
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/dragonage/console.h"
 #include "src/engines/dragonage/dragonage.h"
+#include "src/engines/dragonage/campaigns.h"
+#include "src/engines/dragonage/campaign.h"
 
 namespace Engines {
 
@@ -35,9 +39,44 @@ Console::Console(DragonAgeEngine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
 	_engine(&engine) {
 
+	registerCommand("listareas", boost::bind(&Console::cmdListAreas, this, _1),
+			"Usage: listareas\nList all areas in the current campaign");
 }
 
 Console::~Console() {
+}
+
+void Console::updateCaches() {
+	::Engines::Console::updateCaches();
+
+	updateAreas();
+}
+
+void Console::updateAreas() {
+	setArguments("loadarea");
+
+	const Campaign *campaign = _engine->getCampaigns().getCurrentCampaign();
+	if (!campaign)
+		return;
+
+	std::list<Common::UString> areaTags;
+
+	const Campaign::Areas &areas = campaign->getAreas();
+	for (Campaign::Areas::const_iterator a = areas.begin(); a != areas.end(); ++a)
+		areaTags.push_back(a->tag);
+
+	areaTags.sort(Common::UString::iless());
+	setArguments("loadarea", areaTags);
+}
+
+void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
+	const Campaign *campaign = _engine->getCampaigns().getCurrentCampaign();
+	if (!campaign)
+		return;
+
+	const Campaign::Areas &areas = campaign->getAreas();
+	for (Campaign::Areas::const_iterator a = areas.begin(); a != areas.end(); ++a)
+		printf("%s (\"%s\")", a->tag.c_str(), a->name.getString().c_str());
 }
 
 } // End of namespace DragonAge
