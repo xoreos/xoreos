@@ -24,7 +24,6 @@
 
 #include "src/common/error.h"
 #include "src/common/ustring.h"
-#include "src/common/changeid.h"
 
 #include "src/aurora/resman.h"
 
@@ -41,6 +40,11 @@ void indexMandatoryArchive(const Common::UString &file, uint32 priority, Common:
 	ResMan.indexArchive(file, priority, changeID);
 }
 
+void indexMandatoryArchive(const Common::UString &file, uint32 priority, ChangeList &changes) {
+	changes.push_back(Common::ChangeID());
+	indexMandatoryArchive(file, priority, &changes.back());
+}
+
 bool indexOptionalArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
 	if (EventMan.quitRequested())
 		return false;
@@ -52,6 +56,16 @@ bool indexOptionalArchive(const Common::UString &file, uint32 priority, Common::
 	return true;
 }
 
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, ChangeList &changes) {
+	changes.push_back(Common::ChangeID());
+	if (!indexOptionalArchive(file, priority, &changes.back())) {
+		changes.pop_back();
+		return false;
+	}
+
+	return true;
+}
+
 void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
                              uint32 priority, Common::ChangeID *changeID) {
 
@@ -59,6 +73,13 @@ void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int d
 		return;
 
 	ResMan.indexResourceDir(dir, glob, depth, priority, changeID);
+}
+
+void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
+                             uint32 priority, ChangeList &changes) {
+
+	changes.push_back(Common::ChangeID());
+	indexMandatoryDirectory(dir, glob, depth, priority, &changes.back());
 }
 
 bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int depth,
@@ -74,8 +95,27 @@ bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int de
 	return true;
 }
 
+bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int depth,
+                            uint32 priority, ChangeList &changes) {
+
+	changes.push_back(Common::ChangeID());
+	if (!indexOptionalDirectory(dir, glob, depth, priority, &changes.back())) {
+		changes.pop_back();
+		return false;
+	}
+
+	return true;
+}
+
 void deindexResources(Common::ChangeID &changeID) {
 	ResMan.undo(changeID);
+}
+
+void deindexResources(ChangeList &changes) {
+	for (ChangeList::reverse_iterator c = changes.rbegin(); c != changes.rend(); ++c)
+		deindexResources(*c);
+
+	changes.clear();
 }
 
 } // End of namespace Engines

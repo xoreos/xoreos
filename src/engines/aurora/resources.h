@@ -25,31 +25,43 @@
 #ifndef ENGINES_AURORA_RESOURCES_H
 #define ENGINES_AURORA_RESOURCES_H
 
+#include <list>
+
+#include "src/common/changeid.h"
+
 #include "src/aurora/types.h"
 
 namespace Common {
-	class ChangeID;
 	class UString;
 }
 
 namespace Engines {
 
+typedef std::list<Common::ChangeID> ChangeList;
+
 /** Add an archive file to the resource manager, erroring out if it does not exist. */
 void indexMandatoryArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
+void indexMandatoryArchive(const Common::UString &file, uint32 priority, ChangeList &changes);
 
 /** Add an archive file to the resource manager, if it exists. */
 bool indexOptionalArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, ChangeList &changes);
 
 /** Add a directory to the resource manager, erroring out if it does not exist. */
 void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
                              uint32 priority, Common::ChangeID *changeID = 0);
+void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
+                             uint32 priority, ChangeList &changes);
 
 /** Add a directory to the resource manager, if it exists. */
 bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int depth,
                             uint32 priority, Common::ChangeID *changeID = 0);
+bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int depth,
+                            uint32 priority, ChangeList &changes);
 
 /** Remove previously added resources from the ResourceManager. */
 void deindexResources(Common::ChangeID &changeID);
+void deindexResources(ChangeList &changes);
 
 } // End of namespace Engines
 
