@@ -490,6 +490,9 @@ void ModelNode::renderGeometry() {
 		TextureMan.set(_textures[t]);
 	}
 
+	if (_textures.empty())
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	// Render the node's faces
 
 	const VertexDecl &vertexDecl = _vertexBuffer.getVertexDecl();
@@ -507,6 +510,9 @@ void ModelNode::renderGeometry() {
 		TextureMan.activeTexture(i);
 		glDisable(GL_TEXTURE_2D);
 	}
+
+	if (_textures.empty())
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void ModelNode::render(RenderPass pass) {
