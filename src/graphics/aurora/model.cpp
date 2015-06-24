@@ -51,10 +51,10 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_currentAnimation(0), _nextAnimation(0), _drawBound(false),
 	_drawSkeleton(false), _drawSkeletonInvisible(false) {
 
+	_scale   [0] = 1.0f; _scale   [1] = 1.0f; _scale   [2] = 1.0f;
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
-
-	_modelScale[0] = 1.0f; _modelScale[1] = 1.0f; _modelScale[2] = 1.0f;
+	_center  [0] = 0.0f; _center  [1] = 0.0f; _center  [2] = 0.0f;
 
 	// TODO: Is this the same as modelScale for non-UI?
 	_animationScale = 1.0f;
@@ -94,8 +94,8 @@ const Common::UString &Model::getName() const {
 
 bool Model::isIn(float x, float y) const {
 	if (_type == kModelTypeGUIFront) {
-		x /= _modelScale[0];
-		y /= _modelScale[1];
+		x /= _scale[0];
+		y /= _scale[1];
 
 		const float minX = _position[0];
 		const float minY = _position[1];
@@ -129,15 +129,15 @@ bool Model::isIn(float x1, float y1, float z1, float x2, float y2, float z2) con
 }
 
 float Model::getWidth() const {
-	return _boundBox.getWidth() * _modelScale[0];
+	return _boundBox.getWidth() * _scale[0];
 }
 
 float Model::getHeight() const {
-	return _boundBox.getHeight() * _modelScale[1];
+	return _boundBox.getHeight() * _scale[1];
 }
 
 float Model::getDepth() const {
-	return _boundBox.getDepth() * _modelScale[2];
+	return _boundBox.getDepth() * _scale[2];
 }
 
 void Model::drawBound(bool enabled) {
@@ -178,9 +178,9 @@ Animation *Model::selectDefaultAnimation() const {
 }
 
 void Model::getPosition(float &x, float &y, float &z) const {
-	x = _position[0] * _modelScale[0];
-	y = _position[1] * _modelScale[1];
-	z = _position[2] * _modelScale[2];
+	x = _position[0] * _scale[0];
+	y = _position[1] * _scale[1];
+	z = _position[2] * _scale[2];
 }
 
 void Model::getRotation(float &x, float &y, float &z) const {
@@ -198,9 +198,9 @@ void Model::getAbsolutePosition(float &x, float &y, float &z) const {
 void Model::setPosition(float x, float y, float z) {
 	lockFrameIfVisible();
 
-	_position[0] = x / _modelScale[0];
-	_position[1] = y / _modelScale[1];
-	_position[2] = z / _modelScale[2];
+	_position[0] = x / _scale[0];
+	_position[1] = y / _scale[1];
+	_position[2] = z / _scale[2];
 
 	createAbsolutePosition();
 	calculateDistance();
@@ -228,9 +228,9 @@ void Model::setRotation(float x, float y, float z) {
 void Model::setScale(float x, float y, float z) {
 	lockFrameIfVisible();
 
-	_modelScale[0] = x;
-	_modelScale[1] = y;
-	_modelScale[2] = z;
+	_scale[0] = x;
+	_scale[1] = y;
+	_scale[2] = z;
 
 	createAbsolutePosition();
 	calculateDistance();
@@ -241,9 +241,9 @@ void Model::setScale(float x, float y, float z) {
 }
 
 void Model::move(float x, float y, float z) {
-	x /= _modelScale[0];
-	y /= _modelScale[1];
-	z /= _modelScale[2];
+	x /= _scale[0];
+	y /= _scale[1];
+	z /= _scale[2];
 
 	setPosition(_position[0] + x, _position[1] + y, _position[2] + z);
 }
@@ -263,7 +263,7 @@ void Model::getTooltipAnchor(float &x, float &y, float &z) const {
 void Model::createAbsolutePosition() {
 	_absolutePosition.loadIdentity();
 
-	_absolutePosition.scale(_modelScale[0], _modelScale[1], _modelScale[2]);
+	_absolutePosition.scale(_scale[0], _scale[1], _scale[2]);
 
 	if (_type == kModelTypeObject)
 		_absolutePosition.rotate(90.0f, -1.0f, 0.0f, 0.0f);
@@ -488,7 +488,7 @@ void Model::render(RenderPass pass) {
 	}
 
 	// Apply our global model transformation
-	glScalef(_modelScale[0], _modelScale[1], _modelScale[2]);
+	glScalef(_scale[0], _scale[1], _scale[2]);
 
 	if (_type == kModelTypeObject)
 		// Aurora world objects have a rotated axis

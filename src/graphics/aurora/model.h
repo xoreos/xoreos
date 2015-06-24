@@ -90,13 +90,12 @@ public:
 	/** Get the position of the node after translate/rotate. */
 	void getAbsolutePosition(float &x, float &y, float &z) const;
 
+	/** Set the current scale of the model. */
+	void setScale   (float x, float y, float z);
 	/** Set the current position of the model. */
 	void setPosition(float x, float y, float z);
 	/** Set the current rotation of the model. */
 	void setRotation(float x, float y, float z);
-
-	/** Set the current scale of the model. */
-	void setScale(float x, float y, float z);
 
 	/** Move the model, relative to its current position. */
 	void move  (float x, float y, float z);
@@ -207,8 +206,7 @@ protected:
 	/** All default animations, sorted from least to most probable. */
 	DefaultAnimations _defaultAnimations;
 
-	float _modelScale[3]; ///< The model's scale.
-
+	float _scale   [3]; ///< Model's scale.
 	float _position[3]; ///< Model's position.
 	float _rotation[3]; ///< Model's rotation.
 	float _center  [3]; ///< Model's center.

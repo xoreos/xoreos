@@ -54,7 +54,7 @@ public:
 	NewGameFog(const Common::UString &name) :
 		Graphics::Aurora::Model_NWN(name, Graphics::Aurora::kModelTypeGUIFront) {
 
-		_modelScale[0] = _modelScale[1] = 10.0f;
+		_scale[0] = _scale[1] = 10.0f;
 
 		_startTime  = EventMan.getTimestamp();
 		_lastTime   = _startTime;

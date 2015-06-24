@@ -1076,7 +1076,7 @@ void Model_Sonic::createBound() {
 void Model_Sonic::createAbsolutePosition() {
 	_absolutePosition.loadIdentity();
 
-	_absolutePosition.scale(_modelScale[0], _modelScale[1], _modelScale[2]);
+	_absolutePosition.scale(_scale[0], _scale[1], _scale[2]);
 
 	_absolutePosition.translate(_position[0], _position[1], _position[2]);
 
@@ -1341,7 +1341,7 @@ void Model_Sonic::render(RenderPass pass) {
 	}
 
 	// Apply our global model transformation
-	glScalef(_modelScale[0], _modelScale[1], _modelScale[2]);
+	glScalef(_scale[0], _scale[1], _scale[2]);
 
 	glTranslatef(_position[0], _position[1], _position[2]);
 

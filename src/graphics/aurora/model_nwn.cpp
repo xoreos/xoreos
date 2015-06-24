@@ -182,8 +182,8 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 
 	if (_type == kModelTypeGUIFront) {
 		// NWN GUI objects use 0.01 units / pixel
-		_modelScale[0] = _modelScale[1] = 100.0f;
-		_modelScale[2] = 1.0f;
+		_scale[0] = _scale[1] = 100.0f;
+		_scale[2] = 1.0f;
 	}
 
 	_fileName = name;

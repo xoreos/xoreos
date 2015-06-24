@@ -152,15 +152,15 @@ const Common::UString &ModelNode::getName() const {
 }
 
 float ModelNode::getWidth() const {
-	return _boundBox.getWidth() * _model->_modelScale[0];
+	return _boundBox.getWidth() * _model->_scale[0];
 }
 
 float ModelNode::getHeight() const {
-	return _boundBox.getHeight() * _model->_modelScale[1];
+	return _boundBox.getHeight() * _model->_scale[1];
 }
 
 float ModelNode::getDepth() const {
-	return _boundBox.getDepth() * _model->_modelScale[2];
+	return _boundBox.getDepth() * _model->_scale[2];
 }
 
 bool ModelNode::isInFrontOf(const ModelNode &node) const {
@@ -173,9 +173,9 @@ bool ModelNode::isInFrontOf(const ModelNode &node) const {
 }
 
 void ModelNode::getPosition(float &x, float &y, float &z) const {
-	x = _position[0] * _model->_modelScale[0];
-	y = _position[1] * _model->_modelScale[1];
-	z = _position[2] * _model->_modelScale[2];
+	x = _position[0] * _model->_scale[0];
+	y = _position[1] * _model->_scale[1];
+	z = _position[2] * _model->_scale[2];
 }
 
 void ModelNode::getRotation(float &x, float &y, float &z) const {
@@ -192,14 +192,14 @@ void ModelNode::getOrientation(float &x, float &y, float &z, float &a) const {
 }
 
 void ModelNode::getAbsolutePosition(float &x, float &y, float &z) const {
-	x = _absolutePosition.getX() * _model->_modelScale[0];
-	y = _absolutePosition.getY() * _model->_modelScale[1];
-	z = _absolutePosition.getZ() * _model->_modelScale[2];
+	x = _absolutePosition.getX() * _model->_scale[0];
+	y = _absolutePosition.getY() * _model->_scale[1];
+	z = _absolutePosition.getZ() * _model->_scale[2];
 }
 
 Common::TransformationMatrix ModelNode::getAsolutePosition() const {
 	Common::TransformationMatrix absolutePosition = _absolutePosition;
-	absolutePosition.scale(_model->_modelScale[0], _model->_modelScale[1], _model->_modelScale[2]);
+	absolutePosition.scale(_model->_scale[0], _model->_scale[1], _model->_scale[2]);
 
 	return absolutePosition;
 }
@@ -207,9 +207,9 @@ Common::TransformationMatrix ModelNode::getAsolutePosition() const {
 void ModelNode::setPosition(float x, float y, float z) {
 	lockFrameIfVisible();
 
-	_position[0] = x / _model->_modelScale[0];
-	_position[1] = y / _model->_modelScale[1];
-	_position[2] = z / _model->_modelScale[2];
+	_position[0] = x / _model->_scale[0];
+	_position[1] = y / _model->_scale[1];
+	_position[2] = z / _model->_scale[2];
 
 	if (_parent)
 		_parent->orderChildren();
