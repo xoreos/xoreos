@@ -177,6 +177,12 @@ Animation *Model::selectDefaultAnimation() const {
 	return 0;
 }
 
+void Model::getScale(float &x, float &y, float &z) const {
+	x = _scale[0];
+	y = _scale[1];
+	z = _scale[2];
+}
+
 void Model::getPosition(float &x, float &y, float &z) const {
 	x = _position[0] * _scale[0];
 	y = _position[1] * _scale[1];

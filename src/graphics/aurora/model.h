@@ -82,6 +82,8 @@ public:
 
 	// Positioning
 
+	/** Get the current scale of the model. */
+	void getScale   (float &x, float &y, float &z) const;
 	/** Get the current position of the model. */
 	void getPosition(float &x, float &y, float &z) const;
 	/** Get the current rotation of the model. */
