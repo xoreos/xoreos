@@ -847,6 +847,8 @@ void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GF
 
 		std::vector<Common::UString> textures;
 		textures.push_back(materialObject.textures["mml_tDiffuse"]);
+		if (textures.back().empty())
+			textures.back() = materialObject.textures["LowLodMap"];
 
 		while (!textures.empty() && textures.back().empty())
 			textures.pop_back();
