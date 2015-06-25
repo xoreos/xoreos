@@ -266,14 +266,11 @@ void Model::getTooltipAnchor(float &x, float &y, float &z) const {
 void Model::createAbsolutePosition() {
 	_absolutePosition.loadIdentity();
 
-	if (_type == kModelTypeObject)
-		_absolutePosition.rotate(90.0f, -1.0f, 0.0f, 0.0f);
-
 	_absolutePosition.translate(_position[0], _position[1], _position[2]);
 
-	_absolutePosition.rotate( _rotation[0], 1.0f, 0.0f, 0.0f);
-	_absolutePosition.rotate( _rotation[1], 0.0f, 1.0f, 0.0f);
-	_absolutePosition.rotate(-_rotation[2], 0.0f, 0.0f, 1.0f);
+	_absolutePosition.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
+	_absolutePosition.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
+	_absolutePosition.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
 
 	_absolutePosition.scale(_scale[0], _scale[1], _scale[2]);
 
@@ -420,8 +417,8 @@ void Model::calculateDistance() {
 	center.translate(_center[0], _center[1], _center[2]);
 
 
-	const float cameraX =  CameraMan.getPosition()[0];
-	const float cameraY =  CameraMan.getPosition()[1];
+	const float cameraX = -CameraMan.getPosition()[0];
+	const float cameraY = -CameraMan.getPosition()[1];
 	const float cameraZ = -CameraMan.getPosition()[2];
 
 	const float x = ABS(center.getX() - cameraX);
@@ -492,15 +489,11 @@ void Model::render(RenderPass pass) {
 
 	// Apply our global model transformation
 
-	if (_type == kModelTypeObject)
-		// Aurora world objects have a rotated axis
-		glRotatef(90.0f, -1.0f, 0.0f, 0.0f);
-
 	glTranslatef(_position[0], _position[1], _position[2]);
 
-	glRotatef( _rotation[0], 1.0f, 0.0f, 0.0f);
-	glRotatef( _rotation[1], 0.0f, 1.0f, 0.0f);
-	glRotatef(-_rotation[2], 0.0f, 0.0f, 1.0f);
+	glRotatef(_rotation[0], 1.0f, 0.0f, 0.0f);
+	glRotatef(_rotation[1], 0.0f, 1.0f, 0.0f);
+	glRotatef(_rotation[2], 0.0f, 0.0f, 1.0f);
 
 	glScalef(_scale[0], _scale[1], _scale[2]);
 

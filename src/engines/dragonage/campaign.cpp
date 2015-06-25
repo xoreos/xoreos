@@ -369,6 +369,10 @@ void Campaign::enter() {
 	if (!_area)
 		return;
 
+	CameraMan.reset();
+	CameraMan.setOrientation(90.0f, 0.0f, 0.0f);
+	CameraMan.update();
+
 	_eventQueue.clear();
 
 	_area->show();
@@ -443,7 +447,7 @@ void Campaign::movePC(const Common::UString &area) {
 
 void Campaign::movePC(float x, float y, float z) {
 	// Roughly head position
-	CameraMan.setPosition(x, y + 2.0f, z);
+	CameraMan.setPosition(x, y, z + 1.8f);
 	CameraMan.update();
 }
 

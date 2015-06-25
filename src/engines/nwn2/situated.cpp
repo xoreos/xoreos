@@ -123,7 +123,7 @@ void Situated::setOrientation(float x, float y, float z) {
 	Object::getOrientation(x, y, z);
 
 	if (_model)
-		_model->setRotation(x, z, -y);
+		_model->setRotation(x, y, z);
 }
 
 bool Situated::isLocked() const {
@@ -179,8 +179,8 @@ void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	float bearing = instance.getDouble("Bearing");
 
 	float rotX = 0.0f;
-	float rotY = Common::rad2deg(bearing);
-	float rotZ = 0.0f;
+	float rotY = 0.0f;
+	float rotZ = Common::rad2deg(bearing);
 
 	if (instance.hasField("Orientation")) {
 		const Aurora::GFF3Struct &o = instance.getStruct("Orientation");
@@ -191,9 +191,9 @@ void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 		float oW = o.getDouble("w");
 
 		// Convert quaternions to roll/pitch/yaw
-		rotY = 180.0f - Common::rad2deg(atan2(2 * (oX*oY + oZ*oW), 1 - 2 * (oY*oY + oZ*oZ)));
+		rotZ = 180.0f - Common::rad2deg(atan2(2 * (oX*oY + oZ*oW), 1 - 2 * (oY*oY + oZ*oZ)));
 		rotX = 180.0f - Common::rad2deg(asin(2 * (oX*oZ - oW*oY)));
-		rotZ = Common::rad2deg(atan2(2 * (oX*oW + oY*oZ), 1 - 2 * (oZ*oZ + oW*oW)));
+		rotY = Common::rad2deg(atan2(2 * (oX*oW + oY*oZ), 1 - 2 * (oZ*oZ + oW*oW)));
 	}
 
 	setOrientation(rotX, rotY, rotZ);

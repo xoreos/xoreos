@@ -100,6 +100,8 @@ void Area::getWorldPosition(float x, float y, float z, float &worldX, float &wor
 	worldX = x + kScreenWidth / 2.0f;
 	worldY = z;
 	worldZ = (y - kScreenHeight + kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle)) - kCameraHeight;
+
+	worldZ = floor(worldZ);
 }
 
 void Area::getCameraLimits(float &minX, float &minY, float &minZ,
@@ -107,10 +109,10 @@ void Area::getCameraLimits(float &minX, float &minY, float &minZ,
 
 	minX = kScreenWidth / 2.0f;
 	minY = -FLT_MAX;
-	minZ = -(_height - kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle));
+	minZ = (kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle));
 	maxX = _width - kScreenWidth / 2.0f;
 	maxY =  FLT_MAX;
-	maxZ = -(kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle));
+	maxZ = (_height - kScreenHeight / 2.0f) / sin(Common::deg2rad(kCameraAngle));
 }
 
 void Area::show() {

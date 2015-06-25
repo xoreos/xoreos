@@ -72,7 +72,7 @@ void Situated::setOrientation(float x, float y, float z) {
 	Object::getOrientation(x, y, z);
 
 	if (_model)
-		_model->setRotation(x, z, -y);
+		_model->setRotation(x, y, z);
 }
 
 void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
@@ -125,7 +125,7 @@ void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 
 	float bearing = instance.getDouble("Bearing");
 
-	setOrientation(0.0f, Common::rad2deg(bearing), 0.0f);
+	setOrientation(0.0f, 0.0f, Common::rad2deg(bearing));
 }
 
 void Situated::loadProperties(const Aurora::GFF3Struct &gff) {

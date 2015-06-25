@@ -26,6 +26,8 @@
 
 #include "src/common/util.h"
 #include "src/common/maths.h"
+#include "src/common/vector3.h"
+#include "src/common/transmatrix.h"
 
 #include "src/graphics/camera.h"
 #include "src/graphics/graphics.h"
@@ -136,14 +138,6 @@ void CameraManager::setOrientation(float x, float y, float z) {
 	_needUpdate = true;
 }
 
-void CameraManager::setOrientation(float vX, float vY) {
-	float x, y, z;
-
-	Common::vector2orientation(vX, vY, x, y, z);
-
-	setOrientation(x, 360.0f - y, z);
-}
-
 void CameraManager::turn(float x, float y, float z) {
 	setOrientation(_orientation[0] + x, _orientation[1] + y, _orientation[2] + z);
 }
@@ -152,31 +146,16 @@ void CameraManager::move(float x, float y, float z) {
 	setPosition(_position[0] + x, _position[1] + y, _position[2] + z);
 }
 
-void CameraManager::move(float n) {
-	float x = n * sin(Common::deg2rad(_orientation[1]));
-	float y = n * sin(Common::deg2rad(_orientation[0]));
-	float z = n * cos(Common::deg2rad(_orientation[1])) *
-	              cos(Common::deg2rad(_orientation[0]));
+void CameraManager::moveRelative(float x, float y, float z) {
+	Common::TransformationMatrix orientation;
 
-	move(x, y, z);
-}
+	orientation.rotate(_orientation[2], 0.0f, 0.0f, 1.0f);
+	orientation.rotate(_orientation[1], 0.0f, 1.0f, 0.0f);
+	orientation.rotate(_orientation[0], 1.0f, 0.0f, 0.0f);
 
-void CameraManager::strafe(float n) {
-	float x = n * sin(Common::deg2rad(_orientation[1] + 90.0f)) *
-	              cos(Common::deg2rad(_orientation[2]));
-	float y = n * sin(Common::deg2rad(_orientation[2]));
-	float z = n * cos(Common::deg2rad(_orientation[1] + 90.0f));
+	const Common::Vector3 relative = orientation * Common::Vector3(x, y, z);
 
-	move(x, y, z);
-}
-
-void CameraManager::fly(float n) {
-	float x = n * cos(Common::deg2rad(_orientation[2] + 90.0f));
-	float y = n * sin(Common::deg2rad(_orientation[0] + 90.0f)) *
-	              sin(Common::deg2rad(_orientation[2] + 90.0f));
-	float z = n * cos(Common::deg2rad(_orientation[0] + 90.0f));
-
-	move(x, y, z);
+	move(relative[0], relative[1], relative[2]);
 }
 
 uint32 CameraManager::lastChanged() const {

@@ -50,11 +50,11 @@ CompassWidget::~CompassWidget() {
 
 // TODO: The disk rotation should feel more "natural", i.e. it should
 //       be more sluggish.
-void CompassWidget::setRotation(float x, float y, float UNUSED(z)) {
+void CompassWidget::setRotation(float x, float UNUSED(y), float z) {
 	_model->setRotation(-x, 0.0f, 0.0f);
 	Graphics::Aurora::ModelNode *pointer = _model->getNode("cmp_pointer");
 	if (pointer)
-		pointer->setRotation(0.0f, 0.0f, y);
+		pointer->setRotation(0.0f, 0.0f, z);
 }
 
 
@@ -98,7 +98,7 @@ void Compass::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
 void Compass::notifyCameraMoved() {
 	const float *orientation = CameraMan.getOrientation();
 
-	_compass->setRotation(orientation[0] + 90.0f, orientation[1], orientation[2]);
+	_compass->setRotation(orientation[0] - 90.0f, orientation[1], orientation[2]);
 }
 
 } // End of namespace NWN

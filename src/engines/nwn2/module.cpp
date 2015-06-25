@@ -181,9 +181,11 @@ void Module::enter() {
 
 	CameraMan.reset();
 
+	const float entryAngle = -Common::rad2deg(atan2(entryDirX, entryDirY));
+
 	// Roughly head position
-	CameraMan.setPosition(entryX, entryZ + 2.0f, entryY);
-	CameraMan.setOrientation(entryDirX, entryDirY);
+	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);
+	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
 	CameraMan.update();
 }
 
@@ -372,7 +374,7 @@ void Module::movePC(const Common::UString &area) {
 
 void Module::movePC(float x, float y, float z) {
 	// Roughly head position
-	CameraMan.setPosition(x, y + 2.0f, z);
+	CameraMan.setPosition(x, y, z + 1.8f);
 	CameraMan.update();
 }
 

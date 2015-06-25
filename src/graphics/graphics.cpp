@@ -604,11 +604,11 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 
 	// Apply camera orientation
 	model.rotate(-cOrient[0], 1.0f, 0.0f, 0.0f);
-	model.rotate( cOrient[1], 0.0f, 1.0f, 0.0f);
+	model.rotate(-cOrient[1], 0.0f, 1.0f, 0.0f);
 	model.rotate(-cOrient[2], 0.0f, 0.0f, 1.0f);
 
 	// Apply camera position
-	model.translate(-cPos[0], -cPos[1], cPos[2]);
+	model.translate(-cPos[0], -cPos[1], -cPos[2]);
 
 
 	Common::Vector3 coords(x, y, z);
@@ -659,12 +659,12 @@ bool GraphicsManager::unproject(float x, float y,
 		memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
 
 		// Apply camera position
-		model.translate(cPos[0], cPos[1], -cPos[2]);
+		model.translate(cPos[0], cPos[1], cPos[2]);
 
 		// Apply camera orientation
-		model.rotate( cOrient[2], 0.0f, 0.0f, 1.0f);
-		model.rotate(-cOrient[1], 0.0f, 1.0f, 0.0f);
-		model.rotate( cOrient[0], 1.0f, 0.0f, 0.0f);
+		model.rotate(cOrient[2], 0.0f, 0.0f, 1.0f);
+		model.rotate(cOrient[1], 0.0f, 1.0f, 0.0f);
+		model.rotate(cOrient[0], 1.0f, 0.0f, 0.0f);
 
 
 		// Multiply with the inverse of our projection matrix
@@ -989,17 +989,17 @@ bool GraphicsManager::renderWorld() {
 
 	// Apply camera orientation
 	glRotatef(-cOrient[0], 1.0f, 0.0f, 0.0f);
-	glRotatef( cOrient[1], 0.0f, 1.0f, 0.0f);
+	glRotatef(-cOrient[1], 0.0f, 1.0f, 0.0f);
 	glRotatef(-cOrient[2], 0.0f, 0.0f, 1.0f);
 
 	// Apply camera position
-	glTranslatef(-cPos[0], -cPos[1], cPos[2]);
+	glTranslatef(-cPos[0], -cPos[1], -cPos[2]);
 
 	_modelview.loadIdentity();
 	_modelview.rotate(-cOrient[0], 1.0f, 0.0f, 0.0f);
-	_modelview.rotate( cOrient[1], 0.0f, 1.0f, 0.0f);
+	_modelview.rotate(-cOrient[1], 0.0f, 1.0f, 0.0f);
 	_modelview.rotate(-cOrient[2], 0.0f, 0.0f, 1.0f);
-	_modelview.translate(-cPos[0], -cPos[1], cPos[2]);
+	_modelview.translate(-cPos[0], -cPos[1], -cPos[2]);
 
 	QueueMan.lockQueue(kQueueVisibleWorldObject);
 	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);

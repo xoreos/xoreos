@@ -316,11 +316,10 @@ void Module::enter() {
 	_ifo.getEntryPosition(entryX, entryY, entryZ);
 	_ifo.getEntryDirection(entryDirX, entryDirY);
 
-	float orientX, orientY, orientZ;
-	Common::vector2orientation(entryDirX, entryDirY, orientX, orientY, orientZ);
+	const float entryAngle = -Common::rad2deg(atan2(entryDirX, entryDirY));
 
 	_pc->setPosition(entryX, entryY, entryZ);
-	_pc->setOrientation(orientX, orientY, orientZ);
+	_pc->setOrientation(0.0f, 0.0f, entryAngle);
 
 	_pc->loadModel();
 
@@ -338,8 +337,8 @@ void Module::enter() {
 	CameraMan.reset();
 
 	// Roughly head position
-	CameraMan.setPosition(entryX, entryZ + 2.0f, entryY);
-	CameraMan.setOrientation(entryDirX, entryDirY);
+	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);
+	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
 	CameraMan.update();
 }
 
@@ -708,7 +707,7 @@ void Module::movedPC() {
 	_pc->getPosition(x, y, z);
 
 	// Roughly head position
-	CameraMan.setPosition(x, z + 2.0f, y);
+	CameraMan.setPosition(x, y, z + 1.8f);
 	CameraMan.update();
 
 	_newArea.clear();

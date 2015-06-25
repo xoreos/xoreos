@@ -468,7 +468,7 @@ void Area::loadTiles() {
 			const float tileZ = t.height * _tileset->getTilesHeight();
 
 			t.model->setPosition(tileX, tileY, tileZ);
-			t.model->setRotation(0.0f, 0.0f, -(((int) t.orientation) * 90.0f));
+			t.model->setRotation(0.0f, 0.0f, ((int) t.orientation) * 90.0f);
 		}
 	}
 }

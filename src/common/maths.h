@@ -98,12 +98,6 @@ static inline float deg2rad(float deg) {
 	return deg * M_PI / 180.0f;
 }
 
-static inline void vector2orientation(float vX, float vY, float &x, float &y, float &z) {
-	x = 0.0f;
-	y = rad2deg(atan2(vY, vX)) - 90.0f;
-	z = 0.0f;
-}
-
 } // End of namespace Common
 
 #endif // COMMON_MATHS_H

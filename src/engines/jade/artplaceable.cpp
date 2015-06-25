@@ -90,7 +90,7 @@ void ArtPlaceable::setOrientation(float x, float y, float z) {
 	Object::getOrientation(x, y, z);
 
 	if (_model)
-		_model->setRotation(x, z, -y);
+		_model->setRotation(x, y, z);
 }
 
 void ArtPlaceable::enter() {

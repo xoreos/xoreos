@@ -47,15 +47,11 @@ public:
 	void setPosition   (float x, float y, float z); ///< Set the camera position.
 	void setOrientation(float x, float y, float z); ///< Set the camera orientation.
 
-	/** Set orientation from unit vector describing the bearing in the xy plane. */
-	void setOrientation(float vX, float vY);
-
 	void turn(float x, float y, float z); ///< Turn along axes.
 	void move(float x, float y, float z); ///< Move along axes.
 
-	void move  (float n); ///< Move along current view axis.
-	void strafe(float n); ///< Move orthogonal (left/right) to current view axis.
-	void fly   (float n); ///< Move orthogonal (up/down) to current view axis.
+	/** Move relative to the current view axis. */
+	void moveRelative(float x, float y, float z);
 
 	uint32 lastChanged() const; ///< The timestamp the camera was changed last.
 

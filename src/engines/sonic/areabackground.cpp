@@ -138,7 +138,7 @@ void AreaBackground::setPosition(float x, float y) {
 void AreaBackground::notifyCameraMoved() {
 	const float *pos = CameraMan.getPosition();
 
-	setPosition(pos[0], -pos[2]);
+	setPosition(pos[0], pos[2]);
 }
 
 } // End of namespace Sonic

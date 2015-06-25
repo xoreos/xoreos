@@ -469,7 +469,7 @@ void Area::loadTileModels() {
 			((Graphics::Aurora::Model_NWN2 *) t->model)->setTintWalls(t->wallTint);
 		}
 
-		float rotation = (((int) t->orientation) * 90.0f);
+		const float rotation = -(((int) t->orientation) * 90.0f);
 
 		t->model->setPosition(t->position[0], t->position[1], t->position[2]);
 		t->model->setRotation(0.0f, 0.0f, rotation);

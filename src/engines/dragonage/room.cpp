@@ -132,9 +132,9 @@ void Room::loadLayout(const Common::UString &roomFile) {
 		float oW = orient[3];
 
 		// Convert quaternions to roll/pitch/yaw
-		float rotY = 180.0f - Common::rad2deg(atan2(2 * (oX*oY + oZ*oW), 1 - 2 * (oY*oY + oZ*oZ)));
+		float rotZ = 180.0f - Common::rad2deg(atan2(2 * (oX*oY + oZ*oW), 1 - 2 * (oY*oY + oZ*oZ)));
 		float rotX = 180.0f - Common::rad2deg(asin(2 * (oX*oZ - oW*oY)));
-		float rotZ = Common::rad2deg(atan2(2 * (oX*oW + oY*oZ), 1 - 2 * (oZ*oZ + oW*oW)));
+		float rotY = Common::rad2deg(atan2(2 * (oX*oW + oY*oZ), 1 - 2 * (oZ*oZ + oW*oW)));
 
 		Common::UString file = (*m)->getString(kGFF4EnvModelFile);
 		if (file.empty())
@@ -152,7 +152,7 @@ void Room::loadLayout(const Common::UString &roomFile) {
 		model->setScale(scale, scale, scale);
 
 		model->move(pos[0], pos[1], pos[2]);
-		model->rotate(rotX, rotZ, rotY);
+		model->rotate(rotX, rotY, -rotZ);
 	}
 }
 

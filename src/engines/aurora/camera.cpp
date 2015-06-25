@@ -43,29 +43,29 @@ bool handleCameraKeyboardInput(const Events::Event &e) {
 		multiplier = 5.0f;
 
 	if      (e.key.keysym.sym      == SDLK_UP)
-		CameraMan.move(multiplier *  0.5f);
+		CameraMan.moveRelative(0.0f, 0.0f, multiplier * -0.5f);
 	else if (e.key.keysym.sym      == SDLK_DOWN)
-		CameraMan.move(multiplier * -0.5f);
+		CameraMan.moveRelative(0.0f, 0.0f, multiplier *  0.5f);
 	else if (e.key.keysym.sym      == SDLK_RIGHT)
-		CameraMan.turn( 0.0f, multiplier *  5.0f, 0.0f);
+		CameraMan.turn( 0.0f, 0.0f, multiplier * -5.0f);
 	else if (e.key.keysym.sym      == SDLK_LEFT)
-		CameraMan.turn( 0.0f, multiplier * -5.0f, 0.0f);
+		CameraMan.turn( 0.0f, 0.0f, multiplier *  5.0f);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_W)
-		CameraMan.move(multiplier *  0.5f);
+		CameraMan.moveRelative(0.0f, 0.0f, multiplier * -0.5f);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_S)
-		CameraMan.move(multiplier * -0.5f);
+		CameraMan.moveRelative(0.0f, 0.0f, multiplier *  0.5f);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_D)
-		CameraMan.turn( 0.0f, multiplier *  5.0f, 0.0f);
+		CameraMan.turn( 0.0f, 0.0f, multiplier * -5.0f);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_A)
-		CameraMan.turn( 0.0f, multiplier * -5.0f, 0.0f);
-	else if (e.key.keysym.scancode == SDL_SCANCODE_E)
-		CameraMan.strafe(multiplier *  0.5f);
+		CameraMan.turn( 0.0f, 0.0f, multiplier *  5.0f);
 	else if (e.key.keysym.scancode == SDL_SCANCODE_Q)
-		CameraMan.strafe(multiplier * -0.5f);
+		CameraMan.moveRelative(multiplier * -0.5f, 0.0f, 0.0f);
+	else if (e.key.keysym.scancode == SDL_SCANCODE_E)
+		CameraMan.moveRelative(multiplier *  0.5f, 0.0f, 0.0f);
 	else if (e.key.keysym.sym      == SDLK_INSERT)
-		CameraMan.move(0.0f, multiplier *  0.5f, 0.0f);
+		CameraMan.moveRelative(0.0f, multiplier *  0.5f, 0.0f);
 	else if (e.key.keysym.sym      == SDLK_DELETE)
-		CameraMan.move(0.0f, multiplier * -0.5f, 0.0f);
+		CameraMan.moveRelative(0.0f, multiplier * -0.5f, 0.0f);
 	else if (e.key.keysym.sym      == SDLK_PAGEUP)
 		CameraMan.turn(multiplier *  5.0f,  0.0f, 0.0f);
 	else if (e.key.keysym.sym      == SDLK_PAGEDOWN)
@@ -73,7 +73,7 @@ bool handleCameraKeyboardInput(const Events::Event &e) {
 	else if (e.key.keysym.sym      == SDLK_END) {
 		const float *orient = CameraMan.getOrientation();
 
-		CameraMan.setOrientation(0.0f, orient[1], orient[2]);
+		CameraMan.setOrientation(90.0f, orient[1], orient[2]);
 	} else
 		return false;
 
@@ -83,7 +83,7 @@ bool handleCameraKeyboardInput(const Events::Event &e) {
 bool handleCameraMouseInput(const Events::Event &e) {
 	// Holding down the middle mouse button enables free look.
 	if (e.motion.state & SDL_BUTTON(2))
-		CameraMan.turn(-0.5f * e.motion.yrel, 0.5f * e.motion.xrel, 0.0f);
+		CameraMan.turn(-0.5f * e.motion.yrel, 0.0f, -0.5f * e.motion.xrel);
 	else
 		return false;
 

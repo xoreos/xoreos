@@ -123,7 +123,7 @@ void Creature::setOrientation(float x, float y, float z) {
 	Object::getOrientation(x, y, z);
 
 	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
-		(*m)->setRotation(x, z, -y);
+		(*m)->setRotation(x, y, z);
 }
 
 void Creature::enter() {
@@ -358,10 +358,7 @@ void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	float bearingX = instance.getDouble("XOrientation");
 	float bearingY = instance.getDouble("YOrientation");
 
-	float o[3];
-	Common::vector2orientation(bearingX, bearingY, o[0], o[1], o[2]);
-
-	setOrientation(o[0], o[1], o[2]);
+	setOrientation(0.0f, 0.0f, -Common::rad2deg(atan2(bearingX, bearingY)));
 }
 
 void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
