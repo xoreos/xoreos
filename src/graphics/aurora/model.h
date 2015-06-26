@@ -238,8 +238,6 @@ protected:
 	/** Finalize the loading procedure. */
 	void finalize();
 
-	virtual void createAbsolutePosition();
-
 
 	// GLContainer
 	void doRebuild();
@@ -257,6 +255,8 @@ private:
 
 	void createStateNamesList(); ///< Create the list of all state names.
 	void createBound();          ///< Create the model's bounding box.
+
+	void createAbsolutePosition();
 
 	void manageAnimations(float dt);
 
