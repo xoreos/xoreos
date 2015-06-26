@@ -48,8 +48,6 @@ namespace DragonAge {
 static const uint32 kCIFID     = MKTAG('C', 'I', 'F', ' ');
 static const uint32 kVersion01 = MKTAG('V', '0', '.', '1');
 
-static const uint32 kVARSID    = MKTAG('V', 'A', 'R', 'S');
-
 using ::Aurora::GFF4File;
 using ::Aurora::GFF4Struct;
 using ::Aurora::GFF4List;
@@ -254,34 +252,6 @@ void Campaign::addAreaName(const RIMNode &node) {
 	}
 
 	deindexResources(rimChange);
-}
-
-void Campaign::readVarTable(const GFF4List &varTable) {
-	for (GFF4List::const_iterator v = varTable.begin(); v != varTable.end(); ++v) {
-		if (!*v || ((*v)->getLabel() != kVARSID))
-			continue;
-
-		const Common::UString name  = (*v)->getString (kGFF4ScriptVarTableName);
-		const uint8           type  = (*v)->getUint   (kGFF4ScriptVarTableType);
-		const GFF4Struct     *value = (*v)->getGeneric(kGFF4ScriptVarTableValue);
-
-		if (name.empty() || (type == 0) || !value || !value->hasField(0))
-			continue;
-
-		switch (type) {
-			case  1:
-				_varTable.setVariable(name, Aurora::NWScript::Variable((int32) value->getSint(0)));
-				break;
-
-			case  3:
-			case 12:
-				_varTable.setVariable(name, Aurora::NWScript::Variable(value->getString(0)));
-				break;
-
-			default:
-				throw Common::Exception("Unknown variable type %u (\"%s\")", type, name.c_str());
-		}
-	}
 }
 
 void Campaign::readManifest(const Common::UString &path) {

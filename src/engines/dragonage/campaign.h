@@ -33,11 +33,11 @@
 #include "src/aurora/locstring.h"
 #include "src/aurora/types.h"
 
-#include "src/aurora/nwscript/variablecontainer.h"
-
 #include "src/events/types.h"
 
 #include "src/engines/aurora/resources.h"
+
+#include "src/engines/dragonage/scriptobject.h"
 
 namespace Engines {
 
@@ -45,7 +45,7 @@ namespace DragonAge {
 
 class Area;
 
-class Campaign {
+class Campaign : public ScriptObject {
 public:
 	struct AreaDescription {
 		Common::UString   tag;
@@ -103,7 +103,6 @@ private:
 	Aurora::LocString _name;
 	Aurora::LocString _description;
 
-	Common::UString _tag;
 	Common::UString _extends;
 
 	bool _enabled;
@@ -129,8 +128,6 @@ private:
 
 	Areas _areas;
 
-	Aurora::NWScript::VariableContainer _varTable;
-
 	ChangeList _resources;
 
 	Area *_area;
@@ -146,7 +143,6 @@ private:
 	void read(const Common::UString &cifPath, const Common::UString &manifestPath);
 	void readCIF(const Common::UString &path);
 	RIMNode *readRIMs(const Aurora::GFF4Struct &node, const RIMNode *parent = 0);
-	void readVarTable(const Aurora::GFF4List &varTable);
 	void readManifest(const Common::UString &path);
 
 	void addAreaName(const RIMNode &node);
