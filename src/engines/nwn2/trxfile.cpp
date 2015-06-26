@@ -185,49 +185,19 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 		for (int j = 0; j < 3; j++)
 			textureColors[i][j] = ttrn.readIEEEFloatLE();
 
-	uint32 vCount = ttrn.readUint32LE();
-	uint32 fCount = ttrn.readUint32LE();
+	const uint32 vCount = ttrn.readUint32LE();
+	const uint32 fCount = ttrn.readUint32LE();
 
-
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 3;
-	GLsizei vcsize = 4;
-
-	uint32 vSize = (vpsize + vnsize + vcsize) * sizeof(float);
-
-	Graphics::VertexBuffer vBuf;
-	vBuf.setSize(vCount, vSize);
-
-	float *vertexData = (float *) vBuf.getData();
 	Graphics::VertexDecl vertexDecl;
 
-	Graphics::VertexAttrib vp;
-	vp.index = Graphics::VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = vSize;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
+	vertexDecl.push_back(Graphics::VertexAttrib(Graphics::VPOSITION, 3, GL_FLOAT));
+	vertexDecl.push_back(Graphics::VertexAttrib(Graphics::VNORMAL  , 3, GL_FLOAT));
+	vertexDecl.push_back(Graphics::VertexAttrib(Graphics::VCOLOR   , 4, GL_FLOAT));
 
-	Graphics::VertexAttrib vn;
-	vn.index = Graphics::VNORMAL;
-	vn.size = vnsize;
-	vn.type = GL_FLOAT;
-	vn.stride = vSize;
-	vn.pointer = vertexData + vpsize;
-	vertexDecl.push_back(vn);
+	Graphics::VertexBuffer vBuf;
+	vBuf.setVertexDeclInterleave(vCount, vertexDecl);
 
-	Graphics::VertexAttrib vc;
-	vc.index = Graphics::VCOLOR;
-	vc.size = vcsize;
-	vc.type = GL_FLOAT;
-	vc.stride = vSize;
-	vc.pointer = vertexData + vpsize + vnsize;
-	vertexDecl.push_back(vc);
-
-	vBuf.setVertexDecl(vertexDecl);
-
-	float *v = vertexData;
+	float *v = (float *) vBuf.getData();
 	for (uint32 i = 0; i < vCount; i++) {
 		*v++ = ttrn.readIEEEFloatLE();
 		*v++ = ttrn.readIEEEFloatLE();
@@ -314,48 +284,15 @@ void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 	uint32 vCount = watr.readUint32LE();
 	uint32 fCount = watr.readUint32LE();
 
-
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 0;
-	GLsizei vcsize = 3;
-
-	uint32 vSize = (vpsize + vnsize + vcsize) * sizeof(float);
-
-	Graphics::VertexBuffer vBuf;
-	vBuf.setSize(vCount, vSize);
-
-	float *vertexData = (float *) vBuf.getData();
 	Graphics::VertexDecl vertexDecl;
 
-	Graphics::VertexAttrib vp;
-	vp.index = Graphics::VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = vSize;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
+	vertexDecl.push_back(Graphics::VertexAttrib(Graphics::VPOSITION, 3, GL_FLOAT));
+	vertexDecl.push_back(Graphics::VertexAttrib(Graphics::VCOLOR   , 3, GL_FLOAT));
 
-	/*
-	Graphics::VertexAttrib vn;
-	vn.index = Graphics::VNORMAL;
-	vn.size = vnsize;
-	vn.type = GL_FLOAT;
-	vn.stride = vSize;
-	vn.pointer = vertexData + vpsize;
-	vertexDecl.push_back(vn);
-	*/
+	Graphics::VertexBuffer vBuf;
+	vBuf.setVertexDeclInterleave(vCount, vertexDecl);
 
-	Graphics::VertexAttrib vc;
-	vc.index = Graphics::VCOLOR;
-	vc.size = vcsize;
-	vc.type = GL_FLOAT;
-	vc.stride = vSize;
-	vc.pointer = vertexData + vpsize + vnsize;
-	vertexDecl.push_back(vc);
-
-	vBuf.setVertexDecl(vertexDecl);
-
-	float *v = vertexData;
+	float *v = (float *) vBuf.getData();
 	for (uint32 i = 0; i < vCount; i++) {
 		*v++ = watr.readIEEEFloatLE();
 		*v++ = watr.readIEEEFloatLE();
