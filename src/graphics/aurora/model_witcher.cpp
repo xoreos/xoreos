@@ -177,7 +177,7 @@ void Model_Witcher::load(ParserContext &ctx) {
 
 	ctx.mdb->skip(4);
 
-	float scale = ctx.mdb->readIEEEFloatLE();
+	float modelScale = ctx.mdb->readIEEEFloatLE();
 
 	Common::UString superModel = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 64);
 

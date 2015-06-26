@@ -776,7 +776,7 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 	if (defaultNode)
 		vertex.nodes.push_back(PrimitiveNode(defaultNode, 1.0f));
 
-	Common::Vector3 scale(ctx.defaultScale, ctx.defaultScale, ctx.defaultScale);
+	Common::Vector3 primScale(ctx.defaultScale, ctx.defaultScale, ctx.defaultScale);
 
 	// Texture dimensions, to convert the texture coordinates to OpenGL notation
 
@@ -885,16 +885,16 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 				}
 
 				// Reset the scale
-				scale[0] = 1.0f;
-				scale[1] = 1.0f;
-				scale[2] = 1.0f;
+				primScale[0] = 1.0f;
+				primScale[1] = 1.0f;
+				primScale[2] = 1.0f;
 				break;
 
 			case kPolygonMatrixScale:
 				// The NDS probably directly scales the current matrix?
-				scale[0] *= readNintendoFixedPoint(c->parameters[0], true, 19, 12);
-				scale[1] *= readNintendoFixedPoint(c->parameters[1], true, 19, 12);
-				scale[2] *= readNintendoFixedPoint(c->parameters[2], true, 19, 12);
+				primScale[0] *= readNintendoFixedPoint(c->parameters[0], true, 19, 12);
+				primScale[1] *= readNintendoFixedPoint(c->parameters[1], true, 19, 12);
+				primScale[2] *= readNintendoFixedPoint(c->parameters[2], true, 19, 12);
 				break;
 
 			// Commands we hopefully won't need
@@ -936,7 +936,7 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 				primitive->invalid = true;
 
 			primitive->vertices.push_back(vertex);
-			primitive->vertices.back().vertex.multiply(scale);
+			primitive->vertices.back().vertex.multiply(primScale);
 
 			hasVertex = false;
 		}

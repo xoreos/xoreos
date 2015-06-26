@@ -201,7 +201,7 @@ void Model_Jade::load(ParserContext &ctx) {
 
 	ctx.mdl->skip(4); // Unknown
 
-	float scale = ctx.mdl->readIEEEFloatLE();
+	float modelScale = ctx.mdl->readIEEEFloatLE();
 
 	Common::UString superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
@@ -310,7 +310,7 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	uint32 childrenOffset = ctx.mdl->readUint32LE();
 	uint32 childrenCount  = ctx.mdl->readUint32LE();
 
-	float scale           = ctx.mdl->readIEEEFloatLE();
+	float nodeScale       = ctx.mdl->readIEEEFloatLE();
 	float maxAnimDistance = ctx.mdl->readIEEEFloatLE();
 
 	std::vector<uint32> children;

@@ -198,7 +198,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	float radius = ctx.mdl->readIEEEFloatLE();
 
-	float scale = ctx.mdl->readIEEEFloatLE();
+	float modelScale = ctx.mdl->readIEEEFloatLE();
 
 	Common::UString superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
