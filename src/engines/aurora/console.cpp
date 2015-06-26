@@ -378,9 +378,9 @@ bool ConsoleWindow::getPosition(int cursorX, int cursorY, float &x, float &y) {
 	x = (realX - _x) / _font.getFont().getWidth(' ');
 	y = (realY - _y) / _lineHeight;
 
-	if ((x < _x) || (x > (_x + _width)))
+	if ((x < 0.0f) || (x > _width))
 		return false;
-	if ((y < _y) || (y > (_y + _height)))
+	if ((y < 0.0f) || (y > _height))
 		return false;
 
 	return true;
