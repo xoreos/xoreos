@@ -591,7 +591,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	}
 
 	// If the node has no own geometry, inherit the geometry from the root state
-	if (!(flags & kNodeFlagHasMesh)) {
+	if (!(flags & kNodeFlagHasMesh) || (_render && (_vertexBuffer.getCount() == 0))) {
 		ModelNode *node = _model->getNode(_name);
 		if (node && (node != this))
 			node->inheritGeometry(*this);
