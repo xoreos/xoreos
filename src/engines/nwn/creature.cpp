@@ -170,12 +170,12 @@ void Creature::setPosition(float x, float y, float z) {
 		_model->setPosition(x, y, z);
 }
 
-void Creature::setOrientation(float x, float y, float z) {
-	Object::setOrientation(x, y, z);
-	Object::getOrientation(x, y, z);
+void Creature::setOrientation(float x, float y, float z, float angle) {
+	Object::setOrientation(x, y, z, angle);
+	Object::getOrientation(x, y, z, angle);
 
 	if (_model)
-		_model->setRotation(x, y, z);
+		_model->setOrientation(x, y, z, angle);
 }
 
 uint32 Creature::lastChangedGUIDisplay() const {
@@ -507,13 +507,13 @@ void Creature::loadModel() {
 
 	// Positioning
 
-	float x, y, z;
+	float x, y, z, angle;
 
 	getPosition(x, y, z);
 	setPosition(x, y, z);
 
-	getOrientation(x, y, z);
-	setOrientation(x, y, z);
+	getOrientation(x, y, z, angle);
+	setOrientation(x, y, z, angle);
 
 	// Clickable
 
@@ -589,7 +589,7 @@ void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	float bearingX = instance.getDouble("XOrientation");
 	float bearingY = instance.getDouble("YOrientation");
 
-	setOrientation(0.0f, 0.0f, -Common::rad2deg(atan2(bearingX, bearingY)));
+	setOrientation(0.0f, 0.0f, 1.0f, -Common::rad2deg(atan2(bearingX, bearingY)));
 }
 
 static const char *kBodyPartFields[] = {

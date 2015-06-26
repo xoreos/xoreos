@@ -119,7 +119,7 @@ public:
 	/** Set the creature's position. */
 	void setPosition(float x, float y, float z);
 	/** Set the creature's orientation. */
-	void setOrientation(float x, float y, float z);
+	void setOrientation(float x, float y, float z, float angle);
 
 	// Object/Cursor interactions
 

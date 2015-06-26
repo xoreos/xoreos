@@ -102,12 +102,12 @@ public:
 	/** Return the object's position within its area. */
 	virtual void getPosition(float &x, float &y, float &z) const;
 	/** Return the object's orientation. */
-	virtual void getOrientation(float &x, float &y, float &z) const;
+	virtual void getOrientation(float &x, float &y, float &z, float &angle) const;
 
 	/** Set the object's position within its area. */
 	virtual void setPosition(float x, float y, float z);
 	/** Set the object's orientation. */
-	virtual void setOrientation(float x, float y, float z);
+	virtual void setOrientation(float x, float y, float z, float angle);
 
 	/** Create a Location out of the object's area, position and orientation. */
 	Location getLocation() const;
@@ -149,7 +149,7 @@ protected:
 	Area *_area; ///< The area the object is currently in.
 
 	float _position[3];    ///< The object's position.
-	float _orientation[3]; ///< The object's orientation.
+	float _orientation[4]; ///< The object's orientation.
 
 	Sound::ChannelHandle _sound; ///< The currently playing object sound.
 

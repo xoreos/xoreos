@@ -49,7 +49,7 @@ public:
 	/** Set the situated object's position. */
 	void setPosition(float x, float y, float z);
 	/** Set the situated object's orientation. */
-	void setOrientation(float x, float y, float z);
+	void setOrientation(float x, float y, float z, float angle);
 
 	/** Is the situated object open? */
 	virtual bool isOpen() const = 0;

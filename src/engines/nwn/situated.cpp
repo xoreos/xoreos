@@ -67,13 +67,13 @@ void Situated::loadModel() {
 
 	// Positioning
 
-	float x, y, z;
+	float x, y, z, angle;
 
 	getPosition(x, y, z);
 	setPosition(x, y, z);
 
-	getOrientation(x, y, z);
-	setOrientation(x, y, z);
+	getOrientation(x, y, z, angle);
+	setOrientation(x, y, z, angle);
 
 	// Clickable
 
@@ -108,12 +108,12 @@ void Situated::setPosition(float x, float y, float z) {
 		_model->setPosition(x, y, z);
 }
 
-void Situated::setOrientation(float x, float y, float z) {
-	Object::setOrientation(x, y, z);
-	Object::getOrientation(x, y, z);
+void Situated::setOrientation(float x, float y, float z, float angle) {
+	Object::setOrientation(x, y, z, angle);
+	Object::getOrientation(x, y, z, angle);
 
 	if (_model)
-		_model->setRotation(x, y, z);
+		_model->setOrientation(x, y, z, angle);
 }
 
 bool Situated::isLocked() const {
@@ -158,7 +158,7 @@ void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 
 	float bearing = instance.getDouble("Bearing");
 
-	setOrientation(0.0f, 0.0f, Common::rad2deg(bearing));
+	setOrientation(0.0f, 0.0f, 1.0f, Common::rad2deg(bearing));
 }
 
 void Situated::loadProperties(const Aurora::GFF3Struct &gff) {

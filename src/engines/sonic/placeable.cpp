@@ -104,12 +104,12 @@ void Placeable::setPosition(float x, float y, float z) {
 	}
 }
 
-void Placeable::setOrientation(float x, float y, float z) {
-	Object::setOrientation(x, y, z);
-	Object::getOrientation(x, y, z);
+void Placeable::setOrientation(float x, float y, float z, float angle) {
+	Object::setOrientation(x, y, z, angle);
+	Object::getOrientation(x, y, z, angle);
 
 	if (_model)
-		_model->setRotation(x, y, z);
+		_model->setOrientation(x, y, z, angle);
 }
 
 void Placeable::load(const Aurora::GFF4Struct &placeable) {
@@ -159,7 +159,7 @@ void Placeable::load(const Aurora::GFF4Struct &placeable) {
 	}
 
 	double orientation = placeable.getDouble(Aurora::kGFF4Orientation);
-	setOrientation(0.0f, Common::rad2deg(orientation), 0.0f);
+	setOrientation(0.0f, 1.0f, 0.0f, Common::rad2deg(orientation));
 }
 
 } // End of namespace Sonic

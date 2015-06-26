@@ -49,7 +49,7 @@ public:
 	/** Set the situated object's position. */
 	void setPosition(float x, float y, float z);
 	/** Set the situated object's orientation. */
-	void setOrientation(float x, float y, float z);
+	void setOrientation(float x, float y, float z, float angle);
 
 	bool isLocked() const;       ///< Is the situated object locked?
 	void setLocked(bool locked); ///< Lock/Unlock the situated object.

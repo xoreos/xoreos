@@ -85,12 +85,12 @@ void ArtPlaceable::setPosition(float x, float y, float z) {
 		_model->setPosition(x, y, z);
 }
 
-void ArtPlaceable::setOrientation(float x, float y, float z) {
-	Object::setOrientation(x, y, z);
-	Object::getOrientation(x, y, z);
+void ArtPlaceable::setOrientation(float x, float y, float z, float angle) {
+	Object::setOrientation(x, y, z, angle);
+	Object::getOrientation(x, y, z, angle);
 
 	if (_model)
-		_model->setRotation(x, y, z);
+		_model->setOrientation(x, y, z, angle);
 }
 
 void ArtPlaceable::enter() {

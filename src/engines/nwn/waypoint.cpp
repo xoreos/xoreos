@@ -92,7 +92,7 @@ void Waypoint::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	float bearingX = instance.getDouble("XOrientation");
 	float bearingY = instance.getDouble("YOrientation");
 
-	setOrientation(0.0f, 0.0f, -Common::rad2deg(atan2(bearingX, bearingY)));
+	setOrientation(0.0f, 0.0f, 1.0f, -Common::rad2deg(atan2(bearingX, bearingY)));
 }
 
 void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {

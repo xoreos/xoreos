@@ -472,7 +472,7 @@ void Area::loadTileModels() {
 		const float rotation = -(((int) t->orientation) * 90.0f);
 
 		t->model->setPosition(t->position[0], t->position[1], t->position[2]);
-		t->model->setRotation(0.0f, 0.0f, rotation);
+		t->model->setOrientation(0.0f, 0.0f, 1.0f, rotation);
 
 		// Rotate static floors back
 		const std::list<Graphics::Aurora::ModelNode *> &nodes = t->model->getNodes();

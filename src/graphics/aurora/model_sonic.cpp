@@ -1077,11 +1077,7 @@ void Model_Sonic::createAbsolutePosition() {
 	_absolutePosition.loadIdentity();
 
 	_absolutePosition.translate(_position[0], _position[1], _position[2]);
-
-	_absolutePosition.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
-	_absolutePosition.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
-	_absolutePosition.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
-
+	_absolutePosition.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
 	_absolutePosition.scale(_scale[0], _scale[1], _scale[2]);
 
 	_absoluteBoundBox = _boundBox;
@@ -1341,15 +1337,9 @@ void Model_Sonic::render(RenderPass pass) {
 	}
 
 	// Apply our global model transformation
-
 	glTranslatef(_position[0], _position[1], _position[2]);
-
-	glRotatef(_rotation[0], 1.0f, 0.0f, 0.0f);
-	glRotatef(_rotation[1], 0.0f, 1.0f, 0.0f);
-	glRotatef(_rotation[2], 0.0f, 0.0f, 1.0f);
-
+	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
 	glScalef(_scale[0], _scale[1], _scale[2]);
-
 
 	// Draw the bounding box, if requested
 	doDrawBound();

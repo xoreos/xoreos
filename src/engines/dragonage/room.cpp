@@ -108,6 +108,7 @@ void Room::loadLayout(const Common::UString &roomFile) {
 
 	float roomOrient[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	rmlTop.getVector4(kGFF4Orientation, roomOrient[0], roomOrient[1], roomOrient[2], roomOrient[3]);
+	roomOrient[3] = Common::rad2deg(acos(roomOrient[3]) * 2.0);
 
 	status("Loading room \"%s\" (%d)", roomFile.c_str(), _id);
 
@@ -125,16 +126,7 @@ void Room::loadLayout(const Common::UString &roomFile) {
 
 		float orient[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		(*m)->getVector4(kGFF4Orientation, orient[0], orient[1], orient[2], orient[3]);
-
-		float oX = orient[0];
-		float oY = orient[1];
-		float oZ = orient[2];
-		float oW = orient[3];
-
-		// Convert quaternions to roll/pitch/yaw
-		float rotZ = 180.0f - Common::rad2deg(atan2(2 * (oX*oY + oZ*oW), 1 - 2 * (oY*oY + oZ*oZ)));
-		float rotX = 180.0f - Common::rad2deg(asin(2 * (oX*oZ - oW*oY)));
-		float rotY = Common::rad2deg(atan2(2 * (oX*oW + oY*oZ), 1 - 2 * (oZ*oZ + oW*oW)));
+		orient[3] = Common::rad2deg(acos(orient[3]) * 2.0);
 
 		Common::UString file = (*m)->getString(kGFF4EnvModelFile);
 		if (file.empty())
@@ -148,11 +140,11 @@ void Room::loadLayout(const Common::UString &roomFile) {
 		_models.push_back(model);
 
 		model->setPosition(roomPos[0], roomPos[1], roomPos[2]);
-		model->setRotation(0.0f, 0.0f, 0.0f);
+		model->setOrientation(roomOrient[0], roomOrient[1], roomOrient[2], roomOrient[3]);
 		model->setScale(scale, scale, scale);
 
 		model->move(pos[0], pos[1], pos[2]);
-		model->rotate(rotX, rotY, -rotZ);
+		model->rotate(orient[0], orient[1], orient[2], orient[3]);
 	}
 }
 

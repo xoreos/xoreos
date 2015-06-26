@@ -319,7 +319,7 @@ void Module::enter() {
 	const float entryAngle = -Common::rad2deg(atan2(entryDirX, entryDirY));
 
 	_pc->setPosition(entryX, entryY, entryZ);
-	_pc->setOrientation(0.0f, 0.0f, entryAngle);
+	_pc->setOrientation(0.0f, 0.0f, 1.0f, entryAngle);
 
 	_pc->loadModel();
 

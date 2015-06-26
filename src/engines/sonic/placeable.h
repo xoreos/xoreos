@@ -51,7 +51,7 @@ public:
 	void highlight(bool enabled);
 
 	void setPosition(float x, float y, float z);
-	void setOrientation(float x, float y, float z);
+	void setOrientation(float x, float y, float z, float angle);
 
 protected:
 	Common::ChangeID _modelTexture;

@@ -68,14 +68,16 @@ void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
 
-	_model->setPosition(x, y, z);
+	if (_model)
+		_model->setPosition(x, y, z);
 }
 
-void Creature::setOrientation(float x, float y, float z) {
-	Object::setOrientation(x, y, z);
-	Object::getOrientation(x, y, z);
+void Creature::setOrientation(float x, float y, float z, float angle) {
+	Object::setOrientation(x, y, z, angle);
+	Object::getOrientation(x, y, z, angle);
 
-	_model->setRotation(x, y, z);
+	if (_model)
+		_model->setOrientation(x, y, z, angle);
 }
 
 void Creature::load(const Aurora::GFF3Struct &creature) {
@@ -123,7 +125,7 @@ void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	float bearingX = instance.getDouble("XOrientation");
 	float bearingY = instance.getDouble("YOrientation");
 
-	setOrientation(0.0f, 0.0f, -Common::rad2deg(atan2(bearingX, bearingY)));
+	setOrientation(0.0f, 0.0f, 1.0f, -Common::rad2deg(atan2(bearingX, bearingY)));
 }
 
 void Creature::loadProperties(const Aurora::GFF3Struct &gff) {

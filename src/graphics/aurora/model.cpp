@@ -52,9 +52,14 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_drawSkeleton(false), _drawSkeletonInvisible(false) {
 
 	_scale   [0] = 1.0f; _scale   [1] = 1.0f; _scale   [2] = 1.0f;
-	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
-	_center  [0] = 0.0f; _center  [1] = 0.0f; _center  [2] = 0.0f;
+
+	_orientation[0] = 0.0f;
+	_orientation[1] = 0.0f;
+	_orientation[2] = 0.0f;
+	_orientation[3] = 0.0f;
+
+	_center[0] = 0.0f; _center[1] = 0.0f; _center[2] = 0.0f;
 
 	// TODO: Is this the same as modelScale for non-UI?
 	_animationScale = 1.0f;
@@ -180,10 +185,12 @@ void Model::getScale(float &x, float &y, float &z) const {
 	z = _scale[2];
 }
 
-void Model::getRotation(float &x, float &y, float &z) const {
-	x = _rotation[0];
-	y = _rotation[1];
-	z = _rotation[2];
+void Model::getOrientation(float &x, float &y, float &z, float &angle) const {
+	x = _orientation[0];
+	y = _orientation[1];
+	z = _orientation[2];
+
+	angle = _orientation[3];
 }
 
 void Model::getPosition(float &x, float &y, float &z) const {
@@ -213,12 +220,13 @@ void Model::setScale(float x, float y, float z) {
 	unlockFrameIfVisible();
 }
 
-void Model::setRotation(float x, float y, float z) {
+void Model::setOrientation(float x, float y, float z, float angle) {
 	lockFrameIfVisible();
 
-	_rotation[0] = x;
-	_rotation[1] = y;
-	_rotation[2] = z;
+	_orientation[0] = x;
+	_orientation[1] = y;
+	_orientation[2] = z;
+	_orientation[3] = angle;
 
 	createAbsolutePosition();
 	calculateDistance();
@@ -247,8 +255,15 @@ void Model::scale(float x, float y, float z) {
 	setScale(_scale[0] * x, _scale[1] * y, _scale[2] * z);
 }
 
-void Model::rotate(float x, float y, float z) {
-	setRotation(_rotation[0] + x, _rotation[1] + y, _rotation[2] + z);
+void Model::rotate(float x, float y, float z, float angle) {
+	Common::TransformationMatrix orientation;
+
+	orientation.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+	orientation.rotate(angle, x, y, z);
+
+	orientation.getAxisAngle(angle, x, y, z);
+
+	setOrientation(x, y, z, angle);
 }
 
 void Model::move(float x, float y, float z) {
@@ -267,11 +282,7 @@ void Model::createAbsolutePosition() {
 	_absolutePosition.loadIdentity();
 
 	_absolutePosition.translate(_position[0], _position[1], _position[2]);
-
-	_absolutePosition.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
-	_absolutePosition.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
-	_absolutePosition.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
-
+	_absolutePosition.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
 	_absolutePosition.scale(_scale[0], _scale[1], _scale[2]);
 
 	_absoluteBoundBox = _boundBox;
@@ -488,15 +499,9 @@ void Model::render(RenderPass pass) {
 	}
 
 	// Apply our global model transformation
-
 	glTranslatef(_position[0], _position[1], _position[2]);
-
-	glRotatef(_rotation[0], 1.0f, 0.0f, 0.0f);
-	glRotatef(_rotation[1], 0.0f, 1.0f, 0.0f);
-	glRotatef(_rotation[2], 0.0f, 0.0f, 1.0f);
-
+	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
 	glScalef(_scale[0], _scale[1], _scale[2]);
-
 
 	// Draw the bounding box, if requested
 	doDrawBound();

@@ -44,7 +44,7 @@ public:
 	void hide();
 
 	void setPosition(float x, float y, float z);
-	void setOrientation(float x, float y, float z);
+	void setOrientation(float x, float y, float z, float angle);
 
 	void enter();
 	void leave();
