@@ -99,7 +99,7 @@ void Area::loadEnvironment(const Common::UString &resRef) {
 
 	const GFF4Struct &arlTop = arl.getTopLevel();
 
-	_id = arlTop.getSint(kGFF4EnvAreaID, -1);
+	_id = (uint32) ((int32) arlTop.getSint(kGFF4EnvAreaID, -1));
 
 	_environmentName = arlTop.getString(kGFF4EnvAreaName);
 	_skyDome         = arlTop.getString(kGFF4EnvAreaSkydomeModel);
@@ -134,14 +134,13 @@ void Area::loadARE(const Common::UString &resRef) {
 	_tag = areTop.getString("Tag");
 
 	areTop.getLocString("Name", _name);
+
+	if (areTop.hasField("VarTable"))
+		readVarTable(areTop.getList("VarTable"));
 }
 
 const Common::UString &Area::getResRef() const {
 	return _resRef;
-}
-
-const Common::UString &Area::getTag() const {
-	return _tag;
 }
 
 const Aurora::LocString &Area::getName() const {

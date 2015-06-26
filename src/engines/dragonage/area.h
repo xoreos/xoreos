@@ -37,19 +37,20 @@
 
 #include "src/engines/aurora/resources.h"
 
+#include "src/engines/dragonage/scriptobject.h"
+
 namespace Engines {
 
 namespace DragonAge {
 
 class Room;
 
-class Area : public Events::Notifyable {
+class Area : public ScriptObject, public Events::Notifyable {
 public:
 	Area(const Common::UString &resRef, const Common::UString &env, const Common::UString &rim);
 	~Area();
 
 	const Common::UString   &getResRef() const;
-	const Common::UString   &getTag()    const;
 	const Aurora::LocString &getName()   const;
 
 	void show();
@@ -71,9 +72,6 @@ private:
 	typedef std::vector<Room *> Rooms;
 
 	Common::UString _resRef;
-	Common::UString _tag;
-
-	int32 _id;
 
 	Common::UString _environmentName;
 	Common::UString _skyDome;
