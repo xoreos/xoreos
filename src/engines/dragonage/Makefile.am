@@ -12,6 +12,7 @@ noinst_HEADERS = \
                  room.h \
                  scriptobject.h \
                  object.h \
+                 waypoint.h \
                  $(EMPTY)
 
 libdragonage_la_SOURCES = \
@@ -24,4 +25,5 @@ libdragonage_la_SOURCES = \
                           room.cpp \
                           scriptobject.cpp \
                           object.cpp \
+                          waypoint.cpp \
                           $(EMPTY)
