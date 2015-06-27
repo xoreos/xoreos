@@ -115,6 +115,7 @@ private:
 	void loadObject(DragonAge::Object &object);
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
+	void loadCreatures (const Aurora::GFF3List &list);
 
 	void checkActive(int x = -1, int y = -1);
 	void setActive(DragonAge::Object *object);

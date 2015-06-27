@@ -41,6 +41,7 @@
 #include "src/engines/dragonage/object.h"
 #include "src/engines/dragonage/waypoint.h"
 #include "src/engines/dragonage/placeable.h"
+#include "src/engines/dragonage/creature.h"
 
 namespace Engines {
 
@@ -161,6 +162,8 @@ void Area::loadARE(const Common::UString &resRef) {
 		loadWaypoints (areTop.getList("WaypointList"));
 	if (areTop.hasField("PlaceableList"))
 		loadPlaceables(areTop.getList("PlaceableList"));
+	if (areTop.hasField("CreatureList"))
+		loadCreatures (areTop.getList("CreatureList"));
 }
 
 void Area::loadObject(DragonAge::Object &object) {
@@ -187,6 +190,14 @@ void Area::loadPlaceables(const Aurora::GFF3List &list) {
 		Placeable *placeable = new Placeable(**p);
 
 		loadObject(*placeable);
+	}
+}
+
+void Area::loadCreatures(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
+		Creature *creature = new Creature(**c);
+
+		loadObject(*creature);
 	}
 }
 
