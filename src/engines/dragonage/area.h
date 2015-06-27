@@ -30,6 +30,7 @@
 #include <map>
 
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/locstring.h"
@@ -64,6 +65,9 @@ public:
 	/** Process the current event queue. */
 	void processEventQueue();
 
+	/** Forcibly remove the focus from the currently highlighted object. */
+	void removeFocus();
+
 	static Aurora::LocString getName(const Common::UString &resRef);
 
 
@@ -96,6 +100,13 @@ private:
 	Objects    _objects;   ///< List of all objects in the area.
 	ObjectMap  _objectMap; ///< Map of objects by their model IDs.
 
+	/** The currently active (highlighted) object. */
+	DragonAge::Object *_activeObject;
+
+	bool _highlightAll; ///< Are we currently highlighting all objects?
+
+	Common::Mutex _mutex;
+
 
 	void load(const Common::UString &resRef, const Common::UString &env, const Common::UString &rim);
 	void loadEnvironment(const Common::UString &resRef);
@@ -104,6 +115,12 @@ private:
 	void loadObject(DragonAge::Object &object);
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
+
+	void checkActive(int x = -1, int y = -1);
+	void setActive(DragonAge::Object *object);
+	DragonAge::Object *getObjectAt(int x, int y);
+
+	void highlightAll(bool enabled);
 
 	void clean();
 };
