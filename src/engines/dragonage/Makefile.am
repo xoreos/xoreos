@@ -14,6 +14,7 @@ noinst_HEADERS = \
                  object.h \
                  waypoint.h \
                  placeable.h \
+                 creature.h \
                  $(EMPTY)
 
 libdragonage_la_SOURCES = \
@@ -28,4 +29,5 @@ libdragonage_la_SOURCES = \
                           object.cpp \
                           waypoint.cpp \
                           placeable.cpp \
+                          creature.cpp \
                           $(EMPTY)

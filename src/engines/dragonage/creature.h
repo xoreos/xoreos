@@ -1,0 +1,135 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file
+ *  A creature in a Dragon Age: Origins area.
+ */
+
+#ifndef ENGINES_DRAGONAGE_CREATURE_H
+#define ENGINES_DRAGONAGE_CREATURE_H
+
+#include <vector>
+#include <list>
+
+#include "src/common/ustring.h"
+
+#include "src/aurora/types.h"
+
+#include "src/graphics/aurora/types.h"
+
+#include "src/engines/dragonage/object.h"
+
+namespace Aurora {
+	class GDAFile;
+}
+
+namespace Engines {
+
+namespace DragonAge {
+
+class Creature : public Object {
+public:
+	/** Load from a placeable instance. */
+	Creature(const Aurora::GFF3Struct &placeable);
+	~Creature();
+
+	void setPosition(float x, float y, float z);
+	void setOrientation(float x, float y, float z, float angle);
+
+	void show();
+	void hide();
+
+	void enter();
+	void leave();
+
+	void highlight(bool enabled);
+
+
+private:
+	static const size_t kPartVariationCount = 4;
+
+	enum EquipSlot {
+		kEquipSlotMain       =  0,
+		kEquipSlotOffhand    =  1,
+		kEquipSlotRangedammo =  2,
+		kEquipSlotChest      =  4,
+		kEquipSlotHead       =  5,
+		kEquipSlotBoots      =  6,
+		kEquipSlotGloves     =  7,
+		kEquipSlotCloak      =  8,
+		kEquipSlotRing1      =  9,
+		kEquipSlotRing2      = 10,
+		kEquipSlotNeck       = 11,
+		kEquipSlotBelt       = 12,
+		kEquipSlotBite       = 13
+	};
+
+	struct EquipItem {
+		Common::UString resRef;
+
+		EquipSlot slot;
+
+		bool stealable;
+		bool droopable;
+
+		int32 setNumber;
+	};
+	typedef std::vector<EquipItem> Items;
+
+	typedef std::list<Graphics::Aurora::Model *> Models;
+
+
+
+	uint32 _appearance;
+	uint8  _appearanceGender;
+
+	Common::UString _headMorph;
+	uint32 _partVariation[kPartVariationCount];
+
+	Items _items;
+
+	Models _models;
+
+
+	void load(const Aurora::GFF3Struct &placeable);
+	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
+
+	void loadProperties(const Aurora::GFF3Struct &gff);
+
+	void loadModelsSimple(const Aurora::GDAFile &gda, size_t row);
+	void loadModelsWelded(const Aurora::GDAFile &gda, size_t row);
+	void loadModelsHead  (const Aurora::GDAFile &gda, size_t row);
+	void loadModelsParts (const Aurora::GDAFile &gda, size_t row);
+
+	void loadModelsHeadMorph();
+	void loadModelsHeadList(const Aurora::GDAFile &gda, size_t row);
+
+	Common::UString findEquipModel(EquipSlot slot, const Common::UString &prefix, uint8 *armorType = 0) const;
+
+	static Common::UString createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8 gender);
+	static Common::UString createModelPart(const Aurora::GDAFile &gda, size_t row,
+	                                       const Common::UString &prefix);
+};
+
+} // End of namespace Dragon Age
+
+} // End of namespace Engines
+
+#endif // ENGINES_DRAGONAGE_CREATURE_H
