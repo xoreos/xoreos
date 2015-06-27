@@ -46,7 +46,7 @@ public:
 	/** Does this waypoint have a map note? */
 	bool hasMapNote() const;
 	/** Return the waypoint's map note text. */
-	Aurora::LocString getMapNote() const;
+	const Aurora::LocString &getMapNote() const;
 
 	/** Return the icon representing the waypoint on the map. */
 	const Common::UString &getIcon() const;

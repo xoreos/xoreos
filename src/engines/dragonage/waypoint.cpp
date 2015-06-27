@@ -50,7 +50,7 @@ bool Waypoint::hasMapNote() const {
 	return _hasMapNote;
 }
 
-Aurora::LocString Waypoint::getMapNote() const {
+const Aurora::LocString &Waypoint::getMapNote() const {
 	return _mapNote;
 }
 
