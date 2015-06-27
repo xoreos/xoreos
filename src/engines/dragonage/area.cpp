@@ -37,6 +37,7 @@
 #include "src/engines/dragonage/room.h"
 #include "src/engines/dragonage/object.h"
 #include "src/engines/dragonage/waypoint.h"
+#include "src/engines/dragonage/placeable.h"
 
 namespace Engines {
 
@@ -154,13 +155,15 @@ void Area::loadARE(const Common::UString &resRef) {
 		readVarTable(areTop.getList("VarTable"));
 
 	if (areTop.hasField("WaypointList"))
-		loadWaypoints(areTop.getList("WaypointList"));
+		loadWaypoints (areTop.getList("WaypointList"));
+	if (areTop.hasField("PlaceableList"))
+		loadPlaceables(areTop.getList("PlaceableList"));
 }
 
 void Area::loadObject(DragonAge::Object &object) {
 	_objects.push_back(&object);
 
-	if (!_object.isStatic()) {
+	if (!object.isStatic()) {
 		const std::list<uint32> &ids = object.getIDs();
 
 		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
@@ -173,6 +176,14 @@ void Area::loadWaypoints(const Aurora::GFF3List &list) {
 		Waypoint *waypoint = new Waypoint(**w);
 
 		loadObject(*waypoint);
+	}
+}
+
+void Area::loadPlaceables(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator p = list.begin(); p != list.end(); ++p) {
+		Placeable *placeable = new Placeable(**p);
+
+		loadObject(*placeable);
 	}
 }
 

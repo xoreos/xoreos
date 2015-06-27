@@ -102,7 +102,8 @@ private:
 	void loadARE(const Common::UString &resRef);
 
 	void loadObject(DragonAge::Object &object);
-	void loadWaypoints(const Aurora::GFF3List &list);
+	void loadWaypoints (const Aurora::GFF3List &list);
+	void loadPlaceables(const Aurora::GFF3List &list);
 
 	void clean();
 };
