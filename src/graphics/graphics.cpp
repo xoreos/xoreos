@@ -252,7 +252,10 @@ bool GraphicsManager::setFSAA(int level) {
 	destroyContext();
 
 	uint32 flags = SDL_GetWindowFlags(_screen);
-	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
+
+	int x, y;
+	SDL_GetWindowPosition(_screen, &x, &y);
+
 	SDL_GL_DeleteContext(_glContext);
 	SDL_DestroyWindow(_screen);
 
@@ -261,7 +264,7 @@ bool GraphicsManager::setFSAA(int level) {
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
 
 	// Now try to change the screen
-	_screen = SDL_CreateWindow(_windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
+	_screen = SDL_CreateWindow(_windowTitle.c_str(), x, y, _width, _height, flags);
 
 	if (!_screen) {
 		// Failed changing, back up
@@ -271,7 +274,7 @@ bool GraphicsManager::setFSAA(int level) {
 		// Set the multisample level
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
-		_screen = SDL_CreateWindow(_windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayIndex), _width, _height, flags);
+		_screen = SDL_CreateWindow(_windowTitle.c_str(), x, y, _width, _height, flags);
 
 		// There's no reason how this could possibly fail, but ok...
 		if (!_screen)
@@ -331,7 +334,10 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
-	_screen = SDL_CreateWindow(_windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+	int x = ConfigMan.getInt("x", SDL_WINDOWPOS_UNDEFINED);
+	int y = ConfigMan.getInt("y", SDL_WINDOWPOS_UNDEFINED);
+
+	_screen = SDL_CreateWindow(_windowTitle.c_str(), x, y, width, height, flags);
 	if (!_screen)
 		return false;
 
