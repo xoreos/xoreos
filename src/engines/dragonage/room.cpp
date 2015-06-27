@@ -26,6 +26,7 @@
 #include "src/common/strutil.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
+#include "src/common/transmatrix.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/gff4file.h"
@@ -110,6 +111,10 @@ void Room::loadLayout(const Common::UString &roomFile) {
 	rmlTop.getVector4(kGFF4Orientation, roomOrient[0], roomOrient[1], roomOrient[2], roomOrient[3]);
 	roomOrient[3] = Common::rad2deg(acos(roomOrient[3]) * 2.0);
 
+	Common::TransformationMatrix roomTransform;
+	roomTransform.translate(roomPos[0], roomPos[1], roomPos[2]);
+	roomTransform.rotate(roomOrient[3], roomOrient[0], roomOrient[1], roomOrient[2]);
+
 	status("Loading room \"%s\" (%d)", roomFile.c_str(), _id);
 
 	const GFF4List &models = rmlTop.getList(kGFF4EnvRoomModelList);
@@ -139,12 +144,17 @@ void Room::loadLayout(const Common::UString &roomFile) {
 
 		_models.push_back(model);
 
-		model->setPosition(roomPos[0], roomPos[1], roomPos[2]);
-		model->setOrientation(roomOrient[0], roomOrient[1], roomOrient[2], roomOrient[3]);
-		model->setScale(scale, scale, scale);
+		Common::TransformationMatrix modelTransform(roomTransform);
 
-		model->move(pos[0], pos[1], pos[2]);
-		model->rotate(orient[0], orient[1], orient[2], orient[3]);
+		modelTransform.translate(pos[0], pos[1], pos[2]);
+		modelTransform.rotate(orient[3], orient[0], orient[1], orient[2]);
+
+		modelTransform.getPosition(pos[0], pos[1], pos[2]);
+		modelTransform.getAxisAngle(orient[3], orient[0], orient[1], orient[2]);
+
+		model->setPosition(pos[0], pos[1], pos[2]);
+		model->setOrientation(orient[0], orient[1], orient[2], orient[3]);
+		model->setScale(scale, scale, scale);
 	}
 }
 
