@@ -29,6 +29,8 @@
 #include "src/aurora/gff3file.h"
 #include "src/aurora/gff4file.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/events/events.h"
 
 #include "src/engines/dragonage/area.h"
@@ -177,17 +179,25 @@ void Area::loadWaypoints(const Aurora::GFF3List &list) {
 void Area::show() {
 	_eventQueue.clear();
 
+	GfxMan.lockFrame();
+
 	for (Rooms::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		(*r)->show();
 	for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->show();
+
+	GfxMan.unlockFrame();
 }
 
 void Area::hide() {
+	GfxMan.lockFrame();
+
 	for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->hide();
 	for (Rooms::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		(*r)->hide();
+
+	GfxMan.unlockFrame();
 }
 
 Aurora::LocString Area::getName(const Common::UString &resRef) {
