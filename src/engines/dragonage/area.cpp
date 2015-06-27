@@ -33,6 +33,8 @@
 
 #include "src/engines/dragonage/area.h"
 #include "src/engines/dragonage/room.h"
+#include "src/engines/dragonage/object.h"
+#include "src/engines/dragonage/waypoint.h"
 
 namespace Engines {
 
@@ -76,8 +78,19 @@ Area::~Area() {
 	}
 }
 
+const Common::UString &Area::getResRef() const {
+	return _resRef;
+}
+
+const Aurora::LocString &Area::getName() const {
+	return _name;
+}
+
 void Area::clean() {
 	hide();
+
+	for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		delete *o;
 
 	for (Rooms::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		delete *r;
@@ -137,14 +150,28 @@ void Area::loadARE(const Common::UString &resRef) {
 
 	if (areTop.hasField("VarTable"))
 		readVarTable(areTop.getList("VarTable"));
+
+	if (areTop.hasField("WaypointList"))
+		loadWaypoints(areTop.getList("WaypointList"));
 }
 
-const Common::UString &Area::getResRef() const {
-	return _resRef;
+void Area::loadObject(DragonAge::Object &object) {
+	_objects.push_back(&object);
+
+	if (!_object.isStatic()) {
+		const std::list<uint32> &ids = object.getIDs();
+
+		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+			_objectMap.insert(std::make_pair(*id, &object));
+	}
 }
 
-const Aurora::LocString &Area::getName() const {
-	return _name;
+void Area::loadWaypoints(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator w = list.begin(); w != list.end(); ++w) {
+		Waypoint *waypoint = new Waypoint(**w);
+
+		loadObject(*waypoint);
+	}
 }
 
 void Area::show() {
@@ -152,9 +179,13 @@ void Area::show() {
 
 	for (Rooms::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		(*r)->show();
+	for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->show();
 }
 
 void Area::hide() {
+	for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		(*o)->hide();
 	for (Rooms::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		(*r)->hide();
 }

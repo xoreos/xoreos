@@ -26,6 +26,8 @@
 #define ENGINES_DRAGONAGE_AREA_H
 
 #include <vector>
+#include <list>
+#include <map>
 
 #include "src/common/ustring.h"
 
@@ -44,6 +46,7 @@ namespace Engines {
 namespace DragonAge {
 
 class Room;
+class Object;
 
 class Area : public ScriptObject, public Events::Notifyable {
 public:
@@ -71,6 +74,10 @@ protected:
 private:
 	typedef std::vector<Room *> Rooms;
 
+	typedef std::list<DragonAge::Object *> Objects;
+	typedef std::map<uint32, DragonAge::Object *> ObjectMap;
+
+
 	Common::UString _resRef;
 
 	Common::UString _environmentName;
@@ -86,10 +93,16 @@ private:
 	ChangeList _resources;
 	std::list<Events::Event> _eventQueue;
 
+	Objects    _objects;   ///< List of all objects in the area.
+	ObjectMap  _objectMap; ///< Map of objects by their model IDs.
+
 
 	void load(const Common::UString &resRef, const Common::UString &env, const Common::UString &rim);
 	void loadEnvironment(const Common::UString &resRef);
 	void loadARE(const Common::UString &resRef);
+
+	void loadObject(DragonAge::Object &object);
+	void loadWaypoints(const Aurora::GFF3List &list);
 
 	void clean();
 };
