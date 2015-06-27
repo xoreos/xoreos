@@ -48,6 +48,9 @@ public:
 	/** Return the waypoint's map note text. */
 	Aurora::LocString getMapNote() const;
 
+	/** Return the icon representing the waypoint on the map. */
+	const Common::UString &getIcon() const;
+
 	/** Is the map note enabled? */
 	bool enabledMapNote() const;
 
@@ -60,6 +63,9 @@ private:
 
 	bool _hasMapNote;
 	bool _enabledMapNote;
+
+	uint32 _type;
+	Common::UString _icon;
 
 	Aurora::LocString _mapNote;
 

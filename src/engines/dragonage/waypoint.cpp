@@ -26,6 +26,8 @@
 #include "src/common/maths.h"
 
 #include "src/aurora/gff3file.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/gdafile.h"
 
 #include "src/engines/dragonage/waypoint.h"
 
@@ -52,6 +54,10 @@ Aurora::LocString Waypoint::getMapNote() const {
 	return _mapNote;
 }
 
+const Common::UString &Waypoint::getIcon() const {
+	return _icon;
+}
+
 bool Waypoint::enabledMapNote() const {
 	return _enabledMapNote;
 }
@@ -67,6 +73,8 @@ void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 
 	_hasMapNote     = waypoint.getBool("HasMapNote");
 	_enabledMapNote = waypoint.getBool("MapNoteEnabled");
+
+	_type = (uint32) ((int32) waypoint.getSint("MapNoteType", -1));
 
 	waypoint.getLocString("MapNote", _mapNote);
 
@@ -89,6 +97,10 @@ void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 	};
 
 	setOrientation(orientation[0], orientation[1], orientation[2], orientation[3]);
+
+	const Aurora::GDAFile &gda = TwoDAReg.getGDA("waypointtypes");
+
+	_icon = gda.getString(_type, "Icon");
 }
 
 } // End of namespace DragonAge
