@@ -43,6 +43,11 @@ public:
 	~DDS();
 
 private:
+	enum DataType {
+		kDataTypeDirect,
+		kDataType4444
+	};
+
 	/** The specific pixel format of the included image data. */
 	struct DDSPixelFormat {
 		uint32 size;     ///< The size of the image data in bytes.
@@ -57,12 +62,12 @@ private:
 
 	// Loading helpers
 	void load(Common::SeekableReadStream &dds);
-	void readHeader(Common::SeekableReadStream &dds);
-	void readStandardHeader(Common::SeekableReadStream &dds);
-	void readBioWareHeader(Common::SeekableReadStream &dds);
-	void readData(Common::SeekableReadStream &dds);
+	void readHeader(Common::SeekableReadStream &dds, DataType &dataType);
+	void readStandardHeader(Common::SeekableReadStream &dds, DataType &dataType);
+	void readBioWareHeader(Common::SeekableReadStream &dds, DataType &dataType);
+	void readData(Common::SeekableReadStream &dds, DataType dataType);
 
-	void detectFormat(const DDSPixelFormat &format);
+	void detectFormat(const DDSPixelFormat &format, DataType &dataType);
 
 	void setSize(MipMap &mipMap);
 };
