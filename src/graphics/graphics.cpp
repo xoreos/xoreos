@@ -1156,7 +1156,7 @@ void GraphicsManager::renderScene() {
 
 	cleanupAbandoned();
 
-	if (_frameLock.load(boost::memory_order_acquire) > 0) {
+	if (EventMan.quitRequested() || (_frameLock.load(boost::memory_order_acquire) > 0)) {
 		_frameEndSignal.store(true, boost::memory_order_release);
 
 		return;

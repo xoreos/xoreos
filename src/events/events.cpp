@@ -315,9 +315,8 @@ void EventsManager::runMainLoop() {
 
 		_queueProcessed.signal();
 
-		if (!_quitRequested)
-			// Render a frame
-			GfxMan.renderScene();
+		// Render a frame
+		GfxMan.renderScene();
 	}
 }
 
