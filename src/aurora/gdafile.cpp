@@ -69,24 +69,9 @@ size_t GDAFile::findRow(uint32 id) const {
 	if (idColumn == kInvalidColumn)
 		return kInvalidRow;
 
-	/* If an ID column exists, the rows are always sorted by ID value,
-	 * so we can perform a binary search for the requested ID. */
-
-	const size_t size = _rows->size();
-	size_t low = 0, high = size - 1, midpoint = 0;
-
-	while ((low <= high) && (high < size) && (low < size)) {
-		midpoint = low + ((high - low) / 2);
-
-		assert((*_rows)[midpoint]);
-
-		if      (id == (*_rows)[midpoint]->getUint(idColumn))
-			return midpoint;
-		else if (id  < (*_rows)[midpoint]->getUint(idColumn))
-			high = midpoint - 1;
-		else
-			low  = midpoint + 1;
-	}
+	for (size_t i = 0; i < _rows->size(); i++)
+		if ((*_rows)[i] && ((*_rows)[i]->getUint(idColumn) == id))
+			return i;
 
 	return kInvalidRow;
 }
