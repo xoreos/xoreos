@@ -44,7 +44,11 @@
 #include "src/aurora/aurorafile.h"
 #include "src/aurora/gff4file.h"
 
+#include "src/graphics/images/decoder.h"
+
 #include "src/graphics/aurora/model_dragonage.h"
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
 
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
@@ -672,6 +676,7 @@ void ModelNode_DragonAge::createVertexBuffer(const GFF4Struct &meshChunk,
 
 					case kMeshDeclUseColor:
 						read4Float32(vertexData, d->type, vData);
+						vData[-1] = 0xFF; // WORKAROUND: Shader side-stepping
 						break;
 
 					default:
@@ -802,6 +807,108 @@ void ModelNode_DragonAge::readMAO(const Common::UString &materialName, MaterialO
 	}
 }
 
+void ModelNode_DragonAge::loadTextures(const std::vector<Common::UString> &textures,
+                                       const MaterialObject &material) {
+	/* If this is a texture doing tinting, the alpha channel is wrong (and potentially all 0x00).
+	 * Usually, tinting would be done using a shader, but since we don't support that yet, we're
+	 * modifying the alpha channel of the texture instead. */
+
+	const bool fixAlpha = material.defaultSemantic.equalsIgnoreCase("ArmourSkinTint") ||
+	                      material.material.equalsIgnoreCase("Face.mat") ||
+	                      material.material.equalsIgnoreCase("Eye.mat");
+	const bool fixHair  = material.material.equalsIgnoreCase("HairAlpha.mat");
+
+	if      (fixHair)
+		fixTexturesHair (textures);
+	else if (fixAlpha)
+		fixTexturesAlpha(textures);
+	else
+		ModelNode::loadTextures(textures);
+}
+
+void ModelNode_DragonAge::fixTexturesAlpha(const std::vector<Common::UString> &textures) {
+	std::vector<TextureHandle> handles;
+
+	for (std::vector<Common::UString>::const_iterator t = textures.begin(); t != textures.end(); ++t) {
+		if (t->empty() || (*t == "NULL") || TextureMan.hasTexture(*t))
+			continue;
+
+		ImageDecoder *image = 0;
+		try {
+			image = Texture::loadImage(*t);
+			if (image->isCompressed())
+				image->decompress();
+
+			if (image->getFormatRaw() != kPixelFormatRGBA8)
+				throw 0;
+
+			for (size_t m = 0; m < image->getMipMapCount(); m++) {
+				const ImageDecoder::MipMap &mipMap = image->getMipMap(m);
+				if ((mipMap.size % 4) != 0)
+					throw 0;
+
+				for (size_t p = 0; p < mipMap.size; p += 4) {
+					mipMap.data[p + 3] = 0xFF;
+				}
+			}
+
+		} catch (...) {
+			delete image;
+			continue;
+		}
+
+		try {
+			handles.push_back(TextureMan.add(Texture::create(image), *t));
+		} catch (...) {
+		}
+	}
+
+	ModelNode::loadTextures(textures);
+}
+
+void ModelNode_DragonAge::fixTexturesHair(const std::vector<Common::UString> &textures) {
+	std::vector<TextureHandle> handles;
+
+	for (std::vector<Common::UString>::const_iterator t = textures.begin(); t != textures.end(); ++t) {
+		if (t->empty() || (*t == "NULL") || TextureMan.hasTexture(*t))
+			continue;
+
+		ImageDecoder *image = 0;
+		try {
+			image = Texture::loadImage(*t);
+			if (image->isCompressed())
+				image->decompress();
+
+			if (image->getFormatRaw() != kPixelFormatRGBA8)
+				throw 0;
+
+			for (size_t m = 0; m < image->getMipMapCount(); m++) {
+				const ImageDecoder::MipMap &mipMap = image->getMipMap(m);
+				if ((mipMap.size % 4) != 0)
+					throw 0;
+
+				for (size_t p = 0; p < mipMap.size; p += 4) {
+					mipMap.data[p + 0] = mipMap.data[p + 3];
+					mipMap.data[p + 1] = mipMap.data[p + 3];
+					mipMap.data[p + 2] = mipMap.data[p + 3];
+					mipMap.data[p + 3] = 0xFF;
+				}
+			}
+
+		} catch (...) {
+			delete image;
+			continue;
+		}
+
+		try {
+			handles.push_back(TextureMan.add(Texture::create(image), *t));
+		} catch (...) {
+		}
+	}
+
+	ModelNode::loadTextures(textures);
+}
+
 void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GFF4Struct &meshGFF) {
 	if (!ctx.mshTop)
 		return;
@@ -848,12 +955,14 @@ void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GF
 		std::vector<Common::UString> textures;
 		textures.push_back(materialObject.textures["mml_tDiffuse"]);
 		if (textures.back().empty())
+			textures.back() = materialObject.textures["mml_tPackedTexture"];
+		if (textures.back().empty())
 			textures.back() = materialObject.textures["LowLodMap"];
 
 		while (!textures.empty() && textures.back().empty())
 			textures.pop_back();
 
-		loadTextures(textures);
+		loadTextures(textures, materialObject);
 
 	} catch (...) {
 		delete indexData;

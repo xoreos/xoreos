@@ -182,6 +182,11 @@ private:
 	void readMAOGFF(Common::SeekableReadStream *maoStream, MaterialObject &material);
 	void readMAOXML(Common::SeekableReadStream *maoStream, MaterialObject &material);
 
+	void loadTextures(const std::vector<Common::UString> &textures, const MaterialObject &material);
+
+	void fixTexturesAlpha(const std::vector<Common::UString> &textures);
+	void fixTexturesHair (const std::vector<Common::UString> &textures);
+
 	static void read2Float32(Common::ReadStream &stream, MeshDeclType type, float *&f);
 	static void read3Float32(Common::ReadStream &stream, MeshDeclType type, float *&f);
 	static void read4Float32(Common::ReadStream &stream, MeshDeclType type, float *&f);
