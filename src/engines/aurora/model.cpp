@@ -55,7 +55,8 @@ Graphics::Aurora::Model *loadModelObject(const Common::UString &resref,
 
 	try {
 
-		model = kModelLoader->load(resref, Graphics::Aurora::kModelTypeObject, texture);
+		if (!resref.empty())
+			model = kModelLoader->load(resref, Graphics::Aurora::kModelTypeObject, texture);
 
 	} catch (Common::Exception &e) {
 
@@ -74,7 +75,8 @@ Graphics::Aurora::Model *loadModelGUI(const Common::UString &resref) {
 
 	try {
 
-		model = kModelLoader->load(resref, Graphics::Aurora::kModelTypeGUIFront, "");
+		if (!resref.empty())
+			model = kModelLoader->load(resref, Graphics::Aurora::kModelTypeGUIFront, "");
 
 	} catch (Common::Exception &e) {
 
