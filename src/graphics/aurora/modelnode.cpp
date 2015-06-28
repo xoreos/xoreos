@@ -46,69 +46,6 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 	return a->isInFrontOf(*b);
 }
 
-// OpenGL < 2 vertex attribute helper functions
-
-static void EnableVertexPos(const VertexAttrib &va) {
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(va.size, va.type, va.stride, va.pointer);
-}
-
-static void EnableVertexNorm(const VertexAttrib &va) {
-	assert(va.size == 3);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(va.type, va.stride, va.pointer);
-}
-
-static void EnableVertexCol(const VertexAttrib &va) {
-	glEnableClientState(GL_COLOR_ARRAY);
-	glColorPointer(va.size, va.type, va.stride, va.pointer);
-}
-
-static void EnableVertexTex(const VertexAttrib &va) {
-	glClientActiveTextureARB(GL_TEXTURE0 + va.index - VTCOORD);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glTexCoordPointer(va.size, va.type, va.stride, va.pointer);
-}
-
-static void DisableVertexPos(const VertexAttrib &UNUSED(va)) {
-	glDisableClientState(GL_VERTEX_ARRAY);
-}
-
-static void DisableVertexNorm(const VertexAttrib &UNUSED(va)) {
-	glDisableClientState(GL_NORMAL_ARRAY);
-}
-
-static void DisableVertexCol(const VertexAttrib &UNUSED(va)) {
-	glDisableClientState(GL_COLOR_ARRAY);
-}
-
-static void DisableVertexTex(const VertexAttrib &va) {
-	glClientActiveTextureARB(GL_TEXTURE0 + va.index - VTCOORD);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-}
-
-static void EnableVertexAttrib(const VertexAttrib &va) {
-	if (va.index == VPOSITION)
-		EnableVertexPos(va);
-	else if (va.index == VNORMAL)
-		EnableVertexNorm(va);
-	else if (va.index == VCOLOR)
-		EnableVertexCol(va);
-	else if (va.index >= VTCOORD)
-		EnableVertexTex(va);
-}
-
-static void DisableVertexAttrib(const VertexAttrib &va) {
-	if (va.index == VPOSITION)
-		DisableVertexPos(va);
-	else if (va.index == VNORMAL)
-		DisableVertexNorm(va);
-	else if (va.index == VCOLOR)
-		DisableVertexCol(va);
-	else if (va.index >= VTCOORD)
-		DisableVertexTex(va);
-}
-
 ModelNode::ModelNode(Model &model) :
 	_model(&model), _parent(0), _level(0),
 	_isTransparent(false), _render(false), _hasTransparencyHint(false) {
@@ -494,16 +431,7 @@ void ModelNode::renderGeometry() {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Render the node's faces
-
-	const VertexDecl &vertexDecl = _vertexBuffer.getVertexDecl();
-
-	for (size_t i = 0; i < vertexDecl.size(); i++)
-		EnableVertexAttrib(vertexDecl[i]);
-
-	glDrawElements(GL_TRIANGLES, _indexBuffer.getCount(), _indexBuffer.getType(), _indexBuffer.getData());
-
-	for (size_t i = 0; i < vertexDecl.size(); i++)
-		DisableVertexAttrib(vertexDecl[i]);
+	_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
 
 	// Disable the texture units again
 	for (size_t i = 0; i < _textures.size(); i++) {
