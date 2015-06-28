@@ -124,9 +124,7 @@ void Placeable::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struc
 
 	const Aurora::GDAFile &gda = TwoDAReg.getGDA("placeable_types");
 
-	_modelName = gda.getString(gda.findRow(_appearance), "ModelName");
-	if (!_modelName.empty())
-		_model = loadModelObject(_modelName);
+	_model = loadModelObject(gda.getString(gda.findRow(_appearance), "ModelName"));
 
 	if (_model) {
 		_model->setTag(_tag);

@@ -133,12 +133,9 @@ void Room::loadLayout(const Common::UString &roomFile) {
 		(*m)->getVector4(kGFF4Orientation, orient[0], orient[1], orient[2], orient[3]);
 		orient[3] = Common::rad2deg(acos(orient[3]) * 2.0);
 
-		Common::UString file = (*m)->getString(kGFF4EnvModelFile);
-		if (file.empty())
-			// TODO: Instances
-			continue;
+		// TODO: Instances
 
-		Graphics::Aurora::Model *model = loadModelObject(file);
+		Graphics::Aurora::Model *model = loadModelObject((*m)->getString(kGFF4EnvModelFile));
 		if (!model)
 			continue;
 

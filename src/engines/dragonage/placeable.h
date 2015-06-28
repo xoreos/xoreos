@@ -58,7 +58,6 @@ public:
 private:
 	uint32 _appearance;
 
-	Common::UString _modelName;
 	Graphics::Aurora::Model *_model;
 
 
