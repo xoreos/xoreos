@@ -203,7 +203,7 @@ public:
 
 	void clear();
 	void print(const Common::UString &line);
-	void printf(const char *s, ...);
+	void printf(const char *s, ...) GCC_PRINTF(2, 3);
 
 
 protected:
