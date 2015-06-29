@@ -46,12 +46,15 @@ namespace Engines {
 
 namespace DragonAge {
 
+class Campaign;
+
 class Room;
 class Object;
 
 class Area : public ScriptObject, public Events::Notifyable {
 public:
-	Area(const Common::UString &resRef, const Common::UString &env, const Common::UString &rim);
+	Area(Campaign &campaign, const Common::UString &resRef,
+	     const Common::UString &env, const Common::UString &rim);
 	~Area();
 
 	const Common::UString   &getResRef() const;
@@ -81,6 +84,8 @@ private:
 	typedef std::list<DragonAge::Object *> Objects;
 	typedef std::map<uint32, DragonAge::Object *> ObjectMap;
 
+
+	Campaign *_campaign;
 
 	Common::UString _resRef;
 

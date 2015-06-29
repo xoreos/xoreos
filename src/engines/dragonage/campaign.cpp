@@ -332,6 +332,8 @@ void Campaign::unload() {
 	delete _area;
 	_area = 0;
 
+	clearObjects();
+
 	deindexResources(_resources);
 }
 
@@ -362,6 +364,8 @@ void Campaign::unloadArea() {
 
 	delete _area;
 	_area = 0;
+
+	clearObjects();
 }
 
 void Campaign::loadArea() {
@@ -373,7 +377,7 @@ void Campaign::loadArea() {
 	if (area == _areaMap.end())
 		throw Common::Exception("Area \"%s\" does not exist in this campaign", _newArea.c_str());
 
-	_area = new Area(area->second->area, area->second->environment, area->second->rim);
+	_area = new Area(*this, area->second->area, area->second->environment, area->second->rim);
 }
 
 bool Campaign::changeArea() {

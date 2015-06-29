@@ -37,6 +37,7 @@
 #include "src/events/events.h"
 
 #include "src/engines/dragonage/area.h"
+#include "src/engines/dragonage/campaign.h"
 #include "src/engines/dragonage/room.h"
 #include "src/engines/dragonage/object.h"
 #include "src/engines/dragonage/waypoint.h"
@@ -63,8 +64,9 @@ using ::Aurora::GFF4List;
 
 using namespace ::Aurora::GFF4FieldNamesEnum;
 
-Area::Area(const Common::UString &resRef, const Common::UString &env, const Common::UString &rim) :
-	ScriptObject(kObjectTypeArea), _resRef(resRef), _activeObject(0), _highlightAll(0) {
+Area::Area(Campaign &campaign, const Common::UString &resRef,
+           const Common::UString &env, const Common::UString &rim) :
+	ScriptObject(kObjectTypeArea), _campaign(&campaign), _resRef(resRef), _activeObject(0), _highlightAll(0) {
 
 	try {
 
@@ -96,8 +98,10 @@ const Aurora::LocString &Area::getName() const {
 void Area::clean() {
 	hide();
 
-	for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o)
+	for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+		_campaign->removeObject(**o);
 		delete *o;
+	}
 
 	for (Rooms::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		delete *r;
@@ -168,6 +172,8 @@ void Area::loadARE(const Common::UString &resRef) {
 
 void Area::loadObject(DragonAge::Object &object) {
 	_objects.push_back(&object);
+
+	_campaign->addObject(object);
 
 	if (!object.isStatic()) {
 		const std::list<uint32> &ids = object.getIDs();
