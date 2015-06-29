@@ -29,18 +29,25 @@
 
 #include "src/aurora/nwscript/object.h"
 
+#include "src/engines/dragonage/types.h"
+
 namespace Engines {
 
 namespace DragonAge {
 
 class ScriptObject : public ::Aurora::NWScript::Object {
 public:
-	ScriptObject();
+	ScriptObject(ObjectType type);
 	~ScriptObject();
+
+	ObjectType getObjectType() const;
 
 protected:
 	void readVarTable(const Aurora::GFF3List &varTable);
 	void readVarTable(const Aurora::GFF4List &varTable);
+
+private:
+	ObjectType _type;
 };
 
 } // End of namespace DragonAge

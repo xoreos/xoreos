@@ -41,7 +41,7 @@ namespace DragonAge {
 /** An object in a Dragon Age: Origins area. */
 class Object : public ScriptObject {
 public:
-	Object();
+	Object(ObjectType type);
 	virtual ~Object();
 
 	// Basic visuals

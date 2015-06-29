@@ -48,10 +48,14 @@ using ::Aurora::GFF4List;
 using namespace ::Aurora::GFF4FieldNamesEnum;
 
 
-ScriptObject::ScriptObject() {
+ScriptObject::ScriptObject(ObjectType type) : _type(type) {
 }
 
 ScriptObject::~ScriptObject() {
+}
+
+ObjectType ScriptObject::getObjectType() const {
+	return _type;
 }
 
 void ScriptObject::readVarTable(const GFF3List &varTable) {

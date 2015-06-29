@@ -35,7 +35,7 @@ namespace Engines {
 
 namespace DragonAge {
 
-Waypoint::Waypoint(const Aurora::GFF3Struct &waypoint) {
+Waypoint::Waypoint(const Aurora::GFF3Struct &waypoint) : Object(kObjectTypeWaypoint) {
 	load(waypoint);
 }
 

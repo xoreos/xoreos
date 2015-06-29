@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace DragonAge {
 
-Object::Object() : _static(true), _usable(false) {
+Object::Object(ObjectType type) : ScriptObject(type), _static(true), _usable(false) {
 	_position[0] = 0.0f;
 	_position[1] = 0.0f;
 	_position[2] = 0.0f;

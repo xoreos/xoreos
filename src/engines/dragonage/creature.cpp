@@ -60,7 +60,9 @@ using namespace ::Aurora::GFF4FieldNamesEnum;
 
 using Graphics::Aurora::Model;
 
-Creature::Creature(const GFF3Struct &creature) : _appearance(0xFFFFFFFF), _appearanceGender(1) {
+Creature::Creature(const GFF3Struct &creature) : Object(kObjectTypeCreature),
+	_appearance(0xFFFFFFFF), _appearanceGender(1) {
+
 	for (size_t i = 0; i < kPartVariationCount; i++)
 		_partVariation[i] = 0xFFFFFFFF;
 

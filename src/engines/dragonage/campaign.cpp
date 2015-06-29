@@ -65,7 +65,7 @@ Campaign::RIMNode::~RIMNode() {
 
 
 Campaign::Campaign(const Common::UString &cifPath,  const Common::UString &manifestPath) :
-	_enabled(false), _bioware(false), _needsAuth(false),
+	ScriptObject(kObjectTypeModule), _enabled(false), _bioware(false), _needsAuth(false),
 	_priority(0xFFFFFFFF), _format(0xFFFFFFFF), _state(0xFFFFFFFF), _rimRoot(0),
 	_area(0) {
 

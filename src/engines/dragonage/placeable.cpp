@@ -39,7 +39,9 @@ namespace Engines {
 
 namespace DragonAge {
 
-Placeable::Placeable(const Aurora::GFF3Struct &placeable) : _appearance(0xFFFFFFFF), _model(0) {
+Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Object(kObjectTypePlaceable),
+	_appearance(0xFFFFFFFF), _model(0) {
+
 	try {
 		load(placeable);
 	} catch (...) {
