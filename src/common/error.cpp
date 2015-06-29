@@ -24,6 +24,7 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <cstdlib>
 
 #include "src/common/error.h"
 #include "src/common/util.h"
@@ -92,9 +93,9 @@ const Exception kWriteError("Write error");
 
 
 void printException(Exception &e, const UString &prefix) {
-	Exception::Stack &stack = e.getStack();
-
 	try {
+		Exception::Stack &stack = e.getStack();
+
 		if (stack.empty()) {
 			status("FATAL ERROR");
 			return;
@@ -110,6 +111,7 @@ void printException(Exception &e, const UString &prefix) {
 		}
 	} catch (...) {
 		status("FATAL ERROR: Exception while printing exception stack");
+		std::exit(1);
 	}
 }
 
