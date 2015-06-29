@@ -126,8 +126,6 @@ private:
 
 	NWNEngine *_engine;
 
-	Aurora::NWScript::ObjectContainer::SearchContext _objSearchContext;
-
 
 	void registerFunctions();
 	void registerFunctions000(const Defaults &d);

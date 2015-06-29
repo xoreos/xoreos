@@ -897,15 +897,19 @@ void ScriptFunctions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
 	if (tag.empty())
 		return;
 
-	module->findObjectInit(_objSearchContext, tag);
-	while (module->findNextObject(_objSearchContext)) {
-		Waypoint *waypoint = convertWaypoint(_objSearchContext.getObject());
+	Aurora::NWScript::ObjectSearch *search = module->findObjectsByTag(tag);
+	Aurora::NWScript::Object       *object = 0;
+
+	while ((object = search->next())) {
+		Waypoint *waypoint = convertWaypoint(object);
 
 		if (waypoint) {
 			ctx.getReturn() = waypoint;
 			break;
 		}
 	}
+
+	delete search;
 }
 
 void ScriptFunctions::getTransitionTarget(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {

@@ -24,6 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/uuid.h"
 
 #include "src/aurora/ssffile.h"
 #include "src/aurora/2dafile.h"
@@ -50,6 +51,8 @@ namespace NWN {
 Object::Object(ObjectType type) : _type(type),
 	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(false), _usable(true),
 	_pcSpeaker(0), _area(0) {
+
+	_id = Common::generateIDNumber();
 
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;

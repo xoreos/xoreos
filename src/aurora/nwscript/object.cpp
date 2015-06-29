@@ -22,36 +22,9 @@
  *  An NWScript object.
  */
 
-#include "src/aurora/types.h"
-
-#include "src/aurora/nwscript/object.h"
-#include "src/aurora/nwscript/objectcontainer.h"
-
 namespace Aurora {
 
 namespace NWScript {
-
-Object::Object() : _id(kObjectIDInvalid), _objectContainer(0) {
-}
-
-Object::~Object() {
-	removeContainer();
-}
-
-uint32 Object::getID() const {
-	return _id;
-}
-
-const Common::UString &Object::getTag() const {
-	return _tag;
-}
-
-void Object::removeContainer() {
-	if (!_objectContainer)
-		return;
-
-	_objectContainer->removeObject(*this);
-}
 
 } // End of namespace NWScript
 

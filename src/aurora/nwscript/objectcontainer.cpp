@@ -22,6 +22,8 @@
  *  An NWScript object container.
  */
 
+#include <algorithm>
+
 #include "src/common/error.h"
 
 #include "src/aurora/types.h"
@@ -32,92 +34,81 @@ namespace Aurora {
 
 namespace NWScript {
 
-ObjectContainer::SearchContext::SearchContext() : _empty(true), _object(0) {
-}
-
-ObjectContainer::SearchContext::~SearchContext() {
-}
-
-Object *ObjectContainer::SearchContext::getObject() const {
-	return _object;
-}
-
-
-ObjectContainer::ObjectContainer() : _currentID(0) {
+ObjectContainer::ObjectContainer() {
 }
 
 ObjectContainer::~ObjectContainer() {
 }
 
-void ObjectContainer::addObject(Object &obj) {
+void ObjectContainer::clearObjects() {
 	Common::StackLock lock(_mutex);
 
-	removeObject(obj);
-
-	obj._id = ++_currentID;
-
-	obj._objectContainer    = this;
-	obj._objectContainerTag = _objects.insert(std::make_pair(obj.getTag(), &obj));
+	_objects.clear();
+	_objectsByID.clear();
+	_objectsByTag.clear();
 }
 
-void ObjectContainer::removeObject(Object &obj) {
+void ObjectContainer::addObject(Object &object) {
 	Common::StackLock lock(_mutex);
 
-	if (!obj._objectContainer)
-		return;
+	assert(std::find(_objects.begin(), _objects.end(), &object) == _objects.end());
 
-	obj._id = kObjectIDInvalid;
-
-	obj._objectContainer = 0;
-
-	_objects.erase(obj._objectContainerTag);
-	obj._objectContainerTag = _objects.end();
+	_objects.push_back(&object);
+	_objectsByID.insert(std::make_pair(object.getID(), &object));
+	_objectsByTag.insert(std::make_pair(object.getTag(), &object));
 }
 
-bool ObjectContainer::findObjectInit(SearchContext &ctx) const {
-	ctx._object = 0;
-	ctx._tag    = "";
-	ctx._range  = std::make_pair(_objects.begin(), _objects.end());
-	ctx._empty  = ctx._range.first == ctx._range.second;
+void ObjectContainer::removeObject(Object &object) {
+	Common::StackLock lock(_mutex);
 
-	return !ctx._empty;
-}
+	_objects.remove(&object);
+	_objectsByID.erase(object.getID());
 
-bool ObjectContainer::findObjectInit(SearchContext &ctx, const Common::UString &tag) const {
-	ctx._object = 0;
-	ctx._tag    = tag;
-	ctx._range  = _objects.equal_range(tag);
-	ctx._empty  = ctx._range.first == ctx._range.second;
+	std::pair<ObjectTagMap::iterator, ObjectTagMap::iterator> tag =
+		_objectsByTag.equal_range(object.getTag());
 
-	return !ctx._empty;
-}
-
-Object *ObjectContainer::findNextObject(SearchContext &ctx) const {
-	if (ctx._empty || (ctx._range.first == ctx._range.second)) {
-		ctx._empty  = true;
-		ctx._object = 0;
-		return 0;
+	for (ObjectTagMap::iterator o = tag.first; o != tag.second; ++o) {
+		if (o->second == &object) {
+			_objectsByTag.erase(o);
+			break;
+		}
 	}
-
-	ctx._object = ctx._range.first->second;
-
-	++ctx._range.first;
-
-	return ctx._object;
 }
 
-Object *ObjectContainer::findObject() const {
-	if (_objects.empty())
-		return 0;
+Object *ObjectContainer::getObjectByID(uint32 id) const {
+	ObjectIDMap::const_iterator o = _objectsByID.find(id);
+	if (o != _objectsByID.end())
+		return o->second;
 
-	return _objects.begin()->second;
+	return 0;
 }
 
-Object *ObjectContainer::findObject(const Common::UString &tag) const {
-	SearchContext ctx;
-	findObjectInit(ctx, tag);
+Object *ObjectContainer::getFirstObject() const {
+	SearchList ctx(_objects);
 
-	return findNextObject(ctx);
+	return ctx.get();
+}
+
+Object *ObjectContainer::getFirstObjectByTag(const Common::UString &tag) const {
+	SearchTagMap ctx(_objectsByTag, tag);
+
+	return ctx.get();
+}
+
+ObjectSearch *ObjectContainer::findObjects() const {
+	return new SearchList(_objects);
+}
+
+ObjectSearch *ObjectContainer::findObjectsByTag(const Common::UString &tag) const {
+	return new SearchTagMap(_objectsByTag, tag);
+}
+
+void ObjectContainer::lock() {
+	_mutex.lock();
+}
+
+void ObjectContainer::unlock() {
+	_mutex.unlock();
 }
 
 } // End of namespace NWScript

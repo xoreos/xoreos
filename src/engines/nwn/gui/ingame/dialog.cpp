@@ -743,7 +743,7 @@ Object *Dialog::getSpeaker() {
 		return 0;
 
 	if (!entry->speaker.empty())
-		return dynamic_cast<Object *>(_module->findObject(entry->speaker));
+		return dynamic_cast<Object *>(_module->getFirstObjectByTag(entry->speaker));
 
 	return _object;
 }

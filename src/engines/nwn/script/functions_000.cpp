@@ -704,16 +704,18 @@ void ScriptFunctions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx)
 	int crit3Value = ctx.getParams()[7].getInt();
 	*/
 
-	if (!module->findObjectInit(_objSearchContext))
-		return;
+	Aurora::NWScript::ObjectSearch *search = module->findObjects();
+	Aurora::NWScript::Object       *object = 0;
 
 	std::list<Object *> creatures;
-	while (module->findNextObject(_objSearchContext)) {
-		Creature *creature = convertCreature(_objSearchContext.getObject());
+	while ((object = search->next())) {
+		Creature *creature = convertCreature(object);
 
 		if (creature && (creature != target) && (creature->getArea() == target->getArea()))
 			creatures.push_back(creature);
 	}
+
+	delete search;
 
 	creatures.sort(ObjectDistanceSort(*target));
 

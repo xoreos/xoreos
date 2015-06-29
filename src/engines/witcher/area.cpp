@@ -74,7 +74,7 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 }
 
 Area::~Area() {
-	removeContainer();
+	_module->removeObject(*this);
 
 	hide();
 
@@ -85,8 +85,12 @@ Area::~Area() {
 
 void Area::clear() {
 	// Delete objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+		if (!(*o)->isStatic())
+			_module->removeObject(**o);
+
 		delete *o;
+	}
 
 	_objects.clear();
 

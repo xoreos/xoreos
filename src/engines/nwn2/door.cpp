@@ -228,7 +228,7 @@ void Door::evaluateLink() {
 		return;
 
 	if ((_linkedToFlag != 0) && !_linkedTo.empty()) {
-		Aurora::NWScript::Object *object = _module->findObject(_linkedTo);
+		Aurora::NWScript::Object *object = _module->getFirstObjectByTag(_linkedTo);
 
 		if      (_linkedToFlag == kLinkedToDoor)
 			_link = _linkedDoor     = dynamic_cast<Door *>(object);

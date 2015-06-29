@@ -425,13 +425,12 @@ void ScriptFunctions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	int nth = ctx.getParams()[1].getInt();
 
-	if (!module->findObjectInit(_objSearchContext, tag))
-		return;
-
+	Aurora::NWScript::ObjectSearch *search = module->findObjectsByTag(tag);
 	while (nth-- >= 0)
-		module->findNextObject(_objSearchContext);
+		search->next();
 
-	ctx.getReturn() = _objSearchContext.getObject();
+	ctx.getReturn() = search->get();
+	delete search;
 }
 
 void ScriptFunctions::adjustAlignment(Aurora::NWScript::FunctionContext &UNUSED(ctx)) {
@@ -634,17 +633,19 @@ void ScriptFunctions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	ObjectType type = (ObjectType) ctx.getParams()[0].getInt();
 	int nth = ctx.getParams()[2].getInt() - 1;
 
-	if (!module->findObjectInit(_objSearchContext))
-		return;
+	Aurora::NWScript::ObjectSearch *search = module->findObjects();
+	Aurora::NWScript::Object       *object = 0;
 
 	std::list<Object *> objects;
-	while (module->findNextObject(_objSearchContext)) {
-		Object *object = convertObject(_objSearchContext.getObject());
+	while ((object = search->next())) {
+		Object *nwnObject = convertObject(object);
 
-		if (object && (object != target) && (object->getType() == type) &&
-		    (object->getArea() == target->getArea()))
-			objects.push_back(object);
+		if (nwnObject && (nwnObject != target) && (nwnObject->getType() == type) &&
+		    (nwnObject->getArea() == target->getArea()))
+			objects.push_back(nwnObject);
 	}
+
+	delete search;
 
 	objects.sort(ObjectDistanceSort(*target));
 
@@ -678,16 +679,18 @@ void ScriptFunctions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &c
 
 	int nth = ctx.getParams()[2].getInt() - 1;
 
-	if (!module->findObjectInit(_objSearchContext, tag))
-		return;
+	Aurora::NWScript::ObjectSearch *search = module->findObjectsByTag(tag);
+	Aurora::NWScript::Object       *object = 0;
 
 	std::list<Object *> objects;
-	while (module->findNextObject(_objSearchContext)) {
-		Object *object = convertObject(_objSearchContext.getObject());
+	while ((object = search->next())) {
+		Object *nwnObject = convertObject(object);
 
-		if (object && (object != target) && (object->getArea() == target->getArea()))
-			objects.push_back(object);
+		if (nwnObject && (nwnObject != target) && (nwnObject->getArea() == target->getArea()))
+			objects.push_back(nwnObject);
 	}
+
+	delete search;
 
 	objects.sort(ObjectDistanceSort(*target));
 

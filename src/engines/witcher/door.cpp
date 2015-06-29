@@ -88,7 +88,7 @@ void Door::evaluateLink() {
 	if (_link || _linkTag.empty())
 		return;
 
-	Aurora::NWScript::Object *object = _module->findObject(_linkTag);
+	Aurora::NWScript::Object *object = _module->getFirstObjectByTag(_linkTag);
 	_link = dynamic_cast<Waypoint *>(object);
 }
 

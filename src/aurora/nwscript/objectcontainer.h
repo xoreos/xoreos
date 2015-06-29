@@ -25,6 +25,9 @@
 #ifndef AURORA_NWSCRIPT_OBJECTCONTAINER_H
 #define AURORA_NWSCRIPT_OBJECTCONTAINER_H
 
+#include <list>
+#include <map>
+
 #include "src/common/mutex.h"
 
 #include "src/aurora/nwscript/object.h"
@@ -33,51 +36,108 @@ namespace Aurora {
 
 namespace NWScript {
 
+class ObjectSearch {
+public:
+	ObjectSearch() { }
+	virtual ~ObjectSearch() { }
+
+	/** Return the current object in the search context. */
+	virtual Object *get()  = 0;
+	/** Move to the next object in the search context and return the previous one. */
+	virtual Object *next() = 0;
+};
+
+template<typename T> class SearchRange : public ObjectSearch {
+public:
+	typedef T type;
+	typedef typename T::const_iterator iterator;
+	typedef std::pair<iterator, iterator> range;
+
+	SearchRange(const range &r) : _range(r) { }
+	~SearchRange() { }
+
+	Object *get() {
+		if (_range.first == _range.second)
+			return 0;
+
+		return getObject(_range.first);
+	}
+
+	Object *next() {
+		if (_range.first == _range.second)
+			return 0;
+
+		Object *object = getObject(_range.first);
+
+		++_range.first;
+
+		return object;
+	}
+
+protected:
+	virtual Object *getObject(const iterator &t) = 0;
+
+private:
+	range _range;
+};
+
+class SearchList : public SearchRange< std::list<Object *> > {
+public:
+	SearchList(const type &l) : SearchRange(std::make_pair(l.begin(), l.end())) { }
+	~SearchList() { }
+
+	Object *getObject(const iterator &t) { return *t; }
+};
+
+class SearchTagMap : public SearchRange< std::multimap<Common::UString, Object *> > {
+public:
+	SearchTagMap(const type &m, const Common::UString &tag) : SearchRange(m.equal_range(tag)) { }
+	~SearchTagMap() { }
+
+	Object *getObject(const iterator &t) { return t->second; };
+};
+
 class ObjectContainer {
 public:
-	class SearchContext {
-	public:
-		SearchContext();
-		~SearchContext();
-
-		Object *getObject() const;
-
-	private:
-		bool _empty;
-		Object *_object;
-		Common::UString _tag;
-		std::pair<ObjectTagMap::const_iterator, ObjectTagMap::const_iterator> _range;
-
-		friend class ObjectContainer;
-	};
-
 	ObjectContainer();
 	~ObjectContainer();
 
+	void clearObjects();
+
 	/** Add an object to this container. */
-	void addObject(Object &obj);
+	void addObject(Object &object);
 	/** Remove an object from this container. */
-	void removeObject(Object &obj);
+	void removeObject(Object &object);
 
-	/** Init a search context for finding all objects. */
-	bool findObjectInit(SearchContext &ctx) const;
-	/** Init a search context for finding all objects with this tag. */
-	bool findObjectInit(SearchContext &ctx, const Common::UString &tag) const;
+	/** Find a specific object by ID. */
+	Object *getObjectByID(uint32 id) const;
 
-	/** Find the next object. */
-	Object *findNextObject(SearchContext &ctx) const;
+	/** Return the first object. */
+	Object *getFirstObject() const;
+	/** Return the first object with this tag. */
+	Object *getFirstObjectByTag(const Common::UString &tag) const;
 
-	/** Find the first best object, disregarding any other matches. */
-	Object *findObject() const;
-	/** Find the first best object with this tag, disregarding any other matches. */
-	Object *findObject(const Common::UString &tag) const;
+	/** Return a search context to iterate over all objects. */
+	ObjectSearch *findObjects() const;
+	/** Return a search context to iterate over all objects with this tag. */
+	ObjectSearch *findObjectsByTag(const Common::UString &tag) const;
+
+
+protected:
+	void lock();
+	void unlock();
+
 
 private:
+	typedef std::map<uint32, Object *> ObjectIDMap;
+	typedef SearchList::type ObjectList;
+	typedef SearchTagMap::type ObjectTagMap;
+
 	Common::Mutex _mutex;
 
-	uint32 _currentID;
-
-	ObjectTagMap _objects;
+	ObjectList   _objects;
+	ObjectIDMap  _objectsByID;
+	ObjectTagMap _objectsByTag;
 };
 
 } // End of namespace NWScript

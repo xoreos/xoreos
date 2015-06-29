@@ -25,8 +25,6 @@
 #ifndef AURORA_NWSCRIPT_OBJECT_H
 #define AURORA_NWSCRIPT_OBJECT_H
 
-#include <map>
-
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -36,32 +34,26 @@ namespace Aurora {
 
 namespace NWScript {
 
-class ObjectContainer;
-
-typedef std::map<uint32, class Object *> ObjectIDMap;
-typedef std::multimap<Common::UString, class Object *> ObjectTagMap;
-
 class Object : public VariableContainer {
 public:
-	Object();
-	virtual ~Object();
+	Object() : _id(kObjectIDInvalid) {
+	}
 
-	uint32 getID() const;
+	virtual ~Object() {
+	}
 
-	const Common::UString &getTag() const;
+	uint32 getID() const {
+		return _id;
+	}
+
+	const Common::UString &getTag() const {
+		return _tag;
+	}
 
 protected:
 	uint32 _id;
 
 	Common::UString _tag;
-
-	void removeContainer();
-
-private:
-	ObjectContainer *_objectContainer;
-	ObjectTagMap::iterator _objectContainerTag;
-
-	friend class ObjectContainer;
 };
 
 } // End of namespace NWScript
