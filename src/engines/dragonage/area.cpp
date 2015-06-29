@@ -242,6 +242,34 @@ Aurora::LocString Area::getName(const Common::UString &resRef) {
 	return name;
 }
 
+void Area::getEntryLocation(float &posX, float &posY, float &posZ,
+                            float &orientX, float &orientY, float &orientZ, float &orientAngle) const {
+
+	DragonAge::Object *object = 0;
+
+	object = ObjectContainer::toObject(_campaign->getFirstObjectByTag(_startPoint));
+	if (!object)
+		object = ObjectContainer::toObject(_campaign->getFirstObjectByType(kObjectTypeWaypoint));
+	if (!object)
+		object = ObjectContainer::toObject(_campaign->getFirstObject());
+
+	if (object) {
+		object->getPosition(posX, posY, posZ);
+		object->getOrientation(orientX, orientY, orientZ, orientAngle);
+		return;
+	}
+
+	posX = 0.0f;
+	posY = 0.0f;
+	posZ = 0.0f;
+
+	orientX = 0.0f;
+	orientY = 0.0f;
+	orientZ = 0.0f;
+
+	orientAngle = 0.0f;
+}
+
 void Area::addEvent(const Events::Event &event) {
 	_eventQueue.push_back(event);
 }

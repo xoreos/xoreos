@@ -60,6 +60,10 @@ public:
 	const Common::UString   &getResRef() const;
 	const Aurora::LocString &getName()   const;
 
+	/** Return the position and orientation the PC should enter this area. */
+	void getEntryLocation(float &posX, float &posY, float &posZ,
+	                      float &orientX, float &orientY, float &orientZ, float &orientAngle) const;
+
 	void show();
 	void hide();
 
