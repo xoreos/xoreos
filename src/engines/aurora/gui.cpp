@@ -101,7 +101,7 @@ uint32 GUI::run(uint32 startCode) {
 
 		// But return immediately when an engine quit was requested
 		if (EventMan.quitRequested())
-			return 0;
+			return kReturnCodeNone;
 
 		// Handle events
 		Events::Event event;
