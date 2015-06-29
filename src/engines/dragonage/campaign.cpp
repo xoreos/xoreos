@@ -341,7 +341,11 @@ void Campaign::enter() {
 	if (!_area)
 		return;
 
+	float posX, posY, posZ, orientX, orientY, orientZ, orientAngle;
+	_area->getEntryLocation(posX, posY, posZ, orientX, orientY, orientZ, orientAngle);
+
 	CameraMan.reset();
+	CameraMan.setPosition(posX, posY, posZ + 1.8f);
 	CameraMan.setOrientation(90.0f, 0.0f, 0.0f);
 	CameraMan.update();
 
