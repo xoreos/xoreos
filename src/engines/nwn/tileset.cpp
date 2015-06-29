@@ -68,7 +68,7 @@ float Tileset::getTilesHeight() const {
 
 const Tileset::Tile &Tileset::getTile(size_t n) const {
 	if (n >= _tiles.size())
-		throw Common::Exception("Tileset has no tile %u", n);
+		throw Common::Exception("Tileset has no tile %u", (uint)n);
 
 	return _tiles[n];
 }

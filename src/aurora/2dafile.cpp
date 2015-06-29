@@ -381,17 +381,17 @@ bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
 
 	// Write column headers
 
-	file.writeString(Common::UString::format("%-*s", colLength[0], ""));
+	file.writeString(Common::UString::format("%-*s", (int)colLength[0], ""));
 
 	for (size_t i = 0; i < _headers.size(); i++)
-		file.writeString(Common::UString::format(" %-*s", colLength[i + 1], _headers[i].c_str()));
+		file.writeString(Common::UString::format(" %-*s", (int)colLength[i + 1], _headers[i].c_str()));
 
 	file.writeByte('\n');
 
 	// Write array
 
 	for (size_t i = 0; i < _rows.size(); i++) {
-		file.writeString(Common::UString::format("%*d", colLength[0], i));
+		file.writeString(Common::UString::format("%*u", (int)colLength[0], (uint)i));
 
 		for (size_t j = 0; j < _rows[i]->_data.size(); j++) {
 			const bool needQuote = _rows[i]->_data[j].contains(' ');
@@ -402,7 +402,7 @@ bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
 			else
 				cellString = _rows[i]->_data[j];
 
-			file.writeString(Common::UString::format(" %-*s", colLength[j + 1], cellString.c_str()));
+			file.writeString(Common::UString::format(" %-*s", (int)colLength[j + 1], cellString.c_str()));
 
 		}
 

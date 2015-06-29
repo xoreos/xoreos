@@ -205,7 +205,7 @@ void Area::load() {
 void Area::loadDefinition() {
 	const Aurora::GDAFile &areas = TwoDAReg.getGDA("areas");
 	if (!areas.hasRow(_id))
-		throw Common::Exception("No such Area ID %d (%u)", _id, areas.getRowCount());
+		throw Common::Exception("No such Area ID %d (%u)", _id, (uint)areas.getRowCount());
 
 	_name = TalkMan.getString(areas.getInt(_id, "Name", 0xFFFFFFFF));
 

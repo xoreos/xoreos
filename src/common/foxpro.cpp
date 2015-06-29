@@ -466,13 +466,13 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
 	size_t block = ((uint32) i) - 1;
 
 	if (block >= _memos.size())
-		throw Exception("Memo block #%d >= memo block count %d", block, _memos.size());
+		throw Exception("Memo block #%u >= memo block count %u", (uint)block, (uint)_memos.size());
 
 	size_t type = READ_BE_UINT32(_memos[block] + 0);
 	size_t size = READ_BE_UINT32(_memos[block] + 4);
 
 	if ((type != 0x00) && (type != 0x01) && (type != 0x02))
-		throw Exception("Memo type unknown (%d)", type);
+		throw Exception("Memo type unknown (%u)", (uint)type);
 
 	bool first = true;
 
@@ -484,7 +484,7 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
 	while (size > 0) {
 		if (block >= _memos.size()) {
 			delete[] data;
-			throw Exception("Memo block #%d >= memo block count %d", block, _memos.size());
+			throw Exception("Memo block #%u >= memo block count %u", (uint)block, (uint)_memos.size());
 		}
 
 		size_t n = MIN<size_t>(size, _memoBlockSize - (first ? 8 : 0));
@@ -878,7 +878,7 @@ bool FoxPro::getInt(const byte *data, size_t size, int32 &i) {
 	char n[32];
 
 	if (size > 31)
-		throw Exception("Numerical field size > 31 (%d)", size);
+		throw Exception("Numerical field size > 31 (%u)", (uint)size);
 
 	strncpy(n, (const char *) data, size);
 	n[size] = '\0';

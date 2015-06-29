@@ -72,7 +72,7 @@ void Console::updateAreas() {
 		if (areas.getInt(i, "Name") > 0) {
 			_areas.insert(i);
 
-			areaIDs.push_back(Common::UString::format("%u", i));
+			areaIDs.push_back(Common::UString::format("%u", (uint)i));
 		}
 	}
 

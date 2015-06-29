@@ -491,8 +491,8 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
                          uint32 function, uint8 argCount) {
 
 	if ((argCount < ctx.getParamMin()) || (argCount > ctx.getParamMax()))
-		throw Common::Exception("NCSFile::callEngine(): Argument count mismatch (%d vs %d - %d)",
-		                        argCount, ctx.getParamMin(), ctx.getParamMax());
+		throw Common::Exception("NCSFile::callEngine(): Argument count mismatch (%u vs %u - %u)",
+		                        argCount, (uint)ctx.getParamMin(), (uint)ctx.getParamMax());
 
 	ctx.setCurrentScript(this);
 	ctx.setCaller(_owner);

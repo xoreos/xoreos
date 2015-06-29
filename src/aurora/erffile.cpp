@@ -438,7 +438,7 @@ const Archive::ResourceList &ERFFile::getResources() const {
 
 const ERFFile::IResource &ERFFile::getIResource(uint32 index) const {
 	if (index >= _iResources.size())
-		throw Common::Exception("Resource index out of range (%d/%d)", index, _iResources.size());
+		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_iResources.size());
 
 	return _iResources[index];
 }

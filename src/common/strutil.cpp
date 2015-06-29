@@ -208,9 +208,9 @@ template<typename T> void parseString(const UString &str, T &value) {
 
 	try {
 		if (endptr && (*endptr != '\0'))
-			throw Exception("Can't convert \"%s\" to type of size %d", str.c_str(), sizeof(T));
+			throw Exception("Can't convert \"%s\" to type of size %u", str.c_str(), (uint)sizeof(T));
 		if (errno == ERANGE)
-			throw Exception("\"%s\" out of range for type of size %d", str.c_str(), sizeof(T));
+			throw Exception("\"%s\" out of range for type of size %u", str.c_str(), (uint)sizeof(T));
 	} catch (...) {
 		value = oldValue;
 		throw;

@@ -128,7 +128,7 @@ const ZipFile::FileList &ZipFile::getFiles() const {
 
 const ZipFile::IFile &ZipFile::getIFile(uint32 index) const {
 	if (index >= _iFiles.size())
-		throw Exception("File index out of range (%d/%d)", index, _iFiles.size());
+		throw Exception("File index out of range (%u/%u)", index, (uint)_iFiles.size());
 
 	return _iFiles[index];
 }

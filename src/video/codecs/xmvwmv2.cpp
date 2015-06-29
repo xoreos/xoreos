@@ -675,7 +675,7 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 			// Skip the run of 0s
 			coeffCount += run;
 			if (coeffCount >= (kBlockSize * kBlockSize))
-				throw Common::Exception("XMVWMV2Codec::parseExtraData(): ",
+				throw Common::Exception("XMVWMV2Codec::parseExtraData(): "
 				                        "Overrun while deRLEing AC coefficients");
 
 			// deZigZag the current coefficient position

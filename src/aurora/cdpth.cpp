@@ -127,7 +127,7 @@ static void readCells(ReadContext &ctx) {
 			ctx.cells.back() = Aurora::Small::decompress(cellData);
 
 			if (ctx.cells.back()->size() != 8192)
-				throw Common::Exception("Invalid size for cell %u: %u", i, (uint)ctx.cells.back()->size());
+				throw Common::Exception("Invalid size for cell %u: %u", (uint)i, (uint)ctx.cells.back()->size());
 
 			ctx.cdpth->seek(pos);
 		}

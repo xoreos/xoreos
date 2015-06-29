@@ -138,7 +138,7 @@ const Archive::ResourceList &BZFFile::getResources() const {
 
 const BZFFile::IResource &BZFFile::getIResource(uint32 index) const {
 	if (index >= _iResources.size())
-		throw Common::Exception("Resource index out of range (%d/%d)", index, _iResources.size());
+		throw Common::Exception("Resource index out of range (%u/%u)", index, (uint)_iResources.size());
 
 	return _iResources[index];
 }

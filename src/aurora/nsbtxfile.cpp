@@ -91,7 +91,7 @@ uint32 NSBTXFile::getITEXSize(const Texture &texture) {
 
 uint32 NSBTXFile::getResourceSize(uint32 index) const {
 	if (index >= _textures.size())
-		throw Common::Exception("Texture index out of range (%d/%d)", index, _textures.size());
+		throw Common::Exception("Texture index out of range (%u/%u)", index, (uint)_textures.size());
 
 	return getITEXSize(_textures[index]);
 }
@@ -318,7 +318,7 @@ void NSBTXFile::getTexture(const ReadContext &ctx) {
 
 Common::SeekableReadStream *NSBTXFile::getResource(uint32 index, bool UNUSED(tryNoCopy)) const {
 	if (index >= _textures.size())
-		throw Common::Exception("Texture index out of range (%d/%d)", index, _textures.size());
+		throw Common::Exception("Texture index out of range (%u/%u)", index, (uint)_textures.size());
 
 	Common::MemoryWriteStreamDynamic stream(false, getITEXSize(_textures[index]));
 
@@ -373,7 +373,7 @@ void NSBTXFile::readFileHeader(Common::SeekableSubReadStreamEndian &nsbtx) {
 
 	const uint32 fileSize = nsbtx.readUint32();
 	if (fileSize > (uint32)nsbtx.size())
-		throw Common::Exception("Size too large (%u > %u)", fileSize, nsbtx.size());
+		throw Common::Exception("Size too large (%u > %u)", fileSize, (uint)nsbtx.size());
 
 	const uint16 headerSize = nsbtx.readUint16();
 	if (headerSize != 16)

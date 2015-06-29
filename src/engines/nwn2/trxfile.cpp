@@ -138,7 +138,7 @@ void TRXFile::loadPackets(Common::SeekableReadStream &trx, std::vector<Packet> &
 
 		uint32 type = trx.readUint32BE();
 		if (type != p->type)
-			throw Common::Exception("Packet type mismatch (0x%08X vs 0x%08)", type, p->type);
+			throw Common::Exception("Packet type mismatch (0x%08X vs 0x%08X)", type, p->type);
 
 		p->size = trx.readUint32LE();
 		if ((trx.size() - trx.pos()) < p->size)
