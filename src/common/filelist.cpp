@@ -78,6 +78,19 @@ void FileList::sort(bool caseInsensitive) {
 		_files.sort(Common::UString::sless());
 }
 
+void FileList::relativize(const Common::UString &basePath) {
+	std::list<UString>::iterator file = _files.begin();
+
+	while (file != _files.end()) {
+		*file = FilePath::relativize(basePath, *file);
+
+		if (file->empty())
+			file = _files.erase(file);
+		else
+			++file;
+	}
+}
+
 FileList::const_iterator FileList::begin() const {
 	return _files.begin();
 }

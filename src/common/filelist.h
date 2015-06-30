@@ -56,6 +56,12 @@ public:
 	/** Sort this list alphabetically. */
 	void sort(bool caseInsensitive);
 
+	/** Express all files in this archive as relative to the given base path.
+	 *  Files that do not match the base path will be removed from the list.
+	 *  See also FilePath::relativize().
+	 */
+	void relativize(const Common::UString &basePath);
+
 	/** Return a const_iterator pointing to the beginning of the list. */
 	const_iterator begin() const;
 	/** Return a const_iterator pointing past the end of the list. */
