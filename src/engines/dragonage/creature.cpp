@@ -29,7 +29,6 @@
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/gff4file.h"
-#include "src/aurora/2dareg.h"
 #include "src/aurora/gdafile.h"
 
 #include "src/graphics/aurora/model.h"
@@ -37,6 +36,7 @@
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/dragonage/creature.h"
+#include "src/engines/dragonage/util.h"
 
 namespace Engines {
 
@@ -230,15 +230,12 @@ void Creature::loadModelsHeadList(const Aurora::GDAFile &gda, size_t row) {
 
 	const Common::UString prefix = createModelPrefix(gda, row, _appearanceGender);
 
-	const Aurora::GDAFile &m2da = TwoDAReg.getGDA("m2da_base");
-
 	for (size_t i = 0; i < kPartVariationCount; i++) {
 		const size_t sheetIndex = gda.getInt(row, kSheetColumns[i]);
 		if (sheetIndex == 0)
 			continue;
 
-		const Common::UString sheetName = m2da.getString(m2da.findRow(sheetIndex), "Worksheet");
-		const Aurora::GDAFile &sheet    = TwoDAReg.getGDA(sheetName);
+		const Aurora::GDAFile &sheet = getMGDA(sheetIndex);
 
 		const size_t sheetRow = sheet.findRow(_partVariation[i]);
 		if (sheetRow == Aurora::GDAFile::kInvalidRow)
@@ -255,7 +252,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 
 	const Common::UString prefix = createModelPrefix(gda, row, _appearanceGender);
 
-	const Aurora::GDAFile &naked = TwoDAReg.getGDA("naked_variation");
+	const Aurora::GDAFile &naked = getMGDA(kWorksheetNakedVariations);
 
 	static const uint32 kNakedTorso  = 0;
 	static const uint32 kNakedGloves = 1;
@@ -309,8 +306,7 @@ Common::UString Creature::findEquipModel(EquipSlot slot, const Common::UString &
 	if (armorType)
 		*armorType = 0;
 
-	const Aurora::GDAFile &m2da      = TwoDAReg.getGDA("m2da_base");
-	const Aurora::GDAFile &baseItems = TwoDAReg.getGDA("bitm_base");
+	const Aurora::GDAFile &baseItems = getMGDA(kWorksheetItems);
 
 	for (Items::const_iterator item = _items.begin(); item != _items.end(); ++item) {
 		if (item->slot != slot)
@@ -330,12 +326,9 @@ Common::UString Creature::findEquipModel(EquipSlot slot, const Common::UString &
 			if (armorType)
 				*armorType = baseItems.getInt(itemRow, "ArmorType");
 
-			const uint32 varSheet    = (uint32) baseItems.getInt(itemRow, "Variation_Worksheet", -1);
-			const size_t varSheetRow = m2da.findRow(varSheet);
-			if (varSheetRow == Aurora::GDAFile::kInvalidRow)
-				continue;
+			const uint32 varSheet = (uint32) baseItems.getInt(itemRow, "Variation_Worksheet", -1);
+			const Aurora::GDAFile &variations = getMGDA(varSheet);
 
-			const Aurora::GDAFile &variations = TwoDAReg.getGDA(m2da.getString(varSheetRow, "Worksheet"));
 			const size_t variationRow = variations.findRow(variation);
 			if (variationRow == Aurora::GDAFile::kInvalidRow)
 				continue;
@@ -354,7 +347,7 @@ void Creature::load(const GFF3Struct &instance, const GFF3Struct *blueprint = 0)
 		loadProperties(*blueprint);
 	loadProperties(instance);
 
-	const Aurora::GDAFile &gda = TwoDAReg.getGDA("apr_base");
+	const Aurora::GDAFile &gda = getMGDA(kWorksheetAppearances);
 	const size_t row = gda.findRow(_appearance);
 
 	const Common::UString modelType = gda.getString(row, "ModelType");

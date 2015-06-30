@@ -29,6 +29,23 @@ namespace Engines {
 
 namespace DragonAge {
 
+/** Multiple GDA as defined by m2da_*.gda. */
+enum Worksheet {
+	kWorksheetAnimations      =   0,
+	kWorksheetAbilities       =   1,
+	kWorksheetAppearances     =   2,
+	kWorksheetClasses         =   3,
+	kWorksheetProjectiles     =   4,
+	kWorksheetRaces           =   5,
+	kWorksheetItems           =   6,
+	kWorksheetPortraits       =   7,
+	kWorksheetVisualEffects   =   8,
+	kWorksheetSounds          =  10,
+	kWorksheetNakedVariations =  80,
+	kWorksheetPlaceables      =  93,
+	kWorksheetWaypoints       = 106
+};
+
 /** Object type, matches the bitfield in script.ldf */
 enum ObjectType {
 	kObjectTypeGUI                = 0,

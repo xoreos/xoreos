@@ -26,10 +26,10 @@
 #include "src/common/maths.h"
 
 #include "src/aurora/gff3file.h"
-#include "src/aurora/2dareg.h"
 #include "src/aurora/gdafile.h"
 
 #include "src/engines/dragonage/waypoint.h"
+#include "src/engines/dragonage/util.h"
 
 namespace Engines {
 
@@ -98,7 +98,7 @@ void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 
 	setOrientation(orientation[0], orientation[1], orientation[2], orientation[3]);
 
-	const Aurora::GDAFile &gda = TwoDAReg.getGDA("waypointtypes");
+	const Aurora::GDAFile &gda = getMGDA(kWorksheetWaypoints);
 
 	_icon = gda.getString(_type, "Icon");
 }

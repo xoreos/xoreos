@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libdragonage.la
 noinst_HEADERS = \
                  dragonage.h \
                  types.h \
+                 util.h \
                  modelloader.h \
                  console.h \
                  campaigns.h \
@@ -21,6 +22,7 @@ noinst_HEADERS = \
 
 libdragonage_la_SOURCES = \
                           dragonage.cpp \
+                          util.cpp \
                           modelloader.cpp \
                           console.cpp \
                           campaigns.cpp \

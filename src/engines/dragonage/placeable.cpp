@@ -26,7 +26,6 @@
 #include "src/common/maths.h"
 
 #include "src/aurora/gff3file.h"
-#include "src/aurora/2dareg.h"
 #include "src/aurora/gdafile.h"
 
 #include "src/graphics/aurora/model.h"
@@ -34,6 +33,7 @@
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/dragonage/placeable.h"
+#include "src/engines/dragonage/util.h"
 
 namespace Engines {
 
@@ -124,7 +124,7 @@ void Placeable::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struc
 		loadProperties(*blueprint);
 	loadProperties(instance);
 
-	const Aurora::GDAFile &gda = TwoDAReg.getGDA("placeable_types");
+	const Aurora::GDAFile &gda = getMGDA(kWorksheetPlaceables);
 
 	_model = loadModelObject(gda.getString(gda.findRow(_appearance), "ModelName"));
 
