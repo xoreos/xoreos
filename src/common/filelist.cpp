@@ -71,6 +71,13 @@ size_t FileList::size() const {
 	return _files.size();
 }
 
+void FileList::sort(bool caseInsensitive) {
+	if (caseInsensitive)
+		_files.sort(Common::UString::iless());
+	else
+		_files.sort(Common::UString::sless());
+}
+
 FileList::const_iterator FileList::begin() const {
 	return _files.begin();
 }

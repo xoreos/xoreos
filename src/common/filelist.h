@@ -53,6 +53,9 @@ public:
 	/** Return the number of files in the list. */
 	size_t size() const;
 
+	/** Sort this list alphabetically. */
+	void sort(bool caseInsensitive);
+
 	/** Return a const_iterator pointing to the beginning of the list. */
 	const_iterator begin() const;
 	/** Return a const_iterator pointing past the end of the list. */
