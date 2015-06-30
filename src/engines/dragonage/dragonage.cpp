@@ -202,7 +202,7 @@ void DragonAgeEngine::run() {
 }
 
 void DragonAgeEngine::init() {
-	LoadProgress progress(20);
+	LoadProgress progress(15);
 
 	progress.step("Declare languages");
 	declareLanguages();
@@ -255,81 +255,92 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 	progress.step("Setting base directory");
 	ResMan.registerDataBase(_target);
 
-	progress.step("Adding extra archive directories");
-	indexMandatoryDirectory("packages/core/data"          , 0,  0, 2);
-	indexMandatoryDirectory("packages/core/data/abilities", 0,  0, 3);
-	indexMandatoryDirectory("packages/core/textures"      , 0, -1, 4);
-	indexMandatoryDirectory("modules/single player/data"  , 0,  0, 5);
+	progress.step("Adding core archive directories");
+	indexMandatoryDirectory("/packages/core/data"           , 0,  0,  2);
+	indexMandatoryDirectory("/packages/core/data/abilities" , 0,  0,  3);
+	indexMandatoryDirectory("/packages/core/data/movies"    , 0,  0,  4);
+	indexMandatoryDirectory("/packages/core/data/talktables", 0,  0,  5);
+	indexMandatoryDirectory("/packages/core/data/cursors"   , 0,  0,  6);
+	indexMandatoryDirectory("/packages/core/textures"       , 0, -1,  7);
+	indexMandatoryDirectory("/packages/core/audio"          , 0, -1,  8);
+	indexMandatoryDirectory("/packages/core/env"            , 0, -1,  9);
+	indexMandatoryDirectory("/packages/core/patch/"         , 0,  0, 10);
 
 	progress.step("Loading core resource files");
-	indexMandatoryArchive("2da.erf"               , 10);
-	indexMandatoryArchive("anims.erf"             , 11);
-	indexMandatoryArchive("chargen.gpu.rim"       , 12);
-	indexMandatoryArchive("chargen.rim"           , 13);
-	indexMandatoryArchive("consolescripts.erf"    , 14);
-	indexMandatoryArchive("designerareas.erf"     , 15);
-	indexMandatoryArchive("designercreatures.erf" , 16);
-	indexMandatoryArchive("designercutscenes.erf" , 17);
-	indexMandatoryArchive("designerdialogs.erf"   , 18);
-	indexMandatoryArchive("designeritems.erf"     , 19);
-	indexMandatoryArchive("designerplaceables.erf", 20);
-	indexMandatoryArchive("designerplots.erf"     , 21);
-	indexMandatoryArchive("designerscripts.rim"   , 22);
-	indexMandatoryArchive("designertriggers.erf"  , 23);
-	indexMandatoryArchive("face.erf"              , 24);
-	indexMandatoryArchive("global.rim"            , 25);
-	indexMandatoryArchive("globalvfx.rim"         , 26);
-	indexMandatoryArchive("gui.erf"               , 27);
-	indexMandatoryArchive("guiexport.erf"         , 28);
-	indexMandatoryArchive("iterationtests.erf"    , 29);
-	indexMandatoryArchive("lightprobedata.erf"    , 30);
-	indexMandatoryArchive("materialobjects.erf"   , 31);
-	indexMandatoryArchive("materials.erf"         , 32);
-	indexMandatoryArchive("misc.erf"              , 33);
-	indexMandatoryArchive("modelhierarchies.erf"  , 34);
-	indexMandatoryArchive("modelmeshdata.erf"     , 35);
-	indexMandatoryArchive("pathfindingpatches.erf", 36);
-	indexMandatoryArchive("postprocesseffects.erf", 37);
-	indexMandatoryArchive("resmetrics.erf"        , 38);
-	indexMandatoryArchive("scripts.erf"           , 39);
-	indexMandatoryArchive("shaders.erf"           , 40);
-	indexMandatoryArchive("states.erf"            , 41);
-	indexMandatoryArchive("subqueuefiles.erf"     , 42);
-	indexMandatoryArchive("textures.erf"          , 43);
-	indexMandatoryArchive("tints.erf"             , 44);
+	indexMandatoryArchive("/packages/core/data/2da.erf",                20);
+	indexMandatoryArchive("/packages/core/data/anims.erf",              21);
+	indexMandatoryArchive("/packages/core/data/chargen.gpu.rim",        22);
+	indexMandatoryArchive("/packages/core/data/chargen.rim",            23);
+	indexMandatoryArchive("/packages/core/data/consolescripts.erf",     24);
+	indexMandatoryArchive("/packages/core/data/designerareas.erf",      25);
+	indexMandatoryArchive("/packages/core/data/designercreatures.erf",  26);
+	indexMandatoryArchive("/packages/core/data/designercutscenes.erf",  27);
+	indexMandatoryArchive("/packages/core/data/designerdialogs.erf",    28);
+	indexMandatoryArchive("/packages/core/data/designeritems.erf",      29);
+	indexMandatoryArchive("/packages/core/data/designerplaceables.erf", 30);
+	indexMandatoryArchive("/packages/core/data/designerplots.erf",      31);
+	indexMandatoryArchive("/packages/core/data/designerscripts.rim",    32);
+	indexMandatoryArchive("/packages/core/data/designertriggers.erf",   33);
+	indexMandatoryArchive("/packages/core/data/face.erf",               34);
+	indexMandatoryArchive("/packages/core/data/global.rim",             35);
+	indexMandatoryArchive("/packages/core/data/globalvfx.rim",          36);
+	indexMandatoryArchive("/packages/core/data/gui.erf",                37);
+	indexMandatoryArchive("/packages/core/data/guiexport.erf",          38);
+	indexMandatoryArchive("/packages/core/data/iterationtests.erf",     39);
+	indexMandatoryArchive("/packages/core/data/lightprobedata.erf",     40);
+	indexMandatoryArchive("/packages/core/data/materialobjects.erf",    41);
+	indexMandatoryArchive("/packages/core/data/materials.erf",          42);
+	indexMandatoryArchive("/packages/core/data/misc.erf",               43);
+	indexMandatoryArchive("/packages/core/data/modelhierarchies.erf",   44);
+	indexMandatoryArchive("/packages/core/data/modelmeshdata.erf",      45);
+	indexMandatoryArchive("/packages/core/data/pathfindingpatches.erf", 46);
+	indexMandatoryArchive("/packages/core/data/postprocesseffects.erf", 47);
+	indexMandatoryArchive("/packages/core/data/resmetrics.erf",         48);
+	indexMandatoryArchive("/packages/core/data/scripts.erf",            49);
+	indexMandatoryArchive("/packages/core/data/shaders.erf",            50);
+	indexMandatoryArchive("/packages/core/data/states.erf",             51);
+	indexMandatoryArchive("/packages/core/data/subqueuefiles.erf",      52);
+	indexMandatoryArchive("/packages/core/data/textures.erf",           53);
+	indexMandatoryArchive("/packages/core/data/tints.erf",              54);
 
 	progress.step("Loading core ability resource files");
-	indexMandatoryArchive("bearform.rim"    , 100);
-	indexMandatoryArchive("burningform.rim" , 101);
-	indexMandatoryArchive("golemform.rim"   , 102);
-	indexMandatoryArchive("mouseform.rim"   , 103);
-	indexMandatoryArchive("spiderform.rim"  , 104);
-	indexMandatoryArchive("spiritform.rim"  , 105);
-	indexMandatoryArchive("summonbear.rim"  , 106);
-	indexMandatoryArchive("summonspider.rim", 107);
-	indexMandatoryArchive("summonwolf.rim"  , 108);
+	indexMandatoryArchive("/packages/core/data/abilities/bearform.rim",     100);
+	indexMandatoryArchive("/packages/core/data/abilities/burningform.rim",  101);
+	indexMandatoryArchive("/packages/core/data/abilities/golemform.rim",    102);
+	indexMandatoryArchive("/packages/core/data/abilities/mouseform.rim",    103);
+	indexMandatoryArchive("/packages/core/data/abilities/spiderform.rim",   104);
+	indexMandatoryArchive("/packages/core/data/abilities/spiritform.rim",   105);
+	indexMandatoryArchive("/packages/core/data/abilities/summonbear.rim",   106);
+	indexMandatoryArchive("/packages/core/data/abilities/summonspider.rim", 107);
+	indexMandatoryArchive("/packages/core/data/abilities/summonwolf.rim",   108);
 
-	progress.step("Indexing extra core sound resources");
-	indexMandatoryDirectory("packages/core/audio"          , 0, -1, 150);
-	progress.step("Indexing extra core movie resources");
-	indexMandatoryDirectory("packages/core/data/movies"    , 0,  0, 151);
-	progress.step("Indexing extra core talktables");
-	indexMandatoryDirectory("packages/core/data/talktables", 0,  0, 152);
-	progress.step("Indexing extra core cursors");
-	indexMandatoryDirectory("packages/core/data/cursors"   , 0,  0, 153);
+	progress.step("Loading core patch files");
+	loadPatches("/packages/core/patch", 150);
 
-	progress.step("Indexing extra environments");
-	indexMandatoryDirectory("packages/core/env", 0, -1, 200);
+	progress.step("Adding single-player campaign archive directories");
+	indexMandatoryDirectory("/modules/single player/data/"          , 0,  0, 200);
+	indexMandatoryDirectory("/modules/single player/data/movies"    , 0,  0, 201);
+	indexMandatoryDirectory("/modules/single player/data/talktables", 0,  0, 202);
+	indexMandatoryDirectory("/modules/single player/audio"          , 0, -1, 203);
+	indexMandatoryDirectory("/modules/single player/patch"          , 0,  0, 204);
 
-	progress.step("Loading single-player campaign global resource files");
-	indexMandatoryArchive("moduleglobal.rim", 250);
+	progress.step("Loading single-player campaign resource files");
+	indexMandatoryArchive("/modules/single player/data/designerareas.erf",        220);
+	indexMandatoryArchive("/modules/single player/data/designercreatures.erf",    221);
+	indexMandatoryArchive("/modules/single player/data/designercutscenes.erf",    222);
+	indexMandatoryArchive("/modules/single player/data/designerdialogs.erf",      223);
+	indexMandatoryArchive("/modules/single player/data/designeritems.erf",        224);
+	indexMandatoryArchive("/modules/single player/data/designermaps.erf",         225);
+	indexMandatoryArchive("/modules/single player/data/designermerchants.erf",    226);
+	indexMandatoryArchive("/modules/single player/data/designerplaceables.erf",   227);
+	indexMandatoryArchive("/modules/single player/data/designerplots.erf",        228);
+	indexMandatoryArchive("/modules/single player/data/designerscripts.erf",      229);
+	indexMandatoryArchive("/modules/single player/data/designertriggers.erf",     230);
+	indexMandatoryArchive("/modules/single player/data/extradesignerscripts.rim", 231);
+	indexMandatoryArchive("/modules/single player/data/moduleglobal.rim",         232);
 
-	progress.step("Indexing extra single-player campaign movie resources");
-	indexMandatoryDirectory("modules/single player/data"           , 0,  0, 300);
-	progress.step("Indexing extra single-player campaign sound resources");
-	indexMandatoryDirectory("modules/single player/data/movies"    , 0,  0, 301);
-	progress.step("Indexing extra single-player campaign talktables");
-	indexMandatoryDirectory("modules/single player/data/talktables", 0,  0, 302);
+	progress.step("Loading single-player campaign patch files");
+	loadPatches("/modules/single player/patch", 250);
 
 	// TODO: DLC
 
@@ -337,6 +348,17 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 
 	progress.step("Registering file formats");
 	registerModelLoader(new DragonAgeModelLoader);
+}
+
+void DragonAgeEngine::loadPatches(const Common::UString &dir, uint32 priority) {
+	Common::FileList patches(Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir, true), 0);
+
+	patches.sort(true);
+	patches.relativize(ResMan.getDataBase());
+
+	for (Common::FileList::const_iterator p = patches.begin(); p != patches.end(); ++p)
+		if (Common::FilePath::getExtension(*p).equalsIgnoreCase(".erf"))
+			indexMandatoryArchive("/" + *p, priority++);
 }
 
 void DragonAgeEngine::unloadLanguageFiles() {

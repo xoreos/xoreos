@@ -104,6 +104,8 @@ private:
 	void initConfig();
 	void initGameConfig();
 
+	void loadPatches(const Common::UString &dir, uint32 priority);
+
 	void unloadLanguageFiles();
 	void loadLanguageFiles(LoadProgress &progress, Aurora::Language language);
 	void loadLanguageFiles(Aurora::Language language);
