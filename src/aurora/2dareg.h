@@ -49,6 +49,9 @@ public:
 	/** Get a certain GDA, loading it if necessary. */
 	const GDAFile &getGDA(const Common::UString &name);
 
+	/** Get a certain multiple GDA, loading it if necessary. */
+	const GDAFile &getMGDA(const Common::UString &prefix);
+
 	/** Add a certain 2DA to the registry, reloading it if necessary. */
 	void add2DA(const Common::UString &name);
 	/** Remove a certain 2DA from the registry. */
@@ -56,6 +59,8 @@ public:
 
 	/** Add a certain GDA to the registry, reloading it if necessary. */
 	void addGDA(const Common::UString &name);
+	/** Add a certain multiple GDA to the registry, reloading it if necessary. */
+	void addMGDA(const Common::UString &prefix);
 	/** Remove a certain GDA from the registry. */
 	void removeGDA(const Common::UString &name);
 
@@ -68,6 +73,7 @@ private:
 
 	TwoDAFile *load2DA(const Common::UString &name);
 	GDAFile   *loadGDA(const Common::UString &name);
+	GDAFile   *loadMGDA(Common::UString prefix);
 };
 
 } // End of namespace Aurora

@@ -84,6 +84,22 @@ const GDAFile &TwoDARegistry::getGDA(const Common::UString &name) {
 	return *result.first->second;
 }
 
+const GDAFile &TwoDARegistry::getMGDA(const Common::UString &prefix) {
+	GDAMap::const_iterator gda = _gdas.find(prefix);
+	if (gda != _gdas.end())
+		// Entry exists => return
+		return *gda->second;
+
+	// Entry doesn't exist => load and add
+
+	GDAFile *newGDA = loadMGDA(prefix);
+
+	std::pair<GDAMap::iterator, bool> result;
+	result = _gdas.insert(std::make_pair(prefix, newGDA));
+
+	return *result.first->second;
+}
+
 void TwoDARegistry::add2DA(const Common::UString &name) {
 	TwoDAMap::iterator twoda = _twodas.find(name);
 	if (twoda != _twodas.end()) {
@@ -116,6 +132,18 @@ void TwoDARegistry::addGDA(const Common::UString &name) {
 
 	// Load and add
 	_gdas[name] = loadGDA(name);
+}
+
+void TwoDARegistry::addMGDA(const Common::UString &prefix) {
+	GDAMap::iterator gda = _gdas.find(prefix);
+	if (gda != _gdas.end()) {
+		// Entry exists => remove first
+		delete gda->second;
+		_gdas.erase(gda);
+	}
+
+	// Load and add
+	_gdas[prefix] = loadMGDA(prefix);
 }
 
 void TwoDARegistry::removeGDA(const Common::UString &name) {
@@ -165,6 +193,38 @@ GDAFile *TwoDARegistry::loadGDA(const Common::UString &name) {
 	} catch (Common::Exception &e) {
 
 		e.add("Failed loading GDA \"%s\"", name.c_str());
+		throw;
+	}
+
+	return gda;
+}
+
+GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
+	prefix.makeLower();
+
+	std::list<ResourceManager::ResourceID> gdas;
+	ResMan.getAvailableResources(kFileTypeGDA, gdas);
+
+	GDAFile *gda = 0;
+	try {
+		for (std::list<ResourceManager::ResourceID>::const_iterator g = gdas.begin(); g != gdas.end(); ++g) {
+			if (!g->name.toLower().beginsWith(prefix))
+				continue;
+
+			Common::SeekableReadStream *stream = ResMan.getResource(g->name, kFileTypeGDA);
+			if (!stream)
+				throw Common::Exception("No such GDA");
+
+			if (!gda)
+				gda = new GDAFile(stream);
+			else
+				gda->add(stream);
+		}
+
+	} catch (Common::Exception &e) {
+		delete gda;
+
+		e.add("Failed loading multiple GDA \"%s\"", prefix.c_str());
 		throw;
 	}
 
