@@ -26,6 +26,8 @@
  * (<http://social.bioware.com/wiki/datoolset/index.php/GDA>).
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/hash.h"
@@ -37,7 +39,7 @@ static const uint32 kG2DAID = MKTAG('G', '2', 'D', 'A');
 
 namespace Aurora {
 
-GDAFile::GDAFile(Common::SeekableReadStream *gda) : _gff4(0), _columns(0), _rows(0) {
+GDAFile::GDAFile(Common::SeekableReadStream *gda) : _columns(0), _rowCount(0) {
 	load(gda);
 }
 
@@ -50,7 +52,7 @@ size_t GDAFile::getColumnCount() const {
 }
 
 size_t GDAFile::getRowCount() const {
-	return _rows->size();
+	return _rowCount;
 }
 
 bool GDAFile::hasRow(size_t row) const {
@@ -58,10 +60,25 @@ bool GDAFile::hasRow(size_t row) const {
 }
 
 const GFF4Struct *GDAFile::getRow(size_t row) const {
-	if (row >= _rows->size())
-		return 0;
+	assert(_rowStarts.size() == _rows.size());
 
-	return (*_rows)[row];
+	/* To find the correct GFF4 for this row, we go through
+	 * the list of row start indices in reverse, until we
+	 * found one that's not bigger than the row we want.
+	 */
+
+	for (ptrdiff_t i = _rowStarts.size() - 1; i >= 0; i--) {
+		if (_rowStarts[i] <= row) {
+			row -= _rowStarts[i];
+
+			if (row >= _rows[i]->size())
+				return 0;
+
+			return (*_rows[i])[row];
+		}
+	}
+
+	return 0;
 }
 
 size_t GDAFile::findRow(uint32 id) const {
@@ -69,9 +86,20 @@ size_t GDAFile::findRow(uint32 id) const {
 	if (idColumn == kInvalidColumn)
 		return kInvalidRow;
 
-	for (size_t i = 0; i < _rows->size(); i++)
-		if ((*_rows)[i] && ((*_rows)[i]->getUint(idColumn) == id))
+	// Go through all rows of all GFF4s, and look for the ID
+
+	size_t gff4 = 0;
+	for (size_t i = 0, j = 0; i < _rowCount; i++, j++) {
+		if (j >= _rows[gff4]->size()) {
+			if (++gff4 >= _rows.size())
+				break;
+
+			j = 0;
+		}
+
+		if ((*_rows[gff4])[j] && ((*_rows[gff4])[j]->getUint(idColumn) == id))
 			return i;
+	}
 
 	return kInvalidRow;
 }
@@ -180,12 +208,15 @@ float GDAFile::getFloat(size_t row, const Common::UString &columnName, float def
 
 void GDAFile::load(Common::SeekableReadStream *gda) {
 	try {
-		_gff4 = new GFF4File(gda, kG2DAID);
+		_gff4s.push_back(new GFF4File(gda, kG2DAID));
 
-		const GFF4Struct &top = _gff4->getTopLevel();
+		const GFF4Struct &top = _gff4s.back()->getTopLevel();
 
 		_columns = &top.getList(kGFF4G2DAColumnList);
-		_rows    = &top.getList(kGFF4G2DARowList);
+		_rows.push_back(&top.getList(kGFF4G2DARowList));
+
+		_rowStarts.push_back(_rowCount);
+		_rowCount += _rows.back()->size();
 
 	} catch (Common::Exception &e) {
 		clear();
@@ -195,12 +226,45 @@ void GDAFile::load(Common::SeekableReadStream *gda) {
 	}
 }
 
-void GDAFile::clear() {
-	delete _gff4;
-	_gff4 = 0;
+void GDAFile::add(Common::SeekableReadStream *gda) {
+	try {
+		_gff4s.push_back(new GFF4File(gda, kG2DAID));
 
-	_columns = 0;
-	_rows    = 0;
+		const GFF4Struct &top = _gff4s.back()->getTopLevel();
+
+		_rows.push_back(&top.getList(kGFF4G2DARowList));
+
+		_rowStarts.push_back(_rowCount);
+		_rowCount += _rows.back()->size();
+
+		Columns columns = &top.getList(kGFF4G2DAColumnList);
+		if (columns->size() != _columns->size())
+			throw Common::Exception("Column counts don't match (%u vs. %u)",
+			                        (uint)columns->size(), (uint)_columns->size());
+
+		for (size_t i = 0; i < columns->size(); i++) {
+			const uint32 hash1 = (uint32) (* columns)[i]->getUint(kGFF4G2DAColumnHash);
+			const uint32 hash2 = (uint32) (*_columns)[i]->getUint(kGFF4G2DAColumnHash);
+
+			const uint32 type1 = (uint32) (* columns)[i]->getUint(kGFF4G2DAColumnType);
+			const uint32 type2 = (uint32) (*_columns)[i]->getUint(kGFF4G2DAColumnType);
+
+			if ((hash1 != hash2) || (type1 != type2))
+				throw Common::Exception("Columns don't match (%u: %u+%u vs. %u+%u)", (uint) i,
+				                        hash1, type1, hash2, type2);
+		}
+
+	} catch (Common::Exception &e) {
+		clear();
+
+		e.add("Failed adding GDA file");
+		throw;
+	}
+}
+
+void GDAFile::clear() {
+	for (std::vector<GFF4File *>::iterator g = _gff4s.begin(); g != _gff4s.end(); ++g)
+		delete *g;
 }
 
 } // End of namespace Aurora

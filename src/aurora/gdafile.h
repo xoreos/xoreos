@@ -25,6 +25,7 @@
 #ifndef AURORA_GDAFILE_H
 #define AURORA_GDAFILE_H
 
+#include <vector>
 #include <map>
 
 #include "src/common/ustring.h"
@@ -46,6 +47,15 @@ public:
 
 	GDAFile(Common::SeekableReadStream *gda);
 	~GDAFile();
+
+	/** Add another GDA with the same column structure to the bottom of this GDA.
+	 *
+	 *  This effectively pastes the GDAs together, creating one combined table.
+	 *  Note that the row numbers will be continous and therefore will be
+	 *  different depending on the order of the pasting, making them useless
+	 *  for row identification. An ID column should be used for this case.
+	 */
+	void add(Common::SeekableReadStream *gda);
 
 	/** Return the number of columns in the array. */
 	size_t getColumnCount() const;
@@ -78,14 +88,24 @@ public:
 
 
 private:
+	typedef std::vector<GFF4File *> GFF4s;
+	typedef const GFF4List * Columns;
+	typedef const GFF4List * Row;
+	typedef std::vector<Row> Rows;
+	typedef std::vector<size_t> RowStarts;
+
 	typedef std::map<uint32, size_t> ColumnHashMap;
 	typedef std::map<Common::UString, size_t> ColumnNameMap;
 
 
-	GFF4File *_gff4;
+	GFF4s _gff4s;
 
-	const GFF4List *_columns;
-	const GFF4List *_rows;
+	Columns _columns;
+	Rows    _rows;
+
+	size_t _rowCount;
+
+	RowStarts _rowStarts;
 
 	mutable ColumnHashMap _columnHashMap;
 	mutable ColumnNameMap _columnNameMap;
