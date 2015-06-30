@@ -30,6 +30,7 @@
 #include "src/common/xml.h"
 #include "src/common/configman.h"
 
+#include "src/aurora/2dareg.h"
 #include "src/aurora/gff4file.h"
 
 #include "src/graphics/camera.h"
@@ -333,6 +334,7 @@ void Campaign::unload() {
 	_area = 0;
 
 	clearObjects();
+	TwoDAReg.clear();
 
 	deindexResources(_resources);
 }
