@@ -49,9 +49,12 @@ class GFF3Struct;
  */
 class GFF3File : public AuroraBase {
 public:
-	GFF3File(Common::SeekableReadStream *gff3, uint32 id);
+	GFF3File(Common::SeekableReadStream *gff3, uint32 id = 0xFFFFFFFF);
 	GFF3File(const Common::UString &gff3, FileType type, uint32 id);
 	~GFF3File();
+
+	/** Return the GFF3's specific type. */
+	uint32 getType() const;
 
 	/** Returns the top-level struct. */
 	const GFF3Struct &getTopLevel() const;

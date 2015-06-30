@@ -57,10 +57,12 @@ class GFF4Struct;
  */
 class GFF4File : public AuroraBase {
 public:
-	GFF4File(Common::SeekableReadStream *gff4, uint32 type);
+	GFF4File(Common::SeekableReadStream *gff4, uint32 type = 0xFFFFFFFF);
 	GFF4File(const Common::UString &gff4, FileType fileType, uint32 type);
 	~GFF4File();
 
+	/** Return the GFF4's specific type. */
+	uint32 getType() const;
 	/** Return the GFF4's specific type version. */
 	uint32 getTypeVersion() const;
 	/** Return the platform this GFF4 is for. */

@@ -89,6 +89,10 @@ void GFF3File::clear() {
 	_structs.clear();
 }
 
+uint32 GFF3File::getType() const {
+	return _id;
+}
+
 const GFF3Struct &GFF3File::getTopLevel() const {
 	return getStruct(0);
 }
@@ -113,7 +117,7 @@ void GFF3File::load(uint32 id) {
 void GFF3File::loadHeader(uint32 id) {
 	readHeader(*_stream);
 
-	if (_id != id)
+	if ((id != 0xFFFFFFFF) && (_id != id))
 		throw Common::Exception("GFF3 has invalid ID (want %s, got %s)",
 				Common::debugTag(id).c_str(), Common::debugTag(_id).c_str());
 
