@@ -353,6 +353,8 @@ void Campaign::readCIFDynamic(const Common::UString &path) {
 }
 
 void Campaign::load() {
+	status("Loading campaign \"%s\" (\"%s\", \"%s\")", _tag.c_str(), _uid.c_str(), _name.getString().c_str());
+
 	loadResources();
 	readCIFDynamic(_cifPath);
 
@@ -395,9 +397,7 @@ void Campaign::enter() {
 
 	_area->show();
 
-	status("Entered area \"%s\" (\"%s\") of campaign \"%s\" (\"%s\", \"%s\")",
-			_area->getTag().c_str(), _area->getName().getString().c_str(),
-			_tag.c_str(), _uid.c_str(), _name.getString().c_str());
+	status("Entered area \"%s\" (\"%s\")", _area->getTag().c_str(), _area->getName().getString().c_str());
 }
 
 void Campaign::leave() {
