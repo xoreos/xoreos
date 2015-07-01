@@ -114,7 +114,11 @@ void TalkTable_GFF::load02(const GFF4Struct &top) {
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
-		_entries[strRef] = new Entry(*s);
+		Entry *entry = new Entry(*s);
+
+		std::pair<Entries::iterator, bool> result = _entries.insert(std::make_pair(strRef, entry));
+		if (!result.second)
+			delete entry;
 	}
 }
 
@@ -134,7 +138,11 @@ void TalkTable_GFF::load05(const GFF4Struct &top) {
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
-		_entries[strRef] = new Entry(*s);
+		Entry *entry = new Entry(*s);
+
+		std::pair<Entries::iterator, bool> result = _entries.insert(std::make_pair(strRef, entry));
+		if (!result.second)
+			delete entry;
 	}
 }
 
