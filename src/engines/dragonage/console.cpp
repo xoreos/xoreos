@@ -45,6 +45,8 @@ Console::Console(DragonAgeEngine &engine) :
 			"Usage: loadarea <name>\nLoad and show a specific area in the current campaign");
 	registerCommand("listcampaigns", boost::bind(&Console::cmdListCampaigns, this, _1),
 			"Usage: listcampaigns\nList all playable campaigns");
+	registerCommand("loadcampaign" , boost::bind(&Console::cmdLoadCampaign , this, _1),
+			"Usage: loadcampaign <name>\nLoad and run a specific campaign");
 }
 
 Console::~Console() {
@@ -129,6 +131,26 @@ void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
 
 	for (Campaigns::PlayableCampaigns::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c)
 		printf("%s (\"%s\")", (*c)->getUID().c_str(), (*c)->getName().getString().c_str());
+}
+
+void Console::cmdLoadCampaign(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	Campaigns &campaignsCtx = _engine->getCampaigns();
+
+	const Campaigns::PlayableCampaigns &campaigns = campaignsCtx.getCampaigns();
+	for (Campaigns::PlayableCampaigns::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {
+		if ((*c)->getUID().equalsIgnoreCase(cl.args)) {
+			hide();
+			campaignsCtx.load(**c);
+			return;
+		}
+	}
+
+	printf("No such campaign \"%s\"", cl.args.c_str());
 }
 
 } // End of namespace DragonAge
