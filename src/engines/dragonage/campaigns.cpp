@@ -295,6 +295,9 @@ void Campaigns::replaceCampaign() {
 		return;
 
 	loadCampaign(*campaign);
+
+	if (_currentCampaign)
+		_currentCampaign->enter();
 }
 
 void Campaigns::refreshLocalized() {
