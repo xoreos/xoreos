@@ -923,11 +923,9 @@ void ResourceManager::addResource(Resource &resource, uint64 hash, Change *chang
 	checkHashCollision(resource, resList);
 #endif
 
-	// Add the resource to the list and sort by priority
+	// Add the resource to the list
 	resList->second.push_back(resource);
 	Resource *res = &resList->second.back();
-
-	resList->second.sort();
 
 	checkResourceIsArchive(*res, change);
 
@@ -937,6 +935,9 @@ void ResourceManager::addResource(Resource &resource, uint64 hash, Change *chang
 		change->_change->resources.back().hashIt = resList;
 		change->_change->resources.back().resIt  = --resList->second.end();
 	}
+
+	// Resort the list by priority
+	resList->second.sort();
 }
 
 void ResourceManager::addResource(const Common::UString &path, Change *change, uint32 priority) {
