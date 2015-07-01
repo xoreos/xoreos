@@ -392,9 +392,6 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 	_static = !gff.getBool("Active"      , !_static);
 	_usable =  gff.getBool("IsSelectable",  _usable);
 
-	_static = false;
-	_usable = true;
-
 	_appearance = gff.getUint("Appearance", _appearance);
 
 	if (gff.hasField("Appearance Data")) {
