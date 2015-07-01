@@ -39,6 +39,7 @@
 
 #include "src/engines/aurora/camera.h"
 
+#include "src/engines/dragonage/dragonage.h"
 #include "src/engines/dragonage/campaign.h"
 #include "src/engines/dragonage/area.h"
 
@@ -65,8 +66,10 @@ Campaign::RIMNode::~RIMNode() {
 }
 
 
-Campaign::Campaign(const Common::UString &cifPath,  const Common::UString &manifestPath) :
-	ScriptObject(kObjectTypeModule), _enabled(false), _bioware(false), _needsAuth(false),
+Campaign::Campaign(DragonAgeEngine &engine, const Common::UString &cifPath,
+                   const Common::UString &manifestPath, const Common::UString &addinBase) :
+	ScriptObject(kObjectTypeModule), _engine(&engine), _addinBase(addinBase),
+	_enabled(false), _bioware(false), _needsAuth(false),
 	_priority(0xFFFFFFFF), _format(0xFFFFFFFF), _state(0xFFFFFFFF), _rimRoot(0),
 	_area(0) {
 
@@ -218,7 +221,9 @@ Campaign::RIMNode *Campaign::readRIMs(const GFF4Struct &node, const RIMNode *par
 			if (*c)
 				rim->children.push_back(readRIMs(**c, rim));
 
-	} catch (...) {
+	} catch (Common::Exception &e) {
+		Common::printException(e, "WARNING1: ");
+
 		delete rim;
 		throw;
 	}
@@ -317,9 +322,28 @@ const Campaign::Areas &Campaign::getAreas() const {
 	return _areas;
 }
 
+void Campaign::loadResources() {
+	_engine->loadTexturePack("/packages/core"        ,   0, _resources, kTextureQualityHigh);
+	_engine->loadTexturePack("/modules/single player", 500, _resources, kTextureQualityHigh);
+
+	for (size_t i = 0; i < _packages.size(); i++) {
+		const Common::UString dir = "/packages/" + _packages[i];
+
+		_engine->loadResources  (dir, 1000 + i * 500, _resources, _tlks);
+		_engine->loadTexturePack(dir, 1000 + i * 500, _resources, kTextureQualityHigh);
+	}
+
+	if (!_addinBase.empty()) {
+		_engine->loadResources  ("/addins/" + _addinBase + "/core"   , 10000, _resources, _tlks);
+		_engine->loadTexturePack("/addins/" + _addinBase + "/core"   , 10000, _resources, kTextureQualityHigh);
+
+		_engine->loadResources  ("/addins/" + _addinBase + "/module", 10500, _resources, _tlks);
+		_engine->loadTexturePack("/addins/" + _addinBase + "/module", 10500, _resources, kTextureQualityHigh);
+	}
+}
+
 void Campaign::load() {
-	indexMandatoryArchive("/packages/core/textures/high/texturepack.erf"           , 900, _resources);
-	indexMandatoryArchive("/packages/core/textures/high/chargentexturepack.gpu.rim", 901, _resources);
+	loadResources();
 
 	_entryArea = ConfigMan.getString("area", _entryArea);
 
@@ -335,6 +359,8 @@ void Campaign::unload() {
 
 	clearObjects();
 	TwoDAReg.clear();
+
+	_engine->unloadTalkTables(_tlks);
 
 	deindexResources(_resources);
 }

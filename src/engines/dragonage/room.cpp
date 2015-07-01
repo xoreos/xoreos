@@ -84,10 +84,10 @@ void Room::load(const GFF4Struct &room) {
 
 	const Common::UString roomFile = room.getString(kGFF4EnvRoomFile);
 
-	indexOptionalArchive(roomFile + ".rim"      , 1003, _resources);
-	indexOptionalArchive(roomFile + ".gpu.rim"  , 1004, _resources);
-	indexOptionalArchive(roomFile + "_0.rim"    , 1005, _resources);
-	indexOptionalArchive(roomFile + "_0.gpu.rim", 1006, _resources);
+	indexOptionalArchive(roomFile + ".rim"      , 12000, _resources);
+	indexOptionalArchive(roomFile + ".gpu.rim"  , 12001, _resources);
+	indexOptionalArchive(roomFile + "_0.rim"    , 12002, _resources);
+	indexOptionalArchive(roomFile + "_0.gpu.rim", 12003, _resources);
 
 	loadLayout(roomFile);
 	loadLayout(roomFile + "_0");

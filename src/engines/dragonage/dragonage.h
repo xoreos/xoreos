@@ -35,6 +35,10 @@
 #include "src/engines/engine.h"
 #include "src/engines/engineprobe.h"
 
+#include "src/engines/aurora/resources.h"
+
+#include "src/engines/dragonage/types.h"
+
 namespace Common {
 	class FileList;
 }
@@ -84,6 +88,10 @@ public:
 	/** Return the campaigns context. */
 	Campaigns &getCampaigns();
 
+	void loadResources  (const Common::UString &dir, uint32 priority, ChangeList &res, ChangeList &tlk);
+	void loadTexturePack(const Common::UString &dir, uint32 priority, ChangeList &res, TextureQuality quality);
+
+	void unloadTalkTables(ChangeList &changes);
 
 protected:
 	void run();
@@ -92,7 +100,8 @@ protected:
 private:
 	Aurora::Language _language;
 
-	std::list<Common::ChangeID> _languageTLK;
+	ChangeList _resources;
+	ChangeList _languageTLK;
 
 	Campaigns *_campaigns;
 
@@ -104,12 +113,11 @@ private:
 	void initConfig();
 	void initGameConfig();
 
-	void loadPatches(const Common::UString &dir, uint32 priority);
+	void loadTalkTables(const Common::UString &dir, uint32 priority, ChangeList &changes);
+	void loadResourceDir(const Common::UString &dir, uint32 priority, ChangeList &changes);
 
-	void unloadLanguageFiles();
-	void loadLanguageFiles(LoadProgress &progress, Aurora::Language language);
-	void loadLanguageFiles(Aurora::Language language);
-	void loadTalkTable(const Common::UString &tlk, Aurora::Language language, uint32 priority);
+	void loadTalkTable(const Common::UString &tlk, Aurora::Language language,
+	                   uint32 priority, ChangeList &changes);
 
 	void deinit();
 

@@ -77,6 +77,7 @@ void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 		return;
 
 	const Campaign::Areas &areas = campaign->getAreas();
+
 	for (Campaign::Areas::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		printf("%s (\"%s\")", a->tag.c_str(), a->name.getString().c_str());
 }

@@ -110,7 +110,7 @@ void Area::clean() {
 }
 
 void Area::load(const Common::UString &resRef, const Common::UString &env, const Common::UString &rim) {
-	indexMandatoryArchive(rim + ".rim", 1000, _resources);
+	indexOptionalArchive(rim + ".rim", 11000, _resources);
 
 	loadEnvironment(env);
 	loadARE(resRef);
@@ -132,8 +132,8 @@ void Area::loadEnvironment(const Common::UString &resRef) {
 
 	const Common::UString layout = arlTop.getString(kGFF4EnvAreaLayoutName);
 	if (!layout.empty()) {
-		indexOptionalArchive(layout + ".rim"    , 1001, _resources);
-		indexOptionalArchive(layout + ".gpu.rim", 1002, _resources);
+		indexOptionalArchive(layout + ".rim"    , 11001, _resources);
+		indexOptionalArchive(layout + ".gpu.rim", 11002, _resources);
 	}
 
 	const GFF4List &rooms = arlTop.getList(kGFF4EnvAreaRoomList);

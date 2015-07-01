@@ -44,6 +44,8 @@ namespace Engines {
 
 namespace DragonAge {
 
+class DragonAgeEngine;
+
 class Area;
 
 class Campaign : public ScriptObject, public ObjectContainer {
@@ -99,7 +101,11 @@ private:
 	typedef std::map<Common::UString, const RIMNode *> AreaMap;
 
 
+	DragonAgeEngine *_engine;
+
 	Common::UString _uid;
+
+	Common::UString _addinBase;
 
 	Aurora::LocString _name;
 	Aurora::LocString _description;
@@ -130,6 +136,7 @@ private:
 	Areas _areas;
 
 	ChangeList _resources;
+	ChangeList _tlks;
 
 	Area *_area;
 	Common::UString _newArea;
@@ -137,7 +144,8 @@ private:
 	std::list<Events::Event> _eventQueue;
 
 
-	Campaign(const Common::UString &cifPath = "",  const Common::UString &manifestPath = "");
+	Campaign(DragonAgeEngine &engine, const Common::UString &cifPath = "",
+	         const Common::UString &manifestPath = "", const Common::UString &addinBase = "");
 	~Campaign();
 
 	// .--- Loader
@@ -147,6 +155,8 @@ private:
 	void readManifest(const Common::UString &path);
 
 	void addAreaName(const RIMNode &node);
+
+	void loadResources();
 	// '---
 
 	// .--- Methods called by the Campaigns context

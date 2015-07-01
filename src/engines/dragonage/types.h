@@ -29,6 +29,13 @@ namespace Engines {
 
 namespace DragonAge {
 
+enum TextureQuality {
+	kTextureQualityHigh   = 0,
+	kTextureQualityMedium,
+
+	kTextureQualityMAX
+};
+
 /** Multiple GDA as defined by m2da_*.gda. */
 enum Worksheet {
 	kWorksheetAnimations      =   0,

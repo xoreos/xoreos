@@ -35,6 +35,7 @@ class Console;
 
 namespace DragonAge {
 
+class DragonAgeEngine;
 class Campaign;
 
 class Campaigns {
@@ -42,7 +43,7 @@ public:
 	typedef std::vector<Campaign *> PlayableCampaigns;
 	typedef std::vector<Campaign *> AddinContent;
 
-	Campaigns(::Engines::Console &console);
+	Campaigns(::Engines::Console &console, DragonAgeEngine &engine);
 	~Campaigns();
 
 	/** Return all playable campaigns. */
@@ -72,6 +73,7 @@ public:
 
 private:
 	::Engines::Console *_console;
+	DragonAgeEngine *_engine;
 
 	/** All campaigns we know about. */
 	PlayableCampaigns _campaigns;
@@ -98,7 +100,8 @@ private:
 
 	void findCampaigns();
 	void addCampaign(Campaign *campaign);
-	Campaign *readCampaign(const Common::UString &cifPath = "", const Common::UString &manifestPath = "");
+	Campaign *readCampaign(const Common::UString &cifPath = "", const Common::UString &manifestPath = "",
+	                       const Common::UString &addinBase = "");
 
 	Campaign *getCampaign(const Common::UString &uid);
 	Campaign *getAddin(const Common::UString &uid);

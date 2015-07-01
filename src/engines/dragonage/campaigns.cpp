@@ -30,6 +30,7 @@
 
 #include "src/events/events.h"
 
+#include "src/engines/dragonage/dragonage.h"
 #include "src/engines/dragonage/campaigns.h"
 #include "src/engines/dragonage/campaign.h"
 #include "src/engines/dragonage/console.h"
@@ -38,8 +39,8 @@ namespace Engines {
 
 namespace DragonAge {
 
-Campaigns::Campaigns(::Engines::Console &console) : _console(&console),
-	_currentCampaign(0), _running(false) {
+Campaigns::Campaigns(::Engines::Console &console, DragonAgeEngine &engine) :
+	_console(&console), _engine(&engine), _currentCampaign(0), _running(false) {
 
 	findCampaigns();
 }
@@ -127,7 +128,9 @@ void Campaigns::findCampaigns() {
 		const Common::UString cifFile      = moduleFiles.findFirstGlob(".*\\.cif", true);
 		const Common::UString manifestFile = dlcFiles.findFirst("/manifest.xml", true);
 
-		addCampaign(readCampaign(cifFile, manifestFile));
+		const Common::UString addinBase = Common::FilePath::relativize(dlcDir, *d);
+
+		addCampaign(readCampaign(cifFile, manifestFile, addinBase));
 	}
 }
 
@@ -143,7 +146,8 @@ void Campaigns::addCampaign(Campaign *campaign) {
 		_addins.push_back(campaign);
 }
 
-Campaign *Campaigns::readCampaign(const Common::UString &cifPath, const Common::UString &manifestPath) {
+Campaign *Campaigns::readCampaign(const Common::UString &cifPath, const Common::UString &manifestPath,
+                                  const Common::UString &addinBase) {
 	if (cifPath.empty())
 		return 0;
 
@@ -151,7 +155,7 @@ Campaign *Campaigns::readCampaign(const Common::UString &cifPath, const Common::
 
 	try {
 
-		campaign = new Campaign(cifPath, manifestPath);
+		campaign = new Campaign(*_engine, cifPath, manifestPath, addinBase);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading campaign \"%s\"", Common::FilePath::getStem(cifPath).c_str());

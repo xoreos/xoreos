@@ -202,7 +202,7 @@ void DragonAgeEngine::run() {
 }
 
 void DragonAgeEngine::init() {
-	LoadProgress progress(15);
+	LoadProgress progress(11);
 
 	progress.step("Declare languages");
 	declareLanguages();
@@ -211,6 +211,8 @@ void DragonAgeEngine::init() {
 		status("Setting the language to %s", LangMan.getLanguageName(_language).c_str());
 	else
 		warning("Failed to detect this game's language");
+
+	LangMan.setCurrentLanguage(_language);
 
 	progress.step("Loading user game config");
 	initConfig();
@@ -256,142 +258,117 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 	ResMan.registerDataBase(_target);
 
 	progress.step("Adding core archive directories");
-	indexMandatoryDirectory("/packages/core/data"           , 0,  0,  2);
-	indexMandatoryDirectory("/packages/core/data/abilities" , 0,  0,  3);
-	indexMandatoryDirectory("/packages/core/data/movies"    , 0,  0,  4);
-	indexMandatoryDirectory("/packages/core/data/talktables", 0,  0,  5);
-	indexMandatoryDirectory("/packages/core/data/cursors"   , 0,  0,  6);
-	indexMandatoryDirectory("/packages/core/textures"       , 0, -1,  7);
-	indexMandatoryDirectory("/packages/core/audio"          , 0, -1,  8);
-	indexMandatoryDirectory("/packages/core/env"            , 0, -1,  9);
-	indexMandatoryDirectory("/packages/core/patch/"         , 0,  0, 10);
 
-	progress.step("Loading core resource files");
-	indexMandatoryArchive("/packages/core/data/2da.erf",                20);
-	indexMandatoryArchive("/packages/core/data/anims.erf",              21);
-	indexMandatoryArchive("/packages/core/data/chargen.gpu.rim",        22);
-	indexMandatoryArchive("/packages/core/data/chargen.rim",            23);
-	indexMandatoryArchive("/packages/core/data/consolescripts.erf",     24);
-	indexMandatoryArchive("/packages/core/data/designerareas.erf",      25);
-	indexMandatoryArchive("/packages/core/data/designercreatures.erf",  26);
-	indexMandatoryArchive("/packages/core/data/designercutscenes.erf",  27);
-	indexMandatoryArchive("/packages/core/data/designerdialogs.erf",    28);
-	indexMandatoryArchive("/packages/core/data/designeritems.erf",      29);
-	indexMandatoryArchive("/packages/core/data/designerplaceables.erf", 30);
-	indexMandatoryArchive("/packages/core/data/designerplots.erf",      31);
-	indexMandatoryArchive("/packages/core/data/designerscripts.rim",    32);
-	indexMandatoryArchive("/packages/core/data/designertriggers.erf",   33);
-	indexMandatoryArchive("/packages/core/data/face.erf",               34);
-	indexMandatoryArchive("/packages/core/data/global.rim",             35);
-	indexMandatoryArchive("/packages/core/data/globalvfx.rim",          36);
-	indexMandatoryArchive("/packages/core/data/gui.erf",                37);
-	indexMandatoryArchive("/packages/core/data/guiexport.erf",          38);
-	indexMandatoryArchive("/packages/core/data/iterationtests.erf",     39);
-	indexMandatoryArchive("/packages/core/data/lightprobedata.erf",     40);
-	indexMandatoryArchive("/packages/core/data/materialobjects.erf",    41);
-	indexMandatoryArchive("/packages/core/data/materials.erf",          42);
-	indexMandatoryArchive("/packages/core/data/misc.erf",               43);
-	indexMandatoryArchive("/packages/core/data/modelhierarchies.erf",   44);
-	indexMandatoryArchive("/packages/core/data/modelmeshdata.erf",      45);
-	indexMandatoryArchive("/packages/core/data/pathfindingpatches.erf", 46);
-	indexMandatoryArchive("/packages/core/data/postprocesseffects.erf", 47);
-	indexMandatoryArchive("/packages/core/data/resmetrics.erf",         48);
-	indexMandatoryArchive("/packages/core/data/scripts.erf",            49);
-	indexMandatoryArchive("/packages/core/data/shaders.erf",            50);
-	indexMandatoryArchive("/packages/core/data/states.erf",             51);
-	indexMandatoryArchive("/packages/core/data/subqueuefiles.erf",      52);
-	indexMandatoryArchive("/packages/core/data/textures.erf",           53);
-	indexMandatoryArchive("/packages/core/data/tints.erf",              54);
+	progress.step("Indexing core resources files");
+	loadResources("/packages/core", 0, _resources, _languageTLK);
 
-	progress.step("Loading core ability resource files");
-	indexMandatoryArchive("/packages/core/data/abilities/bearform.rim",     100);
-	indexMandatoryArchive("/packages/core/data/abilities/burningform.rim",  101);
-	indexMandatoryArchive("/packages/core/data/abilities/golemform.rim",    102);
-	indexMandatoryArchive("/packages/core/data/abilities/mouseform.rim",    103);
-	indexMandatoryArchive("/packages/core/data/abilities/spiderform.rim",   104);
-	indexMandatoryArchive("/packages/core/data/abilities/spiritform.rim",   105);
-	indexMandatoryArchive("/packages/core/data/abilities/summonbear.rim",   106);
-	indexMandatoryArchive("/packages/core/data/abilities/summonspider.rim", 107);
-	indexMandatoryArchive("/packages/core/data/abilities/summonwolf.rim",   108);
+	progress.step("Indexing extra core resources files");
+	indexMandatoryArchive("/packages/core/data/designerscripts.rim",        450, _resources);
+	indexMandatoryArchive("/packages/core/data/globalvfx.rim",              451, _resources);
+	indexMandatoryArchive("/packages/core/data/chargen.rim",                452, _resources);
+	indexMandatoryArchive("/packages/core/data/chargen.gpu.rim",            453, _resources);
+	indexMandatoryArchive("/packages/core/data/global.rim",                 454, _resources);
+	indexMandatoryArchive("/packages/core/data/abilities/spiritform.rim",   455, _resources);
+	indexMandatoryArchive("/packages/core/data/abilities/summonwolf.rim",   456, _resources);
+	indexMandatoryArchive("/packages/core/data/abilities/mouseform.rim",    457, _resources);
+	indexMandatoryArchive("/packages/core/data/abilities/summonspider.rim", 458, _resources);
+	indexMandatoryArchive("/packages/core/data/abilities/summonbear.rim",   459, _resources);
+	indexMandatoryArchive("/packages/core/data/abilities/spiderform.rim",   460, _resources);
+	indexMandatoryArchive("/packages/core/data/abilities/golemform.rim",    461, _resources);
+	indexMandatoryArchive("/packages/core/data/abilities/bearform.rim",     462, _resources);
+	indexMandatoryArchive("/packages/core/data/abilities/burningform.rim",  463, _resources);
 
-	progress.step("Loading core patch files");
-	loadPatches("/packages/core/patch", 150);
-
-	progress.step("Adding single-player campaign archive directories");
-	indexMandatoryDirectory("/modules/single player/data/"          , 0,  0, 200);
-	indexMandatoryDirectory("/modules/single player/data/movies"    , 0,  0, 201);
-	indexMandatoryDirectory("/modules/single player/data/talktables", 0,  0, 202);
-	indexMandatoryDirectory("/modules/single player/audio"          , 0, -1, 203);
-	indexMandatoryDirectory("/modules/single player/patch"          , 0,  0, 204);
-
-	progress.step("Loading single-player campaign resource files");
-	indexMandatoryArchive("/modules/single player/data/designerareas.erf",        220);
-	indexMandatoryArchive("/modules/single player/data/designercreatures.erf",    221);
-	indexMandatoryArchive("/modules/single player/data/designercutscenes.erf",    222);
-	indexMandatoryArchive("/modules/single player/data/designerdialogs.erf",      223);
-	indexMandatoryArchive("/modules/single player/data/designeritems.erf",        224);
-	indexMandatoryArchive("/modules/single player/data/designermaps.erf",         225);
-	indexMandatoryArchive("/modules/single player/data/designermerchants.erf",    226);
-	indexMandatoryArchive("/modules/single player/data/designerplaceables.erf",   227);
-	indexMandatoryArchive("/modules/single player/data/designerplots.erf",        228);
-	indexMandatoryArchive("/modules/single player/data/designerscripts.erf",      229);
-	indexMandatoryArchive("/modules/single player/data/designertriggers.erf",     230);
-	indexMandatoryArchive("/modules/single player/data/extradesignerscripts.rim", 231);
-	indexMandatoryArchive("/modules/single player/data/moduleglobal.rim",         232);
-
-	progress.step("Loading single-player campaign patch files");
-	loadPatches("/modules/single player/patch", 250);
-
-	// TODO: DLC
-
-	loadLanguageFiles(progress, _language);
+	progress.step("Indexing single-player campaign resources files");
+	loadResources("/modules/single player", 500, _resources, _languageTLK);
 
 	progress.step("Registering file formats");
 	registerModelLoader(new DragonAgeModelLoader);
 }
 
-void DragonAgeEngine::loadPatches(const Common::UString &dir, uint32 priority) {
-	Common::FileList patches(Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir, true), 0);
+void DragonAgeEngine::loadResources(const Common::UString &dir, uint32 priority,
+                                    ChangeList &res, ChangeList &tlk) {
 
-	patches.sort(true);
-	patches.relativize(ResMan.getDataBase());
+	indexOptionalDirectory(dir + "/data"           , 0,  0, priority + 10, res);
+	indexOptionalDirectory(dir + "/data/abilities" , 0,  0, priority + 11, res);
+	indexOptionalDirectory(dir + "/data/movies"    , 0,  0, priority + 12, res);
+	indexOptionalDirectory(dir + "/data/talktables", 0,  0, priority + 13, res);
+	indexOptionalDirectory(dir + "/data/cursors"   , 0,  0, priority + 14, res);
+	indexOptionalDirectory(dir + "/textures"       , 0, -1, priority + 15, res);
+	indexOptionalDirectory(dir + "/audio"          , 0, -1, priority + 16, res);
+	indexOptionalDirectory(dir + "/env"            , 0, -1, priority + 17, res);
+	indexOptionalDirectory(dir + "/patch"          , 0,  0, priority + 18, res);
 
-	for (Common::FileList::const_iterator p = patches.begin(); p != patches.end(); ++p)
-		if (Common::FilePath::getExtension(*p).equalsIgnoreCase(".erf"))
-			indexMandatoryArchive("/" + *p, priority++);
+	loadResourceDir(dir + "/data"          , priority + 100, res);
+	loadResourceDir(dir + "/data/abilities", priority + 200, res);
+
+	loadResourceDir(dir + "/patch", 0x40000000 | priority, res);
+
+	loadTalkTables(dir + "/data/talktables", priority, tlk);
 }
 
-void DragonAgeEngine::unloadLanguageFiles() {
-	for (std::list<Common::ChangeID>::iterator t = _languageTLK.begin(); t != _languageTLK.end(); ++t)
-		TalkMan.removeTable(*t);
+void DragonAgeEngine::loadTexturePack(const Common::UString &dir, uint32 priority,
+                                      ChangeList &res, TextureQuality quality) {
 
-	_languageTLK.clear();
+	static const char *kTextureQualityName[kTextureQualityMAX] = { "high", "medium" };
+
+	if (((uint)quality) >= kTextureQualityMAX)
+		throw Common::Exception("Invalid texture quality level");
+
+	loadResourceDir(dir + "/textures/" + kTextureQualityName[quality], priority + 300, res);
 }
 
-void DragonAgeEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
-	progress.step(Common::UString::format("Indexing language files (%s)",
-				LangMan.getLanguageName(language).c_str()));
-
-	loadLanguageFiles(language);
-}
-
-void DragonAgeEngine::loadTalkTable(const Common::UString &tlk, Aurora::Language language, uint32 priority) {
-	Common::UString tlkM = tlk + getLanguageString(language);
-	Common::UString tlkF = tlk + getLanguageString(language) + "_f";
-
-	_languageTLK.push_back(Common::ChangeID());
-	TalkMan.addTable(tlkM, tlkF, false, priority, &_languageTLK.back());
-}
-
-void DragonAgeEngine::loadLanguageFiles(Aurora::Language language) {
-	unloadLanguageFiles();
+void DragonAgeEngine::loadTalkTables(const Common::UString &dir, uint32 priority, ChangeList &changes) {
 	if (EventMan.quitRequested())
 		return;
 
-	LangMan.setCurrentLanguage(language);
+	const Common::UString tlkDir = Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir, true);
 
-	loadTalkTable("core_"        , language, 0);
-	loadTalkTable("singleplayer_", language, 1);
+	Common::FileList files(Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir, true), 0);
+
+	files.sort(true);
+	files.relativize(tlkDir);
+
+	const Common::UString languageTLK = getLanguageString(_language) + ".tlk";
+	for (Common::FileList::const_iterator f = files.begin(); f != files.end(); ++f) {
+		if (!f->toLower().endsWith(languageTLK))
+			continue;
+
+		Common::UString tlk = *f;
+		tlk.truncate(tlk.size() - languageTLK.size());
+
+		loadTalkTable(tlk, _language, priority++, changes);
+	}
+}
+
+void DragonAgeEngine::loadResourceDir(const Common::UString &dir, uint32 priority, ChangeList &changes) {
+	if (EventMan.quitRequested())
+		return;
+
+	Common::FileList files(Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir, true), 0);
+
+	files.sort(true);
+	files.relativize(ResMan.getDataBase());
+
+	for (Common::FileList::const_iterator f = files.begin(); f != files.end(); ++f)
+		if (Common::FilePath::getExtension(*f).equalsIgnoreCase(".erf"))
+			indexMandatoryArchive("/" + *f, priority++, changes);
+}
+
+void DragonAgeEngine::unloadTalkTables(ChangeList &changes) {
+	for (std::list<Common::ChangeID>::iterator t = changes.begin(); t != changes.end(); ++t)
+		TalkMan.removeTable(*t);
+
+	changes.clear();
+}
+
+void DragonAgeEngine::loadTalkTable(const Common::UString &tlk, Aurora::Language language,
+                                    uint32 priority, ChangeList &changes) {
+
+	Common::UString tlkM = tlk + getLanguageString(language);
+	Common::UString tlkF = tlk + getLanguageString(language) + "_f";
+
+	changes.push_back(Common::ChangeID());
+	TalkMan.addTable(tlkM, tlkF, false, priority, &changes.back());
 }
 
 void DragonAgeEngine::initCursors() {
@@ -476,6 +453,8 @@ void DragonAgeEngine::initGameConfig() {
 }
 
 void DragonAgeEngine::deinit() {
+	unloadTalkTables(_languageTLK);
+	deindexResources(_resources);
 }
 
 void DragonAgeEngine::playIntroVideos() {
@@ -484,7 +463,7 @@ void DragonAgeEngine::playIntroVideos() {
 }
 
 void DragonAgeEngine::main() {
-	_campaigns = new Campaigns(*_console);
+	_campaigns = new Campaigns(*_console, *this);
 
 	const Campaign *singlePlayer = _campaigns->findCampaign("Single Player");
 	if (!singlePlayer)
