@@ -39,10 +39,12 @@ Console::Console(DragonAgeEngine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
 	_engine(&engine) {
 
-	registerCommand("listareas", boost::bind(&Console::cmdListAreas, this, _1),
+	registerCommand("listareas"    , boost::bind(&Console::cmdListAreas     , this, _1),
 			"Usage: listareas\nList all areas in the current campaign");
-	registerCommand("loadarea" , boost::bind(&Console::cmdLoadArea, this, _1),
+	registerCommand("loadarea"     , boost::bind(&Console::cmdLoadArea     , this, _1),
 			"Usage: loadarea <name>\nLoad and show a specific area in the current campaign");
+	registerCommand("listcampaigns", boost::bind(&Console::cmdListCampaigns, this, _1),
+			"Usage: listcampaigns\nList all playable campaigns");
 }
 
 Console::~Console() {
@@ -52,6 +54,7 @@ void Console::updateCaches() {
 	::Engines::Console::updateCaches();
 
 	updateAreas();
+	updateCampaigns();
 }
 
 void Console::updateAreas() {
@@ -69,6 +72,21 @@ void Console::updateAreas() {
 
 	areaTags.sort(Common::UString::iless());
 	setArguments("loadarea", areaTags);
+}
+
+void Console::updateCampaigns() {
+	setArguments("loadcampaign");
+
+	const Campaigns &campaignsCtx = _engine->getCampaigns();
+
+	std::list<Common::UString> campaignTags;
+
+	const Campaigns::PlayableCampaigns &campaigns = campaignsCtx.getCampaigns();
+	for (Campaigns::PlayableCampaigns::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c)
+		campaignTags.push_back((*c)->getUID());
+
+	campaignTags.sort(Common::UString::iless());
+	setArguments("loadcampaign", campaignTags);
 }
 
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
@@ -102,6 +120,15 @@ void Console::cmdLoadArea(const CommandLine &cl) {
 	}
 
 	printf("No such area \"%s\"", cl.args.c_str());
+}
+
+void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
+	const Campaigns &campaignsCtx = _engine->getCampaigns();
+
+	const Campaigns::PlayableCampaigns &campaigns = campaignsCtx.getCampaigns();
+
+	for (Campaigns::PlayableCampaigns::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c)
+		printf("%s (\"%s\")", (*c)->getUID().c_str(), (*c)->getName().getString().c_str());
 }
 
 } // End of namespace DragonAge
