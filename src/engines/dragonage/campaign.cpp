@@ -68,8 +68,8 @@ Campaign::RIMNode::~RIMNode() {
 
 Campaign::Campaign(DragonAgeEngine &engine, const Common::UString &cifPath,
                    const Common::UString &manifestPath, const Common::UString &addinBase) :
-	ScriptObject(kObjectTypeModule), _engine(&engine), _addinBase(addinBase),
-	_enabled(false), _bioware(false), _needsAuth(false),
+	ScriptObject(kObjectTypeModule), _engine(&engine), _cifPath(cifPath),
+	_addinBase(addinBase), _enabled(false), _bioware(false), _needsAuth(false),
 	_priority(0xFFFFFFFF), _format(0xFFFFFFFF), _state(0xFFFFFFFF), _rimRoot(0),
 	_area(0) {
 
@@ -130,7 +130,7 @@ void Campaign::read(const Common::UString &cifPath, const Common::UString &manif
 			throw Common::Exception("DLC without a manifest.xml");
 	}
 
-	readCIF(cifPath);
+	readCIFStatic(cifPath);
 	readManifest(manifestPath);
 
 	if (_uid.empty())
@@ -146,7 +146,7 @@ void Campaign::read(const Common::UString &cifPath, const Common::UString &manif
 		throw Common::Exception("TODO: Needs authorization");
 }
 
-void Campaign::readCIF(const Common::UString &path) {
+void Campaign::readCIFStatic(const Common::UString &path) {
 	Common::ReadFile *cifFile = new Common::ReadFile(path);
 
 	GFF4File cif(cifFile, kCIFID);
@@ -186,13 +186,6 @@ void Campaign::readCIF(const Common::UString &path) {
 			_entryOrientation[0], _entryOrientation[1], _entryOrientation[2]);
 
 	cifTop.getString(kGFF4CampaignCIFPackagesList, _packages);
-
-	const GFF4Struct *rimRoot = cifTop.getStruct(kGFF4RimTreeRootNode);
-	if (rimRoot)
-		_rimRoot = readRIMs(*rimRoot);
-
-	if (cifTop.hasField(kGFF4ScriptVarTable))
-		readVarTable(cifTop.getList(kGFF4ScriptVarTable));
 }
 
 Campaign::RIMNode *Campaign::readRIMs(const GFF4Struct &node, const RIMNode *parent) {
@@ -342,8 +335,26 @@ void Campaign::loadResources() {
 	}
 }
 
+void Campaign::readCIFDynamic(const Common::UString &path) {
+	Common::ReadFile *cifFile = new Common::ReadFile(path);
+
+	GFF4File cif(cifFile, kCIFID);
+	if (cif.getTypeVersion() != kVersion01)
+		throw Common::Exception("Unsupported CIF version %s", Common::debugTag(cif.getTypeVersion()).c_str());
+
+	const GFF4Struct &cifTop = cif.getTopLevel();
+
+	const GFF4Struct *rimRoot = cifTop.getStruct(kGFF4RimTreeRootNode);
+	if (rimRoot)
+		_rimRoot = readRIMs(*rimRoot);
+
+	if (cifTop.hasField(kGFF4ScriptVarTable))
+		readVarTable(cifTop.getList(kGFF4ScriptVarTable));
+}
+
 void Campaign::load() {
 	loadResources();
+	readCIFDynamic(_cifPath);
 
 	_entryArea = ConfigMan.getString("area", _entryArea);
 
@@ -356,6 +367,9 @@ void Campaign::unload() {
 
 	delete _area;
 	_area = 0;
+
+	delete _rimRoot;
+	_rimRoot = 0;
 
 	clearObjects();
 	TwoDAReg.clear();

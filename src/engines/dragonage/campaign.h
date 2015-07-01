@@ -105,6 +105,7 @@ private:
 
 	Common::UString _uid;
 
+	Common::UString _cifPath;
 	Common::UString _addinBase;
 
 	Aurora::LocString _name;
@@ -150,12 +151,13 @@ private:
 
 	// .--- Loader
 	void read(const Common::UString &cifPath, const Common::UString &manifestPath);
-	void readCIF(const Common::UString &path);
+	void readCIFStatic(const Common::UString &path);
 	RIMNode *readRIMs(const Aurora::GFF4Struct &node, const RIMNode *parent = 0);
 	void readManifest(const Common::UString &path);
 
 	void addAreaName(const RIMNode &node);
 
+	void readCIFDynamic(const Common::UString &path);
 	void loadResources();
 	// '---
 
