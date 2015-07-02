@@ -449,7 +449,7 @@ Common::UString GFF3Struct::getString(const Common::UString &field,
 	    (f->type == kFieldTypeUint64) ||
 	    (f->type == kFieldTypeStrRef)) {
 
-		return Common::UString::format("%lu", getUint(field));
+		return Common::composeString(getUint(field));
 	}
 
 	if ((f->type == kFieldTypeChar  ) ||
@@ -457,27 +457,32 @@ Common::UString GFF3Struct::getString(const Common::UString &field,
 	    (f->type == kFieldTypeSint32) ||
 	    (f->type == kFieldTypeSint64)) {
 
-		return Common::UString::format("%ld", getSint(field));
+		return Common::composeString(getSint(field));
 	}
 
 	if ((f->type == kFieldTypeFloat) ||
 	    (f->type == kFieldTypeDouble)) {
 
-		return Common::UString::format("%lf", getDouble(field));
+		return Common::composeString(getDouble(field));
 	}
 
 	if (f->type == kFieldTypeVector) {
 		float x, y, z;
 
 		getVector(field, x, y, z);
-		return Common::UString::format("%f/%f/%f", x, y, z);
+		return Common::composeString(x) + "/" +
+		       Common::composeString(y) + "/" +
+		       Common::composeString(z);
 	}
 
 	if (f->type == kFieldTypeOrientation) {
 		float a, b, c, d;
 
 		getOrientation(field, a, b, c, d);
-		return Common::UString::format("%f/%f/%f/%f", a, b, c, d);
+		return Common::composeString(a) + "/" +
+		       Common::composeString(b) + "/" +
+		       Common::composeString(c) + "/" +
+		       Common::composeString(d);
 	}
 
 	throw Common::Exception("GFF3: Field is not a string(able) type");
