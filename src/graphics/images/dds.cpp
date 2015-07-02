@@ -286,8 +286,6 @@ void DDS::detectFormat(const DDSPixelFormat &format, DataType &dataType) {
 		_formatRaw  = kPixelFormatRGB8;
 		_dataType   = kPixelDataType8;
 
-		warning("Found untested DDS RGB8 data");
-
 	} else if ((format.flags & kPixelFlagsIsRGB) && (format.flags & kPixelFlagsHasAlpha) &&
 	           (format.bitCount == 16) &&
 	           (format.rBitMask == 0x00007C00) && (format.gBitMask == 0x000003E0) &&
