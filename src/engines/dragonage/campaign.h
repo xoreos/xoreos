@@ -180,6 +180,8 @@ private:
 	void loadArea();
 	void unloadArea();
 	bool changeArea();
+
+	void enterArea(bool startArea = false);
 	// '---
 
 	friend class Campaigns;

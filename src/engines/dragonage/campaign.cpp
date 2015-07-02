@@ -381,16 +381,33 @@ void Campaign::unload() {
 	deindexResources(_resources);
 }
 
-void Campaign::enter() {
+void Campaign::enterArea(bool startArea) {
 	if (!_area)
 		return;
 
-	float posX, posY, posZ, orientX, orientY, orientZ, orientAngle;
-	_area->getEntryLocation(posX, posY, posZ, orientX, orientY, orientZ, orientAngle);
+	float entryPosX, entryPosY, entryPosZ, entryOrientX, entryOrientY, entryOrientZ;
+
+	if (startArea) {
+		entryPosX = _entryPosition[0];
+		entryPosY = _entryPosition[1];
+		entryPosZ = _entryPosition[2];
+
+		entryOrientX = _entryOrientation[0];
+		entryOrientY = _entryOrientation[1];
+		entryOrientZ = _entryOrientation[2];
+	} else {
+		float orientX, orientY, orientZ, orientAngle;
+
+		_area->getEntryLocation(entryPosX, entryPosY, entryPosZ, orientX, orientY, orientZ, orientAngle);
+
+		entryOrientX = 0.0f;
+		entryOrientY = 0.0f;
+		entryOrientZ = 0.0f;
+	}
 
 	CameraMan.reset();
-	CameraMan.setPosition(posX, posY, posZ + 1.8f);
-	CameraMan.setOrientation(90.0f, 0.0f, 0.0f);
+	CameraMan.setPosition(entryPosX, entryPosY, entryPosZ + 1.8f);
+	CameraMan.setOrientation(entryOrientX + 90.0f, entryOrientY, entryOrientZ);
 	CameraMan.update();
 
 	_eventQueue.clear();
@@ -398,6 +415,10 @@ void Campaign::enter() {
 	_area->show();
 
 	status("Entered area \"%s\" (\"%s\")", _area->getTag().c_str(), _area->getName().getString().c_str());
+}
+
+void Campaign::enter() {
+	enterArea(true);
 }
 
 void Campaign::leave() {
@@ -434,7 +455,7 @@ bool Campaign::changeArea() {
 	if (!_area)
 		return false;
 
-	enter();
+	enterArea();
 	return true;
 }
 
