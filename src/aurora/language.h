@@ -77,6 +77,7 @@ public:
 
 		uint32 id;
 		Common::Encoding encoding;
+		Common::Encoding encodingLocString;
 	};
 
 	LanguageManager();
@@ -89,6 +90,11 @@ public:
 	/** Add a supported language for the current game to the LanguageManager,
 	 *  together with its internal (ungendered) language ID and usual encoding. */
 	void addLanguage(Language language, uint32 id, Common::Encoding encoding);
+	/** Add a supported language for the current game to the LanguageManager,
+	 *  together with its internal (ungendered) language ID, the usual encoding,
+	 *  and the encoding when reading an embedded LocString string. */
+	void addLanguage(Language language, uint32 id, Common::Encoding encoding,
+	                 Common::Encoding encodingLocString);
 	/** Add a supported language for the current game to the LanguageManager,
 	 *  together with its internal (ungendered) language ID and usual encoding. */
 	void addLanguage(const Declaration &languageDeclaration);
@@ -137,6 +143,8 @@ public:
 
 	/** Return the encoding used for the given language. */
 	Common::Encoding getEncoding(Language language) const;
+	/** Return the encoding used for the given language, for reading an embedded LocString string. */
+	Common::Encoding getEncodingLocString(Language language) const;
 	// '---
 
 	// .--- Current language
@@ -160,6 +168,8 @@ public:
 
 	/** Return the encoding for the current text language. */
 	Common::Encoding getCurrentEncoding() const;
+	/** Return the encoding for the current text language, for reading an embedded LocString string. */
+	Common::Encoding getCurrentEncodingLocString() const;
 	// '---
 
 	// .--- Static language utility methods

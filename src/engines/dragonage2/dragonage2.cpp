@@ -221,17 +221,17 @@ void DragonAge2Engine::init() {
 
 void DragonAge2Engine::declareLanguages() {
 	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
-		{ Aurora::kLanguageEnglish  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageFrench   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageGerman   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageItalian  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageSpanish  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguagePolish   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageCzech    , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageHungarian, Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageRussian  , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageKorean   , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE },
-		{ Aurora::kLanguageJapanese , Aurora::kLanguageInvalid, Common::kEncodingUTF16LE }
+		{ Aurora::kLanguageEnglish  ,  0, Common::kEncodingUTF16LE, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageFrench   ,  1, Common::kEncodingUTF16LE, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageRussian  ,  2, Common::kEncodingUTF16LE, Common::kEncodingCP1251 },
+		{ Aurora::kLanguageItalian  ,  3, Common::kEncodingUTF16LE, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageGerman   ,  4, Common::kEncodingUTF16LE, Common::kEncodingCP1252 },
+		{ Aurora::kLanguagePolish   ,  5, Common::kEncodingUTF16LE, Common::kEncodingCP1250 },
+		{ Aurora::kLanguageSpanish  ,  6, Common::kEncodingUTF16LE, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageCzech    ,  7, Common::kEncodingUTF16LE, Common::kEncodingCP1250 },
+		{ Aurora::kLanguageHungarian,  8, Common::kEncodingUTF16LE, Common::kEncodingCP1250 },
+		{ Aurora::kLanguageKorean   ,  9, Common::kEncodingUTF16LE, Common::kEncodingCP949  },
+		{ Aurora::kLanguageJapanese , 10, Common::kEncodingUTF16LE, Common::kEncodingCP932  }
 	};
 
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));

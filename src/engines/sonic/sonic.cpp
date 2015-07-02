@@ -249,12 +249,12 @@ void SonicEngine::init() {
 
 void SonicEngine::declareLanguages() {
 	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
-		{ Aurora::kLanguageEnglish , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageFrench  , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageGerman  , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageItalian , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageSpanish , Aurora::kLanguageInvalid, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageJapanese, Aurora::kLanguageInvalid, Common::kEncodingUTF8   }
+		{ Aurora::kLanguageEnglish , Aurora::kLanguageInvalid, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageFrench  , Aurora::kLanguageInvalid, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageGerman  , Aurora::kLanguageInvalid, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageItalian , Aurora::kLanguageInvalid, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageSpanish , Aurora::kLanguageInvalid, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageJapanese, Aurora::kLanguageInvalid, Common::kEncodingUTF8  , Common::kEncodingUTF8   }
 	};
 
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));

@@ -239,18 +239,18 @@ void WitcherEngine::init() {
 
 void WitcherEngine::declareLanguages() {
 	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
-		{ Aurora::kLanguageEnglish           ,  3, Common::kEncodingUTF8 },
-		{ Aurora::kLanguagePolish            ,  5, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageGerman            , 10, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageFrench            , 11, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageSpanish           , 12, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageItalian           , 13, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageRussian           , 14, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageCzech             , 15, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageHungarian         , 16, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageKorean            , 20, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageChineseTraditional, 21, Common::kEncodingUTF8 },
-		{ Aurora::kLanguageChineseSimplified , 22, Common::kEncodingUTF8 }
+		{ Aurora::kLanguageEnglish           ,  3, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguagePolish            ,  5, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageGerman            , 10, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageFrench            , 11, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageSpanish           , 12, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageItalian           , 13, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageRussian           , 14, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageCzech             , 15, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageHungarian         , 16, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageKorean            , 20, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageChineseTraditional, 21, Common::kEncodingUTF8, Common::kEncodingUTF8 },
+		{ Aurora::kLanguageChineseSimplified , 22, Common::kEncodingUTF8, Common::kEncodingUTF8 }
 	};
 
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));

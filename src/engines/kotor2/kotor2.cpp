@@ -226,16 +226,16 @@ void KotOR2Engine::init() {
 
 void KotOR2Engine::declareLanguages() {
 	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
-		{ Aurora::kLanguageEnglish           ,   0, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageFrench            ,   1, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageGerman            ,   2, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageItalian           ,   3, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageSpanish           ,   4, Common::kEncodingCP1252 },
-		{ Aurora::kLanguagePolish            ,   5, Common::kEncodingCP1250 },
-		{ Aurora::kLanguageKorean            , 128, Common::kEncodingCP949  },
-		{ Aurora::kLanguageChineseTraditional, 129, Common::kEncodingCP950  },
-		{ Aurora::kLanguageChineseSimplified , 130, Common::kEncodingCP936  },
-		{ Aurora::kLanguageJapanese          , 131, Common::kEncodingCP932  }
+		{ Aurora::kLanguageEnglish           ,   0, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageFrench            ,   1, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageGerman            ,   2, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageItalian           ,   3, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageSpanish           ,   4, Common::kEncodingCP1252, Common::kEncodingCP1252 },
+		{ Aurora::kLanguagePolish            ,   5, Common::kEncodingCP1250, Common::kEncodingCP1250 },
+		{ Aurora::kLanguageKorean            , 128, Common::kEncodingCP949 , Common::kEncodingCP949  },
+		{ Aurora::kLanguageChineseTraditional, 129, Common::kEncodingCP950 , Common::kEncodingCP950  },
+		{ Aurora::kLanguageChineseSimplified , 130, Common::kEncodingCP936 , Common::kEncodingCP936  },
+		{ Aurora::kLanguageJapanese          , 131, Common::kEncodingCP932 , Common::kEncodingCP932  }
 	};
 
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));

@@ -61,6 +61,21 @@ void LanguageManager::addLanguage(Language language, uint32 id, Common::Encoding
 	declaration.id       = id;
 	declaration.encoding = encoding;
 
+	declaration.encodingLocString = encoding;
+
+	addLanguage(declaration);
+}
+
+void LanguageManager::addLanguage(Language language, uint32 id, Common::Encoding encoding,
+                                  Common::Encoding encodingLocString) {
+	Declaration declaration;
+
+	declaration.language = language;
+	declaration.id       = id;
+	declaration.encoding = encoding;
+
+	declaration.encodingLocString = encodingLocString;
+
 	addLanguage(declaration);
 }
 
@@ -140,6 +155,14 @@ Common::Encoding LanguageManager::getEncoding(Language language) const {
 	return l->encoding;
 }
 
+Common::Encoding LanguageManager::getEncodingLocString(Language language) const {
+	const Declaration *l = find(language);
+	if (!l)
+		return Common::kEncodingInvalid;
+
+	return l->encodingLocString;
+}
+
 void LanguageManager::setCurrentLanguage(Language language) {
 	setCurrentLanguageText(language);
 	setCurrentLanguageVoice(language);
@@ -176,6 +199,10 @@ LanguageGender LanguageManager::getCurrentGender() const {
 
 Common::Encoding LanguageManager::getCurrentEncoding() const {
 	return getEncoding(getCurrentLanguageText());
+}
+
+Common::Encoding LanguageManager::getCurrentEncodingLocString() const {
+	return getEncodingLocString(getCurrentLanguageText());
 }
 
 uint32 LanguageManager::convertLanguageIDToGendered(uint32 languageID, LanguageGender gender) {
