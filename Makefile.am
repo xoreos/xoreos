@@ -8,12 +8,27 @@ EXTRA_DIST = \
              README.md \
              FAQ.md \
              CONTRIBUTING.md \
+             CODE_OF_CONDUCT.md \
+             doc/doxygen/README \
              dists/macosx/Info.plist \
              dists/macosx/xoreos.icns \
              dists/win32/xoreos.ico \
              dists/win32/xoreos.rc \
              glew/LICENSE.txt \
              lua/README.xoreos \
+             .uncrustifyrc \
+             m4/ax_check_glu.m4 \
+             m4/ax_check_glut.m4 \
+             CMakeLists.txt \
+             cmake/CMakeAM.cmake \
+             cmake/FindFaad.cmake \
+             cmake/FindGLEW.cmake \
+             cmake/FindMad.cmake \
+             cmake/FindSDL2.cmake \
+             cmake/FindVorbis.cmake \
+             cmake/FindXviD.cmake \
+             cmake/toolchain/i686-windows-mingw.cmake \
+             cmake/toolchain/x86_64-windows-mingw.cmake \
              $(EMPTY)
 
 dist_doc_DATA = \
@@ -22,6 +37,8 @@ dist_doc_DATA = \
                 ChangeLog \
                 README.md \
                 FAQ.md \
+                CONTRIBUTING.md \
+                CODE_OF_CONDUCT.md \
                 $(EMPTY)
 
 SUBDIRS = \
