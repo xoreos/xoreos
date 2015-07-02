@@ -62,6 +62,7 @@ noinst_HEADERS = \
                  filelist.h \
                  bitstream.h \
                  huffman.h \
+                 vector3.h \
                  matrix.h \
                  transmatrix.h \
                  boundingbox.h \

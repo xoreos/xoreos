@@ -26,6 +26,7 @@ noinst_HEADERS = \
                  gui/widgets/modelwidget.h \
                  gui/widgets/quadwidget.h \
                  gui/widgets/textwidget.h \
+                 gui/widgets/button.h \
                  gui/widgets/checkbox.h \
                  gui/widgets/close.h \
                  gui/widgets/editbox.h \

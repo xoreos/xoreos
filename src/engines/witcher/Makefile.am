@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libwitcher.la
 
 noinst_HEADERS = \
                  witcher.h \
+                 types.h \
                  modelloader.h \
                  console.h \
                  campaign.h \
