@@ -303,6 +303,8 @@ void DragonAgeEngine::loadResources(const Common::UString &dir, uint32 priority,
 
 	loadResourceDir(dir + "/patch", 0x40000000 | priority, res);
 
+	indexOptionalDirectory(dir + "/override", 0, -1, 0x40000000 | (priority + 499), res);
+
 	loadTalkTables(dir + "/data/talktables", priority, tlk);
 }
 
