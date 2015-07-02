@@ -200,6 +200,9 @@ GDAFile *TwoDARegistry::loadGDA(const Common::UString &name) {
 }
 
 GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
+	if (prefix.empty())
+		throw Common::Exception("Trying to load MGDA \"\"");
+
 	prefix.makeLower();
 
 	std::list<ResourceManager::ResourceID> gdas;
