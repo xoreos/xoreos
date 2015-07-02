@@ -704,33 +704,39 @@ void ModelNode_DragonAge::readMAOGFF(Common::SeekableReadStream *maoStream, Mate
 	material.defaultSemantic = maoTop.getString(kGFF4MAODefaultSemantic);
 
 	// Floats
-	const GFF4List &floats = maoTop.getList(kGFF4MAOFloats);
-	for (GFF4List::const_iterator f = floats.begin(); f != floats.end(); ++f) {
-		if (!isType(*f, kFLOTID))
-			continue;
+	if (maoTop.hasField(kGFF4MAOFloats)) {
+		const GFF4List &floats = maoTop.getList(kGFF4MAOFloats);
+		for (GFF4List::const_iterator f = floats.begin(); f != floats.end(); ++f) {
+			if (!isType(*f, kFLOTID))
+				continue;
 
-		material.floats[(*f)->getString(kGFF4MAOFloatName)] = (float) (*f)->getDouble(kGFF4MAOFloatValue);
+			material.floats[(*f)->getString(kGFF4MAOFloatName)] = (float) (*f)->getDouble(kGFF4MAOFloatValue);
+		}
 	}
 
 	// Vectors
-	const GFF4List &vectors = maoTop.getList(kGFF4MAOVectors);
-	for (GFF4List::const_iterator v = floats.begin(); v != floats.end(); ++v) {
-		if (!isType(*v, kFLT4ID))
-			continue;
+	if (maoTop.hasField(kGFF4MAOVectors)) {
+		const GFF4List &vectors = maoTop.getList(kGFF4MAOVectors);
+		for (GFF4List::const_iterator v = vectors.begin(); v != vectors.end(); ++v) {
+			if (!isType(*v, kFLT4ID))
+				continue;
 
-		double v1 = 0.0, v2 = 0.0, v3 = 0.0, v4 = 1.0;
-		(*v)->getVector4(kGFF4MAOVectorValue, v1, v2, v3, v4);
+			double v1 = 0.0, v2 = 0.0, v3 = 0.0, v4 = 1.0;
+			(*v)->getVector4(kGFF4MAOVectorValue, v1, v2, v3, v4);
 
-		material.vectors[(*v)->getString(kGFF4MAOVectorName)] = Common::Vector3(v1, v2, v3, v4);
+			material.vectors[(*v)->getString(kGFF4MAOVectorName)] = Common::Vector3(v1, v2, v3, v4);
+		}
 	}
 
 	// Textures
-	const GFF4List &textures = maoTop.getList(kGFF4MAOTextures);
-	for (GFF4List::const_iterator t = textures.begin(); t != textures.end(); ++t) {
-		if (!isType(*t, kTEXID))
-			continue;
+	if (maoTop.hasField(kGFF4MAOTextures)) {
+		const GFF4List &textures = maoTop.getList(kGFF4MAOTextures);
+		for (GFF4List::const_iterator t = textures.begin(); t != textures.end(); ++t) {
+			if (!isType(*t, kTEXID))
+				continue;
 
-		material.textures[(*t)->getString(kGFF4MAOTextureName)] = (*t)->getString(kGFF4MAOTextureResource);
+			material.textures[(*t)->getString(kGFF4MAOTextureName)] = (*t)->getString(kGFF4MAOTextureResource);
+		}
 	}
 }
 
