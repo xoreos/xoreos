@@ -20,7 +20,6 @@ libnwscript_la_SOURCES = \
                          variable.cpp \
                          variablecontainer.cpp \
                          functioncontext.cpp \
-                         object.cpp \
                          objectcontainer.cpp \
                          functionman.cpp \
                          ncsfile.cpp \
