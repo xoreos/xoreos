@@ -206,10 +206,12 @@ void Model_DragonAge::load(ParserContext &ctx) {
 	_name = ctx.mmhName;
 
 	// Lax sanity checks
+	/*
 	if (!ctx.mmhName.empty() && (ctx.mmhFile != ctx.mmhName))
 		warning("MMH names don't match (\"%s\" vs. \"%s\")", ctx.mmhFile.c_str(), ctx.mmhName.c_str());
 	if (!ctx.mshName.empty() && (ctx.mshFile != ctx.mshName))
 		warning("MSH names don't match (\"%s\" vs. \"%s\")", ctx.mshFile.c_str(), ctx.mshName.c_str());
+	*/
 
 	const GFF4Struct *rootNodes = ctx.mmhTop->getGeneric(kGFF4MMHChildren);
 	if (!rootNodes)
