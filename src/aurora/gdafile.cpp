@@ -265,6 +265,18 @@ void GDAFile::add(Common::SeekableReadStream *gda) {
 void GDAFile::clear() {
 	for (std::vector<GFF4File *>::iterator g = _gff4s.begin(); g != _gff4s.end(); ++g)
 		delete *g;
+
+	_gff4s.clear();
+
+	_columns = 0;
+	_rows.clear();
+
+	_rowStarts.clear();
+
+	_rowCount = 0;
+
+	_columnHashMap.clear();
+	_columnNameMap.clear();
 }
 
 } // End of namespace Aurora
