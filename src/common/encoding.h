@@ -45,6 +45,7 @@ enum Encoding {
 	kEncodingLatin9,  ///< ISO-8859-15 (Latin-9).
 
 	kEncodingCP1250,  ///< Windows codepage 1250 (Eastern European, Latin alphabet).
+	kEncodingCP1251,  ///< Windows codepage 1251 (Eastern European, Cyrillic alphabet).
 	kEncodingCP1252,  ///< Windows codepage 1252 (Western European, Latin alphabet).
 
 	kEncodingCP932,   ///< Windows codepage 932 (Japanese, extended Shift-JIS).

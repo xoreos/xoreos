@@ -38,16 +38,16 @@
 namespace Common {
 
 static const char *kEncodingName[kEncodingMAX] = {
-	"ASCII", "UTF-8", "UTF-16LE", "UTF-16BE", "ISO-8859-15", "WINDOWS-1250", "WINDOWS-1252",
-	"CP932", "CP936", "CP949", "CP950"
+	"ASCII", "UTF-8", "UTF-16LE", "UTF-16BE", "ISO-8859-15", "WINDOWS-1250", "WINDOWS-1251",
+	"WINDOWS-1252", "CP932", "CP936", "CP949", "CP950"
 };
 
 static const size_t kEncodingGrowthFrom[kEncodingMAX] = {
-	1, 1, 2, 2, 4, 4, 4, 4, 4, 4, 4
+	1, 1, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4
 };
 
 static const size_t kEncodingGrowthTo  [kEncodingMAX] = {
-	1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1
+	1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
 /** A manager handling string encoding conversions. */
