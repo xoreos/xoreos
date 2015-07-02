@@ -213,13 +213,16 @@ GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
 
 			Common::SeekableReadStream *stream = ResMan.getResource(g->name, kFileTypeGDA);
 			if (!stream)
-				throw Common::Exception("No such GDA");
+				throw Common::Exception("No such GDA \"%s\"", g->name.c_str());
 
 			if (!gda)
 				gda = new GDAFile(stream);
 			else
 				gda->add(stream);
 		}
+
+		if (!gda)
+			throw Common::Exception("No such GDA");
 
 	} catch (Common::Exception &e) {
 		delete gda;
