@@ -66,7 +66,7 @@ bool ReadFile::open(const UString &fileName) {
 		return false;
 	}
 
-	if ((int64)fileSize > (int64)0x7FFFFFFF) {
+	if ((uint64)((unsigned long)fileSize) > (uint64)0x7FFFFFFFULL) {
 		warning("ReadFile \"%s\" is too big", fileName.c_str());
 
 		close();
