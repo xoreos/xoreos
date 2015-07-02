@@ -19,43 +19,56 @@
  */
 
 /** @file
- *  Dragon Age II (debug) console.
+ *  A placeable object in a Dragon Age II area.
  */
 
-#ifndef ENGINES_DRAGONAGE2_CONSOLE_H
-#define ENGINES_DRAGONAGE2_CONSOLE_H
+#ifndef ENGINES_DRAGONAGE2_PLACEABLE_H
+#define ENGINES_DRAGONAGE2_PLACEABLE_H
 
-#include "src/engines/aurora/console.h"
+#include "src/common/ustring.h"
+
+#include "src/aurora/types.h"
+
+#include "src/graphics/aurora/types.h"
+
+#include "src/engines/dragonage2/object.h"
 
 namespace Engines {
 
 namespace DragonAge2 {
 
-class DragonAge2Engine;
-
-class Console : public ::Engines::Console {
+class Placeable : public Object {
 public:
-	Console(DragonAge2Engine &engine);
-	~Console();
+	/** Load from a placeable instance. */
+	Placeable(const Aurora::GFF3Struct &placeable);
+	~Placeable();
+
+	void setPosition(float x, float y, float z);
+	void setOrientation(float x, float y, float z, float angle);
+
+	void show();
+	void hide();
+
+	void enter();
+	void leave();
+
+	void highlight(bool enabled);
+
 
 private:
-	DragonAge2Engine *_engine;
+	uint32 _appearance;
+
+	Graphics::Aurora::Model *_model;
 
 
-	// Updating the caches
-	void updateCaches();
-	void updateAreas();
-	void updateCampaigns();
+	void load(const Aurora::GFF3Struct &placeable);
+	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
 
-	void cmdListAreas    (const CommandLine &cl);
-	void cmdLoadArea     (const CommandLine &cl);
-	void cmdListCampaigns(const CommandLine &cl);
-	void cmdLoadCampaign (const CommandLine &cl);
-
+	void loadProperties(const Aurora::GFF3Struct &gff);
 };
 
-} // End of namespace DragonAge2
+} // End of namespace Dragon Age
 
 } // End of namespace Engines
 
-#endif // ENGINES_DRAGONAGE2_CONSOLE_H
+#endif // ENGINES_DRAGONAGE2_PLACEABLE_H

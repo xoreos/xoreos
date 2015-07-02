@@ -27,6 +27,7 @@
 #include "src/common/readstream.h"
 
 #include "src/aurora/types.h"
+#include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/model_dragonage.h"
 
@@ -38,6 +39,12 @@ namespace DragonAge2 {
 
 Graphics::Aurora::Model *DragonAge2ModelLoader::load(const Common::UString &resref,
 		Graphics::Aurora::ModelType type, const Common::UString &UNUSED(texture)) {
+
+	// Check if this model uses LOD. If so, load the highest
+	Common::UString name = resref;
+	if (!ResMan.hasResource(resref, ::Aurora::kFileTypeMMH) &&
+	     ResMan.hasResource(resref + "_0", ::Aurora::kFileTypeMMH))
+		name = resref + "_0";
 
 	return new Graphics::Aurora::Model_DragonAge(resref, type);
 }

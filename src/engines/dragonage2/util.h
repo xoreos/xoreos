@@ -19,43 +19,28 @@
  */
 
 /** @file
- *  Dragon Age II (debug) console.
+ *  Dragon Age II utility functions.
  */
 
-#ifndef ENGINES_DRAGONAGE2_CONSOLE_H
-#define ENGINES_DRAGONAGE2_CONSOLE_H
+#ifndef ENGINES_DRAGONAGE2_UTIL_H
+#define ENGINES_DRAGONAGE2_UTIL_H
 
-#include "src/engines/aurora/console.h"
+#include "src/common/types.h"
+
+#include "src/engines/dragonage2/types.h"
+
+namespace Aurora {
+	class GDAFile;
+}
 
 namespace Engines {
 
 namespace DragonAge2 {
 
-class DragonAge2Engine;
-
-class Console : public ::Engines::Console {
-public:
-	Console(DragonAge2Engine &engine);
-	~Console();
-
-private:
-	DragonAge2Engine *_engine;
-
-
-	// Updating the caches
-	void updateCaches();
-	void updateAreas();
-	void updateCampaigns();
-
-	void cmdListAreas    (const CommandLine &cl);
-	void cmdLoadArea     (const CommandLine &cl);
-	void cmdListCampaigns(const CommandLine &cl);
-	void cmdLoadCampaign (const CommandLine &cl);
-
-};
+const Aurora::GDAFile &getMGDA(uint32 id);
 
 } // End of namespace DragonAge2
 
 } // End of namespace Engines
 
-#endif // ENGINES_DRAGONAGE2_CONSOLE_H
+#endif // ENGINES_DRAGONAGE2_UTIL_H

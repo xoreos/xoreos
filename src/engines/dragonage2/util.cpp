@@ -19,43 +19,28 @@
  */
 
 /** @file
- *  Dragon Age II (debug) console.
+ *  Dragon Age II utility functions.
  */
 
-#ifndef ENGINES_DRAGONAGE2_CONSOLE_H
-#define ENGINES_DRAGONAGE2_CONSOLE_H
+#include "src/common/ustring.h"
 
-#include "src/engines/aurora/console.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/gdafile.h"
+
+#include "src/engines/dragonage2/util.h"
 
 namespace Engines {
 
 namespace DragonAge2 {
 
-class DragonAge2Engine;
+const Aurora::GDAFile &getMGDA(uint32 id) {
+	const Aurora::GDAFile &m2da  = TwoDAReg.getMGDA("m2da_");
 
-class Console : public ::Engines::Console {
-public:
-	Console(DragonAge2Engine &engine);
-	~Console();
+	const Common::UString sheetName = m2da.getString(m2da.findRow(id), "Worksheet");
 
-private:
-	DragonAge2Engine *_engine;
-
-
-	// Updating the caches
-	void updateCaches();
-	void updateAreas();
-	void updateCampaigns();
-
-	void cmdListAreas    (const CommandLine &cl);
-	void cmdLoadArea     (const CommandLine &cl);
-	void cmdListCampaigns(const CommandLine &cl);
-	void cmdLoadCampaign (const CommandLine &cl);
-
-};
+	return TwoDAReg.getMGDA(sheetName);
+}
 
 } // End of namespace DragonAge2
 
 } // End of namespace Engines
-
-#endif // ENGINES_DRAGONAGE2_CONSOLE_H

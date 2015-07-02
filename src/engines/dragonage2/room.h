@@ -19,43 +19,53 @@
  */
 
 /** @file
- *  Dragon Age II (debug) console.
+ *  A room in a Dragon Age II area.
  */
 
-#ifndef ENGINES_DRAGONAGE2_CONSOLE_H
-#define ENGINES_DRAGONAGE2_CONSOLE_H
+#ifndef ENGINES_DRAGONAGE2_ROOM_H
+#define ENGINES_DRAGONAGE2_ROOM_H
 
-#include "src/engines/aurora/console.h"
+#include <vector>
+
+#include "src/common/ustring.h"
+
+#include "src/aurora/types.h"
+
+#include "src/graphics/aurora/types.h"
+
+#include "src/engines/aurora/resources.h"
 
 namespace Engines {
 
 namespace DragonAge2 {
 
-class DragonAge2Engine;
-
-class Console : public ::Engines::Console {
+class Room {
 public:
-	Console(DragonAge2Engine &engine);
-	~Console();
+	Room(const Aurora::GFF4Struct &room);
+	~Room();
+
+	int32 getID();
+
+	void show();
+	void hide();
 
 private:
-	DragonAge2Engine *_engine;
+	typedef std::vector<Graphics::Aurora::Model *> Models;
 
+	int32 _id;
 
-	// Updating the caches
-	void updateCaches();
-	void updateAreas();
-	void updateCampaigns();
+	Models _models;
 
-	void cmdListAreas    (const CommandLine &cl);
-	void cmdLoadArea     (const CommandLine &cl);
-	void cmdListCampaigns(const CommandLine &cl);
-	void cmdLoadCampaign (const CommandLine &cl);
+	ChangeList _resources;
 
+	void load(const Aurora::GFF4Struct &room);
+	void loadLayout(const Common::UString &roomFile);
+
+	void clean();
 };
 
 } // End of namespace DragonAge2
 
 } // End of namespace Engines
 
-#endif // ENGINES_DRAGONAGE2_CONSOLE_H
+#endif // ENGINES_DRAGONAGE2_ROOM_H

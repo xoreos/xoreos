@@ -19,43 +19,39 @@
  */
 
 /** @file
- *  Dragon Age II (debug) console.
+ *  An object context from the view of the script interpreter.
  */
 
-#ifndef ENGINES_DRAGONAGE2_CONSOLE_H
-#define ENGINES_DRAGONAGE2_CONSOLE_H
+#ifndef ENGINES_DRAGONAGE2_SCRIPTOBJECT_H
+#define ENGINES_DRAGONAGE2_SCRIPTOBJECT_H
 
-#include "src/engines/aurora/console.h"
+#include "src/aurora/types.h"
+
+#include "src/aurora/nwscript/object.h"
+
+#include "src/engines/dragonage2/types.h"
 
 namespace Engines {
 
 namespace DragonAge2 {
 
-class DragonAge2Engine;
-
-class Console : public ::Engines::Console {
+class ScriptObject : public ::Aurora::NWScript::Object {
 public:
-	Console(DragonAge2Engine &engine);
-	~Console();
+	ScriptObject(ObjectType type);
+	~ScriptObject();
+
+	ObjectType getObjectType() const;
+
+protected:
+	void readVarTable(const Aurora::GFF3List &varTable);
+	void readVarTable(const Aurora::GFF4List &varTable);
 
 private:
-	DragonAge2Engine *_engine;
-
-
-	// Updating the caches
-	void updateCaches();
-	void updateAreas();
-	void updateCampaigns();
-
-	void cmdListAreas    (const CommandLine &cl);
-	void cmdLoadArea     (const CommandLine &cl);
-	void cmdListCampaigns(const CommandLine &cl);
-	void cmdLoadCampaign (const CommandLine &cl);
-
+	ObjectType _type;
 };
 
 } // End of namespace DragonAge2
 
 } // End of namespace Engines
 
-#endif // ENGINES_DRAGONAGE2_CONSOLE_H
+#endif // ENGINES_DRAGONAGE2_SCRIPTOBJECT_H
