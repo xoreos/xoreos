@@ -282,10 +282,20 @@ void ModelNode_DragonAge::read2Float32(Common::ReadStream &stream, MeshDeclType 
 			*f++ = stream.readIEEEFloatLE();
 			break;
 
+		case kMeshDeclTypeUint8_4:
+			*f++ = stream.readByte();
+			*f++ = stream.readByte();
+			break;
+
 		case kMeshDeclTypeSint16_2:
 		case kMeshDeclTypeSint16_4:
 			*f++ = (int16) stream.readUint16LE();
 			*f++ = (int16) stream.readUint16LE();
+			break;
+
+		case kMeshDeclTypeUint8_4n:
+			*f++ = stream.readByte() / 255.0f;
+			*f++ = stream.readByte() / 255.0f;
 			break;
 
 		case kMeshDeclTypeSint16_2n:
