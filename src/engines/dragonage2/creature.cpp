@@ -265,7 +265,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 
 	model = loadModelObject(gda.getString(row, "ModelName"));
 	if (!model)
-		model = loadModelObject(findEquipModel(kEquipSlotChest, prefix, &armorType));
+		model = loadModelObject(findEquipModel(kInventorySlotChest, prefix, &armorType));
 	if (!model)
 		model = loadModelObject(createModelPart(naked, naked.findRow(kNakedTorso), prefix));
 
@@ -276,7 +276,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 	if (armorType != 5) {
 		// Gloves: equipped gloves item -> naked
 
-		model = loadModelObject(findEquipModel(kEquipSlotGloves, prefix));
+		model = loadModelObject(findEquipModel(kInventorySlotGloves, prefix));
 		if (!model)
 			model = loadModelObject(createModelPart(naked, naked.findRow(kNakedGloves), prefix));
 
@@ -285,7 +285,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 
 		// Boots: equipped boots item -> naked
 
-		model = loadModelObject(findEquipModel(kEquipSlotBoots, prefix));
+		model = loadModelObject(findEquipModel(kInventorySlotBoots, prefix));
 		if (!model)
 			model = loadModelObject(createModelPart(naked, naked.findRow(kNakedBoots), prefix));
 
@@ -301,7 +301,7 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 		loadModelsHeadList(gda, row);
 }
 
-Common::UString Creature::findEquipModel(EquipSlot slot, const Common::UString &prefix,
+Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UString &prefix,
                                          uint8 *armorType) const {
 	if (armorType)
 		*armorType = 0;
@@ -415,7 +415,7 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 		_items.resize(itemList.size());
 
 		for (size_t i = 0; i < itemList.size(); i++) {
-			_items[i].slot = (EquipSlot) itemList[i]->getID();
+			_items[i].slot = (InventorySlot) itemList[i]->getID();
 
 			_items[i].resRef = itemList[i]->getString("TemplateResRef");
 

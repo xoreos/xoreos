@@ -80,6 +80,32 @@ enum ObjectType {
 	kObjectTypeInvalid            = 0xFFFFFFFF
 };
 
+/** Slot in a creature's inventory. */
+enum InventorySlot {
+	kInventorySlotMain           =  0,
+	kInventorySlotOffhand        =  1,
+	kInventorySlotRangedAmmo     =  2,
+	kInventorySlotChest          =  4,
+	kInventorySlotHead           =  5,
+	kInventorySlotBoots          =  6,
+	kInventorySlotGloves         =  7,
+	kInventorySlotCloak          =  8,
+	kInventorySlotRing1          =  9,
+	kInventorySlotRing2          = 10,
+	kInventorySlotNeck           = 11,
+	kInventorySlotBelt           = 12,
+	kInventorySlotBite           = 13,
+	kInventorySlotShaleShoulders = 14,
+	kInventorySlotShaleChest     = 15,
+	kInventorySlotShaleRightArm  = 16,
+	kInventorySlotShaleLeftArm   = 17,
+	kInventorySlotDogWarpaint    = 18,
+	kInventorySlotDogCollar      = 19,
+	kInventorySlotPartyMember    = 20,
+
+	kInventorySlotInvalid        = 255
+};
+
 } // End of namespace DragonAge2
 
 } // End of namespace Engines
