@@ -206,6 +206,36 @@ float GDAFile::getFloat(size_t row, const Common::UString &columnName, float def
 	return gdaRow->getDouble(gdaColumn, def);
 }
 
+uint32 GDAFile::identifyType(const Columns &columns, const Row &rows, size_t column) const {
+	if (!columns || (column >= columns->size()) || !(*columns)[column])
+		return -1;
+
+	if ((*columns)[column]->hasField(kGFF4G2DAColumnType))
+		return (uint32) (*columns)[column]->getUint(kGFF4G2DAColumnType, -1);
+
+	if (!rows || rows->empty() || !(*rows)[0])
+		return -1;
+
+	GFF4Struct::FieldType fieldType = (*rows)[0]->getFieldType(kGFF4G2DAColumn1 + column);
+
+	switch (fieldType) {
+		case GFF4Struct::kFieldTypeString:
+			return 0;
+
+		case GFF4Struct::kFieldTypeUint:
+		case GFF4Struct::kFieldTypeSint:
+			return 1;
+
+		case GFF4Struct::kFieldTypeDouble:
+			return 2;
+
+		default:
+			break;
+	}
+
+	return -1;
+}
+
 void GDAFile::load(Common::SeekableReadStream *gda) {
 	try {
 		_gff4s.push_back(new GFF4File(gda, kG2DAID));
@@ -246,8 +276,8 @@ void GDAFile::add(Common::SeekableReadStream *gda) {
 			const uint32 hash1 = (uint32) (* columns)[i]->getUint(kGFF4G2DAColumnHash);
 			const uint32 hash2 = (uint32) (*_columns)[i]->getUint(kGFF4G2DAColumnHash);
 
-			const uint32 type1 = (uint32) (* columns)[i]->getUint(kGFF4G2DAColumnType);
-			const uint32 type2 = (uint32) (*_columns)[i]->getUint(kGFF4G2DAColumnType);
+			const uint32 type1 = identifyType( columns, _rows.back(), i);
+			const uint32 type2 = identifyType(_columns, _rows[0]    , i);
 
 			if ((hash1 != hash2) || (type1 != type2))
 				throw Common::Exception("Columns don't match (%u: %u+%u vs. %u+%u)", (uint) i,

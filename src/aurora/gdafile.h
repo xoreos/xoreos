@@ -114,6 +114,8 @@ private:
 	void load(Common::SeekableReadStream *gda);
 	void clear();
 
+	uint32 identifyType(const Columns &columns, const Row &rows, size_t column) const;
+
 	const GFF4Struct *getRowColumn(size_t row, uint32 hash, size_t &column) const;
 	const GFF4Struct *getRowColumn(size_t row, const Common::UString &name, size_t &column) const;
 };
