@@ -34,6 +34,7 @@
 
 #include "src/graphics/aurora/types.h"
 
+#include "src/engines/dragonage/types.h"
 #include "src/engines/dragonage/object.h"
 
 namespace Aurora {
@@ -65,26 +66,10 @@ public:
 private:
 	static const size_t kPartVariationCount = 4;
 
-	enum EquipSlot {
-		kEquipSlotMain       =  0,
-		kEquipSlotOffhand    =  1,
-		kEquipSlotRangedammo =  2,
-		kEquipSlotChest      =  4,
-		kEquipSlotHead       =  5,
-		kEquipSlotBoots      =  6,
-		kEquipSlotGloves     =  7,
-		kEquipSlotCloak      =  8,
-		kEquipSlotRing1      =  9,
-		kEquipSlotRing2      = 10,
-		kEquipSlotNeck       = 11,
-		kEquipSlotBelt       = 12,
-		kEquipSlotBite       = 13
-	};
-
 	struct EquipItem {
 		Common::UString resRef;
 
-		EquipSlot slot;
+		InventorySlot slot;
 
 		bool stealable;
 		bool droopable;
@@ -94,7 +79,6 @@ private:
 	typedef std::vector<EquipItem> Items;
 
 	typedef std::list<Graphics::Aurora::Model *> Models;
-
 
 
 	uint32 _appearance;
@@ -121,7 +105,8 @@ private:
 	void loadModelsHeadMorph();
 	void loadModelsHeadList(const Aurora::GDAFile &gda, size_t row);
 
-	Common::UString findEquipModel(EquipSlot slot, const Common::UString &prefix, uint8 *armorType = 0) const;
+	Common::UString findEquipModel(InventorySlot slot, const Common::UString &prefix,
+	                               uint8 *armorType = 0) const;
 
 	static Common::UString createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8 gender);
 	static Common::UString createModelPart(const Aurora::GDAFile &gda, size_t row,
