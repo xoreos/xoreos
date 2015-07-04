@@ -61,7 +61,7 @@ using namespace ::Aurora::GFF4FieldNamesEnum;
 using Graphics::Aurora::Model;
 
 Creature::Creature(const GFF3Struct &creature) : Object(kObjectTypeCreature),
-	_appearance(0xFFFFFFFF), _appearanceGender(1) {
+	_appearance(0xFFFFFFFF) {
 
 	for (size_t i = 0; i < kPartVariationCount; i++)
 		_partVariation[i] = 0xFFFFFFFF;
@@ -146,19 +146,18 @@ void Creature::load(const GFF3Struct &creature) {
 	delete utc;
 }
 
-Common::UString Creature::createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8 gender) {
+Common::UString Creature::createModelPrefix(const Aurora::GDAFile &gda, size_t row) {
 	if (row == Aurora::GDAFile::kInvalidRow)
 		return "";
 
-	static const char *kGenderChars[4] = { "N", "M", "F", "N" };
+	const Common::UString race   = gda.getString(row, "ModelRace");
+	const Common::UString gender = gda.getString(row, "ModelGenderOverride");
 
-	Common::UString genderChar = gda.getString(row, "ModelGenderOverride");
-	if (genderChar.empty() && (gender < ARRAYSIZE(kGenderChars)))
-		genderChar = kGenderChars[gender];
+	Common::UString prefix = race + gender;
+	if (prefix.empty())
+		prefix = "shared";
 
-	const Common::UString modelRace = gda.getString(row, "ModelRace");
-
-	return modelRace + genderChar;
+	return prefix;
 }
 
 Common::UString Creature::createModelPart(const Aurora::GDAFile &gda, size_t row,
@@ -166,14 +165,34 @@ Common::UString Creature::createModelPart(const Aurora::GDAFile &gda, size_t row
 	if (row == Aurora::GDAFile::kInvalidRow)
 		return "";
 
-	const Common::UString type      = gda.getString(row, "ModelType");
-	const Common::UString subType   = gda.getString(row, "ModelSubType");
-	const Common::UString variation = gda.getString(row, "ModelVariation");
+	const Common::UString modelPath = gda.getString(row, "ModelPath");
+	const Common::UString model     = gda.getString(row, "Model");
 
-	if (type.empty() || subType.empty())
+	if (modelPath.empty() && model.empty())
 		return "";
 
-	return prefix + "_" + type + "_" + subType + variation;
+	return modelPath + "\\" + prefix + "\\" + model;
+}
+
+Common::UString Creature::getItemModel(uint32 variation, const Common::UString &prefix,
+                                       uint8 *armorType) const {
+
+	if (armorType)
+		*armorType = 0;
+
+	const Aurora::GDAFile &variations = getMGDA(kWorksheetItemVariations);
+	const size_t variationRow = variations.findRow(variation);
+	if (!variation || (variationRow == Aurora::GDAFile::kInvalidRow))
+		return "";
+
+	const Common::UString model = createModelPart(variations, variationRow, prefix);
+	if (model.empty())
+		return "";
+
+	if (armorType)
+		*armorType = variations.getInt(variationRow, "MaterialGroup");
+
+	return model;
 }
 
 void Creature::loadModelsSimple(const Aurora::GDAFile &gda, size_t row) {
@@ -199,13 +218,24 @@ void Creature::loadModelsHead(const Aurora::GDAFile &gda, size_t row) {
 	if (model)
 		_models.push_back(model);
 
+	const Common::UString prefix = createModelPrefix(gda, row);
+
+	bool haveHelm = false;
+	if ((model = loadModelObject(findEquipModel(kInventorySlotHead, prefix)))) {
+		haveHelm = true;
+
+		_models.push_back(model);
+	}
+
 	if (!_headMorph.empty())
-		loadModelsHeadMorph();
+		loadModelsHeadMorph(!haveHelm);
 	else
-		loadModelsHeadList(gda, row);
+		loadModelsHeadList(gda, row, !haveHelm);
 }
 
-void Creature::loadModelsHeadMorph() {
+void Creature::loadModelsHeadMorph(bool loadHair) {
+	static const size_t kHairPart = 2;
+
 	try {
 		GFF4File mor(_headMorph, Aurora::kFileTypeMOR, kMORPID);
 		if (mor.getTypeVersion() != kVersion01)
@@ -215,24 +245,32 @@ void Creature::loadModelsHeadMorph() {
 		mor.getTopLevel().getString(kGFF4MorphParts, parts);
 
 		Model *model = 0;
-		for (std::vector<Common::UString>::const_iterator p = parts.begin(); p != parts.end(); ++p)
-			if ((model = loadModelObject(*p)))
-				_models.push_back(model);
+		for (size_t i = 0; i < parts.size(); i++) {
+			if ((i == kHairPart) && !loadHair)
+				continue;
 
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+			if ((model = loadModelObject(parts[i])))
+				_models.push_back(model);
+		}
+
+	} catch (...) {
 	}
 }
 
-void Creature::loadModelsHeadList(const Aurora::GDAFile &gda, size_t row) {
+void Creature::loadModelsHeadList(const Aurora::GDAFile &gda, size_t row, bool loadHair) {
+	static const size_t kHairPart = 2;
+
 	static const char *kSheetColumns[kPartVariationCount] =
 		{"Head_Worksheet", "Eyes_Worksheet", "Hair_Worksheet", "Beard_Worksheet"};
 
-	const Common::UString prefix = createModelPrefix(gda, row, _appearanceGender);
+	const Common::UString prefix = createModelPrefix(gda, row);
 
 	for (size_t i = 0; i < kPartVariationCount; i++) {
 		const size_t sheetIndex = gda.getInt(row, kSheetColumns[i]);
 		if (sheetIndex == 0)
+			continue;
+
+		if ((i == kHairPart) && !loadHair)
 			continue;
 
 		const Aurora::GDAFile &sheet = getMGDA(sheetIndex);
@@ -250,55 +288,77 @@ void Creature::loadModelsHeadList(const Aurora::GDAFile &gda, size_t row) {
 void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 	// Parts, various models for each body part
 
-	const Common::UString prefix = createModelPrefix(gda, row, _appearanceGender);
+	const Common::UString prefix = createModelPrefix(gda, row);
 
-	const Aurora::GDAFile &naked = getMGDA(kWorksheetBodyParts);
+	const uint32 chestModel  = gda.getInt(row, "ChestModelVariation");
+	const uint32 glovesModel = gda.getInt(row, "GlovesModelVariation");
+	const uint32 bootsModel  = gda.getInt(row, "BootsModelVariation");
+	const uint32 helmModel   = gda.getInt(row, "HelmModelVariation");
 
-	static const uint32 kNakedTorso  = 0;
-	static const uint32 kNakedGloves = 1;
-	static const uint32 kNakedBoots  = 2;
+	static const uint32 kNakedTorso  = 10;
+	static const uint32 kNakedGloves = 11;
+	static const uint32 kNakedBoots  = 12;
 
 	uint8  armorType = 0;
 	Model *model     = 0;
 
-	// Torso: creature model -> equipped chest item -> naked
+	// Torso: creature model -> appearance override -> equipped chest item -> naked
 
 	model = loadModelObject(gda.getString(row, "ModelName"));
 	if (!model)
+		model = loadModelObject(getItemModel(chestModel, prefix));
+	if (!model)
 		model = loadModelObject(findEquipModel(kInventorySlotChest, prefix, &armorType));
 	if (!model)
-		model = loadModelObject(createModelPart(naked, naked.findRow(kNakedTorso), prefix));
+		model = loadModelObject(getItemModel(kNakedTorso, prefix, &armorType));
 
 	if (model)
 		_models.push_back(model);
 
 	// Armor of type 5 (clothing) already includes hands and feet in the model...
 	if (armorType != 5) {
-		// Gloves: equipped gloves item -> naked
+		// Gloves: appearance override -> equipped gloves item -> naked
 
-		model = loadModelObject(findEquipModel(kInventorySlotGloves, prefix));
+		model = loadModelObject(getItemModel(glovesModel, prefix));
 		if (!model)
-			model = loadModelObject(createModelPart(naked, naked.findRow(kNakedGloves), prefix));
+			model = loadModelObject(findEquipModel(kInventorySlotGloves, prefix));
+		if (!model)
+			model = loadModelObject(getItemModel(kNakedGloves, prefix));
 
 		if (model)
 			_models.push_back(model);
 
-		// Boots: equipped boots item -> naked
+		// Boots: appearance override -> equipped boots item -> naked
 
-		model = loadModelObject(findEquipModel(kInventorySlotBoots, prefix));
+		model = loadModelObject(getItemModel(bootsModel, prefix));
 		if (!model)
-			model = loadModelObject(createModelPart(naked, naked.findRow(kNakedBoots), prefix));
+			model = loadModelObject(findEquipModel(kInventorySlotBoots, prefix));
+		if (!model)
+			model = loadModelObject(getItemModel(kNakedBoots, prefix));
 
 		if (model)
 			_models.push_back(model);
 	}
 
+	// Helm: appearance override -> equipped helm item
+
+	model = loadModelObject(getItemModel(helmModel, prefix));
+	if (!model)
+		model = loadModelObject(findEquipModel(kInventorySlotHead, prefix));
+
+	bool haveHelm = false;
+	if (model) {
+		haveHelm = true;
+
+		_models.push_back(model);
+	}
+
 	// Head: morph -> part list
 
 	if (!_headMorph.empty())
-		loadModelsHeadMorph();
+		loadModelsHeadMorph(!haveHelm);
 	else
-		loadModelsHeadList(gda, row);
+		loadModelsHeadList(gda, row, !haveHelm);
 }
 
 Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UString &prefix,
@@ -306,7 +366,7 @@ Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UStri
 	if (armorType)
 		*armorType = 0;
 
-	const Aurora::GDAFile &baseItems = getMGDA(kWorksheetItemVariations);
+	const Aurora::GDAFile &baseItems = getMGDA(kWorksheetItems);
 
 	for (Items::const_iterator item = _items.begin(); item != _items.end(); ++item) {
 		if (item->slot != slot)
@@ -323,17 +383,7 @@ Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UStri
 			if (itemRow == Aurora::GDAFile::kInvalidRow)
 				continue;
 
-			if (armorType)
-				*armorType = baseItems.getInt(itemRow, "ArmorType");
-
-			const uint32 varSheet = (uint32) baseItems.getInt(itemRow, "Variation_Worksheet", -1);
-			const Aurora::GDAFile &variations = getMGDA(varSheet);
-
-			const size_t variationRow = variations.findRow(variation);
-			if (variationRow == Aurora::GDAFile::kInvalidRow)
-				continue;
-
-			return createModelPart(variations, variationRow, prefix);
+			return getItemModel(variation, prefix, armorType);
 
 		} catch (...) {
 		}
@@ -351,7 +401,6 @@ void Creature::load(const GFF3Struct &instance, const GFF3Struct *blueprint = 0)
 	const size_t row = gda.findRow(_appearance);
 
 	const Common::UString modelType = gda.getString(row, "ModelType");
-	const Common::UString modelName = gda.getString(row, "ModelName");
 
 	if      (modelType == "S")
 		loadModelsSimple(gda, row);
@@ -398,7 +447,6 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 		const GFF3Struct &app = gff.getStruct("Appearance Data");
 
 		_appearance = (uint32) ((int32) app.getSint("Appearance_Type", (int32) _appearance));
-		_appearanceGender = app.getUint("Gender", _appearanceGender);
 
 		_headMorph = app.getString("HeadMorph", _headMorph);
 

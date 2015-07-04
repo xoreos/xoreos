@@ -81,7 +81,6 @@ private:
 
 
 	uint32 _appearance;
-	uint8  _appearanceGender;
 
 	Common::UString _headMorph;
 	uint32 _partVariation[kPartVariationCount];
@@ -101,13 +100,16 @@ private:
 	void loadModelsHead  (const Aurora::GDAFile &gda, size_t row);
 	void loadModelsParts (const Aurora::GDAFile &gda, size_t row);
 
-	void loadModelsHeadMorph();
-	void loadModelsHeadList(const Aurora::GDAFile &gda, size_t row);
+	void loadModelsHeadMorph(bool loadHair = true);
+	void loadModelsHeadList(const Aurora::GDAFile &gda, size_t row, bool loadHair = true);
+
+	Common::UString getItemModel(uint32 variation, const Common::UString &prefix,
+	                             uint8 *armorType = 0) const;
 
 	Common::UString findEquipModel(InventorySlot slot, const Common::UString &prefix,
 	                               uint8 *armorType = 0) const;
 
-	static Common::UString createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8 gender);
+	static Common::UString createModelPrefix(const Aurora::GDAFile &gda, size_t row);
 	static Common::UString createModelPart(const Aurora::GDAFile &gda, size_t row,
 	                                       const Common::UString &prefix);
 };

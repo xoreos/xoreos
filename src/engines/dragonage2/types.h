@@ -44,7 +44,6 @@ enum Worksheet {
 	kWorksheetClasses          =      3,
 	kWorksheetProjectiles      =      4,
 	kWorksheetRaces            =      5,
-	kWorksheetItems            =      6,
 	kWorksheetPortraits        =      7,
 	kWorksheetVisualEffects    =      8,
 	kWorksheetWeaponTrailTypes =      9,
@@ -53,6 +52,7 @@ enum Worksheet {
 	kWorksheetBodyParts        =     90,
 	kWorksheetWaypoints        =    106,
 	kWorksheetPlaceables       =  11101,
+	kWorksheetItems            =  12000,
 	kWorksheetItemVariations   =  12004
 };
 
