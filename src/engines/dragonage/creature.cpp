@@ -381,7 +381,6 @@ void Creature::load(const GFF3Struct &instance, const GFF3Struct *blueprint = 0)
 	const size_t row = gda.findRow(_appearance);
 
 	const Common::UString modelType = gda.getString(row, "ModelType");
-	const Common::UString modelName = gda.getString(row, "ModelName");
 
 	if      (modelType == "S")
 		loadModelsSimple(gda, row);
