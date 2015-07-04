@@ -102,8 +102,8 @@ private:
 	void loadModelsHead  (const Aurora::GDAFile &gda, size_t row);
 	void loadModelsParts (const Aurora::GDAFile &gda, size_t row);
 
-	void loadModelsHeadMorph();
-	void loadModelsHeadList(const Aurora::GDAFile &gda, size_t row);
+	void loadModelsHeadMorph(bool loadHair = true);
+	void loadModelsHeadList(const Aurora::GDAFile &gda, size_t row, bool loadHair = true);
 
 	Common::UString findEquipModel(InventorySlot slot, const Common::UString &prefix,
 	                               uint8 *armorType = 0) const;

@@ -199,13 +199,26 @@ void Creature::loadModelsHead(const Aurora::GDAFile &gda, size_t row) {
 	if (model)
 		_models.push_back(model);
 
+	// Helm
+
+	const Common::UString prefix = createModelPrefix(gda, row, _appearanceGender);
+
+	bool haveHelm = false;
+	if ((model = loadModelObject(findEquipModel(kInventorySlotHead, prefix)))) {
+		haveHelm = true;
+
+		_models.push_back(model);
+	}
+
 	if (!_headMorph.empty())
-		loadModelsHeadMorph();
+		loadModelsHeadMorph(!haveHelm);
 	else
-		loadModelsHeadList(gda, row);
+		loadModelsHeadList(gda, row, !haveHelm);
 }
 
-void Creature::loadModelsHeadMorph() {
+void Creature::loadModelsHeadMorph(bool loadHair) {
+	static const size_t kHairPart = 2;
+
 	try {
 		GFF4File mor(_headMorph, Aurora::kFileTypeMOR, kMORPID);
 		if (mor.getTypeVersion() != kVersion01)
@@ -215,16 +228,21 @@ void Creature::loadModelsHeadMorph() {
 		mor.getTopLevel().getString(kGFF4MorphParts, parts);
 
 		Model *model = 0;
-		for (std::vector<Common::UString>::const_iterator p = parts.begin(); p != parts.end(); ++p)
-			if ((model = loadModelObject(*p)))
-				_models.push_back(model);
+		for (size_t i = 0; i < parts.size(); i++) {
+			if ((i == kHairPart) && !loadHair)
+				continue;
 
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+			if ((model = loadModelObject(parts[i])))
+				_models.push_back(model);
+		}
+
+	} catch (...) {
 	}
 }
 
-void Creature::loadModelsHeadList(const Aurora::GDAFile &gda, size_t row) {
+void Creature::loadModelsHeadList(const Aurora::GDAFile &gda, size_t row, bool loadHair) {
+	static const size_t kHairPart = 2;
+
 	static const char *kSheetColumns[kPartVariationCount] =
 		{"Head_Worksheet", "Eyes_Worksheet", "Hair_Worksheet", "Beard_Worksheet"};
 
@@ -233,6 +251,9 @@ void Creature::loadModelsHeadList(const Aurora::GDAFile &gda, size_t row) {
 	for (size_t i = 0; i < kPartVariationCount; i++) {
 		const size_t sheetIndex = gda.getInt(row, kSheetColumns[i]);
 		if (sheetIndex == 0)
+			continue;
+
+		if ((i == kHairPart) && !loadHair)
 			continue;
 
 		const Aurora::GDAFile &sheet = getMGDA(sheetIndex);
@@ -293,12 +314,21 @@ void Creature::loadModelsParts(const Aurora::GDAFile &gda, size_t row) {
 			_models.push_back(model);
 	}
 
+	// Helm
+
+	bool haveHelm = false;
+	if ((model = loadModelObject(findEquipModel(kInventorySlotHead, prefix)))) {
+		haveHelm = true;
+
+		_models.push_back(model);
+	}
+
 	// Head: morph -> part list
 
 	if (!_headMorph.empty())
-		loadModelsHeadMorph();
+		loadModelsHeadMorph(!haveHelm);
 	else
-		loadModelsHeadList(gda, row);
+		loadModelsHeadList(gda, row, !haveHelm);
 }
 
 Common::UString Creature::findEquipModel(InventorySlot slot, const Common::UString &prefix,
