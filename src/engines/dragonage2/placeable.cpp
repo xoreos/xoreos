@@ -126,7 +126,7 @@ void Placeable::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struc
 
 	const Aurora::GDAFile &gda = getMGDA(kWorksheetPlaceables);
 
-	_model = loadModelObject(gda.getString(gda.findRow(_appearance), 2559392631));
+	_model = loadModelObject(gda.getString(gda.findRow(_appearance), "Model"));
 
 	if (_model) {
 		_model->setTag(_tag);
