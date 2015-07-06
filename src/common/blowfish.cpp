@@ -254,7 +254,7 @@ static void blowfishSetKey(BlowfishContext &ctx, const byte *key, size_t keyLeng
 		throw Exception("Invalid Blowfish key length %u", (uint) keyLength);
 
 	for (size_t i = 0; i < 4; i++) {
-		for(size_t j = 0; j < 256; j++)
+		for (size_t j = 0; j < 256; j++)
 			ctx.S[i][j] = S[i][j];
 	}
 
@@ -264,7 +264,7 @@ static void blowfishSetKey(BlowfishContext &ctx, const byte *key, size_t keyLeng
 
 		for (size_t j = 0; j < 4; j++) {
 			data = (data << 8) | key[k++];
-			if(k >= keyLength)
+			if (k >= keyLength)
 				k = 0;
 		}
 
@@ -282,7 +282,7 @@ static void blowfishSetKey(BlowfishContext &ctx, const byte *key, size_t keyLeng
 	}
 
 	for (size_t i = 0; i < 4; i++) {
-		for(size_t j = 0; j < 256; j += 2) {
+		for (size_t j = 0; j < 256; j += 2) {
 			blowfishEnc(ctx, dataL, dataR);
 
 			ctx.S[i][j    ] = dataL;

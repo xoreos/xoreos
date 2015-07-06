@@ -234,7 +234,7 @@ float readIEEEFloat16(uint16 value) {
 	do {
 		aE++;
 		vM <<= 1;
-	} while((vM & 0x0400) == 0);
+	} while ((vM & 0x0400) == 0);
 
 	// Adjust the exponent, and clip the shifted mantissa to valid range again
 	fER -= aE;
