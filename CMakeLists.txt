@@ -30,7 +30,7 @@ elseif(CMAKE_HOST_UNIX)
   string(REPLACE "<LINK_LIBRARIES>" "-Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_C_CREATE_SHARED_MODULE "${CMAKE_C_CREATE_SHARED_MODULE}")
   string(REPLACE "<LINK_LIBRARIES>" "-Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_CXX_CREATE_SHARED_MODULE "${CMAKE_CXX_CREATE_SHARED_MODULE}")
 elseif(CMAKE_HOST_WIN32)
-
+  add_definitions(-DICONV_CONST=)
 else()
   message(STATUS "Unknown platform, maybe not supported")
 endif()
