@@ -28,10 +28,12 @@ Status [![Build Status](https://travis-ci.org/xoreos/xoreos.svg?branch=master)](
 ------
 
 Currently, the "foundation" work of managing resources, reading many basic
-file formats, displaying graphics and playing sounds has been done.
-Most games show partial ingame graphics, such as the area geometry and objects,
-letting you fly around in a "spectator mode". No actual "normal" gameplay
-is implemented yet, though.
+file formats, displaying graphics and playing sounds has been done. All
+targeted games show partial ingame graphics, such as the area geometry and
+objects, letting you fly around in a "spectator mode". Some games show partial
+menus, and something resembling a starting point for a script system is there.
+
+No actual "normal" gameplay is implemented yet, though.
 
 For further information about the status of specific games, please visit
 [our wiki](https://wiki.xoreos.org/index.php?title=Games).
