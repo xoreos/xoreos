@@ -20,12 +20,9 @@ LIBSL       = $(XOREOS_LIBS) $(LTLIBICONV) $(ZLIB_LIBS) $(LZMA_LIBS) \
               $(VORBIS_LIBS) \
               $(LIBSL_BOOST)
 
-FLAGS_C_CXX = -I$(top_srcdir) -ggdb -Wall -Wno-multichar \
-              -Wignored-qualifiers \
-              -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits \
-              -Wuninitialized -Wunused-parameter $(WERROR) -DGLEW_STATIC
+FLAGS_C_CXX = -I$(top_srcdir) -ggdb $(WARN_C_CXX) $(WERROR) -DGLEW_STATIC
 FLAGS_C     =
-FLAGS_CXX   = -Wnon-virtual-dtor -Wno-overloaded-virtual
+FLAGS_CXX   = $(WARN_CXX)
 
 AM_CFLAGS   = $(FLAGS_C_CXX) $(FLAGS_C)   $(LIBSF_C_CXX) $(LIBSF_C)
 AM_CXXFLAGS = $(FLAGS_C_CXX) $(FLAGS_CXX) $(LIBSF_C_CXX) $(LIBSF_CXX)
