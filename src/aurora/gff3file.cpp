@@ -467,7 +467,7 @@ Common::UString GFF3Struct::getString(const Common::UString &field,
 	}
 
 	if (f->type == kFieldTypeVector) {
-		float x, y, z;
+		float x = 0.0, y = 0.0, z = 0.0;
 
 		getVector(field, x, y, z);
 		return Common::composeString(x) + "/" +
@@ -476,7 +476,7 @@ Common::UString GFF3Struct::getString(const Common::UString &field,
 	}
 
 	if (f->type == kFieldTypeOrientation) {
-		float a, b, c, d;
+		float a = 0.0, b = 0.0, c = 0.0, d = 0.0;
 
 		getOrientation(field, a, b, c, d);
 		return Common::composeString(a) + "/" +
