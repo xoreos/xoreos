@@ -64,6 +64,16 @@ fi
 AC_SUBST(WARN_C_CXX)
 AC_SUBST(WARN_CXX)
 
+dnl Link-time optimization
+AC_ARG_WITH([lto], [AS_HELP_STRING([--with-lto], [Compile with link-time optimization @<:@default=no@:>@])], [], [with_lto=no])
+
+LTO=""
+if test "x$with_lto" = "xyes"; then
+	AX_CHECK_COMPILER_FLAGS_VAR([C], [LTO], [-flto])
+fi
+
+AC_SUBST(LTO)
+
 dnl Endianness
 AC_C_BIGENDIAN()
 
