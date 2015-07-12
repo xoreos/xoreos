@@ -152,7 +152,7 @@ void Placeable::load(const Aurora::GFF4Struct &placeable) {
 	}
 
 	if (placeable.hasField(Aurora::kGFF4Position)) {
-		double x, y, z;
+		double x = 0.0, y = 0.0, z = 0.0;
 
 		placeable.getVector3(Aurora::kGFF4Position, x, y, z);
 		setPosition(x, y, z);
