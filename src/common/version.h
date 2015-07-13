@@ -37,4 +37,10 @@ extern const char *XOREOS_NAMEVERSION;
 // "xoreos 0.0.1+2197.g19f9c1b [0.0.1+2197.g19f9c1b] (2013-07-28T13:32:04)"
 extern const char *XOREOS_NAMEVERSIONFULL;
 
+// "https://..."
+extern const char *XOREOS_URL;
+
+// Very shortened authors/copyright message
+extern const char *XOREOS_AUTHORS;
+
 #endif // COMMON_VERSION_H

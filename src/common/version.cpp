@@ -69,3 +69,11 @@ const char *XOREOS_NAME            = PACKAGE_NAME;
 const char *XOREOS_VERSION         = PACKAGE_VERSION;
 const char *XOREOS_NAMEVERSION     = PACKAGE_NAME " " PACKAGE_VERSION XOREOS_REVSEP XOREOS_REV;
 const char *XOREOS_NAMEVERSIONFULL = PACKAGE_NAME " " PACKAGE_VERSION XOREOS_REVSEP XOREOS_REV " [" XOREOS_REVDESC "] (" XOREOS_BUILDDATE ")";
+const char *XOREOS_URL             = "https://xoreos.org/";
+
+const char *XOREOS_AUTHORS =
+	"Copyright (c) 2010-2015 by the xoreos team.\n"
+	"Please see the AUTHORS file for details.\n"
+	"\n"
+	"This is free software; see the source for copying conditions.  There is NO\n"
+	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.";

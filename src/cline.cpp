@@ -88,6 +88,10 @@ static void displayUsage(const char *name) {
 
 static void displayVersion() {
 	std::printf("%s\n", XOREOS_NAMEVERSIONFULL);
+	std::printf("%s\n", XOREOS_URL);
+	std::printf("\n");
+	std::printf("%s\n", XOREOS_AUTHORS);
+	std::printf("\n");
 }
 
 static Common::UString convertShortToLongOption(char shortOption) {
