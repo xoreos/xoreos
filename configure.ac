@@ -46,7 +46,6 @@ if test "x$with_warnings" = "xno"; then
 	WARN_CXX=""
 else
 	WARN_C_CXX="-Wall"
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wno-multichar])
 	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wignored-qualifiers])
 	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wpointer-arith])
 	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wshadow])
