@@ -119,7 +119,7 @@ PEResources::~PEResources() {
 }
 
 bool PEResources::loadFromEXE(SeekableReadStream &exe) {
-	if (exe.readUint16BE() != 'MZ')
+	if (exe.readUint16BE() != MKTAG_16('M', 'Z'))
 		return false;
 
 	exe.skip(58);
