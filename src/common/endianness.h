@@ -116,6 +116,9 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
  */
 #define MKTAG(a0,a1,a2,a3) ((uint32)((a3) | ((a2) << 8) | ((a1) << 16) | ((a0) << 24)))
 
+/** A wrapper macro used around two character constants, like 'MZ'. */
+#define MKTAG_16(a0,a1) ((uint16)((a1) | ((a0) << 8)))
+
 // Functions for reading/writing native Integers,
 // this transparently handles the need for alignment
 
