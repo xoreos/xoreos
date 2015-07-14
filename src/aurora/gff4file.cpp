@@ -249,6 +249,9 @@ bool GFF4File::hasSharedStrings() const {
 }
 
 Common::UString GFF4File::getSharedString(uint32 i) const {
+	if (i == 0xFFFFFFFF)
+		return "";
+
 	assert(i < _sharedStrings.size());
 
 	return _sharedStrings[i];
@@ -741,9 +744,6 @@ Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::
 Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::Encoding encoding,
                                       uint32 offset) const {
 
-	if (_parent->hasSharedStrings())
-		return _parent->getSharedString(offset);
-
 	const uint32 pos = data.seek(offset);
 
 	Common::UString str = getString(data, encoding);
@@ -757,6 +757,9 @@ Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, const Fi
                                       Common::Encoding encoding) const {
 
 	if (field.type == kIFieldTypeString) {
+		if (_parent->hasSharedStrings())
+			return _parent->getSharedString(data.readUint32LE());
+
 		uint32 offset = data.pos();
 		if (!field.isGeneric) {
 			offset = data.readUint32LE();
