@@ -65,11 +65,11 @@ boost.m4
    libraries. boost.m4 is licensed under version 3 or later of the GNU General
    Public License.
 
-ax_check_gl.m4 / ax_check_glu.m4
-********************************
-   xoreos uses (modified) Braden McDaniel's autoconf macros
-   (<https://code.google.com/p/autoconf-gl-macros/>) to check for OpenGL
-   and GLU, licensed under version 2 or later of the GNU General Public License.
+ax_check_gl.m4
+**************
+   xoreos uses a (modified) autoconf macro by Braden McDaniel
+   (<https://code.google.com/p/autoconf-gl-macros/>) to check for OpenGL,
+   licensed under version 2 or later of the GNU General Public License.
 
 ax_check_freetype2.m4
 *********************

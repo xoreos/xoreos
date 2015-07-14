@@ -17,8 +17,6 @@ EXTRA_DIST = \
              glew/LICENSE.txt \
              lua/README.xoreos \
              .uncrustifyrc \
-             m4/ax_check_glu.m4 \
-             m4/ax_check_glut.m4 \
              CMakeLists.txt \
              cmake/CMakeAM.cmake \
              cmake/FindFaad.cmake \
