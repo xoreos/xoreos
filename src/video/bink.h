@@ -87,7 +87,7 @@ private:
 		kBlockFill       ,  ///< Block is filled with single colour.
 		kBlockInter      ,  ///< Motion block with DCT applied to the difference.
 		kBlockPattern    ,  ///< Block is filled with two colours following custom pattern.
-		kBlockRaw        ,  ///< Uncoded 8x8 block.
+		kBlockRaw           ///< Uncoded 8x8 block.
 	};
 
 	/** Data structure for decoding and tranlating Huffman'd data. */

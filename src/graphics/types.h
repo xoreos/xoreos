@@ -42,7 +42,7 @@ enum PixelFormat {
 	kPixelFormatRGB  = GL_RGB ,
 	kPixelFormatRGBA = GL_RGBA,
 	kPixelFormatBGR  = GL_BGR ,
-	kPixelFormatBGRA = GL_BGRA,
+	kPixelFormatBGRA = GL_BGRA
 };
 
 enum PixelFormatRaw {
@@ -86,7 +86,7 @@ enum RenderableType {
 enum RenderPass {
 	kRenderPassOpaque      = 0, ///< Only render opaque parts.
 	kRenderPassTransparent = 1, ///< Only render transparent parts.
-	kRenderPassAll         = 2, ///< Render all parts.
+	kRenderPassAll         = 2  ///< Render all parts.
 };
 
 struct ColorPosition {
