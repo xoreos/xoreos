@@ -349,10 +349,9 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 
 	_glContext = SDL_GL_CreateContext(_screen);
 
-	if (_glContext != NULL) {
+	if (_glContext)
 		// OpenGL 3.2 context created, continue.
 		return (_gl3 = true);
-	}
 
 	// OpenGL 3.2 context not created. Spit out an error message, and try a 2.1 context.
 	_gl3 = false;
@@ -366,7 +365,7 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 
 	_glContext = SDL_GL_CreateContext(_screen);
 
-	if (_glContext == NULL) {
+	if (!_glContext) {
 		SDL_DestroyWindow(_screen);
 		return false;
 	}
