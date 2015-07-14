@@ -177,7 +177,7 @@ target_link_libraries(xoreos ${XOREOS_LIBRARIES})
 # try to add version information from git to src/common/version.cpp
 # this is not 100% clean, and doesn't reconfigure when there's only a local change since last
 #  build (so it does not always add the .dirty suffix)
-string(TIMESTAMP XOREOS_BUILDDATE)
+string(TIMESTAMP XOREOS_BUILDDATE "%Y-%m-%dT%H:%M:%SZ" UTC)
 set_property(SOURCE src/common/version.cpp APPEND PROPERTY COMPILE_DEFINITIONS XOREOS_BUILDDATE="${XOREOS_BUILDDATE}")
 
 find_package(Git)
