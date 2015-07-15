@@ -31,6 +31,7 @@ namespace Common {
 
 class UString;
 class SeekableReadStream;
+class MemoryReadStream;
 
 enum Encoding {
 	kEncodingInvalid = -1,
@@ -69,7 +70,7 @@ UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 UString readString(const byte *data, size_t size, Encoding encoding);
 
 /** Convert a string into the given encoding. */
-SeekableReadStream *convertString(const UString &str, Encoding encoding);
+MemoryReadStream *convertString(const UString &str, Encoding encoding);
 
 /** Return the number of bytes per codepoint in this encoding.
  *

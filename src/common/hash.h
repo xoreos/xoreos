@@ -28,7 +28,7 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 #include "src/common/encoding.h"
-#include "src/common/readstream.h"
+#include "src/common/memreadstream.h"
 
 namespace Common {
 

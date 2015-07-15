@@ -84,7 +84,7 @@ public:
 		return convert(_contextFrom[encoding], data, n, kEncodingGrowthFrom[encoding]);
 	}
 
-	SeekableReadStream *convert(Encoding encoding, const UString &str) {
+	MemoryReadStream *convert(Encoding encoding, const UString &str) {
 		if (((size_t) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
 
@@ -135,7 +135,7 @@ private:
 		return str;
 	}
 
-	SeekableReadStream *convert(iconv_t &ctx, const UString &str, size_t growth) {
+	MemoryReadStream *convert(iconv_t &ctx, const UString &str, size_t growth) {
 		if (ctx == ((iconv_t) -1))
 			return 0;
 
@@ -290,7 +290,7 @@ UString readString(const byte *data, size_t size, Encoding encoding) {
 	return createString(output, encoding);
 }
 
-SeekableReadStream *convertString(const UString &str, Encoding encoding) {
+MemoryReadStream *convertString(const UString &str, Encoding encoding) {
 	if (encoding == kEncodingUTF8)
 		return new MemoryReadStream((const byte *) str.c_str(), strlen(str.c_str()));
 
