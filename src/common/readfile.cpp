@@ -22,11 +22,46 @@
  *  Implementing the stream reading interfaces for files.
  */
 
+#include "src/common/system.h"
+
+#if defined(WIN32)
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#include <wchar.h>
+
+	#include "src/common/encoding.h"
+	#include "src/common/memreadstream.h"
+#endif
+
 #include "src/common/readfile.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 
 namespace Common {
+
+#if defined(WIN32)
+
+/* On Windows, we have to convert the UTF-8 filename to UTF-16 and use _wfopen,
+ * otherwise we can'to open files with non-ASCII characters in their names. */
+static inline std::FILE *openFile(const UString &fileName) {
+	MemoryReadStream *utf16Name = convertString(fileName, kEncodingUTF16LE);
+
+	std::FILE *file = _wfopen((const wchar_t *) utf16Name->getData(), L"rb");
+
+	delete utf16Name;
+
+	return file;
+}
+
+#else
+
+/* On non-Windows, we just open the files as-is. */
+static inline std::FILE *openFile(const UString &fileName) {
+	return std::fopen(fileName.c_str(), "rb");
+}
+
+#endif
+
 
 ReadFile::ReadFile() : _handle(0), _size(kSizeInvalid) {
 }
@@ -59,7 +94,7 @@ bool ReadFile::open(const UString &fileName) {
 	close();
 
 	long fileSize = -1;
-	if (!(_handle  = std::fopen(fileName.c_str(), "rb")) ||
+	if (!(_handle  = openFile(fileName)) ||
 	    ((fileSize = getInitialSize(_handle)) < 0)) {
 
 		close();
