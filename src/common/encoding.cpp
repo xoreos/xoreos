@@ -50,6 +50,10 @@ static const size_t kEncodingGrowthTo  [kEncodingMAX] = {
 	1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
+static const size_t kTerminatorLength  [kEncodingMAX] = {
+	1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1
+};
+
 /** A manager handling string encoding conversions. */
 class ConversionManager : public Singleton<ConversionManager> {
 public:
@@ -81,25 +85,25 @@ public:
 		if (((size_t) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
 
-		return convert(_contextFrom[encoding], data, n, kEncodingGrowthFrom[encoding]);
+		return convert(_contextFrom[encoding], data, n, kEncodingGrowthFrom[encoding], 1);
 	}
 
 	MemoryReadStream *convert(Encoding encoding, const UString &str) {
 		if (((size_t) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
 
-		return convert(_contextTo[encoding], str, kEncodingGrowthTo[encoding]);
+		return convert(_contextTo[encoding], str, kEncodingGrowthTo[encoding], kTerminatorLength[encoding]);
 	}
 
 private:
 	iconv_t _contextFrom[kEncodingMAX];
 	iconv_t _contextTo  [kEncodingMAX];
 
-	const byte *convert(iconv_t &ctx, byte *data, size_t nIn, size_t nOut, size_t &size) {
+	byte *doConvert(iconv_t &ctx, byte *data, size_t nIn, size_t nOut, size_t &size) {
 		size_t inBytes  = nIn;
 		size_t outBytes = nOut;
 
-		byte *convData = new byte[outBytes + 1];
+		byte *convData = new byte[outBytes];
 
 		byte *outBuf = convData;
 
@@ -114,20 +118,22 @@ private:
 			return 0;
 		}
 
-		size = nOut - outBytes + 1;
-		convData[size - 1] = '\0';
+		size = nOut - outBytes;
 
 		return convData;
 	}
 
-	UString convert(iconv_t &ctx, byte *data, size_t n, size_t growth) {
+	UString convert(iconv_t &ctx, byte *data, size_t n, size_t growth, size_t termSize) {
 		if (ctx == ((iconv_t) -1))
 			return "[!!!]";
 
 		size_t size;
-		const byte *dataOut = convert(ctx, data, n, n * growth, size);
+		byte *dataOut = doConvert(ctx, data, n, n * growth + termSize, size);
 		if (!dataOut)
 			return "[!?!]";
+
+		while (termSize-- > 0)
+			dataOut[size++] = '\0';
 
 		UString str((const char *) dataOut);
 		delete[] dataOut;
@@ -135,20 +141,23 @@ private:
 		return str;
 	}
 
-	MemoryReadStream *convert(iconv_t &ctx, const UString &str, size_t growth) {
+	MemoryReadStream *convert(iconv_t &ctx, const UString &str, size_t growth, size_t termSize) {
 		if (ctx == ((iconv_t) -1))
 			return 0;
 
 		byte  *dataIn = const_cast<byte *>((const byte *) str.c_str());
 		size_t nIn    = strlen(str.c_str());
-		size_t nOut   = nIn * growth;
+		size_t nOut   = nIn * growth + termSize;
 
 		size_t size;
-		const byte *dataOut = convert(ctx, dataIn, nIn, nOut, size);
+		byte *dataOut = doConvert(ctx, dataIn, nIn, nOut, size);
 		if (!dataOut)
 			return 0;
 
-		return new MemoryReadStream(dataOut, size - 1, true);
+		while (termSize-- > 0)
+			dataOut[size++] = '\0';
+
+		return new MemoryReadStream(dataOut, size, true);
 	}
 };
 
