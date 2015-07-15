@@ -45,6 +45,7 @@ noinst_HEADERS = \
                  util.h \
                  strutil.h \
                  encoding.h \
+                 cline.h \
                  debugman.h \
                  debug.h \
                  atomic.h \
@@ -96,6 +97,7 @@ libcommon_la_SOURCES = \
                        util.cpp \
                        strutil.cpp \
                        encoding.cpp \
+                       cline.cpp \
                        debugman.cpp \
                        debug.cpp \
                        uuid.cpp \
