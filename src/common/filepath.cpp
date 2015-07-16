@@ -30,6 +30,7 @@
 
 #include "src/common/filepath.h"
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/encoding.h"
 #include "src/common/platform.h"
 
@@ -313,7 +314,11 @@ UString FilePath::findSubDirectory(const UString &directory, const UString &subD
 }
 
 bool FilePath::createDirectories(const UString &path) {
-	return create_directories(path.c_str());
+	try {
+		return create_directories(path.c_str());
+	} catch (std::exception &se) {
+		throw Exception(se);
+	}
 }
 
 UString FilePath::escapeStringLiteral(const UString &str) {
