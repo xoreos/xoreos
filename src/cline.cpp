@@ -27,15 +27,14 @@
 
 #include "src/cline.h"
 
-#include "src/common/ustring.h"
 #include "src/common/util.h"
 #include "src/common/version.h"
 
 #include "src/common/configman.h"
 
-static void displayUsage(const char *name) {
+static void displayUsage(const Common::UString &name) {
 	std::printf("xoreos - A reimplementation of BioWare's Aurora engine\n");
-	std::printf("Usage: %s [options] [target]\n\n", name);
+	std::printf("Usage: %s [options] [target]\n\n", name.c_str());
 	std::printf("          --help              Display this text and exit.\n");
 	std::printf("          --version           Display version information and exit.\n");
 	std::printf("  -cFILE  --config=FILE       Load the config from file FILE.\n");
@@ -74,13 +73,13 @@ static void displayUsage(const char *name) {
 	std::printf("      Use \"All\" to enable all debug channels.\n");
 	std::printf("\n");
 	std::printf("Examples:\n");
-	std::printf("%s -p/path/to/nwn/\n", name);
+	std::printf("%s -p/path/to/nwn/\n", name.c_str());
 	std::printf("  xoreos will start the game in /path/to/nwn/. Should a target with this\n");
 	std::printf("  path not yet exist in the config file, xoreos will create one named \"nwn\".\n");
-	std::printf("%s -p/path/to/nwn/ foobar\n", name);
+	std::printf("%s -p/path/to/nwn/ foobar\n", name.c_str());
 	std::printf("  xoreos will start the game in /path/to/nwn/. If a target \"foobar\"\n");
 	std::printf("  does not yet exist in the config file, xoreos will create it.\n");
-	std::printf("%s nwn\n", name);
+	std::printf("%s nwn\n", name.c_str());
 	std::printf("  xoreos will start the game specified by target \"nwn\", which must exit\n");
 	std::printf("  in the config file already.\n");
 	std::printf("\n");
@@ -94,7 +93,7 @@ static void displayVersion() {
 	std::printf("\n");
 }
 
-static Common::UString convertShortToLongOption(char shortOption) {
+static Common::UString convertShortToLongOption(uint32 shortOption) {
 	if (shortOption == 'p')
 		return "path";
 	if (shortOption == 'c')
@@ -143,35 +142,37 @@ static bool setOption(Common::UString &key, const Common::UString &value) {
 	return true;
 }
 
-static bool parseOption(const char *arg, Common::UString &key) {
-	if (arg[1] == '\0') {
-		warning("Unrecognized command line argument \"%s\"", arg);
+static bool parseOption(const Common::UString &arg, Common::UString &key) {
+	if (arg.size() < 2) {
+		warning("Unrecognized command line argument \"%s\"", arg.c_str());
 		return false;
 	}
 
+	Common::UString::iterator start = arg.begin();
+	++start;
+
 	Common::UString value;
-	const char *start = arg + 1;
 	if (*start == '-') {
 		// Long option
 
-		start++;
+		++start;
 
-		const char *e = strchr(start, '=');
-		if (e) {
-			key = Common::UString(start, e - start);
-			value = e + 1;
+		Common::UString::iterator e = arg.findFirst('=');
+		if (e != arg.end()) {
+			key = arg.substr(start, e++);
+			value = arg.substr(e, arg.end());
 		} else
-			key = start;
+			key = arg.substr(start, arg.end());
 
 	} else {
 		// Short option
 
-		key   = convertShortToLongOption(*start);
-		value = start + 1;
+		key   = convertShortToLongOption(*start++);
+		value = arg.substr(start, arg.end());
 	}
 
 	if (key.empty()) {
-		warning("Unrecognized command line argument \"%s\"", arg);
+		warning("Unrecognized command line argument \"%s\"", arg.c_str());
 		return false;
 	}
 
@@ -184,13 +185,13 @@ static bool parseOption(const char *arg, Common::UString &key) {
 	return true;
 }
 
-bool parseCommandline(int argc, char **argv, Common::UString &target, int &code) {
+bool parseCommandline(const std::vector<Common::UString> &argv, Common::UString &target, int &code) {
 	target.clear();
 
 	Common::UString key;
 
 	bool stopMark = false;
-	for (int i = 1; i < argc; i++) {
+	for (size_t i = 1; i < argv.size(); i++) {
 
 		if (!key.empty()) {
 		// Still got one parameter missing from last time
@@ -202,19 +203,19 @@ bool parseCommandline(int argc, char **argv, Common::UString &target, int &code)
 			continue;
 		}
 
-		if (!stopMark && (argv[i][0] == '-')) {
-			if (!strcmp(argv[i], "--")) {
+		if (!stopMark && argv[i].beginsWith("-")) {
+			if (argv[i] == "--") {
 				stopMark = true;
 				continue;
 			}
 
-			if (!strcmp(argv[i], "--help")) {
+			if (argv[i] == "--help") {
 				code = 0;
 				displayUsage(argv[0]);
 				return false;
 			}
 
-			if (!strcmp(argv[i], "--version")) {
+			if (argv[i] == "--version") {
 				code = 0;
 				displayVersion();
 				return false;
@@ -239,7 +240,7 @@ bool parseCommandline(int argc, char **argv, Common::UString &target, int &code)
 		}
 
 		if (!target.empty()) {
-			warning("Found multiple target (\"%s\" and \"%s\")", target.c_str(), argv[i]);
+			warning("Found multiple target (\"%s\" and \"%s\")", target.c_str(), argv[i].c_str());
 			code = 1;
 			return false;
 		}

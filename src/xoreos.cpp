@@ -31,6 +31,7 @@
 #include "src/common/ustring.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/cline.h"
 #include "src/common/filepath.h"
 #include "src/common/threads.h"
 #include "src/common/debugman.h"
@@ -72,9 +73,12 @@ static bool configFileIsBroken = false;
 int main(int argc, char **argv) {
 	initConfig();
 
+	std::vector<Common::UString> args;
+	Common::getParameters(argc, argv, args);
+
 	Common::UString target;
 	int code;
-	if (!parseCommandline(argc, argv, target, code))
+	if (!parseCommandline(args, target, code))
 		return code;
 
 	// Check the requested target
@@ -123,7 +127,7 @@ int main(int argc, char **argv) {
 	if (!logFile.empty())
 		DebugMan.openLogFile(logFile);
 
-	DebugMan.logCommandLine(argc, argv);
+	DebugMan.logCommandLine(args);
 
 	status("Target \"%s\"", target.c_str());
 

@@ -27,6 +27,7 @@
 #ifndef COMMON_DEBUGMAN_H
 #define COMMON_DEBUGMAN_H
 
+#include <vector>
 #include <map>
 
 #include "src/common/types.h"
@@ -114,7 +115,7 @@ public:
 	void logString(const UString &str);
 
 	/** Write the whole command line to the current log file. */
-	void logCommandLine(int argc, char **argv);
+	void logCommandLine(const std::vector<Common::UString> &argv);
 
 	/** Return the OS-specific default path of the log file. */
 	static UString getDefaultLogFile();

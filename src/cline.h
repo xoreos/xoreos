@@ -22,8 +22,8 @@
  *  Command line arguments parser.
  */
 
-namespace Common {
-	class UString;
-}
+#include <vector>
 
-bool parseCommandline(int argc, char **argv, Common::UString &target, int &code);
+#include "src/common/ustring.h"
+
+bool parseCommandline(const std::vector<Common::UString> &argv, Common::UString &target, int &code);

@@ -217,11 +217,11 @@ void DebugManager::logString(const UString &str) {
 		_logFile.flush();
 }
 
-void DebugManager::logCommandLine(int argc, char **argv) {
+void DebugManager::logCommandLine(const std::vector<Common::UString> &argv) {
 	logString("Full command line:");
-	for (int i = 0; i < argc; i++) {
+	for (std::vector<Common::UString>::const_iterator arg = argv.begin(); arg != argv.end(); ++arg) {
 		logString(" ");
-		logString(argv[i]);
+		logString(*arg);
 	}
 	logString("\n");
 }
