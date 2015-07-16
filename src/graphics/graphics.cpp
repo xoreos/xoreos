@@ -123,17 +123,7 @@ GraphicsManager::~GraphicsManager() {
 void GraphicsManager::init() {
 	Common::enforceMainThread();
 
-	uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK;
-
-	// TODO: Is this actually needed on any systems? It seems to make MacOS X fail to
-	//       receive any events, too.
-/*
-// Might be needed on unixoid OS, but it crashes Windows. Nice.
-#ifndef WIN32
-	sdlInitFlags |= SDL_INIT_EVENTTHREAD;
-#endif
-*/
-
+	const uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK;
 	if (SDL_Init(sdlInitFlags) < 0)
 		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
 
