@@ -127,6 +127,7 @@ BOOST_BIND
 BOOST_UUID
 BOOST_SMART_PTR
 BOOST_ATOMIC
+BOOST_LOCALE
 
 dnl Extra flags
 case "$target" in
