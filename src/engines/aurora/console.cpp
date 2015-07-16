@@ -343,7 +343,12 @@ bool ConsoleWindow::openLogFile(const Common::UString &file) {
 
 	// Create the directories in the path, if necessary
 	Common::UString path = Common::FilePath::canonicalize(file);
-	Common::FilePath::createDirectories(Common::FilePath::getDirectory(path));
+
+	try {
+		Common::FilePath::createDirectories(Common::FilePath::getDirectory(path));
+	} catch (...) {
+		return false;
+	}
 
 	return _logFile.open(path);
 }
