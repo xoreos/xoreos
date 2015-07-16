@@ -167,7 +167,12 @@ bool DebugManager::openLogFile(const UString &file) {
 
 	// Create the directories in the path, if necessary
 	UString path = FilePath::canonicalize(file);
-	FilePath::createDirectories(FilePath::getDirectory(path));
+
+	try {
+		FilePath::createDirectories(FilePath::getDirectory(path));
+	} catch (...) {
+		return false;
+	}
 
 	if (!_logFile.open(path))
 		return false;
