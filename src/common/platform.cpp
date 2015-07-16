@@ -42,10 +42,25 @@
 #include <cassert>
 #include <cstdlib>
 
+#include <boost/locale.hpp>
+#include <boost/filesystem/path.hpp>
+
 #include "src/common/platform.h"
+#include "src/common/error.h"
 #include "src/common/filepath.h"
 
 namespace Common {
+
+void Platform::init() {
+	/* Imbue Boost.Filesystem with a locale converting between UTF-8 and the
+	 * local encoding. This allows us to work with UTF-8 everywhere. */
+
+	try {
+		boost::filesystem::path::imbue(boost::locale::generator().generate(""));
+	} catch (std::exception &se) {
+		throw Exception(se);
+	}
+}
 
 // .--- getParameters() ---.
 #if defined(WIN32)

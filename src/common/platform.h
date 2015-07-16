@@ -42,6 +42,9 @@ public:
 		kFileModeMAX
 	};
 
+	/** Intialize platform-dependant things. */
+	static void init();
+
 	/** Read the command line parameters into UTF-8 strings. */
 	static void getParameters(int argc, char **argv, std::vector<UString> &args);
 

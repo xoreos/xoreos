@@ -60,6 +60,7 @@
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
 
+void initPlatform();
 void initConfig();
 
 void init();
@@ -71,6 +72,7 @@ void listDebug();
 static bool configFileIsBroken = false;
 
 int main(int argc, char **argv) {
+	initPlatform();
 	initConfig();
 
 	std::vector<Common::UString> args;
@@ -194,6 +196,17 @@ int main(int argc, char **argv) {
 
 	deinit();
 	return 0;
+}
+
+void initPlatform() {
+	try {
+		Common::Platform::init();
+	} catch (Common::Exception &e) {
+		e.add("Failed to initialize the low-level platform-specific subsytem");
+
+		Common::printException(e);
+		std::exit(1);
+	}
 }
 
 void initConfig() {
