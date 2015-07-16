@@ -128,9 +128,9 @@ bool ConfigManager::save() {
 
 	// Create the directories in the path, if necessary
 	UString file = FilePath::canonicalize(getConfigFile());
-	FilePath::createDirectories(FilePath::getDirectory(file));
 
 	try {
+		FilePath::createDirectories(FilePath::getDirectory(file));
 
 		// Open and save the config
 		WriteFile config;
