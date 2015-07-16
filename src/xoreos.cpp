@@ -127,7 +127,8 @@ int main(int argc, char **argv) {
 		logFile.clear();
 
 	if (!logFile.empty())
-		DebugMan.openLogFile(logFile);
+		if (!DebugMan.openLogFile(logFile))
+			warning("Failed to open log file \"%s\" for writing", logFile.c_str());
 
 	DebugMan.logCommandLine(args);
 
