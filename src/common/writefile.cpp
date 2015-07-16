@@ -52,7 +52,11 @@ bool WriteFile::open(const UString &fileName) {
 	if (path.empty())
 		return false;
 
-	FilePath::createDirectories(FilePath::getDirectory(path));
+	try {
+		FilePath::createDirectories(FilePath::getDirectory(path));
+	} catch (...) {
+		return false;
+	}
 
 	if (!(_handle = Platform::openFile(path, Platform::kFileModeWrite)))
 		return false;
