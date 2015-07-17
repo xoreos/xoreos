@@ -114,7 +114,7 @@ AX_CHECK_OGG(, AC_MSG_ERROR([libOgg (>= 1.2.0) is required and could not be foun
 AX_CHECK_VORBIS(, AC_MSG_ERROR([libVorbisFile (>= 1.3.1) is required and could not be found!]))
 
 dnl Boost
-BOOST_REQUIRE(1.48.0)
+BOOST_REQUIRE(1.53.0)
 BOOST_STRING_ALGO
 BOOST_SYSTEM
 BOOST_FILESYSTEM
