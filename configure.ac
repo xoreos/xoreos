@@ -98,7 +98,7 @@ dnl General purpose libraries
 AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found!]))
 AX_CHECK_ZLIB(1, 2, 3, 4, , AC_MSG_ERROR([zlib(>= 1.2.3.4) is required and could not be found!]))
 AX_CHECK_LZMA(5, 0, 5, 2, , AC_MSG_ERROR([liblzma(>= 5.0.5) is required and could not be found!]))
-AX_CHECK_XML2(2, 9, 1, , AC_MSG_ERROR([libxml2(>= 2.9.1) is required and could not be found!]))
+AX_CHECK_XML2(2, 8, 0, , AC_MSG_ERROR([libxml2(>= 2.8.0) is required and could not be found!]))
 
 dnl Graphic libraries
 AX_CHECK_SDL2(2000, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
