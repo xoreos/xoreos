@@ -91,7 +91,9 @@ Engines::Engine *DragonAge2EngineProbe::createEngine() const {
 }
 
 
-DragonAge2Engine::DragonAge2Engine() : _language(Aurora::kLanguageInvalid) {
+DragonAge2Engine::DragonAge2Engine() : _language(Aurora::kLanguageInvalid),
+	_campaigns(0) {
+
 	_console = new Console(*this);
 }
 
