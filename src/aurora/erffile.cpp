@@ -464,7 +464,7 @@ Common::MemoryReadStream *ERFFile::decrypt(Common::MemoryReadStream *cryptStream
 		Common::MemoryReadStream *decryptStream = 0;
 
 		switch (_header.encryption) {
-			case kCompressionNone:
+			case kEncryptionNone:
 				return cryptStream;
 
 			case kEncryptionBlowfishDAO:
