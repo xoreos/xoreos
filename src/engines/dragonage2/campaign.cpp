@@ -86,6 +86,7 @@ Campaign::Campaign(DragonAge2Engine &engine, const Common::UString &cifPath,
 
 Campaign::~Campaign() {
 	delete _rimRoot;
+	_rimRoot = 0;
 
 	try {
 		unload();
