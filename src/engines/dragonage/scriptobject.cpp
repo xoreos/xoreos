@@ -104,22 +104,21 @@ void ScriptObject::readVarTable(const GFF4List &varTable) {
 			continue;
 
 		switch (type) {
-			case  0:
 			case  4:
 				setVariable(name, Aurora::NWScript::Variable());
 				break;
 
 			case  1:
-				setVariable(name, (int32) (value ? value->getSint(0) : 0));
+				setVariable(name, (int32) value->getSint(0));
 				break;
 
 			case  2:
-				setVariable(name, (float) (value ? value->getDouble(0) : 0.0));
+				setVariable(name, (float) value->getDouble(0));
 				break;
 
 			case  3:
 			case 12:
-				setVariable(name, value ? value->getString(0) : "");
+				setVariable(name, value->getString(0));
 				break;
 
 			default:
