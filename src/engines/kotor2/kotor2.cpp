@@ -531,6 +531,7 @@ void KotOR2Engine::deinit() {
 void KotOR2Engine::playIntroVideos() {
 	playVideo("leclogo");
 	playVideo("obsidianent");
+	playVideo("aspyr");
 	playVideo("legal");
 }
 
