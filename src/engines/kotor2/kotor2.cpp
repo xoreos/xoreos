@@ -58,8 +58,10 @@ namespace Engines {
 
 namespace KotOR2 {
 
-const KotOR2EngineProbeWin  kKotOR2EngineProbeWin;
-const KotOR2EngineProbeXbox kKotOR2EngineProbeXbox;
+const KotOR2EngineProbeWin   kKotOR2EngineProbeWin;
+const KotOR2EngineProbeLinux kKotOR2EngineProbeLinux;
+const KotOR2EngineProbeMac   kKotOR2EngineProbeMac;
+const KotOR2EngineProbeXbox  kKotOR2EngineProbeXbox;
 
 const Common::UString KotOR2EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
 
@@ -100,6 +102,58 @@ bool KotOR2EngineProbeWin::probe(const Common::UString &UNUSED(directory),
 }
 
 
+KotOR2EngineProbeLinux::KotOR2EngineProbeLinux() {
+}
+
+KotOR2EngineProbeLinux::~KotOR2EngineProbeLinux() {
+}
+
+bool KotOR2EngineProbeLinux::probe(const Common::UString &directory,
+                                   const Common::FileList &rootFiles) const {
+
+	// The game binary found in the Aspyr Linux port
+	if (!rootFiles.contains("/KOTOR2", false))
+		return false;
+
+	// The directory containing what was originally within the PE resources
+	if (Common::FilePath::findSubDirectory(directory, "resources").empty())
+		return false;
+	// The directory containing the original game data files
+	if (Common::FilePath::findSubDirectory(directory, "steamassets").empty())
+		return false;
+
+	return true;
+}
+
+
+KotOR2EngineProbeMac::KotOR2EngineProbeMac() {
+}
+
+KotOR2EngineProbeMac::~KotOR2EngineProbeMac() {
+}
+
+bool KotOR2EngineProbeMac::probe(const Common::UString &directory,
+                                 const Common::FileList &UNUSED(rootFiles)) const {
+
+	// The directory containing the Mac binary
+	if (Common::FilePath::findSubDirectory(directory, "MacOS").empty())
+		return false;
+	// The directory containing what was originally within the PE resources
+	if (Common::FilePath::findSubDirectory(directory, "Resources").empty())
+		return false;
+	// The directory containing the original game data files
+	if (Common::FilePath::findSubDirectory(directory, "GameData").empty())
+		return false;
+
+	// The game binary found in the Aspyr Mac port
+	Common::FileList binaryFiles(Common::FilePath::findSubDirectory(directory, "MacOS"));
+	if (!binaryFiles.contains("KOTOR2", false))
+		return false;
+
+	return true;
+}
+
+
 KotOR2EngineProbeXbox::KotOR2EngineProbeXbox() {
 }
 
@@ -124,11 +178,17 @@ KotOR2Engine::~KotOR2Engine() {
 }
 
 bool KotOR2Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
-                                   Aurora::Platform UNUSED(platform),
+                                   Aurora::Platform platform,
                                    std::vector<Aurora::Language> &languages) const {
 	try {
+		Common::UString baseDir = target;
+		if      (platform == Aurora::kPlatformLinux)
+			baseDir += "/steamassets";
+		else if (platform == Aurora::kPlatformMacOSX)
+			baseDir += "/GameData";
+
 		Common::FileList files;
-		if (!files.addDirectory(target))
+		if (!files.addDirectory(baseDir))
 			return true;
 
 		Common::UString tlk = files.findFirst("dialog.tlk", true);
@@ -247,7 +307,14 @@ void KotOR2Engine::initResources(LoadProgress &progress) {
 		ResMan.addTypeAlias(Aurora::kFileTypeTXB, Aurora::kFileTypeTPC);
 
 	progress.step("Setting base directory");
-	ResMan.registerDataBase(_target);
+
+	Common::UString baseDir = _target;
+	if      (_platform == Aurora::kPlatformLinux)
+		baseDir += "/steamassets";
+	else if (_platform == Aurora::kPlatformMacOSX)
+		baseDir += "/GameData";
+
+	ResMan.registerDataBase(baseDir);
 
 	progress.step("Adding extra archive directories");
 	const Common::UString dataDir = (_platform == Aurora::kPlatformXbox) ? "dataxbox" : "data";
@@ -285,6 +352,10 @@ void KotOR2Engine::initResources(LoadProgress &progress) {
 	if (_platform == Aurora::kPlatformWindows) {
 		initCursorsRemap();
 		indexMandatoryArchive("swkotor2.exe", 104);
+	} else if (_platform == Aurora::kPlatformLinux) {
+		indexMandatoryDirectory("../resources/cursors/", 0, 0, 104);
+	} else if (_platform == Aurora::kPlatformMacOSX) {
+		indexMandatoryDirectory("../Resources/Cursors/", 0, 0, 104);
 	}
 
 	// Texture packs at 400, in module.cpp
@@ -447,7 +518,7 @@ void KotOR2Engine::initConfig() {
 
 void KotOR2Engine::initGameConfig() {
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "KOTOR2_moduleDir",
-		Common::FilePath::findSubDirectory(_target, "modules", true));
+		Common::FilePath::findSubDirectory(ResMan.getDataBase(), "modules", true));
 }
 
 void KotOR2Engine::checkConfig() {
