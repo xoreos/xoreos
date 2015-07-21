@@ -256,7 +256,8 @@ void KotOR2Engine::initResources(LoadProgress &progress) {
 	indexMandatoryDirectory( dataDir , 0, 0, 2);
 	indexMandatoryDirectory("lips"   , 0, 0, 3);
 	indexMandatoryDirectory("modules", 0, 0, 4);
-	indexMandatoryDirectory( rimsDir , 0, 0, 5);
+
+	indexOptionalDirectory(rimsDir, 0, 0, 5);
 
 	if (_platform != Aurora::kPlatformXbox)
 		indexMandatoryDirectory("texturepacks", 0, 0, 6);
