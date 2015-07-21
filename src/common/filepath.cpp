@@ -265,8 +265,22 @@ static UString findSubDirectory_internal(const UString &directory, const UString
 		bool caseInsensitive) {
 
 	try {
-		path dirPath(directory.c_str());
-		path subDirPath(subDirectory.c_str());
+		// Special case: . is the same, current directory
+		if (subDirectory == ".")
+			return directory;
+
+		const path dirPath(directory.c_str());
+
+		// Special case: .. is the parent directory
+		if (subDirectory == "..") {
+			path parent = dirPath.parent_path();
+			if (parent == dirPath)
+				return "";
+
+			return parent.generic_string();
+		}
+
+		const path subDirPath(subDirectory.c_str());
 
 		// Iterator over the directory's contents
 		directory_iterator itEnd;
