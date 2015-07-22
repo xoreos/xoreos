@@ -225,7 +225,7 @@ UString ConfigManager::createGame(const UString &path, UString target) {
 	ConfigDomain *gameDomain = _config->addDomain(target);
 	assert(gameDomain);
 
-	gameDomain->setString("path", path);
+	gameDomain->setString("path", Common::FilePath::canonicalize(path, false));
 
 	_changed = true;
 
