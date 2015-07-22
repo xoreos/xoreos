@@ -168,6 +168,9 @@ UString ConfigManager::findGame(const UString &path) {
 	try {
 		const ConfigFile::DomainList &domains = _config->getDomains();
 		for (ConfigFile::DomainList::const_iterator d = domains.begin(); d != domains.end(); ++d) {
+			if ((*d)->getName() == kDomainApp)
+				continue;
+
 			Common::UString domainPath = (*d)->getString("path");
 			if (domainPath.empty())
 				continue;
