@@ -22,6 +22,8 @@
  *  TPC (BioWare's own texture format) loading.
  */
 
+#include <cstring>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -31,6 +33,7 @@
 
 #include "src/graphics/images/tpc.h"
 
+static const byte kEncodingGray         = 0x01;
 static const byte kEncodingRGB          = 0x02;
 static const byte kEncodingRGBA         = 0x04;
 static const byte kEncodingSwizzledBGRA = 0x0C;
@@ -47,10 +50,10 @@ TPC::~TPC() {
 void TPC::load(Common::SeekableReadStream &tpc) {
 	try {
 
-		bool needDeSwizzle = false;
+		byte encoding;
 
-		readHeader(tpc, needDeSwizzle);
-		readData  (tpc, needDeSwizzle);
+		readHeader(tpc, encoding);
+		readData  (tpc, encoding);
 		readTXI   (tpc);
 
 	} catch (Common::Exception &e) {
@@ -61,7 +64,7 @@ void TPC::load(Common::SeekableReadStream &tpc) {
 	}
 }
 
-void TPC::readHeader(Common::SeekableReadStream &tpc, bool &needDeSwizzle) {
+void TPC::readHeader(Common::SeekableReadStream &tpc, byte &encoding) {
 	// Number of bytes for the pixel data in one full image
 	uint32 dataSize = tpc.readUint32LE();
 
@@ -72,13 +75,12 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, bool &needDeSwizzle) {
 	uint32 height = tpc.readUint16LE();
 
 	// How's the pixel data encoded?
-	byte encoding    = tpc.readByte();
+	encoding = tpc.readByte();
+
 	// Number of mip maps in the image
 	byte mipMapCount = tpc.readByte();
 
 	tpc.skip(114); // Reserved
-
-	needDeSwizzle = false;
 
 	uint32 minDataSize = 0;
 	if (dataSize == 0) {
@@ -86,7 +88,17 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, bool &needDeSwizzle) {
 
 		_compressed = false;
 
-		if        (encoding == kEncodingRGB) {
+		if        (encoding == kEncodingGray) {
+			// 8bpp grayscale
+
+			_hasAlpha   = false;
+			_format     = kPixelFormatRGB;
+			_formatRaw  = kPixelFormatRGB8;
+			_dataType   = kPixelDataType8;
+
+			minDataSize = 1;
+			dataSize    = width * height;
+		} else if (encoding == kEncodingRGB) {
 			// RGB, no alpha channel
 
 			_hasAlpha   = false;
@@ -109,8 +121,6 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, bool &needDeSwizzle) {
 		} else if (encoding == kEncodingSwizzledBGRA) {
 			// BGRA, alpha channel, texture memory layout is "swizzled"
 
-			needDeSwizzle = true;
-
 			_hasAlpha   = true;
 			_format     = kPixelFormatBGRA;
 			_formatRaw  = kPixelFormatRGBA8;
@@ -119,7 +129,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, bool &needDeSwizzle) {
 			minDataSize = 4;
 			dataSize    = width * height * 4;
 		} else
-			throw Common::Exception("Unknown TPC raw encoding: %d (%d)", encoding, dataSize);
+			throw Common::Exception("Unknown TPC raw encoding: %d (%d), %dx%d, %d", encoding, dataSize, width, height, mipMapCount);
 
 	} else if (encoding == kEncodingRGB) {
 		// S3TC DXT1
@@ -192,12 +202,12 @@ void TPC::deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height) {
 	}
 }
 
-void TPC::readData(Common::SeekableReadStream &tpc, bool needDeSwizzle) {
+void TPC::readData(Common::SeekableReadStream &tpc, byte encoding) {
 	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
 
 		// If the texture width is a power of two, the texture memory layout is "swizzled"
 		const bool widthPOT = ((*mipMap)->width & ((*mipMap)->width - 1)) == 0;
-		const bool swizzled = needDeSwizzle && widthPOT;
+		const bool swizzled = (encoding == kEncodingSwizzledBGRA) && widthPOT;
 
 		(*mipMap)->data = new byte[(*mipMap)->size];
 
@@ -212,6 +222,19 @@ void TPC::readData(Common::SeekableReadStream &tpc, bool needDeSwizzle) {
 		} else {
 			if (tpc.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
 				throw Common::Exception(Common::kReadError);
+
+			// Unpacking 8bpp grayscale data into RGB
+			if (encoding == kEncodingGray) {
+				byte *dataGray = (*mipMap)->data;
+
+				(*mipMap)->size = (*mipMap)->width * (*mipMap)->height * 3;
+				(*mipMap)->data = new byte[(*mipMap)->size];
+
+				for (int i = 0; i < ((*mipMap)->width * (*mipMap)->height); i++)
+					memset((*mipMap)->data + i * 3, dataGray[i], 3);
+
+				delete[] dataGray;
+			}
 		}
 
 	}

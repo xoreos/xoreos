@@ -42,8 +42,8 @@ public:
 private:
 	// Loading helpers
 	void load(Common::SeekableReadStream &tpc);
-	void readHeader(Common::SeekableReadStream &tpc, bool &needDeSwizzle);
-	void readData(Common::SeekableReadStream &tpc, bool needDeSwizzle);
+	void readHeader(Common::SeekableReadStream &tpc, byte &encoding);
+	void readData(Common::SeekableReadStream &tpc, byte encoding);
 	void readTXI(Common::SeekableReadStream &tpc);
 
 	static void deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height);
