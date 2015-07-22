@@ -167,9 +167,14 @@ UString ConfigManager::findGame(const UString &path) {
 
 	try {
 		const ConfigFile::DomainList &domains = _config->getDomains();
-		for (ConfigFile::DomainList::const_iterator d = domains.begin(); d != domains.end(); ++d)
-			if (FilePath::canonicalize((*d)->getString("path")) == canonicalPath)
+		for (ConfigFile::DomainList::const_iterator d = domains.begin(); d != domains.end(); ++d) {
+			Common::UString domainPath = (*d)->getString("path");
+			if (domainPath.empty())
+				continue;
+
+			if (FilePath::canonicalize(domainPath) == canonicalPath)
 				return (*d)->getName();
+		}
 	} catch (...) {
 		return "";
 	}
