@@ -20,7 +20,7 @@
 
 /** @file
  *  Nitro Character Graphic Resource, a Nintendo DS image format.
- *  Uses NCLR, Nitro CoLouR, palette files.
+ *  Uses NCLR, Nitro CoLoR, palette files.
  */
 
 #ifndef GRAPHICS_IMAGES_NCGR_H

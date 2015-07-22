@@ -1201,7 +1201,7 @@ enum GFF4FieldNames {
 	kGFF4AcNodeImage                                     =   9006,
 	kGFF4AcEdgeList                                      =   9007,
 	kGFF4AcNodeList                                      =   9008,
-	kGFF4AcNodeColour                                    =   9009,
+	kGFF4AcNodeColor                                     =   9009,
 	kGFF4AcNodeAnimation                                 =   9010,
 	kGFF4AcCurveControlPointList                         =   9011,
 	kGFF4AcCurveControlPointTime                         =   9012,

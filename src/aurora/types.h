@@ -235,7 +235,7 @@ enum FileType {
 	kFileTypeNBFS           = 21010, ///< Image, Map, Nitro Basic File Screen.
 	kFileTypeNCER           = 21011, ///< Image, Nitro CEll Resource.
 	kFileTypeNCGR           = 21012, ///< Image, Nitro Character Graphic Resource.
-	kFileTypeNCLR           = 21013, ///< Palette, Nitro CoLouR.
+	kFileTypeNCLR           = 21013, ///< Palette, Nitro CoLoR.
 	kFileTypeNFTR           = 21014, ///< Font.
 	kFileTypeNSBCA          = 21015, ///< Model Animation.
 	kFileTypeNSBMD          = 21016, ///< Model.

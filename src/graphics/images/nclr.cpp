@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Loading Nitro CoLouR palette files.
+ *  Loading Nitro CoLoR palette files.
  */
 
 /* Based heavily on the NCLR reader found in the NDS file viewer

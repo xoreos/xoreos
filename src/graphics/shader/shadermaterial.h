@@ -45,7 +45,7 @@ namespace Shader {
 
 // Hints as to which render pass this material should be used on.
 #define SHADER_MATERIAL_HINT_MASK              (0xF0000000)
-#define SHADER_MATERIAL_HINT_COLOUR            (0x00000000)
+#define SHADER_MATERIAL_HINT_COLOR             (0x00000000)
 #define SHADER_MATERIAL_HINT_SHADOW            (0x10000000)
 #define SHADER_MATERIAL_HINT_LIGHT             (0x20000000)
 #define SHADER_MATERIAL_HINT_POST              (0x30000000)

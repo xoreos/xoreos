@@ -36,7 +36,7 @@
  *    * A shader program instance (shaderInstance) adds its own pointer information to match the program uniform list.
  *    * Binding a shader program instance (shaderInstance) takes the pointer, and can then bind it directly to a location.
  *  So this is a bit complicated, but easily allows switching the data pointers
- *  within a shader program instance. Textures can be swapped out, colours
+ *  within a shader program instance. Textures can be swapped out, colors
  *  modified, etc, and it's all automatically bound correctly. Assigning data
  *  to a variable within a shader program instance is generally done by using
  *  the variable's name directly. This avoids having to know the location of
@@ -146,7 +146,7 @@ enum ShaderType {
 enum ShaderVertexAttrib {
 	VERTEX_LOCATION    = 0,
 	VERTEX_NORMAL      = 1,
-	VERTEX_COLOUR      = 2,
+	VERTEX_COLOR       = 2,
 	VERTEX_TEXCOORD0   = 3,
 	VERTEX_BONE_ID     = 4,
 	VERTEX_BONE_WEIGHT = 5,

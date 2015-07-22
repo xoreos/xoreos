@@ -57,10 +57,10 @@ uniform sampler2D texture0;\n\
 \n\
 in vec2 texCoords;\n\
 \n\
-layout(location = 0) out vec4 outColour;\n\
+layout(location = 0) out vec4 outColor;\n\
 \n\
 void main(void) {\n\
-  outColour = texture(texture0, texCoords);\n\
+  outColor = texture(texture0, texCoords);\n\
 }\n\
 ";
 // ---------------------------------------------------------
