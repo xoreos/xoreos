@@ -69,9 +69,9 @@ The quickest way to start a game in path /path/to/game/ would be to call
 
     xoreos -p/path/to/game/
 
-If you're on Windows and the path is, say, D:\Path\\To\\Game\\, call
+If you're on Windows and the path is, say, D:\\Path\\To\\Game\\, call
 
-    xoreos -pD:\Path\To\Game\
+    xoreos -pD:\\Path\\To\\Game\\
 
 
 Config file
