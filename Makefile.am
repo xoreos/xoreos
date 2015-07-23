@@ -39,6 +39,10 @@ dist_doc_DATA = \
                 CODE_OF_CONDUCT.md \
                 $(EMPTY)
 
+dist_man6_MANS = \
+                 man/xoreos.6 \
+                 $(EMPTY)
+
 SUBDIRS = \
           utf8cpp \
           glew \

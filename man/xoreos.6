@@ -1,0 +1,320 @@
+.de URL
+\\$2 \(laURL: \\$1 \(ra\\$3
+..
+.if \n[.g] .mso www.tmac
+
+.hw xoreos
+.hw $XDG\_CONFIG\_HOME-/-xoreos-/-xoreos.conf
+.hw $XDG\_CONFIG\_HOME
+.hw $HOME-/-.config/
+.hw $HOME-/-Library-/-Preferences-/-xoreos-/-xoreos.conf
+.hw xoreos.conf
+.hw $APPDATA
+.hw $USERPROFILE
+
+.TH xoreos 6 2015-07-24 xoreos
+.SH NAME
+xoreos - A reimplementation of BioWare's Aurora engine
+.SH SYNOPSIS
+xoreos [<options>] [<target>]
+.SH DESCRIPTION
+.PP
+.B xoreos
+is an open source implementation of BioWare's Aurora engine and its
+derivatives, licensed under the terms of the GNU General Public
+License version 3 (or later). The goal is to have all games using
+this engines working in a portable manner.
+.PP
+.B The following games are valid targets for xoreos:
+.PD 0
+.IP - 2
+Neverwinter Nights
+.IP - 2
+Neverwinter Nights 2
+.IP - 2
+Knights of the Old Republic
+.IP - 2
+Knights of the Old Republic II: The Sith Lords
+.IP - 2
+Jade Empire
+.IP - 2
+Sonic Chronicles: The Dark Brotherhood
+.IP - 2
+The Witcher
+.IP - 2
+Dragon Age: Origins
+.IP - 2
+Dragon Age II
+.PD
+.SS Running xoreos
+First, you need to fully install and/or copy the game you want to play
+with
+.B xoreos
+onto your hard disk. How you do this depends on the game, your
+operating system and where/how you have bought the game.
+.PP
+.B xoreos
+does not yet have a launcher GUI or anything like this. You need
+to start it from the command line. Run xoreos with the command line
+option "--help" (without the quotes) to get a help text about further
+command line options.
+.PP
+The quickest way to start a game in path /path/to/game/ would be to call
+.IP "" 4
+.nf
+xoreos -p/path/to/game/
+.fi
+.PP
+If you're on Windows and the path is, say, D:\\Path\\To\\Game\\, call
+.IP "" 4
+.nf
+xoreos -pD:\\Path\\To\\Game\\
+.fi
+.SS Config file
+In general,
+.B xoreos
+can read the configuration which game to run from either the command
+line, a config file or both. Additionally, when you first specify a
+new game on the command line,
+.B xoreos
+will add a related entry in the config file (creating it first, if
+necessary).
+.PP
+To accurately identify a specific instance of an installed game,
+.B xoreos
+uses the concept of a "target". Each target has a separate section in
+the config file, and each of their options apply only to that target.
+The special target "xoreos" is a global section applying to all games,
+although the same option in a game target overrides the global option.
+.PP
+.B For example:
+.IP "" 4
+.nf
+[xoreos]
+width=1024
+height=768
+fullscreen=false
+
+[nwn]
+path=/home/drmccoy/games/nwn/
+fullscreen=true
+volume_music=0.500000
+volume_sfx=0.850000
+volume_voice=0.850000
+.fi
+.PP
+You can then start the game with the target "nwn" with
+.IP "" 4
+.nf
+xoreos nwn
+.fi
+.PP
+and
+.BR xoreos
+will do the rest. This will start the game in the path
+/home/drmccoy/games/nwn/, running it in fullscreen at 1024x768.
+.PP
+As you can see with the volume options,
+.BR xoreos
+also saves settings you made in the game' actual GUI into the
+target's section of the config file.
+.PP
+The place where
+.BR xoreos
+expects the config file depends on your operating system:
+.PD 0
+.IP - 2
+On GNU/Linux, the place is $XDG\_CONFIG\_HOME/xoreos/xoreos.conf.
+$XDG\_CONFIG\_HOME defaults to $HOME/.config/
+.IP - 2
+On Mac OS X, the place is $HOME/Library/Preferences/xoreos/xoreos.conf
+.IP - 2
+On Windows, xoreos.conf is in the subdirectory xoreos in either
+$APPDATA or $USERPROFILE, depending on your Windows version
+.PD
+.SH OPTIONS
+.TP 4
+.B --help
+Show a help text and exit.
+.TP 4
+.B --version
+Show version information and exit.
+.TP 4
+.BR -c FILE
+.PD 0
+.TP 4
+.BR --config= FILE
+Load the config from file FILE.
+.PD
+
+
+
+.TP 4
+.BR -p DIR
+.PD 0
+.TP 4
+.BR --path= DIR
+Override the game path with DIR.
+.PD
+.TP 4
+.BR -w SIZE
+.PD 0
+.TP 4
+.BR --width= SIZE
+Set the window's width to SIZE.
+.PD
+.TP 4
+.BR -h SIZE
+.PD 0
+.TP 4
+.BR --height= SIZE
+Set the window's height to SIZE.
+.PD
+.TP 4
+.BR -f BOOL
+.PD 0
+.TP 4
+.BR --fullscreen= BOOL
+Switch fullscreen on/off.
+.PD
+.TP 4
+.BR -k BOOL
+.PD 0
+.TP 4
+.BR --skipvideos= BOOL
+Disable videos on/off.
+.PD
+.TP 4
+.BR -v VOL
+.PD 0
+.TP 4
+.BR --volume= VOL
+Set global volume to VOL.
+.PD
+.TP 4
+.BR -m VOL
+.PD 0
+.TP 4
+.BR --volume_music= VOL
+Set music volume to VOL.
+.PD
+.TP 4
+.BR -s VOL
+.PD 0
+.TP 4
+.BR --volume_sfx= VOL
+Set SFX volume to VOL.
+.PD
+.TP 4
+.BR -o VOL
+.PD 0
+.TP 4
+.BR --volume_voice= VOL
+Set voice volume to VOL.
+.PD
+.TP 4
+.BR -i VOL
+.PD 0
+.TP 4
+.BR --volume_video= VOL
+Set video volume to VOL.
+.PD
+.TP 4
+.BR -q LANG
+.PD 0
+.TP 4
+.BR --lang= LANG
+Set the game's language.
+.PD
+.TP 4
+.BR --langtext= LANG
+Set the game's text language.
+.TP 4
+.BR --langvoice= LANG
+Set the game's voice language.
+.TP 4
+.BR -d LVL
+.PD 0
+.TP 4
+.BR --debuglevel= LVL
+Set the debug level to LVL.
+.PD
+.TP 4
+.BR --debugchannel= CHAN
+Set the enabled debug channel(s) to CHAN.
+.TP 4
+.BR --listdebug
+List all available debug channels.
+.TP 4
+.BR --listlangs
+List all available languages for this target.
+.TP 4
+.BR --logfile= FILE
+Write all debug output into this file too.
+.TP 4
+.BR --nologfile= BOOL
+Don't write a log file.
+.TP 4
+.BR --consolelog= FILE
+Write all debug console output into this file too.
+.TP 4
+.BR --noconsolelog= BOOL
+Don't write a debug console log file.
+.PP
+.PD 0
+.IP "FILE:" 6
+Absolute or relative path to a file.
+.PP
+.IP "FILE:" 6
+Absolute or relative path to a file.
+.IP "DIR:" 6
+Absolute or relative path to a directory.
+.IP "SIZE:" 6
+A positive integer.
+.IP "BOOL:" 6
+"true", "yes", "y", "on" and "1" are true, everything else is false.
+.IP "VOL:" 6
+A double ranging from 0.0 (min) - 1.0 (max).
+.IP "LANG:" 6
+A language identifier. Full name, ISO 639-1 or ISO 639-2 language
+code; or IETF language tag with ISO 639-1 and ISO 3166-1 country code.
+Examples: en, de_de, hun, Czech, zh-tw, zh_cn, zh-cht, zh-chs.
+.IP "LVL:" 6
+A positive integer.
+.IP "CHAN:" 6
+A comma-separated list of debug channels. Use "All" to enable all
+debug channels.
+.PD
+.PP
+Long-form command line option, like --skipvideos, map directly to
+config options. Options given on the command line will override any
+options found in the config file for this session, but will not save
+back to that config file.
+.SH EXAMPLES
+.TP 4
+xoreos -p/path/to/nwn/
+.BR xoreos
+will start the game in /path/to/nwn/. Should a target with this path
+not yet exist in the config file,
+.BR xoreos
+will create one named "nwn".
+.TP 4
+xoreos -p/path/to/nwn/ foobar
+.BR xoreos
+will start the game in /path/to/nwn/. If a target "foobar" does not
+yet exist in the config file,
+.BR xoreos
+will create it.
+.TP 4
+xoreos nwn
+.BR xoreos
+will start the game specified by target "nwn", which must exit in the
+config file already.
+
+.SH "SEE ALSO"
+More information about the xoreos project can be found on
+.URL "https://xoreos.org/" "its website" " and"
+.URL "https://wiki.xoreos.org/" "its wiki" .
+.SH AUTHORS
+This program is part of the xoreos projects, and was written by
+the xoreos team. Please see the AUTHORS file for details.
