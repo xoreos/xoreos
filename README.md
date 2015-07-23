@@ -116,11 +116,11 @@ the game' actual GUI into the target's section of the config file.
 
 The place where xoreos expects the config file depends on your operating system:
 
-- On GNU/Linux, the place is $XDG\_CONFIG\_HOME/.xoreosrc. $XDG\_CONFIG\_HOME
-  defaults to $HOME/.config/
-- On Mac OS X, the place is $HOME/Library/Preferences/xoreos\\ Preferences/.xoreosrc
-- On Windows, the file is called xoreos.ini and is in the subdirectory xoreos
-  in either $APPDATA or $USERPROFILE, depending on your Windows version
+- On GNU/Linux, the place is $XDG\_CONFIG\_HOME/xoreos/xoreos.conf.
+  $XDG\_CONFIG\_HOME defaults to $HOME/.config/
+- On Mac OS X, the place is $HOME/Library/Preferences/xoreos/xoreos.conf
+- On Windows, xoreos.conf is in the subdirectory xoreos in either $APPDATA
+  or $USERPROFILE, depending on your Windows version
 
 
 Links
