@@ -73,6 +73,17 @@ fi
 
 AC_SUBST(LTO)
 
+dnl Release version number
+AC_ARG_WITH([release], [AS_HELP_STRING([--with-release=VER], [Set the version suffix to VER instead of the git revision. If no VER is given, do not add a version suffix at all])], [], [with_release=no])
+
+if test "x$with_release" != "xno"; then
+	AC_DEFINE([XOREOS_RELEASE], 1, [Define to 1 if we are in release version mode])
+
+	if test "x$with_release" != "xyes"; then
+		AC_DEFINE_UNQUOTED([XOREOS_DISTRO], ["+$with_release"], [Release version suffix])
+	fi
+fi
+
 dnl Endianness
 AC_C_BIGENDIAN()
 
