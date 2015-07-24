@@ -1,0 +1,34 @@
+# Maintainer: Sven Hesse <drmccoy@drmccoy.de>
+
+pkgname=xoreos-git
+_gitname=xoreos
+pkgver=0.0.1.r3433.g713086d
+pkgrel=1
+pkgdesc="A reimplementation of BioWare's Aurora engine"
+arch=('i686' 'x86_64')
+url="https://xoreos.org/"
+license=('GPL3')
+depends=('zlib' 'xz' 'libxml2' 'boost' 'boost-libs' 'sdl2' 'freetype2' 'openal' 'libmad' 'libogg' 'libvorbis' 'faad2' 'xvidcore')
+makedepends=()
+source=('git://github.com/xoreos/xoreos.git')
+md5sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/$_gitname"
+
+	git describe --long --match desc/\* | cut -d '/' -f 2- | sed -e 's/\(.*\)-\([^-]*\)-\([^-]*\)/\1.r\2.\3/'
+}
+
+build() {
+	cd "$srcdir/$_gitname"
+
+	./autogen.sh
+	./configure --with-release=xArch --with-lto --prefix=/usr
+	make
+}
+
+package() {
+	cd "$srcdir/$_gitname"
+
+	make DESTDIR="$pkgdir/" install
+}

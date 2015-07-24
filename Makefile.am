@@ -14,6 +14,7 @@ EXTRA_DIST = \
              dists/macosx/xoreos.icns \
              dists/win32/xoreos.ico \
              dists/win32/xoreos.rc \
+             dists/arch/PKGBUILD \
              glew/LICENSE.txt \
              lua/README.xoreos \
              .uncrustifyrc \
