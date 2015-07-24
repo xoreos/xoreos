@@ -37,6 +37,7 @@ dist_doc_DATA = \
                 COPYING \
                 AUTHORS \
                 ChangeLog \
+                TODO \
                 README.md \
                 FAQ.md \
                 CONTRIBUTING.md \
