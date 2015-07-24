@@ -1,0 +1,18 @@
+Source: xoreos
+Section: games
+Priority: optional
+Maintainer: Sven Hesse <drmccoy@drmccoy.de>
+Build-Depends: debhelper (>= 9), dh-autoreconf, autotools-dev, autoconf (>= 2.65), gettext, zlib1g-dev (>= 1:1.2.3.4), liblzma-dev (>= 5.0.5), libxml2-dev (>= 2.8.0), libboost-dev (>= 1.53), libboost-atomic-dev (>= 1.53), libboost-date-time-dev (>= 1.53), libboost-filesystem-dev (>= 1.53), libboost-locale-dev (>= 1.53), libboost-regex-dev (>= 1.53), libboost-system-dev (>= 1.53), mesa-common-dev, libsdl2-dev (>= 2.0.0), libfreetype6-dev (>= 2.4.0), libopenal-dev (>= 1:1.12), libmad0-dev (>= 0.15.1b), libogg-dev (>= 1.2.0), libvorbis-dev (>= 1.3.1), libfaad-dev (>= 2.7), libxvidcore-dev (>= 2:1.2.2)
+Standards-Version: 3.9.6
+Homepage: https://xoreos.org/
+
+Package: xoreos
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Reimplementation of BioWare's Aurora engine
+ xoreos is an open source implementation of BioWare's Aurora engine and
+ its derivatives, licensed under the terms of the GNU General Public
+ License version 3 (or later).
+ .
+ The goal is to have all games using this engines working in a portable
+ manner, starting from Neverwinter Nights and ending with Dragon Age II.

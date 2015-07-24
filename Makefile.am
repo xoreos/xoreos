@@ -15,6 +15,13 @@ EXTRA_DIST = \
              dists/win32/xoreos.ico \
              dists/win32/xoreos.rc \
              dists/arch/PKGBUILD \
+             dists/debian/changelog \
+             dists/debian/compat \
+             dists/debian/control \
+             dists/debian/copyright \
+             dists/debian/rules \
+             dists/debian/xoreos.lintian-overrides \
+             dists/debian/source/format \
              glew/LICENSE.txt \
              lua/README.xoreos \
              .uncrustifyrc \
