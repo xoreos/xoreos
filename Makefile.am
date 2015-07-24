@@ -5,10 +5,6 @@ EXTRA_DIST = \
              BUILDDEP \
              Doxyfile \
              README.dox \
-             README.md \
-             FAQ.md \
-             CONTRIBUTING.md \
-             CODE_OF_CONDUCT.md \
              doc/doxygen/README \
              dists/macosx/Info.plist \
              dists/macosx/xoreos.icns \
