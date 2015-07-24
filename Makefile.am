@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4 --install
 
 EXTRA_DIST = \
              autogen.sh \
-             BUILDDEP \
+             BUILDDEP.md \
              Doxyfile \
              README.dox \
              doc/doxygen/README \
