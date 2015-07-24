@@ -21,6 +21,9 @@ Someday, ????-??-?? (Version 0.0.2)
 		- Area loading with objects
 	- DRAGONAGE/DRAGONAGE2:
 		- Area loading with objects
+	- Fixed Windows UTF-8 compatibility
+	- Added a man page for xoreos
+	- Added build files for Arch and Debian packages
 
 Friday, 2010-03-26 (Version 0.0.1)
 	- Initial empty frame
