@@ -193,6 +193,7 @@ private:
 	bool _fullScreen; ///< Are we currently in fullscreen mode?
 
 	bool _gl3;
+	int  _glProfile;
 
 	int _fsaa;    ///< Current FSAA settings.
 	int _fsaaMax; ///< Max supported FSAA level.

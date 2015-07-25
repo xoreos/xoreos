@@ -72,8 +72,9 @@ GraphicsManager::GraphicsManager() {
 
 	_fullScreen = false;
 
-	// Default to GL3 true; GL3.x will be available on most modern systems.
-	_gl3 = true;
+	// Default to an OpenGL 3.2 compatibility context. GL3.x will be available on most modern systems.
+	_gl3       = true;
+	_glProfile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
 
 	_fsaa    = 0;
 	_fsaaMax = 0;
@@ -277,11 +278,11 @@ bool GraphicsManager::setFSAA(int level) {
 	if (_gl3) {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, _glProfile);
 	} else {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, _glProfile);
 	}
 	_glContext = SDL_GL_CreateContext(_screen);
 	rebuildContext();
@@ -333,34 +334,49 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 
 	setWindowIcon(*_screen);
 
+	_gl3       = true;
+	_glProfile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
+
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK , _glProfile);
 
 	_glContext = SDL_GL_CreateContext(_screen);
-
 	if (_glContext)
-		// OpenGL 3.2 context created, continue.
-		return (_gl3 = true);
+		return true;
 
-	// OpenGL 3.2 context not created. Spit out an error message, and try a 2.1 context.
-	_gl3 = false;
+	// OpenGL 3.2 context not created. Spit out an error message, and try a 2.1 core context.
+
+	_gl3       = false;
+	_glProfile = SDL_GL_CONTEXT_PROFILE_CORE;
+
 	warning("Could not create OpenGL 3.2 context: %s", SDL_GetError());
 	warning("Your graphics card hardware or driver does not support OpenGL 3.2. "
 	        "Attempting to create OpenGL 2.1 context instead");
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK , _glProfile);
 
 	_glContext = SDL_GL_CreateContext(_screen);
+	if (_glContext)
+		return true;
 
-	if (!_glContext) {
-		SDL_DestroyWindow(_screen);
-		return false;
-	}
+	// No OpenGL 2.1 core context. Let SDL decide what to give us.
 
-	return true;
+	_gl3       = false;
+	_glProfile = 0;
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK , _glProfile);
+
+	_glContext = SDL_GL_CreateContext(_screen);
+	if (_glContext)
+		return true;
+
+	SDL_DestroyWindow(_screen);
+	return false;
 }
 
 void GraphicsManager::checkGLExtensions() {
