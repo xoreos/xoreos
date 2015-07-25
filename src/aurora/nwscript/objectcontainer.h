@@ -83,7 +83,7 @@ private:
 
 class SearchList : public SearchRange< std::list<Object *> > {
 public:
-	SearchList(const type &l) : SearchRange(std::make_pair(l.begin(), l.end())) { }
+	SearchList(const type &l) : SearchRange<type>(std::make_pair(l.begin(), l.end())) { }
 	~SearchList() { }
 
 	Object *getObject(const iterator &t) { return *t; }
@@ -91,7 +91,7 @@ public:
 
 class SearchTagMap : public SearchRange< std::multimap<Common::UString, Object *> > {
 public:
-	SearchTagMap(const type &m, const Common::UString &tag) : SearchRange(m.equal_range(tag)) { }
+	SearchTagMap(const type &m, const Common::UString &tag) : SearchRange<type>(m.equal_range(tag)) { }
 	~SearchTagMap() { }
 
 	Object *getObject(const iterator &t) { return t->second; };

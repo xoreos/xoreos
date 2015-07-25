@@ -38,8 +38,8 @@ namespace DragonAge {
 
 class SearchType : public ::Aurora::NWScript::SearchRange< std::list<ScriptObject *> > {
 public:
-	SearchType(const iterator &a, const iterator &b) : SearchRange(std::make_pair(a, b)) { }
-	SearchType(const type &l) : SearchRange(std::make_pair(l.begin(), l.end())) { }
+	SearchType(const iterator &a, const iterator &b) : ::Aurora::NWScript::SearchRange<type>(std::make_pair(a, b)) { }
+	SearchType(const type &l) : ::Aurora::NWScript::SearchRange<type>(std::make_pair(l.begin(), l.end())) { }
 	~SearchType() { }
 
 	::Aurora::NWScript::Object *getObject(const iterator &t) { return *t; }
