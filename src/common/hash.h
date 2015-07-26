@@ -59,7 +59,7 @@ static inline uint32 hashStringDJB2(const UString &string) {
 static inline uint32 hashStringDJB2(const UString &string, Encoding encoding) {
 	uint32 hash = 5381;
 
-	SeekableReadStream *data = convertString(string, encoding);
+	SeekableReadStream *data = convertString(string, encoding, false);
 	if (data) {
 		uint32 c;
 		while ((c = data->readChar()) != ReadStream::kEOF)
@@ -89,7 +89,7 @@ static inline uint32 hashStringFNV32(const UString &string) {
 static inline uint32 hashStringFNV32(const UString &string, Encoding encoding) {
 	uint32 hash = 0x811C9DC5;
 
-	SeekableReadStream *data = convertString(string, encoding);
+	SeekableReadStream *data = convertString(string, encoding, false);
 	if (data) {
 		uint32 c;
 		while ((c = data->readChar()) != ReadStream::kEOF)
@@ -119,7 +119,7 @@ static inline uint64 hashStringFNV64(const UString &string) {
 static inline uint32 hashStringFNV64(const UString &string, Encoding encoding) {
 	uint64 hash = 0xCBF29CE484222325LL;
 
-	SeekableReadStream *data = convertString(string, encoding);
+	SeekableReadStream *data = convertString(string, encoding, false);
 	if (data) {
 		uint32 c;
 		while ((c = data->readChar()) != ReadStream::kEOF)
@@ -204,7 +204,7 @@ static inline uint32 hashStringCRC32(const UString &string) {
 static inline uint32 hashStringCRC32(const UString &string, Encoding encoding) {
 	uint32 hash = 0xFFFFFFFF;
 
-	SeekableReadStream *data = convertString(string, encoding);
+	SeekableReadStream *data = convertString(string, encoding, false);
 	if (data) {
 		uint32 c;
 		while ((c = data->readChar()) != ReadStream::kEOF)
