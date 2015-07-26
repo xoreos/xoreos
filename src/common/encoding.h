@@ -70,7 +70,7 @@ UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 UString readString(const byte *data, size_t size, Encoding encoding);
 
 /** Convert a string into the given encoding. */
-MemoryReadStream *convertString(const UString &str, Encoding encoding);
+MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString = true);
 
 /** Return the number of bytes per codepoint in this encoding.
  *

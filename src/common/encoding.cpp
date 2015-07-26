@@ -88,11 +88,12 @@ public:
 		return convert(_contextFrom[encoding], data, n, kEncodingGrowthFrom[encoding], 1);
 	}
 
-	MemoryReadStream *convert(Encoding encoding, const UString &str) {
+	MemoryReadStream *convert(Encoding encoding, const UString &str, bool terminate = true) {
 		if (((size_t) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
 
-		return convert(_contextTo[encoding], str, kEncodingGrowthTo[encoding], kTerminatorLength[encoding]);
+		return convert(_contextTo[encoding], str, kEncodingGrowthTo[encoding],
+		               terminate ? kTerminatorLength[encoding] : 0);
 	}
 
 private:
@@ -299,11 +300,11 @@ UString readString(const byte *data, size_t size, Encoding encoding) {
 	return createString(output, encoding);
 }
 
-MemoryReadStream *convertString(const UString &str, Encoding encoding) {
+MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString) {
 	if (encoding == kEncodingUTF8)
-		return new MemoryReadStream((const byte *) str.c_str(), strlen(str.c_str()));
+		return new MemoryReadStream((const byte *) str.c_str(), strlen(str.c_str()) + terminateString ? 1 : 0);
 
-	return ConvMan.convert(encoding, str);
+	return ConvMan.convert(encoding, str, terminateString);
 }
 
 size_t getBytesPerCodepoint(Encoding encoding) {
