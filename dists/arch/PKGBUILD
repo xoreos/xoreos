@@ -2,7 +2,7 @@
 
 pkgname=xoreos-git
 _gitname=xoreos
-pkgver=0.0.1.r3433.g713086d
+pkgver=0.0.2.r3433.g713086d
 pkgrel=1
 pkgdesc="A reimplementation of BioWare's Aurora engine"
 arch=('i686' 'x86_64')
