@@ -28,7 +28,6 @@
 #include "src/common/filepath.h"
 #include "src/common/readfile.h"
 #include "src/common/xml.h"
-#include "src/common/configman.h"
 
 #include "src/aurora/2dareg.h"
 #include "src/aurora/gff4file.h"
@@ -358,8 +357,6 @@ void Campaign::load() {
 
 	loadResources();
 	readCIFDynamic(_cifPath);
-
-	_entryArea = ConfigMan.getString("area", _entryArea);
 
 	_newArea = _entryArea;
 	loadArea();
