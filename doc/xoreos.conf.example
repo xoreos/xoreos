@@ -1,0 +1,47 @@
+[xoreos]
+# Global options
+width=1024
+height=768
+x=0 # Force the xoreos window to position at x = 0
+y=0 # Force the xoreos window to position at y = 0
+fullscreen=false
+fsaa=4 # 4x anti-aliasing
+logfile=/home/drmccoy/xoreos.log
+consolelog=/home/drmccoy/xoreos-console.log
+showfps=true
+volume=1.000000 # Master volume
+volume_music=0.500000
+volume_sfx=0.850000
+volume_voice=0.850000
+volume_video=0.850000
+skipvideos=false
+
+[nwn]
+# Neverwinter Nights
+path=/home/drmccoy/games/nwn/
+description=Neverwinter Nights (English)
+lang=English
+texturepack=3 # High res texture pack
+tooltipdelay=100
+largefonts=true
+difficulty=0 # Easy
+mouseoverfeedback=false # Show mouse-over feedback
+feedbackmode=2 # Text bubble mode (2 = text, portrait and bubble)
+fullscreen=true # Fullscreen for Neverwinter Nights
+fsaa=8 # 8x anti-aliasing
+
+[nwn2]
+# Neverwinter Nights 2
+path=/home/drmccoy/games/nwn2/
+tint=false # Debug option to disable CPU mesh tinting hack
+lang=German
+
+[kotor]
+# Knights of the Old Republic
+path=/home/drmccoy/games/kotor/
+skipvideos=true # I don't want to see any videos in KotOR
+
+[witcher]
+path=/home/drmccoy/games/witcher/
+langtext=English
+langvoice=German

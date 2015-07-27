@@ -43,6 +43,7 @@ dist_doc_DATA = \
                 FAQ.md \
                 CONTRIBUTING.md \
                 CODE_OF_CONDUCT.md \
+                doc/xoreos.conf.example \
                 $(EMPTY)
 
 dist_man6_MANS = \
