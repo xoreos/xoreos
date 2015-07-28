@@ -1,3 +1,70 @@
+# This is an example for a xoreos.conf file, where xoreos reads and
+# saves game configuration options. xoreos expects this file in the
+# user conf directory, whose location depends on the operating
+# system.
+#
+# - On GNU/Linux, the place is $XDG_CONFIG_HOME/xoreos/xoreos.conf.
+#   $XDG_CONFIG_HOME defaults to $HOME/.config/
+# - On Mac OS X, the place is $HOME/Library/Preferences/xoreos/xoreos.conf
+# - On Windows, xoreos.conf is in the subdirectory xoreos in either
+#   $APPDATA or $USERPROFILE, depending on your Windows version
+#
+# You can also specify a different config.log with the command line
+# option -c/--configfile.
+#
+# If the xoreos.conf does not exist, xoreos will create one with
+# default values on the first successful game start.
+#
+# When a setting is changed using the in-game menus, like the options
+# menu in Neverwinter Nights, xoreos will save the changes back to the
+# config file on exit, inside the section for the current game.
+# Settings given on the command line are not saved back. When xoreos
+# saves the config file, all unchanged settings and all comments in it
+# will be preserved.
+#
+# The "xoreos" section is used for global configuration; the other
+# sections are targets, entries to describe games. If the same setting
+# exists in the global section and in the section for the current
+# game, the setting in the game section overrides the global setting.
+#
+# The name of the game section is not used for game identification.
+# As such, the name is arbitrary and up to the user. There are
+# restrictions on the name, though: only these characters are allowed:
+# [-_. A-Za-z0-9], i.e. alphanumerical characters plus hyphen,
+# underscore, full stop and space. All section names have to be
+# unique, too. Since the section name "xoreos" is already used for
+# global options, it is not a valid game section name.
+#
+# The section names can be used to start xoreos with. This example
+# file has a section called "nwn"; to start xoreos with that game, and
+# automatically apply the settings in that "nwn" section (in addition
+# to the global options), start xoreos with "nwn" as a command line
+# option. Like so:
+#
+# xoreos nwn
+#
+# All setting keys are also valid command line options for xoreos, and
+# vice versa. For example, you can start xoreos thusly:
+#
+# xoreos --width=800 --height=600 nwn
+#
+# This will start xoreos with Neverwinter Nights, with a window of
+# size 800x600. These two added settings will not be saved to the
+# config file. But if you then change the resolution in the options
+# menu of Neverwinter Nights, xoreos will add width and height to the
+# "nwn" section, with the values you selected inside the game.
+#
+# Moreover, if a give an option on the command line that already
+# exists in the game section, it will override the setting in the game
+# section, but only for this session. It will not save back to the
+# config file. For example
+#
+# xoreos --largefonts=false nwn
+#
+# Will start Neverwinter Nights in xoreos with the small in-game
+# conversation font, but this setting will not be remembered for the
+# next time.
+
 # Global options
 [xoreos]
 # These are default settings that can be overridden by the targets.
