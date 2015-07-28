@@ -22,8 +22,13 @@
  *  Command line arguments parser.
  */
 
+#ifndef CLINE_H
+#define CLINE_H
+
 #include <vector>
 
 #include "src/common/ustring.h"
 
 bool parseCommandline(const std::vector<Common::UString> &argv, Common::UString &target, int &code);
+
+#endif // CLINE_H
