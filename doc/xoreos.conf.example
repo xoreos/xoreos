@@ -1,47 +1,134 @@
-[xoreos]
 # Global options
+[xoreos]
+# These are default settings that can be overridden by the targets.
+
+# Window size.
 width=1024
 height=768
-x=0 # Force the xoreos window to position at x = 0
-y=0 # Force the xoreos window to position at y = 0
+
+# Window positioning. Forces the game window to appear at these
+# coordinates. When x and/or y are not specified, the placement of
+# the window is left to your operating system.
+x=0
+y=0
+
+# Fullscreen or windowed mode.
 fullscreen=false
-fsaa=4 # 4x anti-aliasing
+
+# Fullscreen anti-aliasing.
+fsaa=4
+
+# The xoreos log file will be written here. By default, the log
+# will be written into a file located in the OS-specific user
+# data directory.
 logfile=/home/drmccoy/xoreos.log
+# If set to true, no log file will be written at all. The default
+# is to write a log file.
+nologfile=false
+
+# A log of the debug console will be written here.
 consolelog=/home/drmccoy/xoreos-console.log
+# If set to true, no console log will be written at all. The default
+# is to write a console log.
+noconsolelog=false
+
+# Show a frames-per-second counter in the top left corner.
 showfps=true
-volume=1.000000 # Master volume
-volume_music=0.500000
-volume_sfx=0.850000
-volume_voice=0.850000
-volume_video=0.850000
+
+# Volume options.
+volume=1.000000        # Master volume.
+volume_music=0.500000  # Music.
+volume_sfx=0.850000    # Sound effects.
+volume_voice=0.850000  # Voices.
+volume_video=0.850000  # Sound from the videos.
+
+# Don't show any videos at all.
 skipvideos=false
 
-[nwn]
 # Neverwinter Nights
+[nwn]
+# The path where to find the game. Both / and \ are valid as
+# directory separators. Relative paths are supported. ~/ at the
+# start of the path string will be replaced with the user's home
+# directory. All targets need to have a path, the rest is
+# optional.
 path=/home/drmccoy/games/nwn/
+
+# A description of the game. Will appear in the window title and a
+# potential future xoreos GUI. If left out, a default description
+# containing the game name (in English) plus the detected platform
+# of the game will be used.
+# For example "Neverwinter Nights (GNU/Linux)".
 description=Neverwinter Nights (English)
+
+# The language of the game. Most of the supported games can only
+# be installed in one language at the same time. There, specifying
+# the language of the game is optional, and will be autodetected
+# anyway. A wide variety of strings are recognized here, including
+# the English name of a language and country, the name of the
+# language and country in the language in question, the ISO 693-1,
+# 693-2 and 693-3 language codes, the ISO 3166-2 country codes and
+# the usual combinations of ISO 693 and ISO 3166 ("de_DE", ...).
 lang=English
-texturepack=3 # High res texture pack
+
+# Override these options for Neverwinter Nights.
+fullscreen=true
+fsaa=8
+
+# Options specific to Neverwinter Nights:
+
+# Which texture pack to use. From 0 (very low) to 3 (highest).
+texturepack=3
+
+# The amount of time in ms until a tooltip appears.
 tooltipdelay=100
+
+# Use the large in-game conversation font.
 largefonts=true
+
+# Game difficulty. From 0 (Easy) to 3 (Very Difficult).
 difficulty=0 # Easy
-mouseoverfeedback=false # Show mouse-over feedback
-feedbackmode=2 # Text bubble mode (2 = text, portrait and bubble)
-fullscreen=true # Fullscreen for Neverwinter Nights
-fsaa=8 # 8x anti-aliasing
 
-[nwn2]
+# Show mouse-over feedback. If set to true, a creature's health
+# will be displayed in its feedback bubble.
+# This option is not yet evaluated by xoreos.
+mouseoverfeedback=false
+# How the feedback bubble should look.
+# 0: Off
+# 1: Text only
+# 2: Text and portrait
+feedbackmode=2
+
 # Neverwinter Nights 2
-path=/home/drmccoy/games/nwn2/
-tint=false # Debug option to disable CPU mesh tinting hack
-lang=German
+[nwn2]
+# The ~/ will be replaced with the user's home directory.
+# For a user with the name of "drmccoy", this will be:
+# - On GNU/Linux, $HOME (usually /home/drmccoy/)
+# - On Mac OS X, $HOME (usually /Users/drmccoy/)
+# - On Windows, %USERPROFILE%
+path=~/games/nwn2/
 
-[kotor]
+# Options specific to Neverwinter Nights:
+
+# This is a debug option to disable the tinting of meshes.
+# Currently, we're tinting the meshes on the CPU, which is slow and
+# eats a lot of RAM, both on the GPU and the system. This will
+# change in the future.
+tint=false
+
 # Knights of the Old Republic
-path=/home/drmccoy/games/kotor/
-skipvideos=true # I don't want to see any videos in KotOR
+[kotor]
+# An example of a path on Windows, with forward slashes.
+path=C:/games/kotor/
 
+# The Witcher
 [witcher]
-path=/home/drmccoy/games/witcher/
+# An example of a path on Windows, with backward slashes.
+path=C:\games\witcher\
+
+# The Witcher has separate language settings for text and voice.
+# Only setting the option "lang" will set both text and voice, but
+# both "langtext" and "langvoice" will override this setting for
+# text or voice, respectively.
 langtext=English
 langvoice=German
