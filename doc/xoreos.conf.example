@@ -108,7 +108,7 @@ feedbackmode=2
 # - On Windows, %USERPROFILE%
 path=~/games/nwn2/
 
-# Options specific to Neverwinter Nights:
+# Options specific to Neverwinter Nights 2:
 
 # This is a debug option to disable the tinting of meshes.
 # Currently, we're tinting the meshes on the CPU, which is slow and
