@@ -9,8 +9,8 @@
 # - On Windows, xoreos.conf is in the subdirectory xoreos in either
 #   $APPDATA or $USERPROFILE, depending on your Windows version
 #
-# You can also specify a different config.log with the command line
-# option -c/--configfile.
+# You can also specify a different xoreos.conf with the command line
+# option -c/--config.
 #
 # If the xoreos.conf does not exist, xoreos will create one with
 # default values on the first successful game start.
