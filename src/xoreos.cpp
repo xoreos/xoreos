@@ -24,6 +24,8 @@
 
 #define SDL_MAIN_HANDLED
 
+#include <vector>
+
 #include <cstdio>
 
 #include "src/cline.h"
