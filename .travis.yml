@@ -20,6 +20,7 @@ script:
 addons:
   apt:
     sources:
+      - boost-latest
       - debian-sid
     packages:
       - libboost1.55-all-dev
