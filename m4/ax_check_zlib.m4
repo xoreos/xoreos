@@ -32,10 +32,7 @@ AC_DEFUN([AX_CHECK_ZLIB], [
 #include <zlib.h>
 
 int main(int argc, char **argv) {
-#if  (ZLIB_VER_MAJOR  < $1) || \
-    ((ZLIB_VER_MAJOR == $1) && (ZLIB_VER_MINOR  < $2)) || \
-    ((ZLIB_VER_MAJOR == $1) && (ZLIB_VER_MINOR == $2) && (ZLIB_VER_REVISION  < $3)) || \
-    ((ZLIB_VER_MAJOR == $1) && (ZLIB_VER_MINOR == $2) && (ZLIB_VER_REVISION == $3) && (ZLIB_VER_SUBREVISION < $4))
+#if ZLIB_VERNUM < (($1 * 4096) + ($2 * 256) + ($3 * 16) + $4)
 	#error zlib version too low
 #endif
 
