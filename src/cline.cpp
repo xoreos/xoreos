@@ -55,6 +55,7 @@ static void displayUsage(const Common::UString &name) {
 	std::printf("          --debugchannel=CHAN Set the enabled debug channel(s) to CHAN.\n");
 	std::printf("          --listdebug         List all available debug channels.\n");
 	std::printf("          --listlangs         List all available languages for this target.\n");
+	std::printf("          --saveconf=BOOL     If false, never write to the config file.\n");
 	std::printf("          --logfile=FILE      Write all debug output into this file too.\n");
 	std::printf("          --nologfile=BOOL    Don't write a log file.\n");
 	std::printf("          --consolelog=FILE   Write all debug console output into this file too.\n");

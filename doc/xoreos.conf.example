@@ -85,6 +85,10 @@ fullscreen=false
 # Fullscreen anti-aliasing.
 fsaa=4
 
+# If set to false, a changed configuration will not be saved back.
+# By default, changes are saved.
+saveconf=true
+
 # The xoreos log file will be written here. By default, the log
 # will be written into a file located in the OS-specific user
 # data directory.

@@ -241,6 +241,8 @@ void initConfig() {
 
 	ConfigMan.setBool(Common::kConfigRealmDefault, "skipvideos", false);
 
+	ConfigMan.setBool(Common::kConfigRealmDefault, "saveconf", true);
+
 	// Populate the new config with the defaults
 	if (newConfig) {
 		ConfigMan.setDefaults();

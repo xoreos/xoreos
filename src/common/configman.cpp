@@ -126,6 +126,9 @@ bool ConfigManager::save() {
 	if (!_config)
 		return true;
 
+	if (!getBool("saveconf", true))
+		return true;
+
 	// Create the directories in the path, if necessary
 	UString file = FilePath::canonicalize(getConfigFile());
 
