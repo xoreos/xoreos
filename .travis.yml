@@ -21,7 +21,6 @@ addons:
   apt:
     sources:
       - boost-latest
-      - debian-sid
     packages:
       - libboost1.55-all-dev=1.55.0-1ppa1~precise1
       - libopenal-dev
