@@ -28,7 +28,6 @@ addons:
       - libmad0-dev
       - libfaad-dev
       - libvorbis-dev
-      - libsdl2-dev
       - libxvidcore-dev
       - libgl1-mesa-dev
       - liblzma-dev
