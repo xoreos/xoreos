@@ -22,7 +22,7 @@ addons:
     sources:
       - boost-latest
     packages:
-      - libboost1.55-all-dev=1.55.0-1ppa1~precise1
+      - libboost1.55-all-dev
       - libopenal-dev
       - libfreetype6-dev
       - libmad0-dev
