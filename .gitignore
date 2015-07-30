@@ -42,6 +42,8 @@ INSTALL
 /doc/doxygen/html/
 /doc/doxygen/latex/
 /doc/doxygen/man/
+/doc/doxygen/*.tmp
+/doc/doxygen/*.db
 # git versioning stamp
 /gitstamp/gitstamp
 # Unix binary
