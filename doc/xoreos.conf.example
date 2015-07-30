@@ -15,6 +15,8 @@
 # If the xoreos.conf does not exist, xoreos will create one with
 # default values on the first successful game start.
 #
+# The encoding of this file *must* be UTF-8.
+#
 # When a setting is changed using the in-game menus, like the options
 # menu in Neverwinter Nights, xoreos will save the changes back to the
 # config file on exit, inside the section for the current game.
@@ -196,6 +198,10 @@ path=C:/games/kotor/
 [witcher]
 # An example of a path on Windows, with backward slashes.
 path=C:\games\witcher\
+
+# This whole file, including user-visible strings and paths, has
+# to be encoded as UTF-8.
+description=The Witcher (Wiedźmin)
 
 # The Witcher has separate language settings for text and voice.
 # Only setting the option "lang" will set both text and voice, but
