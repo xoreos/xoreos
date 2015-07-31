@@ -27,6 +27,7 @@
 
 #include <cassert>
 
+#include "src/common/types.h" /* need to include before lzma.h stop it redefining macros */
 #include <lzma.h>
 
 #include "src/common/util.h"
