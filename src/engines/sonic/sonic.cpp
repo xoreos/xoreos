@@ -62,43 +62,6 @@ namespace Engines {
 
 namespace Sonic {
 
-const SonicEngineProbe kSonicEngineProbe;
-
-const Common::UString SonicEngineProbe::kGameName = "Sonic Chronicles: The Dark Brotherhood";
-
-SonicEngineProbe::SonicEngineProbe() {
-}
-
-SonicEngineProbe::~SonicEngineProbe() {
-}
-
-Aurora::GameID SonicEngineProbe::getGameID() const {
-	return Aurora::kGameIDSonic;
-}
-
-const Common::UString &SonicEngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool SonicEngineProbe::probe(const Common::UString &UNUSED(directory),
-                             const Common::FileList &UNUSED(rootFiles)) const {
-
-	return false;
-}
-
-bool SonicEngineProbe::probe(Common::SeekableReadStream &stream) const {
-	Common::UString title, code, maker;
-	if (!Aurora::NDSFile::isNDS(stream, title, code, maker))
-		return false;
-
-	return title == "SONICCHRON";
-}
-
-Engines::Engine *SonicEngineProbe::createEngine() const {
-	return new SonicEngine;
-}
-
-
 SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid), _module(0) {
 	_console = new Console(*this);
 }

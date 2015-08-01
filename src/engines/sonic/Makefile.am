@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libsonic.la
 
 noinst_HEADERS = \
                  sonic.h \
+                 probes.h \
                  types.h \
                  files.h \
                  modelloader.h \
@@ -19,6 +20,7 @@ noinst_HEADERS = \
 
 libsonic_la_SOURCES = \
                       sonic.cpp \
+                      probes.cpp \
                       modelloader.cpp \
                       console.cpp \
                       util.cpp \

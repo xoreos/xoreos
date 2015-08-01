@@ -33,11 +33,6 @@
 #include "src/graphics/aurora/fonthandle.h"
 
 #include "src/engines/engine.h"
-#include "src/engines/engineprobe.h"
-
-namespace Common {
-	class FileList;
-}
 
 namespace Engines {
 
@@ -46,28 +41,6 @@ class LoadProgress;
 namespace Sonic {
 
 class Module;
-
-class SonicEngineProbe : public Engines::EngineProbe {
-public:
-	SonicEngineProbe();
-	~SonicEngineProbe();
-
-	Aurora::GameID getGameID() const;
-
-	const Common::UString &getGameName() const;
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	bool probe(Common::SeekableReadStream &stream) const;
-
-	Engines::Engine *createEngine() const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformNDS; }
-
-private:
-	static const Common::UString kGameName;
-};
-
-extern const SonicEngineProbe kSonicEngineProbe;
 
 class SonicEngine : public Engines::Engine {
 public:
