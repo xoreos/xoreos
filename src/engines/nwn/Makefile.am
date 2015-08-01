@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libnwn.la
 
 noinst_HEADERS = \
                  nwn.h \
+                 probes.h \
                  types.h \
                  modelloader.h \
                  version.h \
@@ -87,6 +88,7 @@ noinst_HEADERS = \
 
 libnwn_la_SOURCES = \
                     nwn.cpp \
+                    probes.cpp \
                     types.cpp \
                     modelloader.cpp \
                     version.cpp \

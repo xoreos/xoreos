@@ -34,11 +34,6 @@
 #include "src/sound/types.h"
 
 #include "src/engines/engine.h"
-#include "src/engines/engineprobe.h"
-
-namespace Common {
-	class FileList;
-}
 
 namespace Engines {
 
@@ -51,70 +46,6 @@ class ScriptFunctions;
 
 class GUI;
 class Module;
-
-class NWNEngineProbe : public Engines::EngineProbe {
-private:
-	static const Common::UString kGameName;
-
-public:
-	NWNEngineProbe() {}
-	~NWNEngineProbe() {}
-
-	Aurora::GameID getGameID() const {
-		return Aurora::kGameIDNWN;
-	}
-
-	const Common::UString &getGameName() const {
-		return kGameName;
-	}
-
-	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
-		return false;
-	}
-
-	Engines::Engine *createEngine() const;
-};
-
-class NWNEngineProbeWindows : public NWNEngineProbe {
-public:
-	NWNEngineProbeWindows() {}
-	~NWNEngineProbeWindows() {}
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
-};
-
-class NWNEngineProbeMac : public NWNEngineProbe {
-public:
-	NWNEngineProbeMac() {}
-	~NWNEngineProbeMac() {}
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformMacOSX; }
-};
-
-class NWNEngineProbeLinux: public NWNEngineProbe {
-public:
-	NWNEngineProbeLinux() {}
-	~NWNEngineProbeLinux() {}
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformLinux; }
-};
-
-class NWNEngineProbeFallback : public NWNEngineProbe {
-public:
-	NWNEngineProbeFallback() {}
-	~NWNEngineProbeFallback() {}
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformUnknown; }
-};
-
-extern const NWNEngineProbeWindows  kNWNEngineProbeWin;
-extern const NWNEngineProbeMac      kNWNEngineProbeMac;
-extern const NWNEngineProbeLinux    kNWNEngineProbeLinux;
-extern const NWNEngineProbeFallback kNWNEngineProbeFallback;
 
 class NWNEngine : public Engines::Engine {
 public:

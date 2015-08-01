@@ -66,54 +66,6 @@ namespace Engines {
 
 namespace NWN {
 
-const NWNEngineProbeWindows  kNWNEngineProbeWin;
-const NWNEngineProbeMac      kNWNEngineProbeMac;
-const NWNEngineProbeLinux    kNWNEngineProbeLinux;
-const NWNEngineProbeFallback kNWNEngineProbeFallback;
-
-const Common::UString NWNEngineProbe::kGameName = "Neverwinter Nights";
-
-Engines::Engine *NWNEngineProbe::createEngine() const {
-	return new NWNEngine;
-}
-
-bool NWNEngineProbeWindows::probe(const Common::UString &UNUSED(directory),
-                                  const Common::FileList &rootFiles) const {
-
-	// Look for the Windows binary nwmain.exe
-	return rootFiles.contains("/nwmain.exe", true);
-}
-
-bool NWNEngineProbeMac::probe(const Common::UString &directory,
-                              const Common::FileList &UNUSED(rootFiles)) const {
-
-	// Look for the app directory containing the Mac OS X binary
-	return !Common::FilePath::findSubDirectory(directory, "Neverwinter Nights.app", true).empty();
-}
-
-bool NWNEngineProbeLinux::probe(const Common::UString &UNUSED(directory),
-                                const Common::FileList &rootFiles) const {
-
-	// Look for the Linux binary nwmain
-	return rootFiles.contains("/nwmain", true);
-}
-
-bool NWNEngineProbeFallback::probe(const Common::UString &UNUSED(directory),
-                                   const Common::FileList &rootFiles) const {
-
-	// Don't accidentally trigger on NWN2
-	if (rootFiles.contains("/nwn2.ini", true))
-		return false;
-	if (rootFiles.contains("/nwn2main.exe", true))
-		return false;
-
-	// As a fallback, look for the nwn.ini, nwnplayer.ini or nwncdkey.ini
-	return rootFiles.contains("/nwn.ini", true) ||
-	       rootFiles.contains("/nwnplayer.ini", true) ||
-	       rootFiles.contains("/nwncdkey.ini", true);
-}
-
-
 NWNEngine::NWNEngine() : _version(0), _language(Aurora::kLanguageInvalid),
 	_hasXP1(false), _hasXP2(false), _hasXP3(false), _scriptFuncs(0), _module(0) {
 
