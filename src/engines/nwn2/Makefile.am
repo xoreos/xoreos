@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libnwn2.la
 
 noinst_HEADERS = \
                  nwn2.h \
+                 probes.h \
                  types.h \
                  modelloader.h \
                  util.h \
@@ -23,6 +24,7 @@ noinst_HEADERS = \
 
 libnwn2_la_SOURCES = \
                      nwn2.cpp \
+                     probes.cpp \
                      modelloader.cpp \
                      util.cpp \
                      trxfile.cpp \

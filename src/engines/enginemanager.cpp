@@ -57,7 +57,7 @@
 
 // The engines
 #include "src/engines/nwn/probes.h"
-#include "src/engines/nwn2/nwn2.h"
+#include "src/engines/nwn2/probes.h"
 #include "src/engines/kotor/kotor.h"
 #include "src/engines/kotor2/kotor2.h"
 #include "src/engines/jade/jade.h"

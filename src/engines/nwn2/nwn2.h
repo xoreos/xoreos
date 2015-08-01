@@ -30,11 +30,6 @@
 #include "src/aurora/types.h"
 
 #include "src/engines/engine.h"
-#include "src/engines/engineprobe.h"
-
-namespace Common {
-	class FileList;
-}
 
 namespace Engines {
 
@@ -44,28 +39,6 @@ namespace NWN2 {
 
 class Campaign;
 class Module;
-
-class NWN2EngineProbe : public Engines::EngineProbe {
-public:
-	NWN2EngineProbe();
-	~NWN2EngineProbe();
-
-	Aurora::GameID getGameID() const;
-
-	const Common::UString &getGameName() const;
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	bool probe(Common::SeekableReadStream &stream) const;
-
-	Engines::Engine *createEngine() const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
-
-private:
-	static const Common::UString kGameName;
-};
-
-extern const NWN2EngineProbe kNWN2EngineProbe;
 
 class NWN2Engine : public Engines::Engine {
 public:

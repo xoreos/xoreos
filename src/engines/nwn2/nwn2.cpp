@@ -53,45 +53,6 @@ namespace Engines {
 
 namespace NWN2 {
 
-const NWN2EngineProbe kNWN2EngineProbe;
-
-const Common::UString NWN2EngineProbe::kGameName = "Neverwinter Nights 2";
-
-NWN2EngineProbe::NWN2EngineProbe() {
-}
-
-NWN2EngineProbe::~NWN2EngineProbe() {
-}
-
-Aurora::GameID NWN2EngineProbe::getGameID() const {
-	return Aurora::kGameIDNWN2;
-}
-
-const Common::UString &NWN2EngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool NWN2EngineProbe::probe(const Common::UString &UNUSED(directory),
-                            const Common::FileList &rootFiles) const {
-
-	// If either the ini file or the binary is found, this should be a valid path
-	if (rootFiles.contains("/nwn2.ini", true))
-		return true;
-	if (rootFiles.contains("/nwn2main.exe", true))
-		return true;
-
-	return false;
-}
-
-bool NWN2EngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *NWN2EngineProbe::createEngine() const {
-	return new NWN2Engine;
-}
-
-
 NWN2Engine::NWN2Engine() : _language(Aurora::kLanguageInvalid),
 	_hasXP1(false), _hasXP2(false), _hasXP3(false), _campaign(0) {
 
