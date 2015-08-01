@@ -60,43 +60,6 @@ namespace Engines {
 
 namespace Jade {
 
-const JadeEngineProbe kJadeEngineProbe;
-
-const Common::UString JadeEngineProbe::kGameName = "Jade Empire";
-
-JadeEngineProbe::JadeEngineProbe() {
-}
-
-JadeEngineProbe::~JadeEngineProbe() {
-}
-
-Aurora::GameID JadeEngineProbe::getGameID() const {
-	return Aurora::kGameIDJade;
-}
-
-const Common::UString &JadeEngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool JadeEngineProbe::probe(const Common::UString &UNUSED(directory),
-                            const Common::FileList &rootFiles) const {
-
-	// If the launcher binary is found, this should be a valid path
-	if (rootFiles.contains("/JadeEmpire.exe", true))
-		return true;
-
-	return false;
-}
-
-bool JadeEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *JadeEngineProbe::createEngine() const {
-	return new JadeEngine;
-}
-
-
 JadeEngine::JadeEngine() : _language(Aurora::kLanguageInvalid),
 	_module(0) {
 

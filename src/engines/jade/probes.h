@@ -19,67 +19,44 @@
  */
 
 /** @file
- *  Engine class handling Jade Empire
+ *  Probing for an installation of Jade Empire.
  */
 
-#ifndef ENGINES_JADE_JADE_H
-#define ENGINES_JADE_JADE_H
+#ifndef ENGINES_JADE_PROBES_H
+#define ENGINES_JADE_PROBES_H
 
 #include "src/common/ustring.h"
 
-#include "src/aurora/types.h"
-
-#include "src/engines/engine.h"
+#include "src/engines/engineprobe.h"
 
 namespace Engines {
 
-class LoadProgress;
-
 namespace Jade {
 
-class Module;
-
-class JadeEngine : public Engines::Engine {
+class JadeEngineProbe : public Engines::EngineProbe {
 public:
-	JadeEngine();
-	~JadeEngine();
+	JadeEngineProbe();
+	~JadeEngineProbe();
 
-	bool detectLanguages(Aurora::GameID game, const Common::UString &target,
-	                     Aurora::Platform platform,
-	                     std::vector<Aurora::Language> &languages) const;
+	Aurora::GameID getGameID() const;
 
-	bool getLanguage(Aurora::Language &language) const;
-	bool changeLanguage();
+	const Common::UString &getGameName() const;
 
-	/** Return the currently running module. */
-	Module *getModule();
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
+	bool probe(Common::SeekableReadStream &stream) const;
 
+	Engines::Engine *createEngine() const;
 
-protected:
-	void run();
-
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
 
 private:
-	Aurora::Language _language;
-
-	Module *_module;
-
-
-	void init();
-	void declareLanguages();
-	void initResources(LoadProgress &progress);
-	void initCursors();
-	void initConfig();
-	void initGameConfig();
-
-	void deinit();
-
-	void playIntroVideos();
-	void main();
+	static const Common::UString kGameName;
 };
+
+extern const JadeEngineProbe kJadeEngineProbe;
 
 } // End of namespace Jade
 
 } // End of namespace Engines
 
-#endif // ENGINES_JADE_JADE_H
+#endif // ENGINES_JADE_PROBES_H

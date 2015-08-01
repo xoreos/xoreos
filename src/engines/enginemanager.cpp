@@ -60,7 +60,7 @@
 #include "src/engines/nwn2/probes.h"
 #include "src/engines/kotor/probes.h"
 #include "src/engines/kotor2/probes.h"
-#include "src/engines/jade/jade.h"
+#include "src/engines/jade/probes.h"
 #include "src/engines/witcher/witcher.h"
 #include "src/engines/sonic/sonic.h"
 #include "src/engines/dragonage/dragonage.h"
