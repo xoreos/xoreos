@@ -32,11 +32,6 @@
 #include "src/aurora/language.h"
 
 #include "src/engines/engine.h"
-#include "src/engines/engineprobe.h"
-
-namespace Common {
-	class FileList;
-}
 
 namespace Engines {
 
@@ -46,28 +41,6 @@ namespace Witcher {
 
 class Campaign;
 class Module;
-
-class WitcherEngineProbe : public Engines::EngineProbe {
-public:
-	WitcherEngineProbe();
-	~WitcherEngineProbe();
-
-	Aurora::GameID getGameID() const;
-
-	const Common::UString &getGameName() const;
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	bool probe(Common::SeekableReadStream &stream) const;
-
-	Engines::Engine *createEngine() const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
-
-private:
-	static const Common::UString kGameName;
-};
-
-extern const WitcherEngineProbe kWitcherEngineProbe;
 
 class WitcherEngine : public Engines::Engine {
 public:

@@ -52,50 +52,6 @@ namespace Engines {
 
 namespace Witcher {
 
-const WitcherEngineProbe kWitcherEngineProbe;
-
-const Common::UString WitcherEngineProbe::kGameName = "The Witcher";
-
-WitcherEngineProbe::WitcherEngineProbe() {
-}
-
-WitcherEngineProbe::~WitcherEngineProbe() {
-}
-
-Aurora::GameID WitcherEngineProbe::getGameID() const {
-	return Aurora::kGameIDWitcher;
-}
-
-const Common::UString &WitcherEngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool WitcherEngineProbe::probe(const Common::UString &directory,
-                               const Common::FileList &UNUSED(rootFiles)) const {
-
-	// There should be a system directory
-	Common::UString systemDir = Common::FilePath::findSubDirectory(directory, "system", true);
-	if (systemDir.empty())
-		return false;
-
-	// The system directory has to be readable
-	Common::FileList systemFiles;
-	if (!systemFiles.addDirectory(systemDir))
-		return false;
-
-	// If either witcher.ini or witcher.exe exists, this should be a valid path
-	return systemFiles.containsGlob(".*/witcher.(exe|ini)", true);
-}
-
-bool WitcherEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *WitcherEngineProbe::createEngine() const {
-	return new WitcherEngine;
-}
-
-
 WitcherEngine::WitcherEngine() :
 	_languageText(Aurora::kLanguageInvalid), _languageVoice(Aurora::kLanguageInvalid),
 	_campaign(0) {

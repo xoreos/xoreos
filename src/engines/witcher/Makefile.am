@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libwitcher.la
 
 noinst_HEADERS = \
                  witcher.h \
+                 probes.h \
                  types.h \
                  modelloader.h \
                  console.h \
@@ -20,6 +21,7 @@ noinst_HEADERS = \
 
 libwitcher_la_SOURCES = \
                         witcher.cpp \
+                        probes.cpp \
                         modelloader.cpp \
                         console.cpp \
                         campaign.cpp \
