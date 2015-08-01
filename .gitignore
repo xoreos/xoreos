@@ -44,6 +44,12 @@ Makefile.in
 /m4/pkg.m4
 /stamp-h1
 
+# CMake temp file
+/CMakeCache.txt
+/CMakeFiles/
+/cmake_install.cmake
+Makefile.am.cmake
+
 # Doxygen files
 /Doxyerror
 /doc/doxygen/html/
