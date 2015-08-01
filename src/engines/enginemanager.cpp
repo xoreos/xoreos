@@ -59,7 +59,7 @@
 #include "src/engines/nwn/probes.h"
 #include "src/engines/nwn2/probes.h"
 #include "src/engines/kotor/probes.h"
-#include "src/engines/kotor2/kotor2.h"
+#include "src/engines/kotor2/probes.h"
 #include "src/engines/jade/jade.h"
 #include "src/engines/witcher/witcher.h"
 #include "src/engines/sonic/sonic.h"
