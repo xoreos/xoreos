@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libkotor.la
 
 noinst_HEADERS = \
                  kotor.h \
+                 probes.h \
                  console.h \
                  modelloader.h \
                  object.h \
@@ -41,6 +42,7 @@ noinst_HEADERS = \
 
 libkotor_la_SOURCES = \
                       kotor.cpp \
+                      probes.cpp \
                       console.cpp \
                       modelloader.cpp \
                       object.cpp \
