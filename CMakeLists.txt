@@ -239,7 +239,7 @@ if(GIT_FOUND)
 
   execute_process(
     COMMAND ${GIT_EXECUTABLE} update-index --refresh --unmerged
-    COMMAND ${GIT_EXECUTABLE} diff-index --quiet HEAD || echo ".dirty"
+    COMMAND ${GIT_EXECUTABLE} diff-index --quiet HEAD
     OUTPUT_QUIET ERROR_QUIET
     RESULT_VARIABLE XOREOS_REVDIRT
   )
