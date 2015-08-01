@@ -1,3 +1,8 @@
+# Editor temp files
+.sw[po]
+.*.sw[po]
+*~
+
 # MSVC files
 Debug/
 Release/
@@ -5,14 +10,26 @@ ipch/
 *.suo
 *.sdf
 *.opensdf
-*~
-git-revision.h
-# autotools files
+
+# Build files
+*.[oa]
+*.l[oa]
+*.d
+.dirstamp
+.libs/
+.deps/
+
+# autotools temp files
 Makefile
 Makefile.in
-Doxyerror
-INSTALL
+/INSTALL
 /aclocal.m4
+/autom4te.cache/
+/build-aux/
+/config.h
+/config.h.in
+/config.log
+/config.status
 /configure
 /libtool
 /m4/libtool.m4
@@ -20,33 +37,26 @@ INSTALL
 /m4/ltsugar.m4
 /m4/ltversion.m4
 /m4/lt~obsolete.m4
-/build-aux/ar-lib
-/build-aux/compile
-/build-aux/config.guess
-/build-aux/config.sub
-/build-aux/depcomp
-/build-aux/install-sh
-/build-aux/ltmain.sh
-/build-aux/missing
-/config.h.in
-/autom4te.cache/
+/m4/iconv.m4
+/m4/lib-ld.m4
+/m4/lib-link.m4
+/m4/lib-prefix.m4
+/m4/pkg.m4
 /stamp-h1
-/config.h
-/config.log
-/config.status
-*.l[oa]
-.dirstamp
-.libs/
-.deps/
+
 # Doxygen files
+/Doxyerror
 /doc/doxygen/html/
 /doc/doxygen/latex/
 /doc/doxygen/man/
 /doc/doxygen/*.tmp
 /doc/doxygen/*.db
+
 # git versioning stamp
 /gitstamp/gitstamp
+
 # Unix binary
 /src/xoreos
+
 # Window binary
 /src/xoreos.exe
