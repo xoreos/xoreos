@@ -63,7 +63,7 @@
 #include "src/engines/jade/probes.h"
 #include "src/engines/witcher/probes.h"
 #include "src/engines/sonic/probes.h"
-#include "src/engines/dragonage/dragonage.h"
+#include "src/engines/dragonage/probes.h"
 #include "src/engines/dragonage2/dragonage2.h"
 
 DECLARE_SINGLETON(Engines::EngineManager)

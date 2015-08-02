@@ -54,43 +54,6 @@ namespace Engines {
 
 namespace DragonAge {
 
-const DragonAgeEngineProbe kDragonAgeEngineProbe;
-
-const Common::UString DragonAgeEngineProbe::kGameName = "Dragon Age: Origins";
-
-DragonAgeEngineProbe::DragonAgeEngineProbe() {
-}
-
-DragonAgeEngineProbe::~DragonAgeEngineProbe() {
-}
-
-Aurora::GameID DragonAgeEngineProbe::getGameID() const {
-	return Aurora::kGameIDDragonAge;
-}
-
-const Common::UString &DragonAgeEngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool DragonAgeEngineProbe::probe(const Common::UString &UNUSED(directory),
-                                 const Common::FileList &rootFiles) const {
-
-	// If the launcher binary is found, this should be a valid path
-	if (rootFiles.contains("/daoriginslauncher.exe", true))
-		return true;
-
-	return false;
-}
-
-bool DragonAgeEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *DragonAgeEngineProbe::createEngine() const {
-	return new DragonAgeEngine;
-}
-
-
 DragonAgeEngine::DragonAgeEngine() : _language(Aurora::kLanguageInvalid),
 	_campaigns(0) {
 
