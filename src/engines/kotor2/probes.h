@@ -91,10 +91,7 @@ public:
 	Aurora::Platform getPlatform() const { return Aurora::kPlatformXbox; }
 };
 
-extern const KotOR2EngineProbeWin   kKotOR2EngineProbeWin;
-extern const KotOR2EngineProbeLinux kKotOR2EngineProbeLinux;
-extern const KotOR2EngineProbeMac   kKotOR2EngineProbeMac;
-extern const KotOR2EngineProbeXbox  kKotOR2EngineProbeXbox;
+extern const Engines::EngineProbe * const kProbes[];
 
 } // End of namespace KotOR2
 

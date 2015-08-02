@@ -53,7 +53,7 @@ private:
 	static const Common::UString kGameName;
 };
 
-extern const WitcherEngineProbe kWitcherEngineProbe;
+extern const Engines::EngineProbe * const kProbes[];
 
 } // End of namespace Witcher
 

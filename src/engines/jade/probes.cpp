@@ -33,6 +33,12 @@ namespace Jade {
 
 const JadeEngineProbe kJadeEngineProbe;
 
+const Engines::EngineProbe * const kProbes[] = {
+	&kJadeEngineProbe,
+	0
+};
+
+
 const Common::UString JadeEngineProbe::kGameName = "Jade Empire";
 
 JadeEngineProbe::JadeEngineProbe() {

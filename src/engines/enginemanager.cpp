@@ -72,26 +72,17 @@ DECLARE_SINGLETON(Engines::EngineManager)
 
 namespace Engines {
 
-static const EngineProbe *kProbes[] = {
-	&NWN::kNWNEngineProbeLinux,
-	&NWN::kNWNEngineProbeMac,
-	&NWN::kNWNEngineProbeWin,
-	&NWN::kNWNEngineProbeFallback,
-	&NWN2::kNWN2EngineProbe,
-	&KotOR::kKotOREngineProbeWin,
-	&KotOR::kKotOREngineProbeMac,
-	&KotOR::kKotOREngineProbeXbox,
-	&KotOR2::kKotOR2EngineProbeWin,
-	&KotOR2::kKotOR2EngineProbeLinux,
-	&KotOR2::kKotOR2EngineProbeMac,
-	&KotOR2::kKotOR2EngineProbeXbox,
-	&Jade::kJadeEngineProbe,
-	&Witcher::kWitcherEngineProbe,
-	&Sonic::kSonicEngineProbe,
-	&DragonAge::kDragonAgeEngineProbe,
-	&DragonAge2::kDragonAge2EngineProbe
+static const EngineProbe * const * const kProbes[] = {
+	NWN::kProbes,
+	NWN2::kProbes,
+	KotOR::kProbes,
+	KotOR2::kProbes,
+	Jade::kProbes,
+	Witcher::kProbes,
+	Sonic::kProbes,
+	DragonAge::kProbes,
+	DragonAge2::kProbes
 };
-
 
 GameInstance::GameInstance() {
 }
@@ -171,9 +162,15 @@ bool GameInstanceEngine::probe() {
 bool GameInstanceEngine::probe(const Common::FileList &rootFiles) {
 	// Try to find the first engine able to handle the directory's data
 	for (size_t i = 0; i < ARRAYSIZE(kProbes); i++) {
-		if (kProbes[i]->probe(_target, rootFiles)) {
-			_probe = kProbes[i];
-			return true;
+		const EngineProbe * const * probes = kProbes[i];
+
+		while (probes && *probes) {
+			if ((*probes)->probe(_target, rootFiles)) {
+				_probe = *probes;
+				return true;
+			}
+
+			probes++;
 		}
 	}
 
@@ -181,11 +178,17 @@ bool GameInstanceEngine::probe(const Common::FileList &rootFiles) {
 }
 
 bool GameInstanceEngine::probe(Common::SeekableReadStream &stream) {
-	// Try to find the first engine able to handle the stream's data
+	// Try to find the first engine able to handle the directory's data
 	for (size_t i = 0; i < ARRAYSIZE(kProbes); i++) {
-		if (kProbes[i]->probe(stream)) {
-			_probe = kProbes[i];
-			return true;
+		const EngineProbe * const * probes = kProbes[i];
+
+		while (probes && *probes) {
+			if ((*probes)->probe(stream)) {
+				_probe = *probes;
+				return true;
+			}
+
+			probes++;
 		}
 	}
 

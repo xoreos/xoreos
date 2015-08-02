@@ -35,6 +35,12 @@ namespace Sonic {
 
 const SonicEngineProbe kSonicEngineProbe;
 
+const Engines::EngineProbe * const kProbes[] = {
+	&kSonicEngineProbe,
+	0
+};
+
+
 const Common::UString SonicEngineProbe::kGameName = "Sonic Chronicles: The Dark Brotherhood";
 
 SonicEngineProbe::SonicEngineProbe() {

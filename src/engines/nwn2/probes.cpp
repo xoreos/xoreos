@@ -33,6 +33,12 @@ namespace NWN2 {
 
 const NWN2EngineProbe kNWN2EngineProbe;
 
+const Engines::EngineProbe * const kProbes[] = {
+	&kNWN2EngineProbe,
+	0
+};
+
+
 const Common::UString NWN2EngineProbe::kGameName = "Neverwinter Nights 2";
 
 NWN2EngineProbe::NWN2EngineProbe() {

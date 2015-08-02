@@ -36,6 +36,14 @@ const KotOREngineProbeWin  kKotOREngineProbeWin;
 const KotOREngineProbeMac  kKotOREngineProbeMac;
 const KotOREngineProbeXbox kKotOREngineProbeXbox;
 
+const Engines::EngineProbe * const kProbes[] = {
+	&kKotOREngineProbeWin,
+	&kKotOREngineProbeMac,
+	&kKotOREngineProbeXbox,
+	0
+};
+
+
 const Common::UString KotOREngineProbe::kGameName = "Star Wars: Knights of the Old Republic";
 
 KotOREngineProbe::KotOREngineProbe() {

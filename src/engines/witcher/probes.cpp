@@ -34,6 +34,12 @@ namespace Witcher {
 
 const WitcherEngineProbe kWitcherEngineProbe;
 
+const Engines::EngineProbe * const kProbes[] = {
+	&kWitcherEngineProbe,
+	0
+};
+
+
 const Common::UString WitcherEngineProbe::kGameName = "The Witcher";
 
 WitcherEngineProbe::WitcherEngineProbe() {

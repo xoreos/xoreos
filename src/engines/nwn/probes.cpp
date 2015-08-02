@@ -37,6 +37,14 @@ const NWNEngineProbeMac      kNWNEngineProbeMac;
 const NWNEngineProbeLinux    kNWNEngineProbeLinux;
 const NWNEngineProbeFallback kNWNEngineProbeFallback;
 
+const Engines::EngineProbe * const kProbes[] = {
+	&kNWNEngineProbeWin,
+	&kNWNEngineProbeMac,
+	&kNWNEngineProbeLinux,
+	&kNWNEngineProbeFallback,
+	0
+};
+
 const Common::UString NWNEngineProbe::kGameName = "Neverwinter Nights";
 
 Engines::Engine *NWNEngineProbe::createEngine() const {

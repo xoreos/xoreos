@@ -33,6 +33,12 @@ namespace DragonAge {
 
 const DragonAgeEngineProbe kDragonAgeEngineProbe;
 
+const Engines::EngineProbe * const kProbes[] = {
+	&kDragonAgeEngineProbe,
+	0
+};
+
+
 const Common::UString DragonAgeEngineProbe::kGameName = "Dragon Age: Origins";
 
 DragonAgeEngineProbe::DragonAgeEngineProbe() {

@@ -53,7 +53,7 @@ private:
 	static const Common::UString kGameName;
 };
 
-extern const NWN2EngineProbe kNWN2EngineProbe;
+extern const Engines::EngineProbe * const kProbes[];
 
 } // End of namespace NWN2
 

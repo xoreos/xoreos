@@ -37,6 +37,15 @@ const KotOR2EngineProbeLinux kKotOR2EngineProbeLinux;
 const KotOR2EngineProbeMac   kKotOR2EngineProbeMac;
 const KotOR2EngineProbeXbox  kKotOR2EngineProbeXbox;
 
+const Engines::EngineProbe * const kProbes[] = {
+	&kKotOR2EngineProbeWin,
+	&kKotOR2EngineProbeLinux,
+	&kKotOR2EngineProbeMac,
+	&kKotOR2EngineProbeXbox,
+	0
+};
+
+
 const Common::UString KotOR2EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
 
 KotOR2EngineProbe::KotOR2EngineProbe() {

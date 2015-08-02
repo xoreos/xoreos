@@ -53,7 +53,7 @@ private:
 	static const Common::UString kGameName;
 };
 
-extern const DragonAge2EngineProbe kDragonAge2EngineProbe;
+extern const Engines::EngineProbe * const kProbes[];
 
 } // End of namespace DragonAge2
 

@@ -53,7 +53,7 @@ private:
 	static const Common::UString kGameName;
 };
 
-extern const SonicEngineProbe kSonicEngineProbe;
+extern const Engines::EngineProbe * const kProbes[];
 
 } // End of namespace Sonic
 

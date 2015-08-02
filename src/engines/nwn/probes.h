@@ -92,10 +92,7 @@ public:
 	Aurora::Platform getPlatform() const { return Aurora::kPlatformUnknown; }
 };
 
-extern const NWNEngineProbeWindows  kNWNEngineProbeWin;
-extern const NWNEngineProbeMac      kNWNEngineProbeMac;
-extern const NWNEngineProbeLinux    kNWNEngineProbeLinux;
-extern const NWNEngineProbeFallback kNWNEngineProbeFallback;
+extern const Engines::EngineProbe * const kProbes[];
 
 } // End of namespace NWN
 

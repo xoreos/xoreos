@@ -33,6 +33,12 @@ namespace DragonAge2 {
 
 const DragonAge2EngineProbe kDragonAge2EngineProbe;
 
+const Engines::EngineProbe * const kProbes[] = {
+	&kDragonAge2EngineProbe,
+	0
+};
+
+
 const Common::UString DragonAge2EngineProbe::kGameName = "Dragon Age II";
 
 DragonAge2EngineProbe::DragonAge2EngineProbe() {
