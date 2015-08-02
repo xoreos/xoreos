@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = libdragonage2.la
 
 noinst_HEADERS = \
                  dragonage2.h \
+                 probes.h \
                  types.h \
                  util.h \
                  modelloader.h \
@@ -22,6 +23,7 @@ noinst_HEADERS = \
 
 libdragonage2_la_SOURCES = \
                            dragonage2.cpp \
+                           probes.cpp \
                            util.cpp \
                            modelloader.cpp \
                            console.cpp \

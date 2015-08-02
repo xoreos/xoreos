@@ -54,43 +54,6 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-const DragonAge2EngineProbe kDragonAge2EngineProbe;
-
-const Common::UString DragonAge2EngineProbe::kGameName = "Dragon Age II";
-
-DragonAge2EngineProbe::DragonAge2EngineProbe() {
-}
-
-DragonAge2EngineProbe::~DragonAge2EngineProbe() {
-}
-
-Aurora::GameID DragonAge2EngineProbe::getGameID() const {
-	return Aurora::kGameIDDragonAge2;
-}
-
-const Common::UString &DragonAge2EngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool DragonAge2EngineProbe::probe(const Common::UString &UNUSED(directory),
-                                  const Common::FileList &rootFiles) const {
-
-	// If the launcher binary is found, this should be a valid path
-	if (rootFiles.contains("/dragonage2launcher.exe", true))
-		return true;
-
-	return false;
-}
-
-bool DragonAge2EngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *DragonAge2EngineProbe::createEngine() const {
-	return new DragonAge2Engine;
-}
-
-
 DragonAge2Engine::DragonAge2Engine() : _language(Aurora::kLanguageInvalid),
 	_campaigns(0) {
 

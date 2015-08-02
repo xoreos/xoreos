@@ -55,6 +55,8 @@
 #include "src/engines/aurora/tokenman.h"
 #include "src/engines/aurora/model.h"
 
+#include "src/engines/engine.h"
+
 // The engines
 #include "src/engines/nwn/probes.h"
 #include "src/engines/nwn2/probes.h"
@@ -64,7 +66,7 @@
 #include "src/engines/witcher/probes.h"
 #include "src/engines/sonic/probes.h"
 #include "src/engines/dragonage/probes.h"
-#include "src/engines/dragonage2/dragonage2.h"
+#include "src/engines/dragonage2/probes.h"
 
 DECLARE_SINGLETON(Engines::EngineManager)
 
