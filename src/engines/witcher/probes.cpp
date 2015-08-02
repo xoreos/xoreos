@@ -22,6 +22,7 @@
  *  Probing for an installation of The Witcher.
  */
 
+#include "src/common/ustring.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 
@@ -32,54 +33,59 @@ namespace Engines {
 
 namespace Witcher {
 
-const WitcherEngineProbe kWitcherEngineProbe;
+static const class EngineProbe : public Engines::EngineProbe {
+private:
+	static const Common::UString kGameName;
+
+public:
+	EngineProbe() {}
+	~EngineProbe() {}
+
+	Aurora::GameID getGameID() const {
+		return Aurora::kGameIDWitcher;
+	}
+
+	const Common::UString &getGameName() const {
+		return kGameName;
+	}
+
+	Aurora::Platform getPlatform() const {
+		return Aurora::kPlatformWindows;
+	}
+
+	Engines::Engine *createEngine() const {
+		return new WitcherEngine;
+	}
+
+	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
+		return false;
+	}
+
+	bool probe(const Common::UString &directory, const Common::FileList &UNUSED(rootFiles)) const {
+
+		// There should be a system directory
+		Common::UString systemDir = Common::FilePath::findSubDirectory(directory, "system", true);
+		if (systemDir.empty())
+			return false;
+
+		// The system directory has to be readable
+		Common::FileList systemFiles;
+		if (!systemFiles.addDirectory(systemDir))
+			return false;
+
+		// If either witcher.ini or witcher.exe exists, this should be a valid path
+		return systemFiles.containsGlob(".*/witcher.(exe|ini)", true);
+	}
+
+} kEngineProbe;
+
+const Common::UString EngineProbe::kGameName = "The Witcher";
+
 
 const Engines::EngineProbe * const kProbes[] = {
-	&kWitcherEngineProbe,
+	&kEngineProbe,
 	0
 };
-
-
-const Common::UString WitcherEngineProbe::kGameName = "The Witcher";
-
-WitcherEngineProbe::WitcherEngineProbe() {
-}
-
-WitcherEngineProbe::~WitcherEngineProbe() {
-}
-
-Aurora::GameID WitcherEngineProbe::getGameID() const {
-	return Aurora::kGameIDWitcher;
-}
-
-const Common::UString &WitcherEngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool WitcherEngineProbe::probe(const Common::UString &directory,
-                               const Common::FileList &UNUSED(rootFiles)) const {
-
-	// There should be a system directory
-	Common::UString systemDir = Common::FilePath::findSubDirectory(directory, "system", true);
-	if (systemDir.empty())
-		return false;
-
-	// The system directory has to be readable
-	Common::FileList systemFiles;
-	if (!systemFiles.addDirectory(systemDir))
-		return false;
-
-	// If either witcher.ini or witcher.exe exists, this should be a valid path
-	return systemFiles.containsGlob(".*/witcher.(exe|ini)", true);
-}
-
-bool WitcherEngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *WitcherEngineProbe::createEngine() const {
-	return new WitcherEngine;
-}
 
 } // End of namespace Witcher
 

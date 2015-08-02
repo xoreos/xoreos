@@ -25,61 +25,11 @@
 #ifndef ENGINES_KOTOR_PROBES_H
 #define ENGINES_KOTOR_PROBES_H
 
-#include "src/common/ustring.h"
-
 #include "src/engines/engineprobe.h"
 
 namespace Engines {
 
 namespace KotOR {
-
-class KotOREngineProbe : public Engines::EngineProbe {
-public:
-	KotOREngineProbe();
-	~KotOREngineProbe();
-
-	Aurora::GameID getGameID() const;
-
-	const Common::UString &getGameName() const;
-
-	bool probe(Common::SeekableReadStream &stream) const;
-	virtual bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const = 0;
-
-	Engines::Engine *createEngine() const;
-
-private:
-	static const Common::UString kGameName;
-};
-
-class KotOREngineProbeWin : public KotOREngineProbe {
-public:
-	KotOREngineProbeWin();
-	~KotOREngineProbeWin();
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
-};
-
-class KotOREngineProbeMac : public KotOREngineProbe {
-public:
-	KotOREngineProbeMac();
-	~KotOREngineProbeMac();
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformMacOSX; }
-};
-
-class KotOREngineProbeXbox : public KotOREngineProbe {
-public:
-	KotOREngineProbeXbox();
-	~KotOREngineProbeXbox();
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformXbox; }
-};
 
 extern const Engines::EngineProbe * const kProbes[];
 

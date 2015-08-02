@@ -22,6 +22,7 @@
  *  Probing for an installation of Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
+#include "src/common/ustring.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 
@@ -32,122 +33,129 @@ namespace Engines {
 
 namespace KotOR2 {
 
-const KotOR2EngineProbeWin   kKotOR2EngineProbeWin;
-const KotOR2EngineProbeLinux kKotOR2EngineProbeLinux;
-const KotOR2EngineProbeMac   kKotOR2EngineProbeMac;
-const KotOR2EngineProbeXbox  kKotOR2EngineProbeXbox;
+class EngineProbe : public Engines::EngineProbe {
+private:
+	static const Common::UString kGameName;
 
-const Engines::EngineProbe * const kProbes[] = {
-	&kKotOR2EngineProbeWin,
-	&kKotOR2EngineProbeLinux,
-	&kKotOR2EngineProbeMac,
-	&kKotOR2EngineProbeXbox,
-	0
+public:
+	EngineProbe() {}
+	~EngineProbe() {}
+
+	Aurora::GameID getGameID() const {
+		return Aurora::kGameIDKotOR2;
+	}
+
+	const Common::UString &getGameName() const {
+		return kGameName;
+	}
+
+	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
+		return false;
+	}
+
+	Engines::Engine *createEngine() const {
+		return new KotOR2Engine;
+	}
 };
 
-
-const Common::UString KotOR2EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
-
-KotOR2EngineProbe::KotOR2EngineProbe() {
-}
-
-KotOR2EngineProbe::~KotOR2EngineProbe() {
-}
-
-Aurora::GameID KotOR2EngineProbe::getGameID() const {
-	return Aurora::kGameIDKotOR2;
-}
-
-const Common::UString &KotOR2EngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool KotOR2EngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *KotOR2EngineProbe::createEngine() const {
-	return new KotOR2Engine;
-}
+const Common::UString EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
 
 
-KotOR2EngineProbeWin::KotOR2EngineProbeWin() {
-}
+static const class EngineProbeWin : public EngineProbe {
+public:
+	EngineProbeWin() {}
+	~EngineProbeWin() {}
 
-KotOR2EngineProbeWin::~KotOR2EngineProbeWin() {
-}
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
 
-bool KotOR2EngineProbeWin::probe(const Common::UString &UNUSED(directory),
-                                 const Common::FileList &rootFiles) const {
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
 
-	// If "swkotor2.exe" exists, this should be a valid path for the Windows port
-	return rootFiles.contains("/swkotor2.exe", true);
-}
+		// If "swkotor2.exe" exists, this should be a valid path for the Windows port
+		return rootFiles.contains("/swkotor2.exe", true);
+	}
+
+} kEngineProbeWin;
+
+static const class EngineProbeLinux : public EngineProbe {
+public:
+	EngineProbeLinux() {}
+	~EngineProbeLinux() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformLinux; }
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+
+		// The game binary found in the Aspyr Linux port
+		if (!rootFiles.contains("/KOTOR2", false))
+			return false;
+
+		// The directory containing what was originally within the PE resources
+		if (Common::FilePath::findSubDirectory(directory, "resources").empty())
+			return false;
+		// The directory containing the original game data files
+		if (Common::FilePath::findSubDirectory(directory, "steamassets").empty())
+			return false;
+
+		return true;
+	}
+
+} kEngineProbeLinux;
+
+static const class EngineProbeMac : public EngineProbe {
+public:
+	EngineProbeMac() {}
+	~EngineProbeMac() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformMacOSX; }
+
+	bool probe(const Common::UString &directory, const Common::FileList &UNUSED(rootFiles)) const {
+
+		// The directory containing the Mac binary
+		if (Common::FilePath::findSubDirectory(directory, "MacOS").empty())
+			return false;
+		// The directory containing what was originally within the PE resources
+		if (Common::FilePath::findSubDirectory(directory, "Resources").empty())
+			return false;
+		// The directory containing the original game data files
+		if (Common::FilePath::findSubDirectory(directory, "GameData").empty())
+			return false;
+
+		// The game binary found in the Aspyr Mac port
+		Common::FileList binaryFiles(Common::FilePath::findSubDirectory(directory, "MacOS"));
+		if (!binaryFiles.contains("KOTOR2", false))
+			return false;
+
+		return true;
+	}
+
+} kEngineProbeMac;
+
+static const class EngineProbeXbox : public EngineProbe {
+public:
+	EngineProbeXbox() {}
+	~EngineProbeXbox() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformXbox; }
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+
+		// If the "dataxbox" directory exists and "weapons.erf" exists,
+		// this should be a valid path for the Xbox port
+		const Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "dataxbox");
+
+		return !appDirectory.empty() && rootFiles.contains("/weapons.erf", true);
+	}
+
+} kEngineProbeXbox;
 
 
-KotOR2EngineProbeLinux::KotOR2EngineProbeLinux() {
-}
-
-KotOR2EngineProbeLinux::~KotOR2EngineProbeLinux() {
-}
-
-bool KotOR2EngineProbeLinux::probe(const Common::UString &directory,
-                                   const Common::FileList &rootFiles) const {
-
-	// The game binary found in the Aspyr Linux port
-	if (!rootFiles.contains("/KOTOR2", false))
-		return false;
-
-	// The directory containing what was originally within the PE resources
-	if (Common::FilePath::findSubDirectory(directory, "resources").empty())
-		return false;
-	// The directory containing the original game data files
-	if (Common::FilePath::findSubDirectory(directory, "steamassets").empty())
-		return false;
-
-	return true;
-}
-
-
-KotOR2EngineProbeMac::KotOR2EngineProbeMac() {
-}
-
-KotOR2EngineProbeMac::~KotOR2EngineProbeMac() {
-}
-
-bool KotOR2EngineProbeMac::probe(const Common::UString &directory,
-                                 const Common::FileList &UNUSED(rootFiles)) const {
-
-	// The directory containing the Mac binary
-	if (Common::FilePath::findSubDirectory(directory, "MacOS").empty())
-		return false;
-	// The directory containing what was originally within the PE resources
-	if (Common::FilePath::findSubDirectory(directory, "Resources").empty())
-		return false;
-	// The directory containing the original game data files
-	if (Common::FilePath::findSubDirectory(directory, "GameData").empty())
-		return false;
-
-	// The game binary found in the Aspyr Mac port
-	Common::FileList binaryFiles(Common::FilePath::findSubDirectory(directory, "MacOS"));
-	if (!binaryFiles.contains("KOTOR2", false))
-		return false;
-
-	return true;
-}
-
-
-KotOR2EngineProbeXbox::KotOR2EngineProbeXbox() {
-}
-
-KotOR2EngineProbeXbox::~KotOR2EngineProbeXbox() {
-}
-
-bool KotOR2EngineProbeXbox::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
-	// If the "dataxbox" directory exists and "weapons.erf" exists, this should be a valid path for the Xbox port
-	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "dataxbox");
-	return !appDirectory.empty() && rootFiles.contains("/weapons.erf", true);
-}
+const Engines::EngineProbe * const kProbes[] = {
+	&kEngineProbeWin,
+	&kEngineProbeLinux,
+	&kEngineProbeMac,
+	&kEngineProbeXbox,
+	0
+};
 
 } // End of namespace KotOR2
 

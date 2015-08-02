@@ -22,6 +22,7 @@
  *  Probing for an installation of Dragon Age II.
  */
 
+#include "src/common/ustring.h"
 #include "src/common/filelist.h"
 
 #include "src/engines/dragonage2/probes.h"
@@ -31,47 +32,52 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-const DragonAge2EngineProbe kDragonAge2EngineProbe;
+static const class EngineProbe : public Engines::EngineProbe {
+private:
+	static const Common::UString kGameName;
+
+public:
+	EngineProbe() {}
+	~EngineProbe() {}
+
+	Aurora::GameID getGameID() const {
+		return Aurora::kGameIDDragonAge2;
+	}
+
+	const Common::UString &getGameName() const {
+		return kGameName;
+	}
+
+	Aurora::Platform getPlatform() const {
+		return Aurora::kPlatformWindows;
+	}
+
+	Engines::Engine *createEngine() const {
+		return new DragonAge2Engine;
+	}
+
+	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
+		return false;
+	}
+
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
+
+		// If the launcher binary is found, this should be a valid path
+		if (rootFiles.contains("/dragonage2launcher.exe", true))
+			return true;
+
+		return false;
+	}
+
+} kEngineProbe;
+
+const Common::UString EngineProbe::kGameName = "Dragon Age II";
+
 
 const Engines::EngineProbe * const kProbes[] = {
-	&kDragonAge2EngineProbe,
+	&kEngineProbe,
 	0
 };
-
-
-const Common::UString DragonAge2EngineProbe::kGameName = "Dragon Age II";
-
-DragonAge2EngineProbe::DragonAge2EngineProbe() {
-}
-
-DragonAge2EngineProbe::~DragonAge2EngineProbe() {
-}
-
-Aurora::GameID DragonAge2EngineProbe::getGameID() const {
-	return Aurora::kGameIDDragonAge2;
-}
-
-const Common::UString &DragonAge2EngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool DragonAge2EngineProbe::probe(const Common::UString &UNUSED(directory),
-                                  const Common::FileList &rootFiles) const {
-
-	// If the launcher binary is found, this should be a valid path
-	if (rootFiles.contains("/dragonage2launcher.exe", true))
-		return true;
-
-	return false;
-}
-
-bool DragonAge2EngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *DragonAge2EngineProbe::createEngine() const {
-	return new DragonAge2Engine;
-}
 
 } // End of namespace DragonAge2
 

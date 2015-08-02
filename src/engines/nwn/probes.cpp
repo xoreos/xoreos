@@ -22,6 +22,7 @@
  *  Probing for an installation of Neverwinter Nights.
  */
 
+#include "src/common/ustring.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 
@@ -32,60 +33,110 @@ namespace Engines {
 
 namespace NWN {
 
-const NWNEngineProbeWindows  kNWNEngineProbeWin;
-const NWNEngineProbeMac      kNWNEngineProbeMac;
-const NWNEngineProbeLinux    kNWNEngineProbeLinux;
-const NWNEngineProbeFallback kNWNEngineProbeFallback;
+class EngineProbe : public Engines::EngineProbe {
+private:
+	static const Common::UString kGameName;
 
-const Engines::EngineProbe * const kProbes[] = {
-	&kNWNEngineProbeWin,
-	&kNWNEngineProbeMac,
-	&kNWNEngineProbeLinux,
-	&kNWNEngineProbeFallback,
-	0
+public:
+	EngineProbe() {}
+	~EngineProbe() {}
+
+	Aurora::GameID getGameID() const {
+		return Aurora::kGameIDNWN;
+	}
+
+	const Common::UString &getGameName() const {
+		return kGameName;
+	}
+
+	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
+		return false;
+	}
+
+	Engines::Engine *createEngine() const {
+		return new NWNEngine;
+	}
 };
 
-const Common::UString NWNEngineProbe::kGameName = "Neverwinter Nights";
+const Common::UString EngineProbe::kGameName = "Neverwinter Nights";
 
-Engines::Engine *NWNEngineProbe::createEngine() const {
-	return new NWNEngine;
-}
 
-bool NWNEngineProbeWindows::probe(const Common::UString &UNUSED(directory),
-                                  const Common::FileList &rootFiles) const {
+static const class EngineProbeWindows : public EngineProbe {
+public:
+	EngineProbeWindows() {}
+	~EngineProbeWindows() {}
 
-	// Look for the Windows binary nwmain.exe
-	return rootFiles.contains("/nwmain.exe", true);
-}
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
 
-bool NWNEngineProbeMac::probe(const Common::UString &directory,
-                              const Common::FileList &UNUSED(rootFiles)) const {
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
 
-	// Look for the app directory containing the Mac OS X binary
-	return !Common::FilePath::findSubDirectory(directory, "Neverwinter Nights.app", true).empty();
-}
+		// Look for the Windows binary nwmain.exe
+		return rootFiles.contains("/nwmain.exe", true);
+	}
 
-bool NWNEngineProbeLinux::probe(const Common::UString &UNUSED(directory),
-                                const Common::FileList &rootFiles) const {
+} kEngineProbeWin;
 
-	// Look for the Linux binary nwmain
-	return rootFiles.contains("/nwmain", true);
-}
+static const class EngineProbeMac : public EngineProbe {
+public:
+	EngineProbeMac() {}
+	~EngineProbeMac() {}
 
-bool NWNEngineProbeFallback::probe(const Common::UString &UNUSED(directory),
-                                   const Common::FileList &rootFiles) const {
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformMacOSX; }
 
-	// Don't accidentally trigger on NWN2
-	if (rootFiles.contains("/nwn2.ini", true))
-		return false;
-	if (rootFiles.contains("/nwn2main.exe", true))
-		return false;
+	bool probe(const Common::UString &directory, const Common::FileList &UNUSED(rootFiles)) const {
 
-	// As a fallback, look for the nwn.ini, nwnplayer.ini or nwncdkey.ini
-	return rootFiles.contains("/nwn.ini", true) ||
-	       rootFiles.contains("/nwnplayer.ini", true) ||
-	       rootFiles.contains("/nwncdkey.ini", true);
-}
+		// Look for the app directory containing the Mac OS X binary
+		return !Common::FilePath::findSubDirectory(directory, "Neverwinter Nights.app", true).empty();
+	}
+
+} kEngineProbeMac;
+
+static const class EngineProbeLinux: public EngineProbe {
+public:
+	EngineProbeLinux() {}
+	~EngineProbeLinux() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformLinux; }
+
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
+
+		// Look for the Linux binary nwmain
+		return rootFiles.contains("/nwmain", true);
+	}
+
+} kEngineProbeLinux;
+
+static const class EngineProbeFallback : public EngineProbe {
+public:
+	EngineProbeFallback() {}
+	~EngineProbeFallback() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformUnknown; }
+
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
+
+		// Don't accidentally trigger on NWN2
+		if (rootFiles.contains("/nwn2.ini", true))
+			return false;
+		if (rootFiles.contains("/nwn2main.exe", true))
+			return false;
+
+		// As a fallback, look for the nwn.ini, nwnplayer.ini or nwncdkey.ini
+		return rootFiles.contains("/nwn.ini", true) ||
+		       rootFiles.contains("/nwnplayer.ini", true) ||
+		       rootFiles.contains("/nwncdkey.ini", true);
+	}
+
+} kEngineProbeFallback;
+
+
+const Engines::EngineProbe * const kProbes[] = {
+	&kEngineProbeWin,
+	&kEngineProbeMac,
+	&kEngineProbeLinux,
+	&kEngineProbeFallback,
+	0
+};
 
 } // End of namespace NWN
 

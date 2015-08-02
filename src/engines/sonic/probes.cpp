@@ -22,6 +22,7 @@
  *  Probing for an installation of Sonic Chronicles: The Dark Brotherhood.
  */
 
+#include "src/common/ustring.h"
 #include "src/common/filelist.h"
 
 #include "src/aurora/ndsrom.h"
@@ -33,47 +34,51 @@ namespace Engines {
 
 namespace Sonic {
 
-const SonicEngineProbe kSonicEngineProbe;
+static const class EngineProbe : public Engines::EngineProbe {
+private:
+	static const Common::UString kGameName;
+
+public:
+	EngineProbe() {}
+	~EngineProbe() {}
+
+	Aurora::GameID getGameID() const {
+		return Aurora::kGameIDSonic;
+	}
+
+	const Common::UString &getGameName() const {
+		return kGameName;
+	}
+
+	Aurora::Platform getPlatform() const {
+		return Aurora::kPlatformNDS;
+	}
+
+	Engines::Engine *createEngine() const {
+		return new SonicEngine;
+	}
+
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &UNUSED(rootFiles)) const {
+		return false;
+	}
+
+	bool probe(Common::SeekableReadStream &stream) const {
+		Common::UString title, code, maker;
+		if (!Aurora::NDSFile::isNDS(stream, title, code, maker))
+			return false;
+
+		return title == "SONICCHRON";
+	}
+
+} kEngineProbe;
+
+const Common::UString EngineProbe::kGameName = "Sonic Chronicles: The Dark Brotherhood";
+
 
 const Engines::EngineProbe * const kProbes[] = {
-	&kSonicEngineProbe,
+	&kEngineProbe,
 	0
 };
-
-
-const Common::UString SonicEngineProbe::kGameName = "Sonic Chronicles: The Dark Brotherhood";
-
-SonicEngineProbe::SonicEngineProbe() {
-}
-
-SonicEngineProbe::~SonicEngineProbe() {
-}
-
-Aurora::GameID SonicEngineProbe::getGameID() const {
-	return Aurora::kGameIDSonic;
-}
-
-const Common::UString &SonicEngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool SonicEngineProbe::probe(const Common::UString &UNUSED(directory),
-                             const Common::FileList &UNUSED(rootFiles)) const {
-
-	return false;
-}
-
-bool SonicEngineProbe::probe(Common::SeekableReadStream &stream) const {
-	Common::UString title, code, maker;
-	if (!Aurora::NDSFile::isNDS(stream, title, code, maker))
-		return false;
-
-	return title == "SONICCHRON";
-}
-
-Engines::Engine *SonicEngineProbe::createEngine() const {
-	return new SonicEngine;
-}
 
 } // End of namespace Sonic
 

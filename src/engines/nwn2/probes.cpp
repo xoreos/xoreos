@@ -22,6 +22,7 @@
  *  Probing for an installation of Neverwinter Nights 2.
  */
 
+#include "src/common/ustring.h"
 #include "src/common/filelist.h"
 
 #include "src/engines/nwn2/probes.h"
@@ -31,49 +32,54 @@ namespace Engines {
 
 namespace NWN2 {
 
-const NWN2EngineProbe kNWN2EngineProbe;
+static const class EngineProbe : public Engines::EngineProbe {
+private:
+	static const Common::UString kGameName;
+
+public:
+	EngineProbe() {}
+	~EngineProbe() {}
+
+	Aurora::GameID getGameID() const {
+		return Aurora::kGameIDNWN2;
+	}
+
+	const Common::UString &getGameName() const {
+		return kGameName;
+	}
+
+	Engines::Engine *createEngine() const {
+		return new NWN2Engine;
+	}
+
+	Aurora::Platform getPlatform() const {
+		return Aurora::kPlatformWindows;
+	}
+
+	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
+		return false;
+	}
+
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
+
+		// If either the ini file or the binary is found, this should be a valid path
+		if (rootFiles.contains("/nwn2.ini", true))
+			return true;
+		if (rootFiles.contains("/nwn2main.exe", true))
+			return true;
+
+		return false;
+	}
+
+} kEngineProbe;
+
+const Common::UString EngineProbe::kGameName = "Neverwinter Nights 2";
+
 
 const Engines::EngineProbe * const kProbes[] = {
-	&kNWN2EngineProbe,
+	&kEngineProbe,
 	0
 };
-
-
-const Common::UString NWN2EngineProbe::kGameName = "Neverwinter Nights 2";
-
-NWN2EngineProbe::NWN2EngineProbe() {
-}
-
-NWN2EngineProbe::~NWN2EngineProbe() {
-}
-
-Aurora::GameID NWN2EngineProbe::getGameID() const {
-	return Aurora::kGameIDNWN2;
-}
-
-const Common::UString &NWN2EngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool NWN2EngineProbe::probe(const Common::UString &UNUSED(directory),
-                            const Common::FileList &rootFiles) const {
-
-	// If either the ini file or the binary is found, this should be a valid path
-	if (rootFiles.contains("/nwn2.ini", true))
-		return true;
-	if (rootFiles.contains("/nwn2main.exe", true))
-		return true;
-
-	return false;
-}
-
-bool NWN2EngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *NWN2EngineProbe::createEngine() const {
-	return new NWN2Engine;
-}
 
 } // End of namespace NWN2
 

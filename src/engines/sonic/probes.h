@@ -25,33 +25,11 @@
 #ifndef ENGINES_SONIC_PROBES_H
 #define ENGINES_SONIC_PROBES_H
 
-#include "src/common/ustring.h"
-
 #include "src/engines/engineprobe.h"
 
 namespace Engines {
 
 namespace Sonic {
-
-class SonicEngineProbe : public Engines::EngineProbe {
-public:
-	SonicEngineProbe();
-	~SonicEngineProbe();
-
-	Aurora::GameID getGameID() const;
-
-	const Common::UString &getGameName() const;
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	bool probe(Common::SeekableReadStream &stream) const;
-
-	Engines::Engine *createEngine() const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformNDS; }
-
-private:
-	static const Common::UString kGameName;
-};
 
 extern const Engines::EngineProbe * const kProbes[];
 

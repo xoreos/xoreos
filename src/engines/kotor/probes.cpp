@@ -22,6 +22,7 @@
  *  Probing for an installation of Star Wars: Knights of the Old Republic.
  */
 
+#include "src/common/ustring.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 
@@ -32,83 +33,93 @@ namespace Engines {
 
 namespace KotOR {
 
-const KotOREngineProbeWin  kKotOREngineProbeWin;
-const KotOREngineProbeMac  kKotOREngineProbeMac;
-const KotOREngineProbeXbox kKotOREngineProbeXbox;
+class EngineProbe : public Engines::EngineProbe {
+private:
+	static const Common::UString kGameName;
 
-const Engines::EngineProbe * const kProbes[] = {
-	&kKotOREngineProbeWin,
-	&kKotOREngineProbeMac,
-	&kKotOREngineProbeXbox,
-	0
+public:
+	EngineProbe() {}
+	~EngineProbe() {}
+
+	Aurora::GameID getGameID() const {
+		return Aurora::kGameIDKotOR;
+	}
+
+	const Common::UString &getGameName() const {
+		return kGameName;
+	}
+
+	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
+		return false;
+	}
+
+	Engines::Engine *createEngine() const {
+		return new KotOREngine;
+	}
 };
 
-
-const Common::UString KotOREngineProbe::kGameName = "Star Wars: Knights of the Old Republic";
-
-KotOREngineProbe::KotOREngineProbe() {
-}
-
-KotOREngineProbe::~KotOREngineProbe() {
-}
-
-Aurora::GameID KotOREngineProbe::getGameID() const {
-	return Aurora::kGameIDKotOR;
-}
-
-const Common::UString &KotOREngineProbe::getGameName() const {
-	return kGameName;
-}
-
-bool KotOREngineProbe::probe(Common::SeekableReadStream &UNUSED(stream)) const {
-	return false;
-}
-
-Engines::Engine *KotOREngineProbe::createEngine() const {
-	return new KotOREngine;
-}
+const Common::UString EngineProbe::kGameName = "Star Wars: Knights of the Old Republic";
 
 
-KotOREngineProbeWin::KotOREngineProbeWin() {
-}
+static const class EngineProbeWin : public EngineProbe {
+public:
+	EngineProbeWin() {}
+	~EngineProbeWin() {}
 
-KotOREngineProbeWin::~KotOREngineProbeWin() {
-}
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
 
-bool KotOREngineProbeWin::probe(const Common::UString &UNUSED(directory),
-                                const Common::FileList &rootFiles) const {
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
 
-	// If swkotor.exe exists, this should be a valid path for the Windows port
-	return rootFiles.contains("/swkotor.exe", true);
-}
+		// If swkotor.exe exists, this should be a valid path for the Windows port
+		return rootFiles.contains("/swkotor.exe", true);
+	}
+
+} kEngineProbeWin;
+
+static const class EngineProbeMac : public EngineProbe {
+public:
+	EngineProbeMac() {}
+	~EngineProbeMac() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformMacOSX; }
+
+	bool probe(const Common::UString &directory, const Common::FileList &UNUSED(rootFiles)) const {
+
+		// If the "Knights of the Old Republic.app" directory exists,
+		// this should be a valid path for the Mac OS X port
+		const Common::UString appDirectory =
+			Common::FilePath::findSubDirectory(directory, "Knights of the Old Republic.app", true);
+
+		return !appDirectory.empty();
+	}
+
+} kEngineProbeMac;
+
+static const class EngineProbeXbox : public EngineProbe {
+public:
+	EngineProbeXbox() {}
+	~EngineProbeXbox() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformXbox; }
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+
+		// If the "dataxbox" directory exists and "players.erf" exists,
+		// this should be a valid path for the Xbox port
+		const Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "dataxbox");
+
+		return !appDirectory.empty() && rootFiles.contains("/players.erf", true);
+	}
+
+} kEngineProbeXbox;
 
 
-KotOREngineProbeMac::KotOREngineProbeMac() {
-}
-
-KotOREngineProbeMac::~KotOREngineProbeMac() {
-}
-
-bool KotOREngineProbeMac::probe(const Common::UString &directory,
-                                const Common::FileList &UNUSED(rootFiles)) const {
-
-	// If the "Knights of the Old Republic.app" directory exists, this should be a valid path for the Mac OS X port
-	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "Knights of the Old Republic.app", true);
-	return !appDirectory.empty();
-}
-
-
-KotOREngineProbeXbox::KotOREngineProbeXbox() {
-}
-
-KotOREngineProbeXbox::~KotOREngineProbeXbox() {
-}
-
-bool KotOREngineProbeXbox::probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
-	// If the "dataxbox" directory exists and "players.erf" exists, this should be a valid path for the Xbox port
-	Common::UString appDirectory = Common::FilePath::findSubDirectory(directory, "dataxbox");
-	return !appDirectory.empty() && rootFiles.contains("/players.erf", true);
-}
+const Engines::EngineProbe * const kProbes[] = {
+	&kEngineProbeWin,
+	&kEngineProbeMac,
+	&kEngineProbeXbox,
+	0
+};
 
 } // End of namespace KotOR
 

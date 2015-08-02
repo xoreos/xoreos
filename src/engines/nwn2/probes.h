@@ -25,33 +25,11 @@
 #ifndef ENGINES_NWN2_PROBES_H
 #define ENGINES_NWN2_PROBES_H
 
-#include "src/common/ustring.h"
-
 #include "src/engines/engineprobe.h"
 
 namespace Engines {
 
 namespace NWN2 {
-
-class NWN2EngineProbe : public Engines::EngineProbe {
-public:
-	NWN2EngineProbe();
-	~NWN2EngineProbe();
-
-	Aurora::GameID getGameID() const;
-
-	const Common::UString &getGameName() const;
-
-	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const;
-	bool probe(Common::SeekableReadStream &stream) const;
-
-	Engines::Engine *createEngine() const;
-
-	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
-
-private:
-	static const Common::UString kGameName;
-};
 
 extern const Engines::EngineProbe * const kProbes[];
 
