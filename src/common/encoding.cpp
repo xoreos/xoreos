@@ -302,7 +302,7 @@ UString readString(const byte *data, size_t size, Encoding encoding) {
 
 MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString) {
 	if (encoding == kEncodingUTF8)
-		return new MemoryReadStream((const byte *) str.c_str(), strlen(str.c_str()) + terminateString ? 1 : 0);
+		return new MemoryReadStream((const byte *) str.c_str(), strlen(str.c_str()) + (terminateString ? 1 : 0));
 
 	return ConvMan.convert(encoding, str, terminateString);
 }
