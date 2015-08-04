@@ -122,6 +122,9 @@ The place where xoreos expects the config file depends on your operating system:
 - On Windows, xoreos.conf is in the subdirectory xoreos in either $APPDATA
   or $USERPROFILE, depending on your Windows version
 
+For a more elaborate example with more in-depth explanations, please see
+[xoreos.conf.example](doc/xoreos.conf.example) in the doc directory.
+
 
 Links
 -----
