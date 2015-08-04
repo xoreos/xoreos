@@ -69,7 +69,9 @@ if [ ! -d $TOOL_BASE ]; then
   echo -e "\033[33;1mExtracting Coverity Scan Analysis Tool...\033[0m"
   mkdir -p $TOOL_BASE
   pushd $TOOL_BASE
-  tar xzf $TOOL_ARCHIVE
+  set -o pipefail
+  ( tar xzf $TOOL_ARCHIVE 2>&1 ) | ( grep -v "Ignoring unknown extended header keyword" || true )
+  set +o pipefail
   popd
 fi
 
