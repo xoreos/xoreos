@@ -79,14 +79,12 @@ bool WitcherEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::U
 		for (size_t i = 0; i < Aurora::kLanguageMAX; i++) {
 			const uint32 langID = LangMan.getLanguageID((Aurora::Language) i);
 
-			const Common::UString v1 = Common::UString::format("lang_%d.key"  , langID);
-			const Common::UString v2 = Common::UString::format("M1_%d.key"    , langID);
-			const Common::UString v3 = Common::UString::format("M2_%d.key"    , langID);
-			const Common::UString t  = Common::UString::format("dialog_%d.tlk", langID);
+			const Common::UString voiceKey = Common::UString::format("lang_%d.key"  , langID);
+			const Common::UString textKey  = Common::UString::format("dialog_%d.tlk", langID);
 
-			if (files.contains(v1, true) && files.contains(v2, true) && files.contains(v3, true))
+			if (files.contains(voiceKey, true))
 				languagesVoice.push_back((Aurora::Language) i);
-			if (files.contains(t, true))
+			if (files.contains(textKey, true))
 				languagesText.push_back((Aurora::Language) i);
 		}
 
@@ -219,9 +217,10 @@ void WitcherEngine::initResources(LoadProgress &progress) {
 	progress.step("Adding extra archive directories");
 	indexMandatoryDirectory("system"      , 0,  0, 2);
 	indexMandatoryDirectory("data"        , 0,  0, 3);
-	indexMandatoryDirectory("data/voices" , 0,  0, 4);
+	indexMandatoryDirectory("data/modules", 0, -1, 4);
 
-	indexMandatoryDirectory("data/modules", 0, -1, 5);
+	// Contains BIFs with voices for the two premium modules
+	indexOptionalDirectory("data/voices", 0, 0, 5);
 
 	progress.step("Loading main KEY");
 	indexMandatoryArchive("main.key", 10);
@@ -303,13 +302,15 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 	archive = Common::UString::format("lang_%d.key", LangMan.getLanguageID(langVoice));
 	indexMandatoryArchive(archive, 100, &_languageResources.back());
 
+	// Voices for the first premium module (The Price of Neutrality)
 	_languageResources.push_back(Common::ChangeID());
 	archive = Common::UString::format("M1_%d.key", LangMan.getLanguageID(langVoice));
-	indexMandatoryArchive(archive, 101, &_languageResources.back());
+	indexOptionalArchive(archive, 101, &_languageResources.back());
 
+	// Voices for the second premium module (Side Effects)
 	_languageResources.push_back(Common::ChangeID());
 	archive = Common::UString::format("M2_%d.key", LangMan.getLanguageID(langVoice));
-	indexMandatoryArchive(archive, 102, &_languageResources.back());
+	indexOptionalArchive(archive, 102, &_languageResources.back());
 
 	archive = Common::UString::format("dialog_%d", LangMan.getLanguageID(langText));
 	TalkMan.addTable(archive, "", false, 0, &_languageTLK);
