@@ -205,7 +205,7 @@ UString Platform::getConfigDirectory() {
 	UString directory;
 
 #if defined(WIN32)
-	// Windows: $APPDATA/xoreos/ or $USERPROFILE/Application Data/xoreos/ or ./
+	// Windows: $APPDATA/xoreos/ or $USERPROFILE/xoreos/ or ./
 
 	const WindowsVersion windowsVersion = getWindowsVersion();
 
@@ -215,11 +215,11 @@ UString Platform::getConfigDirectory() {
 		if (!directory.empty())
 			directory += "\\xoreos";
 
-		// Try the User Profile directory and create our own Application Data directory
+		// Try the User Profile directory
 		if (directory.empty()) {
 			directory = getWindowsVariable(L"USERPROFILE");
 			if (!directory.empty())
-				directory += "\\Application Data\\xoreos";
+				directory += "\\xoreos";
 		}
 	}
 
