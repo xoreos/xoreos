@@ -114,32 +114,41 @@ std::FILE *Platform::openFile(const UString &fileName, FileMode mode) {
 // .--- Windows utility functions ---.
 #if defined(WIN32)
 
-/** Map the Windows version mess to one simple integer,
- *  which is hopefully enough for what we care about...
- */
-static inline uint32 getWindowsVersion() {
-	OSVERSIONINFO win32OsVersion;
-	ZeroMemory(&win32OsVersion, sizeof(OSVERSIONINFO));
-	win32OsVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	if (!GetVersionEx(&win32OsVersion))
-		return 0;
+enum WindowsVersion {
+	kWindowsVersionUnknown = 0x00000000,
+	kWindowsVersion2000    = 0x00050000,
+	kWindowsVersionXP      = 0x00050001,
+	kWindowsVersionXPProf  = 0x00050002,
+	kWindowsVersionVista   = 0x00060000,
+	kWindowsVersion7       = 0x00060001,
+	kWindowsVersion8       = 0x00060002,
+	kWindowsVersion8_1     = 0x00060003,
+	kWindowsVersion10      = 0x000A0000
+};
 
-	if (win32OsVersion.dwPlatformId == VER_PLATFORM_WIN32s) {
-		// Windows 3.1
-		return 1;
-	} else if (win32OsVersion.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
-		// Windows 95 and 98
-		return (win32OsVersion.dwMinorVersion == 0) ? 2 : 3;
-	} else if (win32OsVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) {
-		// Windows NT
-		if (win32OsVersion.dwMajorVersion < 5)
-			return 4;
+static bool isWindowsVersionOrGreater(uint16 majorVersion, uint16 minorVersion) {
+	OSVERSIONINFOEX osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
 
-		// Windows 2000, XP, ...
-		return win32OsVersion.dwMajorVersion;
-	} else
-		// Unknown
-		return 0;
+	DWORDLONG condition =
+		VerSetConditionMask(VerSetConditionMask(
+			0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+			   VER_MINORVERSION, VER_GREATER_EQUAL);
+
+	osvi.dwMajorVersion = majorVersion;
+	osvi.dwMinorVersion = minorVersion;
+
+	return VerifyVersionInfo(&osvi, VER_MAJORVERSION | VER_MINORVERSION, condition);
+}
+
+static WindowsVersion getWindowsVersion() {
+	static const int16 kWindowsVersionMax = 20;
+
+	for (int16 i = kWindowsVersionMax; i >= 0; i--)
+		for (int16 j = 5; j >= 0; j--)
+			if (isWindowsVersionOrGreater(i, j))
+				return (WindowsVersion) ((i << 16) + j);
+
+	return kWindowsVersionUnknown;
 }
 
 static inline UString getWindowsVariable(const wchar_t *variable) {
@@ -198,23 +207,20 @@ UString Platform::getConfigDirectory() {
 #if defined(WIN32)
 	// Windows: $APPDATA/xoreos/ or $USERPROFILE/Application Data/xoreos/ or ./
 
-	uint32 windowsVersion = getWindowsVersion();
-	if (windowsVersion == 0)
-		// If we can't determine the version, just try everything...
-		windowsVersion = 5;
+	const WindowsVersion windowsVersion = getWindowsVersion();
 
-	// Try the Application Data directory
-	if (windowsVersion >= 5) {
+	if (windowsVersion >= kWindowsVersion2000) {
+		// Try the Application Data directory
 		directory = getWindowsVariable(L"APPDATA");
 		if (!directory.empty())
 			directory += "\\xoreos";
-	}
 
-	// Try the User Profile directory and create our own Application Data directory
-	if ((windowsVersion >= 4) && directory.empty()) {
-		directory = getWindowsVariable(L"USERPROFILE");
-		if (!directory.empty())
-			directory += "\\Application Data\\xoreos";
+		// Try the User Profile directory and create our own Application Data directory
+		if (directory.empty()) {
+			directory = getWindowsVariable(L"USERPROFILE");
+			if (!directory.empty())
+				directory += "\\Application Data\\xoreos";
+		}
 	}
 
 	// If all else fails (or the Windows version is too low), use the current directory
