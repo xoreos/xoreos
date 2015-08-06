@@ -29,6 +29,7 @@
 
 #include <SDL.h>
 
+#define GLEW_NO_GLU
 #include "glew/glew.h"
 
 #include "src/common/types.h"
