@@ -64,5 +64,5 @@ Makefile.am.cmake
 # Unix binary
 /src/xoreos
 
-# Window binary
+# Windows binary
 /src/xoreos.exe
