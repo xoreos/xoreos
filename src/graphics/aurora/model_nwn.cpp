@@ -854,8 +854,8 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	for (norms_set_it i = verts_norms.begin(); i != verts_norms.end(); ++i) {
 		v = (float *) vn.pointer + i->vi * vnsize;
 		*v++ = i->xyz[0];
-		*v++ = i->xyz[0];
-		*v++ = i->xyz[0];
+		*v++ = i->xyz[1];
+		*v++ = i->xyz[2];
 	}
 
 	// additional unique verts norms
