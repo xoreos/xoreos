@@ -800,32 +800,22 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	}
 
 
-	// Read vertex data
-
-
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 3;
-	GLsizei vtsize = 2;
-	uint32 vertexSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
-	_vertexBuffer.setSize(vertexCountNew, vertexSize);
-
-	float *vertexData = (float *) _vertexBuffer.getData();
 	VertexDecl vertexDecl;
 
-	// Read vertex coordinates
+	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
+	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
+	for (uint t = 0; t < textureCount; t++)
+		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	VertexAttrib vp;
-	vp.index = VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = 0;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
+	_vertexBuffer.setVertexDeclLinear(vertexCountNew, vertexDecl);
+
+
+	// Read vertex data
 
 	assert (vertexOffset != 0xFFFFFFFF);
 	ctx.mdl->seek(ctx.offRawData + vertexOffset);
 
-	float *v = (float *) vp.pointer;
+	float *v = (float *) vertexDecl[0].pointer;
 	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdl->readIEEEFloatLE();
 		*v++ = ctx.mdl->readIEEEFloatLE();
@@ -835,7 +825,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	// duplicate positions for unique norms
 	for (size_t i = 0; i < new_verts_norms.size(); i++) {
 		uint32 vi = new_verts_norms[i].vi;
-		float *v0 = (float *) vp.pointer + vi * vpsize;
+		float *v0 = (float *)vertexDecl[0].pointer + vi * vertexDecl[0].size;
 		*v++ = *v0++;
 		*v++ = *v0++;
 		*v++ = *v0++;
@@ -843,23 +833,15 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	// Read vertex normals
 
-	VertexAttrib vn;
-	vn.index = VNORMAL;
-	vn.size = vnsize;
-	vn.type = GL_FLOAT;
-	vn.stride = 0;
-	vn.pointer = vertexData + vpsize * vertexCountNew;
-	vertexDecl.push_back(vn);
-
 	for (norms_set_it i = verts_norms.begin(); i != verts_norms.end(); ++i) {
-		v = (float *) vn.pointer + i->vi * vnsize;
+		v = (float *)vertexDecl[1].pointer + i->vi * vertexDecl[1].size;
 		*v++ = i->xyz[0];
 		*v++ = i->xyz[1];
 		*v++ = i->xyz[2];
 	}
 
 	// additional unique verts norms
-	v = (float *) vn.pointer + vnsize * vertexCount;
+	v = (float *)vertexDecl[1].pointer + vertexDecl[1].size * vertexCount;
 	for (size_t i = 0; i < new_verts_norms.size(); i++) {
 		*v++ = new_verts_norms[i].xyz[0];
 		*v++ = new_verts_norms[i].xyz[1];
@@ -869,19 +851,11 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	// Read texture coordinates
 
 	for (uint16 t = 0; t < textureCount; t++) {
-		VertexAttrib vt;
-		vt.index = VTCOORD + t;
-		vt.size = vtsize;
-		vt.type = GL_FLOAT;
-		vt.stride = 0;
-		vt.pointer = vertexData + (vpsize + vnsize + vtsize * t) * vertexCountNew;
-		vertexDecl.push_back(vt);
-
 		bool hasTexture = textureVertexOffset[t] != 0xFFFFFFFF;
 		if (hasTexture)
 			ctx.mdl->seek(ctx.offRawData + textureVertexOffset[t]);
 
-		v = (float *) vt.pointer;
+		v = (float *) vertexDecl[2 + t].pointer;
 		for (uint32 i = 0; i < vertexCount; i++) {
 			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
 			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
@@ -890,13 +864,11 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 		// duplicate tcoords for unique norms
 		for (size_t i = 0; i < new_verts_norms.size(); i++) {
 			uint32 vi = new_verts_norms[i].vi;
-			float *v0 = (float *) vt.pointer + vi * vtsize;
+			float *v0 = (float *) vertexDecl[2 + t].pointer + vi * vertexDecl[2 + t].size;
 			*v++ = *v0++;
 			*v++ = *v0++;
 		}
 	}
-
-	_vertexBuffer.setVertexDecl(vertexDecl);
 
 	createBound();
 
