@@ -981,21 +981,23 @@ const ResourceManager::Resource *ResourceManager::getRes(uint64 hash) const {
 const ResourceManager::Resource *ResourceManager::getRes(const Common::UString &name,
 		const std::vector<FileType> &types) const {
 
+	const Resource *result = 0;
 	for (std::vector<FileType>::const_iterator type = types.begin(); type != types.end(); ++type) {
 		const Resource *res = getRes(getHash(name, *type));
-		if (res)
-			return res;
-
-		if (_hasSmall) {
+		if (res && (!result || *result < *res))
+			result = res;
+	}
+	if (!result && _hasSmall) {
+		for (std::vector<FileType>::const_iterator type = types.begin(); type != types.end(); ++type) {
 			Common::UString smallName = TypeMan.addFileType(TypeMan.setFileType(name, *type), kFileTypeSMALL);
 
-			res = getRes(getHash(smallName));
-			if (res)
-				return res;
+			const Resource *res = getRes(getHash(smallName));
+			if (res && (!result || *result < *res))
+				result = res;
 		}
 	}
 
-	return 0;
+	return result;
 }
 
 const ResourceManager::Resource *ResourceManager::getRes(const Common::UString &name, FileType type) const {
