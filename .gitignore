@@ -50,6 +50,12 @@ Makefile.in
 /cmake_install.cmake
 Makefile.am.cmake
 
+# Eclipse project files
+/.autotools
+/.cproject
+/.project
+/.settings
+
 # Doxygen files
 /Doxyerror
 /doc/doxygen/html/
