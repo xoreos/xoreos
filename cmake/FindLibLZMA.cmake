@@ -7,11 +7,11 @@
 
 if(WIN32)
   find_path(LIBLZMA_INCLUDE_DIR lzma/version.h $ENV{PROGRAMFILES}/xz/include DOC "The directory where lzma/version.h resides")
-  find_library(LIBLZMA_LIBRARY NAMES liblzma PATHS $ENV{PROGRAMFILES}/xz/lib DOC "The liblzma library")
+  find_library(LIBLZMA_LIBRARY NAMES lzma liblzma PATHS $ENV{PROGRAMFILES}/xz/lib DOC "The liblzma library")
 
 else(WIN32)
   find_path(LIBLZMA_INCLUDE_DIR lzma/version.h DOC "The directory where lzma/version.h resides")
-  find_library(LIBLZMA_LIBRARY NAMES liblzma DOC "The liblzma library")
+  find_library(LIBLZMA_LIBRARY NAMES lzma liblzma DOC "The liblzma library")
 
 endif(WIN32)
 
