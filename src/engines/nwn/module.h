@@ -66,6 +66,10 @@ public:
 	/** Clear the whole context. */
 	void clear();
 
+	// .--- Module management
+	/** Is a module currently running? */
+	bool isRunning() const;
+
 	/** Load a module. */
 	void load(const Common::UString &module);
 	/** Use this character as the player character. */
@@ -74,21 +78,25 @@ public:
 	void run();
 	/** Exit the currently running module. */
 	void exit();
+	// '---
 
-	/** Show the ingame main menu. */
-	void showMenu();
-
-	/** Is a module currently running? */
-	bool isRunning() const;
+	// .--- Information about the current module
 	/** Return the name of the currently loaded module. */
 	const Common::UString &getName() const;
-
 	/** Return the IFO of the currently loaded module. */
 	const Aurora::IFOFile &getIFO() const;
+	// '---
+
+	// .--- Elements of the current module
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
 	/** Return the currently playing PC. */
 	Creature *getPC();
+	// '---
+
+	// .--- Interact with the current module
+	/** Show the ingame main menu. */
+	void showMenu();
 
 	/** Start a conversation.
 	 *
@@ -101,7 +109,14 @@ public:
 	 */
 	bool startConversation(const Common::UString &conv, Creature &pc,
 	                       Engines::NWN::Object &obj, bool playHello = true);
+	// '---
 
+	void delayScript(const Common::UString &script,
+	                 const Aurora::NWScript::ScriptState &state,
+	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
+	                 uint32 delay);
+
+	// .--- PC management
 	/** Move the player character to this area. */
 	void movePC(const Common::UString &area);
 	/** Move the player character to this position within the current area. */
@@ -112,14 +127,11 @@ public:
 	void movePC(Area *area, float x, float y, float z);
 	/** Notify the module that the PC was moved. */
 	void movedPC();
+	// '---
 
-	void delayScript(const Common::UString &script,
-	                 const Aurora::NWScript::ScriptState &state,
-	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
-	                 uint32 delay);
-
-
+	// .--- Static utility methods
 	static Common::UString getDescription(const Common::UString &module);
+	// '---
 
 
 private:
@@ -181,6 +193,7 @@ private:
 	std::multiset<Action> _delayedActions;
 
 
+	// .--- Unloading
 	/** Unload the whole shebang.
 	 *
 	 *  @param completeUnload Also unload the PC and texture packs.
@@ -195,7 +208,9 @@ private:
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadTexturePack(); ///< Unload the texture pack.
 	void unloadAreas();       ///< Unload the areas.
+	// '---
 
+	// .--- Loading
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
@@ -203,6 +218,7 @@ private:
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadTexturePack(); ///< Load the texture pack.
 	void loadAreas();       ///< Load the areas.
+	// '---
 
 	void setPCTokens();
 	void removePCTokens();
