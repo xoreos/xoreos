@@ -76,18 +76,35 @@ void Game::run() {
 
 	while (!EventMan.quitRequested()) {
 		mainMenu(first, first);
-
-		if (EventMan.quitRequested())
-			break;
-
-		_module->run();
-		_module->clear();
-
-		first = false;
+		runModule();
 	}
 
 	delete _module;
 	_module = 0;
+}
+
+void Game::runModule() {
+	if (EventMan.quitRequested() || !_module->isLoaded()) {
+		_module->clear();
+		return;
+	}
+
+	_module->enter();
+	EventMan.enableKeyRepeat(true);
+
+	while (!EventMan.quitRequested() && _module->isRunning()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event))
+			_module->addEvent(event);
+
+		_module->processEventQueue();
+		EventMan.delay(10);
+	}
+
+	EventMan.enableKeyRepeat(false);
+	_module->leave();
+
+	_module->clear();
 }
 
 void Game::playMenuMusic(Common::UString music) {

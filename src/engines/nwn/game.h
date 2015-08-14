@@ -82,6 +82,7 @@ private:
 	void playMenuMusic(Common::UString music = "");
 
 	void mainMenu(bool playStartSound, bool showLegal);
+	void runModule();
 };
 
 } // End of namespace NWN

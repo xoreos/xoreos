@@ -323,7 +323,6 @@ void Module::enter() {
 	if (!startMovie.empty())
 		playVideo(startMovie);
 
-	_exit    = false;
 	_newArea = _ifo.getEntryArea();
 
 	CameraMan.reset();
@@ -332,6 +331,21 @@ void Module::enter() {
 	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);
 	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
 	CameraMan.update();
+
+	_running = true;
+	_exit    = false;
+
+	_ingameGUI->show();
+}
+
+void Module::leave() {
+	_ingameGUI->stopConversation();
+	_ingameGUI->hide();
+
+	EventMan.enableKeyRepeat(0);
+
+	_running = false;
+	_exit    = true;
 }
 
 void Module::enterArea() {
@@ -380,66 +394,47 @@ void Module::exit() {
 	_exit = true;
 }
 
-bool Module::isRunning() const {
-	return _running;
+bool Module::isLoaded() const {
+	return _hasModule && _pc;
 }
 
-void Module::run() {
-	enter();
-	_running = true;
+bool Module::isRunning() const {
+	return !EventMan.quitRequested() && _running && !_exit && !_newArea.empty();
+}
 
-	EventMan.enableKeyRepeat();
+void Module::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
 
-	_ingameGUI->show();
+void Module::processEventQueue() {
+	if (!isRunning())
+		return;
 
-	try {
+	replaceModule();
+	enterArea();
 
-		EventMan.flushEvents();
+	if (!isRunning())
+		return;
 
-		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
-			replaceModule();
-			enterArea();
-			if (_exit)
-				break;
+	handleEvents();
+	handleActions();
 
-			handleEvents();
-			handleActions();
-
-			_ingameGUI->updatePartyMember(0, *_pc);
-
-			if (!EventMan.quitRequested() && !_exit && !_newArea.empty())
-				EventMan.delay(10);
-		}
-
-	} catch (Common::Exception &e) {
-		_running = false;
-
-		e.add("Failed running module \"%s\"", _ifo.getName().getString().c_str());
-		throw e;
-	}
-
-	_ingameGUI->stopConversation();
-	_ingameGUI->hide();
-
-	EventMan.enableKeyRepeat(0);
-
-	_running = false;
+	_ingameGUI->updatePartyMember(0, *_pc);
 }
 
 void Module::handleEvents() {
-	Events::Event event;
-	while (EventMan.pollEvent(event)) {
+	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event) {
 		// Handle console
-		if (_console->processEvent(event)) {
+		if (_console->processEvent(*event)) {
 			if (!_currentArea)
 				return;
 
 			continue;
 		}
 
-		if (event.type == Events::kEventKeyDown) {
+		if (event->type == Events::kEventKeyDown) {
 			// Menu
-			if (event.key.keysym.sym == SDLK_ESCAPE) {
+			if (event->key.keysym.sym == SDLK_ESCAPE) {
 				// But only if we're not in a conversation, where ESC should abort that
 				if (!_ingameGUI->hasRunningConversation()) {
 					showMenu();
@@ -448,7 +443,7 @@ void Module::handleEvents() {
 			}
 
 			// Console
-			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+			if ((event->key.keysym.sym == SDLK_d) && (event->key.keysym.mod & KMOD_CTRL)) {
 				_console->show();
 				continue;
 			}
@@ -456,14 +451,17 @@ void Module::handleEvents() {
 
 		// Camera
 		if (!_console->isVisible())
-			if (handleCameraInput(event))
+			if (handleCameraInput(*event))
 				continue;
 
-		_ingameGUI->addEvent(event);
-		_currentArea->addEvent(event);
+		_ingameGUI->addEvent(*event);
+		_currentArea->addEvent(*event);
 	}
 
+	_eventQueue.clear();
+
 	CameraMan.update();
+
 	_currentArea->processEventQueue();
 	_ingameGUI->processEventQueue();
 }
@@ -472,7 +470,7 @@ void Module::handleActions() {
 	uint32 now = EventMan.getTimestamp();
 
 	while (!_delayedActions.empty()) {
-		std::multiset<Action>::iterator action = _delayedActions.begin();
+		ActionQueue::iterator action = _delayedActions.begin();
 
 		if (now < action->timestamp)
 			break;
@@ -497,6 +495,7 @@ void Module::unload(bool completeUnload) {
 void Module::unloadModule() {
 	handleActions();
 
+	_eventQueue.clear();
 	_delayedActions.clear();
 
 	TwoDAReg.clear();

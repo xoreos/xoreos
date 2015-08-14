@@ -67,6 +67,8 @@ public:
 	void clear();
 
 	// .--- Module management
+	/** Is a module currently loaded and ready to run? */
+	bool isLoaded() const;
 	/** Is a module currently running? */
 	bool isRunning() const;
 
@@ -74,8 +76,6 @@ public:
 	void load(const Common::UString &module);
 	/** Use this character as the player character. */
 	void usePC(const Common::UString &bic, bool local);
-	/** Run the currently loaded module. */
-	void run();
 	/** Exit the currently running module. */
 	void exit();
 	// '---
@@ -133,6 +133,17 @@ public:
 	static Common::UString getDescription(const Common::UString &module);
 	// '---
 
+	// .--- Module main loop (called by the Game class)
+	/** Enter the loaded module, starting it. */
+	void enter();
+	/** Leave the running module, quitting it. */
+	void leave();
+
+	/** Add a single event for consideration into the event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+	// '---
 
 private:
 	enum ActionType {
@@ -155,6 +166,9 @@ private:
 	};
 
 	typedef std::map<Common::UString, Area *> AreaMap;
+
+	typedef std::list<Events::Event> EventQueue;
+	typedef std::multiset<Action> ActionQueue;
 
 
 	::Engines::Console *_console;
@@ -190,7 +204,8 @@ private:
 
 	Common::UString _newModule; ///< The module we should change to.
 
-	std::multiset<Action> _delayedActions;
+	EventQueue  _eventQueue;
+	ActionQueue _delayedActions;
 
 
 	// .--- Unloading
@@ -223,7 +238,6 @@ private:
 	void setPCTokens();
 	void removePCTokens();
 
-	void enter();     ///< Enter the currently loaded module.
 	void enterArea(); ///< Enter a new area.
 
 	/** Load the actual module. */
