@@ -51,8 +51,6 @@
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/area.h"
 
-#include "src/engines/nwn/script/container.h"
-
 #include "src/engines/nwn/gui/ingame/ingame.h"
 
 struct GenderToken {
@@ -156,8 +154,6 @@ void Module::loadModule(const Common::UString &module) {
 		checkHAKs();
 
 		_tag = _ifo.getTag();
-
-		readScripts(*_ifo.getGFF());
 
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
@@ -323,10 +319,6 @@ void Module::enter() {
 
 	_pc->loadModel();
 
-	runScript(kScriptModuleLoad , this, _pc);
-	runScript(kScriptModuleStart, this, _pc);
-	runScript(kScriptEnter      , this, _pc);
-
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
 		playVideo(startMovie);
@@ -351,7 +343,6 @@ void Module::enterArea() {
 	if (_currentArea) {
 		_pc->hide();
 
-		_currentArea->runScript(kScriptExit, _currentArea, _pc);
 		_currentArea->hide();
 
 		_currentArea = 0;
@@ -379,8 +370,6 @@ void Module::enterArea() {
 	_ingameGUI->setArea(_currentArea->getName());
 
 	_pc->setArea(_currentArea);
-
-	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
 
 	_console->printf("Entering area \"%s\"", _currentArea->getResRef().c_str());
 }
@@ -488,10 +477,6 @@ void Module::handleActions() {
 		if (now < action->timestamp)
 			break;
 
-		if (action->type == kActionScript)
-			ScriptContainer::runScript(action->script, action->state,
-			                           action->owner, action->triggerer);
-
 		_delayedActions.erase(action);
 	}
 }
@@ -510,7 +495,6 @@ void Module::unload(bool completeUnload) {
 }
 
 void Module::unloadModule() {
-	runScript(kScriptExit, this, _pc);
 	handleActions();
 
 	_delayedActions.clear();
@@ -518,7 +502,6 @@ void Module::unloadModule() {
 	TwoDAReg.clear();
 
 	clearVariables();
-	clearScripts();
 
 	_tag.clear();
 

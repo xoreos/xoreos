@@ -184,10 +184,6 @@ bool Door::click(Object *triggerer) {
 	if (!isOpen())
 		return open(triggerer);
 
-	// If the door is open and has a click script, call that
-	if (hasScript(kScriptClick))
-		return runScript(kScriptClick, this, triggerer);
-
 	evaluateLink();
 	if (_link) {
 		float x, y, z;
@@ -209,7 +205,6 @@ bool Door::open(Object *opener) {
 
 	if (isLocked()) {
 		playSound(_soundLocked);
-		runScript(kScriptFailToOpen, this, opener);
 		return false;
 	}
 
@@ -219,7 +214,6 @@ bool Door::open(Object *opener) {
 	playSound(_soundOpened);
 	if (_model)
 		_model->playAnimation("opening1");
-	runScript(kScriptOpen, this, opener);
 
 	// Also open the linked door
 	evaluateLink();
@@ -242,7 +236,6 @@ bool Door::close(Object *closer) {
 	playSound(_soundClosed);
 	if (_model)
 		_model->playAnimation("closing1");
-	runScript(kScriptClosed, this, closer);
 
 	// Also close the linked door
 	evaluateLink();

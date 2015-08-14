@@ -42,8 +42,6 @@
 
 #include "src/engines/nwn/creature.h"
 
-#include "src/engines/nwn/script/container.h"
-
 namespace Engines {
 
 class Console;
@@ -58,8 +56,7 @@ class Area;
 
 class IngameGUI;
 
-class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer,
-               public ScriptContainer {
+class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
 public:
 	Module(::Engines::Console &console, const Version &gameVersion);
 	~Module();

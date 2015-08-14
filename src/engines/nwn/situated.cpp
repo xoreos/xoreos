@@ -198,9 +198,6 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Locked
 	_locked = gff.getBool("Locked", _locked);
-
-	// Scripts
-	readScripts(gff);
 }
 
 void Situated::loadPortrait(const Aurora::GFF3Struct &gff) {

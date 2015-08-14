@@ -82,8 +82,6 @@ noinst_HEADERS = \
                  gui/ingame/charinfo.h \
                  gui/ingame/partyleader.h \
                  gui/ingame/dialog.h \
-                 script/container.h \
-                 script/functions.h \
                  $(EMPTY)
 
 libnwn_la_SOURCES = \
@@ -166,15 +164,4 @@ libnwn_la_SOURCES = \
                     gui/ingame/charinfo.cpp \
                     gui/ingame/partyleader.cpp \
                     gui/ingame/dialog.cpp \
-                    script/container.cpp \
-                    script/functions.cpp \
-                    script/functions_000.cpp \
-                    script/functions_100.cpp \
-                    script/functions_200.cpp \
-                    script/functions_300.cpp \
-                    script/functions_400.cpp \
-                    script/functions_500.cpp \
-                    script/functions_600.cpp \
-                    script/functions_700.cpp \
-                    script/functions_800.cpp \
                     $(EMPTY)

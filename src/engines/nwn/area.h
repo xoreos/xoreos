@@ -46,8 +46,6 @@
 
 #include "src/engines/nwn/tileset.h"
 
-#include "src/engines/nwn/script/container.h"
-
 namespace Engines {
 
 namespace NWN {
@@ -56,8 +54,7 @@ class Module;
 
 class Object;
 
-class Area : public Aurora::NWScript::Object, public Events::Notifyable,
-             public ScriptContainer {
+class Area : public Aurora::NWScript::Object, public Events::Notifyable {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();

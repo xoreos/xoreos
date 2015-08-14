@@ -57,8 +57,6 @@
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/area.h"
 
-#include "src/engines/nwn/script/functions.h"
-
 #include "src/engines/nwn/gui/legal.h"
 #include "src/engines/nwn/gui/main/main.h"
 
@@ -67,7 +65,7 @@ namespace Engines {
 namespace NWN {
 
 NWNEngine::NWNEngine() : _version(0), _language(Aurora::kLanguageInvalid),
-	_hasXP1(false), _hasXP2(false), _hasXP3(false), _scriptFuncs(0), _module(0) {
+	_hasXP1(false), _hasXP2(false), _hasXP3(false), _module(0) {
 
 	_console = new Console(*this);
 }
@@ -176,9 +174,6 @@ void NWNEngine::init() {
 
 	progress.step("Initializing internal game config");
 	initGameConfig();
-
-	progress.step("Starting script system");
-	_scriptFuncs = new ScriptFunctions(*this);
 
 	progress.step("Successfully initialized the engine");
 }
@@ -472,7 +467,6 @@ void NWNEngine::checkConfig() {
 }
 
 void NWNEngine::deinit() {
-	delete _scriptFuncs;
 	delete _version;
 }
 
