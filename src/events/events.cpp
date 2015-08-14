@@ -116,7 +116,8 @@ bool EventsManager::isQueueFull() const {
 }
 
 void EventsManager::delay(uint32 ms) {
-	SDL_Delay(ms);
+	if (!_quitRequested)
+		SDL_Delay(ms);
 }
 
 uint32 EventsManager::getTimestamp() const {
