@@ -147,8 +147,6 @@ void NewModuleMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) 
 void NewModuleMenu::initModuleList() {
 	status("Creating module list");
 
-	NWNEngine::getModules(_modules);
-
 	WidgetListBox &moduleList = *getListBox("ModuleListBox", true);
 
 	moduleList.lock();

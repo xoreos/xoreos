@@ -22,12 +22,9 @@
  *  Engine class handling Neverwinter Nights.
  */
 
-#include <algorithm>
-
 #include "src/common/util.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
-#include "src/common/readstream.h"
 #include "src/common/configman.h"
 
 #include "src/aurora/util.h"
@@ -35,8 +32,6 @@
 #include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
 #include "src/aurora/talktable_tlk.h"
-
-#include "src/sound/sound.h"
 
 #include "src/events/events.h"
 
@@ -54,24 +49,18 @@
 #include "src/engines/nwn/version.h"
 #include "src/engines/nwn/modelloader.h"
 #include "src/engines/nwn/console.h"
-#include "src/engines/nwn/module.h"
-#include "src/engines/nwn/area.h"
-
-#include "src/engines/nwn/gui/legal.h"
-#include "src/engines/nwn/gui/main/main.h"
 
 namespace Engines {
 
 namespace NWN {
 
 NWNEngine::NWNEngine() : _version(0), _language(Aurora::kLanguageInvalid),
-	_hasXP1(false), _hasXP2(false), _hasXP3(false), _module(0) {
+	_hasXP1(false), _hasXP2(false), _hasXP3(false) {
 
 	_console = new Console(*this);
 }
 
 NWNEngine::~NWNEngine() {
-	delete _module;
 }
 
 bool NWNEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -115,10 +104,6 @@ bool NWNEngine::changeLanguage() {
 	return true;
 }
 
-Module *NWNEngine::getModule() {
-	return _module;
-}
-
 void NWNEngine::run() {
 	init();
 	if (EventMan.quitRequested())
@@ -132,8 +117,6 @@ void NWNEngine::run() {
 		return;
 
 	CursorMan.showCursor();
-
-	mainMenuLoop();
 
 	deinit();
 }
@@ -476,164 +459,6 @@ void NWNEngine::playIntroVideos() {
 	playVideo("wotclogo");
 	playVideo("fge_logo_black");
 	playVideo("nwnintro");
-}
-
-void NWNEngine::playMenuMusic(Common::UString music) {
-	stopMenuMusic();
-
-	if (music.empty())
-		music = _hasXP2 ? "mus_x2theme" : "mus_theme_main";
-
-	_menuMusic = playSound(music, Sound::kSoundTypeMusic, true);
-}
-
-void NWNEngine::stopMenuMusic() {
-	SoundMan.stopChannel(_menuMusic);
-}
-
-void NWNEngine::playMusic(const Common::UString &music) {
-	if (_module && _module->isRunning()) {
-		Area *area = _module->getCurrentArea();
-		if (area)
-			area->playAmbientMusic(music);
-
-		return;
-	}
-
-	playMenuMusic(music);
-}
-
-void NWNEngine::stopMusic() {
-	stopMenuMusic();
-
-	if (_module && _module->isRunning()) {
-		Area *area = _module->getCurrentArea();
-		if (area)
-			area->stopAmbientMusic();
-	}
-}
-
-void NWNEngine::runMainMenu(GUI *mainMenu) {
-	_console->disableCommand("loadcampaign", "not available in the main menu");
-	_console->disableCommand("loadmodule"  , "not available in the main menu");
-	_console->disableCommand("exitmodule"  , "not available in the main menu");
-	_console->disableCommand("listareas"   , "not available in the main menu");
-	_console->disableCommand("gotoarea"    , "not available in the main menu");
-
-	mainMenu->run();
-
-	_console->enableCommand("loadcampaign");
-	_console->enableCommand("loadmodule");
-	_console->enableCommand("exitmodule");
-	_console->enableCommand("listareas");
-	_console->enableCommand("gotoarea");
-}
-
-void NWNEngine::mainMenuLoop() {
-	playMenuMusic();
-
-	// Start sound
-	playSound("gui_prompt", Sound::kSoundTypeSFX);
-
-	// Create and fade in the legal billboard
-	Legal *legal = new Legal;
-
-	_module = new Module(*_console, *_version);
-
-	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(*_module, _console);
-
-		EventMan.flushEvents();
-		if (legal) {
-			// Fade in, show and fade out the legal billboard
-			legal->fadeIn();
-			mainMenu->show();
-			legal->show();
-
-			delete legal;
-			legal = 0;
-		} else
-			mainMenu->show();
-
-		runMainMenu(mainMenu);
-
-		mainMenu->hide();
-		delete mainMenu;
-
-		if (EventMan.quitRequested())
-			break;
-
-		stopMenuMusic();
-
-		_module->run();
-		if (EventMan.quitRequested())
-			break;
-
-		playMenuMusic();
-		_module->clear();
-	}
-
-	delete _module;
-	_module = 0;
-
-	stopMenuMusic();
-
-	delete legal;
-}
-
-void NWNEngine::getModules(std::vector<Common::UString> &modules) {
-	modules.clear();
-
-	Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
-	if (moduleDir.empty())
-		return;
-
-	Common::FileList mods;
-	mods.addDirectory(moduleDir);
-
-	for (Common::FileList::const_iterator m = mods.begin(); m != mods.end(); ++m) {
-		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
-			continue;
-
-		modules.push_back(Common::FilePath::getStem(*m));
-	}
-
-	std::sort(modules.begin(), modules.end(), Common::UString::iless());
-}
-
-bool NWNEngine::hasModule(Common::UString &module) {
-	const Common::UString nwmFile = module + ".nwm";
-	const Common::UString modFile = module + ".mod";
-
-	if (ResMan.hasArchive(nwmFile)) {
-		module = nwmFile;
-		return true;
-	}
-
-	if (ResMan.hasArchive(modFile)) {
-		module = modFile;
-		return true;
-	}
-
-	return false;
-}
-
-void NWNEngine::getCharacters(std::vector<Common::UString> &characters, bool local) {
-	characters.clear();
-
-	Common::UString pcDir = ConfigMan.getString(local ? "NWN_localPCDir" : "NWN_serverPCDir");
-	if (pcDir.empty())
-		return;
-
-	Common::FileList chars;
-	chars.addDirectory(pcDir);
-
-	for (Common::FileList::const_iterator c = chars.begin(); c != chars.end(); ++c) {
-		if (!Common::FilePath::getExtension(*c).equalsIgnoreCase(".bic"))
-			continue;
-
-		characters.push_back(Common::FilePath::getStem(*c));
-	}
 }
 
 } // End of namespace NWN

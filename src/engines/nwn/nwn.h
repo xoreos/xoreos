@@ -27,11 +27,7 @@
 
 #include <vector>
 
-#include "src/common/ustring.h"
-
 #include "src/aurora/types.h"
-
-#include "src/sound/types.h"
 
 #include "src/engines/engine.h"
 
@@ -42,9 +38,6 @@ class LoadProgress;
 namespace NWN {
 
 class Version;
-
-class GUI;
-class Module;
 
 class NWNEngine : public Engines::Engine {
 public:
@@ -57,21 +50,6 @@ public:
 
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
-
-	/** Return the currently running module. */
-	Module *getModule();
-
-	/** Overwrite all currently playing music. */
-	void playMusic(const Common::UString &music = "");
-	/** Force all currently playing music stopped. */
-	void stopMusic();
-
-	/** Return a list of all modules. */
-	static void getModules(std::vector<Common::UString> &modules);
-	/** Does a given module exist? */
-	static bool hasModule(Common::UString &module);
-	/** Return a list of local player characters. */
-	static void getCharacters(std::vector<Common::UString> &characters, bool local);
 
 
 protected:
@@ -86,10 +64,6 @@ private:
 	bool _hasXP1; // Shadows of Undrentide (SoU)
 	bool _hasXP2; // Hordes of the Underdark (HotU)
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
-
-	Module *_module;
-
-	Sound::ChannelHandle _menuMusic;
 
 
 	void init();
@@ -108,13 +82,6 @@ private:
 	void checkConfig();
 
 	void playIntroVideos();
-
-	void playMenuMusic(Common::UString music = "");
-	void stopMenuMusic();
-
-	void runMainMenu(GUI *mainMenu);
-
-	void mainMenuLoop();
 };
 
 } // End of namespace NWN

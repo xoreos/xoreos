@@ -179,7 +179,6 @@ void CharPremadeMenu::initCharacterList() {
 	status("Creating character list");
 
 	std::vector<Common::UString> characters;
-	NWNEngine::getCharacters(characters, true);
 
 	WidgetListBox &charList = *getListBox("ButtonList", true);
 

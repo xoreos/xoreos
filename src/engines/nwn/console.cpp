@@ -46,11 +46,13 @@ static const int kCampaignNames[] = {
 	100777, 100778, 100779
 };
 
+/*
 static const char *kCampaignModules[] = {
 	"Prelude"      , "Chapter1"     , "Chapter2"     , "Chapter3", "Chapter4",
 	"XP1-Chapter 1", "XP1-Interlude", "XP1-Chapter 2",
 	"XP2_Chapter1" , "XP2_Chapter2" , "XP2_Chapter3"
 };
+*/
 
 namespace Engines {
 
@@ -141,28 +143,12 @@ void Console::updateCampaigns() {
 void Console::updateModules() {
 	_modules.clear();
 
-	std::vector<Common::UString> modules;
-	NWNEngine::getModules(modules);
-
-	for (std::vector<Common::UString>::iterator m = modules.begin(); m != modules.end(); ++m)
-		_modules.push_back(*m);
-
 	setArguments("loadmodule", _modules);
 }
 
 void Console::updateAreas() {
 	_areas.clear();
 	setArguments("gotoarea");
-
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
-	const std::vector<Common::UString> &areas = module->getIFO().getAreas();
-	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
-		_areas.push_back(*a);
-
-	setArguments("gotoarea", _areas);
 }
 
 void Console::updateMusic() {
@@ -184,12 +170,6 @@ void Console::updateMusic() {
 }
 
 void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
-	hide();
-	module->exit();
 }
 
 void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
@@ -199,25 +179,10 @@ void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdLoadCampaign(const CommandLine &cl) {
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
 	if (cl.args.empty()) {
 		printCommandHelp(cl.cmd);
 		return;
 	}
-
-	CampaignMap::const_iterator c = _campaignModules.find(cl.args);
-	if (c == _campaignModules.end()) {
-		printf("No such campaign module \"%s\"", cl.args.c_str());
-		return;
-	}
-
-	hide();
-
-	Common::UString mod = Common::UString(kCampaignModules[c->second]) + ".nwm";
-	module->load(mod);
 }
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
@@ -230,20 +195,6 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		printCommandHelp(cl.cmd);
 		return;
 	}
-
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
-	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
-		if (m->equalsIgnoreCase(cl.args)) {
-			hide();
-			module->load(cl.args + ".mod");
-			return;
-		}
-	}
-
-	printf("No such module \"%s\"", cl.args.c_str());
 }
 
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
@@ -254,24 +205,10 @@ void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdGotoArea(const CommandLine &cl) {
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
 	if (cl.args.empty()) {
 		printCommandHelp(cl.cmd);
 		return;
 	}
-
-	const std::vector<Common::UString> &areas = module->getIFO().getAreas();
-	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
-		if (a->equalsIgnoreCase(cl.args)) {
-			hide();
-			module->movePC(*a);
-			return;
-		}
-
-	printf("Area \"%s\" does not exist", cl.args.c_str());
 }
 
 void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
@@ -280,11 +217,9 @@ void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
-	_engine->stopMusic();
 }
 
-void Console::cmdPlayMusic(const CommandLine &cl) {
-	_engine->playMusic(cl.args);
+void Console::cmdPlayMusic(const CommandLine &UNUSED(cl)) {
 }
 
 } // End of namespace NWN
