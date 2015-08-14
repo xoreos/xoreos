@@ -9,6 +9,7 @@ noinst_HEADERS = \
                  modelloader.h \
                  version.h \
                  console.h \
+                 game.h \
                  location.h \
                  tileset.h \
                  module.h \
@@ -92,6 +93,7 @@ libnwn_la_SOURCES = \
                     version.cpp \
                     creature.cpp \
                     console.cpp \
+                    game.cpp \
                     module.cpp \
                     area.cpp \
                     tileset.cpp \

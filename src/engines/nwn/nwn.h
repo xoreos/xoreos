@@ -38,6 +38,7 @@ class LoadProgress;
 namespace NWN {
 
 class Version;
+class Game;
 
 class NWNEngine : public Engines::Engine {
 public:
@@ -50,6 +51,9 @@ public:
 
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
+
+	/** Return the context running the actual game. */
+	Game &getGame();
 
 
 protected:
@@ -64,6 +68,8 @@ private:
 	bool _hasXP1; // Shadows of Undrentide (SoU)
 	bool _hasXP2; // Hordes of the Underdark (HotU)
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
+
+	Game *_game;
 
 
 	void init();

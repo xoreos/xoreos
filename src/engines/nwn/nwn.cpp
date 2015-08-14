@@ -22,6 +22,8 @@
  *  Engine class handling Neverwinter Nights.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
@@ -49,18 +51,21 @@
 #include "src/engines/nwn/version.h"
 #include "src/engines/nwn/modelloader.h"
 #include "src/engines/nwn/console.h"
+#include "src/engines/nwn/game.h"
 
 namespace Engines {
 
 namespace NWN {
 
 NWNEngine::NWNEngine() : _version(0), _language(Aurora::kLanguageInvalid),
-	_hasXP1(false), _hasXP2(false), _hasXP3(false) {
+	_hasXP1(false), _hasXP2(false), _hasXP3(false), _game(0) {
 
 	_console = new Console(*this);
 }
 
 NWNEngine::~NWNEngine() {
+	delete _version;
+	delete _game;
 }
 
 bool NWNEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -104,6 +109,12 @@ bool NWNEngine::changeLanguage() {
 	return true;
 }
 
+Game &NWNEngine::getGame() {
+	assert(_game);
+
+	return *_game;
+}
+
 void NWNEngine::run() {
 	init();
 	if (EventMan.quitRequested())
@@ -117,6 +128,9 @@ void NWNEngine::run() {
 		return;
 
 	CursorMan.showCursor();
+
+	_game = new Game(*this, *_console, *_version);
+	_game->run();
 
 	deinit();
 }
@@ -451,6 +465,10 @@ void NWNEngine::checkConfig() {
 
 void NWNEngine::deinit() {
 	delete _version;
+	delete _game;
+
+	_version = 0;
+	_game    = 0;
 }
 
 void NWNEngine::playIntroVideos() {
