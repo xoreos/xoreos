@@ -35,8 +35,8 @@
 
 #include "src/engines/aurora/model.h"
 
-#include "src/engines/nwn/nwn.h"
 #include "src/engines/nwn/creature.h"
+#include "src/engines/nwn/game.h"
 #include "src/engines/nwn/module.h"
 
 #include "src/engines/nwn/gui/widgets/listbox.h"
@@ -179,6 +179,7 @@ void CharPremadeMenu::initCharacterList() {
 	status("Creating character list");
 
 	std::vector<Common::UString> characters;
+	Game::getCharacters(characters, true);
 
 	WidgetListBox &charList = *getListBox("ButtonList", true);
 

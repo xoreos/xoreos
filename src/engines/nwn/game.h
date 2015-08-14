@@ -25,6 +25,12 @@
 #ifndef ENGINES_NWN_GAME_H
 #define ENGINES_NWN_GAME_H
 
+#include <vector>
+
+#include "src/common/ustring.h"
+
+#include "src/sound/types.h"
+
 namespace Engines {
 
 class Console;
@@ -34,6 +40,8 @@ namespace NWN {
 class NWNEngine;
 class Version;
 
+class Module;
+
 class Game {
 public:
 	Game(NWNEngine &engine, ::Engines::Console &console, const Version &version);
@@ -41,14 +49,39 @@ public:
 
 	const Version &getVersion() const;
 
+	/** Return the module context. */
+	Module &getModule();
+
+	/** Overwrite all currently playing music. */
+	void playMusic(const Common::UString &music = "");
+	/** Force all currently playing music stopped. */
+	void stopMusic();
+
 	void run();
+
+	/** Return a list of all modules. */
+	static void getModules(std::vector<Common::UString> &modules);
+	/** Does this module exist? */
+	static bool hasModule(Common::UString &module);
+	/** Return a list of local player characters. */
+	static void getCharacters(std::vector<Common::UString> &characters, bool local);
+
 
 private:
 	NWNEngine *_engine;
+	Module    *_module;
 
 	::Engines::Console *_console;
 
 	const Version *_version;
+
+	Sound::ChannelHandle _menuMusic;
+
+
+	void stopMenuMusic();
+	void playMenuMusic(Common::UString music = "");
+
+	void mainMenu(bool playStartSound, bool showLegal);
 };
 
 } // End of namespace NWN
