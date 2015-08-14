@@ -396,7 +396,7 @@ void Area::loadModels() {
 	loadTileModels();
 
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
-		Engines::NWN::Object &object = **o;
+		NWN::Object &object = **o;
 
 		object.loadModel();
 
@@ -489,7 +489,7 @@ void Area::unloadTiles() {
 	}
 }
 
-void Area::loadObject(Engines::NWN::Object &object) {
+void Area::loadObject(NWN::Object &object) {
 	object.setArea(this);
 
 	_objects.push_back(&object);
@@ -560,7 +560,7 @@ void Area::processEventQueue() {
 		checkActive();
 }
 
-Engines::NWN::Object *Area::getObjectAt(int x, int y) {
+NWN::Object *Area::getObjectAt(int x, int y) {
 	const Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
 	if (!obj)
 		return 0;
@@ -572,7 +572,7 @@ Engines::NWN::Object *Area::getObjectAt(int x, int y) {
 	return o->second;
 }
 
-void Area::setActive(Engines::NWN::Object *object) {
+void Area::setActive(NWN::Object *object) {
 	if (object == _activeObject)
 		return;
 
@@ -603,7 +603,7 @@ void Area::click(int x, int y) {
 
 	Common::StackLock lock(_mutex);
 
-	Engines::NWN::Object *o = getObjectAt(x, y);
+	NWN::Object *o = getObjectAt(x, y);
 	if (!o)
 		return;
 

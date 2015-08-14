@@ -108,7 +108,7 @@ public:
 	 *  @return true if the conversation was started successfully.
 	 */
 	bool startConversation(const Common::UString &conv, Creature &pc,
-	                       Engines::NWN::Object &obj, bool playHello = true);
+	                       NWN::Object &obj, bool playHello = true);
 	// '---
 
 	void delayScript(const Common::UString &script,

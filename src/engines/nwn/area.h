@@ -138,8 +138,8 @@ private:
 		Graphics::Aurora::Model *model; ///< The tile's model.
 	};
 
-	typedef std::list<Engines::NWN::Object *> ObjectList;
-	typedef std::map<uint32, Engines::NWN::Object *> ObjectMap;
+	typedef std::list<NWN::Object *> ObjectList;
+	typedef std::map<uint32, NWN::Object *> ObjectMap;
 
 
 	Module *_module;
@@ -185,7 +185,7 @@ private:
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
 
 	/** The currently active (highlighted) object. */
-	Engines::NWN::Object *_activeObject;
+	NWN::Object *_activeObject;
 
 	bool _highlightAll; ///< Are we currently highlighting all objects?
 
@@ -206,7 +206,7 @@ private:
 	void loadTiles(const Aurora::GFF3List &tiles);
 	void loadTile(const Aurora::GFF3Struct &t, Tile &tile);
 
-	void loadObject(Engines::NWN::Object &object);
+	void loadObject(NWN::Object &object);
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
 	void loadDoors     (const Aurora::GFF3List &list);
@@ -229,8 +229,8 @@ private:
 	// Highlight / active helpers
 
 	void checkActive(int x = -1, int y = -1);
-	void setActive(Engines::NWN::Object *object);
-	Engines::NWN::Object *getObjectAt(int x, int y);
+	void setActive(NWN::Object *object);
+	NWN::Object *getObjectAt(int x, int y);
 
 	void highlightAll(bool enabled);
 

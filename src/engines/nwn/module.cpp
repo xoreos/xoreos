@@ -636,7 +636,7 @@ void Module::showMenu() {
 }
 
 bool Module::startConversation(const Common::UString &conv, Creature &pc,
-                               Engines::NWN::Object &obj, bool playHello) {
+                               NWN::Object &obj, bool playHello) {
 
 	return _ingameGUI->startConversation(conv, pc, obj, playHello);
 }
