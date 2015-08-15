@@ -47,6 +47,18 @@ void Functions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
 	_game->getModule().delayScript(script, state, getParamObject(ctx, 0), ctx.getTriggerer(), 0);
 }
 
+void Functions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
+	Common::UString script = ctx.getScriptName();
+	if (script.empty())
+		throw Common::Exception("Functions::assignCommand(): Script needed");
+
+	uint32 delay = ctx.getParams()[0].getFloat() * 1000;
+
+	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
+
+	_game->getModule().delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), delay);
+}
+
 // TODO: These functions need to assign an action, instead of simply delaying the script a bit.
 
 void Functions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {
