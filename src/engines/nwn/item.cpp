@@ -169,6 +169,9 @@ void Item::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Portrait
 	loadPortrait(gff);
+
+	// Scripts
+	readScripts(gff);
 }
 
 void Item::loadPortrait(const Aurora::GFF3Struct &gff) {

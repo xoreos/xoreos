@@ -156,6 +156,8 @@ void Module::loadModule(const Common::UString &module) {
 		_tag  = _ifo.getTag();
 		_name = _ifo.getName().getString();
 
+		readScripts(*_ifo.getGFF());
+
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
 		throw e;
@@ -320,6 +322,10 @@ void Module::enter() {
 
 	_pc->loadModel();
 
+	runScript(kScriptModuleLoad , this, _pc);
+	runScript(kScriptModuleStart, this, _pc);
+	runScript(kScriptEnter      , this, _pc);
+
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
 		playVideo(startMovie);
@@ -358,6 +364,7 @@ void Module::enterArea() {
 	if (_currentArea) {
 		_pc->hide();
 
+		_currentArea->runScript(kScriptExit, _currentArea, _pc);
 		_currentArea->hide();
 
 		_currentArea = 0;
@@ -385,6 +392,8 @@ void Module::enterArea() {
 	_ingameGUI->setArea(_currentArea->getName());
 
 	_pc->setArea(_currentArea);
+
+	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
 
 	_console->printf("Entering area \"%s\"", _currentArea->getResRef().c_str());
 }
@@ -476,6 +485,10 @@ void Module::handleActions() {
 		if (now < action->timestamp)
 			break;
 
+		if (action->type == kActionScript)
+			ScriptContainer::runScript(action->script, action->state,
+			                           action->owner, action->triggerer);
+
 		_delayedActions.erase(action);
 	}
 }
@@ -494,6 +507,7 @@ void Module::unload(bool completeUnload) {
 }
 
 void Module::unloadModule() {
+	runScript(kScriptExit, this, _pc);
 	handleActions();
 
 	_eventQueue.clear();
@@ -502,6 +516,7 @@ void Module::unloadModule() {
 	TwoDAReg.clear();
 
 	clearVariables();
+	clearScripts();
 
 	_tag.clear();
 
