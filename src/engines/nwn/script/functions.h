@@ -147,6 +147,11 @@ private:
 	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Situated objects, functions_situated.cpp
+	void getLocked(Aurora::NWScript::FunctionContext &ctx);
+	void setLocked(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Creatures, functions_creature.cpp
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 	// '---
