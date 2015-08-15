@@ -138,6 +138,10 @@ private:
 	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Actions, functions_action.cpp
+	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Conversations, functions_conversation.cpp
 	void speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx);
 	// '---

@@ -374,7 +374,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 291, "GetLastPlayerDied"                   , 0                                                },
 	{ 292, "GetModuleItemLost"                   , 0                                                },
 	{ 293, "GetModuleItemLostBy"                 , 0                                                },
-	{ 294, "ActionDoCommand"                     , 0                                                },
+	{ 294, "ActionDoCommand"                     , &Functions::actionDoCommand                      },
 	{ 295, "EventConversation"                   , 0                                                },
 	{ 296, "SetEncounterDifficulty"              , 0                                                },
 	{ 297, "GetEncounterDifficulty"              , 0                                                },
