@@ -56,6 +56,7 @@ class Area;
 /** An object within a NWN area. */
 class Object : public Aurora::NWScript::Object, public NWN::ScriptContainer {
 public:
+	Object(ObjectType type = kObjectTypeNone);
 	virtual ~Object();
 
 	/** Return the exact type of the object. */
@@ -179,8 +180,6 @@ protected:
 
 	Sound::ChannelHandle _sound; ///< The currently playing object sound.
 
-
-	Object(ObjectType type = kObjectTypeNone);
 
 	/** Load the object's sound set. */
 	void loadSSF();
