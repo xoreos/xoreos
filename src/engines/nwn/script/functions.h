@@ -137,6 +137,10 @@ private:
 	void setLocalString(Aurora::NWScript::FunctionContext &ctx);
 	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Conversations, functions_conversation.cpp
+	void speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace NWN

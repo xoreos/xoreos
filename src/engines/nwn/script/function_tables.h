@@ -497,7 +497,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 414, "SoundObjectStop"                     , 0                                                },
 	{ 415, "SoundObjectSetVolume"                , 0                                                },
 	{ 416, "SoundObjectSetPosition"              , 0                                                },
-	{ 417, "SpeakOneLinerConversation"           , 0                                                },
+	{ 417, "SpeakOneLinerConversation"           , &Functions::speakOneLinerConversation            },
 	{ 418, "GetGold"                             , 0                                                },
 	{ 419, "GetLastRespawnButtonPresser"         , 0                                                },
 	{ 420, "GetIsDM"                             , 0                                                },
