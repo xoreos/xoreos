@@ -12,6 +12,7 @@ noinst_HEADERS = \
                  game.h \
                  location.h \
                  tileset.h \
+                 objectcontainer.h \
                  module.h \
                  area.h \
                  object.h \
@@ -97,6 +98,7 @@ libnwn_la_SOURCES = \
                     module.cpp \
                     area.cpp \
                     tileset.cpp \
+                    objectcontainer.cpp \
                     object.cpp \
                     waypoint.cpp \
                     situated.cpp \
