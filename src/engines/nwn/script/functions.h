@@ -73,10 +73,48 @@ private:
 
 	void registerFunctions();
 
-	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
+	// .--- Utility methods
+	static int32 random(int min, int max, int32 n = 1);
 
 	static Common::UString formatTag(const Aurora::NWScript::Object *object);
 	static Common::UString formatParams(const Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
+	// --- Engine functions ---
+
+	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
+
+	// .--- Math, functions_math.cpp
+	void abs (Aurora::NWScript::FunctionContext &ctx);
+	void fabs(Aurora::NWScript::FunctionContext &ctx);
+
+	void cos(Aurora::NWScript::FunctionContext &ctx);
+	void sin(Aurora::NWScript::FunctionContext &ctx);
+	void tan(Aurora::NWScript::FunctionContext &ctx);
+
+	void acos(Aurora::NWScript::FunctionContext &ctx);
+	void asin(Aurora::NWScript::FunctionContext &ctx);
+	void atan(Aurora::NWScript::FunctionContext &ctx);
+
+	void log (Aurora::NWScript::FunctionContext &ctx);
+	void pow (Aurora::NWScript::FunctionContext &ctx);
+	void sqrt(Aurora::NWScript::FunctionContext &ctx);
+
+	void random(Aurora::NWScript::FunctionContext &ctx);
+
+	void d2  (Aurora::NWScript::FunctionContext &ctx);
+	void d3  (Aurora::NWScript::FunctionContext &ctx);
+	void d4  (Aurora::NWScript::FunctionContext &ctx);
+	void d6  (Aurora::NWScript::FunctionContext &ctx);
+	void d8  (Aurora::NWScript::FunctionContext &ctx);
+	void d10 (Aurora::NWScript::FunctionContext &ctx);
+	void d12 (Aurora::NWScript::FunctionContext &ctx);
+	void d20 (Aurora::NWScript::FunctionContext &ctx);
+	void d100(Aurora::NWScript::FunctionContext &ctx);
+
+	void intToFloat(Aurora::NWScript::FunctionContext &ctx);
+	void floatToInt(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace NWN

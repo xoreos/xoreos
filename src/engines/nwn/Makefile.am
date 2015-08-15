@@ -173,4 +173,5 @@ libnwn_la_SOURCES = \
                     gui/ingame/dialog.cpp \
                     script/container.cpp \
                     script/functions.cpp \
+                    script/functions_math.cpp \
                     $(EMPTY)
