@@ -74,6 +74,9 @@ private:
 	void registerFunctions();
 
 	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
+
+	static Common::UString formatTag(const Aurora::NWScript::Object *object);
+	static Common::UString formatParams(const Aurora::NWScript::FunctionContext &ctx);
 };
 
 } // End of namespace NWN
