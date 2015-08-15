@@ -144,6 +144,8 @@ private:
 
 	// .--- Conversations, functions_conversation.cpp
 	void speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx);
+
+	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
