@@ -102,6 +102,12 @@ void Functions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = speaker;
 }
 
+void Functions::getLastSpeaker(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	unimplementedFunction(ctx);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

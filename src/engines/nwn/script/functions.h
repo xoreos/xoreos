@@ -173,7 +173,8 @@ private:
 
 	void beginConversation(Aurora::NWScript::FunctionContext &ctx);
 
-	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
+	void getPCSpeaker  (Aurora::NWScript::FunctionContext &ctx);
+	void getLastSpeaker(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
