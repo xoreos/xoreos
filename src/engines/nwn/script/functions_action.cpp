@@ -35,6 +35,16 @@ namespace Engines {
 
 namespace NWN {
 
+void Functions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
+	Common::UString script = ctx.getScriptName();
+	if (script.empty())
+		throw Common::Exception("Functions::assignCommand(): Script needed");
+
+	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
+
+	_game->getModule().delayScript(script, state, getParamObject(ctx, 0), ctx.getTriggerer(), 0);
+}
+
 // TODO: These functions need to assign an action, instead of simply delaying the script a bit.
 
 void Functions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {

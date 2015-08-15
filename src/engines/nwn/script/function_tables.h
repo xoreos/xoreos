@@ -86,7 +86,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{   3, "FloatToString"                       , 0                                                },
 	{   4, "PrintInteger"                        , 0                                                },
 	{   5, "PrintObject"                         , 0                                                },
-	{   6, "AssignCommand"                       , 0                                                },
+	{   6, "AssignCommand"                       , &Functions::assignCommand                        },
 	{   7, "DelayCommand"                        , 0                                                },
 	{   8, "ExecuteScript"                       , 0                                                },
 	{   9, "ClearAllActions"                     , 0                                                },

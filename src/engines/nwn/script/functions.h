@@ -157,6 +157,8 @@ private:
 	// '---
 
 	// .--- Actions, functions_action.cpp
+	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
+
 	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
