@@ -40,6 +40,8 @@ namespace NWN {
 class NWNEngine;
 class Version;
 
+class Functions;
+
 class Module;
 
 class Game {
@@ -70,6 +72,8 @@ public:
 private:
 	NWNEngine *_engine;
 	Module    *_module;
+
+	Functions *_functions;
 
 	::Engines::Console *_console;
 

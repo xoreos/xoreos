@@ -46,17 +46,21 @@
 #include "src/engines/nwn/gui/legal.h"
 #include "src/engines/nwn/gui/main/main.h"
 
+#include "src/engines/nwn/script/functions.h"
+
 namespace Engines {
 
 namespace NWN {
 
 Game::Game(NWNEngine &engine, ::Engines::Console &console, const Version &version) :
-	_engine(&engine), _module(0), _console(&console), _version(&version) {
+	_engine(&engine), _module(0), _functions(0), _console(&console), _version(&version) {
 
+	_functions = new Functions(*this);
 }
 
 Game::~Game() {
 	delete _module;
+	delete _functions;
 }
 
 const Version &Game::getVersion() const {
