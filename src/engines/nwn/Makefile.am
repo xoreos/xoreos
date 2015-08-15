@@ -176,6 +176,7 @@ libnwn_la_SOURCES = \
                     script/functions_math.cpp \
                     script/functions_module.cpp \
                     script/functions_object.cpp \
+                    script/functions_creature.cpp \
                     script/functions_action.cpp \
                     script/functions_conversation.cpp \
                     $(EMPTY)

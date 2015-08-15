@@ -144,6 +144,10 @@ private:
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Creatures, functions_creature.cpp
+	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Actions, functions_action.cpp
 	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
 	// '---
