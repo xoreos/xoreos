@@ -88,7 +88,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{   5, "PrintObject"                         , 0                                                },
 	{   6, "AssignCommand"                       , &Functions::assignCommand                        },
 	{   7, "DelayCommand"                        , &Functions::delayCommand                         },
-	{   8, "ExecuteScript"                       , 0                                                },
+	{   8, "ExecuteScript"                       , &Functions::executeScript                        },
 	{   9, "ClearAllActions"                     , 0                                                },
 	{  10, "SetFacing"                           , 0                                                },
 	{  11, "SetCalendar"                         , 0                                                },

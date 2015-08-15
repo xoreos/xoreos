@@ -160,6 +160,8 @@ private:
 	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
 	void delayCommand (Aurora::NWScript::FunctionContext &ctx);
 
+	void executeScript(Aurora::NWScript::FunctionContext &ctx);
+
 	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionOpenDoor (Aurora::NWScript::FunctionContext &ctx);

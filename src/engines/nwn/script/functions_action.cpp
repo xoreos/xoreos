@@ -24,7 +24,11 @@
 
 #include "src/common/error.h"
 
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
+
 #include "src/aurora/nwscript/functioncontext.h"
+#include "src/aurora/nwscript/ncsfile.h"
 
 #include "src/engines/nwn/game.h"
 #include "src/engines/nwn/module.h"
@@ -57,6 +61,27 @@ void Functions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::ScriptState &state = ctx.getParams()[1].getScriptState();
 
 	_game->getModule().delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), delay);
+}
+
+void Functions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
+	Common::UString script = ctx.getParams()[0].getString();
+
+	// Max resource name length is 16, and ExecuteScript should truncate accordingly
+	script.truncate(16);
+
+	if (!ResMan.hasResource(script, Aurora::kFileTypeNCS))
+		return;
+
+	Aurora::NWScript::Object *object = getParamObject(ctx, 1);
+	try {
+		Aurora::NWScript::NCSFile ncs(script);
+
+		ncs.run(object);
+	} catch (Common::Exception &e) {
+		e.add("Failed ExecuteScript(\"%s\", %s)", script.c_str(), formatTag(object).c_str());
+
+		Common::printException(e, "WARNING: ");
+	}
 }
 
 // TODO: These functions need to assign an action, instead of simply delaying the script a bit.
