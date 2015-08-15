@@ -33,6 +33,8 @@
 
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/game.h"
+#include "src/engines/nwn/objectcontainer.h"
+#include "src/engines/nwn/object.h"
 
 #include "src/engines/nwn/script/functions.h"
 
@@ -164,6 +166,17 @@ Common::UString Functions::formatParams(const Aurora::NWScript::FunctionContext 
 	}
 
 	return params;
+}
+
+Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getParams()[n].getObject());
+	if (!object || (object->getType() == kObjectTypeInvalid))
+		return 0;
+
+	if (object->getType() == kObjectTypeSelf)
+		return ctx.getCaller();
+
+	return object;
 }
 
 } // End of namespace NWN

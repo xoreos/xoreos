@@ -30,6 +30,7 @@
 namespace Aurora {
 	namespace NWScript {
 		class FunctionContext;
+		class Object;
 	}
 }
 
@@ -78,6 +79,8 @@ private:
 
 	static Common::UString formatTag(const Aurora::NWScript::Object *object);
 	static Common::UString formatParams(const Aurora::NWScript::FunctionContext &ctx);
+
+	static Aurora::NWScript::Object *getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n);
 	// '---
 
 	// --- Engine functions ---
@@ -114,6 +117,25 @@ private:
 
 	void intToFloat(Aurora::NWScript::FunctionContext &ctx);
 	void floatToInt(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
+	// .--- General object functions, functions_object.cpp
+	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
+	void getExitingObject (Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsObjectValid(Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
+
+	void getLocalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalFloat (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalString(Aurora::NWScript::FunctionContext &ctx);
+	void getLocalObject(Aurora::NWScript::FunctionContext &ctx);
+
+	void setLocalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalFloat (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalString(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
