@@ -25,6 +25,14 @@
 #ifndef ENGINES_NWN_SCRIPT_FUNCTIONS_H
 #define ENGINES_NWN_SCRIPT_FUNCTIONS_H
 
+#include "src/aurora/nwscript/types.h"
+
+namespace Aurora {
+	namespace NWScript {
+		class FunctionContext;
+	}
+}
+
 namespace Engines {
 
 namespace NWN {
@@ -37,9 +45,35 @@ public:
 	~Functions();
 
 private:
+	typedef void (Functions::*funcPtr)(Aurora::NWScript::FunctionContext &ctx);
+
+	struct FunctionPointer {
+		uint32 id;
+		const char *name;
+		funcPtr func;
+	};
+
+	struct FunctionSignature {
+		uint32 id;
+		Aurora::NWScript::Type returnType;
+		Aurora::NWScript::Type parameters[8];
+	};
+
+	struct FunctionDefaults {
+		uint32 id;
+		Aurora::NWScript::Variable defaults[6];
+	};
+
+	static const FunctionPointer kFunctionPointers[];
+	static const FunctionSignature kFunctionSignatures[];
+	static const FunctionDefaults kFunctionDefaults[];
+
+
 	Game *_game;
 
 	void registerFunctions();
+
+	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
 };
 
 } // End of namespace NWN

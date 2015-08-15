@@ -86,6 +86,7 @@ noinst_HEADERS = \
                  gui/ingame/dialog.h \
                  script/container.h \
                  script/functions.h \
+                 script/function_tables.h \
                  $(EMPTY)
 
 libnwn_la_SOURCES = \

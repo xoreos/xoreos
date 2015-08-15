@@ -22,12 +22,20 @@
  *  Neverwinter Nights engine functions.
  */
 
+#include <cassert>
+
+#include <boost/bind.hpp>
+
+#include "src/common/util.h"
+
 #include "src/aurora/nwscript/functionman.h"
 
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/game.h"
 
 #include "src/engines/nwn/script/functions.h"
+
+#include "src/engines/nwn/script/function_tables.h"
 
 namespace Engines {
 
@@ -42,6 +50,43 @@ Functions::~Functions() {
 }
 
 void Functions::registerFunctions() {
+	assert(ARRAYSIZE(kFunctionPointers) == ARRAYSIZE(kFunctionSignatures));
+	assert(ARRAYSIZE(kFunctionPointers) == ARRAYSIZE(kFunctionDefaults));
+
+	for (size_t i = 0; i < ARRAYSIZE(kFunctionPointers); i++) {
+		const FunctionPointer   &fPtr = kFunctionPointers[i];
+		const FunctionSignature &fSig = kFunctionSignatures[i];
+		const FunctionDefaults  &fDef = kFunctionDefaults[i];
+
+		const uint32 id = fPtr.id;
+
+		assert((fSig.id == id) && (fDef.id == id));
+
+		Aurora::NWScript::Signature signature;
+		signature.push_back(fSig.returnType);
+		for (size_t j = 0; j < ARRAYSIZE(fSig.parameters); j++) {
+			if (fSig.parameters[j] == kTypeVoid)
+				break;
+
+			signature.push_back(fSig.parameters[j]);
+		}
+
+		Aurora::NWScript::Parameters defaults;
+		for (size_t j = 0; j < ARRAYSIZE(fDef.defaults); j++) {
+			if (fDef.defaults[j].getType() == kTypeVoid)
+				break;
+
+			defaults.push_back(fDef.defaults[j]);
+		}
+
+		const funcPtr f = fPtr.func ? fPtr.func : &Functions::unimplementedFunction;
+
+		FunctionMan.registerFunction(fPtr.name, id, boost::bind(f, this, _1), signature, defaults);
+	}
+}
+
+void Functions::unimplementedFunction(Aurora::NWScript::FunctionContext &ctx) {
+	warning("TODO: %s", ctx.getName().c_str());
 }
 
 } // End of namespace NWN
