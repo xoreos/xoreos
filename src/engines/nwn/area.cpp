@@ -44,7 +44,6 @@
 
 #include "src/engines/nwn/area.h"
 #include "src/engines/nwn/module.h"
-#include "src/engines/nwn/object.h"
 #include "src/engines/nwn/waypoint.h"
 #include "src/engines/nwn/placeable.h"
 #include "src/engines/nwn/door.h"
@@ -207,7 +206,7 @@ void Area::playAmbientMusic(Common::UString music) {
 	if (music.empty())
 		return;
 
-	_ambientMusic = playSound(music, Sound::kSoundTypeMusic, true);
+	_ambientMusic = ::Engines::playSound(music, Sound::kSoundTypeMusic, true);
 }
 
 void Area::playAmbientSound(Common::UString sound) {
@@ -220,7 +219,7 @@ void Area::playAmbientSound(Common::UString sound) {
 	if (sound.empty())
 		return;
 
-	_ambientSound = playSound(sound, Sound::kSoundTypeSFX, true, _ambientDayVol);
+	_ambientSound = ::Engines::playSound(sound, Sound::kSoundTypeSFX, true, _ambientDayVol);
 }
 
 void Area::show() {

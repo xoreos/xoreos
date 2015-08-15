@@ -35,8 +35,6 @@
 
 #include "src/aurora/types.h"
 
-#include "src/aurora/nwscript/object.h"
-
 #include "src/graphics/aurora/types.h"
 
 #include "src/sound/types.h"
@@ -45,6 +43,7 @@
 #include "src/events/notifyable.h"
 
 #include "src/engines/nwn/tileset.h"
+#include "src/engines/nwn/object.h"
 
 namespace Engines {
 
@@ -52,9 +51,7 @@ namespace NWN {
 
 class Module;
 
-class Object;
-
-class Area : public Aurora::NWScript::Object, public Events::Notifyable {
+class Area : public NWN::Object, public Events::Notifyable {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();
