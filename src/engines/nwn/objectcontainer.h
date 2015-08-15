@@ -47,6 +47,19 @@ class Door;
 class Creature;
 class Location;
 
+/** A class able to sort objects by distance to a target object. */
+class ObjectDistanceSort {
+public:
+	ObjectDistanceSort(const NWN::Object &target);
+
+	bool operator()(NWN::Object *a, NWN::Object *b);
+
+private:
+	float xt, yt, zt;
+
+	float getDistance(NWN::Object &a);
+};
+
 class ObjectContainer : public ::Aurora::NWScript::ObjectContainer {
 public:
 	ObjectContainer();

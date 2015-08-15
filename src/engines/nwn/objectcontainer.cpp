@@ -23,6 +23,7 @@
  */
 
 #include "src/common/types.h"
+#include "src/common/util.h"
 
 #include "src/engines/nwn/objectcontainer.h"
 #include "src/engines/nwn/object.h"
@@ -38,6 +39,22 @@
 namespace Engines {
 
 namespace NWN {
+
+ObjectDistanceSort::ObjectDistanceSort(const NWN::Object &target) {
+	target.getPosition(xt, yt, zt);
+}
+
+bool ObjectDistanceSort::operator()(NWN::Object *a, NWN::Object *b) {
+	return getDistance(*a) < getDistance(*b);
+}
+
+float ObjectDistanceSort::getDistance(NWN::Object &a) {
+	float x, y, z;
+	a.getPosition(x, y, z);
+
+	return ABS(x - xt) + ABS(y - yt) + ABS(z - zt);
+}
+
 
 class SearchType : public ::Aurora::NWScript::SearchRange< std::list<NWN::Object *> > {
 public:
