@@ -33,14 +33,13 @@
 
 #include "src/aurora/ifofile.h"
 
-#include "src/aurora/nwscript/object.h"
-#include "src/aurora/nwscript/objectcontainer.h"
-
 #include "src/graphics/aurora/types.h"
 
 #include "src/events/types.h"
 
 #include "src/engines/nwn/creature.h"
+#include "src/engines/nwn/objectcontainer.h"
+#include "src/engines/nwn/object.h"
 
 namespace Engines {
 
@@ -50,13 +49,11 @@ namespace NWN {
 
 class Version;
 
-class Object;
-
 class Area;
 
 class IngameGUI;
 
-class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
+class Module : public NWN::Object, public NWN::ObjectContainer {
 public:
 	Module(::Engines::Console &console, const Version &gameVersion);
 	~Module();
