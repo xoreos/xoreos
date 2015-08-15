@@ -37,6 +37,8 @@
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/location.h"
 
+#include "src/engines/nwn/script/container.h"
+
 namespace Aurora {
 	class SSFFile;
 
@@ -52,7 +54,7 @@ namespace NWN {
 class Area;
 
 /** An object within a NWN area. */
-class Object : public Aurora::NWScript::Object {
+class Object : public Aurora::NWScript::Object, public NWN::ScriptContainer {
 public:
 	virtual ~Object();
 
