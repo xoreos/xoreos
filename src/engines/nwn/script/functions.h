@@ -160,6 +160,9 @@ private:
 	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionOpenDoor (Aurora::NWScript::FunctionContext &ctx);
+	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Conversations, functions_conversation.cpp

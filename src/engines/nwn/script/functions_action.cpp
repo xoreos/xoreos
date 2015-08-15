@@ -28,6 +28,8 @@
 
 #include "src/engines/nwn/game.h"
 #include "src/engines/nwn/module.h"
+#include "src/engines/nwn/objectcontainer.h"
+#include "src/engines/nwn/door.h"
 
 #include "src/engines/nwn/script/functions.h"
 
@@ -55,6 +57,18 @@ void Functions::actionDoCommand(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::NWScript::ScriptState &state = ctx.getParams()[0].getScriptState();
 
 	_game->getModule().delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), 0);
+}
+
+void Functions::actionOpenDoor(Aurora::NWScript::FunctionContext &ctx) {
+	Door *door = NWN::ObjectContainer::toDoor(getParamObject(ctx, 0));
+	if (door)
+		door->open(NWN::ObjectContainer::toObject(ctx.getCaller()));
+}
+
+void Functions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
+	Door *door = NWN::ObjectContainer::toDoor(getParamObject(ctx, 0));
+	if (door)
+		door->close(NWN::ObjectContainer::toObject(ctx.getCaller()));
 }
 
 } // End of namespace NWN
