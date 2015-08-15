@@ -144,6 +144,7 @@ private:
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void getNearestObject(Aurora::NWScript::FunctionContext &ctx);
+	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Creatures, functions_creature.cpp

@@ -162,6 +162,49 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = *it;
 }
 
+void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Object *) 0;
+
+	const Common::UString &tag = ctx.getParams()[0].getString();
+	if (tag.empty())
+		return;
+
+	NWN::Object *target = NWN::ObjectContainer::toObject(getParamObject(ctx, 1));
+	if (!target)
+		return;
+
+	size_t nth = MAX<int32>(ctx.getParams()[2].getInt() - 1, 0);
+
+	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjectsByTag(tag);
+	Aurora::NWScript::Object       *object = 0;
+
+	std::list<Object *> objects;
+	while ((object = search->next())) {
+		// Needs to be a valid object, not the target, but in the target's area
+		NWN::Object *nwnObject = NWN::ObjectContainer::toObject(object);
+		if (!nwnObject || (nwnObject == target) || (nwnObject->getArea() != target->getArea()))
+			continue;
+
+		// Ignore invalid object types
+		uint32 objectType = (uint32) nwnObject->getType();
+		if ((objectType == kObjectTypeNone) || (objectType >= kObjectTypeMAX))
+			continue;
+
+		objects.push_back(nwnObject);
+	}
+
+	delete search;
+
+	objects.sort(ObjectDistanceSort(*target));
+
+	std::list<Object *>::iterator it = objects.begin();
+	for (size_t n = 0; (n < nth) && (it != objects.end()); ++n)
+		++it;
+
+	if (it != objects.end())
+		ctx.getReturn() = *it;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
