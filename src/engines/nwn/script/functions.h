@@ -140,6 +140,8 @@ private:
 	void setLocalFloat (Aurora::NWScript::FunctionContext &ctx);
 	void setLocalString(Aurora::NWScript::FunctionContext &ctx);
 	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
+
+	void getTag(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp

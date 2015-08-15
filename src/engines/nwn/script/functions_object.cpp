@@ -105,6 +105,14 @@ void Functions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 		object->setVariable(ctx.getParams()[1].getString(), ctx.getParams()[2].getObject());
 }
 
+void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().getString().clear();
+
+	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
+	if (object)
+		ctx.getReturn() = object->getTag();
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
