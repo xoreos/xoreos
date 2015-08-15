@@ -154,6 +154,8 @@ private:
 
 	// .--- Creatures, functions_creature.cpp
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp

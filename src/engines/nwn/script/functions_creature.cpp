@@ -44,6 +44,12 @@ void Functions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature ? (int32) creature->getAbility(ability) : 0;
 }
 
+void Functions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature ? (creature->getCurrentHP() <= 0) : false;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

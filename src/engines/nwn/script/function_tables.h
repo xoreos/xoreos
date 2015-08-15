@@ -220,7 +220,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 137, "VectorNormalize"                     , 0                                                },
 	{ 138, "EffectCurse"                         , 0                                                },
 	{ 139, "GetAbilityScore"                     , &Functions::getAbilityScore                      },
-	{ 140, "GetIsDead"                           , 0                                                },
+	{ 140, "GetIsDead"                           , &Functions::getIsDead                            },
 	{ 141, "PrintVector"                         , 0                                                },
 	{ 142, "Vector"                              , 0                                                },
 	{ 143, "SetFacingPoint"                      , 0                                                },
