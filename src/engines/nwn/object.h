@@ -178,7 +178,7 @@ protected:
 	Sound::ChannelHandle _sound; ///< The currently playing object sound.
 
 
-	Object(ObjectType type);
+	Object(ObjectType type = kObjectTypeNone);
 
 	/** Load the object's sound set. */
 	void loadSSF();
