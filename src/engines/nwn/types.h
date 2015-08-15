@@ -46,7 +46,9 @@ enum ObjectType {
 
 	kObjectTypeMAX,
 
+	kObjectTypeSelf         = 0x7FFE,
 	kObjectTypeInvalid      = 0x7FFF,
+
 	kObjectTypeAll          = 0x7FFF
 };
 
