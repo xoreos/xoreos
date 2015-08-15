@@ -22,8 +22,12 @@
  *  Neverwinter Nights engine functions messing with objects.
  */
 
+#include "src/common/util.h"
+
 #include "src/aurora/nwscript/functioncontext.h"
 
+#include "src/engines/nwn/game.h"
+#include "src/engines/nwn/module.h"
 #include "src/engines/nwn/objectcontainer.h"
 #include "src/engines/nwn/object.h"
 
@@ -111,6 +115,51 @@ void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
 	if (object)
 		ctx.getReturn() = object->getTag();
+}
+
+void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	NWN::Object *target = NWN::ObjectContainer::toObject(getParamObject(ctx, 1));
+	if (!target)
+		return;
+
+	// Bitfield of type(s) to check for
+	uint32 type = ctx.getParams()[0].getInt();
+	// We want the nth nearest object
+	size_t nth  = MAX<int32>(ctx.getParams()[2].getInt() - 1, 0);
+
+	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjects();
+	Aurora::NWScript::Object       *object = 0;
+
+	std::list<Object *> objects;
+	while ((object = search->next())) {
+		// Needs to be a valid object, not the target, but in the target's area
+		NWN::Object *nwnObject = NWN::ObjectContainer::toObject(object);
+		if (!nwnObject || (nwnObject == target) || (nwnObject->getArea() != target->getArea()))
+			continue;
+
+		// Ignore invalid object types
+		uint32 objectType = (uint32) nwnObject->getType();
+		if ((objectType == kObjectTypeNone) || (objectType >= kObjectTypeMAX))
+			continue;
+
+		// Convert the type into a bitfield value and check against the type bitfield
+
+		if (type & (1 << (objectType - 1)))
+			objects.push_back(nwnObject);
+	}
+
+	delete search;
+
+	objects.sort(ObjectDistanceSort(*target));
+
+	std::list<Object *>::iterator it = objects.begin();
+	for (size_t n = 0; (n < nth) && (it != objects.end()); ++n)
+		++it;
+
+	if (it != objects.end())
+		ctx.getReturn() = *it;
 }
 
 } // End of namespace NWN
