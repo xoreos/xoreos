@@ -119,6 +119,10 @@ private:
 	void floatToInt(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Module functions, functions_module.cpp
+	void getModule(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- General object functions, functions_object.cpp
 	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
 	void getExitingObject (Aurora::NWScript::FunctionContext &ctx);

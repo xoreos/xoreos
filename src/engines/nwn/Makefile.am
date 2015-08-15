@@ -174,6 +174,7 @@ libnwn_la_SOURCES = \
                     script/container.cpp \
                     script/functions.cpp \
                     script/functions_math.cpp \
+                    script/functions_module.cpp \
                     script/functions_object.cpp \
                     script/functions_action.cpp \
                     script/functions_conversation.cpp \
