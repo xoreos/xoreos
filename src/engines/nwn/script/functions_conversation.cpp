@@ -92,6 +92,16 @@ void Functions::beginConversation(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = _game->getModule().startConversation(conversation, *pc, *object);
 }
 
+void Functions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *speaker = 0;
+
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
+	if (object)
+		speaker = object->getPCSpeaker();
+
+	ctx.getReturn() = speaker;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
