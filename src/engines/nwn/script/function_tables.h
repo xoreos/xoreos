@@ -319,7 +319,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 236, "GetIsFriend"                         , 0                                                },
 	{ 237, "GetIsNeutral"                        , 0                                                },
 	{ 238, "GetPCSpeaker"                        , &Functions::getPCSpeaker                         },
-	{ 239, "GetStringByStrRef"                   , 0                                                },
+	{ 239, "GetStringByStrRef"                   , &Functions::getStringByStrRef                    },
 	{ 240, "ActionSpeakStringByStrRef"           , 0                                                },
 	{ 241, "DestroyObject"                       , 0                                                },
 	{ 242, "GetModule"                           , &Functions::getModule                            },

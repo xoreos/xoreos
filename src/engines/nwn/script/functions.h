@@ -152,6 +152,8 @@ private:
 	void insertString (Aurora::NWScript::FunctionContext &ctx);
 	void getSubString (Aurora::NWScript::FunctionContext &ctx);
 	void findSubString(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Module functions, functions_module.cpp

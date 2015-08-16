@@ -26,6 +26,9 @@
 #include "src/common/ustring.h"
 #include "src/common/strutil.h"
 
+#include "src/aurora/language.h"
+#include "src/aurora/talkman.h"
+
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/nwn/script/functions.h"
@@ -170,6 +173,13 @@ void Functions::findSubString(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) -1;
 
 	unimplementedFunction(ctx);
+}
+
+void Functions::getStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
+	const uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+	const Aurora::LanguageGender gender = (Aurora::LanguageGender) ctx.getParams()[1].getInt();
+
+	ctx.getReturn() = TalkMan.getString(strRef, gender);
 }
 
 } // End of namespace NWN
