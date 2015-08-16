@@ -131,6 +131,14 @@ void Functions::getArea(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = (Aurora::NWScript::Object *) object->getArea();
 }
 
+void Functions::getLocation(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	ctx.getReturn() = object->getLocation();
+}
+
 void Functions::getPosition(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn().setVector(0.0f, 0.0f, 0.0f);
 

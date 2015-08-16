@@ -293,7 +293,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 210, "GetSittingCreature"                  , 0                                                },
 	{ 211, "GetGoingToBeAttackedBy"              , 0                                                },
 	{ 212, "EffectSpellResistanceIncrease"       , 0                                                },
-	{ 213, "GetLocation"                         , 0                                                },
+	{ 213, "GetLocation"                         , &Functions::getLocation                          },
 	{ 214, "ActionJumpToLocation"                , 0                                                },
 	{ 215, "Location"                            , 0                                                },
 	{ 216, "ApplyEffectAtLocation"               , 0                                                },

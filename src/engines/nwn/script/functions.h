@@ -180,7 +180,8 @@ private:
 
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
-	void getArea(Aurora::NWScript::FunctionContext &ctx);
+	void getArea    (Aurora::NWScript::FunctionContext &ctx);
+	void getLocation(Aurora::NWScript::FunctionContext &ctx);
 
 	void getPosition(Aurora::NWScript::FunctionContext &ctx);
 
