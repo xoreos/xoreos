@@ -395,7 +395,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 312, "GetIsPlayableRacialType"             , 0                                                },
 	{ 313, "JumpToLocation"                      , &Functions::jumpToLocation                       },
 	{ 314, "EffectTemporaryHitpoints"            , 0                                                },
-	{ 315, "GetSkillRank"                        , 0                                                },
+	{ 315, "GetSkillRank"                        , &Functions::getSkillRank                         },
 	{ 316, "GetAttackTarget"                     , 0                                                },
 	{ 317, "GetLastAttackType"                   , 0                                                },
 	{ 318, "GetLastAttackMode"                   , 0                                                },

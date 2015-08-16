@@ -221,6 +221,7 @@ private:
 
 	// .--- Creatures, functions_creature.cpp
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
+	void getSkillRank   (Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
 
