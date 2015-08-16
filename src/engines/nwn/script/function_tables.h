@@ -406,7 +406,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 323, "SetIsDestroyable"                    , 0                                                },
 	{ 324, "SetLocked"                           , &Functions::setLocked                            },
 	{ 325, "GetLocked"                           , &Functions::getLocked                            },
-	{ 326, "GetClickingObject"                   , 0                                                },
+	{ 326, "GetClickingObject"                   , &Functions::getClickingObject                    },
 	{ 327, "SetAssociateListenPatterns"          , 0                                                },
 	{ 328, "GetLastWeaponUsed"                   , 0                                                },
 	{ 329, "ActionInteractObject"                , 0                                                },

@@ -44,6 +44,10 @@ using Aurora::NWScript::kTypeString;
 using Aurora::NWScript::kTypeObject;
 using Aurora::NWScript::kTypeScriptState;
 
+void Functions::getClickingObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = ctx.getTriggerer();
+}
+
 void Functions::getEnteringObject(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: This should return the *last* entered object, i.e. it should remember past triggerers.
 	ctx.getReturn() = ctx.getTriggerer();
