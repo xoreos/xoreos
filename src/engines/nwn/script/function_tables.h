@@ -22,6 +22,31 @@
  *  Tables defining the engine functions in Neverwinter Nights.
  */
 
+/* The functions are defined by three tables:
+ * - kFunctionPointers
+ * - kFunctionSignatures
+ * - kFunctionDefaults
+ *
+ * kFunctionPointers provides the ID and name of the engine function, and a
+ * pointer to Functions method doing the actual work. If the function pointer
+ * is 0, a default unimplementedFunction method is used that just prints
+ * the name of the function when it's called.
+ *
+ * kFunctionSignatures defines the signature of the function, i.e. the types
+ * of the return value and its parameters.
+ *
+ * kFunctionDefaults pins default values to parameters. I.e. if a function
+ * Foobar(int mode, int doEverything=FALSE) is called with only one parameters,
+ * the default value FALSE is applied to the doEverything parameters. The
+ * kFunctionDefaults entry for the function then contains a reference to a
+ * false value. Because of ambiguities otherwise, the default values have to be
+ * "aligned" to the right; only the last-most n parameters are allowed to have
+ * default values, with no gaps.
+ *
+ * Please note that all three tables have to be of the same length, and that
+ * the order of the functions have to be the same in all three tables.
+ */
+
 #ifndef ENGINES_NWN_SCRIPT_FUNCTION_TABLES_H
 #define ENGINES_NWN_SCRIPT_FUNCTION_TABLES_H
 
@@ -42,6 +67,11 @@ using Aurora::NWScript::kTypeStruct;
 using Aurora::NWScript::kTypeEngineType;
 using Aurora::NWScript::kTypeScriptState;
 
+/* Default values as used by the function parameters, if no explicit value
+ * is given at the time of the calling.
+ *
+ * TODO: Most of them should eventually be rolled into enums in types.h.
+ */
 
 static NWN::Object kDefaultObjectInvalid(kObjectTypeInvalid);
 static NWN::Object kDefaultObjectSelf   (kObjectTypeSelf);
@@ -79,6 +109,7 @@ static const int32 kDefaultVFXNone                   = -    1;
 static const float kDefaultFadeSpeedMedium = 0.01;
 
 
+/** The table defining the name and function pointer of each engine function. */
 const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{   0, "Random"                              , &Functions::random                               },
 	{   1, "PrintString"                         , &Functions::printString                          },
@@ -930,6 +961,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 847, "ItemPropertyAdditional"              , 0                                                }
 };
 
+/** The table defining the signature (return type and type of parameters) of each engine function. */
 const Functions::FunctionSignature Functions::kFunctionSignatures[] = {
 	{   0, kTypeInt       , { kTypeInt } },
 	{   1, kTypeVoid      , { kTypeString } },
@@ -1781,6 +1813,7 @@ const Functions::FunctionSignature Functions::kFunctionSignatures[] = {
 	{ 847, kTypeEngineType, { kTypeInt } }
 };
 
+/** The table defining the default values for the parameters of each engine function. */
 const Functions::FunctionDefaults Functions::kFunctionDefaults[] = {
 	{   0, { } },
 	{   1, { } },
