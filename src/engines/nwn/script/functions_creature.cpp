@@ -90,6 +90,12 @@ void Functions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature ? (creature->getCurrentHP() <= 0) : false;
 }
 
+void Functions::getGender(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = (int32) (creature ? creature->getGender() : kGenderNone);
+}
+
 void Functions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 

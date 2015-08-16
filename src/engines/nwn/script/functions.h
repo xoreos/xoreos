@@ -230,6 +230,7 @@ private:
 
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
 
+	void getGender    (Aurora::NWScript::FunctionContext &ctx);
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
 
 	void getHitDice(Aurora::NWScript::FunctionContext &ctx);

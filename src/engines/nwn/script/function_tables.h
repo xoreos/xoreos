@@ -438,7 +438,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 355, "VersusAlignmentEffect"               , 0                                                },
 	{ 356, "VersusRacialTypeEffect"              , 0                                                },
 	{ 357, "VersusTrapEffect"                    , 0                                                },
-	{ 358, "GetGender"                           , 0                                                },
+	{ 358, "GetGender"                           , &Functions::getGender                            },
 	{ 359, "GetIsTalentValid"                    , 0                                                },
 	{ 360, "ActionMoveAwayFromLocation"          , 0                                                },
 	{ 361, "GetAttemptedAttackTarget"            , 0                                                },
