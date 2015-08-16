@@ -107,7 +107,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  24, "GetArea"                             , &Functions::getArea                              },
 	{  25, "GetEnteringObject"                   , &Functions::getEnteringObject                    },
 	{  26, "GetExitingObject"                    , &Functions::getExitingObject                     },
-	{  27, "GetPosition"                         , 0                                                },
+	{  27, "GetPosition"                         , &Functions::getPosition                          },
 	{  28, "GetFacing"                           , 0                                                },
 	{  29, "GetItemPossessor"                    , 0                                                },
 	{  30, "GetItemPossessedBy"                  , 0                                                },
