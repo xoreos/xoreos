@@ -29,8 +29,6 @@
 
 #include "src/aurora/types.h"
 
-#include "src/sound/types.h"
-
 #include "src/engines/engine.h"
 
 namespace Engines {
@@ -39,7 +37,7 @@ class LoadProgress;
 
 namespace KotOR {
 
-class Module;
+class Game;
 
 class KotOREngine : public Engines::Engine {
 public:
@@ -53,8 +51,8 @@ public:
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
 
-	/** Return the currently running module. */
-	Module *getModule();
+	/** Return the context running the actual game. */
+	Game &getGame();
 
 
 protected:
@@ -64,14 +62,12 @@ protected:
 private:
 	Aurora::Language _language;
 
-	Module *_module;
-
-	Sound::ChannelHandle _menuMusic;
-
 	bool _hasLiveKey;
 
-	bool hasYavin4Module() const;
+	Game *_game;
 
+
+	bool hasYavin4Module() const;
 
 	void init();
 
@@ -87,11 +83,6 @@ private:
 	void checkConfig();
 
 	void playIntroVideos();
-
-	void playMenuMusic();
-	void stopMenuMusic();
-
-	void mainMenuLoop();
 };
 
 } // End of namespace KotOR

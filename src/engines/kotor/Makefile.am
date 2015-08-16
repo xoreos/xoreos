@@ -7,6 +7,7 @@ noinst_HEADERS = \
                  probes.h \
                  console.h \
                  modelloader.h \
+                 game.h \
                  object.h \
                  situated.h \
                  placeable.h \
@@ -45,6 +46,7 @@ libkotor_la_SOURCES = \
                       probes.cpp \
                       console.cpp \
                       modelloader.cpp \
+                      game.cpp \
                       object.cpp \
                       situated.cpp \
                       placeable.cpp \

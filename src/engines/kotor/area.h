@@ -67,6 +67,13 @@ public:
 
 	void removeFocus();
 
+	void playAmbientMusic(Common::UString music = "");
+	void playAmbientSound(Common::UString sound = "");
+
+	void stopSound();
+	void stopAmbientMusic();
+	void stopAmbientSound();
+
 
 protected:
 	void notifyCameraMoved();
@@ -135,13 +142,6 @@ private:
 	void loadCreatures (const Aurora::GFF3List &list);
 
 	void unload();
-
-	void stopSound();
-	void stopAmbientMusic();
-	void stopAmbientSound();
-
-	void playAmbientMusic(Common::UString music = "");
-	void playAmbientSound(Common::UString sound = "");
 
 	void checkActive();
 	void setActive(Object *object);

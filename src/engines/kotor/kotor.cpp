@@ -34,8 +34,6 @@
 #include "src/aurora/talkman.h"
 #include "src/aurora/talktable_tlk.h"
 
-#include "src/sound/sound.h"
-
 #include "src/events/events.h"
 
 #include "src/graphics/aurora/cursorman.h"
@@ -48,23 +46,21 @@
 
 #include "src/engines/kotor/kotor.h"
 #include "src/engines/kotor/modelloader.h"
-#include "src/engines/kotor/module.h"
 #include "src/engines/kotor/console.h"
-
-#include "src/engines/kotor/gui/main/main.h"
+#include "src/engines/kotor/game.h"
 
 namespace Engines {
 
 namespace KotOR {
 
 KotOREngine::KotOREngine() : _language(Aurora::kLanguageInvalid),
-	_module(0), _hasLiveKey(false) {
+	_hasLiveKey(false), _game(0) {
 
 	_console = new Console(*this);
 }
 
 KotOREngine::~KotOREngine() {
-	delete _module;
+	delete _game;
 }
 
 bool KotOREngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -108,8 +104,10 @@ bool KotOREngine::changeLanguage() {
 	return true;
 }
 
-Module *KotOREngine::getModule() {
-	return _module;
+Game &KotOREngine::getGame() {
+	assert(_game);
+
+	return *_game;
 }
 
 void KotOREngine::run() {
@@ -126,7 +124,8 @@ void KotOREngine::run() {
 
 	CursorMan.showCursor();
 
-	mainMenuLoop();
+	_game = new Game(*this, *_console, _platform);
+	_game->run();
 
 	deinit();
 }
@@ -449,58 +448,6 @@ void KotOREngine::playIntroVideos() {
 
 		playVideo("legal");
 	}
-}
-
-void KotOREngine::playMenuMusic() {
-	if (SoundMan.isPlaying(_menuMusic))
-		return;
-
-	_menuMusic = playSound("mus_theme_cult", Sound::kSoundTypeMusic, true);
-}
-
-void KotOREngine::stopMenuMusic() {
-	SoundMan.stopChannel(_menuMusic);
-}
-
-void KotOREngine::mainMenuLoop() {
-	playMenuMusic();
-
-	_module = new Module(*_console);
-
-	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(*_module, _platform == Aurora::kPlatformXbox, _console);
-
-		EventMan.flushEvents();
-
-		_console->disableCommand("loadmodule", "not available in the main menu");
-		_console->disableCommand("exitmodule", "not available in the main menu");
-
-		mainMenu->show();
-		mainMenu->run();
-		mainMenu->hide();
-
-		_console->enableCommand("loadmodule");
-		_console->enableCommand("exitmodule");
-
-		delete mainMenu;
-
-		if (EventMan.quitRequested())
-			break;
-
-		stopMenuMusic();
-
-		_module->run();
-		if (EventMan.quitRequested())
-			break;
-
-		playMenuMusic();
-		_module->clear();
-	}
-
-	delete _module;
-	_module = 0;
-
-	stopMenuMusic();
 }
 
 bool KotOREngine::hasYavin4Module() const {
