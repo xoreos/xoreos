@@ -84,6 +84,12 @@ void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature ? creature->getClassLevel(ctx.getParams()[0].getInt()) : 0;
 }
 
+void Functions::getXP(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = (int32) (creature ? creature->getXP() : 0);
+}
+
 void Functions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 

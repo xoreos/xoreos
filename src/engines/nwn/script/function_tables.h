@@ -475,7 +475,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 392, "SetIsTemporaryNeutral"               , 0                                                },
 	{ 393, "GiveXPToCreature"                    , 0                                                },
 	{ 394, "SetXP"                               , 0                                                },
-	{ 395, "GetXP"                               , 0                                                },
+	{ 395, "GetXP"                               , &Functions::getXP                                },
 	{ 396, "IntToHexString"                      , &Functions::intToHexString                       },
 	{ 397, "GetBaseItemType"                     , 0                                                },
 	{ 398, "GetItemHasItemProperty"              , 0                                                },

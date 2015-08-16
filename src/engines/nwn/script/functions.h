@@ -230,6 +230,8 @@ private:
 	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByClass   (Aurora::NWScript::FunctionContext &ctx);
 
+	void getXP(Aurora::NWScript::FunctionContext &ctx);
+
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
 
 	void getGender    (Aurora::NWScript::FunctionContext &ctx);
