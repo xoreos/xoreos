@@ -80,6 +80,19 @@ void Functions::getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature ? (int32) NWN::getAlignmentGoodEvil(creature->getGoodEvil()) : -1;
 }
 
+void Functions::getCommandable(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = (int32) (creature ? creature->isCommandable() : false);
+}
+
+void Functions::setCommandable(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 1));
+
+	if (creature)
+		creature->setCommandable(ctx.getParams()[0].getInt() != 0);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

@@ -184,6 +184,9 @@ private:
 
 	void getPosition(Aurora::NWScript::FunctionContext &ctx);
 
+	void getCommandable(Aurora::NWScript::FunctionContext &ctx);
+	void setCommandable(Aurora::NWScript::FunctionContext &ctx);
+
 	void getDistanceToObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void getObjectByTag       (Aurora::NWScript::FunctionContext &ctx);
