@@ -78,43 +78,43 @@ void Functions::sqrt(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::random(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(0, ctx.getParams()[0].getInt() - 1);
+	ctx.getReturn() = getRandom(0, ctx.getParams()[0].getInt() - 1);
 }
 
 void Functions::d2(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(1, 2, ctx.getParams()[0].getInt());
+	ctx.getReturn() = getRandom(1, 2, ctx.getParams()[0].getInt());
 }
 
 void Functions::d3(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(1, 3, ctx.getParams()[0].getInt());
+	ctx.getReturn() = getRandom(1, 3, ctx.getParams()[0].getInt());
 }
 
 void Functions::d4(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(1, 4, ctx.getParams()[0].getInt());
+	ctx.getReturn() = getRandom(1, 4, ctx.getParams()[0].getInt());
 }
 
 void Functions::d6(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(1, 6, ctx.getParams()[0].getInt());
+	ctx.getReturn() = getRandom(1, 6, ctx.getParams()[0].getInt());
 }
 
 void Functions::d8(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(1, 8, ctx.getParams()[0].getInt());
+	ctx.getReturn() = getRandom(1, 8, ctx.getParams()[0].getInt());
 }
 
 void Functions::d10(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(1, 10, ctx.getParams()[0].getInt());
+	ctx.getReturn() = getRandom(1, 10, ctx.getParams()[0].getInt());
 }
 
 void Functions::d12(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(1, 12, ctx.getParams()[0].getInt());
+	ctx.getReturn() = getRandom(1, 12, ctx.getParams()[0].getInt());
 }
 
 void Functions::d20(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(1, 20, ctx.getParams()[0].getInt());
+	ctx.getReturn() = getRandom(1, 20, ctx.getParams()[0].getInt());
 }
 
 void Functions::d100(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = random(1, 100, ctx.getParams()[0].getInt());
+	ctx.getReturn() = getRandom(1, 100, ctx.getParams()[0].getInt());
 }
 
 void Functions::intToFloat(Aurora::NWScript::FunctionContext &ctx) {

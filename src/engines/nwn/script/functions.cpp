@@ -96,7 +96,7 @@ void Functions::unimplementedFunction(Aurora::NWScript::FunctionContext &ctx) {
 	warning("TODO: %s(%s)", ctx.getName().c_str(), formatParams(ctx).c_str());
 }
 
-int32 Functions::random(int min, int max, int32 n) {
+int32 Functions::getRandom(int min, int max, int32 n) {
 	if (n < 1)
 		n = 1;
 

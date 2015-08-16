@@ -79,7 +79,7 @@ private:
 	// .--- Utility methods
 	void jumpTo(NWN::Object *object, Area *area, float x, float y, float z);
 
-	static int32 random(int min, int max, int32 n = 1);
+	static int32 getRandom(int min, int max, int32 n = 1);
 
 	static Common::UString formatTag(const Aurora::NWScript::Object *object);
 	static Common::UString formatParams(const Aurora::NWScript::FunctionContext &ctx);
