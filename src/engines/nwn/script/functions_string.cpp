@@ -76,7 +76,7 @@ void Functions::printFloat(Aurora::NWScript::FunctionContext &ctx) {
 	const int   width    = ctx.getParams()[1].getInt();
 	const int   decimals = ctx.getParams()[2].getInt();
 
-	status("NWN: %s", floatToString(value, width, decimals).c_str());
+	status("NWN: %s", formatFloat(value, width, decimals).c_str());
 }
 
 void Functions::printString(Aurora::NWScript::FunctionContext &ctx) {
@@ -113,7 +113,7 @@ void Functions::floatToString(Aurora::NWScript::FunctionContext &ctx) {
 	const int   width    = ctx.getParams()[1].getInt();
 	const int   decimals = ctx.getParams()[2].getInt();
 
-	ctx.getReturn() = floatToString(value, width, decimals);
+	ctx.getReturn() = formatFloat(value, width, decimals);
 }
 
 void Functions::intToHexString(Aurora::NWScript::FunctionContext &ctx) {

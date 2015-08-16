@@ -172,7 +172,7 @@ Common::UString Functions::formatParams(const Aurora::NWScript::FunctionContext 
 	return params;
 }
 
-Common::UString Functions::floatToString(float f, int width, int decimals) {
+Common::UString Functions::formatFloat(float f, int width, int decimals) {
 	return Common::UString::format("%*.*f", width, decimals, f);
 }
 
