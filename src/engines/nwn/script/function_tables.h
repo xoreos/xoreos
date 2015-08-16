@@ -501,7 +501,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 418, "GetGold"                             , 0                                                },
 	{ 419, "GetLastRespawnButtonPresser"         , 0                                                },
 	{ 420, "GetIsDM"                             , 0                                                },
-	{ 421, "PlayVoiceChat"                       , 0                                                },
+	{ 421, "PlayVoiceChat"                       , &Functions::playVoiceChat                        },
 	{ 422, "GetIsWeaponEffective"                , 0                                                },
 	{ 423, "GetLastSpellHarmful"                 , 0                                                },
 	{ 424, "EventActivateItem"                   , 0                                                },

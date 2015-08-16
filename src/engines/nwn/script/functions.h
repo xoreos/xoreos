@@ -284,6 +284,10 @@ private:
 	void getPCSpeaker  (Aurora::NWScript::FunctionContext &ctx);
 	void getLastSpeaker(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Sound, functions_sound.cpp
+	void playVoiceChat(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace NWN
