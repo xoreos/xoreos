@@ -771,7 +771,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 688, "ItemPropertyWeightIncrease"          , 0                                                },
 	{ 689, "GetIsSkillSuccessful"                , 0                                                },
 	{ 690, "EffectSpellFailure"                  , 0                                                },
-	{ 691, "SpeakStringByStrRef"                 , 0                                                },
+	{ 691, "SpeakStringByStrRef"                 , &Functions::speakStringByStrRef                  },
 	{ 692, "SetCutsceneMode"                     , 0                                                },
 	{ 693, "GetLastPCToCancelCutscene"           , 0                                                },
 	{ 694, "GetDialogSoundLength"                , 0                                                },

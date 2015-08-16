@@ -24,6 +24,8 @@
 
 #include "src/common/util.h"
 
+#include "src/aurora/talkman.h"
+
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/nwn/game.h"
@@ -43,6 +45,18 @@ void Functions::speakString(Aurora::NWScript::FunctionContext &ctx) {
 
 	if (object)
 		object->speakString(ctx.getParams()[0].getString(), ctx.getParams()[1].getInt());
+}
+
+void Functions::speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	// TODO: Volume
+	const uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+	const uint32 volume = (uint32) ctx.getParams()[1].getInt();
+
+	object->speakString(TalkMan.getString(strRef).c_str(), volume);
 }
 
 void Functions::speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx) {
