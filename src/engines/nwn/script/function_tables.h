@@ -800,7 +800,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 717, "SendMessageToPCByStrRef"             , 0                                                },
 	{ 718, "IncrementRemainingFeatUses"          , 0                                                },
 	{ 719, "ExportSingleCharacter"               , 0                                                },
-	{ 720, "PlaySoundByStrRef"                   , 0                                                },
+	{ 720, "PlaySoundByStrRef"                   , &Functions::playSoundByStrRef                    },
 	{ 721, "SetSubRace"                          , 0                                                },
 	{ 722, "SetDeity"                            , 0                                                },
 	{ 723, "GetIsDMPossessed"                    , 0                                                },

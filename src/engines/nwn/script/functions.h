@@ -300,7 +300,8 @@ private:
 	// '---
 
 	// .--- Sound, functions_sound.cpp
-	void playVoiceChat(Aurora::NWScript::FunctionContext &ctx);
+	void playVoiceChat    (Aurora::NWScript::FunctionContext &ctx);
+	void playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx);
 
 	void musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx);
 	void musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx);

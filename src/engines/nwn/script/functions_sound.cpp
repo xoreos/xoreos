@@ -22,6 +22,7 @@
  *  Neverwinter Nights engine functions handling sound.
  */
 
+#include "src/aurora/talkman.h"
 #include "src/aurora/ssffile.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
@@ -46,6 +47,19 @@ void Functions::playVoiceChat(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	object->playSound(ssf->getSound(ctx.getParams()[0].getInt()).fileName, true);
+}
+
+void Functions::playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+
+	// TODO: Run as action
+	// bool runAsAction = ctx.getParams()[1].getInt() != 0;
+
+	object->playSound(TalkMan.getSoundResRef(strRef));
 }
 
 void Functions::musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx) {
