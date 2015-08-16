@@ -38,6 +38,13 @@ namespace Engines {
 
 namespace NWN {
 
+void Functions::speakString(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
+
+	if (object)
+		object->speakString(ctx.getParams()[0].getString(), ctx.getParams()[1].getInt());
+}
+
 void Functions::speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx) {
 	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
 	if (!object)
