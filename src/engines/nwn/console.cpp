@@ -22,6 +22,8 @@
  *  NWN (debug) console.
  */
 
+#include <algorithm>
+
 #include <boost/bind.hpp>
 
 #include "src/common/ustring.h"
@@ -140,26 +142,20 @@ void Console::updateCampaigns() {
 }
 
 void Console::updateModules() {
-	_modules.clear();
-
 	std::vector<Common::UString> modules;
 	Game::getModules(modules);
 
-	for (std::vector<Common::UString>::iterator m = modules.begin(); m != modules.end(); ++m)
-		_modules.push_back(*m);
+	_modules.clear();
+	std::copy(modules.begin(), modules.end(), std::back_inserter(_modules));
 
 	setArguments("loadmodule", _modules);
 }
 
 void Console::updateAreas() {
+	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
+
 	_areas.clear();
-	setArguments("gotoarea");
-
-	Module &module = _engine->getGame().getModule();
-
-	const std::vector<Common::UString> &areas = module.getIFO().getAreas();
-	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
-		_areas.push_back(*a);
+	std::copy(areas.begin(), areas.end(), std::back_inserter(_areas));
 
 	setArguments("gotoarea", _areas);
 }
