@@ -174,6 +174,24 @@ void Functions::getHenchman(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature->getAssociate(kAssociateTypeHenchman, ctx.getParams()[1].getInt());
 }
 
+void Functions::addHenchman(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *master   = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	Creature *henchman = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	if (!master || !henchman)
+		return;
+
+	master->addAssociate(*henchman, kAssociateTypeHenchman);
+}
+
+void Functions::removeHenchman(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *master   = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	Creature *henchman = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	if (!master || !henchman)
+		return;
+
+	master->removeAssociate(*henchman);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

@@ -243,6 +243,9 @@ private:
 	void getMaster   (Aurora::NWScript::FunctionContext &ctx);
 	void getAssociate(Aurora::NWScript::FunctionContext &ctx);
 	void getHenchman (Aurora::NWScript::FunctionContext &ctx);
+
+	void addHenchman(Aurora::NWScript::FunctionContext &ctx);
+	void removeHenchman(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp
