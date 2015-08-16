@@ -246,7 +246,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 163, "GetCommandable"                      , &Functions::getCommandable                       },
 	{ 164, "EffectRegenerate"                    , 0                                                },
 	{ 165, "EffectMovementSpeedIncrease"         , 0                                                },
-	{ 166, "GetHitDice"                          , 0                                                },
+	{ 166, "GetHitDice"                          , &Functions::getHitDice                           },
 	{ 167, "ActionForceFollowObject"             , 0                                                },
 	{ 168, "GetTag"                              , &Functions::getTag                               },
 	{ 169, "ResistSpell"                         , 0                                                },

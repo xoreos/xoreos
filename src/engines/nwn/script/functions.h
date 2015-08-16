@@ -207,6 +207,8 @@ private:
 
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
 
+	void getHitDice(Aurora::NWScript::FunctionContext &ctx);
+
 	void getLawChaosValue    (Aurora::NWScript::FunctionContext &ctx);
 	void getGoodEvilValue    (Aurora::NWScript::FunctionContext &ctx);
 	void getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx);

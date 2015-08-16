@@ -56,6 +56,12 @@ void Functions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) (creature ? creature->getRace() : kRaceInvalid);
 }
 
+void Functions::getHitDice(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature ? creature->getHitDice() : 0;
+}
+
 void Functions::getLawChaosValue(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
