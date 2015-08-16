@@ -251,6 +251,7 @@ private:
 	void actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void actionJumpToObject  (Aurora::NWScript::FunctionContext &ctx);
 	void actionMoveToObject  (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 

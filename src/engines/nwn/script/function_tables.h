@@ -276,7 +276,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 193, "GetFactionBestAC"                    , 0                                                },
 	{ 194, "ActionSit"                           , 0                                                },
 	{ 195, "GetListenPatternNumber"              , 0                                                },
-	{ 196, "ActionJumpToObject"                  , 0                                                },
+	{ 196, "ActionJumpToObject"                  , &Functions::actionJumpToObject                   },
 	{ 197, "GetWaypointByTag"                    , &Functions::getWaypointByTag                     },
 	{ 198, "GetTransitionTarget"                 , 0                                                },
 	{ 199, "EffectLinkEffects"                   , 0                                                },
