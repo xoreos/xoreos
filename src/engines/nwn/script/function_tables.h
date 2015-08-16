@@ -399,7 +399,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 316, "GetAttackTarget"                     , 0                                                },
 	{ 317, "GetLastAttackType"                   , 0                                                },
 	{ 318, "GetLastAttackMode"                   , 0                                                },
-	{ 319, "GetMaster"                           , 0                                                },
+	{ 319, "GetMaster"                           , &Functions::getMaster                            },
 	{ 320, "GetIsInCombat"                       , 0                                                },
 	{ 321, "GetLastAssociateCommand"             , 0                                                },
 	{ 322, "GiveGoldToCreature"                  , 0                                                },

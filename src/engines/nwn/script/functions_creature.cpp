@@ -105,6 +105,12 @@ void Functions::setCommandable(Aurora::NWScript::FunctionContext &ctx) {
 		creature->setCommandable(ctx.getParams()[0].getInt() != 0);
 }
 
+void Functions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = (Aurora::NWScript::Object *) (creature ? creature->getMaster() : 0);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
