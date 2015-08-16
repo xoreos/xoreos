@@ -22,6 +22,8 @@
  *  Neverwinter Nights engine functions operating on the current module.
  */
 
+#include "src/common/util.h"
+
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/nwn/game.h"
@@ -63,6 +65,17 @@ void Functions::getPositionFromLocation(Aurora::NWScript::FunctionContext &ctx) 
 	loc->getPosition(x, y, z);
 
 	ctx.getReturn().setVector(x, y, z);
+}
+
+void Functions::startNewModule(Aurora::NWScript::FunctionContext &ctx) {
+	Common::UString mod = ctx.getParams()[0].getString();
+
+	if (!Game::hasModule(mod)) {
+		warning("Can't start module \"%s\": No such module", mod.c_str());
+		return;
+	}
+
+	_game->getModule().load(mod);
 }
 
 } // End of namespace NWN
