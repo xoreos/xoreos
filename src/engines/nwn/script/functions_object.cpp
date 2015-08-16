@@ -180,6 +180,28 @@ void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	delete search;
 }
 
+void Functions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	const Common::UString &tag = ctx.getParams()[0].getString();
+	if (tag.empty())
+		return;
+
+	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjectsByTag(tag);
+	Aurora::NWScript::Object       *object = 0;
+
+	while ((object = search->next())) {
+		Waypoint *waypoint = NWN::ObjectContainer::toWaypoint(object);
+
+		if (waypoint) {
+			ctx.getReturn() = (Aurora::NWScript::Object *) waypoint;
+			break;
+		}
+	}
+
+	delete search;
+}
+
 void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
