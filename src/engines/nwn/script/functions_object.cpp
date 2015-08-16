@@ -193,7 +193,7 @@ void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	int nth = ctx.getParams()[1].getInt();
 
 	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjectsByTag(tag);
-	while (nth-- >= 0)
+	while (nth-- > 0)
 		search->next();
 
 	ctx.getReturn() = search->get();
