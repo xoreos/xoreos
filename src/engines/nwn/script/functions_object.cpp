@@ -123,6 +123,13 @@ void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = object->getTag();
 }
 
+void Functions::getName(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: bOriginalName
+
+	NWN::Object *object = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+	ctx.getReturn().getString() = object ? object->getName() : "";
+}
+
 void Functions::getArea(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 

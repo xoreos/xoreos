@@ -333,7 +333,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 250, "EffectPoison"                        , 0                                                },
 	{ 251, "EffectDisease"                       , 0                                                },
 	{ 252, "EffectSilence"                       , 0                                                },
-	{ 253, "GetName"                             , 0                                                },
+	{ 253, "GetName"                             , &Functions::getName                              },
 	{ 254, "GetLastSpeaker"                      , &Functions::getLastSpeaker                       },
 	{ 255, "BeginConversation"                   , &Functions::beginConversation                    },
 	{ 256, "GetLastPerceived"                    , 0                                                },
