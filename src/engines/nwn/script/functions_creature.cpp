@@ -22,6 +22,8 @@
  *  Neverwinter Nights engine functions messing with creatures.
  */
 
+#include "src/common/util.h"
+
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/nwn/types.h"
@@ -48,6 +50,38 @@ void Functions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 1));
 
 	ctx.getReturn() = creature ? creature->getSkillRank(ctx.getParams()[0].getInt()) : -1;
+}
+
+void Functions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) kClassInvalid;
+
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 1));
+	if (!creature)
+		return;
+
+	uint32 classID;
+	uint16 level;
+	creature->getClass(MAX<int32>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
+
+	ctx.getReturn() = (int32) classID;
+}
+
+void Functions::getLevelByPosition(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0;
+
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 1));
+	if (!creature)
+		return;
+
+	uint32 classID;
+	uint16 level;
+	creature->getClass(MAX<int32>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
+}
+
+void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 1));
+
+	ctx.getReturn() = creature ? creature->getClassLevel(ctx.getParams()[0].getInt()) : 0;
 }
 
 void Functions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {

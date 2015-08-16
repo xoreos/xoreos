@@ -224,6 +224,10 @@ private:
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 	void getSkillRank   (Aurora::NWScript::FunctionContext &ctx);
 
+	void getClassByPosition(Aurora::NWScript::FunctionContext &ctx);
+	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
+	void getLevelByClass   (Aurora::NWScript::FunctionContext &ctx);
+
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
 
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
