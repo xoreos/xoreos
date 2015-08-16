@@ -46,6 +46,12 @@ void Functions::setLocked(Aurora::NWScript::FunctionContext &ctx) {
 		situated->setLocked(ctx.getParams()[1].getInt() != 0);
 }
 
+void Functions::getIsOpen(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN::ObjectContainer::toSituated(getParamObject(ctx, 0));
+
+	ctx.getReturn() = situated ? situated->isOpen() : 0;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
