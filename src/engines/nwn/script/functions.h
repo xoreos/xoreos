@@ -176,6 +176,8 @@ private:
 
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
+	void getArea(Aurora::NWScript::FunctionContext &ctx);
+
 	void getObjectByTag       (Aurora::NWScript::FunctionContext &ctx);
 	void getNearestObject     (Aurora::NWScript::FunctionContext &ctx);
 	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);

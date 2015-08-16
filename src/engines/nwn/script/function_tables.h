@@ -104,7 +104,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  21, "ActionMoveToLocation"                , 0                                                },
 	{  22, "ActionMoveToObject"                  , 0                                                },
 	{  23, "ActionMoveAwayFromObject"            , 0                                                },
-	{  24, "GetArea"                             , 0                                                },
+	{  24, "GetArea"                             , &Functions::getArea                              },
 	{  25, "GetEnteringObject"                   , &Functions::getEnteringObject                    },
 	{  26, "GetExitingObject"                    , &Functions::getExitingObject                     },
 	{  27, "GetPosition"                         , 0                                                },
