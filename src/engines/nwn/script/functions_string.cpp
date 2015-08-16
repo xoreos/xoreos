@@ -33,11 +33,25 @@
 
 #include "src/engines/aurora/tokenman.h"
 
+#include "src/engines/nwn/objectcontainer.h"
+#include "src/engines/nwn/object.h"
+#include "src/engines/nwn/creature.h"
+
 #include "src/engines/nwn/script/functions.h"
 
 namespace Engines {
 
 namespace NWN {
+
+void Functions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *pc = NWN::ObjectContainer::toPC(getParamObject(ctx, 0));
+	if (!pc)
+		return;
+
+	const Common::UString &msg = ctx.getParams()[1].getString();
+
+	warning("Send message to PC \"%s\": \"%s\"", pc->getName().c_str(), msg.c_str());
+}
 
 void Functions::printInteger(Aurora::NWScript::FunctionContext &ctx) {
 	status("NWN: %d", ctx.getParams()[0].getInt());

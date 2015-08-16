@@ -454,7 +454,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 371, "GetPCPlayerName"                     , 0                                                },
 	{ 372, "SetPCLike"                           , 0                                                },
 	{ 373, "SetPCDislike"                        , 0                                                },
-	{ 374, "SendMessageToPC"                     , 0                                                },
+	{ 374, "SendMessageToPC"                     , &Functions::sendMessageToPC                      },
 	{ 375, "GetAttemptedSpellTarget"             , 0                                                },
 	{ 376, "GetLastOpenedBy"                     , 0                                                },
 	{ 377, "GetHasSpell"                         , 0                                                },
