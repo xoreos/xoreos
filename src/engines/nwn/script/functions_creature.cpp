@@ -52,6 +52,12 @@ void Functions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature ? creature->getSkillRank(ctx.getParams()[0].getInt()) : -1;
 }
 
+void Functions::getHasFeat(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 1));
+
+	ctx.getReturn() = creature ? creature->hasFeat(ctx.getParams()[0].getInt()) : 0;
+}
+
 void Functions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) kClassInvalid;
 

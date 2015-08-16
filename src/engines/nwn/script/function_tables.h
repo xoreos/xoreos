@@ -365,7 +365,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 282, "GetModuleItemAcquired"               , 0                                                },
 	{ 283, "GetModuleItemAcquiredFrom"           , 0                                                },
 	{ 284, "SetCustomToken"                      , &Functions::setCustomToken                       },
-	{ 285, "GetHasFeat"                          , 0                                                },
+	{ 285, "GetHasFeat"                          , &Functions::getHasFeat                           },
 	{ 286, "GetHasSkill"                         , 0                                                },
 	{ 287, "ActionUseFeat"                       , 0                                                },
 	{ 288, "ActionUseSkill"                      , 0                                                },

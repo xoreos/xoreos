@@ -236,6 +236,7 @@ private:
 	// .--- Creatures, functions_creature.cpp
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 	void getSkillRank   (Aurora::NWScript::FunctionContext &ctx);
+	void getHasFeat     (Aurora::NWScript::FunctionContext &ctx);
 
 	void getClassByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
