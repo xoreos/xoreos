@@ -56,6 +56,30 @@ void Functions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) (creature ? creature->getRace() : kRaceInvalid);
 }
 
+void Functions::getLawChaosValue(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature ? (int32) creature->getLawChaos() : -1;
+}
+
+void Functions::getGoodEvilValue(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature ? (int32) creature->getGoodEvil() : -1;
+}
+
+void Functions::getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature ? (int32) NWN::getAlignmentLawChaos(creature->getLawChaos()) : -1;
+}
+
+void Functions::getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature ? (int32) NWN::getAlignmentGoodEvil(creature->getGoodEvil()) : -1;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

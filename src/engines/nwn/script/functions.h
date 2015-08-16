@@ -199,6 +199,11 @@ private:
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
 
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
+
+	void getLawChaosValue    (Aurora::NWScript::FunctionContext &ctx);
+	void getGoodEvilValue    (Aurora::NWScript::FunctionContext &ctx);
+	void getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx);
+	void getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp
