@@ -130,6 +130,8 @@ private:
 	// '---
 
 	// .--- Strings, functions_string.cpp
+	void writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx);
+
 	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
 
 	void printInteger(Aurora::NWScript::FunctionContext &ctx);

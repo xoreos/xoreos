@@ -640,7 +640,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 557, "ExportAllCharacters"                 , 0                                                },
 	{ 558, "MusicBackgroundGetDayTrack"          , &Functions::musicBackgroundGetDayTrack           },
 	{ 559, "MusicBackgroundGetNightTrack"        , &Functions::musicBackgroundGetNightTrack         },
-	{ 560, "WriteTimestampedLogEntry"            , 0                                                },
+	{ 560, "WriteTimestampedLogEntry"            , &Functions::writeTimestampedLogEntry             },
 	{ 561, "GetModuleName"                       , 0                                                },
 	{ 562, "GetFactionLeader"                    , 0                                                },
 	{ 563, "SendMessageToAllDMs"                 , 0                                                },
