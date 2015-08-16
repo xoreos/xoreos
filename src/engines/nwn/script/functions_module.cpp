@@ -26,6 +26,8 @@
 
 #include "src/engines/nwn/game.h"
 #include "src/engines/nwn/module.h"
+#include "src/engines/nwn/location.h"
+#include "src/engines/nwn/objectcontainer.h"
 
 #include "src/engines/nwn/script/functions.h"
 
@@ -35,6 +37,19 @@ namespace NWN {
 
 void Functions::getModule(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) &_game->getModule();
+}
+
+void Functions::location(Aurora::NWScript::FunctionContext &ctx) {
+	Location loc;
+
+	loc.setArea  (NWN::ObjectContainer::toArea(ctx.getParams()[0].getObject()));
+	loc.setFacing(ctx.getParams()[2].getFloat());
+
+	float x, y, z;
+	ctx.getParams()[1].getVector(x, y, z);
+	loc.setPosition(x, y, z);
+
+	ctx.getReturn() = loc;
 }
 
 } // End of namespace NWN

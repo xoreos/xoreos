@@ -295,7 +295,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 212, "EffectSpellResistanceIncrease"       , 0                                                },
 	{ 213, "GetLocation"                         , &Functions::getLocation                          },
 	{ 214, "ActionJumpToLocation"                , 0                                                },
-	{ 215, "Location"                            , 0                                                },
+	{ 215, "Location"                            , &Functions::location                             },
 	{ 216, "ApplyEffectAtLocation"               , 0                                                },
 	{ 217, "GetIsPC"                             , &Functions::getIsPC                              },
 	{ 218, "FeetToMeters"                        , 0                                                },
