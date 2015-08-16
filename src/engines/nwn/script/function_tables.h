@@ -284,7 +284,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 201, "AdjustAlignment"                     , 0                                                },
 	{ 202, "ActionWait"                          , 0                                                },
 	{ 203, "SetAreaTransitionBMP"                , 0                                                },
-	{ 204, "ActionStartConversation"             , 0                                                },
+	{ 204, "ActionStartConversation"             , &Functions::actionStartConversation              },
 	{ 205, "ActionPauseConversation"             , 0                                                },
 	{ 206, "ActionResumeConversation"            , 0                                                },
 	{ 207, "EffectBeam"                          , 0                                                },

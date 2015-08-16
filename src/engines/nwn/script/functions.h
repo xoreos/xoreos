@@ -227,7 +227,8 @@ private:
 	void actionOpenDoor (Aurora::NWScript::FunctionContext &ctx);
 	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
 
-	void actionSpeakString(Aurora::NWScript::FunctionContext &ctx);
+	void actionSpeakString      (Aurora::NWScript::FunctionContext &ctx);
+	void actionStartConversation(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx);
 	// '---

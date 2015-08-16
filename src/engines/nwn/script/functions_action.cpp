@@ -116,6 +116,41 @@ void Functions::actionSpeakString(Aurora::NWScript::FunctionContext &ctx) {
 		object->speakString(ctx.getParams()[0].getString(), ctx.getParams()[1].getInt());
 }
 
+void Functions::actionStartConversation(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *source = NWN::ObjectContainer::toObject(ctx.getCaller());
+	NWN::Object *target = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!source || !target)
+		return;
+
+	Creature *pc = NWN::ObjectContainer::toPC(target);
+	if (!pc) {
+		warning("TODO: ActionStartConversation: Non-PC target \"%s\"", target->getTag().c_str());
+		return;
+	}
+
+	if (source->getPCSpeaker()) {
+		if (source->getPCSpeaker() != pc) {
+			Creature *otherPC = NWN::ObjectContainer::toPC(source->getPCSpeaker());
+
+			warning("Functions::actionStartConversation(): "
+			        "Object \"%s\" already in conversation with PC \"%s\"",
+			        source->getTag().c_str(), otherPC ? otherPC->getName().c_str() : "");
+			return;
+		}
+	}
+
+	Common::UString conversation = ctx.getParams()[1].getString();
+	if (conversation.empty())
+		conversation = source->getConversation();
+
+	// TODO: privateConv
+	// bool privateConv = ctx.getParams()[2].getInt() != 0;
+
+	const bool playHello = ctx.getParams()[2].getInt() != 0;
+
+	_game->getModule().startConversation(conversation, *pc, *source, playHello);
+}
+
 void Functions::actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx) {
 	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
 	if (!object)
