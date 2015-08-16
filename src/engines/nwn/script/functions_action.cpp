@@ -30,6 +30,7 @@
 #include "src/aurora/nwscript/functioncontext.h"
 #include "src/aurora/nwscript/ncsfile.h"
 
+#include "src/engines/nwn/types.h"
 #include "src/engines/nwn/game.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/objectcontainer.h"
@@ -113,6 +114,20 @@ void Functions::actionSpeakString(Aurora::NWScript::FunctionContext &ctx) {
 
 	if (object)
 		object->speakString(ctx.getParams()[0].getString(), ctx.getParams()[1].getInt());
+}
+
+void Functions::actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	Animation animation = (Animation) ctx.getParams()[0].getInt();
+
+	// TODO: speed, second
+	// float speed   = ctx.getParams()[1].getFloat();
+	// float seconds = ctx.getParams()[2].getFloat();
+
+	object->playAnimation(animation);
 }
 
 } // End of namespace NWN

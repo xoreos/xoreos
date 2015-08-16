@@ -209,6 +209,8 @@ private:
 	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionSpeakString(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Conversations, functions_conversation.cpp
