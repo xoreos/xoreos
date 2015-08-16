@@ -163,6 +163,8 @@ private:
 
 	void getStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
 
+	void get2DAString(Aurora::NWScript::FunctionContext &ctx);
+
 	void setCustomToken(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 

@@ -790,7 +790,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 707, "GetModuleItemAcquiredBy"             , 0                                                },
 	{ 708, "GetImmortal"                         , 0                                                },
 	{ 709, "DoWhirlwindAttack"                   , 0                                                },
-	{ 710, "Get2DAString"                        , 0                                                },
+	{ 710, "Get2DAString"                        , &Functions::get2DAString                         },
 	{ 711, "EffectEthereal"                      , 0                                                },
 	{ 712, "GetAILevel"                          , 0                                                },
 	{ 713, "SetAILevel"                          , 0                                                },

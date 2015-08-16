@@ -30,6 +30,8 @@
 
 #include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
 
@@ -217,6 +219,21 @@ void Functions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString tokenName = Common::UString::format("<CUSTOM%d>", tokenNumber);
 
 	TokenMan.set(tokenName, tokenValue);
+}
+
+void Functions::get2DAString(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().getString().clear();
+
+	const Common::UString &file =          ctx.getParams()[0].getString();
+	const Common::UString &col  =          ctx.getParams()[1].getString();
+	const uint32           row  = (uint32) ctx.getParams()[2].getInt();
+
+	if (file.empty() || col.empty())
+		return;
+
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA(file);
+
+	ctx.getReturn() = twoda.getRow(row).getString(col);
 }
 
 } // End of namespace NWN
