@@ -197,6 +197,8 @@ private:
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
+
+	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp

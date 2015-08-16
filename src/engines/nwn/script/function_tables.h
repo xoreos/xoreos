@@ -187,7 +187,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 104, "VectorMagnitude"                     , 0                                                },
 	{ 105, "GetMetaMagicFeat"                    , 0                                                },
 	{ 106, "GetObjectType"                       , &Functions::getObjectType                        },
-	{ 107, "GetRacialType"                       , 0                                                },
+	{ 107, "GetRacialType"                       , &Functions::getRacialType                        },
 	{ 108, "FortitudeSave"                       , 0                                                },
 	{ 109, "ReflexSave"                          , 0                                                },
 	{ 110, "WillSave"                            , 0                                                },
