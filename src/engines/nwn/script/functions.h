@@ -239,7 +239,8 @@ private:
 	void getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx);
 	void getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx);
 
-	void getMaster(Aurora::NWScript::FunctionContext &ctx);
+	void getMaster  (Aurora::NWScript::FunctionContext &ctx);
+	void getHenchman(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp

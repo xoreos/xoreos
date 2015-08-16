@@ -434,7 +434,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 351, "EffectSkillIncrease"                 , 0                                                },
 	{ 352, "GetInventoryDisturbType"             , 0                                                },
 	{ 353, "GetInventoryDisturbItem"             , 0                                                },
-	{ 354, "GetHenchman"                         , 0                                                },
+	{ 354, "GetHenchman"                         , &Functions::getHenchman                          },
 	{ 355, "VersusAlignmentEffect"               , 0                                                },
 	{ 356, "VersusRacialTypeEffect"              , 0                                                },
 	{ 357, "VersusTrapEffect"                    , 0                                                },
