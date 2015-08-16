@@ -119,7 +119,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  36, "GetLastAttacker"                     , 0                                                },
 	{  37, "ActionAttack"                        , 0                                                },
 	{  38, "GetNearestCreature"                  , &Functions::getNearestCreature                   },
-	{  39, "ActionSpeakString"                   , 0                                                },
+	{  39, "ActionSpeakString"                   , &Functions::actionSpeakString                    },
 	{  40, "ActionPlayAnimation"                 , 0                                                },
 	{  41, "GetDistanceToObject"                 , 0                                                },
 	{  42, "GetIsObjectValid"                    , &Functions::getIsObjectValid                     },

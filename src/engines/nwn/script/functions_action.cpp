@@ -108,6 +108,13 @@ void Functions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
 		door->close(NWN::ObjectContainer::toObject(ctx.getCaller()));
 }
 
+void Functions::actionSpeakString(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
+
+	if (object)
+		object->speakString(ctx.getParams()[0].getString(), ctx.getParams()[1].getInt());
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
