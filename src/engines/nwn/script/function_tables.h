@@ -380,7 +380,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 297, "GetEncounterDifficulty"              , 0                                                },
 	{ 298, "GetDistanceBetweenLocations"         , 0                                                },
 	{ 299, "GetReflexAdjustedDamage"             , 0                                                },
-	{ 300, "PlayAnimation"                       , 0                                                },
+	{ 300, "PlayAnimation"                       , &Functions::playAnimation                        },
 	{ 301, "TalentSpell"                         , 0                                                },
 	{ 302, "TalentFeat"                          , 0                                                },
 	{ 303, "TalentSkill"                         , 0                                                },
