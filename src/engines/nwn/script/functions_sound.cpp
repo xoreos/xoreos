@@ -72,6 +72,18 @@ void Functions::musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ct
 		area->setMusicNightTrack(ctx.getParams()[1].getInt());
 }
 
+void Functions::musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = NWN::ObjectContainer::toArea(getParamObject(ctx, 0));
+
+	ctx.getReturn() = (int32) (area ? area->getMusicDayTrack() : -1);
+}
+
+void Functions::musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = NWN::ObjectContainer::toArea(getParamObject(ctx, 0));
+
+	ctx.getReturn() = (int32) (area ? area->getMusicNightTrack() : -1);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

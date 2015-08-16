@@ -301,6 +301,9 @@ private:
 	void musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx);
 	void musicBackgroundChangeDay(Aurora::NWScript::FunctionContext &ctx);
 	void musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ctx);
+
+	void musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
