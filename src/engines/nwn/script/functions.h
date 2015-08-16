@@ -158,6 +158,8 @@ private:
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
 
 	void location(Aurora::NWScript::FunctionContext &ctx);
+
+	void getPositionFromLocation(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- General object functions, functions_object.cpp

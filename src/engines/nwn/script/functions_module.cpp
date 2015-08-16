@@ -52,6 +52,19 @@ void Functions::location(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = loc;
 }
 
+void Functions::getPositionFromLocation(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().setVector(0.0f, 0.0f, 0.0f);
+
+	Location *loc = NWN::ObjectContainer::toLocation(ctx.getParams()[0].getEngineType());
+	if (!loc)
+		return;
+
+	float x, y, z;
+	loc->getPosition(x, y, z);
+
+	ctx.getReturn().setVector(x, y, z);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

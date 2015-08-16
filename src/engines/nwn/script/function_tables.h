@@ -303,7 +303,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 220, "ApplyEffectToObject"                 , 0                                                },
 	{ 221, "SpeakString"                         , &Functions::speakString                          },
 	{ 222, "GetSpellTargetLocation"              , 0                                                },
-	{ 223, "GetPositionFromLocation"             , 0                                                },
+	{ 223, "GetPositionFromLocation"             , &Functions::getPositionFromLocation              },
 	{ 224, "GetAreaFromLocation"                 , 0                                                },
 	{ 225, "GetFacingFromLocation"               , 0                                                },
 	{ 226, "GetNearestCreatureToLocation"        , 0                                                },
