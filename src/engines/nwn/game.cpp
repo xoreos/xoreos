@@ -154,7 +154,7 @@ void Game::mainMenu(bool playStartSound, bool showLegal) {
 
 	EventMan.flushEvents();
 
-	MainMenu mainMenu(*_module, _console);
+	MainMenu menu(*_module, _console);
 
 	if (showLegal) {
 		// Fade in, show and fade out the legal billboard
@@ -162,10 +162,10 @@ void Game::mainMenu(bool playStartSound, bool showLegal) {
 		Legal legal;
 
 		legal.fadeIn();
-		mainMenu.show();
+		menu.show();
 		legal.show();
 	} else
-		mainMenu.show();
+		menu.show();
 
 	_console->disableCommand("loadcampaign", "not available in the main menu");
 	_console->disableCommand("loadmodule"  , "not available in the main menu");
@@ -173,7 +173,7 @@ void Game::mainMenu(bool playStartSound, bool showLegal) {
 	_console->disableCommand("listareas"   , "not available in the main menu");
 	_console->disableCommand("gotoarea"    , "not available in the main menu");
 
-	mainMenu.run();
+	menu.run();
 
 	_console->enableCommand("loadcampaign");
 	_console->enableCommand("loadmodule");
@@ -181,7 +181,7 @@ void Game::mainMenu(bool playStartSound, bool showLegal) {
 	_console->enableCommand("listareas");
 	_console->enableCommand("gotoarea");
 
-	mainMenu.hide();
+	menu.hide();
 
 	stopMenuMusic();
 }
