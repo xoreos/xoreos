@@ -172,6 +172,9 @@ private:
 	void getPositionFromLocation(Aurora::NWScript::FunctionContext &ctx);
 
 	void startNewModule(Aurora::NWScript::FunctionContext &ctx);
+
+	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
+	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- General object functions, functions_object.cpp

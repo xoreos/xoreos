@@ -78,6 +78,14 @@ void Functions::startNewModule(Aurora::NWScript::FunctionContext &ctx) {
 	_game->getModule().load(mod);
 }
 
+void Functions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) _game->getModule().getPC();
+}
+
+void Functions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
