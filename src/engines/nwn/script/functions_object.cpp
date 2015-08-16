@@ -144,6 +144,25 @@ void Functions::getPosition(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn().setVector(x, y, z);
 }
 
+#define SQR(x) ((x) * (x))
+void Functions::getDistanceToObject(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1.0f;
+
+	NWN::Object *object1 = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+	NWN::Object *object2 = NWN::ObjectContainer::toObject(ctx.getCaller());
+	if (!object1 || !object2)
+		return;
+
+	float x1, y1, z1;
+	object1->getPosition(x1, y1, z1);
+
+	float x2, y2, z2;
+	object2->getPosition(x2, y2, z2);
+
+	ctx.getReturn() = sqrtf(SQR(x1 - x2) + SQR(y1 - y2) + SQR(z1 - z2));
+}
+#undef SQR
+
 void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 

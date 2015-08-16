@@ -121,7 +121,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  38, "GetNearestCreature"                  , &Functions::getNearestCreature                   },
 	{  39, "ActionSpeakString"                   , &Functions::actionSpeakString                    },
 	{  40, "ActionPlayAnimation"                 , &Functions::actionPlayAnimation                  },
-	{  41, "GetDistanceToObject"                 , 0                                                },
+	{  41, "GetDistanceToObject"                 , &Functions::getDistanceToObject                  },
 	{  42, "GetIsObjectValid"                    , &Functions::getIsObjectValid                     },
 	{  43, "ActionOpenDoor"                      , &Functions::actionOpenDoor                       },
 	{  44, "ActionCloseDoor"                     , &Functions::actionCloseDoor                      },
