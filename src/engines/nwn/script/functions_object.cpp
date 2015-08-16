@@ -109,6 +109,12 @@ void Functions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 		object->setVariable(ctx.getParams()[1].getString(), ctx.getParams()[2].getObject());
 }
 
+void Functions::getObjectType(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+
+	ctx.getReturn() = (int32) (object ? object->getType() : kObjectTypeNone);
+}
+
 void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn().getString().clear();
 

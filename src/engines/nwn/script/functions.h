@@ -172,6 +172,8 @@ private:
 	void setLocalString(Aurora::NWScript::FunctionContext &ctx);
 	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
 
+	void getObjectType(Aurora::NWScript::FunctionContext &ctx);
+
 	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void getObjectByTag       (Aurora::NWScript::FunctionContext &ctx);
