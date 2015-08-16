@@ -249,6 +249,48 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = *it;
 }
 
+void Functions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	NWN::Object *target = NWN::ObjectContainer::toObject(getParamObject(ctx, 2));
+	if (!target)
+		return;
+
+	size_t nth = MAX<int32>(ctx.getParams()[3].getInt() - 1, 0);
+
+	/* TODO: Criteria:
+	 *
+	 * int crit1Type  = ctx.getParams()[0].getInt();
+	 * int crit1Value = ctx.getParams()[1].getInt();
+	 * int crit2Type  = ctx.getParams()[4].getInt();
+	 * int crit2Value = ctx.getParams()[5].getInt();
+	 * int crit3Type  = ctx.getParams()[6].getInt();
+	 * int crit3Value = ctx.getParams()[7].getInt();
+	 */
+
+	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjects();
+	Aurora::NWScript::Object       *object = 0;
+
+	std::list<Object *> creatures;
+	while ((object = search->next())) {
+		Creature *creature = NWN::ObjectContainer::toCreature(object);
+
+		if (creature && (creature != target) && (creature->getArea() == target->getArea()))
+			creatures.push_back(creature);
+	}
+
+	delete search;
+
+	creatures.sort(ObjectDistanceSort(*target));
+
+	std::list<Object *>::iterator it = creatures.begin();
+	for (size_t n = 0; (n < nth) && (it != creatures.end()); ++n)
+		++it;
+
+	if (it != creatures.end())
+		ctx.getReturn() = *it;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

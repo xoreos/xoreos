@@ -183,6 +183,7 @@ private:
 	void getObjectByTag       (Aurora::NWScript::FunctionContext &ctx);
 	void getNearestObject     (Aurora::NWScript::FunctionContext &ctx);
 	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
+	void getNearestCreature   (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp
