@@ -39,6 +39,8 @@ namespace Engines {
 namespace NWN {
 
 class Game;
+class Area;
+class Object;
 
 class Functions {
 public:
@@ -75,6 +77,8 @@ private:
 	void registerFunctions();
 
 	// .--- Utility methods
+	void jumpTo(NWN::Object *object, Area *area, float x, float y, float z);
+
 	static int32 random(int min, int max, int32 n = 1);
 
 	static Common::UString formatTag(const Aurora::NWScript::Object *object);
@@ -206,6 +210,8 @@ private:
 	void getNearestCreature   (Aurora::NWScript::FunctionContext &ctx);
 
 	void playAnimation(Aurora::NWScript::FunctionContext &ctx);
+
+	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp

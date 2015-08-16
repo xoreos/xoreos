@@ -393,7 +393,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 310, "ActionUseTalentAtLocation"           , 0                                                },
 	{ 311, "GetGoldPieceValue"                   , 0                                                },
 	{ 312, "GetIsPlayableRacialType"             , 0                                                },
-	{ 313, "JumpToLocation"                      , 0                                                },
+	{ 313, "JumpToLocation"                      , &Functions::jumpToLocation                       },
 	{ 314, "EffectTemporaryHitpoints"            , 0                                                },
 	{ 315, "GetSkillRank"                        , 0                                                },
 	{ 316, "GetAttackTarget"                     , 0                                                },
