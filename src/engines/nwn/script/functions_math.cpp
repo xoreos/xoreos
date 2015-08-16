@@ -125,6 +125,28 @@ void Functions::floatToInt(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) ctx.getParams()[0].getFloat();
 }
 
+void Functions::vector(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn().setVector(ctx.getParams()[0].getFloat(),
+	                          ctx.getParams()[1].getFloat(),
+	                          ctx.getParams()[2].getFloat());
+}
+
+void Functions::vectorMagnitude(Aurora::NWScript::FunctionContext &ctx) {
+	float x, y, z;
+	ctx.getParams()[0].getVector(x, y, z);
+
+	ctx.getReturn() = sqrtf(x*x + y*y + z*z);
+}
+
+void Functions::vectorNormalize(Aurora::NWScript::FunctionContext &ctx) {
+	float x, y, z;
+	ctx.getParams()[0].getVector(x, y, z);
+
+	const float length = sqrtf(x*x + y*y + z*z);
+
+	ctx.getReturn().setVector(x / length, y / length, z / length);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

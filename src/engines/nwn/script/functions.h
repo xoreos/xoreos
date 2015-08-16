@@ -119,6 +119,10 @@ private:
 
 	void intToFloat(Aurora::NWScript::FunctionContext &ctx);
 	void floatToInt(Aurora::NWScript::FunctionContext &ctx);
+
+	void vector         (Aurora::NWScript::FunctionContext &ctx);
+	void vectorMagnitude(Aurora::NWScript::FunctionContext &ctx);
+	void vectorNormalize(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Strings, functions_string.cpp
