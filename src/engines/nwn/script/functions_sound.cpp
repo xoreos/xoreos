@@ -28,6 +28,7 @@
 
 #include "src/engines/nwn/objectcontainer.h"
 #include "src/engines/nwn/object.h"
+#include "src/engines/nwn/area.h"
 
 #include "src/engines/nwn/script/functions.h"
 
@@ -45,6 +46,30 @@ void Functions::playVoiceChat(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	object->playSound(ssf->getSound(ctx.getParams()[0].getInt()).fileName, true);
+}
+
+void Functions::musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = NWN::ObjectContainer::toArea(getParamObject(ctx, 0));
+	if (area)
+		area->playAmbientMusic();
+}
+
+void Functions::musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = NWN::ObjectContainer::toArea(getParamObject(ctx, 0));
+	if (area)
+		area->stopAmbientMusic();
+}
+
+void Functions::musicBackgroundChangeDay(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = NWN::ObjectContainer::toArea(getParamObject(ctx, 0));
+	if (area)
+		area->setMusicDayTrack(ctx.getParams()[1].getInt());
+}
+
+void Functions::musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ctx) {
+	Area *area = NWN::ObjectContainer::toArea(getParamObject(ctx, 0));
+	if (area)
+		area->setMusicNightTrack(ctx.getParams()[1].getInt());
 }
 
 } // End of namespace NWN
