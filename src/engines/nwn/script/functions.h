@@ -298,6 +298,8 @@ private:
 	void getLastSpeaker(Aurora::NWScript::FunctionContext &ctx);
 
 	void isInConversation(Aurora::NWScript::FunctionContext &ctx);
+
+	void getListenPatternNumber(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Sound, functions_sound.cpp

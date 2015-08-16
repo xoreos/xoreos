@@ -135,6 +135,12 @@ void Functions::isInConversation(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = object ? (object->getPCSpeaker() != 0) : 0;
 }
 
+void Functions::getListenPatternNumber(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = -1;
+
+	unimplementedFunction(ctx);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
