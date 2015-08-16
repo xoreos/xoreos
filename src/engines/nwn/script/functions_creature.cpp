@@ -151,6 +151,19 @@ void Functions::getMaster(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) (creature ? creature->getMaster() : 0);
 }
 
+void Functions::getAssociate(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Creature *creature = NWN::ObjectContainer::toCreature(getParamObject(ctx, 1));
+	if (!creature)
+		return;
+
+	const int type = ctx.getParams()[0].getInt();
+	const int nth  = ctx.getParams()[2].getInt();
+
+	ctx.getReturn() = creature->getAssociate((AssociateType) type, nth);
+}
+
 void Functions::getHenchman(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 

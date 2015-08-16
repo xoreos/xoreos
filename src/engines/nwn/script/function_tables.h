@@ -444,7 +444,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 361, "GetAttemptedAttackTarget"            , 0                                                },
 	{ 362, "GetTypeFromTalent"                   , 0                                                },
 	{ 363, "GetIdFromTalent"                     , 0                                                },
-	{ 364, "GetAssociate"                        , 0                                                },
+	{ 364, "GetAssociate"                        , &Functions::getAssociate                         },
 	{ 365, "AddHenchman"                         , 0                                                },
 	{ 366, "RemoveHenchman"                      , 0                                                },
 	{ 367, "AddJournalQuestEntry"                , 0                                                },
