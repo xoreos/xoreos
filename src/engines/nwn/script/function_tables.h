@@ -280,7 +280,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 197, "GetWaypointByTag"                    , 0                                                },
 	{ 198, "GetTransitionTarget"                 , 0                                                },
 	{ 199, "EffectLinkEffects"                   , 0                                                },
-	{ 200, "GetObjectByTag"                      , 0                                                },
+	{ 200, "GetObjectByTag"                      , &Functions::getObjectByTag                       },
 	{ 201, "AdjustAlignment"                     , 0                                                },
 	{ 202, "ActionWait"                          , 0                                                },
 	{ 203, "SetAreaTransitionBMP"                , 0                                                },

@@ -117,6 +117,23 @@ void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = object->getTag();
 }
 
+void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	const Common::UString &tag = ctx.getParams()[0].getString();
+	if (tag.empty())
+		return;
+
+	int nth = ctx.getParams()[1].getInt();
+
+	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjectsByTag(tag);
+	while (nth-- >= 0)
+		search->next();
+
+	ctx.getReturn() = search->get();
+	delete search;
+}
+
 void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
