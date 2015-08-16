@@ -153,7 +153,8 @@ void Module::loadModule(const Common::UString &module) {
 		checkXPs();
 		checkHAKs();
 
-		_tag = _ifo.getTag();
+		_tag  = _ifo.getTag();
+		_name = _ifo.getName().getString();
 
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
@@ -698,10 +699,6 @@ void Module::movedPC() {
 
 		_newArea = _pc->getArea()->getResRef();
 	}
-}
-
-const Common::UString &Module::getName() const {
-	return _ifo.getName().getString();
 }
 
 const Aurora::IFOFile &Module::getIFO() const {

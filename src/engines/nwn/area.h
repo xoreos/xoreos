@@ -144,7 +144,6 @@ private:
 	bool _loaded;
 
 	Common::UString _resRef; ///< The area's resref (resource ID).
-	Common::UString _name;   ///< The area's localized name.
 
 	Common::UString _displayName; ///< The area's localized display name.
 

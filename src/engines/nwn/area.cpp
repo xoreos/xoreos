@@ -132,7 +132,7 @@ const Common::UString &Area::getResRef() {
 }
 
 const Common::UString &Area::getName() {
-	return _name;
+	return NWN::Object::getName();
 }
 
 const Common::UString &Area::getDisplayName() {
