@@ -249,6 +249,8 @@ private:
 	void actionStartConversation(Aurora::NWScript::FunctionContext &ctx);
 
 	void actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Conversations, functions_conversation.cpp
