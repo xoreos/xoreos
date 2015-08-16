@@ -180,6 +180,21 @@ void Functions::actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx) {
 	unimplementedFunction(ctx);
 }
 
+void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
+	NWN::Object *moveTo = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+
+	if (!object || !moveTo)
+		return;
+
+	float x, y, z;
+	moveTo->getPosition(x, y, z);
+
+	jumpTo(object, moveTo->getArea(), x, y, z);
+
+	unimplementedFunction(ctx);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
