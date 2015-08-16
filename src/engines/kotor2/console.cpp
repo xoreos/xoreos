@@ -34,6 +34,7 @@
 
 #include "src/engines/kotor2/console.h"
 #include "src/engines/kotor2/kotor2.h"
+#include "src/engines/kotor2/game.h"
 #include "src/engines/kotor2/module.h"
 
 namespace Engines {
@@ -62,38 +63,18 @@ void Console::updateCaches() {
 }
 
 void Console::updateModules() {
+	std::vector<Common::UString> modules;
+	Game::getModules(modules);
+
 	_modules.clear();
-	setArguments("loadmodule");
+	std::copy(modules.begin(), modules.end(), std::back_inserter(_modules));
 
-	Common::UString moduleDir = ConfigMan.getString("KOTOR2_moduleDir");
-	if (moduleDir.empty())
-		return;
-
-	Common::FileList mods;
-	mods.addDirectory(moduleDir);
-
-	for (Common::FileList::const_iterator m = mods.begin(); m != mods.end(); ++m) {
-		Common::UString file = m->toLower();
-		if (!file.endsWith("_s.rim"))
-			continue;
-
-		file = Common::FilePath::getStem(file);
-		file.truncate(file.size() - Common::UString("_s").size());
-
-		_modules.push_back(file);
-	}
-
-	_modules.sort(Common::UString::iless());
 	setArguments("loadmodule", _modules);
 }
 
 void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
 	hide();
-	module->exit();
+	_engine->getGame().getModule().exit();
 }
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
@@ -107,14 +88,10 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		return;
 	}
 
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
 	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
 			hide();
-			module->load(cl.args);
+			_engine->getGame().getModule().load(cl.args);
 			return;
 		}
 	}

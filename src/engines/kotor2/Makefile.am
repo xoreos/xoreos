@@ -7,6 +7,7 @@ noinst_HEADERS = \
                  probes.h \
                  modelloader.h \
                  console.h \
+                 game.h \
                  module.h \
                  gui/widgets/kotorwidget.h \
                  gui/gui.h \
@@ -18,6 +19,7 @@ libkotor2_la_SOURCES = \
                        probes.cpp \
                        modelloader.cpp \
                        console.cpp \
+                       game.cpp \
                        gui/main/main.cpp \
                        $(EMPTY)
 

@@ -34,8 +34,6 @@
 #include "src/aurora/talkman.h"
 #include "src/aurora/talktable_tlk.h"
 
-#include "src/sound/sound.h"
-
 #include "src/events/events.h"
 
 #include "src/graphics/aurora/cursorman.h"
@@ -46,26 +44,23 @@
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/model.h"
 
-
 #include "src/engines/kotor2/kotor2.h"
 #include "src/engines/kotor2/modelloader.h"
 #include "src/engines/kotor2/console.h"
-#include "src/engines/kotor2/module.h"
-
-#include "src/engines/kotor2/gui/main/main.h"
+#include "src/engines/kotor2/game.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
 KotOR2Engine::KotOR2Engine() : _language(Aurora::kLanguageInvalid),
-	_module(0) {
+	_game(0) {
 
 	_console = new Console(*this);
 }
 
 KotOR2Engine::~KotOR2Engine() {
-	delete _module;
+	delete _game;
 }
 
 bool KotOR2Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -115,8 +110,10 @@ bool KotOR2Engine::changeLanguage() {
 	return true;
 }
 
-Module *KotOR2Engine::getModule() {
-	return _module;
+Game &KotOR2Engine::getGame() {
+	assert(_game);
+
+	return *_game;
 }
 
 void KotOR2Engine::run() {
@@ -133,7 +130,8 @@ void KotOR2Engine::run() {
 
 	CursorMan.showCursor();
 
-	mainMenuLoop();
+	_game = new Game(*this, *_console, _platform);
+	_game->run();
 
 	deinit();
 }
@@ -424,59 +422,6 @@ void KotOR2Engine::playIntroVideos() {
 	playVideo("obsidianent");
 	playVideo("aspyr");
 	playVideo("legal");
-}
-
-void KotOR2Engine::playMenuMusic() {
-	if (SoundMan.isPlaying(_menuMusic))
-		return;
-
-	_menuMusic = playSound("mus_sion", Sound::kSoundTypeMusic, true);
-}
-
-void KotOR2Engine::stopMenuMusic() {
-	SoundMan.stopChannel(_menuMusic);
-}
-
-void KotOR2Engine::mainMenuLoop() {
-	playMenuMusic();
-
-	_module = new Module(*_console);
-
-	while (!EventMan.quitRequested()) {
-		GUI *mainMenu = new MainMenu(*_module, _console);
-
-		EventMan.flushEvents();
-
-		_console->disableCommand("loadmodule", "not available in the main menu");
-		_console->disableCommand("exitmodule", "not available in the main menu");
-
-		mainMenu->show();
-		mainMenu->run();
-		mainMenu->hide();
-
-		_console->enableCommand("loadmodule");
-		_console->enableCommand("exitmodule");
-
-		delete mainMenu;
-
-		if (EventMan.quitRequested())
-			break;
-
-		stopMenuMusic();
-
-		_module->run();
-		if (EventMan.quitRequested())
-			break;
-
-		playMenuMusic();
-		_console->hide();
-		_module->clear();
-	}
-
-	delete _module;
-	_module = 0;
-
-	stopMenuMusic();
 }
 
 } // End of namespace KotOR2
