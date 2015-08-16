@@ -115,6 +115,12 @@ void Functions::getLastSpeaker(Aurora::NWScript::FunctionContext &ctx) {
 	unimplementedFunction(ctx);
 }
 
+void Functions::isInConversation(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+
+	ctx.getReturn() = object ? (object->getPCSpeaker() != 0) : 0;
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

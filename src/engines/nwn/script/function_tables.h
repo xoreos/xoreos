@@ -525,7 +525,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 442, "GetItemActivatedTarget"              , 0                                                },
 	{ 443, "GetIsOpen"                           , &Functions::getIsOpen                            },
 	{ 444, "TakeGoldFromCreature"                , 0                                                },
-	{ 445, "IsInConversation"                    , 0                                                },
+	{ 445, "IsInConversation"                    , &Functions::isInConversation                     },
 	{ 446, "EffectAbilityDecrease"               , 0                                                },
 	{ 447, "EffectAttackDecrease"                , 0                                                },
 	{ 448, "EffectDamageDecrease"                , 0                                                },
