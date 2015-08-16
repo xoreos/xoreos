@@ -80,6 +80,8 @@ private:
 	static Common::UString formatTag(const Aurora::NWScript::Object *object);
 	static Common::UString formatParams(const Aurora::NWScript::FunctionContext &ctx);
 
+	static Common::UString floatToString(float f, int width = 18, int decimals = 9);
+
 	static Aurora::NWScript::Object *getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n);
 	// '---
 
@@ -117,6 +119,35 @@ private:
 
 	void intToFloat(Aurora::NWScript::FunctionContext &ctx);
 	void floatToInt(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
+	// .--- Strings, functions_string.cpp
+	void printInteger(Aurora::NWScript::FunctionContext &ctx);
+	void printFloat  (Aurora::NWScript::FunctionContext &ctx);
+	void printString (Aurora::NWScript::FunctionContext &ctx);
+	void printObject (Aurora::NWScript::FunctionContext &ctx);
+	void printVector (Aurora::NWScript::FunctionContext &ctx);
+
+	void intToString   (Aurora::NWScript::FunctionContext &ctx);
+	void floatToString (Aurora::NWScript::FunctionContext &ctx);
+	void objectToString(Aurora::NWScript::FunctionContext &ctx);
+
+	void intToHexString(Aurora::NWScript::FunctionContext &ctx);
+
+	void stringToInt  (Aurora::NWScript::FunctionContext &ctx);
+	void stringToFloat(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStringLength(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStringUpperCase(Aurora::NWScript::FunctionContext &ctx);
+	void getStringLowerCase(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStringRight(Aurora::NWScript::FunctionContext &ctx);
+	void getStringLeft (Aurora::NWScript::FunctionContext &ctx);
+
+	void insertString (Aurora::NWScript::FunctionContext &ctx);
+	void getSubString (Aurora::NWScript::FunctionContext &ctx);
+	void findSubString(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Module functions, functions_module.cpp

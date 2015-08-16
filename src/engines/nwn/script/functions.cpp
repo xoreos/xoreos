@@ -168,6 +168,10 @@ Common::UString Functions::formatParams(const Aurora::NWScript::FunctionContext 
 	return params;
 }
 
+Common::UString Functions::floatToString(float f, int width, int decimals) {
+	return Common::UString::format("%*.*f", width, decimals, f);
+}
+
 Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n) {
 	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getParams()[n].getObject());
 	if (!object || (object->getType() == kObjectTypeInvalid))
