@@ -154,6 +154,8 @@ private:
 	void findSubString(Aurora::NWScript::FunctionContext &ctx);
 
 	void getStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
+
+	void setCustomToken(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Module functions, functions_module.cpp

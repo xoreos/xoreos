@@ -31,6 +31,8 @@
 
 #include "src/aurora/nwscript/functioncontext.h"
 
+#include "src/engines/aurora/tokenman.h"
+
 #include "src/engines/nwn/script/functions.h"
 
 namespace Engines {
@@ -180,6 +182,15 @@ void Functions::getStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
 	const Aurora::LanguageGender gender = (Aurora::LanguageGender) ctx.getParams()[1].getInt();
 
 	ctx.getReturn() = TalkMan.getString(strRef, gender);
+}
+
+void Functions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
+	int32 tokenNumber = ctx.getParams()[0].getInt();
+	const Common::UString &tokenValue = ctx.getParams()[1].getString();
+
+	const Common::UString tokenName = Common::UString::format("<CUSTOM%d>", tokenNumber);
+
+	TokenMan.set(tokenName, tokenValue);
 }
 
 } // End of namespace NWN
