@@ -44,16 +44,23 @@ private:
 
 	// Caches
 	std::list<Common::UString> _modules; ///< All known modules.
+	std::list<Common::UString> _music;   ///< All known music resources.
+
+	size_t _maxSizeMusic;
 
 
 	// Updating the caches
 	void updateCaches();
 	void updateModules();
+	void updateMusic();
 
 	// The commands
 	void cmdExitModule (const CommandLine &cl);
 	void cmdListModules(const CommandLine &cl);
 	void cmdLoadModule (const CommandLine &cl);
+	void cmdListMusic  (const CommandLine &cl);
+	void cmdStopMusic  (const CommandLine &cl);
+	void cmdPlayMusic  (const CommandLine &cl);
 };
 
 } // End of namespace KotOR
