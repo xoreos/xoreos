@@ -74,7 +74,27 @@ void Game::run() {
 }
 
 void Game::runModule() {
-	_module->run();
+	if (EventMan.quitRequested() || !_module->isLoaded()) {
+		_module->clear();
+		return;
+	}
+
+	_module->enter();
+	EventMan.enableKeyRepeat(true);
+
+	while (!EventMan.quitRequested() && _module->isRunning()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event))
+			_module->addEvent(event);
+
+		_module->processEventQueue();
+		EventMan.delay(10);
+	}
+
+	EventMan.enableKeyRepeat(false);
+	_module->leave();
+
+	_module->clear();
 }
 
 void Game::playMenuMusic(Common::UString music) {

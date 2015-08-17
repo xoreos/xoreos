@@ -95,41 +95,12 @@ void Module::loadModule(const Common::UString &module) {
 	_hasModule = true;
 }
 
-void Module::run() {
-	enter();
-	_running = true;
-
-	EventMan.enableKeyRepeat();
-
-	try {
-
-		EventMan.flushEvents();
-
-		while (!EventMan.quitRequested() && !_exit) {
-			replaceModule();
-			if (_exit)
-				break;
-
-			handleEvents();
-
-			if (!EventMan.quitRequested() && !_exit)
-				EventMan.delay(10);
-		}
-
-	} catch (Common::Exception &e) {
-		_running = false;
-
-		e.add("Failed running module \"%s\"", _ifo.getName().getString().c_str());
-		throw e;
-	}
-
-	EventMan.enableKeyRepeat(0);
-
-	_running = false;
+bool Module::isLoaded() const {
+	return _hasModule && _area;
 }
 
 bool Module::isRunning() const {
-	return _running;
+	return !EventMan.quitRequested() && _running && !_exit;
 }
 
 void Module::exit() {
@@ -150,7 +121,7 @@ void Module::load() {
 void Module::loadResources() {
 	// Add all available resource files for the module.
 	// Apparently, the original game prefers ERFs over RIMs. This is
-	// exploited by the KotOR2 2 TSL Restored Content Mod.
+	// exploited by the KotOR2 TSL Restored Content Mod.
 
 	// General module resources
 	_resources.push_back(Common::ChangeID());
@@ -162,7 +133,7 @@ void Module::loadResources() {
 	if (!indexOptionalArchive (_module + "_s.erf", 1001, &_resources.back()))
 		   indexMandatoryArchive(_module + "_s.rim", 1001, &_resources.back());
 
-	// Dialogs, KotOR2 2 only
+	// Dialogs, KotOR2 only
 	_resources.push_back(Common::ChangeID());
 	if (!indexOptionalArchive(_module + "_dlg.erf", 1002, &_resources.back()))
 		   indexOptionalArchive(_module + "_dlg.rim", 1002, &_resources.back());
@@ -179,7 +150,8 @@ void Module::loadResources() {
 void Module::loadIFO() {
 	_ifo.load();
 
-	_tag = _ifo.getTag();
+	_tag  = _ifo.getTag();
+	_name = _ifo.getName().getString();
 }
 
 void Module::loadArea() {
@@ -266,16 +238,14 @@ void Module::replaceModule() {
 }
 
 void Module::enter() {
-	if (!_hasModule || !_area)
+	if (!isLoaded())
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
-	_console->printf("Entering module \"%s\"", _ifo.getName().getString().c_str());
+	_console->printf("Entering module \"%s\"", _name.c_str());
 
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
 		playVideo(startMovie);
-
-	_exit = false;
 
 	float entryX, entryY, entryZ, entryDirX, entryDirY;
 	_ifo.getEntryPosition(entryX, entryY, entryZ);
@@ -289,35 +259,52 @@ void Module::enter() {
 	CameraMan.update();
 
 	_area->show();
+
+	_running = true;
+	_exit    = false;
 }
 
 void Module::leave() {
-	if (!_area)
+	if (_area)
+		_area->hide();
+
+	_running = false;
+	_exit    = true;
+}
+
+void Module::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+void Module::processEventQueue() {
+	if (!isRunning())
 		return;
 
-	_area->hide();
+	replaceModule();
+
+	if (!isRunning())
+		return;
+
+	handleEvents();
 }
 
 void Module::handleEvents() {
-	Events::Event event;
-	while (EventMan.pollEvent(event)) {
+	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event) {
 		// Handle console
-		if (_console->processEvent(event)) {
-			if (!_area)
-				return;
-
+		if (_console->isVisible()) {
+			_console->processEvent(*event);
 			continue;
 		}
 
-		if (event.type == Events::kEventKeyDown) {
+		if (event->type == Events::kEventKeyDown) {
 			// Menu
-			if (event.key.keysym.sym == SDLK_ESCAPE) {
+			if (event->key.keysym.sym == SDLK_ESCAPE) {
 				showMenu();
 				continue;
 			}
 
 			// Console
-			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+			if ((event->key.keysym.sym == SDLK_d) && (event->key.keysym.mod & KMOD_CTRL)) {
 				_console->show();
 				continue;
 			}
@@ -325,18 +312,17 @@ void Module::handleEvents() {
 
 		// Camera
 		if (!_console->isVisible())
-			if (handleCameraInput(event))
+			if (handleCameraInput(*event))
 				continue;
 
-		_area->addEvent(event);
+		_area->addEvent(*event);
 	}
 
-	CameraMan.update();
-	_area->processEventQueue();
-}
+	_eventQueue.clear();
 
-const Common::UString &Module::getName() const {
-	return _module;
+	CameraMan.update();
+
+	_area->processEventQueue();
 }
 
 const Aurora::IFOFile &Module::getIFO() const {

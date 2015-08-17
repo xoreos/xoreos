@@ -44,7 +44,6 @@ namespace KotOR2 {
 
 class Area;
 
-/** A KotOR2 module. */
 class Module : public KotOR2::Object, public KotOR2::ObjectContainer {
 public:
 	Module(::Engines::Console &console);
@@ -53,28 +52,49 @@ public:
 	/** Clear the whole context. */
 	void clear();
 
-	/** Load a module. */
-	void load(const Common::UString &module);
-	/** Run the currently loaded module. */
-	void run();
-	/** Exit the currently running module. */
-	void exit();
-
-	/** Show the ingame main menu. */
-	void showMenu();
-
+	// .--- Module management
+	/** Is a module currently loaded and ready to run? */
+	bool isLoaded() const;
 	/** Is a module currently running? */
 	bool isRunning() const;
-	/** Return the name of the currently loaded module. */
-	const Common::UString &getName() const;
 
+	/** Load a module. */
+	void load(const Common::UString &module);
+	/** Exit the currently running module. */
+	void exit();
+	// '---
+
+	// .--- Information about the current module
 	/** Return the IFO of the currently loaded module. */
 	const Aurora::IFOFile &getIFO() const;
+	// '---
+
+	// .--- Elements of the current module
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
+	// '---
+
+	// .--- Interact with the current module
+	/** Show the ingame main menu. */
+	void showMenu();
+	// '---
+
+	// .--- Module main loop (called by the Game class)
+	/** Enter the loaded module, starting it. */
+	void enter();
+	/** Leave the running module, quitting it. */
+	void leave();
+
+	/** Add a single event for consideration into the event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+	// '---
+
+private:
+	typedef std::list<Events::Event> EventQueue;
 
 
-protected:
 	::Engines::Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
@@ -98,23 +118,24 @@ protected:
 
 	Area *_area; ///< The current module's area.
 
+	EventQueue  _eventQueue;
 
-	void load();
-	void loadResources();
-	void loadIFO();
-	void loadArea();
-	void loadTexturePack();
 
+	// .--- Unloading
 	void unload();
 	void unloadResources();
 	void unloadIFO();
 	void unloadArea();
 	void unloadTexturePack();
+	// '---
 
-	void enter(); ///< Enter the current module.
-	void leave(); ///< Leave the current module.
-
-	void handleEvents();
+	// .--- Loading
+	void load();
+	void loadResources();
+	void loadIFO();
+	void loadArea();
+	void loadTexturePack();
+	// '---
 
 	/** Load the actual module. */
 	void loadModule(const Common::UString &module);
@@ -122,6 +143,8 @@ protected:
 	void changeModule(const Common::UString &module);
 	/** Actually replace the currently running module. */
 	void replaceModule();
+
+	void handleEvents();
 };
 
 } // End of namespace KotOR2
