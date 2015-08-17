@@ -53,25 +53,15 @@ namespace Engines {
 
 namespace NWN {
 
-Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _loaded(false),
-	_resRef(resRef), _visible(false), _tileset(0),
-	_activeObject(0), _highlightAll(false) {
+Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _resRef(resRef),
+	_visible(false), _tileset(0), _activeObject(0), _highlightAll(false) {
 
 	try {
-		// Load ARE and GIT
-
-		Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
-		loadARE(are.getTopLevel());
-
-		Aurora::GFF3File git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
-		loadGIT(git.getTopLevel());
-
+		load();
 	} catch (...) {
 		clear();
 		throw;
 	}
-
-	_loaded = true;
 
 	// Tell the module that we exist
 	_module->addObject(*this);
@@ -85,6 +75,14 @@ Area::~Area() {
 	removeFocus();
 
 	clear();
+}
+
+void Area::load() {
+	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+	loadARE(are.getTopLevel());
+
+	Aurora::GFF3File git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
+	loadGIT(git.getTopLevel());
 }
 
 void Area::clear() {
@@ -588,7 +586,7 @@ void Area::setActive(NWN::Object *object) {
 }
 
 void Area::checkActive(int x, int y) {
-	if (!_loaded || _highlightAll)
+	if (_highlightAll)
 		return;
 
 	Common::StackLock lock(_mutex);
@@ -600,9 +598,6 @@ void Area::checkActive(int x, int y) {
 }
 
 void Area::click(int x, int y) {
-	if (!_loaded)
-		return;
-
 	Common::StackLock lock(_mutex);
 
 	NWN::Object *o = getObjectAt(x, y);

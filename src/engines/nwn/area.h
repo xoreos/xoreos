@@ -139,9 +139,7 @@ private:
 	typedef std::map<uint32, NWN::Object *> ObjectMap;
 
 
-	Module *_module;
-
-	bool _loaded;
+	Module *_module; ///< The module this area is in.
 
 	Common::UString _resRef; ///< The area's resref (resource ID).
 
@@ -193,6 +191,7 @@ private:
 	// Loading helpers
 
 	void clear();
+	void load();
 
 	void loadARE(const Aurora::GFF3Struct &are);
 	void loadGIT(const Aurora::GFF3Struct &git);
