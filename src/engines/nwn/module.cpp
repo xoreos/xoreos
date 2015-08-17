@@ -349,8 +349,6 @@ void Module::leave() {
 	_ingameGUI->stopConversation();
 	_ingameGUI->hide();
 
-	EventMan.enableKeyRepeat(0);
-
 	_running = false;
 	_exit    = true;
 }
