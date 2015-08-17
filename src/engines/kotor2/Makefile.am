@@ -10,6 +10,7 @@ noinst_HEADERS = \
                  modelloader.h \
                  game.h \
                  object.h \
+                 waypoint.h \
                  situated.h \
                  placeable.h \
                  door.h \
@@ -29,6 +30,7 @@ libkotor2_la_SOURCES = \
                        modelloader.cpp \
                        game.cpp \
                        object.cpp \
+                       waypoint.cpp \
                        situated.cpp \
                        placeable.cpp \
                        door.cpp \
