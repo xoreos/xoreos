@@ -33,6 +33,7 @@
 
 #include "src/events/types.h"
 
+#include "src/engines/kotor2/objectcontainer.h"
 #include "src/engines/kotor2/object.h"
 
 namespace Engines {
@@ -44,7 +45,7 @@ namespace KotOR2 {
 class Area;
 
 /** A KotOR2 module. */
-class Module : public KotOR2::Object {
+class Module : public KotOR2::Object, public KotOR2::ObjectContainer {
 public:
 	Module(::Engines::Console &console);
 	~Module();

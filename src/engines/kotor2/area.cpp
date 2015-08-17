@@ -64,9 +64,14 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _r
 		clear();
 		throw;
 	}
+
+	// Tell the module that we exist
+	_module->addObject(*this);
 }
 
 Area::~Area() {
+	_module->removeObject(*this);
+
 	hide();
 
 	removeFocus();
@@ -88,8 +93,12 @@ void Area::load() {
 }
 
 void Area::clear() {
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+		if (!(*o)->isStatic())
+			_module->removeObject(**o);
+
 		delete *o;
+	}
 
 	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		delete *r;
@@ -337,6 +346,8 @@ void Area::loadObject(KotOR2::Object &object) {
 
 		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 			_objectMap.insert(std::make_pair(*id, &object));
+
+		_module->addObject(object);
 	}
 }
 
