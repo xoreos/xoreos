@@ -46,6 +46,12 @@ ObjectType Object::getType() const {
 	return _type;
 }
 
+void Object::show() {
+}
+
+void Object::hide() {
+}
+
 const Common::UString &Object::getName() const {
 	return _name;
 }
@@ -95,6 +101,15 @@ void Object::setOrientation(float x, float y, float z, float angle) {
 	_orientation[1] = y;
 	_orientation[2] = z;
 	_orientation[3] = angle;
+}
+
+void Object::enter() {
+}
+
+void Object::leave() {
+}
+
+void Object::highlight(bool UNUSED(enabled)) {
 }
 
 } // End of namespace Jade
