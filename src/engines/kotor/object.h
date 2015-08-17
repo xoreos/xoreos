@@ -40,7 +40,7 @@ namespace KotOR {
 
 class Object : public Aurora::NWScript::Object {
 public:
-	Object(ObjectType type = kObjectTypeNone);
+	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
 
 	/** Return the exact type of the object. */
