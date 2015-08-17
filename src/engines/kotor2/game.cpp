@@ -38,10 +38,9 @@
 #include "src/engines/kotor2/kotor2.h"
 #include "src/engines/kotor2/console.h"
 #include "src/engines/kotor2/module.h"
+#include "src/engines/kotor2/area.h"
 
 #include "src/engines/kotor2/gui/main/main.h"
-
-#include "src/engines/kotor/area.h"
 
 namespace Engines {
 
@@ -93,7 +92,7 @@ void Game::stopMenuMusic() {
 
 void Game::playMusic(const Common::UString &music) {
 	if (_module && _module->isRunning()) {
-		KotOR::Area *area = _module->getCurrentArea();
+		Area *area = _module->getCurrentArea();
 		if (area)
 			area->playAmbientMusic(music);
 
@@ -107,7 +106,7 @@ void Game::stopMusic() {
 	stopMenuMusic();
 
 	if (_module && _module->isRunning()) {
-		KotOR::Area *area = _module->getCurrentArea();
+		Area *area = _module->getCurrentArea();
 		if (area)
 			area->stopAmbientMusic();
 	}
