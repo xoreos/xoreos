@@ -183,9 +183,7 @@ void Module::loadIFO() {
 }
 
 void Module::loadArea() {
-	_area = new Area;
-
-	_area->load(_ifo.getEntryArea());
+	_area = new Area(*this, _ifo.getEntryArea());
 }
 
 static const char *texturePacks[3] = {
