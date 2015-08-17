@@ -166,6 +166,9 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// PC
 	_isPC = gff.getBool("IsPC", _isPC);
+
+	// Scripts
+	readScripts(gff);
 }
 
 void Creature::loadPortrait(const Aurora::GFF3Struct &gff) {

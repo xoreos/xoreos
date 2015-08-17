@@ -109,6 +109,9 @@ void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {
 
 		_mapNote = mapNote.getString();
 	}
+
+	// Scripts
+	readScripts(gff);
 }
 
 } // End of namespace KotOR
