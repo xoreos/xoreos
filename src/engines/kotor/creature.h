@@ -49,6 +49,10 @@ public:
 	void show(); ///< Show the creature's model.
 	void hide(); ///< Hide the creature's model.
 
+	// Basic properties
+
+	bool isPC() const; ///< Is the creature a player character?
+
 	// Positioning
 
 	/** Set the creature's position. */
@@ -74,6 +78,8 @@ private:
 
 		Common::UString bodyTexture;
 	};
+
+	bool _isPC; ///< Is the creature a PC?
 
 	uint32 _appearance; ///< The creature's general appearance.
 
