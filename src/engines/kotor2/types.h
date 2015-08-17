@@ -45,7 +45,7 @@ enum ObjectType {
 
 	kObjectTypeMAX,
 
-	kObjectTypeSelf         = 0x7FFE,
+	kObjectTypeSelf         = 0x7FFE, ///< Fake value to describe the calling object in a script.
 	kObjectTypeInvalid      = 0x7FFF,
 
 	kObjectTypeAll          = 0x7FFF
