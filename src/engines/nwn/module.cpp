@@ -98,7 +98,7 @@ bool Module::Action::operator<(const Action &s) const {
 }
 
 
-Module::Module(::Engines::Console &console, const Version &gameVersion) :
+Module::Module(::Engines::Console &console, const Version &gameVersion) : Object(kObjectTypeModule),
 	_console(&console), _gameVersion(&gameVersion),
 	_hasModule(false), _running(false), _pc(0),
 	_currentTexturePack(-1), _exit(false), _currentArea(0) {

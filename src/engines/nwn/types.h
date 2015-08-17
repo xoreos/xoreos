@@ -45,6 +45,8 @@ enum ObjectType {
 
 	kObjectTypeMAX,
 
+	kObjectTypeModule       = 0x7FFC, ///< Fake value for a module object.
+	kObjectTypeArea         = 0x7FFD, ///< Fake value for an area object.
 	kObjectTypeSelf         = 0x7FFE, ///< Fake value to describe the calling object in a script.
 	kObjectTypeInvalid      = 0x7FFF,
 
