@@ -47,47 +47,65 @@ public:
 	/** Return the exact type of the object. */
 	ObjectType getType() const;
 
-	virtual void show() = 0;
-	virtual void hide() = 0;
+	// Basic visuals
 
-	const Common::UString &getName() const;
-	const Common::UString &getDescription() const;
+	virtual void show(); ///< Show the object's model(s).
+	virtual void hide(); ///< Hide the object's model(s).
 
-	const Common::UString &getPortrait() const;
-
-	bool isStatic() const;
-	bool isUsable() const;
-
-	bool isClickable() const;
-
+	/** Return the object's model IDs. */
 	const std::list<uint32> &getIDs() const;
 
+	// Basic properties
+
+	/** Return the object's name. */
+	const Common::UString &getName() const;
+	/** Return the object's description. */
+	const Common::UString &getDescription() const;
+	/** Return the object's portrait. */
+	const Common::UString &getPortrait() const;
+
+	// Interactive properties
+
+	bool isStatic() const; ///< Is the object static (not manipulatable at all)?
+	bool isUsable() const; ///< Can the object be used by the PC?
+
+	bool isClickable() const; ///< Can the player click the object?
+
+	// Positioning
+
+	/** Return the object's position within its area. */
 	virtual void getPosition(float &x, float &y, float &z) const;
+	/** Return the object's orientation. */
 	virtual void getOrientation(float &x, float &y, float &z, float &angle) const;
 
+	/** Set the object's position within its area. */
 	virtual void setPosition(float x, float y, float z);
+	/** Set the object's orientation. */
 	virtual void setOrientation(float x, float y, float z, float angle);
 
-	virtual void enter() = 0;
-	virtual void leave() = 0;
+	// Object/Cursor interactions
 
-	virtual void highlight(bool enabled) = 0;
+	virtual void enter(); ///< The cursor entered the object. */
+	virtual void leave(); ///< The cursor left the object. */
+
+	/** (Un)Highlight the object. */
+	virtual void highlight(bool enabled);
 
 protected:
 	ObjectType _type; ///< The object's type.
 
-	Common::UString _name;
-	Common::UString _description;
+	Common::UString _name;        ///< The object's display name.
+	Common::UString _description; ///< The object's description.
 
-	Common::UString _portrait;
+	Common::UString _portrait; ///< The object's portrait.
 
-	bool _static;
-	bool _usable;
+	bool _static; ///< Is the object static?
+	bool _usable; ///< Is the object usable?
 
-	std::list<uint32> _ids;
+	std::list<uint32> _ids; ///< The object's model IDs.
 
-	float _position[3];
-	float _orientation[4];
+	float _position[3];    ///< The object's position.
+	float _orientation[4]; ///< The object's orientation.
 };
 
 } // End of namespace KotOR
