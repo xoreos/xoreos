@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A room within a KotOR area.
+ *  A room within a Star Wars: Knights of the Old Republic area.
  */
 
 #include "src/common/error.h"

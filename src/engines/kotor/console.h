@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR (debug) console.
+ *  Star Wars: Knights of the Old Republic (debug) console.
  */
 
 #ifndef ENGINES_KOTOR_CONSOLE_H

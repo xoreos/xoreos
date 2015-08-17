@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An object within a KotOR area.
+ *  An object in a Star Wars: Knights of the Old Republic area.
  */
 
 #ifndef ENGINES_KOTOR_OBJECT_H

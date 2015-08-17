@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A module.
+ *  The context needed to run a Star Wars: Knights of the Old Republic module.
  */
 
 #include "src/common/util.h"

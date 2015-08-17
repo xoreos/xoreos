@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A module.
+ *  The context needed to run a Star Wars: Knights of the Old Republic module.
  */
 
 #ifndef ENGINES_KOTOR_MODULE_H

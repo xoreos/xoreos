@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR model loader.
+ *  Star Wars: Knights of the Old Republic model loader.
  */
 
 #include "src/common/error.h"

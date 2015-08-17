@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Star Wars: Knights of the Old Republic
+ *  Engine class handling Star Wars: Knights of the Old Republic.
  */
 
 #include "src/common/util.h"

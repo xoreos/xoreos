@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An area.
+ *  The context holding a Star Wars: Knights of the Old Republic area.
  */
 
 #ifndef ENGINES_KOTOR_AREA_H

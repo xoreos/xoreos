@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A creature.
+ *  A creature in a Star Wars: Knights of the Old Republic area.
  */
 
 #ifndef ENGINES_KOTOR_CREATURE_H

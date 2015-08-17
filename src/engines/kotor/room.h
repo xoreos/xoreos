@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A room within a KotOR area.
+ *  A room within a Star Wars: Knights of the Old Republic area.
  */
 
 #ifndef ENGINES_KOTOR_ROOM_H

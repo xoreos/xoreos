@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A creature.
+ *  A creature in a Star Wars: Knights of the Old Republic area.
  */
 
 #include "src/engines/kotor/creature.h"

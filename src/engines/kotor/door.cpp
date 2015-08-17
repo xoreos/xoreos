@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR door.
+ *  A door in a Star Wars: Knights of the Old Republic area.
  */
 
 #include "src/common/util.h"

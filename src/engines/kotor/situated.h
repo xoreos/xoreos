@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR situated object.
+ *  A situated object in a Star Wars: Knights of the Old Republic area.
  */
 
 #ifndef ENGINES_KOTOR_SITUATED_H

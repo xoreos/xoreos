@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR placeable.
+ *  A placeable in a Star Wars: Knights of the Old Republic area.
  */
 
 #ifndef ENGINES_KOTOR_PLACEABLE_H

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Star Wars: Knights of the Old Republic
+ *  Engine class handling Star Wars: Knights of the Old Republic.
  */
 
 #ifndef ENGINES_KOTOR_KOTOR_H

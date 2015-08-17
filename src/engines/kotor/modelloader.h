@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR model loader.
+ *  Star Wars: Knights of the Old Republic model loader.
  */
 
 #ifndef ENGINES_KOTOR_MODELLOADER_H
