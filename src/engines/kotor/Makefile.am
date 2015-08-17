@@ -43,6 +43,8 @@ noinst_HEADERS = \
                  gui/options/sound.h \
                  gui/options/soundadv.h \
                  script/container.h \
+                 script/functions.h \
+                 script/function_tables.h \
                  $(EMPTY)
 
 libkotor_la_SOURCES = \
@@ -85,4 +87,5 @@ libkotor_la_SOURCES = \
                       gui/options/sound.cpp \
                       gui/options/soundadv.cpp \
                       script/container.cpp \
+                      script/functions.cpp \
                       $(EMPTY)
