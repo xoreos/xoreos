@@ -52,6 +52,59 @@ enum ObjectType {
 	kObjectTypeAll          = 0x7FFF
 };
 
+enum Script {
+	kScriptAccelerate    =  0,
+	kScriptActivateItem      ,
+	kScriptAnimate           ,
+	kScriptAquireItem        ,
+	kScriptAttacked          ,
+	kScriptBlocked           ,
+	kScriptBreak             ,
+	kScriptClick             ,
+	kScriptClosed            ,
+	kScriptCreate            ,
+	kScriptDamaged           ,
+	kScriptDeath             ,
+	kScriptDialogue          ,
+	kScriptDisarm            ,
+	kScriptDisturbed         ,
+	kScriptEndDialogue       ,
+	kScriptEndRound          ,
+	kScriptEnter             ,
+	kScriptExhausted         ,
+	kScriptExit              ,
+	kScriptFailToOpen        ,
+	kScriptFire              ,
+	kScriptHeartbeart        ,
+	kScriptHeartbeat         ,
+	kScriptHitBullet         ,
+	kScriptHitFollower       ,
+	kScriptHitObstacle       ,
+	kScriptHitWorld          ,
+	kScriptLock              ,
+	kScriptModuleLoad        ,
+	kScriptModuleStart       ,
+	kScriptNotice            ,
+	kScriptOpen              ,
+	kScriptOpenStore         ,
+	kScriptPlayerDeath       ,
+	kScriptPlayerDying       ,
+	kScriptPlayerLevelUp     ,
+	kScriptPlayerRespawn     ,
+	kScriptPlayerRest        ,
+	kScriptRest              ,
+	kScriptSpawn             ,
+	kScriptSpellCastAt       ,
+	kScriptTrackLoop         ,
+	kScriptTrapTriggered     ,
+	kScriptUnaquireItem      ,
+	kScriptUnlock            ,
+	kScriptUsed              ,
+	kScriptUserdefined       ,
+
+	kScriptMAX
+};
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
