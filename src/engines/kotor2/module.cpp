@@ -245,6 +245,11 @@ void Module::enter() {
 
 	_console->printf("Entering module \"%s\"", _name.c_str());
 
+	// TODO: This needs a player character
+	runScript(kScriptModuleLoad , this);
+	runScript(kScriptModuleStart, this);
+	runScript(kScriptEnter      , this);
+
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
 		playVideo(startMovie);
@@ -262,13 +267,23 @@ void Module::enter() {
 
 	_area->show();
 
+	// TODO: This needs a player character
+	_area->runScript(kScriptEnter, _area);
+
 	_running = true;
 	_exit    = false;
 }
 
 void Module::leave() {
-	if (_area)
+	if (_area) {
+		// TODO: This needs a player character
+		_area->runScript(kScriptExit, _area);
+
 		_area->hide();
+	}
+
+	// TODO: This needs a player character
+	runScript(kScriptExit, this);
 
 	_running = false;
 	_exit    = true;
