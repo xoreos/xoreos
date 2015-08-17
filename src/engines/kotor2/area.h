@@ -47,33 +47,54 @@ namespace Engines {
 
 namespace KotOR2 {
 
+class Module;
 class Room;
 
-/** A KotOR2 area. */
 class Area : public KotOR2::Object, public Events::Notifyable {
 public:
-	Area();
+	Area(Module &module, const Common::UString &resRef);
 	~Area();
 
-	void load(const Common::UString &resRef);
+	// General properties
 
+	/** Return the area's resref (resource ID). */
+	const Common::UString &getResRef();
 	/** Return the area's localized name. */
 	const Common::UString &getName();
+
+	// Visibility
 
 	void show();
 	void hide();
 
-	void addEvent(const Events::Event &event);
-	void processEventQueue();
+	// Music/Sound
 
-	void removeFocus();
+	uint32 getMusicDayTrack   () const; ///< Return the music track ID playing by day.
+	uint32 getMusicNightTrack () const; ///< Return the music track ID playing by night.
+	uint32 getMusicBattleTrack() const; ///< Return the music track ID playing in battle.
 
+	void setMusicDayTrack   (uint32 track); ///< Set the music track ID playing by day.
+	void setMusicNightTrack (uint32 track); ///< Set the music track ID playing by night.
+	void setMusicBattleTrack(uint32 track); ///< Set the music track ID playing in battle.
+
+	void stopSound();        ///< Stop all sounds.
+	void stopAmbientMusic(); ///< Stop the ambient music.
+	void stopAmbientSound(); ///< Stop the ambient sound.
+
+	/** Play the specified music (or the area's default) as ambient music. */
 	void playAmbientMusic(Common::UString music = "");
+	/** Play the specified sound (or the area's default) as ambient sound. */
 	void playAmbientSound(Common::UString sound = "");
 
-	void stopSound();
-	void stopAmbientMusic();
-	void stopAmbientSound();
+	// Events
+
+	/** Add a single event for consideration into the area event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+
+	/** Forcibly remove the focus from the currently highlighted object. */
+	void removeFocus();
 
 
 protected:
@@ -81,50 +102,61 @@ protected:
 
 
 private:
-	typedef std::list<Room *>   RoomList;
-	typedef std::list<Object *> ObjectList;
+	typedef std::list<Room *> RoomList;
 
-	typedef std::map<uint32, Object *> ObjectMap;
+	typedef std::list<KotOR2::Object *> ObjectList;
+	typedef std::map<uint32, KotOR2::Object *> ObjectMap;
 
 
-	bool _loaded;
+	Module *_module; ///< The module this area is in.
 
-	Common::UString _resRef;
-	Common::UString _name;
+	Common::UString _resRef;      ///< The area's resref (resource ID).
+	Common::UString _displayName; ///< The area's localized display name.
 
-	Common::UString _ambientDay;
-	Common::UString _ambientNight;
+	Common::UString _ambientDay;   ///< Ambient sound that plays by day.
+	Common::UString _ambientNight; ///< Ambient sound that plays by night.
 
-	Common::UString _musicDay;
-	Common::UString _musicNight;
-	Common::UString _musicBattle;
+	uint32 _musicDayTrack;    ///< Music track ID that plays by day.
+	uint32 _musicNightTrack;  ///< Music track ID that plays by night.
+	uint32 _musicBattleTrack; ///< Music track ID that plays in battle.
 
+	Common::UString _musicDay;    ///< Music that plays by day.
+	Common::UString _musicNight;  ///< Music that plays by night.
+	Common::UString _musicBattle; ///< Music that plays in battle.
+
+	/** Battle music stingers. */
 	std::vector<Common::UString> _musicBattleStinger;
 
-	float _ambientDayVol;
-	float _ambientNightVol;
+	float _ambientDayVol;   ///< Day ambient sound volume.
+	float _ambientNightVol; ///< Night ambient sound volume.
 
-	bool _visible;
+	bool _visible; ///< Is the area currently visible?
 
-	Sound::ChannelHandle _ambientSound;
-	Sound::ChannelHandle _ambientMusic;
+	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
+	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.
 
-	Aurora::LYTFile _lyt;
-	Aurora::VISFile _vis;
+	Aurora::LYTFile _lyt; ///< The area's layout description.
+	Aurora::VISFile _vis; ///< The area's inter-room visibility description.
 
-	RoomList _rooms;
+	RoomList _rooms; ///< All rooms in the area.
 
-	ObjectList _objects;
-	ObjectMap  _objectMap;
+	ObjectList _objects;   ///< List of all objects in the area.
+	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
 
-	Object *_activeObject;
+	/** The currently active (highlighted) object. */
+	KotOR2::Object *_activeObject;
 
-	bool _highlightAll;
+	bool _highlightAll; ///< Are we currently highlighting all objects?
 
-	std::list<Events::Event> _eventQueue;
+	std::list<Events::Event> _eventQueue; ///< The event queue.
 
-	Common::Mutex _mutex;
+	Common::Mutex _mutex; ///< Mutex securing access to the area.
 
+
+	// Loading helpers
+
+	void clear();
+	void load();
 
 	void loadLYT();
 	void loadVIS();
@@ -136,7 +168,7 @@ private:
 
 	void loadProperties(const Aurora::GFF3Struct &props);
 
-	void loadObject(Object &object);
+	void loadObject(KotOR2::Object &object);
 
 	void loadPlaceables(const Aurora::GFF3List &list);
 	void loadDoors     (const Aurora::GFF3List &list);
@@ -144,11 +176,14 @@ private:
 
 	void unload();
 
+	// Highlight / active helpers
+
 	void checkActive();
-	void setActive(Object *object);
-	Object *getObjectAt(int x, int y);
+	void setActive(KotOR2::Object *object);
+	KotOR2::Object *getObjectAt(int x, int y);
 
 	void highlightAll(bool enabled);
+
 
 	friend class Console;
 };

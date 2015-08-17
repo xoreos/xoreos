@@ -45,6 +45,7 @@
 
 #include "src/engines/kotor2/area.h"
 #include "src/engines/kotor2/room.h"
+#include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/placeable.h"
 #include "src/engines/kotor2/door.h"
 #include "src/engines/kotor2/creature.h"
@@ -53,15 +54,95 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Area::Area() : _loaded(false), _visible(false), _activeObject(0), _highlightAll(false) {
+Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _resRef(resRef),
+	_visible(false), _activeObject(0), _highlightAll(false) {
+
+	try {
+		load();
+	} catch (...) {
+		clear();
+		throw;
+	}
 }
 
 Area::~Area() {
-	unload();
+	hide();
+
+	removeFocus();
+
+	clear();
+}
+
+void Area::load() {
+	loadLYT(); // Room layout
+	loadVIS(); // Room visibilities
+
+	loadRooms();
+
+	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+	loadARE(are.getTopLevel());
+
+	Aurora::GFF3File git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
+	loadGIT(git.getTopLevel());
+}
+
+void Area::clear() {
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+		delete *o;
+
+	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
+		delete *r;
+
+	_objects.clear();
+	_rooms.clear();
 }
 
 const Common::UString &Area::getName() {
 	return _name;
+}
+
+uint32 Area::getMusicDayTrack() const {
+	return _musicDayTrack;
+}
+
+uint32 Area::getMusicNightTrack() const {
+	return _musicNightTrack;
+}
+
+uint32 Area::getMusicBattleTrack() const {
+	return _musicBattleTrack;
+}
+
+void Area::setMusicDayTrack(uint32 track) {
+	_musicDayTrack = track;
+	_musicDay      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
+}
+
+void Area::setMusicNightTrack(uint32 track) {
+	_musicNightTrack = track;
+	_musicNight      = TwoDAReg.get2DA("ambientmusic").getRow(track).getString("Resource");
+}
+
+void Area::setMusicBattleTrack(uint32 track) {
+	_musicBattleTrack = track;
+
+	if (_musicBattleTrack != Aurora::kStrRefInvalid) {
+		const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get2DA("ambientmusic");
+
+		// Normal battle music
+		_musicBattle = ambientMusic.getRow(_musicBattleTrack).getString("Resource");
+
+		// Battle stingers
+		Common::UString stinger[3];
+		stinger[0] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger1");
+		stinger[1] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger2");
+		stinger[2] = ambientMusic.getRow(_musicBattleTrack).getString("Stinger3");
+
+		_musicBattleStinger.clear();
+		for (int i = 0; i < 3; i++)
+			if (!stinger[i].empty())
+				_musicBattleStinger.push_back(stinger[i]);
+	}
 }
 
 void Area::stopSound() {
@@ -80,37 +161,32 @@ void Area::stopAmbientSound() {
 void Area::playAmbientMusic(Common::UString music) {
 	stopAmbientMusic();
 
-	// TODO Day/Night
+	// TODO: Area::playAmbientMusic(): Day/Night
 	if (music.empty())
 		music = _musicDay;
 
 	if (music.empty())
 		return;
 
-	_ambientMusic = playSound(music, Sound::kSoundTypeMusic, true);
+	_ambientMusic = ::Engines::playSound(music, Sound::kSoundTypeMusic, true);
 }
 
 void Area::playAmbientSound(Common::UString sound) {
 	stopAmbientSound();
 
-	// TODO Day/Night
+	// TODO: Area::playAmbientSound():  Day/Night
 	if (sound.empty())
 		sound = _ambientDay;
 
 	if (sound.empty())
 		return;
 
-	_ambientSound = playSound(sound, Sound::kSoundTypeSFX, true, _ambientDayVol);
+	_ambientSound = ::Engines::playSound(sound, Sound::kSoundTypeSFX, true, _ambientDayVol);
 }
 
 void Area::show() {
-	assert(_loaded);
-
 	if (_visible)
 		return;
-
-	playAmbientSound();
-	playAmbientMusic();
 
 	GfxMan.lockFrame();
 
@@ -124,12 +200,14 @@ void Area::show() {
 
 	GfxMan.unlockFrame();
 
+	// Play music and sound
+	playAmbientSound();
+	playAmbientMusic();
+
 	_visible = true;
 }
 
 void Area::hide() {
-	assert(_loaded);
-
 	if (!_visible)
 		return;
 
@@ -150,23 +228,6 @@ void Area::hide() {
 	GfxMan.unlockFrame();
 
 	_visible = false;
-}
-
-void Area::load(const Common::UString &resRef) {
-	_resRef = resRef;
-
-	loadLYT(); // Room layout
-	loadVIS(); // Room visibilities
-
-	loadRooms();
-
-	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
-	loadARE(are.getTopLevel());
-
-	Aurora::GFF3File git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
-	loadGIT(git.getTopLevel());
-
-	_loaded = true;
 }
 
 void Area::loadLYT() {
@@ -250,32 +311,12 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 
 	// Ambient music
 
-	const Aurora::TwoDAFile &ambientMusic = TwoDAReg.get2DA("ambientmusic");
-
-	uint32 musicDay   = props.getUint("MusicDay"   , Aurora::kStrRefInvalid);
-	uint32 musicNight = props.getUint("MusicNight" , Aurora::kStrRefInvalid);
-
-	_musicDay   = ambientMusic.getRow(musicDay  ).getString("Resource");
-	_musicNight = ambientMusic.getRow(musicNight).getString("Resource");
-
+	setMusicDayTrack  (props.getUint("MusicDay"   , Aurora::kStrRefInvalid));
+	setMusicNightTrack(props.getUint("MusicNight" , Aurora::kStrRefInvalid));
 
 	// Battle music
 
-	uint32 musicBattle = props.getUint("MusicBattle", Aurora::kStrRefInvalid);
-
-	if (musicBattle != Aurora::kStrRefInvalid) {
-		_musicBattle = ambientMusic.getRow(musicBattle).getString("Resource");
-
-		// Battle stingers
-		Common::UString stinger[3];
-		stinger[0] = ambientMusic.getRow(musicBattle).getString("Stinger1");
-		stinger[1] = ambientMusic.getRow(musicBattle).getString("Stinger2");
-		stinger[2] = ambientMusic.getRow(musicBattle).getString("Stinger3");
-
-		for (int i = 0; i < 3; i++)
-			if (!stinger[i].empty())
-				_musicBattleStinger.push_back(stinger[i]);
-	}
+	setMusicBattleTrack(props.getUint("MusicBattle", Aurora::kStrRefInvalid));
 }
 
 void Area::loadRooms() {
@@ -284,7 +325,7 @@ void Area::loadRooms() {
 		_rooms.push_back(new Room(r->model, r->x, r->y, r->z));
 }
 
-void Area::loadObject(Object &object) {
+void Area::loadObject(KotOR2::Object &object) {
 	_objects.push_back(&object);
 
 	if (!object.isStatic()) {
@@ -319,22 +360,6 @@ void Area::loadCreatures(const Aurora::GFF3List &list) {
 	}
 }
 
-void Area::unload() {
-	hide();
-	removeFocus();
-
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		delete *o;
-
-	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		delete *r;
-
-	_objects.clear();
-	_rooms.clear();
-
-	_loaded = false;
-}
-
 void Area::addEvent(const Events::Event &event) {
 	_eventQueue.push_back(event);
 }
@@ -361,7 +386,7 @@ void Area::processEventQueue() {
 		checkActive();
 }
 
-Object *Area::getObjectAt(int x, int y) {
+KotOR2::Object *Area::getObjectAt(int x, int y) {
 	const Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
 	if (!obj)
 		return 0;
@@ -373,7 +398,7 @@ Object *Area::getObjectAt(int x, int y) {
 	return o->second;
 }
 
-void Area::setActive(Object *object) {
+void Area::setActive(KotOR2::Object *object) {
 	if (object == _activeObject)
 		return;
 
@@ -387,7 +412,7 @@ void Area::setActive(Object *object) {
 }
 
 void Area::checkActive() {
-	if (!_loaded || _highlightAll)
+	if (_highlightAll)
 		return;
 
 	Common::StackLock lock(_mutex);
