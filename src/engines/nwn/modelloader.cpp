@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN model loader.
+ *  Neverwinter Nights model loader.
  */
 
 #include "src/common/error.h"

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An object within a NWN area.
+ *  An object in a Neverwinter Nights area.
  */
 
 #include "src/common/util.h"

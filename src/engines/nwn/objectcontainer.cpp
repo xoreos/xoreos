@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A container of Dragon Age: Origins objects.
+ *  A container of Neverwinter Nights objects.
  */
 
 #include "src/common/types.h"

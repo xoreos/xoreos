@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN tileset.
+ *  A tileset in Neverwinter Nights.
  */
 
 #ifndef ENGINES_NWN_TILESET_H

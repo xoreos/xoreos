@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN installation version detection.
+ *  Neverwinter Nights installation version detection.
  */
 
 #ifndef ENGINES_NWN_VERSION_H

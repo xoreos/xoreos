@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Basic NWN type definitions.
+ *  Basic Neverwinter Nights type definitions.
  */
 
 #include "src/engines/nwn/types.h"

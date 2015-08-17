@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN situated object.
+ *  A situated object in a Neverwinter Nights area.
  */
 
 #ifndef ENGINES_NWN_SITUATED_H

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN installation version detection.
+ *  Neverwinter Nights installation version detection.
  */
 
 #include <algorithm>

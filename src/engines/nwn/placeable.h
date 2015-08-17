@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN placeable.
+ *  A placeable object in a Neverwinter Nights area.
  */
 
 #ifndef ENGINES_NWN_PLACEABLE_H

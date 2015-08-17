@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN inventory item.
+ *  An inventory item in Neverwinter Nights.
  */
 
 #ifndef ENGINES_NWN_ITEM_H

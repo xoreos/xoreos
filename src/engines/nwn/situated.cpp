@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN situated object.
+ *  A situated object in a Neverwinter Nights area.
  */
 
 #include "src/common/error.h"

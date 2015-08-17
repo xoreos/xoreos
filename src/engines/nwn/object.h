@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An object within a NWN area.
+ *  An object in a Neverwinter Nights area.
  */
 
 #ifndef ENGINES_NWN_OBJECT_H

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN model loader.
+ *  Neverwinter Nights model loader.
  */
 
 #ifndef ENGINES_NWN_MODELLOADER_H

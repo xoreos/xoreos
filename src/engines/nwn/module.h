@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The context needed to run a NWN module.
+ *  The context needed to run a Neverwinter Nights module.
  */
 
 #ifndef ENGINES_NWN_MODULE_H

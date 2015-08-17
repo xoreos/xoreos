@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN area.
+ *  The context holding a Neverwinter Nights area.
  */
 
 #include <cassert>

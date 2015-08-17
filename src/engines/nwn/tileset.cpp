@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN tileset.
+ *  A tileset in Neverwinter Nights.
  */
 
 #include "src/common/error.h"

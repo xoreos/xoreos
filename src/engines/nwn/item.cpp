@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN inventory item.
+ *  An inventory item in Neverwinter Nights.
  */
 
 #include "src/common/error.h"

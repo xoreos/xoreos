@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A location within a NWN area.
+ *  A location within a Neverwinter Nights area.
  */
 
 #include "src/engines/nwn/location.h"
