@@ -55,8 +55,8 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _resRef(resRef),
-	_visible(false), _activeObject(0), _highlightAll(false) {
+Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
+	_module(&module), _resRef(resRef), _visible(false), _activeObject(0), _highlightAll(false) {
 
 	try {
 		load();
