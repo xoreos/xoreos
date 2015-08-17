@@ -11,6 +11,7 @@ noinst_HEADERS = \
                  game.h \
                  object.h \
                  situated.h \
+                 waypoint.h \
                  placeable.h \
                  door.h \
                  creature.h \
@@ -49,6 +50,7 @@ libkotor_la_SOURCES = \
                       modelloader.cpp \
                       game.cpp \
                       object.cpp \
+                      waypoint.cpp \
                       situated.cpp \
                       placeable.cpp \
                       door.cpp \
