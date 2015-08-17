@@ -30,6 +30,8 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
+#include "src/aurora/nwscript/object.h"
+
 #include "src/engines/jade/types.h"
 
 namespace Engines {
@@ -37,7 +39,7 @@ namespace Engines {
 namespace Jade {
 
 /** An object within a Jade area. */
-class Object {
+class Object : public Aurora::NWScript::Object {
 public:
 	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
@@ -48,7 +50,6 @@ public:
 	virtual void show() = 0;
 	virtual void hide() = 0;
 
-	const Common::UString &getTag() const;
 	const Common::UString &getName() const;
 	const Common::UString &getDescription() const;
 
@@ -73,7 +74,6 @@ public:
 protected:
 	ObjectType _type; ///< The object's type.
 
-	Common::UString _tag;
 	Common::UString _name;
 	Common::UString _description;
 

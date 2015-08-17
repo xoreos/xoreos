@@ -46,10 +46,6 @@ ObjectType Object::getType() const {
 	return _type;
 }
 
-const Common::UString &Object::getTag() const {
-	return _tag;
-}
-
 const Common::UString &Object::getName() const {
 	return _name;
 }
