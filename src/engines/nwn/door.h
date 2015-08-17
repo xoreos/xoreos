@@ -50,20 +50,12 @@ public:
 	Door(Module &module, const Aurora::GFF3Struct &door);
 	~Door();
 
+	// Basic visuals
 
 	void show(); ///< Show the door's model.
 	void hide(); ///< Hide the door's model.
 
-
-	void enter(); ///< The cursor entered the door.
-	void leave(); ///< The cursor left the door.
-
-	/** (Un)Highlight the door. */
-	void highlight(bool enabled);
-
-	/** The door was clicked. */
-	bool click(Object *triggerer = 0);
-
+	// Basic properties
 
 	/** Is the door open? */
 	bool isOpen() const;
@@ -76,9 +68,23 @@ public:
 	/** Lock/Unlock the door. */
 	void setLocked(bool locked);
 
+	// Object/Cursor interactions
+
+	void enter(); ///< The cursor entered the door.
+	void leave(); ///< The cursor left the door.
+
+	/** (Un)Highlight the door. */
+	void highlight(bool enabled);
+
+	/** The door was clicked. */
+	bool click(Object *triggerer = 0);
+
+	// Animation
+
 	/** Play a door animation. */
+	void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
+	/** Play a default door animation. */
 	void playAnimation(Animation animation);
-	virtual void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0) { Situated::playAnimation(animation, restart, loopCount); }
 
 protected:
 	/** Load door-specific properties. */

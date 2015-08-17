@@ -51,9 +51,16 @@ public:
 	Placeable(const Aurora::GFF3Struct &placeable);
 	~Placeable();
 
+	// Basic visuals
 
 	void hide(); ///< Hide the placeable's model.
 
+	// Basic properties
+
+	/** Is the placeable open? */
+	bool isOpen() const;
+
+	// Object/Cursor interactions
 
 	void enter(); ///< The cursor entered the placeable.
 	void leave(); ///< The cursor left the placeable.
@@ -64,12 +71,12 @@ public:
 	/** The placeable was clicked. */
 	bool click(Object *triggerer = 0);
 
-	/** Is the placeable open? */
-	bool isOpen() const;
+	// Animation
 
-	/** Play a placable animation. */
+	/** Play a placeable animation. */
+	void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
+	/** Play a default placeable animation. */
 	void playAnimation(Animation animation);
-	virtual void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0) { Situated::playAnimation(animation, restart, loopCount); }
 
 protected:
 	/** Load placeable-specific properties. */

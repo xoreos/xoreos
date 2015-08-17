@@ -42,14 +42,38 @@ namespace Engines {
 
 namespace NWN {
 
-Item::Item() : Object(kObjectTypeItem), _appearanceID(Aurora::kFieldIDInvalid),
-	_soundAppType(Aurora::kFieldIDInvalid), _model(0) {
+Item::Item(const Aurora::GFF3Struct &item) : Object(kObjectTypeItem),
+	_appearanceID(Aurora::kFieldIDInvalid), _soundAppType(Aurora::kFieldIDInvalid),
+	_baseItem(Aurora::kFieldIDInvalid), _model(0) {
 
-	_armorParts.resize(kArmorPartMAX);
+	for (size_t i = 0; i < kColorMAX; i++)
+		_colors[i] = Aurora::kFieldIDInvalid;
+	for (size_t i = 0; i < kArmorPartMAX; i++)
+		_armorParts[i] = Aurora::kFieldIDInvalid;
+
+	load(item);
 }
 
 Item::~Item() {
 	delete _model;
+}
+
+void Item::load(const Aurora::GFF3Struct &item) {
+	Common::UString temp = item.getString("EquippedRes");
+	if (temp.empty())
+		temp = item.getString("TemplateResRef");
+
+	Aurora::GFF3File *uti = 0;
+	if (!temp.empty()) {
+		try {
+			uti = new Aurora::GFF3File(temp, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '));
+		} catch (...) {
+		}
+	}
+
+	load(item, uti ? &uti->getTopLevel() : 0);
+
+	delete uti;
 }
 
 void Item::loadModel() {
@@ -102,38 +126,28 @@ void Item::hide() {
 }
 
 void Item::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
-	// UTI def has a baseitem (index into baseitem.2da, determines equippable slots, model type)
-	// armour is 16, modeltype 3
-	// can look up armorpart_bodypart id
-	// them use that to construct model names
-
 	// General properties
 
 	if (blueprint)
 		loadProperties(*blueprint); // Blueprint
-	loadProperties(instance);    // Instance
+	loadProperties(instance);     // Instance
 
-
-	// Specialized object properties
-
-	// if (blueprint)
-	// 	loadObject(*blueprint); // Blueprint
-	// loadObject(instance);    // Instance
-
-	// TODO:
-	//  baseitem -- needed for inventory UI interactions
-	//  stacksize -- used by inventory UI
-
-	// Appearance
-
-	// if (_appearanceID == Aurora::kFieldIDInvalid)
-		// throw Common::Exception("Item object without an appearance");
-
-	// loadAppearance();
-	loadSounds();
+	/* TODO:
+	 * - BaseItem
+	 *   - What exactly is this item (weapon, armor, ...)
+	 *   - Index into baseitems.2da
+	 * - StackSize
+	 *   - The number of items that stack in the inventory
+	 */
 }
 
 void Item::loadProperties(const Aurora::GFF3Struct &gff) {
+	static const char * const kColorNames[kColorMAX] = {
+		"Metal1Color"  , "Metal2Color",
+		"Leather1Color", "Leather2Color",
+		"Cloth1Color"  , "Cloth2Color"
+	};
+
 	// Tag
 	_tag = gff.getString("Tag", _tag);
 
@@ -154,15 +168,11 @@ void Item::loadProperties(const Aurora::GFF3Struct &gff) {
 	}
 
 	// This is an index into basitem.2da which contains inventory slot info
-	_baseitem = gff.getUint("BaseItem", _baseitem);
+	_baseItem = gff.getUint("BaseItem", _baseItem);
 
 	// TODO: Are these armor only?
-	_colorMetal1 = gff.getUint("Metal1Color", _colorMetal1);
-	_colorMetal2  = gff.getUint("Metal2Color", _colorMetal2);
-	_colorLeather1 = gff.getUint("Leather1Color", _colorLeather1);
-	_colorLeather2 = gff.getUint("Leather2Color", _colorLeather2);
-	_colorCloth1 = gff.getUint("Cloth1Color", _colorCloth1);
-	_colorCloth2 = gff.getUint("Cloth2Color", _colorCloth2);
+	for (size_t i = 0; i < kColorMAX; i++)
+		_colors[i] = gff.getUint(kColorNames[i], _colors[i]);
 
 	// Armor parts
 	loadArmorParts(gff);
@@ -187,43 +197,42 @@ void Item::loadPortrait(const Aurora::GFF3Struct &gff) {
 	_portrait = gff.getString("Portrait", _portrait);
 }
 
-void Item::loadSounds() {
-	if (_soundAppType == Aurora::kFieldIDInvalid)
-		return;
-}
+void Item::loadArmorParts(const Aurora::GFF3Struct &gff) {
+	static const char * const kArmorPartNames[] = {
+		"Appearance_Head" ,  // Heads appear to be a special case
+		"ArmorPart_Neck"  ,
+		"ArmorPart_Torso" ,
+		"ArmorPart_Pelvis",
+		"ArmorPart_Belt"  ,
+		"ArmorPart_RFoot" , "ArmorPart_LFoot" ,
+		"ArmorPart_RShin" , "ArmorPart_LShin" ,
+		"ArmorPart_LThigh", "ArmorPart_RThigh",
+		"ArmorPart_RFArm" , "ArmorPart_LFArm" ,
+		"ArmorPart_RBicep", "ArmorPart_LBicep",
+		"ArmorPart_RShoul", "ArmorPart_LShoul",
+		"ArmorPart_RHand" , "ArmorPart_LHand"
+	};
 
-static const char *kArmorPartFields[] = {
-	"Appearance_Head",  // Heads appear to be a special case
-	"ArmorPart_Neck"  ,
-	"ArmorPart_Torso" ,
-	"ArmorPart_Pelvis",
-	"ArmorPart_Belt"  ,
-	"ArmorPart_RFoot", "ArmorPart_LFoot" ,
-	"ArmorPart_RShin" , "ArmorPart_LShin" ,
-	"ArmorPart_LThigh", "ArmorPart_RThigh",
-	"ArmorPart_RFArm" , "ArmorPart_LFArm" ,
-	"ArmorPart_RBicep", "ArmorPart_LBicep",
-	"ArmorPart_RShoul", "ArmorPart_LShoul",
-	"ArmorPart_RHand" , "ArmorPart_LHand"
-};
-
-void Item::loadArmorParts(const Aurora::GFF3Struct &gff)
-{
 	for (size_t i = 0; i < kArmorPartMAX; i++)
-		if (gff.hasField(kArmorPartFields[i])) {
-			_armorParts[i].id = gff.getUint(kArmorPartFields[i], _armorParts[i].id);
-		}
-		else
-			_armorParts[i].id = 0;
+		_armorParts[i] = gff.getUint(kArmorPartNames[i], _armorParts[i]);
 }
 
 bool Item::isArmor() const {
 	// TODO: This should really be based on the baseitem.2da
-	return _armorParts[kArmorPartTorso].id > 0;
+
+	return _armorParts[kArmorPartTorso] != Aurora::kFieldIDInvalid;
 }
 
-int Item::getArmorPart(size_t index) const {
-	return _armorParts[index].id;
+uint32 Item::getColor(Color color) const {
+	assert((size_t)color < kColorMAX);
+
+	return _colors[(size_t)color];
+}
+
+uint32 Item::getArmorPart(size_t index) const {
+	assert(index < kArmorPartMAX);
+
+	return _armorParts[index];
 }
 
 } // End of namespace NWN

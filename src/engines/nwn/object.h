@@ -53,7 +53,6 @@ namespace NWN {
 
 class Area;
 
-/** An object within a NWN area. */
 class Object : public Aurora::NWScript::Object, public NWN::ScriptContainer {
 public:
 	Object(ObjectType type = kObjectTypeNone);
@@ -151,7 +150,8 @@ public:
 
 	/** Play an object animation. */
 	virtual void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
-	void playAnimation(Animation animation);
+	/** Play a default object animation. */
+	virtual void playAnimation(Animation animation);
 
 protected:
 	ObjectType _type; ///< The object's type.

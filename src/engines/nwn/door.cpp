@@ -272,6 +272,10 @@ void Door::evaluateLink() {
 	_evaluatedLink = true;
 }
 
+void Door::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {
+	Situated::playAnimation(animation, restart, loopCount);
+}
+
 void Door::playAnimation(Animation animation) {
 
 	switch (animation) {

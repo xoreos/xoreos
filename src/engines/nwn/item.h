@@ -35,48 +35,36 @@ namespace Engines {
 
 namespace NWN {
 
-/** NWN inventory item. */
 class Item : public Object {
 public:
-	Item();
+	enum Color {
+		kColorMetal1   = 0,
+		kColorMetal2      ,
+		kColorLeather1    ,
+		kColorLeather2    ,
+		kColorCloth1      ,
+		kColorCloth2      ,
+
+		kColorMAX
+	};
+
+	Item(const Aurora::GFF3Struct &item);
 	~Item();
 
-	void loadModel();   ///< Load the situated object's model.
-	void unloadModel(); ///< Unload the situated object's model.
+	// Basic visuals
 
-	void show(); ///< Show the situated object's model.
-	void hide(); ///< Hide the situated object's model.
+	void loadModel();   ///< Load the item's model.
+	void unloadModel(); ///< Unload the item's model.
 
-	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0);
+	void show(); ///< Show the item's model.
+	void hide(); ///< Hide the item's model.
+
+	// Basic properties
 
 	bool isArmor() const;
-	int getArmorPart(size_t index) const;
 
-	// TODO: Use _colors array like plt file
-	uint32 _colorMetal1;   ///< The 1. color of the creature's metal armor.
-	uint32 _colorMetal2;   ///< The 2. color of the creature's metal armor.
-	uint32 _colorLeather1; ///< The 1. color of the creature's leather armor.
-	uint32 _colorLeather2; ///< The 2. color of the creature's leather armor.
-	uint32 _colorCloth1;   ///< The 1. color of the creature's cloth armor.
-	uint32 _colorCloth2;   ///< The 2. color of the creature's cloth armor.
-
-protected:
-	Common::UString _modelName; ///< The model's resource name.
-
-	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
-	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
-
-	uint32 _baseitem; ///< The index within the baseitem 2DA.
-
-	Graphics::Aurora::Model *_model; ///< The situated object's model.
-
-	/** Load the situated object from an instance and its blueprint. */
-
-	/** Load object-specific properties. */
-	// virtual void loadObject(const Aurora::GFF3Struct &gff) = 0;
-	/** Load appearance-specific properties. */
-	// virtual void loadAppearance() = 0;
-
+	uint32 getColor(Color color) const;
+	uint32 getArmorPart(size_t index) const;
 
 private:
 	/** Parts of an armor set. */
@@ -100,19 +88,28 @@ private:
 		kArmorPartLeftShoul     ,
 		kArmorPartRightHand     ,
 		kArmorPartLeftHand      ,
+
 		kArmorPartMAX
 	};
+
+	Common::UString _modelName; ///< The model's resource name.
+
+	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
+	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
+
+	uint32 _baseItem; ///< The index within the baseitem 2DA.
+
+	uint32 _colors[kColorMAX];         ///< The item's colors
+	uint32 _armorParts[kArmorPartMAX]; ///< The item's armor parts.
+
+	Graphics::Aurora::Model *_model; ///< The item's model.
+
+	void load(const Aurora::GFF3Struct &item);
+	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
+
 	void loadProperties(const Aurora::GFF3Struct &gff);
 	void loadPortrait(const Aurora::GFF3Struct &gff);
 	void loadArmorParts(const Aurora::GFF3Struct &gff);
-	void loadSounds();
-
-	/** Index to appropriate armor part. */
-	struct ArmorPart {
-		uint32 id; ///< Index of the part variant.
-	};
-
-	std::vector<ArmorPart> _armorParts; ///< The item's armor parts.
 };
 
 } // End of namespace NWN

@@ -283,7 +283,8 @@ private:
 	uint32 _phenotype;    ///< The creature's phenotype.
 
 	std::vector<BodyPart> _bodyParts; ///< The creature's body parts.
-	std::vector<Item> _equippedItems; ///< The creature's equipped items.
+
+	std::vector<Item *> _equippedItems; ///< The creature's equipped items.
 
 	Common::UString _partsSuperModelName; ///< The supermodel used for parts-based creatures
 

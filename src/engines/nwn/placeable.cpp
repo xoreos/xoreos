@@ -179,6 +179,10 @@ bool Placeable::click(Object *triggerer) {
 	return true;
 }
 
+void Placeable::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {
+	Situated::playAnimation(animation, restart, loopCount);
+}
+
 void Placeable::playAnimation(Animation animation) {
 	// TODO: Door::Placeable(): Animate
 
@@ -209,6 +213,7 @@ void Placeable::playAnimation(Animation animation) {
 
 	setModelState();
 }
+
 } // End of namespace NWN
 
 } // End of namespace Engines

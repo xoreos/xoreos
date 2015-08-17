@@ -35,10 +35,11 @@ namespace Engines {
 
 namespace NWN {
 
-/** NWN situated object. */
 class Situated : public Object {
 public:
 	~Situated();
+
+	// Basic visuals
 
 	void loadModel();   ///< Load the situated object's model.
 	void unloadModel(); ///< Unload the situated object's model.
@@ -46,16 +47,20 @@ public:
 	void show(); ///< Show the situated object's model.
 	void hide(); ///< Hide the situated object's model.
 
-	/** Set the situated object's position. */
-	void setPosition(float x, float y, float z);
-	/** Set the situated object's orientation. */
-	void setOrientation(float x, float y, float z, float angle);
+	// Basic properties
 
 	/** Is the situated object open? */
 	virtual bool isOpen() const = 0;
 
 	bool isLocked() const;               ///< Is the situated object locked?
 	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
+
+	// Positioning
+
+	/** Set the situated object's position. */
+	void setPosition(float x, float y, float z);
+	/** Set the situated object's orientation. */
+	void setOrientation(float x, float y, float z, float angle);
 
 protected:
 	Common::UString _modelName; ///< The model's resource name.

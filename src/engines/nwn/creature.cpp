@@ -91,6 +91,9 @@ Creature::~Creature() {
 
 	delete _model;
 	delete _tooltip;
+
+	for (std::vector<Item *>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e)
+		delete *e;
 }
 
 void Creature::init() {
@@ -408,8 +411,8 @@ void Creature::getPartModels() {
 }
 
 void Creature::getArmorModels() {
-	for (std::vector<Item>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
-		const Item &item = *e;
+	for (std::vector<Item *>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
+		const Item &item = **e;
 		if (!item.isArmor())
 			continue;
 
@@ -417,18 +420,18 @@ void Creature::getArmorModels() {
 
 		// Set the body part models
 		for (size_t i = 0; i < kBodyPartMAX; i++) {
-			int id = item.getArmorPart(i);
-			if (id > 0)
+			uint32 id = item.getArmorPart(i);
+			if (id != Aurora::kFieldIDInvalid)
 				_bodyParts[i].idArmor = id;
 		}
 
 		// Set the armour color channels
-		_colorMetal1   = item._colorMetal1;
-		_colorMetal2   = item._colorMetal2;
-		_colorLeather1 = item._colorLeather1;
-		_colorLeather2 = item._colorLeather2;
-		_colorCloth1   = item._colorCloth1;
-		_colorCloth2   = item._colorCloth2;
+		_colorMetal1   = item.getColor(Item::kColorMetal1);
+		_colorMetal2   = item.getColor(Item::kColorMetal2);
+		_colorLeather1 = item.getColor(Item::kColorLeather1);
+		_colorLeather2 = item.getColor(Item::kColorLeather2);
+		_colorCloth1   = item.getColor(Item::kColorCloth1);
+		_colorCloth2   = item.getColor(Item::kColorCloth2);
 	}
 }
 
@@ -763,28 +766,8 @@ void Creature::loadEquippedItems(const Aurora::GFF3Struct &gff) {
 		return;
 
 	const Aurora::GFF3List &cEquipped = gff.getList("Equip_ItemList");
-	for (Aurora::GFF3List::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e) {
-		const Aurora::GFF3Struct &cItem = **e;
-
-		Common::UString itemRef = cItem.getString("EquippedRes");
-		if (itemRef.empty())
-			itemRef = cItem.getString("TemplateResRef");
-
-		Aurora::GFF3File *uti = 0;
-		if (!itemRef.empty()) {
-			try {
-				uti = new Aurora::GFF3File(itemRef, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '));
-			} catch (...) {
-			}
-		}
-
-		// Load the item and add it to the equipped list
-		_equippedItems.push_back(Item());
-		_equippedItems.back().load(cItem, uti ? &uti->getTopLevel() : 0);
-
-		delete uti;
-	}
-
+	for (Aurora::GFF3List::const_iterator e = cEquipped.begin(); e != cEquipped.end(); ++e)
+		_equippedItems.push_back(new Item(**e));
 }
 
 void Creature::loadClasses(const Aurora::GFF3Struct &gff,
