@@ -170,6 +170,7 @@ private:
 
 	void loadObject(KotOR2::Object &object);
 
+	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
 	void loadDoors     (const Aurora::GFF3List &list);
 	void loadCreatures (const Aurora::GFF3List &list);
