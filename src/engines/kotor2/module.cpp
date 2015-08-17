@@ -152,6 +152,8 @@ void Module::loadIFO() {
 
 	_tag  = _ifo.getTag();
 	_name = _ifo.getName().getString();
+
+	readScripts(*_ifo.getGFF());
 }
 
 void Module::loadArea() {

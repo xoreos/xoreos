@@ -283,6 +283,9 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 	are.getLocString("Name", name);
 
 	_name = name.getString();
+
+	// Scripts
+	readScripts(are);
 }
 
 void Area::loadGIT(const Aurora::GFF3Struct &git) {

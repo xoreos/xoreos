@@ -161,6 +161,9 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Usable
 	_usable = gff.getBool("Useable", _usable);
+
+	// Scripts
+	readScripts(gff);
 }
 
 void Situated::loadPortrait(const Aurora::GFF3Struct &gff) {
