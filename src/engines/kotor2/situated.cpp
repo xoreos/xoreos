@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR2 situated object.
+ *  A situated object in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
  */
 
 #include "src/common/error.h"

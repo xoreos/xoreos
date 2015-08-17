@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An area.
+ *  The context holding a Star Wars: Knights of the Old Republic II - The Sith Lords area.
  */
 
 #include <cassert>

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An object within a KotOR2 area.
+ *  An object in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
  */
 
 #include "src/engines/kotor2/object.h"

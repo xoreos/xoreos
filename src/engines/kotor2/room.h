@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A room within a KotOR2 area.
+ *  A room within a Star Wars: Knights of the Old Republic II - The Sith Lords area.
  */
 
 #ifndef ENGINES_KOTOR2_ROOM_H

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR2 model loader.
+ *  Star Wars: Knights of the Old Republic II - The Sith Lords model loader.
  */
 
 #ifndef ENGINES_KOTOR2_MODELLOADER_H

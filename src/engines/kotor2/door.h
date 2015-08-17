@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR2 door.
+ *  A door in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
  */
 
 #ifndef ENGINES_KOTOR2_DOOR_H

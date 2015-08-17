@@ -58,7 +58,7 @@ public:
 	}
 };
 
-const Common::UString EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords";
+const Common::UString EngineProbe::kGameName = "Star Wars: Knights of the Old Republic II - The Sith Lords II - The Sith Lords";
 
 
 static const class EngineProbeWin : public EngineProbe {

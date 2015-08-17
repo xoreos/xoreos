@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  KotOR2 (debug) console.
+ *  Star Wars: Knights of the Old Republic II - The Sith Lords (debug) console.
  */
 
 #ifndef ENGINES_KOTOR2_CONSOLE_H

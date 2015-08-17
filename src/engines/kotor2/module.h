@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A module.
+ *  The context needed to run a Star Wars: Knights of the Old Republic II - The Sith Lords module.
  */
 
 #ifndef ENGINES_KOTOR2_MODULE_H
