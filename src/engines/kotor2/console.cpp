@@ -30,6 +30,8 @@
 #include "src/common/filelist.h"
 #include "src/common/configman.h"
 
+#include "src/aurora/resman.h"
+
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/kotor2/console.h"
@@ -51,6 +53,13 @@ Console::Console(KotOR2Engine &engine) :
 			"Usage: listmodules\nList all modules");
 	registerCommand("loadmodule" , boost::bind(&Console::cmdLoadModule , this, _1),
 			"Usage: loadmodule <module>\nLoad and enter the specified module");
+	registerCommand("listmusic"  , boost::bind(&Console::cmdListMusic  , this, _1),
+			"Usage: listmusic\nList all available music resources");
+	registerCommand("stopmusic"  , boost::bind(&Console::cmdStopMusic  , this, _1),
+			"Usage: stopmusic\nStop the currently playing music resource");
+	registerCommand("playmusic"  , boost::bind(&Console::cmdPlayMusic  , this, _1),
+			"Usage: playmusic [<music>]\nPlay the specified music resource. "
+			"If none was specified, play the default area music.");
 }
 
 Console::~Console() {
@@ -60,6 +69,7 @@ void Console::updateCaches() {
 	::Engines::Console::updateCaches();
 
 	updateModules();
+	updateMusic();
 }
 
 void Console::updateModules() {
@@ -70,6 +80,26 @@ void Console::updateModules() {
 	std::copy(modules.begin(), modules.end(), std::back_inserter(_modules));
 
 	setArguments("loadmodule", _modules);
+}
+
+void Console::updateMusic() {
+	_music.clear();
+	_maxSizeMusic = 0;
+
+	const Common::FileList music(Common::FilePath::findSubDirectory(ResMan.getDataBase(), "streammusic", true));
+
+	for (Common::FileList::const_iterator m = music.begin(); m != music.end(); ++m) {
+		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".wav"))
+			continue;
+
+		_music.push_back(Common::FilePath::getStem(*m));
+
+		_maxSizeMusic = MAX(_maxSizeMusic, _music.back().size());
+	}
+
+	_music.sort(Common::UString::iless());
+
+	setArguments("playmusic", _music);
 }
 
 void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
@@ -97,6 +127,19 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 	}
 
 	printf("No such module \"%s\"", cl.args.c_str());
+}
+
+void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
+	updateMusic();
+	printList(_music, _maxSizeMusic);
+}
+
+void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
+	_engine->getGame().stopMusic();
+}
+
+void Console::cmdPlayMusic(const CommandLine &cl) {
+	_engine->getGame().playMusic(cl.args);
 }
 
 } // End of namespace KotOR2
