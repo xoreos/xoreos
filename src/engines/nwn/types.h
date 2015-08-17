@@ -33,7 +33,6 @@ namespace NWN {
 
 /** Object type, matches the bitfield in nwscript.nss */
 enum ObjectType {
-	kObjectTypeNone         = 0,
 	kObjectTypeCreature     = 1,
 	kObjectTypeItem         = 2,
 	kObjectTypeTrigger      = 3,
