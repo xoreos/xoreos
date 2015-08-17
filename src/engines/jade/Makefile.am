@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libjade.la
 noinst_HEADERS = \
                  jade.h \
                  probes.h \
+                 types.h \
                  modelloader.h \
                  console.h \
                  module.h \

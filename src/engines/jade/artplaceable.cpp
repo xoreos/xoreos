@@ -35,7 +35,7 @@ namespace Engines {
 namespace Jade {
 
 ArtPlaceable::ArtPlaceable(const Common::UString &resRef, uint32 id, float x, float y, float z) :
-	_model(0) {
+	Object(kObjectTypePlaceable), _model(0) {
 
 	load(resRef, id, x, y, z);
 }

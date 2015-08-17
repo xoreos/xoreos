@@ -30,6 +30,8 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
+#include "src/engines/jade/types.h"
+
 namespace Engines {
 
 namespace Jade {
@@ -37,8 +39,11 @@ namespace Jade {
 /** An object within a Jade area. */
 class Object {
 public:
-	Object();
+	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
+
+	/** Return the exact type of the object. */
+	ObjectType getType() const;
 
 	virtual void show() = 0;
 	virtual void hide() = 0;
@@ -66,6 +71,8 @@ public:
 	virtual void highlight(bool enabled) = 0;
 
 protected:
+	ObjectType _type; ///< The object's type.
+
 	Common::UString _tag;
 	Common::UString _name;
 	Common::UString _description;
