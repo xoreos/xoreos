@@ -46,6 +46,7 @@
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/room.h"
 #include "src/engines/kotor/module.h"
+#include "src/engines/kotor/waypoint.h"
 #include "src/engines/kotor/placeable.h"
 #include "src/engines/kotor/door.h"
 #include "src/engines/kotor/creature.h"
@@ -279,6 +280,9 @@ void Area::loadGIT(const Aurora::GFF3Struct &git) {
 	if (git.hasField("AreaProperties"))
 		loadProperties(git.getStruct("AreaProperties"));
 
+	if (git.hasField("WaypointListList"))
+		loadWaypoints(git.getList("WaypointListList"));
+
 	if (git.hasField("Placeable List"))
 		loadPlaceables(git.getList("Placeable List"));
 
@@ -333,6 +337,14 @@ void Area::loadObject(KotOR::Object &object) {
 
 		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 			_objectMap.insert(std::make_pair(*id, &object));
+	}
+}
+
+void Area::loadWaypoints(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator w = list.begin(); w != list.end(); ++w) {
+		Waypoint *waypoint = new Waypoint(**w);
+
+		loadObject(*waypoint);
 	}
 }
 
