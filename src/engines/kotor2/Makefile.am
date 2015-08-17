@@ -17,6 +17,7 @@ noinst_HEADERS = \
                  creature.h \
                  area.h \
                  room.h \
+                 objectcontainer.h \
                  module.h \
                  gui/widgets/kotorwidget.h \
                  gui/gui.h \
@@ -37,6 +38,7 @@ libkotor2_la_SOURCES = \
                        creature.cpp \
                        area.cpp \
                        room.cpp \
+                       objectcontainer.cpp \
                        module.cpp \
                        gui/main/main.cpp \
                        $(EMPTY)
