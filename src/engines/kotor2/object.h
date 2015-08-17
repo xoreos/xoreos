@@ -34,11 +34,13 @@
 
 #include "src/engines/kotor2/types.h"
 
+#include "src/engines/kotor2/script/container.h"
+
 namespace Engines {
 
 namespace KotOR2 {
 
-class Object : public Aurora::NWScript::Object {
+class Object : public Aurora::NWScript::Object, public KotOR2::ScriptContainer {
 public:
 	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
