@@ -433,10 +433,8 @@ void Module::processEventQueue() {
 void Module::handleEvents() {
 	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event) {
 		// Handle console
-		if (_console->processEvent(*event)) {
-			if (!_currentArea)
-				return;
-
+		if (_console->isVisible()) {
+			_console->processEvent(*event);
 			continue;
 		}
 
