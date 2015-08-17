@@ -35,25 +35,35 @@ namespace KotOR {
 
 class Door : public Situated {
 public:
+	/** Load from a door instance. */
 	Door(const Aurora::GFF3Struct &door);
 	~Door();
 
-	void hide();
+	// Basic visuals
 
-	void enter();
-	void leave();
+	void hide(); ///< Hide the door's model.
 
-	void highlight(bool enabled);
+	// Object/Cursor interactions
+
+	void enter(); ///< The cursor entered the door. */
+	void leave(); ///< The cursor left the door. */
+
+	/** (Un)Highlight the door. */
+	virtual void highlight(bool enabled);
 
 protected:
+	/** Load door-specific properties. */
 	void loadObject(const Aurora::GFF3Struct &gff);
+	/** Load appearance-specific properties. */
 	void loadAppearance();
 
 private:
-	uint32 _genericType;
+	uint32 _genericType; ///< Index into the generic door types.
 
+	/** Load from a door instance. */
 	void load(const Aurora::GFF3Struct &door);
 
+	/** Load the appearance from this 2DA row. */
 	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);
 };
 
