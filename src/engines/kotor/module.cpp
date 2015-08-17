@@ -178,6 +178,8 @@ void Module::loadResources() {
 
 void Module::loadIFO() {
 	_ifo.load();
+
+	_tag = _ifo.getTag();
 }
 
 void Module::loadArea() {

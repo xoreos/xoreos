@@ -202,6 +202,10 @@ void Area::loadVIS() {
 }
 
 void Area::loadARE(const Aurora::GFF3Struct &are) {
+	// Tag
+
+	_tag = are.getString("Tag");
+
 	// Name
 
 	Aurora::LocString name;

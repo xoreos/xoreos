@@ -33,6 +33,8 @@
 
 #include "src/events/types.h"
 
+#include "src/engines/kotor/object.h"
+
 namespace Engines {
 
 class Console;
@@ -42,7 +44,7 @@ namespace KotOR {
 class Area;
 
 /** A KotOR module. */
-class Module {
+class Module : public KotOR::Object {
 public:
 	Module(::Engines::Console &console);
 	~Module();

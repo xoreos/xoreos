@@ -41,15 +41,16 @@
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
+#include "src/engines/kotor/object.h"
+
 namespace Engines {
 
 namespace KotOR {
 
 class Room;
-class Object;
 
 /** A KotOR area. */
-class Area : public Events::Notifyable {
+class Area : public KotOR::Object, public Events::Notifyable {
 public:
 	Area();
 	~Area();
