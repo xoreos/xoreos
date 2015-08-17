@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libkotor.la
 noinst_HEADERS = \
                  kotor.h \
                  probes.h \
+                 types.h \
                  console.h \
                  modelloader.h \
                  game.h \

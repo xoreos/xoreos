@@ -19,55 +19,40 @@
  */
 
 /** @file
- *  A situated object in a Star Wars: Knights of the Old Republic area.
+ *  Basic Star Wars: Knights of the Old Republic type definitions.
  */
 
-#ifndef ENGINES_KOTOR_SITUATED_H
-#define ENGINES_KOTOR_SITUATED_H
-
-#include "src/aurora/types.h"
-
-#include "src/graphics/aurora/types.h"
-
-#include "src/engines/kotor/object.h"
+#ifndef ENGINES_KOTOR_TYPES_H
+#define ENGINES_KOTOR_TYPES_H
 
 namespace Engines {
 
 namespace KotOR {
 
-/** KotOR situated object. */
-class Situated : public Object {
-public:
-	Situated(ObjectType type);
-	~Situated();
+/** Object type, matches the bitfield in nwscript.nss */
+enum ObjectType {
+	kObjectTypeNone         =  0,
+	kObjectTypeCreature     =  1,
+	kObjectTypeItem         =  2,
+	kObjectTypeTrigger      =  3,
+	kObjectTypeDoor         =  4,
+	kObjectTypeAreaOfEffect =  5,
+	kObjectTypeWaypoint     =  6,
+	kObjectTypePlaceable    =  7,
+	kObjectTypeStore        =  8,
+	kObjectTypeEncounter    =  9,
+	kObjectTypeSound        = 10,
 
-	void show();
-	void hide();
+	kObjectTypeMAX,
 
-	void setPosition(float x, float y, float z);
-	void setOrientation(float x, float y, float z, float angle);
+	kObjectTypeSelf         = 0x7FFE,
+	kObjectTypeInvalid      = 0x7FFF,
 
-protected:
-	Common::UString _modelName;
-
-	uint32 _appearanceID;
-
-	Graphics::Aurora::Model *_model;
-
-
-	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0);
-
-	virtual void loadObject(const Aurora::GFF3Struct &gff) = 0;
-	virtual void loadAppearance() = 0;
-
-
-private:
-	void loadProperties(const Aurora::GFF3Struct &gff);
-	void loadPortrait(const Aurora::GFF3Struct &gff);
+	kObjectTypeAll          = 0x7FFF
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_SITUATED_H
+#endif // ENGINES_KOTOR_TYPES_H
