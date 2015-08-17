@@ -64,6 +64,10 @@ void Creature::hide() {
 		_model->hide();
 }
 
+bool Creature::isPC() const {
+	return _isPC;
+}
+
 void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
@@ -159,6 +163,9 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Usable
 	_usable = gff.getBool("Useable", _usable);
+
+	// PC
+	_isPC = gff.getBool("IsPC", _isPC);
 }
 
 void Creature::loadPortrait(const Aurora::GFF3Struct &gff) {
