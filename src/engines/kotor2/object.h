@@ -38,7 +38,6 @@ namespace Engines {
 
 namespace KotOR2 {
 
-/** An object within a KotOR2 area. */
 class Object : public Aurora::NWScript::Object {
 public:
 	Object(ObjectType type = kObjectTypeNone);

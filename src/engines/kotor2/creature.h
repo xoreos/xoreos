@@ -38,24 +38,34 @@ namespace Engines {
 
 namespace KotOR2 {
 
-/** A KotOR2 creature. */
 class Creature : public Object {
 public:
+	/** Load from a creature instance. */
 	Creature(const Aurora::GFF3Struct &creature);
 	~Creature();
 
-	void show();
-	void hide();
+	// Basic visuals
 
+	void show(); ///< Show the creature's model.
+	void hide(); ///< Hide the creature's model.
+
+	// Positioning
+
+	/** Set the creature's position. */
 	void setPosition(float x, float y, float z);
+	/** Set the creature's orientation. */
 	void setOrientation(float x, float y, float z, float angle);
 
-	void enter();
-	void leave();
+	// Object/Cursor interactions
 
-	void highlight(bool enabled);
+	void enter(); ///< The cursor entered the creature. */
+	void leave(); ///< The cursor left the creature. */
+
+	/** (Un)Highlight the creature. */
+	virtual void highlight(bool enabled);
 
 private:
+	/** Parts of a creature's body. */
 	struct PartModels {
 		Common::UString type;
 
@@ -65,9 +75,10 @@ private:
 		Common::UString bodyTexture;
 	};
 
-	uint32 _appearance;
+	uint32 _appearance; ///< The creature's general appearance.
 
-	Graphics::Aurora::Model *_model;
+	Graphics::Aurora::Model *_model; ///< The creature's model. */
+
 
 	void load(const Aurora::GFF3Struct &creature);
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);

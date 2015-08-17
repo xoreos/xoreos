@@ -35,21 +35,31 @@ namespace KotOR2 {
 
 class Placeable : public Situated {
 public:
+	/** Load from a placeable instance. */
 	Placeable(const Aurora::GFF3Struct &placeable);
 	~Placeable();
 
-	void hide();
+	// Basic visuals
 
-	void enter();
-	void leave();
+	void hide(); ///< Hide the placeable's model.
 
-	void highlight(bool enabled);
+	// Object/Cursor interactions
+
+	void enter(); ///< The cursor entered the placeable. */
+	void leave(); ///< The cursor left the placeable. */
+
+	/** (Un)Highlight the placeable. */
+	virtual void highlight(bool enabled);
 
 protected:
-	void load(const Aurora::GFF3Struct &placeable);
-
+	/** Load placeable-specific properties. */
 	void loadObject(const Aurora::GFF3Struct &gff);
+	/** Load appearance-specific properties. */
 	void loadAppearance();
+
+private:
+	/** Load from a placeable instance. */
+	void load(const Aurora::GFF3Struct &placeable);
 };
 
 } // End of namespace KotOR2

@@ -35,29 +35,38 @@ namespace Engines {
 
 namespace KotOR2 {
 
-/** KotOR2 situated object. */
 class Situated : public Object {
 public:
-	Situated(ObjectType type);
 	~Situated();
 
-	void show();
-	void hide();
+	// Basic visuals
 
+	void show(); ///< Show the situated object's model.
+	void hide(); ///< Hide the situated object's model.
+
+	// Positioning
+
+	/** Set the situated object's position. */
 	void setPosition(float x, float y, float z);
+	/** Set the situated object's orientation. */
 	void setOrientation(float x, float y, float z, float angle);
 
 protected:
-	Common::UString _modelName;
+	Common::UString _modelName; ///< The model's resource name.
 
-	uint32 _appearanceID;
+	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
 
-	Graphics::Aurora::Model *_model;
+	Graphics::Aurora::Model *_model; ///< The situated object's model.
 
 
+	Situated(ObjectType type);
+
+	/** Load the situated object from an instance and its blueprint. */
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0);
 
+	/** Load object-specific properties. */
 	virtual void loadObject(const Aurora::GFF3Struct &gff) = 0;
+	/** Load appearance-specific properties. */
 	virtual void loadAppearance() = 0;
 
 
