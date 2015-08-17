@@ -38,7 +38,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Placeable::Placeable(const Aurora::GFF3Struct &placeable) {
+Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable) {
 	load(placeable);
 }
 

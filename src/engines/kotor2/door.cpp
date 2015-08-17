@@ -39,7 +39,9 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Door::Door(const Aurora::GFF3Struct &door) : _genericType(Aurora::kFieldIDInvalid) {
+Door::Door(const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
+	_genericType(Aurora::kFieldIDInvalid) {
+
 	load(door);
 }
 

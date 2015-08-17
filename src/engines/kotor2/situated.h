@@ -38,7 +38,7 @@ namespace KotOR2 {
 /** KotOR2 situated object. */
 class Situated : public Object {
 public:
-	Situated();
+	Situated(ObjectType type);
 	~Situated();
 
 	void show();

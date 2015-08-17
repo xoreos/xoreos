@@ -44,7 +44,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Creature::Creature(const Aurora::GFF3Struct &creature) :
+Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature),
 	_appearance(Aurora::kFieldIDInvalid), _model(0) {
 
 	load(creature);

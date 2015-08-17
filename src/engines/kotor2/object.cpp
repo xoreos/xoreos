@@ -28,7 +28,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Object::Object() : _static(false), _usable(true) {
+Object::Object(ObjectType type) : _type(type), _static(false), _usable(true) {
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
 	_position   [2] = 0.0f;
@@ -39,6 +39,10 @@ Object::Object() : _static(false), _usable(true) {
 }
 
 Object::~Object() {
+}
+
+ObjectType Object::getType() const {
+	return _type;
 }
 
 const Common::UString &Object::getTag() const {
