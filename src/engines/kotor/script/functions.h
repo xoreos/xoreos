@@ -97,6 +97,8 @@ private:
 	void getClickingObject(Aurora::NWScript::FunctionContext &ctx);
 	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
 	void getExitingObject (Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
