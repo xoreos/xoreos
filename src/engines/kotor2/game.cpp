@@ -42,17 +42,21 @@
 
 #include "src/engines/kotor2/gui/main/main.h"
 
+#include "src/engines/kotor2/script/functions.h"
+
 namespace Engines {
 
 namespace KotOR2 {
 
 Game::Game(KotOR2Engine &engine, ::Engines::Console &console, Aurora::Platform platform) :
-	_engine(&engine), _module(0), _platform(platform), _console(&console) {
+	_engine(&engine), _module(0), _functions(0), _platform(platform), _console(&console) {
 
+	_functions = new Functions(*this);
 }
 
 Game::~Game() {
 	delete _module;
+	delete _functions;
 }
 
 Module &Game::getModule() {

@@ -39,6 +39,8 @@ namespace KotOR2 {
 
 class KotOR2Engine;
 
+class Functions;
+
 class Module;
 
 class Game {
@@ -63,6 +65,8 @@ public:
 private:
 	KotOR2Engine *_engine;
 	Module      *_module;
+
+	Functions *_functions;
 
 	Aurora::Platform _platform;
 
