@@ -40,9 +40,14 @@ namespace KotOR2 {
 
 class Creature : public Object {
 public:
+	/** Create a dummy creature instance. Not playable as it is.*/
+	Creature();
 	/** Load from a creature instance. */
 	Creature(const Aurora::GFF3Struct &creature);
 	~Creature();
+
+	/** Create a fake player character creature for testing purposes. */
+	void createFakePC();
 
 	// Basic visuals
 
@@ -85,6 +90,8 @@ private:
 
 	Graphics::Aurora::Model *_model; ///< The creature's model. */
 
+
+	void init();
 
 	void load(const Aurora::GFF3Struct &creature);
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
