@@ -52,6 +52,10 @@ void Functions::getExitingObject(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = ctx.getTriggerer();
 }
 
+void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = KotOR2::ObjectContainer::toPC(getParamObject(ctx, 0)) != 0;
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
