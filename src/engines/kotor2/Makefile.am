@@ -47,6 +47,7 @@ libkotor2_la_SOURCES = \
                        script/container.cpp \
                        script/container.cpp \
                        script/functions.cpp \
+                       script/functions_module.cpp \
                        script/functions_object.cpp \
                        $(EMPTY)
 

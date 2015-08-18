@@ -361,7 +361,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 239, "GetStringByStrRef"                   , 0                                                },
 	{ 240, "ActionSpeakStringByStrRef"           , 0                                                },
 	{ 241, "DestroyObject"                       , 0                                                },
-	{ 242, "GetModule"                           , 0                                                },
+	{ 242, "GetModule"                           , &Functions::getModule                            },
 	{ 243, "CreateObject"                        , 0                                                },
 	{ 244, "EventSpellCastAt"                    , 0                                                },
 	{ 245, "GetLastSpellCaster"                  , 0                                                },
