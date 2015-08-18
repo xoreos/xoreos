@@ -23,6 +23,8 @@ noinst_HEADERS = \
                  gui/gui.h \
                  gui/main/main.h \
                  script/container.h \
+                 script/functions.h \
+                 script/function_tables.h \
                  $(EMPTY)
 
 libkotor2_la_SOURCES = \
@@ -43,6 +45,8 @@ libkotor2_la_SOURCES = \
                        module.cpp \
                        gui/main/main.cpp \
                        script/container.cpp \
+                       script/container.cpp \
+                       script/functions.cpp \
                        $(EMPTY)
 
 libkotor2_la_LIBADD = \
