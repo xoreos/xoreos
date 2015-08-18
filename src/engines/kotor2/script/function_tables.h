@@ -852,7 +852,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 730, "ActionFollowLeader"                  , 0                                                },
 	{ 731, "SetForcePowerUnsuccessful"           , 0                                                },
 	{ 732, "GetIsDebilitated"                    , 0                                                },
-	{ 733, "PlayMovie"                           , 0                                                },
+	{ 733, "PlayMovie"                           , &Functions::playMovie                            },
 	{ 734, "SaveNPCState"                        , 0                                                },
 	{ 735, "GetCategoryFromTalent"               , 0                                                },
 	{ 736, "SurrenderByFaction"                  , 0                                                },

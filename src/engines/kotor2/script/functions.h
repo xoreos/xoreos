@@ -109,6 +109,10 @@ private:
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Movies, functions_movie.cpp
+	void playMovie(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace KotOR2
