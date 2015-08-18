@@ -44,14 +44,21 @@ namespace Engines {
 
 namespace KotOR {
 
-Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature),
-	_appearance(Aurora::kFieldIDInvalid), _model(0) {
-
+Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature), _model(0) {
+	init();
 	load(creature);
+}
+
+Creature::Creature() : Object(kObjectTypeCreature), _model(0) {
+	init();
 }
 
 Creature::~Creature() {
 	delete _model;
+}
+
+void Creature::init() {
+	_appearance = Aurora::kFieldIDInvalid;
 }
 
 void Creature::show() {
@@ -248,6 +255,13 @@ void Creature::loadHead(PartModels &parts) {
 		return;
 
 	headHook->addChild(loadModelObject(parts.head));
+}
+
+void Creature::createFakePC() {
+	_name = "Fakoo McFakeston";
+	_tag  = Common::UString::format("[PC: %s]", _name.c_str());
+
+	_isPC = true;
 }
 
 void Creature::enter() {
