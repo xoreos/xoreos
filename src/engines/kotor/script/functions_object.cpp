@@ -52,6 +52,10 @@ void Functions::getExitingObject(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = ctx.getTriggerer();
 }
 
+void Functions::getIsObjectValid(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = getParamObject(ctx, 0) != 0;
+}
+
 void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = KotOR::ObjectContainer::toPC(getParamObject(ctx, 0)) != 0;
 }
