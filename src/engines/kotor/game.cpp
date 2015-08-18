@@ -39,6 +39,7 @@
 #include "src/engines/kotor/console.h"
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
+#include "src/engines/kotor/creature.h"
 
 #include "src/engines/kotor/gui/main/main.h"
 
@@ -78,6 +79,11 @@ void Game::run() {
 }
 
 void Game::runModule() {
+	Creature *fakePC = new Creature;
+	fakePC->createFakePC();
+
+	_module->usePC(fakePC);
+
 	if (EventMan.quitRequested() || !_module->isLoaded()) {
 		_module->clear();
 		return;

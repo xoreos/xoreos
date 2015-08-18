@@ -39,13 +39,14 @@
 
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
+#include "src/engines/kotor/creature.h"
 
 namespace Engines {
 
 namespace KotOR {
 
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
-	_console(&console), _hasModule(false), _running(false),
+	_console(&console), _hasModule(false), _running(false), _pc(0),
 	_currentTexturePack(-1), _exit(false), _area(0) {
 
 }
@@ -58,8 +59,7 @@ Module::~Module() {
 }
 
 void Module::clear() {
-	unload();
-	unloadTexturePack();
+	unload(true);
 }
 
 void Module::load(const Common::UString &module) {
@@ -75,7 +75,7 @@ void Module::load(const Common::UString &module) {
 }
 
 void Module::loadModule(const Common::UString &module) {
-	unload();
+	unload(false);
 
 	_module = module;
 
@@ -95,8 +95,17 @@ void Module::loadModule(const Common::UString &module) {
 	_hasModule = true;
 }
 
+void Module::usePC(Creature *pc) {
+	delete _pc;
+	_pc = pc;
+}
+
+Creature *Module::getPC() {
+	return _pc;
+}
+
 bool Module::isLoaded() const {
-	return _hasModule && _area;
+	return _hasModule && _area && _pc;
 }
 
 bool Module::isRunning() const {
@@ -184,10 +193,15 @@ void Module::loadTexturePack() {
 	_currentTexturePack = level;
 }
 
-void Module::unload() {
-	leave();
-
+void Module::unload(bool completeUnload) {
+	leaveArea();
 	unloadArea();
+
+	if (completeUnload) {
+		unloadPC();
+		unloadTexturePack();
+	}
+
 	unloadIFO();
 	unloadResources();
 
@@ -214,6 +228,11 @@ void Module::unloadArea() {
 	_area = 0;
 }
 
+void Module::unloadPC() {
+	delete _pc;
+	_pc = 0;
+}
+
 void Module::unloadTexturePack() {
 	deindexResources(_textures);
 	_currentTexturePack = -1;
@@ -231,7 +250,7 @@ void Module::replaceModule() {
 
 	Common::UString newModule = _newModule;
 
-	unload();
+	unload(false);
 
 	_exit = true;
 
@@ -244,11 +263,6 @@ void Module::enter() {
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
 	_console->printf("Entering module \"%s\"", _name.c_str());
-
-	// TODO: This needs a player character
-	runScript(kScriptModuleLoad , this);
-	runScript(kScriptModuleStart, this);
-	runScript(kScriptEnter      , this);
 
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
@@ -265,28 +279,37 @@ void Module::enter() {
 	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
 	CameraMan.update();
 
-	_area->show();
-
-	// TODO: This needs a player character
-	_area->runScript(kScriptEnter, _area);
+	enterArea();
 
 	_running = true;
 	_exit    = false;
 }
 
 void Module::leave() {
+	leaveArea();
+
+	_running = false;
+	_exit    = true;
+}
+
+void Module::enterArea() {
+	_area->show();
+
+	runScript(kScriptModuleLoad , this, _pc);
+	runScript(kScriptModuleStart, this, _pc);
+	runScript(kScriptEnter      , this, _pc);
+
+	_area->runScript(kScriptEnter, _area, _pc);
+}
+
+void Module::leaveArea() {
 	if (_area) {
-		// TODO: This needs a player character
-		_area->runScript(kScriptExit, _area);
+		_area->runScript(kScriptExit, _area, _pc);
 
 		_area->hide();
 	}
 
-	// TODO: This needs a player character
-	runScript(kScriptExit, this);
-
-	_running = false;
-	_exit    = true;
+	runScript(kScriptExit, this, _pc);
 }
 
 void Module::addEvent(const Events::Event &event) {
