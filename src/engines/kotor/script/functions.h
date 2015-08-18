@@ -93,6 +93,10 @@ private:
 
 	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
 
+	// .--- General object functions, functions_object.cpp
+	void getClickingObject(Aurora::NWScript::FunctionContext &ctx);
+	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
+	void getExitingObject (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 

@@ -88,4 +88,5 @@ libkotor_la_SOURCES = \
                       gui/options/soundadv.cpp \
                       script/container.cpp \
                       script/functions.cpp \
+                      script/functions_object.cpp \
                       $(EMPTY)
