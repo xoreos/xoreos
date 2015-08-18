@@ -43,7 +43,6 @@ namespace Engines {
 namespace NWN {
 
 Item::Item(const Aurora::GFF3Struct &item) : Object(kObjectTypeItem),
-	_appearanceID(Aurora::kFieldIDInvalid), _soundAppType(Aurora::kFieldIDInvalid),
 	_baseItem(Aurora::kFieldIDInvalid), _model(0) {
 
 	for (size_t i = 0; i < kColorMAX; i++)

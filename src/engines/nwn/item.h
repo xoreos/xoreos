@@ -94,9 +94,6 @@ private:
 
 	Common::UString _modelName; ///< The model's resource name.
 
-	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
-	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
-
 	uint32 _baseItem; ///< The index within the baseitem 2DA.
 
 	uint32 _colors[kColorMAX];         ///< The item's colors
