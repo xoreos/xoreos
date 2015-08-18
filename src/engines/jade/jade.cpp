@@ -188,6 +188,7 @@ void JadeEngine::initResources(LoadProgress &progress) {
 	// Some new file types with the same function as old ones re-use the type ID
 	ResMan.addTypeAlias(Aurora::kFileTypeBTC, Aurora::kFileTypeCRE);
 	ResMan.addTypeAlias(Aurora::kFileTypeBTP, Aurora::kFileTypePLA);
+	ResMan.addTypeAlias(Aurora::kFileTypeGIT, Aurora::kFileTypeSAV);
 	ResMan.addTypeAlias(Aurora::kFileTypeBTT, Aurora::kFileTypeTRG);
 
 	progress.step("Setting base directory");
