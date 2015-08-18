@@ -151,6 +151,16 @@ private:
 	void delayCommand (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Sound, functions_sound.cpp
+	void musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundChangeDay(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ctx);
+
+	void musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Movies, functions_movie.cpp
 	void playMovie(Aurora::NWScript::FunctionContext &ctx);
 	// '---
