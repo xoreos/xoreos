@@ -166,6 +166,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeMAB,            ".mab"},
 	{kFileTypeQST2,           ".qst2"},
 	{kFileTypeSTO,            ".sto"},
+	{kFileTypeHEX,            ".hex"},
 	{kFileTypeMDX2,           ".mdx2"},
 	{kFileTypeTXB2,           ".txb2"},
 	{kFileTypeFSM,            ".fsm"},

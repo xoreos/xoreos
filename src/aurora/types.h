@@ -166,6 +166,7 @@ enum FileType {
 	kFileTypeMAB            =  3011, ///< Material, binary.
 	kFileTypeQST2           =  3012, ///< Quest, GFF.
 	kFileTypeSTO            =  3013, ///< GFF.
+	kFileTypeHEX            =  3015, ///< Hex grid file.
 	kFileTypeMDX2           =  3016, ///< Geometry, model mesh data.
 	kFileTypeTXB2           =  3017, ///< Texture.
 	kFileTypeFSM            =  3022, ///< Finite State Machine data.
