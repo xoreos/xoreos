@@ -64,12 +64,14 @@ private:
 
 	struct FunctionDefaults {
 		uint32 id;
-		Aurora::NWScript::Variable defaults[6];
+		const Aurora::NWScript::Variable *defaults[6];
 	};
 
 	static const FunctionPointer kFunctionPointers[];
 	static const FunctionSignature kFunctionSignatures[];
 	static const FunctionDefaults kFunctionDefaults[];
+
+	static const Aurora::NWScript::Variable kDefaultValues[];
 
 
 	Game *_game;

@@ -80,10 +80,10 @@ void Functions::registerFunctions() {
 
 		Aurora::NWScript::Parameters defaults;
 		for (size_t j = 0; j < ARRAYSIZE(fDef.defaults); j++) {
-			if (fDef.defaults[j].getType() == kTypeVoid)
+			if (!fDef.defaults[j])
 				break;
 
-			defaults.push_back(fDef.defaults[j]);
+			defaults.push_back(Aurora::NWScript::Variable(*fDef.defaults[j]));
 		}
 
 		const funcPtr f = fPtr.func ? fPtr.func : &Functions::unimplementedFunction;
