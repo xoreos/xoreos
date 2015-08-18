@@ -43,6 +43,7 @@ class Console;
 namespace KotOR2 {
 
 class Area;
+class Creature;
 
 class Module : public KotOR2::Object, public KotOR2::ObjectContainer {
 public:
@@ -60,6 +61,8 @@ public:
 
 	/** Load a module. */
 	void load(const Common::UString &module);
+	/** Use this character as the player character. */
+	void usePC(Creature *pc);
 	/** Exit the currently running module. */
 	void exit();
 	// '---
@@ -72,6 +75,8 @@ public:
 	// .--- Elements of the current module
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
+	/** Return the currently playing PC. */
+	Creature *getPC();
 	// '---
 
 	// .--- Interact with the current module
@@ -106,6 +111,8 @@ private:
 	/** The current module's IFO. */
 	Aurora::IFOFile _ifo;
 
+	Creature *_pc; ///< The player character we use.
+
 	/** The current texture pack. */
 	int _currentTexturePack;
 	/** Resources added by the current texture pack. */
@@ -122,8 +129,16 @@ private:
 
 
 	// .--- Unloading
-	void unload();
+	/** Unload the whole shebang.
+	 *
+	 *  @param completeUnload Also unload the PC and texture packs.
+	 *                        true:  completely quit the module
+	 *                        false: the PC can be transfered to a new module.
+	 */
+	void unload(bool completeUnload = true);
+
 	void unloadResources();
+	void unloadPC();
 	void unloadIFO();
 	void unloadArea();
 	void unloadTexturePack();
@@ -131,6 +146,7 @@ private:
 
 	// .--- Loading
 	void load();
+
 	void loadResources();
 	void loadIFO();
 	void loadArea();
@@ -143,6 +159,9 @@ private:
 	void changeModule(const Common::UString &module);
 	/** Actually replace the currently running module. */
 	void replaceModule();
+
+	void enterArea();
+	void leaveArea();
 
 	void handleEvents();
 };
