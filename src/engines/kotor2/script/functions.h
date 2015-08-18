@@ -110,6 +110,11 @@ private:
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Actions, functions_action.cpp
+	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
+	void delayCommand (Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Movies, functions_movie.cpp
 	void playMovie(Aurora::NWScript::FunctionContext &ctx);
 	// '---
