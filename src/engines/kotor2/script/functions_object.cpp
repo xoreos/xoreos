@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Star Wars: Knights of the Old Republic engine functions messing with objects.
+ *  Star Wars: Knights of the Old Republic II - The Sith Lords engine functions messing with objects.
  */
 
 #include "src/common/util.h"

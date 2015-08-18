@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Star Wars: Knights of the Old Republic engine functions operating on the current module.
+ *  Star Wars: Knights of the Old Republic II - The Sith Lords engine functions operating on the current module.
  */
 
 #include "src/common/util.h"

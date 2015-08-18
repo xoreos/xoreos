@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A container of Star Wars: Knights of the Old Republic objects.
+ *  A container of Star Wars: Knights of the Old Republic II - The Sith Lords objects.
  */
 
 #include "src/common/types.h"

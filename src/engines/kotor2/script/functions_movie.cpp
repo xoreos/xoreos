@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Star Wars: Knights of the Old Republic engine functions handling movies.
+ *  Star Wars: Knights of the Old Republic II - The Sith Lords engine functions handling movies.
  */
 
 #include "src/common/util.h"

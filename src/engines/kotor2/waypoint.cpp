@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A waypoint in a Star Wars: Knights of the Old Republic area.
+ *  A waypoint in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
  */
 
 #include "src/common/util.h"
