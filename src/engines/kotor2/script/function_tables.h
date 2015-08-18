@@ -161,7 +161,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  39, "ActionSpeakString"                   , 0                                                },
 	{  40, "ActionPlayAnimation"                 , 0                                                },
 	{  41, "GetDistanceToObject"                 , 0                                                },
-	{  42, "GetIsObjectValid"                    , 0                                                },
+	{  42, "GetIsObjectValid"                    , &Functions::getIsObjectValid                     },
 	{  43, "ActionOpenDoor"                      , 0                                                },
 	{  44, "ActionCloseDoor"                     , 0                                                },
 	{  45, "SetCameraFacing"                     , 0                                                },

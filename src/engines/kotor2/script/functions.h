@@ -98,6 +98,8 @@ private:
 	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
 	void getExitingObject (Aurora::NWScript::FunctionContext &ctx);
 
+	void getIsObjectValid(Aurora::NWScript::FunctionContext &ctx);
+
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
