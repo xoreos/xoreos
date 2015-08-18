@@ -84,6 +84,11 @@ public:
 	void showMenu();
 	// '---
 
+	void delayScript(const Common::UString &script,
+	                 const Aurora::NWScript::ScriptState &state,
+	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
+	                 uint32 delay);
+
 	// .--- Module main loop (called by the Game class)
 	/** Enter the loaded module, starting it. */
 	void enter();
@@ -97,7 +102,27 @@ public:
 	// '---
 
 private:
+	enum ActionType {
+		kActionNone   = 0,
+		kActionScript = 1
+	};
+
+	struct Action {
+		ActionType type;
+
+		Common::UString script;
+
+		Aurora::NWScript::ScriptState state;
+		Aurora::NWScript::Object *owner;
+		Aurora::NWScript::Object *triggerer;
+
+		uint32 timestamp;
+
+		bool operator<(const Action &s) const;
+	};
+
 	typedef std::list<Events::Event> EventQueue;
+	typedef std::multiset<Action> ActionQueue;
 
 
 	::Engines::Console *_console;
@@ -126,6 +151,7 @@ private:
 	Area *_area; ///< The current module's area.
 
 	EventQueue  _eventQueue;
+	ActionQueue _delayedActions;
 
 
 	// .--- Unloading
@@ -164,6 +190,8 @@ private:
 	void leaveArea();
 
 	void handleEvents();
+
+	void handleActions();
 };
 
 } // End of namespace KotOR2
