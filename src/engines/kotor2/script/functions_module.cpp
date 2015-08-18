@@ -40,6 +40,14 @@ void Functions::getModule(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) &_game->getModule();
 }
 
+void Functions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) _game->getModule().getPC();
+}
+
+void Functions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
