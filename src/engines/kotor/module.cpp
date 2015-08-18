@@ -45,6 +45,11 @@ namespace Engines {
 
 namespace KotOR {
 
+bool Module::Action::operator<(const Action &s) const {
+	return timestamp < s.timestamp;
+}
+
+
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false), _pc(0),
 	_currentTexturePack(-1), _exit(false), _area(0) {
@@ -205,6 +210,9 @@ void Module::unload(bool completeUnload) {
 	unloadIFO();
 	unloadResources();
 
+	_eventQueue.clear();
+	_delayedActions.clear();
+
 	_newModule.clear();
 	_hasModule = false;
 
@@ -326,6 +334,7 @@ void Module::processEventQueue() {
 		return;
 
 	handleEvents();
+	handleActions();
 }
 
 void Module::handleEvents() {
@@ -365,12 +374,45 @@ void Module::handleEvents() {
 	_area->processEventQueue();
 }
 
+void Module::handleActions() {
+	uint32 now = EventMan.getTimestamp();
+
+	while (!_delayedActions.empty()) {
+		ActionQueue::iterator action = _delayedActions.begin();
+
+		if (now < action->timestamp)
+			break;
+
+		if (action->type == kActionScript)
+			ScriptContainer::runScript(action->script, action->state,
+			                           action->owner, action->triggerer);
+
+		_delayedActions.erase(action);
+	}
+}
+
 const Aurora::IFOFile &Module::getIFO() const {
 	return _ifo;
 }
 
 Area *Module::getCurrentArea() {
 	return _area;
+}
+
+void Module::delayScript(const Common::UString &script,
+                         const Aurora::NWScript::ScriptState &state,
+                         Aurora::NWScript::Object *owner,
+                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+	Action action;
+
+	action.type      = kActionScript;
+	action.script    = script;
+	action.state     = state;
+	action.owner     = owner;
+	action.triggerer = triggerer;
+	action.timestamp = EventMan.getTimestamp() + delay;
+
+	_delayedActions.insert(action);
 }
 
 } // End of namespace KotOR
