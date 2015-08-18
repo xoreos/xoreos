@@ -39,12 +39,13 @@
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
+#include "src/engines/jade/object.h"
+
 namespace Engines {
 
 namespace Jade {
 
 class Room;
-class Object;
 
 /** An area in Jade Empire, holding all objects and rooms within, as well as
  *  general area properties like the current background music and ambient
@@ -54,7 +55,7 @@ class Object;
  *  from the top down. The negative Z axis goes down into the ground, while the
  *  positive Y axis points due north and the positive X axis points due east.
  */
-class Area : public Events::Notifyable {
+class Area : public Object, public Events::Notifyable {
 public:
 	Area();
 	~Area();

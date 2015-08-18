@@ -46,7 +46,7 @@ namespace Engines {
 
 namespace Jade {
 
-Area::Area() : _loaded(false), _visible(false), _activeObject(0), _highlightAll(false) {
+Area::Area() : Object(kObjectTypeArea), _loaded(false), _visible(false), _activeObject(0), _highlightAll(false) {
 }
 
 Area::~Area() {
