@@ -32,10 +32,11 @@
 
 #include "src/aurora/ifofile.h"
 
-#include "src/aurora/nwscript/object.h"
 #include "src/aurora/nwscript/objectcontainer.h"
 
 #include "src/events/types.h"
+
+#include "src/engines/nwn2/object.h"
 
 namespace Engines {
 
@@ -46,7 +47,7 @@ namespace NWN2 {
 class Campaign;
 class Area;
 
-class Module : public Aurora::NWScript::Object, public Aurora::NWScript::ObjectContainer {
+class Module : public NWN2::Object, public Aurora::NWScript::ObjectContainer {
 public:
 	Module(::Engines::Console &console, Campaign *campaign = 0);
 	~Module();
@@ -61,8 +62,6 @@ public:
 
 	/** Is a module currently running? */
 	bool isRunning() const;
-	/** Return the name of the currently loaded module. */
-	const Common::UString &getName() const;
 
 	/** Return the IFO of the currently loaded module. */
 	const Aurora::IFOFile &getIFO() const;

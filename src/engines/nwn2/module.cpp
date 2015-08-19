@@ -47,7 +47,7 @@ namespace Engines {
 
 namespace NWN2 {
 
-Module::Module(::Engines::Console &console, Campaign *campaign) :
+Module::Module(::Engines::Console &console, Campaign *campaign) : Object(kObjectTypeModule),
 	_console(&console), _campaign(campaign),
 	_hasModule(false), _running(false), _exit(false), _currentArea(0) {
 
@@ -93,7 +93,8 @@ void Module::loadModule(const Common::UString &module) {
 		checkXPs();
 		checkHAKs();
 
-		_tag = _ifo.getTag();
+		_tag  = _ifo.getTag();
+		_name = _ifo.getName().getString();
 
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
@@ -155,7 +156,7 @@ void Module::enter() {
 	if (!_hasModule)
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
-	_console->printf("Entering module \"%s\"", _ifo.getName().getString().c_str());
+	_console->printf("Entering module \"%s\"", _name.c_str());
 
 	try {
 
@@ -164,7 +165,7 @@ void Module::enter() {
 		loadAreas();
 
 	} catch (Common::Exception &e) {
-		e.add("Can't initialize module \"%s\"", _ifo.getName().getString().c_str());
+		e.add("Can't initialize module \"%s\"", _name.c_str());
 		throw e;
 	}
 
@@ -246,7 +247,7 @@ void Module::run() {
 	} catch (Common::Exception &e) {
 		_running = false;
 
-		e.add("Failed running module \"%s\"", _ifo.getName().getString().c_str());
+		e.add("Failed running module \"%s\"", _name.c_str());
 		throw e;
 	}
 
@@ -381,10 +382,6 @@ void Module::movePC(float x, float y, float z) {
 void Module::movePC(const Common::UString &area, float x, float y, float z) {
 	movePC(area);
 	movePC(x, y, z);
-}
-
-const Common::UString &Module::getName() const {
-	return _ifo.getName().getString();
 }
 
 const Aurora::IFOFile &Module::getIFO() const {
