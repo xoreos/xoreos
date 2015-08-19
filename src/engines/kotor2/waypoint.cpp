@@ -28,8 +28,6 @@
 #include "src/aurora/locstring.h"
 #include "src/aurora/gff3file.h"
 
-#include "src/engines/aurora/util.h"
-
 #include "src/engines/kotor2/waypoint.h"
 
 namespace Engines {

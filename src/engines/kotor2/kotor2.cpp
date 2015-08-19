@@ -22,13 +22,14 @@
  *  Engine class handling Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
+#include "src/common/ustring.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
-#include "src/common/readstream.h"
 #include "src/common/configman.h"
 
-#include "src/aurora/util.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/language.h"
 #include "src/aurora/talkman.h"

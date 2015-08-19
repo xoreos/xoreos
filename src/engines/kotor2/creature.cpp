@@ -35,7 +35,6 @@
 #include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/model.h"
 
-#include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/kotor2/creature.h"
