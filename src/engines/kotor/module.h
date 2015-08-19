@@ -89,6 +89,10 @@ public:
 	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
 	                 uint32 delay);
 
+	// .--- Static utility methods
+	static Common::UString getName(const Common::UString &module);
+	// '---
+
 	// .--- Module main loop (called by the Game class)
 	/** Enter the loaded module, starting it. */
 	void enter();
