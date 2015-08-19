@@ -37,8 +37,7 @@ class LoadProgress;
 
 namespace NWN2 {
 
-class Campaign;
-class Module;
+class Game;
 
 class NWN2Engine : public Engines::Engine {
 public:
@@ -52,10 +51,8 @@ public:
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
 
-	/** Return the currently running campaign. */
-	Campaign *getCampaign();
-	/** Return the currently running module. */
-	Module   *getModule();
+	/** Return the context running the actual game. */
+	Game &getGame();
 
 
 protected:
@@ -69,7 +66,7 @@ private:
 	bool _hasXP2; // Storm of Zehir (SoZ)
 	bool _hasXP3; // Mysteries of Westgate (MoW)
 
-	Campaign *_campaign;
+	Game *_game;
 
 
 	void init();
@@ -82,7 +79,6 @@ private:
 	void deinit();
 
 	void playIntroVideos();
-	void main();
 };
 
 } // End of namespace NWN2

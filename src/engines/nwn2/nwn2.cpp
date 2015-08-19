@@ -22,6 +22,8 @@
  *  Engine class handling Neverwinter Nights 2.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/filelist.h"
@@ -47,20 +49,20 @@
 #include "src/engines/nwn2/nwn2.h"
 #include "src/engines/nwn2/modelloader.h"
 #include "src/engines/nwn2/console.h"
-#include "src/engines/nwn2/campaign.h"
+#include "src/engines/nwn2/game.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
 NWN2Engine::NWN2Engine() : _language(Aurora::kLanguageInvalid),
-	_hasXP1(false), _hasXP2(false), _hasXP3(false), _campaign(0) {
+	_hasXP1(false), _hasXP2(false), _hasXP3(false), _game(0) {
 
 	_console = new Console(*this);
 }
 
 NWN2Engine::~NWN2Engine() {
-	delete _campaign;
+	delete _game;
 }
 
 bool NWN2Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -104,15 +106,10 @@ bool NWN2Engine::changeLanguage() {
 	return true;
 }
 
-Campaign *NWN2Engine::getCampaign() {
-	return _campaign;
-}
+Game &NWN2Engine::getGame() {
+	assert(_game);
 
-Module *NWN2Engine::getModule() {
-	if (!_campaign)
-		return 0;
-
-	return _campaign->getModule();
+	return *_game;
 }
 
 void NWN2Engine::run() {
@@ -129,7 +126,8 @@ void NWN2Engine::run() {
 
 	CursorMan.showCursor();
 
-	main();
+	_game = new Game(*this, *_console);
+	_game->run();
 
 	deinit();
 }
@@ -369,6 +367,9 @@ void NWN2Engine::initGameConfig() {
 }
 
 void NWN2Engine::deinit() {
+	delete _game;
+
+	_game = 0;
 }
 
 void NWN2Engine::playIntroVideos() {
@@ -378,21 +379,6 @@ void NWN2Engine::playIntroVideos() {
 	playVideo("nvidialogo");
 	playVideo("legal");
 	playVideo("intro");
-}
-
-void NWN2Engine::main() {
-	_campaign = new Campaign(*_console);
-
-	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
-	if (campaigns.empty())
-		error("No campaigns found");
-
-	_campaign->load(*campaigns.begin());
-	_campaign->run();
-	_campaign->clear();
-
-	delete _campaign;
-	_campaign = 0;
 }
 
 } // End of namespace NWN2

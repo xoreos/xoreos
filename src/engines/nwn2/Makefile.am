@@ -10,6 +10,7 @@ noinst_HEADERS = \
                  util.h \
                  trxfile.h \
                  console.h \
+                 game.h \
                  campaign.h \
                  module.h \
                  area.h \
@@ -29,6 +30,7 @@ libnwn2_la_SOURCES = \
                      util.cpp \
                      trxfile.cpp \
                      console.cpp \
+                     game.cpp \
                      campaign.cpp \
                      module.cpp \
                      area.cpp \
