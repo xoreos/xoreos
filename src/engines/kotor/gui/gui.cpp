@@ -27,8 +27,6 @@
 
 #include "src/aurora/gff3file.h"
 
-#include "src/engines/aurora/util.h"
-
 #include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/kotor/gui/widgets/panel.h"

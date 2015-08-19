@@ -25,8 +25,6 @@
 #ifndef ENGINES_KOTOR_KOTOR_H
 #define ENGINES_KOTOR_KOTOR_H
 
-#include "src/common/ustring.h"
-
 #include "src/aurora/types.h"
 
 #include "src/engines/engine.h"

@@ -30,8 +30,6 @@
 
 #include "src/graphics/aurora/model.h"
 
-#include "src/engines/aurora/util.h"
-
 #include "src/engines/kotor/placeable.h"
 
 namespace Engines {

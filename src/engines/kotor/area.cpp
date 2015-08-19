@@ -22,8 +22,6 @@
  *  The context holding a Star Wars: Knights of the Old Republic area.
  */
 
-#include <cassert>
-
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"

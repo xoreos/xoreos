@@ -33,7 +33,6 @@
 
 #include "src/graphics/aurora/model.h"
 
-#include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/kotor/situated.h"
