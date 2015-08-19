@@ -109,7 +109,9 @@ void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 	updateModules();
-	printList(_modules);
+
+	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
+		printf("%s (\"%s\")", m->c_str(), Module::getName(*m).c_str());
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
