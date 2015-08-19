@@ -49,6 +49,41 @@ enum ObjectType {
 	kObjectTypeAll          = 0x7FFF
 };
 
+enum Script {
+	kScriptOnHeartbeat           = 0,
+	kScriptOnEnter               = 1,
+	kScriptOnExit                = 2,
+	kScriptOnUserdefined         = 3,
+	kScriptOnDamage              = 4,
+	kScriptOnDeath               = 5,
+	kScriptOnDisarm              = 6,
+	kScriptOnClick               = 7,
+	kScriptOnTrapTriggered       = 8,
+	kScriptOnOpen                = 9,
+	kScriptOnClose               = 10,
+	kScriptOnUnlock              = 11,
+	kScriptOnFailToOpen          = 12,
+	kScriptOnConversation        = 13,
+	kScriptOnActivate            = 14,
+	kScriptOnPerceptionAppeared  = 15,
+	kScriptOnSpellCastAt         = 16,
+	kScriptOnPhysicalAttacked    = 17,
+	kScriptOnDisturbed           = 18,
+	kScriptOnCombatEnd           = 19,
+	kScriptOnSpawn               = 20,
+	kScriptOnRested              = 21,
+	kScriptOnBlocked             = 22,
+	kScriptOnCreate              = 23,
+	kScriptOnPerceptionVanished  = 24,
+	kScriptOnUse                 = 25,
+	kScriptOnDead                = 26,
+	kScriptOnStateChange         = 27,
+	kScriptOnSubCombatStart      = 28,
+	kScriptOnSubCombatEnd        = 29,
+
+	kScriptMAX
+};
+
 } // End of namespace Jade
 
 } // End of namespace Engines
