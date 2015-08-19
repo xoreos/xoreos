@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Star Wars: Knights of the Old Republic II - The Sith Lords
+ *  Engine class handling Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
 #ifndef ENGINES_KOTOR2_KOTOR2_H

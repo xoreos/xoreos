@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Star Wars: Knights of the Old Republic II - The Sith Lords
+ *  Engine class handling Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
 #include "src/common/util.h"
