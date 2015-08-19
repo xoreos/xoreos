@@ -32,10 +32,9 @@
 
 #include "src/aurora/ifofile.h"
 
-#include "src/aurora/nwscript/objectcontainer.h"
-
 #include "src/events/types.h"
 
+#include "src/engines/nwn2/objectcontainer.h"
 #include "src/engines/nwn2/object.h"
 
 namespace Engines {
@@ -47,7 +46,7 @@ namespace NWN2 {
 class Campaign;
 class Area;
 
-class Module : public NWN2::Object, public Aurora::NWScript::ObjectContainer {
+class Module : public NWN2::Object, public NWN2::ObjectContainer {
 public:
 	Module(::Engines::Console &console, Campaign *campaign = 0);
 	~Module();
