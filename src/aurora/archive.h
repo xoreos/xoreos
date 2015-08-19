@@ -73,6 +73,11 @@ public:
 
 	/** Return with which algorithm the name is hashed. */
 	virtual Common::HashAlgo getNameHashAlgo() const;
+
+	/** Return the index of the resource matching the hash, or 0xFFFFFFFF if not found. */
+	uint32 findResource(uint64 hash) const;
+	/** Return the index of the resource matching the name and type, or 0xFFFFFFFF if not found. */
+	uint32 findResource(const Common::UString &name, FileType type) const;
 };
 
 } // End of namespace Aurora

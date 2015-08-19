@@ -45,4 +45,20 @@ Common::HashAlgo Archive::getNameHashAlgo() const {
 	return Common::kHashNone;
 }
 
+uint32 Archive::findResource(uint64 hash) const {
+	for (ResourceList::const_iterator r = getResources().begin(); r != getResources().end(); ++r)
+		if (r->hash == hash)
+			return r->index;
+
+	return 0xFFFFFFFF;
+}
+
+uint32 Archive::findResource(const Common::UString &name, FileType type) const {
+	for (ResourceList::const_iterator r = getResources().begin(); r != getResources().end(); ++r)
+		if ((r->type == type) && (r->name == name))
+			return r->index;
+
+	return 0xFFFFFFFF;
+}
+
 } // End of namespace Aurora
