@@ -42,6 +42,8 @@
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
+#include "src/engines/nwn2/object.h"
+
 namespace Engines {
 
 namespace NWN2 {
@@ -50,9 +52,7 @@ class TRXFile;
 
 class Module;
 
-class Object;
-
-class Area : public Aurora::NWScript::Object, public Events::Notifyable {
+class Area : public NWN2::Object, public Events::Notifyable {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();
@@ -147,7 +147,6 @@ private:
 	bool _loaded;
 
 	Common::UString _resRef; ///< The area's resref (resource ID).
-	Common::UString _name;   ///< The area's localized name.
 
 	Common::UString _displayName; ///< The area's localized display name.
 

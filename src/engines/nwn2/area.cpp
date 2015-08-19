@@ -47,7 +47,6 @@
 #include "src/engines/nwn2/util.h"
 #include "src/engines/nwn2/trxfile.h"
 #include "src/engines/nwn2/module.h"
-#include "src/engines/nwn2/object.h"
 #include "src/engines/nwn2/waypoint.h"
 #include "src/engines/nwn2/placeable.h"
 #include "src/engines/nwn2/door.h"
@@ -57,8 +56,9 @@ namespace Engines {
 
 namespace NWN2 {
 
-Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _loaded(false),
-	_resRef(resRef), _visible(false), _terrain(0), _activeObject(0), _highlightAll(false) {
+Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
+	_module(&module), _loaded(false), _resRef(resRef), _visible(false),
+	_terrain(0), _activeObject(0), _highlightAll(false) {
 
 	try {
 		// Load ARE and GIT
@@ -135,7 +135,7 @@ const Common::UString &Area::getResRef() {
 }
 
 const Common::UString &Area::getName() {
-	return _name;
+	return NWN2::Object::getName();
 }
 
 const Common::UString &Area::getDisplayName() {
@@ -208,7 +208,7 @@ void Area::playAmbientMusic(Common::UString music) {
 	if (music.empty())
 		return;
 
-	_ambientMusic = playSound(music, Sound::kSoundTypeMusic, true);
+	_ambientMusic = ::Engines::playSound(music, Sound::kSoundTypeMusic, true);
 }
 
 void Area::playAmbientSound(Common::UString sound) {
@@ -221,7 +221,7 @@ void Area::playAmbientSound(Common::UString sound) {
 	if (sound.empty())
 		return;
 
-	_ambientSound = playSound(sound, Sound::kSoundTypeSFX, true, _ambientDayVol);
+	_ambientSound = ::Engines::playSound(sound, Sound::kSoundTypeSFX, true, _ambientDayVol);
 }
 
 void Area::show() {
