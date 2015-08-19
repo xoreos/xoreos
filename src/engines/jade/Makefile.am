@@ -13,6 +13,7 @@ noinst_HEADERS = \
                  room.h \
                  object.h \
                  artplaceable.h \
+                 creature.h \
                  gui/main/main.h \
                  script/container.h \
                  $(EMPTY)
@@ -27,6 +28,7 @@ libjade_la_SOURCES = \
                      room.cpp \
                      object.cpp \
                      artplaceable.cpp \
+                     creature.cpp \
                      gui/main/main.cpp \
                      script/container.cpp \
                      $(EMPTY)
