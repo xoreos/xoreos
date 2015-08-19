@@ -416,6 +416,9 @@ void KotOR2Engine::checkConfig() {
 }
 
 void KotOR2Engine::deinit() {
+	delete _game;
+
+	_game = 0;
 }
 
 void KotOR2Engine::playIntroVideos() {
