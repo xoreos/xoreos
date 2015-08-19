@@ -31,17 +31,27 @@ namespace Engines {
 
 namespace NWN2 {
 
+/** Object type, matches the bitfield in nwscript.nss */
 enum ObjectType {
-	kObjectTypeNone         = 0     ,
-	kObjectTypeCreature     = 1 << 0,
-	kObjectTypeItem         = 1 << 1,
-	kObjectTypeTrigger      = 1 << 2,
-	kObjectTypeDoor         = 1 << 3,
-	kObjectTypeAreaOfEffect = 1 << 4,
-	kObjectTypeWaypoint     = 1 << 5,
-	kObjectTypePlaceable    = 1 << 6,
-	kObjectTypeStore        = 1 << 7,
-	kObjectTypeEncounter    = 1 << 8,
+	kObjectTypeCreature     =  1,
+	kObjectTypeItem         =  2,
+	kObjectTypeTrigger      =  3,
+	kObjectTypeDoor         =  4,
+	kObjectTypeAreaOfEffect =  5,
+	kObjectTypeWaypoint     =  6,
+	kObjectTypePlaceable    =  7,
+	kObjectTypeStore        =  8,
+	kObjectTypeEncounter    =  9,
+	kObjectTypeLight        = 10,
+	kObjectTypePlacedEffect = 11,
+
+	kObjectTypeMAX,
+
+	kObjectTypeModule       = 0x7FFC, ///< Fake value for a module object.
+	kObjectTypeArea         = 0x7FFD, ///< Fake value for an area object.
+	kObjectTypeSelf         = 0x7FFE, ///< Fake value to describe the calling object in a script.
+	kObjectTypeInvalid      = 0x7FFF,
+
 	kObjectTypeAll          = 0x7FFF
 };
 
@@ -62,8 +72,6 @@ enum Gender {
 	kGenderOther  = 3,
 	kGenderNone   = 4
 };
-
-static const uint32 kObjectTypeInvalid = 0x7FFF;
 
 static const uint32 kRaceInvalid    =  28;
 static const uint32 kSubRaceInvalid = 255;
