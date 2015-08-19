@@ -443,6 +443,13 @@ Common::UString GFF3Struct::getString(const Common::UString &field,
 		return Common::readStringFixed(data, Common::kEncodingASCII, length);
 	}
 
+	if (f->type == kFieldTypeLocString) {
+		LocString locString;
+		getLocString(field, locString);
+
+		return locString.getString();
+	}
+
 	if ((f->type == kFieldTypeByte  ) ||
 	    (f->type == kFieldTypeUint16) ||
 	    (f->type == kFieldTypeUint32) ||
