@@ -25,6 +25,14 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
+#include "src/common/readfile.h"
+#include "src/common/filepath.h"
+#include "src/common/filelist.h"
+#include "src/common/configman.h"
+
+#include "src/aurora/types.h"
+#include "src/aurora/rimfile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/graphics/camera.h"
 
@@ -413,6 +421,42 @@ void Module::delayScript(const Common::UString &script,
 	action.timestamp = EventMan.getTimestamp() + delay;
 
 	_delayedActions.insert(action);
+}
+
+Common::UString Module::getName(const Common::UString &module) {
+	/* Return the localized name of the first (and only) area of the module,
+	 * which is the closest thing to the name of the module.
+	 *
+	 * To do that, if looks through the module directory for a matching RIM file
+	 * (case-insensitively) and opens it without indexing into the ResourceManager.
+	 * It then opens the module.ifo, grabs the name of the area, opens its ARE file
+	 * and returns the localized "Name" field.
+	 *
+	 * If there's any error while doing all this, an empty string is returned.
+	 */
+
+	try {
+		const Common::FileList modules(ConfigMan.getString("KOTOR2_moduleDir"));
+
+		const Aurora::RIMFile rim(new Common::ReadFile(modules.findFirst(module + ".rim", true)));
+		const uint32 ifoIndex = rim.findResource("module", Aurora::kFileTypeIFO);
+
+		const Aurora::GFF3File ifo(rim.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
+
+		const Aurora::GFF3List &areas = ifo.getTopLevel().getList("Mod_Area_list");
+		if (areas.empty())
+			return "";
+
+		const uint32 areIndex = rim.findResource((*areas.begin())->getString("Area_Name"), Aurora::kFileTypeARE);
+
+		const Aurora::GFF3File are(rim.getResource(areIndex), MKTAG('A', 'R', 'E', ' '));
+
+		return are.getTopLevel().getString("Name");
+
+	} catch (...) {
+	}
+
+	return "";
 }
 
 } // End of namespace KotOR2
