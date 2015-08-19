@@ -34,12 +34,14 @@
 
 #include "src/engines/jade/types.h"
 
+#include "src/engines/jade/script/container.h"
+
 namespace Engines {
 
 namespace Jade {
 
 /** An object within a Jade area. */
-class Object : public Aurora::NWScript::Object {
+class Object : public Aurora::NWScript::Object, public Jade::ScriptContainer {
 public:
 	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
