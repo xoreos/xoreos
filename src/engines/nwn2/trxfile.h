@@ -45,6 +45,23 @@ namespace Engines {
 
 namespace NWN2 {
 
+/** Loader for TRX, baked terrain files, found in Neverwinter Nights 2.
+ *
+ *  While indoor areas in Neverwinter Nights 2 use tiles similar to those
+ *  found in the first Neverwinter Nights game, outdoor areas use a more
+ *  free-form and dynamic terrain.
+ *
+ *  A TRX file consists of 4 "packet" types:
+ *  - TRWH packets, containing the size of the terrain
+ *  - TRRN packets, with a ground mesh and grass descriptions
+ *  - WATR packets, with a mesh for a stretch of water (sea, river, ...)
+ *  - ASWM packets, with a mesh defining a region creatures can walk on
+ *
+ *  Usually, there should be exactly one TRWH packet, followed by an arbitrary
+ *  number of TRRN, WATR and ASWM packets. TRRN packets are divided into tiles,
+ *  rectangular areas for a piece of the ground, while WATR packets divide
+ *  the bodies of water in more natural ways.
+ */
 class TRXFile {
 public:
 	TRXFile(const Common::UString &resRef);
