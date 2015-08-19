@@ -433,6 +433,9 @@ void KotOREngine::checkConfig() {
 }
 
 void KotOREngine::deinit() {
+	delete _game;
+
+	_game = 0;
 }
 
 void KotOREngine::playIntroVideos() {
