@@ -49,19 +49,22 @@ public:
 	Placeable(const Aurora::GFF3Struct &placeable);
 	~Placeable();
 
+	// Basic visuals
 
 	void hide(); ///< Hide the placeable's model.
 
+	// Basic properties
+
+	/** Is the placeable open? */
+	bool isOpen() const;
+
+	// Object/Cursor interactions
 
 	void enter(); ///< The cursor entered the placeable.
 	void leave(); ///< The cursor left the placeable.
 
 	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
-
-
-	/** Is the placeable open? */
-	bool isOpen() const;
 
 protected:
 	/** Load placeable-specific properties. */

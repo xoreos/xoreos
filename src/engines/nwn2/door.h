@@ -50,17 +50,12 @@ public:
 	Door(Module &module, const Aurora::GFF3Struct &door);
 	~Door();
 
+	// Basic visuals
 
 	void show(); ///< Show the door's model.
 	void hide(); ///< Hide the door's model.
 
-
-	void enter(); ///< The cursor entered the door.
-	void leave(); ///< The cursor left the door.
-
-	/** (Un)Highlight the door. */
-	void highlight(bool enabled);
-
+	// Basic properties
 
 	/** Is the door open? */
 	bool isOpen() const;
@@ -72,6 +67,14 @@ public:
 
 	/** Lock/Unlock the door. */
 	void setLocked(bool locked);
+
+	// Object/Cursor interactions
+
+	void enter(); ///< The cursor entered the door.
+	void leave(); ///< The cursor left the door.
+
+	/** (Un)Highlight the door. */
+	void highlight(bool enabled);
 
 protected:
 	/** Load door-specific properties. */
