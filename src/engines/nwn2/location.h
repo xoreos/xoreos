@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A location within a NWN2 area.
+ *  A location within a Neverwinter Nights 2 area.
  */
 
 #ifndef ENGINES_NWN2_LOCATION_H

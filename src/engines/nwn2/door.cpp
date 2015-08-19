@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN2 door.
+ *  A door in a Neverwinter Nights 2 area.
  */
 
 #include "src/common/util.h"

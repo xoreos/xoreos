@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Neverwinter Nights 2
+ *  Engine class handling Neverwinter Nights 2.
  */
 
 #ifndef ENGINES_NWN2_NWN2_H

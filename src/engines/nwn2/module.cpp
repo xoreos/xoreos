@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The context needed to run a NWN2 module.
+ *  The context needed to run a Neverwinter Nights 2 module.
  */
 
 #include "src/common/util.h"

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Loader for NWN2 baked terrain files (TRX).
+ *  Loader for Neverwinter Nights 2 baked terrain files (TRX).
  */
 
 #include "src/common/error.h"

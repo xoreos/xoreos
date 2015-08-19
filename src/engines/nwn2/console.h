@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN2 (debug) console.
+ *  Neverwinter Nights 2 (debug) console.
  */
 
 #ifndef ENGINES_NWN2_CONSOLE_H

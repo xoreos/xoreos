@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN2 placeable.
+ *  A placeable object in a Neverwinter Nights 2 area.
  */
 
 #include "src/common/util.h"

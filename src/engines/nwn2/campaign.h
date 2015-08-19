@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The context holding an NWN2 campaign.
+ *  The context holding a Neverwinter Nights 2 campaign.
  */
 
 #ifndef ENGINES_NWN2_CAMPAIGN_H

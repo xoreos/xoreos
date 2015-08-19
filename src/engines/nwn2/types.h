@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Basic NWN2 type definitions.
+ *  Basic Neverwinter Nights 2 type definitions.
  */
 
 #ifndef ENGINES_NWN2_TYPES_H

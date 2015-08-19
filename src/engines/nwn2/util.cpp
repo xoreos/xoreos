@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN2 utility functions
+ *  Neverwinter Nights 2 utility functions.
  */
 
 #include "src/common/ustring.h"

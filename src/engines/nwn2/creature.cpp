@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN2 creature.
+ *  A creature in a Neverwinter Nights 2 area.
  */
 
 #include <cassert>

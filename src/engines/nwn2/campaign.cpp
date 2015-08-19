@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The context holding an NWN2 campaign.
+ *  The context holding an Neverwinter Nights 2 campaign.
  */
 
 #include "src/common/util.h"

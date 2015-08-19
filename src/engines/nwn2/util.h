@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN2 utility functions
+ *  Neverwinter Nights 2 utility functions.
  */
 
 #ifndef ENGINES_NWN2_UTIL_H

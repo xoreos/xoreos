@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN2 door.
+ *  A door in a Neverwinter Nights 2 area.
  */
 
 #ifndef ENGINES_NWN2_DOOR_H

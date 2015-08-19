@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  NWN2 area.
+ *  The context holding a Neverwinter Nights 2 area.
  */
 
 #ifndef ENGINES_NWN2_AREA_H
