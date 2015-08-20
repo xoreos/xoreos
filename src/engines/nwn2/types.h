@@ -113,6 +113,15 @@ enum Ability {
 	kAbilityMAX
 };
 
+enum Alignment {
+	kAlignmentAll     = 0,
+	kAlignmentNeutral = 1,
+	kAlignmentLawful  = 2,
+	kAlignmentChaotic = 3,
+	kAlignmentGood    = 4,
+	kAlignmentEvil    = 5
+};
+
 enum Gender {
 	kGenderMale   = 0,
 	kGenderFemale = 1,
