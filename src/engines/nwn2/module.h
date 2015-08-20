@@ -26,6 +26,9 @@
 #define ENGINES_NWN2_MODULE_H
 
 #include <vector>
+#include <list>
+#include <map>
+#include <set>
 
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
@@ -70,6 +73,11 @@ public:
 	Creature *getPC();
 	// '---
 
+	void delayScript(const Common::UString &script,
+	                 const Aurora::NWScript::ScriptState &state,
+	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
+	                 uint32 delay);
+
 	// .--- PC management
 	/** Move the player character to this area. */
 	void movePC(const Common::UString &area);
@@ -109,9 +117,29 @@ public:
 	// '---
 
 private:
-	typedef std::list<Events::Event> EventQueue;
+	enum ActionType {
+		kActionNone   = 0,
+		kActionScript = 1
+	};
+
+	struct Action {
+		ActionType type;
+
+		Common::UString script;
+
+		Aurora::NWScript::ScriptState state;
+		Aurora::NWScript::Object *owner;
+		Aurora::NWScript::Object *triggerer;
+
+		uint32 timestamp;
+
+		bool operator<(const Action &s) const;
+	};
 
 	typedef std::map<Common::UString, Area *> AreaMap;
+
+	typedef std::list<Events::Event> EventQueue;
+	typedef std::multiset<Action> ActionQueue;
 
 
 	::Engines::Console *_console;
@@ -140,6 +168,7 @@ private:
 	Common::UString _newModule; ///< The module we should change to.
 
 	EventQueue  _eventQueue;
+	ActionQueue _delayedActions;
 
 
 	// .--- Unloading
@@ -171,6 +200,8 @@ private:
 	void replaceModule();
 
 	void handleEvents();
+
+	void handleActions();
 };
 
 } // End of namespace NWN2
