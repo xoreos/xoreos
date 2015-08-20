@@ -26,6 +26,7 @@
 #define ENGINES_NWN_OBJECTCONTAINER_H
 
 #include <list>
+#include <map>
 
 #include "src/common/types.h"
 
@@ -93,8 +94,9 @@ public:
 
 private:
 	typedef std::list<NWN::Object *> ObjectList;
+	typedef std::map<ObjectType, ObjectList> ObjectMap;
 
-	ObjectList _objects[kObjectTypeMAX];
+	ObjectMap _objects;
 };
 
 } // End of namespace NWN
