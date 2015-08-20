@@ -22,6 +22,7 @@ noinst_HEADERS = \
                  door.h \
                  placeable.h \
                  creature.h \
+                 script/container.h \
                  $(EMPTY)
 
 libnwn2_la_SOURCES = \
@@ -43,4 +44,5 @@ libnwn2_la_SOURCES = \
                      door.cpp \
                      placeable.cpp \
                      creature.cpp \
+                     script/container.cpp \
                      $(EMPTY)
