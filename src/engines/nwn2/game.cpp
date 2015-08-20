@@ -75,7 +75,15 @@ void Game::run() {
 }
 
 void Game::runCampaign() {
+	std::vector<Common::UString> characters;
+	getCharacters(characters, true);
+
+	if (characters.empty())
+		throw Common::Exception("No characters in the localvault directory");
+
 	_campaign->load("neverwinter nights 2 campaign");
+	_campaign->usePC(*characters.begin(), true);
+
 	if (EventMan.quitRequested() || !_campaign->isLoaded()) {
 		_campaign->clear();
 		return;

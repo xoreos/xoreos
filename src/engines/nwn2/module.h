@@ -44,6 +44,7 @@ class Console;
 namespace NWN2 {
 
 class Area;
+class Creature;
 
 class Module : public NWN2::Object, public NWN2::ObjectContainer {
 public:
@@ -74,6 +75,10 @@ public:
 	void movePC(float x, float y, float z);
 	/** Move the player character to this position within this area. */
 	void movePC(const Common::UString &area, float x, float y, float z);
+	/** Move the player character to this position within this area. */
+	void movePC(Area *area, float x, float y, float z);
+	/** Notify the module that the PC was moved. */
+	void movedPC();
 	// '---
 
 	// .--- Static utility methods
@@ -91,7 +96,7 @@ public:
 	void exit();
 
 	/** Enter the loaded module, starting it. */
-	void enter();
+	void enter(Creature &pc);
 	/** Leave the running module, quitting it. */
 	void leave();
 
@@ -123,6 +128,9 @@ private:
 
 	Aurora::IFOFile _ifo; ///< The module's IFO.
 
+	/** The player character we use. */
+	Creature *_pc;
+
 	AreaMap         _areas;       ///< The areas in the current module.
 	Common::UString _newArea;     ///< The new area to enter.
 	Area           *_currentArea; ///< The current area.
@@ -136,6 +144,7 @@ private:
 	void unload(); ///< Unload the whole shebang.
 
 	void unloadModule();      ///< Unload the module.
+	void unloadPC();          ///< Unload the PC.
 	void unloadTLK();         ///< Unload the TLK used by the module.
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadAreas();       ///< Unload the areas.

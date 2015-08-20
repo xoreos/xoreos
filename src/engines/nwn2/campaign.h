@@ -39,6 +39,7 @@ class Console;
 namespace NWN2 {
 
 class Module;
+class Creature;
 
 class Campaign {
 public:
@@ -58,6 +59,8 @@ public:
 	void load(const Common::UString &campaign);
 	/** Load a stand-alone module as a campaign. */
 	void loadModule(const Common::UString &module);
+	/** Use this character as the player character. */
+	void usePC(const Common::UString &bic, bool local);
 	/** Exit the currently running campaign. */
 	void exit();
 	// '---
@@ -117,6 +120,9 @@ private:
 	/** The current module of the current campaign. */
 	Module *_module;
 
+	/** The player character we use. */
+	Creature *_pc;
+
 	/** The campaign we should change to. */
 	Common::UString _newCampaign;
 	/** Is the campaign to change to a stand-alone module? */
@@ -124,6 +130,16 @@ private:
 
 	EventQueue _eventQueue;
 
+
+	/** Unload the whole shebang.
+	 *
+	 *  @param completeUnload Also unload the PC
+	 *                        true:  completely quit the module
+	 *                        false: the PC can be transfered to a new module.
+	 */
+	void unload(bool completeUnload = true);
+
+	void unloadPC();
 
 	/** Load a new campaign. */
 	void loadCampaign(const Common::UString &campaign, bool standalone);

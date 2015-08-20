@@ -32,6 +32,7 @@
 #include "src/common/filelist.h"
 
 #include "src/aurora/resman.h"
+#include "src/aurora/language.h"
 #include "src/aurora/gff3file.h"
 
 #include "src/graphics/camera.h"
@@ -44,13 +45,15 @@
 
 #include "src/engines/nwn2/campaign.h"
 #include "src/engines/nwn2/module.h"
+#include "src/engines/nwn2/creature.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
 Campaign::Campaign(::Engines::Console &console) : _console(&console),
-	_hasCampaign(false), _running(false), _exit(true), _module(0), _newCampaignStandalone(false) {
+	_hasCampaign(false), _running(false), _exit(true), _module(0), _pc(0),
+	_newCampaignStandalone(false) {
 
 	_module = new Module(*_console);
 }
@@ -65,24 +68,7 @@ Campaign::~Campaign() {
 }
 
 void Campaign::clear() {
-	_module->clear();
-
-	_hasCampaign = false;
-	_running     = false;
-	_exit        = true;
-
-	_name.clear();
-	_description.clear();
-
-	_modules.clear();
-	_startModule.clear();
-
-	_newCampaign.clear();
-	_newCampaignStandalone = false;
-
-	_eventQueue.clear();
-
-	deindexResources(_resCampaign);
+	unload(true);
 }
 
 const Common::UString &Campaign::getName() const {
@@ -100,11 +86,40 @@ Module &Campaign::getModule() {
 }
 
 bool Campaign::isLoaded() const {
-	return _hasCampaign && _module->isLoaded();
+	return _hasCampaign && _module->isLoaded() && _pc;
 }
 
 bool Campaign::isRunning() const {
 	return !EventMan.quitRequested() && _running && !_exit && _module->isRunning();
+}
+
+void Campaign::unload(bool completeUnload) {
+	_module->clear();
+
+	_hasCampaign = false;
+	_running     = false;
+	_exit        = true;
+
+	_name.clear();
+	_description.clear();
+
+	_modules.clear();
+	_startModule.clear();
+
+	_newCampaign.clear();
+	_newCampaignStandalone = false;
+
+	_eventQueue.clear();
+
+	if (completeUnload)
+		unloadPC();
+
+	deindexResources(_resCampaign);
+}
+
+void Campaign::unloadPC() {
+	delete _pc;
+	_pc = 0;
 }
 
 void Campaign::load(const Common::UString &campaign) {
@@ -129,6 +144,22 @@ void Campaign::loadModule(const Common::UString &module) {
 
 	// We are not currently running a campaign. Directly load the new campaign
 	loadCampaign(module, true);
+}
+
+void Campaign::usePC(const Common::UString &bic, bool local) {
+	unloadPC();
+
+	if (bic.empty())
+		throw Common::Exception("Tried to load an empty PC");
+
+	try {
+		_pc = new Creature(bic, local);
+	} catch (Common::Exception &e) {
+		e.add("Can't load PC \"%s\"", bic.c_str());
+		throw e;
+	}
+
+	LangMan.setCurrentGender(_pc->isFemale() ? Aurora::kLanguageGenderFemale : Aurora::kLanguageGenderMale);
 }
 
 void Campaign::exit() {
@@ -178,7 +209,7 @@ void Campaign::setupStandaloneModule(const Common::UString &module) {
 }
 
 void Campaign::loadCampaign(const Common::UString &campaign, bool standalone) {
-	clear();
+	unload(false);
 
 	if (!standalone)
 		loadCampaignResource(campaign);
@@ -198,10 +229,13 @@ void Campaign::loadCampaign(const Common::UString &campaign, bool standalone) {
 }
 
 void Campaign::enter() {
-	if (!isLoaded())
+	if (!_hasCampaign)
 		throw Common::Exception("Campaign::enter(): Lacking a campaign?!?");
 
-	_module->enter();
+	if (!_pc)
+		throw Common::Exception("Campaign::enter(): Lacking a PC?!?");
+
+	_module->enter(*_pc);
 
 	_running = true;
 	_exit    = false;
