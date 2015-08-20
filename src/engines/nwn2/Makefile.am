@@ -49,4 +49,5 @@ libnwn2_la_SOURCES = \
                      creature.cpp \
                      script/container.cpp \
                      script/functions.cpp \
+                     script/functions_math.cpp \
                      $(EMPTY)
