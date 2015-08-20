@@ -22,12 +22,12 @@
  *  Neverwinter Nights 2 (debug) console.
  */
 
+#include <algorithm>
+
 #include <boost/bind.hpp>
 
 #include "src/common/ustring.h"
 #include "src/common/util.h"
-#include "src/common/filepath.h"
-#include "src/common/filelist.h"
 
 #include "src/aurora/resman.h"
 
@@ -80,9 +80,9 @@ void Console::updateCaches() {
 	::Engines::Console::updateCaches();
 
 	updateMusic();
-	updateAreas();
 	updateCampaigns();
 	updateModules();
+	updateAreas();
 }
 
 void Console::updateMusic() {
@@ -103,51 +103,36 @@ void Console::updateMusic() {
 	setArguments("playmusic", _music);
 }
 
-void Console::updateAreas() {
-	_areas.clear();
-
-	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
-	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
-		_areas.push_back(*a);
-
-	_areas.sort(Common::UString::iless());
-	setArguments("gotoarea", _areas);
-}
-
 void Console::updateCampaigns() {
-	std::list<Common::UString> names;
+	std::vector<Common::UString> campaigns;
+	Game::getCampaigns(campaigns);
 
-	const std::list<CampaignDescription> &campaigns = _engine->getGame().getCampaign().getCampaigns();
-	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {
-		names.push_back(Common::FilePath::getStem(c->directory));
-	}
+	_campaigns.clear();
+	std::copy(campaigns.begin(), campaigns.end(), std::back_inserter(_campaigns));
 
-	names.sort(Common::UString::iless());
-	setArguments("loadcampaign", names);
+	_campaigns.sort(Common::UString::iless());
+	setArguments("loadcampaign", _campaigns);
 }
 
 void Console::updateModules() {
+	std::vector<Common::UString> modules;
+	Game::getModules(modules);
+
 	_modules.clear();
-	setArguments("loadmodule", _modules);
-
-	Common::UString baseDir   = ResMan.getDataBase();
-	Common::UString moduleDir = Common::FilePath::findSubDirectory(baseDir, "modules", true);
-	if (moduleDir.empty())
-		return;
-
-	Common::FileList modules;
-	if (!modules.addDirectory(moduleDir))
-		return;
-
-	for (Common::FileList::const_iterator m = modules.begin(); m != modules.end(); ++m) {
-		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
-			continue;
-
-		_modules.push_back(Common::FilePath::getStem(*m));
-	}
+	std::copy(modules.begin(), modules.end(), std::back_inserter(_modules));
 
 	_modules.sort(Common::UString::iless());
 	setArguments("loadmodule", _modules);
+}
+
+void Console::updateAreas() {
+	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
+
+	_areas.clear();
+	std::copy(areas.begin(), areas.end(), std::back_inserter(_areas));
+
+	_areas.sort(Common::UString::iless());
+	setArguments("gotoarea", _areas);
 }
 
 void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
@@ -183,7 +168,7 @@ void Console::cmdMove(const CommandLine &cl) {
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 	updateAreas();
 
-	for (std::list<Common::UString>::iterator a = _areas.begin(); a != _areas.end(); ++a)
+	for (std::list<Common::UString>::const_iterator a = _areas.begin(); a != _areas.end(); ++a)
 		printf("%s (\"%s\")", a->c_str(), Area::getName(*a).c_str());
 }
 
@@ -207,17 +192,8 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
 	updateCampaigns();
 
-	std::list<Common::UString> names;
-
-	const std::list<CampaignDescription> &campaigns = _engine->getGame().getCampaign().getCampaigns();
-	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {
-		names.push_back(Common::FilePath::getStem(c->directory) + " (\"" + c->name.getString() + "\")");
-	}
-
-	names.sort(Common::UString::iless());
-
-	for (std::list<Common::UString>::iterator c = names.begin(); c != names.end(); ++c)
-		print(*c);
+	for (std::list<Common::UString>::const_iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
+		printf("%s (\"%s\")", c->c_str(), Campaign::getName(*c).c_str());
 }
 
 void Console::cmdLoadCampaign(const CommandLine &cl) {
@@ -226,9 +202,9 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 		return;
 	}
 
-	const std::list<CampaignDescription> &campaigns = _engine->getGame().getCampaign().getCampaigns();
-	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {
-		if (Common::FilePath::getStem(c->directory).equalsIgnoreCase(cl.args)) {
+	updateCampaigns();
+	for (std::list<Common::UString>::const_iterator c = _campaigns.begin(); c != _campaigns.end(); ++c) {
+		if (c->equalsIgnoreCase(cl.args)) {
 			hide();
 			_engine->getGame().getCampaign().load(*c);
 			return;
@@ -240,7 +216,9 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 	updateModules();
-	printList(_modules);
+
+	for (std::list<Common::UString>::const_iterator m = _modules.begin(); m != _modules.end(); ++m)
+		printf("%s", m->c_str());
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
@@ -249,7 +227,8 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		return;
 	}
 
-	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
+	updateModules();
+	for (std::list<Common::UString>::const_iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
 			hide();
 			_engine->getGame().getModule().load(cl.args + ".mod");

@@ -43,9 +43,10 @@ private:
 	NWN2Engine *_engine;
 
 	// Caches
-	std::list<Common::UString> _music;   ///< All known music resources.
-	std::list<Common::UString> _areas;   ///< All known areas in the current module.
-	std::list<Common::UString> _modules; ///< All known modules.
+	std::list<Common::UString> _music;     ///< All known music resources.
+	std::list<Common::UString> _campaigns; ///< All known campaigns.
+	std::list<Common::UString> _modules;   ///< All known modules.
+	std::list<Common::UString> _areas;     ///< All known areas in the current module.
 
 	size_t _maxSizeMusic;
 
@@ -53,9 +54,9 @@ private:
 	// Updating the caches
 	void updateCaches();
 	void updateMusic();
-	void updateAreas();
 	void updateCampaigns();
 	void updateModules();
+	void updateAreas();
 
 	// The commands
 	void cmdListMusic    (const CommandLine &cl);

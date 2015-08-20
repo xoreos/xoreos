@@ -24,6 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/configman.h"
 #include "src/common/readfile.h"
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
@@ -40,10 +41,7 @@ namespace Engines {
 
 namespace NWN2 {
 
-Campaign::Campaign(::Engines::Console &console) : _running(false),
-	_module(console, this), _newCampaign(0) {
-
-	findCampaigns();
+Campaign::Campaign(::Engines::Console &console) : _running(false), _module(console, this) {
 }
 
 Campaign::~Campaign() {
@@ -53,90 +51,38 @@ Campaign::~Campaign() {
 	}
 }
 
-const std::list<CampaignDescription> &Campaign::getCampaigns() const {
-	return _campaigns;
-}
-
-void Campaign::findCampaigns() {
-	Common::UString baseDir = ResMan.getDataBase();
-
-	Common::UString campaignBaseDir = Common::FilePath::findSubDirectory(baseDir, "campaigns", true);
-	if (campaignBaseDir.empty())
-		return;
-
-	Common::FileList campaignFiles;
-	if (!campaignFiles.addDirectory(campaignBaseDir, -1))
-		return;
-
-	Common::FileList camFiles;
-	if (!campaignFiles.getSubList("campaign.cam", true, camFiles))
-		return;
-
-	for (Common::FileList::const_iterator c = camFiles.begin(); c != camFiles.end(); ++c) {
-		CampaignDescription desc;
-
-		desc.directory = Common::FilePath::relativize(baseDir, Common::FilePath::getDirectory(*c));
-		if (!readCampaign(*c, desc))
-			continue;
-
-		_campaigns.push_back(desc);
-	}
-}
-
-bool Campaign::readCampaign(const Common::UString &camFile, CampaignDescription &desc) {
-	Common::ReadFile *file = new Common::ReadFile;
-	if (!file->open(camFile)) {
-		delete file;
-		return false;
-	}
-
-	Aurora::GFF3File *gff = 0;
-	try {
-		gff = new Aurora::GFF3File(file, MKTAG('C', 'A', 'M', ' '));
-	} catch (...) {
-		return false;
-	}
-
-	gff->getTopLevel().getLocString("DisplayName", desc.name);
-	gff->getTopLevel().getLocString("Description", desc.description);
-
-	delete gff;
-
-	return true;
-}
-
 void Campaign::clear() {
 	_module.clear();
 
-	_currentCampaign.directory.clear();
-	_currentCampaign.name.clear();
-	_currentCampaign.description.clear();
+	_name.clear();
+	_description.clear();
 
 	_modules.clear();
 	_startModule.clear();
 
-	_newCampaign = 0;
+	_newCampaign.clear();
 
 	deindexResources(_resCampaign);
 }
 
-void Campaign::load(const CampaignDescription &desc) {
+void Campaign::load(const Common::UString &campaign) {
 	if (isRunning()) {
 		// We are currently running a campaign. Schedule a safe change instead
 
-		changeCampaign(desc);
+		changeCampaign(campaign);
 		return;
 	}
 
 	// We are not currently running a campaign. Directly load the new campaign
-	loadCampaign(desc);
+	loadCampaign(campaign);
 }
 
-void Campaign::loadCampaignResource(const CampaignDescription &desc) {
-	if (desc.directory.empty())
-		throw Common::Exception("Campaign path is empty");
+void Campaign::loadCampaignResource(const Common::UString &campaign) {
+	const Common::UString directory = getDirectory(campaign, true);
+	if (directory.empty())
+		throw Common::Exception("No such campaign \"%s\"", campaign.c_str());
 
-	indexMandatoryDirectory(desc.directory, 0, -1, 1000, &_resCampaign);
+	indexMandatoryDirectory(directory, 0, -1, 1000, &_resCampaign);
 
 	Aurora::GFF3File *gff = 0;
 	try {
@@ -161,14 +107,15 @@ void Campaign::loadCampaignResource(const CampaignDescription &desc) {
 	for (Aurora::GFF3List::const_iterator m = modules.begin(); m != modules.end(); ++m)
 		_modules.push_back((*m)->getString("ModuleName") + ".mod");
 
+	_name        = gff->getTopLevel().getString("DisplayName");
+	_description = gff->getTopLevel().getString("Description");
+
 	delete gff;
 }
 
-void Campaign::loadCampaign(const CampaignDescription &desc) {
+void Campaign::loadCampaign(const Common::UString &campaign) {
 	clear();
-	loadCampaignResource(desc);
-
-	_currentCampaign = desc;
+	loadCampaignResource(campaign);
 
 	try {
 		_module.load(_startModule);
@@ -197,32 +144,72 @@ bool Campaign::isRunning() const {
 	return _running;
 }
 
-void Campaign::changeCampaign(const CampaignDescription &desc) {
-	_newCampaign = &desc;
+void Campaign::changeCampaign(const Common::UString &campaign) {
+	_newCampaign = campaign;
 }
 
 void Campaign::replaceCampaign() {
-	if (!_newCampaign)
+	if (_newCampaign.empty())
 		return;
 
-	const CampaignDescription *campaign = _newCampaign;
+	const Common::UString campaign = _newCampaign;
 
 	clear();
-	loadCampaignResource(*campaign);
+	loadCampaignResource(campaign);
 
 	_module.load(_startModule);
 }
 
 const Common::UString &Campaign::getName() const {
-	return _currentCampaign.name.getString();
+	return _name;
 }
 
 const Common::UString &Campaign::getDescription() const {
-	return _currentCampaign.description.getString();
+	return _description;
 }
 
 Module *Campaign::getModule() {
 	return &_module;
+}
+
+Common::UString Campaign::getDirectory(const Common::UString &campaign, bool relative) {
+	const Common::UString campaignsDir = ConfigMan.getString("NWN2_campaignDir");
+	const Common::UString campaignDir  = Common::FilePath::findSubDirectory(campaignsDir, campaign, true);
+
+	if (!relative)
+		return campaignDir;
+
+	return Common::FilePath::relativize(ResMan.getDataBase(), campaignDir);
+}
+
+Common::UString Campaign::getName(const Common::UString &campaign) {
+	try {
+		const Common::FileList camFiles(getDirectory(campaign, false));
+		const Common::UString  camFile (camFiles.findFirst("campaign.cam", true));
+
+		Aurora::GFF3File cam(new Common::ReadFile(camFile), MKTAG('C', 'A', 'M', ' '));
+
+		return cam.getTopLevel().getString("DisplayName");
+
+	} catch (...) {
+	}
+
+	return "";
+}
+
+Common::UString Campaign::getDescription(const Common::UString &campaign) {
+	try {
+		const Common::FileList camFiles(getDirectory(campaign, false));
+		const Common::UString  camFile (camFiles.findFirst("campaign.cam", true));
+
+		Aurora::GFF3File cam(new Common::ReadFile(camFile), MKTAG('C', 'A', 'M', ' '));
+
+		return cam.getTopLevel().getString("Description");
+
+	} catch (...) {
+	}
+
+	return "";
 }
 
 } // End of namespace NWN2

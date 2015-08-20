@@ -26,6 +26,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/filepath.h"
 #include "src/common/filelist.h"
 #include "src/common/readstream.h"
 #include "src/common/configman.h"
@@ -364,6 +365,11 @@ void NWN2Engine::initGameConfig() {
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN2_hasXP1", _hasXP1);
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN2_hasXP2", _hasXP2);
 	ConfigMan.setBool(Common::kConfigRealmGameTemp, "NWN2_hasXP3", _hasXP3);
+
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN2_campaignDir",
+		Common::FilePath::findSubDirectory(_target, "campaigns", true));
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN2_moduleDir",
+		Common::FilePath::findSubDirectory(_target, "modules", true));
 }
 
 void NWN2Engine::deinit() {

@@ -25,6 +25,9 @@
 #include <cassert>
 
 #include "src/common/error.h"
+#include "src/common/configman.h"
+#include "src/common/filepath.h"
+#include "src/common/filelist.h"
 
 #include "src/events/events.h"
 
@@ -72,11 +75,7 @@ void Game::run() {
 }
 
 void Game::runCampaign() {
-	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
-	if (campaigns.empty())
-		throw Common::Exception("No campaigns found");
-
-	_campaign->load(*campaigns.begin());
+	_campaign->load("neverwinter nights 2 campaign");
 
 	_campaign->run();
 
@@ -103,6 +102,40 @@ void Game::stopMusic() {
 		return;
 
 	area->stopAmbientMusic();
+}
+
+void Game::getCampaigns(std::vector<Common::UString> &campaigns) {
+	campaigns.clear();
+
+	const Common::UString directory = ConfigMan.getString("NWN2_campaignDir");
+
+	const Common::FileList camFiles(directory, -1);
+
+	for (Common::FileList::const_iterator c = camFiles.begin(); c != camFiles.end(); ++c) {
+		if (!Common::FilePath::getFile(*c).equalsIgnoreCase("campaign.cam"))
+			continue;
+
+		const Common::UString cam = Common::FilePath::relativize(directory, Common::FilePath::getDirectory(*c));
+		if (cam.empty() || (cam == "."))
+			continue;
+
+		campaigns.push_back(cam);
+	}
+}
+
+void Game::getModules(std::vector<Common::UString> &modules) {
+	modules.clear();
+
+	const Common::UString directory = ConfigMan.getString("NWN2_moduleDir");
+
+	const Common::FileList modFiles(directory);
+
+	for (Common::FileList::const_iterator m = modFiles.begin(); m != modFiles.end(); ++m) {
+		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
+			continue;
+
+		modules.push_back(Common::FilePath::getStem(*m));
+	}
 }
 
 } // End of namespace NWN2

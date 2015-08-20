@@ -30,8 +30,6 @@
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
-#include "src/aurora/locstring.h"
-
 #include "src/engines/nwn2/module.h"
 
 namespace Engines {
@@ -40,25 +38,16 @@ class Console;
 
 namespace NWN2 {
 
-struct CampaignDescription {
-	Common::UString directory;
-
-	Aurora::LocString name;
-	Aurora::LocString description;
-};
-
 class Campaign {
 public:
 	Campaign(::Engines::Console &console);
 	~Campaign();
 
-	const std::list<CampaignDescription> &getCampaigns() const;
-
 	/** Clear the whole context. */
 	void clear();
 
 	/** Load a campaign. */
-	void load(const CampaignDescription &desc);
+	void load(const Common::UString &campaign);
 	/** Run the currently loaded campaign. */
 	void run();
 
@@ -72,16 +61,18 @@ public:
 	/** Return the currently running module. */
 	Module *getModule();
 
+	static Common::UString getName(const Common::UString &campaign);
+	static Common::UString getDescription(const Common::UString &campaign);
+
 
 private:
-	/** All campaigns we know about. */
-	std::list<CampaignDescription> _campaigns;
-
 	/** Resources added by the campaign. */
 	Common::ChangeID _resCampaign;
 
-	/** The currently loaded campaign. */
-	CampaignDescription _currentCampaign;
+	/** The name of the currently loaded campaign. */
+	Common::UString _name;
+	/** The description of the currently loaded campaign. */
+	Common::UString _description;
 
 	/** Are we currently running a module? */
 	bool _running;
@@ -95,18 +86,15 @@ private:
 	Module _module;
 
 	/** The campaign we should change to. */
-	const CampaignDescription *_newCampaign;
+	Common::UString _newCampaign;
 
 
 	/** Load a new campaign. */
-	void loadCampaign(const CampaignDescription &desc);
+	void loadCampaign(const Common::UString &campaign);
 	/** Schedule a change to a new campaign. */
-	void changeCampaign(const CampaignDescription &desc);
+	void changeCampaign(const Common::UString &campaign);
 	/** Load the actual campaign resources. */
-	void loadCampaignResource(const CampaignDescription &desc);
-
-	void findCampaigns();
-	bool readCampaign(const Common::UString &camFile, CampaignDescription &desc);
+	void loadCampaignResource(const Common::UString &campaign);
 
 
 	// Methods called by the module
@@ -115,6 +103,9 @@ private:
 	void replaceCampaign();
 
 	friend class Module;
+
+	/** Return the actual real directory for this campaign. */
+	static Common::UString getDirectory(const Common::UString &campaign, bool relative);
 };
 
 } // End of namespace NWN2
