@@ -275,8 +275,11 @@ void Module::replaceModule() {
 }
 
 void Module::enter() {
-	if (!isLoaded())
+	if (!_hasModule)
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
+
+	if (!_pc)
+		throw Common::Exception("Module::enter(): Lacking a PC?!?");
 
 	_console->printf("Entering module \"%s\"", _name.c_str());
 
