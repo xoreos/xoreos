@@ -51,4 +51,5 @@ libnwn2_la_SOURCES = \
                      script/functions.cpp \
                      script/functions_math.cpp \
                      script/functions_module.cpp \
+                     script/functions_object.cpp \
                      $(EMPTY)

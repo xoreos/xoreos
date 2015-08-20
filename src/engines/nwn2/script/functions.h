@@ -142,6 +142,46 @@ private:
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- General object functions, functions_object.cpp
+	void getClickingObject(Aurora::NWScript::FunctionContext &ctx);
+	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
+	void getExitingObject (Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsObjectValid(Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
+
+	void getLocalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalFloat (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalString(Aurora::NWScript::FunctionContext &ctx);
+	void getLocalObject(Aurora::NWScript::FunctionContext &ctx);
+
+	void setLocalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalFloat (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalString(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
+
+	void getObjectType(Aurora::NWScript::FunctionContext &ctx);
+
+	void getTag (Aurora::NWScript::FunctionContext &ctx);
+	void getName(Aurora::NWScript::FunctionContext &ctx);
+
+	void getArea    (Aurora::NWScript::FunctionContext &ctx);
+	void getLocation(Aurora::NWScript::FunctionContext &ctx);
+
+	void getPosition(Aurora::NWScript::FunctionContext &ctx);
+
+	void getDistanceToObject(Aurora::NWScript::FunctionContext &ctx);
+
+	void getObjectByTag       (Aurora::NWScript::FunctionContext &ctx);
+	void getWaypointByTag     (Aurora::NWScript::FunctionContext &ctx);
+	void getNearestObject     (Aurora::NWScript::FunctionContext &ctx);
+	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
+	void getNearestCreature   (Aurora::NWScript::FunctionContext &ctx);
+
+	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace NWN2
