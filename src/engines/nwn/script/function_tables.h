@@ -518,7 +518,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 382, "ActionForceMoveToLocation"           , 0                                                },
 	{ 383, "ActionForceMoveToObject"             , 0                                                },
 	{ 384, "GetJournalQuestExperience"           , 0                                                },
-	{ 385, "JumpToObject"                        , 0                                                },
+	{ 385, "JumpToObject"                        , &Functions::jumpToObject                         },
 	{ 386, "SetMapPinEnabled"                    , 0                                                },
 	{ 387, "EffectHitPointChangeWhenDying"       , 0                                                },
 	{ 388, "PopUpGUIPanel"                       , 0                                                },

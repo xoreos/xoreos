@@ -377,6 +377,22 @@ void Functions::jumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
 	jumpTo(object, moveTo->getArea(), x, y, z);
 }
 
+void Functions::jumpToObject(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: walkStraightLineToPoint
+	// bool walkStraightLineToPoint = ctx.getParams()[1].getInt() != 0;
+
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
+	NWN::Object *moveTo = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+
+	if (!object || !moveTo)
+		return;
+
+	float x, y, z;
+	moveTo->getPosition(x, y, z);
+
+	jumpTo(object, moveTo->getArea(), x, y, z);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

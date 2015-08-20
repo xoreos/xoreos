@@ -224,6 +224,7 @@ private:
 	void playAnimation(Aurora::NWScript::FunctionContext &ctx);
 
 	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp
