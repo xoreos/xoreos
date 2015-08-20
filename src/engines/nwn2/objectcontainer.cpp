@@ -75,8 +75,7 @@ ObjectContainer::~ObjectContainer() {
 void ObjectContainer::clearObjects() {
 	lock();
 
-	for (size_t i = 0; i < kObjectTypeMAX; i++)
-		_objects[i].clear();
+	_objects.clear();
 
 	::Aurora::NWScript::ObjectContainer::clearObjects();
 
@@ -88,9 +87,7 @@ void ObjectContainer::addObject(NWN2::Object &object) {
 
 	::Aurora::NWScript::ObjectContainer::addObject(object);
 
-	ObjectType type = object.getType();
-	if (((uint) type) < kObjectTypeMAX)
-		_objects[type].push_back(&object);
+	_objects[object.getType()].push_back(&object);
 
 	unlock();
 }
@@ -98,9 +95,7 @@ void ObjectContainer::addObject(NWN2::Object &object) {
 void ObjectContainer::removeObject(NWN2::Object &object) {
 	lock();
 
-	ObjectType type = object.getType();
-	if (((uint) type) < kObjectTypeMAX)
-		_objects[type].remove(&object);
+	_objects[object.getType()].remove(&object);
 
 	::Aurora::NWScript::ObjectContainer::removeObject(object);
 
@@ -108,19 +103,23 @@ void ObjectContainer::removeObject(NWN2::Object &object) {
 }
 
 ::Aurora::NWScript::Object *ObjectContainer::getFirstObjectByType(ObjectType type) const {
-	if (((uint) type) >= kObjectTypeMAX)
+	ObjectMap::const_iterator l = _objects.find(type);
+	if (l == _objects.end())
 		return 0;
 
-	SearchType ctx(_objects[type]);
+	SearchType ctx(l->second);
 
 	return ctx.get();
 }
 
 ::Aurora::NWScript::ObjectSearch *ObjectContainer::findObjectsByType(ObjectType type) const {
-	if (((uint) type) >= kObjectTypeMAX)
-		return new SearchType(_objects[0].end(), _objects[0].end());
+	static const ObjectList kEmptyObjectList;
 
-	return new SearchType(_objects[type]);
+	ObjectMap::const_iterator l = _objects.find(type);
+	if (l == _objects.end())
+		return new SearchType(kEmptyObjectList.begin(), kEmptyObjectList.end());
+
+	return new SearchType(l->second);
 }
 
 NWN2::Object *ObjectContainer::toObject(::Aurora::NWScript::Object *object) {
