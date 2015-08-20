@@ -116,9 +116,13 @@ void Functions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getObjectType(Aurora::NWScript::FunctionContext &ctx) {
-	NWN::Object *object = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+	ctx.getReturn() = (int32) kObjectTypeInvalid;
 
-	ctx.getReturn() = (int32) (object ? object->getType() : kObjectTypeInvalid);
+	NWN::Object *object = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object || ((uint32)object->getType() >= kObjectTypeMAX))
+		return;
+
+	ctx.getReturn() = (int32) object->getType();
 }
 
 void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
@@ -246,13 +250,11 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 			continue;
 
 		// Ignore invalid object types
-		uint32 objectType = (uint32) nwnObject->getType();
+		const uint32 objectType = (uint32) nwnObject->getType();
 		if (objectType >= kObjectTypeMAX)
 			continue;
 
-		// Convert the type into a bitfield value and check against the type bitfield
-
-		if (type & (1 << (objectType - 1)))
+		if (type & objectType)
 			objects.push_back(nwnObject);
 	}
 
