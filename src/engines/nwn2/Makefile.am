@@ -23,6 +23,8 @@ noinst_HEADERS = \
                  placeable.h \
                  creature.h \
                  script/container.h \
+                 script/functions.h \
+                 script/function_tables.h \
                  $(EMPTY)
 
 libnwn2_la_SOURCES = \
@@ -45,4 +47,5 @@ libnwn2_la_SOURCES = \
                      placeable.cpp \
                      creature.cpp \
                      script/container.cpp \
+                     script/functions.cpp \
                      $(EMPTY)
