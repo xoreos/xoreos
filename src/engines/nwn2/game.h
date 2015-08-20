@@ -60,9 +60,11 @@ public:
 	void run();
 
 	/** Return a list of all campaigns. */
-	static void getCampaigns(std::vector<Common::UString> &campaigns);
+	static void getCampaigns (std::vector<Common::UString> &campaigns);
 	/** Return a list of all modules. */
-	static void getModules  (std::vector<Common::UString> &modules);
+	static void getModules   (std::vector<Common::UString> &modules);
+	/** Return a list of local player characters. */
+	static void getCharacters(std::vector<Common::UString> &characters, bool local);
 
 
 private:

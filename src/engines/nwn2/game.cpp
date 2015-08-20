@@ -155,6 +155,24 @@ void Game::getModules(std::vector<Common::UString> &modules) {
 	}
 }
 
+void Game::getCharacters(std::vector<Common::UString> &characters, bool local) {
+	characters.clear();
+
+	Common::UString pcDir = ConfigMan.getString(local ? "NWN2_localPCDir" : "NWN2_serverPCDir");
+	if (pcDir.empty())
+		return;
+
+	Common::FileList chars;
+	chars.addDirectory(pcDir);
+
+	for (Common::FileList::const_iterator c = chars.begin(); c != chars.end(); ++c) {
+		if (!Common::FilePath::getExtension(*c).equalsIgnoreCase(".bic"))
+			continue;
+
+		characters.push_back(Common::FilePath::getStem(*c));
+	}
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines
