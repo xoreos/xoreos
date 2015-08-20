@@ -67,6 +67,17 @@ void Functions::playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx) {
 		::Engines::playSound(sound, Sound::kSoundTypeVoice);
 }
 
+void Functions::playSound(Aurora::NWScript::FunctionContext &ctx) {
+	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
+
+	if (object)
+		object->playSound(ctx.getParams()[0].getString());
+	else
+		::Engines::playSound(ctx.getParams()[0].getString(), Sound::kSoundTypeSFX);
+
+	unimplementedFunction(ctx);
+}
+
 void Functions::musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx) {
 	Area *area = NWN::ObjectContainer::toArea(getParamObject(ctx, 0));
 	if (area)
