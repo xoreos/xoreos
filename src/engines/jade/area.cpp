@@ -118,6 +118,9 @@ void Area::load(const Common::UString &resRef) {
 
 void Area::loadARE(const Aurora::GFF3Struct &are) {
 	_layout = are.getString("Layout");
+
+	// Scripts
+	readScripts(are);
 }
 
 void Area::loadResources() {
