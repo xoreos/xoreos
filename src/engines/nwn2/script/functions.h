@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Star Wars: Knights of the Old Republic engine functions.
+ *  Neverwinter Nights 2 engine functions.
  */
 
 #ifndef ENGINES_NWN2_SCRIPT_FUNCTIONS_H

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Tables defining the engine functions in Star Wars: Knights of the Old Republic.
+ *  Tables defining the engine functions in Neverwinter Nights 2
  */
 
 /* The functions are defined by three tables:

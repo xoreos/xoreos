@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Star Wars: Knights of the Old Republic engine functions.
+ *  Neverwinter Nights 2 engine functions.
  */
 
 #include <cassert>
