@@ -26,6 +26,7 @@
 #define ENGINES_KOTOR_OBJECTCONTAINER_H
 
 #include <list>
+#include <map>
 
 #include "src/common/types.h"
 
@@ -90,8 +91,9 @@ public:
 
 private:
 	typedef std::list<KotOR::Object *> ObjectList;
+	typedef std::map<ObjectType, ObjectList> ObjectMap;
 
-	ObjectList _objects[kObjectTypeMAX];
+	ObjectMap _objects;
 };
 
 } // End of namespace KotOR
