@@ -250,6 +250,25 @@ private:
 	void getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx);
 	void getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Actions, functions_action.cpp
+	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
+	void delayCommand (Aurora::NWScript::FunctionContext &ctx);
+
+	void executeScript(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionOpenDoor (Aurora::NWScript::FunctionContext &ctx);
+	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionSpeakString(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void actionJumpToObject  (Aurora::NWScript::FunctionContext &ctx);
+	void actionMoveToObject  (Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace NWN2
