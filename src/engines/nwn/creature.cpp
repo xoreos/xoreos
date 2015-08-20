@@ -1011,24 +1011,10 @@ void Creature::getPCListInfo(const Common::UString &bic, bool local,
 }
 
 Aurora::GFF3File *Creature::openPC(const Common::UString &bic, bool local) {
-	Common::UString pcDir  = ConfigMan.getString(local ? "NWN_localPCDir" : "NWN_serverPCDir");
-	Common::UString pcFile = pcDir + "/" + bic + ".bic";
+	const Common::UString pcDir  = ConfigMan.getString(local ? "NWN_localPCDir" : "NWN_serverPCDir");
+	const Common::UString pcFile = pcDir + "/" + bic + ".bic";
 
-	Common::ReadFile *pc = 0;
-	try {
-		pc = new Common::ReadFile(pcFile);
-	} catch (...) {
-		throw;
-	}
-
-	Aurora::GFF3File *gff = 0;
-	try {
-		gff = new Aurora::GFF3File(pc, kBICID);
-	} catch (...) {
-		throw;
-	}
-
-	return gff;
+	return new Aurora::GFF3File(new Common::ReadFile(pcFile), kBICID);
 }
 
 void Creature::getClassString(const std::vector<Class> &classes, Common::UString &str) {
