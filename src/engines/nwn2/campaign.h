@@ -30,6 +30,8 @@
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
+#include "src/aurora/nwscript/variablecontainer.h"
+
 #include "src/events/types.h"
 
 namespace Engines {
@@ -41,7 +43,7 @@ namespace NWN2 {
 class Module;
 class Creature;
 
-class Campaign {
+class Campaign : public Aurora::NWScript::VariableContainer {
 public:
 	Campaign(::Engines::Console &console);
 	~Campaign();

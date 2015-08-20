@@ -111,6 +111,8 @@ void Campaign::unload(bool completeUnload) {
 
 	_eventQueue.clear();
 
+	clearVariables();
+
 	if (completeUnload)
 		unloadPC();
 
