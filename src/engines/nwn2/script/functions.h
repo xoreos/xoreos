@@ -269,6 +269,13 @@ private:
 	void actionJumpToObject  (Aurora::NWScript::FunctionContext &ctx);
 	void actionMoveToObject  (Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Conversations, functions_conversation.cpp
+	void speakString        (Aurora::NWScript::FunctionContext &ctx);
+	void speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
+
+	void speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace NWN2
