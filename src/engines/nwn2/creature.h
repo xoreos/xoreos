@@ -45,6 +45,8 @@ public:
 	Creature();
 	/** Load from a creature instance. */
 	Creature(const Aurora::GFF3Struct &creature);
+	/** Load from a character file. */
+	Creature(const Common::UString &bic, bool local);
 	~Creature();
 
 	// Basic visuals
@@ -184,6 +186,8 @@ private:
 
 	/** Init the creature. */
 	void init();
+	/** Load from a character file. */
+	void loadCharacter(const Common::UString &bic, bool local);
 	/** Load from a creature instance. */
 	void load(const Aurora::GFF3Struct &creature);
 
@@ -204,6 +208,8 @@ private:
 	                    uint8 visualType, uint8 variation);
 	bool loadHeadModel(uint8 appearance);
 	bool loadHairModel(uint8 appearance);
+
+	static Aurora::GFF3File *openPC(const Common::UString &bic, bool local);
 };
 
 } // End of namespace NWN2

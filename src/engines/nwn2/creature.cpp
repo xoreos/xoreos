@@ -26,6 +26,8 @@
 
 #include "src/common/util.h"
 #include "src/common/maths.h"
+#include "src/common/configman.h"
+#include "src/common/readfile.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/locstring.h"
@@ -41,6 +43,8 @@
 #include "src/engines/nwn2/util.h"
 #include "src/engines/nwn2/creature.h"
 
+static const uint32 kBICID = MKTAG('B', 'I', 'C', ' ');
+
 namespace Engines {
 
 namespace NWN2 {
@@ -53,6 +57,12 @@ Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreat
 	init();
 
 	load(creature);
+}
+
+Creature::Creature(const Common::UString &bic, bool local) : Object(kObjectTypeCreature) {
+	init();
+
+	loadCharacter(bic, local);
 }
 
 Creature::~Creature() {
@@ -340,6 +350,27 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 	delete utc;
 }
 
+void Creature::loadCharacter(const Common::UString &bic, bool local) {
+	Aurora::GFF3File *gff = openPC(bic, local);
+
+	try {
+		load(gff->getTopLevel(), 0);
+	} catch (...) {
+		delete gff;
+		throw;
+	}
+
+	delete gff;
+
+	// All BICs should be PCs.
+	_isPC = true;
+
+	// Set the PC tag to something recognizable for now.
+	// Let's hope no script depends on it being "".
+
+	_tag = Common::UString::format("[PC: %s]", _name.c_str());
+}
+
 void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 
@@ -566,6 +597,13 @@ bool Creature::hasFeat(uint32 feat) const {
 			return true;
 
 	return false;
+}
+
+Aurora::GFF3File *Creature::openPC(const Common::UString &bic, bool local) {
+	const Common::UString pcDir  = ConfigMan.getString(local ? "NWN2_localPCDir" : "NWN2_serverPCDir");
+	const Common::UString pcFile = pcDir + "/" + bic + ".bic";
+
+	return new Aurora::GFF3File(new Common::ReadFile(pcFile), kBICID);
 }
 
 } // End of namespace NWN2

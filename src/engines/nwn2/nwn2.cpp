@@ -370,6 +370,10 @@ void NWN2Engine::initGameConfig() {
 		Common::FilePath::findSubDirectory(_target, "campaigns", true));
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN2_moduleDir",
 		Common::FilePath::findSubDirectory(_target, "modules", true));
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN2_localPCDir",
+		Common::FilePath::findSubDirectory(_target, "localvault", true));
+	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN2_serverPCDir",
+		Common::FilePath::findSubDirectory(_target, "servervault", true));
 }
 
 void NWN2Engine::deinit() {
