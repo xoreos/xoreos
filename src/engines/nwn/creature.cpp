@@ -545,6 +545,8 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 		throw;
 	}
 
+	delete gff;
+
 	// All BICs should be PCs.
 	_isPC = true;
 
