@@ -276,6 +276,20 @@ private:
 
 	void speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Sound, functions_sound.cpp
+	void playVoiceChat    (Aurora::NWScript::FunctionContext &ctx);
+	void playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx);
+	void playSound        (Aurora::NWScript::FunctionContext &ctx);
+
+	void musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundStop(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundChangeDay(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ctx);
+
+	void musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx);
+	void musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace NWN2
