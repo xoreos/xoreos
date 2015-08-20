@@ -66,6 +66,8 @@ public:
 	// .--- Elements of the current module
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
+	/** Return the currently playing PC. */
+	Creature *getPC();
 	// '---
 
 	// .--- PC management

@@ -69,6 +69,10 @@ Area *Module::getCurrentArea() {
 	return _currentArea;
 }
 
+Creature *Module::getPC() {
+	return _pc;
+}
+
 bool Module::isLoaded() const {
 	return _hasModule;
 }
