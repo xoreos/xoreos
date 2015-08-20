@@ -519,6 +519,9 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 		_bootsVisualType = boots.getUint("ArmorVisualType", _bootsVisualType);
 		_bootsVariation  = boots.getUint("Variation"      , _bootsVariation);
 	}
+
+	// Scripts
+	readScripts(gff);
 }
 
 void Creature::loadClasses(const Aurora::GFF3Struct &gff,

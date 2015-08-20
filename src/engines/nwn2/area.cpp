@@ -316,6 +316,9 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 
 		loadTiles(tiles);
 	}
+
+	// Scripts
+	readScripts(are);
 }
 
 void Area::loadGIT(const Aurora::GFF3Struct &git) {

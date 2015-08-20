@@ -232,6 +232,9 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Tint
 	readTint(gff, _tint);
+
+	// Scripts
+	readScripts(gff);
 }
 
 void Situated::loadSounds() {
