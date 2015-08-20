@@ -35,6 +35,7 @@
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/objectcontainer.h"
 #include "src/engines/nwn/door.h"
+#include "src/engines/nwn/creature.h"
 
 #include "src/engines/nwn/script/functions.h"
 

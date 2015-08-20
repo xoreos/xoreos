@@ -50,6 +50,7 @@
 #include "src/engines/nwn/version.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/area.h"
+#include "src/engines/nwn/creature.h"
 
 #include "src/engines/nwn/gui/ingame/ingame.h"
 

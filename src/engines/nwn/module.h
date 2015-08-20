@@ -37,7 +37,6 @@
 
 #include "src/events/types.h"
 
-#include "src/engines/nwn/creature.h"
 #include "src/engines/nwn/objectcontainer.h"
 #include "src/engines/nwn/object.h"
 
@@ -50,6 +49,7 @@ namespace NWN {
 class Version;
 
 class Area;
+class Creature;
 
 class IngameGUI;
 

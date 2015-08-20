@@ -39,6 +39,7 @@
 #include "src/engines/nwn/area.h"
 #include "src/engines/nwn/objectcontainer.h"
 #include "src/engines/nwn/object.h"
+#include "src/engines/nwn/creature.h"
 
 #include "src/engines/nwn/script/functions.h"
 
