@@ -35,11 +35,9 @@
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/resources.h"
-#include "src/engines/aurora/camera.h"
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/nwn2/module.h"
-#include "src/engines/nwn2/campaign.h"
 #include "src/engines/nwn2/area.h"
 
 
@@ -47,8 +45,7 @@ namespace Engines {
 
 namespace NWN2 {
 
-Module::Module(::Engines::Console &console, Campaign *campaign) : Object(kObjectTypeModule),
-	_console(&console), _campaign(campaign),
+Module::Module(::Engines::Console &console) : Object(kObjectTypeModule), _console(&console),
 	_hasModule(false), _running(false), _exit(false), _currentArea(0) {
 
 }
@@ -62,6 +59,18 @@ Module::~Module() {
 
 void Module::clear() {
 	unload();
+}
+
+Area *Module::getCurrentArea() {
+	return _currentArea;
+}
+
+bool Module::isLoaded() const {
+	return _hasModule;
+}
+
+bool Module::isRunning() const {
+	return !EventMan.quitRequested() && _running && !_exit && !_newArea.empty();
 }
 
 void Module::load(const Common::UString &module) {
@@ -133,10 +142,6 @@ void Module::changeModule(const Common::UString &module) {
 }
 
 void Module::replaceModule() {
-	// Look if a campaign replacement was scheduled
-	if (_campaign)
-		_campaign->replaceCampaign();
-
 	if (_newModule.empty())
 		return;
 
@@ -153,7 +158,7 @@ void Module::replaceModule() {
 }
 
 void Module::enter() {
-	if (!_hasModule)
+	if (!isLoaded())
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
 	_console->printf("Entering module \"%s\"", _name.c_str());
@@ -177,7 +182,6 @@ void Module::enter() {
 	if (!startMovie.empty())
 		playVideo(startMovie);
 
-	_exit    = false;
 	_newArea = _ifo.getEntryArea();
 
 	CameraMan.reset();
@@ -188,6 +192,31 @@ void Module::enter() {
 	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);
 	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
 	CameraMan.update();
+
+	_running = true;
+	_exit    = false;
+}
+
+void Module::leave() {
+	_running = false;
+	_exit    = true;
+}
+
+void Module::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+void Module::processEventQueue() {
+	if (!isRunning())
+		return;
+
+	replaceModule();
+	enterArea();
+
+	if (!isRunning())
+		return;
+
+	handleEvents();
 }
 
 void Module::enterArea() {
@@ -222,72 +251,12 @@ void Module::enterArea() {
 			_currentArea->getName().c_str(), _currentArea->getDisplayName().c_str());
 }
 
-void Module::run() {
-	enter();
-	_running = true;
-
-	EventMan.enableKeyRepeat();
-
-	try {
-
-		EventMan.flushEvents();
-
-		while (!EventMan.quitRequested() && !_exit && !_newArea.empty()) {
-			replaceModule();
-			enterArea();
-			if (_exit)
-				break;
-
-			handleEvents();
-
-			if (!EventMan.quitRequested() && !_exit && !_newArea.empty())
-				EventMan.delay(10);
-		}
-
-	} catch (Common::Exception &e) {
-		_running = false;
-
-		e.add("Failed running module \"%s\"", _name.c_str());
-		throw e;
-	}
-
-	EventMan.enableKeyRepeat(0);
-
-	_running = false;
-}
-
-bool Module::isRunning() const {
-	return _running;
-}
-
 void Module::handleEvents() {
-	Events::Event event;
-	while (EventMan.pollEvent(event)) {
-		// Handle console
-		if (_console->processEvent(event)) {
-			if (!_currentArea)
-				return;
+	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event)
+		_currentArea->addEvent(*event);
 
-			continue;
-		}
+	_eventQueue.clear();
 
-		if (event.type == Events::kEventKeyDown) {
-			// Console
-			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
-				_console->show();
-				continue;
-			}
-		}
-
-		// Camera
-		if (!_console->isVisible())
-			if (handleCameraInput(event))
-				continue;
-
-		_currentArea->addEvent(event);
-	}
-
-	CameraMan.update();
 	_currentArea->processEventQueue();
 }
 
@@ -306,7 +275,12 @@ void Module::unloadModule() {
 	deindexResources(_resModule);
 
 	_newModule.clear();
+
+	_eventQueue.clear();
+
 	_hasModule = false;
+	_running   = false;
+	_exit      = true;
 }
 
 void Module::loadTLK() {
@@ -386,10 +360,6 @@ void Module::movePC(const Common::UString &area, float x, float y, float z) {
 
 const Aurora::IFOFile &Module::getIFO() const {
 	return _ifo;
-}
-
-Area *Module::getCurrentArea() {
-	return _currentArea;
 }
 
 } // End of namespace NWN2

@@ -22,6 +22,8 @@
  *  The context holding an Neverwinter Nights 2 campaign.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
@@ -32,16 +34,25 @@
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
+#include "src/graphics/camera.h"
+
+#include "src/events/events.h"
+
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/console.h"
+#include "src/engines/aurora/camera.h"
 
 #include "src/engines/nwn2/campaign.h"
+#include "src/engines/nwn2/module.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
-Campaign::Campaign(::Engines::Console &console) : _running(false), _module(console, this) {
+Campaign::Campaign(::Engines::Console &console) : _console(&console),
+	_hasCampaign(false), _running(false), _exit(true), _module(0) {
+
+	_module = new Module(*_console);
 }
 
 Campaign::~Campaign() {
@@ -49,10 +60,16 @@ Campaign::~Campaign() {
 		clear();
 	} catch (...) {
 	}
+
+	delete _module;
 }
 
 void Campaign::clear() {
-	_module.clear();
+	_module->clear();
+
+	_hasCampaign = false;
+	_running     = false;
+	_exit        = true;
 
 	_name.clear();
 	_description.clear();
@@ -62,7 +79,31 @@ void Campaign::clear() {
 
 	_newCampaign.clear();
 
+	_eventQueue.clear();
+
 	deindexResources(_resCampaign);
+}
+
+const Common::UString &Campaign::getName() const {
+	return _name;
+}
+
+const Common::UString &Campaign::getDescription() const {
+	return _description;
+}
+
+Module &Campaign::getModule() {
+	assert(_module);
+
+	return *_module;
+}
+
+bool Campaign::isLoaded() const {
+	return _hasCampaign && _module->isLoaded();
+}
+
+bool Campaign::isRunning() const {
+	return !EventMan.quitRequested() && _running && !_exit && _module->isRunning();
 }
 
 void Campaign::load(const Common::UString &campaign) {
@@ -75,6 +116,10 @@ void Campaign::load(const Common::UString &campaign) {
 
 	// We are not currently running a campaign. Directly load the new campaign
 	loadCampaign(campaign);
+}
+
+void Campaign::exit() {
+	_exit = true;
 }
 
 void Campaign::loadCampaignResource(const Common::UString &campaign) {
@@ -118,30 +163,78 @@ void Campaign::loadCampaign(const Common::UString &campaign) {
 	loadCampaignResource(campaign);
 
 	try {
-		_module.load(_startModule);
+		_module->load(_startModule);
 	} catch (Common::Exception &e) {
 		clear();
 
 		e.add("Failed to load campaign's starting module");
 		throw;
 	}
+
+	_hasCampaign = true;
 }
 
-void Campaign::run() {
-	_running = true;
+void Campaign::enter() {
+	if (!isLoaded())
+		throw Common::Exception("Campaign::enter(): Lacking a campaign?!?");
 
-	try {
-		_module.run();
-	} catch (...) {
-		_running = false;
-		throw;
-	}
+	_module->enter();
+
+	_running = true;
+	_exit    = false;
+}
+
+void Campaign::leave() {
+	_module->leave();
 
 	_running = false;
+	_exit    = true;
 }
 
-bool Campaign::isRunning() const {
-	return _running;
+void Campaign::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+void Campaign::processEventQueue() {
+	if (!isRunning())
+		return;
+
+	replaceCampaign();
+
+	if (!isRunning())
+		return;
+
+	handleEvents();
+}
+
+void Campaign::handleEvents() {
+	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event) {
+		// Handle console
+		if (_console->isVisible()) {
+			_console->processEvent(*event);
+			continue;
+		}
+
+		if (event->type == Events::kEventKeyDown) {
+			// Console
+			if ((event->key.keysym.sym == SDLK_d) && (event->key.keysym.mod & KMOD_CTRL)) {
+				_console->show();
+				continue;
+			}
+		}
+
+		// Camera
+		if (handleCameraInput(*event))
+			continue;
+
+		_module->addEvent(*event);
+	}
+
+	_eventQueue.clear();
+
+	CameraMan.update();
+
+	_module->processEventQueue();
 }
 
 void Campaign::changeCampaign(const Common::UString &campaign) {
@@ -154,22 +247,8 @@ void Campaign::replaceCampaign() {
 
 	const Common::UString campaign = _newCampaign;
 
-	clear();
-	loadCampaignResource(campaign);
-
-	_module.load(_startModule);
-}
-
-const Common::UString &Campaign::getName() const {
-	return _name;
-}
-
-const Common::UString &Campaign::getDescription() const {
-	return _description;
-}
-
-Module *Campaign::getModule() {
-	return &_module;
+	loadCampaign(campaign);
+	enter();
 }
 
 Common::UString Campaign::getDirectory(const Common::UString &campaign, bool relative) {

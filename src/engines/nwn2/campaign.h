@@ -30,13 +30,15 @@
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
-#include "src/engines/nwn2/module.h"
+#include "src/events/types.h"
 
 namespace Engines {
 
 class Console;
 
 namespace NWN2 {
+
+class Module;
 
 class Campaign {
 public:
@@ -46,63 +48,91 @@ public:
 	/** Clear the whole context. */
 	void clear();
 
-	/** Load a campaign. */
-	void load(const Common::UString &campaign);
-	/** Run the currently loaded campaign. */
-	void run();
-
+	// .--- Campaign management
+	/** Is a campaign currently loaded and ready to run? */
+	bool isLoaded() const;
 	/** Is a campaign currently running? */
 	bool isRunning() const;
+
+	/** Load a campaign. */
+	void load(const Common::UString &campaign);
+	/** Exit the currently running campaign. */
+	void exit();
+	// '---
+
+	// .--- Information about the current campaign
 	/** Return the name of the current campaign. */
 	const Common::UString &getName() const;
 	/** Return the description of the current campaign. */
 	const Common::UString &getDescription() const;
+	// '---
 
+	// .--- Elements of the current campaign
 	/** Return the currently running module. */
-	Module *getModule();
+	Module &getModule();
+	// '---
 
+	// .--- Static utility methods
 	static Common::UString getName(const Common::UString &campaign);
 	static Common::UString getDescription(const Common::UString &campaign);
+	// '---
 
+	// .--- Campaign main loop (called by the Game class)
+	/** Enter the loaded campaign, starting it. */
+	void enter();
+	/** Leave the running campaign, quitting it. */
+	void leave();
+
+	/** Add a single event for consideration into the event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+	// '---
 
 private:
-	/** Resources added by the campaign. */
-	Common::ChangeID _resCampaign;
+	typedef std::list<Events::Event> EventQueue;
+
+
+	::Engines::Console *_console;
+
+	bool _hasCampaign; ///< Do we have a module?
+	bool _running;     ///< Are we currently running a campaign?
+	bool _exit;        ///< Should we exit the campaign?
 
 	/** The name of the currently loaded campaign. */
 	Common::UString _name;
 	/** The description of the currently loaded campaign. */
 	Common::UString _description;
 
-	/** Are we currently running a module? */
-	bool _running;
-
 	/** All modules used by the current campaign. */
 	std::list<Common::UString> _modules;
 	/** The module the current campaign starts in. */
 	Common::UString _startModule;
 
+	/** Resources added by the campaign. */
+	Common::ChangeID _resCampaign;
+
 	/** The current module of the current campaign. */
-	Module _module;
+	Module *_module;
 
 	/** The campaign we should change to. */
 	Common::UString _newCampaign;
+
+	EventQueue _eventQueue;
 
 
 	/** Load a new campaign. */
 	void loadCampaign(const Common::UString &campaign);
 	/** Schedule a change to a new campaign. */
 	void changeCampaign(const Common::UString &campaign);
-	/** Load the actual campaign resources. */
-	void loadCampaignResource(const Common::UString &campaign);
-
-
-	// Methods called by the module
-
 	/** Actually replace the currently running campaign. */
 	void replaceCampaign();
 
-	friend class Module;
+	/** Load the actual campaign resources. */
+	void loadCampaignResource(const Common::UString &campaign);
+
+	void handleEvents();
+
 
 	/** Return the actual real directory for this campaign. */
 	static Common::UString getDirectory(const Common::UString &campaign, bool relative);

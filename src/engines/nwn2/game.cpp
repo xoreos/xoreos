@@ -58,9 +58,9 @@ Campaign &Game::getCampaign() {
 }
 
 Module &Game::getModule() {
-	assert(_campaign && _campaign->getModule());
+	assert(_campaign);
 
-	return *_campaign->getModule();
+	return _campaign->getModule();
 }
 
 void Game::run() {
@@ -76,17 +76,34 @@ void Game::run() {
 
 void Game::runCampaign() {
 	_campaign->load("neverwinter nights 2 campaign");
+	if (EventMan.quitRequested() || !_campaign->isLoaded()) {
+		_campaign->clear();
+		return;
+	}
 
-	_campaign->run();
+	_campaign->enter();
+	EventMan.enableKeyRepeat(true);
+
+	while (!EventMan.quitRequested() && _campaign->isRunning()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event))
+			_campaign->addEvent(event);
+
+		_campaign->processEventQueue();
+		EventMan.delay(10);
+	}
+
+	EventMan.enableKeyRepeat(false);
+	_campaign->leave();
 
 	_campaign->clear();
 }
 
 void Game::playMusic(const Common::UString &music) {
-	if (!_campaign || !_campaign->getModule() || !_campaign->getModule()->isRunning())
+	if (!_campaign || !_campaign->getModule().isRunning())
 		return;
 
-	Area *area = _campaign->getModule()->getCurrentArea();
+	Area *area = _campaign->getModule().getCurrentArea();
 	if (!area)
 		return;
 
@@ -94,10 +111,10 @@ void Game::playMusic(const Common::UString &music) {
 }
 
 void Game::stopMusic() {
-	if (!_campaign || !_campaign->getModule() || !_campaign->getModule()->isRunning())
+	if (!_campaign || !_campaign->getModule().isRunning())
 		return;
 
-	Area *area = _campaign->getModule()->getCurrentArea();
+	Area *area = _campaign->getModule().getCurrentArea();
 	if (!area)
 		return;
 

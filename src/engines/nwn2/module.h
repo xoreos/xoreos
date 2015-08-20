@@ -43,48 +43,70 @@ class Console;
 
 namespace NWN2 {
 
-class Campaign;
 class Area;
 
 class Module : public NWN2::Object, public NWN2::ObjectContainer {
 public:
-	Module(::Engines::Console &console, Campaign *campaign = 0);
+	Module(::Engines::Console &console);
 	~Module();
 
 	/** Clear the whole context. */
 	void clear();
 
-	/** Load a module. */
-	void load(const Common::UString &module);
-	/** Run the currently loaded module. */
-	void run();
-
+	// .--- Module management
+	/** Is a module currently loaded and ready to run? */
+	bool isLoaded() const;
 	/** Is a module currently running? */
 	bool isRunning() const;
 
+	/** Load a module. */
+	void load(const Common::UString &module);
+	/** Exit the currently running module. */
+	void exit();
+	// '---
+
+	// .--- Information about the current module
 	/** Return the IFO of the currently loaded module. */
 	const Aurora::IFOFile &getIFO() const;
+	// '---
+
+	// .--- Elements of the current module
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
+	// '---
 
+	// .--- PC management
 	/** Move the player character to this area. */
 	void movePC(const Common::UString &area);
 	/** Move the player character to this position within the current area. */
 	void movePC(float x, float y, float z);
 	/** Move the player character to this position within this area. */
 	void movePC(const Common::UString &area, float x, float y, float z);
+	// '---
 
+	// .--- Module main loop (called by the Campaign class)
+	/** Enter the loaded module, starting it. */
+	void enter();
+	/** Leave the running module, quitting it. */
+	void leave();
+
+	/** Add a single event for consideration into the event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+	// '---
 
 private:
+	typedef std::list<Events::Event> EventQueue;
+
 	typedef std::map<Common::UString, Area *> AreaMap;
 
 
-	::Engines::Console  *_console;
-
-	Campaign *_campaign;
+	::Engines::Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
 	bool _running;   ///< Are we currently running a module?
+	bool _exit;      ///< Should we exit the module?
 
 	/** Resources added by the module. */
 	Common::ChangeID _resModule;
@@ -96,30 +118,33 @@ private:
 
 	Aurora::IFOFile _ifo; ///< The module's IFO.
 
-	bool _exit; //< Should we exit the module?
-
 	AreaMap         _areas;       ///< The areas in the current module.
 	Common::UString _newArea;     ///< The new area to enter.
 	Area           *_currentArea; ///< The current area.
 
 	Common::UString _newModule; ///< The module we should change to.
 
+	EventQueue  _eventQueue;
 
+
+	// .--- Unloading
 	void unload(); ///< Unload the whole shebang.
 
 	void unloadModule();      ///< Unload the module.
 	void unloadTLK();         ///< Unload the TLK used by the module.
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadAreas();       ///< Unload the areas.
+	// '---
 
+	// .--- Loading
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
 	void loadTLK();         ///< Load the TLK used by the module.
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadAreas();       ///< Load the areas.
+	// '---
 
-	void enter();     ///< Enter the currently loaded module.
 	void enterArea(); ///< Enter a new area.
 
 	/** Load the actual module. */
@@ -130,8 +155,6 @@ private:
 	void replaceModule();
 
 	void handleEvents();
-
-	void handleActions();
 };
 
 } // End of namespace NWN2
