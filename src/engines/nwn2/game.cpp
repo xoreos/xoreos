@@ -38,17 +38,21 @@
 #include "src/engines/nwn2/module.h"
 #include "src/engines/nwn2/area.h"
 
+#include "src/engines/nwn2/script/functions.h"
+
 namespace Engines {
 
 namespace NWN2 {
 
 Game::Game(NWN2Engine &engine, ::Engines::Console &console) :
-	_engine(&engine), _campaign(0), _console(&console) {
+	_engine(&engine), _campaign(0), _functions(0), _console(&console) {
 
+	_functions = new Functions(*this);
 }
 
 Game::~Game() {
 	delete _campaign;
+	delete _functions;
 }
 
 Campaign &Game::getCampaign() {

@@ -39,6 +39,8 @@ namespace NWN2 {
 
 class NWN2Engine;
 
+class Functions;
+
 class Campaign;
 class Module;
 
@@ -70,6 +72,8 @@ public:
 private:
 	NWN2Engine *_engine;
 	Campaign   *_campaign;
+
+	Functions *_functions;
 
 	::Engines::Console *_console;
 
