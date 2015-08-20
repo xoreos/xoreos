@@ -70,7 +70,7 @@ enum Script {
 	kScriptPlayerUnequipItem    ,
 	kScriptPlayerLevelUp        ,
 	kScriptPlayerRest           ,
-	kScriptPlayerRespan         ,
+	kScriptPlayerRespawn        ,
 	kScriptUserdefined          ,
 	kScriptUsed                 ,
 	kScriptClick                ,

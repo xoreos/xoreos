@@ -67,7 +67,7 @@ static const ScriptName kScriptNames[] = {
 	{kScriptPlayerUnequipItem, "Mod_OnPlrUnEqItm"},
 	{kScriptPlayerLevelUp    , "Mod_OnPlrLvlUp"  },
 	{kScriptPlayerRest       , "Mod_OnPlrRest"   },
-	{kScriptPlayerRespan     , "Mod_OnSpawnBtnDn"},
+	{kScriptPlayerRespawn    , "Mod_OnSpawnBtnDn"},
 	{kScriptUserdefined      , "Mod_OnUsrDefined"},
 	{kScriptUserdefined      , "OnUserDefined"   },
 	{kScriptUserdefined      , "ScriptUserDefine"},
