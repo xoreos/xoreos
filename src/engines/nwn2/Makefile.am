@@ -30,6 +30,7 @@ noinst_HEADERS = \
 libnwn2_la_SOURCES = \
                      nwn2.cpp \
                      probes.cpp \
+                     types.cpp \
                      modelloader.cpp \
                      util.cpp \
                      trxfile.cpp \

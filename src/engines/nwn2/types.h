@@ -134,6 +134,9 @@ static const uint32 kRaceInvalid    =  28;
 static const uint32 kSubRaceInvalid = 255;
 static const uint32 kClassInvalid   = 255;
 
+Alignment getAlignmentLawChaos(uint8 lawChaos);
+Alignment getAlignmentGoodEvil(uint8 goodEvil);
+
 } // End of namespace NWN2
 
 } // End of namespace Engines
