@@ -63,10 +63,6 @@ void Functions::getIsObjectValid(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = getParamObject(ctx, 0) != 0;
 }
 
-void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = NWN2::ObjectContainer::toPC(getParamObject(ctx, 0)) != 0;
-}
-
 void Functions::getLocalInt(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
 	if (object)

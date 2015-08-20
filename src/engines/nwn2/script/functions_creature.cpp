@@ -102,6 +102,10 @@ void Functions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature ? (creature->getCurrentHP() <= 0) : false;
 }
 
+void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = NWN2::ObjectContainer::toPC(getParamObject(ctx, 0)) != 0;
+}
+
 void Functions::getGender(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
