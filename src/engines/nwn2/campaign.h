@@ -56,6 +56,8 @@ public:
 
 	/** Load a campaign. */
 	void load(const Common::UString &campaign);
+	/** Load a stand-alone module as a campaign. */
+	void loadModule(const Common::UString &module);
 	/** Exit the currently running campaign. */
 	void exit();
 	// '---
@@ -117,19 +119,23 @@ private:
 
 	/** The campaign we should change to. */
 	Common::UString _newCampaign;
+	/** Is the campaign to change to a stand-alone module? */
+	bool _newCampaignStandalone;
 
 	EventQueue _eventQueue;
 
 
 	/** Load a new campaign. */
-	void loadCampaign(const Common::UString &campaign);
+	void loadCampaign(const Common::UString &campaign, bool standalone);
 	/** Schedule a change to a new campaign. */
-	void changeCampaign(const Common::UString &campaign);
+	void changeCampaign(const Common::UString &campaign, bool standalone);
 	/** Actually replace the currently running campaign. */
 	void replaceCampaign();
 
 	/** Load the actual campaign resources. */
 	void loadCampaignResource(const Common::UString &campaign);
+	/** Set up the loading of a singular, stand-alone module. */
+	void setupStandaloneModule(const Common::UString &module);
 
 	void handleEvents();
 

@@ -50,19 +50,11 @@ public:
 	Module(::Engines::Console &console);
 	~Module();
 
-	/** Clear the whole context. */
-	void clear();
-
 	// .--- Module management
 	/** Is a module currently loaded and ready to run? */
 	bool isLoaded() const;
 	/** Is a module currently running? */
 	bool isRunning() const;
-
-	/** Load a module. */
-	void load(const Common::UString &module);
-	/** Exit the currently running module. */
-	void exit();
 	// '---
 
 	// .--- Information about the current module
@@ -85,6 +77,14 @@ public:
 	// '---
 
 	// .--- Module main loop (called by the Campaign class)
+	/** Clear the whole context. */
+	void clear();
+
+	/** Load a module. */
+	void load(const Common::UString &module);
+	/** Exit the currently running module. */
+	void exit();
+
 	/** Enter the loaded module, starting it. */
 	void enter();
 	/** Leave the running module, quitting it. */

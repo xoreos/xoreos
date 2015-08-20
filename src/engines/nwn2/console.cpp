@@ -231,7 +231,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 	for (std::list<Common::UString>::const_iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
 			hide();
-			_engine->getGame().getModule().load(cl.args + ".mod");
+			_engine->getGame().getCampaign().loadModule(cl.args + ".mod");
 			return;
 		}
 	}
