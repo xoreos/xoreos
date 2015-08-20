@@ -27,6 +27,8 @@
 
 #include "src/aurora/nwscript/functioncontext.h"
 
+#include "src/engines/aurora/util.h"
+
 #include "src/engines/nwn/objectcontainer.h"
 #include "src/engines/nwn/object.h"
 #include "src/engines/nwn/area.h"
@@ -54,12 +56,15 @@ void Functions::playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx) {
 	if (!object)
 		return;
 
-	uint32 strRef = (uint32) ctx.getParams()[0].getInt();
+	const Common::UString sound = TalkMan.getSoundResRef((uint32) ctx.getParams()[0].getInt());
 
 	// TODO: Run as action
 	// bool runAsAction = ctx.getParams()[1].getInt() != 0;
 
-	object->playSound(TalkMan.getSoundResRef(strRef));
+	if (object)
+		object->playSound(sound);
+	else
+		::Engines::playSound(sound, Sound::kSoundTypeVoice);
 }
 
 void Functions::musicBackgroundPlay(Aurora::NWScript::FunctionContext &ctx) {
