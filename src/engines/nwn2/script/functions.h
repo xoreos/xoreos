@@ -226,6 +226,30 @@ private:
 
 	void getIsOpen(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Creatures, functions_creature.cpp
+	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
+	void getSkillRank   (Aurora::NWScript::FunctionContext &ctx);
+	void getHasFeat     (Aurora::NWScript::FunctionContext &ctx);
+
+	void getClassByPosition(Aurora::NWScript::FunctionContext &ctx);
+	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
+	void getLevelByClass   (Aurora::NWScript::FunctionContext &ctx);
+
+	void getXP(Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
+
+	void getGender    (Aurora::NWScript::FunctionContext &ctx);
+	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
+
+	void getHitDice(Aurora::NWScript::FunctionContext &ctx);
+
+	void getLawChaosValue    (Aurora::NWScript::FunctionContext &ctx);
+	void getGoodEvilValue    (Aurora::NWScript::FunctionContext &ctx);
+	void getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx);
+	void getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace NWN2
