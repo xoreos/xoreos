@@ -25,9 +25,13 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
+#include "src/common/filelist.h"
+#include "src/common/readfile.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/talkman.h"
+#include "src/aurora/erffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/graphics/camera.h"
 
@@ -360,6 +364,40 @@ void Module::movePC(const Common::UString &area, float x, float y, float z) {
 
 const Aurora::IFOFile &Module::getIFO() const {
 	return _ifo;
+}
+
+Common::UString Module::getName(const Common::UString &module) {
+	try {
+		const Common::FileList modules(ConfigMan.getString("NWN2_moduleDir"));
+
+		const Aurora::ERFFile mod(new Common::ReadFile(modules.findFirst(module + ".mod", true)));
+		const uint32 ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
+
+		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
+
+		return ifo.getTopLevel().getString("Mod_Name");
+
+	} catch (...) {
+	}
+
+	return "";
+}
+
+Common::UString Module::getDescription(const Common::UString &module) {
+	try {
+		const Common::FileList modules(ConfigMan.getString("NWN2_moduleDir"));
+
+		const Aurora::ERFFile mod(new Common::ReadFile(modules.findFirst(module + ".mod", true)));
+		const uint32 ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
+
+		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
+
+		return ifo.getTopLevel().getString("Mod_Description");
+
+	} catch (...) {
+	}
+
+	return "";
 }
 
 } // End of namespace NWN2
