@@ -243,6 +243,7 @@ private:
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
+	void getIsDM(Aurora::NWScript::FunctionContext &ctx);
 
 	void getGender    (Aurora::NWScript::FunctionContext &ctx);
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
