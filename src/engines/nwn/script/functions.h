@@ -210,9 +210,6 @@ private:
 
 	void getPosition(Aurora::NWScript::FunctionContext &ctx);
 
-	void getCommandable(Aurora::NWScript::FunctionContext &ctx);
-	void setCommandable(Aurora::NWScript::FunctionContext &ctx);
-
 	void getDistanceToObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void getObjectByTag       (Aurora::NWScript::FunctionContext &ctx);
@@ -256,6 +253,9 @@ private:
 	void getGoodEvilValue    (Aurora::NWScript::FunctionContext &ctx);
 	void getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx);
 	void getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx);
+
+	void getCommandable(Aurora::NWScript::FunctionContext &ctx);
+	void setCommandable(Aurora::NWScript::FunctionContext &ctx);
 
 	void getMaster   (Aurora::NWScript::FunctionContext &ctx);
 	void getAssociate(Aurora::NWScript::FunctionContext &ctx);
