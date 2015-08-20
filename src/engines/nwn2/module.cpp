@@ -174,10 +174,6 @@ void Module::enter(Creature &pc) {
 	if (!isLoaded())
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
-	_pc = &pc;
-
-	_console->printf("Entering module \"%s\" with character \"%s\"", _name.c_str(), _pc->getName().c_str());
-
 	try {
 
 		loadTLK();
@@ -189,6 +185,7 @@ void Module::enter(Creature &pc) {
 		throw e;
 	}
 
+	_pc = &pc;
 	addObject(*_pc);
 
 	float entryX, entryY, entryZ, entryDirX, entryDirY;
@@ -201,6 +198,13 @@ void Module::enter(Creature &pc) {
 	_pc->setOrientation(0.0f, 0.0f, 1.0f, entryAngle);
 
 	_pc->loadModel();
+
+	_console->printf("Entering module \"%s\" with character \"%s\"", _name.c_str(), _pc->getName().c_str());
+
+	runScript(kScriptModuleLoad , this, _pc);
+	runScript(kScriptModuleStart, this, _pc);
+	runScript(kScriptPCLoaded   , this, _pc);
+	runScript(kScriptEnter      , this, _pc);
 
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
@@ -220,6 +224,8 @@ void Module::enter(Creature &pc) {
 }
 
 void Module::leave() {
+	runScript(kScriptExit, this, _pc);
+
 	_running = false;
 	_exit    = true;
 
@@ -248,6 +254,8 @@ void Module::enterArea() {
 		return;
 
 	if (_currentArea) {
+		_currentArea->runScript(kScriptExit, _currentArea, _pc);
+
 		_pc->hide();
 
 		_currentArea->hide();
@@ -271,6 +279,8 @@ void Module::enterArea() {
 
 	_currentArea->show();
 	_pc->show();
+
+	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
 
 	_pc->setArea(_currentArea);
 
