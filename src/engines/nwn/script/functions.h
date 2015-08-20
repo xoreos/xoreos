@@ -71,8 +71,6 @@ private:
 	static const FunctionSignature kFunctionSignatures[];
 	static const FunctionDefaults kFunctionDefaults[];
 
-	static const Aurora::NWScript::Variable kDefaultValues[];
-
 
 	Game *_game;
 
