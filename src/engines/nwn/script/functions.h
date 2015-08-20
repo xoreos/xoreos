@@ -188,8 +188,6 @@ private:
 
 	void getIsObjectValid(Aurora::NWScript::FunctionContext &ctx);
 
-	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
-
 	void getLocalInt   (Aurora::NWScript::FunctionContext &ctx);
 	void getLocalFloat (Aurora::NWScript::FunctionContext &ctx);
 	void getLocalString(Aurora::NWScript::FunctionContext &ctx);
@@ -243,6 +241,8 @@ private:
 	void getXP(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 
 	void getGender    (Aurora::NWScript::FunctionContext &ctx);
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
