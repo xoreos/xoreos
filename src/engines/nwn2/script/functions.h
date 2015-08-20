@@ -166,6 +166,11 @@ private:
 	void get2DAString(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Campaign functions, functions_campaign.cpp
+	void getOnePartyMode(Aurora::NWScript::FunctionContext &ctx);
+	void getIsSinglePlayer(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Module functions, functions_module.cpp
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
 
