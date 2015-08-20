@@ -106,6 +106,12 @@ void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = NWN2::ObjectContainer::toPC(getParamObject(ctx, 0)) != 0;
 }
 
+void Functions::getIsDM(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature && creature->isDM();
+}
+
 void Functions::getGender(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
