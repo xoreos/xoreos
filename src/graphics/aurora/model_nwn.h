@@ -44,7 +44,7 @@ class ModelNode_NWN_ASCII;
 class Model_NWN : public Model {
 public:
 	Model_NWN(const Common::UString &name, ModelType type = kModelTypeObject,
-	          const Common::UString &texture = "", std::map<Common::UString, Model*, Common::UString::iless> *modelCache = 0);
+	          const Common::UString &texture = "", ModelCache *modelCache = 0);
 	~Model_NWN();
 
 private:

@@ -177,7 +177,7 @@ bool Model_NWN::ParserContext::findNode(const Common::UString &name,
 
 
 Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
-                     const Common::UString &texture, std::map<Common::UString, Model *, Common::UString::iless> *modelCache) :
+                     const Common::UString &texture, ModelCache *modelCache) :
 	Model(type) {
 
 	if (_type == kModelTypeGUIFront) {

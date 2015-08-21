@@ -42,7 +42,7 @@ Graphics::Aurora::Model *NWNModelLoader::load(const Common::UString &resref,
 	// check model cache
 	// else load supermodel and insert into cache
 
-	return new Graphics::Aurora::Model_NWN(resref, type, texture, &modelCache);
+	return new Graphics::Aurora::Model_NWN(resref, type, texture, &_modelCache);
 }
 
 } // End of namespace NWN

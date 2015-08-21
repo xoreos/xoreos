@@ -25,6 +25,10 @@
 #ifndef GRAPHICS_AURORA_TYPES_H
 #define GRAPHICS_AURORA_TYPES_H
 
+#include <map>
+
+#include "src/common/ustring.h"
+
 #include "src/graphics/types.h"
 
 namespace Graphics {
@@ -44,6 +48,8 @@ class Model;
 class ModelNode;
 class Text;
 class GUIQuad;
+
+typedef std::map<Common::UString, class Model *, Common::UString::iless> ModelCache;
 
 } // End of namespace Aurora
 

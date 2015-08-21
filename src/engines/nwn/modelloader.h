@@ -36,7 +36,8 @@ public:
 	Graphics::Aurora::Model *load(const Common::UString &resref,
 			Graphics::Aurora::ModelType type, const Common::UString &texture);
 
-	std::map<Common::UString, Graphics::Aurora::Model*, Common::UString::iless> modelCache;
+private:
+	Graphics::Aurora::ModelCache _modelCache;
 };
 
 } // End of namespace NWN
