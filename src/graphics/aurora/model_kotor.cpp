@@ -35,6 +35,8 @@
 #include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/model_kotor.h"
+#include "src/graphics/aurora/animation.h"
+#include "src/graphics/aurora/animnode.h"
 
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
@@ -182,7 +184,8 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	ctx.mdl->skip(4); // Unknown
 
-	ctx.mdl->skip(12); // TODO: Animation Header Pointer Array
+	uint32 animOffset, animCount;
+	readArrayDef(*ctx.mdl, animOffset, animCount);
 
 	ctx.mdl->skip(4); // Parent model pointer
 
@@ -223,6 +226,64 @@ void Model_KotOR::load(ParserContext &ctx) {
 	rootNode->load(ctx);
 
 	addState(ctx);
+
+	std::vector<uint32> animOffsets;
+	readArray(*ctx.mdl, ctx.offModelData + animOffset, animCount, animOffsets);
+
+	for (std::vector<uint32>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
+		newState(ctx);
+
+		readAnim(ctx, ctx.offModelData + *offset);
+
+		addState(ctx);
+	}
+}
+
+void Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
+	ctx.mdl->seek(offset);
+
+	ctx.mdl->skip(8); // Function pointers
+
+	ctx.state->name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+
+	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
+	uint32 nodeCount       = ctx.mdl->readUint32LE();
+
+	ctx.mdl->skip(24 + 4); // Unknown + Reference count
+
+	uint8 type = ctx.mdl->readByte();
+
+	ctx.mdl->skip(3); // Padding + Unknown
+
+	float animLength = ctx.mdl->readIEEEFloatLE();
+	float transTime  = ctx.mdl->readIEEEFloatLE();
+
+	const Common::UString animRoot = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+
+	uint32 eventOffset, eventCount;
+	readArrayDef(*ctx.mdl, eventOffset, eventCount);
+
+	ctx.mdl->skip(4); // Padding + Unknown
+
+	ModelNode_KotOR *rootNode = new ModelNode_KotOR(*this);
+	ctx.nodes.push_back(rootNode);
+
+	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
+	rootNode->load(ctx);
+
+	Animation *anim = new Animation();
+
+	anim->setName(ctx.state->name);
+	anim->setLength(animLength);
+	anim->setTransTime(transTime);
+
+	_animationMap.insert(std::make_pair(ctx.state->name, anim));
+
+	for (std::list<ModelNode_KotOR *>::iterator n = ctx.nodes.begin(); n != ctx.nodes.end(); ++n) {
+		AnimNode *animnode = new AnimNode(*n);
+
+		anim->addAnimNode(animnode);
+	}
 }
 
 void Model_KotOR::readStrings(Common::SeekableReadStream &mdl,
@@ -392,20 +453,34 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 
 		if        (type == kControllerTypePosition) {
 			if (columnCount != 3)
-				throw Common::Exception("Position controller with %d values", columnCount);
+				return;
 
-			_position[0] = data[dataIndex + 0];
-			_position[1] = data[dataIndex + 1];
-			_position[2] = data[dataIndex + 2];
+			for (uint16 r = 0; r < rowCount; r++) {
+				PositionKeyFrame p;
+				p.time = data[timeIndex + r];
+
+				p.x = data[dataIndex + (r * columnCount) + 0];
+				p.y = data[dataIndex + (r * columnCount) + 1];
+				p.z = data[dataIndex + (r * columnCount) + 2];
+
+				_positionFrames.push_back(p);
+			}
 
 		} else if (type == kControllerTypeOrientation) {
 			if (columnCount != 4)
-				throw Common::Exception("Orientation controller with %d values", columnCount);
+				return;
 
-			_orientation[0] = data[dataIndex + 0];
-			_orientation[1] = data[dataIndex + 1];
-			_orientation[2] = data[dataIndex + 2];
-			_orientation[3] = data[dataIndex + 3];
+			for (int r = 0; r < rowCount; r++) {
+				QuaternionKeyFrame q;
+				q.time = data[timeIndex + r];
+
+				q.x = data[dataIndex + (r * columnCount) + 0];
+				q.y = data[dataIndex + (r * columnCount) + 1];
+				q.z = data[dataIndex + (r * columnCount) + 2];
+				q.q = data[dataIndex + (r * columnCount) + 3];
+
+				_orientationFrames.push_back(q);
+			}
 		}
 
 	}

@@ -75,6 +75,7 @@ private:
 	void addState(ParserContext &ctx);
 
 	void load(ParserContext &ctx);
+	void readAnim(ParserContext &ctx, uint32 offset);
 
 	void readStrings(Common::SeekableReadStream &mdl,
 			const std::vector<uint32> &offsets, uint32 offset,
