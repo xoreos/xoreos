@@ -169,6 +169,16 @@ private:
 	// .--- Campaign functions, functions_campaign.cpp
 	void getOnePartyMode(Aurora::NWScript::FunctionContext &ctx);
 	void getIsSinglePlayer(Aurora::NWScript::FunctionContext &ctx);
+
+	void getGlobalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void getGlobalBool  (Aurora::NWScript::FunctionContext &ctx);
+	void getGlobalString(Aurora::NWScript::FunctionContext &ctx);
+	void getGlobalFloat (Aurora::NWScript::FunctionContext &ctx);
+
+	void setGlobalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void setGlobalBool  (Aurora::NWScript::FunctionContext &ctx);
+	void setGlobalString(Aurora::NWScript::FunctionContext &ctx);
+	void setGlobalFloat (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Module functions, functions_module.cpp
