@@ -195,14 +195,7 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 	else
 		loadBinary(ctx);
 
-	if (!_superModelName.empty() && _superModelName != "NULL") {
-		if (modelCache && (modelCache->count(_superModelName) > 0))
-			_superModel = (*modelCache)[_superModelName];
-		else {
-			_superModel = new Model_NWN(_superModelName, type, "", modelCache);
-			(*modelCache)[_superModelName] = _superModel;
-		}
-	}
+	loadSuperModel(modelCache);
 
 	// These are usually inherited from a supermodel
 	populateDefaultAnimations();
@@ -475,6 +468,27 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 		anim->addAnimNode(animnode);
 	}
 
+}
+
+void Model_NWN::loadSuperModel(ModelCache *modelCache) {
+	if (!_superModelName.empty() && _superModelName != "NULL") {
+		bool foundInCache = false;
+
+		if (modelCache) {
+			ModelCache::iterator super = modelCache->find(_superModelName);
+			if (super != modelCache->end()) {
+				_superModel = super->second;
+
+				foundInCache = true;
+			}
+		}
+
+		if (!_superModel)
+			_superModel = new Model_NWN(_superModelName, _type, "", modelCache);
+
+		if (modelCache && !foundInCache)
+			modelCache->insert(std::make_pair(_superModelName, _superModel));
+	}
 }
 
 struct DefaultAnim {

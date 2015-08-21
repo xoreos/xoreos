@@ -87,6 +87,8 @@ private:
 	void readAnimASCII(ParserContext &ctx);
 	void skipAnimASCII(ParserContext &ctx);
 
+	void loadSuperModel(ModelCache *modelCache);
+
 	void populateDefaultAnimations();
 
 	friend class ModelNode_NWN_Binary;
