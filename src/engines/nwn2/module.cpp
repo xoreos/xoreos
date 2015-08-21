@@ -55,7 +55,7 @@ bool Module::Action::operator<(const Action &s) const {
 
 
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule), _console(&console),
-	_hasModule(false), _running(false), _exit(false), _pc(0), _currentArea(0) {
+	_hasModule(false), _running(false), _exit(false), _pc(0), _currentArea(0), _ranPCSpawn(false) {
 
 }
 
@@ -173,10 +173,10 @@ void Module::replaceModule() {
 	_exit = true;
 
 	loadModule(newModule);
-	enter(*pc);
+	enter(*pc, false);
 }
 
-void Module::enter(Creature &pc) {
+void Module::enter(Creature &pc, bool isNewCampaign) {
 	if (!isLoaded())
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
@@ -190,6 +190,9 @@ void Module::enter(Creature &pc) {
 		e.add("Can't initialize module \"%s\"", _name.c_str());
 		throw e;
 	}
+
+	if (isNewCampaign)
+		_ranPCSpawn = false;
 
 	_pc = &pc;
 	addObject(*_pc);
@@ -291,7 +294,11 @@ void Module::enterArea() {
 
 	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
 
-	runScript(kScriptPCLoaded, this, _pc);
+	if (!_ranPCSpawn) {
+		runScript(kScriptPCLoaded, this, _pc);
+
+		_ranPCSpawn = true;
+	}
 
 	EventMan.flushEvents();
 

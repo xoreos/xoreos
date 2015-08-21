@@ -106,7 +106,7 @@ public:
 	void exit();
 
 	/** Enter the loaded module, starting it. */
-	void enter(Creature &pc);
+	void enter(Creature &pc, bool isNewCampaign = true);
 	/** Leave the running module, quitting it. */
 	void leave();
 
@@ -164,6 +164,8 @@ private:
 	AreaMap         _areas;       ///< The areas in the current module.
 	Common::UString _newArea;     ///< The new area to enter.
 	Area           *_currentArea; ///< The current area.
+
+	bool _ranPCSpawn; ///< Did we run the PC spawn script?
 
 	Common::UString _newModule; ///< The module we should change to.
 
