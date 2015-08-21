@@ -71,7 +71,10 @@ public:
 	void leave(); ///< The cursor left the creature. */
 
 	/** (Un)Highlight the creature. */
-	virtual void highlight(bool enabled);
+	void highlight(bool enabled);
+
+	/** The creature was clicked. */
+	bool click(Object *triggerer = 0);
 
 private:
 	/** Parts of a creature's body. */
