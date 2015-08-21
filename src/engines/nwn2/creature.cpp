@@ -149,6 +149,18 @@ void Creature::highlight(bool enabled) {
 		(*m)->drawBound(enabled);
 }
 
+bool Creature::click(Object *triggerer) {
+	// Try the onDialog script first
+	if (hasScript(kScriptDialogue))
+		return runScript(kScriptDialogue, this, triggerer);
+
+	// Next, look we have a generic onClick script
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
+
+	return false;
+}
+
 const Common::UString &Creature::getFirstName() const {
 	return _firstName;
 }
