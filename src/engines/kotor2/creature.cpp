@@ -275,6 +275,18 @@ void Creature::highlight(bool enabled) {
 	_model->drawBound(enabled);
 }
 
+bool Creature::click(Object *triggerer) {
+	// Try the onDialog script first
+	if (hasScript(kScriptDialogue))
+		return runScript(kScriptDialogue, this, triggerer);
+
+	// Next, look we have a generic onClick script
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
+
+	return false;
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
