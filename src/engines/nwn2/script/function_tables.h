@@ -984,7 +984,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  843, "GetRosterNPCPartyLimit"              , 0                                                },
 	{  844, "SetIsRosterMemberCampaignNPC"        , 0                                                },
 	{  845, "GetIsRosterMemberCampaignNPC"        , 0                                                },
-	{  846, "GetIsRosterMember"                   , 0                                                },
+	{  846, "GetIsRosterMember"                   , &Functions::getIsRosterMember                    },
 	{  847, "ShowWorldMap"                        , 0                                                },
 	{  848, "TriggerEncounter"                    , 0                                                },
 	{  849, "GetIsSinglePlayer"                   , &Functions::getIsSinglePlayer                    },

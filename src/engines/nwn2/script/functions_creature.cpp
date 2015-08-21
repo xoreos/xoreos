@@ -156,6 +156,13 @@ void Functions::getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature ? (int32) NWN2::getAlignmentGoodEvil(creature->getGoodEvil()) : -1;
 }
 
+void Functions::getIsRosterMember(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	Creature *pc       = _game->getModule().getPC();
+
+	ctx.getReturn() = (int32) ((creature && (creature == pc)) ? 1 : 0);
+}
+
 void Functions::getFactionLeader(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 	Creature *pc       = _game->getModule().getPC();
