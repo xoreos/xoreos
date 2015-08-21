@@ -700,7 +700,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  559, "MusicBackgroundGetNightTrack"        , &Functions::musicBackgroundGetNightTrack         },
 	{  560, "WriteTimestampedLogEntry"            , &Functions::writeTimestampedLogEntry             },
 	{  561, "GetModuleName"                       , 0                                                },
-	{  562, "GetFactionLeader"                    , 0                                                },
+	{  562, "GetFactionLeader"                    , &Functions::getFactionLeader                     },
 	{  563, "SendMessageToAllDMs"                 , 0                                                },
 	{  564, "EndGame"                             , 0                                                },
 	{  565, "BootPC"                              , 0                                                },

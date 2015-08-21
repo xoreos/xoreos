@@ -265,6 +265,8 @@ private:
 	void getGoodEvilValue    (Aurora::NWScript::FunctionContext &ctx);
 	void getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx);
 	void getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx);
+
+	void getFactionLeader(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp

@@ -27,6 +27,8 @@
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/nwn2/types.h"
+#include "src/engines/nwn2/game.h"
+#include "src/engines/nwn2/module.h"
 #include "src/engines/nwn2/objectcontainer.h"
 #include "src/engines/nwn2/object.h"
 #include "src/engines/nwn2/creature.h"
@@ -152,6 +154,13 @@ void Functions::getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
 	ctx.getReturn() = creature ? (int32) NWN2::getAlignmentGoodEvil(creature->getGoodEvil()) : -1;
+}
+
+void Functions::getFactionLeader(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	Creature *pc       = _game->getModule().getPC();
+
+	ctx.getReturn() = (Aurora::NWScript::Object *) ((creature == pc) ? creature : (Creature *) 0);
 }
 
 } // End of namespace NWN2
