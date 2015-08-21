@@ -209,7 +209,6 @@ void Module::enter(Creature &pc) {
 
 	runScript(kScriptModuleLoad , this, _pc);
 	runScript(kScriptModuleStart, this, _pc);
-	runScript(kScriptPCLoaded   , this, _pc);
 	runScript(kScriptEnter      , this, _pc);
 
 	Common::UString startMovie = _ifo.getStartMovie();
@@ -291,6 +290,8 @@ void Module::enterArea() {
 	_pc->setArea(_currentArea);
 
 	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
+
+	runScript(kScriptPCLoaded, this, _pc);
 
 	EventMan.flushEvents();
 
