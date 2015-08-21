@@ -35,6 +35,9 @@ class KotOR2ModelLoader : public ModelLoader {
 public:
 	Graphics::Aurora::Model *load(const Common::UString &resref,
 			Graphics::Aurora::ModelType type, const Common::UString &texture);
+
+private:
+	Graphics::Aurora::ModelCache _modelCache;
 };
 
 } // End of namespace KotOR2

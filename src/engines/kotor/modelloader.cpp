@@ -38,7 +38,7 @@ namespace KotOR {
 Graphics::Aurora::Model *KotORModelLoader::load(const Common::UString &resref,
 		Graphics::Aurora::ModelType type, const Common::UString &texture) {
 
-	return new Graphics::Aurora::Model_KotOR(resref, false, type, texture);
+	return new Graphics::Aurora::Model_KotOR(resref, false, type, texture, &_modelCache);
 }
 
 } // End of namespace KotOR

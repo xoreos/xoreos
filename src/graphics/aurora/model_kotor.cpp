@@ -140,8 +140,8 @@ void Model_KotOR::ParserContext::clear() {
 }
 
 
-Model_KotOR::Model_KotOR(const Common::UString &name,
-                         bool kotor2, ModelType type, const Common::UString &texture) :
+Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, ModelType type,
+                         const Common::UString &texture, ModelCache *modelCache) :
 	Model(type) {
 
 	_fileName = name;
@@ -149,6 +149,8 @@ Model_KotOR::Model_KotOR(const Common::UString &name,
 	ParserContext ctx(name, texture, kotor2);
 
 	load(ctx);
+
+	loadSuperModel(modelCache, kotor2);
 
 	finalize();
 }
@@ -203,7 +205,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 
 	float modelScale = ctx.mdl->readIEEEFloatLE();
 
-	Common::UString superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	_superModelName = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
 	ctx.mdl->skip(4); // Root node pointer again
 
@@ -283,6 +285,27 @@ void Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
 		AnimNode *animnode = new AnimNode(*n);
 
 		anim->addAnimNode(animnode);
+	}
+}
+
+void Model_KotOR::loadSuperModel(ModelCache *modelCache, bool kotor2) {
+	if (!_superModelName.empty() && _superModelName != "NULL") {
+		bool foundInCache = false;
+
+		if (modelCache) {
+			ModelCache::iterator super = modelCache->find(_superModelName);
+			if (super != modelCache->end()) {
+				_superModel = super->second;
+
+				foundInCache = true;
+			}
+		}
+
+		if (!_superModel)
+			_superModel = new Model_KotOR(_superModelName, kotor2, _type, "", modelCache);
+
+		if (modelCache && !foundInCache)
+			modelCache->insert(std::make_pair(_superModelName, _superModel));
 	}
 }
 

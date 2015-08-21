@@ -41,9 +41,8 @@ class ModelNode_KotOR;
 /** A 3D model in the NWN binary MDL format. */
 class Model_KotOR : public Model {
 public:
-	Model_KotOR(const Common::UString &name, bool kotor2,
-	            ModelType type = kModelTypeObject,
-	            const Common::UString &texture = "");
+	Model_KotOR(const Common::UString &name, bool kotor2, ModelType type = kModelTypeObject,
+	            const Common::UString &texture = "", ModelCache *modelCache = 0);
 	~Model_KotOR();
 
 private:
@@ -76,6 +75,8 @@ private:
 
 	void load(ParserContext &ctx);
 	void readAnim(ParserContext &ctx, uint32 offset);
+
+	void loadSuperModel(ModelCache *modelCache, bool kotor2);
 
 	void readStrings(Common::SeekableReadStream &mdl,
 			const std::vector<uint32> &offsets, uint32 offset,
