@@ -520,8 +520,9 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 		_bootsVariation  = boots.getUint("Variation"      , _bootsVariation);
 	}
 
-	// Scripts
+	// Scripts and variables
 	readScripts(gff);
+	readVarTable(gff);
 }
 
 void Creature::loadClasses(const Aurora::GFF3Struct &gff,

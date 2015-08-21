@@ -110,8 +110,9 @@ void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {
 		_mapNote = mapNote.getString();
 	}
 
-	// Scripts
+	// Scripts and variables
 	readScripts(gff);
+	readVarTable(gff);
 }
 
 } // End of namespace NWN2

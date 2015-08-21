@@ -119,6 +119,7 @@ void Module::loadModule(const Common::UString &module) {
 		_name = _ifo.getName().getString();
 
 		readScripts(*_ifo.getGFF());
+		readVarTable(*_ifo.getGFF());
 
 	} catch (Common::Exception &e) {
 		e.add("Can't load module \"%s\"", module.c_str());
