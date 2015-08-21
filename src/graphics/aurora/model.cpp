@@ -47,7 +47,7 @@ namespace Graphics {
 namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
-	_type(type), _supermodel(0), _currentState(0),
+	_type(type), _superModel(0), _currentState(0),
 	_currentAnimation(0), _nextAnimation(0), _drawBound(false),
 	_drawSkeleton(false), _drawSkeletonInvisible(false) {
 
@@ -357,8 +357,8 @@ ModelNode *Model::getNode(const Common::UString &node) {
 
 	NodeMap::iterator n = _currentState->nodeMap.find(node);
 	if (n == _currentState->nodeMap.end()) {
-		if (_supermodel)
-			return _supermodel->getNode(node);
+		if (_superModel)
+			return _superModel->getNode(node);
 
 		return 0;
 	}
@@ -372,8 +372,8 @@ const ModelNode *Model::getNode(const Common::UString &node) const {
 
 	NodeMap::const_iterator n = _currentState->nodeMap.find(node);
 	if (n == _currentState->nodeMap.end()) {
-		if (_supermodel)
-			return _supermodel->getNode(node);
+		if (_superModel)
+			return _superModel->getNode(node);
 
 		return 0;
 	}
@@ -393,8 +393,8 @@ Animation *Model::getAnimation(const Common::UString &anim) {
 
 	AnimationMap::iterator n = _animationMap.find(anim);
 	if (n == _animationMap.end()) {
-		if (_supermodel)
-			return _supermodel->getAnimation(anim);
+		if (_superModel)
+			return _superModel->getAnimation(anim);
 
 		return 0;
 	}
@@ -407,8 +407,8 @@ float Model::getAnimationScale(const Common::UString &anim) {
 	AnimationMap::iterator n = _animationMap.find(anim);
 	if (n == _animationMap.end()) {
 		// Animation scaling only applies to inherited animations
-		if (_supermodel)
-			return _animationScale * _supermodel->getAnimationScale(anim);
+		if (_superModel)
+			return _animationScale * _superModel->getAnimationScale(anim);
 		// Can't find it, return sensible default
 		return 1.0f;
 	}

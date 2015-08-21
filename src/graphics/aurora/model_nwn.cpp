@@ -196,11 +196,11 @@ Model_NWN::Model_NWN(const Common::UString &name, ModelType type,
 		loadBinary(ctx);
 
 	if (!_superModelName.empty() && _superModelName != "NULL") {
-		if ((*modelCache).count(_superModelName)>0)
-			_supermodel = (*modelCache)[_superModelName];
+		if (modelCache && (modelCache->count(_superModelName) > 0))
+			_superModel = (*modelCache)[_superModelName];
 		else {
-			_supermodel = new Model_NWN(_superModelName, type, "", modelCache);
-			(*modelCache)[_superModelName] = _supermodel;
+			_superModel = new Model_NWN(_superModelName, type, "", modelCache);
+			(*modelCache)[_superModelName] = _superModel;
 		}
 	}
 
