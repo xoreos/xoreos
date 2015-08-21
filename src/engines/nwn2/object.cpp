@@ -28,6 +28,7 @@
 #include "src/aurora/ssffile.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/dlgfile.h"
 
 #include "src/aurora/nwscript/types.h"
@@ -189,6 +190,51 @@ void Object::loadSSF() {
 	} catch (...) {
 		warning("Failed to load SSF \"%s\" (object \"%s\")", ssfFile.c_str(), _tag.c_str());
 	}
+}
+
+void Object::readVarTable(const Aurora::GFF3List &varTable) {
+	for (Aurora::GFF3List::const_iterator v = varTable.begin(); v != varTable.end(); ++v) {
+		const Common::UString name  = (*v)->getString ("Name");
+		const uint32          type  = (*v)->getUint   ("Type");
+
+		if (name.empty())
+			continue;
+
+		switch (type) {
+			case -1:
+				setVariable(name, Aurora::NWScript::Variable());
+				break;
+
+			case  1:
+				setVariable(name, (int32) (*v)->getSint("Value"));
+				break;
+
+			case  2:
+				setVariable(name, (float) (*v)->getDouble("Value"));
+				break;
+
+			case  3:
+				setVariable(name, (*v)->getString("Value"));
+				break;
+
+			case  4:
+				setVariable(name, (int32)((uint32) (*v)->getUint("Value")));
+				break;
+
+			case  5:
+				warning("TODO: Object::readVarTable(), \"%s\" has location type", name.c_str());
+				setVariable(name, Aurora::NWScript::Variable());
+				break;
+
+			default:
+				throw Common::Exception("Unknown variable type %u (\"%s\")", type, name.c_str());
+		}
+	}
+}
+
+void Object::readVarTable(const Aurora::GFF3Struct &gff) {
+	if (gff.hasField("VarTable"))
+		readVarTable(gff.getList("VarTable"));
 }
 
 void Object::speakString(const Common::UString &string, uint32 UNUSED(volume)) {

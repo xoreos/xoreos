@@ -166,6 +166,10 @@ protected:
 
 	/** Load the object's sound set. */
 	void loadSSF();
+
+	/** Read the object's variable table. */
+	void readVarTable(const Aurora::GFF3List &varTable);
+	void readVarTable(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace NWN2
