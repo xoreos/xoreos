@@ -76,6 +76,9 @@ public:
 	/** (Un)Highlight the door. */
 	void highlight(bool enabled);
 
+	/** The door was clicked. */
+	bool click(Object *triggerer = 0);
+
 protected:
 	/** Load door-specific properties. */
 	void loadObject(const Aurora::GFF3Struct &gff);

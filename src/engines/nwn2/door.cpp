@@ -171,6 +171,30 @@ void Door::setLocked(bool locked) {
 		_linkedDoor->setLocked(locked);
 }
 
+bool Door::click(Object *triggerer) {
+	// If the door is closed, try to open it
+	if (!isOpen())
+		return open(triggerer);
+
+	// If the door is open and has a click or used script, call that
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
+	if (hasScript(kScriptUsed))
+		return runScript(kScriptUsed , this, triggerer);
+
+	evaluateLink();
+	if (_link) {
+		float x, y, z;
+		_link->getPosition(x, y, z);
+
+		_module->movePC(_link->getArea(), x, y, z);
+		return true;
+	}
+
+	// If the door is open and has no script, close it
+	return close(triggerer);
+}
+
 bool Door::open(Object *opener) {
 	// TODO: Door::open(): Open in direction of the opener
 
@@ -179,6 +203,7 @@ bool Door::open(Object *opener) {
 
 	if (isLocked()) {
 		playSound(_soundLocked);
+		runScript(kScriptFailToOpen, this, opener);
 		return false;
 	}
 
@@ -188,6 +213,7 @@ bool Door::open(Object *opener) {
 	playSound(_soundOpened);
 	if (_model)
 		_model->playAnimation("opening1");
+	runScript(kScriptOpen, this, opener);
 
 	// Also open the linked door
 	evaluateLink();
@@ -210,6 +236,7 @@ bool Door::close(Object *closer) {
 	playSound(_soundClosed);
 	if (_model)
 		_model->playAnimation("closing1");
+	runScript(kScriptClosed, this, closer);
 
 	// Also close the linked door
 	evaluateLink();
