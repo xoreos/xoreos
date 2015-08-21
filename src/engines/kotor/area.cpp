@@ -393,12 +393,17 @@ void Area::processEventQueue() {
 	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
 	     e != _eventQueue.end(); ++e) {
 
-		if        (e->type == Events::kEventMouseMove) {
+		if        (e->type == Events::kEventMouseMove) { // Moving the mouse
 			hasMove = true;
-		} else if (e->type == Events::kEventKeyDown) {
+		} else if (e->type == Events::kEventMouseDown) { // Clicking
+			if (e->button.button == SDL_BUTTON_LMASK) {
+				checkActive(e->button.x, e->button.y);
+				click(e->button.x, e->button.y);
+			}
+		} else if (e->type == Events::kEventKeyDown) { // Holding down TAB
 			if (e->key.keysym.sym == SDLK_TAB)
 				highlightAll(true);
-		} else if (e->type == Events::kEventKeyUp) {
+		} else if (e->type == Events::kEventKeyUp) {   // Releasing TAB
 			if (e->key.keysym.sym == SDLK_TAB)
 				highlightAll(false);
 		}
@@ -435,16 +440,26 @@ void Area::setActive(KotOR::Object *object) {
 		_activeObject->enter();
 }
 
-void Area::checkActive() {
+void Area::checkActive(int x, int y) {
 	if (_highlightAll)
 		return;
 
 	Common::StackLock lock(_mutex);
 
-	int x, y;
-	CursorMan.getPosition(x, y);
+	if ((x < 0) || (y < 0))
+		CursorMan.getPosition(x, y);
 
 	setActive(getObjectAt(x, y));
+}
+
+void Area::click(int x, int y) {
+	Common::StackLock lock(_mutex);
+
+	KotOR::Object *o = getObjectAt(x, y);
+	if (!o)
+		return;
+
+	o->click(_module->getPC());
 }
 
 void Area::highlightAll(bool enabled) {
