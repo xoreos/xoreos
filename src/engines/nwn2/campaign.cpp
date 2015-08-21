@@ -237,6 +237,7 @@ void Campaign::enter() {
 	if (!_pc)
 		throw Common::Exception("Campaign::enter(): Lacking a PC?!?");
 
+	_pc->clearVariables();
 	_module->enter(*_pc);
 
 	_running = true;
