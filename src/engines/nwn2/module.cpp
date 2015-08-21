@@ -261,6 +261,7 @@ void Module::enterArea() {
 
 	if (_currentArea) {
 		_currentArea->runScript(kScriptExit, _currentArea, _pc);
+		_pc->setArea(0);
 
 		_pc->hide();
 
@@ -286,9 +287,9 @@ void Module::enterArea() {
 	_currentArea->show();
 	_pc->show();
 
-	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
-
 	_pc->setArea(_currentArea);
+
+	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
 
 	EventMan.flushEvents();
 
