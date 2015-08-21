@@ -92,6 +92,9 @@ public:
 	/** (Un)Highlight the object. */
 	virtual void highlight(bool enabled);
 
+	/** The object was clicked. */
+	virtual bool click(Object *triggerer = 0);
+
 protected:
 	ObjectType _type; ///< The object's type.
 

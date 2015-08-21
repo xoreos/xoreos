@@ -115,6 +115,10 @@ void Object::leave() {
 void Object::highlight(bool UNUSED(enabled)) {
 }
 
+bool Object::click(Object *UNUSED(triggerer)) {
+	return true;
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines

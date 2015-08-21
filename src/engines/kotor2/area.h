@@ -179,11 +179,13 @@ private:
 
 	// Highlight / active helpers
 
-	void checkActive();
+	void checkActive(int x = -1, int y = -1);
 	void setActive(KotOR2::Object *object);
 	KotOR2::Object *getObjectAt(int x, int y);
 
 	void highlightAll(bool enabled);
+
+	void click(int x, int y);
 
 
 	friend class Console;
