@@ -116,6 +116,16 @@ void Placeable::highlight(bool enabled) {
 		_model->drawBound(enabled);
 }
 
+bool Placeable::click(Object *triggerer) {
+	// If the placeable has a click or used script, call that
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
+	if (hasScript(kScriptUsed))
+		return runScript(kScriptUsed , this, triggerer);
+
+	return false;
+}
+
 void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 	// State
 

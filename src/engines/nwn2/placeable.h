@@ -66,6 +66,9 @@ public:
 	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
 
+	/** The placeable was clicked. */
+	bool click(Object *triggerer = 0);
+
 protected:
 	/** Load placeable-specific properties. */
 	void loadObject(const Aurora::GFF3Struct &gff);
