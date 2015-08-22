@@ -188,6 +188,8 @@ bool Placeable::click(Object *triggerer) {
 	if (_state == kStateDestroyed)
 		return true;
 
+	_lastUsedBy = triggerer;
+
 	// Objects with an inventory toggle between open and closed
 	if (_hasInventory) {
 		if (isOpen())
@@ -214,6 +216,8 @@ bool Placeable::open(Object *opener) {
 		playSound(_soundLocked);
 		return false;
 	}
+
+	_lastOpenedBy = opener;
 
 	playAnimation(kAnimationPlaceableOpen);
 	runScript(kScriptOpen, this, opener);

@@ -184,6 +184,8 @@ void Door::setLocked(bool locked) {
 }
 
 bool Door::click(Object *triggerer) {
+	_lastUsedBy = triggerer;
+
 	// If the door is closed, try to open it
 	if (!isOpen())
 		return open(triggerer);
@@ -216,6 +218,8 @@ bool Door::open(Object *opener) {
 		runScript(kScriptFailToOpen, this, opener);
 		return false;
 	}
+
+	_lastOpenedBy = opener;
 
 	playAnimation(kAnimationDoorOpen1);
 	runScript(kScriptOpen, this, opener);

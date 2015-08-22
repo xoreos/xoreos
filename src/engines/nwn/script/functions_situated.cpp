@@ -52,6 +52,26 @@ void Functions::getIsOpen(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = situated ? situated->isOpen() : 0;
 }
 
+void Functions::getLastOpenedBy(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Situated *situated = NWN::ObjectContainer::toSituated(ctx.getCaller());
+	if (!situated)
+		return;
+
+	ctx.getReturn() = (Aurora::NWScript::Object *) situated->getLastOpenedBy();
+}
+
+void Functions::getLastUsedBy(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Situated *situated = NWN::ObjectContainer::toSituated(ctx.getCaller());
+	if (!situated)
+		return;
+
+	ctx.getReturn() = (Aurora::NWScript::Object *) situated->getLastUsedBy();
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
