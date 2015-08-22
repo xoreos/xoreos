@@ -125,6 +125,11 @@ void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn().getString().clear();
 
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
+
+	// PCs don't have a tag, and the scripts depend on that
+	if (object == _game->getModule().getPC())
+		object = 0;
+
 	if (object)
 		ctx.getReturn() = object->getTag();
 }
