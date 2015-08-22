@@ -475,8 +475,7 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 			continue;
 
 		if        (type == kControllerTypePosition) {
-			if (columnCount != 3)
-				return;
+			return;
 
 			for (uint16 r = 0; r < rowCount; r++) {
 				PositionKeyFrame p;
@@ -490,8 +489,7 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 			}
 
 		} else if (type == kControllerTypeOrientation) {
-			if (columnCount != 4)
-				return;
+			return;
 
 			for (int r = 0; r < rowCount; r++) {
 				QuaternionKeyFrame q;
