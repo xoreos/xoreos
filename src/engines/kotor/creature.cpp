@@ -49,10 +49,17 @@ namespace KotOR {
 Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature) {
 	init();
 	load(creature);
+
+	if (_model)
+		_modelStates = _model->getStates();
+
+	_currentModelState = _modelStates.end();
 }
 
 Creature::Creature() : Object(kObjectTypeCreature) {
 	init();
+
+	_currentModelState = _modelStates.end();
 }
 
 Creature::~Creature() {
@@ -412,6 +419,39 @@ bool Creature::click(Object *triggerer) {
 
 Common::ScopedPtr<Graphics::Aurora::Model> &Creature::getModel() {
 	return _model;
+}
+
+void Creature::playNextAnimation() {
+	if (!_model)
+		return;
+
+	if (_currentModelState == _modelStates.end())
+		_currentModelState = _modelStates.begin();
+
+	if (_currentModelState == _modelStates.end())
+		return;
+
+	warning("Playing animation \"%s\" on model \"%s\" (\"%s\")", _currentModelState->c_str(),
+	        _model->getName().c_str(), _tag.c_str());
+
+	_model->playAnimation(*_currentModelState, true, -1);
+
+	++_currentModelState;
+}
+
+void Creature::playPreviousAnimation() {
+	if (!_model || _modelStates.empty())
+		return;
+
+	--_currentModelState;
+
+	warning("Playing animation \"%s\" on model \"%s\" (\"%s\")", _currentModelState->c_str(),
+	        _model->getName().c_str(), _tag.c_str());
+
+	_model->playAnimation(*_currentModelState, true, -1);
+
+	if (_currentModelState == _modelStates.begin())
+		_currentModelState = _modelStates.end();
 }
 
 } // End of namespace KotOR

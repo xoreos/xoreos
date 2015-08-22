@@ -117,6 +117,9 @@ public:
 	/** Play an object sound. */
 	void playSound(const Common::UString &sound, bool pitchVariance = false);
 
+	virtual void playNextAnimation();
+	virtual void playPreviousAnimation();
+
 protected:
 	ObjectType _type; ///< The object's type.
 

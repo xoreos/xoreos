@@ -68,6 +68,11 @@ public:
 	/** Set the situated object's orientation. */
 	void setOrientation(float x, float y, float z, float angle);
 
+	// Object/Cursor interactions
+
+	void playNextAnimation();
+	void playPreviousAnimation();
+
 protected:
 	Common::UString _modelName; ///< The model's resource name.
 
@@ -87,6 +92,9 @@ protected:
 	Object *_lastUsedBy;   ///< The object that last used this situated object.
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The situated object's model.
+
+	std::list<Common::UString> _modelStates;
+	std::list<Common::UString>::const_iterator _currentModelState;
 
 
 	Situated(ObjectType type);

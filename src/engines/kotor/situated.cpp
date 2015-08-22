@@ -44,6 +44,7 @@ Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kField
 	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
 	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0) {
 
+	_currentModelState = _modelStates.end();
 }
 
 Situated::~Situated() {
@@ -204,6 +205,39 @@ void Situated::loadSounds() {
 	_soundDestroyed = twoda.getRow(_soundAppType).getString("Destroyed");
 	_soundUsed      = twoda.getRow(_soundAppType).getString("Used");
 	_soundLocked    = twoda.getRow(_soundAppType).getString("Locked");
+}
+
+void Situated::playNextAnimation() {
+	if (!_model)
+		return;
+
+	if (_currentModelState == _modelStates.end())
+		_currentModelState = _modelStates.begin();
+
+	if (_currentModelState == _modelStates.end())
+		return;
+
+	warning("Setting state \"%s\" on model \"%s\" (\"%s\")", _currentModelState->c_str(),
+	        _model->getName().c_str(), _tag.c_str());
+
+	_model->setState(*_currentModelState);
+
+	++_currentModelState;
+}
+
+void Situated::playPreviousAnimation() {
+	if (!_model || _modelStates.empty())
+		return;
+
+	--_currentModelState;
+
+	warning("Setting state \"%s\" on model \"%s\" (\"%s\")", _currentModelState->c_str(),
+	        _model->getName().c_str(), _tag.c_str());
+
+	_model->setState(*_currentModelState);
+
+	if (_currentModelState == _modelStates.begin())
+		_currentModelState = _modelStates.end();
 }
 
 } // End of namespace KotOR

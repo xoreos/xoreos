@@ -43,6 +43,11 @@ Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectType
 	_state(kStateDefault), _hasInventory(false) {
 
 	load(placeable);
+
+	if (_model)
+		_modelStates = _model->getStates();
+
+	_currentModelState = _modelStates.end();
 }
 
 Placeable::~Placeable() {

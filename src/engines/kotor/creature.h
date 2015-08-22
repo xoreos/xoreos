@@ -92,6 +92,9 @@ public:
 
 	Common::ScopedPtr<Graphics::Aurora::Model> &getModel();
 
+	void playNextAnimation();
+	void playPreviousAnimation();
+
 private:
 	/** Parts of a creature's body. */
 	struct PartModels {
@@ -120,6 +123,9 @@ private:
 	std::vector<ClassLevel> _levels; ///< The levels of the creature.
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
+
+	std::list<Common::UString> _modelStates;
+	std::list<Common::UString>::const_iterator _currentModelState;
 
 
 	void init();

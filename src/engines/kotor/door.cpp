@@ -46,6 +46,11 @@ Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(kObjectTyp
 	_linkedToFlag(kLinkedToNothing), _linkedToType(kObjectTypeAll) {
 
 	load(door);
+
+	if (_model)
+		_modelStates = _model->getStates();
+
+	_currentModelState = _modelStates.end();
 }
 
 Door::~Door() {
