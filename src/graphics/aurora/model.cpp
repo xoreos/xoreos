@@ -629,11 +629,26 @@ void Model::finalize() {
 	_currentAnimation = selectDefaultAnimation();
 }
 
-void Model::createStateNamesList() {
-	_stateNames.clear();
+void Model::createStateNamesList(std::list<Common::UString> *stateNames) {
+	bool isRoot = false;
+
+	if (!stateNames) {
+		_stateNames.clear();
+
+		stateNames = &_stateNames;
+		isRoot     = true;
+	}
 
 	for (StateList::const_iterator s = _stateList.begin(); s != _stateList.end(); ++s)
-		_stateNames.push_back((*s)->name);
+		stateNames->push_back((*s)->name);
+
+	if (_superModel)
+		_superModel->createStateNamesList(stateNames);
+
+	if (isRoot) {
+		stateNames->sort();
+		stateNames->unique();
+	}
 }
 
 void Model::createBound() {

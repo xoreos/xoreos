@@ -253,8 +253,10 @@ private:
 
 	float _elapsedTime; ///< Track animation duration
 
-	void createStateNamesList(); ///< Create the list of all state names.
-	void createBound();          ///< Create the model's bounding box.
+	/** Create the list of all state names. */
+	void createStateNamesList(std::list<Common::UString> *stateNames = 0);
+	/** Create the model's bounding box. */
+	void createBound();
 
 	void createAbsolutePosition();
 
