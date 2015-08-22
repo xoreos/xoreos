@@ -82,6 +82,8 @@ void Functions::getLevelByPosition(Aurora::NWScript::FunctionContext &ctx) {
 	uint32 classID;
 	uint16 level;
 	creature->getClass(MAX<int32>(ctx.getParams()[0].getInt() - 1, 0), classID, level);
+
+	ctx.getReturn() = (int32) level;
 }
 
 void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
