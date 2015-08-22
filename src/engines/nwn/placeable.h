@@ -59,6 +59,18 @@ public:
 
 	/** Is the placeable open? */
 	bool isOpen() const;
+	/** Is the placeable activated? */
+	bool isActivated() const;
+
+	/** The opener object opens this placeable. */
+	bool open(Object *opener);
+	/** The closer object closes this placeable. */
+	bool close(Object *closer);
+
+	/** The user object activates this placeable. */
+	bool activate(Object *opener);
+	/** The user object deactivates this placeable. */
+	bool deactivate(Object *closer);
 
 	// Object/Cursor interactions
 
@@ -86,6 +98,8 @@ protected:
 
 private:
 	State _state; ///< The current state of the placeable.
+
+	bool _hasInventory; ///< Does this placeable have an inventory?
 
 	Tooltip *_tooltip; ///< The tooltip displayed over the placeable.
 

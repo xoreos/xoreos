@@ -117,6 +117,8 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 	// State
 
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
+
+	_hasInventory = gff.getBool("HasInventory", _hasInventory);
 }
 
 void Placeable::loadAppearance() {
@@ -168,13 +170,110 @@ void Placeable::hideTooltip() {
 }
 
 bool Placeable::isOpen() const {
-	return _state == kStateOpen;
+	return (_state == kStateOpen) || (_state == kStateActivated);
+}
+
+bool Placeable::isActivated() const {
+	return isOpen();
 }
 
 bool Placeable::click(Object *triggerer) {
-	// If the door has a used script, call that
-	if (hasScript(kScriptUsed))
-		return runScript(kScriptUsed, this, triggerer);
+	// If the placeable is locked, just play the apropriate sound and bail
+	if (isLocked()) {
+		playSound(_soundLocked);
+		return false;
+	}
+
+	// If the object was destroyed, nothing more can be done with it
+	if (_state == kStateDestroyed)
+		return true;
+
+	// Objects with an inventory toggle between open and closed
+	if (_hasInventory) {
+		if (isOpen())
+			return close(triggerer);
+
+		return open(triggerer);
+	}
+
+	// Objects without an inventory toggle between activated and deactivated
+	if (isActivated())
+		return deactivate(triggerer);
+
+	return activate(triggerer);
+}
+
+bool Placeable::open(Object *opener) {
+	if (!_hasInventory)
+		return false;
+
+	if (isOpen())
+		return true;
+
+	if (isLocked()) {
+		playSound(_soundLocked);
+		return false;
+	}
+
+	playAnimation(kAnimationPlaceableOpen);
+	runScript(kScriptOpen, this, opener);
+
+	_state = kStateOpen;
+
+	return true;
+}
+
+bool Placeable::close(Object *closer) {
+	if (!_hasInventory)
+		return false;
+
+	if (!isOpen())
+		return true;
+
+	playAnimation(kAnimationPlaceableClose);
+	runScript(kScriptClosed, this, closer);
+
+	_state = kStateClosed;
+
+	return true;
+}
+
+bool Placeable::activate(Object *user) {
+	if (_hasInventory)
+		return false;
+
+	if (isActivated())
+		return true;
+
+	if (isLocked()) {
+		playSound(_soundLocked);
+		return false;
+	}
+
+	playAnimation(kAnimationPlaceableActivate);
+	runScript(kScriptUsed, this, user);
+
+	_state = kStateActivated;
+
+	return true;
+}
+
+bool Placeable::deactivate(Object *user) {
+	if (_hasInventory)
+		return false;
+
+	if (!isActivated())
+		return true;
+
+	if (isLocked()) {
+		playSound(_soundLocked);
+		return false;
+	}
+
+	playAnimation(kAnimationPlaceableDeactivate);
+	runScript(kScriptUsed, this, user);
+
+	_state = kStateDeactivated;
 
 	return true;
 }
@@ -184,34 +283,34 @@ void Placeable::playAnimation(const Common::UString &animation, bool restart, in
 }
 
 void Placeable::playAnimation(Animation animation) {
-	// TODO: Door::Placeable(): Animate
-
 	switch (animation) {
 		case kAnimationPlaceableActivate:
 			playSound(_soundUsed);
-			_state = kStateActivated;
+			if (_model)
+				_model->playAnimation("off2on");
 			break;
 
 		case kAnimationPlaceableDeactivate:
 			playSound(_soundUsed);
-			_state = kStateDeactivated;
+			if (_model)
+				_model->playAnimation("on2off");
 			break;
 
 		case kAnimationPlaceableOpen:
 			playSound(_soundOpened);
-			_state = kStateOpen;
+			if (_model)
+				_model->playAnimation("close2open");
 			break;
 
 		case kAnimationPlaceableClose:
 			playSound(_soundClosed);
-			_state = kStateClosed;
+			if (_model)
+				_model->playAnimation("open2close");
 			break;
 
 		default:
 			break;
 	}
-
-	setModelState();
 }
 
 } // End of namespace NWN
