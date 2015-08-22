@@ -129,6 +129,10 @@ void Door::setModelState() {
 			_model->setState("opened2");
 			break;
 
+		case kStateDestroyed:
+			_model->setState("dead");
+			break;
+
 		default:
 			_model->setState("");
 			break;
@@ -204,7 +208,7 @@ bool Door::click(Object *triggerer) {
 bool Door::open(Object *opener) {
 	// TODO: Door::open(): Open in direction of the opener
 
-	if (isOpen())
+	if (isOpen() || (_state == kStateDestroyed))
 		return true;
 
 	if (isLocked()) {
@@ -213,13 +217,10 @@ bool Door::open(Object *opener) {
 		return false;
 	}
 
-	_state = kStateOpened1;
-	// setModelState();
-
-	playSound(_soundOpened);
-	if (_model)
-		_model->playAnimation("opening1");
+	playAnimation(kAnimationDoorOpen1);
 	runScript(kScriptOpen, this, opener);
+
+	_state = kStateOpened1;
 
 	// Also open the linked door
 	evaluateLink();
@@ -230,19 +231,16 @@ bool Door::open(Object *opener) {
 }
 
 bool Door::close(Object *closer) {
-	if (!isOpen())
+	if (!isOpen() || (_state == kStateDestroyed))
 		return true;
 
 	if (_invisible)
 		return false;
 
-	_state = kStateClosed;
-	// setModelState();
-
-	playSound(_soundClosed);
-	if (_model)
-		_model->playAnimation("closing1");
+	playAnimation(kAnimationDoorClose);
 	runScript(kScriptClosed, this, closer);
+
+	_state = kStateClosed;
 
 	// Also close the linked door
 	evaluateLink();
@@ -283,25 +281,22 @@ void Door::playAnimation(Animation animation) {
 			playSound(_soundClosed);
 			if (_model)
 				_model->playAnimation("closing1");
-			_state = kStateClosed;
 			break;
 
 		case kAnimationDoorOpen1:
 			playSound(_soundOpened);
 			if (_model)
 				_model->playAnimation("opening1");
-			_state = kStateOpened1;
 			break;
 
 		case kAnimationDoorOpen2:
 			playSound(_soundOpened);
 			if (_model)
 				_model->playAnimation("opening2");
-			_state = kStateOpened2;
 			break;
 
 		case kAnimationDoorDestroy:
-			warning("TODO: Door::playAnimation(): kAnimationDoorDestroy");
+			playSound(_soundDestroyed);
 			if (_model)
 				_model->playAnimation("die");
 			break;
@@ -309,8 +304,6 @@ void Door::playAnimation(Animation animation) {
 		default:
 			break;
 	}
-
-	// setModelState();
 }
 
 } // End of namespace NWN
