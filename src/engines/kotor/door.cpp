@@ -81,11 +81,15 @@ void Door::loadAppearance() {
 }
 
 void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
+	if (_appearanceID == Aurora::kFieldIDInvalid)
+		return;
+
 	uint32 column = twoda.headerToColumn("ModelName");
 	if (column == Aurora::kFieldIDInvalid)
 		column = twoda.headerToColumn("Model");
 
-	_modelName = twoda.getRow(id).getString(column);
+	_modelName    = twoda.getRow(id).getString(column);
+	_soundAppType = twoda.getRow(_appearanceID).getInt("SoundAppType");
 }
 
 void Door::hide() {

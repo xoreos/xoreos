@@ -41,8 +41,8 @@ namespace Engines {
 
 namespace KotOR {
 
-Situated::Situated(ObjectType type) : Object(type),
-	_appearanceID(Aurora::kFieldIDInvalid), _model(0) {
+Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
+	_soundAppType(Aurora::kFieldIDInvalid), _model(0) {
 
 }
 
@@ -93,8 +93,11 @@ void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 
 	// Appearance
 
-	if (_appearanceID != Aurora::kFieldIDInvalid)
-		loadAppearance();
+	if (_appearanceID == Aurora::kFieldIDInvalid)
+		warning("Situated object \"%s\" without an appearance", _tag.c_str());
+
+	loadAppearance();
+	loadSounds();
 
 	// Model
 
@@ -176,6 +179,19 @@ void Situated::loadPortrait(const Aurora::GFF3Struct &gff) {
 	}
 
 	_portrait = gff.getString("Portrait", _portrait);
+}
+
+void Situated::loadSounds() {
+	if (_soundAppType == Aurora::kFieldIDInvalid)
+		return;
+
+	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("placeableobjsnds");
+
+	_soundOpened    = twoda.getRow(_soundAppType).getString("Opened");
+	_soundClosed    = twoda.getRow(_soundAppType).getString("Closed");
+	_soundDestroyed = twoda.getRow(_soundAppType).getString("Destroyed");
+	_soundUsed      = twoda.getRow(_soundAppType).getString("Used");
+	_soundLocked    = twoda.getRow(_soundAppType).getString("Locked");
 }
 
 } // End of namespace KotOR

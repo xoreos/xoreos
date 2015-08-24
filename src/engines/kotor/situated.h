@@ -55,6 +55,13 @@ protected:
 	Common::UString _modelName; ///< The model's resource name.
 
 	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
+	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
+
+	Common::UString _soundOpened;    ///< The sound the object makes when opened.
+	Common::UString _soundClosed;    ///< The sound the object makes when closed.
+	Common::UString _soundDestroyed; ///< The sound the object makes when destroyed.
+	Common::UString _soundUsed;      ///< The sound the object makes when used.
+	Common::UString _soundLocked;    ///< The sound the object makes when locked.
 
 	Graphics::Aurora::Model *_model; ///< The situated object's model.
 
@@ -73,6 +80,7 @@ protected:
 private:
 	void loadProperties(const Aurora::GFF3Struct &gff);
 	void loadPortrait(const Aurora::GFF3Struct &gff);
+	void loadSounds();
 };
 
 } // End of namespace KotOR
