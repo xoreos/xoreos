@@ -72,9 +72,13 @@ void Placeable::loadObject(const Aurora::GFF3Struct &UNUSED(gff)) {
 }
 
 void Placeable::loadAppearance() {
+	if (_appearanceID == Aurora::kFieldIDInvalid)
+		return;
+
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("placeables");
 
-	_modelName = twoda.getRow(_appearanceID).getString("ModelName");
+	_modelName    = twoda.getRow(_appearanceID).getString("ModelName");
+	_soundAppType = twoda.getRow(_appearanceID).getInt("SoundAppType");
 }
 
 void Placeable::enter() {
