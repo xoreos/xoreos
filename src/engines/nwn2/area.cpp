@@ -26,7 +26,6 @@
 #include "src/common/error.h"
 #include "src/common/configman.h"
 
-#include "src/aurora/locstring.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -113,14 +112,11 @@ Common::UString Area::getName(const Common::UString &resRef) {
 	try {
 		Aurora::GFF3File are(resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 
-		Aurora::LocString name;
-		are.getTopLevel().getLocString("Name", name);
+		Common::UString name = are.getTopLevel().getString("Name");
+		if (!name.empty() && (*--name.end() == '\n'))
+			name.erase(--name.end());
 
-		Common::UString str = name.getString();
-		if (!str.empty() && (*--str.end() == '\n'))
-			str.erase(--str.end());
-
-		return str;
+		return name;
 
 	} catch (...) {
 	}
@@ -289,10 +285,7 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 
 	// Name
 
-	Aurora::LocString name;
-	are.getLocString("Name", name);
-
-	_name = name.getString();
+	_name = are.getString("Name");
 	if (!_name.empty() && (*--_name.end() == '\n'))
 		_name.erase(--_name.end());
 

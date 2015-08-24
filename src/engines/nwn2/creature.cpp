@@ -30,7 +30,6 @@
 #include "src/common/readfile.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/locstring.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -411,31 +410,15 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Name
 
-	if (gff.hasField("FirstName")) {
-		Aurora::LocString firstName;
-		gff.getLocString("FirstName", firstName);
-
-		_firstName = createDisplayName(firstName.getString());
-	}
-
-	if (gff.hasField("LastName")) {
-		Aurora::LocString lastName;
-		gff.getLocString("LastName", lastName);
-
-		_lastName = createDisplayName(lastName.getString());
-	}
+	_firstName = gff.getString("FirstName", _firstName);
+	_lastName  = gff.getString("LastName" , _lastName);
 
 	_name = _firstName + " " + _lastName;
 	_name.trim();
 
 	// Description
 
-	if (gff.hasField("Description")) {
-		Aurora::LocString description;
-		gff.getLocString("Description", description);
-
-		_description = description.getString();
-	}
+	_description = gff.getString("Description", _description);
 
 	// Conversation
 

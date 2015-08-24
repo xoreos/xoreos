@@ -27,7 +27,6 @@
 #include "src/common/util.h"
 #include "src/common/configman.h"
 
-#include "src/aurora/locstring.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -200,20 +199,10 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	_tag = gff.getString("Tag", _tag);
 
 	// Name
-	if (gff.hasField("LocName")) {
-		Aurora::LocString name;
-		gff.getLocString("LocName", name);
-
-		_name = name.getString();
-	}
+	_name = gff.getString("LocName", _name);
 
 	// Description
-	if (gff.hasField("Description")) {
-		Aurora::LocString description;
-		gff.getLocString("Description", description);
-
-		_description = description.getString();
-	}
+	_description = gff.getString("Description", _description);
 
 	// Appearance
 	_appearanceID = gff.getUint("Appearance", _appearanceID);

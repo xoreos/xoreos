@@ -25,7 +25,6 @@
 #include "src/common/util.h"
 #include "src/common/maths.h"
 
-#include "src/aurora/locstring.h"
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/aurora/util.h"
@@ -97,18 +96,11 @@ void Waypoint::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 
 void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Tag
-
 	_tag = gff.getString("Tag", _tag);
 
 	// Map note
-
 	_hasMapNote = gff.getBool("MapNoteEnabled", _hasMapNote);
-	if (gff.hasField("MapNote")) {
-		Aurora::LocString mapNote;
-		gff.getLocString("MapNote", mapNote);
-
-		_mapNote = mapNote.getString();
-	}
+	_mapNote = gff.getString("MapNote", _mapNote);
 
 	// Scripts and variables
 	readScripts(gff);
