@@ -41,7 +41,7 @@ namespace Engines {
 namespace NWN {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
-	_state(kStateDefault), _tooltip(0) {
+	_state(kStateDefault), _hasInventory(false), _tooltip(0) {
 
 	load(placeable);
 }
