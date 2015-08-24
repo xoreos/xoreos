@@ -60,6 +60,16 @@ public:
 	/** Is the placeable activated? */
 	bool isActivated() const;
 
+	/** The opener object opens this placeable. */
+	bool open(Object *opener);
+	/** The closer object closes this placeable. */
+	bool close(Object *closer);
+
+	/** The user object activates this placeable. */
+	bool activate(Object *opener);
+	/** The user object deactivates this placeable. */
+	bool deactivate(Object *closer);
+
 	// Object/Cursor interactions
 
 	void enter(); ///< The cursor entered the placeable. */
@@ -67,6 +77,9 @@ public:
 
 	/** (Un)Highlight the placeable. */
 	virtual void highlight(bool enabled);
+
+	/** The placeable was clicked. */
+	bool click(Object *triggerer = 0);
 
 protected:
 	/** Load placeable-specific properties. */
@@ -76,6 +89,8 @@ protected:
 
 private:
 	State _state; ///< The current state of the placeable.
+
+	bool _hasInventory; ///< Does this placeable have an inventory?
 
 	/** Load from a placeable instance. */
 	void load(const Aurora::GFF3Struct &placeable);
