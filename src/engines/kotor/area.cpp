@@ -284,8 +284,8 @@ void Area::loadGIT(const Aurora::GFF3Struct &git) {
 	if (git.hasField("AreaProperties"))
 		loadProperties(git.getStruct("AreaProperties"));
 
-	if (git.hasField("WaypointListList"))
-		loadWaypoints(git.getList("WaypointListList"));
+	if (git.hasField("WaypointList"))
+		loadWaypoints(git.getList("WaypointList"));
 
 	if (git.hasField("Placeable List"))
 		loadPlaceables(git.getList("Placeable List"));
