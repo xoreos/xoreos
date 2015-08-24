@@ -91,8 +91,7 @@ void Area::load() {
 
 void Area::clear() {
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
-		if (!(*o)->isStatic())
-			_module->removeObject(**o);
+		_module->removeObject(**o);
 
 		delete *o;
 	}
@@ -335,14 +334,13 @@ void Area::loadRooms() {
 
 void Area::loadObject(KotOR2::Object &object) {
 	_objects.push_back(&object);
+	_module->addObject(object);
 
 	if (!object.isStatic()) {
 		const std::list<uint32> &ids = object.getIDs();
 
 		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 			_objectMap.insert(std::make_pair(*id, &object));
-
-		_module->addObject(object);
 	}
 }
 
