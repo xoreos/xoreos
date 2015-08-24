@@ -24,6 +24,10 @@
 
 #include "src/engines/kotor2/object.h"
 
+#include "src/sound/sound.h"
+
+#include "src/engines/aurora/util.h"
+
 namespace Engines {
 
 namespace KotOR2 {
@@ -117,6 +121,18 @@ void Object::highlight(bool UNUSED(enabled)) {
 
 bool Object::click(Object *UNUSED(triggerer)) {
 	return true;
+}
+
+void Object::stopSound() {
+	SoundMan.stopChannel(_sound);
+}
+
+void Object::playSound(const Common::UString &sound, bool pitchVariance) {
+	stopSound();
+	if (sound.empty())
+		return;
+
+	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice, false, 1.0f, pitchVariance);
 }
 
 } // End of namespace KotOR2

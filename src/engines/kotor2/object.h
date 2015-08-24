@@ -32,6 +32,8 @@
 
 #include "src/aurora/nwscript/object.h"
 
+#include "src/sound/types.h"
+
 #include "src/engines/kotor2/types.h"
 
 #include "src/engines/kotor2/script/container.h"
@@ -95,6 +97,13 @@ public:
 	/** The object was clicked. */
 	virtual bool click(Object *triggerer = 0);
 
+	// Sound
+
+	/** Stop the current object sound. */
+	void stopSound();
+	/** Play an object sound. */
+	void playSound(const Common::UString &sound, bool pitchVariance = false);
+
 protected:
 	ObjectType _type; ///< The object's type.
 
@@ -110,6 +119,8 @@ protected:
 
 	float _position[3];    ///< The object's position.
 	float _orientation[4]; ///< The object's orientation.
+
+	Sound::ChannelHandle _sound; ///< The currently playing object sound.
 };
 
 } // End of namespace KotOR2
