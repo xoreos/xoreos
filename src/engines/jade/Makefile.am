@@ -18,6 +18,8 @@ noinst_HEADERS = \
                  waypoint.h \
                  gui/main/main.h \
                  script/container.h \
+                 script/functions.h \
+                 script/function_tables.h \
                  $(EMPTY)
 
 libjade_la_SOURCES = \
@@ -35,4 +37,5 @@ libjade_la_SOURCES = \
                      waypoint.cpp \
                      gui/main/main.cpp \
                      script/container.cpp \
+                     script/functions.cpp \
                      $(EMPTY)
