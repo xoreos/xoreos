@@ -29,7 +29,6 @@
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/locstring.h"
 
 #include "src/graphics/aurora/types.h"
 #include "src/graphics/aurora/texturehandle.h"

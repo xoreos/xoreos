@@ -26,7 +26,6 @@
 #include "src/common/maths.h"
 #include "src/common/util.h"
 
-#include "src/aurora/locstring.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -151,20 +150,10 @@ void Item::loadProperties(const Aurora::GFF3Struct &gff) {
 	_tag = gff.getString("Tag", _tag);
 
 	// Name
-	if (gff.hasField("LocalizedName")) {
-		Aurora::LocString name;
-		gff.getLocString("LocalizedName", name);
-
-		_name = name.getString();
-	}
+	_name = gff.getString("LocalizedName", _name);
 
 	// Description
-	if (gff.hasField("Description")) {
-		Aurora::LocString description;
-		gff.getLocString("Description", description);
-
-		_description = description.getString();
-	}
+	_description = gff.getString("Description", _description);
 
 	// This is an index into basitem.2da which contains inventory slot info
 	_baseItem = gff.getUint("BaseItem", _baseItem);

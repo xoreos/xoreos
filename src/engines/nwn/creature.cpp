@@ -619,31 +619,15 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Name
 
-	if (gff.hasField("FirstName")) {
-		Aurora::LocString firstName;
-		gff.getLocString("FirstName", firstName);
-
-		_firstName = firstName.getString();
-	}
-
-	if (gff.hasField("LastName")) {
-		Aurora::LocString lastName;
-		gff.getLocString("LastName", lastName);
-
-		_lastName = lastName.getString();
-	}
+	_firstName = gff.getString("FirstName", _firstName);
+	_lastName  = gff.getString("LastName" , _lastName);
 
 	_name = _firstName + " " + _lastName;
 	_name.trim();
 
 	// Description
 
-	if (gff.hasField("Description")) {
-		Aurora::LocString description;
-		gff.getLocString("Description", description);
-
-		_description = description.getString();
-	}
+	_description = gff.getString("Description", _description);
 
 	// Conversation
 
@@ -977,13 +961,11 @@ void Creature::getPCListInfo(const Common::UString &bic, bool local,
 		const Aurora::GFF3Struct &top = gff->getTopLevel();
 
 		// Reading name
-		Aurora::LocString firstName;
-		top.getLocString("FirstName", firstName);
+		const Common::UString firstName = top.getString("FirstName");
+		const Common::UString lastName  = top.getString("LastName");
 
-		Aurora::LocString lastName;
-		top.getLocString("LastName", lastName);
-
-		name = firstName.getString() + " " + lastName.getString();
+		name = firstName + " " + lastName;
+		name.trim();
 
 		// Reading portrait (failure non-fatal)
 		try {

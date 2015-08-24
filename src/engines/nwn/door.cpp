@@ -83,7 +83,7 @@ void Door::loadObject(const Aurora::GFF3Struct &gff) {
 	// Linked to
 
 	_linkedToFlag = (LinkedToFlag) gff.getUint("LinkedToFlags", (uint) _linkedToFlag);
-	_linkedTo     = gff.getString("LinkedTo");
+	_linkedTo     = gff.getString("LinkedTo", _linkedTo);
 }
 
 void Door::loadAppearance() {
