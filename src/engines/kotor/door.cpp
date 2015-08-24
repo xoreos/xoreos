@@ -32,13 +32,15 @@
 #include "src/graphics/aurora/model.h"
 
 #include "src/engines/kotor/door.h"
+#include "src/engines/kotor/module.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Door::Door(const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
-	_genericType(Aurora::kFieldIDInvalid), _state(kStateClosed) {
+Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
+	_module(&module), _genericType(Aurora::kFieldIDInvalid), _state(kStateClosed),
+	_linkedToFlag(kLinkedToNothing), _linkedToType(kObjectTypeAll) {
 
 	load(door);
 }
@@ -71,6 +73,16 @@ void Door::loadObject(const Aurora::GFF3Struct &gff) {
 	// State
 
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
+
+	// Linked to
+
+	_linkedToFlag   = (LinkedToFlag) gff.getUint("LinkedToFlags", (uint) _linkedToFlag);
+	_linkedTo       = gff.getString("LinkedTo", _linkedTo);
+	_linkedToModule = gff.getString("LinkedToModule", _linkedToModule);
+
+	_transitionDestination = gff.getString("TransitionDestin", _transitionDestination);
+
+	_linkedToType = (ObjectType) (kObjectTypeDoor | kObjectTypeWaypoint);
 }
 
 void Door::loadAppearance() {
@@ -127,6 +139,12 @@ bool Door::click(Object *triggerer) {
 	// If the door is open and has a click script, call that
 	if (hasScript(kScriptClick))
 		return runScript(kScriptClick, this, triggerer);
+
+	if (!_linkedTo.empty()) {
+		_module->movePC(_linkedToModule, _linkedTo, _linkedToType);
+
+		return true;
+	}
 
 	// If the door is open and has no script, close it
 	return close(triggerer);

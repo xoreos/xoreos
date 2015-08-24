@@ -33,6 +33,8 @@ namespace Engines {
 
 namespace KotOR {
 
+class Module;
+
 class Door : public Situated {
 public:
 	/** The state of a door. */
@@ -44,7 +46,7 @@ public:
 	};
 
 	/** Load from a door instance. */
-	Door(const Aurora::GFF3Struct &door);
+	Door(Module &module, const Aurora::GFF3Struct &door);
 	~Door();
 
 	// Basic visuals
@@ -79,9 +81,25 @@ protected:
 	void loadAppearance();
 
 private:
+	enum LinkedToFlag {
+		kLinkedToNothing  = 0, ///< This door links to nothing.
+		kLinkedToDoor     = 1, ///< This door links to another door.
+		kLinkedToWaypoint = 2  ///< This door links to a waypoint.
+	};
+
+	Module *_module; ///< The module the door is in.
+
 	uint32 _genericType; ///< Index into the generic door types.
 
 	State _state; ///< The current state of the door.
+
+	LinkedToFlag    _linkedToFlag;   ///< Does this door link to anything?
+	ObjectType      _linkedToType;   ///< The type of the object this door links to.
+	Common::UString _linkedTo;       ///< The object tag this door links to.
+	Common::UString _linkedToModule; ///< The module the object this door links to is in.
+
+	/** A localized string describing where this door leads to. */
+	Common::UString _transitionDestination;
 
 	/** Load from a door instance. */
 	void load(const Aurora::GFF3Struct &door);
