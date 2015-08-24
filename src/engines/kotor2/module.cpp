@@ -60,7 +60,8 @@ bool Module::Action::operator<(const Action &s) const {
 
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false), _pc(0),
-	_currentTexturePack(-1), _exit(false), _area(0) {
+	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
+	_area(0) {
 
 }
 
@@ -75,22 +76,29 @@ void Module::clear() {
 	unload(true);
 }
 
-void Module::load(const Common::UString &module) {
+void Module::load(const Common::UString &module, const Common::UString &entryLocation,
+                  ObjectType entryLocationType) {
+
 	if (isRunning()) {
 		// We are currently running a module. Schedule a safe change instead
 
-		changeModule(module);
+		changeModule(module, entryLocation, entryLocationType);
 		return;
 	}
 
 	// We are not currently running a module. Directly load the new module
-	loadModule(module);
+	loadModule(module, entryLocation, entryLocationType);
 }
 
-void Module::loadModule(const Common::UString &module) {
+void Module::loadModule(const Common::UString &module, const Common::UString &entryLocation,
+                        ObjectType entryLocationType) {
+
 	unload(false);
 
 	_module = module;
+
+	_entryLocation     = entryLocation;
+	_entryLocationType = entryLocationType;
 
 	try {
 
@@ -225,6 +233,9 @@ void Module::unload(bool completeUnload) {
 	_hasModule = false;
 
 	_module.clear();
+
+	_entryLocation.clear();
+	_entryLocationType = kObjectTypeAll;
 }
 
 void Module::unloadResources() {
@@ -254,8 +265,13 @@ void Module::unloadTexturePack() {
 	_currentTexturePack = -1;
 }
 
-void Module::changeModule(const Common::UString &module) {
+void Module::changeModule(const Common::UString &module, const Common::UString &entryLocation,
+                          ObjectType entryLocationType) {
+
 	_newModule = module;
+
+	_entryLocation     = entryLocation;
+	_entryLocationType = entryLocationType;
 }
 
 void Module::replaceModule() {
@@ -264,13 +280,15 @@ void Module::replaceModule() {
 
 	_console->hide();
 
-	Common::UString newModule = _newModule;
+	const Common::UString newModule         = _newModule;
+	const Common::UString entryLocation     = _entryLocation;
+	const ObjectType      entryLocationType = _entryLocationType;
 
 	unload(false);
 
 	_exit = true;
 
-	loadModule(newModule);
+	loadModule(newModule, entryLocation, entryLocationType);
 	enter();
 }
 
@@ -287,11 +305,9 @@ void Module::enter() {
 	if (!startMovie.empty())
 		playVideo(startMovie);
 
-	float entryX, entryY, entryZ, entryDirX, entryDirY;
-	_ifo.getEntryPosition(entryX, entryY, entryZ);
-	_ifo.getEntryDirection(entryDirX, entryDirY);
-
-	const float entryAngle = -Common::rad2deg(atan2(entryDirX, entryDirY));
+	float entryX, entryY, entryZ, entryAngle;
+	if (!getEntryObjectLocation(entryX, entryY, entryZ, entryAngle))
+		getEntryIFOLocation(entryX, entryY, entryZ, entryAngle);
 
 	// Roughly head position
 	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);
@@ -302,6 +318,48 @@ void Module::enter() {
 
 	_running = true;
 	_exit    = false;
+}
+
+bool Module::getObjectLocation(const Common::UString &object, ObjectType location,
+                               float &entryX, float &entryY, float &entryZ, float &entryAngle) {
+
+	if (object.empty())
+		return false;
+
+	Aurora::NWScript::ObjectSearch *search = findObjectsByTag(object);
+
+
+	KotOR2::Object *kotorObject = 0;
+	while (!kotorObject && search->get()) {
+		kotorObject = KotOR2::ObjectContainer::toObject(search->next());
+		if (!kotorObject || !(kotorObject->getType() & location))
+			kotorObject = 0;
+	}
+
+	delete search;
+
+	if (!kotorObject)
+		return false;
+
+	// TODO: Entry orientation
+
+	kotorObject->getPosition(entryX, entryY, entryZ);
+	entryAngle = 0.0f;
+
+	return true;
+}
+
+bool Module::getEntryObjectLocation(float &entryX, float &entryY, float &entryZ, float &entryAngle) {
+	return getObjectLocation(_entryLocation, _entryLocationType, entryX, entryY, entryZ, entryAngle);
+}
+
+void Module::getEntryIFOLocation(float &entryX, float &entryY, float &entryZ, float &entryAngle) {
+	_ifo.getEntryPosition(entryX, entryY, entryZ);
+
+	float entryDirX, entryDirY;
+	_ifo.getEntryDirection(entryDirX, entryDirY);
+
+	entryAngle = -Common::rad2deg(atan2(entryDirX, entryDirY));
 }
 
 void Module::leave() {
@@ -400,6 +458,38 @@ void Module::handleActions() {
 
 		_delayedActions.erase(action);
 	}
+}
+
+void Module::movePC(float x, float y, float z) {
+	if (!_pc)
+		return;
+
+	_pc->setPosition(x, y, z);
+	movedPC();
+}
+
+void Module::movePC(const Common::UString &module, const Common::UString &object, ObjectType type) {
+	if (module.empty() || (module == _module)) {
+		float x, y, z, angle;
+		if (getObjectLocation(object, type, x, y, z, angle))
+			movePC(x, y, z);
+
+		return;
+	}
+
+	load(module, object, type);
+}
+
+void Module::movedPC() {
+	if (!_pc)
+		return;
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	// Roughly head position
+	CameraMan.setPosition(x, y, z + 1.8f);
+	CameraMan.update();
 }
 
 const Aurora::IFOFile &Module::getIFO() const {

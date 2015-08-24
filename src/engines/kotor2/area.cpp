@@ -362,7 +362,7 @@ void Area::loadPlaceables(const Aurora::GFF3List &list) {
 
 void Area::loadDoors(const Aurora::GFF3List &list) {
 	for (Aurora::GFF3List::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Door *door = new Door(**d);
+		Door *door = new Door(*_module, **d);
 
 		loadObject(*door);
 	}

@@ -60,7 +60,8 @@ public:
 	bool isRunning() const;
 
 	/** Load a module. */
-	void load(const Common::UString &module);
+	void load(const Common::UString &module, const Common::UString &entryLocation = "",
+	          ObjectType entryLocationType = kObjectTypeAll);
 	/** Use this character as the player character. */
 	void usePC(Creature *pc);
 	/** Exit the currently running module. */
@@ -88,6 +89,15 @@ public:
 	                 const Aurora::NWScript::ScriptState &state,
 	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
 	                 uint32 delay);
+
+	// .--- PC management
+	/** Move the player character to this position within the current area. */
+	void movePC(float x, float y, float z);
+	/** Move the player character to this object within this area. */
+	void movePC(const Common::UString &module, const Common::UString &object, ObjectType type = kObjectTypeAll);
+	/** Notify the module that the PC was moved. */
+	void movedPC();
+	// '---
 
 	// .--- Static utility methods
 	static Common::UString getName(const Common::UString &module);
@@ -152,6 +162,11 @@ private:
 	Common::UString _module;    ///< The current module's name.
 	Common::UString _newModule; ///< The module we should change to.
 
+	/** The tag of the object in the start location for this module. */
+	Common::UString _entryLocation;
+	/** The type(s) of the object in the start location for this module. */
+	ObjectType      _entryLocationType;
+
 	Area *_area; ///< The current module's area.
 
 	EventQueue  _eventQueue;
@@ -184,11 +199,18 @@ private:
 	// '---
 
 	/** Load the actual module. */
-	void loadModule(const Common::UString &module);
+	void loadModule(const Common::UString &module, const Common::UString &entryLocation,
+	                ObjectType entryLocationType);
 	/** Schedule a change to a new module. */
-	void changeModule(const Common::UString &module);
+	void changeModule(const Common::UString &module, const Common::UString &entryLocation,
+	                  ObjectType entryLocationType);
 	/** Actually replace the currently running module. */
 	void replaceModule();
+
+	bool getObjectLocation(const Common::UString &object, ObjectType location,
+	                       float &entryX, float &entryY, float &entryZ, float &entryAngle);
+	bool getEntryObjectLocation(float &entryX, float &entryY, float &entryZ, float &entryAngle);
+	void getEntryIFOLocation(float &entryX, float &entryY, float &entryZ, float &entryAngle);
 
 	void enterArea();
 	void leaveArea();
