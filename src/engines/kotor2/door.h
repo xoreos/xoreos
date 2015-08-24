@@ -56,13 +56,21 @@ public:
 	/** Is the door open? */
 	bool isOpen() const;
 
+	/** The opener object opens this door. */
+	bool open(Object *opener);
+	/** The closer object closes this door. */
+	bool close(Object *closer);
+
 	// Object/Cursor interactions
 
 	void enter(); ///< The cursor entered the door. */
 	void leave(); ///< The cursor left the door. */
 
 	/** (Un)Highlight the door. */
-	virtual void highlight(bool enabled);
+	void highlight(bool enabled);
+
+	/** The door was clicked. */
+	bool click(Object *triggerer = 0);
 
 protected:
 	/** Load door-specific properties. */
