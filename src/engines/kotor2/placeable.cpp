@@ -37,7 +37,7 @@ namespace Engines {
 namespace KotOR2 {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
-	_state(kStateDefault) {
+	_state(kStateDefault), _hasInventory(false) {
 
 	load(placeable);
 }
@@ -74,6 +74,8 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 	// State
 
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
+
+	_hasInventory = gff.getBool("HasInventory", _hasInventory);
 }
 
 void Placeable::loadAppearance() {
@@ -105,6 +107,107 @@ bool Placeable::isOpen() const {
 
 bool Placeable::isActivated() const {
 	return isOpen();
+}
+
+bool Placeable::click(Object *triggerer) {
+	// If the placeable is locked, just play the apropriate sound and bail
+	if (isLocked()) {
+		playSound(_soundLocked);
+		return false;
+	}
+
+	// If the object was destroyed, nothing more can be done with it
+	if (_state == kStateDestroyed)
+		return true;
+
+	// Objects with an inventory toggle between open and closed
+	if (_hasInventory) {
+		if (isOpen())
+			return close(triggerer);
+
+		return open(triggerer);
+	}
+
+	// Objects without an inventory toggle between activated and deactivated
+	if (isActivated())
+		return deactivate(triggerer);
+
+	return activate(triggerer);
+}
+
+bool Placeable::open(Object *opener) {
+	if (!_hasInventory)
+		return false;
+
+	if (isOpen())
+		return true;
+
+	if (isLocked()) {
+		playSound(_soundLocked);
+		return false;
+	}
+
+	playSound(_soundOpened);
+	runScript(kScriptOpen, this, opener);
+
+	_state = kStateOpen;
+
+	return true;
+}
+
+bool Placeable::close(Object *closer) {
+	if (!_hasInventory)
+		return false;
+
+	if (!isOpen())
+		return true;
+
+	playSound(_soundClosed);
+	runScript(kScriptClosed, this, closer);
+
+	_state = kStateClosed;
+
+	return true;
+}
+
+bool Placeable::activate(Object *user) {
+	if (_hasInventory)
+		return false;
+
+	if (isActivated())
+		return true;
+
+	if (isLocked()) {
+		playSound(_soundLocked);
+		return false;
+	}
+
+	playSound(_soundUsed);
+	runScript(kScriptUsed, this, user);
+
+	_state = kStateActivated;
+
+	return true;
+}
+
+bool Placeable::deactivate(Object *user) {
+	if (_hasInventory)
+		return false;
+
+	if (!isActivated())
+		return true;
+
+	if (isLocked()) {
+		playSound(_soundLocked);
+		return false;
+	}
+
+	playSound(_soundUsed);
+	runScript(kScriptUsed, this, user);
+
+	_state = kStateDeactivated;
+
+	return true;
 }
 
 } // End of namespace KotOR2
