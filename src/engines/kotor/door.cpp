@@ -119,6 +119,51 @@ bool Door::isOpen() const {
 	return (_state == kStateOpened1) || (_state == kStateOpened2);
 }
 
+bool Door::click(Object *triggerer) {
+	// If the door is closed, try to open it
+	if (!isOpen())
+		return open(triggerer);
+
+	// If the door is open and has a click script, call that
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
+
+	// If the door is open and has no script, close it
+	return close(triggerer);
+}
+
+bool Door::open(Object *opener) {
+	// TODO: Door::open(): Open in direction of the opener
+
+	if (isOpen() || (_state == kStateDestroyed))
+		return true;
+
+	if (isLocked()) {
+		playSound(_soundLocked);
+		runScript(kScriptFailToOpen, this, opener);
+		return false;
+	}
+
+	playSound(_soundOpened);
+	runScript(kScriptOpen, this, opener);
+
+	_state = kStateOpened1;
+
+	return true;
+}
+
+bool Door::close(Object *closer) {
+	if (!isOpen() || (_state == kStateDestroyed))
+		return true;
+
+	playSound(_soundClosed);
+	runScript(kScriptClosed, this, closer);
+
+	_state = kStateClosed;
+
+	return true;
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
