@@ -27,7 +27,6 @@
 #include "src/common/readstream.h"
 
 #include "src/aurora/resman.h"
-#include "src/aurora/locstring.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -272,15 +271,10 @@ void Area::loadVIS() {
 
 void Area::loadARE(const Aurora::GFF3Struct &are) {
 	// Tag
-
 	_tag = are.getString("Tag");
 
 	// Name
-
-	Aurora::LocString name;
-	are.getLocString("Name", name);
-
-	_name = name.getString();
+	_name = are.getString("Name");
 
 	// Scripts
 	readScripts(are);
