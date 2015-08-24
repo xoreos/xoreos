@@ -36,7 +36,9 @@ namespace Engines {
 
 namespace KotOR {
 
-Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable) {
+Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
+	_state(kStateDefault) {
+
 	load(placeable);
 }
 
@@ -68,7 +70,10 @@ void Placeable::hide() {
 	Situated::hide();
 }
 
-void Placeable::loadObject(const Aurora::GFF3Struct &UNUSED(gff)) {
+void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
+	// State
+
+	_state = (State) gff.getUint("AnimationState", (uint) _state);
 }
 
 void Placeable::loadAppearance() {
@@ -92,6 +97,14 @@ void Placeable::leave() {
 void Placeable::highlight(bool enabled) {
 	if (_model)
 		_model->drawBound(enabled);
+}
+
+bool Placeable::isOpen() const {
+	return (_state == kStateOpen) || (_state == kStateActivated);
+}
+
+bool Placeable::isActivated() const {
+	return isOpen();
 }
 
 } // End of namespace KotOR

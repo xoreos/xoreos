@@ -42,7 +42,7 @@ namespace Engines {
 namespace KotOR {
 
 Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
-	_soundAppType(Aurora::kFieldIDInvalid), _model(0) {
+	_soundAppType(Aurora::kFieldIDInvalid), _locked(false), _model(0) {
 
 }
 
@@ -74,6 +74,14 @@ void Situated::setOrientation(float x, float y, float z, float angle) {
 
 	if (_model)
 		_model->setOrientation(x, y, z, angle);
+}
+
+bool Situated::isLocked() const {
+	return _locked;
+}
+
+void Situated::setLocked(bool locked) {
+	_locked = locked;
 }
 
 void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
@@ -163,6 +171,9 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Usable
 	_usable = gff.getBool("Useable", _usable);
+
+	// Locked
+	_locked = gff.getBool("Locked", _locked);
 
 	// Scripts
 	readScripts(gff);

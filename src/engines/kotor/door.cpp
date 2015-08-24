@@ -38,7 +38,7 @@ namespace Engines {
 namespace KotOR {
 
 Door::Door(const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
-	_genericType(Aurora::kFieldIDInvalid) {
+	_genericType(Aurora::kFieldIDInvalid), _state(kStateClosed) {
 
 	load(door);
 }
@@ -67,6 +67,10 @@ void Door::load(const Aurora::GFF3Struct &door) {
 
 void Door::loadObject(const Aurora::GFF3Struct &gff) {
 	_genericType = gff.getUint("GenericType", _genericType);
+
+	// State
+
+	_state = (State) gff.getUint("AnimationState", (uint) _state);
 }
 
 void Door::loadAppearance() {
@@ -109,6 +113,10 @@ void Door::leave() {
 void Door::highlight(bool enabled) {
 	if (_model)
 		_model->drawBound(enabled);
+}
+
+bool Door::isOpen() const {
+	return (_state == kStateOpened1) || (_state == kStateOpened2);
 }
 
 } // End of namespace KotOR
