@@ -44,6 +44,14 @@ public:
 	void show(); ///< Show the situated object's model.
 	void hide(); ///< Hide the situated object's model.
 
+	// Basic properties
+
+	/** Is the situated object open? */
+	virtual bool isOpen() const = 0;
+
+	bool isLocked() const;               ///< Is the situated object locked?
+	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
+
 	// Positioning
 
 	/** Set the situated object's position. */
@@ -56,6 +64,8 @@ protected:
 
 	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
 	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
+
+	bool _locked; ///< Is the situated object locked?
 
 	Common::UString _soundOpened;    ///< The sound the object makes when opened.
 	Common::UString _soundClosed;    ///< The sound the object makes when closed.
