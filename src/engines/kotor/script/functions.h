@@ -151,6 +151,10 @@ private:
 	void setLocked(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsOpen(Aurora::NWScript::FunctionContext &ctx);
+
+	void getLastOpenedBy(Aurora::NWScript::FunctionContext &ctx);
+	void getLastClosedBy(Aurora::NWScript::FunctionContext &ctx);
+	void getLastUsedBy  (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp
