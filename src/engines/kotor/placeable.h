@@ -76,7 +76,7 @@ public:
 	void leave(); ///< The cursor left the placeable. */
 
 	/** (Un)Highlight the placeable. */
-	virtual void highlight(bool enabled);
+	void highlight(bool enabled);
 
 	/** The placeable was clicked. */
 	bool click(Object *triggerer = 0);
