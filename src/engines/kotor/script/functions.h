@@ -146,6 +146,13 @@ private:
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Situated objects, functions_situated.cpp
+	void getLocked(Aurora::NWScript::FunctionContext &ctx);
+	void setLocked(Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsOpen(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Actions, functions_action.cpp
 	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
 	void delayCommand (Aurora::NWScript::FunctionContext &ctx);
