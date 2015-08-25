@@ -1,14 +1,14 @@
 Someday, ????-??-?? (Version 0.0.3)
 	- DOCS:
-		- Add xoreos.conf.example
+		- Added xoreos.conf.example
 	- BUILD:
-		- Fix autotools out-of-tree builds
-		- Fix CMake compilation on Windows with MSVC
-		- Fix configure with zlib 1.2.3.4 - 1.2.3.9
+		- Fixed autotools out-of-tree builds
+		- Fixed CMake compilation on Windows with MSVC
+		- Fixed configure with zlib 1.2.3.4 - 1.2.3.9
 	- ENGINES:
-		- Restructure probes
+		- Restructured probes
 		- WITCHER:
-			- Fix init without premium modules
+			- Fixed init without premium modules
 
 Monday, 2015-07-27 (Version 0.0.2)
 	- Loading resources
