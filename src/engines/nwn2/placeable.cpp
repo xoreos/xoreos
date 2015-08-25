@@ -99,7 +99,15 @@ void Placeable::setModelState() {
 
 }
 
+void Placeable::show() {
+	setModelState();
+
+	Situated::show();
+}
+
 void Placeable::hide() {
+	leave();
+
 	Situated::hide();
 }
 

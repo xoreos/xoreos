@@ -148,6 +148,8 @@ void Door::show() {
 }
 
 void Door::hide() {
+	leave();
+
 	Situated::hide();
 }
 
