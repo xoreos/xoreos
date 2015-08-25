@@ -53,8 +53,6 @@ void Functions::playVoiceChat(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx) {
 	NWN2::Object *object = NWN2::ObjectContainer::toObject(ctx.getCaller());
-	if (!object)
-		return;
 
 	const Common::UString sound = TalkMan.getSoundResRef((uint32) ctx.getParams()[0].getInt());
 
