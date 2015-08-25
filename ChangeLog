@@ -7,6 +7,25 @@ Someday, ????-??-?? (Version 0.0.3)
 		- Fixed configure with zlib 1.2.3.4 - 1.2.3.9
 	- ENGINES:
 		- Restructured probes
+		- NWN:
+			- Rewrote script system
+			- Restructured main game loop
+			- Implemented partial placeable handling
+		- KOTOR:
+			- Restructured main game loop
+			- Restructured object classes to match NWN
+			- Added script system
+			- Implemented partial placeable and door handling
+		- KOTOR2:
+			- Restructured main game loop
+			- Added duplicates of KotOR object classes
+			- Added script system
+			- Implemented partial placeable and door handling
+		- NWN2:
+			- Restructured main game loop
+			- Restructured object classes to match NWN
+			- Added script system
+			- Implemented partial placeable and door handling
 		- WITCHER:
 			- Fixed init without premium modules
 
