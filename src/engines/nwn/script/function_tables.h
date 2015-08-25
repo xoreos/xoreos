@@ -393,7 +393,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 257, "GetLastPerceptionHeard"              , 0                                                },
 	{ 258, "GetLastPerceptionInaudible"          , 0                                                },
 	{ 259, "GetLastPerceptionSeen"               , 0                                                },
-	{ 260, "GetLastClosedBy"                     , 0                                                },
+	{ 260, "GetLastClosedBy"                     , &Functions::getLastClosedBy                      },
 	{ 261, "GetLastPerceptionVanished"           , 0                                                },
 	{ 262, "GetFirstInPersistentObject"          , 0                                                },
 	{ 263, "GetNextInPersistentObject"           , 0                                                },

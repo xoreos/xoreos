@@ -42,8 +42,8 @@ namespace Engines {
 namespace NWN {
 
 Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
-	_soundAppType(Aurora::kFieldIDInvalid), _locked(false), _lastOpenedBy(0), _lastUsedBy(0),
-	_model(0) {
+	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
+	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0), _model(0) {
 
 }
 
@@ -126,6 +126,10 @@ void Situated::setLocked(bool locked) {
 
 Object *Situated::getLastOpenedBy() const {
 	return _lastOpenedBy;
+}
+
+Object *Situated::getLastClosedBy() const {
+	return _lastClosedBy;
 }
 
 Object *Situated::getLastUsedBy() const {

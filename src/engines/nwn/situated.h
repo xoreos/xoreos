@@ -57,6 +57,8 @@ public:
 
 	/** Return the object that last opened this situated object. */
 	Object *getLastOpenedBy() const;
+	/** Return the object that last closed this situated object. */
+	Object *getLastClosedBy() const;
 	/** Return the object that last used this situated object. */
 	Object *getLastUsedBy  () const;
 
@@ -81,8 +83,9 @@ protected:
 	Common::UString _soundUsed;      ///< The sound the object makes when used.
 	Common::UString _soundLocked;    ///< The sound the object makes when locked.
 
-	Object *_lastOpenedBy; ///< The object that last used this situated object.
-	Object *_lastUsedBy;   ///< The object that last opened this situated object.
+	Object *_lastOpenedBy; ///< The object that last opened this situated object.
+	Object *_lastClosedBy; ///< The object that last closed this situated object.
+	Object *_lastUsedBy;   ///< The object that last used this situated object.
 
 	Graphics::Aurora::Model *_model; ///< The situated object's model.
 

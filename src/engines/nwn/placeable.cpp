@@ -234,6 +234,8 @@ bool Placeable::close(Object *closer) {
 	if (!isOpen())
 		return true;
 
+	_lastClosedBy = closer;
+
 	playAnimation(kAnimationPlaceableClose);
 	runScript(kScriptClosed, this, closer);
 

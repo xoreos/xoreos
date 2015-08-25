@@ -241,6 +241,8 @@ bool Door::close(Object *closer) {
 	if (_invisible)
 		return false;
 
+	_lastClosedBy = closer;
+
 	playAnimation(kAnimationDoorClose);
 	runScript(kScriptClosed, this, closer);
 

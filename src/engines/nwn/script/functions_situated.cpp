@@ -62,6 +62,16 @@ void Functions::getLastOpenedBy(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) situated->getLastOpenedBy();
 }
 
+void Functions::getLastClosedBy(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Situated *situated = NWN::ObjectContainer::toSituated(ctx.getCaller());
+	if (!situated)
+		return;
+
+	ctx.getReturn() = (Aurora::NWScript::Object *) situated->getLastClosedBy();
+}
+
 void Functions::getLastUsedBy(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
