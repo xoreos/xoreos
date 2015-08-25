@@ -52,6 +52,36 @@ void Functions::getIsOpen(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = situated ? situated->isOpen() : 0;
 }
 
+void Functions::getLastOpenedBy(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Situated *situated = KotOR2::ObjectContainer::toSituated(ctx.getCaller());
+	if (!situated)
+		return;
+
+	ctx.getReturn() = (Aurora::NWScript::Object *) situated->getLastOpenedBy();
+}
+
+void Functions::getLastClosedBy(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Situated *situated = KotOR2::ObjectContainer::toSituated(ctx.getCaller());
+	if (!situated)
+		return;
+
+	ctx.getReturn() = (Aurora::NWScript::Object *) situated->getLastClosedBy();
+}
+
+void Functions::getLastUsedBy(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	Situated *situated = KotOR2::ObjectContainer::toSituated(ctx.getCaller());
+	if (!situated)
+		return;
+
+	ctx.getReturn() = (Aurora::NWScript::Object *) situated->getLastUsedBy();
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
