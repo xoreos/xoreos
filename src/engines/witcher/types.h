@@ -32,20 +32,27 @@ namespace Engines {
 namespace Witcher {
 
 enum ObjectType {
-	kObjectTypeNone         = 0     ,
-	kObjectTypeCreature     = 1 << 0,
-	kObjectTypeItem         = 1 << 1,
-	kObjectTypeTrigger      = 1 << 2,
-	kObjectTypeDoor         = 1 << 3,
-	kObjectTypeAreaOfEffect = 1 << 4,
-	kObjectTypeWaypoint     = 1 << 5,
-	kObjectTypePlaceable    = 1 << 6,
-	kObjectTypeStore        = 1 << 7,
-	kObjectTypeEncounter    = 1 << 8,
-	kObjectTypeAll          = 0x7FFF
-};
+	kObjectTypeCreature     = 1 <<  0,
+	kObjectTypeItem         = 1 <<  1,
+	kObjectTypeTrigger      = 1 <<  2,
+	kObjectTypeDoor         = 1 <<  3,
+	kObjectTypeAreaOfEffect = 1 <<  4,
+	kObjectTypeWaypoint     = 1 <<  5,
+	kObjectTypePlaceable    = 1 <<  6,
+	kObjectTypeStore        = 1 <<  7,
+	kObjectTypeSound        = 1 <<  9,
+	kObjectTypeSpawnPoint   = 1 << 10,
+	kObjectTypeActionPoint  = 1 << 11,
 
-static const uint32 kObjectTypeInvalid = 0x7FFF;
+	kObjectTypeInvalid      = 0x7FFF,
+	kObjectTypeAll          = 0x7FFF,
+
+	kObjectTypeMAX          = 0x7FFF,
+
+	kObjectTypeArea         = 1 << 29, ///< Fake value for an area object.
+	kObjectTypeModule       = 1 << 30, ///< Fake value for a module object.
+	kObjectTypeSelf         = 1 << 31  ///< Fake value to describe the calling object in a script.
+};
 
 } // End of namespace Witcher
 
