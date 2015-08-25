@@ -55,6 +55,13 @@ public:
 	bool isLocked() const;               ///< Is the situated object locked?
 	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
 
+	/** Return the object that last opened this situated object. */
+	Object *getLastOpenedBy() const;
+	/** Return the object that last closed this situated object. */
+	Object *getLastClosedBy() const;
+	/** Return the object that last used this situated object. */
+	Object *getLastUsedBy  () const;
+
 	// Positioning
 
 	/** Set the situated object's position. */
@@ -77,6 +84,10 @@ protected:
 	Common::UString _soundLocked;    ///< The sound the object makes when locked.
 
 	float _tint[3][4];
+
+	Object *_lastOpenedBy; ///< The object that last opened this situated object.
+	Object *_lastClosedBy; ///< The object that last closed this situated object.
+	Object *_lastUsedBy;   ///< The object that last used this situated object.
 
 	Graphics::Aurora::Model *_model; ///< The situated object's model.
 

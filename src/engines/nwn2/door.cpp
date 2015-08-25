@@ -176,6 +176,8 @@ void Door::setLocked(bool locked) {
 }
 
 bool Door::click(Object *triggerer) {
+	_lastUsedBy = triggerer;
+
 	// If the door is closed, try to open it
 	if (!isOpen())
 		return open(triggerer);
@@ -211,6 +213,8 @@ bool Door::open(Object *opener) {
 		return false;
 	}
 
+	_lastOpenedBy = opener;
+
 	playSound(_soundOpened);
 	runScript(kScriptOpen, this, opener);
 
@@ -230,6 +234,8 @@ bool Door::close(Object *closer) {
 
 	if (_invisible)
 		return false;
+
+	_lastClosedBy = closer;
 
 	playSound(_soundClosed);
 	runScript(kScriptClosed, this, closer);

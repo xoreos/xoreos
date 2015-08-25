@@ -45,7 +45,8 @@ namespace Engines {
 namespace NWN2 {
 
 Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
-	_soundAppType(Aurora::kFieldIDInvalid), _locked(false), _model(0) {
+	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
+	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0), _model(0) {
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 4; j++)
@@ -131,6 +132,18 @@ bool Situated::isLocked() const {
 
 void Situated::setLocked(bool locked) {
 	_locked = locked;
+}
+
+Object *Situated::getLastOpenedBy() const {
+	return _lastOpenedBy;
+}
+
+Object *Situated::getLastClosedBy() const {
+	return _lastClosedBy;
+}
+
+Object *Situated::getLastUsedBy() const {
+	return _lastUsedBy;
 }
 
 void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
