@@ -455,58 +455,10 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	}
 }
 
-void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
-		uint32 offset, uint32 count, std::vector<float> &data) {
+void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &UNUSED(ctx),
+		uint32 UNUSED(offset), uint32 UNUSED(count), std::vector<float> &UNUSED(data)) {
 
-	uint32 pos = ctx.mdl->seek(offset);
-
-	// TODO: readNodeControllers: Implement this properly :P
-
-	for (uint32 i = 0; i < count; i++) {
-		uint32 type        = ctx.mdl->readUint32LE();
-		uint16 rowCount    = ctx.mdl->readUint16LE();
-		uint16 timeIndex   = ctx.mdl->readUint16LE();
-		uint16 dataIndex   = ctx.mdl->readUint16LE();
-		uint8  columnCount = ctx.mdl->readByte();
-		ctx.mdl->skip(1);
-
-		if (rowCount == 0xFFFF)
-			// TODO: Controller row count = 0xFFFF
-			continue;
-
-		if        (type == kControllerTypePosition) {
-			return;
-
-			for (uint16 r = 0; r < rowCount; r++) {
-				PositionKeyFrame p;
-				p.time = data[timeIndex + r];
-
-				p.x = data[dataIndex + (r * columnCount) + 0];
-				p.y = data[dataIndex + (r * columnCount) + 1];
-				p.z = data[dataIndex + (r * columnCount) + 2];
-
-				_positionFrames.push_back(p);
-			}
-
-		} else if (type == kControllerTypeOrientation) {
-			return;
-
-			for (int r = 0; r < rowCount; r++) {
-				QuaternionKeyFrame q;
-				q.time = data[timeIndex + r];
-
-				q.x = data[dataIndex + (r * columnCount) + 0];
-				q.y = data[dataIndex + (r * columnCount) + 1];
-				q.z = data[dataIndex + (r * columnCount) + 2];
-				q.q = data[dataIndex + (r * columnCount) + 3];
-
-				_orientationFrames.push_back(q);
-			}
-		}
-
-	}
-
-	ctx.mdl->seek(pos);
+	// TODO
 }
 
 void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
