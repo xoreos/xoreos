@@ -56,6 +56,8 @@ Creature::~Creature() {
 }
 
 void Creature::init() {
+	_isPC = false;
+
 	_appearance = Aurora::kFieldIDInvalid;
 }
 
