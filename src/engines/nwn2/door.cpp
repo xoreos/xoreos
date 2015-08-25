@@ -211,13 +211,10 @@ bool Door::open(Object *opener) {
 		return false;
 	}
 
-	_state = kStateOpened1;
-	// setModelState();
-
 	playSound(_soundOpened);
-	if (_model)
-		_model->playAnimation("opening1");
 	runScript(kScriptOpen, this, opener);
+
+	_state = kStateOpened1;
 
 	// Also open the linked door
 	evaluateLink();
@@ -234,13 +231,10 @@ bool Door::close(Object *closer) {
 	if (_invisible)
 		return false;
 
-	_state = kStateClosed;
-	// setModelState();
-
 	playSound(_soundClosed);
-	if (_model)
-		_model->playAnimation("closing1");
 	runScript(kScriptClosed, this, closer);
+
+	_state = kStateClosed;
 
 	// Also close the linked door
 	evaluateLink();
