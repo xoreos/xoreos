@@ -53,6 +53,7 @@ public:
 
 	// Basic visuals
 
+	void show(); ///< Show the placeable's model.
 	void hide(); ///< Hide the placeable's model.
 
 	// Basic properties
