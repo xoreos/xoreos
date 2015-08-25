@@ -45,7 +45,7 @@ namespace KotOR2 {
 
 Console::Console(KotOR2Engine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
-	_engine(&engine) {
+	_engine(&engine), _maxSizeMusic(0) {
 
 	registerCommand("exitmodule" , boost::bind(&Console::cmdExitModule , this, _1),
 			"Usage: exitmodule\nExit the module, returning to the main menu");
