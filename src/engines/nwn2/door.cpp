@@ -130,6 +130,10 @@ void Door::setModelState() {
 			_model->setState("opened2");
 			break;
 
+		case kStateDestroyed:
+			_model->setState("dead");
+			break;
+
 		default:
 			_model->setState("");
 			break;
@@ -198,7 +202,7 @@ bool Door::click(Object *triggerer) {
 bool Door::open(Object *opener) {
 	// TODO: Door::open(): Open in direction of the opener
 
-	if (isOpen())
+	if (isOpen() || (_state == kStateDestroyed))
 		return true;
 
 	if (isLocked()) {
@@ -224,7 +228,7 @@ bool Door::open(Object *opener) {
 }
 
 bool Door::close(Object *closer) {
-	if (!isOpen())
+	if (!isOpen() || (_state == kStateDestroyed))
 		return true;
 
 	if (_invisible)
