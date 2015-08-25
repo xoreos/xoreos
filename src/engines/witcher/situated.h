@@ -40,20 +40,25 @@ class Situated : public Object {
 public:
 	~Situated();
 
+	// Basic visuals
+
 	void loadModel();   ///< Load the situated object's model.
 	void unloadModel(); ///< Unload the situated object's model.
 
 	void show(); ///< Show the situated object's model.
 	void hide(); ///< Hide the situated object's model.
 
+	// Basic properties
+
+	bool isLocked() const;               ///< Is the situated object locked?
+	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
+
+	// Positioning
+
 	/** Set the situated object's position. */
 	void setPosition(float x, float y, float z);
 	/** Set the situated object's orientation. */
 	void setOrientation(float x, float y, float z, float angle);
-
-	bool isLocked() const;       ///< Is the situated object locked?
-	void setLocked(bool locked); ///< Lock/Unlock the situated object.
-
 
 protected:
 	Common::UString _modelName; ///< The model's resource name.

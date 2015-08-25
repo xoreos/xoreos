@@ -60,6 +60,12 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 void Placeable::loadObject(const Aurora::GFF3Struct &UNUSED(gff)) {
 }
 
+void Placeable::hide() {
+	leave();
+
+	Situated::hide();
+}
+
 void Placeable::enter() {
 	highlight(true);
 }

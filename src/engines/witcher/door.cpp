@@ -65,10 +65,14 @@ void Door::loadObject(const Aurora::GFF3Struct &gff) {
 	_linkTag = gff.getString("LinkedTo");
 }
 
+void Door::hide() {
+	leave();
+
+	Situated::hide();
+}
+
 void Door::enter() {
 	highlight(true);
-
-	evaluateLink();
 }
 
 void Door::leave() {

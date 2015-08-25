@@ -43,8 +43,14 @@ public:
 	Door(Module &module, const Aurora::GFF3Struct &door);
 	~Door();
 
-	void enter(); ///< The cursor entered the door.
-	void leave(); ///< The cursor left the door.
+	// Basic visuals
+
+	void hide(); ///< Hide the door's model.
+
+	// Object/Cursor interactions
+
+	void enter(); ///< The cursor entered the door. */
+	void leave(); ///< The cursor left the door. */
 
 	/** (Un)Highlight the door. */
 	void highlight(bool enabled);
@@ -52,11 +58,9 @@ public:
 	/** The door was clicked. */
 	bool click(Object *triggerer = 0);
 
-
 protected:
 	/** Load door-specific properties. */
 	void loadObject(const Aurora::GFF3Struct &gff);
-
 
 private:
 	Module *_module; ///< The module the door is in.

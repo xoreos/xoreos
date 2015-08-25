@@ -43,6 +43,8 @@ public:
 	Waypoint(const Aurora::GFF3Struct &waypoint);
 	~Waypoint();
 
+	// Basic properties
+
 	/** Does this waypoint have a map note? */
 	bool hasMapNote() const;
 	/** Return the waypoint's map note text. */
@@ -55,8 +57,7 @@ public:
 	void enableMapNote(bool enabled);
 
 private:
-	bool _hasMapNote; ///< Does this waypoint have a map note?
-
+	bool _hasMapNote;           ///< Does this waypoint have a map note?
 	Aurora::LocString _mapNote; ///< The waypoint's map note text.
 
 	/** Load from a waypoint instance. */

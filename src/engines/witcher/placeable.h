@@ -39,8 +39,14 @@ public:
 	Placeable(const Aurora::GFF3Struct &placeable);
 	~Placeable();
 
-	void enter(); ///< The cursor entered the placeable.
-	void leave(); ///< The cursor left the placeable.
+	// Basic visuals
+
+	void hide(); ///< Hide the placeable's model.
+
+	// Object/Cursor interactions
+
+	void enter(); ///< The cursor entered the placeable. */
+	void leave(); ///< The cursor left the placeable. */
 
 	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
@@ -48,11 +54,9 @@ public:
 	/** The placeable was clicked. */
 	bool click(Object *triggerer = 0);
 
-
 protected:
 	/** Load placeable-specific properties. */
 	void loadObject(const Aurora::GFF3Struct &gff);
-
 
 private:
 	/** Load from a placeable instance. */
