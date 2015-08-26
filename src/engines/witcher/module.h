@@ -30,10 +30,9 @@
 
 #include "src/aurora/ifofile.h"
 
-#include "src/aurora/nwscript/objectcontainer.h"
-
 #include "src/events/types.h"
 
+#include "src/engines/witcher/objectcontainer.h"
 #include "src/engines/witcher/object.h"
 
 namespace Engines {
@@ -45,7 +44,7 @@ namespace Witcher {
 class Campaign;
 class Area;
 
-class Module : public Witcher::Object, public Aurora::NWScript::ObjectContainer {
+class Module : public Witcher::Object, public Witcher::ObjectContainer {
 public:
 	Module(::Engines::Console &console, Campaign *campaign = 0);
 	~Module();
