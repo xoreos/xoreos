@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A door within a Witcher area.
+ *  A door in a The Witcher area.
  */
 
 #include "src/common/util.h"

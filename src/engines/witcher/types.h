@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Basic Witcher type definitions.
+ *  Basic The Witcher type definitions.
  */
 
 #ifndef ENGINES_WITCHER_TYPES_H

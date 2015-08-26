@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The context needed to run a Witcher module.
+ *  The context needed to run a The Witcher module.
  */
 
 #include "src/common/util.h"

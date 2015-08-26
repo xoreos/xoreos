@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A door within a Witcher area.
+ *  A door in a The Witcher area.
  */
 
 #ifndef ENGINES_WITCHER_DOOR_H

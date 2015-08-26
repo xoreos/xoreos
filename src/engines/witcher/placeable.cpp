@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A placeable within a Witcher area.
+ *  A placeable object in a The Witcher area.
  */
 
 #include "src/common/util.h"

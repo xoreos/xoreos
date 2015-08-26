@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A waypoint within a Witcher area.
+ *  A waypoint in a The Witcher area.
  */
 
 #ifndef ENGINES_WITCHER_WAYPOINT_H

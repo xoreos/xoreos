@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A location within a Witcher area.
+ *  A location within a The Witcher area.
  */
 
 #include "src/engines/witcher/location.h"

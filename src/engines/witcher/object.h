@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An object within a Witcher area.
+ *  An object in a The Witcher area.
  */
 
 #ifndef ENGINES_WITCHER_OBJECT_H

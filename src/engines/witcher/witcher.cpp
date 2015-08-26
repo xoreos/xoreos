@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling The Witcher
+ *  Engine class handling The Witcher.
  */
 
 #include "src/common/util.h"

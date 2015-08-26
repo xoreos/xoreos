@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An object within a Witcher area.
+ *  An object in a The Witcher area.
  */
 
 #include "src/common/util.h"

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling The Witcher
+ *  Engine class handling The Witcher.
  */
 
 #ifndef ENGINES_WITCHER_WITCHER_H

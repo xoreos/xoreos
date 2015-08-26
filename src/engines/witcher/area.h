@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An area in The Witcher.
+ *  The context holding a The Witcher area.
  */
 
 #ifndef ENGINES_WITCHER_AREA_H

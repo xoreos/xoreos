@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The context holding a Witcher campaign.
+ *  The context holding a The Witcher campaign.
  */
 
 #include "src/common/util.h"
