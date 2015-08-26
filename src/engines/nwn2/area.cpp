@@ -56,7 +56,7 @@ namespace Engines {
 namespace NWN2 {
 
 Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
-	_module(&module), _loaded(false), _resRef(resRef), _visible(false),
+	_module(&module), _resRef(resRef), _visible(false),
 	_terrain(0), _activeObject(0), _highlightAll(false) {
 
 	try {
@@ -72,8 +72,6 @@ Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeAr
 		clear();
 		throw;
 	}
-
-	_loaded = true;
 
 	// Tell the module that we exist
 	_module->addObject(*this);
@@ -595,7 +593,7 @@ void Area::setActive(Engines::NWN2::Object *object) {
 }
 
 void Area::checkActive(int x, int y) {
-	if (!_loaded || _highlightAll)
+	if (_highlightAll)
 		return;
 
 	Common::StackLock lock(_mutex);
@@ -607,9 +605,6 @@ void Area::checkActive(int x, int y) {
 }
 
 void Area::click(int x, int y) {
-	if (!_loaded)
-		return;
-
 	Common::StackLock lock(_mutex);
 
 	Engines::NWN2::Object *o = getObjectAt(x, y);

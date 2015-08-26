@@ -142,8 +142,6 @@ private:
 
 	Module *_module;
 
-	bool _loaded;
-
 	Common::UString _resRef; ///< The area's resref (resource ID).
 
 	Common::UString _displayName; ///< The area's localized display name.
