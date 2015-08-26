@@ -46,7 +46,7 @@
 #include "src/engines/witcher/witcher.h"
 #include "src/engines/witcher/modelloader.h"
 #include "src/engines/witcher/console.h"
-#include "src/engines/witcher/campaign.h"
+#include "src/engines/witcher/game.h"
 
 namespace Engines {
 
@@ -54,13 +54,13 @@ namespace Witcher {
 
 WitcherEngine::WitcherEngine() :
 	_languageText(Aurora::kLanguageInvalid), _languageVoice(Aurora::kLanguageInvalid),
-	_campaign(0) {
+	_game(0) {
 
 	_console = new Console(*this);
 }
 
 WitcherEngine::~WitcherEngine() {
-	delete _campaign;
+	delete _game;
 }
 
 bool WitcherEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -94,17 +94,6 @@ bool WitcherEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::U
 	return true;
 }
 
-Campaign *WitcherEngine::getCampaign() {
-	return _campaign;
-}
-
-Module *WitcherEngine::getModule() {
-	if (!_campaign)
-		return 0;
-
-	return _campaign->getModule();
-}
-
 bool WitcherEngine::getLanguage(Aurora::Language &languageText, Aurora::Language &languageVoice) const {
 	languageText  = _languageText;
 	languageVoice = _languageVoice;
@@ -124,8 +113,8 @@ bool WitcherEngine::changeLanguage() {
 
 		loadLanguageFiles(languageText, languageVoice);
 
-		if (_campaign)
-			_campaign->refreshLocalized();
+		if (_game)
+			_game->refreshLocalized();
 
 		_languageText  = languageText;
 		_languageVoice = languageVoice;
@@ -139,6 +128,12 @@ bool WitcherEngine::changeLanguage() {
 	}
 
 	return true;
+}
+
+Game &WitcherEngine::getGame() {
+	assert(_game);
+
+	return *_game;
 }
 
 void WitcherEngine::run() {
@@ -155,7 +150,8 @@ void WitcherEngine::run() {
 
 	CursorMan.showCursor();
 
-	main();
+	_game = new Game(*this, *_console);
+	_game->run();
 
 	deinit();
 }
@@ -318,6 +314,9 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 }
 
 void WitcherEngine::deinit() {
+	delete _game;
+
+	_game = 0;
 }
 
 void WitcherEngine::playIntroVideos() {
@@ -326,31 +325,6 @@ void WitcherEngine::playIntroVideos() {
 	playVideo("engine");
 	playVideo("intro");
 	playVideo("title");
-}
-
-void WitcherEngine::main() {
-	_campaign = new Campaign(*_console);
-
-	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
-	if (campaigns.empty())
-		error("No campaigns found");
-
-	// Find the original The Witcher campaign
-	const CampaignDescription *witcherCampaign = 0;
-	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c)
-		if (c->tag == "thewitcher")
-			witcherCampaign = &*c;
-
-	// If that's not available, load the first one found
-	if (!witcherCampaign)
-		witcherCampaign = &*campaigns.begin();
-
-	_campaign->load(*witcherCampaign);
-	_campaign->run();
-	_campaign->clear();
-
-	delete _campaign;
-	_campaign = 0;
 }
 
 } // End of namespace Witcher

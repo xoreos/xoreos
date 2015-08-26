@@ -228,8 +228,8 @@ void Campaign::refreshLocalized() {
 	_module.refreshLocalized();
 }
 
-Module *Campaign::getModule() {
-	return &_module;
+Module &Campaign::getModule() {
+	return _module;
 }
 
 } // End of namespace Witcher

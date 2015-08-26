@@ -78,7 +78,7 @@ public:
 	void refreshLocalized();
 
 	/** Return the currently running module. */
-	Module *getModule();
+	Module &getModule();
 
 
 private:

@@ -38,6 +38,7 @@
 
 #include "src/engines/witcher/console.h"
 #include "src/engines/witcher/witcher.h"
+#include "src/engines/witcher/game.h"
 #include "src/engines/witcher/campaign.h"
 #include "src/engines/witcher/module.h"
 #include "src/engines/witcher/area.h"
@@ -110,16 +111,10 @@ void Console::updateMusic() {
 }
 
 void Console::updateAreas() {
+	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
+
 	_areas.clear();
-	setArguments("gotoarea");
-
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
-	const std::vector<Common::UString> &areas = module->getIFO().getAreas();
-	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
-		_areas.push_back(*a);
+	std::copy(areas.begin(), areas.end(), std::back_inserter(_areas));
 
 	_areas.sort(Common::UString::iless());
 	setArguments("gotoarea", _areas);
@@ -144,7 +139,7 @@ void Console::updateModules() {
 		_modules.push_back(Common::FilePath::getStem(*m));
 	}
 
-	_areas.sort(Common::UString::iless());
+	_modules.sort(Common::UString::iless());
 	setArguments("loadmodule", _modules);
 }
 
@@ -154,27 +149,11 @@ void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
-	Area *area = module->getCurrentArea();
-	if (!area)
-		return;
-
-	area->stopAmbientMusic();
+	_engine->getGame().stopMusic();
 }
 
 void Console::cmdPlayMusic(const CommandLine &cl) {
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
-	Area *area = module->getCurrentArea();
-	if (!area)
-		return;
-
-	area->playAmbientMusic(cl.args);
+	_engine->getGame().playMusic(cl.args);
 }
 
 void Console::cmdMove(const CommandLine &cl) {
@@ -191,11 +170,7 @@ void Console::cmdMove(const CommandLine &cl) {
 		return;
 	}
 
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
-	module->movePC(x, y, z);
+	_engine->getGame().getModule().movePC(x, y, z);
 }
 
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
@@ -211,15 +186,11 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		return;
 	}
 
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
-	const std::vector<Common::UString> &areas = module->getIFO().getAreas();
+	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
 	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		if (a->equalsIgnoreCase(cl.args)) {
 			hide();
-			module->movePC(*a);
+			_engine->getGame().getModule().movePC(*a);
 			return;
 		}
 
@@ -237,14 +208,11 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		return;
 	}
 
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
-	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
+	updateModules();
+	for (std::list<Common::UString>::const_iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
 			hide();
-			module->load(cl.args + ".mod");
+			_engine->getGame().getModule().load(cl.args + ".mod");
 			return;
 		}
 	}

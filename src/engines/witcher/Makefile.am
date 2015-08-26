@@ -8,6 +8,7 @@ noinst_HEADERS = \
                  types.h \
                  modelloader.h \
                  console.h \
+                 game.h \
                  campaign.h \
                  module.h \
                  area.h \
@@ -24,6 +25,7 @@ libwitcher_la_SOURCES = \
                         probes.cpp \
                         modelloader.cpp \
                         console.cpp \
+                        game.cpp \
                         campaign.cpp \
                         module.cpp \
                         area.cpp \

@@ -29,7 +29,6 @@
 #include "src/common/changeid.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/language.h"
 
 #include "src/engines/engine.h"
 
@@ -39,8 +38,7 @@ class LoadProgress;
 
 namespace Witcher {
 
-class Campaign;
-class Module;
+class Game;
 
 class WitcherEngine : public Engines::Engine {
 public:
@@ -55,10 +53,8 @@ public:
 	bool getLanguage(Aurora::Language &languageText, Aurora::Language &languageVoice) const;
 	bool changeLanguage();
 
-	/** Return the currently running campaign. */
-	Campaign *getCampaign();
-	/** Return the currently running module. */
-	Module   *getModule();
+	/** Return the context running the actual game. */
+	Game &getGame();
 
 
 protected:
@@ -69,10 +65,10 @@ private:
 	Aurora::Language _languageText;
 	Aurora::Language _languageVoice;
 
-	Campaign *_campaign;
-
 	std::list<Common::ChangeID> _languageResources;
 	Common::ChangeID _languageTLK;
+
+	Game *_game;
 
 
 	void init();
