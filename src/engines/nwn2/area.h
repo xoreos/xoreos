@@ -33,8 +33,6 @@
 
 #include "src/aurora/types.h"
 
-#include "src/aurora/nwscript/object.h"
-
 #include "src/graphics/aurora/types.h"
 
 #include "src/sound/types.h"
