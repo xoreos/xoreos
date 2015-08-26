@@ -32,8 +32,6 @@
 #include "src/aurora/types.h"
 #include "src/aurora/locstring.h"
 
-#include "src/aurora/nwscript/object.h"
-
 #include "src/graphics/aurora/types.h"
 
 #include "src/sound/types.h"
@@ -41,15 +39,15 @@
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
+#include "src/engines/witcher/object.h"
+
 namespace Engines {
 
 namespace Witcher {
 
 class Module;
 
-class Object;
-
-class Area : public Aurora::NWScript::Object, public Events::Notifyable {
+class Area : public Witcher::Object, public Events::Notifyable {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();
@@ -111,10 +109,7 @@ private:
 
 	Module *_module;
 
-	bool _loaded;
-
-	Common::UString   _resRef; ///< The area's resref (resource ID).
-	Aurora::LocString _name;   ///< The area's name.
+	Common::UString _resRef; ///< The area's resref (resource ID).
 
 	uint32 _musicDayTrack;    ///< Music track ID that plays by day.
 	uint32 _musicNightTrack;  ///< Music track ID that plays by night.

@@ -41,7 +41,6 @@
 
 #include "src/engines/witcher/area.h"
 #include "src/engines/witcher/module.h"
-#include "src/engines/witcher/object.h"
 #include "src/engines/witcher/waypoint.h"
 #include "src/engines/witcher/placeable.h"
 #include "src/engines/witcher/door.h"
@@ -50,8 +49,9 @@ namespace Engines {
 
 namespace Witcher {
 
-Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _loaded(false),
-	_resRef(resRef), _visible(false), _model(0), _activeObject(0), _highlightAll(false) {
+Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
+	_module(&module), _resRef(resRef), _visible(false),
+	_model(0), _activeObject(0), _highlightAll(false) {
 
 	try {
 		// Load ARE and GIT
@@ -66,8 +66,6 @@ Area::Area(Module &module, const Common::UString &resRef) : _module(&module), _l
 		clear();
 		throw;
 	}
-
-	_loaded = true;
 
 	// Tell the module that we exist
 	_module->addObject(*this);
@@ -119,7 +117,7 @@ const Common::UString &Area::getResRef() const {
 }
 
 const Aurora::LocString &Area::getName() const {
-	return _name;
+	return Witcher::Object::getName();
 }
 
 void Area::refreshLocalized() {
@@ -168,7 +166,7 @@ void Area::playAmbientMusic(Common::UString music) {
 	if (music.empty())
 		return;
 
-	_ambientMusic = playSound(music, Sound::kSoundTypeMusic, true);
+	_ambientMusic = ::Engines::playSound(music, Sound::kSoundTypeMusic, true);
 }
 
 void Area::show() {
@@ -390,7 +388,7 @@ void Area::setActive(Engines::Witcher::Object *object) {
 }
 
 void Area::checkActive(int x, int y) {
-	if (!_loaded || _highlightAll)
+	if (_highlightAll)
 		return;
 
 	Common::StackLock lock(_mutex);
@@ -402,9 +400,6 @@ void Area::checkActive(int x, int y) {
 }
 
 void Area::click(int x, int y) {
-	if (!_loaded)
-		return;
-
 	Common::StackLock lock(_mutex);
 
 	Engines::Witcher::Object *o = getObjectAt(x, y);
