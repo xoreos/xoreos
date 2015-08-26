@@ -33,36 +33,26 @@
 
 #include "src/engines/witcher/module.h"
 
+namespace Common {
+	class SeekableReadStream;
+}
+
 namespace Engines {
 
 class Console;
 
 namespace Witcher {
 
-struct CampaignDescription {
-	Common::UString tag;
-
-	Aurora::LocString name;
-	Aurora::LocString description;
-
-	Common::UString file;
-	Common::UString directory;
-
-	void clear();
-};
-
 class Campaign {
 public:
 	Campaign(::Engines::Console &console);
 	~Campaign();
 
-	const std::list<CampaignDescription> &getCampaigns() const;
-
 	/** Clear the whole context. */
 	void clear();
 
 	/** Load a campaign. */
-	void load(const CampaignDescription &desc);
+	void load(const Common::UString &campaign);
 	/** Run the currently loaded campaign. */
 	void run();
 
@@ -80,16 +70,18 @@ public:
 	/** Return the currently running module. */
 	Module &getModule();
 
+	static Common::UString getName(const Common::UString &campaign);
+	static Common::UString getDescription(const Common::UString &campaign);
+
 
 private:
-	/** All campaigns we know about. */
-	std::list<CampaignDescription> _campaigns;
-
-	/** The currently loaded campaign. */
-	CampaignDescription _currentCampaign;
-
 	/** Are we currently running a module? */
 	bool _running;
+
+	/** The name of the currently loaded campaign. */
+	Aurora::LocString _name;
+	/** The description of the currently loaded campaign. */
+	Aurora::LocString _description;
 
 	/** All modules used by the current campaign. */
 	std::list<Common::UString> _modules;
@@ -100,18 +92,18 @@ private:
 	Module _module;
 
 	/** The campaign we should change to. */
-	const CampaignDescription *_newCampaign;
+	Common::UString _newCampaign;
 
 
 	/** Load a new campaign. */
-	void loadCampaign(const CampaignDescription &desc);
+	void loadCampaign(const Common::UString &campaign);
 	/** Schedule a change to a new campaign. */
-	void changeCampaign(const CampaignDescription &desc);
+	void changeCampaign(const Common::UString &campaign);
 	/** Load the actual campaign resources. */
-	void loadCampaignFile(const CampaignDescription &desc);
+	void loadCampaignFile(const Common::UString &campaign);
 
-	void findCampaigns();
-	bool readCampaign(const Common::UString &mmdFile, CampaignDescription &desc);
+	static Common::UString getDirectory(const Common::UString &campaign);
+	static Common::SeekableReadStream *openMMD(const Common::UString &campaign);
 
 
 	// Methods called by the module

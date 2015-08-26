@@ -24,11 +24,12 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/configman.h"
 #include "src/common/readfile.h"
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
-#include "src/common/configman.h"
 
+#include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/witcher/campaign.h"
@@ -38,146 +39,93 @@ namespace Engines {
 
 namespace Witcher {
 
-void CampaignDescription::clear() {
-	tag.clear();
-
-	name.clear();
-	description.clear();
-
-	file.clear();
-	directory.clear();
-}
-
-
 Campaign::Campaign(::Engines::Console &console) : _running(false),
-	_module(console, this), _newCampaign(0) {
+	_module(console, this) {
 
-	findCampaigns();
 }
 
 Campaign::~Campaign() {
 	clear();
 }
 
-const std::list<CampaignDescription> &Campaign::getCampaigns() const {
-	return _campaigns;
-}
-
-void Campaign::findCampaigns() {
-	Common::UString moduleDir = ConfigMan.getString("WITCHER_moduleDir");
-	if (moduleDir.empty())
-		return;
-
-	Common::FileList modules;
-	if (!modules.addDirectory(moduleDir, -1))
-		return;
-
-	Common::FileList mmdFiles;
-	if (!modules.getSubListGlob(".*\\.mmd", true, mmdFiles))
-		return;
-
-	for (Common::FileList::const_iterator c = mmdFiles.begin(); c != mmdFiles.end(); ++c) {
-		CampaignDescription desc;
-
-		desc.directory = Common::FilePath::relativize(moduleDir, Common::FilePath::getDirectory(*c));
-		if (!readCampaign(*c, desc))
-			continue;
-
-		_campaigns.push_back(desc);
-	}
-}
-
-bool Campaign::readCampaign(const Common::UString &mmdFile, CampaignDescription &desc) {
-	Common::ReadFile *file = new Common::ReadFile;
-	if (!file->open(mmdFile)) {
-		delete file;
-		return false;
-	}
-
-	Aurora::GFF3File *gff = 0;
-	try {
-		gff = new Aurora::GFF3File(file, MKTAG('M', 'M', 'D', ' '));
-	} catch (...) {
-		return false;
-	}
-
-	gff->getTopLevel().getLocString("Meta_Name", desc.name);
-	gff->getTopLevel().getLocString("Meta_Desc", desc.description);
-
-	delete gff;
-
-	desc.file = mmdFile;
-	desc.tag  = Common::FilePath::getStem(mmdFile).toLower();
-
-	return true;
-}
-
 void Campaign::clear() {
 	_module.clear();
 
-	_currentCampaign.clear();
+	_name.clear();
+	_description.clear();
 
 	_modules.clear();
 	_startModule.clear();
 
-	_newCampaign = 0;
+	_newCampaign.clear();
 }
 
-void Campaign::load(const CampaignDescription &desc) {
+void Campaign::load(const Common::UString &campaign) {
 	if (isRunning()) {
 		// We are currently running a campaign. Schedule a safe change instead
 
-		changeCampaign(desc);
+		changeCampaign(campaign);
 		return;
 	}
 
 	// We are not currently running a campaign. Directly load the new campaign
-	loadCampaign(desc);
+	loadCampaign(campaign);
 }
 
-void Campaign::loadCampaignFile(const CampaignDescription &desc) {
-	Common::ReadFile *file = 0;
-	Aurora::GFF3File *gff  = 0;
+Common::SeekableReadStream *Campaign::openMMD(const Common::UString &campaign) {
+	const Common::FileList mmdFiles(ConfigMan.getString("WITCHER_moduleDir"), -1);
+
+	for (Common::FileList::const_iterator c = mmdFiles.begin(); c != mmdFiles.end(); ++c) {
+		if (!Common::FilePath::getFile(*c).equalsIgnoreCase(campaign + ".mmd"))
+			continue;
+
+		return new Common::ReadFile(*c);
+	}
+
+	throw Common::Exception("No such campaign \"%s\"", campaign.c_str());
+}
+
+Common::UString Campaign::getDirectory(const Common::UString &campaign) {
+	const Common::FileList mmdFiles(ConfigMan.getString("WITCHER_moduleDir"), -1);
+
+	for (Common::FileList::const_iterator c = mmdFiles.begin(); c != mmdFiles.end(); ++c) {
+		if (!Common::FilePath::getFile(*c).equalsIgnoreCase(campaign + ".mmd"))
+			continue;
+
+		return Common::FilePath::relativize(ResMan.getDataBase(), Common::FilePath::getDirectory(*c));
+	}
+
+	throw Common::Exception("No such campaign \"%s\"", campaign.c_str());
+}
+
+void Campaign::loadCampaignFile(const Common::UString &campaign) {
 	try {
+		Aurora::GFF3File mmd(openMMD(campaign), MKTAG('M', 'M', 'D', ' '));
 
-		try {
-			if (desc.file.empty())
-				throw Common::Exception("Campaign file is empty");
+		mmd.getTopLevel().getLocString("Meta_Name", _name);
+		mmd.getTopLevel().getLocString("Meta_Desc", _description);
 
-			file = new Common::ReadFile(desc.file);
-			gff  = new Aurora::GFF3File(file, MKTAG('M', 'M', 'D', ' '));
-		} catch (Common::Exception &UNUSED(e)) {
-			delete file;
-			throw;
-		}
-
-		_startModule = gff->getTopLevel().getString("StartingMod");
-
-		const Aurora::GFF3List &modules = gff->getTopLevel().getList("Meta_Mod_list");
-		for (Aurora::GFF3List::const_iterator m = modules.begin(); m != modules.end(); ++m)
-			_modules.push_back((*m)->getString("Mod_Name"));
-
+		_startModule = mmd.getTopLevel().getString("StartingMod");
 		if (_startModule.empty())
 			throw Common::Exception("No starting module");
 
-	} catch (Common::Exception &e) {
-		delete gff;
+		const Aurora::GFF3List &modules = mmd.getTopLevel().getList("Meta_Mod_list");
+		for (Aurora::GFF3List::const_iterator m = modules.begin(); m != modules.end(); ++m)
+			_modules.push_back((*m)->getString("Mod_Name"));
 
-		e.add("Failed to load campaign \"%s\" (\"%s\")", desc.tag.c_str(), desc.name.getString().c_str());
+	} catch (Common::Exception &e) {
+		e.add("Failed to load campaign \"%s\" (\"%s\")", campaign.c_str(), _description.getString().c_str());
+
 		throw;
 	}
-
-	delete gff;
 }
 
-void Campaign::loadCampaign(const CampaignDescription &desc) {
+void Campaign::loadCampaign(const Common::UString &campaign) {
 	clear();
-	loadCampaignFile(desc);
-
-	_currentCampaign = desc;
+	loadCampaignFile(campaign);
 
 	try {
-		_module.load(_currentCampaign.directory + "/" + _startModule + ".mod");
+		_module.load(getDirectory(campaign) + "/" + _startModule + ".mod");
 	} catch (Common::Exception &e) {
 		clear();
 
@@ -203,25 +151,25 @@ bool Campaign::isRunning() const {
 	return _running;
 }
 
-void Campaign::changeCampaign(const CampaignDescription &desc) {
-	_newCampaign = &desc;
+void Campaign::changeCampaign(const Common::UString &campaign) {
+	_newCampaign = campaign;
 }
 
 void Campaign::replaceCampaign() {
-	if (!_newCampaign)
+	if (_newCampaign.empty())
 		return;
 
-	const CampaignDescription *campaign = _newCampaign;
+	const Common::UString campaign = _newCampaign;
 
-	loadCampaign(*campaign);
+	loadCampaign(campaign);
 }
 
-const Aurora::LocString&Campaign::getName() const {
-	return _currentCampaign.name;
+const Aurora::LocString &Campaign::getName() const {
+	return _name;
 }
 
 const Aurora::LocString &Campaign::getDescription() const {
-	return _currentCampaign.description;
+	return _description;
 }
 
 void Campaign::refreshLocalized() {
@@ -230,6 +178,30 @@ void Campaign::refreshLocalized() {
 
 Module &Campaign::getModule() {
 	return _module;
+}
+
+Common::UString Campaign::getName(const Common::UString &campaign) {
+	try {
+		Aurora::GFF3File mmd(openMMD(campaign), MKTAG('M', 'M', 'D', ' '));
+
+		return mmd.getTopLevel().getString("Meta_Name");
+
+	} catch (Common::Exception &e) {
+	}
+
+	return "";
+}
+
+Common::UString Campaign::getDescription(const Common::UString &campaign) {
+	try {
+		Aurora::GFF3File mmd(openMMD(campaign), MKTAG('M', 'M', 'D', ' '));
+
+		return mmd.getTopLevel().getString("Meta_Desc");
+
+	} catch (Common::Exception &e) {
+	}
+
+	return "";
 }
 
 } // End of namespace Witcher

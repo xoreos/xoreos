@@ -75,21 +75,8 @@ void Game::run() {
 }
 
 void Game::runCampaign() {
-	const std::list<CampaignDescription> &campaigns = _campaign->getCampaigns();
-	if (campaigns.empty())
-		error("No campaigns found");
+	_campaign->load("thewitcher");
 
-	// Find the original The Witcher campaign
-	const CampaignDescription *witcherCampaign = 0;
-	for (std::list<CampaignDescription>::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c)
-		if (c->tag == "thewitcher")
-			witcherCampaign = &*c;
-
-	// If that's not available, load the first one found
-	if (!witcherCampaign)
-		witcherCampaign = &*campaigns.begin();
-
-	_campaign->load(*witcherCampaign);
 	_campaign->run();
 	_campaign->clear();
 }
@@ -121,6 +108,41 @@ void Game::refreshLocalized() {
 		return;
 
 	_campaign->refreshLocalized();
+}
+
+void Game::getCampaigns(std::vector<Common::UString> &campaigns) {
+	campaigns.clear();
+
+	const Common::FileList mmdFiles(ConfigMan.getString("WITCHER_moduleDir"), -1);
+
+	for (Common::FileList::const_iterator c = mmdFiles.begin(); c != mmdFiles.end(); ++c) {
+		if (!Common::FilePath::getExtension(*c).equalsIgnoreCase(".mmd"))
+			continue;
+
+		const Common::UString mmd = Common::FilePath::getStem(*c);
+		if (mmd.empty())
+			continue;
+
+		campaigns.push_back(mmd);
+	}
+}
+
+void Game::getModules(std::vector<Common::UString> &modules) {
+	modules.clear();
+
+	const Common::FileList modFiles(ConfigMan.getString("WITCHER_moduleDir"), -1);
+
+	for (Common::FileList::const_iterator c = modFiles.begin(); c != modFiles.end(); ++c) {
+		if (!Common::FilePath::getExtension(*c).equalsIgnoreCase(".mod") &&
+		    !Common::FilePath::getExtension(*c).equalsIgnoreCase(".adv"))
+			continue;
+
+		const Common::UString mod = Common::FilePath::getStem(*c);
+		if (mod.empty())
+			continue;
+
+		modules.push_back(mod);
+	}
 }
 
 } // End of namespace Witcher

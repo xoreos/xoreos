@@ -121,23 +121,11 @@ void Console::updateAreas() {
 }
 
 void Console::updateModules() {
+	std::vector<Common::UString> modules;
+	Game::getModules(modules);
+
 	_modules.clear();
-	setArguments("loadmodule", _modules);
-
-	Common::UString moduleDir = ConfigMan.getString("WITCHER_moduleDir");
-	if (moduleDir.empty())
-		return;
-
-	Common::FileList mods;
-	if (!mods.addDirectory(moduleDir, -1))
-		return;
-
-	for (Common::FileList::const_iterator m = mods.begin(); m != mods.end(); ++m) {
-		if (!Common::FilePath::getExtension(*m).equalsIgnoreCase(".mod"))
-			continue;
-
-		_modules.push_back(Common::FilePath::getStem(*m));
-	}
+	std::copy(modules.begin(), modules.end(), std::back_inserter(_modules));
 
 	_modules.sort(Common::UString::iless());
 	setArguments("loadmodule", _modules);

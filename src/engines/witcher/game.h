@@ -62,6 +62,11 @@ public:
 
 	void run();
 
+	/** Return a list of all campaigns. */
+	static void getCampaigns(std::vector<Common::UString> &campaigns);
+	/** Return a list of all modules. */
+	static void getModules  (std::vector<Common::UString> &modules);
+
 
 private:
 	WitcherEngine *_engine;
