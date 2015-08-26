@@ -10,6 +10,7 @@ noinst_HEADERS = \
                  console.h \
                  game.h \
                  campaign.h \
+                 objectcontainer.h \
                  module.h \
                  area.h \
                  location.h \
@@ -27,6 +28,7 @@ libwitcher_la_SOURCES = \
                         console.cpp \
                         game.cpp \
                         campaign.cpp \
+                        objectcontainer.cpp \
                         module.cpp \
                         area.cpp \
                         location.cpp \
