@@ -488,6 +488,14 @@ const Aurora::IFOFile &Module::getIFO() const {
 	return _ifo;
 }
 
+const Common::UString &Module::getName() const {
+	return NWN2::Object::getName();
+}
+
+const Common::UString &Module::getDescription() const {
+	return NWN2::Object::getDescription();
+}
+
 void Module::delayScript(const Common::UString &script,
                          const Aurora::NWScript::ScriptState &state,
                          Aurora::NWScript::Object *owner,
