@@ -59,8 +59,6 @@ public:
 
 	/** Return the area's resref (resource ID). */
 	const Common::UString &getResRef();
-	/** Return the area's localized name. */
-	const Common::UString &getName();
 
 	// Visibility
 
