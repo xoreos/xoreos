@@ -82,6 +82,10 @@ public:
 	void movePC(const Common::UString &area, float x, float y, float z);
 	// '---
 
+	// .--- Static utility methods
+	static Common::UString findModule(const Common::UString &module, bool relative);
+	// '---
+
 	// .--- Module main loop (called by the Campaign class)
 	/** Clear the whole context. */
 	void clear();

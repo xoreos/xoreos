@@ -26,6 +26,10 @@
 #include "src/common/maths.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
+#include "src/common/filepath.h"
+#include "src/common/filelist.h"
+
+#include "src/aurora/resman.h"
 
 #include "src/graphics/camera.h"
 
@@ -305,6 +309,23 @@ const Aurora::IFOFile &Module::getIFO() const {
 void Module::refreshLocalized() {
 	for (AreaMap::iterator a = _areas.begin(); a != _areas.end(); ++a)
 		a->second->refreshLocalized();
+}
+
+Common::UString Module::findModule(const Common::UString &module, bool relative) {
+	const Common::FileList modFiles(ConfigMan.getString("WITCHER_moduleDir"), -1);
+
+	for (Common::FileList::const_iterator m = modFiles.begin(); m != modFiles.end(); ++m) {
+		if (!Common::FilePath::getFile(*m).equalsIgnoreCase(module + ".mod") &&
+		    !Common::FilePath::getFile(*m).equalsIgnoreCase(module + ".adv"))
+			continue;
+
+		if (!relative)
+			return *m;
+
+		return Common::FilePath::relativize(ResMan.getDataBase(), *m);
+	}
+
+	return "";
 }
 
 } // End of namespace Witcher

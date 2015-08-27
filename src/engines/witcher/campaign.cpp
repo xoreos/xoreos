@@ -47,7 +47,8 @@ namespace Engines {
 namespace Witcher {
 
 Campaign::Campaign(::Engines::Console &console) : _console(&console),
-	_hasCampaign(false), _running(false), _exit(true), _module(0) {
+	_hasCampaign(false), _running(false), _exit(true), _module(0),
+	_newCampaignStandalone(false) {
 
 	_module = new Module(*_console);
 }
@@ -101,6 +102,7 @@ void Campaign::unload() {
 	_startModule.clear();
 
 	_newCampaign.clear();
+	_newCampaignStandalone = false;
 
 	_eventQueue.clear();
 }
@@ -109,12 +111,24 @@ void Campaign::load(const Common::UString &campaign) {
 	if (isRunning()) {
 		// We are currently running a campaign. Schedule a safe change instead
 
-		changeCampaign(campaign);
+		changeCampaign(campaign, false);
 		return;
 	}
 
 	// We are not currently running a campaign. Directly load the new campaign
-	loadCampaign(campaign);
+	loadCampaign(campaign, false);
+}
+
+void Campaign::loadModule(const Common::UString &module) {
+	if (isRunning()) {
+		// We are currently running a campaign. Schedule a safe change instead
+
+		changeCampaign(module, true);
+		return;
+	}
+
+	// We are not currently running a campaign. Directly load the new campaign
+	loadCampaign(module, true);
 }
 
 Common::SeekableReadStream *Campaign::openMMD(const Common::UString &campaign) {
@@ -167,9 +181,22 @@ void Campaign::loadCampaignFile(const Common::UString &campaign) {
 	}
 }
 
-void Campaign::loadCampaign(const Common::UString &campaign) {
+void Campaign::setupStandaloneModule(const Common::UString &module) {
+	const Common::UString mod = Module::findModule(module, true);
+	if (mod.empty())
+		throw Common::Exception("No such module \"%s\"", module.c_str());
+
+	_modules.push_back(mod);
+	_startModule = mod;
+}
+
+void Campaign::loadCampaign(const Common::UString &campaign, bool standalone) {
 	unload();
-	loadCampaignFile(campaign);
+
+	if (!standalone)
+		loadCampaignFile(campaign);
+	else
+		setupStandaloneModule(campaign);
 
 	try {
 		_module->load(_startModule);
@@ -250,8 +277,9 @@ void Campaign::handleEvents() {
 	_module->processEventQueue();
 }
 
-void Campaign::changeCampaign(const Common::UString &campaign) {
-	_newCampaign = campaign;
+void Campaign::changeCampaign(const Common::UString &campaign, bool standalone) {
+	_newCampaign           = campaign;
+	_newCampaignStandalone = standalone;
 }
 
 void Campaign::replaceCampaign() {
@@ -259,8 +287,9 @@ void Campaign::replaceCampaign() {
 		return;
 
 	const Common::UString campaign = _newCampaign;
+	const bool standalone = _newCampaignStandalone;
 
-	loadCampaign(campaign);
+	loadCampaign(campaign, standalone);
 	enter();
 }
 
