@@ -102,7 +102,7 @@ private:
 
 	::Engines::Console *_console;
 
-	bool _hasCampaign; ///< Do we have a module?
+	bool _hasCampaign; ///< Do we have a campaign?
 	bool _running;     ///< Are we currently running a campaign?
 	bool _exit;        ///< Should we exit the campaign?
 
