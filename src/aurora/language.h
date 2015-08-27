@@ -58,6 +58,7 @@ enum Language {
 	kLanguageJapanese,
 
 	kLanguageMAX,
+	kLanguageDebug   = 0xFFFFFFFD, ///< Pseudo value for debug strings.
 	kLanguageChinese = 0xFFFFFFFE, ///< Pseudo value that means either traditional or simplified Chinese.
 	kLanguageInvalid = 0xFFFFFFFF
 };
