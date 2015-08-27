@@ -61,6 +61,11 @@ public:
 	// .--- Information about the current module
 	/** Return the IFO of the currently loaded module. */
 	const Aurora::IFOFile &getIFO() const;
+
+	/** Return the module's name. */
+	const Aurora::LocString &getName() const;
+	/** Return the module's description. */
+	const Aurora::LocString &getDescription() const;
 	// '---
 
 	// .--- Elements of the current module
@@ -83,6 +88,9 @@ public:
 	// '---
 
 	// .--- Static utility methods
+	static Common::UString getName(const Common::UString &module);
+	static Common::UString getDescription(const Common::UString &module);
+
 	static Common::UString findModule(const Common::UString &module, bool relative);
 	// '---
 

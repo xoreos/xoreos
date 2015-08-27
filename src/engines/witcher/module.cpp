@@ -26,10 +26,13 @@
 #include "src/common/maths.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
+#include "src/common/readfile.h"
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
 
 #include "src/aurora/resman.h"
+#include "src/aurora/erffile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/graphics/camera.h"
 
@@ -306,9 +309,47 @@ const Aurora::IFOFile &Module::getIFO() const {
 	return _ifo;
 }
 
+const Aurora::LocString &Module::getName() const {
+	return Witcher::Object::getName();
+}
+
+const Aurora::LocString &Module::getDescription() const {
+	return Witcher::Object::getDescription();
+}
+
 void Module::refreshLocalized() {
 	for (AreaMap::iterator a = _areas.begin(); a != _areas.end(); ++a)
 		a->second->refreshLocalized();
+}
+
+Common::UString Module::getName(const Common::UString &module) {
+	try {
+		const Aurora::ERFFile mod(new Common::ReadFile(findModule(module, false)));
+		const uint32 ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
+
+		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
+
+		return ifo.getTopLevel().getString("Mod_Name");
+
+	} catch (...) {
+	}
+
+	return "";
+}
+
+Common::UString Module::getDescription(const Common::UString &module) {
+	try {
+		const Aurora::ERFFile mod(new Common::ReadFile(findModule(module, false)));
+		const uint32 ifoIndex = mod.findResource("module", Aurora::kFileTypeIFO);
+
+		const Aurora::GFF3File ifo(mod.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
+
+		return ifo.getTopLevel().getString("Mod_Description");
+
+	} catch (...) {
+	}
+
+	return "";
 }
 
 Common::UString Module::findModule(const Common::UString &module, bool relative) {
