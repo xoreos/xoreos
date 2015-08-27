@@ -48,6 +48,7 @@ class Area;
 /** An object within a Witcher area. */
 class Object : public Aurora::NWScript::Object {
 public:
+	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
 
 	/** Return the exact type of the object. */
@@ -149,9 +150,6 @@ protected:
 	float _orientation[4]; ///< The object's orientation.
 
 	Sound::ChannelHandle _sound; ///< The currently playing object sound.
-
-
-	Object(ObjectType type);
 };
 
 } // End of namespace Witcher
