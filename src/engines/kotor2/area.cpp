@@ -103,10 +103,6 @@ void Area::clear() {
 	_rooms.clear();
 }
 
-const Common::UString &Area::getName() {
-	return _name;
-}
-
 uint32 Area::getMusicDayTrack() const {
 	return _musicDayTrack;
 }
