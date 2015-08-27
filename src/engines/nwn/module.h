@@ -25,6 +25,7 @@
 #ifndef ENGINES_NWN_MODULE_H
 #define ENGINES_NWN_MODULE_H
 
+#include <list>
 #include <map>
 #include <set>
 
