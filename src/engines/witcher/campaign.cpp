@@ -32,24 +32,67 @@
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
+#include "src/graphics/camera.h"
+
+#include "src/events/events.h"
+
+#include "src/engines/aurora/console.h"
+#include "src/engines/aurora/camera.h"
+
 #include "src/engines/witcher/campaign.h"
-#include "src/engines/witcher/console.h"
+#include "src/engines/witcher/module.h"
 
 namespace Engines {
 
 namespace Witcher {
 
-Campaign::Campaign(::Engines::Console &console) : _running(false),
-	_module(console, this) {
+Campaign::Campaign(::Engines::Console &console) : _console(&console),
+	_hasCampaign(false), _running(false), _exit(true), _module(0) {
 
+	_module = new Module(*_console);
 }
 
 Campaign::~Campaign() {
-	clear();
+	try {
+		clear();
+	} catch (...) {
+	}
+
+	delete _module;
 }
 
 void Campaign::clear() {
-	_module.clear();
+	unload();
+}
+
+const Aurora::LocString &Campaign::getName() const {
+	return _name;
+}
+
+const Aurora::LocString &Campaign::getDescription() const {
+	return _description;
+}
+
+Module &Campaign::getModule() {
+	assert(_module);
+
+	return *_module;
+}
+
+bool Campaign::isLoaded() const {
+	return _hasCampaign && _module->isLoaded();
+}
+
+bool Campaign::isRunning() const {
+	return !EventMan.quitRequested() && _running && !_exit && _module->isRunning();
+}
+
+void Campaign::unload() {
+	_module->clear();
+
+	_hasCampaign = false;
+	_running     = false;
+	_exit        = true;
 
 	_name.clear();
 	_description.clear();
@@ -58,6 +101,8 @@ void Campaign::clear() {
 	_startModule.clear();
 
 	_newCampaign.clear();
+
+	_eventQueue.clear();
 }
 
 void Campaign::load(const Common::UString &campaign) {
@@ -113,6 +158,8 @@ void Campaign::loadCampaignFile(const Common::UString &campaign) {
 		for (Aurora::GFF3List::const_iterator m = modules.begin(); m != modules.end(); ++m)
 			_modules.push_back((*m)->getString("Mod_Name"));
 
+		_startModule = getDirectory(campaign) + "/" + _startModule + ".mod";
+
 	} catch (Common::Exception &e) {
 		e.add("Failed to load campaign \"%s\" (\"%s\")", campaign.c_str(), _description.getString().c_str());
 
@@ -121,34 +168,86 @@ void Campaign::loadCampaignFile(const Common::UString &campaign) {
 }
 
 void Campaign::loadCampaign(const Common::UString &campaign) {
-	clear();
+	unload();
 	loadCampaignFile(campaign);
 
 	try {
-		_module.load(getDirectory(campaign) + "/" + _startModule + ".mod");
+		_module->load(_startModule);
 	} catch (Common::Exception &e) {
 		clear();
 
 		e.add("Failed to load campaign's starting module");
 		throw;
 	}
+
+	_hasCampaign = true;
 }
 
-void Campaign::run() {
-	_running = true;
+void Campaign::exit() {
+	_exit = true;
+}
 
-	try {
-		_module.run();
-	} catch (...) {
-		_running = false;
-		throw;
-	}
+void Campaign::enter() {
+	if (!_hasCampaign)
+		throw Common::Exception("Campaign::enter(): Lacking a campaign?!?");
+
+	_module->enter();
+
+	_running = true;
+	_exit    = false;
+}
+
+void Campaign::leave() {
+	_module->leave();
 
 	_running = false;
+	_exit    = true;
 }
 
-bool Campaign::isRunning() const {
-	return _running;
+void Campaign::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+void Campaign::processEventQueue() {
+	if (!isRunning())
+		return;
+
+	replaceCampaign();
+
+	if (!isRunning())
+		return;
+
+	handleEvents();
+}
+
+void Campaign::handleEvents() {
+	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event) {
+		// Handle console
+		if (_console->isVisible()) {
+			_console->processEvent(*event);
+			continue;
+		}
+
+		if (event->type == Events::kEventKeyDown) {
+			// Console
+			if ((event->key.keysym.sym == SDLK_d) && (event->key.keysym.mod & KMOD_CTRL)) {
+				_console->show();
+				continue;
+			}
+		}
+
+		// Camera
+		if (handleCameraInput(*event))
+			continue;
+
+		_module->addEvent(*event);
+	}
+
+	_eventQueue.clear();
+
+	CameraMan.update();
+
+	_module->processEventQueue();
 }
 
 void Campaign::changeCampaign(const Common::UString &campaign) {
@@ -162,22 +261,11 @@ void Campaign::replaceCampaign() {
 	const Common::UString campaign = _newCampaign;
 
 	loadCampaign(campaign);
-}
-
-const Aurora::LocString &Campaign::getName() const {
-	return _name;
-}
-
-const Aurora::LocString &Campaign::getDescription() const {
-	return _description;
+	enter();
 }
 
 void Campaign::refreshLocalized() {
-	_module.refreshLocalized();
-}
-
-Module &Campaign::getModule() {
-	return _module;
+	_module->refreshLocalized();
 }
 
 Common::UString Campaign::getName(const Common::UString &campaign) {

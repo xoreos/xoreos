@@ -25,6 +25,9 @@
 #ifndef ENGINES_WITCHER_MODULE_H
 #define ENGINES_WITCHER_MODULE_H
 
+#include <list>
+#include <map>
+
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -41,58 +44,80 @@ class Console;
 
 namespace Witcher {
 
-class Campaign;
 class Area;
 
 class Module : public Witcher::Object, public Witcher::ObjectContainer {
 public:
-	Module(::Engines::Console &console, Campaign *campaign = 0);
+	Module(::Engines::Console &console);
 	~Module();
 
-	/** Clear the whole context. */
-	void clear();
-
-	/** Load a module. */
-	void load(const Common::UString &module);
-	/** Run the currently loaded module. */
-	void run();
-
+	// .--- Module management
+	/** Is a module currently loaded and ready to run? */
+	bool isLoaded() const;
 	/** Is a module currently running? */
 	bool isRunning() const;
+	// '---
 
+	// .--- Information about the current module
 	/** Return the IFO of the currently loaded module. */
 	const Aurora::IFOFile &getIFO() const;
+	// '---
+
+	// .--- Elements of the current module
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
+	// '---
 
+	// .--- Interact with the current campaign
 	/** Refresh all localized strings. */
 	void refreshLocalized();
+	// '---
 
+	// .--- PC management
 	/** Move the player character to this area. */
 	void movePC(const Common::UString &area);
 	/** Move the player character to this position within the current area. */
 	void movePC(float x, float y, float z);
 	/** Move the player character to this position within this area. */
 	void movePC(const Common::UString &area, float x, float y, float z);
+	// '---
 
+	// .--- Module main loop (called by the Campaign class)
+	/** Clear the whole context. */
+	void clear();
+
+	/** Load a module. */
+	void load(const Common::UString &module);
+	/** Exit the currently running module. */
+	void exit();
+
+	/** Enter the loaded module, starting it. */
+	void enter();
+	/** Leave the running module, quitting it. */
+	void leave();
+
+	/** Add a single event for consideration into the event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+	// '---
 
 private:
 	typedef std::map<Common::UString, Area *> AreaMap;
 
+	typedef std::list<Events::Event> EventQueue;
+
 
 	::Engines::Console  *_console;
 
-	Campaign *_campaign;
-
 	bool _hasModule; ///< Do we have a module?
 	bool _running;   ///< Are we currently running a module?
+	bool _exit;      ///< Should we exit the module?
 
 	/** Resources added by the module. */
 	Common::ChangeID _resModule;
 
 	Aurora::IFOFile _ifo; ///< The module's IFO.
-
-	bool _exit; //< Should we exit the module?
 
 	AreaMap         _areas;           ///< The areas in the current module.
 	Common::UString _newArea;         ///< The new area to enter.
@@ -100,15 +125,20 @@ private:
 
 	Common::UString _newModule; ///< The module we should change to.
 
+	EventQueue  _eventQueue;
 
+
+	// .--- Unloading
 	void unload(); ///< Unload the whole shebang.
 
-	void unloadModule(); ///< Unload the module.
-	void unloadAreas();  ///< Unload the areas.
+	void unloadModule();      ///< Unload the module.
+	void unloadAreas();       ///< Unload the areas.
+	// '---
 
-	void loadAreas(); ///< Load the areas.
+	// .--- Loading
+	void loadAreas();       ///< Load the areas.
+	// '---
 
-	void enter();     ///< Enter the currently loaded module.
 	void enterArea(); ///< Enter a new area.
 
 	/** Load the actual module. */
@@ -119,8 +149,6 @@ private:
 	void replaceModule();
 
 	void handleEvents();
-
-	void handleActions();
 };
 
 } // End of namespace Witcher

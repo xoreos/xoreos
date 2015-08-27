@@ -77,7 +77,26 @@ void Game::run() {
 void Game::runCampaign() {
 	_campaign->load("thewitcher");
 
-	_campaign->run();
+	if (EventMan.quitRequested() || !_campaign->isLoaded()) {
+		_campaign->clear();
+		return;
+	}
+
+	_campaign->enter();
+	EventMan.enableKeyRepeat(true);
+
+	while (!EventMan.quitRequested() && _campaign->isRunning()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event))
+			_campaign->addEvent(event);
+
+		_campaign->processEventQueue();
+		EventMan.delay(10);
+	}
+
+	EventMan.enableKeyRepeat(false);
+	_campaign->leave();
+
 	_campaign->clear();
 }
 

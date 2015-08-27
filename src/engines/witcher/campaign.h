@@ -31,7 +31,7 @@
 
 #include "src/aurora/locstring.h"
 
-#include "src/engines/witcher/module.h"
+#include "src/events/types.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -43,6 +43,8 @@ class Console;
 
 namespace Witcher {
 
+class Module;
+
 class Campaign {
 public:
 	Campaign(::Engines::Console &console);
@@ -51,32 +53,61 @@ public:
 	/** Clear the whole context. */
 	void clear();
 
-	/** Load a campaign. */
-	void load(const Common::UString &campaign);
-	/** Run the currently loaded campaign. */
-	void run();
-
+	// .--- Campaign management
+	/** Is a campaign currently loaded and ready to run? */
+	bool isLoaded() const;
 	/** Is a campaign currently running? */
 	bool isRunning() const;
 
+	/** Load a campaign. */
+	void load(const Common::UString &campaign);
+	/** Exit the currently running campaign. */
+	void exit();
+	// '---
+
+	// .--- Information about the current campaign
 	/** Return the name of the current campaign. */
 	const Aurora::LocString &getName() const;
 	/** Return the description of the current campaign. */
 	const Aurora::LocString &getDescription() const;
+	// '---
 
-	/** Refresh all localized strings. */
-	void refreshLocalized();
-
+	// .--- Elements of the current campaign
 	/** Return the currently running module. */
 	Module &getModule();
+	// '---
 
+	// .--- Interact with the current campaign
+	/** Refresh all localized strings. */
+	void refreshLocalized();
+	// '---
+
+	// .--- Static utility methods
 	static Common::UString getName(const Common::UString &campaign);
 	static Common::UString getDescription(const Common::UString &campaign);
+	// '---
 
+	// .--- Campaign main loop (called by the Game class)
+	/** Enter the loaded campaign, starting it. */
+	void enter();
+	/** Leave the running campaign, quitting it. */
+	void leave();
+
+	/** Add a single event for consideration into the event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+	// '---
 
 private:
-	/** Are we currently running a module? */
-	bool _running;
+	typedef std::list<Events::Event> EventQueue;
+
+
+	::Engines::Console *_console;
+
+	bool _hasCampaign; ///< Do we have a campaign?
+	bool _running;     ///< Are we currently running a campaign?
+	bool _exit;        ///< Should we exit the campaign?
 
 	/** The name of the currently loaded campaign. */
 	Aurora::LocString _name;
@@ -89,29 +120,34 @@ private:
 	Common::UString _startModule;
 
 	/** The current module of the current campaign. */
-	Module _module;
+	Module *_module;
 
 	/** The campaign we should change to. */
 	Common::UString _newCampaign;
 
+	EventQueue _eventQueue;
+
+
+	/** Unload the whole shebang. */
+	void unload();
 
 	/** Load a new campaign. */
 	void loadCampaign(const Common::UString &campaign);
 	/** Schedule a change to a new campaign. */
 	void changeCampaign(const Common::UString &campaign);
-	/** Load the actual campaign resources. */
-	void loadCampaignFile(const Common::UString &campaign);
-
-	static Common::UString getDirectory(const Common::UString &campaign);
-	static Common::SeekableReadStream *openMMD(const Common::UString &campaign);
-
-
-	// Methods called by the module
-
 	/** Actually replace the currently running campaign. */
 	void replaceCampaign();
 
-	friend class Module;
+	/** Load the actual campaign resources. */
+	void loadCampaignFile(const Common::UString &campaign);
+
+	void handleEvents();
+
+
+	/** Return the actual real directory for this campaign. */
+	static Common::UString getDirectory(const Common::UString &campaign);
+	/** Open the MMD campaign file for this campaign. */
+	static Common::SeekableReadStream *openMMD(const Common::UString &campaign);
 };
 
 } // End of namespace Witcher
