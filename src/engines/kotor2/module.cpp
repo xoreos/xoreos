@@ -497,6 +497,10 @@ const Aurora::IFOFile &Module::getIFO() const {
 	return _ifo;
 }
 
+const Common::UString &Module::getName() const {
+	return KotOR2::Object::getName();
+}
+
 Area *Module::getCurrentArea() {
 	return _area;
 }

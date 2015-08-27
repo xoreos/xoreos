@@ -74,6 +74,9 @@ public:
 	// .--- Information about the current module
 	/** Return the IFO of the currently loaded module. */
 	const Aurora::IFOFile &getIFO() const;
+
+	/** Return the module's name. */
+	const Common::UString &getName() const;
 	// '---
 
 	// .--- Elements of the current module
