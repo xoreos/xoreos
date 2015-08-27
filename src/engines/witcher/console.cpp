@@ -64,6 +64,11 @@ Console::Console(WitcherEngine &engine) :
 			"Usage: listareas\nList all areas in the current module");
 	registerCommand("gotoarea"     , boost::bind(&Console::cmdGotoArea     , this, _1),
 			"Usage: gotoarea <area>\nMove to a specific area");
+	registerCommand("listcampaigns", boost::bind(&Console::cmdListCampaigns, this, _1),
+			"Usage: listcampaigns\nList all campaigns");
+	registerCommand("loadcampaign" , boost::bind(&Console::cmdLoadCampaign , this, _1),
+			"Usage: loadcampaign <campaign>\nLoads a campaign, "
+			"replacing the currently running one");
 	registerCommand("listmodules"  , boost::bind(&Console::cmdListModules  , this, _1),
 			"Usage: listmodules\nList all modules");
 	registerCommand("loadmodule"   , boost::bind(&Console::cmdLoadModule   , this, _1),
@@ -78,8 +83,9 @@ void Console::updateCaches() {
 	::Engines::Console::updateCaches();
 
 	updateMusic();
-	updateAreas();
+	updateCampaigns();
 	updateModules();
+	updateAreas();
 }
 
 void Console::updateMusic() {
@@ -110,14 +116,15 @@ void Console::updateMusic() {
 	setArguments("playmusic", _music);
 }
 
-void Console::updateAreas() {
-	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
+void Console::updateCampaigns() {
+	std::vector<Common::UString> campaigns;
+	Game::getCampaigns(campaigns);
 
-	_areas.clear();
-	std::copy(areas.begin(), areas.end(), std::back_inserter(_areas));
+	_campaigns.clear();
+	std::copy(campaigns.begin(), campaigns.end(), std::back_inserter(_campaigns));
 
-	_areas.sort(Common::UString::iless());
-	setArguments("gotoarea", _areas);
+	_campaigns.sort(Common::UString::iless());
+	setArguments("loadcampaign", _campaigns);
 }
 
 void Console::updateModules() {
@@ -129,6 +136,16 @@ void Console::updateModules() {
 
 	_modules.sort(Common::UString::iless());
 	setArguments("loadmodule", _modules);
+}
+
+void Console::updateAreas() {
+	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
+
+	_areas.clear();
+	std::copy(areas.begin(), areas.end(), std::back_inserter(_areas));
+
+	_areas.sort(Common::UString::iless());
+	setArguments("gotoarea", _areas);
 }
 
 void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
@@ -183,6 +200,31 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		}
 
 	printf("Area \"%s\" does not exist", cl.args.c_str());
+}
+
+void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
+	updateCampaigns();
+
+	for (std::list<Common::UString>::const_iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
+		printf("%s (\"%s\")", c->c_str(), Campaign::getName(*c).c_str());
+}
+
+void Console::cmdLoadCampaign(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	updateCampaigns();
+	for (std::list<Common::UString>::const_iterator c = _campaigns.begin(); c != _campaigns.end(); ++c) {
+		if (c->equalsIgnoreCase(cl.args)) {
+			hide();
+			_engine->getGame().getCampaign().load(*c);
+			return;
+		}
+	}
+
+	printf("No such campaign \"%s\"", cl.args.c_str());
 }
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {

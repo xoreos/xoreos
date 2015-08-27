@@ -49,8 +49,9 @@ private:
 
 	// Caches
 	std::list<Common::UString> _music;     ///< All known music resources.
-	std::list<Common::UString> _areas;     ///< All known areas in the current module.
+	std::list<Common::UString> _campaigns; ///< All known campaigns.
 	std::list<Common::UString> _modules;   ///< All known modules.
+	std::list<Common::UString> _areas;     ///< All known areas in the current module.
 
 	size_t _maxSizeMusic;
 
@@ -58,8 +59,9 @@ private:
 	// Updating the caches
 	void updateCaches();
 	void updateMusic();
-	void updateAreas();
+	void updateCampaigns();
 	void updateModules();
+	void updateAreas();
 
 	// The commands
 	void cmdListMusic    (const CommandLine &cl);
@@ -68,6 +70,8 @@ private:
 	void cmdMove         (const CommandLine &cl);
 	void cmdListAreas    (const CommandLine &cl);
 	void cmdGotoArea     (const CommandLine &cl);
+	void cmdListCampaigns(const CommandLine &cl);
+	void cmdLoadCampaign (const CommandLine &cl);
 	void cmdListModules  (const CommandLine &cl);
 	void cmdLoadModule   (const CommandLine &cl);
 };
