@@ -22,8 +22,6 @@
  *  A creature in a Star Wars: Knights of the Old Republic area.
  */
 
-#include "src/engines/kotor/creature.h"
-
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -37,6 +35,8 @@
 #include "src/graphics/aurora/model.h"
 
 #include "src/engines/aurora/model.h"
+
+#include "src/engines/kotor/creature.h"
 
 namespace Engines {
 
