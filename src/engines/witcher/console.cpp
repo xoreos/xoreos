@@ -187,7 +187,15 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 	updateModules();
-	printList(_modules);
+
+	for (std::list<Common::UString>::const_iterator m = _modules.begin(); m != _modules.end(); ++m) {
+		const Common::UString name = Module::getName(*m);
+
+		if (!name.empty())
+			printf("%s (\"%s\")", m->c_str(), name.c_str());
+		else
+			printf("%s", m->c_str());
+	}
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
