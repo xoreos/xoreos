@@ -25,6 +25,9 @@
 #ifndef ENGINES_KOTOR2_MODULE_H
 #define ENGINES_KOTOR2_MODULE_H
 
+#include <list>
+#include <set>
+
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 #include "src/common/configman.h"
