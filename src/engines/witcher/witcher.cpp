@@ -193,6 +193,7 @@ void WitcherEngine::init() {
 
 void WitcherEngine::declareLanguages() {
 	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
+		{ Aurora::kLanguageDebug             ,  0, Common::kEncodingUTF8, Common::kEncodingUTF8 },
 		{ Aurora::kLanguageEnglish           ,  3, Common::kEncodingUTF8, Common::kEncodingUTF8 },
 		{ Aurora::kLanguagePolish            ,  5, Common::kEncodingUTF8, Common::kEncodingUTF8 },
 		{ Aurora::kLanguageGerman            , 10, Common::kEncodingUTF8, Common::kEncodingUTF8 },
