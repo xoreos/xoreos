@@ -45,6 +45,7 @@ class Waypoint;
 class Situated;
 class Placeable;
 class Door;
+class Creature;
 class Location;
 
 /** A class able to sort objects by distance to a target object. */
@@ -86,6 +87,8 @@ public:
 	static Situated  *toSituated (Aurora::NWScript::Object *object);
 	static Placeable *toPlaceable(Aurora::NWScript::Object *object);
 	static Door      *toDoor     (Aurora::NWScript::Object *object);
+	static Creature  *toCreature (Aurora::NWScript::Object *object);
+	static Creature  *toPC       (Aurora::NWScript::Object *object);
 
 	static Location *toLocation(Aurora::NWScript::EngineType *engineType);
 

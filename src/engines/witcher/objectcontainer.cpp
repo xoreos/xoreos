@@ -33,6 +33,7 @@
 #include "src/engines/witcher/situated.h"
 #include "src/engines/witcher/placeable.h"
 #include "src/engines/witcher/door.h"
+#include "src/engines/witcher/creature.h"
 #include "src/engines/witcher/location.h"
 
 namespace Engines {
@@ -147,6 +148,18 @@ Placeable *ObjectContainer::toPlaceable(Aurora::NWScript::Object *object) {
 
 Door *ObjectContainer::toDoor(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Door *>(object);
+}
+
+Creature *ObjectContainer::toCreature(Aurora::NWScript::Object *object) {
+	return dynamic_cast<Creature *>(object);
+}
+
+Creature *ObjectContainer::toPC(Aurora::NWScript::Object *object) {
+	Creature *pc = dynamic_cast<Creature *>(object);
+	if (!pc || !pc->isPC())
+		return 0;
+
+	return pc;
 }
 
 Location *ObjectContainer::toLocation(Aurora::NWScript::EngineType *engineType) {
