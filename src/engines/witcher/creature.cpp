@@ -50,7 +50,7 @@ bool Creature::isPC() const {
 void Creature::load(const Common::UString &utc) {
 	Aurora::GFF3File gff(utc, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
 
-	load(utc);
+	load(gff.getTopLevel());
 }
 
 void Creature::load(const Aurora::GFF3Struct &utc) {
