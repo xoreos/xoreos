@@ -174,20 +174,10 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	_tag      = gff.getString("Tag", _tag);
 
 	// Name
-	if (gff.hasField("LocName")) {
-		try {
-			gff.getLocString("LocName", _name);
-		} catch (...) {
-		}
-	}
+	gff.getLocString("LocName", _name);
 
 	// Description
-	if (gff.hasField("Description")) {
-		try {
-			gff.getLocString("Description", _description);
-		} catch (...) {
-		}
-	}
+	gff.getLocString("Description", _description);
 
 	refreshLocalized();
 
