@@ -39,6 +39,8 @@
 #include "src/engines/witcher/types.h"
 #include "src/engines/witcher/location.h"
 
+#include "src/engines/witcher/script/container.h"
+
 namespace Engines {
 
 namespace Witcher {
@@ -46,7 +48,7 @@ namespace Witcher {
 class Area;
 
 /** An object within a Witcher area. */
-class Object : public Aurora::NWScript::Object {
+class Object : public Aurora::NWScript::Object, public Witcher::ScriptContainer {
 public:
 	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
