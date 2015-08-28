@@ -50,6 +50,11 @@ namespace Engines {
 
 namespace Witcher {
 
+bool Module::Action::operator<(const Action &s) const {
+	return timestamp < s.timestamp;
+}
+
+
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule), _console(&console),
 	_hasModule(false), _running(false), _exit(false), _pc(0), _currentArea(0) {
 
@@ -272,6 +277,23 @@ void Module::handleEvents() {
 	_currentArea->processEventQueue();
 }
 
+void Module::handleActions() {
+	uint32 now = EventMan.getTimestamp();
+
+	while (!_delayedActions.empty()) {
+		ActionQueue::iterator action = _delayedActions.begin();
+
+		if (now < action->timestamp)
+			break;
+
+		if (action->type == kActionScript)
+			ScriptContainer::runScript(action->script, action->state,
+			                           action->owner, action->triggerer);
+
+		_delayedActions.erase(action);
+	}
+}
+
 void Module::unload() {
 	unloadAreas();
 	unloadModule();
@@ -287,6 +309,7 @@ void Module::unloadModule() {
 	_newModule.clear();
 
 	_eventQueue.clear();
+	_delayedActions.clear();
 
 	_hasModule = false;
 	_running   = false;
@@ -406,6 +429,22 @@ const Aurora::LocString &Module::getDescription() const {
 void Module::refreshLocalized() {
 	for (AreaMap::iterator a = _areas.begin(); a != _areas.end(); ++a)
 		a->second->refreshLocalized();
+}
+
+void Module::delayScript(const Common::UString &script,
+                         const Aurora::NWScript::ScriptState &state,
+                         Aurora::NWScript::Object *owner,
+                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+	Action action;
+
+	action.type      = kActionScript;
+	action.script    = script;
+	action.state     = state;
+	action.owner     = owner;
+	action.triggerer = triggerer;
+	action.timestamp = EventMan.getTimestamp() + delay;
+
+	_delayedActions.insert(action);
 }
 
 Common::UString Module::getName(const Common::UString &module) {
