@@ -38,17 +38,21 @@
 #include "src/engines/witcher/module.h"
 #include "src/engines/witcher/area.h"
 
+#include "src/engines/witcher/script/functions.h"
+
 namespace Engines {
 
 namespace Witcher {
 
 Game::Game(WitcherEngine &engine, ::Engines::Console &console) :
-	_engine(&engine), _campaign(0), _console(&console) {
+	_engine(&engine), _campaign(0), _functions(0), _console(&console) {
 
+	_functions = new Functions(*this);
 }
 
 Game::~Game() {
 	delete _campaign;
+	delete _functions;
 }
 
 Campaign &Game::getCampaign() {

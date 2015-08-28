@@ -39,6 +39,8 @@ namespace Witcher {
 
 class WitcherEngine;
 
+class Functions;
+
 class Campaign;
 class Module;
 
@@ -71,6 +73,8 @@ public:
 private:
 	WitcherEngine *_engine;
 	Campaign      *_campaign;
+
+	Functions *_functions;
 
 	::Engines::Console *_console;
 
