@@ -21,6 +21,8 @@ noinst_HEADERS = \
                  placeable.h \
                  creature.h \
                  script/container.h \
+                 script/functions.h \
+                 script/function_tables.h \
                  $(EMPTY)
 
 libwitcher_la_SOURCES = \
@@ -41,4 +43,5 @@ libwitcher_la_SOURCES = \
                         placeable.cpp \
                         creature.cpp \
                         script/container.cpp \
+                        script/functions.cpp \
                         $(EMPTY)
