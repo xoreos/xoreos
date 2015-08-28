@@ -111,6 +111,9 @@ void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {
 	gff.getLocString("MapNote", _mapNote);
 
 	refreshLocalized();
+
+	// Scripts
+	readScripts(gff);
 }
 
 } // End of namespace Witcher

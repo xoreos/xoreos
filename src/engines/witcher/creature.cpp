@@ -72,6 +72,9 @@ void Creature::load(const Aurora::GFF3Struct &utc) {
 
 	// PC
 	_isPC = utc.getBool("IsPC", _isPC);
+
+	// Scripts
+	readScripts(utc);
 }
 
 } // End of namespace Witcher

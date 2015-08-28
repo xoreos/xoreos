@@ -235,6 +235,9 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 	// Area geometry model
 
 	_modelName = are.getString("Tileset");
+
+	// Scripts
+	readScripts(are);
 }
 
 void Area::loadGIT(const Aurora::GFF3Struct &git) {
