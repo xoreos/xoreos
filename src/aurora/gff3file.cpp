@@ -495,19 +495,28 @@ Common::UString GFF3Struct::getString(const Common::UString &field,
 	throw Common::Exception("GFF3: Field is not a string(able) type");
 }
 
-void GFF3Struct::getLocString(const Common::UString &field, LocString &str) const {
+bool GFF3Struct::getLocString(const Common::UString &field, LocString &str) const {
 	const Field *f = getField(field);
-	if (!f)
-		return;
-	if (f->type != kFieldTypeLocString)
-		throw Common::Exception("GFF3: Field is not of a localized string type");
+	if (!f || (f->type != kFieldTypeLocString))
+		return false;
 
-	Common::SeekableReadStream &data = getData(*f);
+	LocString locString;
 
-	const uint32 size = data.readUint32LE();
-	Common::SeekableSubReadStream locStringData(&data, data.pos(), data.pos() + size);
+	try {
 
-	str.readLocString(locStringData);
+		Common::SeekableReadStream &data = getData(*f);
+
+		const uint32 size = data.readUint32LE();
+		Common::SeekableSubReadStream locStringData(&data, data.pos(), data.pos() + size);
+
+		locString.readLocString(locStringData);
+
+	} catch (...) {
+		return false;
+	}
+
+	str.swap(locString);
+	return true;
 }
 
 Common::SeekableReadStream *GFF3Struct::getData(const Common::UString &field) const {

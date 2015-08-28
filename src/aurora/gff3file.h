@@ -142,7 +142,7 @@ public:
 	Common::UString getString(const Common::UString &field,
 	                          const Common::UString &def = "") const;
 
-	void getLocString(const Common::UString &field, LocString &str) const;
+	bool getLocString(const Common::UString &field, LocString &str) const;
 
 	void getVector     (const Common::UString &field,
 	                    float &x, float &y, float &z          ) const;
