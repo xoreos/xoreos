@@ -20,6 +20,7 @@ noinst_HEADERS = \
                  door.h \
                  placeable.h \
                  creature.h \
+                 script/container.h \
                  $(EMPTY)
 
 libwitcher_la_SOURCES = \
@@ -39,4 +40,5 @@ libwitcher_la_SOURCES = \
                         door.cpp \
                         placeable.cpp \
                         creature.cpp \
+                        script/container.cpp \
                         $(EMPTY)
