@@ -54,6 +54,56 @@ enum ObjectType {
 	kObjectTypeSelf         = 1 << 31  ///< Fake value to describe the calling object in a script.
 };
 
+enum Script {
+	kScriptAttackBegin         =  0,
+	kScriptAttacked                ,
+	kScriptBattleBegin             ,
+	kScriptBlocked                 ,
+	kScriptCastSpellAt             ,
+	kScriptClick                   ,
+	kScriptClosed                  ,
+	kScriptDamaged                 ,
+	kScriptDeath                   ,
+	kScriptDialogue                ,
+	kScriptDisarm                  ,
+	kScriptDisturbed               ,
+	kScriptEndDialogue             ,
+	kScriptEndRound                ,
+	kScriptEnter                   ,
+	kScriptExit                    ,
+	kScriptFailToOpen              ,
+	kScriptHeartbeat               ,
+	kScriptInternal                ,
+	kScriptIsUsable                ,
+	kScriptItemSold                ,
+	kScriptJoinAttempt             ,
+	kScriptLock                    ,
+	kScriptModuleLoad              ,
+	kScriptModuleStart             ,
+	kScriptNotice                  ,
+	kScriptOpen                    ,
+	kScriptOpenStore               ,
+	kScriptOutOfAmmo               ,
+	kScriptPlayerDeath             ,
+	kScriptPlayerDying             ,
+	kScriptPlayerLevelUp           ,
+	kScriptPlayerRespawn           ,
+	kScriptPlayerRest              ,
+	kScriptPutIntoInventory        ,
+	kScriptRemoveFromInventory     ,
+	kScriptRest                    ,
+	kScriptSpawn                   ,
+	kScriptSpellCastAt             ,
+	kScriptTrapTriggered           ,
+	kScriptUnlock                  ,
+	kScriptUsed                    ,
+	kScriptUserdefine              ,
+	kScriptUserdefined             ,
+	kScriptWitness                 ,
+
+	kScriptMAX
+};
+
 } // End of namespace Witcher
 
 } // End of namespace Engines
