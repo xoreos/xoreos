@@ -41,13 +41,14 @@
 
 #include "src/engines/witcher/campaign.h"
 #include "src/engines/witcher/module.h"
+#include "src/engines/witcher/creature.h"
 
 namespace Engines {
 
 namespace Witcher {
 
 Campaign::Campaign(::Engines::Console &console) : _console(&console),
-	_hasCampaign(false), _running(false), _exit(true), _module(0),
+	_hasCampaign(false), _running(false), _exit(true), _module(0), _pc(0),
 	_newCampaignStandalone(false) {
 
 	_module = new Module(*_console);
@@ -63,7 +64,7 @@ Campaign::~Campaign() {
 }
 
 void Campaign::clear() {
-	unload();
+	unload(true);
 }
 
 const Aurora::LocString &Campaign::getName() const {
@@ -81,14 +82,14 @@ Module &Campaign::getModule() {
 }
 
 bool Campaign::isLoaded() const {
-	return _hasCampaign && _module->isLoaded();
+	return _hasCampaign && _module->isLoaded() && _pc;
 }
 
 bool Campaign::isRunning() const {
 	return !EventMan.quitRequested() && _running && !_exit && _module->isRunning();
 }
 
-void Campaign::unload() {
+void Campaign::unload(bool completeUnload) {
 	_module->clear();
 
 	_hasCampaign = false;
@@ -105,6 +106,14 @@ void Campaign::unload() {
 	_newCampaignStandalone = false;
 
 	_eventQueue.clear();
+
+	if (completeUnload)
+		unloadPC();
+}
+
+void Campaign::unloadPC() {
+	delete _pc;
+	_pc = 0;
 }
 
 void Campaign::load(const Common::UString &campaign) {
@@ -210,6 +219,20 @@ void Campaign::loadCampaign(const Common::UString &campaign, bool standalone) {
 	_hasCampaign = true;
 }
 
+void Campaign::usePC(const Common::UString &utc) {
+	unloadPC();
+
+	if (utc.empty())
+		throw Common::Exception("Tried to load an empty PC");
+
+	try {
+		_pc = new Creature(utc);
+	} catch (Common::Exception &e) {
+		e.add("Can't load PC \"%s\"", utc.c_str());
+		throw e;
+	}
+}
+
 void Campaign::exit() {
 	_exit = true;
 }
@@ -218,7 +241,11 @@ void Campaign::enter() {
 	if (!_hasCampaign)
 		throw Common::Exception("Campaign::enter(): Lacking a campaign?!?");
 
-	_module->enter();
+	if (!_pc)
+		throw Common::Exception("Campaign::enter(): Lacking a PC?!?");
+
+	_pc->clearVariables();
+	_module->enter(*_pc);
 
 	_running = true;
 	_exit    = false;

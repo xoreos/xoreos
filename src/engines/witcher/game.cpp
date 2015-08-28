@@ -76,6 +76,7 @@ void Game::run() {
 
 void Game::runCampaign() {
 	_campaign->load("thewitcher");
+	_campaign->usePC("wiedzmin");
 
 	if (EventMan.quitRequested() || !_campaign->isLoaded()) {
 		_campaign->clear();

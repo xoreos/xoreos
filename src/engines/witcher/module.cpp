@@ -44,13 +44,14 @@
 
 #include "src/engines/witcher/module.h"
 #include "src/engines/witcher/area.h"
+#include "src/engines/witcher/creature.h"
 
 namespace Engines {
 
 namespace Witcher {
 
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule), _console(&console),
-	_hasModule(false), _running(false), _exit(false), _currentArea(0) {
+	_hasModule(false), _running(false), _exit(false), _pc(0), _currentArea(0) {
 
 }
 
@@ -67,6 +68,10 @@ void Module::clear() {
 
 Area *Module::getCurrentArea() {
 	return _currentArea;
+}
+
+Creature *Module::getPC() {
+	return _pc;
 }
 
 bool Module::isLoaded() const {
@@ -126,17 +131,20 @@ void Module::replaceModule() {
 
 	_console->hide();
 
+	assert(_pc);
+
 	Common::UString newModule = _newModule;
+	Creature *pc = _pc;
 
 	unload();
 
 	_exit = true;
 
 	loadModule(newModule);
-	enter();
+	enter(*pc);
 }
 
-void Module::enter() {
+void Module::enter(Creature &pc) {
 	if (!isLoaded())
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
@@ -149,13 +157,22 @@ void Module::enter() {
 		throw e;
 	}
 
+	_pc = &pc;
+	addObject(*_pc);
+
 	float entryX, entryY, entryZ, entryDirX, entryDirY;
 	_ifo.getEntryPosition(entryX, entryY, entryZ);
 	_ifo.getEntryDirection(entryDirX, entryDirY);
 
 	const float entryAngle = -Common::rad2deg(atan2(entryDirX, entryDirY));
 
-	_console->printf("Entering module \"%s\"", _name.getString().c_str());
+	_pc->setPosition(entryX, entryY, entryZ);
+	_pc->setOrientation(0.0f, 0.0f, 1.0f, entryAngle);
+
+	_pc->loadModel();
+
+	_console->printf("Entering module \"%s\" with character \"%s\"",
+	                 _name.getString().c_str(), _pc->getName().getString().c_str());
 
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
@@ -201,6 +218,10 @@ void Module::enterArea() {
 		return;
 
 	if (_currentArea) {
+		_pc->setArea(0);
+
+		_pc->hide();
+
 		_currentArea->hide();
 
 		_currentArea = 0;
@@ -221,6 +242,9 @@ void Module::enterArea() {
 	_currentArea = area->second;
 
 	_currentArea->show();
+	_pc->show();
+
+	_pc->setArea(_currentArea);
 
 	EventMan.flushEvents();
 
@@ -290,19 +314,70 @@ void Module::unloadAreas() {
 	_currentArea = 0;
 }
 
+void Module::unloadPC() {
+	if (!_pc)
+		return;
+
+	removeObject(*_pc);
+
+	_pc->hide();
+	_pc = 0;
+}
+
 void Module::movePC(const Common::UString &area) {
-	_newArea = area;
+	if (!_pc)
+		return;
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	movePC(area, x, y, z);
 }
 
 void Module::movePC(float x, float y, float z) {
-	// Roughly head position
-	CameraMan.setPosition(x, y, z + 1.8f);
-	CameraMan.update();
+	if (!_pc)
+		return;
+
+	movePC(_currentArea, x, y, z);
 }
 
 void Module::movePC(const Common::UString &area, float x, float y, float z) {
-	movePC(area);
-	movePC(x, y, z);
+	if (!_pc)
+		return;
+
+	Area *pcArea = 0;
+
+	AreaMap::iterator a = _areas.find(area);
+	if (a != _areas.end())
+		pcArea = a->second;
+
+	movePC(pcArea, x, y, z);
+}
+
+void Module::movePC(Area *area, float x, float y, float z) {
+	if (!_pc)
+		return;
+
+	_pc->setArea(area);
+	_pc->setPosition(x, y, z);
+
+	movedPC();
+}
+
+void Module::movedPC() {
+	if (!_pc)
+		return;
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	// Roughly head position
+	CameraMan.setPosition(x, y, z + 1.8f);
+	CameraMan.update();
+
+	_newArea.clear();
+	if (_pc->getArea())
+		_newArea = _pc->getArea()->getResRef();
 }
 
 const Aurora::IFOFile &Module::getIFO() const {

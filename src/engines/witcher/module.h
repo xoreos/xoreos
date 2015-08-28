@@ -45,6 +45,7 @@ class Console;
 namespace Witcher {
 
 class Area;
+class Creature;
 
 class Module : public Witcher::Object, public Witcher::ObjectContainer {
 public:
@@ -71,6 +72,8 @@ public:
 	// .--- Elements of the current module
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
+	/** Return the currently playing PC. */
+	Creature *getPC();
 	// '---
 
 	// .--- Interact with the current campaign
@@ -85,6 +88,10 @@ public:
 	void movePC(float x, float y, float z);
 	/** Move the player character to this position within this area. */
 	void movePC(const Common::UString &area, float x, float y, float z);
+	/** Move the player character to this position within this area. */
+	void movePC(Area *area, float x, float y, float z);
+	/** Notify the module that the PC was moved. */
+	void movedPC();
 	// '---
 
 	// .--- Static utility methods
@@ -104,7 +111,7 @@ public:
 	void exit();
 
 	/** Enter the loaded module, starting it. */
-	void enter();
+	void enter(Creature &pc);
 	/** Leave the running module, quitting it. */
 	void leave();
 
@@ -131,6 +138,9 @@ private:
 
 	Aurora::IFOFile _ifo; ///< The module's IFO.
 
+	/** The player character we use. */
+	Creature *_pc;
+
 	AreaMap         _areas;           ///< The areas in the current module.
 	Common::UString _newArea;         ///< The new area to enter.
 	Area           *_currentArea;     ///< The current area.
@@ -144,6 +154,7 @@ private:
 	void unload(); ///< Unload the whole shebang.
 
 	void unloadModule();      ///< Unload the module.
+	void unloadPC();          ///< Unload the PC.
 	void unloadAreas();       ///< Unload the areas.
 	// '---
 
