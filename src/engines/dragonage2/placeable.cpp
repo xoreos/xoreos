@@ -142,10 +142,8 @@ void Placeable::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struc
 void Placeable::loadProperties(const Aurora::GFF3Struct &gff) {
 	_tag = gff.getString("Tag", _tag);
 
-	if (gff.hasField("LocName"))
-		gff.getLocString("LocName", _name);
-	if (gff.hasField("LocPopupText"))
-		gff.getLocString("LocPopupText", _description);
+	gff.getLocString("LocName"     , _name);
+	gff.getLocString("LocPopupText", _description);
 
 	_conversation = gff.getString("Conversation", _conversation);
 

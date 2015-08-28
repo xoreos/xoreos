@@ -431,10 +431,8 @@ void Creature::load(const GFF3Struct &instance, const GFF3Struct *blueprint = 0)
 void Creature::loadProperties(const GFF3Struct &gff) {
 	_tag = gff.getString("Tag", _tag);
 
-	if (gff.hasField("LocName"))
-		gff.getLocString("LocName", _name);
-	if (gff.hasField("Description"))
-		gff.getLocString("Description", _description);
+	gff.getLocString("LocName"    , _name);
+	gff.getLocString("Description", _description);
 
 	_conversation = gff.getString("DialogResRef", _conversation);
 
