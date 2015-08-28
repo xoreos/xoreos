@@ -176,6 +176,10 @@ void Module::enter(Creature &pc) {
 	_console->printf("Entering module \"%s\" with character \"%s\"",
 	                 _name.getString().c_str(), _pc->getName().getString().c_str());
 
+	runScript(kScriptModuleLoad , this, _pc);
+	runScript(kScriptModuleStart, this, _pc);
+	runScript(kScriptEnter      , this, _pc);
+
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
 		playVideo(startMovie);
@@ -194,6 +198,8 @@ void Module::enter(Creature &pc) {
 }
 
 void Module::leave() {
+	runScript(kScriptExit, this, _pc);
+
 	_running = false;
 	_exit    = true;
 }
@@ -220,6 +226,7 @@ void Module::enterArea() {
 		return;
 
 	if (_currentArea) {
+		_currentArea->runScript(kScriptExit, _currentArea, _pc);
 		_pc->setArea(0);
 
 		_pc->hide();
@@ -247,6 +254,8 @@ void Module::enterArea() {
 	_pc->show();
 
 	_pc->setArea(_currentArea);
+
+	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
 
 	EventMan.flushEvents();
 
