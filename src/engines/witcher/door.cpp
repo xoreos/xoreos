@@ -37,7 +37,7 @@ namespace Engines {
 namespace Witcher {
 
 Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
-	_module(&module), _state(kStateClosed), _link(0) {
+	_module(&module), _state(kStateClosed) {
 
 	load(door);
 }
@@ -108,7 +108,7 @@ void Door::loadObject(const Aurora::GFF3Struct &gff) {
 
 	// Linked to
 
-	_linkTag        = gff.getString("LinkedTo"    , _linkTag);
+	_linkedTo       = gff.getString("LinkedTo"    , _linkedTo);
 	_linkedToModule = gff.getString("TargetModule", _linkedToModule);
 }
 
@@ -125,20 +125,58 @@ void Door::highlight(bool enabled) {
 		_model->drawBound(enabled);
 }
 
-bool Door::click(Object *UNUSED(triggerer)) {
+bool Door::click(Object *triggerer) {
+	// If the door is closed, try to open it
+	if (!isOpen())
+		return open(triggerer);
+
+	// If the door is open and has a click or used script, call that
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
+	if (hasScript(kScriptUsed))
+		return runScript(kScriptUsed , this, triggerer);
+
+	if (!_linkedTo.empty())
+		_module->movePC(_linkedToModule, _linkedTo);
+
+	// If the door is open and has no script, close it
+	return close(triggerer);
+}
+
+bool Door::open(Object *opener) {
+	// TODO: Door::open(): Open in direction of the opener
+
+	if (isOpen() || (_state == kStateDestroyed))
+		return true;
+
+	if (isLocked()) {
+		playSound(_soundLocked);
+		runScript(kScriptFailToOpen, this, opener);
+		return false;
+	}
+
+	playSound(_soundOpened);
+	runScript(kScriptOpen, this, opener);
+
+	_state = kStateOpened1;
+
+	return true;
+}
+
+bool Door::close(Object *closer) {
+	if (!isOpen() || (_state == kStateDestroyed))
+		return true;
+
+	playSound(_soundClosed);
+	runScript(kScriptClosed, this, closer);
+
+	_state = kStateClosed;
+
 	return true;
 }
 
 bool Door::isOpen() const {
 	return (_state == kStateOpened1) || (_state == kStateOpened2);
-}
-
-void Door::evaluateLink() {
-	if (_link || _linkTag.empty())
-		return;
-
-	Aurora::NWScript::Object *object = _module->getFirstObjectByTag(_linkTag);
-	_link = dynamic_cast<Waypoint *>(object);
 }
 
 } // End of namespace Witcher

@@ -61,6 +61,11 @@ public:
 	/** Is the door open? */
 	bool isOpen() const;
 
+	/** The opener object opens this door. */
+	bool open(Object *opener);
+	/** The closer object closes this door. */
+	bool close(Object *closer);
+
 	// Object/Cursor interactions
 
 	void enter(); ///< The cursor entered the door. */
@@ -81,8 +86,7 @@ private:
 
 	State _state; ///< The current state of the door.
 
-	Common::UString _linkTag;        ///< The waypoint tag this door links to.
-	Waypoint       *_link;           ///< The waypoint this door links to.
+	Common::UString _linkedTo;       ///< The waypoint tag this door links to.
 	Common::UString _linkedToModule; ///< The module the waypoint this door links to is in.
 
 	/** Load from a door instance. */
@@ -90,8 +94,6 @@ private:
 
 	/** Sync the model's state with the door's state. */
 	void setModelState();
-	/** Evaluate our link. */
-	void evaluateLink();
 };
 
 } // End of namespace Witcher

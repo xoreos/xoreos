@@ -96,6 +96,8 @@ public:
 	void movePC(const Common::UString &area, float x, float y, float z);
 	/** Move the player character to this position within this area. */
 	void movePC(Area *area, float x, float y, float z);
+	/** Move the player character to this object within this area. */
+	void movePC(const Common::UString &module, const Common::UString &object);
 	/** Notify the module that the PC was moved. */
 	void movedPC();
 	// '---
@@ -112,7 +114,7 @@ public:
 	void clear();
 
 	/** Load a module. */
-	void load(const Common::UString &module);
+	void load(const Common::UString &module, const Common::UString &entryLocation = "");
 	/** Exit the currently running module. */
 	void exit();
 
@@ -171,7 +173,11 @@ private:
 	Common::UString _newArea;         ///< The new area to enter.
 	Area           *_currentArea;     ///< The current area.
 
+	Common::UString _module;    ///< The current module's name.
 	Common::UString _newModule; ///< The module we should change to.
+
+	/** The tag of the object in the start location for this module. */
+	Common::UString _entryLocation;
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
@@ -192,11 +198,18 @@ private:
 	void enterArea(); ///< Enter a new area.
 
 	/** Load the actual module. */
-	void loadModule(const Common::UString &module);
+	void loadModule(const Common::UString &module, const Common::UString &entryLocation);
 	/** Schedule a change to a new module. */
-	void changeModule(const Common::UString &module);
+	void changeModule(const Common::UString &module, const Common::UString &entryLocation);
 	/** Actually replace the currently running module. */
 	void replaceModule();
+
+	bool getObjectLocation(const Common::UString &object, Common::UString &area,
+	                       float &x, float &y, float &z, float &angle);
+	bool getEntryObjectLocation(Common::UString &area,
+	                            float &entryX, float &entryY, float &entryZ, float &entryAngle);
+	void getEntryIFOLocation(Common::UString &area,
+	                         float &entryX, float &entryY, float &entryZ, float &entryAngle);
 
 	void handleEvents();
 

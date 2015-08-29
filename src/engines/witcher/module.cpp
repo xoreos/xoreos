@@ -87,23 +87,26 @@ bool Module::isRunning() const {
 	return !EventMan.quitRequested() && _running && !_exit && !_newArea.empty();
 }
 
-void Module::load(const Common::UString &module) {
+void Module::load(const Common::UString &module, const Common::UString &entryLocation) {
 	if (isRunning()) {
 		// We are currently running a module. Schedule a safe change instead
 
-		changeModule(module);
+		changeModule(module, entryLocation);
 		return;
 	}
 
 	// We are not currently running a module. Directly load the new module
-	loadModule(module);
+	loadModule(module, entryLocation);
 }
 
-void Module::loadModule(const Common::UString &module) {
+void Module::loadModule(const Common::UString &module, const Common::UString &entryLocation) {
 	unload();
 
 	if (module.empty())
 		throw Common::Exception("Tried to load an empty module");
+
+	_module        = module;
+	_entryLocation = entryLocation;
 
 	try {
 		indexMandatoryArchive(module, 1001, &_resModule);
@@ -128,8 +131,9 @@ void Module::loadModule(const Common::UString &module) {
 	_hasModule = true;
 }
 
-void Module::changeModule(const Common::UString &module) {
-	_newModule = module;
+void Module::changeModule(const Common::UString &module, const Common::UString &entryLocation) {
+	_newModule     = module;
+	_entryLocation = entryLocation;
 }
 
 void Module::replaceModule() {
@@ -140,14 +144,16 @@ void Module::replaceModule() {
 
 	assert(_pc);
 
-	Common::UString newModule = _newModule;
+	const Common::UString newModule     = _newModule;
+	const Common::UString entryLocation = _entryLocation;
+
 	Creature *pc = _pc;
 
 	unload();
 
 	_exit = true;
 
-	loadModule(newModule);
+	loadModule(newModule, entryLocation);
 	enter(*pc);
 }
 
@@ -167,16 +173,19 @@ void Module::enter(Creature &pc) {
 	_pc = &pc;
 	addObject(*_pc);
 
-	float entryX, entryY, entryZ, entryDirX, entryDirY;
-	_ifo.getEntryPosition(entryX, entryY, entryZ);
-	_ifo.getEntryDirection(entryDirX, entryDirY);
-
-	const float entryAngle = -Common::rad2deg(atan2(entryDirX, entryDirY));
+	float entryX, entryY, entryZ, entryAngle;
+	if (!getEntryObjectLocation(_newArea, entryX, entryY, entryZ, entryAngle))
+		getEntryIFOLocation(_newArea, entryX, entryY, entryZ, entryAngle);
 
 	_pc->setPosition(entryX, entryY, entryZ);
 	_pc->setOrientation(0.0f, 0.0f, 1.0f, entryAngle);
 
 	_pc->loadModel();
+
+	// Roughly head position
+	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);
+	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
+	CameraMan.update();
 
 	_console->printf("Entering module \"%s\" with character \"%s\"",
 	                 _name.getString().c_str(), _pc->getName().getString().c_str());
@@ -189,8 +198,6 @@ void Module::enter(Creature &pc) {
 	if (!startMovie.empty())
 		playVideo(startMovie);
 
-	_newArea = _ifo.getEntryArea();
-
 	CameraMan.reset();
 
 	// Roughly head position
@@ -200,6 +207,56 @@ void Module::enter(Creature &pc) {
 
 	_running = true;
 	_exit    = false;
+}
+
+bool Module::getObjectLocation(const Common::UString &object, Common::UString &area,
+                               float &x, float &y, float &z, float &angle) {
+
+	if (object.empty())
+		return false;
+
+	Aurora::NWScript::ObjectSearch *search = findObjectsByTag(object);
+
+	Witcher::Object *witcherObject = 0;
+	while (!witcherObject && search->get()) {
+		witcherObject = Witcher::ObjectContainer::toObject(search->next());
+		if (!witcherObject || (witcherObject->getType() != kObjectTypeWaypoint))
+			witcherObject = 0;
+	}
+
+	delete search;
+
+	if (!witcherObject)
+		return false;
+
+	// TODO: Entry orientation
+
+	if (witcherObject->getArea())
+		area = witcherObject->getArea()->getResRef();
+
+	witcherObject->getPosition(x, y, z);
+	angle = 0.0f;
+
+	return true;
+}
+
+bool Module::getEntryObjectLocation(Common::UString &entryArea,
+                                    float &entryX, float &entryY, float &entryZ, float &entryAngle) {
+
+	return getObjectLocation(_entryLocation, entryArea, entryX, entryY, entryZ, entryAngle);
+}
+
+void Module::getEntryIFOLocation(Common::UString &entryArea,
+                                 float &entryX, float &entryY, float &entryZ, float &entryAngle) {
+
+	entryArea = _ifo.getEntryArea();
+
+	_ifo.getEntryPosition(entryX, entryY, entryZ);
+
+	float entryDirX, entryDirY;
+	_ifo.getEntryDirection(entryDirX, entryDirY);
+
+	entryAngle = -Common::rad2deg(atan2(entryDirX, entryDirY));
 }
 
 void Module::leave() {
@@ -307,7 +364,10 @@ void Module::unloadModule() {
 
 	deindexResources(_resModule);
 
+	_module.clear();
 	_newModule.clear();
+
+	_entryLocation.clear();
 
 	_eventQueue.clear();
 	_delayedActions.clear();
@@ -397,6 +457,20 @@ void Module::movePC(Area *area, float x, float y, float z) {
 	_pc->setPosition(x, y, z);
 
 	movedPC();
+}
+
+void Module::movePC(const Common::UString &module, const Common::UString &object) {
+	if (module.empty() || (module == _module)) {
+		float x, y, z, angle;
+		Common::UString area;
+
+		if (getObjectLocation(object, area, x, y, z, angle))
+			movePC(area, x, y, z);
+
+		return;
+	}
+
+	load(module, object);
 }
 
 void Module::movedPC() {
