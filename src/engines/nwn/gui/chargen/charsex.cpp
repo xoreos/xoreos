@@ -66,10 +66,10 @@ void CharSex::hide() {
 
 	if (_returnCode == 1) {
 		// Set previous choice if any.
-		uint32 previousGender = _choices->getCharacter().getGender();
+		Gender previousGender = _choices->getCharacter().getGender();
 
 		if (previousGender != kGenderNone)
-			_buttons->setActive(previousGender);
+			_buttons->setActive((size_t) previousGender);
 		else
 			reset();
 	}
@@ -77,7 +77,7 @@ void CharSex::hide() {
 
 void CharSex::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setCharGender(_buttons->getChoice());
+		_choices->setCharGender((Gender) _buttons->getChoice());
 		_returnCode = 2;
 		return;
 	}

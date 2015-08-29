@@ -66,7 +66,7 @@ const Creature& CharGenChoices::getCharacter() {
 	return *_creature;
 }
 
-void CharGenChoices::setCharGender(uint32 gender) {
+void CharGenChoices::setCharGender(Gender gender) {
 	_creature->setGender(gender);
 }
 

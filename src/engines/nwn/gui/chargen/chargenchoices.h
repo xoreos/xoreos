@@ -29,6 +29,8 @@
 
 #include "src/common/types.h"
 
+#include "src/engines/nwn/types.h"
+
 namespace Common {
 class UString;
 }
@@ -46,7 +48,7 @@ public:
 
 	void reset();
 	const Creature &getCharacter();
-	void setCharGender(uint32 gender);
+	void setCharGender(Gender gender);
 	void setCharRace(uint32 race);
 	void setCharPortrait(const Common::UString &portrait);
 	void setCharClass(uint32 classId);

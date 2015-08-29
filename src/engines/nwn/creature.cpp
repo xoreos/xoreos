@@ -193,11 +193,11 @@ const Common::UString &Creature::getLastName() const {
 	return _lastName;
 }
 
-uint32 Creature::getGender() const {
+Gender Creature::getGender() const {
 	return _gender;
 }
 
-void Creature::setGender(uint32 gender) {
+void Creature::setGender(Gender gender) {
 	_gender = gender;
 }
 
@@ -384,7 +384,7 @@ static const char *kBodyPartNodes[] = {
 void Creature::getPartModels() {
 	const Aurora::TwoDAFile &appearance = TwoDAReg.get2DA("appearance");
 
-	const Aurora::TwoDARow &gender = TwoDAReg.get2DA("gender").getRow(_gender);
+	const Aurora::TwoDARow &gender = TwoDAReg.get2DA("gender").getRow((uint) _gender);
 	const Aurora::TwoDARow &race   = TwoDAReg.get2DA("racialtypes").getRow(_race);
 	const Aurora::TwoDARow &raceAp = appearance.getRow(race.getInt("Appearance"));
 	const Aurora::TwoDARow &pheno  = TwoDAReg.get2DA("phenotype").getRow(_phenotype);
@@ -642,7 +642,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	loadPortrait(gff, _portrait);
 
 	// Gender
-	_gender = gff.getUint("Gender", _gender);
+	_gender = (Gender) gff.getUint("Gender", (uint64) _gender);
 
 	// Race
 	_race = gff.getUint("Race", _race);

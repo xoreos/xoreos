@@ -72,9 +72,9 @@ public:
 	const Common::UString &getLastName() const;
 
 	/** Get the creature's gender. */
-	uint32 getGender() const;
+	Gender getGender() const;
 	/** Set the creature's gender. */
-	void setGender(uint32 gender);
+	void setGender(Gender gender);
 	/** Is the creature female, do we need female dialogs tokens? */
 	bool isFemale() const;
 
@@ -249,7 +249,7 @@ private:
 	Common::UString _firstName; ///< The creature's first name.
 	Common::UString _lastName;  ///< The creature's last name.
 
-	uint32 _gender; ///< The creature's gender.
+	Gender _gender; ///< The creature's gender.
 	uint32 _race;   ///< The creature's race.
 
 	Common::UString _subRace; ///< The creature's subrace.
