@@ -126,6 +126,8 @@ void Door::highlight(bool enabled) {
 }
 
 bool Door::click(Object *triggerer) {
+	_lastUsedBy = triggerer;
+
 	// If the door is closed, try to open it
 	if (!isOpen())
 		return open(triggerer);
@@ -155,6 +157,8 @@ bool Door::open(Object *opener) {
 		return false;
 	}
 
+	_lastOpenedBy = opener;
+
 	playSound(_soundOpened);
 	runScript(kScriptOpen, this, opener);
 
@@ -166,6 +170,8 @@ bool Door::open(Object *opener) {
 bool Door::close(Object *closer) {
 	if (!isOpen() || (_state == kStateDestroyed))
 		return true;
+
+	_lastClosedBy = closer;
 
 	playSound(_soundClosed);
 	runScript(kScriptClosed, this, closer);
