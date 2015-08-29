@@ -241,6 +241,9 @@ private:
 
 	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
 
+	void actionOpenDoor (Aurora::NWScript::FunctionContext &ctx);
+	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
+
 	void actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx);
 	void actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx);
 	void actionJumpToObject  (Aurora::NWScript::FunctionContext &ctx);
