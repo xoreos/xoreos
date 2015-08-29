@@ -128,6 +128,43 @@ private:
 	void vectorMagnitude(Aurora::NWScript::FunctionContext &ctx);
 	void vectorNormalize(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Strings, functions_string.cpp
+	void writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx);
+
+	void sendMessageToPC(Aurora::NWScript::FunctionContext &ctx);
+
+	void printInteger(Aurora::NWScript::FunctionContext &ctx);
+	void printFloat  (Aurora::NWScript::FunctionContext &ctx);
+	void printString (Aurora::NWScript::FunctionContext &ctx);
+	void printObject (Aurora::NWScript::FunctionContext &ctx);
+	void printVector (Aurora::NWScript::FunctionContext &ctx);
+
+	void intToString   (Aurora::NWScript::FunctionContext &ctx);
+	void floatToString (Aurora::NWScript::FunctionContext &ctx);
+	void objectToString(Aurora::NWScript::FunctionContext &ctx);
+
+	void intToHexString(Aurora::NWScript::FunctionContext &ctx);
+
+	void stringToInt  (Aurora::NWScript::FunctionContext &ctx);
+	void stringToFloat(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStringLength(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStringUpperCase(Aurora::NWScript::FunctionContext &ctx);
+	void getStringLowerCase(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStringRight(Aurora::NWScript::FunctionContext &ctx);
+	void getStringLeft (Aurora::NWScript::FunctionContext &ctx);
+
+	void insertString (Aurora::NWScript::FunctionContext &ctx);
+	void getSubString (Aurora::NWScript::FunctionContext &ctx);
+	void findSubString(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
+
+	void get2DAString(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace Witcher

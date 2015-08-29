@@ -45,4 +45,5 @@ libwitcher_la_SOURCES = \
                         script/container.cpp \
                         script/functions.cpp \
                         script/functions_math.cpp \
+                        script/functions_string.cpp \
                         $(EMPTY)
