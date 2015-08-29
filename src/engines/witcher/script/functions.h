@@ -226,6 +226,20 @@ private:
 	// .--- Creatures, functions_creature.cpp
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Actions, functions_action.cpp
+	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
+	void delayCommand (Aurora::NWScript::FunctionContext &ctx);
+
+	void executeScript(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void actionJumpToObject  (Aurora::NWScript::FunctionContext &ctx);
+	void actionMoveToObject  (Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace Witcher
