@@ -110,6 +110,13 @@ void Functions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
 		door->close(Witcher::ObjectContainer::toObject(ctx.getCaller()));
 }
 
+void Functions::actionSpeakString(Aurora::NWScript::FunctionContext &ctx) {
+	Witcher::Object *object = Witcher::ObjectContainer::toObject(ctx.getCaller());
+
+	if (object)
+		object->speakString(ctx.getParams()[0].getString(), ctx.getParams()[1].getInt());
+}
+
 void Functions::actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
 	Witcher::Object   *object = Witcher::ObjectContainer::toObject(ctx.getCaller());
 	Witcher::Location *moveTo = Witcher::ObjectContainer::toLocation(ctx.getParams()[0].getEngineType());

@@ -23,6 +23,9 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/error.h"
+
+#include "src/aurora/dlgfile.h"
 
 #include "src/sound/sound.h"
 
@@ -154,6 +157,42 @@ void Object::leave() {
 }
 
 void Object::highlight(bool UNUSED(enabled)) {
+}
+
+void Object::speakString(const Common::UString &string, uint32 UNUSED(volume)) {
+	// TODO: Object::speakString(): Show the string in a speech bubble
+
+	status("<%s> \"%s\"", getName().getString().c_str(), string.c_str());
+}
+
+void Object::speakOneLiner(Common::UString conv, Object *UNUSED(tokenTarget)) {
+	if (conv.empty())
+		conv = _conversation;
+	if (conv.empty())
+		return;
+
+	Common::UString text;
+	Common::UString sound;
+
+
+	try {
+		Aurora::DLGFile dlg(conv, this);
+
+		const Aurora::DLGFile::Line *line = dlg.getOneLiner();
+		if (line) {
+			text  = line->text.getString();
+			sound = line->sound;
+		}
+
+	} catch (Common::Exception &e) {
+		e.add("Failed evaluating one-liner from conversation \"%s\"", conv.c_str());
+		Common::printException(e, "WARNING: ");
+	}
+
+	if (!text.empty())
+		speakString(text, 0);
+	if (!sound.empty())
+		playSound(sound);
 }
 
 void Object::stopSound() {

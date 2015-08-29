@@ -123,6 +123,13 @@ public:
 	/** The object was clicked. */
 	virtual bool click(Object *triggerer = 0);
 
+	// Object (text) talking
+
+	/** Speak the specified string. */
+	void speakString(const Common::UString &string, uint32 volume);
+	/** Speak an one-liner from the specified conversation file. */
+	void speakOneLiner(Common::UString conv, Object *tokenTarget = 0);
+
 	// Sound
 
 	/** Stop the current object sound. */
