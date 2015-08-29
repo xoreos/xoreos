@@ -252,6 +252,13 @@ private:
 	void actionMoveToObject  (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Conversations, functions_conversation.cpp
+	void speakString        (Aurora::NWScript::FunctionContext &ctx);
+	void speakStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
+
+	void speakOneLinerConversation(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Sound, functions_sound.cpp
 	void playVoiceChat    (Aurora::NWScript::FunctionContext &ctx);
 	void playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx);

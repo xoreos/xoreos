@@ -51,5 +51,6 @@ libwitcher_la_SOURCES = \
                         script/functions_situated.cpp \
                         script/functions_creature.cpp \
                         script/functions_action.cpp \
+                        script/functions_conversation.cpp \
                         script/functions_sound.cpp \
                         $(EMPTY)
