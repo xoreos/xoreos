@@ -34,7 +34,9 @@ namespace Engines {
 
 namespace Witcher {
 
-Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable) {
+Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
+	_state(kStateDefault) {
+
 	load(placeable);
 }
 
@@ -57,13 +59,58 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	delete utp;
 }
 
-void Placeable::loadObject(const Aurora::GFF3Struct &UNUSED(gff)) {
+void Placeable::setModelState() {
+	if (!_model)
+		return;
+
+	switch (_state) {
+		case kStateDefault:
+			_model->setState("default");
+			break;
+
+		case kStateOpen:
+			_model->setState("open");
+			break;
+
+		case kStateClosed:
+			_model->setState("close");
+			break;
+
+		case kStateDestroyed:
+			_model->setState("dead");
+			break;
+
+		case kStateActivated:
+			_model->setState("on");
+			break;
+
+		case kStateDeactivated:
+			_model->setState("off");
+			break;
+
+		default:
+			_model->setState("");
+			break;
+	}
+
+}
+
+void Placeable::show() {
+	setModelState();
+
+	Situated::show();
 }
 
 void Placeable::hide() {
 	leave();
 
 	Situated::hide();
+}
+
+void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
+	// State
+
+	_state = (State) gff.getUint("AnimationState", (uint) _state);
 }
 
 void Placeable::enter() {
@@ -77,6 +124,14 @@ void Placeable::leave() {
 void Placeable::highlight(bool enabled) {
 	if (_model)
 		_model->drawBound(enabled);
+}
+
+bool Placeable::isOpen() const {
+	return _state == kStateOpen;
+}
+
+bool Placeable::isActivated() const {
+	return isOpen();
 }
 
 bool Placeable::click(Object *UNUSED(triggerer)) {

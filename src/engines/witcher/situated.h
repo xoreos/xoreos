@@ -50,6 +50,9 @@ public:
 
 	// Basic properties
 
+	/** Is the situated object open? */
+	virtual bool isOpen() const = 0;
+
 	bool isLocked() const;               ///< Is the situated object locked?
 	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
 

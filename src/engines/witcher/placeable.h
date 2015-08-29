@@ -35,13 +35,31 @@ namespace Witcher {
 
 class Placeable : public Situated {
 public:
+	/** The state of a placeable. */
+	enum State {
+		kStateDefault     = 0, ///< Default.
+		kStateOpen        = 1, ///< Open.
+		kStateClosed      = 2, ///< Closed.
+		kStateDestroyed   = 3, ///< Destroyed.
+		kStateActivated   = 4, ///< Activated.
+		kStateDeactivated = 5  ///< Deactivated.
+	};
+
 	/** Load from a placeable instance. */
 	Placeable(const Aurora::GFF3Struct &placeable);
 	~Placeable();
 
 	// Basic visuals
 
+	void show(); ///< Show the placeable's model.
 	void hide(); ///< Hide the placeable's model.
+
+	// Basic properties
+
+	/** Is the placeable open? */
+	bool isOpen() const;
+	/** Is the placeable activated? */
+	bool isActivated() const;
 
 	// Object/Cursor interactions
 
@@ -59,8 +77,13 @@ protected:
 	void loadObject(const Aurora::GFF3Struct &gff);
 
 private:
+	State _state; ///< The current state of the placeable.
+
 	/** Load from a placeable instance. */
 	void load(const Aurora::GFF3Struct &placeable);
+
+	/** Sync the model's state with the placeable's state. */
+	void setModelState();
 };
 
 } // End of namespace Witcher
