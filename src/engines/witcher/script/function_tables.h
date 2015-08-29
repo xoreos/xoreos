@@ -328,7 +328,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 214, "ActionJumpToLocation"              , 0                                              },
 	{ 215, "Location"                          , &Functions::location                           },
 	{ 216, "ApplyEffectAtLocation"             , 0                                              },
-	{ 217, "GetIsPC"                           , 0                                              },
+	{ 217, "GetIsPC"                           , &Functions::getIsPC                            },
 	{ 218, "FeetToMeters"                      , 0                                              },
 	{ 219, "YardsToMeters"                     , 0                                              },
 	{ 220, "ApplyEffectToObject"               , 0                                              },

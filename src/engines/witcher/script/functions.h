@@ -222,6 +222,10 @@ private:
 	void getLocked(Aurora::NWScript::FunctionContext &ctx);
 	void setLocked(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Creatures, functions_creature.cpp
+	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace Witcher
