@@ -108,7 +108,8 @@ void Door::loadObject(const Aurora::GFF3Struct &gff) {
 
 	// Linked to
 
-	_linkTag = gff.getString("LinkedTo");
+	_linkTag        = gff.getString("LinkedTo"    , _linkTag);
+	_linkedToModule = gff.getString("TargetModule", _linkedToModule);
 }
 
 void Door::enter() {

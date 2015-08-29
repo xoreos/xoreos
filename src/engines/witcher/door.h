@@ -81,8 +81,9 @@ private:
 
 	State _state; ///< The current state of the door.
 
-	Common::UString _linkTag; ///< The waypoint tag this door links to.
-	Waypoint       *_link;    ///< The waypoint this door links to.
+	Common::UString _linkTag;        ///< The waypoint tag this door links to.
+	Waypoint       *_link;           ///< The waypoint this door links to.
+	Common::UString _linkedToModule; ///< The module the waypoint this door links to is in.
 
 	/** Load from a door instance. */
 	void load(const Aurora::GFF3Struct &door);
