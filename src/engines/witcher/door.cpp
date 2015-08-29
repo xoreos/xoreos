@@ -37,7 +37,7 @@ namespace Engines {
 namespace Witcher {
 
 Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
-	_module(&module), _link(0) {
+	_module(&module), _state(kStateClosed), _link(0) {
 
 	load(door);
 }
@@ -61,14 +61,54 @@ void Door::load(const Aurora::GFF3Struct &door) {
 	delete utd;
 }
 
-void Door::loadObject(const Aurora::GFF3Struct &gff) {
-	_linkTag = gff.getString("LinkedTo");
+void Door::setModelState() {
+	if (!_model)
+		return;
+
+	switch (_state) {
+		case kStateClosed:
+			_model->setState("closed");
+			break;
+
+		case kStateOpened1:
+			_model->setState("opened1");
+			break;
+
+		case kStateOpened2:
+			_model->setState("opened2");
+			break;
+
+		case kStateDestroyed:
+			_model->setState("dead");
+			break;
+
+		default:
+			_model->setState("");
+			break;
+	}
+
+}
+
+void Door::show() {
+	setModelState();
+
+	Situated::show();
 }
 
 void Door::hide() {
 	leave();
 
 	Situated::hide();
+}
+
+void Door::loadObject(const Aurora::GFF3Struct &gff) {
+	// State
+
+	_state = (State) gff.getUint("AnimationState", (uint) _state);
+
+	// Linked to
+
+	_linkTag = gff.getString("LinkedTo");
 }
 
 void Door::enter() {
@@ -86,6 +126,10 @@ void Door::highlight(bool enabled) {
 
 bool Door::click(Object *UNUSED(triggerer)) {
 	return true;
+}
+
+bool Door::isOpen() const {
+	return (_state == kStateOpened1) || (_state == kStateOpened2);
 }
 
 void Door::evaluateLink() {
