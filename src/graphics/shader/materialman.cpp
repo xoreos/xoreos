@@ -22,11 +22,9 @@
  *  The global shader material manager.
  */
 
+#include "src/common/util.h"
 
 #include "src/graphics/shader/materialman.h"
-
-
-#include "src/common/util.h"
 
 DECLARE_SINGLETON(Graphics::Shader::MaterialManager)
 

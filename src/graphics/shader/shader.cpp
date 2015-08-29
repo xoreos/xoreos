@@ -30,10 +30,10 @@
 #include "src/common/util.h"
 #include "src/common/transmatrix.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/graphics/shader/shader.h"
 #include "src/graphics/shader/shadercode.h"
-
-#include "src/graphics/graphics.h"
 
 /*--------------------------------------------------------------------*/
 

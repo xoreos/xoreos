@@ -22,8 +22,9 @@
  *  Shader surface, responsible for tracking data relating to a vertex shader.
  */
 
-#include "src/graphics/shader/shadersurface.h"
 #include "src/graphics/graphics.h"
+
+#include "src/graphics/shader/shadersurface.h"
 
 namespace Graphics {
 

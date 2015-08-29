@@ -25,8 +25,9 @@
 #ifndef GRAPHICS_SHADER_SHADERSURFACE_H
 #define GRAPHICS_SHADER_SHADERSURFACE_H
 
-#include "src/graphics/shader/shader.h"
 #include "src/common/transmatrix.h"
+
+#include "src/graphics/shader/shader.h"
 
 namespace Graphics {
 

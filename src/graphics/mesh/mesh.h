@@ -25,17 +25,15 @@
 #ifndef GRAPHICS_MESH_MESH_H
 #define GRAPHICS_MESH_MESH_H
 
-#include "src/graphics/graphics.h"
-#include "src/graphics/types.h"
-#include "src/graphics/glcontainer.h"
-#include "src/graphics/indexbuffer.h"
-#include "src/graphics/vertexbuffer.h"
-
-#include "src/common/types.h"
+#include "src/common/ustring.h"
 #include "src/common/mutex.h"
 #include "src/common/matrix.h"
 #include "src/common/transmatrix.h"
-#include "src/common/ustring.h"
+
+#include "src/graphics/graphics.h"
+#include "src/graphics/glcontainer.h"
+#include "src/graphics/indexbuffer.h"
+#include "src/graphics/vertexbuffer.h"
 
 namespace Graphics {
 

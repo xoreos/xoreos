@@ -22,11 +22,9 @@
  *  The global shader surface manager.
  */
 
+#include "src/common/util.h"
 
 #include "src/graphics/shader/surfaceman.h"
-
-
-#include "src/common/util.h"
 
 DECLARE_SINGLETON(Graphics::Shader::SurfaceManager)
 

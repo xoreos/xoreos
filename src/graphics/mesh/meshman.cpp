@@ -23,11 +23,10 @@
  */
 
 
-#include "src/graphics/mesh/meshman.h"
-
-#include "src/graphics/mesh/meshwirebox.h"
-
 #include "src/common/util.h"
+
+#include "src/graphics/mesh/meshman.h"
+#include "src/graphics/mesh/meshwirebox.h"
 
 DECLARE_SINGLETON(Graphics::Mesh::MeshManager)
 
