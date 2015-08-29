@@ -217,6 +217,11 @@ private:
 	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
 	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Situated objects, functions_situated.cpp
+	void getLocked(Aurora::NWScript::FunctionContext &ctx);
+	void setLocked(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace Witcher
