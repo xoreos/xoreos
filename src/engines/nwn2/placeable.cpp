@@ -39,7 +39,7 @@ namespace Engines {
 namespace NWN2 {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
-	_state(kStateDefault) {
+	_state(kStateDefault), _hasInventory(false) {
 
 	load(placeable);
 }
