@@ -200,7 +200,7 @@ void Campaign::setupStandaloneModule(const Common::UString &module) {
 }
 
 void Campaign::loadCampaign(const Common::UString &campaign, bool standalone) {
-	unload();
+	unload(false);
 
 	if (!standalone)
 		loadCampaignFile(campaign);
