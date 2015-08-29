@@ -61,6 +61,16 @@ public:
 	/** Is the placeable activated? */
 	bool isActivated() const;
 
+	/** The opener object opens this placeable. */
+	bool open(Object *opener);
+	/** The closer object closes this placeable. */
+	bool close(Object *closer);
+
+	/** The user object activates this placeable. */
+	bool activate(Object *opener);
+	/** The user object deactivates this placeable. */
+	bool deactivate(Object *closer);
+
 	// Object/Cursor interactions
 
 	void enter(); ///< The cursor entered the placeable. */
