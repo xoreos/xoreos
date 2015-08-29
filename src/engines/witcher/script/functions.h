@@ -165,6 +165,19 @@ private:
 
 	void get2DAString(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Module functions, functions_module.cpp
+	void getModule(Aurora::NWScript::FunctionContext &ctx);
+
+	void location(Aurora::NWScript::FunctionContext &ctx);
+
+	void getPositionFromLocation(Aurora::NWScript::FunctionContext &ctx);
+
+	void startNewModule(Aurora::NWScript::FunctionContext &ctx);
+
+	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
+	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace Witcher
