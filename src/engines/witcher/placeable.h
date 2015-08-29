@@ -79,6 +79,8 @@ protected:
 private:
 	State _state; ///< The current state of the placeable.
 
+	bool _hasInventory; ///< Does this placeable have an inventory?
+
 	/** Load from a placeable instance. */
 	void load(const Aurora::GFF3Struct &placeable);
 

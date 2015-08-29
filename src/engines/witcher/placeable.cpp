@@ -35,7 +35,7 @@ namespace Engines {
 namespace Witcher {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
-	_state(kStateDefault) {
+	_state(kStateDefault), _hasInventory(false) {
 
 	load(placeable);
 }
@@ -111,6 +111,8 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 	// State
 
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
+
+	_hasInventory = gff.getBool("HasInventory", _hasInventory);
 }
 
 void Placeable::enter() {
