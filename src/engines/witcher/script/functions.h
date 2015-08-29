@@ -77,7 +77,7 @@ private:
 	void registerFunctions();
 
 	// .--- Utility methods
-	void jumpTo(Witcher::Object *object, float x, float y, float z);
+	void jumpTo(Witcher::Object *object, Area *area, float x, float y, float z);
 
 	static int32 getRandom(int min, int max, int32 n = 1);
 
