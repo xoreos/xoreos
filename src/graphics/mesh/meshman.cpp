@@ -27,7 +27,6 @@
 
 #include "src/graphics/mesh/meshwirebox.h"
 
-#include "src/common/version.h"
 #include "src/common/util.h"
 
 DECLARE_SINGLETON(Graphics::Mesh::MeshManager)

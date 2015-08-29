@@ -27,7 +27,6 @@
 #include <sstream>
 #include <stdlib.h>
 
-#include "src/common/version.h"
 #include "src/common/util.h"
 #include "src/common/transmatrix.h"
 
