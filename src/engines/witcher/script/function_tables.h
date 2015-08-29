@@ -554,7 +554,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 440, "GetItemActivator"                  , 0                                              },
 	{ 441, "GetItemActivatedTargetLocation"    , 0                                              },
 	{ 442, "GetItemActivatedTarget"            , 0                                              },
-	{ 443, "GetIsOpen"                         , 0                                              },
+	{ 443, "GetIsOpen"                         , &Functions::getIsOpen                          },
 	{ 444, "TakeGoldFromCreature"              , 0                                              },
 	{ 445, "IsInConversation"                  , 0                                              },
 	{ 446, "EnableSequenceJumps"               , 0                                              },

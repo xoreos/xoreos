@@ -221,6 +221,8 @@ private:
 	// .--- Situated objects, functions_situated.cpp
 	void getLocked(Aurora::NWScript::FunctionContext &ctx);
 	void setLocked(Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsOpen(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Creatures, functions_creature.cpp
