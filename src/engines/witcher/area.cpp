@@ -84,8 +84,7 @@ Area::~Area() {
 void Area::clear() {
 	// Delete objects
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
-		if (!(*o)->isStatic())
-			_module->removeObject(**o);
+		_module->removeObject(**o);
 
 		delete *o;
 	}
@@ -306,8 +305,7 @@ void Area::loadObject(Engines::Witcher::Object &object) {
 	object.setArea(this);
 
 	_objects.push_back(&object);
-	if (!object.isStatic())
-		_module->addObject(object);
+	_module->addObject(object);
 }
 
 void Area::loadWaypoints(const Aurora::GFF3List &list) {
