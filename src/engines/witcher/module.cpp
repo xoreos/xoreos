@@ -295,6 +295,7 @@ void Module::handleActions() {
 }
 
 void Module::unload() {
+	unloadPC();
 	unloadAreas();
 	unloadModule();
 }
