@@ -28,6 +28,9 @@ Someday, ????-??-?? (Version 0.0.3)
 			- Implemented partial placeable and door handling
 		- WITCHER:
 			- Fixed init without premium modules
+			- Restructured object classes to match NWN
+			- Added script system
+			- Implemented partial placeable and door handling
 
 Monday, 2015-07-27 (Version 0.0.2)
 	- Loading resources
