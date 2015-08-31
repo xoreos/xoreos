@@ -39,6 +39,7 @@
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
+#include "src/engines/jade/module.h"
 #include "src/engines/jade/object.h"
 
 namespace Engines {
@@ -57,19 +58,27 @@ class Room;
  */
 class Area : public Object, public Events::Notifyable {
 public:
-	Area();
+	Area(Module &module, const Common::UString &resRef);
 	~Area();
 
-	void load(const Common::UString &resRef);
+	// General properties
 
-	const Common::UString &getName();
+	/** Return the area's resref (resource ID). */
+	const Common::UString &getResRef();
+
+	// Visibility
 
 	void show();
 	void hide();
 
+	// Events
+
+	/** Add a single event for consideration into the area event queue. */
 	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
 	void processEventQueue();
 
+	/** Forcibly remove the focus from the currently highlighted object. */
 	void removeFocus();
 
 
@@ -84,33 +93,39 @@ private:
 	typedef std::map<uint32, Object *> ObjectMap;
 
 
-	bool _loaded;
+	Module *_module; ///< The module this area is in.
 
-	Common::UString _resRef;
-	Common::UString _layout;
+	Common::UString _resRef;      ///< The area's resref (resource ID).
+	Common::UString _layout;      ///< The area's layout resref (resource ID).
 
-	bool _visible;
+	bool _visible; ///< Is the area currently visible?
 
-	std::list<Common::ChangeID> _resources;
+	std::list<Common::ChangeID> _resources; ///< The area's resource archives.
 
-	Aurora::LYTFile _lyt;
-	Aurora::VISFile _vis;
+	Aurora::LYTFile _lyt; ///< The area's layout description.
+	Aurora::VISFile _vis; ///< The area's inter-room visibility description.
 
-	RoomList _rooms;
+	RoomList _rooms; ///< All rooms in the area.
 
-	ObjectList _objects;
-	ObjectMap  _objectMap;
+	ObjectList _objects;   ///< List of all objects in the area.
+	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
 
-	Object *_activeObject;
+	/** The currently active (highlighted) object. */
+	Jade::Object *_activeObject;
 
-	bool _highlightAll;
+	bool _highlightAll; ///< Are we currently highlighting all objects?
 
-	std::list<Events::Event> _eventQueue;
+	std::list<Events::Event> _eventQueue; ///< The event queue.
 
-	Common::Mutex _mutex;
+	Common::Mutex _mutex; ///< Mutex securing access to the area.
 
+	// Loading helpers
+
+	void clear();
+	void load();
 
 	void loadARE(const Aurora::GFF3Struct &are);
+	void loadSAV(const Aurora::GFF3Struct &sav);
 
 	void loadResources();
 
@@ -120,15 +135,22 @@ private:
 	void loadRooms();
 	void loadArtPlaceables();
 
-	void loadObject(Object &object);
+	void loadObject(Jade::Object &object);
+
+	void loadWaypoints (const Aurora::GFF3List &list);
+	void loadCreatures (const Aurora::GFF3List &list);
 
 	void unload();
 
-	void checkActive();
-	void setActive(Object *object);
-	Object *getObjectAt(int x, int y);
+	// Highlight / active helpers
+
+	void checkActive(int x = -1, int y = -1);
+	void setActive(Jade::Object *object);
+	Jade::Object *getObjectAt(int x, int y);
 
 	void highlightAll(bool enabled);
+
+	void click(int x, int y);
 };
 
 } // End of namespace Jade

@@ -136,9 +136,7 @@ void Module::load() {
 }
 
 void Module::loadArea() {
-	_area = new Area;
-
-	_area->load(_module);
+	_area = new Area(*this, _module);
 }
 
 void Module::unload() {

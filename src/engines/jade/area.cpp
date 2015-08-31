@@ -41,25 +41,61 @@
 #include "src/engines/jade/area.h"
 #include "src/engines/jade/room.h"
 #include "src/engines/jade/artplaceable.h"
+#include "src/engines/jade/creature.h"
+#include "src/engines/jade/waypoint.h"
 
 namespace Engines {
 
 namespace Jade {
 
-Area::Area() : Object(kObjectTypeArea), _loaded(false), _visible(false), _activeObject(0), _highlightAll(false) {
+Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
+	_module(&module), _resRef(resRef), _visible(false), _activeObject(0), _highlightAll(false) {
+
+	try {
+		load();
+	} catch (...) {
+		clear();
+		throw;
+	}
 }
 
 Area::~Area() {
-	unload();
+	hide();
+
+	removeFocus();
+
+	clear();
 }
 
-const Common::UString &Area::getName() {
+void Area::load() {
+	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+	loadARE(are.getTopLevel());
+
+	loadResources();
+
+	Aurora::GFF3File sav(_resRef, Aurora::kFileTypeSAV, MKTAG('S', 'A', 'V', ' '));
+	loadSAV(sav.getTopLevel());
+
+	loadLYT(); // Room layout
+	loadVIS(); // Room visibilities
+
+	loadRooms();
+	loadArtPlaceables();
+}
+
+void Area::clear() {
+	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
+		delete *r;
+
+	_objects.clear();
+	_rooms.clear();
+}
+
+const Common::UString &Area::getResRef() {
 	return _resRef;
 }
 
 void Area::show() {
-	assert(_loaded);
-
 	if (_visible)
 		return;
 
@@ -92,28 +128,11 @@ void Area::hide() {
 
 	// Hide rooms
 	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		(*r)->show();
+		(*r)->hide();
 
 	GfxMan.unlockFrame();
 
 	_visible = false;
-}
-
-void Area::load(const Common::UString &resRef) {
-	_resRef = resRef;
-
-	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
-	loadARE(are.getTopLevel());
-
-	loadResources();
-
-	loadLYT(); // Room layout
-	loadVIS(); // Room visibilities
-
-	loadRooms();
-	loadArtPlaceables();
-
-	_loaded = true;
 }
 
 void Area::loadARE(const Aurora::GFF3Struct &are) {
@@ -121,6 +140,38 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 
 	// Scripts
 	readScripts(are);
+}
+
+void Area::loadSAV(const Aurora::GFF3Struct &sav) {
+	if (sav.hasField("CreatureList")) {
+		const Aurora::GFF3Struct &creatures = sav.getStruct("CreatureList");
+		loadCreatures(creatures.getList("StaticList"));
+		loadCreatures(creatures.getList("DynamicList"));
+	}
+
+	// TODO load crowd list
+
+	// TODO load placeable list
+
+	// TODO load sound list
+
+	// TODO load trigger list
+
+	if (sav.hasField("WaypointList")) {
+		const Aurora::GFF3Struct &waypoints = sav.getStruct("WaypointList");
+		loadWaypoints(waypoints.getList("StaticList"));
+		loadWaypoints(waypoints.getList("DynamicList"));
+	}
+
+	// TODO load projectile list
+
+	// TODO load area of effect list
+
+	// TODO load store list
+
+	// TODO load apple list
+
+	// TODO load camera list
 }
 
 void Area::loadResources() {
@@ -171,6 +222,15 @@ void Area::loadRooms() {
 		_rooms.push_back(new Room(rooms[i].model, i, rooms[i].x, rooms[i].y, rooms[i].z));
 }
 
+void Area::loadArtPlaceables() {
+	const Aurora::LYTFile::ArtPlaceableArray &objects = _lyt.getArtPlaceables();
+	for (size_t i = 0; i < objects.size(); i++) {
+		ArtPlaceable *object = new ArtPlaceable(objects[i].model, i, objects[i].x, objects[i].y, objects[i].z);
+
+		loadObject(*object);
+	}
+}
+
 void Area::loadObject(Object &object) {
 	_objects.push_back(&object);
 
@@ -182,35 +242,20 @@ void Area::loadObject(Object &object) {
 	}
 }
 
-void Area::loadArtPlaceables() {
-	const Aurora::LYTFile::ArtPlaceableArray &objects = _lyt.getArtPlaceables();
-	for (size_t i = 0; i < objects.size(); i++) {
-		ArtPlaceable *object = new ArtPlaceable(objects[i].model, i, objects[i].x, objects[i].y, objects[i].z);
+void Area::loadWaypoints(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator w = list.begin(); w != list.end(); ++w) {
+		Waypoint *waypoint = new Waypoint(**w);
 
-		loadObject(*object);
+		loadObject(*waypoint);
 	}
 }
 
-void Area::unload() {
-	hide();
-	removeFocus();
+void Area::loadCreatures(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
+		Creature *creature = new Creature(**c);
 
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		delete *o;
-
-	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		delete *r;
-
-	_objects.clear();
-	_rooms.clear();
-
-	std::list<Common::ChangeID>::reverse_iterator r;
-	for (r = _resources.rbegin(); r != _resources.rend(); ++r)
-		deindexResources(*r);
-
-	_resources.clear();
-
-	_loaded = false;
+		loadObject(*creature);
+	}
 }
 
 void Area::addEvent(const Events::Event &event) {
@@ -222,12 +267,17 @@ void Area::processEventQueue() {
 	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin();
 	     e != _eventQueue.end(); ++e) {
 
-		if        (e->type == Events::kEventMouseMove) {
+		if        (e->type == Events::kEventMouseMove) { // Moving the mouse
 			hasMove = true;
-		} else if (e->type == Events::kEventKeyDown) {
+		} else if (e->type == Events::kEventMouseDown) { // Clicking
+			if (e->button.button == SDL_BUTTON_LMASK) {
+				checkActive(e->button.x, e->button.y);
+				click(e->button.x, e->button.y);
+			}
+		} else if (e->type == Events::kEventKeyDown) { // Holding down TAB
 			if (e->key.keysym.sym == SDLK_TAB)
 				highlightAll(true);
-		} else if (e->type == Events::kEventKeyUp) {
+		} else if (e->type == Events::kEventKeyUp) {   // Releasing TAB
 			if (e->key.keysym.sym == SDLK_TAB)
 				highlightAll(false);
 		}
@@ -239,7 +289,7 @@ void Area::processEventQueue() {
 		checkActive();
 }
 
-Object *Area::getObjectAt(int x, int y) {
+Jade::Object *Area::getObjectAt(int x, int y) {
 	const Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
 	if (!obj)
 		return 0;
@@ -251,7 +301,7 @@ Object *Area::getObjectAt(int x, int y) {
 	return o->second;
 }
 
-void Area::setActive(Object *object) {
+void Area::setActive(Jade::Object *object) {
 	if (object == _activeObject)
 		return;
 
@@ -264,16 +314,24 @@ void Area::setActive(Object *object) {
 		_activeObject->enter();
 }
 
-void Area::checkActive() {
-	if (!_loaded || _highlightAll)
+void Area::checkActive(int x, int y) {
+	if (_highlightAll)
 		return;
 
 	Common::StackLock lock(_mutex);
 
-	int x, y;
-	CursorMan.getPosition(x, y);
+	if ((x < 0) || (y < 0))
+		CursorMan.getPosition(x, y);
 
 	setActive(getObjectAt(x, y));
+}
+
+void Area::click(int x, int y) {
+	Common::StackLock lock(_mutex);
+
+	Jade::Object *o = getObjectAt(x, y);
+	if (!o)
+		return;
 }
 
 void Area::highlightAll(bool enabled) {
@@ -295,6 +353,7 @@ void Area::removeFocus() {
 }
 
 void Area::notifyCameraMoved() {
+	checkActive();
 }
 
 } // End of namespace Jade
