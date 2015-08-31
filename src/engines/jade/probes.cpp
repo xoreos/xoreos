@@ -48,49 +48,50 @@ public:
 		return kGameName;
 	}
 
-	Engines::Engine *createEngine() const {
-		return new JadeEngine;
-	}
-
 	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
 		return false;
 	}
+
+	Engines::Engine *createEngine() const {
+		return new JadeEngine;
+	}
 };
 
-class EngineProbeWin : public EngineProbe {
+const Common::UString EngineProbe::kGameName = "Jade Empire";
+
+
+static const class EngineProbeWindows : public EngineProbe {
 public:
-	Aurora::Platform getPlatform() const {
-		return Aurora::kPlatformWindows;
-	}
+	EngineProbeWindows() {}
+	~EngineProbeWindows() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
 
 	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
 		// If the launcher binary is found, this should be a valid path
-                if (rootFiles.contains("/JadeEmpire.exe", true))
-                        return true;
+		if (rootFiles.contains("/JadeEmpire.exe", true))
+			return true;
 
-                return false;
+		return false;
 	}
-};
 
-class EngineProbeXbox : public EngineProbe {
+} kEngineProbeWin;
+
+static const class EngineProbeXbox : public EngineProbe {
 public:
-	Aurora::Platform getPlatform() const {
-		return Aurora::kPlatformXbox;
-	}
+	EngineProbeXbox() {}
+	~EngineProbeXbox() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformXbox; }
 
 	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
-                if (rootFiles.contains("/jadedirs.ini", true))
-                        return true;
+		if (rootFiles.contains("/jadedirs.ini", true))
+			return true;
 
-                return false;
-        }
-};
+		return false;
+	}
 
-static const EngineProbeWin kEngineProbeWin;
-static const EngineProbeXbox kEngineProbeXbox;
-
-
-const Common::UString EngineProbe::kGameName = "Jade Empire";
+} kEngineProbeXbox;
 
 
 const Engines::EngineProbe * const kProbes[] = {
