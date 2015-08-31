@@ -32,7 +32,7 @@ namespace Engines {
 
 namespace Jade {
 
-static const class EngineProbe : public Engines::EngineProbe {
+class EngineProbe : public Engines::EngineProbe {
 private:
 	static const Common::UString kGameName;
 
@@ -52,30 +52,50 @@ public:
 		return new JadeEngine;
 	}
 
+	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
+		return false;
+	}
+};
+
+class EngineProbeWin : public EngineProbe {
+public:
 	Aurora::Platform getPlatform() const {
 		return Aurora::kPlatformWindows;
 	}
 
-	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
-		return false;
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
+		// If the launcher binary is found, this should be a valid path
+                if (rootFiles.contains("/JadeEmpire.exe", true))
+                        return true;
+
+                return false;
+	}
+};
+
+class EngineProbeXbox : public EngineProbe {
+public:
+	Aurora::Platform getPlatform() const {
+		return Aurora::kPlatformXbox;
 	}
 
 	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
+                if (rootFiles.contains("/jadedirs.ini", true))
+                        return true;
 
-		// If the launcher binary is found, this should be a valid path
-		if (rootFiles.contains("/JadeEmpire.exe", true))
-			return true;
+                return false;
+        }
+};
 
-		return false;
-	}
+static const EngineProbeWin kEngineProbeWin;
+static const EngineProbeXbox kEngineProbeXbox;
 
-} kEngineProbe;
 
 const Common::UString EngineProbe::kGameName = "Jade Empire";
 
 
 const Engines::EngineProbe * const kProbes[] = {
-	&kEngineProbe,
+	&kEngineProbeWin,
+	&kEngineProbeXbox,
 	0
 };
 

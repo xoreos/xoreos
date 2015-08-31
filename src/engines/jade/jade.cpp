@@ -154,10 +154,12 @@ void JadeEngine::init() {
 	if (EventMan.quitRequested())
 		return;
 
-	progress.step("Loading game cursors");
-	initCursors();
-	if (EventMan.quitRequested())
-		return;
+	if (_platform == Aurora::kPlatformWindows) {
+		progress.step("Loading game cursors");
+		initCursors();
+		if (EventMan.quitRequested())
+			return;
+	}
 
 	progress.step("Initializing internal game config");
 	initGameConfig();
@@ -213,8 +215,11 @@ void JadeEngine::initResources(LoadProgress &progress) {
 	indexMandatoryDirectory("sound"   , 0, -1, 101);
 	progress.step("Indexing extra movie resources");
 	indexMandatoryDirectory("movies"  , 0, -1, 102);
-	progress.step("Indexing extra shader resources");
-	indexMandatoryDirectory("shaderpc", 0, -1, 103);
+
+	if (_platform == Aurora::kPlatformWindows) {
+		progress.step("Indexing extra shader resources");
+		indexMandatoryDirectory("shaderpc", 0, -1, 103);
+	}
 
 	progress.step("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 150);
