@@ -55,26 +55,30 @@ enum Worksheet {
 
 /** Object type, matches the bitfield in script.ldf */
 enum ObjectType {
-	kObjectTypeGUI                = 0,
-	kObjectTypeTile               = 1,
-	kObjectTypeModule             = 2,
-	kObjectTypeArea               = 3,
-	kObjectTypeStore              = 4,
-	kObjectTypeCreature           = 5,
-	kObjectTypeItem               = 6,
-	kObjectTypeTrigger            = 7,
-	kObjectTypeProjectile         = 8,
-	kObjectTypePlaceable          = 9,
-	kObjectTypeAreaOfEffectObject = 11,
-	kObjectTypeWaypoint           = 12,
-	kObjectTypeSound              = 14,
-	kObjectTypeParty              = 15,
-	kObjectTypeMapPatch           = 16,
-	kObjectTypeVfx                = 17,
-	kObjectTypeMap                = 18,
+	kObjectTypeInvalid            = 0,
+
+	kObjectTypeGUI                = 1 <<  0,
+	kObjectTypeTile               = 1 <<  1,
+	kObjectTypeModule             = 1 <<  2,
+	kObjectTypeArea               = 1 <<  3,
+	kObjectTypeStore              = 1 <<  4,
+	kObjectTypeCreature           = 1 <<  5,
+	kObjectTypeItem               = 1 <<  6,
+	kObjectTypeTrigger            = 1 <<  7,
+	kObjectTypeProjectile         = 1 <<  8,
+	kObjectTypePlaceable          = 1 <<  9,
+	kObjectTypeAreaOfEffectObject = 1 << 11,
+	kObjectTypeWaypoint           = 1 << 12,
+	kObjectTypeSound              = 1 << 14,
+	kObjectTypeParty              = 1 << 15,
+	kObjectTypeMapPatch           = 1 << 16,
+	kObjectTypeVfx                = 1 << 17,
+	kObjectTypeMap                = 1 << 18,
 
 	kObjectTypeMAX,
-	kObjectTypeInvalid            = 0xFFFFFFFF
+	kObjectTypeAll                = 0xFFFFFFFF,
+
+	kObjectTypeSelf               = 1 << 31  ///< Fake value to describe the calling object in a script.
 };
 
 /** Slot in a creature's inventory. */
