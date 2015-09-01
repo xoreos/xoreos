@@ -63,12 +63,16 @@ bool Waypoint::hasMapNote() const {
 	return _hasMapNote;
 }
 
-Common::UString Waypoint::getMapNote() const {
-	return _mapNote;
+bool Waypoint::enabledMapNote() const {
+	return _hasMapNote && _enabledMapNote;
 }
 
 void Waypoint::enableMapNote(bool enabled) {
 	_hasMapNote = enabled;
+}
+
+Common::UString Waypoint::getMapNote() const {
+	return _mapNote;
 }
 
 void Waypoint::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
