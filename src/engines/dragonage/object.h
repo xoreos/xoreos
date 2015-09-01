@@ -30,18 +30,24 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
+#include "src/aurora/types.h"
 #include "src/aurora/locstring.h"
 
-#include "src/engines/dragonage/scriptobject.h"
+#include "src/aurora/nwscript/object.h"
+
+#include "src/engines/dragonage/types.h"
 
 namespace Engines {
 
 namespace DragonAge {
 
-class Object : public ScriptObject {
+class Object : public Aurora::NWScript::Object {
 public:
-	Object(ObjectType type);
+	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
+
+	/** Return the exact type of the object. */
+	ObjectType getType() const;
 
 	// Basic visuals
 
@@ -90,6 +96,8 @@ public:
 
 
 protected:
+	ObjectType _type; ///< The object's type.
+
 	Aurora::LocString _name;        ///< The object's display name.
 	Aurora::LocString _description; ///< The object's description.
 
@@ -108,6 +116,9 @@ protected:
 
 	void syncPosition();
 	void syncOrientation();
+
+	void readVarTable(const Aurora::GFF3List &varTable);
+	void readVarTable(const Aurora::GFF4List &varTable);
 };
 
 } // End of namespace DragonAge

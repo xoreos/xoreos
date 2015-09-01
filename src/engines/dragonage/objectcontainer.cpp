@@ -23,11 +23,11 @@
  */
 
 #include "src/common/types.h"
+#include "src/common/util.h"
 
 #include "src/engines/dragonage/objectcontainer.h"
-#include "src/engines/dragonage/scriptobject.h"
-#include "src/engines/dragonage/area.h"
 #include "src/engines/dragonage/object.h"
+#include "src/engines/dragonage/area.h"
 #include "src/engines/dragonage/waypoint.h"
 #include "src/engines/dragonage/placeable.h"
 #include "src/engines/dragonage/creature.h"
@@ -36,7 +36,23 @@ namespace Engines {
 
 namespace DragonAge {
 
-class SearchType : public ::Aurora::NWScript::SearchRange< std::list<ScriptObject *> > {
+ObjectDistanceSort::ObjectDistanceSort(const DragonAge::Object &target) {
+	target.getPosition(xt, yt, zt);
+}
+
+bool ObjectDistanceSort::operator()(DragonAge::Object *a, DragonAge::Object *b) {
+	return getDistance(*a) < getDistance(*b);
+}
+
+float ObjectDistanceSort::getDistance(DragonAge::Object &a) {
+	float x, y, z;
+	a.getPosition(x, y, z);
+
+	return ABS(x - xt) + ABS(y - yt) + ABS(z - zt);
+}
+
+
+class SearchType : public ::Aurora::NWScript::SearchRange< std::list<DragonAge::Object *> > {
 public:
 	SearchType(const iterator &a, const iterator &b) : ::Aurora::NWScript::SearchRange<type>(std::make_pair(a, b)) { }
 	SearchType(const type &l) : ::Aurora::NWScript::SearchRange<type>(std::make_pair(l.begin(), l.end())) { }
@@ -62,20 +78,20 @@ void ObjectContainer::clearObjects() {
 	unlock();
 }
 
-void ObjectContainer::addObject(ScriptObject &object) {
+void ObjectContainer::addObject(DragonAge::Object &object) {
 	lock();
 
 	::Aurora::NWScript::ObjectContainer::addObject(object);
 
-	_objects[object.getObjectType()].push_back(&object);
+	_objects[object.getType()].push_back(&object);
 
 	unlock();
 }
 
-void ObjectContainer::removeObject(ScriptObject &object) {
+void ObjectContainer::removeObject(DragonAge::Object &object) {
 	lock();
 
-	_objects[object.getObjectType()].remove(&object);
+	_objects[object.getType()].remove(&object);
 
 	::Aurora::NWScript::ObjectContainer::removeObject(object);
 
@@ -102,27 +118,23 @@ void ObjectContainer::removeObject(ScriptObject &object) {
 	return new SearchType(l->second);
 }
 
-ScriptObject *ObjectContainer::toScriptObject(::Aurora::NWScript::Object *object) {
-	return dynamic_cast<ScriptObject *>(object);
-}
-
 DragonAge::Object *ObjectContainer::toObject(::Aurora::NWScript::Object *object) {
 	return dynamic_cast<DragonAge::Object *>(object);
 }
 
-Area *ObjectContainer::toArea(::Aurora::NWScript::Object *object) {
+Area *ObjectContainer::toArea(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Area *>(object);
 }
 
-Waypoint *ObjectContainer::toWaypoint(::Aurora::NWScript::Object *object) {
+Waypoint *ObjectContainer::toWaypoint(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Waypoint *>(object);
 }
 
-Placeable *ObjectContainer::toPlaceable(::Aurora::NWScript::Object *object) {
+Placeable *ObjectContainer::toPlaceable(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Placeable *>(object);
 }
 
-Creature *ObjectContainer::toCreature(::Aurora::NWScript::Object *object) {
+Creature *ObjectContainer::toCreature(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Creature *>(object);
 }
 

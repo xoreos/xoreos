@@ -66,7 +66,7 @@ using namespace ::Aurora::GFF4FieldNamesEnum;
 
 Area::Area(Campaign &campaign, const Common::UString &resRef,
            const Common::UString &env, const Common::UString &rim) :
-	ScriptObject(kObjectTypeArea), _campaign(&campaign), _resRef(resRef), _activeObject(0), _highlightAll(0) {
+	Object(kObjectTypeArea), _campaign(&campaign), _resRef(resRef), _activeObject(0), _highlightAll(0) {
 
 	try {
 

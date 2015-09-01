@@ -38,13 +38,24 @@ namespace Engines {
 
 namespace DragonAge {
 
-class ScriptObject;
-
-class Area;
 class Object;
+class Area;
 class Waypoint;
 class Placeable;
 class Creature;
+
+/** A class able to sort objects by distance to a target object. */
+class ObjectDistanceSort {
+public:
+	ObjectDistanceSort(const DragonAge::Object &target);
+
+	bool operator()(DragonAge::Object *a, DragonAge::Object *b);
+
+private:
+	float xt, yt, zt;
+
+	float getDistance(DragonAge::Object &a);
+};
 
 class ObjectContainer : public ::Aurora::NWScript::ObjectContainer {
 public:
@@ -54,9 +65,9 @@ public:
 	void clearObjects();
 
 	/** Add an object to this container. */
-	void addObject(ScriptObject &object);
+	void addObject(DragonAge::Object &object);
 	/** Remove an object from this container. */
-	void removeObject(ScriptObject &object);
+	void removeObject(DragonAge::Object &object);
 
 	/** Return the first object of this type. */
 	::Aurora::NWScript::Object *getFirstObjectByType(ObjectType type) const;
@@ -64,17 +75,15 @@ public:
 	/** Return a search context to iterate over all objects of this type. */
 	::Aurora::NWScript::ObjectSearch *findObjectsByType(ObjectType type) const;
 
-	static ScriptObject *toScriptObject(::Aurora::NWScript::Object *object);
-
 	static DragonAge::Object *toObject(::Aurora::NWScript::Object *object);
 
-	static Area      *toArea     (::Aurora::NWScript::Object *object);
-	static Waypoint  *toWaypoint (::Aurora::NWScript::Object *object);
-	static Placeable *toPlaceable(::Aurora::NWScript::Object *object);
-	static Creature  *toCreature (::Aurora::NWScript::Object *object);
+	static Area      *toArea     (Aurora::NWScript::Object *object);
+	static Waypoint  *toWaypoint (Aurora::NWScript::Object *object);
+	static Placeable *toPlaceable(Aurora::NWScript::Object *object);
+	static Creature  *toCreature (Aurora::NWScript::Object *object);
 
 private:
-	typedef std::list<ScriptObject *> ObjectList;
+	typedef std::list<DragonAge::Object *> ObjectList;
 	typedef std::map<ObjectType, ObjectList> ObjectMap;
 
 	ObjectMap _objects;

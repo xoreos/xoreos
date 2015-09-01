@@ -67,7 +67,7 @@ Campaign::RIMNode::~RIMNode() {
 
 Campaign::Campaign(DragonAgeEngine &engine, const Common::UString &cifPath,
                    const Common::UString &manifestPath, const Common::UString &addinBase) :
-	ScriptObject(kObjectTypeModule), _engine(&engine), _cifPath(cifPath),
+	Object(kObjectTypeModule), _engine(&engine), _cifPath(cifPath),
 	_addinBase(addinBase), _enabled(false), _bioware(false), _needsAuth(false),
 	_priority(0xFFFFFFFF), _format(0xFFFFFFFF), _state(0xFFFFFFFF), _rimRoot(0),
 	_area(0) {
