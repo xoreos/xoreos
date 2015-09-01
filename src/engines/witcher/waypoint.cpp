@@ -71,7 +71,7 @@ bool Waypoint::enabledMapNote() const {
 }
 
 void Waypoint::enableMapNote(bool enabled) {
-	_hasMapNote = enabled;
+	_enabledMapNote = enabled;
 }
 
 const Aurora::LocString &Waypoint::getMapNote() const {
