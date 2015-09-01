@@ -569,7 +569,12 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 		}
 	}
 
-	load(creature, utc ? &utc->getTopLevel() : 0);
+	try {
+		load(creature, utc ? &utc->getTopLevel() : 0);
+	} catch (...) {
+		delete utc;
+		throw;
+	}
 
 	delete utc;
 

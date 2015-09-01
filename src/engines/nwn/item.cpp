@@ -69,7 +69,12 @@ void Item::load(const Aurora::GFF3Struct &item) {
 		}
 	}
 
-	load(item, uti ? &uti->getTopLevel() : 0);
+	try {
+		load(item, uti ? &uti->getTopLevel() : 0);
+	} catch (...) {
+		delete uti;
+		throw;
+	}
 
 	delete uti;
 }
