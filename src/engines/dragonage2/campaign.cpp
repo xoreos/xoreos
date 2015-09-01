@@ -349,8 +349,7 @@ void Campaign::readCIFDynamic(const Common::UString &path) {
 	if (rimRoot)
 		_rimRoot = readRIMs(*rimRoot);
 
-	if (cifTop.hasField(kGFF4ScriptVarTable))
-		readVarTable(cifTop.getList(kGFF4ScriptVarTable));
+	readVarTable(cifTop);
 }
 
 void Campaign::load() {

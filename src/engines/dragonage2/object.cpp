@@ -181,6 +181,11 @@ void Object::readVarTable(const GFF3List &varTable) {
 	}
 }
 
+void Object::readVarTable(const Aurora::GFF3Struct &gff) {
+	if (gff.hasField("VarTable"))
+		readVarTable(gff.getList("VarTable"));
+}
+
 void Object::readVarTable(const GFF4List &varTable) {
 	for (GFF4List::const_iterator v = varTable.begin(); v != varTable.end(); ++v) {
 		if (!*v || ((*v)->getLabel() != kVARSID))
@@ -215,6 +220,11 @@ void Object::readVarTable(const GFF4List &varTable) {
 				throw Common::Exception("Unknown variable type %u (\"%s\")", type, name.c_str());
 		}
 	}
+}
+
+void Object::readVarTable(const Aurora::GFF4Struct &gff) {
+	if (gff.hasField(kGFF4ScriptVarTable))
+		readVarTable(gff.getList(kGFF4ScriptVarTable));
 }
 
 } // End of namespace DragonAge2
