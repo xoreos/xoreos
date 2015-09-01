@@ -58,7 +58,12 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 		}
 	}
 
-	Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
+	try {
+		Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
+	} catch (...) {
+		delete utp;
+		throw;
+	}
 
 	delete utp;
 }
