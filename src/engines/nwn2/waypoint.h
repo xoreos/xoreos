@@ -47,11 +47,14 @@ public:
 
 	/** Does this waypoint have a map note? */
 	bool hasMapNote() const;
-	/** Return the waypoint's map note text. */
-	Common::UString getMapNote() const;
+	/** Is this waypoint's map note currently enabled? */
+	bool enabledMapNote() const;
 
 	/** Enable/Disable the waypoint's map note. */
 	void enableMapNote(bool enabled);
+
+	/** Return the waypoint's map note text. */
+	Common::UString getMapNote() const;
 
 private:
 	bool _hasMapNote;     ///< Does this waypoint have a map note?
