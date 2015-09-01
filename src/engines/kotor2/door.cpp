@@ -59,7 +59,12 @@ void Door::load(const Aurora::GFF3Struct &door) {
 		}
 	}
 
-	Situated::load(door, utd ? &utd->getTopLevel() : 0);
+	try {
+		Situated::load(door, utd ? &utd->getTopLevel() : 0);
+	} catch (...) {
+		delete utd;
+		throw;
+	}
 
 	if (!utd)
 		warning("Door \"%s\" has no blueprint", _tag.c_str());
