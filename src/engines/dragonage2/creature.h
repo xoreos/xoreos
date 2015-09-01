@@ -34,6 +34,7 @@
 
 #include "src/graphics/aurora/types.h"
 
+#include "src/engines/dragonage/types.h"
 #include "src/engines/dragonage2/object.h"
 
 namespace Aurora {
@@ -50,43 +51,59 @@ public:
 	Creature(const Aurora::GFF3Struct &placeable);
 	~Creature();
 
-	void setPosition(float x, float y, float z);
-	void setOrientation(float x, float y, float z, float angle);
+	// Basic visuals
 
-	void show();
-	void hide();
+	void show(); ///< Show the creature's model.
+	void hide(); ///< Hide the creature's model.
 
-	void enter();
-	void leave();
+	// Object/Cursor interactions
 
+	void enter(); ///< The cursor entered the creature. */
+	void leave(); ///< The cursor left the creature. */
+
+	/** (Un)Highlight the creature. */
 	void highlight(bool enabled);
+
+	// Positioning
+
+	/** Set the creature's position. */
+	void setPosition(float x, float y, float z);
+	/** Set the creature's orientation. */
+	void setOrientation(float x, float y, float z, float angle);
 
 
 private:
+	/** Max number of model parts for a creature's head. */
 	static const size_t kPartVariationCount = 4;
 
+	/** An item equipped by the creature. */
 	struct EquipItem {
-		Common::UString resRef;
+		Common::UString resRef; ///< Name of the item blueprint resource.
 
-		InventorySlot slot;
+		InventorySlot slot; ///< The equipment slot the item occupies.
 
-		bool stealable;
-		bool droopable;
+		bool stealable; ///< Can this item be stolen?
+		bool droopable; ///< Does this item drop with the creature's death?
 
-		int32 setNumber;
+		int32 setNumber; ///< ID of the set the item belongs to.
 	};
 	typedef std::vector<EquipItem> Items;
 
 	typedef std::list<Graphics::Aurora::Model *> Models;
 
 
-	uint32 _appearance;
+	/** The creatures's appearance; index into the Appearances MGDA. */
+	uint32 _appearanceID;
 
+	/** Name of the morph file describing the creature's head. */
 	Common::UString _headMorph;
+	/** Indices into the MGDAs describing the creature's head model parts. */
 	uint32 _partVariation[kPartVariationCount];
 
+	/** All item the creature has currently equipped. */
 	Items _items;
 
+	/** The models making up this creature. */
 	Models _models;
 
 

@@ -40,7 +40,7 @@ namespace Engines {
 namespace DragonAge2 {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Object(kObjectTypePlaceable),
-	_appearance(0xFFFFFFFF), _model(0) {
+	_appearanceID(0xFFFFFFFF), _model(0) {
 
 	try {
 		load(placeable);
@@ -126,7 +126,7 @@ void Placeable::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struc
 
 	const Aurora::GDAFile &gda = getMGDA(kWorksheetPlaceables);
 
-	_model = loadModelObject(gda.getString(gda.findRow(_appearance), "Model"));
+	_model = loadModelObject(gda.getString(gda.findRow(_appearanceID), "Model"));
 
 	if (_model) {
 		_model->setTag(_tag);
@@ -140,21 +140,24 @@ void Placeable::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struc
 }
 
 void Placeable::loadProperties(const Aurora::GFF3Struct &gff) {
+	// Tag
 	_tag = gff.getString("Tag", _tag);
 
+	// Name and description
 	gff.getLocString("LocName"     , _name);
 	gff.getLocString("LocPopupText", _description);
 
+	// Conversation
 	_conversation = gff.getString("Conversation", _conversation);
 
+	// Static and usable
 	_static = !gff.getBool("Active" , !_static);
 	_usable =  gff.getBool("Useable",  _usable);
 
-	_appearance = gff.getUint("Appearance", _appearance);
+	// Appearance
+	_appearanceID = gff.getUint("Appearance", _appearanceID);
 
-	if (gff.hasField("VarTable"))
-		readVarTable(gff.getList("VarTable"));
-
+	// Position
 	if (gff.hasField("XPosition")) {
 		const float position[3] = {
 			(float) gff.getDouble("XPosition"),
@@ -165,6 +168,7 @@ void Placeable::loadProperties(const Aurora::GFF3Struct &gff) {
 		setPosition(position[0], position[1], position[2]);
 	}
 
+	// Orientation
 	if (gff.hasField("XOrientation")) {
 		const float orientation[4] = {
 			(float) gff.getDouble("XOrientation"),
@@ -175,6 +179,10 @@ void Placeable::loadProperties(const Aurora::GFF3Struct &gff) {
 
 		setOrientation(orientation[0], orientation[1], orientation[2], orientation[3]);
 	}
+
+	// Variables
+	if (gff.hasField("VarTable"))
+		readVarTable(gff.getList("VarTable"));
 }
 
 } // End of namespace Dragon Age

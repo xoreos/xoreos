@@ -38,7 +38,6 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-/** An object in a Dragon Age II area. */
 class Object : public ScriptObject {
 public:
 	Object(ObjectType type);

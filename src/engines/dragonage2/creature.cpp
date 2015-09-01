@@ -61,7 +61,7 @@ using namespace ::Aurora::GFF4FieldNamesEnum;
 using Graphics::Aurora::Model;
 
 Creature::Creature(const GFF3Struct &creature) : Object(kObjectTypeCreature),
-	_appearance(0xFFFFFFFF) {
+	_appearanceID(0xFFFFFFFF) {
 
 	for (size_t i = 0; i < kPartVariationCount; i++)
 		_partVariation[i] = 0xFFFFFFFF;
@@ -398,7 +398,7 @@ void Creature::load(const GFF3Struct &instance, const GFF3Struct *blueprint = 0)
 	loadProperties(instance);
 
 	const Aurora::GDAFile &gda = getMGDA(kWorksheetAppearances);
-	const size_t row = gda.findRow(_appearance);
+	const size_t row = gda.findRow(_appearanceID);
 
 	const Common::UString modelType = gda.getString(row, "ModelType");
 
@@ -429,22 +429,27 @@ void Creature::load(const GFF3Struct &instance, const GFF3Struct *blueprint = 0)
 }
 
 void Creature::loadProperties(const GFF3Struct &gff) {
+	// Tag
 	_tag = gff.getString("Tag", _tag);
 
+	// Name and description
 	gff.getLocString("LocName"    , _name);
 	gff.getLocString("Description", _description);
 
+	// Conversation
 	_conversation = gff.getString("DialogResRef", _conversation);
 
+	// Static and usable
 	_static = !gff.getBool("Active"      , !_static);
 	_usable =  gff.getBool("IsSelectable",  _usable);
 
-	_appearance = gff.getUint("Appearance", _appearance);
+	// Appearance
+	_appearanceID = gff.getUint("Appearance", _appearanceID);
 
 	if (gff.hasField("Appearance Data")) {
 		const GFF3Struct &app = gff.getStruct("Appearance Data");
 
-		_appearance = (uint32) ((int32) app.getSint("Appearance_Type", (int32) _appearance));
+		_appearanceID = (uint32) ((int32) app.getSint("Appearance_Type", (int32) _appearanceID));
 
 		_headMorph = app.getString("HeadMorph", _headMorph);
 
@@ -456,6 +461,7 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 		}
 	}
 
+	// Equipped items
 	if (gff.hasField("Equip_ItemList")) {
 		const GFF3List &itemList = gff.getList("Equip_ItemList");
 		_items.resize(itemList.size());
@@ -472,9 +478,7 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 		}
 	}
 
-	if (gff.hasField("VarTable"))
-		readVarTable(gff.getList("VarTable"));
-
+	// Position
 	if (gff.hasField("XPosition")) {
 		const float position[3] = {
 			(float) gff.getDouble("XPosition"),
@@ -485,6 +489,7 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 		setPosition(position[0], position[1], position[2]);
 	}
 
+	// Orientation
 	if (gff.hasField("XOrientation")) {
 		const float orientation[4] = {
 			(float) gff.getDouble("XOrientation"),
@@ -495,6 +500,10 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 
 		setOrientation(orientation[0], orientation[1], orientation[2], orientation[3]);
 	}
+
+	// Variables
+	if (gff.hasField("VarTable"))
+		readVarTable(gff.getList("VarTable"));
 }
 
 } // End of namespace Dragon Age

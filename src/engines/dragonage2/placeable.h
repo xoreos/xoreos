@@ -43,22 +43,32 @@ public:
 	Placeable(const Aurora::GFF3Struct &placeable);
 	~Placeable();
 
-	void setPosition(float x, float y, float z);
-	void setOrientation(float x, float y, float z, float angle);
+	// Basic visuals
 
-	void show();
-	void hide();
+	void show(); ///< Show the placeable's model.
+	void hide(); ///< Hide the placeable's model.
 
-	void enter();
-	void leave();
+	// Object/Cursor interactions
 
+	void enter(); ///< The cursor entered the placeable. */
+	void leave(); ///< The cursor left the placeable. */
+
+	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
+
+	// Positioning
+
+	/** Set the placeable's position. */
+	void setPosition(float x, float y, float z);
+	/** Set the placeable's orientation. */
+	void setOrientation(float x, float y, float z, float angle);
 
 
 private:
-	uint32 _appearance;
+	/** The placeable's appearance; index into the Placeables MGDA. */
+	uint32 _appearanceID;
 
-	Graphics::Aurora::Model *_model;
+	Graphics::Aurora::Model *_model; ///< The placeable's model.
 
 
 	void load(const Aurora::GFF3Struct &placeable);
