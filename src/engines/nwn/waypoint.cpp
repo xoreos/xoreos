@@ -70,7 +70,7 @@ bool Waypoint::enabledMapNote() const {
 }
 
 void Waypoint::enableMapNote(bool enabled) {
-	_hasMapNote = enabled;
+	_enabledMapNote = enabled;
 }
 
 Common::UString Waypoint::getMapNote() const {
