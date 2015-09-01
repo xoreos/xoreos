@@ -47,14 +47,17 @@ public:
 
 	/** Does this waypoint have a map note? */
 	bool hasMapNote() const;
+	/** Is this waypoint's map note currently enabled? */
+	bool enabledMapNote() const;
+
+	/** Enable/Disable the waypoint's map note. */
+	void enableMapNote(bool enabled);
+
 	/** Return the waypoint's map note text. */
 	const Aurora::LocString &getMapNote() const;
 
 	/** Refresh all localized strings. */
 	void refreshLocalized();
-
-	/** Enable/Disable the waypoint's map note. */
-	void enableMapNote(bool enabled);
 
 private:
 	bool _hasMapNote;     ///< Does this waypoint have a map note?

@@ -66,16 +66,20 @@ bool Waypoint::hasMapNote() const {
 	return _hasMapNote;
 }
 
+bool Waypoint::enabledMapNote() const {
+	return _hasMapNote && _enabledMapNote;
+}
+
+void Waypoint::enableMapNote(bool enabled) {
+	_hasMapNote = enabled;
+}
+
 const Aurora::LocString &Waypoint::getMapNote() const {
 	return _mapNote;
 }
 
 void Waypoint::refreshLocalized() {
 	Object::refreshLocalized();
-}
-
-void Waypoint::enableMapNote(bool enabled) {
-	_hasMapNote = enabled;
 }
 
 void Waypoint::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
