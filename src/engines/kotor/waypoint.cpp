@@ -97,7 +97,10 @@ void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {
 	_tag = gff.getString("Tag", _tag);
 
 	// Map note
-	_hasMapNote = gff.getBool("MapNoteEnabled", _hasMapNote);
+
+	_hasMapNote     = gff.getBool("HasMapNote"    , _hasMapNote);
+	_enabledMapNote = gff.getBool("MapNoteEnabled", _enabledMapNote);
+
 	_mapNote = gff.getString("MapNote", _mapNote);
 
 	// Scripts
