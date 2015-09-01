@@ -107,7 +107,9 @@ void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Map note
 
-	_hasMapNote = gff.getBool("HasMapNote", _hasMapNote);
+	_hasMapNote     = gff.getBool("HasMapNote"    , _hasMapNote);
+	_enabledMapNote = gff.getBool("MapNoteEnabled", _enabledMapNote);
+
 	gff.getLocString("MapNote", _mapNote);
 
 	refreshLocalized();
