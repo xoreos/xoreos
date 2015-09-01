@@ -483,8 +483,7 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 	}
 
 	// Variables
-	if (gff.hasField("VarTable"))
-		readVarTable(gff.getList("VarTable"));
+	readVarTable(gff);
 }
 
 } // End of namespace Dragon Age

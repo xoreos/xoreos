@@ -118,7 +118,9 @@ protected:
 	void syncOrientation();
 
 	void readVarTable(const Aurora::GFF3List &varTable);
+	void readVarTable(const Aurora::GFF3Struct &gff);
 	void readVarTable(const Aurora::GFF4List &varTable);
+	void readVarTable(const Aurora::GFF4Struct &gff);
 };
 
 } // End of namespace DragonAge

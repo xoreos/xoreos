@@ -107,8 +107,7 @@ void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 	_icon = gda.getString(_type, "Icon");
 
 	// Variables
-	if (waypoint.hasField("VarTable"))
-		readVarTable(waypoint.getList("VarTable"));
+	readVarTable(waypoint);
 }
 
 } // End of namespace DragonAge
