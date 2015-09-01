@@ -40,34 +40,41 @@ public:
 	Waypoint(const Aurora::GFF3Struct &waypoint);
 	~Waypoint();
 
+	// Basic properties
+
 	/** Return the ID of the group this waypoint belongs to. */
 	int32 getGroup() const;
 
 	/** Does this waypoint have a map note? */
 	bool hasMapNote() const;
-	/** Return the waypoint's map note text. */
-	const Aurora::LocString &getMapNote() const;
-
-	/** Return the icon representing the waypoint on the map. */
-	const Common::UString &getIcon() const;
-
 	/** Is the map note enabled? */
 	bool enabledMapNote() const;
 
 	/** Enable/Disable the waypoint's map note. */
 	void enableMapNote(bool enabled);
 
+	/** Return the waypoint's map note text. */
+	const Aurora::LocString &getMapNote() const;
+
+	/** Return the icon representing the waypoint on the map. */
+	const Common::UString &getIcon() const;
+
 
 private:
+	/** The ID of the group this waypoint belongs to. */
 	int32 _group;
 
-	bool _hasMapNote;
-	bool _enabledMapNote;
+	bool _hasMapNote;     ///< Does this waypoint have a map note?
+	bool _enabledMapNote; ///< Is this waypoint's map note enabled?
 
-	uint32 _type;
-	Common::UString _icon;
-
+	/** The waypoint's map note text. */
 	Aurora::LocString _mapNote;
+
+	/** Index into the Waypoints MGDA. */
+	uint32 _type; ///< The type of the map note
+
+	/** The icon to show in the mini map for this waypoint. */
+	Common::UString _icon;
 
 
 	void load(const Aurora::GFF3Struct &waypoint);

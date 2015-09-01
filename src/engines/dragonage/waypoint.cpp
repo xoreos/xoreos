@@ -50,14 +50,6 @@ bool Waypoint::hasMapNote() const {
 	return _hasMapNote;
 }
 
-const Aurora::LocString &Waypoint::getMapNote() const {
-	return _mapNote;
-}
-
-const Common::UString &Waypoint::getIcon() const {
-	return _icon;
-}
-
 bool Waypoint::enabledMapNote() const {
 	return _enabledMapNote;
 }
@@ -66,21 +58,31 @@ void Waypoint::enableMapNote(bool enabled) {
 	_enabledMapNote = enabled;
 }
 
+const Aurora::LocString &Waypoint::getMapNote() const {
+	return _mapNote;
+}
+
+const Common::UString &Waypoint::getIcon() const {
+	return _icon;
+}
+
 void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
+	// Tag
 	_tag = waypoint.getString("Tag");
 
+	// Group
 	_group = waypoint.getSint("Group", -1);
 
+	// Map Note
 	_hasMapNote     = waypoint.getBool("HasMapNote");
 	_enabledMapNote = waypoint.getBool("MapNoteEnabled");
 
-	_type = (uint32) ((int32) waypoint.getSint("MapNoteType", -1));
-
 	waypoint.getLocString("MapNote", _mapNote);
 
-	if (waypoint.hasField("VarTable"))
-		readVarTable(waypoint.getList("VarTable"));
+	// Type
+	_type = (uint32) ((int32) waypoint.getSint("MapNoteType", -1));
 
+	// Position
 	const float position[3] = {
 		(float) waypoint.getDouble("XPosition"),
 		(float) waypoint.getDouble("YPosition"),
@@ -89,6 +91,7 @@ void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 
 	setPosition(position[0], position[1], position[2]);
 
+	// Orientation
 	const float orientation[4] = {
 		(float) waypoint.getDouble("XOrientation"),
 		(float) waypoint.getDouble("YOrientation"),
@@ -100,7 +103,12 @@ void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 
 	const Aurora::GDAFile &gda = getMGDA(kWorksheetWaypoints);
 
+	// Icon
 	_icon = gda.getString(_type, "Icon");
+
+	// Variables
+	if (waypoint.hasField("VarTable"))
+		readVarTable(waypoint.getList("VarTable"));
 }
 
 } // End of namespace DragonAge

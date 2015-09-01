@@ -38,7 +38,6 @@ namespace Engines {
 
 namespace DragonAge {
 
-/** An object in a Dragon Age: Origins area. */
 class Object : public ScriptObject {
 public:
 	Object(ObjectType type);
