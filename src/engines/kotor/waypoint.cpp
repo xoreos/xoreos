@@ -54,7 +54,12 @@ void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 		}
 	}
 
-	load(waypoint, utw ? &utw->getTopLevel() : 0);
+	try {
+		load(waypoint, utw ? &utw->getTopLevel() : 0);
+	} catch (...) {
+		delete utw;
+		throw;
+	}
 
 	delete utw;
 }
