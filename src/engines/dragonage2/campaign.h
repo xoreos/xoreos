@@ -37,8 +37,8 @@
 
 #include "src/engines/aurora/resources.h"
 
-#include "src/engines/dragonage2/scriptobject.h"
 #include "src/engines/dragonage2/objectcontainer.h"
+#include "src/engines/dragonage2/object.h"
 
 namespace Engines {
 
@@ -48,7 +48,7 @@ class DragonAge2Engine;
 
 class Area;
 
-class Campaign : public ScriptObject, public ObjectContainer {
+class Campaign : public DragonAge2::Object, public DragonAge2::ObjectContainer {
 public:
 	struct AreaDescription {
 		Common::UString   tag;

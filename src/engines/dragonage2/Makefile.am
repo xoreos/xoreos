@@ -13,7 +13,6 @@ noinst_HEADERS = \
                  campaign.h \
                  area.h \
                  room.h \
-                 scriptobject.h \
                  object.h \
                  waypoint.h \
                  placeable.h \
@@ -31,7 +30,6 @@ libdragonage2_la_SOURCES = \
                            campaign.cpp \
                            area.cpp \
                            room.cpp \
-                           scriptobject.cpp \
                            object.cpp \
                            waypoint.cpp \
                            placeable.cpp \

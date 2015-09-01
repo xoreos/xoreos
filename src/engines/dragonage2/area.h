@@ -40,7 +40,7 @@
 
 #include "src/engines/aurora/resources.h"
 
-#include "src/engines/dragonage2/scriptobject.h"
+#include "src/engines/dragonage2/object.h"
 
 namespace Engines {
 
@@ -51,7 +51,7 @@ class Campaign;
 class Room;
 class Object;
 
-class Area : public ScriptObject, public Events::Notifyable {
+class Area : public DragonAge2::Object, public Events::Notifyable {
 public:
 	Area(Campaign &campaign, const Common::UString &resRef,
 	     const Common::UString &env, const Common::UString &rim);
