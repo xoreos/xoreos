@@ -13,7 +13,6 @@ noinst_HEADERS = \
                  room.h \
                  object.h \
                  objectcontainer.h \
-                 artplaceable.h \
                  creature.h \
                  placeable.h \
                  waypoint.h \
@@ -33,7 +32,6 @@ libjade_la_SOURCES = \
                      room.cpp \
                      object.cpp \
                      objectcontainer.cpp \
-                     artplaceable.cpp \
                      creature.cpp \
                      placeable.cpp \
                      waypoint.cpp \
