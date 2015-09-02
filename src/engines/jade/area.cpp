@@ -40,8 +40,8 @@
 
 #include "src/engines/jade/area.h"
 #include "src/engines/jade/room.h"
-#include "src/engines/jade/artplaceable.h"
 #include "src/engines/jade/creature.h"
+#include "src/engines/jade/placeable.h"
 #include "src/engines/jade/waypoint.h"
 
 namespace Engines {
@@ -80,7 +80,6 @@ void Area::load() {
 	loadVIS(); // Room visibilities
 
 	loadRooms();
-	loadArtPlaceables();
 }
 
 void Area::clear() {
@@ -151,7 +150,11 @@ void Area::loadSAV(const Aurora::GFF3Struct &sav) {
 
 	// TODO load crowd list
 
-	// TODO load placeable list
+	if (sav.hasField("PlaceableList")) {
+		const Aurora::GFF3Struct &placeables = sav.getStruct("PlaceableList");
+		loadPlaceables(placeables.getList("StaticList"));
+		loadPlaceables(placeables.getList("DynamicList"));
+	}
 
 	// TODO load sound list
 
@@ -222,15 +225,6 @@ void Area::loadRooms() {
 		_rooms.push_back(new Room(rooms[i].model, i, rooms[i].x, rooms[i].y, rooms[i].z));
 }
 
-void Area::loadArtPlaceables() {
-	const Aurora::LYTFile::ArtPlaceableArray &objects = _lyt.getArtPlaceables();
-	for (size_t i = 0; i < objects.size(); i++) {
-		ArtPlaceable *object = new ArtPlaceable(objects[i].model, i, objects[i].x, objects[i].y, objects[i].z);
-
-		loadObject(*object);
-	}
-}
-
 void Area::loadObject(Object &object) {
 	_objects.push_back(&object);
 
@@ -255,6 +249,14 @@ void Area::loadCreatures(const Aurora::GFF3List &list) {
 		Creature *creature = new Creature(**c);
 
 		loadObject(*creature);
+	}
+}
+
+void Area::loadPlaceables(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
+		Placeable *placeable = new Placeable(**c);
+
+		loadObject(*placeable);
 	}
 }
 
