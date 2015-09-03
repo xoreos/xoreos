@@ -44,7 +44,7 @@ class LoadProgress;
 
 namespace DragonAge2 {
 
-class Campaigns;
+class Game;
 
 class DragonAge2Engine : public Engines::Engine {
 public:
@@ -58,8 +58,8 @@ public:
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
 
-	/** Return the campaigns context. */
-	Campaigns &getCampaigns();
+	/** Return the context running the actual game. */
+	Game &getGame();
 
 	void loadResources  (const Common::UString &dir, uint32 priority, ChangeList &res, ChangeList &tlk);
 	void loadTexturePack(const Common::UString &dir, uint32 priority, ChangeList &res, TextureQuality quality);
@@ -76,7 +76,7 @@ private:
 	ChangeList _resources;
 	ChangeList _languageTLK;
 
-	Campaigns *_campaigns;
+	Game *_game;
 
 
 	void init();
@@ -95,7 +95,6 @@ private:
 	void deinit();
 
 	void playIntroVideos();
-	void main();
 
 	static Common::UString getLanguageString(Aurora::Language language);
 };

@@ -9,6 +9,7 @@ noinst_HEADERS = \
                  util.h \
                  modelloader.h \
                  console.h \
+                 game.h \
                  campaigns.h \
                  campaign.h \
                  area.h \
@@ -26,6 +27,7 @@ libdragonage2_la_SOURCES = \
                            util.cpp \
                            modelloader.cpp \
                            console.cpp \
+                           game.cpp \
                            campaigns.cpp \
                            campaign.cpp \
                            area.cpp \

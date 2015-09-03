@@ -28,6 +28,7 @@
 
 #include "src/engines/dragonage2/console.h"
 #include "src/engines/dragonage2/dragonage2.h"
+#include "src/engines/dragonage2/game.h"
 #include "src/engines/dragonage2/campaigns.h"
 #include "src/engines/dragonage2/campaign.h"
 
@@ -62,7 +63,7 @@ void Console::updateCaches() {
 void Console::updateAreas() {
 	setArguments("loadarea");
 
-	const Campaign *campaign = _engine->getCampaigns().getCurrentCampaign();
+	const Campaign *campaign = _engine->getGame().getCampaigns().getCurrentCampaign();
 	if (!campaign)
 		return;
 
@@ -79,7 +80,7 @@ void Console::updateAreas() {
 void Console::updateCampaigns() {
 	setArguments("loadcampaign");
 
-	const Campaigns &campaignsCtx = _engine->getCampaigns();
+	const Campaigns &campaignsCtx = _engine->getGame().getCampaigns();
 
 	std::list<Common::UString> campaignTags;
 
@@ -92,7 +93,7 @@ void Console::updateCampaigns() {
 }
 
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
-	const Campaign *campaign = _engine->getCampaigns().getCurrentCampaign();
+	const Campaign *campaign = _engine->getGame().getCampaigns().getCurrentCampaign();
 	if (!campaign)
 		return;
 
@@ -108,7 +109,7 @@ void Console::cmdLoadArea(const CommandLine &cl) {
 		return;
 	}
 
-	Campaign *campaign = _engine->getCampaigns().getCurrentCampaign();
+	Campaign *campaign = _engine->getGame().getCampaigns().getCurrentCampaign();
 	if (!campaign)
 		return;
 
@@ -125,7 +126,7 @@ void Console::cmdLoadArea(const CommandLine &cl) {
 }
 
 void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
-	const Campaigns &campaignsCtx = _engine->getCampaigns();
+	const Campaigns &campaignsCtx = _engine->getGame().getCampaigns();
 
 	const Campaigns::PlayableCampaigns &campaigns = campaignsCtx.getCampaigns();
 
@@ -139,7 +140,7 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 		return;
 	}
 
-	Campaigns &campaignsCtx = _engine->getCampaigns();
+	Campaigns &campaignsCtx = _engine->getGame().getCampaigns();
 
 	const Campaigns::PlayableCampaigns &campaigns = campaignsCtx.getCampaigns();
 	for (Campaigns::PlayableCampaigns::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c) {

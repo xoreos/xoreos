@@ -47,20 +47,20 @@
 #include "src/engines/dragonage2/dragonage2.h"
 #include "src/engines/dragonage2/modelloader.h"
 #include "src/engines/dragonage2/console.h"
-#include "src/engines/dragonage2/campaigns.h"
-#include "src/engines/dragonage2/campaign.h"
+#include "src/engines/dragonage2/game.h"
 
 namespace Engines {
 
 namespace DragonAge2 {
 
 DragonAge2Engine::DragonAge2Engine() : _language(Aurora::kLanguageInvalid),
-	_campaigns(0) {
+	_game(0) {
 
 	_console = new Console(*this);
 }
 
 DragonAge2Engine::~DragonAge2Engine() {
+	delete _game;
 }
 
 Common::UString DragonAge2Engine::getLanguageString(Aurora::Language language) {
@@ -125,12 +125,6 @@ bool DragonAge2Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common
 	return true;
 }
 
-Campaigns &DragonAge2Engine::getCampaigns() {
-	assert(_campaigns);
-
-	return *_campaigns;
-}
-
 bool DragonAge2Engine::getLanguage(Aurora::Language &language) const {
 	language = _language;
 	return true;
@@ -142,6 +136,12 @@ bool DragonAge2Engine::changeLanguage() {
 		return false;
 
 	return true;
+}
+
+Game &DragonAge2Engine::getGame() {
+	assert(_game);
+
+	return *_game;
 }
 
 void DragonAge2Engine::run() {
@@ -158,7 +158,8 @@ void DragonAge2Engine::run() {
 
 	CursorMan.showCursor();
 
-	main();
+	_game = new Game(*this, *_console);
+	_game->run();
 
 	deinit();
 }
@@ -430,24 +431,14 @@ void DragonAge2Engine::initGameConfig() {
 void DragonAge2Engine::deinit() {
 	unloadTalkTables(_languageTLK);
 	deindexResources(_resources);
+
+	delete _game;
+
+	_game = 0;
 }
 
 void DragonAge2Engine::playIntroVideos() {
 	playVideo("dragon_age_ea_logo");
-}
-
-void DragonAge2Engine::main() {
-	_campaigns = new Campaigns(*_console, *this);
-
-	const Campaign *singlePlayer = _campaigns->findCampaign("campaign_base");
-	if (!singlePlayer)
-		throw Common::Exception("Can't find the default single player campaign");
-
-	_campaigns->load(*singlePlayer);
-	_campaigns->run();
-
-	delete _campaigns;
-	_campaigns = 0;
 }
 
 } // End of namespace DragonAge2
