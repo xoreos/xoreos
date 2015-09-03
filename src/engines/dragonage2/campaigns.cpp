@@ -30,7 +30,7 @@
 
 #include "src/events/events.h"
 
-#include "src/engines/dragonage2/dragonage2.h"
+#include "src/engines/dragonage2/game.h"
 #include "src/engines/dragonage2/campaigns.h"
 #include "src/engines/dragonage2/campaign.h"
 #include "src/engines/dragonage2/console.h"
@@ -39,8 +39,8 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-Campaigns::Campaigns(::Engines::Console &console, DragonAge2Engine &engine) :
-	_console(&console), _engine(&engine), _currentCampaign(0), _running(false) {
+Campaigns::Campaigns(::Engines::Console &console, Game &game) : _console(&console), _game(&game),
+	_currentCampaign(0), _running(false) {
 
 	findCampaigns();
 }
@@ -155,7 +155,7 @@ Campaign *Campaigns::readCampaign(const Common::UString &cifPath, const Common::
 
 	try {
 
-		campaign = new Campaign(*_engine, cifPath, manifestPath, addinBase);
+		campaign = new Campaign(*_game, cifPath, manifestPath, addinBase);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading campaign \"%s\"", Common::FilePath::getStem(cifPath).c_str());

@@ -38,7 +38,7 @@
 
 #include "src/engines/aurora/camera.h"
 
-#include "src/engines/dragonage2/dragonage2.h"
+#include "src/engines/dragonage2/game.h"
 #include "src/engines/dragonage2/campaign.h"
 #include "src/engines/dragonage2/area.h"
 
@@ -65,9 +65,9 @@ Campaign::RIMNode::~RIMNode() {
 }
 
 
-Campaign::Campaign(DragonAge2Engine &engine, const Common::UString &cifPath,
+Campaign::Campaign(Game &game, const Common::UString &cifPath,
                    const Common::UString &manifestPath, const Common::UString &addinBase) :
-	Object(kObjectTypeModule), _engine(&engine), _cifPath(cifPath),
+	Object(kObjectTypeModule), _game(&game), _cifPath(cifPath),
 	_addinBase(addinBase), _enabled(false), _bioware(false), _needsAuth(false),
 	_priority(0xFFFFFFFF), _format(0xFFFFFFFF), _state(0xFFFFFFFF), _rimRoot(0),
 	_area(0) {
@@ -317,22 +317,25 @@ const Campaign::Areas &Campaign::getAreas() const {
 }
 
 void Campaign::loadResources() {
-	_engine->loadTexturePack("/packages/core"        ,   0, _resources, kTextureQualityHigh);
-	_engine->loadTexturePack("/modules/campaign_base", 500, _resources, kTextureQualityHigh);
+	_game->loadTexturePack("/packages/core"        ,   0, _resources, kTextureQualityHigh);
+	_game->loadTexturePack("/modules/campaign_base", 500, _resources, kTextureQualityHigh);
 
 	for (size_t i = 0; i < _packages.size(); i++) {
 		const Common::UString dir = "/packages/" + _packages[i];
 
-		_engine->loadResources  (dir, 1000 + i * 500, _resources, _tlks);
-		_engine->loadTexturePack(dir, 1000 + i * 500, _resources, kTextureQualityHigh);
+		_game->loadResources  (dir, 1000 + i * 500, _resources);
+		_game->loadTalkTables (dir, 1000 + i * 500, _tlks);
+		_game->loadTexturePack(dir, 1000 + i * 500, _resources, kTextureQualityHigh);
 	}
 
 	if (!_addinBase.empty()) {
-		_engine->loadResources  ("/addins/" + _addinBase + "/core"   , 10000, _resources, _tlks);
-		_engine->loadTexturePack("/addins/" + _addinBase + "/core"   , 10000, _resources, kTextureQualityHigh);
+		_game->loadResources  ("/addins/" + _addinBase + "/core"   , 10000, _resources);
+		_game->loadTalkTables ("/addins/" + _addinBase + "/core"   , 10000, _tlks);
+		_game->loadTexturePack("/addins/" + _addinBase + "/core"   , 10000, _resources, kTextureQualityHigh);
 
-		_engine->loadResources  ("/addins/" + _addinBase + "/module", 10500, _resources, _tlks);
-		_engine->loadTexturePack("/addins/" + _addinBase + "/module", 10500, _resources, kTextureQualityHigh);
+		_game->loadResources  ("/addins/" + _addinBase + "/module", 10500, _resources);
+		_game->loadTalkTables ("/addins/" + _addinBase + "/module", 10500, _tlks);
+		_game->loadTexturePack("/addins/" + _addinBase + "/module", 10500, _resources, kTextureQualityHigh);
 	}
 }
 
@@ -374,7 +377,7 @@ void Campaign::unload() {
 	clearObjects();
 	TwoDAReg.clear();
 
-	_engine->unloadTalkTables(_tlks);
+	_game->unloadTalkTables(_tlks);
 
 	deindexResources(_resources);
 }

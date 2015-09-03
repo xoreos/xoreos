@@ -35,7 +35,7 @@ class Console;
 
 namespace DragonAge2 {
 
-class DragonAge2Engine;
+class Game;
 class Campaign;
 
 class Campaigns {
@@ -43,7 +43,7 @@ public:
 	typedef std::vector<Campaign *> PlayableCampaigns;
 	typedef std::vector<Campaign *> AddinContent;
 
-	Campaigns(::Engines::Console &console, DragonAge2Engine &engine);
+	Campaigns(::Engines::Console &console, Game &game);
 	~Campaigns();
 
 	/** Return all playable campaigns. */
@@ -73,7 +73,7 @@ public:
 
 private:
 	::Engines::Console *_console;
-	DragonAge2Engine *_engine;
+	Game *_game;
 
 	/** All campaigns we know about. */
 	PlayableCampaigns _campaigns;

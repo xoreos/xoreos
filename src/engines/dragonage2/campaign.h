@@ -44,8 +44,7 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-class DragonAge2Engine;
-
+class Game;
 class Area;
 
 class Campaign : public DragonAge2::Object, public DragonAge2::ObjectContainer {
@@ -102,7 +101,7 @@ private:
 	typedef std::map<Common::UString, const RIMNode *> AreaMap;
 
 
-	DragonAge2Engine *_engine;
+	Game *_game;
 
 	Common::UString _uid;
 
@@ -146,7 +145,7 @@ private:
 	std::list<Events::Event> _eventQueue;
 
 
-	Campaign(DragonAge2Engine &engine, const Common::UString &cifPath = "",
+	Campaign(Game &game, const Common::UString &cifPath = "",
 	         const Common::UString &manifestPath = "", const Common::UString &addinBase = "");
 	~Campaign();
 
