@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Dragon Age II
+ *  Engine class handling Dragon Age II.
  */
 
 #ifndef ENGINES_DRAGONAGE2_DRAGONAGE2_H

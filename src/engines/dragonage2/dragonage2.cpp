@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Dragon Age II
+ *  Engine class handling Dragon Age II.
  */
 
 #include <cassert>

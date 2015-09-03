@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Dragon Age 2 model loader.
+ *  Dragon Age II model loader.
  */
 
 #include "src/common/system.h"

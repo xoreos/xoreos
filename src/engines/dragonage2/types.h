@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Basic Dragon Age II types.
+ *  Basic Dragon Age II type definitions.
  */
 
 #ifndef ENGINES_DRAGONAGE2_TYPES_H
