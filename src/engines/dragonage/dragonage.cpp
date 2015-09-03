@@ -47,21 +47,20 @@
 #include "src/engines/dragonage/dragonage.h"
 #include "src/engines/dragonage/modelloader.h"
 #include "src/engines/dragonage/console.h"
-#include "src/engines/dragonage/campaigns.h"
-#include "src/engines/dragonage/campaign.h"
+#include "src/engines/dragonage/game.h"
 
 namespace Engines {
 
 namespace DragonAge {
 
 DragonAgeEngine::DragonAgeEngine() : _language(Aurora::kLanguageInvalid),
-	_campaigns(0) {
+	_game(0) {
 
 	_console = new Console(*this);
 }
 
 DragonAgeEngine::~DragonAgeEngine() {
-	delete _campaigns;
+	delete _game;
 }
 
 Common::UString DragonAgeEngine::getLanguageString(Aurora::Language language) {
@@ -126,12 +125,6 @@ bool DragonAgeEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common:
 	return true;
 }
 
-Campaigns &DragonAgeEngine::getCampaigns() {
-	assert(_campaigns);
-
-	return *_campaigns;
-}
-
 bool DragonAgeEngine::getLanguage(Aurora::Language &language) const {
 	language = _language;
 	return true;
@@ -143,6 +136,12 @@ bool DragonAgeEngine::changeLanguage() {
 		return false;
 
 	return true;
+}
+
+Game &DragonAgeEngine::getGame() {
+	assert(_game);
+
+	return *_game;
 }
 
 void DragonAgeEngine::run() {
@@ -159,7 +158,8 @@ void DragonAgeEngine::run() {
 
 	CursorMan.showCursor();
 
-	main();
+	_game = new Game(*this, *_console);
+	_game->run();
 
 	deinit();
 }
@@ -420,25 +420,15 @@ void DragonAgeEngine::initGameConfig() {
 void DragonAgeEngine::deinit() {
 	unloadTalkTables(_languageTLK);
 	deindexResources(_resources);
+
+	delete _game;
+
+	_game = 0;
 }
 
 void DragonAgeEngine::playIntroVideos() {
 	playVideo("dragon_age_ea_logo");
 	playVideo("dragon_age_main");
-}
-
-void DragonAgeEngine::main() {
-	_campaigns = new Campaigns(*_console, *this);
-
-	const Campaign *singlePlayer = _campaigns->findCampaign("Single Player");
-	if (!singlePlayer)
-		throw Common::Exception("Can't find the default single player campaign");
-
-	_campaigns->load(*singlePlayer);
-	_campaigns->run();
-
-	delete _campaigns;
-	_campaigns = 0;
 }
 
 } // End of namespace DragonAge
