@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A waypoint in a Neverwinter Nights area.
+ *  A waypoint in a Neverwinter Nights 2 area.
  */
 
 #ifndef ENGINES_NWN2_WAYPOINT_H

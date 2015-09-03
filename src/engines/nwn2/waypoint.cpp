@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A waypoint in a Neverwinter Nights area.
+ *  A waypoint in a Neverwinter Nights 2 area.
  */
 
 #include "src/common/util.h"
