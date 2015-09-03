@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Dragon Age (debug) console.
+ *  Dragon Age: Origins (debug) console.
  */
 
 #ifndef ENGINES_DRAGONAGE_CONSOLE_H

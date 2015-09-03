@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Dragon Age: Origins
+ *  Engine class handling Dragon Age: Origins.
  */
 
 #include <cassert>

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Basic Dragon Age: Origins types.
+ *  Basic Dragon Age: Origins type definitions.
  */
 
 #ifndef ENGINES_DRAGONAGE_TYPES_H
