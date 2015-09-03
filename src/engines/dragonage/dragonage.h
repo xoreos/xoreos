@@ -28,15 +28,12 @@
 #include <list>
 
 #include "src/common/ustring.h"
-#include "src/common/changeid.h"
 
 #include "src/aurora/types.h"
 
 #include "src/engines/engine.h"
 
 #include "src/engines/aurora/resources.h"
-
-#include "src/engines/dragonage/types.h"
 
 namespace Engines {
 
@@ -61,10 +58,8 @@ public:
 	/** Return the context running the actual game. */
 	Game &getGame();
 
-	void loadResources  (const Common::UString &dir, uint32 priority, ChangeList &res, ChangeList &tlk);
-	void loadTexturePack(const Common::UString &dir, uint32 priority, ChangeList &res, TextureQuality quality);
-
-	void unloadTalkTables(ChangeList &changes);
+	/** Return the string Dragon Age: Origins uses to representing this language. */
+	static Common::UString getLanguageString(Aurora::Language language);
 
 protected:
 	void run();
@@ -86,17 +81,9 @@ private:
 	void initConfig();
 	void initGameConfig();
 
-	void loadTalkTables(const Common::UString &dir, uint32 priority, ChangeList &changes);
-	void loadResourceDir(const Common::UString &dir, uint32 priority, ChangeList &changes);
-
-	void loadTalkTable(const Common::UString &tlk, Aurora::Language language,
-	                   uint32 priority, ChangeList &changes);
-
 	void deinit();
 
 	void playIntroVideos();
-
-	static Common::UString getLanguageString(Aurora::Language language);
 };
 
 } // End of namespace DragonAge

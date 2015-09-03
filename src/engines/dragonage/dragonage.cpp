@@ -32,7 +32,6 @@
 
 #include "src/aurora/resman.h"
 #include "src/aurora/language.h"
-#include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
@@ -223,7 +222,8 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 	progress.step("Adding core archive directories");
 
 	progress.step("Indexing core resources files");
-	loadResources("/packages/core", 0, _resources, _languageTLK);
+	Game::loadResources ("/packages/core", 0, _resources);
+	Game::loadTalkTables("/packages/core", 0, _languageTLK, _language);
 
 	progress.step("Indexing extra core resources files");
 	indexMandatoryArchive("/packages/core/data/designerscripts.rim",        450, _resources);
@@ -242,98 +242,11 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 	indexMandatoryArchive("/packages/core/data/abilities/burningform.rim",  463, _resources);
 
 	progress.step("Indexing single-player campaign resources files");
-	loadResources("/modules/single player", 500, _resources, _languageTLK);
+	Game::loadResources ("/modules/single player", 500, _resources);
+	Game::loadTalkTables("/modules/single player", 500, _languageTLK, _language);
 
 	progress.step("Registering file formats");
 	registerModelLoader(new DragonAgeModelLoader);
-}
-
-void DragonAgeEngine::loadResources(const Common::UString &dir, uint32 priority,
-                                    ChangeList &res, ChangeList &tlk) {
-
-	indexOptionalDirectory(dir + "/data"           , 0,  0, priority + 10, res);
-	indexOptionalDirectory(dir + "/data/abilities" , 0,  0, priority + 11, res);
-	indexOptionalDirectory(dir + "/data/movies"    , 0,  0, priority + 12, res);
-	indexOptionalDirectory(dir + "/data/talktables", 0,  0, priority + 13, res);
-	indexOptionalDirectory(dir + "/data/cursors"   , 0,  0, priority + 14, res);
-	indexOptionalDirectory(dir + "/textures"       , 0, -1, priority + 15, res);
-	indexOptionalDirectory(dir + "/audio"          , 0, -1, priority + 16, res);
-	indexOptionalDirectory(dir + "/env"            , 0, -1, priority + 17, res);
-	indexOptionalDirectory(dir + "/patch"          , 0,  0, priority + 18, res);
-
-	loadResourceDir(dir + "/data"          , priority + 100, res);
-	loadResourceDir(dir + "/data/abilities", priority + 200, res);
-
-	loadResourceDir(dir + "/patch", 0x40000000 | priority, res);
-
-	indexOptionalDirectory(dir + "/override", 0, -1, 0x40000000 | (priority + 499), res);
-
-	loadTalkTables(dir + "/data/talktables", priority, tlk);
-}
-
-void DragonAgeEngine::loadTexturePack(const Common::UString &dir, uint32 priority,
-                                      ChangeList &res, TextureQuality quality) {
-
-	static const char *kTextureQualityName[kTextureQualityMAX] = { "high", "medium" };
-
-	if (((uint)quality) >= kTextureQualityMAX)
-		throw Common::Exception("Invalid texture quality level");
-
-	loadResourceDir(dir + "/textures/" + kTextureQualityName[quality], priority + 300, res);
-}
-
-void DragonAgeEngine::loadTalkTables(const Common::UString &dir, uint32 priority, ChangeList &changes) {
-	if (EventMan.quitRequested())
-		return;
-
-	const Common::UString tlkDir = Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir, true);
-
-	Common::FileList files(Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir, true), 0);
-
-	files.sort(true);
-	files.relativize(tlkDir);
-
-	const Common::UString languageTLK = getLanguageString(_language) + ".tlk";
-	for (Common::FileList::const_iterator f = files.begin(); f != files.end(); ++f) {
-		if (!f->toLower().endsWith(languageTLK))
-			continue;
-
-		Common::UString tlk = *f;
-		tlk.truncate(tlk.size() - languageTLK.size());
-
-		loadTalkTable(tlk, _language, priority++, changes);
-	}
-}
-
-void DragonAgeEngine::loadResourceDir(const Common::UString &dir, uint32 priority, ChangeList &changes) {
-	if (EventMan.quitRequested())
-		return;
-
-	Common::FileList files(Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir, true), 0);
-
-	files.sort(true);
-	files.relativize(ResMan.getDataBase());
-
-	for (Common::FileList::const_iterator f = files.begin(); f != files.end(); ++f)
-		if (Common::FilePath::getExtension(*f).equalsIgnoreCase(".erf"))
-			indexMandatoryArchive("/" + *f, priority++, changes);
-}
-
-void DragonAgeEngine::unloadTalkTables(ChangeList &changes) {
-	for (std::list<Common::ChangeID>::iterator t = changes.begin(); t != changes.end(); ++t)
-		TalkMan.removeTable(*t);
-
-	changes.clear();
-}
-
-void DragonAgeEngine::loadTalkTable(const Common::UString &tlk, Aurora::Language language,
-                                    uint32 priority, ChangeList &changes) {
-
-	Common::UString tlkM = tlk + getLanguageString(language);
-	Common::UString tlkF = tlk + getLanguageString(language) + "_f";
-
-	changes.push_back(Common::ChangeID());
-	TalkMan.addTable(tlkM, tlkF, false, priority, &changes.back());
 }
 
 void DragonAgeEngine::initCursors() {
@@ -418,7 +331,7 @@ void DragonAgeEngine::initGameConfig() {
 }
 
 void DragonAgeEngine::deinit() {
-	unloadTalkTables(_languageTLK);
+	Game::unloadTalkTables(_languageTLK);
 	deindexResources(_resources);
 
 	delete _game;
