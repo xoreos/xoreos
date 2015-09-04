@@ -25,7 +25,6 @@
 #include <cassert>
 
 #include "src/common/util.h"
-#include "src/common/error.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 #include "src/common/configman.h"
@@ -34,7 +33,6 @@
 #include "src/aurora/language.h"
 
 #include "src/graphics/aurora/cursorman.h"
-#include "src/graphics/aurora/fontman.h"
 
 #include "src/events/events.h"
 

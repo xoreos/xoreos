@@ -25,8 +25,6 @@
 #ifndef ENGINES_DRAGONAGE2_DRAGONAGE2_H
 #define ENGINES_DRAGONAGE2_DRAGONAGE2_H
 
-#include <list>
-
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
