@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include <algorithm>
+
 #include "src/common/error.h"
 #include "src/common/configman.h"
 #include "src/common/filepath.h"
@@ -150,6 +152,8 @@ void Game::getCampaigns(std::vector<Common::UString> &campaigns) {
 
 		campaigns.push_back(cam);
 	}
+
+	std::sort(campaigns.begin(), campaigns.end(), Common::UString::iless());
 }
 
 void Game::getModules(std::vector<Common::UString> &modules) {
@@ -165,6 +169,8 @@ void Game::getModules(std::vector<Common::UString> &modules) {
 
 		modules.push_back(Common::FilePath::getStem(*m));
 	}
+
+	std::sort(modules.begin(), modules.end(), Common::UString::iless());
 }
 
 void Game::getCharacters(std::vector<Common::UString> &characters, bool local) {
@@ -183,6 +189,8 @@ void Game::getCharacters(std::vector<Common::UString> &characters, bool local) {
 
 		characters.push_back(Common::FilePath::getStem(*c));
 	}
+
+	std::sort(characters.begin(), characters.end(), Common::UString::iless());
 }
 
 } // End of namespace NWN2
