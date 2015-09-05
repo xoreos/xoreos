@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include <algorithm>
+
 #include "src/common/error.h"
 #include "src/common/configman.h"
 #include "src/common/filepath.h"
@@ -149,6 +151,8 @@ void Game::getCampaigns(std::vector<Common::UString> &campaigns) {
 
 		campaigns.push_back(mmd);
 	}
+
+	std::sort(campaigns.begin(), campaigns.end(), Common::UString::iless());
 }
 
 void Game::getModules(std::vector<Common::UString> &modules) {
@@ -167,6 +171,8 @@ void Game::getModules(std::vector<Common::UString> &modules) {
 
 		modules.push_back(mod);
 	}
+
+	std::sort(modules.begin(), modules.end(), Common::UString::iless());
 }
 
 } // End of namespace Witcher
