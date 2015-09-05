@@ -22,6 +22,8 @@
  *  The fog behind the new game dialogs.
  */
 
+#include <cstdlib>
+
 #include "src/common/maths.h"
 #include "src/common/readstream.h"
 

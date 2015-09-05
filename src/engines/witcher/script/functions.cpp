@@ -23,6 +23,7 @@
  */
 
 #include <cassert>
+#include <cstdlib>
 
 #include <boost/bind.hpp>
 

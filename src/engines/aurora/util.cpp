@@ -22,6 +22,8 @@
  *  Generic Aurora engines utility functions.
  */
 
+#include <cstdlib>
+
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/writefile.h"
