@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include <algorithm>
+
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
 #include "src/common/configman.h"
