@@ -29,6 +29,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include <algorithm>
+
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
@@ -157,6 +159,8 @@ void IFOFile::load() {
 		for (GFF3List::const_iterator a = areas.begin(); a != areas.end(); ++a)
 			_areas.push_back((*a)->getString("Area_Name"));
 	}
+
+	std::sort(_areas.begin(), _areas.end(), Common::UString::iless());
 
 	// NSS files that should be cached
 	if (ifoTop.hasField("Mod_CacheNSSList")) {
