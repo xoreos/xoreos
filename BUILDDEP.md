@@ -3,7 +3,7 @@ Build-time library dependencies
 
 - iconv
 - zlib (>= 1.2.3)
-- liblzma (>= 5.0.5)
+- liblzma (>= 5.0.3)
 - libxml2 (>= 2.8.0)
 
 - Boost (>= 1.53.0)
