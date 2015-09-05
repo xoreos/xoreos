@@ -100,39 +100,24 @@ void Console::updateMusic() {
 		_maxSizeMusic = MAX(_maxSizeMusic, _music.back().size());
 	}
 
+	std::sort(_music.begin(), _music.end(), Common::UString::iless());
 	setArguments("playmusic", _music);
 }
 
 void Console::updateCampaigns() {
-	std::vector<Common::UString> campaigns;
-	Game::getCampaigns(campaigns);
+	Game::getCampaigns(_campaigns);
 
-	_campaigns.clear();
-	std::copy(campaigns.begin(), campaigns.end(), std::back_inserter(_campaigns));
-
-	_campaigns.sort(Common::UString::iless());
 	setArguments("loadcampaign", _campaigns);
 }
 
 void Console::updateModules() {
-	std::vector<Common::UString> modules;
-	Game::getModules(modules);
+	Game::getModules(_modules);
 
-	_modules.clear();
-	std::copy(modules.begin(), modules.end(), std::back_inserter(_modules));
-
-	_modules.sort(Common::UString::iless());
 	setArguments("loadmodule", _modules);
 }
 
 void Console::updateAreas() {
-	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
-
-	_areas.clear();
-	std::copy(areas.begin(), areas.end(), std::back_inserter(_areas));
-
-	_areas.sort(Common::UString::iless());
-	setArguments("gotoarea", _areas);
+	setArguments("gotoarea", _engine->getGame().getModule().getIFO().getAreas());
 }
 
 void Console::cmdListMusic(const CommandLine &UNUSED(cl)) {
@@ -168,7 +153,8 @@ void Console::cmdMove(const CommandLine &cl) {
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 	updateAreas();
 
-	for (std::list<Common::UString>::const_iterator a = _areas.begin(); a != _areas.end(); ++a)
+	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
+	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		printf("%s (\"%s\")", a->c_str(), Area::getName(*a).c_str());
 }
 
@@ -192,7 +178,7 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
 	updateCampaigns();
 
-	for (std::list<Common::UString>::const_iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
+	for (std::vector<Common::UString>::const_iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
 		printf("%s (\"%s\")", c->c_str(), Campaign::getName(*c).c_str());
 }
 
@@ -203,7 +189,7 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 	}
 
 	updateCampaigns();
-	for (std::list<Common::UString>::const_iterator c = _campaigns.begin(); c != _campaigns.end(); ++c) {
+	for (std::vector<Common::UString>::const_iterator c = _campaigns.begin(); c != _campaigns.end(); ++c) {
 		if (c->equalsIgnoreCase(cl.args)) {
 			hide();
 			_engine->getGame().getCampaign().load(*c);
@@ -217,7 +203,7 @@ void Console::cmdLoadCampaign(const CommandLine &cl) {
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 	updateModules();
 
-	for (std::list<Common::UString>::const_iterator m = _modules.begin(); m != _modules.end(); ++m) {
+	for (std::vector<Common::UString>::const_iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		const Common::UString name = Module::getName(*m);
 
 		if (!name.empty())
@@ -234,7 +220,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 	}
 
 	updateModules();
-	for (std::list<Common::UString>::const_iterator m = _modules.begin(); m != _modules.end(); ++m) {
+	for (std::vector<Common::UString>::const_iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
 			hide();
 			_engine->getGame().getCampaign().loadModule(cl.args + ".mod");

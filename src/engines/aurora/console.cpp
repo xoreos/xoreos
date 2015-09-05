@@ -1056,18 +1056,17 @@ bool Console::printHints(const Common::UString &command) {
 		return false;
 
 	size_t maxSize;
-	size_t count;
-	const std::list<Common::UString> &hints = _readLine->getCompleteHint(maxSize, count);
-	if (count == 0)
+	const std::vector<Common::UString> &hints = _readLine->getCompleteHint(maxSize);
+	if (hints.empty())
 		return false;
 
 	maxSize = MAX<size_t>(maxSize, 3) + 2;
 	size_t lineSize = getColumns() / maxSize;
-	size_t lines = count / lineSize;
+	size_t lines = hints.size() / lineSize;
 
 	if (lines >= (kConsoleLines - 3)) {
 		if (!_printedCompleteWarning)
-			printf("%u completion candidates", (uint)count);
+			printf("%u completion candidates", (uint)hints.size());
 
 		_printedCompleteWarning = true;
 
@@ -1422,7 +1421,9 @@ void Console::printFullHelp() {
 	print("Available commands (help <command> for further help on each command):");
 
 	size_t maxSize = 0;
-	std::list<Common::UString> commands;
+	std::vector<Common::UString> commands;
+	commands.reserve(_commands.size());
+
 	for (CommandMap::const_iterator c = _commands.begin(); c != _commands.end(); ++c) {
 		commands.push_back(c->second.cmd);
 
@@ -1432,12 +1433,12 @@ void Console::printFullHelp() {
 	printList(commands, maxSize);
 }
 
-void Console::printList(const std::list<Common::UString> &list, size_t maxSize) {
+void Console::printList(const std::vector<Common::UString> &list, size_t maxSize) {
 	const size_t columns = getColumns();
 
 	// If no max size is given, go through the whole list to find it ourselves
 	if (maxSize == 0)
-		for (std::list<Common::UString>::const_iterator l = list.begin(); l != list.end(); ++l)
+		for (std::vector<Common::UString>::const_iterator l = list.begin(); l != list.end(); ++l)
 			maxSize = MAX<size_t>(maxSize, l->size());
 
 	maxSize = MAX<size_t>(maxSize, 3);
@@ -1462,9 +1463,8 @@ void Console::printList(const std::list<Common::UString> &list, size_t maxSize) 
 	}
 
 	// Move past the items we're cutting
-	std::list<Common::UString>::const_iterator l = list.begin();
-	for (size_t i = 0; i < linesCut; i++)
-		++l;
+	std::vector<Common::UString>::const_iterator l = list.begin();
+	std::advance(l, linesCut);
 
 	// Print the lines
 	while (l != list.end()) {
@@ -1519,9 +1519,7 @@ void Console::splitArguments(Common::UString argLine, std::vector<Common::UStrin
 		args.pop_back();
 }
 
-void Console::setArguments(const Common::UString &cmd,
-		const std::list<Common::UString> &args) {
-
+void Console::setArguments(const Common::UString &cmd, const std::vector<Common::UString> &args) {
 	_readLine->setArguments(cmd, args);
 }
 
@@ -1557,7 +1555,7 @@ bool Console::registerCommand(const Common::UString &cmd, const CommandCallback 
 }
 
 void Console::updateHelpArguments() {
-	std::list<Common::UString> commands;
+	std::vector<Common::UString> commands;
 	for (CommandMap::const_iterator c = _commands.begin(); c != _commands.end(); ++c)
 		commands.push_back(c->second.cmd);
 

@@ -25,6 +25,7 @@
 #ifndef COMMON_READLINE_H
 #define COMMON_READLINE_H
 
+#include <vector>
 #include <list>
 #include <set>
 #include <map>
@@ -55,7 +56,7 @@ public:
 	void addCommand(const UString &command);
 
 	/** Set the tab-completeable arguments for a command. */
-	void setArguments(const UString &command, const std::list<UString> &arguments);
+	void setArguments(const UString &command, const std::vector<UString> &arguments);
 	/** Clear the tab-completeable arguments for a command. */
 	void setArguments(const UString &command);
 
@@ -69,7 +70,7 @@ public:
 	bool getOverwrite() const;
 
 	/** Return the current tab-completion hints. */
-	const std::list<UString> &getCompleteHint(size_t &maxSize, size_t &count) const;
+	const std::vector<UString> &getCompleteHint(size_t &maxSize) const;
 
 	/** Add that character to the current input. */
 	void addInput(uint32 c);
@@ -126,7 +127,7 @@ private:
 	ArgumentSets _arguments;
 
 	/** Current possible command candidates for the input line. */
-	std::list<UString> _completeHint;
+	std::vector<UString> _completeHint;
 	/** Max size of a current command candidates. */
 	size_t _maxHintSize;
 	size_t _hintCount;

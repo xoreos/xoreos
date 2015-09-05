@@ -22,6 +22,8 @@
  *  A class providing (limited) readline-like capabilities.
  */
 
+#include <algorithm>
+
 #include "src/common/util.h"
 #include "src/common/readline.h"
 
@@ -32,7 +34,7 @@ namespace Common {
 ReadLine::ReadLine(size_t historySize) :
 	_historySizeMax(historySize), _historySizeCurrent(0),
 	_historyIgnoreSpace(false), _historyIgnoreDups(false), _historyEraseDups(false),
-	_cursorPosition(0), _overwrite(false), _maxHintSize(0), _hintCount(0) {
+	_cursorPosition(0), _overwrite(false), _maxHintSize(0) {
 
 	_historyPosition = _history.end();
 }
@@ -61,13 +63,13 @@ void ReadLine::addCommand(const UString &command) {
 	_commands.insert(command);
 }
 
-void ReadLine::setArguments(const UString &command, const std::list<UString> &arguments) {
+void ReadLine::setArguments(const UString &command, const std::vector<UString> &arguments) {
 	std::pair<ArgumentSets::iterator, bool> result =
 		_arguments.insert(std::make_pair(command, CommandSet()));
 
 	result.first->second.clear();
-	for (std::list<UString>::const_iterator a = arguments.begin(); a != arguments.end(); ++a)
-		result.first->second.insert(*a);
+	std::copy(arguments.begin(), arguments.end(),
+	          std::inserter(result.first->second, result.first->second.end()));
 }
 
 void ReadLine::setArguments(const UString &command) {
@@ -88,9 +90,8 @@ bool ReadLine::getOverwrite() const {
 	return _overwrite;
 }
 
-const std::list<UString> &ReadLine::getCompleteHint(size_t &maxSize, size_t &count) const {
+const std::vector<UString> &ReadLine::getCompleteHint(size_t &maxSize) const {
 	maxSize = _maxHintSize;
-	count   = _hintCount;
 
 	return _completeHint;
 }
@@ -119,7 +120,6 @@ bool ReadLine::processEvent(const Events::Event &event, UString &command) {
 
 	_completeHint.clear();
 	_maxHintSize = 0;
-	_hintCount   = 0;
 
 	if (event.type == Events::kEventKeyDown)
 		return processKeyDown(event, command);
@@ -512,9 +512,12 @@ void ReadLine::tabComplete(const UString &prefix, const UString &input,
 	// Partial match, figure out the common substring
 	UString substring = findCommonSubstring(candidates);
 
-	_completeHint = candidates;
-	_maxHintSize  = maxSize;
-	_hintCount    = count;
+	_completeHint.clear();
+	_completeHint.reserve(count);
+
+	std::copy(candidates.begin(), candidates.end(), std::back_inserter(_completeHint));
+
+	_maxHintSize = maxSize;
 
 	if (substring != input) {
 		_currentLine    = prefix + substring;

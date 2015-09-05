@@ -25,7 +25,7 @@
 #ifndef ENGINES_WITCHER_CONSOLE_H
 #define ENGINES_WITCHER_CONSOLE_H
 
-#include <list>
+#include <vector>
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
@@ -48,10 +48,10 @@ private:
 	WitcherEngine *_engine;
 
 	// Caches
-	std::list<Common::UString> _music;     ///< All known music resources.
-	std::list<Common::UString> _campaigns; ///< All known campaigns.
-	std::list<Common::UString> _modules;   ///< All known modules.
-	std::list<Common::UString> _areas;     ///< All known areas in the current module.
+	std::vector<Common::UString> _music;     ///< All known music resources.
+	std::vector<Common::UString> _campaigns; ///< All known campaigns.
+	std::vector<Common::UString> _modules;   ///< All known modules.
+	std::vector<Common::UString> _areas;     ///< All known areas in the current module.
 
 	size_t _maxSizeMusic;
 

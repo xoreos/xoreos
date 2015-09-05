@@ -25,6 +25,8 @@
 #ifndef ENGINES_JADE_CONSOLE_H
 #define ENGINES_JADE_CONSOLE_H
 
+#include <vector>
+
 #include "src/engines/aurora/console.h"
 
 namespace Engines {
@@ -43,7 +45,7 @@ private:
 	JadeEngine *_engine;
 
 	// Caches
-	std::list<Common::UString> _modules; ///< All known modules.
+	std::vector<Common::UString> _modules; ///< All known modules.
 
 
 	// Updating the caches

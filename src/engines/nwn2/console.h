@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN2_CONSOLE_H
 #define ENGINES_NWN2_CONSOLE_H
 
+#include <vector>
+
 #include "src/engines/aurora/console.h"
 
 namespace Engines {
@@ -43,10 +45,9 @@ private:
 	NWN2Engine *_engine;
 
 	// Caches
-	std::list<Common::UString> _music;     ///< All known music resources.
-	std::list<Common::UString> _campaigns; ///< All known campaigns.
-	std::list<Common::UString> _modules;   ///< All known modules.
-	std::list<Common::UString> _areas;     ///< All known areas in the current module.
+	std::vector<Common::UString> _music;     ///< All known music resources.
+	std::vector<Common::UString> _campaigns; ///< All known campaigns.
+	std::vector<Common::UString> _modules;   ///< All known modules.
 
 	size_t _maxSizeMusic;
 

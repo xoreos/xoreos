@@ -75,11 +75,7 @@ void Console::updateCaches() {
 }
 
 void Console::updateModules() {
-	std::vector<Common::UString> modules;
-	Game::getModules(modules);
-
-	_modules.clear();
-	std::copy(modules.begin(), modules.end(), std::back_inserter(_modules));
+	Game::getModules(_modules);
 
 	setArguments("loadmodule", _modules);
 }
@@ -99,8 +95,7 @@ void Console::updateMusic() {
 		_maxSizeMusic = MAX(_maxSizeMusic, _music.back().size());
 	}
 
-	_music.sort(Common::UString::iless());
-
+	std::sort(_music.begin(), _music.end(), Common::UString::iless());
 	setArguments("playmusic", _music);
 }
 
@@ -112,7 +107,7 @@ void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 	updateModules();
 
-	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
+	for (std::vector<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
 		printf("%s (\"%s\")", m->c_str(), Module::getName(*m).c_str());
 }
 
@@ -122,7 +117,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		return;
 	}
 
-	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
+	for (std::vector<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
 			hide();
 			_engine->getGame().getModule().load(cl.args);

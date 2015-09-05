@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_CONSOLE_H
 #define ENGINES_NWN_CONSOLE_H
 
-#include <list>
+#include <vector>
 #include <map>
 
 #include "src/common/types.h"
@@ -51,12 +51,10 @@ private:
 
 	NWNEngine *_engine;
 
-
 	// Caches
-	std::list<Common::UString> _campaigns; ///< All known campaigns modules.
-	std::list<Common::UString> _modules;   ///< All known modules.
-	std::list<Common::UString> _areas;     ///< All known areas in the current module.
-	std::list<Common::UString> _music;     ///< All known music resources.
+	std::vector<Common::UString> _campaigns; ///< All known campaigns modules.
+	std::vector<Common::UString> _modules;   ///< All known modules.
+	std::vector<Common::UString> _music;     ///< All known music resources.
 
 	CampaignMap _campaignModules; ///< Mapping campaign module file -> campaign module name.
 

@@ -22,6 +22,8 @@
  *  Dragon Age: Origins (debug) console.
  */
 
+#include <algorithm>
+
 #include <boost/bind.hpp>
 
 #include "src/graphics/aurora/types.h"
@@ -67,13 +69,13 @@ void Console::updateAreas() {
 	if (!campaign)
 		return;
 
-	std::list<Common::UString> areaTags;
+	std::vector<Common::UString> areaTags;
 
 	const Campaign::Areas &areas = campaign->getAreas();
 	for (Campaign::Areas::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		areaTags.push_back(a->tag);
 
-	areaTags.sort(Common::UString::iless());
+	std::sort(areaTags.begin(), areaTags.end(), Common::UString::iless());
 	setArguments("loadarea", areaTags);
 }
 
@@ -82,13 +84,13 @@ void Console::updateCampaigns() {
 
 	const Campaigns &campaignsCtx = _engine->getGame().getCampaigns();
 
-	std::list<Common::UString> campaignTags;
+	std::vector<Common::UString> campaignTags;
 
 	const Campaigns::PlayableCampaigns &campaigns = campaignsCtx.getCampaigns();
 	for (Campaigns::PlayableCampaigns::const_iterator c = campaigns.begin(); c != campaigns.end(); ++c)
 		campaignTags.push_back((*c)->getUID());
 
-	campaignTags.sort(Common::UString::iless());
+	std::sort(campaignTags.begin(), campaignTags.end(), Common::UString::iless());
 	setArguments("loadcampaign", campaignTags);
 }
 

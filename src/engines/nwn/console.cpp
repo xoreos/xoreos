@@ -104,6 +104,8 @@ void Console::updateCampaigns() {
 	_campaigns.clear();
 	_campaignModules.clear();
 
+	_campaigns.reserve(ARRAYSIZE(kCampaignNames));
+
 	// Base game
 	for (int i = 0; i < 5; i++) {
 		Common::UString name = TalkMan.getString(kCampaignNames[i]);
@@ -142,22 +144,13 @@ void Console::updateCampaigns() {
 }
 
 void Console::updateModules() {
-	std::vector<Common::UString> modules;
-	Game::getModules(modules);
-
-	_modules.clear();
-	std::copy(modules.begin(), modules.end(), std::back_inserter(_modules));
+	Game::getModules(_modules);
 
 	setArguments("loadmodule", _modules);
 }
 
 void Console::updateAreas() {
-	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
-
-	_areas.clear();
-	std::copy(areas.begin(), areas.end(), std::back_inserter(_areas));
-
-	setArguments("gotoarea", _areas);
+	setArguments("gotoarea", _engine->getGame().getModule().getIFO().getAreas());
 }
 
 void Console::updateMusic() {
@@ -175,6 +168,7 @@ void Console::updateMusic() {
 		_maxSizeMusic = MAX(_maxSizeMusic, _music.back().size());
 	}
 
+	std::sort(_music.begin(), _music.end(), Common::UString::iless());
 	setArguments("playmusic", _music);
 }
 
@@ -186,7 +180,7 @@ void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
 
 void Console::cmdListCampaigns(const CommandLine &UNUSED(cl)) {
 	updateCampaigns();
-	for (std::list<Common::UString>::iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
+	for (std::vector<Common::UString>::iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
 		print(*c);
 }
 
@@ -219,7 +213,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		return;
 	}
 
-	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
+	for (std::vector<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
 			hide();
 
@@ -234,7 +228,8 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 	updateAreas();
 
-	for (std::list<Common::UString>::iterator a = _areas.begin(); a != _areas.end(); ++a)
+	const std::vector<Common::UString> &areas = _engine->getGame().getModule().getIFO().getAreas();
+	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a)
 		printf("%s (\"%s\")", a->c_str(), Area::getName(*a).c_str());
 }
 

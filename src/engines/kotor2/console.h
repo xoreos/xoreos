@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR2_CONSOLE_H
 #define ENGINES_KOTOR2_CONSOLE_H
 
+#include <vector>
+
 #include "src/engines/aurora/console.h"
 
 namespace Engines {
@@ -43,8 +45,8 @@ private:
 	KotOR2Engine *_engine;
 
 	// Caches
-	std::list<Common::UString> _modules; ///< All known modules.
-	std::list<Common::UString> _music;   ///< All known music resources.
+	std::vector<Common::UString> _modules; ///< All known modules.
+	std::vector<Common::UString> _music;   ///< All known music resources.
 
 	size_t _maxSizeMusic;
 

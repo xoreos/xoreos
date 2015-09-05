@@ -221,9 +221,9 @@ protected:
 	                     const Common::UString &help);
 
 	void printCommandHelp(const Common::UString &cmd);
-	void printList(const std::list<Common::UString> &list, size_t maxSize = 0);
+	void printList(const std::vector<Common::UString> &list, size_t maxSize = 0);
 
-	void setArguments(const Common::UString &cmd, const std::list<Common::UString> &args);
+	void setArguments(const Common::UString &cmd, const std::vector<Common::UString> &args);
 	void setArguments(const Common::UString &cmd);
 
 	virtual void updateCaches();
@@ -267,8 +267,8 @@ private:
 	ptrdiff_t _lastClickY;
 
 
-	std::list<Common::UString> _videos;
-	std::list<Common::UString> _sounds;
+	std::vector<Common::UString> _videos;
+	std::vector<Common::UString> _sounds;
 
 	size_t _maxSizeVideos;
 	size_t _maxSizeSounds;

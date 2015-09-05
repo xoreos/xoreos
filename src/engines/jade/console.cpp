@@ -22,6 +22,8 @@
  *  Jade (debug) console.
  */
 
+#include <algorithm>
+
 #include <boost/bind.hpp>
 
 #include "src/common/ustring.h"
@@ -73,7 +75,7 @@ void Console::updateModules() {
 	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator a = ares.begin(); a != ares.end(); ++a)
 		_modules.push_back(a->name);
 
-	_modules.sort(Common::UString::iless());
+	std::sort(_modules.begin(), _modules.end(), Common::UString::iless());
 	setArguments("loadmodule", _modules);
 }
 
@@ -101,7 +103,7 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 	if (!module)
 		return;
 
-	for (std::list<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
+	for (std::vector<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
 			hide();
 			module->load(cl.args);
