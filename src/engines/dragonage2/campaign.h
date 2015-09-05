@@ -49,13 +49,6 @@ class Area;
 
 class Campaign : public DragonAge2::Object, public DragonAge2::ObjectContainer {
 public:
-	struct AreaDescription {
-		Common::UString   tag;
-		Aurora::LocString name;
-	};
-
-	typedef std::vector<AreaDescription> Areas;
-
 	/** Return the unique ID of this campaign. */
 	const Common::UString &getUID() const;
 
@@ -69,7 +62,10 @@ public:
 	bool isBioWare() const; ///< Is this an original campaign by BioWare?
 	bool needsAuth() const; ///< Does this campaign need authorization from BioWare?
 
-	const Areas &getAreas() const;
+	/** Return the RIM file containing this area. */
+	const Common::UString &getAreaRIM(const Common::UString &area) const;
+
+	const std::vector<Common::UString> &getAreas() const;
 
 	/** Move the player character to this area. */
 	void movePC(const Common::UString &area);
@@ -134,7 +130,7 @@ private:
 	RIMNode *_rimRoot;
 	AreaMap  _areaMap;
 
-	Areas _areas;
+	std::vector<Common::UString> _areas;
 
 	ChangeList _resources;
 	ChangeList _tlks;
