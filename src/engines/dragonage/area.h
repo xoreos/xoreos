@@ -75,7 +75,7 @@ public:
 	/** Forcibly remove the focus from the currently highlighted object. */
 	void removeFocus();
 
-	static Aurora::LocString getName(const Common::UString &resRef);
+	static Common::UString getName(const Common::UString &resRef, const Common::UString &rimFile = "");
 
 
 protected:

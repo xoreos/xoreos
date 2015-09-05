@@ -33,6 +33,7 @@
 #include "src/engines/dragonage/game.h"
 #include "src/engines/dragonage/campaigns.h"
 #include "src/engines/dragonage/campaign.h"
+#include "src/engines/dragonage/area.h"
 
 namespace Engines {
 
@@ -69,14 +70,7 @@ void Console::updateAreas() {
 	if (!campaign)
 		return;
 
-	std::vector<Common::UString> areaTags;
-
-	const Campaign::Areas &areas = campaign->getAreas();
-	for (Campaign::Areas::const_iterator a = areas.begin(); a != areas.end(); ++a)
-		areaTags.push_back(a->tag);
-
-	std::sort(areaTags.begin(), areaTags.end(), Common::UString::iless());
-	setArguments("loadarea", areaTags);
+	setArguments("loadarea", campaign->getAreas());
 }
 
 void Console::updateCampaigns() {
@@ -99,10 +93,13 @@ void Console::cmdListAreas(const CommandLine &UNUSED(cl)) {
 	if (!campaign)
 		return;
 
-	const Campaign::Areas &areas = campaign->getAreas();
+	const std::vector<Common::UString> &areas = campaign->getAreas();
 
-	for (Campaign::Areas::const_iterator a = areas.begin(); a != areas.end(); ++a)
-		printf("%s (\"%s\")", a->tag.c_str(), a->name.getString().c_str());
+	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a) {
+		const Common::UString &rim = campaign->getAreaRIM(*a);
+
+		printf("%s (\"%s\")", a->c_str(), Area::getName(*a, rim).c_str());
+	}
 }
 
 void Console::cmdLoadArea(const CommandLine &cl) {
@@ -115,11 +112,12 @@ void Console::cmdLoadArea(const CommandLine &cl) {
 	if (!campaign)
 		return;
 
-	const Campaign::Areas &areas = campaign->getAreas();
-	for (Campaign::Areas::const_iterator a = areas.begin(); a != areas.end(); ++a) {
-		if (a->tag.equalsIgnoreCase(cl.args)) {
+	const std::vector<Common::UString> &areas = campaign->getAreas();
+
+	for (std::vector<Common::UString>::const_iterator a = areas.begin(); a != areas.end(); ++a) {
+		if (a->equalsIgnoreCase(cl.args)) {
 			hide();
-			campaign->movePC(cl.args);
+			campaign->movePC(*a);
 			return;
 		}
 	}

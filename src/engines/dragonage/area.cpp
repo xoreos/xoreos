@@ -26,6 +26,8 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 
+#include "src/aurora/resman.h"
+#include "src/aurora/rimfile.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/gff4file.h"
 
@@ -232,13 +234,33 @@ void Area::hide() {
 	GfxMan.unlockFrame();
 }
 
-Aurora::LocString Area::getName(const Common::UString &resRef) {
-	GFF3File are(resRef, Aurora::kFileTypeARE, kAREID);
+Common::UString Area::getName(const Common::UString &resRef, const Common::UString &rimFile) {
+	if (!rimFile.empty()) {
 
-	Aurora::LocString name;
-	are.getTopLevel().getLocString("Name", name);
+		try {
+			Common::SeekableReadStream *rimStream = ResMan.getResource(rimFile, Aurora::kFileTypeRIM);
+			if (!rimStream)
+				throw 0;
 
-	return name;
+			const Aurora::RIMFile rim(rimStream);
+			const uint32 areIndex = rim.findResource(resRef, Aurora::kFileTypeARE);
+
+			const GFF3File are(rim.getResource(areIndex), kAREID);
+
+			return are.getTopLevel().getString("Name");
+		} catch (...) {
+		}
+
+	}
+
+	try {
+		const GFF3File are(resRef, Aurora::kFileTypeARE, kAREID);
+
+		return are.getTopLevel().getString("Name");
+	} catch (...) {
+	}
+
+	return "";
 }
 
 void Area::getEntryLocation(float &posX, float &posY, float &posZ,

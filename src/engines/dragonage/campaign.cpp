@@ -221,36 +221,13 @@ Campaign::RIMNode *Campaign::readRIMs(const GFF4Struct &node, const RIMNode *par
 		throw;
 	}
 
-	if (!rim->area.empty())
+	if (!rim->area.empty()) {
 		_areaMap.insert(std::make_pair(rim->area, rim));
 
-	addAreaName(*rim);
-
-	return rim;
-}
-
-void Campaign::addAreaName(const RIMNode &node) {
-	if (node.area.empty())
-		return;
-
-	Common::ChangeID rimChange;
-
-	try {
-
-		if (!node.rim.empty())
-			indexOptionalArchive(node.rim + ".rim", 1000, &rimChange);
-
-		const Aurora::LocString name = Area::getName(node.area);
-
-		_areas.push_back(AreaDescription());
-
-		_areas.back().tag  = node.area;
-		_areas.back().name = name;
-
-	} catch (...) {
+		_areas.push_back(rim->area);
 	}
 
-	deindexResources(rimChange);
+	return rim;
 }
 
 void Campaign::readManifest(const Common::UString &path) {
@@ -311,7 +288,17 @@ bool Campaign::needsAuth() const {
 	return _needsAuth;
 }
 
-const Campaign::Areas &Campaign::getAreas() const {
+const Common::UString &Campaign::getAreaRIM(const Common::UString &area) const {
+	static const Common::UString kEmptyString;
+
+	AreaMap::const_iterator a = _areaMap.find(area);
+	if (a != _areaMap.end())
+		return a->second->rim;
+
+	return kEmptyString;
+}
+
+const std::vector<Common::UString> &Campaign::getAreas() const {
 	return _areas;
 }
 
