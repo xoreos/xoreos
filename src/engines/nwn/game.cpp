@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include <algorithm>
+
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
 #include "src/common/configman.h"
@@ -202,6 +204,8 @@ void Game::getCharacters(std::vector<Common::UString> &characters, bool local) {
 
 		characters.push_back(Common::FilePath::getStem(*c));
 	}
+
+	std::sort(characters.begin(), characters.end(), Common::UString::iless());
 }
 
 void Game::getModules(std::vector<Common::UString> &modules) {
