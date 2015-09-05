@@ -57,6 +57,8 @@ namespace Aurora {
 ERFFile::ERFFile(Common::SeekableReadStream *erf, const std::vector<byte> &password) :
 	_erf(erf), _password(password) {
 
+	assert(_erf);
+
 	try {
 		load(*_erf);
 	} catch (...) {
