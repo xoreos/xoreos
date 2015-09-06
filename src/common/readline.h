@@ -130,7 +130,6 @@ private:
 	std::vector<UString> _completeHint;
 	/** Max size of a current command candidates. */
 	size_t _maxHintSize;
-	size_t _hintCount;
 
 
 	std::list<HistorySave>::iterator findHistorySave();
