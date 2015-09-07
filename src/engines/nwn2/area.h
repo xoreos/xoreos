@@ -50,6 +50,14 @@ class TRXFile;
 
 class Module;
 
+/** An area in Neverwinter Nights 2, holding all objects, room tiles and terrain
+ *  within, as well as general area properties like the current background music
+ *  and ambient sounds.
+ *
+ *  Note: the coordinate system of the in-world graphics is oriented as viewed
+ *  from the top down. The negative Z axis goes down into the ground, while the
+ *  positive Y axis points due north and the positive X axis points due east.
+ */
 class Area : public NWN2::Object, public Events::Notifyable {
 public:
 	Area(Module &module, const Common::UString &resRef);
