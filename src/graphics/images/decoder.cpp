@@ -117,7 +117,8 @@ void ImageDecoder::MipMap::setPixel(int n, float r, float g, float b, float a) {
 
 
 ImageDecoder::ImageDecoder() : _compressed(false), _hasAlpha(false),
-	_format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8), _dataType(kPixelDataType8) {
+	_format(kPixelFormatBGRA), _formatRaw(kPixelFormatRGBA8), _dataType(kPixelDataType8),
+	_layerCount(1), _isCubeMap(false) {
 
 }
 
@@ -157,13 +158,30 @@ PixelDataType ImageDecoder::getDataType() const {
 }
 
 size_t ImageDecoder::getMipMapCount() const {
-	return _mipMaps.size();
+	assert((_mipMaps.size() % _layerCount) == 0);
+
+	return _mipMaps.size() / _layerCount;
 }
 
-const ImageDecoder::MipMap &ImageDecoder::getMipMap(size_t mipMap) const {
-	assert(mipMap < _mipMaps.size());
+size_t ImageDecoder::getLayerCount() const {
+	return _layerCount;
+}
 
-	return *_mipMaps[mipMap];
+bool ImageDecoder::isCubeMap() const {
+	assert(!_isCubeMap || (_layerCount == 6));
+
+	return _isCubeMap;
+}
+
+const ImageDecoder::MipMap &ImageDecoder::getMipMap(size_t mipMap, size_t layer) const {
+	assert(layer < _layerCount);
+	assert((_mipMaps.size() % _layerCount) == 0);
+
+	const size_t index = layer * getMipMapCount() + mipMap;
+
+	assert(index < _mipMaps.size());
+
+	return *_mipMaps[index];
 }
 
 void ImageDecoder::decompress(MipMap &out, const MipMap &in, PixelFormatRaw format) {
@@ -208,6 +226,9 @@ void ImageDecoder::decompress() {
 }
 
 bool ImageDecoder::dumpTGA(const Common::UString &fileName) const {
+	if (_layerCount != 1)
+		throw Common::Exception("TODO: ImageDecoder::dumpTGA() with %u layers", (uint) _layerCount);
+
 	if (_mipMaps.size() < 1)
 		return false;
 
