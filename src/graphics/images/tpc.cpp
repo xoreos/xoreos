@@ -56,6 +56,8 @@ void TPC::load(Common::SeekableReadStream &tpc) {
 		readData  (tpc, encoding);
 		readTXI   (tpc);
 
+		fixupCubeMap();
+
 	} catch (Common::Exception &e) {
 		clear();
 
@@ -142,6 +144,8 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, byte &encoding) {
 
 		minDataSize = 8;
 
+		checkCubeMap(width, height);
+
 	} else if (encoding == kEncodingRGBA) {
 		// S3TC DXT5
 
@@ -153,40 +157,90 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, byte &encoding) {
 
 		minDataSize = 16;
 
+		checkCubeMap(width, height);
+
 	} else
 		throw Common::Exception("Unknown TPC encoding: %d (%d)", encoding, dataSize);
 
 	size_t fullDataSize = tpc.size() - 128;
 
-	_mipMaps.reserve(mipMapCount);
-	for (uint32 i = 0; i < mipMapCount; i++) {
-		MipMap *mipMap = new MipMap(this);
+	_mipMaps.reserve(mipMapCount * _layerCount);
 
-		mipMap->width  = MAX<uint32>(width,  1);
-		mipMap->height = MAX<uint32>(height, 1);
+	size_t layerCount;
+	for (layerCount = 0; layerCount < _layerCount; layerCount++) {
+		uint32 layerWidth  = width;
+		uint32 layerHeight = height;
+		uint32 layerSize   = dataSize;
 
-		mipMap->size = MAX<uint32>(dataSize, minDataSize);
+		for (size_t i = 0; i < mipMapCount; i++) {
+			MipMap *mipMap = new MipMap(this);
 
-		mipMap->data = 0;
+			mipMap->width  = MAX<uint32>(layerWidth,  1);
+			mipMap->height = MAX<uint32>(layerHeight, 1);
 
-		if (fullDataSize < mipMap->size) {
-			// Wouldn't fit
-			delete mipMap;
-			break;
+			mipMap->size = MAX<uint32>(layerSize, minDataSize);
+
+			mipMap->data = 0;
+
+			if (fullDataSize < mipMap->size) {
+				// Wouldn't fit
+				delete mipMap;
+				break;
+			}
+
+			fullDataSize -= mipMap->size;
+
+			_mipMaps.push_back(mipMap);
+
+			layerWidth  >>= 1;
+			layerHeight >>= 1;
+			layerSize   >>= 2;
+
+			if ((layerWidth < 1) && (layerHeight < 1))
+				break;
 		}
-
-		fullDataSize -= mipMap->size;
-
-		_mipMaps.push_back(mipMap);
-
-		width    >>= 1;
-		height   >>= 1;
-		dataSize >>= 2;
-
-		if ((width < 1) && (height < 1))
-			break;
 	}
 
+	if ((layerCount != _layerCount) || ((_mipMaps.size() % _layerCount) != 0))
+		throw Common::Exception("Failed to correctly read all texture layers (%u, %u, %u, %u)",
+		                        (uint) _layerCount, (uint) mipMapCount,
+		                        (uint) layerCount, (uint) _mipMaps.size());
+}
+
+bool TPC::checkCubeMap(uint32 &width, uint32 &height) {
+	/* Check if this texture is a cube map by looking if height equals to six
+	 * times width. This means that there are 6 sides of width * (height / 6)
+	 * images in this texture, making it a cube map.
+	 *
+	 * The indivual sides are then stores on after another, together with
+	 * their mip maps.
+	 *
+	 * I.e.
+	 * - Side 0, mip map 0
+	 * - Side 0, mip map 1
+	 * - ...
+	 * - Side 1, mip map 0
+	 * - Side 1, mip map 1
+	 * - ...
+	 *
+	 * The ordering of the sides should be the usual Direct3D cube map order,
+	 * which is the same as the OpenGL cube map order.
+	 *
+	 * Yes, that's a really hacky way to encode a cube map. But this is how
+	 * the original game does it. It works and doesn't clash with other, normal
+	 * textures because TPC textures always have power-of-two side lengths,
+	 * and therefore (height / width) == 6 isn't true for non-cubemaps.
+	 */
+
+	if ((height / width) != 6)
+		return false;
+
+	height /= 6;
+
+	_layerCount = 6;
+	_isCubeMap  = true;
+
+	return true;
 }
 
 void TPC::deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height) {
@@ -253,6 +307,51 @@ void TPC::readTXI(Common::SeekableReadStream &tpc) {
 	}
 
 	delete txiData;
+}
+
+void TPC::fixupCubeMap() {
+	/* Do various fixups to the cube maps. This includes rotating and swapping a
+	 * few sides around. This is done by the original games as well.
+	 */
+
+	if (!isCubeMap())
+		return;
+
+	// Since we need to rotate the individual cube sides, we need to decompress them all
+	decompress();
+
+	// Swap the first two sides of the cube maps
+	for (size_t j = 0; j < getMipMapCount(); j++) {
+		const size_t index0 = 0 * getMipMapCount() + j;
+		const size_t index1 = 1 * getMipMapCount() + j;
+			assert((index0 < _mipMaps.size()) && (index1 < _mipMaps.size()));
+
+		MipMap &mipMap0 = *_mipMaps[index0];
+		MipMap &mipMap1 = *_mipMaps[index1];
+
+		assert((mipMap0.width == mipMap1.width) && (mipMap0.height == mipMap1.height));
+
+		SWAP(mipMap0.data, mipMap1.data);
+	}
+
+	const int bpp = (_formatRaw == kPixelFormatRGB8) ? 3 : ((_formatRaw == kPixelFormatRGBA8) ? 4 : 0);
+	if (bpp == 0)
+		return;
+
+	// Rotate the cube sides so that they're all oriented correctly
+	for (size_t i = 0; i < getLayerCount(); i++) {
+		for (size_t j = 0; j < getMipMapCount(); j++) {
+			const size_t index = i * getMipMapCount() + j;
+			assert(index < _mipMaps.size());
+
+			MipMap &mipMap = *_mipMaps[index];
+
+			static const int rotation[6] = { 1, 3, 0, 2, 2, 0 };
+
+			rotate90(mipMap.data, mipMap.width, mipMap.height, bpp, rotation[i]);
+		}
+	}
+
 }
 
 } // End of namespace Graphics
