@@ -22,6 +22,8 @@
  *  An object within a Jade Empire area.
  */
 
+#include "src/aurora/gff3file.h"
+
 #include "src/engines/jade/object.h"
 #include "src/engines/jade/types.h"
 
@@ -110,6 +112,23 @@ void Object::leave() {
 }
 
 void Object::highlight(bool UNUSED(enabled)) {
+}
+
+void Object::loadPositional (const Aurora::GFF3Struct& gff) {
+
+	const Aurora::GFF3Struct &positional = gff.getStruct("Positional");
+
+	double x, y, z;
+
+	// Position
+
+	positional.getVector("Position", x, y, z);
+	setPosition(x, y, z);
+
+	// Orientation
+
+	positional.getVector("Orientation", x, y, z);
+	setOrientation(x, y, z, 0);
 }
 
 } // End of namespace Jade

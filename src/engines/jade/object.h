@@ -36,6 +36,12 @@
 
 #include "src/engines/jade/script/container.h"
 
+namespace Aurora {
+
+class GFF3Struct;
+
+}
+
 namespace Engines {
 
 namespace Jade {
@@ -104,6 +110,9 @@ protected:
 
 	float _position[3];    ///< The object's position.
 	float _orientation[4]; ///< The object's orientation.
+
+	/** Load the object's positional gff struct which contains the position and orientation. */
+	void loadPositional(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace Jade
