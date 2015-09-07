@@ -43,9 +43,6 @@ namespace Graphics {
 /** A generic interface for image decoders. */
 class ImageDecoder {
 public:
-	ImageDecoder();
-	virtual ~ImageDecoder();
-
 	/** A mip map. */
 	struct MipMap {
 		int    width;  ///< The mip map's width.
@@ -56,6 +53,7 @@ public:
 		const ImageDecoder *image; ///< The image the mip map belongs to.
 
 		MipMap(const ImageDecoder *i = 0);
+		MipMap(const MipMap &mipMap, const ImageDecoder *i = 0);
 		~MipMap();
 
 		void swap(MipMap &right);
@@ -70,6 +68,12 @@ public:
 		/** Set the color values of the pixel at this index. */
 		void setPixel(int n, float r, float g, float b, float a);
 	};
+
+	ImageDecoder();
+	ImageDecoder(const ImageDecoder &image);
+	virtual ~ImageDecoder();
+
+	ImageDecoder &operator=(const ImageDecoder &image);
 
 	/** Is the image data compressed? */
 	bool isCompressed() const;

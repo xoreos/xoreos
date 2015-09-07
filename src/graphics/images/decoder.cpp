@@ -39,6 +39,14 @@ namespace Graphics {
 ImageDecoder::MipMap::MipMap(const ImageDecoder *i) : width(0), height(0), size(0), data(0), image(i) {
 }
 
+ImageDecoder::MipMap::MipMap(const MipMap &mipMap, const ImageDecoder *i) :
+	width(mipMap.width), height(mipMap.height), size(mipMap.size), data(0), image(i) {
+
+	data = new byte[size];
+
+	memcpy(data, mipMap.data, size);
+}
+
 ImageDecoder::MipMap::~MipMap() {
 	delete[] data;
 }
@@ -122,8 +130,34 @@ ImageDecoder::ImageDecoder() : _compressed(false), _hasAlpha(false),
 
 }
 
+ImageDecoder::ImageDecoder(const ImageDecoder &image) {
+	*this = image;
+}
+
 ImageDecoder::~ImageDecoder() {
 	clear();
+}
+
+ImageDecoder &ImageDecoder::operator=(const ImageDecoder &image) {
+	_compressed = image._compressed;
+	_hasAlpha   = image._hasAlpha;
+
+	_format    = image._format;
+	_formatRaw = image._formatRaw;
+	_dataType  = image._dataType;
+
+	_layerCount = image._layerCount;
+	_isCubeMap  = image._isCubeMap;
+
+	_txi = image._txi;
+
+	_mipMaps.clear();
+	_mipMaps.reserve(image._mipMaps.size());
+
+	for (std::vector<MipMap *>::const_iterator m = image._mipMaps.begin(); m != image._mipMaps.end(); ++m)
+		_mipMaps.push_back(new MipMap(**m));
+
+	return *this;
 }
 
 void ImageDecoder::clear() {
