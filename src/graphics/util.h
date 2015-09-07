@@ -25,6 +25,7 @@
 #ifndef GRAPHICS_UTIL_H
 #define GRAPHICS_UTIL_H
 
+#include <cassert>
 #include <cstring>
 
 #include "src/common/types.h"
@@ -79,6 +80,37 @@ static inline void flipVertically(byte *data, int width, int height, int bpp) {
 	}
 
 	delete[] buffer;
+}
+
+/** Rotate a square image in 90° steps. */
+static inline void rotate90(byte *data, int width, int height, int bpp, int steps) {
+	assert(width == height);
+
+	while (steps-- > 0) {
+		const int n = width;
+
+		const int w =  n      / 2;
+		const int h = (n + 1) / 2;
+
+		for (int x = 0; x < w; x++) {
+			for (int y = 0; y < h; y++) {
+				const int d0 = ( y          * n +  x         ) * bpp;
+				const int d1 = ((n - 1 - x) * n +  y         ) * bpp;
+				const int d2 = ((n - 1 - y) * n + (n - 1 - x)) * bpp;
+				const int d3 = ( x          * n + (n - 1 - y)) * bpp;
+
+				for (int p = 0; p < bpp; p++) {
+					const byte tmp = data[d0 + p];
+
+					data[d0 + p] = data[d1 + p];
+					data[d1 + p] = data[d2 + p];
+					data[d2 + p] = data[d3 + p];
+					data[d3 + p] = tmp;
+				}
+			}
+		}
+
+	}
 }
 
 /** De-"swizzle" a texture pixel offset. */
