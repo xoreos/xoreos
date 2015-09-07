@@ -51,6 +51,14 @@ class Campaign;
 class Room;
 class Object;
 
+/** An area in Dragon Age: Origins, holding all objects and rooms within, as
+ *  well as general area properties like the current background music and
+ *  ambient sounds.
+ *
+ *  Note: the coordinate system of the in-world graphics is oriented as viewed
+ *  from the top down. The negative Z axis goes down into the ground, while the
+ *  positive Y axis points due north and the positive X axis points due east.
+ */
 class Area : public DragonAge::Object, public Events::Notifyable {
 public:
 	Area(Campaign &campaign, const Common::UString &resRef,
