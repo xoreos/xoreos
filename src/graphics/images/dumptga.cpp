@@ -33,7 +33,7 @@
 
 namespace Graphics {
 
-static void writePixel(Common::WriteFile &file, const byte *&data, PixelFormat format) {
+static void writePixel(Common::WriteStream &file, const byte *&data, PixelFormat format) {
 	if (format == kPixelFormatRGB) {
 		file.writeByte(data[2]);
 		file.writeByte(data[1]);
@@ -63,47 +63,58 @@ static void writePixel(Common::WriteFile &file, const byte *&data, PixelFormat f
 
 }
 
-void dumpTGA(const Common::UString &fileName, const byte *data, int width, int height, PixelFormat format) {
-	if ((width <= 0) || (height <= 0) || !data)
-		throw Common::Exception("Invalid image data (%dx%d %d)", width, height, data != 0);
+static Common::WriteStream *openTGA(const Common::UString &fileName, int width, int height) {
+	Common::WriteFile *file = new Common::WriteFile(fileName);
 
-	Common::WriteFile file;
+	file->writeByte(0);     // ID Length
+	file->writeByte(0);     // Palette size
+	file->writeByte(2);     // Unmapped RGB
+	file->writeUint32LE(0); // Color map
+	file->writeByte(0);     // Color map
+	file->writeUint16LE(0); // X
+	file->writeUint16LE(0); // Y
 
-	if (!file.open(fileName))
-		throw Common::Exception(Common::kOpenError);
+	file->writeUint16LE(width);
+	file->writeUint16LE(height);
 
-	file.writeByte(0); // ID Length
-	file.writeByte(0); // Palette size
-	file.writeByte(2); // Unmapped RGB
-	file.writeUint32LE(0); // Color map
-	file.writeByte(0);     // Color map
-	file.writeUint16LE(0); // X
-	file.writeUint16LE(0); // Y
+	file->writeByte(32); // Pixel depths
 
-	file.writeUint16LE(width);
-	file.writeUint16LE(height);
+	file->writeByte(0);
 
-	file.writeByte(32); // Pixel depths
+	return file;
+}
 
-	file.writeByte(0);
+static void writeMipMap(Common::WriteStream &stream, const ImageDecoder::MipMap &mipMap, PixelFormat format) {
+	const byte *data = mipMap.data;
 
-	uint32 count = width * height;
-	for (uint32 i = 0; i < count; i++)
-		writePixel(file, data, format);
-
-	file.close();
+	uint32 count = mipMap.width * mipMap.height;
+	while (count-- > 0)
+		writePixel(stream, data, format);
 }
 
 void dumpTGA(const Common::UString &fileName, const ImageDecoder *image) {
-	if (!image || (image->getMipMapCount() < 1))
+	if (!image || (image->getLayerCount() < 1) || (image->getMipMapCount() < 1))
 		throw Common::Exception("No image");
 
-	if (image->getLayerCount() != 1)
-		throw Common::Exception("TODO: dumpTGA() with %u layers", (uint) image->getLayerCount());
+	int32 width  = image->getMipMap(0, 0).width;
+	int32 height = 0;
 
-	const ImageDecoder::MipMap &mipMap = image->getMipMap(0);
+	for (size_t i = 0; i < image->getLayerCount(); i++) {
+		const ImageDecoder::MipMap &mipMap = image->getMipMap(0, i);
 
-	dumpTGA(fileName, mipMap.data, mipMap.width, mipMap.height, image->getFormat());
+		if (mipMap.width != width)
+			throw Common::Exception("dumpTGA(): Unsupported image with variable layer width");
+
+		height += mipMap.height;
+	}
+
+	Common::WriteStream *file = openTGA(fileName, width, height);
+
+	for (size_t i = 0; i < image->getLayerCount(); i++)
+		writeMipMap(*file, image->getMipMap(0, i), image->getFormat());
+
+	file->flush();
+	delete file;
 }
 
 } // End of namespace Graphics
