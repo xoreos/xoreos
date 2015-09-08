@@ -105,6 +105,9 @@ protected:
 	void doDestroy();
 
 
+	void create2DTexture();
+	void createCubeMapTexture();
+
 	static ImageDecoder *loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type);
 	static TXI *loadTXI(const Common::UString &name);
 

@@ -159,6 +159,15 @@ void Texture::doRebuild() {
 	if (_textureID == 0)
 		glGenTextures(1, &_textureID);
 
+	if (_image->isCubeMap()) {
+		createCubeMapTexture();
+		return;
+	}
+
+	create2DTexture();
+}
+
+void Texture::create2DTexture() {
 	// Bind the texture
 	glBindTexture(GL_TEXTURE_2D, _textureID);
 
@@ -214,7 +223,76 @@ void Texture::doRebuild() {
 		}
 
 	}
+}
 
+void Texture::createCubeMapTexture() {
+	glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);
+
+	// Texture wrapping
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Filter?
+	const TXI::Features &features = getTXI().getFeatures();
+	if (features.filter) {
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	} else {
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+
+	assert(_image->getLayerCount() == 6);
+
+	static const GLenum faceTarget[6] = {
+		GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+	};
+
+	for (size_t i = 0; i < _image->getLayerCount(); i++) {
+		if (_image->getMipMapCount() == 1) {
+			// Texture doesn't specify any mip maps, generate our own
+
+			glTexParameteri(faceTarget[i], GL_GENERATE_MIPMAP, GL_TRUE);
+			glTexParameteri(faceTarget[i], GL_TEXTURE_BASE_LEVEL, 0);
+			glTexParameteri(faceTarget[i], GL_TEXTURE_MAX_LEVEL, 9);
+		} else {
+			// Texture does specify mip maps, use these
+
+			glTexParameteri(faceTarget[i], GL_GENERATE_MIPMAP, GL_FALSE);
+			glTexParameteri(faceTarget[i], GL_TEXTURE_BASE_LEVEL, 0);
+			glTexParameteri(faceTarget[i], GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
+		}
+
+		// Texture image data
+		if (_image->isCompressed()) {
+			// Compressed texture data
+
+			for (size_t j = 0; j < _image->getMipMapCount(); j++) {
+				const ImageDecoder::MipMap &mipMap = _image->getMipMap(j, i);
+
+				glCompressedTexImage2D(faceTarget[i], j, _image->getFormatRaw(),
+				                       mipMap.width, mipMap.height, 0,
+				                       mipMap.size, mipMap.data);
+			}
+
+		} else {
+			// Uncompressed texture data
+
+			for (size_t j = 0; j < _image->getMipMapCount(); j++) {
+				const ImageDecoder::MipMap &mipMap = _image->getMipMap(j, i);
+
+				glTexImage2D(faceTarget[i], j, _image->getFormatRaw(),
+				             mipMap.width, mipMap.height, 0, _image->getFormat(),
+				             _image->getDataType(), mipMap.data);
+			}
+
+		}
+	}
 }
 
 Texture *Texture::createPLT(const Common::UString &name, Common::SeekableReadStream *imageStream) {
