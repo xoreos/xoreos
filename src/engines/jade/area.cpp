@@ -42,6 +42,7 @@
 #include "src/engines/jade/room.h"
 #include "src/engines/jade/creature.h"
 #include "src/engines/jade/placeable.h"
+#include "src/engines/jade/trigger.h"
 #include "src/engines/jade/waypoint.h"
 
 namespace Engines {
@@ -158,7 +159,11 @@ void Area::loadSAV(const Aurora::GFF3Struct &sav) {
 
 	// TODO load sound list
 
-	// TODO load trigger list
+	if (sav.hasField("TriggerList")) {
+		const Aurora::GFF3Struct &trigger = sav.getStruct("TriggerList");
+		loadTriggers(trigger.getList("StaticList"));
+		loadTriggers(trigger.getList("DynamicList"));
+	}
 
 	if (sav.hasField("WaypointList")) {
 		const Aurora::GFF3Struct &waypoints = sav.getStruct("WaypointList");
@@ -257,6 +262,14 @@ void Area::loadPlaceables(const Aurora::GFF3List &list) {
 		Placeable *placeable = new Placeable(**c);
 
 		loadObject(*placeable);
+	}
+}
+
+void Area::loadTriggers(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
+		Trigger *trigger = new Trigger(**c);
+
+		loadObject(*trigger);
 	}
 }
 

@@ -139,6 +139,7 @@ private:
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadCreatures (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
+	void loadTriggers  (const Aurora::GFF3List &list);
 
 	void unload();
 
