@@ -29,6 +29,8 @@
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
+#include "src/graphics/images/decoder.h"
+
 #include "src/graphics/graphics.h"
 
 #include "src/events/requests.h"
@@ -217,6 +219,13 @@ void TextureManager::reset() {
 
 void TextureManager::set() {
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_CUBE_MAP);
+
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_TEXTURE_GEN_R);
 }
 
 void TextureManager::set(const TextureHandle &handle) {
@@ -229,7 +238,34 @@ void TextureManager::set(const TextureHandle &handle) {
 	if (id == 0)
 		warning("Empty texture ID for texture \"%s\"", handle._it->first.c_str());
 
-	glBindTexture(GL_TEXTURE_2D, id);
+	if (handle._it->second->texture->getImage().isCubeMap()) {
+		glBindTexture(GL_TEXTURE_CUBE_MAP, id);
+
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_TEXTURE_CUBE_MAP);
+
+		glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+		glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+		glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+
+		glEnable(GL_TEXTURE_GEN_S);
+		glEnable(GL_TEXTURE_GEN_T);
+		glEnable(GL_TEXTURE_GEN_R);
+
+		//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+
+	} else {
+		glBindTexture(GL_TEXTURE_2D, id);
+
+		glDisable(GL_TEXTURE_CUBE_MAP);
+		glEnable(GL_TEXTURE_2D);
+
+		glDisable(GL_TEXTURE_GEN_S);
+		glDisable(GL_TEXTURE_GEN_T);
+		glDisable(GL_TEXTURE_GEN_R);
+
+		//glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+	}
 }
 
 static GLenum texture[32] = {

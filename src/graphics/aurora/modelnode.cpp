@@ -299,6 +299,8 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 	bool hasAlpha = true;
 	bool isDecal  = true;
 
+	Common::UString envMap;
+
 	for (size_t t = 0; t != textures.size(); t++) {
 
 		try {
@@ -317,12 +319,24 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 
 				if (!_textures[t].getTexture().getTXI().getFeatures().decal)
 					isDecal = false;
+
+				if (!_textures[t].getTexture().getTXI().getFeatures().envMapTexture.empty())
+					envMap = _textures[t].getTexture().getTXI().getFeatures().envMapTexture;
 			}
 
 		} catch (Common::Exception &e) {
 			Common::printException(e, "WARNING: ");
 		}
 
+	}
+
+	envMap.trim();
+	if (!envMap.empty()) {
+		try {
+			_envMap = TextureMan.get(envMap);
+		} catch (Common::Exception &e) {
+			Common::printException(e, "WARNING: ");
+		}
 	}
 
 	if (_hasTransparencyHint) {
@@ -419,28 +433,70 @@ void ModelNode::orderChildren() {
 }
 
 void ModelNode::renderGeometry() {
-	// Enable all needed texture units
+	if (!_envMap.empty()) {
+		renderGeometryEnvMapped();
+		return;
+	}
+
+	renderGeometryNormal();
+}
+
+void ModelNode::renderGeometryNormal() {
 	for (size_t t = 0; t < _textures.size(); t++) {
 		TextureMan.activeTexture(t);
-		glEnable(GL_TEXTURE_2D);
-
 		TextureMan.set(_textures[t]);
 	}
 
 	if (_textures.empty())
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// Render the node's faces
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
 
-	// Disable the texture units again
-	for (size_t i = 0; i < _textures.size(); i++) {
-		TextureMan.activeTexture(i);
-		glDisable(GL_TEXTURE_2D);
+	for (size_t t = 0; t < _textures.size(); t++) {
+		TextureMan.activeTexture(t);
+		TextureMan.set();
 	}
 
 	if (_textures.empty())
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void ModelNode::renderGeometryEnvMapped() {
+	if (!_textures.empty()) {
+		for (size_t t = 0; t < _textures.size(); t++) {
+			TextureMan.activeTexture(t);
+			TextureMan.set(_textures[t]);
+		}
+
+		glBlendFunc(GL_ONE, GL_ZERO);
+
+		_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
+
+		for (size_t t = 0; t < _textures.size(); t++) {
+			TextureMan.activeTexture(t);
+			TextureMan.set();
+		}
+
+		TextureMan.activeTexture(0);
+
+		glDisable(GL_ALPHA_TEST);
+
+		glBlendFunc(GL_ZERO, GL_ONE);
+		TextureMan.set(_textures[0]);
+
+		_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
+
+		glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
+		TextureMan.set(_envMap);
+
+		_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
+	}
+
+	TextureMan.set();
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ModelNode::render(RenderPass pass) {

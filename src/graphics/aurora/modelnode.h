@@ -142,6 +142,8 @@ protected:
 
 	std::vector<TextureHandle> _textures; ///< Textures.
 
+	TextureHandle _envMap;
+
 	bool _isTransparent;
 
 	bool _dangly; ///< Is the node mesh's dangly?
@@ -197,6 +199,8 @@ private:
 	void orderChildren();
 
 	void renderGeometry();
+	void renderGeometryNormal();
+	void renderGeometryEnvMapped();
 
 
 public:
