@@ -320,6 +320,8 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 				if (!_textures[t].getTexture().getTXI().getFeatures().decal)
 					isDecal = false;
 
+				if (!_textures[t].getTexture().getTXI().getFeatures().bumpyShinyTexture.empty())
+					envMap = _textures[t].getTexture().getTXI().getFeatures().bumpyShinyTexture;
 				if (!_textures[t].getTexture().getTXI().getFeatures().envMapTexture.empty())
 					envMap = _textures[t].getTexture().getTXI().getFeatures().envMapTexture;
 			}
