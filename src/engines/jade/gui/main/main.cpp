@@ -24,13 +24,17 @@
 
 #include "src/common/util.h"
 
+#include "src/engines/jade/module.h"
+
 #include "src/engines/jade/gui/main/main.h"
 
 namespace Engines {
 
 namespace Jade {
 
-MainMenu::MainMenu() {
+MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::KotOR::GUI(console),
+	_module(&module) {
+
 	load("maingame");
 }
 
@@ -38,6 +42,12 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::callbackActive(Widget &UNUSED(widget)) {
+	try {
+		_module->load("j01_town");
+	} catch (Common::Exception &e) {
+		Common::printException(e, "WARNING: ");
+		return;
+	}
 }
 
 } // End of namespace Jade

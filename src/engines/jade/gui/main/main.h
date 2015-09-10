@@ -31,13 +31,18 @@ namespace Engines {
 
 namespace Jade {
 
+class Module;
+
 class MainMenu : public ::Engines::KotOR::GUI {
 public:
-	MainMenu();
+	MainMenu(Module &module, ::Engines::Console *console = 0);
 	~MainMenu();
 
 protected:
 	void callbackActive(Widget &widget);
+
+private:
+	Module *_module;
 };
 
 } // End of namespace Jade
