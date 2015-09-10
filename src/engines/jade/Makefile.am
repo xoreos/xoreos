@@ -8,6 +8,7 @@ noinst_HEADERS = \
                  types.h \
                  modelloader.h \
                  console.h \
+                 game.h \
                  module.h \
                  area.h \
                  room.h \
@@ -28,6 +29,7 @@ libjade_la_SOURCES = \
                      probes.cpp \
                      modelloader.cpp \
                      console.cpp \
+                     game.cpp \
                      module.cpp \
                      area.cpp \
                      room.cpp \
