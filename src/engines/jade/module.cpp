@@ -36,13 +36,19 @@
 
 #include "src/engines/jade/module.h"
 #include "src/engines/jade/area.h"
+#include "src/engines/jade/creature.h"
 
 namespace Engines {
 
 namespace Jade {
 
-Module::Module(::Engines::Console &console) : _console(&console),
-	_hasModule(false), _running(false), _exit(false), _area(0) {
+bool Module::Action::operator<(const Action &s) const {
+	return timestamp < s.timestamp;
+}
+
+
+Module::Module(::Engines::Console &console) : _console(&console), _hasModule(false),
+	_running(false), _pc(0), _exit(false), _area(0) {
 
 }
 
@@ -54,7 +60,7 @@ Module::~Module() {
 }
 
 void Module::clear() {
-	unload();
+	unload(true);
 }
 
 void Module::load(const Common::UString &module) {
@@ -70,7 +76,7 @@ void Module::load(const Common::UString &module) {
 }
 
 void Module::loadModule(const Common::UString &module) {
-	unload();
+	unload(false);
 
 	_module = module;
 
@@ -90,45 +96,29 @@ void Module::loadModule(const Common::UString &module) {
 	_hasModule = true;
 }
 
-void Module::run() {
-	enter();
-	_running = true;
+void Module::usePC(Creature *pc) {
+	delete _pc;
+	_pc = pc;
+}
 
-	EventMan.enableKeyRepeat();
+Creature *Module::getPC() {
+	return _pc;
+}
 
-	try {
-
-		EventMan.flushEvents();
-
-		while (!EventMan.quitRequested() && !_exit) {
-			replaceModule();
-			if (_exit)
-				break;
-
-			handleEvents();
-
-			if (!EventMan.quitRequested() && !_exit)
-				EventMan.delay(10);
-		}
-
-	} catch (Common::Exception &e) {
-		_running = false;
-
-		e.add("Failed running module \"%s\"", _module.c_str());
-		throw e;
-	}
-
-	EventMan.enableKeyRepeat(0);
-
-	_running = false;
+bool Module::isLoaded() const {
+	return _hasModule && _area && _pc;
 }
 
 bool Module::isRunning() const {
-	return _running;
+	return !EventMan.quitRequested() && _running && !_exit;
 }
 
 void Module::exit() {
 	_exit = true;
+}
+
+void Module::showMenu() {
+	// TODO: Module::showMenu()
 }
 
 void Module::load() {
@@ -139,22 +129,31 @@ void Module::loadArea() {
 	_area = new Area(*this, _module);
 }
 
-void Module::unload() {
-	leave();
-
+void Module::unload(bool completeUnload) {
+	leaveArea();
 	unloadArea();
+
+	if (completeUnload) {
+		unloadPC();
+	}
+
+	_eventQueue.clear();
+	_delayedActions.clear();
 
 	_newModule.clear();
 	_hasModule = false;
 
 	_module.clear();
-
-	_areaName.clear();
 }
 
 void Module::unloadArea() {
 	delete _area;
 	_area = 0;
+}
+
+void Module::unloadPC() {
+	delete _pc;
+	_pc = 0;
 }
 
 void Module::changeModule(const Common::UString &module) {
@@ -167,9 +166,9 @@ void Module::replaceModule() {
 
 	_console->hide();
 
-	Common::UString newModule = _newModule;
+	const Common::UString newModule = _newModule;
 
-	unload();
+	unload(false);
 
 	_exit = true;
 
@@ -181,38 +180,76 @@ void Module::enter() {
 	if (!_hasModule || !_area)
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
-	_console->printf("Entering module \"%s\"", _module.c_str());
+	if (!_pc)
+		throw Common::Exception("Module::enter(): Lacking a PC?!?");
 
-	_exit = false;
+	_console->printf("Entering module \"%s\"", _module.c_str());
 
 	CameraMan.reset();
 	CameraMan.setOrientation(90.0f, 0.0f, 0.0f);
 	CameraMan.update();
 
-	_area->show();
+	enterArea();
+
+	_running = true;
+	_exit    = false;
 }
 
 void Module::leave() {
-	if (!_area)
+	leaveArea();
+
+	_running = false;
+	_exit    = true;
+}
+
+void Module::enterArea() {
+	_area->show();
+
+	_area->runScript(kScriptOnEnter, _area, _pc);
+}
+
+void Module::leaveArea() {
+	if (_area) {
+		_area->runScript(kScriptOnExit, _area, _pc);
+
+		_area->hide();
+	}
+}
+
+void Module::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+void Module::processEventQueue() {
+	if (!isRunning())
 		return;
 
-	_area->hide();
+	replaceModule();
+
+	if (!isRunning())
+		return;
+
+	handleEvents();
+	handleActions();
 }
 
 void Module::handleEvents() {
-	Events::Event event;
-	while (EventMan.pollEvent(event)) {
+	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event) {
 		// Handle console
-		if (_console->processEvent(event)) {
-			if (!_area)
-				return;
-
+		if (_console->isVisible()) {
+			_console->processEvent(*event);
 			continue;
 		}
 
-		if (event.type == Events::kEventKeyDown) {
+		if (event->type == Events::kEventKeyDown) {
+			// Menu
+			if (event->key.keysym.sym == SDLK_ESCAPE) {
+				showMenu();
+				continue;
+			}
+
 			// Console
-			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+			if ((event->key.keysym.sym == SDLK_d) && (event->key.keysym.mod & KMOD_CTRL)) {
 				_console->show();
 				continue;
 			}
@@ -220,14 +257,61 @@ void Module::handleEvents() {
 
 		// Camera
 		if (!_console->isVisible())
-			if (handleCameraInput(event))
+			if (handleCameraInput(*event))
 				continue;
 
-		_area->addEvent(event);
+		_area->addEvent(*event);
 	}
 
+	_eventQueue.clear();
+
 	CameraMan.update();
+
 	_area->processEventQueue();
+}
+
+void Module::handleActions() {
+	uint32 now = EventMan.getTimestamp();
+
+	while (!_delayedActions.empty()) {
+		ActionQueue::iterator action = _delayedActions.begin();
+
+		if (now < action->timestamp)
+			break;
+
+		if (action->type == kActionScript)
+			ScriptContainer::runScript(action->script, action->state,
+			                           action->owner, action->triggerer);
+
+		_delayedActions.erase(action);
+	}
+}
+
+void Module::movePC(float x, float y, float z) {
+	if (!_pc)
+		return;
+
+	_pc->setPosition(x, y, z);
+	movedPC();
+}
+
+void Module::movePC(const Common::UString &module) {
+	if (module.empty() || (module == _module))
+		return;
+
+	loadModule(module);
+}
+
+void Module::movedPC() {
+	if (!_pc)
+		return;
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	// Roughly head position
+	CameraMan.setPosition(x, y, z + 1.8f);
+	CameraMan.update();
 }
 
 const Common::UString &Module::getName() const {
@@ -236,6 +320,22 @@ const Common::UString &Module::getName() const {
 
 Area *Module::getCurrentArea() {
 	return _area;
+}
+
+void Module::delayScript(const Common::UString &script,
+                         const Aurora::NWScript::ScriptState &state,
+                         Aurora::NWScript::Object *owner,
+                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+	Action action;
+
+	action.type      = kActionScript;
+	action.script    = script;
+	action.state     = state;
+	action.owner     = owner;
+	action.triggerer = triggerer;
+	action.timestamp = EventMan.getTimestamp() + delay;
+
+	_delayedActions.insert(action);
 }
 
 } // End of namespace Jade

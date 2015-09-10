@@ -55,6 +55,7 @@
 #include "src/engines/jade/modelloader.h"
 #include "src/engines/jade/console.h"
 #include "src/engines/jade/module.h"
+#include "src/engines/jade/creature.h"
 
 namespace Engines {
 
@@ -266,13 +267,34 @@ void JadeEngine::playIntroVideos() {
 
 void JadeEngine::main() {
 	_module = new Module(*_console);
-
 	_module->load("j01_town");
-	_module->run();
-	_module->clear();
 
-	delete _module;
-	_module = 0;
+	Creature *fakePC = new Creature;
+	fakePC->createFakePC();
+
+	_module->usePC(fakePC);
+
+	if (EventMan.quitRequested() || !_module->isLoaded()) {
+		_module->clear();
+		return;
+	}
+
+	_module->enter();
+	EventMan.enableKeyRepeat(true);
+
+	while (!EventMan.quitRequested() && _module->isRunning()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event))
+			_module->addEvent(event);
+
+		_module->processEventQueue();
+		EventMan.delay(10);
+	}
+
+	EventMan.enableKeyRepeat(false);
+	_module->leave();
+
+	_module->clear();
 }
 
 } // End of namespace Jade

@@ -25,8 +25,14 @@
 #ifndef ENGINES_JADE_MODULE_H
 #define ENGINES_JADE_MODULE_H
 
+#include <list>
+#include <set>
+
 #include "src/common/ustring.h"
+#include "src/common/changeid.h"
 #include "src/common/configman.h"
+
+#include "src/aurora/nwscript/object.h"
 
 #include "src/events/types.h"
 
@@ -37,6 +43,7 @@ class Console;
 namespace Jade {
 
 class Area;
+class Creature;
 
 /** A Jade module. */
 class Module {
@@ -47,50 +54,126 @@ public:
 	/** Clear the whole context. */
 	void clear();
 
-	/** Load a module. */
-	void load(const Common::UString &module);
-	/** Run the currently loaded module. */
-	void run();
-	/** Exit the currently running module. */
-	void exit();
-
+	// .--- Module management
+	/** Is a module currently loaded and ready to run? */
+	bool isLoaded() const;
 	/** Is a module currently running? */
 	bool isRunning() const;
-	/** Return the name of the currently loaded module. */
-	const Common::UString &getName() const;
 
+	/** Load a module. */
+	void load(const Common::UString &module);
+	/** Use this character as the player character. */
+	void usePC(Creature *pc);
+	/** Exit the currently running module. */
+	void exit();
+	// '---
+
+	// .--- Information about the current module
+	/** Return the module's name. */
+	const Common::UString &getName() const;
+	// '---
+
+	// .--- Elements of the current module
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
+	/** Return the currently playing PC. */
+	Creature *getPC();
+	// '---
 
+	// .--- Interact with the current module
+	/** Show the ingame main menu. */
+	void showMenu();
+	// '---
+
+	void delayScript(const Common::UString &script,
+	                 const Aurora::NWScript::ScriptState &state,
+	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
+	                 uint32 delay);
+
+	// .--- PC management
+	/** Move the player character to this position within the current area. */
+	void movePC(float x, float y, float z);
+	/** Move the player character to this object within this area. */
+	void movePC(const Common::UString &module);
+	/** Notify the module that the PC was moved. */
+	void movedPC();
+	// '---
+
+	// .--- Module main loop (called by the Game class)
+	/** Enter the loaded module, starting it. */
+	void enter();
+	/** Leave the running module, quitting it. */
+	void leave();
+
+	/** Add a single event for consideration into the event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+	// '---
 
 private:
+	enum ActionType {
+		kActionNone   = 0,
+		kActionScript = 1
+	};
+
+	struct Action {
+		ActionType type;
+
+		Common::UString script;
+
+		Aurora::NWScript::ScriptState state;
+		Aurora::NWScript::Object *owner;
+		Aurora::NWScript::Object *triggerer;
+
+		uint32 timestamp;
+
+		bool operator<(const Action &s) const;
+	};
+
+	typedef std::list<Events::Event> EventQueue;
+	typedef std::multiset<Action> ActionQueue;
+
+
 	::Engines::Console *_console;
 
 	bool _hasModule; ///< Do we have a module?
 	bool _running;   ///< Are we currently running a module?
+
+	/** Resources added by the current module. */
+	std::list<Common::ChangeID> _resources;
+
+	Creature *_pc; ///< The player character we use.
 
 	bool _exit; //< Should we exit the module?
 
 	Common::UString _module;    ///< The current module's name.
 	Common::UString _newModule; ///< The module we should change to.
 
-	Common::UString _areaName; ///< The name of this module's area.
-
 	Area *_area; ///< The current module's area.
 
+	EventQueue  _eventQueue;
+	ActionQueue _delayedActions;
 
-	void load();
-	void loadArea();
 
-	void unload();
+	// .--- Unloading
+	/** Unload the whole shebang.
+	 *
+	 *  @param completeUnload Also unload the PC.
+	 *                        true:  completely quit the module
+	 *                        false: the PC can be transfered to a new module.
+	 */
+	void unload(bool completeUnload = true);
+
+	void unloadPC();
 	void unloadArea();
+	// '---
 
-	void findAreaName();
+	// .--- Loading
+	void load();
 
-	void enter(); ///< Enter the current module.
-	void leave(); ///< Leave the current module.
-
-	void handleEvents();
+	void loadArea();
+	// '---
 
 	/** Load the actual module. */
 	void loadModule(const Common::UString &module);
@@ -98,6 +181,13 @@ private:
 	void changeModule(const Common::UString &module);
 	/** Actually replace the currently running module. */
 	void replaceModule();
+
+	void enterArea();
+	void leaveArea();
+
+	void handleEvents();
+
+	void handleActions();
 };
 
 } // End of namespace Jade
