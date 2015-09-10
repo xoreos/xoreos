@@ -42,6 +42,12 @@ namespace Aurora {
 /** The global Aurora texture manager. */
 class TextureManager : public Common::Singleton<TextureManager> {
 public:
+	/** The mode/usage of a specific texture. */
+	enum TextureMode {
+		kModeDiffuse,                 ///< A standard diffuse texture.
+		kModeEnvironmentMapReflective ///< A reflective environment map.
+	};
+
 	TextureManager();
 	~TextureManager();
 
@@ -76,7 +82,7 @@ public:
 
 	// .--- Texture rendering
 	/** Bind this texture to the current texture unit. */
-	void set(const TextureHandle &handle);
+	void set(const TextureHandle &handle, TextureMode mode = kModeDiffuse);
 	/** Reset the current texture unit to an empty texture. */
 	void set();
 	/** Completely reset the texture rendering. */

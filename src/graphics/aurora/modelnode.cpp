@@ -469,7 +469,7 @@ void ModelNode::renderGeometryEnvMapped() {
 	if (!_textures.empty()) {
 		for (size_t t = 0; t < _textures.size(); t++) {
 			TextureMan.activeTexture(t);
-			TextureMan.set(_textures[t]);
+			TextureMan.set(_textures[t], TextureManager::kModeDiffuse);
 		}
 
 		glBlendFunc(GL_ONE, GL_ZERO);
@@ -486,12 +486,12 @@ void ModelNode::renderGeometryEnvMapped() {
 		glDisable(GL_ALPHA_TEST);
 
 		glBlendFunc(GL_ZERO, GL_ONE);
-		TextureMan.set(_textures[0]);
+		TextureMan.set(_textures[0], TextureManager::kModeDiffuse);
 
 		_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
 
 		glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
-		TextureMan.set(_envMap);
+		TextureMan.set(_envMap, TextureManager::kModeEnvironmentMapReflective);
 
 		_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
 	}
