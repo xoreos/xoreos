@@ -33,6 +33,7 @@
 #include "src/aurora/nwscript/functionman.h"
 
 #include "src/engines/jade/types.h"
+#include "src/engines/jade/game.h"
 #include "src/engines/jade/objectcontainer.h"
 #include "src/engines/jade/object.h"
 
@@ -44,7 +45,7 @@ namespace Engines {
 
 namespace Jade {
 
-Functions::Functions() {
+Functions::Functions(Game &game) : _game(&game) {
 	registerFunctions();
 }
 

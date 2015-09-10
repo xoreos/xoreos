@@ -48,7 +48,7 @@ namespace Jade {
 Game::Game(JadeEngine &engine, ::Engines::Console &console, Aurora::Platform platform) :
 	_engine(&engine), _module(0), _functions(0), _platform(platform), _console(&console) {
 
-	_functions = new Functions();
+	_functions = new Functions(*this);
 }
 
 Game::~Game() {

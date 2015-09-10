@@ -38,9 +38,11 @@ namespace Engines {
 
 namespace Jade {
 
+class Game;
+
 class Functions {
 public:
-	Functions();
+	Functions(Game &game);
 	~Functions();
 
 private:
@@ -66,6 +68,9 @@ private:
 	static const FunctionPointer kFunctionPointers[];
 	static const FunctionSignature kFunctionSignatures[];
 	static const FunctionDefaults kFunctionDefaults[];
+
+
+	Game *_game;
 
 	void registerFunctions();
 
