@@ -133,6 +133,12 @@ const Common::UString &Area::getDisplayName() {
 	return _displayName;
 }
 
+const Common::UString &Area::getEnvironmentMap() const {
+	static const Common::UString kEmptyString;
+
+	return _tileset ? _tileset->getEnvironmentMap() : kEmptyString;
+}
+
 uint32 Area::getMusicDayTrack() const {
 	return _musicDayTrack;
 }

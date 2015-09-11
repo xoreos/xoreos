@@ -73,6 +73,9 @@ public:
 	/** Return the area's localized display name. */
 	const Common::UString &getDisplayName();
 
+	/** Return the area's environment map. */
+	const Common::UString &getEnvironmentMap() const;
+
 	// Visibility
 
 	void show(); ///< Show the area.
