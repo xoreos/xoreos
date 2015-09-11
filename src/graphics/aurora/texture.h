@@ -108,8 +108,11 @@ protected:
 	void create2DTexture();
 	void createCubeMapTexture();
 
-	static ImageDecoder *loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type);
 	static TXI *loadTXI(const Common::UString &name);
+	static ImageDecoder *loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
+	                               TXI *txi = 0);
+
+	static ImageDecoder *loadImage(const Common::UString &name, ::Aurora::FileType &type, TXI *txi);
 
 	static Texture *createPLT(const Common::UString &name, Common::SeekableReadStream *imageStream);
 };

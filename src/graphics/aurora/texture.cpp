@@ -119,10 +119,12 @@ bool Texture::reload() {
 
 	try {
 
-		image = loadImage(_name, type);
 		txi   = loadTXI  (_name);
+		image = loadImage(_name, type, txi);
 
 	} catch (Common::Exception &e) {
+		delete txi;
+
 		e.add("Failed to reload texture \"%s\" (%d)", _name.c_str(), type);
 		throw;
 	}
@@ -322,8 +324,8 @@ Texture *Texture::create(const Common::UString &name) {
 		if (type == ::Aurora::kFileTypePLT)
 			return createPLT(name, imageStream);
 
-		image = loadImage(imageStream, type);
 		txi   = loadTXI(name);
+		image = loadImage(imageStream, type, txi);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed to create texture \"%s\" (%d)", name.c_str(), type);
@@ -378,19 +380,28 @@ void Texture::refresh() {
 }
 
 ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType &type) {
+	return loadImage(name, type, 0);
+}
+
+ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType &type, TXI *txi) {
 	Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
 	if (!imageStream)
 		throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
-	return loadImage(imageStream, type);
+	return loadImage(imageStream, type, txi);
 }
 
-ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type) {
+ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
+                                 TXI *txi) {
+
+	// Check for a cube map, but only those that don't use a file for each side
+	const bool isCubeMap = txi && txi->getFeatures().cube && (txi->getFeatures().fileRange == 0);
+
 	ImageDecoder *image = 0;
 	try {
 		// Loading the different image formats
 		if      (type == ::Aurora::kFileTypeTGA)
-			image = new TGA(*imageStream);
+			image = new TGA(*imageStream, isCubeMap);
 		else if (type == ::Aurora::kFileTypeDDS)
 			image = new DDS(*imageStream);
 		else if (type == ::Aurora::kFileTypeTPC)
