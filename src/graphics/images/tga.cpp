@@ -35,7 +35,12 @@
 
 namespace Graphics {
 
-TGA::TGA(Common::SeekableReadStream &tga) {
+TGA::TGA(Common::SeekableReadStream &tga, bool isCubeMap) {
+	if (isCubeMap) {
+		_layerCount = 6;
+		_isCubeMap  = true;
+	}
+
 	_compressed = false;
 
 	load(tga);
@@ -75,14 +80,37 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 	if (!isSupportedImageType(imageType))
 		throw Common::Exception("Unsupported image type: %d", imageType);
 
+	if ((imageType == kImageTypeRLECMap)      ||
+	    (imageType == kImageTypeRLETrueColor) ||
+	    (imageType == kImageTypeRLEBW)) {
+
+		/* Multi-layer images (e.g. cube maps) are split into multiple images.
+		 * RLE compression adds a complexity there, since the split might be
+		 * in the middle of a run. We need a file to test this on first.
+		 */
+
+		if (_layerCount > 1)
+			throw Common::Exception("TODO: RLE-compressed multi-layer TGA");
+	}
+
 	// Color map specifications + X + Y
 	tga.skip(5 + 2 + 2);
 
-	_mipMaps.push_back(new MipMap(this));
+	int32 width  = tga.readUint16LE();
+	int32 height = tga.readUint16LE();
 
-	// Image dimensions
-	_mipMaps[0]->width  = tga.readUint16LE();
-	_mipMaps[0]->height = tga.readUint16LE();
+	if ((height % _layerCount) != 0)
+		throw Common::Exception("TGA with %u layers but size of %dx%d", (uint) _layerCount, width, height);
+
+	height /= _layerCount;
+
+	_mipMaps.resize(_layerCount, 0);
+	for (size_t i = 0; i < _layerCount; i++) {
+		_mipMaps[i] = new MipMap(this);
+
+		_mipMaps[i]->width  = width;
+		_mipMaps[i]->height = height;
+	}
 
 	// Bits per pixel
 	pixelDepth = tga.readByte();
@@ -125,68 +153,70 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 }
 
 void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pixelDepth, byte imageDesc) {
-	if (imageType == kImageTypeTrueColor || imageType == kImageTypeRLETrueColor) {
-		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height;
-		if      (_format == kPixelFormatBGR)
-			_mipMaps[0]->size *= 3;
-		else if (_format == kPixelFormatBGRA)
-			_mipMaps[0]->size *= 4;
+	for (size_t i = 0; i < _layerCount; i++) {
+		if (imageType == kImageTypeTrueColor || imageType == kImageTypeRLETrueColor) {
+			_mipMaps[i]->size = _mipMaps[i]->width * _mipMaps[i]->height;
+			if      (_format == kPixelFormatBGR)
+				_mipMaps[i]->size *= 3;
+			else if (_format == kPixelFormatBGRA)
+				_mipMaps[i]->size *= 4;
 
-		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
+			_mipMaps[i]->data = new byte[_mipMaps[i]->size];
 
-		if (imageType == kImageTypeTrueColor) {
-			if (pixelDepth == 16) {
-				// Convert from 16bpp to 32bpp.
-				// 16bpp TGA is usually ARGB1555, but Sonic's are AGBR1555.
-				// Hopefully Sonic is the only game that needs 16bpp TGAs.
+			if (imageType == kImageTypeTrueColor) {
+				if (pixelDepth == 16) {
+					// Convert from 16bpp to 32bpp.
+					// 16bpp TGA is usually ARGB1555, but Sonic's are AGBR1555.
+					// Hopefully Sonic is the only game that needs 16bpp TGAs.
 
-				uint16 count = _mipMaps[0]->width * _mipMaps[0]->height;
-				byte *dst = _mipMaps[0]->data;
+					uint16 count = _mipMaps[i]->width * _mipMaps[i]->height;
+					byte *dst = _mipMaps[i]->data;
 
-				while (count--) {
-					uint16 pixel = tga.readUint16LE();
+					while (count--) {
+						uint16 pixel = tga.readUint16LE();
 
-					*dst++ = (pixel & 0x7C00) >> 7;
-					*dst++ = (pixel & 0x03E0) >> 2;
-					*dst++ = (pixel & 0x001F) << 3;
-					*dst++ = (pixel & 0x8000) ? 0xFF : 0x00;
+						*dst++ = (pixel & 0x7C00) >> 7;
+						*dst++ = (pixel & 0x03E0) >> 2;
+						*dst++ = (pixel & 0x001F) << 3;
+						*dst++ = (pixel & 0x8000) ? 0xFF : 0x00;
+					}
+				} else {
+					// Read it in raw
+					tga.read(_mipMaps[i]->data, _mipMaps[i]->size);
 				}
 			} else {
-				// Read it in raw
-				tga.read(_mipMaps[0]->data, _mipMaps[0]->size);
+				readRLE(tga, pixelDepth, i);
 			}
-		} else {
-			readRLE(tga, pixelDepth);
+		} else if (imageType == kImageTypeBW) {
+			_mipMaps[i]->size = _mipMaps[i]->width * _mipMaps[i]->height * 4;
+			_mipMaps[i]->data = new byte[_mipMaps[i]->size];
+
+			byte  *data  = _mipMaps[i]->data;
+			uint32 count = _mipMaps[i]->width * _mipMaps[i]->height;
+
+			while (count-- > 0) {
+				byte g = tga.readByte();
+
+				memset(data, g, 3);
+				data[3] = 0xFF;
+
+				data += 4;
+			}
+
 		}
-	} else if (imageType == kImageTypeBW) {
-		_mipMaps[0]->size = _mipMaps[0]->width * _mipMaps[0]->height * 4;
-		_mipMaps[0]->data = new byte[_mipMaps[0]->size];
 
-		byte  *data  = _mipMaps[0]->data;
-		uint32 count = _mipMaps[0]->width * _mipMaps[0]->height;
-
-		while (count-- > 0) {
-			byte g = tga.readByte();
-
-			memset(data, g, 3);
-			data[3] = 0xFF;
-
-			data += 4;
-		}
-
+		// Bit 5 of imageDesc set means the origin in upper-left corner
+		if (imageDesc & 0x20)
+			flipVertically(_mipMaps[i]->data, _mipMaps[i]->width, _mipMaps[i]->height, pixelDepth / 8);
 	}
-
-	// Bit 5 of imageDesc set means the origin in upper-left corner
-	if (imageDesc & 0x20)
-		flipVertically(_mipMaps[0]->data, _mipMaps[0]->width, _mipMaps[0]->height, pixelDepth / 8);
 }
 
-void TGA::readRLE(Common::SeekableReadStream &tga, byte pixelDepth) {
+void TGA::readRLE(Common::SeekableReadStream &tga, byte pixelDepth, size_t layer) {
 	if (pixelDepth != 24 && pixelDepth != 32)
 		throw Common::Exception("Unhandled RLE depth %d", pixelDepth);
 
-	byte  *data  = _mipMaps[0]->data;
-	uint32 count = _mipMaps[0]->width * _mipMaps[0]->height;
+	byte  *data  = _mipMaps[layer]->data;
+	uint32 count = _mipMaps[layer]->width * _mipMaps[layer]->height;
 
 	while (count > 0) {
 		byte code = tga.readByte();

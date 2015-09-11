@@ -38,7 +38,7 @@ namespace Graphics {
 /** TarGa image. */
 class TGA : public ImageDecoder {
 public:
-	TGA(Common::SeekableReadStream &tga);
+	TGA(Common::SeekableReadStream &tga, bool isCubeMap = false);
 	~TGA();
 
 private:
@@ -56,7 +56,7 @@ private:
 	void load(Common::SeekableReadStream &tga);
 	void readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte &pixelDepth, byte &imageDesc);
 	void readData(Common::SeekableReadStream &tga, ImageType imageType, byte pixelDepth, byte imageDesc);
-	void readRLE(Common::SeekableReadStream &tga, byte pixelDepth);
+	void readRLE(Common::SeekableReadStream &tga, byte pixelDepth, size_t layer);
 
 	bool isSupportedImageType(ImageType type) const;
 };
