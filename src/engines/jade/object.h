@@ -60,6 +60,9 @@ public:
 
 	// Basic visuals
 
+	virtual void loadModel();   ///< Load the object's model(s).
+	virtual void unloadModel(); ///< Unload the object's model(s).
+
 	virtual void show(); ///< Show the object's model(s).
 	virtual void hide(); ///< Hide the object's model(s).
 
