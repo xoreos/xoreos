@@ -48,6 +48,7 @@
 
 #include "src/engines/nwn/creature.h"
 #include "src/engines/nwn/item.h"
+#include "src/engines/nwn/area.h"
 
 #include "src/engines/nwn/gui/widgets/tooltip.h"
 
@@ -249,6 +250,13 @@ int32 Creature::getCurrentHP() const {
 
 int32 Creature::getMaxHP() const {
 	return _baseHP + _bonusHP;
+}
+
+void Creature::setArea(Area *area) {
+	Object::setArea(area);
+
+	if (area && _model && _environmentMap.equalsIgnoreCase("default"))
+		_model->setEnvironmentMap(area->getEnvironmentMap());
 }
 
 void Creature::addAssociate(Creature &henchman, AssociateType type) {
@@ -470,6 +478,8 @@ void Creature::loadModel() {
 	if (_portrait.empty())
 		_portrait = appearance.getString("PORTRAIT");
 
+	_environmentMap = appearance.getString("ENVMAP");
+
 	if (appearance.getString("MODELTYPE") == "P") {
 		getArmorModels();
 		getPartModels();
@@ -525,6 +535,14 @@ void Creature::loadModel() {
 		_model->setClickable(isClickable());
 
 		_ids.push_back(_model->getID());
+
+		if (!_environmentMap.empty()) {
+			Common::UString environmentMap = _environmentMap;
+			if (environmentMap.equalsIgnoreCase("default"))
+				environmentMap = _area ? _area->getEnvironmentMap() : "";
+
+			_model->setEnvironmentMap(environmentMap);
+		}
 	}
 }
 

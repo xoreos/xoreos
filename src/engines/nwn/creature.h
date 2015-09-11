@@ -145,6 +145,9 @@ public:
 
 	// Object/Object interactions
 
+	/** Set the area this creature is currently in. */
+	void setArea(Area *area);
+
 	/** Add an associate (henchman, familiar, ...). */
 	void addAssociate(Creature &associate, AssociateType type);
 	/** Remove an associate (henchman, familiar, ...). */
@@ -286,6 +289,8 @@ private:
 	std::vector<Item *> _equippedItems; ///< The creature's equipped items.
 
 	Common::UString _partsSuperModelName; ///< The supermodel used for parts-based creatures
+
+	Common::UString _environmentMap; ///< The environment map override to use on the model.
 
 	uint32 _colorSkin;    ///< The color of the creature's skin.
 	uint32 _colorHair;    ///< The color of the creature's hair.
