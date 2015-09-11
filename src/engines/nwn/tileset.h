@@ -49,6 +49,7 @@ public:
 	~Tileset();
 
 	const Common::UString &getName() const;
+	const Common::UString &getEnvironmentMap() const;
 
 	float getTilesHeight() const;
 
@@ -57,6 +58,8 @@ public:
 private:
 	Common::UString _resRef;
 	Common::UString _name;
+
+	Common::UString _environmentMap;
 
 	float _tilesHeight;
 

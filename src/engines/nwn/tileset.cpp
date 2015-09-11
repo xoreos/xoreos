@@ -62,6 +62,10 @@ const Common::UString &Tileset::getName() const {
 	return _name;
 }
 
+const Common::UString &Tileset::getEnvironmentMap() const {
+	return _environmentMap;
+}
+
 float Tileset::getTilesHeight() const {
 	return _tilesHeight;
 }
@@ -93,7 +97,8 @@ void Tileset::load(const Common::ConfigFile &set) {
 void Tileset::loadGeneral(const Common::ConfigDomain &general) {
 	_name = TalkMan.getString(general.getUint("DisplayName", Aurora::kStrRefInvalid));
 
-	_tilesHeight = general.getUint("Transition");
+	_tilesHeight    = general.getUint("Transition");
+	_environmentMap = general.getString("EnvMap");
 }
 
 void Tileset::loadTile(const Common::ConfigFile &set, uint i, Tile &tile) {
