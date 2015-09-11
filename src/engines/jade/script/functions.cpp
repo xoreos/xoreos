@@ -93,6 +93,18 @@ void Functions::unimplementedFunction(Aurora::NWScript::FunctionContext &ctx) {
 	warning("TODO: %s(%s)", ctx.getName().c_str(), formatParams(ctx).c_str());
 }
 
+int32 Functions::getRandom(int min, int max, int32 n) {
+	if (n < 1)
+		n = 1;
+
+	int32 r = 0;
+
+	while (n-- > 0)
+		r += std::rand() % (max - min + 1) + min;
+
+	return r;
+}
+
 Common::UString Functions::formatTag(const Aurora::NWScript::Object *object) {
 	if (!object)
 		return "0";

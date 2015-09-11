@@ -42,4 +42,5 @@ libjade_la_SOURCES = \
                      gui/main/main.cpp \
                      script/container.cpp \
                      script/functions.cpp \
+                     script/functions_math.cpp \
                      $(EMPTY)
