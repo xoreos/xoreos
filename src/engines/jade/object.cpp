@@ -86,6 +86,18 @@ void Object::setArea(Area *area) {
 	_area = area;
 }
 
+Location Object::getLocation() const {
+	// TODO: Object::getLocation(): Facing
+
+	Location location;
+
+	location.setArea(_area);
+	location.setPosition(_position[0], _position[1], _position[2]);
+	location.setFacing(0.0f);
+
+	return location;
+}
+
 void Object::getPosition(float &x, float &y, float &z) const {
 	x = _position[0];
 	y = _position[1];

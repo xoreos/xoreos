@@ -33,6 +33,7 @@
 #include "src/aurora/nwscript/object.h"
 
 #include "src/engines/jade/types.h"
+#include "src/engines/jade/location.h"
 
 #include "src/engines/jade/script/container.h"
 
@@ -95,6 +96,9 @@ public:
 	virtual void setPosition(float x, float y, float z);
 	/** Set the object's orientation. */
 	virtual void setOrientation(float x, float y, float z, float angle);
+
+	/** Create a Location out of the object's area, position and orientation. */
+	Location getLocation() const;
 
 	// Object/Cursor interactions
 
