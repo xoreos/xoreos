@@ -347,6 +347,9 @@ void Area::click(int x, int y) {
 	Jade::Object *o = getObjectAt(x, y);
 	if (!o)
 		return;
+
+	o->runScript(kScriptOnClick, o, _module->getPC());
+	o->runScript(kScriptOnUse, o, _module->getPC());
 }
 
 void Area::highlightAll(bool enabled) {
