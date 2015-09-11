@@ -47,7 +47,7 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 }
 
 ModelNode::ModelNode(Model &model) :
-	_model(&model), _parent(0), _level(0),
+	_model(&model), _parent(0), _level(0), _envMapMode(kModeEnvironmentBlendedUnder),
 	_isTransparent(false), _render(false), _hasTransparencyHint(false) {
 
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
@@ -436,7 +436,19 @@ void ModelNode::orderChildren() {
 
 void ModelNode::renderGeometry() {
 	if (!_envMap.empty()) {
-		renderGeometryEnvMapped();
+		switch (_envMapMode) {
+			case kModeEnvironmentBlendedUnder:
+				renderGeometryEnvMappedUnder();
+				break;
+
+			case kModeEnvironmentBlendedOver:
+				renderGeometryEnvMappedOver();
+				break;
+
+			default:
+				break;
+		}
+
 		return;
 	}
 
@@ -463,7 +475,38 @@ void ModelNode::renderGeometryNormal() {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void ModelNode::renderGeometryEnvMapped() {
+void ModelNode::renderGeometryEnvMappedUnder() {
+	/* First draw the node with only the environment map, then simply
+	 * blend a semi-transparent diffuse texture ontop.
+	 *
+	 * Neverwinter Nights uses this method.
+	 */
+
+	TextureMan.set(_envMap, TextureManager::kModeEnvironmentMapReflective);
+	_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
+
+	for (size_t t = 0; t < _textures.size(); t++) {
+		TextureMan.activeTexture(t);
+		TextureMan.set(_textures[t], TextureManager::kModeDiffuse);
+	}
+
+	_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
+
+	for (size_t t = 0; t < _textures.size(); t++) {
+		TextureMan.activeTexture(t);
+		TextureMan.set();
+	}
+}
+
+void ModelNode::renderGeometryEnvMappedOver() {
+	/* First draw the node with diffuse textures, then draw it again with
+	 * only the environment map. This performs a more complex blending of
+	 * the textures, allowing the color of a transparent diffuse texture
+	 * to modulate the color of the environment map.
+	 *
+	 * KotOR and KotOR2 use this method.
+	 */
+
 	if (!_textures.empty()) {
 		for (size_t t = 0; t < _textures.size(); t++) {
 			TextureMan.activeTexture(t);

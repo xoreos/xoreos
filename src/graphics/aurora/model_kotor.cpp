@@ -360,6 +360,7 @@ void Model_KotOR::addState(ParserContext &ctx) {
 
 
 ModelNode_KotOR::ModelNode_KotOR(Model &model) : ModelNode(model) {
+	_envMapMode = kModeEnvironmentBlendedOver;
 }
 
 ModelNode_KotOR::~ModelNode_KotOR() {

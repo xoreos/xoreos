@@ -109,6 +109,12 @@ public:
 	void setTextures(const std::vector<Common::UString> &textures);
 
 protected:
+	/** The way the environment map is applied to a model node. */
+	enum EnvironmentMapMode {
+		kModeEnvironmentBlendedUnder, ///< Environment map first, then blend the diffuse textures in.
+		kModeEnvironmentBlendedOver   ///< Diffuse textures first, then blend the environment map in.
+	};
+
 	Model *_model; ///< The model this node belongs to.
 
 	ModelNode *_parent;               ///< The node's parent.
@@ -142,7 +148,8 @@ protected:
 
 	std::vector<TextureHandle> _textures; ///< Textures.
 
-	TextureHandle _envMap;
+	TextureHandle      _envMap;     ///< The environment map texture.
+	EnvironmentMapMode _envMapMode; ///< The way the environment map is applied.
 
 	bool _isTransparent;
 
@@ -200,7 +207,8 @@ private:
 
 	void renderGeometry();
 	void renderGeometryNormal();
-	void renderGeometryEnvMapped();
+	void renderGeometryEnvMappedUnder();
+	void renderGeometryEnvMappedOver();
 
 
 public:
