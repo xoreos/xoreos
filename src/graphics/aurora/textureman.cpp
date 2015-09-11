@@ -252,13 +252,22 @@ void TextureManager::set(const TextureHandle &handle, TextureMode mode) {
 
 	switch (mode) {
 		case kModeEnvironmentMapReflective:
-			glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-			glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-			glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+			if (handle._it->second->texture->getImage().isCubeMap()) {
+				glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+				glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+				glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
 
-			glEnable(GL_TEXTURE_GEN_S);
-			glEnable(GL_TEXTURE_GEN_T);
-			glEnable(GL_TEXTURE_GEN_R);
+				glEnable(GL_TEXTURE_GEN_S);
+				glEnable(GL_TEXTURE_GEN_T);
+				glEnable(GL_TEXTURE_GEN_R);
+			} else {
+				glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+				glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+
+				glEnable(GL_TEXTURE_GEN_S);
+				glEnable(GL_TEXTURE_GEN_T);
+			}
+
 			break;
 
 		case kModeDiffuse:
