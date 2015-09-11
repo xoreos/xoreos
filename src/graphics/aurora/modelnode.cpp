@@ -452,8 +452,6 @@ void ModelNode::renderGeometryNormal() {
 	if (_textures.empty())
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
 
 	for (size_t t = 0; t < _textures.size(); t++) {
