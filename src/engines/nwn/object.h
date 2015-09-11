@@ -104,7 +104,7 @@ public:
 	/** Return the area this object is currently in. */
 	Area *getArea() const;
 	/** Set the area this object is currently in. */
-	void setArea(Area *);
+	virtual void setArea(Area *);
 
 	// Positioning
 
