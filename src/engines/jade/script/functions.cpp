@@ -32,10 +32,15 @@
 
 #include "src/aurora/nwscript/functionman.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/engines/jade/types.h"
 #include "src/engines/jade/game.h"
+#include "src/engines/jade/module.h"
+#include "src/engines/jade/area.h"
 #include "src/engines/jade/objectcontainer.h"
 #include "src/engines/jade/object.h"
+#include "src/engines/jade/creature.h"
 
 #include "src/engines/jade/script/functions.h"
 
@@ -182,6 +187,53 @@ Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::Func
 		return ctx.getCaller();
 
 	return object;
+}
+
+void Functions::jumpTo(Jade::Object *object, Area *area, float x, float y, float z) {
+	// Sanity check
+	if (!object->getArea() || !area) {
+		warning("Functions::jumpTo(): No area?!? (%d, %d)", object->getArea() != 0, area != 0);
+		return;
+	}
+
+	GfxMan.lockFrame();
+
+	// Are we moving between areas?
+	if (object->getArea() != area) {
+		const Common::UString &areaFrom = object->getArea()->getResRef();
+		const Common::UString &areaTo   = area->getResRef();
+
+		warning("TODO: Functions::jumpTo(): Moving from \"%s\" to \"%s\"", areaFrom.c_str(), areaTo.c_str());
+
+		Jade::Object *pc = Jade::ObjectContainer::toObject(_game->getModule().getPC());
+		if (pc) {
+			const Common::UString &pcArea = pc->getArea()->getResRef();
+
+			if (areaFrom == pcArea) {
+				// Moving away from the currently visible area.
+
+				object->hide();
+				object->unloadModel();
+
+			} else if (areaTo == pcArea) {
+				// Moving into the currently visible area.
+
+				object->loadModel();
+				object->show();
+			}
+
+		}
+
+		object->setArea(area);
+	}
+
+	// Update position
+	object->setPosition(x, y, z);
+
+	GfxMan.unlockFrame();
+
+	if (object == _game->getModule().getPC())
+		_game->getModule().movedPC();
 }
 
 } // End of namespace Jade
