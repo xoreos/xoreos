@@ -18,6 +18,7 @@ noinst_HEADERS = \
                  placeable.h \
                  trigger.h \
                  waypoint.h \
+                 location.h \
                  gui/main/main.h \
                  script/container.h \
                  script/functions.h \
@@ -39,6 +40,7 @@ libjade_la_SOURCES = \
                      placeable.cpp \
                      trigger.cpp \
                      waypoint.cpp \
+                     location.cpp \
                      gui/main/main.cpp \
                      script/container.cpp \
                      script/functions.cpp \
