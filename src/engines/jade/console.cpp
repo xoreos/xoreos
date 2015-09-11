@@ -38,6 +38,7 @@
 
 #include "src/engines/jade/console.h"
 #include "src/engines/jade/jade.h"
+#include "src/engines/jade/game.h"
 #include "src/engines/jade/module.h"
 
 namespace Engines {
@@ -67,25 +68,14 @@ void Console::updateCaches() {
 
 void Console::updateModules() {
 	_modules.clear();
-	setArguments("loadmodule");
+	Game::getModules(_modules);
 
-	std::list<Aurora::ResourceManager::ResourceID> ares;
-	ResMan.getAvailableResources(Aurora::kFileTypeARE, ares);
-
-	for (std::list<Aurora::ResourceManager::ResourceID>::const_iterator a = ares.begin(); a != ares.end(); ++a)
-		_modules.push_back(a->name);
-
-	std::sort(_modules.begin(), _modules.end(), Common::UString::iless());
 	setArguments("loadmodule", _modules);
 }
 
 void Console::cmdExitModule(const CommandLine &UNUSED(cl)) {
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
 	hide();
-	module->exit();
+	_engine->getGame().getModule().exit();
 }
 
 void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
@@ -99,14 +89,10 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		return;
 	}
 
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
 	for (std::vector<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
 		if (m->equalsIgnoreCase(cl.args)) {
 			hide();
-			module->load(cl.args);
+			_engine->getGame().getModule().load(cl.args);
 			return;
 		}
 	}

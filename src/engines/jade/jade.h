@@ -37,7 +37,7 @@ class LoadProgress;
 
 namespace Jade {
 
-class Module;
+class Game;
 
 class JadeEngine : public Engines::Engine {
 public:
@@ -51,8 +51,8 @@ public:
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
 
-	/** Return the currently running module. */
-	Module *getModule();
+	/** Return the context running the actual game. */
+	Game &getGame();
 
 
 protected:
@@ -62,7 +62,7 @@ protected:
 private:
 	Aurora::Language _language;
 
-	Module *_module;
+	Game *_game;
 
 
 	void init();
@@ -75,7 +75,6 @@ private:
 	void deinit();
 
 	void playIntroVideos();
-	void main();
 };
 
 } // End of namespace Jade

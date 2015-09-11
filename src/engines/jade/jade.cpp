@@ -54,21 +54,20 @@
 #include "src/engines/jade/jade.h"
 #include "src/engines/jade/modelloader.h"
 #include "src/engines/jade/console.h"
-#include "src/engines/jade/module.h"
-#include "src/engines/jade/creature.h"
+#include "src/engines/jade/game.h"
 
 namespace Engines {
 
 namespace Jade {
 
 JadeEngine::JadeEngine() : _language(Aurora::kLanguageInvalid),
-	_module(0) {
+	_game(0) {
 
 	_console = new Console(*this);
 }
 
 JadeEngine::~JadeEngine() {
-	delete _module;
+	delete _game;
 }
 
 bool JadeEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -112,8 +111,10 @@ bool JadeEngine::changeLanguage() {
 	return true;
 }
 
-Module *JadeEngine::getModule() {
-	return _module;
+Game &JadeEngine::getGame() {
+	assert(_game);
+
+	return *_game;
 }
 
 void JadeEngine::run() {
@@ -130,7 +131,8 @@ void JadeEngine::run() {
 
 	CursorMan.showCursor();
 
-	main();
+	_game = new Game(*this, *_console, _platform);
+	_game->run();
 
 	deinit();
 }
@@ -255,6 +257,9 @@ void JadeEngine::initGameConfig() {
 }
 
 void JadeEngine::deinit() {
+	delete _game;
+
+	_game = 0;
 }
 
 void JadeEngine::playIntroVideos() {
@@ -263,38 +268,6 @@ void JadeEngine::playIntroVideos() {
 	playVideo("bwlogo");
 	playVideo("graymatr");
 	playVideo("attract");
-}
-
-void JadeEngine::main() {
-	_module = new Module(*_console);
-	_module->load("j01_town");
-
-	Creature *fakePC = new Creature;
-	fakePC->createFakePC();
-
-	_module->usePC(fakePC);
-
-	if (EventMan.quitRequested() || !_module->isLoaded()) {
-		_module->clear();
-		return;
-	}
-
-	_module->enter();
-	EventMan.enableKeyRepeat(true);
-
-	while (!EventMan.quitRequested() && _module->isRunning()) {
-		Events::Event event;
-		while (EventMan.pollEvent(event))
-			_module->addEvent(event);
-
-		_module->processEventQueue();
-		EventMan.delay(10);
-	}
-
-	EventMan.enableKeyRepeat(false);
-	_module->leave();
-
-	_module->clear();
 }
 
 } // End of namespace Jade
