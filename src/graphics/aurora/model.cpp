@@ -152,6 +152,16 @@ void Model::drawSkeleton(bool enabled, bool showInvisible) {
 	_drawSkeletonInvisible = showInvisible;
 }
 
+void Model::setEnvironmentMap(const Common::UString &environmentMap) {
+	lockFrameIfVisible();
+
+	for (StateList::iterator s = _stateList.begin(); s != _stateList.end(); ++s)
+		for (NodeList::iterator n = (*s)->nodeList.begin(); n != (*s)->nodeList.end(); ++n)
+			(*n)->setEnvironmentMap(environmentMap);
+
+	unlockFrameIfVisible();
+}
+
 void Model::playAnimation(const Common::UString &anim, bool restart, int32 loopCount) {
 	Animation *animation = getAnimation(anim);
 	if (!animation)

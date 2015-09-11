@@ -71,6 +71,8 @@ public:
 	/** Should a skeleton showing the nodes and their relation be drawn inside the model? */
 	void drawSkeleton(bool enabled, bool showInvisible);
 
+	/** Change the environment map on this model. */
+	void setEnvironmentMap(const Common::UString &environmentMap = "");
 
 	/** Is that point within the model's bounding box? */
 	bool isIn(float x, float y) const;
