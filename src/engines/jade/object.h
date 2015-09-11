@@ -108,6 +108,13 @@ public:
 	/** (Un)Highlight the object. */
 	virtual void highlight(bool enabled);
 
+	// Animation
+
+	/** Play an object animation. */
+	virtual void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
+	/** Play a default object animation. */
+	virtual void playAnimation(Animation animation);
+
 protected:
 	ObjectType _type; ///< The object's type.
 

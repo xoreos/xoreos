@@ -22,6 +22,8 @@
  *  An object within a Jade Empire area.
  */
 
+#include "src/common/util.h"
+
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/jade/object.h"
@@ -132,6 +134,17 @@ void Object::leave() {
 }
 
 void Object::highlight(bool UNUSED(enabled)) {
+}
+
+void Object::playAnimation(const Common::UString &animation,
+                           bool UNUSED(restart), int32 UNUSED(loopCount)) {
+
+	warning("TODO: Object::playAnimation(\"%s\")", animation.c_str());
+}
+
+void Object::playAnimation(Animation animation) {
+	warning("TODO: Object::playAnimation(%d)", (int) animation);
+	// playAnimation(kAnimations[animation]);
 }
 
 void Object::loadPositional (const Aurora::GFF3Struct& gff) {
