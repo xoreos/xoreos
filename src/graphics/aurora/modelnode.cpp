@@ -275,6 +275,15 @@ void ModelNode::addChild(Model *model) {
 		_model->show();
 }
 
+void ModelNode::setEnvironmentMap(const Common::UString &environmentMap) {
+	_envMap.clear();
+
+	try {
+		_envMap = TextureMan.get(environmentMap);
+	} catch (...) {
+	}
+}
+
 void ModelNode::setInvisible(bool invisible) {
 	_render = !invisible;
 }
