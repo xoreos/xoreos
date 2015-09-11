@@ -7,6 +7,7 @@ noinst_HEADERS = \
                  dumptga.h \
                  screenshot.h \
                  surface.h \
+                 cubemapcombiner.h \
                  tga.h \
                  dds.h \
                  tpc.h \
@@ -28,6 +29,7 @@ libimages_la_SOURCES = \
                        dumptga.cpp \
                        screenshot.cpp \
                        surface.cpp \
+                       cubemapcombiner.cpp \
                        tga.cpp \
                        dds.cpp \
                        tpc.cpp \
