@@ -46,6 +46,8 @@ namespace Engines {
 
 namespace Jade {
 
+class Area;
+
 /** An object within a Jade area. */
 class Object : public Aurora::NWScript::Object, public Jade::ScriptContainer {
 public:
@@ -77,6 +79,11 @@ public:
 
 	bool isClickable() const; ///< Can the player click the object?
 
+	/** Return the area this object is currently in. */
+	Area *getArea() const;
+	/** Set the area this object is currently in. */
+	void setArea(Area *);
+
 	// Positioning
 
 	/** Return the object's position within its area. */
@@ -107,6 +114,8 @@ protected:
 	bool _usable; ///< Is the object usable?
 
 	std::list<uint32> _ids; ///< The object's model IDs.
+
+	Area *_area; ///< The area the object is currently in.
 
 	float _position[3];    ///< The object's position.
 	float _orientation[4]; ///< The object's orientation.

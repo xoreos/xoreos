@@ -78,6 +78,14 @@ const std::list<uint32> &Object::getIDs() const {
 	return _ids;
 }
 
+Area *Object::getArea() const {
+	return _area;
+}
+
+void Object::setArea(Area *area) {
+	_area = area;
+}
+
 void Object::getPosition(float &x, float &y, float &z) const {
 	x = _position[0];
 	y = _position[1];
