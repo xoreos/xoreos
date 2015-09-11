@@ -36,6 +36,8 @@
 
 #include "src/events/types.h"
 
+#include "src/engines/jade/objectcontainer.h"
+
 namespace Engines {
 
 class Console;
@@ -46,7 +48,7 @@ class Area;
 class Creature;
 
 /** A Jade module. */
-class Module {
+class Module : public Jade::ObjectContainer {
 public:
 	Module(::Engines::Console &console);
 	~Module();

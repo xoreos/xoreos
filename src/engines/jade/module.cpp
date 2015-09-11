@@ -97,8 +97,11 @@ void Module::loadModule(const Common::UString &module) {
 }
 
 void Module::usePC(Creature *pc) {
-	delete _pc;
+	unloadPC();
+
 	_pc = pc;
+
+	addObject(*_pc);
 }
 
 Creature *Module::getPC() {
@@ -152,6 +155,11 @@ void Module::unloadArea() {
 }
 
 void Module::unloadPC() {
+	if (!_pc)
+		return;
+
+	removeObject(*_pc);
+
 	delete _pc;
 	_pc = 0;
 }

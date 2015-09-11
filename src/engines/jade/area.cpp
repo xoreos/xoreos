@@ -58,9 +58,14 @@ Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeAr
 		clear();
 		throw;
 	}
+
+	// Tell the module that we exist
+	_module->addObject(*this);
 }
 
 Area::~Area() {
+	_module->removeObject(*this);
+
 	hide();
 
 	removeFocus();
@@ -84,6 +89,13 @@ void Area::load() {
 }
 
 void Area::clear() {
+	// Delete objects
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+		_module->removeObject(**o);
+
+		delete *o;
+	}
+
 	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		delete *r;
 
@@ -234,6 +246,7 @@ void Area::loadRooms() {
 
 void Area::loadObject(Object &object) {
 	_objects.push_back(&object);
+	_module->addObject(object);
 
 	if (!object.isStatic()) {
 		const std::list<uint32> &ids = object.getIDs();
