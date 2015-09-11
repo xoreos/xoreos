@@ -261,6 +261,16 @@ UString::iterator UString::findFirst(uint32 c) const {
 	return end();
 }
 
+UString::iterator UString::findFirst(const UString &what) const {
+	size_t index = _string.find(what._string);
+	if (index != std::string::npos) {
+		std::string::const_iterator it = _string.begin();
+		std::advance(it, index);
+		return iterator(it, _string.begin(), _string.end());
+	}
+	return end();
+}
+
 UString::iterator UString::findLast(uint32 c) const {
 	if (empty())
 		return end();

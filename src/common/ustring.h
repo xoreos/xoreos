@@ -124,6 +124,7 @@ public:
 	iterator end() const;
 
 	iterator findFirst(uint32 c) const;
+	iterator findFirst(const UString &what) const;
 	iterator findLast(uint32 c) const;
 
 	bool beginsWith(const UString &with) const;
