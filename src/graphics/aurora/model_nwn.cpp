@@ -1311,45 +1311,17 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 
 	// Read vertices (interleaved)
 
-	GLsizei vpsize = 3;
-	GLsizei vnsize = 3;
-	GLsizei vtsize = 2;
-	uint32 vertexSize = (vpsize + vnsize + vtsize * textureCount) * sizeof(float);
-	_vertexBuffer.setSize(vertexCount, vertexSize);
-
-	float *vertexData = (float *) _vertexBuffer.getData();
 	VertexDecl vertexDecl;
 
-	VertexAttrib vp;
-	vp.index = VPOSITION;
-	vp.size = vpsize;
-	vp.type = GL_FLOAT;
-	vp.stride = vertexSize;
-	vp.pointer = vertexData;
-	vertexDecl.push_back(vp);
+	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
+	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
+	for (uint t = 0; t < textureCount; t++)
+		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	VertexAttrib vn;
-	vn.index = VNORMAL;
-	vn.size = vnsize;
-	vn.type = GL_FLOAT;
-	vn.stride = vertexSize;
-	vn.pointer = vertexData + vpsize;
-	vertexDecl.push_back(vn);
-
-	for (uint16 t = 0; t < textureCount; t++) {
-		VertexAttrib vt;
-		vt.index = VTCOORD + t;
-		vt.size = vtsize;
-		vt.type = GL_FLOAT;
-		vt.stride = vertexSize;
-		vt.pointer = vertexData + vpsize + vnsize + vtsize * t;
-		vertexDecl.push_back(vt);
-	}
-
-	_vertexBuffer.setVertexDecl(vertexDecl);
+	_vertexBuffer.setVertexDeclInterleave(facesCount * 3, vertexDecl);
 
 	for (verts_set_it i = verts.begin(); i != verts.end(); ++i) {
-		float *v = vertexData + i->i * vertexSize / sizeof(float);
+		float *v = (float *)(((char *)_vertexBuffer.getData()) + i->i * _vertexBuffer.getSize());
 
 		// Position
 		*v++ = mesh.vX[i->p];
