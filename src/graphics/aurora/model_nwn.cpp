@@ -643,24 +643,18 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 }
 
-struct Normal {
-	uint16 vi;    // id of vertex this normal belongs to
-	float xyz[3]; // vertex normal
+struct Face {
+	float normal[3];
+
+	uint32 smooth;
+
+	uint16 index[3];
 };
 
-bool operator == (const Normal &a, const Normal &b) {
-	return a.vi == b.vi;
-}
-
-std::size_t hash_value(const Normal &b) {
-	boost::hash<uint16> hasher;
-	return hasher(b.vi);
-}
-
-bool fuzzy_equal(const float a[3], const float b[3]) {
+static bool fuzzyEqual(const float *a, const float *b) {
 	return fabs(a[0] - b[0]) < 1E-4 &&
-		fabs(a[1] - b[1]) < 1E-4 &&
-		fabs(a[2] - b[2]) < 1E-4;
+	       fabs(a[1] - b[1]) < 1E-4 &&
+	       fabs(a[2] - b[2]) < 1E-4;
 }
 
 void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
@@ -772,117 +766,130 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	size_t endPos = ctx.mdl->pos();
 
 
+	// Read vertices
+
+	std::vector<float> vertices;
+	vertices.resize(vertexCount * 3);
+
+	assert (vertexOffset != 0xFFFFFFFF);
+	ctx.mdl->seek(ctx.offRawData + vertexOffset);
+	for (std::vector<float>::iterator v = vertices.begin(); v != vertices.end(); ++v)
+		*v = ctx.mdl->readIEEEFloatLE();
+
 	// Read faces
-	// NWN stores 1 normal per face
-	// Convert to one normal per vertex by duplicating vertex data
-	// for face verts with multiple normals
 
-	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	std::vector<Face> faces;
+	faces.resize(facesCount);
 
-	std::vector<Normal> new_verts_norms;
-	boost::unordered_set<Normal> verts_norms;
-	typedef boost::unordered_set<Normal>::iterator norms_set_it;
+	std::vector< std::list<Face *> > vFaces;
+	vFaces.resize(vertexCount);
 
-	Normal n;
-	uint16 vertexCountNew = vertexCount;
-	uint16 *f = (uint16 *) _indexBuffer.getData();
+	assert (facesOffset != 0xFFFFFFFF);
 	ctx.mdl->seek(ctx.offModelData + facesOffset);
-	for (uint32 i = 0; i < facesCount; i++) {
-		// Face normal
-		n.xyz[0] = ctx.mdl->readIEEEFloatLE();
-		n.xyz[1] = ctx.mdl->readIEEEFloatLE();
-		n.xyz[2] = ctx.mdl->readIEEEFloatLE();
+	for (std::vector<Face>::iterator f = faces.begin(); f != faces.end(); ++f) {
+		f->normal[0] = ctx.mdl->readIEEEFloatLE();
+		f->normal[1] = ctx.mdl->readIEEEFloatLE();
+		f->normal[2] = ctx.mdl->readIEEEFloatLE();
 
-		ctx.mdl->skip(    4); // Plane distance
-		ctx.mdl->skip(    4); // Surface ID / smoothing group ??
+		ctx.mdl->skip(4); // Plane distance
+
+		f->smooth = ctx.mdl->readUint32LE();
+
 		ctx.mdl->skip(3 * 2); // Adjacent face number or -1
 
-		// Face indices
-		for (uint32 j = 0; j < 3; j++) {
-			n.vi = ctx.mdl->readUint16LE();
-			assert(n.vi <= vertexCount);
+		f->index[0] = ctx.mdl->readUint16LE();
+		f->index[1] = ctx.mdl->readUint16LE();
+		f->index[2] = ctx.mdl->readUint16LE();
 
-			// check if we have a normal for this vertex already
-			std::pair<norms_set_it, bool> it = verts_norms.insert(n);
-			if (!it.second && !fuzzy_equal(n.xyz, it.first->xyz)) {
-				new_verts_norms.push_back(n);
-				n.vi = vertexCountNew++;
-			}
+		// Assign this face to all vertices belonging to this face
+		for (int i = 0; i < 3; i++) {
+			assert((f->index[i] * 3) < vertices.size());
 
-			*f++ = n.vi;
+			const float *fV = &vertices[f->index[i] * 3];
+
+			for (uint32 j = 0; j < vertices.size() / 3; j++)
+				if (fuzzyEqual(fV, &vertices[j * 3]))
+					vFaces[j].push_back(&*f);
 		}
 	}
 
+	// Read texture coordinates
+
+	std::vector<float> texCoords;
+	texCoords.resize(textureCount * vertexCount * 2);
+
+	for (uint16 t = 0; t < textureCount; t++) {
+		const bool hasTexture = textureVertexOffset[t] != 0xFFFFFFFF;
+		if (hasTexture)
+			ctx.mdl->seek(ctx.offRawData + textureVertexOffset[t]);
+
+		float *v = &texCoords[t * vertexCount * 2];
+		for (uint32 i = 0; i < vertexCount; i++) {
+			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
+			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
+		}
+	}
+
+	// Create vertex buffer
 
 	VertexDecl vertexDecl;
 
 	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
 	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
 	for (uint t = 0; t < textureCount; t++)
-		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
+		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	_vertexBuffer.setVertexDeclLinear(vertexCountNew, vertexDecl);
+	_vertexBuffer.setVertexDeclInterleave(facesCount * 3, vertexDecl);
 
+	float *v = (float *)_vertexBuffer.getData();
+	for (uint32 i = 0; i < facesCount; i++) {
+		const Face &face = faces[i];
 
-	// Read vertex data
+		for (uint32 j = 0; j < 3; j++) {
+			const uint16 index = face.index[j];
+			assert((index * 3) < vertices.size());
 
-	assert (vertexOffset != 0xFFFFFFFF);
-	ctx.mdl->seek(ctx.offRawData + vertexOffset);
+			// Vertices
+			*v++ = vertices[index * 3 + 0];
+			*v++ = vertices[index * 3 + 1];
+			*v++ = vertices[index * 3 + 2];
 
-	float *v = (float *) vertexDecl[0].pointer;
-	for (uint32 i = 0; i < vertexCount; i++) {
-		*v++ = ctx.mdl->readIEEEFloatLE();
-		*v++ = ctx.mdl->readIEEEFloatLE();
-		*v++ = ctx.mdl->readIEEEFloatLE();
-	}
+			// Normals, smoothed
+			Common::Vector3 normal(0.0f, 0.0f, 0.0f);
+			uint32 n = 0;
 
-	// duplicate positions for unique norms
-	for (size_t i = 0; i < new_verts_norms.size(); i++) {
-		uint32 vi = new_verts_norms[i].vi;
-		float *v0 = (float *)vertexDecl[0].pointer + vi * vertexDecl[0].size;
-		*v++ = *v0++;
-		*v++ = *v0++;
-		*v++ = *v0++;
-	}
+			for (std::list<Face *>::const_iterator vF = vFaces[index].begin(); vF != vFaces[index].end(); ++vF) {
+				if (face.smooth != (*vF)->smooth)
+					continue;
 
-	// Read vertex normals
+				normal += Common::Vector3((*vF)->normal[0], (*vF)->normal[1], (*vF)->normal[2]);
+				n++;
+			}
 
-	for (norms_set_it i = verts_norms.begin(); i != verts_norms.end(); ++i) {
-		v = (float *)vertexDecl[1].pointer + i->vi * vertexDecl[1].size;
-		*v++ = i->xyz[0];
-		*v++ = i->xyz[1];
-		*v++ = i->xyz[2];
-	}
+			if (n > 0) {
+				normal /= (float) n;
+				normal.norm();
+			}
 
-	// additional unique verts norms
-	v = (float *)vertexDecl[1].pointer + vertexDecl[1].size * vertexCount;
-	for (size_t i = 0; i < new_verts_norms.size(); i++) {
-		*v++ = new_verts_norms[i].xyz[0];
-		*v++ = new_verts_norms[i].xyz[1];
-		*v++ = new_verts_norms[i].xyz[2];
-	}
+			*v++ = normal[0];
+			*v++ = normal[1];
+			*v++ = normal[2];
 
-	// Read texture coordinates
-
-	for (uint16 t = 0; t < textureCount; t++) {
-		bool hasTexture = textureVertexOffset[t] != 0xFFFFFFFF;
-		if (hasTexture)
-			ctx.mdl->seek(ctx.offRawData + textureVertexOffset[t]);
-
-		v = (float *) vertexDecl[2 + t].pointer;
-		for (uint32 i = 0; i < vertexCount; i++) {
-			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
-			*v++ = hasTexture ? ctx.mdl->readIEEEFloatLE() : 0.0f;
-		}
-
-		// duplicate tcoords for unique norms
-		for (size_t i = 0; i < new_verts_norms.size(); i++) {
-			uint32 vi = new_verts_norms[i].vi;
-			float *v0 = (float *) vertexDecl[2 + t].pointer + vi * vertexDecl[2 + t].size;
-			*v++ = *v0++;
-			*v++ = *v0++;
+			// Texture coordinates
+			for (uint32 t = 0; t < textureCount; t++) {
+				*v++ = texCoords[t * vertexCount * 2 + index * 2 + 0];
+				*v++ = texCoords[t * vertexCount * 2 + index * 2 + 1];
+			}
 		}
 	}
+
+	// Create index buffer
+
+	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+
+	uint16 *f = (uint16 *) _indexBuffer.getData();
+	for (uint16 i = 0; i < facesCount * 3; i++)
+		*f++ = i;
 
 	createBound();
 
@@ -1242,7 +1249,7 @@ struct FaceVert {
 };
 
 bool operator == (const FaceVert &a, const FaceVert &b) {
-	return (a.p == b.p) && (a.t == b.t) && fuzzy_equal(&a.n[0], &b.n[0]);
+	return (a.p == b.p) && (a.t == b.t) && fuzzyEqual(&a.n[0], &b.n[0]);
 }
 
 std::size_t hash_value(const FaceVert &b) {
