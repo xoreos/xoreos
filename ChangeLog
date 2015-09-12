@@ -12,6 +12,7 @@ Someday, ????-??-?? (Version 0.0.3)
 			- Restructured main game loop
 			- Implemented partial placeable handling
 			- Implemented preliminary reflective environment mapping
+			- Implemented preliminary normal smoothing on binary models
 		- KOTOR:
 			- Restructured main game loop
 			- Restructured object classes to match NWN
