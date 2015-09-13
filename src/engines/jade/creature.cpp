@@ -127,6 +127,13 @@ void Creature::loadBlueprint(const Aurora::GFF3Struct &gff) {
 		}
 	}
 
+	if (gff.hasField("Stats")) {
+		const Aurora::GFF3Struct &stats = gff.getStruct("Stats");
+
+		// Conversation
+		_conversation = stats.getString("Conversation", _conversation);
+	}
+
 	// Scripts
 	readScripts(gff);
 }

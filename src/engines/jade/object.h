@@ -76,6 +76,9 @@ public:
 	/** Return the object's description. */
 	const Common::UString &getDescription() const;
 
+	/** Return the object's default conversation (DLG). */
+	const Common::UString &getConversation() const;
+
 	// Interactive properties
 
 	bool isStatic() const; ///< Is the object static (not manipulatable at all)?
@@ -123,6 +126,8 @@ protected:
 
 	Common::UString _name;        ///< The object's display name.
 	Common::UString _description; ///< The object's description.
+
+	Common::UString _conversation; ///< The object's default conversation.
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?

@@ -84,6 +84,9 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 }
 
 void Placeable::loadBlueprint(const Aurora::GFF3Struct &gff) {
+	//Conversation
+	_conversation = gff.getString("Conversation", _conversation);
+
 	// Appearance
 	_appearanceType = gff.getUint("AppearanceType", _appearanceType);
 

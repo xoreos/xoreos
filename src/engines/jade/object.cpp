@@ -33,7 +33,8 @@ namespace Engines {
 
 namespace Jade {
 
-Object::Object(ObjectType type) : _type(type), _static(false), _usable(true) {
+Object::Object(ObjectType type) : _type(type), _conversation(""), _static(false), _usable(true) {
+
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
 	_position   [2] = 0.0f;
@@ -68,6 +69,10 @@ const Common::UString &Object::getName() const {
 
 const Common::UString &Object::getDescription() const {
 	return _description;
+}
+
+const Common::UString &Object::getConversation() const {
+	return _conversation;
 }
 
 bool Object::isStatic() const {
