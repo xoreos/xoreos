@@ -79,6 +79,13 @@ public:
 	/** Return the object's default conversation (DLG). */
 	const Common::UString &getConversation() const;
 
+	// Object/Object interactions
+
+	/** Return the PC currently speaking with this object. */
+	Aurora::NWScript::Object *getPCSpeaker() const;
+	/** Set the PC currently speaking with this object. */
+	void setPCSpeaker(Aurora::NWScript::Object *pc);
+
 	// Interactive properties
 
 	bool isStatic() const; ///< Is the object static (not manipulatable at all)?
@@ -114,6 +121,11 @@ public:
 	/** (Un)Highlight the object. */
 	virtual void highlight(bool enabled);
 
+	// Object (text) talking
+
+	/** Speak the specified string. */
+	void speakString(int32 resref);
+
 	// Animation
 
 	/** Play an object animation. */
@@ -133,6 +145,8 @@ protected:
 	bool _usable; ///< Is the object usable?
 
 	std::list<uint32> _ids; ///< The object's model IDs.
+
+	Aurora::NWScript::Object *_pcSpeaker; ///< The current PC speaking with the object.
 
 	Area *_area; ///< The area the object is currently in.
 

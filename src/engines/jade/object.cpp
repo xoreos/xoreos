@@ -25,6 +25,7 @@
 #include "src/common/util.h"
 
 #include "src/aurora/gff3file.h"
+#include "src/aurora/talkman.h"
 
 #include "src/engines/jade/object.h"
 #include "src/engines/jade/types.h"
@@ -33,7 +34,8 @@ namespace Engines {
 
 namespace Jade {
 
-Object::Object(ObjectType type) : _type(type), _conversation(""), _static(false), _usable(true) {
+Object::Object(ObjectType type) : _type(type), _conversation(""), _static(false), _usable(true),
+	_pcSpeaker(0) {
 
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
@@ -91,6 +93,14 @@ const std::list<uint32> &Object::getIDs() const {
 	return _ids;
 }
 
+Aurora::NWScript::Object *Object::getPCSpeaker() const {
+	return _pcSpeaker;
+}
+
+void Object::setPCSpeaker(Aurora::NWScript::Object *pc) {
+	_pcSpeaker = pc;
+}
+
 Area *Object::getArea() const {
 	return _area;
 }
@@ -145,6 +155,12 @@ void Object::leave() {
 }
 
 void Object::highlight(bool UNUSED(enabled)) {
+}
+
+void Object::speakString(int32 strRef) {
+	// TODO: Object::speakString(): Show the string in a speech bubble
+
+	status("<%s> \"%s\"", getName().c_str(), TalkMan.getString(strRef).c_str());
 }
 
 void Object::playAnimation(const Common::UString &animation,
