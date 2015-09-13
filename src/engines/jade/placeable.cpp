@@ -35,13 +35,14 @@
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/jade/placeable.h"
+#include "src/engines/jade/types.h"
 
 namespace Engines {
 
 namespace Jade {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Object(kObjectTypePlaceable),
-	_appearanceType(Aurora::kFieldIDInvalid), _model(0) {
+	_appearanceType(Aurora::kFieldIDInvalid), _lastOpenedBy(0), _lastClosedBy(0), _model(0) {
 
 	load(placeable);
 }
@@ -192,6 +193,57 @@ void Placeable::leave() {
 void Placeable::highlight(bool enabled) {
 	if (_model)
 		_model->drawBound(enabled);
+}
+
+bool Placeable::open(Object *opener) {
+	int32 newState = nextState("open");
+
+	if (newState == -1) {
+		runScript(kScriptOnFailToOpen, this, opener);
+		return false;
+	}
+
+	_lastOpenedBy = opener;
+	_state = newState;
+
+	playAnimation(kAnimationOpeningADoorDoubleDoor);
+	runScript(kScriptOnOpen, this, opener);
+
+	return true;
+}
+
+bool Placeable::close(Object *closer) {
+	int32 newState = nextState("closed");
+
+	if (newState != -1) {
+		_lastClosedBy = closer;
+
+		_state = newState;
+
+		runScript(kScriptOnClose, this, closer);
+
+		return true;
+	}
+	return false;
+}
+
+int32 Placeable::nextState(const Common::UString &input) {
+	const Aurora::GFF3Struct &top = _fsm->getTopLevel();
+
+	const Aurora::GFF3Struct &trans = top.getStruct("StateTrans");
+
+	int32 inputCount = top.getSint("InputCount");
+
+	const Aurora::GFF3Struct &inputs = top.getStruct("InputNames");
+	for (int i = 0;i < inputCount; i++) {
+		const Common::UString &inputKey = Common::UString::format("I%i", i);
+		const Common::UString &inputValue = inputs.getString(inputKey);
+		if (input == inputValue) {
+			const Common::UString &transKey = Common::UString::format("S%i_I%i", _state, i);
+			return trans.getSint(transKey);
+		}
+	}
+	return -1;
 }
 
 } // End of namespace Jade

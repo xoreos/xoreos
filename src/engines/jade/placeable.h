@@ -46,6 +46,13 @@ public:
 	void show(); ///< Show the placeable's model.
 	void hide(); ///< Hide the placeable's model.
 
+	// Basic properties
+
+	/** The opener object opens this placeable. */
+	bool open(Object *opener);
+	/** The closer object closes this placeable. */
+	bool close(Object *closer);
+
 	// Object/Cursor interactions
 
 	void enter(); ///< The cursor entered the placeable. */
@@ -60,6 +67,9 @@ protected:
 	Common::UString _resRef;    ///< The placeable's description resref.
 
 	uint32 _appearanceType;     ///< The index within the placeable 2DA.
+
+	Object *_lastOpenedBy; ///< The object that last opened this placeable object.
+	Object *_lastClosedBy; ///< The object that last closed this placeable object.
 
 	Graphics::Aurora::Model *_model; ///< The placeable's model.
 
@@ -77,6 +87,8 @@ private:
 	void loadProperties();
 	/** Load appearance-specific properties. */
 	void loadAppearance();
+	/** Determines the result State according to the state model */
+	int32 nextState(const Common::UString &input);
 };
 
 } // End of namespace Jade
