@@ -346,16 +346,17 @@ enum FileType {
 };
 
 enum GameID {
-	kGameIDUnknown    = 0, ///< Unknown game.
-	kGameIDNWN        = 1, ///< Neverwinter Nights.
-	kGameIDNWN2       = 2, ///< Neverwinter Nights 2.
-	kGameIDKotOR      = 3, ///< Star Wars: Knights of the Old Republic.
-	kGameIDKotOR2     = 4, ///< Star Wars: Knights of the Old Republic II - The Sith Lords.
-	kGameIDJade       = 5, ///< Jade Empire.
-	kGameIDWitcher    = 6, ///< The Witcher.
-	kGameIDSonic      = 7, ///< Sonic Chronicles: The Dark Brotherhood.
-	kGameIDDragonAge  = 8, ///< Dragon Age: Origins.
-	kGameIDDragonAge2 = 9  ///< Dragon Age II.
+	kGameIDUnknown    = -1, ///< Unknown game.
+	kGameIDNWN        =  0, ///< Neverwinter Nights.
+	kGameIDNWN2       =  1, ///< Neverwinter Nights 2.
+	kGameIDKotOR      =  2, ///< Star Wars: Knights of the Old Republic.
+	kGameIDKotOR2     =  3, ///< Star Wars: Knights of the Old Republic II - The Sith Lords.
+	kGameIDJade       =  4, ///< Jade Empire.
+	kGameIDWitcher    =  5, ///< The Witcher.
+	kGameIDSonic      =  6, ///< Sonic Chronicles: The Dark Brotherhood.
+	kGameIDDragonAge  =  7, ///< Dragon Age: Origins.
+	kGameIDDragonAge2 =  8, ///< Dragon Age II.
+	kGameIDMAX
 };
 
 enum ResourceType {
