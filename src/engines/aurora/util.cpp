@@ -222,7 +222,7 @@ bool dump2DA(const Common::UString &name, Common::UString file) {
 
 		Aurora::TwoDAFile twoda(*twoDAFile);
 
-		success = twoda.dumpASCII(file);
+		success = twoda.writeASCII(file);
 
 	} catch (...) {
 	}

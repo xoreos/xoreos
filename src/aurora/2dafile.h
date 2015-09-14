@@ -35,6 +35,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class WriteStream;
 	class StreamTokenizer;
 }
 
@@ -98,8 +99,20 @@ public:
 	/** Get a row. */
 	const TwoDARow &getRow(size_t row) const;
 
-	/** Dump the 2DA data into an V2.0 ASCII 2DA. */
-	bool dumpASCII(const Common::UString &fileName) const;
+	/** Write the 2DA data into an V2.0 ASCII 2DA. */
+	void writeASCII(Common::WriteStream &out) const;
+	/** Write the 2DA data into an V2.0 ASCII 2DA. */
+	bool writeASCII(const Common::UString &fileName) const;
+
+	/** Write the 2DA data into an V2.b binary 2DA. */
+	void writeBinary(Common::WriteStream &out) const;
+	/** Write the 2DA data into an V2.b binary 2DA. */
+	bool writeBinary(const Common::UString &fileName) const;
+
+	/** Write the 2DA data into a CSV stream. */
+	void writeCSV(Common::WriteStream &out) const;
+	/** Write the 2DA data into a CSV file. */
+	bool writeCSV(const Common::UString &fileName) const;
 
 private:
 	typedef std::map<Common::UString, size_t, Common::UString::iless> HeaderMap;

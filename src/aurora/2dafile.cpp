@@ -26,6 +26,8 @@
  * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/strutil.h"
@@ -34,8 +36,8 @@
 #include "src/common/writefile.h"
 #include "src/common/streamtokenizer.h"
 
-#include "src/aurora/2dafile.h"
 #include "src/aurora/types.h"
+#include "src/aurora/2dafile.h"
 
 static const uint32 k2DAID     = MKTAG('2', 'D', 'A', ' ');
 static const uint32 k2DAIDTab  = MKTAG('2', 'D', 'A', '\t');
@@ -347,17 +349,13 @@ const TwoDARow &TwoDAFile::getRow(size_t row) const {
 	return *_rows[row];
 }
 
-bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
-	Common::WriteFile file;
-	if (!file.open(fileName))
-		return false;
-
+void TwoDAFile::writeASCII(Common::WriteStream &out) const {
 	// Write header
 
-	file.writeString("2DA V2.0\n");
+	out.writeString("2DA V2.0\n");
 	if (!_defaultString.empty())
-		file.writeString(Common::UString::format("DEFAULT: %s", _defaultString.c_str()));
-	file.writeByte('\n');
+		out.writeString(Common::UString::format("DEFAULT: %s", _defaultString.c_str()));
+	out.writeByte('\n');
 
 	// Calculate column lengths
 
@@ -381,17 +379,17 @@ bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
 
 	// Write column headers
 
-	file.writeString(Common::UString::format("%-*s", (int)colLength[0], ""));
+	out.writeString(Common::UString::format("%-*s", (int)colLength[0], ""));
 
 	for (size_t i = 0; i < _headers.size(); i++)
-		file.writeString(Common::UString::format(" %-*s", (int)colLength[i + 1], _headers[i].c_str()));
+		out.writeString(Common::UString::format(" %-*s", (int)colLength[i + 1], _headers[i].c_str()));
 
-	file.writeByte('\n');
+	out.writeByte('\n');
 
 	// Write array
 
 	for (size_t i = 0; i < _rows.size(); i++) {
-		file.writeString(Common::UString::format("%*u", (int)colLength[0], (uint)i));
+		out.writeString(Common::UString::format("%*u", (int)colLength[0], (uint)i));
 
 		for (size_t j = 0; j < _rows[i]->_data.size(); j++) {
 			const bool needQuote = _rows[i]->_data[j].contains(' ');
@@ -402,14 +400,181 @@ bool TwoDAFile::dumpASCII(const Common::UString &fileName) const {
 			else
 				cellString = _rows[i]->_data[j];
 
-			file.writeString(Common::UString::format(" %-*s", (int)colLength[j + 1], cellString.c_str()));
+			out.writeString(Common::UString::format(" %-*s", (int)colLength[j + 1], cellString.c_str()));
 
 		}
 
-		file.writeByte('\n');
+		out.writeByte('\n');
 	}
 
-	file.flush();
+	out.flush();
+}
+
+bool TwoDAFile::writeASCII(const Common::UString &fileName) const {
+	Common::WriteFile file;
+	if (!file.open(fileName))
+		return false;
+
+	writeASCII(file);
+	file.close();
+
+	return true;
+}
+
+void TwoDAFile::writeBinary(Common::WriteStream &out) const {
+	const size_t columnCount = _headers.size();
+	const size_t rowCount    = _rows.size();
+	const size_t cellCount   = columnCount * rowCount;
+
+	out.writeString("2DA V2.b\n");
+
+	// Write the column headers
+
+	for (std::vector<Common::UString>::const_iterator h = _headers.begin(); h != _headers.end(); ++h) {
+		out.writeString(*h);
+		out.writeByte('\t');
+	}
+	out.writeByte('\0');
+
+	// Write the row indices
+
+	out.writeUint32LE((uint32) rowCount);
+	for (size_t i = 0; i < rowCount; i++) {
+		out.writeString(Common::composeString(i));
+		out.writeByte('\t');
+	}
+
+	/* Deduplicate cell data strings. Binary 2DA files don't store the
+	 * data for each cell directly: instead, each cell contains an offset
+	 * into a data array. This way, cells with the same data only need to
+	 * to store this data once.
+	 *
+	 * The original binary 2DA files in KotOR/KotOR2 make extensive use
+	 * of that, and we should do this as well.
+	 *
+	 * Basically, this involves going through each cell, and looking up
+	 * if we already saved this particular piece of data. If not, save
+	 * it, otherwise only remember the offset. There's no need to be
+	 * particularily smart about it, so we're just doing it the naive
+	 * O(n^2) way.
+	 */
+
+	std::vector<Common::UString> data;
+	std::vector<size_t> offsets;
+
+	data.reserve(cellCount);
+	offsets.reserve(cellCount);
+
+	size_t dataSize = 0;
+
+	std::vector<size_t> cells;
+	cells.reserve(cellCount);
+
+	for (size_t i = 0; i < rowCount; i++) {
+		assert(_rows[i]);
+
+		for (size_t j = 0; j < columnCount; j++) {
+			const Common::UString cell = _rows[i]->getString(j);
+
+			// Do we already know about this cell data string?
+			size_t foundCell = SIZE_MAX;
+			for (size_t k = 0; k < data.size(); k++) {
+				if (data[k] == cell) {
+					foundCell = k;
+					break;
+				}
+			}
+
+			// If not, add it to the cell data array
+			if (foundCell == SIZE_MAX) {
+				foundCell = data.size();
+
+				data.push_back(cell);
+				offsets.push_back(dataSize);
+
+				dataSize += data.back().size() + 1;
+			}
+
+			// Remember the offset to the cell data array
+			cells.push_back(offsets[foundCell]);
+		}
+	}
+
+	// Write cell data offsets
+	for (std::vector<size_t>::const_iterator c = cells.begin(); c != cells.end(); ++c)
+		out.writeUint16LE((uint16) *c);
+
+	// Size of the all cell data strings
+	out.writeUint16LE((uint16) dataSize);
+
+	// Write cell data strings
+	for (std::vector<Common::UString>::const_iterator d = data.begin(); d != data.end(); ++d) {
+		out.writeString(*d);
+		out.writeByte('\0');
+	}
+}
+
+bool TwoDAFile::writeBinary(const Common::UString &fileName) const {
+	Common::WriteFile file;
+	if (!file.open(fileName))
+		return false;
+
+	writeBinary(file);
+	file.close();
+
+	return true;
+}
+
+void TwoDAFile::writeCSV(Common::WriteStream &out) const {
+	// Write column headers
+
+	for (size_t i = 0; i < _headers.size(); i++) {
+		const bool needQuote = _headers[i].contains(',');
+		if (needQuote)
+			out.writeByte('"');
+
+		out.writeString(_headers[i]);
+
+		if (needQuote)
+			out.writeByte('"');
+
+		if (i < (_headers.size() - 1))
+			out.writeByte(',');
+	}
+
+	out.writeByte('\n');
+
+	// Write array
+
+	for (size_t i = 0; i < _rows.size(); i++) {
+		for (size_t j = 0; j < _rows[i]->_data.size(); j++) {
+			const bool needQuote = _rows[i]->_data[j].contains(',');
+
+			if (needQuote)
+				out.writeByte('"');
+
+			if (_rows[i]->_data[j] != "****")
+				out.writeString(_rows[i]->_data[j]);
+
+			if (needQuote)
+				out.writeByte('"');
+
+			if (j < (_rows[i]->_data.size() - 1))
+				out.writeByte(',');
+		}
+
+		out.writeByte('\n');
+	}
+
+	out.flush();
+}
+
+bool TwoDAFile::writeCSV(const Common::UString &fileName) const {
+	Common::WriteFile file;
+	if (!file.open(fileName))
+		return false;
+
+	writeCSV(file);
 	file.close();
 
 	return true;
