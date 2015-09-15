@@ -46,8 +46,13 @@ void printDataHex(const byte *data, size_t size);
  */
 UString debugTag(uint32 tag, bool trim = false);
 
-/** Parse a string into any POD integer, float/double or bool type. */
-template<typename T> void parseString(const UString &str, T &value);
+/** Parse a string into any POD integer, float/double or bool type.
+ *
+ *  If allowEmpty is false, parseString() will throw when encountering an empty string.
+ *  If allowEmpty is true and an empty string is encountered, parseString() will
+ *  immediately return without modifying the value parameter.
+ */
+template<typename T> void parseString(const UString &str, T &value, bool allowEmpty = false);
 
 /** Convert any POD integer, float/double or bool type into a string. */
 template<typename T> UString composeString(T value);

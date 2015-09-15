@@ -194,7 +194,14 @@ static inline void parse(const char *nptr, char **endptr, double &value) {
 }
 
 
-template<typename T> void parseString(const UString &str, T &value) {
+template<typename T> void parseString(const UString &str, T &value, bool allowEmpty) {
+	if (str.empty()) {
+		if (allowEmpty)
+			return;
+
+		throw Exception("Trying to parse an empty string");
+	}
+
 	const char *nptr = str.c_str();
 	char *endptr = 0;
 
@@ -217,7 +224,14 @@ template<typename T> void parseString(const UString &str, T &value) {
 	}
 }
 
-template<> void parseString(const UString &str, bool &value) {
+template<> void parseString(const UString &str, bool &value, bool allowEmpty) {
+	if (str.empty()) {
+		if (allowEmpty)
+			return;
+
+		throw Exception("Trying to parse an empty string");
+	}
+
 	// Valid true values are "true", "yes", "y", "on" and "1"
 
 	bool oldValue = value;
@@ -235,21 +249,21 @@ template<> void parseString(const UString &str, bool &value) {
 	}
 }
 
-template void parseString<bool              >(const UString &str, bool               &value);
+template void parseString<bool              >(const UString &str, bool               &value, bool allowEmpty);
 
-template void parseString<  signed char     >(const UString &str,   signed char      &value);
-template void parseString<unsigned char     >(const UString &str, unsigned char      &value);
-template void parseString<  signed short    >(const UString &str,   signed short     &value);
-template void parseString<unsigned short    >(const UString &str, unsigned short     &value);
-template void parseString<  signed int      >(const UString &str,   signed int       &value);
-template void parseString<unsigned int      >(const UString &str, unsigned int       &value);
-template void parseString<  signed long     >(const UString &str,   signed long      &value);
-template void parseString<unsigned long     >(const UString &str, unsigned long      &value);
-template void parseString<  signed long long>(const UString &str,   signed long long &value);
-template void parseString<unsigned long long>(const UString &str, unsigned long long &value);
+template void parseString<  signed char     >(const UString &str,   signed char      &value, bool allowEmpty);
+template void parseString<unsigned char     >(const UString &str, unsigned char      &value, bool allowEmpty);
+template void parseString<  signed short    >(const UString &str,   signed short     &value, bool allowEmpty);
+template void parseString<unsigned short    >(const UString &str, unsigned short     &value, bool allowEmpty);
+template void parseString<  signed int      >(const UString &str,   signed int       &value, bool allowEmpty);
+template void parseString<unsigned int      >(const UString &str, unsigned int       &value, bool allowEmpty);
+template void parseString<  signed long     >(const UString &str,   signed long      &value, bool allowEmpty);
+template void parseString<unsigned long     >(const UString &str, unsigned long      &value, bool allowEmpty);
+template void parseString<  signed long long>(const UString &str,   signed long long &value, bool allowEmpty);
+template void parseString<unsigned long long>(const UString &str, unsigned long long &value, bool allowEmpty);
 
-template void parseString<float             >(const UString &str, float              &value);
-template void parseString<double            >(const UString &str, double             &value);
+template void parseString<float             >(const UString &str, float              &value, bool allowEmpty);
+template void parseString<double            >(const UString &str, double             &value, bool allowEmpty);
 
 
 template<typename T> UString composeString(T value) {
