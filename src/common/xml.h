@@ -34,7 +34,7 @@ struct _xmlNode;
 
 namespace Common {
 
-class SeekableReadStream;
+class ReadStream;
 
 /** Initialize the XML subsystem. Needs to be called from the main thread. */
 void initXML();
@@ -43,10 +43,10 @@ void deinitXML();
 
 class XMLNode;
 
-/** Class to parse a SeekableReadStream into a simple XML tree. */
+/** Class to parse a ReadStream into a simple XML tree. */
 class XMLParser {
 public:
-	XMLParser(SeekableReadStream &stream, bool makeLower = false);
+	XMLParser(ReadStream &stream, bool makeLower = false);
 	~XMLParser();
 
 	/** Return the XML root node. */

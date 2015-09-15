@@ -47,7 +47,7 @@ static void errorFuncThrow(void *UNUSED(ctx), const char *msg, ...) {
 }
 
 static int readStream(void *context, char *buffer, int len) {
-	SeekableReadStream *stream = (SeekableReadStream *) context;
+	ReadStream *stream = (ReadStream *) context;
 	if (!stream)
 		return -1;
 
@@ -69,7 +69,7 @@ void deinitXML() {
 	xmlCleanupParser();
 }
 
-XMLParser::XMLParser(SeekableReadStream &stream, bool makeLower) : _rootNode(0) {
+XMLParser::XMLParser(ReadStream &stream, bool makeLower) : _rootNode(0) {
 	xmlDocPtr xml = 0;
 
 	try {
