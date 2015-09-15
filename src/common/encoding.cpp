@@ -34,6 +34,7 @@
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
 #include "src/common/memreadstream.h"
+#include "src/common/writestream.h"
 
 namespace Common {
 
@@ -298,6 +299,41 @@ UString readString(const byte *data, size_t size, Encoding encoding) {
 	memcpy(&output[0], data, size);
 
 	return createString(output, encoding);
+}
+
+size_t writeString(WriteStream &stream, const Common::UString &str, Encoding encoding, bool terminate) {
+	size_t n = 0;
+
+	MemoryReadStream *data = 0;
+	try {
+		data = convertString(str, encoding, terminate);
+
+		n = stream.writeStream(*data);
+	} catch (...) {
+		delete data;
+		throw;
+	}
+
+	delete data;
+
+	return n;
+}
+
+void writeStringFixed(WriteStream &stream, const Common::UString &str, Encoding encoding, size_t length) {
+	MemoryReadStream *data = 0;
+	try {
+		data = convertString(str, encoding, false);
+
+		size_t n = stream.writeStream(*data, length);
+		while (n++ < length)
+			stream.writeByte(0);
+
+	} catch (...) {
+		delete data;
+		throw;
+	}
+
+	delete data;
 }
 
 MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString) {

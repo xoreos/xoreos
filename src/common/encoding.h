@@ -32,6 +32,7 @@ namespace Common {
 class UString;
 class SeekableReadStream;
 class MemoryReadStream;
+class WriteStream;
 
 enum Encoding {
 	kEncodingInvalid = -1,
@@ -68,6 +69,12 @@ UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 
 /** Read a string with the given encoding from the raw buffer. */
 UString readString(const byte *data, size_t size, Encoding encoding);
+
+/** Write a string into a stream with a given encoding. */
+size_t writeString(WriteStream &stream, const Common::UString &str, Encoding encoding, bool terminate = true);
+
+/** Write a string into a stream with a given encoding and fixed length in bytes. */
+void writeStringFixed(WriteStream &stream, const Common::UString &str, Encoding encoding, size_t length);
 
 /** Convert a string into the given encoding. */
 MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString = true);
