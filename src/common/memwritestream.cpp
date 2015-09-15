@@ -76,7 +76,9 @@ void MemoryWriteStreamDynamic::reserve(size_t s) {
 
 	byte *oldData = _data;
 
-	_capacity = s + 32;
+	while (_capacity < s)
+		_capacity = MAX<size_t>(2, _capacity * 2);
+
 	_data = new byte[_capacity];
 	_ptr = _data + _pos;
 
