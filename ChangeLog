@@ -25,6 +25,11 @@ Someday, ????-??-?? (Version 0.0.3)
 			- Added script system
 			- Implemented partial placeable and door handling
 			- Implemented preliminary reflective environment mapping
+		- JADE:
+			- Restructured main game loop
+			- Restructured object classes to match NWN
+			- Added script system
+			- Implemented partial area object loading and handling
 		- NWN2:
 			- Restructured main game loop
 			- Restructured object classes to match NWN
