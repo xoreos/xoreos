@@ -39,7 +39,23 @@ namespace Common {
 
 namespace Aurora {
 
-/** Class to hold the GFF'd two-dimensional array of a GDA file. */
+/** Class to hold the GFF'd two-dimensional array of a GDA file.
+ *
+ *  GDAs works very similar to 2DA files (see TwoDAFile in 2dafile.h).
+ *  But instead of keeping the data inside a simple ASCII or binary
+ *  format, GDAs store their table data inside a V4.0 GFF.
+ *
+ *  Moreover, GDAs do not contain column headers as strings. Instead,
+ *  they only store the CRC32 hash of the lower-case string encoded
+ *  in UTF-16LE. As such, it is not possible to directly list the
+ *  column names of a GDA without prior knowledge.
+ *
+ *  Several GDAs with the same column layout can also be combined into
+ *  an MGDA, creating a merged, combined table. This is commonly used
+ *  by the Dragon Age games. Within these MGDAs, rows are not anymore
+ *  identified by raw row index (since this index is now meaningless),
+ *  but by an "ID" column.
+ */
 class GDAFile {
 public:
 	static const size_t kInvalidColumn = SIZE_MAX;
