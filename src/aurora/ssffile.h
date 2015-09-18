@@ -39,7 +39,14 @@ namespace Common {
 
 namespace Aurora {
 
-/** Class to hold a sound set. */
+/** Class to hold a sound set.
+ *
+ *  A sound set contains a simple array of strings and sound resource
+ *  names for common creature sounds, like fighting noises, being
+ *  hurt, calling for medical help, etc.
+ *
+ *  Which index is used for which situation differs from game to game.
+ */
 class SSFFile : public AuroraBase {
 public:
 	/** A sound in the sound set. */
