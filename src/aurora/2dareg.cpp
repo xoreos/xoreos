@@ -200,6 +200,8 @@ GDAFile *TwoDARegistry::loadGDA(const Common::UString &name) {
 }
 
 GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
+	/* Load multiple GDAs with the same prefix, and merge them together into a single GDA. */
+
 	if (prefix.empty())
 		throw Common::Exception("Trying to load MGDA \"\"");
 
@@ -211,13 +213,16 @@ GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
 	GDAFile *gda = 0;
 	try {
 		for (std::list<ResourceManager::ResourceID>::const_iterator g = gdas.begin(); g != gdas.end(); ++g) {
+			// Find all GDAs that match the prefix
 			if (!g->name.toLower().beginsWith(prefix))
 				continue;
 
+			// Load the the GDA
 			Common::SeekableReadStream *stream = ResMan.getResource(g->name, kFileTypeGDA);
 			if (!stream)
 				throw Common::Exception("No such GDA \"%s\"", g->name.c_str());
 
+			// If this is the first GDA, plain load it. Otherwise, merge it into the first one
 			if (!gda)
 				gda = new GDAFile(stream);
 			else

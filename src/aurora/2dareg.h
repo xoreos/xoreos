@@ -35,7 +35,24 @@ namespace Aurora {
 class TwoDAFile;
 class GDAFile;
 
-/** The global 2DA registry, holding all current 2DAs. */
+/** The global 2DA registry, holding all current 2DAs.
+ *
+ *  TwoDARegistry is to be used by the engines to hold and cache 2DAs
+ *  and GDAs relevant to the current context, so that they don't need
+ *  to be parsed multiple times for successive uses.
+ *
+ *  All loaded 2DAs and GDAs will be held in memory until the clear()
+ *  method is called, which should be done in a moment appropriate for
+ *  the game. Most likely, this moment is the unloading of a module
+ *  or campaign, when the context of the current 2DAs/GDAs expires.
+ *
+ *  TwoDARegistry can also be used to load a so-called MGDA, a concat-
+ *  enation of multiple GDA files with the same prefix. This is used
+ *  by the Dragon Age games to allow for multiple GDAs to be used for
+ *  the same resource type, each GDA holding the information for a
+ *  range of resources. These GDAs complete each other instead of
+ *  overwriting each other.
+ */
 class TwoDARegistry : public Common::Singleton<TwoDARegistry> {
 public:
 	TwoDARegistry();
