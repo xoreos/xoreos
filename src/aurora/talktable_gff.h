@@ -35,7 +35,16 @@
 
 namespace Aurora {
 
-/** Loading BioWare's GFF'd talk tables. */
+/** Loading BioWare's GFF'd talk tables.
+ *
+ *  See class TalkTable for a general overview how talk tables work.
+ *
+ *  Unlike TalkTable_TLK, a GFF talk table stores the string data
+ *  within a V4.0 GFF. It does not store any language ID (the language
+ *  is implicit in the talk tables file name), nor any other data
+ *  besides the raw strings. getSoundResRef() always returns an empty
+ *  string.
+ */
 class TalkTable_GFF : public TalkTable {
 public:
 	TalkTable_GFF(Common::SeekableReadStream *tlk, Common::Encoding encoding);

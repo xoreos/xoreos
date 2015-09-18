@@ -35,7 +35,15 @@
 
 namespace Aurora {
 
-/** Loading BioWare's TLK talk tables. */
+/** Loading BioWare's TLK talk tables.
+ *
+ *  See class TalkTable for a general overview how talk tables work.
+ *
+ *  Unlike TalkTable_GFF, a TLK talk table is its own simple binary
+ *  format. It has a numerical, game-local ID of the language it
+ *  contains, and stores a few more optional data points per string,
+ *  like a reference to a voice-over file.
+ */
 class TalkTable_TLK : public AuroraBase, public TalkTable {
 public:
 	TalkTable_TLK(Common::SeekableReadStream *tlk, Common::Encoding encoding);

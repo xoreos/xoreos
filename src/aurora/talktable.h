@@ -35,7 +35,18 @@ namespace Common {
 
 namespace Aurora {
 
-/** Base class for BioWare's talk tables. */
+/** Base class for BioWare's talk tables.
+ *
+ *  A talk table contains localized string data, and optional voice-
+ *  over resource names, indexed by a string reference ("StrRef").
+ *
+ *  A single talktable always contains strings in a single language
+ *  (and for a single gender of the PC), and commonly all strings for
+ *  a given context (module, campaign, ...).
+ *
+ *  See classes TalkTable_TLK and TalkTable_GFF for the two main
+ *  formats a talk table can be found in.
+ */
 class TalkTable {
 public:
 	virtual ~TalkTable();
