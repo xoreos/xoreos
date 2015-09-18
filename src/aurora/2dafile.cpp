@@ -156,14 +156,15 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 	if ((_version != kVersion2a) && (_version != kVersion2b))
 		throw Common::Exception("Unsupported 2DA file version %s", Common::debugTag(_version).c_str());
 
-	Common::UString lineRest = Common::readStringLine(twoda, Common::kEncodingASCII);
+	// Ignore the rest of the line; it's garbage
+	Common::readStringLine(twoda, Common::kEncodingASCII);
 
 	try {
 
 		if      (_version == kVersion2a)
-			read2a(twoda);
+			read2a(twoda); // ASCII
 		else if (_version == kVersion2b)
-			read2b(twoda);
+			read2b(twoda); // Binary
 
 		// Create the map to quickly translate headers to column indices
 		createHeaderMap();
@@ -180,10 +181,14 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 void TwoDAFile::read2a(Common::SeekableReadStream &twoda) {
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleIgnoreAll);
 
+	// Spaces and tabs act to separate cells
 	tokenize.addSeparator(' ');
 	tokenize.addSeparator('\t');
+	// We can quote spaces and tabs with "
 	tokenize.addQuote('\"');
+	// \n ends a whole row
 	tokenize.addChunkEnd('\n');
+	// We're ignoring \r
 	tokenize.addIgnore('\r');
 
 	readDefault2a(twoda, tokenize);
@@ -200,6 +205,11 @@ void TwoDAFile::read2b(Common::SeekableReadStream &twoda) {
 void TwoDAFile::readDefault2a(Common::SeekableReadStream &twoda,
                               Common::StreamTokenizer &tokenize) {
 
+	/* ASCII 2DA files can have default values that are returned for cells
+	 * that don't exist. They are specified in the second line, optionally
+	 * preceeded by "Default:".
+	 */
+
 	std::vector<Common::UString> defaultRow;
 	tokenize.getTokens(twoda, defaultRow, 2);
 
@@ -215,6 +225,8 @@ void TwoDAFile::readDefault2a(Common::SeekableReadStream &twoda,
 void TwoDAFile::readHeaders2a(Common::SeekableReadStream &twoda,
                               Common::StreamTokenizer &tokenize) {
 
+	/* Read the column headers of an ASCII 2DA file. */
+
 	tokenize.getTokens(twoda, _headers);
 
 	tokenize.nextChunk(twoda);
@@ -223,15 +235,20 @@ void TwoDAFile::readHeaders2a(Common::SeekableReadStream &twoda,
 void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda,
                            Common::StreamTokenizer &tokenize) {
 
+	/* And now read the individual cells in the rows. */
+
 	size_t columnCount = _headers.size();
 
 	while (!twoda.eos()) {
 		TwoDARow *row = new TwoDARow(*this);
 
+		// Skip the first token, which is the row index. It's implicit in the data anyway
 		tokenize.skipToken(twoda);
 
+		// Read all the cells in the row
 		size_t count = tokenize.getTokens(twoda, row->_data, columnCount, columnCount);
 
+		// And move to the next line
 		tokenize.nextChunk(twoda);
 
 		if (count == 0) {
@@ -245,8 +262,11 @@ void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda,
 }
 
 void TwoDAFile::readHeaders2b(Common::SeekableReadStream &twoda) {
+	/* Read the column headers of a binary 2DA file. */
+
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
+	// Individual column headers a separated by either a tab or a NUL
 	tokenize.addSeparator('\t');
 	tokenize.addSeparator('\0');
 
@@ -259,14 +279,18 @@ void TwoDAFile::readHeaders2b(Common::SeekableReadStream &twoda) {
 }
 
 void TwoDAFile::skipRowNames2b(Common::SeekableReadStream &twoda) {
-	uint32 rowCount = twoda.readUint32LE();
+	/* Next up are the row names / indices. Like for the ASCII 2DA files,
+	 * the actual row indices are implicit in the data, so we're just
+	 * ignoring them. The only information we care about is how many rows
+	 * there are.
+	 */
 
-	_rows.reserve(rowCount);
-	for (uint32 i = 0; i < rowCount; i++)
-		_rows.push_back(0);
+	const uint32 rowCount = twoda.readUint32LE();
+	_rows.resize(rowCount, 0);
 
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
+	// Individual row indices a separated by either a tab or a NUL
 	tokenize.addSeparator('\t');
 	tokenize.addSeparator('\0');
 
@@ -274,6 +298,13 @@ void TwoDAFile::skipRowNames2b(Common::SeekableReadStream &twoda) {
 }
 
 void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
+	/* And now read the cells. In binary 2DA files, each cell only
+	 * stores a single 16-bit number, the offset into the data segment
+	 * where the data for this cell can be found. Moreover, a single
+	 * data offset can be used by several cells, deduplicating the
+	 * cell data.
+	 */
+
 	size_t columnCount = _headers.size();
 	size_t rowCount    = _rows.size();
 	size_t cellCount   = columnCount * rowCount;
@@ -287,7 +318,7 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 	for (size_t i = 0; i < cellCount; i++)
 		offsets[i] = twoda.readUint16LE();
 
-	twoda.skip(2); // Reserved
+	twoda.skip(2); // Size of the data segment in bytes
 
 	size_t dataOffset = twoda.pos();
 

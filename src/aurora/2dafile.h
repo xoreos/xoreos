@@ -43,6 +43,17 @@ namespace Aurora {
 
 class TwoDAFile;
 
+/** A row within a 2DA file.
+ *
+ *  Each row inside a 2DA file contains several cells with string
+ *  data, identified by either their column index or column header
+ *  string.
+ *
+ *  For convenience's sake, there are also methods to directly parse
+ *  the cell strings into integer or floating point values.
+ *
+ *  See also class TwoDAFile.
+ */
 class TwoDARow {
 public:
 	/** Return the contents of a cell as a string. */
@@ -78,7 +89,31 @@ private:
 	friend class TwoDAFile;
 };
 
-/** Class to hold the two-dimensional array of a 2DA file. */
+/** Class to hold the two-dimensional array of a 2DA file.
+ *
+ *  A 2DA contains a two-dimensional array of string data, where
+ *  each cell can be identified by the numerical index of its row
+ *  and column. Moreover, each column has a textual "header", a
+ *  string uniquely identifying the column by what it's used for.
+ *
+ *  The usual use-case is to first identify which row to use for
+ *  a certain object, item, feat, etc., read this row out of the
+ *  2DA, and then read each column cell in that row.
+ *
+ *  For example: the data file defining an item specifies a "Type"
+ *  of 23, which is an index into the row 23 of the 2DA "items.2da".
+ *  This 2DA contains the column "Model", "Icon" and "Price", so
+ *  the cells in the row 23 contain the model, icon and price of
+ *  the item we are looking for.
+ *
+ *  2DA files exist in two variants: ASCII and binary. The ASCII
+ *  version is just a simple text file, formated to represent a
+ *  grid of data, with whitespace separating the cells. It can
+ *  be read and modified with a simple text editor. The binary
+ *  version cannot.
+ *
+ *  See also classes TwoDARow and TwoDARegistry.
+ */
 class TwoDAFile : public AuroraBase {
 public:
 	TwoDAFile(Common::SeekableReadStream &twoda);
@@ -99,6 +134,7 @@ public:
 	/** Get a row. */
 	const TwoDARow &getRow(size_t row) const;
 
+	// .--- 2DA file writers
 	/** Write the 2DA data into an V2.0 ASCII 2DA. */
 	void writeASCII(Common::WriteStream &out) const;
 	/** Write the 2DA data into an V2.0 ASCII 2DA. */
@@ -113,6 +149,7 @@ public:
 	void writeCSV(Common::WriteStream &out) const;
 	/** Write the 2DA data into a CSV file. */
 	bool writeCSV(const Common::UString &fileName) const;
+	// '---
 
 private:
 	typedef std::map<Common::UString, size_t, Common::UString::iless> HeaderMap;
