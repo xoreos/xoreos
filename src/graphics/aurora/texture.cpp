@@ -342,8 +342,11 @@ Texture *Texture::create(const Common::UString &name) {
 				throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
 			// PLT needs extra handling, since they're their own Texture class
-			if (type == ::Aurora::kFileTypePLT)
+			if (type == ::Aurora::kFileTypePLT) {
+				delete txi;
+
 				return createPLT(name, imageStream);
+			}
 
 			image = loadImage(imageStream, type, txi);
 		}
