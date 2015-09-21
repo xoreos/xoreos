@@ -200,9 +200,14 @@ void Functions::getSubString(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::findSubString(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (int32) -1;
+	const Common::UString &str = ctx.getParams()[0].getString();
+	const Common::UString &sub = ctx.getParams()[1].getString();
 
-	unimplementedFunction(ctx);
+	Common::UString::iterator it = str.findFirst(sub);
+	if (it == str.end())
+		ctx.getReturn() = -1;
+
+	ctx.getReturn() = (int32) str.getPosition(it);
 }
 
 void Functions::getStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
