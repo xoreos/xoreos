@@ -60,7 +60,9 @@ Campaigns &Game::getCampaigns() {
 void Game::run() {
 	_campaigns = new Campaigns(*_console, *this);
 
-	runCampaigns();
+	while (!EventMan.quitRequested()) {
+		runCampaigns();
+	}
 
 	delete _campaigns;
 	_campaigns = 0;
@@ -72,7 +74,24 @@ void Game::runCampaigns() {
 		throw Common::Exception("Can't find the default single player campaign");
 
 	_campaigns->load(*singlePlayer);
-	_campaigns->run();
+
+	if (EventMan.quitRequested() || !_campaigns->isLoaded())
+		return;
+
+	_campaigns->enter();
+	EventMan.enableKeyRepeat(true);
+
+	while (!EventMan.quitRequested() && _campaigns->isRunning()) {
+		Events::Event event;
+		while (EventMan.pollEvent(event))
+			_campaigns->addEvent(event);
+
+		_campaigns->processEventQueue();
+		EventMan.delay(10);
+	}
+
+	EventMan.enableKeyRepeat(false);
+	_campaigns->leave();
 }
 
 void Game::loadResources(const Common::UString &dir, uint32 priority, ChangeList &res) {
