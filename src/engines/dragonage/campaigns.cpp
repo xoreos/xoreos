@@ -28,19 +28,23 @@
 
 #include "src/aurora/resman.h"
 
+#include "src/graphics/camera.h"
+
 #include "src/events/events.h"
+
+#include "src/engines/aurora/console.h"
+#include "src/engines/aurora/camera.h"
 
 #include "src/engines/dragonage/game.h"
 #include "src/engines/dragonage/campaigns.h"
 #include "src/engines/dragonage/campaign.h"
-#include "src/engines/dragonage/console.h"
 
 namespace Engines {
 
 namespace DragonAge {
 
 Campaigns::Campaigns(::Engines::Console &console, Game &game) : _console(&console), _game(&game),
-	_currentCampaign(0), _running(false) {
+	_hasCampaign(false), _running(false), _exit(true), _currentCampaign(0) {
 
 	findCampaigns();
 }
@@ -101,6 +105,14 @@ Campaign *Campaigns::getAddin(const Common::UString &uid) {
 			return *a;
 
 	return 0;
+}
+
+bool Campaigns::isLoaded() const {
+	return _hasCampaign && _currentCampaign && _currentCampaign->isLoaded();
+}
+
+bool Campaigns::isRunning() const {
+	return !EventMan.quitRequested() && _running && !_exit && _currentCampaign && _currentCampaign->isLoaded();
 }
 
 void Campaigns::findCampaigns() {
@@ -177,13 +189,23 @@ void Campaigns::load(const Campaign &campaign) {
 	loadCampaign(campaign);
 }
 
+void Campaigns::exit() {
+	_exit = true;
+}
+
 void Campaigns::unload() {
 	if (_currentCampaign)
 		_currentCampaign->unload();
 
 	_currentCampaign = 0;
 
+	_hasCampaign = false;
+	_running     = false;
+	_exit        = true;
+
 	_newCampaign.clear();
+
+	_eventQueue.clear();
 }
 
 void Campaigns::loadCampaign(const Campaign &campaign) {
@@ -203,77 +225,74 @@ void Campaigns::loadCampaign(const Campaign &campaign) {
 		      campaign.getUID().c_str(), campaign.getName().getString().c_str());
 		throw e;
 	}
+
+	_hasCampaign = true;
 }
 
-void Campaigns::run() {
-	if (!_currentCampaign)
-		return;
+void Campaigns::enter() {
+	if (!_hasCampaign)
+		throw Common::Exception("Campaigns::enter(): Lacking a campaign?!?");
 
 	_currentCampaign->enter();
+
 	_running = true;
+	_exit    = false;
+}
 
-	EventMan.enableKeyRepeat();
-
-	try {
-
-		EventMan.flushEvents();
-
-		while (!EventMan.quitRequested()) {
-			replaceCampaign();
-			if (!_currentCampaign)
-				break;
-
-			if (!_currentCampaign->changeArea())
-				break;
-
-			handleEvents();
-
-			if (!EventMan.quitRequested())
-				EventMan.delay(10);
-		}
-
-	} catch (Common::Exception &e) {
-		_running = false;
-
-		e.add("Failing running campaign \"%s\" (\"%s\")",
-				_currentCampaign ? _currentCampaign->getUID().c_str() : "",
-				_currentCampaign ? _currentCampaign->getName().getString().c_str() : "");
-
-		throw e;
-	}
+void Campaigns::leave() {
+	if (_currentCampaign)
+		_currentCampaign->leave();
 
 	_running = false;
+	_exit    = true;
+}
+
+void Campaigns::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+void Campaigns::processEventQueue() {
+	if (!isRunning())
+		return;
+
+	replaceCampaign();
+
+	if (!isRunning())
+		return;
+
+	handleEvents();
 }
 
 void Campaigns::handleEvents() {
-	Events::Event event;
-	while (EventMan.pollEvent(event)) {
+	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event) {
 		// Handle console
 		if (_console->isVisible()) {
-			_console->processEvent(event);
+			_console->processEvent(*event);
 			continue;
 		}
 
-		if (event.type == Events::kEventKeyDown) {
+		if (event->type == Events::kEventKeyDown) {
 			// Console
-			if ((event.key.keysym.sym == SDLK_d) && (event.key.keysym.mod & KMOD_CTRL)) {
+			if ((event->key.keysym.sym == SDLK_d) && (event->key.keysym.mod & KMOD_CTRL)) {
 				_console->show();
 				continue;
 			}
 		}
 
-		if (_currentCampaign) {
-			_currentCampaign->addEvent(event);
+		// Camera
+		if (handleCameraInput(*event))
 			continue;
-		}
+
+		if (_currentCampaign)
+			_currentCampaign->addEvent(*event);
 	}
 
-	if (_currentCampaign)
-		_currentCampaign->processEventQueue();
-}
+	_eventQueue.clear();
 
-bool Campaigns::isRunning() const {
-	return _running;
+	CameraMan.update();
+
+		if (_currentCampaign)
+			_currentCampaign->processEventQueue();
 }
 
 Campaign *Campaigns::getCurrentCampaign() const {
@@ -295,9 +314,7 @@ void Campaigns::replaceCampaign() {
 		return;
 
 	loadCampaign(*campaign);
-
-	if (_currentCampaign)
-		_currentCampaign->enter();
+	enter();
 }
 
 void Campaigns::refreshLocalized() {

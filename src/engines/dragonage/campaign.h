@@ -26,6 +26,7 @@
 #define ENGINES_DRAGONAGE_CAMPAIGN_H
 
 #include <vector>
+#include <list>
 #include <map>
 
 #include "src/common/ustring.h"
@@ -49,6 +50,7 @@ class Area;
 
 class Campaign : public DragonAge::Object, public DragonAge::ObjectContainer {
 public:
+	// .--- Static information
 	/** Return the unique ID of this campaign. */
 	const Common::UString &getUID() const;
 
@@ -61,19 +63,28 @@ public:
 	bool isEnabled() const; ///< Is this Campaign enabled?
 	bool isBioWare() const; ///< Is this an original campaign by BioWare?
 	bool needsAuth() const; ///< Does this campaign need authorization from BioWare?
+	// '---
 
+	// .--- Areas
 	/** Return the RIM file containing this area. */
 	const Common::UString &getAreaRIM(const Common::UString &area) const;
 
 	const std::vector<Common::UString> &getAreas() const;
+	// '---
 
+	// .--- Campaign management
+	/** Is this campaign currently loaded? */
+	bool isLoaded() const;
+	// '---
+
+	// .--- PC management
 	/** Move the player character to this area. */
 	void movePC(const Common::UString &area);
 	/** Move the player character to this position within the current area. */
 	void movePC(float x, float y, float z);
 	/** Move the player character to this position within this area. */
 	void movePC(const Common::UString &area, float x, float y, float z);
-
+	// '---
 
 private:
 	/** A node in the RIM tree. */
@@ -94,6 +105,8 @@ private:
 	};
 	/** Map of area RIMNodes indexed by the area resref. */
 	typedef std::map<Common::UString, const RIMNode *> AreaMap;
+
+	typedef std::list<Events::Event> EventQueue;
 
 
 	Game *_game;
@@ -131,13 +144,15 @@ private:
 
 	std::vector<Common::UString> _areas;
 
+	bool _loaded;
+
 	ChangeList _resources;
 	ChangeList _tlks;
 
-	Area *_area;
-	Common::UString _newArea;
+	Common::UString _newArea;     ///< The new area to enter.
+	Area           *_currentArea; ///< The current area.
 
-	std::list<Events::Event> _eventQueue;
+	EventQueue _eventQueue;
 
 
 	Campaign(Game &game, const Common::UString &cifPath = "",
@@ -177,6 +192,8 @@ private:
 	bool changeArea();
 
 	void enterArea(bool startArea = false);
+
+	void handleEvents();
 	// '---
 
 	friend class Campaigns;

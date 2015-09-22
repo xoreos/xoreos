@@ -40,11 +40,12 @@ class Campaign;
 
 class Campaigns {
 public:
-	typedef std::vector<Campaign *> PlayableCampaigns;
-	typedef std::vector<Campaign *> AddinContent;
-
 	Campaigns(::Engines::Console &console, Game &game);
 	~Campaigns();
+
+	// .--- Available campaigns and addins
+	typedef std::vector<Campaign *> PlayableCampaigns;
+	typedef std::vector<Campaign *> AddinContent;
 
 	/** Return all playable campaigns. */
 	const PlayableCampaigns &getCampaigns() const;
@@ -55,25 +56,52 @@ public:
 	const Campaign *findCampaign(const Common::UString &uid) const;
 	/** Find a specific add-in by UID and return it, or 0 if not found. */
 	const Campaign *findAddin(const Common::UString &uid) const;
+	// '---
 
-	/** Load a campaign. */
-	void load(const Campaign &campaign);
-	/** Run the currently loaded campaign. */
-	void run();
-
+	// .--- Campaign management
+	/** Is a campaign currently loaded and ready to run? */
+	bool isLoaded() const;
 	/** Is a campaign currently running? */
 	bool isRunning() const;
 
+	/** Load a campaign. */
+	void load(const Campaign &campaign);
+	/** Exit the currently running campaign. */
+	void exit();
+	// '---
+
+	// .--- The current campaign
 	/** Return the currently running campaign. */
 	Campaign *getCurrentCampaign() const;
+	// '---
 
+	// .--- Interact with the current campaign
 	/** Refresh all localized strings. */
 	void refreshLocalized();
+	// '---
 
+	// .--- Campaign main loop (called by the Game class)
+	/** Enter the loaded campaign, starting it. */
+	void enter();
+	/** Leave the running campaign, quitting it. */
+	void leave();
+
+	/** Add a single event for consideration into the event queue. */
+	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
+	void processEventQueue();
+	// '---
 
 private:
+	typedef std::list<Events::Event> EventQueue;
+
+
 	::Engines::Console *_console;
 	Game *_game;
+
+	bool _hasCampaign; ///< Do we have a campaign?
+	bool _running;     ///< Are we currently running a campaign?
+	bool _exit;        ///< Should we exit the campaign?
 
 	/** All campaigns we know about. */
 	PlayableCampaigns _campaigns;
@@ -83,20 +111,23 @@ private:
 	/** The currently loaded campaign. */
 	Campaign *_currentCampaign;
 
-	/** Are we currently running a module? */
-	bool _running;
-
 	/** The UID of the campaign we should change to. */
 	Common::UString _newCampaign;
 
+	EventQueue _eventQueue;
 
-	void unload();
+
 	void clean();
+
+	/** Unload the whole shebang. */
+	void unload();
 
 	/** Load a new campaign. */
 	void loadCampaign(const Campaign &campaign);
 	/** Schedule a change to a new campaign. */
 	void changeCampaign(const Campaign &campaign);
+	/** Actually replace the currently running campaign. */
+	void replaceCampaign();
 
 	void findCampaigns();
 	void addCampaign(Campaign *campaign);
@@ -105,9 +136,6 @@ private:
 
 	Campaign *getCampaign(const Common::UString &uid);
 	Campaign *getAddin(const Common::UString &uid);
-
-	/** Actually replace the currently running campaign. */
-	void replaceCampaign();
 
 	void handleEvents();
 };

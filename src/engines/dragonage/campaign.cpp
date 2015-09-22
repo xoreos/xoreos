@@ -34,10 +34,6 @@
 
 #include "src/graphics/camera.h"
 
-#include "src/events/events.h"
-
-#include "src/engines/aurora/camera.h"
-
 #include "src/engines/dragonage/game.h"
 #include "src/engines/dragonage/campaign.h"
 #include "src/engines/dragonage/area.h"
@@ -70,7 +66,7 @@ Campaign::Campaign(Game &game, const Common::UString &cifPath,
 	Object(kObjectTypeModule), _game(&game), _cifPath(cifPath),
 	_addinBase(addinBase), _enabled(false), _bioware(false), _needsAuth(false),
 	_priority(0xFFFFFFFF), _format(0xFFFFFFFF), _state(0xFFFFFFFF), _rimRoot(0),
-	_area(0) {
+	_loaded(false), _currentArea(0) {
 
 	_entryPosition[0] = 0.0;
 	_entryPosition[1] = 0.0;
@@ -302,6 +298,10 @@ const std::vector<Common::UString> &Campaign::getAreas() const {
 	return _areas;
 }
 
+bool Campaign::isLoaded() const {
+	return _loaded;
+}
+
 void Campaign::loadResources() {
 	_game->loadTexturePack("/packages/core"        ,   0, _resources, kTextureQualityHigh);
 	_game->loadTexturePack("/modules/single player", 500, _resources, kTextureQualityHigh);
@@ -347,6 +347,8 @@ void Campaign::load() {
 	loadResources();
 	readCIFDynamic(_cifPath);
 
+	_loaded = true;
+
 	_newArea = _entryArea;
 	loadArea();
 }
@@ -354,11 +356,14 @@ void Campaign::load() {
 void Campaign::unload() {
 	leave();
 
-	delete _area;
-	_area = 0;
+	delete _currentArea;
+	_currentArea = 0;
 
 	delete _rimRoot;
 	_rimRoot = 0;
+
+	_areaMap.clear();
+	_areas.clear();
 
 	clearObjects();
 	TwoDAReg.clear();
@@ -366,10 +371,12 @@ void Campaign::unload() {
 	_game->unloadTalkTables(_tlks);
 
 	deindexResources(_resources);
+
+	_loaded = false;
 }
 
 void Campaign::enterArea(bool startArea) {
-	if (!_area)
+	if (!_currentArea)
 		return;
 
 	float entryPosX, entryPosY, entryPosZ, entryOrientX, entryOrientY, entryOrientZ;
@@ -385,7 +392,7 @@ void Campaign::enterArea(bool startArea) {
 	} else {
 		float orientX, orientY, orientZ, orientAngle;
 
-		_area->getEntryLocation(entryPosX, entryPosY, entryPosZ, orientX, orientY, orientZ, orientAngle);
+		_currentArea->getEntryLocation(entryPosX, entryPosY, entryPosZ, orientX, orientY, orientZ, orientAngle);
 
 		entryOrientX = 0.0f;
 		entryOrientY = 0.0f;
@@ -399,25 +406,28 @@ void Campaign::enterArea(bool startArea) {
 
 	_eventQueue.clear();
 
-	_area->show();
+	_currentArea->show();
 
-	status("Entered area \"%s\" (\"%s\")", _area->getTag().c_str(), _area->getName().getString().c_str());
+	status("Entered area \"%s\" (\"%s\")", _currentArea->getTag().c_str(), _currentArea->getName().getString().c_str());
 }
 
 void Campaign::enter() {
+	if (!isLoaded())
+		throw Common::Exception("Campaign::enter(): Not loaded?!?");
+
 	enterArea(true);
 }
 
 void Campaign::leave() {
-	if (_area)
-		_area->hide();
+	if (_currentArea)
+		_currentArea->hide();
 }
 
 void Campaign::unloadArea() {
 	leave();
 
-	delete _area;
-	_area = 0;
+	delete _currentArea;
+	_currentArea = 0;
 
 	clearObjects();
 }
@@ -431,15 +441,15 @@ void Campaign::loadArea() {
 	if (area == _areaMap.end())
 		throw Common::Exception("Area \"%s\" does not exist in this campaign", _newArea.c_str());
 
-	_area = new Area(*this, area->second->area, area->second->environment, area->second->rim);
+	_currentArea = new Area(*this, area->second->area, area->second->environment, area->second->rim);
 }
 
 bool Campaign::changeArea() {
-	if (_area && (_area->getResRef() == _newArea))
+	if (_currentArea && (_currentArea->getResRef() == _newArea))
 		return true;
 
 	loadArea();
-	if (!_area)
+	if (!_currentArea)
 		return false;
 
 	enterArea();
@@ -451,22 +461,24 @@ void Campaign::addEvent(const Events::Event &event) {
 }
 
 void Campaign::processEventQueue() {
-	for (std::list<Events::Event>::const_iterator e = _eventQueue.begin(); e != _eventQueue.end(); ++e) {
-		// Camera
-		if (handleCameraInput(*e))
-			continue;
+	if (!isLoaded())
+		return;
 
-		if (_area) {
-			_area->addEvent(*e);
-			continue;
-		}
-	}
+	changeArea();
+
+	if (!isLoaded())
+		return;
+
+	handleEvents();
+}
+
+void Campaign::handleEvents() {
+	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event)
+		_currentArea->addEvent(*event);
+
 	_eventQueue.clear();
 
-	if (_area)
-		_area->processEventQueue();
-
-	CameraMan.update();
+	_currentArea->processEventQueue();
 }
 
 void Campaign::movePC(const Common::UString &area) {
