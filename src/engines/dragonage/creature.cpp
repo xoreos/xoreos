@@ -27,6 +27,7 @@
 #include "src/common/maths.h"
 #include "src/common/error.h"
 
+#include "src/aurora/language.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/gff4file.h"
 #include "src/aurora/gdafile.h"
@@ -60,11 +61,12 @@ using namespace ::Aurora::GFF4FieldNamesEnum;
 
 using Graphics::Aurora::Model;
 
-Creature::Creature(const GFF3Struct &creature) : Object(kObjectTypeCreature),
-	_appearanceID(0xFFFFFFFF), _appearanceGender(1) {
+Creature::Creature() : Object(kObjectTypeCreature) {
+	init();
+}
 
-	for (size_t i = 0; i < kPartVariationCount; i++)
-		_partVariation[i] = 0xFFFFFFFF;
+Creature::Creature(const GFF3Struct &creature) : Object(kObjectTypeCreature) {
+	init();
 
 	try {
 		load(creature);
@@ -81,6 +83,16 @@ Creature::~Creature() {
 
 	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
 		delete *m;
+}
+
+void Creature::init() {
+	_isPC = false;
+
+	_appearanceID     = 0xFFFFFFFF;
+	_appearanceGender = 1;
+
+	for (size_t i = 0; i < kPartVariationCount; i++)
+		_partVariation[i] = 0xFFFFFFFF;
 }
 
 void Creature::setPosition(float x, float y, float z) {
@@ -107,6 +119,17 @@ void Creature::show() {
 void Creature::hide() {
 	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
 		(*m)->hide();
+}
+
+bool Creature::isPC() const {
+	return _isPC;
+}
+
+void Creature::createFakePC() {
+	_name.setString(LangMan.getCurrentLanguageText(), LangMan.getCurrentGender(), "Fakoo McFakeston");
+	_tag = Common::UString::format("[PC: %s]", _name.getString().c_str());
+
+	_isPC = true;
 }
 
 void Creature::enter() {
