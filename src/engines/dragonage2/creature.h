@@ -47,14 +47,23 @@ namespace DragonAge2 {
 
 class Creature : public Object {
 public:
+	/** Create a dummy creature instance. Not playable as it is.*/
+	Creature();
 	/** Load from a placeable instance. */
 	Creature(const Aurora::GFF3Struct &placeable);
 	~Creature();
+
+	/** Create a fake player character creature for testing purposes. */
+	void createFakePC();
 
 	// Basic visuals
 
 	void show(); ///< Show the creature's model.
 	void hide(); ///< Hide the creature's model.
+
+	// Basic properties
+
+	bool isPC() const; ///< Is the creature a player character?
 
 	// Object/Cursor interactions
 
@@ -92,6 +101,8 @@ private:
 	typedef std::list<Graphics::Aurora::Model *> Models;
 
 
+	bool _isPC; ///< Is the creature a PC?
+
 	/** The creatures's appearance; index into the Appearances MGDA. */
 	uint32 _appearanceID;
 
@@ -107,6 +118,7 @@ private:
 	Models _models;
 
 
+	void init();
 	void load(const Aurora::GFF3Struct &placeable);
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
 
