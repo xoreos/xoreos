@@ -78,6 +78,11 @@ void Functions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
 	try {
 		Aurora::NWScript::NCSFile ncs(script);
 
+		// Let the child script inherit the environment of this parent script
+		Aurora::NWScript::VariableContainer *env = ctx.getCurrentEnvironment();
+		if (env)
+			ncs.setEnvironment(*env);
+
 		ncs.run(object);
 	} catch (Common::Exception &e) {
 		e.add("Failed ExecuteScript(\"%s\", %s)", script.c_str(), formatTag(object).c_str());
