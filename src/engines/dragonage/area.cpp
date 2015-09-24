@@ -162,6 +162,8 @@ void Area::loadARE(const Common::UString &resRef) {
 	areTop.getLocString("Name", _name);
 
 	readVarTable(areTop);
+	readScript(areTop);
+	enableEvents(true);
 
 	if (areTop.hasField("WaypointList"))
 		loadWaypoints (areTop.getList("WaypointList"));

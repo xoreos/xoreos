@@ -130,6 +130,8 @@ void Creature::createFakePC() {
 	_tag = Common::UString::format("[PC: %s]", _name.getString().c_str());
 
 	_isPC = true;
+
+	enableEvents(false);
 }
 
 void Creature::enter() {
@@ -505,8 +507,10 @@ void Creature::loadProperties(const GFF3Struct &gff) {
 		setOrientation(orientation[0], orientation[1], orientation[2], orientation[3]);
 	}
 
-	// Variables
+	// Variables and script
 	readVarTable(gff);
+	readScript(gff);
+	enableEvents(true);
 }
 
 } // End of namespace Dragon Age

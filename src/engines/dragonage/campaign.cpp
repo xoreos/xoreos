@@ -348,6 +348,8 @@ void Campaign::readCIFDynamic(const Common::UString &path) {
 		_rimRoot = readRIMs(*rimRoot);
 
 	readVarTable(cifTop);
+	readScript(cifTop);
+	enableEvents(true);
 }
 
 void Campaign::load() {
