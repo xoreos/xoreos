@@ -44,6 +44,8 @@ namespace Engines {
 
 namespace DragonAge2 {
 
+class Event;
+
 class ScriptContainer {
 public:
 	ScriptContainer();
@@ -60,6 +62,8 @@ public:
 	bool runScript(EventType event, Aurora::NWScript::Object *owner = 0,
 	               Aurora::NWScript::Object *triggerer = 0);
 
+	bool runScript(Event &event);
+
 	static bool runScript(const Common::UString &script, EventType event,
 	                      Aurora::NWScript::Object *owner = 0,
 	                      Aurora::NWScript::Object *triggerer = 0);
@@ -67,6 +71,11 @@ public:
 	                      const Aurora::NWScript::ScriptState &state,
 	                      Aurora::NWScript::Object *owner = 0,
 	                      Aurora::NWScript::Object *triggerer = 0);
+
+	static bool runScript(const Common::UString &script, Event &event);
+	static bool runScript(const Common::UString &script, Event &event,
+	                      const Aurora::NWScript::ScriptState &state);
+
 
 protected:
 	void clearScript();
