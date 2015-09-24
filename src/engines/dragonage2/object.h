@@ -37,11 +37,13 @@
 
 #include "src/engines/dragonage2/types.h"
 
+#include "src/engines/dragonage2/script/container.h"
+
 namespace Engines {
 
 namespace DragonAge2 {
 
-class Object : public Aurora::NWScript::Object {
+class Object : public Aurora::NWScript::Object, public DragonAge2::ScriptContainer {
 public:
 	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
