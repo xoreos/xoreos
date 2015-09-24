@@ -37,6 +37,7 @@
 #include "src/engines/dragonage2/dragonage2.h"
 #include "src/engines/dragonage2/campaigns.h"
 #include "src/engines/dragonage2/campaign.h"
+#include "src/engines/dragonage2/creature.h"
 
 namespace Engines {
 
@@ -78,7 +79,12 @@ void Game::runCampaigns() {
 	if (EventMan.quitRequested() || !_campaigns->isLoaded())
 		return;
 
+	Creature *fakePC = new Creature;
+	fakePC->createFakePC();
+
+	_campaigns->usePC(fakePC);
 	_campaigns->enter();
+
 	EventMan.enableKeyRepeat(true);
 
 	while (!EventMan.quitRequested() && _campaigns->isRunning()) {
@@ -92,6 +98,7 @@ void Game::runCampaigns() {
 
 	EventMan.enableKeyRepeat(false);
 	_campaigns->leave();
+	_campaigns->unload();
 }
 
 void Game::loadResources(const Common::UString &dir, uint32 priority, ChangeList &res) {

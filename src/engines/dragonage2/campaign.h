@@ -47,6 +47,7 @@ namespace DragonAge2 {
 
 class Game;
 class Area;
+class Creature;
 
 class Campaign : public DragonAge2::Object, public DragonAge2::ObjectContainer {
 public:
@@ -70,6 +71,13 @@ public:
 	const Common::UString &getAreaRIM(const Common::UString &area) const;
 
 	const std::vector<Common::UString> &getAreas() const;
+	// '---
+
+	// .--- Elements of the current campaign
+	/** Return the area the PC is currently in. */
+	Area *getCurrentArea() const;
+	/** Return the currently playing PC. */
+	Creature *getPC() const;
 	// '---
 
 	// .--- Campaign management
@@ -150,6 +158,9 @@ private:
 	ChangeList _resources;
 	ChangeList _tlks;
 
+	/** The player character we use. */
+	Creature *_pc;
+
 	Common::UString _newArea;     ///< The new area to enter.
 	Area           *_currentArea; ///< The current area.
 
@@ -179,7 +190,7 @@ private:
 	void unload();
 
 	/** Enter the campaign, starting it. */
-	void enter();
+	void enter(Creature &pc);
 	/** Leave the campaign, ending it. */
 	void leave();
 

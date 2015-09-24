@@ -37,6 +37,7 @@ namespace DragonAge2 {
 
 class Game;
 class Campaign;
+class Creature;
 
 class Campaigns {
 public:
@@ -66,13 +67,19 @@ public:
 
 	/** Load a campaign. */
 	void load(const Campaign &campaign);
+	/** Use this character as the player character. */
+	void usePC(Creature *pc);
 	/** Exit the currently running campaign. */
 	void exit();
+	/** Completely unload the currently loaded campaign. */
+	void unload();
 	// '---
 
 	// .--- The current campaign
 	/** Return the currently running campaign. */
 	Campaign *getCurrentCampaign() const;
+	/** Return the currently playing PC. */
+	Creature *getPC() const;
 	// '---
 
 	// .--- Interact with the current campaign
@@ -111,6 +118,9 @@ private:
 	/** The currently loaded campaign. */
 	Campaign *_currentCampaign;
 
+	/** The player character we use. */
+	Creature *_pc;
+
 	/** The UID of the campaign we should change to. */
 	Common::UString _newCampaign;
 
@@ -119,8 +129,15 @@ private:
 
 	void clean();
 
-	/** Unload the whole shebang. */
-	void unload();
+	/** Unload the whole shebang.
+	 *
+	 *  @param completeUnload Also unload the PC
+	 *                        true:  completely quit the current campaign.
+	 *                        false: the PC can be transfered to a new campaign.
+	 */
+	void unload(bool completeUnload);
+
+	void unloadPC();
 
 	/** Load a new campaign. */
 	void loadCampaign(const Campaign &campaign);
