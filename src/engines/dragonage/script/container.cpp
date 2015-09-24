@@ -35,6 +35,8 @@
 #include "src/aurora/nwscript/variable.h"
 #include "src/aurora/nwscript/ncsfile.h"
 
+#include "src/engines/dragonage/event.h"
+
 #include "src/engines/dragonage/script/container.h"
 
 namespace Engines {
@@ -103,11 +105,17 @@ void ScriptContainer::readScript(const Aurora::GFF4Struct &gff) {
 bool ScriptContainer::runScript(EventType event, Aurora::NWScript::Object *owner,
                                 Aurora::NWScript::Object *triggerer) {
 
-	std::map<EventType, bool>::const_iterator enabled = _eventEnabled.find(event);
+	Event e(event, triggerer, owner);
+
+	return runScript(e);
+}
+
+bool ScriptContainer::runScript(Event &event) {
+	std::map<EventType, bool>::const_iterator enabled = _eventEnabled.find(event.getType());
 	if ((enabled == _eventEnabled.end()) != !enabled->second)
 		return true;
 
-	return runScript(_script, event, owner, triggerer);
+	return runScript(_script, event);
 }
 
 bool ScriptContainer::runScript(const Common::UString &script, EventType event,
@@ -121,15 +129,29 @@ bool ScriptContainer::runScript(const Common::UString &script, EventType event,
                                 const Aurora::NWScript::ScriptState &state,
                                 Aurora::NWScript::Object *owner,
                                 Aurora::NWScript::Object *triggerer) {
+
+
+	Event e(event, triggerer, owner);
+
+	return runScript(script, event, state);
+}
+
+bool ScriptContainer::runScript(const Common::UString &script, Event &event) {
+	return runScript(script, event, Aurora::NWScript::NCSFile::getEmptyState());
+}
+
+bool ScriptContainer::runScript(const Common::UString &script, Event &event,
+                                const Aurora::NWScript::ScriptState &state) {
+
 	if (script.empty())
 		return true;
 
 	try {
 		Aurora::NWScript::NCSFile ncs(script);
 
-		ncs.getEnvironment().setVariable("EventType", (int32) event);
+		ncs.getEnvironment().setVariable("Event", (Aurora::NWScript::EngineType *) &event);
 
-		const Aurora::NWScript::Variable &retVal = ncs.run(state, owner, triggerer);
+		const Aurora::NWScript::Variable &retVal = ncs.run(state, event.getTarget(), event.getCreator());
 		if (retVal.getType() == Aurora::NWScript::kTypeInt)
 			return retVal.getInt() != 0;
 		if (retVal.getType() == Aurora::NWScript::kTypeFloat)
