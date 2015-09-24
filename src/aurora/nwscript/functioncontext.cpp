@@ -156,6 +156,13 @@ NCSFile *FunctionContext::getCurrentScript() const {
 	return _currentScript;
 }
 
+VariableContainer *FunctionContext::getCurrentEnvironment() const {
+	if (!_currentScript)
+		return 0;
+
+	return &_currentScript->getEnvironment();
+}
+
 static const Common::UString kStringEmpty;
 const Common::UString &FunctionContext::getScriptName() const {
 	if (!_currentScript)

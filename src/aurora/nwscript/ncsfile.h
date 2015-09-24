@@ -35,6 +35,7 @@
 
 #include "src/aurora/nwscript/types.h"
 #include "src/aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/variablecontainer.h"
 
 namespace Common {
 	class UString;
@@ -88,6 +89,17 @@ public:
 
 	const Common::UString &getName() const;
 
+	/** Return the script's environment variables.
+	 *
+	 *  Environment variables can be set by script engine functions and will
+	 *  persist for the whole run of the script. Similar to an environment in
+	 *  a UNIX shell, if the script spawns off a second script, that child
+	 *  script will inherit the environment of its parent script.
+	 */
+	VariableContainer &getEnvironment();
+	/** Overwrite the environment. */
+	void setEnvironment(const VariableContainer &env);
+
 	/** Run the current script, from start to finish. */
 	const Variable &run(Object *owner = 0, Object *triggerer = 0);
 
@@ -136,6 +148,8 @@ private:
 
 	Object *_owner;
 	Object *_triggerer;
+
+	VariableContainer _env;
 
 	std::stack<uint32> _returnOffsets;
 

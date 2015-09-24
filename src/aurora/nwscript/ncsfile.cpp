@@ -292,6 +292,14 @@ const Common::UString &NCSFile::getName() const {
 	return _name;
 }
 
+VariableContainer &NCSFile::getEnvironment() {
+	return _env;
+}
+
+void NCSFile::setEnvironment(const VariableContainer &env) {
+	_env = env;
+}
+
 ScriptState NCSFile::getEmptyState() {
 	ScriptState state;
 

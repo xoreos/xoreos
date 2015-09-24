@@ -36,6 +36,7 @@ namespace Aurora {
 namespace NWScript {
 
 class NCSFile;
+class VariableContainer;
 
 class FunctionContext {
 public:
@@ -72,6 +73,7 @@ public:
 
 	void setCurrentScript(NCSFile *script = 0);
 	NCSFile *getCurrentScript() const;
+	VariableContainer *getCurrentEnvironment() const;
 
 	const Common::UString &getScriptName() const;
 
