@@ -19,6 +19,7 @@ noinst_HEADERS = \
                  placeable.h \
                  creature.h \
                  objectcontainer.h \
+                 script/container.h \
                  $(EMPTY)
 
 libdragonage2_la_SOURCES = \
@@ -37,4 +38,5 @@ libdragonage2_la_SOURCES = \
                            placeable.cpp \
                            creature.cpp \
                            objectcontainer.cpp \
+                           script/container.cpp \
                            $(EMPTY)
