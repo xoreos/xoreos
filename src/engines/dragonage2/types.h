@@ -110,6 +110,145 @@ enum InventorySlot {
 	kInventorySlotInvalid        = 255
 };
 
+/** Types for script events. */
+enum EventType {
+	// Objects
+	kEventTypeInvalid                    =   0,
+	kEventTypeSpellCastAt                =   1,
+	kEventTypeDamaged                    =   2,
+	kEventTypeSpawn                      =   3,
+	kEventTypeDeath                      =   4,
+	kEventTypeMeleeAttackStart           =   5,
+	kEventTypeInventoryAdded             =   6,
+	kEventTypeInventoryRemoved           =   7,
+	kEventTypeEnter                      =   8,
+	kEventTypeExit                       =   9,
+
+	// Creatures
+	kEventTypeBlocked                    =  10,
+	kEventTypeEquip                      =  11,
+	kEventTypeUnequip                    =  12,
+	kEventTypeFailToOpen                 =  13,
+
+	// Placeables
+	kEventTypeUse                        =  14,
+	kEventTypeClick                      =  15,
+	kEventTypeTrapTriggered              =  16,
+	kEventTypeTrapDisarmed               =  17,
+
+	// Other
+	kEventTypeConversation               =  18,
+	kEventTypeModuleStart                =  19,
+	kEventTypeModuleLoad                 =  20,
+	kEventTypeListener                   =  21,
+	kEventTypeLocked                     =  22,
+	kEventTypeUnlocked                   =  23,
+	kEventTypePlayerLevelUp              =  24,
+	kEventTypeModuleGetCharStage         =  63,
+
+	// Perception
+	kEventTypePerceptionAppear           =  25,
+	kEventTypePerceptionDisappear        =  26,
+
+	// Plot
+	kEventTypeSetPlot                    =  27,
+	kEventTypeGetPlot                    =  28,
+
+	// Attack
+	kEventTypeAttackImpact               =  29,
+	kEventTypeCombatInitiated            =  30,
+
+	// Ability
+	kEventTypeAbilityCastImpact          =  31,
+	kEventTypeAbilityCastStart           =  32,
+
+	// Rules
+	kEventTypeApplyEffect                =  33,
+	kEventTypeRemoveEffect               =  34,
+
+	// AI
+	kEventTypeCommandPending             =  35,
+	kEventTypeCommandComplete            =  36,
+
+	// Area loading
+	kEventTypeGameObjectsLoaded          =  37,
+	kEventTypeAreaLoadPreLoadExit        =  38,
+	kEventTypeAreaLoadPostLoadExit       =  39,
+	kEventTypeAreaLoadSpecial            =  40,
+	kEventTypeAreaLoadSaveSpecial        =  41,
+	kEventTypeAreaLoadSavePreLoadExit    =  42,
+	kEventTypeAreaLoadSavePostLoadExit   =  43,
+
+	// Character creation
+	kEventTypeChargenStart               =  44,
+	kEventTypeChargenScreenEntered       =  45,
+	kEventTypeChargenSelectRace          =  46,
+	kEventTypeChargenSelectClass         =  47,
+	kEventTypeChargenSelectSoundset      =  48,
+	kEventTypeChargenSelectName          =  49,
+	kEventTypeChargenAssignAttributes    =  50,
+	kEventTypeChargenAssignAbilities     =  51,
+	kEventTypeChargenSelectLevelUpClass  =  52,
+	kEventTypeChargenImportHero          =  53,
+	kEventTypeChargenSelectGender        =  54,
+	kEventTypeChargenSelectBackground    =  55,
+	kEventTypeChargenEnd                 =  59,
+
+	kEventTypeGameModeChange             =  60,
+	kEventTypeDeathResParty              =  61,
+	kEventTypeModulePreSave              =  62,
+	kEventTypeManaStamDepleted           =  64,
+	kEventTypeItemOnHit                  =  65,
+	kEventTypePartyMemberAdded           =  66,
+	kEventTypePartyMemberDropped         =  67,
+	kEventTypeUsePlotAction              =  68,
+	kEventTypeChantersDonation           =  69,
+	kEventTypeItemOnTestUsable           =  70,
+	kEventTypePartyPickerClosed          =  71,
+	kEventTypeLevelOfTheWeek             =  72,
+	kEventTypeAbilityAcquired            =  73,
+	kEventTypeAoeHeartbeat               =  74,
+	kEventTypeWorldMapClosed             =  75,
+	kEventTypePopupResult                =  76,
+	kEventTypePlaceableCollision         =  77,
+	kEventTypePlaceableOnclick           =  78,
+	kEventTypeReachedWaypoint            =  79,
+	kEventTypeArealistPostLoad           =  80,
+	kEventTypeHeartbeat2                 =  81,
+	kEventTypeGiftItem                   =  82,
+	kEventTypeLoadTacticsPreset          =  83,
+	kEventTypeGuiOpened                  =  84,
+	kEventTypeInventoryFull              =  85,
+	kEventTypeCreatureEntersConversation =  86,
+	kEventTypeRubberBand                 =  87,
+	kEventTypeGiveUp                     =  88,
+	kEventTypeOnSelect                   =  89,
+	kEventTypeOnOrderReceived            =  90,
+	kEventTypeBeginTravel                =  91,
+	kEventTypeWorldmapPreTransition      =  92,
+	kEventTypeAbilityProjectileLaunched  =  93,
+	kEventTypePlayerCommandAdded         =  94,
+	kEventTypeCharRecordOpened           =  95,
+	kEventTypeOptionsChanged             =  96,
+	kEventTypeRoamDistExceeded           =  97,
+	kEventTypePlotCompleted              =  98,
+	kEventTypePartyMoneyChanged          =  99,
+	kEventTypeCodexChanged               = 100,
+	kEventTypeUseAbilityImmediate        = 101,
+	kEventTypeCraftItem                  = 102,
+	kEventTypeWorldmapPostTransition     = 103,
+	kEventTypePartyPickerInit            = 104,
+	kEventTypeUseBestHealthPotion        = 105,
+	kEventTypeSwitchWeaponSets           = 106,
+	kEventTypeToggleHoldParty            = 107,
+	kEventTypeInventoryJunkItem          = 108,
+	kEventTypeRadialMenuOpenModalMenu    = 109,
+	kEventTypeAbilityOnTestUsable        = 110,
+	kEventTypeChooseBasicAttack          = 111,
+	kEventTypeAbilityAnimCancellable     = 112,
+	kEventTypeAOETargetingGUIOpened      = 113
+};
+
 } // End of namespace DragonAge2
 
 } // End of namespace Engines
