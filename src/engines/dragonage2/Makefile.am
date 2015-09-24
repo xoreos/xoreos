@@ -9,6 +9,7 @@ noinst_HEADERS = \
                  util.h \
                  modelloader.h \
                  console.h \
+                 event.h \
                  game.h \
                  campaigns.h \
                  campaign.h \
@@ -28,6 +29,7 @@ libdragonage2_la_SOURCES = \
                            util.cpp \
                            modelloader.cpp \
                            console.cpp \
+                           event.cpp \
                            game.cpp \
                            campaigns.cpp \
                            campaign.cpp \
