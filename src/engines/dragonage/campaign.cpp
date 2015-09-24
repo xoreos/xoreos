@@ -37,6 +37,7 @@
 #include "src/engines/dragonage/game.h"
 #include "src/engines/dragonage/campaign.h"
 #include "src/engines/dragonage/area.h"
+#include "src/engines/dragonage/creature.h"
 
 namespace Engines {
 
@@ -66,7 +67,7 @@ Campaign::Campaign(Game &game, const Common::UString &cifPath,
 	Object(kObjectTypeModule), _game(&game), _cifPath(cifPath),
 	_addinBase(addinBase), _enabled(false), _bioware(false), _needsAuth(false),
 	_priority(0xFFFFFFFF), _format(0xFFFFFFFF), _state(0xFFFFFFFF), _rimRoot(0),
-	_loaded(false), _currentArea(0) {
+	_loaded(false), _pc(0), _currentArea(0) {
 
 	_entryPosition[0] = 0.0;
 	_entryPosition[1] = 0.0;
@@ -298,6 +299,14 @@ const std::vector<Common::UString> &Campaign::getAreas() const {
 	return _areas;
 }
 
+Area *Campaign::getCurrentArea() const {
+	return _currentArea;
+}
+
+Creature *Campaign::getPC() const {
+	return _pc;
+}
+
 bool Campaign::isLoaded() const {
 	return _loaded;
 }
@@ -411,14 +420,18 @@ void Campaign::enterArea(bool startArea) {
 	status("Entered area \"%s\" (\"%s\")", _currentArea->getTag().c_str(), _currentArea->getName().getString().c_str());
 }
 
-void Campaign::enter() {
+void Campaign::enter(Creature &pc) {
 	if (!isLoaded())
 		throw Common::Exception("Campaign::enter(): Not loaded?!?");
+
+	_pc = &pc;
 
 	enterArea(true);
 }
 
 void Campaign::leave() {
+	_pc = 0;
+
 	if (_currentArea)
 		_currentArea->hide();
 }
@@ -486,6 +499,9 @@ void Campaign::movePC(const Common::UString &area) {
 }
 
 void Campaign::movePC(float x, float y, float z) {
+	if (_pc)
+		_pc->setPosition(x, y, z);
+
 	// Roughly head position
 	CameraMan.setPosition(x, y, z + 1.8f);
 	CameraMan.update();

@@ -38,13 +38,14 @@
 #include "src/engines/dragonage/game.h"
 #include "src/engines/dragonage/campaigns.h"
 #include "src/engines/dragonage/campaign.h"
+#include "src/engines/dragonage/creature.h"
 
 namespace Engines {
 
 namespace DragonAge {
 
 Campaigns::Campaigns(::Engines::Console &console, Game &game) : _console(&console), _game(&game),
-	_hasCampaign(false), _running(false), _exit(true), _currentCampaign(0) {
+	_hasCampaign(false), _running(false), _exit(true), _currentCampaign(0), _pc(0) {
 
 	findCampaigns();
 }
@@ -57,6 +58,8 @@ Campaigns::~Campaigns() {
 }
 
 void Campaigns::clean() {
+	delete _pc;
+
 	if (_currentCampaign)
 		_currentCampaign->unload();
 
@@ -194,6 +197,10 @@ void Campaigns::exit() {
 }
 
 void Campaigns::unload() {
+	unload(true);
+}
+
+void Campaigns::unload(bool completeUnload) {
 	if (_currentCampaign)
 		_currentCampaign->unload();
 
@@ -205,11 +212,19 @@ void Campaigns::unload() {
 
 	_newCampaign.clear();
 
+	if (completeUnload)
+		unloadPC();
+
 	_eventQueue.clear();
 }
 
+void Campaigns::unloadPC() {
+	delete _pc;
+	_pc = 0;
+}
+
 void Campaigns::loadCampaign(const Campaign &campaign) {
-	unload();
+	unload(false);
 
 	try {
 		_currentCampaign = getCampaign(campaign.getUID());
@@ -219,7 +234,7 @@ void Campaigns::loadCampaign(const Campaign &campaign) {
 		_currentCampaign->load();
 
 	} catch (Common::Exception &e) {
-		unload();
+		unload(false);
 
 		e.add("Failed loading campaign \"%s\" (\"%s\")",
 		      campaign.getUID().c_str(), campaign.getName().getString().c_str());
@@ -229,11 +244,19 @@ void Campaigns::loadCampaign(const Campaign &campaign) {
 	_hasCampaign = true;
 }
 
+void Campaigns::usePC(Creature *pc) {
+	delete _pc;
+	_pc = pc;
+}
+
 void Campaigns::enter() {
 	if (!_hasCampaign)
 		throw Common::Exception("Campaigns::enter(): Lacking a campaign?!?");
 
-	_currentCampaign->enter();
+	if (!_pc)
+		throw Common::Exception("Campaigns::enter(): Lacking a PC?!?");
+
+	_currentCampaign->enter(*_pc);
 
 	_running = true;
 	_exit    = false;
@@ -297,6 +320,10 @@ void Campaigns::handleEvents() {
 
 Campaign *Campaigns::getCurrentCampaign() const {
 	return _currentCampaign;
+}
+
+Creature *Campaigns::getPC() const {
+	return _pc;
 }
 
 void Campaigns::changeCampaign(const Campaign &campaign) {
