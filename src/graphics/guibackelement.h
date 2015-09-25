@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A GUI element that is to be drawn in front of the normal objects.
+ *  A GUI element that is to be drawn behind normal objects.
  */
 
 #ifndef GRAPHICS_GUIBACKELEMENT_H
