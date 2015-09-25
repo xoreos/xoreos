@@ -237,9 +237,10 @@ void JadeEngine::initResources(LoadProgress &progress) {
 	progress.step("Registering file formats");
 	registerModelLoader(new JadeModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
-	FontMan.addAlias("sava"   , "asian");
-	FontMan.addAlias("cerigo" , "asian");
-	FontMan.addAlias("fnt_gui", "asian");
+	FontMan.addAlias("sava"       , "eurogui");
+	FontMan.addAlias("cerigo"     , "eurodialog");
+	FontMan.addAlias("fnt_gui"    , "eurogui");
+	FontMan.addAlias("fnt_console", "eurogui");
 }
 
 void JadeEngine::initCursors() {
