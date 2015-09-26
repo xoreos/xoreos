@@ -22,50 +22,9 @@
  *  NWScript utility functions.
  */
 
-#include <cstdarg>
-
-#include "src/common/util.h"
-
-#include "src/aurora/nwscript/util.h"
-#include "src/aurora/nwscript/variable.h"
-
 namespace Aurora {
 
 namespace NWScript {
-
-Signature createSignature(size_t n, ...) {
-	Signature signature;
-
-	signature.reserve(n);
-
-	va_list va;
-
-	va_start(va, n);
-
-	while (n-- > 0)
-		signature.push_back((Type) va_arg(va, int));
-
-	va_end(va);
-
-	return signature;
-}
-
-Parameters createDefaults(size_t n, ...) {
-	Parameters defaults;
-
-	defaults.reserve(n);
-
-	va_list va;
-
-	va_start(va, n);
-
-	while (n-- > 0)
-		defaults.push_back(*va_arg(va, const Variable *));
-
-	va_end(va);
-
-	return defaults;
-}
 
 } // End of namespace NWScript
 

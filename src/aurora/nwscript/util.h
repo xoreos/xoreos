@@ -25,14 +25,9 @@
 #ifndef AURORA_NWSCRIPT_UTIL_H
 #define AURORA_NWSCRIPT_UTIL_H
 
-#include "src/aurora/nwscript/types.h"
-
 namespace Aurora {
 
 namespace NWScript {
-
-Signature createSignature(size_t n, ...);
-Parameters createDefaults(size_t n, ...);
 
 } // End of namespace NWScript
 
