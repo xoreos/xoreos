@@ -157,10 +157,6 @@ Common::UString Functions::formatParams(const Aurora::NWScript::FunctionContext 
 				}
 				break;
 
-			case kTypeStruct:
-				params += "<struct>";
-				break;
-
 			case kTypeEngineType:
 				params += "<engine>";
 				break;

@@ -40,7 +40,6 @@ enum Type {
 	kTypeString        ,
 	kTypeObject        ,
 	kTypeVector        ,
-	kTypeStruct        , // TODO
 	kTypeEngineType    ,
 	kTypeScriptState     // "action"
 };

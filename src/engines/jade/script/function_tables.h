@@ -65,7 +65,6 @@ using Aurora::NWScript::kTypeFloat;
 using Aurora::NWScript::kTypeString;
 using Aurora::NWScript::kTypeObject;
 using Aurora::NWScript::kTypeVector;
-using Aurora::NWScript::kTypeStruct;
 using Aurora::NWScript::kTypeEngineType;
 using Aurora::NWScript::kTypeScriptState;
 
