@@ -40,8 +40,8 @@ enum Type {
 	kTypeString        ,
 	kTypeObject        ,
 	kTypeVector        ,
-	kTypeEngineType    ,
-	kTypeScriptState     // "action"
+	kTypeEngineType    , ///< "effect", "event", "location", "talent"...
+	kTypeScriptState     ///< "action".
 };
 
 // Index 0 is the return type, following indices are the arguments
