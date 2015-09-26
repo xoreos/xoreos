@@ -242,6 +242,10 @@ private:
 	DECLARE_OPCODE(o_savebp);
 	DECLARE_OPCODE(o_restorebp);
 	DECLARE_OPCODE(o_storestate);
+	DECLARE_OPCODE(o_writearray);
+	DECLARE_OPCODE(o_readarray);
+	DECLARE_OPCODE(o_getref);
+	DECLARE_OPCODE(o_getrefarray);
 };
 
 #undef DECLARE_OPCODE

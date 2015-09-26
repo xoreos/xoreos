@@ -186,6 +186,7 @@ void NCSStack::print() const {
 
 
 #define OPCODE(x) { &NCSFile::x, #x }
+#define OPCODE0() { 0, "" }
 
 void NCSFile::setupOpcodes() {
 	static const Opcode opcodes[] = {
@@ -246,7 +247,22 @@ void NCSFile::setupOpcodes() {
 		OPCODE(o_restorebp),
 		// 0x2C
 		OPCODE(o_storestate),
-		OPCODE(o_nop)
+		OPCODE(o_nop),
+		OPCODE0(),
+		OPCODE0(),
+		// 0x30
+		OPCODE(o_writearray),
+		OPCODE0(),
+		OPCODE(o_readarray),
+		OPCODE0(),
+		// 0x34
+		OPCODE0(),
+		OPCODE0(),
+		OPCODE0(),
+		OPCODE(o_getref),
+		// 0x38
+		OPCODE0(),
+		OPCODE(o_getrefarray)
 	};
 
 	_opcodes = opcodes;
@@ -391,7 +407,7 @@ bool NCSFile::executeStep() {
 		return false;
 	}
 
-	if (opcode >= _opcodeListSize)
+	if ((opcode >= _opcodeListSize) || (!_opcodes[opcode].proc))
 		throw Common::Exception("NCSFile::executeStep(): Illegal instruction 0x%02x", opcode);
 
 	debugC(1, kDebugScripts, "NWScript opcode %s [0x%02X]", _opcodes[opcode].desc, opcode);
@@ -1441,6 +1457,22 @@ void NCSFile::o_storestate(InstructionType type) {
 
 	for (int32 posSP = -4; sizeSP > 0; sizeSP--, posSP -= 4)
 		state.locals.push_back(_stack.getRelSP(posSP));
+}
+
+void NCSFile::o_writearray(InstructionType UNUSED(type)) {
+	throw Common::Exception("NCSFile::o_writearray(): TODO");
+}
+
+void NCSFile::o_readarray(InstructionType UNUSED(type)) {
+	throw Common::Exception("NCSFile::o_readarray(): TODO");
+}
+
+void NCSFile::o_getref(InstructionType UNUSED(type)) {
+	throw Common::Exception("NCSFile::o_getref(): TODO");
+}
+
+void NCSFile::o_getrefarray(InstructionType UNUSED(type)) {
+	throw Common::Exception("NCSFile::o_getrefarray(): TODO");
 }
 
 } // End of namespace NWScript
