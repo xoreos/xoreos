@@ -438,6 +438,7 @@ void NCSFile::o_rsadd(InstructionType type) {
 			_stack.push(kTypeFloat);
 			break;
 		case kInstTypeString:
+		case kInstTypeResource:
 			_stack.push(kTypeString);
 			break;
 		case kInstTypeObject:
@@ -466,7 +467,8 @@ void NCSFile::o_const(InstructionType type) {
 			_stack.push(_script->readIEEEFloatBE());
 			break;
 
-		case kInstTypeString: {
+		case kInstTypeString:
+		case kInstTypeResource: {
 			_stack.push(Common::readStringFixed(*_script, Common::kEncodingASCII, _script->readUint16BE()));
 			break;
 		}

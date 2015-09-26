@@ -117,6 +117,7 @@ private:
 		kInstTypeFloat       =  4,
 		kInstTypeString      =  5,
 		kInstTypeObject      =  6,
+		kInstTypeResource    = 96,
 		kInstTypeEngineType0 = 16, // NWN:     effect        DA: event
 		kInstTypeEngineType1 = 17, // NWN:     event         DA: location
 		kInstTypeEngineType2 = 18, // NWN:     location      DA: command
