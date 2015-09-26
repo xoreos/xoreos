@@ -25,9 +25,26 @@
 #ifndef AURORA_NWSCRIPT_UTIL_H
 #define AURORA_NWSCRIPT_UTIL_H
 
+#include "src/common/ustring.h"
+
 namespace Aurora {
 
 namespace NWScript {
+
+class Object;
+class FunctionContext;
+
+/** Contruct a string with the tag of this object. */
+Common::UString formatTag(const Object *object);
+
+/** Construct a string describing parameters of this function. */
+Common::UString formatParams(const FunctionContext &ctx);
+
+/** Construct a string describing this variable type. */
+Common::UString formatType(Type type);
+
+/** Print a description of this variable into that string. */
+void formatVariable(Common::UString &str, const Variable &var);
 
 } // End of namespace NWScript
 

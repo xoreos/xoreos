@@ -34,6 +34,7 @@
 #include "src/aurora/2dafile.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
+#include "src/aurora/nwscript/util.h"
 
 #include "src/engines/aurora/tokenman.h"
 
@@ -86,7 +87,8 @@ void Functions::printString(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
-	ctx.getReturn() = Common::UString::format("object<%s,%p)", formatTag(object).c_str(), (void *) object);
+	ctx.getReturn() = Common::UString::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
+	                                          (void *) object);
 
 	status("Witcher: %s", ctx.getReturn().getString().c_str());
 }
@@ -94,7 +96,8 @@ void Functions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::objectToString(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
-	ctx.getReturn() = Common::UString::format("object<%s,%p)", formatTag(object).c_str(), (void *) object);
+	ctx.getReturn() = Common::UString::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
+	                                          (void *) object);
 }
 
 void Functions::printVector(Aurora::NWScript::FunctionContext &ctx) {

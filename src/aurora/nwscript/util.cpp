@@ -22,9 +22,100 @@
  *  NWScript utility functions.
  */
 
+#include "src/common/strutil.h"
+
+#include "src/aurora/nwscript/object.h"
+#include "src/aurora/nwscript/functioncontext.h"
+
 namespace Aurora {
 
 namespace NWScript {
+
+Common::UString formatTag(const Object *object) {
+	if (!object)
+		return "0";
+
+	return "\"" + object->getTag() + "\"";
+}
+
+void formatVariable(Common::UString &str, const Variable &var) {
+	switch (var.getType()) {
+		case kTypeInt:
+			str += Common::composeString(var.getInt());
+			break;
+
+		case kTypeFloat:
+			str += Common::composeString(var.getFloat());
+			break;
+
+		case kTypeString:
+			str += "\"" + var.getString() + "\"";
+			break;
+
+		case kTypeObject:
+			str += "<" + formatType(var.getType()) + ">(" + formatTag(var.getObject()) + ")";
+			break;
+
+		case kTypeVector:
+			{
+				float x, y, z;
+				var.getVector(x, y, z);
+
+				str += "[";
+				str += Common::composeString(x) + ", ";
+				str += Common::composeString(y) + ", ";
+				str += Common::composeString(z);
+				str += "]";
+			}
+			break;
+
+		default:
+			str += "<" + formatType(var.getType()) + ">";
+			break;
+	}
+}
+
+Common::UString formatParams(const FunctionContext &ctx) {
+	Common::UString params;
+	for (size_t i = 0; i < ctx.getParams().size(); i++) {
+		if (i != 0)
+			params += ", ";
+
+		formatVariable(params, ctx.getParams()[i]);
+	}
+
+	return params;
+}
+
+Common::UString formatType(Type type) {
+	switch (type) {
+		case kTypeVoid:
+			return "void";
+
+		case kTypeInt:
+			return "int";
+
+		case kTypeFloat:
+			return "float";
+
+		case kTypeString:
+			return "string";
+
+		case kTypeObject:
+			return "object";
+
+		case kTypeVector:
+			return "vector";
+
+		case kTypeEngineType:
+			return "engine";
+
+		case kTypeScriptState:
+			return "state";
+	}
+
+	return "unknown";
+}
 
 } // End of namespace NWScript
 

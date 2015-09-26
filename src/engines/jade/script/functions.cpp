@@ -28,9 +28,9 @@
 #include <boost/bind.hpp>
 
 #include "src/common/util.h"
-#include "src/common/strutil.h"
 
 #include "src/aurora/nwscript/functionman.h"
+#include "src/aurora/nwscript/util.h"
 
 #include "src/graphics/graphics.h"
 
@@ -95,7 +95,8 @@ void Functions::registerFunctions() {
 }
 
 void Functions::unimplementedFunction(Aurora::NWScript::FunctionContext &ctx) {
-	warning("TODO: %s(%s)", ctx.getName().c_str(), formatParams(ctx).c_str());
+	warning("TODO: %s %s(%s)", Aurora::NWScript::formatType(ctx.getReturn().getType()).c_str(),
+	                           ctx.getName().c_str(), Aurora::NWScript::formatParams(ctx).c_str());
 }
 
 int32 Functions::getRandom(int min, int max, int32 n) {
@@ -108,66 +109,6 @@ int32 Functions::getRandom(int min, int max, int32 n) {
 		r += std::rand() % (max - min + 1) + min;
 
 	return r;
-}
-
-Common::UString Functions::formatTag(const Aurora::NWScript::Object *object) {
-	if (!object)
-		return "0";
-
-	return "\"" + object->getTag() + "\"";
-}
-
-Common::UString Functions::formatParams(const Aurora::NWScript::FunctionContext &ctx) {
-	Common::UString params;
-	for (size_t i = 0; i < ctx.getParams().size(); i++) {
-		if (i != 0)
-			params += ", ";
-
-		switch (ctx.getParams()[i].getType()) {
-			case kTypeVoid:
-				params += "<void>";
-				break;
-
-			case kTypeInt:
-				params += Common::composeString(ctx.getParams()[i].getInt());
-				break;
-
-			case kTypeFloat:
-				params += Common::composeString(ctx.getParams()[i].getFloat());
-				break;
-
-			case kTypeString:
-				params += "\"" + ctx.getParams()[i].getString() + "\"";
-				break;
-
-			case kTypeObject:
-				params += "<object>(" + formatTag(ctx.getParams()[i].getObject()) + ")";
-				break;
-
-			case kTypeVector:
-				{
-					float x, y, z;
-					ctx.getParams()[i].getVector(x, y, z);
-
-					params += "(";
-					params += Common::composeString(x) + ", ";
-					params += Common::composeString(y) + ", ";
-					params += Common::composeString(z);
-					params += ")";
-				}
-				break;
-
-			case kTypeEngineType:
-				params += "<engine>";
-				break;
-
-			case kTypeScriptState:
-				params += "<state>";
-				break;
-		}
-	}
-
-	return params;
 }
 
 Common::UString Functions::formatFloat(float f, int width, int decimals) {

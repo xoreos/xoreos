@@ -29,6 +29,7 @@
 
 #include "src/aurora/nwscript/functioncontext.h"
 #include "src/aurora/nwscript/ncsfile.h"
+#include "src/aurora/nwscript/util.h"
 
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/game.h"
@@ -85,7 +86,7 @@ void Functions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
 
 		ncs.run(object);
 	} catch (Common::Exception &e) {
-		e.add("Failed ExecuteScript(\"%s\", %s)", script.c_str(), formatTag(object).c_str());
+		e.add("Failed ExecuteScript(\"%s\", %s)", script.c_str(), Aurora::NWScript::formatTag(object).c_str());
 
 		Common::printException(e, "WARNING: ");
 	}
