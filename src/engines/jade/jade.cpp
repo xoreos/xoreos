@@ -267,8 +267,8 @@ void JadeEngine::playIntroVideos() {
 	playVideo("black");
 	playVideo("publisher");
 	playVideo("bwlogo");
+	playVideo("black");
 	playVideo("graymatr");
-	playVideo("attract");
 }
 
 } // End of namespace Jade
