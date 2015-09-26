@@ -443,16 +443,12 @@ void NCSFile::o_rsadd(InstructionType type) {
 		case kInstTypeObject:
 			_stack.push(kTypeObject);
 			break;
-		case kInstTypeEffect:
-			_stack.push(kTypeEngineType);
-			break;
-		case kInstTypeEvent:
-			_stack.push(kTypeEngineType);
-			break;
-		case kInstTypeLocation:
-			_stack.push(kTypeEngineType);
-			break;
-		case kInstTypeTalent:
+		case kInstTypeEngineType0:
+		case kInstTypeEngineType1:
+		case kInstTypeEngineType2:
+		case kInstTypeEngineType3:
+		case kInstTypeEngineType4:
+		case kInstTypeEngineType5:
 			_stack.push(kTypeEngineType);
 			break;
 		default:

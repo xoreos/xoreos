@@ -111,32 +111,36 @@ public:
 private:
 	enum InstructionType {
 		// Unary
-		kInstTypeNone      =  0,
-		kInstTypeDirect    =  1,
-		kInstTypeInt       =  3,
-		kInstTypeFloat     =  4,
-		kInstTypeString    =  5,
-		kInstTypeObject    =  6,
-		kInstTypeEffect    = 16,
-		kInstTypeEvent     = 17,
-		kInstTypeLocation  = 18,
-		kInstTypeTalent    = 19,
+		kInstTypeNone        =  0,
+		kInstTypeDirect      =  1,
+		kInstTypeInt         =  3,
+		kInstTypeFloat       =  4,
+		kInstTypeString      =  5,
+		kInstTypeObject      =  6,
+		kInstTypeEngineType0 = 16, // NWN:     effect        DA: event
+		kInstTypeEngineType1 = 17, // NWN:     event         DA: location
+		kInstTypeEngineType2 = 18, // NWN:     location      DA: command
+		kInstTypeEngineType3 = 19, // NWN:     talent        DA: effect
+		kInstTypeEngineType4 = 20, // NWN:     itemproperty  DA: itemproperty
+		kInstTypeEngineType5 = 21, // Witcher: mod           DA: player
 
 		// Binary
-		kInstTypeIntInt           = 32,
-		kInstTypeFloatFloat       = 33,
-		kInstTypeObjectObject     = 34,
-		kInstTypeStringString     = 35,
-		kInstTypeStructStruct     = 36,
-		kInstTypeIntFloat         = 37,
-		kInstTypeFloatInt         = 38,
-		kInstTypeEffectEffect     = 48,
-		kInstTypeEventEvent       = 49,
-		kInstTypeLocationLocation = 50,
-		kInstTypeTalentTalent     = 51,
-		kInstTypeVectorVector     = 58,
-		kInstTypeVectorFloat      = 59,
-		kInstTypeFloatVector      = 60
+		kInstTypeIntInt                 = 32,
+		kInstTypeFloatFloat             = 33,
+		kInstTypeObjectObject           = 34,
+		kInstTypeStringString           = 35,
+		kInstTypeStructStruct           = 36,
+		kInstTypeIntFloat               = 37,
+		kInstTypeFloatInt               = 38,
+		kInstTypeEngineType0EngineType0 = 48,
+		kInstTypeEngineType1EngineType1 = 49,
+		kInstTypeEngineType2EngineType2 = 50,
+		kInstTypeEngineType3EngineType3 = 51,
+		kInstTypeEngineType4EngineType4 = 52,
+		kInstTypeEngineType5EngineType5 = 53,
+		kInstTypeVectorVector           = 58,
+		kInstTypeVectorFloat            = 59,
+		kInstTypeFloatVector            = 60
 	};
 
 	Common::UString _name;
