@@ -657,23 +657,59 @@ void NCSFile::o_booland(InstructionType type) {
 }
 
 void NCSFile::o_eq(InstructionType type) {
-	if (type == kInstTypeStructStruct) // TODO!
-		_script->readUint16BE();
+	size_t n = 1;
 
-	Variable arg1 = _stack.pop();
-	Variable arg2 = _stack.pop();
+	if (type == kInstTypeStructStruct) {
+		// Comparisons between two structs (or two vectors) come with the size of the type
 
-	_stack.push(arg1 == arg2);
+		const size_t size = _script->readUint16BE();
+
+		if ((size % 4) != 0)
+			throw Common::Exception("NCSFile::o_eq(): size %% 4 != 0");
+
+		n = size / 4;
+	}
+
+	std::vector<Variable> args1, args2;
+
+	args1.reserve(n);
+	args2.reserve(n);
+
+	for (size_t i = 0; i < n; i++)
+		args1.push_back(_stack.pop());
+
+	for (size_t i = 0; i < n; i++)
+		args2.push_back(_stack.pop());
+
+	_stack.push(args1 == args2);
 }
 
 void NCSFile::o_neq(InstructionType type) {
-	if (type == kInstTypeStructStruct) // TODO!
-		_script->readUint16BE();
+	size_t n = 1;
 
-	Variable arg1 = _stack.pop();
-	Variable arg2 = _stack.pop();
+	if (type == kInstTypeStructStruct) {
+		// Comparisons between two structs (or two vectors) come with the size of the type
 
-	_stack.push(arg1 != arg2);
+		const size_t size = _script->readUint16BE();
+
+		if ((size % 4) != 0)
+			throw Common::Exception("NCSFile::o_eq(): size %% 4 != 0");
+
+		n = size / 4;
+	}
+
+	std::vector<Variable> args1, args2;
+
+	args1.reserve(n);
+	args2.reserve(n);
+
+	for (size_t i = 0; i < n; i++)
+		args1.push_back(_stack.pop());
+
+	for (size_t i = 0; i < n; i++)
+		args2.push_back(_stack.pop());
+
+	_stack.push(args1 != args2);
 }
 
 void NCSFile::o_geq(InstructionType type) {
