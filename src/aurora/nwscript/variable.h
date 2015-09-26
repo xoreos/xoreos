@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include <boost/shared_ptr.hpp>
+
 #include "src/common/types.h"
 
 #include "src/aurora/types.h"
@@ -52,6 +54,8 @@ struct ScriptState {
 
 class Variable {
 public:
+	typedef std::vector< boost::shared_ptr<Variable> > Array;
+
 	Variable(Type type = kTypeVoid);
 	Variable(int32 value);
 	Variable(float value);
@@ -89,6 +93,13 @@ public:
 	void setVector(float  x, float  y, float  z);
 	void getVector(float &x, float &y, float &z) const;
 
+	const Array &getArray() const;
+	Array &getArray();
+
+	size_t getArraySize() const;
+
+	void growArray(Type type, size_t size);
+
 	ScriptState &getScriptState();
 	const ScriptState &getScriptState() const;
 
@@ -104,6 +115,8 @@ private:
 		ScriptState *_scriptState;
 		EngineType *_engineType;
 	} _value;
+
+	boost::shared_ptr<Array> _array;
 };
 
 } // End of namespace NWScript

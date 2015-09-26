@@ -22,6 +22,8 @@
  *  NWScript variable.
  */
 
+#include <boost/make_shared.hpp>
+
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 
@@ -87,6 +89,8 @@ Variable::~Variable() {
 }
 
 void Variable::setType(Type type) {
+	_array.reset();
+
 	if      (_type == kTypeString)
 		delete _value._string;
 	else if (_type == kTypeEngineType)
@@ -99,6 +103,10 @@ void Variable::setType(Type type) {
 	switch (_type) {
 		case kTypeVoid:
 		case kTypeAny:
+			break;
+
+		case kTypeArray:
+			_array = boost::make_shared<Array>();
 			break;
 
 		case kTypeInt:
@@ -149,6 +157,8 @@ Variable &Variable::operator=(const Variable &var) {
 		*this = var._value._engineType;
 	else if (_type == kTypeScriptState)
 		*_value._scriptState = *var._value._scriptState;
+	else if (_type == kTypeArray)
+		_array = var._array;
 	else
 		_value = var._value;
 
@@ -238,6 +248,9 @@ bool Variable::operator==(const Variable &var) const {
 			       _value._vector[1] == var._value._vector[1] &&
 			       _value._vector[2] == var._value._vector[2];
 
+		case kTypeArray:
+			return _array.get() && var._array.get() && *_array == *var._array;
+
 		default:
 			break;
 	}
@@ -311,6 +324,47 @@ void Variable::getVector(float &x, float &y, float &z) const {
 	x = _value._vector[0];
 	y = _value._vector[1];
 	z = _value._vector[2];
+}
+
+const Variable::Array &Variable::getArray() const {
+	if (_type != kTypeArray)
+		throw Common::Exception("Can't get an array value from a non-array variable");
+
+	assert(_array.get());
+
+	return *_array;
+}
+
+Variable::Array &Variable::getArray() {
+	if (_type != kTypeArray)
+		throw Common::Exception("Can't get an array value from a non-array variable");
+
+	assert(_array.get());
+
+	return *_array;
+}
+
+size_t Variable::getArraySize() const {
+	if (_type != kTypeArray)
+		throw Common::Exception("Can't get an array size from a non-array variable");
+
+	assert(_array.get());
+
+	return _array->size();
+}
+
+void Variable::growArray(Type type, size_t size) {
+	if (_type != kTypeArray)
+		throw Common::Exception("Can't grow a non-array variable");
+
+	assert(_array.get());
+
+	if (!_array->empty() && (*_array)[0].get() && (*_array)[0]->getType() != type)
+		throw Common::Exception("Array type mismatch (%d vs %d)", (*_array)[0]->getType(), type);
+
+	_array->reserve(size);
+	while (_array->size() < size)
+		_array->push_back(boost::make_shared<Variable>(Variable(type)));
 }
 
 ScriptState &Variable::getScriptState() {

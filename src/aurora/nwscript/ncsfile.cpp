@@ -443,6 +443,19 @@ void NCSFile::o_rsadd(InstructionType type) {
 		case kInstTypeEngineType5:
 			_stack.push(kTypeEngineType);
 			break;
+		case kInstTypeIntArray:
+		case kInstTypeFloatArray:
+		case kInstTypeStringArray:
+		case kInstTypeObjectArray:
+		case kInstTypeResourceArray:
+		case kInstTypeEngineType0Array:
+		case kInstTypeEngineType1Array:
+		case kInstTypeEngineType2Array:
+		case kInstTypeEngineType3Array:
+		case kInstTypeEngineType4Array:
+		case kInstTypeEngineType5Array:
+			_stack.push(kTypeArray);
+			break;
 		default:
 			throw Common::Exception("NCSFile::o_rsadd(): Illegal type %d", type);
 	}
@@ -509,6 +522,7 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 			case kTypeString:
 			case kTypeObject:
 			case kTypeEngineType:
+			case kTypeArray:
 				param = _stack.pop();
 				break;
 
@@ -548,6 +562,7 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 		case kTypeString:
 		case kTypeObject:
 		case kTypeEngineType:
+		case kTypeArray:
 			_stack.push(retVal);
 			break;
 

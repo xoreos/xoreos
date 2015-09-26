@@ -125,6 +125,19 @@ private:
 		kInstTypeEngineType4 = 20, // NWN:     itemproperty  DA: itemproperty
 		kInstTypeEngineType5 = 21, // Witcher: mod           DA: player
 
+		// Arrays
+		kInstTypeIntArray          = 64,
+		kInstTypeFloatArray        = 65,
+		kInstTypeStringArray       = 66,
+		kInstTypeObjectArray       = 67,
+		kInstTypeResourceArray     = 68,
+		kInstTypeEngineType0Array  = 80,
+		kInstTypeEngineType1Array  = 81,
+		kInstTypeEngineType2Array  = 82,
+		kInstTypeEngineType3Array  = 83,
+		kInstTypeEngineType4Array  = 84,
+		kInstTypeEngineType5Array  = 85,
+
 		// Binary
 		kInstTypeIntInt                 = 32,
 		kInstTypeFloatFloat             = 33,

@@ -69,6 +69,24 @@ void formatVariable(Common::UString &str, const Variable &var) {
 			}
 			break;
 
+		case kTypeArray:
+			{
+				const Variable::Array &array = var.getArray();
+
+				str += "{";
+				for (size_t i = 0; i < array.size(); i++) {
+					if (i != 0)
+						str += ", ";
+
+					if (!array[i].get())
+						str += "/";
+					else
+						formatVariable(str, *array[i]);
+				}
+				str += "}";
+			}
+			break;
+
 		default:
 			str += "<" + formatType(var.getType()) + ">";
 			break;
@@ -112,6 +130,9 @@ Common::UString formatType(Type type) {
 
 		case kTypeScriptState:
 			return "state";
+
+		case kTypeArray:
+			return "array";
 
 		case kTypeAny:
 			return "any";
