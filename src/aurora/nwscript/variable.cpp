@@ -98,6 +98,7 @@ void Variable::setType(Type type) {
 
 	switch (_type) {
 		case kTypeVoid:
+		case kTypeAny:
 			break;
 
 		case kTypeInt:

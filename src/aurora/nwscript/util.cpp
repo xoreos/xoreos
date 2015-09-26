@@ -112,6 +112,9 @@ Common::UString formatType(Type type) {
 
 		case kTypeScriptState:
 			return "state";
+
+		case kTypeAny:
+			return "any";
 	}
 
 	return "unknown";

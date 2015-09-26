@@ -499,7 +499,11 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 	for (uint8 i = 0; i < argCount; i++) {
 		Variable &param = ctx.getParams()[i];
 
-		switch (param.getType()) {
+		Type type = param.getType();
+		if (type == kTypeAny)
+			type = _stack.top().getType();
+
+		switch (type) {
 			case kTypeInt:
 			case kTypeFloat:
 			case kTypeString:

@@ -67,6 +67,7 @@ using Aurora::NWScript::kTypeObject;
 using Aurora::NWScript::kTypeVector;
 using Aurora::NWScript::kTypeEngineType;
 using Aurora::NWScript::kTypeScriptState;
+using Aurora::NWScript::kTypeAny;
 
 /* Default values as used by the function parameters, if no explicit value
  * is given at the time of the calling.
