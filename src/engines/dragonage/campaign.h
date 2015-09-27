@@ -203,6 +203,7 @@ private:
 	bool changeArea();
 
 	void enterArea(bool startArea = false);
+	void leaveArea();
 
 	void handleEvents();
 	// '---
