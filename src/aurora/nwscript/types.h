@@ -44,6 +44,7 @@ enum Type {
 	kTypeScriptState        , ///< "action".
 	kTypeArray              ,
 
+	kTypeReference          , ///< A reference/pointer to another variable.
 	kTypeAny                  ///< Any other type.
 };
 

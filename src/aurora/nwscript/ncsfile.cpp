@@ -522,6 +522,7 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 			case kTypeString:
 			case kTypeObject:
 			case kTypeEngineType:
+			case kTypeReference:
 			case kTypeArray:
 				param = _stack.pop();
 				break;

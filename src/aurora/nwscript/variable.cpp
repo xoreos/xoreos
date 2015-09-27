@@ -139,6 +139,10 @@ void Variable::setType(Type type) {
 			_value._scriptState = new ScriptState;
 			break;
 
+		case kTypeReference:
+			_value._reference = 0;
+			break;
+
 		default:
 			throw Common::Exception("Variable::setType(): Invalid type %d", type);
 			break;
@@ -379,6 +383,20 @@ const ScriptState &Variable::getScriptState() const {
 		throw Common::Exception("Can't get a script state value from a non-script-state variable");
 
 	return *_value._scriptState;
+}
+
+Variable *Variable::getReference() const {
+	if (_type != kTypeReference)
+		throw Common::Exception("Can't get a reference value from a non-reference variable");
+
+	return _value._reference;
+}
+
+void Variable::setReference(Variable *reference) {
+	if (_type != kTypeReference)
+		throw Common::Exception("Can't assign a reference value to a non-reference variable");
+
+	_value._reference = reference;
 }
 
 } // End of namespace NWScript

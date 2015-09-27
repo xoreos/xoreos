@@ -103,6 +103,9 @@ public:
 	ScriptState &getScriptState();
 	const ScriptState &getScriptState() const;
 
+	Variable *getReference() const;
+	void setReference(Variable *reference);
+
 private:
 	Type _type;
 
@@ -114,6 +117,7 @@ private:
 		float _vector[3];
 		ScriptState *_scriptState;
 		EngineType *_engineType;
+		Variable *_reference;
 	} _value;
 
 	boost::shared_ptr<Array> _array;

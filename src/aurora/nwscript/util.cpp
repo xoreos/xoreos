@@ -87,6 +87,19 @@ void formatVariable(Common::UString &str, const Variable &var) {
 			}
 			break;
 
+		case kTypeReference:
+			{
+				Variable *ref = var.getReference();
+
+				str += "<" + formatType(var.getType()) + ">(";
+				if (ref)
+					formatVariable(str, *ref);
+				else
+					str += "0";
+				str += ")";
+			}
+			break;
+
 		default:
 			str += "<" + formatType(var.getType()) + ">";
 			break;
@@ -133,6 +146,9 @@ Common::UString formatType(Type type) {
 
 		case kTypeArray:
 			return "array";
+
+		case kTypeReference:
+			return "ref";
 
 		case kTypeAny:
 			return "any";
