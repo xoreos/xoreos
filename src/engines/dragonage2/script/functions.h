@@ -106,6 +106,8 @@ private:
 
 	void setEventType   (Aurora::NWScript::FunctionContext &ctx);
 	void setEventCreator(Aurora::NWScript::FunctionContext &ctx);
+
+	void handleEvent(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 

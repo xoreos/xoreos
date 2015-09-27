@@ -32,6 +32,7 @@
 #include "src/engines/dragonage2/event.h"
 
 #include "src/engines/dragonage2/script/functions.h"
+#include "src/engines/dragonage2/script/container.h"
 
 namespace Engines {
 
@@ -101,6 +102,18 @@ void Functions::setEventCreator(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	event->setCreator(ctx.getParams()[1].getObject());
+}
+
+void Functions::handleEvent(Aurora::NWScript::FunctionContext &ctx) {
+	Event invalidEvent;
+
+	Event *event = DragonAge2::ObjectContainer::toEvent(ctx.getParams()[0].getEngineType());
+	if (!event)
+		event = &invalidEvent;
+
+	// TODO: According to the Dragon Age wiki, "The maximum level of event rerouteing is 8".
+
+	DragonAge2::ScriptContainer::runScript(ctx.getParams()[1].getString(), *event);
 }
 
 } // End of namespace DragonAge2

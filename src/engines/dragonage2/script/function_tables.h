@@ -246,7 +246,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 118, "SetEventObject"                        , 0                                                  },
 	{ 119, "GetEventString"                        , 0                                                  },
 	{ 120, "SetEventString"                        , 0                                                  },
-	{ 121, "HandleEvent"                           , 0                                                  },
+	{ 121, "HandleEvent"                           , &Functions::handleEvent                            },
 	{ 122, "SetEventScript"                        , 0                                                  },
 	{ 123, "EnablevEvent"                          , 0                                                  },
 	{ 124, "RegisterEventListener"                 , 0                                                  },
