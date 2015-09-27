@@ -49,6 +49,7 @@ static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
 
 static const uint32 kScriptObjectSelf        = 0x00000000;
 static const uint32 kScriptObjectInvalid     = 0x00000001;
+static const uint32 kScriptObjectInvalid2    = 0xFFFFFFFF;
 static const uint32 kScriptObjectTypeInvalid = 0x7F000000;
 
 namespace Aurora {
@@ -499,6 +500,8 @@ void NCSFile::o_const(InstructionType type) {
 			if      (objectID == kScriptObjectSelf)
 				_stack.push(_owner);
 			else if (objectID == kScriptObjectInvalid)
+				_stack.push((Object *) 0);
+			else if (objectID == kScriptObjectInvalid2)
 				_stack.push((Object *) 0);
 			else if (objectID == kScriptObjectTypeInvalid)
 				_stack.push((Object *) 0);
