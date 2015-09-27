@@ -29,6 +29,8 @@
 
 #include "src/common/ustring.h"
 
+#include "src/events/types.h"
+
 namespace Engines {
 
 class Console;
