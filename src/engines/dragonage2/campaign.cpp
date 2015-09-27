@@ -418,7 +418,13 @@ void Campaign::enterArea(bool startArea) {
 
 	_eventQueue.clear();
 
+	_currentArea->runScript(kEventTypeEnter              , _currentArea, _pc);
+	_currentArea->runScript(kEventTypeAreaLoadPreLoadExit, _currentArea);
+
 	_currentArea->show();
+
+	_currentArea->runScript(kEventTypeAreaLoadPostLoadExit, _currentArea);
+	_currentArea->runScript(kEventTypeAreaLoadSpecial     , _currentArea);
 
 	status("Entered area \"%s\" (\"%s\")", _currentArea->getTag().c_str(), _currentArea->getName().getString().c_str());
 }
@@ -427,20 +433,37 @@ void Campaign::enter(Creature &pc) {
 	if (!isLoaded())
 		throw Common::Exception("Campaign::enter(): Not loaded?!?");
 
+	runScript(kEventTypeModuleStart      , this);
+	runScript(kEventTypeGameObjectsLoaded, this);
+
 	_pc = &pc;
+
+	runScript(kEventTypeEnter, this, _pc);
 
 	enterArea(true);
 }
 
 void Campaign::leave() {
-	_pc = 0;
+	leaveArea();
 
-	if (_currentArea)
-		_currentArea->hide();
+	if (_pc)
+		runScript(kEventTypeExit, this, _pc);
+
+	_pc = 0;
+}
+
+void Campaign::leaveArea() {
+	if (!_currentArea)
+		return;
+
+	if (_pc)
+		_currentArea->runScript(kEventTypeExit, _currentArea, _pc);
+
+	_currentArea->hide();
 }
 
 void Campaign::unloadArea() {
-	leave();
+	leaveArea();
 
 	delete _currentArea;
 	_currentArea = 0;
