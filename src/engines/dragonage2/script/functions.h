@@ -103,6 +103,9 @@ private:
 	void getEventType   (Aurora::NWScript::FunctionContext &ctx);
 	void getEventCreator(Aurora::NWScript::FunctionContext &ctx);
 	void getEventTarget (Aurora::NWScript::FunctionContext &ctx);
+
+	void setEventType   (Aurora::NWScript::FunctionContext &ctx);
+	void setEventCreator(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
