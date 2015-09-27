@@ -21,6 +21,8 @@ noinst_HEADERS = \
                  creature.h \
                  objectcontainer.h \
                  script/container.h \
+                 script/functions.h \
+                 script/function_tables.h \
                  $(EMPTY)
 
 libdragonage2_la_SOURCES = \
@@ -41,4 +43,5 @@ libdragonage2_la_SOURCES = \
                            creature.cpp \
                            objectcontainer.cpp \
                            script/container.cpp \
+                           script/functions.cpp \
                            $(EMPTY)
