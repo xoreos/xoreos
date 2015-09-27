@@ -169,28 +169,19 @@ void NCSStack::setBasePtr(int32 pos) {
 }
 
 void NCSStack::print() const {
-	if (!DebugMan.isEnabled(2, kDebugScripts))
+	if (!DebugMan.isEnabled(3, kDebugScripts))
 		return;
 
-	debugC(2, kDebugScripts, ".--- %d ---.", _stackPtr);
+	debugC(3, kDebugScripts, ".--- %d ---.", _stackPtr);
 	for (int32 i = _stackPtr; i >= 0; i--) {
 		const Variable &var = at(i);
 
-		if      (var.getType() == kTypeInt)
-			debugC(2, kDebugScripts, "| %d: %d", var.getType(), var.getInt());
-		else if (var.getType() == kTypeFloat)
-			debugC(2, kDebugScripts, "| %d: %f", var.getType(), var.getFloat());
-		else if (var.getType() == kTypeString)
-			debugC(2, kDebugScripts, "| %d: \"%s\"", var.getType(), var.getString().c_str());
-		else if (var.getType() == kTypeObject) {
-			if (!var.getObject())
-				debugC(2, kDebugScripts, "| %d: 0", var.getType());
-			else
-				debugC(2, kDebugScripts, "| %d: \"%s\"", var.getType(), var.getObject()->getTag().c_str());
-		} else
-			debugC(2, kDebugScripts, "| %d", var.getType());
+		Common::UString str;
+		formatVariable(str, var);
+
+		debugC(3, kDebugScripts, "| %04d: %02d - %s", i, var.getType(), str.c_str());
 	}
-	debugC(2, kDebugScripts, "'--- ---'");
+	debugC(3, kDebugScripts, "'--- ---'");
 }
 
 
