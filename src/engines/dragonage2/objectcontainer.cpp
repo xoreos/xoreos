@@ -31,6 +31,7 @@
 #include "src/engines/dragonage2/waypoint.h"
 #include "src/engines/dragonage2/placeable.h"
 #include "src/engines/dragonage2/creature.h"
+#include "src/engines/dragonage2/event.h"
 
 namespace Engines {
 
@@ -136,6 +137,10 @@ Placeable *ObjectContainer::toPlaceable(Aurora::NWScript::Object *object) {
 
 Creature *ObjectContainer::toCreature(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Creature *>(object);
+}
+
+Event *ObjectContainer::toEvent(Aurora::NWScript::EngineType *engineType) {
+	return dynamic_cast<Event *>(engineType);
 }
 
 } // End of namespace DragonAge2
