@@ -34,6 +34,12 @@
 
 #include "src/engines/dragonage/types.h"
 
+namespace Aurora {
+	namespace NWScript {
+		class EngineType;
+	}
+}
+
 namespace Engines {
 
 namespace DragonAge {
@@ -43,6 +49,8 @@ class Area;
 class Waypoint;
 class Placeable;
 class Creature;
+
+class Event;
 
 /** A class able to sort objects by distance to a target object. */
 class ObjectDistanceSort {
@@ -81,6 +89,8 @@ public:
 	static Waypoint  *toWaypoint (Aurora::NWScript::Object *object);
 	static Placeable *toPlaceable(Aurora::NWScript::Object *object);
 	static Creature  *toCreature (Aurora::NWScript::Object *object);
+
+	static Event *toEvent(Aurora::NWScript::EngineType *engineType);
 
 private:
 	typedef std::list<DragonAge::Object *> ObjectList;
