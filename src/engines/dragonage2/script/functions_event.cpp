@@ -57,6 +57,26 @@ void Functions::getEventType(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) event->getType();
 }
 
+void Functions::getEventCreator(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	const Event *event = DragonAge2::ObjectContainer::toEvent(ctx.getParams()[0].getEngineType());
+	if (!event)
+		return;
+
+	ctx.getReturn() = event->getCreator();
+}
+
+void Functions::getEventTarget(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	const Event *event = DragonAge2::ObjectContainer::toEvent(ctx.getParams()[0].getEngineType());
+	if (!event)
+		return;
+
+	ctx.getReturn() = event->getTarget();
+}
+
 } // End of namespace DragonAge2
 
 } // End of namespace Engines
