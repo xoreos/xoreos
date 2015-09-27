@@ -45,6 +45,8 @@ namespace DragonAge {
 
 class DragonAgeEngine;
 
+class Functions;
+
 class Campaigns;
 
 class Game {
@@ -76,6 +78,8 @@ public:
 private:
 	DragonAgeEngine *_engine;
 	Campaigns       *_campaigns;
+
+	Functions *_functions;
 
 	::Engines::Console *_console;
 
