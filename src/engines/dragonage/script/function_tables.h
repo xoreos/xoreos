@@ -231,7 +231,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 104, "IsStringEmpty"                         , 0                                                  },
 	{ 105, "SignalEvent"                           , 0                                                  },
 	{ 106, "Event"                                 , 0                                                  },
-	{ 107, "IsEventValid"                          , 0                                                  },
+	{ 107, "IsEventValid"                          , &Functions::isEventValid                           },
 	{ 108, "GetCurrentEvent"                       , &Functions::getCurrentEvent                        },
 	{ 109, "GetEventCreator"                       , &Functions::getEventCreator                        },
 	{ 110, "SetEventCreator"                       , 0                                                  },

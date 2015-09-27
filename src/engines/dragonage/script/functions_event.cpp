@@ -47,6 +47,12 @@ void Functions::getCurrentEvent(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = env->getVariable("Event");
 }
 
+void Functions::isEventValid(Aurora::NWScript::FunctionContext &ctx) {
+	const Event *event = DragonAge::ObjectContainer::toEvent(ctx.getParams()[0].getEngineType());
+
+	ctx.getReturn() = event && (event->getType() != kEventTypeInvalid);
+}
+
 void Functions::getEventType(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) kEventTypeInvalid;
 
