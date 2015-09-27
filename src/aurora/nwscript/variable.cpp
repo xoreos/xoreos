@@ -60,13 +60,13 @@ Variable::Variable(Object *value) : _type(kTypeVoid) {
 	*this = value;
 }
 
-Variable::Variable(const EngineType *value) : _type(kTypeEngineType) {
+Variable::Variable(const EngineType *value) : _type(kTypeVoid) {
 	setType(kTypeEngineType);
 
 	*this = value;
 }
 
-Variable::Variable(const EngineType &value) : _type(kTypeEngineType) {
+Variable::Variable(const EngineType &value) : _type(kTypeVoid) {
 	setType(kTypeEngineType);
 
 	*this = value;
