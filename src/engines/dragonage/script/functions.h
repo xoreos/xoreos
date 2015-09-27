@@ -88,6 +88,12 @@ private:
 	// --- Engine functions ---
 
 	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
+
+	// .--- Events, functions_event.cpp
+	void getCurrentEvent(Aurora::NWScript::FunctionContext &ctx);
+
+	void getEventType(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace DragonAge
