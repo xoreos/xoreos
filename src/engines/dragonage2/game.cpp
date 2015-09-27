@@ -39,17 +39,21 @@
 #include "src/engines/dragonage2/campaign.h"
 #include "src/engines/dragonage2/creature.h"
 
+#include "src/engines/dragonage2/script/functions.h"
+
 namespace Engines {
 
 namespace DragonAge2 {
 
 Game::Game(DragonAge2Engine &engine, ::Engines::Console &console) :
-	_engine(&engine), _campaigns(0), _console(&console) {
+	_engine(&engine), _campaigns(0), _functions(0), _console(&console) {
 
+	_functions = new Functions(*this);
 }
 
 Game::~Game() {
 	delete _campaigns;
+	delete _functions;
 }
 
 Campaigns &Game::getCampaigns() {
