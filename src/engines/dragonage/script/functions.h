@@ -98,7 +98,9 @@ private:
 	// .--- Events, functions_event.cpp
 	void getCurrentEvent(Aurora::NWScript::FunctionContext &ctx);
 
-	void getEventType(Aurora::NWScript::FunctionContext &ctx);
+	void getEventType   (Aurora::NWScript::FunctionContext &ctx);
+	void getEventCreator(Aurora::NWScript::FunctionContext &ctx);
+	void getEventTarget (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
