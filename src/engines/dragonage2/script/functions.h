@@ -89,6 +89,12 @@ private:
 
 	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
 
+	// .--- Module functions, functions_module.cpp
+	void getModule(Aurora::NWScript::FunctionContext &ctx);
+
+	void getHero(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Events, functions_event.cpp
 	void getCurrentEvent(Aurora::NWScript::FunctionContext &ctx);
 
