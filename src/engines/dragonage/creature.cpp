@@ -150,6 +150,13 @@ void Creature::highlight(bool enabled) {
 		(*m)->drawBound(enabled);
 }
 
+bool Creature::click(Object *triggerer) {
+	runScript(kEventTypeClick   , this, triggerer);
+	runScript(kEventTypeDialogue, this, triggerer);
+
+	return true;
+}
+
 void Creature::load(const GFF3Struct &creature) {
 	_resRef = creature.getString("TemplateResRef");
 

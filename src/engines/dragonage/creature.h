@@ -73,6 +73,9 @@ public:
 	/** (Un)Highlight the creature. */
 	void highlight(bool enabled);
 
+	/** The creature was clicked. */
+	bool click(Object *triggerer = 0);
+
 	// Positioning
 
 	/** Set the creature's position. */
