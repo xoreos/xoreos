@@ -28,6 +28,8 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
+#include "src/aurora/nwscript/object.h"
+
 #include "src/engines/sonic/types.h"
 
 namespace Engines {
@@ -35,7 +37,7 @@ namespace Engines {
 namespace Sonic {
 
 /** An object within a Sonic area. */
-class Object {
+class Object : public Aurora::NWScript::Object {
 public:
 	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
@@ -50,11 +52,6 @@ public:
 
 	// Basic properties
 
-	/** Return the object's tag. */
-	const Common::UString &getTag() const;
-
-	/** Return the object's ID. */
-	uint32 getID() const;
 	/** Return the ID of the object's model. */
 	uint32 getModelID() const;
 
@@ -81,9 +78,6 @@ public:
 protected:
 	ObjectType _type; ///< The object's type.
 
-	Common::UString _tag; ///< The object's tag.
-
-	uint32 _id;      ///< The object's ID.
 	uint32 _modelID; ///< The ID of the object's model.
 
 	float _position[3];    ///< The object's position.

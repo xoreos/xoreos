@@ -28,7 +28,9 @@ namespace Engines {
 
 namespace Sonic {
 
-Object::Object(ObjectType type) : _type(type), _id(0xFFFFFFFF), _modelID(0xFFFFFFFF) {
+Object::Object(ObjectType type) : _type(type), _modelID(0xFFFFFFFF) {
+	_id = 0xFFFFFFFF;
+
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
 	_position   [2] = 0.0f;
@@ -43,14 +45,6 @@ Object::~Object() {
 
 ObjectType Object::getType() const {
 	return _type;
-}
-
-const Common::UString &Object::getTag() const {
-	return _tag;
-}
-
-uint32 Object::getID() const {
-	return _id;
 }
 
 void Object::show() {
