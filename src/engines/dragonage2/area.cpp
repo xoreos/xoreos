@@ -304,6 +304,11 @@ void Area::processEventQueue() {
 
 		if        (e->type == Events::kEventMouseMove) { // Moving the mouse
 			hasMove = true;
+		} else if (e->type == Events::kEventMouseDown) { // Clicking
+			if (e->button.button == SDL_BUTTON_LMASK) {
+				checkActive(e->button.x, e->button.y);
+				click(e->button.x, e->button.y);
+			}
 		} else if (e->type == Events::kEventKeyDown) { // Holding down TAB
 			if (e->key.keysym.sym == SDLK_TAB)
 				highlightAll(true);
@@ -354,6 +359,16 @@ void Area::checkActive(int x, int y) {
 		CursorMan.getPosition(x, y);
 
 	setActive(getObjectAt(x, y));
+}
+
+void Area::click(int x, int y) {
+	Common::StackLock lock(_mutex);
+
+	DragonAge2::Object *o = getObjectAt(x, y);
+	if (!o)
+		return;
+
+	o->click();
 }
 
 void Area::highlightAll(bool enabled) {
