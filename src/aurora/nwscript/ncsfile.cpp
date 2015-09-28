@@ -1509,8 +1509,20 @@ void NCSFile::o_readarray(InstructionType type) {
 	_stack.push(*array[index]);
 }
 
-void NCSFile::o_getref(InstructionType UNUSED(type)) {
-	throw Common::Exception("NCSFile::o_getref(): TODO");
+void NCSFile::o_getref(InstructionType type) {
+	if (type != kInstTypeDirect)
+		throw Common::Exception("NCSFile::o_getref(): Illegal type %d", type);
+
+	int32 offset = _script->readSint32BE();
+	int16 size   = _script->readSint16BE();
+
+	if (size != 4)
+		throw Common::Exception("NCSFile::o_readarray(): Invalid size %d", size);
+
+	Variable &var = _stack.getRelSP(offset);
+
+	_stack.push(Variable(kTypeReference));
+	_stack.top().setReference(&var);
 }
 
 void NCSFile::o_getrefarray(InstructionType UNUSED(type)) {
