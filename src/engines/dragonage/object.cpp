@@ -160,6 +160,10 @@ void Object::leave() {
 void Object::highlight(bool UNUSED(enabled)) {
 }
 
+bool Object::click(Object *UNUSED(triggerer)) {
+	return true;
+}
+
 void Object::readVarTable(const GFF3List &varTable) {
 	for (GFF3List::const_iterator v = varTable.begin(); v != varTable.end(); ++v) {
 		const Common::UString name  = (*v)->getString ("Name");
