@@ -44,6 +44,7 @@
 #include "src/engines/witcher/waypoint.h"
 #include "src/engines/witcher/placeable.h"
 #include "src/engines/witcher/door.h"
+#include "src/engines/witcher/creature.h"
 
 namespace Engines {
 
@@ -407,7 +408,7 @@ void Area::click(int x, int y) {
 	if (!o)
 		return;
 
-	o->click();
+	o->click(_module->getPC());
 }
 
 void Area::highlightAll(bool enabled) {
