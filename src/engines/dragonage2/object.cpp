@@ -82,6 +82,14 @@ const Aurora::LocString &Object::getDescription() const {
 	return _description;
 }
 
+const Common::UString &Object::getNonLocalizedName() const {
+	return _nonLocalizedName;
+}
+
+void Object::setNonLocalizedName(const Common::UString &name) {
+	_nonLocalizedName = name;
+}
+
 const Common::UString &Object::getConversation() const {
 	return _conversation;
 }

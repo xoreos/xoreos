@@ -69,6 +69,14 @@ public:
 	/** Return the object's default conversation (DLG). */
 	const Common::UString &getConversation() const;
 
+	/** Return the object's non-localized name.
+	 *
+	 *  The non-localized name has a higher priority than the default, localized name.
+	 */
+	const Common::UString &getNonLocalizedName() const;
+	/** Set the object's non-localized name. */
+	void setNonLocalizedName(const Common::UString &name);
+
 	// Interactive properties
 
 	bool isStatic() const; ///< Is the object static (not manipulatable at all)?
@@ -102,6 +110,8 @@ protected:
 
 	Aurora::LocString _name;        ///< The object's display name.
 	Aurora::LocString _description; ///< The object's description.
+
+	Common::UString _nonLocalizedName; ///< The object's non-localized name.
 
 	Common::UString _conversation; ///< The object's default conversation.
 
