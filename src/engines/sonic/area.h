@@ -53,31 +53,47 @@ public:
 	Area(uint32 id);
 	~Area();
 
+	// General properties
+
 	/** Return the area's localized name. */
 	const Common::UString &getName();
 
-	uint32 getWidth() const;
-	uint32 getHeight() const;
+	uint32 getWidth() const;  ///< Return the width of the area, in pixels.
+	uint32 getHeight() const; ///< Return the height of the area, in pixels.
 
-	float getStartX() const;
-	float getStartY() const;
+	float getStartX() const; ///< Return the starting X position within this area.
+	float getStartY() const; ///< Return the starting Y position within this area.
 
-	void enter();
-	void leave();
+	// Entering/Leaving
 
-	void show();
-	void hide();
+	void enter(); ///< Enter the area.
+	void leave(); ///< Leave the area.
 
+	// Visibility
+
+	void show(); ///< Show the area.
+	void hide(); ///< Hide the area.
+
+	// Events
+
+	/** Add a single event for consideration into the area event queue. */
 	void addEvent(const Events::Event &event);
+	/** Process the current event queue. */
 	void processEventQueue();
 
+	/** Forcibly remove the focus from the currently highlighted object. */
 	void removeFocus();
 
+	// Utility methods
+
+	/** Return a position that would position the camera on these coordinates within the area. */
 	static void getCameraPosition(float x, float y, float &cameraX, float &cameraY, float &cameraZ);
+	/** Return a position that would position on object at these coordinates within the area. */
 	static void getWorldPosition(float x, float y, float z, float &worldX, float &worldY, float &worldZ);
 
 
 protected:
+	/** Notify the area that the camera has been moved. */
 	void notifyCameraMoved();
 
 
@@ -125,6 +141,8 @@ private:
 	Common::Mutex _mutex;
 
 
+	// Loading helpers
+
 	void load();
 	void loadDefinition();
 	void loadBackground();
@@ -137,6 +155,8 @@ private:
 
 	void getCameraLimits(float &minX, float &minY, float &minZ,
 	                     float &maxX, float &maxY, float &maxZ) const;
+
+	// Highlight / active helpers
 
 	void checkActive();
 	void setActive(Object *object);
