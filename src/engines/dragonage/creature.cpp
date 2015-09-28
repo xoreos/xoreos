@@ -151,12 +151,12 @@ void Creature::highlight(bool enabled) {
 }
 
 void Creature::load(const GFF3Struct &creature) {
-	const Common::UString temp = creature.getString("TemplateResRef");
+	_resRef = creature.getString("TemplateResRef");
 
 	GFF3File *utc = 0;
-	if (!temp.empty()) {
+	if (!_resRef.empty()) {
 		try {
-			utc = new GFF3File(temp, Aurora::kFileTypeUTC, kUTCID);
+			utc = new GFF3File(_resRef, Aurora::kFileTypeUTC, kUTCID);
 		} catch (...) {
 		}
 	}

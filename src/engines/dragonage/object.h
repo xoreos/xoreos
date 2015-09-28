@@ -61,6 +61,9 @@ public:
 
 	// Basic properties
 
+	/** Return the object's resource reference. */
+	const Common::UString &getResRef() const;
+
 	/** Return the object's name. */
 	const Aurora::LocString &getName() const;
 	/** Return the object's description. */
@@ -107,6 +110,8 @@ public:
 
 protected:
 	ObjectType _type; ///< The object's type.
+
+	Common::UString _resRef; ///< The object's resource reference.
 
 	Aurora::LocString _name;        ///< The object's display name.
 	Aurora::LocString _description; ///< The object's description.

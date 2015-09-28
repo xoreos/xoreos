@@ -99,12 +99,12 @@ void Placeable::highlight(bool enabled) {
 }
 
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
-	const Common::UString temp = placeable.getString("TemplateResRef");
+	_resRef = placeable.getString("TemplateResRef");
 
 	Aurora::GFF3File *utp = 0;
-	if (!temp.empty()) {
+	if (!_resRef.empty()) {
 		try {
-			utp = new Aurora::GFF3File(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '));
+			utp = new Aurora::GFF3File(_resRef, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '));
 		} catch (...) {
 		}
 	}
