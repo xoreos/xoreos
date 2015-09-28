@@ -43,6 +43,8 @@ namespace Engines {
 
 namespace Sonic {
 
+class Module;
+
 class AreaBackground;
 class AreaMiniMap;
 
@@ -50,7 +52,7 @@ class Object;
 
 class Area : public Sonic::Object, public Events::Notifyable {
 public:
-	Area(uint32 id);
+	Area(Module &module, uint32 id);
 	~Area();
 
 	// General properties
@@ -100,6 +102,9 @@ protected:
 private:
 	typedef std::list<Object *> ObjectList;
 	typedef std::map<uint32, Object *> ObjectMap;
+
+
+	Module *_module;
 
 	Common::UString _name;
 	Common::UString _background;

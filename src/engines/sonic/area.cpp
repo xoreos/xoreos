@@ -38,6 +38,7 @@
 
 #include "src/engines/sonic/area.h"
 #include "src/engines/sonic/types.h"
+#include "src/engines/sonic/module.h"
 #include "src/engines/sonic/areabackground.h"
 #include "src/engines/sonic/areaminimap.h"
 #include "src/engines/sonic/placeable.h"
@@ -48,8 +49,8 @@ namespace Engines {
 
 namespace Sonic {
 
-Area::Area(uint32 id) : Object(kObjectTypeArea),
-	_width(0), _height(0), _startPosX(0.0f), _startPosY(0.0f),
+Area::Area(Module &module, uint32 id) : Object(kObjectTypeArea),
+	_module(&module), _width(0), _height(0), _startPosX(0.0f), _startPosY(0.0f),
 	_miniMapWidth(0), _miniMapHeight(0), _soundMapBank(-1), _sound(-1), _soundType(-1), _soundBank(-1),
 	_numberRings(0), _numberChaoEggs(0), _bgPanel(0), _mmPanel(0),
 	_activeObject(0), _highlightAll(false) {
@@ -57,16 +58,24 @@ Area::Area(uint32 id) : Object(kObjectTypeArea),
 	_id = id;
 
 	load();
+
+	// Tell the module that we exist
+	_module->addObject(*this);
 }
 
 Area::~Area() {
+	_module->removeObject(*this);
+
 	hide();
 
 	delete _mmPanel;
 	delete _bgPanel;
 
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+		_module->removeObject(**o);
+
 		delete *o;
+	}
 }
 
 const Common::UString &Area::getName() {
@@ -275,6 +284,7 @@ void Area::loadObject(Object &object) {
 	_objects.push_back(&object);
 
 	_objectMap.insert(std::make_pair(object.getModelID(), &object));
+	_module->addObject(object);
 }
 
 void Area::loadPlaceables(const Aurora::GFF4List &list) {

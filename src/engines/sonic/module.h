@@ -29,6 +29,7 @@
 
 #include "src/events/types.h"
 
+#include "src/engines/sonic/objectcontainer.h"
 #include "src/engines/sonic/object.h"
 
 namespace Engines {
@@ -40,7 +41,7 @@ namespace Sonic {
 class Area;
 
 /** A Sonic module. */
-class Module : public Sonic::Object {
+class Module : public Sonic::Object, public Sonic::ObjectContainer {
 public:
 	Module(::Engines::Console &console);
 	~Module();

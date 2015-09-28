@@ -106,7 +106,7 @@ void Module::loadArea() {
 		return;
 	}
 
-	_area = new Area((uint32)_newArea);
+	_area = new Area(*this, (uint32)_newArea);
 
 	_area->enter();
 	_area->show();
