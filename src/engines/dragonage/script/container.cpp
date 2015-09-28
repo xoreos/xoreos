@@ -133,7 +133,7 @@ bool ScriptContainer::runScript(const Common::UString &script, EventType event,
 
 	Event e(event, triggerer, owner);
 
-	return runScript(script, event, state);
+	return runScript(script, e, state);
 }
 
 bool ScriptContainer::runScript(const Common::UString &script, Event &event) {
