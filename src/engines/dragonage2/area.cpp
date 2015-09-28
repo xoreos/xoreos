@@ -368,7 +368,7 @@ void Area::click(int x, int y) {
 	if (!o)
 		return;
 
-	o->click();
+	o->click(_campaign->getPC());
 }
 
 void Area::highlightAll(bool enabled) {

@@ -98,6 +98,13 @@ void Placeable::highlight(bool enabled) {
 		_model->drawBound(enabled);
 }
 
+bool Placeable::click(Object *triggerer) {
+	runScript(kEventTypeClick, this, triggerer);
+	runScript(kEventTypeUse  , this, triggerer);
+
+	return true;
+}
+
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	_resRef = placeable.getString("TemplateResRef");
 
