@@ -35,8 +35,8 @@
 
 namespace Graphics {
 
-TGA::TGA(Common::SeekableReadStream &tga, bool isCubeMap) {
-	if (isCubeMap) {
+TGA::TGA(Common::SeekableReadStream &tga, bool cubeMap) {
+	if (cubeMap) {
 		_layerCount = 6;
 		_isCubeMap  = true;
 	}

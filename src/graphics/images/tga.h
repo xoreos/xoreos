@@ -38,7 +38,7 @@ namespace Graphics {
 /** TarGa image. */
 class TGA : public ImageDecoder {
 public:
-	TGA(Common::SeekableReadStream &tga, bool isCubeMap = false);
+	TGA(Common::SeekableReadStream &tga, bool cubeMap = false);
 	~TGA();
 
 private:
