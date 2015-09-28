@@ -96,7 +96,7 @@ void Module::exit() {
 }
 
 void Module::loadArea() {
-	if (_area && (_area->getID() == _newArea))
+	if (_area && (_area->getID() == (uint32)_newArea))
 		return;
 
 	unloadArea();
@@ -106,7 +106,7 @@ void Module::loadArea() {
 		return;
 	}
 
-	_area = new Area(_newArea);
+	_area = new Area((uint32)_newArea);
 
 	_area->enter();
 	_area->show();

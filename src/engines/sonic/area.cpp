@@ -48,10 +48,13 @@ namespace Engines {
 
 namespace Sonic {
 
-Area::Area(int32 id) : _id(id), _width(0), _height(0), _startPosX(0.0f), _startPosY(0.0f),
+Area::Area(uint32 id) : Object(kObjectTypeArea),
+	_width(0), _height(0), _startPosX(0.0f), _startPosY(0.0f),
 	_miniMapWidth(0), _miniMapHeight(0), _soundMapBank(-1), _sound(-1), _soundType(-1), _soundBank(-1),
 	_numberRings(0), _numberChaoEggs(0), _bgPanel(0), _mmPanel(0),
 	_activeObject(0), _highlightAll(false) {
+
+	_id = id;
 
 	load();
 }
@@ -64,10 +67,6 @@ Area::~Area() {
 
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		delete *o;
-}
-
-int32 Area::getID() const {
-	return _id;
 }
 
 const Common::UString &Area::getName() {
@@ -205,7 +204,7 @@ void Area::load() {
 void Area::loadDefinition() {
 	const Aurora::GDAFile &areas = TwoDAReg.getGDA("areas");
 	if (!areas.hasRow(_id))
-		throw Common::Exception("No such Area ID %d (%u)", _id, (uint)areas.getRowCount());
+		throw Common::Exception("No such Area ID %u (%u)", _id, (uint)areas.getRowCount());
 
 	_name = TalkMan.getString(areas.getInt(_id, "Name", 0xFFFFFFFF));
 

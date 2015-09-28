@@ -37,6 +37,8 @@
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
+#include "src/engines/sonic/object.h"
+
 namespace Engines {
 
 namespace Sonic {
@@ -46,12 +48,11 @@ class AreaMiniMap;
 
 class Object;
 
-class Area : public Events::Notifyable {
+class Area : public Sonic::Object, public Events::Notifyable {
 public:
-	Area(int32 id);
+	Area(uint32 id);
 	~Area();
 
-	int32 getID() const;
 	/** Return the area's localized name. */
 	const Common::UString &getName();
 
@@ -84,9 +85,6 @@ private:
 	typedef std::list<Object *> ObjectList;
 	typedef std::map<uint32, Object *> ObjectMap;
 
-	int32 _id;
-
-	Common::UString _tag;
 	Common::UString _name;
 	Common::UString _background;
 	Common::UString _layout;
