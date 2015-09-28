@@ -202,6 +202,8 @@ else(ICONV_SECOND_ARGUMENT_IS_CONST)
   add_definitions(-DICONV_CONST=)
 endif(ICONV_SECOND_ARGUMENT_IS_CONST)
 
+add_definitions(-DGLEW_NO_GLU)
+
 find_package(GLEW)
 if(NOT GLEW_FOUND)
   add_definitions(-DGLEW_STATIC)
