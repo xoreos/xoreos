@@ -74,6 +74,10 @@ const std::list<uint32> &Object::getIDs() const {
 	return _ids;
 }
 
+const Common::UString &Object::getResRef() const {
+	return _resRef;
+}
+
 const Aurora::LocString &Object::getName() const {
 	return _name;
 }
