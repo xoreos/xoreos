@@ -22,6 +22,8 @@
  *  Engine class handling Sonic Chronicles: The Dark Brotherhood.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/filelist.h"
@@ -33,8 +35,6 @@
 #include "src/aurora/talkman.h"
 #include "src/aurora/ndsrom.h"
 
-#include "src/sound/sound.h"
-
 #include "src/events/events.h"
 
 #include "src/graphics/graphics.h"
@@ -42,8 +42,6 @@
 
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
-#include "src/graphics/aurora/guiquad.h"
-#include "src/graphics/aurora/text.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/loadprogress.h"
@@ -55,19 +53,18 @@
 #include "src/engines/sonic/files.h"
 #include "src/engines/sonic/modelloader.h"
 #include "src/engines/sonic/console.h"
-#include "src/engines/sonic/util.h"
-#include "src/engines/sonic/module.h"
+#include "src/engines/sonic/game.h"
 
 namespace Engines {
 
 namespace Sonic {
 
-SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid), _module(0) {
+SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid), _game(0) {
 	_console = new Console(*this);
 }
 
 SonicEngine::~SonicEngine() {
-	delete _module;
+	delete _game;
 }
 
 Common::UString SonicEngine::getLanguageHERF(Aurora::Language language) {
@@ -165,8 +162,10 @@ bool SonicEngine::changeLanguage() {
 	return true;
 }
 
-Module *SonicEngine::getModule() {
-	return _module;
+Game &SonicEngine::getGame() {
+	assert(_game);
+
+	return *_game;
 }
 
 void SonicEngine::run() {
@@ -178,7 +177,8 @@ void SonicEngine::run() {
 	CursorMan.set();
 	CursorMan.showCursor();
 
-	main();
+	_game = new Game(*this, *_console);
+	_game->run();
 
 	deinit();
 }
@@ -187,7 +187,7 @@ void SonicEngine::init() {
 	// Force to the screen size of the Nintendo DS (2 screens of 256x192)
 	GfxMan.setScreenSize(kScreenWidth, 2 * kScreenHeight);
 
-	LoadProgress progress(9);
+	LoadProgress progress(8);
 
 	progress.step("Declare languages");
 	declareLanguages();
@@ -242,15 +242,6 @@ void SonicEngine::initResources(LoadProgress &progress) {
 
 	GfxMan.setOrthogonal(0.0f, 1000.0f);
 	GfxMan.setCullFace(false);
-
-	progress.step("Load essential fonts");
-
-	_guiFont = loadFont("guifont", "jillcan13sh", false);
-
-	if (_language == Aurora::kLanguageJapanese)
-		_quoteFont = loadFont("quotefont", "jillcan12sh", false);
-	else
-		_quoteFont = loadFont("quotefont", "jillcan12rg", true);
 }
 
 void SonicEngine::declareResources() {
@@ -291,191 +282,10 @@ void SonicEngine::initGameConfig() {
 }
 
 void SonicEngine::deinit() {
-	_guiFont.clear();
+	delete _game;
+	_game = 0;
 
 	unloadLanguageFiles();
-}
-
-bool SonicEngine::waitClick() {
-	while (!EventMan.quitRequested()) {
-		Events::Event event;
-		while (EventMan.pollEvent(event)) {
-			if (event.type == Events::kEventMouseUp)
-				return true;
-		}
-
-		EventMan.delay(10);
-	}
-
-	return !EventMan.quitRequested();
-}
-
-bool SonicEngine::showLicenseSplash() {
-	Graphics::Aurora::GUIQuad top("nintendosplash"  , 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-	Graphics::Aurora::GUIQuad bot("actimaginesplash", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-
-	top.setPosition(kTopScreenX   , kTopScreenY);
-	bot.setPosition(kBottomScreenX, kBottomScreenY);
-
-	GfxMan.lockFrame();
-	top.show();
-	bot.show();
-	GfxMan.unlockFrame();
-
-	if (!waitClick())
-		return false;
-
-	GfxMan.lockFrame();
-	top.hide();
-	bot.hide();
-
-	return true;
-}
-
-bool SonicEngine::showTitle() {
-	Graphics::Aurora::GUIQuad top("introscr_top", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-	Graphics::Aurora::GUIQuad bot("introscr_bot", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-
-	top.setPosition(kTopScreenX   , kTopScreenY);
-	bot.setPosition(kBottomScreenX, kBottomScreenY);
-
-	top.show();
-	bot.show();
-	GfxMan.unlockFrame();
-
-	if (!waitClick())
-		return false;
-
-	GfxMan.lockFrame();
-	top.hide();
-	bot.hide();
-
-	return true;
-}
-
-bool SonicEngine::showMainMenu() {
-	Graphics::Aurora::GUIQuad top("introscr_top" , 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-	Graphics::Aurora::GUIQuad bot("startupscrbot", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-
-	top.setPosition(kTopScreenX   , kTopScreenY   , 0.0f);
-	bot.setPosition(kBottomScreenX, kBottomScreenY, 0.0f);
-
-	top.show();
-	bot.show();
-
-
-	Graphics::Aurora::TextureHandle buttonTexture = loadNCGR("main_pnl_off", "gui_main_pnl", 8, 2,
-			"00", "01", "02", "03", "04", (const char *) 0, (const char *) 0, (const char *) 0,
-			"10", "11", "12", "13", "14", "15", "16", "17");
-
-	Graphics::Aurora::GUIQuad button(buttonTexture, 0.0f, 0.0f, 240.0f, 48.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-
-	button.setPosition(-120.0f, -120.0f, -1.0f);
-	button.show();
-
-
-	Graphics::Aurora::Text buttonText(_guiFont, TalkMan.getString(15860));
-
-	float buttonX, buttonY, buttonZ;
-	button.getPosition(buttonX, buttonY, buttonZ);
-
-	const float buttonTextX = buttonX + ((button.getWidth()  - buttonText.getWidth())  / 2.0f);
-	const float buttonTextY = buttonY + ((button.getHeight() - buttonText.getHeight()) / 2.0f);
-
-	buttonText.setPosition(buttonTextX, buttonTextY, -2.0f);
-	buttonText.show();
-
-
-	Graphics::Aurora::Text helpText(_guiFont, TalkMan.getString(18707));
-
-	const float helpTextX = kBottomScreenX + ((kScreenWidth - helpText.getWidth()) / 2.0f);
-	const float helpTextY = kBottomScreenY;
-
-	helpText.setPosition(helpTextX, helpTextY, -2.0f);
-	helpText.show();
-
-
-	GfxMan.unlockFrame();
-
-	if (!waitClick())
-		return false;
-
-	GfxMan.lockFrame();
-	helpText.hide();
-	buttonText.hide();
-	button.hide();
-	top.hide();
-	bot.hide();
-
-	return true;
-}
-
-bool SonicEngine::showQuote() {
-	const float length = (_language == Aurora::kLanguageJapanese) ? 236.0f : 256.0f;
-	const float align  = (_language == Aurora::kLanguageJapanese) ?   0.0f :   0.5f;
-
-	Common::UString quote = TalkMan.getString(21712);
-	_guiFont.getFont().split(quote, length, 0.0f, false);
-
-	Graphics::Aurora::Text quoteText(_quoteFont, quote, 1.0f, 1.0f, 1.0f, 1.0f, align);
-
-	const float quoteTextX = kTopScreenX + ((kScreenWidth  - quoteText.getWidth())  / 2.0f);
-	const float quoteTextY = kTopScreenY + ((kScreenHeight - quoteText.getHeight()) / 2.0f);
-
-	quoteText.setPosition(quoteTextX, quoteTextY, 0.0f);
-	quoteText.show();
-
-	GfxMan.unlockFrame();
-
-	if (!waitClick())
-		return false;
-
-	GfxMan.lockFrame();
-	quoteText.hide();
-
-	return true;
-}
-
-bool SonicEngine::showChapter1() {
-	Graphics::Aurora::GUIQuad top("chap1scr_top", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-	Graphics::Aurora::GUIQuad bot("chap1scr_bot", 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-
-	top.setPosition(kTopScreenX   , kTopScreenY);
-	bot.setPosition(kBottomScreenX, kBottomScreenY);
-
-	top.show();
-	bot.show();
-	GfxMan.unlockFrame();
-
-	if (!waitClick())
-		return false;
-
-	GfxMan.lockFrame();
-	top.hide();
-	bot.hide();
-	GfxMan.unlockFrame();
-
-	return true;
-}
-
-void SonicEngine::main() {
-	if (!showLicenseSplash())
-		return;
-	if (!showTitle())
-		return;
-	if (!showMainMenu())
-		return;
-	if (!showQuote())
-		return;
-	if (!showChapter1())
-		return;
-
-	_module = new Module(*_console);
-
-	_module->run();
-
-	delete _module;
-	_module = 0;
 }
 
 } // End of namespace Sonic

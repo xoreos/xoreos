@@ -10,6 +10,7 @@ noinst_HEADERS = \
                  modelloader.h \
                  console.h \
                  util.h \
+                 game.h \
                  areabackground.h \
                  areaminimap.h \
                  area.h \
@@ -25,6 +26,7 @@ libsonic_la_SOURCES = \
                       modelloader.cpp \
                       console.cpp \
                       util.cpp \
+                      game.cpp \
                       areabackground.cpp \
                       areaminimap.cpp \
                       area.cpp \

@@ -36,6 +36,7 @@
 
 #include "src/engines/sonic/console.h"
 #include "src/engines/sonic/sonic.h"
+#include "src/engines/sonic/game.h"
 #include "src/engines/sonic/module.h"
 
 namespace Engines {
@@ -94,10 +95,6 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		return;
 	}
 
-	Module *module = _engine->getModule();
-	if (!module)
-		return;
-
 	int32 areaID = -1;
 	try {
 		Common::parseString(cl.args, areaID);
@@ -112,7 +109,7 @@ void Console::cmdGotoArea(const CommandLine &cl) {
 		return;
 	}
 
-	module->movePC(areaID);
+	_engine->getGame().getModule().movePC(areaID);
 }
 
 } // End of namespace Sonic

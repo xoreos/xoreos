@@ -30,8 +30,6 @@
 
 #include "src/aurora/types.h"
 
-#include "src/graphics/aurora/fonthandle.h"
-
 #include "src/engines/engine.h"
 
 namespace Engines {
@@ -40,7 +38,7 @@ class LoadProgress;
 
 namespace Sonic {
 
-class Module;
+class Game;
 
 class SonicEngine : public Engines::Engine {
 public:
@@ -54,7 +52,8 @@ public:
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
 
-	Module *getModule();
+	/** Return the context running the actual game. */
+	Game &getGame();
 
 
 protected:
@@ -67,10 +66,7 @@ private:
 	Common::ChangeID _languageHERF;
 	Common::ChangeID _languageTLK;
 
-	Graphics::Aurora::FontHandle _guiFont;
-	Graphics::Aurora::FontHandle _quoteFont;
-
-	Module *_module;
+	Game *_game;
 
 
 	void init();
@@ -85,16 +81,6 @@ private:
 	void loadLanguageFiles(Aurora::Language language);
 
 	void deinit();
-
-	void main();
-
-	bool waitClick();
-
-	bool showLicenseSplash();
-	bool showTitle();
-	bool showMainMenu();
-	bool showQuote();
-	bool showChapter1();
 
 
 	static Common::UString getLanguageHERF(Aurora::Language language);
