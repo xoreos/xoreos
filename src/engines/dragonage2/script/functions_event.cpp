@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/error.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
 #include "src/aurora/nwscript/variablecontainer.h"
@@ -104,6 +105,72 @@ void Functions::setEventCreator(Aurora::NWScript::FunctionContext &ctx) {
 	event->setCreator(ctx.getParams()[1].getObject());
 }
 
+void Functions::getEventTypeRef(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) kEventTypeInvalid;
+
+	const Aurora::NWScript::Variable *variable = ctx.getParams()[0].getReference();
+	if (!variable)
+		return;
+
+	const Event *event = DragonAge2::ObjectContainer::toEvent(variable->getEngineType());
+	if (!event)
+		return;
+
+	ctx.getReturn() = (int32) event->getType();
+}
+
+void Functions::getEventCreatorRef(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	const Aurora::NWScript::Variable *variable = ctx.getParams()[0].getReference();
+	if (!variable)
+		return;
+
+	const Event *event = DragonAge2::ObjectContainer::toEvent(variable->getEngineType());
+	if (!event)
+		return;
+
+	ctx.getReturn() = event->getCreator();
+}
+
+void Functions::getEventTargetRef(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+
+	const Aurora::NWScript::Variable *variable = ctx.getParams()[0].getReference();
+	if (!variable)
+		return;
+
+	const Event *event = DragonAge2::ObjectContainer::toEvent(variable->getEngineType());
+	if (!event)
+		return;
+
+	ctx.getReturn() = event->getCreator();
+}
+
+void Functions::setEventTypeRef(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Variable *variable = ctx.getParams()[0].getReference();
+	if (!variable)
+		return;
+
+	Event *event = DragonAge2::ObjectContainer::toEvent(variable->getEngineType());
+	if (!event)
+		return;
+
+	event->setType((EventType) ctx.getParams()[1].getInt());
+}
+
+void Functions::setEventCreatorRef(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Variable *variable = ctx.getParams()[0].getReference();
+	if (!variable)
+		return;
+
+	Event *event = DragonAge2::ObjectContainer::toEvent(variable->getEngineType());
+	if (!event)
+		return;
+
+	event->setCreator(ctx.getParams()[1].getObject());
+}
+
 void Functions::handleEvent(Aurora::NWScript::FunctionContext &ctx) {
 	Event invalidEvent;
 
@@ -112,6 +179,20 @@ void Functions::handleEvent(Aurora::NWScript::FunctionContext &ctx) {
 		event = &invalidEvent;
 
 	// TODO: According to the Dragon Age wiki, "The maximum level of event rerouteing is 8".
+
+	DragonAge2::ScriptContainer::runScript(ctx.getParams()[1].getString(), *event);
+}
+
+void Functions::handleEventRef(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Variable *variable = ctx.getParams()[0].getReference();
+	if (!variable)
+		throw Common::Exception("Functions::handleEventRef(): Empty reference");
+
+	Event *event = DragonAge2::ObjectContainer::toEvent(variable->getEngineType());
+	if (!event)
+		throw Common::Exception("Functions::handleEventRef(): Reference is not an event");
+
+	// TODO: Maximum level of event rerouteing?
 
 	DragonAge2::ScriptContainer::runScript(ctx.getParams()[1].getString(), *event);
 }
