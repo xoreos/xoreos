@@ -1472,7 +1472,7 @@ void NCSFile::o_writearray(InstructionType type) {
 	int16 size   = _script->readSint16BE();
 
 	if (size != 4)
-		throw Common::Exception("NCSFile::o_readarray(): Invalid size %d", size);
+		throw Common::Exception("NCSFile::o_writearray(): Invalid size %d", size);
 
 	Variable &arrayVar = _stack.getRelSP(offset);
 
@@ -1517,7 +1517,7 @@ void NCSFile::o_getref(InstructionType type) {
 	int16 size   = _script->readSint16BE();
 
 	if (size != 4)
-		throw Common::Exception("NCSFile::o_readarray(): Invalid size %d", size);
+		throw Common::Exception("NCSFile::o_getref(): Invalid size %d", size);
 
 	Variable &var = _stack.getRelSP(offset);
 
