@@ -38,8 +38,8 @@ namespace Engines {
 
 namespace Sonic {
 
-Module::Module(::Engines::Console &console) : _console(&console),
-	_running(false), _exit(false), _newArea(-1), _area(0) {
+Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
+	_console(&console), _running(false), _exit(false), _newArea(-1), _area(0) {
 
 }
 
