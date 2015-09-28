@@ -22,7 +22,7 @@ LIBSL       = $(XOREOS_LIBS) $(LTLIBICONV) $(ZLIB_LIBS) $(LZMA_LIBS) \
               $(LIBSL_BOOST)
 
 FLAGS_C_CXX = -I$(top_srcdir) -ggdb $(LTO) $(WARN_C_CXX) $(WERROR) \
-              -DGLEW_STATIC
+              -DGLEW_STATIC -DGLEW_NO_GLU
 FLAGS_C     =
 FLAGS_CXX   = $(WARN_CXX)
 
