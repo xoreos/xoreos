@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Sonic Chronicles: The Dark Brotherhood
+ *  Engine class handling Sonic Chronicles: The Dark Brotherhood.
  */
 
 #ifndef ENGINES_SONIC_SONIC_H

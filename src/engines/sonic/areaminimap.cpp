@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The area mini map.
+ *  The area mini map in Sonic Chronicles: The Dark Brotherhood.
  */
 
 #include "src/common/ustring.h"

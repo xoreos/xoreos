@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Sonic model loader.
+ *  Sonic Chronicles: The Dark Brotherhood model loader.
  */
 
 #ifndef ENGINES_SONIC_MODELLOADER_H

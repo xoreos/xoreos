@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A placeable object within a Sonic area.
+ *  A placeable object in a Sonic Chronicles: The Dark Brotherhood area.
  */
 
 #include "src/common/util.h"

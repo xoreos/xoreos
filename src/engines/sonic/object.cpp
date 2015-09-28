@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An object within a Sonic area.
+ *  An object in a Sonic Chronicles: The Dark Brotherhood area.
  */
 
 #include "src/engines/sonic/object.h"

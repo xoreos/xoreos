@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  All currently known resource file names.
+ *  All currently known resource file names in Sonic Chronicles: The Dark Brotherhood.
  */
 
 #ifndef ENGINES_SONIC_FILES_H

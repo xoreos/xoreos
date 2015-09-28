@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Engine class handling Sonic Chronicles: The Dark Brotherhood
+ *  Engine class handling Sonic Chronicles: The Dark Brotherhood.
  */
 
 #include "src/common/util.h"

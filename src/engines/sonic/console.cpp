@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Sonic (debug) console.
+ *  Sonic Chronicles: The Dark Brotherhood (debug) console.
  */
 
 #include <boost/bind.hpp>

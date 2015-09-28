@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A placeable object within a Sonic area.
+ *  A placeable object in a Sonic Chronicles: The Dark Brotherhood area.
  */
 
 #ifndef ENGINES_SONIC_PLACEABLE_H

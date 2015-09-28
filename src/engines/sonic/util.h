@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Sonic utility functions
+ *  Sonic Chronicles: The Dark Brotherhood utility functions.
  */
 
 #ifndef ENGINES_SONIC_UTIL_H

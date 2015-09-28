@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The scrolling background image panel.
+ *  The scrolling background image panel in Sonic Chronicles: The Dark Brotherhood.
  */
 
 #ifndef ENGINES_SONIC_AREABACKGROUND_H

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An area in Sonic.
+ *  The context holding a Sonic Chronicles: The Dark Brotherhood area.
  */
 
 #ifndef ENGINES_SONIC_AREA_H

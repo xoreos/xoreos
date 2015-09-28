@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The area mini map.
+ *  The area mini map in Sonic Chronicles: The Dark Brotherhood.
  */
 
 #ifndef ENGINES_SONIC_AREAMINIMAP_H

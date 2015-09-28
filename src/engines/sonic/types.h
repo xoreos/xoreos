@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Basic Sonic types and defines.
+ *  Basic Sonic Chronicles: The Dark Brotherhood types and defines.
  */
 
 #ifndef ENGINES_SONIC_TYPES_H

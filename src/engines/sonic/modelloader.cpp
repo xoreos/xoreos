@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Sonic model loader.
+ *  Sonic Chronicles: The Dark Brotherhood model loader.
  */
 
 #include "src/common/system.h"

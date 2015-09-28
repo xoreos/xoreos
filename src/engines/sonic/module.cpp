@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The Module managing Sonic's gameplay.
+ *  The context needed to run a Sonic Chronicles: The Dark Brotherhood module.
  */
 
 #include "src/common/error.h"

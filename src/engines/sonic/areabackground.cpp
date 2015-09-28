@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The scrolling background image panel.
+ *  The scrolling background image panel in Sonic Chronicles: The Dark Brotherhood.
  */
 
 #include "src/common/util.h"

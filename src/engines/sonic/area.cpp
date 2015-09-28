@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An area in Sonic.
+ *  The context holding a Sonic Chronicles: The Dark Brotherhood area.
  */
 
 #include "src/common/util.h"
