@@ -1525,8 +1525,27 @@ void NCSFile::o_getref(InstructionType type) {
 	_stack.top().setReference(&var);
 }
 
-void NCSFile::o_getrefarray(InstructionType UNUSED(type)) {
-	throw Common::Exception("NCSFile::o_getrefarray(): TODO");
+void NCSFile::o_getrefarray(InstructionType type) {
+	if (type != kInstTypeDirect)
+		throw Common::Exception("NCSFile::o_getrefarray(): Illegal type %d", type);
+
+	int32 offset = _script->readSint32BE();
+	int16 size   = _script->readSint16BE();
+
+	if (size != 4)
+		throw Common::Exception("NCSFile::o_getrefarray(): Invalid size %d", size);
+
+	Variable::Array &array = _stack.getRelSP(offset).getArray();
+
+	Variable indexVar  = _stack.pop();
+	const int32 index = indexVar.getInt();
+
+	if ((index < 0) || ((uint)index >= array.size()))
+		throw Common::Exception("NCSFile::o_getrefarray(): Index out of range (%d, %u)",
+		                        index, (uint) array.size());
+
+	_stack.push(Variable(kTypeReference));
+	_stack.top().setReference(&*array[index]);
 }
 
 } // End of namespace NWScript
