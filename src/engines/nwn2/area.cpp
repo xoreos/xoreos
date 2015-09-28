@@ -611,7 +611,7 @@ void Area::click(int x, int y) {
 	if (!o)
 		return;
 
-	o->click();
+	o->click(_module->getPC());
 }
 
 void Area::highlightAll(bool enabled) {
