@@ -28,6 +28,8 @@
  * a mirror (<https://github.com/xoreos/xoreos-docs>).
  */
 
+#include <boost/make_shared.hpp>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
@@ -1462,8 +1464,27 @@ void NCSFile::o_storestate(InstructionType type) {
 		state.locals.push_back(_stack.getRelSP(posSP));
 }
 
-void NCSFile::o_writearray(InstructionType UNUSED(type)) {
-	throw Common::Exception("NCSFile::o_writearray(): TODO");
+void NCSFile::o_writearray(InstructionType type) {
+	if (type != kInstTypeDirect)
+		throw Common::Exception("NCSFile::o_writearray(): Illegal type %d", type);
+
+	int32 offset = _script->readSint32BE();
+	int16 size   = _script->readSint16BE();
+
+	if (size != 4)
+		throw Common::Exception("NCSFile::o_readarray(): Invalid size %d", size);
+
+	Variable &arrayVar = _stack.getRelSP(offset);
+
+	Variable  indexVar = _stack.pop();
+	Variable &valueVar = _stack.top();
+
+	const int32 index = indexVar.getInt();
+	if (index < 0)
+		throw Common::Exception("NCSFile::o_writearray(): Invalid index %d", index);
+
+	arrayVar.growArray(valueVar.getType(), index + 1);
+	arrayVar.getArray()[index] = boost::make_shared<Variable>(Variable(valueVar));
 }
 
 void NCSFile::o_readarray(InstructionType type) {
