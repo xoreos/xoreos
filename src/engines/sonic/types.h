@@ -43,6 +43,19 @@ static const float kBottomScreenY = -192.0f;
 static const float kCameraHeight = 50.0f;
 static const float kCameraAngle  = 45.0f;
 
+enum ObjectType {
+	kObjectTypeInvalid      = 0,
+	kObjectTypeModule       = 1 << 0,
+	kObjectTypeArea         = 1 << 1,
+	kObjectTypePlaceable    = 1 << 2,
+	kObjectTypeItem         = 1 << 3,
+	kObjectTypeCreature     = 1 << 4,
+
+	kObjectTypeAll          = 0x7FFF,
+
+	kObjectTypeMAX          = 0x7FFF
+};
+
 } // End of namespace Sonic
 
 } // End of namespace Engines

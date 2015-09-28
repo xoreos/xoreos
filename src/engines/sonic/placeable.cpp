@@ -51,8 +51,8 @@ namespace Engines {
 
 namespace Sonic {
 
-Placeable::Placeable(const Aurora::GFF4Struct &placeable) : _model(0),
-	_typeID(0xFFFFFFFF), _appearanceID(0xFFFFFFFF), _scale(1.0f) {
+Placeable::Placeable(const Aurora::GFF4Struct &placeable) : Object(kObjectTypePlaceable),
+	_model(0), _typeID(0xFFFFFFFF), _appearanceID(0xFFFFFFFF), _scale(1.0f) {
 
 	load(placeable);
 }
