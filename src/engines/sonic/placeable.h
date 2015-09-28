@@ -39,32 +39,47 @@ namespace Sonic {
 
 class Placeable : public Object {
 public:
+	/** Load from a placeable instance. */
 	Placeable(const Aurora::GFF4Struct &placeable);
 	~Placeable();
 
-	void show();
-	void hide();
+	// Basic visuals
 
-	void enter();
-	void leave();
+	void show(); ///< Show the placeable's model.
+	void hide(); ///< Hide the placeable's model.
 
+	// Object/Cursor interactions
+
+	void enter(); ///< The cursor entered the placeable.
+	void leave(); ///< The cursor left the placeable.
+
+	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
 
-	void setPosition(float x, float y, float z);
-	void setOrientation(float x, float y, float z, float angle);
+	// Positioning
+
+	/** Set the placeable's position within its area. */
+	virtual void setPosition(float x, float y, float z);
+	/** Set the placeable's orientation. */
+	virtual void setOrientation(float x, float y, float z, float angle);
 
 protected:
+	/** The resource change created by indexing the model's texture. */
 	Common::ChangeID _modelTexture;
+	/** The placeable's model. */
 	Graphics::Aurora::Model *_model;
 
-	uint32 _typeID;
-	uint32 _appearanceID;
+	uint32 _typeID;       ///< The placeable's type.
+	uint32 _appearanceID; ///< The placeable's appearance.
 
+	/** The name of the model representing this placeable. */
 	Common::UString _modelName;
 
+	/** The scale modifying this placeable's model. */
 	float _scale;
 
 
+	/** Load from a placeable instance. */
 	void load(const Aurora::GFF4Struct &placeable);
 };
 

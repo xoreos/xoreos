@@ -53,6 +53,12 @@ uint32 Object::getID() const {
 	return _id;
 }
 
+void Object::show() {
+}
+
+void Object::hide() {
+}
+
 uint32 Object::getModelID() const {
 	return _modelID;
 }
@@ -82,6 +88,15 @@ void Object::setOrientation(float x, float y, float z, float angle) {
 	_orientation[1] = y;
 	_orientation[2] = z;
 	_orientation[3] = angle;
+}
+
+void Object::enter() {
+}
+
+void Object::leave() {
+}
+
+void Object::highlight(bool UNUSED(enabled)) {
 }
 
 } // End of namespace Sonic

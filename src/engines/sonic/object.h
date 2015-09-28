@@ -43,35 +43,51 @@ public:
 	/** Return the exact type of the object. */
 	ObjectType getType() const;
 
-	virtual void show() = 0;
-	virtual void hide() = 0;
+	// Basic visuals
 
+	virtual void show(); ///< Show the object's model.
+	virtual void hide(); ///< Hide the object's model.
+
+	// Basic properties
+
+	/** Return the object's tag. */
 	const Common::UString &getTag() const;
 
+	/** Return the object's ID. */
 	uint32 getID() const;
+	/** Return the ID of the object's model. */
 	uint32 getModelID() const;
 
+	// Positioning
+
+	/** Return the object's position within its area. */
 	virtual void getPosition(float &x, float &y, float &z) const;
+	/** Return the object's orientation. */
 	virtual void getOrientation(float &x, float &y, float &z, float &angle) const;
 
+	/** Set the object's position within its area. */
 	virtual void setPosition(float x, float y, float z);
+	/** Set the object's orientation. */
 	virtual void setOrientation(float x, float y, float z, float angle);
 
-	virtual void enter() = 0;
-	virtual void leave() = 0;
+	// Object/Cursor interactions
 
-	virtual void highlight(bool enabled) = 0;
+	virtual void enter(); ///< The cursor entered the object. */
+	virtual void leave(); ///< The cursor left the object. */
+
+	/** (Un)Highlight the object. */
+	virtual void highlight(bool enabled);
 
 protected:
 	ObjectType _type; ///< The object's type.
 
-	Common::UString _tag;
+	Common::UString _tag; ///< The object's tag.
 
-	uint32 _id;
-	uint32 _modelID;
+	uint32 _id;      ///< The object's ID.
+	uint32 _modelID; ///< The ID of the object's model.
 
-	float _position[3];
-	float _orientation[4];
+	float _position[3];    ///< The object's position.
+	float _orientation[4]; ///< The object's orientation.
 };
 
 } // End of namespace Sonic
