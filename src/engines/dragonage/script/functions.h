@@ -228,6 +228,10 @@ private:
 	void UT_getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Creatures, functions_creature.cpp
+	void isHero(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Events, functions_event.cpp
 	void getCurrentEvent(Aurora::NWScript::FunctionContext &ctx);
 
