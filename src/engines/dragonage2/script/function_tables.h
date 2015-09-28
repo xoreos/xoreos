@@ -625,7 +625,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 497, "InvalidFunction497"                    , 0                                                  },
 	{ 498, "InvalidFunction498"                    , 0                                                  },
 	{ 499, "InvalidFunction499"                    , 0                                                  },
-	{ 500, "IsHero"                                , 0                                                  },
+	{ 500, "IsHero"                                , &Functions::isHero                                 },
 	{ 501, "InvalidFunction501"                    , 0                                                  },
 	{ 502, "GetHero"                               , &Functions::getHero                                },
 	{ 503, "InvalidFunction503"                    , 0                                                  },
