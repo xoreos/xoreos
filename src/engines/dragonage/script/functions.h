@@ -179,6 +179,55 @@ private:
 	void getHero(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- General object functions, functions_object.cpp
+	void isObjectValid(Aurora::NWScript::FunctionContext &ctx);
+
+	void getLocalInt     (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalFloat   (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalString  (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalObject  (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalResource(Aurora::NWScript::FunctionContext &ctx);
+	void getLocalLocation(Aurora::NWScript::FunctionContext &ctx);
+	void getLocalPlayer  (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalEvent   (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalCommand (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalEffect  (Aurora::NWScript::FunctionContext &ctx);
+
+	void getLocalItemProperty(Aurora::NWScript::FunctionContext &ctx);
+
+	void setLocalInt     (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalFloat   (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalString  (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalObject  (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalResource(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalLocation(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalPlayer  (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalEvent   (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalCommand (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalEffect  (Aurora::NWScript::FunctionContext &ctx);
+
+	void setLocalItemProperty(Aurora::NWScript::FunctionContext &ctx);
+
+	void getObjectType(Aurora::NWScript::FunctionContext &ctx);
+
+	void getTag   (Aurora::NWScript::FunctionContext &ctx);
+	void getResRef(Aurora::NWScript::FunctionContext &ctx);
+	void getName  (Aurora::NWScript::FunctionContext &ctx);
+	void setName  (Aurora::NWScript::FunctionContext &ctx);
+
+	void getArea    (Aurora::NWScript::FunctionContext &ctx);
+	void getPosition(Aurora::NWScript::FunctionContext &ctx);
+
+	void getDistanceBetween(Aurora::NWScript::FunctionContext &ctx);
+
+	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);
+
+	void getNearestObject     (Aurora::NWScript::FunctionContext &ctx);
+	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
+
+	void UT_getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Events, functions_event.cpp
 	void getCurrentEvent(Aurora::NWScript::FunctionContext &ctx);
 
