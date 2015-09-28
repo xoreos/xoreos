@@ -779,7 +779,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 651, "ResetCameraFacing"                     , 0                                                  },
 	{ 652, "SetMapPinState"                        , 0                                                  },
 	{ 653, "GetMapPinState"                        , 0                                                  },
-	{ 654, "GetCurrentEventType"                   , 0                                                  },
+	{ 654, "GetCurrentEventType"                   , &Functions::getCurrentEventType                    },
 	{ 655, "SetEffectEngineInteger"                , 0                                                  },
 	{ 656, "GetOrientation"                        , 0                                                  },
 	{ 657, "SetOrientation"                        , 0                                                  },
