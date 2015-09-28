@@ -78,8 +78,6 @@ private:
 	// .--- Utility methods
 	void jumpTo(DragonAge::Object *object, float x, float y, float z);
 
-	static int32 getRandom(int min, int max, int32 n = 1);
-
 	static Common::UString formatFloat(float f, int width = 18, int decimals = 9);
 
 	static Aurora::NWScript::Object *getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n);
@@ -88,6 +86,38 @@ private:
 	// --- Engine functions ---
 
 	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
+
+	// .--- Math, functions_math.cpp
+	void abs (Aurora::NWScript::FunctionContext &ctx);
+	void fabs(Aurora::NWScript::FunctionContext &ctx);
+
+	void cos(Aurora::NWScript::FunctionContext &ctx);
+	void sin(Aurora::NWScript::FunctionContext &ctx);
+	void tan(Aurora::NWScript::FunctionContext &ctx);
+
+	void acos(Aurora::NWScript::FunctionContext &ctx);
+	void asin(Aurora::NWScript::FunctionContext &ctx);
+	void atan(Aurora::NWScript::FunctionContext &ctx);
+
+	void log (Aurora::NWScript::FunctionContext &ctx);
+	void pow (Aurora::NWScript::FunctionContext &ctx);
+	void sqrt(Aurora::NWScript::FunctionContext &ctx);
+
+	void random     (Aurora::NWScript::FunctionContext &ctx);
+	void randomFloat(Aurora::NWScript::FunctionContext &ctx);
+
+	void intToFloat(Aurora::NWScript::FunctionContext &ctx);
+	void floatToInt(Aurora::NWScript::FunctionContext &ctx);
+
+	void vector(Aurora::NWScript::FunctionContext &ctx);
+
+	void isVectorEmpty(Aurora::NWScript::FunctionContext &ctx);
+
+	void getVectorMagnitude(Aurora::NWScript::FunctionContext &ctx);
+	void getVectorNormalize(Aurora::NWScript::FunctionContext &ctx);
+
+	void getArraySize(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 
 	// .--- Module functions, functions_module.cpp
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
