@@ -13,6 +13,7 @@ noinst_HEADERS = \
                  areabackground.h \
                  areaminimap.h \
                  area.h \
+                 objectcontainer.h \
                  module.h \
                  object.h \
                  placeable.h \
@@ -27,6 +28,7 @@ libsonic_la_SOURCES = \
                       areabackground.cpp \
                       areaminimap.cpp \
                       area.cpp \
+                      objectcontainer.cpp \
                       module.cpp \
                       object.cpp \
                       placeable.cpp \
