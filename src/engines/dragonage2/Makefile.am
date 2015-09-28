@@ -45,6 +45,7 @@ libdragonage2_la_SOURCES = \
                            script/container.cpp \
                            script/functions.cpp \
                            script/functions_math.cpp \
+                           script/functions_string.cpp \
                            script/functions_module.cpp \
                            script/functions_event.cpp \
                            $(EMPTY)

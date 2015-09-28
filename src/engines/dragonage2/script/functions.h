@@ -119,6 +119,60 @@ private:
 	void getArraySize(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Strings, functions_string.cpp
+	void printToLog        (Aurora::NWScript::FunctionContext &ctx);
+	void printToLogAndFlush(Aurora::NWScript::FunctionContext &ctx);
+
+	void logTrace    (Aurora::NWScript::FunctionContext &ctx);
+	void printWarning(Aurora::NWScript::FunctionContext &ctx);
+
+	void DEBUG_printToScreen(Aurora::NWScript::FunctionContext &ctx);
+	void printToLogWindow   (Aurora::NWScript::FunctionContext &ctx);
+
+	void printInteger (Aurora::NWScript::FunctionContext &ctx);
+	void printFloat   (Aurora::NWScript::FunctionContext &ctx);
+	void printString  (Aurora::NWScript::FunctionContext &ctx);
+	void printObject  (Aurora::NWScript::FunctionContext &ctx);
+	void printVector  (Aurora::NWScript::FunctionContext &ctx);
+	void printResource(Aurora::NWScript::FunctionContext &ctx);
+
+	void intToString     (Aurora::NWScript::FunctionContext &ctx);
+	void floatToString   (Aurora::NWScript::FunctionContext &ctx);
+	void objectToString  (Aurora::NWScript::FunctionContext &ctx);
+	void vectorToString  (Aurora::NWScript::FunctionContext &ctx);
+	void resourceToString(Aurora::NWScript::FunctionContext &ctx);
+
+	void toString(Aurora::NWScript::FunctionContext &ctx);
+
+	void intToHexString(Aurora::NWScript::FunctionContext &ctx);
+
+	void stringToInt   (Aurora::NWScript::FunctionContext &ctx);
+	void stringToFloat (Aurora::NWScript::FunctionContext &ctx);
+	void stringToVector(Aurora::NWScript::FunctionContext &ctx);
+
+	void charToInt(Aurora::NWScript::FunctionContext &ctx);
+	void intToChar(Aurora::NWScript::FunctionContext &ctx);
+
+	void isStringEmpty  (Aurora::NWScript::FunctionContext &ctx);
+	void getStringLength(Aurora::NWScript::FunctionContext &ctx);
+
+	void stringUpperCase(Aurora::NWScript::FunctionContext &ctx);
+	void stringLowerCase(Aurora::NWScript::FunctionContext &ctx);
+
+	void stringRight(Aurora::NWScript::FunctionContext &ctx);
+	void stringLeft (Aurora::NWScript::FunctionContext &ctx);
+
+	void insertString (Aurora::NWScript::FunctionContext &ctx);
+	void subString    (Aurora::NWScript::FunctionContext &ctx);
+	void findSubString(Aurora::NWScript::FunctionContext &ctx);
+
+	void getStringByStringId(Aurora::NWScript::FunctionContext &ctx);
+	void getTlkTableString  (Aurora::NWScript::FunctionContext &ctx);
+
+	void getCurrentScriptName    (Aurora::NWScript::FunctionContext &ctx);
+	void getCurrentScriptResource(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Module functions, functions_module.cpp
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
 
