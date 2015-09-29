@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 project(xoreos C CXX)
-set(xoreos_VERSION 0.0.2)
+set(xoreos_VERSION 0.0.3)
 
 
 # -------------------------------------------------------------------------

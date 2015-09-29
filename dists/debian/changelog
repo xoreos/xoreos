@@ -1,3 +1,9 @@
+xoreos (0.0.3-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Sven Hesse <drmccoy@drmccoy.de>  Wed, 30 Sep 2015 00:00:00 +0200
+
 xoreos (0.0.2-1) unstable; urgency=low
 
   * Initial release
