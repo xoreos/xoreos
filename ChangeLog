@@ -46,6 +46,8 @@ Someday, ????-??-?? (Version 0.0.3)
 		- DRAGONAGE2:
 			- Restructured main game loop
 			- Added script system
+		- SONIC:
+			- Restructured engine to match the others
 
 Monday, 2015-07-27 (Version 0.0.2)
 	- Loading resources
