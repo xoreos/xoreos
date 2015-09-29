@@ -40,6 +40,12 @@ Someday, ????-??-?? (Version 0.0.3)
 			- Restructured object classes to match NWN
 			- Added script system
 			- Implemented partial placeable and door handling
+		- DRAGONAGE:
+			- Restructured main game loop
+			- Added script system
+		- DRAGONAGE2:
+			- Restructured main game loop
+			- Added script system
 
 Monday, 2015-07-27 (Version 0.0.2)
 	- Loading resources
