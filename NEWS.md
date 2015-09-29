@@ -1,3 +1,30 @@
+Changes in xoreos version 0.0.3
+===============================
+
+All targeted games now feature a working script system, with game scripts
+being fired for the start of a campaign or module, when entering and leaving
+areas, and when clicking on in-game object. The singular exception is the
+Nintendo DS game Sonic Chronicles: The Dark Brotherhood, which doesn't seem to
+feature any scripts at all.
+
+The vast majority of engine functions, the functions that are called by the
+scripts and that do the actual work of tracking and changing the game state,
+are still missing, though. Per game there are about 850 functions (with some
+overlap) that need to be implemented. We currently have about 90, per game, of
+these written and working within xoreos. Moreover, many of the functions still
+missing depend on features not yet implemented.
+
+Apart from the script system changes, 0.0.3 also comes with support for
+reflective environment mapping in Neverwinter Nights and the two Knights of
+the Old Republic games. The "metallic" armor and area parts that were rendered
+rendered transparent in xoreos are now properly reflective. This can be seen,
+for example, in the Sith troopers in Knights of the Old Republic, in various
+plate armor worn by NPC in Neverwinter Nights, as well as the metallic floors
+on the planet of Taris and the icy wastes of Cania. For Neverwinter Nights,
+xoreos now also correctly smoothes the vertex normals of (binary) models, so
+that the metallic effect is not broken by sharp polygon edges.
+
+
 Changes in xoreos version 0.0.2
 ===============================
 
