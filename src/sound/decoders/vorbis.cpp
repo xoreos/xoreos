@@ -50,7 +50,7 @@ static size_t read_stream_wrap(void *ptr, size_t size, size_t nmemb, void *datas
 }
 
 static int seek_stream_wrap(void *datasource, ogg_int64_t offset, int whence) {
-	Common::SeekableReadStream::Origin seekOrigin;
+	Common::SeekableReadStream::Origin seekOrigin = Common::SeekableReadStream::kOriginMAX;
 	switch (whence) {
 		case SEEK_SET:
 			seekOrigin = Common::SeekableReadStream::kOriginBegin;
