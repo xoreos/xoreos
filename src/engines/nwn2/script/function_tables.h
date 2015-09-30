@@ -81,8 +81,8 @@ static const Aurora::NWScript::Variable kDefaultInt9         ((int32)           
 static const Aurora::NWScript::Variable kDefaultInt18        ((int32)          18);
 static const Aurora::NWScript::Variable kDefaultInt50        ((int32)          50);
 static const Aurora::NWScript::Variable kDefaultInt100       ((int32)         100);
-static const Aurora::NWScript::Variable kDefaultInt4294901760((int32)  4294901760);
-static const Aurora::NWScript::Variable kDefaultInt4294967295((int32)  4294967295);
+static const Aurora::NWScript::Variable kDefaultInt4294901760((int32)  4294901760U);
+static const Aurora::NWScript::Variable kDefaultInt4294967295((int32)  4294967295U);
 
 static const Aurora::NWScript::Variable kDefaultFloatMinus1_0(-  1.0f);
 static const Aurora::NWScript::Variable kDefaultFloat0_0     (   0.0f);
@@ -115,7 +115,7 @@ static const Aurora::NWScript::Variable kDefaultDRTypeMagicBonus         ((int32
 static const Aurora::NWScript::Variable kDefaultFalse                    ((int32)           0);
 static const Aurora::NWScript::Variable kDefaultGenderMale               ((int32)           0);
 static const Aurora::NWScript::Variable kDefaultIPConstUnlimitedAmmoBasic((int32)           1);
-static const Aurora::NWScript::Variable kDefaultMetaMagicAny             ((int32)  4294967295);
+static const Aurora::NWScript::Variable kDefaultMetaMagicAny             ((int32)  4294967295U);
 static const Aurora::NWScript::Variable kDefaultMissChanceTypeNormal     ((int32)           0);
 static const Aurora::NWScript::Variable kDefaultObjectTypeAll            ((int32)       32767);
 static const Aurora::NWScript::Variable kDefaultObjectTypeCreature       ((int32)           1);
