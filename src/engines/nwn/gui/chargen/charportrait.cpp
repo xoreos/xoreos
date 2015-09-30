@@ -175,7 +175,7 @@ const std::vector<Common::UString> CharPortrait::initPortraitList() {
 		if (rowPortrait.getInt("plot"))
 			continue;
 
-		if ((uint32) rowPortrait.getInt("Sex") != _choices->getCharacter().getGender())
+		if ((uint32)rowPortrait.getInt("Sex") != (uint32)_choices->getCharacter().getGender())
 			continue;
 
 		if (rowPortrait.empty("Race"))
