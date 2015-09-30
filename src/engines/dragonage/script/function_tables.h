@@ -84,7 +84,7 @@ static const Aurora::NWScript::Variable kDefaultInt18        ((int32)          1
 static const Aurora::NWScript::Variable kDefaultInt205       ((int32)         205);
 static const Aurora::NWScript::Variable kDefaultInt206       ((int32)         206);
 static const Aurora::NWScript::Variable kDefaultInt16777215  ((int32)    16777215);
-static const Aurora::NWScript::Variable kDefaultInt4294967295((int32)  4294967295);
+static const Aurora::NWScript::Variable kDefaultInt4294967295((int32)  4294967295U);
 
 static const Aurora::NWScript::Variable kDefaultFloatMinus1_0(-  1.0f);
 static const Aurora::NWScript::Variable kDefaultFloat0_0     (   0.0f);
@@ -110,10 +110,10 @@ static const Aurora::NWScript::Variable kDefaultFalse                    ((int32
 static const Aurora::NWScript::Variable kDefaultFloatyMessage            ((int32)           0);
 static const Aurora::NWScript::Variable kDefaultGenderMale               ((int32)           1);
 static const Aurora::NWScript::Variable kDefaultGetItemsOptionAll        ((int32)           1);
-static const Aurora::NWScript::Variable kDefaultInvalidWeaponSet         ((int32)  4294967295);
+static const Aurora::NWScript::Variable kDefaultInvalidWeaponSet         ((int32)  4294967295U);
 static const Aurora::NWScript::Variable kDefaultInventorySlotInvalid     ((int32)         255);
 static const Aurora::NWScript::Variable kDefaultLogChannelGeneral        ((int32)           0);
-static const Aurora::NWScript::Variable kDefaultObjectTypeAll            ((int32)  4294967295);
+static const Aurora::NWScript::Variable kDefaultObjectTypeAll            ((int32)  4294967295U);
 static const Aurora::NWScript::Variable kDefaultObjectTypeCreature       ((int32)          32);
 static const Aurora::NWScript::Variable kDefaultProjectileTargetInvalid  ((int32)           0);
 static const Aurora::NWScript::Variable kDefaultPropertyValueBase        ((int32)           2);
