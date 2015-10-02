@@ -48,7 +48,7 @@ Will there be a toolset like the one that shipped with Neverwinter Nights?
 --------------------------------------------------------------------------
 
 Probably not. The main focus is to get the games themselves running.
-A toolset is not something I'm all to interested it.
+A toolset is not something I'm all too interested in.
 
 
 Have you tried using Ogre3D as your 3D engine?
