@@ -50,6 +50,12 @@ Will there be a toolset like the one that shipped with Neverwinter Nights?
 Probably not. The main focus is to get the games themselves running.
 A toolset is not something I'm all too interested in.
 
+However, if somebody is interested in developing such a toolset, we would
+welcome it under the xoreos banner. There is a certain overlap of code and
+infrastructure, some of that already written, that's necessary for both goals.
+
+Feel free to contact us if you're that somebody.
+
 
 Have you tried using Ogre3D as your 3D engine?
 ----------------------------------------------
