@@ -44,14 +44,14 @@ namespace Engines {
 
 namespace Jade {
 
-Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature), _isPC(false), _appearance(Aurora::kFieldIDInvalid),
-	_headType(0), _model(0) {
+Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature), _isPC(false), _autoBalance(0),
+	_appearance(Aurora::kFieldIDInvalid), _headType(0), _model(0) {
 
 	load(creature);
 }
 
-Creature::Creature() : Object(kObjectTypeCreature), _isPC(false), _appearance(Aurora::kFieldIDInvalid),
-	_headType(0), _model(0) {
+Creature::Creature() : Object(kObjectTypeCreature), _isPC(false), _autoBalance(0),
+	_appearance(Aurora::kFieldIDInvalid), _headType(0), _model(0) {
 }
 
 Creature::~Creature() {
@@ -70,6 +70,10 @@ void Creature::hide() {
 
 bool Creature::isPC() const {
 	return _isPC;
+}
+
+int32 Creature::getAutoBalance() const {
+	return _autoBalance;
 }
 
 void Creature::setPosition(float x, float y, float z) {
@@ -135,6 +139,9 @@ void Creature::loadBlueprint(const Aurora::GFF3Struct &gff) {
 
 		// Conversation
 		_conversation = stats.getString("Conversation", _conversation);
+
+		// AutoBalance
+		_autoBalance = stats.getBool("AutoBalance");
 	}
 
 	// Scripts

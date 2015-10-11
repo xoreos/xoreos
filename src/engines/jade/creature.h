@@ -58,6 +58,8 @@ public:
 
 	bool isPC() const; ///< Is the creature a player character?
 
+	int32 getAutoBalance() const;
+
 	// Positioning
 
 	/** Set the creature's position. */
@@ -75,6 +77,8 @@ public:
 
 private:
 	bool _isPC; ///< Is the creature a PC?
+
+	int32 _autoBalance;
 
 	uint32 _appearance; ///< The creature's general appearance.
 	uint32 _headType;   ///< The creature's type of head if separate from the model.
