@@ -213,6 +213,10 @@ private:
 	void getObjectConversationResref(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Creatures, functions_creature.cpp
+	void getAutoBalance(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Events, functions_event.cpp
 	void eventUserDefined(Aurora::NWScript::FunctionContext &ctx);
 

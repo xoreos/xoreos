@@ -1161,7 +1161,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 1034, "GetFileExists"                          , 0                                                   },
 	{ 1035, "AllowQuickTravel"                       , 0                                                   },
 	{ 1036, "GetStyleType"                           , 0                                                   },
-	{ 1037, "GetAutoBalance"                         , 0                                                   },
+	{ 1037, "GetAutoBalance"                         , &Functions::getAutoBalance                          },
 	{ 1038, "RemoveQuest"                            , 0                                                   },
 	{ 1039, "GetLastHostileAttacker"                 , 0                                                   },
 	{ 1040, "SaveVisibilityGraph"                    , 0                                                   },
