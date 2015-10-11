@@ -201,6 +201,15 @@ private:
 	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
 	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Events, functions_event.cpp
+	void eventUserDefined(Aurora::NWScript::FunctionContext &ctx);
+
+	void signalEvent(Aurora::NWScript::FunctionContext &ctx);
+
+	void getUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx);
+	void setUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace Jade
