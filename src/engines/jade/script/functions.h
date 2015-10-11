@@ -209,6 +209,8 @@ private:
 
 	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
 	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
+
+	void getObjectConversationResref(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Events, functions_event.cpp

@@ -299,6 +299,11 @@ void Functions::jumpToObject(Aurora::NWScript::FunctionContext &ctx) {
 	jumpTo(object, moveTo->getArea(), x, y, z);
 }
 
+void Functions::getObjectConversationResref(Aurora::NWScript::FunctionContext &ctx) {
+	Jade::Object *object = Jade::ObjectContainer::toObject(getParamObject(ctx, 0));
+	ctx.getReturn() = object->getConversation();
+}
+
 } // End of namespace Jade
 
 } // End of namespace Engines

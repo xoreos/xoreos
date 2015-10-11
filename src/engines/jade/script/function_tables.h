@@ -241,7 +241,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  114, "GetConversationOwnerForCamera"          , 0                                                   },
 	{  115, "GetCutsceneFromScriptCommand"           , 0                                                   },
 	{  116, "GetPlayerConversationOwner"             , 0                                                   },
-	{  117, "GetObjectConversationResref"            , 0                                                   },
+	{  117, "GetObjectConversationResref"            , &Functions::getObjectConversationResref             },
 	{  118, "SetAppearance"                          , 0                                                   },
 	{  119, "GetHeadType"                            , 0                                                   },
 	{  120, "GetInCutsceneMode"                      , 0                                                   },
