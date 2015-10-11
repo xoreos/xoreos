@@ -104,6 +104,9 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 		delete cre;
 	}
 
+	// Tag
+	_tag = creature.getString("Tag");
+
 	// Appearance
 
 	if (_appearance == Aurora::kFieldIDInvalid)
