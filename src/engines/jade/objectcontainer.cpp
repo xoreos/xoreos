@@ -33,6 +33,7 @@
 #include "src/engines/jade/placeable.h"
 #include "src/engines/jade/creature.h"
 #include "src/engines/jade/location.h"
+#include "src/engines/jade/event.h"
 
 namespace Engines {
 
@@ -151,6 +152,10 @@ Creature *ObjectContainer::toPC(Aurora::NWScript::Object *object) {
 
 Location *ObjectContainer::toLocation(Aurora::NWScript::EngineType *engineType) {
 	return dynamic_cast<Location *>(engineType);
+}
+
+Event *ObjectContainer::toEvent(Aurora::NWScript::EngineType *engineType) {
+	return dynamic_cast<Event *>(engineType);
 }
 
 } // End of namespace Jade

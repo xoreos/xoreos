@@ -40,6 +40,7 @@ noinst_HEADERS = \
                  trigger.h \
                  waypoint.h \
                  location.h \
+                 event.h \
                  gui/main/main.h \
                  script/container.h \
                  script/functions.h \
@@ -62,6 +63,7 @@ libjade_la_SOURCES = \
                      trigger.cpp \
                      waypoint.cpp \
                      location.cpp \
+                     event.cpp \
                      gui/main/main.cpp \
                      script/container.cpp \
                      script/functions.cpp \
