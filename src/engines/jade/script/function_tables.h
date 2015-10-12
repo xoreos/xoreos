@@ -411,7 +411,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  284, "SetCustomToken"                         , &Functions::setCustomToken                          },
 	{  285, "GetAILevel"                             , 0                                                   },
 	{  286, "SetAILevel"                             , 0                                                   },
-	{  287, "SetObjectNoCollide"                     , 0                                                   },
+	{  287, "SetObjectNoCollide"                     , &Functions::setObjectNoCollide                      },
 	{  288, "ToggleHexGridPatch"                     , 0                                                   },
 	{  289, "GetPlayerSeenByObject"                  , 0                                                   },
 	{  290, "EnableDepthOfField"                     , 0                                                   },

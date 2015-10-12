@@ -304,6 +304,16 @@ void Functions::getObjectConversationResref(Aurora::NWScript::FunctionContext &c
 	ctx.getReturn() = object->getConversation();
 }
 
+void Functions::setObjectNoCollide(Aurora::NWScript::FunctionContext &ctx) {
+	Jade::Object *object = Jade::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	bool noCollide = ctx.getParams()[1].getInt() != 0;
+
+	object->setNoCollide(noCollide);
+}
+
 } // End of namespace Jade
 
 } // End of namespace Engines
