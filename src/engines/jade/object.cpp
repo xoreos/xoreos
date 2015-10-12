@@ -164,6 +164,16 @@ void Object::leave() {
 void Object::highlight(bool UNUSED(enabled)) {
 }
 
+bool Object::click(Object *triggerer) {
+	bool result = false;
+	if (hasScript(kScriptOnClick))
+		result = runScript(kScriptOnClick, this, triggerer);
+	if (hasScript(kScriptOnUse))
+		result = runScript(kScriptOnUse, this, triggerer);
+
+	return result;
+}
+
 void Object::speakString(int32 strRef) {
 	// TODO: Object::speakString(): Show the string in a speech bubble
 
