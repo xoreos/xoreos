@@ -127,6 +127,9 @@ public:
 	/** The object was clicked. */
 	virtual bool click(Object *triggerer = 0);
 
+	/** Return the object that last triggered this object. */
+	Object *getLastTriggerer() const;
+
 	// Object (text) talking
 
 	/** Speak the specified string. */
@@ -157,6 +160,8 @@ protected:
 	Aurora::NWScript::Object *_pcSpeaker; ///< The current PC speaking with the object.
 
 	Area *_area; ///< The area the object is currently in.
+
+	Object *_lastTriggerer; ///< The object that last used this object.
 
 	float _position[3];    ///< The object's position.
 	float _orientation[4]; ///< The object's orientation.
