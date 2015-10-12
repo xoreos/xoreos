@@ -124,6 +124,12 @@ void Module::showMenu() {
 	// TODO: Module::showMenu()
 }
 
+bool Module::startConversation (const Common::UString &UNUSED(conv), Creature &UNUSED(pc), Object &UNUSED(obj),
+                                bool UNUSED(noWidescreen), bool UNUSED(resetZoom)) {
+	// TODO
+	return false;
+}
+
 void Module::load() {
 	loadArea();
 }

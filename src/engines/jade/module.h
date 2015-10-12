@@ -87,6 +87,20 @@ public:
 	void showMenu();
 	// '---
 
+	/** Start a conversation.
+	 *
+	 *  @param  conv         The dialog ResRef to use.
+	 *  @param  pc           The PC that initiated the conversation.
+	 *  @param  obj          The object the PC is talking with.
+	 *  @param  noWidescreen True to start with short bars, false to start with tall bars
+	 *  @param  resetZoom    Whether to set the zoom back to standard when starting the conversation
+	 *
+	 *  @return true if the conversation was started successfully.
+	 */
+	bool startConversation(const Common::UString &conv, Creature &pc,
+	                       Object &obj, bool noWidescreen = false, bool resetZoom = true);
+	// '---
+
 	void delayScript(const Common::UString &script,
 	                 const Aurora::NWScript::ScriptState &state,
 	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
