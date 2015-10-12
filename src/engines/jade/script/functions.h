@@ -211,6 +211,7 @@ private:
 	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
 
 	void getObjectConversationResref(Aurora::NWScript::FunctionContext &ctx);
+	void getPriorActivation         (Aurora::NWScript::FunctionContext &ctx);
 
 	void setObjectNoCollide(Aurora::NWScript::FunctionContext &ctx);
 	// '---

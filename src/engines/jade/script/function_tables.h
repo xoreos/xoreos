@@ -283,7 +283,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  156, "SetHealth"                              , 0                                                   },
 	{  157, "GetGemInAmulet"                         , 0                                                   },
 	{  158, "SetFloatingTextAlpha"                   , 0                                                   },
-	{  159, "GetPriorActivation"                     , 0                                                   },
+	{  159, "GetPriorActivation"                     , &Functions::getPriorActivation                      },
 	{  160, "ActionSetFacing"                        , 0                                                   },
 	{  161, "GetBuildType"                           , 0                                                   },
 	{  162, "SetCommandable"                         , 0                                                   },

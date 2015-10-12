@@ -304,6 +304,11 @@ void Functions::getObjectConversationResref(Aurora::NWScript::FunctionContext &c
 	ctx.getReturn() = object->getConversation();
 }
 
+void Functions::getPriorActivation(Aurora::NWScript::FunctionContext &ctx) {
+	Jade::Object *object = Jade::ObjectContainer::toObject(getParamObject(ctx, 0));
+	ctx.getReturn() = (int32) (object->getLastTriggerer() != 0);
+}
+
 void Functions::setObjectNoCollide(Aurora::NWScript::FunctionContext &ctx) {
 	Jade::Object *object = Jade::ObjectContainer::toObject(getParamObject(ctx, 0));
 	if (!object)
