@@ -35,7 +35,7 @@ namespace Engines {
 namespace Jade {
 
 Object::Object(ObjectType type) : _type(type), _conversation(""), _static(false), _usable(true),
-	_pcSpeaker(0), _area(0) {
+	_noCollide(false), _pcSpeaker(0), _area(0) {
 
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
@@ -83,6 +83,13 @@ bool Object::isStatic() const {
 
 bool Object::isUsable() const {
 	return _usable;
+}
+bool Object::isNoCollide() const {
+	return _noCollide;
+}
+
+void Object::setNoCollide(bool noCollide) {
+	_noCollide = noCollide;
 }
 
 bool Object::isClickable() const {

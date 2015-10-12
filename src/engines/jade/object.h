@@ -91,6 +91,9 @@ public:
 	bool isStatic() const; ///< Is the object static (not manipulable at all)?
 	bool isUsable() const; ///< Can the object be used by the PC?
 
+	bool isNoCollide() const;          ///< Is collision checking disabled?
+	void setNoCollide(bool noCollide); ///< Enable or disable collision checking
+
 	bool isClickable() const; ///< Can the player click the object?
 
 	/** Return the area this object is currently in. */
@@ -143,6 +146,8 @@ protected:
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
+
+	bool _noCollide; ///< Is collision checking for the object disabled?
 
 	std::list<uint32> _ids; ///< The object's model IDs.
 
