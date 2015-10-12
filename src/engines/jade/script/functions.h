@@ -217,6 +217,28 @@ private:
 	void getAutoBalance(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Actions, functions_action.cpp
+	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
+	void delayCommand (Aurora::NWScript::FunctionContext &ctx);
+
+	void executeScript(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionDoCommand(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionOpenDoor (Aurora::NWScript::FunctionContext &ctx);
+	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionSpeakStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
+	void actionStartConversation  (Aurora::NWScript::FunctionContext &ctx);
+
+	void actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx);
+
+	void actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx);
+	void actionJumpToObject  (Aurora::NWScript::FunctionContext &ctx);
+	void actionMoveToObject  (Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Events, functions_event.cpp
 	void eventUserDefined(Aurora::NWScript::FunctionContext &ctx);
 
