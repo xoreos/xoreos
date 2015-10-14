@@ -157,12 +157,14 @@ size_t StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<UStrin
 	list.clear();
 	list.reserve(min);
 
-	size_t realTokenCount;
-	for (realTokenCount = 0; !isChunkEnd(stream) && (realTokenCount < max); realTokenCount++) {
+	size_t realTokenCount = 0;
+	while (!isChunkEnd(stream) && (realTokenCount < max)) {
 		UString token = getToken(stream);
 
-		if (!token.empty() || (_conSepRule != kRuleIgnoreAll))
+		if (!token.empty() || (_conSepRule != kRuleIgnoreAll)) {
 			list.push_back(token);
+			realTokenCount++;
+		}
 	}
 
 	while (list.size() < min)
