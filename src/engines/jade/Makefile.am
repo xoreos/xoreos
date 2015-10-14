@@ -74,4 +74,5 @@ libjade_la_SOURCES = \
                      script/functions_module.cpp \
                      script/functions_creature.cpp \
                      script/functions_action.cpp \
+                     script/functions_2da.cpp \
                      $(EMPTY)

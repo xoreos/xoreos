@@ -28,6 +28,7 @@
 #include "src/aurora/nwscript/types.h"
 
 namespace Aurora {
+	class TwoDAFile;
 	namespace NWScript {
 		class FunctionContext;
 		class Object;
@@ -84,6 +85,8 @@ private:
 	static Common::UString formatFloat(float f, int width = 18, int decimals = 9);
 
 	static Aurora::NWScript::Object *getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n);
+
+	const Aurora::TwoDAFile &findTable(int32 nr);
 	// '---
 
 	// --- Engine functions ---
@@ -249,6 +252,19 @@ private:
 
 	void getUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx);
 	void setUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
+	// .--- 2DA Reads, functions_2da.cpp
+	void get2DANumRows  (Aurora::NWScript::FunctionContext &ctx);
+	void get2DANumColumn(Aurora::NWScript::FunctionContext &ctx);
+
+	void get2DAEntryIntByString   (Aurora::NWScript::FunctionContext &ctx);
+	void get2DAEntryFloatByString (Aurora::NWScript::FunctionContext &ctx);
+	void get2DAEntryStringByString(Aurora::NWScript::FunctionContext &ctx);
+
+	void get2DAEntryInt   (Aurora::NWScript::FunctionContext &ctx);
+	void get2DAEntryFloat (Aurora::NWScript::FunctionContext &ctx);
+	void get2DAEntryString(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
