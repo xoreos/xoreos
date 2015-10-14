@@ -166,6 +166,18 @@ private:
 	void setCustomToken(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Game functions, functions_game.cpp
+	void getGlobalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void getGlobalBool  (Aurora::NWScript::FunctionContext &ctx);
+	void getGlobalString(Aurora::NWScript::FunctionContext &ctx);
+	void getGlobalFloat (Aurora::NWScript::FunctionContext &ctx);
+
+	void setGlobalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void setGlobalBool  (Aurora::NWScript::FunctionContext &ctx);
+	void setGlobalString(Aurora::NWScript::FunctionContext &ctx);
+	void setGlobalFloat (Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Module functions, functions_module.cpp
 	void location(Aurora::NWScript::FunctionContext &ctx);
 
