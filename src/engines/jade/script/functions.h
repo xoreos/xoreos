@@ -196,11 +196,13 @@ private:
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 
 	void getLocalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void getLocalBool  (Aurora::NWScript::FunctionContext &ctx);
 	void getLocalFloat (Aurora::NWScript::FunctionContext &ctx);
 	void getLocalString(Aurora::NWScript::FunctionContext &ctx);
 	void getLocalObject(Aurora::NWScript::FunctionContext &ctx);
 
 	void setLocalInt   (Aurora::NWScript::FunctionContext &ctx);
+	void setLocalBool  (Aurora::NWScript::FunctionContext &ctx);
 	void setLocalFloat (Aurora::NWScript::FunctionContext &ctx);
 	void setLocalString(Aurora::NWScript::FunctionContext &ctx);
 	void setLocalObject(Aurora::NWScript::FunctionContext &ctx);
