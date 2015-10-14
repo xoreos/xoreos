@@ -682,7 +682,7 @@ void NCSFile::o_booland(InstructionType type) {
 	try {
 		int32 arg1 = _stack.pop().getInt();
 		int32 arg2 = _stack.pop().getInt();
-		_stack.push(arg1 && arg2);
+		_stack.push(arg1 & arg2);
 	} catch (Common::Exception &UNUSED(e)) {
 		throw;
 	}
