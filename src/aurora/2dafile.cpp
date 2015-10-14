@@ -227,7 +227,8 @@ void TwoDAFile::readHeaders2a(Common::SeekableReadStream &twoda,
 
 	/* Read the column headers of an ASCII 2DA file. */
 
-	tokenize.getTokens(twoda, _headers);
+	while (!twoda.eos() && (tokenize.getTokens(twoda, _headers) == 0))
+		tokenize.nextChunk(twoda);
 
 	tokenize.nextChunk(twoda);
 }
