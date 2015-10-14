@@ -29,6 +29,8 @@
 
 #include "src/common/ustring.h"
 
+#include "src/aurora/nwscript/variablecontainer.h"
+
 namespace Engines {
 
 class Console;
@@ -41,7 +43,7 @@ class Functions;
 
 class Module;
 
-class Game {
+class Game : public Aurora::NWScript::VariableContainer {
 public:
 	Game(JadeEngine &engine, ::Engines::Console &console, Aurora::Platform platform);
 	~Game();
