@@ -866,13 +866,25 @@ void NCSFile::o_shleft(InstructionType type) {
 }
 
 void NCSFile::o_shright(InstructionType type) {
+	/* According to Skywing's NWNScriptLib
+	 * (<https://github.com/SkywingvL/nwn2dev-public/blob/master/NWNScriptLib/NWScriptVM.cpp#L2233>):
+	 * "The operation implemented here is actually a complex sequence that, if
+	 *  the amount to be shifted is negative, involves both a front-loaded and
+	 *  end-loaded negate built on top of a signed shift." */
+
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_shright(): Illegal type %d", type);
 
 	try {
 		int32 arg1 = _stack.pop().getInt();
 		int32 arg2 = _stack.pop().getInt();
-		_stack.push(arg2 >> arg1);
+
+		if (arg2 < 0) {
+			arg2 = -arg2;
+			_stack.push(-(arg2 >> arg1));
+		} else
+			_stack.push(arg2 >> arg1);
+
 	} catch (Common::Exception &UNUSED(e)) {
 		throw;
 	}
