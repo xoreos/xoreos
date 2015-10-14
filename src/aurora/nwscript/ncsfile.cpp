@@ -891,7 +891,10 @@ void NCSFile::o_shright(InstructionType type) {
 }
 
 void NCSFile::o_ushright(InstructionType type) {
-	// TODO: Difference between this and o_shright
+	/* According to Skywing's NWNScriptLib
+	 * (<https://github.com/SkywingvL/nwn2dev-public/blob/master/NWNScriptLib/NWScriptVM.cpp#L2272>):
+	 * "While this operator may have originally been intended to implement
+	 *  an unsigned shift, it actually performs an arithmetic (signed) shift." */
 
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_ushright(): Illegal type %d", type);
