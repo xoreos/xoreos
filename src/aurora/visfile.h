@@ -39,7 +39,16 @@ namespace Common {
 
 namespace Aurora {
 
-/** A VIS, BioWare's Visibility Format. */
+/** A VIS, BioWare's Visibility Format.
+ *
+ *  A VIS file is a simple ASCII file defining the inter-room visibility in
+ *  an area, i.e. which rooms are visible from any given other room. The
+ *  definitions of the rooms themselves can be found in LYT files (see
+ *  class LYTFile).
+ *
+ *  VIS files are used by the two Knights of the Old Republic games and
+ *  Jade Empire.
+ */
 class VISFile {
 public:
 	VISFile();
@@ -54,6 +63,10 @@ public:
 	 */
 	void load(Common::SeekableReadStream &vis);
 
+	/** Return the visibility array for a given room.
+	 *
+	 *  This is a list of rooms that are visible from that given room
+	 */
 	const std::vector<Common::UString> &getVisibilityArray(const Common::UString &room) const;
 
 private:
