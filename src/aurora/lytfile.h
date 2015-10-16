@@ -36,7 +36,22 @@ namespace Common {
 
 namespace Aurora {
 
-/** An LYT, BioWare's Layout Format. */
+/** An LYT, BioWare's Layout Format.
+ *
+ *  A LYT file is a simple ASCII file specifying the layout of an area in
+ *  the two Knights of the Old Republic games and Jade Empire. The LYT
+ *  defines the general visual structure of an area.
+ *
+ *  This includes:
+ *  - Rooms: a single model making up a part of the area geometry
+ *  - Door hooks: coordinates where doors can be placed
+ *  - Art placeables: simple placeable objects
+ *
+ *  As well as these fields we don't support yet:
+ *  - File dependencies
+ *  - Obstacles
+ *  - Walk mesh rooms
+ */
 class LYTFile {
 public:
 	/** A room. */
