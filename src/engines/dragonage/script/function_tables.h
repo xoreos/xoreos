@@ -567,7 +567,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 440, "BeginConversation"                     , 0                                                  },
 	{ 441, "InvalidFunction441"                    , 0                                                  },
 	{ 442, "InvalidFunction442"                    , 0                                                  },
-	{ 443, "InvalidFunction443"                    , 0                                                  },
+	{ 443, "GetConversationEntryParameter"         , 0                                                  },
 	{ 444, "HasConversation"                       , 0                                                  },
 	{ 445, "GetClusterCenter"                      , 0                                                  },
 	{ 446, "ClearPerceptionList"                   , 0                                                  },
@@ -674,8 +674,8 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 547, "SetCommandFloat"                       , 0                                                  },
 	{ 548, "InvalidFunction548"                    , 0                                                  },
 	{ 549, "InvalidFunction549"                    , 0                                                  },
-	{ 550, "InvalidFunction550"                    , 0                                                  },
-	{ 551, "InvalidFunction551"                    , 0                                                  },
+	{ 550, "GetCommandObject"                      , 0                                                  },
+	{ 551, "SetCommandObject"                      , 0                                                  },
 	{ 552, "InvalidFunction552"                    , 0                                                  },
 	{ 553, "InvalidFunction553"                    , 0                                                  },
 	{ 554, "InvalidFunction554"                    , 0                                                  },
@@ -982,7 +982,11 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 855, "RemoveEffectModifyProperty"            , 0                                                  },
 	{ 856, "GetM2DARowIdFromRowIndex"              , 0                                                  },
 	{ 857, "IsPRC"                                 , 0                                                  },
-	{ 858, "SetPartyPickerStage"                   , 0                                                  }
+	{ 858, "SetPartyPickerStage"                   , 0                                                  },
+	{ 859, "GetAbilityList"                        , 0                                                  },
+	{ 860, "RequestTarget"                         , 0                                                  },
+	{ 861, "SetPlotActionCooldown"                 , 0                                                  },
+	{ 862, "IsPackageLoaded"                       , 0                                                  }
 };
 
 /** The table defining the signature (return type and type of parameters) of each engine function. */
@@ -1430,7 +1434,7 @@ const Functions::FunctionSignature Functions::kFunctionSignatures[] = {
 	{ 440, kTypeInt       , { kTypeObject, kTypeObject, kTypeString } },
 	{ 441, kTypeVoid      , { } },
 	{ 442, kTypeVoid      , { } },
-	{ 443, kTypeVoid      , { } },
+	{ 443, kTypeInt       , { } },
 	{ 444, kTypeInt       , { kTypeObject } },
 	{ 445, kTypeEngineType, { kTypeObject, kTypeInt, kTypeInt, kTypeInt, kTypeInt } },
 	{ 446, kTypeVoid      , { kTypeObject } },
@@ -1537,8 +1541,8 @@ const Functions::FunctionSignature Functions::kFunctionSignatures[] = {
 	{ 547, kTypeEngineType, { kTypeEngineType, kTypeFloat, kTypeInt } },
 	{ 548, kTypeVoid      , { } },
 	{ 549, kTypeVoid      , { } },
-	{ 550, kTypeVoid      , { } },
-	{ 551, kTypeVoid      , { } },
+	{ 550, kTypeObject    , { kTypeEngineType, kTypeInt } },
+	{ 551, kTypeEngineType, { kTypeEngineType, kTypeObject, kTypeInt } },
 	{ 552, kTypeVoid      , { } },
 	{ 553, kTypeVoid      , { } },
 	{ 554, kTypeVoid      , { } },
@@ -1798,7 +1802,7 @@ const Functions::FunctionSignature Functions::kFunctionSignatures[] = {
 	{ 808, kTypeArray     , { kTypeInt, kTypeInt } },
 	{ 809, kTypeString    , { kTypeString, kTypeString } },
 	{ 810, kTypeVoid      , { kTypeInt } },
-	{ 811, kTypeEngineType, { kTypeEngineType } },
+	{ 811, kTypeEngineType, { kTypeEngineType, kTypeInt } },
 	{ 812, kTypeInt       , { kTypeObject, kTypeObject } },
 	{ 813, kTypeVoid      , { kTypeObject, kTypeInt } },
 	{ 814, kTypeVoid      , { kTypeObject, kTypeInt } },
@@ -1845,7 +1849,11 @@ const Functions::FunctionSignature Functions::kFunctionSignatures[] = {
 	{ 855, kTypeVoid      , { kTypeEngineType } },
 	{ 856, kTypeInt       , { kTypeInt, kTypeInt, kTypeString } },
 	{ 857, kTypeInt       , { kTypeString, kTypeInt } },
-	{ 858, kTypeVoid      , { kTypeString, kTypeString } }
+	{ 858, kTypeVoid      , { kTypeString, kTypeString } },
+	{ 859, kTypeArray     , { kTypeObject, kTypeInt, kTypeInt } },
+	{ 860, kTypeVoid      , { kTypeInt, kTypeFloat, kTypeFloat, kTypeInt, kTypeObject, kTypeString } },
+	{ 861, kTypeVoid      , { kTypeInt, kTypeFloat, kTypeInt, kTypeObject, kTypeString } },
+	{ 862, kTypeInt       , { kTypeString } },
 };
 
 /** The table defining the default values for the parameters of each engine function. */
@@ -2400,8 +2408,8 @@ const Functions::FunctionDefaults Functions::kFunctionDefaults[] = {
 	{ 547, { &kDefaultInt0 } },
 	{ 548, { } },
 	{ 549, { } },
-	{ 550, { } },
-	{ 551, { } },
+	{ 550, { &kDefaultInt0 } },
+	{ 551, { &kDefaultInt0 } },
 	{ 552, { } },
 	{ 553, { } },
 	{ 554, { } },
@@ -2661,7 +2669,7 @@ const Functions::FunctionDefaults Functions::kFunctionDefaults[] = {
 	{ 808, { &kDefaultObjectTypeCreature } },
 	{ 809, { } },
 	{ 810, { } },
-	{ 811, { } },
+	{ 811, { &kDefaultFalse } },
 	{ 812, { } },
 	{ 813, { } },
 	{ 814, { } },
@@ -2708,7 +2716,11 @@ const Functions::FunctionDefaults Functions::kFunctionDefaults[] = {
 	{ 855, { } },
 	{ 856, { &kDefaultStringEmpty } },
 	{ 857, { } },
-	{ 858, { } }
+	{ 858, { } },
+	{ 859, { &kDefaultAbilityInvalid, &kDefaultFalse } },
+	{ 860, { &kDefaultStringEmpty } },
+	{ 861, { &kDefaultStringEmpty } },
+	{ 862, { } }
 };
 
 } // End of namespace DragonAge
