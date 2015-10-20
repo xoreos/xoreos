@@ -10,9 +10,6 @@
 @section Credits
 @verbinclude AUTHORS
 
-@section Installation
-@verbinclude INSTALL
-
 @section FAQ
 @verbinclude FAQ.md
 
