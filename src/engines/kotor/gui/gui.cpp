@@ -26,6 +26,7 @@
 #include "src/common/util.h"
 
 #include "src/aurora/gff3file.h"
+#include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/cursorman.h"
 
@@ -96,15 +97,18 @@ void GUI::mouseUp() {
 }
 
 void GUI::load(const Common::UString &resref) {
-	_name = resref;
+	// This is only relevant to Jade Empire.
+	// LTI prefixed GUI definitions for the Windows version of Jade Empire
+	// with lti_ to support mouse and keyboard control.
+	_name = ResMan.hasResource("lti_" + resref, Aurora::kFileTypeGUI) ? _name = "lti_" + resref : resref;
 
 	try {
-		_gff.reset(new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' ')));
+		_gff.reset(new Aurora::GFF3File(_name, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' ')));
 
 		loadWidget(_gff->getTopLevel(), 0);
 
 	} catch (Common::Exception &e) {
-		e.add("Can't load GUI \"%s\"", resref.c_str());
+		e.add("Can't load GUI \"%s\"", _name.c_str());
 		throw;
 	}
 }
