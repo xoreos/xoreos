@@ -171,6 +171,8 @@ enum FileType {
 	kFileTypeTXB2           =  3017, ///< Texture.
 	kFileTypeFSM            =  3022, ///< Finite State Machine data.
 	kFileTypeART            =  3023, ///< Area enviroment settings, INI.
+	kFileTypeAMP            =  3024, ///< Brightening control.
+	kFileTypeCWA            =  3025, ///< Crowd attributes, GFF.
 	kFileTypeBIP            =  3028, ///< Lipsync data, binary LIP.
 	kFileTypeMDB2           =  4000,
 	kFileTypeMDA2           =  4001,
@@ -305,10 +307,9 @@ enum FileType {
 	kFileTypeABC            = 24003, ///< Font, character descriptions.
 	kFileTypeSBM            = 24004, ///< Font, character bitmap data.
 	kFileTypePVD            = 24005,
-	kFileTypeAMP            = 24006,
-	kFileTypePLA            = 24007, ///< Placeable, GFF.
-	kFileTypeTRG            = 24008, ///< Trigger, GFF.
-	kFileTypePK             = 24009,
+	kFileTypePLA            = 24006, ///< Placeable, GFF.
+	kFileTypeTRG            = 24007, ///< Trigger, GFF.
+	kFileTypePK             = 24008,
 
 	// Found in Dragon Age II
 	kFileTypeALS            = 25000,
