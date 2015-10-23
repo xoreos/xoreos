@@ -31,7 +31,21 @@
 
 namespace Aurora {
 
-/** Various file types used by the Aurora engine and found in archives. */
+/** Various file types used by the Aurora engine and found in archives.
+ *
+ *  Many archive formats used by the Aurora engine games do not contain
+ *  full filenames for the files contained within. Instead, they only
+ *  provide the stem of the filename, i.e. the file name without the file
+ *  extension. Additionally, they contain a type ID, which maps to the
+ *  enum values below.
+ *
+ *  Please note, however, that all IDs >= 19000 aren't found in such
+ *  archives. These are arbitrary numbers for files that are only found
+ *  as plain files in the file system, or inside archives that do not
+ *  use numerical type IDs. Should such a file ever be found in an archive
+ *  with a type ID, this dummy entry needs to be deleted, and a real entry
+ *  with the correct ID should be added instead.
+ */
 enum FileType {
 	kFileTypeNone           = -   1,
 	kFileTypeRES            =     0, ///< Generic GFF.
@@ -186,6 +200,8 @@ enum FileType {
 	kFileTypeERF            =  9997, ///< Module resources.
 	kFileTypeBIF            =  9998, ///< Game resource data.
 	kFileTypeKEY            =  9999, ///< Game resource index.
+
+	/* --- Entries for files not found in archives with numerical type IDs --- */
 
 	// Found in NWN
 	kFileTypeEXE            = 19000, ///< Windows PE EXE file.
