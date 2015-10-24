@@ -251,7 +251,7 @@ enum FileType {
 	kFileTypeNDS            = 21000, ///< Archive, Nintendo DS ROM file.
 	kFileTypeHERF           = 21001, ///< Archive, hashed ERF.
 	kFileTypeDICT           = 21002, ///< HERF file name -> hashes dictionary.
-	kFileTypeSMALL          = 21023, ///< Compressed file, Nintendo LZSS.
+	kFileTypeSMALL          = 21003, ///< Compressed file, Nintendo LZSS.
 	kFileTypeCBGT           = 21004,
 	kFileTypeCDPTH          = 21005,
 	kFileTypeEMIT           = 21006,
