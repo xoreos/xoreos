@@ -91,10 +91,12 @@ void NDSFile::readNames(Common::SeekableReadStream &nds, uint32 offset, uint32 l
 	nds.seek(offset + 8);
 
 	uint32 index = 0;
-	while (((size_t)nds.pos()) < (offset + length)) {
+	while (((size_t)nds.pos()) < (size_t)(offset + length)) {
 		Resource res;
 
 		byte nameLength = nds.readByte();
+		if ((nameLength == 0) || ((size_t)nds.pos() >= (size_t)(offset + length)))
+			break;
 
 		Common::UString name = Common::readStringFixed(nds, Common::kEncodingASCII, nameLength).toLower();
 
