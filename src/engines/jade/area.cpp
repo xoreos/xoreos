@@ -117,8 +117,10 @@ void Area::show() {
 
 	// Show objects
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
-		(*o)->show();
-		(*o)->runScript(kScriptOnSpawn, *o, this);
+		if ((*o)->isActive()) {
+			(*o)->show();
+			(*o)->runScript(kScriptOnSpawn, *o, this);
+		}
 	}
 
 	GfxMan.unlockFrame();

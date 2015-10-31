@@ -120,8 +120,8 @@ void Placeable::loadInstance(const Aurora::GFF3Struct &gff) {
 	// Sound Cue
 	_soundCue = gff.getString("SoundCue");
 
-	// Usable
-	_usable = gff.getBool("Active");
+	// Active
+	_active = gff.getBool("Active");
 
 	// Modelname
 	Common::UString appearance = gff.getString("Appearance", _modelName);

@@ -90,6 +90,7 @@ public:
 
 	bool isStatic() const; ///< Is the object static (not manipulable at all)?
 	bool isUsable() const; ///< Can the object be used by the PC?
+	bool isActive() const; ///< Is the object currently active/available/visible?
 
 	bool isNoCollide() const;          ///< Is collision checking disabled?
 	void setNoCollide(bool noCollide); ///< Enable or disable collision checking
@@ -152,6 +153,7 @@ protected:
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
+	bool _active; ///< Is the object currently active/available/visible?
 
 	bool _noCollide; ///< Is collision checking for the object disabled?
 

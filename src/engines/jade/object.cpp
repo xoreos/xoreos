@@ -84,6 +84,11 @@ bool Object::isStatic() const {
 bool Object::isUsable() const {
 	return _usable;
 }
+
+bool Object::isActive() const {
+	return _active;
+}
+
 bool Object::isNoCollide() const {
 	return _noCollide;
 }

@@ -152,8 +152,8 @@ void Creature::loadInstance(const Aurora::GFF3Struct &instance) {
 
 	loadPositional(instance);
 
-	// Usable
-	_usable = instance.getBool("Active");
+	// Active
+	_active = instance.getBool("Active");
 }
 
 void Creature::loadAppearance() {
