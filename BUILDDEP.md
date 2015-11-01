@@ -26,7 +26,7 @@ Build-time library dependencies
 - FreeType 2 (>= 2.4.0 (libtool number >= 11.0.5))
 
 - OpenAL Soft (>= 1.12)
-- MAD (>= 1.15.1b)
+- MAD (>= 0.15.1b)
 - libogg (>= 1.2.0)
 - libvorbisfile (>= 1.3.1)
 - libfaad (>= 2.7)
