@@ -56,6 +56,9 @@ Makefile.am.cmake
 /.project
 /.settings
 
+# Netbeans project files
+/nbproject/
+
 # Doxygen files
 /Doxyerror
 /doc/doxygen/html/
