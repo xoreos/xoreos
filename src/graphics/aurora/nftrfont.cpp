@@ -540,7 +540,7 @@ uint32 NFTRFont::convertToUTF32(uint16 codePoint, uint8 encoding) {
 		data[0] = codePoint;
 	}
 
-	Common::UString str = readString(data, 4, e);
+	Common::UString str = Common::readString(data, 4, e);
 	if (str.empty())
 		return 0;
 
