@@ -39,7 +39,6 @@
 
 namespace Graphics {
 	class Texture;
-	class ListContainer;
 }
 
 namespace Events {
