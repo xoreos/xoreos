@@ -40,12 +40,13 @@ endif()
 
 # platform specific warning settings
 if(CMAKE_HOST_WIN32)
-  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-  endif()
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+      string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    else()
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+    endif()
+
     set(WARNINGS_DISABLE
       # ignore
       4250 # 'class1' : inherits 'class2::member' via dominance
