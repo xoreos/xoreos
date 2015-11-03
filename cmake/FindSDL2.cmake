@@ -2,16 +2,16 @@
 # Once done this will define
 #
 # SDL2_INCLUDE_DIRS - where to find SDL.h, etc.
-# SDL2_LIBRARIES - List of libraries when using libmad.
-# SDL2_FOUND - True if libmad found.
+# SDL2_LIBRARIES - List of libraries when using SDL2.
+# SDL2_FOUND - True if SDL2 found.
 
 if(WIN32)
   find_path(SDL2_INCLUDE_DIR SDL.h $ENV{PROGRAMFILES}/SDL2/include DOC "The directory where SDL.h resides")
-  find_library(SDL2_LIBRARY NAMES SDL2 PATHS $ENV{PROGRAMFILES}/SDL2/lib DOC "The libmad library")
+  find_library(SDL2_LIBRARY NAMES SDL2 PATHS $ENV{PROGRAMFILES}/SDL2/lib DOC "The SDL2 library")
 
 else(WIN32)
   find_path(SDL2_INCLUDE_DIR SDL.h /usr/include/SDL2 DOC "The directory where SDL.h resides")
-  find_library(SDL2_LIBRARY NAMES SDL2 DOC "The libmad library")
+  find_library(SDL2_LIBRARY NAMES SDL2 DOC "The SDL2 library")
 
 endif(WIN32)
 
@@ -30,7 +30,7 @@ mark_as_advanced(SDL2_LIBRARY)
 mark_as_advanced(SDL2_FOUND)
 
 if(NOT SDL2_FOUND)
-  set(SDL2_DIR_MESSAGE "libmad was not found. Make sure SDL2_LIBRARY and SDL2_INCLUDE_DIR are set.")
+  set(SDL2_DIR_MESSAGE "SDL2 was not found. Make sure SDL2_LIBRARY and SDL2_INCLUDE_DIR are set.")
   if(NOT SDL2_FIND_QUIETLY)
     message(STATUS "${SDL2_DIR_MESSAGE}")
   else(NOT SDL2_FIND_QUIETLY)
