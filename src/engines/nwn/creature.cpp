@@ -940,7 +940,7 @@ bool Creature::click(Object *triggerer) {
 }
 
 void Creature::createTooltip() {
-	if (_tooltip)
+	if (_tooltip || !_model)
 		return;
 
 	_tooltip = new Tooltip(Tooltip::kTypeFeedback, *_model);
@@ -952,7 +952,9 @@ void Creature::createTooltip() {
 
 void Creature::showTooltip() {
 	createTooltip();
-	_tooltip->show();
+
+	if (_tooltip)
+		_tooltip->show();
 }
 
 void Creature::hideTooltip() {
