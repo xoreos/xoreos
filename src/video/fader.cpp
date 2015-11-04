@@ -56,8 +56,6 @@ void Fader::processData() {
 		return;
 
 	if (!_started) {
-		diffTime = 0;
-
 		_lastUpdate = curTime;
 		_started    = true;
 
