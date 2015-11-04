@@ -158,7 +158,7 @@ void Placeable::highlight(bool enabled) {
 }
 
 void Placeable::createTooltip() {
-	if (_tooltip)
+	if (_tooltip || !_model)
 		return;
 
 	_tooltip = new Tooltip(Tooltip::kTypeFeedback, *_model);
@@ -170,7 +170,9 @@ void Placeable::createTooltip() {
 
 void Placeable::showTooltip() {
 	createTooltip();
-	_tooltip->show();
+
+	if (_tooltip)
+		_tooltip->show();
 }
 
 void Placeable::hideTooltip() {
