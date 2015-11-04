@@ -95,7 +95,7 @@ void FPSCounter::calculateFPS() {
 	for (uint32 i = 0; i < seconds; i++)
 		frames += _frames[i];
 
-	_fps = frames / seconds;
+	_fps = seconds ? (frames / seconds) : 0;
 }
 
 } // End of namespace Graphics
