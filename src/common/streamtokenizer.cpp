@@ -61,8 +61,7 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 	// Init
 	bool   chunkEnd     = false;
 	bool   inQuote      = false;
-	bool   hasSeparator = false;
-	uint32 separator    = 0;
+	uint32 separator    = 0xFFFFFFFF;
 
 	UString token;
 
@@ -89,7 +88,6 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 			if (!token.empty()) {
 				// We have a token
 
-				hasSeparator = true;
 				separator = c;
 				break;
 			}
@@ -99,20 +97,17 @@ UString StreamTokenizer::getToken(SeekableReadStream &stream) {
 			if (_conSepRule == kRuleHeed) {
 				// We heed every separator
 
-				hasSeparator = true;
 				separator = c;
 				break;
 			}
 
-			if ((_conSepRule == kRuleIgnoreSame) && hasSeparator && (separator != ((byte) c))) {
+			if ((_conSepRule == kRuleIgnoreSame) && (separator != 0xFFFFFFFF) && (separator != c)) {
 				// We ignore only consecutive separators that are the same
-				hasSeparator = true;
 				separator = c;
 				break;
 			}
 
 			// We ignore all consecutive separators
-			hasSeparator = true;
 			separator = c;
 			continue;
 		}
