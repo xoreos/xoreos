@@ -734,7 +734,7 @@ Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::
 	const size_t size   = length * lengthMult;
 
 	try {
-		return readStringFixed(data, encoding, size);
+		return Common::readStringFixed(data, encoding, size);
 	} catch (...) {
 	}
 
