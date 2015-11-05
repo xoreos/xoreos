@@ -99,6 +99,9 @@ VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
 
 	setVertexDecl(other._decl);
 	setSize(other._count, other._size);
+	if (!_data || !other._data)
+		return *this;
+
 	memcpy(_data, other._data, other._count * other._size);
 
 	// Fix up the data pointers

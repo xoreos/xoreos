@@ -46,7 +46,10 @@ IndexBuffer &IndexBuffer::operator=(const IndexBuffer &other) {
 		return *this;
 
 	setSize(other._count, other._size, other._type);
-	memcpy(_data, other._data, other._count * other._size);
+
+	if (_data && other._data)
+		memcpy(_data, other._data, other._count * other._size);
+
 	return *this;
 }
 
