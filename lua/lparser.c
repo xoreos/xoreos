@@ -5,7 +5,6 @@
 */
 
 
-#include <assert.h>
 #include <string.h>
 
 #define lparser_c
@@ -1259,7 +1258,6 @@ static void breakstat (LexState *ls) {
   }
   if (!bl)
     luaX_syntaxerror(ls, "no loop to break");
-  assert(bl);
   if (upval)
     luaK_codeABC(fs, OP_CLOSE, bl->nactvar, 0, 0);
   luaK_concat(fs, &bl->breaklist, luaK_jump(fs));

@@ -5,7 +5,6 @@
 */
 
 
-#include <assert.h>
 #include <errno.h>
 #include <locale.h>
 #include <stdio.h>
@@ -398,7 +397,6 @@ static int g_read (lua_State *L, FILE *f, int first) {
       else {
         const char *p = lua_tostring(L, n);
         luaL_argcheck(L, p && p[0] == '*', n, "invalid option");
-        assert(p);
         switch (p[1]) {
           case 'n':  /* number */
             success = read_number(L, f);

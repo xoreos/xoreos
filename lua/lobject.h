@@ -7,7 +7,6 @@
 #ifndef lobject_h
 #define lobject_h
 
-#include <assert.h>
 
 #include "llimits.h"
 #include "lua.h"
@@ -144,7 +143,6 @@ typedef struct lua_TObject {
 #define setobj(obj1,obj2) \
   { const TObject *o2=(obj2); TObject *o1=(obj1); \
     checkconsistency(o2); \
-    assert(o2); \
     o1->tt=o2->tt; o1->value = o2->value; }
 
 

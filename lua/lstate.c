@@ -5,7 +5,6 @@
 */
 
 
-#include <assert.h>
 #include <stdlib.h>
 
 #define lstate_c
@@ -92,7 +91,6 @@ static void f_luaopen (lua_State *L, void *ud) {
   global_State *g = luaM_new(NULL, global_State);
   UNUSED(ud);
   if (g == NULL) luaD_throw(L, LUA_ERRMEM);
-  assert(g);
   L->l_G = g;
   g->mainthread = L;
   g->GCthreshold = 0;  /* mark it as unfinished state */
