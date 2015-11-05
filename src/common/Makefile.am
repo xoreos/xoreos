@@ -21,6 +21,7 @@ noinst_LTLIBRARIES = libcommon.la
 
 noinst_HEADERS = \
                  system.h \
+                 noreturn.h \
                  types.h \
                  endianness.h \
                  version.h \

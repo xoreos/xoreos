@@ -31,6 +31,8 @@
 	#include "config.h"
 #endif
 
+#include "src/common/noreturn.h"
+
 #if defined(_MSC_VER)
 
 	#include <cstdarg>
@@ -55,7 +57,6 @@
 	#endif
 
 	#define FORCEINLINE __forceinline
-	#define NORETURN_PRE __declspec(noreturn)
 	#define PLUGIN_EXPORT __declspec(dllexport)
 
 	static FORCEINLINE int c99_vsnprintf(char* str, size_t size, const char* format, va_list ap) {
@@ -114,7 +115,6 @@
 // GCC specific stuff
 //
 #if defined(__GNUC__)
-	#define NORETURN_POST __attribute__((__noreturn__))
 	#define PACKED_STRUCT __attribute__((__packed__))
 	#define GCC_PRINTF(x,y) __attribute__((__format__(printf, x, y)))
 
@@ -374,14 +374,6 @@
 //
 #ifndef FORCEINLINE
 	#define FORCEINLINE inline
-#endif
-
-#ifndef NORETURN_PRE
-	#define NORETURN_PRE
-#endif
-
-#ifndef NORETURN_POST
-	#define NORETURN_POST
 #endif
 
 #ifndef STRINGBUFLEN
