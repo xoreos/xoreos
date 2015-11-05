@@ -7,10 +7,12 @@
 #ifndef ldo_h
 #define ldo_h
 
+#include "src/common/noreturn.h"
 
 #include "lobject.h"
 #include "lstate.h"
 #include "lzio.h"
+
 
 
 /*
@@ -53,7 +55,7 @@ void luaD_reallocCI (lua_State *L, int newsize);
 void luaD_reallocstack (lua_State *L, int newsize);
 void luaD_growstack (lua_State *L, int n);
 
-void luaD_throw (lua_State *L, int errcode);
+NORETURN_PRE void luaD_throw (lua_State *L, int errcode) NORETURN_POST;
 int luaD_rawrunprotected (lua_State *L, Pfunc f, void *ud);
 
 

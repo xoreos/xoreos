@@ -68,6 +68,8 @@ void luaX_errorline (LexState *ls, const char *s, const char *token, int line) {
 }
 
 
+NORETURN_PRE static void luaX_error (LexState *ls, const char *s, const char *token) NORETURN_POST;
+
 static void luaX_error (LexState *ls, const char *s, const char *token) {
   luaX_errorline(ls, s, token, ls->linenumber);
 }
@@ -100,6 +102,8 @@ const char *luaX_token2str (LexState *ls, int token) {
     return token2string[token-FIRST_RESERVED];
 }
 
+
+NORETURN_PRE static void luaX_lexerror (LexState *ls, const char *s, int token) NORETURN_POST;
 
 static void luaX_lexerror (LexState *ls, const char *s, int token) {
   if (token == TK_EOS)
