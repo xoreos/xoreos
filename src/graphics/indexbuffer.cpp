@@ -47,6 +47,15 @@ IndexBuffer &IndexBuffer::operator=(const IndexBuffer &other) {
 
 	setSize(other._count, other._size, other._type);
 
+	/* _data, _count, _size and _type are always only ever set by the setSize()
+	 * method which is also called above to replicate the situation in the right-
+	 * hand side IndexBuffer of the assignment. _data is set to a new allocated
+	 * block of memory of count * size size, but only if both count and size > 0.
+	 *
+	 * We can never run into a situation here where _data == 0 and other._data
+	 * != 0 or vice versa. Either both are == 0 (in which case count * size == 0)
+	 * or both are != 0. */
+
 	if (_data && other._data)
 		memcpy(_data, other._data, other._count * other._size);
 

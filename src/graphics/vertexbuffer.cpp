@@ -99,6 +99,16 @@ VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
 
 	setVertexDecl(other._decl);
 	setSize(other._count, other._size);
+
+	/* _data, _count and _size are always only ever set by the setSize() method,
+	 * which is also called above to replicate the situation in the right-hand
+	 * side VertexBuffer of the assignment. _data is set to a new allocated block
+	 * of memory of count * size size, but only if both count and size > 0.
+	 *
+	 * We can never run into a situation here where _data == 0 and other._data
+	 * != 0 or vice versa. Either both are == 0 (in which case count * size == 0)
+	 * or both are != 0. */
+
 	if (!_data || !other._data)
 		return *this;
 
