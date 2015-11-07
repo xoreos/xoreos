@@ -37,9 +37,10 @@
 
 namespace Common {
 
-void printDataHex(SeekableReadStream &stream) {
-	size_t pos  = stream.pos();
-	size_t size = stream.size() - pos;
+void printDataHex(SeekableReadStream &stream, size_t size) {
+	size_t pos = stream.pos();
+
+	size = MIN<size_t>(stream.size() - pos, size);
 
 	if (size == 0)
 		return;
