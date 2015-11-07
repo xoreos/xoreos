@@ -46,11 +46,11 @@ static const uint32 kERFID     = MKTAG('E', 'R', 'F', ' ');
 static const uint32 kMODID     = MKTAG('M', 'O', 'D', ' ');
 static const uint32 kHAKID     = MKTAG('H', 'A', 'K', ' ');
 static const uint32 kSAVID     = MKTAG('S', 'A', 'V', ' ');
-static const uint32 kVersion1  = MKTAG('V', '1', '.', '0');
+static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
 static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
-static const uint32 kVersion2  = MKTAG('V', '2', '.', '0');
+static const uint32 kVersion20 = MKTAG('V', '2', '.', '0');
 static const uint32 kVersion22 = MKTAG('V', '2', '.', '2');
-static const uint32 kVersion3  = MKTAG('V', '3', '.', '0');
+static const uint32 kVersion30 = MKTAG('V', '3', '.', '0');
 
 namespace Aurora {
 
@@ -75,12 +75,12 @@ void ERFFile::verifyVersion(uint32 id, uint32 version, bool utf16le) {
 	if ((id != kERFID) && (id != kMODID) && (id != kHAKID) && (id != kSAVID))
 		throw Common::Exception("Not an ERF file (%s)", Common::debugTag(id).c_str());
 
-	if ((version != kVersion1) && (version != kVersion11) &&
-	    (version != kVersion2) && (version != kVersion22) &&
-	    (version != kVersion3))
+	if ((version != kVersion10) && (version != kVersion11) &&
+	    (version != kVersion20) && (version != kVersion22) &&
+	    (version != kVersion30))
 		throw Common::Exception("Unsupported ERF file version %s", Common::debugTag(version).c_str());
 
-	if ((version != kVersion1) && (version != kVersion11) && !utf16le)
+	if ((version != kVersion10) && (version != kVersion11) && !utf16le)
 		throw Common::Exception("ERF file version 2.0+, but not UTF-16LE");
 }
 
@@ -182,7 +182,7 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 	uint32 flags = 0;
 
-	if        (version == kVersion1) {
+	if        (version == kVersion10) {
 
 		/* Version 1.0:
 		 * Neverwinter Nights, Knights of the Old Republic I and II,
@@ -248,7 +248,7 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		if (header.resCount > 0)
 			header.isNWNPremium = ((header.offResList - header.offKeyList) / header.resCount) < 40;
 
-	} else if (version == kVersion2) {
+	} else if (version == kVersion20) {
 
 		/* Version 2.0:
 		 * Unencrypted data in Dragon Age: Origins. */
@@ -294,7 +294,7 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.offKeyList      = 0;    // No separate key list in ERF V2.2
 		header.offResList      = 0x38; // Resource list always starts at 0x38 in ERF V2.2
 
-	} else if (version == kVersion3) {
+	} else if (version == kVersion30) {
 
 		/* Version 3.0:
 		 * Dragon Age II. */
@@ -333,7 +333,7 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 void ERFFile::readDescription(LocString &description, Common::SeekableReadStream &erf,
                               const ERFHeader &header, uint32 version) {
 
-	if ((version != kVersion1) && (version != kVersion11))
+	if ((version != kVersion10) && (version != kVersion11))
 		return;
 
 	erf.seek(header.offDescription);
@@ -344,41 +344,41 @@ void ERFFile::readResources(Common::SeekableReadStream &erf, const ERFHeader &he
 	_resources.resize(header.resCount);
 	_iResources.resize(header.resCount);
 
-	if        (_version == kVersion1) {
+	if        (_version == kVersion10) {
 
-		readV1KeyList(erf, header); // Read name and type part of the resource list
-		readV1ResList(erf, header); // Read offset and size part of the resource list
+		readV10KeyList(erf, header); // Read name and type part of the resource list
+		readV10ResList(erf, header); // Read offset and size part of the resource list
 
 	} else if (_version == kVersion11) {
 
 		// Read name and type part of the resource list
 		if (header.isNWNPremium)
-			readV1KeyList (erf, header);
+			readV10KeyList(erf, header);
 		else
 			readV11KeyList(erf, header);
 
-		readV1ResList (erf, header); // Read offset and size part of the resource list
+		readV10ResList (erf, header); // Read offset and size part of the resource list
 
-	} else if (_version == kVersion2) {
+	} else if (_version == kVersion20) {
 
 		// Read the resource list
-		readV2ResList(erf, header);
+		readV20ResList(erf, header);
 
 	} else if (_version == kVersion22) {
 
 		// Read the resource list
 		readV22ResList(erf, header);
 
-	} else if (_version == kVersion3) {
+	} else if (_version == kVersion30) {
 
 		// Read the resource list
-		readV3ResList(erf, header);
+		readV30ResList(erf, header);
 
 	}
 
 }
 
-void ERFFile::readV1KeyList(Common::SeekableReadStream &erf, const ERFHeader &header) {
+void ERFFile::readV10KeyList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offKeyList);
 
 	uint32 index = 0;
@@ -404,7 +404,7 @@ void ERFFile::readV11KeyList(Common::SeekableReadStream &erf, const ERFHeader &h
 	}
 }
 
-void ERFFile::readV1ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
+void ERFFile::readV10ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offResList);
 
 	for (IResourceList::iterator res = _iResources.begin(); res != _iResources.end(); ++res) {
@@ -413,7 +413,7 @@ void ERFFile::readV1ResList(Common::SeekableReadStream &erf, const ERFHeader &he
 	}
 }
 
-void ERFFile::readV2ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
+void ERFFile::readV20ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offResList);
 
 	uint32 index = 0;
@@ -452,7 +452,7 @@ void ERFFile::readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 
 }
 
-void ERFFile::readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
+void ERFFile::readV30ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
 	erf.seek(header.offResList);
 
 	uint32 index = 0;
@@ -652,7 +652,7 @@ Common::SeekableReadStream *ERFFile::decompressZlib(byte *compressedData, uint32
 
 Common::HashAlgo ERFFile::getNameHashAlgo() const {
 	// Only V3 uses hashing
-	return (_version == kVersion3) ? Common::kHashFNV64 : Common::kHashNone;
+	return (_version == kVersion30) ? Common::kHashFNV64 : Common::kHashNone;
 }
 
 LocString ERFFile::getDescription(Common::SeekableReadStream &erf) {

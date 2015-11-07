@@ -149,20 +149,20 @@ private:
 	void readResources(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V1.0
-	void readV1ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
-	void readV1KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	void readV10ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	void readV10KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V1.1
 	void readV11KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V2.0
-	void readV2ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	void readV20ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V2.2
 	void readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V3.0
-	void readV3ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	void readV30ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// Encryption
 	void verifyPasswordDigest();
