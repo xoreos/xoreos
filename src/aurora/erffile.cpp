@@ -54,13 +54,106 @@ static const uint32 kVersion30 = MKTAG('V', '3', '.', '0');
 
 namespace Aurora {
 
+static const byte kNWNPremiumKeys[6][56] = {
+	{
+		0x8A, 0x83, 0x5A, 0x2D, 0x01, 0x10, 0x5C, 0xBE, 0xCE, 0x2C, 0xD0, 0x69, 0xB8, 0x48, 0xC9, 0xBE,
+		0xAA, 0x7E, 0x57, 0xBD, 0xAB, 0x94, 0xCE, 0x0D, 0x09, 0x10, 0xBD, 0x57, 0x8D, 0x1A, 0x0D, 0x35,
+		0xC9, 0x84, 0x90, 0xFA, 0x7B, 0x65, 0x32, 0x97, 0xCF, 0x39, 0x66, 0xA7, 0x60, 0xEC, 0x99, 0xEF,
+		0x76, 0x5A, 0x3B, 0x2C, 0x2F, 0x0A, 0x24, 0xC3
+	}, {
+		0x5C, 0xA8, 0x83, 0xCE, 0x6D, 0x9C, 0x84, 0x3B, 0xDE, 0xA1, 0xD7, 0x85, 0x78, 0x87, 0xFD, 0x0D,
+		0xD7, 0x97, 0x42, 0x38, 0x93, 0x53, 0xCD, 0x3D, 0xEC, 0x03, 0xCE, 0x15, 0x09, 0x48, 0xD7, 0x9B,
+		0x86, 0x20, 0x19, 0x21, 0xC2, 0x6E, 0x42, 0xEE, 0xAF, 0xBE, 0xCA, 0x41, 0xBF, 0x0A, 0x66, 0x9A,
+		0x2A, 0x8F, 0xC2, 0x04, 0x56, 0x14, 0x77, 0x82
+	}, {
+		0x94, 0x37, 0xDD, 0x56, 0xED, 0xD9, 0xF0, 0x41, 0x91, 0x28, 0xC2, 0xD5, 0x4F, 0x97, 0xE8, 0x5D,
+		0x95, 0x42, 0x41, 0xB5, 0xA3, 0xA2, 0x03, 0xB6, 0x08, 0x8B, 0xC1, 0xC7, 0xCB, 0xEE, 0xD8, 0xD9,
+		0x83, 0x4E, 0x9F, 0xAB, 0x69, 0x41, 0x6C, 0xFC, 0x87, 0x13, 0xB5, 0xFD, 0xCA, 0x0A, 0x1D, 0x83,
+		0x89, 0x51, 0x4E, 0xF3, 0x5B, 0xED, 0x9A, 0x5C
+	}, {
+		0xEC, 0xBF, 0x9A, 0x75, 0x39, 0xE4, 0x65, 0x10, 0xCA, 0xA1, 0xB6, 0x3A, 0x76, 0xA2, 0x50, 0xDD,
+		0xE2, 0x06, 0xEA, 0x39, 0x20, 0x0F, 0xBC, 0xC7, 0x5D, 0x03, 0xD6, 0xB2, 0x75, 0x83, 0xEF, 0x08,
+		0xA7, 0xFD, 0x68, 0xDB, 0x33, 0xAA, 0x69, 0xA1, 0x39, 0x80, 0x62, 0x29, 0x8C, 0xE9, 0x2B, 0xA9,
+		0x60, 0xC6, 0x93, 0x27, 0x2C, 0x0D, 0x42, 0x26
+	}, {
+		0x72, 0xA3, 0x8B, 0x0C, 0x49, 0x63, 0x53, 0x32, 0x7D, 0x86, 0x9C, 0x3D, 0x48, 0x84, 0x77, 0xBD,
+		0xBB, 0x7C, 0x48, 0xDC, 0x33, 0x45, 0x40, 0x78, 0xAF, 0x26, 0x64, 0x96, 0x7F, 0x80, 0x44, 0x67,
+		0xF7, 0xDA, 0x08, 0x74, 0xF4, 0xD8, 0x7C, 0x2D, 0x2D, 0x1F, 0xF2, 0xD1, 0x5D, 0x18, 0xF7, 0xD2,
+		0x71, 0x28, 0xD0, 0x31, 0x5C, 0xCC, 0x6E, 0xCD
+	}, {
+		0x1D, 0xEA, 0x5E, 0x04, 0x0B, 0x43, 0xF2, 0x2F, 0x23, 0x90, 0x04, 0x38, 0x5C, 0xA1, 0x18, 0x9C,
+		0xFF, 0xB1, 0xB1, 0x86, 0xE6, 0x69, 0x67, 0x8E, 0x29, 0x08, 0x94, 0x4C, 0x08, 0x22, 0x0A, 0x8C,
+		0x9D, 0xC5, 0xFE, 0xE2, 0x27, 0x84, 0xE7, 0xD3, 0xD1, 0x6B, 0xF2, 0x38, 0xF4, 0xFF, 0xBF, 0x80,
+		0x7E, 0x1E, 0x98, 0x75, 0x32, 0xA3, 0x2C, 0xF6
+	}
+};
+
+
+ERFFile::ERFHeader::ERFHeader() : stringTable(0) {
+	clear();
+}
+
+ERFFile::ERFHeader::~ERFHeader() {
+	delete[] stringTable;
+}
+
+void ERFFile::ERFHeader::clear() {
+	resCount  = 0;
+	langCount = 0;
+
+	descriptionID = 0;
+
+	offDescription = 0xFFFFFFFF;
+	offKeyList     = 0xFFFFFFFF;
+	offResList     = 0xFFFFFFFF;
+
+	descriptionSize = 0;
+
+	buildYear = 0;
+	buildDay  = 0;
+
+	isNWNPremium = false;
+
+	moduleID = 0;
+
+	encryption  = kEncryptionNone;
+	compression = kCompressionNone;
+
+	clearStringTable();
+}
+
+void ERFFile::ERFHeader::clearStringTable() {
+	delete[] stringTable;
+
+	stringTable     = 0;
+	stringTableSize = 0;
+}
+
+bool ERFFile::ERFHeader::isSensible(size_t fileSize) {
+	if ((buildYear > 2200) || (buildYear < 2000) || (buildDay > 366))
+		return false;
+
+	if ((resCount >= 131072) || (langCount > 32))
+		return false;
+
+	if ((offDescription != 0xFFFFFFFF) && (offDescription > fileSize))
+		return false;
+	if ((offKeyList     != 0xFFFFFFFF) && (offKeyList     > fileSize))
+		return false;
+	if ((offResList     != 0xFFFFFFFF) && (offResList     > fileSize))
+		return false;
+
+	return true;
+}
+
+
 ERFFile::ERFFile(Common::SeekableReadStream *erf, const std::vector<byte> &password) :
 	_erf(erf), _password(password) {
 
 	assert(_erf);
 
 	try {
-		load(*_erf);
+		load();
 	} catch (...) {
 		delete _erf;
 		throw;
@@ -85,7 +178,7 @@ void ERFFile::verifyVersion(uint32 id, uint32 version, bool utf16le) {
 }
 
 void ERFFile::verifyPasswordDigest() {
-	if (_header.encryption == kEncryptionNone)
+	if ((_header.encryption == kEncryptionNone) || (_header.encryption == kEncryptionBlowfishNWN))
 		return;
 
 	if (_password.empty())
@@ -142,29 +235,83 @@ void ERFFile::verifyPasswordDigest() {
 	throw Common::Exception("Invalid encryption type %u", (uint)_header.encryption);
 }
 
-void ERFFile::load(Common::SeekableReadStream &erf) {
-	readHeader(erf);
+bool ERFFile::decryptNWNPremiumHeader(Common::SeekableReadStream &erf, ERFHeader &header,
+                                      const std::vector<byte> &password) {
+
+	Common::SeekableReadStream *decryptERF = decrypt(erf, erf.pos(), 152, kEncryptionBlowfishNWN, password);
+
+	try {
+
+		readV11Header(*decryptERF, header);
+
+	} catch (...) {
+		delete decryptERF;
+		throw;
+	}
+
+	delete decryptERF;
+
+	return header.isSensible(erf.size());
+}
+
+bool ERFFile::findNWNPremiumKey(Common::SeekableReadStream &erf, ERFHeader &header,
+                                const std::vector<byte> &md5, std::vector<byte> &password) {
+
+	assert(md5.empty() || (md5.size() == 16));
+
+	password.resize(56);
+	const size_t headerPos = erf.pos();
+
+	for (size_t i = 0; i < ARRAYSIZE(kNWNPremiumKeys); i++) {
+		memcpy(&password[0], kNWNPremiumKeys[i], 56);
+		if (!md5.empty())
+			memcpy(&password[0] + 40, &md5[0], 16);
+
+		erf.seek(headerPos);
+		if (decryptNWNPremiumHeader(erf, header, password))
+			return true;
+	}
+
+	return false;
+}
+
+void ERFFile::readNWNPremiumHeader(Common::SeekableReadStream &erf, ERFHeader &header,
+                                   std::vector<byte> &password) {
+
+	assert(header.encryption == kEncryptionBlowfishNWN);
+
+	if (!password.empty() && (password.size() != 16))
+		throw Common::Exception("Invalid Neverwinter Nights premium module MD5 length (%u)",
+		                        (uint)password.size());
+
+	const std::vector<byte> md5 = password;
+
+	if (!findNWNPremiumKey(erf, header, md5, password))
+		throw Common::Exception("Wrong Neverwinter Nights premium module key");
+
+	header.isNWNPremium = true;
+	header.encryption   = kEncryptionBlowfishNWN;
+}
+
+void ERFFile::load() {
+	readHeader(*_erf);
 
 	verifyVersion(_id, _version, _utf16le);
 
 	try {
 
-		readERFHeader(erf, _header, _version);
+		readERFHeader(*_erf, _header, _version, _password);
 
-		try {
+		verifyPasswordDigest();
 
-			verifyPasswordDigest();
+		readDescription(_description, *_erf, _header);
 
-			readDescription(_description, erf, _header, _version);
-			readResources(erf, _header);
+		if (_header.encryption == kEncryptionBlowfishNWN)
+			decryptNWNPremium();
 
-		} catch (Common::Exception &UNUSED(e)) {
-			delete[] _header.stringTable;
-			throw;
-		}
+		readResources(*_erf, _header);
 
-		delete[] _header.stringTable;
-		_header.stringTable = 0;
+		_header.clearStringTable();
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading ERF file");
@@ -173,10 +320,40 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 
 }
 
+void ERFFile::decryptNWNPremium() {
+	assert(_header.encryption == kEncryptionBlowfishNWN);
+
+	_erf->seek(0);
+
+	Common::SeekableReadStream *decryptERF = decrypt(*_erf, kEncryptionBlowfishNWN, _password);
+
+	delete _erf;
+	_erf = decryptERF;
+
+	_header.encryption = kEncryptionNone;
+}
+
 void ERFFile::readV10Header(Common::SeekableReadStream &erf, ERFHeader &header) {
-	header.langCount = erf.readUint32LE(); // Number of languages for the description
-	erf.skip(4);                           // Number of bytes in the description
-	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
+	header.langCount        = erf.readUint32LE(); // Number of languages for the description
+	header.descriptionSize  = erf.readUint32LE(); // Number of bytes in the description
+	header.resCount         = erf.readUint32LE(); // Number of resources in the ERF
+
+	header.offDescription = erf.readUint32LE();
+	header.offKeyList     = erf.readUint32LE();
+	header.offResList     = erf.readUint32LE();
+
+	header.buildYear = erf.readUint32LE() + 1900;
+	header.buildDay  = erf.readUint32LE();
+
+	header.descriptionID = erf.readUint32LE();
+
+	erf.skip(116); // Reserved
+}
+
+void ERFFile::readV11Header(Common::SeekableReadStream &erf, ERFHeader &header) {
+	header.langCount        = erf.readUint32LE(); // Number of languages for the description
+	header.descriptionSize  = erf.readUint32LE(); // Number of bytes in the description
+	header.resCount         = erf.readUint32LE(); // Number of resources in the ERF
 
 	header.offDescription = erf.readUint32LE();
 	header.offKeyList     = erf.readUint32LE();
@@ -189,68 +366,32 @@ void ERFFile::readV10Header(Common::SeekableReadStream &erf, ERFHeader &header) 
 
 	erf.skip(116); // Reserved
 
-	header.moduleID = 0; // No module ID in ERF V1.0
-}
+	header.isNWNPremium = ((header.offResList - header.offKeyList) / header.resCount) >= 40;
 
-void ERFFile::readV11Header(Common::SeekableReadStream &erf, ERFHeader &header, bool &isEncrypted) {
-	header.langCount = erf.readUint32LE(); // Number of languages for the description
-	erf.skip(4);                           // Number of bytes in the description
-	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
-
-	header.offDescription = erf.readUint32LE();
-	header.offKeyList     = erf.readUint32LE();
-	header.offResList     = erf.readUint32LE();
-
-	header.buildYear = erf.readUint32LE() + 1900;
-	header.buildDay  = erf.readUint32LE();
-
-	header.descriptionID = erf.readUint32LE();
-
-	header.moduleID = 0; // No module ID in ERF V1.1
-
-	byte buffer[116];
-
-	if (erf.read(buffer, 116) != 116)
-		throw Common::Exception(Common::kReadError);
-
-	isEncrypted = false;
-	for (size_t i = 0; i < 116; i++) {
-		if (buffer[i] != 0x00) {
-			isEncrypted = true;
-			break;
-		}
+	if (!header.isSensible()) {
+		header.isNWNPremium = true;
+		header.encryption   = kEncryptionBlowfishNWN;
 	}
-
-	const bool fitsNWN2Filenames = ((header.offResList - header.offKeyList) / header.resCount) >= 40;
-
-	header.isNWNPremium = isEncrypted || !fitsNWN2Filenames;
 }
 
 void ERFFile::readV20Header(Common::SeekableReadStream &erf, ERFHeader &header) {
-	header.langCount = 0;                  // No description in ERF V2.0
 	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
 	header.buildYear = erf.readUint32LE() + 1900;
 	header.buildDay  = erf.readUint32LE();
 
-	erf.skip(4);     // Unknown, always 0xFFFFFFFF?
+	erf.skip(4); // Unknown, always 0xFFFFFFFF?
 
-	header.descriptionID   = 0;    // No description in ERF V2.0
-	header.offDescription  = 0;    // No description in ERF V2.0
-	header.offKeyList      = 0;    // No separate key list in ERF V2.0
-	header.offResList      = 0x20; // Resource list always starts at 0x20 in ERF V2.0
-
-	header.moduleID = 0; // No module ID in ERF V2.0
+	header.offResList = 0x00000020; // Resource list always starts at 0x20 in ERF V2.0
 }
 
 void ERFFile::readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags) {
-	header.langCount = 0;                  // No description in ERF V2.2
 	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
 	header.buildYear = erf.readUint32LE() + 1900;
 	header.buildDay  = erf.readUint32LE();
 
-	erf.skip(4);     // Unknown, always 0xFFFFFFFF?
+	erf.skip(4); // Unknown, always 0xFFFFFFFF?
 
 	flags = erf.readUint32LE();
 
@@ -260,15 +401,14 @@ void ERFFile::readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, 
 	if (erf.read(&header.passwordDigest[0], 16) != 16)
 		throw Common::Exception(Common::kReadError);
 
-	header.descriptionID   = 0;    // No description in ERF V2.2
-	header.offDescription  = 0;    // No description in ERF V2.2
-	header.offKeyList      = 0;    // No separate key list in ERF V2.2
-	header.offResList      = 0x38; // Resource list always starts at 0x38 in ERF V2.2
+	header.offResList = 0x00000038; // Resource list always starts at 0x38 in ERF V2.2
+
+	header.encryption  = (Encryption)  ((flags >>  4) & 0x0000000F);
+	header.compression = (Compression) ((flags >> 29) & 0x00000007);
 }
 
 void ERFFile::readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags) {
-	header.langCount       = 0;                  // No description in ERF V3.0
-	header.stringTableSize = erf.readUint32LE();
+	header.stringTableSize = erf.readUint32LE(); // Number of bytes in the string table
 	header.resCount        = erf.readUint32LE(); // Number of resources in the ERF
 
 	flags = erf.readUint32LE();
@@ -281,22 +421,21 @@ void ERFFile::readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 	header.stringTable = new char[header.stringTableSize];
 	if (erf.read(header.stringTable, header.stringTableSize) != header.stringTableSize) {
-		delete[] header.stringTable;
+		header.clearStringTable();
 		throw Common::Exception("Failed to read ERF string table");
 	}
 
-	header.descriptionID  = 0;                             // No description in ERF V3.0
-	header.offDescription = 0;                             // No description in ERF V3.0
-	header.offKeyList     = 0;                             // No separate key list in ERF V3.0
-	header.offResList     = 0x30 + header.stringTableSize; // Resource list always starts after the string table in ERF V3.0
+	// Resource list always starts after the string table in ERF V3.0
+	header.offResList     = 0x00000030 + header.stringTableSize;
+
+	header.encryption  = (Encryption)  ((flags >>  4) & 0x0000000F);
+	header.compression = (Compression) ((flags >> 29) & 0x00000007);
 }
 
-void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version) {
-	header.buildYear       = 0;
-	header.buildDay        = 0;
-	header.isNWNPremium    = false;
-	header.stringTableSize = 0;
-	header.stringTable     = 0;
+void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version,
+                            std::vector<byte> &password) {
+
+	header.clear();
 
 	if        (version == kVersion10) {
 
@@ -316,13 +455,15 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		 *   ERFs, except that they may be encrypted.
 		 */
 
-		bool isEncrypted = false;
-		readV11Header(erf, header, isEncrypted);
+		const size_t headerPos = erf.pos();
 
-		header.encryption = isEncrypted ? kEncryptionBlowfishNWN : kEncryptionNone;
+		readV11Header(erf, header);
 
-		if (isEncrypted)
-			throw Common::Exception("TODO: Encrypted Neverwinter Nights premium module");
+		if (header.encryption == kEncryptionBlowfishNWN) {
+			erf.seek(headerPos);
+
+			readNWNPremiumHeader(erf, header, password);
+		}
 
 	} else if (version == kVersion20) {
 
@@ -339,9 +480,6 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		uint32 flags = 0;
 		readV22Header(erf, header, flags);
 
-		header.encryption  = (Encryption)  ((flags >>  4) & 0x0000000F);
-		header.compression = (Compression) ((flags >> 29) & 0x00000007);
-
 	} else if (version == kVersion30) {
 
 		/* Version 2.2:
@@ -349,16 +487,17 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 		uint32 flags = 0;
 		readV30Header(erf, header, flags);
-
-		header.encryption  = (Encryption)  ((flags >>  4) & 0x0000000F);
-		header.compression = (Compression) ((flags >> 29) & 0x00000007);
 	}
 }
 
 void ERFFile::readDescription(LocString &description, Common::SeekableReadStream &erf,
-                              const ERFHeader &header, uint32 version) {
+                              const ERFHeader &header) {
 
-	if ((version != kVersion10) && (version != kVersion11))
+	description.clear();
+	if ((header.offDescription == 0) || (header.offDescription == 0xFFFFFFFF) || (header.langCount == 0))
+		return;
+
+	if (header.encryption == kEncryptionBlowfishNWN)
 		return;
 
 	erf.seek(header.offDescription);
@@ -547,31 +686,58 @@ Common::SeekableReadStream *ERFFile::getResource(uint32 index, bool tryNoCopy) c
 
 	_erf->seek(res.offset);
 
-	// Read, decrypt and decompress
-	return decompress(decrypt(_erf->readStream(res.packedSize)), res.unpackedSize);
+	// Read
+	Common::MemoryReadStream *stream = _erf->readStream(res.packedSize);
+
+	// Decrypt
+	if (_header.encryption != kEncryptionNone)
+		stream = decrypt(stream, _header.encryption, _password);
+
+	// Decompress
+	return decompress(stream, res.unpackedSize);
 }
 
-Common::MemoryReadStream *ERFFile::decrypt(Common::MemoryReadStream *cryptStream) const {
+Common::MemoryReadStream *ERFFile::decrypt(Common::SeekableReadStream &cryptStream,
+                                           Encryption encryption, const std::vector<byte> &password) {
+	switch (encryption) {
+		case kEncryptionBlowfishDAO:
+		case kEncryptionBlowfishDA2:
+		case kEncryptionBlowfishNWN:
+			return Common::decryptBlowfishEBC(cryptStream, password);
+
+		default:
+			throw Common::Exception("Invalid ERF encryption %u", (uint) encryption);
+	}
+}
+
+Common::MemoryReadStream *ERFFile::decrypt(Common::SeekableReadStream *cryptStream,
+                                           Encryption encryption, const std::vector<byte> &password) {
+
+	assert(cryptStream);
+
+	Common::MemoryReadStream *decryptStream = 0;
+
 	try {
-		Common::MemoryReadStream *decryptStream = 0;
-
-		switch (_header.encryption) {
-			case kEncryptionNone:
-				return cryptStream;
-
-			case kEncryptionBlowfishDAO:
-			case kEncryptionBlowfishDA2:
-				decryptStream = Common::decryptBlowfishEBC(*cryptStream, _password);
-				delete cryptStream;
-				return decryptStream;
-
-			default:
-				throw Common::Exception("Invalid ERF encryption %u", (uint) _header.encryption);
-		}
+		decryptStream = decrypt(*cryptStream, encryption, password);
 	} catch (...) {
 		delete cryptStream;
 		throw;
 	}
+
+	delete cryptStream;
+	return decryptStream;
+}
+
+Common::SeekableReadStream *ERFFile::decrypt(Common::SeekableReadStream &erf, size_t pos, size_t size,
+                                             Encryption encryption, const std::vector<byte> &password) {
+
+	return decrypt(new Common::SeekableSubReadStream(&erf, pos, pos + size), encryption, password);
+}
+
+Common::SeekableReadStream *ERFFile::decrypt(Common::SeekableReadStream &erf, size_t size,
+                                             Encryption encryption, const std::vector<byte> &password) {
+
+	return decrypt(erf, erf.pos(), size, encryption, password);
 }
 
 Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packedStream,
@@ -691,14 +857,13 @@ LocString ERFFile::getDescription(Common::SeekableReadStream &erf) {
 	LocString description;
 
 	try {
-		readERFHeader(erf, header, version);
-		readDescription(description, erf, header, version);
+		std::vector<byte> password;
+		readERFHeader(erf, header, version, password);
 	} catch (...) {
-		delete[] header.stringTable;
-		throw;
+		return description;
 	}
 
-	delete[] header.stringTable;
+	readDescription(description, erf, header);
 
 	return description;
 }
