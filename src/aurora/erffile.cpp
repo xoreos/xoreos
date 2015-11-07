@@ -91,8 +91,8 @@ void ERFFile::verifyPasswordDigest() {
 	if (_password.empty())
 		throw Common::Exception("Encrypted; password required");
 
-		if (_header.encryption == kEncryptionXOR)
-			throw Common::Exception("Unsupported XOR encryption");
+	if (_header.encryption == kEncryptionXOR)
+		throw Common::Exception("Unsupported XOR encryption");
 
 	if (_header.encryption == kEncryptionBlowfishDAO) {
 		// The digest is the simple MD5 sum of the password
