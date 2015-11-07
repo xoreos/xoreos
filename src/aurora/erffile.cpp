@@ -173,6 +173,124 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 
 }
 
+void ERFFile::readV10Header(Common::SeekableReadStream &erf, ERFHeader &header) {
+	header.langCount = erf.readUint32LE(); // Number of languages for the description
+	erf.skip(4);                           // Number of bytes in the description
+	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
+
+	header.offDescription = erf.readUint32LE();
+	header.offKeyList     = erf.readUint32LE();
+	header.offResList     = erf.readUint32LE();
+
+	header.buildYear = erf.readUint32LE() + 1900;
+	header.buildDay  = erf.readUint32LE();
+
+	header.descriptionID = erf.readUint32LE();
+
+	erf.skip(116); // Reserved
+
+	header.moduleID = 0; // No module ID in ERF V1.0
+}
+
+void ERFFile::readV11Header(Common::SeekableReadStream &erf, ERFHeader &header, bool &isEncrypted) {
+	header.langCount = erf.readUint32LE(); // Number of languages for the description
+	erf.skip(4);                           // Number of bytes in the description
+	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
+
+	header.offDescription = erf.readUint32LE();
+	header.offKeyList     = erf.readUint32LE();
+	header.offResList     = erf.readUint32LE();
+
+	header.buildYear = erf.readUint32LE() + 1900;
+	header.buildDay  = erf.readUint32LE();
+
+	header.descriptionID = erf.readUint32LE();
+
+	header.moduleID = 0; // No module ID in ERF V1.1
+
+	byte buffer[116];
+
+	if (erf.read(buffer, 116) != 116)
+		throw Common::Exception(Common::kReadError);
+
+	isEncrypted = false;
+	for (size_t i = 0; i < 116; i++) {
+		if (buffer[i] != 0x00) {
+			isEncrypted = true;
+			break;
+		}
+	}
+
+	const bool fitsNWN2Filenames = ((header.offResList - header.offKeyList) / header.resCount) >= 40;
+
+	header.isNWNPremium = isEncrypted || !fitsNWN2Filenames;
+}
+
+void ERFFile::readV20Header(Common::SeekableReadStream &erf, ERFHeader &header) {
+	header.langCount = 0;                  // No description in ERF V2.0
+	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
+
+	header.buildYear = erf.readUint32LE() + 1900;
+	header.buildDay  = erf.readUint32LE();
+
+	erf.skip(4);     // Unknown, always 0xFFFFFFFF?
+
+	header.descriptionID   = 0;    // No description in ERF V2.0
+	header.offDescription  = 0;    // No description in ERF V2.0
+	header.offKeyList      = 0;    // No separate key list in ERF V2.0
+	header.offResList      = 0x20; // Resource list always starts at 0x20 in ERF V2.0
+
+	header.moduleID = 0; // No module ID in ERF V2.0
+}
+
+void ERFFile::readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags) {
+	header.langCount = 0;                  // No description in ERF V2.2
+	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
+
+	header.buildYear = erf.readUint32LE() + 1900;
+	header.buildDay  = erf.readUint32LE();
+
+	erf.skip(4);     // Unknown, always 0xFFFFFFFF?
+
+	flags = erf.readUint32LE();
+
+	header.moduleID = erf.readUint32LE();
+
+	header.passwordDigest.resize(16);
+	if (erf.read(&header.passwordDigest[0], 16) != 16)
+		throw Common::Exception(Common::kReadError);
+
+	header.descriptionID   = 0;    // No description in ERF V2.2
+	header.offDescription  = 0;    // No description in ERF V2.2
+	header.offKeyList      = 0;    // No separate key list in ERF V2.2
+	header.offResList      = 0x38; // Resource list always starts at 0x38 in ERF V2.2
+}
+
+void ERFFile::readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags) {
+	header.langCount       = 0;                  // No description in ERF V3.0
+	header.stringTableSize = erf.readUint32LE();
+	header.resCount        = erf.readUint32LE(); // Number of resources in the ERF
+
+	flags = erf.readUint32LE();
+
+	header.moduleID = erf.readUint32LE();
+
+	header.passwordDigest.resize(16);
+	if (erf.read(&header.passwordDigest[0], 16) != 16)
+		throw Common::Exception(Common::kReadError);
+
+	header.stringTable = new char[header.stringTableSize];
+	if (erf.read(header.stringTable, header.stringTableSize) != header.stringTableSize) {
+		delete[] header.stringTable;
+		throw Common::Exception("Failed to read ERF string table");
+	}
+
+	header.descriptionID  = 0;                             // No description in ERF V3.0
+	header.offDescription = 0;                             // No description in ERF V3.0
+	header.offKeyList     = 0;                             // No separate key list in ERF V3.0
+	header.offResList     = 0x30 + header.stringTableSize; // Resource list always starts after the string table in ERF V3.0
+}
+
 void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version) {
 	header.buildYear       = 0;
 	header.buildDay        = 0;
@@ -180,30 +298,13 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 	header.stringTableSize = 0;
 	header.stringTable     = 0;
 
-	uint32 flags = 0;
-
 	if        (version == kVersion10) {
 
 		/* Version 1.0:
 		 * Neverwinter Nights, Knights of the Old Republic I and II,
 		 * Jade Empire, The Witcher. */
 
-		header.langCount = erf.readUint32LE(); // Number of languages for the description
-		erf.skip(4);                           // Number of bytes in the description
-		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
-
-		header.offDescription = erf.readUint32LE();
-		header.offKeyList     = erf.readUint32LE();
-		header.offResList     = erf.readUint32LE();
-
-		header.buildYear = erf.readUint32LE() + 1900;
-		header.buildDay  = erf.readUint32LE();
-
-		header.descriptionID = erf.readUint32LE();
-
-		erf.skip(116); // Reserved
-
-		header.moduleID = 0; // No module ID in ERF V1.0
+		readV10Header(erf, header);
 
 	} else if (version == kVersion11) {
 
@@ -215,116 +316,40 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		 *   ERFs, except that they may be encrypted.
 		 */
 
-		header.langCount = erf.readUint32LE(); // Number of languages for the description
-		erf.skip(4);                           // Number of bytes in the description
-		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
+		bool isEncrypted = false;
+		readV11Header(erf, header, isEncrypted);
 
-		header.offDescription = erf.readUint32LE();
-		header.offKeyList     = erf.readUint32LE();
-		header.offResList     = erf.readUint32LE();
+		header.encryption = isEncrypted ? kEncryptionBlowfishNWN : kEncryptionNone;
 
-		header.buildYear = erf.readUint32LE() + 1900;
-		header.buildDay  = erf.readUint32LE();
-
-		header.descriptionID = erf.readUint32LE();
-
-		byte buffer[116];
-
-		if (erf.read(buffer, 116) != 116)
-			throw Common::Exception(Common::kReadError);
-
-		for (size_t i = 0; i < 116; i++) {
-			if (buffer[i] != 0x00) {
-				header.isNWNPremium = true;
-				header.encryption   = kEncryptionBlowfishNWN;
-
-				throw Common::Exception("TODO: Encrypted Neverwinter Nights premium module");
-				break;
-			}
-		}
-
-		header.moduleID = 0; // No module ID in ERF V1.1
-
-		if (header.resCount > 0)
-			header.isNWNPremium = ((header.offResList - header.offKeyList) / header.resCount) < 40;
+		if (isEncrypted)
+			throw Common::Exception("TODO: Encrypted Neverwinter Nights premium module");
 
 	} else if (version == kVersion20) {
 
 		/* Version 2.0:
 		 * Unencrypted data in Dragon Age: Origins. */
 
-		header.langCount = 0;                  // No description in ERF V2.0
-		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
-
-		header.buildYear = erf.readUint32LE() + 1900;
-		header.buildDay  = erf.readUint32LE();
-
-		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
-
-		header.descriptionID   = 0;    // No description in ERF V2.0
-		header.offDescription  = 0;    // No description in ERF V2.0
-		header.offKeyList      = 0;    // No separate key list in ERF V2.0
-		header.offResList      = 0x20; // Resource list always starts at 0x20 in ERF V2.0
-
-		header.moduleID = 0; // No module ID in ERF V2.0
+		readV20Header(erf, header);
 
 	} else if (version == kVersion22) {
 
 		/* Version 2.2:
 		 * Encrypted data in Dragon Age: Origins. */
 
-		header.langCount = 0;                  // No description in ERF V2.2
-		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
+		uint32 flags = 0;
+		readV22Header(erf, header, flags);
 
-		header.buildYear = erf.readUint32LE() + 1900;
-		header.buildDay  = erf.readUint32LE();
-
-		erf.skip(4);     // Unknown, always 0xFFFFFFFF?
-
-		flags = erf.readUint32LE();
-
-		header.moduleID = erf.readUint32LE();
-
-		header.passwordDigest.resize(16);
-		if (erf.read(&header.passwordDigest[0], 16) != 16)
-			throw Common::Exception(Common::kReadError);
-
-		header.descriptionID   = 0;    // No description in ERF V2.2
-		header.offDescription  = 0;    // No description in ERF V2.2
-		header.offKeyList      = 0;    // No separate key list in ERF V2.2
-		header.offResList      = 0x38; // Resource list always starts at 0x38 in ERF V2.2
+		header.encryption  = (Encryption)  ((flags >>  4) & 0x0000000F);
+		header.compression = (Compression) ((flags >> 29) & 0x00000007);
 
 	} else if (version == kVersion30) {
 
-		/* Version 3.0:
+		/* Version 2.2:
 		 * Dragon Age II. */
 
-		header.langCount = 0;                        // No description in ERF V3.0
-		header.stringTableSize = erf.readUint32LE();
-		header.resCount        = erf.readUint32LE(); // Number of resources in the ERF
+		uint32 flags = 0;
+		readV30Header(erf, header, flags);
 
-		flags = erf.readUint32LE();
-
-		header.moduleID = erf.readUint32LE();
-
-		header.passwordDigest.resize(16);
-		if (erf.read(&header.passwordDigest[0], 16) != 16)
-			throw Common::Exception(Common::kReadError);
-
-		header.stringTable = new char[header.stringTableSize];
-		if (erf.read(header.stringTable, header.stringTableSize) != header.stringTableSize) {
-			delete[] header.stringTable;
-			throw Common::Exception("Failed to read ERF string table");
-		}
-
-		header.descriptionID  = 0;                             // No description in ERF V3.0
-		header.offDescription = 0;                             // No description in ERF V3.0
-		header.offKeyList     = 0;                             // No separate key list in ERF V3.0
-		header.offResList     = 0x30 + header.stringTableSize; // Resource list always starts after the string table in ERF V3.2
-
-	}
-
-	if (header.encryption != kEncryptionBlowfishNWN) {
 		header.encryption  = (Encryption)  ((flags >>  4) & 0x0000000F);
 		header.compression = (Compression) ((flags >> 29) & 0x00000007);
 	}

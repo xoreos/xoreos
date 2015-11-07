@@ -149,19 +149,24 @@ private:
 	void readResources(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V1.0
+	static void readV10Header(Common::SeekableReadStream &erf, ERFHeader &header);
 	void readV10ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 	void readV10KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V1.1
+	static void readV11Header(Common::SeekableReadStream &erf, ERFHeader &header, bool &isEncrypted);
 	void readV11KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V2.0
+	static void readV20Header(Common::SeekableReadStream &erf, ERFHeader &header);
 	void readV20ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V2.2
+	static void readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags);
 	void readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// V3.0
+	static void readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags);
 	void readV30ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 
 	// Encryption
