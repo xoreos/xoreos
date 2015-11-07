@@ -184,6 +184,10 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 	if        (version == kVersion1) {
 
+		/* Version 1.0:
+		 * Neverwinter Nights, Knights of the Old Republic I and II,
+		 * Jade Empire, The Witcher. */
+
 		header.langCount = erf.readUint32LE(); // Number of languages for the description
 		erf.skip(4);                           // Number of bytes in the description
 		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
@@ -202,6 +206,14 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.moduleID = 0; // No module ID in ERF V1.0
 
 	} else if (version == kVersion11) {
+
+		/* Version 1.1:
+		 * There's two slightly different formats of the 1.1 ERF version:
+		 * - The one is present in Neverwinter Nights 2. It extends the filename
+		 *   field in the key list to 32 characters (from 16 in V1.0)
+		 * - Premium modules in Neverwinter Nights. They are identical to V1.0
+		 *   ERFs, except that they may be encrypted.
+		 */
 
 		header.langCount = erf.readUint32LE(); // Number of languages for the description
 		erf.skip(4);                           // Number of bytes in the description
@@ -238,6 +250,9 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 	} else if (version == kVersion2) {
 
+		/* Version 2.0:
+		 * Unencrypted data in Dragon Age: Origins. */
+
 		header.langCount = 0;                  // No description in ERF V2.0
 		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
@@ -254,6 +269,9 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.moduleID = 0; // No module ID in ERF V2.0
 
 	} else if (version == kVersion22) {
+
+		/* Version 2.2:
+		 * Encrypted data in Dragon Age: Origins. */
 
 		header.langCount = 0;                  // No description in ERF V2.2
 		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
@@ -277,6 +295,9 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 		header.offResList      = 0x38; // Resource list always starts at 0x38 in ERF V2.2
 
 	} else if (version == kVersion3) {
+
+		/* Version 3.0:
+		 * Dragon Age II. */
 
 		header.langCount = 0;                        // No description in ERF V3.0
 		header.stringTableSize = erf.readUint32LE();
