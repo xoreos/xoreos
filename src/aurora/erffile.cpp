@@ -176,12 +176,13 @@ void ERFFile::load(Common::SeekableReadStream &erf) {
 void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version) {
 	header.buildYear       = 0;
 	header.buildDay        = 0;
+	header.isNWNPremium    = false;
 	header.stringTableSize = 0;
 	header.stringTable     = 0;
 
 	uint32 flags = 0;
 
-	if        ((version == kVersion1) || (version == kVersion11)) {
+	if        (version == kVersion1) {
 
 		header.langCount = erf.readUint32LE(); // Number of languages for the description
 		erf.skip(4);                           // Number of bytes in the description
@@ -198,7 +199,42 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 		erf.skip(116); // Reserved
 
-		header.moduleID = 0; // No module ID in ERF V1.0 / V1.1
+		header.moduleID = 0; // No module ID in ERF V1.0
+
+	} else if (version == kVersion11) {
+
+		header.langCount = erf.readUint32LE(); // Number of languages for the description
+		erf.skip(4);                           // Number of bytes in the description
+		header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
+
+		header.offDescription = erf.readUint32LE();
+		header.offKeyList     = erf.readUint32LE();
+		header.offResList     = erf.readUint32LE();
+
+		header.buildYear = erf.readUint32LE() + 1900;
+		header.buildDay  = erf.readUint32LE();
+
+		header.descriptionID = erf.readUint32LE();
+
+		byte buffer[116];
+
+		if (erf.read(buffer, 116) != 116)
+			throw Common::Exception(Common::kReadError);
+
+		for (size_t i = 0; i < 116; i++) {
+			if (buffer[i] != 0x00) {
+				header.isNWNPremium = true;
+				header.encryption   = kEncryptionBlowfishNWN;
+
+				throw Common::Exception("TODO: Encrypted Neverwinter Nights premium module");
+				break;
+			}
+		}
+
+		header.moduleID = 0; // No module ID in ERF V1.1
+
+		if (header.resCount > 0)
+			header.isNWNPremium = ((header.offResList - header.offKeyList) / header.resCount) < 40;
 
 	} else if (version == kVersion2) {
 
@@ -267,13 +303,16 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 	}
 
-	header.encryption  = (Encryption)  ((flags >>  4) & 0x0000000F);
-	header.compression = (Compression) ((flags >> 29) & 0x00000007);
+	if (header.encryption != kEncryptionBlowfishNWN) {
+		header.encryption  = (Encryption)  ((flags >>  4) & 0x0000000F);
+		header.compression = (Compression) ((flags >> 29) & 0x00000007);
+	}
 }
 
 void ERFFile::readDescription(LocString &description, Common::SeekableReadStream &erf,
                               const ERFHeader &header, uint32 version) {
-	if (version != kVersion1)
+
+	if ((version != kVersion1) && (version != kVersion11))
 		return;
 
 	erf.seek(header.offDescription);
@@ -291,7 +330,12 @@ void ERFFile::readResources(Common::SeekableReadStream &erf, const ERFHeader &he
 
 	} else if (_version == kVersion11) {
 
-		readV11KeyList(erf, header); // Read name and type part of the resource list
+		// Read name and type part of the resource list
+		if (header.isNWNPremium)
+			readV1KeyList (erf, header);
+		else
+			readV11KeyList(erf, header);
+
 		readV1ResList (erf, header); // Read offset and size part of the resource list
 
 	} else if (_version == kVersion2) {

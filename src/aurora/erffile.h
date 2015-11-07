@@ -72,10 +72,11 @@ public:
 
 private:
 	enum Encryption {
-		kEncryptionNone        = 0,
-		kEncryptionXOR         = 1,
-		kEncryptionBlowfishDAO = 2,
-		kEncryptionBlowfishDA2 = 3
+		kEncryptionNone        =  0,
+		kEncryptionXOR         =  1,
+		kEncryptionBlowfishDAO =  2,
+		kEncryptionBlowfishDA2 =  3,
+		kEncryptionBlowfishNWN = 16
 	};
 
 	enum Compression {
@@ -97,6 +98,8 @@ private:
 
 		uint32 buildYear;        ///< The year the ERF was built.
 		uint32 buildDay;         ///< The day of year the ERF was built.
+
+		bool   isNWNPremium;     ///< Is this a Neverwinter Nights premium module?
 
 		char  *stringTable;      ///< String table used for hashed ERFs.
 		uint32 stringTableSize;  ///< Size of the string table.
