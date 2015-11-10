@@ -44,13 +44,26 @@ Please also read over our [CONTRIBUTING.md](CONTRIBUTING.md) for some
 guidelines. Thanks.
 
 
-Compiling xoreos
-----------------
+Getting xoreos
+--------------
 
-Since we are not yet distributing binaries of xoreos, you will have to compile
-xoreos yourself. Please read the [compiling xoreos page on our
-wiki](https://wiki.xoreos.org/index.php?title=Compiling_xoreos) for information
-on how to do this on various operating systems.
+You can get xoreos in multiple ways:
+
+You can download an archive with a binary of the latest release from our
+[downloads page](https://xoreos.org/downloads/index.html). This includes
+binaries for Microsoft Windows, Mac OS X and GNU/Linux, as well as packages
+for various GNU/Linux distributions. All of them are available for both 32-
+and 64-bit x86 architectures.
+
+Or, if you're running Arch Linux, you can install xoreos directly from the
+[AUR](https://aur.archlinux.org/packages/xoreos/).
+
+Lastly, you can compile xoreos yourself; either from a release source package,
+found on our [downloads page](https://xoreos.org/downloads/index.html), or a
+fresh [repository](https://github.com/xoreos/xoreos) checkout. For details
+on how to compile xoreos on various operating system, please read the
+[Compiling xoreos](https://wiki.xoreos.org/index.php?title=Compiling_xoreos)
+page on our wiki.
 
 
 Running xoreos
