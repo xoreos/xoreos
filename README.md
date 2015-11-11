@@ -86,6 +86,10 @@ If you're on Windows and the path is, say, D:\\Path\\To\\Game\\, call
 
     xoreos -pD:\\Path\\To\\Game\\
 
+For a more in-depth documentation on how to run xoreos, please also read the
+[Running xoreos](https://wiki.xoreos.org/index.php?title=Running_xoreos)
+page on our wiki.
+
 
 Config file
 -----------
@@ -136,7 +140,9 @@ The place where xoreos expects the config file depends on your operating system:
   or $USERPROFILE, depending on your Windows version
 
 For a more elaborate example with more in-depth explanations, please see
-[xoreos.conf.example](doc/xoreos.conf.example) in the doc directory.
+[xoreos.conf.example](doc/xoreos.conf.example) in the doc directory, or the
+[Running xoreos](https://wiki.xoreos.org/index.php?title=Running_xoreos)
+page on our wiki.
 
 
 Links
