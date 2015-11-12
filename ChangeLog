@@ -1,3 +1,14 @@
+Someday, ????-??-?? (Version 0.0.4)
+	- DOCS:
+		- Improved documentation in various files
+	- BUILD:
+		- Fixed various little problems in the CMake system related to
+		  non-MSVC compilers
+	- ENGINES:
+		- DRAGONAGE:
+			- Added engine script functions from the 1.01 and 1.03
+			  updates
+
 Wednesday, 2015-09-30 (Version 0.0.3)
 	- DOCS:
 		- Added xoreos.conf.example
