@@ -128,19 +128,7 @@ void Placeable::loadInstance(const Aurora::GFF3Struct &gff) {
 	if (!appearance.empty())
 		_modelName = appearance;
 
-	const Aurora::GFF3Struct &positional = gff.getStruct("Positional");
-
-	double x, y, z;
-
-	// Position
-
-	positional.getVector("Position", x, y, z);
-	setPosition(x, y, z);
-
-	// Orientation
-
-	positional.getVector("Orientation", x, y, z);
-	setOrientation(x, y, z, 0);
+	loadPositional(gff);
 
 	// Name
 	gff.getString("Name");
