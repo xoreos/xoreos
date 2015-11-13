@@ -73,6 +73,7 @@ noinst_HEADERS = \
                  gui/main/newcamp.h \
                  gui/main/newgamefog.h \
                  gui/main/newmodule.h \
+                 gui/main/newpremium.h \
                  gui/main/newxp1.h \
                  gui/main/newxp2.h \
                  gui/main/options.h \
@@ -160,6 +161,7 @@ libnwn_la_SOURCES = \
                     gui/main/newcamp.cpp \
                     gui/main/newgamefog.cpp \
                     gui/main/newmodule.cpp \
+                    gui/main/newpremium.cpp \
                     gui/main/newxp1.cpp \
                     gui/main/newxp2.cpp \
                     gui/main/options.cpp \
