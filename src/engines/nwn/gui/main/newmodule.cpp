@@ -196,7 +196,7 @@ Common::UString NewModuleMenu::getSelectedModule() {
 }
 
 void NewModuleMenu::selectedModule() {
-	Common::UString description = Module::getDescription(getSelectedModule());
+	Common::UString description = Module::getDescription(getSelectedModule() + ".mod");
 	if (description.empty())
 		description = TalkMan.getString(67741);
 

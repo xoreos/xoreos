@@ -231,6 +231,9 @@ private:
 	void loadAreas();       ///< Load the areas.
 	// '---
 
+	static Common::UString getDescriptionExtra   (Common::UString module);
+	static Common::UString getDescriptionCampaign(Common::UString module);
+
 	void setPCTokens();
 	void removePCTokens();
 

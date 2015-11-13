@@ -26,6 +26,7 @@
 #include "src/common/maths.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
+#include "src/common/filepath.h"
 
 #include "src/events/events.h"
 
@@ -737,14 +738,45 @@ void Module::delayScript(const Common::UString &script,
 	_delayedActions.insert(action);
 }
 
-Common::UString Module::getDescription(const Common::UString &module) {
+Common::UString Module::getDescriptionExtra(Common::UString module) {
+	if (!Common::FilePath::getExtension(module).equalsIgnoreCase(".mod"))
+		module += ".mod";
+
 	try {
 		Common::UString moduleDir = ConfigMan.getString("NWN_extraModuleDir");
 		Common::UString modFile   = module;
 
-		return Aurora::ERFFile::getDescription(moduleDir + "/" + modFile + ".mod").getString();
+		return Aurora::ERFFile::getDescription(moduleDir + "/" + modFile).getString();
 	} catch (...) {
 	}
+
+	return "";
+}
+
+Common::UString Module::getDescriptionCampaign(Common::UString module) {
+	if (!Common::FilePath::getExtension(module).equalsIgnoreCase(".nwm"))
+		module += ".nwm";
+
+	try {
+		Common::UString moduleDir = ConfigMan.getString("NWN_campaignDir");
+		Common::UString modFile   = module;
+
+		return Aurora::ERFFile::getDescription(moduleDir + "/" + modFile).getString();
+	} catch (...) {
+	}
+
+	return "";
+}
+
+Common::UString Module::getDescription(const Common::UString &module) {
+	Common::UString description;
+
+	description = getDescriptionCampaign(module);
+	if (!description.empty())
+		return description;
+	description = getDescriptionExtra   (module);
+	if (!description.empty())
+		return description;
 
 	return "";
 }
