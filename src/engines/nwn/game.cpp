@@ -95,6 +95,8 @@ void Game::runModule() {
 		return;
 	}
 
+	EventMan.flushEvents();
+
 	_module->enter();
 	EventMan.enableKeyRepeat(true);
 
