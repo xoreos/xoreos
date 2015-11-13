@@ -324,9 +324,16 @@ void Module::enter() {
 
 	_pc->loadModel();
 
+	_running = true;
+	_exit    = false;
+
 	runScript(kScriptModuleLoad , this, _pc);
 	runScript(kScriptModuleStart, this, _pc);
 	runScript(kScriptEnter      , this, _pc);
+
+	// The entry scripts might have already determined that we should quit
+	if (_exit)
+		return;
 
 	Common::UString startMovie = _ifo.getStartMovie();
 	if (!startMovie.empty())
@@ -340,9 +347,6 @@ void Module::enter() {
 	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);
 	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
 	CameraMan.update();
-
-	_running = true;
-	_exit    = false;
 
 	_ingameGUI->show();
 }
