@@ -63,6 +63,8 @@ public:
 
 	/** Return a list of all modules. */
 	static void getModules(std::vector<Common::UString> &modules);
+	/** Return a list of all premium modules. */
+	static void getPremiumModules(std::vector<Common::UString> &modules);
 	/** Does this module exist? */
 	static bool hasModule(Common::UString &module);
 	/** Return a list of local player characters. */

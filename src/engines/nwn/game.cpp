@@ -228,6 +228,28 @@ void Game::getModules(std::vector<Common::UString> &modules) {
 	std::sort(modules.begin(), modules.end(), Common::UString::iless());
 }
 
+void Game::getPremiumModules(std::vector<Common::UString> &modules) {
+	static const char * const kPremiumModules[] = {
+		"Neverwinter Nights - Infinite Dungeons.nwm",
+		"Neverwinter Nights - Kingmaker.nwm",
+		"Neverwinter Nights - Pirates of the Sword Coast.nwm",
+		"Neverwinter Nights - ShadowGuard.nwm",
+		"Neverwinter Nights - Witch's Wake.nwm",
+		"Neverwinter Nights - Wyvern Crown of Cormyr.nwm"
+	};
+
+	modules.clear();
+
+	Common::FileList mods(ConfigMan.getString("NWN_campaignDir"));
+
+	for (Common::FileList::const_iterator m = mods.begin(); m != mods.end(); ++m)
+		for (size_t i = 0; i < ARRAYSIZE(kPremiumModules); i++)
+			if (Common::FilePath::getFile(*m).equalsIgnoreCase(kPremiumModules[i]))
+				modules.push_back(Common::FilePath::getStem(*m));
+
+	std::sort(modules.begin(), modules.end(), Common::UString::iless());
+}
+
 bool Game::hasModule(Common::UString &module) {
 	const Common::UString nwmFile = module + ".nwm";
 	const Common::UString modFile = module + ".mod";
