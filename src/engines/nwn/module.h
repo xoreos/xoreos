@@ -38,6 +38,8 @@
 
 #include "src/events/types.h"
 
+#include "src/engines/aurora/resources.h"
+
 #include "src/engines/nwn/objectcontainer.h"
 #include "src/engines/nwn/object.h"
 
@@ -182,7 +184,7 @@ private:
 	Common::ChangeID _resTLK;
 
 	/** Resources added by the HAKs of the module. */
-	std::vector<Common::ChangeID> _resHAKs;
+	ChangeList _resHAKs;
 
 	Aurora::IFOFile _ifo; ///< The module's IFO.
 
@@ -222,6 +224,9 @@ private:
 	// '---
 
 	// .--- Loading
+	/** Check if this is premium module, and if so, prepare its loading. */
+	void preparePremiumModule(const Common::UString &module);
+
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 

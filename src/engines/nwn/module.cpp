@@ -27,6 +27,8 @@
 #include "src/common/error.h"
 #include "src/common/configman.h"
 #include "src/common/filepath.h"
+#include "src/common/readfile.h"
+#include "src/common/md5.h"
 
 #include "src/events/events.h"
 
@@ -43,13 +45,13 @@
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/tokenman.h"
-#include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/camera.h"
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/version.h"
 #include "src/engines/nwn/module.h"
+#include "src/engines/nwn/game.h"
 #include "src/engines/nwn/area.h"
 #include "src/engines/nwn/creature.h"
 
@@ -138,6 +140,37 @@ void Module::load(const Common::UString &module) {
 	loadModule(module);
 }
 
+void Module::preparePremiumModule(const Common::UString &module) {
+	if (!Game::isPremiumModule(module))
+		return;
+
+	try {
+		/* If this is a premium module, we need to calculate the MD5 sum of this
+		 * module file, and then load the main HAK for this module, using the
+		 * MD5 has part of the decryption password. This has to be done before
+		 * loading the IFO, because the HAK comes with the proper IFO. The one
+		 * in the module is a stub that exists the game, assuming you haven't
+		 * purchased the premium module in question. */
+
+		Common::ReadFile mod(ResMan.findResourceFile(module));
+
+		std::vector<byte> md5;
+		Common::hashMD5(mod, md5);
+
+		indexMandatoryArchive(Common::FilePath::changeExtension(module, ".hak"), 1001, md5, _resHAKs);
+	} catch (...) {
+	}
+
+	/* TODO: The Neverwinter Nights premium modules have slightly modified
+	 *       GFF files, including the module.ifo. The "IFO V3.2" header is
+	 *       missing, and all offsets are slightly off. We don't support
+	 *       these GFF files yet, so we now unload the main premium module
+	 *       HAK again. This makes the game act like we haven't purchased
+	 *       the premium module.
+	 */
+	unloadHAKs();
+}
+
 void Module::loadModule(const Common::UString &module) {
 	unload(false);
 
@@ -146,6 +179,7 @@ void Module::loadModule(const Common::UString &module) {
 
 	try {
 		indexMandatoryArchive(module, 1000, &_resModule);
+		preparePremiumModule(module);
 
 		_ifo.load();
 
@@ -556,18 +590,12 @@ void Module::unloadTLK() {
 void Module::loadHAKs() {
 	const std::vector<Common::UString> &haks = _ifo.getHAKs();
 
-	_resHAKs.resize(haks.size());
-
 	for (size_t i = 0; i < haks.size(); i++)
-		indexMandatoryArchive(haks[i] + ".hak", 1001 + i, &_resHAKs[i]);
+		indexMandatoryArchive(haks[i] + ".hak", 1002 + i, _resHAKs);
 }
 
 void Module::unloadHAKs() {
-	std::vector<Common::ChangeID>::iterator hak;
-	for (hak = _resHAKs.begin(); hak != _resHAKs.end(); ++hak)
-		deindexResources(*hak);
-
-	_resHAKs.clear();
+	deindexResources(_resHAKs);
 }
 
 static const char *texturePacks[4][4] = {
