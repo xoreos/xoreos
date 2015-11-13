@@ -250,6 +250,13 @@ void Game::getPremiumModules(std::vector<Common::UString> &modules) {
 	std::sort(modules.begin(), modules.end(), Common::UString::iless());
 }
 
+bool Game::hasPremiumModules() {
+	std::vector<Common::UString> modules;
+	getPremiumModules(modules);
+
+	return !modules.empty();
+}
+
 bool Game::hasModule(Common::UString &module) {
 	const Common::UString nwmFile = module + ".nwm";
 	const Common::UString modFile = module + ".mod";
