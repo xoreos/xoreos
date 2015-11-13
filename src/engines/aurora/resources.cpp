@@ -33,37 +33,69 @@
 
 namespace Engines {
 
-void indexMandatoryArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+void indexMandatoryArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+                           Common::ChangeID *changeID) {
+
 	if (EventMan.quitRequested())
 		return;
 
-	ResMan.indexArchive(file, priority, changeID);
+	ResMan.indexArchive(file, priority, password, changeID);
+}
+
+void indexMandatoryArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+                           ChangeList &changes) {
+
+	changes.push_back(Common::ChangeID());
+	indexMandatoryArchive(file, priority, password, &changes.back());
+}
+
+void indexMandatoryArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+	std::vector<byte> password;
+
+	indexMandatoryArchive(file, priority, password, changeID);
 }
 
 void indexMandatoryArchive(const Common::UString &file, uint32 priority, ChangeList &changes) {
-	changes.push_back(Common::ChangeID());
-	indexMandatoryArchive(file, priority, &changes.back());
+	std::vector<byte> password;
+
+	indexMandatoryArchive(file, priority, password, changes);
 }
 
-bool indexOptionalArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+                          Common::ChangeID *changeID) {
+
 	if (EventMan.quitRequested())
 		return false;
 
 	if (!ResMan.hasArchive(file))
 		return false;
 
-	ResMan.indexArchive(file, priority, changeID);
+	ResMan.indexArchive(file, priority, password, changeID);
 	return true;
 }
 
-bool indexOptionalArchive(const Common::UString &file, uint32 priority, ChangeList &changes) {
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+                          ChangeList &changes) {
+
 	changes.push_back(Common::ChangeID());
-	if (!indexOptionalArchive(file, priority, &changes.back())) {
+	if (!indexOptionalArchive(file, priority, password, &changes.back())) {
 		changes.pop_back();
 		return false;
 	}
 
 	return true;
+}
+
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+	std::vector<byte> password;
+
+	return indexOptionalArchive(file, priority, password, changeID);
+}
+
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, ChangeList &changes) {
+	std::vector<byte> password;
+
+	return indexOptionalArchive(file, priority, password, changes);
 }
 
 void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,

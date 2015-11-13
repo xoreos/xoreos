@@ -26,6 +26,7 @@
 #define ENGINES_AURORA_RESOURCES_H
 
 #include <list>
+#include <vector>
 
 #include "src/common/changeid.h"
 
@@ -42,10 +43,18 @@ typedef std::list<Common::ChangeID> ChangeList;
 /** Add an archive file to the resource manager, erroring out if it does not exist. */
 void indexMandatoryArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
 void indexMandatoryArchive(const Common::UString &file, uint32 priority, ChangeList &changes);
+void indexMandatoryArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+                           Common::ChangeID *changeID = 0);
+void indexMandatoryArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+                           ChangeList &changes);
 
 /** Add an archive file to the resource manager, if it exists. */
 bool indexOptionalArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
 bool indexOptionalArchive(const Common::UString &file, uint32 priority, ChangeList &changes);
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+                          Common::ChangeID *changeID = 0);
+bool indexOptionalArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+                          ChangeList &changes);
 
 /** Add a directory to the resource manager, erroring out if it does not exist. */
 void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
