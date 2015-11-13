@@ -5,6 +5,8 @@ Someday, ????-??-?? (Version 0.0.4)
 		- Fixed various little problems in the CMake system related to
 		  non-MSVC compilers
 	- ENGINES:
+		- NWN:
+			- Implemented partial support for premium modules
 		- DRAGONAGE:
 			- Added engine script functions from the 1.01 and 1.03
 			  updates
