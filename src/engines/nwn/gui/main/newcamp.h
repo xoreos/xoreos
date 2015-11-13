@@ -51,6 +51,7 @@ private:
 	GUI *_xp1;
 	GUI *_xp2;
 	GUI *_modules;
+	GUI *_premium;
 };
 
 } // End of namespace NWN

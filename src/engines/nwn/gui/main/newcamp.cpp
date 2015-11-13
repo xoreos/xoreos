@@ -24,11 +24,14 @@
 
 #include "src/common/configman.h"
 
+#include "src/engines/nwn/game.h"
+
 #include "src/engines/nwn/gui/main/newcamp.h"
 #include "src/engines/nwn/gui/main/new.h"
 #include "src/engines/nwn/gui/main/newxp1.h"
 #include "src/engines/nwn/gui/main/newxp2.h"
 #include "src/engines/nwn/gui/main/newmodule.h"
+#include "src/engines/nwn/gui/main/newpremium.h"
 
 namespace Engines {
 
@@ -49,15 +52,17 @@ NewCampMenu::NewCampMenu(Module &module, GUI &charType, ::Engines::Console *cons
 		button->setDisabled(!ConfigMan.getBool("NWN_hasXP2"));
 	button = getWidget("NWNXP3Button");
 	if (button)
-		button->setDisabled(true);
+		button->setDisabled(!Game::hasPremiumModules());
 
-	_base    = new NewMenu      (*_module, *_charType, _console);
-	_xp1     = new NewXP1Menu   (*_module, *_charType, _console);
-	_xp2     = new NewXP2Menu   (*_module, *_charType, _console);
-	_modules = new NewModuleMenu(*_module, *_charType, _console);
+	_base    = new NewMenu       (*_module, *_charType, _console);
+	_xp1     = new NewXP1Menu    (*_module, *_charType, _console);
+	_xp2     = new NewXP2Menu    (*_module, *_charType, _console);
+	_modules = new NewModuleMenu (*_module, *_charType, _console);
+	_premium = new NewPremiumMenu(*_module, *_charType, _console);
 }
 
 NewCampMenu::~NewCampMenu() {
+	delete _premium;
 	delete _modules;
 	delete _xp2;
 	delete _xp1;
@@ -92,6 +97,16 @@ void NewCampMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "NWNXP2Button") {
 		if (sub(*_xp2, 0, false) == 2) {
+			_returnCode = 2;
+			return;
+		}
+
+		show();
+		return;
+	}
+
+	if (widget.getTag() == "NWNXP3Button") {
+		if (sub(*_premium, 0, false) == 2) {
 			_returnCode = 2;
 			return;
 		}
