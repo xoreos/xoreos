@@ -230,6 +230,42 @@ public:
 	 */
 	bool hasResource(const Common::UString &name, const std::vector<FileType> &types) const;
 
+	/** Find and return the absolute filesystem file behind a resource.
+	 *
+	 *  If this resources does not exist, or the resource is not a direct file
+	 *  (because it's found within an archive), an empty string will be returned.
+	 *
+	 *  @param name The name (with extension) of the resource.
+	 */
+	Common::UString findResourceFile(const Common::UString &name, FileType type) const;
+
+	/** Find and return the absolute filesystem file behind a resource.
+	 *
+	 *  If this resources does not exist, or the resource is not a direct file
+	 *  (because it's found within an archive), an empty string will be returned.
+	 *
+	 *  @param name The name (with extension) of the resource.
+	 */
+	Common::UString findResourceFile(const Common::UString &name, ResourceType type) const;
+
+	/** Find and return the absolute filesystem file behind a resource.
+	 *
+	 *  If this resources does not exist, or the resource is not a direct file
+	 *  (because it's found within an archive), an empty string will be returned.
+	 *
+	 *  @param name The name (with extension) of the resource.
+	 */
+	Common::UString findResourceFile(const Common::UString &name) const;
+
+	/** Find and return the absolute filesystem file behind a resource.
+	 *
+	 *  If this resources does not exist, or the resource is not a direct file
+	 *  (because it's found within an archive), an empty string will be returned.
+	 *
+	 *  @param name The name (with extension) of the resource.
+	 */
+	Common::UString findResourceFile(const Common::UString &name, const std::vector<FileType> &types) const;
+
 	/** Return a resource.
 	 *
 	 *  @param  hash The hash of the name and extension of the resource.

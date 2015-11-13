@@ -651,6 +651,33 @@ bool ResourceManager::hasResource(uint64 hash) const {
 	return getRes(hash) != 0;
 }
 
+Common::UString ResourceManager::findResourceFile(const Common::UString &name, FileType type) const {
+	std::vector<FileType> types;
+
+	types.push_back(type);
+
+	return findResourceFile(name, types);
+}
+
+Common::UString ResourceManager::findResourceFile(const Common::UString &name, ResourceType type) const {
+	assert((type >= 0) && (type < kResourceMAX));
+
+	return findResourceFile(name, _resourceTypeTypes[type]);
+}
+
+Common::UString ResourceManager::findResourceFile(const Common::UString &name) const {
+	return findResourceFile(TypeMan.setFileType(name, kFileTypeNone), TypeMan.getFileType(name));
+}
+
+Common::UString ResourceManager::findResourceFile(const Common::UString &name,
+                                                  const std::vector<FileType> &types) const {
+	const Resource *res = getRes(name, types);
+	if (res && (res->source == kSourceFile))
+		return res->path;
+
+	return "";
+}
+
 uint32 ResourceManager::getResourceSize(const Resource &res) const {
 	if (res.source == kSourceArchive) {
 		if ((res.archive == 0) || (res.archive->archive == 0) || (res.archiveIndex == 0xFFFFFFFF))
