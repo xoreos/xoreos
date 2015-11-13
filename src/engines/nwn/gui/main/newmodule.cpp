@@ -138,7 +138,7 @@ void NewModuleMenu::show() {
 }
 
 void NewModuleMenu::fixWidgetType(const Common::UString &tag, WidgetType &type) {
-	     if (tag == "ModuleListBox")
+	if (tag == "ModuleListBox")
 		type = kWidgetTypeListBox;
 	else if (tag == "ModDescEditBox")
 		type = kWidgetTypeListBox;
