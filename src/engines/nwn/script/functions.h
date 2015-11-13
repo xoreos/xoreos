@@ -173,6 +173,7 @@ private:
 	void getPositionFromLocation(Aurora::NWScript::FunctionContext &ctx);
 
 	void startNewModule(Aurora::NWScript::FunctionContext &ctx);
+	void endGame       (Aurora::NWScript::FunctionContext &ctx);
 
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);

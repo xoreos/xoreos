@@ -26,6 +26,8 @@
 
 #include "src/aurora/nwscript/functioncontext.h"
 
+#include "src/engines/aurora/util.h"
+
 #include "src/engines/nwn/game.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/location.h"
@@ -76,6 +78,16 @@ void Functions::startNewModule(Aurora::NWScript::FunctionContext &ctx) {
 	}
 
 	_game->getModule().load(mod);
+}
+
+void Functions::endGame(Aurora::NWScript::FunctionContext &ctx) {
+	_game->getModule().exit();
+
+	const Common::UString video = ctx.getParams()[0].getString();
+	if (!video.empty())
+		playVideo(video);
+
+	playVideo("credits");
 }
 
 void Functions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {

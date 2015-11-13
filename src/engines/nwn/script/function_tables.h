@@ -697,7 +697,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 561, "GetModuleName"                       , 0                                                },
 	{ 562, "GetFactionLeader"                    , 0                                                },
 	{ 563, "SendMessageToAllDMs"                 , 0                                                },
-	{ 564, "EndGame"                             , 0                                                },
+	{ 564, "EndGame"                             , &Functions::endGame                              },
 	{ 565, "BootPC"                              , 0                                                },
 	{ 566, "ActionCounterSpell"                  , 0                                                },
 	{ 567, "AmbientSoundSetDayVolume"            , 0                                                },
