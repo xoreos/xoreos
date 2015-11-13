@@ -125,6 +125,18 @@ public:
 	void indexArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID = 0);
 	// '---
 
+	/** Add all the resources of an archive to the resource manager.
+	 *
+	 *  @param file The name of the archive file to index.
+	 *  @param priority The priority these files have over others of the same name
+	 *                  and type. Higher number = higher priority. 0 means blacklisted.
+	 *  @param password Use this password to decrypt the archive file, if necessary.
+	 *  @param changeID If given, record the collective changes done here.
+	 */
+	void indexArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
+	                  Common::ChangeID *changeID = 0);
+	// '---
+
 	// .--- Directories and files
 	/** Does a specific directory, relative to the base directory, exist?
 	 *

@@ -288,7 +288,9 @@ Common::SeekableReadStream *ResourceManager::openArchiveStream(const KnownArchiv
 	return getResource(*archive.resource, true);
 }
 
-void ResourceManager::indexArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
+                                   const std::vector<byte> &password, Common::ChangeID *changeID) {
+
 	KnownArchive *knownArchive = findArchive(file);
 	if (!knownArchive)
 		throw Common::Exception("No such archive file \"%s\"", file.c_str());
@@ -318,7 +320,7 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
 				break;
 
 			case kArchiveERF:
-				archive = new ERFFile(archiveStream);
+				archive = new ERFFile(archiveStream, password);
 				break;
 
 			case kArchiveRIM:
@@ -348,6 +350,12 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
 		delete archive;
 		throw;
 	}
+}
+
+void ResourceManager::indexArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
+	std::vector<byte> password;
+
+	indexArchive(file, priority, password, changeID);
 }
 
 uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
