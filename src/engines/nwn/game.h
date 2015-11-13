@@ -67,6 +67,8 @@ public:
 	static void getPremiumModules(std::vector<Common::UString> &modules);
 	/** Do we actually have any premium modules installed at all? */
 	static bool hasPremiumModules();
+	/** Is this module file (including extension) a premium module? */
+	static bool isPremiumModule(const Common::UString &module);
 	/** Does this module exist? */
 	static bool hasModule(Common::UString &module);
 	/** Return a list of local player characters. */
