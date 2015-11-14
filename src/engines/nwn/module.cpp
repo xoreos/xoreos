@@ -181,7 +181,7 @@ void Module::loadModule(const Common::UString &module) {
 		indexMandatoryArchive(module, 1000, &_resModule);
 		preparePremiumModule(module);
 
-		_ifo.load();
+		_ifo.load(true);
 
 		if (_ifo.isSave())
 			throw Common::Exception("This is a save");

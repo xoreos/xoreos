@@ -51,7 +51,7 @@ void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 	Aurora::GFF3File *utw = 0;
 	if (!temp.empty()) {
 		try {
-			utw = new Aurora::GFF3File(temp, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' '));
+			utw = new Aurora::GFF3File(temp, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' '), true);
 		} catch (...) {
 		}
 	}

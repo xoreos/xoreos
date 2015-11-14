@@ -56,7 +56,7 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	Aurora::GFF3File *utp = 0;
 	if (!temp.empty()) {
 		try {
-			utp = new Aurora::GFF3File(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '));
+			utp = new Aurora::GFF3File(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '), true);
 		} catch (...) {
 		}
 	}

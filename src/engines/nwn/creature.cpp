@@ -582,7 +582,7 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 	Aurora::GFF3File *utc = 0;
 	if (!temp.empty()) {
 		try {
-			utc = new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
+			utc = new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '), true);
 		} catch (...) {
 		}
 	}

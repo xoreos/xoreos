@@ -551,7 +551,7 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj,
 
 	_object->setPCSpeaker(&pc);
 
-	_dlg = new Aurora::DLGFile(conv, _object);
+	_dlg = new Aurora::DLGFile(conv, _object, true);
 	_dlg->startConversation();
 
 	_dlgBox = new DialogBox(kDialogWidth, kDialogHeight);

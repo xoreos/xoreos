@@ -93,7 +93,7 @@ void GUI::load(const Common::UString &resref) {
 
 	Aurora::GFF3File *gff = 0;
 	try {
-		gff = new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '));
+		gff = new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '), true);
 
 		loadWidget(gff->getTopLevel(), 0);
 

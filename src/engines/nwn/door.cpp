@@ -59,7 +59,7 @@ void Door::load(const Aurora::GFF3Struct &door) {
 	Aurora::GFF3File *utd = 0;
 	if (!temp.empty()) {
 		try {
-			utd = new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
+			utd = new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '), true);
 		} catch (...) {
 		}
 	}

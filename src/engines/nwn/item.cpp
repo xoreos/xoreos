@@ -64,7 +64,7 @@ void Item::load(const Aurora::GFF3Struct &item) {
 	Aurora::GFF3File *uti = 0;
 	if (!temp.empty()) {
 		try {
-			uti = new Aurora::GFF3File(temp, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '));
+			uti = new Aurora::GFF3File(temp, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '), true);
 		} catch (...) {
 		}
 	}

@@ -78,10 +78,10 @@ Area::~Area() {
 }
 
 void Area::load() {
-	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '), true);
 	loadARE(are.getTopLevel());
 
-	Aurora::GFF3File git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
+	Aurora::GFF3File git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '), true);
 	loadGIT(git.getTopLevel());
 }
 
@@ -107,7 +107,7 @@ void Area::clear() {
 
 Common::UString Area::getName(const Common::UString &resRef) {
 	try {
-		Aurora::GFF3File are(resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
+		Aurora::GFF3File are(resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '), true);
 
 		Common::UString name = are.getTopLevel().getString("Name");
 		if (!name.empty() && (*--name.end() == '\n'))

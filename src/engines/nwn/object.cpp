@@ -219,7 +219,7 @@ void Object::speakOneLiner(Common::UString conv, Object *UNUSED(tokenTarget)) {
 
 
 	try {
-		Aurora::DLGFile dlg(conv, this);
+		Aurora::DLGFile dlg(conv, this, true);
 
 		const Aurora::DLGFile::Line *line = dlg.getOneLiner();
 		if (line) {
