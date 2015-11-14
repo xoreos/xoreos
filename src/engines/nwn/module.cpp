@@ -160,15 +160,6 @@ void Module::preparePremiumModule(const Common::UString &module) {
 		indexMandatoryArchive(Common::FilePath::changeExtension(module, ".hak"), 1001, md5, _resHAKs);
 	} catch (...) {
 	}
-
-	/* TODO: The Neverwinter Nights premium modules have slightly modified
-	 *       GFF files, including the module.ifo. The "IFO V3.2" header is
-	 *       missing, and all offsets are slightly off. We don't support
-	 *       these GFF files yet, so we now unload the main premium module
-	 *       HAK again. This makes the game act like we haven't purchased
-	 *       the premium module.
-	 */
-	unloadHAKs();
 }
 
 void Module::loadModule(const Common::UString &module) {
