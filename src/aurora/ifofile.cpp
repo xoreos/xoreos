@@ -98,10 +98,10 @@ void IFOFile::unload() {
 	clear();
 }
 
-void IFOFile::load() {
+void IFOFile::load(bool repairNWNPremium) {
 	unload();
 
-	_gff = new GFF3File("module", kFileTypeIFO, MKTAG('I', 'F', 'O', ' '));
+	_gff = new GFF3File("module", kFileTypeIFO, MKTAG('I', 'F', 'O', ' '), repairNWNPremium);
 
 	const GFF3Struct &ifoTop = _gff->getTopLevel();
 

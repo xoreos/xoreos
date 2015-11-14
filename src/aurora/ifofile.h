@@ -40,8 +40,8 @@ public:
 	IFOFile();
 	~IFOFile();
 
-	void load();   ///< Load the currently available module.ifo.
-	void unload(); ///< Unload a currently loaded IFO.
+	void load(bool repairNWNPremium = false); ///< Load the currently available module.ifo.
+	void unload();                            ///< Unload a currently loaded IFO.
 
 	/** Return the IFO's GFF struct. */
 	const GFF3Struct *getGFF() const;
