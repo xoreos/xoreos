@@ -42,20 +42,20 @@ static const uint32 kDLGID = MKTAG('D', 'L', 'G', ' ');
 
 namespace Aurora {
 
-DLGFile::DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner) :
+DLGFile::DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner, bool repairNWNPremium) :
 	_owner(owner), _ended(true) {
 
-	GFF3File gff(dlg, kDLGID);
+	GFF3File gff(dlg, kDLGID, repairNWNPremium);
 
 	load(gff.getTopLevel());
 
 	_currentEntry = _entriesNPC.end();
 }
 
-DLGFile::DLGFile(const Common::UString &dlg, NWScript::Object *owner) :
+DLGFile::DLGFile(const Common::UString &dlg, NWScript::Object *owner, bool repairNWNPremium) :
 	_owner(owner), _ended(true) {
 
-	GFF3File gff(dlg, kFileTypeDLG, kDLGID);
+	GFF3File gff(dlg, kFileTypeDLG, kDLGID, repairNWNPremium);
 
 	load(gff.getTopLevel());
 }

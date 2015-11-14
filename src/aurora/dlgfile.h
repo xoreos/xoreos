@@ -79,8 +79,8 @@ public:
 	};
 
 
-	DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner = 0);
-	DLGFile(const Common::UString &dlg, NWScript::Object *owner = 0);
+	DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner = 0, bool repairNWNPremium = false);
+	DLGFile(const Common::UString &dlg, NWScript::Object *owner = 0, bool repairNWNPremium = false);
 	~DLGFile();
 
 	/** Does starting the conversation zoom in the camera onto the speaker or not? */
