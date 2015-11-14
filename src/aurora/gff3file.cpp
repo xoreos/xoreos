@@ -63,11 +63,15 @@ void GFF3File::Header::read(Common::SeekableReadStream &gff3) {
 }
 
 
-GFF3File::GFF3File(Common::SeekableReadStream *gff3, uint32 id) : _stream(gff3) {
+GFF3File::GFF3File(Common::SeekableReadStream *gff3, uint32 id, bool repairNWNPremium) :
+	_stream(gff3), _repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
+
 	load(id);
 }
 
-GFF3File::GFF3File(const Common::UString &gff3, FileType type, uint32 id) : _stream(0) {
+GFF3File::GFF3File(const Common::UString &gff3, FileType type, uint32 id, bool repairNWNPremium) :
+	_stream(0), _repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
+
 	_stream = ResMan.getResource(gff3, type);
 	if (!_stream)
 		throw Common::Exception("No such GFF3 \"%s\"", TypeMan.setFileType(gff3, type).c_str());
@@ -115,7 +119,31 @@ void GFF3File::load(uint32 id) {
 }
 
 void GFF3File::loadHeader(uint32 id) {
-	readHeader(*_stream);
+	if (_repairNWNPremium) {
+		uint32 firstOffset  = _stream->readUint32LE();
+		uint32 maybeVersion = _stream->readUint32BE();
+
+		if ((maybeVersion != kVersion32) && (maybeVersion != kVersion33)) {
+			if ((firstOffset >= 0x30) && (firstOffset <= 0x12F)) {
+				// Yes, this looks like a messed-with GFF found in an NWN premium module
+				_version = kVersion32;
+				id = _id = 0xFFFFFFFF;
+
+				_offsetCorrection = firstOffset - 0x30;
+
+			} else
+				// File is broken in a different way. The later checks will throw
+				_repairNWNPremium = false;
+
+		} else
+			// This is not a GFF file that needs repairing
+			_repairNWNPremium = false;
+
+		_stream->seek(0);
+	}
+
+	if (!_repairNWNPremium)
+		readHeader(*_stream);
 
 	if ((id != 0xFFFFFFFF) && (_id != id))
 		throw Common::Exception("GFF3 has invalid ID (want %s, got %s)",
@@ -125,6 +153,31 @@ void GFF3File::loadHeader(uint32 id) {
 		throw Common::Exception("Unsupported GFF3 file version %s", Common::debugTag(_version).c_str());
 
 	_header.read(*_stream);
+
+		// Fix offsets in the header, and check for consistency
+
+	if ((_header.structOffset       < _offsetCorrection) ||
+	    (_header.fieldOffset        < _offsetCorrection) ||
+	    (_header.labelOffset        < _offsetCorrection) ||
+	    (_header.fieldDataOffset    < _offsetCorrection) ||
+	    (_header.fieldIndicesOffset < _offsetCorrection) ||
+	    (_header.listIndicesOffset  < _offsetCorrection))
+		throw Common::Exception("GFF3 header broken: section offset smaller than offset correction");
+
+	_header.structOffset       -= _offsetCorrection;
+	_header.fieldOffset        -= _offsetCorrection;
+	_header.labelOffset        -= _offsetCorrection;
+	_header.fieldDataOffset    -= _offsetCorrection;
+	_header.fieldIndicesOffset -= _offsetCorrection;
+	_header.listIndicesOffset  -= _offsetCorrection;
+
+	if ((_header.structOffset       >= _stream->size()) ||
+	    (_header.fieldOffset        >= _stream->size()) ||
+	    (_header.labelOffset        >= _stream->size()) ||
+	    (_header.fieldDataOffset    >= _stream->size()) ||
+	    (_header.fieldIndicesOffset >= _stream->size()) ||
+	    (_header.listIndicesOffset  >= _stream->size()))
+		throw Common::Exception("GFF3 header broken: section offset points outside stream");
 }
 
 void GFF3File::loadStructs() {
