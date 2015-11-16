@@ -32,6 +32,9 @@
 
 namespace Common {
 
+UString::UString() : _size(0) {
+}
+
 UString::UString(const UString &str) {
 	*this = str;
 }

@@ -63,12 +63,14 @@ public:
 		}
 	};
 
+	/** Construct an empty string. */
+	UString();
 	/** Copy constructor. */
 	UString(const UString &str);
 	/** Construct UString from an UTF-8 string. */
 	UString(const std::string &str);
 	/** Construct UString from an UTF-8 string. */
-	UString(const char *str = "");
+	UString(const char *str);
 	/** Construct UString from the first n bytes of an UTF-8 string. */
 	UString(const char *str, size_t n);
 	/** Construct UString by creating n copies of Unicode codepoint c. */
