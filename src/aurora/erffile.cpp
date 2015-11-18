@@ -486,7 +486,7 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 	} else if (version == kVersion30) {
 
-		/* Version 2.2:
+		/* Version 3.0:
 		 * Dragon Age II. */
 
 		uint32 flags = 0;
