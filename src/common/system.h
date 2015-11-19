@@ -52,7 +52,7 @@
 		#define HAVE_STRTOULL 1
 	#endif
 
-	#ifndef XOREOS_LITTLE_ENDIAN
+	#if !defined(XOREOS_LITTLE_ENDIAN) && !defined(XOREOS_BIG_ENDIAN)
 		#define XOREOS_LITTLE_ENDIAN 1
 	#endif
 
@@ -89,7 +89,9 @@
 
 #elif defined(__MINGW32__)
 
-	#define XOREOS_LITTLE_ENDIAN
+	#if !defined(XOREOS_LITTLE_ENDIAN) && !defined(XOREOS_BIG_ENDIAN)
+		#define XOREOS_LITTLE_ENDIAN 1
+	#endif
 
 	#define PLUGIN_EXPORT __declspec(dllexport)
 
@@ -99,11 +101,13 @@
 
 #elif defined(UNIX)
 
-	#if defined(HAVE_CONFIG_H)
-		#if defined(WORDS_BIGENDIAN)
-			#define XOREOS_BIG_ENDIAN
-		#else
-			#define XOREOS_LITTLE_ENDIAN
+	#if !defined(XOREOS_LITTLE_ENDIAN) && !defined(XOREOS_BIG_ENDIAN)
+		#if defined(HAVE_CONFIG_H)
+			#if defined(WORDS_BIGENDIAN)
+				#define XOREOS_BIG_ENDIAN 1
+			#else
+				#define XOREOS_LITTLE_ENDIAN 1
+			#endif
 		#endif
 	#endif
 
