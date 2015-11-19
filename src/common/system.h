@@ -89,7 +89,9 @@
 
 #elif defined(__MINGW32__)
 
-	#define XOREOS_LITTLE_ENDIAN
+	#ifndef XOREOS_LITTLE_ENDIAN
+		#define XOREOS_LITTLE_ENDIAN
+	#endif
 
 	#define PLUGIN_EXPORT __declspec(dllexport)
 
