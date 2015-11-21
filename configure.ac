@@ -84,6 +84,9 @@ if test "x$with_release" != "xno"; then
 	fi
 fi
 
+#dnl Force compiling against the internal GLEW library
+AC_ARG_ENABLE([external-glew], [AS_HELP_STRING([--disable-external-glew], [Do not check for an external GLEW library and always compile against the internal GLEW library @<:@default=no@:>@])], [], [enable_external_glew=yes])
+
 dnl Endianness
 AC_C_BIGENDIAN()
 
@@ -105,15 +108,33 @@ AC_CHECK_FUNCS([strtoll])
 AC_CHECK_FUNCS([strtoull])
 AC_CHECK_FUNCS([strtof])
 
-dnl Use our internal glew sources
-AC_DEFINE([XOREOS_INTERNAL_GLEW], 1, [Defined to 1 if we are using our internal glew sources])
-AM_CONDITIONAL(INTERNAL_GLEW, true)
-
 dnl General purpose libraries
 AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found!]))
 AX_CHECK_ZLIB(1, 2, 3, 0, , AC_MSG_ERROR([zlib(>= 1.2.3) is required and could not be found!]))
 AX_CHECK_LZMA(5, 0, 3, 2, , AC_MSG_ERROR([liblzma(>= 5.0.3) is required and could not be found!]))
 AX_CHECK_XML2(2, 8, 0, , AC_MSG_ERROR([libxml2(>= 2.8.0) is required and could not be found!]))
+
+dnl GLEW
+if test "x$enable_external_glew" = "xyes"; then
+	AX_CHECK_GLEW( , [enable_external_glew=no])
+fi
+
+if test "x$enable_external_glew" = "xyes"; then
+	AC_MSG_NOTICE([using external GLEW library])
+
+	AM_CONDITIONAL(INTERNAL_GLEW, false)
+else
+	AC_MSG_NOTICE([using internal GLEW library])
+
+	GLEW_CFLAGS="-DGLEW_NO_GLU -DGLEW_STATIC"
+	GLEW_LIBS=""
+
+	AC_SUBST(GLEW_CFLAGS)
+	AC_SUBST(GLEW_LIBS)
+
+	AC_DEFINE([XOREOS_INTERNAL_GLEW], 1, [Defined to 1 if we are using our internal GLEW sources])
+	AM_CONDITIONAL(INTERNAL_GLEW, true)
+fi
 
 dnl Graphic libraries
 AX_CHECK_SDL2(2000, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
