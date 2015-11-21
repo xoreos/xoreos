@@ -59,6 +59,15 @@ Makefile.am.cmake
 # Netbeans project files
 /nbproject/
 
+# Debian temp files
+/debian
+/dists/debian/autoreconf.after
+/dists/debian/autoreconf.before
+/dists/debian/files
+/dists/debian/xoreos.debhelper.log
+/dists/debian/xoreos.substvars
+/dists/debian/xoreos/
+
 # Doxygen files
 /Doxyerror
 /doc/doxygen/html/
