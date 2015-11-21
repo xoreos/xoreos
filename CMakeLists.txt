@@ -205,13 +205,26 @@ endif(ICONV_SECOND_ARGUMENT_IS_CONST)
 
 add_definitions(-DGLEW_NO_GLU)
 
-find_package(GLEW)
+option(GLEW_INTERNAL "Use internal glew libraries" OFF)
+
+set(GLEW_FOUND 0)
+if(NOT GLEW_INTERNAL)
+  find_package(GLEW)
+endif()
+
 if(NOT GLEW_FOUND)
+  message(STATUS "Using internal GLEW library")
+
   add_definitions(-DGLEW_STATIC)
   set(GLEW_LIBRARIES    glew)
   set(GLEW_INCLUDE_DIRS glew)
 
+  add_definitions(-DXOREOS_INTERNAL_GLEW)
+  set(INTERNAL_GLEW 1)
+
   parse_configure(configure.ac glew)
+else()
+  message(STATUS "Using external GLEW library")
 endif()
 include_directories(${GLEW_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${GLEW_LIBRARIES})

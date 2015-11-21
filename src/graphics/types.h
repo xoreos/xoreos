@@ -29,9 +29,13 @@
 
 #include <SDL.h>
 
-#include "glew/glew.h"
-
 #include "src/common/types.h"
+
+#ifdef XOREOS_INTERNAL_GLEW
+	#include "glew/glew.h"
+#else
+	#include <GL/glew.h>
+#endif
 
 namespace Graphics {
 

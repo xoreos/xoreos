@@ -50,13 +50,18 @@ dist_man6_MANS = \
                  man/xoreos.6 \
                  $(EMPTY)
 
-SUBDIRS = \
-          utf8cpp \
-          glew \
-          lua \
-          gitstamp \
-          src \
-          $(EMPTY)
+SUBDIRS =
+
+if INTERNAL_GLEW
+SUBDIRS += glew
+endif
+
+SUBDIRS += \
+           utf8cpp \
+           lua \
+           gitstamp \
+           src \
+           $(EMPTY)
 
 doxygen:
 	doxygen

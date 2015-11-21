@@ -57,5 +57,8 @@ libgraphics_la_LIBADD = \
                         shader/libshader.la \
                         mesh/libmesh.la \
                         render/librender.la \
-                        ../../glew/libglew.la \
                         $(EMPTY)
+
+if INTERNAL_GLEW
+libgraphics_la_LIBADD += ../../glew/libglew.la
+endif

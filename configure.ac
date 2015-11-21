@@ -105,6 +105,10 @@ AC_CHECK_FUNCS([strtoll])
 AC_CHECK_FUNCS([strtoull])
 AC_CHECK_FUNCS([strtof])
 
+dnl Use our internal glew sources
+AC_DEFINE([XOREOS_INTERNAL_GLEW], 1, [Defined to 1 if we are using our internal glew sources])
+AM_CONDITIONAL(INTERNAL_GLEW, true)
+
 dnl General purpose libraries
 AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found!]))
 AX_CHECK_ZLIB(1, 2, 3, 0, , AC_MSG_ERROR([zlib(>= 1.2.3) is required and could not be found!]))
