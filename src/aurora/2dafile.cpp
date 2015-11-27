@@ -381,6 +381,20 @@ const TwoDARow &TwoDAFile::getRow(size_t row) const {
 	return *_rows[row];
 }
 
+const TwoDARow &TwoDAFile::getRow(const Common::UString &header, const Common::UString &value) const {
+	size_t columnIndex = headerToColumn(header);
+	if (columnIndex == kFieldIDInvalid)
+		return _emptyRow;
+
+	for (std::vector<TwoDARow *>::const_iterator row = _rows.begin(); row != _rows.end(); ++row) {
+		if ((*row)->getString(columnIndex).equalsIgnoreCase(value))
+			return **row;
+	}
+
+	// No such row
+	return _emptyRow;
+}
+
 void TwoDAFile::writeASCII(Common::WriteStream &out) const {
 	// Write header
 

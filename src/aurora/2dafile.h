@@ -134,6 +134,9 @@ public:
 	/** Get a row. */
 	const TwoDARow &getRow(size_t row) const;
 
+	/** Get a row whose value in the column named header is the given string value. */
+	const TwoDARow &getRow(const Common::UString &header, const Common::UString &value) const;
+
 	// .--- 2DA file writers
 	/** Write the 2DA data into an V2.0 ASCII 2DA. */
 	void writeASCII(Common::WriteStream &out) const;
