@@ -64,7 +64,7 @@ public:
 	/** Clear (destroy) GL resources associated with the buffer. */
 	void destroyGL();
 
-	GLuint getIBO();
+	GLuint getIBO() const;
 
 private:
 	uint32 _count; ///< Number of elements in buffer

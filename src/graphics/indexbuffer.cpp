@@ -120,7 +120,7 @@ void IndexBuffer::destroyGL() {
 	}
 }
 
-GLuint IndexBuffer::getIBO() {
+GLuint IndexBuffer::getIBO() const {
 	return _ibo;
 }
 
