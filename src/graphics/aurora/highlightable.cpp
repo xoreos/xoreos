@@ -33,7 +33,7 @@ Highlightable::~Highlightable() {
 
 }
 
-bool Highlightable::isHighlightable() {
+bool Highlightable::isHighlightable() const {
 	return _highlightable;
 }
 
@@ -41,7 +41,7 @@ void Highlightable::setHighlightable(bool highlightable) {
 	_highlightable = highlightable;
 }
 
-bool Highlightable::isHightlighted() {
+bool Highlightable::isHightlighted() const {
 	return _isHighlighted;
 }
 
@@ -70,7 +70,7 @@ void Highlightable::setHighlightUpperBound(float r, float g, float b, float a) {
 	_upperBoundA = a;
 }
 
-void Highlightable::getHighlightedLowerBound(float& r, float& g, float& b, float& a) {
+void Highlightable::getHighlightedLowerBound(float& r, float& g, float& b, float& a) const {
 	r = _lowerBoundR;
 	g = _lowerBoundG;
 	b = _lowerBoundB;
