@@ -45,7 +45,7 @@ bool Thread::createThread() {
 		return true;
 
 	// Try to create the thread
-	if (!(_thread = SDL_CreateThread(threadHelper, 0, (void *) this)))
+	if (!(_thread = SDL_CreateThread(threadHelper, 0, static_cast<void *>(this))))
 		return false;
 
 	return true;
@@ -81,7 +81,7 @@ bool Thread::destroyThread() {
 }
 
 int Thread::threadHelper(void *obj) {
-	Thread *thread = (Thread *) obj;
+	Thread *thread = static_cast<Thread *>(obj);
 
 	// The thread is running.
 	thread->_threadRunning = true;
