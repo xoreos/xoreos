@@ -51,7 +51,8 @@ public:
 protected:
 	void flipHighlightDelta();
 
-	void incrementColor(float initialR, float initialG, float initialB, float initialA, float &r, float &g, float &b, float &a);
+	void incrementColor(float initialR, float initialG, float initialB, float initialA,
+	                    float &r, float &g, float &b, float &a);
 
 
 private:
