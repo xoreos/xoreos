@@ -177,7 +177,7 @@ bool EventsManager::parseITC(const Event &event) {
 	// Get the specific ITC type
 	ITCEvent itcEvent = (ITCEvent) event.user.code;
 
-	Request &request = *((Request *) event.user.data1);
+	Request &request = *static_cast<Request *>(event.user.data1);
 
 	if (request._type != itcEvent)
 		throw Common::Exception("Request type does not match the ITC type");

@@ -53,7 +53,7 @@ void Request::setGarbage() {
 void Request::create() {
 	_event.type       = kEventITC;
 	_event.user.code  = (int) _type;
-	_event.user.data1 = (void *) this;
+	_event.user.data1 = static_cast<void *>(this);
 }
 
 void Request::signalReply() {

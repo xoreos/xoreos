@@ -62,7 +62,7 @@ void TimerManager::addTimer(uint32 interval, TimerHandle &handle, const TimerFun
 	handle._empty    = false;
 
 	id->_func = func;
-	id->_id   = SDL_AddTimer(interval, &TimerManager::timerCallback, (void *) &handle);
+	id->_id   = SDL_AddTimer(interval, &TimerManager::timerCallback, static_cast<void *>(&handle));
 	if (id->_id)
 		return;
 
@@ -96,7 +96,7 @@ void TimerManager::removeTimer(TimerID &id) {
 }
 
 uint32 TimerManager::timerCallback(uint32 interval, void *data) {
-	TimerHandle &handle = *((TimerHandle *) data);
+	TimerHandle &handle = *static_cast<TimerHandle *>(data);
 
 	if (handle._empty)
 		return 0;
