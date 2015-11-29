@@ -87,14 +87,14 @@ void Functions::printString(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
-	status("KotOR2: object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(), (void *) object);
+	status("KotOR2: object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(), static_cast<void *>(object));
 }
 
 void Functions::objectToString(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
 	ctx.getReturn() = Common::UString::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
-	                                          (void *) object);
+	                                          static_cast<void *>(object));
 }
 
 void Functions::printVector(Aurora::NWScript::FunctionContext &ctx) {
