@@ -69,29 +69,41 @@ void SoundManager::init() {
 
 	_curID = 1;
 
-	_dev = alcOpenDevice(0);
-
-	_hasSound = _dev != 0;
-	if (!_hasSound)
-		warning("Failed to open OpenAL device. Disabling sound output");
-
 	_ctx = 0;
+
+	_hasSound = false;
 
 	_hasMultiChannel = false;
 	_format51        = 0;
 
-	if (_hasSound) {
+	try {
+		_dev = alcOpenDevice(0);
+		if (!_dev)
+			throw Common::Exception("Could not open OpenAL device");
+
 		_ctx = alcCreateContext(_dev, 0);
-		alcMakeContextCurrent(_ctx);
 		if (!_ctx)
-			throw Common::Exception("Could not create OpenAL context");
+			throw Common::Exception("Could not create OpenAL context: 0x%X", (uint) alGetError());
+
+		alcMakeContextCurrent(_ctx);
+
+		ALenum error = alGetError();
+		if (error != AL_NO_ERROR)
+			throw Common::Exception("Could not use OpenAL context: 0x%X", (uint) alGetError());
 
 		_hasMultiChannel = alIsExtensionPresent("AL_EXT_MCFORMATS") != 0;
 		_format51        = alGetEnumValue("AL_FORMAT_51CHN16");
-	}
 
-	if (!createThread())
-		throw Common::Exception("Failed to create sound thread: %s", SDL_GetError());
+		if (!createThread())
+			throw Common::Exception("Failed to create sound thread: %s", SDL_GetError());
+
+		_hasSound = true;
+
+	} catch (Common::Exception &e) {
+		e.add("Failed to initialize OpenAL. Disabling sound output!");
+
+		Common::printException(e, "WARNING: ");
+	}
 
 	_ready = true;
 
