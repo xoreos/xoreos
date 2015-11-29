@@ -88,7 +88,7 @@ void Functions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
 	ctx.getReturn() = Common::UString::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
-	                                          (void *) object);
+	                                          static_cast<void *>(object));
 
 	status("Witcher: %s", ctx.getReturn().getString().c_str());
 }
@@ -97,7 +97,7 @@ void Functions::objectToString(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
 	ctx.getReturn() = Common::UString::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
-	                                          (void *) object);
+	                                          static_cast<void *>(object));
 }
 
 void Functions::printVector(Aurora::NWScript::FunctionContext &ctx) {
