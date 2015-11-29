@@ -48,7 +48,7 @@ public:
 	void lockQueue(QueueType queue);
 	void unlockQueue(QueueType queue);
 
-	const std::list<Queueable *> &getQueue(QueueType queue);
+	const std::list<Queueable *> &getQueue(QueueType queue) const;
 
 	void sortQueue(QueueType queue);
 	void clearQueue(QueueType queue);

@@ -55,7 +55,7 @@ bool QueueManager::isQueueEmpty(QueueType queue) {
 	return _queue[queue].empty();
 }
 
-const std::list<Queueable *> &QueueManager::getQueue(QueueType queue) {
+const std::list<Queueable *> &QueueManager::getQueue(QueueType queue) const {
 	return _queue[queue];
 }
 
