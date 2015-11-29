@@ -195,7 +195,7 @@ void Object::loadSSF() {
 void Object::readVarTable(const Aurora::GFF3List &varTable) {
 	for (Aurora::GFF3List::const_iterator v = varTable.begin(); v != varTable.end(); ++v) {
 		const Common::UString name  = (*v)->getString ("Name");
-		const uint32          type  = (*v)->getUint   ("Type");
+		const int32           type  = (*v)->getSint   ("Type");
 
 		if (name.empty())
 			continue;
