@@ -7,11 +7,11 @@
 
 if(WIN32)
   find_path(OGG_INCLUDE_DIR ogg/ogg.h $ENV{PROGRAMFILES}/libogg/include DOC "The directory where ogg/ogg.h resides")
-  find_library(OGG_LIBRARY NAMES libogg PATHS $ENV{PROGRAMFILES}/libogg/lib DOC "The libogg library")
+  find_library(OGG_LIBRARY NAMES ogg libogg PATHS $ENV{PROGRAMFILES}/libogg/lib DOC "The libogg library")
 
 else(WIN32)
   find_path(OGG_INCLUDE_DIR ogg/ogg.h DOC "The directory where ogg/ogg.h resides")
-  find_library(OGG_LIBRARY NAMES libogg DOC "The libogg library")
+  find_library(OGG_LIBRARY NAMES ogg DOC "The libogg library")
 
 endif(WIN32)
 
