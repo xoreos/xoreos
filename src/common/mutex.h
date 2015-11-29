@@ -28,11 +28,12 @@
 #include <SDL_thread.h>
 
 #include "src/common/types.h"
+#include "src/common/noncopyable.h"
 
 namespace Common {
 
 /** A mutex. */
-class Mutex {
+class Mutex : public NonCopyable {
 public:
 	Mutex();
 	~Mutex();
@@ -47,7 +48,7 @@ private:
 };
 
 /** A semaphore . */
-class Semaphore {
+class Semaphore : public NonCopyable {
 public:
 	Semaphore(uint value = 0);
 	~Semaphore();
@@ -63,7 +64,7 @@ private:
 };
 
 /** Convenience class that locks a mutex on creation and unlocks it on destruction. */
-class StackLock {
+class StackLock : public NonCopyable {
 public:
 	StackLock(Mutex &mutex);
 	StackLock(Semaphore &semaphore);
@@ -75,7 +76,7 @@ private:
 };
 
 /** A condition. */
-class Condition {
+class Condition : public NonCopyable {
 public:
 	Condition();
 	Condition(Mutex &mutex);
