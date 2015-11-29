@@ -159,8 +159,6 @@ uint32 VertexBuffer::getTypeSize(GLenum type) {
 		case GL_FLOAT:
 		case GL_4_BYTES:
 			return 4;
-			return 4;
-			return 4;
 		case GL_DOUBLE:
 			return 8;
 		default:
