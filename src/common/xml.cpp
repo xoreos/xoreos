@@ -164,15 +164,15 @@ UString XMLNode::getProperty(const UString &name, const UString &def) const {
 }
 
 void XMLNode::load(_xmlNode &node, bool makeLower) {
-	_name    = node.name    ? (const char *) node.name    : "";
-	_content = node.content ? (const char *) node.content : "";
+	_name    = node.name    ? reinterpret_cast<const char *>(node.name)    : "";
+	_content = node.content ? reinterpret_cast<const char *>(node.content) : "";
 
 	if (makeLower)
 		_name.makeLower();
 
 	for (xmlAttrPtr attrib = node.properties; attrib; attrib = attrib->next) {
-		UString name (attrib->name     ? (const char *) attrib->name              : "");
-		UString value(attrib->children ? (const char *) attrib->children->content : "");
+		UString name (attrib->name     ? reinterpret_cast<const char *>(attrib->name)              : "");
+		UString value(attrib->children ? reinterpret_cast<const char *>(attrib->children->content) : "");
 
 		if (makeLower)
 			name.makeLower();
