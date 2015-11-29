@@ -87,7 +87,7 @@ void Mesh::initGL() {
 			                      decl[i].type,
 			                      GL_FALSE,
 			                      decl[i].stride,
-			                      (void *)(offset) );
+			                      reinterpret_cast<void *>(offset));
 			glEnableVertexAttribArray(decl[i].index);
 		}
 
