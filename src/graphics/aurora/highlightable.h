@@ -37,13 +37,16 @@ public:
 	bool isHightlighted() const;
 	void setHighlighted(bool hightlighted);
 
-	// This is how much the quad changes per render. Positive number increment the color, negative numbers decrement it.
+	/** Set how much the quad changes per render.
+	 *
+	 *  Positive number increment the color, negative numbers decrement it.
+	 */
 	void setHighlightDelta(float r, float g, float b, float a);
 
-	//When any of the quad properties are greater than this bound, the signs of the delta floats will flip
+	/** When any of the quad properties are greater than this bound, the signs of the delta floats will flip. */
 	void setHighlightUpperBound(float r, float g, float b, float a);
 
-	//When any of the quad properties are less than this bound, the signs of the delta floats will flip
+	/** When any of the quad properties are less than this bound, the signs of the delta floats will flip. */
 	void setHighlightLowerBound(float r, float g, float b, float a);
 
 	void getHighlightedLowerBound(float &r, float &g, float &b, float &a) const;
