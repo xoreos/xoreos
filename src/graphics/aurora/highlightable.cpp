@@ -70,7 +70,7 @@ void Highlightable::setHighlightUpperBound(float r, float g, float b, float a) {
 	_upperBoundA = a;
 }
 
-void Highlightable::getHighlightedLowerBound(float& r, float& g, float& b, float& a) const {
+void Highlightable::getHighlightedLowerBound(float &r, float &g, float &b, float &a) const {
 	r = _lowerBoundR;
 	g = _lowerBoundG;
 	b = _lowerBoundB;
