@@ -211,7 +211,7 @@ void YUVToRGBManager::convert420(LuminanceScale scale, byte *dst, int dstPitch, 
 
 	for (int h = 0; h < halfHeight; h++) {
 		for (int w = 0; w < halfWidth; w++) {
-			register const byte *L;
+			const byte *L;
 
 			int16 cr_r  = _colorTab[*vSrc + 0 * 256];
 			int16 crb_g = _colorTab[*vSrc + 1 * 256] + _colorTab[*uSrc + 2 * 256];
@@ -250,7 +250,7 @@ void YUVToRGBManager::convert420(LuminanceScale scale, byte *dst, int dstPitch, 
 
 	for (int h = 0; h < halfHeight; h++) {
 		for (int w = 0; w < halfWidth; w++) {
-			register const byte *L;
+			const byte *L;
 
 			int16 cr_r  = _colorTab[*vSrc + 0 * 256];
 			int16 crb_g = _colorTab[*vSrc + 1 * 256] + _colorTab[*uSrc + 2 * 256];
