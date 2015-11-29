@@ -113,7 +113,7 @@ public:
 	/** Clear (destroy) GL resources associated with the buffer. */
 	void destroyGL();
 
-	GLuint getVBO();
+	GLuint getVBO() const;
 
 	// Render method
 

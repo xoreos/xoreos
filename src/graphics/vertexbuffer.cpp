@@ -253,7 +253,7 @@ void VertexBuffer::destroyGL() {
 	}
 }
 
-GLuint VertexBuffer::getVBO() {
+GLuint VertexBuffer::getVBO() const {
 	return _vbo;
 }
 
