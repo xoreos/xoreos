@@ -171,12 +171,12 @@ void GFF3File::loadHeader(uint32 id) {
 	_header.fieldIndicesOffset -= _offsetCorrection;
 	_header.listIndicesOffset  -= _offsetCorrection;
 
-	if ((_header.structOffset       >= _stream->size()) ||
-	    (_header.fieldOffset        >= _stream->size()) ||
-	    (_header.labelOffset        >= _stream->size()) ||
-	    (_header.fieldDataOffset    >= _stream->size()) ||
-	    (_header.fieldIndicesOffset >= _stream->size()) ||
-	    (_header.listIndicesOffset  >= _stream->size()))
+	if ((_header.structOffset       > _stream->size()) ||
+	    (_header.fieldOffset        > _stream->size()) ||
+	    (_header.labelOffset        > _stream->size()) ||
+	    (_header.fieldDataOffset    > _stream->size()) ||
+	    (_header.fieldIndicesOffset > _stream->size()) ||
+	    (_header.listIndicesOffset  > _stream->size()))
 		throw Common::Exception("GFF3 header broken: section offset points outside stream");
 }
 
