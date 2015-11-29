@@ -275,7 +275,7 @@ void NSBTXFile::getPalette(ReadContext &ctx) const {
 		}
 
 	} catch (...) {
-		delete palData;
+		delete[] palData;
 		throw;
 	}
 
