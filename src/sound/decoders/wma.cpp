@@ -686,7 +686,8 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 	if (!outputData)
 		return 0;
 
-	return new Common::MemoryReadStream((byte *) outputData, outputDataSize * 2, true);
+	// TODO: This might be a problem alignment-wise?
+	return new Common::MemoryReadStream(reinterpret_cast<byte *>(outputData), outputDataSize * 2, true);
 }
 
 bool WMACodec::decodeFrame(Common::BitStream &bits, int16 *outputData) {
