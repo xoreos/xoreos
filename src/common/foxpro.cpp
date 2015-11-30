@@ -409,7 +409,7 @@ double FoxPro::getDouble(const Record &record, size_t field) const {
 		if (f.size > 31)
 			throw Exception("Numerical field size > 31 (%d)", f.size);
 
-		strncpy(n, (const char *) record.fields[field], f.size);
+		strncpy(n, reinterpret_cast<const char *>(record.fields[field]), f.size);
 		n[f.size] = '\0';
 
 		if (std::sscanf(n, "%lf", &d) != 1)
@@ -446,7 +446,8 @@ date FoxPro::getDate(const Record &record, size_t field) const {
 			throw Exception("Date field size != 8 (%d)", f.size);
 
 	int year, month, day;
-	if (std::sscanf((const char *) record.fields[field], "%4d%2d%2d", &year, &month, &day) != 3)
+	if (std::sscanf(reinterpret_cast<const char *>(record.fields[field]),
+	                "%4d%2d%2d", &year, &month, &day) != 3)
 		throw Exception("Failed reading the date");
 
 	return date(year, month, day);
@@ -709,8 +710,8 @@ void FoxPro::setString(size_t record, size_t field, const UString &value) {
 	if (f.type != kTypeString)
 		throw Exception("Field is not of string type ('%c')", f.type);
 
-	char *data    = (char *) r.fields[field];
-	char *dataEnd = (char *) r.fields[field] + f.size;
+	char *data    = reinterpret_cast<char *>(r.fields[field]);
+	char *dataEnd = reinterpret_cast<char *>(r.fields[field]) + f.size;
 
 	strncpy(data, value.c_str(), f.size);
 
@@ -728,7 +729,7 @@ void FoxPro::setInt(size_t record, size_t field, int32 value) {
 	Record &r = _records[record];
 	Field  &f = _fields[field];
 
-	char *data = (char *) r.fields[field];
+	char *data = reinterpret_cast<char *>(r.fields[field]);
 
 	if        (f.type == kTypeNumber) {
 
@@ -762,7 +763,7 @@ void FoxPro::setBool(size_t record, size_t field, bool value) {
 	if (f.size != 1)
 		throw Exception("Bool field size != 1 (%d)", f.size);
 
-	char *data = (char *) r.fields[field];
+	char *data = reinterpret_cast<char *>(r.fields[field]);
 
 	data[0] = value ? 'T' : 'F';
 
@@ -775,7 +776,7 @@ void FoxPro::setDouble(size_t record, size_t field, double value) {
 	Record &r = _records[record];
 	Field  &f = _fields[field];
 
-	char *data = (char *) r.fields[field];
+	char *data = reinterpret_cast<char *>(r.fields[field]);
 
 	if        (f.type == kTypeNumber) {
 
@@ -813,7 +814,7 @@ void FoxPro::setDate(size_t record, size_t field, const date &value) {
 	if (f.type != kTypeDate)
 		throw Exception("Field is not of date type ('%c')", f.type);
 
-	char *data = (char *) r.fields[field];
+	char *data = reinterpret_cast<char *>(r.fields[field]);
 
 	snprintf(data, 8, "%04d%02d%02d",
 			(int) value.year(), (int) value.month(), (int) value.day());
@@ -830,7 +831,7 @@ void FoxPro::setMemo(size_t record, size_t field, SeekableReadStream *value) {
 	if (f.type != kTypeMemo)
 		throw Exception("Field is not of memo type ('%c')", f.type);
 
-	char *data = (char *) r.fields[field];
+	char *data = reinterpret_cast<char *>(r.fields[field]);
 
 	if (!value) {
 		memset(data, 0x20, f.size);
@@ -880,7 +881,7 @@ bool FoxPro::getInt(const byte *data, size_t size, int32 &i) {
 	if (size > 31)
 		throw Exception("Numerical field size > 31 (%u)", (uint)size);
 
-	strncpy(n, (const char *) data, size);
+	strncpy(n, reinterpret_cast<const char *>(data), size);
 	n[size] = '\0';
 
 	return std::sscanf(n, "%d", &i) == 1;
