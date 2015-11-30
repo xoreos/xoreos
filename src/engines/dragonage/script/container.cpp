@@ -149,7 +149,7 @@ bool ScriptContainer::runScript(const Common::UString &script, Event &event,
 	try {
 		Aurora::NWScript::NCSFile ncs(script);
 
-		ncs.getEnvironment().setVariable("Event", (Aurora::NWScript::EngineType *) &event);
+		ncs.getEnvironment().setVariable("Event", static_cast<Aurora::NWScript::EngineType *>(&event));
 
 		const Aurora::NWScript::Variable &retVal = ncs.run(state, event.getTarget(), event.getCreator());
 		if (retVal.getType() == Aurora::NWScript::kTypeInt)
