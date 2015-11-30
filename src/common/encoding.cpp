@@ -113,7 +113,8 @@ private:
 		iconv(ctx, 0, 0, 0, 0);
 
 		// Convert
-		if (iconv(ctx, (ICONV_CONST char **) &data, &inBytes, (char **) &outBuf, &outBytes) == ((size_t) -1)) {
+		if (iconv(ctx, const_cast<ICONV_CONST char **>(reinterpret_cast<char **>(&data)), &inBytes,
+		          reinterpret_cast<char **>(&outBuf), &outBytes) == ((size_t) -1)) {
 			warning("iconv() failed: %s", strerror(errno));
 			delete[] convData;
 
@@ -137,7 +138,7 @@ private:
 		while (termSize-- > 0)
 			dataOut[size++] = '\0';
 
-		UString str((const char *) dataOut);
+		UString str(reinterpret_cast<const char *>(dataOut));
 		delete[] dataOut;
 
 		return str;
@@ -147,7 +148,7 @@ private:
 		if (ctx == ((iconv_t) -1))
 			return 0;
 
-		byte  *dataIn = const_cast<byte *>((const byte *) str.c_str());
+		byte  *dataIn = const_cast<byte *>(reinterpret_cast<const byte *>(str.c_str()));
 		size_t nIn    = strlen(str.c_str());
 		size_t nOut   = nIn * growth + termSize;
 
@@ -246,10 +247,10 @@ static UString createString(std::vector<byte> &output, Encoding encoding) {
 		case kEncodingASCII:
 		case kEncodingUTF8:
 			output.push_back('\0');
-			return UString((const char *) &output[0]);
+			return UString(reinterpret_cast<const char *>(&output[0]));
 
 		default:
-			return ConvMan.convert(encoding, (byte *) &output[0], output.size());
+			return ConvMan.convert(encoding, &output[0], output.size());
 	}
 
 	return "";
@@ -338,7 +339,8 @@ void writeStringFixed(WriteStream &stream, const Common::UString &str, Encoding 
 
 MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString) {
 	if (encoding == kEncodingUTF8)
-		return new MemoryReadStream((const byte *) str.c_str(), strlen(str.c_str()) + (terminateString ? 1 : 0));
+		return new MemoryReadStream(reinterpret_cast<const byte *>(str.c_str()),
+		                            strlen(str.c_str()) + (terminateString ? 1 : 0));
 
 	return ConvMan.convert(encoding, str, terminateString);
 }
