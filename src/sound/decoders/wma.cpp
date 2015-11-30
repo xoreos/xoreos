@@ -1220,11 +1220,11 @@ static const float powTab[] = {
 
 bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 	const float  *ptab  = powTab + 60;
-	const uint32 *iptab = (const uint32 *) ptab;
+	const uint32 *iptab = reinterpret_cast<const uint32 *>(ptab);
 
 	const uint16 *ptr = _exponentBands[_frameLenBits - _blockLenBits];
 
-	uint32 *q = (uint32 *) _exponents[ch];
+	uint32 *q = reinterpret_cast<uint32 *>(_exponents[ch]);
 	uint32 *qEnd = q + _blockLen;
 
 	float maxScale = 0;
@@ -1338,8 +1338,8 @@ bool WMACodec::decodeRunLevel(Common::BitStream &bits, const Common::Huffman &hu
 	const float *levelTable, const uint16 *runTable, int version, float *ptr,
 	int offset, int numCoefs, int blockLen, int frameLenBits, int coefNbBits) {
 
-	const uint32 *ilvl = (const uint32*) levelTable;
-	uint32 *iptr = (uint32 *) ptr;
+	const uint32 *ilvl = reinterpret_cast<const uint32 *>(levelTable);
+	uint32 *iptr = reinterpret_cast<uint32 *>(ptr);
 
 	const unsigned int coefMask = blockLen - 1;
 
