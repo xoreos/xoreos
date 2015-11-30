@@ -41,15 +41,15 @@ namespace Sound {
 // These are wrapper functions to allow using a SeekableReadStream object to
 // provide data to the OggVorbis_File object.
 
-static size_t read_stream_wrap(void *ptr, size_t size, size_t nmemb, void *datasource) {
-	Common::SeekableReadStream *stream = static_cast<Common::SeekableReadStream *>(datasource);
+static size_t read_stream_wrap(void *ptr, size_t size, size_t nmemb, void *dataSource) {
+	Common::SeekableReadStream *stream = static_cast<Common::SeekableReadStream *>(dataSource);
 
 	size_t result = stream->read(ptr, size * nmemb);
 
 	return result / size;
 }
 
-static int seek_stream_wrap(void *datasource, ogg_int64_t offset, int whence) {
+static int seek_stream_wrap(void *dataSource, ogg_int64_t offset, int whence) {
 	Common::SeekableReadStream::Origin seekOrigin = Common::SeekableReadStream::kOriginMAX;
 	switch (whence) {
 		case SEEK_SET:
@@ -66,18 +66,18 @@ static int seek_stream_wrap(void *datasource, ogg_int64_t offset, int whence) {
 			break;
 	}
 
-	Common::SeekableReadStream *stream = static_cast<Common::SeekableReadStream *>(datasource);
+	Common::SeekableReadStream *stream = static_cast<Common::SeekableReadStream *>(dataSource);
 	stream->seek((ptrdiff_t)offset, seekOrigin);
 	return stream->pos();
 }
 
-static int close_stream_wrap(void *UNUSED(datasource)) {
+static int close_stream_wrap(void *UNUSED(dataSource)) {
 	// Do nothing -- we leave it up to the VorbisStream to free memory as appropriate.
 	return 0;
 }
 
-static long tell_stream_wrap(void *datasource) {
-	Common::SeekableReadStream *stream = static_cast<Common::SeekableReadStream *>(datasource);
+static long tell_stream_wrap(void *dataSource) {
+	Common::SeekableReadStream *stream = static_cast<Common::SeekableReadStream *>(dataSource);
 	return stream->pos();
 }
 
@@ -106,9 +106,10 @@ public:
 
 	size_t readBuffer(int16 *buffer, const size_t numSamples);
 
-	bool endOfData() const		{ return _pos >= _bufferEnd; }
-	int getChannels() const		{ return _isStereo ? 2 : 1; }
-	int getRate() const			{ return _rate; }
+	bool endOfData() const { return _pos >= _bufferEnd; }
+	int getChannels() const { return _isStereo ? 2 : 1; }
+	int getRate() const { return _rate; }
+
 	bool rewind();
 
 protected:
@@ -133,7 +134,7 @@ VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, bool dispose) :
 
 	// Setup some header information
 	_isStereo = ov_info(&_ovFile, -1)->channels >= 2;
-	_rate = ov_info(&_ovFile, -1)->rate;
+	_rate     = ov_info(&_ovFile, -1)->rate;
 }
 
 VorbisStream::~VorbisStream() {
@@ -147,9 +148,11 @@ size_t VorbisStream::readBuffer(int16 *buffer, const size_t numSamples) {
 	while (samples < numSamples && _pos < _bufferEnd) {
 		const size_t len = MIN<size_t>(numSamples - samples, _bufferEnd - _pos);
 		memcpy(buffer, _pos, len * 2);
-		buffer += len;
-		_pos += len;
+
+		buffer  += len;
+		_pos    += len;
 		samples += len;
+
 		if (_pos >= _bufferEnd) {
 			if (!refill())
 				break;
@@ -168,30 +171,30 @@ bool VorbisStream::rewind() {
 bool VorbisStream::refill() {
 	// Read the samples
 	size_t len_left = sizeof(_buffer);
-	char *read_pos = reinterpret_cast<char *>(_buffer);
+	char  *read_pos = reinterpret_cast<char *>(_buffer);
 
 	while (len_left > 0) {
 		long result;
 
-#ifdef USE_TREMOR
+#if USE_TREMOR
 		// Tremor ov_read() always returns data as signed 16 bit interleaved PCM
 		// in host byte order. As such, it does not take arguments to request
 		// specific signedness, byte order or bit depth as in Vorbisfile.
 		result = ov_read(&_ovFile, read_pos, len_left,
-						0);
+		                 0);
 #else
 #ifdef XOREOS_BIG_ENDIAN
 		result = ov_read(&_ovFile, read_pos, len_left,
-						1,
-						2,	// 16 bit
-						1,	// signed
-						0);
+		                 1, // big endian
+		                 2, // 16 bit
+		                 1, // signed
+		                 0);
 #else
 		result = ov_read(&_ovFile, read_pos, len_left,
-						0,
-						2,	// 16 bit
-						1,	// signed
-						0);
+		                 0, // little endian
+		                 2, // 16 bit
+		                 1, // signed
+		                 0);
 #endif
 #endif
 		if (result == OV_HOLE) {
@@ -220,9 +223,7 @@ bool VorbisStream::refill() {
 	return true;
 }
 
-RewindableAudioStream *makeVorbisStream(
-	Common::SeekableReadStream *stream,
-	bool disposeAfterUse) {
+RewindableAudioStream *makeVorbisStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
 	RewindableAudioStream *s = new VorbisStream(stream, disposeAfterUse);
 
 	if (s && s->endOfData()) {
