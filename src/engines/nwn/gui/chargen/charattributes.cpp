@@ -99,7 +99,7 @@ void CharAttributes::callbackActive(Widget &widget) {
 
 	// Update texts when attribute buttons are clicked.
 	if (widget.getTag().endsWith("Label")) {
-		_attrButtons->setActive((WidgetButton *) &widget);
+		_attrButtons->setActive(dynamic_cast<WidgetButton *>(&widget));
 
 		for (uint b = 0; b < 6; ++b) {
 			if (buttonsList[b] != &widget)

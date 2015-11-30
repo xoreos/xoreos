@@ -104,7 +104,7 @@ void CharRace::callbackActive(Widget &widget) {
 		return;
 	}
 
-	_buttons->setActive((WidgetButton *) &widget);
+	_buttons->setActive(dynamic_cast<WidgetButton *>(&widget));
 }
 
 } // End of namespace NWN
