@@ -462,8 +462,8 @@ void Area::loadTileModels() {
 
 		// Tinting
 		if (ConfigMan.getBool("tint")) {
-			((Graphics::Aurora::Model_NWN2 *) t->model)->setTintFloor(t->floorTint);
-			((Graphics::Aurora::Model_NWN2 *) t->model)->setTintWalls(t->wallTint);
+			dynamic_cast<Graphics::Aurora::Model_NWN2 &>(*t->model).setTintFloor(t->floorTint);
+			dynamic_cast<Graphics::Aurora::Model_NWN2 &>(*t->model).setTintWalls(t->wallTint);
 		}
 
 		const float rotation = -(((int) t->orientation) * 90.0f);

@@ -73,7 +73,7 @@ void Situated::loadModel() {
 
 	// Tinting
 	if (ConfigMan.getBool("tint"))
-		((Graphics::Aurora::Model_NWN2 *) _model)->setTint(_tint);
+		dynamic_cast<Graphics::Aurora::Model_NWN2 &>(*_model).setTint(_tint);
 
 	// Positioning
 
