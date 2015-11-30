@@ -62,7 +62,7 @@ void CharGenChoices::reset() {
 	_classFeats.clear();
 }
 
-const Creature& CharGenChoices::getCharacter() {
+const Creature &CharGenChoices::getCharacter() {
 	return *_creature;
 }
 

@@ -78,7 +78,7 @@ void CharAttributes::reset() {
 	getButton("OkButton", true)->setDisabled(true);
 }
 
-void CharAttributes::callbackActive(Widget& widget) {
+void CharAttributes::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
 		_choices->setCharAbilities(_attributes, _attrAdjust);
 		_returnCode = 2;

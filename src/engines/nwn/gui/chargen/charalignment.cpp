@@ -113,7 +113,7 @@ void CharAlignment::hide() {
 	}
 }
 
-void CharAlignment::callbackActive(Widget& widget) {
+void CharAlignment::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
 		_choices->setCharAlign(_goodness, _loyalty);
 		_returnCode = 2;
