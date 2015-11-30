@@ -54,12 +54,12 @@ else
 	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wuninitialized])
 	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wunused-parameter])
 	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wunused-but-set-parameter])
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wno-long-long])
+	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wlong-long], [-Wno-long-long])
 
 	WARN_CXX=""
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN_CXX], [-Wnon-virtual-dtor])
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN_CXX], [-Wno-overloaded-virtual])
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN_CXX], [-Wno-c++11-long-long])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN_CXX], [-Woverloaded-virtual], [-Wno-overloaded-virtual])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN_CXX], [-Wc++11-long-long], [-Wno-c++11-long-long])
 fi
 
 AC_SUBST(WARN_C_CXX)
