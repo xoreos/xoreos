@@ -1052,9 +1052,13 @@ void Model_Sonic::createBound() {
 			assert(vpos.type == GL_FLOAT);
 
 			uint32 stride = MAX<uint32>(vpos.size, vpos.stride / sizeof(float));
-			float *vX = (float *) vpos.pointer;
-			float *vY = vX + 1;
-			float *vZ = vY + 1;
+
+			const float *vertexData = reinterpret_cast<const float *>(vpos.pointer);
+
+			const float *vX = vertexData + 0;
+			const float *vY = vertexData + 1;
+			const float *vZ = vertexData + 2;
+
 			for (uint32 v = 0; v < p->vertexBuffer.getCount(); v++)
 				_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
 		}
@@ -1122,7 +1126,7 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 
 	primitive.indexBuffer.setSize(primitive.indices.size(), sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *indices = (uint16 *) primitive.indexBuffer.getData();
+	uint16 *indices = reinterpret_cast<uint16 *>(primitive.indexBuffer.getData());
 	memcpy(indices, &primitive.indices[0], primitive.indices.size() * sizeof(uint16));
 
 	// Create vertex buffer
@@ -1136,7 +1140,7 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 
 	primitive.vertexBuffer.setVertexDeclInterleave(primitive.vertices.size(), vertexDecl);
 
-	float *vData = (float *) primitive.vertexBuffer.getData();
+	float *vData = reinterpret_cast<float *>(primitive.vertexBuffer.getData());
 	for (PrimitiveVertices::const_iterator v = primitive.vertices.begin(); v != primitive.vertices.end(); ++v) {
 		/* To get the absolute position of the vertex, transform it by the absolute
 		 * position of its base node. Use an identity matrix as a fallback. */

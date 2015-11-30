@@ -625,7 +625,7 @@ void ModelNode_DragonAge::createIndexBuffer(const GFF4Struct &meshChunk,
 	const uint32 startIndex = meshChunk.getUint(kGFF4MeshChunkStartIndex);
 	indexData.skip(startIndex * 2);
 
-	uint16 *indices = (uint16 *) _indexBuffer.getData();
+	uint16 *indices = reinterpret_cast<uint16 *>(_indexBuffer.getData());
 	while (indexCount-- > 0)
 		*indices++ = indexData.readUint16LE();
 }
@@ -666,7 +666,7 @@ void ModelNode_DragonAge::createVertexBuffer(const GFF4Struct &meshChunk,
 
 	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *vData = (float *) _vertexBuffer.getData();
+	float *vData = reinterpret_cast<float *>(_vertexBuffer.getData());
 	for (uint32 v = 0; v < vertexCount; v++) {
 
 		for (MeshDeclarations::const_iterator d = meshDecl.begin(); d != meshDecl.end(); ++d) {

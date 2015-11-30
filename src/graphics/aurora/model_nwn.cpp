@@ -841,7 +841,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	_vertexBuffer.setVertexDeclInterleave(facesCount * 3, vertexDecl);
 
-	float *v = (float *)_vertexBuffer.getData();
+	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
 	for (uint32 i = 0; i < facesCount; i++) {
 		const Face &face = faces[i];
 
@@ -887,7 +887,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = (uint16 *) _indexBuffer.getData();
+	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
 	for (uint16 i = 0; i < facesCount * 3; i++)
 		*f++ = i;
 
@@ -1282,7 +1282,7 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	typedef boost::unordered_set<FaceVert>::iterator verts_set_it;
 
 	uint32 vertexCount = 0;
-	uint32 *f = (uint32 *) _indexBuffer.getData();
+	uint32 *f = reinterpret_cast<uint32 *>(_indexBuffer.getData());
 	for (uint32 i = 0; i < facesCount; i++) {
 		const uint32 v[3] = {mesh.vIA[i], mesh.vIB[i], mesh.vIC[i]};
 		const uint32 t[3] = {mesh.tIA[i], mesh.tIB[i], mesh.tIC[i]};
@@ -1321,7 +1321,8 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	_vertexBuffer.setVertexDeclInterleave(facesCount * 3, vertexDecl);
 
 	for (verts_set_it i = verts.begin(); i != verts.end(); ++i) {
-		float *v = (float *)(((char *)_vertexBuffer.getData()) + i->i * _vertexBuffer.getSize());
+		byte  *vData = reinterpret_cast<byte  *>(_vertexBuffer.getData()) + i->i * _vertexBuffer.getSize();
+		float *v     = reinterpret_cast<float *>(vData);
 
 		// Position
 		*v++ = mesh.vX[i->p];

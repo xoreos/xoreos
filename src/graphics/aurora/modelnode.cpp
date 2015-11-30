@@ -374,9 +374,11 @@ void ModelNode::createBound() {
 
 		const uint32 stride = MAX<uint32>(vA->size, vA->stride / sizeof(float));
 
-		float *vX = ((float *) vA->pointer) + 0;
-		float *vY = ((float *) vA->pointer) + 1;
-		float *vZ = ((float *) vA->pointer) + 2;
+		const float *vertexData = reinterpret_cast<const float *>(vA->pointer);
+
+		const float *vX = vertexData + 0;
+		const float *vY = vertexData + 1;
+		const float *vZ = vertexData + 2;
 
 		for (uint32 v = 0; v < _vertexBuffer.getCount(); v++)
 			_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);

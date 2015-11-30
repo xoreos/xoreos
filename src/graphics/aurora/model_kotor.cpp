@@ -584,7 +584,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = (float *)_vertexBuffer.getData();
+	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		ctx.mdx->seek(offNodeData + i * mdxStructSize);
@@ -621,7 +621,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = (uint16 *) _indexBuffer.getData();
+	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdl->readUint16LE();
 

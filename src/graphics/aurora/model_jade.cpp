@@ -611,7 +611,7 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 
 	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = (float *) _vertexBuffer.getData();
+	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.vertices[i * 3 + 0];
@@ -627,7 +627,7 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 
 	_indexBuffer.setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = (uint16 *) _indexBuffer.getData();
+	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
 	memcpy(f, &ctx.indices[0], indexCount * sizeof(uint16));
 
 	createBound();

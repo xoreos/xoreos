@@ -257,7 +257,7 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = (float *) _vertexBuffer.getData();
+	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -291,7 +291,7 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = (uint16 *) _indexBuffer.getData();
+	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdb->readUint16LE();
 
@@ -357,7 +357,7 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = (float *) _vertexBuffer.getData();
+	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -395,7 +395,7 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = (uint16 *) _indexBuffer.getData();
+	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdb->readUint16LE();
 
