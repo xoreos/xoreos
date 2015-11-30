@@ -31,21 +31,21 @@
 
 namespace Graphics {
 
-/**  Vertex attribute data index enum, hardcoded for now */
+/**  Vertex attribute data index enum, hardcoded for now. */
 enum VertexAttribIdEnum {
-	VPOSITION = 0, ///< Vertex position
-	VNORMAL,       ///< Vertex normal
-	VCOLOR,        ///< Vertex color
-	VTCOORD        ///< Vertex texture coordinates, VTCOORDi = VTCOORD + i
+	VPOSITION = 0, ///< Vertex position.
+	VNORMAL,       ///< Vertex normal.
+	VCOLOR,        ///< Vertex color.
+	VTCOORD        ///< Vertex texture coordinates, VTCOORDi = VTCOORD + i.
 };
 
 /**  Generic vertex attribute data */
 struct VertexAttrib {
-	GLuint index;          ///< Index of the vertex attribute (see VertexAttribIdEnum)
-	GLint size;            ///< Number of components per vertex attribute, must be 1, 2, 3, 4
-	GLenum type;           ///< Data type of each attribute component in the array
-	GLsizei stride;        ///< Byte offset between consecutive vertex attributes
-	const GLvoid *pointer; ///< Offset of the first component of the first generic vertex attribute
+	GLuint index;          ///< Index of the vertex attribute (see VertexAttribIdEnum).
+	GLint size;            ///< Number of components per vertex attribute, must be 1, 2, 3, 4.
+	GLenum type;           ///< Data type of each attribute component in the array.
+	GLsizei stride;        ///< Byte offset between consecutive vertex attributes.
+	const GLvoid *pointer; ///< Offset of the first component of the first generic vertex attribute.
 
 	VertexAttrib() { }
 	VertexAttrib(GLuint i, GLint s, GLenum t, GLsizei st = 0, const GLvoid *p = 0) :
@@ -59,12 +59,12 @@ struct VertexAttrib {
 	void disable() const;
 };
 
-/** Vertex data layout */
+/** Vertex data layout. */
 typedef std::vector<VertexAttrib> VertexDecl;
 
 class IndexBuffer;
 
-/** Buffer containing vertex data */
+/** Buffer containing vertex data. */
 class VertexBuffer {
 public:
 	VertexBuffer();
@@ -75,36 +75,38 @@ public:
 
 	VertexBuffer &operator=(const VertexBuffer &other);
 
-	/** Change buffer size. Will allocate memory, free previous */
+	/** Change buffer size. Will allocate memory, free previous. */
 	void setSize(uint32 vertCount, uint32 vertSize);
 
-	/** Set vertex declaration for this buffer */
+	/** Set vertex declaration for this buffer. */
 	void setVertexDecl(const VertexDecl &decl);
 
 	/** Set the linear vertex declaration for this buffer.
+	 *
 	 *  Will allocate memory to fit vertCount vertices into this buffer and
 	 *  modify the declaration's pointers and strides to fit a linear layout.
 	 */
 	void setVertexDeclLinear(uint32 vertCount, VertexDecl &decl);
 	/** Set the interleaved vertex declaration for this buffer.
+	 *
 	 *  Will allocate memory to fit vertCount vertices into this buffer and
 	 *  modify the declaration's pointers and strides to fit an interleaved layout.
 	 */
 	void setVertexDeclInterleave(uint32 vertCount, VertexDecl &decl);
 
-	/** Access buffer data */
+	/** Access buffer data. */
 	GLvoid *getData();
 
-	/** Access buffer data */
+	/** Access buffer data. */
 	const GLvoid *getData() const;
 
-	/** Access vertex declaration */
+	/** Access vertex declaration. */
 	const VertexDecl &getVertexDecl() const;
 
-	/** Get vertex count */
+	/** Get vertex count. */
 	uint32 getCount() const;
 
-	/** Get vertex element size in bytes */
+	/** Get vertex element size in bytes. */
 	uint32 getSize() const;
 
 	/** Initialise internal buffer object for GL handling. */
@@ -124,10 +126,10 @@ public:
 	void draw(GLenum mode, const IndexBuffer &indexBuffer) const;
 
 private:
-	VertexDecl _decl; ///< Vertex declaration
-	uint32 _count;    ///< Number of elements in buffer
-	uint32 _size;     ///< Size of a buffer element in bytes (vertex attributes size sum)
-	byte  *_data;     ///< Buffer data
+	VertexDecl _decl; ///< Vertex declaration.
+	uint32 _count;    ///< Number of elements in buffer.
+	uint32 _size;     ///< Size of a buffer element in bytes (vertex attributes size sum).
+	byte  *_data;     ///< Buffer data.
 
 	GLuint _vbo;      ///< Vertex Buffer Object.
 	GLuint _hint;     ///< GL hint for static or dynamic data.

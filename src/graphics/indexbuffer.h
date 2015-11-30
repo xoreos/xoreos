@@ -29,7 +29,7 @@
 
 namespace Graphics {
 
-/** Buffer containing indices data */
+/** Buffer containing indices data. */
 class IndexBuffer {
 public:
 	IndexBuffer();
@@ -40,19 +40,19 @@ public:
 
 	IndexBuffer &operator=(const IndexBuffer &other);
 
-	/** Change buffer size. Will allocate memory, free previous */
+	/** Change buffer size. Will allocate memory, free previous. */
 	void setSize(uint32 indexCount, uint32 indexSize, GLenum indexType);
 
-	/** Access buffer data */
+	/** Access buffer data. */
 	GLvoid *getData();
 
-	/** Access buffer data */
+	/** Access buffer data. */
 	const GLvoid *getData() const;
 
-	/** Get element count */
+	/** Get element count. */
 	uint32 getCount() const;
 
-	/** Get element type */
+	/** Get element type. */
 	GLenum getType() const;
 
 	/** Initialise internal buffer object for GL handling. */
@@ -67,13 +67,13 @@ public:
 	GLuint getIBO() const;
 
 private:
-	uint32 _count; ///< Number of elements in buffer
-	uint32 _size;  ///< Size of a buffer element in bytes
-	GLenum _type;  ///< Element type (GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, ...)
-	byte  *_data;  ///< Buffer data
+	uint32 _count; ///< Number of elements in buffer.
+	uint32 _size;  ///< Size of a buffer element in bytes.
+	GLenum _type;  ///< Element type (GL_UNSIGNED_SHORT, GL_UNSIGNED_INT, ...).
+	byte  *_data;  ///< Buffer data.
 
-	GLuint _ibo;      ///< "Index" Buffer Object.
-	GLuint _hint;     ///< GL hint for static or dynamic data.
+	GLuint _ibo;   ///< "Index" Buffer Object.
+	GLuint _hint;  ///< GL hint for static or dynamic data.
 };
 
 } // End of namespace Graphics
