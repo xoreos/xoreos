@@ -67,7 +67,7 @@ float WidgetGridItemPortrait::getWidth() const {
 void WidgetGridItemPortrait::mouseDown(uint8 state, float x, float y) {
 	activate();
 
-	((CharPortrait *) _gui)->setMainTexture(_portrait);
+	dynamic_cast<CharPortrait &>(*_gui).setMainTexture(_portrait);
 
 	_owner->mouseDown(state, x, y);
 }
