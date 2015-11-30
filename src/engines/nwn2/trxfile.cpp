@@ -197,7 +197,7 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	Graphics::VertexBuffer vBuf;
 	vBuf.setVertexDeclInterleave(vCount, vertexDecl);
 
-	float *v = (float *) vBuf.getData();
+	float *v = reinterpret_cast<float *>(vBuf.getData());
 	for (uint32 i = 0; i < vCount; i++) {
 		*v++ = ttrn.readIEEEFloatLE();
 		*v++ = ttrn.readIEEEFloatLE();
@@ -231,7 +231,7 @@ void TRXFile::loadTRRN(Common::SeekableReadStream &trx, Packet &packet) {
 	Graphics::IndexBuffer iBuf;
 	iBuf.setSize(fCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = (uint16 *) iBuf.getData();
+	uint16 *f = reinterpret_cast<uint16 *>(iBuf.getData());
 	for (uint32 i = 0; i < fCount; i++) {
 		*f++ = ttrn.readUint16LE();
 		*f++ = ttrn.readUint16LE();
@@ -292,7 +292,7 @@ void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 	Graphics::VertexBuffer vBuf;
 	vBuf.setVertexDeclInterleave(vCount, vertexDecl);
 
-	float *v = (float *) vBuf.getData();
+	float *v = reinterpret_cast<float *>(vBuf.getData());
 	for (uint32 i = 0; i < vCount; i++) {
 		*v++ = watr.readIEEEFloatLE();
 		*v++ = watr.readIEEEFloatLE();
@@ -308,7 +308,7 @@ void TRXFile::loadWATR(Common::SeekableReadStream &trx, Packet &packet) {
 	Graphics::IndexBuffer iBuf;
 	iBuf.setSize(fCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = (uint16 *) iBuf.getData();
+	uint16 *f = reinterpret_cast<uint16 *>(iBuf.getData());
 	for (uint32 i = 0; i < fCount; i++) {
 		*f++ = watr.readUint16LE();
 		*f++ = watr.readUint16LE();
