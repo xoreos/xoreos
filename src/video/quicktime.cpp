@@ -129,19 +129,20 @@ void QuickTimeDecoder::load() {
 
 	// Initialize audio, if present
 	if (_audioTrackIndex >= 0) {
-		AudioSampleDesc *entry = (AudioSampleDesc *)_tracks[_audioTrackIndex]->sampleDescs[0];
+		AudioSampleDesc &entry = dynamic_cast<AudioSampleDesc &>(*_tracks[_audioTrackIndex]->sampleDescs[0]);
 
-		if (entry->isAudioCodecSupported()) {
+		if (entry.isAudioCodecSupported()) {
 			_curAudioChunk = 0;
 
 			// Make sure the bits per sample transfers to the sample size
-			if (entry->getCodecTag() == MKTAG('r', 'a', 'w', ' ') || entry->getCodecTag() == MKTAG('t', 'w', 'o', 's'))
-				_tracks[_audioTrackIndex]->sampleSize = (entry->_bitsPerSample / 8) * entry->_channels;
+			if (entry.getCodecTag() == MKTAG('r', 'a', 'w', ' ') ||
+			    entry.getCodecTag() == MKTAG('t', 'w', 'o', 's'))
+				_tracks[_audioTrackIndex]->sampleSize = (entry._bitsPerSample / 8) * entry._channels;
 
 			// Initialize the codec (if necessary)
-			entry->initCodec();
+			entry.initCodec();
 
-			initSound(entry->_sampleRate, entry->_channels, true);
+			initSound(entry._sampleRate, entry._channels, true);
 			updateAudioBuffer();
 		} else
 			_audioTrackIndex = -1; // Invalidate the stream
@@ -154,7 +155,7 @@ void QuickTimeDecoder::load() {
 
 	// Initialize video codec, if present
 	for (size_t i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
-		((VideoSampleDesc *) _tracks[_videoTrackIndex]->sampleDescs[i])->initCodec(*_surface);
+		dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[i]).initCodec(*_surface);
 }
 
 QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uint32 format) {
@@ -274,7 +275,7 @@ Codec *QuickTimeDecoder::findDefaultVideoCodec() const {
 	if (_videoTrackIndex < 0 || _tracks[_videoTrackIndex]->sampleDescs.empty())
 		return 0;
 
-	return ((VideoSampleDesc *)_tracks[_videoTrackIndex]->sampleDescs[0])->_videoCodec;
+	return dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[0])._videoCodec;
 }
 
 void QuickTimeDecoder::startVideo() {
@@ -307,12 +308,12 @@ void QuickTimeDecoder::processData() {
 	}
 
 	// Find which video description entry we want
-	VideoSampleDesc *entry = (VideoSampleDesc *)_tracks[_videoTrackIndex]->sampleDescs[descId - 1];
+	VideoSampleDesc &entry = dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[descId - 1]);
 
-	if (entry->_videoCodec) {
+	if (entry._videoCodec) {
 		assert(_surface);
 
-		entry->_videoCodec->decodeFrame(*_surface, *frameData);
+		entry._videoCodec->decodeFrame(*_surface, *frameData);
 		_needCopy = true;
 	}
 
@@ -820,13 +821,13 @@ Common::SeekableReadStream *QuickTimeDecoder::getNextFramePacket(uint32 &descId)
 }
 
 void QuickTimeDecoder::queueNextAudioChunk() {
-	AudioSampleDesc *entry = (AudioSampleDesc *)_tracks[_audioTrackIndex]->sampleDescs[0];
+	AudioSampleDesc &entry = dynamic_cast<AudioSampleDesc &>(*_tracks[_audioTrackIndex]->sampleDescs[0]);
 	Common::MemoryWriteStreamDynamic *wStream = new Common::MemoryWriteStreamDynamic();
 
 	_fd->seek(_tracks[_audioTrackIndex]->chunkOffsets[_curAudioChunk]);
 
 	// First, we have to get the sample count
-	uint32 sampleCount = entry->getAudioChunkSampleCount(_curAudioChunk);
+	uint32 sampleCount = entry.getAudioChunkSampleCount(_curAudioChunk);
 	assert(sampleCount);
 
 	if (isOldDemuxing()) {
@@ -836,12 +837,12 @@ void QuickTimeDecoder::queueNextAudioChunk() {
 		while (sampleCount > 0) {
 			uint32 samples = 0, size = 0;
 
-			if (entry->_samplesPerFrame >= 160) {
-				samples = entry->_samplesPerFrame;
-				size = entry->_bytesPerFrame;
-			} else if (entry->_samplesPerFrame > 1) {
-				samples = MIN<uint32>((1024 / entry->_samplesPerFrame) * entry->_samplesPerFrame, sampleCount);
-				size = (samples / entry->_samplesPerFrame) * entry->_bytesPerFrame;
+			if (entry._samplesPerFrame >= 160) {
+				samples = entry._samplesPerFrame;
+				size = entry._bytesPerFrame;
+			} else if (entry._samplesPerFrame > 1) {
+				samples = MIN<uint32>((1024 / entry._samplesPerFrame) * entry._samplesPerFrame, sampleCount);
+				size = (samples / entry._samplesPerFrame) * entry._bytesPerFrame;
 			} else {
 				samples = MIN<uint32>(1024, sampleCount);
 				size = samples * _tracks[_audioTrackIndex]->sampleSize;
@@ -857,7 +858,7 @@ void QuickTimeDecoder::queueNextAudioChunk() {
 		// Find our starting sample
 		uint32 startSample = 0;
 		for (uint32 i = 0; i < _curAudioChunk; i++)
-			startSample += entry->getAudioChunkSampleCount(i);
+			startSample += entry.getAudioChunkSampleCount(i);
 
 		for (uint32 i = 0; i < sampleCount; i++) {
 			uint32 size = (_tracks[_audioTrackIndex]->sampleSize != 0) ? _tracks[_audioTrackIndex]->sampleSize : _tracks[_audioTrackIndex]->sampleSizes[i + startSample];
@@ -868,7 +869,7 @@ void QuickTimeDecoder::queueNextAudioChunk() {
 	}
 
 	// Now queue the buffer
-	queueSound(entry->createAudioStream(new Common::MemoryReadStream(wStream->getData(), wStream->size(), true)));
+	queueSound(entry.createAudioStream(new Common::MemoryReadStream(wStream->getData(), wStream->size(), true)));
 	delete wStream;
 
 	_curAudioChunk++;
@@ -884,7 +885,7 @@ void QuickTimeDecoder::updateAudioBuffer() {
 		// If we're on the last frame, make sure all audio remaining is buffered
 		numberOfChunksNeeded = _tracks[_audioTrackIndex]->chunkCount;
 	} else {
-		AudioSampleDesc *entry = (AudioSampleDesc *)_tracks[_audioTrackIndex]->sampleDescs[0];
+		AudioSampleDesc &entry = dynamic_cast<AudioSampleDesc &>(*_tracks[_audioTrackIndex]->sampleDescs[0]);
 
 		// Calculate the amount of chunks we need in memory until the next frame
 		uint32 timeToNextFrame = getTimeToNextFrame();
@@ -892,10 +893,10 @@ void QuickTimeDecoder::updateAudioBuffer() {
 		uint32 curAudioChunk = _curAudioChunk - getNumQueuedStreams();
 
 		for (; timeFilled < timeToNextFrame && curAudioChunk < _tracks[_audioTrackIndex]->chunkCount; numberOfChunksNeeded++, curAudioChunk++) {
-			uint32 sampleCount = entry->getAudioChunkSampleCount(curAudioChunk);
+			uint32 sampleCount = entry.getAudioChunkSampleCount(curAudioChunk);
 			assert(sampleCount);
 
-			timeFilled += sampleCount * 1000 / entry->_sampleRate;
+			timeFilled += sampleCount * 1000 / entry._sampleRate;
 		}
 
 		// Add a couple extra to ensure we don't underrun
