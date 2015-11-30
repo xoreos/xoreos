@@ -284,7 +284,7 @@
 			}
 		}
 		if (endptr != 0)
-			*endptr = (char *) (any ? s - 1 : nptr);
+			*endptr = any ? const_cast<char *>(s - 1) : const_cast<char *>(nptr);
 		return (acc);
 	}
 
@@ -359,14 +359,14 @@
 				errno = ERANGE;
 			} else {
 				any = 1;
-				acc *= (unsigned long long)base;
+				acc *= static_cast<unsigned long long>(base);
 				acc += c;
 			}
 		}
 		if (neg && any > 0)
 			acc = -acc;
 		if (endptr != 0)
-			*endptr = (char *) (any ? s - 1 : nptr);
+			*endptr = any ? const_cast<char *>(s - 1) : const_cast<char *>(nptr);
 		return (acc);
 	}
 
