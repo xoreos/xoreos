@@ -476,7 +476,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	// Read vertex position
 	ctx.mdb->seek(ctx.offRawData + vertexOffset);
-	float *v = reinterpret_cast<float *>(vertexDecl[0].getData());
+	float *v = reinterpret_cast<float *>(_vertexBuffer.getData(0));
 	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -486,7 +486,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	// Read vertex normals
 	assert(normalsCount == vertexCount);
 	ctx.mdb->seek(ctx.offRawData + normalsOffset);
-	v = reinterpret_cast<float *>(vertexDecl[1].getData());
+	v = reinterpret_cast<float *>(_vertexBuffer.getData(1));
 	for (uint32 i = 0; i < normalsCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -497,7 +497,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	for (uint t = 0; t < texCount; t++) {
 
 		ctx.mdb->seek(ctx.offRawData + tVertsOffset[t]);
-		v = reinterpret_cast<float *>(vertexDecl[2 + t].getData());
+		v = reinterpret_cast<float *>(_vertexBuffer.getData(2 + t));
 		for (uint32 i = 0; i < tVertsCount[t]; i++) {
 			if (i < tVertsCount[t]) {
 				*v++ = ctx.mdb->readIEEEFloatLE();
@@ -701,7 +701,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 
 	// Read vertex position
 	ctx.mdb->seek(ctx.offRawData + vertexOffset);
-	float *v = reinterpret_cast<float *>(vertexDecl[0].getData());
+	float *v = reinterpret_cast<float *>(_vertexBuffer.getData(0));
 	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -711,7 +711,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	// Read vertex normals
 	assert(normalsCount == vertexCount);
 	ctx.mdb->seek(ctx.offRawData + normalsOffset);
-	v = reinterpret_cast<float *>(vertexDecl[1].getData());
+	v = reinterpret_cast<float *>(_vertexBuffer.getData(1));
 	for (uint32 i = 0; i < normalsCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -722,7 +722,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	for (uint t = 0; t < texCount; t++) {
 
 		ctx.mdb->seek(ctx.offRawData + tVertsOffset[t]);
-		v = reinterpret_cast<float *>(vertexDecl[2 + t].getData());
+		v = reinterpret_cast<float *>(_vertexBuffer.getData(2 + t));
 		for (uint32 i = 0; i < tVertsCount[t]; i++) {
 			if (i < tVertsCount[t]) {
 				*v++ = ctx.mdb->readIEEEFloatLE();

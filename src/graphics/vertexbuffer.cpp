@@ -222,6 +222,18 @@ const GLvoid *VertexBuffer::getData() const {
 	return static_cast<const GLvoid *>(_data);
 }
 
+GLvoid *VertexBuffer::getData(size_t vertexDecl) {
+	assert(vertexDecl < _decl.size());
+
+	return _decl[vertexDecl].getData();
+}
+
+const GLvoid *VertexBuffer::getData(size_t vertexDecl) const {
+	assert(vertexDecl < _decl.size());
+
+	return _decl[vertexDecl].getData();
+}
+
 const VertexDecl &VertexBuffer::getVertexDecl() const {
 	return _decl;
 }

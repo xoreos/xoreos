@@ -100,6 +100,12 @@ public:
 	/** Access buffer data. */
 	const GLvoid *getData() const;
 
+	/** Access buffer data of a specific vertex declaration. */
+	GLvoid *getData(size_t vertexDecl);
+
+	/** Access buffer data of a specific vertex declaration. */
+	const GLvoid *getData(size_t vertexDecl) const;
+
 	/** Access vertex declaration. */
 	const VertexDecl &getVertexDecl() const;
 
