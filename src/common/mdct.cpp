@@ -65,7 +65,7 @@ MDCT::~MDCT() {
 	} while (0)
 
 void MDCT::calcMDCT(float *output, const float *input) {
-	Complex *x = (Complex *) output;
+	Complex *x = reinterpret_cast<Complex *>(output);
 
 	const int size2 = _size >> 1;
 	const int size4 = _size >> 2;
@@ -118,7 +118,7 @@ void MDCT::calcIMDCT(float *output, const float *input) {
 }
 
 void MDCT::calcHalfIMDCT(float *output, const float *input) {
-	Complex *z = (Complex *) output;
+	Complex *z = reinterpret_cast<Complex *>(output);
 
 	const int size2 = _size >> 1;
 	const int size4 = _size >> 2;

@@ -60,8 +60,8 @@ void RDFT::calc(float *data) {
 	const float k2 = 0.5f - (_inverse ? 1.0f : 0.0f);
 
 	if (!_inverse) {
-		_fft->permute((Complex *) data);
-		_fft->calc   ((Complex *) data);
+		_fft->permute(reinterpret_cast<Complex *>(data));
+		_fft->calc   (reinterpret_cast<Complex *>(data));
 	}
 
 	Complex ev, od;
@@ -98,8 +98,8 @@ void RDFT::calc(float *data) {
 		data[0] *= k1;
 		data[1] *= k1;
 
-		_fft->permute((Complex *) data);
-		_fft->calc   ((Complex *) data);
+		_fft->permute(reinterpret_cast<Complex *>(data));
+		_fft->calc   (reinterpret_cast<Complex *>(data));
 	}
 
 }
