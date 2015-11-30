@@ -74,7 +74,7 @@ void Platform::getParameters(int UNUSED(argc), char **UNUSED(argv), std::vector<
 	args.reserve(argc);
 
 	for (int i = 0; i < argc; i++)
-		args.push_back(readString((const byte *) argv[i], wcslen(argv[i]) * 2, kEncodingUTF16LE));
+		args.push_back(readString(reinterpret_cast<const byte *>(argv[i]), wcslen(argv[i]) * 2, kEncodingUTF16LE));
 }
 
 #else
@@ -159,7 +159,7 @@ static inline UString getWindowsVariable(const wchar_t *variable) {
 	size_t size = length * sizeof(wchar_t);
 	byte  *data = new byte[size];
 
-	DWORD newLength = GetEnvironmentVariableW(variable, (wchar_t *) data, length);
+	DWORD newLength = GetEnvironmentVariableW(variable, reinterpret_cast<wchar_t *>(data), length);
 	if (!newLength || (newLength > length)) {
 		delete[] data;
 		return "";
