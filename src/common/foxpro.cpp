@@ -163,7 +163,7 @@ void FoxPro::loadRecords(SeekableReadStream &dbf, uint32 recordSize, uint32 reco
 	_records.resize(recordCount);
 	for (uint32 i = 0; i < recordCount; i++) {
 		Record &record = _records[i];
-		const byte *data = recordData + i * recordSize;
+		byte *data = recordData + i * recordSize;
 
 		char status = *data++;
 		if ((status != ' ') && (status != '*'))

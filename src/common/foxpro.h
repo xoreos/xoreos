@@ -75,7 +75,7 @@ public:
 	/** A record. */
 	struct Record {
 		bool deleted; ///< Has this record been deleted?
-		std::vector<const byte *> fields; ///< Raw field data.
+		std::vector<byte *> fields; ///< Raw field data.
 	};
 
 	FoxPro();
