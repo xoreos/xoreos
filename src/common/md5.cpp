@@ -252,7 +252,7 @@ static void md5Update(MD5Context &ctx, const byte *data, size_t size) {
 		}
 
 		memcpy(&ctx.buffer[used], data, available);
-		data = (const byte *)data + available;
+		data = data + available;
 		size -= available;
 		md5Body(ctx, ctx.buffer, 64);
 	}
@@ -341,7 +341,7 @@ void hashMD5(const UString &string, std::vector<byte> &digest) {
 }
 
 void hashMD5(const std::vector<byte> &data, std::vector<byte> &digest) {
-	hashMD5((const byte *) &data[0], data.size(), digest);
+	hashMD5(&data[0], data.size(), digest);
 }
 
 
@@ -370,7 +370,7 @@ bool compareMD5Digest(const UString &string, const std::vector<byte> &digest) {
 }
 
 bool compareMD5Digest(const std::vector<byte> &data, const std::vector<byte> &digest) {
-	return compareMD5Digest((const byte *) &data[0], data.size(), digest);
+	return compareMD5Digest(&data[0], data.size(), digest);
 }
 
 } // End of namespace Common
