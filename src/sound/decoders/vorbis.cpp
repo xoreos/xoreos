@@ -168,7 +168,7 @@ bool VorbisStream::rewind() {
 bool VorbisStream::refill() {
 	// Read the samples
 	size_t len_left = sizeof(_buffer);
-	char *read_pos = (char *)_buffer;
+	char *read_pos = reinterpret_cast<char *>(_buffer);
 
 	while (len_left > 0) {
 		long result;
@@ -215,7 +215,7 @@ bool VorbisStream::refill() {
 	}
 
 	_pos = _buffer;
-	_bufferEnd = (int16 *)read_pos;
+	_bufferEnd = reinterpret_cast<int16 *>(read_pos);
 
 	return true;
 }
