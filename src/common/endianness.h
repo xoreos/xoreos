@@ -189,16 +189,16 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 		static inline uint16 READ_UINT16(const void *ptr) {
 			const uint8 *b = static_cast<const uint8 *>(ptr);
-			return (b[1] << 8) | b[0];
+			return ((uint16)b[1] << 8) | (uint16)b[0];
 		}
 		static inline uint32 READ_UINT32(const void *ptr) {
 			const uint8 *b = static_cast<const uint8 *>(ptr);
-			return (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | (b[0]);
+			return ((uint32)b[3] << 24) | (uint32)(b[2] << 16) | (uint32)(b[1] << 8) | (uint32)(b[0]);
 		}
 		static inline uint64 READ_UINT64(const void *ptr) {
 			const uint8 *b = static_cast<const uint8 *>(ptr);
-			return (b[7] << 56) | (b[6] << 48) | (b[5] << 40) | (b[4] << 32) |
-			       (b[3] << 24) | (b[2] << 16) | (b[1] <<  8) | (b[0]);
+			return ((uint64)b[7] << 56) | ((uint64)b[6] << 48) | ((uint64)b[5] << 40) | ((uint64)b[4] << 32) |
+			       ((uint64)b[3] << 24) | ((uint64)b[2] << 16) | ((uint64)b[1] <<  8) | ((uint64)b[0]);
 		}
 		static inline void WRITE_UINT16(void *ptr, uint16 value) {
 			uint8 *b = static_cast<uint8 *>(ptr);
@@ -228,16 +228,16 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 		static inline uint16 READ_UINT16(const void *ptr) {
 			const uint8 *b = static_cast<const uint8 *>(ptr);
-			return (b[0] << 8) | b[1];
+			return ((uint16)b[0] << 8) | (uint16)b[1];
 		}
 		static inline uint32 READ_UINT32(const void *ptr) {
 			const uint8 *b = static_cast<const uint8 *>(ptr);
-			return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3]);
+			return ((uint32)b[0] << 24) | ((uint32)b[1] << 16) | ((uint32)b[2] << 8) | ((uint32)b[3]);
 		}
 		static inline uint64 READ_UINT64(const void *ptr) {
 			const uint8 *b = static_cast<const uint8 *>(ptr);
-			return (b[0] << 56) | (b[1] << 48) | (b[2] << 40) | (b[3] << 32) |
-			       (b[4] << 24) | (b[5] << 16) | (b[6] <<  8) | (b[7]);
+			return ((uint64)b[0] << 56) | ((uint64)b[1] << 48) | ((uint64)b[2] << 40) | ((uint64)b[3] << 32) |
+			       ((uint64)b[4] << 24) | ((uint64)b[5] << 16) | ((uint64)b[6] <<  8) | ((uint64)b[7]);
 		}
 		static inline void WRITE_UINT16(void *ptr, uint16 value) {
 			uint8 *b = static_cast<uint8 *>(ptr);
@@ -307,16 +307,16 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 		static inline uint16 READ_BE_UINT16(const void *ptr) {
 			const uint8 *b = static_cast<const uint8 *>(ptr);
-			return (b[0] << 8) | b[1];
+			return ((uint16)b[0] << 8) | (uint16)b[1];
 		}
 		static inline uint32 READ_BE_UINT32(const void *ptr) {
 			const uint8 *b = static_cast<const uint8 *>(ptr);
-			return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3]);
+			return ((uint32)b[0] << 24) | ((uint32)b[1] << 16) | ((uint32)b[2] << 8) | ((uint32)b[3]);
 		}
 		static inline uint32 READ_BE_UINT64(const void *ptr) {
 			const uint8 *b = static_cast<const uint8 *>(ptr);
-			return (b[0] << 56) | (b[1] << 48) | (b[2] << 40) | (b[3] << 32) |
-			       (b[4] << 24) | (b[5] << 16) | (b[6] <<  8) | (b[7]);
+			return ((uint64)b[0] << 56) | ((uint64)b[1] << 48) | ((uint64)b[2] << 40) | ((uint64)b[3] << 32) |
+			       ((uint64)b[4] << 24) | ((uint64)b[5] << 16) | ((uint64)b[6] <<  8) | ((uint64)b[7]);
 		}
 		static inline void WRITE_BE_UINT16(void *ptr, uint16 value) {
 			uint8 *b = static_cast<uint8 *>(ptr);
@@ -404,16 +404,16 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 	static inline uint16 READ_LE_UINT16(const void *ptr) {
 		const uint8 *b = static_cast<const uint8 *>(ptr);
-		return (b[1] << 8) | b[0];
+		return ((uint16)b[1] << 8) | (uint16)b[0];
 	}
 	static inline uint32 READ_LE_UINT32(const void *ptr) {
 		const uint8 *b = static_cast<const uint8 *>(ptr);
-		return (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | (b[0]);
+		return ((uint32)b[3] << 24) | ((uint32)b[2] << 16) | ((uint32)b[1] << 8) | ((uint32)b[0]);
 	}
 	static inline uint64 READ_LE_UINT64(const void *ptr) {
 		const uint8 *b = static_cast<const uint8 *>(ptr);
-		return (b[7] << 56) | (b[6] << 48) | (b[5] << 40) | (b[4] << 32) |
-		       (b[3] << 24) | (b[2] << 16) | (b[1] <<  8) | (b[0]);
+		return ((uint64)b[7] << 56) | ((uint64)b[6] << 48) | ((uint64)b[5] << 40) | ((uint64)b[4] << 32) |
+		       ((uint64)b[3] << 24) | ((uint64)b[2] << 16) | ((uint64)b[1] <<  8) | ((uint64)b[0]);
 	}
 	static inline void WRITE_LE_UINT16(void *ptr, uint16 value) {
 		uint8 *b = static_cast<uint8 *>(ptr);
