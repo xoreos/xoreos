@@ -119,7 +119,9 @@ VertexBuffer &VertexBuffer::operator=(const VertexBuffer &other) {
 	std::vector<VertexAttrib>::const_iterator src = other._decl.begin();
 	std::vector<VertexAttrib>::iterator dest = _decl.begin();
 	while ((src != other._decl.end()) && (dest != _decl.end())) {
-		dest->pointer = (byte *)_data + ((byte *)src->pointer - (byte *)other._data);
+		const byte *ptr = _data + (reinterpret_cast<const byte *>(src->pointer) - other._data);
+
+		dest->pointer = reinterpret_cast<const GLvoid *>(ptr);
 
 		++src;
 		++dest;
