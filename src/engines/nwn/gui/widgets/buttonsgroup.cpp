@@ -60,6 +60,9 @@ void ButtonsGroup::removeButton(WidgetButton *button) {
 }
 
 void ButtonsGroup::setActive(WidgetButton *button) {
+	if (!button)
+		return;
+
 	for (std::vector<WidgetButton *>::iterator it = _buttonsList.begin();
 	     it != _buttonsList.end(); ++it) {
 		// First we check if the button belongs to this group.
