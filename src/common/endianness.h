@@ -125,27 +125,27 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 #if !defined(XOREOS_NEED_ALIGNMENT)
 
 	FORCEINLINE uint16 READ_UINT16(const void *ptr) {
-		return *(const uint16 *)(ptr);
+		return *(static_cast<const uint16 *>(ptr));
 	}
 
 	FORCEINLINE uint32 READ_UINT32(const void *ptr) {
-		return *(const uint32 *)(ptr);
+		return *(static_cast<const uint32 *>(ptr));
 	}
 
 	FORCEINLINE uint64 READ_UINT64(const void *ptr) {
-		return *(const uint64 *)(ptr);
+		return *(static_cast<const uint64 *>(ptr));
 	}
 
 	FORCEINLINE void WRITE_UINT16(void *ptr, uint16 value) {
-		*(uint16 *)(ptr) = value;
+		*static_cast<uint16 *>(ptr) = value;
 	}
 
 	FORCEINLINE void WRITE_UINT32(void *ptr, uint32 value) {
-		*(uint32 *)(ptr) = value;
+		*static_cast<uint32 *>(ptr) = value;
 	}
 
 	FORCEINLINE void WRITE_UINT64(void *ptr, uint64 value) {
-		*(uint64 *)(ptr) = value;
+		*static_cast<uint64 *>(ptr) = value;
 	}
 
 // test for GCC >= 4.0. these implementations will automatically use CPU-specific
@@ -154,32 +154,32 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 	FORCEINLINE uint16 READ_UINT16(const void *ptr) {
 		struct Unaligned16 { uint16 val; } __attribute__ ((__packed__));
-		return ((const Unaligned16 *)ptr)->val;
+		return static_cast<const Unaligned16 *>(ptr)->val;
 	}
 
 	FORCEINLINE uint32 READ_UINT32(const void *ptr) {
 		struct Unaligned32 { uint32 val; } __attribute__ ((__packed__));
-		return ((const Unaligned32 *)ptr)->val;
+		return static_cast<const Unaligned32 *>(ptr)->val;
 	}
 
 	FORCEINLINE uint64 READ_UINT64(const void *ptr) {
 		struct Unaligned64 { uint64 val; } __attribute__ ((__packed__));
-		return ((const Unaligned64 *)ptr)->val;
+		return static_cast<const Unaligned64 *>(ptr)->val;
 	}
 
 	FORCEINLINE void WRITE_UINT16(void *ptr, uint16 value) {
 		struct Unaligned16 { uint16 val; } __attribute__ ((__packed__));
-		((Unaligned16 *)ptr)->val = value;
+		static_cast<Unaligned16 *>(ptr)->val = value;
 	}
 
 	FORCEINLINE void WRITE_UINT32(void *ptr, uint32 value) {
 		struct Unaligned32 { uint32 val; } __attribute__ ((__packed__));
-		((Unaligned32 *)ptr)->val = value;
+		static_cast<Unaligned32 *>(ptr)->val = value;
 	}
 
 	FORCEINLINE void WRITE_UINT64(void *ptr, uint64 value) {
 		struct Unaligned64 { uint64 val; } __attribute__ ((__packed__));
-		((Unaligned64 *)ptr)->val = value;
+		static_cast<Unaligned64 *>(ptr)->val = value;
 	}
 
 // use software fallback by loading each byte explicitely
@@ -188,32 +188,32 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#if defined(XOREOS_LITTLE_ENDIAN)
 
 		static inline uint16 READ_UINT16(const void *ptr) {
-			const uint8 *b = (const uint8 *)ptr;
+			const uint8 *b = static_cast<const uint8 *>(ptr);
 			return (b[1] << 8) | b[0];
 		}
 		static inline uint32 READ_UINT32(const void *ptr) {
-			const uint8 *b = (const uint8 *)ptr;
+			const uint8 *b = static_cast<const uint8 *>(ptr);
 			return (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | (b[0]);
 		}
 		static inline uint64 READ_UINT64(const void *ptr) {
-			const uint8 *b = (const uint8 *)ptr;
+			const uint8 *b = static_cast<const uint8 *>(ptr);
 			return (b[7] << 56) | (b[6] << 48) | (b[5] << 40) | (b[4] << 32) |
 			       (b[3] << 24) | (b[2] << 16) | (b[1] <<  8) | (b[0]);
 		}
 		static inline void WRITE_UINT16(void *ptr, uint16 value) {
-			uint8 *b = (uint8 *)ptr;
+			uint8 *b = static_cast<uint8 *>(ptr);
 			b[0] = (uint8)(value >> 0);
 			b[1] = (uint8)(value >> 8);
 		}
 		static inline void WRITE_UINT32(void *ptr, uint32 value) {
-			uint8 *b = (uint8 *)ptr;
+			uint8 *b = static_cast<uint8 *>(ptr);
 			b[0] = (uint8)(value >>  0);
 			b[1] = (uint8)(value >>  8);
 			b[2] = (uint8)(value >> 16);
 			b[3] = (uint8)(value >> 24);
 		}
 		static inline void WRITE_UINT64(void *ptr, uint64 value) {
-			uint8 *b = (uint8 *)ptr;
+			uint8 *b = static_cast<uint8 *>(ptr);
 			b[0] = (uint8)(value >>  0);
 			b[1] = (uint8)(value >>  8);
 			b[2] = (uint8)(value >> 16);
@@ -227,32 +227,32 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#elif defined(XOREOS_BIG_ENDIAN)
 
 		static inline uint16 READ_UINT16(const void *ptr) {
-			const uint8 *b = (const uint8 *)ptr;
+			const uint8 *b = static_cast<const uint8 *>(ptr);
 			return (b[0] << 8) | b[1];
 		}
 		static inline uint32 READ_UINT32(const void *ptr) {
-			const uint8 *b = (const uint8 *)ptr;
+			const uint8 *b = static_cast<const uint8 *>(ptr);
 			return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3]);
 		}
 		static inline uint64 READ_UINT64(const void *ptr) {
-			const uint8 *b = (const uint8 *)ptr;
+			const uint8 *b = static_cast<const uint8 *>(ptr);
 			return (b[0] << 56) | (b[1] << 48) | (b[2] << 40) | (b[3] << 32) |
 			       (b[4] << 24) | (b[5] << 16) | (b[6] <<  8) | (b[7]);
 		}
 		static inline void WRITE_UINT16(void *ptr, uint16 value) {
-			uint8 *b = (uint8 *)ptr;
+			uint8 *b = static_cast<uint8 *>(ptr);
 			b[0] = (uint8)(value >> 8);
 			b[1] = (uint8)(value >> 0);
 		}
 		static inline void WRITE_UINT32(void *ptr, uint32 value) {
-			uint8 *b = (uint8 *)ptr;
+			uint8 *b = static_cast<uint8 *>(ptr);
 			b[0] = (uint8)(value >> 24);
 			b[1] = (uint8)(value >> 16);
 			b[2] = (uint8)(value >>  8);
 			b[3] = (uint8)(value >>  0);
 		}
 		static inline void WRITE_UINT64(void *ptr, uint64 value) {
-			uint8 *b = (uint8 *)ptr;
+			uint8 *b = static_cast<uint8 *>(ptr);
 			b[0] = (uint8)(value >> 56);
 			b[1] = (uint8)(value >> 48);
 			b[2] = (uint8)(value >> 40);
@@ -306,32 +306,32 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#if defined(XOREOS_NEED_ALIGNMENT) && !defined(__mips__)
 
 		static inline uint16 READ_BE_UINT16(const void *ptr) {
-			const uint8 *b = (const uint8 *)ptr;
+			const uint8 *b = static_cast<const uint8 *>(ptr);
 			return (b[0] << 8) | b[1];
 		}
 		static inline uint32 READ_BE_UINT32(const void *ptr) {
-			const uint8 *b = (const uint8 *)ptr;
+			const uint8 *b = static_cast<const uint8 *>(ptr);
 			return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | (b[3]);
 		}
 		static inline uint32 READ_BE_UINT64(const void *ptr) {
-			const uint8 *b = (const uint8 *)ptr;
+			const uint8 *b = static_cast<const uint8 *>(ptr);
 			return (b[0] << 56) | (b[1] << 48) | (b[2] << 40) | (b[3] << 32) |
 			       (b[4] << 24) | (b[5] << 16) | (b[6] <<  8) | (b[7]);
 		}
 		static inline void WRITE_BE_UINT16(void *ptr, uint16 value) {
-			uint8 *b = (uint8 *)ptr;
+			uint8 *b = static_cast<uint8 *>(ptr);
 			b[0] = (uint8)(value >> 8);
 			b[1] = (uint8)(value >> 0);
 		}
 		static inline void WRITE_BE_UINT32(void *ptr, uint32 value) {
-			uint8 *b = (uint8 *)ptr;
+			uint8 *b = static_cast<uint8 *>(ptr);
 			b[0] = (uint8)(value >> 24);
 			b[1] = (uint8)(value >> 16);
 			b[2] = (uint8)(value >>  8);
 			b[3] = (uint8)(value >>  0);
 		}
 		static inline void WRITE_BE_UINT64(void *ptr, uint64 value) {
-			uint8 *b = (uint8 *)ptr;
+			uint8 *b = static_cast<uint8 *>(ptr);
 			b[0] = (uint8)(value >> 56);
 			b[1] = (uint8)(value >> 48);
 			b[2] = (uint8)(value >> 40);
@@ -403,32 +403,32 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#if defined(XOREOS_NEED_ALIGNMENT) && !defined(__mips__)
 
 	static inline uint16 READ_LE_UINT16(const void *ptr) {
-		const uint8 *b = (const uint8 *)ptr;
+		const uint8 *b = static_cast<const uint8 *>(ptr);
 		return (b[1] << 8) | b[0];
 	}
 	static inline uint32 READ_LE_UINT32(const void *ptr) {
-		const uint8 *b = (const uint8 *)ptr;
+		const uint8 *b = static_cast<const uint8 *>(ptr);
 		return (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | (b[0]);
 	}
 	static inline uint64 READ_LE_UINT64(const void *ptr) {
-		const uint8 *b = (const uint8 *)ptr;
+		const uint8 *b = static_cast<const uint8 *>(ptr);
 		return (b[7] << 56) | (b[6] << 48) | (b[5] << 40) | (b[4] << 32) |
 		       (b[3] << 24) | (b[2] << 16) | (b[1] <<  8) | (b[0]);
 	}
 	static inline void WRITE_LE_UINT16(void *ptr, uint16 value) {
-		uint8 *b = (uint8 *)ptr;
+		uint8 *b = static_cast<uint8 *>(ptr);
 		b[0] = (uint8)(value >> 0);
 		b[1] = (uint8)(value >> 8);
 	}
 	static inline void WRITE_LE_UINT32(void *ptr, uint32 value) {
-		uint8 *b = (uint8 *)ptr;
+		uint8 *b = static_cast<uint8 *>(ptr);
 		b[0] = (uint8)(value >>  0);
 		b[1] = (uint8)(value >>  8);
 		b[2] = (uint8)(value >> 16);
 		b[3] = (uint8)(value >> 24);
 	}
 	static inline void WRITE_LE_UINT64(void *ptr, uint64 value) {
-		uint8 *b = (uint8 *)ptr;
+		uint8 *b = static_cast<uint8 *>(ptr);
 		b[0] = (uint8)(value >>  0);
 		b[1] = (uint8)(value >>  8);
 		b[2] = (uint8)(value >> 16);
