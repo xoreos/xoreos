@@ -95,7 +95,7 @@ size_t Interleaver::readBuffer(int16 *buffer, const size_t numSamples) {
 				return kSizeInvalid;
 
 			if (nRead != channels)
-				memset((byte *) buffer, 0, 2 * channels);
+				memset(buffer, 0, 2 * channels);
 
 			buffer  += channels;
 			samples += (*s)->getChannels();
