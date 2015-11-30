@@ -309,8 +309,6 @@ template<> UString composeString(double value) {
 	return UString::format("%lf", value);
 }
 
-template UString composeString<bool              >(bool               value);
-
 template UString composeString<  signed char     >(  signed char      value);
 template UString composeString<unsigned char     >(unsigned char      value);
 template UString composeString<  signed short    >(  signed short     value);
@@ -321,8 +319,5 @@ template UString composeString<  signed long     >(  signed long      value);
 template UString composeString<unsigned long     >(unsigned long      value);
 template UString composeString<  signed long long>(  signed long long value);
 template UString composeString<unsigned long long>(unsigned long long value);
-
-template UString composeString<float             >(float              value);
-template UString composeString<double            >(double             value);
 
 } // End of namespace Common
