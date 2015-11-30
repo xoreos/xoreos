@@ -259,7 +259,7 @@ void Bink::audioPacket(AudioTrack &audio) {
 			return;
 		}
 
-		queueSound((const byte *) out, audio.blockSize * 2);
+		queueSound(reinterpret_cast<const byte *>(out), audio.blockSize * 2);
 
 		if (audio.bits->pos() & 0x1F) // next data block starts at a 32-byte boundary
 			audio.bits->skip(32 - (audio.bits->pos() & 0x1F));
@@ -725,7 +725,7 @@ int32 Bink::getBundleValue(Source source) {
 	if ((source == kSourceXOff) || (source == kSourceYOff))
 		return (int8) *_bundles[source].curPtr++;
 
-	int16 ret = *((int16 *) _bundles[source].curPtr);
+	int16 ret = *reinterpret_cast<int16 *>(_bundles[source].curPtr);
 
 	_bundles[source].curPtr += 2;
 
@@ -1162,7 +1162,7 @@ void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSig
 	if (length == 0)
 		return;
 
-	int16 *dest = (int16 *) bundle.curDec;
+	int16 *dest = reinterpret_cast<int16 *>(bundle.curDec);
 
 	int32 v = video.bits->getBits(startBits - (hasSign ? 1 : 0));
 	if (v && hasSign) {
@@ -1199,7 +1199,7 @@ void Bink::readDCS(VideoFrame &video, Bundle &bundle, int startBits, bool hasSig
 				*dest++ = v;
 	}
 
-	bundle.curDec = (byte *) dest;
+	bundle.curDec = reinterpret_cast<byte *>(dest);
 }
 
 /* WORKAROUND: This fixes the NWN2 WotC logo.
@@ -1429,7 +1429,7 @@ void Bink::audioBlock(AudioTrack &audio, int16 *out) {
 	else if (audio.codec == kAudioCodecRDFT)
 		audioBlockRDFT(audio);
 
-	Sound::floatToInt16Interleave(out, (const float **) audio.coeffsPtr,
+	Sound::floatToInt16Interleave(out, const_cast<const float **>(audio.coeffsPtr),
 	                              audio.frameLen, audio.channels);
 
 	if (!audio.first) {
