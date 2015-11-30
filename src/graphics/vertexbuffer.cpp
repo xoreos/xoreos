@@ -31,6 +31,14 @@
 
 namespace Graphics {
 
+GLvoid *VertexAttrib::getData() {
+	return const_cast<GLvoid *>(pointer);
+}
+
+const GLvoid *VertexAttrib::getData() const {
+	return pointer;
+}
+
 void VertexAttrib::enable() const {
 	switch (index) {
 		case VPOSITION:

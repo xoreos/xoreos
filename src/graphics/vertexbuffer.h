@@ -51,6 +51,9 @@ struct VertexAttrib {
 	VertexAttrib(GLuint i, GLint s, GLenum t, GLsizei st = 0, const GLvoid *p = 0) :
 		index(i), size(s), type(t), stride(st), pointer(p) { }
 
+	GLvoid *getData();
+	const GLvoid *getData() const;
+
 	// Render methods
 	void enable() const;
 	void disable() const;
