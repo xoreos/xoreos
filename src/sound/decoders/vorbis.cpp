@@ -42,7 +42,7 @@ namespace Sound {
 // provide data to the OggVorbis_File object.
 
 static size_t read_stream_wrap(void *ptr, size_t size, size_t nmemb, void *datasource) {
-	Common::SeekableReadStream *stream = (Common::SeekableReadStream *)datasource;
+	Common::SeekableReadStream *stream = static_cast<Common::SeekableReadStream *>(datasource);
 
 	size_t result = stream->read(ptr, size * nmemb);
 
@@ -66,7 +66,7 @@ static int seek_stream_wrap(void *datasource, ogg_int64_t offset, int whence) {
 			break;
 	}
 
-	Common::SeekableReadStream *stream = (Common::SeekableReadStream *)datasource;
+	Common::SeekableReadStream *stream = static_cast<Common::SeekableReadStream *>(datasource);
 	stream->seek((ptrdiff_t)offset, seekOrigin);
 	return stream->pos();
 }
@@ -77,7 +77,7 @@ static int close_stream_wrap(void *UNUSED(datasource)) {
 }
 
 static long tell_stream_wrap(void *datasource) {
-	Common::SeekableReadStream *stream = (Common::SeekableReadStream *)datasource;
+	Common::SeekableReadStream *stream = static_cast<Common::SeekableReadStream *>(datasource);
 	return stream->pos();
 }
 
