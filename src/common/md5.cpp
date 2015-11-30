@@ -115,7 +115,7 @@ struct MD5Context {
  */
 #if defined(__i386__) || defined(__x86_64__) || defined(__vax__)
 #define SET(n) \
-	(*(uint32 *)&ptr[(n) * 4])
+	(*const_cast<uint32 *>(reinterpret_cast<const uint32 *>(&ptr[(n) * 4])))
 #define GET(n) \
 	SET(n)
 #else
