@@ -205,11 +205,11 @@ void VertexBuffer::setVertexDeclInterleave(uint32 vertCount, VertexDecl &decl) {
 }
 
 GLvoid *VertexBuffer::getData() {
-	return _data;
+	return static_cast<GLvoid *>(_data);
 }
 
 const GLvoid *VertexBuffer::getData() const {
-	return (const GLvoid *) _data;
+	return static_cast<const GLvoid *>(_data);
 }
 
 const VertexDecl &VertexBuffer::getVertexDecl() const {
