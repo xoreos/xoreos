@@ -93,9 +93,9 @@ void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStre
 	    xvid_dec_frame.output.plane[2])
 		YUVToRGBMan.convert420(Graphics::YUVToRGBManager::kScaleFull,
 				surface.getData(), surface.getWidth() * 4,
-				(const byte *) xvid_dec_frame.output.plane[0],
-				(const byte *) xvid_dec_frame.output.plane[1],
-				(const byte *) xvid_dec_frame.output.plane[2], _width, _height,
+				static_cast<const byte *>(xvid_dec_frame.output.plane[0]),
+				static_cast<const byte *>(xvid_dec_frame.output.plane[1]),
+				static_cast<const byte *>(xvid_dec_frame.output.plane[2]), _width, _height,
 				xvid_dec_frame.output.stride[0], xvid_dec_frame.output.stride[1]);
 }
 
