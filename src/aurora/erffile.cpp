@@ -194,7 +194,7 @@ void ERFFile::verifyPasswordDigest() {
 
 		// Parse the password into a number, and create an 8-byte little endian array out of it
 
-		Common::UString passwordString((const char *) &_password[0], _password.size());
+		Common::UString passwordString(reinterpret_cast<const char *>(&_password[0]), _password.size());
 
 		uint64 passwordNumber = 0;
 		Common::parseString(passwordString, passwordNumber);
