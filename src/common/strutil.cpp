@@ -250,8 +250,6 @@ template<> void parseString(const UString &str, bool &value, bool allowEmpty) {
 	}
 }
 
-template void parseString<bool              >(const UString &str, bool               &value, bool allowEmpty);
-
 template void parseString<  signed char     >(const UString &str,   signed char      &value, bool allowEmpty);
 template void parseString<unsigned char     >(const UString &str, unsigned char      &value, bool allowEmpty);
 template void parseString<  signed short    >(const UString &str,   signed short     &value, bool allowEmpty);
