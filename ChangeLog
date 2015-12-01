@@ -4,6 +4,9 @@ Someday, ????-??-?? (Version 0.0.4)
 	- BUILD:
 		- Fixed various little problems in the CMake system related to
 		  non-MSVC compilers
+		- Added configure/CMake option to let the user select between
+		  internal and external GLEW libraries
+		- Added dynamic supported warning flag detected to CMake
 	- ENGINES:
 		- NWN:
 			- Implemented support for premium modules
