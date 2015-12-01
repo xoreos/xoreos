@@ -10,6 +10,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(GNUInstallDirs)
 include(CheckIncludeFile)
 include(CMakeAM)
+include(SetCheckCompilerFlag)
 
 
 # -------------------------------------------------------------------------
@@ -20,7 +21,7 @@ if(CMAKE_HOST_APPLE)
 elseif(CMAKE_HOST_UNIX)
   add_definitions(-DUNIX)
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Wno-unused-parameter -fdata-sections -ffunction-sections -fno-show-column -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdata-sections -ffunction-sections -fno-show-column -std=c++11")
 
   # Wrap libraries in --start-group and --end-group to easily support static linking and symbol resolution, maybe useful on APPLE also, but I don't know
   string(REPLACE "<LINK_LIBRARIES>" "-Wl,--gc-sections -Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_LINK_EXECUTABLE}")
@@ -37,6 +38,21 @@ elseif(CMAKE_HOST_WIN32)
 else()
   message(STATUS "Unknown platform, maybe not supported")
 endif()
+
+# Compiler warning flags
+set_check_compiler_flag_c_cxx("-Wignored-qualifiers")
+set_check_compiler_flag_c_cxx("-Wpointer-arith")
+set_check_compiler_flag_c_cxx("-Wshadow")
+set_check_compiler_flag_c_cxx("-Wsign-compare")
+set_check_compiler_flag_c_cxx("-Wtype-limits")
+set_check_compiler_flag_c_cxx("-Wuninitialized")
+set_check_compiler_flag_c_cxx("-Wunused-parameter")
+set_check_compiler_flag_c_cxx("-Wunused-but-set-parameter")
+set_check_compiler_flag_c_cxx("-Wlong-long" "-Wno-long-long")
+
+set_check_compiler_flag_cxx("-Wnon-virtual-dtor")
+set_check_compiler_flag_cxx("-Woverloaded-virtual" "-Wno-overloaded-virtual")
+set_check_compiler_flag_cxx("-Wc++11-long-long" "-Wno-c++11-long-long")
 
 # platform specific warning settings
 if(CMAKE_HOST_WIN32)
@@ -82,9 +98,6 @@ if(CMAKE_HOST_WIN32)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNINGS} ${MT_BUILD}")
   endif()
-else()
-  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wno-multichar -Wpointer-arith -Wshadow")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-multichar -Wpointer-arith -Wshadow -Wnon-virtual-dtor")
 endif()
 
 
