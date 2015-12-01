@@ -13,6 +13,9 @@ Someday, ????-??-?? (Version 0.0.4)
 		- DRAGONAGE:
 			- Added engine script functions from the 1.01 and 1.03
 			  updates
+	- MISC:
+		- Changed C-style casts to static_cast and reinterpret_cast
+		  in various places
 
 Wednesday, 2015-09-30 (Version 0.0.3)
 	- DOCS:
