@@ -23,10 +23,7 @@ function(set_check_compiler_flag_cxx FLAG)
   endif()
 endfunction()
 
-function(set_check_compiler_flag_c_cxx FLAG)
+macro(set_check_compiler_flag_c_cxx FLAG)
   set_check_compiler_flag_c(${FLAG} ${ARGN})
   set_check_compiler_flag_cxx(${FLAG} ${ARGN})
-
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" PARENT_SCOPE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
-endfunction()
+endmacro()
