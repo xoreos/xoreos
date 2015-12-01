@@ -21,7 +21,7 @@ if(CMAKE_HOST_APPLE)
 elseif(CMAKE_HOST_UNIX)
   add_definitions(-DUNIX)
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdata-sections -ffunction-sections -fno-show-column -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdata-sections -ffunction-sections -fno-show-column")
 
   # Wrap libraries in --start-group and --end-group to easily support static linking and symbol resolution, maybe useful on APPLE also, but I don't know
   string(REPLACE "<LINK_LIBRARIES>" "-Wl,--gc-sections -Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_LINK_EXECUTABLE}")
@@ -38,6 +38,10 @@ elseif(CMAKE_HOST_WIN32)
 else()
   message(STATUS "Unknown platform, maybe not supported")
 endif()
+
+# C/C++ standards we're compiling against
+set_check_compiler_flag_c("-std=c99")
+set_check_compiler_flag_cxx("-std=c++03")
 
 # Compiler warning flags
 set_check_compiler_flag_c_cxx("-Wignored-qualifiers")
