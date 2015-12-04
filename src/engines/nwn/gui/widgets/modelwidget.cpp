@@ -83,6 +83,12 @@ float ModelWidget::getHeight() const {
 	return _model->getHeight();
 }
 
+void ModelWidget::setTag(const Common::UString &tag) {
+	Widget::setTag(tag);
+
+	_model->setTag(tag);
+}
+
 Graphics::Aurora::ModelNode *ModelWidget::getNode(const Common::UString &nodeName) const {
 	return _model->getNode(nodeName);
 }

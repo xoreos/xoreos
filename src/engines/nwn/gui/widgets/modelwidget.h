@@ -56,6 +56,8 @@ public:
 	float getWidth () const;
 	float getHeight() const;
 
+	void setTag(const Common::UString &tag);
+
 	Graphics::Aurora::ModelNode *getNode(const Common::UString &nodeName) const;
 
 protected:
