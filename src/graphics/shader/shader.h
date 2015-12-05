@@ -20,9 +20,8 @@
 
 /** @file
  *  The global shader manager.
- */
-
-/** Developer's Notes:
+ *
+ *  Developer's Notes:
  *  This form of shader handling is absolute overkill for xoreos. It's based
  *  upon code developed for a different project, then plugged into xoreos to
  *  save some wheel reinvention. It is, however, rather flexible and should
