@@ -151,7 +151,8 @@ Links
 - [xoreos website](https://xoreos.org/)
 - [xoreos wiki](https://wiki.xoreos.org/)
 - [Screenshots](https://xoreos.org/screenshots/index.html)
-- [Source repository](https://github.com/xoreos/xoreos)
+- [Main source repository](https://github.com/xoreos/xoreos)
+- [All xoreos repositories](https://github.com/xoreos/)
 
 
 Contact
