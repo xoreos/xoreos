@@ -153,6 +153,7 @@ Links
 - [Screenshots](https://xoreos.org/screenshots/index.html)
 - [Main source repository](https://github.com/xoreos/xoreos)
 - [All xoreos repositories](https://github.com/xoreos/)
+- [Doxygen documentation](https://xoreos.org/doxygen/)
 
 
 Contact
