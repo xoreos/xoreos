@@ -147,8 +147,11 @@ int main(int argc, char **argv) {
 		error("Invalid path \"%s\"", dirArg.c_str());
 	}
 
-	if (!Common::FilePath::isDirectory(baseDir) && !Common::FilePath::isRegularFile(baseDir))
-		error("No such file or directory \"%s\"", baseDir.c_str());
+	if (!Common::FilePath::isDirectory(baseDir))
+		if (!Common::FilePath::isRegularFile(baseDir))
+			error("No such file or directory \"%s\"", baseDir.c_str());
+		else
+			error("Target \"%s\" is a file instead of a directory", baseDir.c_str());
 
 	Engines::GameThread *gameThread = new Engines::GameThread;
 	try {
