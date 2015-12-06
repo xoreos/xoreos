@@ -59,7 +59,7 @@ public:
 private:
 	bool _hasMapNote;         ///< Does this waypoint have a map note?
 	bool _displayMapNote;     ///< Does this waypoint show the map note?
-	int _mapNoteType;         ///< Type of map note
+	int _mapNoteType;         ///< Type of map note.
 	Common::UString _mapNote; ///< The waypoint's map note text.
 
 	/** Load from a waypoint instance. */

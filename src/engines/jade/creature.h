@@ -67,8 +67,8 @@ public:
 
 	// Object/Cursor interactions
 
-	void enter(); ///< The cursor entered the creature. */
-	void leave(); ///< The cursor left the creature. */
+	void enter(); ///< The cursor entered the creature.
+	void leave(); ///< The cursor left the creature.
 
 	/** (Un)Highlight the creature. */
 	virtual void highlight(bool enabled);
@@ -79,7 +79,7 @@ private:
 	uint32 _appearance; ///< The creature's general appearance.
 	uint32 _headType;   ///< The creature's type of head if seperate from the model.
 
-	Graphics::Aurora::Model *_model; ///< The creature's model. */
+	Graphics::Aurora::Model *_model; ///< The creature's model.
 
 
 	void load(const Aurora::GFF3Struct &creature);
