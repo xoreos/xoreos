@@ -102,11 +102,11 @@ private:
 	int _byteOffsetBits;
 
 	// Coefficients
-	int    _coefsStart;                       ///< First coded coef
-	int    _coefsEnd[kBlockNBSizes];          ///< Max number of coded coefficients
+	int    _coefsStart;                       ///< First coded coef.
+	int    _coefsEnd[kBlockNBSizes];          ///< Max number of coded coefficients.
 	int    _exponentSizes[kBlockNBSizes];
 	uint16 _exponentBands[kBlockNBSizes][25];
-	int    _highBandStart[kBlockNBSizes];     ///< Index of first coef in high band
+	int    _highBandStart[kBlockNBSizes];     ///< Index of first coef in high band.
 	int    _exponentHighSizes[kBlockNBSizes];
 	int    _exponentHighBands[kBlockNBSizes][kHighBandSizeMax];
 
@@ -151,8 +151,8 @@ private:
 
 	/** Overhang from the last superframe. */
 	byte _lastSuperframe[kSuperframeSizeMax + 4];
-	int  _lastSuperframeLen; ///< Size of the overhang data. */
-	int  _lastBitoffset;     ///< Bit position within the overhang. */
+	int  _lastSuperframeLen; ///< Size of the overhang data.
+	int  _lastBitoffset;     ///< Bit position within the overhang.
 
 	// Output
 	float _output[kBlockSizeMax * 2];

@@ -48,11 +48,11 @@ template<bool is16Bit, bool isUnsigned, bool isLE>
 class PCMStream : public RewindableAudioStream {
 
 protected:
-	const int _rate;                     ///< Sample rate of stream
-	const int _channels;                 ///< Amount of channels
+	const int _rate;                     ///< Sample rate of stream.
+	const int _channels;                 ///< Amount of channels.
 
-	Common::SeekableReadStream *_stream; ///< Stream to read data from
-	const bool _disposeAfterUse;         ///< Indicates whether the stream object should be deleted when this RawStream is destructed
+	Common::SeekableReadStream *_stream; ///< Stream to read data from.
+	const bool _disposeAfterUse;         ///< Indicates whether the stream object should be deleted when this RawStream is destructed.
 
 public:
 	PCMStream(int rate, int channels, bool disposeStream, Common::SeekableReadStream *stream)
