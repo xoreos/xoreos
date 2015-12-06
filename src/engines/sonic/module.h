@@ -68,9 +68,9 @@ protected:
 	::Engines::Console *_console;
 
 	bool _running; ///< Are we currently running a module?
-	bool _exit;    //< Should we exit the module?
+	bool _exit;    ///< Should we exit the module?
 
-	int32 _newArea; ///< The new area to enter
+	int32 _newArea; ///< The new area to enter.
 
 	Area *_area; ///< The current area.
 
