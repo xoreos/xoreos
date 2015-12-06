@@ -163,7 +163,7 @@ private:
 	/** Resources added by the current texture pack. */
 	Common::ChangeID _textures;
 
-	bool _exit; //< Should we exit the module?
+	bool _exit; ///< Should we exit the module?
 
 	Common::UString _module;    ///< The current module's name.
 	Common::UString _newModule; ///< The module we should change to.
