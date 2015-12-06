@@ -175,8 +175,8 @@ public:
 
 	// Object/Cursor interactions
 
-	void enter(); ///< The cursor entered the creature. */
-	void leave(); ///< The cursor left the creature. */
+	void enter(); ///< The cursor entered the creature.
+	void leave(); ///< The cursor left the creature.
 
 	/** (Un)Highlight the creature. */
 	virtual void highlight(bool enabled);
@@ -279,7 +279,7 @@ private:
 	Common::UString _deity; ///< The creature's deity.
 
 	uint8 _goodEvil; ///< The creature's good/evil value (0-100).
-	uint8 _lawChaos; ///< The creature's law/chaos value (0-100);
+	uint8 _lawChaos; ///< The creature's law/chaos value (0-100).
 
 	uint32 _appearanceID; ///< The creature's general appearance.
 	uint32 _phenotype;    ///< The creature's phenotype.
@@ -288,7 +288,7 @@ private:
 
 	std::vector<Item *> _equippedItems; ///< The creature's equipped items.
 
-	Common::UString _partsSuperModelName; ///< The supermodel used for parts-based creatures
+	Common::UString _partsSuperModelName; ///< The supermodel used for parts-based creatures.
 
 	Common::UString _environmentMap; ///< The environment map override to use on the model.
 
@@ -310,7 +310,7 @@ private:
 	/** Is the creature commandable (has a modifyable action queue)? */
 	bool _isCommandable;
 
-	Graphics::Aurora::Model *_model; ///< The creature's model. */
+	Graphics::Aurora::Model *_model; ///< The creature's model.
 
 	Tooltip *_tooltip; ///< The tooltip displayed over the creature.
 

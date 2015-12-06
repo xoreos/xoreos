@@ -55,7 +55,7 @@ public:
 	uint64 getVersion() const;      ///< Return the combined version.
 	uint16 getVersionMajor() const; ///< Return the major version.
 	uint16 getVersionMinor() const; ///< Return the minor version.
-	uint16 getVersionBuild() const; ///< Return the build number
+	uint16 getVersionBuild() const; ///< Return the build number.
 
 	Common::UString getVersionString() const;
 
@@ -65,7 +65,7 @@ public:
 	static uint64 getOptimumVersion();      ///< Return the optimum combined version.
 	static uint16 getOptimumVersionMajor(); ///< Return the optimum major version.
 	static uint16 getOptimumVersionMinor(); ///< Return the optimum minor version.
-	static uint16 getOptimumVersionBuild(); ///< Return the optimum build number
+	static uint16 getOptimumVersionBuild(); ///< Return the optimum build number.
 
 	static Common::UString getOptimumVersionString();
 

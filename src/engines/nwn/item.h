@@ -96,7 +96,7 @@ private:
 
 	uint32 _baseItem; ///< The index within the baseitem 2DA.
 
-	uint32 _colors[kColorMAX];         ///< The item's colors
+	uint32 _colors[kColorMAX];         ///< The item's colors.
 	uint32 _armorParts[kArmorPartMAX]; ///< The item's armor parts.
 
 	Graphics::Aurora::Model *_model; ///< The item's model.

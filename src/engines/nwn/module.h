@@ -194,7 +194,7 @@ private:
 	int _currentTexturePack;
 	Common::ChangeID _resTP[4];
 
-	bool _exit; //< Should we exit the module?
+	bool _exit; ///< Should we exit the module?
 
 	AreaMap         _areas;           ///< The areas in the current module.
 	Common::UString _newArea;         ///< The new area to enter.
