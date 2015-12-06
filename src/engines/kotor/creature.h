@@ -67,8 +67,8 @@ public:
 
 	// Object/Cursor interactions
 
-	void enter(); ///< The cursor entered the creature. */
-	void leave(); ///< The cursor left the creature. */
+	void enter(); ///< The cursor entered the creature.
+	void leave(); ///< The cursor left the creature.
 
 	/** (Un)Highlight the creature. */
 	void highlight(bool enabled);
@@ -91,7 +91,7 @@ private:
 
 	uint32 _appearance; ///< The creature's general appearance.
 
-	Graphics::Aurora::Model *_model; ///< The creature's model. */
+	Graphics::Aurora::Model *_model; ///< The creature's model.
 
 
 	void init();

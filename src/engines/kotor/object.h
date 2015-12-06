@@ -88,8 +88,8 @@ public:
 
 	// Object/Cursor interactions
 
-	virtual void enter(); ///< The cursor entered the object. */
-	virtual void leave(); ///< The cursor left the object. */
+	virtual void enter(); ///< The cursor entered the object.
+	virtual void leave(); ///< The cursor left the object.
 
 	/** (Un)Highlight the object. */
 	virtual void highlight(bool enabled);
