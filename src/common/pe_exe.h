@@ -57,7 +57,7 @@ public:
 private:
 	/** An ID Type. */
 	enum IDType {
-		kIDTypeNull,      ///< No type set
+		kIDTypeNull,      ///< No type set.
 		kIDTypeNumerical, ///< A numerical ID.
 		kIDTypeString     ///< A string ID.
 	} _idType;
