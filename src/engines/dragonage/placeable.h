@@ -50,8 +50,8 @@ public:
 
 	// Object/Cursor interactions
 
-	void enter(); ///< The cursor entered the placeable. */
-	void leave(); ///< The cursor left the placeable. */
+	void enter(); ///< The cursor entered the placeable.
+	void leave(); ///< The cursor left the placeable.
 
 	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
