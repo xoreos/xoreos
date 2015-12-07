@@ -136,8 +136,8 @@ protected:
 	float _orientation[4]; ///< Orientation of the node.
 	float _scale      [3]; ///< Scale of the node.
 
-	std::vector<PositionKeyFrame> _positionFrames; ///< Keyframes for position animation
-	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation
+	std::vector<PositionKeyFrame> _positionFrames;      ///< Keyframes for position animation.
+	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation.
 
 	/** Position of the node after translate/rotate. */
 	Common::TransformationMatrix _absolutePosition;

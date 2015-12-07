@@ -124,7 +124,7 @@ private:
 		kMeshDeclTypeFloat32_2 =  1, ///< 2 32-bit floats.
 		kMeshDeclTypeFloat32_3 =  2, ///< 3 32-bit floats.
 		kMeshDeclTypeFloat32_4 =  3, ///< 4 32-bit floats.
-		kMeshDeclTypeColor     =  4, ///< 4-byte color
+		kMeshDeclTypeColor     =  4, ///< 4-byte color.
 		kMeshDeclTypeUint8_4   =  5, ///< 4 unsigned 8-bit integers.
 		kMeshDeclTypeSint16_2  =  6, ///< 2 signed 16-bit integers.
 		kMeshDeclTypeSint16_4  =  7, ///< 4 signed 16-bit integers.

@@ -44,7 +44,7 @@ extern const char *kSystemFontMono;
 /** The format of a font. */
 enum FontFormat {
 	kFontFormatUnknown = 0, ///< Unknown font format.
-	kFontFormatTexture    , ///< Textured font, used by NWN and KotOR/KotOR2
+	kFontFormatTexture    , ///< Textured font, used by NWN and KotOR/KotOR2.
 	kFontFormatABC        , ///< ABC/SBM font, used by Jade Empire.
 	kFontFormatTTF        , ///< TTF font, used by NWN2.
 	kFontFormatNFTR         ///< NFTR font, used by Sonic.

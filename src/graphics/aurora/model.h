@@ -253,7 +253,7 @@ private:
 	bool _drawSkeleton;
 	bool _drawSkeletonInvisible;
 
-	float _elapsedTime; ///< Track animation duration
+	float _elapsedTime; ///< Track animation duration.
 
 	/** Create the list of all state names. */
 	void createStateNamesList(std::list<Common::UString> *stateNames = 0);
