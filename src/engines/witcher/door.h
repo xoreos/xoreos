@@ -68,8 +68,8 @@ public:
 
 	// Object/Cursor interactions
 
-	void enter(); ///< The cursor entered the door. */
-	void leave(); ///< The cursor left the door. */
+	void enter(); ///< The cursor entered the door.
+	void leave(); ///< The cursor left the door.
 
 	/** (Un)Highlight the door. */
 	void highlight(bool enabled);
