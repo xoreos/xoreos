@@ -81,11 +81,11 @@ private:
 		uint16 width;
 		uint16 height;
 
-		bool wrapX; ///< true: wrap, false: clamp
-		bool wrapY; ///< true: wrap, false: clamp
-		bool flipX; ///< true: flip on every 2nd texture wrap
-		bool flipY; ///< true: flip on every 2nd texture wrap
-		bool alpha; ///< true: color index 0 is transparent
+		bool wrapX; ///< true: wrap, false: clamp.
+		bool wrapY; ///< true: wrap, false: clamp.
+		bool flipX; ///< true: flip on every 2nd texture wrap.
+		bool flipY; ///< true: flip on every 2nd texture wrap.
+		bool alpha; ///< true: color index 0 is transparent.
 
 		Transform coordTransform;
 	};

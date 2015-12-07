@@ -361,7 +361,7 @@ enum FileType {
 	kFileTypeXLS            = 25023,
 
 	// Found in the iOS version of Knights of the Old Republic
-	kFileTypeBZF            = 26000, ///< Game resource data, LZMA-compressed BIF
+	kFileTypeBZF            = 26000, ///< Game resource data, LZMA-compressed BIF.
 
 	// Found in The Witcher
 	kFileTypeADV            = 27000, ///< Extra adventure modules, ERF.
@@ -407,14 +407,14 @@ enum ArchiveType {
 };
 
 enum Platform {
-	kPlatformWindows =  0, ///< Microsoft Windows
-	kPlatformNDS,          ///< Nintendo DS
-	kPlatformMacOSX,       ///< Mac OS X
-	kPlatformXbox,         ///< Microsoft Xbox
-	kPlatformPS3,          ///< Sony PlayStation 3
-	kPlatformXbox360,      ///< Microsoft Xbox 360
-	kPlatformLinux,        ///< GNU/Linux
-	kPlatformUnknown       ///< Unknown (must be last)
+	kPlatformWindows =  0, ///< Microsoft Windows.
+	kPlatformNDS,          ///< Nintendo DS.
+	kPlatformMacOSX,       ///< Mac OS X.
+	kPlatformXbox,         ///< Microsoft Xbox.
+	kPlatformPS3,          ///< Sony PlayStation 3.
+	kPlatformXbox360,      ///< Microsoft Xbox 360.
+	kPlatformLinux,        ///< GNU/Linux.
+	kPlatformUnknown       ///< Unknown (must be last).
 };
 
 static const uint32 kObjectIDInvalid = 0xFFFFFFFF;

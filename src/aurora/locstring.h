@@ -89,7 +89,7 @@ public:
 private:
 	typedef std::map<uint32, Common::UString> StringMap;
 
-	uint32 _id; ///< The string's ID / StrRef. */
+	uint32 _id; ///< The string's ID / StrRef.
 
 	StringMap _strings;
 

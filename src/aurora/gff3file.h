@@ -87,7 +87,7 @@ private:
 
 	Common::SeekableReadStream *_stream;
 
-	Header _header; ///< The GFF's header
+	Header _header; ///< The GFF's header.
 
 	/** Should we try to read GFF files found in Neverwinter Nights premium modules? */
 	bool   _repairNWNPremium;
