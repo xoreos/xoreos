@@ -71,7 +71,7 @@ private:
 	Aurora::LocString _mapNote;
 
 	/** Index into the Waypoints MGDA. */
-	uint32 _type; ///< The type of the map note
+	uint32 _type; ///< The type of the map note.
 
 	/** The icon to show in the mini map for this waypoint. */
 	Common::UString _icon;
