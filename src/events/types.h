@@ -50,7 +50,7 @@ enum EventType {
 	kEventQuit      = SDL_QUIT           , ///< Application quit was requested.
 	kEventWindow    = SDL_WINDOWEVENT    , ///< Resize the window.
 	kEventUserMIN   = SDL_USEREVENT - 1  , ///< For range checks.
-	kEventITC       = SDL_USEREVENT      , ///< Inter-thread communication
+	kEventITC       = SDL_USEREVENT      , ///< Inter-thread communication.
 	kEventUserMAX   = SDL_LASTEVENT        ///< For range checks.
 };
 
