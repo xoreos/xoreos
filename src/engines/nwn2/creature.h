@@ -125,8 +125,8 @@ public:
 
 	// Object/Cursor interactions
 
-	void enter(); ///< The cursor entered the creature. */
-	void leave(); ///< The cursor left the creature. */
+	void enter(); ///< The cursor entered the creature.
+	void leave(); ///< The cursor left the creature.
 
 	/** (Un)Highlight the creature. */
 	void highlight(bool enabled);
@@ -170,7 +170,7 @@ private:
 	Common::UString _deity; ///< The creature's deity.
 
 	uint8 _goodEvil; ///< The creature's good/evil value (0-100).
-	uint8 _lawChaos; ///< The creature's law/chaos value (0-100);
+	uint8 _lawChaos; ///< The creature's law/chaos value (0-100).
 
 	uint32 _appearanceID; ///< The creature's general appearance.
 
