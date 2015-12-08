@@ -8258,7 +8258,7 @@ static const float cosTable65536[32768] = {
 	 1.000000f,  1.000000f,  1.000000f,  1.000000f,  1.000000f,  1.000000f,  1.000000f,  1.000000f
 };
 
-static const float *cosTables[17] = {
+static const float * const cosTables[17] = {
 	0           , 0           , 0            , 0            ,
 	cosTable16  , cosTable32  , cosTable64   , cosTable128  ,
 	cosTable256 , cosTable512 , cosTable1024 , cosTable2048 ,
