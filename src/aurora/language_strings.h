@@ -27,7 +27,7 @@
 
 namespace Aurora {
 
-static const char *kLanguageNames[] = {
+static const char * const kLanguageNames[] = {
 	"English", "French", "German", "Italian", "Spanish", "Polish", "Czech", "Hungarian",
 	"Russian", "Korean", "Traditional Chinese", "Simplified Chinese", "Japanese"
 };

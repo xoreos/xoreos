@@ -414,7 +414,7 @@ void FileTypeManager::buildHashLookup(Common::HashAlgo algo) {
 }
 
 Common::UString getPlatformDescription(Platform platform) {
-	static const char *names[] = {
+	static const char * const names[] = {
 		"Windows", "Nintendo DS", "Mac OS X", "Xbox", "PlayStation 3", "Xbox 360", "GNU/Linux", "Unknown"
 	};
 
