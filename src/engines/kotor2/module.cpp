@@ -191,7 +191,7 @@ void Module::loadArea() {
 	_area = new Area(*this, _ifo.getEntryArea());
 }
 
-static const char *texturePacks[3] = {
+static const char * const texturePacks[3] = {
 	"swpc_tex_tpc.erf", // Worst
 	"swpc_tex_tpb.erf", // Medium
 	"swpc_tex_tpa.erf"  // Best
