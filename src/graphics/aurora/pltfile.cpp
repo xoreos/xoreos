@@ -165,7 +165,7 @@ void PLTFile::build() {
 }
 
 /** The palette image resource names for all layers. */
-static const char *kPalettes[PLTFile::kLayerMAX] = {
+static const char * const kPalettes[PLTFile::kLayerMAX] = {
 	"pal_skin01",
 	"pal_hair01",
 	"pal_armor01",
