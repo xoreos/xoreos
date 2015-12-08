@@ -45,7 +45,7 @@ public:
 	static const size_t kInvalidIndex = SIZE_MAX;
 
 	/** Build a string map to match a list of strings against. */
-	StringListMap(const char **strings, size_t count, bool onlyFirstWord = false);
+	StringListMap(const char * const *strings, size_t count, bool onlyFirstWord = false);
 
 	/** Match a string against the map.
 	 *

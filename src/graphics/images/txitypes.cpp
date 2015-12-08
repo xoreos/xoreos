@@ -27,7 +27,7 @@
 
 #include "src/graphics/images/txitypes.h"
 
-static const char *kTXICommands[] = {
+static const char * const kTXICommands[] = {
 	"alphamean",
 	"arturoheight",
 	"arturowidth",

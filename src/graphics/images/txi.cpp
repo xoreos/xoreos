@@ -32,7 +32,7 @@
 #include "src/graphics/images/txi.h"
 #include "src/graphics/images/txitypes.h"
 
-static const char *kBlendings[] = { "default", "additive", "punchthrough" };
+static const char * const kBlendings[] = { "default", "additive", "punchthrough" };
 
 namespace Graphics {
 

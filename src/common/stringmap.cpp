@@ -29,7 +29,7 @@
 
 namespace Common {
 
-StringListMap::StringListMap(const char **strings, size_t count, bool onlyFirstWord) : _onlyFirstWord(onlyFirstWord) {
+StringListMap::StringListMap(const char * const *strings, size_t count, bool onlyFirstWord) : _onlyFirstWord(onlyFirstWord) {
 	for (size_t i = 0; i < count; i++)
 		_map.insert(std::make_pair(UString(strings[i]), i));
 }
