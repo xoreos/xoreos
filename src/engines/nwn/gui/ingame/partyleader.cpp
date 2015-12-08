@@ -41,12 +41,12 @@ namespace Engines {
 
 namespace NWN {
 
-static const char *kButtonTags[] = {
+static const char * const kButtonTags[] = {
 	"ButtonMap"      , "ButtonJournal"  , "ButtonRest"  , "ButtonOptions",
 	"ButtonInventory", "ButtonCharacter", "ButtonSpells", "ButtonPlayers"
 };
 
-static const char *kButtonModels[] = {
+static const char * const kButtonModels[] = {
 	"pb_but_map", "pb_but_jour", "pb_but_rest" , "pb_but_opts",
 	"pb_but_inv", "pb_but_char", "pb_but_spell", "pb_but_pvp"
 };

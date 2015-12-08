@@ -35,9 +35,9 @@
 
 #include "src/engines/nwn/gui/widgets/portrait.h"
 
-static const char *kSuffix[] = {"h"   , "l"   , "m"   , "s"   , "t"   ,  "i"  };
-static const float kWidth [] = {256.0f, 128.0f,  64.0f,  32.0f,  16.0f,  32.0f};
-static const float kHeight[] = {400.0f, 200.0f, 100.0f,  50.0f,  25.0f,  32.0f};
+static const char * const kSuffix[] = {"h"   , "l"   , "m"   , "s"   , "t"   ,  "i"  };
+static const float        kWidth [] = {256.0f, 128.0f,  64.0f,  32.0f,  16.0f,  32.0f};
+static const float        kHeight[] = {400.0f, 200.0f, 100.0f,  50.0f,  25.0f,  32.0f};
 
 namespace Engines {
 

@@ -287,7 +287,7 @@ void NWNEngine::initResources(LoadProgress &progress) {
 }
 
 void NWNEngine::declareBogusTextures() {
-	static const char *kBogusTextures[] = {
+	static const char * const kBogusTextures[] = {
 		"belt_g",
 		"FB1_g",
 		"head_g",

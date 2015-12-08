@@ -49,7 +49,7 @@ static const int kCampaignNames[] = {
 	100777, 100778, 100779
 };
 
-static const char *kCampaignModules[] = {
+static const char * const kCampaignModules[] = {
 	"Prelude"      , "Chapter1"     , "Chapter2"     , "Chapter3", "Chapter4",
 	"XP1-Chapter 1", "XP1-Interlude", "XP1-Chapter 2",
 	"XP2_Chapter1" , "XP2_Chapter2" , "XP2_Chapter3"

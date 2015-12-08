@@ -358,7 +358,7 @@ void Creature::constructModelName(const Common::UString &type, uint32 id,
 
 // Based on filenames in model2.bif
 // These should be read from MDLNAME, NODENAME in capart.2da (in 2da.bif)
-static const char *kBodyPartModels[] = {
+static const char * const kBodyPartModels[] = {
 	"head"  ,
 	"neck"  ,
 	"chest" ,
@@ -374,7 +374,7 @@ static const char *kBodyPartModels[] = {
 };
 
 // Node names taken from pfa0.mdl
-static const char *kBodyPartNodes[] = {
+static const char * const kBodyPartNodes[] = {
 	"head_g"     ,
 	"neck_g"     ,
 	"torso_g"    ,
@@ -620,7 +620,7 @@ void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	setOrientation(0.0f, 0.0f, 1.0f, -Common::rad2deg(atan2(bearingX, bearingY)));
 }
 
-static const char *kBodyPartFields[] = {
+static const char * const kBodyPartFields[] = {
 	"Appearance_Head",
 	"BodyPart_Neck"  ,
 	"BodyPart_Torso" ,

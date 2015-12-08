@@ -589,7 +589,7 @@ void Module::unloadHAKs() {
 	deindexResources(_resHAKs);
 }
 
-static const char *texturePacks[4][4] = {
+static const char * const texturePacks[4][4] = {
 	{ "textures_tpc.erf", "tiles_tpc.erf", "xp1_tex_tpc.erf", "xp2_tex_tpc.erf" }, // Worst
 	{ "textures_tpa.erf", "tiles_tpc.erf", "xp1_tex_tpc.erf", "xp2_tex_tpc.erf" }, // Bad
 	{ "textures_tpa.erf", "tiles_tpb.erf", "xp1_tex_tpb.erf", "xp2_tex_tpb.erf" }, // Okay
