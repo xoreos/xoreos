@@ -98,11 +98,11 @@ std::FILE *Platform::openFile(const UString &fileName, FileMode mode) {
 	std::FILE *file = 0;
 
 #if defined(WIN32)
-	static const wchar_t *modeStrings[kFileModeMAX] = { L"rb", L"wb" };
+	static const wchar_t * const modeStrings[kFileModeMAX] = { L"rb", L"wb" };
 
 	file = _wfopen(boost::filesystem::path(fileName.c_str()).c_str(), modeStrings[(uint) mode]);
 #else
-	static const char *modeStrings[kFileModeMAX] = { "rb", "wb" };
+	static const char * const modeStrings[kFileModeMAX] = { "rb", "wb" };
 
 	file = std::fopen(boost::filesystem::path(fileName.c_str()).c_str(), modeStrings[(uint) mode]);
 #endif
