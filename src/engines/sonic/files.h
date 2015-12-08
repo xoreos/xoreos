@@ -29,7 +29,7 @@ namespace Engines {
 
 namespace Sonic {
 
-static const char *kFiles[] = {
+static const char * const kFiles[] = {
 	// test_[efigs].herf
 	"attack1_bs.tga",
 	"chap10scr_bot.tga",
