@@ -182,7 +182,7 @@ Common::UString Creature::createModelPrefix(const Aurora::GDAFile &gda, size_t r
 	if (row == Aurora::GDAFile::kInvalidRow)
 		return "";
 
-	static const char *kGenderChars[4] = { "N", "M", "F", "N" };
+	static const char * const kGenderChars[4] = { "N", "M", "F", "N" };
 
 	Common::UString genderChar = gda.getString(row, "ModelGenderOverride");
 	if (genderChar.empty() && (gender < ARRAYSIZE(kGenderChars)))
@@ -275,7 +275,7 @@ void Creature::loadModelsHeadMorph(bool loadHair) {
 void Creature::loadModelsHeadList(const Aurora::GDAFile &gda, size_t row, bool loadHair) {
 	static const size_t kHairPart = 2;
 
-	static const char *kSheetColumns[kPartVariationCount] =
+	static const char * const kSheetColumns[kPartVariationCount] =
 		{"Head_Worksheet", "Eyes_Worksheet", "Hair_Worksheet", "Beard_Worksheet"};
 
 	const Common::UString prefix = createModelPrefix(gda, row, _appearanceGender);

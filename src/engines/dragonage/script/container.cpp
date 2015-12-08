@@ -45,7 +45,7 @@ namespace DragonAge {
 
 using namespace ::Aurora::GFF4FieldNamesEnum;
 
-static const char *kScriptNames[] = {
+static const char * const kScriptNames[] = {
 	"EventScript",
 	"Script",
 	"ScriptResRefID"

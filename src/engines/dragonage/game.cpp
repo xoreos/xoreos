@@ -127,7 +127,7 @@ void Game::loadResources(const Common::UString &dir, uint32 priority, ChangeList
 void Game::loadTexturePack(const Common::UString &dir, uint32 priority,
                            ChangeList &res, TextureQuality quality) {
 
-	static const char *kTextureQualityName[kTextureQualityMAX] = { "high", "medium" };
+	static const char * const kTextureQualityName[kTextureQualityMAX] = { "high", "medium" };
 
 	if (((uint)quality) >= kTextureQualityMAX)
 		throw Common::Exception("Invalid texture quality level");
