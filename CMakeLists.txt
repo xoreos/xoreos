@@ -115,7 +115,8 @@ if(CMAKE_HOST_WIN32)
       set(WARNINGS "${WARNINGS} /wd${d}")
     endforeach(d)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNINGS} ${MT_BUILD}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNINGS}")
+    link_libraries(winmm.lib imm32.lib mincore.lib version.lib)
   endif()
 endif()
 
@@ -216,6 +217,7 @@ option(Boost_USE_STATIC_LIBS "Use Boost static libraries" OFF)
 find_package(Boost COMPONENTS system filesystem regex date_time atomic locale REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND XOREOS_LIBRARIES ${Boost_LIBRARIES})
 
 find_package(SDL2 REQUIRED)
@@ -249,7 +251,7 @@ list(APPEND XOREOS_LIBRARIES ${OGG_LIBRARY})
 
 find_package(Vorbis REQUIRED)
 include_directories(${VORBIS_INCLUDE_DIR})
-list(APPEND XOREOS_LIBRARIES ${VORBIS_LIBRARY})
+list(APPEND XOREOS_LIBRARIES ${VORBIS_LIBRARIES})
 
 find_package(XviD REQUIRED)
 include_directories(${XVID_INCLUDE_DIR})
