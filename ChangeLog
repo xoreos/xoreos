@@ -1,6 +1,7 @@
 Someday, ????-??-?? (Version 0.0.4)
 	- DOCS:
 		- Improved documentation in various files
+		- Rewrote manpage to use semantic -mdoc macros
 	- BUILD:
 		- Fixed various little problems in the CMake system related to
 		  non-MSVC compilers
