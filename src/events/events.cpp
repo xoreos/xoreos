@@ -54,7 +54,7 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 
 
 EventsManager::EventsManager() : _ready(false), _quitRequested(false), _doQuit(false),
-	_fatalError(false), _queueSize(0), _fullQueue(false), _repeat(false) {
+	_fatalError(false), _queueSize(0), _fullQueue(false), _repeat(false), _repeatCounter(0) {
 
 }
 
@@ -78,6 +78,8 @@ void EventsManager::init() {
 	std::srand(getTimestamp());
 
 	enableTextInput(false);
+
+	_repeatCounter = 0;
 }
 
 void EventsManager::deinit() {
@@ -105,6 +107,8 @@ void EventsManager::reset() {
 
 	deinitJoysticks();
 	initJoysticks();
+
+	_repeatCounter = 0;
 }
 
 bool EventsManager::ready() const {
@@ -258,7 +262,12 @@ bool EventsManager::pushEvent(Event &event) {
 }
 
 void EventsManager::enableKeyRepeat(bool repeat) {
-	_repeat = repeat;
+	if (repeat)
+	  _repeatCounter++;
+	else if (!repeat && _repeatCounter > 0)
+	  _repeatCounter--;
+  
+	_repeat = _repeatCounter > 0;
 }
 
 void EventsManager::enableTextInput(bool textInput) {
