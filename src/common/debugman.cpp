@@ -26,17 +26,12 @@
 
 #include <vector>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include "src/common/maths.h"
 #include "src/common/util.h"
 #include "src/common/filepath.h"
 #include "src/common/debugman.h"
 #include "src/common/version.h"
-
-// boost-date_time stuff
-using boost::posix_time::ptime;
-using boost::posix_time::second_clock;
+#include "src/common/datetime.h"
 
 DECLARE_SINGLETON(Common::DebugManager)
 
@@ -196,11 +191,7 @@ void DebugManager::logString(const UString &str) {
 		UString tstamp;
 
 		try {
-			ptime t(second_clock::universal_time());
-			tstamp = UString::format("[%04d-%02d-%02dT%02d:%02d:%02d] ",
-				(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
-				(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
-				(int) t.time_of_day().seconds());
+			tstamp = "[" + Common::DateTime(Common::DateTime::kUTC).formatDateTimeISO('T', '-', ':') + "] ";
 		} catch (...) {
 			tstamp = "[0000-00-00T00:00:00] ";
 		}
