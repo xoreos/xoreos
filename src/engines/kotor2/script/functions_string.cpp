@@ -22,11 +22,10 @@
  *  Star Wars: Knights of the Old Republic II - The Sith Lords engine functions operating on strings.
  */
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 #include "src/common/strutil.h"
+#include "src/common/datetime.h"
 
 #include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
@@ -49,11 +48,7 @@ namespace Engines {
 namespace KotOR2 {
 
 void Functions::writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx) {
-	boost::posix_time::ptime t(boost::posix_time::second_clock::universal_time());
-	const Common::UString tstamp = Common::UString::format("%04d-%02d-%02dT%02d:%02d:%02d",
-		(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
-		(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
-		(int) t.time_of_day().seconds());
+	const Common::UString tstamp = Common::DateTime(Common::DateTime::kUTC).formatDateTimeISO('T', '-', ':');
 
 	status("KotOR2: %s: %s", tstamp.c_str(), ctx.getParams()[0].getString().c_str());
 }
