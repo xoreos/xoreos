@@ -25,12 +25,11 @@
 #include <cstdio>
 #include <cstring>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include "src/common/ustring.h"
 #include "src/common/writefile.h"
 #include "src/common/filepath.h"
 #include "src/common/threads.h"
+#include "src/common/datetime.h"
 
 #include "src/graphics/types.h"
 
@@ -38,17 +37,12 @@
 
 namespace Graphics {
 
-// boost-date_time stuff
-using boost::posix_time::ptime;
-using boost::posix_time::second_clock;
-
 static bool constructFilename(Common::UString &filename) {
-	// Construct a file name from the current time
-	ptime t(second_clock::universal_time());
-	filename = Common::UString::format("%04d%02d%02dT%02d%02d%02d.bmp",
-		(int) t.date().year(), (int) t.date().month(), (int) t.date().day(),
-		(int) t.time_of_day().hours(), (int) t.time_of_day().minutes(),
-		(int) t.time_of_day().seconds());
+	try {
+		filename = Common::DateTime(Common::DateTime::kUTC).formatDateTimeISO('T') + ".bmp";
+	} catch (...) {
+		return false;
+	}
 
 	filename = Common::FilePath::getUserDataFile(filename);
 	if (Common::FilePath::isRegularFile(filename))
