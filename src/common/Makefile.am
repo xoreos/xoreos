@@ -51,6 +51,7 @@ noinst_HEADERS = \
                  debug.h \
                  atomic.h \
                  uuid.h \
+                 datetime.h \
                  readstream.h \
                  memreadstream.h \
                  writestream.h \
@@ -102,6 +103,7 @@ libcommon_la_SOURCES = \
                        debugman.cpp \
                        debug.cpp \
                        uuid.cpp \
+                       datetime.cpp \
                        readstream.cpp \
                        memreadstream.cpp \
                        writestream.cpp \
