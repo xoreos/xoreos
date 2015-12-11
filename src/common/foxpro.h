@@ -28,8 +28,6 @@
 #include <vector>
 #include <list>
 
-#include <boost/date_time/gregorian/gregorian_types.hpp>
-
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -85,7 +83,7 @@ public:
 	          SeekableReadStream *fpt = 0);
 	void save(WriteStream *dbf, WriteStream *cdx = 0, WriteStream *fpt = 0) const;
 
-	boost::gregorian::date getLastUpdate() const;
+	void getLastUpdate(uint16 &lastUpdateYear, uint8 &lastUpdateMonth, uint8 &lastUpdateDay) const;
 
 	bool hasIndex() const;
 	bool hasMemo () const;
@@ -101,7 +99,7 @@ public:
 	bool    getBool  (const Record &record, size_t field) const;
 	double  getDouble(const Record &record, size_t field) const;
 
-	boost::gregorian::date getDate(const Record &record, size_t field) const;
+	void getDate(const Record &record, size_t field, uint16 &year, uint8 &month, uint8 &day);
 
 	SeekableReadStream *getMemo(const Record &record, size_t field) const;
 
@@ -123,12 +121,14 @@ public:
 	void setBool  (size_t record, size_t field, bool value);
 	void setDouble(size_t record, size_t field, double value);
 
-	void setDate(size_t record, size_t field, const boost::gregorian::date &value);
+	void setDate(size_t record, size_t field, uint16 year, uint8 month, uint8 day);
 
 	void setMemo(size_t record, size_t field, SeekableReadStream *value = 0);
 
 private:
-	boost::gregorian::date _lastUpdate;
+	uint16 _lastUpdateYear;
+	uint8  _lastUpdateMonth;
+	uint8  _lastUpdateDay;
 
 	bool _hasIndex;
 	bool _hasMemo;

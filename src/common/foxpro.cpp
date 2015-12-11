@@ -30,14 +30,12 @@
 #include "src/common/encoding.h"
 #include "src/common/memreadstream.h"
 #include "src/common/writestream.h"
-
-// boost-date_time stuff
-using boost::gregorian::date;
-using boost::gregorian::day_clock;
+#include "src/common/datetime.h"
 
 namespace Common {
 
 FoxPro::FoxPro() : _hasIndex(false), _hasMemo(false), _memoBlockSize(512) {
+	updateUpdate();
 }
 
 FoxPro::~FoxPro() {
@@ -83,11 +81,9 @@ void FoxPro::loadHeader(SeekableReadStream &dbf, uint32 &recordSize, uint32 &rec
 	if (version != 0xF5)
 		throw Exception("Unknown database version 0x%02X", version);
 
-	int lastUpdateYear  = dbf.readByte() + 2000;
-	int lastUpdateMonth = dbf.readByte();
-	int lastUpdateDay   = dbf.readByte();
-
-	_lastUpdate = date(lastUpdateYear, lastUpdateMonth, lastUpdateDay);
+	_lastUpdateYear  = dbf.readByte() + 2000;
+	_lastUpdateMonth = dbf.readByte();
+	_lastUpdateDay   = dbf.readByte();
 
 	recordCount    = dbf.readUint32LE();
 	firstRecordPos = dbf.readUint16LE();
@@ -227,9 +223,9 @@ void FoxPro::save(WriteStream *dbf, WriteStream *cdx, WriteStream *fpt) const {
 void FoxPro::saveHeader(WriteStream &dbf) const {
 	dbf.writeByte(0xF5); // Version
 
-	dbf.writeByte(_lastUpdate.year() - 2000);
-	dbf.writeByte(_lastUpdate.month());
-	dbf.writeByte(_lastUpdate.day());
+	dbf.writeByte(_lastUpdateYear - 2000);
+	dbf.writeByte(_lastUpdateMonth);
+	dbf.writeByte(_lastUpdateDay);
 
 	dbf.writeUint32LE(_records.size());
 
@@ -310,8 +306,10 @@ void FoxPro::saveMemos(WriteStream &fpt) const {
 		fpt.write(_memos[i], _memoBlockSize);
 }
 
-date FoxPro::getLastUpdate() const {
-	return _lastUpdate;
+void FoxPro::getLastUpdate(uint16 &lastUpdateYear, uint8 &lastUpdateMonth, uint8 &lastUpdateDay) const {
+	lastUpdateYear  = _lastUpdateYear;
+	lastUpdateMonth = _lastUpdateMonth;
+	lastUpdateDay   = _lastUpdateDay;
 }
 
 bool FoxPro::hasIndex() const {
@@ -435,7 +433,7 @@ double FoxPro::getDouble(const Record &record, size_t field) const {
 	return d;
 }
 
-date FoxPro::getDate(const Record &record, size_t field) const {
+void FoxPro::getDate(const Record &record, size_t field, uint16 &year, uint8 &month, uint8 &day) {
 	assert(field < _fields.size());
 
 	const Field &f = _fields[field];
@@ -445,12 +443,14 @@ date FoxPro::getDate(const Record &record, size_t field) const {
 	if (f.size != 8)
 			throw Exception("Date field size != 8 (%d)", f.size);
 
-	int year, month, day;
+	uint fieldYear, fieldMonth, fieldDay;
 	if (std::sscanf(reinterpret_cast<const char *>(record.fields[field]),
-	                "%4d%2d%2d", &year, &month, &day) != 3)
+	                "%4u%2u%2u", &fieldYear, &fieldMonth, &fieldDay) != 3)
 		throw Exception("Failed reading the date");
 
-	return date(year, month, day);
+	year  = fieldYear;
+	month = fieldMonth;
+	day   = fieldDay;
 }
 
 SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
@@ -805,7 +805,7 @@ void FoxPro::setDouble(size_t record, size_t field, double value) {
 	updateUpdate();
 }
 
-void FoxPro::setDate(size_t record, size_t field, const date &value) {
+void FoxPro::setDate(size_t record, size_t field, uint16 year, uint8 month, uint8 day) {
 	assert((record < _records.size()) && (field < _fields.size()));
 
 	Record &r = _records[record];
@@ -816,8 +816,7 @@ void FoxPro::setDate(size_t record, size_t field, const date &value) {
 
 	char *data = reinterpret_cast<char *>(r.fields[field]);
 
-	snprintf(data, 8, "%04d%02d%02d",
-			(int) value.year(), (int) value.month(), (int) value.day());
+	snprintf(data, 8, "%04u%02u%02u", (uint) year, (uint) month, (uint) day);
 
 	updateUpdate();
 }
@@ -888,7 +887,7 @@ bool FoxPro::getInt(const byte *data, size_t size, int32 &i) {
 }
 
 void FoxPro::updateUpdate() {
-	_lastUpdate = day_clock::universal_day();
+	Common::DateTime(Common::DateTime::kUTC).getDate(_lastUpdateYear, _lastUpdateMonth, _lastUpdateDay);
 }
 
 } // End of namespace Common
