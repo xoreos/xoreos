@@ -63,6 +63,7 @@ extern const Exception kReadError;  ///< Exception when reading from a stream fa
 extern const Exception kSeekError;  ///< Exception when seeking a stream failed.
 extern const Exception kWriteError; ///< Exception when writing to a stream failed.
 
+/** Print a whole exception stack to stderr and the log. */
 void printException(Exception &e, const UString &prefix = "ERROR: ");
 
 } // End of namespace Common
