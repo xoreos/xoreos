@@ -75,8 +75,8 @@ bool ConfigDomain::getBool(const UString &key, bool def) const {
 	bool x = def;
 	try {
 		parseString(value, x);
-	} catch (Exception &e) {
-		printException(e, "WARNING: ");
+	} catch (...) {
+		exceptionDispatcherWarning();
 	}
 
 	return x;
@@ -90,8 +90,8 @@ int ConfigDomain::getInt(const UString &key, int def) const {
 	int x = def;
 	try {
 		parseString(value, x);
-	} catch (Exception &e) {
-		printException(e, "WARNING: ");
+	} catch (...) {
+		exceptionDispatcherWarning();
 	}
 
 	return x;
@@ -105,8 +105,8 @@ uint ConfigDomain::getUint(const UString &key, uint def) const {
 	uint x = def;
 	try {
 		parseString(value, x);
-	} catch (Exception &e) {
-		printException(e, "WARNING: ");
+	} catch (...) {
+		exceptionDispatcherWarning();
 	}
 
 	return x;
@@ -120,8 +120,8 @@ double ConfigDomain::getDouble(const UString &key, double def) const {
 	double x = def;
 	try {
 		parseString(value, x);
-	} catch (Exception &e) {
-		printException(e, "WARNING: ");
+	} catch (...) {
+		exceptionDispatcherWarning();
 	}
 
 	return x;

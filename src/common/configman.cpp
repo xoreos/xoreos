@@ -113,9 +113,8 @@ bool ConfigManager::load() {
 		// Get the application domain
 		_domainApp = _config->addDomain(kDomainApp);
 
-	} catch (Exception &e) {
-		e.add("Failed loading config file \"%s\"", file.c_str());
-		printException(e, "WARNING: ");
+	} catch (...) {
+		exceptionDispatcherWarning("Failed loading config file \"%s\"", file.c_str());
 		return false;
 	}
 
@@ -142,9 +141,8 @@ bool ConfigManager::save() {
 
 		_config->save(config);
 
-	} catch (Exception &e) {
-		e.add("Failed saving config file \"%s\"", file.c_str());
-		printException(e, "WARNING: ");
+	} catch (...) {
+		exceptionDispatcherWarning("Failed saving config file \"%s\"", file.c_str());
 		return false;
 	}
 
@@ -310,8 +308,8 @@ bool ConfigManager::getBool(const UString &key, bool def) const {
 	bool x = def;
 	try {
 		parseString(value, x);
-	} catch (Exception &e) {
-		printException(e, "WARNING: ");
+	} catch (...) {
+		exceptionDispatcherWarning();
 	}
 
 	return x;
@@ -325,8 +323,8 @@ int ConfigManager::getInt(const UString &key, int def) const {
 	int x = def;
 	try {
 		parseString(value, x);
-	} catch (Exception &e) {
-		printException(e, "WARNING: ");
+	} catch (...) {
+		exceptionDispatcherWarning();
 	}
 
 	return x;
@@ -340,8 +338,8 @@ double ConfigManager::getDouble(const UString &key, double def) const {
 	double x = def;
 	try {
 		parseString(value, x);
-	} catch (Exception &e) {
-		printException(e, "WARNING: ");
+	} catch (...) {
+		exceptionDispatcherWarning();
 	}
 
 	return x;
