@@ -59,6 +59,38 @@ public:
 	 */
 	DateTime(const UString &value);
 
+	/** Return the year in the Gregorian calendar. */
+	uint16 getYear () const { return date().year(); }
+	/** Return the month in the Gregorian calendar (1..12). */
+	uint8  getMonth() const { return date().month(); }
+	/** Return the day in the Gregorian calendar (1..31). */
+	uint8  getDay  () const { return date().day(); }
+
+	/** Return the hour in the 24-hour clock (0..23). */
+	uint8 getHour  () const { return time_of_day().hours(); }
+	/** Return the minute (0..59). */
+	uint8 getMinute() const { return time_of_day().minutes(); }
+	/** Return the second (0..60). */
+	uint8 getSecond() const { return time_of_day().seconds(); }
+
+	/** Return the year, month (1..12) and day (1..31) in the Gregorian calendar. */
+	void getDate(uint16 &year, uint8 &month, uint8 &day) const {
+		year  = getYear();
+		month = getMonth();
+		day   = getDay();
+	}
+	/** Return the hour in the 24-hour clock (0..23), minute (0..59) and second (0..60). */
+	void getTime(uint8 &hour, uint8 &minute, uint8 &second) const {
+		hour   = getHour();
+		minute = getMinute();
+		second = getSecond();
+	}
+	/** Return the year, month (1..12), day (1..31), hour (0..23), minute (0..59) and second (0..60). */
+	void getDateTime(uint16 &year, uint8 &month, uint8 &day, uint8 &hour, uint8 &minute, uint8 &second) const {
+		getDate(year, month , day);
+		getTime(hour, minute, second);
+	}
+
 	/** Return a string representation of the date in ISO 8601 format.
 	 *
 	 *  The format will be YYYY-mm-DD, with YYYY being a 4 digit year in the
