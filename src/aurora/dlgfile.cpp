@@ -301,9 +301,8 @@ bool DLGFile::runScript(const Common::UString &script) const {
 
 		return true;
 
-	} catch (Common::Exception &e) {
-		e.add("Failed running dialog script \"%s\"", script.c_str());
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed running dialog script \"%s\"", script.c_str());
 		return false;
 	}
 
