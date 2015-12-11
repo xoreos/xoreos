@@ -58,10 +58,10 @@ private:
 
 typedef StackException Exception;
 
-extern const Exception kOpenError;
-extern const Exception kReadError;
-extern const Exception kSeekError;
-extern const Exception kWriteError;
+extern const Exception kOpenError;  ///< Exception when a file couldn't be opened.
+extern const Exception kReadError;  ///< Exception when reading from a stream failed.
+extern const Exception kSeekError;  ///< Exception when seeking a stream failed.
+extern const Exception kWriteError; ///< Exception when writing to a stream failed.
 
 void printException(Exception &e, const UString &prefix = "ERROR: ");
 
