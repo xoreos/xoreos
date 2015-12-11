@@ -66,6 +66,20 @@ extern const Exception kWriteError; ///< Exception when writing to a stream fail
 /** Print a whole exception stack to stderr and the log. */
 void printException(Exception &e, const UString &prefix = "ERROR: ");
 
+/** Exception dispatcher that prints the exception as an error, and adds another reason ontop.
+ *  This is intended for fatal errors. */
+void exceptionDispatcherError(const char *s, ...) GCC_PRINTF(1, 2);
+/** Exception dispatcher that prints the exception as an error.
+ *  This is intended for fatal errors. */
+void exceptionDispatcherError();
+
+/** Exception dispatcher that prints the exception as a warning, and adds another reason ontop.
+ *  This is intended for non-fatal exceptions that can be ignored. */
+void exceptionDispatcherWarning(const char *s, ...) GCC_PRINTF(1, 2);
+/** Exception dispatcher that prints the exception as a warning.
+ *  This is intended for non-fatal exceptions that can be ignored. */
+void exceptionDispatcherWarning();
+
 } // End of namespace Common
 
 #endif // COMMON_ERROR_H

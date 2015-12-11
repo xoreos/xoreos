@@ -115,4 +115,59 @@ void printException(Exception &e, const UString &prefix) {
 	}
 }
 
+static void exceptionDispatcher(const char *prefix, const char *reason = "") {
+	try {
+		try {
+			throw;
+		} catch (Exception &e) {
+			if (reason[0] != 0)
+				e.add("%s", reason);
+
+			printException(e, prefix);
+		} catch (std::exception &e) {
+			Exception se(e);
+			if (!reason[0] != 0)
+				se.add("%s", reason);
+
+			printException(se, prefix);
+		} catch (...) {
+			if (!reason[0] != 0) {
+				Exception se("%s", reason);
+				printException(se, prefix);
+			}
+		}
+	} catch (...) {
+	}
+}
+
+void exceptionDispatcherError(const char *s, ...) {
+	char buf[STRINGBUFLEN];
+	va_list va;
+
+	va_start(va, s);
+	vsnprintf(buf, STRINGBUFLEN, s, va);
+	va_end(va);
+
+	exceptionDispatcher("ERROR: ", buf);
+}
+
+void exceptionDispatcherError() {
+	exceptionDispatcher("ERROR: ");
+}
+
+void exceptionDispatcherWarning(const char *s, ...) {
+	char buf[STRINGBUFLEN];
+	va_list va;
+
+	va_start(va, s);
+	vsnprintf(buf, STRINGBUFLEN, s, va);
+	va_end(va);
+
+	exceptionDispatcher("WARNING: ", buf);
+}
+
+void exceptionDispatcherWarning() {
+	exceptionDispatcher("WARNING: ");
+}
+
 } // End of namespace Common
