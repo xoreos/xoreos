@@ -170,10 +170,10 @@ int main(int argc, char **argv) {
 			EventMan.runMainLoop();
 		}
 
-	} catch (Common::Exception &e) {
+	} catch (...) {
 		EventMan.raiseFatalError();
 
-		Common::printException(e);
+		Common::exceptionDispatcherError();
 	}
 
 	if (EventMan.fatalErrorRaised())
@@ -193,8 +193,8 @@ int main(int argc, char **argv) {
 			if (!configFileIsBroken)
 				ConfigMan.save();
 		}
-	} catch (Common::Exception &e) {
-		Common::printException(e);
+	} catch (...) {
+		Common::exceptionDispatcherError();
 	}
 
 	deinit();
@@ -204,10 +204,8 @@ int main(int argc, char **argv) {
 void initPlatform() {
 	try {
 		Common::Platform::init();
-	} catch (Common::Exception &e) {
-		e.add("Failed to initialize the low-level platform-specific subsytem");
-
-		Common::printException(e);
+	} catch (...) {
+		Common::exceptionDispatcherError("Failed to initialize the low-level platform-specific subsytem");
 		std::exit(1);
 	}
 }
