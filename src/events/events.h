@@ -176,6 +176,7 @@ private:
 	Common::Condition _queueProcessed;
 
 	bool _repeat;
+	uint _repeatCounter;
 
 
 	/** Initialize the available joysticks/gamepads. */
