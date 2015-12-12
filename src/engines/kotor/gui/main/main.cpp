@@ -117,8 +117,8 @@ void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_NEWGAME") {
 		try {
 			_module->load("end_m01aa");
-		} catch (Common::Exception &e) {
-			Common::printException(e, "WARNING: ");
+		} catch (...) {
+			Common::exceptionDispatcherWarning();
 			return;
 		}
 
