@@ -99,10 +99,8 @@ void SoundManager::init() {
 
 		_hasSound = true;
 
-	} catch (Common::Exception &e) {
-		e.add("Failed to initialize OpenAL. Disabling sound output!");
-
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed to initialize OpenAL. Disabling sound output!");
 	}
 
 	_ready = true;
