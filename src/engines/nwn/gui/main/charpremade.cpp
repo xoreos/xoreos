@@ -201,11 +201,10 @@ void CharPremadeMenu::initCharacterList() {
 
 		try {
 			Creature::getPCListInfo(ch.file, true, ch.name, ch.classes, ch.portrait);
-		} catch (Common::Exception &e) {
+		} catch (...) {
 			_characters.pop_back();
 
-			e.add("Can't read PC \"%s\"", c->c_str());
-			Common::printException(e, "WARNING: ");
+			Common::exceptionDispatcherWarning("Can't read PC \"%s\"", c->c_str());
 			continue;
 		}
 
@@ -243,8 +242,8 @@ const Common::UString &CharPremadeMenu::getSelectedCharacter() {
 void CharPremadeMenu::playCharacter() {
 	try {
 		_module->usePC(getSelectedCharacter(), true);
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
 		return;
 	}
 

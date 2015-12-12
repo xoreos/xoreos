@@ -995,11 +995,10 @@ void Creature::getPCListInfo(const Common::UString &bic, bool local,
 		// Reading portrait (failure non-fatal)
 		try {
 			loadPortrait(top, portrait);
-		} catch (Common::Exception &e) {
+		} catch (...) {
 			portrait.clear();
 
-			e.add("Can't read portrait for PC \"%s\"", bic.c_str());
-			Common::printException(e, "WARNING: ");
+			Common::exceptionDispatcherWarning("Can't read portrait for PC \"%s\"", bic.c_str());
 		}
 
 		// Reading classes

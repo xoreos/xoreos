@@ -208,8 +208,8 @@ void NewModuleMenu::loadModule() {
 
 	try {
 		_module->load(module + ".mod");
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
 		return;
 	}
 

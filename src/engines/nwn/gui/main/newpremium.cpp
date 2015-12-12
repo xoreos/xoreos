@@ -217,8 +217,8 @@ void NewPremiumMenu::loadModule() {
 
 	try {
 		_module->load(module + ".nwm");
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
 		return;
 	}
 

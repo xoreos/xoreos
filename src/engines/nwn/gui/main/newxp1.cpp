@@ -90,8 +90,8 @@ void NewXP1Menu::callbackActive(Widget &widget) {
 void NewXP1Menu::loadModule(const Common::UString &module) {
 	try {
 		_module->load(module);
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
 		return;
 	}
 

@@ -200,12 +200,11 @@ bool IngameGUI::startConversation(const Common::UString &conv,
 		_dialog = new Dialog(conv, pc, obj, *_module, playHello);
 
 		_dialog->show();
-	} catch (Common::Exception &e) {
+	} catch (...) {
 		delete _dialog;
 		_dialog = 0;
 
-		e.add("Failed starting conversation \"%s\"", conv.c_str());
-		Common::printException(e, "WARNING: ");
+		Common::exceptionDispatcherWarning("Failed starting conversation \"%s\"", conv.c_str());
 		return false;
 	}
 

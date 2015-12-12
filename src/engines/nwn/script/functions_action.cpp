@@ -85,10 +85,9 @@ void Functions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
 			ncs.setEnvironment(*env);
 
 		ncs.run(object);
-	} catch (Common::Exception &e) {
-		e.add("Failed ExecuteScript(\"%s\", %s)", script.c_str(), Aurora::NWScript::formatTag(object).c_str());
-
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed ExecuteScript(\"%s\", %s)",
+		                                   script.c_str(), Aurora::NWScript::formatTag(object).c_str());
 	}
 }
 
