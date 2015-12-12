@@ -178,6 +178,8 @@ private:
 	bool _repeat;
 	uint _repeatCounter;
 
+	uint _textInputCounter;
+
 
 	/** Initialize the available joysticks/gamepads. */
 	void initJoysticks();

@@ -54,7 +54,8 @@ const EventsManager::RequestHandler EventsManager::_requestHandler[kITCEventMAX]
 
 
 EventsManager::EventsManager() : _ready(false), _quitRequested(false), _doQuit(false),
-	_fatalError(false), _queueSize(0), _fullQueue(false), _repeat(false), _repeatCounter(0) {
+	_fatalError(false), _queueSize(0), _fullQueue(false), _repeat(false), _repeatCounter(0),
+	_textInputCounter(0) {
 
 }
 
@@ -77,6 +78,8 @@ void EventsManager::init() {
 
 	std::srand(getTimestamp());
 
+	// Forcing enableTextInput to be disabled requires _textInputCounter = 1 to not underrun the counter.
+	_textInputCounter = 1;
 	enableTextInput(false);
 
 	_repeatCounter = 0;
@@ -109,6 +112,8 @@ void EventsManager::reset() {
 	initJoysticks();
 
 	_repeatCounter = 0;
+
+	_textInputCounter = 0;
 }
 
 bool EventsManager::ready() const {
@@ -274,10 +279,18 @@ void EventsManager::enableKeyRepeat(bool repeat) {
 }
 
 void EventsManager::enableTextInput(bool textInput) {
-	if (textInput)
-		SDL_StartTextInput();
-	else
-		SDL_StopTextInput();
+	if (!textInput && _textInputCounter == 0)
+		throw Common::Exception("EventsManager::enableTextInput(): Counter underrun");
+
+	if (textInput) {
+		if(_textInputCounter == 0)
+			SDL_StartTextInput();
+		_textInputCounter++;
+	} else {
+		if (_textInputCounter == 1)
+			SDL_StopTextInput();
+		_textInputCounter--;
+	}
 }
 
 Common::UString EventsManager::getTextInput(const Event &event) {
