@@ -220,7 +220,7 @@ void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kL
 			// Copy the whole row into the buffer
 			memcpy(rows, palette->getMipMap(0).data + (row * 4 * 256), 4 * 256);
 
-		} catch (Common::Exception &e) {
+		} catch (...) {
 			// On error set to pink (while honoring intensity), for high debug visibility
 			for (uint32 p = 0; p < 256; p++) {
 				rows[p * 4 + 0] = p;
@@ -229,8 +229,7 @@ void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kL
 				rows[p * 4 + 3] = 0xFF;
 			}
 
-			e.add("Failed to load palette \"%s\"", kPalettes[i]);
-			Common::printException(e, "WARNING: ");
+			Common::exceptionDispatcherWarning("Failed to load palette \"%s\"", kPalettes[i]);
 		}
 
 		delete palette;

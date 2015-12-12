@@ -201,9 +201,8 @@ void TextureManager::reloadAll() {
 	for (TextureMap::iterator texture = _textures.begin(); texture != _textures.end(); ++texture) {
 		try {
 			texture->second->texture->reload();
-		} catch (Common::Exception &e) {
-			e.add("Failed reloading texture \"%s\"", texture->first.c_str());
-			Common::printException(e, "WARNING: ");
+		} catch (...) {
+			Common::exceptionDispatcherWarning("Failed reloading texture \"%s\"", texture->first.c_str());
 		}
 	}
 

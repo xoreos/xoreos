@@ -277,11 +277,11 @@ void TTFFont::addChar(uint32 c) {
 		_pages.back()->curX       += cWidth;
 		_pages.back()->needRebuild = true;
 
-	} catch (Common::Exception &e) {
+	} catch (...) {
 		if (cC != _chars.end())
 			_chars.erase(cC);
 
-		Common::printException(e);
+		Common::exceptionDispatcherWarning();
 	}
 }
 

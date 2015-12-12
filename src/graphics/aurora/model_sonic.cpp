@@ -738,8 +738,8 @@ void Model_Sonic::createGeometry(ParserContext &ctx) {
 		try {
 			if (polygon.material && !polygon.material->texture.empty())
 				geometry.texture = TextureMan.get(polygon.material->texture);
-		} catch (Common::Exception &e) {
-			Common::printException(e, "WARNING: ");
+		} catch (...) {
+			Common::exceptionDispatcherWarning();
 		}
 
 		// Create the primitives and their vertices

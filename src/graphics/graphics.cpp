@@ -741,10 +741,8 @@ bool GraphicsManager::unproject(float x, float y,
 		y2 = oFar._y * oFar._w;
 		z2 = oFar._z * oFar._w;
 
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
-		return false;
 	} catch (...) {
+		Common::exceptionDispatcherWarning();
 		return false;
 	}
 

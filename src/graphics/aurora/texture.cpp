@@ -495,9 +495,8 @@ TXI *Texture::loadTXI(const Common::UString &name) {
 	TXI *txi = 0;
 	try {
 		txi = new TXI(*txiStream);
-	} catch (Common::Exception &e) {
-		e.add("Failed loading TXI \"%s\"", name.c_str());
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed loading TXI \"%s\"", name.c_str());
 	}
 
 	delete txiStream;

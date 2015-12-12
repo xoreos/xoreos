@@ -335,8 +335,8 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 					envMap = _textures[t].getTexture().getTXI().getFeatures().envMapTexture;
 			}
 
-		} catch (Common::Exception &e) {
-			Common::printException(e, "WARNING: ");
+		} catch (...) {
+			Common::exceptionDispatcherWarning();
 		}
 
 	}
@@ -345,8 +345,8 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 	if (!envMap.empty()) {
 		try {
 			_envMap = TextureMan.get(envMap);
-		} catch (Common::Exception &e) {
-			Common::printException(e, "WARNING: ");
+		} catch (...) {
+			Common::exceptionDispatcherWarning();
 		}
 	}
 

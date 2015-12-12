@@ -666,11 +666,11 @@ void ModelNode_Jade::readMaterialTextures(uint32 materialID, std::vector<Common:
 				textures.back().clear();
 		}
 
-	} catch (Common::Exception &e) {
+	} catch (...) {
 		delete mab;
 		textures.clear();
 
-		Common::printException(e, "WARNING: ");
+		Common::exceptionDispatcherWarning();
 		return;
 	}
 

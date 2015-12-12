@@ -99,12 +99,11 @@ bool CursorManager::add(const Common::UString &name, const Common::UString &grou
 		if (!result.second)
 			throw "Cursor already exists";
 
-	} catch (Common::Exception &e) {
+	} catch (...) {
 		delete cursor;
 
-		e.add("Could not add cursor \"%s\" as \"%s\":\"%s\"",
-		      name.c_str(), group.c_str(), state.c_str());
-		Common::printException(e);
+		Common::exceptionDispatcherWarning("Could not add cursor \"%s\" as \"%s\":\"%s\"",
+		                                   name.c_str(), group.c_str(), state.c_str());
 		return false;
 	}
 
