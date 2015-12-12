@@ -573,6 +573,21 @@ WidgetListItem *WidgetListBox::getSelectedItem() const {
 	return _items[_selectedItem];
 }
 
+void WidgetListBox::deselect() {
+	if (_selectedItem >= _items.size()) return;
+
+	_items[_selectedItem]->deactivate();
+	_selectedItem = 0xFFFFFFFF;
+}
+
+std::vector<WidgetListItem *>::iterator WidgetListBox::begin() {
+	return _items.begin();
+}
+
+std::vector<WidgetListItem *>::iterator WidgetListBox::end() {
+	return _items.end();
+}
+
 bool WidgetListBox::wasDblClicked() {
 	bool dblClicked = _dblClicked;
 

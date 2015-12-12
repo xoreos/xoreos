@@ -143,6 +143,12 @@ public:
 	void select(size_t item);
 	size_t getSelected() const;
 	WidgetListItem *getSelectedItem() const;
+	void deselect();
+
+	/** Get begin iterator from all the items in WidgetListBox. */
+	std::vector<WidgetListItem *>::iterator begin();
+	/** Get end iterator from all the items in WidgetListBox. */
+	std::vector<WidgetListItem *>::iterator end();
 
 	bool wasDblClicked();
 
