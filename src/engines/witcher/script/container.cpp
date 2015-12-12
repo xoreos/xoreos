@@ -172,9 +172,8 @@ bool ScriptContainer::runScript(const Common::UString &script,
 
 		return true;
 
-	} catch (Common::Exception &e) {
-		e.add("Failed running script \"%s\"", script.c_str());
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed running script \"%s\"", script.c_str());
 		return false;
 	}
 
