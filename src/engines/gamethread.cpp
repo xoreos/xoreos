@@ -91,7 +91,7 @@ void GameThread::threadMethod() {
 	} catch (Common::Exception &e) {
 		EventMan.raiseFatalError();
 
-		Common::printException(e);
+		Common::exceptionDispatcherError();
 	}
 
 	EventMan.doQuit();

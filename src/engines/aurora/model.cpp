@@ -58,11 +58,8 @@ Graphics::Aurora::Model *loadModelObject(const Common::UString &resref,
 		if (!resref.empty())
 			model = kModelLoader->load(resref, Graphics::Aurora::kModelTypeObject, texture);
 
-	} catch (Common::Exception &e) {
-
-		e.add("Failed to load object model \"%s\"", resref.c_str());
-		Common::printException(e, "WARNING: ");
-
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed to load object model \"%s\"", resref.c_str());
 	}
 
 	return model;
@@ -78,11 +75,8 @@ Graphics::Aurora::Model *loadModelGUI(const Common::UString &resref) {
 		if (!resref.empty())
 			model = kModelLoader->load(resref, Graphics::Aurora::kModelTypeGUIFront, "");
 
-	} catch (Common::Exception &e) {
-
-		e.add("Failed to load GUI model \"%s\"", resref.c_str());
-		Common::printException(e, "WARNING: ");
-
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed to load GUI model \"%s\"", resref.c_str());
 	}
 
 	return model;

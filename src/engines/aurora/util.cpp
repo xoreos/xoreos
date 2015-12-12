@@ -61,8 +61,8 @@ void playVideo(const Common::UString &video) {
 		Video::Aurora::VideoPlayer videoPlayer(video);
 
 		videoPlayer.play();
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
 	}
 
 	// Restore volumes
@@ -96,8 +96,8 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 
 		SoundMan.startChannel(channel);
 
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
 	}
 
 	return channel;
