@@ -74,8 +74,8 @@ void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_NEWGAME") {
 		try {
 			_module->load("001EBO");
-		} catch (Common::Exception &e) {
-			Common::printException(e, "WARNING: ");
+		} catch (...) {
+			Common::exceptionDispatcherWarning();
 			return;
 		}
 
