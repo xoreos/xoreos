@@ -44,8 +44,8 @@ MainMenu::~MainMenu() {
 void MainMenu::callbackActive(Widget &UNUSED(widget)) {
 	try {
 		_module->load("j01_town");
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
 		return;
 	}
 }
