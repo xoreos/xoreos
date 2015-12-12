@@ -262,9 +262,8 @@ void Object::speakOneLiner(Common::UString conv, Object *UNUSED(tokenTarget)) {
 			sound = line->sound;
 		}
 
-	} catch (Common::Exception &e) {
-		e.add("Failed evaluating one-liner from conversation \"%s\"", conv.c_str());
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed evaluating one-liner from conversation \"%s\"", conv.c_str());
 	}
 
 	if (!text.empty())

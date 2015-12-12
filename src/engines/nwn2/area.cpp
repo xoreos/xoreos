@@ -370,8 +370,8 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 void Area::loadTerrain() {
 	try {
 		_terrain = new TRXFile(_resRef);
-	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
 	}
 }
 
