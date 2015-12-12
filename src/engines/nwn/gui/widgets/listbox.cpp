@@ -568,6 +568,8 @@ size_t WidgetListBox::getSelected() const {
 }
 
 WidgetListItem *WidgetListBox::getSelectedItem() const {
+	if (_selectedItem >= _items.size()) return 0;
+
 	return _items[_selectedItem];
 }
 
