@@ -213,8 +213,6 @@ Campaign::RIMNode *Campaign::readRIMs(const GFF4Struct &node, const RIMNode *par
 				rim->children.push_back(readRIMs(**c, rim));
 
 	} catch (Common::Exception &e) {
-		Common::printException(e, "WARNING1: ");
-
 		delete rim;
 		throw;
 	}

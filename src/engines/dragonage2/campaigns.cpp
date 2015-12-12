@@ -172,9 +172,9 @@ Campaign *Campaigns::readCampaign(const Common::UString &cifPath, const Common::
 
 		campaign = new Campaign(*_game, cifPath, manifestPath, addinBase);
 
-	} catch (Common::Exception &e) {
-		e.add("Failed reading campaign \"%s\"", Common::FilePath::getStem(cifPath).c_str());
-		Common::printException(e, "WARNING: ");
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed reading campaign \"%s\"",
+		                                   Common::FilePath::getStem(cifPath).c_str());
 	}
 
 	return campaign;
