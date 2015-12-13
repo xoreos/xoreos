@@ -65,7 +65,7 @@ public:
 	/** Add a debug channel.
 	 *
 	 *  A debug channel separates debug messages into groups, so debug output
-	 *  doesn't get swamped unecessarily. Only when a debug channel is enabled
+	 *  doesn't get swamped unnecessarily. Only when a debug channel is enabled
 	 *  are debug messages to that channel shown.
 	 *
 	 *  So that several channels can be enabled at the same time, all channel

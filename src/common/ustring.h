@@ -142,7 +142,7 @@ public:
 	void trimRight();
 	void trim();
 
-	/** Replace all occurences of a character with another character. */
+	/** Replace all occurrences of a character with another character. */
 	void replaceAll(uint32 what, uint32 with);
 
 	/** Convert the string to lowercase. */

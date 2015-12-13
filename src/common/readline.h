@@ -55,9 +55,9 @@ public:
 	/** Add a command that can be tab-completed. */
 	void addCommand(const UString &command);
 
-	/** Set the tab-completeable arguments for a command. */
+	/** Set the tab-completable arguments for a command. */
 	void setArguments(const UString &command, const std::vector<UString> &arguments);
-	/** Clear the tab-completeable arguments for a command. */
+	/** Clear the tab-completable arguments for a command. */
 	void setArguments(const UString &command);
 
 	/** Return the current input line. */
@@ -121,9 +121,9 @@ private:
 	/** Saved copies of modified history lines. */
 	std::list<HistorySave> _historySave;
 
-	/** All known tab-completeable commands. */
+	/** All known tab-completable commands. */
 	CommandSet _commands;
-	/** All know tab-completeable command arguments. */
+	/** All know tab-completable command arguments. */
 	ArgumentSets _arguments;
 
 	/** Current possible command candidates for the input line. */

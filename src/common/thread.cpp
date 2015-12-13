@@ -89,7 +89,7 @@ int Thread::threadHelper(void *obj) {
 	// Run the thread
 	thread->threadMethod();
 
-	// Thead thread is not running.
+	// Thread thread is not running.
 	thread->_threadRunning = false;
 
 	return 0;

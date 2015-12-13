@@ -29,7 +29,7 @@
 
 namespace Common {
 
-/** A bouding box around 3D points. */
+/** A bounding box around 3D points. */
 class BoundingBox {
 public:
 	BoundingBox();

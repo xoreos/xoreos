@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  ZIP file decompresssion.
+ *  ZIP file decompression.
  */
 
 #include <cassert>

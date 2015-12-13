@@ -42,7 +42,7 @@ public:
 		kFileModeMAX
 	};
 
-	/** Intialize platform-dependant things. */
+	/** Initialize platform-dependant things. */
 	static void init();
 
 	/** Read the command line parameters into UTF-8 strings. */

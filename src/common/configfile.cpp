@@ -477,7 +477,7 @@ void ConfigFile::parseConfigLine(const UString &line, UString &domainName,
 	value.trim();
 	comment.trim();
 
-	// Readd the comment character #
+	// Read the comment character #
 	if (hasComment)
 		comment = "# " + comment;
 

@@ -31,7 +31,7 @@ namespace Common {
 
 /**
  * Subclass of NonCopyable can not be copied due to the fact that
- * we made the copy constructor and assigment operator private.
+ * we made the copy constructor and assignment operator private.
  */
 class NonCopyable {
 public:

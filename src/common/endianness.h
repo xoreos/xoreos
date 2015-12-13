@@ -110,7 +110,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
  * A wrapper macro used around four character constants, like 'DATA', to
  * ensure portability. Typical usage: MKTAG('D','A','T','A').
  *
- * Why is this necessary? The C/C++ standard does not define the endianess to
+ * Why is this necessary? The C/C++ standard does not define the endianness to
  * be used for character constants. Hence if one uses multi-byte character
  * constants, a potential portability problem opens up.
  */
@@ -182,7 +182,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 		static_cast<Unaligned64 *>(ptr)->val = value;
 	}
 
-// use software fallback by loading each byte explicitely
+// use software fallback by loading each byte explicitly
 #else
 
 	#if defined(XOREOS_LITTLE_ENDIAN)
@@ -267,7 +267,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 
 #endif
 
-//  Map Funtions for reading/writing BE/LE integers depending on native endianess
+//  Map Functions for reading/writing BE/LE integers depending on native endianness
 #if defined(XOREOS_LITTLE_ENDIAN)
 
 	#define READ_LE_UINT16(a) READ_UINT16(a)
@@ -302,7 +302,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#define CONSTANT_BE_32(a) SWAP_CONSTANT_32(a)
 	#define CONSTANT_BE_64(a) SWAP_CONSTANT_64(a)
 
-// if the unaligned load and the byteswap take alot instructions its better to directly read and invert
+// if the unaligned load and the byteswap take a lot instructions its better to directly read and invert
 	#if defined(XOREOS_NEED_ALIGNMENT) && !defined(__mips__)
 
 		static inline uint16 READ_BE_UINT16(const void *ptr) {
@@ -399,7 +399,7 @@ static inline uint16 SWAP_BYTES_16(const uint16 a) {
 	#define CONSTANT_BE_32(a) ((uint32)(a))
 	#define CONSTANT_BE_64(a) ((uint64)(a))
 
-	// if the unaligned load and the byteswap take alot instructions its better to directly read and invert
+	// if the unaligned load and the byteswap take a lot instructions its better to directly read and invert
 	#if defined(XOREOS_NEED_ALIGNMENT) && !defined(__mips__)
 
 	static inline uint16 READ_LE_UINT16(const void *ptr) {

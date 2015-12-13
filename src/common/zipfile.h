@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  ZIP file decompresssion.
+ *  ZIP file decompression.
  */
 
 #ifndef COMMON_ZIPFILE_H
@@ -55,7 +55,7 @@ public:
 	/** Return the size of a file. */
 	size_t getFileSize(uint32 index) const;
 
-	/** Return a stream of the files's contents. */
+	/** Return a stream of the file's contents. */
 	SeekableReadStream *getFile(uint32 index, bool tryNoCopy = false) const;
 
 private:
