@@ -77,7 +77,7 @@ private:
 	bool _isPC; ///< Is the creature a PC?
 
 	uint32 _appearance; ///< The creature's general appearance.
-	uint32 _headType;   ///< The creature's type of head if seperate from the model.
+	uint32 _headType;   ///< The creature's type of head if separate from the model.
 
 	Graphics::Aurora::Model *_model; ///< The creature's model.
 
