@@ -49,13 +49,13 @@ public:
 
 	// Properties, only available when the joystick is enabled.
 
-	/** Return the numer of axes the joystick has. */
+	/** Return the number of axes the joystick has. */
 	int getAxisCount  () const;
-	/** Return the numer of balls the joystick has. */
+	/** Return the number of balls the joystick has. */
 	int getBallCount  () const;
-	/** Return the numer of hats the joystick has. */
+	/** Return the number of hats the joystick has. */
 	int getHatCount   () const;
-	/** Return the numer of buttons the joystick has. */
+	/** Return the number of buttons the joystick has. */
 	int getButtonCount() const;
 
 private:

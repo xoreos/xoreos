@@ -133,7 +133,7 @@ public:
 
 	// Joystick input
 
-	/** Return the number of avaiable joysticks. */
+	/** Return the number of available joysticks. */
 	size_t getJoystickCount() const;
 
 	/** Return the joystick with that index. */

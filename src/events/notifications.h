@@ -44,7 +44,7 @@ class Notifyable;
  *
  *  One example would be a change in the display resolution: GUI elements with
  *  an affinity to a screen edge or corner need to told that this change
- *  occured, so that they can reposition themselves to the new coordinates.
+ *  occurred, so that they can reposition themselves to the new coordinates.
  */
 class NotificationManager : public Common::Singleton<NotificationManager> {
 public:

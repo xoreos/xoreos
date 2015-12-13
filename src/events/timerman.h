@@ -60,7 +60,7 @@ public:
 
 	void init();
 
-	/** Add a function to be called regularily.
+	/** Add a function to be called regularly.
 	 *
 	 *  @param interval The interval in ms. The granularity is
 	 *                  platform-dependent. The most common number is 10ms.
