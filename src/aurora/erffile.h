@@ -52,7 +52,7 @@ public:
 	 *  password with which many of the DLC's ERF archive are encrypted. This
 	 *  password is used to directly decrypt the archive.
 	 *
-	 *  In Neverwinter Nights, each premium module consists of an uncrypted
+	 *  In Neverwinter Nights, each premium module consists of an unencrypted
 	 *  .nwm file and an encrypted .hak file, both of which are ERF archives.
 	 *  In this case, the password is the MD5 of the .nwm file. It is then used
 	 *  to calculate the key to decrypt the .hak file.

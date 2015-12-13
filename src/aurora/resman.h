@@ -50,7 +50,7 @@ class KEYFile;
 class BIFFile;
 
 /** A resource manager holding information about and handling all request for all
- *  resources useable by the game.
+ *  resources usable by the game.
  */
 class ResourceManager : public Common::Singleton<ResourceManager> {
 public:
@@ -73,7 +73,7 @@ public:
 	/** Do we have "small" files (compressed with Nintendo DS's LZSS algorithm)? */
 	void setHasSmall(bool hasSmall);
 
-	/** With which hash algo are/should the names be hashed? */
+	/** With which hash algorithm are/should the names be hashed? */
 	void setHashAlgo(Common::HashAlgo algo);
 
 	/** Set the array used to map cursor ID to cursor names. */
@@ -467,7 +467,7 @@ private:
 	/** Do we have "small" files? */
 	bool _hasSmall;
 
-	/** With which hash algo are/should the names be hashed? */
+	/** With which hash algorithm are/should the names be hashed? */
 	Common::HashAlgo _hashAlgo;
 
 	/** Cursor ID -> cursor name. */

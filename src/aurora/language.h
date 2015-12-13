@@ -85,7 +85,7 @@ public:
 	~LanguageManager();
 
 	// .--- Managed language methods
-	/** Clear all managaged languages from the LanguageManager. */
+	/** Clear all managed languages from the LanguageManager. */
 	void clear();
 
 	/** Add a supported language for the current game to the LanguageManager,

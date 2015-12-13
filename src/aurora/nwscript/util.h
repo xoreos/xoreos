@@ -34,7 +34,7 @@ namespace NWScript {
 class Object;
 class FunctionContext;
 
-/** Contruct a string with the tag of this object. */
+/** Construct a string with the tag of this object. */
 Common::UString formatTag(const Object *object);
 
 /** Construct a string describing parameters of this function. */

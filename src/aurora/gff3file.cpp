@@ -212,7 +212,7 @@ void GFF3File::loadLists() {
 	_lists.resize(listCount);
 	_listOffsetToIndex.resize(rawLists.size(), 0xFFFFFFFF);
 
-	// Converting the raw list array into real, useable lists
+	// Converting the raw list array into real, usable lists
 	uint32 listIndex = 0;
 	for (size_t i = 0; i < rawLists.size(); listIndex++) {
 		_listOffsetToIndex[i] = listIndex;

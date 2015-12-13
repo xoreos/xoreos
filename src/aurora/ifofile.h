@@ -104,7 +104,7 @@ public:
 	/** Returns the list of monster NPCs used in the module. */
 	const std::vector<Common::UString> &getMonsterNPCs() const;
 
-	// Time managment
+	// Time management
 
 	/** Return the module's starting time. */
 	void getStartTime(uint8 &hour, uint8 &day, uint8 &month, uint32 &year) const;

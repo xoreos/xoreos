@@ -75,7 +75,7 @@ void ResourceManager::OpenedArchive::set(KnownArchive &kA, Archive &a) {
 
 	known->opened = this;
 
-	/* If the resource ifself is found in an archive, double-link these two
+	/* If the resource itself is found in an archive, double-link these two
 	 * archives, so that we can catch attempts of closing archives with
 	 * child-archives still open.
 	 */

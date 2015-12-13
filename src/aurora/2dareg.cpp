@@ -217,7 +217,7 @@ GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
 			if (!g->name.toLower().beginsWith(prefix))
 				continue;
 
-			// Load the the GDA
+			// Load the GDA
 			Common::SeekableReadStream *stream = ResMan.getResource(g->name, kFileTypeGDA);
 			if (!stream)
 				throw Common::Exception("No such GDA \"%s\"", g->name.c_str());

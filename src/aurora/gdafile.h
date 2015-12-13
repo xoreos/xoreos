@@ -67,7 +67,7 @@ public:
 	/** Add another GDA with the same column structure to the bottom of this GDA.
 	 *
 	 *  This effectively pastes the GDAs together, creating one combined table.
-	 *  Note that the row numbers will be continous and therefore will be
+	 *  Note that the row numbers will be continuous and therefore will be
 	 *  different depending on the order of the pasting, making them useless
 	 *  for row identification. An ID column should be used for this case.
 	 */

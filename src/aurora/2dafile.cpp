@@ -207,7 +207,7 @@ void TwoDAFile::readDefault2a(Common::SeekableReadStream &twoda,
 
 	/* ASCII 2DA files can have default values that are returned for cells
 	 * that don't exist. They are specified in the second line, optionally
-	 * preceeded by "Default:".
+	 * preceded by "Default:".
 	 */
 
 	std::vector<Common::UString> defaultRow;
@@ -487,7 +487,7 @@ void TwoDAFile::writeBinary(Common::WriteStream &out) const {
 	 * Basically, this involves going through each cell, and looking up
 	 * if we already saved this particular piece of data. If not, save
 	 * it, otherwise only remember the offset. There's no need to be
-	 * particularily smart about it, so we're just doing it the naive
+	 * particularly smart about it, so we're just doing it the naive
 	 * O(n^2) way.
 	 */
 
