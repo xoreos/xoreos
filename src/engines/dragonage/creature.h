@@ -106,7 +106,7 @@ private:
 
 	bool _isPC; ///< Is the creature a PC?
 
-	/** The creatures's appearance; index into the Appearances MGDA. */
+	/** The creature's appearance; index into the Appearances MGDA. */
 	uint32 _appearanceID;
 	/** The gender of the creature's model files. */
 	uint8  _appearanceGender;
