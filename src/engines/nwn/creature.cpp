@@ -631,9 +631,7 @@ void Creature::loadModel() {
 				continue;
 
 			// Add the loaded model to the appropriate part node
-			Graphics::Aurora::ModelNode *partNode = _model->getNode(kBodyPartNodes[i]);
-			if (partNode)
-				partNode->addChild(partModel);
+			_model->attachModel(kBodyPartNodes[i], partModel);
 
 			std::list<Common::UString> newTextures;
 			TextureMan.stopRecordNewTextures(newTextures);
