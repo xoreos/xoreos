@@ -282,7 +282,7 @@ void XMVWMV2Codec::init() {
 	_huffCBP[3] = new Common::Huffman(wmv2HuffmanPMB[2]);
 
 
-	// DC huffman decoders
+	// DC Huffman decoders
 	_huffDC[0][0] = new Common::Huffman(wmv2HuffmanDC[0][0]);
 	_huffDC[0][1] = new Common::Huffman(wmv2HuffmanDC[0][1]);
 	_huffDC[1][0] = new Common::Huffman(wmv2HuffmanDC[1][0]);
@@ -414,7 +414,7 @@ void XMVWMV2Codec::initDecodeContext(DecodeContext &ctx) {
 void XMVWMV2Codec::decodeIFrame(DecodeContext &ctx) {
 	// Coefficients decoders
 
-	// Do we have the AC huffman table indices per macro block?
+	// Do we have the AC Huffman table indices per macro block?
 	if (_hasACPerMacroBlock)
 		ctx.hasACPerMacroBlock = ctx.bits.getBit() != 0;
 
@@ -424,7 +424,7 @@ void XMVWMV2Codec::decodeIFrame(DecodeContext &ctx) {
 		ctx.decoderAC[0] = &_decoderAC[0][getTrit(ctx.bits)];
 	}
 
-	// DC huffman table index
+	// DC Huffman table index
 	uint8 dcTableIndex = ctx.bits.getBit();
 
 	ctx.huffDC[0] = _huffDC[0][dcTableIndex];
@@ -449,7 +449,7 @@ void XMVWMV2Codec::decodeIFrame(DecodeContext &ctx) {
 
 			ctx.hasACPrediction = ctx.bits.getBit() != 0;
 
-			// Read the AC huffman table indices for this macro block
+			// Read the AC Huffman table indices for this macro block
 			if (ctx.hasACPerMacroBlock && !ctx.curCBP[0].empty()) {
 				uint32 index = getTrit(ctx.bits);
 

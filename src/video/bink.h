@@ -93,7 +93,7 @@ private:
 	/** Data structure for decoding and tranlating Huffman'd data. */
 	struct Huffman {
 		int  index;       ///< Index of the Huffman codebook to use.
-		byte symbols[16]; ///< Huffman symbol => Bink symbol tranlation list.
+		byte symbols[16]; ///< Huffman symbol => Bink symbol translation list.
 	};
 
 	/** Data structure used for decoding a single Bink data type. */
@@ -197,7 +197,7 @@ private:
 	uint32 _id; ///< The BIK FourCC.
 
 	uint32 _fpsNum; ///< Dividend of the FPS value.
-	uint32 _fpsDen; ///< Dividor of the FPS value.
+	uint32 _fpsDen; ///< Divisor of the FPS value.
 
 	uint32 _videoFlags; ///< Video frame features.
 
