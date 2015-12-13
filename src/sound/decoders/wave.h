@@ -41,7 +41,7 @@ class RewindableAudioStream;
  * @param stream          The SeekableReadStream from which to read the WAVE data.
  * @param disposeAfterUse Whether to delete the stream after use.
  *
- * @return A new RewindableAudioStream, or 0, if an error occured.
+ * @return A new RewindableAudioStream, or 0, if an error occurred.
  */
 RewindableAudioStream *makeWAVStream(
 	Common::SeekableReadStream *stream,

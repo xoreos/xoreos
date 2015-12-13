@@ -99,7 +99,7 @@ public:
 	 *
 	 *  @param  audStream The stream to play.
 	 *  @param  type The type of the sound.
-	 *  @param  disposeAfterUse Should the stream be taken over and discarded once it finshed?
+	 *  @param  disposeAfterUse Should the stream be taken over and discarded once it finished?
 	 *  @return The channel the sound has been assigned to, or -1 on error.
 	 */
 	ChannelHandle playAudioStream(AudioStream *audStream,
@@ -208,7 +208,7 @@ private:
 	/** Check that the SoundManager was properly initialized. */
 	void checkReady();
 
-	/** Update the sound information. Called regularily from within the thread method. */
+	/** Update the sound information. Called regularly from within the thread method. */
 	void update();
 
 	/** Look for a free place in the channel vector. */

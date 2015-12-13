@@ -148,7 +148,7 @@ void WMACodec::init(Common::SeekableReadStream *extraData) {
 	// Init the noise generator
 	initNoise();
 
-	// Init the coefficient huffman codes
+	// Init the coefficient Huffman codes
 	initCoefHuffman(bps);
 
 	// Init MDCTs

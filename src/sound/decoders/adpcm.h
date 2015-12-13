@@ -56,7 +56,7 @@ enum ADPCMTypes {
  * @param channels          The number of channels.
  * @param blockAlign        Block alignment ???
  *
- * @return A new RewindableAudioStream, or 0, if an error occured.
+ * @return A new RewindableAudioStream, or 0, if an error occurred.
  */
 RewindableAudioStream *makeADPCMStream(
 	Common::SeekableReadStream *stream,

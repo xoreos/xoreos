@@ -51,7 +51,7 @@ static const size_t kOpenALBufferCount = 5;
 /** Number of bytes per OpenAL buffer.
  *
  *  @note Needs to be high enough to prevent stuttering, but low enough to
- *        prevent a noticable lag. 32768 seems to work just fine.
+ *        prevent a noticeable lag. 32768 seems to work just fine.
  */
 static const size_t kOpenALBufferSize = 32768;
 

@@ -115,21 +115,21 @@ private:
 
 	uint16 *_coefHuffmanRunTable[2];   ///< Run table for the coef Huffman.
 	float  *_coefHuffmanLevelTable[2]; ///< Level table for the coef Huffman.
-	uint16 *_coefHuffmanIntTable[2];   ///< Int tablre for the coef Huffman.
+	uint16 *_coefHuffmanIntTable[2];   ///< Int table for the coef Huffman.
 
 	// Noise
 	float _noiseMult;                 ///< Noise multiplier.
 	float _noiseTable[kNoiseTabSize]; ///< Noise table.
 	int   _noiseIndex;
 
-	Common::Huffman *_hgainHuffman; ///< Perceptual noise huffman code.
+	Common::Huffman *_hgainHuffman; ///< Perceptual noise Huffman code.
 
 	// Exponents
 	int   _exponentsBSize[kChannelsMax];
 	float _exponents[kChannelsMax][kBlockSizeMax];
 	float _maxExponent[kChannelsMax];
 
-	Common::Huffman *_expHuffman; ///< Exponents huffman code.
+	Common::Huffman *_expHuffman; ///< Exponents Huffman code.
 
 	// Coded values in high bands
 	bool _highBandCoded [kChannelsMax][kHighBandSizeMax];
