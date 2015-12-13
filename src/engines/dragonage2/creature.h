@@ -106,7 +106,7 @@ private:
 
 	bool _isPC; ///< Is the creature a PC?
 
-	/** The creatures's appearance; index into the Appearances MGDA. */
+	/** The creature's appearance; index into the Appearances MGDA. */
 	uint32 _appearanceID;
 
 	/** Name of the morph file describing the creature's head. */
