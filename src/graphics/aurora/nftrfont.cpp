@@ -489,7 +489,7 @@ void NFTRFont::drawGlyph(const Glyph &glyph, Surface &surface, uint32 x, uint32 
 			 * to work with. This is used in fonts that anti-alias, especially
 			 * in higher-res Asian fonts.
 			 *
-			 * Note that we also guard against a potential divison by 0. */
+			 * Note that we also guard against a potential division by 0. */
 			uint16 value = 0;
 			if (glyph.palMode >= 7)
 				value = (maxColors == 2) ? 0xFF : (255 * (pixel    ) / (maxColors - 1));

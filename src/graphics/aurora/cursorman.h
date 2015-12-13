@@ -38,7 +38,7 @@ namespace Aurora {
 
 class Cursor;
 
-/** The global Aurorar cursor manager. */
+/** The global Aurora cursor manager. */
 class CursorManager : public Common::Singleton<CursorManager> {
 public:
 	CursorManager();

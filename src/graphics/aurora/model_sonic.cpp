@@ -164,7 +164,7 @@ void Model_Sonic::readModel(ParserContext &ctx) {
 uint8 Model_Sonic::readInfoOffset(ParserContext &ctx, Infos &infos, uint32 offset) {
 	/* Contains names and offsets of entries in a section. */
 
-	ctx.nsbmd->skip(1); // Unkown
+	ctx.nsbmd->skip(1); // Unknown
 
 	const uint8 count = ctx.nsbmd->readByte();
 	infos.resize(count);
@@ -188,7 +188,7 @@ uint8 Model_Sonic::readInfoOffset(ParserContext &ctx, Infos &infos, uint32 offse
 uint8 Model_Sonic::readInfoOffsetCount(ParserContext &ctx, Infos &infos, uint32 offset) {
 	/* Contains names, offsets and counts/sizes of entries in a section. */
 
-	ctx.nsbmd->skip(1); // Unkown
+	ctx.nsbmd->skip(1); // Unknown
 
 	const uint8 count = ctx.nsbmd->readByte();
 	infos.resize(count);

@@ -193,7 +193,7 @@ void NCGR::readChar(NCGRFile &ctx) {
 	 * are in this format, it seems. */
 	const uint8 tiled = ctx.ncgr->readByte();
 
-	/* part == 0xFF apparently means that the image is partioned somehow?
+	/* part == 0xFF apparently means that the image is portioned somehow?
 	 * None of the Sonic files have this flag set, though. */
 	const uint8 part  = ctx.ncgr->readByte();
 

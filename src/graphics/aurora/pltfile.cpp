@@ -158,7 +158,7 @@ void PLTFile::build() {
 	const uint8 *layer  = _dataLayers;
 	      byte  *dst    = _surface->getData();
 
-	/* Now terate over all pixels, each time copying the correct BGRA values
+	/* Now iterate over all pixels, each time copying the correct BGRA values
 	 * for the pixel's intensity into the final image. */
 	for (uint32 i = 0; i < pixels; i++, image++, layer++, dst += 4)
 		memcpy(dst, rows + (*layer * 4 * 256) + (*image * 4), 4);

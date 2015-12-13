@@ -488,7 +488,7 @@ void ModelNode::renderGeometryNormal() {
 
 void ModelNode::renderGeometryEnvMappedUnder() {
 	/* First draw the node with only the environment map, then simply
-	 * blend a semi-transparent diffuse texture ontop.
+	 * blend a semi-transparent diffuse texture on top.
 	 *
 	 * Neverwinter Nights uses this method.
 	 */

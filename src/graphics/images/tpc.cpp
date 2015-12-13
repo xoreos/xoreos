@@ -212,7 +212,7 @@ bool TPC::checkCubeMap(uint32 &width, uint32 &height) {
 	 * times width. This means that there are 6 sides of width * (height / 6)
 	 * images in this texture, making it a cube map.
 	 *
-	 * The indivual sides are then stores on after another, together with
+	 * The individual sides are then stores on after another, together with
 	 * their mip maps.
 	 *
 	 * I.e.

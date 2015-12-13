@@ -139,7 +139,7 @@ public:
 	/** Get the object at this screen position. */
 	Renderable *getObjectAt(float x, float y);
 
-	/** Recalculate all object distances to the camera and resort the objebts. */
+	/** Recalculate all object distances to the camera and resort the objects. */
 	void recalculateObjectDistances();
 
 	/** Lock the frame mutex. */
