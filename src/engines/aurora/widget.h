@@ -114,7 +114,7 @@ protected:
 	/** A fellow group member signaled that it is now active. */
 	virtual void signalGroupMemberActive();
 
-	void setActive(bool active); ///< The the widget's active state.
+	void setActive(bool active); ///< The widget's active state.
 
 private:
 	bool _active;    ///< Was the widget activated?

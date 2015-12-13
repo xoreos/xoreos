@@ -89,7 +89,7 @@ protected:
 	/** Put these widgets together into a group. */
 	void declareGroup(const std::list<Widget *> &group);
 
-	/** Forcifully remove the focus from the current widget. */
+	/** Forcefully remove the focus from the current widget. */
 	void removeFocus();
 
 	/** Force an update of the mouse position. */
