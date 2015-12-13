@@ -75,9 +75,6 @@ public:
 	/** Should the node never be rendered at all? */
 	void setInvisible(bool invisible);
 
-	/** Add another model as a child to this node. */
-	void addChild(Model *model);
-
 	/** Change the environment map on this model node. */
 	void setEnvironmentMap(const Common::UString &environmentMap = "");
 
@@ -250,8 +247,6 @@ public:
 	void inheritPosition(ModelNode &node) const;
 	void inheritOrientation(ModelNode &node) const;
 	void inheritGeometry(ModelNode &node) const;
-
-	void reparent(ModelNode &parent);
 
 	// Animation helpers
 	void interpolatePosition(float time, float &x, float &y, float &z) const;
