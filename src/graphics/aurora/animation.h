@@ -80,6 +80,10 @@ protected:
 	Common::UString _name; ///< The model's name.
 	float _length;
 	float _transtime;
+
+private:
+	void interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale) const;
+	void interpolateOrientation(ModelNode *animNode, ModelNode *target, float time) const;
 };
 
 } // End of namespace Aurora
