@@ -115,7 +115,7 @@ bool Placeable::isActivated() const {
 }
 
 bool Placeable::click(Object *triggerer) {
-	// If the placeable is locked, just play the apropriate sound and bail
+	// If the placeable is locked, just play the appropriate sound and bail
 	if (isLocked()) {
 		playSound(_soundLocked);
 		return false;
