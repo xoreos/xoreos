@@ -68,7 +68,7 @@ void MoviesCampMenu::callbackActive(Widget &widget) {
 	}
 
 	if        (widget.getTag() == "NWNXP1Button") {
-		// No GUI file? Harcoded?
+		// No GUI file? Hardcoded?
 
 		// Just play them one after another for now...
 		playVideo("xp1_intro");

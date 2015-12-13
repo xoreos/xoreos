@@ -64,7 +64,7 @@ CharAlignment::CharAlignment(CharGenChoices &choices, ::Engines::Console *consol
 
 	getButton("OkButton", true)->setDisabled(true);
 
-	//TODO Recomend button for alignment.
+	//TODO Recommend button for alignment.
 	getWidget("RecommendButton", true)->setDisabled(true);
 }
 

@@ -224,7 +224,7 @@ bool Version::detectWindows(const Common::UString &directory) {
 }
 
 // In the Mac OS X binaries, the version number ("1.69") and the build number ("8109")
-// preceed the name "Neverwinter Nights", each field separated by 4 0-byte.
+// precede the name "Neverwinter Nights", each field separated by 4 0-byte.
 bool Version::detectMacOSX(const Common::UString &directory) {
 	Common::UString appDir =
 		Common::FilePath::findSubDirectory(directory, "Neverwinter Nights.app/Contents/MacOS", true);

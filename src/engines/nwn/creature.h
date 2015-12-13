@@ -107,7 +107,7 @@ public:
 	const Common::UString &getConvClass() const;
 	/** Return the creature's class as needed in conversations, e.g. "barbarian". */
 	const Common::UString &getConvclass() const;
-	/** Return the pcreature's class plural as needed in conversations, e.g. "Barbarians". */
+	/** Return the creature's class plural as needed in conversations, e.g. "Barbarians". */
 	const Common::UString &getConvClasses() const;
 
 	/** Return the creature's class description. */
@@ -163,7 +163,7 @@ public:
 
 	/** Is this creature commandable (has a modifyable action queue)? */
 	bool isCommandable() const;
-	/** Set whether this creature commandable (has a modifyable action queue). */
+	/** Set whether this creature commandable (has a modifiable action queue). */
 	void setCommandable(bool commandable);
 
 	// Positioning
@@ -224,7 +224,7 @@ private:
 		uint16 level;   ///< Levels of that class.
 	};
 
-	/** An assocatiate. */
+	/** An associate. */
 	struct Associate {
 		AssociateType type;  ///< The associate's type.
 		Creature *associate; ///< The associate.
@@ -307,7 +307,7 @@ private:
 	Creature *_master;                ///< The creature's master.
 	std::list<Associate> _associates; ///< The creature's associates.
 
-	/** Is the creature commandable (has a modifyable action queue)? */
+	/** Is the creature commandable (has a modifiable action queue)? */
 	bool _isCommandable;
 
 	Graphics::Aurora::Model *_model; ///< The creature's model.

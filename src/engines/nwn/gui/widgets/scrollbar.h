@@ -43,7 +43,7 @@ class GUI;
 class Scrollbar : public Graphics::GUIFrontElement {
 public:
 	enum Type {
-		kTypeVertical,  ///< Vertial scrollbar.
+		kTypeVertical,  ///< Vertical scrollbar.
 		kTypeHorizontal ///< Horizontal scrollbar.
 	};
 
