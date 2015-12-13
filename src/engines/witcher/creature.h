@@ -37,7 +37,7 @@ namespace Witcher {
 
 class Creature : public Object {
 public:
-	/** Load from a creature templace. */
+	/** Load from a creature template. */
 	Creature(const Common::UString &utc);
 	~Creature();
 
