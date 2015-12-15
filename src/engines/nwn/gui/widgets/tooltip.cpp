@@ -268,20 +268,24 @@ void Tooltip::setPosition(float x, float y, float z) {
 	updatePosition();
 }
 
-void Tooltip::show() {
+void Tooltip::show(uint32 delay) {
 	if (_visible || _empty)
 		return;
 
 	redoLines();
 
-	uint32 delay = ConfigMan.getInt("tooltipdelay", 100);
-	if (delay == 0)
-		doShow(0);
-	else
-		TimerMan.addTimer(delay, _timer,
-		                  boost::bind(&Tooltip::doShow, this, _1));
-
 	_visible = true;
+
+	if (delay == 0) {
+		doShow(0);
+		return;
+	}
+
+	TimerMan.addTimer(delay, _timer, boost::bind(&Tooltip::doShow, this, _1));
+}
+
+void Tooltip::show() {
+	show(getDefaultDelay());
 }
 
 void Tooltip::hide() {
