@@ -46,8 +46,9 @@ class Portrait;
 class Tooltip : public Events::Notifyable {
 public:
 	enum Type {
-		kTypeHelp,    ///< Help string when mousing over a GUI widget.
-		kTypeFeedback ///< Name and/or portrait of an object in the 3D world.
+		kTypeHelp,     ///< Help string when mousing over a GUI widget.
+		kTypeFeedback, ///< Name and/or portrait of an object in the 3D world.
+		kTypeSpeech    ///< A scripted speech line on an object.
 	};
 
 	Tooltip(Type type);

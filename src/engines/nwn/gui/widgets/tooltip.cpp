@@ -469,18 +469,26 @@ uint32 Tooltip::doShow(uint32 UNUSED(oldInterval)) {
 }
 
 void Tooltip::getFeedbackMode(bool &showBubble, bool &showText, bool &showPortrait) const {
-	if (_type == kTypeHelp) {
-		showBubble   = true;
-		showText     = true;
-		showPortrait = false;
-		return;
-	}
-
 	uint32 mode = ConfigMan.getInt("feedbackmode", 2);
 
 	showBubble   = mode == 2;
 	showText     = mode >= 1;
 	showPortrait = mode == 2;
+
+	switch (_type) {
+		case kTypeHelp:
+			showBubble   = true;
+			showText     = true;
+			showPortrait = false;
+			break;
+
+		case kTypeSpeech:
+			showText     = true;
+			break;
+
+		default:
+			break;
+	}
 }
 
 Common::UString Tooltip::getFontName() {
