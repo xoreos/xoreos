@@ -79,8 +79,8 @@ Tooltip::Tooltip(Type type, Graphics::Aurora::Model &parent) : _type(type),
 Tooltip::~Tooltip() {
 	hide();
 
-	for (std::vector<Line>::iterator l = _lines.begin(); l != _lines.end(); ++l)
-		delete l->text;
+	deleteTexts();
+
 	delete _portrait;
 	delete _bubble;
 }
@@ -88,12 +88,9 @@ Tooltip::~Tooltip() {
 void Tooltip::clearLines() {
 	hide();
 
-	for (std::vector<Line>::iterator l = _lines.begin(); l != _lines.end(); ++l)
-		delete l->text;
-
 	_lines.clear();
 
-	redoLayout();
+	redoLines(true);
 }
 
 void Tooltip::clearPortrait() {
@@ -124,11 +121,9 @@ void Tooltip::addLine(const Common::UString &text, float r, float g, float b, fl
 		_lines.back().b    = b;
 		_lines.back().a    = a;
 		_lines.back().line = *l;
-		_lines.back().text = new Graphics::Aurora::Text(FontMan.get(getFontName()), *l, r, g, b, a);
-		_lines.back().text->setTag("Tooltip#Text");
 	}
 
-	redoLayout();
+	redoLines(true);
 }
 
 void Tooltip::setPortrait(const Common::UString &image) {
@@ -236,7 +231,7 @@ void Tooltip::updatePosition() {
 
 	const float bubbleTextWidth = bubbleWidth - portraitSpacerWidth;
 
-	const float textHeight = _lines.size() * _lineHeight + (_lines.size() - 1) * _lineSpacing;
+	const float textHeight = _texts.size() * _lineHeight + (_texts.size() - 1) * _lineSpacing;
 
 	const float textBorderY = (bubbleHeight - textHeight) / 2.0f;
 
@@ -245,14 +240,12 @@ void Tooltip::updatePosition() {
 	const float textBottomZ = bubbleZ - 1.0f;
 
 	float textY = textBottomY;
-	for (std::vector<Line>::reverse_iterator l = _lines.rbegin(); l != _lines.rend(); ++l) {
-		if (l->text) {
-			const float textWidth   = l->text->getWidth();
-			const float textBorderX = (bubbleTextWidth - textWidth) * _align;
-			const float textX       = textBottomX + textBorderX;
-			const float lineY       = textY - l->text->getHeight();
-			l->text->setPosition(floorf(textX), floorf(lineY), floorf(textBottomZ));
-		}
+	for (std::vector<Graphics::Aurora::Text *>::iterator t = _texts.begin(); t != _texts.end(); ++t) {
+		const float textWidth   = (*t)->getWidth();
+		const float textBorderX = (bubbleTextWidth - textWidth) * _align;
+		const float textX       = textBottomX + textBorderX;
+		const float lineY       = textY - (*t)->getHeight();
+		(*t)->setPosition(floorf(textX), floorf(lineY), floorf(textBottomZ));
 
 		textY -= (_lineHeight + _lineSpacing);
 	}
@@ -297,16 +290,15 @@ void Tooltip::hide() {
 
 void Tooltip::getSize(float &width, float &height) {
 	width = 0.0f;
-	for (std::vector<Line>::const_iterator l = _lines.begin(); l != _lines.end(); ++l)
-		if (l->text)
-			width = MAX(width, l->text->getWidth());
+	for (std::vector<Graphics::Aurora::Text *>::const_iterator t = _texts.begin(); t != _texts.end(); ++t)
+		width = MAX(width, (*t)->getWidth());
 
 	if (_portrait)
 		width += _portrait->getWidth() + 10.0f;
 
 	height = 0.0f;
-	if (_lines.size() > 0)
-		height = (_lines.size() * _lineHeight) + ((_lines.size() - 1) * _lineSpacing);
+	if (_texts.size() > 0)
+		height = (_texts.size() * _lineHeight) + ((_texts.size() - 1) * _lineSpacing);
 
 	if (_portrait)
 		height = MAX(height, _portrait->getHeight());
@@ -316,48 +308,71 @@ void Tooltip::checkEmpty() {
 	_empty = !_portrait && _lines.empty();
 }
 
-void Tooltip::redoLines() {
-	bool needRedo = false;
+void Tooltip::deleteTexts() {
+	for (std::vector<Graphics::Aurora::Text *>::iterator t = _texts.begin(); t != _texts.end(); ++t)
+		delete *t;
 
-	Common::UString fontName = getFontName();
-	if (fontName != _font) {
-		needRedo = true;
+	_texts.clear();
+}
 
-		for (std::vector<Line>::iterator l = _lines.begin(); l != _lines.end(); ++l) {
-			delete l->text;
-			l->text = 0;
+bool Tooltip::createTexts(float width, size_t maxLines) {
+	deleteTexts();
+
+	Graphics::Aurora::FontHandle font = FontMan.get(_font);
+
+	const float maxWidth = _showBubble ? (width - (_showPortrait ? 26.0f : 0.0f)) : 0.0f;
+
+	for (std::vector<Line>::const_iterator l = _lines.begin(); l != _lines.end(); l++) {
+		std::vector<Common::UString> lineLines;
+
+		font.getFont().split(l->line, lineLines, maxWidth);
+
+		for (std::vector<Common::UString>::const_iterator i = lineLines.begin(); i != lineLines.end(); ++i) {
+			_texts.push_back(new Graphics::Aurora::Text(font, *i, l->r, l->g, l->b, l->a));
+			_texts.back()->setTag("Tooltip#Text");
 		}
-
-		_font = fontName;
-
-		Graphics::Aurora::FontHandle font = FontMan.get(_font);
-
-		_lineHeight  = font.getFont().getHeight();
-		_lineSpacing = font.getFont().getLineSpacing();
-
-		_width  = 0.0f;
-		_height = 0.0f;
 	}
+
+	return !_showBubble || !maxLines || (_texts.size() <= maxLines);
+}
+
+void Tooltip::redoLines(bool force) {
+	bool needRedo = force;
 
 	bool showBubble, showText, showPortrait;
 	getFeedbackMode(showBubble, showText, showPortrait);
 
-	if ((showBubble   != _showBubble  ) ||
+	const Common::UString fontName = getFontName();
+
+	if ((fontName     != _font        ) ||
+	    (showBubble   != _showBubble  ) ||
 		  (showText     != _showText    ) ||
 			(showPortrait != _showPortrait)) {
 
-		needRedo = true;
-
-		_width  = 0.0f;
-		_height = 0.0f;
-
+		_font         = fontName;
 		_showBubble   = showBubble;
 		_showText     = showText;
 		_showPortrait = showPortrait;
+
+		needRedo = true;
 	}
 
-	if (needRedo)
-		redoLayout();
+	if (!needRedo)
+		return;
+
+	Graphics::Aurora::FontHandle font = FontMan.get(_font);
+
+	_lineHeight  = font.getFont().getHeight();
+	_lineSpacing = font.getFont().getLineSpacing();
+
+	_width  = 0.0f;
+	_height = 0.0f;
+
+	if (!createTexts(100.0f, 3))
+		if (!createTexts(150.f, 3))
+			createTexts(300.0f);
+
+	redoLayout();
 }
 
 void Tooltip::redoBubble() {
@@ -399,14 +414,6 @@ void Tooltip::redoLayout() {
 	_lineHeight  = font.getFont().getHeight();
 	_lineSpacing = font.getFont().getLineSpacing();
 
-	for (std::vector<Line>::iterator l = _lines.begin(); l != _lines.end(); ++l) {
-		if (l->text)
-			continue;
-
-		l->text = new Graphics::Aurora::Text(font, l->line, l->r, l->g, l->b, l->a);
-		l->text->setTag("Tooltip#Text");
-	}
-
 	float width, height;
 	getSize(width, height);
 
@@ -432,9 +439,8 @@ void Tooltip::doShow() {
 		_portrait->show();
 
 	if (_showText)
-		for (std::vector<Line>::iterator l = _lines.begin(); l != _lines.end(); ++l)
-			if (l->text)
-				l->text->show();
+		for (std::vector<Graphics::Aurora::Text *>::iterator t = _texts.begin(); t != _texts.end(); ++t)
+			(*t)->show();
 
 	GfxMan.unlockFrame();
 }
@@ -450,9 +456,8 @@ void Tooltip::doHide() {
 	if (_portrait)
 		_portrait->hide();
 
-	for (std::vector<Line>::iterator l = _lines.begin(); l != _lines.end(); ++l)
-		if (l->text)
-			l->text->hide();
+	for (std::vector<Graphics::Aurora::Text *>::iterator t = _texts.begin(); t != _texts.end(); ++t)
+		(*t)->hide();
 
 	GfxMan.unlockFrame();
 }

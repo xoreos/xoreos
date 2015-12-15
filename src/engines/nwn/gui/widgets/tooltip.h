@@ -85,8 +85,6 @@ private:
 	struct Line {
 		float r, g, b, a;
 		Common::UString line;
-
-		Graphics::Aurora::Text *text;
 	};
 
 	Type _type;
@@ -108,6 +106,7 @@ private:
 	Portrait *_portrait;
 
 	std::vector<Line> _lines;
+	std::vector<Graphics::Aurora::Text *> _texts;
 
 	bool _offscreen;
 
@@ -134,9 +133,12 @@ private:
 	void getSize(float &width, float &height);
 
 	void checkEmpty();
-	void redoLines();
+	void redoLines(bool force = false);
 	void redoBubble();
 	void redoLayout();
+
+	bool createTexts(float width, size_t maxLines = 0);
+	void deleteTexts();
 
 	uint32 doShow(uint32 oldInterval);
 
