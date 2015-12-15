@@ -53,7 +53,7 @@ void NWNWidget::hide() {
 
 void NWNWidget::enter() {
 	if (_tooltip)
-		_tooltip->show();
+		_tooltip->show(Tooltip::getDefaultDelay());
 }
 
 void NWNWidget::leave() {
