@@ -319,7 +319,8 @@ bool Object::showSpeechTooltip(const Common::UString &line) {
 	if (!createSpeechTooltip(line))
 		return false;
 
-	_tooltip->show(0);
+	// Show the speech bubble immediately, for 12s (two rounds)
+	_tooltip->show(0, 12000);
 
 	return true;
 }
