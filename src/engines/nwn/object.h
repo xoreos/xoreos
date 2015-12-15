@@ -135,7 +135,8 @@ public:
 	// Object (text) talking
 
 	/** Speak the specified string. */
-	void speakString(const Common::UString &string, uint32 volume);
+	virtual void speakString(const Common::UString &string, uint32 volume);
+
 	/** Speak an one-liner from the specified conversation file. */
 	void speakOneLiner(Common::UString conv, Object *tokenTarget = 0);
 

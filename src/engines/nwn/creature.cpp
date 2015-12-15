@@ -50,8 +50,6 @@
 #include "src/engines/nwn/item.h"
 #include "src/engines/nwn/area.h"
 
-#include "src/engines/nwn/gui/widgets/tooltip.h"
-
 static const uint32 kBICID = MKTAG('B', 'I', 'C', ' ');
 
 namespace Engines {
@@ -921,7 +919,7 @@ void Creature::highlight(bool enabled) {
 		_model->drawBound(enabled);
 
 	if (enabled)
-		showTooltip();
+		showFeedbackTooltip();
 	else
 		hideTooltip();
 }
@@ -939,29 +937,70 @@ bool Creature::click(Object *triggerer) {
 	return beginConversation(triggerer);
 }
 
-void Creature::createTooltip() {
-	if (_tooltip || !_model)
-		return;
+bool Creature::createTooltip(Tooltip::Type type) {
+	if (!_model)
+		return false;
 
-	_tooltip = new Tooltip(Tooltip::kTypeFeedback, *_model);
+	if (!_tooltip) {
+		_tooltip = new Tooltip(type, *_model);
 
-	_tooltip->setAlign(0.5f);
-	_tooltip->addLine(_name, 0.5f, 0.5f, 1.0f, 1.0f);
-	_tooltip->setPortrait(_portrait);
+		_tooltip->setAlign(0.5f);
+		_tooltip->setPortrait(_portrait);
+	}
+
+	return true;
 }
 
-void Creature::showTooltip() {
-	createTooltip();
+bool Creature::createFeedbackTooltip() {
+	if (!createTooltip(Tooltip::kTypeFeedback))
+		return false;
 
-	if (_tooltip)
-		_tooltip->show();
+	_tooltip->clearLines();
+	_tooltip->addLine(_name, 0.5f, 0.5f, 1.0f, 1.0f);
+
+	return true;
+}
+
+bool Creature::createSpeechTooltip(const Common::UString &line) {
+	if (!createTooltip(Tooltip::kTypeSpeech))
+		return false;
+
+	_tooltip->clearLines();
+	_tooltip->addLine(line, 1.0f, 1.0f, 1.0f, 1.0f);
+
+	return true;
+}
+
+bool Creature::showFeedbackTooltip() {
+	hideTooltip();
+
+	if (!createFeedbackTooltip())
+		return false;
+
+	_tooltip->show(Tooltip::getDefaultDelay());
+
+	return true;
+}
+
+bool Creature::showSpeechTooltip(const Common::UString &line) {
+	hideTooltip();
+
+	if (!createSpeechTooltip(line))
+		return false;
+
+	_tooltip->show(0);
+
+	return true;
 }
 
 void Creature::hideTooltip() {
-	if (!_tooltip)
-		return;
-
+	if (_tooltip)
 	_tooltip->hide();
+}
+
+void Creature::speakString(const Common::UString &string, uint32 volume) {
+	if (!showSpeechTooltip(string))
+		Object::speakString(string, volume);
 }
 
 void Creature::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {
