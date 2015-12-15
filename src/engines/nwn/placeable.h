@@ -33,8 +33,6 @@ namespace Engines {
 
 namespace NWN {
 
-class Tooltip;
-
 class Placeable : public Situated {
 public:
 	/** The state of a placeable. */
@@ -102,14 +100,8 @@ private:
 
 	bool _hasInventory; ///< Does this placeable have an inventory?
 
-	Tooltip *_tooltip; ///< The tooltip displayed over the placeable.
-
 	/** Load from a placeable instance. */
 	void load(const Aurora::GFF3Struct &placeable);
-
-	void createTooltip(); ///< Create the tooltip.
-	void showTooltip();   ///< Show the tooltip.
-	void hideTooltip();   ///< Hide the tooltip.
 
 	/** Sync the model's state with the placeable's state. */
 	void setModelState();

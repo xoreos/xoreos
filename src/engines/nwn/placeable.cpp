@@ -41,13 +41,12 @@ namespace Engines {
 namespace NWN {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
-	_state(kStateDefault), _hasInventory(false), _tooltip(0) {
+	_state(kStateDefault), _hasInventory(false) {
 
 	load(placeable);
 }
 
 Placeable::~Placeable() {
-	delete _tooltip;
 }
 
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
@@ -116,11 +115,6 @@ void Placeable::show() {
 void Placeable::hide() {
 	leave();
 
-	hideTooltip();
-
-	delete _tooltip;
-	_tooltip = 0;
-
 	Situated::hide();
 }
 
@@ -152,34 +146,9 @@ void Placeable::highlight(bool enabled) {
 		_model->drawBound(enabled);
 
 	if (enabled)
-		showTooltip();
+		showFeedbackTooltip();
 	else
 		hideTooltip();
-}
-
-void Placeable::createTooltip() {
-	if (_tooltip || !_model)
-		return;
-
-	_tooltip = new Tooltip(Tooltip::kTypeFeedback, *_model);
-
-	_tooltip->setAlign(0.5f);
-	_tooltip->addLine(_name, 0.5f, 0.5f, 1.0f, 1.0f);
-	_tooltip->setPortrait(_portrait);
-}
-
-void Placeable::showTooltip() {
-	createTooltip();
-
-	if (_tooltip)
-		_tooltip->show();
-}
-
-void Placeable::hideTooltip() {
-	if (!_tooltip)
-		return;
-
-	_tooltip->hide();
 }
 
 bool Placeable::isOpen() const {

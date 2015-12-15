@@ -50,7 +50,7 @@ namespace NWN {
 
 Object::Object(ObjectType type) : _type(type),
 	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(false), _usable(true),
-	_pcSpeaker(0), _area(0) {
+	_pcSpeaker(0), _area(0), _tooltip(0) {
 
 	_id = Common::generateIDNumber();
 
@@ -65,6 +65,7 @@ Object::Object(ObjectType type) : _type(type),
 
 Object::~Object() {
 	delete _ssf;
+	delete _tooltip;
 }
 
 ObjectType Object::getType() const {
@@ -203,7 +204,8 @@ void Object::loadSSF() {
 }
 
 void Object::speakString(const Common::UString &string, uint32 UNUSED(volume)) {
-	status("<%s> \"%s\"", getName().c_str(), string.c_str());
+	if (!showSpeechTooltip(string))
+		status("<%s> \"%s\"", getName().c_str(), string.c_str());
 }
 
 void Object::speakOneLiner(Common::UString conv, Object *UNUSED(tokenTarget)) {
@@ -274,6 +276,57 @@ void Object::playAnimation(const Common::UString &animation,
 void Object::playAnimation(Animation animation) {
 	warning("TODO: Object::playAnimation(%d)", (int) animation);
 	// playAnimation(kAnimations[animation]);
+}
+
+bool Object::createTooltip(Tooltip::Type UNUSED(type)) {
+	return false;
+}
+
+bool Object::createFeedbackTooltip() {
+	if (!createTooltip(Tooltip::kTypeFeedback))
+		return false;
+
+	_tooltip->clearLines();
+	_tooltip->addLine(_name, 0.5f, 0.5f, 1.0f, 1.0f);
+
+	return true;
+}
+
+bool Object::createSpeechTooltip(const Common::UString &line) {
+	if (!createTooltip(Tooltip::kTypeSpeech))
+		return false;
+
+	_tooltip->clearLines();
+	_tooltip->addLine(line, 1.0f, 1.0f, 1.0f, 1.0f);
+
+	return true;
+}
+
+bool Object::showFeedbackTooltip() {
+	hideTooltip();
+
+	if (!createFeedbackTooltip())
+		return false;
+
+	_tooltip->show(Tooltip::getDefaultDelay());
+
+	return true;
+}
+
+bool Object::showSpeechTooltip(const Common::UString &line) {
+	hideTooltip();
+
+	if (!createSpeechTooltip(line))
+		return false;
+
+	_tooltip->show(0);
+
+	return true;
+}
+
+void Object::hideTooltip() {
+	if (_tooltip)
+	_tooltip->hide();
 }
 
 } // End of namespace NWN

@@ -105,6 +105,9 @@ private:
 	void loadProperties(const Aurora::GFF3Struct &gff);
 	void loadPortrait(const Aurora::GFF3Struct &gff);
 	void loadSounds();
+
+	/** Create an empty tooltip. */
+	bool createTooltip(Tooltip::Type type);
 };
 
 } // End of namespace NWN

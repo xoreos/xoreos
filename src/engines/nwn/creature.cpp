@@ -89,7 +89,6 @@ Creature::~Creature() {
 	hide();
 
 	delete _model;
-	delete _tooltip;
 
 	for (std::vector<Item *>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e)
 		delete *e;
@@ -138,8 +137,7 @@ void Creature::init() {
 
 	_isCommandable = true;
 
-	_model   = 0;
-	_tooltip = 0;
+	_model = 0;
 
 	for (size_t i = 0; i < kAbilityMAX; i++)
 		_abilities[i] = 0;
@@ -156,9 +154,6 @@ void Creature::hide() {
 	leave();
 
 	hideTooltip();
-
-	delete _tooltip;
-	_tooltip = 0;
 
 	if (_model)
 		_model->hide();
@@ -949,58 +944,6 @@ bool Creature::createTooltip(Tooltip::Type type) {
 	}
 
 	return true;
-}
-
-bool Creature::createFeedbackTooltip() {
-	if (!createTooltip(Tooltip::kTypeFeedback))
-		return false;
-
-	_tooltip->clearLines();
-	_tooltip->addLine(_name, 0.5f, 0.5f, 1.0f, 1.0f);
-
-	return true;
-}
-
-bool Creature::createSpeechTooltip(const Common::UString &line) {
-	if (!createTooltip(Tooltip::kTypeSpeech))
-		return false;
-
-	_tooltip->clearLines();
-	_tooltip->addLine(line, 1.0f, 1.0f, 1.0f, 1.0f);
-
-	return true;
-}
-
-bool Creature::showFeedbackTooltip() {
-	hideTooltip();
-
-	if (!createFeedbackTooltip())
-		return false;
-
-	_tooltip->show(Tooltip::getDefaultDelay());
-
-	return true;
-}
-
-bool Creature::showSpeechTooltip(const Common::UString &line) {
-	hideTooltip();
-
-	if (!createSpeechTooltip(line))
-		return false;
-
-	_tooltip->show(0);
-
-	return true;
-}
-
-void Creature::hideTooltip() {
-	if (_tooltip)
-	_tooltip->hide();
-}
-
-void Creature::speakString(const Common::UString &string, uint32 volume) {
-	if (!showSpeechTooltip(string))
-		Object::speakString(string, volume);
 }
 
 void Creature::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {

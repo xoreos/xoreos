@@ -96,6 +96,8 @@ void Situated::show() {
 }
 
 void Situated::hide() {
+	hideTooltip();
+
 	if (_model)
 		_model->hide();
 }
@@ -229,6 +231,20 @@ void Situated::loadSounds() {
 	_soundDestroyed = twoda.getRow(_soundAppType).getString("Destroyed");
 	_soundUsed      = twoda.getRow(_soundAppType).getString("Used");
 	_soundLocked    = twoda.getRow(_soundAppType).getString("Locked");
+}
+
+bool Situated::createTooltip(Tooltip::Type type) {
+	if (!_model)
+		return false;
+
+	if (!_tooltip) {
+		_tooltip = new Tooltip(type, *_model);
+
+		_tooltip->setAlign(0.5f);
+		_tooltip->setPortrait(_portrait);
+	}
+
+	return true;
 }
 
 } // End of namespace NWN

@@ -37,6 +37,8 @@
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/location.h"
 
+#include "src/engines/nwn/gui/widgets/tooltip.h"
+
 #include "src/engines/nwn/script/container.h"
 
 namespace Aurora {
@@ -181,11 +183,28 @@ protected:
 
 	Sound::ChannelHandle _sound; ///< The currently playing object sound.
 
+	Tooltip *_tooltip; ///< The tooltip displayed over the object.
+
 
 	/** Load the object's sound set. */
 	void loadSSF();
 	/** Begin a conversation between the triggerer and this object. */
 	bool beginConversation(Object *triggerer);
+
+	/** Create an empty tooltip. */
+	virtual bool createTooltip(Tooltip::Type type);
+
+	/** Create a tooltip with the name and/or portrait of the creature. */
+	bool createFeedbackTooltip();
+	/** Create a tooltip with a line the creature should speak. */
+	bool createSpeechTooltip(const Common::UString &line);
+
+	/** Create and show a tootip with the name and/or portrait of the creature. */
+	bool showFeedbackTooltip();
+	/** Create and show a tootip with a line the creature speaks. */
+	bool showSpeechTooltip(const Common::UString &line);
+	/** Hide the tooltip again. */
+	void hideTooltip();
 };
 
 } // End of namespace NWN

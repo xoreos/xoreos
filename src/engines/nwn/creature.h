@@ -36,8 +36,6 @@
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/object.h"
 
-#include "src/engines/nwn/gui/widgets/tooltip.h"
-
 namespace Engines {
 
 namespace NWN {
@@ -185,11 +183,6 @@ public:
 	/** The creature was clicked. */
 	virtual bool click(Object *triggerer = 0);
 
-	// Object (text) talking
-
-	/** Speak the specified string. */
-	void speakString(const Common::UString &string, uint32 volume);
-
 	// Animation
 
 	void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
@@ -318,8 +311,6 @@ private:
 
 	Graphics::Aurora::Model *_model; ///< The creature's model.
 
-	Tooltip *_tooltip; ///< The tooltip displayed over the creature.
-
 
 	/** Init the creature. */
 	void init();
@@ -373,22 +364,11 @@ private:
 	/** Finished those paletted textures. */
 	void finishPLTs(const std::list<Graphics::Aurora::TextureHandle> &plts);
 
-	/** Create an empty tooltip. */
-	bool createTooltip(Tooltip::Type type);
-	/** Create a tooltip with the name and/or portrait of the creature. */
-	bool createFeedbackTooltip();
-	/** Create a tooltip with a line the creature should speak. */
-	bool createSpeechTooltip(const Common::UString &line);
-
-	/** Create and show a tootip with the name and/or portrait of the creature. */
-	bool showFeedbackTooltip();
-	/** Create and show a tootip with a line the creature speaks. */
-	bool showSpeechTooltip(const Common::UString &line);
-	/** Hide the tooltip again. */
-	void hideTooltip();
-
 	static Aurora::GFF3File *openPC(const Common::UString &bic, bool local);
 	static void getClassString(const std::vector<Class> &classes, Common::UString &str);
+
+	/** Create an empty tooltip. */
+	bool createTooltip(Tooltip::Type type);
 };
 
 } // End of namespace NWN
