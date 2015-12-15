@@ -67,8 +67,16 @@ public:
 	void updatePosition();
 	void setPosition(float x, float y, float z);
 
-	/** Show the tooltip, waiting delay ms before it appears. */
-	void show(uint32 delay);
+	/** Show the tooltip.
+	 *
+	 *  @param delay   Time in ms to wait before the tooltip appears.
+	 *                 If delay is 0, the tooltip will appear immediately.
+	 *  @param timeOut Time in ms, after the tooltip appeared, before it will be
+	 *                 automatically hidden again. If timeOut is 0, the tooltip
+	 *                 will not be automatically hidden at all. To hide it,
+	 *                 hide() has to be called.
+	 */
+	void show(uint32 delay, uint32 timeOut = 0);
 	/** Hide the tooltip again. */
 	void hide();
 
@@ -121,7 +129,8 @@ private:
 
 	Common::UString _font;
 
-	Events::TimerHandle _timer;
+	Events::TimerHandle _timerShow;
+	Events::TimerHandle _timerHide;
 
 	bool _needCamera;
 	bool _detectEdge;
@@ -140,6 +149,7 @@ private:
 	void deleteTexts();
 
 	uint32 doShow(uint32 oldInterval);
+	uint32 doHide(uint32 oldInterval);
 
 	void doShow();
 	void doHide();

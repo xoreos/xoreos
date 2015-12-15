@@ -261,7 +261,7 @@ void Tooltip::setPosition(float x, float y, float z) {
 	updatePosition();
 }
 
-void Tooltip::show(uint32 delay) {
+void Tooltip::show(uint32 delay, uint32 timeOut) {
 	if (_visible || _empty)
 		return;
 
@@ -269,18 +269,26 @@ void Tooltip::show(uint32 delay) {
 
 	_visible = true;
 
-	if (delay == 0) {
+	if (delay == 0)
 		doShow(0);
-		return;
-	}
 
-	TimerMan.addTimer(delay, _timer, boost::bind(&Tooltip::doShow, this, _1));
+	if (delay   != 0)
+		TimerMan.addTimer(delay          , _timerShow, boost::bind(&Tooltip::doShow, this, _1));
+	if (timeOut != 0)
+		TimerMan.addTimer(delay + timeOut, _timerHide, boost::bind(&Tooltip::doHide, this, _1));
 }
 
 void Tooltip::hide() {
-	TimerMan.removeTimer(_timer);
+	Common::StackLock lock(_mutex);
+
+	if (!_visible)
+		return;
 
 	_visible = false;
+
+	TimerMan.removeTimer(_timerHide);
+	TimerMan.removeTimer(_timerShow);
+
 	doHide();
 }
 
@@ -442,9 +450,6 @@ void Tooltip::doShow() {
 }
 
 void Tooltip::doHide() {
-	if (_visible)
-		return;
-
 	GfxMan.lockFrame();
 
 	if (_bubble)
@@ -461,6 +466,20 @@ void Tooltip::doHide() {
 uint32 Tooltip::doShow(uint32 UNUSED(oldInterval)) {
 	Common::StackLock lock(_mutex);
 	doShow();
+	return 0;
+}
+
+uint32 Tooltip::doHide(uint32 UNUSED(oldInterval)) {
+	Common::StackLock lock(_mutex);
+
+	if (!_visible)
+		return 0;
+
+	_visible = false;
+
+	TimerMan.removeTimer(_timerShow);
+
+	doHide();
 	return 0;
 }
 
