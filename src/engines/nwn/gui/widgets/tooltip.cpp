@@ -514,6 +514,10 @@ Common::UString Tooltip::getBubbleModel(uint32 lines, float width) {
 	return Common::UString::format("pnl_bubble%d_%d", modelLines, modelWidth);
 }
 
+uint32 Tooltip::getDefaultDelay() {
+	return (uint32) ConfigMan.getInt("tooltipdelay", 100);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

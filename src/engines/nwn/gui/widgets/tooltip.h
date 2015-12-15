@@ -69,6 +69,9 @@ public:
 	void show();
 	void hide();
 
+	/** Returns the configured default delay, in ms, before a tooltip appears. */
+	static uint32 getDefaultDelay();
+
 
 protected:
 	void notifyCameraMoved();
