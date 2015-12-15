@@ -66,7 +66,9 @@ public:
 	void updatePosition();
 	void setPosition(float x, float y, float z);
 
+	/** Show the tooltip, waiting the default delay before it appears. */
 	void show();
+	/** Hide the tooltip again. */
 	void hide();
 
 	/** Returns the configured default delay, in ms, before a tooltip appears. */
