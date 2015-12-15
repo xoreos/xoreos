@@ -69,8 +69,6 @@ public:
 
 	/** Show the tooltip, waiting delay ms before it appears. */
 	void show(uint32 delay);
-	/** Show the tooltip, waiting the default delay before it appears. */
-	void show();
 	/** Hide the tooltip again. */
 	void hide();
 

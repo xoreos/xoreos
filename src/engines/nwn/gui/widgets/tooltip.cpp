@@ -277,10 +277,6 @@ void Tooltip::show(uint32 delay) {
 	TimerMan.addTimer(delay, _timer, boost::bind(&Tooltip::doShow, this, _1));
 }
 
-void Tooltip::show() {
-	show(getDefaultDelay());
-}
-
 void Tooltip::hide() {
 	TimerMan.removeTimer(_timer);
 
