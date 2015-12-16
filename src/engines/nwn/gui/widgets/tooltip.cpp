@@ -215,10 +215,8 @@ void Tooltip::updatePosition() {
 	const float portraitWidth  = hasPortrait ? _portrait->getWidth () : 0.0f;
 	const float portraitHeight = hasPortrait ? _portrait->getHeight() : 0.0f;
 
-	const float portraitBorderY = (bubbleHeight - portraitHeight) / 2.0f;
-
-	const float portraitX = bubbleX + 5.0f;
-	const float portraitY = bubbleY - bubbleHeight + portraitBorderY + 1.0f;
+	const float portraitX = bubbleX;
+	const float portraitY = bubbleY - portraitHeight - 3.0f;
 	const float portraitZ = bubbleZ - 1.0f;
 
 	if (hasPortrait)
