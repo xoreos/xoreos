@@ -225,7 +225,7 @@ void Tooltip::updatePosition() {
 
 	// Set text position
 
-	const float portraitSpacerWidth = portraitWidth + (_portrait ? 10.0f : 0.0f);
+	const float portraitSpacerWidth = portraitWidth + (_portrait ? 2.0f : 0.0f);
 
 	const float bubbleTextWidth = bubbleWidth - portraitSpacerWidth;
 
@@ -296,7 +296,7 @@ void Tooltip::getSize(float &width, float &height) {
 		width = MAX(width, (*t)->getWidth());
 
 	if (_portrait)
-		width += _portrait->getWidth() + 10.0f;
+		width += _portrait->getWidth() + 2.0f;
 
 	height = 0.0f;
 	if (_texts.size() > 0)
@@ -322,7 +322,7 @@ bool Tooltip::createTexts(float width, size_t maxLines) {
 
 	Graphics::Aurora::FontHandle font = FontMan.get(_font);
 
-	const float maxWidth = _showBubble ? (width - (_showPortrait ? 26.0f : 0.0f)) : 0.0f;
+	const float maxWidth = _showBubble ? (width - (_showPortrait ? 18.0f : 0.0f)) : 0.0f;
 
 	for (std::vector<Line>::const_iterator l = _lines.begin(); l != _lines.end(); l++) {
 		std::vector<Common::UString> lineLines;
