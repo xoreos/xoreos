@@ -8,6 +8,8 @@ Someday, ????-??-?? (Version 0.0.4)
 		- Added configure/CMake option to let the user select between
 		  internal and external GLEW libraries
 		- Added dynamic supported warning flag detection to CMake
+	- GRAPHICS:
+		- Made TextureFont codepage-aware
 	- ENGINES:
 		- NWN:
 			- Implemented support for premium modules
