@@ -126,12 +126,12 @@ static void exceptionDispatcher(const char *prefix, const char *reason = "") {
 			printException(e, prefix);
 		} catch (std::exception &e) {
 			Exception se(e);
-			if (!reason[0] != 0)
+			if (reason[0] != 0)
 				se.add("%s", reason);
 
 			printException(se, prefix);
 		} catch (...) {
-			if (!reason[0] != 0) {
+			if (reason[0] != 0) {
 				Exception se("%s", reason);
 				printException(se, prefix);
 			}
