@@ -201,7 +201,7 @@ void Tooltip::updatePosition() {
 	const float overX = _detectEdge ? MAX(0.0f, bubbleRight - maxX)  : 0.0f;
 
 	const float bubbleX = bubbleWantX - overX;
-	const float bubbleY = pY + _y;
+	const float bubbleY = pY + bubbleHeight + _y;
 	const float bubbleZ = pZ + _z;
 
 	if (hasBubble)
