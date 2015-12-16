@@ -11,6 +11,7 @@ Someday, ????-??-?? (Version 0.0.4)
 	- ENGINES:
 		- NWN:
 			- Implemented support for premium modules
+			- Implemented speech bubbles
 		- DRAGONAGE:
 			- Added engine script functions from the 1.01 and 1.03
 			  updates
