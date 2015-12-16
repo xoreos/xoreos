@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_AURORA_TEXTUREFONT_H
 #define GRAPHICS_AURORA_TEXTUREFONT_H
 
-#include <vector>
+#include <map>
 
 #include "src/common/types.h"
 
@@ -66,7 +66,7 @@ private:
 
 	TextureHandle _texture;
 
-	std::vector<Char> _chars;
+	std::map<uint32, Char> _chars;
 
 	float _height;
 	float _spaceR;

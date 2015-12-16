@@ -22,10 +22,17 @@
  *  A texture font, as used by NWN and KotOR/KotOR2.
  */
 
+#include <cassert>
+
+#include <vector>
+
 #include "src/common/types.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/util.h"
+#include "src/common/encoding.h"
+
+#include "src/aurora/language.h"
 
 #include "src/graphics/images/txi.h"
 
@@ -36,6 +43,20 @@
 namespace Graphics {
 
 namespace Aurora {
+
+static uint32 convertToUTF32(byte c, Common::Encoding encoding) {
+	if ((encoding == Common::kEncodingInvalid) || (encoding == Common::kEncodingASCII))
+		return (uint32) c;
+
+	byte data[2] = { c, 0x00 };
+
+	const Common::UString str = Common::readString(data, 2, encoding);
+	if (str.empty())
+		return 0;
+
+	return *str.begin();
+}
+
 
 // TODO: Multibyte fonts?
 TextureFont::TextureFont(const Common::UString &name) : _height(1.0f), _spaceR(0.0f), _spaceB(0.0f) {
@@ -48,12 +69,14 @@ TextureFont::~TextureFont() {
 }
 
 float TextureFont::getWidth(uint32 c) const {
-	if (c >= _chars.size())
-		c = 'm';
-	if (c >= _chars.size())
+	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+
+	if (cC == _chars.end())
+		_chars.find('m');
+	if (cC == _chars.end())
 		return _spaceR;
 
-	return _chars[c].width + _spaceR;
+	return cC->second.width + _spaceR;
 }
 
 float TextureFont::getHeight() const {
@@ -80,23 +103,23 @@ void TextureFont::drawMissing() const {
 }
 
 void TextureFont::draw(uint32 c) const {
-	if (c >= _chars.size()) {
+	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+
+	if (cC == _chars.end()) {
 		drawMissing();
 		return;
 	}
 
 	TextureMan.set(_texture);
 
-	const Char &cC = _chars[c];
-
 	glBegin(GL_QUADS);
 	for (int i = 0; i < 4; i++) {
-		glTexCoord2f(cC.tX[i], cC.tY[i]);
-		glVertex2f  (cC.vX[i], cC.vY[i]);
+		glTexCoord2f(cC->second.tX[i], cC->second.tY[i]);
+		glVertex2f  (cC->second.vX[i], cC->second.vY[i]);
 	}
 	glEnd();
 
-	glTranslatef(cC.width + _spaceR, 0.0f, 0.0f);
+	glTranslatef(cC->second.width + _spaceR, 0.0f, 0.0f);
 }
 
 void TextureFont::load() {
@@ -127,12 +150,22 @@ void TextureFont::load() {
 	_spaceR = txiFeatures.spacingR   * 100.0f;
 	_spaceB = txiFeatures.spacingB   * 100.0f;
 
+	const Common::Encoding encoding = LangMan.getCurrentEncoding();
+
 	// Build the character texture and vertex coordinates
-	_chars.resize(charCount);
 	for (uint32 i = 0; i < charCount; i++) {
+		if ((encoding != Common::kEncodingInvalid) && !Common::isValidCodepoint(encoding, i))
+			continue;
+
+		std::pair<std::map<uint32, Char>::iterator,bool> result;
+
+		result = _chars.insert(std::make_pair(convertToUTF32((byte) i, encoding), Char()));
+		if (!result.second)
+			continue;
+
 		TXI::Coords ul = uls[i];
 		TXI::Coords lr = lrs[i];
-		Char &c = _chars[i];
+		Char &c = result.first->second;
 
 		// Texture coordinates, directly out of the TXI
 		c.tX[0] = ul.x; c.tY[0] = lr.y;
