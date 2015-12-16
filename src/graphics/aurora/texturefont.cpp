@@ -108,6 +108,9 @@ void TextureFont::load() {
 	if (charCount == 0)
 		throw Common::Exception("Texture defines no characters");
 
+	if ((charCount > 256) || (txiFeatures.fileRange > 1) || (txiFeatures.isDoubleByte))
+		throw Common::Exception("TODO: Multibyte texture font");
+
 	// Character coordinates
 	const std::vector<TXI::Coords> &uls = txiFeatures.upperLeftCoords;
 	const std::vector<TXI::Coords> &lrs = txiFeatures.lowerRightCoords;
