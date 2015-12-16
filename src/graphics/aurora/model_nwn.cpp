@@ -1318,7 +1318,7 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	_vertexBuffer.setVertexDeclInterleave(facesCount * 3, vertexDecl);
+	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
 	for (verts_set_it i = verts.begin(); i != verts.end(); ++i) {
 		byte  *vData = reinterpret_cast<byte  *>(_vertexBuffer.getData()) + i->i * _vertexBuffer.getSize();
