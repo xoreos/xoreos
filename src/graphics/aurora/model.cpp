@@ -284,7 +284,7 @@ void Model::move(float x, float y, float z) {
 void Model::getTooltipAnchor(float &x, float &y, float &z) const {
 	Common::TransformationMatrix pos = _absolutePosition;
 
-	pos.translate(0.0f, 0.0f, _absoluteBoundBox.getHeight() + 0.5f);
+	pos.translate(0.0f, 0.0f, _absoluteBoundBox.getDepth());
 
 	pos.getPosition(x, y, z);
 }
