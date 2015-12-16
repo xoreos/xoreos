@@ -85,6 +85,12 @@ MemoryReadStream *convertString(const UString &str, Encoding encoding, bool term
  */
 size_t getBytesPerCodepoint(Encoding encoding);
 
+/** Return whether the given codepoint is valid in this encoding.
+ *
+ *  TODO: Implement for Unicode and CJK encodings.
+ */
+bool isValidCodepoint(Encoding encoding, uint32 cp);
+
 } // End of namespace Common
 
 #endif // COMMON_ENCODING_H
