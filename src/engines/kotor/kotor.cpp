@@ -433,6 +433,8 @@ void KotOREngine::checkConfig() {
 }
 
 void KotOREngine::deinit() {
+	unregisterModelLoader();
+
 	delete _game;
 
 	_game = 0;
