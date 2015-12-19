@@ -194,14 +194,14 @@ protected:
 	/** Create an empty tooltip. */
 	virtual bool createTooltip(Tooltip::Type type);
 
-	/** Create a tooltip with the name and/or portrait of the creature. */
+	/** Create a tooltip with the name and/or portrait of the object. */
 	bool createFeedbackTooltip();
-	/** Create a tooltip with a line the creature should speak. */
+	/** Create a tooltip with a line the object should speak. */
 	bool createSpeechTooltip(const Common::UString &line);
 
-	/** Create and show a tootip with the name and/or portrait of the creature. */
+	/** Create and show a tootip with the name and/or portrait of the object. */
 	bool showFeedbackTooltip();
-	/** Create and show a tootip with a line the creature speaks. */
+	/** Create and show a tootip with a line the object speaks. */
 	bool showSpeechTooltip(const Common::UString &line);
 	/** Hide the tooltip again. */
 	void hideTooltip();
