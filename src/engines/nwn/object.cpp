@@ -64,8 +64,9 @@ Object::Object(ObjectType type) : _type(type),
 }
 
 Object::~Object() {
+	destroyTooltip();
+
 	delete _ssf;
-	delete _tooltip;
 }
 
 ObjectType Object::getType() const {
@@ -76,6 +77,7 @@ void Object::loadModel() {
 }
 
 void Object::unloadModel() {
+	destroyTooltip();
 }
 
 void Object::show() {
@@ -300,6 +302,13 @@ bool Object::createSpeechTooltip(const Common::UString &line) {
 	_tooltip->addLine(line, 1.0f, 1.0f, 1.0f, 1.0f);
 
 	return true;
+}
+
+void Object::destroyTooltip() {
+	hideTooltip();
+
+	delete _tooltip;
+	_tooltip = 0;
 }
 
 bool Object::showFeedbackTooltip() {

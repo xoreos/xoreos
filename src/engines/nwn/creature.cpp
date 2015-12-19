@@ -542,6 +542,8 @@ void Creature::loadModel() {
 void Creature::unloadModel() {
 	hide();
 
+	destroyTooltip();
+
 	delete _model;
 	_model = 0;
 }

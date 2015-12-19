@@ -86,6 +86,8 @@ void Situated::loadModel() {
 void Situated::unloadModel() {
 	hide();
 
+	destroyTooltip();
+
 	delete _model;
 	_model = 0;
 }

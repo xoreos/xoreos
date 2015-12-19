@@ -199,6 +199,9 @@ protected:
 	/** Create a tooltip with a line the object should speak. */
 	bool createSpeechTooltip(const Common::UString &line);
 
+	/** Destroy all tooltips on this object. */
+	void destroyTooltip();
+
 	/** Create and show a tootip with the name and/or portrait of the object. */
 	bool showFeedbackTooltip();
 	/** Create and show a tootip with a line the object speaks. */
