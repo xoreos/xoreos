@@ -416,6 +416,8 @@ void KotOR2Engine::checkConfig() {
 }
 
 void KotOR2Engine::deinit() {
+	unregisterModelLoader();
+
 	delete _game;
 
 	_game = 0;
