@@ -33,6 +33,8 @@ namespace KotOR {
 
 class KotORModelLoader : public ModelLoader {
 public:
+	~KotORModelLoader();
+
 	Graphics::Aurora::Model *load(const Common::UString &resref,
 			Graphics::Aurora::ModelType type, const Common::UString &texture);
 

@@ -35,6 +35,11 @@ namespace Engines {
 
 namespace KotOR {
 
+KotORModelLoader::~KotORModelLoader() {
+	for (Graphics::Aurora::ModelCache::iterator m = _modelCache.begin(); m != _modelCache.end(); ++m)
+		delete m->second;
+}
+
 Graphics::Aurora::Model *KotORModelLoader::load(const Common::UString &resref,
 		Graphics::Aurora::ModelType type, const Common::UString &texture) {
 
