@@ -33,6 +33,8 @@ namespace NWN {
 
 class NWNModelLoader : public ModelLoader {
 public:
+	~NWNModelLoader();
+
 	Graphics::Aurora::Model *load(const Common::UString &resref,
 			Graphics::Aurora::ModelType type, const Common::UString &texture);
 
