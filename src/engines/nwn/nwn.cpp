@@ -464,6 +464,8 @@ void NWNEngine::checkConfig() {
 }
 
 void NWNEngine::deinit() {
+	unregisterModelLoader();
+
 	delete _version;
 	delete _game;
 
