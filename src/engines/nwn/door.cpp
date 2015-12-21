@@ -105,6 +105,10 @@ void Door::loadAppearance() {
 		_modelName.clear();
 		_state = kStateOpened1;
 	}
+
+	// Doors have a default, fallback portrait
+	if (_portrait.empty())
+		_portrait = "po_door01_";
 }
 
 void Door::loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id) {
