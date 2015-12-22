@@ -138,7 +138,7 @@ void CBGT::readPaletteIndices(ReadContext &ctx) {
 		ctx.width  = twoDA.getColumnCount() * 64;
 		ctx.height = twoDA.getRowCount()    * 64;
 
-		if ((ctx.width == 0) || (ctx.height == 0))
+		if ((ctx.width == 0) || (ctx.width >= 0x8000) || (ctx.height == 0) || (ctx.height >= 0x8000))
 			throw Common::Exception("Dimensions of %ux%u", ctx.width, ctx.height);
 
 		ctx.maxPaletteIndex = 0;
