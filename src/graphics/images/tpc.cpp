@@ -76,6 +76,9 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, byte &encoding) {
 	uint32 width  = tpc.readUint16LE();
 	uint32 height = tpc.readUint16LE();
 
+	if ((width >= 0x8000) || (height >= 0x8000))
+		throw Common::Exception("Unsupported image dimensions (%ux%u)", width, height);
+
 	// How's the pixel data encoded?
 	encoding = tpc.readByte();
 
