@@ -86,6 +86,9 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds, DataType &dataType
 	uint32 height = dds.readUint32LE();
 	uint32 width  = dds.readUint32LE();
 
+	if ((width >= 0x8000) || (height >= 0x8000))
+		throw Common::Exception("Unsupported image dimensions (%ux%u)", width, height);
+
 	dds.skip(4 + 4); // Pitch + Depth
 	//uint32 pitchOrLineSize = dds.readUint32LE();
 	//uint32 depth           = dds.readUint32LE();
@@ -141,6 +144,9 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds, DataType &dataType)
 	// Image dimensions
 	uint32 width  = dds.readUint32LE();
 	uint32 height = dds.readUint32LE();
+
+	if ((width >= 0x8000) || (height >= 0x8000))
+		throw Common::Exception("Unsupported image dimensions (%ux%u)", width, height);
 
 	// Check that the width and height are really powers of 2
 	if (!IsPower2(width) || !IsPower2(height))
