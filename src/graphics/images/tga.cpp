@@ -99,6 +99,9 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 	int32 width  = tga.readUint16LE();
 	int32 height = tga.readUint16LE();
 
+	if ((width >= 0x8000) || (height >= 0x8000))
+		throw Common::Exception("Unsupported image dimensions (%dx%d)", width, height);
+
 	if ((height % _layerCount) != 0)
 		throw Common::Exception("TGA with %u layers but size of %dx%d", (uint) _layerCount, width, height);
 
