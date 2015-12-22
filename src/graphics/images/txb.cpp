@@ -74,6 +74,9 @@ void TXB::readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle, uint3
 	uint32 width  = txb.readUint16LE();
 	uint32 height = txb.readUint16LE();
 
+	if ((width >= 0x8000) || (height >= 0x8000))
+		throw Common::Exception("Unsupported image dimensions (%ux%u)", width, height);
+
 	// How's the pixel data encoded?
 	byte encoding    = txb.readByte();
 	// Number of mip maps in the image
