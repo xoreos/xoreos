@@ -66,6 +66,9 @@ const uint16 *CDPTH::load(Common::SeekableReadStream &cdpth, uint32 width, uint3
 	ReadContext ctx(cdpth, width, height);
 
 	try {
+		if ((ctx.width == 0) || (ctx.width >= 0x8000) || (ctx.height == 0) || (ctx.height >= 0x8000))
+			throw Common::Exception("Invalid dimensions of %ux%u", ctx.width, ctx.height);
+
 		if (((ctx.width % 64) != 0) || ((ctx.height % 64) != 0))
 			throw Common::Exception("Dimensions need to be divisible by 64");
 
