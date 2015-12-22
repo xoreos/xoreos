@@ -49,6 +49,9 @@ void NBFS::load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nb
 		if (nbfs.size() != (width * height))
 			throw Common::Exception("Dimensions mismatch (%u * %u != %u)", width, height, (uint)nbfs.size());
 
+		if ((width >= 0x8000) || (height >= 0x8000))
+			throw Common::Exception("Invalid dimensions of %ux%u", width, height);
+
 		if (nbfp.size() > 512)
 			throw Common::Exception("Too much palette data (%u bytes)", (uint)nbfp.size());
 
