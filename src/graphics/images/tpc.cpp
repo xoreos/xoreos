@@ -326,6 +326,27 @@ void TPC::fixupCubeMap() {
 	if (!isCubeMap())
 		return;
 
+	for (size_t j = 0; j < getMipMapCount(); j++) {
+		assert(getLayerCount() > 0);
+
+		const size_t index0 = 0 * getMipMapCount() + j;
+		assert(index0 < _mipMaps.size());
+
+		const  int32 width  = _mipMaps[index0]->width;
+		const  int32 height = _mipMaps[index0]->height;
+		const uint32 size   = _mipMaps[index0]->size;
+
+		for (size_t i = 1; i < getLayerCount(); i++) {
+			const size_t index = i * getMipMapCount() + j;
+			assert(index < _mipMaps.size());
+
+			if ((width  != _mipMaps[index]->width ) ||
+			    (height != _mipMaps[index]->height) ||
+			    (size   != _mipMaps[index]->size  ))
+				throw Common::Exception("Cube map layer dimensions mismatch");
+		}
+	}
+
 	// Since we need to rotate the individual cube sides, we need to decompress them all
 	decompress();
 
@@ -333,12 +354,10 @@ void TPC::fixupCubeMap() {
 	for (size_t j = 0; j < getMipMapCount(); j++) {
 		const size_t index0 = 0 * getMipMapCount() + j;
 		const size_t index1 = 1 * getMipMapCount() + j;
-			assert((index0 < _mipMaps.size()) && (index1 < _mipMaps.size()));
+		assert((index0 < _mipMaps.size()) && (index1 < _mipMaps.size()));
 
 		MipMap &mipMap0 = *_mipMaps[index0];
 		MipMap &mipMap1 = *_mipMaps[index1];
-
-		assert((mipMap0.width == mipMap1.width) && (mipMap0.height == mipMap1.height));
 
 		SWAP(mipMap0.data, mipMap1.data);
 	}
