@@ -205,6 +205,10 @@ void NCGR::readChar(NCGRFile &ctx) {
 	const uint32 dataSize   = ctx.ncgr->readUint32();
 	const uint32 dataOffset = ctx.ncgr->readUint32() + 24;
 
+	if ((dataOffset >= ctx.ncgr->size()) || ((ctx.ncgr->size() - dataOffset) < dataSize))
+		throw Common::Exception("Invalid data offset (%u, %u, %u)",
+		                        dataOffset, dataSize, (uint)ctx.ncgr->size());
+
 	ctx.image = new Common::SeekableSubReadStream(ctx.ncgr, dataOffset, dataOffset + dataSize);
 }
 
