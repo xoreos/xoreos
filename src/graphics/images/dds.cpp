@@ -26,6 +26,8 @@
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
+#include "src/graphics/util.h"
+
 #include "src/graphics/images/dds.h"
 
 static const uint32 kDDSID  = MKTAG('D', 'D', 'S', ' ');
@@ -209,22 +211,7 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds, DataType &dataType)
 void DDS::setSize(MipMap &mipMap) {
 	// Depending on the pixel format, set the image data size in bytes
 
-	if (_formatRaw == kPixelFormatDXT1) {
-		mipMap.size = ((mipMap.width + 3) / 4) * ((mipMap.height + 3) / 4) *  8;
-	} else if (_formatRaw == kPixelFormatDXT3) {
-		mipMap.size = ((mipMap.width + 3) / 4) * ((mipMap.height + 3) / 4) * 16;
-	} else if (_formatRaw == kPixelFormatDXT5) {
-		mipMap.size = ((mipMap.width + 3) / 4) * ((mipMap.height + 3) / 4) * 16;
-	} else if (_formatRaw == kPixelFormatRGBA8) {
-		mipMap.size = mipMap.width * mipMap.height * 4;
-	} else if (_formatRaw == kPixelFormatRGB8) {
-		mipMap.size = mipMap.width * mipMap.height * 3;
-	} else if (_formatRaw == kPixelFormatRGB5A1) {
-		mipMap.size = mipMap.width * mipMap.height * 2;
-	} else if (_formatRaw == kPixelFormatRGB5) {
-		mipMap.size = mipMap.width * mipMap.height * 2;
-	} else
-		mipMap.size = 0;
+	mipMap.size = getDataSize(_formatRaw, mipMap.width, mipMap.height);
 }
 
 void DDS::readData(Common::SeekableReadStream &dds, DataType dataType) {
