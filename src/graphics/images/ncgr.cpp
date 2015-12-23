@@ -176,7 +176,7 @@ void NCGR::readChar(NCGRFile &ctx) {
 	 * ''''''
 	 */
 
-	if ((ctx.width >= 0x7FFF8) || (ctx.height >= 0x7FFF8))
+	if ((ctx.width >= 0x8000) || (ctx.height >= 0x8000))
 		throw Common::Exception("Unsupported image dimensions");
 
 	// depthValue == 3 means 4 bit graphics. We don't need to support them.
@@ -233,6 +233,9 @@ void NCGR::calculateGrid(ReadContext &ctx, uint32 &imageWidth, uint32 &imageHeig
 void NCGR::draw(ReadContext &ctx) {
 	uint32 imageWidth, imageHeight;
 	calculateGrid(ctx, imageWidth, imageHeight);
+
+	if ((imageWidth >= 0x8000) || (imageHeight >= 0x8000))
+		throw Common::Exception("Unsupported full image dimensions");
 
 	_format    = kPixelFormatBGRA;
 	_formatRaw = kPixelFormatRGBA8;
