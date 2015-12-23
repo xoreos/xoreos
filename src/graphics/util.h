@@ -31,8 +31,42 @@
 #include "src/common/types.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
+#include "src/common/error.h"
+
+#include "src/graphics/types.h"
 
 namespace Graphics {
+
+/** Return the number of bytes necessary to hold an image of these dimensions
+  * and in this format. */
+static inline uint32 getDataSize(PixelFormatRaw format, int32 width, int32 height) {
+	if ((width < 0) || (width >= 0x8000) || (height < 0) || (height >= 0x8000))
+		throw Common::Exception("Invalid dimensions %dx%d", width, height);
+
+	switch (format) {
+		case kPixelFormatRGB8:
+			return width * height * 3;
+
+		case kPixelFormatRGBA8:
+			return width * height * 4;
+
+		case kPixelFormatRGB5A1:
+		case kPixelFormatRGB5:
+			return width * height * 2;
+
+		case kPixelFormatDXT1:
+			return MAX<uint32>( 8, ((width + 3) / 4) * ((height + 3) / 4) *  8);
+
+		case kPixelFormatDXT3:
+		case kPixelFormatDXT5:
+			return MAX<uint32>(16, ((width + 3) / 4) * ((height + 3) / 4) * 16);
+
+		default:
+			break;
+	}
+
+	throw Common::Exception("Invalid pixel format %u", (uint) format);
+}
 
 /** Flip an image horizontally. */
 static inline void flipHorizontally(byte *data, int width, int height, int bpp) {
