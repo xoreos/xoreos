@@ -241,7 +241,7 @@ bool TPC::checkCubeMap(uint32 &width, uint32 &height) {
 	 * and therefore (height / width) == 6 isn't true for non-cubemaps.
 	 */
 
-	if ((height / width) != 6)
+	if ((height == 0) || (width == 0) || ((height / width) != 6))
 		return false;
 
 	height /= 6;
