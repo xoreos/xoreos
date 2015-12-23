@@ -29,6 +29,7 @@
 #include "src/common/memreadstream.h"
 
 #include "src/graphics/graphics.h"
+#include "src/graphics/util.h"
 
 #include "src/graphics/images/decoder.h"
 #include "src/graphics/images/s3tc.h"
@@ -223,6 +224,11 @@ void ImageDecoder::decompress(MipMap &out, const MipMap &in, PixelFormatRaw form
 	    (format != kPixelFormatDXT3) &&
 	    (format != kPixelFormatDXT5))
 		throw Common::Exception("Unknown compressed format %d", format);
+
+	/* The DXT algorithms work on 4x4 pixel blocks. Textures smaller than one
+	 * block will be padded, but larger textures need to be correctly aligned. */
+	if (!hasValidDimensions(format, in.width, in.height))
+		throw Common::Exception("Invalid dimensions (%dx%d) for format %d", in.width, in.height, format);
 
 	out.width  = in.width;
 	out.height = in.height;
