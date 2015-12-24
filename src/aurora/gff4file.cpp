@@ -143,6 +143,9 @@ void GFF4File::loadHeader(uint32 type) {
 	if ((type != 0xFFFFFFFF) && (_header.type != type))
 		throw Common::Exception("GFF4 has invalid type (want %s, got %s)",
 				Common::debugTag(type).c_str(), Common::debugTag(_header.type).c_str());
+
+	if (_header.structCount == 0)
+		throw Common::Exception("GFF4 has no structs");
 }
 
 void GFF4File::loadStructs() {
