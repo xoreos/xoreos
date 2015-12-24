@@ -203,7 +203,7 @@ void GFF3File::loadLists() {
 		uint32 n = rawLists[i];
 
 		if ((i + n) > rawLists.size())
-			throw Common::Exception("GFF3: List indices broken");
+			throw Common::Exception("GFF3: List indices broken during counting");
 
 		i += n;
 		listCount++;
@@ -218,30 +218,43 @@ void GFF3File::loadLists() {
 		_listOffsetToIndex[i] = listIndex;
 
 		const uint32 n = rawLists[i++];
-		assert((i + n) <= rawLists.size());
+		if ((i + n) > rawLists.size())
+			throw Common::Exception("GFF3: List indices broken during conversion");
 
 		_lists[listIndex].resize(n);
-		for (uint32 j = 0; j < n; j++, i++)
-			_lists[listIndex][j] = _structs[rawLists[i]];
+		for (uint32 j = 0; j < n; j++, i++) {
+			const size_t structIndex = rawLists[i];
+			if (structIndex >= _structs.size())
+				throw Common::Exception("GFF3: List struct index out of range (%u >= %u)",
+				                        (uint) structIndex, (uint) _structs.size());
+
+			_lists[listIndex][j] = _structs[structIndex];
+		}
 	}
 }
 
 // --- Helpers for GFF3Struct ---
 
 const GFF3Struct &GFF3File::getStruct(uint32 i) const {
-	assert(i < _structs.size());
+	if (i >= _structs.size())
+		throw Common::Exception("GFF3: Struct index out of range (%u >= %u)", i, (uint) _structs.size());
 
 	return *_structs[i];
 }
 
 const GFF3List &GFF3File::getList(uint32 i) const {
-	assert(i < _listOffsetToIndex.size());
+	if (i >= _listOffsetToIndex.size())
+		throw Common::Exception("GFF3: List offset index out of range (%u >= %u)",
+		                        i, (uint) _listOffsetToIndex.size());
 
-	i = _listOffsetToIndex[i];
+	const uint32 listIndex = _listOffsetToIndex[i];
 
-	assert(i < _lists.size());
+	if (listIndex == 0xFFFFFFFF)
+		throw Common::Exception("GFF3: Empty list index at %u", i);
 
-	return _lists[i];
+	assert(listIndex < _lists.size());
+
+	return _lists[listIndex];
 }
 
 Common::SeekableReadStream &GFF3File::getStream(uint32 offset) const {
