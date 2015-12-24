@@ -242,7 +242,9 @@ uint32 GFF4File::getDataOffset() const {
 }
 
 const GFF4File::StructTemplate &GFF4File::getStructTemplate(uint32 i) const {
-	assert(i < _structTemplates.size());
+	if (i >= _structTemplates.size())
+		throw Common::Exception("GFF4: Struct template out of range (%u >= %u)",
+		                        i, (uint) _structTemplates.size());
 
 	return _structTemplates[i];
 }
