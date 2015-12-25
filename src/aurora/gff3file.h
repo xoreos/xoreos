@@ -207,14 +207,14 @@ private:
 		kFieldTypeFloat       =   8, ///< IEEE float.
 		kFieldTypeDouble      =   9, ///< IEEE double.
 		kFieldTypeExoString   =  10, ///< String.
-		kFieldTypeResRef      =  11, ///< String, max. 16 characters.
+		kFieldTypeResRef      =  11, ///< Resource reference, string, max. 16 characters.
 		kFieldTypeLocString   =  12, ///< Localized string.
 		kFieldTypeVoid        =  13, ///< Random data of variable length.
 		kFieldTypeStruct      =  14, ///< Struct containing a number of fields.
 		kFieldTypeList        =  15, ///< List containing a number of structs.
 		kFieldTypeOrientation =  16, ///< An object orientation.
 		kFieldTypeVector      =  17, ///< A vector of 3 floats.
-		kFieldTypeStrRef      =  18  // TODO: New in Jade Empire
+		kFieldTypeStrRef      =  18  ///< String reference, index into a talk table.
 	};
 
 	/** A field in the GFF3 struct. */
