@@ -46,6 +46,31 @@ class GFF3Struct;
 /** A GFF (generic file format) V3.2/V3.3 file, found in all Aurora games
  *  except Sonic Chronicles: The Dark Brotherhood. Even games that have
  *  V4.0/V4.1 GFFs additionally use V3.2/V3.3 files as well.
+ *
+ *  GFF files store hierarchical data, similar in concept to XML. They are
+ *  used whenever such data is useful: to, for example, hold area and object
+ *  descriptions, module and campaign specifications or conversations. They
+ *  consist of a top-level struct, with a collection of fields of various
+ *  types, indexed by a human-readable string name. A field can then be
+ *  another struct (which itself will be a collection of fields) or a
+ *  list of structs, leading to a recursive, hierarchical structure.
+ *
+ *  GFF V3.2/V3.3 files come in a multitude of types (ARE, DLG, ...), each
+ *  with its own 4-byte type ID ('ARE ', 'DLG ', ...). When specified in
+ *  the GFF3File constructor, the loader will enforce that it matches, and
+ *  throw an exception should it not. Conversely, an ID of 0xFFFFFFFF means
+ *  that no such type ID enforcement should be done. In both cases, the type
+ *  ID read from the file can get access through getType().
+ *
+ *  The GFF V3.2/V3.3 files found in the encrypted premium module archives
+ *  of Neverwinter Nights are deliberately broken in various way. When the
+ *  constructor parameter repairNWNPremium is set to true, GFF3File will
+ *  detect such broken files and automatically repair them. When this
+ *  parameter is set to false, no detection will take place, and these
+ *  broken files will lead the loader to throw an exception.
+ *
+ *  See also: GFF4File in gff4file.h for the later V4.0/V4.1 versions of
+ *  the GFF format.
  */
 class GFF3File : public AuroraBase {
 public:

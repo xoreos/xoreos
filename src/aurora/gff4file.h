@@ -54,6 +54,9 @@ class GFF4Struct;
  *    in Sonic, which have strings in a language-specific encoding. For example,
  *    the English, French, Italian, German and Spanish (EFIGS) versions have
  *    the strings in TLK files encoded in Windows CP-1252.
+ *
+ *  See also: GFF3File in gff3file.h for the earlier V3.2/V3.3 versions of
+ *  the GFF format.
  */
 class GFF4File : public AuroraBase {
 public:
