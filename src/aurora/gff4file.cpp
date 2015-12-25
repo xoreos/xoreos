@@ -1267,8 +1267,13 @@ Common::SeekableReadStream *GFF4Struct::getData(uint32 field) const {
 	if ((size == 0) || (count == 0))
 		return 0;
 
-	const uint32 dataBegin = data->pos();
-	const uint32 dataEnd   = data->pos() + (count * size);
+	const size_t dataSize  = count * size;
+	const size_t dataBegin = data->pos();
+	const size_t dataEnd   = data->pos() + dataSize;
+
+	if ((dataBegin >= data->size()) || ((data->size() - dataBegin) < dataSize))
+		throw Common::Exception("Invalid data offset (%u, %u, %u)",
+		                        (uint) dataBegin, (uint) dataSize, (uint) data->size());
 
 	return new Common::SeekableSubReadStream(data, dataBegin, dataEnd);
 }
