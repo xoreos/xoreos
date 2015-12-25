@@ -47,6 +47,20 @@ class GFF4Struct;
 /** A GFF (generic file format) V4.0/V4.1 file, found in Dragon Age: Origins,
  *  Dragon Age 2 and Sonic Chronicles: The Dark Brotherhood.
  *
+ *  Just like GFF V3.2/V3.3 files, GFF V4.0/V4.1 store hierarchical data,
+ *  similar in concept to XML and hold, for example, module and campaign
+ *  descriptions. Unlike version 3 of the format, version 4 is optimized
+ *  for access speed, with fields indexed by a numerical value instead of
+ *  a human-readable string. A collection of currently known field values
+ *  and their meanings can be found in gff4fields.h.
+ *
+ *  GFF V4.0/V4.1 files come in a multitude of types (ARE, DLG, ...), each
+ *  with its own 4-byte type ID ('ARE ', 'DLG ', ...). When specified in
+ *  the GFF4File constructor, the loader will enforce that it matches, and
+ *  throw an exception should it not. Conversely, an ID of 0xFFFFFFFF means
+ *  that no such type ID enforcement should be done. In both cases, the type
+ *  ID read from the file can get access through getType().
+ *
  *  Notes:
  *  - Generics and lists of generics are mapped to structs, with the field ID
  *    being the list element indices (or just 0 on non-list generics).
