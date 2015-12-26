@@ -366,11 +366,13 @@ void ERFFile::readV11Header(Common::SeekableReadStream &erf, ERFHeader &header) 
 
 	erf.skip(116); // Reserved
 
+	const uint32 keyListSize = header.offResList - header.offKeyList;
+
 	/* Check whether the "true" V1.1 extended filenames would fit into the key
 	 * list. If so, this is probably a true V1.1 ERF, as found in Neverwinter
 	 * Nights 2. If not, this is a Neverwinter Nights premium module with shorter
 	 * filenames. */
-	header.isNWNPremium = ((header.offResList - header.offKeyList) / header.resCount) < 40;
+	header.isNWNPremium = (header.resCount > 0) && ((keyListSize / header.resCount) < 40);
 
 	if (!header.isSensible()) {
 		header.isNWNPremium = true;
