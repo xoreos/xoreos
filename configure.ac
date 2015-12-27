@@ -10,9 +10,8 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([1.11 foreign -Wall -Wno-portability no-dist-gzip dist-xz subdir-objects])
-# Support silent build rules. Disable
-# by either passing --disable-silent-rules to configure or passing V=1
-# to make
+dnl Support silent build rules. Disable by either passing
+dnl --disable-silent-rules to configure or passing V=1 to make
 AM_SILENT_RULES([yes])
 
 dnl If AM_PROG_AR exists, call it, to shut up a libtool warning (and make it more portable, I guess?)
@@ -86,7 +85,7 @@ if test "x$with_release" != "xno"; then
 	fi
 fi
 
-#dnl Force compiling against the internal GLEW library
+dnl Force compiling against the internal GLEW library
 AC_ARG_ENABLE([external-glew], [AS_HELP_STRING([--disable-external-glew], [Do not check for an external GLEW library and always compile against the internal GLEW library @<:@default=no@:>@])], [], [enable_external_glew=yes])
 
 dnl Endianness
