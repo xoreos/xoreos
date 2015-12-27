@@ -19,6 +19,8 @@
 
 # Top-level automake build recipe.
 
+include $(top_srcdir)/Makefile.common
+
 ACLOCAL_AMFLAGS = -I m4 --install
 
 EXTRA_DIST = \
