@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
+# Graphics (OpenGL, 2D/3D drawing, images, textures, ...) subsystem.
+
 include $(top_srcdir)/Makefile.common
 
 SUBDIRS = \

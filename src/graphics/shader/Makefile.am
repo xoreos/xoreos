@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
+# GLSL shaders.
+
 include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libshader.la

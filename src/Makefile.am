@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
+# Main xoreos entry point.
+
 include $(top_srcdir)/Makefile.common
 
 # Windows resources

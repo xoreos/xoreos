@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
+# GLEW (OpenGL Extension Wrangler) 1.13.0 (<http://glew.sourceforge.net/>).
+
 include $(top_srcdir)/Makefile.common
 
 noinst_LTLIBRARIES = libglew.la

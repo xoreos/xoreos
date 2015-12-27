@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
+# Top-level automake build recipe.
+
 ACLOCAL_AMFLAGS = -I m4 --install
 
 EXTRA_DIST = \
