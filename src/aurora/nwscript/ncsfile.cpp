@@ -439,6 +439,7 @@ void NCSFile::decompile() {
 
 // OPCODES!
 
+/** RSADD: push an empty variable onto the stack. */
 void NCSFile::o_rsadd(InstructionType type) {
 	switch (type) {
 		case kInstTypeInt:
@@ -480,6 +481,7 @@ void NCSFile::o_rsadd(InstructionType type) {
 	}
 }
 
+/** CONST: push a constant (predetermined value) variable onto the stack. */
 void NCSFile::o_const(InstructionType type) {
 	switch (type) {
 		case kInstTypeInt:
@@ -497,6 +499,14 @@ void NCSFile::o_const(InstructionType type) {
 		}
 
 		case kInstTypeObject: {
+			/* The scripts only know of two constant objects:
+			 * - OBJECT_SELF, the owner object of the script
+			 * - OBJECT_INVALID, an invalid object
+			 *
+			 * In the bytecode, the latter can be initialized by a few different
+			 * magic values. They *should* all have the same effect, though.
+			 */
+
 			uint32 objectID = _script->readUint32BE();
 
 			if      (objectID == kScriptObjectSelf)
@@ -518,6 +528,7 @@ void NCSFile::o_const(InstructionType type) {
 	}
 }
 
+/** Helper function for o_action(), doing the actual engine function calling. */
 void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
                          uint32 function, uint8 argCount) {
 
@@ -529,6 +540,7 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 	ctx.setCaller(_owner);
 	ctx.setTriggerer(_triggerer);
 
+	// Pop parameters
 	ctx.setParamsSpecified(argCount);
 	for (uint8 i = 0; i < argCount; i++) {
 		Variable &param = ctx.getParams()[i];
@@ -549,6 +561,8 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 				break;
 
 			case kTypeVector: {
+				// A vector is held as three floats on the stack
+
 				float z = _stack.pop().getFloat();
 				float y = _stack.pop().getFloat();
 				float x = _stack.pop().getFloat();
@@ -558,6 +572,8 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 			}
 
 			case kTypeScriptState:
+				// The script state, "action" type, isn't stored on the stack at all
+
 				param.getScriptState() = _storedState.getScriptState();
 				_storedState.setType(kTypeVoid);
 				break;
@@ -570,10 +586,11 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 
 	}
 
-	debugC(1, kDebugScripts, "NWScript engine function %s (%d)",
-	       ctx.getName().c_str(), function);
+	// Call the engine function
+	debugC(1, kDebugScripts, "NWScript engine function %s (%d)", ctx.getName().c_str(), function);
 	FunctionMan.call(function, ctx);
 
+	// Push return values
 	Variable &retVal = ctx.getReturn();
 	switch (retVal.getType()) {
 		case kTypeVoid:
@@ -589,6 +606,8 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 			break;
 
 		case kTypeVector: {
+			// A vector is held as three floats on the stack
+
 			float x, y, z;
 			retVal.getVector(x, y, z);
 
@@ -605,6 +624,7 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 	}
 }
 
+/** ACTION: call a game-specific engine function. */
 void NCSFile::o_action(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_action(): Illegal type %d", type);
@@ -623,6 +643,7 @@ void NCSFile::o_action(InstructionType type) {
 	}
 }
 
+/** LOGAND: perform a logical boolean AND (&&). */
 void NCSFile::o_logand(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_logand(): Illegal type %d", type);
@@ -636,6 +657,7 @@ void NCSFile::o_logand(InstructionType type) {
 	}
 }
 
+/** LOGOR: perform a logical boolean OR (||). */
 void NCSFile::o_logor(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_logor(): Illegal type %d", type);
@@ -649,6 +671,7 @@ void NCSFile::o_logor(InstructionType type) {
 	}
 }
 
+/** INCOR: perform a bit-wise inclusive OR (|). */
 void NCSFile::o_incor(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_incor(): Illegal type %d", type);
@@ -662,6 +685,7 @@ void NCSFile::o_incor(InstructionType type) {
 	}
 }
 
+/** EXCOR: perform a bit-wise exclusive OR (^). */
 void NCSFile::o_excor(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_excor(): Illegal type %d", type);
@@ -675,6 +699,7 @@ void NCSFile::o_excor(InstructionType type) {
 	}
 }
 
+/** BOOLAND: perform a bit-wise AND (&). */
 void NCSFile::o_booland(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_booland(): Illegal type %d", type);
@@ -688,6 +713,7 @@ void NCSFile::o_booland(InstructionType type) {
 	}
 }
 
+/** EQ: compare the top-most stack elements for equality (==). */
 void NCSFile::o_eq(InstructionType type) {
 	size_t n = 1;
 
@@ -716,6 +742,7 @@ void NCSFile::o_eq(InstructionType type) {
 	_stack.push(args1 == args2);
 }
 
+/** NEQ: compare the top-most stack elements for inequality (!=). */
 void NCSFile::o_neq(InstructionType type) {
 	size_t n = 1;
 
@@ -744,6 +771,7 @@ void NCSFile::o_neq(InstructionType type) {
 	_stack.push(args1 != args2);
 }
 
+/** GEQ: compare the top-most stack elements, greater-or-equal (>=). */
 void NCSFile::o_geq(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt:
@@ -771,6 +799,7 @@ void NCSFile::o_geq(InstructionType type) {
 	}
 }
 
+/** GT: compare the top-most stack elements, greater (>). */
 void NCSFile::o_gt(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt:
@@ -798,6 +827,7 @@ void NCSFile::o_gt(InstructionType type) {
 	}
 }
 
+/** LT: compare the top-most stack elements, less (<). */
 void NCSFile::o_lt(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt:
@@ -825,6 +855,7 @@ void NCSFile::o_lt(InstructionType type) {
 	}
 }
 
+/** LEQ: compare the top-most stack elements, less-or-equal (<=). */
 void NCSFile::o_leq(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt:
@@ -852,6 +883,7 @@ void NCSFile::o_leq(InstructionType type) {
 	}
 }
 
+/** SHLEFT: shift the top-most stack element to the left (<<). */
 void NCSFile::o_shleft(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_shleft(): Illegal type %d", type);
@@ -865,6 +897,7 @@ void NCSFile::o_shleft(InstructionType type) {
 	}
 }
 
+/** SHRIGHT: signed-shift the top-most stack element to the right (>>>). */
 void NCSFile::o_shright(InstructionType type) {
 	/* According to Skywing's NWNScriptLib
 	 * (<https://github.com/SkywingvL/nwn2dev-public/blob/master/NWNScriptLib/NWScriptVM.cpp#L2233>):
@@ -890,6 +923,7 @@ void NCSFile::o_shright(InstructionType type) {
 	}
 }
 
+/** USHRIGHT: shift the top-most stack element to the right (>>). */
 void NCSFile::o_ushright(InstructionType type) {
 	/* According to Skywing's NWNScriptLib
 	 * (<https://github.com/SkywingvL/nwn2dev-public/blob/master/NWNScriptLib/NWScriptVM.cpp#L2272>):
@@ -908,6 +942,7 @@ void NCSFile::o_ushright(InstructionType type) {
 	}
 }
 
+/** MOD: calculate the remainder (modulo) of an integer division (%). */
 void NCSFile::o_mod(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_mod(): Illegal type %d", type);
@@ -927,6 +962,7 @@ void NCSFile::o_mod(InstructionType type) {
 	}
 }
 
+/** NEQ: negate the top-most stack element (unary -). */
 void NCSFile::o_neg(InstructionType type) {
 	switch (type) {
 		case kInstTypeInt:
@@ -950,6 +986,7 @@ void NCSFile::o_neg(InstructionType type) {
 	}
 }
 
+/** COMP: calculate the 1-complement of the top-most stack element (~). */
 void NCSFile::o_comp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_comp(): Illegal type %d", type);
@@ -961,6 +998,7 @@ void NCSFile::o_comp(InstructionType type) {
 	}
 }
 
+/** MOVSP: pop elements off the stack. */
 void NCSFile::o_movsp(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_movsp(): Illegal type %d", type);
@@ -968,6 +1006,7 @@ void NCSFile::o_movsp(InstructionType type) {
 	_stack.setStackPtr(_stack.getStackPtr() - _script->readSint32BE());
 }
 
+/** JMP: jump directly to a different script offset. */
 void NCSFile::o_jmp(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_jmp(): Illegal type %d", type);
@@ -976,6 +1015,7 @@ void NCSFile::o_jmp(InstructionType type) {
 	_script->skip(offset - 6);
 }
 
+/** JZ: jump conditionally if the top-most stack element is 0. */
 void NCSFile::o_jz(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_jz(): Illegal type %d", type);
@@ -986,6 +1026,7 @@ void NCSFile::o_jz(InstructionType type) {
 		_script->skip(offset - 6);
 }
 
+/** NOT: boolean-negate the top-most stack element (!). */
 void NCSFile::o_not(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_not(): Illegal type %d", type);
@@ -993,6 +1034,7 @@ void NCSFile::o_not(InstructionType type) {
 	_stack.push(!_stack.pop().getInt());
 }
 
+/** DECSP: decrement the value of a stack element (--). */
 void NCSFile::o_decsp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_decsp(): Illegal type %d", type);
@@ -1002,6 +1044,7 @@ void NCSFile::o_decsp(InstructionType type) {
 	_stack.setRelSP(offset, _stack.getRelSP(offset).getInt() - 1);
 }
 
+/** INCSP: increment the value of a stack element (++). */
 void NCSFile::o_incsp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_incsp(): Illegal type %d", type);
@@ -1011,6 +1054,7 @@ void NCSFile::o_incsp(InstructionType type) {
 	_stack.setRelSP(offset, _stack.getRelSP(offset).getInt() + 1);
 }
 
+/** JNZ: jump conditionally if the top-most stack element is not 0. */
 void NCSFile::o_jnz(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_jnz(): Illegal type %d", type);
@@ -1021,6 +1065,7 @@ void NCSFile::o_jnz(InstructionType type) {
 		_script->skip(offset - 6);
 }
 
+/** DECBP: decrement the value of a base-pointer stack element (--). */
 void NCSFile::o_decbp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_decbp(): Illegal type %d", type);
@@ -1030,6 +1075,7 @@ void NCSFile::o_decbp(InstructionType type) {
 	_stack.setRelBP(offset, _stack.getRelBP(offset).getInt() - 1);
 }
 
+/** INCBP: increment the value of a base-pointer stack element (++). */
 void NCSFile::o_incbp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_incbp(): Illegal type %d", type);
@@ -1039,6 +1085,10 @@ void NCSFile::o_incbp(InstructionType type) {
 	_stack.setRelBP(offset, _stack.getRelBP(offset).getInt() + 1);
 }
 
+/** SAVEBP: set the value of the base-pointer.
+ *
+ *  Used to create an anchor point to access global variables.
+ */
 void NCSFile::o_savebp(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_savebp(): Illegal type %d", type);
@@ -1047,6 +1097,10 @@ void NCSFile::o_savebp(InstructionType type) {
 	_stack.setBasePtr(_stack.getStackPtr());
 }
 
+/** RESTOREBP: restore the value of the base-pointer to a prior value.
+ *
+ *  Destroy the global variables anchor point after use.
+ */
 void NCSFile::o_restorebp(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_restorebp(): Illegal type %d", type);
@@ -1054,10 +1108,12 @@ void NCSFile::o_restorebp(InstructionType type) {
 	_stack.setBasePtr(_stack.pop().getInt());
 }
 
+/** NOP: no operation. */
 void NCSFile::o_nop(InstructionType UNUSED(type)) {
 	// Nothing! Yay!
 }
 
+/** CPDOWNSP: copy a value into an existing stack element. */
 void NCSFile::o_cpdownsp(InstructionType type) {
 	if (type != kInstTypeDirect)
 		throw Common::Exception("NCSFile::o_cpdownsp(): Illegal type %d", type);
@@ -1078,6 +1134,7 @@ void NCSFile::o_cpdownsp(InstructionType type) {
 	}
 }
 
+/** CPTOPSP: push a copy of a stack element on top of the stack. */
 void NCSFile::o_cptopsp(InstructionType type) {
 	if (type != kInstTypeDirect)
 		throw Common::Exception("NCSFile::o_cptopsp(): Illegal type %d", type);
@@ -1095,6 +1152,7 @@ void NCSFile::o_cptopsp(InstructionType type) {
 	}
 }
 
+/** ADD: add the top-most stack elements (+). */
 void NCSFile::o_add(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt: {
@@ -1156,6 +1214,7 @@ void NCSFile::o_add(InstructionType type) {
 	}
 }
 
+/** SUB: subtract the top-most stack elements (-). */
 void NCSFile::o_sub(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt: {
@@ -1209,6 +1268,7 @@ void NCSFile::o_sub(InstructionType type) {
 	}
 }
 
+/** MUL: multiply the top-most stack elements (*). */
 void NCSFile::o_mul(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt: {
@@ -1272,6 +1332,7 @@ void NCSFile::o_mul(InstructionType type) {
 	}
 }
 
+/** DIV: divide the top-most stack elements (/). */
 void NCSFile::o_div(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt: {
@@ -1356,6 +1417,7 @@ void NCSFile::o_div(InstructionType type) {
 	}
 }
 
+/** STORESTATEALL: unused, obsolete opcode. Hopefully. */
 void NCSFile::o_storestateall(InstructionType type) {
 	uint8  offset = (uint8) type;
 
@@ -1364,6 +1426,7 @@ void NCSFile::o_storestateall(InstructionType type) {
 	warning("TODO: NCSFile::o_storestateall(): %d", offset);
 }
 
+/** JSR: call a subroutine. */
 void NCSFile::o_jsr(InstructionType type) {
 	if (type != kInstTypeNone)
 		throw Common::Exception("NCSFile::o_jsr(): Illegal type %d", type);
@@ -1376,6 +1439,7 @@ void NCSFile::o_jsr(InstructionType type) {
 	_script->skip(offset - 6);
 }
 
+/** RETN: return from a subroutine call. */
 void NCSFile::o_retn(InstructionType UNUSED(type)) {
 	uint32 returnAddress = _script->size();
 	if (!_returnOffsets.empty()) {
@@ -1386,6 +1450,10 @@ void NCSFile::o_retn(InstructionType UNUSED(type)) {
 	_script->seek(returnAddress);
 }
 
+/** DESTRUCT: remove elements from the stack.
+ *
+ *  Used to isolate struct elements.
+ */
 void NCSFile::o_destruct(InstructionType UNUSED(type)) {
 	int16 stackSize        = _script->readSint16BE();
 	int16 dontRemoveOffset = _script->readSint16BE();
@@ -1416,6 +1484,10 @@ void NCSFile::o_destruct(InstructionType UNUSED(type)) {
 		_stack.push(*t);
 }
 
+/** CPDOWNBP: copy a value into an existing base-pointer stack element.
+ *
+ *  Used to write into a global variable.
+ */
 void NCSFile::o_cpdownbp(InstructionType type) {
 	if (type != kInstTypeDirect)
 		throw Common::Exception("NCSFile::o_cpdownbp(): Illegal type %d", type);
@@ -1436,6 +1508,10 @@ void NCSFile::o_cpdownbp(InstructionType type) {
 	}
 }
 
+/** CPTOPBP: push a copy of a base-pointer stack element on top of the stack.
+ *
+ *  Used to read from a global variable.
+ */
 void NCSFile::o_cptopbp(InstructionType type) {
 	if (type != kInstTypeDirect)
 		throw Common::Exception("NCSFile::o_cptopbp(): Illegal type %d", type);
@@ -1454,6 +1530,11 @@ void NCSFile::o_cptopbp(InstructionType type) {
 	}
 }
 
+/** STORESTATE: create a functor of a subroutine with the current stack.
+ *
+ *  Used to create the "action" variables when calling an engine function that
+ *  assigns a function to an object, or delays a function, or similar.
+ */
 void NCSFile::o_storestate(InstructionType type) {
 	uint8  offset = (uint8) type;
 	uint32 sizeBP = _script->readUint32BE();
@@ -1479,6 +1560,17 @@ void NCSFile::o_storestate(InstructionType type) {
 		state.locals.push_back(_stack.getRelSP(posSP));
 }
 
+/** WRITEARRAY: write the value of an array element on the stack.
+ *
+ *  Writes into the dynamic array variables types added with
+ *  Dragon Age: Origins.
+ *
+ *  The index of the array to write and the value to write are at
+ *  the top-most stack position; the offset to the array variable
+ *  is passed as a direct argument to the instruction.
+ *
+ *  The index is popped off the stack, but the value written remains.
+ */
 void NCSFile::o_writearray(InstructionType type) {
 	if (type != kInstTypeDirect)
 		throw Common::Exception("NCSFile::o_writearray(): Illegal type %d", type);
@@ -1502,6 +1594,18 @@ void NCSFile::o_writearray(InstructionType type) {
 	arrayVar.getArray()[index] = boost::make_shared<Variable>(Variable(valueVar));
 }
 
+/** READARRAY: push the value of an array element onto of the stack.
+ *
+ *  Reads out of the dynamic array variables types added with
+ *  Dragon Age: Origins.
+ *
+ *  The index of the array to read is at the top-most stack position;
+ *  the offset to the array variable is passed as a direct argument to
+ *  the instruction.
+ *
+ *  The index is popped off the stack, and the value read out of the
+ *  array is pushed on top.
+ */
 void NCSFile::o_readarray(InstructionType type) {
 	if (type != kInstTypeDirect)
 		throw Common::Exception("NCSFile::o_readarray(): Illegal type %d", type);
@@ -1524,6 +1628,16 @@ void NCSFile::o_readarray(InstructionType type) {
 	_stack.push(*array[index]);
 }
 
+/** GETREF: push the reference to a stack element onto the stack.
+ *
+ *  Creates a reference to a variable, usually an engine type like
+ *  Event or Effect, so that it can be modified by an engine function
+ *  directly, without having to create a modified copy. Added with
+ *  Dragon Age II.
+ *
+ *  The offset to the variable to create a reference to is passed
+ *  as a direct argument to the instruction.
+ */
 void NCSFile::o_getref(InstructionType type) {
 	if (type != kInstTypeDirect)
 		throw Common::Exception("NCSFile::o_getref(): Illegal type %d", type);
@@ -1540,6 +1654,21 @@ void NCSFile::o_getref(InstructionType type) {
 	_stack.top().setReference(&var);
 }
 
+/** GETREFARRAY: push the reference to an array element onto the stack.
+ *
+ *  Like GETREF, this creates a reference to a variable, usually an
+ *  engine type like Event or Effect, so that it can be modified by an
+ *  engine function directly, without having to create a modified copy.
+ *  GETREFARRAY, however, create a reference to a variable held inside
+ *  a dynamic array variable. Added with Dragon Age II.
+ *
+ *  The index of the array is at the top-most stack position; the
+ *  offset to the array variable is passed as a direct argument to
+ *  the instruction.
+ *
+ *  The index is popped off the stack, and the reference to the
+ *  variable inside the array is pushed on top.
+ */
 void NCSFile::o_getrefarray(InstructionType type) {
 	if (type != kInstTypeDirect)
 		throw Common::Exception("NCSFile::o_getrefarray(): Illegal type %d", type);
