@@ -725,7 +725,7 @@ void NCSFile::o_neq(InstructionType type) {
 		const size_t size = _script->readUint16BE();
 
 		if ((size % 4) != 0)
-			throw Common::Exception("NCSFile::o_eq(): size %% 4 != 0");
+			throw Common::Exception("NCSFile::o_neq(): size %% 4 != 0");
 
 		n = size / 4;
 	}
