@@ -21,6 +21,7 @@ Someday, ????-??-?? (Version 0.0.4)
 		- Changed C-style casts to static_cast and reinterpret_cast
 		  in various places
 		- Improved const-correctness in various places
+		- Ran many file format loaders through afl and fixed all crashes
 
 Wednesday, 2015-09-30 (Version 0.0.3)
 	- DOCS:
