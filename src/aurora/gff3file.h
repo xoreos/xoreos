@@ -72,7 +72,7 @@ class GFF3Struct;
  *  See also: GFF4File in gff4file.h for the later V4.0/V4.1 versions of
  *  the GFF format.
  */
-class GFF3File : public AuroraBase {
+class GFF3File : public AuroraFile {
 public:
 	GFF3File(Common::SeekableReadStream *gff3, uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
 	GFF3File(const Common::UString &gff3, FileType type, uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);

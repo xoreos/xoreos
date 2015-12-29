@@ -42,7 +42,7 @@ namespace Common {
 namespace Aurora {
 
 /** Class to hold resource data of an ERF file. */
-class ERFFile : public Archive, public AuroraBase {
+class ERFFile : public Archive, public AuroraFile {
 public:
 	/** Take over this stream and read an ERF file out of it.
 	 *

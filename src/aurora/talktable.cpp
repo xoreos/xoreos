@@ -50,7 +50,7 @@ TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, Common::Encoding enc
 	uint32 id, version;
 	bool utf16le;
 
-	AuroraBase::readHeader(*tlk, id, version, utf16le);
+	AuroraFile::readHeader(*tlk, id, version, utf16le);
 
 	tlk->seek(pos);
 

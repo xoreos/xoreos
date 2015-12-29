@@ -40,7 +40,7 @@ namespace Common {
 namespace Aurora {
 
 /** Class to hold resource data of a RIM file. */
-class RIMFile : public Archive, public AuroraBase {
+class RIMFile : public Archive, public AuroraFile {
 public:
 	RIMFile(Common::SeekableReadStream *rim);
 	~RIMFile();

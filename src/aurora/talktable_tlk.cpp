@@ -169,7 +169,7 @@ uint32 TalkTable_TLK::getLanguageID(Common::SeekableReadStream &tlk) {
 	uint32 id, version;
 	bool utf16le;
 
-	AuroraBase::readHeader(tlk, id, version, utf16le);
+	AuroraFile::readHeader(tlk, id, version, utf16le);
 
 	if ((id != kTLKID) || ((version != kVersion3) && (version != kVersion4)))
 		return kLanguageInvalid;

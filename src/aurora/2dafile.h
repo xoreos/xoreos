@@ -114,7 +114,7 @@ private:
  *
  *  See also classes TwoDARow and TwoDARegistry.
  */
-class TwoDAFile : public AuroraBase {
+class TwoDAFile : public AuroraFile {
 public:
 	TwoDAFile(Common::SeekableReadStream &twoda);
 	~TwoDAFile();

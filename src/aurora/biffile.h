@@ -42,7 +42,7 @@ namespace Aurora {
 class KEYFile;
 
 /** Class to hold resource data information of a bif file. */
-class BIFFile : public Archive, public AuroraBase {
+class BIFFile : public Archive, public AuroraFile {
 public:
 	BIFFile(Common::SeekableReadStream *bif);
 	~BIFFile();

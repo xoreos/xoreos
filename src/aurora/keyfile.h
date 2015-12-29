@@ -41,7 +41,7 @@ namespace Common {
 namespace Aurora {
 
 /** Class to hold resource index information of a key file. */
-class KEYFile : public AuroraBase {
+class KEYFile : public AuroraFile {
 public:
 	/** A key resource index. */
 	struct Resource {

@@ -807,7 +807,7 @@ void ModelNode_DragonAge::readMAO(const Common::UString &materialName, MaterialO
 		if (!maoStream)
 			throw Common::Exception("No such MAO");
 
-		const uint32 tag = ::Aurora::AuroraBase::readHeaderID(*maoStream);
+		const uint32 tag = ::Aurora::AuroraFile::readHeaderID(*maoStream);
 		maoStream->seek(0);
 
 		if      (tag == kGFFID)

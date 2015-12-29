@@ -35,7 +35,7 @@ class Surface;
 
 namespace Aurora {
 
-class PLTFile : public ::Aurora::AuroraBase, public Texture {
+class PLTFile : public ::Aurora::AuroraFile, public Texture {
 public:
 	enum Layer {
 		kLayerSkin     = 0,

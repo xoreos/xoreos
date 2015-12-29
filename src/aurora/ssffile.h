@@ -47,7 +47,7 @@ namespace Aurora {
  *
  *  Which index is used for which situation differs from game to game.
  */
-class SSFFile : public AuroraBase {
+class SSFFile : public AuroraFile {
 public:
 	/** A sound in the sound set. */
 	struct Sound {

@@ -81,7 +81,7 @@ private:
 #define DECLARE_OPCODE(x) void x(InstructionType type)
 
 /** An NCS, BioWare's NWN Compile Script. */
-class NCSFile : public AuroraBase {
+class NCSFile : public AuroraFile {
 public:
 	NCSFile(Common::SeekableReadStream *ncs);
 	NCSFile(const Common::UString &ncs);

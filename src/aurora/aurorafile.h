@@ -35,9 +35,9 @@ namespace Common {
 namespace Aurora {
 
 /** Base class for most files found in games using BioWare's Aurora engine. */
-class AuroraBase {
+class AuroraFile {
 public:
-	AuroraBase();
+	AuroraFile();
 
 	void clear();
 

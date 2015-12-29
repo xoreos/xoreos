@@ -103,7 +103,7 @@ void PLTFile::rebuild() {
 
 void PLTFile::load(Common::SeekableReadStream &plt) {
 	// --- PLT header ---
-	AuroraBase::readHeader(plt);
+	AuroraFile::readHeader(plt);
 
 	if (_id != kPLTID)
 		throw Common::Exception("Not a PLT file (%s)", Common::debugTag(_id).c_str());

@@ -44,7 +44,7 @@ namespace Aurora {
  *  contains, and stores a few more optional data points per string,
  *  like a reference to a voice-over file.
  */
-class TalkTable_TLK : public AuroraBase, public TalkTable {
+class TalkTable_TLK : public AuroraFile, public TalkTable {
 public:
 	TalkTable_TLK(Common::SeekableReadStream *tlk, Common::Encoding encoding);
 	~TalkTable_TLK();
