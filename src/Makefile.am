@@ -27,11 +27,11 @@ include $(top_srcdir)/Makefile.common
 
 SUBDIRS = \
           common \
+          aurora \
           graphics \
           sound \
           video \
           events \
-          aurora \
           engines \
           $(EMPTY)
 
