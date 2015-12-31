@@ -51,9 +51,7 @@ bool AuroraFile::isUTF16LE() const {
 	return _utf16le;
 }
 
-void AuroraFile::readHeader(Common::SeekableReadStream &stream,
-                            uint32 &id, uint32 &version, bool &utf16le) {
-
+void AuroraFile::readHeader(Common::ReadStream &stream, uint32 &id, uint32 &version, bool &utf16le) {
 	id      = stream.readUint32BE();
 	version = stream.readUint32BE();
 
@@ -72,19 +70,19 @@ void AuroraFile::readHeader(Common::SeekableReadStream &stream,
 		utf16le = false;
 }
 
-void AuroraFile::readHeader(Common::SeekableReadStream &stream, uint32 &id, uint32 &version) {
+void AuroraFile::readHeader(Common::ReadStream &stream, uint32 &id, uint32 &version) {
 	bool utf16le;
 	readHeader(stream, id, version, utf16le);
 }
 
-uint32 AuroraFile::readHeaderID(Common::SeekableReadStream &stream) {
+uint32 AuroraFile::readHeaderID(Common::ReadStream &stream) {
 	uint32 id, version;
 	readHeader(stream, id, version);
 
 	return id;
 }
 
-void AuroraFile::readHeader(Common::SeekableReadStream &stream) {
+void AuroraFile::readHeader(Common::ReadStream &stream) {
 	readHeader(stream, _id, _version, _utf16le);
 }
 
