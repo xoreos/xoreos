@@ -72,7 +72,7 @@ const char *XOREOS_NAMEVERSIONFULL = PACKAGE_NAME " " PACKAGE_VERSION XOREOS_REV
 const char *XOREOS_URL             = "https://xoreos.org/";
 
 const char *XOREOS_AUTHORS =
-	"Copyright (c) 2010-2015 by the xoreos team.\n"
+	"Copyright (c) 2010-2016 by the xoreos team.\n"
 	"Please see the AUTHORS file for details.\n"
 	"\n"
 	"This is free software; see the source for copying conditions.  There is NO\n"
