@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Utility class for handling special data structures found in BioWare's Aurora files.
+ *  Base for BioWare's Aurora engine files.
  */
 
 #ifndef AURORA_AURORAFILE_H
