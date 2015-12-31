@@ -33,7 +33,22 @@ namespace Common {
 
 namespace Aurora {
 
-/** Base class for most files found in games using BioWare's Aurora engine. */
+/** Base class for most files found in games using BioWare's Aurora engine.
+ *
+ *  Aurora files generally start with a 4-byte human-readable ID, for example
+ *  'ERF ', followed by a 4-byte version string, like 'V1.0'. This base class
+ *  reads them as big-endian 32-bit integer values. See the MKTAG() macro, as
+ *  defined in src/common/endianness.h, for generating values to compare the
+ *  IDs read out of a stream against.
+ *
+ *  Later games encode these ID and version values as 8-byte, little-endian
+ *  UTF-16 strings instead. We automatically detect this, convert them back
+ *  into the old format, and set a flag that can be queried with the method
+ *  isUTF16LE().
+ *
+ *  Alternatively, AuroraFile provides static methods for reading the base
+ *  header out of a stream.
+ */
 class AuroraFile {
 public:
 	AuroraFile();
