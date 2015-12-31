@@ -29,7 +29,6 @@
 
 namespace Common {
 	class SeekableReadStream;
-	class UString;
 }
 
 namespace Aurora {
