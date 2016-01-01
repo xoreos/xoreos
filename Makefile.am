@@ -62,6 +62,8 @@ EXTRA_DIST = \
 
 dist_doc_DATA = \
                 COPYING \
+                COPYING.Bitstream \
+                COPYING.Arev \
                 AUTHORS \
                 ChangeLog \
                 NEWS.md \

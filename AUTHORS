@@ -128,7 +128,9 @@ DejaVu Sans Mono Bold
    xoreos includes DejaVu Sans Mono Bold (<http://dejavu-fonts.org/>) as a
    monospaced system font. The DejaVu font family is based on the Vera Fonts
    (<http://gnome.org/fonts/>), distributed under the Bitstream Vera Fonts
-   license (<http://dejavu-fonts.org/wiki/License>).
+   license. Glyphs imported from Arev fonts are Copyright 2006 by Tavmjung Bah.
+   For the full license texts, see COPYING.Bitstream and COPYING.Arev, or
+   <http://dejavu-fonts.org/wiki/License>.
 
 ScummVM code
 ************
