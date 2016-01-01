@@ -38,7 +38,7 @@ namespace Common {
  *
  * <http://openwall.info/wiki/people/solar/software/public-domain-source-code/md5>
  *
- * The original copyright note on md5.c reads as follow:
+ * The original copyright note on md5.c reads as follows:
  *
  * This software was written by Alexander Peslyak in 2001.  No copyright is
  * claimed, and the software is hereby placed in the public domain.
