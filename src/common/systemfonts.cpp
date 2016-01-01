@@ -28,9 +28,12 @@
 
 namespace Common {
 
-/** The DejaVu Sans Mono Bold font.
+/** The DejaVu Sans Mono Bold font, version 2.35.
  *
  *  Distributed under the terms of the Bitstream Vera license.
+ *
+ *  DejaVu changes are in public domain. Glyphs imported from Arev fonts are
+ *  Copyright 2006 by Tavmjong Bah.
  */
 static const byte kDejaVuSansMonoBold[] = {
 	0x00,0x01,0x00,0x00,0x00,0x12,0x01,0x00,0x00,0x04,0x00,0x20,0x46,0x46,0x54,0x4D,
