@@ -20,5 +20,5 @@ override_dh_auto_configure:
 override_dh_auto_install:
 	dh_auto_install
 	# These files are redundant for Debian packages
-	rm --verbose $(TMP)/usr/share/doc/xoreos/COPYING
+	rm --verbose $(TMP)/usr/share/doc/xoreos/COPYING*
 	rm --verbose $(TMP)/usr/share/doc/xoreos/ChangeLog
