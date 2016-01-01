@@ -64,6 +64,7 @@ dist_doc_DATA = \
                 COPYING \
                 COPYING.Bitstream \
                 COPYING.Arev \
+                COPYING.GPLv2 \
                 AUTHORS \
                 ChangeLog \
                 NEWS.md \

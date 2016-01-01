@@ -75,6 +75,8 @@ ax_check_gl.m4
    xoreos uses a (modified) autoconf macro by Braden McDaniel
    (<https://code.google.com/p/autoconf-gl-macros/>) to check for OpenGL,
    licensed under version 2 or later of the GNU General Public License.
+   For the full license text, see COPYING.GPLv2 or
+   <https://gnu.org/licenses/gpl-2.0.html>.
 
 ax_check_freetype2.m4
 *********************
@@ -136,4 +138,5 @@ ScummVM code
 ************
    xoreos uses some ScummVM (<http://scummvm.org/>) code, most prominently the
    endian, singleton, stream and audio stream code. ScummVM is licensed under
-   version 2 or later of the GNU General Public License.
+   version 2 or later of the GNU General Public License. For the full license
+   text, see COPYING.GPLv2 or <https://gnu.org/licenses/gpl-2.0.html>.
