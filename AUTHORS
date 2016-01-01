@@ -116,14 +116,16 @@ Bink
 ****
    The Bink decoder used in xoreos is based (heavily) on the Bink decoder in
    FFmpeg (<http://ffmpeg.org/>), licensed under the GNU Lesser General Public
-   License (LGPL) version 2.1 or later. Many thanks to Kostya Shishkov
-   (<http://codecs.multimedia.cx/>) for doing the hard work.
+   License (LGPL) version 2.1 or later. For the full license text, see
+   COPYING.LGPLv2.1 or <https://gnu.org/licenses/lgpl-2.1.html>. Many thanks
+   to Kostya Shishkov (<http://codecs.multimedia.cx/>) for doing the hard work.
 
 WMA
 ***
    The WMA decoder used in xoreos is based (heavily) on the WMA decoder in
    FFmpeg (<http://ffmpeg.org/>), licensed under the GNU Lesser General Public
-   License (LGPL) version 2.1 or later.
+   License (LGPL) version 2.1 or later. For the full license text, see
+   COPYING.LGPLv2.1 or <https://gnu.org/licenses/lgpl-2.1.html>.
 
 DejaVu Sans Mono Bold
 *********************
