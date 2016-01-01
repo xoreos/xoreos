@@ -33,10 +33,32 @@ namespace Common {
 
 /* .--- Blowfish, based on the implementation from mbed TLS ---.
  *
- * This is an implementation of Bruce Schneier's Blowfish algorithm
- * based on the mbed TLS library (<https://tls.mbed.org/>). mbed TLS
- * is released under the terms of the GNU General Public License
- * version 2 or later.
+ * This is an implementation of Bruce Schneier's Blowfish algorithm based on
+ * the implementation found in the mbed TLS library (<https://tls.mbed.org/>),
+ * licensed under the terms of the Apache License, Version 2.0.
+ *
+ * The original copyright note in blowfish.c reads as follows:
+ *
+ * Copyright (C) 2006-2015, ARM Limited, All Rights Reserved
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * This file is part of mbed TLS (https://tls.mbed.org)
+ *
+ * The Blowfish block cipher was designed by Bruce Schneier in 1993.
+ * http://www.schneier.com/blowfish.html
+ * http://en.wikipedia.org/wiki/Blowfish_%28cipher%29
  */
 
 enum Mode {
