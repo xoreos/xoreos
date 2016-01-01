@@ -18,11 +18,54 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Based quite heavily on the Bink decoder found in FFmpeg.
-// Many thanks to Kostya Shishkov for doing the hard work.
-
 /** @file
  *  Decoding RAD Game Tools' Bink videos.
+ */
+
+/* Based on the Bink implementation in FFmpeg (<https://ffmpeg.org/)>,
+ * which is released under the terms of version 2 or later of the GNU
+ * Lesser General Public License.
+ *
+ * The original copyright notes in the files
+ * - libavformat/bink.c
+ * - libavcodec/bink.c
+ * - libavcodec/binkdata.h
+ * - libavcodec/binkdsp.c
+ * - libavcodec/binkdsp.h
+ * - libavcodec/binkaudio.c
+ * read as follows:
+ *
+ * Bink demuxer
+ * Copyright (c) 2008-2010 Peter Ross (pross@xvid.org)
+ * Copyright (c) 2009 Daniel Verkamp (daniel@drv.nu)
+ *
+ * Bink video decoder
+ * Copyright (c) 2009 Konstantin Shishkov
+ * Copyright (C) 2011 Peter Ross <pross@xvid.org>
+ *
+ * Bink video decoder
+ * Copyright (C) 2009 Konstantin Shishkov
+ *
+ * Bink DSP routines
+ * Copyright (c) 2009 Konstantin Shishkov
+ *
+ * Bink Audio decoder
+ * Copyright (c) 2007-2011 Peter Ross (pross@xvid.org)
+ * Copyright (c) 2009 Daniel Verkamp (daniel@drv.nu)
+ *
+ * FFmpeg is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * FFmpeg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #include <cassert>

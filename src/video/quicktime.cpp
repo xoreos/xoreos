@@ -22,13 +22,35 @@
  *  Decoding Apple QuickTime videos.
  */
 
-//
-// Heavily based on ScummVM code which is heavily based on ffmpeg code.
-//
-// Copyright (c) 2001 Fabrice Bellard.
-// First version by Francois Revol revol@free.fr
-// Seek function by Gael Chardon gael.dev@4now.net
-//
+/* Based on the Quicktime implementation in FFmpeg (<https://ffmpeg.org/)>,
+ * which is released under the terms of version 2 or later of the GNU
+ * Lesser General Public License.
+ *
+ * The original copyright note in libavformat/mov.c reads as follows:
+ *
+ * MOV demuxer
+ * Copyright (c) 2001 Fabrice Bellard
+ * Copyright (c) 2009 Baptiste Coudurier <baptiste dot coudurier at gmail dot com>
+ *
+ * first version by Francois Revol <revol@free.fr>
+ * seek function by Gael Chardon <gael.dev@4now.net>
+ *
+ * This file is part of FFmpeg.
+ *
+ * FFmpeg is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * FFmpeg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 
 #include <cassert>
 #include <cstring>
