@@ -42,6 +42,7 @@ EXTRA_DIST = \
              dists/debian/source/format \
              glew/LICENSE.txt \
              lua/README.xoreos \
+             lua/COPYRIGHT \
              .uncrustifyrc \
              CMakeLists.txt \
              cmake/CMakeAM.cmake \

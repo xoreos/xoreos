@@ -100,7 +100,8 @@ lua
    xoreos uses lua, a lightweight scripting language (<http://www.lua.org/>), to
    handle scripts from The Witcher. To minimize dependencies on "uncommon"
    libraries, xoreos completely includes the lua 5.0.3 code. Lua is licensed
-   under the terms of the MIT license.
+   under the terms of the MIT license. For the full license text, see
+   lua/COPYRIGHT or <http://www.lua.org/license.html>.
 
 UTF-8 CPP
 *********
