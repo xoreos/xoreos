@@ -92,7 +92,8 @@ glew
    features and extensions. To minimize dependencies on "uncommon" libraries,
    xoreos completely includes the glew code, one of its suggested use methods.
    glew is licensed under the Modified BSD License, the Mesa 3-D License
-   (MIT License), and the Khronos License (MIT License).
+   (MIT License), and the Khronos License (MIT License). For the full license
+   text, see glew/LICENSE.txt or <http://glew.sourceforge.net/credits.html>.
 
 lua
 ***
