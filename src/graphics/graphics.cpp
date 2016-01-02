@@ -1353,15 +1353,10 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 }
 
 void GraphicsManager::toggleMouseGrab() {
-	/* TODO: This used to call SDL1.2's SDL_WM_GrabInput(), which has been
-	 *       removed in SDL2. Unfortunately, SDL_SetRelativeMouseMode()
-	 *       isn't a drop-in replacement.
-	 */
+	if (!_screen)
+		return;
 
-	if (SDL_GetRelativeMouseMode() == SDL_FALSE)
-		SDL_SetRelativeMouseMode(SDL_TRUE);
-	else
-		SDL_SetRelativeMouseMode(SDL_FALSE);
+	SDL_SetWindowGrab(_screen, (SDL_bool) !SDL_GetWindowGrab(_screen));
 }
 
 void GraphicsManager::setScreenSize(int width, int height) {
