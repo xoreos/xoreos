@@ -104,8 +104,8 @@ UTF-8 CPP
 *********
    xoreos uses the lightweight header-only UTF-8 CPP library
    (<http://utfcpp.sourceforge.net/>) for handling UTF-8 encoded strings.
-   UTF-8 CPP is licensed under a copyleft license. See utf8cpp/utf8.h for
-   details.
+   UTF-8 CPP is licensed under the Boost Software License. See utf8cpp/utf8.h
+   for details.
 
 Bink
 ****
