@@ -142,3 +142,13 @@ DejaVu Sans Mono Bold
    license. Glyphs imported from Arev fonts are Copyright 2006 by Tavmjung Bah.
    For the full license texts, see COPYING.Bitstream and COPYING.Arev, or
    <http://dejavu-fonts.org/wiki/License>.
+
+Nintendo DS formats
+*******************
+   xoreos includes readers for various Nintendo DS file formats, based on
+   code in Tinke by pleoNeX (<https://github.com/pleonex/tinke>), licensed
+   under version 3 or later of the GNU General Public License. For the full
+   license text, see COPYING or <https://gnu.org/licenses/gpl-3.0.html>.
+   They are also based on lowlines' file format specifications
+   (<http://llref.emutalk.net/docs/>) and the Nintendo DS information
+   documentation GBATEK by Martin Korth (<http://problemkaputt.de/gbatek.htm>).
