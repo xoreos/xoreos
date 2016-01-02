@@ -112,6 +112,13 @@ UTF-8 CPP
    UTF-8 CPP is licensed under the Boost Software License. See utf8cpp/utf8.h
    for details.
 
+ScummVM code
+************
+   xoreos uses some ScummVM (<http://scummvm.org/>) code, most prominently the
+   endian, singleton, stream and audio stream code. ScummVM is licensed under
+   version 2 or later of the GNU General Public License. For the full license
+   text, see COPYING.GPLv2 or <https://gnu.org/licenses/gpl-2.0.html>.
+
 Bink
 ****
    The Bink decoder used in xoreos is based (heavily) on the Bink decoder in
@@ -135,10 +142,3 @@ DejaVu Sans Mono Bold
    license. Glyphs imported from Arev fonts are Copyright 2006 by Tavmjung Bah.
    For the full license texts, see COPYING.Bitstream and COPYING.Arev, or
    <http://dejavu-fonts.org/wiki/License>.
-
-ScummVM code
-************
-   xoreos uses some ScummVM (<http://scummvm.org/>) code, most prominently the
-   endian, singleton, stream and audio stream code. ScummVM is licensed under
-   version 2 or later of the GNU General Public License. For the full license
-   text, see COPYING.GPLv2 or <https://gnu.org/licenses/gpl-2.0.html>.
