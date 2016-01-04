@@ -61,6 +61,7 @@ public:
 	static const size_t kInvalidColumn = SIZE_MAX;
 	static const size_t kInvalidRow    = SIZE_MAX;
 
+	/** Take over this stream and read a GDA file out of it. */
 	GDAFile(Common::SeekableReadStream *gda);
 	~GDAFile();
 
@@ -70,6 +71,8 @@ public:
 	 *  Note that the row numbers will be continuous and therefore will be
 	 *  different depending on the order of the pasting, making them useless
 	 *  for row identification. An ID column should be used for this case.
+	 *
+	 *  The ownership stream will be transfered to this GDAFile object.
 	 */
 	void add(Common::SeekableReadStream *gda);
 

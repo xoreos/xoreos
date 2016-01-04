@@ -44,6 +44,7 @@ class KEYFile;
 /** Class to hold resource data information of a bif file. */
 class BIFFile : public Archive, public AuroraFile {
 public:
+	/** Take over this stream and read a BIF file out of it. */
 	BIFFile(Common::SeekableReadStream *bif);
 	~BIFFile();
 

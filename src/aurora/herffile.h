@@ -42,6 +42,7 @@ namespace Aurora {
 /** Class to hold resource data of an HERF file. */
 class HERFFile : public Archive {
 public:
+	/** Take over this stream and read an HERF file out of it. */
 	HERFFile(Common::SeekableReadStream *herf);
 	~HERFFile();
 

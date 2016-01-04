@@ -36,7 +36,13 @@ class Small {
 public:
 	static void decompress(Common::SeekableReadStream &small, Common::WriteStream &out);
 
+	/** Take over this stream and decompress it into a new SeekableReadStream.
+	 *
+	 *  If the Small files is uncompressed, this new stream will be a
+	 *  SeekableSubReadStream simply wrapping the old stream.
+	 */
 	static Common::SeekableReadStream *decompress(Common::SeekableReadStream *small);
+	/** Decompress this stream into a new SeekableReadStream. */
 	static Common::SeekableReadStream *decompress(Common::SeekableReadStream &small);
 };
 

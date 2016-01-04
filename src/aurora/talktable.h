@@ -56,6 +56,7 @@ public:
 	virtual const Common::UString &getString     (uint32 strRef) const = 0;
 	virtual const Common::UString &getSoundResRef(uint32 strRef) const = 0;
 
+	/** Take over this stream and read a talk table (of either format) out of it. */
 	static TalkTable *load(Common::SeekableReadStream *tlk, Common::Encoding encoding);
 
 

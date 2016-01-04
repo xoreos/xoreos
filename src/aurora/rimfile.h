@@ -42,6 +42,7 @@ namespace Aurora {
 /** Class to hold resource data of a RIM file. */
 class RIMFile : public Archive, public AuroraFile {
 public:
+	/** Take over this stream and read a RIM file out of it. */
 	RIMFile(Common::SeekableReadStream *rim);
 	~RIMFile();
 

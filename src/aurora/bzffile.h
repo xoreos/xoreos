@@ -47,6 +47,7 @@ class KEYFile;
 /** Class to hold resource data information of a bzf file. */
 class BZFFile : public Archive, public AuroraFile {
 public:
+	/** Take over this stream and read a BZF file out of it. */
 	BZFFile(Common::SeekableReadStream *bzf);
 	~BZFFile();
 

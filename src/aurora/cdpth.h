@@ -53,7 +53,9 @@ namespace Aurora {
  */
 class CDPTH {
 public:
+	/** Read a CDPTH out of this stream. */
 	static const uint16 *load(Common::SeekableReadStream &cdpth, uint32 width, uint32 height);
+	/** Read a CDPTH out of this stream and delete it afterwards. */
 	static const uint16 *load(Common::SeekableReadStream *cdpth, uint32 width, uint32 height);
 };
 

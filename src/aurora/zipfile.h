@@ -40,6 +40,7 @@ namespace Aurora {
 /** A class encapsulating ZIP files for resource archive access. */
 class ZIPFile : public Archive {
 public:
+	/** Take over this stream and read a ZIP file out of it. */
 	ZIPFile(Common::SeekableReadStream *zip);
 	~ZIPFile();
 

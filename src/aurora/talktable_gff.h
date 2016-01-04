@@ -47,6 +47,7 @@ namespace Aurora {
  */
 class TalkTable_GFF : public TalkTable {
 public:
+	/** Take over this stream and read a GFF'd TLK out of it. */
 	TalkTable_GFF(Common::SeekableReadStream *tlk, Common::Encoding encoding);
 	~TalkTable_GFF();
 

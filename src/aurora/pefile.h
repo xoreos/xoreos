@@ -43,6 +43,7 @@ namespace Aurora {
 /** A class encapsulating PE exe's for resource archive access. */
 class PEFile : public Archive {
 public:
+	/** Take over this stream and read a PE file out of it. */
 	PEFile(Common::SeekableReadStream *exe, const std::vector<Common::UString> &remap);
 	~PEFile();
 

@@ -41,6 +41,7 @@ namespace Aurora {
 
 class NSBTXFile : public Archive, public NitroFile {
 public:
+	/** Take over this stream and read an NSBTX file out of it. */
 	NSBTXFile(Common::SeekableReadStream *nsbtx);
 	~NSBTXFile();
 

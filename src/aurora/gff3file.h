@@ -74,7 +74,9 @@ class GFF3Struct;
  */
 class GFF3File : public AuroraFile {
 public:
+	/** Take over this stream and read a GFF3 file out of it. */
 	GFF3File(Common::SeekableReadStream *gff3, uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
+	/** Request this resource from the ResourceManager and read a GFF3 file out of it. */
 	GFF3File(const Common::UString &gff3, FileType type, uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
 	~GFF3File();
 

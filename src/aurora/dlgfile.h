@@ -79,7 +79,9 @@ public:
 	};
 
 
+	/** Take over this stream and read a DLG file out of it. */
 	DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner = 0, bool repairNWNPremium = false);
+	/** Request this resource from the ResourceManager and read a DLG file out of it. */
 	DLGFile(const Common::UString &dlg, NWScript::Object *owner = 0, bool repairNWNPremium = false);
 	~DLGFile();
 

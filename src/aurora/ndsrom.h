@@ -43,7 +43,9 @@ namespace Aurora {
 /** A class encapsulating Nintendo DS ROM access. */
 class NDSFile : public Archive {
 public:
+	/** Over this file in the filesystem and read a NDS file out of it. */
 	NDSFile(const Common::UString &fileName);
+	/** Take over this stream and read a NDS file out of it. */
 	NDSFile(Common::SeekableReadStream *nds);
 	~NDSFile();
 
