@@ -143,6 +143,7 @@ Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small)
 	try {
 		::Aurora::decompress(*small, out, type, size);
 	} catch (Common::Exception &e) {
+		delete small;
 		out.dispose();
 
 		e.add("Failed to decompress \"small\" file");

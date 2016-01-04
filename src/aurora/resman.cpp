@@ -763,14 +763,8 @@ Common::SeekableReadStream *ResourceManager::getResource(const Resource &res, bo
 	}
 
 	// Transparently decompress "small" files
-	if (res.isSmall) {
-		try {
-			stream = Small::decompress(stream);
-		} catch (...) {
-			delete stream;
-			throw;
-		}
-	}
+	if (res.isSmall)
+		stream = Small::decompress(stream);
 
 	return stream;
 }
