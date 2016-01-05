@@ -30,14 +30,14 @@
 
 namespace Aurora {
 
-static void readSmallHeader(Common::SeekableReadStream &small, uint32 &type, uint32 &size) {
+static void readSmallHeader(Common::ReadStream &small, uint32 &type, uint32 &size) {
 	uint32 data = small.readUint32LE();
 
 	type = data & 0x000000FF;
 	size = data >> 8;
 }
 
-static void decompress00(Common::SeekableReadStream &small, Common::WriteStream &out, uint32 size) {
+static void decompress00(Common::ReadStream &small, Common::WriteStream &out, uint32 size) {
 	out.writeStream(small, size);
 }
 
@@ -48,7 +48,7 @@ static void decompress00(Common::SeekableReadStream &small, Common::WriteStream 
  * See <https://github.com/gravgun/dsdecmp/blob/master/CSharp/DSDecmp/Formats/Nitro/LZ10.cs#L121>
  * and <https://code.google.com/p/dsdecmp/>.
  */
-static void decompress10(Common::SeekableReadStream &small, Common::WriteStream &out, uint32 size) {
+static void decompress10(Common::ReadStream &small, Common::WriteStream &out, uint32 size) {
 	byte   buffer[0x10000];
 	uint32 bufferPos = 0;
 
@@ -106,7 +106,7 @@ static void decompress10(Common::SeekableReadStream &small, Common::WriteStream 
 		throw Common::Exception("Invalid \"small\" data");
 }
 
-static void decompress(Common::SeekableReadStream &small, Common::WriteStream &out,
+static void decompress(Common::ReadStream &small, Common::WriteStream &out,
                        uint32 type, uint32 size) {
 
 	if      (type == 0x00)
@@ -117,7 +117,7 @@ static void decompress(Common::SeekableReadStream &small, Common::WriteStream &o
 		throw Common::Exception("Unsupported type 0x%08X", (uint) type);
 }
 
-void Small::decompress(Common::SeekableReadStream &small, Common::WriteStream &out) {
+void Small::decompress(Common::ReadStream &small, Common::WriteStream &out) {
 	uint32 type, size;
 	readSmallHeader(small, type, size);
 
@@ -154,7 +154,7 @@ Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small)
 	return new Common::MemoryReadStream(out.getData(), out.size(), true);
 }
 
-Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream &small) {
+Common::SeekableReadStream *Small::decompress(Common::ReadStream &small) {
 	uint32 type, size;
 	readSmallHeader(small, type, size);
 
@@ -170,6 +170,20 @@ Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream &small)
 	}
 
 	return new Common::MemoryReadStream(out.getData(), out.size(), true);
+}
+
+Common::SeekableReadStream *Small::decompress(Common::ReadStream *small) {
+	Common::SeekableReadStream *decompressed = 0;
+
+	try {
+		decompressed = decompress(*small);
+	} catch (...) {
+		delete small;
+		throw;
+	}
+
+	delete small;
+	return decompressed;
 }
 
 } // End of namespace Aurora

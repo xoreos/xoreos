@@ -26,6 +26,7 @@
 #define AURORA_SMALLFILE_H
 
 namespace Common {
+	class ReadStream;
 	class SeekableReadStream;
 	class WriteStream;
 }
@@ -34,7 +35,12 @@ namespace Aurora {
 
 class Small {
 public:
-	static void decompress(Common::SeekableReadStream &small, Common::WriteStream &out);
+	static void decompress(Common::ReadStream &small, Common::WriteStream &out);
+
+	/** Decompress this stream into a new SeekableReadStream. */
+	static Common::SeekableReadStream *decompress(Common::ReadStream &small);
+	/** Take over this stream and decompress it into a new SeekableReadStream. */
+	static Common::SeekableReadStream *decompress(Common::ReadStream *small);
 
 	/** Take over this stream and decompress it into a new SeekableReadStream.
 	 *
@@ -42,8 +48,7 @@ public:
 	 *  SeekableSubReadStream simply wrapping the old stream.
 	 */
 	static Common::SeekableReadStream *decompress(Common::SeekableReadStream *small);
-	/** Decompress this stream into a new SeekableReadStream. */
-	static Common::SeekableReadStream *decompress(Common::SeekableReadStream &small);
+
 };
 
 } // End of namespace Aurora
