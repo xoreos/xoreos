@@ -590,21 +590,25 @@ void SoundManager::bufferData(Channel &channel) {
 	ALenum error = AL_NO_ERROR;
 
 	// Get the number of buffers that have been processed
-	ALint buffersProcessed;
+	ALint buffersProcessed = -1;
 	alGetSourcei(channel.source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 	if ((error = alGetError()) != AL_NO_ERROR)
 		throw Common::Exception("OpenAL error while getting processed buffers: %X", error);
 
-	// Pull all processed buffers from the queue and put them into our free list
-	while (buffersProcessed--) {
-		ALuint alBuffer;
+	assert(buffersProcessed >= 0);
 
-		alSourceUnqueueBuffers(channel.source, 1, &alBuffer);
-		if ((error = alGetError()) != AL_NO_ERROR)
-			throw Common::Exception("OpenAL error while unqueueing buffers: %X", error);
+	if ((size_t)buffersProcessed > kOpenALBufferCount)
+		throw Common::Exception("Got more processed buffers than total source buffers?!?");
 
-		channel.freeBuffers.push_back(alBuffer);
-	}
+	// Unqueue the processed buffers
+	ALuint freeBuffers[kOpenALBufferCount];
+	alSourceUnqueueBuffers(channel.source, buffersProcessed, freeBuffers);
+	if ((error = alGetError()) != AL_NO_ERROR)
+		throw Common::Exception("OpenAL error while unqueueing buffers: %X", error);
+
+	// Put them into the free buffers list
+	for (size_t i = 0; i < (size_t)buffersProcessed; i++)
+		channel.freeBuffers.push_back(freeBuffers[i]);
 
 	// Buffer as long as we still have data and free buffers
 	std::list<ALuint>::iterator buffer = channel.freeBuffers.begin();
