@@ -178,14 +178,24 @@ bool SoundManager::isPlaying(size_t channel) const {
 	if (!_hasSound)
 		return true;
 
+	ALenum error = AL_NO_ERROR;
+
 	ALint val;
 	alGetSourcei(_channels[channel]->source, AL_SOURCE_STATE, &val);
+	if ((error = alGetError()) != AL_NO_ERROR)
+		throw Common::Exception("OpenAL error while getting source state: %X", error);
 
 	if (val != AL_PLAYING) {
 		if (!_channels[channel]->stream || _channels[channel]->stream->endOfStream()) {
-			ALint buffersQueued, buffersProcessed;
-			alGetSourcei(_channels[channel]->source, AL_BUFFERS_QUEUED,    &buffersQueued);
+			ALint buffersQueued;
+			alGetSourcei(_channels[channel]->source, AL_BUFFERS_QUEUED, &buffersQueued);
+			if ((error = alGetError()) != AL_NO_ERROR)
+				throw Common::Exception("OpenAL error while getting queued buffers: %X", error);
+
+			ALint buffersProcessed;
 			alGetSourcei(_channels[channel]->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
+			if ((error = alGetError()) != AL_NO_ERROR)
+				throw Common::Exception("OpenAL error while getting processed buffers: %X", error);
 
 			if (buffersQueued == buffersProcessed)
 				return false;
@@ -577,15 +587,21 @@ void SoundManager::bufferData(Channel &channel) {
 	if (!_hasSound)
 		return;
 
+	ALenum error = AL_NO_ERROR;
+
 	// Get the number of buffers that have been processed
 	ALint buffersProcessed;
 	alGetSourcei(channel.source, AL_BUFFERS_PROCESSED, &buffersProcessed);
+	if ((error = alGetError()) != AL_NO_ERROR)
+		throw Common::Exception("OpenAL error while getting processed buffers: %X", error);
 
 	// Pull all processed buffers from the queue and put them into our free list
 	while (buffersProcessed--) {
 		ALuint alBuffer;
 
 		alSourceUnqueueBuffers(channel.source, 1, &alBuffer);
+		if ((error = alGetError()) != AL_NO_ERROR)
+			throw Common::Exception("OpenAL error while unqueueing buffers: %X", error);
 
 		channel.freeBuffers.push_back(alBuffer);
 	}
@@ -597,6 +613,8 @@ void SoundManager::bufferData(Channel &channel) {
 			break;
 
 		alSourceQueueBuffers(channel.source, 1, &*buffer);
+		if ((error = alGetError()) != AL_NO_ERROR)
+			throw Common::Exception("OpenAL error while queueing buffers: %X", error);
 
 		buffer = channel.freeBuffers.erase(buffer);
 	}
