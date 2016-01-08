@@ -72,7 +72,7 @@ float TextureFont::getWidth(uint32 c) const {
 	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
 
 	if (cC == _chars.end())
-		_chars.find('m');
+		cC = _chars.find('m');
 	if (cC == _chars.end())
 		return _spaceR;
 
