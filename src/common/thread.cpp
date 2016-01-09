@@ -20,6 +20,8 @@
 
 /** @file
  *  Threading helpers.
+ *
+ *  See also threads.h for the global threading system helpers.
  */
 
 #include <SDL_timer.h>

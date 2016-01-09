@@ -20,6 +20,8 @@
 
 /** @file
  *  Threading system helpers.
+ *
+ *  See alsoo class Thread in thread.h.
  */
 
 #ifndef COMMON_THREADS_H
@@ -27,10 +29,17 @@
 
 namespace Common {
 
+/** Initialize the global threading system.
+ *
+ *  This needs to be done before any threads are instantiated.
+ */
 void initThreads();
+/** Was the global threading system initialized? */
 bool initedThreads();
 
+/** Returns true if called from the main thread, false otherwise. */
 bool isMainThread();
+/** Throws an Exception if called from a non-main thread. */
 void enforceMainThread();
 
 } // End of namespace Common

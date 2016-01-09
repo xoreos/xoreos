@@ -20,6 +20,8 @@
 
 /** @file
  *  Threading system helpers.
+ *
+ *  See alsoo class Thread in thread.h.
  */
 
 #ifndef COMMON_THREADS_H
