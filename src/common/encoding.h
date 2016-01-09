@@ -58,25 +58,72 @@ enum Encoding {
 	kEncodingMAX      ///< For range checks.
 };
 
-/** Read a string with the given encoding of a stream. */
+/** Read a string with the given encoding of a stream.
+ *
+ *  Reading stops after an end-of-string terminating sequence has been read.
+ *  For single- and variable-byte encodings, this is 0x00 ('\0'). For 2-byte
+ *  encodings, this is 0x0000. For 4-byte encodings, this is 0x00000000.
+ */
 UString readString(SeekableReadStream &stream, Encoding encoding);
 
-/** Read length bytes as a string with the given encoding out of a stream. */
+/** Read length bytes as a string with the given encoding out of a stream.
+ *
+ *  Exactly length bytes will be read out of the stream (unless reading
+ *  out of the stream fails).
+ */
 UString readStringFixed(SeekableReadStream &stream, Encoding encoding, size_t length);
 
-/** Read a line with the given encoding out of a stream. */
+/** Read a line with the given encoding out of a stream.
+ *
+ *  Reading stops after an end-of-line sequence has been read. For single-
+ *  and variable-byte encodings, this is 0x0A ('\n', LF, line feed). For 2-
+ *  byte encodings, this is 0x000A. For 4-byte encodings, this is 0x0000000A.
+ *
+ *  Any occurrence of '\r' (CR, carriage return, 0x0D/0x000D/0x0000000D) will
+ *  be read and ignored, and *not* stored in the resulting string. This way,
+ *  both Unix-like (GNU/Linux, Mac OS X, *BSD) and DOS-like (DOS, Windows)
+ *  newlines can be understood.
+ */
 UString readStringLine(SeekableReadStream &stream, Encoding encoding);
 
-/** Read a string with the given encoding from the raw buffer. */
+/** Read a string with the given encoding from the raw buffer.
+ *
+ *  The raw buffer may or may not end in a terminating end-of-string
+ *  sequence.
+ */
 UString readString(const byte *data, size_t size, Encoding encoding);
 
-/** Write a string into a stream with a given encoding. */
+/** Write a string into a stream with a given encoding.
+ *
+ *  @param  stream The stream to write into.
+ *  @param  str The string to write.
+ *  @param  encoding The encoding to convert the string into.
+ *  @param  terminate Should we write a terminating end-of-string sequence into
+ *                    the stream after the string has been written?
+ *  @return The number of bytes written to the stream, including the end-of-string
+ *          sequence if requested.
+ */
 size_t writeString(WriteStream &stream, const Common::UString &str, Encoding encoding, bool terminate = true);
 
-/** Write a string into a stream with a given encoding and fixed length in bytes. */
+/** Write a string into a stream with a given encoding and fixed length in bytes.
+ *
+ *  If the string is longer than length (in bytes), the string will be cut off.
+ *  For multi-byte encodings, this may result in invalid/incomplete sequences
+ *  at the end of the string.
+ *
+ *  If the string is shorter than length, 0x00 will be written into the stream
+ *  until length has been reached.
+ */
 void writeStringFixed(WriteStream &stream, const Common::UString &str, Encoding encoding, size_t length);
 
-/** Convert a string into the given encoding. */
+/** Convert a string into the given encoding.
+ *
+ *  @param  str The string to convert.
+ *  @param  encoding The encoding to convert the string into.
+ *  @param  terminateString Should the result contain a terminating end-of-
+ *                          string sequence?
+ *  @return A newly created MemoryReadStream of the converted string.
+ */
 MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString = true);
 
 /** Return the number of bytes per codepoint in this encoding.
