@@ -84,8 +84,8 @@ public:
 	~ADPCMStream();
 
 	virtual bool endOfData() const { return (_stream->eos() || _stream->pos() >= _endpos); }
-	virtual int getChannels() const	{ return _channels; }
-	virtual int getRate() const	{ return _rate; }
+	virtual int getChannels() const { return _channels; }
+	virtual int getRate() const { return _rate; }
 
 	virtual bool rewind();
 };

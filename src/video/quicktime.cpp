@@ -231,8 +231,8 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uin
 		_fd->readUint16BE(); // revision level
 		_fd->readUint32BE(); // vendor
 
-		entry->_channels = _fd->readUint16BE();			 // channel count
-		entry->_bitsPerSample = _fd->readUint16BE();	  // sample size
+		entry->_channels = _fd->readUint16BE();      // channel count
+		entry->_bitsPerSample = _fd->readUint16BE(); // sample size
 
 		_fd->readUint16BE(); // compression id = 0
 		_fd->readUint16BE(); // packet size = 0
@@ -516,7 +516,7 @@ int QuickTimeDecoder::readTRAK(Atom atom) {
 int QuickTimeDecoder::readELST(Atom UNUSED(atom)) {
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
-	uint32 editCount = _fd->readUint32BE();	 // entries
+	uint32 editCount = _fd->readUint32BE();            // entries
 
 	for (uint32 i = 0; i < editCount; i++){
 		_fd->readUint32BE(); // Track duration

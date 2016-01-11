@@ -65,9 +65,9 @@ namespace Sound {
 class MP3Stream : public RewindableAudioStream {
 protected:
 	enum State {
-		MP3_STATE_INIT,	// Need to init the decoder
-		MP3_STATE_READY,	// ready for processing data
-		MP3_STATE_EOS		// end of data reached (may need to loop)
+		MP3_STATE_INIT,  // Need to init the decoder
+		MP3_STATE_READY, // ready for processing data
+		MP3_STATE_EOS    // end of data reached (may need to loop)
 	};
 
 	Common::SeekableReadStream *_inStream;
@@ -96,9 +96,9 @@ public:
 
 	size_t readBuffer(int16 *buffer, const size_t numSamples);
 
-	bool endOfData() const		{ return _state == MP3_STATE_EOS; }
-	int getChannels() const		{ return MAD_NCHANNELS(&_frame.header); }
-	int getRate() const			{ return _frame.header.samplerate; }
+	bool endOfData() const { return _state == MP3_STATE_EOS; }
+	int getChannels() const { return MAD_NCHANNELS(&_frame.header); }
+	int getRate() const { return _frame.header.samplerate; }
 	bool rewind();
 
 protected:
@@ -201,7 +201,7 @@ void MP3Stream::readMP3Data() {
 		// Note that we use memmove, as we are reusing the same buffer,
 		// and hence the data regions we copy from and to may overlap.
 		remaining = _stream.bufend - _stream.next_frame;
-		assert(remaining < BUFFER_SIZE);	// Paranoia check
+		assert(remaining < BUFFER_SIZE); // Paranoia check
 		memmove(_buf, _stream.next_frame, remaining);
 	}
 
