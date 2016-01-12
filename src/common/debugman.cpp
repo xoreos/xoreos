@@ -38,7 +38,7 @@ DECLARE_SINGLETON(Common::DebugManager)
 namespace Common {
 
 DebugManager::DebugManager() : _debugLevel(0), _logFileStartLine(false) {
-	for (uint32 i = 0; i < kChannelCount; i++)
+	for (size_t i = 0; i < kChannelCount; i++)
 		_channels[i].enabled = false;
 
 	addDebugChannel(kDebugGraphics, "GGraphics", "Global graphics debug channel");
@@ -91,7 +91,7 @@ void DebugManager::getDebugChannels(std::vector<UString> &names, std::vector<USt
 }
 
 void DebugManager::clearEngineChannels() {
-	for (uint32 i = kGlobalChannelCount; i < kChannelCount; i++) {
+	for (size_t i = kGlobalChannelCount; i < kChannelCount; i++) {
 		Channel &channel = _channels[i];
 
 		ChannelMap::iterator c = _channelMap.find(channel.name);
@@ -126,7 +126,7 @@ uint32 DebugManager::parseChannelList(const UString &list) const {
 }
 
 void DebugManager::setEnabled(uint32 mask) {
-	for (uint32 i = 0; i < kChannelCount; i++, mask >>= 1)
+	for (size_t i = 0; i < kChannelCount; i++, mask >>= 1)
 		_channels[i].enabled = (mask & 1) != 0;
 }
 
