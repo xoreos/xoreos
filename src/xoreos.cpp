@@ -63,14 +63,14 @@
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
 
-void initPlatform();
-void initConfig();
+static void initPlatform();
+static void initConfig();
 
-void init();
-void deinit();
+static void init();
+static void deinit();
 
-void initDebug();
-void listDebug();
+static void initDebug();
+static void listDebug();
 
 static bool configFileIsBroken = false;
 
@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-void initPlatform() {
+static void initPlatform() {
 	try {
 		Common::Platform::init();
 	} catch (...) {
@@ -211,7 +211,7 @@ void initPlatform() {
 	}
 }
 
-void initConfig() {
+static void initConfig() {
 	bool newConfig = false;
 	if (!ConfigMan.load()) {
 		// Loading failed, create an empty config file
@@ -249,12 +249,12 @@ void initConfig() {
 	}
 }
 
-void initDebug() {
+static void initDebug() {
 	DebugMan.setDebugLevel(ConfigMan.getInt("debuglevel", 0));
 	DebugMan.setEnabled(DebugMan.parseChannelList(ConfigMan.getString("debugchannel")));
 }
 
-void listDebug() {
+static void listDebug() {
 	std::vector<Common::UString> names, descriptions;
 	DebugMan.getDebugChannels(names, descriptions);
 
@@ -270,7 +270,7 @@ void listDebug() {
 		std::printf("%-*s - %s\n", (int) maxNameLength, names[i].c_str(), descriptions[i].c_str());
 }
 
-void init() {
+static void init() {
 	// Init threading system
 	Common::initThreads();
 
@@ -286,7 +286,7 @@ void init() {
 	status("Event subsystem initialized");
 }
 
-void deinit() {
+static void deinit() {
 	// Deinit subsystems
 	try {
 		if (Common::initedThreads()) {
