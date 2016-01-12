@@ -73,23 +73,20 @@ bool DebugManager::addDebugChannel(uint32 channel, const UString &name,
 	return true;
 }
 
-void DebugManager::getDebugChannels(std::vector<UString> &names,
-                                    std::vector<UString> &descriptions,
-                                    uint32 &nameLength) const {
-
+void DebugManager::getDebugChannels(std::vector<UString> &names, std::vector<UString> &descriptions) const {
 	names.clear();
 	descriptions.clear();
-	nameLength = 0;
 
-	for (uint32 i = 0; i < kChannelCount; i++) {
+	names.reserve(kChannelCount);
+	descriptions.reserve(kChannelCount);
+
+	for (size_t i = 0; i < kChannelCount; i++) {
 		const Channel &channel = _channels[i];
 		if (channel.name.empty())
 			continue;
 
 		names.push_back(channel.name);
 		descriptions.push_back(channel.description);
-
-		nameLength = MAX<uint32>(nameLength, channel.name.size());
 	}
 }
 

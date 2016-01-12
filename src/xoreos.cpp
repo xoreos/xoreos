@@ -24,9 +24,10 @@
 
 #define SDL_MAIN_HANDLED
 
-#include <vector>
-
+#include <cassert>
 #include <cstdio>
+
+#include <vector>
 
 #include "src/cline.h"
 
@@ -254,21 +255,19 @@ void initDebug() {
 }
 
 void listDebug() {
-	std::vector<Common::UString> names;
-	std::vector<Common::UString> descriptions;
-	uint32 nameLength;
+	std::vector<Common::UString> names, descriptions;
+	DebugMan.getDebugChannels(names, descriptions);
 
-	DebugMan.getDebugChannels(names, descriptions, nameLength);
+	assert(names.size() == descriptions.size());
 
-	for (uint32 i = 0; i < names.size(); i++) {
-		std::printf("%s  ", names[i].c_str());
+	size_t maxNameLength = 0;
+	for (std::vector<Common::UString>::const_iterator n = names.begin(); n != names.end(); n++)
+		maxNameLength = MAX(maxNameLength, n->size());
 
-		uint32 l = nameLength - names[i].size();
-		for (uint32 s = 0; s < l; s++)
-			std::printf(" ");
+	assert(maxNameLength < INT_MAX);
 
-		std::printf("%s\n", descriptions[i].c_str());
-	}
+	for (size_t i = 0; i < names.size(); i++)
+		std::printf("%-*s - %s\n", (int) maxNameLength, names[i].c_str(), descriptions[i].c_str());
 }
 
 void init() {

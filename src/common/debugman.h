@@ -87,8 +87,7 @@ public:
 	bool addDebugChannel(uint32 channel, const UString &name, const UString &description);
 
 	/** Return the channel names alongside their descriptions. */
-	void getDebugChannels(std::vector<UString> &names,
-	                      std::vector<UString> &descriptions, uint32 &nameLength) const;
+	void getDebugChannels(std::vector<UString> &names, std::vector<UString> &descriptions) const;
 
 	/** Remove all engine-specific debug channels. */
 	void clearEngineChannels();
