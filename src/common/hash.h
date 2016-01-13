@@ -116,7 +116,7 @@ static inline uint64 hashStringFNV64(const UString &string) {
 	return hash;
 }
 
-static inline uint32 hashStringFNV64(const UString &string, Encoding encoding) {
+static inline uint64 hashStringFNV64(const UString &string, Encoding encoding) {
 	uint64 hash = 0xCBF29CE484222325LL;
 
 	SeekableReadStream *data = convertString(string, encoding, false);
