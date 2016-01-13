@@ -22,8 +22,6 @@
  *  A bounding box.
  */
 
-#include <cstdio>
-
 #include "src/common/boundingbox.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
