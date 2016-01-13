@@ -250,8 +250,11 @@ static void initConfig() {
 }
 
 static void initDebug() {
-	DebugMan.setDebugLevel(ConfigMan.getInt("debuglevel", 0));
-	DebugMan.setEnabled(DebugMan.parseChannelList(ConfigMan.getString("debugchannel")));
+	const uint32 debugLevel = (uint32) CLIP<int32>(ConfigMan.getInt("debuglevel", 0), 0, 0x7FFFFFFF);
+	const uint32 debugMask  = DebugMan.parseChannelList(ConfigMan.getString("debugchannel"));
+
+	DebugMan.setDebugLevel(debugLevel);
+	DebugMan.setEnabled(debugMask);
 }
 
 static void listDebug() {
