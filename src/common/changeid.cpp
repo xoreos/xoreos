@@ -23,7 +23,6 @@
  */
 
 #include "src/common/changeid.h"
-#include "src/common/util.h"
 
 namespace Common {
 
