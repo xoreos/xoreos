@@ -222,7 +222,7 @@ bool BoundingBox::isIn(float x1, float y1, float z1, float x2, float y2, float z
 	    inBox(x, y, z, minX, minY, minZ, maxX, maxY, maxZ, 3))
 		return true;
 
-return false;
+	return false;
 }
 
 void BoundingBox::add(float x, float y, float z) {
