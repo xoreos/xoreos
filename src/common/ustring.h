@@ -155,9 +155,9 @@ public:
 	/** Return an uppercased copy of the string. */
 	UString toUpper() const;
 
-	/** Convert an iterator into a numerical position. */
-	iterator getPosition(size_t n)    const;
 	/** Convert a numerical position into an iterator. */
+	iterator getPosition(size_t n)    const;
+	/** Convert an iterator into a numerical position. */
 	size_t   getPosition(iterator it) const;
 
 	/** Insert character c in front of this position. */
