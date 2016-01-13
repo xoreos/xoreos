@@ -95,32 +95,25 @@ static void displayVersion() {
 }
 
 static Common::UString convertShortToLongOption(uint32 shortOption) {
-	if (shortOption == 'p')
-		return "path";
-	if (shortOption == 'c')
-		return "config";
-	if (shortOption == 'f')
-		return "fullscreen";
-	if (shortOption == 'w')
-		return "width";
-	if (shortOption == 'h')
-		return "height";
-	if (shortOption == 'k')
-		return "skipvideos";
-	if (shortOption == 'v')
-		return "volume";
-	if (shortOption == 'm')
-		return "volume_music";
-	if (shortOption == 's')
-		return "volume_sfx";
-	if (shortOption == 'o')
-		return "volume_voice";
-	if (shortOption == 'i')
-		return "volume_video";
-	if (shortOption == 'd')
-		return "debuglevel";
-	if (shortOption == 'q')
-		return "lang";
+	static const char * const kOptions[] = {
+		"p", "path",
+		"c", "config",
+		"f", "fullscreen",
+		"w", "width",
+		"h", "height",
+		"k", "skipvideos",
+		"v", "volume",
+		"m", "volume_music",
+		"s", "volume_sfx",
+		"o", "volume_voice",
+		"i", "volume_video",
+		"d", "debuglevel",
+		"q", "lang"
+	};
+
+	for (size_t i = 0; i < (ARRAYSIZE(kOptions) / 2); i++)
+		if (((uint32) kOptions[2 * i + 0][0]) == shortOption)
+			return kOptions[2 * i + 1];
 
 	return "";
 }
