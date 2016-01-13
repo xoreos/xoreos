@@ -280,8 +280,6 @@ static UString findSubDirectory_internal(const UString &directory, const UString
 			return parent.generic_string();
 		}
 
-		const path subDirPath(subDirectory.c_str());
-
 		// Iterator over the directory's contents
 		directory_iterator itEnd;
 		for (directory_iterator itDir(dirPath); itDir != itEnd; ++itDir) {
