@@ -378,20 +378,16 @@ bool isValidCodepoint(Encoding encoding, uint32 cp) {
 
 		case kEncodingASCII:
 			return cp <= 127;
-			break;
 
 		case kEncodingLatin9:
 			return (cp <= 0x7F) || (cp >= 0xA0);
-			break;
 
 		case kEncodingCP1250:
 			return (cp != 0x81) && (cp != 0x83) && (cp != 0x88) &&
 			       (cp != 0x90) && (cp != 0x98);
-			break;
 
 		case kEncodingCP1251:
 			return cp != 0x98;
-			break;
 
 		case kEncodingCP1252:
 			return (cp != 0x81) && (cp != 0x8D) && (cp != 0x8F) &&
