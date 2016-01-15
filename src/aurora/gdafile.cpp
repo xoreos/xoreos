@@ -208,13 +208,13 @@ float GDAFile::getFloat(size_t row, const Common::UString &columnName, float def
 
 uint32 GDAFile::identifyType(const Columns &columns, const Row &rows, size_t column) const {
 	if (!columns || (column >= columns->size()) || !(*columns)[column])
-		return -1;
+		return 0xFFFFFFFF;
 
 	if ((*columns)[column]->hasField(kGFF4G2DAColumnType))
 		return (uint32) (*columns)[column]->getUint(kGFF4G2DAColumnType, -1);
 
 	if (!rows || rows->empty() || !(*rows)[0])
-		return -1;
+		return 0xFFFFFFFF;
 
 	GFF4Struct::FieldType fieldType = (*rows)[0]->getFieldType(kGFF4G2DAColumn1 + column);
 
@@ -233,7 +233,7 @@ uint32 GDAFile::identifyType(const Columns &columns, const Row &rows, size_t col
 			break;
 	}
 
-	return -1;
+	return 0xFFFFFFFF;
 }
 
 void GDAFile::load(Common::SeekableReadStream *gda) {
