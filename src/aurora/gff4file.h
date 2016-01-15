@@ -97,10 +97,10 @@ private:
 		uint32 platformID;   ///< ID of the platform this GFF4 is for.
 		uint32 type;         ///< The specific type this GFF4 describes.
 		uint32 typeVersion;  ///< The version of the specific type this GFF4 describes.
-		uint32 structCount;  ///< Number of struct templates in thie GFF4.
+		uint32 structCount;  ///< Number of struct templates in this GFF4.
 		uint32 stringCount;  ///< Number of shared strings (V4.1 only).
 		uint32 stringOffset; ///< Offset to shared strings (V4.1 only).
-		uint32 dataOffset;   ///< Offset to the data portion..
+		uint32 dataOffset;   ///< Offset to the data portion.
 
 		bool hasSharedStrings;
 

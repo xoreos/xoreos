@@ -72,7 +72,7 @@ public:
 	 *  different depending on the order of the pasting, making them useless
 	 *  for row identification. An ID column should be used for this case.
 	 *
-	 *  The ownership stream will be transfered to this GDAFile object.
+	 *  The ownership stream will be transferred to this GDAFile object.
 	 */
 	void add(Common::SeekableReadStream *gda);
 

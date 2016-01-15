@@ -107,7 +107,7 @@ private:
  *  the item we are looking for.
  *
  *  2DA files exist in two variants: ASCII and binary. The ASCII
- *  version is just a simple text file, formated to represent a
+ *  version is just a simple text file, formatted to represent a
  *  grid of data, with whitespace separating the cells. It can
  *  be read and modified with a simple text editor. The binary
  *  version cannot.

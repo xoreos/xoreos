@@ -87,8 +87,8 @@ enum FileType {
 	kFileTypeTLK            =  2018, ///< Talk table.
 	kFileTypeTXI            =  2022, ///< Texture information.
 	kFileTypeGIT            =  2023, ///< Dynamic area data, GFF.
-	kFileTypeBTI            =  2024, ///< Item templace (BioWare), GFF.
-	kFileTypeUTI            =  2025, ///< Item templace (user), GFF.
+	kFileTypeBTI            =  2024, ///< Item template (BioWare), GFF.
+	kFileTypeUTI            =  2025, ///< Item template (user), GFF.
 	kFileTypeBTC            =  2026, ///< Creature template (BioWare), GFF.
 	kFileTypeUTC            =  2027, ///< Creature template (user), GFF.
 	kFileTypeDLG            =  2029, ///< Dialog tree, GFF.
@@ -191,7 +191,7 @@ enum FileType {
 	kFileTypeMDX2           =  3016, ///< Geometry, model mesh data.
 	kFileTypeTXB2           =  3017, ///< Texture.
 	kFileTypeFSM            =  3022, ///< Finite State Machine data.
-	kFileTypeART            =  3023, ///< Area enviroment settings, INI.
+	kFileTypeART            =  3023, ///< Area environment settings, INI.
 	kFileTypeAMP            =  3024, ///< Brightening control.
 	kFileTypeCWA            =  3025, ///< Crowd attributes, GFF.
 	kFileTypeBIP            =  3028, ///< Lipsync data, binary LIP.
