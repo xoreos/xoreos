@@ -104,7 +104,7 @@ void KEYFile::readBIFList(Common::SeekableReadStream &key, uint32 offset) {
 			key.skip(2); // Location of the bif (HD, CD, ...)
 		}
 
-		uint32 curPos = key.seek(nameOffset);
+		const size_t curPos = key.seek(nameOffset);
 
 		*bif = Common::readStringFixed(key, Common::kEncodingASCII, nameSize);
 
