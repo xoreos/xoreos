@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Virtual baseclass of a texture.
+ *  Virtual base class of a texture.
  */
 
 #include "src/common/threads.h"
