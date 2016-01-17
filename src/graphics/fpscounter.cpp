@@ -55,7 +55,7 @@ void FPSCounter::reset() {
 
 	_hasFullSeconds = false;
 
-	_fps = 0.0f;
+	_fps = 0;
 
 	for (uint32 i = 0; i < _seconds; i++)
 		_frames[i] = 0;
