@@ -719,7 +719,7 @@ template<typename T>
 void Model::readArray(Common::SeekableReadStream &stream,
                       uint32 offset, uint32 count, std::vector<T> &values) {
 
-	uint32 pos = stream.seek(offset);
+	const size_t pos = stream.seek(offset);
 
 	values.resize(count);
 	for (uint32 i = 0; i < count; i++)
