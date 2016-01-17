@@ -99,8 +99,8 @@ static inline void flipHorizontally(byte *data, int width, int height, int bpp) 
 	if ((width <= 0) || (height <= 0) || (bpp <= 0))
 		return;
 
-	int halfWidth = width / 2;
-	int pitch     = bpp * width;
+	const size_t halfWidth = width / 2;
+	const size_t pitch     = bpp * width;
 
 	byte *buffer = new byte[bpp];
 
@@ -108,7 +108,7 @@ static inline void flipHorizontally(byte *data, int width, int height, int bpp) 
 		byte *dataStart = data;
 		byte *dataEnd   = data + pitch - bpp;
 
-		for (int j = 0; j < halfWidth; j++) {
+		for (size_t j = 0; j < halfWidth; j++) {
 			memcpy(buffer   , dataStart, bpp);
 			memcpy(dataStart, dataEnd  , bpp);
 			memcpy(dataEnd  , buffer   , bpp);
@@ -128,14 +128,14 @@ static inline void flipVertically(byte *data, int width, int height, int bpp) {
 	if ((width <= 0) || (height <= 0) || (bpp <= 0))
 		return;
 
-	int halfHeight = height / 2;
-	int pitch      = bpp * width;
+	const size_t pitch = bpp * width;
 
 	byte *dataStart = data;
 	byte *dataEnd   = data + (pitch * height) - pitch;
 
 	byte *buffer = new byte[pitch];
 
+	size_t halfHeight = height / 2;
 	while (halfHeight--) {
 		memcpy(buffer   , dataStart, pitch);
 		memcpy(dataStart, dataEnd  , pitch);
@@ -156,19 +156,19 @@ static inline void rotate90(byte *data, int width, int height, int bpp, int step
 	assert(width == height);
 
 	while (steps-- > 0) {
-		const int n = width;
+		const size_t n = width;
 
-		const int w =  n      / 2;
-		const int h = (n + 1) / 2;
+		const size_t w =  n      / 2;
+		const size_t h = (n + 1) / 2;
 
-		for (int x = 0; x < w; x++) {
-			for (int y = 0; y < h; y++) {
-				const int d0 = ( y          * n +  x         ) * bpp;
-				const int d1 = ((n - 1 - x) * n +  y         ) * bpp;
-				const int d2 = ((n - 1 - y) * n + (n - 1 - x)) * bpp;
-				const int d3 = ( x          * n + (n - 1 - y)) * bpp;
+		for (size_t x = 0; x < w; x++) {
+			for (size_t y = 0; y < h; y++) {
+				const size_t d0 = ( y          * n +  x         ) * bpp;
+				const size_t d1 = ((n - 1 - x) * n +  y         ) * bpp;
+				const size_t d2 = ((n - 1 - y) * n + (n - 1 - x)) * bpp;
+				const size_t d3 = ( x          * n + (n - 1 - y)) * bpp;
 
-				for (int p = 0; p < bpp; p++) {
+				for (size_t p = 0; p < (size_t) bpp; p++) {
 					const byte tmp = data[d0 + p];
 
 					data[d0 + p] = data[d1 + p];
