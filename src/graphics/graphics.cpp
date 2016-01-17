@@ -1091,7 +1091,7 @@ bool GraphicsManager::renderGUIBack() {
 		return false;
 
 	glDisable(GL_DEPTH_TEST);
-	glDepthMask(false);
+	glDepthMask(GL_FALSE);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -1115,7 +1115,7 @@ bool GraphicsManager::renderGUIBack() {
 
 	QueueMan.unlockQueue(kQueueVisibleGUIBackObject);
 
-	glDepthMask(true);
+	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 	return true;
 }
