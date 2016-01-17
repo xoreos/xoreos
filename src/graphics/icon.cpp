@@ -28,7 +28,6 @@
 	#include <SDL_syswm.h>
 #endif
 
-#include <cassert>
 #include <cstring>
 
 #include "src/graphics/icon.h"
