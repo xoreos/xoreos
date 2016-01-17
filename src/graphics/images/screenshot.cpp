@@ -22,9 +22,6 @@
  *  Screenshot writing.
  */
 
-#include <cstdio>
-#include <cstring>
-
 #include "src/common/ustring.h"
 #include "src/common/writefile.h"
 #include "src/common/filepath.h"

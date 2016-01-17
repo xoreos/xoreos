@@ -22,12 +22,7 @@
  *  Virtual base class of a texture.
  */
 
-#include "src/common/threads.h"
-
-#include "src/events/requests.h"
-
 #include "src/graphics/texture.h"
-#include "src/graphics/graphics.h"
 
 namespace Graphics {
 

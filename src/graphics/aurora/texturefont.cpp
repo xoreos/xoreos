@@ -22,8 +22,6 @@
  *  A texture font, as used by NWN and KotOR/KotOR2.
  */
 
-#include <cassert>
-
 #include <vector>
 
 #include "src/common/types.h"

@@ -26,7 +26,6 @@
 #include "src/common/error.h"
 
 #include "src/graphics/renderable.h"
-#include "src/graphics/types.h"
 #include "src/graphics/graphics.h"
 
 namespace Graphics {
