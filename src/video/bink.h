@@ -348,8 +348,6 @@ private:
 
 	void readAudioCoeffs(AudioTrack &audio, float *coeffs);
 
-	void floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels);
-
 	// Bink video IDCT
 	void IDCT(int16 *block);
 	void IDCTPut(DecodeContext &ctx, int16 *block);
