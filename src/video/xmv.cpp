@@ -342,7 +342,7 @@ void XboxMediaVideo::processPacketHeader(Packet &packet) {
 	// for every audio track. But as playing around with XMV files with ADPCM audio
 	// showed, taking the extra 4 bytes from the audio data gives you either
 	// completely distorted audio or click (when skipping the remaining 68 bytes of
-	// the ADPCM block). Substracting _audioTracks.size() * 4 bytes from the video
+	// the ADPCM block). Subtracting _audioTracks.size() * 4 bytes from the video
 	// data works at least for the audio. Probably some alignment thing?
 	// The video data has (always?) lots of padding, so it should work out regardless.
 	packet.video.dataSize -= _audioTracks.size() * 4;

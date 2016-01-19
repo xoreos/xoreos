@@ -133,7 +133,7 @@ private:
 		kBlockRaw           ///< Uncoded 8x8 block.
 	};
 
-	/** Data structure for decoding and tranlating Huffman'd data. */
+	/** Data structure for decoding and translating Huffman'd data. */
 	struct Huffman {
 		int  index;       ///< Index of the Huffman codebook to use.
 		byte symbols[16]; ///< Huffman symbol => Bink symbol translation list.
