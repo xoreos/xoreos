@@ -28,8 +28,6 @@
 #include "src/events/requesttypes.h"
 #include "src/events/events.h"
 
-#include "src/graphics/images/decoder.h"
-
 namespace Events {
 
 Request::Request(ITCEvent type) : _type(type), _dispatched(false), _garbage(false),
