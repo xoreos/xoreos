@@ -110,7 +110,7 @@ public:
 };
 
 /**
- * A rewindable audio stream. This allows for reseting the AudioStream
+ * A rewindable audio stream. This allows for resetting the AudioStream
  * to its initial state. Note that rewinding itself is not required to
  * be working when the stream is being played by Mixer!
  */
