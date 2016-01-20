@@ -24,15 +24,13 @@
  *  See also class Thread in thread.h.
  */
 
-#ifndef COMMON_THREADS_H
-#define COMMON_THREADS_H
-
 #include <cassert>
 
 #include <SDL_thread.h>
 
 #include "src/common/types.h"
 #include "src/common/error.h"
+#include "src/common/threads.h"
 
 static bool   threadsInited = false;
 static SDL_threadID threadsMainID;
@@ -62,5 +60,3 @@ void enforceMainThread() {
 }
 
 } // End of namespace Common
-
-#endif // COMMON_THREADS_H
