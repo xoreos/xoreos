@@ -98,6 +98,8 @@ ModelNode::ModelNode(Model &model)
 	_orientationBuffer[1] = 0.0f;
 	_orientationBuffer[2] = 0.0f;
 	_orientationBuffer[3] = 0.0f;
+
+_mesh = 0; // Should also be added to MeshMan, so this class won't "own" it.
 }
 
 ModelNode::~ModelNode() {

@@ -40,6 +40,8 @@
 #include "src/graphics/aurora/types.h"
 #include "src/graphics/aurora/texturehandle.h"
 
+#include "src/graphics/mesh/meshman.h"
+
 namespace Graphics {
 
 namespace Aurora {
