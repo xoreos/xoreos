@@ -22,9 +22,6 @@
  *  Generic Aurora engines model functions.
  */
 
-#ifndef ENGINES_AURORA_MODEL_H
-#define ENGINES_AURORA_MODEL_H
-
 #include <cassert>
 
 #include "src/common/ustring.h"
@@ -89,5 +86,3 @@ void freeModel(Graphics::Aurora::Model *&model) {
 }
 
 } // End of namespace Engines
-
-#endif // ENGINES_AURORA_MODEL_H
