@@ -130,7 +130,7 @@ void LoadProgress::step(const Common::UString &description) {
 }
 
 Common::UString LoadProgress::createProgressbar(size_t length, double filled) {
-	const size_t amount = (size_t) length * filled;
+	const size_t amount = length * filled;
 
 	Common::UString str;
 
