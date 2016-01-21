@@ -99,7 +99,8 @@ ModelNode::ModelNode(Model &model)
 	_orientationBuffer[2] = 0.0f;
 	_orientationBuffer[3] = 0.0f;
 
-_mesh = 0; // Should also be added to MeshMan, so this class won't "own" it.
+	_mesh = 0; // Should also be added to MeshMan, so this class won't "own" it.
+	_shaderRenderable = 0;
 }
 
 ModelNode::~ModelNode() {
@@ -115,6 +116,7 @@ ModelNode::~ModelNode() {
 			delete _mesh->data;
 		}
 	}
+
 	delete _mesh;
 	_mesh = 0;
 

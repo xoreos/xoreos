@@ -41,6 +41,7 @@
 #include "src/graphics/aurora/texturehandle.h"
 
 #include "src/graphics/mesh/meshman.h"
+#include "src/graphics/shader/shaderrenderable.h"
 
 namespace Graphics {
 
