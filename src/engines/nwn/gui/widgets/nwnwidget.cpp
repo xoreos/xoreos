@@ -22,8 +22,6 @@
  *  A NWN widget.
  */
 
-#include <boost/bind.hpp>
-
 #include "src/common/ustring.h"
 
 #include "src/engines/nwn/gui/widgets/nwnwidget.h"
