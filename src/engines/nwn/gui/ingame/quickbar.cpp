@@ -108,7 +108,7 @@ Quickbar::Quickbar() {
 
 	_edgeHeight = bottomEdge->getHeight();
 
-	for (int i = 0; i < 12; i++) {
+	for (size_t i = 0; i < 12; i++) {
 		QuickbarButton *button = new QuickbarButton(*this, i);
 
 		button->setPosition(i * _slotWidth, bottomEdge->getHeight(), 0.0f);
