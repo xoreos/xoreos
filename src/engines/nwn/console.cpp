@@ -43,7 +43,7 @@
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/area.h"
 
-static const int kCampaignNames[] = {
+static const uint32 kCampaignNames[] = {
 	10314 , 5557  , 5558  , 5559, 5560,
 	40041 , 40042 , 40043 ,
 	100777, 100778, 100779
