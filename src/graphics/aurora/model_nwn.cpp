@@ -222,6 +222,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
 	debugC(kDebugGraphics, 4, "Loading NWN binary model \"%s\": \"%s\"", _fileName.c_str(),
 	       _name.c_str());
+	ctx.mdlName = _name;
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -306,6 +307,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 			       _name.c_str());
 
 			_name = line[1];
+			ctx.mdlName = _name;
 		} else if (line[0] == "setsupermodel") {
 			if (line[1] != _name)
 				warning("Model_NWN_ASCII::load(): setsupermodel: \"%s\" != \"%s\"",
@@ -938,6 +940,24 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	createBound();
 
 	ctx.mdl->seek(endPos);
+
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
+	_mesh = new Graphics::Mesh::Mesh();
+	*(_mesh->getVertexBuffer()) = _vertexBuffer;
+	*(_mesh->getIndexBuffer()) = _indexBuffer;
+	_mesh->setName(meshName);
+	_mesh->init();
+	MeshMan.addMesh(_mesh);
+
 }
 
 void ModelNode_NWN_Binary::readAnim(Model_NWN::ParserContext &ctx) {
@@ -1159,6 +1179,23 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		mesh.textures[0] = ctx.texture;
 
 	processMesh(mesh);
+
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
+	_mesh = new Graphics::Mesh::Mesh();
+	*(_mesh->getVertexBuffer()) = _vertexBuffer;
+	*(_mesh->getIndexBuffer()) = _indexBuffer;
+	_mesh->setName(meshName);
+	_mesh->init();
+	MeshMan.addMesh(_mesh);
 }
 
 void ModelNode_NWN_ASCII::readConstraints(Model_NWN::ParserContext &ctx, uint32 n) {
