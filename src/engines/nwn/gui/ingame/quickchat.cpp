@@ -72,7 +72,7 @@ void ChatModeButton::hide() {
 void ChatModeButton::setMode(ChatMode mode) {
 	_mode = mode;
 
-	_label->setText(TalkMan.getString(66751 + (int) _mode) + ":");
+	_label->setText(TalkMan.getString(66751 + (uint) _mode) + ":");
 }
 
 void ChatModeButton::setPosition(float x, float y, float z) {
