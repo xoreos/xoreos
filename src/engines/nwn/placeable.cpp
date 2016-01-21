@@ -34,8 +34,6 @@
 
 #include "src/engines/nwn/placeable.h"
 
-#include "src/engines/nwn/gui/widgets/tooltip.h"
-
 namespace Engines {
 
 namespace NWN {
