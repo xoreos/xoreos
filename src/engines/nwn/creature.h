@@ -160,7 +160,7 @@ public:
 	/** Set the creature's master. */
 	void setMaster(Creature *master = 0);
 
-	/** Is this creature commandable (has a modifyable action queue)? */
+	/** Is this creature commandable (has a modifiable action queue)? */
 	bool isCommandable() const;
 	/** Set whether this creature commandable (has a modifiable action queue). */
 	void setCommandable(bool commandable);

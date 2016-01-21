@@ -91,7 +91,7 @@ public:
 
 	// Interactive properties
 
-	bool isStatic() const; ///< Is the object static (not manipulatable at all)?
+	bool isStatic() const; ///< Is the object static (not manipulable at all)?
 	bool isUsable() const; ///< Can the object be used by the PC?
 
 	bool isClickable() const; ///< Can the player click the object?
@@ -202,9 +202,9 @@ protected:
 	/** Destroy all tooltips on this object. */
 	void destroyTooltip();
 
-	/** Create and show a tootip with the name and/or portrait of the object. */
+	/** Create and show a tooltip with the name and/or portrait of the object. */
 	bool showFeedbackTooltip();
-	/** Create and show a tootip with a line the object speaks. */
+	/** Create and show a tooltip with a line the object speaks. */
 	bool showSpeechTooltip(const Common::UString &line);
 	/** Hide the tooltip again. */
 	void hideTooltip();
