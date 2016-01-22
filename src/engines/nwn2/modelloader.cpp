@@ -25,8 +25,6 @@
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
-#include "src/aurora/types.h"
-
 #include "src/graphics/aurora/model_nwn2.h"
 
 #include "src/engines/nwn2/modelloader.h"
