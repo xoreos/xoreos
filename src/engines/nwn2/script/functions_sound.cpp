@@ -103,13 +103,13 @@ void Functions::musicBackgroundChangeNight(Aurora::NWScript::FunctionContext &ct
 void Functions::musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx) {
 	Area *area = NWN2::ObjectContainer::toArea(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (area ? area->getMusicDayTrack() : -1);
+	ctx.getReturn() = area ? (int32)area->getMusicDayTrack() : -1;
 }
 
 void Functions::musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx) {
 	Area *area = NWN2::ObjectContainer::toArea(getParamObject(ctx, 0));
 
-	ctx.getReturn() = (int32) (area ? area->getMusicNightTrack() : -1);
+	ctx.getReturn() = area ? (int32)area->getMusicNightTrack() : -1;
 }
 
 } // End of namespace NWN2
