@@ -103,7 +103,7 @@ uniform sampler2D texture0;\n\
 varying vec2 texCoords;\n\
 \n\
 void main(void) {\n\
-  gl_FragColor = texture2D(texture0, texCoords);\n\
+  gl_FragColor = vec4(texCoords, 1.0, 1.0);//texture2D(texture0, texCoords);\n\
 }\n\
 ";
 // ---------------------------------------------------------

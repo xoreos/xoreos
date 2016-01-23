@@ -51,6 +51,9 @@
 #include "src/graphics/aurora/animnode.h"
 #include "src/graphics/aurora/animationchannel.h"
 
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -958,6 +961,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	_mesh->init();
 	MeshMan.addMesh(_mesh);
 
+	_shaderRenderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("defaultSurface"), MaterialMan.getMaterial("defaultWhite"), _mesh);
 }
 
 void ModelNode_NWN_Binary::readAnim(Model_NWN::ParserContext &ctx) {
@@ -1196,6 +1200,8 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 	_mesh->setName(meshName);
 	_mesh->init();
 	MeshMan.addMesh(_mesh);
+
+	_shaderRenderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("defaultSurface"), MaterialMan.getMaterial("defaultWhite"), _mesh);
 }
 
 void ModelNode_NWN_ASCII::readConstraints(Model_NWN::ParserContext &ctx, uint32 n) {
