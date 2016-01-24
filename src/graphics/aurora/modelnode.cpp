@@ -600,7 +600,7 @@ bool ModelNode::renderableMesh(Mesh *mesh) {
 	return mesh && mesh->data && mesh->data->indexBuffer.getCount() > 0;
 }
 
-void ModelNode::render(RenderPass pass) {
+void ModelNode::render(RenderPass pass, const Common::TransformationMatrix &parentTransform) {
 	// Apply the node's transformation
 
 	glTranslatef(_position[0], _position[1], _position[2]);
@@ -622,6 +622,15 @@ void ModelNode::render(RenderPass pass) {
 		}
 	}
 
+	//_renderTransform.loadIdentity();
+	_renderTransform = parentTransform;
+	_renderTransform.translate(_position[0], _position[1], _position[2]);
+	_renderTransform.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+	_renderTransform.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
+	_renderTransform.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
+	_renderTransform.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
+	_renderTransform.scale(_scale[0], _scale[1], _scale[2]);
+
 	// Render the node's geometry
 
 	bool isTransparent = mesh && mesh->isTransparent;
@@ -642,7 +651,7 @@ void ModelNode::render(RenderPass pass) {
 	// Render the node's children
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
 		glPushMatrix();
-		(*c)->render(pass);
+		(*c)->render(pass, _renderTransform);
 		glPopMatrix();
 	}
 }

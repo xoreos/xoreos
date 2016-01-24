@@ -651,9 +651,8 @@ void Model::render(RenderPass pass) {
 	// Draw the nodes
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
 	     n != _currentState->rootNodes.end(); ++n) {
-
 		glPushMatrix();
-		(*n)->render(pass);
+		(*n)->render(pass, _absolutePosition);
 		glPopMatrix();
 	}
 

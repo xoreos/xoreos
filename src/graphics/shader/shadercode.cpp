@@ -112,8 +112,9 @@ const char fragmentColor2xText[] =
 \n\
 uniform vec4 color;\n\
 \n\
+varying vec2 texCoords;\n\
 void main(void) {\n\
-  gl_FragColor = color;\n\
+  gl_FragColor = vec4(texCoords, 1.0, 1.0) * color;\n\
 }\n\
 ";
 // ---------------------------------------------------------

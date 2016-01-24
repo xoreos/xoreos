@@ -216,6 +216,7 @@ protected:
 
 	/** Position of the node after translate/rotate. */
 	glm::mat4 _absolutePosition;
+	glm::mat4 _renderTransform;
 
 	bool _render; ///< Render the node?
 
@@ -247,7 +248,7 @@ protected:
 	void createAbsoluteBound();
 	void createAbsoluteBound(Common::BoundingBox parentPosition);
 
-	void render(RenderPass pass);
+	void render(RenderPass pass, const glm::mat4 &parentTransform);
 	void drawSkeleton(const glm::mat4 &parent, bool showInvisible);
 
 	void lockFrame();

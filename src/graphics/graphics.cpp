@@ -535,7 +535,6 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 	// This is our projection matrix
 	glm::mat4 proj(_projection);
 
-
 	// Generate the model matrix
 
 	glm::mat4 model;
@@ -932,6 +931,9 @@ bool GraphicsManager::renderWorld() {
 	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
 	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
 
+	_projection = _perspective;
+	_projectionInv = _perspective.getInverse();
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -1003,6 +1005,9 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 	if (disableDepthMask)
 		glDepthMask(GL_FALSE);
 
+	_projection.loadIdentity();
+	_projection.scale(2.0f / _width, 2.0f / _height, 0.0f);
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -1017,6 +1022,7 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 
 	QueueMan.lockQueue(guiQueue);
 	const std::list<Queueable *> &gui = QueueMan.getQueue(guiQueue);
+	_modelview.loadIdentity();
 
 	buildNewTextures();
 
