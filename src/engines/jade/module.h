@@ -163,7 +163,7 @@ private:
 	 *
 	 *  @param completeUnload Also unload the PC.
 	 *                        true:  completely quit the module
-	 *                        false: the PC can be transfered to a new module.
+	 *                        false: the PC can be transferred to a new module.
 	 */
 	void unload(bool completeUnload = true);
 
