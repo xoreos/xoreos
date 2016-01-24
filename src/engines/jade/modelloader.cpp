@@ -25,8 +25,6 @@
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
-#include "src/aurora/types.h"
-
 #include "src/graphics/aurora/model_jade.h"
 
 #include "src/engines/jade/modelloader.h"
