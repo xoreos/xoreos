@@ -26,8 +26,6 @@
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
-#include "src/aurora/types.h"
-
 #include "src/graphics/aurora/model_witcher.h"
 
 #include "src/engines/witcher/modelloader.h"
