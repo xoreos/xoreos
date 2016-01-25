@@ -85,7 +85,7 @@ public:
 
 	// Interactive properties
 
-	bool isStatic() const; ///< Is the object static (not manipulatable at all)?
+	bool isStatic() const; ///< Is the object static (not manipulable at all)?
 	bool isUsable() const; ///< Can the object be used by the PC?
 
 	bool isClickable() const; ///< Can the player click the object?
