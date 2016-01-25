@@ -85,7 +85,6 @@ private:
 	void deinit();
 
 	void playIntroVideos();
-	void main();
 };
 
 } // End of namespace Witcher
