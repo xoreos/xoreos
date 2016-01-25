@@ -293,8 +293,6 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 
 	Common::UString archive;
 
-	Common::ChangeID change;
-
 	_languageResources.push_back(Common::ChangeID());
 	archive = Common::UString::format("lang_%d.key", LangMan.getLanguageID(langVoice));
 	indexMandatoryArchive(archive, 100, &_languageResources.back());
