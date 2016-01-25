@@ -196,7 +196,7 @@ void Functions::getSubString(Aurora::NWScript::FunctionContext &ctx) {
 		return;
 
 	Common::UString::iterator from = str.getPosition((size_t) offset);
-	Common::UString::iterator to   = str.getPosition((size_t) MIN<int32>(offset + count, str.size()));
+	Common::UString::iterator to   = str.getPosition(MIN<size_t>(offset + count, str.size()));
 
 	ctx.getReturn() = str.substr(from, to);
 }
