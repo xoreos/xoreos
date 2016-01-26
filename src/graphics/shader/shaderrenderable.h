@@ -42,6 +42,7 @@ public:
 
 	ShaderRenderable();
 	ShaderRenderable(Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh);
+	ShaderRenderable(Shader::ShaderRenderable *src);
 	~ShaderRenderable();
 
 	ShaderSurface *getSurface();
@@ -49,8 +50,8 @@ public:
 	ShaderProgram *getProgram();
 	Mesh::Mesh *getMesh();
 
-	void setSurface(Shader::ShaderSurface *surface);
-	void setMaterial(Shader::ShaderMaterial *material);
+	void setSurface(Shader::ShaderSurface *surface, bool rebuildProgram = true);
+	void setMaterial(Shader::ShaderMaterial *material, bool rebuildProgram = true);
 	void setMesh(Mesh::Mesh *mesh);
 
 	void copyRenderable(Shader::ShaderRenderable *src);

@@ -40,6 +40,15 @@ ShaderRenderable::ShaderRenderable(Shader::ShaderSurface *surface, Shader::Shade
 	_mesh->useIncrement();
 }
 
+ShaderRenderable::ShaderRenderable(Shader::ShaderRenderable *src) : _surface(0), _material(0), _program(0), _mesh(0) {
+	if (src) {
+		setSurface(src->_surface, false);
+		setMaterial(src->_material, false);
+		setMesh(src->_mesh);
+		updateProgram();
+	}
+}
+
 ShaderRenderable::~ShaderRenderable() {
 	if (_surface) {
 		_surface->useDecrement();
@@ -68,7 +77,7 @@ Mesh::Mesh *ShaderRenderable::getMesh() {
 	return _mesh;
 }
 
-void ShaderRenderable::setSurface(Shader::ShaderSurface *surface) {
+void ShaderRenderable::setSurface(Shader::ShaderSurface *surface, bool rebuildProgram) {
 	// TODO: check old surface for usage count decrement.
 	if (_surface) {
 		_surface->useDecrement();
@@ -77,10 +86,12 @@ void ShaderRenderable::setSurface(Shader::ShaderSurface *surface) {
 	if (_surface) {
 		_surface->useIncrement();
 	}
-	updateProgram();
+	if (rebuildProgram) {
+		updateProgram();
+	}
 }
 
-void ShaderRenderable::setMaterial(Shader::ShaderMaterial *material) {
+void ShaderRenderable::setMaterial(Shader::ShaderMaterial *material, bool rebuildProgram) {
 	if (_material) {
 		_material->useDecrement();
 	}
@@ -88,7 +99,9 @@ void ShaderRenderable::setMaterial(Shader::ShaderMaterial *material) {
 	if (_material) {
 		_material->useIncrement();
 	}
-	updateProgram();
+	if (rebuildProgram) {
+		updateProgram();
+	}
 }
 
 void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
@@ -103,12 +116,12 @@ void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
 
 void ShaderRenderable::copyRenderable(ShaderRenderable *src) {
 	if (src) {
-		setSurface(src->getSurface());
-		setMaterial(src->getMaterial());
+		setSurface(src->getSurface(), false);
+		setMaterial(src->getMaterial(), false);
 		setMesh(src->getMesh());
 	} else {
-		setSurface(0);
-		setMaterial(0);
+		setSurface(0, false);
+		setMaterial(0, false);
 		setMesh(0);
 	}
 	updateProgram();
