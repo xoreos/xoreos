@@ -44,7 +44,7 @@ public:
 	Room(const Aurora::GFF4Struct &room);
 	~Room();
 
-	int32 getID();
+	int32 getID() const;
 
 	void show();
 	void hide();
