@@ -135,7 +135,7 @@ private:
 	 *
 	 *  @param completeUnload Also unload the PC
 	 *                        true:  completely quit the current campaign.
-	 *                        false: the PC can be transfered to a new campaign.
+	 *                        false: the PC can be transferred to a new campaign.
 	 */
 	void unload(bool completeUnload);
 
