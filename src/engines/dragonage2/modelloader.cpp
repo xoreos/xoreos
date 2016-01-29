@@ -46,7 +46,7 @@ Graphics::Aurora::Model *DragonAge2ModelLoader::load(const Common::UString &resr
 	     ResMan.hasResource(resref + "_0", ::Aurora::kFileTypeMMH))
 		name = resref + "_0";
 
-	return new Graphics::Aurora::Model_DragonAge(resref, type);
+	return new Graphics::Aurora::Model_DragonAge(name, type);
 }
 
 } // End of namespace DragonAge2
