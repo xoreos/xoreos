@@ -70,6 +70,10 @@ Room::~Room() {
 	}
 }
 
+int32 Room::getID() const {
+	return _id;
+}
+
 void Room::clean() {
 	hide();
 
