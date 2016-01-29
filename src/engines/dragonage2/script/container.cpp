@@ -22,8 +22,6 @@
  *  An object containing scripts.
  */
 
-#include <cassert>
-
 #include "src/common/util.h"
 #include "src/common/error.h"
 
