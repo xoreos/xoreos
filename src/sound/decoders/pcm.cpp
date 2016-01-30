@@ -74,6 +74,8 @@ protected:
 	const int _rate;                     ///< Sample rate of stream.
 	const int _channels;                 ///< Amount of channels.
 
+	uint64 _length;
+
 	Common::SeekableReadStream *_stream; ///< Stream to read data from.
 	const bool _disposeAfterUse;         ///< Indicates whether the stream object should be deleted when this RawStream is destructed.
 
@@ -81,6 +83,7 @@ public:
 	PCMStream(int rate, int channels, bool disposeStream, Common::SeekableReadStream *stream)
 		: _rate(rate), _channels(channels), _stream(stream), _disposeAfterUse(disposeStream) {
 
+		_length = stream->size() / _channels / (is16Bit ? 2 : 1);
 	}
 
 	virtual ~PCMStream() {
@@ -89,9 +92,12 @@ public:
 	}
 
 	size_t readBuffer(int16 *buffer, const size_t numSamples);
-	int getChannels() const           { return _channels; }
-	bool endOfData() const          { return _stream->pos() >= _stream->size(); }
-	int getRate() const         { return _rate; }
+
+	int getChannels() const { return _channels; }
+	bool endOfData() const { return _stream->pos() >= _stream->size(); }
+	int getRate() const { return _rate; }
+	uint64 getLength() const { return _length; }
+
 	bool rewind();
 };
 
