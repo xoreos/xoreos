@@ -116,12 +116,20 @@ public:
  */
 class RewindableAudioStream : public AudioStream {
 public:
+	static const uint64 kInvalidLength = UINT64_C(0xFFFFFFFFFFFFFFFF);
+
 	/**
 	 * Rewinds the stream to its start.
 	 *
 	 * @return true on success, false otherwise.
 	 */
 	virtual bool rewind() = 0;
+
+	/**
+	 * Estimate the total number of samples per channel in this stream.
+	 * If this value is not calculatable, return kInvalidLength.
+	 */
+	virtual uint64 getLength() const { return kInvalidLength; }
 };
 
 /**
