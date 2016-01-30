@@ -115,6 +115,36 @@ bool LoopingAudioStream::rewind() {
 	return true;
 }
 
+uint64 LoopingAudioStream::getLength() const {
+	if (!_loops)
+		return RewindableAudioStream::kInvalidLength;
+
+	uint64 length = _parent->getLength();
+	if (length == RewindableAudioStream::kInvalidLength)
+		return RewindableAudioStream::kInvalidLength;
+
+	return _loops * length;
+}
+
+uint64 LoopingAudioStream::getDuration() const {
+	if (!_loops)
+		return RewindableAudioStream::kInvalidLength;
+
+	uint64 duration = _parent->getDuration();
+	if (duration == RewindableAudioStream::kInvalidLength)
+		return RewindableAudioStream::kInvalidLength;
+
+	return _loops * duration;
+}
+
+uint64 LoopingAudioStream::getLengthOnce() const {
+	return _parent->getLength();
+}
+
+uint64 LoopingAudioStream::getDurationOnce() const {
+	return _parent->getDuration();
+}
+
 class QueuingAudioStreamImpl : public QueuingAudioStream {
 private:
 	/**

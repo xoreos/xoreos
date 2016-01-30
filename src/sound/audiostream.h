@@ -172,6 +172,14 @@ public:
 
 	bool rewind();
 
+	uint64 getLength() const;
+	uint64 getDuration() const;
+
+	/** Return the length of one loop. */
+	uint64 getLengthOnce() const;
+	/** Return the duration of one loop. */
+	uint64 getDurationOnce() const;
+
 private:
 	RewindableAudioStream *_parent;
 	bool _disposeAfterUse;
