@@ -107,6 +107,14 @@ AudioStream *makeLoopingAudioStream(RewindableAudioStream *stream, size_t loops)
 		return stream;
 }
 
+bool LoopingAudioStream::rewind() {
+	if (!_parent->rewind())
+		return false;
+
+	_completeIterations = 0;
+	return true;
+}
+
 class QueuingAudioStreamImpl : public QueuingAudioStream {
 private:
 	/**

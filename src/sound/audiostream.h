@@ -169,6 +169,9 @@ public:
 
 	/** Returns number of loops the stream has played. */
 	size_t getCompleteIterations() const { return _completeIterations; }
+
+	bool rewind();
+
 private:
 	RewindableAudioStream *_parent;
 	bool _disposeAfterUse;
