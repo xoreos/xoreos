@@ -122,6 +122,8 @@ protected:
 	const int16 *_bufferEnd;
 	const int16 *_pos;
 
+	uint64 _length;
+
 public:
 	// startTime / duration are in milliseconds
 	VorbisStream(Common::SeekableReadStream *inStream, bool dispose);
@@ -132,6 +134,7 @@ public:
 	bool endOfData() const { return _pos >= _bufferEnd; }
 	int getChannels() const { return _isStereo ? 2 : 1; }
 	int getRate() const { return _rate; }
+	uint64 getLength() const { return _length; }
 
 	bool rewind();
 
@@ -142,7 +145,8 @@ protected:
 VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, bool dispose) :
 	_inStream(inStream),
 	_disposeAfterUse(dispose),
-	_bufferEnd(_buffer + ARRAYSIZE(_buffer)) {
+	_bufferEnd(_buffer + ARRAYSIZE(_buffer)),
+	_length(kInvalidLength) {
 
 	int res = ov_open_callbacks(inStream, &_ovFile, 0, 0, g_stream_wrap);
 	if (res < 0) {
@@ -150,6 +154,10 @@ VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, bool dispose) :
 		_pos = _bufferEnd;
 		return;
 	}
+
+	ogg_int64_t total = ov_pcm_total(&_ovFile, -1);
+	if (total >= 0)
+		_length = (uint64) total;
 
 	// Read in initial data
 	if (!refill())
