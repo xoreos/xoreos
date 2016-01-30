@@ -82,6 +82,9 @@ protected:
 	mad_frame _frame;
 	mad_synth _synth;
 
+	uint64 _length;
+	uint64 _samples;
+
 	enum {
 		BUFFER_SIZE = 5 * 8192
 	};
@@ -99,6 +102,8 @@ public:
 	bool endOfData() const { return _state == MP3_STATE_EOS; }
 	int getChannels() const { return MAD_NCHANNELS(&_frame.header); }
 	int getRate() const { return _frame.header.samplerate; }
+	uint64 getLength() const { return _length; }
+
 	bool rewind();
 
 protected:
@@ -115,7 +120,9 @@ MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
 	_disposeAfterUse(dispose),
 	_posInFrame(0),
 	_state(MP3_STATE_INIT),
-	_totalTime(mad_timer_zero) {
+	_totalTime(mad_timer_zero),
+	_length(kInvalidLength),
+	_samples(0) {
 
 	// The MAD_BUFFER_GUARD must always contain zeros (the reason
 	// for this is that the Layer III Huffman decoder of libMAD
@@ -127,6 +134,8 @@ MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
 
 	while (_state != MP3_STATE_EOS)
 		readHeader();
+
+	_length = _samples;
 
 	deinitStream();
 
@@ -242,6 +251,7 @@ void MP3Stream::initStream() {
 	// Reset the stream data
 	_inStream->seek(0);
 	_totalTime = mad_timer_zero;
+	_samples = 0;
 	_posInFrame = 0;
 
 	// Update state
@@ -280,6 +290,7 @@ void MP3Stream::readHeader() {
 
 		// Sum up the total playback time so far
 		mad_timer_add(&_totalTime, _frame.header.duration);
+		_samples += 32 * MAD_NSBSAMPLES(&_frame.header);
 		break;
 	}
 
