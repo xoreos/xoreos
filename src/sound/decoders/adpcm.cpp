@@ -68,6 +68,8 @@ protected:
 	uint32 _blockPos[2];
 	const int _rate;
 
+	uint64 _length;
+
 	struct {
 		// OKI/IMA
 		struct {
@@ -86,6 +88,7 @@ public:
 	virtual bool endOfData() const { return (_stream->eos() || _stream->pos() >= _endpos); }
 	virtual int getChannels() const { return _channels; }
 	virtual int getRate() const { return _rate; }
+	virtual uint64 getLength() const { return _length; }
 
 	virtual bool rewind();
 };
@@ -104,7 +107,8 @@ ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUs
 		_endpos(_startpos + size),
 		_channels(channels),
 		_blockAlign(blockAlign),
-		_rate(rate) {
+		_rate(rate),
+		_length(kInvalidLength) {
 
 	reset();
 }
@@ -134,6 +138,9 @@ public:
 	Ima_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
 		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
 		memset(&_status, 0, sizeof(_status));
+
+		// 2 samples per input byte
+		_length = stream->size() * 2 / _channels;
 	}
 
 	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
@@ -175,6 +182,9 @@ public:
 		_chunkPos[1] = 0;
 		_streamPos[0] = 0;
 		_streamPos[1] = _blockAlign;
+
+		// 2 samples per input byte, but 2 byte header per block
+		_length = ((stream->size() / _blockAlign) * (_blockAlign - 2) * 2) / channels;
 	}
 
 	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
@@ -257,6 +267,9 @@ public:
 
 		_samplesLeft[0] = 0;
 		_samplesLeft[1] = 0;
+
+		// 2 samples per input byte, but 4 byte header per block per channel
+		_length = ((stream->size() / _blockAlign) * (_blockAlign - (4 * channels)) * 2) / channels;
 	}
 
 	size_t readBuffer(int16 *buffer, const size_t numSamples);
@@ -357,6 +370,9 @@ public:
 		if (blockAlign == 0)
 			error("MS_ADPCMStream(): blockAlign isn't specified for MS ADPCM");
 		memset(&_status, 0, sizeof(_status));
+
+		// 2 samples per input byte, but 7 byte header per block per channel
+		_length = ((stream->size() / _blockAlign) * (_blockAlign - (7 * channels)) * 2) / channels;
 	}
 
 	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
