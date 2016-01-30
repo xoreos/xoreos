@@ -81,4 +81,12 @@
 typedef uint8 byte;
 typedef unsigned int uint;
 
+#ifndef INT64_C
+	#define INT64_C(c) (c ## LL)
+#endif
+
+#ifndef UINT64_C
+	#define UINT64_C(c) (c ## ULL)
+#endif
+
 #endif // COMMON_TYPES_H
