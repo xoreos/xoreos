@@ -130,6 +130,17 @@ public:
 	 * If this value is not calculatable, return kInvalidLength.
 	 */
 	virtual uint64 getLength() const { return kInvalidLength; }
+
+	/**
+	 * Estimate the total duration of the stream in milliseconds.
+	 * If this value is not calculable, return kInvalidLength.
+	 */
+	virtual uint64 getDuration() const {
+		if ((getLength() == kInvalidLength) || (getRate() <= 0))
+			return kInvalidLength;
+
+		return (getLength() * 1000) / getRate();
+	}
 };
 
 /**
