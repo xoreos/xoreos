@@ -1,3 +1,21 @@
+Changes in xoreos version 0.0.4
+===============================
+
+Neverwinter Nights now shows speech bubbles for conversation one-liners, as
+used for cutscenes, bark strings and short NPC dialogues. Additionally, the
+premium modules BioWare sold for Neverwinter Nights, including the three that
+come with the Diamond Edition, can now be properly loaded and started.
+
+An oversight in the handling of the texture fonts used in Neverwinter Nights
+and the two Knights of Old Republic games has been fixed. This oversight
+broke rendering of certain characters, most prominently of those used in
+eastern European languages and the "smart" single quotation mark that's used
+instead of an apostrophe in some strings found in the French versions.
+
+Moreover, this release includes a lot of user-invisible code documentation
+and quality fixes.
+
+
 Changes in xoreos version 0.0.3
 ===============================
 

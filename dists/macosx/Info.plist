@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>xoreos</string>
 	<key>CFBundleGetInfoString</key>
-	<string>0.0.3, Copyright 2010-2016 The xoreos Team</string>
+	<string>0.0.4, Copyright 2010-2016 The xoreos Team</string>
 	<key>CFBundleIconFile</key>
 	<string>xoreos.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -21,9 +21,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.0.3</string>
+	<string>0.0.4</string>
 	<key>CFBundleVersion</key>
-	<string>0.0.3</string>
+	<string>0.0.4</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSHumanReadableCopyright</key>

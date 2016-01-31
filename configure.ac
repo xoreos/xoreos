@@ -19,7 +19,7 @@ dnl along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
 AC_PREREQ([2.65])
 
-AC_INIT([xoreos],[0.0.3],[xoreos-devel@xoreos.org],[xoreos],[https://xoreos.org/])
+AC_INIT([xoreos],[0.0.4],[xoreos-devel@xoreos.org],[xoreos],[https://xoreos.org/])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([config.h.in])
