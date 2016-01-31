@@ -58,10 +58,22 @@ bool FilePath::isDirectory(const UString &p) {
 }
 
 size_t FilePath::getFileSize(const UString &p) {
-	uintmax_t size = file_size(p.c_str());
+	uintmax_t size = (uintmax_t) -1;
 
-	if ((size == ((uintmax_t) -1)) || (size > 0x7FFFFFFF))
+	try {
+		size = file_size(p.c_str());
+	} catch (...) {
+	}
+
+	if (size == ((uintmax_t) -1)) {
+		warning("Failed to get size of file \"%s\"", p.c_str());
 		return kFileInvalid;
+	}
+
+	if (size > 0x7FFFFFFF) {
+		warning("Size of file \"%s\" too large", p.c_str());
+		return kFileInvalid;
+	}
 
 	return size;
 }
