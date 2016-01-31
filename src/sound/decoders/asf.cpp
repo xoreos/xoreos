@@ -110,6 +110,9 @@ public:
 	bool endOfData() const;
 	int getChannels() const { return _channels; }
 	int getRate() const { return _sampleRate; }
+	uint64 getLength() const;
+	uint64 getDuration() const;
+
 	bool rewind();
 
 private:
@@ -308,6 +311,14 @@ void ASFStream::parseStreamHeader() {
 	}
 
 	_codec = createCodec();
+}
+
+uint64 ASFStream::getLength() const {
+	return (_duration * getRate()) / 10000000;
+}
+
+uint64 ASFStream::getDuration() const {
+	return _duration / 10000;
 }
 
 bool ASFStream::rewind() {
