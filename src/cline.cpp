@@ -29,7 +29,7 @@
 
 #include "src/common/util.h"
 #include "src/common/version.h"
-
+#include "src/common/platform.h"
 #include "src/common/configman.h"
 
 static void displayUsage(const Common::UString &name) {
@@ -83,6 +83,10 @@ static void displayUsage(const Common::UString &name) {
 	std::printf("%s nwn\n", name.c_str());
 	std::printf("  xoreos will start the game specified by target \"nwn\", which must exit\n");
 	std::printf("  in the config file already.\n");
+	std::printf("\n");
+	std::printf("Configuration directory: %s\n", Common::Platform::getConfigDirectory().c_str());
+	std::printf("User data directory: %s\n", Common::Platform::getUserDataDirectory().c_str());
+	std::printf("Configuration file: %s\n", ConfigMan.getConfigFile().c_str());
 	std::printf("\n");
 }
 
