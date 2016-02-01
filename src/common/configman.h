@@ -49,6 +49,9 @@ public:
 	ConfigManager();
 	~ConfigManager();
 
+	/** Return the config file that's currently in use. */
+	UString getConfigFile() const;
+
 	/** Set the config file to use. */
 	void setConfigFile(const UString &file = "");
 
@@ -130,8 +133,6 @@ private:
 	ConfigDomain *_domainDefaultGame; ///< Game defaults domain.
 	ConfigDomain *_domainCommandline; ///< Command line domain.
 	ConfigDomain *_domainGameTemp;    ///< Temporary game settings domain.
-
-	UString getConfigFile() const;
 
 	static UString getDefaultConfigFile();
 
