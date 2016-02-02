@@ -41,6 +41,8 @@
 #include "src/graphics/aurora/texture.h"
 #include "src/graphics/aurora/model.h"
 
+#include "src/graphics/shader/materialman.h"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -100,6 +102,7 @@ ModelNode::ModelNode(Model &model)
 	_orientationBuffer[3] = 0.0f;
 
 	_mesh = 0; // Should also be added to MeshMan, so this class won't "own" it.
+	_material = 0;
 	_shaderRenderable = 0;
 }
 
@@ -365,6 +368,21 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 	// that the geometry shouldn't be rendered.
 	if (!hasTexture)
 		_render = false;
+	else {
+		// TODO: this is a placeholder to load things. Materials should be named after the modelnode, maybe.
+		// Also, single-texture-only models are supported here...not the best idea.
+		_material = MaterialMan.getMaterial(_textures[0].getName());
+		if (!_material) {
+			_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/default.frag", Shader::SHADER_FRAGMENT), _textures[0].getName());
+			Shader::ShaderSampler * sampler = (Shader::ShaderSampler *)(_material->getVariableData("texture0"));
+			sampler->texture = &(_textures[0].getTexture());
+			MaterialMan.addMaterial(_material);
+		}
+
+		if (_shaderRenderable) {
+			_shaderRenderable->setMaterial(_material);
+		}
+	}
 }
 
 void ModelNode::createBound() {
