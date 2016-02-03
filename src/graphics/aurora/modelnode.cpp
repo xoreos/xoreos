@@ -376,6 +376,7 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 			_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/default.frag", Shader::SHADER_FRAGMENT), _textures[0].getName());
 			Shader::ShaderSampler * sampler = (Shader::ShaderSampler *)(_material->getVariableData("texture0"));
 			sampler->texture = &(_textures[0].getTexture());
+			sampler->handle = _textures[0];
 			MaterialMan.addMaterial(_material);
 		}
 
