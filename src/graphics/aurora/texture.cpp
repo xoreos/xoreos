@@ -179,6 +179,16 @@ void Texture::create2DTexture() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+	// Pixel row alignment
+	int alignment = 4;
+	if (!ISPOWER2(_image->getMipMap(0).width)) {
+		if      ((_image->getFormatRaw() == kPixelFormatRGB5) || (_image->getFormatRaw() == kPixelFormatRGB5A1))
+			alignment = 2;
+		else if  (_image->getFormatRaw() == kPixelFormatRGB8)
+			alignment = 1;
+	}
+	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+
 	// Filter?
 	const TXI::Features &features = getTXI().getFeatures();
 	if (features.filter) {
@@ -235,6 +245,16 @@ void Texture::createCubeMapTexture() {
 	// Texture wrapping
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	// Pixel row alignment
+	int alignment = 4;
+	if (!ISPOWER2(_image->getMipMap(0).width)) {
+		if      ((_image->getFormatRaw() == kPixelFormatRGB5) || (_image->getFormatRaw() == kPixelFormatRGB5A1))
+			alignment = 2;
+		else if  (_image->getFormatRaw() == kPixelFormatRGB8)
+			alignment = 1;
+	}
+	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 
 	// Filter?
 	const TXI::Features &features = getTXI().getFeatures();
