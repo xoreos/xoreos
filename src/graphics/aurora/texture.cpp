@@ -171,100 +171,101 @@ void Texture::doRebuild() {
 	create2DTexture();
 }
 
+void Texture::setWrap(GLenum target, GLint wrapModeX, GLint wrapModeY) {
+	glTexParameteri(target, GL_TEXTURE_WRAP_S, wrapModeX);
+	glTexParameteri(target, GL_TEXTURE_WRAP_T, wrapModeY);
+}
+
+void Texture::setAlign() {
+	/* If this is a texture with a non-power-of-two width, we need to
+	 * loosen the alignment constraints for the pixel rows. */
+
+	int alignment = 4;
+
+	if (!ISPOWER2(_image->getMipMap(0).width)) {
+		if      ((_image->getFormatRaw() == kPixelFormatRGB5) ||
+		         (_image->getFormatRaw() == kPixelFormatRGB5A1))
+			alignment = 2;
+		else if  (_image->getFormatRaw() == kPixelFormatRGB8)
+			alignment = 1;
+	}
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+}
+
+void Texture::setFilter(GLenum target) {
+	const TXI::Features &features = getTXI().getFeatures();
+
+	if (features.filter) {
+		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	} else {
+		glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+}
+
+void Texture::setMipMaps(GLenum target) {
+	if (_image->getMipMapCount() == 1) {
+		// Texture doesn't specify any mip maps, generate our own
+
+		glTexParameteri(target, GL_GENERATE_MIPMAP, GL_TRUE);
+		glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, 9);
+	} else {
+		// Texture does specify mip maps, use these
+
+		glTexParameteri(target, GL_GENERATE_MIPMAP, GL_FALSE);
+		glTexParameteri(target, GL_TEXTURE_BASE_LEVEL, 0);
+		glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
+	}
+}
+
+void Texture::setMipMapData(GLenum target, size_t layer, size_t mipMap) {
+	const ImageDecoder::MipMap &m = _image->getMipMap(mipMap, layer);
+
+	if (_image->isCompressed()) {
+		glCompressedTexImage2D(target, mipMap, _image->getFormatRaw(),
+		                       m.width, m.height, 0, m.size, m.data);
+	} else {
+		glTexImage2D(target, mipMap, _image->getFormatRaw(),
+		             m.width, m.height, 0, _image->getFormat(), _image->getDataType(), m.data);
+	}
+}
+
 void Texture::create2DTexture() {
 	// Bind the texture
 	glBindTexture(GL_TEXTURE_2D, _textureID);
 
-	// Texture wrapping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// Edge wrap mode
+	setWrap(GL_TEXTURE_2D, GL_REPEAT, GL_REPEAT);
 
 	// Pixel row alignment
-	int alignment = 4;
-	if (!ISPOWER2(_image->getMipMap(0).width)) {
-		if      ((_image->getFormatRaw() == kPixelFormatRGB5) || (_image->getFormatRaw() == kPixelFormatRGB5A1))
-			alignment = 2;
-		else if  (_image->getFormatRaw() == kPixelFormatRGB8)
-			alignment = 1;
-	}
-	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+	setAlign();
 
-	// Filter?
-	const TXI::Features &features = getTXI().getFeatures();
-	if (features.filter) {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	} else {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	}
+	// Filter method
+	setFilter(GL_TEXTURE_2D);
 
-	if (_image->getMipMapCount() == 1) {
-		// Texture doesn't specify any mip maps, generate our own
-
-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 9);
-	} else {
-		// Texture does specify mip maps, use these
-
-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
-	}
+	// Mip map parameters
+	setMipMaps(GL_TEXTURE_2D);
 
 	// Texture image data
-	if (_image->isCompressed()) {
-		// Compressed texture data
-
-		for (size_t i = 0; i < _image->getMipMapCount(); i++) {
-			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
-
-			glCompressedTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
-			                       mipMap.width, mipMap.height, 0,
-			                       mipMap.size, mipMap.data);
-		}
-
-	} else {
-		// Uncompressed texture data
-
-		for (size_t i = 0; i < _image->getMipMapCount(); i++) {
-			const ImageDecoder::MipMap &mipMap = _image->getMipMap(i);
-
-			glTexImage2D(GL_TEXTURE_2D, i, _image->getFormatRaw(),
-			             mipMap.width, mipMap.height, 0, _image->getFormat(),
-			             _image->getDataType(), mipMap.data);
-		}
-
-	}
+	for (size_t i = 0; i < _image->getMipMapCount(); i++)
+		setMipMapData(GL_TEXTURE_2D, 0, i);
 }
 
 void Texture::createCubeMapTexture() {
+	// Bind the texture
 	glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);
 
-	// Texture wrapping
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// Edge wrap mode
+	setWrap(GL_TEXTURE_CUBE_MAP, GL_REPEAT, GL_REPEAT);
 
 	// Pixel row alignment
-	int alignment = 4;
-	if (!ISPOWER2(_image->getMipMap(0).width)) {
-		if      ((_image->getFormatRaw() == kPixelFormatRGB5) || (_image->getFormatRaw() == kPixelFormatRGB5A1))
-			alignment = 2;
-		else if  (_image->getFormatRaw() == kPixelFormatRGB8)
-			alignment = 1;
-	}
-	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
+	setAlign();
 
-	// Filter?
-	const TXI::Features &features = getTXI().getFeatures();
-	if (features.filter) {
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	} else {
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	}
+	// Filter method
+	setFilter(GL_TEXTURE_CUBE_MAP);
 
 	assert(_image->getLayerCount() == 6);
 
@@ -278,44 +279,12 @@ void Texture::createCubeMapTexture() {
 	};
 
 	for (size_t i = 0; i < _image->getLayerCount(); i++) {
-		if (_image->getMipMapCount() == 1) {
-			// Texture doesn't specify any mip maps, generate our own
-
-			glTexParameteri(faceTarget[i], GL_GENERATE_MIPMAP, GL_TRUE);
-			glTexParameteri(faceTarget[i], GL_TEXTURE_BASE_LEVEL, 0);
-			glTexParameteri(faceTarget[i], GL_TEXTURE_MAX_LEVEL, 9);
-		} else {
-			// Texture does specify mip maps, use these
-
-			glTexParameteri(faceTarget[i], GL_GENERATE_MIPMAP, GL_FALSE);
-			glTexParameteri(faceTarget[i], GL_TEXTURE_BASE_LEVEL, 0);
-			glTexParameteri(faceTarget[i], GL_TEXTURE_MAX_LEVEL, _image->getMipMapCount() - 1);
-		}
+		// Mip map parameters
+		setMipMaps(faceTarget[i]);
 
 		// Texture image data
-		if (_image->isCompressed()) {
-			// Compressed texture data
-
-			for (size_t j = 0; j < _image->getMipMapCount(); j++) {
-				const ImageDecoder::MipMap &mipMap = _image->getMipMap(j, i);
-
-				glCompressedTexImage2D(faceTarget[i], j, _image->getFormatRaw(),
-				                       mipMap.width, mipMap.height, 0,
-				                       mipMap.size, mipMap.data);
-			}
-
-		} else {
-			// Uncompressed texture data
-
-			for (size_t j = 0; j < _image->getMipMapCount(); j++) {
-				const ImageDecoder::MipMap &mipMap = _image->getMipMap(j, i);
-
-				glTexImage2D(faceTarget[i], j, _image->getFormatRaw(),
-				             mipMap.width, mipMap.height, 0, _image->getFormat(),
-				             _image->getDataType(), mipMap.data);
-			}
-
-		}
+		for (size_t j = 0; j < _image->getMipMapCount(); j++)
+			setMipMapData(GL_TEXTURE_2D, i, j);
 	}
 }
 

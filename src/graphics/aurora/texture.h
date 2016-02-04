@@ -108,6 +108,12 @@ protected:
 	void create2DTexture();
 	void createCubeMapTexture();
 
+	void setWrap(GLenum target, GLint wrapModeX, GLint wrapModeY);
+	void setAlign();
+	void setFilter(GLenum target);
+	void setMipMaps(GLenum target);
+	void setMipMapData(GLenum target, size_t layer, size_t mipMap);
+
 	static TXI *loadTXI(const Common::UString &name);
 	static ImageDecoder *loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
 	                               TXI *txi = 0);
