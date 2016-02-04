@@ -77,6 +77,7 @@ template<typename T> inline T CLIP (T v, T amin, T amax)
  */
 template<typename T> inline void SWAP(T &a, T &b) { T tmp = a; a = b; b = tmp; }
 
+/** Round up to the next power of 2. */
 static inline uint32 NEXTPOWER2(uint32 x) {
 	if (x == 0)
 		return 1;
@@ -88,6 +89,7 @@ static inline uint32 NEXTPOWER2(uint32 x) {
 	return x + 1;
 }
 
+/** Round up to the next power of 2. */
 static inline uint64 NEXTPOWER2(uint64 x) {
 	if (x == 0)
 		return 1;
