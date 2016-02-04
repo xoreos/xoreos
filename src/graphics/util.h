@@ -78,14 +78,10 @@ static inline bool hasValidDimensions(PixelFormatRaw format, int32 width, int32 
 		case kPixelFormatRGBA8:
 		case kPixelFormatRGB5A1:
 		case kPixelFormatRGB5:
-			return true;
-
 		case kPixelFormatDXT1:
 		case kPixelFormatDXT3:
 		case kPixelFormatDXT5:
-			/* The DXT algorithms work on 4x4 pixel blocks. Textures smaller than one
-			 * block will be padded, but larger textures need to be correctly aligned. */
-			return ((width < 4) && (height < 4)) || (((width % 4) == 0) && ((height % 4) == 0));
+			return true;
 
 		default:
 			break;
