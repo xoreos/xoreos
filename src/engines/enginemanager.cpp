@@ -261,6 +261,9 @@ void EngineManager::cleanup() const {
 
 		RequestMan.sync();
 
+		// Need to clean up materials, or else they'll contain references to deleted textures.
+		MaterialMan.cleanup();
+
 		FontMan.clear();
 		CursorMan.clear();
 		TextureMan.clear();

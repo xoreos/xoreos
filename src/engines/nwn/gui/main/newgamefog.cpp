@@ -84,6 +84,9 @@ public:
 		glRotatef(diffRotate / _rotateSpeed, 0.0f, 0.0f, -1.0f);
 
 		glScalef(_curZoom, _curZoom, 1.0f);
+		Common::TransformationMatrix bob = _absolutePosition;
+		_absolutePosition.rotate(diffRotate / _rotateSpeed, 0.0f, 0.0f, -1.0f);
+		_absolutePosition.scale(_curZoom, _curZoom, 1.0f);
 		_curZoom += ((curTime - _lastTime) / 3000.0f) * _curZoom;
 
 		if (_curFade >= 1.0f)
@@ -98,6 +101,7 @@ public:
 		glColor4f(1.0f, 1.0f, 1.0f, _curFade);
 
 		Graphics::Aurora::Model_NWN::render(pass);
+		_absolutePosition = bob;
 
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
