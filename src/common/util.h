@@ -77,6 +77,9 @@ template<typename T> inline T CLIP (T v, T amin, T amax)
  */
 template<typename T> inline void SWAP(T &a, T &b) { T tmp = a; a = b; b = tmp; }
 
+/** Is this integer value a power of 2? */
+template<typename T> inline bool ISPOWER2(T x) { return x && !(x & (x - 1)); }
+
 /** Round up to the next power of 2. */
 static inline uint32 NEXTPOWER2(uint32 x) {
 	if (x == 0)
