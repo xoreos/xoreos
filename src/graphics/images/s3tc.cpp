@@ -85,8 +85,15 @@ void decompressDXT1(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 
 			for (byte y = 0; y < blockHeight; ++y) {
 				for (byte x = 0; x < blockWidth; ++x) {
-					WRITE_BE_UINT32(dest + (height - 1 - (ty - blockHeight + y)) * pitch + (tx + x) * 4, blended[cpx & 3]);
+					const uint32 destX = tx + x;
+					const uint32 destY = height - 1 - (ty - blockHeight + y);
+
+					const uint32 pixel =  blended[cpx & 3];
+
 					cpx >>= 2;
+
+					if ((destX < width) && (destY < height))
+						WRITE_BE_UINT32(dest + destY * pitch + destX * 4, pixel);
 				}
 			}
 		}
@@ -122,9 +129,16 @@ void decompressDXT3(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 
 			for (byte y = 0; y < blockHeight; ++y) {
 				for (byte x = 0; x < blockWidth; ++x) {
-					uint32 alpha = (tex.alpha[y] >> (x * 4)) & 0xF;
-					WRITE_BE_UINT32(dest + (height - 1 - (ty - blockHeight + y)) * pitch + (tx + x) * 4, blended[cpx & 3] | alpha << 4);
+					const uint32 destX = tx + x;
+					const uint32 destY = height - 1 - (ty - blockHeight + y);
+
+					const uint32 alpha = (tex.alpha[y] >> (x * 4)) & 0xF;
+					const uint32 pixel = blended[cpx & 3] | alpha << 4;
+
 					cpx >>= 2;
+
+					if ((destX < width) && (destY < height))
+						WRITE_BE_UINT32(dest + destY * pitch + destX * 4, pixel);
 				}
 			}
 		}
@@ -186,9 +200,16 @@ void decompressDXT5(byte *dest, Common::SeekableReadStream &src, uint32 width, u
 
 			for (byte y = 0; y < blockHeight; ++y) {
 				for (byte x = 0; x < blockWidth; ++x) {
-					uint32 alpha = alphab[(tex.alphabl >> (3 * (4 * (3 - y) + x))) & 7];
-					WRITE_BE_UINT32(dest + (height - 1 - (ty - blockHeight + y)) * pitch + (tx + x) * 4, blended[cpx & 3] | alpha);
+					const uint32 destX = tx + x;
+					const uint32 destY = height - 1 - (ty - blockHeight + y);
+
+					const uint32 alpha = alphab[(tex.alphabl >> (3 * (4 * (3 - y) + x))) & 7];
+					const uint32 pixel = blended[cpx & 3] | alpha;
+
 					cpx >>= 2;
+
+					if ((destX < width) && (destY < height))
+						WRITE_BE_UINT32(dest + destY * pitch + destX * 4, pixel);
 				}
 			}
 		}
