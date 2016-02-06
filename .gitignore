@@ -37,10 +37,6 @@ Makefile.in
 /m4/ltsugar.m4
 /m4/ltversion.m4
 /m4/lt~obsolete.m4
-/m4/iconv.m4
-/m4/lib-ld.m4
-/m4/lib-link.m4
-/m4/lib-prefix.m4
 /m4/pkg.m4
 /stamp-h1
 
