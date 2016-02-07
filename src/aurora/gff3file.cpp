@@ -407,6 +407,14 @@ uint32 GFF3Struct::getID() const {
 	return _id;
 }
 
+GFF3Struct::FieldType GFF3Struct::getType(const Common::UString &field) const {
+	const Field *f = getField(field);
+	if (!f)
+		return kFieldTypeNone;
+
+	return f->type;
+}
+
 // --- Field value reader helpers ---
 
 const GFF3Struct::Field *GFF3Struct::getField(const Common::UString &name) const {

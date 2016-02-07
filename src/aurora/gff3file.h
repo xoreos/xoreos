@@ -155,6 +155,30 @@ private:
 /** A struct within a GFF. */
 class GFF3Struct {
 public:
+	/** The type of a GFF field. */
+	enum FieldType {
+		kFieldTypeNone        = - 1, ///< Invalid type.
+		kFieldTypeByte        =   0, ///< A single byte.
+		kFieldTypeChar        =   1, ///< A single character.
+		kFieldTypeUint16      =   2, ///< Unsigned 16bit integer.
+		kFieldTypeSint16      =   3, ///< Signed 16bit integer.
+		kFieldTypeUint32      =   4, ///< Unsigned 32bit integer.
+		kFieldTypeSint32      =   5, ///< Signed 32bit integer.
+		kFieldTypeUint64      =   6, ///< Unsigned 64bit integer.
+		kFieldTypeSint64      =   7, ///< Signed 64bit integer.
+		kFieldTypeFloat       =   8, ///< IEEE float.
+		kFieldTypeDouble      =   9, ///< IEEE double.
+		kFieldTypeExoString   =  10, ///< String.
+		kFieldTypeResRef      =  11, ///< Resource reference, string, max. 16 characters.
+		kFieldTypeLocString   =  12, ///< Localized string.
+		kFieldTypeVoid        =  13, ///< Random data of variable length.
+		kFieldTypeStruct      =  14, ///< Struct containing a number of fields.
+		kFieldTypeList        =  15, ///< List containing a number of structs.
+		kFieldTypeOrientation =  16, ///< An object orientation.
+		kFieldTypeVector      =  17, ///< A vector of 3 floats.
+		kFieldTypeStrRef      =  18  ///< String reference, index into a talk table.
+	};
+
 	/** Return the struct's ID. */
 	uint32 getID() const;
 
@@ -162,6 +186,9 @@ public:
 	size_t getFieldCount() const;
 	/** Does this specific field exist? */
 	bool hasField(const Common::UString &field) const;
+
+	/** Return the type of this field, or kFieldTypeNone if such a field doesn't exist. */
+	FieldType getType(const Common::UString &field) const;
 
 	// .--- Read field values
 	char   getChar(const Common::UString &field, char   def = '\0' ) const;
@@ -195,30 +222,6 @@ public:
 	// '---
 
 private:
-	/** The type of a GFF field. */
-	enum FieldType {
-		kFieldTypeNone        = - 1, ///< Invalid type.
-		kFieldTypeByte        =   0, ///< A single byte.
-		kFieldTypeChar        =   1, ///< A single character.
-		kFieldTypeUint16      =   2, ///< Unsigned 16bit integer.
-		kFieldTypeSint16      =   3, ///< Signed 16bit integer.
-		kFieldTypeUint32      =   4, ///< Unsigned 32bit integer.
-		kFieldTypeSint32      =   5, ///< Signed 32bit integer.
-		kFieldTypeUint64      =   6, ///< Unsigned 64bit integer.
-		kFieldTypeSint64      =   7, ///< Signed 64bit integer.
-		kFieldTypeFloat       =   8, ///< IEEE float.
-		kFieldTypeDouble      =   9, ///< IEEE double.
-		kFieldTypeExoString   =  10, ///< String.
-		kFieldTypeResRef      =  11, ///< Resource reference, string, max. 16 characters.
-		kFieldTypeLocString   =  12, ///< Localized string.
-		kFieldTypeVoid        =  13, ///< Random data of variable length.
-		kFieldTypeStruct      =  14, ///< Struct containing a number of fields.
-		kFieldTypeList        =  15, ///< List containing a number of structs.
-		kFieldTypeOrientation =  16, ///< An object orientation.
-		kFieldTypeVector      =  17, ///< A vector of 3 floats.
-		kFieldTypeStrRef      =  18  ///< String reference, index into a talk table.
-	};
-
 	/** A field in the GFF3 struct. */
 	struct Field {
 		FieldType type;     ///< Type of the field.
