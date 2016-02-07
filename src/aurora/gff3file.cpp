@@ -349,8 +349,13 @@ void GFF3Struct::readField(Common::SeekableReadStream &data, uint32 index) {
 	const uint32 fieldLabel = data.readUint32LE();
 	const uint32 fieldData  = data.readUint32LE();
 
-	// And add it to the map
-	_fields[readLabel(data, fieldLabel)] = Field((FieldType) fieldType, fieldData);
+	// Read the name
+	Common::UString fieldName = readLabel(data, fieldLabel);
+
+	// And add the field to the map and name list
+	_fields[fieldName] = Field((FieldType) fieldType, fieldData);
+
+	_fieldNames.push_back(fieldName);
 }
 
 void GFF3Struct::readFields(Common::SeekableReadStream &data, uint32 index, uint32 count) {
@@ -405,6 +410,10 @@ bool GFF3Struct::hasField(const Common::UString &field) const {
 
 uint32 GFF3Struct::getID() const {
 	return _id;
+}
+
+const std::vector<Common::UString> &GFF3Struct::getFieldNames() const {
+	return _fieldNames;
 }
 
 GFF3Struct::FieldType GFF3Struct::getType(const Common::UString &field) const {
