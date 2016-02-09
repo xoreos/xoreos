@@ -86,6 +86,8 @@ public:
 	bool isVariableOwned(const Common::UString &name) const;
 
 	void bindProgram(Shader::ShaderProgram *program);
+	void bindProgram(Shader::ShaderProgram *program, float fade);
+	void bindFade(Shader::ShaderProgram *program, float fade);
 
 	void bindGLState();
 	void unbindGLState();
@@ -107,6 +109,8 @@ private:
 
 	Common::UString _name;
 	uint32 _usageCount;
+
+	uint32 _alphaIndex;
 
 	void *genMaterialVar(uint32 index);
 	void delMaterialVar(uint32 index);

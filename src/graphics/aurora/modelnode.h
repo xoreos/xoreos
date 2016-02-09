@@ -117,6 +117,16 @@ public:
 	void computeInverseBindPose();
 	void computeAbsoluteTransform();
 
+	/** Set a specific material to apply to the node. */
+	void setMaterial(Shader::ShaderMaterial *material);
+
+	/** Get the alpha (transparency) of the node. */
+	float getAlpha();
+
+	/** Set the alpha (transparency) of the node. */
+	void setAlpha(float alpha, bool isRecursive = true);
+
+protected:
 	/** The way the environment map is applied to a model node. */
 	enum EnvironmentMapMode {
 		kModeEnvironmentBlendedUnder, ///< Environment map first, then blend the diffuse textures in.

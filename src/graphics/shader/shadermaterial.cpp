@@ -52,7 +52,7 @@ static const GLenum ShaderMaterialBlendfuncArray[] = {
 	GL_ONE_MINUS_SRC1_ALPHA
 };
 
-ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) : _variableData(), _fragShader(fragShader), _flags(0), _name(name), _usageCount(0) {
+ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) : _variableData(), _fragShader(fragShader), _flags(0), _name(name), _usageCount(0), _alphaIndex(0xFFFFFFFF) {
 	fragShader->usageCount++;
 
 	uint32 varCount = fragShader->variablesCombined.size();
@@ -60,6 +60,10 @@ ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::U
 	for (uint32 i = 0; i < varCount; ++i) {
 		_variableData[i].flags = 0;
 		genMaterialVar(i);
+
+		if (fragShader->variablesCombined[i].name == "alpha") {
+			_alphaIndex = i;
+		}
 	}
 }
 
@@ -223,6 +227,22 @@ bool ShaderMaterial::isVariableOwned(const Common::UString &name) const {
 void ShaderMaterial::bindProgram(Shader::ShaderProgram *program) {
 	for (uint32 i = 0; i < _variableData.size(); i++) {
 		ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], _variableData[i].data);
+	}
+}
+
+void ShaderMaterial::bindProgram(Shader::ShaderProgram *program, float alpha) {
+	for (uint32 i = 0; i < _variableData.size(); i++) {
+		if (_alphaIndex == i) {
+			ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], &alpha);
+		} else {
+			ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], _variableData[i].data);
+		}
+	}
+}
+
+void ShaderMaterial::bindFade(Shader::ShaderProgram *program, float alpha) {
+	if (_alphaIndex != 0xFFFFFFFF) {
+		ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[_alphaIndex], program->fragmentVariableLocations[_alphaIndex], &alpha);
 	}
 }
 

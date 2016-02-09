@@ -54,13 +54,14 @@ const char fragmentDefault3xText[] =
 precision highp float;\n\
 \n\
 uniform sampler2D texture0;\n\
+uniform float alpha;\n\
 \n\
 in vec2 texCoords;\n\
 \n\
 layout(location = 0) out vec4 outColor;\n\
 \n\
 void main(void) {\n\
-  outColor = texture(texture0, texCoords);\n\
+  outColor = texture(texture0, texCoords) * vec4(1.0, 1.0, 1.0f, alpha);\n\
 }\n\
 ";
 // ---------------------------------------------------------
@@ -69,9 +70,10 @@ const char fragmentColor3xText[] =
 precision highp float;\n\
 \n\
 uniform vec4 color;\n\
+uniform float alpha;\n\
 \n\
 void main(void) {\n\
-  gl_FragColor = color;\n\
+  gl_FragColor = color * vec4(1.0, 1.0, 1.0f, alpha);\n\
 }\n\
 ";
 // ---------------------------------------------------------
@@ -99,11 +101,12 @@ const char fragmentDefault2xText[] =
 "#version 120\n\
 \n\
 uniform sampler2D texture0;\n\
+uniform float alpha;\n\
 \n\
 varying vec2 texCoords;\n\
 \n\
 void main(void) {\n\
-  gl_FragColor = texture2D(texture0, texCoords);\n\
+  gl_FragColor = texture2D(texture0, texCoords) * vec4(1.0, 1.0, 1.0f, alpha);\n\
 }\n\
 ";
 // ---------------------------------------------------------
@@ -111,10 +114,11 @@ const char fragmentColor2xText[] =
 "#version 120\n\
 \n\
 uniform vec4 color;\n\
+uniform float alpha;\n\
 \n\
 varying vec2 texCoords;\n\
 void main(void) {\n\
-  gl_FragColor = color;\n\
+  gl_FragColor = color * vec4(1.0, 1.0, 1.0f, alpha);\n\
 }\n\
 ";
 // ---------------------------------------------------------

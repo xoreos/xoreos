@@ -55,7 +55,7 @@ public:
 	void setMesh(Mesh::Mesh *mesh);
 
 	void copyRenderable(Shader::ShaderRenderable *src);
-	void renderImmediate(const glm::mat4 &tform);
+	void renderImmediate(const glm::mat4 &tform, float alpha = 1.0f);
 
 private:
 	ShaderSurface *_surface;

@@ -104,6 +104,8 @@ ModelNode::ModelNode(Model &model)
 	_mesh = 0; // Should also be added to MeshMan, so this class won't "own" it.
 	_material = 0;
 	_shaderRenderable = 0;
+
+	_alpha = 1.0f;
 }
 
 ModelNode::~ModelNode() {
@@ -304,6 +306,27 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 
 ModelNode::Mesh *ModelNode::getMesh() const {
 	return _mesh;
+}
+
+void ModelNode::setMaterial(Shader::ShaderMaterial *material) {
+	_material = material;
+	if (_shaderRenderable) {
+		_shaderRenderable->setMaterial(_material);
+	}
+}
+
+float ModelNode::getAlpha() {
+	return _alpha;
+}
+
+void ModelNode::setAlpha(float alpha, bool isRecursive) {
+	_alpha = alpha;
+
+	if (isRecursive) {
+		for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+			(*c)->setAlpha(alpha, true);
+		}
+	}
 }
 
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
