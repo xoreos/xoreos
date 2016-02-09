@@ -211,6 +211,17 @@ void TextureManager::reloadAll() {
 }
 
 void TextureManager::reset() {
+	for (size_t i = 0; i < 32; i++) {
+		activeTexture(i);
+
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_TEXTURE_CUBE_MAP);
+
+		glDisable(GL_TEXTURE_GEN_S);
+		glDisable(GL_TEXTURE_GEN_T);
+		glDisable(GL_TEXTURE_GEN_R);
+	}
+
 	activeTexture(0);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
