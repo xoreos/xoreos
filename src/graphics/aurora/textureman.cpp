@@ -41,6 +41,44 @@ namespace Graphics {
 
 namespace Aurora {
 
+static GLenum kTextureUnit[] = {
+	GL_TEXTURE0_ARB,
+	GL_TEXTURE1_ARB,
+	GL_TEXTURE2_ARB,
+	GL_TEXTURE3_ARB,
+	GL_TEXTURE4_ARB,
+	GL_TEXTURE5_ARB,
+	GL_TEXTURE6_ARB,
+	GL_TEXTURE7_ARB,
+	GL_TEXTURE8_ARB,
+	GL_TEXTURE9_ARB,
+	GL_TEXTURE10_ARB,
+	GL_TEXTURE11_ARB,
+	GL_TEXTURE12_ARB,
+	GL_TEXTURE13_ARB,
+	GL_TEXTURE14_ARB,
+	GL_TEXTURE15_ARB,
+	GL_TEXTURE16_ARB,
+	GL_TEXTURE17_ARB,
+	GL_TEXTURE18_ARB,
+	GL_TEXTURE19_ARB,
+	GL_TEXTURE20_ARB,
+	GL_TEXTURE21_ARB,
+	GL_TEXTURE22_ARB,
+	GL_TEXTURE23_ARB,
+	GL_TEXTURE24_ARB,
+	GL_TEXTURE25_ARB,
+	GL_TEXTURE26_ARB,
+	GL_TEXTURE27_ARB,
+	GL_TEXTURE28_ARB,
+	GL_TEXTURE29_ARB,
+	GL_TEXTURE30_ARB,
+	GL_TEXTURE31_ARB
+};
+
+static const size_t kTextureUnitCount = ARRAYSIZE(kTextureUnit);
+
+
 TextureManager::TextureManager() : _recordNewTextures(false) {
 }
 
@@ -211,7 +249,7 @@ void TextureManager::reloadAll() {
 }
 
 void TextureManager::reset() {
-	for (size_t i = 0; i < 32; i++) {
+	for (size_t i = 0; i < kTextureUnitCount; i++) {
 		activeTexture(i);
 
 		glDisable(GL_TEXTURE_2D);
@@ -289,47 +327,12 @@ void TextureManager::set(const TextureHandle &handle, TextureMode mode) {
 	}
 }
 
-static GLenum texture[32] = {
-	GL_TEXTURE0_ARB,
-	GL_TEXTURE1_ARB,
-	GL_TEXTURE2_ARB,
-	GL_TEXTURE3_ARB,
-	GL_TEXTURE4_ARB,
-	GL_TEXTURE5_ARB,
-	GL_TEXTURE6_ARB,
-	GL_TEXTURE7_ARB,
-	GL_TEXTURE8_ARB,
-	GL_TEXTURE9_ARB,
-	GL_TEXTURE10_ARB,
-	GL_TEXTURE11_ARB,
-	GL_TEXTURE12_ARB,
-	GL_TEXTURE13_ARB,
-	GL_TEXTURE14_ARB,
-	GL_TEXTURE15_ARB,
-	GL_TEXTURE16_ARB,
-	GL_TEXTURE17_ARB,
-	GL_TEXTURE18_ARB,
-	GL_TEXTURE19_ARB,
-	GL_TEXTURE20_ARB,
-	GL_TEXTURE21_ARB,
-	GL_TEXTURE22_ARB,
-	GL_TEXTURE23_ARB,
-	GL_TEXTURE24_ARB,
-	GL_TEXTURE25_ARB,
-	GL_TEXTURE26_ARB,
-	GL_TEXTURE27_ARB,
-	GL_TEXTURE28_ARB,
-	GL_TEXTURE29_ARB,
-	GL_TEXTURE30_ARB,
-	GL_TEXTURE31_ARB
-};
-
 void TextureManager::activeTexture(size_t n) {
-	if (n >= ARRAYSIZE(texture))
+	if (n >= kTextureUnitCount)
 		return;
 
 	if (GfxMan.supportMultipleTextures())
-		glActiveTextureARB(texture[n]);
+		glActiveTextureARB(kTextureUnit[n]);
 }
 
 } // End of namespace Aurora
