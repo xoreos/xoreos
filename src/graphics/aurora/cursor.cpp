@@ -54,7 +54,7 @@ Cursor::~Cursor() {
 }
 
 void Cursor::render() {
-	TextureMan.activeTexture(0);
+	TextureMan.reset();
 	TextureMan.set(_texture);
 
 	int x, y;
@@ -72,6 +72,8 @@ void Cursor::render() {
 		glTexCoord2f(0.0f, 1.0f);
 		glVertex2f(0.0f, _width);
 	glEnd();
+
+	TextureMan.reset();
 }
 
 void Cursor::load() {
