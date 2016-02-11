@@ -342,6 +342,8 @@ void GFF4Struct::load(GFF4File &parent, uint32 offset, const GFF4File::StructTem
 	for (size_t i = 0; i < tmplt.fields.size(); i++) {
 		const GFF4File::StructTemplate::Field &field = tmplt.fields[i];
 
+		_fieldLabels.push_back(field.label);
+
 		// Calculate the offset for the field data, but guard against NULL pointers
 		uint32 fieldOffset = offset + field.offset;
 		if ((offset == 0xFFFFFFFF) || (field.offset == 0xFFFFFFFF))
@@ -419,6 +421,8 @@ void GFF4Struct::load(GFF4File &parent, const Field &genericParent) {
 		if (fieldOffset == 0xFFFFFFFF)
 			continue;
 
+		_fieldLabels.push_back(i);
+
 		// Load the field and its struct(s), if any
 		Field &f = _fields[i] = Field(i, fieldType, fieldFlags, fieldOffset, true);
 		if (f.type == kFieldTypeStruct)
@@ -440,6 +444,10 @@ size_t GFF4Struct::getFieldCount() const {
 
 bool GFF4Struct::hasField(uint32 field) const {
 	return getField(field) != 0;
+}
+
+const std::vector<uint32> &GFF4Struct::getFieldLabels() const {
+	return _fieldLabels;
 }
 
 GFF4Struct::FieldType GFF4Struct::getFieldType(uint32 field) const {

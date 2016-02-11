@@ -211,6 +211,9 @@ public:
 	/** Does this specific field exist? */
 	bool hasField(uint32 field) const;
 
+	/** Return a list of all field labels in this struct. */
+	const std::vector<uint32> &getFieldLabels() const;
+
 	/** Return the type of this field, or kFieldTypeNone if it doesn't exist. */
 	FieldType getFieldType(uint32 field) const;
 	/** Return the type of this field and whether it's list, or kFieldTypeNone if it doesn't exist. */
@@ -330,6 +333,9 @@ private:
 	size_t _fieldCount;
 
 	FieldMap _fields;
+
+	/** The labels of all fields in this struct. */
+	std::vector<uint32> _fieldLabels;
 
 
 	// .--- Loader
