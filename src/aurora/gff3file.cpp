@@ -416,7 +416,7 @@ const std::vector<Common::UString> &GFF3Struct::getFieldNames() const {
 	return _fieldNames;
 }
 
-GFF3Struct::FieldType GFF3Struct::getType(const Common::UString &field) const {
+GFF3Struct::FieldType GFF3Struct::getFieldType(const Common::UString &field) const {
 	const Field *f = getField(field);
 	if (!f)
 		return kFieldTypeNone;

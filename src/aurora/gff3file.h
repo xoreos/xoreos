@@ -191,7 +191,7 @@ public:
 	const std::vector<Common::UString> &getFieldNames() const;
 
 	/** Return the type of this field, or kFieldTypeNone if such a field doesn't exist. */
-	FieldType getType(const Common::UString &field) const;
+	FieldType getFieldType(const Common::UString &field) const;
 
 
 	// .--- Read field values
