@@ -319,6 +319,10 @@ GFF3Struct::GFF3Struct(const GFF3File &parent, uint32 offset) : _parent(&parent)
 GFF3Struct::~GFF3Struct() {
 }
 
+uint32 GFF3Struct::getID() const {
+	return _id;
+}
+
 // --- Loader ---
 
 void GFF3Struct::load(uint32 offset) {
@@ -406,10 +410,6 @@ size_t GFF3Struct::getFieldCount() const {
 
 bool GFF3Struct::hasField(const Common::UString &field) const {
 	return getField(field) != 0;
-}
-
-uint32 GFF3Struct::getID() const {
-	return _id;
 }
 
 const std::vector<Common::UString> &GFF3Struct::getFieldNames() const {
