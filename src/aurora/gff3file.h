@@ -193,6 +193,7 @@ public:
 	/** Return the type of this field, or kFieldTypeNone if such a field doesn't exist. */
 	FieldType getType(const Common::UString &field) const;
 
+
 	// .--- Read field values
 	char   getChar(const Common::UString &field, char   def = '\0' ) const;
 	uint64 getUint(const Common::UString &field, uint64 def = 0    ) const;
