@@ -114,9 +114,9 @@ private:
 
 	Common::SeekableReadStream *_stream;
 
-	Header _header; ///< The GFF's header.
+	Header _header; ///< The GFF3's header.
 
-	/** Should we try to read GFF files found in Neverwinter Nights premium modules? */
+	/** Should we try to read GFF3 files found in Neverwinter Nights premium modules? */
 	bool   _repairNWNPremium;
 	/** The correctional value for offsets to repair Neverwinter Nights premium modules. */
 	uint32 _offsetCorrection;
@@ -124,7 +124,7 @@ private:
 	StructArray _structs; ///< Our structs.
 	ListArray   _lists;   ///< Our lists.
 
-	/** To convert list offsets found in GFF to real indices. */
+	/** To convert list offsets found in GFF3 to real indices. */
 	std::vector<uint32> _listOffsetToIndex;
 
 
@@ -138,24 +138,24 @@ private:
 	// '---
 
 	// .--- Helper methods called by GFF3Struct
-	/** Return the GFF stream. */
+	/** Return the GFF3 stream. */
 	Common::SeekableReadStream &getStream(uint32 offset) const;
-	/** Return the GFF stream seeked to the start of the field data. */
+	/** Return the GFF3 stream seeked to the start of the field data. */
 	Common::SeekableReadStream &getFieldData() const;
 
-	/** Return a struct within the GFF. */
+	/** Return a struct within the GFF3. */
 	const GFF3Struct &getStruct(uint32 i) const;
-	/** Return a list within the GFF. */
+	/** Return a list within the GFF3. */
 	const GFF3List   &getList  (uint32 i) const;
 	// '---
 
 	friend class GFF3Struct;
 };
 
-/** A struct within a GFF. */
+/** A struct within a GFF3. */
 class GFF3Struct {
 public:
-	/** The type of a GFF field. */
+	/** The type of a GFF3 field. */
 	enum FieldType {
 		kFieldTypeNone        = - 1, ///< Invalid type.
 		kFieldTypeByte        =   0, ///< A single byte.
@@ -238,7 +238,7 @@ private:
 	typedef std::map<Common::UString, Field> FieldMap;
 
 
-	const GFF3File *_parent; ///< The parent GFF.
+	const GFF3File *_parent; ///< The parent GFF3.
 
 	uint32 _id;         ///< The struct's ID.
 	uint32 _fieldIndex; ///< Field / Field indices index.

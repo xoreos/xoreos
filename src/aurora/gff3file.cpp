@@ -120,7 +120,7 @@ void GFF3File::load(uint32 id) {
 
 void GFF3File::loadHeader(uint32 id) {
 	if (_repairNWNPremium) {
-		/* The GFF files in the encrypted premium module archive for Neverwinter
+		/* The GFF3 files in the encrypted premium module archive for Neverwinter
 		 * nights are deliberately broken: the file type and version have been
 		 * removed, and the offsets to the individual sections are increased
 		 * by a certain amount.
@@ -136,7 +136,7 @@ void GFF3File::loadHeader(uint32 id) {
 
 		if ((maybeVersion != kVersion32) && (maybeVersion != kVersion33)) {
 			if ((firstOffset >= 0x30) && (firstOffset <= 0x12F)) {
-				// Yes, this looks like a messed-with GFF found in an NWN premium module
+				// Yes, this looks like a messed-with GFF3 found in an NWN premium module
 				_version = kVersion32;
 				id = _id = 0xFFFFFFFF;
 
@@ -147,7 +147,7 @@ void GFF3File::loadHeader(uint32 id) {
 				_repairNWNPremium = false;
 
 		} else
-			// This is not a GFF file that needs repairing
+			// This is not a GFF3 file that needs repairing
 			_repairNWNPremium = false;
 
 		_stream->seek(0);
@@ -200,7 +200,7 @@ void GFF3File::loadStructs() {
 }
 
 void GFF3File::loadLists() {
-	/* Read in the lists section of the GFF.
+	/* Read in the lists section of the GFF3.
 	 *
 	 * GFF3s store lists in a linear fashion, with the indices prefixes by
 	 * the number of indices to follow. For example, with the indices counts
