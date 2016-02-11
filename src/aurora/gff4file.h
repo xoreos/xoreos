@@ -198,6 +198,11 @@ public:
 		kFieldTypeGeneric     =  65535  ///< A "generic" field, able to hold any other type.
 	};
 
+	/** Return the struct's unique ID within the GFF4. */
+	uint64 getID() const;
+	/** Return the number of structs that refer to this struct. */
+	uint32 getRefCount() const;
+
 	/** Return the struct's label. */
 	uint32 getLabel() const;
 
