@@ -220,13 +220,21 @@ uint32 GDAFile::identifyType(const Columns &columns, const Row &rows, size_t col
 
 	switch (fieldType) {
 		case GFF4Struct::kFieldTypeString:
+		case GFF4Struct::kFieldTypeASCIIString:
 			return 0;
 
-		case GFF4Struct::kFieldTypeUint:
-		case GFF4Struct::kFieldTypeSint:
+		case GFF4Struct::kFieldTypeUint8:
+		case GFF4Struct::kFieldTypeUint16:
+		case GFF4Struct::kFieldTypeUint32:
+		case GFF4Struct::kFieldTypeUint64:
+		case GFF4Struct::kFieldTypeSint8:
+		case GFF4Struct::kFieldTypeSint16:
+		case GFF4Struct::kFieldTypeSint32:
+		case GFF4Struct::kFieldTypeSint64:
 			return 1;
 
-		case GFF4Struct::kFieldTypeDouble:
+		case GFF4Struct::kFieldTypeFloat32:
+		case GFF4Struct::kFieldTypeFloat64:
 			return 2;
 
 		default:

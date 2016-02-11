@@ -172,19 +172,30 @@ private:
 
 class GFF4Struct {
 public:
-	/** The public field types, representing the abstract contents of the field. */
+	/** The type of a GFF4 field. */
 	enum FieldType {
-		kFieldTypeNone = -1,
-		kFieldTypeUint,
-		kFieldTypeSint,
-		kFieldTypeDouble,
-		kFieldTypeString,
-		kFieldTypeTalkString,
-		kFieldTypeVector3,
-		kFieldTypeVector4,
-		kFieldTypeMatrix,
-		kFieldTypeStruct,
-		kFieldTypeGeneric
+		kFieldTypeNone        = -    1, ///< Invalid type.
+		kFieldTypeUint8       =      0, ///< Unsigned 8bit integer.
+		kFieldTypeSint8       =      1, ///< Signed 8bit integer.
+		kFieldTypeUint16      =      2, ///< Unsigned 16bit integer.
+		kFieldTypeSint16      =      3, ///< Signed 16bit integer.
+		kFieldTypeUint32      =      4, ///< Unsigned 32bit integer.
+		kFieldTypeSint32      =      5, ///< Signed 32bit integer.
+		kFieldTypeUint64      =      6, ///< Unsigned 64bit integer.
+		kFieldTypeSint64      =      7, ///< Signed 64bit integer.
+		kFieldTypeFloat32     =      8, ///< 32bit IEEE float.
+		kFieldTypeFloat64     =      9, ///< 64bit IEEE float (double).
+		kFieldTypeVector3f    =     10, ///< 3 IEEE floats, 3D vector.
+		kFieldTypeVector4f    =     12, ///< 4 IEEE floats, 4D vector.
+		kFieldTypeQuaternionf =     13, ///< 4 IEEE floats, Quaternion rotation.
+		kFieldTypeString      =     14, ///< A string.
+		kFieldTypeColor4f     =     15, ///< 4 IEEE floats, RGBA color.
+		kFieldTypeMatrix4x4f  =     16, ///< 16 IEEE floats, 4x4 matrix in row-major order.
+		kFieldTypeTlkString   =     17, ///< 2 unsigned 32bit integers, reference into the TLK table.
+		kFieldTypeNDSFixed    =     18, ///< A 32bit fixed-point value, found in Sonic.
+		kFieldTypeASCIIString =     20, ///< ASCII string, found in Sonic.
+		kFieldTypeStruct      =  65534, ///< A struct.
+		kFieldTypeGeneric     =  65535  ///< A "generic" field, able to hold any other type.
 	};
 
 	/** Return the struct's label. */
@@ -277,44 +288,18 @@ public:
 	// '---
 
 private:
-	/** The internal field types, representing the actual contents of the field. */
-	enum IFieldType {
-		kIFieldTypeNone        = -    1, ///< Invalid type.
-		kIFieldTypeUint8       =      0, ///< Unsigned 8bit integer.
-		kIFieldTypeSint8       =      1, ///< Signed 8bit integer.
-		kIFieldTypeUint16      =      2, ///< Unsigned 16bit integer.
-		kIFieldTypeSint16      =      3, ///< Signed 16bit integer.
-		kIFieldTypeUint32      =      4, ///< Unsigned 32bit integer.
-		kIFieldTypeSint32      =      5, ///< Signed 32bit integer.
-		kIFieldTypeUint64      =      6, ///< Unsigned 64bit integer.
-		kIFieldTypeSint64      =      7, ///< Signed 64bit integer.
-		kIFieldTypeFloat32     =      8, ///< 32bit IEEE float.
-		kIFieldTypeFloat64     =      9, ///< 64bit IEEE float (double).
-		kIFieldTypeVector3f    =     10, ///< 3 IEEE floats, 3D vector.
-		kIFieldTypeVector4f    =     12, ///< 4 IEEE floats, 4D vector.
-		kIFieldTypeQuaternionf =     13, ///< 4 IEEE floats, Quaternion rotation.
-		kIFieldTypeString      =     14, ///< A string.
-		kIFieldTypeColor4f     =     15, ///< 4 IEEE floats, RGBA color.
-		kIFieldTypeMatrix4x4f  =     16, ///< 16 IEEE floats, 4x4 matrix in row-major order.
-		kIFieldTypeTlkString   =     17, ///< 2 unsigned 32bit integers, reference into the TLK table.
-		kIFieldTypeNDSFixed    =     18, ///< A 32bit fixed-point value, found in Sonic.
-		kIFieldTypeASCIIString =     20, ///< ASCII string, found in Sonic.
-		kIFieldTypeStruct      =  65534, ///< A struct.
-		kIFieldTypeGeneric     =  65535  ///< A "generic" field, able to hold any other type.
-	};
-
 	/** A field in the GFF4 struct. */
 	struct Field {
-		uint32     label;  ///< A numerical label of the field.
-		IFieldType type;   ///< Type of the field.
-		uint32     offset; ///< Offset into the GFF4 data.
+		uint32    label;  ///< A numerical label of the field.
+		FieldType type;   ///< Type of the field.
+		uint32    offset; ///< Offset into the GFF4 data.
 
 		bool isList;      ///< Is this field a singular item or a list?
 		bool isReference; ///< Is this field a reference (pointer) to another field?
 		bool isGeneric;   ///< Is this field found in a generic?
 
-		uint16   structIndex; ///< Index of the field's struct type (if kIFieldTypeStruct).
-		GFF4List structs;     ///< List of GFF4Struct (if kIFieldTypeStruct).
+		uint16   structIndex; ///< Index of the field's struct type (if kFieldTypeStruct).
+		GFF4List structs;     ///< List of GFF4Struct (if kFieldTypeStruct).
 
 		Field();
 		Field(uint32 l, uint16 t, uint16 f, uint32 o, bool g = false);
@@ -363,16 +348,14 @@ private:
 	// '---
 
 	// .--- Field reader helpers
-	FieldType convertFieldType(IFieldType type) const;
-
 	uint32 getListCount(Common::SeekableReadStream &data, const Field &field) const;
-	uint32 getFieldSize(IFieldType type) const;
+	uint32 getFieldSize(FieldType type) const;
 
-	uint64 getUint(Common::SeekableReadStream &data, IFieldType type) const;
-	 int64 getSint(Common::SeekableReadStream &data, IFieldType type) const;
+	uint64 getUint(Common::SeekableReadStream &data, FieldType type) const;
+	 int64 getSint(Common::SeekableReadStream &data, FieldType type) const;
 
-	double getDouble(Common::SeekableReadStream &data, IFieldType type) const;
-	float  getFloat (Common::SeekableReadStream &data, IFieldType type) const;
+	double getDouble(Common::SeekableReadStream &data, FieldType type) const;
+	float  getFloat (Common::SeekableReadStream &data, FieldType type) const;
 
 	Common::UString getString(Common::SeekableReadStream &data, Common::Encoding encoding) const;
 	Common::UString getString(Common::SeekableReadStream &data, Common::Encoding encoding,
