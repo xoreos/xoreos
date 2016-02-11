@@ -216,6 +216,12 @@ public:
 	/** Return the type of this field and whether it's list, or kFieldTypeNone if it doesn't exist. */
 	FieldType getFieldType(uint32 field, bool &isList) const;
 
+	/** Collectively return all field properties in one go.
+	 *
+	 *  @return true if the field exists, false otherwise.
+	 */
+	bool getFieldProperties(uint32 field, FieldType &type, uint32 &label, bool &isList) const;
+
 
 	// .--- Single values
 	uint64 getUint(uint32 field, uint64 def = 0    ) const;

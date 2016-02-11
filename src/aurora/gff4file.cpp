@@ -457,6 +457,18 @@ GFF4Struct::FieldType GFF4Struct::getFieldType(uint32 field, bool &isList) const
 	return f->type;
 }
 
+bool GFF4Struct::getFieldProperties(uint32 field, FieldType &type, uint32 &label, bool &isList) const {
+	const Field *f = getField(field);
+	if (!f)
+		return false;
+
+	type   = f->type;
+	label  = f->label;
+	isList = f->isList;
+
+	return true;
+}
+
 // --- Field value reader helpers ---
 
 const GFF4Struct::Field *GFF4Struct::getField(uint32 field) const {
