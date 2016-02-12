@@ -284,7 +284,7 @@ void Texture::createCubeMapTexture() {
 
 		// Texture image data
 		for (size_t j = 0; j < _image->getMipMapCount(); j++)
-			setMipMapData(GL_TEXTURE_2D, i, j);
+			setMipMapData(faceTarget[i], i, j);
 	}
 }
 
