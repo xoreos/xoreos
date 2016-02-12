@@ -32,7 +32,12 @@ namespace Graphics {
 /** An element of the front GUI. */
 class GUIFrontElement : public Renderable {
 public:
-	GUIFrontElement() : Renderable(kRenderableTypeGUIFront) { }
+	enum GUIElementType {
+		kGUIElementFront = kRenderableTypeGUIFront,
+		kGUIElementBack = kRenderableTypeGUIBack
+	};
+
+	GUIFrontElement(GUIElementType type) : Renderable(static_cast<RenderableType>(type)) { }
 	~GUIFrontElement() { }
 };
 

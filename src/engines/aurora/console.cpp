@@ -67,10 +67,11 @@ static const size_t kConsoleLines       =  25;
 namespace Engines {
 
 ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t history,
-                             int fontHeight) : _font(FontMan.get(font, fontHeight)),
-	_historySizeMax(history), _historySizeCurrent(0), _historyStart(0),
-	_cursorPosition(0), _overwrite(false),
-	_cursorBlinkState(false), _lastCursorBlink(0) {
+                             int fontHeight) :
+	Graphics::GUIFrontElement(Graphics::GUIFrontElement::kGUIElementFront),
+	_font(FontMan.get(font, fontHeight)), _historySizeMax(history),
+	_historySizeCurrent(0), _historyStart(0), _cursorPosition(0),
+	_overwrite(false), _cursorBlinkState(false), _lastCursorBlink(0) {
 
 	assert(lines >= 2);
 	assert(history >= lines);

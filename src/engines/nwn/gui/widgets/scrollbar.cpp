@@ -35,7 +35,8 @@ namespace Engines {
 
 namespace NWN {
 
-Scrollbar::Scrollbar(Type type) : _type(type), _x(0.0f), _y(0.0f), _z(0.0f) {
+Scrollbar::Scrollbar(Type type) : Graphics::GUIFrontElement(Graphics::GUIFrontElement::kGUIElementFront),
+	_type(type), _x(0.0f), _y(0.0f), _z(0.0f) {
 	_texture = TextureMan.get("gui_scrollbar");
 
 	setLength(16.0f);

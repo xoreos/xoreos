@@ -80,7 +80,9 @@ DialogBox::ReplyLine::ReplyLine(std::list<Reply>::const_iterator &i) :
 }
 
 
-DialogBox::DialogBox(float width, float height) : _width(width), _height(height),
+DialogBox::DialogBox(float width, float height) :
+	Graphics::GUIFrontElement(Graphics::GUIFrontElement::kGUIElementFront),
+	_width(width), _height(height),
 	_x(0.0f), _y(0.0f), _z(0.0f), _replyCount(0), _replyCountWidth(0.0f) {
 
 	const Common::UString fontName =
