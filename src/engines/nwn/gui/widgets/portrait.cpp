@@ -45,7 +45,7 @@ namespace NWN {
 
 Portrait::Portrait(const Common::UString &name, Size size,
 		float border, float bR, float bG, float bB, float bA) :
-	Graphics::GUIFrontElement(Graphics::GUIFrontElement::kGUIElementFront),
+	Graphics::GUIElement(Graphics::GUIElement::kGUIElementFront),
 	_size(size), _border(border), _bR(bR), _bG(bG), _bB(bB), _bA(bA) {
 
 	assert((_size >= kSizeHuge) && (_size < kSizeMAX));

@@ -29,7 +29,7 @@
 #include "src/events/notifyable.h"
 
 #include "src/graphics/types.h"
-#include "src/graphics/guifrontelement.h"
+#include <src/graphics/guielement.h>
 
 #include "src/graphics/aurora/fonthandle.h"
 
@@ -62,7 +62,7 @@ class Module;
 
 // TODO: Scrollbars. Need to restructure/rewrite the scrollbar element/widget for that
 
-class DialogBox : public Graphics::GUIFrontElement {
+class DialogBox : public Graphics::GUIElement {
 public:
 	DialogBox(float width, float height);
 	~DialogBox();

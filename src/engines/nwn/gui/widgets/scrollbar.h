@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "src/graphics/guifrontelement.h"
+#include <src/graphics/guielement.h>
 
 #include "src/graphics/aurora/texturehandle.h"
 
@@ -40,7 +40,7 @@ namespace NWN {
 class GUI;
 
 /** A NWN scrollbar model. */
-class Scrollbar : public Graphics::GUIFrontElement {
+class Scrollbar : public Graphics::GUIElement {
 public:
 	enum Type {
 		kTypeVertical,  ///< Vertical scrollbar.

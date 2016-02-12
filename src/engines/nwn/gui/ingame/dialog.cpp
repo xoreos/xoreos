@@ -81,7 +81,7 @@ DialogBox::ReplyLine::ReplyLine(std::list<Reply>::const_iterator &i) :
 
 
 DialogBox::DialogBox(float width, float height) :
-	Graphics::GUIFrontElement(Graphics::GUIFrontElement::kGUIElementFront),
+	Graphics::GUIElement(Graphics::GUIElement::kGUIElementFront),
 	_width(width), _height(height),
 	_x(0.0f), _y(0.0f), _z(0.0f), _replyCount(0), _replyCountWidth(0.0f) {
 
@@ -115,7 +115,7 @@ void DialogBox::show() {
 	showEntry();
 	showReplies();
 
-	Graphics::GUIFrontElement::show();
+	Graphics::GUIElement::show();
 
 	GfxMan.unlockFrame();
 }
@@ -129,7 +129,7 @@ void DialogBox::hide() {
 	_name->hide();
 	_portrait->hide();
 
-	Graphics::GUIFrontElement::hide();
+	Graphics::GUIElement::hide();
 
 	GfxMan.unlockFrame();
 }

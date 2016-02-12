@@ -19,28 +19,28 @@
  */
 
 /** @file
- *  A GUI element that is to be drawn in front of the normal objects.
+ *  A GUI element.
  */
 
-#ifndef GRAPHICS_GUIFRONTELEMENT_H
-#define GRAPHICS_GUIFRONTELEMENT_H
+#ifndef GRAPHICS_GUIELEMENT_H
+#define GRAPHICS_GUIELEMENT_H
 
 #include "src/graphics/renderable.h"
 
 namespace Graphics {
 
-/** An element of the front GUI. */
-class GUIFrontElement : public Renderable {
+/** An element of the GUI. */
+class GUIElement : public Renderable {
 public:
 	enum GUIElementType {
 		kGUIElementFront = kRenderableTypeGUIFront,
 		kGUIElementBack = kRenderableTypeGUIBack
 	};
 
-	GUIFrontElement(GUIElementType type) : Renderable(static_cast<RenderableType>(type)) { }
-	~GUIFrontElement() { }
+	GUIElement(GUIElementType type) : Renderable(static_cast<RenderableType>(type)) { }
+	~GUIElement() { }
 };
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_GUIFRONTELEMENT_H
+#endif // GRAPHICS_GUIELEMENT_H

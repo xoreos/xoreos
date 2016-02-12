@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_PORTRAIT_H
 #define ENGINES_NWN_GUI_WIDGETS_PORTRAIT_H
 
-#include "src/graphics/guifrontelement.h"
+#include <src/graphics/guielement.h>
 
 #include "src/graphics/aurora/texturehandle.h"
 
@@ -40,7 +40,7 @@ namespace Engines {
 namespace NWN {
 
 /** A NWN portrait model. */
-class Portrait : public Graphics::GUIFrontElement {
+class Portrait : public Graphics::GUIElement {
 public:
 	enum Size {
 		kSizeHuge   = 0,

@@ -36,7 +36,7 @@
 #include "src/events/notifyable.h"
 
 #include "src/graphics/types.h"
-#include "src/graphics/guifrontelement.h"
+#include <src/graphics/guielement.h>
 
 #include "src/graphics/aurora/types.h"
 #include "src/graphics/aurora/fonthandle.h"
@@ -49,7 +49,7 @@ namespace Engines {
 
 class Engine;
 
-class ConsoleWindow : public Graphics::GUIFrontElement, public Events::Notifyable {
+class ConsoleWindow : public Graphics::GUIElement, public Events::Notifyable {
 public:
 	ConsoleWindow(const Common::UString &font, size_t lines, size_t history,
 	              int fontHeight = 0);

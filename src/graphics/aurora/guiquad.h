@@ -27,7 +27,7 @@
 
 #include "src/common/maths.h"
 
-#include "src/graphics/guifrontelement.h"
+#include <src/graphics/guielement.h>
 
 #include "src/graphics/aurora/texturehandle.h"
 
@@ -39,7 +39,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-class GUIQuad : public GUIFrontElement {
+class GUIQuad : public GUIElement {
 public:
 	GUIQuad(const Common::UString &texture,
 	        float  x1       , float  y1       , float  x2       , float  y2,

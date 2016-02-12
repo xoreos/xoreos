@@ -46,7 +46,7 @@ noinst_HEADERS = \
                  camera.h \
                  renderable.h \
                  object.h \
-                 guifrontelement.h \
+                 guielement.h \
                  guibackelement.h \
                  yuv_to_rgb.h \
                  ttf.h \

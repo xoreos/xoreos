@@ -29,7 +29,7 @@
 #include "src/common/maths.h"
 
 #include "src/graphics/types.h"
-#include "src/graphics/guifrontelement.h"
+#include <src/graphics/guielement.h>
 
 #include "src/graphics/aurora/fonthandle.h"
 
@@ -38,7 +38,7 @@ namespace Graphics {
 namespace Aurora {
 
 /** A text object. */
-class Text : public GUIFrontElement {
+class Text : public GUIElement {
 public:
 	Text(const FontHandle &font, const Common::UString &str,
 	     float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f, float align = 0.0f);

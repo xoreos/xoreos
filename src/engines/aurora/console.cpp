@@ -68,7 +68,7 @@ namespace Engines {
 
 ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t history,
                              int fontHeight) :
-	Graphics::GUIFrontElement(Graphics::GUIFrontElement::kGUIElementFront),
+	Graphics::GUIElement(Graphics::GUIElement::kGUIElementFront),
 	_font(FontMan.get(font, fontHeight)), _historySizeMax(history),
 	_historySizeCurrent(0), _historyStart(0), _cursorPosition(0),
 	_overwrite(false), _cursorBlinkState(false), _lastCursorBlink(0) {
@@ -140,7 +140,7 @@ void ConsoleWindow::show() {
 	_prompt->show();
 	_input->show();
 
-	Graphics::GUIFrontElement::show();
+	Graphics::GUIElement::show();
 
 	GfxMan.unlockFrame();
 }
@@ -157,7 +157,7 @@ void ConsoleWindow::hide() {
 	_prompt->hide();
 	_input->hide();
 
-	Graphics::GUIFrontElement::hide();
+	Graphics::GUIElement::hide();
 
 	GfxMan.unlockFrame();
 }
