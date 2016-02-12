@@ -49,7 +49,8 @@ static const float kVertexY1 = kBottomScreenY;
 static const float kVertexX2 = kVertexX1 + kScreenWidth;
 static const float kVertexY2 = kVertexY1 + kScreenHeight;
 
-AreaBackground::AreaBackground(const Common::UString &name) {
+AreaBackground::AreaBackground(const Common::UString &name) :
+	Graphics::GUIElement(Graphics::GUIElement::kGUIElementBack) {
 	_distance = FLT_MAX;
 
 	loadTexture(name);
