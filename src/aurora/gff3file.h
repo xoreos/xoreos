@@ -179,7 +179,15 @@ public:
 		kFieldTypeStrRef      =  18  ///< String reference, index into a talk table.
 	};
 
-	/** Return the struct's ID. */
+	/** Return the struct's ID.
+	 *
+	 *  The ID is a (non-unique) number that's saved in the GFF3 file.
+	 *  It's sometimes used to identify the higher-level meaning of a struct
+	 *  within a GFF3.
+	 *
+	 *  The purpose of the ID in a GFF3 struct is comparable to the label in
+	 *  a GFF4 struct.
+	 */
 	uint32 getID() const;
 
 	/** Return the number of fields in this struct. */
