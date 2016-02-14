@@ -203,7 +203,19 @@ public:
 	/** Return the number of structs that refer to this struct. */
 	uint32 getRefCount() const;
 
-	/** Return the struct's label. */
+	/** Return the struct's label.
+	 *
+	 *  The label is a (non-unique) 4-byte value, most often consisting of
+	 *  upper-case letters ([A-Z]), that can sometimes be used to identify
+	 *  the higher-level meaning of a struct within a GFF4.
+	 *
+	 *  It is read as a big-endian 32-bit integer value. See the MKTAG()
+	 *  macro, as defined in src/common/endianness.h, for generating values
+	 *  to compare it against.
+	 *
+	 *  The purpose of the label in a GFF4 struct is comparable to the ID in
+	 *  a GFF3 struct.
+	 */
 	uint32 getLabel() const;
 
 	/** Return the number of fields in this struct. */
