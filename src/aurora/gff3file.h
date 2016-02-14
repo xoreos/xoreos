@@ -169,7 +169,7 @@ public:
 		kFieldTypeFloat       =   8, ///< IEEE float.
 		kFieldTypeDouble      =   9, ///< IEEE double.
 		kFieldTypeExoString   =  10, ///< String.
-		kFieldTypeResRef      =  11, ///< Resource reference, string, max. 16 characters.
+		kFieldTypeResRef      =  11, ///< Resource reference, string.
 		kFieldTypeLocString   =  12, ///< Localized string.
 		kFieldTypeVoid        =  13, ///< Random data of variable length.
 		kFieldTypeStruct      =  14, ///< Struct containing a number of fields.

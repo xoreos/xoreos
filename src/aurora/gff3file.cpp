@@ -552,6 +552,12 @@ Common::UString GFF3Struct::getString(const Common::UString &field,
 
 	// ResRef, resource reference, a shorter string
 	if (f->type == kFieldTypeResRef) {
+		/* In most games, this field has a limit of 16 characters, because
+		 * resource filenames were limited to 16 characters (without extension)
+		 * inside the archives. In Dragon Age: Origins and Dragon Age II,
+		 * however, this limit has been lifted, and a full 255 characters
+		 * are available in ResRef string fields. */
+
 		Common::SeekableReadStream &data = getData(*f);
 
 		const uint32 length = data.readByte();
