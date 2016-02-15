@@ -55,6 +55,10 @@ size_t GDAFile::getRowCount() const {
 	return _rowCount;
 }
 
+const GDAFile::Headers &GDAFile::getHeaders() const {
+	return _headers;
+}
+
 bool GDAFile::hasRow(size_t row) const {
 	return getRow(row) != 0;
 }
@@ -256,6 +260,16 @@ void GDAFile::load(Common::SeekableReadStream *gda) {
 		_rowStarts.push_back(_rowCount);
 		_rowCount += _rows.back()->size();
 
+		_headers.resize(_columns->size());
+		for (size_t i = 0; i < _columns->size(); i++) {
+			if (!(*_columns)[i])
+				continue;
+
+			_headers[i].hash  = (uint32) (*_columns)[i]->getUint(kGFF4G2DAColumnHash);
+			_headers[i].type  = (Type)   identifyType(_columns, _rows.back(), i);
+			_headers[i].field = (uint32) kGFF4G2DAColumn1 + i;
+		}
+
 	} catch (Common::Exception &e) {
 		clear();
 
@@ -305,6 +319,8 @@ void GDAFile::clear() {
 		delete *g;
 
 	_gff4s.clear();
+
+	_headers.clear();
 
 	_columns = 0;
 	_rows.clear();

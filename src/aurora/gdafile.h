@@ -61,6 +61,26 @@ public:
 	static const size_t kInvalidColumn = SIZE_MAX;
 	static const size_t kInvalidRow    = SIZE_MAX;
 
+	enum Type {
+		kTypeEmpty    = -1,
+		kTypeString   =  0,
+		kTypeInt      =  1,
+		kTypeFloat    =  2,
+		kTypeBool     =  3,
+		kTypeResource =  4
+	};
+
+	struct Header {
+		uint32 hash;
+		Type type;
+
+		uint32 field;
+
+		Header() : hash(0), type(kTypeEmpty), field(0xFFFFFFFF) { }
+	};
+	typedef std::vector<Header> Headers;
+
+
 	/** Take over this stream and read a GDA file out of it. */
 	GDAFile(Common::SeekableReadStream *gda);
 	~GDAFile();
@@ -83,6 +103,9 @@ public:
 
 	/** Does this row exist in the GDA? */
 	bool hasRow(size_t row) const;
+
+	/** Get the column headers. */
+	const Headers &getHeaders() const;
 
 	/** Get a row as a GFF4 struct. */
 	const GFF4Struct *getRow(size_t row) const;
@@ -118,6 +141,8 @@ private:
 
 
 	GFF4s _gff4s;
+
+	Headers _headers;
 
 	Columns _columns;
 	Rows    _rows;
