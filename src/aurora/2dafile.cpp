@@ -38,6 +38,9 @@
 
 #include "src/aurora/types.h"
 #include "src/aurora/2dafile.h"
+#include "src/aurora/gdafile.h"
+#include "src/aurora/gdaheaders.h"
+#include "src/aurora/gff4file.h"
 
 static const uint32 k2DAID     = MKTAG('2', 'D', 'A', ' ');
 static const uint32 k2DAIDTab  = MKTAG('2', 'D', 'A', '\t');
@@ -125,6 +128,12 @@ TwoDAFile::TwoDAFile(Common::SeekableReadStream &twoda) :
 	_defaultInt(0), _defaultFloat(0.0f), _emptyRow(*this) {
 
 	load(twoda);
+}
+
+TwoDAFile::TwoDAFile(const GDAFile &gda) :
+	_defaultInt(0), _defaultFloat(0.0f), _emptyRow(*this) {
+
+	load(gda);
 }
 
 TwoDAFile::~TwoDAFile() {
@@ -350,6 +359,67 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 void TwoDAFile::createHeaderMap() {
 	for (size_t i = 0; i < _headers.size(); i++)
 		_headerMap.insert(std::make_pair(_headers[i], i));
+}
+
+void TwoDAFile::load(const GDAFile &gda) {
+	try {
+
+		const GDAFile::Headers &headers = gda.getHeaders();
+		assert(headers.size() == gda.getColumnCount());
+
+		_headers.resize(gda.getColumnCount());
+		for (size_t i = 0; i < gda.getColumnCount(); i++) {
+			const char *headerString = findGDAHeader(headers[i].hash);
+
+			_headers[i] = headerString ? headerString : Common::UString::format("[%u]", headers[i].hash);
+		}
+
+		_rows.resize(gda.getRowCount(), 0);
+		for (size_t i = 0; i < gda.getRowCount(); i++) {
+			const GFF4Struct *row = gda.getRow(i);
+
+			_rows[i] = new TwoDARow(*this);
+			_rows[i]->_data.resize(gda.getColumnCount());
+
+			for (size_t j = 0; j < gda.getColumnCount(); j++) {
+				if (row) {
+					switch (headers[j].type) {
+						case GDAFile::kTypeString:
+						case GDAFile::kTypeResource:
+							_rows[i]->_data[j] = row->getString(headers[j].field);
+							break;
+
+						case GDAFile::kTypeInt:
+							_rows[i]->_data[j] = Common::UString::format("%d", (int) row->getSint(headers[j].field));
+							break;
+
+						case GDAFile::kTypeFloat:
+							_rows[i]->_data[j] = Common::UString::format("%f", row->getDouble(headers[j].field));
+							break;
+
+						case GDAFile::kTypeBool:
+							_rows[i]->_data[j] = Common::UString::format("%u", (uint) row->getUint(headers[j].field));
+							break;
+
+						default:
+							break;
+					}
+				}
+
+				if (_rows[i]->_data[j].empty())
+					_rows[i]->_data[j] = "****";
+
+			}
+		}
+
+	} catch (Common::Exception &e) {
+		clear();
+
+		e.add("Failed reading GDA file");
+		throw;
+	}
+
+	createHeaderMap();
 }
 
 size_t TwoDAFile::getRowCount() const {
