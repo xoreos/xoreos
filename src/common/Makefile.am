@@ -84,6 +84,7 @@ noinst_HEADERS = \
                  writefile.h \
                  filepath.h \
                  filelist.h \
+                 binsearch.h \
                  bitstream.h \
                  huffman.h \
                  vector3.h \
