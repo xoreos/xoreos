@@ -609,6 +609,9 @@ void TwoDAFile::writeBinary(Common::WriteStream &out) const {
 				offsets.push_back(dataSize);
 
 				dataSize += data.back().size() + 1;
+
+				if (dataSize > 65535)
+					throw Common::Exception("TwoDAFile::writeBinary(): Cell data size overflow");
 			}
 
 			// Remember the offset to the cell data array
