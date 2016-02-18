@@ -18,6 +18,11 @@ Files: dists/arch/PKGBUILD
 Copyright: 2015-2016 Sven Hesse <drmccoy@drmccoy.de>
 License: GPL-3.0+
 
+Files: dists/fedora/build-from-git.sh
+       dists/fedora/xoreos.spec
+Copyright: 2016 Ben Rosser <rosser.bjr@gmail.com>
+License: GPL-3.0+
+
 Files: dists/win32/xoreos.ico
 Copyright: 2013 Alex Bevilacqua
            2013 Sven Hesse <drmccoy@drmccoy.de>
