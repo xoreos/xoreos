@@ -279,8 +279,8 @@ public:
 	bool getSint(uint32 field, std::vector< int64> &list) const;
 	bool getBool(uint32 field, std::vector<bool  > &list) const;
 
-	bool  getDouble(uint32 field, std::vector<double> &list) const;
-	float getFloat (uint32 field, std::vector<float > &list) const;
+	bool getDouble(uint32 field, std::vector<double> &list) const;
+	bool getFloat (uint32 field, std::vector<float > &list) const;
 
 	/** Return field strings, read from the given encoding. */
 	bool getString(uint32 field, Common::Encoding encoding, std::vector<Common::UString> &list) const;

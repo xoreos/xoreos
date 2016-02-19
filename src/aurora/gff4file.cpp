@@ -1066,7 +1066,7 @@ bool GFF4Struct::getDouble(uint32 field, std::vector<double> &list) const {
 	return true;
 }
 
-float GFF4Struct::getFloat(uint32 field, std::vector<float> &list) const {
+bool GFF4Struct::getFloat(uint32 field, std::vector<float> &list) const {
 	const Field *f;
 	Common::SeekableReadStream *data = getField(field, f);
 	if (!data)
