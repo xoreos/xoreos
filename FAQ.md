@@ -67,6 +67,18 @@ US people are more likely to pronounce it "zore + eos" and European people
 are more likely to pronounce it "ksor + eos".
 
 
+How do you spell "xoreos"?
+--------------------------
+
+Canonically, "xoreos" is spelled all-lowercase, starting with a lowercase x.
+If you absolutely must uppercase the starting letter, "Xoreos" is okay as well.
+
+It is *never* "XoreOS" or "xoreOS". The "os" in "xoreos" is part of "Eos",
+not an abbreviation of "Operating System".
+
+xOreOs is right out.
+
+
 Have you tried using Ogre3D as your 3D engine?
 ----------------------------------------------
 
