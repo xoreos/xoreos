@@ -57,6 +57,16 @@ infrastructure, some of that already written, that's necessary for both goals.
 Feel free to contact us if you're that somebody.
 
 
+How do you pronounce "xoreos"?
+------------------------------
+
+Similar to [Xonotic](http://www.xonotic.org/), there are two pronunciations,
+depending on where you live.
+
+US people are more likely to pronounce it "zore + eos" and European people
+are more likely to pronounce it "ksor + eos".
+
+
 Have you tried using Ogre3D as your 3D engine?
 ----------------------------------------------
 
