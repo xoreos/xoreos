@@ -79,12 +79,20 @@ int main(int argc, char **argv) {
 	initConfig();
 
 	std::vector<Common::UString> args;
-	Common::Platform::getParameters(argc, argv, args);
-
 	Common::UString target;
-	int code;
-	if (!parseCommandline(args, target, code))
-		return code;
+
+	try {
+		Common::Platform::getParameters(argc, argv, args);
+
+		int code;
+		if (!parseCommandline(args, target, code))
+			return code;
+
+	} catch (...) {
+		Common::exceptionDispatcherError();
+
+		return 1;
+	}
 
 	// Check the requested target
 	if (target.empty() || !ConfigMan.hasGame(target)) {
