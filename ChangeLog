@@ -1,3 +1,19 @@
+Someday, ????-??-?? (Version 0.0.5)
+	- MAIN:
+		- Made --help display the user directories and config file
+	- AURORA:
+		- Unified some code between xoreos and xoreos-tools
+		- Fixed a potential field overflow in the binary 2DA writer
+	- GRAPHICS:
+		- Loosened restrictions on textures, allowing NPOT textures
+		- Fixed a potential race condition between environment
+		  mapping and cursor drawing
+	- ENGINES:
+		- JADE:
+			- Implemented more engine script functions
+	- DIST:
+		- Added Fedora package build files
+
 Monday, 2016-02-01 (Version 0.0.4)
 	- DOCS:
 		- Improved documentation in various files
