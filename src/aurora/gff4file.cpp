@@ -522,7 +522,7 @@ Common::SeekableReadStream *GFF4Struct::getField(uint32 fieldID, const Field *&f
 	return getData(*field);
 }
 
-uint32 GFF4Struct::getVectorMatrixLength(const Field &field, uint32 maxLength) const {
+uint32 GFF4Struct::getVectorMatrixLength(const Field &field, uint32 minLength, uint32 maxLength) const {
 	uint32 length;
 	if       (field.type == kFieldTypeVector3f)
 		length =  3;
@@ -535,6 +535,8 @@ uint32 GFF4Struct::getVectorMatrixLength(const Field &field, uint32 maxLength) c
 	else
 		throw Common::Exception("GFF4: Field is not of Vector/Matrix type");
 
+	if (length < minLength)
+		throw Common::Exception("GFF4: Vector/Matrix type is too short (%d < %d)", length, minLength);
 	if (length > maxLength)
 		throw Common::Exception("GFF4: Vector/Matrix type is too long (%d > %d)", length, maxLength);
 
@@ -871,7 +873,7 @@ bool GFF4Struct::getVector3(uint32 field, double &v1, double &v2, double &v3) co
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	getVectorMatrixLength(*f, 3);
+	getVectorMatrixLength(*f, 3, 3);
 
 	v1 = getDouble(*data, kFieldTypeFloat32);
 	v2 = getDouble(*data, kFieldTypeFloat32);
@@ -889,7 +891,7 @@ bool GFF4Struct::getVector3(uint32 field, float &v1, float &v2, float &v3) const
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	getVectorMatrixLength(*f, 3);
+	getVectorMatrixLength(*f, 3, 3);
 
 	v1 = getFloat(*data, kFieldTypeFloat32);
 	v2 = getFloat(*data, kFieldTypeFloat32);
@@ -907,7 +909,7 @@ bool GFF4Struct::getVector4(uint32 field, double &v1, double &v2, double &v3, do
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	getVectorMatrixLength(*f, 4);
+	getVectorMatrixLength(*f, 4, 4);
 
 	v1 = getDouble(*data, kFieldTypeFloat32);
 	v2 = getDouble(*data, kFieldTypeFloat32);
@@ -926,7 +928,7 @@ bool GFF4Struct::getVector4(uint32 field, float &v1, float &v2, float &v3, float
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	getVectorMatrixLength(*f, 4);
+	getVectorMatrixLength(*f, 4, 4);
 
 	v1 = getFloat(*data, kFieldTypeFloat32);
 	v2 = getFloat(*data, kFieldTypeFloat32);
@@ -945,7 +947,7 @@ bool GFF4Struct::getMatrix4x4(uint32 field, double (&m)[16]) const {
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	const uint32 length = getVectorMatrixLength(*f, 16);
+	const uint32 length = getVectorMatrixLength(*f, 0, 16);
 	for (uint32 i = 0; i < length; i++)
 		m[i] = getDouble(*data, kFieldTypeFloat32);
 
@@ -961,7 +963,7 @@ bool GFF4Struct::getMatrix4x4(uint32 field, float (&m)[16]) const {
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	const uint32 length = getVectorMatrixLength(*f, 16);
+	const uint32 length = getVectorMatrixLength(*f, 0, 16);
 	for (uint32 i = 0; i < length; i++)
 		m[i] = getFloat(*data, kFieldTypeFloat32);
 
@@ -977,7 +979,7 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<double> &vectorMatrix
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	const uint32 length = getVectorMatrixLength(*f, 16);
+	const uint32 length = getVectorMatrixLength(*f, 0, 16);
 
 	vectorMatrix.resize(length);
 	for (uint32 i = 0; i < length; i++)
@@ -995,7 +997,7 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<float> &vectorMatrix)
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	const uint32 length = getVectorMatrixLength(*f, 16);
+	const uint32 length = getVectorMatrixLength(*f, 0, 16);
 
 	vectorMatrix.resize(length);
 	for (uint32 i = 0; i < length; i++)
@@ -1151,7 +1153,7 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<double> 
 	if (!data)
 		return false;
 
-	const uint32 length = getVectorMatrixLength(*f, 16);
+	const uint32 length = getVectorMatrixLength(*f, 0, 16);
 	const uint32 count  = getListCount(*data, *f);
 
 	list.resize(count);
@@ -1171,7 +1173,7 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<float> >
 	if (!data)
 		return false;
 
-	const uint32 length = getVectorMatrixLength(*f, 16);
+	const uint32 length = getVectorMatrixLength(*f, 0, 16);
 	const uint32 count  = getListCount(*data, *f);
 
 	list.resize(count);

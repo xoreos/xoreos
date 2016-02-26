@@ -392,7 +392,7 @@ private:
 	Common::UString getString(Common::SeekableReadStream &data, const Field &field,
 	                          Common::Encoding encoding) const;
 
-	uint32 getVectorMatrixLength(const Field &field, uint32 maxLength) const;
+	uint32 getVectorMatrixLength(const Field &field, uint32 minLength, uint32 maxLength) const;
 	// '---
 
 
