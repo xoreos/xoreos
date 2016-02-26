@@ -947,7 +947,7 @@ bool GFF4Struct::getMatrix4x4(uint32 field, double (&m)[16]) const {
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	const uint32 length = getVectorMatrixLength(*f, 0, 16);
+	const uint32 length = getVectorMatrixLength(*f, 16, 16);
 	for (uint32 i = 0; i < length; i++)
 		m[i] = getDouble(*data, kFieldTypeFloat32);
 
@@ -963,7 +963,7 @@ bool GFF4Struct::getMatrix4x4(uint32 field, float (&m)[16]) const {
 	if (f->isList)
 		throw Common::Exception("GFF4: Tried reading list as singular value");
 
-	const uint32 length = getVectorMatrixLength(*f, 0, 16);
+	const uint32 length = getVectorMatrixLength(*f, 16, 16);
 	for (uint32 i = 0; i < length; i++)
 		m[i] = getFloat(*data, kFieldTypeFloat32);
 
