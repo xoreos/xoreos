@@ -118,7 +118,7 @@ void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int d
 	try {
 		ResMan.indexResourceDir(dir, glob, depth, priority, changeID);
 	} catch (Common::Exception &e) {
-		e.add("Failed to index directory archive \"%s\"", dir.c_str());
+		e.add("Failed to index mandatory directory \"%s\"", dir.c_str());
 		throw;
 	}
 }
