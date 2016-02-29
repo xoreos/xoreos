@@ -109,7 +109,12 @@ void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int d
 	if (EventMan.quitRequested())
 		return;
 
-	ResMan.indexResourceDir(dir, glob, depth, priority, changeID);
+	try {
+		ResMan.indexResourceDir(dir, glob, depth, priority, changeID);
+	} catch (Common::Exception &e) {
+		e.add("Failed to index directory archive \"%s\"", dir.c_str());
+		throw;
+	}
 }
 
 void indexMandatoryDirectory(const Common::UString &dir, const char *glob, int depth,
