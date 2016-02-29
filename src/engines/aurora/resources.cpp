@@ -39,7 +39,12 @@ void indexMandatoryArchive(const Common::UString &file, uint32 priority, const s
 	if (EventMan.quitRequested())
 		return;
 
-	ResMan.indexArchive(file, priority, password, changeID);
+	try {
+		ResMan.indexArchive(file, priority, password, changeID);
+	} catch (Common::Exception &e) {
+		e.add("Failed to index mandatory archive \"%s\"", file.c_str());
+		throw;
+	}
 }
 
 void indexMandatoryArchive(const Common::UString &file, uint32 priority, const std::vector<byte> &password,
