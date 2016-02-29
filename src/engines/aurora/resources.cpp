@@ -139,7 +139,13 @@ bool indexOptionalDirectory(const Common::UString &dir, const char *glob, int de
 	if (!ResMan.hasResourceDir(dir))
 		return false;
 
-	ResMan.indexResourceDir(dir, glob, depth, priority, changeID);
+	try {
+		ResMan.indexResourceDir(dir, glob, depth, priority, changeID);
+	} catch (Common::Exception &e) {
+		e.add("Found optional directory \"%s\", but failed to index it", dir.c_str());
+		throw;
+	}
+
 	return true;
 }
 
