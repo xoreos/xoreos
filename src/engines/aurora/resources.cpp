@@ -75,7 +75,13 @@ bool indexOptionalArchive(const Common::UString &file, uint32 priority, const st
 	if (!ResMan.hasArchive(file))
 		return false;
 
-	ResMan.indexArchive(file, priority, password, changeID);
+	try {
+		ResMan.indexArchive(file, priority, password, changeID);
+	} catch (Common::Exception &e) {
+		e.add("Found optional archive \"%s\", but failed to index it", file.c_str());
+		throw;
+	}
+
 	return true;
 }
 
