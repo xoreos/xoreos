@@ -131,7 +131,7 @@ public:
 	 *
 	 *  @param sep     Use this character as the separator between date and time.
 	 *  @param sepDate Use this character as the separator between the date elements.
-	 *  @parem sepTime Use this character as the separator between the time elements.
+	 *  @param sepTime Use this character as the separator between the time elements.
 	 */
 	UString formatDateTimeISO(uint32 sep = 0, uint32 sepDate = 0, uint32 sepTime = 0) const;
 };
