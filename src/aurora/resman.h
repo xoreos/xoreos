@@ -247,7 +247,8 @@ public:
 	 *  If this resources does not exist, or the resource is not a direct file
 	 *  (because it's found within an archive), an empty string will be returned.
 	 *
-	 *  @param name The name (with extension) of the resource.
+	 *  @param name The name (ResRef) of the resource.
+	 *  @param type The resource's type.
 	 */
 	Common::UString findResourceFile(const Common::UString &name, FileType type) const;
 
@@ -256,7 +257,8 @@ public:
 	 *  If this resources does not exist, or the resource is not a direct file
 	 *  (because it's found within an archive), an empty string will be returned.
 	 *
-	 *  @param name The name (with extension) of the resource.
+	 *  @param name The name (ResRef) of the resource.
+	 *  @param type The resource's type.
 	 */
 	Common::UString findResourceFile(const Common::UString &name, ResourceType type) const;
 
@@ -274,7 +276,8 @@ public:
 	 *  If this resources does not exist, or the resource is not a direct file
 	 *  (because it's found within an archive), an empty string will be returned.
 	 *
-	 *  @param name The name (with extension) of the resource.
+	 *  @param name The name (ResRef) of the resource.
+	 *  @param types The resource's types.
 	 */
 	Common::UString findResourceFile(const Common::UString &name, const std::vector<FileType> &types) const;
 
