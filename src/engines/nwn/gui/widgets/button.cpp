@@ -131,6 +131,12 @@ void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)
 	}
 }
 
+void WidgetButton::mouseWheel(uint8 state, int x, int y) {
+	if (_owner) {
+		_owner->mouseWheel(state, x, y);
+	}
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines
