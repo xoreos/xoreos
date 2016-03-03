@@ -199,7 +199,8 @@ void Widget::addSub(Widget &widget) {
 
 	widget._owner = this;
 
-	_gui->addWidget(&widget);
+	if (!_gui->hasWidget(widget.getTag()))
+		_gui->addWidget(&widget);
 }
 
 void Widget::addChild(Widget &widget) {
