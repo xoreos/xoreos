@@ -30,6 +30,8 @@
 #include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 
+#include "src/engines/nwn/gui/chargen/charskills.h"
+#include "src/engines/nwn/gui/chargen/charfeats.h"
 #include "src/engines/nwn/gui/chargen/charpackage.h"
 
 namespace Engines {
@@ -40,15 +42,16 @@ CharPackage::CharPackage(CharGenChoices &choices, ::Engines::Console *console) :
 	_choices = &choices;
 	load("cg_package");
 
-	//TODO Implement package recommendation.
+	// TODO Implement package recommendation.
 	getButton("RecommendButton", true)->setDisabled(true);
-	//TODO Implement package configuration.
-	getButton("ConfigurePckg", true)->setDisabled(true);
 
 	_packageListBox = getListBox("ClassListBox", true);
 }
 
 CharPackage::~CharPackage() {
+	for (std::vector<CharGenBase *>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
+		delete *g;
+	}
 }
 
 void CharPackage::reset() {
@@ -56,6 +59,11 @@ void CharPackage::reset() {
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(487));
 
 	_choices->setCharPackage(10000);
+
+	for (std::vector<CharGenBase *>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
+		delete *g;
+	}
+	_subGUIs.clear();
 }
 
 void CharPackage::show() {
@@ -81,6 +89,28 @@ void CharPackage::callbackActive(Widget &widget) {
 		size_t choice = _packageListBox->getSelected();
 		getEditBox("HelpBox", true)->setText("fnt_galahad14", _helpTexts[choice]);
 		getEditBox("HelpBox", true)->setTitle("fnt_galahad14", _packageNames[choice]);
+	}
+
+	if (widget.getTag() == "ConfigurePckg") {
+		if (_subGUIs.size() == 0) {
+			CharSkills *charSkills = new CharSkills(*_choices, _console);
+			_subGUIs.push_back(charSkills);
+			// TODO Check if new feats are needed.
+			CharFeats *charFeats = new CharFeats(*_choices, _console);
+			_subGUIs.push_back(charFeats);
+		}
+
+		uint32 subReturnCode;
+		for (std::vector<CharGenBase *>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
+			subReturnCode = sub(**g, 0, false);
+			if (subReturnCode == 1) {
+				reset();
+				_returnCode = 1;
+				return;
+			}
+		}
+
+		_returnCode = 2;
 	}
 }
 

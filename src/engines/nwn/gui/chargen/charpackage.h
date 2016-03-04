@@ -31,6 +31,8 @@ namespace Engines {
 
 namespace NWN {
 
+class CharSkills;
+
 class CharPackage : public CharGenBase {
 public:
 	CharPackage(CharGenChoices &choices, ::Engines::Console *console);
@@ -46,6 +48,8 @@ protected:
 
 private:
 	WidgetListBox *_packageListBox;
+
+	std::vector<CharGenBase *>   _subGUIs;
 
 	std::vector<Common::UString> _packageNames;
 	std::vector<uint32>          _packageID;
