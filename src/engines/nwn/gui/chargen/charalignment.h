@@ -18,7 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-  /** @file
+/** @file
  *  The alignment chooser in CharGen.
  */
 
