@@ -79,6 +79,8 @@ CharFeats::CharFeats(CharGenChoices &choices, ::Engines::Console *console) : Cha
 
 	// TODO: Recommend button
 	getButton("RecommendButton", true)->setDisabled(true);
+	// TODO: Reset button
+	getButton("ResetButton", true)->setDisabled(true);
 
 	_featHelp   = new CharFeatHelp(console);
 	_featsPopup = new CharFeatsPopup(console);
