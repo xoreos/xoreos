@@ -47,6 +47,7 @@ CharGenChoices::CharGenChoices() {
 	_racialAbilities.assign(6, 0);
 
 	_package = 10000;
+	_skills.assign(28, 0);
 }
 
 CharGenChoices::~CharGenChoices() {
@@ -60,6 +61,8 @@ void CharGenChoices::reset() {
 	_racialFeats.clear();
 	_normalFeats.clear();
 	_classFeats.clear();
+
+	_skills.assign(28, 0);
 }
 
 const Creature &CharGenChoices::getCharacter() {
@@ -129,6 +132,14 @@ void CharGenChoices::setCharAbilities(std::vector<uint32> abilities,
 
 void CharGenChoices::setCharPackage(uint32 package) {
 	_package = package;
+}
+
+void CharGenChoices::setCharSkill(size_t skillIndex, uint8 rank) {
+	_skills[skillIndex] = rank;
+}
+
+void CharGenChoices::setCharNotUsedSkills(uint8 notUsedSkills) {
+	_notUsedSkills = notUsedSkills;
 }
 
 bool CharGenChoices::hasFeat(uint32 featId) const {

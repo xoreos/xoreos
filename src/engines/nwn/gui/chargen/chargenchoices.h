@@ -55,6 +55,8 @@ public:
 	void setCharAlign(uint32 goodness, uint32 loyalty);
 	void setCharAbilities(std::vector<uint32> abilities, std::vector<uint32> racialAbilities);
 	void setCharPackage(uint32 package);
+	void setCharSkill(size_t skillIndex, uint8 rank);
+	void setCharNotUsedSkills(uint8 notUsedSkills);
 
 	bool hasFeat(uint32 featId) const;
 	uint32 getClass() const;
@@ -70,11 +72,13 @@ private:
 	std::vector<uint32> _classFeats;
 	std::vector<uint32> _abilities;
 	std::vector<uint32> _racialAbilities;
+	std::vector<uint8> _skills;
 
 	uint32 _classId;
 	uint32 _goodness;
 	uint32 _loyalty;
 	uint32 _package;
+	uint8 _notUsedSkills;
 
 };
 
