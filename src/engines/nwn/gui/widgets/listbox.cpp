@@ -22,6 +22,7 @@
  *  A NWN listbox widget.
  */
 
+#include <algorithm>
 #include <cassert>
 
 #include "src/common/util.h"
@@ -44,10 +45,18 @@ namespace Engines {
 
 namespace NWN {
 
+bool compPtrItem(WidgetListItem *itemA, WidgetListItem *itemB) {
+	return *itemA < *itemB;
+}
+
 WidgetListItem::WidgetListItem(::Engines::GUI &gui) : NWNWidget(gui, ""), _itemNumber(0xFFFFFFFF), _state(false) {
 }
 
 WidgetListItem::~WidgetListItem() {
+}
+
+bool WidgetListItem::operator<(const WidgetListItem &item) const {
+	return getTag() < item.getTag();
 }
 
 void WidgetListItem::mouseUp(uint8 state, float UNUSED(x), float UNUSED(y)) {
@@ -500,6 +509,13 @@ void WidgetListBox::unlock() {
 
 	if (isVisible())
 		updateVisible();
+}
+
+void WidgetListBox::sortByTag() {
+	std::sort(_items.begin(), _items.end(), compPtrItem);
+	for (uint16 it = 0; it < _items.size(); ++it) {
+		_items[it]->_itemNumber = it;
+	}
 }
 
 void WidgetListBox::setText(const Common::UString &font,

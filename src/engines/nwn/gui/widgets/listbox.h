@@ -50,6 +50,7 @@ public:
 	WidgetListItem(::Engines::GUI &gui);
 	~WidgetListItem();
 
+	bool operator<(const WidgetListItem &item) const;
 	void mouseUp   (uint8 state, float x, float y);
 	void mouseWheel(uint8 state, int x, int y);
 
@@ -137,6 +138,7 @@ public:
 	void add(WidgetListItem *item, bool noTag = false);
 	void remove(WidgetListItem *item);
 	void unlock();
+	void sortByTag();
 
 	void setText(const Common::UString &font, const Common::UString &text,
 	             float spacing = 0.0f);
