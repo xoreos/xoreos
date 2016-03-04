@@ -67,6 +67,8 @@ PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
 GraphicsManager::GraphicsManager() {
 	_ready = false;
 
+	_debugGL = false;
+
 	_needManualDeS3TC        = false;
 	_supportMultipleTextures = false;
 	_multipleTextureCount    = 0;
@@ -124,6 +126,8 @@ GraphicsManager::~GraphicsManager() {
 
 void GraphicsManager::init() {
 	Common::enforceMainThread();
+
+	_debugGL = ConfigMan.getBool("debuggl", false);
 
 	const uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK;
 	if (SDL_Init(sdlInitFlags) < 0)
@@ -290,6 +294,10 @@ bool GraphicsManager::setFSAA(int level) {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, _glProfile);
 	}
+
+	// Create a debug context?
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, _debugGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0);
+
 	_glContext = SDL_GL_CreateContext(_screen);
 	rebuildContext();
 
@@ -347,6 +355,9 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK , _glProfile);
 
+	// Create a debug context?
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, _debugGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0);
+
 	_glContext = SDL_GL_CreateContext(_screen);
 	if (_glContext)
 		return true;
@@ -364,6 +375,9 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK , _glProfile);
 
+	// Create a debug context?
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, _debugGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0);
+
 	_glContext = SDL_GL_CreateContext(_screen);
 	if (_glContext)
 		return true;
@@ -377,12 +391,65 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK , _glProfile);
 
+	// Create a debug context?
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, _debugGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0);
+
 	_glContext = SDL_GL_CreateContext(_screen);
 	if (_glContext)
 		return true;
 
 	SDL_DestroyWindow(_screen);
 	return false;
+}
+
+static const char *getGLDebugSource(GLenum source) {
+	if ((source < GL_DEBUG_SOURCE_API_ARB) || (source > GL_DEBUG_SOURCE_OTHER_ARB))
+		return "Unknown";
+
+	static const char * const kSourceName[] = { "API", "Window", "Shader", "3rd", "App", "Other" };
+
+	return kSourceName[source - GL_DEBUG_SOURCE_API_ARB];
+}
+
+static const char *getGLDebugType(GLenum type) {
+	if ((type < GL_DEBUG_TYPE_ERROR_ARB) || (type > GL_DEBUG_TYPE_OTHER_ARB))
+		return "Unknown";
+
+	static const char * const kTypeName[] =
+	{ "Error", "Deprecated", "Undefined", "Portability", "Performance", "Other" };
+
+	return kTypeName[type - GL_DEBUG_TYPE_ERROR_ARB];
+}
+
+static const char *getGLDebugSeverity(GLenum severity) {
+	if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+		return "Notification";
+
+	if ((severity < GL_DEBUG_SEVERITY_HIGH_ARB) || (severity > GL_DEBUG_SEVERITY_LOW_ARB))
+		return "Unknown";
+
+	static const char * const kSevName[] = { "High", "Medium", "Low" };
+
+	return kSevName[severity - GL_DEBUG_SEVERITY_HIGH_ARB];
+}
+
+static void outputGLDebug(GLenum source, GLenum type, GLuint id, GLenum severity,
+                          GLsizei UNUSED(length), const GLchar *message,
+                          const void *UNUSED(userParam)) {
+
+	// Print OpenGL debug output, but suppress duplicates
+
+	static GLenum lastSource = 0;
+	static GLenum lastType   = 0;
+	static GLuint lastID     = 0;
+
+	if ((lastSource != source) || (lastType != type) || (lastID != id))
+		warning("GL<%s,%s,%s,%u>: %s", getGLDebugSource(source), getGLDebugType(type),
+		                               getGLDebugSeverity(severity), id, message);
+
+	lastSource = source;
+	lastType   = type;
+	lastID     = id;
 }
 
 void GraphicsManager::checkGLExtensions() {
@@ -425,6 +492,13 @@ void GraphicsManager::checkGLExtensions() {
 		warning("Your graphics card does no support applying multiple textures onto "
 		        "one surface");
 		warning("xoreos will only use one texture. Certain surfaces may look weird");
+	}
+
+	if (_debugGL && GLEW_ARB_debug_output) {
+		warning("Enabled OpenGL debug output");
+
+		glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE);
+		glDebugMessageCallbackARB(&outputGLDebug, 0);
 	}
 }
 

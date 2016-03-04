@@ -188,6 +188,8 @@ private:
 
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
+	bool _debugGL; ///< Should we create an OpenGL debug context?
+
 	// Extensions
 	bool   _needManualDeS3TC;        ///< Do we need to do manual S3TC DXTn decompression?
 	bool   _supportMultipleTextures; ///< Do we have support for multiple textures?
