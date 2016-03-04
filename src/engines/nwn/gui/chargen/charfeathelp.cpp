@@ -25,6 +25,7 @@
 #include "src/engines/nwn/gui/widgets/portrait.h"
 #include "src/engines/nwn/gui/widgets/editbox.h"
 #include "src/engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/chargen/charfeats.h"
 #include "src/engines/nwn/gui/chargen/charfeathelp.h"
 
@@ -44,6 +45,10 @@ CharFeatHelp::CharFeatHelp(::Engines::Console *console) : GUI(console) {
 	_icon->setPosition(-200, 145, pZ - 10);
 
 	getEditBox("EditBox", true)->addChild(*_icon);
+
+	// Remove unnecessary button.
+	getLabel("OkButton#Caption", true)->remove();
+	getButton("OkButton", true)->remove();
 }
 
 CharFeatHelp::~CharFeatHelp() {
