@@ -22,8 +22,8 @@
  *  The skills selection GUI.
  */
 
-#ifndef CHARSKILLS_H
-#define CHARSKILLS_H
+#ifndef ENGINES_NWN_GUI_CHARGEN_CHARSKILLS_H
+#define ENGINES_NWN_GUI_CHARGEN_CHARSKILLS_H
 
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
@@ -96,4 +96,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // CHARSKILLS_H
+#endif // ENGINES_NWN_GUI_CHARGEN_CHARSKILLS_H
