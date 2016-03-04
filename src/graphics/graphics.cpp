@@ -69,6 +69,7 @@ GraphicsManager::GraphicsManager() {
 
 	_needManualDeS3TC        = false;
 	_supportMultipleTextures = false;
+	_multipleTextureCount    = 0;
 
 	_fullScreen = false;
 
@@ -172,6 +173,7 @@ void GraphicsManager::deinit() {
 
 	_needManualDeS3TC        = false;
 	_supportMultipleTextures = false;
+	_multipleTextureCount    = 0;
 }
 
 bool GraphicsManager::ready() const {
@@ -184,6 +186,10 @@ bool GraphicsManager::needManualDeS3TC() const {
 
 bool GraphicsManager::supportMultipleTextures() const {
 	return _supportMultipleTextures;
+}
+
+size_t GraphicsManager::getMultipleTextureCount() const {
+	return _multipleTextureCount;
 }
 
 int GraphicsManager::getMaxFSAA() const {
@@ -403,14 +409,23 @@ void GraphicsManager::checkGLExtensions() {
 		}
 	}
 
+
 	if (!GLEW_ARB_multitexture) {
+		_supportMultipleTextures = false;
+		_multipleTextureCount    = 1;
+	} else {
+		GLint maxTextureCoords = -1;
+		glGetIntegerv(GL_MAX_TEXTURE_COORDS, &maxTextureCoords);
+
+		_multipleTextureCount    = (maxTextureCoords <= 0) ? 1 : maxTextureCoords;
+		_supportMultipleTextures = _multipleTextureCount > 1;
+	}
+
+	if (!_supportMultipleTextures) {
 		warning("Your graphics card does no support applying multiple textures onto "
 		        "one surface");
 		warning("xoreos will only use one texture. Certain surfaces may look weird");
-
-		_supportMultipleTextures = false;
-	} else
-		_supportMultipleTextures = true;
+	}
 }
 
 void GraphicsManager::setWindowTitle(const Common::UString &title) {

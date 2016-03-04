@@ -328,11 +328,10 @@ void TextureManager::set(const TextureHandle &handle, TextureMode mode) {
 }
 
 void TextureManager::activeTexture(size_t n) {
-	if (n >= kTextureUnitCount)
+	if ((n >= GfxMan.getMultipleTextureCount()) || (n >= ARRAYSIZE(kTextureUnit)))
 		return;
 
-	if (GfxMan.supportMultipleTextures())
-		glActiveTextureARB(kTextureUnit[n]);
+	glActiveTextureARB(kTextureUnit[n]);
 }
 
 } // End of namespace Aurora

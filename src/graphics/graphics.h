@@ -63,6 +63,8 @@ public:
 	bool needManualDeS3TC() const;
 	/** Do we have support for multiple textures? */
 	bool supportMultipleTextures() const;
+	/** Return the number of texture units for multiple textures. */
+	size_t getMultipleTextureCount() const;
 
 	/** Set the screen size. */
 	void setScreenSize(int width, int height);
@@ -187,8 +189,9 @@ private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
 	// Extensions
-	bool _needManualDeS3TC;        ///< Do we need to do manual S3TC DXTn decompression?
-	bool _supportMultipleTextures; ///< Do we have support for multiple textures?
+	bool   _needManualDeS3TC;        ///< Do we need to do manual S3TC DXTn decompression?
+	bool   _supportMultipleTextures; ///< Do we have support for multiple textures?
+	size_t _multipleTextureCount;    ///< The number of texture units for multiple textures.
 
 	bool _fullScreen; ///< Are we currently in fullscreen mode?
 
