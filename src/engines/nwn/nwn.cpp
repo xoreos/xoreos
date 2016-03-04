@@ -136,7 +136,7 @@ void NWNEngine::run() {
 }
 
 void NWNEngine::init() {
-	LoadProgress progress(21);
+	LoadProgress progress(20);
 
 	progress.step("Declare languages");
 	declareLanguages();
