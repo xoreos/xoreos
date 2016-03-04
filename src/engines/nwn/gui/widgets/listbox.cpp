@@ -400,7 +400,7 @@ void WidgetListBox::reserve(size_t n) {
 	_items.reserve(n);
 }
 
-void WidgetListBox::add(WidgetListItem *item) {
+void WidgetListBox::add(WidgetListItem *item, bool noTag) {
 	assert(_locked);
 
 	if (!_items.empty())
@@ -409,7 +409,8 @@ void WidgetListBox::add(WidgetListItem *item) {
 
 	item->_itemNumber = _items.size();
 
-	item->setTag(Common::UString::format("%s#Item%d", getTag().c_str(), (int)_items.size()));
+	if (!noTag)
+		item->setTag(Common::UString::format("%s#Item%d", getTag().c_str(), (int)_items.size()));
 
 	for (std::vector<WidgetListItem *>::iterator i = _items.begin(); i != _items.end(); ++i) {
 		(*i)->addGroupMember(*item);
@@ -419,6 +420,44 @@ void WidgetListBox::add(WidgetListItem *item) {
 	_items.push_back(item);
 
 	addSub(*item);
+
+	if (isVisible()) {
+		updateScrollbarLength();
+		updateScrollbarPosition();
+	}
+}
+
+void WidgetListBox::remove(WidgetListItem *item) {
+	assert(_locked);
+
+	for (size_t it = 0; it < _visibleItems.size(); ++it) {
+		if (_visibleItems[it] == item) {
+			_visibleItems.erase(_visibleItems.begin() + it);
+			break;
+		}
+	}
+
+	std::vector<WidgetListItem *>::iterator itItem;
+	for (std::vector<WidgetListItem *>::iterator i = _items.begin(); i != _items.end(); ++i) {
+		(*i)->removeGroupMember(*item);
+		item->removeGroupMember(**i);
+		if (*i == item)
+			itItem = i;
+	}
+
+	_items.erase(itItem);
+
+	removeSub(*item);
+	item->_itemNumber = 0xFFFFFFFF;
+
+	_selectedItem = 0xFFFFFFFF;
+
+	ptrdiff_t max = _items.size() - _visibleItems.size();
+	if (max > 0 && _scrollbar->getState() == 1.f)
+		_startItem -= 1;
+
+	if (item->isVisible())
+		item->hide();
 }
 
 void WidgetListBox::unlock() {
@@ -458,6 +497,9 @@ void WidgetListBox::unlock() {
 	updateScrollbarPosition();
 
 	GfxMan.unlockFrame();
+
+	if (isVisible())
+		updateVisible();
 }
 
 void WidgetListBox::setText(const Common::UString &font,

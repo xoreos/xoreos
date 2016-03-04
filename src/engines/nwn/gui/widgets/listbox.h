@@ -134,7 +134,8 @@ public:
 	void lock();
 	void clear();
 	void reserve(size_t n);
-	void add(WidgetListItem *item);
+	void add(WidgetListItem *item, bool noTag = false);
+	void remove(WidgetListItem *item);
 	void unlock();
 
 	void setText(const Common::UString &font, const Common::UString &text,
