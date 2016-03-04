@@ -162,12 +162,10 @@ CharSkills::CharSkills(CharGenChoices &choices, ::Engines::Console *console) : C
 	// Adjust panel position.
 	WidgetLabel *costBox = getLabel("CostBox", true);
 	costBox->movePosition(costBox->getWidth(), 0.f, 0.f);
-	WidgetLabel *ptsRemainingBox = getLabel("PtsRemainingBox", true);
-	ptsRemainingBox->movePosition(ptsRemainingBox->getWidth(), 0.f, 0.f);
 
 	createSkillsList();
 
-	ptsRemainingBox->setText(Common::composeString<uint32>(_availableSkillRank));
+	getLabel("PtsRemainingBox", true)->setText(Common::composeString<uint32>(_availableSkillRank));
 
 	// Default help texts.
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(58250));
