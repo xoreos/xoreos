@@ -142,6 +142,10 @@ void CharGenChoices::setCharNotUsedSkills(uint8 notUsedSkills) {
 	_notUsedSkills = notUsedSkills;
 }
 
+void CharGenChoices::setCharFeat(uint32 feat) {
+	_normalFeats.push_back(feat);
+}
+
 bool CharGenChoices::hasFeat(uint32 featId) const {
 	for (std::vector<uint32>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
 		if (*f == featId)
@@ -156,6 +160,92 @@ bool CharGenChoices::hasFeat(uint32 featId) const {
 			return true;
 
 	return _creature->hasFeat(featId);
+}
+
+bool CharGenChoices::hasPrereqFeat(uint32 featId, bool isClassFeat) {
+	const Aurora::TwoDAFile &twodaFeats = TwoDAReg.get2DA("feat");
+	const Aurora::TwoDARow  &row        = twodaFeats.getRow(featId);
+
+	// Some feats have been removed. Check if it's the case.
+	if (row.empty("FEAT"))
+		return false;
+
+	if (!row.getInt("ALLCLASSESCANUSE") && !isClassFeat)
+		return false;
+
+	// Check abilities.
+	if ((uint32) row.getInt("MINSTR") > getAbility(kAbilityStrength))
+		return false;
+	if ((uint32) row.getInt("MINDEX") > getAbility(kAbilityDexterity))
+		return false;
+	if ((uint32) row.getInt("MININT") > getAbility(kAbilityIntelligence))
+		return false;
+	if ((uint32) row.getInt("MINWIS") > getAbility(kAbilityWisdom))
+		return false;
+	if ((uint32) row.getInt("MINCHA") > getAbility(kAbilityCharisma))
+		return false;
+	if ((uint32) row.getInt("MINCON") > getAbility(kAbilityConstitution))
+		return false;
+
+	// Check if the character has the prerequisite feats.
+	if (!row.empty("PREREQFEAT1") && !hasFeat(row.getInt("PREREQFEAT1")))
+		return false;
+	if (!row.empty("PREREQFEAT2") && !hasFeat(row.getInt("PREREQFEAT2")))
+		return false;
+
+	if (!row.empty("OrReqFeat0")) {
+		bool OrReqFeat = hasFeat(row.getInt("OrReqFeat0"));
+		if (!row.empty("OrReqFeat1")) {
+			OrReqFeat = OrReqFeat || hasFeat(row.getInt("OrReqFeat1"));
+			if (!row.empty("OrReqFeat2")) {
+				OrReqFeat = OrReqFeat || hasFeat(row.getInt("OrReqFeat2"));
+				if (!row.empty("OrReqFeat3")) {
+					OrReqFeat = OrReqFeat || hasFeat(row.getInt("OrReqFeat3"));
+					if (!row.empty("OrReqFeat4"))
+						OrReqFeat = OrReqFeat || hasFeat(row.getInt("OrReqFeat4"));
+				}
+			}
+		}
+
+		if (!OrReqFeat)
+			return false;
+	}
+
+	// TODO Check base bonus attack
+	if (row.getInt("PreReqEpic") > 0 && _creature->getHitDice() < 21)
+		return false;
+
+	// Check minimun level.
+	if ((_creature->getClassLevel(row.getInt("MinLevelClass")) < row.getInt("MinLevel")) && !row.empty("MinLevel"))
+		return false;
+
+	// Check maximum level.
+	if ((_creature->getHitDice() >= row.getInt("MaxLevel")) && !row.empty("MaxLevel"))
+		return false;
+
+	// Check skill rank.
+	if (!row.empty("REQSKILL")) {
+		if (_skills[row.getInt("REQSKILL")] == 0)
+			return false;
+		if ((row.getInt("ReqSkillMinRanks") > _skills[row.getInt("REQSKILL")]) && !row.empty("ReqSkillMinRanks"))
+			return false;
+	}
+	if (!row.empty("REQSKILL2")) {
+		if (_skills[row.getInt("REQSKILL2")] == 0)
+			return false;
+		if ((row.getInt("ReqSkillMinRanks2") > _skills[row.getInt("REQSKILL2")]) && !row.empty("ReqSkillMinRanks2"))
+			return false;
+	}
+
+	// Check if the character already has the feat.
+	if (hasFeat(featId)) {
+		if (!row.getInt("GAINMULTIPLE"))
+			return false;
+	}
+
+	// TODO Check spell level
+	// TODO Check saving throw
+	return true;
 }
 
 uint32 CharGenChoices::getClass() const {
@@ -182,6 +272,12 @@ uint32 CharGenChoices::getAbility(uint32 ability) const {
 
 uint32 CharGenChoices::getPackage() const {
 	return _package;
+}
+
+std::vector<uint32> CharGenChoices::getFeats() {
+	std::vector<uint32> allFeats(_racialFeats);
+	allFeats.insert(allFeats.end(), _classFeats.begin(), _classFeats.end());
+	return allFeats;
 }
 
 } // End of namespace NWN

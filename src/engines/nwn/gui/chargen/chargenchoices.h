@@ -57,12 +57,15 @@ public:
 	void setCharPackage(uint32 package);
 	void setCharSkill(size_t skillIndex, uint8 rank);
 	void setCharNotUsedSkills(uint8 notUsedSkills);
+	void setCharFeat(uint32 feat);
 
 	bool hasFeat(uint32 featId) const;
+	bool hasPrereqFeat(uint32 featId, bool isClassFeat);
 	uint32 getClass() const;
 	uint32 getRace() const;
 	bool getAlign(uint32 &goodness, uint32 &loyalty) const;
 	uint32 getAbility(uint32 ability) const;
+	std::vector<uint32> getFeats();
 	uint32 getPackage() const;
 
 private:
