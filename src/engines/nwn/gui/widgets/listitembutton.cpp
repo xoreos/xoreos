@@ -33,6 +33,7 @@
 #include "src/engines/aurora/util.h"
 
 #include "src/engines/nwn/gui/widgets/portrait.h"
+#include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 
 namespace Engines {
@@ -56,10 +57,14 @@ WidgetListItemBaseButton::~WidgetListItemBaseButton() {
 }
 
 void WidgetListItemBaseButton::show() {
+	WidgetListItem::show();
+
 	_button->show();
 }
 
 void WidgetListItemBaseButton::hide() {
+	WidgetListItem::hide();
+
 	_button->hide();
 }
 
@@ -110,8 +115,9 @@ bool WidgetListItemBaseButton::deactivate() {
 
 WidgetListItemButton::WidgetListItemButton(::Engines::GUI &gui, const Common::UString &button,
                                            const Common::UString &text, const Common::UString &icon,
-                                           const Common::UString &soundClick) :
-                                           WidgetListItemBaseButton(gui, button, 1.0f, soundClick) {
+                                           uint32 otherButtons, const Common::UString &soundClick) :
+                                           WidgetListItemBaseButton(gui, button, 1.0f, soundClick),
+                                           _isRight(true) {
 
 	_text = new Graphics::Aurora::Text(FontMan.get("fnt_galahad14"), text);
 
@@ -120,6 +126,26 @@ WidgetListItemButton::WidgetListItemButton(::Engines::GUI &gui, const Common::US
 	} else {
 		_icon = new Portrait(icon, Portrait::kSizeIcon);
 	}
+
+	if (otherButtons & kHelpButton) {
+		_helpButton = loadModelGUI("ctl_cg_btn_help");
+	} else {
+		_helpButton = 0;
+	}
+
+	if (otherButtons & kMoveButton) {
+		_isMovable = true;
+		_moveButtonRight = new WidgetButton(gui, "Item#" + text + "#MoveButtonRight", "ctl_cg_btn_right");
+		_moveButtonLeft  = new WidgetButton(gui, "Item#" + text + "#MoveButtonLeft", "ctl_cg_btn_left");
+
+		addSub(*_moveButtonRight);
+		addSub(*_moveButtonLeft);
+
+	} else {
+		_isMovable = false;
+		_moveButtonLeft = 0;
+		_moveButtonRight = 0;
+	}
 }
 
 WidgetListItemButton::~WidgetListItemButton() {
@@ -127,6 +153,11 @@ WidgetListItemButton::~WidgetListItemButton() {
 
 	if (_icon)
 		delete _icon;
+
+	if (_moveButtonLeft) {
+		_moveButtonLeft->remove();
+		_moveButtonRight->remove();
+	}
 }
 
 void WidgetListItemButton::show() {
@@ -136,6 +167,14 @@ void WidgetListItemButton::show() {
 
 	if (_icon)
 		_icon->show();
+
+	if (_moveButtonRight) {
+		if (_isRight) {
+			_moveButtonRight->show();
+		} else {
+			_moveButtonLeft->show();
+		}
+	}
 }
 
 void WidgetListItemButton::hide() {
@@ -145,6 +184,14 @@ void WidgetListItemButton::hide() {
 
 	if (_icon)
 		_icon->hide();
+
+	if (_moveButtonRight) {
+		if (_isRight) {
+			_moveButtonRight->hide();
+		} else {
+			_moveButtonLeft->hide();
+		}
+	}
 }
 
 void WidgetListItemButton::setPosition(float x, float y, float z) {
@@ -153,7 +200,7 @@ void WidgetListItemButton::setPosition(float x, float y, float z) {
 	float pX, pY, pZ;
 	if (_button->getNode("text0")) {
 		_button->getNode("text0")->getPosition(pX, pY, pZ);
-		pY -= _text->getHeight() * 1.5f;
+		pY -= (4 - _text->getLineCount()) * _text->getHeight() * 0.5f;
 	} else if (_button->getNode("text")) {
 		_button->getNode("text")->getPosition(pX, pY, pZ);
 		pY -= _text->getHeight() / 2;
@@ -165,6 +212,17 @@ void WidgetListItemButton::setPosition(float x, float y, float z) {
 
 	_text->setPosition(x + pX, y + pY, z - pZ);
 
+	if (_moveButtonRight) {
+		_button->getNode("addremovebutton")->getPosition(pX, pY, pZ);
+		_moveButtonRight->setPosition(x + pX, y + pY, z - pZ);
+		_moveButtonLeft->setPosition(x + pX, y + pY, z - pZ);
+	}
+
+	if (_helpButton) {
+		_button->getNode("helpbutton")->getPosition(pX, pY, pZ);
+		_helpButton->setPosition(x + pX, y + pY, z - pZ);
+	}
+
 	if (!_icon)
 		return;
 
@@ -172,8 +230,63 @@ void WidgetListItemButton::setPosition(float x, float y, float z) {
 	_icon->setPosition(x + pX - _icon->getWidth() / 2, y + pY - _icon->getHeight() / 2, z - 5);
 }
 
+void WidgetListItemButton::mouseDown(uint8 state, float x, float y) {
+	Engines::NWN::WidgetListItemBaseButton::mouseDown(state, x, y);
+
+	if (_helpButton) {
+		if (_helpButton->isIn(x, y)) {
+			_helpButton->setState("down");
+		}
+	}
+}
+
+void WidgetListItemButton::mouseUp(uint8 state, float x, float y) {
+	Engines::NWN::WidgetListItemBaseButton::mouseUp(state, x, y);
+
+	if (_helpButton) {
+		_helpButton->setState("up");
+		if (_helpButton->isIn(x, y)) {
+			callbackHelp();
+		}
+	}
+}
+
+void WidgetListItemButton::enter() {
+	if (_helpButton)
+		_helpButton->show();
+}
+
+void WidgetListItemButton::leave() {
+	if (_helpButton)
+		_helpButton->hide();
+}
+
+bool WidgetListItemButton::movable() const {
+	return _isMovable;
+}
+
+void WidgetListItemButton::setUnmovable() {
+	_isMovable = false;
+	_text->setColor(0.5f, 0.5f, 0.5f, 1.f);
+}
+
 void WidgetListItemButton::setTextColor(float r, float g, float b, float a) {
 	_text->setColor(r, g, b, a);
+}
+
+void WidgetListItemButton::changeArrowDirection() {
+	if (!_moveButtonRight)
+		return;
+
+	_isRight = !_isRight;
+
+	if (isVisible()) {
+		hide();
+		show();
+	}
+}
+
+void WidgetListItemButton::callbackHelp() {
 }
 
 } // End of namespace NWN

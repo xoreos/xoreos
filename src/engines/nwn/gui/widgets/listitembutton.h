@@ -32,6 +32,8 @@ namespace Engines {
 namespace NWN {
 
 class Portrait;
+class WidgetButton;
+
 class WidgetListItemBaseButton : public WidgetListItem {
 public:
 	WidgetListItemBaseButton(::Engines::GUI &gui, const Common::UString &button,
@@ -61,10 +63,17 @@ private:
 	const Common::UString _sound;
 };
 
+enum AdditionalButton {
+	kHelpButton = 0x01,
+	kMoveButton = 0x02,
+	kNoButton   = 0x04
+};
+
 class WidgetListItemButton : public WidgetListItemBaseButton {
 public:
 	WidgetListItemButton(::Engines::GUI &gui, const Common::UString &button,
 	                     const Common::UString &text, const Common::UString &icon,
+	                     uint32 otherButtons = 0x04,
 	                     const Common::UString &soundClick = "gui_button");
 	~WidgetListItemButton();
 
@@ -73,11 +82,30 @@ public:
 
 	void setPosition(float x, float y, float z);
 
+	void mouseDown(uint8 state, float x, float y);
+	void mouseUp(uint8 state, float x, float y);
+
+	void enter();
+	void leave();
+
+	bool movable() const;
+	void setUnmovable();
+
 	void setTextColor(float r, float g, float b, float a);
 
-private:
+	void changeArrowDirection();
+
+protected:
+	virtual void callbackHelp();
+
 	Graphics::Aurora::Text  *_text;
 	Portrait *_icon;
+	bool _isRight;
+	bool _isMovable;
+
+	Graphics::Aurora::Model *_helpButton;
+	WidgetButton *_moveButtonRight;
+	WidgetButton *_moveButtonLeft;
 };
 
 } // End of namespace NWN
