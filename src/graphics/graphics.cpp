@@ -32,6 +32,7 @@
 #include "src/common/maths.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
+#include "src/common/debugman.h"
 #include "src/common/threads.h"
 #include "src/common/transmatrix.h"
 #include "src/common/vector3.h"
@@ -402,54 +403,51 @@ bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
 	return false;
 }
 
-static const char *getGLDebugSource(GLenum source) {
-	if ((source < GL_DEBUG_SOURCE_API_ARB) || (source > GL_DEBUG_SOURCE_OTHER_ARB))
-		return "Unknown";
-
-	static const char * const kSourceName[] = { "API", "Window", "Shader", "3rd", "App", "Other" };
-
-	return kSourceName[source - GL_DEBUG_SOURCE_API_ARB];
-}
-
-static const char *getGLDebugType(GLenum type) {
-	if ((type < GL_DEBUG_TYPE_ERROR_ARB) || (type > GL_DEBUG_TYPE_OTHER_ARB))
-		return "Unknown";
-
-	static const char * const kTypeName[] =
-	{ "Error", "Deprecated", "Undefined", "Portability", "Performance", "Other" };
-
-	return kTypeName[type - GL_DEBUG_TYPE_ERROR_ARB];
-}
-
-static const char *getGLDebugSeverity(GLenum severity) {
-	if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
-		return "Notification";
-
-	if ((severity < GL_DEBUG_SEVERITY_HIGH_ARB) || (severity > GL_DEBUG_SEVERITY_LOW_ARB))
-		return "Unknown";
-
-	static const char * const kSevName[] = { "High", "Medium", "Low" };
-
-	return kSevName[severity - GL_DEBUG_SEVERITY_HIGH_ARB];
-}
-
 static void outputGLDebug(GLenum source, GLenum type, GLuint id, GLenum severity,
                           GLsizei UNUSED(length), const GLchar *message,
                           const void *UNUSED(userParam)) {
 
-	// Print OpenGL debug output, but suppress duplicates
+	static const uint32 kSourceLookup[] = {
+		GL_DEBUG_SOURCE_API_ARB            , Common::kDebugGLAPI,
+		GL_DEBUG_SOURCE_SHADER_COMPILER_ARB, Common::kDebugGLWindow,
+		GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB  , Common::kDebugGLShader,
+		GL_DEBUG_SOURCE_THIRD_PARTY_ARB    , Common::kDebugGL3rd,
+		GL_DEBUG_SOURCE_APPLICATION_ARB    , Common::kDebugGLApp,
+		GL_DEBUG_SOURCE_OTHER_ARB          , Common::kDebugGLOther
+	};
 
-	static GLenum lastSource = 0;
-	static GLenum lastType   = 0;
-	static GLuint lastID     = 0;
+	static const uint32 kTypeLookup[] = {
+		GL_DEBUG_TYPE_ERROR_ARB              , Common::kDebugGLTypeError,
+		GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB, Common::kDebugGLTypeDeprecated,
+		GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB , Common::kDebugGLTypeUndefined,
+		GL_DEBUG_TYPE_PERFORMANCE_ARB        , Common::kDebugGLTypePortability,
+		GL_DEBUG_TYPE_PORTABILITY_ARB        , Common::kDebugGLTypePerformance,
+		GL_DEBUG_TYPE_OTHER_ARB              , Common::kDebugGLTypeOther
+	};
 
-	if ((lastSource != source) || (lastType != type) || (lastID != id))
-		warning("GL<%s,%s,%s,%u>: %s", getGLDebugSource(source), getGLDebugType(type),
-		                               getGLDebugSeverity(severity), id, message);
+	static const uint32 kLevelLookup[] = {
+		GL_DEBUG_SEVERITY_HIGH_ARB    , 1,
+		GL_DEBUG_SEVERITY_MEDIUM_ARB  , 2,
+		GL_DEBUG_SEVERITY_LOW_ARB     , 3,
+		GL_DEBUG_SEVERITY_NOTIFICATION, 4
+	};
 
-	lastSource = source;
-	lastType   = type;
-	lastID     = id;
+	Common::DebugChannel debugChannel = Common::kDebugGLOther;
+	for (size_t i = 0; i < ARRAYSIZE(kSourceLookup); i += 2)
+		if (source == (GLenum) kSourceLookup[i + 0])
+			debugChannel = (Common::DebugChannel) kSourceLookup[i + 1];
+
+	Common::DebugGLType debugType = Common::kDebugGLTypeOther;
+	for (size_t i = 0; i < ARRAYSIZE(kTypeLookup); i += 2)
+		if (type == (GLenum) kTypeLookup[i + 0])
+			debugType = (Common::DebugGLType) kTypeLookup[i + 1];
+
+	uint32 debugLevel = 5;
+	for (size_t i = 0; i < ARRAYSIZE(kLevelLookup); i += 2)
+		if (severity == (GLenum) kLevelLookup[i + 0])
+			debugLevel = kLevelLookup[i + 1];
+
+	DebugMan.logDebugGL(debugChannel, debugLevel, debugType, id, message);
 }
 
 void GraphicsManager::checkGLExtensions() {
