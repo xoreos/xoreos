@@ -52,6 +52,7 @@ static void displayUsage(const Common::UString &name) {
 	std::printf("          --langtext=LANG     Set the game's text language.\n");
 	std::printf("          --langvoice=LANG    Set the game's voice language.\n");
 	std::printf("  -dDLVL  --debug=DLVL        Set the debug channel verbosities.\n");
+	std::printf("          --debuggl=BOOL      Create OpenGL debug context.\n");
 	std::printf("          --listdebug         List all available debug channels.\n");
 	std::printf("          --listlangs         List all available languages for this target.\n");
 	std::printf("          --saveconf=BOOL     If false, never write to the config file.\n");
@@ -70,7 +71,9 @@ static void displayUsage(const Common::UString &name) {
 	std::printf("      Examples: en, de_de, hun, Czech, zh-tw, zh_cn, zh-cht, zh-chs.\n");
 	std::printf("DLVL: A comma-separated list of a debug channel name, a colon and the desired\n");
 	std::printf("      verbosity level. For example: GGraphics:4,GVideo:1,EEvents:9\n");
-	std::printf("      Use \"All\" to refer to all debug channels.\n");
+	std::printf("      Use \"All\" to refer to all debug channels. OpenGL debug channels\n");
+	std::printf("      need the debuggl option to be enabled and require OpenGL driver support\n");
+	std::printf("      of the GL_ARB_debug_output extension.\n");
 	std::printf("\n");
 	std::printf("Examples:\n");
 	std::printf("%s -p/path/to/nwn/\n", name.c_str());
