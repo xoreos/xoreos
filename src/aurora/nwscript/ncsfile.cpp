@@ -175,16 +175,16 @@ void NCSStack::print() const {
 	if (!DebugMan.isEnabled(kDebugScripts, 3))
 		return;
 
-	debugC(3, kDebugScripts, ".--- %d ---.", _stackPtr);
+	debugC(kDebugScripts, 3, ".--- %d ---.", _stackPtr);
 	for (int32 i = _stackPtr; i >= 0; i--) {
 		const Variable &var = at(i);
 
 		Common::UString str;
 		formatVariable(str, var);
 
-		debugC(3, kDebugScripts, "| %04d: %02d - %s", i, var.getType(), str.c_str());
+		debugC(kDebugScripts, 3, "| %04d: %02d - %s", i, var.getType(), str.c_str());
 	}
-	debugC(3, kDebugScripts, "'--- ---'");
+	debugC(kDebugScripts, 3, "'--- ---'");
 }
 
 
@@ -359,7 +359,7 @@ const Variable &NCSFile::run(Object *owner, Object *triggerer) {
 }
 
 const Variable &NCSFile::run(const ScriptState &state, Object *owner, Object *triggerer) {
-	debugC(1, kDebugScripts, "=== Running script \"%s\" (%d) ===",
+	debugC(kDebugScripts, 1, "=== Running script \"%s\" (%d) ===",
 	       _name.c_str(), state.offset);
 
 	reset();
@@ -391,7 +391,7 @@ const Variable &NCSFile::execute(Object *owner, Object *triggerer) {
 		_return = _stack.top();
 
 	if (!_stack.empty() && (_stack.top().getType() == kTypeInt))
-		debugC(1, kDebugScripts, "=> Script\"%s\" returns: %d",
+		debugC(kDebugScripts, 1, "=> Script\"%s\" returns: %d",
 		       _name.c_str(), _stack.top().getInt());
 
 	_owner     = 0;
@@ -413,7 +413,7 @@ bool NCSFile::executeStep() {
 	if ((opcode >= _opcodeListSize) || (!_opcodes[opcode].proc))
 		throw Common::Exception("NCSFile::executeStep(): Illegal instruction 0x%02x", opcode);
 
-	debugC(1, kDebugScripts, "NWScript opcode %s [0x%02X]", _opcodes[opcode].desc, opcode);
+	debugC(kDebugScripts, 1, "NWScript opcode %s [0x%02X]", _opcodes[opcode].desc, opcode);
 
 	try {
 		(this->*(_opcodes[opcode].proc))((InstructionType)type);
@@ -422,7 +422,7 @@ bool NCSFile::executeStep() {
 	}
 
 	_stack.print();
-	debugC(2, kDebugScripts, "[RETURN: %d]",
+	debugC(kDebugScripts, 2, "[RETURN: %d]",
 	       _returnOffsets.empty() ? -1 : _returnOffsets.top());
 
 	return true;
@@ -587,7 +587,7 @@ void NCSFile::callEngine(Aurora::NWScript::FunctionContext &ctx,
 	}
 
 	// Call the engine function
-	debugC(1, kDebugScripts, "NWScript engine function %s (%d)", ctx.getName().c_str(), function);
+	debugC(kDebugScripts, 1, "NWScript engine function %s (%d)", ctx.getName().c_str(), function);
 	FunctionMan.call(function, ctx);
 
 	// Push return values

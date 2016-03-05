@@ -218,7 +218,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
-	debugC(4, kDebugGraphics, "Loading NWN binary model \"%s\": \"%s\"", _fileName.c_str(),
+	debugC(kDebugGraphics, 4, "Loading NWN binary model \"%s\": \"%s\"", _fileName.c_str(),
 	       _name.c_str());
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
@@ -300,7 +300,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 			if (!_name.empty())
 				warning("Model_NWN_ASCII::load(): More than one model definition");
 
-			debugC(4, kDebugGraphics, "Loading NWN ASCII model \"%s\": \"%s\"", _fileName.c_str(),
+			debugC(kDebugGraphics, 4, "Loading NWN ASCII model \"%s\": \"%s\"", _fileName.c_str(),
 			       _name.c_str());
 
 			_name = line[1];
@@ -460,7 +460,7 @@ void Model_NWN::readAnimBinary(ParserContext &ctx, uint32 offset) {
 	anim->setLength(animLength);
 	anim->setTransTime(transTime);
 	_animationMap.insert(std::make_pair(ctx.state->name, anim));
-	debugC(4, kDebugGraphics, "Loaded animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
+	debugC(kDebugGraphics, 4, "Loaded animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
 
 	for (std::list<ModelNode *>::iterator n = ctx.nodes.begin();
 	     n != ctx.nodes.end(); ++n) {
@@ -540,7 +540,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
-	debugC(5, kDebugGraphics, "Node \"%s\" in state \"%s\"", _name.c_str(),
+	debugC(kDebugGraphics, 5, "Node \"%s\" in state \"%s\"", _name.c_str(),
 	       ctx.state->name.c_str());
 
 	ctx.mdl->skip(8); // Parent pointers
@@ -1015,7 +1015,7 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 	_name = name;
 
-	debugC(5, kDebugGraphics, "Node \"%s\" in state \"%s\"", _name.c_str(),
+	debugC(kDebugGraphics, 5, "Node \"%s\" in state \"%s\"", _name.c_str(),
 	       ctx.state->name.c_str());
 
 	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin"))

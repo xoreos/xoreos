@@ -31,7 +31,7 @@
 #include "src/common/debug.h"
 #include "src/common/debugman.h"
 
-void debugC(uint32 level, uint32 channel, const char *s, ...) {
+void debugC(uint32 channel, uint32 level, const char *s, ...) {
 	if (!DebugMan.isEnabled(channel, level))
 		return;
 
@@ -51,7 +51,7 @@ void debugC(uint32 level, uint32 channel, const char *s, ...) {
 	DebugMan.logString("\n");
 }
 
-void debugCN(uint32 level, uint32 channel, const char *s, ...) {
+void debugCN(uint32 channel, uint32 level, const char *s, ...) {
 	if (!DebugMan.isEnabled(channel, level))
 		return;
 
