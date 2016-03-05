@@ -289,8 +289,6 @@ void EngineManager::run(GameInstance &game) const {
 
 void EngineManager::cleanup() const {
 	try {
-		DebugMan.clearEngineChannels();
-
 		unregisterModelLoader();
 
 		RequestMan.sync();

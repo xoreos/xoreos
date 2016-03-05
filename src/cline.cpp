@@ -51,8 +51,7 @@ static void displayUsage(const Common::UString &name) {
 	std::printf("  -qLANG  --lang=LANG         Set the game's language.\n");
 	std::printf("          --langtext=LANG     Set the game's text language.\n");
 	std::printf("          --langvoice=LANG    Set the game's voice language.\n");
-	std::printf("  -dLVL   --debuglevel=LVL    Set the debug level to LVL.\n");
-	std::printf("          --debugchannel=CHAN Set the enabled debug channel(s) to CHAN.\n");
+	std::printf("  -dDLVL  --debug=DLVL        Set the debug channel verbosities.\n");
 	std::printf("          --listdebug         List all available debug channels.\n");
 	std::printf("          --listlangs         List all available languages for this target.\n");
 	std::printf("          --saveconf=BOOL     If false, never write to the config file.\n");
@@ -69,9 +68,9 @@ static void displayUsage(const Common::UString &name) {
 	std::printf("LANG: A language identifier. Full name, ISO 639-1 or ISO 639-2 language code;\n");
 	std::printf("      or IETF language tag with ISO 639-1 and ISO 3166-1 country code.\n");
 	std::printf("      Examples: en, de_de, hun, Czech, zh-tw, zh_cn, zh-cht, zh-chs.\n");
-	std::printf("LVL:  A positive integer.\n");
-	std::printf("CHAN: A comma-separated list of debug channels.\n");
-	std::printf("      Use \"All\" to enable all debug channels.\n");
+	std::printf("DLVL: A comma-separated list of a debug channel name, a colon and the desired\n");
+	std::printf("      verbosity level. For example: GGraphics:4,GVideo:1,EEvents:9\n");
+	std::printf("      Use \"All\" to refer to all debug channels.\n");
 	std::printf("\n");
 	std::printf("Examples:\n");
 	std::printf("%s -p/path/to/nwn/\n", name.c_str());
@@ -111,7 +110,7 @@ static Common::UString convertShortToLongOption(uint32 shortOption) {
 		"s", "volume_sfx",
 		"o", "volume_voice",
 		"i", "volume_video",
-		"d", "debuglevel",
+		"d", "debug",
 		"q", "lang"
 	};
 

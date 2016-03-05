@@ -37,74 +37,92 @@
 
 namespace Common {
 
-/** Global, non-engine code debug channels. */
+/** All debug channels. */
 enum DebugChannels {
-	kDebugGraphics   = 1 <<  0,
-	kDebugSound      = 1 <<  1,
-	kDebugEvents     = 1 <<  2,
-	kDebugScripts    = 1 <<  3,
-	kDebugReserved04 = 1 <<  4,
-	kDebugReserved05 = 1 <<  5,
-	kDebugReserved06 = 1 <<  6,
-	kDebugReserved07 = 1 <<  7,
-	kDebugReserved08 = 1 <<  8,
-	kDebugReserved09 = 1 <<  9,
-	kDebugReserved10 = 1 << 10,
-	kDebugReserved11 = 1 << 11,
-	kDebugReserved12 = 1 << 12,
-	kDebugReserved13 = 1 << 13,
-	kDebugReserved14 = 1 << 14
+	kDebugGraphics, ///< "GGraphics", global, non-engine graphics.
+	kDebugSound   , ///< "GSound", global, non-engine sound.
+	kDebugVideo   , ///< "GVideo", global, non-engine video (movies).
+	kDebugEvents  , ///< "GEvents", global, non-engine events.
+	kDebugScripts , ///< "GScripts", global, non-engine scripts.
+
+	kDebugEngineGraphics, ///< "EGraphics", engine graphics.
+	kDebugEngineSound   , ///< "ESound", engine sound.
+	kDebugEngineVideo   , ///< "EVideo", engine video.
+	kDebugEngineEvents  , ///< "EEvents", engine events.
+	kDebugEngineScripts , ///< "EScripts", engine scripts.
+	kDebugEngineLogic   , ///< "ELogic", engine game logic.
+
+	kDebugChannelCount, ///< Total number of debug channels.
+	kDebugChannelAll    ///< Special value to refer to all debug channel.
 };
 
-/** The debug manager, managing debug channels. */
+/** The debug manager, managing debug channels.
+ *
+ *  A debug channel separates debug messages into groups, so debug output
+ *  doesn't get swamped unnecessarily.
+ *
+ *  Each debug channel is associated with a verbosity "level" at which it
+ *  is currently enabled, and each debug message is sent to a channel with
+ *  a number specifying its verbosity level. The debug message is then only
+ *  shown when the debug channel it belongs to is enabled at a verbosity
+ *  level equal to or higher than the debug message's verbosity level.
+ *
+ *  The verbosity levels go from 0 (disabled) to 9 (most verbose).
+ *
+ *  For example:
+ *
+ *  There are two debug channels, C1 and C2. C1 is enabled at verbosity
+ *  level 3 and C2 is enabled at verbosity level 0 (i.e. disabled).
+ *  These three debug messages arrive:
+ *  1) Channel C1, level 3
+ *  2) Channel C1, level 4
+ *  3) Channel C2, level 1
+ *
+ *  In this scenario, only message 1, the one at channel C1 with a level
+ *  of 3 is shown. Message 2 is not shown, because with a level of 4 it
+ *  exceeds the current level of C1, which is 3. Likewise, the level of
+ *  message 3, 1, exceeds the current level of C2. In fact, with a
+ *  current level of 0, no messages will be shown for C2 at all, ever.
+ */
 class DebugManager : public Singleton<DebugManager> {
 public:
+	static const uint32 kMaxVerbosityLevel = 9;
+
 	DebugManager();
 	~DebugManager();
-
-	/** Add a debug channel.
-	 *
-	 *  A debug channel separates debug messages into groups, so debug output
-	 *  doesn't get swamped unnecessarily. Only when a debug channel is enabled
-	 *  are debug messages to that channel shown.
-	 *
-	 *  So that several channels can be enabled at the same time, all channel
-	 *  IDs must be OR-able, i.e. the first one should be 1, then 2, 4, ....
-	 *
-	 *  The first 15 channels (IDs 2^1 - 2^15) are reserved for the non-engine
-	 *  code, the next 15 channels (IDs 2^16 - 2^30) are reserved for the
-	 *  engines.
-	 *
-	 *  @param channel     The channel ID, should be OR-able.
-	 *  @param name        The channel's name, used to enable the channel on the
-	 *                     command line (or console, if supported by the engine).
-	 *  @param description A description of the channel, displayed when listing
-	 *                     The available channels.
-	 *
-	 *  @return true on success.
-	 *
-	 */
-	bool addDebugChannel(uint32 channel, const UString &name, const UString &description);
 
 	/** Return the channel names alongside their descriptions. */
 	void getDebugChannels(std::vector<UString> &names, std::vector<UString> &descriptions) const;
 
-	/** Remove all engine-specific debug channels. */
-	void clearEngineChannels();
+	/** Set the verbosity level of this channel (by ID). */
+	void setVerbosityLevel(uint32 channel, uint32 level);
+	/** Set the verbosity level of this channel (by name). */
+	void setVerbosityLevel(const UString &channel, uint32 level);
 
-	/** Parse a comma-separated list of debug channels to a channel mask. */
-	uint32 parseChannelList(const UString &list) const;
+	/** Return the verbosity level of this channel (by ID). */
+	uint32 getVerbosityLevel(uint32 channel) const;
+	/** Return the verbosity level of this channel (by name). */
+	uint32 getVerbosityLevel(const UString &channel) const;
 
-	/** Use the specified mask to set the enabled state for all channels. */
-	void setEnabled(uint32 mask);
+	/** Is this channel ID enabled for this verbosity level? */
+	bool isEnabled(uint32 channel, uint32 level) const;
+	/** Is this channel name enabled for this verbosity level? */
+	bool isEnabled(const UString &channel, uint32 level) const;
 
-	/** Is the specified channel and level enabled? */
-	bool isEnabled(uint32 level, uint32 channel) const;
+	/** Sync verbosity levels from the ConfigManager.
+	 *
+	 *  This reads the current value of the "debug" config option from
+	 *  the ConfigManager, parses it, and sets the verbosity levels of
+	 *  all debug channels according to this value.
+	 */
+	void setVerbosityLevelsFromConfig();
 
-	/** Return the current debug level. */
-	uint32 getDebugLevel() const;
-	/** Set the current debug level. */
-	void   setDebugLevel(uint32 level);
+	/** Sync verbosity levels to the ConfigManager.
+	 *
+	 *  This writes the current verbosity levels of all debug channels
+	 *  into the "debug" config option of the ConfigManager.
+	 */
+	void setConfigToVerbosityLevels();
 
 	/** Open a log file where all debug output will be written to. */
 	bool openLogFile(const UString &file);
@@ -114,33 +132,29 @@ public:
 	void logString(const UString &str);
 
 	/** Write the whole command line to the current log file. */
-	void logCommandLine(const std::vector<Common::UString> &argv);
+	void logCommandLine(const std::vector<UString> &argv);
 
 	/** Return the OS-specific default path of the log file. */
 	static UString getDefaultLogFile();
 
 private:
-	static const size_t kGlobalChannelCount = 15;
-	static const size_t kEngineChannelCount = 15;
-	static const size_t kChannelCount       = kGlobalChannelCount + kEngineChannelCount;
-
 	/** A debug channel. */
 	struct Channel {
 		UString name;        ///< The channel's name.
 		UString description; ///< The channel's description.
 
-		bool enabled; ///< Is the channel enabled?
+		uint32 level; ///< The current level at which this debug channel is enabled.
 	};
 
-	typedef std::map<UString, uint32> ChannelMap;
+	typedef std::map<UString, uint32, UString::iless> ChannelMap;
 
-	Channel    _channels[kChannelCount]; ///< All debug channels.
-	ChannelMap _channelMap;              ///< Debug channels indexed by name.
-
-	uint32 _debugLevel; ///< The current debug level.
+	Channel    _channels[kDebugChannelCount]; ///< All debug channels.
+	ChannelMap _channelMap;                   ///< Debug channels indexed by name.
 
 	WriteFile _logFile;
 	bool _logFileStartLine;
+
+	bool _changedConfig;
 };
 
 } // End of namespace Common

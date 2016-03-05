@@ -32,14 +32,14 @@
 #include "src/common/debugman.h"
 
 /** Print a debug message, but only if the current debug level is at least
- *  the specified level and if the specified channel is enabled.
+ *  the specified level for the specified channel.
  *
  *  Automatically appends a newline.
  */
 void debugC(uint32 level, uint32 channel, const char *s, ...) GCC_PRINTF(3, 4);
 
 /** Print a debug message, but only if the current debug level is at least
- *  the specified level and if the specified channel is enabled.
+ *  the specified level for the specified channel.
  *
  *  Doesn't automatically append a newline.
  */

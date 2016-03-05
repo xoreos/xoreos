@@ -69,7 +69,6 @@ static void initConfig();
 static void init();
 static void deinit();
 
-static void initDebug();
 static void listDebug();
 
 static bool configFileIsBroken = false;
@@ -162,7 +161,7 @@ int main(int argc, char **argv) {
 	Engines::GameThread *gameThread = new Engines::GameThread;
 	try {
 		// Enable requested debug channels
-		initDebug();
+		DebugMan.setVerbosityLevelsFromConfig();
 
 		// Initialize all necessary subsystems
 		init();
@@ -196,6 +195,9 @@ int main(int argc, char **argv) {
 	}
 
 	try {
+		// Sync changed debug channel settings
+		DebugMan.setConfigToVerbosityLevels();
+
 		// Configs changed, we should save them
 		if (ConfigMan.changed()) {
 			// But don't clobber a broken save
@@ -255,14 +257,6 @@ static void initConfig() {
 		ConfigMan.setDefaults();
 		ConfigMan.save();
 	}
-}
-
-static void initDebug() {
-	const uint32 debugLevel = (uint32) CLIP<int32>(ConfigMan.getInt("debuglevel", 0), 0, 0x7FFFFFFF);
-	const uint32 debugMask  = DebugMan.parseChannelList(ConfigMan.getString("debugchannel"));
-
-	DebugMan.setDebugLevel(debugLevel);
-	DebugMan.setEnabled(debugMask);
 }
 
 static void listDebug() {

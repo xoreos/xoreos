@@ -172,7 +172,7 @@ void NCSStack::setBasePtr(int32 pos) {
 }
 
 void NCSStack::print() const {
-	if (!DebugMan.isEnabled(3, kDebugScripts))
+	if (!DebugMan.isEnabled(kDebugScripts, 3))
 		return;
 
 	debugC(3, kDebugScripts, ".--- %d ---.", _stackPtr);

@@ -24,12 +24,12 @@
  *  The debug manager, managing debug channels.
  */
 
-#include <vector>
-
 #include "src/common/maths.h"
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/filepath.h"
 #include "src/common/debugman.h"
+#include "src/common/configman.h"
 #include "src/common/version.h"
 #include "src/common/datetime.h"
 
@@ -37,119 +37,144 @@ DECLARE_SINGLETON(Common::DebugManager)
 
 namespace Common {
 
-DebugManager::DebugManager() : _debugLevel(0), _logFileStartLine(false) {
-	for (size_t i = 0; i < kChannelCount; i++)
-		_channels[i].enabled = false;
+static const char * const kDebugNames[kDebugChannelCount] = {
+	"GGraphics", "GSound", "GVideo", "GEvents", "GScripts",
+	"EGraphics", "ESound", "EVideo", "EEvents", "EScripts", "ELogic"
+};
 
-	addDebugChannel(kDebugGraphics, "GGraphics", "Global graphics debug channel");
-	addDebugChannel(kDebugSound   , "GSound"   , "Global sound debug channel");
-	addDebugChannel(kDebugEvents  , "GEvents"  , "Global events debug channel");
-	addDebugChannel(kDebugScripts , "GScripts" , "Global scripts debug channel");
+static const char * const kDebugDescriptions[kDebugChannelCount] = {
+	"Global graphics debug channel",
+	"Global sound debug channel",
+	"Global video (movies) debug channel",
+	"Global events debug channel",
+	"Global scripts debug channel",
+	"Engine graphics debug channel",
+	"Engine sound debug channel",
+	"Engine video debug channel",
+	"Engine events debug channel",
+	"Engine scripts debug channel",
+	"Engine game logic debug channel"
+};
+
+
+DebugManager::DebugManager() : _logFileStartLine(false), _changedConfig(false) {
+	for (size_t i = 0; i < kDebugChannelCount; i++) {
+		_channels[i].name        = kDebugNames[i];
+		_channels[i].description = kDebugDescriptions[i];
+		_channels[i].level       = 0;
+
+		_channelMap[kDebugNames[i]] = i;
+	}
+
+	_channelMap["all"] = kDebugChannelAll;
 }
 
 DebugManager::~DebugManager() {
 	closeLogFile();
 }
 
-bool DebugManager::addDebugChannel(uint32 channel, const UString &name,
-                                   const UString &description) {
-
-	if ((channel == 0) || name.empty())
-		return false;
-
-	int index = intLog2(channel);
-	if ((index < 0) || ((size_t)index >= kChannelCount))
-		return false;
-
-	if (!_channels[index].name.empty())
-		return false;
-
-	_channels[index].name        = name;
-	_channels[index].description = description;
-	_channels[index].enabled     = false;
-
-	_channelMap[name] = channel;
-
-	return true;
-}
-
 void DebugManager::getDebugChannels(std::vector<UString> &names, std::vector<UString> &descriptions) const {
-	names.clear();
-	descriptions.clear();
+	names.resize(kDebugChannelCount);
+	descriptions.resize(kDebugChannelCount);
 
-	names.reserve(kChannelCount);
-	descriptions.reserve(kChannelCount);
-
-	for (size_t i = 0; i < kChannelCount; i++) {
-		const Channel &channel = _channels[i];
-		if (channel.name.empty())
-			continue;
-
-		names.push_back(channel.name);
-		descriptions.push_back(channel.description);
+	for (size_t i = 0; i < kDebugChannelCount; i++) {
+		names[i]        = _channels[i].name;
+		descriptions[i] = _channels[i].description;
 	}
 }
 
-void DebugManager::clearEngineChannels() {
-	for (size_t i = kGlobalChannelCount; i < kChannelCount; i++) {
-		Channel &channel = _channels[i];
+void DebugManager::setVerbosityLevel(uint32 channel, uint32 level) {
+	if (channel == kDebugChannelAll) {
+		for (size_t i = 0; i < kDebugChannelCount; i++)
+			setVerbosityLevel(i, level);
 
-		ChannelMap::iterator c = _channelMap.find(channel.name);
-		if (c != _channelMap.end())
-			_channelMap.erase(c);
-
-		channel.name.clear();
-		channel.description.clear();
-		channel.enabled = false;
+		return;
 	}
+
+	if (channel >= kDebugChannelCount)
+		return;
+
+	_channels[channel].level = MIN<uint32>(level, kMaxVerbosityLevel);
+
+	_changedConfig = true;
 }
 
-uint32 DebugManager::parseChannelList(const UString &list) const {
-	std::vector<UString> channels;
-	UString::split(list, ',', channels);
+void DebugManager::setVerbosityLevel(const UString &channel, uint32 level) {
+	ChannelMap::iterator c = _channelMap.find(channel);
+	if (c == _channelMap.end())
+		return;
 
-	uint32 mask = 0;
-	for (std::vector<UString>::const_iterator c = channels.begin(); c != channels.end(); ++c) {
-		if (c->equalsIgnoreCase("all"))
-			return 0xFFFFFFFF;
+	setVerbosityLevel(c->second, level);
+}
 
-		ChannelMap::const_iterator channel = _channelMap.find(*c);
-		if (channel == _channelMap.end()) {
-			warning("No such debug channel \"%s\"", c->c_str());
+uint32 DebugManager::getVerbosityLevel(uint32 channel) const {
+	if (channel >= kDebugChannelCount)
+		return 0;
+
+	return _channels[channel].level;
+}
+
+uint32 DebugManager::getVerbosityLevel(const UString &channel) const {
+	ChannelMap::const_iterator c = _channelMap.find(channel);
+	if (c == _channelMap.end())
+		return 0;
+
+	return getVerbosityLevel(c->second);
+}
+
+bool DebugManager::isEnabled(uint32 channel, uint32 level) const {
+	return getVerbosityLevel(channel) >= MIN<uint32>(level, kMaxVerbosityLevel);
+}
+
+bool DebugManager::isEnabled(const UString &channel, uint32 level) const {
+	return getVerbosityLevel(channel) >= MIN<uint32>(level, kMaxVerbosityLevel);
+}
+
+void DebugManager::setVerbosityLevelsFromConfig() {
+	setVerbosityLevel(kDebugChannelAll, 0);
+
+	std::vector<UString> debug;
+	UString::split(ConfigMan.getString("debug"), ',', debug);
+
+	for (std::vector<UString>::const_iterator d = debug.begin(); d != debug.end(); ++d) {
+		std::vector<UString> config;
+		UString::split(*d, ':', config);
+
+		if ((config.size() != 2) || config[0].empty())
 			continue;
+
+		config[0].trim();
+		config[1].trim();
+
+		uint32 level = 0;
+		try {
+			parseString(config[1], level);
+		} catch (...) {
 		}
 
-		mask |= channel->second;
+		setVerbosityLevel(config[0], level);
 	}
 
-	return mask;
+	_changedConfig = false;
 }
 
-void DebugManager::setEnabled(uint32 mask) {
-	for (size_t i = 0; i < kChannelCount; i++, mask >>= 1)
-		_channels[i].enabled = (mask & 1) != 0;
-}
+void DebugManager::setConfigToVerbosityLevels() {
+	if (!_changedConfig)
+		return;
 
-bool DebugManager::isEnabled(uint32 level, uint32 channel) const {
-	if (_debugLevel < level)
-		return false;
+	UString debug;
 
-	if (channel == 0)
-		return false;
+	for (size_t i = 0; i < kDebugChannelCount; i++) {
+		if (_channels[i].level == 0)
+			continue;
 
-	int index = intLog2(channel);
-	if ((index < 0) || ((size_t)index >= kChannelCount))
-		return false;
+		if (!debug.empty())
+			debug += ',';
 
-	return _channels[index].enabled;
-}
+		debug += _channels[i].name + ":" + composeString(_channels[i].level);
+	}
 
-uint32 DebugManager::getDebugLevel() const {
-	return _debugLevel;
-}
-
-void DebugManager::setDebugLevel(uint32 level) {
-	_debugLevel = level;
+	ConfigMan.setString("debug", debug, true);
 }
 
 bool DebugManager::openLogFile(const UString &file) {
