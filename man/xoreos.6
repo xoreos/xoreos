@@ -194,13 +194,10 @@ Set the game's language.
 Set the game's text language.
 .It Fl Fl langvoice= Ns Ar lang
 Set the game's voice language.
-.It Fl d Ar lvl
-.It Fl Fl debuglevel= Ns Ar lvl
-Set the debug level to
-.Ar lvl .
-.It Fl Fl debugchannel= Ns Ar chan
-Set the enabled debug channel(s) to
-.Ar chan .
+.It Fl d Ar dlvl
+.It Fl Fl debug= Ns Ar dlvl
+Set the debug channel verbosities to
+.Ar dlvl .
 .It Fl Fl listdebug
 List all available debug channels.
 .It Fl Fl listlangs
@@ -236,12 +233,12 @@ A language identifier.
 Full name, ISO 639-1 or ISO 639-2 language code;
 or IETF language tag with ISO 639-1 and ISO 3166-1 country code.
 Examples: en, de_de, hun, Czech, zh-tw, zh_cn, zh-cht, zh-chs.
-.It Ar lvl
-A positive integer.
-.It Ar chan
-A comma-separated list of debug channels. Use
+.It Ar dlvl
+A comma-separated list of a debug channel name, a colon and the desired
+verbosity level. For example: GGraphics:4,GVideo:1,EEvents:9.
+Use
 .Dq All
-to enable all debug channels.
+to refer to all debug channels.
 .El
 .Pp
 Long-form command line option, like
