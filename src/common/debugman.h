@@ -38,7 +38,7 @@
 namespace Common {
 
 /** All debug channels. */
-enum DebugChannels {
+enum DebugChannel {
 	kDebugGraphics, ///< "GGraphics", global, non-engine graphics.
 	kDebugSound   , ///< "GSound", global, non-engine sound.
 	kDebugVideo   , ///< "GVideo", global, non-engine video (movies).
@@ -95,17 +95,17 @@ public:
 	void getDebugChannels(std::vector<UString> &names, std::vector<UString> &descriptions) const;
 
 	/** Set the verbosity level of this channel (by ID). */
-	void setVerbosityLevel(uint32 channel, uint32 level);
+	void setVerbosityLevel(DebugChannel channel, uint32 level);
 	/** Set the verbosity level of this channel (by name). */
 	void setVerbosityLevel(const UString &channel, uint32 level);
 
 	/** Return the verbosity level of this channel (by ID). */
-	uint32 getVerbosityLevel(uint32 channel) const;
+	uint32 getVerbosityLevel(DebugChannel channel) const;
 	/** Return the verbosity level of this channel (by name). */
 	uint32 getVerbosityLevel(const UString &channel) const;
 
 	/** Is this channel ID enabled for this verbosity level? */
-	bool isEnabled(uint32 channel, uint32 level) const;
+	bool isEnabled(DebugChannel channel, uint32 level) const;
 	/** Is this channel name enabled for this verbosity level? */
 	bool isEnabled(const UString &channel, uint32 level) const;
 
@@ -146,7 +146,7 @@ private:
 		uint32 level; ///< The current level at which this debug channel is enabled.
 	};
 
-	typedef std::map<UString, uint32, UString::iless> ChannelMap;
+	typedef std::map<UString, DebugChannel, UString::iless> ChannelMap;
 
 	Channel    _channels[kDebugChannelCount]; ///< All debug channels.
 	ChannelMap _channelMap;                   ///< Debug channels indexed by name.

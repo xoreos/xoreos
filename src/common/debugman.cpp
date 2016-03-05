@@ -63,7 +63,7 @@ DebugManager::DebugManager() : _logFileStartLine(false), _changedConfig(false) {
 		_channels[i].description = kDebugDescriptions[i];
 		_channels[i].level       = 0;
 
-		_channelMap[kDebugNames[i]] = i;
+		_channelMap[kDebugNames[i]] = (DebugChannel) i;
 	}
 
 	_channelMap["all"] = kDebugChannelAll;
@@ -83,10 +83,10 @@ void DebugManager::getDebugChannels(std::vector<UString> &names, std::vector<USt
 	}
 }
 
-void DebugManager::setVerbosityLevel(uint32 channel, uint32 level) {
+void DebugManager::setVerbosityLevel(DebugChannel channel, uint32 level) {
 	if (channel == kDebugChannelAll) {
 		for (size_t i = 0; i < kDebugChannelCount; i++)
-			setVerbosityLevel(i, level);
+			setVerbosityLevel((DebugChannel) i, level);
 
 		return;
 	}
@@ -107,7 +107,7 @@ void DebugManager::setVerbosityLevel(const UString &channel, uint32 level) {
 	setVerbosityLevel(c->second, level);
 }
 
-uint32 DebugManager::getVerbosityLevel(uint32 channel) const {
+uint32 DebugManager::getVerbosityLevel(DebugChannel channel) const {
 	if (channel >= kDebugChannelCount)
 		return 0;
 
@@ -122,7 +122,7 @@ uint32 DebugManager::getVerbosityLevel(const UString &channel) const {
 	return getVerbosityLevel(c->second);
 }
 
-bool DebugManager::isEnabled(uint32 channel, uint32 level) const {
+bool DebugManager::isEnabled(DebugChannel channel, uint32 level) const {
 	return getVerbosityLevel(channel) >= MIN<uint32>(level, kMaxVerbosityLevel);
 }
 

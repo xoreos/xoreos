@@ -36,13 +36,13 @@
  *
  *  Automatically appends a newline.
  */
-void debugC(uint32 channel, uint32 level, const char *s, ...) GCC_PRINTF(3, 4);
+void debugC(Common::DebugChannel channel, uint32 level, const char *s, ...) GCC_PRINTF(3, 4);
 
 /** Print a debug message, but only if the current debug level is at least
  *  the specified level for the specified channel.
  *
  *  Doesn't automatically append a newline.
  */
-void debugCN(uint32 channel, uint32 level, const char *s, ...) GCC_PRINTF(3, 4);
+void debugCN(Common::DebugChannel channel, uint32 level, const char *s, ...) GCC_PRINTF(3, 4);
 
 #endif // COMMON_DEBUG_H
