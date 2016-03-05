@@ -188,7 +188,7 @@ void DebugManager::logString(const UString &str) {
 		UString tstamp;
 
 		try {
-			tstamp = "[" + Common::DateTime(Common::DateTime::kUTC).formatDateTimeISO('T', '-', ':') + "] ";
+			tstamp = "[" + DateTime(DateTime::kUTC).formatDateTimeISO('T', '-', ':') + "] ";
 		} catch (...) {
 			tstamp = "[0000-00-00T00:00:00] ";
 		}
@@ -210,9 +210,9 @@ void DebugManager::logString(const UString &str) {
 		_logFile.flush();
 }
 
-void DebugManager::logCommandLine(const std::vector<Common::UString> &argv) {
+void DebugManager::logCommandLine(const std::vector<UString> &argv) {
 	logString("Full command line:");
-	for (std::vector<Common::UString>::const_iterator arg = argv.begin(); arg != argv.end(); ++arg) {
+	for (std::vector<UString>::const_iterator arg = argv.begin(); arg != argv.end(); ++arg) {
 		logString(" ");
 		logString(*arg);
 	}
