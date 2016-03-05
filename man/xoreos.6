@@ -198,6 +198,8 @@ Set the game's voice language.
 .It Fl Fl debug= Ns Ar dlvl
 Set the debug channel verbosities to
 .Ar dlvl .
+.It Fl Fl debuggl= Ns Ar bool
+Create OpenGL debug context.
 .It Fl Fl listdebug
 List all available debug channels.
 .It Fl Fl listlangs
@@ -239,6 +241,8 @@ verbosity level. For example: GGraphics:4,GVideo:1,EEvents:9.
 Use
 .Dq All
 to refer to all debug channels.
+OpenGL debug channels need the debuggl option to be enabled and require
+OpenGL driver support of the GL_ARB_debug_output extension.
 .El
 .Pp
 Long-form command line option, like
