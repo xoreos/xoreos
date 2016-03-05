@@ -267,6 +267,9 @@ void Texture::createCubeMapTexture() {
 	// Filter method
 	setFilter(GL_TEXTURE_CUBE_MAP);
 
+	// Mip map parameters
+	setMipMaps(GL_TEXTURE_CUBE_MAP);
+
 	assert(_image->getLayerCount() == 6);
 
 	static const GLenum faceTarget[6] = {
@@ -278,14 +281,10 @@ void Texture::createCubeMapTexture() {
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 
-	for (size_t i = 0; i < _image->getLayerCount(); i++) {
-		// Mip map parameters
-		setMipMaps(faceTarget[i]);
-
-		// Texture image data
+	// Texture image data
+	for (size_t i = 0; i < _image->getLayerCount(); i++)
 		for (size_t j = 0; j < _image->getMipMapCount(); j++)
 			setMipMapData(faceTarget[i], i, j);
-	}
 }
 
 Texture *Texture::createPLT(const Common::UString &name, Common::SeekableReadStream *imageStream) {
