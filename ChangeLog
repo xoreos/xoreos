@@ -1,6 +1,10 @@
 Someday, ????-??-?? (Version 0.0.5)
 	- MAIN:
 		- Made --help display the user directories and config file
+		- Changed the behaviour of debug channels. Each debug channel
+		  now has its own verbosity level. The options "debuglevel"
+		  and "debugchannel" (--debuglevel and --debugchannel) have
+		  been replaced by "debug" (--debug)
 	- AURORA:
 		- Unified some code between xoreos and xoreos-tools
 		- Fixed a potential field overflow in the binary 2DA writer
