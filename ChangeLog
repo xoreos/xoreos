@@ -12,6 +12,7 @@ Someday, ????-??-?? (Version 0.0.5)
 		- Loosened restrictions on textures, allowing NPOT textures
 		- Fixed a potential race condition between environment
 		  mapping and cursor drawing
+		- Added option to create an OpenGL debug config ("debuggl")
 	- ENGINES:
 		- JADE:
 			- Implemented more engine script functions
