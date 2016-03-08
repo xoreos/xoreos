@@ -496,7 +496,25 @@ void GraphicsManager::checkGLExtensions() {
 		warning("Enabled OpenGL debug output");
 
 		glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE);
-		glDebugMessageCallbackARB(&outputGLDebug, 0);
+
+		/** NOTE: The type of GLDEBUGPROCARB changed with revision 17 (2013-07-08)
+		 *        of GL_ARB_debug_output. It involved changing the type of the last
+		 *        parameter, userParam, from void * to const void *. We aren't even
+		 *        using the parameter, so we really don't care.
+		 *
+		 *        Conversely, the OpenGL 4.3 Core function glDebugMessageCallback()
+		 *        takes a GLDEBUGPROC function pointer, whose signature has again
+		 *        a non-const userParam. We aren't using an OpenGL 4.3 context,
+		 *        though.
+		 *
+		 *        Type-punning the function pointer like this should hopefully not
+		 *        break anything. The C standard says that it's legal when the
+		 *        parameters have compatible types (otherwise, it's undefined).
+		 *        Since void * can be safely cast to const void *, but not the
+		 *        user way round, having outputGLDebug() take a const void * is
+		 *        probably the safest bet.
+		 */
+		glDebugMessageCallbackARB((GLDEBUGPROCARB) &outputGLDebug, 0);
 	}
 }
 
