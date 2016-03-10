@@ -62,8 +62,16 @@ public:
 	IFOFile();
 	~IFOFile();
 
-	void load(bool repairNWNPremium = false); ///< Load the currently available module.ifo.
-	void unload();                            ///< Unload a currently loaded IFO.
+	/** Load the currently available module.ifo.
+	 *
+	 *  Since this is a GFF3 file, which might be found in a Neverwinter
+	 *  Nights premium module and therefore mangled, the parameter
+	 *  repairNWNPremium indicates whether we want to try to repair such
+	 *  mangled module.ifo files.
+	 */
+	void load(bool repairNWNPremium = false);
+	/** Unload a currently loaded IFO. */
+	void unload();
 
 	/** Return the IFO's GFF struct. */
 	const GFF3Struct *getGFF() const;
