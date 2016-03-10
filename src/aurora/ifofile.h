@@ -35,6 +35,28 @@ namespace Aurora {
 class GFF3File;
 class GFF3Struct;
 
+/** An IFO (module information) file, describing global module properties
+ *  in many Aurora games.
+ *
+ *  Information commonly found in IFO files include: the name and description
+ *  - Name and description
+ *  - Requirements
+ *  - List of all areas
+ *  - Starting area and position
+ *  - Time and date
+ *
+ *  The base file format of an IFO file is a GFF3.
+ *
+ *  Especially for Neverwinter Nights, Neverwinter Nights 2 and The Witcher,
+ *  this file is serves as the global description of the module file as a
+ *  whole, even more so if this is a standalone adventure module.
+ *
+ *  In the two Knights of the Old Republic games, the IFO file is less
+ *  important, but still contains vital information.
+ *
+ *  Jade Empire does not use an IFO file. Neither do Sonic Chronicles or
+ *  the two Dragon Age games.
+ */
 class IFOFile {
 public:
 	IFOFile();
