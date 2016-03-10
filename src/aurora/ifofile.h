@@ -99,7 +99,13 @@ public:
 	// .--- Module requirements
 	/** Return the minimum game version the module needs to run. */
 	void getMinVersion(int &major, int &minor) const;
-	/** Return the list of required expansions. */
+
+	/** Return the list of required expansions.
+	 *
+	 *  This is a bitfield, storing the information whether expansion 1
+	 *  to expansion 16 is required, from LSB to MSB. If the Nth bit is
+	 *  set, the expansion N is required. Otherwise, it isn't.
+	 */
 	uint16 getExpansions() const;
 
 	/** Return the list of required HAK files.
