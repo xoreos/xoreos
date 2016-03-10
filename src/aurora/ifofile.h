@@ -76,8 +76,7 @@ public:
 	/** Return the IFO's GFF struct. */
 	const GFF3Struct *getGFF() const;
 
-	// General properties
-
+	// .--- General properties
 	/** Return the version of this IFO file. */
 	uint32 getVersion() const;
 	/** Return the ID of the IFO file creator. */
@@ -95,9 +94,9 @@ public:
 
 	/** Return the custom TLK table this module uses. */
 	const Common::UString &getTLK() const;
+	// '---
 
-	// General module requirements
-
+	// .--- Module requirements
 	/** Return the minimum game version the module needs to run. */
 	void getMinVersion(int &major, int &minor) const;
 	/** Return the list of required expansions. */
@@ -105,9 +104,9 @@ public:
 
 	/** Return the list of required HAK files. */
 	const std::vector<Common::UString> &getHAKs() const;
+	// '---
 
-	// Entry behaviour
-
+	// .--- Entry behaviour
 	/** Return the starting movie. */
 	const Common::UString &getStartMovie() const;
 
@@ -117,8 +116,9 @@ public:
 	void getEntryPosition (float &x, float &y, float &z) const;
 	/** Return the entry direction. */
 	void getEntryDirection(float &x, float &y) const;
+	// '---
 
-
+	// .--- Module elements
 	/** Return the list of areas in the module. */
 	const std::vector<Common::UString> &getAreas() const;
 	/** Return the list of NSS (script) files that should be cached. */
@@ -133,9 +133,9 @@ public:
 	const std::vector<Common::UString> &getStoryNPCs() const;
 	/** Returns the list of monster NPCs used in the module. */
 	const std::vector<Common::UString> &getMonsterNPCs() const;
+	// '---
 
-	// Time management
-
+	// .--- Time management
 	/** Return the module's starting time. */
 	void getStartTime(uint8 &hour, uint8 &day, uint8 &month, uint32 &year) const;
 
@@ -144,9 +144,9 @@ public:
 
 	/** Return the number of real time minutes per game hour. */
 	uint32 getMinutesPerHour() const;
+	// '---
 
-	// Weather
-
+	// .--- Weather
 	/** Return the minimum weather intensity. */
 	int32 getMinWeatherIntensity() const;
 	/** Return the maximum weather intensity. */
@@ -155,9 +155,12 @@ public:
 	int32 getRainChance() const;
 	/** Return the chance that it's going to snow. */
 	int32 getSnowChance() const;
+	// '---
 
+	// .--- Combat behaviour
 	/** Get the number creature kill XP is multiplied by. */
 	float getXPScale() const;
+	// '---
 
 private:
 	GFF3File *_gff; ///< The module.ifo GFF.
@@ -183,8 +186,8 @@ private:
 
 	Common::UString _startMovie; ///< The movie the module starts with.
 
-	// Entry location
 	Common::UString _entryArea; ///< The area the PC starts in.
+
 	float _entryX;    ///< The X position the PC starts in.
 	float _entryY;    ///< The Y position the PC starts in.
 	float _entryZ;    ///< The Z position the PC starts in.
