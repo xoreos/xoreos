@@ -102,7 +102,11 @@ public:
 	/** Return the list of required expansions. */
 	uint16 getExpansions() const;
 
-	/** Return the list of required HAK files. */
+	/** Return the list of required HAK files.
+	 *
+	 *  A HAK file is an extra ERF resource archive that contains
+	 *  resources used by this module.
+	 */
 	const std::vector<Common::UString> &getHAKs() const;
 	// '---
 
