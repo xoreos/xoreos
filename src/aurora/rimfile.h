@@ -39,7 +39,24 @@ namespace Common {
 
 namespace Aurora {
 
-/** Class to hold resource data of a RIM file. */
+/** Class to hold resource data of a RIM archive file.
+ *
+ *  A RIM file is a resource archive, used in several Aurora games.
+ *  It is a simplified version of the more complex ERF format, lacking
+ *  the support for a localized description text as found in early ERF
+ *  formats, as well as compression and encryption as found in later
+ *  ERF formats.
+ *
+ *  There is only one single version, V1.0, of the RIM format known and
+ *  supported. For each resource file, it stores a path- and extension-less
+ *  name (with a maximum of 16 ASCII characters) and a Type ID.
+ *
+ *  RIM files are found in Knights of the Old Republic, Knights of the Old
+ *  Republic II and Jade Empire. They always have the .rim extension.
+ *
+ *  Note: .rim files in the Dragon Age games are not real RIM files.
+ *        Instead, they are ERF files. See class ERFFile in erffile.h.
+ */
 class RIMFile : public Archive, public AuroraFile {
 public:
 	/** Take over this stream and read a RIM file out of it. */
