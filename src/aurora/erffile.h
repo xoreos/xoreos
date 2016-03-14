@@ -84,6 +84,17 @@ namespace Aurora {
  *
  *  Known unsupported features:
  *  - XOR encryption as used in versions 2.2 and 3.0
+ *
+ *  ERF files can have several different file extensions:
+ *  - .erf: Generic resource archive
+ *  - .nwm: BioWare original campaign modules
+ *  - .mod: Community adventure modules
+ *  - .hak: Additional, shared module resources
+ *  - .sav: Save games
+ *  - .crf: Creature resources
+ *  - .rim: Room resources in the Dragon Age games (Note: in earlier games,
+ *          .rim are RIM files. See also class RIMFile in rimfile.h.)
+ *  - .rimp: Patch resources
  */
 class ERFFile : public Archive, public AuroraFile {
 public:
