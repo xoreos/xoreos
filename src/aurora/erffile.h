@@ -41,7 +41,50 @@ namespace Common {
 
 namespace Aurora {
 
-/** Class to hold resource data of an ERF file. */
+/** Class to hold resource data of an ERF archive file.
+ *
+ *  The ERF file is, together with KEY and BIF files, the most basic
+ *  and widespread archive archive format used in Aurora engine games.
+ *  There are several versions with different features.
+ *
+ *  Supported versions:
+ *  - 1.0:
+ *    - Used in Neverwinter Nights, Knights of the Old Republic I and II,
+ *      Jade Empire and The Witcher
+ *    - 16 ASCII characters per resource name
+ *    - Extension saved as a Type ID
+ *    - Includes a localized description text field
+ *  - 1.1 (variant a):
+ *    - Used in BioWare premium modules for Neverwinter Nights
+ *    - Blowfish encrypted
+ *    - Otherwise, identical to the 1.0 format
+ *  - 1.1 (variant b):
+ *    - Used in Neverwinter Nights 2
+ *    - 32 ASCII characters per resource name
+ *    - Extension saved as a Type ID
+ *    - Includes a localized description text field
+ *  - 2.0:
+ *    - Used in Dragon Age: Origins
+ *    - 32 UTF-16 characters per resource name
+ *    - Resource name includes extension and path
+ *  - 2.2:
+ *    - Used in Dragon Age: Origins
+ *    - Optionally Blowfish encrypted
+ *    - Optionally DEFLATE compressed
+ *    - Otherwise, identical to the 2.0 format
+ *  - 3.0:
+ *    - Dragon Age II
+ *    - Optionally Blowfish encrypted
+ *    - Optionally DEFLATE compressed
+ *    - Variable amount of ASCII characters per resource name
+ *    - Resource name includes extension and path
+ *    - Optionally, resource names are stripped in favour of a FNV64
+ *      hash of the resource name (including path and extension) and
+ *      a FNV32 hash of only the extension
+ *
+ *  Known unsupported features:
+ *  - XOR encryption as used in versions 2.2 and 3.0
+ */
 class ERFFile : public Archive, public AuroraFile {
 public:
 	/** Take over this stream and read an ERF file out of it.
@@ -85,17 +128,17 @@ public:
 
 private:
 	enum Encryption {
-		kEncryptionNone        =  0,
-		kEncryptionXOR         =  1,
-		kEncryptionBlowfishDAO =  2,
-		kEncryptionBlowfishDA2 =  3,
-		kEncryptionBlowfishNWN = 16
+		kEncryptionNone        =  0, ///< No encryption at all.
+		kEncryptionXOR         =  1, ///< XOR encryption as used by V2.2 and V3.0 (UNSUPPORTED!)
+		kEncryptionBlowfishDAO =  2, ///< Blowfish encryption as used by Dragon Age: Origins (V2.2).
+		kEncryptionBlowfishDA2 =  3, ///< Blowfish encryption as used by Dragon Age II (V3.0).
+		kEncryptionBlowfishNWN = 16  ///< Blowfish encryption as used by Neverwinter Nights (V1.1).
 	};
 
 	enum Compression {
-		kCompressionNone           = 0,
-		kCompressionBioWareZlib    = 1,
-		kCompressionHeaderlessZlib = 7
+		kCompressionNone           = 0, ///< No compression as all.
+		kCompressionBioWareZlib    = 1, ///< Compression using DEFLATE with an extra header byte.
+		kCompressionHeaderlessZlib = 7  ///< Compression using DEFLATE with default parameters.
 	};
 
 	/** The header of an ERF file. */

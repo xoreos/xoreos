@@ -770,6 +770,8 @@ Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packed
 Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStream *packedStream,
                                                            uint32 unpackedSize) const {
 
+	/* Decompress using raw inflate. An extra one byte header specifies the window size. */
+
 	// This ugly const cast is necessary because the zlib API wants a non-const
 	// next_in pointer by default. Unless we define ZLIB_CONST, but that only
 	// appeared in zlib 1.2.5.3. Not really worth bumping our required zlib
@@ -791,6 +793,8 @@ Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStr
 
 Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
                                                               uint32 unpackedSize) const {
+
+	/* Decompress using raw inflate. Use the default window size of MAX_WBITS (15). */
 
 	// This ugly const cast is necessary because the zlib API wants a non-const
 	// next_in pointer by default. Unless we define ZLIB_CONST, but that only
