@@ -206,6 +206,7 @@ private:
 
 	void load();
 
+	// .--- Header
 	static void verifyVersion(uint32 id, uint32 version, bool utf16le);
 
 	static void readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, uint32 version,
@@ -214,29 +215,35 @@ private:
                               const ERFHeader &header);
 
 	void readResources(Common::SeekableReadStream &erf, const ERFHeader &header);
+	// '---
 
-	// V1.0
+	// .--- V1.0
 	static void readV10Header(Common::SeekableReadStream &erf, ERFHeader &header);
 	void readV10ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 	void readV10KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	// '---
 
-	// V1.1
+	// .--- V1.1
 	static void readV11Header(Common::SeekableReadStream &erf, ERFHeader &header);
 	void readV11KeyList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	// '---
 
-	// V2.0
+	// .--- V2.0
 	static void readV20Header(Common::SeekableReadStream &erf, ERFHeader &header);
 	void readV20ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	// '---
 
-	// V2.2
+	// .--- V2.2
 	static void readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags);
 	void readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	// '---
 
-	// V3.0
+	// .--- V3.0
 	static void readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags);
 	void readV30ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	// '---
 
-	// Encryption
+	// .--- Encryption
 	void verifyPasswordDigest();
 
 	static Common::MemoryReadStream *decrypt(Common::SeekableReadStream &cryptStream,
@@ -257,12 +264,20 @@ private:
 	                                    std::vector<byte> &password);
 
 	void decryptNWNPremium();
+	// '---
 
-	// Compression
-	Common::SeekableReadStream *decompress(Common::MemoryReadStream *packedStream, uint32 unpackedSize) const;
-	Common::SeekableReadStream *decompressBiowareZlib(Common::MemoryReadStream *packedStream, uint32 unpackedSize) const;
-	Common::SeekableReadStream *decompressHeaderlessZlib(Common::MemoryReadStream *packedStream, uint32 unpackedSize) const;
-	Common::SeekableReadStream *decompressZlib(const byte *compressedData, uint32 packedSize, uint32 unpackedSize, int windowBits) const;
+	// .--- Compression
+	Common::SeekableReadStream *decompress(Common::MemoryReadStream *packedStream,
+	                                       uint32 unpackedSize) const;
+
+	Common::SeekableReadStream *decompressBiowareZlib   (Common::MemoryReadStream *packedStream,
+	                                                     uint32 unpackedSize) const;
+	Common::SeekableReadStream *decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
+	                                                     uint32 unpackedSize) const;
+
+	Common::SeekableReadStream *decompressZlib(const byte *compressedData, uint32 packedSize,
+	                                           uint32 unpackedSize, int windowBits) const;
+	// '---
 
 	const IResource &getIResource(uint32 index) const;
 };
