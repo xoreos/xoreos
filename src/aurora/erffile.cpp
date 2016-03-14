@@ -772,12 +772,8 @@ Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStr
 
 	/* Decompress using raw inflate. An extra one byte header specifies the window size. */
 
-	// This ugly const cast is necessary because the zlib API wants a non-const
-	// next_in pointer by default. Unless we define ZLIB_CONST, but that only
-	// appeared in zlib 1.2.5.3. Not really worth bumping our required zlib
-	// version for, IMHO.
-	byte *compressedData = const_cast<byte *>(packedStream->getData());
-	uint32 packedSize = packedStream->size();
+	const byte * const compressedData = packedStream->getData();
+	const uint32 packedSize = packedStream->size();
 
 	Common::SeekableReadStream *stream = 0;
 	try {
@@ -796,12 +792,8 @@ Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryRead
 
 	/* Decompress using raw inflate. Use the default window size of MAX_WBITS (15). */
 
-	// This ugly const cast is necessary because the zlib API wants a non-const
-	// next_in pointer by default. Unless we define ZLIB_CONST, but that only
-	// appeared in zlib 1.2.5.3. Not really worth bumping our required zlib
-	// version for, IMHO.
-	byte *compressedData = const_cast<byte *>(packedStream->getData());
-	uint32 packedSize = packedStream->size();
+	const byte * const compressedData = packedStream->getData();
+	const uint32 packedSize = packedStream->size();
 
 	Common::SeekableReadStream *stream = 0;
 	try {
@@ -815,17 +807,24 @@ Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryRead
 	return stream;
 }
 
-Common::SeekableReadStream *ERFFile::decompressZlib(byte *compressedData, uint32 packedSize,
+Common::SeekableReadStream *ERFFile::decompressZlib(const byte *compressedData, uint32 packedSize,
                                                     uint32 unpackedSize, int windowBits) const {
 	// Allocate the decompressed data
 	byte *decompressedData = new byte[unpackedSize];
+
+	/* Initialize the zlib data stream for decompression.
+	 *
+	 * This ugly const cast is necessary because the zlib API wants a non-const
+	 * next_in pointer by default. Unless we define ZLIB_CONST, but that only
+	 * appeared in zlib 1.2.5.3. Not really worth bumping our required zlib
+	 * version for, IMHO. */
 
 	z_stream strm;
 	strm.zalloc   = Z_NULL;
 	strm.zfree    = Z_NULL;
 	strm.opaque   = Z_NULL;
 	strm.avail_in = packedSize;
-	strm.next_in  = compressedData;
+	strm.next_in  = const_cast<byte *>(compressedData);
 
 	// Negative windows bits means there is no zlib header present in the data.
 	int zResult = inflateInit2(&strm, -windowBits);

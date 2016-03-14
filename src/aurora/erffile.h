@@ -262,7 +262,7 @@ private:
 	Common::SeekableReadStream *decompress(Common::MemoryReadStream *packedStream, uint32 unpackedSize) const;
 	Common::SeekableReadStream *decompressBiowareZlib(Common::MemoryReadStream *packedStream, uint32 unpackedSize) const;
 	Common::SeekableReadStream *decompressHeaderlessZlib(Common::MemoryReadStream *packedStream, uint32 unpackedSize) const;
-	Common::SeekableReadStream *decompressZlib(byte *compressedData, uint32 packedSize, uint32 unpackedSize, int windowBits) const;
+	Common::SeekableReadStream *decompressZlib(const byte *compressedData, uint32 packedSize, uint32 unpackedSize, int windowBits) const;
 
 	const IResource &getIResource(uint32 index) const;
 };
