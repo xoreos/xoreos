@@ -44,7 +44,13 @@ namespace Aurora {
 
 class KEYFile;
 
-/** Class to hold resource data information of a bzf file. */
+/** Class to hold resource data information of a BZF file.
+ *
+ *  A BZF is a compressed variation of a BIF file, found exclusively
+ *  in the iOS version of Knights of the Old Republic.
+ *
+ *  See also classes KEYFile in keyfile.h and BIFFile in biffile.h.
+ */
 class BZFFile : public Archive, public AuroraFile {
 public:
 	/** Take over this stream and read a BZF file out of it. */
