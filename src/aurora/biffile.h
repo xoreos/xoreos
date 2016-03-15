@@ -41,7 +41,32 @@ namespace Aurora {
 
 class KEYFile;
 
-/** Class to hold resource data information of a bif file. */
+/** Class to hold resource data information of a BIF file.
+ *
+ *  A BIF file is one part of the KEY/BIF resource archive system.
+ *  The KEY file contains the resource names and types, and the BIF
+ *  file contains the actual resource data. So BIF files only contain
+ *  the resource data itself.
+ *
+ *  A KEY file can index resources of several BIF files and several
+ *  BIF files can in turn index different resources of the same BIF
+ *  file.
+ *
+ *  Additionally, there are BZF files. A BZF is a compressed variation
+ *  of a BIF file, found exclusively in the iOS version of Knights of
+ *  the Old Republic.
+ *
+ *  See also classes KEYFile in keyfile.h and BZFFile in bzffile.h.
+ *
+ *  There are two versions of BIF files known and supported
+ *  - V1, used by Neverwinter Nights, Neverwinter Nights 2, Knight of
+ *    the Old Republic, Knight of the Old Republic II and Jade Empire
+ *  - V1.1, used by The Witcher
+ *
+ *  Please note that BIF (and KEY) files found in Infinity Engine
+ *  games (Baldur's Gate et al) are not supported at all, even though
+ *  they claim to be V1.
+ */
 class BIFFile : public Archive, public AuroraFile {
 public:
 	/** Take over this stream and read a BIF file out of it. */
@@ -57,7 +82,14 @@ public:
 	/** Return a stream of the resource's contents. */
 	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
-	/** Merge information from the KEY into the BIF. */
+	/** Merge information from the KEY into the BIF.
+	 *
+	 *  Without this step, this BIFFile archive does not contain any
+	 *  resource names at all.
+	 *
+	 *  @param key      A KEYFile with information about this BIF.
+	 *  @param bifIndex The index this BIF has within the KEY file.
+	 */
 	void mergeKEY(const KEYFile &key, uint32 bifIndex);
 
 private:
