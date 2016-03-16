@@ -253,13 +253,14 @@ void FoxPro::saveFields(WriteStream &dbf) const {
 	for (size_t i = 0; i < _fields.size(); i++) {
 		const Field &field = _fields[i];
 
-		int l = strlen(field.name.c_str());
+		const size_t nameLength = strlen(field.name.c_str());
 
-		dbf.write(field.name.c_str(), MIN(10, l));
+		dbf.write(field.name.c_str(), MIN<size_t>(10, nameLength));
 		dbf.writeByte(0x00);
 
-		while ((10 - l++) > 0)
-			dbf.writeByte(0x00);
+		if (nameLength < 10)
+			for (size_t j = 0; j < (10 - nameLength); j++)
+				dbf.writeByte(0x00);
 
 		dbf.writeByte((byte) ((char) field.type));
 
