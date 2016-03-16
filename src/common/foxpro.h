@@ -157,6 +157,8 @@ private:
 	void addField(uint8 size);
 	void updateUpdate();
 
+	static void checkName(const UString &name);
+
 	static bool getInt(const byte *data, size_t size, int32 &i);
 };
 

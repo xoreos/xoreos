@@ -515,7 +515,15 @@ void FoxPro::deleteRecord(size_t record) {
 	//       field of equals or less size.
 }
 
+void FoxPro::checkName(const UString &name) {
+	for (UString::iterator c = name.begin(); c != name.end(); ++c)
+		if (!UString::isASCII(*c))
+			throw Common::Exception("FoxPro field names need to be in unextended ASCII");
+}
+
 size_t FoxPro::addFieldString(const UString &name, uint8 size) {
+	checkName(name);
+
 	size_t offset = 1;
 	if (!_fields.empty())
 		offset = _fields.back().offset + _fields.back().size;
@@ -540,6 +548,8 @@ size_t FoxPro::addFieldString(const UString &name, uint8 size) {
 }
 
 size_t FoxPro::addFieldNumber(const UString &name, uint8 size, uint8 decimals) {
+	checkName(name);
+
 	size_t offset = 1;
 	if (!_fields.empty())
 		offset = _fields.back().offset + _fields.back().size;
@@ -564,6 +574,8 @@ size_t FoxPro::addFieldNumber(const UString &name, uint8 size, uint8 decimals) {
 }
 
 size_t FoxPro::addFieldInt(const UString &name) {
+	checkName(name);
+
 	size_t offset = 1;
 	if (!_fields.empty())
 		offset = _fields.back().offset + _fields.back().size;
@@ -588,6 +600,8 @@ size_t FoxPro::addFieldInt(const UString &name) {
 }
 
 size_t FoxPro::addFieldBool(const UString &name) {
+	checkName(name);
+
 	size_t offset = 1;
 	if (!_fields.empty())
 		offset = _fields.back().offset + _fields.back().size;
@@ -612,6 +626,8 @@ size_t FoxPro::addFieldBool(const UString &name) {
 }
 
 size_t FoxPro::addFieldDate(const UString &name) {
+	checkName(name);
+
 	size_t offset = 1;
 	if (!_fields.empty())
 		offset = _fields.back().offset + _fields.back().size;
@@ -636,6 +652,8 @@ size_t FoxPro::addFieldDate(const UString &name) {
 }
 
 size_t FoxPro::addFieldMemo(const UString &name) {
+	checkName(name);
+
 	size_t offset = 1;
 	if (!_fields.empty())
 		offset = _fields.back().offset + _fields.back().size;
