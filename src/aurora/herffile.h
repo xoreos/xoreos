@@ -39,7 +39,15 @@ namespace Common {
 
 namespace Aurora {
 
-/** Class to hold resource data of an HERF file. */
+/** Class to hold resource data of an HERF archive file.
+ *
+ *  A HERF file is a very simplified version of a ERF file, similar to a
+ *  RIM file. But unlike a RIM file, a HERF file only stores djb2 hashes
+ *  of the included resource names. A dictionary, which matches hashes
+ *  back to names might be present, but doesn't have to.
+ *
+ *  HERF files are only used in the Nintendo DS game Sonic Chronicles.
+ */
 class HERFFile : public Archive {
 public:
 	/** Take over this stream and read an HERF file out of it. */
