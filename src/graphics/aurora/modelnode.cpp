@@ -42,6 +42,7 @@
 #include "src/graphics/aurora/model.h"
 
 #include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
 
 namespace Graphics {
 
@@ -284,6 +285,7 @@ void ModelNode::setEnvironmentMap(const Common::UString &environmentMap) {
 		} catch (...) {
 		}
 	}
+	this->buildMaterial();
 }
 
 void ModelNode::setInvisible(bool invisible) {
@@ -392,20 +394,7 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 	if (!hasTexture)
 		_render = false;
 	else {
-		// TODO: this is a placeholder to load things. Materials should be named after the modelnode, maybe.
-		// Also, single-texture-only models are supported here...not the best idea.
-		_material = MaterialMan.getMaterial(_textures[0].getName());
-		if (!_material) {
-			_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/default.frag", Shader::SHADER_FRAGMENT), _textures[0].getName());
-			Shader::ShaderSampler * sampler = (Shader::ShaderSampler *)(_material->getVariableData("texture0"));
-			sampler->texture = &(_textures[0].getTexture());
-			sampler->handle = _textures[0];
-			MaterialMan.addMaterial(_material);
-		}
-
-		if (_shaderRenderable) {
-			_shaderRenderable->setMaterial(_material);
-		}
+		this->buildMaterial();
 	}
 }
 
@@ -528,24 +517,11 @@ void ModelNode::orderChildren() {
 		(*c)->orderChildren();
 }
 
+
 void ModelNode::renderGeometry(Mesh &mesh) {
 	if (!mesh.data->envMap.empty()) {
-		switch (mesh.data->envMapMode) {
-			case kModeEnvironmentBlendedUnder:
-				renderGeometryEnvMappedUnder(mesh);
-				break;
-
-			case kModeEnvironmentBlendedOver:
-				renderGeometryEnvMappedOver(mesh);
-				break;
-
-			default:
-				break;
-		}
-
-		return;
+		switch (mesh.data->envMapMode)
 	}
-
 	renderGeometryNormal(mesh);
 }
 
@@ -856,6 +832,127 @@ void ModelNode::computeAbsoluteTransform() {
 					          node->_orientationBuffer[1],
 					          node->_orientationBuffer[2]));
 	}
+}
+
+void ModelNode::buildMaterial() {
+	Common::UString materialName = "xoreos";
+
+	for (size_t t = 0; t != _textures.size(); t++) {
+		materialName += ".";
+		materialName += _textures[t].getName();
+	}
+
+	if (!_envMap.empty()) {
+		materialName += ".";
+		materialName += _envMap.getName();
+	}
+
+	_material = MaterialMan.getMaterial(materialName);
+	if (!_material) {
+		Shader::ShaderSampler * sampler;
+		uint32 flags = 0;
+		if (!_envMap.empty()) {
+			flags |= Graphics::Shader::ShaderBuilder::ENV_SPHERE_PRE;
+		}
+
+		if (_textures.size() > 0) {
+			flags |= Graphics::Shader::ShaderBuilder::TEXTURE;
+		}
+
+		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(flags, Shader::SHADER_FRAGMENT), materialName);
+
+		if (!_envMap.empty()) {
+			sampler = (Shader::ShaderSampler *)(_material->getVariableData("_textureSphere0"));
+			sampler->texture = &(_envMap.getTexture());
+			sampler->handle = _envMap;
+		}
+
+		if (_textures.size() > 0) {
+			sampler = (Shader::ShaderSampler *)(_material->getVariableData("_texture0"));
+			sampler->texture = &(_textures[0].getTexture());
+			sampler->handle = _textures[0];
+		}
+
+		if (_isTransparent) {
+			flags |= SHADER_MATERIAL_TRANSPARENT;
+			flags |= Shader::ShaderMaterial::genBlendFlags(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			_material->setFlags(flags);
+		}
+
+		MaterialMan.addMaterial(_material);
+		status("Added material: %s\n", materialName.c_str());
+	}
+
+	if (_shaderRenderable) {
+		_shaderRenderable->setMaterial(_material);
+	}
+}
+
+void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {
+	// If less than 2 keyframes, don't interpolate, just return the only position
+	if (_positionFrames.size() < 2) {
+		getPosition(x, y, z);
+		return;
+	}
+
+	size_t lastFrame = 0;
+	for (size_t i = 0; i < _positionFrames.size(); i++) {
+		const PositionKeyFrame &pos = _positionFrames[i];
+		if (pos.time >= time)
+			break;
+
+		lastFrame = i;
+	}
+
+	const PositionKeyFrame &last = _positionFrames[lastFrame];
+	if (lastFrame + 1 >= _positionFrames.size() || last.time == time) {
+		x = last.x;
+		y = last.y;
+		z = last.z;
+		return;
+	}
+
+	const PositionKeyFrame &next = _positionFrames[lastFrame + 1];
+
+	const float f = (time - last.time) / (next.time - last.time);
+	x = f * next.x + (1.0f - f) * last.x;
+	y = f * next.y + (1.0f - f) * last.y;
+	z = f * next.z + (1.0f - f) * last.z;
+}
+
+void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z, float &a) const {
+	// If less than 2 keyframes, don't interpolate just return the only orientation
+	if (_orientationFrames.size() < 2) {
+		getOrientation(x, y, z, a);
+		return;
+	}
+
+	size_t lastFrame = 0;
+	for (size_t i = 0; i < _orientationFrames.size(); i++) {
+		const QuaternionKeyFrame &pos = _orientationFrames[i];
+		if (pos.time >= time)
+			break;
+
+		lastFrame = i;
+	}
+
+	const QuaternionKeyFrame &last = _orientationFrames[lastFrame];
+	if (lastFrame + 1 >= _orientationFrames.size() || last.time == time) {
+		x = last.x;
+		y = last.y;
+		z = last.z;
+		a = Common::rad2deg(acos(last.q) * 2.0);
+	}
+
+	const QuaternionKeyFrame &next = _orientationFrames[lastFrame + 1];
+
+	const float f = (time - last.time) / (next.time - last.time);
+	x = f * next.x + (1.0f - f) * last.x;
+	y = f * next.y + (1.0f - f) * last.y;
+	z = f * next.z + (1.0f - f) * last.z;
+
+	const float q = f * next.q + (1.0f - f) * last.q;
+	a = Common::rad2deg(acos(q) * 2.0);
 }
 
 } // End of namespace Aurora

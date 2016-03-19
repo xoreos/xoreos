@@ -70,6 +70,7 @@
 
 #include "src/graphics/texture.h"
 #include "src/graphics/aurora/texturehandle.h"
+#include "src/graphics/shader/shaderbuilder.h"
 
 namespace Graphics {
 
@@ -235,6 +236,9 @@ public:
 	ShaderObject *getShaderObject(const Common::UString &name, ShaderType type);
 	ShaderObject *getShaderObject(const Common::UString &name, const Common::UString &source, ShaderType type);
 
+	/** Build a shader from a set of flags, defined in shaderbuilder.h */
+	ShaderObject *getShaderObject(uint32 flags, ShaderType type);
+
 	void bindShaderVariable(ShaderObject::ShaderObjectVariable &var, GLint loc, const void *data);
 	void bindShaderInstance(ShaderProgram *program, const void **vertexVariables, const void **fragmentVariables);
 
@@ -257,6 +261,8 @@ private:
 	uint32 _counterFID;
 	std::map<Common::UString, Shader::ShaderObject *> _shaderObjectMap;
 	std::vector<Shader::ShaderProgram *> _shaderProgramArray;
+
+	ShaderBuilder _builder;
 };
 
 } // End of namespace Shader

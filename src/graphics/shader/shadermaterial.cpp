@@ -51,6 +51,7 @@ static const GLenum ShaderMaterialBlendfuncArray[] = {
 	GL_SRC1_ALPHA,
 	GL_ONE_MINUS_SRC1_ALPHA
 };
+#define BLEND_FUNC_COUNT (19)
 
 ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) : _variableData(), _fragShader(fragShader), _flags(0), _name(name), _usageCount(0), _alphaIndex(0xFFFFFFFF) {
 	fragShader->usageCount++;
@@ -61,7 +62,7 @@ ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::U
 		_variableData[i].flags = 0;
 		genMaterialVar(i);
 
-		if (fragShader->variablesCombined[i].name == "alpha") {
+		if (fragShader->variablesCombined[i].name == "_alpha") {
 			_alphaIndex = i;
 		}
 	}
@@ -83,6 +84,28 @@ uint32 ShaderMaterial::getFlags() const {
 
 void ShaderMaterial::setFlags(uint32 flags) {
 	_flags = flags;
+}
+
+uint32 ShaderMaterial::genBlendFlags(GLenum src, GLenum dst) {
+	uint32 flags = 0;
+
+	// First figure out the src flags.
+	for (uint32 i = 0; i < BLEND_FUNC_COUNT; i++) {
+		if (src == ShaderMaterialBlendfuncArray[i]) {
+			flags |= i << SHADER_MATERIAL_TRANSPARENT_SRC_SHIFT;
+			break;
+		}
+	}
+
+	// Now get the dst flags.
+	for (uint32 i = 0; i < BLEND_FUNC_COUNT; i++) {
+		if (dst == ShaderMaterialBlendfuncArray[i]) {
+			flags |= i << SHADER_MATERIAL_TRANSPARENT_DST_SHIFT;
+			break;
+		}
+	}
+
+	return flags;
 }
 
 Shader::ShaderObject *ShaderMaterial::getFragmentShader() const {

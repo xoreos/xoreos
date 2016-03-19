@@ -33,6 +33,7 @@
 
 #include "src/graphics/shader/shader.h"
 #include "src/graphics/shader/shadercode.h"
+#include "src/graphics/shader/shaderbuilder.h"
 
 /*--------------------------------------------------------------------*/
 
@@ -61,6 +62,7 @@ void ShaderManager::init() {
 
 	ShaderObject *vObj;
 	ShaderObject *fObj;
+
 	if (GfxMan.isGL3()) {
 		vObj = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault3xText, SHADER_VERTEX);
 		fObj = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault3xText, SHADER_FRAGMENT);
@@ -74,6 +76,15 @@ void ShaderManager::init() {
 		registerShaderProgram(vObj, fObj);
 
 		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor2xText, SHADER_FRAGMENT);
+		registerShaderProgram(vObj, fObj);
+
+		fObj = getShaderObject("default/envmap.frag", Graphics::Shader::fragmentEnv2xText, SHADER_FRAGMENT);
+		registerShaderProgram(vObj, fObj);
+
+		fObj = getShaderObject(ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
+		registerShaderProgram(vObj, fObj);
+
+		fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_PRE | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
 		registerShaderProgram(vObj, fObj);
 	}
 }
@@ -133,7 +144,64 @@ ShaderObject *ShaderManager::getShaderObject(const Common::UString &name, const 
 		GLsizei logolength;
 		char logorama[4096];
 		glGetShaderInfoLog(shaderObject->glid, 4095, &logolength, logorama);
-		error("shader compile failure! shader %s, Driver output:\n", logorama);
+		error("shader compile failure! shader %s, Driver output:%s\n", name.c_str(), logorama);
+		delete shaderObject;
+	} else {
+		_shaderObjectMap.insert(std::pair<Common::UString, ShaderObject *>(name, shaderObject));
+		parseShaderVariables(source, shaderObject->variablesSelf);
+		genShaderVariableList(shaderObject, shaderObject->variablesCombined);
+		if (shaderObject->type == SHADER_VERTEX) {
+			shaderObject->id = _counterVID++; // Post decrement intentional.
+		} else {
+			shaderObject->id = _counterFID++; // Post decrement intentional.
+		}
+	}
+
+	return shaderObject;
+}
+
+ShaderObject *ShaderManager::getShaderObject(uint32 flags, ShaderType type) {
+	ShaderObject *shaderObject = 0;
+
+	Common::UString name;
+	if (type == SHADER_VERTEX) {
+		name = _builder.genVertexShaderName(flags);
+	} else {
+		name = _builder.genFragmentShaderName(flags);
+	}
+
+	std::map<Common::UString, Shader::ShaderObject *>::iterator it = _shaderObjectMap.find(name);
+	if (it != _shaderObjectMap.end()) {
+		return it->second;
+	}
+
+	Common::UString source;
+	if (type == SHADER_VERTEX) {
+		source = _builder.genVertexShader(flags);
+	} else {
+		source = _builder.genFragmentShader(flags);
+	}
+
+	// todo: below here is duplicate code from above, maybe we can fix that at some point.
+	//       a function to build a shader from input name and source string sounds good.
+
+	shaderObject = new ShaderObject;
+	shaderObject->type = type;
+	shaderObject->glid = glCreateShader(shaderObject->type == SHADER_VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
+	const char *text = source.c_str();
+	glShaderSource(shaderObject->glid, 1, (const GLchar **)(&text), 0);
+	glCompileShader(shaderObject->glid);
+
+	status("shader %s loaded", name.c_str());
+	status("source string: %s\n", source.c_str());
+
+	GLint gl_status;
+	glGetShaderiv(shaderObject->glid, GL_COMPILE_STATUS, &gl_status);
+	if (gl_status == GL_FALSE) {
+		GLsizei logolength;
+		char logorama[4096];
+		glGetShaderInfoLog(shaderObject->glid, 4095, &logolength, logorama);
+		error("shader compile failure! shader %s, Driver output: %s\n", name.c_str(), logorama);
 		delete shaderObject;
 	} else {
 		_shaderObjectMap.insert(std::pair<Common::UString, ShaderObject *>(name, shaderObject));
@@ -316,12 +384,10 @@ ShaderProgram *ShaderManager::registerShaderProgram(ShaderObject *vertexObject, 
 	GLint linkStatus;
 	glGetProgramiv(glid, GL_LINK_STATUS, &linkStatus);
 	if (linkStatus == GL_FALSE) {
-		//error("shader link failure! shaders: %s, %s\nDriver output:\n", getShaderObjectName(vertexObject).c_str(), getShaderObjectName(fragmentObject).c_str());
-		error("Shader link failure! Driver output:\n");
 		GLsizei logolength;
 		char logorama[4096];
 		glGetProgramInfoLog(glid, 4095, &logolength, logorama);
-		error("%s", logorama);
+		error("Shader link failure! Driver output: %s", logorama);
 
 		glDeleteProgram(glid);
 		vertexObject->usageCount--;
@@ -348,6 +414,8 @@ ShaderProgram *ShaderManager::registerShaderProgram(ShaderObject *vertexObject, 
 	program->glid = glid;
 	program->vertexObject = vertexObject;
 	program->fragmentObject = fragmentObject;
+
+	printf("Program id generated: %u\n", glid);
 
 	//status("processing vertex variables, count: %u", (uint) vertexObject->variablesCombined.size());
 	for (uint32 i = 0; i < vertexObject->variablesCombined.size(); ++i) {

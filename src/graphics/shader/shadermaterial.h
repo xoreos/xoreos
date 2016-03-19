@@ -60,6 +60,8 @@ public:
 	uint32 getFlags() const;
 	void setFlags(uint32 flags);
 
+	static uint32 genBlendFlags(GLenum src, GLenum dst);
+
 	Shader::ShaderObject *getFragmentShader() const;
 
 	uint32 getVariableCount() const;

@@ -271,6 +271,8 @@ protected:
 	void setBufferedOrientation(float x, float y, float z, float angle);
 	void flushBuffers();
 
+	void buildMaterial();
+
 
 private:
 	const Common::BoundingBox &getAbsoluteBound() const;
