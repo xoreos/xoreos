@@ -77,16 +77,22 @@ void ShaderManager::init() {
 
 		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor2xText, SHADER_FRAGMENT);
 		registerShaderProgram(vObj, fObj);
-
-		fObj = getShaderObject("default/envmap.frag", Graphics::Shader::fragmentEnv2xText, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-
-		fObj = getShaderObject(ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-
-		fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_PRE | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
 	}
+
+	fObj = getShaderObject(ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_PRE, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	fObj = getShaderObject(ShaderBuilder::ENV_CUBE_PRE, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_PRE | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	fObj = getShaderObject(ShaderBuilder::ENV_CUBE_PRE | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
 }
 
 void ShaderManager::deinit() {
@@ -177,9 +183,9 @@ ShaderObject *ShaderManager::getShaderObject(uint32 flags, ShaderType type) {
 
 	Common::UString source;
 	if (type == SHADER_VERTEX) {
-		source = _builder.genVertexShader(flags);
+		source = _builder.genVertexShader(flags, GfxMan.isGL3());
 	} else {
-		source = _builder.genFragmentShader(flags);
+		source = _builder.genFragmentShader(flags, GfxMan.isGL3());
 	}
 
 	// todo: below here is duplicate code from above, maybe we can fix that at some point.

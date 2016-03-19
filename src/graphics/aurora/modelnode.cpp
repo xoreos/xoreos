@@ -44,6 +44,8 @@
 #include "src/graphics/shader/materialman.h"
 #include "src/graphics/shader/surfaceman.h"
 
+#include "src/graphics/images/decoder.h"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -852,17 +854,33 @@ void ModelNode::buildMaterial() {
 		Shader::ShaderSampler * sampler;
 		uint32 flags = 0;
 		if (!_envMap.empty()) {
-			flags |= Graphics::Shader::ShaderBuilder::ENV_SPHERE_PRE;
+			if (_envMap.getTexture().getImage().isCubeMap()) {
+				if (_envMapMode == kModeEnvironmentBlendedUnder) {
+					flags |= Shader::ShaderBuilder::ENV_CUBE_PRE;
+				} else {
+					flags |= Shader::ShaderBuilder::ENV_CUBE_POST;
+				}
+			} else {
+				if (_envMapMode == kModeEnvironmentBlendedUnder) {
+					flags |= Shader::ShaderBuilder::ENV_SPHERE_PRE;
+				} else {
+					flags |= Shader::ShaderBuilder::ENV_SPHERE_POST;
+				}
+			}
 		}
 
 		if (_textures.size() > 0) {
-			flags |= Graphics::Shader::ShaderBuilder::TEXTURE;
+			flags |= Shader::ShaderBuilder::TEXTURE;
 		}
 
 		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(flags, Shader::SHADER_FRAGMENT), materialName);
 
 		if (!_envMap.empty()) {
-			sampler = (Shader::ShaderSampler *)(_material->getVariableData("_textureSphere0"));
+			if (_envMap.getTexture().getImage().isCubeMap()) {
+				sampler = (Shader::ShaderSampler *)(_material->getVariableData("_textureCube0"));
+			} else {
+				sampler = (Shader::ShaderSampler *)(_material->getVariableData("_textureSphere0"));
+			}
 			sampler->texture = &(_envMap.getTexture());
 			sampler->handle = _envMap;
 		}

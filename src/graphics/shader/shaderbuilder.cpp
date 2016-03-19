@@ -33,6 +33,91 @@ namespace Graphics {
 
 namespace Shader {
 
+
+// ---------------------------------------------------------
+static const Common::UString header_default_3vert =
+"#version 330\n\n"
+"layout(location = 0) in vec3 inPosition;\n"
+"layout(location = 1) in vec3 inNormal;\n"
+"layout(location = 3) in vec2 inTexCoord0;\n"
+"out vec3 _normal;\n"
+"out vec3 _position;\n"
+"out vec2 _texCoords;\n"
+"uniform mat4 _objectModelviewMatrix;\n"
+"uniform mat4 _projectionMatrix;\n"
+"uniform mat4 _modelviewMatrix;\n";
+
+static const Common::UString header_default_3frag =
+"#version 330\n\n"
+"precision highp float;\n\n"
+"uniform float _alpha;\n";
+
+static const Common::UString header_colour_3frag =
+"uniform vec4 _color;\n";
+
+static const Common::UString header_texture_3frag =
+"uniform sampler2D _texture0;\n";
+
+static const Common::UString header_texcube_3frag =
+"uniform samplerCube _textureCube0;\n";
+
+static const Common::UString header_texsphere_3frag =
+"uniform sampler2D _textureSphere0;\n";
+
+
+static const Common::UString body_default_3vert =
+"void main(void) {\n"
+"	mat mo = (_modelviewMatrix * _objectModelviewMatrix);\n"
+"	vec4 vertex = mo * vec4(inPosition, 1.0f);\n"
+"	gl_Position = _projectionMatrix * vertex;\n"
+"	_normal = mat3(mo) * vec3(inNormal);\n"
+"	_position = vec3(vertex);\n"
+"	_texCoords = inTexCoord0;\n"
+"}\n";
+
+static const Common::UString body_default_start_3frag =
+"in vec3 _normal;\n"
+"in vec3 _position;\n"
+"in vec2 _texCoords;\n\n"
+"layout(location = 0) out vec4 outColor;\n"
+"void main(void) {\n"
+"	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
+"	float opacity = 1.0;\n";
+
+static const Common::UString body_default_end_3frag =
+"	fraggle.a = opacity * _alpha;\n"
+"	outColor = fraggle;\n"
+"}\n";
+
+static const Common::UString body_colour_3frag =
+"	opacity *= _color.a;\n"
+"	fraggle = mix(fraggle, _color, _color.a);\n";
+
+static const Common::UString body_texture_3frag =
+"	vec4 texture0_diffuse = texture(_texture0, _texCoords);\n"
+"	opacity *= texture0_diffuse.a;\n"
+"	fraggle = mix(fraggle, texture0_diffuse, texture0_diffuse.a);\n";
+
+static const Common::UString body_texcube_3frag =
+"	vec3 u = normalize(_position);\n"
+"	vec3 n = normalize(_normal);\n"
+"	vec3 r = reflect(u, n);\n"
+"	vec4 texcube0_diffuse = texture(_textureCube0, r);\n"
+"	fraggle = mix(fraggle, texcube0_diffuse, texcube0_diffuse.a);\n";
+
+static const Common::UString body_texsphere_3frag =
+"	vec3 u = normalize(_position);\n"
+"	vec3 n = normalize(_normal);\n"
+"	vec3 r = reflect(u, n);\n"
+"	float m = 2.0 * sqrt(r.x * r.x + r.y * r.y + (r.z + 1.0) * (r.z + 1.0));\n"
+"	vec2 coords = vec2(r.x / m + 0.5, r.y / m + 0.5);\n"
+"	vec4 texsphere0_diffuse = texture(_textureSphere0, coords);\n"
+"	fraggle = mix(fraggle, texsphere0_diffuse, texsphere0_diffuse.a);\n";
+// ---------------------------------------------------------
+
+
+
+// ---------------------------------------------------------
 static const Common::UString header_default_2vert =
 "#version 120\n"
 "varying vec3 _normal;\n"
@@ -64,8 +149,8 @@ static const Common::UString body_default_2vert =
 "	mat mo = (_modelviewMatrix * _objectModelviewMatrix);\n"
 "	vec4 vertex = mo * gl_Vertex;\n"
 "	gl_Position = _projectionMatrix * vertex;\n"
-"	_normal = mat3(mo) * vec3(vertex);\n"
-"	_position = vec3(_objectModelviewMatrix * gl_Vertex);\n"
+"	_normal = mat3(mo) * vec3(gl_Normal);\n"
+"	_position = vec3(vertex);\n"
 "	_texCoords = vec2(gl_MultiTexCoord0);\n"
 "}\n";
 
@@ -92,23 +177,34 @@ static const Common::UString body_texture_2frag =
 "	fraggle = mix(fraggle, texture0_diffuse, texture0_diffuse.a);\n";
 
 static const Common::UString body_texcube_2frag =
-"	vec4 texcube0_diffuse = textureCube(_textureCube0, vec3(_texCoords, 1.0f));\n"
+"	vec3 u = normalize(_position);\n"
+"	vec3 n = normalize(_normal);\n"
+"	vec3 r = reflect(u, n);\n"
+"	vec4 texcube0_diffuse = textureCube(_textureCube0, r);\n"
 "	fraggle = mix(fraggle, texcube0_diffuse, texcube0_diffuse.a);\n";
 
 static const Common::UString body_texsphere_2frag =
-"	vec4 texsphere0_diffuse = texture2D(_textureSphere0, _texCoords);\n"
+"	vec3 u = normalize(_position);\n"
+"	vec3 n = normalize(_normal);\n"
+"	vec3 r = reflect(u, n);\n"
+"	float m = 2.0 * sqrt(r.x * r.x + r.y * r.y + (r.z + 1.0) * (r.z + 1.0));\n"
+"	vec2 coords = vec2(r.x / m + 0.5, r.y / m + 0.5);\n"
+"	vec4 texsphere0_diffuse = texture2D(_textureSphere0, coords);\n"
 "	fraggle = mix(fraggle, texsphere0_diffuse, texsphere0_diffuse.a);\n";
-
+// ---------------------------------------------------------
 
 ShaderBuilder::ShaderBuilder() {
-	this->genVertexShader(0);
 }
 
 ShaderBuilder::~ShaderBuilder() {
 }
 
-Common::UString ShaderBuilder::genVertexShader(uint32_t flags) {
-	return header_default_2vert + body_default_2vert;
+Common::UString ShaderBuilder::genVertexShader(uint32_t flags, bool isGL3) {
+	if (isGL3) {
+		return header_default_3vert + body_default_3vert;
+	} else {
+		return header_default_2vert + body_default_2vert;
+	}
 }
 
 Common::UString ShaderBuilder::genVertexShaderName(uint32_t flags) {
@@ -142,40 +238,81 @@ Common::UString ShaderBuilder::genVertexShaderName(uint32_t flags) {
 	return name;
 }
 
-Common::UString ShaderBuilder::genFragmentShader(uint32_t flags) {
-	Common::UString header = header_default_2frag;
-	Common::UString body = body_default_start_2frag;
-	if (flags & ShaderBuilder::ENV_CUBE_PRE) {
-		header += header_texcube_2frag;
-		body += body_texcube_2frag;
-	}
+Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
+	Common::UString header;
+	Common::UString body;
 
-	if (flags & ShaderBuilder::ENV_SPHERE_PRE) {
-		header += header_texsphere_2frag;
-		body += body_texsphere_2frag;
-	}
+	if (isGL3) {
+		header = header_default_3frag;
+		body = body_default_start_3frag;
 
-	if (flags & ShaderBuilder::COLOUR) {
-		header += header_colour_2frag;
-		body += body_colour_2frag;
-	}
+		if (flags & ShaderBuilder::ENV_CUBE_PRE) {
+			header += header_texcube_3frag;
+			body += body_texcube_3frag;
+		}
 
-	if (flags & ShaderBuilder::TEXTURE) {
-		header += header_texture_2frag;
-		body += body_texture_2frag;
-	}
+		if (flags & ShaderBuilder::ENV_SPHERE_PRE) {
+			header += header_texsphere_3frag;
+			body += body_texsphere_3frag;
+		}
 
-	if (flags & ShaderBuilder::ENV_CUBE_POST) {
-		header += header_texcube_2frag;
-		body += body_texcube_2frag;
-	}
+		if (flags & ShaderBuilder::COLOUR) {
+			header += header_colour_3frag;
+			body += body_colour_3frag;
+		}
 
-	if (flags & ShaderBuilder::ENV_SPHERE_POST) {
-		header += header_texsphere_2frag;
-		body += body_texsphere_2frag;
-	}
+		if (flags & ShaderBuilder::TEXTURE) {
+			header += header_texture_3frag;
+			body += body_texture_3frag;
+		}
 
-	body += body_default_end_2frag;
+		if (flags & ShaderBuilder::ENV_CUBE_POST) {
+			header += header_texcube_3frag;
+			body += body_texcube_3frag;
+		}
+
+		if (flags & ShaderBuilder::ENV_SPHERE_POST) {
+			header += header_texsphere_3frag;
+			body += body_texsphere_3frag;
+		}
+
+		body += body_default_end_3frag;
+	} else {
+		header = header_default_2frag;
+		body = body_default_start_2frag;
+
+		if (flags & ShaderBuilder::ENV_CUBE_PRE) {
+			header += header_texcube_2frag;
+			body += body_texcube_2frag;
+		}
+
+		if (flags & ShaderBuilder::ENV_SPHERE_PRE) {
+			header += header_texsphere_2frag;
+			body += body_texsphere_2frag;
+		}
+
+		if (flags & ShaderBuilder::COLOUR) {
+			header += header_colour_2frag;
+			body += body_colour_2frag;
+		}
+
+		if (flags & ShaderBuilder::TEXTURE) {
+			header += header_texture_2frag;
+			body += body_texture_2frag;
+		}
+
+		if (flags & ShaderBuilder::ENV_CUBE_POST) {
+			header += header_texcube_2frag;
+			body += body_texcube_2frag;
+		}
+
+		if (flags & ShaderBuilder::ENV_SPHERE_POST) {
+			header += header_texsphere_2frag;
+			body += body_texsphere_2frag;
+		}
+
+		body += body_default_end_2frag;
+	}
 
 	return header + body;
 }

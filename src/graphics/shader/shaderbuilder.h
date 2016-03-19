@@ -72,7 +72,7 @@ public:
 	 * @param flags   Input flags to indicated pre-built components to include.
 	 * @return  Output of final shader string.
 	 */
-	Common::UString genVertexShader(uint32_t flags);
+	Common::UString genVertexShader(uint32_t flags, bool isGL3);
 
 	/**
 	 * @brief Generate a name to use for the (vertex) shader, based upon input flags.
@@ -91,7 +91,7 @@ public:
 	 * @param flags   Input flags to indicated pre-built components to include.
 	 * @return  Output of final shader string.
 	 */
-	Common::UString genFragmentShader(uint32_t flags);
+	Common::UString genFragmentShader(uint32_t flags, bool isGL3);
 
 	/**
 	 * @brief Generate a name to use for the (fragment) shader, based upon input flags.
