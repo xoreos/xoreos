@@ -79,6 +79,9 @@ void ShaderManager::init() {
 		registerShaderProgram(vObj, fObj);
 	}
 
+	fObj = getShaderObject((uint32)0, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
 	fObj = getShaderObject(ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
 	registerShaderProgram(vObj, fObj);
 
