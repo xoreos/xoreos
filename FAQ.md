@@ -41,6 +41,13 @@ Currently, it doesn't, because we don't have an OpenGL ES renderer. This is
 something we want to do in the future, though.
 
 
+Does xoreos run on consoles, like the Sony PlayStation or the Xbox?
+-------------------------------------------------------------------
+
+No. And due to the closed and proprietary nature of these consoles, xoreos
+working on any of them in the future is highly unlikely.
+
+
 What about earlier games, like Baldur's Gate?
 --------------------------------------------
 
