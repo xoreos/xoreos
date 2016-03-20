@@ -34,6 +34,13 @@ a proper cross-platform toolset based on the xoreos code; even as a kind of
 subproject, if wanted.
 
 
+Does xoreos run on mobile devices, like Android and iOS?
+--------------------------------------------------------
+
+Currently, it doesn't, because we don't have an OpenGL ES renderer. This is
+something we want to do in the future, though.
+
+
 What about earlier games, like Baldur's Gate?
 --------------------------------------------
 
