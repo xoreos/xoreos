@@ -181,7 +181,10 @@ static const Common::UString body_texcube_2frag =
 "	vec3 n = normalize(_normal);\n"
 "	vec3 r = reflect(u, n);\n"
 "	vec4 texcube0_diffuse = textureCube(_textureCube0, r);\n"
-"	fraggle = mix(fraggle, texcube0_diffuse, texcube0_diffuse.a);\n";
+//"	vec4 texcube0_diffuse = texture2D(_textureCube0, _texCoords);"
+//"	fraggle = texcube0_diffuse;\n";
+"	fraggle = vec4(1.0, 0.0, 0.0, 1.0);\n";
+//"	fraggle = mix(fraggle, texcube0_diffuse, texcube0_diffuse.a);\n";
 
 static const Common::UString body_texsphere_2frag =
 "	vec3 u = normalize(_position);\n"

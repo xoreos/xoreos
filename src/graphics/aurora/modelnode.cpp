@@ -891,6 +891,10 @@ void ModelNode::buildMaterial() {
 			sampler->handle = _textures[0];
 		}
 
+		if (_name == "Plane237") {
+			_isTransparent = true;  // Hack hack hack hack.
+		}
+
 		if (_isTransparent) {
 			flags |= SHADER_MATERIAL_TRANSPARENT;
 			flags |= Shader::ShaderMaterial::genBlendFlags(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -898,7 +902,7 @@ void ModelNode::buildMaterial() {
 		}
 
 		MaterialMan.addMaterial(_material);
-		status("Added material: %s\n", materialName.c_str());
+		// status("Added material: %s", materialName.c_str());
 	}
 
 	if (_shaderRenderable) {

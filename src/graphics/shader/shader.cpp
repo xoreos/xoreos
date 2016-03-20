@@ -96,6 +96,18 @@ void ShaderManager::init() {
 
 	fObj = getShaderObject(ShaderBuilder::ENV_CUBE_PRE | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
 	registerShaderProgram(vObj, fObj);
+
+	fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_POST, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	fObj = getShaderObject(ShaderBuilder::ENV_CUBE_POST, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_POST | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	fObj = getShaderObject(ShaderBuilder::ENV_CUBE_POST | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
 }
 
 void ShaderManager::deinit() {
@@ -639,7 +651,7 @@ static const char *shaderTypeChararray[] = {
 	"samplerCube",
 	"sampler1DShadow",
 	"sampler2DShadow",
-	"samplery1DArray",
+	"sampler1DArray",
 	"sampler2DArray",
 	"sampler1DArrayShadow",
 	"sampler2DArrayShadow",
