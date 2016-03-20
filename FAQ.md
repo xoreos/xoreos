@@ -11,6 +11,29 @@ everyone and their dog. Therefore, we chose "xoreos", which is a pun on
 xor and a popular cookie brand, while still including "eos".
 
 
+What is the reason for creating xoreos in the first place?
+----------------------------------------------------------
+
+The main goal of xoreos is to have a portable, free/libre open source software
+program to play the games based on BioWare's Aurora engine and its later
+incarnations.
+
+With portable, we mean at least, but not limited to GNU/Linux and Mac OS X in
+addition to Microsoft Windows. While a small fraction of the games (namely
+Neverwinter Nights and Knights of the Old Republic II) has GNU/Linux ports,
+other games did not. As for Mac OS X, the Neverwinter Nights Mac binary was a
+PowerPC one, which won't work on today's Intel Macs anymore. And later games
+use a Wine bottle, so they are not "proper" ports per se.
+
+Neither of the original games run on Free-/Net-/OpenBSD, nor on other CPU
+architectures. xoreos does.
+
+Moreover xoreos can (in the distant future) open up these games for more
+extensive modding. And while xoreos itself isn't a toolset, we would welcome
+a proper cross-platform toolset based on the xoreos code; even as a kind of
+subproject, if wanted.
+
+
 What about earlier games, like Baldur's Gate?
 --------------------------------------------
 
