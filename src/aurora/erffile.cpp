@@ -280,7 +280,7 @@ void ERFFile::readNWNPremiumHeader(Common::SeekableReadStream &erf, ERFHeader &h
 
 	assert(header.encryption == kEncryptionBlowfishNWN);
 
-	if (!password.empty() && (password.size() != 16))
+	if (!password.empty() && (password.size() != Common::kMD5Length))
 		throw Common::Exception("Invalid Neverwinter Nights premium module MD5 length (%u)",
 		                        (uint)password.size());
 
@@ -403,8 +403,8 @@ void ERFFile::readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 	header.moduleID = erf.readUint32LE();
 
-	header.passwordDigest.resize(16);
-	if (erf.read(&header.passwordDigest[0], 16) != 16)
+	header.passwordDigest.resize(Common::kMD5Length);
+	if (erf.read(&header.passwordDigest[0], Common::kMD5Length) != Common::kMD5Length)
 		throw Common::Exception(Common::kReadError);
 
 	header.offResList = 0x00000038; // Resource list always starts at 0x38 in ERF V2.2
@@ -421,8 +421,8 @@ void ERFFile::readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, 
 
 	header.moduleID = erf.readUint32LE();
 
-	header.passwordDigest.resize(16);
-	if (erf.read(&header.passwordDigest[0], 16) != 16)
+	header.passwordDigest.resize(Common::kMD5Length);
+	if (erf.read(&header.passwordDigest[0], Common::kMD5Length) != Common::kMD5Length)
 		throw Common::Exception(Common::kReadError);
 
 	header.stringTable = new char[header.stringTableSize];
