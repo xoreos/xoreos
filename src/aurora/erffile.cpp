@@ -54,7 +54,9 @@ static const uint32 kVersion30 = MKTAG('V', '3', '.', '0');
 
 namespace Aurora {
 
-static const byte kNWNPremiumKeys[6][56] = {
+static const size_t kNWNPremiumKeyLength = 56;
+
+static const byte kNWNPremiumKeys[][kNWNPremiumKeyLength] = {
 	{
 		0x8A, 0x83, 0x5A, 0x2D, 0x01, 0x10, 0x5C, 0xBE, 0xCE, 0x2C, 0xD0, 0x69, 0xB8, 0x48, 0xC9, 0xBE,
 		0xAA, 0x7E, 0x57, 0xBD, 0xAB, 0x94, 0xCE, 0x0D, 0x09, 0x10, 0xBD, 0x57, 0x8D, 0x1A, 0x0D, 0x35,
@@ -257,15 +259,15 @@ bool ERFFile::decryptNWNPremiumHeader(Common::SeekableReadStream &erf, ERFHeader
 bool ERFFile::findNWNPremiumKey(Common::SeekableReadStream &erf, ERFHeader &header,
                                 const std::vector<byte> &md5, std::vector<byte> &password) {
 
-	assert(md5.empty() || (md5.size() == 16));
+	assert(md5.empty() || (md5.size() == Common::kMD5Length));
 
-	password.resize(56);
+	password.resize(kNWNPremiumKeyLength);
 	const size_t headerPos = erf.pos();
 
 	for (size_t i = 0; i < ARRAYSIZE(kNWNPremiumKeys); i++) {
-		memcpy(&password[0], kNWNPremiumKeys[i], 56);
+		memcpy(&password[0], kNWNPremiumKeys[i], kNWNPremiumKeyLength);
 		if (!md5.empty())
-			memcpy(&password[0] + 40, &md5[0], 16);
+			memcpy(&password[0] + kNWNPremiumKeyLength - Common::kMD5Length, &md5[0], Common::kMD5Length);
 
 		erf.seek(headerPos);
 		if (decryptNWNPremiumHeader(erf, header, password))
