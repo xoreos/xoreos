@@ -34,6 +34,9 @@ namespace Common {
 class UString;
 class ReadStream;
 
+/** The length of an MD5 digest in bytes. */
+static const size_t kMD5Length = 16;
+
 /** Hash the stream into an MD5 digest of 16 bytes. */
 void hashMD5(ReadStream &stream, std::vector<byte> &digest);
 /** Hash the data into an MD5 digest of 16 bytes. */

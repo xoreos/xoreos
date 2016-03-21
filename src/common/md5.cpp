@@ -323,7 +323,7 @@ void hashMD5(ReadStream &stream, std::vector<byte> &digest) {
 		md5Update(ctx, buf, bufRead);
 	}
 
-	digest.resize(16);
+	digest.resize(kMD5Length);
 	md5Final(&digest[0], ctx);
 }
 
@@ -332,7 +332,7 @@ void hashMD5(const byte *data, size_t dataLength, std::vector<byte> &digest) {
 
 	md5Update(ctx, data, dataLength);
 
-	digest.resize(16);
+	digest.resize(kMD5Length);
 	md5Final(&digest[0], ctx);
 }
 
@@ -346,23 +346,23 @@ void hashMD5(const std::vector<byte> &data, std::vector<byte> &digest) {
 
 
 bool compareMD5Digest(ReadStream &stream, const std::vector<byte> &digest) {
-	if (digest.size() != 16)
+	if (digest.size() != kMD5Length)
 		return false;
 
 	std::vector<byte> newDigest;
 	hashMD5(stream, newDigest);
 
-	return memcmp(&digest[0], &newDigest[0], 16) == 0;
+	return memcmp(&digest[0], &newDigest[0], kMD5Length) == 0;
 }
 
 bool compareMD5Digest(const byte *data, size_t dataLength, const std::vector<byte> &digest) {
-	if (digest.size() != 16)
+	if (digest.size() != kMD5Length)
 		return false;
 
 	std::vector<byte> newDigest;
 	hashMD5(data, dataLength, newDigest);
 
-	return memcmp(&digest[0], &newDigest[0], 16) == 0;
+	return memcmp(&digest[0], &newDigest[0], kMD5Length) == 0;
 }
 
 bool compareMD5Digest(const UString &string, const std::vector<byte> &digest) {
