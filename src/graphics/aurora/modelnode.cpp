@@ -858,19 +858,22 @@ void ModelNode::buildMaterial() {
 				if (_envMapMode == kModeEnvironmentBlendedUnder) {
 					flags |= Shader::ShaderBuilder::ENV_CUBE_PRE;
 				} else {
-					flags |= Shader::ShaderBuilder::ENV_CUBE_POST;
+					flags |= Shader::ShaderBuilder::ENV_CUBE_PRE;  // Post me!!!!!!!!!!
 				}
 			} else {
 				if (_envMapMode == kModeEnvironmentBlendedUnder) {
 					flags |= Shader::ShaderBuilder::ENV_SPHERE_PRE;
 				} else {
-					flags |= Shader::ShaderBuilder::ENV_SPHERE_POST;
+					flags |= Shader::ShaderBuilder::ENV_SPHERE_PRE;
 				}
 			}
 		}
 
 		if (_textures.size() > 0) {
 			flags |= Shader::ShaderBuilder::TEXTURE;
+			if (_textures.size() > 1) {
+				printf("Multiple textures must be applied! Node :%s\n", _name.c_str());
+			}
 		}
 
 		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(flags, Shader::SHADER_FRAGMENT), materialName);

@@ -97,13 +97,26 @@ static const Common::UString body_texture_3frag =
 "	vec4 texture0_diffuse = texture(_texture0, _texCoords);\n"
 "	opacity *= texture0_diffuse.a;\n"
 "	fraggle = mix(fraggle, texture0_diffuse, texture0_diffuse.a);\n";
-
+/*
 static const Common::UString body_texcube_3frag =
 "	vec3 u = normalize(_position);\n"
 "	vec3 n = normalize(_normal);\n"
 "	vec3 r = reflect(u, n);\n"
 "	vec4 texcube0_diffuse = texture(_textureCube0, r);\n"
 "	fraggle = mix(fraggle, texcube0_diffuse, texcube0_diffuse.a);\n";
+*/
+static const Common::UString body_texcube_pre_3frag =
+"	vec3 u = normalize(_position);\n"
+"	vec3 n = normalize(_normal);\n"
+"	vec3 r = reflect(u, n);\n"
+"	fraggle = texture(_textureCube0, r);\n";
+
+static const Common::UString body_texcube_post_3frag =
+"	vec3 u = normalize(_position);\n"
+"	vec3 n = normalize(_normal);\n"
+"	vec3 r = reflect(u, n);\n"
+"	fraggle += (1.0 - opacity) * texture(_textureCube0, r);\n"
+"	opacity = 1.0;\n";  // Maybe.
 
 static const Common::UString body_texsphere_3frag =
 "	vec3 u = normalize(_position);\n"
@@ -174,17 +187,25 @@ static const Common::UString body_colour_2frag =
 static const Common::UString body_texture_2frag =
 "	vec4 texture0_diffuse = texture2D(_texture0, _texCoords);\n"
 "	opacity *= texture0_diffuse.a;\n"
-"	fraggle = mix(fraggle, texture0_diffuse, texture0_diffuse.a);\n";
+"	fraggle *= 1.0 - opacity; fraggle += texture0_diffuse;\n";
+//"	fraggle = mix(fraggle, texture0_diffuse, opacity);\n";
 
-static const Common::UString body_texcube_2frag =
+static const Common::UString body_texcube_pre_2frag =
 "	vec3 u = normalize(_position);\n"
 "	vec3 n = normalize(_normal);\n"
 "	vec3 r = reflect(u, n);\n"
-"	vec4 texcube0_diffuse = textureCube(_textureCube0, r);\n"
+//"	vec4 texcube0_diffuse = textureCube(_textureCube0, r);\n"
 //"	vec4 texcube0_diffuse = texture2D(_textureCube0, _texCoords);"
-//"	fraggle = texcube0_diffuse;\n";
-"	fraggle = vec4(1.0, 0.0, 0.0, 1.0);\n";
+"	fraggle = textureCube(_textureCube0, r);\n";
 //"	fraggle = mix(fraggle, texcube0_diffuse, texcube0_diffuse.a);\n";
+
+static const Common::UString body_texcube_post_2frag =
+"	vec3 u = normalize(_position);\n"
+"	vec3 n = normalize(_normal);\n"
+"	vec3 r = reflect(u, n);\n"
+"	fraggle = mix(fraggle, textureCube(_textureCube0, r), opacity);\n"
+		;
+//"	opacity = 1.0;\n";  // Maybe.
 
 static const Common::UString body_texsphere_2frag =
 "	vec3 u = normalize(_position);\n"
@@ -251,7 +272,7 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 
 		if (flags & ShaderBuilder::ENV_CUBE_PRE) {
 			header += header_texcube_3frag;
-			body += body_texcube_3frag;
+			body += body_texcube_pre_3frag;
 		}
 
 		if (flags & ShaderBuilder::ENV_SPHERE_PRE) {
@@ -271,7 +292,7 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 
 		if (flags & ShaderBuilder::ENV_CUBE_POST) {
 			header += header_texcube_3frag;
-			body += body_texcube_3frag;
+			body += body_texcube_post_3frag;
 		}
 
 		if (flags & ShaderBuilder::ENV_SPHERE_POST) {
@@ -286,7 +307,7 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 
 		if (flags & ShaderBuilder::ENV_CUBE_PRE) {
 			header += header_texcube_2frag;
-			body += body_texcube_2frag;
+			body += body_texcube_pre_2frag;
 		}
 
 		if (flags & ShaderBuilder::ENV_SPHERE_PRE) {
@@ -306,7 +327,7 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 
 		if (flags & ShaderBuilder::ENV_CUBE_POST) {
 			header += header_texcube_2frag;
-			body += body_texcube_2frag;
+			body += body_texcube_post_2frag;
 		}
 
 		if (flags & ShaderBuilder::ENV_SPHERE_POST) {

@@ -39,6 +39,9 @@
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/animnode.h"
 
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -177,6 +180,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	ctx.mdlName = _name;
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -511,6 +515,29 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 		childNode->load(ctx);
 	}
+
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
+	_mesh = new Graphics::Mesh::Mesh();
+	*(_mesh->getVertexBuffer()) = _vertexBuffer;
+	*(_mesh->getIndexBuffer()) = _indexBuffer;
+	_mesh->setName(meshName);
+	_mesh->init();
+	MeshMan.addMesh(_mesh);
+
+	if (!_material) {
+		_material = MaterialMan.getMaterial("defaultWhite");
+	}
+	_shaderRenderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("defaultSurface"), _material, _mesh);
+
 }
 
 void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
