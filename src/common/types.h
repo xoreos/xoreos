@@ -29,8 +29,8 @@
 	#include "config.h"
 #endif
 
-#include <stddef.h>
-#include <limits.h>
+#include <cstddef>
+#include <climits>
 
 #ifdef HAVE_STDINT_H
 	#include <stdint.h>
