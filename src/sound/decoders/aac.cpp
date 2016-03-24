@@ -127,7 +127,7 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 			throw Common::Exception("Failed to decode AAC frame: %s", NeAACDecGetErrorMessage(frameInfo.error));
 
 		byte *buffer = new byte[frameInfo.samples * 2];
-		memcpy(buffer, decodedSamples, frameInfo.samples * 2);
+		std::memcpy(buffer, decodedSamples, frameInfo.samples * 2);
 
 		byte flags = FLAG_16BITS;
 

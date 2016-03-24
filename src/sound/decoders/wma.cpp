@@ -1453,7 +1453,7 @@ void WMACodec::window(float *out) const {
 
 		vectorFMulAdd(out + n, in + n, _mdctWindow[bSize], out + n, blockLen);
 
-		memcpy(out + n + blockLen, in + n + blockLen, n * sizeof(float));
+		std::memcpy(out + n + blockLen, in + n + blockLen, n * sizeof(float));
 	}
 
 	out += _blockLen;
@@ -1473,7 +1473,7 @@ void WMACodec::window(float *out) const {
 
 		const int bSize = _frameLenBits - _nextBlockLenBits;
 
-		memcpy(out, in, n*sizeof(float));
+		std::memcpy(out, in, n*sizeof(float));
 
 		vectorFMulReverse(out + n, in + n, _mdctWindow[bSize], blockLen);
 

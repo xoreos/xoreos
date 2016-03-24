@@ -178,7 +178,7 @@ size_t VorbisStream::readBuffer(int16 *buffer, const size_t numSamples) {
 	size_t samples = 0;
 	while (samples < numSamples && _pos < _bufferEnd) {
 		const size_t len = MIN<size_t>(numSamples - samples, _bufferEnd - _pos);
-		memcpy(buffer, _pos, len * 2);
+		std::memcpy(buffer, _pos, len * 2);
 
 		buffer  += len;
 		_pos    += len;
