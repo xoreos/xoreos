@@ -265,9 +265,9 @@ bool ERFFile::findNWNPremiumKey(Common::SeekableReadStream &erf, ERFHeader &head
 	const size_t headerPos = erf.pos();
 
 	for (size_t i = 0; i < ARRAYSIZE(kNWNPremiumKeys); i++) {
-		memcpy(&password[0], kNWNPremiumKeys[i], kNWNPremiumKeyLength);
+		std::memcpy(&password[0], kNWNPremiumKeys[i], kNWNPremiumKeyLength);
 		if (!md5.empty())
-			memcpy(&password[0] + kNWNPremiumKeyLength - Common::kMD5Length, &md5[0], Common::kMD5Length);
+			std::memcpy(&password[0] + kNWNPremiumKeyLength - Common::kMD5Length, &md5[0], Common::kMD5Length);
 
 		erf.seek(headerPos);
 		if (decryptNWNPremiumHeader(erf, header, password))
