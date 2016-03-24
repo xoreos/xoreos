@@ -520,7 +520,7 @@ void Bink::readHuffman(VideoFrame &video, Huffman &huffman) {
 		SWAP(in, out);
 	}
 
-	memcpy(huffman.symbols, in, 16);
+	std::memcpy(huffman.symbols, in, 16);
 }
 
 void Bink::mergeHuffmanSymbols(VideoFrame &video, byte *dst, const byte *src, int size) {
@@ -791,7 +791,7 @@ void Bink::blockSkip(DecodeContext &ctx) {
 	byte *prev = ctx.prev;
 
 	for (int j = 0; j < 8; j++, dest += ctx.pitch, prev += ctx.pitch)
-		memcpy(dest, prev, 8);
+		std::memcpy(dest, prev, 8);
 }
 
 void Bink::blockScaledSkip(DecodeContext &ctx) {
@@ -799,7 +799,7 @@ void Bink::blockScaledSkip(DecodeContext &ctx) {
 	byte *prev = ctx.prev;
 
 	for (int j = 0; j < 16; j++, dest += ctx.pitch, prev += ctx.pitch)
-		memcpy(dest, prev, 16);
+		std::memcpy(dest, prev, 16);
 }
 
 void Bink::blockScaledRun(DecodeContext &ctx) {
@@ -889,7 +889,7 @@ void Bink::blockScaledRaw(DecodeContext &ctx) {
 	byte *dest1 = ctx.dest;
 	byte *dest2 = ctx.dest + ctx.pitch;
 	for (int j = 0; j < 8; j++, dest1 += (ctx.pitch << 1) - 16, dest2 += (ctx.pitch << 1) - 16) {
-		memcpy(row, _bundles[kSourceColors].curPtr, 8);
+		std::memcpy(row, _bundles[kSourceColors].curPtr, 8);
 
 		for (int i = 0; i < 8; i++, dest1 += 2, dest2 += 2)
 			dest1[0] = dest1[1] = dest2[0] = dest2[1] = row[i];
@@ -941,7 +941,7 @@ void Bink::blockMotion(DecodeContext &ctx) {
 		throw Common::Exception("Copy out of bounds (%d | %d)", ctx.blockX * 8 + xOff, ctx.blockY * 8 + yOff);
 
 	for (int j = 0; j < 8; j++, dest += ctx.pitch, prev += ctx.pitch)
-		memcpy(dest, prev, 8);
+		std::memcpy(dest, prev, 8);
 }
 
 void Bink::blockRun(DecodeContext &ctx) {
@@ -1039,7 +1039,7 @@ void Bink::blockRaw(DecodeContext &ctx) {
 	byte *dest = ctx.dest;
 	byte *data = _bundles[kSourceColors].curPtr;
 	for (int i = 0; i < 8; i++, dest += ctx.pitch, data += 8)
-		memcpy(dest, data, 8);
+		std::memcpy(dest, data, 8);
 
 	_bundles[kSourceColors].curPtr += 64;
 }
@@ -1483,7 +1483,7 @@ void Bink::audioBlock(AudioTrack &audio, int16 *out) {
 		}
 	}
 
-	memcpy(audio.prevCoeffs, out + audio.blockSize, audio.overlapLen * audio.channels * sizeof(*out));
+	std::memcpy(audio.prevCoeffs, out + audio.blockSize, audio.overlapLen * audio.channels * sizeof(*out));
 
 	audio.first = false;
 }

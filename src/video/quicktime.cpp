@@ -209,7 +209,7 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uin
 		byte codecName[32];
 		_fd->read(codecName, 32); // codec name, pascal string (FIXME: true for mp4?)
 		if (codecName[0] <= 31) {
-			memcpy(entry->_codecName, &codecName[1], codecName[0]);
+			std::memcpy(entry->_codecName, &codecName[1], codecName[0]);
 			entry->_codecName[codecName[0]] = 0;
 		}
 

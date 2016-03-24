@@ -500,16 +500,16 @@ void XMVWMV2Codec::decodeJFrame(DecodeContext &UNUSED(ctx)) {
 	warning("XMV: J-Frame %d", _currentFrame);
 
 	// Just copy the reference planes for now
-	memcpy(_curPlanes[0], _oldPlanes[0], _lumaWidth   * _lumaHeight  );
-	memcpy(_curPlanes[1], _oldPlanes[1], _chromaWidth * _chromaHeight);
-	memcpy(_curPlanes[2], _oldPlanes[2], _chromaWidth * _chromaHeight);
+	std::memcpy(_curPlanes[0], _oldPlanes[0], _lumaWidth   * _lumaHeight  );
+	std::memcpy(_curPlanes[1], _oldPlanes[1], _chromaWidth * _chromaHeight);
+	std::memcpy(_curPlanes[2], _oldPlanes[2], _chromaWidth * _chromaHeight);
 }
 
 void XMVWMV2Codec::decodePFrame(DecodeContext &UNUSED(ctx)) {
 	// Just copy the reference planes for now
-	memcpy(_curPlanes[0], _oldPlanes[0], _lumaWidth   * _lumaHeight  );
-	memcpy(_curPlanes[1], _oldPlanes[1], _chromaWidth * _chromaHeight);
-	memcpy(_curPlanes[2], _oldPlanes[2], _chromaWidth * _chromaHeight);
+	std::memcpy(_curPlanes[0], _oldPlanes[0], _lumaWidth   * _lumaHeight  );
+	std::memcpy(_curPlanes[1], _oldPlanes[1], _chromaWidth * _chromaHeight);
+	std::memcpy(_curPlanes[2], _oldPlanes[2], _chromaWidth * _chromaHeight);
 }
 
 void XMVWMV2Codec::decodeIMacroBlock(DecodeContext &ctx) {
