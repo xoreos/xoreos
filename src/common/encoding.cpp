@@ -297,7 +297,7 @@ UString readString(const byte *data, size_t size, Encoding encoding) {
 	std::vector<byte> output;
 	output.resize(size);
 
-	memcpy(&output[0], data, size);
+	std::memcpy(&output[0], data, size);
 
 	return createString(output, encoding);
 }

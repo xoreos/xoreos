@@ -491,7 +491,7 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
 
 		size_t n = MIN<size_t>(size, _memoBlockSize - (first ? 8 : 0));
 
-		memcpy(dataPtr, _memos[block] + (first ? 8 : 0), n);
+		std::memcpy(dataPtr, _memos[block] + (first ? 8 : 0), n);
 
 		dataPtr += n;
 		size    -= n;

@@ -247,11 +247,11 @@ static void md5Update(MD5Context &ctx, const byte *data, size_t size) {
 		size_t available = 64 - used;
 
 		if (size < available) {
-			memcpy(&ctx.buffer[used], data, size);
+			std::memcpy(&ctx.buffer[used], data, size);
 			return;
 		}
 
-		memcpy(&ctx.buffer[used], data, available);
+		std::memcpy(&ctx.buffer[used], data, available);
 		data = data + available;
 		size -= available;
 		md5Body(ctx, ctx.buffer, 64);
@@ -262,7 +262,7 @@ static void md5Update(MD5Context &ctx, const byte *data, size_t size) {
 		size &= 0x3F;
 	}
 
-	memcpy(ctx.buffer, data, size);
+	std::memcpy(ctx.buffer, data, size);
 }
 
 static void md5Final(byte *result, MD5Context &ctx) {

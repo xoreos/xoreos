@@ -40,7 +40,7 @@ Matrix::Matrix(const Matrix &right) {
 
 	_elements = new float[_rows * _columns];
 
-	memcpy(_elements, right._elements, _rows * _columns * sizeof(float));
+	std::memcpy(_elements, right._elements, _rows * _columns * sizeof(float));
 }
 
 Matrix::~Matrix() {
@@ -60,7 +60,7 @@ Matrix &Matrix::operator=(const Matrix &right) {
 		_elements = new float[_rows * _columns];
 	}
 
-	memcpy(_elements, right._elements, _rows * _columns * sizeof(float));
+	std::memcpy(_elements, right._elements, _rows * _columns * sizeof(float));
 
 	return *this;
 }
@@ -78,7 +78,7 @@ const float *Matrix::get() const {
 }
 
 void Matrix::set(const float *m) const {
-	memcpy(_elements, m, _rows * _columns * sizeof(float));
+	std::memcpy(_elements, m, _rows * _columns * sizeof(float));
 }
 
 float &Matrix::operator()(int row, int column) {

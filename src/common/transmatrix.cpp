@@ -42,11 +42,11 @@ TransformationMatrix::TransformationMatrix(bool identity) {
 }
 
 TransformationMatrix::TransformationMatrix(const TransformationMatrix &m) {
-	memcpy(_elements, &m, 16 * sizeof(float));
+	std::memcpy(_elements, &m, 16 * sizeof(float));
 }
 
 TransformationMatrix::TransformationMatrix(const float *m) {
-	memcpy(_elements, m, 16 * sizeof(float));
+	std::memcpy(_elements, m, 16 * sizeof(float));
 }
 
 TransformationMatrix::~TransformationMatrix() {
@@ -176,7 +176,7 @@ void TransformationMatrix::getScale(float &x, float &y, float &z) const {
 }
 
 void TransformationMatrix::loadIdentity() {
-	memcpy(_elements, kIdentity, 16 * sizeof(float));
+	std::memcpy(_elements, kIdentity, 16 * sizeof(float));
 }
 
 void TransformationMatrix::translate(float x, float y, float z) {
@@ -289,7 +289,7 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z, bool n
 		result[8  + i] = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
 		result[12 + i] = (_elements[i + 12]);
 	}
-	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
+	std::memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
 void TransformationMatrix::rotateAxisLocal(const Vector3 &vin, float angle, bool normalise) {
@@ -326,7 +326,7 @@ void TransformationMatrix::rotateAxisLocal(const Vector3 &vin, float angle, bool
 		result[8  + i] = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
 		result[12 + i] = (_elements[i + 12]);
 	}
-	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
+	std::memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
 void TransformationMatrix::rotateXAxisLocal(float angle, bool normalise) {
@@ -350,7 +350,7 @@ void TransformationMatrix::rotateXAxisLocal(float angle, bool normalise) {
 			result[8 + i]  = (_elements[i + 4] * msina) + (_elements[i + 8] * cosa);
 			result[12 + i] = (_elements[i + 12]);
 		}
-		memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
+		std::memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 	}
 }
 
@@ -375,7 +375,7 @@ void TransformationMatrix::rotateYAxisLocal(float angle, bool normalise) {
 			result[8 + i]  = (_elements[i] * sina) + (_elements[i + 8] * cosa);
 			result[12 + i] = (_elements[i + 12]);
 		}
-		memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
+		std::memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 	}
 }
 
@@ -400,7 +400,7 @@ void TransformationMatrix::rotateZAxisLocal(float angle, bool normalise) {
 			result[8 + i]  = (_elements[i + 8]);
 			result[12 + i] = (_elements[i + 12]);
 		}
-		memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
+		std::memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 	}
 }
 
@@ -437,7 +437,7 @@ void TransformationMatrix::rotateAxisWorld(const Vector3 &vin, float angle, bool
 		result[8 + i]  = (_elements[i] * m8) + (_elements[i + 4] * m9) + (_elements[i + 8] * m10);
 		result[12 + i] = (_elements[i + 12]);
 	}
-	memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
+	std::memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
 void TransformationMatrix::rotateXAxisWorld(float angle, bool normalise) {
@@ -502,7 +502,7 @@ void TransformationMatrix::transform(const TransformationMatrix &m) {
 		}
 		// _mm_store_ps(&result[i], r);
 	}
-	memcpy(_elements, result, 16 * sizeof(float));
+	std::memcpy(_elements, result, 16 * sizeof(float));
 }
 
 void TransformationMatrix::transform(const TransformationMatrix &a, const TransformationMatrix &b) {
@@ -640,12 +640,12 @@ void TransformationMatrix::ortho(float l, float r, float b, float t, float n, fl
 }
 
 const TransformationMatrix &TransformationMatrix::operator=(const TransformationMatrix &m) {
-	memcpy(_elements, &m, 16 * sizeof(float));
+	std::memcpy(_elements, &m, 16 * sizeof(float));
 	return *this;
 }
 
 const TransformationMatrix &TransformationMatrix::operator=(const float *m) {
-	memcpy(_elements, m, 16 * sizeof(float));
+	std::memcpy(_elements, m, 16 * sizeof(float));
 	return *this;
 }
 
