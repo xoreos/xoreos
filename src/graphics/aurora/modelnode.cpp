@@ -860,7 +860,11 @@ void ModelNode::buildMaterial() {
 		buildFlags |= Shader::ShaderBuilder::TEXTURE;
 		buildFlags |= Shader::ShaderBuilder::MIX_TEXTURE;
 		if (_textures.size() > 1) {
-			if (!_textures[1].empty()) {
+			if (_textures[0].getName() == "LHR_blst02") {  // Dirty hack around a KotOR issue.
+				_isTransparent = true;
+				// printf("transparent hints: %u, %u\n", _hasTransparencyHint ? 1 : 0, _transparencyHint ? 1 : 0);
+			}
+			if (!_textures[1].empty()) { // Sometimes a texture is specified to be loaded, but the resource doesn't actually exist.
 				buildFlags |= Shader::ShaderBuilder::LIGHTMAP;
 			}
 		}
@@ -915,7 +919,7 @@ void ModelNode::buildMaterial() {
 			_isTransparent = true;  // Hack hack hack hack. For NWN.
 		}
 
-		if (_isTransparent) {
+		if (_isTransparent || _transparencyHint) {
 			materialFlags |= SHADER_MATERIAL_TRANSPARENT;
 			materialFlags |= Shader::ShaderMaterial::genBlendFlags(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			_material->setFlags(materialFlags);

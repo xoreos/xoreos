@@ -38,9 +38,9 @@ namespace Shader {
 // ---------------------------------------------------------
 static const Common::UString header_default_3vert =
 "#version 150\n\n"
-"layout(location = 0) in vec3 inPosition;\n"
-"layout(location = 1) in vec3 inNormal;\n"
-"layout(location = 3) in vec2 inTexCoord0;\n"
+"in vec3 inPosition;\n"
+"in vec3 inNormal;\n"
+"in vec2 inTexCoord0;\n"
 "out vec3 _normal;\n"
 "out vec3 _position;\n"
 "out vec2 _texCoords;\n"
@@ -55,16 +55,17 @@ static const Common::UString header_envsphere_3vert =
 "out vec2 _sphereCoords;\n";
 
 static const Common::UString header_lightmap_3vert =
+"in vec2 inTexCoord1;\n"
 "out vec2 _lightmapCoords;\n";
 
 static const Common::UString body_default_start_3vert =
 "void main(void) {\n"
 "	mat4 mo = (_modelviewMatrix * _objectModelviewMatrix);\n"
-"	vec4 vertex = mo * gl_Vertex;\n"
+"	vec4 vertex = mo * vec4(inPosition, 1.0);\n"
 "	gl_Position = _projectionMatrix * vertex;\n"
-"	_normal = mat3(mo) * vec3(gl_Normal);\n"
+"	_normal = mat3(mo) * inNormal;\n"
 "	_position = vec3(vertex);\n"
-"	_texCoords = vec2(gl_MultiTexCoord0);\n";
+"	_texCoords = vec2(inTexCoord0);\n";
 
 static const Common::UString body_envcube_3vert =
 "	vec3 ucube = normalize(_position);\n"
@@ -79,7 +80,7 @@ static const Common::UString body_envsphere_3vert =
 "	_sphereCoords = vec2(rsphere.x / msphere + 0.5, rsphere.y / msphere + 0.5);\n";
 
 static const Common::UString body_lightmap_3vert =
-"	_lightmapCoords = vec2(gl_MultiTexCoord1);\n";
+"	_lightmapCoords = vec2(inTexCoord1);\n";
 
 static const Common::UString body_default_end_3vert =
 "}\n";

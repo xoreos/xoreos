@@ -526,12 +526,16 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	meshName += ".";
 	meshName += _name;
 
-	_mesh = new Graphics::Mesh::Mesh();
-	*(_mesh->getVertexBuffer()) = _vertexBuffer;
-	*(_mesh->getIndexBuffer()) = _indexBuffer;
-	_mesh->setName(meshName);
-	_mesh->init();
-	MeshMan.addMesh(_mesh);
+	_mesh = MeshMan.getMesh(meshName);
+	if (!_mesh) {
+		_mesh = new Graphics::Mesh::Mesh();
+		*(_mesh->getVertexBuffer()) = _vertexBuffer;
+		*(_mesh->getIndexBuffer()) = _indexBuffer;
+		_mesh->setName(meshName);
+		_mesh->init();
+		MeshMan.addMesh(_mesh);
+	}
+	_mesh->useIncrement();
 
 	this->buildMaterial();
 }
@@ -666,6 +670,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_mesh->specular[2] = 0;
 
 	uint32 transparencyHint = ctx.mdl->readUint32LE();
+	//printf("Model %s, hint: %08X\n", ctx.mdlName.c_str(), transparencyHint);
 
 	_mesh->hasTransparencyHint = true;
 	_mesh->transparencyHint    = (transparencyHint != 0);
