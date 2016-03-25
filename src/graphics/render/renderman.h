@@ -30,24 +30,32 @@
 
 #include "src/graphics/render/renderqueue.h"
 
+#include "src/common/ustring.h"
+#include "src/common/singleton.h"
+#include "src/common/mutex.h"
+
 namespace Graphics {
 
 namespace Render {
 
-class RenderManager {
+class RenderManager : public Common::Singleton<RenderManager> {
 public:
 	RenderManager();
 	~RenderManager();
 
 	void setCameraReference(const glm::vec3 &reference);
 
-	void queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform);
+	void queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha);
 
 	void sort();
 
 	void render();
 
 	void clear();
+
+	void init() {}
+	void deinit() {}
+	void cleanup() {}
 
 private:
 	RenderQueue _queueColorSolid;
@@ -58,5 +66,8 @@ private:
 } // namespace Render
 
 } // namespace Graphics
+
+/** Shortcut for accessing the render manager. */
+#define RenderMan Graphics::Render::RenderManager::instance()
 
 #endif // GRAPHICS_RENDER_RENDERMANAGER_H

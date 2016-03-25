@@ -254,6 +254,14 @@ void ShaderMaterial::bindProgram(Shader::ShaderProgram *program) {
 	}
 }
 
+void ShaderMaterial::bindProgramNoFade(Shader::ShaderProgram *program) {
+	for (uint32 i = 0; i < _variableData.size(); i++) {
+		if (_alphaIndex != i) {
+			ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], _variableData[i].data);
+		}
+	}
+}
+
 void ShaderMaterial::bindProgram(Shader::ShaderProgram *program, float alpha) {
 	for (uint32 i = 0; i < _variableData.size(); i++) {
 		if (_alphaIndex == i) {

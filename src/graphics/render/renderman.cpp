@@ -26,6 +26,8 @@
 
 #include "src/graphics/render/renderman.h"
 
+DECLARE_SINGLETON(Graphics::Render::RenderManager)
+
 namespace Graphics {
 
 namespace Render {
@@ -41,11 +43,11 @@ void RenderManager::setCameraReference(const glm::vec3 &reference) {
 	_queueColorTransparent.setCameraReference(reference);
 }
 
-void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform) {
+void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha) {
 	if (renderable->getMaterial()->getFlags() & SHADER_MATERIAL_TRANSPARENT) {
-		_queueColorTransparent.queueItem(renderable, transform);
+		_queueColorTransparent.queueItem(renderable, transform, alpha);
 	} else {
-		_queueColorSolid.queueItem(renderable, transform);
+		_queueColorSolid.queueItem(renderable, transform, alpha);
 	}
 }
 

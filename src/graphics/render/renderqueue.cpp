@@ -68,18 +68,18 @@ void RenderQueue::setCameraReference(const glm::vec3 &reference) {
 	_cameraReference = reference;
 }
 
-void RenderQueue::queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const glm::mat4 *transform) {
-	glm::vec3 ref((*transform)[3][0], (*transform)[3][1], (*transform)[3][2]);
+void RenderQueue::queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const glm::mat4 *transform, float alpha) {
+	Common::Vector3 ref = transform->getPosition();
 	ref -= _cameraReference;
 	// Length squared of ref serves as a suitable depth sorting value.
-	_nodeArray.push_back(RenderQueueNode(program, surface, material, mesh, transform, glm::dot(ref, ref)));
+	_nodeArray.push_back(RenderQueueNode(program, surface, material, mesh, transform, alpha, ref.dot(ref)));
 }
 
-void RenderQueue::queueItem(Shader::ShaderRenderable *renderable, const glm::mat4 *transform) {
-	glm::vec3 ref((*transform)[3][0], (*transform)[3][1], (*transform)[3][2]);
+void RenderQueue::queueItem(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha) {
+	Common::Vector3 ref = transform->getPosition();
 	ref -= _cameraReference;
 	// Length squared of ref serves as a suitable depth sorting value.
-	_nodeArray.push_back(RenderQueueNode(renderable->getProgram(), renderable->getSurface(), renderable->getMaterial(), renderable->getMesh(), transform, glm::dot(ref, ref)));
+	_nodeArray.push_back(RenderQueueNode(renderable->getProgram(), renderable->getSurface(), renderable->getMaterial(), renderable->getMesh(), transform, alpha, ref.dot(ref)));
 }
 
 void RenderQueue::sortShader() {
@@ -121,7 +121,7 @@ void RenderQueue::render() {
 				currentMaterial->unbindGLState();
 			}
 			currentMaterial = _nodeArray[i].material;
-			currentMaterial->bindProgram(currentProgram);
+			currentMaterial->bindProgramNoFade(currentProgram);
 			currentMaterial->bindGLState();
 		}
 
@@ -135,6 +135,8 @@ void RenderQueue::render() {
 		// There's at least one mesh to be rendering here.
 		assert(_nodeArray[i].transform);
 		currentSurface->bindProgram(currentProgram, _nodeArray[i].transform);
+		currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
+		currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
 		currentMesh->render();
 
 		++i;  // Move to next object.
@@ -142,6 +144,7 @@ void RenderQueue::render() {
 			// Next object is basically the same, but will have a different object modelview transform. So rebind that, and render again.
 			assert(_nodeArray[i].transform);
 			currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
+			currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
 			currentMesh->render();
 			++i;
 		}

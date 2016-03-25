@@ -60,6 +60,8 @@
 #include "src/graphics/shader/surfaceman.h"
 #include "src/graphics/mesh/meshman.h"
 
+#include "src/graphics/render/renderman.h"
+
 DECLARE_SINGLETON(Graphics::GraphicsManager)
 
 static glm::mat4 inverse(const glm::mat4 &m);
@@ -963,6 +965,7 @@ bool GraphicsManager::renderWorld() {
 
 	_animationThread.flush();
 
+	RenderMan.clear();
 	// Draw opaque objects
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
@@ -980,6 +983,8 @@ bool GraphicsManager::renderWorld() {
 		static_cast<Renderable *>(*o)->render(kRenderPassTransparent);
 		glPopMatrix();
 	}
+	RenderMan.sort();
+	RenderMan.render();
 
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 	return true;
@@ -988,6 +993,18 @@ bool GraphicsManager::renderWorld() {
 bool GraphicsManager::renderGUIFront() {
 	return renderGUI(_scalingType, kQueueVisibleGUIFrontObject, false);
 }
+#if 0
+	RenderMan.clear();
+	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
+	     g != gui.rend(); ++g) {
+
+		glPushMatrix();
+		static_cast<Renderable *>(*g)->render(kRenderPassAll);
+		glPopMatrix();
+	}
+	RenderMan.sort();
+	RenderMan.render();
+#endif
 
 bool GraphicsManager::renderGUIBack() {
 	return renderGUI(_scalingType, kQueueVisibleGUIBackObject, true);
@@ -1026,6 +1043,7 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 
 	buildNewTextures();
 
+	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
 	     g != gui.rend(); ++g) {
 
@@ -1033,6 +1051,8 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 		static_cast<Renderable *>(*g)->render(kRenderPassAll);
 		glPopMatrix();
 	}
+	RenderMan.sort();
+	RenderMan.render();
 
 	QueueMan.unlockQueue(guiQueue);
 

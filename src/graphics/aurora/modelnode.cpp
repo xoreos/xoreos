@@ -44,6 +44,8 @@
 #include "src/graphics/shader/materialman.h"
 #include "src/graphics/shader/surfaceman.h"
 
+#include "src/graphics/render/renderman.h"
+
 #include "src/graphics/images/decoder.h"
 
 namespace Graphics {
