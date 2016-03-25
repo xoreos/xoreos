@@ -140,6 +140,44 @@ static const Common::UString header_default_2vert =
 "uniform mat4 _projectionMatrix;\n"
 "uniform mat4 _modelviewMatrix;\n";
 
+static const Common::UString header_envcube_2vert =
+"varying vec3 _cubeCoords;\n";
+
+static const Common::UString header_envsphere_2vert =
+"varying vec2 _sphereCoords;\n";
+
+static const Common::UString header_lightmap_2vert =
+"varying vec2 _lightmapCoords;\n";
+
+static const Common::UString body_default_start_2vert =
+"void main(void) {\n"
+"	mat4 mo = (_modelviewMatrix * _objectModelviewMatrix);\n"
+"	vec4 vertex = mo * gl_Vertex;\n"
+"	gl_Position = _projectionMatrix * vertex;\n"
+"	_normal = mat3(mo) * vec3(gl_Normal);\n"
+"	_position = vec3(vertex);\n"
+"	_texCoords = vec2(gl_MultiTexCoord0);\n";
+
+static const Common::UString body_envcube_2vert =
+"	vec3 ucube = normalize(_position);\n"
+"	vec3 ncube = normalize(_normal);\n"
+"	_cubeCoords = reflect(ucube, ncube);\n";
+
+static const Common::UString body_envsphere_2vert =
+"	vec3 usphere = normalize(_position);\n"
+"	vec3 nsphere = normalize(_normal);\n"
+"	vec3 rsphere = reflect(usphere, nsphere);\n"
+"	float msphere = 2.0 * sqrt(rsphere.x * rsphere.x + rsphere.y * rsphere.y + (rsphere.z + 1.0) * (rsphere.z + 1.0));\n"
+"	_sphereCoords = vec2(rsphere.x / msphere + 0.5, rsphere.y / msphere + 0.5);\n";
+
+static const Common::UString body_lightmap_2vert =
+"	_lightmapCoords = vec2(gl_MultiTexCoord1);\n";
+
+static const Common::UString body_default_end_2vert =
+"}\n";
+
+
+
 static const Common::UString header_default_2frag =
 "#version 120\n\n"
 "uniform float _alpha;\n";
@@ -150,22 +188,17 @@ static const Common::UString header_colour_2frag =
 static const Common::UString header_texture_2frag =
 "uniform sampler2D _texture0;\n";
 
-static const Common::UString header_texcube_2frag =
+static const Common::UString header_envcube_2frag =
+"varying vec3 _cubeCoords;\n"
 "uniform samplerCube _textureCube0;\n";
 
-static const Common::UString header_texsphere_2frag =
+static const Common::UString header_envsphere_2frag =
+"varying vec2 _sphereCoords;\n"
 "uniform sampler2D _textureSphere0;\n";
 
-
-static const Common::UString body_default_2vert =
-"void main(void) {\n"
-"	mat mo = (_modelviewMatrix * _objectModelviewMatrix);\n"
-"	vec4 vertex = mo * gl_Vertex;\n"
-"	gl_Position = _projectionMatrix * vertex;\n"
-"	_normal = mat3(mo) * vec3(gl_Normal);\n"
-"	_position = vec3(vertex);\n"
-"	_texCoords = vec2(gl_MultiTexCoord0);\n"
-"}\n";
+static const Common::UString header_lightmap_2frag =
+"varying vec2 _lightmapCoords;\n"
+"uniform sampler2D _lightmap;\n";
 
 static const Common::UString body_default_start_2frag =
 "varying vec3 _normal;\n"
@@ -186,35 +219,25 @@ static const Common::UString body_colour_2frag =
 
 static const Common::UString body_texture_2frag =
 "	vec4 texture0_diffuse = texture2D(_texture0, _texCoords);\n"
-"	opacity *= texture0_diffuse.a;\n"
-"	fraggle *= 1.0 - opacity; fraggle += texture0_diffuse;\n";
-//"	fraggle = mix(fraggle, texture0_diffuse, opacity);\n";
+"	opacity *= texture0_diffuse.a;\n";
 
-static const Common::UString body_texcube_pre_2frag =
-"	vec3 u = normalize(_position);\n"
-"	vec3 n = normalize(_normal);\n"
-"	vec3 r = reflect(u, n);\n"
-//"	vec4 texcube0_diffuse = textureCube(_textureCube0, r);\n"
-//"	vec4 texcube0_diffuse = texture2D(_textureCube0, _texCoords);"
-"	fraggle = textureCube(_textureCube0, r);\n";
-//"	fraggle = mix(fraggle, texcube0_diffuse, texcube0_diffuse.a);\n";
+static const Common::UString body_envcube_2frag =
+"	vec4 envmap_diffuse = textureCube(_textureCube0, _cubeCoords);\n";
 
-static const Common::UString body_texcube_post_2frag =
-"	vec3 u = normalize(_position);\n"
-"	vec3 n = normalize(_normal);\n"
-"	vec3 r = reflect(u, n);\n"
-"	fraggle = mix(fraggle, textureCube(_textureCube0, r), opacity);\n"
-		;
-//"	opacity = 1.0;\n";  // Maybe.
+static const Common::UString body_envsphere_2frag =
+"	vec4 envmap_diffuse = texture2D(_textureSphere0, _sphereCoords);\n";
 
-static const Common::UString body_texsphere_2frag =
-"	vec3 u = normalize(_position);\n"
-"	vec3 n = normalize(_normal);\n"
-"	vec3 r = reflect(u, n);\n"
-"	float m = 2.0 * sqrt(r.x * r.x + r.y * r.y + (r.z + 1.0) * (r.z + 1.0));\n"
-"	vec2 coords = vec2(r.x / m + 0.5, r.y / m + 0.5);\n"
-"	vec4 texsphere0_diffuse = texture2D(_textureSphere0, coords);\n"
-"	fraggle = mix(fraggle, texsphere0_diffuse, texsphere0_diffuse.a);\n";
+static const Common::UString body_mix_env_alpha_minus_one_2frag =
+"	fraggle += (1.0 - opacity) * envmap_diffuse;\n";
+
+static const Common::UString body_mix_texture_alpha_2frag =
+"	fraggle += opacity * texture0_diffuse;\n";
+
+static const Common::UString body_mix_texture_2frag =
+"	fraggle += texture0_diffuse;\n";
+
+static const Common::UString body_lightmap_2frag =
+"	fraggle *= texture2D(_lightmap, _lightmapCoords);\n";
 // ---------------------------------------------------------
 
 ShaderBuilder::ShaderBuilder() {
@@ -224,21 +247,43 @@ ShaderBuilder::~ShaderBuilder() {
 }
 
 Common::UString ShaderBuilder::genVertexShader(uint32_t flags, bool isGL3) {
+	Common::UString header;
+	Common::UString body;
+
 	if (isGL3) {
-		return header_default_3vert + body_default_3vert;
+		return header + body;
 	} else {
-		return header_default_2vert + body_default_2vert;
+		header = header_default_2vert;
+		body = body_default_start_2vert;
+
+		if (flags & ShaderBuilder::ENV_CUBE) {
+			header += header_envcube_2vert;
+			body += body_envcube_2vert;
+		}
+
+		if (flags & ShaderBuilder::ENV_SPHERE) {
+			header += header_envsphere_2vert;
+			body += body_envsphere_2vert;
+		}
+
+		if (flags & ShaderBuilder::LIGHTMAP) {
+			header += header_lightmap_2vert;
+			body += body_lightmap_2vert;
+		}
+
+		body += body_default_end_2vert;
+		return header + body;
 	}
 }
 
 Common::UString ShaderBuilder::genVertexShaderName(uint32_t flags) {
 	Common::UString name = "";
-	if (flags & ShaderBuilder::ENV_CUBE_PRE) {
-		name += "env_cube_pre.";
+	if (flags & ShaderBuilder::ENV_CUBE) {
+		name += "env_cube.";
 	}
 
-	if (flags & ShaderBuilder::ENV_SPHERE_PRE) {
-		name += "env_sphere_pre.";
+	if (flags & ShaderBuilder::ENV_SPHERE) {
+		name += "env_sphere.";
 	}
 
 	if (flags & ShaderBuilder::COLOUR) {
@@ -249,12 +294,20 @@ Common::UString ShaderBuilder::genVertexShaderName(uint32_t flags) {
 		name += "texture.";
 	}
 
-	if (flags & ShaderBuilder::ENV_CUBE_POST) {
-		name += "env_cube_post.";
+	if (flags & ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS) {
+		name += "mix_env_alpha_one_minus.";
 	}
 
-	if (flags & ShaderBuilder::ENV_SPHERE_POST) {
-		name += "env_sphere_post.";
+	if (flags & ShaderBuilder::MIX_TEXTURE_ALPHA) {
+		name += "mix_texture_alpha.";
+	}
+
+	if (flags & ShaderBuilder::MIX_TEXTURE) {
+		name += "mix_texture.";
+	}
+
+	if (flags & ShaderBuilder::LIGHTMAP) {
+		name += "lightmap.";
 	}
 
 	name += "vert";
@@ -267,15 +320,16 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 	Common::UString body;
 
 	if (isGL3) {
+		/*
 		header = header_default_3frag;
 		body = body_default_start_3frag;
 
-		if (flags & ShaderBuilder::ENV_CUBE_PRE) {
+		if (flags & ShaderBuilder::ENV_CUBE) {
 			header += header_texcube_3frag;
 			body += body_texcube_pre_3frag;
 		}
 
-		if (flags & ShaderBuilder::ENV_SPHERE_PRE) {
+		if (flags & ShaderBuilder::ENV_SPHERE) {
 			header += header_texsphere_3frag;
 			body += body_texsphere_3frag;
 		}
@@ -301,18 +355,19 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 		}
 
 		body += body_default_end_3frag;
+		*/
 	} else {
 		header = header_default_2frag;
 		body = body_default_start_2frag;
 
-		if (flags & ShaderBuilder::ENV_CUBE_PRE) {
-			header += header_texcube_2frag;
-			body += body_texcube_pre_2frag;
+		if (flags & ShaderBuilder::ENV_CUBE) {
+			header += header_envcube_2frag;
+			body += body_envcube_2frag;
 		}
 
-		if (flags & ShaderBuilder::ENV_SPHERE_PRE) {
-			header += header_texsphere_2frag;
-			body += body_texsphere_2frag;
+		if (flags & ShaderBuilder::ENV_SPHERE) {
+			header += header_envsphere_2frag;
+			body += body_envsphere_2frag;
 		}
 
 		if (flags & ShaderBuilder::COLOUR) {
@@ -325,14 +380,21 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 			body += body_texture_2frag;
 		}
 
-		if (flags & ShaderBuilder::ENV_CUBE_POST) {
-			header += header_texcube_2frag;
-			body += body_texcube_post_2frag;
+		if (flags & ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS) {
+			body += body_mix_env_alpha_minus_one_2frag;
 		}
 
-		if (flags & ShaderBuilder::ENV_SPHERE_POST) {
-			header += header_texsphere_2frag;
-			body += body_texsphere_2frag;
+		if (flags & ShaderBuilder::MIX_TEXTURE_ALPHA) {
+			body += body_mix_texture_alpha_2frag;
+		}
+
+		if (flags & ShaderBuilder::MIX_TEXTURE) {
+			body += body_mix_texture_2frag;
+		}
+
+		if (flags & ShaderBuilder::LIGHTMAP) {
+			header += header_lightmap_2frag;
+			body += body_lightmap_2frag;
 		}
 
 		body += body_default_end_2frag;
@@ -343,12 +405,12 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 
 Common::UString ShaderBuilder::genFragmentShaderName(uint32_t flags) {
 	Common::UString name = "";
-	if (flags & ShaderBuilder::ENV_CUBE_PRE) {
-		name += "env_cube_pre.";
+	if (flags & ShaderBuilder::ENV_CUBE) {
+		name += "env_cube.";
 	}
 
-	if (flags & ShaderBuilder::ENV_SPHERE_PRE) {
-		name += "env_sphere_pre.";
+	if (flags & ShaderBuilder::ENV_SPHERE) {
+		name += "env_sphere.";
 	}
 
 	if (flags & ShaderBuilder::COLOUR) {
@@ -359,12 +421,20 @@ Common::UString ShaderBuilder::genFragmentShaderName(uint32_t flags) {
 		name += "texture.";
 	}
 
-	if (flags & ShaderBuilder::ENV_CUBE_POST) {
-		name += "env_cube_post.";
+	if (flags & ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS) {
+		name += "mix_env_alpha_one_minus.";
 	}
 
-	if (flags & ShaderBuilder::ENV_SPHERE_POST) {
-		name += "env_sphere_post.";
+	if (flags & ShaderBuilder::MIX_TEXTURE_ALPHA) {
+		name += "mix_texture_alpha.";
+	}
+
+	if (flags & ShaderBuilder::MIX_TEXTURE) {
+		name += "mix_texture.";
+	}
+
+	if (flags & ShaderBuilder::LIGHTMAP) {
+		name += "lightmap.";
 	}
 
 	name += "frag";

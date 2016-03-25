@@ -961,10 +961,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	_mesh->init();
 	MeshMan.addMesh(_mesh);
 
-	if (!_material) {
-		_material = MaterialMan.getMaterial("defaultWhite");
-	}
-	_shaderRenderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("defaultSurface"), _material, _mesh);
+	this->buildMaterial();
 }
 
 void ModelNode_NWN_Binary::readAnim(Model_NWN::ParserContext &ctx) {
@@ -1204,10 +1201,7 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 	_mesh->init();
 	MeshMan.addMesh(_mesh);
 
-	if (!_material) {
-		_material = MaterialMan.getMaterial("defaultWhite");
-	}
-	_shaderRenderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("defaultSurface"), _material, _mesh);
+	this->buildMaterial();
 }
 
 void ModelNode_NWN_ASCII::readConstraints(Model_NWN::ParserContext &ctx, uint32 n) {

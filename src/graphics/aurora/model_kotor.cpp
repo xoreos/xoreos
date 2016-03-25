@@ -533,11 +533,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	_mesh->init();
 	MeshMan.addMesh(_mesh);
 
-	if (!_material) {
-		_material = MaterialMan.getMaterial("defaultWhite");
-	}
-	_shaderRenderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("defaultSurface"), _material, _mesh);
-
+	this->buildMaterial();
 }
 
 void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,

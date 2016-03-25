@@ -46,12 +46,14 @@ class ShaderBuilder {
 public:
 
 	enum {
-		ENV_CUBE_PRE    = 0x0001,
-		ENV_SPHERE_PRE  = 0x0002,
-		COLOUR          = 0x0004,
-		TEXTURE         = 0x0008,
-		ENV_CUBE_POST   = 0x0010,
-		ENV_SPHERE_POST = 0x0020
+		ENV_CUBE                = 0x0001,
+		ENV_SPHERE              = 0x0002,
+		COLOUR                  = 0x0004,
+		TEXTURE                 = 0x0008,
+		MIX_ENV_ALPHA_ONE_MINUS = 0x0010,
+		MIX_TEXTURE_ALPHA       = 0x0020,
+		MIX_TEXTURE             = 0x0040,
+		LIGHTMAP                = 0x0080
 	};
 
 	/**

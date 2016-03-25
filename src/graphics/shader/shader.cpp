@@ -35,6 +35,8 @@
 #include "src/graphics/shader/shadercode.h"
 #include "src/graphics/shader/shaderbuilder.h"
 
+#include "src/graphics/aurora/texture.h"
+
 /*--------------------------------------------------------------------*/
 
 DECLARE_SINGLETON(Graphics::Shader::ShaderManager)
@@ -49,6 +51,12 @@ ShaderManager::ShaderManager() : _counterVID(1), _counterFID(1) {
 ShaderManager::~ShaderManager() {
 	deinit();
 }
+
+#define REGISTER_SHADER(x) do {\
+	vObj = getShaderObject((uint32)(x), SHADER_VERTEX);\
+	fObj = getShaderObject((uint32)(x), SHADER_FRAGMENT);\
+	registerShaderProgram(vObj, fObj);\
+} while (0)
 
 void ShaderManager::init() {
 	//_isGL3 = isGL3;  // pull this from GfxMan
@@ -79,35 +87,48 @@ void ShaderManager::init() {
 		registerShaderProgram(vObj, fObj);
 	}
 
-	fObj = getShaderObject((uint32)0, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
+	uint32 flags = 0;
+	REGISTER_SHADER(flags);
 
-	fObj = getShaderObject(ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
+	flags = ShaderBuilder::TEXTURE;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::MIX_TEXTURE_ALPHA;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::LIGHTMAP;
+	REGISTER_SHADER(flags);
+	flags &= ~(ShaderBuilder::MIX_TEXTURE_ALPHA | ShaderBuilder::LIGHTMAP);
+	flags |= ShaderBuilder::MIX_TEXTURE;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::LIGHTMAP;
+	REGISTER_SHADER(flags);
 
-	fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_PRE, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
+	flags = ShaderBuilder::ENV_SPHERE | ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::TEXTURE;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::MIX_TEXTURE_ALPHA;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::LIGHTMAP;
+	REGISTER_SHADER(flags);
+	flags &= ~(ShaderBuilder::MIX_TEXTURE_ALPHA | ShaderBuilder::LIGHTMAP);
+	flags |= ShaderBuilder::MIX_TEXTURE;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::LIGHTMAP;
+	REGISTER_SHADER(flags);
 
-	fObj = getShaderObject(ShaderBuilder::ENV_CUBE_PRE, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
-
-	fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_PRE | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
-
-	fObj = getShaderObject(ShaderBuilder::ENV_CUBE_PRE | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
-
-	fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_POST, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
-
-	fObj = getShaderObject(ShaderBuilder::ENV_CUBE_POST, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
-
-	fObj = getShaderObject(ShaderBuilder::ENV_SPHERE_POST | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
-
-	fObj = getShaderObject(ShaderBuilder::ENV_CUBE_POST | ShaderBuilder::TEXTURE, SHADER_FRAGMENT);
-	registerShaderProgram(vObj, fObj);
+	flags = ShaderBuilder::ENV_CUBE | ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::TEXTURE;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::MIX_TEXTURE_ALPHA;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::LIGHTMAP;
+	REGISTER_SHADER(flags);
+	flags &= ~(ShaderBuilder::MIX_TEXTURE_ALPHA | ShaderBuilder::LIGHTMAP);
+	flags |= ShaderBuilder::MIX_TEXTURE;
+	REGISTER_SHADER(flags);
+	flags |= ShaderBuilder::LIGHTMAP;
+	REGISTER_SHADER(flags);
 }
 
 void ShaderManager::deinit() {
@@ -238,6 +259,15 @@ ShaderObject *ShaderManager::getShaderObject(uint32 flags, ShaderType type) {
 	return shaderObject;
 }
 
+const Common::UString ShaderManager::getShaderName(uint32 flags, ShaderType type)
+{
+	if (type == SHADER_VERTEX) {
+		return _builder.genVertexShaderName(flags);
+	} else {
+		return _builder.genFragmentShaderName(flags);
+	}
+}
+
 void ShaderManager::bindShaderVariable(ShaderObject::ShaderObjectVariable &var, GLint loc, const void *data) {
 	switch (var.type) {
 		case SHADER_FLOAT: glUniform1fv(loc, var.count, static_cast<const float *>(data)); break;
@@ -263,57 +293,57 @@ void ShaderManager::bindShaderVariable(ShaderObject::ShaderObjectVariable &var, 
 		case SHADER_SAMPLER1D:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_1D, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_1D, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLER2D:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_2D, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_2D, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLER3D:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_3D, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_3D, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLERCUBE:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_CUBE_MAP, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLER1DSHADOW:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_1D_ARRAY, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_1D_ARRAY, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLER2DSHADOW:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_2D, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_2D, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLER1DARRAY:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_1D_ARRAY, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_1D_ARRAY, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLER2DARRAY:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_2D_ARRAY, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLER1DARRAYSHADOW:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_1D_ARRAY, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_1D_ARRAY, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLER2DARRAYSHADOW:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_2D_ARRAY, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_2D_ARRAY, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_SAMPLERBUFFER:
 			glUniform1i(loc, static_cast<const ShaderSampler *>(data)->unit);
 			glActiveTexture(GL_TEXTURE0 + static_cast<const ShaderSampler *>(data)->unit);
-			glBindTexture(GL_TEXTURE_BUFFER, static_cast<const ShaderSampler *>(data)->texture->getID());
+			glBindTexture(GL_TEXTURE_BUFFER, static_cast<const ShaderSampler *>(data)->handle.getTexture().getID());
 			break;
 		case SHADER_ISAMPLER1D: break;
 		case SHADER_ISAMPLER2D: break;
