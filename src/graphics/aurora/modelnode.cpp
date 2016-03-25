@@ -851,42 +851,35 @@ void ModelNode::buildMaterial() {
 		materialName += _envMap.getName();
 	}
 
-	uint32 build_flags = 0;
-	uint32 material_flags = 0;
-	// ENV_CUBE          // env
-	// ENV_SPHERE        // env
-	// TEXTURE           // diffuse, opacity = diffuse.a
-	// MIX_ENV_ALPHA_ONE_MINUS  // (1.0 - opacity) * env
-	// MIX_TEXTURE_ALPHA // opacity * diffuse
-	// MIX_TEXTURE       // diffuse
-	// LIGHTMAP          // fraggle *= lightmap
+	uint32 buildFlags = 0;
+	uint32 materialFlags = 0;
 
 	if (_textures.size() > 0) {
-		build_flags |= Shader::ShaderBuilder::TEXTURE;
-		build_flags |= Shader::ShaderBuilder::MIX_TEXTURE;
+		buildFlags |= Shader::ShaderBuilder::TEXTURE;
+		buildFlags |= Shader::ShaderBuilder::MIX_TEXTURE;
 		if (_textures.size() > 1) {
 			if (!_textures[1].empty()) {
-				build_flags |= Shader::ShaderBuilder::LIGHTMAP;
+				buildFlags |= Shader::ShaderBuilder::LIGHTMAP;
 			}
 		}
 	}
 
 	if (!_envMap.empty()) {
 		// So far, all rendering paths will mix env mapping with (1.0 - opacity).
-		build_flags |= Shader::ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS;
+		buildFlags |= Shader::ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS;
 
 		// Figure out if a cube of sphere map is used.
 		if (_envMap.getTexture().getImage().isCubeMap()) {
-			build_flags |= Shader::ShaderBuilder::ENV_CUBE;
+			buildFlags |= Shader::ShaderBuilder::ENV_CUBE;
 		} else {
-			build_flags |= Shader::ShaderBuilder::ENV_SPHERE;
+			buildFlags |= Shader::ShaderBuilder::ENV_SPHERE;
 		}
 
 		// Under or over mapping will affect how much of a texture is applied, not the environment map.
-		if (build_flags & Shader::ShaderBuilder::TEXTURE) {
+		if (buildFlags & Shader::ShaderBuilder::TEXTURE) {
 			if (_envMapMode == kModeEnvironmentBlendedUnder) {
-				build_flags |= Shader::ShaderBuilder::MIX_TEXTURE_ALPHA;  // Used by NWN.
-				build_flags &= ~(Shader::ShaderBuilder::MIX_TEXTURE);     // Don't forget to clear the default texture mixing.
+				buildFlags |= Shader::ShaderBuilder::MIX_TEXTURE_ALPHA;  // Used by NWN.
+				buildFlags &= ~(Shader::ShaderBuilder::MIX_TEXTURE);     // Don't forget to clear the default texture mixing.
 			}
 			// KotOR uses the default texture mixing.
 		}
@@ -896,7 +889,7 @@ void ModelNode::buildMaterial() {
 	if (!_material) {
 		Shader::ShaderSampler * sampler;
 
-		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(build_flags, Shader::SHADER_FRAGMENT), materialName);
+		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(buildFlags, Shader::SHADER_FRAGMENT), materialName);
 
 		if (!_envMap.empty()) {
 			if (_envMap.getTexture().getImage().isCubeMap()) {
@@ -907,11 +900,11 @@ void ModelNode::buildMaterial() {
 			sampler->handle = _envMap;
 		}
 
-		if (build_flags & Shader::ShaderBuilder::TEXTURE) {
+		if (buildFlags & Shader::ShaderBuilder::TEXTURE) {
 			sampler = (Shader::ShaderSampler *)(_material->getVariableData("_texture0"));
 			sampler->handle = _textures[0];
 		}
-		if (build_flags & Shader::ShaderBuilder::LIGHTMAP) {
+		if (buildFlags & Shader::ShaderBuilder::LIGHTMAP) {
 			sampler = (Shader::ShaderSampler *)(_material->getVariableData("_lightmap"));
 			sampler->handle = _textures[1];
 		}
@@ -921,9 +914,9 @@ void ModelNode::buildMaterial() {
 		}
 
 		if (_isTransparent) {
-			material_flags |= SHADER_MATERIAL_TRANSPARENT;
-			material_flags |= Shader::ShaderMaterial::genBlendFlags(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			_material->setFlags(material_flags);
+			materialFlags |= SHADER_MATERIAL_TRANSPARENT;
+			materialFlags |= Shader::ShaderMaterial::genBlendFlags(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			_material->setFlags(materialFlags);
 		}
 
 		MaterialMan.addMaterial(_material);
@@ -931,10 +924,10 @@ void ModelNode::buildMaterial() {
 	}
 
 	Common::UString surfaceName = "xoreos.";
-	surfaceName += ShaderMan.getShaderName(build_flags, Shader::SHADER_VERTEX);
+	surfaceName += ShaderMan.getShaderName(buildFlags, Shader::SHADER_VERTEX);
 	Shader::ShaderSurface *surface = SurfaceMan.getSurface(surfaceName);
 	if (!surface) {
-		surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(build_flags, Shader::SHADER_VERTEX), surfaceName);
+		surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(buildFlags, Shader::SHADER_VERTEX), surfaceName);
 		SurfaceMan.addSurface(surface);
 	}
 

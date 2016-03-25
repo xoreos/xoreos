@@ -146,13 +146,7 @@ enum ShaderVertexAttrib {
 	VERTEX_NORMAL      = 1,
 	VERTEX_COLOR       = 2,
 	VERTEX_TEXCOORD0   = 3,
-	VERTEX_BONE_ID     = 4,
-	VERTEX_BONE_WEIGHT = 5,
-	VERTEX_INSTANCE_A  = 6,
-	VERTEX_INSTANCE_B  = 7,
-	VERTEX_INSTANCE_C  = 8,
-	VERTEX_INSTANCE_D  = 9,  // A to D is typically object modelview transformations.
-	VERTEX_INSTANCE_E  = 10  // E is typically "extras" used for per-instance data.
+	VERTEX_TEXCOORD1   = 4
 };
 
 enum ShaderUBOIndex {

@@ -428,6 +428,7 @@ ShaderProgram *ShaderManager::registerShaderProgram(ShaderObject *vertexObject, 
 		glBindAttribLocation(glid, (GLuint)(VERTEX_LOCATION), "inPosition");
 		glBindAttribLocation(glid, (GLuint)(VERTEX_TEXCOORD0), "inTexCoord0");
 		glBindAttribLocation(glid, (GLuint)(VERTEX_NORMAL), "inNormal");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_TEXCOORD1), "inTexCoord1");
 	}
 
 	glLinkProgram(glid);
