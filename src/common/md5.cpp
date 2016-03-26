@@ -352,7 +352,7 @@ bool compareMD5Digest(ReadStream &stream, const std::vector<byte> &digest) {
 	std::vector<byte> newDigest;
 	hashMD5(stream, newDigest);
 
-	return memcmp(&digest[0], &newDigest[0], kMD5Length) == 0;
+	return std::memcmp(&digest[0], &newDigest[0], kMD5Length) == 0;
 }
 
 bool compareMD5Digest(const byte *data, size_t dataLength, const std::vector<byte> &digest) {
@@ -362,7 +362,7 @@ bool compareMD5Digest(const byte *data, size_t dataLength, const std::vector<byt
 	std::vector<byte> newDigest;
 	hashMD5(data, dataLength, newDigest);
 
-	return memcmp(&digest[0], &newDigest[0], kMD5Length) == 0;
+	return std::memcmp(&digest[0], &newDigest[0], kMD5Length) == 0;
 }
 
 bool compareMD5Digest(const UString &string, const std::vector<byte> &digest) {
