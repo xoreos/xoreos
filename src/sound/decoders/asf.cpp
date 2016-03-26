@@ -72,11 +72,11 @@ public:
 	}
 
 	bool operator==(const ASFGUID &g) const {
-		return !memcmp(g.id, id, 16);
+		return !std::memcmp(g.id, id, 16);
 	}
 
 	bool operator!=(const ASFGUID &g) const {
-		return memcmp(g.id, id, 16) != 0;
+		return std::memcmp(g.id, id, 16) != 0;
 	}
 
 	Common::UString toString() const {
