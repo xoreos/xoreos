@@ -149,7 +149,7 @@ private:
 			return 0;
 
 		byte  *dataIn = const_cast<byte *>(reinterpret_cast<const byte *>(str.c_str()));
-		size_t nIn    = strlen(str.c_str());
+		size_t nIn    = std::strlen(str.c_str());
 		size_t nOut   = nIn * growth + termSize;
 
 		size_t size;
@@ -340,7 +340,7 @@ void writeStringFixed(WriteStream &stream, const Common::UString &str, Encoding 
 MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString) {
 	if (encoding == kEncodingUTF8)
 		return new MemoryReadStream(reinterpret_cast<const byte *>(str.c_str()),
-		                            strlen(str.c_str()) + (terminateString ? 1 : 0));
+		                            std::strlen(str.c_str()) + (terminateString ? 1 : 0));
 
 	return ConvMan.convert(encoding, str, terminateString);
 }

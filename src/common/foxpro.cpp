@@ -253,7 +253,7 @@ void FoxPro::saveFields(WriteStream &dbf) const {
 	for (size_t i = 0; i < _fields.size(); i++) {
 		const Field &field = _fields[i];
 
-		const size_t nameLength = strlen(field.name.c_str());
+		const size_t nameLength = std::strlen(field.name.c_str());
 
 		dbf.write(field.name.c_str(), MIN<size_t>(10, nameLength));
 		dbf.writeByte(0x00);
@@ -734,7 +734,7 @@ void FoxPro::setString(size_t record, size_t field, const UString &value) {
 
 	strncpy(data, value.c_str(), f.size);
 
-	data += strlen(value.c_str());
+	data += std::strlen(value.c_str());
 
 	while (data < dataEnd)
 		*dataEnd++ = 0x20;

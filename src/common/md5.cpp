@@ -337,7 +337,7 @@ void hashMD5(const byte *data, size_t dataLength, std::vector<byte> &digest) {
 }
 
 void hashMD5(const UString &string, std::vector<byte> &digest) {
-	hashMD5(reinterpret_cast<const byte *>(string.c_str()), strlen(string.c_str()), digest);
+	hashMD5(reinterpret_cast<const byte *>(string.c_str()), std::strlen(string.c_str()), digest);
 }
 
 void hashMD5(const std::vector<byte> &data, std::vector<byte> &digest) {
@@ -366,7 +366,7 @@ bool compareMD5Digest(const byte *data, size_t dataLength, const std::vector<byt
 }
 
 bool compareMD5Digest(const UString &string, const std::vector<byte> &digest) {
-	return compareMD5Digest(reinterpret_cast<const byte *>(string.c_str()), strlen(string.c_str()), digest);
+	return compareMD5Digest(reinterpret_cast<const byte *>(string.c_str()), std::strlen(string.c_str()), digest);
 }
 
 bool compareMD5Digest(const std::vector<byte> &data, const std::vector<byte> &digest) {
