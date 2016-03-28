@@ -51,6 +51,7 @@ noinst_HEADERS = \
                  gui/widgets/scrollbar.h \
                  gui/widgets/slider.h \
                  gui/gui.h \
+                 gui/guibackground.h \
                  gui/main/main.h \
                  gui/main/movies.h \
                  gui/main/options.h \
@@ -95,6 +96,7 @@ libkotor_la_SOURCES = \
                       gui/widgets/scrollbar.cpp \
                       gui/widgets/slider.cpp \
                       gui/gui.cpp \
+                      gui/guibackground.cpp \
                       gui/main/main.cpp \
                       gui/main/movies.cpp \
                       gui/main/options.cpp \
