@@ -59,10 +59,23 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFF3Struct &s, Widget *p) {
 }
 
 
-GUI::GUI(::Engines::Console *console) : ::Engines::GUI(console), _widgetZ(0) {
+GUI::GUI(::Engines::Console *console) : ::Engines::GUI(console), _widgetZ(0), _background(0) {
 }
 
 GUI::~GUI() {
+	delete _background;
+}
+
+void GUI::show() {
+	if (_background)
+		_background->show();
+	::Engines::GUI::show();
+}
+
+void GUI::hide() {
+	if (_background)
+		_background->hide();
+	::Engines::GUI::hide();
 }
 
 void GUI::mouseDown() {
@@ -265,13 +278,10 @@ WidgetListBox *GUI::getListBox(const Common::UString &tag, bool vital) {
 }
 
 void GUI::addBackground(const Common::UString &background) {
-	WidgetPanel *backPanel =
-		new WidgetPanel(*this, "Background", "1600x1200" + background,
-		                -800.0f, -600.0f, 1600.0f, 1200.0f);
-
-	backPanel->movePosition(0.0f, 0.0f, 10.0f);
-
-	addWidget(backPanel);
+	if (!_background)
+		_background = new GUIBackground(background);
+	else
+		_background->setType(background);
 }
 
 } // End of namespace KotOR

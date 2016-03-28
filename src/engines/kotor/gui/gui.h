@@ -32,6 +32,8 @@
 
 #include "src/engines/aurora/gui.h"
 
+#include "src/engines/kotor/gui/guibackground.h"
+
 namespace Engines {
 
 namespace KotOR {
@@ -53,6 +55,9 @@ class GUI : public Engines::GUI {
 public:
 	GUI(::Engines::Console *console = 0);
 	~GUI();
+
+	virtual void show(); ///< Show the GUI.
+	virtual void hide(); ///< Hide the GUI.
 
 protected:
 	enum WidgetType {
@@ -102,6 +107,8 @@ private:
 	};
 
 	float _widgetZ;
+
+	GUIBackground *_background;
 
 	Common::UString _name;
 

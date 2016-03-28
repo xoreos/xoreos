@@ -30,6 +30,7 @@
 
 #include "src/engines/kotor/module.h"
 
+#include "src/engines/kotor/gui/guibackground.h"
 #include "src/engines/kotor/gui/main/main.h"
 #include "src/engines/kotor/gui/main/movies.h"
 #include "src/engines/kotor/gui/main/options.h"
@@ -45,7 +46,7 @@ MainMenu::MainMenu(Module &module, bool isXbox, ::Engines::Console *console) : G
 
 	load(isXbox ? "mainmenu" : "mainmenu16x12");
 
-	addBackground("back");
+	addBackground(kBackgroundTypeMenu);
 
 	_movies = 0;
 	_options = 0;
