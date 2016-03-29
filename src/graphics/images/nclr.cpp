@@ -160,7 +160,7 @@ const byte *NCLR::readPalette(Common::SeekableSubReadStreamEndian &nclr) {
 	// Make the rest of the palette pink, for high debug visibility
 	static const byte kPink[3] = { 0xFF, 0x00, 0xFF };
 	for (uint32 i = colorCount; i < 768; i += sizeof(kPink))
-		memcpy(palette + i, kPink, sizeof(kPink));
+		std::memcpy(palette + i, kPink, sizeof(kPink));
 
 	return palette;
 }

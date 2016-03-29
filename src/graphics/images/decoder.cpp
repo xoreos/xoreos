@@ -45,7 +45,7 @@ ImageDecoder::MipMap::MipMap(const MipMap &mipMap, const ImageDecoder *i) :
 
 	data = new byte[size];
 
-	memcpy(data, mipMap.data, size);
+	std::memcpy(data, mipMap.data, size);
 }
 
 ImageDecoder::MipMap::~MipMap() {
