@@ -549,7 +549,7 @@ bool SoundManager::fillBuffer(ALuint alBuffer, AudioStream *stream) const {
 	size_t numSamples = kOpenALBufferSize / 2;
 
 	byte *buffer = new byte[kOpenALBufferSize];
-	memset(buffer, 0, kOpenALBufferSize);
+	std::memset(buffer, 0, kOpenALBufferSize);
 
 	numSamples = stream->readBuffer(reinterpret_cast<int16 *>(buffer), numSamples);
 	if (numSamples == AudioStream::kSizeInvalid) {

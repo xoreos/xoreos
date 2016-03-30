@@ -127,7 +127,7 @@ MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
 	// The MAD_BUFFER_GUARD must always contain zeros (the reason
 	// for this is that the Layer III Huffman decoder of libMAD
 	// may read a few bytes beyond the end of the input buffer).
-	memset(_buf + BUFFER_SIZE, 0, MAD_BUFFER_GUARD);
+	std::memset(_buf + BUFFER_SIZE, 0, MAD_BUFFER_GUARD);
 
 	// Calculate the length of the stream
 	initStream();

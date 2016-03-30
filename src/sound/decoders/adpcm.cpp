@@ -119,7 +119,7 @@ ADPCMStream::~ADPCMStream() {
 }
 
 void ADPCMStream::reset() {
-	memset(&_status, 0, sizeof(_status));
+	std::memset(&_status, 0, sizeof(_status));
 	_blockPos[0] = _blockPos[1] = _blockAlign; // To make sure first header is read
 }
 
@@ -137,7 +137,7 @@ protected:
 public:
 	Ima_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
 		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
-		memset(&_status, 0, sizeof(_status));
+		std::memset(&_status, 0, sizeof(_status));
 
 		// 2 samples per input byte
 		_length = stream->size() * 2 / _channels;
@@ -361,7 +361,7 @@ protected:
 
 	void reset() {
 		ADPCMStream::reset();
-		memset(&_status, 0, sizeof(_status));
+		std::memset(&_status, 0, sizeof(_status));
 	}
 
 public:
@@ -369,7 +369,7 @@ public:
 		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
 		if (blockAlign == 0)
 			error("MS_ADPCMStream(): blockAlign isn't specified for MS ADPCM");
-		memset(&_status, 0, sizeof(_status));
+		std::memset(&_status, 0, sizeof(_status));
 
 		// 2 samples per input byte, but 7 byte header per block per channel
 		_length = ((stream->size() / _blockAlign) * (_blockAlign - (7 * channels)) * 2) / channels;

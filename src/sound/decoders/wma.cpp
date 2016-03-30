@@ -182,8 +182,8 @@ void WMACodec::init(Common::SeekableReadStream *extraData) {
 	initExponents();
 
 	// Clear the sample output buffers
-	memset(_output  , 0, sizeof(_output));
-	memset(_frameOut, 0, sizeof(_frameOut));
+	std::memset(_output  , 0, sizeof(_output));
+	std::memset(_frameOut, 0, sizeof(_frameOut));
 }
 
 uint16 WMACodec::getFlags(Common::SeekableReadStream *extraData) {
@@ -619,7 +619,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 		outputDataSize = frameCount * _channels * _frameLen;
 		outputData     = new int16[outputDataSize];
 
-		memset(outputData, 0, outputDataSize * 2);
+		std::memset(outputData, 0, outputDataSize * 2);
 
 		// Number of bits data that completes the last superframe's overhang.
 		int bitOffset = bits.getBits(_byteOffsetBits + 3);
@@ -696,7 +696,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 		outputDataSize = _channels * _frameLen;
 		outputData     = new int16[outputDataSize];
 
-		memset(outputData, 0, outputDataSize * 2);
+		std::memset(outputData, 0, outputDataSize * 2);
 
 		// Decode the frame
 		if (!decodeFrame(bits, outputData)) {
@@ -824,7 +824,7 @@ bool WMACodec::decodeChannels(Common::BitStream &bits, int bSize,
 		// No need to optimize this case because it should almost never happen
 
 		if (!hasChannel[0]) {
-			memset(_coefs[0], 0, sizeof(float) * _blockLen);
+			std::memset(_coefs[0], 0, sizeof(float) * _blockLen);
 			hasChannel[0] = true;
 		}
 
@@ -843,7 +843,7 @@ bool WMACodec::calculateIMDCT(int bSize, bool msStereo, bool *hasChannel) {
 		if (hasChannel[i])
 			mdct.calcIMDCT(_output, _coefs[i]);
 		else if (!(msStereo && (i == 1)))
-			memset(_output, 0, sizeof(_output));
+			std::memset(_output, 0, sizeof(_output));
 
 		// Multiply by the window and add in the frame
 		int index = (_frameLen / 2) + _framePos - n4;
@@ -1014,7 +1014,7 @@ bool WMACodec::decodeSpectralCoef(Common::BitStream &bits, bool msStereo, bool *
 			const int tindex = ((i == 1) && msStereo);
 
 			float *ptr = &_coefs1[i][0];
-			memset(ptr, 0, _blockLen * sizeof(float));
+			std::memset(ptr, 0, _blockLen * sizeof(float));
 
 			if (!decodeRunLevel(bits, *_coefHuffman[tindex],
 			                    _coefHuffmanLevelTable[tindex], _coefHuffmanRunTable[tindex],
@@ -1477,7 +1477,7 @@ void WMACodec::window(float *out) const {
 
 		vectorFMulReverse(out + n, in + n, _mdctWindow[bSize], blockLen);
 
-		memset(out + n + blockLen, 0, n * sizeof(float));
+		std::memset(out + n + blockLen, 0, n * sizeof(float));
 	}
 }
 
