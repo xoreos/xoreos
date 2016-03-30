@@ -51,7 +51,7 @@ void IFOFile::clear() {
 	delete _gff;
 	_gff = 0;
 
-	memset(_id, 0, sizeof(_id));
+	std::memset(_id, 0, sizeof(_id));
 
 	_tag.clear();
 

@@ -153,7 +153,7 @@ static void createDepth(ReadContext &ctx) {
 	/* Create the actual depth data, which is made up of 64x64 pixel cells. */
 
 	ctx.depth = new uint16[ctx.width * ctx.height];
-	memset(ctx.depth, 0xFF, ctx.width * ctx.height * sizeof(uint16));
+	std::memset(ctx.depth, 0xFF, ctx.width * ctx.height * sizeof(uint16));
 
 	const uint32 cellWidth  = 64;
 	const uint32 cellHeight = 64;
