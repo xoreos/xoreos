@@ -852,7 +852,7 @@ void FoxPro::setMemo(size_t record, size_t field, SeekableReadStream *value) {
 	char *data = reinterpret_cast<char *>(r.fields[field]);
 
 	if (!value) {
-		memset(data, 0x20, f.size);
+		std::memset(data, 0x20, f.size);
 		updateUpdate();
 		return;
 	}

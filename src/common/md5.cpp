@@ -273,13 +273,13 @@ static void md5Final(byte *result, MD5Context &ctx) {
 	size_t available = 64 - used;
 
 	if (available < 8) {
-		memset(&ctx.buffer[used], 0, available);
+		std::memset(&ctx.buffer[used], 0, available);
 		md5Body(ctx, ctx.buffer, 64);
 		used = 0;
 		available = 64;
 	}
 
-	memset(&ctx.buffer[used], 0, available - 8);
+	std::memset(&ctx.buffer[used], 0, available - 8);
 
 	ctx.lo <<= 3;
 	ctx.buffer[56] = ctx.lo;

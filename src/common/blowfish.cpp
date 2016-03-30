@@ -76,8 +76,8 @@ struct BlowfishContext {
 	uint32 S[4][256];          ///< Key-dependant S-boxes.
 
 	BlowfishContext() {
-		memset(P, 0, sizeof(P));
-		memset(S, 0, sizeof(S));
+		std::memset(P, 0, sizeof(P));
+		std::memset(S, 0, sizeof(S));
 	}
 
 	~BlowfishContext() {
@@ -354,7 +354,7 @@ MemoryReadStream *blowfishEBC(SeekableReadStream &input, const std::vector<byte>
 			if (input.read(buffer, toRead) != toRead)
 				throw Exception(kReadError);
 
-			memset(buffer + toRead, 0, kBlockSize - toRead);
+			std::memset(buffer + toRead, 0, kBlockSize - toRead);
 
 			blowfishECB(ctx, mode, buffer, data);
 

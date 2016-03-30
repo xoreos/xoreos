@@ -605,7 +605,7 @@ void TransformationMatrix::lookAt(const Vector3 &v) {
 void TransformationMatrix::perspective(float fovy, float aspectRatio, float znear, float zfar) {
 	float xmin, xmax, ymin, ymax;
 	TransformationMatrix pMatrix(false);
-	memset(&pMatrix, 0, 16 * sizeof(float));
+	std::memset(&pMatrix, 0, 16 * sizeof(float));
 
 	ymax = znear * tan(deg2rad(0.5f * fovy));
 	ymin = -ymax;
@@ -626,7 +626,7 @@ void TransformationMatrix::perspective(float fovy, float aspectRatio, float znea
 void TransformationMatrix::ortho(float l, float r, float b, float t, float n, float f)
 {
 	TransformationMatrix mMatrix(false);
-	memset(&mMatrix, 0, 16*sizeof(float));
+	std::memset(&mMatrix, 0, 16*sizeof(float));
 
 	mMatrix[0]  =  2.0f / (r - l);
 	mMatrix[5]  =  2.0f / (t - b);
