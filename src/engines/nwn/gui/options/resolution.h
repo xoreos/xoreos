@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_OPTIONS_RESOLUTION_H
 #define ENGINES_NWN_GUI_OPTIONS_RESOLUTION_H
 
+#include "src/graphics/resolution.h"
+
 #include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
@@ -46,20 +48,11 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	struct Resolution {
-		int width;
-		int height;
-
-		Resolution(int w, int h);
-	};
-
-	std::vector<Resolution> _resolutions;
-	std::vector<Resolution> _useableResolutions;
+	std::vector<Graphics::Resolution> _useableResolutions;
 
 	int _width;
 	int _height;
 
-	void initResolutions();
 	void initResolutionsBox(WidgetListBox &resList);
 
 	void setResolution(size_t n);
