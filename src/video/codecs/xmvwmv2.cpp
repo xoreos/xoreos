@@ -161,9 +161,9 @@ void XMVWMV2Codec::DecodeContext::setQScale(int32 qS) {
 	defaultPredictor = (1024 + (dcStepSize / 2)) / dcStepSize;
 
 	if (acQuantTop) {
-		memset(acQuantTop[0], 0, sizeof(int32) * block[0].planePitch);
-		memset(acQuantTop[1], 0, sizeof(int32) * block[4].planePitch);
-		memset(acQuantTop[2], 0, sizeof(int32) * block[5].planePitch);
+		std::memset(acQuantTop[0], 0, sizeof(int32) * block[0].planePitch);
+		std::memset(acQuantTop[1], 0, sizeof(int32) * block[4].planePitch);
+		std::memset(acQuantTop[2], 0, sizeof(int32) * block[5].planePitch);
 
 		for (uint32 x = 0; x < (block[0].planePitch / block[0].blockPitch); x++) {
 			acQuantTop[0][x * block[0].blockPitch + block[4].blockPitch] = defaultPredictor;
@@ -182,7 +182,7 @@ void XMVWMV2Codec::DecodeContext::startRow() {
 	for (int i = 4; i < 6; i++)
 		block[i].acQuantTop = acQuantTop[i - 3];
 
-	memset(acQuantLeft, 0, sizeof(int32) * kBlockSize * 4);
+	std::memset(acQuantLeft, 0, sizeof(int32) * kBlockSize * 4);
 
 	acQuantLeft[0][0] = defaultPredictor;
 	acQuantLeft[1][0] = defaultPredictor;
@@ -230,13 +230,13 @@ XMVWMV2Codec::XMVWMV2Codec(uint32 width, uint32 height,
 	_width(width), _height(height), _cbp(0), _currentFrame(0) {
 
 	// Clear everything, so that a throw in the init doesn't mess everything up
-	memset(_curPlanes, 0, sizeof(_curPlanes));
-	memset(_oldPlanes, 0, sizeof(_oldPlanes));
-	memset(_huffCBP  , 0, sizeof(_huffCBP));
-	memset(_huffDC   , 0, sizeof(_huffDC));
-	memset(_predAC   , 0, sizeof(_predAC));
-	memset(_decoderAC, 0, sizeof(_decoderAC));
-	memset(_decoderMV, 0, sizeof(_decoderMV));
+	std::memset(_curPlanes, 0, sizeof(_curPlanes));
+	std::memset(_oldPlanes, 0, sizeof(_oldPlanes));
+	std::memset(_huffCBP  , 0, sizeof(_huffCBP));
+	std::memset(_huffDC   , 0, sizeof(_huffDC));
+	std::memset(_predAC   , 0, sizeof(_predAC));
+	std::memset(_decoderAC, 0, sizeof(_decoderAC));
+	std::memset(_decoderMV, 0, sizeof(_decoderMV));
 
 	init();
 
@@ -288,12 +288,12 @@ void XMVWMV2Codec::init() {
 	_oldPlanes[1] = new byte[_chromaWidth * _chromaHeight];
 	_oldPlanes[2] = new byte[_chromaWidth * _chromaHeight];
 
-	memset(_curPlanes[0], 0, _lumaWidth   * _lumaHeight  );
-	memset(_curPlanes[1], 0, _chromaWidth * _chromaHeight);
-	memset(_curPlanes[2], 0, _chromaWidth * _chromaHeight);
-	memset(_oldPlanes[0], 0, _lumaWidth   * _lumaHeight  );
-	memset(_oldPlanes[1], 0, _chromaWidth * _chromaHeight);
-	memset(_oldPlanes[2], 0, _chromaWidth * _chromaHeight);
+	std::memset(_curPlanes[0], 0, _lumaWidth   * _lumaHeight  );
+	std::memset(_curPlanes[1], 0, _chromaWidth * _chromaHeight);
+	std::memset(_curPlanes[2], 0, _chromaWidth * _chromaHeight);
+	std::memset(_oldPlanes[0], 0, _lumaWidth   * _lumaHeight  );
+	std::memset(_oldPlanes[1], 0, _chromaWidth * _chromaHeight);
+	std::memset(_oldPlanes[2], 0, _chromaWidth * _chromaHeight);
 
 
 	// Coded block pattern
@@ -429,7 +429,7 @@ void XMVWMV2Codec::initDecodeContext(DecodeContext &ctx) {
 		ctx.block[i].blockPitch = kBlockSize;
 	}
 
-	memset(_cbp, 0, sizeof(CBP) * (_mbCountWidth + 1));
+	std::memset(_cbp, 0, sizeof(CBP) * (_mbCountWidth + 1));
 
 	ctx.rowCBP = _cbp + 1;
 }
@@ -559,18 +559,18 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 	if (ctx.hasACPrediction) {
 
 		if (isPredictedLeft) {
-			memset(block.acQuantTop, 0, sizeof(int32) * kBlockSize);
+			std::memset(block.acQuantTop, 0, sizeof(int32) * kBlockSize);
 
 			zigZag = wmv2ZigZagVertical;
 		} else {
-			memset(block.acQuantLeft, 0, sizeof(int32) * kBlockSize);
+			std::memset(block.acQuantLeft, 0, sizeof(int32) * kBlockSize);
 
 			zigZag = wmv2ZigZagHorizontal;
 		}
 
 	} else {
-		memset(block.acQuantTop , 0, sizeof(int32) * kBlockSize);
-		memset(block.acQuantLeft, 0, sizeof(int32) * kBlockSize);
+		std::memset(block.acQuantTop , 0, sizeof(int32) * kBlockSize);
+		std::memset(block.acQuantLeft, 0, sizeof(int32) * kBlockSize);
 
 		zigZag = wmv2ZigZagNormal;
 	}
@@ -581,7 +581,7 @@ void XMVWMV2Codec::decodeIBlock(DecodeContext &ctx, BlockContext &block) {
 	block.acQuantLeft[0] = dcQuantCoeff;
 
 	int32 acReconCoeffs[kBlockSize * kBlockSize];
-	memset(acReconCoeffs, 0, sizeof(acReconCoeffs));
+	std::memset(acReconCoeffs, 0, sizeof(acReconCoeffs));
 
 	acReconCoeffs[0] = dcQuantCoeff * ctx.dcStepSize;
 

@@ -293,7 +293,7 @@ void Bink::audioPacket(AudioTrack &audio) {
 	int outSize = audio.frameLen * audio.channels;
 	while (!_disableAudio && (audio.bits->pos() < audio.bits->size())) {
 		int16 *out = new int16[outSize];
-		memset(out, 0, outSize * 2);
+		std::memset(out, 0, outSize * 2);
 
 		audioBlock(audio, out);
 
@@ -486,7 +486,7 @@ void Bink::readHuffman(VideoFrame &video, Huffman &huffman) {
 	if (video.bits->getBit()) {
 		// Symbol selection
 
-		memset(hasSymbol, 0, 16);
+		std::memset(hasSymbol, 0, 16);
 
 		uint8 length = video.bits->getBits(3);
 		for (int i = 0; i <= length; i++) {
@@ -630,14 +630,14 @@ void Bink::load() {
 	_oldPlanes[3] = new byte[ width       *  height      ]; // A
 
 	// Initialize the video with solid black
-	memset(_curPlanes[0],   0,  width       *  height      );
-	memset(_curPlanes[1],   0, (width >> 1) * (height >> 1));
-	memset(_curPlanes[2],   0, (width >> 1) * (height >> 1));
-	memset(_curPlanes[3], 255,  width       *  height      );
-	memset(_oldPlanes[0],   0,  width       *  height      );
-	memset(_oldPlanes[1],   0, (width >> 1) * (height >> 1));
-	memset(_oldPlanes[2],   0, (width >> 1) * (height >> 1));
-	memset(_oldPlanes[3], 255,  width       *  height      );
+	std::memset(_curPlanes[0],   0,  width       *  height      );
+	std::memset(_curPlanes[1],   0, (width >> 1) * (height >> 1));
+	std::memset(_curPlanes[2],   0, (width >> 1) * (height >> 1));
+	std::memset(_curPlanes[3], 255,  width       *  height      );
+	std::memset(_oldPlanes[0],   0,  width       *  height      );
+	std::memset(_oldPlanes[1],   0, (width >> 1) * (height >> 1));
+	std::memset(_oldPlanes[2],   0, (width >> 1) * (height >> 1));
+	std::memset(_oldPlanes[3], 255,  width       *  height      );
 
 	initBundles();
 	initHuffman();
@@ -840,7 +840,7 @@ void Bink::blockScaledRun(DecodeContext &ctx) {
 
 void Bink::blockScaledIntra(DecodeContext &ctx) {
 	int16 block[64];
-	memset(block, 0, 64 * sizeof(int16));
+	std::memset(block, 0, 64 * sizeof(int16));
 
 	block[0] = getBundleValue(kSourceIntraDC);
 
@@ -864,7 +864,7 @@ void Bink::blockScaledFill(DecodeContext &ctx) {
 
 	byte *dest = ctx.dest;
 	for (int i = 0; i < 16; i++, dest += ctx.pitch)
-		memset(dest, v, 16);
+		std::memset(dest, v, 16);
 }
 
 void Bink::blockScaledPattern(DecodeContext &ctx) {
@@ -977,7 +977,7 @@ void Bink::blockResidue(DecodeContext &ctx) {
 	byte v = ctx.video->bits->getBits(7);
 
 	int16 block[64];
-	memset(block, 0, 64 * sizeof(int16));
+	std::memset(block, 0, 64 * sizeof(int16));
 
 	readResidue(*ctx.video, block, v);
 
@@ -990,7 +990,7 @@ void Bink::blockResidue(DecodeContext &ctx) {
 
 void Bink::blockIntra(DecodeContext &ctx) {
 	int16 block[64];
-	memset(block, 0, 64 * sizeof(int16));
+	std::memset(block, 0, 64 * sizeof(int16));
 
 	block[0] = getBundleValue(kSourceIntraDC);
 
@@ -1004,14 +1004,14 @@ void Bink::blockFill(DecodeContext &ctx) {
 
 	byte *dest = ctx.dest;
 	for (int i = 0; i < 8; i++, dest += ctx.pitch)
-		memset(dest, v, 8);
+		std::memset(dest, v, 8);
 }
 
 void Bink::blockInter(DecodeContext &ctx) {
 	blockMotion(ctx);
 
 	int16 block[64];
-	memset(block, 0, 64 * sizeof(int16));
+	std::memset(block, 0, 64 * sizeof(int16));
 
 	block[0] = getBundleValue(kSourceInterDC);
 
@@ -1056,7 +1056,7 @@ void Bink::readRuns(VideoFrame &video, Bundle &bundle) {
 	if (video.bits->getBit()) {
 		byte v = video.bits->getBits(4);
 
-		memset(bundle.curDec, v, n);
+		std::memset(bundle.curDec, v, n);
 		bundle.curDec += n;
 
 	} else
@@ -1081,7 +1081,7 @@ void Bink::readMotionValues(VideoFrame &video, Bundle &bundle) {
 			v = (v ^ sign) - sign;
 		}
 
-		memset(bundle.curDec, v, n);
+		std::memset(bundle.curDec, v, n);
 
 		bundle.curDec += n;
 		return;
@@ -1113,7 +1113,7 @@ void Bink::readBlockTypes(VideoFrame &video, Bundle &bundle) {
 	if (video.bits->getBit()) {
 		byte v = video.bits->getBits(4);
 
-		memset(bundle.curDec, v, n);
+		std::memset(bundle.curDec, v, n);
 
 		bundle.curDec += n;
 		return;
@@ -1130,7 +1130,7 @@ void Bink::readBlockTypes(VideoFrame &video, Bundle &bundle) {
 		} else {
 			int run = rleLens[v - 12];
 
-			memset(bundle.curDec, last, run);
+			std::memset(bundle.curDec, last, run);
 
 			bundle.curDec += run;
 		}
@@ -1178,7 +1178,7 @@ void Bink::readColors(VideoFrame &video, Bundle &bundle) {
 			v += 0x80;
 		}
 
-		memset(bundle.curDec, v, n);
+		std::memset(bundle.curDec, v, n);
 		bundle.curDec += n;
 
 		return;
@@ -1555,7 +1555,7 @@ void Bink::readAudioCoeffs(AudioTrack &audio, float *coeffs) {
 		int width = audio.bits->getBits(4);
 		if (width == 0) {
 
-			memset(coeffs + i, 0, (j - i) * sizeof(*coeffs));
+			std::memset(coeffs + i, 0, (j - i) * sizeof(*coeffs));
 			i = j;
 			while (audio.bands[k] * 2 < i)
 				q = quant[k++];

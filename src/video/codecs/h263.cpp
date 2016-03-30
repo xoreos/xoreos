@@ -39,13 +39,13 @@ namespace Video {
 
 H263Codec::H263Codec(uint32 width, uint32 height) : _width(width), _height(height) {
 	xvid_gbl_init_t xvid_gbl_init;
-	memset(&xvid_gbl_init, 0, sizeof(xvid_gbl_init_t));
+	std::memset(&xvid_gbl_init, 0, sizeof(xvid_gbl_init_t));
 	xvid_gbl_init.version = XVID_VERSION;
 	xvid_gbl_init.debug = 0;//XVID_DEBUG_ERROR | XVID_DEBUG_HEADER | XVID_DEBUG_STARTCODE;
 	xvid_global(0, XVID_GBL_INIT, &xvid_gbl_init, 0);
 
 	xvid_dec_create_t xvid_dec_create;
-	memset(&xvid_dec_create, 0, sizeof(xvid_dec_create_t));
+	std::memset(&xvid_dec_create, 0, sizeof(xvid_dec_create_t));
 	xvid_dec_create.version = XVID_VERSION;
 	xvid_dec_create.width = width;
 	xvid_dec_create.height = height;
@@ -71,7 +71,7 @@ void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStre
 	dataStream.read(data, dataSize);
 
 	xvid_dec_frame_t xvid_dec_frame;
-	memset(&xvid_dec_frame, 0, sizeof(xvid_dec_frame_t));
+	std::memset(&xvid_dec_frame, 0, sizeof(xvid_dec_frame_t));
 	xvid_dec_frame.version    = XVID_VERSION;
 	xvid_dec_frame.general    = XVID_DEBLOCKY | XVID_DEBLOCKUV | XVID_DERINGY | XVID_DERINGUV;
 	xvid_dec_frame.bitstream  = data;
@@ -79,7 +79,7 @@ void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStre
 	xvid_dec_frame.output.csp = XVID_CSP_INTERNAL;
 
 	xvid_dec_stats_t xvid_dec_stats;
-	memset(&xvid_dec_stats, 0, sizeof(xvid_dec_stats_t));
+	std::memset(&xvid_dec_stats, 0, sizeof(xvid_dec_stats_t));
 	xvid_dec_stats.version = XVID_VERSION;
 
 	int c = xvid_decore(_decHandle, XVID_DEC_DECODE, &xvid_dec_frame, &xvid_dec_stats);

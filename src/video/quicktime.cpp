@@ -1058,7 +1058,7 @@ void QuickTimeDecoder::AudioSampleDesc::initCodec() {
 }
 
 QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::Track *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
-	memset(_codecName, 0, 32);
+	std::memset(_codecName, 0, 32);
 	_colorTableId = 0;
 	_palette = 0;
 	_videoCodec = 0;
