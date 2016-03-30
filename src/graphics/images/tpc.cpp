@@ -297,7 +297,7 @@ void TPC::readData(Common::SeekableReadStream &tpc, byte encoding) {
 				(*mipMap)->data = new byte[(*mipMap)->size];
 
 				for (int i = 0; i < ((*mipMap)->width * (*mipMap)->height); i++)
-					memset((*mipMap)->data + i * 3, dataGray[i], 3);
+					std::memset((*mipMap)->data + i * 3, dataGray[i], 3);
 
 				delete[] dataGray;
 			}

@@ -223,7 +223,7 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 			while (count-- > 0) {
 				byte g = tga.readByte();
 
-				memset(data, g, 3);
+				std::memset(data, g, 3);
 				data[3] = 0xFF;
 
 				data += 4;

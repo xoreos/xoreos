@@ -230,7 +230,7 @@ void CBGT::createImage(uint32 width, uint32 height) {
 
 	_mipMaps.back()->data = new byte[_mipMaps.back()->size];
 	byte *data = _mipMaps.back()->data;
-	memset(data, 0, _mipMaps.back()->size);
+	std::memset(data, 0, _mipMaps.back()->size);
 }
 
 void CBGT::drawImage(ReadContext &ctx) {

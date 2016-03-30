@@ -68,7 +68,7 @@ const byte *Surface::getData() const {
 
 void Surface::fill(byte r, byte g, byte b, byte a) {
 	if ((r == g) && (r == b) && (r == a)) {
-		memset(_mipMaps[0]->data, r, _mipMaps[0]->size);
+		std::memset(_mipMaps[0]->data, r, _mipMaps[0]->size);
 		return;
 	}
 

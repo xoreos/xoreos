@@ -70,7 +70,7 @@ void NBFS::load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nb
 
 const byte *NBFS::readPalette(Common::SeekableReadStream &nbfp) {
 	byte *palette = new byte[768];
-	memset(palette, 0, 768);
+	std::memset(palette, 0, 768);
 
 	try {
 
