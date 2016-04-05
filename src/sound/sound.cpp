@@ -186,19 +186,19 @@ bool SoundManager::isPlaying(size_t channel) const {
 	ALint val;
 	alGetSourcei(_channels[channel]->source, AL_SOURCE_STATE, &val);
 	if ((error = alGetError()) != AL_NO_ERROR)
-		throw Common::Exception("OpenAL error while getting source state: %X", error);
+		throw Common::Exception("OpenAL error while getting source state: 0x%X", error);
 
 	if (val != AL_PLAYING) {
 		if (!_channels[channel]->stream || _channels[channel]->stream->endOfStream()) {
 			ALint buffersQueued;
 			alGetSourcei(_channels[channel]->source, AL_BUFFERS_QUEUED, &buffersQueued);
 			if ((error = alGetError()) != AL_NO_ERROR)
-				throw Common::Exception("OpenAL error while getting queued buffers: %X", error);
+				throw Common::Exception("OpenAL error while getting queued buffers: 0x%X", error);
 
 			ALint buffersProcessed;
 			alGetSourcei(_channels[channel]->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 			if ((error = alGetError()) != AL_NO_ERROR)
-				throw Common::Exception("OpenAL error while getting processed buffers: %X", error);
+				throw Common::Exception("OpenAL error while getting processed buffers: 0x%X", error);
 
 			if (buffersQueued == buffersProcessed)
 				return false;
@@ -339,7 +339,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 			// Create the source
 			alGenSources(1, &channel.source);
 			if ((error = alGetError()) != AL_NO_ERROR)
-				throw Common::Exception("OpenAL error while generating sources: %X", error);
+				throw Common::Exception("OpenAL error while generating sources: 0x%X", error);
 
 			// Create all needed buffers
 			for (size_t i = 0; i < kOpenALBufferCount; i++) {
@@ -347,14 +347,14 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 
 				alGenBuffers(1, &buffer);
 				if ((error = alGetError()) != AL_NO_ERROR)
-					throw Common::Exception("OpenAL error while generating buffers: %X", error);
+					throw Common::Exception("OpenAL error while generating buffers: 0x%X", error);
 
 				if (fillBuffer(buffer, channel.stream, channel.bufferSize[buffer])) {
 					// If we could fill the buffer with data, queue it
 
 					alSourceQueueBuffers(channel.source, 1, &buffer);
 					if ((error = alGetError()) != AL_NO_ERROR)
-						throw Common::Exception("OpenAL error while queueing buffers: %X", error);
+						throw Common::Exception("OpenAL error while queueing buffers: 0x%X", error);
 
 				} else
 					// If not, put it into our free list
@@ -652,7 +652,7 @@ void SoundManager::bufferData(Channel &channel) {
 	ALint buffersProcessed = -1;
 	alGetSourcei(channel.source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 	if ((error = alGetError()) != AL_NO_ERROR)
-		throw Common::Exception("OpenAL error while getting processed buffers: %X", error);
+		throw Common::Exception("OpenAL error while getting processed buffers: 0x%X", error);
 
 	assert(buffersProcessed >= 0);
 
@@ -663,7 +663,7 @@ void SoundManager::bufferData(Channel &channel) {
 	ALuint freeBuffers[kOpenALBufferCount];
 	alSourceUnqueueBuffers(channel.source, buffersProcessed, freeBuffers);
 	if ((error = alGetError()) != AL_NO_ERROR)
-		throw Common::Exception("OpenAL error while unqueueing buffers: %X", error);
+		throw Common::Exception("OpenAL error while unqueueing buffers: 0x%X", error);
 
 	// Put them into the free buffers list
 	for (size_t i = 0; i < (size_t)buffersProcessed; i++) {
@@ -680,7 +680,7 @@ void SoundManager::bufferData(Channel &channel) {
 
 		alSourceQueueBuffers(channel.source, 1, &*buffer);
 		if ((error = alGetError()) != AL_NO_ERROR)
-			throw Common::Exception("OpenAL error while queueing buffers: %X", error);
+			throw Common::Exception("OpenAL error while queueing buffers: 0x%X", error);
 
 		buffer = channel.freeBuffers.erase(buffer);
 	}
@@ -740,7 +740,7 @@ void SoundManager::pauseChannel(Channel *channel, bool pause) {
 		if (_hasSound) {
 			alSourcePause(channel->source);
 			if ((error = alGetError()) != AL_NO_ERROR)
-				warning("OpenAL error while attempting to pause: %X", error);
+				warning("OpenAL error while attempting to pause: 0x%X", error);
 		}
 
 		channel->state = AL_PAUSED;
