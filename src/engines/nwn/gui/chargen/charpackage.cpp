@@ -32,6 +32,7 @@
 
 #include "src/engines/nwn/gui/chargen/charskills.h"
 #include "src/engines/nwn/gui/chargen/charfeats.h"
+#include "src/engines/nwn/gui/chargen/charschool.h"
 #include "src/engines/nwn/gui/chargen/charpackage.h"
 
 namespace Engines {
@@ -98,6 +99,16 @@ void CharPackage::callbackActive(Widget &widget) {
 			// TODO Check if new feats are needed.
 			CharFeats *charFeats = new CharFeats(*_choices, _console);
 			_subGUIs.push_back(charFeats);
+
+			// Add spell GUI if needed
+			const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
+			const Aurora::TwoDARow &rowClass = twodaClasses.getRow(_choices->getClass());
+			if (rowClass.getInt("SpellCaster") > 0) {
+				if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ") {
+					CharSchool *charSchool = new CharSchool(*_choices, _console);
+					_subGUIs.push_back(charSchool);
+				}
+			}
 		}
 
 		uint32 subReturnCode;
