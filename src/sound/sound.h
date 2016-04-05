@@ -167,6 +167,15 @@ public:
 	/** Set the gain/volume of all channels of a specific type. */
 	void setTypeGain(SoundType type, float gain);
 
+
+	/** Create an audio stream from this data stream.
+	 *
+	 *  The ownership of the data stream is transferred to the audio stream
+	 *  if one was created without an exception being thrown.
+	 */
+	static AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
+
+
 private:
 	static const size_t kChannelCount = 65535; ///< Maximal number of channels.
 
@@ -255,8 +264,6 @@ private:
 	Channel *getChannel(const ChannelHandle &handle);
 
 	void threadMethod();
-
-	static AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
 
 	/** Fill the buffer with data from the audio stream. */
 	bool fillBuffer(ALuint alBuffer, AudioStream *stream, ALsizei &bufferedSize) const;
