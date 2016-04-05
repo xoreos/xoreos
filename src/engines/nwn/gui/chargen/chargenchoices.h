@@ -58,6 +58,7 @@ public:
 	void setCharSkill(size_t skillIndex, uint8 rank);
 	void setCharNotUsedSkills(uint8 notUsedSkills);
 	void setCharFeat(uint32 feat);
+	void setSpellSchool(uint32 spellSchool);
 
 	bool hasFeat(uint32 featId) const;
 	bool hasPrereqFeat(uint32 featId, bool isClassFeat);
@@ -67,6 +68,7 @@ public:
 	uint32 getAbility(uint32 ability) const;
 	std::vector<uint32> getFeats();
 	uint32 getPackage() const;
+	uint32 getSpellSchool() const;
 
 private:
 	Creature *_creature;
@@ -82,6 +84,7 @@ private:
 	uint32 _loyalty;
 	uint32 _package;
 	uint8 _notUsedSkills;
+	uint32 _spellSchool;
 
 };
 

@@ -48,6 +48,8 @@ CharGenChoices::CharGenChoices() {
 
 	_package = 10000;
 	_skills.assign(28, 0);
+
+	_spellSchool = UINT32_MAX;
 }
 
 CharGenChoices::~CharGenChoices() {
@@ -144,6 +146,10 @@ void CharGenChoices::setCharNotUsedSkills(uint8 notUsedSkills) {
 
 void CharGenChoices::setCharFeat(uint32 feat) {
 	_normalFeats.push_back(feat);
+}
+
+void CharGenChoices::setSpellSchool(uint32 spellSchool) {
+	_spellSchool = spellSchool;
 }
 
 bool CharGenChoices::hasFeat(uint32 featId) const {
@@ -272,6 +278,10 @@ uint32 CharGenChoices::getAbility(uint32 ability) const {
 
 uint32 CharGenChoices::getPackage() const {
 	return _package;
+}
+
+uint32 CharGenChoices::getSpellSchool() const {
+	return _spellSchool;
 }
 
 std::vector<uint32> CharGenChoices::getFeats() {
