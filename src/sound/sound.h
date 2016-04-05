@@ -151,6 +151,9 @@ public:
 	/** Return the number of samples this channel has already played. */
 	uint64 getChannelSamplesPlayed(const ChannelHandle &handle);
 
+	/** Return the time this channel has already played in milliseconds. */
+	uint64 getChannelDurationPlayed(const ChannelHandle &handle);
+
 
 	// Type properties
 

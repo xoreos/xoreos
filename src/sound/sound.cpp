@@ -520,6 +520,16 @@ uint64 SoundManager::getChannelSamplesPlayed(const ChannelHandle &handle) {
 	return byteCount / channel->stream->getChannels() / 2;
 }
 
+uint64 SoundManager::getChannelDurationPlayed(const ChannelHandle &handle) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		return 0;
+
+	return (getChannelSamplesPlayed(handle) * 1000) / channel->stream->getRate();
+}
+
 void SoundManager::setTypeGain(SoundType type, float gain) {
 	assert((type >= 0) && (type < kSoundTypeMAX));
 
