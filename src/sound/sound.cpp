@@ -423,6 +423,16 @@ void SoundManager::startChannel(ChannelHandle &handle) {
 	triggerUpdate();
 }
 
+void SoundManager::pauseChannel(ChannelHandle &handle) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	pauseChannel(channel);
+}
+
 void SoundManager::pauseChannel(ChannelHandle &handle, bool pause) {
 	Common::StackLock lock(_mutex);
 
@@ -738,6 +748,16 @@ void SoundManager::pauseChannel(Channel *channel, bool pause) {
 		channel->state = AL_PLAYING;
 
 	triggerUpdate();
+}
+
+void SoundManager::pauseChannel(Channel *channel) {
+	if (!channel)
+		return;
+
+	if      (channel->state == AL_PAUSED)
+		pauseChannel(channel, false);
+	else if (channel->state == AL_PLAYING)
+		pauseChannel(channel, true);
 }
 
 void SoundManager::freeChannel(ChannelHandle &handle) {

@@ -119,6 +119,9 @@ public:
 	/** Pause the channel. */
 	void pauseChannel(ChannelHandle &handle, bool pause);
 
+	/** Pause toggle the channel. */
+	void pauseChannel(ChannelHandle &handle);
+
 	/** Stop and free the channel. */
 	void stopChannel(ChannelHandle &handle);
 
@@ -240,6 +243,8 @@ private:
 
 	/** Pause/Unpause a channel. */
 	void pauseChannel(Channel *channel, bool pause);
+	/** Pause toggle channel. */
+	void pauseChannel(Channel *channe);
 
 	/** Stop and free a channel. */
 	void freeChannel(ChannelHandle &handle);
