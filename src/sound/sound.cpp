@@ -213,6 +213,18 @@ bool SoundManager::isPlaying(size_t channel) const {
 	return true;
 }
 
+bool SoundManager::isPaused(const ChannelHandle &handle) {
+	Common::StackLock lock(_mutex);
+
+	if ((handle.channel == 0) || (handle.id == 0) || !_channels[handle.channel])
+		return false;
+
+	if (_channels[handle.channel]->id != handle.id)
+		return false;
+
+	return _channels[handle.channel]->state == AL_PAUSED;
+}
+
 AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 	bool isMP3 = false;
 	uint32 tag = stream->readUint32BE();

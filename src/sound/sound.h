@@ -78,6 +78,9 @@ public:
 	/** Is that channel currently playing a sound? */
 	bool isPlaying(const ChannelHandle &handle);
 
+	/** Is that channel currently paused? */
+	bool isPaused(const ChannelHandle &handle);
+
 
 	// Playing sounds
 
