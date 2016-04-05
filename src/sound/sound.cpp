@@ -615,7 +615,7 @@ void SoundManager::bufferData(size_t channel) {
 }
 
 void SoundManager::bufferData(Channel &channel) {
-	if (!channel.stream || channel.stream->endOfData())
+	if (!channel.stream)
 		return;
 
 	if (!_hasSound)
