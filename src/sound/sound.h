@@ -57,6 +57,7 @@ class AudioStream;
 class SoundManager : public Common::Singleton<SoundManager>, public Common::Thread {
 public:
 	SoundManager();
+	~SoundManager();
 
 	/** Initialize the sound subsystem. */
 	void init();

@@ -60,6 +60,9 @@ namespace Sound {
 SoundManager::SoundManager() : _ready(false), _hasSound(false), _hasMultiChannel(false), _format51(0) {
 }
 
+SoundManager::~SoundManager() {
+}
+
 void SoundManager::init() {
 	for (size_t i = 0; i < kChannelCount; i++)
 		_channels[i] = 0;
