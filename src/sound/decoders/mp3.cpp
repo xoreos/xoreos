@@ -85,6 +85,9 @@ protected:
 	uint64 _length;
 	uint64 _samples;
 
+	int _sampleRate;
+	int _channels;
+
 	enum {
 		BUFFER_SIZE = 5 * 8192
 	};
@@ -100,8 +103,8 @@ public:
 	size_t readBuffer(int16 *buffer, const size_t numSamples);
 
 	bool endOfData() const { return _state == MP3_STATE_EOS; }
-	int getChannels() const { return MAD_NCHANNELS(&_frame.header); }
-	int getRate() const { return _frame.header.samplerate; }
+	int getChannels() const { return _channels; }
+	int getRate() const { return _sampleRate; }
 	uint64 getLength() const { return _length; }
 
 	bool rewind();
@@ -142,9 +145,12 @@ MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
 	// Reinit stream
 	_state = MP3_STATE_INIT;
 
-	// Decode the first chunk of data. This is necessary so that _frame
-	// is setup and getChannels() and getRate() return correct results.
+	// Decode the first chunk of data. This is necessary so that _frame is
+	// set up, and the number of channels and the sample rate can be queried.
 	decodeMP3Data();
+
+	_sampleRate = _frame.header.samplerate;
+	_channels   = MAD_NCHANNELS(&_frame.header);
 }
 
 MP3Stream::~MP3Stream() {
