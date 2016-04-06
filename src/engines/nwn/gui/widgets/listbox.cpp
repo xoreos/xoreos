@@ -516,6 +516,9 @@ void WidgetListBox::sortByTag() {
 	for (uint16 it = 0; it < _items.size(); ++it) {
 		_items[it]->_itemNumber = it;
 	}
+
+	if (isVisible())
+		updateVisible();
 }
 
 void WidgetListBox::setText(const Common::UString &font,
