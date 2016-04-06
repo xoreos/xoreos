@@ -26,6 +26,8 @@
 #include "src/aurora/2dafile.h"
 #include "src/aurora/talkman.h"
 
+#include "src/engines/nwn/creature.h"
+
 #include "src/engines/nwn/gui/widgets/editbox.h"
 #include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
@@ -104,7 +106,8 @@ void CharPackage::callbackActive(Widget &widget) {
 			const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
 			const Aurora::TwoDARow &rowClass = twodaClasses.getRow(_choices->getClass());
 			if (rowClass.getInt("SpellCaster") > 0) {
-				if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ") {
+				if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ"
+				        && _choices->getCharacter().getHitDice() == 0) {
 					CharSchool *charSchool = new CharSchool(*_choices, _console);
 					_subGUIs.push_back(charSchool);
 				}
