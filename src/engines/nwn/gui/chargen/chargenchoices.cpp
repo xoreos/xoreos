@@ -50,6 +50,9 @@ CharGenChoices::CharGenChoices() {
 	_skills.assign(28, 0);
 
 	_spellSchool = UINT32_MAX;
+
+	_domain1 = UINT8_MAX;
+	_domain2 = UINT8_MAX;
 }
 
 CharGenChoices::~CharGenChoices() {
@@ -150,6 +153,11 @@ void CharGenChoices::setCharFeat(uint32 feat) {
 
 void CharGenChoices::setSpellSchool(uint32 spellSchool) {
 	_spellSchool = spellSchool;
+}
+
+void CharGenChoices::setCharDomains(uint8 domain1, uint8 domain2) {
+	_domain1 = domain1;
+	_domain2 = domain2;
 }
 
 bool CharGenChoices::hasFeat(uint32 featId) const {

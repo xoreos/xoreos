@@ -59,6 +59,7 @@ public:
 	void setCharNotUsedSkills(uint8 notUsedSkills);
 	void setCharFeat(uint32 feat);
 	void setSpellSchool(uint32 spellSchool);
+	void setCharDomains(uint8 domain1, uint8 domain2);
 
 	bool hasFeat(uint32 featId) const;
 	bool hasPrereqFeat(uint32 featId, bool isClassFeat);
@@ -85,6 +86,8 @@ private:
 	uint32 _package;
 	uint8 _notUsedSkills;
 	uint32 _spellSchool;
+	uint8 _domain1;
+	uint8 _domain2;
 
 };
 
