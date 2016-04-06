@@ -171,8 +171,12 @@ void WidgetListItemButton::show() {
 	if (_moveButtonRight) {
 		if (_isRight) {
 			_moveButtonRight->show();
+			if (_moveButtonLeft->isVisible())
+				_moveButtonLeft->hide();
 		} else {
 			_moveButtonLeft->show();
+			if (_moveButtonRight->isVisible())
+				_moveButtonRight->hide();
 		}
 	}
 }
