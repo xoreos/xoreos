@@ -214,20 +214,20 @@ void WidgetListItemButton::setPosition(float x, float y, float z) {
 
 	if (_moveButtonRight) {
 		_button->getNode("addremovebutton")->getPosition(pX, pY, pZ);
-		_moveButtonRight->setPosition(x + pX, y + pY, z - pZ);
-		_moveButtonLeft->setPosition(x + pX, y + pY, z - pZ);
+		_moveButtonRight->setPosition(x + pX, y + pY, z - pZ - 100.f);
+		_moveButtonLeft->setPosition(x + pX, y + pY, z - pZ - 100.f);
 	}
 
 	if (_helpButton) {
 		_button->getNode("helpbutton")->getPosition(pX, pY, pZ);
-		_helpButton->setPosition(x + pX, y + pY, z - pZ);
+		_helpButton->setPosition(x + pX, y + pY, z - pZ - 100.f);
 	}
 
 	if (!_icon)
 		return;
 
 	_button->getNode("icon")->getPosition(pX, pY, pZ);
-	_icon->setPosition(x + pX - _icon->getWidth() / 2, y + pY - _icon->getHeight() / 2, z - 5);
+	_icon->setPosition(x + pX - _icon->getWidth() / 2, y + pY - _icon->getHeight() / 2, z - 100.f);
 }
 
 void WidgetListItemButton::mouseDown(uint8 state, float x, float y) {
