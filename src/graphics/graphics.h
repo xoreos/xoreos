@@ -178,12 +178,6 @@ public:
 	const Common::Matrix4x4 &getModelviewInverseMatrix() const;
 
 private:
-	enum CursorState {
-		kCursorStateStay,
-		kCursorStateSwitchOn,
-		kCursorStateSwitchOff
-	};
-
 	enum ProjectType {
 		kProjectTypePerspective,
 		kProjectTypeOrthogonal
@@ -200,18 +194,7 @@ private:
 
 	WindowManager::RenderType _renderType;
 
-	bool _fullScreen; ///< Are we currently in fullscreen mode?
-
-	bool _gl3;
-	int  _glProfile;
-
 	int _fsaa;    ///< Current FSAA settings.
-	int _fsaaMax; ///< Max supported FSAA level.
-
-	int _width;  ///< The game's screen width.
-	int _height; ///< The game's screen height.
-
-	float _gamma; ///< The current gamma correction value.
 
 	bool   _cullFaceEnabled;
 	GLenum _cullFaceMode;
@@ -221,11 +204,6 @@ private:
 	float _viewAngle;
 	float _clipNear;
 	float _clipFar;
-
-	Common::UString _windowTitle; ///< The current window title.
-
-	SDL_Window *_screen; ///< The OpenGL hardware surface.
-	SDL_GLContext _glContext;
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 	uint32 _lastSampled; ///< Timestamp used to advance animations.
@@ -237,10 +215,7 @@ private:
 	boost::atomic<uint32> _frameLock;
 	boost::atomic<bool>   _frameEndSignal;
 
-	Common::Mutex _cursorMutex;    ///< A mutex locked for the cursor.
-
 	Cursor     *_cursor;       ///< The current cursor.
-	CursorState _cursorState;  ///< What to do with the cursor.
 
 	bool _takeScreenshot; ///< Should screenshot be taken?
 
@@ -256,8 +231,6 @@ private:
 
 	void setupScene();
 
-	int probeFSAA(int width, int height, uint32 flags);
-
 	bool setupSDLGL();
 	void checkGLExtensions();
 
@@ -271,8 +244,6 @@ private:
 
 	void destroyContext();
 	void rebuildContext();
-
-	void handleCursorSwitch();
 
 	void cleanupAbandoned();
 

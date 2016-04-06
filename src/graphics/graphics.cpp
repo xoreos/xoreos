@@ -75,17 +75,6 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 	_supportMultipleTextures = false;
 	_multipleTextureCount    = 0;
 
-	_fullScreen = false;
-
-	// Default to an OpenGL 3.2 compatibility context. GL3.x will be available on most modern systems.
-	_gl3       = true;
-	_glProfile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
-
-	_fsaa    = 0;
-	_fsaaMax = 0;
-
-	_gamma = 1.0f;
-
 	// Default to an OpenGL 3.2 compatibility context. GL3.x will be available on most modern systems.
 	_renderType = WindowManager::kOpenGL32Compat;
 	_fsaa       = 0;
@@ -99,19 +88,11 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 	_clipNear  = 1.0f;
 	_clipFar   = 1000.0f;
 
-	_windowTitle = Version::getProjectNameVersion();
-
-	_screen = 0;
-
-	_width = 800;
-	_height = 600;
-
 	_fpsCounter = new FPSCounter(3);
 
 	_frameLock.store(0);
 
 	_cursor = 0;
-	_cursorState = kCursorStateStay;
 
 	_takeScreenshot = false;
 
@@ -242,29 +223,6 @@ bool GraphicsManager::setFSAA(int level) {
 	rebuildContext();
 
 	return _fsaa == level;
-}
-
-int GraphicsManager::probeFSAA(int width, int height, uint32 flags) {
-	// Find the max supported FSAA level
-
-	for (int i = 32; i >= 2; i >>= 1) {
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE    ,   8);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE  ,   8);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE   ,   8);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE  ,   8);
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,   1);
-
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, i);
-
-		SDL_Window* testScreen = SDL_CreateWindow("nrst", 0, 0, width, height, flags);
-		if (testScreen) {
-			SDL_DestroyWindow(testScreen);
-			return i;
-		}
-	}
-
-	return 0;
 }
 
 bool GraphicsManager::setupSDLGL() {
@@ -1242,17 +1200,6 @@ void GraphicsManager::rebuildContext() {
 	RequestMan.sync();
 }
 
-void GraphicsManager::handleCursorSwitch() {
-	Common::StackLock lock(_cursorMutex);
-
-	if      (_cursorState == kCursorStateSwitchOn)
-		SDL_ShowCursor(SDL_ENABLE);
-	else if (_cursorState == kCursorStateSwitchOff)
-		SDL_ShowCursor(SDL_DISABLE);
-
-	_cursorState = kCursorStateStay;
-}
-
 void GraphicsManager::cleanupAbandoned() {
 	if (!_hasAbandoned)
 		return;
@@ -1305,9 +1252,6 @@ void GraphicsManager::setScreenSize(int width, int height) {
 
 		return RequestMan.callInMainThread(functor);
 	}
-
-	// Save properties
-	// uint32 flags     = SDL_GetWindowFlags(_screen);
 
 	destroyContext();
 
