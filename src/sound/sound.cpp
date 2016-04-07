@@ -186,19 +186,22 @@ bool SoundManager::isPlaying(size_t channel) const {
 	ALint val;
 	alGetSourcei(_channels[channel]->source, AL_SOURCE_STATE, &val);
 	if ((error = alGetError()) != AL_NO_ERROR)
-		throw Common::Exception("OpenAL error while getting source state: 0x%X", error);
+		throw Common::Exception("OpenAL error while getting source state in %s: 0x%X",
+		                        formatChannel(_channels[channel]).c_str(), error);
 
 	if (val != AL_PLAYING) {
 		if (!_channels[channel]->stream || _channels[channel]->stream->endOfStream()) {
 			ALint buffersQueued;
 			alGetSourcei(_channels[channel]->source, AL_BUFFERS_QUEUED, &buffersQueued);
 			if ((error = alGetError()) != AL_NO_ERROR)
-				throw Common::Exception("OpenAL error while getting queued buffers: 0x%X", error);
+				throw Common::Exception("OpenAL error while getting queued buffers in %s: 0x%X",
+				                        formatChannel(_channels[channel]).c_str(), error);
 
 			ALint buffersProcessed;
 			alGetSourcei(_channels[channel]->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 			if ((error = alGetError()) != AL_NO_ERROR)
-				throw Common::Exception("OpenAL error while getting processed buffers: 0x%X", error);
+				throw Common::Exception("OpenAL error while getting processed buffers in %s: 0x%X",
+				                        formatChannel(_channels[channel]).c_str(), error);
 
 			if (buffersQueued == buffersProcessed)
 				return false;
@@ -350,7 +353,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 				if ((error = alGetError()) != AL_NO_ERROR)
 					throw Common::Exception("OpenAL error while generating buffers: 0x%X", error);
 
-				if (fillBuffer(buffer, channel.stream, channel.bufferSize[buffer])) {
+				if (fillBuffer(channel, buffer, channel.stream, channel.bufferSize[buffer])) {
 					// If we could fill the buffer with data, queue it
 
 					alSourceQueueBuffers(channel.source, 1, &buffer);
@@ -494,7 +497,8 @@ void SoundManager::setChannelPosition(const ChannelHandle &handle, float x, floa
 		throw Common::Exception("Invalid channel");
 
 	if (channel->stream->getChannels() > 1)
-		throw Common::Exception("Cannot set position of a non-mono sound.");
+		throw Common::Exception("Cannot set position of a non-mono sound in %s",
+		                        formatChannel(handle).c_str());
 
 	if (_hasSound)
 		alSource3f(channel->source, AL_POSITION, x, y, z);
@@ -508,7 +512,8 @@ void SoundManager::getChannelPosition(const ChannelHandle &handle, float &x, flo
 		throw Common::Exception("Invalid channel");
 
 	if (channel->stream->getChannels() > 1)
-		throw Common::Exception("Cannot get position of a non-mono sound.");
+		throw Common::Exception("Cannot get position of a non-mono sound in %s",
+		                        formatChannel(handle).c_str());
 
 	if (_hasSound)
 		alGetSource3f(channel->source, AL_POSITION, &x, &y, &z);
@@ -586,11 +591,13 @@ void SoundManager::setTypeGain(SoundType type, float gain) {
 	}
 }
 
-bool SoundManager::fillBuffer(ALuint alBuffer, AudioStream *stream, ALsizei &bufferedSize) const {
+bool SoundManager::fillBuffer(const Channel &channel, ALuint alBuffer,
+                              AudioStream *stream, ALsizei &bufferedSize) const {
+
 	bufferedSize = 0;
 
 	if (!stream)
-		throw Common::Exception("No stream");
+		throw Common::Exception("No stream in %s", formatChannel(&channel).c_str());
 
 	if (!_hasSound)
 		return true;
@@ -607,14 +614,16 @@ bool SoundManager::fillBuffer(ALuint alBuffer, AudioStream *stream, ALsizei &buf
 		format = AL_FORMAT_STEREO16;
 	} else if (channelCount == 6) {
 		if (!_hasMultiChannel) {
-			warning("SoundManager::fillBuffer(): TODO: !_hasMultiChannel");
+			warning("SoundManager::fillBuffer(): TODO: !_hasMultiChannel in %s",
+			        formatChannel(&channel).c_str());
 			return false;
 		}
 
 		format = _format51;
 
 	} else {
-		warning("SoundManager::fillBuffer(): Unsupported channel count %d", channelCount);
+		warning("SoundManager::fillBuffer(): Unsupported channel count in %s: %d",
+		        formatChannel(&channel).c_str(), channelCount);
 		return false;
 	}
 
@@ -628,7 +637,7 @@ bool SoundManager::fillBuffer(ALuint alBuffer, AudioStream *stream, ALsizei &buf
 	if (numSamples == AudioStream::kSizeInvalid) {
 		delete[] buffer;
 
-		warning("Failed reading from stream while filling buffer");
+		warning("Failed reading from stream while filling buffer in %s", formatChannel(&channel).c_str());
 		return false;
 	}
 
@@ -639,7 +648,8 @@ bool SoundManager::fillBuffer(ALuint alBuffer, AudioStream *stream, ALsizei &buf
 
 	ALenum error = alGetError();
 	if (error != AL_NO_ERROR) {
-		warning("OpenAL error while filling buffer: 0x%X", error);
+		warning("OpenAL error while filling buffer in %s: 0x%X",
+		        formatChannel(&channel).c_str(), error);
 		return false;
 	}
 
@@ -666,18 +676,21 @@ void SoundManager::bufferData(Channel &channel) {
 	ALint buffersProcessed = -1;
 	alGetSourcei(channel.source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 	if ((error = alGetError()) != AL_NO_ERROR)
-		throw Common::Exception("OpenAL error while getting processed buffers: 0x%X", error);
+		throw Common::Exception("OpenAL error while getting processed buffers in %s: 0x%X",
+		                        formatChannel(&channel).c_str(), error);
 
 	assert(buffersProcessed >= 0);
 
 	if ((size_t)buffersProcessed > kOpenALBufferCount)
-		throw Common::Exception("Got more processed buffers than total source buffers?!?");
+		throw Common::Exception("Got more processed buffers than total source buffers in %s?!?",
+		                        formatChannel(&channel).c_str());
 
 	// Unqueue the processed buffers
 	ALuint freeBuffers[kOpenALBufferCount];
 	alSourceUnqueueBuffers(channel.source, buffersProcessed, freeBuffers);
 	if ((error = alGetError()) != AL_NO_ERROR)
-		throw Common::Exception("OpenAL error while unqueueing buffers: 0x%X", error);
+		throw Common::Exception("OpenAL error while unqueueing buffers in %s: 0x%X",
+		                        formatChannel(&channel).c_str(), error);
 
 	// Put them into the free buffers list
 	for (size_t i = 0; i < (size_t)buffersProcessed; i++) {
@@ -689,12 +702,13 @@ void SoundManager::bufferData(Channel &channel) {
 	// Buffer as long as we still have data and free buffers
 	std::list<ALuint>::iterator buffer = channel.freeBuffers.begin();
 	while (buffer != channel.freeBuffers.end()) {
-		if (!fillBuffer(*buffer, channel.stream, channel.bufferSize[*buffer]))
+		if (!fillBuffer(channel, *buffer, channel.stream, channel.bufferSize[*buffer]))
 			break;
 
 		alSourceQueueBuffers(channel.source, 1, &*buffer);
 		if ((error = alGetError()) != AL_NO_ERROR)
-			throw Common::Exception("OpenAL error while queueing buffers: 0x%X", error);
+			throw Common::Exception("OpenAL error while queueing buffers in %s: 0x%X",
+			                        formatChannel(&channel).c_str(), error);
 
 		buffer = channel.freeBuffers.erase(buffer);
 	}
@@ -754,7 +768,8 @@ void SoundManager::pauseChannel(Channel *channel, bool pause) {
 		if (_hasSound) {
 			alSourcePause(channel->source);
 			if ((error = alGetError()) != AL_NO_ERROR)
-				warning("OpenAL error while attempting to pause: 0x%X", error);
+				warning("OpenAL error while attempting to pause channel %s: 0x%X",
+				        formatChannel(channel).c_str(), error);
 		}
 
 		channel->state = AL_PAUSED;

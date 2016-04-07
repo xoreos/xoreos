@@ -272,7 +272,8 @@ private:
 	void threadMethod();
 
 	/** Fill the buffer with data from the audio stream. */
-	bool fillBuffer(ALuint alBuffer, AudioStream *stream, ALsizei &bufferedSize) const;
+	bool fillBuffer(const Channel &channel, ALuint alBuffer,
+	                AudioStream *stream, ALsizei &bufferedSize) const;
 
 	/** Return a string representing this channel. */
 	Common::UString formatChannel(const Channel *channel) const;
