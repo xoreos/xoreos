@@ -37,6 +37,7 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
+#include "src/common/debug.h"
 
 #include "src/events/events.h"
 
@@ -380,6 +381,8 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 		throw;
 	}
 
+	debugC(Common::kDebugSound, 2, "Created sound channel %s", formatChannel(handle).c_str());
+
 	return handle;
 }
 
@@ -437,6 +440,8 @@ void SoundManager::startChannel(ChannelHandle &handle) {
 
 	channel->state = AL_PLAYING;
 
+	debugC(Common::kDebugSound, 1, "Start sound channel %s", formatChannel(handle).c_str());
+
 	triggerUpdate();
 }
 
@@ -457,11 +462,17 @@ void SoundManager::pauseChannel(ChannelHandle &handle, bool pause) {
 	if (!channel || !channel->stream)
 		throw Common::Exception("Invalid channel");
 
+	debugC(Common::kDebugSound, 1, "%s sound channel %s", pause ? "Pause" : "Unpause",
+	       formatChannel(handle).c_str());
+
 	pauseChannel(channel, pause);
 }
 
 void SoundManager::stopChannel(ChannelHandle &handle) {
 	Common::StackLock lock(_mutex);
+
+	if (isValidChannel(handle))
+		debugC(Common::kDebugSound, 1, "Stop sound channel %s", formatChannel(handle).c_str());
 
 	freeChannel(handle);
 }
@@ -722,9 +733,12 @@ void SoundManager::checkReady() {
 void SoundManager::update() {
 	Common::StackLock lock(_mutex);
 
+	size_t channelCount = 0;
 	for (size_t i = 0; i < kChannelCount; i++) {
 		if (!_channels[i])
 			continue;
+
+		channelCount++;
 
 		// Free the channel if it is no longer playing
 		if (!isPlaying(i)) {
@@ -735,6 +749,8 @@ void SoundManager::update() {
 		// Try to buffer some more data
 		bufferData(i);
 	}
+
+	debugC(Common::kDebugSound, 9, "Active sound channel: %s", Common::composeString(channelCount).c_str());
 }
 
 ChannelHandle SoundManager::newChannel() {
