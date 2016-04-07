@@ -73,18 +73,22 @@ public:
 	void triggerUpdate();
 
 
+	// .--- Channel status
 	/** Does this channel handle point to an existing channel? */
 	bool isValidChannel(const ChannelHandle &handle) const;
 
 	/** Is that channel currently playing a sound? */
 	bool isPlaying(const ChannelHandle &handle);
-
 	/** Is that channel currently paused? */
 	bool isPaused(const ChannelHandle &handle);
 
+	/** Return the number of samples this channel has already played. */
+	uint64 getChannelSamplesPlayed(const ChannelHandle &handle);
+	/** Return the time this channel has already played in milliseconds. */
+	uint64 getChannelDurationPlayed(const ChannelHandle &handle);
+	// '---
 
-	// Playing sounds
-
+	// .--- Playing sounds
 	/** Play a sound file.
 	 *
 	 *  This only allocate a channel for the sound, to actually start playing it,
@@ -110,40 +114,36 @@ public:
 	 */
 	ChannelHandle playAudioStream(AudioStream *audStream,
 	                              SoundType type, bool disposeAfterUse = true);
+	// '---
 
-
-	// Starting/Pausing/Stopping channels
-
+	// .--- Starting/Pausing/Stopping channels
 	/** Start the channel. */
 	void startChannel(ChannelHandle &handle);
 
 	/** Pause the channel. */
 	void pauseChannel(ChannelHandle &handle, bool pause);
-
 	/** Pause toggle the channel. */
 	void pauseChannel(ChannelHandle &handle);
 
 	/** Stop and free the channel. */
 	void stopChannel(ChannelHandle &handle);
+	// '---
 
-
-	// Pausing/Stopping all channels
-
+	// .--- Pausing/Stopping all channels
 	/** Pause all channels. */
 	void pauseAll(bool pause);
 
 	/** Stop all channels. */
 	void stopAll();
+	// '---
 
 
-	// Listener properties
-
+	// .--- Listener properties
 	/** Set the gain of the listener (= the global master volume). */
 	void setListenerGain(float gain);
+	// '---
 
-
-	// Channel properties
-
+	// .--- Channel properties
 	/** Set the position the channel is being played. */
 	void setChannelPosition(const ChannelHandle &handle, float x, float y, float z);
 
@@ -155,20 +155,14 @@ public:
 
 	/** Set the pitch of the channel. */
 	void setChannelPitch(const ChannelHandle &handle, float pitch);
+	// '---
 
-	/** Return the number of samples this channel has already played. */
-	uint64 getChannelSamplesPlayed(const ChannelHandle &handle);
-
-	/** Return the time this channel has already played in milliseconds. */
-	uint64 getChannelDurationPlayed(const ChannelHandle &handle);
-
-
-	// Type properties
-
+	// .--- Type properties
 	/** Set the gain/volume of all channels of a specific type. */
 	void setTypeGain(SoundType type, float gain);
+	// '---
 
-
+	// .--- Utility methods
 	/** Create an audio stream from this data stream.
 	 *
 	 *  The ownership of the data stream is transferred to the audio stream
@@ -178,6 +172,7 @@ public:
 
 	/** Return a string representing the channel referenced by this handle. */
 	Common::UString formatChannel(const ChannelHandle &handle) const;
+	// '---
 
 private:
 	static const size_t kChannelCount = 65535; ///< Maximal number of channels.
