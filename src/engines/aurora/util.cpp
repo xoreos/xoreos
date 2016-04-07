@@ -28,6 +28,7 @@
 #include "src/common/readstream.h"
 #include "src/common/writefile.h"
 #include "src/common/configman.h"
+#include "src/common/debug.h"
 
 #include "src/aurora/util.h"
 #include "src/aurora/resman.h"
@@ -85,6 +86,9 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 			return channel;
 
 		channel = SoundMan.playSoundFile(soundStream, soundType, loop);
+
+		debugC(Common::kDebugEngineSound, 1, "Playing sound \"%s\" in %s",
+		       sound.c_str(), SoundMan.formatChannel(channel).c_str());
 
 		SoundMan.setChannelGain(channel, volume);
 
