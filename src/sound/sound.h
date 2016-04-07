@@ -42,6 +42,7 @@
 #include "src/common/singleton.h"
 #include "src/common/thread.h"
 #include "src/common/mutex.h"
+#include "src/common/ustring.h"
 
 #include "src/sound/types.h"
 
@@ -175,6 +176,8 @@ public:
 	 */
 	static AudioStream *makeAudioStream(Common::SeekableReadStream *stream);
 
+	/** Return a string representing the channel referenced by this handle. */
+	Common::UString formatChannel(const ChannelHandle &handle) const;
 
 private:
 	static const size_t kChannelCount = 65535; ///< Maximal number of channels.
@@ -190,7 +193,8 @@ private:
 
 	/** A sound channel. */
 	struct Channel {
-		uint32 id; ///< The channel's ID.
+		uint32 id;    ///< The channel's ID.
+		size_t index; ///< The channel's index.
 
 		ALint state; ///< The sound's state.
 
@@ -269,6 +273,9 @@ private:
 
 	/** Fill the buffer with data from the audio stream. */
 	bool fillBuffer(ALuint alBuffer, AudioStream *stream, ALsizei &bufferedSize) const;
+
+	/** Return a string representing this channel. */
+	Common::UString formatChannel(const Channel *channel) const;
 };
 
 } // End of namespace Sound

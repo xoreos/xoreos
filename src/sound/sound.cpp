@@ -319,6 +319,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 	Channel &channel = *_channels[handle.channel];
 
 	channel.id              = handle.id;
+	channel.index           = handle.channel;
 	channel.state           = AL_PAUSED;
 	channel.stream          = audStream;
 	channel.source          = 0;
@@ -821,6 +822,17 @@ void SoundManager::threadMethod() {
 		update();
 		_needUpdate.wait(100);
 	}
+}
+
+Common::UString SoundManager::formatChannel(const Channel *channel) const {
+	if (!channel)
+		return "[0:0]";
+
+	return "[" + Common::composeString(channel->index) + ":" + Common::composeString(channel->id) + "]";
+}
+
+Common::UString SoundManager::formatChannel(const ChannelHandle &handle) const {
+	return formatChannel(getChannel(handle));
 }
 
 } // End of namespace Sound
