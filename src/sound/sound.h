@@ -261,6 +261,8 @@ private:
 	void freeChannel(size_t channel);
 
 	/** Return the channel the handle refers to. */
+	const Channel *getChannel(const ChannelHandle &handle) const;
+	/** Return the channel the handle refers to. */
 	Channel *getChannel(const ChannelHandle &handle);
 
 	void threadMethod();

@@ -398,6 +398,19 @@ ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream,
 	return playAudioStream(audioStream, type);
 }
 
+const SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handle) const {
+	if ((handle.channel >= kChannelCount) || (handle.id == 0))
+		return 0;
+
+	if (!_channels[handle.channel])
+		return 0;
+
+	if (_channels[handle.channel]->id != handle.id)
+		return 0;
+
+	return _channels[handle.channel];
+}
+
 SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handle) {
 	if ((handle.channel >= kChannelCount) || (handle.id == 0))
 		return 0;
