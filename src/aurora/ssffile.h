@@ -70,7 +70,7 @@ private:
 	void load(Common::SeekableReadStream &ssf);
 
 	void readEntries(Common::SeekableReadStream &ssf, uint32 offset);
-	void readEntries1(Common::SeekableReadStream &ssf);
+	void readEntries10(Common::SeekableReadStream &ssf);
 	void readEntries11(Common::SeekableReadStream &ssf);
 };
 

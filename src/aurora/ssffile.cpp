@@ -36,7 +36,7 @@
 #include "src/aurora/ssffile.h"
 
 static const uint32 kSSFID     = MKTAG('S', 'S', 'F', ' ');
-static const uint32 kVersion1  = MKTAG('V', '1', '.', '0');
+static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
 static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
@@ -73,11 +73,11 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 	if (_id != kSSFID)
 		throw Common::Exception("Not a SSF file (%s)", Common::debugTag(_id).c_str());
 
-	if ((_version != kVersion1) && (_version != kVersion11))
+	if ((_version != kVersion10) && (_version != kVersion11))
 		throw Common::Exception("Unsupported SSF file version %s", Common::debugTag(_version).c_str());
 
 	size_t entryCount = 0;
-	if (_version == kVersion1)
+	if (_version == kVersion10)
 		entryCount = ssf.readUint32LE();
 
 	uint32 offEntryTable = ssf.readUint32LE();
@@ -101,13 +101,13 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 void SSFFile::readEntries(Common::SeekableReadStream &ssf, uint32 offset) {
 	ssf.seek(offset);
 
-	if      (_version == kVersion1)
-		readEntries1(ssf);
+	if      (_version == kVersion10)
+		readEntries10(ssf);
 	else if (_version == kVersion11)
 		readEntries11(ssf);
 }
 
-void SSFFile::readEntries1(Common::SeekableReadStream &ssf) {
+void SSFFile::readEntries10(Common::SeekableReadStream &ssf) {
 	// V1.0 begins with a list of offsets to the data entries.
 	// Each data entry has a ResRef of a sound file and a StrRef of a text.
 
