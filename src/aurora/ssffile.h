@@ -62,6 +62,12 @@ public:
 	const Sound &getSound(uint32 index) const;
 
 private:
+	enum Version {
+		kVersion10_NWN,
+		kVersion11_NWN2,
+		kVersion11_KotOR
+	};
+
 	typedef std::vector<Sound> SoundSet;
 
 	Sound _emptySound;
@@ -69,9 +75,15 @@ private:
 
 	void load(Common::SeekableReadStream &ssf);
 
-	void readEntries(Common::SeekableReadStream &ssf, uint32 offset);
-	void readEntries10(Common::SeekableReadStream &ssf);
-	void readEntries11(Common::SeekableReadStream &ssf);
+	/** Read the header of an SSF file and determine the version. */
+	Version readSSFHeader(Common::SeekableReadStream &ssf, size_t &entryCount, size_t &offEntryTable);
+
+	/** Read the data entries, depending on the version. */
+	void readEntries(Common::SeekableReadStream &ssf, Version version, size_t offset);
+	/** Read the data entries of the NWN versions. */
+	void readEntriesNWN(Common::SeekableReadStream &ssf, size_t soundFileLen);
+	/** Read the data entries of the KotOR version. */
+	void readEntriesKotOR(Common::SeekableReadStream &ssf);
 };
 
 } // End of namespace Aurora

@@ -68,6 +68,22 @@ SSFFile::~SSFFile() {
 }
 
 void SSFFile::load(Common::SeekableReadStream &ssf) {
+	try {
+		size_t entryCount, offEntryTable;
+		Version version = readSSFHeader(ssf, entryCount, offEntryTable);
+
+		_sounds.resize(entryCount);
+
+		readEntries(ssf, version, offEntryTable);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed reading SSF file");
+		throw;
+	}
+}
+
+SSFFile::Version SSFFile::readSSFHeader(Common::SeekableReadStream &ssf,
+                                        size_t &entryCount, size_t &offEntryTable) {
 	readHeader(ssf);
 
 	if (_id != kSSFID)
@@ -76,40 +92,51 @@ void SSFFile::load(Common::SeekableReadStream &ssf) {
 	if ((_version != kVersion10) && (_version != kVersion11))
 		throw Common::Exception("Unsupported SSF file version %s", Common::debugTag(_version).c_str());
 
-	size_t entryCount = 0;
+	entryCount    = ssf.readUint32LE();
+	offEntryTable = ssf.readUint32LE();
+
+	// Plain old version V1.0 used in NWN (and NWN2)
 	if (_version == kVersion10)
-		entryCount = ssf.readUint32LE();
+		return kVersion10_NWN;
 
-	uint32 offEntryTable = ssf.readUint32LE();
+	// NWN2's V1.1
+	if ((offEntryTable < ssf.size()) && ((ssf.size() - offEntryTable) >= ((4 + 32 + 4) * entryCount)))
+		return kVersion11_NWN2;
 
-	if (_version == kVersion11)
-		entryCount = (ssf.size() - offEntryTable) / 4;
+	offEntryTable = entryCount;
+	entryCount    = (ssf.size() - offEntryTable) / 4;
 
-	_sounds.resize(entryCount);
+	// Sanity check
+	if ((offEntryTable > ssf.size()) || (((ssf.size() - offEntryTable) % 4) != 0))
+		throw Common::Exception("Invalid SSF header (%u, %u)", (uint32) ssf.size(), (uint32) offEntryTable);
 
-	try {
-
-		readEntries(ssf, offEntryTable);
-
-	} catch (Common::Exception &e) {
-		e.add("Failed reading SSF file");
-		throw;
-	}
-
+	// KotOR's V1.1
+	return kVersion11_KotOR;
 }
 
-void SSFFile::readEntries(Common::SeekableReadStream &ssf, uint32 offset) {
+void SSFFile::readEntries(Common::SeekableReadStream &ssf, Version version, size_t offset) {
 	ssf.seek(offset);
 
-	if      (_version == kVersion10)
-		readEntries10(ssf);
-	else if (_version == kVersion11)
-		readEntries11(ssf);
+	switch (version) {
+		case kVersion10_NWN:
+			readEntriesNWN(ssf, 16);
+			break;
+
+		case kVersion11_NWN2:
+			readEntriesNWN(ssf, 32);
+
+		case kVersion11_KotOR:
+			readEntriesKotOR(ssf);
+
+		default:
+			break;
+	}
 }
 
-void SSFFile::readEntries10(Common::SeekableReadStream &ssf) {
-	// V1.0 begins with a list of offsets to the data entries.
-	// Each data entry has a ResRef of a sound file and a StrRef of a text.
+void SSFFile::readEntriesNWN(Common::SeekableReadStream &ssf, size_t soundFileLen) {
+	/* The NWN/NWN2 versions of an SSF file (V1.0 and V1.1) begin with a list of
+	   offsets to the data entries. Each of these contains a ResRef of a sound
+	   file and a StrRef of a text. */
 
 	size_t count = _sounds.size();
 
@@ -123,13 +150,13 @@ void SSFFile::readEntries10(Common::SeekableReadStream &ssf) {
 	for (size_t i = 0; i < count; i++) {
 		ssf.seek(offsets[i]);
 
-		_sounds[i].fileName = Common::readStringFixed(ssf, Common::kEncodingASCII, 16);
+		_sounds[i].fileName = Common::readStringFixed(ssf, Common::kEncodingASCII, soundFileLen);
 		_sounds[i].strRef   = ssf.readUint32LE();
 	}
 }
 
-void SSFFile::readEntries11(Common::SeekableReadStream &ssf) {
-	// V1.1 is just a list of StrRef
+void SSFFile::readEntriesKotOR(Common::SeekableReadStream &ssf) {
+	/* The KotOR/KotOR2 version of an SSF file (V1.1) is just a list of StrRefs. */
 
 	for (SoundSet::iterator sound = _sounds.begin(); sound != _sounds.end(); ++sound)
 		sound->strRef = ssf.readUint32LE();
