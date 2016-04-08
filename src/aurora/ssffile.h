@@ -46,6 +46,10 @@ namespace Aurora {
  *  hurt, calling for medical help, etc.
  *
  *  Which index is used for which situation differs from game to game.
+ *
+ *  SSF files are used in these four games: Neverwinter Nights,
+ *  Neverwinter Nights 2, Knights of the Old Republic and Knights
+ *  of the Old Republic II.
  */
 class SSFFile : public AuroraFile {
 public:
