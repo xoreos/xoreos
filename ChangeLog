@@ -8,6 +8,7 @@ Someday, ????-??-?? (Version 0.0.5)
 	- AURORA:
 		- Unified some code between xoreos and xoreos-tools
 		- Fixed a potential field overflow in the binary 2DA writer
+		- Fixed SSF V1.1 loading for NWN2
 	- GRAPHICS:
 		- Loosened restrictions on textures, allowing NPOT textures
 		- Fixed a potential race condition between environment
