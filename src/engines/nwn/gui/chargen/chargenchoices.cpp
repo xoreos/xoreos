@@ -160,6 +160,13 @@ void CharGenChoices::setCharDomains(uint8 domain1, uint8 domain2) {
 	_domain2 = domain2;
 }
 
+void CharGenChoices::setCharSpell(size_t spellLevel, uint32 spell) {
+	if (_spells.size() < spellLevel + 1)
+		_spells.resize(spellLevel + 1);
+
+	_spells[spellLevel].push_back(spell);
+}
+
 bool CharGenChoices::hasFeat(uint32 featId) const {
 	for (std::vector<uint32>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
 		if (*f == featId)
@@ -282,6 +289,18 @@ bool CharGenChoices::getAlign(uint32 &goodness, uint32 &loyalty) const {
 
 uint32 CharGenChoices::getAbility(uint32 ability) const {
 	return _abilities[ability];
+}
+
+uint32 CharGenChoices::getTotalAbility(uint32 ability) const {
+	return _abilities[ability] + _racialAbilities[ability];
+}
+
+int32 CharGenChoices::getAbilityModifier(Ability ability) {
+	uint32 totalAbility = _abilities[ability] + _racialAbilities[ability];
+	totalAbility -= 6;
+	int32 modifier = (totalAbility - totalAbility % 2) / 2;
+	modifier -= 2;
+	return modifier;
 }
 
 uint32 CharGenChoices::getPackage() const {

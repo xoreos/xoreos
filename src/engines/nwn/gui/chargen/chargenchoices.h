@@ -60,6 +60,7 @@ public:
 	void setCharFeat(uint32 feat);
 	void setSpellSchool(uint32 spellSchool);
 	void setCharDomains(uint8 domain1, uint8 domain2);
+	void setCharSpell(size_t spellLevel, uint32 spell);
 
 	bool hasFeat(uint32 featId) const;
 	bool hasPrereqFeat(uint32 featId, bool isClassFeat);
@@ -67,12 +68,15 @@ public:
 	uint32 getRace() const;
 	bool getAlign(uint32 &goodness, uint32 &loyalty) const;
 	uint32 getAbility(uint32 ability) const;
+	uint32 getTotalAbility(uint32 ability) const;
+	int32 getAbilityModifier(Ability ability);
 	std::vector<uint32> getFeats();
 	uint32 getPackage() const;
 	uint32 getSpellSchool() const;
 
 private:
 	Creature *_creature;
+	std::vector<std::vector<uint32> > _spells;
 	std::vector<uint32> _normalFeats;
 	std::vector<uint32> _racialFeats;
 	std::vector<uint32> _classFeats;
