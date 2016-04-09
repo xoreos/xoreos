@@ -124,9 +124,11 @@ void SSFFile::readEntries(Common::SeekableReadStream &ssf, Version version, size
 
 		case kVersion11_NWN2:
 			readEntriesNWN(ssf, 32);
+			break;
 
 		case kVersion11_KotOR:
 			readEntriesKotOR(ssf);
+			break;
 
 		default:
 			break;
