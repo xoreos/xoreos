@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Feat help GUI.
+ *  Help popup GUI.
  */
 
 #include "src/engines/nwn/gui/widgets/portrait.h"
@@ -27,16 +27,16 @@
 #include "src/engines/nwn/gui/widgets/label.h"
 #include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/chargen/charfeats.h"
-#include "src/engines/nwn/gui/chargen/charfeathelp.h"
+#include "src/engines/nwn/gui/chargen/charhelp.h"
 
 namespace Engines {
 
 namespace NWN {
 
-CharFeatHelp::CharFeatHelp(::Engines::Console *console) : GUI(console) {
-	load("cg_featinfo");
+CharHelp::CharHelp(const Common::UString &GUIResRef, ::Engines::Console *console) : GUI(console) {
+	load(GUIResRef);
 
-	setPosition(0, 0, -120);
+	setPosition(0, 0, -220);
 
 	_icon = new PortraitWidget(*this, "FeatIcon", "", Portrait::kSizeIcon);
 
@@ -47,20 +47,23 @@ CharFeatHelp::CharFeatHelp(::Engines::Console *console) : GUI(console) {
 	getEditBox("EditBox", true)->addChild(*_icon);
 
 	// Remove unnecessary button.
-	getLabel("OkButton#Caption", true)->remove();
-	getButton("OkButton", true)->remove();
+	if (hasWidget("OkButton")) {
+		getLabel("OkButton#Caption", true)->remove();
+		getButton("OkButton", true)->remove();
+	}
 }
 
-CharFeatHelp::~CharFeatHelp() {
+CharHelp::~CharHelp() {
+	delete _icon;
 }
 
-void CharFeatHelp::setFeat(Feat &feat) {
-	getLabel("Title", true)->setText(feat.name);
-	getEditBox("EditBox", true)->setText("fnt_galahad14", feat.description);
-	_icon->setPortrait(feat.icon);
+void CharHelp::setContent(const Common::UString title, const Common::UString desc, const Common::UString icon) {
+	getLabel("Title", true)->setText(title);
+	getEditBox("EditBox", true)->setText("fnt_galahad14", desc);
+	_icon->setPortrait(icon);
 }
 
-void CharFeatHelp::callbackActive(Widget &widget) {
+void CharHelp::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton" || widget.getTag() == "CloseButton")
 		_returnCode = 1;
 }

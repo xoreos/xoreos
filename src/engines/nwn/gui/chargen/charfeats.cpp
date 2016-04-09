@@ -37,7 +37,7 @@
 #include "src/engines/nwn/gui/widgets/label.h"
 #include "src/engines/nwn/gui/widgets/listbox.h"
 #include "src/engines/nwn/gui/widgets/button.h"
-#include "src/engines/nwn/gui/chargen/charfeathelp.h"
+#include "src/engines/nwn/gui/chargen/charhelp.h"
 #include "src/engines/nwn/gui/chargen/charfeatspopup.h"
 #include "src/engines/nwn/gui/chargen/charfeats.h"
 
@@ -82,7 +82,7 @@ CharFeats::CharFeats(CharGenChoices &choices, ::Engines::Console *console) : Cha
 	// TODO: Reset button
 	getButton("ResetButton", true)->setDisabled(true);
 
-	_featHelp   = new CharFeatHelp(console);
+	_featHelp   = new CharHelp("cg_featinfo", console);
 	_featsPopup = new CharFeatsPopup(console);
 
 	_availListBox = getListBox("AvailBox", true);
@@ -112,7 +112,7 @@ void CharFeats::fixWidgetType(const Common::UString &tag, NWN::GUI::WidgetType &
 }
 
 void CharFeats::showFeatHelp(Feat &feat) {
-	_featHelp->setFeat(feat);
+	_featHelp->setContent(feat.name, feat.description, feat.icon);
 
 	_featHelp->show();
 	_featHelp->run();

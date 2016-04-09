@@ -32,7 +32,7 @@ namespace Engines {
 
 namespace NWN {
 
-class CharFeatHelp;
+class CharHelp;
 class CharFeatsPopup;
 class WidgetListBox;
 class WidgetButton;
@@ -90,7 +90,7 @@ private:
 	void removeFromMasterFeats(Feat &feat, WidgetListItemFeat *masterFeatItem);
 	MasterFeatsMap::iterator findMasterFeat(Feat &feat);
 
-	CharFeatHelp   *_featHelp;
+	CharHelp   *_featHelp;
 	CharFeatsPopup *_featsPopup;
 	WidgetListBox  *_availListBox;
 	WidgetListBox  *_knownListBox;

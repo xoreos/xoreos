@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  Feat help GUI.
+ *  Help popup GUI.
  */
 
-#ifndef ENGINES_NWN_GUI_CHARGEN_CHARFEATHELP_H
-#define ENGINES_NWN_GUI_CHARGEN_CHARFEATHELP_H
+#ifndef ENGINES_NWN_GUI_CHARGEN_CHARHELP_H
+#define ENGINES_NWN_GUI_CHARGEN_CHARHELP_H
 
 #include "src/engines/nwn/gui/gui.h"
 
@@ -34,12 +34,12 @@ namespace NWN {
 struct Feat;
 class PortraitWidget;
 
-class CharFeatHelp : public GUI {
+class CharHelp : public GUI {
 public:
-	CharFeatHelp(::Engines::Console *console = 0);
-	~CharFeatHelp();
+	CharHelp(const Common::UString &GUIResRef, ::Engines::Console *console = 0);
+	~CharHelp();
 
-	void setFeat(Feat &feat);
+	void setContent(const Common::UString title, const Common::UString desc, const Common::UString icon);
 private:
 	void callbackActive(Widget &widget);
 
@@ -50,4 +50,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_GUI_CHARGEN_CHARFEATHELP_H
+#endif // ENGINES_NWN_GUI_CHARGEN_CHARHELP_H
