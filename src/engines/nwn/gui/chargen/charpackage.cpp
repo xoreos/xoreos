@@ -36,6 +36,7 @@
 #include "src/engines/nwn/gui/chargen/charfeats.h"
 #include "src/engines/nwn/gui/chargen/charschool.h"
 #include "src/engines/nwn/gui/chargen/chardomain.h"
+#include "src/engines/nwn/gui/chargen/charspells.h"
 #include "src/engines/nwn/gui/chargen/charpackage.h"
 
 namespace Engines {
@@ -111,10 +112,15 @@ void CharPackage::callbackActive(Widget &widget) {
 				        && _choices->getCharacter().getHitDice() == 0) {
 					CharSchool *charSchool = new CharSchool(*_choices, _console);
 					_subGUIs.push_back(charSchool);
+					CharSpells *charSpells = new CharSpells(*_choices, _console);
+					_subGUIs.push_back(charSpells);
 				} else 	if (rowClass.getString("SpellGainTable") == "CLS_SPGN_CLER"
 				            && _choices->getCharacter().getHitDice() == 0) {
 					CharDomain *charDomain = new CharDomain(*_choices, _console);
 					_subGUIs.push_back(charDomain);
+				} else if (!rowClass.empty("SpellKnownTable")) {
+					CharSpells *charSpells = new CharSpells(*_choices, _console);
+					_subGUIs.push_back(charSpells);
 				}
 			}
 		}

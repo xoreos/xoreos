@@ -91,6 +91,7 @@ noinst_HEADERS = \
                  gui/chargen/charfeatspopup.h \
                  gui/chargen/charschool.h \
                  gui/chargen/chardomain.h \
+                 gui/chargen/charspells.h \
                  gui/main/charpremade.h \
                  gui/main/chartype.h \
                  gui/main/main.h \
@@ -185,6 +186,7 @@ libnwn_la_SOURCES = \
                     gui/chargen/charfeatspopup.cpp \
                     gui/chargen/charschool.cpp \
                     gui/chargen/chardomain.cpp \
+                    gui/chargen/charspells.cpp \
                     gui/main/charpremade.cpp \
                     gui/main/chartype.cpp \
                     gui/main/main.cpp \
