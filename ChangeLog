@@ -14,6 +14,8 @@ Someday, ????-??-?? (Version 0.0.5)
 		  mapping and cursor drawing
 		- Added option to create an OpenGL debug config ("debuggl")
 		- Fixed some OpenGL warnings that appeared in debug mode
+	- SOUND:
+		- Unified sound code between xoreos and Phaethon
 	- ENGINES:
 		- JADE:
 			- Implemented more engine script functions
