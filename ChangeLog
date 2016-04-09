@@ -19,6 +19,8 @@ Someday, ????-??-?? (Version 0.0.5)
 			- Implemented more engine script functions
 	- DIST:
 		- Added Fedora package build files
+	- MISC:
+		- Improved code consistency in some places
 
 Monday, 2016-02-01 (Version 0.0.4)
 	- DOCS:
