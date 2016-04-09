@@ -107,6 +107,15 @@ const Widget *Widget::getParent() const {
 	return _parent;
 }
 
+Widget *Widget::getChild(const Common::UString &childTag) {
+	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it) {
+		if ((*it)->getTag() == childTag)
+			return *it;
+	}
+
+	return 0;
+}
+
 void Widget::setPosition(float x, float y, float z) {
 	for (std::list<Widget *>::iterator it = _children.begin(); it != _children.end(); ++it) {
 		float sX, sY, sZ;

@@ -56,6 +56,9 @@ public:
 	Widget *getParent();
 	const Widget *getParent() const;
 
+	/** Get the widget's child by tag. */
+	Widget *getChild(const Common::UString &childTag);
+
 	/** Set the widget's position. */
 	virtual void setPosition(float x, float y, float z);
 
