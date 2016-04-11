@@ -18,6 +18,8 @@ Someday, ????-??-?? (Version 0.0.5)
 	- SOUND:
 		- Unified sound code between xoreos and Phaethon
 		- Added debug messages for easier sound issue tracing
+	- VIDEO:
+		- Added debug messages for easier video issue tracing
 	- ENGINES:
 		- JADE:
 			- Implemented more engine script functions
