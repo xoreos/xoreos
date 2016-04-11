@@ -50,8 +50,10 @@
 namespace Engines {
 
 void playVideo(const Common::UString &video) {
-	if (ConfigMan.getBool("skipvideos", false))
+	if (ConfigMan.getBool("skipvideos", false)) {
+		debugC(Common::kDebugEngineVideo, 1, "Skipping video \"%s\"", video.c_str());
 		return;
+	}
 
 	// Mute other sound sources
 	SoundMan.setTypeGain(Sound::kSoundTypeMusic, 0.0f);
@@ -60,6 +62,8 @@ void playVideo(const Common::UString &video) {
 
 	try {
 		Video::Aurora::VideoPlayer videoPlayer(video);
+
+		debugC(Common::kDebugEngineVideo, 1, "Playing video \"%s\"", video.c_str());
 
 		videoPlayer.play();
 	} catch (...) {
