@@ -62,6 +62,9 @@ public:
 	/** Is the video currently playing? */
 	bool isPlaying() const;
 
+	/** Return the size of this video. */
+	void getSize(uint32 &width, uint32 &height) const;
+
 	/** Start playing the video. */
 	void start();
 

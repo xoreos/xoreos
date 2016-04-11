@@ -204,6 +204,11 @@ bool VideoDecoder::isPlaying() const {
 	return !_finished || SoundMan.isPlaying(_soundHandle);
 }
 
+void VideoDecoder::getSize(uint32 &width, uint32 &height) const {
+	width  = _width;
+	height = _height;
+}
+
 void VideoDecoder::update() {
 	if (getTimeToNextFrame() > 0)
 		return;
