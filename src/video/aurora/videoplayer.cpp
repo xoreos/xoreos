@@ -26,6 +26,7 @@
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
+#include "src/common/debug.h"
 
 #include "src/video/decoder.h"
 #include "src/video/actimagine.h"
@@ -88,6 +89,11 @@ void VideoPlayer::play() {
 
 	_video->start();
 
+	uint32 width, height;
+	_video->getSize(width, height);
+
+	debugC(Common::kDebugVideo, 1, "Starting video (%ux%u)", width, height);
+
 	bool brk = false;
 
 	try {
@@ -109,6 +115,11 @@ void VideoPlayer::play() {
 		_video->abort();
 		throw;
 	}
+
+	if (EventMan.quitRequested() || brk)
+		debugC(Common::kDebugVideo, 1, "Aborting video");
+	else
+		debugC(Common::kDebugVideo, 1, "Ending video");
 
 	_video->abort();
 }

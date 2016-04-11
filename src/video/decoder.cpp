@@ -27,6 +27,7 @@
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 #include "src/common/threads.h"
+#include "src/common/debug.h"
 
 #include "src/graphics/graphics.h"
 
@@ -212,6 +213,8 @@ void VideoDecoder::getSize(uint32 &width, uint32 &height) const {
 void VideoDecoder::update() {
 	if (getTimeToNextFrame() > 0)
 		return;
+
+	debugC(Common::kDebugVideo, 9, "New video frame");
 
 	processData();
 	copyData();
