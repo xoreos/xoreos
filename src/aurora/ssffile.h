@@ -63,7 +63,10 @@ public:
 	SSFFile(const Common::UString &ssf);
 	~SSFFile();
 
-	const Sound &getSound(uint32 index) const;
+	/** Return the number of sounds in this SSF file. */
+	size_t getSoundCount() const;
+
+	const Sound &getSound(size_t index) const;
 
 private:
 	enum Version {

@@ -164,7 +164,11 @@ void SSFFile::readEntriesKotOR(Common::SeekableReadStream &ssf) {
 		sound->strRef = ssf.readUint32LE();
 }
 
-const SSFFile::Sound &SSFFile::getSound(uint32 index) const {
+size_t SSFFile::getSoundCount() const {
+	return _sounds.size();
+}
+
+const SSFFile::Sound &SSFFile::getSound(size_t index) const {
 	if (index >= _sounds.size())
 		return _emptySound;
 
