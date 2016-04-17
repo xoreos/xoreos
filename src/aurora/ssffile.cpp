@@ -43,8 +43,6 @@ namespace Aurora {
 
 SSFFile::SSFFile(Common::SeekableReadStream &ssf) {
 	load(ssf);
-
-	_emptySound.strRef = kStrRefInvalid;
 }
 
 SSFFile::SSFFile(const Common::UString &ssf) {
@@ -60,8 +58,6 @@ SSFFile::SSFFile(const Common::UString &ssf) {
 	}
 
 	delete res;
-
-	_emptySound.strRef = kStrRefInvalid;
 }
 
 SSFFile::~SSFFile() {
@@ -152,8 +148,8 @@ void SSFFile::readEntriesNWN(Common::SeekableReadStream &ssf, size_t soundFileLe
 	for (size_t i = 0; i < count; i++) {
 		ssf.seek(offsets[i]);
 
-		_sounds[i].fileName = Common::readStringFixed(ssf, Common::kEncodingASCII, soundFileLen);
-		_sounds[i].strRef   = ssf.readUint32LE();
+		_sounds[i].soundFile = Common::readStringFixed(ssf, Common::kEncodingASCII, soundFileLen);
+		_sounds[i].strRef    = ssf.readUint32LE();
 	}
 }
 
@@ -168,11 +164,32 @@ size_t SSFFile::getSoundCount() const {
 	return _sounds.size();
 }
 
-const SSFFile::Sound &SSFFile::getSound(size_t index) const {
-	if (index >= _sounds.size())
-		return _emptySound;
+const Common::UString &SSFFile::getSoundFile(size_t index) const {
+	static const Common::UString kEmptyString = "";
 
-	return _sounds[index];
+	if (index >= _sounds.size())
+		return kEmptyString;
+
+	return _sounds[index].soundFile;
+}
+
+uint32 SSFFile::getStrRef(size_t index) const {
+	if (index >= _sounds.size())
+		return kStrRefInvalid;
+
+	return _sounds[index].strRef;
+}
+
+void SSFFile::getSound(size_t index, Common::UString &soundFile, uint32 &strRef) const {
+	if (index >= _sounds.size()) {
+		soundFile.clear();
+		strRef = kStrRefInvalid;
+
+		return;
+	}
+
+	soundFile = _sounds[index].soundFile;
+	strRef    = _sounds[index].strRef;
 }
 
 } // End of namespace Aurora

@@ -53,12 +53,6 @@ namespace Aurora {
  */
 class SSFFile : public AuroraFile {
 public:
-	/** A sound in the sound set. */
-	struct Sound {
-		Common::UString fileName; ///< The name of the sound file to play.
-		uint32          strRef;   ///< StrRef of the text to display.
-	};
-
 	SSFFile(Common::SeekableReadStream &ssf);
 	SSFFile(const Common::UString &ssf);
 	~SSFFile();
@@ -66,7 +60,12 @@ public:
 	/** Return the number of sounds in this SSF file. */
 	size_t getSoundCount() const;
 
-	const Sound &getSound(size_t index) const;
+	/** Return the sound file to play for this sound. */
+	const Common::UString &getSoundFile(size_t index) const;
+	/** Return the string reference of the text to display for this sound. */
+	uint32 getStrRef(size_t index) const;
+	/** Return both the sound file and the string reference for this sound. */
+	void getSound(size_t index, Common::UString &soundFile, uint32 &strRef) const;
 
 private:
 	enum Version {
@@ -75,9 +74,14 @@ private:
 		kVersion11_KotOR
 	};
 
+	/** A sound in the sound set. */
+	struct Sound {
+		Common::UString soundFile; ///< The name of the sound file to play.
+		uint32          strRef;    ///< StrRef of the text to display.
+	};
+
 	typedef std::vector<Sound> SoundSet;
 
-	Sound _emptySound;
 	SoundSet _sounds;
 
 	void load(Common::SeekableReadStream &ssf);

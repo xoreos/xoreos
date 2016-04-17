@@ -48,7 +48,7 @@ void Functions::playVoiceChat(Aurora::NWScript::FunctionContext &ctx) {
 	if (!ssf)
 		return;
 
-	object->playSound(ssf->getSound(ctx.getParams()[0].getInt()).fileName, true);
+	object->playSound(ssf->getSoundFile(ctx.getParams()[0].getInt()), true);
 }
 
 void Functions::playSoundByStrRef(Aurora::NWScript::FunctionContext &ctx) {

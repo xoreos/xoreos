@@ -764,7 +764,7 @@ void Dialog::playSound(bool greeting) {
 		if (ssf) {
 			isSSF = true;
 
-			sound = ssf->getSound(kSSFHello).fileName;
+			sound = ssf->getSoundFile(kSSFHello);
 		}
 	}
 
