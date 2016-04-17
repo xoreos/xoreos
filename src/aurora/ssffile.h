@@ -67,6 +67,13 @@ public:
 	/** Return both the sound file and the string reference for this sound. */
 	void getSound(size_t index, Common::UString &soundFile, uint32 &strRef) const;
 
+	/** Set the sound file to play for this sound. */
+	void setSoundFile(size_t index, const Common::UString &soundFile);
+	/** Set the string reference of the text to display for this sound. */
+	void setStrRef(size_t index, uint32 strRef);
+	/** Set both the sound file and the string reference for this sound. */
+	void setSound(size_t index, const Common::UString &soundFile, uint32 strRef);
+
 private:
 	enum Version {
 		kVersion10_NWN,
@@ -78,6 +85,8 @@ private:
 	struct Sound {
 		Common::UString soundFile; ///< The name of the sound file to play.
 		uint32          strRef;    ///< StrRef of the text to display.
+
+		Sound(const Common::UString &f = "", uint32 s = kStrRefInvalid);
 	};
 
 	typedef std::vector<Sound> SoundSet;

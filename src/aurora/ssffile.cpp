@@ -41,6 +41,10 @@ static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
 
 namespace Aurora {
 
+SSFFile::Sound::Sound(const Common::UString &f, uint32 s) : soundFile(f), strRef(s) {
+}
+
+
 SSFFile::SSFFile(Common::SeekableReadStream &ssf) {
 	load(ssf);
 }
@@ -190,6 +194,28 @@ void SSFFile::getSound(size_t index, Common::UString &soundFile, uint32 &strRef)
 
 	soundFile = _sounds[index].soundFile;
 	strRef    = _sounds[index].strRef;
+}
+
+void SSFFile::setSoundFile(size_t index, const Common::UString &soundFile) {
+	if (_sounds.size() <= index)
+		_sounds.resize(index + 1);
+
+	_sounds[index].soundFile = soundFile;
+}
+
+void SSFFile::setStrRef(size_t index, uint32 strRef) {
+	if (_sounds.size() <= index)
+		_sounds.resize(index + 1);
+
+	_sounds[index].strRef = strRef;
+}
+
+void SSFFile::setSound(size_t index, const Common::UString &soundFile, uint32 strRef) {
+	if (_sounds.size() <= index)
+		_sounds.resize(index + 1);
+
+	_sounds[index].soundFile = soundFile;
+	_sounds[index].strRef    = strRef;
 }
 
 } // End of namespace Aurora
