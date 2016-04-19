@@ -28,6 +28,7 @@
 
 #include "src/common/readstream.h"
 #include "src/common/writestream.h"
+#include "src/common/writefile.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -227,6 +228,45 @@ size_t SSFFile::getMaxSoundFileLen() const {
 	return maxSoundFileLen;
 }
 
+bool SSFFile::existNonASCIISoundFile() const {
+	for (SoundSet::const_iterator s = _sounds.begin(); s != _sounds.end(); ++s)
+		for (Common::UString::iterator c = s->soundFile.begin(); c != s->soundFile.end(); ++c)
+			if (!Common::UString::isASCII(*c))
+				return true;
+
+	return false;
+}
+
+void SSFFile::checkVersionFeatures(Version version) const {
+	if (_sounds.size() >= 0xFFFFFFFF)
+		throw Common::Exception("Too many sounds");
+
+	if (existNonASCIISoundFile())
+		throw Common::Exception("SSF files do not support non-ASCII sound filenames");
+
+	const size_t maxFileLen = getMaxSoundFileLen();
+
+	switch (version) {
+		case kVersion10_NWN:
+			if (maxFileLen > 16)
+				throw Common::Exception("Sound filenames in SSF V1.0 need to be 16 characters or less");
+			break;
+
+		case kVersion11_NWN2:
+			if (maxFileLen > 32)
+				throw Common::Exception("Sound filenames in SSF V1.1 (NWN2) need to be 32 characters or less");
+			break;
+
+		case kVersion11_KotOR:
+			if (maxFileLen > 0)
+				throw Common::Exception("SSF V1.1 (KotOR/KotOR2) does not support sound filenames");
+			break;
+
+		default:
+			throw Common::Exception("Invalid SSF version");
+	}
+}
+
 SSFFile::Version SSFFile::determineVersionForGame(GameID game) const {
 	switch (game) {
 		case kGameIDNWN:
@@ -246,6 +286,35 @@ SSFFile::Version SSFFile::determineVersionForGame(GameID game) const {
 	}
 
 	throw Common::Exception("This game does not support SSF files");
+}
+
+void SSFFile::writeSSF(Common::WriteStream &out, Version version) const {
+	checkVersionFeatures(version);
+
+	switch (version) {
+		case kVersion10_NWN:
+			writeNWN(out);
+			break;
+
+		case kVersion11_NWN2:
+			writeNWN2(out);
+			break;
+
+		case kVersion11_KotOR:
+			writeKotOR(out);
+			break;
+	}
+}
+
+bool SSFFile::writeSSF(const Common::UString &fileName, Version version) const {
+	Common::WriteFile file;
+	if (!file.open(fileName))
+		return false;
+
+	writeSSF(file, version);
+	file.close();
+
+	return true;
 }
 
 void SSFFile::writeNWN(Common::WriteStream &out) const {

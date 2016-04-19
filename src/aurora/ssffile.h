@@ -89,6 +89,11 @@ public:
 	// .--- Writing SSF files
 	/** Determine the best version to save this SSF file in, for the specified game. */
 	Version determineVersionForGame(GameID game) const;
+
+	/** Write the SSF into a stream, as the specified version. */
+	void writeSSF(Common::WriteStream &out, Version version) const;
+	/** Write the SSF into a file, as the specified version. */
+	bool writeSSF(const Common::UString &fileName, Version version) const;
 	// '---
 
 private:
@@ -118,6 +123,10 @@ private:
 
 	/** Return the maximum length of a sound filename in characters. */
 	size_t getMaxSoundFileLen() const;
+	/** Is there a sound filename with non-ASCII characters? */
+	bool existNonASCIISoundFile() const;
+	/** Make sure this SSF files fits the requirements for specified SSF version. */
+	void checkVersionFeatures(Version version) const;
 
 	/** Write this SSF into a stream as a V1.0 (NWN). */
 	void writeNWN(Common::WriteStream &out) const;
