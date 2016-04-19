@@ -67,19 +67,23 @@ public:
 	/** Return the number of sounds in this SSF file. */
 	size_t getSoundCount() const;
 
+	// .--- Reading sounds from the sound set
 	/** Return the sound file to play for this sound. */
 	const Common::UString &getSoundFile(size_t index) const;
 	/** Return the string reference of the text to display for this sound. */
 	uint32 getStrRef(size_t index) const;
 	/** Return both the sound file and the string reference for this sound. */
 	void getSound(size_t index, Common::UString &soundFile, uint32 &strRef) const;
+	// '---
 
+	// .--- Writing sounds to the sound set
 	/** Set the sound file to play for this sound. */
 	void setSoundFile(size_t index, const Common::UString &soundFile);
 	/** Set the string reference of the text to display for this sound. */
 	void setStrRef(size_t index, uint32 strRef);
 	/** Set both the sound file and the string reference for this sound. */
 	void setSound(size_t index, const Common::UString &soundFile, uint32 strRef);
+	// '---
 
 private:
 	/** A sound in the sound set. */
