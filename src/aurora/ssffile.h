@@ -85,6 +85,11 @@ public:
 	void setSound(size_t index, const Common::UString &soundFile, uint32 strRef);
 	// '---
 
+	// .--- Writing SSF files
+	/** Determine the best version to save this SSF file in, for the specified game. */
+	Version determineVersionForGame(GameID game) const;
+	// '---
+
 private:
 	/** A sound in the sound set. */
 	struct Sound {
@@ -109,6 +114,9 @@ private:
 	void readEntriesNWN(Common::SeekableReadStream &ssf, size_t soundFileLen);
 	/** Read the data entries of the KotOR version. */
 	void readEntriesKotOR(Common::SeekableReadStream &ssf);
+
+	/** Return the maximum length of a sound filename in characters. */
+	size_t getMaxSoundFileLen() const;
 };
 
 } // End of namespace Aurora

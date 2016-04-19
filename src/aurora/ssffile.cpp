@@ -218,4 +218,33 @@ void SSFFile::setSound(size_t index, const Common::UString &soundFile, uint32 st
 	_sounds[index].strRef    = strRef;
 }
 
+size_t SSFFile::getMaxSoundFileLen() const {
+	size_t maxSoundFileLen = 0;
+	for (SoundSet::const_iterator s = _sounds.begin(); s != _sounds.end(); ++s)
+		maxSoundFileLen = MAX(maxSoundFileLen, s->soundFile.size());
+
+	return maxSoundFileLen;
+}
+
+SSFFile::Version SSFFile::determineVersionForGame(GameID game) const {
+	switch (game) {
+		case kGameIDNWN:
+			return kVersion10_NWN;
+
+		case kGameIDNWN2:
+			if (getMaxSoundFileLen() > 16)
+				return kVersion11_NWN2;
+			return kVersion10_NWN;
+
+		case kGameIDKotOR:
+		case kGameIDKotOR2:
+			return kVersion11_KotOR;
+
+		default:
+			break;
+	}
+
+	throw Common::Exception("This game does not support SSF files");
+}
+
 } // End of namespace Aurora
