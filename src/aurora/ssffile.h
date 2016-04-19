@@ -61,6 +61,7 @@ public:
 		kVersion11_KotOR ///< SSF V1.1, as found in KotOR and KotOR.
 	};
 
+	SSFFile();
 	SSFFile(Common::SeekableReadStream &ssf);
 	SSFFile(const Common::UString &ssf);
 	~SSFFile();

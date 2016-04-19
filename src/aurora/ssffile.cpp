@@ -47,6 +47,9 @@ SSFFile::Sound::Sound(const Common::UString &f, uint32 s) : soundFile(f), strRef
 }
 
 
+SSFFile::SSFFile() {
+}
+
 SSFFile::SSFFile(Common::SeekableReadStream &ssf) {
 	load(ssf);
 }
