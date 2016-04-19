@@ -53,6 +53,13 @@ namespace Aurora {
  */
 class SSFFile : public AuroraFile {
 public:
+	/** The different versions of SSF files that exists. */
+	enum Version {
+		kVersion10_NWN,  ///< SSF V1.0, as found in NWN and NWN2.
+		kVersion11_NWN2, ///< SSF V1.1, as found in NWN2.
+		kVersion11_KotOR ///< SSF V1.1, as found in KotOR and KotOR.
+	};
+
 	SSFFile(Common::SeekableReadStream &ssf);
 	SSFFile(const Common::UString &ssf);
 	~SSFFile();
@@ -75,12 +82,6 @@ public:
 	void setSound(size_t index, const Common::UString &soundFile, uint32 strRef);
 
 private:
-	enum Version {
-		kVersion10_NWN,
-		kVersion11_NWN2,
-		kVersion11_KotOR
-	};
-
 	/** A sound in the sound set. */
 	struct Sound {
 		Common::UString soundFile; ///< The name of the sound file to play.
