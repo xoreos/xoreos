@@ -27,6 +27,7 @@
  */
 
 #include "src/common/readstream.h"
+#include "src/common/writestream.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -245,6 +246,18 @@ SSFFile::Version SSFFile::determineVersionForGame(GameID game) const {
 	}
 
 	throw Common::Exception("This game does not support SSF files");
+}
+
+void SSFFile::writeNWN(Common::WriteStream &out) const {
+	out.writeString("SSF V1.0");
+}
+
+void SSFFile::writeNWN2(Common::WriteStream &out) const {
+	out.writeString("SSF V1.1");
+}
+
+void SSFFile::writeKotOR(Common::WriteStream &out) const {
+	out.writeString("SSF V1.1");
 }
 
 } // End of namespace Aurora

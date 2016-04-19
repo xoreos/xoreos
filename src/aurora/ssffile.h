@@ -35,6 +35,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class WriteStream;
 }
 
 namespace Aurora {
@@ -117,6 +118,13 @@ private:
 
 	/** Return the maximum length of a sound filename in characters. */
 	size_t getMaxSoundFileLen() const;
+
+	/** Write this SSF into a stream as a V1.0 (NWN). */
+	void writeNWN(Common::WriteStream &out) const;
+	/** Write this SSF into a stream as a V1.1 (NWN2). */
+	void writeNWN2(Common::WriteStream &out) const;
+	/** Write this SSF into a stream as a V1.1 (KotOR/KotOR2). */
+	void writeKotOR(Common::WriteStream &out) const;
 };
 
 } // End of namespace Aurora
