@@ -134,6 +134,9 @@ private:
 	void writeNWN2(Common::WriteStream &out) const;
 	/** Write this SSF into a stream as a V1.1 (KotOR/KotOR2). */
 	void writeKotOR(Common::WriteStream &out) const;
+
+	/** Write this SSF data into a stream as one of the versions for NWN. */
+	void writeNWN(Common::WriteStream &out, size_t soundFileLen) const;
 };
 
 } // End of namespace Aurora

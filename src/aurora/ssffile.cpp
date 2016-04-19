@@ -317,12 +317,38 @@ bool SSFFile::writeSSF(const Common::UString &fileName, Version version) const {
 	return true;
 }
 
+void SSFFile::writeNWN(Common::WriteStream &out, size_t soundFileLen) const {
+	static const uint32 kOffsetEntryTable = 0x28;
+
+	out.writeUint32LE(_sounds.size());
+	out.writeUint32LE(kOffsetEntryTable);
+
+	// Reserved
+	for (uint32 i = 16; i < kOffsetEntryTable; i++)
+		out.writeByte(0);
+
+	uint32 offsetData = kOffsetEntryTable + _sounds.size() * 4;
+
+	for (SoundSet::const_iterator s = _sounds.begin(); s != _sounds.end(); ++s, offsetData += soundFileLen + 4)
+		out.writeUint32LE(offsetData);
+
+	for (SoundSet::const_iterator s = _sounds.begin(); s != _sounds.end(); ++s) {
+		Common::writeStringFixed(out, s->soundFile, Common::kEncodingASCII, soundFileLen);
+
+		out.writeUint32LE(s->strRef);
+	}
+}
+
 void SSFFile::writeNWN(Common::WriteStream &out) const {
 	out.writeString("SSF V1.0");
+
+	writeNWN(out, 16);
 }
 
 void SSFFile::writeNWN2(Common::WriteStream &out) const {
 	out.writeString("SSF V1.1");
+
+	writeNWN(out, 32);
 }
 
 void SSFFile::writeKotOR(Common::WriteStream &out) const {
