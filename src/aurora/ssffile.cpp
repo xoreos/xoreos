@@ -353,6 +353,11 @@ void SSFFile::writeNWN2(Common::WriteStream &out) const {
 
 void SSFFile::writeKotOR(Common::WriteStream &out) const {
 	out.writeString("SSF V1.1");
+
+	out.writeUint32LE(0x0C); // Offset to the entries
+
+	for (SoundSet::const_iterator s = _sounds.begin(); s != _sounds.end(); ++s)
+		out.writeUint32LE(s->strRef);
 }
 
 } // End of namespace Aurora
