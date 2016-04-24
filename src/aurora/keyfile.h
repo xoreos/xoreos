@@ -35,7 +35,6 @@
 
 namespace Common {
 	class SeekableReadStream;
-	class File;
 }
 
 namespace Aurora {
