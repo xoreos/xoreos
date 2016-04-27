@@ -46,10 +46,10 @@ CharGenChoices::CharGenChoices() {
 	_abilities.assign(6, 8);
 	_racialAbilities.assign(6, 0);
 
-	_package = 10000;
+	_package = UINT8_MAX;
 	_skills.assign(28, 0);
 
-	_spellSchool = UINT32_MAX;
+	_spellSchool = UINT8_MAX;
 
 	_domain1 = UINT8_MAX;
 	_domain2 = UINT8_MAX;
@@ -124,18 +124,18 @@ void CharGenChoices::setClass(uint32 classId) {
 	//TODO Init spell slots.
 }
 
-void CharGenChoices::setAlign(uint32 goodness, uint32 loyalty) {
+void CharGenChoices::setAlign(uint8 goodness, uint8 loyalty) {
 	_goodness = goodness;
 	_loyalty  = loyalty;
 }
 
-void CharGenChoices::setAbilities(std::vector<uint32> abilities,
-                                      std::vector<uint32> racialAbilities) {
+void CharGenChoices::setAbilities(std::vector<uint8> abilities,
+                                  std::vector<uint8> racialAbilities) {
 	_abilities = abilities;
 	_racialAbilities = racialAbilities;
 }
 
-void CharGenChoices::setPackage(uint32 package) {
+void CharGenChoices::setPackage(uint8 package) {
 	_package = package;
 }
 
@@ -151,7 +151,7 @@ void CharGenChoices::setFeat(uint32 feat) {
 	_normalFeats.push_back(feat);
 }
 
-void CharGenChoices::setSpellSchool(uint32 spellSchool) {
+void CharGenChoices::setSpellSchool(uint8 spellSchool) {
 	_spellSchool = spellSchool;
 }
 
@@ -160,7 +160,7 @@ void CharGenChoices::setDomains(uint8 domain1, uint8 domain2) {
 	_domain2 = domain2;
 }
 
-void CharGenChoices::setSpell(size_t spellLevel, uint32 spell) {
+void CharGenChoices::setSpell(size_t spellLevel, uint16 spell) {
 	if (_spells.size() < spellLevel + 1)
 		_spells.resize(spellLevel + 1);
 
@@ -277,7 +277,7 @@ uint32 CharGenChoices::getRace() const {
 	return _creature->getRace();
 }
 
-bool CharGenChoices::getAlign(uint32 &goodness, uint32 &loyalty) const {
+bool CharGenChoices::getAlign(uint8 &goodness, uint8 &loyalty) const {
 	// Check if alignment has been previously set.
 	if (_goodness > 100)
 		return false;
@@ -287,11 +287,11 @@ bool CharGenChoices::getAlign(uint32 &goodness, uint32 &loyalty) const {
 	return true;
 }
 
-uint32 CharGenChoices::getAbility(uint32 ability) const {
+uint8 CharGenChoices::getAbility(size_t ability) const {
 	return _abilities[ability];
 }
 
-uint32 CharGenChoices::getTotalAbility(uint32 ability) const {
+uint8 CharGenChoices::getTotalAbility(size_t ability) const {
 	return _abilities[ability] + _racialAbilities[ability];
 }
 
@@ -303,7 +303,7 @@ int32 CharGenChoices::getAbilityModifier(Ability ability) {
 	return modifier;
 }
 
-uint32 CharGenChoices::getPackage() const {
+uint8 CharGenChoices::getPackage() const {
 	return _package;
 }
 

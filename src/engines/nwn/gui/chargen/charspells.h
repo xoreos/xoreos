@@ -36,7 +36,7 @@ class CharHelp;
 class PortraitWidget;
 
 struct Spell {
-	uint32 spellID;
+	uint16 spellID;
 	Common::UString name;
 	Common::UString icon;
 	Common::UString desc;

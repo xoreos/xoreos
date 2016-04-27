@@ -111,7 +111,7 @@ void CharAttributes::callbackActive(Widget &widget) {
 	}
 
 	// Compute and update attributes when any Up and Down attribute buttons are triggered.
-	for (uint a = 0; a< 6; ++a) {
+	for (size_t a = 0; a< 6; ++a) {
 		if (buttonsList[a] != widget.getParent())
 			continue;
 
@@ -203,7 +203,7 @@ void CharAttributes::show() {
 	_attrAdjust.push_back(row.getInt(11));
 
 	// Update attribute text accordingly.
-	for (uint32 it = 0; it < 6; ++it) {
+	for (size_t it = 0; it < 6; ++it) {
 		genTextAttributes(it);
 	}
 
@@ -219,7 +219,7 @@ void CharAttributes::hide() {
 	if (_returnCode == 1) {
 		// Get previous choice.
 		uint sum = 0;
-		for (uint ab = 0; ab < 6; ++ab) {
+		for (size_t ab = 0; ab < 6; ++ab) {
 			_attributes[ab] = _choices->getAbility(ab);
 			sum += _attributes[ab];
 		}
@@ -232,18 +232,18 @@ void CharAttributes::hide() {
 	}
 }
 
-void CharAttributes::genTextAttributes(uint32 attribute) {
+void CharAttributes::genTextAttributes(size_t attribute) {
 	// Compute modifier.
-	uint realValue = _attributes[attribute] + _attrAdjust.at(attribute);
+	uint8 realValue = _attributes[attribute] + _attrAdjust.at(attribute);
 	realValue -= 6;
-	int modifier = (realValue - realValue % 2) / 2;
+	int8 modifier = (realValue - realValue % 2) / 2;
 	modifier -= 2;
 
 	// Transform numbers into strings.
 	Common::UString sign = (modifier < 0) ? "" : "+";
-	Common::UString attr = Common::composeString<uint32>(_attributes[attribute]
+	Common::UString attr = Common::composeString<uint8>(_attributes[attribute]
 	                                                     + _attrAdjust.at(attribute));
-	Common::UString modifStr = Common::composeString<int>(modifier);
+	Common::UString modifStr = Common::composeString<int8>(modifier);
 
 	Common::UString output = attr + " (" + sign + modifStr + ")";
 
@@ -251,22 +251,22 @@ void CharAttributes::genTextAttributes(uint32 attribute) {
 	_labelAttributes[attribute]->setText(output);
 }
 
-uint32 CharAttributes::pointCost(uint32 attrValue) {
+uint8 CharAttributes::pointCost(uint8 attrValue) {
 	if (attrValue < 15) {
 		getLabel("CostEdit#Caption", true)->setText("1");
 		return 1;
 	}
 
 	attrValue -= 15;
-	uint cost = ((attrValue - attrValue % 2) / 2) + 2;
+	uint8 cost = ((attrValue - attrValue % 2) / 2) + 2;
 
-	getLabel("CostEdit#Caption", true)->setText(Common::composeString<uint>(cost));
+	getLabel("CostEdit#Caption", true)->setText(Common::composeString<uint8>(cost));
 
 	return cost;
 }
 
-void CharAttributes::updateText(uint32 attribute) {
-	getLabel("PointsEdit#Caption", true)->setText(Common::composeString<uint32>(_pointLeft));
+void CharAttributes::updateText(uint8 attribute) {
+	getLabel("PointsEdit#Caption", true)->setText(Common::composeString<uint8>(_pointLeft));
 	pointCost(_attributes[attribute] + 1);
 }
 

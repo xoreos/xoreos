@@ -63,7 +63,7 @@ void CharPackage::reset() {
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(483));
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(487));
 
-	_choices->setPackage(10000);
+	_choices->setPackage(UINT8_MAX);
 
 	for (std::vector<CharGenBase *>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
 		delete *g;
@@ -160,13 +160,13 @@ void CharPackage::createPackageList() {
 		WidgetListItemButton *packagetItem = new WidgetListItemButton(*this, "ctl_cg_btn_class", TalkMan.getString(row.getInt("Name")), "");
 		_packageListBox->add(packagetItem);
 
-		_packageID.push_back(it);
+		_packageID.push_back((uint8) it);
 	}
 	_packageListBox->unlock();
 
 	// Set previous choice if any.
-	uint32 package = _choices->getPackage();
-	if (package == 10000) {
+	uint8 package = _choices->getPackage();
+	if (package == UINT8_MAX) {
 		getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(483));
 		getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(487));
 

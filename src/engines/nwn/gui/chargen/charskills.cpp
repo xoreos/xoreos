@@ -48,7 +48,7 @@ namespace NWN {
 WidgetListItemSkill::WidgetListItemSkill(::Engines::GUI &gui,
                                          const Common::UString &text, const Common::UString &helpText,
                                          const Common::UString &icon, size_t skillIndex,
-                                         bool isClassSkill, uint32 maxRank) :
+                                         bool isClassSkill, uint8 maxRank) :
                                          WidgetListItemButton(gui, "ctl_cg_btn_skill", text, icon),
                                          _name(text), _helpText(helpText), _skillIndex(skillIndex),
                                          _isClassSkill(isClassSkill), _skillRank(0),
@@ -109,20 +109,20 @@ void WidgetListItemSkill::setTag(const Common::UString &tag) {
 
 void WidgetListItemSkill::reset() {
 	_skillRank = _minRank;
-	_skillPoint->setText(Common::composeString<uint32>(_skillRank));
+	_skillPoint->setText(Common::composeString<uint8>(_skillRank));
 }
 
 void WidgetListItemSkill::mouseDown(uint8 state, float x, float y) {
 	WidgetListItem::mouseDown(state, x, y);
 
-	uint32 cost = (_isClassSkill) ? 1 : 2;
+	uint8 cost = (_isClassSkill) ? 1 : 2;
 	dynamic_cast<CharSkills &>(*_gui).setSkillCost(cost);
 
 }
 void WidgetListItemSkill::subActive(Widget &widget) {
 	select();
 
-	uint32 cost = (_isClassSkill) ? 1 : 2;
+	uint8 cost = (_isClassSkill) ? 1 : 2;
 	dynamic_cast<CharSkills &>(*_gui).setSkillCost(cost);
 	dynamic_cast<CharSkills &>(*_gui).setHelpText(_name, _helpText);
 
@@ -134,7 +134,7 @@ void WidgetListItemSkill::subActive(Widget &widget) {
 }
 
 void WidgetListItemSkill::changeRank(bool isIncreasing) {
-	uint32 classRankFactor = (_isClassSkill) ? 1 : 2;
+	uint8 classRankFactor = (_isClassSkill) ? 1 : 2;
 
 	if (isIncreasing) {
 		if (_maxRank == _skillRank)
@@ -150,7 +150,7 @@ void WidgetListItemSkill::changeRank(bool isIncreasing) {
 		--_skillRank;
 	}
 
-	_skillPoint->setText(Common::composeString<uint32>(_skillRank));
+	_skillPoint->setText(Common::composeString<uint8>(_skillRank));
 }
 
 CharSkills::CharSkills(CharGenChoices &choices, ::Engines::Console *console) : CharGenBase(console) {
@@ -165,7 +165,7 @@ CharSkills::CharSkills(CharGenChoices &choices, ::Engines::Console *console) : C
 
 	createSkillsList();
 
-	getLabel("PtsRemainingBox", true)->setText(Common::composeString<uint32>(_availableSkillRank));
+	getLabel("PtsRemainingBox", true)->setText(Common::composeString<uint8>(_availableSkillRank));
 
 	// Default help texts.
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(58250));
@@ -179,7 +179,7 @@ void CharSkills::reset() {
 	WidgetListBox *skillBox = getListBox("SkillsButtonBox", true);
 	skillBox->deselect();
 
-	uint32 spentPoint = 0;
+	uint8 spentPoint = 0;
 	for (std::vector<WidgetListItem *>::iterator it = skillBox->begin();
 	     it != skillBox->end(); ++it) {
 
@@ -211,12 +211,12 @@ bool CharSkills::changeAvailableSkillRank(int changeRank) {
 		return false;
 
 	_availableSkillRank += changeRank;
-	getLabel("PtsRemainingBox", true)->setText(Common::composeString<uint32>(_availableSkillRank));
+	getLabel("PtsRemainingBox", true)->setText(Common::composeString<uint8>(_availableSkillRank));
 	return true;
 }
 
-void CharSkills::setSkillCost(uint32 cost) {
-	getLabel("CostBox")->setText(Common::composeString<uint32>(cost));
+void CharSkills::setSkillCost(uint8 cost) {
+	getLabel("CostBox")->setText(Common::composeString<uint8>(cost));
 }
 
 void CharSkills::callbackActive(Widget &widget) {
@@ -233,7 +233,7 @@ void CharSkills::callbackActive(Widget &widget) {
 		     it != skillBox->end(); ++it) {
 			WidgetListItemSkill *item = dynamic_cast<WidgetListItemSkill *>(*it);
 			size_t skillIndex         = item->_skillIndex;
-			uint32 skillRank = item->_skillRank;
+			uint8 skillRank = item->_skillRank;
 
 			_choices->setSkill(skillIndex, skillRank);
 		}
@@ -277,7 +277,7 @@ void CharSkills::createSkillsList() {
 		bool classSkill = (bool) skillsClassRow.getInt("ClassSkill");
 
 
-		uint32 maxRank = 4 + (uint32) _choices->getCharacter().getHitDice();
+		uint8 maxRank = 4 + _choices->getCharacter().getHitDice();
 
 		if (classSkill) {
 			// Add information about wether it is a skill class.
@@ -292,9 +292,9 @@ void CharSkills::createSkillsList() {
 	getListBox("SkillsButtonBox")->unlock();
 }
 
-void CharSkills::computeAvailablePoints(uint32 pointBase) {
-	uint32 abilityScore = _choices->getAbility(kAbilityIntelligence);
-	int    modifier     = (abilityScore - abilityScore % 2) / 2 - 5;
+void CharSkills::computeAvailablePoints(uint8 pointBase) {
+	uint8 abilityScore = _choices->getAbility(kAbilityIntelligence);
+	int8    modifier    = (abilityScore - abilityScore % 2) / 2 - 5;
 	_availableSkillRank = modifier + pointBase;
 
 	// Human race can have more skills

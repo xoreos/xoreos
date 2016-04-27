@@ -42,9 +42,9 @@ public:
 	void show();
 	void hide();
 
-	void genTextAttributes(uint32 attribute);
-	uint32 pointCost(uint32 attrValue);
-	void updateText(uint32 attribute);
+	void genTextAttributes(size_t attribute);
+	uint8 pointCost(uint8 attrValue);
+	void updateText(uint8 attribute);
 
 	void setRecommend();
 
@@ -55,12 +55,12 @@ private:
 	void init();
 	void initButtonsGroup();
 
-	std::vector<uint32> _attributes;
-	std::vector<uint32> _attrAdjust;
+	std::vector<uint8> _attributes;
+	std::vector<uint8> _attrAdjust;
 	std::vector<WidgetLabel *> _labelAttributes;
 	ButtonsGroup *_attrButtons;
 
-	uint32 _pointLeft;
+	uint8 _pointLeft;
 };
 
 } // End of namespace NWN

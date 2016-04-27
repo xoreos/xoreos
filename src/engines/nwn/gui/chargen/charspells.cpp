@@ -283,7 +283,7 @@ void CharSpells::makeSpellsList() {
 	}
 
 	Common::UString oppositeSchool = "";
-	if (_choices->getSpellSchool() < UINT32_MAX) {
+	if (_choices->getSpellSchool() < UINT8_MAX) {
 		const Aurora::TwoDAFile &twodaSpellsSchool = TwoDAReg.get2DA("spellschools");
 		const Aurora::TwoDARow &rowSchool = twodaSpellsSchool.getRow(_choices->getSpellSchool());
 		const Aurora::TwoDARow &rowOppSchool = twodaSpellsSchool.getRow(rowSchool.getInt("Opposition"));
@@ -370,7 +370,7 @@ void CharSpells::makeSpellsList() {
 }
 
 void CharSpells::computeRemainingSpells(const Aurora::TwoDARow &classRow) {
-	uint32 classLevel = _choices->getCharacter().getClassLevel(_choices->getClass());
+	uint16 classLevel = _choices->getCharacter().getClassLevel(_choices->getClass());
 
 	// Check if it is a first level wizard.
 	if (classRow.empty("SpellKnownTable") && classLevel == 0) {

@@ -52,7 +52,7 @@ private:
 	std::vector<CharGenBase *>   _subGUIs;
 
 	std::vector<Common::UString> _packageNames;
-	std::vector<uint32>          _packageID;
+	std::vector<uint8>           _packageID;
 	std::vector<Common::UString> _helpTexts;
 };
 

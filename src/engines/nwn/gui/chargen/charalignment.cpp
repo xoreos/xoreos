@@ -95,7 +95,7 @@ void CharAlignment::hide() {
 	if (_returnCode == 1) {
 		// If alignment has been previously select, set it back.
 		if (_choices->getAlign(_goodness, _loyalty)) {
-			float point[3] = { 0, 100, 50 };
+			uint8 point[3] = { 0, 100, 50 };
 
 			uint loyalButton = 0;
 			uint goodnessButton = 0;
@@ -194,7 +194,7 @@ void CharAlignment::setRestrict() {
 void CharAlignment::getAlignment() {
 	size_t button = _buttons->getChoice();
 
-	float  point[3] = { 0, 100, 50 };
+	uint8  point[3] = { 0, 100, 50 };
 	size_t rest     = button % 3;
 	_goodness = point[rest];
 	_loyalty  = point[(button - rest) / 3];

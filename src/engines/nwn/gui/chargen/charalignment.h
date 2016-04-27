@@ -51,8 +51,8 @@ protected:
 private:
 	ButtonsGroup *_buttons;
 
-	uint32 _goodness;
-	uint32 _loyalty;
+	uint8 _goodness;
+	uint8 _loyalty;
 };
 
 } // End of namespace NWN

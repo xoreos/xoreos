@@ -41,7 +41,7 @@ class WidgetListItemSkill : public WidgetListItemButton {
 public:
 	WidgetListItemSkill(::Engines::GUI &gui, const Common::UString &text,
 	                    const Common::UString &helpText, const Common::UString &icon,
-	                    size_t skillIndex, bool isClassSkill, uint32 maxRank);
+	                    size_t skillIndex, bool isClassSkill, uint8 maxRank);
 	~WidgetListItemSkill();
 
 	void setPosition(float x, float y, float z);
@@ -64,9 +64,9 @@ private:
 
 	size_t _skillIndex;
 	bool   _isClassSkill;
-	uint32 _skillRank;
-	uint32 _maxRank;
-	uint32 _minRank;
+	uint8 _skillRank;
+	uint8 _maxRank;
+	uint8 _minRank;
 
 	friend class CharSkills;
 };
@@ -80,13 +80,13 @@ public:
 	void hide();
 
 	bool changeAvailableSkillRank(int rankChange);
-	void setSkillCost(uint32 cost);
+	void setSkillCost(uint8 cost);
 	void setHelpText(const Common::UString &title, const Common::UString &text);
 
 private:
 	void callbackActive(Widget &widget);
 	void createSkillsList();
-	void computeAvailablePoints(uint32 pointBase);
+	void computeAvailablePoints(uint8 pointBase);
 
 	size_t _availableSkillRank;
 	WidgetEditBox *_helpTextBox;

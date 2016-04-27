@@ -66,7 +66,7 @@ void CharSchool::reset() {
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(381));
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(381), 1.0f);
 
-	_choices->setSpellSchool(UINT32_MAX);
+	_choices->setSpellSchool(UINT8_MAX);
 }
 
 void CharSchool::hide() {
@@ -74,14 +74,14 @@ void CharSchool::hide() {
 
 	if (_returnCode == 1) {
 		// Set previous choice if any.
-		if (_choices->getSpellSchool() < UINT32_MAX)
+		if (_choices->getSpellSchool() < UINT8_MAX)
 			_buttons->setActive(_choices->getSpellSchool());
 	}
 }
 
 void CharSchool::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setSpellSchool(_buttons->getChoice());
+		_choices->setSpellSchool((uint8) _buttons->getChoice());
 		_returnCode = 2;
 		return;
 	}

@@ -52,44 +52,44 @@ public:
 	void setRace(uint32 race);
 	void setPortrait(const Common::UString &portrait);
 	void setClass(uint32 classId);
-	void setAlign(uint32 goodness, uint32 loyalty);
-	void setAbilities(std::vector<uint32> abilities, std::vector<uint32> racialAbilities);
-	void setPackage(uint32 package);
+	void setAlign(uint8 goodness, uint8 loyalty);
+	void setAbilities(std::vector<uint8> abilities, std::vector<uint8> racialAbilities);
+	void setPackage(uint8 package);
 	void setSkill(size_t skillIndex, uint8 rank);
 	void setNotUsedSkills(uint8 notUsedSkills);
 	void setFeat(uint32 feat);
-	void setSpellSchool(uint32 spellSchool);
+	void setSpellSchool(uint8 spellSchool);
 	void setDomains(uint8 domain1, uint8 domain2);
-	void setSpell(size_t spellLevel, uint32 spell);
+	void setSpell(size_t spellLevel, uint16 spell);
 
 	bool hasFeat(uint32 featId) const;
 	bool hasPrereqFeat(uint32 featId, bool isClassFeat);
 	uint32 getClass() const;
 	uint32 getRace() const;
-	bool getAlign(uint32 &goodness, uint32 &loyalty) const;
-	uint32 getAbility(uint32 ability) const;
-	uint32 getTotalAbility(uint32 ability) const;
+	bool getAlign(uint8 &goodness, uint8 &loyalty) const;
+	uint8 getAbility(size_t ability) const;
+	uint8 getTotalAbility(size_t ability) const;
 	int32 getAbilityModifier(Ability ability);
 	std::vector<uint32> getFeats();
-	uint32 getPackage() const;
+	uint8 getPackage() const;
 	uint32 getSpellSchool() const;
 
 private:
 	Creature *_creature;
-	std::vector<std::vector<uint32> > _spells;
+	std::vector<std::vector<uint16> > _spells;
 	std::vector<uint32> _normalFeats;
 	std::vector<uint32> _racialFeats;
 	std::vector<uint32> _classFeats;
-	std::vector<uint32> _abilities;
-	std::vector<uint32> _racialAbilities;
+	std::vector<uint8> _abilities;
+	std::vector<uint8> _racialAbilities;
 	std::vector<uint8> _skills;
 
 	uint32 _classId;
-	uint32 _goodness;
-	uint32 _loyalty;
-	uint32 _package;
+	uint8 _goodness;
+	uint8 _loyalty;
+	uint8 _package;
 	uint8 _notUsedSkills;
-	uint32 _spellSchool;
+	uint8 _spellSchool;
 	uint8 _domain1;
 	uint8 _domain2;
 
