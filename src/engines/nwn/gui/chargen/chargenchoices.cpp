@@ -38,6 +38,14 @@ namespace NWN {
 CharGenChoices::CharGenChoices() {
 	_creature = new Creature();
 
+	init();
+}
+
+CharGenChoices::~CharGenChoices() {
+	delete _creature;
+}
+
+void CharGenChoices::init() {
 	_classId = 0;
 
 	_goodness = 101;
@@ -55,19 +63,17 @@ CharGenChoices::CharGenChoices() {
 	_domain2 = UINT8_MAX;
 }
 
-CharGenChoices::~CharGenChoices() {
-	delete _creature;
 }
 
 void CharGenChoices::reset() {
 	delete _creature;
 	_creature = new Creature();
 
+	init();
+
 	_racialFeats.clear();
 	_normalFeats.clear();
 	_classFeats.clear();
-
-	_skills.assign(28, 0);
 }
 
 const Creature &CharGenChoices::getCharacter() {
@@ -120,8 +126,6 @@ void CharGenChoices::setClass(uint32 classId) {
 		if (!hasFeat(rowFeat.getInt("FeatIndex")))
 			_classFeats.push_back(rowFeat.getInt("FeatIndex"));
 	}
-
-	//TODO Init spell slots.
 }
 
 void CharGenChoices::setAlign(uint8 goodness, uint8 loyalty) {

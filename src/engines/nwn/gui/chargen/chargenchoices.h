@@ -93,6 +93,7 @@ private:
 	uint8 _domain1;
 	uint8 _domain2;
 
+	void init();
 };
 
 } // End of namespace NWN
