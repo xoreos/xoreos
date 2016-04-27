@@ -77,7 +77,7 @@ void CharSex::hide() {
 
 void CharSex::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setCharGender((Gender) _buttons->getChoice());
+		_choices->setGender((Gender) _buttons->getChoice());
 		_returnCode = 2;
 		return;
 	}

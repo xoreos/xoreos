@@ -80,7 +80,7 @@ void CharAlignment::reset() {
 	_buttons->setAllInactive();
 	_goodness = 101;
 	_loyalty = 101;
-	_choices->setCharAlign(_goodness, _loyalty);
+	_choices->setAlign(_goodness, _loyalty);
 }
 
 void CharAlignment::show() {
@@ -115,7 +115,7 @@ void CharAlignment::hide() {
 
 void CharAlignment::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setCharAlign(_goodness, _loyalty);
+		_choices->setAlign(_goodness, _loyalty);
 		_returnCode = 2;
 		return;
 	}

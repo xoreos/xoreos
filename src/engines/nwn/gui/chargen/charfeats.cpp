@@ -183,7 +183,7 @@ void CharFeats::callbackActive(Widget &widget) {
 			if (!featItem->movable())
 				continue;
 
-			_choices->setCharFeat(featItem->_feat.featId);
+			_choices->setFeat(featItem->_feat.featId);
 		}
 
 		_returnCode = 2;

@@ -122,7 +122,7 @@ void CharClass::createClassList() {
 
 void CharClass::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setCharClass(_classesId[_classesListBox->getSelected()]);
+		_choices->setClass(_classesId[_classesListBox->getSelected()]);
 		_returnCode = 2;
 		return;
 	}

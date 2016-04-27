@@ -48,19 +48,19 @@ public:
 
 	void reset();
 	const Creature &getCharacter();
-	void setCharGender(Gender gender);
-	void setCharRace(uint32 race);
-	void setCharPortrait(const Common::UString &portrait);
-	void setCharClass(uint32 classId);
-	void setCharAlign(uint32 goodness, uint32 loyalty);
-	void setCharAbilities(std::vector<uint32> abilities, std::vector<uint32> racialAbilities);
-	void setCharPackage(uint32 package);
-	void setCharSkill(size_t skillIndex, uint8 rank);
-	void setCharNotUsedSkills(uint8 notUsedSkills);
-	void setCharFeat(uint32 feat);
+	void setGender(Gender gender);
+	void setRace(uint32 race);
+	void setPortrait(const Common::UString &portrait);
+	void setClass(uint32 classId);
+	void setAlign(uint32 goodness, uint32 loyalty);
+	void setAbilities(std::vector<uint32> abilities, std::vector<uint32> racialAbilities);
+	void setPackage(uint32 package);
+	void setSkill(size_t skillIndex, uint8 rank);
+	void setNotUsedSkills(uint8 notUsedSkills);
+	void setFeat(uint32 feat);
 	void setSpellSchool(uint32 spellSchool);
-	void setCharDomains(uint8 domain1, uint8 domain2);
-	void setCharSpell(size_t spellLevel, uint32 spell);
+	void setDomains(uint8 domain1, uint8 domain2);
+	void setSpell(size_t spellLevel, uint32 spell);
 
 	bool hasFeat(uint32 featId) const;
 	bool hasPrereqFeat(uint32 featId, bool isClassFeat);

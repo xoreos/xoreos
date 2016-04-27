@@ -223,7 +223,7 @@ void CharSpells::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
 		for (size_t lvl = 0; lvl < _knownSpells.size(); ++lvl) {
 			for (std::vector<Spell>::iterator sp = _knownSpells[lvl].begin(); sp != _knownSpells[lvl].end(); ++sp) {
-				_choices->setCharSpell(lvl, (*sp).spellID);
+				_choices->setSpell(lvl, (*sp).spellID);
 			}
 		}
 		_returnCode = 2;

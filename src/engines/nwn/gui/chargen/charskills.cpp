@@ -185,7 +185,7 @@ void CharSkills::reset() {
 
 		WidgetListItemSkill *item = dynamic_cast<WidgetListItemSkill *>(*it);
 		spentPoint += (item->_isClassSkill) ? item->_skillRank : item->_skillRank * 2;
-		_choices->setCharSkill(item->_skillIndex, 0);
+		_choices->setSkill(item->_skillIndex, 0);
 		item->reset();
 	}
 	changeAvailableSkillRank(spentPoint);
@@ -194,9 +194,9 @@ void CharSkills::reset() {
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(58250));
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(58251));
 
-	_choices->setCharNotUsedSkills(0);
+	_choices->setNotUsedSkills(0);
 	for (size_t sk = 0; sk < 28; ++sk)
-		_choices->setCharSkill(sk, 0);
+		_choices->setSkill(sk, 0);
 }
 
 void CharSkills::hide() {
@@ -235,10 +235,10 @@ void CharSkills::callbackActive(Widget &widget) {
 			size_t skillIndex         = item->_skillIndex;
 			uint32 skillRank = item->_skillRank;
 
-			_choices->setCharSkill(skillIndex, skillRank);
+			_choices->setSkill(skillIndex, skillRank);
 		}
 
-		_choices->setCharNotUsedSkills(_availableSkillRank);
+		_choices->setNotUsedSkills(_availableSkillRank);
 
 		_returnCode = 2;
 		return;

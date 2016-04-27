@@ -97,7 +97,7 @@ CharDomain::~CharDomain() {
 }
 
 void CharDomain::reset() {
-	_choices->setCharDomains(UINT8_MAX, UINT8_MAX);
+	_choices->setDomains(UINT8_MAX, UINT8_MAX);
 }
 
 void CharDomain::fixWidgetType(const Common::UString &tag, NWN::GUI::WidgetType &type) {
@@ -108,7 +108,7 @@ void CharDomain::fixWidgetType(const Common::UString &tag, NWN::GUI::WidgetType 
 void CharDomain::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
 		assert(_chosenDomains.size() == 2);
-		_choices->setCharDomains(_chosenDomains.front()->_domainId, _chosenDomains.back()->_domainId);
+		_choices->setDomains(_chosenDomains.front()->_domainId, _chosenDomains.back()->_domainId);
 		_returnCode = 2;
 		return;
 	}

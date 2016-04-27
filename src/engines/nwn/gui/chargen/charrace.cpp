@@ -79,7 +79,7 @@ void CharRace::reset() {
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(485), 1.0f);
 
 	// Set human as default race.
-	_choices->setCharRace(6);
+	_choices->setRace(6);
 }
 
 void CharRace::hide() {
@@ -94,7 +94,7 @@ void CharRace::hide() {
 
 void CharRace::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setCharRace(_buttons->getChoice());
+		_choices->setRace(_buttons->getChoice());
 		_returnCode = 2;
 		return;
 	}

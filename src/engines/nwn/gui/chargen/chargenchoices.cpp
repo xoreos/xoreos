@@ -74,11 +74,11 @@ const Creature &CharGenChoices::getCharacter() {
 	return *_creature;
 }
 
-void CharGenChoices::setCharGender(Gender gender) {
+void CharGenChoices::setGender(Gender gender) {
 	_creature->setGender(gender);
 }
 
-void CharGenChoices::setCharRace(uint32 race) {
+void CharGenChoices::setRace(uint32 race) {
 	if (race == kRaceInvalid) {
 		warning("Setting invalid race: %d", race);
 		return;
@@ -98,11 +98,11 @@ void CharGenChoices::setCharRace(uint32 race) {
 	}
 }
 
-void CharGenChoices::setCharPortrait(const Common::UString &portrait) {
+void CharGenChoices::setPortrait(const Common::UString &portrait) {
 	_creature->setPortrait(portrait);
 }
 
-void CharGenChoices::setCharClass(uint32 classId) {
+void CharGenChoices::setClass(uint32 classId) {
 	_classId = classId;
 
 	// Add granted class feats.
@@ -124,30 +124,30 @@ void CharGenChoices::setCharClass(uint32 classId) {
 	//TODO Init spell slots.
 }
 
-void CharGenChoices::setCharAlign(uint32 goodness, uint32 loyalty) {
+void CharGenChoices::setAlign(uint32 goodness, uint32 loyalty) {
 	_goodness = goodness;
 	_loyalty  = loyalty;
 }
 
-void CharGenChoices::setCharAbilities(std::vector<uint32> abilities,
+void CharGenChoices::setAbilities(std::vector<uint32> abilities,
                                       std::vector<uint32> racialAbilities) {
 	_abilities = abilities;
 	_racialAbilities = racialAbilities;
 }
 
-void CharGenChoices::setCharPackage(uint32 package) {
+void CharGenChoices::setPackage(uint32 package) {
 	_package = package;
 }
 
-void CharGenChoices::setCharSkill(size_t skillIndex, uint8 rank) {
+void CharGenChoices::setSkill(size_t skillIndex, uint8 rank) {
 	_skills[skillIndex] = rank;
 }
 
-void CharGenChoices::setCharNotUsedSkills(uint8 notUsedSkills) {
+void CharGenChoices::setNotUsedSkills(uint8 notUsedSkills) {
 	_notUsedSkills = notUsedSkills;
 }
 
-void CharGenChoices::setCharFeat(uint32 feat) {
+void CharGenChoices::setFeat(uint32 feat) {
 	_normalFeats.push_back(feat);
 }
 
@@ -155,12 +155,12 @@ void CharGenChoices::setSpellSchool(uint32 spellSchool) {
 	_spellSchool = spellSchool;
 }
 
-void CharGenChoices::setCharDomains(uint8 domain1, uint8 domain2) {
+void CharGenChoices::setDomains(uint8 domain1, uint8 domain2) {
 	_domain1 = domain1;
 	_domain2 = domain2;
 }
 
-void CharGenChoices::setCharSpell(size_t spellLevel, uint32 spell) {
+void CharGenChoices::setSpell(size_t spellLevel, uint32 spell) {
 	if (_spells.size() < spellLevel + 1)
 		_spells.resize(spellLevel + 1);
 

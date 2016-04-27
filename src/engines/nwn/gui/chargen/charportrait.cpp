@@ -116,7 +116,7 @@ CharPortrait::~CharPortrait() {
 
 void CharPortrait::reset() {
 	// Set default portrait.
-	_choices->setCharPortrait("gui_po_nwnlogo_");
+	_choices->setPortrait("gui_po_nwnlogo_");
 	// Disable the OK button.
 	getButton("OkButton", true)->setDisabled(true);
 }
@@ -144,7 +144,7 @@ void CharPortrait::setMainTexture(const Common::UString &texture) {
 
 void CharPortrait::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setCharPortrait(_selectedPortrait);
+		_choices->setPortrait(_selectedPortrait);
 		_returnCode = 2;
 		return;
 	}

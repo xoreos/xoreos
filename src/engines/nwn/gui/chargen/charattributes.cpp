@@ -80,7 +80,7 @@ void CharAttributes::reset() {
 
 void CharAttributes::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setCharAbilities(_attributes, _attrAdjust);
+		_choices->setAbilities(_attributes, _attrAdjust);
 		_returnCode = 2;
 		return;
 	}

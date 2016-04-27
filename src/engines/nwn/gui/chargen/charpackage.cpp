@@ -63,7 +63,7 @@ void CharPackage::reset() {
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(483));
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(487));
 
-	_choices->setCharPackage(10000);
+	_choices->setPackage(10000);
 
 	for (std::vector<CharGenBase *>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
 		delete *g;
@@ -79,7 +79,7 @@ void CharPackage::show() {
 
 void CharPackage::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setCharPackage(_packageID[_packageListBox->getSelected()]);
+		_choices->setPackage(_packageID[_packageListBox->getSelected()]);
 
 		_returnCode = 2;
 		return;
