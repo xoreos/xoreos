@@ -46,6 +46,8 @@ public:
 	CharGenChoices();
 	~CharGenChoices();
 
+	void applyChoices();
+
 	void reset();
 	const Creature &getCharacter();
 	void setGender(Gender gender);

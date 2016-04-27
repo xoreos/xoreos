@@ -63,6 +63,56 @@ void CharGenChoices::init() {
 	_domain2 = UINT8_MAX;
 }
 
+void CharGenChoices::applyChoices() {
+	// Rise level
+	_creature->changeClassLevel(_classId, 1);
+
+	// Set Alignment
+	_creature->setGoodEvil(_goodness);
+	_creature->setLawChaos(_loyalty);
+
+	// Set Abilities
+	size_t ab = 0;
+	for (;ab < 6; ++ab) {
+		Ability ability = static_cast<Ability>(ab);
+		_creature->setAbility(ability, _abilities[ab] + _racialAbilities[ab]);
+	}
+
+	// Set package
+	if (_package != UINT8_MAX)
+		_creature->setStartingPackage(_package);
+
+	//TODO Apply package
+
+	// Set skills
+	size_t skillID = 0;
+	for (std::vector<uint8>::iterator s = _skills.begin(); s != _skills.end(); ++s, ++skillID)
+		_creature->setSkillRank(skillID, *s);
+
+	// Set feats
+	for (std::vector<uint32>::iterator f = _classFeats.begin(); f != _classFeats.end(); ++f)
+		_creature->setFeat(*f);
+
+	for (std::vector<uint32>::iterator f = _racialFeats.begin(); f != _racialFeats.end(); ++f)
+		_creature->setFeat(*f);
+
+	for (std::vector<uint32>::iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
+		_creature->setFeat(*f);
+
+	// Set domains if any.
+	if (_domain1 != UINT8_MAX && _domain2 != UINT8_MAX)
+		_creature->setDomains(_classId, _domain1, _domain2);
+
+	// Set spells if any.
+	if (!_spells.empty()) {
+		for (size_t lvl = 0; lvl < _spells.size(); ++lvl) {
+			for (size_t s = 0; s < _spells[lvl].size(); ++s)
+				_creature->setKnownSpell(_classId, lvl, _spells[lvl][s]);
+		}
+
+		if (_spellSchool != UINT8_MAX)
+			_creature->setSchool(_classId, _spellSchool);
+	}
 }
 
 void CharGenChoices::reset() {
