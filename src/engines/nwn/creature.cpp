@@ -56,6 +56,9 @@ namespace Engines {
 
 namespace NWN {
 
+Creature::Class::Class() : domain1(UINT8_MAX), domain2(UINT8_MAX), school(UINT8_MAX) {
+}
+
 Creature::Associate::Associate(AssociateType t, Creature *a) : type(t), associate(a) {
 }
 
@@ -120,6 +123,9 @@ void Creature::init() {
 
 	_appearanceID = Aurora::kFieldIDInvalid;
 	_phenotype    = Aurora::kFieldIDInvalid;
+
+	_startingPackage = 0;
+	_skills.assign(28, 0);
 
 	_colorSkin    = Aurora::kFieldIDInvalid;
 	_colorHair    = Aurora::kFieldIDInvalid;
@@ -243,6 +249,96 @@ int32 Creature::getCurrentHP() const {
 
 int32 Creature::getMaxHP() const {
 	return _baseHP + _bonusHP;
+}
+
+uint8 Creature::getStartingPackage() const {
+	return _startingPackage;
+}
+
+void Creature::setStartingPackage(uint8 package) {
+	_startingPackage = package;
+}
+
+void Creature::getDomains(uint32 classID, uint8 &domain1, uint8 &domain2) {
+	Class *creatureClass = findClass(classID);
+	if (!creatureClass) {
+		domain1 = UINT8_MAX;
+		domain2 = UINT8_MAX;
+		return;
+	}
+
+	domain1 = creatureClass->domain1;
+	domain2 = creatureClass->domain2;
+}
+
+void Creature::setDomains(uint32 classID, uint8 domain1, uint8 domain2) {
+	Class *creatureClass = findClass(classID);
+	if (!creatureClass)
+		return;
+
+	creatureClass->domain1 = domain1;
+	creatureClass->domain2 = domain2;
+}
+
+bool Creature::hasSpell(uint32 classID, size_t spellLevel, uint16 spell) {
+	Class *creatureClass = findClass(classID);
+	if (!creatureClass)
+		return false;
+
+	if (creatureClass->knownList.size() < spellLevel)
+		return false;
+
+	std::vector<uint16> &spellLvlList = creatureClass->knownList[spellLevel];
+	// Check if the creature already knows the spell.
+	for (std::vector<uint16>::iterator s = spellLvlList.begin(); s != spellLvlList.end(); ++s)
+		if (*s == spell)
+			return true;
+
+	return false;
+}
+
+void Creature::setSchool(uint32 classID, uint8 school) {
+	Class *creatureClass = findClass(classID);
+	if (!creatureClass)
+		return;
+
+	creatureClass->school = school;
+}
+
+void Creature::setKnownSpell(uint32 classID, size_t spellLevel, uint16 spell) {
+	Class *creatureClass = findClass(classID);
+	if (!creatureClass)
+		return;
+
+	if (creatureClass->knownList.size() < spellLevel)
+		creatureClass->knownList.resize(spellLevel);
+
+	std::vector<uint16> &spellLvlList = creatureClass->knownList[spellLevel];
+	// Check if the creature already knows the spell.
+	for (std::vector<uint16>::iterator s = spellLvlList.begin(); s != spellLvlList.end(); ++s)
+		if (*s == spell)
+			return;
+
+	spellLvlList.push_back(spell);
+	return;
+}
+
+void Creature::setMemorizedSpell(uint32 classID, size_t spellLevel, uint16 spell) {
+	Class *creatureClass = findClass(classID);
+	if (!creatureClass)
+		return;
+
+	if (creatureClass->memorizedList.size() < spellLevel)
+		creatureClass->memorizedList.resize(spellLevel);
+
+	std::vector<uint16> &spellLvlList = creatureClass->memorizedList[spellLevel];
+	// Check if the creature already knows the spell.
+	for (std::vector<uint16>::iterator s = spellLvlList.begin(); s != spellLvlList.end(); ++s)
+		if (*s == spell)
+			return;
+
+	spellLvlList.push_back(spell);
+	return;
 }
 
 void Creature::setArea(Area *area) {
@@ -434,6 +530,17 @@ void Creature::getArmorModels() {
 		_colorCloth1   = item.getColor(Item::kColorCloth1);
 		_colorCloth2   = item.getColor(Item::kColorCloth2);
 	}
+}
+
+Creature::Class *Creature::findClass(uint32 classID) {
+	for (std::vector<Class>::iterator c = _classes.begin(); c != _classes.end(); ++c) {
+		if (c->classID != classID)
+			continue;
+
+		return &(*c);
+	}
+
+	return 0;
 }
 
 void Creature::finishPLTs(const std::list<Graphics::Aurora::TextureHandle> &plts) {
@@ -689,6 +796,9 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Classes
 	loadClasses(gff, _classes, _hitDice);
 
+	// Package
+	_startingPackage = gff.getUint("StartingPackage", _startingPackage);
+
 	// Skills
 	if (gff.hasField("SkillList")) {
 		_skills.clear();
@@ -837,6 +947,27 @@ uint16 Creature::getClassLevel(uint32 classID) const {
 	return 0;
 }
 
+void Creature::changeClassLevel(uint32 classID, int16 levelChange) {
+	for (std::vector<Class>::iterator c = _classes.begin(); c != _classes.end(); ++c) {
+		if (c->classID != classID)
+			continue;
+
+		if (c->level + levelChange >= 0)
+			c->level += levelChange;
+
+		return;
+	}
+
+	if (levelChange < 0)
+		return;
+
+	// If there is no level in the class, create it.
+	Class newClass = Class();
+	newClass.classID = classID;
+	newClass.level = levelChange;
+	_classes.push_back(newClass);
+}
+
 const Common::UString &Creature::getConvClass() const {
 	const uint32 classID = _classes.front().classID;
 	const uint32 strRef  = TwoDAReg.get2DA("classes").getRow(classID).getInt("Name");
@@ -866,8 +997,16 @@ uint8 Creature::getGoodEvil() const {
 	return _goodEvil;
 }
 
+void Creature::setGoodEvil(uint8 goodness) {
+	_goodEvil = goodness;
+}
+
 uint8 Creature::getLawChaos() const {
 	return _lawChaos;
+}
+
+void Creature::setLawChaos(uint8 loyalty) {
+	_lawChaos = loyalty;
 }
 
 Common::UString Creature::getClassString() const {
@@ -888,11 +1027,31 @@ uint8 Creature::getAbility(Ability ability) const {
 	return _abilities[ability];
 }
 
+void Creature::setAbility(Ability ability, uint8 score) {
+	assert((ability >= 0) && ability < kAbilityMAX);
+
+	_abilities[ability] = score;
+}
+
 int8 Creature::getSkillRank(uint32 skill) const {
 	if (skill >= _skills.size())
 		return -1;
 
 	return _skills[skill];
+}
+
+void Creature::setSkillRank(size_t skill, uint8 rank) {
+	if (skill >= _skills.size())
+		return;
+
+	_skills[skill] = rank;
+}
+
+void Creature::setFeat(uint32 feat) {
+	if (hasFeat(feat))
+		return;
+
+	_feats.push_back(feat);
 }
 
 bool Creature::hasFeat(uint32 feat) const {

@@ -101,6 +101,8 @@ public:
 	void getClass(uint32 position, uint32 &classID, uint16 &level) const;
 	/** Get the creature's level for this class. */
 	uint16 getClassLevel(uint32 classID) const;
+	/** Set the creature's  level for this class. */
+	void changeClassLevel(uint32 classID, int16 levelChange);
 
 	/** Return the creature's class as needed in conversations, e.g. "Barbarian". */
 	const Common::UString &getConvClass() const;
@@ -117,8 +119,14 @@ public:
 
 	/** Return a creature's ability score. */
 	uint8 getAbility(Ability ability) const;
+	/** Set the creature's ability score. */
+	void setAbility(Ability ability, uint8 score);
 	/** Return the creature's rank in this skill. */
 	 int8 getSkillRank(uint32 skill) const;
+	/** Set the creature's skill rank. */
+	void setSkillRank(size_t skill, uint8 rank);
+	/** Append a feat to the creature. */
+	void setFeat(uint32 feat);
 	/** Does the creature have this feat? */
 	bool  hasFeat(uint32 feat) const;
 
@@ -126,7 +134,11 @@ public:
 	const Common::UString &getDeity() const;
 
 	uint8 getGoodEvil() const;
+	/** Set the creature's good-evil alignment. */
+	void  setGoodEvil(uint8 goodness);
 	uint8 getLawChaos() const;
+	/** Set the creature's law-chaos alignment. */
+	void  setLawChaos(uint8 loyalty);
 
 	bool isPC() const; ///< Is the creature a player character?
 	bool isDM() const; ///< Is the creature a dungeon master?
@@ -141,6 +153,25 @@ public:
 	int32 getCurrentHP() const;
 	/** Return the max HP this creature can have. */
 	int32 getMaxHP() const;
+
+	/** Return the creature's starting package. */
+	uint8 getStartingPackage() const;
+	/** Set the creature's starting package. */
+	void setStartingPackage(uint8 package);
+
+	/** Get clerical domains. */
+	void getDomains(uint32 classID, uint8 &domain1, uint8 &domain2);
+	/** Set clerical domains. */
+	void setDomains(uint32 classID, uint8 domain1, uint8 domain2);
+
+	/** Do the creature know the spell? */
+	bool hasSpell(uint32 classID, size_t spellLevel, uint16 spell);
+	/** Set the creature's school. */
+	void setSchool(uint32 classID, uint8 school);
+	/** Set a creature's known spell. */
+	void setKnownSpell(uint32 classID, size_t spellLevel, uint16 spell);
+	/** Set a creature's memorized spell. */
+	void setMemorizedSpell(uint32 classID, size_t spellLevel, uint16 spell);
 
 	// Object/Object interactions
 
@@ -221,6 +252,16 @@ private:
 	struct Class {
 		uint32 classID; ///< Index into classes.2da.
 		uint16 level;   ///< Levels of that class.
+
+		uint8 domain1; ///< Cleric's domain.
+		uint8 domain2; ///< Cleric's domain.
+
+		uint8 school; ///< Wizard's spell school.
+
+		std::vector<std::vector<uint16> > knownList;     ///< Known spells list.
+		std::vector<std::vector<uint16> > memorizedList; ///< Memorized spells list
+
+		Class();
 	};
 
 	/** An associate. */
@@ -282,6 +323,8 @@ private:
 
 	uint32 _appearanceID; ///< The creature's general appearance.
 	uint32 _phenotype;    ///< The creature's phenotype.
+
+	uint8 _startingPackage; ///< The package chosen at creature's creation.
 
 	std::vector<BodyPart> _bodyParts; ///< The creature's body parts.
 
@@ -360,6 +403,9 @@ private:
 
 	void getPartModels(); ///< Construct all body part models' resource names.
 	void getArmorModels(); ///< Populate the armor info for body parts.
+
+	/** Find the creature's class if any. */
+	Class *findClass(uint32 classID);
 
 	/** Finished those paletted textures. */
 	void finishPLTs(const std::list<Graphics::Aurora::TextureHandle> &plts);
