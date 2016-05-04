@@ -50,6 +50,7 @@ WidgetListItemBaseButton::WidgetListItemBaseButton(::Engines::GUI &gui,
 	assert(_button);
 
 	_button->setClickable(true);
+	_channelHandle = Sound::ChannelHandle();
 }
 
 WidgetListItemBaseButton::~WidgetListItemBaseButton() {
@@ -78,7 +79,10 @@ void WidgetListItemBaseButton::setPosition(float x, float y, float z) {
 void WidgetListItemBaseButton::mouseDown(uint8 state, float x, float y) {
 	Engines::Widget::mouseDown(state, x, y);
 
-	playSound(_sound, Sound::kSoundTypeSFX);
+	if (SoundMan.isValidChannel(_channelHandle))
+		SoundMan.stopChannel(_channelHandle);
+
+	_channelHandle = playSound(_sound, Sound::kSoundTypeSFX);
 }
 
 float WidgetListItemBaseButton::getWidth() const {
@@ -95,6 +99,10 @@ void WidgetListItemBaseButton::setTag(const Common::UString &tag) {
 	_button->setTag(tag);
 }
 
+void WidgetListItemBaseButton::setSound(const Common::UString &sound) {
+	_sound = sound;
+}
+
 bool WidgetListItemBaseButton::activate() {
 	if (!WidgetListItem::activate())
 		return false;
@@ -109,6 +117,8 @@ bool WidgetListItemBaseButton::deactivate() {
 		return false;
 
 	_button->setState("");
+	if (SoundMan.isPlaying(_channelHandle))
+		SoundMan.stopChannel(_channelHandle);
 
 	return true;
 }

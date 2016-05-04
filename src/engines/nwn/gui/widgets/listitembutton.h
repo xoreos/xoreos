@@ -25,6 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_WIDGETLISTITEMBUTTON_H
 #define ENGINES_NWN_GUI_WIDGETS_WIDGETLISTITEMBUTTON_H
 
+#include "src/sound/sound.h"
 #include "src/engines/nwn/gui/widgets/listbox.h"
 
 namespace Engines {
@@ -51,6 +52,7 @@ public:
 	float getHeight() const;
 
 	void setTag(const Common::UString &tag);
+	void setSound(const Common::UString &sound);
 
 protected:
 	bool activate();
@@ -60,7 +62,8 @@ protected:
 
 private:
 	float _spacing;
-	const Common::UString _sound;
+	Common::UString _sound;
+	Sound::ChannelHandle _channelHandle;
 };
 
 enum AdditionalButton {
