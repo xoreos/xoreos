@@ -40,6 +40,7 @@ namespace Engines {
 namespace NWN {
 
 class Creature;
+class Module;
 
 class CharGenChoices {
 public:
@@ -64,6 +65,7 @@ public:
 	void setDomains(uint8 domain1, uint8 domain2);
 	void setSpell(size_t spellLevel, uint16 spell);
 	void setSoundSet(uint32 soundSetID);
+	void useCharacter(Module *module);
 
 	bool hasFeat(uint32 featId) const;
 	bool hasPrereqFeat(uint32 featId, bool isClassFeat);

@@ -28,6 +28,7 @@
 #include "src/aurora/2dafile.h"
 
 #include "src/engines/nwn/creature.h"
+#include "src/engines/nwn/module.h"
 
 #include "src/engines/nwn/gui/chargen/chargenchoices.h"
 
@@ -228,6 +229,12 @@ void CharGenChoices::setSpell(size_t spellLevel, uint16 spell) {
 void CharGenChoices::setSoundSet(uint32 soundSetID) {
 	_soundSet = soundSetID;
 }
+
+void CharGenChoices::useCharacter(Module *module) {
+	module->usePC(_creature);
+	_characterUsed = true;
+}
+
 bool CharGenChoices::hasFeat(uint32 featId) const {
 	for (std::vector<uint32>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
 		if (*f == featId)
