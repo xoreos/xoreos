@@ -26,8 +26,10 @@
 
 #include "src/aurora/2dareg.h"
 #include "src/aurora/2dafile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/engines/nwn/creature.h"
+#include "src/engines/nwn/item.h"
 #include "src/engines/nwn/module.h"
 
 #include "src/engines/nwn/gui/chargen/chargenchoices.h"
@@ -118,6 +120,20 @@ void CharGenChoices::applyChoices() {
 
 	// Set sound set.
 	_creature->setSoundSet(_soundSet);
+
+	// Set appearance.
+	// TODO: Apply choices from user and not default values.
+	_creature->setAppearance(_creature->getRace());
+	Aurora::GFF3File gff = Aurora::GFF3File("NW_CLOTH001", Aurora::kFileTypeUTI);
+	Item *armor = new Item(gff.getTopLevel());
+	_creature->addEquippedItem(armor);
+
+	_creature->setPhenotype(0);
+	_creature->setColorSkin(0);
+	_creature->setColorHair(0);
+	_creature->setColorTatto1(0);
+	_creature->setColorTatto2(0);
+	_creature->setHead(1);
 }
 
 void CharGenChoices::reset() {
