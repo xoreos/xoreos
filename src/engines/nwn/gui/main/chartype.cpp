@@ -52,7 +52,12 @@ void CharTypeMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "CreateNewButton") {
-		sub(*_charGen);
+		if (sub(*_charGen, 0, false) == 2) {
+			_returnCode = 2;
+			return;
+		}
+
+		show();
 		return;
 	}
 

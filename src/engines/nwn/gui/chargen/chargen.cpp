@@ -48,8 +48,6 @@ CharGenMenu::CharGenMenu(Module &module, ::Engines::Console *console) :
 
 	load("cg_main");
 
-
-	// TODO: Play
 	getWidget("PlayButton" , true)->setDisabled(true);
 
 	init();
@@ -76,8 +74,14 @@ void CharGenMenu::callbackActive(Widget &widget) {
 	for (size_t it = 0; it < _chargenGuis.size(); ++it) {
 		if (widget.getTag() == _charButtons[it]->getTag()) {
 			if (sub(*_chargenGuis[it]) == 2) {
-				if (it == _chargenGuis.size() - 1)
+				// Unblocked/blocked PlayButton.
+				if (it == _chargenGuis.size() - 1) {
+					getButton("PlayButton")->setDisabled(false);
 					return;
+				} else {
+					getButton("PlayButton")->setDisabled(true);
+				}
+
 				_charButtons[it + 1]->setDisabled(false);
 				_chargenGuis[it + 1]->reset();
 				for (size_t next = it + 2; next < _charButtons.size(); ++next) {
@@ -96,6 +100,13 @@ void CharGenMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "ResetButton") {
 		reset();
+		return;
+	}
+
+	if (widget.getTag() == "PlayButton") {
+		_choices->applyChoices();
+		_choices->useCharacter(_module);
+		_returnCode = 2;
 		return;
 	}
 }
