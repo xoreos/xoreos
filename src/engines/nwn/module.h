@@ -76,6 +76,7 @@ public:
 	void load(const Common::UString &module);
 	/** Use this character as the player character. */
 	void usePC(const Common::UString &bic, bool local);
+	void usePC(Creature *creature);
 	/** Exit the currently running module. */
 	void exit();
 	// '---

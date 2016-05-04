@@ -287,6 +287,17 @@ void Module::usePC(const Common::UString &bic, bool local) {
 	addObject(*_pc);
 }
 
+void Module::usePC(Creature *creature) {
+	unloadPC();
+
+	_pc = creature;
+
+	setPCTokens();
+	LangMan.setCurrentGender(_pc->isFemale() ? Aurora::kLanguageGenderFemale : Aurora::kLanguageGenderMale);
+
+	addObject(*_pc);
+}
+
 Creature *Module::getPC() {
 	return _pc;
 }
