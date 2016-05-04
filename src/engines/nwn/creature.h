@@ -140,6 +140,9 @@ public:
 	/** Set the creature's law-chaos alignment. */
 	void  setLawChaos(uint8 loyalty);
 
+	/** Set the creature's sound set. */
+	void setSoundSet(uint32 soundSet);
+
 	bool isPC() const; ///< Is the creature a player character?
 	bool isDM() const; ///< Is the creature a dungeon master?
 
@@ -172,6 +175,24 @@ public:
 	void setKnownSpell(uint32 classID, size_t spellLevel, uint16 spell);
 	/** Set a creature's memorized spell. */
 	void setMemorizedSpell(uint32 classID, size_t spellLevel, uint16 spell);
+
+	/** Set the creature's appearance. */
+	void setAppearance(uint32 appearanceID);
+	/** Set the creature's phenotype. */
+	void setPhenotype(uint32 phenotype);
+	/** Set the creature's color skin. */
+	void setColorSkin(uint32 colorSkin);
+	/** Set the creature's color hair. */
+	void setColorHair(uint32 colorHair);
+	/** Set the creature's color tattoo 1. */
+	void setColorTatto1(uint32 colorTattoo1);
+	/** Set the creature's color tatto 2. */
+	void setColorTatto2(uint32 colorTattoo2);
+	/** Set the creature's head. */
+	void setHead(uint32 headID);
+
+	/** Add an equippement to the creature. */
+	void addEquippedItem(Item *item);
 
 	// Object/Object interactions
 

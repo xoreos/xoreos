@@ -341,6 +341,38 @@ void Creature::setMemorizedSpell(uint32 classID, size_t spellLevel, uint16 spell
 	return;
 }
 
+void Creature::setAppearance(uint32 appearanceID) {
+	_appearanceID = appearanceID;
+}
+
+void Creature::setPhenotype(uint32 phenotype) {
+	_phenotype = phenotype;
+}
+
+void Creature::setColorSkin(uint32 colorSkin) {
+	_colorSkin = colorSkin;
+}
+
+void Creature::setColorHair(uint32 colorHair) {
+	_colorHair = colorHair;
+}
+
+void Creature::setColorTatto1(uint32 colorTattoo1) {
+	_colorTattoo1 = colorTattoo1;
+}
+
+void Creature::setColorTatto2(uint32 colorTattoo2) {
+	_colorTattoo2 = colorTattoo2;
+}
+
+void Creature::setHead(uint32 headID) {
+	_bodyParts[kBodyPartHead].id = headID;
+}
+
+void Creature::addEquippedItem(Item *item) {
+	_equippedItems.push_back(item);
+}
+
 void Creature::setArea(Area *area) {
 	Object::setArea(area);
 
@@ -1007,6 +1039,10 @@ uint8 Creature::getLawChaos() const {
 
 void Creature::setLawChaos(uint8 loyalty) {
 	_lawChaos = loyalty;
+}
+
+void Creature::setSoundSet(uint32 soundSet) {
+	_soundSet = soundSet;
 }
 
 Common::UString Creature::getClassString() const {
