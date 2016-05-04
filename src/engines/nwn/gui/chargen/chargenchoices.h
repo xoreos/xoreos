@@ -63,6 +63,7 @@ public:
 	void setSpellSchool(uint8 spellSchool);
 	void setDomains(uint8 domain1, uint8 domain2);
 	void setSpell(size_t spellLevel, uint16 spell);
+	void setSoundSet(uint32 soundSetID);
 
 	bool hasFeat(uint32 featId) const;
 	bool hasPrereqFeat(uint32 featId, bool isClassFeat);
@@ -87,6 +88,7 @@ private:
 	std::vector<uint8> _skills;
 
 	uint32 _classId;
+	uint32 _soundSet;
 	uint8 _goodness;
 	uint8 _loyalty;
 	uint8 _package;

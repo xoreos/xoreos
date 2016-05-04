@@ -113,6 +113,9 @@ void CharGenChoices::applyChoices() {
 		if (_spellSchool != UINT8_MAX)
 			_creature->setSchool(_classId, _spellSchool);
 	}
+
+	// Set sound set.
+	_creature->setSoundSet(_soundSet);
 }
 
 void CharGenChoices::reset() {
@@ -221,6 +224,9 @@ void CharGenChoices::setSpell(size_t spellLevel, uint16 spell) {
 	_spells[spellLevel].push_back(spell);
 }
 
+void CharGenChoices::setSoundSet(uint32 soundSetID) {
+	_soundSet = soundSetID;
+}
 bool CharGenChoices::hasFeat(uint32 featId) const {
 	for (std::vector<uint32>::const_iterator f = _normalFeats.begin(); f != _normalFeats.end(); ++f)
 		if (*f == featId)
