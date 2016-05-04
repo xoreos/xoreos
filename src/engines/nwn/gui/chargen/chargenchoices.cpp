@@ -35,14 +35,15 @@ namespace Engines {
 
 namespace NWN {
 
-CharGenChoices::CharGenChoices() {
+CharGenChoices::CharGenChoices() : _characterUsed(false) {
 	_creature = new Creature();
 
 	init();
 }
 
 CharGenChoices::~CharGenChoices() {
-	delete _creature;
+	if (!_characterUsed)
+		delete _creature;
 }
 
 void CharGenChoices::init() {
