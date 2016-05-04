@@ -221,6 +221,8 @@ void Creature::setRace(uint32 race) {
 
 void Creature::setPortrait(const Common::UString &portrait) {
 	_portrait = portrait;
+
+	_lastChangedGUIDisplay = EventMan.getTimestamp();
 }
 
 const Common::UString &Creature::getPortrait() const {
