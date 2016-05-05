@@ -206,8 +206,13 @@ void CharGenChoices::setAlign(uint8 goodness, uint8 loyalty) {
 
 void CharGenChoices::setAbilities(std::vector<uint8> abilities,
                                   std::vector<uint8> racialAbilities) {
+
 	_abilities = abilities;
 	_racialAbilities = racialAbilities;
+
+	// Exchange intelligence and wisdom to be consistent with kAbility.
+	_abilities[4] = abilities[3];
+	_abilities[3] = abilities[4];
 }
 
 void CharGenChoices::setPackage(uint8 package) {
