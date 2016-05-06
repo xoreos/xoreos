@@ -22,8 +22,6 @@
  *  Feat popup GUI.
  */
 
-#include "src/common/util.h"
-
 #include "src/aurora/talkman.h"
 #include "src/aurora/2dareg.h"
 #include "src/aurora/2dafile.h"
@@ -39,7 +37,7 @@ namespace NWN {
 CharFeatsPopup::CharFeatsPopup(::Engines::Console *console) : GUI(console) {
 	load("cg_feats_popup");
 
-	setPosition(0, 0, -120);
+	setPosition(0, 0, -220);
 
 	_chosenFeat.featId = 0xFFFFFFFF;
 
@@ -51,9 +49,6 @@ CharFeatsPopup::~CharFeatsPopup() {
 
 void CharFeatsPopup::setFeats(std::vector<Feat> feats) {
 	_feats = feats;
-	warning("adding to popup.");
-	for (std::vector<Feat>::iterator f = _feats.begin(); f != _feats.end(); ++f)
-		warning("feat %s, id %u", (*f).name.c_str(), (*f).featId);
 
 	Engines::NWN::WidgetListBox *featBox = getListBox("FeatsList", true);
 	featBox->lock();
