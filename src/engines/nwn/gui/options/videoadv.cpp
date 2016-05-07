@@ -107,7 +107,7 @@ void OptionsVideoAdvancedMenu::fixWidgetType(const Common::UString &tag, WidgetT
 
 void OptionsVideoAdvancedMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "AntiAliasSlider") {
-		int maxFSAA = GfxMan.getMaxFSAA();
+		int maxFSAA = WindowMan.getMaxFSAA();
 
 		if (maxFSAA <= 0)
 			// No antialiasing available
