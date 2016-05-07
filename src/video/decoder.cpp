@@ -228,8 +228,8 @@ void VideoDecoder::getQuadDimensions(float &width, float &height) const {
 		// No scaling requested
 		return;
 
-	float screenWidth  = GfxMan.getScreenWidth();
-	float screenHeight = GfxMan.getScreenHeight();
+	float screenWidth  = WindowMan.getWindowWidth();
+	float screenHeight = WindowMan.getWindowHeight();
 
 	if ((_scale == kScaleUp) && (width <= screenWidth) && (height <= screenHeight))
 		// Only upscaling requested, but not necessary
