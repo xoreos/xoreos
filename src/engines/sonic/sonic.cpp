@@ -185,7 +185,7 @@ void SonicEngine::run() {
 
 void SonicEngine::init() {
 	// Force to the screen size of the Nintendo DS (2 screens of 256x192)
-	GfxMan.setScreenSize(kScreenWidth, 2 * kScreenHeight);
+	WindowMan.setWindowSize(kScreenWidth, 2 * kScreenHeight);
 
 	LoadProgress progress(8);
 
