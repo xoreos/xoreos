@@ -40,6 +40,7 @@
 #include "src/graphics/types.h"
 #include "src/graphics/graphics.h"
 #include "src/graphics/glcontainer.h"
+#include "src/graphics/windowman.h"
 
 DECLARE_SINGLETON(Events::EventsManager)
 
@@ -157,10 +158,10 @@ bool EventsManager::parseEventQuit(const Event &event) {
 bool EventsManager::parseEventGraphics(const Event &event) {
 	if (event.type == kEventKeyDown) {
 		if ((event.key.keysym.mod & KMOD_ALT) && event.key.keysym.sym == SDLK_RETURN) {
-			GfxMan.toggleFullScreen();
+			WindowMan.toggleFullScreen();
 			return true;
 		} else if ((event.key.keysym.mod & KMOD_ALT) && event.key.keysym.sym == SDLK_m) {
-			GfxMan.toggleMouseGrab();
+			WindowMan.toggleMouseGrab();
 			return true;
 		} else if ((event.key.keysym.mod & KMOD_ALT) && event.key.keysym.sym == SDLK_s) {
 			GfxMan.takeScreenshot();
@@ -171,7 +172,7 @@ bool EventsManager::parseEventGraphics(const Event &event) {
 	if (event.type == kEventWindow) {
 		// If the window was restored, reassert the window size
 		if (event.window.event == kEventWindowRestored)
-			GfxMan.setScreenSize(GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+			WindowMan.setWindowSize(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 
 		return true;
 	}
