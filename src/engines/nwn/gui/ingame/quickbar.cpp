@@ -119,7 +119,7 @@ Quickbar::Quickbar() {
 	topEdge->setPosition(0.0f, _slotHeight, 0.0f);
 	addWidget(topEdge);
 
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notifyResized(0, 0, WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
 Quickbar::~Quickbar() {

@@ -197,7 +197,7 @@ void Tooltip::updatePosition() {
 	const float bubbleWantX = pX + _x - (bubbleWidth / 2.0f);
 	const float bubbleRight = bubbleWantX + bubbleWidth + 15.0f;
 
-	const float maxX  = _detectEdge ? GfxMan.getScreenWidth() / 2.0f : 0.0f;
+	const float maxX  = _detectEdge ? WindowMan.getWindowWidth() / 2.0f : 0.0f;
 	const float overX = _detectEdge ? MAX(0.0f, bubbleRight - maxX)  : 0.0f;
 
 	const float bubbleX = bubbleWantX - overX;

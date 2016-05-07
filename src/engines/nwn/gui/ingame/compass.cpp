@@ -80,7 +80,7 @@ Compass::Compass(float position) {
 	addWidget(_compass);
 
 
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notifyResized(0, 0, WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
 Compass::~Compass() {

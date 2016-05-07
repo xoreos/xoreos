@@ -74,7 +74,7 @@ OptionsVideoMenu::~OptionsVideoMenu() {
 }
 
 void OptionsVideoMenu::show() {
-	_gamma = GfxMan.getGamma();
+	_gamma = WindowMan.getGamma();
 
 	if (_gamma == 0.0f) {
 		getWidget("GammaSlider"     , true)->setDisabled(true);
@@ -137,12 +137,12 @@ void OptionsVideoMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "GammaSlider") {
 		float gamma = dynamic_cast<WidgetSlider &>(widget).getState() / 10.0f;
 
-		GfxMan.setGamma(gamma + 0.1f);
+		WindowMan.setGamma(gamma + 0.1f);
 		return;
 	}
 
 	if (widget.getTag() == "GammaResetButton") {
-		GfxMan.setGamma(_gamma);
+		WindowMan.setGamma(_gamma);
 
 		int gammaValue = CLIP(_gamma - 0.1f, 0.0f, 1.9f) * 10;
 
@@ -169,12 +169,12 @@ void OptionsVideoMenu::updateTextureQualityLabel() {
 }
 
 void OptionsVideoMenu::adoptChanges() {
-	ConfigMan.setDouble("gamma", GfxMan.getGamma(), true);
+	ConfigMan.setDouble("gamma", WindowMan.getGamma(), true);
 	ConfigMan.setInt("texturepack", _textureLevel);
 }
 
 void OptionsVideoMenu::revertChanges() {
-	GfxMan.setGamma(_gamma);
+	WindowMan.setGamma(_gamma);
 }
 
 } // End of namespace NWN
