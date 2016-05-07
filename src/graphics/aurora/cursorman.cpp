@@ -29,6 +29,7 @@
 #include "src/graphics/aurora/cursor.h"
 
 #include "src/graphics/graphics.h"
+#include "src/graphics/windowman.h"
 
 DECLARE_SINGLETON(Graphics::Aurora::CursorManager)
 
@@ -162,20 +163,20 @@ uint8 CursorManager::getPosition(int &x, int &y) const {
 }
 
 void CursorManager::setPosition(int x, int y) {
-	GfxMan.setCursorPosition(x, y);
+	WindowMan.setCursorPosition(x, y);
 }
 
 void CursorManager::toScreenCoordinates(int x, int y, float &sX, float &sY) {
-	const float sW = GfxMan.getScreenWidth();
-	const float sH = GfxMan.getScreenHeight();
+	const float sW = WindowMan.getWindowWidth();
+	const float sH = WindowMan.getWindowHeight();
 
 	sX =       ((float) x)  - (sW / 2.0f);
 	sY = (sH - ((float) y)) - (sH / 2.0f);
 }
 
 void CursorManager::fromScreenCoordinates(float sX, float sY, int &x, int &y) {
-	const float sW = GfxMan.getScreenWidth();
-	const float sH = GfxMan.getScreenHeight();
+	const float sW = WindowMan.getWindowWidth();
+	const float sH = WindowMan.getWindowHeight();
 
 	x = (int)   sX + (sW / 2.0f);
 	y = (int) (-sY - (sH / 2.0f)) + sH;
@@ -220,7 +221,7 @@ Cursor *CursorManager::find(Common::UString &group, Common::UString &state, bool
 
 void CursorManager::update() {
 	GfxMan.setCursor(_hidden ? 0 : _currentCursor);
-	GfxMan.showCursor(!_hidden && !_currentCursor);
+	WindowMan.showCursor(!_hidden && !_currentCursor);
 }
 
 } // End of namespace Aurora
