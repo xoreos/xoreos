@@ -103,7 +103,7 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 		_lines.back()->disableColorTokens(true);
 	}
 
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notifyResized(0, 0, WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 
 	updateScrollbarLength();
 	updateScrollbarPosition();
