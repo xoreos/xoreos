@@ -46,8 +46,8 @@ GUIBackground::GUIBackground(const Common::UString &type) :
 
 	_distance = FLT_MAX;
 
-	_screenWidth = GfxMan.getScreenWidth();
-	_screenHeight = GfxMan.getScreenHeight();
+	_screenWidth = WindowMan.getWindowWidth();
+	_screenHeight = WindowMan.getWindowHeight();
 
 	update();
 }
