@@ -182,10 +182,6 @@ size_t GraphicsManager::getMultipleTextureCount() const {
 	return _multipleTextureCount;
 }
 
-int GraphicsManager::getMaxFSAA() const {
-	return WindowMan.getMaxFSAA();
-}
-
 int GraphicsManager::getCurrentFSAA() const {
 	return _fsaa;
 }
@@ -360,18 +356,6 @@ void GraphicsManager::checkGLExtensions() {
 		 */
 		glDebugMessageCallbackARB((GLDEBUGPROCARB) &outputGLDebug, 0);
 	}
-}
-
-void GraphicsManager::setWindowTitle(const Common::UString &title) {
-	WindowMan.setWindowTitle(title);
-}
-
-float GraphicsManager::getGamma() const {
-	return WindowMan.getGamma();
-}
-
-void GraphicsManager::setGamma(float gamma) {
-	WindowMan.setGamma(gamma);
 }
 
 void GraphicsManager::setupScene() {
@@ -765,10 +749,6 @@ void GraphicsManager::setCursor(Cursor *cursor) {
 	unlockFrame();
 }
 
-void GraphicsManager::setCursorPosition(int x, int y) {
-	WindowMan.setCursorPosition(x, y);
-}
-
 void GraphicsManager::takeScreenshot() {
 	lockFrame();
 
@@ -1134,26 +1114,6 @@ const Common::Matrix4x4 &GraphicsManager::getModelviewInverseMatrix() const {
 	return _modelviewInv;
 }
 
-int GraphicsManager::getScreenWidth() const {
-	return WindowMan.getWindowWidth();
-}
-
-int GraphicsManager::getScreenHeight() const {
-	return WindowMan.getWindowHeight();
-}
-
-int GraphicsManager::getSystemWidth() const {
-	return WindowMan.getSystemWidth();
-}
-
-int GraphicsManager::getSystemHeight() const {
-	return WindowMan.getSystemHeight();
-}
-
-bool GraphicsManager::isFullScreen() const {
-	return WindowMan.isFullScreen();
-}
-
 bool GraphicsManager::isGL3() const {
 	return _renderType == WindowManager::kOpenGL32Compat;
 }
@@ -1216,52 +1176,6 @@ void GraphicsManager::cleanupAbandoned() {
 	_abandonLists.clear();
 
 	_hasAbandoned = false;
-}
-
-void GraphicsManager::toggleFullScreen() {
-	WindowMan.toggleFullScreen();
-}
-
-void GraphicsManager::setFullScreen(bool fullScreen) {
-	if (WindowMan.isFullScreen() == fullScreen)
-		// Nothing to do
-		return;
-
-	// Force calling it from the main thread
-	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setFullScreen, this, fullScreen));
-
-		return RequestMan.callInMainThread(functor);
-	}
-
-	destroyContext();
-
-	WindowMan.setFullScreen(fullScreen);
-
-	rebuildContext();
-}
-
-void GraphicsManager::toggleMouseGrab() {
-	WindowMan.toggleMouseGrab();
-}
-
-void GraphicsManager::setScreenSize(int width, int height) {
-	// Force calling it from the main thread
-	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setScreenSize, this, width, height));
-
-		return RequestMan.callInMainThread(functor);
-	}
-
-	destroyContext();
-
-	WindowMan.setWindowSize(width, height);
-
-	rebuildContext();
-}
-
-void GraphicsManager::showCursor(bool show) {
-	WindowMan.showCursor(show);
 }
 
 void GraphicsManager::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
