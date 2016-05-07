@@ -50,7 +50,7 @@ FPS::~FPS() {
 
 void FPS::init() {
 	setTag("FPS");
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notifyResized(0, 0, WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
 void FPS::render(RenderPass pass) {
