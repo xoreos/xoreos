@@ -69,51 +69,17 @@ public:
 	/** Return the number of texture units for multiple textures. */
 	size_t getMultipleTextureCount() const;
 
-	/** Set the screen size. */
-	void setScreenSize(int width, int height);
-	/** Set full screen/windowed mode. */
-	void setFullScreen(bool fullScreen);
-	/** Toggle between full screen and windowed mode. */
-	void toggleFullScreen();
-
-	/** Return the current screen width. */
-	int getScreenWidth() const;
-	/** Return the current screen height. */
-	int getScreenHeight() const;
-
-	/** Return the system's screen width. */
-	int getSystemWidth() const;
-	/** Return the system's screen height. */
-	int getSystemHeight() const;
-
-	/** Are we currently in full screen mode? */
-	bool isFullScreen() const;
-
 	/** Are we currently running an OpenGL 3.x context? */
 	bool isGL3() const;
 
 	/** Set the FSAA settings. */
 	bool setFSAA(int level);
 
-	/** Return the max supported FSAA level. */
-	int getMaxFSAA() const;
-
 	/** Return the current FSAA level. */
 	int getCurrentFSAA() const;
 
-	/** Toggle mouse grab */
-	void toggleMouseGrab();
-
 	/** How many frames per second to we render at the moments? */
 	uint32 getFPS() const;
-
-	/** Set the window's title. */
-	void setWindowTitle(const Common::UString &title = "");
-
-	/** Get the overall gamma correction. */
-	float getGamma() const;
-	/** Set the overall gamma correction. */
-	void setGamma(float gamma);
 
 	/** Enable/Disable face culling. */
 	void setCullFace(bool enabled, GLenum mode = GL_BACK);
@@ -123,12 +89,8 @@ public:
 	/** Change the projection matrix to be orthogonal. */
 	void setOrthogonal(float clipNear, float clipFar);
 
-	/** Show/Hide the cursor. */
-	void showCursor(bool show);
 	/** Set the current cursor. */
 	void setCursor(Cursor *cursor = 0);
-	/** Set position to the cursor. */
-	void setCursorPosition(int x, int y);
 
 	/** Take a screenshot. */
 	void takeScreenshot();
