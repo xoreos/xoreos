@@ -222,6 +222,7 @@ private:
 	bool renderWorld();
 	bool renderGUIFront();
 	bool renderGUIBack();
+	bool renderGUI(QueueType guiQueue, bool disableDepthMask);
 	bool renderCursor();
 	void endScene();
 

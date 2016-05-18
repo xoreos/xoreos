@@ -960,43 +960,20 @@ bool GraphicsManager::renderWorld() {
 }
 
 bool GraphicsManager::renderGUIFront() {
-	if (QueueMan.isQueueEmpty(kQueueVisibleGUIFrontObject))
-		return false;
-
-	glDisable(GL_DEPTH_TEST);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glScalef(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	QueueMan.lockQueue(kQueueVisibleGUIFrontObject);
-	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIFrontObject);
-
-	buildNewTextures();
-
-	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
-	     g != gui.rend(); ++g) {
-
-		glPushMatrix();
-		static_cast<Renderable *>(*g)->render(kRenderPassAll);
-		glPopMatrix();
-	}
-
-	QueueMan.unlockQueue(kQueueVisibleGUIFrontObject);
-
-	glEnable(GL_DEPTH_TEST);
-	return true;
+	return renderGUI(kQueueVisibleGUIFrontObject, false);
 }
 
 bool GraphicsManager::renderGUIBack() {
-	if (QueueMan.isQueueEmpty(kQueueVisibleGUIBackObject))
+	return renderGUI(kQueueVisibleGUIBackObject, true);
+}
+
+bool GraphicsManager::renderGUI(QueueType guiQueue, bool disableDepthMask) {
+	if (QueueMan.isQueueEmpty(guiQueue))
 		return false;
 
 	glDisable(GL_DEPTH_TEST);
-	glDepthMask(GL_FALSE);
+	if (disableDepthMask)
+		glDepthMask(GL_FALSE);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -1005,8 +982,8 @@ bool GraphicsManager::renderGUIBack() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	QueueMan.lockQueue(kQueueVisibleGUIBackObject);
-	const std::list<Queueable *> &gui = QueueMan.getQueue(kQueueVisibleGUIBackObject);
+	QueueMan.lockQueue(guiQueue);
+	const std::list<Queueable *> &gui = QueueMan.getQueue(guiQueue);
 
 	buildNewTextures();
 
@@ -1018,9 +995,10 @@ bool GraphicsManager::renderGUIBack() {
 		glPopMatrix();
 	}
 
-	QueueMan.unlockQueue(kQueueVisibleGUIBackObject);
+	QueueMan.unlockQueue(guiQueue);
 
-	glDepthMask(GL_TRUE);
+	if (disableDepthMask)
+		glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 	return true;
 }
