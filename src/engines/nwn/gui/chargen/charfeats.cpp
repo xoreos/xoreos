@@ -81,8 +81,6 @@ CharFeats::CharFeats(CharGenChoices &choices, ::Engines::Console *console) : Cha
 	_normalFeats = 0;
 	_bonusFeats = 0;
 
-	// TODO: Recommend button
-	getButton("RecommendButton", true)->setDisabled(true);
 	_featHelp   = new CharHelp("cg_featinfo", console);
 	_featsPopup = new CharFeatsPopup(console);
 
@@ -245,6 +243,13 @@ void CharFeats::callbackActive(Widget &widget) {
 		GfxMan.unlockFrame();
 		return;
 	}
+
+	if (widget.getTag() == "RecommendButton") {
+		GfxMan.lockFrame();
+		setRecommendedFeats();
+		GfxMan.unlockFrame();
+		return;
+	}
 }
 
 void CharFeats::callbackRun() {
@@ -385,8 +390,31 @@ void CharFeats::changeAvailFeats(int8 diff, bool normalFeat, bool rebuild) {
 	}
 }
 
+void CharFeats::setRecommendedFeats() {
+	// Set list to the initial state.
+	reset();
+
+	// Retrieve recommended feats.
+	std::vector<uint32> recFeats;
+	_choices->getPrefFeats(recFeats);
+
+	for (std::vector<uint32>::iterator rF = recFeats.begin(); rF != recFeats.end(); ++rF) {
+		if (_bonusFeats + _normalFeats == 0)
+			break;
+
+		for (std::list<FeatItem>::iterator aF = _availFeats.begin(); aF != _availFeats.end(); ++aF) {
+			if (*rF != (*aF).featId)
+				continue;
+
+			// Avoid unnecessary list rebuild.
+			bool rebuild = _bonusFeats + _normalFeats == 1;
+			moveFeat(*aF, true, rebuild);
+			break;
+		}
 	}
 
+	if (_bonusFeats + _normalFeats != 0)
+		error("Unable to select the recommended feats");
 }
 
 } // End of namespace NWN

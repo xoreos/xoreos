@@ -44,6 +44,7 @@ public:
 
 protected:
 	void callbackActive(Widget &widget);
+	void setRecommend();
 	void setRestrict();
 
 	void getAlignment();

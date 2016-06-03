@@ -47,9 +47,6 @@ CharPackage::CharPackage(CharGenChoices &choices, ::Engines::Console *console) :
 	_choices = &choices;
 	load("cg_package");
 
-	// TODO Implement package recommendation.
-	getButton("RecommendButton", true)->setDisabled(true);
-
 	_packageListBox = getListBox("ClassListBox", true);
 }
 
@@ -94,6 +91,12 @@ void CharPackage::callbackActive(Widget &widget) {
 		size_t choice = _packageListBox->getSelected();
 		getEditBox("HelpBox", true)->setText("fnt_galahad14", _helpTexts[choice]);
 		getEditBox("HelpBox", true)->setTitle("fnt_galahad14", _packageNames[choice]);
+		return;
+	}
+
+	if (widget.getTag() == "RecommendButton") {
+		// Recommend first package.
+		_packageListBox->select(0);
 	}
 
 	if (widget.getTag() == "ConfigurePckg") {
@@ -123,6 +126,7 @@ void CharPackage::callbackActive(Widget &widget) {
 					_subGUIs.push_back(charSpells);
 				}
 			}
+			//TODO: Add animal companion/familiar GUI.
 		}
 
 		uint32 subReturnCode;

@@ -408,6 +408,16 @@ void CharGenChoices::getFeats(std::vector<uint32> &feats) {
 	feats.insert(feats.end(), _classFeats.begin(), _classFeats.end());
 }
 
+uint8 CharGenChoices::getPrefSpellSchool() {
+	const Aurora::TwoDAFile &twodaPackage = TwoDAReg.get2DA("package");
+	const Aurora::TwoDARow  &row          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
+
+	if (row.empty("School"))
+		return UINT8_MAX;
+
+	return static_cast<uint8>(row.getInt("School"));
+}
+
 void CharGenChoices::getPrefFeats(std::vector<uint32> &feats) {
 	const Aurora::TwoDAFile &twodaPackage    = TwoDAReg.get2DA("packages");
 	const Aurora::TwoDARow  &rowPck          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
@@ -437,6 +447,42 @@ void CharGenChoices::getPrefSkills(std::vector<uint8> &skills) {
 	skills.clear();
 	for (size_t r = 0; r < twodaPckSkills.getRowCount(); ++r)
 		skills.push_back((uint8) twodaPckSkills.getRow(r).getInt("SKILLINDEX"));
+}
+
+void CharGenChoices::getPrefDomains(uint8 &domain1, uint8 &domain2) {
+	const Aurora::TwoDAFile &twodaPackage    = TwoDAReg.get2DA("packages");
+	const Aurora::TwoDARow  &rowPck          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
+
+	domain1 = (uint8) rowPck.getInt("Domain1");
+	domain2 = (uint8) rowPck.getInt("Domain2");
+}
+
+void CharGenChoices::getPrefSpells(std::vector<std::vector<uint16> > &spells) {
+	const Aurora::TwoDAFile &twodaSpells     = TwoDAReg.get2DA("spells");
+	const Aurora::TwoDAFile &twodaPackage    = TwoDAReg.get2DA("packages");
+	const Aurora::TwoDARow  &rowPck          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
+	const Aurora::TwoDAFile &twodaPckSpells  = TwoDAReg.get2DA(rowPck.getString("SpellPref2DA"));
+
+	std::map<uint32, Common::UString> spellCasterClass;
+	spellCasterClass[1]  =     "Bard";
+	spellCasterClass[2]  =   "Cleric";
+	spellCasterClass[3]  =    "Druid";
+	spellCasterClass[6]  =  "Paladin";
+	spellCasterClass[7]  =   "Ranger";
+	spellCasterClass[9]  = "Wiz_Sorc";
+	spellCasterClass[10] = "Wiz_Sorc";
+
+	spells.clear();
+	for (size_t r = 0; r < twodaPckSpells.getRowCount(); ++r) {
+		uint16 spellIndex = twodaPckSpells.getRow(r).getInt("SpellIndex");
+		const Aurora::TwoDARow  &rowSpell = twodaSpells.getRow(spellIndex);
+
+		size_t spellLevel = rowSpell.getInt(spellCasterClass[_classId]);
+		if (spells.size() < spellLevel + 1)
+			spells.resize(spellLevel + 1);
+
+		spells[spellLevel].push_back(spellIndex);
+	}
 }
 
 uint8 CharGenChoices::computeAvailSkillRank() {

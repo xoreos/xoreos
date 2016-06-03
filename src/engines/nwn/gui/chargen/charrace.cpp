@@ -104,6 +104,10 @@ void CharRace::callbackActive(Widget &widget) {
 		return;
 	}
 
+	if (widget.getTag() == "RecommendButton") {
+		_buttons->setActive(6);
+	}
+
 	_buttons->setActive(dynamic_cast<WidgetButton *>(&widget));
 }
 

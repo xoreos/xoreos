@@ -66,6 +66,7 @@ private:
 	void callbackActive(Widget &widget);
 	void createDomainList();
 	void updateChosenDomains();
+	void setRecommendedDomains();
 
 	WidgetListBox *_domainListBox;
 	std::vector<WidgetListItemDomain *> _chosenDomains;

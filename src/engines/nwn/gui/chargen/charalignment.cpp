@@ -61,11 +61,6 @@ CharAlignment::CharAlignment(CharGenChoices &choices, ::Engines::Console *consol
 	_buttons->addButton(getButton("NEButton"), TalkMan.getString(117), TalkMan.getString(++textID));
 	_buttons->addButton(getButton("NGButton"), TalkMan.getString(115), TalkMan.getString(++textID));
 	_buttons->addButton(getButton("TNButton"), TalkMan.getString(116), TalkMan.getString(++textID));
-
-	getButton("OkButton", true)->setDisabled(true);
-
-	//TODO Recommend button for alignment.
-	getWidget("RecommendButton", true)->setDisabled(true);
 }
 
 CharAlignment::~CharAlignment() {
@@ -76,7 +71,6 @@ void CharAlignment::reset() {
 	getEditBox("HelpEdit", true)->setTitle("fnt_galahad14", TalkMan.getString(111));
 	getEditBox("HelpEdit", true)->setText("fnt_galahad14", TalkMan.getString(458));
 
-	getButton("OkButton", true)->setDisabled(true);
 	_buttons->setAllInactive();
 	_goodness = 101;
 	_loyalty = 101;
@@ -87,6 +81,10 @@ void CharAlignment::show() {
 	Engines::GUI::show();
 
 	setRestrict();
+	setRecommend();
+
+	getEditBox("HelpEdit", true)->setTitle("fnt_galahad14", TalkMan.getString(111));
+	getEditBox("HelpEdit", true)->setText("fnt_galahad14", TalkMan.getString(458));
 }
 
 void CharAlignment::hide() {
@@ -125,9 +123,19 @@ void CharAlignment::callbackActive(Widget &widget) {
 		return;
 	}
 
+	if (widget.getTag() == "RecommendButton") {
+		setRecommend();
+		return;
+	}
+
 	_buttons->setActive(dynamic_cast<WidgetButton *>(&widget));
 	getAlignment();
-	getButton("OkButton", true)->setDisabled(false);
+}
+
+void CharAlignment::setRecommend() {
+	// { Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Wizard }
+	uint8 recommendedAlign[] = {2, 1, 5, 8, 1, 5, 4, 1, 8, 2, 5};
+	_buttons->setActive(recommendedAlign[_choices->getClass()]);
 }
 
 void CharAlignment::setRestrict() {

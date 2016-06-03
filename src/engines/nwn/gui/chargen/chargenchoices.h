@@ -103,7 +103,10 @@ public:
 	uint8 getSpellSchool() const;
 
 	void getPrefFeats(std::vector<uint32> &feats);
+	uint8 getPrefSpellSchool();
 	void getPrefSkills(std::vector<uint8> &skills);
+	void getPrefDomains(uint8 &domain1, uint8 &domain2);
+	void getPrefSpells(std::vector<std::vector<uint16> > &spells);
 
 	uint8 computeAvailSkillRank();
 	void getSkillItems(std::vector<SkillItem> &skills);

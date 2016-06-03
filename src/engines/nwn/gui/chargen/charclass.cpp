@@ -132,6 +132,14 @@ void CharClass::callbackActive(Widget &widget) {
 		return;
 	}
 
+	if (widget.getTag() == "RecommendButton") {
+		// Recommend fighter.
+		_classesListBox->select(4);
+		getEditBox("HelpBox", true)->setText("fnt_galahad14", _helpTexts[4]);
+		getEditBox("HelpBox", true)->setTitle("fnt_galahad14", _classNames[4]);
+		return;
+	}
+
 	if (widget.getTag() == "ClassListBox") {
 		getEditBox("HelpBox", true)->setText("fnt_galahad14", _helpTexts[_classesListBox->getSelected()]);
 		getEditBox("HelpBox", true)->setTitle("fnt_galahad14", _classNames[_classesListBox->getSelected()]);

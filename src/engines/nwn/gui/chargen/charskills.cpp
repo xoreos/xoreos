@@ -29,6 +29,8 @@
 #include "src/aurora/2dareg.h"
 #include "src/aurora/2dafile.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/text.h"
@@ -233,6 +235,13 @@ void CharSkills::callbackActive(Widget &widget) {
 		_returnCode = 1;
 		return;
 	}
+
+	if (widget.getTag() == "RecommendButton") {
+		GfxMan.lockFrame();
+		setRecommendedSkills();
+		GfxMan.unlockFrame();
+		return;
+	}
 }
 
 void CharSkills::setHelpText(const Common::UString &title, const Common::UString &text) {
@@ -257,10 +266,36 @@ void CharSkills::createSkillsList() {
 	skillListBox->unlock();
 }
 
+void CharSkills::setRecommendedSkills() {
+	reset();
 
+	std::vector<uint8> prefSkills;
+	_choices->getPrefSkills(prefSkills);
 
+	WidgetListBox *listBox = getListBox("SkillsButtonBox");
 
+	// Fill preferred skills
+	for (std::vector<uint8>::iterator pS = prefSkills.begin(); pS != prefSkills.end(); ++pS) {
+		if (_availableSkillRank == 0)
+			break;
 
+		for (std::vector<WidgetListItem *>::iterator i = listBox->begin(); i != listBox->end(); ++i) {
+			WidgetListItemSkill *item = dynamic_cast<WidgetListItemSkill *>(*i);
+
+			if (item->_skill.skillID != *pS)
+				continue;
+
+			// Increase skill rank to the maximum.
+			bool skillFilled = false;
+			while (!skillFilled) {
+				if (!item->changeRank(true))
+					skillFilled = true;
+			}
+
+			// Continue to the next preferred skill.
+			break;
+		}
+	}
 }
 
 }   // End of namespace NWN

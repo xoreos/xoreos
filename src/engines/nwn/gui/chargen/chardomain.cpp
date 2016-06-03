@@ -77,9 +77,6 @@ CharDomain::CharDomain(CharGenChoices &choices, Console *console) : CharGenBase(
 
 	_chosenDomains.clear();
 
-	// TODO: Recommend button in CharDomain.
-	getButton("RecommendButton")->setDisabled(true);
-
 	getButton("OkButton")->setDisabled(true);
 	_domainListBox = getListBox("DomainListBox", true);
 
@@ -98,6 +95,9 @@ CharDomain::~CharDomain() {
 
 void CharDomain::reset() {
 	_choices->setDomains(UINT8_MAX, UINT8_MAX);
+
+	for (size_t d = _chosenDomains.size(); d > 0; --d)
+		moveDomain(_chosenDomains[d]);
 }
 
 void CharDomain::fixWidgetType(const Common::UString &tag, NWN::GUI::WidgetType &type) {
@@ -119,6 +119,7 @@ void CharDomain::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "RecommendButton") {
+		setRecommendedDomains();
 		return;
 	}
 }
@@ -202,6 +203,29 @@ void CharDomain::updateChosenDomains() {
 		_chosenDomains[dom]->setPosition(nX + pX,nY + pY,nZ + pZ - 100.f);
 		_chosenDomains[dom]->show();
 	}
+}
+
+void CharDomain::setRecommendedDomains() {
+	reset();
+
+	uint8 domain1, domain2;
+	_choices->getPrefDomains(domain1, domain2);
+	while (_chosenDomains.size() < 2) {
+		for (std::vector<WidgetListItem *>::iterator d = _domainListBox->begin(); d != _domainListBox->end(); ++d) {
+			WidgetListItemDomain *item = dynamic_cast<WidgetListItemDomain *>(*d);
+			if (domain1 == item->_domainId) {
+				moveDomain(item);
+				break;
+			}
+
+			if (domain2 == item->_domainId) {
+				moveDomain(item);
+				break;
+			}
+		}
+	}
+	// FIXME: It seems that when we try to move back a preferred item, it doesn't hide itself
+	//        necessarily.
 }
 
 } // End of namespace NWN

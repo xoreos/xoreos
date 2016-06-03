@@ -64,7 +64,7 @@ public:
 	void reset();
 	void fixWidgetType(const Common::UString &tag, NWN::GUI::WidgetType &type);
 
-	void showSpellLevel(size_t spellLevel);
+	void showSpellLevel(size_t spellLevel, bool forceUpdate = false);
 	void moveSpell(WidgetListItemSpell *spellItem);
 	void showSpellHelp(Spell &spell);
 
@@ -74,6 +74,7 @@ private:
 	void makeSpellsList();
 	void computeRemainingSpells(const Aurora::TwoDARow &classRow);
 	void updateRemainLabel();
+	void setRecommendedSpells();
 
 	CharHelp *_spellHelp;
 

@@ -77,6 +77,7 @@ private:
 	void callbackActive(Widget &widget);
 	void createSkillsList();
 	void computeAvailablePoints(uint8 pointBase);
+	void setRecommendedSkills();
 
 	size_t _availableSkillRank;
 	WidgetEditBox *_helpTextBox;

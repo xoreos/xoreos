@@ -74,6 +74,7 @@ private:
 
 	void changeAvailFeats(int8 diff, bool normalFeat, bool rebuild = true);
 
+	void setRecommendedFeats();
 
 	CharHelp   *_featHelp;
 	CharFeatsPopup *_featsPopup;

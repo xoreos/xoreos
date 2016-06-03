@@ -29,6 +29,8 @@
 #include "src/aurora/2dareg.h"
 #include "src/aurora/2dafile.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/modelnode.h"
 
@@ -78,11 +80,6 @@ CharSpells::CharSpells(CharGenChoices &choices, Console *console) : CharGenBase(
 
 	_spellHelp = new CharHelp("cg_spellinfo", console);
 
-	// TODO: Recommend button in the spell selection for the character generator.
-	getWidget("RecommendButton", true)->setDisabled(true);
-	// TODO: Reset button in the spell selection for the character generator.
-	getWidget("ResetButton", true)->setDisabled(true);
-
 	_availListBox = getListBox("AvailBox", true);
 	_availListBox->setMode(WidgetListBox::kModeSelectable);
 	_knownListBox = getListBox("KnownBox", true);
@@ -121,8 +118,8 @@ void CharSpells::fixWidgetType(const Common::UString &tag, GUI::WidgetType &type
 		type = kWidgetTypeButton;
 }
 
-void CharSpells::showSpellLevel(size_t spellLevel) {
-	if (_currentSpellLevel == spellLevel)
+void CharSpells::showSpellLevel(size_t spellLevel, bool forceUpdate) {
+	if (_currentSpellLevel == spellLevel && !forceUpdate)
 		return;
 
 	// Show/hide label about empty spells list.
@@ -235,6 +232,21 @@ void CharSpells::callbackActive(Widget &widget) {
 		return;
 	}
 
+	if (widget.getTag() == "RecommendButton") {
+		GfxMan.lockFrame();
+		setRecommendedSpells();
+		GfxMan.unlockFrame();
+		return;
+	}
+
+	if (widget.getTag() == "ResetButton") {
+		GfxMan.lockFrame();
+		reset();
+		showSpellLevel(_currentSpellLevel, true);
+		GfxMan.unlockFrame();
+		return;
+	}
+
 	for (uint32 lvl = 0; lvl <= _maxLevel; ++lvl) {
 		if (widget.getTag() == "SpellLevel" + Common::composeString<uint32>(lvl)) {
 			showSpellLevel(lvl);
@@ -258,8 +270,11 @@ void CharSpells::makeSpellsList() {
 		}
 	}
 
+	_knownSpells.clear();
 	_knownSpells.resize(_maxLevel + 1);
+	_availSpells.clear();
 	_availSpells.resize(_maxLevel + 1);
+	_remainingSpells.clear();
 	_remainingSpells.resize(_maxLevel + 1);
 
 	computeRemainingSpells(classRow);
@@ -394,6 +409,46 @@ void CharSpells::computeRemainingSpells(const Aurora::TwoDARow &classRow) {
 
 void CharSpells::updateRemainLabel() {
 	getLabel("RemainLabel")->setText(Common::composeString<uint8>(_remainingSpells[_currentSpellLevel]));
+}
+
+void CharSpells::setRecommendedSpells() {
+	std::vector<std::vector<uint16> > prefSpells;
+	_choices->getPrefSpells(prefSpells);
+
+	for (size_t lvl = 0; lvl < _remainingSpells.size(); ++lvl) {
+		bool allSpellsMoved = false;
+		while (_remainingSpells[lvl] != 0 && !allSpellsMoved) {
+			allSpellsMoved = true;
+			for (std::vector<Spell>::iterator s = _availSpells[lvl].begin(); s != _availSpells[lvl].end(); ++s) {
+				if (_remainingSpells[lvl] == 0)
+					break;
+
+				if ((*s).spellID != prefSpells[lvl].front())
+					continue;
+
+				allSpellsMoved = false;
+				_knownSpells[lvl].push_back(*s);
+				_availSpells[lvl].erase(s);
+
+				prefSpells[lvl].erase(prefSpells[lvl].begin());
+				--_remainingSpells[lvl];
+
+				if (prefSpells[lvl].size() == 0)
+					break;
+			}
+
+			if (allSpellsMoved && prefSpells[lvl].size() > 0) {
+				prefSpells[lvl].erase(prefSpells[lvl].begin());
+				allSpellsMoved = false;
+				continue;
+			}
+
+			if (prefSpells[lvl].size() == 0)
+				break;
+		}
+	}
+
+	showSpellLevel(_currentSpellLevel, true);
 }
 
 void CharSpells::showSpellHelp(Spell &spell) {
