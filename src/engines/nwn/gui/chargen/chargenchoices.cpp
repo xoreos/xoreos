@@ -62,13 +62,7 @@ void CharGenChoices::init() {
 	_abilities.assign(6, 8);
 	_racialAbilities.assign(6, 0);
 
-	_package = UINT8_MAX;
-	_skills.assign(28, 0);
-
-	_spellSchool = UINT8_MAX;
-
-	_domain1 = UINT8_MAX;
-	_domain2 = UINT8_MAX;
+	resetPackage();
 }
 
 void CharGenChoices::applyChoices() {
@@ -85,12 +79,6 @@ void CharGenChoices::applyChoices() {
 		Ability ability = static_cast<Ability>(ab);
 		_creature->setAbility(ability, _abilities[ab] + _racialAbilities[ab]);
 	}
-
-	// Set package
-	if (_package != UINT8_MAX)
-		_creature->setStartingPackage(_package);
-
-	//TODO Apply package
 
 	// Set skills
 	size_t skillID = 0;
@@ -147,8 +135,23 @@ void CharGenChoices::reset() {
 	init();
 
 	_racialFeats.clear();
-	_normalFeats.clear();
 	_classFeats.clear();
+
+	resetPackage();
+}
+
+void CharGenChoices::resetPackage() {
+	_package = UINT8_MAX;
+
+	_skills.assign(28, 0);
+
+	_normalFeats.clear();
+
+	_spells.clear();
+	_spellSchool = UINT8_MAX;
+
+	_domain1 = UINT8_MAX;
+	_domain2 = UINT8_MAX;
 }
 
 const Creature &CharGenChoices::getCharacter() {
@@ -221,6 +224,71 @@ void CharGenChoices::setAbilities(std::vector<uint8> abilities,
 
 void CharGenChoices::setPackage(uint8 package) {
 	_package = package;
+
+	if (_package == UINT8_MAX)
+		return;
+
+	// Set package
+	_creature->setStartingPackage(_package);
+
+	if (_package != UINT8_MAX) {
+		// Set Skills
+		getPrefSkills(_skills);
+
+		// Set Feats
+		std::vector<uint32> packFeats;
+		getPrefFeats(packFeats);
+		std::list<FeatItem> availFeats;
+		uint8 normalFeats, bonusFeats;
+		getFeatItems(availFeats, normalFeats, bonusFeats);
+		while (normalFeats + bonusFeats != 0) {
+			for (std::vector<uint32>::iterator pF = packFeats.begin(); pF != packFeats.end(); ++pF) {
+				if (normalFeats + bonusFeats == 0)
+					break;
+				for (std::list<FeatItem>::iterator aF = availFeats.begin(); aF != availFeats.end(); ++aF) {
+					if (*pF != (*aF).featId)
+						continue;
+
+					// For bonus feats and bonus feats that can be chosen as a general feat.
+					if (bonusFeats > 0 && (*aF).list > 0) {
+						--bonusFeats;
+						_normalFeats.push_back(*pF);
+					}
+
+					// For general feat and bonus feats that can be chosen as a general feat.
+					if ((normalFeats > 0 && (*aF).list == 0) ||
+					        (normalFeats > 0 && (*aF).list < 2 && bonusFeats == 0)) {
+						--normalFeats;
+						_normalFeats.push_back(*pF);
+					}
+
+					break;
+				}
+			}
+		}
+
+		// For spell casters
+		const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
+		const Aurora::TwoDARow &rowClass = twodaClasses.getRow(_classId);
+		if (rowClass.getInt("SpellCaster") > 0) {
+			if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ"
+			        && _creature->getHitDice() == 0) {
+				// Set school
+				setSpellSchool(getPrefSpellSchool());
+
+				// Set spells
+				getPrefSpells(_spells);
+
+			} else 	if (rowClass.getString("SpellGainTable") == "CLS_SPGN_CLER"
+			            && _creature->getHitDice() == 0) {
+				// Set domains.
+				getPrefDomains(_domain1, _domain2);
+			} else if (!rowClass.empty("SpellKnownTable")) {
+				// Set spells
+				getPrefSpells(_spells);
+			}
+		}
+	}
 }
 
 void CharGenChoices::setSkill(size_t skillIndex, uint8 rank) {

@@ -60,7 +60,7 @@ void CharPackage::reset() {
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(483));
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(487));
 
-	_choices->setPackage(UINT8_MAX);
+	_choices->resetPackage();
 
 	for (std::vector<CharGenBase *>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
 		delete *g;

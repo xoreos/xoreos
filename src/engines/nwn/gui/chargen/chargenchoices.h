@@ -73,6 +73,7 @@ public:
 	void applyChoices();
 
 	void reset();
+	void resetPackage();
 	const Creature &getCharacter();
 	void setGender(Gender gender);
 	void setRace(uint32 race);
