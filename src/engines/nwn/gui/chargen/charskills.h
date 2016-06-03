@@ -39,34 +39,24 @@ class WidgetEditBox;
 
 class WidgetListItemSkill : public WidgetListItemButton {
 public:
-	WidgetListItemSkill(::Engines::GUI &gui, const Common::UString &text,
-	                    const Common::UString &helpText, const Common::UString &icon,
-	                    size_t skillIndex, bool isClassSkill, uint8 maxRank);
+	WidgetListItemSkill(::Engines::GUI &gui, SkillItem skill);
 	~WidgetListItemSkill();
 
 	void setPosition(float x, float y, float z);
-	void setTag(const Common::UString &tag);
 
 	void reset();
 	void mouseDown(uint8 state, float x, float y);
 
 private:
 	void subActive(Widget &widget);
-	void changeRank(bool isIncreasing);
+	bool changeRank(bool isIncreasing);
 
 	WidgetButton *_upButton;
 	WidgetButton *_downButton;
 	WidgetPanel  *_skillPointPanel;
 	WidgetLabel  *_skillPoint;
 
-	Common::UString _name;
-	Common::UString _helpText;
-
-	size_t _skillIndex;
-	bool   _isClassSkill;
-	uint8 _skillRank;
-	uint8 _maxRank;
-	uint8 _minRank;
+	SkillItem _skill;
 
 	friend class CharSkills;
 };

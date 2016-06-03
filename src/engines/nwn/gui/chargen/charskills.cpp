@@ -45,33 +45,29 @@ namespace Engines {
 
 namespace NWN {
 
-WidgetListItemSkill::WidgetListItemSkill(::Engines::GUI &gui,
-                                         const Common::UString &text, const Common::UString &helpText,
-                                         const Common::UString &icon, size_t skillIndex,
-                                         bool isClassSkill, uint8 maxRank) :
-                                         WidgetListItemButton(gui, "ctl_cg_btn_skill", text, icon),
-                                         _name(text), _helpText(helpText), _skillIndex(skillIndex),
-                                         _isClassSkill(isClassSkill), _skillRank(0),
-                                         _maxRank(maxRank) {
+WidgetListItemSkill::WidgetListItemSkill(::Engines::GUI &gui, SkillItem skill) :
+                                         WidgetListItemButton(gui, "ctl_cg_btn_skill", skill.name, skill.icon),
+                                         _skill(skill) {
+
+	setTag("Item#" + skill.name);
 
 	// Set maximum width for text.
-	_text->set(text, 230.f);
+	_text->set(skill.name, 230.f);
 
 	// Up and down buttons.
-	_downButton = new WidgetButton(gui, "", "ctl_cg_btn_skdn");
-	_upButton   = new WidgetButton(gui, "", "ctl_cg_btn_skup");
+	_downButton = new WidgetButton(gui, _tag + "#Down", "ctl_cg_btn_skdn");
+	_upButton   = new WidgetButton(gui, _tag + "#Up", "ctl_cg_btn_skup");
 
 	addChild(*_upButton);
+	addSub(*_upButton);
 	addChild(*_downButton);
+	addSub(*_downButton);
 
 	_skillPointPanel = new WidgetPanel(gui, _tag + "#SkillPointPanel", "ctl_cg_numbox3");
 	addChild(*_skillPointPanel);
 
 	_skillPoint = new WidgetLabel(gui, _tag + "#SkillPointLabel", "fnt_galahad14", "0");
 	addChild(*_skillPoint);
-
-	// Set min rank as the initial rank.
-	_minRank = _skillRank;
 }
 
 WidgetListItemSkill::~WidgetListItemSkill() {
@@ -95,36 +91,24 @@ void WidgetListItemSkill::setPosition(float x, float y, float z) {
 	                         z - pZ - 1.f);
 }
 
-void WidgetListItemSkill::setTag(const Common::UString &tag) {
-	WidgetListItemButton::setTag(tag);
-
-	_downButton->setTag(tag + "#Down");
-	_upButton->setTag(tag + "#Up");
-
-	// As the WidgetListBox changes the tag and subwidgets are stored by tags,
-	// only add sub after the tags are set.
-	addSub(*_upButton);
-	addSub(*_downButton);
-}
-
 void WidgetListItemSkill::reset() {
-	_skillRank = _minRank;
-	_skillPoint->setText(Common::composeString<uint8>(_skillRank));
+	_skill.rank = _skill.minRank;
+	_skillPoint->setText(Common::composeString<uint8>(_skill.rank));
 }
 
 void WidgetListItemSkill::mouseDown(uint8 state, float x, float y) {
 	WidgetListItem::mouseDown(state, x, y);
 
-	uint8 cost = (_isClassSkill) ? 1 : 2;
+	uint8 cost = (_skill.isClassSkill) ? 1 : 2;
 	dynamic_cast<CharSkills &>(*_gui).setSkillCost(cost);
-
 }
+
 void WidgetListItemSkill::subActive(Widget &widget) {
 	select();
 
-	uint8 cost = (_isClassSkill) ? 1 : 2;
+	uint8 cost = (_skill.isClassSkill) ? 1 : 2;
 	dynamic_cast<CharSkills &>(*_gui).setSkillCost(cost);
-	dynamic_cast<CharSkills &>(*_gui).setHelpText(_name, _helpText);
+	dynamic_cast<CharSkills &>(*_gui).setHelpText(_skill.name, _skill.help);
 
 	if (widget.getTag().endsWith("#Up"))
 		changeRank(true);
@@ -133,24 +117,25 @@ void WidgetListItemSkill::subActive(Widget &widget) {
 		changeRank(false);
 }
 
-void WidgetListItemSkill::changeRank(bool isIncreasing) {
-	uint8 classRankFactor = (_isClassSkill) ? 1 : 2;
+bool WidgetListItemSkill::changeRank(bool isIncreasing) {
+	uint8 classRankFactor = (_skill.isClassSkill) ? 1 : 2;
 
 	if (isIncreasing) {
-		if (_maxRank == _skillRank)
-			return;
+		if (_skill.maxRank == _skill.rank)
+			return false;
 		if (!dynamic_cast<CharSkills &>(*_gui).changeAvailableSkillRank(-1 * classRankFactor))
-			return;
+			return false;
 
-		++_skillRank;
+		++_skill.rank;
 	} else {
-		if (_skillRank == _minRank)
-			return;
+		if (_skill.rank == _skill.minRank)
+			return false;
 		dynamic_cast<CharSkills &>(*_gui).changeAvailableSkillRank(1 * classRankFactor);
-		--_skillRank;
+		--_skill.rank;
 	}
 
-	_skillPoint->setText(Common::composeString<uint8>(_skillRank));
+	_skillPoint->setText(Common::composeString<uint8>(_skill.rank));
+	return true;
 }
 
 CharSkills::CharSkills(CharGenChoices &choices, ::Engines::Console *console) : CharGenBase(console) {
@@ -184,8 +169,8 @@ void CharSkills::reset() {
 	     it != skillBox->end(); ++it) {
 
 		WidgetListItemSkill *item = dynamic_cast<WidgetListItemSkill *>(*it);
-		spentPoint += (item->_isClassSkill) ? item->_skillRank : item->_skillRank * 2;
-		_choices->setSkill(item->_skillIndex, 0);
+		spentPoint += (item->_skill.isClassSkill) ? item->_skill.rank : item->_skill.rank * 2;
+		_choices->setSkill(item->_skill.skillID, 0);
 		item->reset();
 	}
 	changeAvailableSkillRank(spentPoint);
@@ -223,7 +208,7 @@ void CharSkills::callbackActive(Widget &widget) {
 	if (widget.getTag() == "SkillsButtonBox") {
 		WidgetListBox       *skillBox = getListBox("SkillsButtonBox", true);
 		WidgetListItemSkill *item     = dynamic_cast<WidgetListItemSkill *>(skillBox->getSelectedItem());
-		setHelpText(item->_name, item->_helpText);
+		setHelpText(item->_skill.name, item->_skill.help);
 	}
 
 	if (widget.getTag() == "OkButton") {
@@ -232,8 +217,8 @@ void CharSkills::callbackActive(Widget &widget) {
 		for (std::vector<WidgetListItem *>::iterator it = skillBox->begin();
 		     it != skillBox->end(); ++it) {
 			WidgetListItemSkill *item = dynamic_cast<WidgetListItemSkill *>(*it);
-			size_t skillIndex         = item->_skillIndex;
-			uint8 skillRank = item->_skillRank;
+			size_t skillIndex         = item->_skill.skillID;
+			uint8 skillRank           = item->_skill.rank;
 
 			_choices->setSkill(skillIndex, skillRank);
 		}
@@ -256,53 +241,26 @@ void CharSkills::setHelpText(const Common::UString &title, const Common::UString
 }
 
 void CharSkills::createSkillsList() {
-	const Aurora::TwoDAFile &twodaClasses     = TwoDAReg.get2DA("classes");
-	const Aurora::TwoDAFile &twodaSkills      = TwoDAReg.get2DA("skills");
-	const Aurora::TwoDARow  &rowClasses       = twodaClasses.getRow(_choices->getClass());
-	const Common::UString   skillsClassFile   = rowClasses.getString("SkillsTable");
-	const Aurora::TwoDAFile &twoDaSkillsClass = TwoDAReg.get2DA(skillsClassFile);
+	_availableSkillRank = _choices->computeAvailSkillRank();
 
-	computeAvailablePoints(rowClasses.getInt("SkillPointBase"));
+	std::vector<SkillItem> skills;
+	_choices->getSkillItems(skills);
 
-	getListBox("SkillsButtonBox")->setMode(WidgetListBox::kModeSelectable);
-	getListBox("SkillsButtonBox")->lock();
-	for (size_t s = 0; s < twoDaSkillsClass.getRowCount(); ++s) {
-		const Aurora::TwoDARow &skillsClassRow = twoDaSkillsClass.getRow(s);
-		size_t skillIndex = skillsClassRow.getInt("SkillIndex");
-		const Aurora::TwoDARow &skillRow = twodaSkills.getRow(skillIndex);
+	WidgetListBox *skillListBox = getListBox("SkillsButtonBox");
+	skillListBox->setMode(WidgetListBox::kModeSelectable);
+	skillListBox->lock();
 
-		Common::UString skillName = TalkMan.getString(skillRow.getInt("Name"));
-		Common::UString helpText  = TalkMan.getString(skillRow.getInt("Description"));
+	for (std::vector<SkillItem>::iterator s = skills.begin(); s != skills.end(); ++s)
+		skillListBox->add(new WidgetListItemSkill(*this, *s), true);
 
-		bool classSkill = (bool) skillsClassRow.getInt("ClassSkill");
-
-
-		uint8 maxRank = 4 + _choices->getCharacter().getHitDice();
-
-		if (classSkill) {
-			// Add information about wether it is a skill class.
-			skillName += " " + TalkMan.getString(52951);
-		} else
-			maxRank = (maxRank - maxRank % 2) / 2;
-
-		getListBox("SkillsButtonBox")->add(new WidgetListItemSkill(*this, skillName, helpText,
-		                                                           skillRow.getString("Icon"),
-		                                                           skillIndex, classSkill, maxRank));
-	}
-	getListBox("SkillsButtonBox")->unlock();
+	skillListBox->sortByTag();
+	skillListBox->unlock();
 }
 
-void CharSkills::computeAvailablePoints(uint8 pointBase) {
-	uint8 abilityScore = _choices->getAbility(kAbilityIntelligence);
-	int8    modifier    = (abilityScore - abilityScore % 2) / 2 - 5;
-	_availableSkillRank = modifier + pointBase;
 
-	// Human race can have more skills
-	if (_choices->getRace() == 6)
-		++_availableSkillRank;
-	// More points are available for the first level.
-	if (_choices->getCharacter().getHitDice() == 0)
-		_availableSkillRank *= 4;
+
+
+
 }
 
 }   // End of namespace NWN

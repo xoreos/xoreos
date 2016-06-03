@@ -27,6 +27,7 @@
 #include "src/aurora/2dareg.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/gff3file.h"
+#include "src/aurora/talkman.h"
 
 #include "src/engines/nwn/creature.h"
 #include "src/engines/nwn/item.h"
@@ -403,6 +404,78 @@ std::vector<uint32> CharGenChoices::getFeats() {
 	std::vector<uint32> allFeats(_racialFeats);
 	allFeats.insert(allFeats.end(), _classFeats.begin(), _classFeats.end());
 	return allFeats;
+}
+
+void CharGenChoices::getPrefSkills(std::vector<uint8> &skills) {
+	const Aurora::TwoDAFile &twodaPackage   = TwoDAReg.get2DA("packages");
+	const Aurora::TwoDARow  &rowPck         = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
+	const Aurora::TwoDAFile &twodaPckSkills = TwoDAReg.get2DA(rowPck.getString("SkillPref2DA"));
+
+	skills.clear();
+	for (size_t r = 0; r < twodaPckSkills.getRowCount(); ++r)
+		skills.push_back((uint8) twodaPckSkills.getRow(r).getInt("SKILLINDEX"));
+}
+
+uint8 CharGenChoices::computeAvailSkillRank() {
+	int8 availRank = getAbilityModifier(kAbilityIntelligence);
+	if (availRank < 0)
+		availRank = 0;
+
+	const Aurora::TwoDAFile &twodaPackage = TwoDAReg.get2DA("classes");
+	const Aurora::TwoDARow  &rowClass       = twodaPackage.getRow(_classId);
+	availRank += (int8) rowClass.getInt("SkillPointBase");
+
+	// If human (have Quick to master feat), add an extra point.
+	if (hasFeat(258))
+		++availRank;
+
+	if (_creature->getHitDice() == 0)
+		availRank *= 4;
+
+	return (uint8) availRank;
+}
+
+void CharGenChoices::getSkillItems(std::vector<SkillItem> &skills) {
+	skills.clear();
+
+	const Aurora::TwoDAFile &twodaClasses     = TwoDAReg.get2DA("classes");
+	const Aurora::TwoDAFile &twodaSkills      = TwoDAReg.get2DA("skills");
+	const Aurora::TwoDARow  &rowClasses       = twodaClasses.getRow(_classId);
+	const Common::UString   skillsClassFile   = rowClasses.getString("SkillsTable");
+	const Aurora::TwoDAFile &twoDaSkillsClass = TwoDAReg.get2DA(skillsClassFile);
+
+	for (size_t s = 0; s < twoDaSkillsClass.getRowCount(); ++s) {
+		const Aurora::TwoDARow &skillsClassRow = twoDaSkillsClass.getRow(s);
+		size_t skillIndex = skillsClassRow.getInt("SkillIndex");
+		const Aurora::TwoDARow &skillRow = twodaSkills.getRow(skillIndex);
+
+		Common::UString skillName = TalkMan.getString(skillRow.getInt("Name"));
+		Common::UString icon      = skillRow.getString("Icon");
+		Common::UString helpText  = TalkMan.getString(skillRow.getInt("Description"));
+
+		bool classSkill = (bool) skillsClassRow.getInt("ClassSkill");
+
+		uint8 maxRank = 4 + _creature->getHitDice();
+
+		if (classSkill) {
+			// Add information about wether it is a skill class.
+			skillName += " " + TalkMan.getString(52951);
+		} else {
+			maxRank = (maxRank - maxRank % 2) / 2;
+		}
+
+		SkillItem skill;
+		skill.rank         =          0;
+		skill.maxRank      =    maxRank;
+		skill.minRank      =          0;
+		skill.skillID      = skillIndex;
+		skill.isClassSkill = classSkill;
+		skill.name         =  skillName;
+		skill.icon         =       icon;
+		skill.help         =   helpText;
+
+		skills.push_back(skill);
+	}
 }
 
 } // End of namespace NWN

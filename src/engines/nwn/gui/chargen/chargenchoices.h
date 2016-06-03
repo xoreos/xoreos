@@ -28,12 +28,9 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/ustring.h"
 
 #include "src/engines/nwn/types.h"
-
-namespace Common {
-class UString;
-}
 
 namespace Engines {
 
@@ -41,6 +38,17 @@ namespace NWN {
 
 class Creature;
 class Module;
+
+struct SkillItem {
+	uint8 rank;
+	uint8 maxRank;
+	uint8 minRank;
+	size_t skillID;
+	bool isClassSkill;
+	Common::UString name;
+	Common::UString icon;
+	Common::UString help;
+};
 
 class CharGenChoices {
 public:
@@ -78,6 +86,11 @@ public:
 	std::vector<uint32> getFeats();
 	uint8 getPackage() const;
 	uint8 getSpellSchool() const;
+
+	void getPrefSkills(std::vector<uint8> &skills);
+
+	uint8 computeAvailSkillRank();
+	void getSkillItems(std::vector<SkillItem> &skills);
 
 private:
 	Creature *_creature;
