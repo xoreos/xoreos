@@ -47,21 +47,21 @@ CharFeatsPopup::CharFeatsPopup(::Engines::Console *console) : GUI(console) {
 CharFeatsPopup::~CharFeatsPopup() {
 }
 
-void CharFeatsPopup::setFeats(std::vector<Feat> feats) {
+void CharFeatsPopup::setFeats(std::vector<FeatItem> feats) {
 	_feats = feats;
 
 	Engines::NWN::WidgetListBox *featBox = getListBox("FeatsList", true);
 	featBox->lock();
 	featBox->clear();
 	getListBox("FeatsList", true)->setMode(WidgetListBox::kModeSelectable);
-	for (std::vector<Feat>::iterator f = feats.begin(); f != feats.end(); ++f) {
+	for (std::vector<FeatItem>::iterator f = feats.begin(); f != feats.end(); ++f) {
 		WidgetListItemTextLine *item = new WidgetListItemTextLine(*this, "fnt_galahad14", (*f).name);
 		featBox->add(item);
 	}
 	featBox->unlock();
 }
 
-Feat CharFeatsPopup::getChosenFeat() const {
+FeatItem CharFeatsPopup::getChosenFeat() const {
 	return _chosenFeat;
 }
 

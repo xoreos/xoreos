@@ -50,6 +50,21 @@ struct SkillItem {
 	Common::UString help;
 };
 
+struct FeatItem {
+	uint32 featId;
+	Common::UString name;
+	Common::UString description;
+	Common::UString icon;
+	uint8 list; ///< The kind of list the feat belongs to: 0 (general feat), 2 (bonus feat), 1 (both)
+	bool isMasterFeat;
+	uint32 masterFeat;
+
+	bool operator < (const FeatItem& f) const {
+		return (name < f.name);
+	}
+	FeatItem();
+};
+
 class CharGenChoices {
 public:
 	CharGenChoices();
@@ -83,14 +98,16 @@ public:
 	uint8 getAbility(Ability ability) const;
 	uint8 getTotalAbility(Ability ability) const;
 	int8 getAbilityModifier(Ability ability);
-	std::vector<uint32> getFeats();
+	void getFeats(std::vector<uint32> &feats);
 	uint8 getPackage() const;
 	uint8 getSpellSchool() const;
 
+	void getPrefFeats(std::vector<uint32> &feats);
 	void getPrefSkills(std::vector<uint8> &skills);
 
 	uint8 computeAvailSkillRank();
 	void getSkillItems(std::vector<SkillItem> &skills);
+	void getFeatItems(std::list<FeatItem> &feats, uint8 &normalFeats, uint8 &bonusFeats);
 
 private:
 	Creature *_creature;

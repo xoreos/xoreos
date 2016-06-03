@@ -37,14 +37,14 @@ public:
 	CharFeatsPopup(::Engines::Console *console = 0);
 	~CharFeatsPopup();
 
-	void setFeats(std::vector<Feat> feats);
-	Feat getChosenFeat() const;
+	void setFeats(std::vector<FeatItem> feats);
+	FeatItem getChosenFeat() const;
 
 private:
 	void callbackActive(Widget &widget);
 
-	Feat              _chosenFeat;
-	std::vector<Feat> _feats;
+	FeatItem              _chosenFeat;
+	std::vector<FeatItem> _feats;
 };
 
 

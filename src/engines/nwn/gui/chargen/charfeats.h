@@ -37,34 +37,21 @@ class CharFeatsPopup;
 class WidgetListBox;
 class WidgetButton;
 
-struct Feat {
-	uint32 featId;
-	Common::UString name;
-	Common::UString description;
-	Common::UString icon;
-	bool isMasterFeat;
-	uint32 masterFeat;
-
-	bool operator < (const Feat& f) const {
-		return (name < f.name);
-	}
-};
-
 class WidgetListItemFeat : public WidgetListItemButton {
 public:
-	WidgetListItemFeat (::Engines::GUI &gui, Feat &feat);
+	WidgetListItemFeat (::Engines::GUI &gui, FeatItem &feat);
 	~WidgetListItemFeat();
 
 	void callbackHelp();
 
 private:
 	void subActive(Widget &widget);
-	Feat _feat;
+	FeatItem _feat;
 
 	friend class CharFeats;
 };
 
-typedef std::map<Feat, std::vector<Feat> > MasterFeatsMap;
+typedef std::map<FeatItem, std::vector<FeatItem> > MasterFeatsMap;
 
 class CharFeats : public CharGenBase {
 public:
@@ -74,33 +61,33 @@ public:
 	void reset();
 	void fixWidgetType(const Common::UString &tag, NWN::GUI::WidgetType &type);
 
-	void showFeatHelp(Feat &feat);
+	void showFeatHelp(FeatItem &feat);
+	void moveFeat(FeatItem feat, bool toKnownFeats, bool rebuild = true);
 	void moveFeat(WidgetListItemFeat *item);
 
 private:
 	void callbackActive(Widget &widget);
 	void callbackRun();
 
-	void makeAvailList();
+	void makeAvailList(uint8 list);
 	void makeKnownList();
 
-	void changeAvailFeats(int8 diff);
+	void changeAvailFeats(int8 diff, bool normalFeat, bool rebuild = true);
 
-	void addToMasterFeats(Feat &feat, WidgetListItemFeat *featItem);
-	void removeFromMasterFeats(Feat &feat, WidgetListItemFeat *masterFeatItem);
-	MasterFeatsMap::iterator findMasterFeat(Feat &feat);
 
 	CharHelp   *_featHelp;
 	CharFeatsPopup *_featsPopup;
 	WidgetListBox  *_availListBox;
 	WidgetListBox  *_knownListBox;
 
-	MasterFeatsMap _masterFeats;
+	std::list<FeatItem> _availFeats;
+	std::list<FeatItem> _knownFeats;
 
 	std::vector<WidgetListItemFeat *> _featsTrash;
 
 	uint8 _normalFeats;
 	uint8 _bonusFeats;
+	bool _hasBonusFeats;
 };
 
 } // End of namespace NWN

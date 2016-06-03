@@ -31,7 +31,7 @@ namespace Engines {
 
 namespace NWN {
 
-struct Feat;
+struct FeatItem;
 class PortraitWidget;
 
 class CharHelp : public GUI {

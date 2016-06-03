@@ -26,6 +26,9 @@
 
 #include "src/common/util.h"
 #include "src/common/strutil.h"
+#include "src/common/uuid.h"
+
+#include "src/graphics/graphics.h"
 
 #include "src/graphics/aurora/text.h"
 
@@ -45,15 +48,16 @@ namespace Engines {
 
 namespace NWN {
 
-WidgetListItemFeat::WidgetListItemFeat(::Engines::GUI &gui, Feat &feat) :
-                                       WidgetListItemButton(gui, "ctl_cg_btn_feat", feat.name,
+WidgetListItemFeat::WidgetListItemFeat(::Engines::GUI &gui, FeatItem &feat) :
+                                       WidgetListItemButton(gui, "ctl_cg_btn_feat",
+                                                            feat.name + "#" + Common::generateIDNumberString(),
                                                             feat.icon, kMoveButton | kHelpButton),
                                        _feat(feat) {
 
 	// Set maximum width for text.
 	_text->set(feat.name, 230.f);
 
-	setTag("Item#" + feat.name);
+	setTag("Item#" + feat.name + "#" + Common::generateIDNumberString());
 }
 
 WidgetListItemFeat::~WidgetListItemFeat() {
@@ -79,17 +83,23 @@ CharFeats::CharFeats(CharGenChoices &choices, ::Engines::Console *console) : Cha
 
 	// TODO: Recommend button
 	getButton("RecommendButton", true)->setDisabled(true);
-	// TODO: Reset button
-	getButton("ResetButton", true)->setDisabled(true);
-
 	_featHelp   = new CharHelp("cg_featinfo", console);
 	_featsPopup = new CharFeatsPopup(console);
 
 	_availListBox = getListBox("AvailBox", true);
 	_knownListBox = getListBox("KnownBox", true);
 
-	makeAvailList();
+	_choices->getFeatItems(_availFeats, _normalFeats, _bonusFeats);
+	_hasBonusFeats = _bonusFeats > 0;
+
+	// Update text about the available feats.
+	changeAvailFeats(0, true);
+
+	// By default, show both general and bonus feats.
+	makeAvailList(1);
 	makeKnownList();
+
+	getButton("OkButton", true)->setDisabled(true);
 }
 
 CharFeats::~CharFeats() {
@@ -104,6 +114,9 @@ CharFeats::~CharFeats() {
 }
 
 void CharFeats::reset() {
+	while (_knownFeats.size() > 0) {
+		moveFeat(_knownFeats.front(), false);
+	}
 }
 
 void CharFeats::fixWidgetType(const Common::UString &tag, NWN::GUI::WidgetType &type) {
@@ -111,7 +124,7 @@ void CharFeats::fixWidgetType(const Common::UString &tag, NWN::GUI::WidgetType &
 		type = NWN::GUI::kWidgetTypeListBox;
 }
 
-void CharFeats::showFeatHelp(Feat &feat) {
+void CharFeats::showFeatHelp(FeatItem &feat) {
 	_featHelp->setContent(feat.name, feat.description, feat.icon);
 
 	_featHelp->show();
@@ -119,60 +132,91 @@ void CharFeats::showFeatHelp(Feat &feat) {
 	_featHelp->hide();
 }
 
-void CharFeats::moveFeat(WidgetListItemFeat *item) {
-	WidgetListBox *fromListBox = dynamic_cast<WidgetListBox *>(item->_owner);
-	WidgetListBox *toListBox = 0;
-	if (fromListBox->getTag() == "AvailBox") {
-		toListBox = getListBox("KnownBox", true);
-
-		// Check if there is a feat available.
-		if (_normalFeats == 0)
+void CharFeats::moveFeat(FeatItem feat, bool toKnownFeats, bool rebuild) {
+	// Check if there is enough remaining feats available.
+	if (toKnownFeats) {
+		if (_bonusFeats + _normalFeats == 0)
 			return;
-
-		if (item->_feat.isMasterFeat) {
-			std::vector<Feat> &featsList = _masterFeats[item->_feat];
-			std::sort(featsList.begin(), featsList.end());
-			_featsPopup->setFeats(featsList);
-			_featsPopup->show();
-			uint32 returnCode = _featsPopup->run();
-			_featsPopup->hide();
-
-			if (returnCode == 1)
-				return;
-
-			Feat chosenFeat = _featsPopup->getChosenFeat();
-			removeFromMasterFeats(chosenFeat, item);
-			changeAvailFeats(-1);
+		if (_bonusFeats == 0 && feat.list > 1)
 			return;
-		}
-
-		changeAvailFeats(-1);
-	} else {
-		toListBox = getListBox("AvailBox", true);
-		changeAvailFeats(1);
-		if (item->_feat.masterFeat != 0xFFFFFFFF) {
-			addToMasterFeats(item->_feat, item);
+		if (_normalFeats == 0 && feat.list < 1)
 			return;
-		}
 	}
 
-	item->hide();
-	item->deactivate();
+	std::list<FeatItem> &toList = (toKnownFeats) ? _knownFeats : _availFeats;
+	std::list<FeatItem> &fromList = (toKnownFeats) ? _availFeats : _knownFeats;
+	int8 diff = (toKnownFeats) ? -1 : 1;
 
+	for (std::list<FeatItem>::iterator aF = fromList.begin(); aF != fromList.end(); ++aF) {
+		if ((*aF).featId != feat.featId)
+			continue;
+
+		toList.push_back((*aF));
+		fromList.erase(aF);
+		break;
+	}
+
+	bool isNormalFeat = true;
+	if (toKnownFeats) {
+		isNormalFeat = (feat.list < 2 && _bonusFeats == 0) || (feat.list == 0);
+	} else {
+		isNormalFeat = (feat.list == 0) || (feat.list < 2 && _bonusFeats > 0);
+	}
+
+	changeAvailFeats(diff, isNormalFeat, rebuild);
+}
+
+void CharFeats::moveFeat(WidgetListItemFeat *item) {
+	WidgetListBox *fromListBox = dynamic_cast<WidgetListBox *>(item->_owner);
+
+	// Check if there is enough remaining feats available.
+	if (fromListBox->getTag() == "AvailBox" && _bonusFeats + _normalFeats == 0)
+		return;
+
+	if (!item->_feat.isMasterFeat) {
+		item->hide();
+		removeFocus();
+		fromListBox->lock();
+		fromListBox->remove(item);
+		fromListBox->unlock();
+
+		FeatItem featItem = item->_feat;
+		_featsTrash.push_back(item);
+		moveFeat(featItem, fromListBox->getTag() == "AvailBox");
+		return;
+	}
+
+	// For master feat items.
+
+	// Find feats that belong to the master feat.
+	std::vector<FeatItem> slaveFeatsList;
+	for (std::list<FeatItem>::iterator f = _availFeats.begin(); f != _availFeats.end(); ++f) {
+		if ((*f).masterFeat != item->_feat.featId)
+			continue;
+
+		slaveFeatsList.push_back(*f);
+	}
+
+	// Show the popup.
+	std::sort(slaveFeatsList.begin(), slaveFeatsList.end());
+	_featsPopup->setFeats(slaveFeatsList);
+	removeFocus();
+	_featsPopup->show();
+	uint32 returnCode = _featsPopup->run();
+	_featsPopup->hide();
+
+	if (returnCode == 1)
+		return;
+
+	GfxMan.lockFrame();
 	fromListBox->lock();
 	fromListBox->remove(item);
 	fromListBox->unlock();
+	_featsTrash.push_back(item);
 
-	item->changeArrowDirection();
-
-	toListBox->lock();
-	toListBox->add(item, true);
-
-	if (toListBox->getTag() == "AvailBox")
-		toListBox->sortByTag();
-
-	toListBox->unlock();
-	item->activate();
+	FeatItem chosenFeat = _featsPopup->getChosenFeat();
+	moveFeat(chosenFeat, true);
+	GfxMan.unlockFrame();
 }
 
 void CharFeats::callbackActive(Widget &widget) {
@@ -187,10 +231,19 @@ void CharFeats::callbackActive(Widget &widget) {
 		}
 
 		_returnCode = 2;
+		return;
 	}
 
 	if (widget.getTag() == "CancelButton") {
 		_returnCode = 1;
+		return;
+	}
+
+	if (widget.getTag() == "ResetButton") {
+		GfxMan.lockFrame();
+		reset();
+		GfxMan.unlockFrame();
+		return;
 	}
 }
 
@@ -205,64 +258,45 @@ void CharFeats::callbackRun() {
 	_featsTrash.clear();
 }
 
-void CharFeats::makeAvailList() {
-	uint8 level = _choices->getCharacter().getHitDice();
-	// Get an additional feat each new level multiple of 3.
-	if ((level + 1) % 3)
-		++_normalFeats;
-	// Get an additional feat at level 1.
-	if (level == 0)
-		++_normalFeats;
-	// Get an additional level if the character is human (Quick Master feat).
-	if (_choices->getRace() == 6)
-		++_normalFeats;
-
-	// Update text about the available feats.
-	changeAvailFeats(0);
-	// TODO Make bonus list.
-
+void CharFeats::makeAvailList(uint8 list) {
 	// Build the list of available feats.
 	_availListBox->lock();
 	_availListBox->clear();
 	_availListBox->setMode(WidgetListBox::kModeSelectable);
 
-	// Build list from all possible feats.
-	const Aurora::TwoDAFile &twodaFeats = TwoDAReg.get2DA("feat");
 	const Aurora::TwoDAFile &twodaMasterFeats = TwoDAReg.get2DA("masterfeats");
 
-	for (size_t it = 0; it < twodaFeats.getRowCount(); ++it) {
-		if (!_choices->hasPrereqFeat(it, false))
+	std::list<uint32> masterFeats;
+	for (std::list<FeatItem>::iterator f = _availFeats.begin(); f != _availFeats.end(); ++f) {
+		if (list == 0 && (*f).list > 1)
 			continue;
 
-		const Aurora::TwoDARow &featRow = twodaFeats.getRow(it);
+		if (list == 2 && (*f).list < 1)
+			continue;
 
-		Feat feat;
-		feat.featId = it;
-		feat.name = TalkMan.getString(featRow.getInt("FEAT"));
-		feat.icon = featRow.getString("ICON");
-		feat.description = TalkMan.getString(featRow.getInt("DESCRIPTION"));
-		feat.masterFeat = 0xFFFFFFFF;
-		feat.isMasterFeat = false;
-
-		// Check is the feat belongs to a masterfeat.
-		if (!featRow.empty("MASTERFEAT")) {
-			feat.masterFeat = featRow.getInt("MASTERFEAT");
-
+		FeatItem feat = *f;
+		// Check if the feat belongs to a masterfeat.
+		if (feat.masterFeat < 0xFFFFFFFF) {
 			// Check if the masterfeat is already there.
-			MasterFeatsMap::iterator ms = findMasterFeat(feat);
-			if (ms == _masterFeats.end()) {
-				Feat bareFeat = feat;
-				const Aurora::TwoDARow &masterFeatRow = twodaMasterFeats.getRow(feat.masterFeat);
-				feat.name = TalkMan.getString(masterFeatRow.getInt("STRREF"));
-				feat.icon = masterFeatRow.getString("ICON");
-				feat.isMasterFeat = true;
-				feat.featId = feat.masterFeat;
-				feat.masterFeat = 0xFFFFFFFF;
-				_masterFeats[feat] = std::vector<Feat>(1, bareFeat);
-			} else {
-				ms->second.push_back(feat);
-				continue;
+			bool found = false;
+			for (std::list<uint32>::iterator mf = masterFeats.begin(); mf != masterFeats.end(); ++mf) {
+				if (feat.masterFeat == *mf) {
+					found = true;
+					break;
+				}
 			}
+
+			if (found)
+				continue;
+
+			masterFeats.push_back(feat.masterFeat);
+
+			const Aurora::TwoDARow &masterFeatRow = twodaMasterFeats.getRow(feat.masterFeat);
+			feat.name = TalkMan.getString(masterFeatRow.getInt("STRREF"));
+			feat.icon = masterFeatRow.getString("ICON");
+			feat.isMasterFeat = true;
+			feat.featId = feat.masterFeat;
+			feat.masterFeat = 0xFFFFFFFF;
 		}
 
 		WidgetListItemFeat *featItem = new WidgetListItemFeat(*this, feat);
@@ -277,12 +311,13 @@ void CharFeats::makeKnownList() {
 	_knownListBox->lock();
 	_knownListBox->clear();
 	_knownListBox->setMode(WidgetListBox::kModeSelectable);
-	std::vector<uint32> feats = _choices->getFeats();
+	std::vector<uint32> feats;
+	_choices->getFeats(feats);
 	for (std::vector<uint32>::iterator f = feats.begin(); f != feats.end(); ++f) {
 		const Aurora::TwoDAFile &twodaFeats = TwoDAReg.get2DA("feat");
 		const Aurora::TwoDARow &featRow = twodaFeats.getRow(*f);
 
-		Feat feat;
+		FeatItem feat;
 		feat.name = TalkMan.getString(featRow.getInt("FEAT"));
 		feat.icon = featRow.getString("ICON");
 		feat.description = TalkMan.getString(featRow.getInt("DESCRIPTION"));
@@ -297,81 +332,61 @@ void CharFeats::makeKnownList() {
 	}
 
 	_knownListBox->sortByTag();
+
+	for (std::list<FeatItem>::iterator f = _knownFeats.begin(); f != _knownFeats.end(); ++f) {
+		WidgetListItemFeat *featItem = new WidgetListItemFeat(*this, *f);
+		featItem->changeArrowDirection();
+		_knownListBox->add(featItem, true);
+	}
+
 	_knownListBox->unlock();
 }
 
-void CharFeats::changeAvailFeats(int8 diff) {
-	_normalFeats += diff;
-	getLabel("RemainLabel", true)->setText(Common::composeString<uint8>(_normalFeats));
+void CharFeats::changeAvailFeats(int8 diff, bool normalFeat, bool rebuild) {
+	if (normalFeat) {
+		_normalFeats += diff;
+	} else {
+		_bonusFeats  += diff;
+	}
+
+	int8 list = 1;
+	if (_bonusFeats == 0 && _hasBonusFeats)
+		list = 0;
+
+	if (_bonusFeats > 0 && _normalFeats == 0)
+		list = 2;
+
+	if (rebuild) {
+		size_t startItem = 0;
+		GfxMan.lockFrame();
+		if (_normalFeats + _bonusFeats == 0) {
+			_availListBox->lock();
+			_availListBox->clear();
+			_availListBox->unlock();
+		} else {
+			startItem = _availListBox->getStartItem();
+			makeAvailList(list);
+			_availListBox->setStartItem(startItem);
+		}
+
+		startItem = _knownListBox->getStartItem();
+		makeKnownList();
+		_knownListBox->setStartItem(startItem);
+		GfxMan.unlockFrame();
+	}
+
+	getLabel("RemainLabel", true)->setText(Common::composeString<uint8>(_normalFeats + _bonusFeats));
+
+	// Enable/Disable the OK button.
+	if (_normalFeats + _bonusFeats != 0) {
+		getButton("OkButton", true)->setDisabled(true);
+	} else {
+		getButton("OkButton", true)->setDisabled(false);
+	}
 }
 
-void CharFeats::addToMasterFeats(Feat &feat, WidgetListItemFeat *featItem) {
-	MasterFeatsMap::iterator ms = findMasterFeat(feat);
-	if (ms == _masterFeats.end()) {
-		error("Master feat from (%s) not found", feat.name.c_str());
-		return;
 	}
 
-	// If there is no feat available, create the master feat item.
-	if (ms->second.empty()) {
-		Feat masterFeat = ms->first;
-		WidgetListItemButton *item = new WidgetListItemFeat(*this, masterFeat);
-		_availListBox->lock();
-		_availListBox->add(item, true);
-		_availListBox->sortByTag();
-		_availListBox->unlock();
-	}
-
-	// Add feat to masterFeats list.
-	ms->second.push_back(feat);
-
-	// Remove item from the knownList.
-	_knownListBox->lock();
-	_knownListBox->remove(featItem);
-	featItem->movePosition(0.f, 0.f, 100.f);
-	_featsTrash.push_back(featItem);
-	_knownListBox->unlock();
-}
-
-void CharFeats::removeFromMasterFeats(Feat &feat, WidgetListItemFeat *masterFeatItem) {
-	MasterFeatsMap::iterator ms = findMasterFeat(feat);
-	if (ms == _masterFeats.end()) {
-		error("Master feat from (%s) not found", feat.name.c_str());
-		return;
-	}
-
-	// Erase feat from masterFeats list.
-	for (std::vector<Feat>::iterator f = ms->second.begin(); f != ms->second.end(); ++f) {
-		if ((*f).featId != feat.featId)
-			continue;
-
-		ms->second.erase(f);
-		break;
-	}
-
-	// If there is no feat left in the list, remove the master feat from the availables.
-	if (ms->second.empty()) {
-		_availListBox->lock();
-		_availListBox->remove(masterFeatItem);
-		_featsTrash.push_back(masterFeatItem);
-		_availListBox->unlock();
-	}
-
-	// Add the chosen feat to the known feats.
-	_knownListBox->lock();
-	WidgetListItemFeat *featItem = new WidgetListItemFeat(*this, feat);
-	_knownListBox->add(featItem, true);
-	featItem->changeArrowDirection();
-	_knownListBox->unlock();
-}
-
-MasterFeatsMap::iterator CharFeats::findMasterFeat(Feat &feat) {
-	for (MasterFeatsMap::iterator it = _masterFeats.begin(); it != _masterFeats.end(); ++it) {
-		if (it->first.featId == feat.masterFeat)
-			return it;
-	}
-
-	return _masterFeats.end();
 }
 
 } // End of namespace NWN

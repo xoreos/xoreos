@@ -39,6 +39,9 @@ namespace Engines {
 
 namespace NWN {
 
+FeatItem::FeatItem() : featId(Aurora::kFieldIDInvalid), list(0) {
+}
+
 CharGenChoices::CharGenChoices() : _characterUsed(false) {
 	_creature = new Creature();
 
@@ -400,10 +403,30 @@ uint8 CharGenChoices::getSpellSchool() const {
 	return _spellSchool;
 }
 
-std::vector<uint32> CharGenChoices::getFeats() {
-	std::vector<uint32> allFeats(_racialFeats);
-	allFeats.insert(allFeats.end(), _classFeats.begin(), _classFeats.end());
-	return allFeats;
+void CharGenChoices::getFeats(std::vector<uint32> &feats) {
+	feats = _racialFeats;
+	feats.insert(feats.end(), _classFeats.begin(), _classFeats.end());
+}
+
+void CharGenChoices::getPrefFeats(std::vector<uint32> &feats) {
+	const Aurora::TwoDAFile &twodaPackage    = TwoDAReg.get2DA("packages");
+	const Aurora::TwoDARow  &rowPck          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
+	const Aurora::TwoDAFile &twodaPckFeats   = TwoDAReg.get2DA(rowPck.getString("FeatPref2DA"));
+
+	feats.clear();
+	size_t rowIdx = 0;
+	while (rowIdx < twodaPckFeats.getRowCount()) {
+		const Aurora::TwoDARow  &rowFeat = twodaPckFeats.getRow(rowIdx);
+		++rowIdx;
+		uint32 featID = rowFeat.getInt("FEATINDEX");
+		if (hasFeat(featID))
+			continue;
+
+		if (!hasPrereqFeat(featID, true))
+			continue;
+
+		feats.push_back(featID);
+	}
 }
 
 void CharGenChoices::getPrefSkills(std::vector<uint8> &skills) {
@@ -475,6 +498,99 @@ void CharGenChoices::getSkillItems(std::vector<SkillItem> &skills) {
 		skill.help         =   helpText;
 
 		skills.push_back(skill);
+	}
+}
+
+void CharGenChoices::getFeatItems(std::list<FeatItem> &feats, uint8 &normalFeats, uint8 &bonusFeats) {
+	uint8 level = _creature->getHitDice();
+	normalFeats = 0;
+	bonusFeats  = 0;
+
+	// Get an additional feat each new level multiple of 3.
+	if ((level + 1) % 3)
+		++normalFeats;
+	// Get an additional feat at level 1.
+	if (level == 0)
+		++normalFeats;
+
+	// Bonus feat
+	const Aurora::TwoDAFile &twodaClass = TwoDAReg.get2DA("classes");
+	if (twodaClass.headerToColumn("BonusFeatsTable") != Aurora::kFieldIDInvalid) {
+		const Aurora::TwoDAFile &twodaBonusFeats =
+		        TwoDAReg.get2DA(twodaClass.getRow(_classId).getString("BonusFeatsTable"));
+
+		bonusFeats = twodaBonusFeats.getRow(_creature->getHitDice()).getInt("Bonus");
+	} else {
+		// The number of bonus feats is hardcoded before HotU.
+		// TODO: Hardcoded bonus feats.
+	}
+
+	// Build list from all possible feats.
+	const Aurora::TwoDAFile &twodaFeats = TwoDAReg.get2DA("feat");
+
+	feats.clear();
+	for (size_t it = 0; it < twodaFeats.getRowCount(); ++it) {
+		if (!hasPrereqFeat(it, false))
+			continue;
+
+		const Aurora::TwoDARow &featRow = twodaFeats.getRow(it);
+
+		FeatItem feat;
+		feat.featId = it;
+		feat.name = TalkMan.getString(featRow.getInt("FEAT"));
+		feat.icon = featRow.getString("ICON");
+		feat.description = TalkMan.getString(featRow.getInt("DESCRIPTION"));
+		feat.masterFeat = 0xFFFFFFFF;
+		feat.isMasterFeat = false;
+
+		// Check is the feat belongs to a masterfeat.
+		if (!featRow.empty("MASTERFEAT"))
+			feat.masterFeat = featRow.getInt("MASTERFEAT");
+
+		feats.push_back(feat);
+	}
+
+	// Add class feats.
+	const Aurora::TwoDAFile &twodaClsFeat = TwoDAReg.get2DA(twodaClass.getRow(_classId).getString("FeatsTable"));
+	for (size_t it = 0; it < twodaClsFeat.getRowCount(); ++it) {
+		const Aurora::TwoDARow &clsFeatRow = twodaClsFeat.getRow(it);
+
+		int32 list = clsFeatRow.getInt("List");
+		// Check if it is automatically granted.
+		if (list == 3)
+			continue;
+
+		if (!hasPrereqFeat(clsFeatRow.getInt("FeatIndex"), true))
+			continue;
+
+		// When list=1, the feat can be both in the general and bonus feat list.
+		uint32 id = clsFeatRow.getInt("FeatIndex");
+		if (list == 1) {
+			for (std::list<FeatItem>::iterator f = feats.begin(); f != feats.end(); ++f) {
+				if (id != (*f).featId)
+					continue;
+
+				(*f).list = 1;
+				break;
+			}
+			continue;
+		}
+
+		const Aurora::TwoDARow &featRow = twodaFeats.getRow(id);
+		FeatItem feat;
+		feat.featId = id;
+		feat.name = TalkMan.getString(featRow.getInt("FEAT"));
+		feat.icon = featRow.getString("ICON");
+		feat.description = TalkMan.getString(featRow.getInt("DESCRIPTION"));
+		feat.list = list;
+		feat.masterFeat = 0xFFFFFFFF;
+		feat.isMasterFeat = false;
+
+		// Check is the feat belongs to a masterfeat.
+		if (!featRow.empty("MASTERFEAT"))
+			feat.masterFeat = featRow.getInt("MASTERFEAT");
+
+		feats.push_back(feat);
 	}
 }
 
