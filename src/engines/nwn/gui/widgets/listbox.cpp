@@ -641,6 +641,17 @@ void WidgetListBox::deselect() {
 	_selectedItem = 0xFFFFFFFF;
 }
 
+void WidgetListBox::setStartItem(size_t firstItem) {
+	_startItem = MIN<size_t>(firstItem, _items.size() - _visibleItems.size());
+
+	updateVisible();
+	updateScrollbarPosition();
+}
+
+size_t WidgetListBox::getStartItem() const {
+	return _startItem;
+}
+
 std::vector<WidgetListItem *>::iterator WidgetListBox::begin() {
 	return _items.begin();
 }

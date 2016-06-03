@@ -148,6 +148,11 @@ public:
 	WidgetListItem *getSelectedItem() const;
 	void deselect();
 
+	/** Set the first item to show in the list. */
+	void setStartItem(size_t firstItem);
+	/** Get the first item shown in the list. */
+	size_t getStartItem() const;
+
 	/** Get begin iterator from all the items in WidgetListBox. */
 	std::vector<WidgetListItem *>::iterator begin();
 	/** Get end iterator from all the items in WidgetListBox. */
