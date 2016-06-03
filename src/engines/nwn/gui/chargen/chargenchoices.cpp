@@ -376,19 +376,18 @@ bool CharGenChoices::getAlign(uint8 &goodness, uint8 &loyalty) const {
 	return true;
 }
 
-uint8 CharGenChoices::getAbility(size_t ability) const {
+uint8 CharGenChoices::getAbility(Ability ability) const {
 	return _abilities[ability];
 }
 
-uint8 CharGenChoices::getTotalAbility(size_t ability) const {
+uint8 CharGenChoices::getTotalAbility(Ability ability) const {
 	return _abilities[ability] + _racialAbilities[ability];
 }
 
-int32 CharGenChoices::getAbilityModifier(Ability ability) {
-	uint32 totalAbility = _abilities[ability] + _racialAbilities[ability];
-	totalAbility -= 6;
-	int32 modifier = (totalAbility - totalAbility % 2) / 2;
-	modifier -= 2;
+int8 CharGenChoices::getAbilityModifier(Ability ability) {
+	uint8 totalAbility = getTotalAbility(ability);
+	int8 modifier = (totalAbility - totalAbility % 2) / 2;
+	modifier -= 5;
 	return modifier;
 }
 
@@ -396,7 +395,7 @@ uint8 CharGenChoices::getPackage() const {
 	return _package;
 }
 
-uint32 CharGenChoices::getSpellSchool() const {
+uint8 CharGenChoices::getSpellSchool() const {
 	return _spellSchool;
 }
 

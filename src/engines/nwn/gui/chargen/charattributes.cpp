@@ -220,7 +220,7 @@ void CharAttributes::hide() {
 		// Get previous choice.
 		uint sum = 0;
 		for (size_t ab = 0; ab < 6; ++ab) {
-			_attributes[ab] = _choices->getAbility(ab);
+			_attributes[ab] = _choices->getAbility(static_cast<Ability>(ab));
 			sum += _attributes[ab];
 		}
 		_pointLeft = 0;

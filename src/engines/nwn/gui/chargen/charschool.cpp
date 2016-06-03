@@ -75,7 +75,7 @@ void CharSchool::hide() {
 	if (_returnCode == 1) {
 		// Set previous choice if any.
 		if (_choices->getSpellSchool() < UINT8_MAX)
-			_buttons->setActive(_choices->getSpellSchool());
+			_buttons->setActive((size_t) _choices->getSpellSchool());
 	}
 }
 

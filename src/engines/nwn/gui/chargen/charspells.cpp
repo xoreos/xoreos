@@ -354,7 +354,7 @@ void CharSpells::makeSpellsList() {
 	for (size_t ab = 0; ab < twodaAbilities.getRowCount(); ++ab) {
 		const Aurora::TwoDARow &abilityRow = twodaAbilities.getRow(ab);
 		if (abilityStr.toLower() == abilityRow.getString("Label").toLower()) {
-			_abilityLimit = _choices->getTotalAbility(ab) - 10U;
+			_abilityLimit = _choices->getTotalAbility(static_cast<Ability>(ab)) - 10U;
 			break;
 		}
 	}

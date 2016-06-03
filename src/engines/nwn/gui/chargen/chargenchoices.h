@@ -72,12 +72,12 @@ public:
 	uint32 getClass() const;
 	uint32 getRace() const;
 	bool getAlign(uint8 &goodness, uint8 &loyalty) const;
-	uint8 getAbility(size_t ability) const;
-	uint8 getTotalAbility(size_t ability) const;
-	int32 getAbilityModifier(Ability ability);
+	uint8 getAbility(Ability ability) const;
+	uint8 getTotalAbility(Ability ability) const;
+	int8 getAbilityModifier(Ability ability);
 	std::vector<uint32> getFeats();
 	uint8 getPackage() const;
-	uint32 getSpellSchool() const;
+	uint8 getSpellSchool() const;
 
 private:
 	Creature *_creature;
