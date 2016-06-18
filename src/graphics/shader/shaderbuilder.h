@@ -46,14 +46,13 @@ class ShaderBuilder {
 public:
 
 	enum {
-		ENV_CUBE                = 0x0001,
-		ENV_SPHERE              = 0x0002,
-		COLOUR                  = 0x0004,
-		TEXTURE                 = 0x0008,
-		MIX_ENV_ALPHA_ONE_MINUS = 0x0010,
-		MIX_TEXTURE_ALPHA       = 0x0020,
-		MIX_TEXTURE             = 0x0040,
-		LIGHTMAP                = 0x0080
+		ENV_CUBE,
+		ENV_SPHERE,
+		COLOUR,
+		TEXTURE,
+		TEXTURE_LIGHTMAP,
+		TEXTURE_BUMPMAP,
+		TEXTURE_LIGHTMAP_BUMPMAP
 	};
 
 	/**
@@ -74,7 +73,7 @@ public:
 	 * @param flags   Input flags to indicated pre-built components to include.
 	 * @return  Output of final shader string.
 	 */
-	Common::UString genVertexShader(uint32_t flags, bool isGL3);
+	Common::UString genVertexShader(uint32 flags, bool isGL3);
 
 	/**
 	 * @brief Generate a name to use for the (vertex) shader, based upon input flags.
@@ -86,14 +85,14 @@ public:
 	 * @param flags   Input flags used to generate a name.
 	 * @return  Generated name.
 	 */
-	Common::UString genVertexShaderName(uint32_t flags);
+	Common::UString genVertexShaderName(uint32 flags);
 
 	/**
 	 * @brief Generate a fragment shader string based upon the input flags.
 	 * @param flags   Input flags to indicated pre-built components to include.
 	 * @return  Output of final shader string.
 	 */
-	Common::UString genFragmentShader(uint32_t flags, bool isGL3);
+	Common::UString genFragmentShader(uint32 flags, bool isGL3);
 
 	/**
 	 * @brief Generate a name to use for the (fragment) shader, based upon input flags.
@@ -105,7 +104,15 @@ public:
 	 * @param flags   Input flags used to generate a name.
 	 * @return  Generated name.
 	 */
-	Common::UString genFragmentShaderName(uint32_t flags);
+	Common::UString genFragmentShaderName(uint32 flags);
+
+private:
+	/**
+	 * @brief Generate a base name, vertex and fragment shaders append .vert and .frag respectively.
+	 * @param flags   Input flags used to generate a name.
+	 * @return  Generated base name.
+	 */
+	Common::UString getBaseShaderName(uint32 flags);
 };
 
 } // End of namespace Shader

@@ -30,29 +30,6 @@ namespace Shader {
 
 #define SHADER_MATERIAL_VARIABLE_OWNED (0x00000001)
 
-static const GLenum ShaderMaterialBlendfuncArray[] = {
-	GL_ZERO,
-	GL_ONE,
-	GL_SRC_COLOR,
-	GL_ONE_MINUS_SRC_COLOR,
-	GL_DST_COLOR,
-	GL_ONE_MINUS_DST_COLOR,
-	GL_SRC_ALPHA,
-	GL_ONE_MINUS_SRC_ALPHA,
-	GL_DST_ALPHA,
-	GL_ONE_MINUS_DST_ALPHA,
-	GL_CONSTANT_COLOR,
-	GL_ONE_MINUS_CONSTANT_COLOR,
-	GL_CONSTANT_ALPHA,
-	GL_ONE_MINUS_CONSTANT_ALPHA,
-	GL_SRC_ALPHA_SATURATE,
-	GL_SRC1_COLOR,
-	GL_ONE_MINUS_SRC1_COLOR,
-	GL_SRC1_ALPHA,
-	GL_ONE_MINUS_SRC1_ALPHA
-};
-#define BLEND_FUNC_COUNT (19)
-
 ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) : _variableData(), _fragShader(fragShader), _flags(0), _name(name), _usageCount(0), _alphaIndex(0xFFFFFFFF) {
 	fragShader->usageCount++;
 
@@ -85,28 +62,6 @@ uint32 ShaderMaterial::getFlags() const {
 
 void ShaderMaterial::setFlags(uint32 flags) {
 	_flags = flags;
-}
-
-uint32 ShaderMaterial::genBlendFlags(GLenum src, GLenum dst) {
-	uint32 flags = 0;
-
-	// First figure out the src flags.
-	for (uint32 i = 0; i < BLEND_FUNC_COUNT; i++) {
-		if (src == ShaderMaterialBlendfuncArray[i]) {
-			flags |= i << SHADER_MATERIAL_TRANSPARENT_SRC_SHIFT;
-			break;
-		}
-	}
-
-	// Now get the dst flags.
-	for (uint32 i = 0; i < BLEND_FUNC_COUNT; i++) {
-		if (dst == ShaderMaterialBlendfuncArray[i]) {
-			flags |= i << SHADER_MATERIAL_TRANSPARENT_DST_SHIFT;
-			break;
-		}
-	}
-
-	return flags;
 }
 
 Shader::ShaderObject *ShaderMaterial::getFragmentShader() const {
@@ -279,10 +234,11 @@ void ShaderMaterial::bindFade(Shader::ShaderProgram *program, float alpha) {
 }
 
 void ShaderMaterial::bindGLState() {
+	/*
 	if (_flags & SHADER_MATERIAL_TRANSPARENT) {
 		glBlendFunc(ShaderMaterialBlendfuncArray[(_flags >> SHADER_MATERIAL_TRANSPARENT_SRC_SHIFT) & SHADER_MATERIAL_TRANSPARENT_SHIFT_MASK],
 		            ShaderMaterialBlendfuncArray[(_flags >> SHADER_MATERIAL_TRANSPARENT_DST_SHIFT) & SHADER_MATERIAL_TRANSPARENT_SHIFT_MASK]);
-		glEnable(GL_BLEND);
+		//glEnable(GL_BLEND);  // Blending is never disabled. It's just how the games were written.
 	}
 
 	if (_flags & SHADER_MATERIAL_NOCULLFACE) {
@@ -296,11 +252,14 @@ void ShaderMaterial::bindGLState() {
 	if (_flags & SHADER_MATERIAL_NODEPTHMASK) {
 		glDepthMask(GL_FALSE);
 	}
+	*/
 }
 
 void ShaderMaterial::unbindGLState() {
+	/*
 	if (_flags & SHADER_MATERIAL_TRANSPARENT) {
-		glDisable(GL_BLEND);
+		glBlendFunc(ShaderMaterialBlendfuncArray[3],ShaderMaterialBlendfuncArray[2]);
+		//glDisable(GL_BLEND);  // Blending is never disabled. It's just how the games were written.
 	}
 
 	if (_flags & SHADER_MATERIAL_NOCULLFACE) {
@@ -314,6 +273,7 @@ void ShaderMaterial::unbindGLState() {
 	if (_flags & SHADER_MATERIAL_NODEPTHMASK) {
 		glDepthMask(GL_TRUE);
 	}
+	*/
 }
 
 void ShaderMaterial::restoreGLState() {

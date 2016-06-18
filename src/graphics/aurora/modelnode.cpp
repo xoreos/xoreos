@@ -839,111 +839,119 @@ void ModelNode::computeAbsoluteTransform() {
 }
 
 void ModelNode::buildMaterial() {
-	Common::UString materialName = "xoreos";
-
-	for (size_t t = 0; t != _textures.size(); t++) {
-		if (!_textures[t].empty()) {
-			materialName += ".";
-			materialName += _textures[t].getName();
-		}
+	if (!_mesh) {
+		return;
 	}
 
+	Common::UString materialName;
+
+	Shader::ShaderMaterial *material;
+	Shader::ShaderSampler *sampler;
+	Shader::ShaderSurface *surface;
+
+	_renderableArray.clear();
+
+	Shader::ShaderRenderable env_renderable;
 	if (!_envMap.empty()) {
-		materialName += ".";
+		materialName = "xoroes.";
 		materialName += _envMap.getName();
-	}
-
-	uint32 buildFlags = 0;
-	uint32 materialFlags = 0;
-
-	if (_textures.size() > 0) {
-		buildFlags |= Shader::ShaderBuilder::TEXTURE;
-		buildFlags |= Shader::ShaderBuilder::MIX_TEXTURE;
-		if (_textures.size() > 1) {
-			if (_textures[0].getName() == "LHR_blst02") {  // Dirty hack around a KotOR issue.
-				_isTransparent = true;
-				// printf("transparent hints: %u, %u\n", _hasTransparencyHint ? 1 : 0, _transparencyHint ? 1 : 0);
-			}
-			if (!_textures[1].empty()) { // Sometimes a texture is specified to be loaded, but the resource doesn't actually exist.
-				buildFlags |= Shader::ShaderBuilder::LIGHTMAP;
-			}
-		}
-	}
-
-	if (!_envMap.empty()) {
-		// So far, all rendering paths will mix env mapping with (1.0 - opacity).
-		buildFlags |= Shader::ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS;
-
-		// Figure out if a cube of sphere map is used.
-		if (_envMap.getTexture().getImage().isCubeMap()) {
-			buildFlags |= Shader::ShaderBuilder::ENV_CUBE;
-		} else {
-			buildFlags |= Shader::ShaderBuilder::ENV_SPHERE;
-		}
-
-		// Under or over mapping will affect how much of a texture is applied, not the environment map.
-		if (buildFlags & Shader::ShaderBuilder::TEXTURE) {
-			if (_envMapMode == kModeEnvironmentBlendedUnder) {
-				buildFlags |= Shader::ShaderBuilder::MIX_TEXTURE_ALPHA;  // Used by NWN.
-				buildFlags &= ~(Shader::ShaderBuilder::MIX_TEXTURE);     // Don't forget to clear the default texture mixing.
-			}
-			// KotOR uses the default texture mixing.
-		}
-	}
-
-	_material = MaterialMan.getMaterial(materialName);
-	if (!_material) {
-		Shader::ShaderSampler * sampler;
-
-		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(buildFlags, Shader::SHADER_FRAGMENT), materialName);
-
-		if (!_envMap.empty()) {
+		material = MaterialMan.getMaterial(materialName);
+		if (!material) {
+			// Figure out if a cube or sphere map is used.
 			if (_envMap.getTexture().getImage().isCubeMap()) {
-				sampler = (Shader::ShaderSampler *)(_material->getVariableData("_textureCube0"));
+				material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(Shader::ShaderBuilder::ENV_CUBE, Shader::SHADER_FRAGMENT), materialName);
+				sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureCube0"));
+				surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(Shader::ShaderBuilder::ENV_CUBE, Shader::SHADER_VERTEX), materialName);
+				MaterialMan.addMaterial(material);
+				SurfaceMan.addSurface(surface);
 			} else {
-				sampler = (Shader::ShaderSampler *)(_material->getVariableData("_textureSphere0"));
+				material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(Shader::ShaderBuilder::ENV_SPHERE, Shader::SHADER_FRAGMENT), materialName);
+				sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureSphere0"));
+				surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(Shader::ShaderBuilder::ENV_SPHERE, Shader::SHADER_VERTEX), materialName);
 			}
 			sampler->handle = _envMap;
+		} else {
+			surface = SurfaceMan.getSurface(materialName);
 		}
+		env_renderable.setSurface(surface, false);
+		env_renderable.setMaterial(material, true);
+		env_renderable.setMesh(_mesh);
+	}
 
-		if (buildFlags & Shader::ShaderBuilder::TEXTURE) {
-			sampler = (Shader::ShaderSampler *)(_material->getVariableData("_texture0"));
+	if ((_envMapMode == kModeEnvironmentBlendedUnder) && !_envMap.empty()) {
+		// Set blending flags.
+		// Add to queue.
+		env_renderable.setStateFlags(0);
+		_renderableArray.push_back(env_renderable);
+	}
+
+	/**
+	 * Sometimes the _textures handler array isn't matched up against what
+	 * is properly loaded (missing files from disk). So do some brief sanity
+	 * checks on this.
+	 */
+	size_t tcount = _textures.size();
+	if (tcount == 2) {
+		if (_textures[1].empty()) {
+			--tcount;
+		}
+	}
+	if (tcount == 1) {
+		if (_textures[0].empty()) {
+			--tcount;
+		}
+	}
+
+	switch (tcount) {
+	case 0:
+		break;
+	case 1:
+		materialName = "xoreos.";
+		materialName += _textures[0].getName();
+		material = MaterialMan.getMaterial(materialName);
+		if (!material) {
+			material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(Shader::ShaderBuilder::TEXTURE, Shader::SHADER_FRAGMENT), materialName);
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
 			sampler->handle = _textures[0];
+			surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(Shader::ShaderBuilder::TEXTURE, Shader::SHADER_VERTEX), materialName);
+			MaterialMan.addMaterial(material);
+			SurfaceMan.addSurface(surface);
+		} else {
+			surface = SurfaceMan.getSurface(materialName);
 		}
-		if (buildFlags & Shader::ShaderBuilder::LIGHTMAP) {
-			sampler = (Shader::ShaderSampler *)(_material->getVariableData("_lightmap"));
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, Shader::ShaderRenderable::genBlendFlags(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)));
+		break;
+	case 2:
+		materialName = "xoreos.";
+		materialName += _textures[0].getName();
+		materialName += ".";
+		materialName += _textures[1].getName();
+		material = MaterialMan.getMaterial(materialName);
+		if (!material) {
+			material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::SHADER_FRAGMENT), materialName);
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
+			sampler->handle = _textures[0];
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
 			sampler->handle = _textures[1];
+			surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::SHADER_VERTEX), materialName);
+			MaterialMan.addMaterial(material);
+			SurfaceMan.addSurface(surface);
+		} else {
+			surface = SurfaceMan.getSurface(materialName);
 		}
-
-		if (_name == "Plane237") {
-			_isTransparent = true;  // Hack hack hack hack. For NWN.
-		}
-
-		if (_isTransparent || _transparencyHint) {
-			materialFlags |= SHADER_MATERIAL_TRANSPARENT;
-			materialFlags |= Shader::ShaderMaterial::genBlendFlags(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			_material->setFlags(materialFlags);
-		}
-
-		MaterialMan.addMaterial(_material);
-		// status("Added material: %s", materialName.c_str());
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh));
+		break;
+	default: break;
 	}
 
-	Common::UString surfaceName = "xoreos.";
-	surfaceName += ShaderMan.getShaderName(buildFlags, Shader::SHADER_VERTEX);
-	Shader::ShaderSurface *surface = SurfaceMan.getSurface(surfaceName);
-	if (!surface) {
-		surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(buildFlags, Shader::SHADER_VERTEX), surfaceName);
-		SurfaceMan.addSurface(surface);
+	if ((_envMapMode == kModeEnvironmentBlendedOver) && !_envMap.empty()) {
+		// Set blending flags.
+		// Add to queue.
+		_renderableArray.push_back(env_renderable);
 	}
 
-	if (_shaderRenderable) {
-		_shaderRenderable->setSurface(surface, false);
-		_shaderRenderable->setMaterial(_material);
-	} else {
-		if (_mesh) {
-			_shaderRenderable = new Shader::ShaderRenderable(surface, _material, _mesh);
-		}
+	if (_name == "Plane237") {
+		_isTransparent = true;  // Hack hack hack hack. For NWN.
 	}
 }
 

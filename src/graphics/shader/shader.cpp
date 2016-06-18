@@ -87,48 +87,13 @@ void ShaderManager::init() {
 		registerShaderProgram(vObj, fObj);
 	}
 
-	uint32 flags = 0;
-	REGISTER_SHADER(flags);
-
-	flags = ShaderBuilder::TEXTURE;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::MIX_TEXTURE_ALPHA;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::LIGHTMAP;
-	REGISTER_SHADER(flags);
-	flags &= ~(ShaderBuilder::MIX_TEXTURE_ALPHA | ShaderBuilder::LIGHTMAP);
-	flags |= ShaderBuilder::MIX_TEXTURE;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::LIGHTMAP;
-	REGISTER_SHADER(flags);
-
-	flags = ShaderBuilder::ENV_SPHERE | ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::TEXTURE;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::MIX_TEXTURE_ALPHA;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::LIGHTMAP;
-	REGISTER_SHADER(flags);
-	flags &= ~(ShaderBuilder::MIX_TEXTURE_ALPHA | ShaderBuilder::LIGHTMAP);
-	flags |= ShaderBuilder::MIX_TEXTURE;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::LIGHTMAP;
-	REGISTER_SHADER(flags);
-
-	flags = ShaderBuilder::ENV_CUBE | ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::TEXTURE;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::MIX_TEXTURE_ALPHA;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::LIGHTMAP;
-	REGISTER_SHADER(flags);
-	flags &= ~(ShaderBuilder::MIX_TEXTURE_ALPHA | ShaderBuilder::LIGHTMAP);
-	flags |= ShaderBuilder::MIX_TEXTURE;
-	REGISTER_SHADER(flags);
-	flags |= ShaderBuilder::LIGHTMAP;
-	REGISTER_SHADER(flags);
+	REGISTER_SHADER(ShaderBuilder::ENV_CUBE);
+	REGISTER_SHADER(ShaderBuilder::ENV_SPHERE);
+	REGISTER_SHADER(ShaderBuilder::COLOUR);
+	REGISTER_SHADER(ShaderBuilder::TEXTURE);
+	REGISTER_SHADER(ShaderBuilder::TEXTURE_LIGHTMAP);
+	REGISTER_SHADER(ShaderBuilder::TEXTURE_BUMPMAP);
+	REGISTER_SHADER(ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP);
 }
 
 void ShaderManager::deinit() {

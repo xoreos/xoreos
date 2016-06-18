@@ -114,7 +114,7 @@ static const Common::UString body_default_start_3frag =
 "in vec3 _normal;\n"
 "in vec3 _position;\n"
 "in vec2 _texCoords;\n\n"
-"layout(location = 0) out vec4 outColor;\n"
+"out vec4 outColor;\n"
 "void main(void) {\n"
 "	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
 "	float opacity = 1.0;\n";
@@ -170,6 +170,12 @@ static const Common::UString header_envcube_2vert =
 static const Common::UString header_envsphere_2vert =
 "varying vec2 _sphereCoords;\n";
 
+static const Common::UString header_colour_2vert =
+"\n";
+
+static const Common::UString header_texture_2vert =
+"\n";
+
 static const Common::UString header_lightmap_2vert =
 "varying vec2 _lightmapCoords;\n";
 
@@ -193,6 +199,12 @@ static const Common::UString body_envsphere_2vert =
 "	vec3 rsphere = reflect(usphere, nsphere);\n"
 "	float msphere = 2.0 * sqrt(rsphere.x * rsphere.x + rsphere.y * rsphere.y + (rsphere.z + 1.0) * (rsphere.z + 1.0));\n"
 "	_sphereCoords = vec2(rsphere.x / msphere + 0.5, rsphere.y / msphere + 0.5);\n";
+
+static const Common::UString body_colour_2vert =
+"\n";
+
+static const Common::UString body_texture_2vert =
+"\n";
 
 static const Common::UString body_lightmap_2vert =
 "	_lightmapCoords = vec2(gl_MultiTexCoord1);\n";
@@ -229,27 +241,24 @@ static const Common::UString body_default_start_2frag =
 "varying vec3 _position;\n"
 "varying vec2 _texCoords;\n\n"
 "void main(void) {\n"
-"	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
-"	float opacity = 1.0;\n";
+"	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n";
 
 static const Common::UString body_default_end_2frag =
-"	fraggle.a = opacity * _alpha;\n"
+"	fraggle.a = fraggle.a * _alpha;\n"
 "	gl_FragColor = fraggle;\n"
 "}\n";
 
 static const Common::UString body_colour_2frag =
-"	opacity *= _color.a;\n"
-"	fraggle = mix(fraggle, _color, _color.a);\n";
+"	fraggle = _color;\n";
 
 static const Common::UString body_texture_2frag =
-"	vec4 texture0_diffuse = texture2D(_texture0, _texCoords);\n"
-"	opacity *= texture0_diffuse.a;\n";
+"	fraggle = texture2D(_texture0, _texCoords);\n";
 
 static const Common::UString body_envcube_2frag =
-"	vec4 envmap_diffuse = textureCube(_textureCube0, _cubeCoords);\n";
+"	fraggle = textureCube(_textureCube0, _cubeCoords);\n";
 
 static const Common::UString body_envsphere_2frag =
-"	vec4 envmap_diffuse = texture2D(_textureSphere0, _sphereCoords);\n";
+"	fraggle = texture2D(_textureSphere0, _sphereCoords);\n";
 
 static const Common::UString body_mix_env_alpha_minus_one_2frag =
 "	fraggle += (1.0 - opacity) * envmap_diffuse;\n";
@@ -270,7 +279,7 @@ ShaderBuilder::ShaderBuilder() {
 ShaderBuilder::~ShaderBuilder() {
 }
 
-Common::UString ShaderBuilder::genVertexShader(uint32_t flags, bool isGL3) {
+Common::UString ShaderBuilder::genVertexShader(uint32 flags, bool isGL3) {
 	Common::UString header;
 	Common::UString body;
 
@@ -278,87 +287,88 @@ Common::UString ShaderBuilder::genVertexShader(uint32_t flags, bool isGL3) {
 		header = header_default_3vert;
 		body = body_default_start_3vert;
 
-		if (flags & ShaderBuilder::ENV_CUBE) {
+		switch (flags) {
+		case ShaderBuilder::ENV_CUBE:
 			header += header_envcube_3vert;
 			body += body_envcube_3vert;
-		}
-
-		if (flags & ShaderBuilder::ENV_SPHERE) {
+			break;
+		case ShaderBuilder::ENV_SPHERE:
 			header += header_envsphere_3vert;
 			body += body_envsphere_3vert;
-		}
-
-		if (flags & ShaderBuilder::LIGHTMAP) {
+			break;
+		case ShaderBuilder::COLOUR:
 			header += header_lightmap_3vert;
 			body += body_lightmap_3vert;
+			break;
+		case ShaderBuilder::TEXTURE:
+			header += header_lightmap_3vert;
+			body += body_lightmap_3vert;
+			break;
+		case ShaderBuilder::TEXTURE_LIGHTMAP:
+			header += header_lightmap_3vert;
+			body += body_lightmap_3vert;
+			break;
+		case ShaderBuilder::TEXTURE_BUMPMAP:
+			header += header_lightmap_3vert;
+			body += body_lightmap_3vert;
+			break;
+		case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
+			header += header_lightmap_3vert;
+			body += body_lightmap_3vert;
+			break;
+		default: break;
 		}
-
 		body += body_default_end_3vert;
 
 	} else {
 		header = header_default_2vert;
 		body = body_default_start_2vert;
 
-		if (flags & ShaderBuilder::ENV_CUBE) {
+		switch (flags) {
+		case ShaderBuilder::ENV_CUBE:
 			header += header_envcube_2vert;
 			body += body_envcube_2vert;
-		}
-
-		if (flags & ShaderBuilder::ENV_SPHERE) {
+			break;
+		case ShaderBuilder::ENV_SPHERE:
 			header += header_envsphere_2vert;
 			body += body_envsphere_2vert;
-		}
-
-		if (flags & ShaderBuilder::LIGHTMAP) {
+			break;
+		case ShaderBuilder::COLOUR:
+			header += header_colour_2vert;
+			body += body_colour_2vert;
+			break;
+		case ShaderBuilder::TEXTURE:
+			header += header_texture_2vert;
+			body += body_texture_2vert;
+			break;
+		case ShaderBuilder::TEXTURE_LIGHTMAP:
+			header += header_texture_2vert;
+			header += header_lightmap_2vert;
+			body += body_texture_2vert;
+			body += body_lightmap_2vert;
+			break;
+		case ShaderBuilder::TEXTURE_BUMPMAP:
+			header += header_texture_2vert;
+			header += header_lightmap_2vert;
+			body += body_texture_2vert;
+			body += body_lightmap_2vert;
+			break;
+		case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
 			header += header_lightmap_2vert;
 			body += body_lightmap_2vert;
+			break;
+		default: break;
 		}
-
 		body += body_default_end_2vert;
 	}
 	return header + body;
 }
 
-Common::UString ShaderBuilder::genVertexShaderName(uint32_t flags) {
-	Common::UString name = "";
-	if (flags & ShaderBuilder::ENV_CUBE) {
-		name += "env_cube.";
-	}
-
-	if (flags & ShaderBuilder::ENV_SPHERE) {
-		name += "env_sphere.";
-	}
-
-	if (flags & ShaderBuilder::COLOUR) {
-		name += "colour.";
-	}
-
-	if (flags & ShaderBuilder::TEXTURE) {
-		name += "texture.";
-	}
-
-	if (flags & ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS) {
-		name += "mix_env_alpha_one_minus.";
-	}
-
-	if (flags & ShaderBuilder::MIX_TEXTURE_ALPHA) {
-		name += "mix_texture_alpha.";
-	}
-
-	if (flags & ShaderBuilder::MIX_TEXTURE) {
-		name += "mix_texture.";
-	}
-
-	if (flags & ShaderBuilder::LIGHTMAP) {
-		name += "lightmap.";
-	}
-
-	name += "vert";
-
-	return name;
+Common::UString ShaderBuilder::genVertexShaderName(uint32 flags) {
+	return getBaseShaderName(flags ) + "vert";
 }
 
-Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
+Common::UString ShaderBuilder::genFragmentShader(uint32 flags, bool isGL3) {
 	Common::UString header;
 	Common::UString body;
 
@@ -366,41 +376,36 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 		header = header_default_3frag;
 		body = body_default_start_3frag;
 
-		if (flags & ShaderBuilder::ENV_CUBE) {
+		switch (flags) {
+		case ShaderBuilder::ENV_CUBE:
 			header += header_envcube_3frag;
 			body += body_envcube_3frag;
-		}
-
-		if (flags & ShaderBuilder::ENV_SPHERE) {
+			break;
+		case ShaderBuilder::ENV_SPHERE:
 			header += header_envsphere_3frag;
 			body += body_envsphere_3frag;
-		}
-
-		if (flags & ShaderBuilder::COLOUR) {
-			header += header_colour_3frag;
-			body += body_colour_3frag;
-		}
-
-		if (flags & ShaderBuilder::TEXTURE) {
-			header += header_texture_3frag;
-			body += body_texture_3frag;
-		}
-
-		if (flags & ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS) {
-			body += body_mix_env_alpha_minus_one_3frag;
-		}
-
-		if (flags & ShaderBuilder::MIX_TEXTURE_ALPHA) {
-			body += body_mix_texture_alpha_3frag;
-		}
-
-		if (flags & ShaderBuilder::MIX_TEXTURE) {
-			body += body_mix_texture_3frag;
-		}
-
-		if (flags & ShaderBuilder::LIGHTMAP) {
+			break;
+		case ShaderBuilder::COLOUR:
 			header += header_lightmap_3frag;
 			body += body_lightmap_3frag;
+			break;
+		case ShaderBuilder::TEXTURE:
+			header += header_lightmap_3frag;
+			body += body_lightmap_3frag;
+			break;
+		case ShaderBuilder::TEXTURE_LIGHTMAP:
+			header += header_lightmap_3frag;
+			body += body_lightmap_3frag;
+			break;
+		case ShaderBuilder::TEXTURE_BUMPMAP:
+			header += header_lightmap_3frag;
+			body += body_lightmap_3frag;
+			break;
+		case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
+			header += header_lightmap_3frag;
+			body += body_lightmap_3frag;
+			break;
+		default: break;
 		}
 
 		body += body_default_end_3frag;
@@ -409,41 +414,38 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 		header = header_default_2frag;
 		body = body_default_start_2frag;
 
-		if (flags & ShaderBuilder::ENV_CUBE) {
+		switch (flags) {
+		case ShaderBuilder::ENV_CUBE:
 			header += header_envcube_2frag;
 			body += body_envcube_2frag;
-		}
-
-		if (flags & ShaderBuilder::ENV_SPHERE) {
+			break;
+		case ShaderBuilder::ENV_SPHERE:
 			header += header_envsphere_2frag;
 			body += body_envsphere_2frag;
-		}
-
-		if (flags & ShaderBuilder::COLOUR) {
+			break;
+		case ShaderBuilder::COLOUR:
 			header += header_colour_2frag;
 			body += body_colour_2frag;
-		}
-
-		if (flags & ShaderBuilder::TEXTURE) {
+			break;
+		case ShaderBuilder::TEXTURE:
 			header += header_texture_2frag;
 			body += body_texture_2frag;
-		}
-
-		if (flags & ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS) {
-			body += body_mix_env_alpha_minus_one_2frag;
-		}
-
-		if (flags & ShaderBuilder::MIX_TEXTURE_ALPHA) {
-			body += body_mix_texture_alpha_2frag;
-		}
-
-		if (flags & ShaderBuilder::MIX_TEXTURE) {
-			body += body_mix_texture_2frag;
-		}
-
-		if (flags & ShaderBuilder::LIGHTMAP) {
+			break;
+		case ShaderBuilder::TEXTURE_LIGHTMAP:
+			header += header_texture_2frag;
+			header += header_lightmap_2frag;
+			body += body_texture_2frag;
+			body += body_lightmap_2frag;
+			break;
+		case ShaderBuilder::TEXTURE_BUMPMAP:
 			header += header_lightmap_2frag;
 			body += body_lightmap_2frag;
+			break;
+		case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
+			header += header_lightmap_2frag;
+			body += body_lightmap_2frag;
+			break;
+		default: break;
 		}
 
 		body += body_default_end_2frag;
@@ -452,41 +454,37 @@ Common::UString ShaderBuilder::genFragmentShader(uint32_t flags, bool isGL3) {
 	return header + body;
 }
 
-Common::UString ShaderBuilder::genFragmentShaderName(uint32_t flags) {
+Common::UString ShaderBuilder::genFragmentShaderName(uint32 flags) {
+	return getBaseShaderName(flags ) + "frag";
+}
+
+Common::UString ShaderBuilder::getBaseShaderName(uint32 flags) {
 	Common::UString name = "";
-	if (flags & ShaderBuilder::ENV_CUBE) {
+
+	switch (flags) {
+	case ShaderBuilder::ENV_CUBE:
 		name += "env_cube.";
-	}
-
-	if (flags & ShaderBuilder::ENV_SPHERE) {
+		break;
+	case ShaderBuilder::ENV_SPHERE:
 		name += "env_sphere.";
-	}
-
-	if (flags & ShaderBuilder::COLOUR) {
+		break;
+	case ShaderBuilder::COLOUR:
 		name += "colour.";
-	}
-
-	if (flags & ShaderBuilder::TEXTURE) {
+		break;
+	case ShaderBuilder::TEXTURE:
 		name += "texture.";
+		break;
+	case ShaderBuilder::TEXTURE_LIGHTMAP:
+		name += "texture_lightmap.";
+		break;
+	case ShaderBuilder::TEXTURE_BUMPMAP:
+		name += "texture_bumpmap.";
+		break;
+	case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
+		name += "texture_lightmap_bumpmap.";
+		break;
+	default: break;
 	}
-
-	if (flags & ShaderBuilder::MIX_ENV_ALPHA_ONE_MINUS) {
-		name += "mix_env_alpha_one_minus.";
-	}
-
-	if (flags & ShaderBuilder::MIX_TEXTURE_ALPHA) {
-		name += "mix_texture_alpha.";
-	}
-
-	if (flags & ShaderBuilder::MIX_TEXTURE) {
-		name += "mix_texture.";
-	}
-
-	if (flags & ShaderBuilder::LIGHTMAP) {
-		name += "lightmap.";
-	}
-
-	name += "frag";
 
 	return name;
 }

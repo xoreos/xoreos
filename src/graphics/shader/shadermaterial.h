@@ -31,25 +31,6 @@ namespace Graphics {
 
 namespace Shader {
 
-#define SHADER_MATERIAL_TRANSPARENT            (0x00000001)  // Transparency is applied.
-#define SHADER_MATERIAL_NOCULLFACE             (0x00000002)  // No face culling is used - typically only used with transparency enabled.
-#define SHADER_MATERIAL_NODEPTHTEST            (0x00000004)  // Depth tests disabled (this is always rendered).
-#define SHADER_MATERIAL_NODEPTHMASK            (0x00000008)  // Depth mask writes disabled. This is normal for transparent objects.
-
-// Transparency information (if any).
-#define SHADER_MATERIAL_TRANSPARENT_SRC_MASK   (0x000001F0)
-#define SHADER_MATERIAL_TRANSPARENT_DST_MASK   (0x00003E00)
-#define SHADER_MATERIAL_TRANSPARENT_SHIFT_MASK (0x001F)
-#define SHADER_MATERIAL_TRANSPARENT_SRC_SHIFT  (4)
-#define SHADER_MATERIAL_TRANSPARENT_DST_SHIFT  (9)
-
-// Hints as to which render pass this material should be used on.
-#define SHADER_MATERIAL_HINT_MASK              (0xF0000000)
-#define SHADER_MATERIAL_HINT_COLOR             (0x00000000)
-#define SHADER_MATERIAL_HINT_SHADOW            (0x10000000)
-#define SHADER_MATERIAL_HINT_LIGHT             (0x20000000)
-#define SHADER_MATERIAL_HINT_POST              (0x30000000)
-
 class ShaderMaterial {
 public:
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");
@@ -59,8 +40,6 @@ public:
 
 	uint32 getFlags() const;
 	void setFlags(uint32 flags);
-
-	static uint32 genBlendFlags(GLenum src, GLenum dst);
 
 	Shader::ShaderObject *getFragmentShader() const;
 

@@ -37,24 +37,45 @@ namespace Graphics {
 
 namespace Shader {
 
+#define SHADER_RENDER_TRANSPARENT            (0x00000001)  // Transparency is applied.
+#define SHADER_RENDER_NOCULLFACE             (0x00000002)  // No face culling is used - typically only used with transparency enabled.
+#define SHADER_RENDER_NODEPTHTEST            (0x00000004)  // Depth tests disabled (this is always rendered).
+#define SHADER_RENDER_NODEPTHMASK            (0x00000008)  // Depth mask writes disabled. This is normal for transparent objects.
+
+// Transparency information (if any).
+#define SHADER_RENDER_TRANSPARENT_SRC_MASK   (0x000001F0)
+#define SHADER_RENDER_TRANSPARENT_DST_MASK   (0x00003E00)
+#define SHADER_RENDER_TRANSPARENT_SHIFT_MASK (0x001F)
+#define SHADER_RENDER_TRANSPARENT_SRC_SHIFT  (4)
+#define SHADER_RENDER_TRANSPARENT_DST_SHIFT  (9)
+
 class ShaderRenderable {
 public:
 
 	ShaderRenderable();
-	ShaderRenderable(Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh);
+	ShaderRenderable(Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, uint32 stateflags = 0);
 	ShaderRenderable(Shader::ShaderRenderable *src);
+	ShaderRenderable(const ShaderRenderable &src);
 	~ShaderRenderable();
+
+	const ShaderRenderable &operator=(const ShaderRenderable &src);
 
 	ShaderSurface *getSurface();
 	ShaderMaterial *getMaterial();
 	ShaderProgram *getProgram();
 	Mesh::Mesh *getMesh();
+	uint32 getStateFlags();
 
 	void setSurface(Shader::ShaderSurface *surface, bool rebuildProgram = true);
 	void setMaterial(Shader::ShaderMaterial *material, bool rebuildProgram = true);
 	void setMesh(Mesh::Mesh *mesh);
+	void setStateFlags(uint32 flags);
 
 	void copyRenderable(Shader::ShaderRenderable *src);
+
+	void bindState();
+	void unbindState();
+
 	void renderImmediate(const glm::mat4 &tform, float alpha = 1.0f);
 
 private:
@@ -63,7 +84,12 @@ private:
 	ShaderProgram *_program;
 	Mesh::Mesh *_mesh;
 
+	uint32 _stateFlags;
+
 	void updateProgram();
+
+public:
+	static uint32 genBlendFlags(GLenum src, GLenum dst);
 };
 
 } // End of namespace Shader

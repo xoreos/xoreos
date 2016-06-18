@@ -30,23 +30,68 @@ namespace Graphics {
 
 namespace Shader {
 
-ShaderRenderable::ShaderRenderable() : _surface(0), _material(0), _program(0), _mesh(0) {
+static const GLenum ShaderRenderableBlendfuncArray[] = {
+	GL_ZERO,
+	GL_ONE,
+	GL_SRC_COLOR,
+	GL_ONE_MINUS_SRC_COLOR,
+	GL_DST_COLOR,
+	GL_ONE_MINUS_DST_COLOR,
+	GL_SRC_ALPHA,
+	GL_ONE_MINUS_SRC_ALPHA,
+	GL_DST_ALPHA,
+	GL_ONE_MINUS_DST_ALPHA,
+	GL_CONSTANT_COLOR,
+	GL_ONE_MINUS_CONSTANT_COLOR,
+	GL_CONSTANT_ALPHA,
+	GL_ONE_MINUS_CONSTANT_ALPHA,
+	GL_SRC_ALPHA_SATURATE,
+	GL_SRC1_COLOR,
+	GL_ONE_MINUS_SRC1_COLOR,
+	GL_SRC1_ALPHA,
+	GL_ONE_MINUS_SRC1_ALPHA
+};
+#define BLEND_FUNC_COUNT (19)
+
+ShaderRenderable::ShaderRenderable() : _surface(0), _material(0), _program(0), _mesh(0), _stateFlags(0) {
 }
 
-ShaderRenderable::ShaderRenderable(Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh) : _surface(surface), _material(material), _program(0), _mesh(mesh) {
+ShaderRenderable::ShaderRenderable(Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, uint32 stateflags) : _surface(surface), _material(material), _program(0), _mesh(mesh), _stateFlags(stateflags) {
 	_program = ShaderMan.getShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());
 	_surface->useIncrement();
 	_material->useIncrement();
 	_mesh->useIncrement();
 }
 
-ShaderRenderable::ShaderRenderable(Shader::ShaderRenderable *src) : _surface(0), _material(0), _program(0), _mesh(0) {
+ShaderRenderable::ShaderRenderable(Shader::ShaderRenderable *src) : _surface(0), _material(0), _program(0), _mesh(0), _stateFlags(0) {
 	if (src) {
 		setSurface(src->_surface, false);
 		setMaterial(src->_material, false);
 		setMesh(src->_mesh);
+		setStateFlags(src->_stateFlags);
 		updateProgram();
 	}
+}
+
+ShaderRenderable::ShaderRenderable(const Shader::ShaderRenderable &src) : _surface(src._surface), _material(src._material), _program(src._program), _mesh(src._mesh), _stateFlags(src._stateFlags) {
+	if (_surface) {
+		_surface->useIncrement();
+	}
+	if (_material) {
+		_material->useIncrement();
+	}
+	if (_mesh) {
+		_mesh->useIncrement();
+	}
+}
+
+const ShaderRenderable &ShaderRenderable::operator=(const Shader::ShaderRenderable &src) {
+	setSurface(src._surface, false);
+	setMaterial(src._material, false);
+	setMesh(src._mesh);
+	_program = src._program;
+	_stateFlags = src._stateFlags;
+	return *this;
 }
 
 ShaderRenderable::~ShaderRenderable() {
@@ -75,6 +120,10 @@ ShaderProgram *ShaderRenderable::getProgram() {
 
 Mesh::Mesh *ShaderRenderable::getMesh() {
 	return _mesh;
+}
+
+uint32 ShaderRenderable::getStateFlags() {
+	return _stateFlags;
 }
 
 void ShaderRenderable::setSurface(Shader::ShaderSurface *surface, bool rebuildProgram) {
@@ -114,6 +163,10 @@ void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
 	}
 }
 
+void ShaderRenderable::setStateFlags(uint32 flags) {
+	_stateFlags = flags;
+}
+
 void ShaderRenderable::copyRenderable(ShaderRenderable *src) {
 	if (src) {
 		setSurface(src->getSurface(), false);
@@ -127,7 +180,47 @@ void ShaderRenderable::copyRenderable(ShaderRenderable *src) {
 	updateProgram();
 }
 
+void ShaderRenderable::bindState() {
+	if (_stateFlags & SHADER_RENDER_TRANSPARENT) {
+		glBlendFunc(ShaderRenderableBlendfuncArray[(_stateFlags >> SHADER_RENDER_TRANSPARENT_SRC_SHIFT) & SHADER_RENDER_TRANSPARENT_SHIFT_MASK],
+					ShaderRenderableBlendfuncArray[(_stateFlags >> SHADER_RENDER_TRANSPARENT_DST_SHIFT) & SHADER_RENDER_TRANSPARENT_SHIFT_MASK]);
+		//glEnable(GL_BLEND);  // Blending is never disabled. It's just how the games were written.
+	}
+
+	if (_stateFlags & SHADER_RENDER_NOCULLFACE) {
+		glDisable(GL_CULL_FACE);
+	}
+
+	if (_stateFlags & SHADER_RENDER_NODEPTHTEST) {
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	if (_stateFlags & SHADER_RENDER_NODEPTHMASK) {
+		glDepthMask(GL_FALSE);
+	}
+}
+
+void ShaderRenderable::unbindState() {
+	if (_stateFlags & SHADER_RENDER_TRANSPARENT) {
+		glBlendFunc(ShaderRenderableBlendfuncArray[3],ShaderRenderableBlendfuncArray[2]);
+		//glDisable(GL_BLEND);  // Blending is never disabled. It's just how the games were written.
+	}
+
+	if (_stateFlags & SHADER_RENDER_NOCULLFACE) {
+		glEnable(GL_CULL_FACE);
+	}
+
+	if (_stateFlags & SHADER_RENDER_NODEPTHTEST) {
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	if (_stateFlags & SHADER_RENDER_NODEPTHMASK) {
+		glDepthMask(GL_TRUE);
+	}
+}
+
 void ShaderRenderable::renderImmediate(const glm::mat4 &tform, float alpha) {
+	this->bindState();
 	glUseProgram(_program->glid);
 	_material->bindProgram(_program, alpha);
 	_material->bindGLState();
@@ -148,6 +241,28 @@ void ShaderRenderable::updateProgram() {
 	} else {
 		_program = 0;
 	}
+}
+
+uint32 ShaderRenderable::genBlendFlags(GLenum src, GLenum dst) {
+	uint32 flags = 0;
+
+	// First figure out the src flags.
+	for (uint32 i = 0; i < BLEND_FUNC_COUNT; i++) {
+		if (src == ShaderRenderableBlendfuncArray[i]) {
+			flags |= i << SHADER_RENDER_TRANSPARENT_SRC_SHIFT;
+			break;
+		}
+	}
+
+	// Now get the dst flags.
+	for (uint32 i = 0; i < BLEND_FUNC_COUNT; i++) {
+		if (dst == ShaderRenderableBlendfuncArray[i]) {
+			flags |= i << SHADER_RENDER_TRANSPARENT_DST_SHIFT;
+			break;
+		}
+	}
+
+	return flags;
 }
 
 } // End of namespace Shader

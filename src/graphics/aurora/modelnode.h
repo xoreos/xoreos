@@ -215,6 +215,8 @@ protected:
 
 	Common::UString _name; ///< The node's name.
 
+	std::vector<Shader::ShaderRenderable> _renderableArray;  ///< Damn you bioware.
+
 	float _center     [3]; ///< The node's center.
 	float _position   [3]; ///< Position of the node.
 	float _rotation   [3]; ///< Node rotation.
