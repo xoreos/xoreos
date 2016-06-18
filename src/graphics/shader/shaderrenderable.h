@@ -37,17 +37,18 @@ namespace Graphics {
 
 namespace Shader {
 
-#define SHADER_RENDER_TRANSPARENT            (0x00000001)  // Transparency is applied.
+#define SHADER_RENDER_TRANSPARENT            (0x00000001)  // Transparency is applied. Non-default transparency. Screw you Bioware.
 #define SHADER_RENDER_NOCULLFACE             (0x00000002)  // No face culling is used - typically only used with transparency enabled.
 #define SHADER_RENDER_NODEPTHTEST            (0x00000004)  // Depth tests disabled (this is always rendered).
 #define SHADER_RENDER_NODEPTHMASK            (0x00000008)  // Depth mask writes disabled. This is normal for transparent objects.
+#define SHADER_RENDER_NOALPHATEST            (0x00000010)  // Alpha testing disabled.
 
 // Transparency information (if any).
-#define SHADER_RENDER_TRANSPARENT_SRC_MASK   (0x000001F0)
-#define SHADER_RENDER_TRANSPARENT_DST_MASK   (0x00003E00)
+#define SHADER_RENDER_TRANSPARENT_SRC_MASK   (0x00001F00)
+#define SHADER_RENDER_TRANSPARENT_DST_MASK   (0x0003E000)
 #define SHADER_RENDER_TRANSPARENT_SHIFT_MASK (0x001F)
-#define SHADER_RENDER_TRANSPARENT_SRC_SHIFT  (4)
-#define SHADER_RENDER_TRANSPARENT_DST_SHIFT  (9)
+#define SHADER_RENDER_TRANSPARENT_SRC_SHIFT  (8)
+#define SHADER_RENDER_TRANSPARENT_DST_SHIFT  (13)
 
 class ShaderRenderable {
 public:

@@ -848,6 +848,7 @@ void ModelNode::buildMaterial() {
 	Shader::ShaderMaterial *material;
 	Shader::ShaderSampler *sampler;
 	Shader::ShaderSurface *surface;
+	uint32 renderflags = 0;
 
 	_renderableArray.clear();
 
@@ -876,13 +877,16 @@ void ModelNode::buildMaterial() {
 		env_renderable.setSurface(surface, false);
 		env_renderable.setMaterial(material, true);
 		env_renderable.setMesh(_mesh);
-	}
 
-	if ((_envMapMode == kModeEnvironmentBlendedUnder) && !_envMap.empty()) {
-		// Set blending flags.
-		// Add to queue.
-		env_renderable.setStateFlags(0);
-		_renderableArray.push_back(env_renderable);
+		if (_envMapMode == kModeEnvironmentBlendedUnder) {
+			env_renderable.setStateFlags(0);  // No special rendering options, just get it to screen.
+			_renderableArray.push_back(env_renderable);  // Add to queue - the first thing rendering for this node.
+		} else if (_envMapMode == kModeEnvironmentBlendedOver) {
+			// If a blend-over env map is used, then the underneath uses different blending options.
+			renderflags = Shader::ShaderRenderable::genBlendFlags(GL_ONE, GL_ZERO);
+			renderflags |= SHADER_RENDER_TRANSPARENT | SHADER_RENDER_NOALPHATEST;
+			// env_renderable is pushed onto the queue later.
+		}
 	}
 
 	/**
@@ -919,7 +923,7 @@ void ModelNode::buildMaterial() {
 		} else {
 			surface = SurfaceMan.getSurface(materialName);
 		}
-		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, Shader::ShaderRenderable::genBlendFlags(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)));
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
 		break;
 	case 2:
 		materialName = "xoreos.";
@@ -939,7 +943,7 @@ void ModelNode::buildMaterial() {
 		} else {
 			surface = SurfaceMan.getSurface(materialName);
 		}
-		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh));
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
 		break;
 	default: break;
 	}
@@ -947,6 +951,9 @@ void ModelNode::buildMaterial() {
 	if ((_envMapMode == kModeEnvironmentBlendedOver) && !_envMap.empty()) {
 		// Set blending flags.
 		// Add to queue.
+		renderflags = Shader::ShaderRenderable::genBlendFlags(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
+		renderflags |= SHADER_RENDER_TRANSPARENT | SHADER_RENDER_NOALPHATEST;
+		env_renderable.setStateFlags(renderflags);
 		_renderableArray.push_back(env_renderable);
 	}
 

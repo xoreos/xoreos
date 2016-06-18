@@ -198,11 +198,15 @@ void ShaderRenderable::bindState() {
 	if (_stateFlags & SHADER_RENDER_NODEPTHMASK) {
 		glDepthMask(GL_FALSE);
 	}
+
+	if (_stateFlags & SHADER_RENDER_NOALPHATEST) {
+		glDisable(GL_ALPHA_TEST);
+	}
 }
 
 void ShaderRenderable::unbindState() {
 	if (_stateFlags & SHADER_RENDER_TRANSPARENT) {
-		glBlendFunc(ShaderRenderableBlendfuncArray[3],ShaderRenderableBlendfuncArray[2]);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//glDisable(GL_BLEND);  // Blending is never disabled. It's just how the games were written.
 	}
 
@@ -216,6 +220,10 @@ void ShaderRenderable::unbindState() {
 
 	if (_stateFlags & SHADER_RENDER_NODEPTHMASK) {
 		glDepthMask(GL_TRUE);
+	}
+
+	if (_stateFlags & SHADER_RENDER_NOALPHATEST) {
+		glEnable(GL_ALPHA_TEST);
 	}
 }
 
@@ -232,6 +240,7 @@ void ShaderRenderable::renderImmediate(const glm::mat4 &tform, float alpha) {
 	_surface->unbindGLState();
 	_material->unbindGLState();
 	glUseProgram(0);
+	this->unbindState();
 }
 
 void ShaderRenderable::updateProgram() {
