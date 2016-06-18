@@ -54,6 +54,12 @@ static const Common::UString header_envcube_3vert =
 static const Common::UString header_envsphere_3vert =
 "out vec2 _sphereCoords;\n";
 
+static const Common::UString header_colour_3vert =
+"\n";
+
+static const Common::UString header_texture_3vert =
+"\n";
+
 static const Common::UString header_lightmap_3vert =
 "in vec2 inTexCoord1;\n"
 "out vec2 _lightmapCoords;\n";
@@ -66,6 +72,12 @@ static const Common::UString body_default_start_3vert =
 "	_normal = mat3(mo) * inNormal;\n"
 "	_position = vec3(vertex);\n"
 "	_texCoords = vec2(inTexCoord0);\n";
+
+static const Common::UString body_colour_3vert =
+"\n";
+
+static const Common::UString body_texture_3vert =
+"\n";
 
 static const Common::UString body_envcube_3vert =
 "	vec3 ucube = normalize(_position);\n"
@@ -116,36 +128,24 @@ static const Common::UString body_default_start_3frag =
 "in vec2 _texCoords;\n\n"
 "out vec4 outColor;\n"
 "void main(void) {\n"
-"	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
-"	float opacity = 1.0;\n";
+"	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n";
 
 static const Common::UString body_default_end_3frag =
-"	fraggle.a = opacity * _alpha;\n"
+"	fraggle.a = fraggle.a * _alpha;\n"
 "	outColor = fraggle;\n"
 "}\n";
 
 static const Common::UString body_colour_3frag =
-"	opacity *= _color.a;\n"
-"	fraggle = mix(fraggle, _color, _color.a);\n";
+"	fraggle = _color;\n";
 
 static const Common::UString body_texture_3frag =
-"	vec4 texture0_diffuse = texture(_texture0, _texCoords);\n"
-"	opacity *= texture0_diffuse.a;\n";
+"	fraggle = texture(_texture0, _texCoords);\n";
 
 static const Common::UString body_envcube_3frag =
-"	vec4 envmap_diffuse = texture(_textureCube0, _cubeCoords);\n";
+"	fraggle = texture(_textureCube0, _cubeCoords);\n";
 
 static const Common::UString body_envsphere_3frag =
-"	vec4 envmap_diffuse = texture(_textureSphere0, _sphereCoords);\n";
-
-static const Common::UString body_mix_env_alpha_minus_one_3frag =
-"	fraggle += (1.0 - opacity) * envmap_diffuse;\n";
-
-static const Common::UString body_mix_texture_alpha_3frag =
-"	fraggle += opacity * texture0_diffuse;\n";
-
-static const Common::UString body_mix_texture_3frag =
-"	fraggle += texture0_diffuse;\n";
+"	fraggle = texture(_textureSphere0, _sphereCoords);\n";
 
 static const Common::UString body_lightmap_3frag =
 "	fraggle *= texture(_lightmap, _lightmapCoords);\n";
@@ -260,15 +260,6 @@ static const Common::UString body_envcube_2frag =
 static const Common::UString body_envsphere_2frag =
 "	fraggle = texture2D(_textureSphere0, _sphereCoords);\n";
 
-static const Common::UString body_mix_env_alpha_minus_one_2frag =
-"	fraggle += (1.0 - opacity) * envmap_diffuse;\n";
-
-static const Common::UString body_mix_texture_alpha_2frag =
-"	fraggle += opacity * texture0_diffuse;\n";
-
-static const Common::UString body_mix_texture_2frag =
-"	fraggle += texture0_diffuse;\n";
-
 static const Common::UString body_lightmap_2frag =
 "	fraggle *= texture2D(_lightmap, _lightmapCoords);\n";
 // ---------------------------------------------------------
@@ -297,15 +288,17 @@ Common::UString ShaderBuilder::genVertexShader(uint32 flags, bool isGL3) {
 			body += body_envsphere_3vert;
 			break;
 		case ShaderBuilder::COLOUR:
-			header += header_lightmap_3vert;
-			body += body_lightmap_3vert;
+			header += header_colour_3vert;
+			body += body_colour_3vert;
 			break;
 		case ShaderBuilder::TEXTURE:
-			header += header_lightmap_3vert;
-			body += body_lightmap_3vert;
+			header += header_texture_3vert;
+			body += body_texture_3vert;
 			break;
 		case ShaderBuilder::TEXTURE_LIGHTMAP:
+			header += header_texture_3vert;
 			header += header_lightmap_3vert;
+			body += body_texture_3vert;
 			body += body_lightmap_3vert;
 			break;
 		case ShaderBuilder::TEXTURE_BUMPMAP:
@@ -390,11 +383,13 @@ Common::UString ShaderBuilder::genFragmentShader(uint32 flags, bool isGL3) {
 			body += body_lightmap_3frag;
 			break;
 		case ShaderBuilder::TEXTURE:
-			header += header_lightmap_3frag;
-			body += body_lightmap_3frag;
+			header += header_texture_3frag;
+			body += body_texture_3frag;
 			break;
 		case ShaderBuilder::TEXTURE_LIGHTMAP:
+			header += header_texture_3frag;
 			header += header_lightmap_3frag;
+			body += body_texture_3frag;
 			body += body_lightmap_3frag;
 			break;
 		case ShaderBuilder::TEXTURE_BUMPMAP:
