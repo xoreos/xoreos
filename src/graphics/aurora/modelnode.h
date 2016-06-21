@@ -117,9 +117,6 @@ public:
 	void computeInverseBindPose();
 	void computeAbsoluteTransform();
 
-	/** Set a specific material to apply to the node. */
-	void setMaterial(Shader::ShaderMaterial *material);
-
 	/** Get the alpha (transparency) of the node. */
 	float getAlpha();
 
@@ -215,6 +212,13 @@ protected:
 
 	Common::UString _name; ///< The node's name.
 
+<<<<<<< 228eb15c9132309ed689180cf894594f2480523d
+=======
+	VertexBuffer _vertexBuffer; ///< Node geometry vertex buffer.
+	IndexBuffer _indexBuffer;   ///< Node geometry index buffer.
+
+	Mesh::Mesh *_mesh;                            ///< The node's geometry.
+>>>>>>> GRAPHICS: Inherit node renderables
 	std::vector<Shader::ShaderRenderable> _renderableArray;  ///< Damn you bioware.
 
 	float _center     [3]; ///< The node's center.

@@ -107,8 +107,6 @@ ModelNode::ModelNode(Model &model)
 	_orientationBuffer[3] = 0.0f;
 
 	_mesh = 0; // Should also be added to MeshMan, so this class won't "own" it.
-	_material = 0;
-	_shaderRenderable = 0;
 
 	_alpha = 1.0f;
 }
