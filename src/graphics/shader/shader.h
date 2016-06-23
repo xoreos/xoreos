@@ -71,6 +71,7 @@
 #include "src/graphics/texture.h"
 #include "src/graphics/aurora/texturehandle.h"
 #include "src/graphics/shader/shaderbuilder.h"
+#include "src/graphics/glcontainer.h"
 
 namespace Graphics {
 
@@ -178,7 +179,8 @@ struct ShaderSampler {
 };
 
 
-struct ShaderObject {
+class ShaderObject : public GLContainer {
+public:
 	struct ShaderObjectVariable {
 		ShaderVariableType type;
 		uint32 count;  // Number of variables (normally 1, but higher if an array is defined).
@@ -191,17 +193,26 @@ struct ShaderObject {
 		inline const ShaderObjectVariable &operator=(const ShaderObjectVariable &src) { type = src.type; count = src.count; name = src.name; return *this; }
 	};
 
+	ShaderObject();
+
 	uint32 usageCount;
 	uint32 id;  // ID unique to a shader within its type (i.e unique across vertex shaders, or unique across fragment shaders). 0 is an invalid id.
 	GLuint glid;  // Defaults to zero if not compiled.
 	ShaderType type;  // Type of shader (typically vertex or fragment).
+	Common::UString shaderString;
 
 	std::vector<ShaderObject::ShaderObjectVariable> variablesSelf;
 	std::vector<ShaderObject::ShaderObjectVariable> variablesCombined;
 	std::vector<ShaderObject *> subObjects;
+protected:
+	void doRebuild();
+	void doDestroy();
 };
 
-struct ShaderProgram {
+class ShaderProgram : public GLContainer {
+public:
+	ShaderProgram();
+
 	ShaderObject *vertexObject;  // Vertex shader.
 	ShaderObject *fragmentObject;  // Fragment shader.
 	std::vector<GLint> vertexVariableLocations;
@@ -214,6 +225,13 @@ struct ShaderProgram {
 		glBindAttribLocation(glid, (GLuint)(attrib), name.c_str());
 	}
 
+	void queue() {
+		addToQueue(kQueueNewShader);
+	}
+
+protected:
+	void doRebuild();
+	void doDestroy();
 };
 
 /** The shader manager. */
@@ -259,12 +277,23 @@ private:
 	/** Parses a given string, representing a GLSL shader, and extracts uniform variable information from it. */
 	void parseShaderVariables(const Common::UString &shaderString, std::vector<ShaderObject::ShaderObjectVariable> &variableList);
 
+public:
+	/** Generate GL ids for, and compile a shader object. */
+	void genGLShader(ShaderObject *object);
+
+	/** Generate GL id for, and link, a shader program. */
+	void genGLProgram(ShaderProgram *program);
+
+private:
 	uint32 _counterVID;
 	uint32 _counterFID;
 	std::map<Common::UString, Shader::ShaderObject *> _shaderObjectMap;
 	std::vector<Shader::ShaderProgram *> _shaderProgramArray;
 
 	ShaderBuilder _builder;
+
+	Common::Mutex _shaderMutex;
+	Common::Mutex _programMutex;
 };
 
 } // End of namespace Shader

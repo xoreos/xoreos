@@ -57,10 +57,11 @@ ShaderRenderable::ShaderRenderable() : _surface(0), _material(0), _program(0), _
 }
 
 ShaderRenderable::ShaderRenderable(Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, uint32 stateflags) : _surface(surface), _material(material), _program(0), _mesh(mesh), _stateFlags(stateflags) {
-	_program = ShaderMan.getShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());
+	//_program = ShaderMan.getShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());
 	_surface->useIncrement();
 	_material->useIncrement();
 	_mesh->useIncrement();
+	updateProgram();
 }
 
 ShaderRenderable::ShaderRenderable(Shader::ShaderRenderable *src) : _surface(0), _material(0), _program(0), _mesh(0), _stateFlags(0) {

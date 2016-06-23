@@ -885,6 +885,19 @@ void GraphicsManager::buildNewTextures() {
 
 	QueueMan.clearQueue(kQueueNewTexture);
 	QueueMan.unlockQueue(kQueueNewTexture);
+
+	QueueMan.lockQueue(kQueueNewShader);
+	const std::list<Queueable *> &shadq = QueueMan.getQueue(kQueueNewShader);
+	if (shadq.empty()) {
+		QueueMan.unlockQueue(kQueueNewShader);
+		return;
+	}
+
+	for (std::list<Queueable *>::const_iterator t = shadq.begin(); t != shadq.end(); ++t)
+		static_cast<GLContainer *>(*t)->rebuild();
+
+	QueueMan.clearQueue(kQueueNewShader);
+	QueueMan.unlockQueue(kQueueNewShader);
 }
 
 void GraphicsManager::beginScene() {
