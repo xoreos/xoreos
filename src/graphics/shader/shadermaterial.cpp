@@ -234,46 +234,16 @@ void ShaderMaterial::bindFade(Shader::ShaderProgram *program, float alpha) {
 }
 
 void ShaderMaterial::bindGLState() {
-	/*
-	if (_flags & SHADER_MATERIAL_TRANSPARENT) {
-		glBlendFunc(ShaderMaterialBlendfuncArray[(_flags >> SHADER_MATERIAL_TRANSPARENT_SRC_SHIFT) & SHADER_MATERIAL_TRANSPARENT_SHIFT_MASK],
-		            ShaderMaterialBlendfuncArray[(_flags >> SHADER_MATERIAL_TRANSPARENT_DST_SHIFT) & SHADER_MATERIAL_TRANSPARENT_SHIFT_MASK]);
-		//glEnable(GL_BLEND);  // Blending is never disabled. It's just how the games were written.
-	}
 
-	if (_flags & SHADER_MATERIAL_NOCULLFACE) {
-		glDisable(GL_CULL_FACE);
+	if (_flags & ShaderMaterial::MATERIAL_OPAQUE) {
+		glDisable(GL_BLEND);  // Screw you Bioware.
 	}
-
-	if (_flags & SHADER_MATERIAL_NODEPTHTEST) {
-		glDisable(GL_DEPTH_TEST);
-	}
-
-	if (_flags & SHADER_MATERIAL_NODEPTHMASK) {
-		glDepthMask(GL_FALSE);
-	}
-	*/
 }
 
 void ShaderMaterial::unbindGLState() {
-	/*
-	if (_flags & SHADER_MATERIAL_TRANSPARENT) {
-		glBlendFunc(ShaderMaterialBlendfuncArray[3],ShaderMaterialBlendfuncArray[2]);
-		//glDisable(GL_BLEND);  // Blending is never disabled. It's just how the games were written.
+	if (_flags & ShaderMaterial::MATERIAL_OPAQUE) {
+		glEnable(GL_BLEND);  // Blending is never disabled. It's just how the games were written.
 	}
-
-	if (_flags & SHADER_MATERIAL_NOCULLFACE) {
-		glEnable(GL_CULL_FACE);
-	}
-
-	if (_flags & SHADER_MATERIAL_NODEPTHTEST) {
-		glEnable(GL_DEPTH_TEST);
-	}
-
-	if (_flags & SHADER_MATERIAL_NODEPTHMASK) {
-		glDepthMask(GL_TRUE);
-	}
-	*/
 }
 
 void ShaderMaterial::restoreGLState() {

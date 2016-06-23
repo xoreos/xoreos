@@ -1050,6 +1050,11 @@ void ModelNode::buildMaterial() {
 		_isTransparent = true;  // Hack hack hack hack. For NWN.
 	}
 
+	if (!_envMap.empty() && !_isTransparent) {
+		// Really, disabled blending in this case.
+		material->setFlags(Shader::ShaderMaterial::MATERIAL_OPAQUE);
+	}
+
 	if (_isTransparent) {
 		renderflags |= SHADER_RENDER_REALLY_TRANSPARENT;
 	}

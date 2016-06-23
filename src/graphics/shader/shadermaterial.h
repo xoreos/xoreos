@@ -33,6 +33,10 @@ namespace Shader {
 
 class ShaderMaterial {
 public:
+	enum {
+		MATERIAL_OPAQUE = 0x01
+	};
+
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");
 	~ShaderMaterial();
 

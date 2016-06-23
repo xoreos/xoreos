@@ -151,6 +151,13 @@ void RenderQueue::render() {
 		// Done rendering, unbind the mesh, and onwards into the queue.
 		currentMesh->renderUnbind();
 	}
+	if (currentMaterial) {
+		currentMaterial->unbindGLState();
+	}
+	if (currentSurface) {
+		currentSurface->unbindGLState();
+	}
+
 	glUseProgram(0);
 	glActiveTexture(GL_TEXTURE0);
 }
