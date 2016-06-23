@@ -183,6 +183,7 @@ public:
 	// Renderable
 	void calculateDistance();
 	void render(RenderPass pass);
+	void queueRender();
 	void advanceTime(float dt);
 
 	/** Apply buffered changes to model nodes position and geometry. */

@@ -53,6 +53,9 @@ public:
 	/** Render the object. */
 	virtual void render(RenderPass pass) = 0;
 
+	/** Queue the object for later rendering. */
+	virtual void queueRender() {}
+
 	/** Get the distance of the object from the viewer. */
 	double getDistance() const;
 

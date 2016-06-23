@@ -267,6 +267,8 @@ protected:
 	void render(RenderPass pass, const glm::mat4 &parentTransform);
 	void drawSkeleton(const glm::mat4 &parent, bool showInvisible);
 
+	void queueRender(const Common::TransformationMatrix &parentTransform);
+
 	void lockFrame();
 	void unlockFrame();
 

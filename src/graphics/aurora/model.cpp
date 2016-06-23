@@ -648,14 +648,6 @@ void Model::render(RenderPass pass) {
 	// Draw the bounding box, if requested
 	doDrawBound();
 
-	Common::TransformationMatrix proj;
-	Common::TransformationMatrix mod;
-	glGetFloatv(GL_PROJECTION_MATRIX, (float *)(&proj));
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float *)(&mod));
-
-	Common::TransformationMatrix projc = GfxMan.getProjectionMatrix();
-	Common::TransformationMatrix modc = GfxMan.getModelviewMatrix();
-
 	// Draw the nodes
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
 	     n != _currentState->rootNodes.end(); ++n) {
@@ -669,6 +661,18 @@ void Model::render(RenderPass pass) {
 
 	// Draw the skeleton, if requested
 	doDrawSkeleton();
+}
+
+void Model::queueRender() {
+	if (!_currentState) {
+		return;
+	}
+
+	// Queue the nodes
+	for (NodeList::iterator n = _currentState->rootNodes.begin();
+	     n != _currentState->rootNodes.end(); ++n) {
+		(*n)->queueRender(_absolutePosition);
+	}
 }
 
 void Model::doDrawBound() {

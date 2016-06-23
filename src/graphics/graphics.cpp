@@ -998,7 +998,14 @@ bool GraphicsManager::renderWorld() {
 	}
 	RenderMan.sort();
 	RenderMan.render();
-
+*/
+	RenderMan.clear();
+	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
+	     o != objects.rend(); ++o) {
+		static_cast<Renderable *>(*o)->queueRender();
+	}
+	RenderMan.sort();
+	RenderMan.render();
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 	return true;
 }

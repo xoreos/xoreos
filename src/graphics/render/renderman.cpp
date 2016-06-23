@@ -39,34 +39,49 @@ RenderManager::~RenderManager() {
 }
 
 void RenderManager::setCameraReference(const glm::vec3 &reference) {
-	_queueColorSolid.setCameraReference(reference);
-	_queueColorTransparent.setCameraReference(reference);
+	_queueColorSolidPrimary.setCameraReference(reference);
+	_queueColorSolidSecondary.setCameraReference(reference);
+	_queueColorTransparentPrimary.setCameraReference(reference);
+	_queueColorTransparentSecondary.setCameraReference(reference);
 }
 
-void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha) {
-	/*
-	if (renderable->getMaterial()->getFlags() & SHADER_MATERIAL_TRANSPARENT) {
-		_queueColorTransparent.queueItem(renderable, transform, alpha);
+void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform, float alpha) {
+
+	if (renderable->getStateFlags() & SHADER_RENDER_REALLY_TRANSPARENT) {
+		if (renderable->getMesh()->getVertexBuffer()->getCount() > 6) {
+			_queueColorTransparentPrimary.queueItem(renderable, transform, alpha);
+		} else {
+			_queueColorTransparentSecondary.queueItem(renderable, transform, alpha);
+		}
 	} else {
-		_queueColorSolid.queueItem(renderable, transform, alpha);
+		if (renderable->getMesh()->getVertexBuffer()->getCount() > 6) {
+			_queueColorSolidPrimary.queueItem(renderable, transform, alpha);
+		} else {
+			_queueColorSolidSecondary.queueItem(renderable, transform, alpha);
+		}
 	}
-	*/
-	_queueColorSolid.queueItem(renderable, transform, alpha);
 }
 
 void RenderManager::sort() {
-	_queueColorSolid.sortShader();
-	_queueColorTransparent.sortDepth();
+	_queueColorSolidPrimary.sortShader();
+	_queueColorSolidSecondary.sortShader();
+	//_queueColorTransparent.sortDepth();
+	_queueColorTransparentPrimary.sortShader();
+	_queueColorTransparentSecondary.sortShader();
 }
 
 void RenderManager::render() {
-	_queueColorSolid.render();
-	_queueColorTransparent.render();
+	_queueColorSolidPrimary.render();
+	_queueColorSolidSecondary.render();
+	_queueColorTransparentPrimary.render();
+	_queueColorTransparentSecondary.render();
 }
 
 void RenderManager::clear() {
-	_queueColorSolid.clear();
-	_queueColorTransparent.clear();
+	_queueColorSolidPrimary.clear();
+	_queueColorSolidSecondary.clear();
+	_queueColorTransparentPrimary.clear();
+	_queueColorTransparentSecondary.clear();
 }
 
 } // namespace Render

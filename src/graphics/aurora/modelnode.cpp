@@ -675,10 +675,29 @@ void ModelNode::render(RenderPass pass, const Common::TransformationMatrix &pare
 	}
 }
 
+void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
+	// Apply the node's transformation
+
+	_renderTransform = parentTransform;
+	_renderTransform.translate(_position[0], _position[1], _position[2]);
+	_renderTransform.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+	_renderTransform.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
+	_renderTransform.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
+	_renderTransform.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
+	_renderTransform.scale(_scale[0], _scale[1], _scale[2]);
+
+	for (size_t i = 0; i < _renderableArray.size(); ++i) {
+		RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, _alpha);
+	}
+
+	// Render the node's children
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+		(*c)->queueRender(_renderTransform);
+	}
+}
+
 void ModelNode::drawSkeleton(const glm::mat4 &parent, bool showInvisible) {
 	glm::mat4 mine = parent;
-
-	mine = glm::translate(mine, glm::vec3(_position[0], _position[1], _position[2]));
 
 	if (_orientation[0] != 0 || _orientation[1] != 0 || _orientation[2] != 0)
 		mine = glm::rotate(mine,
@@ -1027,117 +1046,14 @@ void ModelNode::buildMaterial() {
 	default: break;
 	}
 
-	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
-
-#ifdef OLDSTYLE
-	Shader::ShaderRenderable env_renderable;
-	if (!_envMap.empty()) {
-		materialName = "xoroes.";
-		materialName += _envMap.getName();
-		material = MaterialMan.getMaterial(materialName);
-		if (!material) {
-			// Figure out if a cube or sphere map is used.
-			if (_envMap.getTexture().getImage().isCubeMap()) {
-				material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(Shader::ShaderBuilder::ENV_CUBE, Shader::SHADER_FRAGMENT), materialName);
-				sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureCube0"));
-				surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(Shader::ShaderBuilder::ENV_CUBE, Shader::SHADER_VERTEX), materialName);
-				MaterialMan.addMaterial(material);
-				SurfaceMan.addSurface(surface);
-			} else {
-				material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(Shader::ShaderBuilder::ENV_SPHERE, Shader::SHADER_FRAGMENT), materialName);
-				sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureSphere0"));
-				surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(Shader::ShaderBuilder::ENV_SPHERE, Shader::SHADER_VERTEX), materialName);
-			}
-			sampler->handle = _envMap;
-		} else {
-			surface = SurfaceMan.getSurface(materialName);
-		}
-		env_renderable.setSurface(surface, false);
-		env_renderable.setMaterial(material, true);
-		env_renderable.setMesh(_mesh);
-
-		if (_envMapMode == kModeEnvironmentBlendedUnder) {
-			env_renderable.setStateFlags(0);  // No special rendering options, just get it to screen.
-			_renderableArray.push_back(env_renderable);  // Add to queue - the first thing rendering for this node.
-		} else if (_envMapMode == kModeEnvironmentBlendedOver) {
-			// If a blend-over env map is used, then the underneath uses different blending options.
-			renderflags = Shader::ShaderRenderable::genBlendFlags(GL_ONE, GL_ZERO);
-			renderflags |= SHADER_RENDER_TRANSPARENT | SHADER_RENDER_NOALPHATEST;
-			// env_renderable is pushed onto the queue later.
-		}
-	}
-
-	/**
-	 * Sometimes the _textures handler array isn't matched up against what
-	 * is properly loaded (missing files from disk). So do some brief sanity
-	 * checks on this.
-	 */
-	size_t tcount = _textures.size();
-	if (tcount == 2) {
-		if (_textures[1].empty()) {
-			--tcount;
-		}
-	}
-	if (tcount == 1) {
-		if (_textures[0].empty()) {
-			--tcount;
-		}
-	}
-
-	switch (tcount) {
-	case 0:
-		break;
-	case 1:
-		materialName = "xoreos.";
-		materialName += _textures[0].getName();
-		material = MaterialMan.getMaterial(materialName);
-		if (!material) {
-			material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(Shader::ShaderBuilder::TEXTURE, Shader::SHADER_FRAGMENT), materialName);
-			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
-			sampler->handle = _textures[0];
-			surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(Shader::ShaderBuilder::TEXTURE, Shader::SHADER_VERTEX), materialName);
-			MaterialMan.addMaterial(material);
-			SurfaceMan.addSurface(surface);
-		} else {
-			surface = SurfaceMan.getSurface(materialName);
-		}
-		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
-		break;
-	case 2:
-		materialName = "xoreos.";
-		materialName += _textures[0].getName();
-		materialName += ".";
-		materialName += _textures[1].getName();
-		material = MaterialMan.getMaterial(materialName);
-		if (!material) {
-			material = new Shader::ShaderMaterial(ShaderMan.getShaderObject(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::SHADER_FRAGMENT), materialName);
-			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
-			sampler->handle = _textures[0];
-			sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
-			sampler->handle = _textures[1];
-			surface = new Shader::ShaderSurface(ShaderMan.getShaderObject(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::SHADER_VERTEX), materialName);
-			MaterialMan.addMaterial(material);
-			SurfaceMan.addSurface(surface);
-		} else {
-			surface = SurfaceMan.getSurface(materialName);
-		}
-		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
-		break;
-	default: break;
-	}
-
-	if ((_envMapMode == kModeEnvironmentBlendedOver) && !_envMap.empty()) {
-		// Set blending flags.
-		// Add to queue.
-		renderflags = Shader::ShaderRenderable::genBlendFlags(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
-		renderflags |= SHADER_RENDER_TRANSPARENT | SHADER_RENDER_NOALPHATEST;
-		env_renderable.setStateFlags(renderflags);
-		_renderableArray.push_back(env_renderable);
-	}
-#endif
 	if (_name == "Plane237") {
 		_isTransparent = true;  // Hack hack hack hack. For NWN.
 	}
+
+	if (_isTransparent) {
+		renderflags |= SHADER_RENDER_REALLY_TRANSPARENT;
+	}
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
 }
 
 void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {

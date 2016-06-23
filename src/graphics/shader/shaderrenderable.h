@@ -42,6 +42,7 @@ namespace Shader {
 #define SHADER_RENDER_NODEPTHTEST            (0x00000004)  // Depth tests disabled (this is always rendered).
 #define SHADER_RENDER_NODEPTHMASK            (0x00000008)  // Depth mask writes disabled. This is normal for transparent objects.
 #define SHADER_RENDER_NOALPHATEST            (0x00000010)  // Alpha testing disabled.
+#define SHADER_RENDER_REALLY_TRANSPARENT     (0x00000020)  // Alpha testing disabled.
 
 // Transparency information (if any).
 #define SHADER_RENDER_TRANSPARENT_SRC_MASK   (0x00001F00)
