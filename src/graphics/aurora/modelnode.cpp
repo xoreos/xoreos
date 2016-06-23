@@ -519,7 +519,6 @@ void ModelNode::orderChildren() {
 		(*c)->orderChildren();
 }
 
-
 void ModelNode::renderGeometry(Mesh &mesh) {
 	if (!mesh.data->envMap.empty()) {
 		switch (mesh.data->envMapMode)
@@ -841,15 +840,196 @@ void ModelNode::buildMaterial() {
 		return;
 	}
 
-	Common::UString materialName;
+	Common::UString vertexShaderName;
+	Common::UString fragmentShaderName;
+	Common::UString materialName = "xoreos.";
 
 	Shader::ShaderMaterial *material;
 	Shader::ShaderSampler *sampler;
 	Shader::ShaderSurface *surface;
 	uint32 renderflags = 0;
+	uint32 blendflags = Shader::ShaderBuilder::BLEND_ONE;
 
 	_renderableArray.clear();
 
+	ShaderBuild.initShaderName(vertexShaderName);
+	ShaderBuild.initShaderName(fragmentShaderName);
+
+	if (!_envMap.empty()) {
+		if (_envMapMode == kModeEnvironmentBlendedUnder) {
+			blendflags = Shader::ShaderBuilder::BLEND_SRC_ALPHA;  // Main diffuse will have to go over something.
+			materialName += _envMap.getName();
+			// Figure out if a cube or sphere map is used.
+			if (_envMap.getTexture().getImage().isCubeMap()) {
+				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
+				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
+			} else {
+				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
+				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
+			}
+		}
+	}
+
+	/**
+	 * Sometimes the _textures handler array isn't matched up against what
+	 * is properly loaded (missing files from disk). So do some brief sanity
+	 * checks on this.
+	 */
+	size_t tcount = _textures.size();
+	if (tcount == 2) {
+		if (_textures[1].empty()) {
+			--tcount;
+		}
+	}
+	if (tcount == 1) {
+		if (_textures[0].empty()) {
+			--tcount;
+		}
+	}
+
+	switch (tcount) {
+	case 0:
+		break;
+	case 1:
+		materialName += _textures[0].getName();
+		ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::TEXTURE, blendflags);
+		ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::TEXTURE, blendflags);
+		break;
+	case 2:
+		materialName += _textures[0].getName();
+		materialName += ".";
+		materialName += _textures[1].getName();
+		ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags);
+		ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags);
+		break;
+	default: break;
+	}
+
+	if (!_envMap.empty()) {
+		if (_envMapMode == kModeEnvironmentBlendedOver) {
+			materialName += _envMap.getName();
+			// Figure out if a cube or sphere map is used.
+			if (_envMap.getTexture().getImage().isCubeMap()) {
+				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA);
+				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA);
+			} else {
+				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA);
+				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA);
+			}
+		}
+	}
+
+	ShaderBuild.finaliseShaderNameVertex(vertexShaderName);
+	ShaderBuild.finaliseShaderNameFragment(fragmentShaderName);
+
+	material = MaterialMan.getMaterial(materialName);
+	if (material) {
+		surface = SurfaceMan.getSurface(materialName);
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
+		return;
+	}
+
+	// Ok, material doesn't exist. Check on the shaders.
+	Shader::ShaderObject *vertexObject = ShaderMan.getShaderObject(vertexShaderName, Shader::SHADER_VERTEX);
+	Shader::ShaderObject *fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, Shader::SHADER_FRAGMENT);
+
+	// Should be checking vert and frag shader separately, but they really should exist together anyway.
+	if (!vertexObject) {
+		// No object found. Generate a shader then.
+		bool isGL3 = GfxMan.isGL3();
+		Common::UString vertexStringHeader, vertexStringBody, vertexStringFinal;
+		Common::UString fragmentStringHeader, fragmentStringBody, fragmentStringFinal;
+		ShaderBuild.initVertexShaderString(vertexStringHeader, vertexStringBody, isGL3);
+		ShaderBuild.initFragmentShaderString(fragmentStringHeader, fragmentStringBody, isGL3);
+
+		if (!_envMap.empty()) {
+			if (_envMapMode == kModeEnvironmentBlendedUnder) {
+				// Figure out if a cube or sphere map is used.
+				if (_envMap.getTexture().getImage().isCubeMap()) {
+					ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE, isGL3);
+					ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE, isGL3);
+				} else {
+					ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE, isGL3);
+					ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE, isGL3);
+				}
+			}
+		}
+
+		switch (tcount) {
+		case 0:
+			break;
+		case 1:
+			ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::TEXTURE, blendflags, isGL3);
+			ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::TEXTURE, blendflags, isGL3);
+			break;
+		case 2:
+			ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags, isGL3);
+			ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags, isGL3);
+			break;
+		default: break;
+		}
+
+		if (!_envMap.empty()) {
+			if (_envMapMode == kModeEnvironmentBlendedOver) {
+				materialName += _envMap.getName();
+				// Figure out if a cube or sphere map is used.
+				if (_envMap.getTexture().getImage().isCubeMap()) {
+					ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA, isGL3);
+					ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA, isGL3);
+				} else {
+					ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA, isGL3);
+					ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA, isGL3);
+				}
+			}
+		}
+
+		ShaderBuild.finaliseVertexShaderString(vertexStringFinal, vertexStringHeader, vertexStringBody, isGL3);
+		ShaderBuild.finaliseFragmentShaderString(fragmentStringFinal, fragmentStringHeader, fragmentStringBody, isGL3);
+
+		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
+		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);
+	}
+
+	// Shader objects should now exist, so go ahead and make the material and surface.
+	surface = new Shader::ShaderSurface(vertexObject, materialName);
+	material = new Shader::ShaderMaterial(fragmentObject, materialName);
+	MaterialMan.addMaterial(material);
+	SurfaceMan.addSurface(surface);
+
+	if (!_envMap.empty()) {
+		// Figure out if a cube or sphere map is used.
+		if (_envMap.getTexture().getImage().isCubeMap()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureCube0"));
+		} else {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureSphere0"));
+		}
+		sampler->handle = _envMap;
+
+		if (_envMapMode == kModeEnvironmentBlendedOver) {
+			// If a blend-over env map is used, then the underneath uses different blending options.
+			renderflags |= SHADER_RENDER_NOALPHATEST;
+		}
+	}
+
+	switch (tcount) {
+	case 0:
+		break;
+	case 1:
+		sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
+		sampler->handle = _textures[0];
+		break;
+	case 2:
+		sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
+		sampler->handle = _textures[0];
+		sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
+		sampler->handle = _textures[1];
+		break;
+	default: break;
+	}
+
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
+
+#ifdef OLDSTYLE
 	Shader::ShaderRenderable env_renderable;
 	if (!_envMap.empty()) {
 		materialName = "xoroes.";
@@ -954,7 +1134,7 @@ void ModelNode::buildMaterial() {
 		env_renderable.setStateFlags(renderflags);
 		_renderableArray.push_back(env_renderable);
 	}
-
+#endif
 	if (_name == "Plane237") {
 		_isTransparent = true;  // Hack hack hack hack. For NWN.
 	}

@@ -151,12 +151,8 @@ void RenderQueue::render() {
 		// Done rendering, unbind the mesh, and onwards into the queue.
 		currentMesh->renderUnbind();
 	}
-
-	// Restore OpenGL state on exit.
-	glDisable(GL_BLEND);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
+	glUseProgram(0);
+	glActiveTexture(GL_TEXTURE0);
 }
 
 void RenderQueue::clear() {

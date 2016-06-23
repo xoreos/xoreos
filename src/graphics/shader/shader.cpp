@@ -183,7 +183,6 @@ ShaderObject *ShaderManager::getShaderObject(const Common::UString &name, const 
 		shaderObject->id = _counterFID++; // Post decrement intentional.
 	}
 
-	genGLShader(shaderObject);  // todo: replace with queuing for the GL context.
 	return shaderObject;
 }
 
@@ -193,9 +192,9 @@ ShaderObject *ShaderManager::getShaderObject(uint32 flags, ShaderType type) {
 
 	Common::UString name;
 	if (type == SHADER_VERTEX) {
-		name = _builder.genVertexShaderName(flags);
+		name = ShaderBuild.genVertexShaderName(flags);
 	} else {
-		name = _builder.genFragmentShaderName(flags);
+		name = ShaderBuild.genFragmentShaderName(flags);
 	}
 
 	std::map<Common::UString, Shader::ShaderObject *>::iterator it = _shaderObjectMap.find(name);
@@ -206,9 +205,9 @@ ShaderObject *ShaderManager::getShaderObject(uint32 flags, ShaderType type) {
 
 	Common::UString source;
 	if (type == SHADER_VERTEX) {
-		source = _builder.genVertexShader(flags, GfxMan.isGL3());
+		source = ShaderBuild.genVertexShader(flags, GfxMan.isGL3());
 	} else {
-		source = _builder.genFragmentShader(flags, GfxMan.isGL3());
+		source = ShaderBuild.genFragmentShader(flags, GfxMan.isGL3());
 	}
 
 	shaderObject = new ShaderObject;
@@ -236,9 +235,9 @@ ShaderObject *ShaderManager::getShaderObject(uint32 flags, ShaderType type) {
 const Common::UString ShaderManager::getShaderName(uint32 flags, ShaderType type)
 {
 	if (type == SHADER_VERTEX) {
-		return _builder.genVertexShaderName(flags);
+		return ShaderBuild.genVertexShaderName(flags);
 	} else {
-		return _builder.genFragmentShaderName(flags);
+		return ShaderBuild.genFragmentShaderName(flags);
 	}
 }
 

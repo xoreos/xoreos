@@ -29,6 +29,8 @@
 
 #include "src/graphics/shader/shaderbuilder.h"
 
+DECLARE_SINGLETON(Graphics::Shader::ShaderBuilder)
+
 namespace Graphics {
 
 namespace Shader {
@@ -128,7 +130,8 @@ static const Common::UString body_default_start_3frag =
 "in vec2 _texCoords;\n\n"
 "out vec4 outColor;\n"
 "void main(void) {\n"
-"	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n";
+"	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
+"	vec4 froggle = vec4(0.0, 0.0, 0.0, 0.0);\n";
 
 static const Common::UString body_default_end_3frag =
 "	fraggle.a = fraggle.a * _alpha;\n"
@@ -136,19 +139,31 @@ static const Common::UString body_default_end_3frag =
 "}\n";
 
 static const Common::UString body_colour_3frag =
-"	fraggle = _color;\n";
+"	froggle = _color;\n";
 
 static const Common::UString body_texture_3frag =
-"	fraggle = texture(_texture0, _texCoords);\n";
+"	froggle = texture(_texture0, _texCoords);\n";
 
 static const Common::UString body_envcube_3frag =
-"	fraggle = texture(_textureCube0, _cubeCoords);\n";
+"	froggle = texture(_textureCube0, _cubeCoords);\n";
 
 static const Common::UString body_envsphere_3frag =
-"	fraggle = texture(_textureSphere0, _sphereCoords);\n";
+"	froggle = texture(_textureSphere0, _sphereCoords);\n";
 
 static const Common::UString body_lightmap_3frag =
-"	fraggle *= texture(_lightmap, _lightmapCoords);\n";
+"	froggle *= texture(_lightmap, _lightmapCoords);\n";
+// ---------------------------------------------------------
+static const Common::UString body_blend_src_alpha_3frag =
+"	fraggle = mix(fraggle, froggle, froggle.a);\n";
+
+static const Common::UString body_blend_dst_alpha_3frag =
+"	fraggle += (froggle * (1.0f - fraggle.a));\n";
+
+static const Common::UString body_blend_zero_3frag =
+"\n";
+
+static const Common::UString body_blend_one_3frag =
+"	fraggle = froggle;\n";
 // ---------------------------------------------------------
 
 
@@ -241,7 +256,8 @@ static const Common::UString body_default_start_2frag =
 "varying vec3 _position;\n"
 "varying vec2 _texCoords;\n\n"
 "void main(void) {\n"
-"	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n";
+"	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
+"	vec4 froggle;";
 
 static const Common::UString body_default_end_2frag =
 "	fraggle.a = fraggle.a * _alpha;\n"
@@ -249,19 +265,31 @@ static const Common::UString body_default_end_2frag =
 "}\n";
 
 static const Common::UString body_colour_2frag =
-"	fraggle = _color;\n";
+"	froggle = _color;\n";
 
 static const Common::UString body_texture_2frag =
-"	fraggle = texture2D(_texture0, _texCoords);\n";
+"	froggle = texture2D(_texture0, _texCoords);\n";
 
 static const Common::UString body_envcube_2frag =
-"	fraggle = textureCube(_textureCube0, _cubeCoords);\n";
+"	froggle = textureCube(_textureCube0, _cubeCoords);\n";
 
 static const Common::UString body_envsphere_2frag =
-"	fraggle = texture2D(_textureSphere0, _sphereCoords);\n";
+"	froggle = texture2D(_textureSphere0, _sphereCoords);\n";
 
 static const Common::UString body_lightmap_2frag =
-"	fraggle *= texture2D(_lightmap, _lightmapCoords);\n";
+"	froggle *= texture2D(_lightmap, _lightmapCoords);\n";
+// ---------------------------------------------------------
+static const Common::UString body_blend_src_alpha_2frag =
+"	fraggle = mix(fraggle, froggle, froggle.a);\n";
+
+static const Common::UString body_blend_dst_alpha_2frag =
+"	fraggle += (froggle * (1.0f - fraggle.a));\n";
+
+static const Common::UString body_blend_zero_2frag =
+"\n";
+
+static const Common::UString body_blend_one_2frag =
+"	fraggle = froggle;\n";
 // ---------------------------------------------------------
 
 ShaderBuilder::ShaderBuilder() {
@@ -273,12 +301,101 @@ ShaderBuilder::~ShaderBuilder() {
 Common::UString ShaderBuilder::genVertexShader(uint32 flags, bool isGL3) {
 	Common::UString header;
 	Common::UString body;
+	Common::UString combined;
 
+	initVertexShaderString(header, body, isGL3);
+	addVertexShaderString(header, body, flags, ShaderBuilder::BLEND_ONE, isGL3);
+	finaliseVertexShaderString(combined, header, body, isGL3);
+	return combined;
+}
+
+Common::UString ShaderBuilder::genVertexShaderName(uint32 flags) {
+	return getBaseShaderName(flags ) + "vert";
+}
+
+Common::UString ShaderBuilder::genFragmentShader(uint32 flags, bool isGL3) {
+	Common::UString header;
+	Common::UString body;
+	Common::UString combined;
+
+	initFragmentShaderString(header, body, isGL3);
+	addFragmentShaderString(header, body, flags, ShaderBuilder::BLEND_ONE, isGL3);
+	finaliseFragmentShaderString(combined, header, body, isGL3);
+	return combined;
+}
+
+Common::UString ShaderBuilder::genFragmentShaderName(uint32 flags) {
+	return getBaseShaderName(flags ) + "frag";
+}
+
+void ShaderBuilder::initShaderName(Common::UString &name) {
+	name = "xoreos.";
+}
+
+void ShaderBuilder::addShaderName(Common::UString &name, uint32 passType, uint32 blendType) {
+	switch (passType) {
+	case ShaderBuilder::ENV_CUBE:
+		name += "env_cube.";
+		break;
+	case ShaderBuilder::ENV_SPHERE:
+		name += "env_sphere.";
+		break;
+	case ShaderBuilder::COLOUR:
+		name += "colour.";
+		break;
+	case ShaderBuilder::TEXTURE:
+		name += "texture.";
+		break;
+	case ShaderBuilder::TEXTURE_LIGHTMAP:
+		name += "texture_lightmap.";
+		break;
+	case ShaderBuilder::TEXTURE_BUMPMAP:
+		name += "texture_bumpmap.";
+		break;
+	case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
+		name += "texture_lightmap_bumpmap.";
+		break;
+	default: break;
+	}
+
+	switch (blendType) {
+	case ShaderBuilder::BLEND_SRC_ALPHA:
+		name += "blend_src_alpha.";
+		break;
+	case ShaderBuilder::BLEND_DST_ALPHA:
+		name += "blend_dst_alpha.";
+		break;
+	case ShaderBuilder::BLEND_ZERO:
+		name += "blend_zero.";
+		break;
+	case ShaderBuilder::BLEND_ONE:
+		name += "blend_one.";
+		break;
+	default: break;
+	}
+}
+
+void ShaderBuilder::finaliseShaderNameVertex(Common::UString &name) {
+	name += "vert";
+}
+
+void ShaderBuilder::finaliseShaderNameFragment(Common::UString &name) {
+	name += "frag";
+}
+
+void ShaderBuilder::initVertexShaderString(Common::UString &header, Common::UString &body, bool isGL3) {
 	if (isGL3) {
 		header = header_default_3vert;
 		body = body_default_start_3vert;
+	} else {
+		header = header_default_2vert;
+		body = body_default_start_2vert;
+	}
+}
 
-		switch (flags) {
+void ShaderBuilder::addVertexShaderString(Common::UString &header, Common::UString &body, uint32 passType, uint32 blendType, bool isGL3) {
+	if (isGL3) {
+		switch (passType) {
 		case ShaderBuilder::ENV_CUBE:
 			header += header_envcube_3vert;
 			body += body_envcube_3vert;
@@ -311,13 +428,8 @@ Common::UString ShaderBuilder::genVertexShader(uint32 flags, bool isGL3) {
 			break;
 		default: break;
 		}
-		body += body_default_end_3vert;
-
 	} else {
-		header = header_default_2vert;
-		body = body_default_start_2vert;
-
-		switch (flags) {
+		switch (passType) {
 		case ShaderBuilder::ENV_CUBE:
 			header += header_envcube_2vert;
 			body += body_envcube_2vert;
@@ -352,24 +464,33 @@ Common::UString ShaderBuilder::genVertexShader(uint32 flags, bool isGL3) {
 			break;
 		default: break;
 		}
+	}
+}
+
+void ShaderBuilder::finaliseVertexShaderString(Common::UString &combined, Common::UString &header, Common::UString &body, bool isGL3) {
+	if (isGL3) {
+		body += body_default_end_3vert;
+
+	} else {
 		body += body_default_end_2vert;
 	}
-	return header + body;
+
+	combined = header + body;
 }
 
-Common::UString ShaderBuilder::genVertexShaderName(uint32 flags) {
-	return getBaseShaderName(flags ) + "vert";
-}
-
-Common::UString ShaderBuilder::genFragmentShader(uint32 flags, bool isGL3) {
-	Common::UString header;
-	Common::UString body;
-
+void ShaderBuilder::initFragmentShaderString(Common::UString &header, Common::UString &body, bool isGL3) {
 	if (isGL3) {
 		header = header_default_3frag;
 		body = body_default_start_3frag;
+	} else {
+		header = header_default_2frag;
+		body = body_default_start_2frag;
+	}
+}
 
-		switch (flags) {
+void ShaderBuilder::addFragmentShaderString(Common::UString &header, Common::UString &body, uint32 passType, uint32 blendType, bool isGL3) {
+	if (isGL3) {
+		switch (passType) {
 		case ShaderBuilder::ENV_CUBE:
 			header += header_envcube_3frag;
 			body += body_envcube_3frag;
@@ -379,8 +500,8 @@ Common::UString ShaderBuilder::genFragmentShader(uint32 flags, bool isGL3) {
 			body += body_envsphere_3frag;
 			break;
 		case ShaderBuilder::COLOUR:
-			header += header_lightmap_3frag;
-			body += body_lightmap_3frag;
+			header += header_colour_3frag;
+			body += body_colour_3frag;
 			break;
 		case ShaderBuilder::TEXTURE:
 			header += header_texture_3frag;
@@ -403,13 +524,24 @@ Common::UString ShaderBuilder::genFragmentShader(uint32 flags, bool isGL3) {
 		default: break;
 		}
 
-		body += body_default_end_3frag;
+		switch (blendType) {
+		case ShaderBuilder::BLEND_SRC_ALPHA:
+			body += body_blend_src_alpha_3frag;
+			break;
+		case ShaderBuilder::BLEND_DST_ALPHA:
+			body += body_blend_dst_alpha_3frag;
+			break;
+		case ShaderBuilder::BLEND_ZERO:
+			body += body_blend_zero_3frag;
+			break;
+		case ShaderBuilder::BLEND_ONE:
+			body += body_blend_one_3frag;
+			break;
+		default: break;
+		}
 
 	} else {
-		header = header_default_2frag;
-		body = body_default_start_2frag;
-
-		switch (flags) {
+		switch (passType) {
 		case ShaderBuilder::ENV_CUBE:
 			header += header_envcube_2frag;
 			body += body_envcube_2frag;
@@ -433,7 +565,9 @@ Common::UString ShaderBuilder::genFragmentShader(uint32 flags, bool isGL3) {
 			body += body_lightmap_2frag;
 			break;
 		case ShaderBuilder::TEXTURE_BUMPMAP:
+			header += header_texture_2frag;
 			header += header_lightmap_2frag;
+			body += body_texture_2frag;
 			body += body_lightmap_2frag;
 			break;
 		case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
@@ -443,14 +577,33 @@ Common::UString ShaderBuilder::genFragmentShader(uint32 flags, bool isGL3) {
 		default: break;
 		}
 
+		switch (blendType) {
+		case ShaderBuilder::BLEND_SRC_ALPHA:
+			body += body_blend_src_alpha_2frag;
+			break;
+		case ShaderBuilder::BLEND_DST_ALPHA:
+			body += body_blend_dst_alpha_2frag;
+			break;
+		case ShaderBuilder::BLEND_ZERO:
+			body += body_blend_zero_2frag;
+			break;
+		case ShaderBuilder::BLEND_ONE:
+			body += body_blend_one_2frag;
+			break;
+		default: break;
+		}
+	}
+}
+
+void ShaderBuilder::finaliseFragmentShaderString(Common::UString &combined, Common::UString &header, Common::UString &body, bool isGL3) {
+	if (isGL3) {
+		body += body_default_end_3frag;
+
+	} else {
 		body += body_default_end_2frag;
 	}
 
-	return header + body;
-}
-
-Common::UString ShaderBuilder::genFragmentShaderName(uint32 flags) {
-	return getBaseShaderName(flags ) + "frag";
+	combined = header + body;
 }
 
 Common::UString ShaderBuilder::getBaseShaderName(uint32 flags) {

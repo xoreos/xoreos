@@ -42,7 +42,7 @@ namespace Graphics {
 
 namespace Shader {
 
-class ShaderBuilder {
+class ShaderBuilder : public Common::Singleton<ShaderBuilder> {
 public:
 
 	enum {
@@ -53,6 +53,13 @@ public:
 		TEXTURE_LIGHTMAP,
 		TEXTURE_BUMPMAP,
 		TEXTURE_LIGHTMAP_BUMPMAP
+	};
+
+	enum {
+		BLEND_SRC_ALPHA,
+		BLEND_DST_ALPHA,
+		BLEND_ZERO,
+		BLEND_ONE
 	};
 
 	/**
@@ -106,6 +113,23 @@ public:
 	 */
 	Common::UString genFragmentShaderName(uint32 flags);
 
+	/**
+	 * @brief Initialise a name used for a shader object.
+	 * @param name  String used to store the target name.
+	 */
+	void initShaderName(Common::UString &name);
+	void addShaderName(Common::UString &name, uint32 passType, uint32 blendType);
+	void finaliseShaderNameVertex(Common::UString &name);
+	void finaliseShaderNameFragment(Common::UString &name);
+
+	void initVertexShaderString(Common::UString &header, Common::UString &body, bool isGL3);
+	void addVertexShaderString(Common::UString &header, Common::UString &body, uint32 passType, uint32 blendType, bool isGL3);
+	void finaliseVertexShaderString(Common::UString &combined, Common::UString &header, Common::UString &body, bool isGL3);
+
+	void initFragmentShaderString(Common::UString &header, Common::UString &body, bool isGL3);
+	void addFragmentShaderString(Common::UString &header, Common::UString &body, uint32 passType, uint32 blendType, bool isGL3);
+	void finaliseFragmentShaderString(Common::UString &combined, Common::UString &header, Common::UString &body, bool isGL3);
+
 private:
 	/**
 	 * @brief Generate a base name, vertex and fragment shaders append .vert and .frag respectively.
@@ -118,5 +142,8 @@ private:
 } // End of namespace Shader
 
 } // End of namespace Graphics
+
+/** Shortcut for accessing the shader manager. */
+#define ShaderBuild Graphics::Shader::ShaderBuilder::instance()
 
 #endif // GRAPHICS_SHADER_SHADERBUILDER_H

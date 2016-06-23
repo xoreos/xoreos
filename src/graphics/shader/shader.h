@@ -290,8 +290,6 @@ private:
 	std::map<Common::UString, Shader::ShaderObject *> _shaderObjectMap;
 	std::vector<Shader::ShaderProgram *> _shaderProgramArray;
 
-	ShaderBuilder _builder;
-
 	Common::Mutex _shaderMutex;
 	Common::Mutex _programMutex;
 };
