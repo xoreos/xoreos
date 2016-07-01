@@ -686,8 +686,10 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 	_renderTransform.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
 	_renderTransform.scale(_scale[0], _scale[1], _scale[2]);
 
-	for (size_t i = 0; i < _renderableArray.size(); ++i) {
-		RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, _alpha);
+	if (_render) {
+		for (size_t i = 0; i < _renderableArray.size(); ++i) {
+			RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, _alpha);
+		}
 	}
 
 	// Render the node's children
