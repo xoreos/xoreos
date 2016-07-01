@@ -55,6 +55,10 @@ void ShaderObject::doRebuild() {
 }
 
 void ShaderObject::doDestroy() {
+	if (this->glid != 0) {
+		glDeleteShader(this->glid);
+		this->glid = 0;
+	}
 }
 /*--------------------------------------------------------------------*/
 
@@ -67,6 +71,10 @@ void ShaderProgram::doRebuild() {
 }
 
 void ShaderProgram::doDestroy() {
+	if (this->glid != 0) {
+		glDeleteProgram(this->glid);
+		this->glid = 0;
+	}
 }
 /*--------------------------------------------------------------------*/
 
@@ -78,21 +86,9 @@ ShaderManager::~ShaderManager() {
 	deinit();
 }
 
-#define REGISTER_SHADER(x) do {\
-	vObj = getShaderObject((uint32)(x), SHADER_VERTEX);\
-	fObj = getShaderObject((uint32)(x), SHADER_FRAGMENT);\
-	registerShaderProgram(vObj, fObj);\
-} while (0)
-
 void ShaderManager::init() {
 	//_isGL3 = isGL3;  // pull this from GfxMan
 	status("Initialising shaders...");
-
-	ShaderProgram *nullProgram = new ShaderProgram();
-	_shaderProgramArray.push_back(nullProgram);
-	nullProgram->glid = 0;
-	nullProgram->id = 0;
-	nullProgram->usageCount = 1; // Prevent this from being automatically unloaded.
 
 	ShaderObject *vObj;
 	ShaderObject *fObj;
@@ -112,15 +108,6 @@ void ShaderManager::init() {
 		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor2xText, SHADER_FRAGMENT);
 		registerShaderProgram(vObj, fObj);
 	}
-/*
-	REGISTER_SHADER(ShaderBuilder::ENV_CUBE);
-	REGISTER_SHADER(ShaderBuilder::ENV_SPHERE);
-	REGISTER_SHADER(ShaderBuilder::COLOUR);
-	REGISTER_SHADER(ShaderBuilder::TEXTURE);
-	REGISTER_SHADER(ShaderBuilder::TEXTURE_LIGHTMAP);
-	REGISTER_SHADER(ShaderBuilder::TEXTURE_BUMPMAP);
-	REGISTER_SHADER(ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP);
-*/
 }
 
 void ShaderManager::deinit() {
@@ -350,6 +337,11 @@ void ShaderManager::bindShaderInstance(ShaderProgram *prog, const void **vertexV
 
 ShaderProgram *ShaderManager::getShaderProgram(ShaderObject *vertexObject, ShaderObject *fragmentObject) {
 	_programMutex.lock();
+	if (_shaderProgramArray.size() == 0) {
+		_programMutex.unlock();
+		return NULL;
+	}
+
 	uint32 search_high = _shaderProgramArray.size() - 1;  // -1 is ok here, as a default shader will exist.
 	uint32 search_low = 0;
 	uint32 search_mid = _shaderProgramArray.size() >> 1;
