@@ -172,6 +172,7 @@ void Model_Jade::load(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	ctx.mdlName = _name;
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -333,6 +334,29 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 		childNode->load(ctx);
 	}
+
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
+	_mesh = MeshMan.getMesh(meshName);
+	if (!_mesh) {
+		_mesh = new Graphics::Mesh::Mesh();
+		*(_mesh->getVertexBuffer()) = _vertexBuffer;
+		*(_mesh->getIndexBuffer()) = _indexBuffer;
+		_mesh->setName(meshName);
+		_mesh->init();
+		MeshMan.addMesh(_mesh);
+	}
+	_mesh->useIncrement();
+
+	this->buildMaterial();
 }
 
 void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
