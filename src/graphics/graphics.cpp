@@ -772,8 +772,13 @@ Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
 		return 0;
 
 	// Map the screen coordinates to our OpenGL GUI screen coordinates
-	x = x - (WindowMan.getWindowWidth() / 2.0f);
-	y = (WindowMan.getWindowHeight() - y) - (WindowMan.getWindowHeight() / 2.0f);
+	if (_scalingType == kScalingNone) {
+		x = x - (WindowMan.getWindowWidth() / 2.0f);
+		y = (WindowMan.getWindowHeight() - y) - (WindowMan.getWindowHeight() / 2.0f);
+	} else {
+		x = ((x * _guiWidth / WindowMan.getWindowWidth()) - (_guiWidth / 2.0f));
+		y = ((-1.0f * y * _guiHeight / WindowMan.getWindowHeight()) + (_guiHeight / 2.0f));
+	}
 
 	Renderable *object = 0;
 
@@ -990,7 +995,12 @@ bool GraphicsManager::renderGUI(QueueType guiQueue, bool disableDepthMask) {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
+
+	int windowWidth = WindowMan.getWindowWidth();
+	int windowHeight = WindowMan.getWindowHeight();
+	int rasterWidth  = (_scalingType == kScalingWindowSize || _guiWidth  > windowWidth)  ? _guiWidth  : windowWidth;
+	int rasterHeight = (_scalingType == kScalingWindowSize || _guiHeight > windowHeight) ? _guiHeight : windowHeight;
+	glScalef(2.0f / rasterWidth, 2.0f / rasterHeight, 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1027,6 +1037,9 @@ bool GraphicsManager::renderCursor() {
 	glLoadIdentity();
 	glScalef(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
 	glTranslatef(- (WindowMan.getWindowWidth() / 2.0f), WindowMan.getWindowHeight() / 2.0f, 0.0f);
+
+	glMatrixMode(GL_TEXTURE);
+	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
