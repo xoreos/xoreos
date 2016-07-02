@@ -111,14 +111,14 @@ void CharPackage::callbackActive(Widget &widget) {
 			const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
 			const Aurora::TwoDARow &rowClass = twodaClasses.getRow(_choices->getClass());
 			if (rowClass.getInt("SpellCaster") > 0) {
-				if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ"
-				        && _choices->getCharacter().getHitDice() == 0) {
+				if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ" &&
+				    _choices->getCharacter().getHitDice() == 0) {
 					CharSchool *charSchool = new CharSchool(*_choices, _console);
 					_subGUIs.push_back(charSchool);
 					CharSpells *charSpells = new CharSpells(*_choices, _console);
 					_subGUIs.push_back(charSpells);
-				} else 	if (rowClass.getString("SpellGainTable") == "CLS_SPGN_CLER"
-				            && _choices->getCharacter().getHitDice() == 0) {
+				} else if (rowClass.getString("SpellGainTable") == "CLS_SPGN_CLER" &&
+				           _choices->getCharacter().getHitDice() == 0) {
 					CharDomain *charDomain = new CharDomain(*_choices, _console);
 					_subGUIs.push_back(charDomain);
 				} else if (!rowClass.empty("SpellKnownTable")) {
@@ -155,8 +155,9 @@ void CharPackage::createPackageList() {
 	const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("packages");
 	for (size_t it = 0; it < twoda.getRowCount(); ++it) {
 		const Aurora::TwoDARow &row = twoda.getRow(it);
-		if (row.getInt("PlayerClass") == 0 || row.getInt("ClassID") != (int) _choices->getClass()
-		    || row.getInt("Name") == 0)
+		if (row.getInt("PlayerClass") == 0 ||
+		    row.getInt("ClassID") != (int) _choices->getClass() ||
+		    row.getInt("Name") == 0)
 			continue;
 
 		_helpTexts.push_back(TalkMan.getString(row.getInt("Description")));
@@ -179,10 +180,10 @@ void CharPackage::createPackageList() {
 	}
 
 	size_t p = 0;
-	for (;p < _packageID.size(); ++p) {
+	for (; p < _packageID.size(); ++p) {
 		if (_packageID[p] == package)
 			break;
-		}
+	}
 
 		_packageListBox->select(p);
 }

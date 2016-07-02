@@ -68,8 +68,8 @@ void WidgetListItemFeat::callbackHelp() {
 }
 
 void WidgetListItemFeat::subActive(Engines::Widget &widget) {
-	if ((widget.getTag().endsWith("#MoveButtonLeft") || widget.getTag().endsWith("#MoveButtonRight"))
-	        && movable()) {
+	if ((widget.getTag().endsWith("#MoveButtonLeft") || widget.getTag().endsWith("#MoveButtonRight")) &&
+	    movable()) {
 		dynamic_cast<CharFeats &>(*_gui).moveFeat(this);
 	}
 }

@@ -75,7 +75,7 @@ void CharGenChoices::applyChoices() {
 
 	// Set Abilities
 	size_t ab = 0;
-	for (;ab < 6; ++ab) {
+	for (; ab < 6; ++ab) {
 		Ability ability = static_cast<Ability>(ab);
 		_creature->setAbility(ability, _abilities[ab] + _racialAbilities[ab]);
 	}
@@ -104,7 +104,7 @@ void CharGenChoices::applyChoices() {
 		for (size_t lvl = 0; lvl < _spells.size(); ++lvl) {
 			for (size_t s = 0; s < _spells[lvl].size(); ++s)
 				_creature->setKnownSpell(_classId, lvl, _spells[lvl][s]);
-		}
+	}
 
 		if (_spellSchool != UINT8_MAX)
 			_creature->setSchool(_classId, _spellSchool);
@@ -257,7 +257,7 @@ void CharGenChoices::setPackage(uint8 package) {
 
 					// For general feat and bonus feats that can be chosen as a general feat.
 					if ((normalFeats > 0 && (*aF).list == 0) ||
-					        (normalFeats > 0 && (*aF).list < 2 && bonusFeats == 0)) {
+					    (normalFeats > 0 && (*aF).list < 2 && bonusFeats == 0)) {
 						--normalFeats;
 						_normalFeats.push_back(*pF);
 					}
@@ -271,16 +271,16 @@ void CharGenChoices::setPackage(uint8 package) {
 		const Aurora::TwoDAFile &twodaClasses = TwoDAReg.get2DA("classes");
 		const Aurora::TwoDARow &rowClass = twodaClasses.getRow(_classId);
 		if (rowClass.getInt("SpellCaster") > 0) {
-			if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ"
-			        && _creature->getHitDice() == 0) {
+			if (rowClass.getString("SpellGainTable") == "CLS_SPGN_WIZ" &&
+			    _creature->getHitDice() == 0) {
 				// Set school
 				setSpellSchool(getPrefSpellSchool());
 
 				// Set spells
 				getPrefSpells(_spells);
 
-			} else 	if (rowClass.getString("SpellGainTable") == "CLS_SPGN_CLER"
-			            && _creature->getHitDice() == 0) {
+			} else if (rowClass.getString("SpellGainTable") == "CLS_SPGN_CLER" &&
+			           _creature->getHitDice() == 0) {
 				// Set domains.
 				getPrefDomains(_domain1, _domain2);
 			} else if (!rowClass.empty("SpellKnownTable")) {
