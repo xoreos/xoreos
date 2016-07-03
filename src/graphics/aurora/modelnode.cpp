@@ -865,6 +865,10 @@ void ModelNode::buildMaterial() {
 		return;
 	}
 
+	if (!_render) {
+		return;
+	}
+
 	Common::UString vertexShaderName;
 	Common::UString fragmentShaderName;
 	Common::UString materialName = "xoreos.";
@@ -872,7 +876,6 @@ void ModelNode::buildMaterial() {
 	Shader::ShaderMaterial *material;
 	Shader::ShaderSampler *sampler;
 	Shader::ShaderSurface *surface;
-	uint32 renderflags = 0;
 	uint32 blendflags = Shader::ShaderBuilder::BLEND_ONE;
 	uint32 materialFlags = 0;
 
@@ -963,13 +966,18 @@ void ModelNode::buildMaterial() {
 		}
 	}
 
+	if (materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
+		ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED);
+		ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED);
+	}
+
 	ShaderBuild.finaliseShaderNameVertex(vertexShaderName);
 	ShaderBuild.finaliseShaderNameFragment(fragmentShaderName);
 
 	material = MaterialMan.getMaterial(materialName);
 	if (material) {
 		surface = SurfaceMan.getSurface(materialName);
-		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh));
 		return;
 	}
 
@@ -1053,11 +1061,6 @@ void ModelNode::buildMaterial() {
 			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureSphere0"));
 		}
 		sampler->handle = _envMap;
-
-		if (_envMapMode == kModeEnvironmentBlendedOver) {
-			// If a blend-over env map is used, then the underneath uses different blending options.
-			renderflags |= SHADER_RENDER_NOALPHATEST;
-		}
 	}
 
 	switch (tcount) {
@@ -1075,20 +1078,8 @@ void ModelNode::buildMaterial() {
 		break;
 	default: break;
 	}
-/*
-	if (!_envMap.empty()) {
-		if (!_envMap.getTexture().getImage().isCubeMap() || !_isTransparent) {
-			// Really, disabled blending in this case.
-			material->setFlags(Shader::ShaderMaterial::MATERIAL_OPAQUE);
-			_isTransparent = false;
-		}
-	}
 
-	if (_isTransparent) {
-		renderflags |= SHADER_RENDER_REALLY_TRANSPARENT;
-	}
-*/
-	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh));
 }
 
 void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {
