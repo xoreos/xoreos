@@ -879,6 +879,7 @@ void ModelNode::buildMaterial() {
 	uint32 blendflags = Shader::ShaderBuilder::BLEND_ONE;
 	uint32 materialFlags = 0;
 
+	std::vector<Shader::ShaderBuilder::BuildPass> shaderPasses;
 	_renderableArray.clear();
 
 	if (_name == "Plane237") {
@@ -894,12 +895,14 @@ void ModelNode::buildMaterial() {
 			materialName += _envMap.getName();
 			// Figure out if a cube or sphere map is used.
 			if (_envMap.getTexture().getImage().isCubeMap()) {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE));
 				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
 				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
 				if (!_isTransparent) {
 					materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
 				}
 			} else {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE));
 				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
 				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
 				/**
@@ -939,15 +942,13 @@ void ModelNode::buildMaterial() {
 		break;
 	case 1:
 		materialName += _textures[0].getName();
-		ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::TEXTURE, blendflags);
-		ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::TEXTURE, blendflags);
+		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, blendflags));
 		break;
 	case 2:
 		materialName += _textures[0].getName();
 		materialName += ".";
 		materialName += _textures[1].getName();
-		ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags);
-		ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags);
+		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags));
 		break;
 	default: break;
 	}
@@ -957,22 +958,16 @@ void ModelNode::buildMaterial() {
 			materialName += _envMap.getName();
 			// Figure out if a cube or sphere map is used.
 			if (_envMap.getTexture().getImage().isCubeMap()) {
-				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA);
-				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA);
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
 			} else {
-				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA);
-				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA);
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
 			}
 		}
 	}
 
 	if (materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
-		ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED);
-		ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED);
+		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
 	}
-
-	ShaderBuild.finaliseShaderNameVertex(vertexShaderName);
-	ShaderBuild.finaliseShaderNameFragment(fragmentShaderName);
 
 	material = MaterialMan.getMaterial(materialName);
 	if (material) {
@@ -980,6 +975,9 @@ void ModelNode::buildMaterial() {
 		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh));
 		return;
 	}
+
+	vertexShaderName = ShaderBuild.genVertexShaderName(&shaderPasses[0], shaderPasses.size());
+	fragmentShaderName = ShaderBuild.genFragmentShaderName(&shaderPasses[0], shaderPasses.size());
 
 	// Ok, material doesn't exist. Check on the shaders.
 	Shader::ShaderObject *vertexObject = ShaderMan.getShaderObject(vertexShaderName, Shader::SHADER_VERTEX);
@@ -989,58 +987,12 @@ void ModelNode::buildMaterial() {
 	if (!vertexObject) {
 		// No object found. Generate a shader then.
 		bool isGL3 = GfxMan.isGL3();
-		Common::UString vertexStringHeader, vertexStringBody, vertexStringFinal;
-		Common::UString fragmentStringHeader, fragmentStringBody, fragmentStringFinal;
-		ShaderBuild.initVertexShaderString(vertexStringHeader, vertexStringBody, isGL3);
-		ShaderBuild.initFragmentShaderString(fragmentStringHeader, fragmentStringBody, isGL3);
 
-		if (!_envMap.empty()) {
-			if (_envMapMode == kModeEnvironmentBlendedUnder) {
-				// Figure out if a cube or sphere map is used.
-				if (_envMap.getTexture().getImage().isCubeMap()) {
-					ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE, isGL3);
-					ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE, isGL3);
-				} else {
-					ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE, isGL3);
-					ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE, isGL3);
-				}
-			}
-		}
+		Common::UString vertexStringFinal;
+		Common::UString fragmentStringFinal;
 
-		switch (tcount) {
-		case 0:
-			break;
-		case 1:
-			ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::TEXTURE, blendflags, isGL3);
-			ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::TEXTURE, blendflags, isGL3);
-			break;
-		case 2:
-			ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags, isGL3);
-			ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags, isGL3);
-			break;
-		default: break;
-		}
-
-		if (!_envMap.empty()) {
-			if (_envMapMode == kModeEnvironmentBlendedOver) {
-				materialName += _envMap.getName();
-				// Figure out if a cube or sphere map is used.
-				if (_envMap.getTexture().getImage().isCubeMap()) {
-					ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA, isGL3);
-					ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA, isGL3);
-				} else {
-					ShaderBuild.addVertexShaderString(vertexStringHeader, vertexStringBody, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA, isGL3);
-					ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA, isGL3);
-				}
-			}
-		}
-
-		if (materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
-			ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED, isGL3);
-		}
-
-		ShaderBuild.finaliseVertexShaderString(vertexStringFinal, vertexStringHeader, vertexStringBody, isGL3);
-		ShaderBuild.finaliseFragmentShaderString(fragmentStringFinal, fragmentStringHeader, fragmentStringBody, isGL3);
+		vertexStringFinal = ShaderBuild.genVertexShader(&shaderPasses[0], shaderPasses.size(), isGL3);
+		fragmentStringFinal = ShaderBuild.genFragmentShader(&shaderPasses[0], shaderPasses.size(), isGL3);
 
 		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
 		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);

@@ -248,17 +248,6 @@ public:
 	ShaderObject *getShaderObject(const Common::UString &name, ShaderType type);
 	ShaderObject *getShaderObject(const Common::UString &name, const Common::UString &source, ShaderType type);
 
-	/** Build a shader from a set of flags, defined in shaderbuilder.h */
-	ShaderObject *getShaderObject(uint32 flags, ShaderType type);
-
-	/**
-	 * @brief Get the string (name) generated when building a shader only by using a set of flags.
-	 * @param flags  Flags used to generate the shader.
-	 * @param type   SHADER_VERTEX or SHADER_FRAGMENT.
-	 * @return String value generated as a unique name to give to the shader object.
-	 */
-	const Common::UString getShaderName(uint32 flags, ShaderType type);
-
 	void bindShaderVariable(ShaderObject::ShaderObjectVariable &var, GLint loc, const void *data);
 	void bindShaderInstance(ShaderProgram *program, const void **vertexVariables, const void **fragmentVariables);
 

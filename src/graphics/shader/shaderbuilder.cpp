@@ -304,34 +304,50 @@ ShaderBuilder::ShaderBuilder() {
 ShaderBuilder::~ShaderBuilder() {
 }
 
-Common::UString ShaderBuilder::genVertexShader(uint32 flags, bool isGL3) {
+Common::UString ShaderBuilder::genVertexShader(BuildPass *passes, uint32 count, bool isGL3) {
 	Common::UString header;
 	Common::UString body;
 	Common::UString combined;
 
 	initVertexShaderString(header, body, isGL3);
-	addVertexShaderString(header, body, flags, ShaderBuilder::BLEND_ONE, isGL3);
+	for (uint32 i = 0; i < count; ++i) {
+		addVertexShaderString(header, body, passes[i].pass, passes[i].blend, isGL3);
+	}
 	finaliseVertexShaderString(combined, header, body, isGL3);
 	return combined;
 }
 
-Common::UString ShaderBuilder::genVertexShaderName(uint32 flags) {
-	return getBaseShaderName(flags ) + "vert";
+Common::UString ShaderBuilder::genVertexShaderName(BuildPass *passes, uint32 count) {
+	Common::UString name;
+	initShaderName(name);
+	for (uint32 i = 0; i < count; ++i) {
+		addShaderName(name, passes[i].pass, passes[i].blend);
+	}
+	finaliseShaderNameVertex(name);
+	return name;
 }
 
-Common::UString ShaderBuilder::genFragmentShader(uint32 flags, bool isGL3) {
+Common::UString ShaderBuilder::genFragmentShader(BuildPass *passes, uint32 count, bool isGL3) {
 	Common::UString header;
 	Common::UString body;
 	Common::UString combined;
 
 	initFragmentShaderString(header, body, isGL3);
-	addFragmentShaderString(header, body, flags, ShaderBuilder::BLEND_ONE, isGL3);
+	for (uint32 i = 0; i < count; ++i) {
+		addFragmentShaderString(header, body, passes[i].pass, passes[i].blend, isGL3);
+	}
 	finaliseFragmentShaderString(combined, header, body, isGL3);
 	return combined;
 }
 
-Common::UString ShaderBuilder::genFragmentShaderName(uint32 flags) {
-	return getBaseShaderName(flags ) + "frag";
+Common::UString ShaderBuilder::genFragmentShaderName(BuildPass *passes, uint32 count) {
+	Common::UString name;
+	initShaderName(name);
+	for (uint32 i = 0; i < count; ++i) {
+		addShaderName(name, passes[i].pass, passes[i].blend);
+	}
+	finaliseShaderNameFragment(name);
+	return name;
 }
 
 void ShaderBuilder::initShaderName(Common::UString &name) {
@@ -631,37 +647,6 @@ void ShaderBuilder::finaliseFragmentShaderString(Common::UString &combined, Comm
 	}
 
 	combined = header + body;
-}
-
-Common::UString ShaderBuilder::getBaseShaderName(uint32 flags) {
-	Common::UString name = "";
-
-	switch (flags) {
-	case ShaderBuilder::ENV_CUBE:
-		name += "env_cube.";
-		break;
-	case ShaderBuilder::ENV_SPHERE:
-		name += "env_sphere.";
-		break;
-	case ShaderBuilder::COLOUR:
-		name += "colour.";
-		break;
-	case ShaderBuilder::TEXTURE:
-		name += "texture.";
-		break;
-	case ShaderBuilder::TEXTURE_LIGHTMAP:
-		name += "texture_lightmap.";
-		break;
-	case ShaderBuilder::TEXTURE_BUMPMAP:
-		name += "texture_bumpmap.";
-		break;
-	case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
-		name += "texture_lightmap_bumpmap.";
-		break;
-	default: break;
-	}
-
-	return name;
 }
 
 } // End of namespace Shader

@@ -173,61 +173,6 @@ ShaderObject *ShaderManager::getShaderObject(const Common::UString &name, const 
 	return shaderObject;
 }
 
-ShaderObject *ShaderManager::getShaderObject(uint32 flags, ShaderType type) {
-	_shaderMutex.lock();
-	ShaderObject *shaderObject = 0;
-
-	Common::UString name;
-	if (type == SHADER_VERTEX) {
-		name = ShaderBuild.genVertexShaderName(flags);
-	} else {
-		name = ShaderBuild.genFragmentShaderName(flags);
-	}
-
-	std::map<Common::UString, Shader::ShaderObject *>::iterator it = _shaderObjectMap.find(name);
-	if (it != _shaderObjectMap.end()) {
-		_shaderMutex.unlock();
-		return it->second;
-	}
-
-	Common::UString source;
-	if (type == SHADER_VERTEX) {
-		source = ShaderBuild.genVertexShader(flags, GfxMan.isGL3());
-	} else {
-		source = ShaderBuild.genFragmentShader(flags, GfxMan.isGL3());
-	}
-
-	shaderObject = new ShaderObject;
-	shaderObject->type = type;
-	shaderObject->glid = 0;
-	shaderObject->shaderString = source;
-
-	status("shader %s loaded", name.c_str());
-
-	_shaderObjectMap.insert(std::pair<Common::UString, ShaderObject *>(name, shaderObject));
-	_shaderMutex.unlock();
-
-	parseShaderVariables(source, shaderObject->variablesSelf);
-	genShaderVariableList(shaderObject, shaderObject->variablesCombined);
-	if (shaderObject->type == SHADER_VERTEX) {
-		shaderObject->id = _counterVID++; // Post decrement intentional.
-	} else {
-		shaderObject->id = _counterFID++; // Post decrement intentional.
-	}
-
-	//genGLShader(shaderObject);  // todo: replace with queuing for the GL context.
-	return shaderObject;
-}
-
-const Common::UString ShaderManager::getShaderName(uint32 flags, ShaderType type)
-{
-	if (type == SHADER_VERTEX) {
-		return ShaderBuild.genVertexShaderName(flags);
-	} else {
-		return ShaderBuild.genFragmentShaderName(flags);
-	}
-}
-
 void ShaderManager::bindShaderVariable(ShaderObject::ShaderObjectVariable &var, GLint loc, const void *data) {
 	switch (var.type) {
 		case SHADER_FLOAT: glUniform1fv(loc, var.count, static_cast<const float *>(data)); break;

@@ -64,6 +64,21 @@ public:
 		BLEND_IGNORED     ///< Blending not applicable to the component.
 	};
 
+	struct BuildPass {
+		uint32 pass;  ///< Which type of pass (env map, texture, etc).
+		uint32 blend; ///< Any type of blending to apply.
+
+		// Definitions below allow this to be used with std::vector
+		BuildPass() : pass(0), blend(0) {}
+		BuildPass(uint32 p, uint32 b) : pass(p), blend(b) {}
+		BuildPass(const BuildPass &bp) : pass(bp.pass), blend(bp.blend) {}
+		inline const BuildPass &operator=(const BuildPass &bp) {
+			pass = bp.pass;
+			blend = bp.blend;
+			return *this;
+		}
+	};
+
 	/**
 	 * @brief ShaderBuilder constructor.
 	 *
@@ -82,7 +97,7 @@ public:
 	 * @param flags   Input flags to indicated pre-built components to include.
 	 * @return  Output of final shader string.
 	 */
-	Common::UString genVertexShader(uint32 flags, bool isGL3);
+	Common::UString genVertexShader(BuildPass *passes, uint32 count, bool isGL3);
 
 	/**
 	 * @brief Generate a name to use for the (vertex) shader, based upon input flags.
@@ -94,14 +109,14 @@ public:
 	 * @param flags   Input flags used to generate a name.
 	 * @return  Generated name.
 	 */
-	Common::UString genVertexShaderName(uint32 flags);
+	Common::UString genVertexShaderName(BuildPass *passes, uint32 count);
 
 	/**
 	 * @brief Generate a fragment shader string based upon the input flags.
 	 * @param flags   Input flags to indicated pre-built components to include.
 	 * @return  Output of final shader string.
 	 */
-	Common::UString genFragmentShader(uint32 flags, bool isGL3);
+	Common::UString genFragmentShader(BuildPass *passes, uint32 count, bool isGL3);
 
 	/**
 	 * @brief Generate a name to use for the (fragment) shader, based upon input flags.
@@ -113,7 +128,7 @@ public:
 	 * @param flags   Input flags used to generate a name.
 	 * @return  Generated name.
 	 */
-	Common::UString genFragmentShaderName(uint32 flags);
+	Common::UString genFragmentShaderName(BuildPass *passes, uint32 count);
 
 	/**
 	 * @brief Initialise a name used for a shader object.
@@ -131,14 +146,6 @@ public:
 	void initFragmentShaderString(Common::UString &header, Common::UString &body, bool isGL3);
 	void addFragmentShaderString(Common::UString &header, Common::UString &body, uint32 passType, uint32 blendType, bool isGL3);
 	void finaliseFragmentShaderString(Common::UString &combined, Common::UString &header, Common::UString &body, bool isGL3);
-
-private:
-	/**
-	 * @brief Generate a base name, vertex and fragment shaders append .vert and .frag respectively.
-	 * @param flags   Input flags used to generate a name.
-	 * @return  Generated base name.
-	 */
-	Common::UString getBaseShaderName(uint32 flags);
 };
 
 } // End of namespace Shader

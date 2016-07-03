@@ -55,7 +55,7 @@ bool compareDepth(const RenderQueue::RenderQueueNode &a, const RenderQueue::Rend
 	//return (a.reference.lengthSquared() <= b.reference.lengthSquared());
 }
 
-RenderQueue::RenderQueue(uint32 precache) : _nodeArray(precache) {
+RenderQueue::RenderQueue(uint32 precache) : _nodeArray(precache), _cameraReference(0.0f, 0.0f, 0.0f) {
 //	_nodeArray.reserve(1000);
 }
 
@@ -83,11 +83,15 @@ void RenderQueue::queueItem(Shader::ShaderRenderable *renderable, const glm::mat
 }
 
 void RenderQueue::sortShader() {
-	std::sort(_nodeArray.begin(), _nodeArray.end(), compareShader);
+	if (_nodeArray.size() > 1) {
+		std::sort(_nodeArray.begin(), _nodeArray.end(), compareShader);
+	}
 }
 
 void RenderQueue::sortDepth() {
-	std::sort(_nodeArray.begin(), _nodeArray.end(), compareDepth);
+	if (_nodeArray.size() > 1) {
+		std::sort(_nodeArray.begin(), _nodeArray.end(), compareDepth);
+	}
 }
 
 void RenderQueue::render() {
