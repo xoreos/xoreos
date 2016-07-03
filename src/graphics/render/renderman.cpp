@@ -41,23 +41,26 @@ RenderManager::~RenderManager() {
 void RenderManager::setCameraReference(const glm::vec3 &reference) {
 	_queueColorSolidPrimary.setCameraReference(reference);
 	_queueColorSolidSecondary.setCameraReference(reference);
+	_queueColorSolidDecal.setCameraReference(reference);
 	_queueColorTransparentPrimary.setCameraReference(reference);
 	_queueColorTransparentSecondary.setCameraReference(reference);
 }
 
 void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform, float alpha) {
 
-	if (renderable->getStateFlags() & SHADER_RENDER_REALLY_TRANSPARENT) {
+	if (renderable->getMaterial()->getFlags() & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {
 		if (renderable->getMesh()->getVertexBuffer()->getCount() > 6) {
 			_queueColorTransparentPrimary.queueItem(renderable, transform, alpha);
 		} else {
 			_queueColorTransparentSecondary.queueItem(renderable, transform, alpha);
 		}
 	} else {
-		if (renderable->getMesh()->getVertexBuffer()->getCount() > 6) {
+		if (renderable->getMaterial()->getFlags() & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
 			_queueColorSolidPrimary.queueItem(renderable, transform, alpha);
-		} else {
+		} else if (renderable->getMesh()->getVertexBuffer()->getCount() > 6) {
 			_queueColorSolidSecondary.queueItem(renderable, transform, alpha);
+		} else {
+			_queueColorSolidDecal.queueItem(renderable, transform, alpha);
 		}
 	}
 }
@@ -65,7 +68,7 @@ void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const 
 void RenderManager::sort() {
 	_queueColorSolidPrimary.sortShader();
 	_queueColorSolidSecondary.sortShader();
-	//_queueColorTransparent.sortDepth();
+	_queueColorSolidDecal.sortShader();
 	_queueColorTransparentPrimary.sortDepth();
 	_queueColorTransparentSecondary.sortDepth();
 }
@@ -73,6 +76,7 @@ void RenderManager::sort() {
 void RenderManager::render() {
 	_queueColorSolidPrimary.render();
 	_queueColorSolidSecondary.render();
+	_queueColorSolidDecal.render();
 	_queueColorTransparentPrimary.render();
 	_queueColorTransparentSecondary.render();
 }
@@ -80,6 +84,7 @@ void RenderManager::render() {
 void RenderManager::clear() {
 	_queueColorSolidPrimary.clear();
 	_queueColorSolidSecondary.clear();
+	_queueColorSolidDecal.clear();
 	_queueColorTransparentPrimary.clear();
 	_queueColorTransparentSecondary.clear();
 }

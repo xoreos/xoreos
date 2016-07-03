@@ -234,16 +234,9 @@ void ShaderMaterial::bindFade(Shader::ShaderProgram *program, float alpha) {
 }
 
 void ShaderMaterial::bindGLState() {
-
-	if (_flags & ShaderMaterial::MATERIAL_OPAQUE) {
-		glDisable(GL_BLEND);  // Screw you Bioware.
-	}
 }
 
 void ShaderMaterial::unbindGLState() {
-	if (_flags & ShaderMaterial::MATERIAL_OPAQUE) {
-		glEnable(GL_BLEND);  // Blending is never disabled. It's just how the games were written.
-	}
 }
 
 void ShaderMaterial::restoreGLState() {

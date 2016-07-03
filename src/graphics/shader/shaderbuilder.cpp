@@ -165,6 +165,9 @@ static const Common::UString body_blend_zero_3frag =
 static const Common::UString body_blend_one_3frag =
 "	fraggle = froggle;\n";
 // ---------------------------------------------------------
+static const Common::UString body_force_opaque_3frag =
+"	fraggle.a = 1.0f;\n";
+// ---------------------------------------------------------
 
 
 // ---------------------------------------------------------
@@ -291,6 +294,9 @@ static const Common::UString body_blend_zero_2frag =
 static const Common::UString body_blend_one_2frag =
 "	fraggle = froggle;\n";
 // ---------------------------------------------------------
+static const Common::UString body_force_opaque_2frag =
+"	fraggle.a = 1.0f;\n";
+// ---------------------------------------------------------
 
 ShaderBuilder::ShaderBuilder() {
 }
@@ -355,6 +361,9 @@ void ShaderBuilder::addShaderName(Common::UString &name, uint32 passType, uint32
 	case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
 		name += "texture_lightmap_bumpmap.";
 		break;
+	case ShaderBuilder::FORCE_OPAQUE:
+		name += "force_opaque.";
+		break;
 	default: break;
 	}
 
@@ -370,6 +379,9 @@ void ShaderBuilder::addShaderName(Common::UString &name, uint32 passType, uint32
 		break;
 	case ShaderBuilder::BLEND_ONE:
 		name += "blend_one.";
+		break;
+	case ShaderBuilder::BLEND_IGNORED:
+		name += "blend_ignored.";
 		break;
 	default: break;
 	}
@@ -427,6 +439,8 @@ void ShaderBuilder::addVertexShaderString(Common::UString &header, Common::UStri
 			header += header_lightmap_3vert;
 			body += body_lightmap_3vert;
 			break;
+		case ShaderBuilder::FORCE_OPAQUE:
+			break;
 		default: break;
 		}
 	} else {
@@ -462,6 +476,8 @@ void ShaderBuilder::addVertexShaderString(Common::UString &header, Common::UStri
 		case ShaderBuilder::TEXTURE_LIGHTMAP_BUMPMAP:
 			header += header_lightmap_2vert;
 			body += body_lightmap_2vert;
+			break;
+		case ShaderBuilder::FORCE_OPAQUE:
 			break;
 		default: break;
 		}
@@ -522,6 +538,9 @@ void ShaderBuilder::addFragmentShaderString(Common::UString &header, Common::USt
 			header += header_lightmap_3frag;
 			body += body_lightmap_3frag;
 			break;
+		case ShaderBuilder::FORCE_OPAQUE:
+			body += body_force_opaque_3frag;
+			break;
 		default: break;
 		}
 
@@ -537,6 +556,8 @@ void ShaderBuilder::addFragmentShaderString(Common::UString &header, Common::USt
 			break;
 		case ShaderBuilder::BLEND_ONE:
 			body += body_blend_one_3frag;
+			break;
+		case ShaderBuilder::BLEND_IGNORED:
 			break;
 		default: break;
 		}
@@ -575,6 +596,9 @@ void ShaderBuilder::addFragmentShaderString(Common::UString &header, Common::USt
 			header += header_lightmap_2frag;
 			body += body_lightmap_2frag;
 			break;
+		case ShaderBuilder::FORCE_OPAQUE:
+			body += body_force_opaque_2frag;
+			break;
 		default: break;
 		}
 
@@ -590,6 +614,8 @@ void ShaderBuilder::addFragmentShaderString(Common::UString &header, Common::USt
 			break;
 		case ShaderBuilder::BLEND_ONE:
 			body += body_blend_one_2frag;
+			break;
+		case ShaderBuilder::BLEND_IGNORED:
 			break;
 		default: break;
 		}

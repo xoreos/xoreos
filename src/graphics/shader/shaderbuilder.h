@@ -52,14 +52,16 @@ public:
 		TEXTURE,
 		TEXTURE_LIGHTMAP,
 		TEXTURE_BUMPMAP,
-		TEXTURE_LIGHTMAP_BUMPMAP
+		TEXTURE_LIGHTMAP_BUMPMAP,
+		FORCE_OPAQUE
 	};
 
 	enum {
 		BLEND_SRC_ALPHA,
 		BLEND_DST_ALPHA,
 		BLEND_ZERO,
-		BLEND_ONE
+		BLEND_ONE,
+		BLEND_IGNORED     ///< Blending not applicable to the component.
 	};
 
 	/**

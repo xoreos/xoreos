@@ -34,7 +34,8 @@ namespace Shader {
 class ShaderMaterial {
 public:
 	enum {
-		MATERIAL_OPAQUE = 0x01
+		MATERIAL_OPAQUE      = 0x01,  ///< Render hint; material has no transparency.
+		MATERIAL_TRANSPARENT = 0x02   ///< Material definitely has transparency.
 	};
 
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");

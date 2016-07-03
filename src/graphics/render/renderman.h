@@ -60,6 +60,7 @@ public:
 private:
 	RenderQueue _queueColorSolidPrimary;
 	RenderQueue _queueColorSolidSecondary;
+	RenderQueue _queueColorSolidDecal;
 	RenderQueue _queueColorTransparentPrimary;
 	RenderQueue _queueColorTransparentSecondary;
 	//std::vector<GLContainer *> _queueColorImmediate; // For anything special outside the normal render path.

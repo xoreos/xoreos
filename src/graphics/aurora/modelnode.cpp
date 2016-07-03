@@ -861,6 +861,10 @@ void ModelNode::buildMaterial() {
 		return;
 	}
 
+	if (_textures.size() == 0) {
+		return;
+	}
+
 	Common::UString vertexShaderName;
 	Common::UString fragmentShaderName;
 	Common::UString materialName = "xoreos.";
@@ -870,8 +874,13 @@ void ModelNode::buildMaterial() {
 	Shader::ShaderSurface *surface;
 	uint32 renderflags = 0;
 	uint32 blendflags = Shader::ShaderBuilder::BLEND_ONE;
+	uint32 materialFlags = 0;
 
 	_renderableArray.clear();
+
+	if (_name == "Plane237") {
+		_isTransparent = true;  // Hack hack hack hack. For NWN.
+	}
 
 	ShaderBuild.initShaderName(vertexShaderName);
 	ShaderBuild.initShaderName(fragmentShaderName);
@@ -884,11 +893,25 @@ void ModelNode::buildMaterial() {
 			if (_envMap.getTexture().getImage().isCubeMap()) {
 				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
 				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
+				if (!_isTransparent) {
+					materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				}
 			} else {
 				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
 				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
+				/**
+				 * Seems that, regardless of _isTransparent, anything with shperical env mapping is opaque. This mostly comes from
+				 * NWN, where it's seen that things marked as transparent actually shouldn't be. It's assumed this carries over to
+				 * other game titles as well.
+				 */
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				_isTransparent = false;
 			}
 		}
+	}
+
+	if (_isTransparent) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
 
 	/**
@@ -1004,6 +1027,10 @@ void ModelNode::buildMaterial() {
 			}
 		}
 
+		if (materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
+			ShaderBuild.addFragmentShaderString(fragmentStringHeader, fragmentStringBody, Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED, isGL3);
+		}
+
 		ShaderBuild.finaliseVertexShaderString(vertexStringFinal, vertexStringHeader, vertexStringBody, isGL3);
 		ShaderBuild.finaliseFragmentShaderString(fragmentStringFinal, fragmentStringHeader, fragmentStringBody, isGL3);
 
@@ -1014,6 +1041,7 @@ void ModelNode::buildMaterial() {
 	// Shader objects should now exist, so go ahead and make the material and surface.
 	surface = new Shader::ShaderSurface(vertexObject, materialName);
 	material = new Shader::ShaderMaterial(fragmentObject, materialName);
+	material->setFlags(materialFlags);
 	MaterialMan.addMaterial(material);
 	SurfaceMan.addSurface(surface);
 
@@ -1047,19 +1075,19 @@ void ModelNode::buildMaterial() {
 		break;
 	default: break;
 	}
-
-	if (_name == "Plane237") {
-		_isTransparent = true;  // Hack hack hack hack. For NWN.
-	}
-
-	if (!_envMap.empty() && !_isTransparent) {
-		// Really, disabled blending in this case.
-		material->setFlags(Shader::ShaderMaterial::MATERIAL_OPAQUE);
+/*
+	if (!_envMap.empty()) {
+		if (!_envMap.getTexture().getImage().isCubeMap() || !_isTransparent) {
+			// Really, disabled blending in this case.
+			material->setFlags(Shader::ShaderMaterial::MATERIAL_OPAQUE);
+			_isTransparent = false;
+		}
 	}
 
 	if (_isTransparent) {
 		renderflags |= SHADER_RENDER_REALLY_TRANSPARENT;
 	}
+*/
 	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh, renderflags));
 }
 

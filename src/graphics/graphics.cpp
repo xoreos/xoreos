@@ -978,7 +978,7 @@ bool GraphicsManager::renderWorld() {
 
 	_animationThread.flush();
 
-	RenderMan.clear();
+/*
 	// Draw opaque objects
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
@@ -996,9 +996,8 @@ bool GraphicsManager::renderWorld() {
 		static_cast<Renderable *>(*o)->render(kRenderPassTransparent);
 		glPopMatrix();
 	}
-	RenderMan.sort();
-	RenderMan.render();
 */
+
 	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
@@ -1006,6 +1005,7 @@ bool GraphicsManager::renderWorld() {
 	}
 	RenderMan.sort();
 	RenderMan.render();
+
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 	return true;
 }
