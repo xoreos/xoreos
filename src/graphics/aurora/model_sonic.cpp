@@ -802,7 +802,7 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 
 
 	for (PolygonCommands::const_iterator c = polygon.commands.begin(); c != polygon.commands.end(); ++c) {
-		switch(c->command) {
+		switch (c->command) {
 			case kPolygonNOP:
 				break;
 
