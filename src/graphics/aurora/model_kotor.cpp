@@ -526,7 +526,23 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	meshName += ".";
 	meshName += _name;
 
+	/**
+	 * Dirty hack around an issue in KotOR2 where a tile can have multiple meshes
+	 * of exactly the same name. This dirty hack will double up on static objects
+	 * without state, but hopefully they're relatively few and it won't impact
+	 * performance too much.
+	 * A future improvement will be to see if an entire model has already been
+	 * loaded and to use that directly: that should prevent models with an empty
+	 * state from being affected by this dirty hack.
+	 */
 	_mesh = MeshMan.getMesh(meshName);
+	if (ctx.state->name.size() == 0) {
+		while (_mesh) {
+			meshName += "_";
+			_mesh = MeshMan.getMesh(meshName);
+		}
+	}
+
 	if (!_mesh) {
 		_mesh = new Graphics::Mesh::Mesh();
 		*(_mesh->getVertexBuffer()) = _vertexBuffer;
