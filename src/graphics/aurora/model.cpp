@@ -50,6 +50,8 @@ STOP_IGNORE_IMPLICIT_FALLTHROUGH
 #include "src/graphics/shader/materialman.h"
 #include "src/graphics/mesh/meshman.h"
 
+#include "src/graphics/render/renderman.h"
+
 using Common::kDebugGraphics;
 
 namespace Graphics {
@@ -82,10 +84,9 @@ Model::Model(ModelType type)
 
 	addAnimationChannel(kAnimationChannelAll);
 
-	_boundRenderable = new Shader::ShaderRenderable();
-	_boundRenderable->setSurface(SurfaceMan.getSurface("defaultSurface"));
-	_boundRenderable->setMaterial(MaterialMan.getMaterial("defaultWhite"));
-	_boundRenderable->setMesh(MeshMan.getMesh("defaultWireBox"));
+	_boundRenderable.setSurface(SurfaceMan.getSurface("defaultSurface"));
+	_boundRenderable.setMaterial(MaterialMan.getMaterial("defaultWhite"));
+	_boundRenderable.setMesh(MeshMan.getMesh("defaultWireBox"));
 }
 
 Model::~Model() {
@@ -105,8 +106,6 @@ Model::~Model() {
 
 		delete *s;
 	}
-
-	delete _boundRenderable;
 }
 
 void Model::show() {
@@ -668,11 +667,33 @@ void Model::queueRender() {
 		return;
 	}
 
+	queueDrawBound();
+
 	// Queue the nodes
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
 	     n != _currentState->rootNodes.end(); ++n) {
 		(*n)->queueRender(_absolutePosition);
 	}
+}
+
+void Model::queueDrawBound() {
+	if (!_drawBound)
+		return;
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glLineWidth(1.0f);
+
+	Common::BoundingBox object = _boundBox;
+
+	float minX, minY, minZ, maxX, maxY, maxZ;
+	object.getMin(minX, minY, minZ);
+	object.getMax(maxX, maxY, maxZ);
+
+	_boundTransform = _absolutePosition;
+	_boundTransform.translate((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f);
+	_boundTransform.scale((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f);
+
+	RenderMan.queueRenderable(&_boundRenderable, &_boundTransform, 1.0f);
 }
 
 void Model::doDrawBound() {
@@ -735,7 +756,7 @@ void Model::doDrawBound() {
 	glm::mat4 tform = _absolutePosition;
 	tform = glm::translate(tform, glm::vec3((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f));
 	tform = glm::scale(tform, glm::vec3((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f));
-	_boundRenderable->renderImmediate(tform);
+	_boundRenderable.renderImmediate(tform);
 }
 
 void Model::doDrawSkeleton() {

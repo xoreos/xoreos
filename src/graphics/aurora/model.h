@@ -251,7 +251,7 @@ protected:
 
 
 	// Rendering
-
+	void queueDrawBound();
 	void doDrawBound();
 	void doDrawSkeleton();
 
@@ -270,7 +270,8 @@ protected:
 	void doDestroy();
 
 	// Shader renderable, containing information on rendering something.
-	Shader::ShaderRenderable *_boundRenderable;
+	Shader::ShaderRenderable _boundRenderable;
+	Common::TransformationMatrix _boundTransform;
 
 private:
 	bool _drawBound;
