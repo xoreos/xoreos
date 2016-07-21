@@ -298,6 +298,8 @@ private:
 	void cmdGetLang    (const CommandLine &cl);
 	void cmdSetLang    (const CommandLine &cl);
 	void cmdGetString  (const CommandLine &cl);
+	void cmdGetCamera  (const CommandLine &cl);
+	void cmdSetCamera  (const CommandLine &cl);
 
 	void updateHelpArguments();
 

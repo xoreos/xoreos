@@ -39,6 +39,7 @@
 
 #include "src/graphics/graphics.h"
 #include "src/graphics/font.h"
+#include "src/graphics/camera.h"
 
 #include "src/sound/sound.h"
 
@@ -757,6 +758,11 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 			"Change the game's current language");
 	registerCommand("getstring"  , boost::bind(&Console::cmdGetString  , this, _1),
 			"Usage: getstring <strref>\nGet a string from the talk manager and print it");
+	registerCommand("getcamera"  , boost::bind(&Console::cmdGetCamera  , this, _1),
+			"Usage: getcamera\nPrint the current camera position and orientation");
+	registerCommand("setcamera"  , boost::bind(&Console::cmdSetCamera  , this, _1),
+			"Usage: setcamera <posX> <posY> <posZ> [<orientX> <orientY> <orientZ>]\n"
+			"Set the camera position (and orientation)");
 
 	_console->setPrompt(kPrompt);
 
@@ -1416,6 +1422,51 @@ void Console::cmdGetString(const CommandLine &cl) {
 	}
 
 	printf("\"%s\"", TalkMan.getString(strRef).c_str());
+}
+
+void Console::cmdGetCamera(const CommandLine &UNUSED(cl)) {
+	const float *pos    = CameraMan.getPosition();
+	const float *orient = CameraMan.getOrientation();
+
+	printf("Position   : % 9.3f, % 9.3f, % 9.3f", pos   [0], pos   [1], pos   [2]);
+	printf("Orientation: % 9.3f, % 9.3f, % 9.3f", orient[0], orient[1], orient[2]);
+}
+
+void Console::cmdSetCamera(const CommandLine &cl) {
+	std::vector<Common::UString> args;
+	splitArguments(cl.args, args);
+
+	if ((args.size() != 3) && (args.size() != 6)) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	float pos[3] = {0.0f, 0.0f, 0.0f}, orient[3] = {0.0f, 0.0f, 0.0f};
+
+	try {
+		for (size_t i = 0; i < 3; i++)
+			Common::parseString(args[i], pos[i]);
+	} catch (...) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	if (args.size() > 3) {
+		try {
+			for (size_t i = 0; i < 3; i++)
+				Common::parseString(args[3 + i], orient[i]);
+		} catch (...) {
+			printCommandHelp(cl.cmd);
+			return;
+		}
+	}
+
+	CameraMan.setPosition(pos[0], pos[1], pos[2]);
+
+	if (args.size() > 3)
+		CameraMan.setOrientation(orient[0], orient[1], orient[2]);
+
+	CameraMan.update();
 }
 
 void Console::printFullHelp() {
