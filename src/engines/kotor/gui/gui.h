@@ -114,6 +114,9 @@ private:
 
 	float _widgetZ;
 
+	float _guiHeight;
+	float _guiWidth;
+
 	Common::ScopedPtr<GUIBackground> _background;
 
 	Common::ScopedPtr<Aurora::GFF3File> _gff;
