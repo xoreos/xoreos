@@ -79,7 +79,7 @@ protected:
 	virtual void mouseUp();
 	virtual void mouseDown();
 
-	void load(const Common::UString &resref, float width = 0.0f, float height = 0.0f);
+	void load(const Common::UString &resref);
 
 	virtual void initWidget(Widget &widget);
 
@@ -123,7 +123,7 @@ private:
 
 	Common::UString _name;
 
-	void loadWidget(const Aurora::GFF3Struct &strct, Widget *parent, float width, float height);
+	void loadWidget(const Aurora::GFF3Struct &strct, Widget *parent);
 
 	void createWidget(WidgetContext &ctx);
 };

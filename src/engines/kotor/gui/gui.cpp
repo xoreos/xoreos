@@ -85,13 +85,13 @@ void GUI::mouseUp() {
 	CursorMan.setState("up");
 }
 
-void GUI::load(const Common::UString &resref, float width, float height) {
+void GUI::load(const Common::UString &resref) {
 	_name = resref;
 
 	try {
 		_gff.reset(new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' ')));
 
-		loadWidget(_gff->getTopLevel(), 0, width, height);
+		loadWidget(_gff->getTopLevel(), 0);
 
 	} catch (Common::Exception &e) {
 		e.add("Can't load GUI \"%s\"", resref.c_str());
@@ -99,23 +99,22 @@ void GUI::load(const Common::UString &resref, float width, float height) {
 	}
 }
 
-void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent,
-		float width, float height) {
+void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent) {
 
 	WidgetContext ctx(strct, parent);
 
 	createWidget(ctx);
 
-	if (width  <= 0.0f)
-		width  = ctx.widget->getWidth();
-	if (height <= 0.0f)
-		height = ctx.widget->getHeight();
+	if (_guiWidth  <= 0.0f)
+		_guiWidth  = ctx.widget->getWidth();
+	if (_guiHeight <= 0.0f)
+		_guiHeight = ctx.widget->getHeight();
 
 	float wX, wY, wZ;
 	ctx.widget->getPosition(wX, wY, wZ);
 
-	wX = wX - (width / 2.0f);
-	wY = ((height - wY) - ctx.widget->getHeight()) - (height / 2.0f);
+	wX = wX - (_guiWidth / 2.0f);
+	wY = ((_guiHeight - wY) - ctx.widget->getHeight()) - (_guiHeight / 2.0f);
 	wZ = _widgetZ + wZ;
 
 	ctx.widget->setPosition(wX, wY, wZ);
@@ -129,7 +128,7 @@ void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent,
 		const Aurora::GFF3List &children = ctx.strct->getList("CONTROLS");
 
 		for (Aurora::GFF3List::const_iterator c = children.begin(); c != children.end(); ++c)
-			loadWidget(**c, ctx.widget, width, height);
+			loadWidget(**c, ctx.widget);
 	}
 }
 
