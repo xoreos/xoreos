@@ -77,6 +77,16 @@ void GUI::hide() {
 	::Engines::GUI::hide();
 }
 
+void GUI::convertToXoreos(float &x, float &y, const float widgetHeight) const {
+	x = x - (_guiWidth / 2.0f);
+	y = (_guiHeight / 2.0f) - y - widgetHeight;
+}
+
+void GUI::convertToGUI(float &x, float &y, const float widgetHeight) const {
+	x = x + (_guiWidth / 2.0f);
+	y = widgetHeight + (-1.0f * (y - (_guiHeight / 2.0f)));
+}
+
 void GUI::mouseDown() {
 	CursorMan.setState("down");
 }
@@ -113,8 +123,7 @@ void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent) {
 	float wX, wY, wZ;
 	ctx.widget->getPosition(wX, wY, wZ);
 
-	wX = wX - (_guiWidth / 2.0f);
-	wY = ((_guiHeight - wY) - ctx.widget->getHeight()) - (_guiHeight / 2.0f);
+	convertToXoreos(wX, wY, ctx.widget->getHeight());
 	wZ = _widgetZ + wZ;
 
 	ctx.widget->setPosition(wX, wY, wZ);

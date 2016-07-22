@@ -62,6 +62,19 @@ public:
 	virtual void show(); ///< Show the GUI.
 	virtual void hide(); ///< Hide the GUI.
 
+	/**
+	 * Converts Kotor' GUI coordinates with a coordinate origin
+	 * in the upper left corner to the Xoreos coordinate system
+	 * with the coordinate origin in the center.
+	 */
+	void convertToXoreos(float &x, float &y, const float widgetHeight) const;
+	/**
+	 * Converts Xoreos' coordinates with a coordinate origin
+	 * in the center to Kotor's GUI coordinates
+	 * with the coordinate origin in the the upper left corner.
+	 */
+	void convertToGUI(float &x, float &y, const float widgetHeight) const;
+
 protected:
 	enum WidgetType {
 		kWidgetTypeInvalid     = - 1,
