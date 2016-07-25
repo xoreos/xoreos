@@ -133,9 +133,11 @@ public:
 	/** Get the creature's deity. */
 	const Common::UString &getDeity() const;
 
+	/** Get the creature's good-evil alignment. */
 	uint8 getGoodEvil() const;
 	/** Set the creature's good-evil alignment. */
 	void setGoodEvil(uint8 goodness);
+	/** Get the creature's law-chaos alignment. */
 	uint8 getLawChaos() const;
 	/** Set the creature's law-chaos alignment. */
 	void setLawChaos(uint8 loyalty);
