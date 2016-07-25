@@ -101,7 +101,7 @@ public:
 	void getClass(uint32 position, uint32 &classID, uint16 &level) const;
 	/** Get the creature's level for this class. */
 	uint16 getClassLevel(uint32 classID) const;
-	/** Set the creature's  level for this class. */
+	/** Set the creature's level for this class. */
 	void changeClassLevel(uint32 classID, int16 levelChange);
 
 	/** Return the creature's class as needed in conversations, e.g. "Barbarian". */
@@ -122,23 +122,23 @@ public:
 	/** Set the creature's ability score. */
 	void setAbility(Ability ability, uint8 score);
 	/** Return the creature's rank in this skill. */
-	 int8 getSkillRank(uint32 skill) const;
+	int8 getSkillRank(uint32 skill) const;
 	/** Set the creature's skill rank. */
 	void setSkillRank(size_t skill, uint8 rank);
 	/** Append a feat to the creature. */
 	void setFeat(uint32 feat);
 	/** Does the creature have this feat? */
-	bool  hasFeat(uint32 feat) const;
+	bool hasFeat(uint32 feat) const;
 
 	/** Get the creature's deity. */
 	const Common::UString &getDeity() const;
 
 	uint8 getGoodEvil() const;
 	/** Set the creature's good-evil alignment. */
-	void  setGoodEvil(uint8 goodness);
+	void setGoodEvil(uint8 goodness);
 	uint8 getLawChaos() const;
 	/** Set the creature's law-chaos alignment. */
-	void  setLawChaos(uint8 loyalty);
+	void setLawChaos(uint8 loyalty);
 
 	/** Set the creature's sound set. */
 	void setSoundSet(uint32 soundSet);
