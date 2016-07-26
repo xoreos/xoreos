@@ -128,6 +128,13 @@ dnl Special variables of the size of pointers
 AC_TYPE_INTPTR_T
 AC_TYPE_UINTPTR_T
 
+dnl Check the sizes of integer types
+AC_CHECK_SIZEOF([char])
+AC_CHECK_SIZEOF([short])
+AC_CHECK_SIZEOF([int])
+AC_CHECK_SIZEOF([long])
+AC_CHECK_SIZEOF([long long])
+
 dnl math library and special float functions
 AC_CHECK_LIB([m], [cos])
 AC_CHECK_FUNCS([fabs])

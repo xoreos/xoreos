@@ -53,12 +53,57 @@
 
 	   TODO: This might be different on some platforms!
 	*/
+
 	typedef u_int8_t  uint8_t;
 	typedef u_int16_t uint16_t;
 	typedef u_int32_t uint32_t;
 	typedef u_int64_t uint64_t;
+#elif defined(SIZEOF_CHAR) && \
+      defined(SIZEOF_SHORT) && \
+      defined(SIZEOF_INT) && \
+      defined(SIZEOF_LONG) && \
+      defined(SIZEOF_LONG_LONG)
+
+	/* Otherwise, look for candidates among the usual integer
+	   types, if we know about their sizes. */
+
+	#if SIZEOF_CHAR == 1
+		typedef signed   char  int8_t;
+		typedef unsigned char uint8_t;
+	#else
+		#error Cannot find an 8-bit integer type
+	#endif
+
+	#if SIZEOF_SHORT == 2
+		typedef          short  int16_t;
+		typedef unsigned short uint16_t;
+	#elif SIZEOF_INT == 2
+		typedef          int  int16_t;
+		typedef unsigned int uint16_t;
+	#else
+		#error Cannot find a 16-bit integer type
+	#endif
+
+	#if SIZEOF_INT == 4
+		typedef          int  int32_t;
+		typedef unsigned int uint32_t;
+	#elif SIZEOF_LONG == 4
+		typedef          long  int32_t;
+		typedef unsigned long uint32_t;
+	#else
+		#error Cannot find a 32-bit integer type
+	#endif
+
+	#if SIZEOF_LONG == 8
+		typedef          long  int64_t;
+		typedef unsigned long uint64_t;
+	#elif SIZEOF_LONG_LONG == 8
+		typedef          long long  int64_t;
+		typedef unsigned long long uint64_t;
+	#else
+		#error Cannot find a 64-bit integer type
+	#endif
 #else
-	// TODO: Add a fall-back type detection to the configure script.
 	#error Cannot find a way to derive fixed-width integer types
 #endif
 
