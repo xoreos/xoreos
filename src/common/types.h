@@ -107,6 +107,66 @@
 	#error Cannot find a way to derive fixed-width integer types
 #endif
 
+// intptr_t
+#ifndef HAVE_INTPTR_T
+	#undef intptr_t
+
+	#if defined(SIZEOF_VOID_P) && \
+	    defined(SIZEOF_SHORT) && \
+	    defined(SIZEOF_INT) && \
+	    defined(SIZEOF_LONG) && \
+	    defined(SIZEOF_LONG_LONG)
+
+		#if SIZEOF_VOID_P == SIZEOF_SHORT
+			typedef short intptr_t;
+			#define HAVE_INTPTR_T
+		#elif SIZEOF_VOID_P = SIZEOF_INT
+			typedef int intptr_t;
+			#define HAVE_INTPTR_T
+		#elif SIZEOF_VOID_P = SIZEOF_LONG
+			typedef long intptr_t;
+			#define HAVE_INTPTR_T
+		#elif SIZEOF_VOID_P = SIZEOF_LONG_LONG
+			typedef long long intptr_t;
+			#define HAVE_INTPTR_T
+		#endif
+	#endif
+
+	#ifndef HAVE_INTPTR_T
+		#error Cannot find a way to derive a signed integer type to fit a pointer
+	#endif
+#endif
+
+// uintptr_t
+#ifndef HAVE_UINTPTR_T
+	#undef uintptr_t
+
+	#if defined(SIZEOF_VOID_P) && \
+	    defined(SIZEOF_SHORT) && \
+	    defined(SIZEOF_INT) && \
+	    defined(SIZEOF_LONG) && \
+	    defined(SIZEOF_LONG_LONG)
+
+		#if SIZEOF_VOID_P == SIZEOF_SHORT
+			typedef unsigned short uintptr_t;
+			#define HAVE_UINTPTR_T
+		#elif SIZEOF_VOID_P = SIZEOF_INT
+			typedef unsigned int uintptr_t;
+			#define HAVE_UINTPTR_T
+		#elif SIZEOF_VOID_P = SIZEOF_LONG
+			typedef unsigned long uintptr_t;
+			#define HAVE_UINTPTR_T
+		#elif SIZEOF_VOID_P = SIZEOF_LONG_LONG
+			typedef unsigned long long uintptr_t;
+			#define HAVE_UINTPTR_T
+		#endif
+	#endif
+
+	#ifndef HAVE_UINTPTR_T
+		#error Cannot find a way to derive an unsigned integer type to fit a pointer
+	#endif
+#endif
+
 // The maximum value a size_t can describe
 #ifndef SIZE_MAX
 	#define SIZE_MAX ((size_t) -1)

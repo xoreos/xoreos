@@ -134,6 +134,7 @@ AC_CHECK_SIZEOF([short])
 AC_CHECK_SIZEOF([int])
 AC_CHECK_SIZEOF([long])
 AC_CHECK_SIZEOF([long long])
+AC_CHECK_SIZEOF([void *])
 
 dnl math library and special float functions
 AC_CHECK_LIB([m], [cos])
