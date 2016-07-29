@@ -32,7 +32,7 @@ class HighlightableText: public Text, public Highlightable {
 
   public:
 	HighlightableText(const FontHandle &font, const Common::UString &str,
-	     float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f, float halign = 0.0f);
+	     float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f, float halign = kHAlignLeft);
 	~HighlightableText();
 
 	void render(RenderPass pass);
