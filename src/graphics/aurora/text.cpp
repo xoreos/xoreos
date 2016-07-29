@@ -165,23 +165,7 @@ void Text::render(RenderPass pass) {
 		// Save the current position
 		glPushMatrix();
 
-		// Align
-		glTranslatef(roundf((maxLength - font.getLineWidth(*l)) * _align), 0.0f, 0.0f);
-
-		// Draw line
-		for (Common::UString::iterator s = l->begin(); s != l->end(); ++s, position++) {
-			// If we have color changes, apply them
-			while ((color != _colors.end()) && (color->position <= position)) {
-				if (color->defaultColor)
-					glColor4f(_r, _g, _b, _a);
-				else
-					glColor4f(color->r, color->g, color->b, color->a);
-
-				++color;
-			}
-
-			font.draw(*s);
-		}
+		drawLine(*l, maxLength, color, position);
 
 		// Restore position to the start of the line
 		glPopMatrix();
@@ -292,6 +276,30 @@ void Text::parseColors(const Common::UString &str, Common::UString &parsed,
 
 void Text::setFont(const Common::UString &fnt) {
 	_font = FontMan.get(fnt);
+}
+
+void Text::drawLine(const Common::UString &line, float maxLength,
+                    ColorPositions::const_iterator color, size_t position) {
+
+	Font &font = _font.getFont();
+
+	// Align
+	glTranslatef(roundf((maxLength - font.getLineWidth(line)) * _align), 0.0f, 0.0f);
+
+	// Draw line
+	for (Common::UString::iterator s = line.begin(); s != line.end(); ++s, position++) {
+		// If we have color changes, apply them
+		while ((color != _colors.end()) && (color->position <= position)) {
+			if (color->defaultColor)
+				glColor4f(_r, _g, _b, _a);
+			else
+				glColor4f(color->r, color->g, color->b, color->a);
+
+			++color;
+		}
+
+		font.draw(*s);
+	}
 }
 
 } // End of namespace Aurora

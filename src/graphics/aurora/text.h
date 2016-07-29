@@ -93,6 +93,8 @@ private:
 
 	void parseColors(const Common::UString &str, Common::UString &parsed,
 	                 ColorPositions &colors);
+
+	void drawLine(const Common::UString &line, float maxLength, ColorPositions::const_iterator color, size_t position);
 };
 
 } // End of namespace Aurora
