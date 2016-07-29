@@ -145,6 +145,7 @@ void Text::render(RenderPass pass) {
 		return;
 
 	Font &font = _font.getFont();
+	float lineHeight = font.getHeight() + font.getLineSpacing();
 
 	glTranslatef(_x, _y, 0.0f);
 
@@ -154,7 +155,7 @@ void Text::render(RenderPass pass) {
 	float maxLength = font.split(_str, lines, _width, _height, false);
 
 	// Move position to the top
-	glTranslatef(0.0f, (lines.size() - 1) * (font.getHeight() + font.getLineSpacing()), 0.0f);
+	glTranslatef(0.0f, (lines.size() - 1) * lineHeight, 0.0f);
 
 	size_t position = 0;
 
@@ -171,7 +172,7 @@ void Text::render(RenderPass pass) {
 		glPopMatrix();
 
 		// Move to the next line
-		glTranslatef(0.0f, -(font.getHeight() + font.getLineSpacing()), 0.0f);
+		glTranslatef(0.0f, -lineHeight, 0.0f);
 
 		// \n character
 		position++;
