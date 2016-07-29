@@ -58,7 +58,7 @@ WidgetListItemModule::WidgetListItemModule(::Engines::GUI &gui,
 	Graphics::Aurora::FontHandle f = FontMan.get(font);
 	f.getFont().split(text, splitText, _button->getWidth() - 8.0f);
 
-	_text.reset(new Graphics::Aurora::Text(f, splitText, 1.0f, 1.0f, 1.0f, 1.0f, 0.5f));
+	_text.reset(new Graphics::Aurora::Text(f, splitText, 1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter));
 }
 
 WidgetListItemModule::~WidgetListItemModule() {

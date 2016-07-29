@@ -151,7 +151,7 @@ WidgetListItemTextLine::WidgetListItemTextLine(::Engines::GUI &gui,
 
 	_fontHeight = f.getFont().getHeight();
 
-	_text.reset(new Graphics::Aurora::Text(f, text, _uR, _uG, _uB, _uA, 0.0f));
+	_text.reset(new Graphics::Aurora::Text(f, text, _uR, _uG, _uB, _uA));
 
 	_text->setClickable(true);
 }

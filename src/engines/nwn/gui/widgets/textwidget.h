@@ -55,7 +55,7 @@ public:
 
 	void setPosition(float x, float y, float z);
 	void setColor(float r, float g, float b, float a);
-	void setText(const Common::UString &text, float halign = 0.5f, float maxWidth = 0.0f, float maxHeight = 0.0f);
+	void setText(const Common::UString &text, float halign = Graphics::Aurora::kHAlignCenter, float maxWidth = 0.0f, float maxHeight = 0.0f);
 	const Common::UString getText() const;
 
 	float getWidth () const;
