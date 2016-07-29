@@ -41,7 +41,7 @@ namespace Aurora {
 class Text : public GUIElement {
 public:
 	Text(const FontHandle &font, const Common::UString &str,
-	     float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f, float align = 0.0f);
+	     float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f, float halign = 0.0f);
 	~Text();
 
 	const Common::UString &get() const;
@@ -52,7 +52,7 @@ public:
 	void setPosition(float x, float y, float z = -FLT_MAX);
 	void setColor(float r, float g, float b, float a);
 	void unsetColor();
-	void setAlign(float align);
+	void setHorizontalAlign(float halign);
 
 	/** Change the font of the text. */
 	void setFont(const Common::UString &fnt);
@@ -84,7 +84,7 @@ private:
 	float _width;
 	float _height;
 
-	float _align;
+	float _halign;
 
 	Common::UString _str;
 	ColorPositions  _colors;

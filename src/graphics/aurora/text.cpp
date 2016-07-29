@@ -34,9 +34,9 @@ namespace Graphics {
 namespace Aurora {
 
 Text::Text(const FontHandle &font, const Common::UString &str,
-		float r, float g, float b, float a, float align) :
+		float r, float g, float b, float a, float halign) :
 	Graphics::GUIElement(Graphics::GUIElement::kGUIElementFront),
-	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0f), _y(0.0f), _align(align),
+	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0f), _y(0.0f), _halign(halign),
 	_disableColorTokens(false) {
 
 	set(str);
@@ -94,8 +94,8 @@ void Text::unsetColor() {
 	setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void Text::setAlign(float align) {
-	_align = align;
+void Text::setHorizontalAlign(float halign) {
+	_halign = halign;
 }
 
 const Common::UString &Text::get() const {
@@ -284,8 +284,8 @@ void Text::drawLine(const Common::UString &line, float maxLength,
 
 	Font &font = _font.getFont();
 
-	// Align
-	glTranslatef(roundf((maxLength - font.getLineWidth(line)) * _align), 0.0f, 0.0f);
+	// Horizontal Align
+	glTranslatef(roundf((maxLength - font.getLineWidth(line)) * _halign), 0.0f, 0.0f);
 
 	// Draw line
 	for (Common::UString::iterator s = line.begin(); s != line.end(); ++s, position++) {
