@@ -210,12 +210,12 @@ bool Game::showQuote() {
 	_engine->getLanguage(language);
 
 	const float length = (language == Aurora::kLanguageJapanese) ? 236.0f : 256.0f;
-	const float align  = (language == Aurora::kLanguageJapanese) ?   0.0f :   0.5f;
+	const float halign = (language == Aurora::kLanguageJapanese) ?   0.0f :   0.5f;
 
 	Common::UString quote = TalkMan.getString(21712);
 	_guiFont.getFont().split(quote, length, 0.0f, false);
 
-	Graphics::Aurora::Text quoteText(_quoteFont, quote, 1.0f, 1.0f, 1.0f, 1.0f, align);
+	Graphics::Aurora::Text quoteText(_quoteFont, quote, 1.0f, 1.0f, 1.0f, 1.0f, halign);
 
 	const float quoteTextX = kTopScreenX + ((kScreenWidth  - quoteText.getWidth())  / 2.0f);
 	const float quoteTextY = kTopScreenY + ((kScreenHeight - quoteText.getHeight()) / 2.0f);
