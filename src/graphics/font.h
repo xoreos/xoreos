@@ -54,6 +54,8 @@ public:
 	float getWidth (const Common::UString &text, float maxWidth = 0.0f) const;
 	/** Return the height this string would take. */
 	float getHeight(const Common::UString &text, float maxWidth = 0.0f, float maxHeight = 0.0f) const;
+	/** Return the width of this string. */
+	float getLineWidth(const Common::UString &text) const;
 
 	/** Build all necessary characters to display this string. */
 	virtual void buildChars(const Common::UString &str);
@@ -70,7 +72,6 @@ public:
 	float split(const Common::UString &line, Common::UString &lines, float maxWidth, float maxHeight = 0.0f, bool trim = true) const;
 
 private:
-	float getLineWidth(const Common::UString &text) const;
 	bool addLine(std::vector<Common::UString> &lines, const Common::UString &newLine, float maxHeight) const;
 };
 
