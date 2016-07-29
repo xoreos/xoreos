@@ -144,9 +144,56 @@ void Text::render(RenderPass pass) {
 	if (pass == kRenderPassOpaque)
 		return;
 
+	Font &font = _font.getFont();
+
 	glTranslatef(_x, _y, 0.0f);
 
-	_font.getFont().draw(_str, _colors, _r, _g, _b, _a, _align, _width, _height);
+	glColor4f(_r, _g, _b, _a);
+
+	std::vector<Common::UString> lines;
+	float maxLength = font.split(_str, lines, _width, _height, false);
+
+	// Move position to the top
+	glTranslatef(0.0f, (lines.size() - 1) * (font.getHeight() + font.getLineSpacing()), 0.0f);
+
+	size_t position = 0;
+
+	ColorPositions::const_iterator color = _colors.begin();
+
+	// Draw lines
+	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l) {
+		// Save the current position
+		glPushMatrix();
+
+		// Align
+		glTranslatef(roundf((maxLength - font.getLineWidth(*l)) * _align), 0.0f, 0.0f);
+
+		// Draw line
+		for (Common::UString::iterator s = l->begin(); s != l->end(); ++s, position++) {
+			// If we have color changes, apply them
+			while ((color != _colors.end()) && (color->position <= position)) {
+				if (color->defaultColor)
+					glColor4f(_r, _g, _b, _a);
+				else
+					glColor4f(color->r, color->g, color->b, color->a);
+
+				++color;
+			}
+
+			font.draw(*s);
+		}
+
+		// Restore position to the start of the line
+		glPopMatrix();
+
+		// Move to the next line
+		glTranslatef(0.0f, -(font.getHeight() + font.getLineSpacing()), 0.0f);
+
+		// \n character
+		position++;
+	}
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 bool Text::isIn(float x, float y) const {

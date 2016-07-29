@@ -66,57 +66,6 @@ float Font::getHeight(const Common::UString &text, float maxWidth, float maxHeig
 void Font::buildChars(const Common::UString &UNUSED(str)) {
 }
 
-void Font::draw(Common::UString text, const ColorPositions &colors,
-                float r, float g, float b, float a, float align, float maxWidth, float maxHeight) const {
-
-	glColor4f(r, g, b, a);
-
-	std::vector<Common::UString> lines;
-	float maxLength = split(text, lines, maxWidth, maxHeight, false);
-
-	// Move position to the top
-	glTranslatef(0.0f, (lines.size() - 1) * (getHeight() + getLineSpacing()), 0.0f);
-
-	size_t position = 0;
-
-	ColorPositions::const_iterator color = colors.begin();
-
-	// Draw lines
-	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l) {
-		// Save the current position
-		glPushMatrix();
-
-		// Align
-		glTranslatef(roundf((maxLength - getLineWidth(*l)) * align), 0.0f, 0.0f);
-
-		// Draw line
-		for (Common::UString::iterator s = l->begin(); s != l->end(); ++s, position++) {
-			// If we have color changes, apply them
-			while ((color != colors.end()) && (color->position <= position)) {
-				if (color->defaultColor)
-					glColor4f(r, g, b, a);
-				else
-					glColor4f(color->r, color->g, color->b, color->a);
-
-				++color;
-			}
-
-			draw(*s);
-		}
-
-		// Restore position to the start of the line
-		glPopMatrix();
-
-		// Move to the next line
-		glTranslatef(0.0f, -(getHeight() + getLineSpacing()), 0.0f);
-
-		// \n character
-		position++;
-	}
-
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-}
-
 float Font::split(const Common::UString &line, std::vector<Common::UString> &lines,
                   float maxWidth, float maxHeight, bool trim) const {
 
