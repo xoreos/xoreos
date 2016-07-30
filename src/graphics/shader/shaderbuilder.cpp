@@ -151,7 +151,7 @@ static const Common::UString body_envsphere_3frag =
 "	froggle = texture(_textureSphere0, _sphereCoords);\n";
 
 static const Common::UString body_lightmap_3frag =
-"	froggle *= texture(_lightmap, _lightmapCoords);\n";
+"	froggle = texture(_lightmap, _lightmapCoords);\n";
 // ---------------------------------------------------------
 static const Common::UString body_blend_src_alpha_3frag =
 "	fraggle = mix(fraggle, froggle, froggle.a);\n";
@@ -164,6 +164,9 @@ static const Common::UString body_blend_zero_3frag =
 
 static const Common::UString body_blend_one_3frag =
 "	fraggle = froggle;\n";
+
+static const Common::UString body_blend_multiply_3frag =
+"	fraggle *= froggle;\n";
 // ---------------------------------------------------------
 static const Common::UString body_force_opaque_3frag =
 "	fraggle.a = 1.0f;\n";
@@ -280,7 +283,7 @@ static const Common::UString body_envsphere_2frag =
 "	froggle = texture2D(_textureSphere0, _sphereCoords);\n";
 
 static const Common::UString body_lightmap_2frag =
-"	froggle *= texture2D(_lightmap, _lightmapCoords);\n";
+"	froggle = texture2D(_lightmap, _lightmapCoords);\n";
 // ---------------------------------------------------------
 static const Common::UString body_blend_src_alpha_2frag =
 "	fraggle = mix(fraggle, froggle, froggle.a);\n";
@@ -293,6 +296,9 @@ static const Common::UString body_blend_zero_2frag =
 
 static const Common::UString body_blend_one_2frag =
 "	fraggle = froggle;\n";
+
+static const Common::UString body_blend_multiply_2frag =
+"	fraggle *= froggle;\n";
 // ---------------------------------------------------------
 static const Common::UString body_force_opaque_2frag =
 "	fraggle.a = 1.0f;\n";
@@ -369,7 +375,7 @@ void ShaderBuilder::addShaderName(Common::UString &name, uint32 passType, uint32
 		name += "texture.";
 		break;
 	case ShaderBuilder::TEXTURE_LIGHTMAP:
-		name += "texture_lightmap.";
+		name += "lightmap.";
 		break;
 	case ShaderBuilder::TEXTURE_BUMPMAP:
 		name += "texture_bumpmap.";
@@ -442,9 +448,9 @@ void ShaderBuilder::addVertexShaderString(Common::UString &header, Common::UStri
 			body += body_texture_3vert;
 			break;
 		case ShaderBuilder::TEXTURE_LIGHTMAP:
-			header += header_texture_3vert;
+//			header += header_texture_3vert;
 			header += header_lightmap_3vert;
-			body += body_texture_3vert;
+//			body += body_texture_3vert;
 			body += body_lightmap_3vert;
 			break;
 		case ShaderBuilder::TEXTURE_BUMPMAP:
@@ -478,9 +484,9 @@ void ShaderBuilder::addVertexShaderString(Common::UString &header, Common::UStri
 			body += body_texture_2vert;
 			break;
 		case ShaderBuilder::TEXTURE_LIGHTMAP:
-			header += header_texture_2vert;
+//			header += header_texture_2vert;
 			header += header_lightmap_2vert;
-			body += body_texture_2vert;
+//			body += body_texture_2vert;
 			body += body_lightmap_2vert;
 			break;
 		case ShaderBuilder::TEXTURE_BUMPMAP:
@@ -541,9 +547,9 @@ void ShaderBuilder::addFragmentShaderString(Common::UString &header, Common::USt
 			body += body_texture_3frag;
 			break;
 		case ShaderBuilder::TEXTURE_LIGHTMAP:
-			header += header_texture_3frag;
+//			header += header_texture_3frag;
 			header += header_lightmap_3frag;
-			body += body_texture_3frag;
+//			body += body_texture_3frag;
 			body += body_lightmap_3frag;
 			break;
 		case ShaderBuilder::TEXTURE_BUMPMAP:
@@ -573,6 +579,9 @@ void ShaderBuilder::addFragmentShaderString(Common::UString &header, Common::USt
 		case ShaderBuilder::BLEND_ONE:
 			body += body_blend_one_3frag;
 			break;
+		case ShaderBuilder::BLEND_MULTIPLY:
+			body += body_blend_multiply_3frag;
+			break;
 		case ShaderBuilder::BLEND_IGNORED:
 			break;
 		default: break;
@@ -597,9 +606,9 @@ void ShaderBuilder::addFragmentShaderString(Common::UString &header, Common::USt
 			body += body_texture_2frag;
 			break;
 		case ShaderBuilder::TEXTURE_LIGHTMAP:
-			header += header_texture_2frag;
+//			header += header_texture_2frag;
 			header += header_lightmap_2frag;
-			body += body_texture_2frag;
+//			body += body_texture_2frag;
 			body += body_lightmap_2frag;
 			break;
 		case ShaderBuilder::TEXTURE_BUMPMAP:
@@ -630,6 +639,9 @@ void ShaderBuilder::addFragmentShaderString(Common::UString &header, Common::USt
 			break;
 		case ShaderBuilder::BLEND_ONE:
 			body += body_blend_one_2frag;
+			break;
+		case ShaderBuilder::BLEND_MULTIPLY:
+			body += body_blend_multiply_2frag;
 			break;
 		case ShaderBuilder::BLEND_IGNORED:
 			break;

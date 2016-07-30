@@ -920,37 +920,41 @@ void ModelNode::buildMaterial() {
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
 
+	uint32 tcount = _textures.size();
 	/**
 	 * Sometimes the _textures handler array isn't matched up against what
 	 * is properly loaded (missing files from disk). So do some brief sanity
 	 * checks on this.
 	 */
-	size_t tcount = _textures.size();
-	if (tcount == 2) {
-		if (_textures[1].empty()) {
-			--tcount;
-		}
-	}
-	if (tcount == 1) {
-		if (_textures[0].empty()) {
-			--tcount;
+	if (tcount >= 1) {
+		if (!_textures[0].empty()) {
+			materialName += _textures[0].getName();
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_ONE));
 		}
 	}
 
-	switch (tcount) {
-	case 0:
-		break;
-	case 1:
-		materialName += _textures[0].getName();
-		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, blendflags));
-		break;
-	case 2:
-		materialName += _textures[0].getName();
-		materialName += ".";
-		materialName += _textures[1].getName();
-		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, blendflags));
-		break;
-	default: break;
+	if (tcount >= 2) {
+		if (!_textures[1].empty()) {
+			materialName += ".";
+			materialName += _textures[1].getName();
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::ShaderBuilder::BLEND_MULTIPLY));
+		} else {
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+		}
+	}
+
+	if (tcount >= 3) {
+		if (!_textures[2].empty()) {
+			materialName += ".";
+			materialName += _textures[2].getName();
+		} else {
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+		}
+	}
+
+	if (tcount >= 4) {
+		// Don't know yet what this extra texture is supposed to be.
+		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
 	}
 
 	if (!_envMap.empty()) {
@@ -1015,20 +1019,23 @@ void ModelNode::buildMaterial() {
 		sampler->handle = _envMap;
 	}
 
-	switch (tcount) {
-	case 0:
-		break;
-	case 1:
-		sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
-		sampler->handle = _textures[0];
-		break;
-	case 2:
-		sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
-		sampler->handle = _textures[0];
-		sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
-		sampler->handle = _textures[1];
-		break;
-	default: break;
+	if (tcount >= 1) {
+		if (!_textures[0].empty()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
+			sampler->handle = _textures[0];
+		}
+	}
+
+	if (tcount >= 2) {
+		if (!_textures[1].empty()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
+			sampler->handle = _textures[1];
+		}
+	}
+
+	if (tcount >= 3) {
+		if (!_textures[2].empty()) {
+		}
 	}
 
 	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh));

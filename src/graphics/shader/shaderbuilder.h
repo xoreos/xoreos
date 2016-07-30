@@ -61,6 +61,7 @@ public:
 		BLEND_DST_ALPHA,
 		BLEND_ZERO,
 		BLEND_ONE,
+		BLEND_MULTIPLY,   ///< Not really blending, but component-wise multiply.
 		BLEND_IGNORED     ///< Blending not applicable to the component.
 	};
 
