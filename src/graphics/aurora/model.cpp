@@ -190,6 +190,19 @@ Animation *Model::selectDefaultAnimation() const {
 	return 0;
 }
 
+void Model::setCurrentAnimation(Animation *anim) {
+	if (!_currentState)
+		return;
+
+	_currentAnimation = anim;
+	_elapsedTime = 0.0f;
+	for (NodeList::iterator n = _currentState->nodeList.begin(); n != _currentState->nodeList.end(); ++n)
+		if ((*n)->_attachedModel) {
+			(*n)->_attachedModel->_currentAnimation = anim;
+			(*n)->_attachedModel->_elapsedTime = 0.0f;
+		}
+}
+
 void Model::getScale(float &x, float &y, float &z) const {
 	x = _scale[0];
 	y = _scale[1];
@@ -400,6 +413,14 @@ const std::list<ModelNode *> &Model::getNodes() {
 	return _currentState->nodeList;
 }
 
+void Model::attachModel(const Common::UString &nodeName, Model *model) {
+	ModelNode *node = getNode(nodeName);
+	if (node) {
+		node->_attachedModel = model;
+		createBound();
+	}
+}
+
 Animation *Model::getAnimation(const Common::UString &anim) {
 
 	AnimationMap::iterator n = _animationMap.find(anim);
@@ -462,10 +483,9 @@ void Model::manageAnimations(float dt) {
 
 	// Start a new animation if scheduled, interrupting the currently playing animation
 	if (_nextAnimation) {
-		_currentAnimation = _nextAnimation;
+		setCurrentAnimation(_nextAnimation);
 		_nextAnimation    = 0;
 
-		_elapsedTime = 0.0f;
 		lastFrame    = 0.0f;
 		nextFrame    = 0.0f;
 	}
@@ -478,18 +498,16 @@ void Model::manageAnimations(float dt) {
 			if (_loopAnimation > 0)
 				_loopAnimation--;
 
-			_elapsedTime = 0.0f;
 			lastFrame    = 0.0f;
 			nextFrame    = 0.0f;
 		} else
-			_currentAnimation = 0;
+			setCurrentAnimation(0);
 	}
 
 	// No animation, select a default one
 	if (!_currentAnimation) {
-		_currentAnimation = selectDefaultAnimation();
+		setCurrentAnimation(selectDefaultAnimation());
 
-		_elapsedTime = 0.0f;
 		lastFrame    = 0.0f;
 		nextFrame    = 0.0f;
 	}

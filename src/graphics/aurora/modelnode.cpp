@@ -61,7 +61,7 @@ ModelNode::Mesh::Mesh() : shininess(1.0f), alpha(1.0f), tilefade(0), render(fals
 
 
 ModelNode::ModelNode(Model &model) :
-	_model(&model), _parent(0), _level(0), _render(false), _mesh(0) {
+	_model(&model), _parent(0), _attachedModel(0), _level(0), _render(false), _mesh(0) {
 
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
@@ -77,7 +77,8 @@ ModelNode::ModelNode(Model &model) :
 }
 
 ModelNode::~ModelNode() {
-	// dtor
+	delete _attachedModel;
+	_attachedModel = 0;
 }
 
 ModelNode *ModelNode::getParent() {
@@ -287,6 +288,9 @@ void ModelNode::addChild(Model *model) {
 }
 
 void ModelNode::setEnvironmentMap(const Common::UString &environmentMap) {
+	if (_attachedModel)
+		_attachedModel->setEnvironmentMap(environmentMap);
+
 	if (!_mesh || !_mesh->data)
 		return;
 
@@ -458,6 +462,19 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 
 		_absoluteBoundBox.add((*c)->getAbsoluteBound());
 	}
+
+	if (_attachedModel) {
+		Common::TransformationMatrix modelPosition = _absoluteBoundBox.getOrigin();
+
+		modelPosition.translate(_attachedModel->_position[0], _attachedModel->_position[1], _attachedModel->_position[2]);
+		modelPosition.rotate(_attachedModel->_orientation[3], _attachedModel->_orientation[0], _attachedModel->_orientation[1], _attachedModel->_orientation[2]);
+		modelPosition.scale(_attachedModel->_scale[0], _attachedModel->_scale[1], _attachedModel->_scale[2]);
+
+		_attachedModel->_absolutePosition = modelPosition;
+		_attachedModel->createBound();
+
+		_absoluteBoundBox.add(_attachedModel->_absoluteBoundBox);
+	}
 }
 
 void ModelNode::orderChildren() {
@@ -608,6 +625,11 @@ void ModelNode::render(RenderPass pass) {
 	if (shouldRender)
 		renderGeometry(*mesh);
 
+	if (_attachedModel) {
+		glPushMatrix();
+		_attachedModel->render(pass);
+		glPopMatrix();
+	}
 
 	// Render the node's children
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {

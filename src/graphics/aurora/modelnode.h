@@ -180,6 +180,8 @@ protected:
 	ModelNode *_parent;               ///< The node's parent.
 	std::list<ModelNode *> _children; ///< The node's children.
 
+	Model *_attachedModel; ///< The model that is attached to this node.
+
 	uint32 _level;
 
 	Common::UString _name; ///< The node's name.
@@ -256,6 +258,7 @@ public:
 	void interpolateOrientation(float time, float &x, float &y, float &z, float &a) const;
 
 	friend class Model;
+	friend class Animation;
 };
 
 } // End of namespace Aurora

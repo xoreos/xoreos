@@ -37,6 +37,7 @@
 #include "src/graphics/glcontainer.h"
 #include "src/graphics/renderable.h"
 
+#include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/types.h"
 
 #include "src/graphics/shader/shaderrenderable.h"
@@ -49,7 +50,6 @@ namespace Graphics {
 
 namespace Aurora {
 
-class ModelNode;
 class Animation;
 
 class Model : public GLContainer, public Renderable {
@@ -134,6 +134,8 @@ public:
 	/** Get all nodes in the current state. */
 	const std::list<ModelNode *> &getNodes();
 
+	/** Add another model as a child to the named node. */
+	void attachModel(const Common::UString &nodeName, Model *model);
 
 	// Animation
 
@@ -266,6 +268,7 @@ private:
 
 	Animation *selectDefaultAnimation() const;
 
+	void setCurrentAnimation(Animation *anim);
 
 public:
 	// General loading helpers
