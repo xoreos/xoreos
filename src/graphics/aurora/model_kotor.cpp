@@ -360,7 +360,6 @@ void Model_KotOR::addState(ParserContext &ctx) {
 
 
 ModelNode_KotOR::ModelNode_KotOR(Model &model) : ModelNode(model) {
-	_envMapMode = kModeEnvironmentBlendedOver;
 }
 
 ModelNode_KotOR::~ModelNode_KotOR() {
@@ -487,22 +486,24 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
 	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
-	_diffuse[0] = ctx.mdl->readIEEEFloatLE();
-	_diffuse[1] = ctx.mdl->readIEEEFloatLE();
-	_diffuse[2] = ctx.mdl->readIEEEFloatLE();
+	_mesh = new Mesh();
 
-	_ambient[0] = ctx.mdl->readIEEEFloatLE();
-	_ambient[1] = ctx.mdl->readIEEEFloatLE();
-	_ambient[2] = ctx.mdl->readIEEEFloatLE();
+	_mesh->diffuse[0] = ctx.mdl->readIEEEFloatLE();
+	_mesh->diffuse[1] = ctx.mdl->readIEEEFloatLE();
+	_mesh->diffuse[2] = ctx.mdl->readIEEEFloatLE();
 
-	_specular[0] = 0;
-	_specular[1] = 0;
-	_specular[2] = 0;
+	_mesh->ambient[0] = ctx.mdl->readIEEEFloatLE();
+	_mesh->ambient[1] = ctx.mdl->readIEEEFloatLE();
+	_mesh->ambient[2] = ctx.mdl->readIEEEFloatLE();
+
+	_mesh->specular[0] = 0;
+	_mesh->specular[1] = 0;
+	_mesh->specular[2] = 0;
 
 	uint32 transparencyHint = ctx.mdl->readUint32LE();
 
-	_hasTransparencyHint = true;
-	_transparencyHint    = (transparencyHint != 0);
+	_mesh->hasTransparencyHint = true;
+	_mesh->transparencyHint    = (transparencyHint != 0);
 
 	std::vector<Common::UString> textures;
 
@@ -543,9 +544,9 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	ctx.mdl->skip(2);
 
 	byte unknownFlag1 = ctx.mdl->readByte();
-	_shadow  = ctx.mdl->readByte() == 1;
+	_mesh->shadow  = ctx.mdl->readByte() == 1;
 	byte unknownFlag2 = ctx.mdl->readByte();
-	_render  = ctx.mdl->readByte() == 1;
+	_mesh->render  = ctx.mdl->readByte() == 1;
 
 	ctx.mdl->skip(10);
 
@@ -558,6 +559,10 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	if ((offOffVertsCount < 1) || (vertexCount == 0) || (facesCount == 0))
 		return;
+
+	_render = _mesh->render;
+	_mesh->data = new MeshData();
+	_mesh->data->envMapMode = kModeEnvironmentBlendedOver;
 
 	uint32 endPos = ctx.mdl->pos();
 
@@ -582,9 +587,9 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
+	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		ctx.mdx->seek(offNodeData + i * mdxStructSize);
@@ -619,9 +624,9 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.mdl->seek(ctx.offModelData + offVerts);
 
-	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdl->readUint16LE();
 
