@@ -548,6 +548,13 @@ void ModelNode::render(RenderPass pass) {
 
 	Mesh *mesh = _mesh;
 	bool doRender = _render;
+	if (!_model->getState().empty() && !renderableMesh(mesh)) {
+		ModelNode *rootStateNode = _model->getNode("", _name);
+		if (rootStateNode && renderableMesh(rootStateNode->_mesh)) {
+			mesh = rootStateNode->_mesh;
+			doRender = rootStateNode->_render;
+		}
+	}
 
 	// Render the node's geometry
 
