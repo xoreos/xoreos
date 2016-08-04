@@ -620,12 +620,12 @@ void ModelNode_DragonAge::createIndexBuffer(const GFF4Struct &meshChunk,
 		Common::SeekableReadStream &indexData) {
 
 	uint32 indexCount = meshChunk.getUint(kGFF4MeshChunkIndexCount);
-	_indexBuffer.setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->indexBuffer.setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
 
 	const uint32 startIndex = meshChunk.getUint(kGFF4MeshChunkStartIndex);
 	indexData.skip(startIndex * 2);
 
-	uint16 *indices = reinterpret_cast<uint16 *>(_indexBuffer.getData());
+	uint16 *indices = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
 	while (indexCount-- > 0)
 		*indices++ = indexData.readUint16LE();
 }
@@ -664,9 +664,9 @@ void ModelNode_DragonAge::createVertexBuffer(const GFF4Struct &meshChunk,
 		}
 	}
 
-	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *vData = reinterpret_cast<float *>(_vertexBuffer.getData());
+	float *vData = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
 	for (uint32 v = 0; v < vertexCount; v++) {
 
 		for (MeshDeclarations::const_iterator d = meshDecl.begin(); d != meshDecl.end(); ++d) {
@@ -960,10 +960,12 @@ void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GF
 		if (!vertexData)
 			throw Common::Exception("Mesh has mesh declaration but no vertex data");
 
+		_mesh = new Mesh();
+		_render =_mesh->render = true;
+		_mesh->data = new MeshData();
+
 		createIndexBuffer (*meshChunk, *indexData);
 		createVertexBuffer(*meshChunk, *vertexData, meshDecl);
-
-		_render = true;
 
 		// Load the material object, grab the diffuse texture and load
 
