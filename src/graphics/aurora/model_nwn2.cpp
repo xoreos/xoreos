@@ -222,12 +222,14 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	                _tintMap   = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 	Common::UString glowMap    = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
-	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	_diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	_diffuse [2] = ctx.mdb->readIEEEFloatLE();
-	_specular[0] = ctx.mdb->readIEEEFloatLE();
-	_specular[1] = ctx.mdb->readIEEEFloatLE();
-	_specular[2] = ctx.mdb->readIEEEFloatLE();
+	_mesh = new Mesh();
+
+	_mesh->diffuse [0] = ctx.mdb->readIEEEFloatLE();
+	_mesh->diffuse [1] = ctx.mdb->readIEEEFloatLE();
+	_mesh->diffuse [2] = ctx.mdb->readIEEEFloatLE();
+	_mesh->specular[0] = ctx.mdb->readIEEEFloatLE();
+	_mesh->specular[1] = ctx.mdb->readIEEEFloatLE();
+	_mesh->specular[2] = ctx.mdb->readIEEEFloatLE();
 
 	float  specularPower = ctx.mdb->readIEEEFloatLE();
 	float  specularValue = ctx.mdb->readIEEEFloatLE();
@@ -238,6 +240,9 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	if ((vertexCount == 0) || (facesCount == 0))
 		return false;
+
+	_render = _mesh->render = true;
+	_mesh->data = new MeshData();
 
 	std::vector<Common::UString> textures;
 	textures.push_back(diffuseMap);
@@ -255,9 +260,9 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	if (!_tintMap.empty())
 		vertexDecl.push_back(VertexAttrib(VTCOORD + 1, 3, GL_FLOAT));
 
-	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
+	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -289,15 +294,13 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	// Read faces
 
-	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdb->readUint16LE();
 
 	createBound();
-
-	_render = true;
 
 	return true;
 }
@@ -322,12 +325,14 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	                _tintMap   = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 	Common::UString glowMap    = Common::readStringFixed(*ctx.mdb, Common::kEncodingASCII, 32);
 
-	_diffuse [0] = ctx.mdb->readIEEEFloatLE();
-	_diffuse [1] = ctx.mdb->readIEEEFloatLE();
-	_diffuse [2] = ctx.mdb->readIEEEFloatLE();
-	_specular[0] = ctx.mdb->readIEEEFloatLE();
-	_specular[1] = ctx.mdb->readIEEEFloatLE();
-	_specular[2] = ctx.mdb->readIEEEFloatLE();
+	_mesh = new Mesh();
+
+	_mesh->diffuse [0] = ctx.mdb->readIEEEFloatLE();
+	_mesh->diffuse [1] = ctx.mdb->readIEEEFloatLE();
+	_mesh->diffuse [2] = ctx.mdb->readIEEEFloatLE();
+	_mesh->specular[0] = ctx.mdb->readIEEEFloatLE();
+	_mesh->specular[1] = ctx.mdb->readIEEEFloatLE();
+	_mesh->specular[2] = ctx.mdb->readIEEEFloatLE();
 
 	float  specularPower = ctx.mdb->readIEEEFloatLE();
 	float  specularValue = ctx.mdb->readIEEEFloatLE();
@@ -338,6 +343,9 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	if ((vertexCount == 0) || (facesCount == 0))
 		return false;
+
+	_render = _mesh->render = true;
+	_mesh->data = new MeshData();
 
 	std::vector<Common::UString> textures;
 	textures.push_back(diffuseMap);
@@ -355,9 +363,9 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 	if (!_tintMap.empty())
 		vertexDecl.push_back(VertexAttrib(VTCOORD + 1, 3, GL_FLOAT));
 
-	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
+	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -393,20 +401,21 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 
 	// Read faces
 
-	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdb->readUint16LE();
 
 	createBound();
 
-	_render = true;
-
 	return true;
 }
 
 void ModelNode_NWN2::setTint(const float tint[3][4]) {
+	if (!_mesh || !_mesh->data)
+		return;
+
 	lockFrameIfVisible();
 
 	memcpy(_tint, tint, 3 * 4 * sizeof(float));
@@ -421,7 +430,7 @@ void ModelNode_NWN2::removeTint() {
 	if (_tintedMapIndex < 0)
 		return;
 
-	_textures.erase(_textures.begin() + _tintedMapIndex);
+	_mesh->data->textures.erase(_mesh->data->textures.begin() + _tintedMapIndex);
 
 	_tintedMapIndex = -1;
 }
@@ -463,12 +472,12 @@ void ModelNode_NWN2::createTint() {
 				// TODO: Verify how the mixing is actually done in NWN2!
 				for (int i = 0; i < 3; i++) {
 					for (int j = 0; j < 3; j++)
-						dstColor[j] += _tint[i][j] * srcColor[i] * _tint[i][3] * srcColor[3] * _diffuse[i];
+						dstColor[j] += _tint[i][j] * srcColor[i] * _tint[i][3] * srcColor[3] * _mesh->diffuse[i];
 				}
 			} else
 				// Source alpha is 0.0f: No tinting for this pixel
 				for (int i = 0; i < 3; i++)
-					dstColor[i] = _diffuse[i] * _tint[i][3];
+					dstColor[i] = _mesh->diffuse[i] * _tint[i][3];
 
 			tintedImg.setPixel(n, dstColor[0], dstColor[1], dstColor[2], dstColor[3]);
 		}
@@ -484,8 +493,8 @@ void ModelNode_NWN2::createTint() {
 	// And add the new texture to the TextureManager
 	TextureHandle tintedTexture = TextureMan.add(Texture::create(tintedMap));
 
-	_textures.push_back(tintedTexture);
-	_tintedMapIndex = _textures.size() - 1;
+	_mesh->data->textures.push_back(tintedTexture);
+	_tintedMapIndex = _mesh->data->textures.size() - 1;
 }
 
 } // End of namespace Aurora
