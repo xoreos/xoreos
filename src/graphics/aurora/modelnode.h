@@ -184,9 +184,6 @@ protected:
 
 	Common::UString _name; ///< The node's name.
 
-	VertexBuffer _vertexBuffer; ///< Node geometry vertex buffer.
-	IndexBuffer _indexBuffer;   ///< Node geometry index buffer.
-
 	float _center     [3]; ///< The node's center.
 	float _position   [3]; ///< Position of the node.
 	float _rotation   [3]; ///< Node rotation.
@@ -199,44 +196,7 @@ protected:
 	/** Position of the node after translate/rotate. */
 	Common::TransformationMatrix _absolutePosition;
 
-	float _wirecolor[3]; ///< Color of the wireframe.
-	float _ambient  [3]; ///< Ambient color.
-	float _diffuse  [3]; ///< Diffuse color.
-	float _specular [3]; ///< Specular color.
-	float _selfIllum[3]; ///< Self illumination color.
-	float _shininess;    ///< Shiny?
-
-	std::vector<TextureHandle> _textures; ///< Textures.
-
-	TextureHandle      _envMap;     ///< The environment map texture.
-	EnvironmentMapMode _envMapMode; ///< The way the environment map is applied.
-
-	bool _isTransparent;
-
-	bool _dangly; ///< Is the node mesh's dangly?
-
-	float _period;
-	float _tightness;
-	float _displacement;
-
-	bool _showdispl;
-	int  _displtype;
-
-	std::vector<float> _constraints;
-
-	int _tilefade;
-
 	bool _render; ///< Render the node?
-	bool _shadow; ///< Does the node have a shadow?
-
-	bool _beaming;
-	bool _inheritcolor;
-	bool _rotatetexture;
-
-	float _alpha;
-
-	bool _hasTransparencyHint;
-	bool _transparencyHint;
 
 	Mesh *_mesh;
 
@@ -266,11 +226,6 @@ private:
 	const Common::BoundingBox &getAbsoluteBound() const;
 
 	void orderChildren();
-
-	void renderGeometry();
-	void renderGeometryNormal();
-	void renderGeometryEnvMappedUnder();
-	void renderGeometryEnvMappedOver();
 
 	static void renderGeometry(Mesh &mesh);
 	static void renderGeometryNormal(Mesh &mesh);

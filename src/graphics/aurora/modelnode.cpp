@@ -61,8 +61,7 @@ ModelNode::Mesh::Mesh() : shininess(1.0f), alpha(1.0f), tilefade(0), render(fals
 
 
 ModelNode::ModelNode(Model &model) :
-	_model(&model), _parent(0), _level(0), _envMapMode(kModeEnvironmentBlendedUnder),
-	_isTransparent(false), _render(false), _mesh(0), _hasTransparencyHint(false) {
+	_model(&model), _parent(0), _level(0), _render(false), _mesh(0) {
 
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
@@ -214,15 +213,6 @@ void ModelNode::inheritOrientation(ModelNode &node) const {
 }
 
 void ModelNode::inheritGeometry(ModelNode &node) const {
-	node._textures      = _textures;
-	node._render        = _render;
-	node._isTransparent = _isTransparent;
-	node._vertexBuffer  = _vertexBuffer;
-	node._indexBuffer   = _indexBuffer;
-
-	memcpy(node._center, _center, 3 * sizeof(float));
-	node._boundBox = _boundBox;
-
 	if (node._mesh && _mesh)
 		node._mesh->data = _mesh->data;
 	else
@@ -297,13 +287,6 @@ void ModelNode::addChild(Model *model) {
 }
 
 void ModelNode::setEnvironmentMap(const Common::UString &environmentMap) {
-	_envMap.clear();
-
-	try {
-		_envMap = TextureMan.get(environmentMap);
-	} catch (...) {
-	}
-
 	if (!_mesh || !_mesh->data)
 		return;
 
@@ -322,9 +305,11 @@ void ModelNode::setInvisible(bool invisible) {
 }
 
 void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
+	if (!_mesh || !_mesh->data)
+		return;
+
 	lockFrameIfVisible();
 
-	// Assert that this node should be rendered and try to load the textures.
 	// NOTE: loadTextures() will automatically disable rendering of the node
 	//       again when texture loading fails.
 	_render = true;
@@ -336,9 +321,7 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 	bool hasTexture = false;
 
-	_textures.resize(textures.size());
-	if (_mesh && _mesh->data)
-		_mesh->data->textures.resize(textures.size());
+	_mesh->data->textures.resize(textures.size());
 
 	bool hasAlpha = true;
 	bool isDecal  = true;
@@ -350,26 +333,24 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 		try {
 
 			if (!textures[t].empty() && (textures[t] != "NULL")) {
-				_textures[t] = TextureMan.get(textures[t]);
-				if (_mesh && _mesh->data)
-					_mesh->data->textures[t] = TextureMan.get(textures[t]);
-				if (_textures[t].empty())
+				_mesh->data->textures[t] = TextureMan.get(textures[t]);
+				if (_mesh->data->textures[t].empty())
 					continue;
 
 				hasTexture = true;
 
-				if (!_textures[t].getTexture().hasAlpha())
+				if (!_mesh->data->textures[t].getTexture().hasAlpha())
 					hasAlpha = false;
-				if (_textures[t].getTexture().getTXI().getFeatures().alphaMean == 1.0f)
+				if (_mesh->data->textures[t].getTexture().getTXI().getFeatures().alphaMean == 1.0f)
 					hasAlpha = false;
 
-				if (!_textures[t].getTexture().getTXI().getFeatures().decal)
+				if (!_mesh->data->textures[t].getTexture().getTXI().getFeatures().decal)
 					isDecal = false;
 
-				if (!_textures[t].getTexture().getTXI().getFeatures().bumpyShinyTexture.empty())
-					envMap = _textures[t].getTexture().getTXI().getFeatures().bumpyShinyTexture;
-				if (!_textures[t].getTexture().getTXI().getFeatures().envMapTexture.empty())
-					envMap = _textures[t].getTexture().getTXI().getFeatures().envMapTexture;
+				if (!_mesh->data->textures[t].getTexture().getTXI().getFeatures().bumpyShinyTexture.empty())
+					envMap = _mesh->data->textures[t].getTexture().getTXI().getFeatures().bumpyShinyTexture;
+				if (!_mesh->data->textures[t].getTexture().getTXI().getFeatures().envMapTexture.empty())
+					envMap = _mesh->data->textures[t].getTexture().getTXI().getFeatures().envMapTexture;
 			}
 
 		} catch (...) {
@@ -381,18 +362,18 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 	envMap.trim();
 	if (!envMap.empty()) {
 		try {
-			_envMap = TextureMan.get(envMap);
+			_mesh->data->envMap = TextureMan.get(envMap);
 		} catch (...) {
 			Common::exceptionDispatcherWarning();
 		}
 	}
 
-	if (_hasTransparencyHint) {
-		_isTransparent = _transparencyHint;
+	if (_mesh->hasTransparencyHint) {
+		_mesh->isTransparent = _mesh->transparencyHint;
 		if (isDecal)
-			_isTransparent = true;
+			_mesh->isTransparent = true;
 	} else {
-		_isTransparent = hasAlpha;
+		_mesh->isTransparent = hasAlpha;
 	}
 
 	// If the node has no actual texture, we just assume
@@ -404,11 +385,10 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 void ModelNode::createBound() {
 	_boundBox.clear();
 
-	VertexBuffer vertexBuffer;
-	if (_mesh && _mesh->data)
-		vertexBuffer = _mesh->data->vertexBuffer;
-	else
-		vertexBuffer = _vertexBuffer;
+	if (!_mesh || !_mesh->data)
+		return;
+
+	VertexBuffer vertexBuffer = _mesh->data->vertexBuffer;
 
 	const VertexDecl vertexDecl = vertexBuffer.getVertexDecl();
 	for (VertexDecl::const_iterator vA = vertexDecl.begin(); vA != vertexDecl.end(); ++vA) {
@@ -486,116 +466,6 @@ void ModelNode::orderChildren() {
 	// Order the children's children
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c)
 		(*c)->orderChildren();
-}
-
-void ModelNode::renderGeometry() {
-	if (!_envMap.empty()) {
-		switch (_envMapMode) {
-			case kModeEnvironmentBlendedUnder:
-				renderGeometryEnvMappedUnder();
-				break;
-
-			case kModeEnvironmentBlendedOver:
-				renderGeometryEnvMappedOver();
-				break;
-
-			default:
-				break;
-		}
-
-		return;
-	}
-
-	renderGeometryNormal();
-}
-
-void ModelNode::renderGeometryNormal() {
-	for (size_t t = 0; t < _textures.size(); t++) {
-		TextureMan.activeTexture(t);
-		TextureMan.set(_textures[t]);
-	}
-
-	if (_textures.empty())
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
-
-	for (size_t t = 0; t < _textures.size(); t++) {
-		TextureMan.activeTexture(t);
-		TextureMan.set();
-	}
-
-	if (_textures.empty())
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-}
-
-void ModelNode::renderGeometryEnvMappedUnder() {
-	/* First draw the node with only the environment map, then simply
-	 * blend a semi-transparent diffuse texture on top.
-	 *
-	 * Neverwinter Nights uses this method.
-	 */
-
-	TextureMan.set(_envMap, TextureManager::kModeEnvironmentMapReflective);
-	_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
-
-	for (size_t t = 0; t < _textures.size(); t++) {
-		TextureMan.activeTexture(t);
-		TextureMan.set(_textures[t], TextureManager::kModeDiffuse);
-	}
-
-	_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
-
-	for (size_t t = 0; t < _textures.size(); t++) {
-		TextureMan.activeTexture(t);
-		TextureMan.set();
-	}
-}
-
-void ModelNode::renderGeometryEnvMappedOver() {
-	/* First draw the node with diffuse textures, then draw it again with
-	 * only the environment map. This performs a more complex blending of
-	 * the textures, allowing the color of a transparent diffuse texture
-	 * to modulate the color of the environment map.
-	 *
-	 * KotOR and KotOR2 use this method.
-	 */
-
-	if (!_textures.empty()) {
-		for (size_t t = 0; t < _textures.size(); t++) {
-			TextureMan.activeTexture(t);
-			TextureMan.set(_textures[t], TextureManager::kModeDiffuse);
-		}
-
-		glBlendFunc(GL_ONE, GL_ZERO);
-
-		_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
-
-		for (size_t t = 0; t < _textures.size(); t++) {
-			TextureMan.activeTexture(t);
-			TextureMan.set();
-		}
-
-		TextureMan.activeTexture(0);
-		TextureMan.set(_textures[0], TextureManager::kModeDiffuse);
-
-		glDisable(GL_ALPHA_TEST);
-		glBlendFunc(GL_ZERO, GL_ONE);
-
-		_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
-	}
-
-	TextureMan.activeTexture(0);
-	TextureMan.set(_envMap, TextureManager::kModeEnvironmentMapReflective);
-
-	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
-
-	_vertexBuffer.draw(GL_TRIANGLES, _indexBuffer);
-
-	TextureMan.set();
-
-	glEnable(GL_ALPHA_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ModelNode::renderGeometry(Mesh &mesh) {
@@ -729,23 +599,14 @@ void ModelNode::render(RenderPass pass) {
 
 	// Render the node's geometry
 
-	bool isTransparent = mesh ? mesh->isTransparent : _isTransparent;
-	bool hasMeshData = false;
-	if (mesh)
-		hasMeshData = renderableMesh(mesh);
-	else
-		hasMeshData = _indexBuffer.getCount() > 0;
-
-	bool shouldRender = doRender && hasMeshData;
+	bool isTransparent = mesh && mesh->isTransparent;
+	bool shouldRender = doRender && renderableMesh(mesh);
 	if (((pass == kRenderPassOpaque)      &&  isTransparent) ||
 	    ((pass == kRenderPassTransparent) && !isTransparent))
 		shouldRender = false;
 
 	if (shouldRender)
-		if (mesh)
-			renderGeometry(*mesh);
-		else
-			renderGeometry();
+		renderGeometry(*mesh);
 
 
 	// Render the node's children
