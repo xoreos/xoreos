@@ -355,16 +355,18 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
 	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
+	_mesh = new Mesh();
+
 	uint32 transparencyHint = ctx.mdl->readUint32LE();
 	uint16 flags            = ctx.mdl->readUint16LE();
 
-	_shadow = ctx.mdl->readUint16LE() != 0;
+	_mesh->shadow = ctx.mdl->readUint16LE() != 0;
 
-	_render  = (flags & kNodeFlagsRender) != 0;
-	_beaming = (flags & kNodeFlagsBeaming) != 0;
+	_mesh->render  = (flags & kNodeFlagsRender) != 0;
+	_mesh->beaming = (flags & kNodeFlagsBeaming) != 0;
 
-	_hasTransparencyHint = true;
-	_transparencyHint    = (transparencyHint == 1);
+	_mesh->hasTransparencyHint = true;
+	_mesh->transparencyHint    = (transparencyHint == 1);
 
 	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
@@ -412,11 +414,11 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	uint32 materialID      = ctx.mdl->readUint32LE();
 	uint32 materialGroupID = ctx.mdl->readUint32LE();
 
-	_selfIllum[0] = ctx.mdl->readIEEEFloatLE();
-	_selfIllum[1] = ctx.mdl->readIEEEFloatLE();
-	_selfIllum[2] = ctx.mdl->readIEEEFloatLE();
+	_mesh->selfIllum[0] = ctx.mdl->readIEEEFloatLE();
+	_mesh->selfIllum[1] = ctx.mdl->readIEEEFloatLE();
+	_mesh->selfIllum[2] = ctx.mdl->readIEEEFloatLE();
 
-	_alpha = ctx.mdl->readIEEEFloatLE();
+	_mesh->alpha = ctx.mdl->readIEEEFloatLE();
 
 	float textureWCoords = ctx.mdl->readIEEEFloatLE();
 
@@ -599,6 +601,9 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 	if ((vertexCount == 0) || (indexCount == 0))
 		return;
 
+	_render = _mesh->render;
+	_mesh->data = new MeshData();
+
 	loadTextures(ctx.textures);
 
 	// Create the VertexBuffer / IndexBuffer
@@ -609,9 +614,9 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
+	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.vertices[i * 3 + 0];
@@ -625,9 +630,9 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 		}
 	}
 
-	_indexBuffer.setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->indexBuffer.setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
 	memcpy(f, &ctx.indices[0], indexCount * sizeof(uint16));
 
 	createBound();
