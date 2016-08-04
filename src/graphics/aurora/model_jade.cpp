@@ -440,8 +440,6 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	textureCount = ctx.textures.size();
 
-	loadTextures(ctx.textures);
-
 
 	// Read vertices
 
@@ -600,6 +598,8 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 	const uint32 textureCount = ctx.texCoords.size();
 	if ((vertexCount == 0) || (indexCount == 0))
 		return;
+
+	loadTextures(ctx.textures);
 
 	// Create the VertexBuffer / IndexBuffer
 
