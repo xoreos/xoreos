@@ -525,8 +525,6 @@ void Model_NWN::populateDefaultAnimations() {
 
 
 ModelNode_NWN_Binary::ModelNode_NWN_Binary(Model &model) : ModelNode(model) {
-	_hasTransparencyHint = true;
-	_transparencyHint = false;
 }
 
 ModelNode_NWN_Binary::~ModelNode_NWN_Binary() {
@@ -605,7 +603,7 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	}
 
 	// If the node has no own geometry, inherit the geometry from the root state
-	if (!(flags & kNodeFlagHasMesh) || (_render && (_vertexBuffer.getCount() == 0))) {
+	if (!_mesh || !_mesh->data) {
 		ModelNode *node = _model->getNode(_name);
 		if (node && (node != this))
 			node->inheritGeometry(*this);
@@ -663,6 +661,8 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	uint32 facesOffset, facesCount;
 	Model::readArrayDef(*ctx.mdl, facesOffset, facesCount);
 
+	_mesh = new Mesh();
+
 	float boundingMin[3], boundingMax[3];
 
 	boundingMin[0] = ctx.mdl->readIEEEFloatLE();
@@ -680,25 +680,26 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	pointsAverage[1] = ctx.mdl->readIEEEFloatLE();
 	pointsAverage[2] = ctx.mdl->readIEEEFloatLE();
 
-	_ambient[0] = ctx.mdl->readIEEEFloatLE();
-	_ambient[1] = ctx.mdl->readIEEEFloatLE();
-	_ambient[2] = ctx.mdl->readIEEEFloatLE();
+	_mesh->ambient[0] = ctx.mdl->readIEEEFloatLE();
+	_mesh->ambient[1] = ctx.mdl->readIEEEFloatLE();
+	_mesh->ambient[2] = ctx.mdl->readIEEEFloatLE();
 
-	_diffuse[0] = ctx.mdl->readIEEEFloatLE();
-	_diffuse[1] = ctx.mdl->readIEEEFloatLE();
-	_diffuse[2] = ctx.mdl->readIEEEFloatLE();
+	_mesh->diffuse[0] = ctx.mdl->readIEEEFloatLE();
+	_mesh->diffuse[1] = ctx.mdl->readIEEEFloatLE();
+	_mesh->diffuse[2] = ctx.mdl->readIEEEFloatLE();
 
-	_specular[0] = ctx.mdl->readIEEEFloatLE();
-	_specular[1] = ctx.mdl->readIEEEFloatLE();
-	_specular[2] = ctx.mdl->readIEEEFloatLE();
+	_mesh->specular[0] = ctx.mdl->readIEEEFloatLE();
+	_mesh->specular[1] = ctx.mdl->readIEEEFloatLE();
+	_mesh->specular[2] = ctx.mdl->readIEEEFloatLE();
 
-	_shininess = ctx.mdl->readIEEEFloatLE();
+	_mesh->shininess = ctx.mdl->readIEEEFloatLE();
 
-	_shadow  = ctx.mdl->readUint32LE() == 1;
-	_beaming = ctx.mdl->readUint32LE() == 1;
-	_render  = ctx.mdl->readUint32LE() == 1;
+	_mesh->shadow  = ctx.mdl->readUint32LE() == 1;
+	_mesh->beaming = ctx.mdl->readUint32LE() == 1;
+	_mesh->render  = ctx.mdl->readUint32LE() == 1;
 
-	_transparencyHint = ctx.mdl->readUint32LE() == 1;
+	_mesh->hasTransparencyHint = true;
+	_mesh->transparencyHint = ctx.mdl->readUint32LE() == 1;
 
 	ctx.mdl->skip(4); // Unknown
 
@@ -708,7 +709,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64));
 	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64));
 
-	_tilefade = ctx.mdl->readUint32LE();
+	_mesh->tilefade = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(12); // Vertex indices
 	ctx.mdl->skip(12); // Left over faces
@@ -741,7 +742,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	bool lightMapped = ctx.mdl->readByte() == 1;
 
-	_rotatetexture = ctx.mdl->readByte() == 1;
+	_mesh->rotatetexture = ctx.mdl->readByte() == 1;
 
 	ctx.mdl->skip(2); // Padding
 
@@ -759,6 +760,9 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	if ((textureCount > 0) && !ctx.texture.empty())
 		textures[0] = ctx.texture;
+
+	_render = _mesh->render;
+	_mesh->data = new MeshData();
 
 	textures.resize(textureCount);
 	loadTextures(textures);
@@ -839,9 +843,9 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	_vertexBuffer.setVertexDeclInterleave(facesCount * 3, vertexDecl);
+	_mesh->data->vertexBuffer.setVertexDeclInterleave(facesCount * 3, vertexDecl);
 
-	float *v = reinterpret_cast<float *>(_vertexBuffer.getData());
+	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
 	for (uint32 i = 0; i < facesCount; i++) {
 		const Face &face = faces[i];
 
@@ -885,9 +889,9 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	// Create index buffer
 
-	_indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
 	for (uint16 i = 0; i < facesCount * 3; i++)
 		*f++ = i;
 
@@ -1000,8 +1004,6 @@ ModelNode_NWN_ASCII::Mesh::Mesh() : vCount(0), tCount(0), faceCount(0) {
 
 
 ModelNode_NWN_ASCII::ModelNode_NWN_ASCII(Model &model) : ModelNode(model) {
-	_hasTransparencyHint = true;
-	_transparencyHint = false;
 }
 
 ModelNode_NWN_ASCII::~ModelNode_NWN_ASCII() {
@@ -1018,18 +1020,18 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 	debugC(kDebugGraphics, 5, "Node \"%s\" in state \"%s\"", _name.c_str(),
 	       ctx.state->name.c_str());
 
-	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin"))
-		_render = true;
-	else
-		_render = false;
+	if ((type == "trimesh") || (type == "danglymesh") || (type == "skin")) {
+		_mesh = new ModelNode::Mesh();
+		_mesh->hasTransparencyHint = true;
+		_mesh->render = true;
+		if (type == "danglymesh")
+			_mesh->dangly = new Dangly();
+	}
 
 	if ((type == "emitter") || (type == "reference") || (type == "aabb")) {
 		// warning("TODO: Node type %s", type.c_str());
 		skipNode = true;
 	}
-
-	if (type == "danglymesh")
-		_dangly = true;
 
 	Mesh mesh;
 
@@ -1067,11 +1069,10 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 			_orientation[3] = Common::rad2deg(_orientation[3]);
 		} else if (line[0] == "render") {
-			Common::parseString(line[1], _render);
+			Common::parseString(line[1], _mesh->render);
 		} else if (line[0] == "transparencyhint") {
-			Common::parseString(line[1], _transparencyHint);
+			Common::parseString(line[1], _mesh->transparencyHint);
 		} else if (line[0] == "danglymesh") {
-			Common::parseString(line[1], _dangly);
 		} else if (line[0] == "constraints") {
 			uint32 n;
 
@@ -1266,6 +1267,9 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	if ((mesh.vCount == 0) || (mesh.tCount == 0) || (mesh.faceCount == 0))
 		return;
 
+	_render = _mesh->render;
+	_mesh->data = new MeshData();
+
 	loadTextures(mesh.textures);
 
 	const size_t textureCount = mesh.textures.size();
@@ -1276,13 +1280,13 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	// Read faces
 
 	uint32 facesCount = mesh.faceCount;
-	_indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
+	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
 
 	boost::unordered_set<FaceVert> verts;
 	typedef boost::unordered_set<FaceVert>::iterator verts_set_it;
 
 	uint32 vertexCount = 0;
-	uint32 *f = reinterpret_cast<uint32 *>(_indexBuffer.getData());
+	uint32 *f = reinterpret_cast<uint32 *>(_mesh->data->indexBuffer.getData());
 	for (uint32 i = 0; i < facesCount; i++) {
 		const uint32 v[3] = {mesh.vIA[i], mesh.vIB[i], mesh.vIC[i]};
 		const uint32 t[3] = {mesh.tIA[i], mesh.tIB[i], mesh.tIC[i]};
@@ -1318,10 +1322,10 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	_vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
 
 	for (verts_set_it i = verts.begin(); i != verts.end(); ++i) {
-		byte  *vData = reinterpret_cast<byte  *>(_vertexBuffer.getData()) + i->i * _vertexBuffer.getSize();
+		byte  *vData = reinterpret_cast<byte  *>(_mesh->data->vertexBuffer.getData()) + i->i * _mesh->data->vertexBuffer.getSize();
 		float *v     = reinterpret_cast<float *>(vData);
 
 		// Position
