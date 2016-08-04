@@ -118,6 +118,63 @@ protected:
 		kModeEnvironmentBlendedOver   ///< Diffuse textures first, then blend the environment map in.
 	};
 
+	struct DanglyData {
+		std::vector<float> constraints;
+	};
+
+	struct Dangly {
+		float period;
+		float tightness;
+		float displacement;
+
+		DanglyData *data;
+
+		Dangly();
+	};
+
+	struct MeshData {
+		VertexBuffer vertexBuffer; ///< Node geometry vertex buffer.
+		IndexBuffer indexBuffer;   ///< Node geometry index buffer.
+
+		std::vector<TextureHandle> textures; ///< Textures.
+
+		TextureHandle      envMap;     ///< The environment map texture.
+		EnvironmentMapMode envMapMode; ///< The way the environment map is applied.
+
+		MeshData();
+	};
+
+	struct Mesh {
+		float wirecolor[3]; ///< Color of the wireframe.
+		float ambient  [3]; ///< Ambient color.
+		float diffuse  [3]; ///< Diffuse color.
+		float specular [3]; ///< Specular color.
+		float selfIllum[3]; ///< Self illumination color.
+		float shininess;    ///< Shiny?
+
+		float alpha;
+
+		int tilefade;
+
+		bool render; ///< Render this mesh?
+		bool shadow; ///< Does the node have a shadow?
+
+		bool beaming;
+		bool inheritcolor;
+		bool rotatetexture;
+
+		bool isTransparent;
+
+		bool hasTransparencyHint;
+		bool transparencyHint;
+
+		MeshData *data;
+		Dangly *dangly;
+		// TODO Anim, Skin, AABB Meshes
+
+		Mesh();
+	};
+
 	Model *_model; ///< The model this node belongs to.
 
 	ModelNode *_parent;               ///< The node's parent.
@@ -181,6 +238,8 @@ protected:
 	bool _hasTransparencyHint;
 	bool _transparencyHint;
 
+	Mesh *_mesh;
+
 	Common::BoundingBox _boundBox;
 	Common::BoundingBox _absoluteBoundBox;
 
@@ -213,6 +272,12 @@ private:
 	void renderGeometryEnvMappedUnder();
 	void renderGeometryEnvMappedOver();
 
+	static void renderGeometry(Mesh &mesh);
+	static void renderGeometryNormal(Mesh &mesh);
+	static void renderGeometryEnvMappedUnder(Mesh &mesh);
+	static void renderGeometryEnvMappedOver(Mesh &mesh);
+
+	static bool renderableMesh(Mesh *mesh);
 
 public:
 	// General helpers

@@ -46,9 +46,23 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 	return a->isInFrontOf(*b);
 }
 
+ModelNode::Dangly::Dangly() : period(1.0f), tightness(1.0f), displacement(1.0f),
+	data(0) {
+}
+
+ModelNode::MeshData::MeshData() : envMapMode(kModeEnvironmentBlendedUnder) {
+}
+
+ModelNode::Mesh::Mesh() : shininess(1.0f), alpha(1.0f), tilefade(0), render(false),
+	shadow(false), beaming(false), inheritcolor(false), rotatetexture(false),
+	isTransparent(false), hasTransparencyHint(false), transparencyHint(false),
+	data(0), dangly(0) {
+}
+
+
 ModelNode::ModelNode(Model &model) :
 	_model(&model), _parent(0), _level(0), _envMapMode(kModeEnvironmentBlendedUnder),
-	_isTransparent(false), _render(false), _hasTransparencyHint(false) {
+	_isTransparent(false), _render(false), _mesh(0), _hasTransparencyHint(false) {
 
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
@@ -208,6 +222,13 @@ void ModelNode::inheritGeometry(ModelNode &node) const {
 
 	memcpy(node._center, _center, 3 * sizeof(float));
 	node._boundBox = _boundBox;
+
+	if (node._mesh && _mesh)
+		node._mesh->data = _mesh->data;
+	else
+		node._mesh = _mesh;
+	if (node._mesh && node._mesh->data)
+		node._render = _render;
 }
 
 void ModelNode::reparent(ModelNode &parent) {
@@ -282,6 +303,18 @@ void ModelNode::setEnvironmentMap(const Common::UString &environmentMap) {
 		_envMap = TextureMan.get(environmentMap);
 	} catch (...) {
 	}
+
+	if (!_mesh || !_mesh->data)
+		return;
+
+	_mesh->data->envMap.clear();
+
+	if (!environmentMap.empty()) {
+		try {
+			_mesh->data->envMap = TextureMan.get(environmentMap);
+		} catch (...) {
+		}
+	}
 }
 
 void ModelNode::setInvisible(bool invisible) {
@@ -304,6 +337,8 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 	bool hasTexture = false;
 
 	_textures.resize(textures.size());
+	if (_mesh && _mesh->data)
+		_mesh->data->textures.resize(textures.size());
 
 	bool hasAlpha = true;
 	bool isDecal  = true;
@@ -316,6 +351,8 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 
 			if (!textures[t].empty() && (textures[t] != "NULL")) {
 				_textures[t] = TextureMan.get(textures[t]);
+				if (_mesh && _mesh->data)
+					_mesh->data->textures[t] = TextureMan.get(textures[t]);
 				if (_textures[t].empty())
 					continue;
 
@@ -367,7 +404,13 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 void ModelNode::createBound() {
 	_boundBox.clear();
 
-	const VertexDecl vertexDecl = _vertexBuffer.getVertexDecl();
+	VertexBuffer vertexBuffer;
+	if (_mesh && _mesh->data)
+		vertexBuffer = _mesh->data->vertexBuffer;
+	else
+		vertexBuffer = _vertexBuffer;
+
+	const VertexDecl vertexDecl = vertexBuffer.getVertexDecl();
 	for (VertexDecl::const_iterator vA = vertexDecl.begin(); vA != vertexDecl.end(); ++vA) {
 		if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
 			continue;
@@ -380,7 +423,7 @@ void ModelNode::createBound() {
 		const float *vY = vertexData + 1;
 		const float *vZ = vertexData + 2;
 
-		for (uint32 v = 0; v < _vertexBuffer.getCount(); v++)
+		for (uint32 v = 0; v < vertexBuffer.getCount(); v++)
 			_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
 	}
 
@@ -555,6 +598,120 @@ void ModelNode::renderGeometryEnvMappedOver() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+void ModelNode::renderGeometry(Mesh &mesh) {
+	if (!mesh.data->envMap.empty()) {
+		switch (mesh.data->envMapMode) {
+			case kModeEnvironmentBlendedUnder:
+				renderGeometryEnvMappedUnder(mesh);
+				break;
+
+			case kModeEnvironmentBlendedOver:
+				renderGeometryEnvMappedOver(mesh);
+				break;
+
+			default:
+				break;
+		}
+
+		return;
+	}
+
+	renderGeometryNormal(mesh);
+}
+
+void ModelNode::renderGeometryNormal(Mesh &mesh) {
+	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
+		TextureMan.activeTexture(t);
+		TextureMan.set(mesh.data->textures[t]);
+	}
+
+	if (mesh.data->textures.empty())
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+
+	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
+		TextureMan.activeTexture(t);
+		TextureMan.set();
+	}
+
+	if (mesh.data->textures.empty())
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void ModelNode::renderGeometryEnvMappedUnder(Mesh &mesh) {
+	/* First draw the node with only the environment map, then simply
+	 * blend a semi-transparent diffuse texture on top.
+	 *
+	 * Neverwinter Nights uses this method.
+	 */
+
+	TextureMan.set(mesh.data->envMap, TextureManager::kModeEnvironmentMapReflective);
+	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+
+	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
+		TextureMan.activeTexture(t);
+		TextureMan.set(mesh.data->textures[t], TextureManager::kModeDiffuse);
+	}
+
+	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+
+	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
+		TextureMan.activeTexture(t);
+		TextureMan.set();
+	}
+}
+
+void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
+	/* First draw the node with diffuse textures, then draw it again with
+	 * only the environment map. This performs a more complex blending of
+	 * the textures, allowing the color of a transparent diffuse texture
+	 * to modulate the color of the environment map.
+	 *
+	 * KotOR and KotOR2 use this method.
+	 */
+
+	if (!mesh.data->textures.empty()) {
+		for (size_t t = 0; t < mesh.data->textures.size(); t++) {
+			TextureMan.activeTexture(t);
+			TextureMan.set(mesh.data->textures[t], TextureManager::kModeDiffuse);
+		}
+
+		glBlendFunc(GL_ONE, GL_ZERO);
+
+		mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+
+		for (size_t t = 0; t < mesh.data->textures.size(); t++) {
+			TextureMan.activeTexture(t);
+			TextureMan.set();
+		}
+
+		TextureMan.activeTexture(0);
+		TextureMan.set(mesh.data->textures[0], TextureManager::kModeDiffuse);
+
+		glDisable(GL_ALPHA_TEST);
+		glBlendFunc(GL_ZERO, GL_ONE);
+
+		mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	}
+
+	TextureMan.activeTexture(0);
+	TextureMan.set(mesh.data->envMap, TextureManager::kModeEnvironmentMapReflective);
+
+	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
+
+	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+
+	TextureMan.set();
+
+	glEnable(GL_ALPHA_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+bool ModelNode::renderableMesh(Mesh *mesh) {
+	return mesh && mesh->data && mesh->data->indexBuffer.getCount() > 0;
+}
+
 void ModelNode::render(RenderPass pass) {
 	// Apply the node's transformation
 
@@ -567,16 +724,28 @@ void ModelNode::render(RenderPass pass) {
 
 	glScalef(_scale[0], _scale[1], _scale[2]);
 
+	Mesh *mesh = _mesh;
+	bool doRender = _render;
 
 	// Render the node's geometry
 
-	bool shouldRender = _render && (_indexBuffer.getCount() > 0);
-	if (((pass == kRenderPassOpaque)      &&  _isTransparent) ||
-	    ((pass == kRenderPassTransparent) && !_isTransparent))
+	bool isTransparent = mesh ? mesh->isTransparent : _isTransparent;
+	bool hasMeshData = false;
+	if (mesh)
+		hasMeshData = renderableMesh(mesh);
+	else
+		hasMeshData = _indexBuffer.getCount() > 0;
+
+	bool shouldRender = doRender && hasMeshData;
+	if (((pass == kRenderPassOpaque)      &&  isTransparent) ||
+	    ((pass == kRenderPassTransparent) && !isTransparent))
 		shouldRender = false;
 
 	if (shouldRender)
-		renderGeometry();
+		if (mesh)
+			renderGeometry(*mesh);
+		else
+			renderGeometry();
 
 
 	// Render the node's children
