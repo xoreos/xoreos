@@ -119,6 +119,8 @@ void Model_Jade::ParserContext::newNode() {
 	vertices.clear();
 	indices.clear();
 
+	textures.clear();
+
 	texCoords.clear();
 }
 
@@ -432,15 +434,14 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	/* If we were given a valid materialID, load textures from that material.
 	 * Otherwise, try the texture that was given directly.
 	 */
-	std::vector<Common::UString> textures;
 	if (materialID != 0xFFFFFFFF)
-		readMaterialTextures(materialID, textures);
+		readMaterialTextures(materialID, ctx.textures);
 	else if (!texture.empty())
-		textures.push_back(texture);
+		ctx.textures.push_back(texture);
 
-	textureCount = textures.size();
+	textureCount = ctx.textures.size();
 
-	loadTextures(textures);
+	loadTextures(ctx.textures);
 
 
 	// Read vertices

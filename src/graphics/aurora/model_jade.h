@@ -69,6 +69,8 @@ private:
 		std::vector<float>  vertices;
 		std::vector<uint16> indices;
 
+		std::vector<Common::UString> textures;
+
 		std::vector<std::vector<float> > texCoords;
 
 		ParserContext(const Common::UString &name, const Common::UString &t);
