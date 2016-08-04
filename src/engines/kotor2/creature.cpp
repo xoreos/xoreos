@@ -245,11 +245,11 @@ void Creature::loadHead(PartModels &parts) {
 	if (!_model || parts.head.empty())
 		return;
 
-	Graphics::Aurora::ModelNode *headHook = _model->getNode("headhook");
-	if (!headHook)
+	Graphics::Aurora::Model *headModel = loadModelObject(parts.head);
+	if (!headModel)
 		return;
 
-	headHook->addChild(loadModelObject(parts.head));
+	_model->attachModel("headhook", headModel);
 }
 
 void Creature::createFakePC() {
