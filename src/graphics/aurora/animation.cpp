@@ -93,6 +93,26 @@ void Animation::addAnimNode(AnimNode *node) {
 	nodeMap.insert(std::make_pair(node->getName(), node));
 }
 
+bool Animation::hasNode(const Common::UString &node) const {
+	return (nodeMap.find(node) != nodeMap.end());
+}
+
+ModelNode *Animation::getNode(const Common::UString &node) {
+	NodeMap::iterator n = nodeMap.find(node);
+	if (n == nodeMap.end())
+		return 0;
+
+	return n->second->_nodedata;
+}
+
+const ModelNode *Animation::getNode(const Common::UString &node) const {
+	NodeMap::const_iterator n = nodeMap.find(node);
+	if (n == nodeMap.end())
+		return 0;
+
+	return n->second->_nodedata;
+}
+
 void Animation::interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale) const {
 	// If only one keyframe, don't interpolate, just set the only position
 	if (animNode->_positionFrames.size() == 1) {
