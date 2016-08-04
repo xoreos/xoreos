@@ -182,15 +182,15 @@ void Creature::loadHead() {
 
 	const Aurora::TwoDARow &chest = TwoDAReg.get2DA("creaturehooks").getRow(3); // TODO row with label Chest
 
-	Graphics::Aurora::ModelNode *chestHook = _model->getNode(chest.getString("hook"));
-	if (!chestHook)
-		return;
-
 	const Aurora::TwoDARow &headtype = TwoDAReg.get2DA("heads").getRow(_headType);
 
-	const Common::UString headModel = headtype.getString("model");
+	const Common::UString headModelName = headtype.getString("model");
 
-	chestHook->addChild(loadModelObject(headModel));
+	Graphics::Aurora::Model *headModel = loadModelObject(headModelName);
+	if (!headModel)
+		return;
+
+	_model->attachModel(chest.getString("hook"), headModel);
 }
 
 void Creature::createFakePC() {
