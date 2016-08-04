@@ -320,9 +320,8 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 
 	if (type & kNodeTypeHasMesh) {
 		readMesh(ctx);
+		createMesh(ctx);
 	}
-
-	createMesh(ctx);
 
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
 		ModelNode_Jade *childNode = new ModelNode_Jade(*_model);
