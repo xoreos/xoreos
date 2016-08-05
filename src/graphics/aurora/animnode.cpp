@@ -62,26 +62,6 @@ const Common::UString &AnimNode::getName() const {
 	return _name;
 }
 
-void AnimNode::update(Model *model, float UNUSED(lastFrame), float nextFrame, float scale) {
-	if (!_nodedata)
-		return;
-
-	ModelNode *target = model->getNode(_name);
-	if (!target)
-		return;
-
-	// Determine the corresponding keyframes
-	float posX, posY, posZ;
-	_nodedata->interpolatePosition(nextFrame, posX, posY, posZ);
-
-	float oX, oY, oZ, oA;
-	_nodedata->interpolateOrientation(nextFrame, oX, oY, oZ, oA);
-
-	// Update the position/orientation of corresponding modelnode
-	target->setPosition(posX * scale, posY * scale, posZ * scale);
-	target->setOrientation(oX, oY, oZ, oA);
-}
-
 } // End of namespace Aurora
 
 } // End of namespace Graphics

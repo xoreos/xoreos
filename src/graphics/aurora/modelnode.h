@@ -248,10 +248,6 @@ public:
 	void inheritOrientation(ModelNode &node) const;
 	void inheritGeometry(ModelNode &node) const;
 
-	// Animation helpers
-	void interpolatePosition(float time, float &x, float &y, float &z) const;
-	void interpolateOrientation(float time, float &x, float &y, float &z, float &a) const;
-
 	friend class Model;
 	friend class Animation;
 };
