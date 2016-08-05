@@ -39,7 +39,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-Animation::Animation() {
+Animation::Animation() : _length(0.0f), _transtime(0.0f) {
 
 }
 
