@@ -77,6 +77,16 @@ ModelNode::ModelNode(Model &model) :
 }
 
 ModelNode::~ModelNode() {
+	if (_mesh) {
+		if (_mesh->dangly) {
+			delete _mesh->dangly->data;
+			delete _mesh->dangly;
+		}
+		delete _mesh->data;
+	}
+	delete _mesh;
+	_mesh = 0;
+
 	delete _attachedModel;
 	_attachedModel = 0;
 }
