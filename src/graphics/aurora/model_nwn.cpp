@@ -602,13 +602,6 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 		ctx.mdl->skip(0x4);
 	}
 
-	// If the node has no own geometry, inherit the geometry from the root state
-	if (!_mesh || !_mesh->data) {
-		ModelNode *node = _model->getNode(_name);
-		if (node && (node != this))
-			node->inheritGeometry(*this);
-	}
-
 	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
 	                    controllerKeyCount, controllerData);
 

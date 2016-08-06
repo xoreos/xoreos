@@ -213,15 +213,6 @@ void ModelNode::inheritOrientation(ModelNode &node) const {
 	node._orientation[3] = _orientation[3];
 }
 
-void ModelNode::inheritGeometry(ModelNode &node) const {
-	if (node._mesh && _mesh)
-		node._mesh->data = _mesh->data;
-	else
-		node._mesh = _mesh;
-	if (node._mesh && node._mesh->data)
-		node._render = _render;
-}
-
 void ModelNode::setEnvironmentMap(const Common::UString &environmentMap) {
 	if (_attachedModel)
 		_attachedModel->setEnvironmentMap(environmentMap);

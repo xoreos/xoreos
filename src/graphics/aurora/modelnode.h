@@ -246,7 +246,6 @@ public:
 
 	void inheritPosition(ModelNode &node) const;
 	void inheritOrientation(ModelNode &node) const;
-	void inheritGeometry(ModelNode &node) const;
 
 	friend class Model;
 	friend class Animation;
