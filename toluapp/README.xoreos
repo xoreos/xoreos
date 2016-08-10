@@ -4,4 +4,6 @@ tolua++ 1.0.92 source package. This file will list changes applied to it:
 Changes:
 ========
 
-- None (so far!)
+- Silenced two compiler warnings (unused parameter) in tolua_is.c
+  and tolua_to.c
+- Silenced a compiler warning (discards const) in tolua_map.c
