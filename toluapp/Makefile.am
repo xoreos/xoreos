@@ -17,48 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Main xoreos entry point.
+# tolua++ 1.0.92 (http://www.codenix.com/~tolua/).
 
 include $(top_srcdir)/Makefile.common
 
-# Windows resources
-.rc.o:
-	$(AM_V_GEN)$(RC) -DHAVE_CONFIG_H -I$(top_srcdir) -o $@ $<
-
-SUBDIRS = \
-          common \
-          aurora \
-          graphics \
-          sound \
-          video \
-          events \
-          engines \
-          $(EMPTY)
+noinst_LTLIBRARIES = libtoluapp.la
 
 noinst_HEADERS = \
-                 cline.h \
+                 tolua++.h \
+                 tolua_event.h \
                  $(EMPTY)
 
-bin_PROGRAMS = xoreos
+libtoluapp_la_SOURCES = \
+                        tolua_event.c \
+                        tolua_is.c \
+                        tolua_map.c \
+                        tolua_push.c \
+                        tolua_to.c \
+                        $(EMPTY)
 
-xoreos_SOURCES = \
-                 cline.cpp \
-                 xoreos.cpp \
-                 $(EMPTY)
-
-if WIN32
-xoreos_SOURCES += ../dists/win32/xoreos.rc
-endif
-
-xoreos_LDADD = \
-               engines/libengines.la \
-               events/libevents.la \
-               video/libvideo.la \
-               sound/libsound.la \
-               graphics/libgraphics.la \
-               aurora/libaurora.la \
-               common/libcommon.la \
-               ../lua/liblua.la \
-               ../toluapp/libtoluapp.la \
-               $(LDADD) \
-               $(EMPTY)

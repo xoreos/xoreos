@@ -107,6 +107,14 @@ lua
    under the terms of the MIT license. For the full license text, see
    lua/COPYRIGHT or <http://www.lua.org/license.html>.
 
+tolua++
+*******
+   xoreos uses tolua++, a tool to integrate C/C++ code with Lua, to handle
+   scripts from The Witcher. To minimize dependencies on "uncommon" libraries,
+   xoreos completely includes the toluapp 1.0.92 library code. tolua++ is
+   licensed under the terms of the MIT license. For the full license text,
+   see toluapp/COPYRIGHT.
+
 UTF-8 CPP
 *********
    xoreos uses the lightweight header-only UTF-8 CPP library

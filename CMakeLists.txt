@@ -303,9 +303,13 @@ list(APPEND XOREOS_LIBRARIES ${GLEW_LIBRARIES})
 
 
 # use our own version of lua, as we will have to support the Witcher lua scripts
-parse_configure(configure.ac lua)
+parse_configure(configure.ac "^lua")
 include_directories(lua)
 list(APPEND XOREOS_LIBRARIES lua)
+
+parse_configure(configure.ac toluapp)
+include_directories(toluapp)
+list(APPEND XOREOS_LIBRARIES toluapp)
 
 
 # -------------------------------------------------------------------------

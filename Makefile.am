@@ -89,6 +89,7 @@ endif
 SUBDIRS += \
            utf8cpp \
            lua \
+           toluapp \
            gitstamp \
            src \
            $(EMPTY)
