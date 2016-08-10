@@ -75,15 +75,15 @@ static void LoadVector (LoadState* S, void* b, int m, size_t size)
 
 static int LoadInt (LoadState* S)
 {
- int x;
+ int32_t x;
  LoadBlock(S,&x,sizeof(x));
  if (x<0) luaG_runerror(S->L,"bad integer in %s",S->name);
  return x;
 }
 
-static size_t LoadSize (LoadState* S)
+static uint32_t LoadSize (LoadState* S)
 {
- size_t x;
+ uint32_t x;
  LoadBlock(S,&x,sizeof(x));
  return x;
 }
@@ -97,7 +97,7 @@ static lua_Number LoadNumber (LoadState* S)
 
 static TString* LoadString (LoadState* S)
 {
- size_t size=LoadSize(S);
+ uint32_t size=LoadSize(S);
  if (size==0)
   return NULL;
  else
@@ -238,8 +238,8 @@ static void LoadHeader (LoadState* S)
 	"read version %d.%d; expected at least %d.%d",
 	S->name,V(version),V(VERSION0));
  S->swap=(luaU_endianness()!=LoadByte(S));	/* need to swap bytes? */
- TESTSIZE(sizeof(int),"int");
- TESTSIZE(sizeof(size_t), "size_t");
+ TESTSIZE(sizeof(int32_t),"int");
+ TESTSIZE(sizeof(uint32_t), "size_t");
  TESTSIZE(sizeof(Instruction), "Instruction");
  TESTSIZE(SIZE_OP, "OP");
  TESTSIZE(SIZE_A, "A");

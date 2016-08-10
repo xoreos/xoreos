@@ -128,7 +128,7 @@ typedef LUA_UACNUMBER l_uacNumber;
 ** type for virtual-machine instructions
 ** must be an unsigned with (at least) 4 bytes (see details in lopcodes.h)
 */
-typedef unsigned long Instruction;
+typedef uint32_t Instruction;
 
 
 /* maximum depth for calls (unsigned short) */

@@ -39,10 +39,11 @@ static void DumpByte(int y, DumpState* D)
 
 static void DumpInt(int x, DumpState* D)
 {
- DumpBlock(&x,sizeof(x),D);
+ int32_t i = x;
+ DumpBlock(&i,sizeof(i),D);
 }
 
-static void DumpSize(size_t x, DumpState* D)
+static void DumpSize(uint32_t x, DumpState* D)
 {
  DumpBlock(&x,sizeof(x),D);
 }
@@ -58,7 +59,7 @@ static void DumpString(TString* s, DumpState* D)
   DumpSize(0,D);
  else
  {
-  size_t size=s->tsv.len+1;		/* include trailing '\0' */
+  uint32_t size=s->tsv.len+1;		/* include trailing '\0' */
   DumpSize(size,D);
   DumpBlock(getstr(s),size,D);
  }
