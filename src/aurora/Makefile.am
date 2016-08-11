@@ -23,6 +23,7 @@ include $(top_srcdir)/Makefile.common
 
 SUBDIRS = \
           nwscript \
+          lua \
           $(EMPTY)
 
 noinst_LTLIBRARIES = libaurora.la
@@ -106,4 +107,5 @@ libaurora_la_SOURCES = \
 
 libaurora_la_LIBADD = \
                       nwscript/libnwscript.la \
+                      lua/libluascript.la \
                       $(EMPTY)
