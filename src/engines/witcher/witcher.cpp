@@ -33,6 +33,8 @@
 #include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
 
+#include "src/aurora/lua/scriptman.h"
+
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
 
@@ -157,7 +159,7 @@ void WitcherEngine::run() {
 }
 
 void WitcherEngine::init() {
-	LoadProgress progress(14);
+	LoadProgress progress(15);
 
 	progress.step("Declare languages");
 	declareLanguages();
@@ -183,6 +185,9 @@ void WitcherEngine::init() {
 
 	progress.step("Initializing internal game config");
 	initGameConfig();
+
+	progress.step("Initializing Lua subsystem");
+	initLua();
 
 	progress.step("Successfully initialized the engine");
 }
@@ -212,12 +217,13 @@ void WitcherEngine::initResources(LoadProgress &progress) {
 	ResMan.registerDataBase(_target);
 
 	progress.step("Adding extra archive directories");
-	indexMandatoryDirectory("system"      , 0,  0, 2);
-	indexMandatoryDirectory("data"        , 0,  0, 3);
-	indexMandatoryDirectory("data/modules", 0, -1, 4);
+	indexMandatoryDirectory("system"        , 0,  0, 2);
+	indexMandatoryDirectory("system/scripts", 0,  0, 3);
+	indexMandatoryDirectory("data"          , 0,  0, 4);
+	indexMandatoryDirectory("data/modules"  , 0, -1, 5);
 
 	// Contains BIFs with voices for the two premium modules
-	indexOptionalDirectory("data/voices", 0, 0, 5);
+	indexOptionalDirectory("data/voices", 0, 0, 6);
 
 	progress.step("Loading main KEY");
 	indexMandatoryArchive("main.key", 10);
@@ -268,6 +274,10 @@ void WitcherEngine::initGameConfig() {
 		Common::FilePath::findSubDirectory(_target, "data/modules", true));
 }
 
+void WitcherEngine::initLua() {
+	LuaScriptMan.init();
+}
+
 void WitcherEngine::unloadLanguageFiles() {
 	TalkMan.removeTable(_languageTLK);
 
@@ -315,6 +325,9 @@ void WitcherEngine::deinit() {
 	delete _game;
 
 	_game = 0;
+
+	LuaScriptMan.deinit();
+	::Aurora::Lua::ScriptManager::destroy();
 }
 
 void WitcherEngine::playIntroVideos() {

@@ -77,6 +77,7 @@ private:
 	void initCursors();
 	void initConfig();
 	void initGameConfig();
+	void initLua();
 
 	void unloadLanguageFiles();
 	void loadLanguageFiles(LoadProgress &progress, Aurora::Language langText, Aurora::Language langVoice);
