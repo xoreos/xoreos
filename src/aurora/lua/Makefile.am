@@ -25,8 +25,10 @@ noinst_LTLIBRARIES = libluascript.la
 
 noinst_HEADERS = \
                  scriptman.h \
+                 stack.h \
                  $(EMPTY)
 
 libluascript_la_SOURCES = \
                           scriptman.cpp \
+                          stack.cpp \
                           $(EMPTY)
