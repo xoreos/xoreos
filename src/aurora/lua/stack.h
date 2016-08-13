@@ -48,8 +48,10 @@ public:
 	void pushNil();
 	/** Push a boolean @a value onto the stack. */
 	void pushBoolean(bool value);
-	/** Push a number onto the stack. */
-	void pushNumber(float value);
+	/** Push a float value onto the stack. */
+	void pushFloat(float value);
+	/** Push an integer value onto the stack. */
+	void pushInt(int value);
 	/** Push a raw C string onto the stack. */
 	void pushString(const char *value);
 	/** Push a string onto the stack. */
@@ -63,8 +65,10 @@ public:
 
 	/** Return a boolean value at the given @a index in the stack. */
 	bool getBooleanAt(int index) const;
-	/** Return a number at the given @a index in the stack. */
-	float getNumberAt(int index) const;
+	/** Return a float value at the given @a index in the stack. */
+	float getFloatAt(int index) const;
+	/** Return an integer value at the given @a index in the stack. */
+	int getIntAt(int index) const;
 	/** Return a string at the given @a index in the stack. */
 	Common::UString getStringAt(int index) const;
 
@@ -73,6 +77,9 @@ public:
 	 */
 	template<typename T>
 	T *getUserTypeAt(int index, const Common::UString &type) const;
+
+	/** Return the type of the value at the given @a index in the stack. */
+	Common::UString getTypeNameAt(int index) const;
 
 	/** Check whether the value with the given @a index is a nil. */
 	bool isNilAt(int index) const;

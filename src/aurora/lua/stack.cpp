@@ -57,7 +57,11 @@ void Stack::pushBoolean(bool value) {
 	lua_pushboolean(&_luaState, value ? 1 : 0);
 }
 
-void Stack::pushNumber(float value) {
+void Stack::pushFloat(float value) {
+	lua_pushnumber(&_luaState, value);
+}
+
+void Stack::pushInt(int value) {
 	lua_pushnumber(&_luaState, value);
 }
 
@@ -76,7 +80,14 @@ bool Stack::getBooleanAt(int index) const {
 	return lua_toboolean(&_luaState, index);
 }
 
-float Stack::getNumberAt(int index) const {
+float Stack::getFloatAt(int index) const {
+	if (!isNumberAt(index)) {
+		throw Common::Exception("Failed to get a number from the Lua stack (index: %d)", index);
+	}
+	return lua_tonumber(&_luaState, index);
+}
+
+int Stack::getIntAt(int index) const {
 	if (!isNumberAt(index)) {
 		throw Common::Exception("Failed to get a number from the Lua stack (index: %d)", index);
 	}
@@ -88,6 +99,16 @@ Common::UString Stack::getStringAt(int index) const {
 		throw Common::Exception("Failed to get a string from the Lua stack (index: %d)", index);
 	}
 	return lua_tostring(&_luaState, index);
+}
+
+Common::UString Stack::getTypeNameAt(int index) const {
+	if (!checkIndex(index)) {
+		throw Common::Exception("Invalid Lua stack index: %d", index);
+	}
+
+	const Common::UString type = tolua_typename(&_luaState, index);
+	lua_pop(&_luaState, 1);
+	return type;
 }
 
 bool Stack::isNilAt(int index) const {
