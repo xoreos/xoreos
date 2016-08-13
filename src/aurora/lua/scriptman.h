@@ -25,6 +25,8 @@
 #ifndef ENGINES_AURORA_LUA_SCRIPTMAN_H
 #define ENGINES_AURORA_LUA_SCRIPTMAN_H
 
+#include <set>
+
 extern "C" {
 
 #include "lua/lua.h"
@@ -56,6 +58,13 @@ public:
 	void executeFile(const Common::UString &path);
 	/** Execute a script string. */
 	void executeString(const Common::UString &code);
+
+	/** Add a file to the ignore list. */
+	void addIgnoredFile(const Common::UString &path);
+	/** Remove a file from the ignore list. */
+	void removeIgnoredFile(const Common::UString &path);
+	/** Is this file in the ignore list? */
+	bool isIgnoredFile(const Common::UString &path) const;
 
 	/** Declare a class with the given name. Must be called before the registration of entities. */
 	void declareClass(const Common::UString &name);
@@ -90,6 +99,8 @@ private:
 	lua_State *_luaState;
 	/** The current nesting level of the registration process. */
 	int _regNestingLevel;
+	/** A list of files that the script subsystem ignores. */
+	std::set<Common::UString> _ignoredFiles;
 
 	/** Open and setup a new Lua state. */
 	void openLuaState();

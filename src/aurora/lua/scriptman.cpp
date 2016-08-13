@@ -75,6 +75,10 @@ bool ScriptManager::ready() const {
 void ScriptManager::executeFile(const Common::UString &path) {
 	assert(_luaState && _regNestingLevel == 0);
 
+	if (isIgnoredFile(path)) {
+		return;
+	}
+
 	boost::scoped_ptr<Common::SeekableReadStream> stream(ResMan.getResource(path, kFileTypeLUC));
 	if (!stream) {
 		const Common::UString fileName = TypeMan.setFileType(path, kFileTypeLUC);
@@ -99,6 +103,18 @@ void ScriptManager::executeString(const Common::UString &code) {
 	if (execResult != 0) {
 		throw Common::Exception("Failed to execute Lua code: %s", code.c_str());
 	}
+}
+
+void ScriptManager::addIgnoredFile(const Common::UString &path) {
+	_ignoredFiles.insert(path);
+}
+
+void ScriptManager::removeIgnoredFile(const Common::UString &path) {
+	_ignoredFiles.erase(path);
+}
+
+bool ScriptManager::isIgnoredFile(const Common::UString &path) const {
+	return _ignoredFiles.find(path) != _ignoredFiles.end();
 }
 
 void ScriptManager::declareClass(const Common::UString &name) {
