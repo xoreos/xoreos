@@ -39,6 +39,7 @@ extern "C" {
 #include "src/aurora/util.h"
 
 #include "src/aurora/lua/scriptman.h"
+#include "src/aurora/lua/stack.h"
 
 DECLARE_SINGLETON(Aurora::Lua::ScriptManager)
 
@@ -58,6 +59,7 @@ void ScriptManager::init() {
 	assert(!ready());
 
 	openLuaState();
+	registerDefaultBindings();
 }
 
 void ScriptManager::deinit() {
@@ -229,10 +231,49 @@ void ScriptManager::requireDeclaredClass(const Common::UString &name) const {
 	lua_pop(_luaState, 1);
 }
 
+void ScriptManager::registerDefaultBindings() {
+	declareClass("ScriptManager");
+
+	beginRegister();
+
+	registerFunction("getLua", &ScriptManager::getLua);
+
+	beginRegisterClass("ScriptManager");
+	registerFunction("PlayFile", &ScriptManager::playFile);
+	registerFunction("SetGCInterval", &ScriptManager::setGCInterval);
+	endRegisterClass();
+
+	endRegister();
+}
+
 int ScriptManager::atPanic(lua_State *state) {
 	const char *message = luaL_checkstring(state, -1);
 	error("Lua has panicked: %s", message);
 	lua_pop(state, 1);
+	return 0;
+}
+
+int ScriptManager::getLua(lua_State *state) {
+	assert(state);
+
+	Stack stack(*state);
+	stack.pushUserType<ScriptManager>(LuaScriptMan, "ScriptManager");
+	return 1;
+}
+
+int ScriptManager::playFile(lua_State *state) {
+	assert(state);
+
+	Stack stack(*state);
+	assert(stack.getSize() > 1);
+
+	const Common::UString scriptFile = stack.getStringAt(2);
+	LuaScriptMan.executeFile(scriptFile);
+	return 0;
+}
+
+int ScriptManager::setGCInterval(lua_State *UNUSED(state)) {
+	// TODO
 	return 0;
 }
 

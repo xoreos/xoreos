@@ -101,8 +101,14 @@ private:
 	 */
 	void requireDeclaredClass(const Common::UString &name) const;
 
+	void registerDefaultBindings();
+
 	/** Handler of the Lua panic situations. */
 	static int atPanic(lua_State *state);
+
+	static int getLua(lua_State *state);
+	static int playFile(lua_State *state);
+	static int setGCInterval(lua_State *state);
 };
 
 } // End of namespace Lua
