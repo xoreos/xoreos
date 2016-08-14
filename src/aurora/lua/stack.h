@@ -25,6 +25,8 @@
 #ifndef ENGINES_AURORA_LUA_STACK_H
 #define ENGINES_AURORA_LUA_STACK_H
 
+#include "src/aurora/lua/types.h"
+
 struct lua_State;
 
 namespace Common {
@@ -34,6 +36,8 @@ namespace Common {
 namespace Aurora {
 
 namespace Lua {
+
+class Variable;
 
 /** A Lua stack wrapper. */
 class Stack {
@@ -57,6 +61,8 @@ public:
 	/** Push a string onto the stack. */
 	void pushString(const Common::UString &value);
 
+	void pushVariable(const Variable &var);
+
 	/** Push a usertype value onto the stack.
 	 *  Expect that @a type is a name of the registered type in the script subsystem.
 	 */
@@ -78,8 +84,11 @@ public:
 	template<typename T>
 	T *getUserTypeAt(int index, const Common::UString &type) const;
 
+	Variable getVariableAt(int index) const;
+
 	/** Return the type of the value at the given @a index in the stack. */
-	Common::UString getTypeNameAt(int index) const;
+	Common::UString getExactTypeAt(int index) const;
+	Type getTypeAt(int index) const;
 
 	/** Check whether the value with the given @a index is a nil. */
 	bool isNilAt(int index) const;

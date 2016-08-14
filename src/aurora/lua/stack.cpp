@@ -30,8 +30,10 @@ extern "C" {
 
 #include "src/common/error.h"
 #include "src/common/ustring.h"
+#include "src/common/util.h"
 
 #include "src/aurora/lua/stack.h"
+#include "src/aurora/lua/variable.h"
 
 namespace Aurora {
 
@@ -73,6 +75,30 @@ void Stack::pushString(const Common::UString &value) {
 	lua_pushstring(&_luaState, value.c_str());
 }
 
+void Stack::pushVariable(const Variable &var) {
+	switch (var.getType()) {
+		case kTypeNil:
+			pushNil();
+			break;
+		case kTypeBoolean:
+			pushBoolean(var.getBool());
+			break;
+		case kTypeNumber:
+			pushFloat(var.getFloat());
+			break;
+		case kTypeString:
+			pushString(var.getString());
+			break;
+		case kTypeUserType:
+			pushRawUserType(var.getRawUserType(), var.getExactType());
+			break;
+		default:
+			warning("Pushing a varible of type \"%s\" not supported",
+			        var.getExactType().c_str());
+			break;
+	}
+}
+
 bool Stack::getBooleanAt(int index) const {
 	if (!isBooleanAt(index)) {
 		throw Common::Exception("Failed to get a boolean value from the Lua stack (index: %d)", index);
@@ -101,7 +127,28 @@ Common::UString Stack::getStringAt(int index) const {
 	return lua_tostring(&_luaState, index);
 }
 
-Common::UString Stack::getTypeNameAt(int index) const {
+Variable Stack::getVariableAt(int index) const {
+	switch (getTypeAt(index)) {
+		case kTypeNil:
+			return Variable(kTypeNil);
+		case kTypeBoolean:
+			return getBooleanAt(index);
+		case kTypeNumber:
+			return getFloatAt(index);
+		case kTypeString:
+			return getStringAt(index);
+		case kTypeTable:
+			return Variable(kTypeTable, getExactTypeAt(index));
+		case kTypeUserType: {
+			const Common::UString exactType = getExactTypeAt(index);
+			return Variable(getRawUserTypeAt(index, exactType), exactType);
+		}
+		default:
+			return Variable(kTypeNone);
+	}
+}
+
+Common::UString Stack::getExactTypeAt(int index) const {
 	if (!checkIndex(index)) {
 		throw Common::Exception("Invalid Lua stack index: %d", index);
 	}
@@ -109,6 +156,34 @@ Common::UString Stack::getTypeNameAt(int index) const {
 	const Common::UString type = tolua_typename(&_luaState, index);
 	lua_pop(&_luaState, 1);
 	return type;
+}
+
+Type Stack::getTypeAt(int index) const {
+	if (!checkIndex(index)) {
+		throw Common::Exception("Invalid Lua stack index: %d", index);
+	}
+
+	switch (lua_type(&_luaState, index)) {
+		case LUA_TNONE:
+			return kTypeNone;
+		case LUA_TNIL:
+			return kTypeNil;
+		case LUA_TBOOLEAN:
+			return kTypeBoolean;
+		case LUA_TNUMBER:
+			return kTypeNumber;
+		case LUA_TSTRING:
+			return kTypeString;
+		case LUA_TTABLE:
+			return kTypeTable;
+		default:
+			const Common::UString exactType = getExactTypeAt(index);
+			if (isUserTypeAt(index, exactType)) {
+				return kTypeUserType;
+			}
+			warning("Unhandled Lua type: %s", lua_typename(&_luaState, index));
+			return kTypeNone;
+	}
 }
 
 bool Stack::isNilAt(int index) const {
