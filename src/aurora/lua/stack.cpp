@@ -194,7 +194,16 @@ Type Stack::getTypeAt(int index) const {
 
 Variables Stack::getVariables() const {
 	Variables vars;
-	for (int i = 0; i < getSize(); ++i) {
+	for (int i = 1; i <= getSize(); ++i) {
+		vars.push_back(getVariableAt(i));
+	}
+	return vars;
+}
+
+Aurora::Lua::Variables Aurora::Lua::Stack::getVariablesFromTop(int count) const {
+	Variables vars;
+	const int start = std::max(0, getSize() - count) + 1;
+	for (int i = start; i <= getSize(); ++i) {
 		vars.push_back(getVariableAt(i));
 	}
 	return vars;

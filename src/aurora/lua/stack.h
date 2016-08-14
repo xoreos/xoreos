@@ -92,6 +92,7 @@ public:
 	Type getTypeAt(int index) const;
 
 	Variables getVariables() const;
+	Variables getVariablesFromTop(int count) const;
 
 	/** Check whether the value with the given @a index is a nil. */
 	bool isNilAt(int index) const;

@@ -25,16 +25,13 @@
 #ifndef ENGINES_AURORA_LUA_SCRIPTMAN_H
 #define ENGINES_AURORA_LUA_SCRIPTMAN_H
 
+#include <cassert>
 #include <set>
-
-extern "C" {
-
-#include "lua/lua.h"
-
-}
 
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
+
+#include "src/aurora/lua/types.h"
 
 namespace Aurora {
 
@@ -58,6 +55,12 @@ public:
 	void executeFile(const Common::UString &path);
 	/** Execute a script string. */
 	void executeString(const Common::UString &code);
+
+	/** Call a Lua function.
+	 *  A "dot" syntax is used to call class methods or table functions.
+	 *  For example, callFunction("module.Class.method", params).
+	 */
+	Variables callFunction(const Common::UString &name, const Variables &params);
 
 	/** Add a file to the ignore list. */
 	void addIgnoredFile(const Common::UString &path);
