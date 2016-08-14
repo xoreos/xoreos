@@ -99,6 +99,12 @@ void Stack::pushVariable(const Variable &var) {
 	}
 }
 
+void Stack::pushVariables(const Variables &vars) {
+	for (Variables::const_iterator v = vars.begin(); v != vars.end(); ++v) {
+		pushVariable(*v);
+	}
+}
+
 bool Stack::getBooleanAt(int index) const {
 	if (!isBooleanAt(index)) {
 		throw Common::Exception("Failed to get a boolean value from the Lua stack (index: %d)", index);
@@ -184,6 +190,14 @@ Type Stack::getTypeAt(int index) const {
 			warning("Unhandled Lua type: %s", lua_typename(&_luaState, index));
 			return kTypeNone;
 	}
+}
+
+Variables Stack::getVariables() const {
+	Variables vars;
+	for (int i = 0; i < getSize(); ++i) {
+		vars.push_back(getVariableAt(i));
+	}
+	return vars;
 }
 
 bool Stack::isNilAt(int index) const {

@@ -62,6 +62,7 @@ public:
 	void pushString(const Common::UString &value);
 
 	void pushVariable(const Variable &var);
+	void pushVariables(const Variables &vars);
 
 	/** Push a usertype value onto the stack.
 	 *  Expect that @a type is a name of the registered type in the script subsystem.
@@ -89,6 +90,8 @@ public:
 	/** Return the type of the value at the given @a index in the stack. */
 	Common::UString getExactTypeAt(int index) const;
 	Type getTypeAt(int index) const;
+
+	Variables getVariables() const;
 
 	/** Check whether the value with the given @a index is a nil. */
 	bool isNilAt(int index) const;

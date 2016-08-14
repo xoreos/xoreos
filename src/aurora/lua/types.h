@@ -31,6 +31,8 @@ extern "C" {
 
 }
 
+#include <vector>
+
 namespace Aurora {
 
 namespace Lua {
@@ -44,6 +46,10 @@ enum Type {
 	kTypeTable              ,
 	kTypeUserType
 };
+
+class Variable;
+
+typedef std::vector<Variable> Variables;
 
 } // End of namespace Lua
 
