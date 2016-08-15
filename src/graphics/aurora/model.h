@@ -130,6 +130,10 @@ public:
 	ModelNode *getNode(const Common::UString &node);
 	/** Get the specified node, from the current state. */
 	const ModelNode *getNode(const Common::UString &node) const;
+	/** Get the specified node, from the named state, if it exists. */
+	ModelNode *getNode(const Common::UString &stateName, const Common::UString &node);
+	/** Get the specified node, from the named state, if it exists. */
+	const ModelNode *getNode(const Common::UString &stateName, const Common::UString &node) const;
 
 	/** Get all nodes in the current state. */
 	const std::list<ModelNode *> &getNodes();

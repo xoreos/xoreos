@@ -405,6 +405,42 @@ const ModelNode *Model::getNode(const Common::UString &node) const {
 	return n->second;
 }
 
+ModelNode *Model::getNode(const Common::UString &stateName, const Common::UString &node) {
+	StateMap::const_iterator s = _stateMap.find(stateName);
+	if (s == _stateMap.end())
+		return 0;
+
+	State *state = s->second;
+
+	NodeMap::iterator n = state->nodeMap.find(node);
+	if (n == state->nodeMap.end()) {
+		if (_superModel)
+			return _superModel->getNode(stateName, node);
+
+		return 0;
+	}
+
+	return n->second;
+}
+
+const ModelNode *Model::getNode(const Common::UString &stateName, const Common::UString &node) const {
+	StateMap::const_iterator s = _stateMap.find(stateName);
+	if (s == _stateMap.end())
+		return 0;
+
+	State *state = s->second;
+
+	NodeMap::const_iterator n = state->nodeMap.find(node);
+	if (n == state->nodeMap.end()) {
+		if (_superModel)
+			return _superModel->getNode(stateName, node);
+
+		return 0;
+	}
+
+	return n->second;
+}
+
 static std::list<ModelNode *> kEmptyNodeList;
 const std::list<ModelNode *> &Model::getNodes() {
 	if (!_currentState)
