@@ -125,9 +125,12 @@ private:
 	/** Handler of the Lua panic situations. */
 	static int atPanic(lua_State *state);
 
-	static int getLua(lua_State *state);
-	static int playFile(lua_State *state);
-	static int setGCInterval(lua_State *state);
+	/** Lua bindings */
+	static int luaGetLua(lua_State *state);
+	static int luaPlayFile(lua_State *state);
+	static int luaSetGCInterval(lua_State *state);
+	static int luaRegisterSubst(lua_State *state);
+	static int luaRegisterHandler(lua_State *state);
 };
 
 } // End of namespace Lua

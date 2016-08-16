@@ -302,11 +302,13 @@ void ScriptManager::registerDefaultBindings() {
 
 	beginRegister();
 
-	registerFunction("getLua", &ScriptManager::getLua);
+	registerFunction("getLua", &ScriptManager::luaGetLua);
 
 	beginRegisterClass("ScriptManager");
-	registerFunction("PlayFile", &ScriptManager::playFile);
-	registerFunction("SetGCInterval", &ScriptManager::setGCInterval);
+	registerFunction("PlayFile", &ScriptManager::luaPlayFile);
+	registerFunction("SetGCInterval", &ScriptManager::luaSetGCInterval);
+	registerFunction("RegisterSubst", &ScriptManager::luaRegisterSubst);
+	registerFunction("RegisterHandler", &ScriptManager::luaRegisterHandler);
 	endRegisterClass();
 
 	endRegister();
@@ -319,7 +321,7 @@ int ScriptManager::atPanic(lua_State *state) {
 	return 0;
 }
 
-int ScriptManager::getLua(lua_State *state) {
+int ScriptManager::luaGetLua(lua_State *state) {
 	assert(state);
 
 	Stack stack(*state);
@@ -327,7 +329,7 @@ int ScriptManager::getLua(lua_State *state) {
 	return 1;
 }
 
-int ScriptManager::playFile(lua_State *state) {
+int ScriptManager::luaPlayFile(lua_State *state) {
 	assert(state);
 
 	Stack stack(*state);
@@ -338,7 +340,31 @@ int ScriptManager::playFile(lua_State *state) {
 	return 0;
 }
 
-int ScriptManager::setGCInterval(lua_State *UNUSED(state)) {
+int ScriptManager::luaSetGCInterval(lua_State *UNUSED(state)) {
+	// TODO
+	return 0;
+}
+
+int ScriptManager::luaRegisterSubst(lua_State *state) {
+	assert(state);
+
+	Aurora::Lua::Stack stack(*state);
+	assert(stack.getTypeAt(1) == Aurora::Lua::kTypeUserType);
+	assert(stack.getTypeAt(2) == Aurora::Lua::kTypeUserType);
+	assert(stack.getTypeAt(3) == Aurora::Lua::kTypeTable);
+
+	// TODO
+	return 0;
+}
+
+int ScriptManager::luaRegisterHandler(lua_State *state) {
+	assert(state);
+
+	Aurora::Lua::Stack stack(*state);
+	assert(stack.getTypeAt(1) == Aurora::Lua::kTypeUserType);
+	assert(stack.getTypeAt(2) == Aurora::Lua::kTypeUserType);
+	assert(stack.getTypeAt(3) == Aurora::Lua::kTypeString);
+
 	// TODO
 	return 0;
 }
