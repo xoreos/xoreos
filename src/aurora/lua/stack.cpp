@@ -156,7 +156,7 @@ Variable Stack::getVariableAt(int index) const {
 
 Common::UString Stack::getExactTypeAt(int index) const {
 	if (!checkIndex(index)) {
-		throw Common::Exception("Invalid Lua stack index: %d", index);
+		return "none";
 	}
 
 	const Common::UString type = tolua_typename(&_luaState, index);
@@ -166,7 +166,7 @@ Common::UString Stack::getExactTypeAt(int index) const {
 
 Type Stack::getTypeAt(int index) const {
 	if (!checkIndex(index)) {
-		throw Common::Exception("Invalid Lua stack index: %d", index);
+		return kTypeNone;
 	}
 
 	switch (lua_type(&_luaState, index)) {
@@ -182,11 +182,9 @@ Type Stack::getTypeAt(int index) const {
 			return kTypeString;
 		case LUA_TTABLE:
 			return kTypeTable;
+		case LUA_TUSERDATA:
+			return kTypeUserType;
 		default:
-			const Common::UString exactType = getExactTypeAt(index);
-			if (isUserTypeAt(index, exactType)) {
-				return kTypeUserType;
-			}
 			warning("Unhandled Lua type: %s", lua_typename(&_luaState, index));
 			return kTypeNone;
 	}
@@ -226,6 +224,10 @@ bool Stack::isStringAt(int index) const {
 }
 
 bool Stack::isUserTypeAt(int index, const Common::UString &type) const {
+	if (type.empty()) {
+		return getTypeAt(index) == kTypeUserType;
+	}
+
 	tolua_Error error;
 	return checkIndex(index) && tolua_isusertype(&_luaState, index, type.c_str(), 0, &error) != 0;
 }
@@ -245,11 +247,10 @@ void Stack::pushRawUserType(void *value, const Common::UString &type) {
 
 void *Stack::getRawUserTypeAt(int index, const Common::UString &type) const {
 	if (!isUserTypeAt(index, type)) {
-		throw Common::Exception(
-		    "Failed to get a usertype value from the Lua stack (type: %s, index: %d)",
-		    type.c_str(),
-		    index);
+		const char *msg = "Failed to get a usertype value from the Lua stack (type: %s, index: %d)";
+		throw Common::Exception(msg, type.c_str(), index);
 	}
+
 	return tolua_tousertype(&_luaState, index, 0);
 }
 

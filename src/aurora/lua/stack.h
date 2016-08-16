@@ -25,13 +25,11 @@
 #ifndef ENGINES_AURORA_LUA_STACK_H
 #define ENGINES_AURORA_LUA_STACK_H
 
+#include "src/common/ustring.h"
+
 #include "src/aurora/lua/types.h"
 
 struct lua_State;
-
-namespace Common {
-	class UString;
-}
 
 namespace Aurora {
 
@@ -80,10 +78,10 @@ public:
 	Common::UString getStringAt(int index) const;
 
 	/** Return a usertype value at the given @a index in the stack.
-	 *  Expect that @a type is a name of the registered type in the script subsystem.
+	 *  If @a type is not empty, perform a type check.
 	 */
 	template<typename T>
-	T *getUserTypeAt(int index, const Common::UString &type) const;
+	T *getUserTypeAt(int index, const Common::UString &type = "") const;
 
 	Variable getVariableAt(int index) const;
 
@@ -102,8 +100,10 @@ public:
 	bool isNumberAt(int index) const;
 	/** Check whether the value at the given @a index is a string. */
 	bool isStringAt(int index) const;
-	/** Check whether the value at the given @a index is a usertype value with the @a given type. */
-	bool isUserTypeAt(int index, const Common::UString &type) const;
+	/** Check whether the value at the given @a index is a usertype value.
+	 *  If @a type is not empty, perform a type check.
+	 */
+	bool isUserTypeAt(int index, const Common::UString &type = "") const;
 
 	/** Return the underlying Lua state. */
 	lua_State &getLuaState() const;
