@@ -61,6 +61,11 @@ public:
 	 *  For example, callFunction("module.Class.method", params).
 	 */
 	Variables callFunction(const Common::UString &name, const Variables &params);
+	Variables callFunction(const Common::UString &name);
+
+	Variable getGlobalVariable(const Common::UString &name) const;
+	TableRef getGlobalTable(const Common::UString &name) const;
+	FunctionRef getGlobalFunction(const Common::UString &name) const;
 
 	/** Add a file to the ignore list. */
 	void addIgnoredFile(const Common::UString &path);

@@ -40,7 +40,10 @@ extern "C" {
 
 #include "src/aurora/lua/scriptman.h"
 #include "src/aurora/lua/stack.h"
+#include "src/aurora/lua/stackguard.h"
 #include "src/aurora/lua/variable.h"
+#include "src/aurora/lua/table.h"
+#include "src/aurora/lua/function.h"
 
 DECLARE_SINGLETON(Aurora::Lua::ScriptManager)
 
@@ -120,55 +123,36 @@ Variables ScriptManager::callFunction(const Common::UString &name, const Variabl
 	const Common::UString funcName = parts.back();
 	parts.pop_back();
 
-	// Retrieve the global table
-	if (!parts.empty()) {
-		lua_getglobal(_luaState, parts[0].c_str());
-		if (!lua_istable(_luaState, -1)) {
-			const char *msg = "Lua call \"%s\" failed: \"%s\" is not a table";
-			error(msg, name.c_str(), parts[0].c_str());
-			return Variables();
-		}
-	}
-
-	// Retrieve inner tables
-	for (uint32 i = 1; i < parts.size(); ++i) {
-		lua_pushstring(_luaState, parts[i].c_str());
-		lua_gettable(_luaState, -2);
-		if (!lua_istable(_luaState, -1)) {
-			const char *msg = "Lua call \"%s\" failed: \"%s\" is not a table";
-			error(msg, name.c_str(), parts[i].c_str());
-			return Variables();
-		}
-	}
-
-	// Retrieve the function
-	const int savedTop = lua_gettop(_luaState);
 	if (parts.empty()) {
-		lua_getglobal(_luaState, funcName.c_str());
-	} else {
-		lua_pushstring(_luaState, funcName.c_str());
-		lua_gettable(_luaState, -2);
-	}
-	if (!lua_isfunction(_luaState, -1)) {
-		const char *msg = "Lua call \"%s\" failed: \"%s\" is not a function";
-		error(msg, name.c_str(), funcName.c_str());
-		return Variables();
+		return getGlobalFunction(funcName).call(params);
 	}
 
-	// Perform the actual call
+	TableRef table = getGlobalTable(parts[0]);
+	for (uint32 i = 1; i < parts.size(); ++i) {
+		table = table.getTableAt(parts[i]);
+	}
+	return table.getFunctionAt(funcName).call(params);
+}
+
+Variables ScriptManager::callFunction(const Common::UString &name) {
+	return callFunction(name, Variables());
+}
+
+Variable ScriptManager::getGlobalVariable(const Common::UString &name) const {
+	StackGuard guard(*_luaState);
+
+	lua_getglobal(_luaState, name.c_str());
+
 	Stack stack(*_luaState);
-	stack.pushVariables(params);
+	return stack.getVariableAt(-1);
+}
 
-	if (lua_pcall(&stack.getLuaState(), params.size(), LUA_MULTRET, 0) != 0) {
-		const char *msg = "Lua call \"%s\" failed: %s";
-		const Common::UString luaError = stack.getStringAt(-1);
-		error(msg, name.c_str(), luaError.c_str());
-		return Variables();
-	}
+TableRef ScriptManager::getGlobalTable(const Common::UString &name) const {
+	return getGlobalVariable(name).getTable();
+}
 
-	const int retsCount = stack.getSize() - savedTop;
-	const Variables rets = stack.getVariablesFromTop(retsCount);
-	return rets;
+FunctionRef ScriptManager::getGlobalFunction(const Common::UString &name) const {
+	return getGlobalVariable(name).getFunction();
 }
 
 void ScriptManager::addIgnoredFile(const Common::UString &path) {
