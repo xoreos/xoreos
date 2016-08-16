@@ -58,6 +58,8 @@ public:
 	void pushString(const char *value);
 	/** Push a string onto the stack. */
 	void pushString(const Common::UString &value);
+	/** Push a table onto the stack. */
+	void pushTable(const TableRef &value);
 
 	void pushVariable(const Variable &var);
 	void pushVariables(const Variables &vars);
@@ -76,6 +78,8 @@ public:
 	int getIntAt(int index) const;
 	/** Return a string at the given @a index in the stack. */
 	Common::UString getStringAt(int index) const;
+	/** Return a table at the given @a index in the stack. */
+	TableRef getTableAt(int index) const;
 
 	/** Return a usertype value at the given @a index in the stack.
 	 *  If @a type is not empty, perform a type check.
@@ -100,6 +104,8 @@ public:
 	bool isNumberAt(int index) const;
 	/** Check whether the value at the given @a index is a string. */
 	bool isStringAt(int index) const;
+	/** Check whether the value at the given @a index is a table. */
+	bool isTableAt(int index) const;
 	/** Check whether the value at the given @a index is a usertype value.
 	 *  If @a type is not empty, perform a type check.
 	 */

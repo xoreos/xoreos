@@ -49,6 +49,7 @@ enum Type {
 
 class Stack;
 class Variable;
+class TableRef;
 
 typedef std::vector<Variable> Variables;
 

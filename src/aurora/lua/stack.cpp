@@ -34,6 +34,7 @@ extern "C" {
 
 #include "src/aurora/lua/stack.h"
 #include "src/aurora/lua/variable.h"
+#include "src/aurora/lua/table.h"
 
 namespace Aurora {
 
@@ -75,6 +76,15 @@ void Stack::pushString(const Common::UString &value) {
 	lua_pushstring(&_luaState, value.c_str());
 }
 
+void Stack::pushTable(const TableRef &value) {
+	const int ref = value.getRef();
+	if (ref != LUA_REFNIL) {
+		lua_getref(&_luaState, ref);
+	} else {
+		lua_pushnil(&_luaState);
+	}
+}
+
 void Stack::pushVariable(const Variable &var) {
 	switch (var.getType()) {
 		case kTypeNil:
@@ -88,6 +98,9 @@ void Stack::pushVariable(const Variable &var) {
 			break;
 		case kTypeString:
 			pushString(var.getString());
+			break;
+		case kTypeTable:
+			pushTable(var.getTable());
 			break;
 		case kTypeUserType:
 			pushRawUserType(var.getRawUserType(), var.getExactType());
@@ -133,6 +146,13 @@ Common::UString Stack::getStringAt(int index) const {
 	return lua_tostring(&_luaState, index);
 }
 
+TableRef Stack::getTableAt(int index) const {
+	if (!isTableAt(index)) {
+		throw Common::Exception("Failed to get a table from the Lua stack (index: %d)", index);
+	}
+	return TableRef(_luaState, index);
+}
+
 Variable Stack::getVariableAt(int index) const {
 	switch (getTypeAt(index)) {
 		case kTypeNil:
@@ -144,7 +164,7 @@ Variable Stack::getVariableAt(int index) const {
 		case kTypeString:
 			return getStringAt(index);
 		case kTypeTable:
-			return Variable(kTypeTable, getExactTypeAt(index));
+			return getTableAt(index);
 		case kTypeUserType: {
 			const Common::UString exactType = getExactTypeAt(index);
 			return Variable(getRawUserTypeAt(index, exactType), exactType);
@@ -221,6 +241,10 @@ bool Stack::isNumberAt(int index) const {
 
 bool Stack::isStringAt(int index) const {
 	return checkIndex(index) && lua_isstring(&_luaState, index) != 0;
+}
+
+bool Stack::isTableAt(int index) const {
+	return checkIndex(index) && lua_istable(&_luaState, index) != 0;
 }
 
 bool Stack::isUserTypeAt(int index, const Common::UString &type) const {

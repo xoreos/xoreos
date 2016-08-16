@@ -25,6 +25,7 @@
 #include "src/common/error.h"
 
 #include "src/aurora/lua/variable.h"
+#include "src/aurora/lua/table.h"
 
 namespace Aurora {
 
@@ -59,6 +60,11 @@ Variable::Variable(const Common::UString &value) : _type(kTypeNone) {
 	*this = value;
 }
 
+Variable::Variable(const TableRef &value) : _type(kTypeNone) {
+	setType(kTypeTable);
+	*this = value;
+}
+
 Variable::Variable(void *value, const Common::UString &exactType) : _type(kTypeNone) {
 	assert(!exactType.empty());
 
@@ -75,9 +81,17 @@ Variable::~Variable() {
 }
 
 void Variable::setType(Type type, const Common::UString &exactType) {
-	if (_type == kTypeString) {
-		delete _value._string;
-		_value._string = 0;
+	switch (_type) {
+		case kTypeString:
+			delete _value._string;
+			_value._string = 0;
+			break;
+		case kTypeTable:
+			delete _value._table;
+			_value._table = 0;
+			break;
+		default:
+			break;
 	}
 
 	_type = type;
@@ -101,15 +115,14 @@ void Variable::setType(Type type, const Common::UString &exactType) {
 			_value._string = new Common::UString();
 			_exactType = "string";
 			break;
+		case kTypeTable:
+			_value._table = new TableRef();
+			_exactType = "table";
+			break;
 		case kTypeUserType:
 			assert(!exactType.empty());
 
 			_value._data = 0;
-			_exactType = exactType;
-			break;
-		case kTypeTable:
-			assert(!exactType.empty());
-
 			_exactType = exactType;
 			break;
 		default:
@@ -125,10 +138,17 @@ Variable &Variable::operator=(const Variable &var) {
 
 	setType(var._type, var._exactType);
 
-	if (_type == kTypeString) {
-		*_value._string = *var._value._string;
-	} else {
-		_value = var._value;
+	switch (_type) {
+		case kTypeString:
+			*_value._string = *var._value._string;
+			break;
+		case kTypeTable:
+			*_value._table = *var._value._table;
+			_exactType = _value._table->getExactType();
+			break;
+		default:
+			_value = var._value;
+			break;
 	}
 	return *this;
 }
@@ -178,6 +198,16 @@ Variable &Variable::operator=(const Common::UString &value) {
 	return *this;
 }
 
+Variable &Variable::operator=(const TableRef &value) {
+	if (_type != kTypeTable) {
+		throw Common::Exception("Can't assign a table value to a non-table variable");
+	}
+
+	*_value._table = value;
+	_exactType = _value._table->getExactType();
+	return *this;
+}
+
 Variable &Variable::operator=(void *value) {
 	if (_type != kTypeUserType) {
 		throw Common::Exception("Can't assign a raw value to a non-usertype variable");
@@ -205,6 +235,8 @@ bool Variable::operator==(const Variable &var) const {
 			return _value._float == var._value._float;
 		case kTypeString:
 			return *_value._string == *var._value._string;
+		case kTypeTable:
+			return false; // TODO
 		case kTypeUserType:
 			return _value._data == var._value._data;
 		default:
@@ -263,6 +295,22 @@ Common::UString &Variable::getString() {
 	}
 
 	return *_value._string;
+}
+
+TableRef &Variable::getTable() {
+	if (_type != kTypeTable) {
+		throw Common::Exception("Can't get a table value from a non-table variable");
+	}
+
+	return *_value._table;
+}
+
+const TableRef &Variable::getTable() const {
+	if (_type != kTypeTable) {
+		throw Common::Exception("Can't get a table value from a non-table variable");
+	}
+
+	return *_value._table;
 }
 
 void *Variable::getRawUserType() const {
