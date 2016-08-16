@@ -35,6 +35,7 @@ extern "C" {
 #include "src/aurora/lua/stack.h"
 #include "src/aurora/lua/variable.h"
 #include "src/aurora/lua/table.h"
+#include "src/aurora/lua/function.h"
 
 namespace Aurora {
 
@@ -77,6 +78,15 @@ void Stack::pushString(const Common::UString &value) {
 }
 
 void Stack::pushTable(const TableRef &value) {
+	const int ref = value.getRef();
+	if (ref != LUA_REFNIL) {
+		lua_getref(&_luaState, ref);
+	} else {
+		lua_pushnil(&_luaState);
+	}
+}
+
+void Stack::pushFunction(const FunctionRef &value) {
 	const int ref = value.getRef();
 	if (ref != LUA_REFNIL) {
 		lua_getref(&_luaState, ref);
@@ -153,6 +163,13 @@ TableRef Stack::getTableAt(int index) const {
 	return TableRef(_luaState, index);
 }
 
+FunctionRef Stack::getFunctionAt(int index) const {
+	if (!isFunctionAt(index)) {
+		throw Common::Exception("Failed to get a function from the Lua stack (index: %d)", index);
+	}
+	return FunctionRef(_luaState, index);
+}
+
 Variable Stack::getVariableAt(int index) const {
 	switch (getTypeAt(index)) {
 		case kTypeNil:
@@ -165,6 +182,8 @@ Variable Stack::getVariableAt(int index) const {
 			return getStringAt(index);
 		case kTypeTable:
 			return getTableAt(index);
+		case kTypeFunction:
+			return getFunctionAt(index);
 		case kTypeUserType: {
 			const Common::UString exactType = getExactTypeAt(index);
 			return Variable(getRawUserTypeAt(index, exactType), exactType);
@@ -202,6 +221,8 @@ Type Stack::getTypeAt(int index) const {
 			return kTypeString;
 		case LUA_TTABLE:
 			return kTypeTable;
+		case LUA_TFUNCTION:
+			return kTypeFunction;
 		case LUA_TUSERDATA:
 			return kTypeUserType;
 		default:
@@ -244,7 +265,11 @@ bool Stack::isStringAt(int index) const {
 }
 
 bool Stack::isTableAt(int index) const {
-	return checkIndex(index) && lua_istable(&_luaState, index) != 0;
+	return checkIndex(index) && lua_istable(&_luaState, index);
+}
+
+bool Stack::isFunctionAt(int index) const {
+	return checkIndex(index) && lua_isfunction(&_luaState, index);
 }
 
 bool Stack::isUserTypeAt(int index, const Common::UString &type) const {

@@ -65,6 +65,8 @@ public:
 	void setStringAt(const Common::UString &key, const Common::UString &value);
 	void setTableAt(int index, const TableRef &value);
 	void setTableAt(const Common::UString &key, const TableRef &value);
+	void setFunctionAt(int index, const FunctionRef &value);
+	void setFunctionAt(const Common::UString &key, const FunctionRef &value);
 
 	/** Push a usertype value onto the stack.
 	 *  Expect that @a type is a name of the registered type in the script subsystem.
@@ -85,6 +87,8 @@ public:
 	Common::UString getStringAt(const Common::UString &key) const;
 	TableRef getTableAt(int index) const;
 	TableRef getTableAt(const Common::UString &key) const;
+	FunctionRef getFunctionAt(int index) const;
+	FunctionRef getFunctionAt(const Common::UString &key) const;
 
 	/** Return a usertype value at the given @a index in the stack.
 	 *  If @a type is not empty, perform a type check.
@@ -117,6 +121,8 @@ public:
 	bool isStringAt(const Common::UString &key) const;
 	bool isTableAt(int index) const;
 	bool isTableAt(const Common::UString &key) const;
+	bool isFunctionAt(int index) const;
+	bool isFunctionAt(const Common::UString &key) const;
 
 	/** Check whether the value at the given @a index is a usertype value.
 	 *  If @a type is not empty, perform a type check.

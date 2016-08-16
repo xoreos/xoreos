@@ -28,6 +28,7 @@ noinst_HEADERS = \
                  stack.h \
                  variable.h \
                  table.h \
+                 function.h \
                  stackguard.h \
                  types.h \
                  $(EMPTY)
@@ -37,5 +38,6 @@ libluascript_la_SOURCES = \
                           stack.cpp \
                           variable.cpp \
                           table.cpp \
+                          function.cpp \
                           stackguard.cpp \
                           $(EMPTY)

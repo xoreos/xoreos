@@ -44,12 +44,14 @@ enum Type {
 	kTypeNumber             ,
 	kTypeString             ,
 	kTypeTable              ,
+	kTypeFunction           ,
 	kTypeUserType
 };
 
 class Stack;
 class Variable;
 class TableRef;
+class FunctionRef;
 
 typedef std::vector<Variable> Variables;
 

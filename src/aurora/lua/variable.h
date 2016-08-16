@@ -42,6 +42,7 @@ public:
 	Variable(const char *value);
 	Variable(const Common::UString &value);
 	Variable(const TableRef &value);
+	Variable(const FunctionRef &value);
 	Variable(void *value, const Common::UString &exactType);
 	Variable(const Variable &var);
 	~Variable();
@@ -56,6 +57,7 @@ public:
 	Variable &operator=(const char *value);
 	Variable &operator=(const Common::UString &value);
 	Variable &operator=(const TableRef &value);
+	Variable &operator=(const FunctionRef &value);
 	Variable &operator=(void *value);
 
 	bool operator==(const Variable &var) const;
@@ -71,6 +73,7 @@ public:
 	const Common::UString &getString() const;
 	TableRef &getTable();
 	const TableRef &getTable() const;
+	const FunctionRef &getFunction() const;
 	void *getRawUserType() const;
 
 	template<typename T>
@@ -85,6 +88,7 @@ private:
 		float _float;
 		Common::UString *_string;
 		TableRef *_table;
+		FunctionRef *_function;
 		void *_data;
 	} _value;
 };

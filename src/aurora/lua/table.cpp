@@ -33,8 +33,9 @@ extern "C" {
 
 #include "src/aurora/lua/table.h"
 #include "src/aurora/lua/stack.h"
-#include "src/aurora/lua/variable.h"
 #include "src/aurora/lua/stackguard.h"
+#include "src/aurora/lua/variable.h"
+#include "src/aurora/lua/function.h"
 
 namespace Aurora {
 
@@ -186,6 +187,14 @@ void TableRef::setTableAt(const Common::UString &key, const TableRef &value) {
 	setVariableAt(key, value);
 }
 
+void TableRef::setFunctionAt(int index, const FunctionRef &value) {
+	setVariableAt(index, value);
+}
+
+void TableRef::setFunctionAt(const Common::UString &key, const FunctionRef &value) {
+	setVariableAt(key, value);
+}
+
 void TableRef::setUserTypeAt(int index, void *value, const Common::UString &type) {
 	setVariableAt(index, Variable(value, type));
 }
@@ -293,6 +302,22 @@ TableRef TableRef::getTableAt(const Common::UString &key) const {
 	}
 
 	return getVariableAt(key).getTable();
+}
+
+FunctionRef TableRef::getFunctionAt(int index) const {
+	if (!isFunctionAt(index)) {
+		throw Common::Exception("Failed get a function value from the table (index: %d)", index);
+	}
+
+	return getVariableAt(index).getFunction();
+}
+
+FunctionRef TableRef::getFunctionAt(const Common::UString &key) const {
+	if (!isFunctionAt(key)) {
+		throw Common::Exception("Failed get a function value from the table (key: %s)", key.c_str());
+	}
+
+	return getVariableAt(key).getFunction();
 }
 
 void *TableRef::getRawUserTypeAt(int index, const Common::UString &type) const {
@@ -427,6 +452,14 @@ bool TableRef::isTableAt(int index) const {
 
 bool TableRef::isTableAt(const Common::UString &key) const {
 	return getTypeAt(key) == kTypeTable;
+}
+
+bool TableRef::isFunctionAt(int index) const {
+	return getTypeAt(index) == kTypeFunction;
+}
+
+bool TableRef::isFunctionAt(const Common::UString &key) const {
+	return getTypeAt(key) == kTypeFunction;
 }
 
 bool TableRef::isUserTypeAt(int index, const Common::UString &type) const {

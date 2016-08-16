@@ -26,6 +26,7 @@
 
 #include "src/aurora/lua/variable.h"
 #include "src/aurora/lua/table.h"
+#include "src/aurora/lua/function.h"
 
 namespace Aurora {
 
@@ -65,6 +66,11 @@ Variable::Variable(const TableRef &value) : _type(kTypeNone) {
 	*this = value;
 }
 
+Variable::Variable(const FunctionRef &value) : _type(kTypeNone) {
+	setType(kTypeFunction);
+	*this = value;
+}
+
 Variable::Variable(void *value, const Common::UString &exactType) : _type(kTypeNone) {
 	assert(!exactType.empty());
 
@@ -89,6 +95,10 @@ void Variable::setType(Type type, const Common::UString &exactType) {
 		case kTypeTable:
 			delete _value._table;
 			_value._table = 0;
+			break;
+		case kTypeFunction:
+			delete _value._function;
+			_value._function = 0;
 			break;
 		default:
 			break;
@@ -119,6 +129,10 @@ void Variable::setType(Type type, const Common::UString &exactType) {
 			_value._table = new TableRef();
 			_exactType = "table";
 			break;
+		case kTypeFunction:
+			_value._function = new FunctionRef();
+			_exactType = "function";
+			break;
 		case kTypeUserType:
 			assert(!exactType.empty());
 
@@ -145,6 +159,9 @@ Variable &Variable::operator=(const Variable &var) {
 		case kTypeTable:
 			*_value._table = *var._value._table;
 			_exactType = _value._table->getExactType();
+			break;
+		case kTypeFunction:
+			*_value._function = *var._value._function;
 			break;
 		default:
 			_value = var._value;
@@ -208,6 +225,15 @@ Variable &Variable::operator=(const TableRef &value) {
 	return *this;
 }
 
+Variable &Variable::operator=(const FunctionRef &value) {
+	if (_type != kTypeFunction) {
+		throw Common::Exception("Can't assign a function value to a non-function variable");
+	}
+
+	*_value._function = value;
+	return *this;
+}
+
 Variable &Variable::operator=(void *value) {
 	if (_type != kTypeUserType) {
 		throw Common::Exception("Can't assign a raw value to a non-usertype variable");
@@ -236,6 +262,7 @@ bool Variable::operator==(const Variable &var) const {
 		case kTypeString:
 			return *_value._string == *var._value._string;
 		case kTypeTable:
+		case kTypeFunction:
 			return false; // TODO
 		case kTypeUserType:
 			return _value._data == var._value._data;
@@ -311,6 +338,14 @@ const TableRef &Variable::getTable() const {
 	}
 
 	return *_value._table;
+}
+
+const FunctionRef &Variable::getFunction() const {
+	if (_type != kTypeFunction) {
+		throw Common::Exception("Can't get a function value from a non-function variable");
+	}
+
+	return *_value._function;
 }
 
 void *Variable::getRawUserType() const {
