@@ -19,41 +19,37 @@
  */
 
 /** @file
- *  Lua types.
+ *  Lua stack guard.
+ *  It's a helper class for storing and restoring the top position of a Lua stack.
+ *  A guard stores the top at the construction and restores it at the end of a scope.
  */
 
-#ifndef AURORA_LUA_TYPES_H
-#define AURORA_LUA_TYPES_H
+#ifndef AURORA_LUA_STACKGUARD_H
+#define AURORA_LUA_STACKGUARD_H
 
-extern "C" {
-
-#include "lua/lua.h"
-
-}
-
-#include <vector>
+#include "src/aurora/lua/types.h"
 
 namespace Aurora {
 
 namespace Lua {
 
-enum Type {
-	kTypeNone            = 0,
-	kTypeNil                ,
-	kTypeBoolean            ,
-	kTypeNumber             ,
-	kTypeString             ,
-	kTypeTable              ,
-	kTypeUserType
+/** Lua stack guard. */
+class StackGuard {
+public:
+	StackGuard(const Stack &stack);
+	StackGuard(lua_State &state);
+	~StackGuard();
+
+private:
+	lua_State &_state;
+	int _top;
+
+	StackGuard(const StackGuard &guard);
+	StackGuard &operator=(const StackGuard &guard);
 };
-
-class Stack;
-class Variable;
-
-typedef std::vector<Variable> Variables;
 
 } // End of namespace Lua
 
 } // End of namespace Aurora
 
-#endif // AURORA_LUA_TYPES_H
+#endif // AURORA_LUA_STACKGUARD_H

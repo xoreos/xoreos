@@ -27,6 +27,7 @@ noinst_HEADERS = \
                  scriptman.h \
                  stack.h \
                  variable.h \
+                 stackguard.h \
                  types.h \
                  $(EMPTY)
 
@@ -34,4 +35,5 @@ libluascript_la_SOURCES = \
                           scriptman.cpp \
                           stack.cpp \
                           variable.cpp \
+                          stackguard.cpp \
                           $(EMPTY)
