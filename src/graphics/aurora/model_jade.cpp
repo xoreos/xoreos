@@ -345,16 +345,12 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	meshName += ".";
 	meshName += _name;
 
-	_mesh = MeshMan.getMesh(meshName);
-	if (!_mesh) {
-		_mesh = new Graphics::Mesh::Mesh();
-		*(_mesh->getVertexBuffer()) = _vertexBuffer;
-		*(_mesh->getIndexBuffer()) = _indexBuffer;
-		_mesh->setName(meshName);
-		_mesh->init();
-		MeshMan.addMesh(_mesh);
+	_mesh->data->rawMesh->setName(meshName);
+	_mesh->data->rawMesh->init();
+	if (MeshMan.getMesh(meshName)) {
+		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
 	}
-	_mesh->useIncrement();
+	MeshMan.addMesh(_mesh->data->rawMesh);
 
 	this->buildMaterial();
 }
@@ -638,9 +634,9 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
+	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.vertices[i * 3 + 0];
@@ -654,9 +650,9 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 		}
 	}
 
-	_mesh->data->indexBuffer.setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	memcpy(f, &ctx.indices[0], indexCount * sizeof(uint16));
 
 	createBound();

@@ -535,23 +535,25 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	 * loaded and to use that directly: that should prevent models with an empty
 	 * state from being affected by this dirty hack.
 	 */
-	_mesh = MeshMan.getMesh(meshName);
+	Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
 	if (ctx.state->name.size() == 0) {
-		while (_mesh) {
+		while (mystery_mesh) {
 			meshName += "_";
-			_mesh = MeshMan.getMesh(meshName);
+			mystery_mesh = MeshMan.getMesh(meshName);
 		}
 	}
 
-	if (!_mesh) {
-		_mesh = new Graphics::Mesh::Mesh();
-		*(_mesh->getVertexBuffer()) = _vertexBuffer;
-		*(_mesh->getIndexBuffer()) = _indexBuffer;
-		_mesh->setName(meshName);
-		_mesh->init();
-		MeshMan.addMesh(_mesh);
+	if (!mystery_mesh) {
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		if (MeshMan.getMesh(meshName)) {
+			warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+		}
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	} else {
+		delete _mesh->data->rawMesh;
+		_mesh->data->rawMesh = mystery_mesh;
 	}
-	_mesh->useIncrement();
 
 	this->buildMaterial();
 }
@@ -817,9 +819,9 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.mdl->seek(ctx.offModelData + offVerts);
 
-	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdl->readUint16LE();
 

@@ -84,7 +84,7 @@ public:
 		glRotatef(diffRotate / _rotateSpeed, 0.0f, 0.0f, -1.0f);
 
 		glScalef(_curZoom, _curZoom, 1.0f);
-		Common::TransformationMatrix bob = _absolutePosition;
+		Common::Matrix4x4 bob = _absolutePosition;
 		_absolutePosition.loadIdentity();
 		_absolutePosition.rotate(diffRotate / _rotateSpeed, 0.0f, 0.0f, -1.0f);
 		_absolutePosition.scale(_curZoom * 10.0f, _curZoom * 10.0f, 1.0f);

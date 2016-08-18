@@ -477,11 +477,11 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	for (uint t = 0; t < texCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclLinear(vertexCount, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclLinear(vertexCount, vertexDecl);
 
 	// Read vertex position
 	ctx.mdb->seek(ctx.offRawData + vertexOffset);
-	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData(0));
+	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData(0));
 	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -491,7 +491,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	// Read vertex normals
 	assert(normalsCount == vertexCount);
 	ctx.mdb->seek(ctx.offRawData + normalsOffset);
-	v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData(1));
+	v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData(1));
 	for (uint32 i = 0; i < normalsCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -502,7 +502,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	for (uint t = 0; t < texCount; t++) {
 
 		ctx.mdb->seek(ctx.offRawData + tVertsOffset[t]);
-		v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData(2 + t));
+		v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData(2 + t));
 		for (uint32 i = 0; i < tVertsCount[t]; i++) {
 			if (i < tVertsCount[t]) {
 				*v++ = ctx.mdb->readIEEEFloatLE();
@@ -517,10 +517,10 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 
 	// Read faces
 
-	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
 
 	ctx.mdb->seek(ctx.offRawData + facesOffset);
-	uint32 *f = reinterpret_cast<uint32 *>(_mesh->data->indexBuffer.getData());
+	uint32 *f = reinterpret_cast<uint32 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	for (uint32 i = 0; i < facesCount; i++) {
 		ctx.mdb->skip(4 * 4 + 4);
 
@@ -707,11 +707,11 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	for (uint t = 0; t < texCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclLinear(vertexCount, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclLinear(vertexCount, vertexDecl);
 
 	// Read vertex position
 	ctx.mdb->seek(ctx.offRawData + vertexOffset);
-	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData(0));
+	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData(0));
 	for (uint32 i = 0; i < vertexCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -721,7 +721,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	// Read vertex normals
 	assert(normalsCount == vertexCount);
 	ctx.mdb->seek(ctx.offRawData + normalsOffset);
-	v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData(1));
+	v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData(1));
 	for (uint32 i = 0; i < normalsCount; i++) {
 		*v++ = ctx.mdb->readIEEEFloatLE();
 		*v++ = ctx.mdb->readIEEEFloatLE();
@@ -732,7 +732,7 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	for (uint t = 0; t < texCount; t++) {
 
 		ctx.mdb->seek(ctx.offRawData + tVertsOffset[t]);
-		v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData(2 + t));
+		v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData(2 + t));
 		for (uint32 i = 0; i < tVertsCount[t]; i++) {
 			if (i < tVertsCount[t]) {
 				*v++ = ctx.mdb->readIEEEFloatLE();
@@ -747,10 +747,10 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 
 	// Read faces
 
-	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
 
 	ctx.mdb->seek(ctx.offRawData + facesOffset);
-	uint32 *f = reinterpret_cast<uint32 *>(_mesh->data->indexBuffer.getData());
+	uint32 *f = reinterpret_cast<uint32 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	for (uint32 i = 0; i < facesCount; i++) {
 		// Vertex indices
 		*f++ = ctx.mdb->readUint32LE();

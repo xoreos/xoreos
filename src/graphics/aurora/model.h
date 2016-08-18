@@ -271,7 +271,7 @@ protected:
 
 	// Shader renderable, containing information on rendering something.
 	Shader::ShaderRenderable _boundRenderable;
-	Common::TransformationMatrix _boundTransform;
+	Common::Matrix4x4 _boundTransform;
 
 private:
 	bool _drawBound;

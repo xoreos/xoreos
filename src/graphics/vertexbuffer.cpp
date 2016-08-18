@@ -180,8 +180,11 @@ uint32 VertexBuffer::getTypeSize(GLenum type) {
 
 void VertexBuffer::setVertexDeclLinear(uint32 vertCount, VertexDecl &decl) {
 	uint32 vertSize = 0;
-	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a)
+	_decl.clear();
+	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a) {
 		vertSize += a->size * getTypeSize(a->type);
+		_decl.push_back(*a);
+	}
 
 	setSize(vertCount, vertSize);
 
@@ -192,14 +195,14 @@ void VertexBuffer::setVertexDeclLinear(uint32 vertCount, VertexDecl &decl) {
 
 		data += vertCount * a->size * getTypeSize(a->type);
 	}
-
-	_decl = decl;
 }
 
 void VertexBuffer::setVertexDeclInterleave(uint32 vertCount, VertexDecl &decl) {
 	uint32 vertSize = 0;
-	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a)
+	_decl.clear();
+	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a) {
 		vertSize += a->size * getTypeSize(a->type);
+	}
 
 	setSize(vertCount, vertSize);
 
@@ -209,9 +212,8 @@ void VertexBuffer::setVertexDeclInterleave(uint32 vertCount, VertexDecl &decl) {
 		a->pointer = _data + offset;
 
 		offset += a->size * getTypeSize(a->type);
+		_decl.push_back(*a);
 	}
-
-	_decl = decl;
 }
 
 GLvoid *VertexBuffer::getData() {

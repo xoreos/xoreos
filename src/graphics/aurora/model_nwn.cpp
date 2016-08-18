@@ -808,6 +808,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 	textures.resize(textureCount);
 	loadTextures(textures);
@@ -888,9 +889,9 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclInterleave(facesCount * 3, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(facesCount * 3, vertexDecl);
 
-	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
+	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
 	for (uint32 i = 0; i < facesCount; i++) {
 		const Face &face = faces[i];
 
@@ -934,9 +935,9 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	// Create index buffer
 
-	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	for (uint16 i = 0; i < facesCount * 3; i++)
 		*f++ = i;
 
@@ -954,12 +955,12 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	meshName += ".";
 	meshName += _name;
 
-	_mesh = new Graphics::Mesh::Mesh();
-	*(_mesh->getVertexBuffer()) = _vertexBuffer;
-	*(_mesh->getIndexBuffer()) = _indexBuffer;
-	_mesh->setName(meshName);
-	_mesh->init();
-	MeshMan.addMesh(_mesh);
+	_mesh->data->rawMesh->setName(meshName);
+	_mesh->data->rawMesh->init();
+	if (MeshMan.getMesh(meshName)) {
+		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+	}
+	MeshMan.addMesh(_mesh->data->rawMesh);
 
 	this->buildMaterial();
 }
@@ -1104,7 +1105,7 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		skipNode = true;
 	}
 
-	Mesh mesh;
+	ModelNode_NWN_ASCII::Mesh mesh;
 
 	while (!ctx.mdl->eos()) {
 		std::vector<Common::UString> line;
@@ -1194,12 +1195,24 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 	meshName += ".";
 	meshName += _name;
 
-	_mesh = new Graphics::Mesh::Mesh();
-	*(_mesh->getVertexBuffer()) = _vertexBuffer;
-	*(_mesh->getIndexBuffer()) = _indexBuffer;
-	_mesh->setName(meshName);
-	_mesh->init();
-	MeshMan.addMesh(_mesh);
+	if (!_mesh) {
+		return;
+	}
+
+	if (!_mesh->data) {
+		return;
+	}
+
+	if (!_mesh->data->rawMesh) {
+		return;
+	}
+
+	_mesh->data->rawMesh->setName(meshName);
+	_mesh->data->rawMesh->init();
+	if (MeshMan.getMesh(meshName)) {
+		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+	}
+	MeshMan.addMesh(_mesh->data->rawMesh);
 
 	this->buildMaterial();
 }
@@ -1353,12 +1366,13 @@ std::size_t hash_value(const FaceVert &b) {
 	return seed;
 }
 
-void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
+void ModelNode_NWN_ASCII::processMesh(ModelNode_NWN_ASCII::Mesh &mesh) {
 	if ((mesh.vCount == 0) || (mesh.tCount == 0) || (mesh.faceCount == 0))
 		return;
 
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 	loadTextures(mesh.textures);
 
@@ -1370,13 +1384,13 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	// Read faces
 
 	uint32 facesCount = mesh.faceCount;
-	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint32), GL_UNSIGNED_INT);
 
 	boost::unordered_set<FaceVert> verts;
 	typedef boost::unordered_set<FaceVert>::iterator verts_set_it;
 
 	uint32 vertexCount = 0;
-	uint32 *f = reinterpret_cast<uint32 *>(_mesh->data->indexBuffer.getData());
+	uint32 *f = reinterpret_cast<uint32 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	for (uint32 i = 0; i < facesCount; i++) {
 		const uint32 v[3] = {mesh.vIA[i], mesh.vIB[i], mesh.vIC[i]};
 		const uint32 t[3] = {mesh.tIA[i], mesh.tIB[i], mesh.tIC[i]};
@@ -1412,10 +1426,10 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
 	for (verts_set_it i = verts.begin(); i != verts.end(); ++i) {
-		byte  *vData = reinterpret_cast<byte  *>(_mesh->data->vertexBuffer.getData()) + i->i * _mesh->data->vertexBuffer.getSize();
+		byte  *vData = reinterpret_cast<byte  *>(_mesh->data->rawMesh->getVertexBuffer()->getData()) + i->i * _mesh->data->rawMesh->getVertexBuffer()->getSize();
 		float *v     = reinterpret_cast<float *>(vData);
 
 		// Position

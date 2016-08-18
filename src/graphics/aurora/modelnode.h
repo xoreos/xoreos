@@ -123,6 +123,10 @@ public:
 	/** Set the alpha (transparency) of the node. */
 	void setAlpha(float alpha, bool isRecursive = true);
 
+	float getScaleX() { return _scale[0]; }
+	float getScaleY() { return _scale[1]; }
+	float getScaleZ() { return _scale[2]; }
+
 protected:
 	/** The way the environment map is applied to a model node. */
 	enum EnvironmentMapMode {
@@ -155,8 +159,9 @@ protected:
 	};
 
 	struct MeshData {
-		VertexBuffer vertexBuffer; ///< Node geometry vertex buffer.
-		IndexBuffer indexBuffer;   ///< Node geometry index buffer.
+		Graphics::Mesh::Mesh *rawMesh; ///< Node raw mesh data.
+		// VertexBuffer vertexBuffer; ///< Node geometry vertex buffer.
+		// IndexBuffer indexBuffer;   ///< Node geometry index buffer.
 
 		std::vector<float> initialVertexCoords; ///< Initial node vertex coordinates.
 
@@ -212,13 +217,6 @@ protected:
 
 	Common::UString _name; ///< The node's name.
 
-<<<<<<< 228eb15c9132309ed689180cf894594f2480523d
-=======
-	VertexBuffer _vertexBuffer; ///< Node geometry vertex buffer.
-	IndexBuffer _indexBuffer;   ///< Node geometry index buffer.
-
-	Mesh::Mesh *_mesh;                            ///< The node's geometry.
->>>>>>> GRAPHICS: Inherit node renderables
 	std::vector<Shader::ShaderRenderable> _renderableArray;  ///< Damn you bioware.
 
 	float _center     [3]; ///< The node's center.
@@ -267,7 +265,7 @@ protected:
 	void render(RenderPass pass, const glm::mat4 &parentTransform);
 	void drawSkeleton(const glm::mat4 &parent, bool showInvisible);
 
-	void queueRender(const Common::TransformationMatrix &parentTransform);
+	void queueRender(const Common::Matrix4x4 &parentTransform);
 
 	void lockFrame();
 	void unlockFrame();

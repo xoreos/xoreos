@@ -320,11 +320,18 @@ void ModelNode::setMaterial(Shader::ShaderMaterial *material) {
 }
 
 float ModelNode::getAlpha() {
-	return _alpha;
+	if (!_mesh) {
+		return 1.0f;
+	}
+	return _mesh->alpha;
 }
 
 void ModelNode::setAlpha(float alpha, bool isRecursive) {
-	_alpha = alpha;
+	if (!_mesh) {
+		return;
+	}
+
+	_mesh->alpha = alpha;
 
 	if (isRecursive) {
 		for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
@@ -406,23 +413,25 @@ void ModelNode::createBound() {
 	if (!_mesh || !_mesh->data)
 		return;
 
-	VertexBuffer vertexBuffer = _mesh->data->vertexBuffer;
+	VertexBuffer *vertexBuffer = _mesh->data->rawMesh->getVertexBuffer();
 
-	const VertexDecl vertexDecl = vertexBuffer.getVertexDecl();
+	const VertexDecl &vertexDecl = vertexBuffer->getVertexDecl();
 	for (VertexDecl::const_iterator vA = vertexDecl.begin(); vA != vertexDecl.end(); ++vA) {
-		if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
-			continue;
+		if (vA->pointer) {
+			if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
+				continue;
 
-		const uint32 stride = MAX<uint32>(vA->size, vA->stride / sizeof(float));
+			const uint32 stride = MAX<uint32>(vA->size, vA->stride / sizeof(float));
 
-		const float *vertexData = reinterpret_cast<const float *>(vA->pointer);
+			const float *vertexData = reinterpret_cast<const float *>(vA->pointer);
 
-		const float *vX = vertexData + 0;
-		const float *vY = vertexData + 1;
-		const float *vZ = vertexData + 2;
+			const float *vX = vertexData + 0;
+			const float *vY = vertexData + 1;
+			const float *vZ = vertexData + 2;
 
-		for (uint32 v = 0; v < vertexBuffer.getCount(); v++)
-			_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
+			for (uint32 v = 0; v < vertexBuffer->getCount(); v++)
+				_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
+		}
 	}
 
 	createCenter();
@@ -519,10 +528,7 @@ void ModelNode::orderChildren() {
 		(*c)->orderChildren();
 }
 
-void ModelNode::renderGeometry(Mesh &mesh) {
-	if (!mesh.data->envMap.empty()) {
-		switch (mesh.data->envMapMode)
-	}
+void ModelNode::renderGeometry(ModelNode::Mesh &mesh) {
 	renderGeometryNormal(mesh);
 }
 
@@ -535,7 +541,7 @@ void ModelNode::renderGeometryNormal(Mesh &mesh) {
 	if (mesh.data->textures.empty())
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
@@ -554,14 +560,14 @@ void ModelNode::renderGeometryEnvMappedUnder(Mesh &mesh) {
 	 */
 
 	TextureMan.set(mesh.data->envMap, TextureManager::kModeEnvironmentMapReflective);
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
 		TextureMan.set(mesh.data->textures[t], TextureManager::kModeDiffuse);
 	}
 
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
@@ -586,7 +592,7 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 
 		glBlendFunc(GL_ONE, GL_ZERO);
 
-		mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+		mesh.data->rawMesh->render();
 
 		for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 			TextureMan.activeTexture(t);
@@ -599,7 +605,7 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 		glDisable(GL_ALPHA_TEST);
 		glBlendFunc(GL_ZERO, GL_ONE);
 
-		mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+		mesh.data->rawMesh->render();
 	}
 
 	TextureMan.activeTexture(0);
@@ -607,7 +613,7 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 
 	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
 
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	TextureMan.set();
 
@@ -616,7 +622,7 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 }
 
 bool ModelNode::renderableMesh(Mesh *mesh) {
-	return mesh && mesh->data && mesh->data->indexBuffer.getCount() > 0;
+	return mesh && mesh->data && mesh->data->rawMesh;
 }
 
 void ModelNode::render(RenderPass pass, const Common::TransformationMatrix &parentTransform) {
@@ -688,7 +694,7 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 
 	if (_render) {
 		for (size_t i = 0; i < _renderableArray.size(); ++i) {
-			RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, _alpha);
+			RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, _mesh->alpha);
 		}
 	}
 
@@ -861,11 +867,19 @@ void ModelNode::buildMaterial() {
 		return;
 	}
 
-	if (_textures.size() == 0) {
+	if (!_mesh->data) {
+		return;
+	}
+
+	if (_mesh->data->textures.size() == 0) {
 		return;
 	}
 
 	if (!_render) {
+		return;
+	}
+
+	if (!_mesh->data->rawMesh) {
 		return;
 	}
 
@@ -876,29 +890,28 @@ void ModelNode::buildMaterial() {
 	Shader::ShaderMaterial *material;
 	Shader::ShaderSampler *sampler;
 	Shader::ShaderSurface *surface;
-	uint32 blendflags = Shader::ShaderBuilder::BLEND_ONE;
+
 	uint32 materialFlags = 0;
 
 	std::vector<Shader::ShaderBuilder::BuildPass> shaderPasses;
 	_renderableArray.clear();
 
 	if (_name == "Plane237") {
-		_isTransparent = true;  // Hack hack hack hack. For NWN.
+		_mesh->isTransparent = true;  // Hack hack hack hack. For NWN.
 	}
 
 	ShaderBuild.initShaderName(vertexShaderName);
 	ShaderBuild.initShaderName(fragmentShaderName);
 
-	if (!_envMap.empty()) {
-		if (_envMapMode == kModeEnvironmentBlendedUnder) {
-			blendflags = Shader::ShaderBuilder::BLEND_SRC_ALPHA;  // Main diffuse will have to go over something.
-			materialName += _envMap.getName();
+	if (!_mesh->data->envMap.empty()) {
+		if (_mesh->data->envMapMode == kModeEnvironmentBlendedUnder) {
+			materialName += _mesh->data->envMap.getName();
 			// Figure out if a cube or sphere map is used.
-			if (_envMap.getTexture().getImage().isCubeMap()) {
+			if (_mesh->data->envMap.getTexture().getImage().isCubeMap()) {
 				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE));
 				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
 				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
-				if (!_isTransparent) {
+				if (!_mesh->isTransparent) {
 					materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
 				}
 			} else {
@@ -911,32 +924,32 @@ void ModelNode::buildMaterial() {
 				 * other game titles as well.
 				 */
 				materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
-				_isTransparent = false;
+				_mesh->isTransparent = false;
 			}
 		}
 	}
 
-	if (_isTransparent) {
+	if (_mesh->isTransparent) {
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
 
-	uint32 tcount = _textures.size();
+	uint32 tcount = _mesh->data->textures.size();
 	/**
 	 * Sometimes the _textures handler array isn't matched up against what
 	 * is properly loaded (missing files from disk). So do some brief sanity
 	 * checks on this.
 	 */
 	if (tcount >= 1) {
-		if (!_textures[0].empty()) {
-			materialName += _textures[0].getName();
+		if (!_mesh->data->textures[0].empty()) {
+			materialName += _mesh->data->textures[0].getName();
 			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_ONE));
 		}
 	}
 
 	if (tcount >= 2) {
-		if (!_textures[1].empty()) {
+		if (!_mesh->data->textures[1].empty()) {
 			materialName += ".";
-			materialName += _textures[1].getName();
+			materialName += _mesh->data->textures[1].getName();
 			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::ShaderBuilder::BLEND_MULTIPLY));
 		} else {
 			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
@@ -944,9 +957,9 @@ void ModelNode::buildMaterial() {
 	}
 
 	if (tcount >= 3) {
-		if (!_textures[2].empty()) {
+		if (!_mesh->data->textures[2].empty()) {
 			materialName += ".";
-			materialName += _textures[2].getName();
+			materialName += _mesh->data->textures[2].getName();
 		} else {
 			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
 		}
@@ -957,11 +970,11 @@ void ModelNode::buildMaterial() {
 		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
 	}
 
-	if (!_envMap.empty()) {
-		if (_envMapMode == kModeEnvironmentBlendedOver) {
-			materialName += _envMap.getName();
+	if (!_mesh->data->envMap.empty()) {
+		if (_mesh->data->envMapMode == kModeEnvironmentBlendedOver) {
+			materialName += _mesh->data->envMap.getName();
 			// Figure out if a cube or sphere map is used.
-			if (_envMap.getTexture().getImage().isCubeMap()) {
+			if (_mesh->data->envMap.getTexture().getImage().isCubeMap()) {
 				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
 			} else {
 				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
@@ -976,7 +989,7 @@ void ModelNode::buildMaterial() {
 	material = MaterialMan.getMaterial(materialName);
 	if (material) {
 		surface = SurfaceMan.getSurface(materialName);
-		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh));
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh->data->rawMesh));
 		return;
 	}
 
@@ -1009,36 +1022,36 @@ void ModelNode::buildMaterial() {
 	MaterialMan.addMaterial(material);
 	SurfaceMan.addSurface(surface);
 
-	if (!_envMap.empty()) {
+	if (!_mesh->data->envMap.empty()) {
 		// Figure out if a cube or sphere map is used.
-		if (_envMap.getTexture().getImage().isCubeMap()) {
+		if (_mesh->data->envMap.getTexture().getImage().isCubeMap()) {
 			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureCube0"));
 		} else {
 			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureSphere0"));
 		}
-		sampler->handle = _envMap;
+		sampler->handle = _mesh->data->envMap;
 	}
 
 	if (tcount >= 1) {
-		if (!_textures[0].empty()) {
+		if (!_mesh->data->textures[0].empty()) {
 			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
-			sampler->handle = _textures[0];
+			sampler->handle = _mesh->data->textures[0];
 		}
 	}
 
 	if (tcount >= 2) {
-		if (!_textures[1].empty()) {
+		if (!_mesh->data->textures[1].empty()) {
 			sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
-			sampler->handle = _textures[1];
+			sampler->handle = _mesh->data->textures[1];
 		}
 	}
 
 	if (tcount >= 3) {
-		if (!_textures[2].empty()) {
+		if (!_mesh->data->textures[2].empty()) {
 		}
 	}
 
-	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh));
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh->data->rawMesh));
 }
 
 void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {
