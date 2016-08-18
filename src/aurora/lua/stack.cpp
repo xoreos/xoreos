@@ -95,6 +95,10 @@ void Stack::pushFunction(const FunctionRef &value) {
 	}
 }
 
+void Stack::pushRawUserType(void *value, const Common::UString &type) {
+	tolua_pushusertype(&_luaState, value, type.c_str());
+}
+
 void Stack::pushVariable(const Variable &var) {
 	switch (var.getType()) {
 		case kTypeNil:
@@ -111,6 +115,9 @@ void Stack::pushVariable(const Variable &var) {
 			break;
 		case kTypeTable:
 			pushTable(var.getTable());
+			break;
+		case kTypeFunction:
+			pushFunction(var.getFunction());
 			break;
 		case kTypeUserType:
 			pushRawUserType(var.getRawUserType(), var.getExactType());
@@ -168,6 +175,15 @@ FunctionRef Stack::getFunctionAt(int index) const {
 		throw Common::Exception("Failed to get a function from the Lua stack (index: %d)", index);
 	}
 	return FunctionRef(_luaState, index);
+}
+
+void *Stack::getRawUserTypeAt(int index, const Common::UString &type) const {
+	if (!isUserTypeAt(index, type)) {
+		const char *msg = "Failed to get a usertype value from the Lua stack (type: %s, index: %d)";
+		throw Common::Exception(msg, type.c_str(), index);
+	}
+
+	return tolua_tousertype(&_luaState, index, 0);
 }
 
 Variable Stack::getVariableAt(int index) const {
@@ -288,19 +304,6 @@ lua_State &Stack::getLuaState() const {
 bool Stack::checkIndex(int index) const {
 	index = std::abs(index);
 	return index > 0 && index <= getSize();
-}
-
-void Stack::pushRawUserType(void *value, const Common::UString &type) {
-	tolua_pushusertype(&_luaState, value, type.c_str());
-}
-
-void *Stack::getRawUserTypeAt(int index, const Common::UString &type) const {
-	if (!isUserTypeAt(index, type)) {
-		const char *msg = "Failed to get a usertype value from the Lua stack (type: %s, index: %d)";
-		throw Common::Exception(msg, type.c_str(), index);
-	}
-
-	return tolua_tousertype(&_luaState, index, 0);
 }
 
 } // End of namespace Lua

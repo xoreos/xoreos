@@ -102,13 +102,21 @@ public:
 	/** Return the amount of memory in use by Lua (in Kbytes). */
 	int getUsedMemoryAmount() const;
 
+	void setLuaInstanceForObject(void *object, const TableRef& luaInstance);
+	void unsetLuaInstanceForObject(void *object);
+	const TableRef &getLuaInstanceForObject(void *object) const;
+
 private:
+	typedef std::map<void *, TableRef> ObjectLuaInstanceMap;
+
 	/** The Lua state. */
 	lua_State *_luaState;
 	/** The current nesting level of the registration process. */
 	int _regNestingLevel;
 	/** A list of files that the script subsystem ignores. */
 	std::set<Common::UString> _ignoredFiles;
+
+	ObjectLuaInstanceMap _objectLuaInstances;
 
 	/** Open and setup a new Lua state. */
 	void openLuaState();
@@ -130,6 +138,7 @@ private:
 	static int luaPlayFile(lua_State *state);
 	static int luaSetGCInterval(lua_State *state);
 	static int luaRegisterSubst(lua_State *state);
+	static int luaUnregisterSubst(lua_State *state);
 	static int luaRegisterHandler(lua_State *state);
 };
 

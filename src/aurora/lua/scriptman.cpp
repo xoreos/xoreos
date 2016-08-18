@@ -57,6 +57,10 @@ ScriptManager::ScriptManager() : _luaState(0), _regNestingLevel(0) {
 
 ScriptManager::~ScriptManager() {
 	closeLuaState();
+
+	if (!_objectLuaInstances.empty()) {
+		warning("Lua instances were not freed properly");
+	}
 }
 
 void ScriptManager::init() {
@@ -255,6 +259,32 @@ int ScriptManager::getUsedMemoryAmount() const {
 	return lua_getgccount(_luaState);
 }
 
+void ScriptManager::setLuaInstanceForObject(void *object, const TableRef &luaInstance) {
+	assert(object);
+	assert(_objectLuaInstances.find(object) == _objectLuaInstances.end());
+
+	_objectLuaInstances[object] = luaInstance;
+}
+
+void ScriptManager::unsetLuaInstanceForObject(void *object) {
+	assert(object);
+
+	_objectLuaInstances.erase(object);
+}
+
+const TableRef &ScriptManager::getLuaInstanceForObject(void *object) const {
+	assert(object);
+
+	static const TableRef invalidInstance;
+
+	ObjectLuaInstanceMap::const_iterator found = _objectLuaInstances.find(object);
+	if (found == _objectLuaInstances.end())
+	{
+		return invalidInstance;
+	}
+	return found->second;
+}
+
 void ScriptManager::openLuaState() {
 	_luaState = lua_open();
 	if (!_luaState) {
@@ -308,6 +338,7 @@ void ScriptManager::registerDefaultBindings() {
 	registerFunction("PlayFile", &ScriptManager::luaPlayFile);
 	registerFunction("SetGCInterval", &ScriptManager::luaSetGCInterval);
 	registerFunction("RegisterSubst", &ScriptManager::luaRegisterSubst);
+	registerFunction("UnregisterSubst", &ScriptManager::luaUnregisterSubst);
 	registerFunction("RegisterHandler", &ScriptManager::luaRegisterHandler);
 	endRegisterClass();
 
@@ -349,11 +380,30 @@ int ScriptManager::luaRegisterSubst(lua_State *state) {
 	assert(state);
 
 	Aurora::Lua::Stack stack(*state);
-	assert(stack.getTypeAt(1) == Aurora::Lua::kTypeUserType);
-	assert(stack.getTypeAt(2) == Aurora::Lua::kTypeUserType);
-	assert(stack.getTypeAt(3) == Aurora::Lua::kTypeTable);
+	assert(stack.getSize() == 3);
 
-	// TODO
+	ScriptManager* scriptMan = stack.getUserTypeAt<ScriptManager>(1);
+	assert(scriptMan == &LuaScriptMan);
+	void* object = stack.getRawUserTypeAt(2);
+	assert(object);
+	const TableRef instance = stack.getTableAt(3);
+
+	scriptMan->setLuaInstanceForObject(object, instance);
+	return 0;
+}
+
+int ScriptManager::luaUnregisterSubst(lua_State *state) {
+	assert(state);
+
+	Aurora::Lua::Stack stack(*state);
+	assert(stack.getSize() == 2);
+
+	ScriptManager* scriptMan = stack.getUserTypeAt<ScriptManager>(1);
+	assert(scriptMan == &LuaScriptMan);
+	void* object = stack.getRawUserTypeAt(2);
+	assert(object);
+
+	scriptMan->unsetLuaInstanceForObject(object);
 	return 0;
 }
 

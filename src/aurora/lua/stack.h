@@ -62,6 +62,8 @@ public:
 	void pushTable(const TableRef &value);
 	/** Push a function onto the stack. */
 	void pushFunction(const FunctionRef &value);
+	/** Push a raw usertype value onto the stack. */
+	void pushRawUserType(void *value, const Common::UString &type);
 
 	void pushVariable(const Variable &var);
 	void pushVariables(const Variables &vars);
@@ -84,6 +86,8 @@ public:
 	TableRef getTableAt(int index) const;
 	/** Return a function at the given @a index in the stack. */
 	FunctionRef getFunctionAt(int index) const;
+	/** Return a raw usertype value at the given @a index in the stack. */
+	void *getRawUserTypeAt(int index, const Common::UString &type = "") const;
 
 	/** Return a usertype value at the given @a index in the stack.
 	 *  If @a type is not empty, perform a type check.
@@ -126,9 +130,6 @@ private:
 
 	/** Check whether the given @a index is valid. */
 	bool checkIndex(int index) const;
-
-	void pushRawUserType(void *value, const Common::UString &type);
-	void *getRawUserTypeAt(int index, const Common::UString &type) const;
 };
 
 template<typename T>
