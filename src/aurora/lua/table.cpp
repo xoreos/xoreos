@@ -41,30 +41,36 @@ namespace Aurora {
 
 namespace Lua {
 
-TableRef::TableRef() : _luaState(0), _ref(LUA_REFNIL) {
-
+TableRef::TableRef() : _luaState(0),
+	_ref(LUA_REFNIL), _metaAccessEnabled(true) {
 }
 
-TableRef::TableRef(const Stack &stack, int index) : _luaState(&stack.getLuaState()), _ref(LUA_REFNIL) {
+TableRef::TableRef(const Stack &stack, int index) : _luaState(&stack.getLuaState()),
+	_ref(LUA_REFNIL), _metaAccessEnabled(true) {
+
 	lua_pushvalue(_luaState, index);
 	_ref = lua_ref(_luaState, true);
 }
 
-TableRef::TableRef(lua_State &state, int index) : _luaState(&state), _ref(LUA_REFNIL) {
+TableRef::TableRef(lua_State &state, int index) : _luaState(&state),
+	_ref(LUA_REFNIL), _metaAccessEnabled(true) {
+
 	lua_pushvalue(_luaState, index);
 	_ref = lua_ref(_luaState, true);
 }
 
-TableRef::TableRef(const TableRef &table) : _luaState(table._luaState), _ref(LUA_REFNIL) {
-	assert(table._luaState && table._ref != LUA_REFNIL);
+TableRef::TableRef(const TableRef &table) : _luaState(table._luaState),
+	_ref(LUA_REFNIL), _metaAccessEnabled(table._metaAccessEnabled) {
 
-	lua_getref(_luaState, table._ref);
-	_ref = lua_ref(_luaState, true);
+	if (table._luaState && table._ref != LUA_REFNIL) {
+		lua_getref(_luaState, table._ref);
+		_ref = lua_ref(_luaState, true);
+	} else {
+		_luaState = 0;
+	}
 }
 
 TableRef::~TableRef() {
-	assert(_ref != LUA_REFNIL);
-
 	lua_unref(_luaState, _ref);
 }
 
@@ -81,6 +87,7 @@ const TableRef& TableRef::operator=(const TableRef &table) {
 	lua_getref(table._luaState, table._ref);
 	_luaState = table._luaState;
 	_ref = lua_ref(_luaState, true);
+	_metaAccessEnabled = table._metaAccessEnabled;
 
 	if (oldState && oldRef != LUA_REFNIL) {
 		lua_unref(oldState, oldRef);
@@ -120,6 +127,14 @@ TableRef TableRef::getMetaTable() const {
 	return stack.getTableAt(-1);
 }
 
+void TableRef::setMetaAccessEnabled(bool enabled) {
+	_metaAccessEnabled = enabled;
+}
+
+bool TableRef::isMetaAccessEnabled() const {
+	return _metaAccessEnabled;
+}
+
 void TableRef::removeAt(int index) {
 	StackGuard guard(*_luaState);
 
@@ -136,7 +151,12 @@ void TableRef::removeAt(const Common::UString &key) {
 
 	lua_pushstring(_luaState, key.c_str());
 	lua_pushnil(_luaState);
-	lua_rawset(_luaState, -3);
+
+	if (_metaAccessEnabled) {
+		lua_settable(_luaState, -3);
+	} else {
+		lua_rawset(_luaState, -3);
+	}
 }
 
 void TableRef::setBooleanAt(int index, bool value) {
@@ -221,7 +241,12 @@ void TableRef::setVariableAt(const Common::UString &key, const Variable &value) 
 
 	Stack stack(*_luaState);
 	stack.pushVariable(value);
-	lua_rawset(_luaState, -3);
+
+	if (_metaAccessEnabled) {
+		lua_settable(_luaState, -3);
+	} else {
+		lua_rawset(_luaState, -3);
+	}
 }
 
 bool TableRef::getBooleanAt(int index) const {
@@ -351,7 +376,12 @@ Variable TableRef::getVariableAt(const Common::UString &key) const {
 
 	pushSelf();
 	lua_pushstring(_luaState, key.c_str());
-	lua_rawget(_luaState, -2);
+
+	if (_metaAccessEnabled) {
+		lua_gettable(_luaState, -2);
+	} else {
+		lua_rawget(_luaState, -2);
+	}
 
 	Stack stack(*_luaState);
 	return stack.getVariableAt(-1);
@@ -372,7 +402,12 @@ Common::UString TableRef::getExactTypeAt(const Common::UString &key) const {
 
 	pushSelf();
 	lua_pushstring(_luaState, key.c_str());
-	lua_rawget(_luaState, -2);
+
+	if (_metaAccessEnabled) {
+		lua_gettable(_luaState, -2);
+	} else {
+		lua_rawget(_luaState, -2);
+	}
 
 	Stack stack(*_luaState);
 	return stack.getExactTypeAt(-1);
@@ -393,7 +428,12 @@ Type TableRef::getTypeAt(const Common::UString &key) const {
 
 	pushSelf();
 	lua_pushstring(_luaState, key.c_str());
-	lua_rawget(_luaState, -2);
+
+	if (_metaAccessEnabled) {
+		lua_gettable(_luaState, -2);
+	} else {
+		lua_rawget(_luaState, -2);
+	}
 
 	Stack stack(*_luaState);
 	return stack.getTypeAt(-1);
@@ -409,7 +449,6 @@ Variables TableRef::getVariables() const {
 	for (lua_pushnil(_luaState); lua_next(_luaState, top); lua_pop(_luaState, 1)) {
 		Stack stack(*_luaState);
 		vars.push_back(stack.getVariableAt(-1));
-		info("Key: %s [%s]", stack.getStringAt(-2).c_str(), stack.getVariableAt(-1).getExactType().c_str());
 	}
 	return vars;
 }

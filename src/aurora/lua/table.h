@@ -50,6 +50,10 @@ public:
 	Common::UString getExactType() const;
 	TableRef getMetaTable() const;
 
+	/** Enable/Disable access to the table elements using metamethods. */
+	void setMetaAccessEnabled(bool enabled);
+	bool isMetaAccessEnabled() const;
+
 	void removeAt(int index);
 	void removeAt(const Common::UString &key);
 
@@ -139,6 +143,7 @@ private:
 	/** The Lua state. */
 	lua_State *_luaState;
 	int _ref;
+	bool _metaAccessEnabled;
 
 	void pushSelf() const;
 };
