@@ -26,6 +26,7 @@
 #define ENGINES_NWN_TYPES_H
 
 #include "src/common/types.h"
+#include "src/common/ustring.h"
 
 namespace Engines {
 
@@ -279,6 +280,29 @@ static const uint32 kClassInvalid = 255;
 
 Alignment getAlignmentLawChaos(uint8 lawChaos);
 Alignment getAlignmentGoodEvil(uint8 goodEvil);
+
+/** Return the name (as found in the models) of a specific creature animation.
+ *
+ *  @param simple If true, return the name as found in simple, non-player-type
+ *                creatures. Otherwise, return the name as found in complex
+ *                player-type creatures.
+ */
+Common::UString getCreatureAnimationName(Animation animation, bool simple = false);
+
+/** Return the name (as found in the models) of a specific creature talk animation. */
+Common::UString getCreatureTalkAnimationName(TalkAnimation animation);
+
+/** Return the name (as found in the models) of a specific placeable animation. */
+Common::UString getPlaceableAnimationName(Animation animation);
+
+/** Return the name (as found in the models) of a specific door animation.
+ *
+ *  @param alternate If true, return the alternate animation name. This is
+ *                   only used for kAnimationDoorClose, where the actual
+ *                   animation might be different depending to which side the
+ *                   door is currently opened.
+ */
+Common::UString getDoorAnimationName(Animation animation, bool alternate = false);
 
 } // End of namespace NWN
 
