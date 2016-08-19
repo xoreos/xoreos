@@ -776,40 +776,18 @@ struct TalkAnim {
 	const char *name;
 };
 
-static const TalkAnim kTalkAnimations[] = {
-	{kTalkAnimationDefault , "tlknorm" },
-	{kTalkAnimationNormal  , "tlknorm" },
-	{kTalkAnimationPleading, "tlkplead"},
-	{kTalkAnimationForceful, "tlkforce"},
-	{kTalkAnimationLaugh   , "tlklaugh"}
-};
-
 void Dialog::playAnimation() {
 	Object *speaker = getSpeaker();
 	if (!speaker)
 		return;
 
 	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
-	if (!entry || (entry->animation == kTalkAnimationNone)) {
+	if (!entry) {
 		stopAnimation();
 		return;
 	}
 
-	const char *anim = 0;
-	for (size_t i = 0; i < ARRAYSIZE(kTalkAnimations); i++) {
-		if (entry->animation == (uint32)kTalkAnimations[i].id) {
-			anim = kTalkAnimations[i].name;
-			break;
-		}
-	}
-
-	if (!anim) {
-		warning("Dialog::playAnimation(): Animation %d", entry->animation);
-		stopAnimation();
-		return;
-	}
-
-	speaker->playAnimation(anim, false, -1);
+	speaker->playAnimation(getCreatureTalkAnimationName((TalkAnimation) entry->animation), false, -1);
 }
 
 void Dialog::stopAnimation() {
