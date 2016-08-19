@@ -505,6 +505,10 @@ Animation *Model::getAnimation(const Common::UString &anim) {
 	return n->second;
 }
 
+bool Model::hasAnimation(const Common::UString &anim) const {
+	return _animationMap.find(anim) != _animationMap.end();
+}
+
 float Model::getAnimationScale(const Common::UString &anim) {
 	// TODO: We can cache this for performance
 	AnimationMap::iterator n = _animationMap.find(anim);

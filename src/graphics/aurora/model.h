@@ -143,6 +143,9 @@ public:
 
 	// Animation
 
+	/** Does this model have this named animation? */
+	bool hasAnimation(const Common::UString &anim) const;
+
 	/** Determine what animation scaling applies. */
 	float getAnimationScale(const Common::UString &anim);
 
