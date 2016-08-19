@@ -83,9 +83,11 @@ public:
 	// Animation
 
 	/** Play a door animation. */
-	void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
+	void playAnimation(const Common::UString &animation = "", bool restart = true,
+	                   float length = 0.0f, float speed = 1.0f);
 	/** Play a default door animation. */
-	void playAnimation(Animation animation);
+	void playAnimation(Animation animation, bool restart = true,
+	                   float length = 0.0f, float speed = 1.0f);
 
 protected:
 	/** Load door-specific properties. */

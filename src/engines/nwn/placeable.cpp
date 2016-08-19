@@ -264,34 +264,37 @@ bool Placeable::deactivate(Object *user) {
 	return true;
 }
 
-void Placeable::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {
-	Situated::playAnimation(animation, restart, loopCount);
+void Placeable::playAnimation(const Common::UString &animation, bool restart, float length, float speed) {
+	Situated::playAnimation(animation, restart, length, speed);
 }
 
-void Placeable::playAnimation(Animation animation) {
+void Placeable::playAnimation(Animation animation, bool restart, float length, float speed) {
+	// Placeable animations don't loop
+	length = 0.0f;
+
 	switch (animation) {
 		case kAnimationPlaceableActivate:
 			playSound(_soundUsed);
 			if (_model)
-				_model->playAnimation("off2on");
+				_model->playAnimation("off2on", restart, length, speed);
 			break;
 
 		case kAnimationPlaceableDeactivate:
 			playSound(_soundUsed);
 			if (_model)
-				_model->playAnimation("on2off");
+				_model->playAnimation("on2off", restart, length, speed);
 			break;
 
 		case kAnimationPlaceableOpen:
 			playSound(_soundOpened);
 			if (_model)
-				_model->playAnimation("close2open");
+				_model->playAnimation("close2open", restart, length, speed);
 			break;
 
 		case kAnimationPlaceableClose:
 			playSound(_soundClosed);
 			if (_model)
-				_model->playAnimation("open2close");
+				_model->playAnimation("open2close", restart, length, speed);
 			break;
 
 		default:

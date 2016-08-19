@@ -285,35 +285,37 @@ void Door::evaluateLink() {
 	_evaluatedLink = true;
 }
 
-void Door::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {
-	Situated::playAnimation(animation, restart, loopCount);
+void Door::playAnimation(const Common::UString &animation, bool restart, float length, float speed) {
+	Situated::playAnimation(animation, restart, length, speed);
 }
 
-void Door::playAnimation(Animation animation) {
+void Door::playAnimation(Animation animation, bool restart, float length, float speed) {
+	// Door animations don't loop
+	length = 0.0f;
 
 	switch (animation) {
 		case kAnimationDoorClose:
 			playSound(_soundClosed);
 			if (_model)
-				_model->playAnimation("closing1");
+				_model->playAnimation("closing1", restart, length, speed);
 			break;
 
 		case kAnimationDoorOpen1:
 			playSound(_soundOpened);
 			if (_model)
-				_model->playAnimation("opening1");
+				_model->playAnimation("opening1", restart, length, speed);
 			break;
 
 		case kAnimationDoorOpen2:
 			playSound(_soundOpened);
 			if (_model)
-				_model->playAnimation("opening2");
+				_model->playAnimation("opening2", restart, length, speed);
 			break;
 
 		case kAnimationDoorDestroy:
 			playSound(_soundDestroyed);
 			if (_model)
-				_model->playAnimation("die");
+				_model->playAnimation("die", restart, length, speed);
 			break;
 
 		default:

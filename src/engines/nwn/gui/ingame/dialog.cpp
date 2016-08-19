@@ -787,7 +787,7 @@ void Dialog::playAnimation() {
 		return;
 	}
 
-	speaker->playAnimation(getCreatureTalkAnimationName((TalkAnimation) entry->animation), false, -1);
+	speaker->playAnimation(getCreatureTalkAnimationName((TalkAnimation) entry->animation), false, -1.0f);
 }
 
 void Dialog::stopAnimation() {

@@ -64,9 +64,13 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 
 	// TODO: Is this the same as modelScale for non-UI?
 	_animationScale = 1.0f;
-	_elapsedTime = 0.0f;
 
-	_loopAnimation = 0;
+	_animationSpeed  = 1.0f;
+	_animationLength = 1.0f;
+	_animationTime   = 0.0f;
+
+	_animationLoopLength = 1.0f;
+	_animationLoopTime   = 0.0f;
 
 	_boundRenderable = new Shader::ShaderRenderable();
 	_boundRenderable->setSurface(SurfaceMan.getSurface("defaultSurface"));
@@ -162,20 +166,50 @@ void Model::setEnvironmentMap(const Common::UString &environmentMap) {
 	unlockFrameIfVisible();
 }
 
-void Model::playAnimation(const Common::UString &anim, bool restart, int32 loopCount) {
+void Model::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
 	Animation *animation = getAnimation(anim);
-	if (!animation)
+	if (!animation || (speed <= 0.0f))
 		return;
 
-	_loopAnimation = loopCount;
+	if (length == 0.0f)
+		length = animation->getLength() / speed;
+
+	_animationSpeed  = speed;
+	_animationLength = length;
+	_animationTime   = 0.0f;
+
+	_animationLoopLength = animation->getLength();
 
 	if (restart || (animation != _currentAnimation))
 		_nextAnimation = animation;
 }
 
+void Model::playAnimationCount(const Common::UString &anim, bool restart, int32 loopCount) {
+	Animation *animation = getAnimation(anim);
+	if (!animation)
+		return;
+
+	float length = -1.0f;
+	if (loopCount >= 0)
+		length = (loopCount + 1) * animation->getLength();
+
+	playAnimation(anim, restart, length, 1.0f);
+}
+
 void Model::playDefaultAnimation() {
 	_nextAnimation = selectDefaultAnimation();
-	_loopAnimation = 0;
+
+	_animationSpeed  = 1.0f;
+	_animationLength = 1.0f;
+	_animationTime   = 0.0f;
+
+	_animationLoopLength = 1.0f;
+	_animationLoopTime   = 0.0f;
+
+	if (_nextAnimation) {
+		_animationLength     = _nextAnimation->getLength();
+		_animationLoopLength = _nextAnimation->getLength();
+	}
 }
 
 Animation *Model::selectDefaultAnimation() const {
@@ -194,12 +228,13 @@ void Model::setCurrentAnimation(Animation *anim) {
 	if (!_currentState)
 		return;
 
-	_currentAnimation = anim;
-	_elapsedTime = 0.0f;
+	_currentAnimation  = anim;
+	_animationLoopTime = 0.0f;
+
 	for (NodeList::iterator n = _currentState->nodeList.begin(); n != _currentState->nodeList.end(); ++n)
 		if ((*n)->_attachedModel) {
-			(*n)->_attachedModel->_currentAnimation = anim;
-			(*n)->_attachedModel->_elapsedTime = 0.0f;
+			(*n)->_attachedModel->_currentAnimation  = anim;
+			(*n)->_attachedModel->_animationLoopTime = 0.0f;
 		}
 }
 
@@ -513,44 +548,60 @@ void Model::advanceTime(float dt) {
 }
 
 void Model::manageAnimations(float dt) {
-	float lastFrame = _elapsedTime;
-	float nextFrame = _elapsedTime + dt;
-	_elapsedTime = nextFrame;
+	float lastFrame = _animationLoopTime;
+	float nextFrame = _animationLoopTime + _animationSpeed * dt;
+
+	// No animation and no new one scheduled? Select a default one
+	if (!_currentAnimation && !_nextAnimation)
+		playDefaultAnimation();
 
 	// Start a new animation if scheduled, interrupting the currently playing animation
 	if (_nextAnimation) {
 		setCurrentAnimation(_nextAnimation);
-		_nextAnimation    = 0;
+		_nextAnimation = 0;
 
+		dt           = 0.0f;
 		lastFrame    = 0.0f;
 		nextFrame    = 0.0f;
 	}
 
-	// Animation finished?
-	if (_currentAnimation && (nextFrame >= _currentAnimation->getLength())) {
-		// Update the loop counter. If it's 0, then end the animation; otherwise, restart it
+	if (!_currentAnimation)
+		return;
 
-		if (_loopAnimation != 0) {
-			if (_loopAnimation > 0)
-				_loopAnimation--;
+	// The loop of the animation ended: make sure to play the last frame
+	if ((lastFrame < _animationLoopLength) && (nextFrame >= _animationLoopLength)) {
+		_currentAnimation->update(this, lastFrame, _animationLoopLength);
 
-			lastFrame    = 0.0f;
-			nextFrame    = 0.0f;
-		} else
-			setCurrentAnimation(0);
+		_animationTime    += dt;
+		_animationLoopTime = _animationLoopLength;
+		return;
 	}
 
-	// No animation, select a default one
-	if (!_currentAnimation) {
-		setCurrentAnimation(selectDefaultAnimation());
+	// The animation has run its requested course: return to the default animation.
+	if ((_animationLength >= 0.0f) && (_animationTime >= _animationLength)) {
+		playDefaultAnimation();
+		setCurrentAnimation(_nextAnimation);
+		_nextAnimation = 0;
 
-		lastFrame    = 0.0f;
-		nextFrame    = 0.0f;
+		if (_currentAnimation)
+			_currentAnimation->update(this, 0.0f, 0.0f);
+
+		return;
 	}
 
-	// Update the animation, if we have any
-	if (_currentAnimation)
-		_currentAnimation->update(this, lastFrame, nextFrame);
+	// Start the next loop of the animation
+	if (lastFrame >= _animationLoopLength) {
+		_currentAnimation->update(this, 0.0f, 0.0f);
+
+		lastFrame = 0.0f;
+		nextFrame = _animationSpeed * dt;
+	}
+
+	// Update the animation
+	_currentAnimation->update(this, lastFrame, nextFrame);
+
+	_animationTime    += dt;
+	_animationLoopTime = nextFrame;
 }
 
 void Model::render(RenderPass pass) {

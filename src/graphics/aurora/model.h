@@ -150,9 +150,21 @@ public:
 	 *
 	 *  @param anim      The animation to play.
 	 *  @param restart   Whether to restart the animation if it's already playing.
+	 *  @param length    The length in seconds the animation should play for. If 0.0f,
+	 *                   play the animation for one full loop. If negative, loop indefinitely.
+	 *  @param speed     The speed the animation should play at. 1.0f is normal speed.
+	 */
+	void playAnimation(const Common::UString &anim, bool restart = true,
+	                   float length = 0.0f, float speed = 1.0f);
+
+	/** Play a named animation a number of loop iterations.
+	 *
+	 *  @param anim      The animation to play.
+	 *  @param restart   Whether to restart the animation if it's already playing.
 	 *  @param loopCount Number of times to loop the animation. Negative for loop indefinitely.
 	 */
-	void playAnimation(const Common::UString &anim, bool restart = true, int32 loopCount = 0);
+	void playAnimationCount(const Common::UString &anim, bool restart = true, int32 loopCount = 0);
+
 	/** Play a default idle animation. */
 	void playDefaultAnimation();
 
@@ -211,8 +223,6 @@ protected:
 	Animation *_currentAnimation; ///< The currently playing animations.
 	Animation *_nextAnimation;    ///< The animation that's scheduled next.
 
-	int32 _loopAnimation; ///< Number of times to loop the current animation.
-
 	float _animationScale; ///< The scale of the animation.
 
 	/** All default animations, sorted from least to most probable. */
@@ -259,7 +269,13 @@ private:
 	bool _drawSkeleton;
 	bool _drawSkeletonInvisible;
 
-	float _elapsedTime; ///< Track animation duration.
+	float _animationSpeed;  ///< The speed the current animation should run at.
+	float _animationLength; ///< The time the current animation should run for.
+	float _animationTime;   ///< The time the current animation has played.
+
+	float _animationLoopLength; ///< The length of one loop of the current animation.
+	float _animationLoopTime;   ///< The time the current loop of the current animation has played.
+
 
 	/** Create the list of all state names. */
 	void createStateNamesList(std::list<Common::UString> *stateNames = 0);

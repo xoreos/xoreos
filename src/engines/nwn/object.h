@@ -152,9 +152,11 @@ public:
 	// Animation
 
 	/** Play an object animation. */
-	virtual void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
+	virtual void playAnimation(const Common::UString &animation = "", bool restart = true,
+	                           float length = 0.0f, float speed = 1.0f);
 	/** Play a default object animation. */
-	virtual void playAnimation(Animation animation);
+	virtual void playAnimation(Animation animation, bool restart = true,
+	                           float length = 0.0f, float speed = 1.0f);
 
 protected:
 	ObjectType _type; ///< The object's type.

@@ -85,9 +85,11 @@ public:
 	// Animation
 
 	/** Play a placeable animation. */
-	void playAnimation(const Common::UString &animation = "", bool restart = true, int32 loopCount = 0);
+	void playAnimation(const Common::UString &animation = "", bool restart = true,
+	                   float length = 0.0f, float speed = 1.0f);
 	/** Play a default placeable animation. */
-	void playAnimation(Animation animation);
+	void playAnimation(Animation animation, bool restart = true,
+	                   float length = 0.0f, float speed = 1.0f);
 
 protected:
 	/** Load placeable-specific properties. */

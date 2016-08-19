@@ -1143,7 +1143,8 @@ bool Creature::createTooltip(Tooltip::Type type) {
 	return true;
 }
 
-void Creature::playAnimation(const Common::UString &animation, bool restart, int32 loopCount) {
+void Creature::playAnimation(const Common::UString &animation, bool restart,
+                             float length, float speed) {
 	if (!_model)
 		return;
 
@@ -1152,7 +1153,7 @@ void Creature::playAnimation(const Common::UString &animation, bool restart, int
 		return;
 	}
 
-	_model->playAnimation(animation, restart, loopCount);
+	_model->playAnimation(animation, restart, length, speed);
 }
 
 void Creature::getPCListInfo(const Common::UString &bic, bool local,

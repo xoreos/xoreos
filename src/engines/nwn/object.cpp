@@ -270,15 +270,14 @@ bool Object::beginConversation(Object *triggerer) {
 	return true;
 }
 
-void Object::playAnimation(const Common::UString &animation,
-                           bool UNUSED(restart), int32 UNUSED(loopCount)) {
-
-	warning("TODO: Object::playAnimation(\"%s\")", animation.c_str());
+void Object::playAnimation(const Common::UString &animation, bool restart, float length, float speed) {
+	warning("TODO: Object::playAnimation(\"%s\", %s, %f, %f",
+	        animation.c_str(), restart ? "true" : "false", length, speed);
 }
 
-void Object::playAnimation(Animation animation) {
-	warning("TODO: Object::playAnimation(%d)", (int) animation);
-	// playAnimation(kAnimations[animation]);
+void Object::playAnimation(Animation animation, bool restart, float length, float speed) {
+	warning("TODO: Object::playAnimation(%d, %s, %f, %f",
+	        (int) animation, restart ? "true" : "false", length, speed);
 }
 
 bool Object::createTooltip(Tooltip::Type UNUSED(type)) {
