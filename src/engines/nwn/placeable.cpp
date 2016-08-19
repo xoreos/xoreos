@@ -264,42 +264,41 @@ bool Placeable::deactivate(Object *user) {
 	return true;
 }
 
+const Common::UString &Placeable::getAnimationSound(Animation animation) {
+	static const Common::UString kEmptySound;
+
+	switch (animation) {
+		case kAnimationPlaceableActivate:
+		case kAnimationPlaceableDeactivate:
+			return _soundClosed;
+
+		case kAnimationPlaceableOpen:
+			return _soundOpened;
+
+		case kAnimationPlaceableClose:
+			return _soundClosed;
+
+		default:
+			break;
+	}
+
+	return kEmptySound;
+}
+
 void Placeable::playAnimation(const Common::UString &animation, bool restart, float length, float speed) {
 	Situated::playAnimation(animation, restart, length, speed);
 }
 
 void Placeable::playAnimation(Animation animation, bool restart, float length, float speed) {
-	// Placeable animations don't loop
-	length = 0.0f;
+	if (!isAnimationLooping(animation))
+		length = 0.0f;
 
-	switch (animation) {
-		case kAnimationPlaceableActivate:
-			playSound(_soundUsed);
-			if (_model)
-				_model->playAnimation("off2on", restart, length, speed);
-			break;
+	const Common::UString  anim  = getPlaceableAnimationName(animation);
+	const Common::UString &sound = getAnimationSound(animation);
 
-		case kAnimationPlaceableDeactivate:
-			playSound(_soundUsed);
-			if (_model)
-				_model->playAnimation("on2off", restart, length, speed);
-			break;
-
-		case kAnimationPlaceableOpen:
-			playSound(_soundOpened);
-			if (_model)
-				_model->playAnimation("close2open", restart, length, speed);
-			break;
-
-		case kAnimationPlaceableClose:
-			playSound(_soundClosed);
-			if (_model)
-				_model->playAnimation("open2close", restart, length, speed);
-			break;
-
-		default:
-			break;
-	}
+	playSound(sound);
+	if (_model)
+		_model->playAnimation(anim, restart, length, speed);
 }
 
 } // End of namespace NWN

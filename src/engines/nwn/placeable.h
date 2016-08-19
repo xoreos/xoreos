@@ -107,6 +107,8 @@ private:
 
 	/** Sync the model's state with the placeable's state. */
 	void setModelState();
+
+	const Common::UString &getAnimationSound(Animation animation);
 };
 
 } // End of namespace NWN
