@@ -68,6 +68,7 @@ void ScriptManager::init() {
 
 	openLuaState();
 	registerDefaultBindings();
+	executeDefaultCode();
 }
 
 void ScriptManager::deinit() {
@@ -285,6 +286,12 @@ const TableRef &ScriptManager::getLuaInstanceForObject(void *object) const {
 	return found->second;
 }
 
+void ScriptManager::injectNewIndexMetaEventIntoTable(const TableRef &table) {
+	const FunctionRef fn = getGlobalFunction("mt_new_index");
+	TableRef metaTable = table.getMetaTable();
+	metaTable.setFunctionAt("__newindex", fn);
+}
+
 void ScriptManager::openLuaState() {
 	_luaState = lua_open();
 	if (!_luaState) {
@@ -343,6 +350,23 @@ void ScriptManager::registerDefaultBindings() {
 	endRegisterClass();
 
 	endRegister();
+}
+
+void ScriptManager::executeDefaultCode() {
+	static const Common::UString fnNewIndexSource =
+	    "function mt_new_index(table, key, value)"
+	    "    local objClass = getmetatable(table).__objectClass"
+	    "    if objClass ~= nil then"
+	    "        local cppInstance = rawget(table, \"CPP_instance\")"
+	    "        if cppInstance[key] ~= nil then"
+	    "            cppInstance[key] = value"
+	    "        end"
+	    "        return"
+	    "    end"
+	    "    rawset(table, key, value)"
+	    "end";
+
+	executeString(fnNewIndexSource);
 }
 
 int ScriptManager::atPanic(lua_State *state) {

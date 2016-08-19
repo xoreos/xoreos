@@ -106,6 +106,8 @@ public:
 	void unsetLuaInstanceForObject(void *object);
 	const TableRef &getLuaInstanceForObject(void *object) const;
 
+	void injectNewIndexMetaEventIntoTable(const TableRef& table);
+
 private:
 	typedef std::map<void *, TableRef> ObjectLuaInstanceMap;
 
@@ -129,6 +131,7 @@ private:
 	void requireDeclaredClass(const Common::UString &name) const;
 
 	void registerDefaultBindings();
+	void executeDefaultCode();
 
 	/** Handler of the Lua panic situations. */
 	static int atPanic(lua_State *state);
