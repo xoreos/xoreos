@@ -165,6 +165,7 @@ void Animation::interpolateOrientation(ModelNode *animNode, ModelNode *target, f
 	const QuaternionKeyFrame &last = animNode->_orientationFrames[lastFrame];
 	if (lastFrame + 1 >= animNode->_orientationFrames.size() || last.time == time) {
 		target->setOrientation(last.x, last.y, last.z, Common::rad2deg(acos(last.q) * 2.0));
+		return;
 	}
 
 	const QuaternionKeyFrame &next = animNode->_orientationFrames[lastFrame + 1];
