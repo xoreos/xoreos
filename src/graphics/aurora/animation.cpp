@@ -131,7 +131,7 @@ void Animation::interpolatePosition(ModelNode *animNode, ModelNode *target, floa
 	}
 
 	const PositionKeyFrame &last = animNode->_positionFrames[lastFrame];
-	if (lastFrame + 1 >= animNode->_positionFrames.size() || last.time == time) {
+	if (lastFrame + 1 >= animNode->_positionFrames.size() || last.time >= time) {
 		target->setPosition(last.x * scale, last.y * scale, last.z * scale);
 		return;
 	}
@@ -163,7 +163,7 @@ void Animation::interpolateOrientation(ModelNode *animNode, ModelNode *target, f
 	}
 
 	const QuaternionKeyFrame &last = animNode->_orientationFrames[lastFrame];
-	if (lastFrame + 1 >= animNode->_orientationFrames.size() || last.time == time) {
+	if (lastFrame + 1 >= animNode->_orientationFrames.size() || last.time >= time) {
 		target->setOrientation(last.x, last.y, last.z, Common::rad2deg(acos(last.q) * 2.0));
 		return;
 	}
