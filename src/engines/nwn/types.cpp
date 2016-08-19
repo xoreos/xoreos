@@ -143,7 +143,7 @@ Common::UString getPlaceableAnimationName(Animation animation) {
 
 	for (size_t i = 0; i < ARRAYSIZE(kAnimations); i++)
 		if (animation == kAnimations[i].animation)
-			return kAnimations[i].nameSimple;
+			return kAnimations[i].nameComplex;
 
 	return "";
 }
