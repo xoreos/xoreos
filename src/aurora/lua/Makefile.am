@@ -30,6 +30,7 @@ noinst_HEADERS = \
                  table.h \
                  function.h \
                  stackguard.h \
+                 util.h \
                  types.h \
                  $(EMPTY)
 
@@ -40,4 +41,5 @@ libluascript_la_SOURCES = \
                           table.cpp \
                           function.cpp \
                           stackguard.cpp \
+                          util.cpp \
                           $(EMPTY)
