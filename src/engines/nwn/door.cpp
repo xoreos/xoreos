@@ -285,42 +285,45 @@ void Door::evaluateLink() {
 	_evaluatedLink = true;
 }
 
+const Common::UString &Door::getAnimationSound(Animation animation) {
+	static const Common::UString kEmptySound;
+
+	switch (animation) {
+		case kAnimationDoorClose:
+			return _soundClosed;
+
+		case kAnimationDoorOpen1:
+			return _soundOpened;
+
+		case kAnimationDoorOpen2:
+			return _soundOpened;
+
+		case kAnimationDoorDestroy:
+			return _soundDestroyed;
+
+		default:
+			break;
+	}
+
+	return kEmptySound;
+}
+
 void Door::playAnimation(const Common::UString &animation, bool restart, float length, float speed) {
 	Situated::playAnimation(animation, restart, length, speed);
 }
 
 void Door::playAnimation(Animation animation, bool restart, float length, float speed) {
-	// Door animations don't loop
-	length = 0.0f;
+	if (!isAnimationLooping(animation))
+		length = 0.0f;
 
-	switch (animation) {
-		case kAnimationDoorClose:
-			playSound(_soundClosed);
-			if (_model)
-				_model->playAnimation("closing1", restart, length, speed);
-			break;
+	const bool alternate = _state == kStateOpened2;
 
-		case kAnimationDoorOpen1:
-			playSound(_soundOpened);
-			if (_model)
-				_model->playAnimation("opening1", restart, length, speed);
-			break;
+	const Common::UString  anim  = getDoorAnimationName(animation, alternate);
+	const Common::UString &sound = getAnimationSound(animation);
 
-		case kAnimationDoorOpen2:
-			playSound(_soundOpened);
-			if (_model)
-				_model->playAnimation("opening2", restart, length, speed);
-			break;
-
-		case kAnimationDoorDestroy:
-			playSound(_soundDestroyed);
-			if (_model)
-				_model->playAnimation("die", restart, length, speed);
-			break;
-
-		default:
-			break;
-	}
+	playSound(sound);
+	if (_model)
+		_model->playAnimation(anim, restart, length, speed);
 }
 
 } // End of namespace NWN

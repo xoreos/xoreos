@@ -128,6 +128,8 @@ private:
 	void setModelState();
 	/** Evaluate our link. */
 	void evaluateLink();
+
+	const Common::UString &getAnimationSound(Animation animation);
 };
 
 } // End of namespace NWN
