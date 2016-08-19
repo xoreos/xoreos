@@ -163,6 +163,10 @@ Common::UString getDoorAnimationName(Animation animation, bool alternate) {
 	return "";
 }
 
+bool isAnimationLooping(Animation animation) {
+	return (animation >= kAnimationLoopingPause) && (animation <= kAnimationLoopingCustom10);
+}
+
 } // End of namespace NWN
 
 } // End of namespace Engines

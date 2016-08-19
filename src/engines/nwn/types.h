@@ -304,6 +304,9 @@ Common::UString getPlaceableAnimationName(Animation animation);
  */
 Common::UString getDoorAnimationName(Animation animation, bool alternate = false);
 
+/** Return true if the specified animation allows looping. */
+bool isAnimationLooping(Animation animation);
+
 } // End of namespace NWN
 
 } // End of namespace Engines
