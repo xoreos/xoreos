@@ -356,13 +356,12 @@ void Functions::playAnimation(Aurora::NWScript::FunctionContext &ctx) {
 	if (!object)
 		return;
 
-	Animation animation = (Animation) ctx.getParams()[0].getInt();
+	const Animation animation = (Animation) ctx.getParams()[0].getInt();
 
-	// TODO: speed, second
-	// float speed   = ctx.getParams()[1].getFloat();
-	// float seconds = ctx.getParams()[2].getFloat();
+	const float speed   = ctx.getParams()[1].getFloat();
+	const float seconds = ctx.getParams()[2].getFloat();
 
-	object->playAnimation(animation);
+	object->playAnimation(animation, true, seconds, speed);
 }
 
 void Functions::jumpToLocation(Aurora::NWScript::FunctionContext &ctx) {

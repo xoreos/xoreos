@@ -239,8 +239,13 @@ public:
 
 	// Animation
 
+	/** Play a creature animation. */
 	void playAnimation(const Common::UString &animation = "", bool restart = true,
 	                   float length = 0.0f, float speed = 1.0f);
+	/** Play a default creature animation. */
+	void playAnimation(Animation animation, bool restart = true,
+	                   float length = 0.0f, float speed = 1.0f);
+
 
 	/** Return the information needed for a character list. */
 	static void getPCListInfo(const Common::UString &bic, bool local,

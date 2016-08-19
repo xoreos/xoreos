@@ -1156,6 +1156,23 @@ void Creature::playAnimation(const Common::UString &animation, bool restart,
 	_model->playAnimation(animation, restart, length, speed);
 }
 
+void Creature::playAnimation(Animation animation, bool restart, float length, float speed) {
+	if (!_model)
+		return;
+
+	if (!isAnimationLooping(animation))
+		length = 0.0f;
+
+	Common::UString anim = getCreatureAnimationName(animation, false);
+	if (_model->hasAnimation(anim))
+		anim = getCreatureAnimationName(animation, true);
+
+	warning("Creature::playAnimation(%d = \"%s\", %s, %f, %f)", (int) animation, anim.c_str(),
+	        restart ? "true" : "false", length, speed);
+
+	playAnimation(anim, restart, length, speed);
+}
+
 void Creature::getPCListInfo(const Common::UString &bic, bool local,
                              Common::UString &name, Common::UString &classes,
                              Common::UString &portrait) {
