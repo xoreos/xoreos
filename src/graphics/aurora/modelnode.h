@@ -241,6 +241,8 @@ public:
 
 	void setParent(ModelNode *parent); ///< Set the node's parent.
 
+	std::list<ModelNode *> &getChildren(); ///< Get the node's children.
+
 	/** Is this node in front of that other node? */
 	bool isInFrontOf(const ModelNode &node) const;
 

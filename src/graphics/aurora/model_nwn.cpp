@@ -530,6 +530,18 @@ ModelNode_NWN_Binary::ModelNode_NWN_Binary(Model &model) : ModelNode(model) {
 ModelNode_NWN_Binary::~ModelNode_NWN_Binary() {
 }
 
+Common::UString ModelNode_NWN_Binary::loadName(Model_NWN::ParserContext &ctx) {
+	size_t pos = ctx.mdl->pos();
+
+	ctx.mdl->skip(32); // Function pointers, inherit color flag, part number
+
+	Common::UString name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+
+	ctx.mdl->seek(pos);
+
+	return name;
+}
+
 void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->skip(24); // Function pointers
 
@@ -620,6 +632,8 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
+		ctx.mdl->seek(ctx.offModelData + *child);
+
 		ctx.hasPosition    = false;
 		ctx.hasOrientation = false;
 
@@ -628,10 +642,45 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 
 		childNode->setParent(this);
 
-		ctx.mdl->seek(ctx.offModelData + *child);
+		checkDuplicateNode(ctx, childNode);
+
 		childNode->load(ctx);
 	}
 
+}
+
+void ModelNode_NWN_Binary::checkDuplicateNode(Model_NWN::ParserContext &ctx, ModelNode_NWN_Binary *newNode) {
+	// Read the node's name and check if a node with that name already exists
+	Common::UString name = ModelNode_NWN_Binary::loadName(ctx);
+
+	ModelNode_NWN_Binary *oldChildNode = 0;
+	for (std::list<ModelNode *>::iterator n = ctx.nodes.begin(); n != ctx.nodes.end(); ++n) {
+		if ((*n)->getName().equalsIgnoreCase(name)) {
+			oldChildNode = dynamic_cast<ModelNode_NWN_Binary *>(*n);
+			break;
+		}
+	}
+
+	// If there isn't, we're done
+	if (!oldChildNode)
+		return;
+
+	// If it there, reparent its children, remove it from its parent and delete it
+
+	warning("Duplicate node \"%s\" in state \"%s\" in model \"%s\"",
+	        name.c_str(), ctx.state->name.c_str(), _model->getName().c_str());
+
+	for (std::list<ModelNode *>::const_iterator c = oldChildNode->getChildren().begin();
+	     c != oldChildNode->getChildren().end(); ++c) {
+
+		(*c)->setParent(newNode);
+	}
+
+	if (oldChildNode->getParent())
+		oldChildNode->getParent()->getChildren().remove(oldChildNode);
+
+	ctx.nodes.remove(oldChildNode);
+	delete oldChildNode;
 }
 
 struct Face {

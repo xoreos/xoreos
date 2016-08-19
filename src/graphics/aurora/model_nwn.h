@@ -102,7 +102,11 @@ public:
 
 	void load(Model_NWN::ParserContext &ctx);
 
+	static Common::UString loadName(Model_NWN::ParserContext &ctx);
+
 private:
+	void checkDuplicateNode(Model_NWN::ParserContext &ctx, ModelNode_NWN_Binary *newNode);
+
 	void readMesh(Model_NWN::ParserContext &ctx);
 	void readAnim(Model_NWN::ParserContext &ctx);
 

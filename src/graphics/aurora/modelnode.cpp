@@ -108,6 +108,10 @@ void ModelNode::setParent(ModelNode *parent) {
 	}
 }
 
+std::list<ModelNode *> &ModelNode::getChildren() {
+	return _children;
+}
+
 const Common::UString &ModelNode::getName() const {
 	return _name;
 }
