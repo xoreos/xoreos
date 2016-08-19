@@ -113,6 +113,25 @@ const ModelNode *Animation::getNode(const Common::UString &node) const {
 	return n->second->_nodedata;
 }
 
+/** Return the dot product of two quaternions. */
+static float dotQuaternion(float x1, float y1, float z1, float q1,
+                           float x2, float y2, float z2, float q2) {
+
+	return x1 * x2 + y1 * y2 + z1 * z2 + q1 * q2;
+}
+
+/** Normalize a quaternion. */
+static void normQuaternion(float  xIn , float  yIn , float  zIn , float  qIn,
+                           float &xOut, float &yOut, float &zOut, float &qOut) {
+
+	const float magnitude = sqrt(dotQuaternion(xIn, yIn, zIn, qIn, xIn, yIn, zIn, qIn));
+
+	xOut = xIn / magnitude;
+	yOut = yIn / magnitude;
+	zOut = zIn / magnitude;
+	qOut = qIn / magnitude;
+}
+
 void Animation::interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale) const {
 	// If only one keyframe, don't interpolate, just set the only position
 	if (animNode->_positionFrames.size() == 1) {
@@ -171,10 +190,20 @@ void Animation::interpolateOrientation(ModelNode *animNode, ModelNode *target, f
 	const QuaternionKeyFrame &next = animNode->_orientationFrames[lastFrame + 1];
 
 	const float f = (time - last.time) / (next.time - last.time);
-	const float x = f * next.x + (1.0f - f) * last.x;
-	const float y = f * next.y + (1.0f - f) * last.y;
-	const float z = f * next.z + (1.0f - f) * last.z;
-	const float q = f * next.q + (1.0f - f) * last.q;
+
+	/* If the angle is > 90°, we need to flip the direction of one quaternion to
+	   get a smooth transition instead of wild jumps. */
+	const float angle = acos(dotQuaternion(last.x, last.y, last.z, last.q, next.x, next.y, next.z, next.q));
+	const float dir   = (angle >= (M_PI / 2)) ? -1.0f : 1.0f;
+
+	float x = f * dir * next.x + (1.0f - f) * last.x;
+	float y = f * dir * next.y + (1.0f - f) * last.y;
+	float z = f * dir * next.z + (1.0f - f) * last.z;
+	float q = f * dir * next.q + (1.0f - f) * last.q;
+
+	// Normalize the result for slightly better results
+	normQuaternion(x, y, z, q, x, y, z, q);
+
 	target->setOrientation(x, y, z, Common::rad2deg(acos(q) * 2.0));
 }
 
