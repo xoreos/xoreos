@@ -358,8 +358,38 @@ void Functions::playAnimation(Aurora::NWScript::FunctionContext &ctx) {
 
 	const Animation animation = (Animation) ctx.getParams()[0].getInt();
 
-	const float speed   = ctx.getParams()[1].getFloat();
-	const float seconds = ctx.getParams()[2].getFloat();
+	float speed   = ctx.getParams()[1].getFloat();
+	float seconds = ctx.getParams()[2].getFloat();
+
+	if (isAnimationLooping(animation)) {
+		/* Looping animations. Animations that can play for a variable amount
+		   of time, like talking or meditating. */
+
+		// Length of 0 seconds? Don't play the animation.
+		if (seconds == 0.0f)
+			return;
+
+		if (seconds < 0.0f) {
+			warning("Functions::%s(): Seconds == %f", ctx.getName().c_str(), seconds);
+			return;
+		}
+
+		if (speed <= 0.0f) {
+			warning("Functions::%s(): Speed == %f", ctx.getName().c_str(), speed);
+			return;
+		}
+
+	} else {
+		/* Fire-and-forget animations. Simple one-action animations, like
+		   bowing, drinking from a flask, etc. On these animations, the speed
+		   is ignored; they're always played a normal speed. Likewise, the
+		   animation length (in seconds) is ignored; they're always played
+		   one single time. We set the length to zero so that our animation
+		   system can figure out the specifics. */
+
+		speed   = 1.0f;
+		seconds = 0.0f;
+	}
 
 	object->playAnimation(animation, true, seconds, speed);
 }
