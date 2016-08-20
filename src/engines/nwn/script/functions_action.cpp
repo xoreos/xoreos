@@ -158,30 +158,11 @@ void Functions::actionStartConversation(Aurora::NWScript::FunctionContext &ctx) 
 }
 
 void Functions::actionPlayAnimation(Aurora::NWScript::FunctionContext &ctx) {
-	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
-	if (!object)
-		return;
-
-	Animation animation = (Animation) ctx.getParams()[0].getInt();
-
-	// TODO: speed, second
-	// float speed   = ctx.getParams()[1].getFloat();
-	// float seconds = ctx.getParams()[2].getFloat();
-
-	object->playAnimation(animation);
+	playAnimation(ctx);
 }
 
 void Functions::actionJumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
-	NWN::Object   *object = NWN::ObjectContainer::toObject(ctx.getCaller());
-	NWN::Location *moveTo = NWN::ObjectContainer::toLocation(ctx.getParams()[0].getEngineType());
-
-	if (!object || !moveTo)
-		return;
-
-	float x, y, z;
-	moveTo->getPosition(x, y, z);
-
-	jumpTo(object, moveTo->getArea(), x, y, z);
+	jumpToLocation(ctx);
 }
 
 void Functions::actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx) {
@@ -200,19 +181,7 @@ void Functions::actionMoveToLocation(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::actionJumpToObject(Aurora::NWScript::FunctionContext &ctx) {
-	// TODO: walkStraightLineToPoint
-	// bool walkStraightLineToPoint = ctx.getParams()[1].getInt() != 0;
-
-	NWN::Object *object = NWN::ObjectContainer::toObject(ctx.getCaller());
-	NWN::Object *moveTo = NWN::ObjectContainer::toObject(getParamObject(ctx, 0));
-
-	if (!object || !moveTo)
-		return;
-
-	float x, y, z;
-	moveTo->getPosition(x, y, z);
-
-	jumpTo(object, moveTo->getArea(), x, y, z);
+	jumpToObject(ctx);
 }
 
 void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
