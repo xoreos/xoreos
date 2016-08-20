@@ -393,8 +393,15 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 	// Add our bounding box, creating the absolute bounding box
 	_absoluteBoundBox = parentPosition;
 	_absoluteBoundBox.add(_boundBox);
-	_absoluteBoundBox.absolutize();
 
+	// If this node is empty, add the root state node
+	if (_boundBox.empty()) {
+		ModelNode *rootStateNode = _model->getNode("", _name);
+		if (rootStateNode)
+			_absoluteBoundBox.add(rootStateNode->_boundBox);
+	}
+
+	_absoluteBoundBox.absolutize();
 
 	// Recurse into the children
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
