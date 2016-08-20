@@ -381,9 +381,7 @@ void Model::setState(const Common::UString &name) {
 
 	_currentState = state;
 
-	// TODO: Do we need to recreate the bounding box on a state change?
-
-	// createBound();
+	createBound();
 
 	if (visible) {
 		show();
@@ -590,6 +588,7 @@ void Model::manageAnimations(float dt) {
 		if (_currentAnimation)
 			_currentAnimation->update(this, 0.0f, 0.0f);
 
+		createBound();
 		return;
 	}
 
@@ -599,6 +598,8 @@ void Model::manageAnimations(float dt) {
 
 		lastFrame = 0.0f;
 		nextFrame = _animationSpeed * dt;
+
+		createBound();
 	}
 
 	// Update the animation
@@ -606,6 +607,9 @@ void Model::manageAnimations(float dt) {
 
 	_animationTime    += dt;
 	_animationLoopTime = nextFrame;
+
+	if (nextFrame == 0.0f)
+		createBound();
 }
 
 void Model::render(RenderPass pass) {
