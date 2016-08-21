@@ -43,6 +43,10 @@ const float kHAlignLeft   = 0.0f;
 const float kHAlignCenter = 0.5f;
 const float kHAlignRight  = 1.0f;
 
+const float kVAlignTop     = 1.0f;
+const float kVAlignMiddle  = 0.5f;
+const float kVAlignBottom  = 0.0f;
+
 /** The display type of a model. */
 enum ModelType {
 	kModelTypeObject   = kRenderableTypeObject,  ///< A real object in the game world.
