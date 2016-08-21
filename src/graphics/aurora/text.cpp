@@ -34,9 +34,9 @@ namespace Graphics {
 namespace Aurora {
 
 Text::Text(const FontHandle &font, const Common::UString &str,
-		float r, float g, float b, float a, float halign) :
+		float r, float g, float b, float a, float halign, float valign) :
 	Graphics::GUIElement(Graphics::GUIElement::kGUIElementFront),
-	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0f), _y(0.0f), _halign(halign),
+	_r(r), _g(g), _b(b), _a(a), _font(font), _x(0.0f), _y(0.0f), _halign(halign),_valign(valign),
 	_disableColorTokens(false) {
 
 	set(str);
@@ -96,6 +96,10 @@ void Text::unsetColor() {
 
 void Text::setHorizontalAlign(float halign) {
 	_halign = halign;
+}
+
+void Text::setVerticalAlign(float valign) {
+	_valign = valign;
 }
 
 const Common::UString &Text::get() const {
