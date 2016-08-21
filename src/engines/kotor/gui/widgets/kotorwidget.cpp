@@ -35,6 +35,7 @@
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/highlightabletext.h"
 #include "src/graphics/aurora/highlightableguiquad.h"
+#include "src/graphics/aurora/types.h"
 
 #include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
@@ -370,10 +371,10 @@ KotORWidget::Text KotORWidget::createText(const Aurora::GFF3Struct &gff) {
 
 		// TODO: KotORWidget::getText(): Alignment
 		if (alignment == 10) {
-			text.halign = 0.5f;
+			text.halign = Graphics::Aurora::kHAlignCenter;
 			text.valign = 1.0f;
 		} else if (alignment == 18) {
-			text.halign = 0.5f;
+			text.halign = Graphics::Aurora::kHAlignCenter;
 			text.valign = 0.5f;
 		}
 	}
