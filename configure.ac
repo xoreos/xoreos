@@ -107,6 +107,16 @@ fi
 
 AC_SUBST(LTO)
 
+dnl Optimize against local CPU
+AC_ARG_WITH([native], [AS_HELP_STRING([--with-native], [Pass -march=native to the compiler to optimize directly against the local CPU instead of generating a more generic build @<:@default=no@:>@])], [], [with_native=no])
+
+NATIVE=""
+if test "x$with_native" = "xyes"; then
+	AX_CHECK_COMPILER_FLAGS_VAR([C], [NATIVE], [-march=native])
+fi
+
+AC_SUBST(NATIVE)
+
 dnl Release version number
 AC_ARG_WITH([release], [AS_HELP_STRING([--with-release=VER], [Set the version suffix to VER instead of the git revision. If no VER is given, do not add a version suffix at all])], [], [with_release=no])
 
