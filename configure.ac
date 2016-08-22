@@ -86,7 +86,7 @@ AC_SUBST(WARN_CXX)
 AC_ARG_WITH([std], [AS_HELP_STRING([--without-std], [Compile without specifying the C/C++ standard to follow @<:@default=no@:>@])], [], [with_std=yes])
 
 dnl C/C++ dialect
-if test "x$with_warnings" = "xno"; then
+if test "x$with_std" = "xno"; then
 	STD_C=""
 	STD_CXX""
 else
