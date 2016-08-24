@@ -33,6 +33,7 @@ EMPTY =
 
 noinst_HEADERS     =
 noinst_LTLIBRARIES =
+check_LTLIBRARIES  =
 
 bin_PROGRAMS =
 

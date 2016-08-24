@@ -316,6 +316,15 @@ endif()
 include_directories(${GLEW_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${GLEW_LIBRARIES})
 
+# pthreads, for our unit tests
+if(NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "MinGW")
+  find_package(Threads)
+endif()
+
+set(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT})
+if(CMAKE_USE_PTHREADS_INIT)
+  set(PTHREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
+endif()
 
 # use our own version of lua, as we will have to support the Witcher lua scripts
 parse_automake(lua/rules.mk)
@@ -326,13 +335,51 @@ list(APPEND XOREOS_LIBRARIES toluapp)
 
 
 # -------------------------------------------------------------------------
+# custom unit testing target, because CMake's make test is pretty useless
+add_custom_target(check ${CMAKE_COMMAND} -E echo CWD=${CMAKE_BINARY_DIR}
+                  COMMAND ${CMAKE_COMMAND} -E echo CMD=${CMAKE_CTEST_COMMAND} -C $<CONFIG>
+                  COMMAND ${CMAKE_COMMAND} -E echo ----------------------------------
+                  COMMAND ${CMAKE_COMMAND} -E env CTEST_OUTPUT_ON_FAILURE=1 ${CMAKE_CTEST_COMMAND} -C $<CONFIG>
+                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
+
+# -------------------------------------------------------------------------
 # xoreos main targets, parsed from the Automake rules.mk files
 include_directories(${PROJECT_SOURCE_DIR})
 add_definitions(-DPACKAGE_STRING="xoreos ${xoreos_VERSION}")
 
 parse_automake(src/rules.mk)
+
+# unit tests depend on xoreos proper
+foreach(AM_TARGET ${AM_TARGETS})
+  add_dependencies(check ${AM_TARGET})
+endforeach()
+
 foreach(AM_PROGRAM ${AM_PROGRAMS})
   target_link_libraries(${AM_PROGRAM} ${XOREOS_LIBRARIES})
+endforeach()
+
+
+# -------------------------------------------------------------------------
+# unit tests, parsed from the Automake rules.mk files
+enable_testing()
+parse_automake(tests/rules.mk)
+
+# they should be build on make check, but not make all
+foreach(AM_TARGET ${AM_TARGETS})
+  set_target_properties(${AM_TARGET} PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD TRUE EXCLUDE_FROM_ALL TRUE)
+  add_dependencies(check ${AM_TARGET})
+
+  # ctest counts skipped tests as failed... -.-
+  get_target_property(TARGET_SOURCES ${AM_TARGET} SOURCES)
+  foreach(TARGET_SOURCE ${TARGET_SOURCES})
+    set_source_files_properties(${TARGET_SOURCE} PROPERTIES APPEND PROPERTY COMPILE_DEFINITIONS "SKIP_RETURN_CODE=0")
+  endforeach()
+endforeach()
+
+foreach(AM_PROGRAM ${AM_PROGRAMS})
+  target_link_libraries(${AM_PROGRAM} ${XOREOS_LIBRARIES})
+  add_test(NAME ${AM_PROGRAM} COMMAND ${AM_PROGRAM})
 endforeach()
 
 

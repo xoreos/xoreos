@@ -163,3 +163,10 @@ Nintendo DS formats
    They are also based on lowlines' file format specifications
    (<http://llref.emutalk.net/docs/>) and the Nintendo DS information
    documentation GBATEK by Martin Korth (<http://problemkaputt.de/gbatek.htm>).
+
+Google Test
+***********
+   xoreos uses Google Test (<https://github.com/google/googletest>), Google's
+   C++ test framework. Google Test is licensed under the terms of the 3-clause
+   BSD license. For the full license text, see tests/googletest/LICENSE or
+   <https://github.com/google/googletest/blob/master/googletest/LICENSE>.

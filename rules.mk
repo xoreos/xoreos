@@ -118,3 +118,5 @@ include lua/rules.mk
 include toluapp/rules.mk
 
 include src/rules.mk
+
+include tests/rules.mk

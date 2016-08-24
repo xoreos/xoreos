@@ -75,6 +75,9 @@ Makefile.am.cmake
 # git versioning stamp
 /src/version/gitstamp
 
+# Unit tests
+/test-suite.log
+
 # Unix binary
 /src/xoreos
 
