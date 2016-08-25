@@ -42,8 +42,6 @@ EXTRA_DIST = \
              dists/debian/source/format \
              dists/fedora/build-from-git.sh \
              dists/fedora/xoreos.spec \
-             lua/README.xoreos \
-             lua/COPYRIGHT \
              .uncrustifyrc \
              CMakeLists.txt \
              cmake/CMakeAM.cmake \

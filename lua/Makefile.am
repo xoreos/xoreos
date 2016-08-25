@@ -79,3 +79,7 @@ liblua_la_SOURCES = \
                     lzio.c \
                     $(EMPTY)
 
+EXTRA_DIST = \
+             README.xoreos \
+             COPYRIGHT \
+             $(EMPTY)
