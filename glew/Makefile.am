@@ -32,3 +32,7 @@ noinst_HEADERS = \
 libglew_la_SOURCES = \
                      glew.c \
                      $(EMPTY)
+
+EXTRA_DIST = \
+             LICENSE.txt \
+             $(EMPTY)

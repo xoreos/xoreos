@@ -42,7 +42,6 @@ EXTRA_DIST = \
              dists/debian/source/format \
              dists/fedora/build-from-git.sh \
              dists/fedora/xoreos.spec \
-             glew/LICENSE.txt \
              lua/README.xoreos \
              lua/COPYRIGHT \
              .uncrustifyrc \
