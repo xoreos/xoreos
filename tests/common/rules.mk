@@ -59,3 +59,8 @@ check_PROGRAMS                    += tests/common/test_ustring
 tests_common_test_ustring_SOURCES  = tests/common/ustring.cpp
 tests_common_test_ustring_LDADD    = $(common_LIBS)
 tests_common_test_ustring_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/common/test_strutil
+tests_common_test_strutil_SOURCES  = tests/common/strutil.cpp
+tests_common_test_strutil_LDADD    = $(common_LIBS)
+tests_common_test_strutil_CXXFLAGS = $(test_CXXFLAGS)
