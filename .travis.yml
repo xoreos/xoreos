@@ -39,7 +39,7 @@ notifications:
     on_failure: always
   irc:
     channels:
-      - "chat.freenode.net#xoreos"
+      - secure: "Q7G5gmVRO67LIAhic4NoeiPRtygiOqjEfPZMIHqgTcpd1OkD8u/Sv9zhfYORfCIqKX1TruL6to6O/4q0HdjQ4NL4GfiNB0iYc+JCinmg80ekPLjjxBIvHmrsvz8onTAmxyYFacXM0YNurCMVvuD0F/yUaiTWwVcRY7PId8T8KPk="
     on_success: change
     on_failure: always
     use_notice: true
