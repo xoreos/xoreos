@@ -36,14 +36,14 @@ namespace Common {
 class DateTime : public boost::posix_time::ptime {
 public:
 	enum TimeZone {
-		kUTC,  ///< Coordinated Universal DateTime (UTC).
+		kUTC,  ///< Coordinated Universal Time (UTC).
 		kLocal ///< The nondescript local time zone.
 	};
 
 	/** Create a DateTime object from the current date and time.
 	 *
 	 *  @param zone The time zone the current date and time should be expressed as.
-	 *              Can be either Coordinated Universal DateTime (UTC), or the local
+	 *              Can be either Coordinated Universal Time (UTC), or the local
 	 *              system time zone.
 	 *
 	 * Note: The time zone is not stored within the object. It is only used to
