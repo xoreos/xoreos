@@ -64,3 +64,8 @@ check_PROGRAMS                    += tests/common/test_strutil
 tests_common_test_strutil_SOURCES  = tests/common/strutil.cpp
 tests_common_test_strutil_LDADD    = $(common_LIBS)
 tests_common_test_strutil_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                      += tests/common/test_binsearch
+tests_common_test_binsearch_SOURCES  = tests/common/binsearch.cpp
+tests_common_test_binsearch_LDADD    = $(common_LIBS)
+tests_common_test_binsearch_CXXFLAGS = $(test_CXXFLAGS)
