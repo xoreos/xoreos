@@ -847,16 +847,16 @@ void ModelNode_Witcher::evaluateTextures(int n, std::vector<Common::UString> &te
 			continue;
 
 		if (lightMapDayNight && (textures[t] == lightMapName)) {
-			// Day (dzień)
+			// Day (dzie&#324;)
 			if      (ResMan.hasResource(textures[t] + "!d", ::Aurora::kResourceImage))
 				textures[t] += "!d";
 			// Morning (rano)
 			else if (ResMan.hasResource(textures[t] + "!r", ::Aurora::kResourceImage))
 				textures[t] += "!r";
-			// Noon (południe)
+			// Noon (po&#322;udnie)
 			else if (ResMan.hasResource(textures[t] + "!p", ::Aurora::kResourceImage))
 				textures[t] += "!p";
-			// Evening (wieczór)
+			// Evening (wiecz&#211;r)
 			else if (ResMan.hasResource(textures[t] + "!w", ::Aurora::kResourceImage))
 				textures[t] += "!w";
 			// Night (noc)
