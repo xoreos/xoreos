@@ -36,8 +36,8 @@ namespace Common {
 enum HashAlgo {
 	kHashNone  = -1, ///< No hashing at all.
 	kHashDJB2  =  0, ///< djb2 hash function by Daniel J. Bernstein.
-	kHashFNV32 =  1, ///< 32bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo.
-	kHashFNV64 =  2, ///< 64bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo.
+	kHashFNV32 =  1, ///< 32bit Fowler-Noll-Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo.
+	kHashFNV64 =  2, ///< 64bit Fowler-Noll-Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo.
 	kHashCRC32 =  3, ///< 32bit CRC.
 	kHashMAX         ///< For range checks.
 };
@@ -72,7 +72,7 @@ static inline uint32 hashStringDJB2(const UString &string, Encoding encoding) {
 }
 // '--- djb2 hash function by Daniel J. Bernstein ---'
 
-// .--- 32bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---.
+// .--- 32bit Fowler-Noll-Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---.
 static inline uint32 hashFNV32(uint32 hash, uint32 c) {
 	return (hash * 16777619) ^ c;
 }
@@ -100,9 +100,9 @@ static inline uint32 hashStringFNV32(const UString &string, Encoding encoding) {
 
 	return hash;
 }
-// '--- 32bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---'
+// '--- 32bit Fowler-Noll-Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---'
 
-// .--- 64bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---.
+// .--- 64bit Fowler-Noll-Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---.
 static inline uint64 hashFNV64(uint64 hash, uint32 c) {
 	return (hash * 1099511628211LL) ^ c;
 }
@@ -130,7 +130,7 @@ static inline uint64 hashStringFNV64(const UString &string, Encoding encoding) {
 
 	return hash;
 }
-// '--- 64bit Fowler–Noll–Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---'
+// '--- 64bit Fowler-Noll-Vo hash by Glenn Fowler, Landon Curt Noll and Phong Vo ---'
 
 /* .--- CRC32, based on the implementation by Gary S. Brown ---.
  *
