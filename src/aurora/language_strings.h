@@ -78,7 +78,7 @@ static const LanguageStrings kLanguageStrings[] = {
 	},
 	{ kLanguageCzech,
 		{ "czech", "\304\215e\305\241tina", "c\314\214es\314\214tina",
-		  "česká", "\304\215esk\303\201", "c\314\214eska\314\201",
+		  "ceska", "\304\215esk\303\201", "c\314\214eska\314\201",
 		  "cs-cz", "cs_cz", "cz-cz", "cz_cz", "ces-cz", "ces_cz", "cze-cz", "cze_cz",
 		  "cs", "cz", "ces", "cze", 0
 		}
