@@ -56,7 +56,8 @@ namespace Engines {
 
 namespace NWN {
 
-Creature::Class::Class() : domain1(UINT8_MAX), domain2(UINT8_MAX), school(UINT8_MAX) {
+Creature::Class::Class() : classID(UINT32_MAX), level(UINT16_MAX), domain1(UINT8_MAX),
+    domain2(UINT8_MAX), school(UINT8_MAX) {
 }
 
 Creature::Associate::Associate(AssociateType t, Creature *a) : type(t), associate(a) {

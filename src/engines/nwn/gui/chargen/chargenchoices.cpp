@@ -39,7 +39,8 @@ namespace Engines {
 
 namespace NWN {
 
-FeatItem::FeatItem() : featId(Aurora::kFieldIDInvalid), list(0) {
+FeatItem::FeatItem() : featId(Aurora::kFieldIDInvalid), list(0), isMasterFeat(false),
+    masterFeat(Aurora::kFieldIDInvalid) {
 }
 
 CharGenChoices::CharGenChoices() : _characterUsed(false) {
@@ -58,6 +59,9 @@ void CharGenChoices::init() {
 
 	_goodness = 101;
 	_loyalty = 101;
+
+	_soundSet = 0;
+	_notUsedSkills = 0;
 
 	_abilities.assign(6, 8);
 	_racialAbilities.assign(6, 0);
