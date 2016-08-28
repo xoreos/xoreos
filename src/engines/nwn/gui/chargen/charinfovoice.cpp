@@ -91,16 +91,22 @@ void CharInfoVoice::reset() {
 void CharInfoVoice::show() {
 	CharGenBase::show();
 
-	WidgetListItemVoice *firstItem = dynamic_cast<WidgetListItemVoice *>(
-	                                     getListBox("SoundSetEdit", true)->getSelectedItem());
+	WidgetListItemVoice *firstItem =
+		dynamic_cast<WidgetListItemVoice *>(getListBox("SoundSetEdit", true)->getSelectedItem());
 
-	playSound(firstItem->_soundSet->getSoundFile(0), Sound::kSoundTypeSFX);
+	if (firstItem)
+		playSound(firstItem->_soundSet->getSoundFile(0), Sound::kSoundTypeSFX);
 }
 
 void CharInfoVoice::callbackActive(Widget& widget) {
 	if (widget.getTag() == "OkButton") {
-		uint32 ssID = dynamic_cast<WidgetListItemVoice *>(getListBox("SoundSetEdit", true)->getSelectedItem())->_soundSetID;
-		_choices->setSoundSet(ssID);
+		WidgetListItemVoice *item =
+			dynamic_cast<WidgetListItemVoice *>(getListBox("SoundSetEdit", true)->getSelectedItem());
+
+		if (!item)
+			return;
+
+		_choices->setSoundSet(item->_soundSetID);
 		_returnCode = 2;
 		return;
 	}

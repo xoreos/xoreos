@@ -168,7 +168,7 @@ void CharFeats::moveFeat(WidgetListItemFeat *item) {
 	WidgetListBox *fromListBox = dynamic_cast<WidgetListBox *>(item->_owner);
 
 	// Check if there is enough remaining feats available.
-	if (fromListBox->getTag() == "AvailBox" && _bonusFeats + _normalFeats == 0)
+	if (!fromListBox || ((fromListBox->getTag() == "AvailBox") && ((_bonusFeats + _normalFeats) == 0)))
 		return;
 
 	if (!item->_feat.isMasterFeat) {
@@ -221,11 +221,11 @@ void CharFeats::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
 		// Add chosen feats to choices.
 		for (std::vector<WidgetListItem *>::iterator it = _knownListBox->begin(); it != _knownListBox->end(); ++it) {
-			WidgetListItemFeat *featItem = dynamic_cast<WidgetListItemFeat *>(*it);
-			if (!featItem->movable())
+			WidgetListItemFeat &featItem = dynamic_cast<WidgetListItemFeat &>(**it);
+			if (!featItem.movable())
 				continue;
 
-			_choices->setFeat(featItem->_feat.featId);
+			_choices->setFeat(featItem._feat.featId);
 		}
 
 		_returnCode = 2;

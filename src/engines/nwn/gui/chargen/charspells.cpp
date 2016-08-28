@@ -170,6 +170,9 @@ void CharSpells::showSpellLevel(size_t spellLevel, bool forceUpdate) {
 
 void CharSpells::moveSpell(WidgetListItemSpell *spellItem) {
 	WidgetListBox *fromListBox = dynamic_cast<WidgetListBox *>(spellItem->_owner);
+	if (!fromListBox)
+		return;
+
 	WidgetListBox *toListBox = 0;
 
 	std::vector<Spell> *fromSpellList;

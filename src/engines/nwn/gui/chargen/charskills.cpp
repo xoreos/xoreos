@@ -170,10 +170,10 @@ void CharSkills::reset() {
 	for (std::vector<WidgetListItem *>::iterator it = skillBox->begin();
 	     it != skillBox->end(); ++it) {
 
-		WidgetListItemSkill *item = dynamic_cast<WidgetListItemSkill *>(*it);
-		spentPoint += (item->_skill.isClassSkill) ? item->_skill.rank : item->_skill.rank * 2;
-		_choices->setSkill(item->_skill.skillID, 0);
-		item->reset();
+		WidgetListItemSkill &item = dynamic_cast<WidgetListItemSkill &>(**it);
+		spentPoint += (item._skill.isClassSkill) ? item._skill.rank : item._skill.rank * 2;
+		_choices->setSkill(item._skill.skillID, 0);
+		item.reset();
 	}
 	changeAvailableSkillRank(spentPoint);
 
@@ -210,7 +210,9 @@ void CharSkills::callbackActive(Widget &widget) {
 	if (widget.getTag() == "SkillsButtonBox") {
 		WidgetListBox       *skillBox = getListBox("SkillsButtonBox", true);
 		WidgetListItemSkill *item     = dynamic_cast<WidgetListItemSkill *>(skillBox->getSelectedItem());
-		setHelpText(item->_skill.name, item->_skill.help);
+
+		if (item)
+			setHelpText(item->_skill.name, item->_skill.help);
 	}
 
 	if (widget.getTag() == "OkButton") {
@@ -218,9 +220,9 @@ void CharSkills::callbackActive(Widget &widget) {
 		WidgetListBox *skillBox = getListBox("SkillsButtonBox", true);
 		for (std::vector<WidgetListItem *>::iterator it = skillBox->begin();
 		     it != skillBox->end(); ++it) {
-			WidgetListItemSkill *item = dynamic_cast<WidgetListItemSkill *>(*it);
-			size_t skillIndex         = item->_skill.skillID;
-			uint8 skillRank           = item->_skill.rank;
+			WidgetListItemSkill &item = dynamic_cast<WidgetListItemSkill &>(**it);
+			size_t skillIndex         = item._skill.skillID;
+			uint8 skillRank           = item._skill.rank;
 
 			_choices->setSkill(skillIndex, skillRank);
 		}
@@ -280,15 +282,15 @@ void CharSkills::setRecommendedSkills() {
 			break;
 
 		for (std::vector<WidgetListItem *>::iterator i = listBox->begin(); i != listBox->end(); ++i) {
-			WidgetListItemSkill *item = dynamic_cast<WidgetListItemSkill *>(*i);
+			WidgetListItemSkill &item = dynamic_cast<WidgetListItemSkill &>(**i);
 
-			if (item->_skill.skillID != *pS)
+			if (item._skill.skillID != *pS)
 				continue;
 
 			// Increase skill rank to the maximum.
 			bool skillFilled = false;
 			while (!skillFilled) {
-				if (!item->changeRank(true))
+				if (!item.changeRank(true))
 					skillFilled = true;
 			}
 

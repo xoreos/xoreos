@@ -57,9 +57,10 @@ void WidgetListItemDomain::mouseUp(uint8 state, float x, float y) {
 	WidgetListItemButton::mouseUp(state, x, y);
 
 	// Show description text
-	CharDomain *gui = dynamic_cast<CharDomain *>(_gui);
-	gui->getEditBox("DomainDesc", true)->setText("fnt_galahad14", _description);
-	gui->getLabel("DomainName", true)->setText(_name);
+	CharDomain &gui = dynamic_cast<CharDomain &>(*_gui);
+
+	gui.getEditBox("DomainDesc", true)->setText("fnt_galahad14", _description);
+	gui.getLabel("DomainName", true)->setText(_name);
 }
 
 void WidgetListItemDomain::mouseDblClick(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
@@ -212,14 +213,15 @@ void CharDomain::setRecommendedDomains() {
 	_choices->getPrefDomains(domain1, domain2);
 	while (_chosenDomains.size() < 2) {
 		for (std::vector<WidgetListItem *>::iterator d = _domainListBox->begin(); d != _domainListBox->end(); ++d) {
-			WidgetListItemDomain *item = dynamic_cast<WidgetListItemDomain *>(*d);
-			if (domain1 == item->_domainId) {
-				moveDomain(item);
+			WidgetListItemDomain &item = dynamic_cast<WidgetListItemDomain &>(**d);
+
+			if (domain1 == item._domainId) {
+				moveDomain(&item);
 				break;
 			}
 
-			if (domain2 == item->_domainId) {
-				moveDomain(item);
+			if (domain2 == item._domainId) {
+				moveDomain(&item);
 				break;
 			}
 		}
