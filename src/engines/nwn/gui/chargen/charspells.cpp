@@ -436,8 +436,7 @@ void CharSpells::setRecommendedSpells() {
 				prefSpells[lvl].erase(prefSpells[lvl].begin());
 				--_remainingSpells[lvl];
 
-				if (prefSpells[lvl].size() == 0)
-					break;
+				break;
 			}
 
 			if (allSpellsMoved && prefSpells[lvl].size() > 0) {
