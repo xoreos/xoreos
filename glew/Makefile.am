@@ -27,6 +27,7 @@ noinst_HEADERS = \
                  glew.h \
                  glxew.h \
                  wglew.h \
+                 eglew.h \
                  $(EMPTY)
 
 libglew_la_SOURCES = \
