@@ -1,0 +1,73 @@
+diff -ur a/eglew.h b/eglew.h
+--- a/eglew.h	2016-07-24 02:43:37.000000000 +0200
++++ b/eglew.h	2016-08-29 19:13:06.000000000 +0200
+@@ -106,7 +106,7 @@
+ #include <KHR/khrplatform.h>
+ #include <EGL/eglplatform.h>
+ 
+-#include <GL/glew.h>
++#include "glew/glew.h"
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff -ur a/glew.c b/glew.c
+--- a/glew.c	2016-07-24 02:43:37.000000000 +0200
++++ b/glew.c	2016-08-29 19:37:32.000000000 +0200
+@@ -30,17 +30,17 @@
+ ** THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ 
+-#include <GL/glew.h>
++#include "glew/glew.h"
+ 
+ #if defined(GLEW_OSMESA)
+ #  define GLAPI extern
+ #  include <GL/osmesa.h>
+ #elif defined(GLEW_EGL)
+-#  include <GL/eglew.h>
++#  include "glew/eglew.h"
+ #elif defined(_WIN32)
+-#  include <GL/wglew.h>
++#  include "glew/wglew.h"
+ #elif !defined(__ANDROID__) && !defined(__native_client__) && !defined(__HAIKU__) && (!defined(__APPLE__) || defined(GLEW_APPLE_GLX))
+-#  include <GL/glxew.h>
++#  include "glew/glxew.h"
+ #endif
+ 
+ #include <stddef.h>  /* For size_t */
+@@ -13535,7 +13535,7 @@
+ 
+   if (GLEW_VERSION_3_0)
+   {
+-    GLint n = 0;
++    GLint nExt = 0;
+     GLint i;
+     PFNGLGETINTEGERVPROC getIntegerv;
+     PFNGLGETSTRINGIPROC getStringi;
+@@ -13549,12 +13549,12 @@
+     #endif
+ 
+     if (getIntegerv)
+-      getIntegerv(GL_NUM_EXTENSIONS, &n);
++      getIntegerv(GL_NUM_EXTENSIONS, &nExt);
+ 
+     /* glGetStringi is OpenGL 3.0 */
+     getStringi = (PFNGLGETSTRINGIPROC) glewGetProcAddress((const GLubyte*)"glGetStringi");
+     if (getStringi)
+-      for (i = 0; i<n; ++i)
++      for (i = 0; i<nExt; ++i)
+       {
+         ext = (const char *) getStringi(GL_EXTENSIONS, i);
+ 
+diff -ur a/glxew.h b/glxew.h
+--- a/glxew.h	2016-07-24 02:43:37.000000000 +0200
++++ b/glxew.h	2016-08-29 19:14:18.000000000 +0200
+@@ -98,7 +98,7 @@
+ #include <X11/Xlib.h>
+ #include <X11/Xutil.h>
+ #include <X11/Xmd.h>
+-#include <GL/glew.h>
++#include "glew/glew.h"
+ 
+ #ifdef __cplusplus
+ extern "C" {

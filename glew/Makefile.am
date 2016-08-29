@@ -37,4 +37,5 @@ libglew_la_SOURCES = \
 EXTRA_DIST = \
              README.xoreos \
              LICENSE.txt \
+             glew.patch \
              $(EMPTY)

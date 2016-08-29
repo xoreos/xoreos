@@ -8,3 +8,5 @@ Changes:
 - Changed include paths to point to the correct files
   within our source tree
 - Silenced compiler warnings about variable shadowing
+
+See also glew.patch for details.
