@@ -10,3 +10,5 @@ Changes:
   src/common/types.h instead
 - Silenced compiler warnings about variable shadowing
 - Removed Windows-style line endings
+
+See also utf8cpp.patch for details.
