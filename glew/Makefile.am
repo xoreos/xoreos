@@ -35,5 +35,6 @@ libglew_la_SOURCES = \
                      $(EMPTY)
 
 EXTRA_DIST = \
+             README.xoreos \
              LICENSE.txt \
              $(EMPTY)

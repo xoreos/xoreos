@@ -1,0 +1,10 @@
+This is a combination of the "src" and "include" directories of the
+GLEW (<http://glew.sourceforge.net/>) 2.0.0 source package.
+The following changes have been applied:
+
+Changes:
+========
+
+- Changed include paths to point to the correct files
+  within our source tree
+- Silenced compiler warnings about variable shadowing
