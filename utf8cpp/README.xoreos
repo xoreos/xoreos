@@ -1,0 +1,12 @@
+This is the source of UTF8-CPP (<http://utfcpp.sourceforge.net/>),
+version 2.3.4. The following changes have been applied:
+
+Changes:
+========
+
+- Changed include paths to point to the correct files
+  within our source tree
+- Replaced uint_8/uint16_t/uint32_t typedefs by including
+  src/common/types.h instead
+- Silenced compiler warnings about variable shadowing
+- Removed Windows-style line endings

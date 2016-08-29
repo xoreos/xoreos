@@ -27,3 +27,7 @@ noinst_HEADERS = \
                  utf8/core.h \
                  utf8/unchecked.h \
                  $(EMPTY)
+
+EXTRA_DIST = \
+             README.xoreos \
+             $(EMPTY)
