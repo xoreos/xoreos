@@ -9,7 +9,6 @@
 
 #ifdef HAVE_CONFIG_H
 	#include "config.h"
-	#undef VERSION
 #endif
 
 #ifdef HAVE_STDINT_H

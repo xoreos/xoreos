@@ -24,8 +24,8 @@ void luaU_print (const Proto* Main);
 
 /* definitions for headers of binary files */
 #define	LUA_SIGNATURE	"\033Lua"	/* binary files start with "<esc>Lua" */
-#define	VERSION		0x50		/* last format change was in 5.0 */
-#define	VERSION0	0x50		/* last major  change was in 5.0 */
+#define	CHUNK_VERSION	0x50		/* last format change was in 5.0 */
+#define	CHUNK_VERSION0	0x50		/* last major  change was in 5.0 */
 
 /* a multiple of PI for testing native format */
 /* multiplying by 1E7 gives non-trivial integer values */

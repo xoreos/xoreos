@@ -143,7 +143,7 @@ static void DumpFunction(const Proto* f, const TString* p, DumpState* D)
 static void DumpHeader(DumpState* D)
 {
  DumpLiteral(LUA_SIGNATURE,D);
- DumpByte(VERSION,D);
+ DumpByte(CHUNK_VERSION,D);
  DumpByte(luaU_endianness(),D);
  DumpByte(sizeof(int),D);
  DumpByte(sizeof(size_t),D);
