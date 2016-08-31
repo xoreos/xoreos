@@ -21,6 +21,8 @@ Someday, ????-??-?? (Version 0.0.5)
 	- VIDEO:
 		- Added debug messages for easier video issue tracing
 	- ENGINES:
+		- NWN:
+			- Partially implemented the character generator
 		- JADE:
 			- Implemented more engine script functions
 	- DIST:
