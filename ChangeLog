@@ -23,6 +23,9 @@ Someday, ????-??-?? (Version 0.0.5)
 	- ENGINES:
 		- NWN:
 			- Partially implemented the character generator
+			- Fixed various issues and glitches in the animation
+			  system, including scaling and frame interpolation
+			- Implemented PlayAnimation() for creatures
 		- JADE:
 			- Implemented more engine script functions
 	- DIST:
