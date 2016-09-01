@@ -40,6 +40,7 @@ namespace Witcher {
 class WitcherEngine;
 
 class Functions;
+class LuaBindings;
 
 class Campaign;
 class Module;
@@ -75,6 +76,7 @@ private:
 	Campaign      *_campaign;
 
 	Functions *_functions;
+	LuaBindings *_bindings;
 
 	::Engines::Console *_console;
 

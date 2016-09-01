@@ -44,6 +44,7 @@ noinst_HEADERS = \
                  script/container.h \
                  script/functions.h \
                  script/function_tables.h \
+                 lua/bindings.h \
                  $(EMPTY)
 
 libwitcher_la_SOURCES = \
@@ -74,4 +75,5 @@ libwitcher_la_SOURCES = \
                         script/functions_action.cpp \
                         script/functions_conversation.cpp \
                         script/functions_sound.cpp \
+                        lua/bindings.cpp \
                         $(EMPTY)

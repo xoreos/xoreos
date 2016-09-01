@@ -31,6 +31,8 @@
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
 
+#include "src/aurora/lua/scriptman.h"
+
 #include "src/events/events.h"
 
 #include "src/engines/witcher/game.h"
@@ -42,6 +44,8 @@
 
 #include "src/engines/witcher/script/functions.h"
 
+#include "src/engines/witcher/lua/bindings.h"
+
 namespace Engines {
 
 namespace Witcher {
@@ -50,11 +54,13 @@ Game::Game(WitcherEngine &engine, ::Engines::Console &console) :
 	_engine(&engine), _campaign(0), _functions(0), _console(&console) {
 
 	_functions = new Functions(*this);
+	_bindings = new LuaBindings();
 }
 
 Game::~Game() {
 	delete _campaign;
 	delete _functions;
+	delete _bindings;
 }
 
 Campaign &Game::getCampaign() {
@@ -71,6 +77,20 @@ Module &Game::getModule() {
 
 void Game::run() {
 	_campaign = new Campaign(*_console);
+
+	// Don't know what are this file for. Seems to be some internal scripts.
+	// They are absent in game resources.
+	LuaScriptMan.addIgnoredFile("global_local");
+	LuaScriptMan.addIgnoredFile("startup_local");
+
+	// This needs a bit more research, so ignore them for now.
+	LuaScriptMan.addIgnoredFile("combatsystem");
+	LuaScriptMan.addIgnoredFile("gui_defs_sum_v2");
+
+	// This are the only files that need to be called manually, I guess.
+	// Other script files are called from Lua scripts.
+	LuaScriptMan.executeFile("global");
+	LuaScriptMan.executeFile("startup");
 
 	while (!EventMan.quitRequested()) {
 		runCampaign();
