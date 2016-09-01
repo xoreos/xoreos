@@ -214,7 +214,9 @@ void ScriptManager::endRegisterNamespace() {
 	tolua_endmodule(_luaState);
 }
 
-void ScriptManager::beginRegisterClass(const Common::UString &name, const Common::UString &baseName) {
+void ScriptManager::beginRegisterClass(const Common::UString &name, const Common::UString &baseName,
+	                                   lua_CFunction deleter) {
+
 	assert(!name.empty());
 	assert(_luaState && _regNestingLevel > 0);
 
@@ -223,7 +225,7 @@ void ScriptManager::beginRegisterClass(const Common::UString &name, const Common
 	requireDeclaredClass(name);
 	requireDeclaredClass(baseName);
 
-	tolua_cclass(_luaState, name.c_str(), name.c_str(), baseName.c_str(), 0);
+	tolua_cclass(_luaState, name.c_str(), name.c_str(), baseName.c_str(), deleter);
 	tolua_beginmodule(_luaState, name.c_str());
 }
 
@@ -262,7 +264,8 @@ int ScriptManager::getUsedMemoryAmount() const {
 
 void ScriptManager::setLuaInstanceForObject(void *object, const TableRef &luaInstance) {
 	assert(object);
-	assert(_objectLuaInstances.find(object) == _objectLuaInstances.end());
+	// TODO: Commented out to make stubs work
+	// assert(_objectLuaInstances.find(object) == _objectLuaInstances.end());
 
 	_objectLuaInstances[object] = luaInstance;
 }

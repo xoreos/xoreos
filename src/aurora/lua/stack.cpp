@@ -297,6 +297,11 @@ bool Stack::isUserTypeAt(int index, const Common::UString &type) const {
 	return checkIndex(index) && tolua_isusertype(&_luaState, index, type.c_str(), 0, &error) != 0;
 }
 
+void Stack::registerGCForTopObject() {
+	assert(getTypeAt(getSize()) == kTypeUserType);
+	tolua_register_gc(&_luaState, getSize());
+}
+
 lua_State &Stack::getLuaState() const {
 	return _luaState;
 }

@@ -25,7 +25,10 @@
 #ifndef AURORA_LUA_UTIL_H
 #define AURORA_LUA_UTIL_H
 
+#include <cassert>
+
 #include "src/aurora/lua/types.h"
+#include "src/aurora/lua/stack.h"
 
 namespace Aurora {
 
@@ -44,8 +47,26 @@ T *getCppObjectFromVariable(const Variable& var) {
 	return reinterpret_cast<T *>(getRawCppObjectFromVariable(var));
 }
 
+template<typename T>
+class DefaultDeleter {
+public:
+	static int function(lua_State *state) {
+		assert(state);
+
+		Stack stack(*state);
+		assert(stack.getSize() == 1);
+
+		T* object = getCppObjectFromStack<T>(stack, 1);
+		delete object;
+
+		return 0;
+	}
+};
+
 } // End of namespace Lua
 
 } // End of namespace Aurora
+
+#define LUA_DEFAULT_DELETER(Type) ::Aurora::Lua::DefaultDeleter<Type>::function
 
 #endif // AURORA_LUA_UTIL_H

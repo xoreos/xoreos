@@ -88,7 +88,9 @@ public:
 	void endRegisterNamespace();
 
 	/** Begin registration of a class. */
-	void beginRegisterClass(const Common::UString &name, const Common::UString &baseName = "");
+	void beginRegisterClass(const Common::UString &name, const Common::UString &baseName = "",
+	                        lua_CFunction deleter = 0);
+
 	/** End registration of the current class. */
 	void endRegisterClass();
 

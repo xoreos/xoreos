@@ -121,6 +121,8 @@ public:
 	 */
 	bool isUserTypeAt(int index, const Common::UString &type = "") const;
 
+	void registerGCForTopObject();
+
 	/** Return the underlying Lua state. */
 	lua_State &getLuaState() const;
 
