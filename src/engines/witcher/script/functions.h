@@ -90,6 +90,8 @@ private:
 
 	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
 
+	void runClientLua(Aurora::NWScript::FunctionContext &ctx);
+
 	// .--- Math, functions_math.cpp
 	void abs (Aurora::NWScript::FunctionContext &ctx);
 	void fabs(Aurora::NWScript::FunctionContext &ctx);

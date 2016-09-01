@@ -32,6 +32,8 @@
 #include "src/aurora/nwscript/functionman.h"
 #include "src/aurora/nwscript/util.h"
 
+#include "src/aurora/lua/scriptman.h"
+
 #include "src/graphics/graphics.h"
 
 #include "src/engines/witcher/types.h"
@@ -97,6 +99,11 @@ void Functions::registerFunctions() {
 void Functions::unimplementedFunction(Aurora::NWScript::FunctionContext &ctx) {
 	warning("TODO: %s %s(%s)", Aurora::NWScript::formatType(ctx.getReturn().getType()).c_str(),
 	                           ctx.getName().c_str(), Aurora::NWScript::formatParams(ctx).c_str());
+}
+
+void Functions::runClientLua(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString code = ctx.getParams()[0].getString();
+	LuaScriptMan.executeString(code);
 }
 
 int32 Functions::getRandom(int min, int max, int32 n) {

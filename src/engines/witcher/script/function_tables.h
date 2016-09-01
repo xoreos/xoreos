@@ -833,7 +833,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 719, "ExportSingleCharacter"             , 0                                              },
 	{ 720, "PlaySoundByStrRef"                 , &Functions::playSoundByStrRef                  },
 	{ 721, "RunClientMacro"                    , 0                                              },
-	{ 722, "RunClientLua"                      , 0                                              },
+	{ 722, "RunClientLua"                      , &Functions::runClientLua                       },
 	{ 723, "EffectRunScript"                   , 0                                              },
 	{ 724, "SetEmotionalState"                 , 0                                              },
 	{ 725, "GetEffectScriptID"                 , 0                                              },
