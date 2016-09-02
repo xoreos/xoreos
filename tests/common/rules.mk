@@ -74,3 +74,8 @@ check_PROGRAMS                     += tests/common/test_datetime
 tests_common_test_datetime_SOURCES  = tests/common/datetime.cpp
 tests_common_test_datetime_LDADD    = $(common_LIBS)
 tests_common_test_datetime_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                          += tests/common/test_memreadstream
+tests_common_test_memreadstream_SOURCES  = tests/common/memreadstream.cpp
+tests_common_test_memreadstream_LDADD    = $(common_LIBS)
+tests_common_test_memreadstream_CXXFLAGS = $(test_CXXFLAGS)
