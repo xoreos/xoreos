@@ -79,3 +79,8 @@ check_PROGRAMS                          += tests/common/test_memreadstream
 tests_common_test_memreadstream_SOURCES  = tests/common/memreadstream.cpp
 tests_common_test_memreadstream_LDADD    = $(common_LIBS)
 tests_common_test_memreadstream_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                           += tests/common/test_memwritestream
+tests_common_test_memwritestream_SOURCES  = tests/common/memwritestream.cpp
+tests_common_test_memwritestream_LDADD    = $(common_LIBS)
+tests_common_test_memwritestream_CXXFLAGS = $(test_CXXFLAGS)
