@@ -104,3 +104,8 @@ check_PROGRAMS                    += tests/common/test_huffman
 tests_common_test_huffman_SOURCES  = tests/common/huffman.cpp
 tests_common_test_huffman_LDADD    = $(common_LIBS)
 tests_common_test_huffman_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                     += tests/common/test_blowfish
+tests_common_test_blowfish_SOURCES  = tests/common/blowfish.cpp
+tests_common_test_blowfish_LDADD    = $(common_LIBS)
+tests_common_test_blowfish_CXXFLAGS = $(test_CXXFLAGS)
