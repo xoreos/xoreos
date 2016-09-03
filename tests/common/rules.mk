@@ -94,3 +94,8 @@ check_PROGRAMS                      += tests/common/test_writefile
 tests_common_test_writefile_SOURCES  = tests/common/writefile.cpp
 tests_common_test_writefile_LDADD    = $(common_LIBS)
 tests_common_test_writefile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                      += tests/common/test_bitstream
+tests_common_test_bitstream_SOURCES  = tests/common/bitstream.cpp
+tests_common_test_bitstream_LDADD    = $(common_LIBS)
+tests_common_test_bitstream_CXXFLAGS = $(test_CXXFLAGS)
