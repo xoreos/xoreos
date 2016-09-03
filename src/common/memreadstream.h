@@ -102,7 +102,8 @@ private:
 	const bool _bigEndian;
 
 public:
-	MemoryReadStreamEndian(const byte *buf, size_t len, bool bigEndian = false);
+	MemoryReadStreamEndian(const byte *dataPtr, size_t dataSize, bool disposeMemory = false,
+	                       bool bigEndian = false);
 	~MemoryReadStreamEndian();
 
 	uint16 readUint16() {
