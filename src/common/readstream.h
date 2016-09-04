@@ -413,6 +413,14 @@ public:
 	uint64 readSint64() {
 		return _bigEndian ? readSint64BE() : readSint64LE();
 	}
+
+	float readIEEEFloat() {
+		return _bigEndian ? readIEEEFloatBE() : readIEEEFloatLE();
+	}
+
+	double readIEEEDouble() {
+		return _bigEndian ? readIEEEDoubleBE() : readIEEEDoubleLE();
+	}
 };
 
 } // End of namespace Common
