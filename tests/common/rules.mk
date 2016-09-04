@@ -114,3 +114,8 @@ check_PROGRAMS                       += tests/common/test_configfile
 tests_common_test_configfile_SOURCES  = tests/common/configfile.cpp
 tests_common_test_configfile_LDADD    = $(common_LIBS)
 tests_common_test_configfile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                      += tests/common/test_configman
+tests_common_test_configman_SOURCES  = tests/common/configman.cpp
+tests_common_test_configman_LDADD    = $(common_LIBS)
+tests_common_test_configman_CXXFLAGS = $(test_CXXFLAGS)
