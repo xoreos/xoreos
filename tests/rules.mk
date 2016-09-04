@@ -31,6 +31,10 @@ test_LIBS  = \
 
 test_CXXFLAGS = $(GTEST_FLAGS) $(AM_CXXFLAGS)
 
+noinst_HEADERS += \
+    tests/skip.h \
+    $(EMPTY)
+
 include tests/version/rules.mk
 include tests/common/rules.mk
 
