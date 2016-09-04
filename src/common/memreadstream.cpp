@@ -116,7 +116,7 @@ const byte *MemoryReadStream::getData() const {
 
 
 MemoryReadStreamEndian::MemoryReadStreamEndian(const byte *dataPtr, size_t dataSize,
-                                               bool disposeMemory, bool bigEndian) :
+                                               bool bigEndian, bool disposeMemory) :
 	MemoryReadStream(dataPtr, dataSize, disposeMemory), _bigEndian(bigEndian) {
 
 }
