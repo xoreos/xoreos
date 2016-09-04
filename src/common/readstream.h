@@ -391,33 +391,27 @@ public:
 	~SeekableSubReadStreamEndian();
 
 	uint16 readUint16() {
-		uint16 val;
-		read(&val, 2);
-		return (_bigEndian) ? TO_BE_16(val) : TO_LE_16(val);
+		return _bigEndian ? readUint16BE() : readUint16LE();
 	}
 
 	uint32 readUint32() {
-		uint32 val;
-		read(&val, 4);
-		return (_bigEndian) ? TO_BE_32(val) : TO_LE_32(val);
+		return _bigEndian ? readUint32BE() : readUint32LE();
 	}
 
 	uint64 readUint64() {
-		uint64 val;
-		read(&val, 8);
-		return (_bigEndian) ? TO_BE_64(val) : TO_LE_64(val);
+		return _bigEndian ? readUint64BE() : readUint64LE();
 	}
 
-	FORCEINLINE int16 readSint16() {
-		return (int16)readUint16();
+	uint16 readSint16() {
+		return _bigEndian ? readSint16BE() : readSint16LE();
 	}
 
-	FORCEINLINE int32 readSint32() {
-		return (int32)readUint32();
+	uint32 readSint32() {
+		return _bigEndian ? readSint32BE() : readSint32LE();
 	}
 
-	FORCEINLINE int64 readSint64() {
-		return (int64)readUint64();
+	uint64 readSint64() {
+		return _bigEndian ? readSint64BE() : readSint64LE();
 	}
 };
 
