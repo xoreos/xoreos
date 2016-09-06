@@ -91,7 +91,8 @@ size_t WriteStream::writeStream(ReadStream &stream) {
 }
 
 void WriteStream::writeString(const UString &str) {
-	write(str.c_str(), std::strlen(str.c_str()));
+	if (write(str.c_str(), std::strlen(str.c_str())) != std::strlen(str.c_str()))
+		throw Exception(kWriteError);
 }
 
 } // End of namespace Common
