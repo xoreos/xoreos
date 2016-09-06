@@ -171,10 +171,27 @@ public:
 		writeUint64BE((uint64)convertIEEEDouble(value));
 	}
 
-	/** Copy n bytes of the given stream into the stream. */
+	/** Copy n bytes of the given stream into the stream.
+	 *
+	 *  Even if less bytes than requested could be written to the
+	 *  stream, all requested bytes will always be read from the
+	 *  input stream.
+	 *
+	 *  @param  stream The stream to read from.
+	 *  @param  n The number of bytes to read from the stream.
+	 *  @return the number of bytes which were actually written.
+	 */
 	size_t writeStream(ReadStream &stream, size_t n);
 
-	/** Copy the complete contents of the given stream. */
+	/** Copy the complete contents of the given stream.
+	 *
+	 *  Even if less bytes than are available in the input stream
+	 *  can be written to this stream, the input stream will always
+	 *  be exhausted to completion.
+	 *
+	 *  @param  stream The stream to read from.
+	 *  @return the number of bytes which were actually written.
+	 */
 	size_t writeStream(ReadStream &stream);
 
 	/** Write the given string to the stream, encoded as UTF-8.
