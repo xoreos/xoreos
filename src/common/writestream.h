@@ -177,7 +177,8 @@ public:
 	/** Copy the complete contents of the given stream. */
 	size_t writeStream(ReadStream &stream);
 
-	/** Write the given string to the stream. No terminating zero byte is written. */
+	/** Write the given string to the stream, encoded as UTF-8.
+	 *  No terminating zero byte is written. */
 	void writeString(const UString &str);
 };
 
