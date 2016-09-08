@@ -174,6 +174,9 @@ public:
 
 	/** Read a multi-bit value from the bit stream. */
 	uint32 getBits(size_t n) {
+		if (n == 0)
+			return 0;
+
 		if (n > 32)
 			throw Exception("Too many bits requested to be read");
 
