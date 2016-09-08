@@ -195,7 +195,7 @@ public:
 
 	/** Add a bit to the n-bit value x, making it an (n+1)-bit value. */
 	void addBit(uint32 &x, size_t n) {
-		if (n > 32)
+		if (n >= 32)
 			throw Exception("Too many bits requested to be read");
 
 		if (isMSB2LSB)
