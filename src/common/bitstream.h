@@ -60,7 +60,7 @@ public:
 	/** Read a multi-bit value from the bit stream. */
 	virtual uint32 getBits(size_t n) = 0;
 
-	/** Add a bit to the value x, making it an n-bit value. */
+	/** Add a bit to the n-bit value x, making it an (n+1)-bit value. */
 	virtual void addBit(uint32 &x, size_t n) = 0;
 
 protected:
@@ -193,7 +193,7 @@ public:
 		return v;
 	}
 
-	/** Add a bit to the value x, making it an n-bit value. */
+	/** Add a bit to the n-bit value x, making it an (n+1)-bit value. */
 	void addBit(uint32 &x, size_t n) {
 		if (n > 32)
 			throw Exception("Too many bits requested to be read");
