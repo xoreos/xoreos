@@ -36,3 +36,7 @@ libtoluapp_la_SOURCES = \
                         tolua_to.c \
                         $(EMPTY)
 
+EXTRA_DIST = \
+             README.xoreos \
+             COPYRIGHT \
+             $(EMPTY)
