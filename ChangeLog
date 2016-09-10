@@ -28,6 +28,8 @@ Someday, ????-??-?? (Version 0.0.5)
 			- Implemented PlayAnimation() for creatures
 		- JADE:
 			- Implemented more engine script functions
+		- WITCHER:
+			- Started implementing Lua script support
 	- DIST:
 		- Added Fedora package build files
 	- MISC:
