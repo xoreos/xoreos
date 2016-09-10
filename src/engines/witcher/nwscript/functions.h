@@ -22,8 +22,8 @@
  *  The Witcher engine functions.
  */
 
-#ifndef ENGINES_WITCHER_SCRIPT_FUNCTIONS_H
-#define ENGINES_WITCHER_SCRIPT_FUNCTIONS_H
+#ifndef ENGINES_WITCHER_NWSCRIPT_FUNCTIONS_H
+#define ENGINES_WITCHER_NWSCRIPT_FUNCTIONS_H
 
 #include "src/aurora/nwscript/types.h"
 
@@ -276,4 +276,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_WITCHER_SCRIPT_FUNCTIONS_H
+#endif // ENGINES_WITCHER_NWSCRIPT_FUNCTIONS_H

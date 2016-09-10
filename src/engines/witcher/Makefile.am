@@ -41,9 +41,9 @@ noinst_HEADERS = \
                  door.h \
                  placeable.h \
                  creature.h \
-                 script/container.h \
-                 script/functions.h \
-                 script/function_tables.h \
+                 nwscript/container.h \
+                 nwscript/functions.h \
+                 nwscript/function_tables.h \
                  lua/bindings.h \
                  $(EMPTY)
 
@@ -64,16 +64,16 @@ libwitcher_la_SOURCES = \
                         door.cpp \
                         placeable.cpp \
                         creature.cpp \
-                        script/container.cpp \
-                        script/functions.cpp \
-                        script/functions_math.cpp \
-                        script/functions_string.cpp \
-                        script/functions_module.cpp \
-                        script/functions_object.cpp \
-                        script/functions_situated.cpp \
-                        script/functions_creature.cpp \
-                        script/functions_action.cpp \
-                        script/functions_conversation.cpp \
-                        script/functions_sound.cpp \
+                        nwscript/container.cpp \
+                        nwscript/functions.cpp \
+                        nwscript/functions_math.cpp \
+                        nwscript/functions_string.cpp \
+                        nwscript/functions_module.cpp \
+                        nwscript/functions_object.cpp \
+                        nwscript/functions_situated.cpp \
+                        nwscript/functions_creature.cpp \
+                        nwscript/functions_action.cpp \
+                        nwscript/functions_conversation.cpp \
+                        nwscript/functions_sound.cpp \
                         lua/bindings.cpp \
                         $(EMPTY)

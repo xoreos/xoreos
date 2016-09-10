@@ -33,7 +33,7 @@
 #include "src/aurora/nwscript/variable.h"
 #include "src/aurora/nwscript/ncsfile.h"
 
-#include "src/engines/witcher/script/container.h"
+#include "src/engines/witcher/nwscript/container.h"
 
 namespace Engines {
 

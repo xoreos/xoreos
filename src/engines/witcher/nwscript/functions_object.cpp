@@ -33,7 +33,7 @@
 #include "src/engines/witcher/object.h"
 #include "src/engines/witcher/creature.h"
 
-#include "src/engines/witcher/script/functions.h"
+#include "src/engines/witcher/nwscript/functions.h"
 
 namespace Engines {
 

@@ -39,7 +39,7 @@
 #include "src/engines/witcher/types.h"
 #include "src/engines/witcher/location.h"
 
-#include "src/engines/witcher/script/container.h"
+#include "src/engines/witcher/nwscript/container.h"
 
 namespace Engines {
 

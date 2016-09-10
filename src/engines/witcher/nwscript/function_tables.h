@@ -47,8 +47,8 @@
  * the order of the functions have to be the same in all three tables.
  */
 
-#ifndef ENGINES_WITCHER_SCRIPT_FUNCTION_TABLES_H
-#define ENGINES_WITCHER_SCRIPT_FUNCTION_TABLES_H
+#ifndef ENGINES_WITCHER_NWSCRIPT_FUNCTION_TABLES_H
+#define ENGINES_WITCHER_NWSCRIPT_FUNCTION_TABLES_H
 
 #include "src/engines/witcher/types.h"
 #include "src/engines/witcher/object.h"
@@ -2669,4 +2669,4 @@ const Functions::FunctionDefaults Functions::kFunctionDefaults[] = {
 
 } // End of namespace Engines
 
-#endif // ENGINES_WITCHER_SCRIPT_TABLES_H
+#endif // ENGINES_WITCHER_NWSCRIPT_FUNCTION_TABLES_H

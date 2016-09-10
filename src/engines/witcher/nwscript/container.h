@@ -22,8 +22,8 @@
  *  An object containing scripts.
  */
 
-#ifndef ENGINES_WITCHER_SCRIPT_CONTAINER_H
-#define ENGINES_WITCHER_SCRIPT_CONTAINER_H
+#ifndef ENGINES_WITCHER_NWSCRIPT_CONTAINER_H
+#define ENGINES_WITCHER_NWSCRIPT_CONTAINER_H
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
@@ -76,4 +76,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_WITCHER_SCRIPT_CONTAINER_H
+#endif // ENGINES_WITCHER_NWSCRIPT_CONTAINER_H

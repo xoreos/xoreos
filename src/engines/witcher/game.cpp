@@ -42,7 +42,7 @@
 #include "src/engines/witcher/module.h"
 #include "src/engines/witcher/area.h"
 
-#include "src/engines/witcher/script/functions.h"
+#include "src/engines/witcher/nwscript/functions.h"
 
 #include "src/engines/witcher/lua/bindings.h"
 
