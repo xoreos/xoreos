@@ -183,6 +183,12 @@ Files: lua/*.h
 Copyright: 1994-2008 Lua.org, PUC-Rio
 License: Expat
 
+Files: toluapp/*.h
+       toluapp/*.c
+Copyright: 2003 Waldemar Celes, TeCGraf/PUC-Rio
+           2009 Ariel Manzur
+License: Expat
+
 Files: utf8cpp/utf8.h
        utf8cpp/utf8/*.h
 Copyright: 2006 Nemanja Trifunovic
