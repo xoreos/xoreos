@@ -8,5 +8,7 @@ Changes:
 - Changed include paths to point to the correct files
   within our source tree
 - Silenced compiler warnings about variable shadowing
+- Renamed glew.c to glew.cpp, to compile it with a C++
+  compiler
 
 See also glew.patch for details.

@@ -31,7 +31,7 @@ noinst_HEADERS = \
                  $(EMPTY)
 
 libglew_la_SOURCES = \
-                     glew.c \
+                     glew.cpp \
                      $(EMPTY)
 
 EXTRA_DIST = \
