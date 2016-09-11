@@ -12,3 +12,7 @@ Changes:
   where sizeof(void *) < sizeof(lu_hash)
 - Forced a 32-bit bytecode on all platforms
 - Renamed *.c to *.cpp, to compile them with a C++ compiler
+- Renamed the VERSION and VERSION0 macros to CHUNK_VERSION and
+  CHUNK_VERSION0
+- Added our NORETURN macros to luaD_throw() and its callers
+- #include'd src/common/types.h in llimits.h
