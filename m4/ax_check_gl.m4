@@ -41,7 +41,7 @@ AC_REQUIRE([AC_PATH_X])dnl
 AC_REQUIRE([AC_PROG_SED])dnl
 AC_REQUIRE([AX_PTHREAD])dnl
 
-AC_LANG_PUSH([C])
+AC_LANG_PUSH([C++])
 AX_LANG_COMPILER_MS
 AS_IF([test X$ax_compiler_ms = Xno],
       [GL_CFLAGS="${PTHREAD_CFLAGS}"; GL_LIBS="${PTHREAD_LIBS}"])
@@ -149,7 +149,7 @@ CPPFLAGS=$ax_save_CPPFLAGS])
 AS_IF([test "X$ax_cv_check_gl_libgl" = Xno],
       [no_gl=yes; GL_CFLAGS=""; GL_LIBS=""],
       [GL_LIBS="$ax_cv_check_gl_libgl $GL_LIBS"])
-AC_LANG_POP([C])
+AC_LANG_POP([C++])
 
 AC_SUBST([GL_CFLAGS])
 AC_SUBST([GL_LIBS])

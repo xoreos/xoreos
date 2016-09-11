@@ -101,8 +101,10 @@ AC_DEFUN([AX_CHECK_FT2],
          no_ft=yes
        else
          ac_save_CFLAGS="$CFLAGS"
+         ac_save_CXXFLAGS="$CXXFLAGS"
          ac_save_LIBS="$LIBS"
          CFLAGS="$CFLAGS $FT2_CFLAGS"
+         CXXFLAGS="$CXXFLAGS $FT2_CFLAGS"
          LIBS="$FT2_LIBS $LIBS"
 
          #
@@ -140,6 +142,7 @@ main()
            [echo $ECHO_N "cross compiling; assuming OK... $ECHO_C"])
 
          CFLAGS="$ac_save_CFLAGS"
+         CXXFLAGS="$ac_save_CXXFLAGS"
          LIBS="$ac_save_LIBS"
        fi             # test $ft_config_version -lt $ft_min_version
      fi               # test x$enable_fttest = xyes

@@ -89,7 +89,7 @@ AC_DEFUN([AX_PTHREAD], [
 AC_REQUIRE([AC_CANONICAL_HOST])
 AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_SED])
-AC_LANG_PUSH([C])
+AC_LANG_PUSH([C++])
 ax_pthread_ok=no
 
 # We used to check for pthread.h first, but this fails if pthread.h
@@ -102,9 +102,11 @@ ax_pthread_ok=no
 if test "x$PTHREAD_CFLAGS$PTHREAD_LIBS" != "x"; then
 	ax_pthread_save_CC="$CC"
 	ax_pthread_save_CFLAGS="$CFLAGS"
+	ax_pthread_save_CXXFLAGS="$CXXFLAGS"
 	ax_pthread_save_LIBS="$LIBS"
 	AS_IF([test "x$PTHREAD_CC" != "x"], [CC="$PTHREAD_CC"])
 	CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+	CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 	LIBS="$PTHREAD_LIBS $LIBS"
 	AC_MSG_CHECKING([for pthread_join using $CC $PTHREAD_CFLAGS $PTHREAD_LIBS])
 	AC_LINK_IFELSE([AC_LANG_CALL([], [pthread_join])], [ax_pthread_ok=yes])
@@ -115,6 +117,7 @@ if test "x$PTHREAD_CFLAGS$PTHREAD_LIBS" != "x"; then
 	fi
 	CC="$ax_pthread_save_CC"
 	CFLAGS="$ax_pthread_save_CFLAGS"
+	CXXFLAGS="$ax_pthread_save_CXXFLAGS"
 	LIBS="$ax_pthread_save_LIBS"
 fi
 
@@ -297,9 +300,11 @@ if test "x$ax_pthread_clang" = "xyes"; then
 	     ax_pthread_link_step=`$as_echo "$ac_link" | sed "$ax_pthread_sed"`
 	     ax_pthread_2step_ac_link="($ac_compile) && (echo ==== >&5) && ($ax_pthread_link_step)"
 	     ax_pthread_save_CFLAGS="$CFLAGS"
+	     ax_pthread_save_CXXFLAGS="$CXXFLAGS"
 	     for ax_pthread_try in '' -Qunused-arguments -Wno-unused-command-line-argument unknown; do
 		AS_IF([test "x$ax_pthread_try" = "xunknown"], [break])
 		CFLAGS="-Werror -Wunknown-warning-option $ax_pthread_try -pthread $ax_pthread_save_CFLAGS"
+		CXXFLAGS="-Werror -Wunknown-warning-option $ax_pthread_try -pthread $ax_pthread_save_CXXFLAGS"
 		ac_link="$ax_pthread_save_ac_link"
 		AC_LINK_IFELSE([AC_LANG_SOURCE([[int main(void){return 0;}]])],
 		    [ac_link="$ax_pthread_2step_ac_link"
@@ -309,6 +314,7 @@ if test "x$ax_pthread_clang" = "xyes"; then
 	     done
 	     ac_link="$ax_pthread_save_ac_link"
 	     CFLAGS="$ax_pthread_save_CFLAGS"
+	     CXXFLAGS="$ax_pthread_save_CXXFLAGS"
 	     AS_IF([test "x$ax_pthread_try" = "x"], [ax_pthread_try=no])
 	     ax_cv_PTHREAD_CLANG_NO_WARN_FLAG="$ax_pthread_try"
 	    ])
@@ -353,8 +359,10 @@ for ax_pthread_try_flag in $ax_pthread_flags; do
 	esac
 
 	ax_pthread_save_CFLAGS="$CFLAGS"
+	ax_pthread_save_CXXFLAGS="$CXXFLAGS"
 	ax_pthread_save_LIBS="$LIBS"
 	CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+	CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 	LIBS="$PTHREAD_LIBS $LIBS"
 
 	# Check for various functions.  We must include pthread.h,
@@ -383,6 +391,7 @@ for ax_pthread_try_flag in $ax_pthread_flags; do
 	    [])
 
 	CFLAGS="$ax_pthread_save_CFLAGS"
+	CXXFLAGS="$ax_pthread_save_CXXFLAGS"
 	LIBS="$ax_pthread_save_LIBS"
 
 	AC_MSG_RESULT([$ax_pthread_ok])
@@ -396,8 +405,10 @@ fi
 # Various other checks:
 if test "x$ax_pthread_ok" = "xyes"; then
 	ax_pthread_save_CFLAGS="$CFLAGS"
+	ax_pthread_save_CXXFLAGS="$CXXFLAGS"
 	ax_pthread_save_LIBS="$LIBS"
 	CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+	CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 	LIBS="$PTHREAD_LIBS $LIBS"
 
 	# Detect AIX lossage: JOINABLE attribute is called UNDETACHED.
@@ -449,6 +460,7 @@ if test "x$ax_pthread_ok" = "xyes"; then
 	      ])
 
 	CFLAGS="$ax_pthread_save_CFLAGS"
+	CXXFLAGS="$ax_pthread_save_CXXFLAGS"
 	LIBS="$ax_pthread_save_LIBS"
 
 	# More AIX lossage: compile with *_r variant
