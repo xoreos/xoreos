@@ -52,7 +52,7 @@ if test "x$with_werror" = "xyes"; then
 	WERROR="-Werror -Werror=unused-but-set-variable"
 fi
 
-dnl Standard C, C++
+dnl Standard C++
 AC_C_CONST
 AC_HEADER_STDC
 
@@ -60,49 +60,43 @@ dnl Compiler warning flags
 AC_ARG_WITH([warnings], [AS_HELP_STRING([--without-warnings], [Compile without extra warnings @<:@default=no@:>@])], [], [with_warnings=yes])
 
 if test "x$with_warnings" = "xno"; then
-	WARN_C_CXX=""
-	WARN_CXX=""
+	WARN=""
 else
-	WARN_C_CXX="-Wall"
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wignored-qualifiers])
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wpointer-arith])
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wshadow])
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wsign-compare])
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wtype-limits])
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wuninitialized])
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wunused-parameter])
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wunused-but-set-parameter])
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [WARN_C_CXX], [-Wlong-long], [-Wno-long-long])
+	WARN="-Wall"
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wignored-qualifiers])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wpointer-arith])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wshadow])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wsign-compare])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wtype-limits])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wuninitialized])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-parameter])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-but-set-parameter])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wlong-long], [-Wno-long-long])
 
-	WARN_CXX=""
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN_CXX], [-Wnon-virtual-dtor])
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN_CXX], [-Woverloaded-virtual], [-Wno-overloaded-virtual])
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN_CXX], [-Wc++11-long-long], [-Wno-c++11-long-long])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wnon-virtual-dtor])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Woverloaded-virtual], [-Wno-overloaded-virtual])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wc++11-long-long], [-Wno-c++11-long-long])
 fi
 
-AC_SUBST(WARN_C_CXX)
-AC_SUBST(WARN_CXX)
+AC_SUBST(WARN)
 
-AC_ARG_WITH([std], [AS_HELP_STRING([--without-std], [Compile without specifying the C/C++ standard to follow @<:@default=no@:>@])], [], [with_std=yes])
+AC_ARG_WITH([std], [AS_HELP_STRING([--without-std], [Compile without specifying the C++ standard to follow @<:@default=no@:>@])], [], [with_std=yes])
 
-dnl C/C++ dialect
+dnl C++ dialect
 if test "x$with_std" = "xno"; then
-	STD_C=""
-	STD_CXX""
+	STD=""
 else
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [STD_C], [-std=c99])
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [STD_CXX], [-std=c++03])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [STD], [-std=c++03])
 fi
 
-AC_SUBST(STD_C)
-AC_SUBST(STD_CXX)
+AC_SUBST(STD)
 
 dnl Link-time optimization
 AC_ARG_WITH([lto], [AS_HELP_STRING([--with-lto], [Compile with link-time optimization @<:@default=no@:>@])], [], [with_lto=no])
 
 LTO=""
 if test "x$with_lto" = "xyes"; then
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [LTO], [-flto])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [LTO], [-flto])
 fi
 
 AC_SUBST(LTO)
@@ -112,7 +106,7 @@ AC_ARG_WITH([native], [AS_HELP_STRING([--with-native], [Pass -march=native to th
 
 NATIVE=""
 if test "x$with_native" = "xyes"; then
-	AX_CHECK_COMPILER_FLAGS_VAR([C], [NATIVE], [-march=native])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [NATIVE], [-march=native])
 fi
 
 AC_SUBST(NATIVE)

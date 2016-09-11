@@ -19,7 +19,7 @@
 
 cmake_minimum_required(VERSION 2.8.12)
 
-project(xoreos C CXX)
+project(xoreos CXX)
 set(xoreos_VERSION 0.0.4)
 
 
@@ -27,7 +27,7 @@ set(xoreos_VERSION 0.0.4)
 # load some cmake modules from cmake/ subfolder
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(GNUInstallDirs)
-include(CheckIncludeFile)
+include(CheckIncludeFileCXX)
 include(CMakeAM)
 include(SetCheckCompilerFlag)
 
@@ -43,11 +43,8 @@ elseif(CMAKE_HOST_UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdata-sections -ffunction-sections -fno-show-column")
 
   # Wrap libraries in --start-group and --end-group to easily support static linking and symbol resolution, maybe useful on APPLE also, but I don't know
-  string(REPLACE "<LINK_LIBRARIES>" "-Wl,--gc-sections -Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_LINK_EXECUTABLE}")
   string(REPLACE "<LINK_LIBRARIES>" "-Wl,--gc-sections -Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE}")
-  string(REPLACE "<LINK_LIBRARIES>" "-Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_C_CREATE_SHARED_LIBRARY "${CMAKE_C_CREATE_SHARED_LIBRARY}")
   string(REPLACE "<LINK_LIBRARIES>" "-Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_CXX_CREATE_SHARED_LIBRARY "${CMAKE_CXX_CREATE_SHARED_LIBRARY}")
-  string(REPLACE "<LINK_LIBRARIES>" "-Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_C_CREATE_SHARED_MODULE "${CMAKE_C_CREATE_SHARED_MODULE}")
   string(REPLACE "<LINK_LIBRARIES>" "-Wl,--start-group <LINK_LIBRARIES> -Wl,--end-group" CMAKE_CXX_CREATE_SHARED_MODULE "${CMAKE_CXX_CREATE_SHARED_MODULE}")
 elseif(CMAKE_HOST_WIN32)
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
@@ -58,20 +55,19 @@ else()
   message(STATUS "Unknown platform, maybe not supported")
 endif()
 
-# C/C++ standards we're compiling against
-set_check_compiler_flag_c("-std=c99")
+# C++ standard we're compiling against
 set_check_compiler_flag_cxx("-std=c++03")
 
 # Compiler warning flags
-set_check_compiler_flag_c_cxx("-Wignored-qualifiers")
-set_check_compiler_flag_c_cxx("-Wpointer-arith")
-set_check_compiler_flag_c_cxx("-Wshadow")
-set_check_compiler_flag_c_cxx("-Wsign-compare")
-set_check_compiler_flag_c_cxx("-Wtype-limits")
-set_check_compiler_flag_c_cxx("-Wuninitialized")
-set_check_compiler_flag_c_cxx("-Wunused-parameter")
-set_check_compiler_flag_c_cxx("-Wunused-but-set-parameter")
-set_check_compiler_flag_c_cxx("-Wlong-long" "-Wno-long-long")
+set_check_compiler_flag_cxx("-Wignored-qualifiers")
+set_check_compiler_flag_cxx("-Wpointer-arith")
+set_check_compiler_flag_cxx("-Wshadow")
+set_check_compiler_flag_cxx("-Wsign-compare")
+set_check_compiler_flag_cxx("-Wtype-limits")
+set_check_compiler_flag_cxx("-Wuninitialized")
+set_check_compiler_flag_cxx("-Wunused-parameter")
+set_check_compiler_flag_cxx("-Wunused-but-set-parameter")
+set_check_compiler_flag_cxx("-Wlong-long" "-Wno-long-long")
 
 set_check_compiler_flag_cxx("-Wnon-virtual-dtor")
 set_check_compiler_flag_cxx("-Woverloaded-virtual" "-Wno-overloaded-virtual")
@@ -125,9 +121,9 @@ endif()
 
 
 # header detection, could get rid of it, but it is used by lua as well
-include(CheckIncludeFile)
+include(CheckIncludeFileCXX)
 function(check_has_header FILE_NAME PP_NAME)
-  check_include_file(${FILE_NAME} ${PP_NAME})
+  check_include_file_cxx(${FILE_NAME} ${PP_NAME})
   if(${PP_NAME})
     add_definitions(-D${PP_NAME}=1)
   endif()
@@ -139,14 +135,14 @@ check_has_header("sys/types.h" HAVE_SYS_TYPES_H)
 
 # type size checks
 include(CheckTypeSize)
-check_type_size("char"      SIZEOF_CHAR)
-check_type_size("short"     SIZEOF_SHORT)
-check_type_size("int"       SIZEOF_INT)
-check_type_size("long"      SIZEOF_LONG)
-check_type_size("long long" SIZEOF_LONG_LONG)
-check_type_size("void *"    SIZEOF_VOID_P)
-check_type_size("intptr_t"  SIZEOF_INTPTR_T)
-check_type_size("uintptr_t" SIZEOF_UINTPTR_T)
+check_type_size("char"      SIZEOF_CHAR      LANGUAGE CXX)
+check_type_size("short"     SIZEOF_SHORT     LANGUAGE CXX)
+check_type_size("int"       SIZEOF_INT       LANGUAGE CXX)
+check_type_size("long"      SIZEOF_LONG      LANGUAGE CXX)
+check_type_size("long long" SIZEOF_LONG_LONG LANGUAGE CXX)
+check_type_size("void *"    SIZEOF_VOID_P    LANGUAGE CXX)
+check_type_size("intptr_t"  SIZEOF_INTPTR_T  LANGUAGE CXX)
+check_type_size("uintptr_t" SIZEOF_UINTPTR_T LANGUAGE CXX)
 
 if(HAVE_SIZEOF_CHAR AND SIZEOF_CHAR)
   add_definitions(-DSIZEOF_CHAR=${SIZEOF_CHAR})
@@ -190,6 +186,8 @@ check_has_function(strtoull "cstdlib" HAVE_STRTOULL)
 
 # endianess detection, could be replaced by including Boost.Config
 include(TestBigEndian)
+# CMake's endian check needs C and won't work with just CXX...
+enable_language(C)
 test_big_endian(XOREOS_BIG_ENDIAN)
 if(XOREOS_BIG_ENDIAN)
   add_definitions(-DXOREOS_BIG_ENDIAN=1)
