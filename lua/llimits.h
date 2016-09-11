@@ -7,23 +7,7 @@
 #ifndef llimits_h
 #define llimits_h
 
-#ifdef HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
-#ifdef HAVE_STDINT_H
-	#include <stdint.h>
-#endif
-#ifdef HAVE_INTTYPES_H
-	#include <inttypes.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-	#include <sys/types.h>
-#endif
-
-#include <limits.h>
-#include <stddef.h>
-
+#include "src/common/types.h"
 
 #include "lua.h"
 
