@@ -7,3 +7,4 @@ Changes:
 - Silenced two compiler warnings (unused parameter) in tolua_is.c
   and tolua_to.c
 - Silenced a compiler warning (discards const) in tolua_map.c
+- Renamed *.c to *.cpp, to compile them with a C++ compiler

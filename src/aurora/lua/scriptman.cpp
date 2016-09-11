@@ -26,11 +26,7 @@
 
 #include "lua/lualib.h"
 
-extern "C" {
-
 #include "toluapp/tolua++.h"
-
-}
 
 #include "src/common/error.h"
 #include "src/common/util.h"

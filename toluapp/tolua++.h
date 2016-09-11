@@ -22,10 +22,6 @@
 
 #define TOLUA_VERSION "tolua++-1.0.92"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define tolua_pushcppstring(x,y)	tolua_pushstring(x,y.c_str())
 #define tolua_iscppstring	tolua_isstring
 
@@ -177,10 +173,6 @@ TOLUA_API int tolua_fast_isa(lua_State *L, int mt_indexa, int mt_indexb, int sup
 
 #ifndef tolua_owned
 #define tolua_owned
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

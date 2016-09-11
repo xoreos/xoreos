@@ -29,11 +29,11 @@ noinst_HEADERS = \
                  $(EMPTY)
 
 libtoluapp_la_SOURCES = \
-                        tolua_event.c \
-                        tolua_is.c \
-                        tolua_map.c \
-                        tolua_push.c \
-                        tolua_to.c \
+                        tolua_event.cpp \
+                        tolua_is.cpp \
+                        tolua_map.cpp \
+                        tolua_push.cpp \
+                        tolua_to.cpp \
                         $(EMPTY)
 
 EXTRA_DIST = \

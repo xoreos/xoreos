@@ -22,11 +22,7 @@
  *  A Lua stack wrapper.
  */
 
-extern "C" {
-
 #include "toluapp/tolua++.h"
-
-}
 
 #include "src/common/error.h"
 #include "src/common/ustring.h"
