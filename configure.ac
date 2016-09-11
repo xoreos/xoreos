@@ -79,6 +79,11 @@ AC_CHECK_FUNCS([strtoll])
 AC_CHECK_FUNCS([strtoull])
 AC_CHECK_FUNCS([strtof])
 
+dnl Check for -ggdb support
+AX_CHECK_COMPILER_FLAGS_VAR([C++], [GGDB], [-ggdb])
+
+AC_SUBST(GGDB)
+
 dnl --with-werror
 AC_ARG_WITH([werror], [AS_HELP_STRING([--with-werror], [Compile with -Werror @<:@default=no@:>@])], [], [with_werror=no])
 if test "x$with_werror" = "xyes"; then

@@ -56,7 +56,7 @@ LIBSL         = $(LIBSL_XOREOS) $(LIBSL_GENERAL) $(LIBSL_GRAPHIC) \
 # Other compiler flags
 
 FLAGS_DIR     = -I$(top_srcdir)
-FLAGS_DEBUG   = -ggdb
+FLAGS_DEBUG   = $(GGDB)
 FLAGS_STD     = $(STD)
 FLAGS_OPT     = $(LTO) $(NATIVE)
 FLAGS_WARN    = $(WARN) $(WERROR)
