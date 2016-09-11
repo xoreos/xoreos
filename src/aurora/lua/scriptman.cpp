@@ -24,9 +24,9 @@
 
 #include <boost/scoped_ptr.hpp>
 
-extern "C" {
-
 #include "lua/lualib.h"
+
+extern "C" {
 
 #include "toluapp/tolua++.h"
 

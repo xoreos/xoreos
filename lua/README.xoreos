@@ -10,3 +10,4 @@ Changes:
 - Changed the definition of IntPoint() to work warning-less on systems
   where sizeof(void *) < sizeof(lu_hash)
 - Forced a 32-bit bytecode on all platforms
+- Renamed *.c to *.cpp, to compile them with a C++ compiler
