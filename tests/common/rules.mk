@@ -124,3 +124,8 @@ check_PROGRAMS                           += tests/common/test_encoding_ascii
 tests_common_test_encoding_ascii_SOURCES  = tests/common/encoding_ascii.cpp
 tests_common_test_encoding_ascii_LDADD    = $(common_LIBS)
 tests_common_test_encoding_ascii_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                          += tests/common/test_encoding_utf8
+tests_common_test_encoding_utf8_SOURCES  = tests/common/encoding_utf8.cpp
+tests_common_test_encoding_utf8_LDADD    = $(common_LIBS)
+tests_common_test_encoding_utf8_CXXFLAGS = $(test_CXXFLAGS)
