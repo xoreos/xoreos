@@ -169,3 +169,8 @@ check_PROGRAMS                           += tests/common/test_encoding_cp936
 tests_common_test_encoding_cp936_SOURCES  = tests/common/encoding_cp936.cpp
 tests_common_test_encoding_cp936_LDADD    = $(common_LIBS)
 tests_common_test_encoding_cp936_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                           += tests/common/test_encoding_cp949
+tests_common_test_encoding_cp949_SOURCES  = tests/common/encoding_cp949.cpp
+tests_common_test_encoding_cp949_LDADD    = $(common_LIBS)
+tests_common_test_encoding_cp949_CXXFLAGS = $(test_CXXFLAGS)
