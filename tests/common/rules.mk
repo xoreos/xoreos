@@ -159,3 +159,8 @@ check_PROGRAMS                            += tests/common/test_encoding_cp1252
 tests_common_test_encoding_cp1252_SOURCES  = tests/common/encoding_cp1252.cpp
 tests_common_test_encoding_cp1252_LDADD    = $(common_LIBS)
 tests_common_test_encoding_cp1252_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                           += tests/common/test_encoding_cp932
+tests_common_test_encoding_cp932_SOURCES  = tests/common/encoding_cp932.cpp
+tests_common_test_encoding_cp932_LDADD    = $(common_LIBS)
+tests_common_test_encoding_cp932_CXXFLAGS = $(test_CXXFLAGS)
