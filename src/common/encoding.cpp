@@ -180,6 +180,7 @@ static uint32 readFakeChar(SeekableReadStream &stream, Encoding encoding) {
 		case kEncodingLatin9:
 		case kEncodingUTF8:
 		case kEncodingCP1250:
+		case kEncodingCP1251:
 		case kEncodingCP1252:
 		case kEncodingCP932:
 		case kEncodingCP936:
