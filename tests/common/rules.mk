@@ -174,3 +174,8 @@ check_PROGRAMS                           += tests/common/test_encoding_cp949
 tests_common_test_encoding_cp949_SOURCES  = tests/common/encoding_cp949.cpp
 tests_common_test_encoding_cp949_LDADD    = $(common_LIBS)
 tests_common_test_encoding_cp949_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                           += tests/common/test_encoding_cp950
+tests_common_test_encoding_cp950_SOURCES  = tests/common/encoding_cp950.cpp
+tests_common_test_encoding_cp950_LDADD    = $(common_LIBS)
+tests_common_test_encoding_cp950_CXXFLAGS = $(test_CXXFLAGS)
