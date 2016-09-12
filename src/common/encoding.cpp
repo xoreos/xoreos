@@ -218,6 +218,7 @@ static void writeFakeChar(std::vector<byte> &output, uint32 c, Encoding encoding
 		case kEncodingLatin9:
 		case kEncodingUTF8:
 		case kEncodingCP1250:
+		case kEncodingCP1251:
 		case kEncodingCP1252:
 		case kEncodingCP932:
 		case kEncodingCP936:
