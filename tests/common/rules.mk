@@ -139,3 +139,8 @@ check_PROGRAMS                             += tests/common/test_encoding_utf16be
 tests_common_test_encoding_utf16be_SOURCES  = tests/common/encoding_utf16be.cpp
 tests_common_test_encoding_utf16be_LDADD    = $(common_LIBS)
 tests_common_test_encoding_utf16be_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                            += tests/common/test_encoding_latin9
+tests_common_test_encoding_latin9_SOURCES  = tests/common/encoding_latin9.cpp
+tests_common_test_encoding_latin9_LDADD    = $(common_LIBS)
+tests_common_test_encoding_latin9_CXXFLAGS = $(test_CXXFLAGS)
