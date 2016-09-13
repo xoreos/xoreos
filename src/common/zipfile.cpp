@@ -29,8 +29,7 @@
 #include "src/common/util.h"
 #include "src/common/encoding.h"
 #include "src/common/memreadstream.h"
-
-#include <zlib.h>
+#include "src/common/deflate.h"
 
 namespace Common {
 
@@ -189,50 +188,7 @@ SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 meth
 	if (method != 8)
 		throw Exception("Unhandled Zip compression %d", method);
 
-	// Allocate the decompressed data
-	byte *decompressedData = new byte[realSize];
-
-	// Read in the compressed data
-	byte *compressedData = new byte[compSize];
-	if (zip.read(compressedData, compSize) != compSize) {
-		delete[] decompressedData;
-		delete[] compressedData;
-
-		return 0;
-	}
-
-	z_stream strm;
-	strm.zalloc   = Z_NULL;
-	strm.zfree    = Z_NULL;
-	strm.opaque   = Z_NULL;
-	strm.avail_in = compSize;
-	strm.next_in  = compressedData;
-
-	// Negative windows bits means there is no zlib header present in the data.
-	int zResult = inflateInit2(&strm, -MAX_WBITS);
-	if (zResult != Z_OK) {
-		inflateEnd(&strm);
-
-		delete[] decompressedData;
-		delete[] compressedData;
-		throw Exception("Could not initialize zlib inflate");
-	}
-
-	strm.avail_out = realSize;
-	strm.next_out = decompressedData;
-
-	zResult = inflate(&strm, Z_SYNC_FLUSH);
-	if (zResult != Z_OK && zResult != Z_STREAM_END) {
-		inflateEnd(&strm);
-
-		delete[] decompressedData;
-		delete[] compressedData;
-		throw Exception("Failed to inflate: %d", zResult);
-	}
-
-	inflateEnd(&strm);
-	delete[] compressedData;
-	return new MemoryReadStream(decompressedData, realSize, true);
+	return decompressDeflate(zip, compSize, realSize, kWindowBitsMaxRaw);
 }
 
 #define BUFREADCOMMENT (0x400)
