@@ -194,3 +194,8 @@ check_PROGRAMS                 += tests/common/test_hash
 tests_common_test_hash_SOURCES  = tests/common/hash.cpp
 tests_common_test_hash_LDADD    = $(common_LIBS)
 tests_common_test_hash_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                += tests/common/test_md5
+tests_common_test_md5_SOURCES  = tests/common/md5.cpp
+tests_common_test_md5_LDADD    = $(common_LIBS)
+tests_common_test_md5_CXXFLAGS = $(test_CXXFLAGS)
