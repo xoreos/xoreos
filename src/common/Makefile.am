@@ -62,6 +62,7 @@ noinst_HEADERS = \
                  hash.h \
                  md5.h \
                  blowfish.h \
+                 deflate.h \
                  error.h \
                  util.h \
                  strutil.h \
@@ -116,6 +117,7 @@ libcommon_la_SOURCES = \
                        ustring.cpp \
                        md5.cpp \
                        blowfish.cpp \
+                       deflate.cpp \
                        error.cpp \
                        util.cpp \
                        strutil.cpp \
