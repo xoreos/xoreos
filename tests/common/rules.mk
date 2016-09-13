@@ -184,3 +184,8 @@ check_PROGRAMS                     += tests/common/test_filepath
 tests_common_test_filepath_SOURCES  = tests/common/filepath.cpp
 tests_common_test_filepath_LDADD    = $(common_LIBS)
 tests_common_test_filepath_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                     += tests/common/test_filelist
+tests_common_test_filelist_SOURCES  = tests/common/filelist.cpp
+tests_common_test_filelist_LDADD    = $(common_LIBS)
+tests_common_test_filelist_CXXFLAGS = $(test_CXXFLAGS)
