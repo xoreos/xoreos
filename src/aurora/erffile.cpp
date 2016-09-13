@@ -36,11 +36,10 @@
 #include "src/common/encoding.h"
 #include "src/common/md5.h"
 #include "src/common/blowfish.h"
+#include "src/common/deflate.h"
 
 #include "src/aurora/erffile.h"
 #include "src/aurora/util.h"
-
-#include <zlib.h>
 
 static const uint32 kERFID     = MKTAG('E', 'R', 'F', ' ');
 static const uint32 kMODID     = MKTAG('M', 'O', 'D', ' ');
@@ -792,14 +791,14 @@ Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStr
 Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
                                                               uint32 unpackedSize) const {
 
-	/* Decompress using raw inflate. Use the default window size of MAX_WBITS (15). */
+	/* Decompress using raw inflate. Use the default maximum window size (15). */
 
 	const byte * const compressedData = packedStream->getData();
 	const uint32 packedSize = packedStream->size();
 
 	Common::SeekableReadStream *stream = 0;
 	try {
-		stream = decompressZlib(compressedData, packedSize, unpackedSize, MAX_WBITS);
+		stream = decompressZlib(compressedData, packedSize, unpackedSize, Common::kWindowBitsMax);
 	} catch (...) {
 		delete packedStream;
 		throw;
@@ -811,45 +810,11 @@ Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryRead
 
 Common::SeekableReadStream *ERFFile::decompressZlib(const byte *compressedData, uint32 packedSize,
                                                     uint32 unpackedSize, int windowBits) const {
-	// Allocate the decompressed data
-	byte *decompressedData = new byte[unpackedSize];
 
-	/* Initialize the zlib data stream for decompression.
-	 *
-	 * This ugly const cast is necessary because the zlib API wants a non-const
-	 * next_in pointer by default. Unless we define ZLIB_CONST, but that only
-	 * appeared in zlib 1.2.5.3. Not really worth bumping our required zlib
-	 * version for, IMHO. */
+	// Decompress. Negative window size to signal not to look for a gzip header.
+	const byte *data = Common::decompressDeflate(compressedData, packedSize, unpackedSize, -windowBits);
 
-	z_stream strm;
-	strm.zalloc   = Z_NULL;
-	strm.zfree    = Z_NULL;
-	strm.opaque   = Z_NULL;
-	strm.avail_in = packedSize;
-	strm.next_in  = const_cast<byte *>(compressedData);
-
-	// Negative windows bits means there is no zlib header present in the data.
-	int zResult = inflateInit2(&strm, -windowBits);
-	if (zResult != Z_OK) {
-		inflateEnd(&strm);
-
-		delete[] decompressedData;
-		throw Common::Exception("Could not initialize zlib inflate");
-	}
-
-	strm.avail_out = unpackedSize;
-	strm.next_out  = decompressedData;
-
-	zResult = inflate(&strm, Z_SYNC_FLUSH);
-	if (zResult != Z_OK && zResult != Z_STREAM_END) {
-		inflateEnd(&strm);
-
-		delete[] decompressedData;
-		throw Common::Exception("Failed to inflate: %d", zResult);
-	}
-
-	inflateEnd(&strm);
-	return new Common::MemoryReadStream(decompressedData, unpackedSize, true);
+	return new Common::MemoryReadStream(data, unpackedSize, true);
 }
 
 Common::HashAlgo ERFFile::getNameHashAlgo() const {
