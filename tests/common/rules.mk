@@ -99,3 +99,8 @@ check_PROGRAMS                      += tests/common/test_bitstream
 tests_common_test_bitstream_SOURCES  = tests/common/bitstream.cpp
 tests_common_test_bitstream_LDADD    = $(common_LIBS)
 tests_common_test_bitstream_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/common/test_huffman
+tests_common_test_huffman_SOURCES  = tests/common/huffman.cpp
+tests_common_test_huffman_LDADD    = $(common_LIBS)
+tests_common_test_huffman_CXXFLAGS = $(test_CXXFLAGS)
