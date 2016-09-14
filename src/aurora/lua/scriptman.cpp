@@ -52,10 +52,9 @@ ScriptManager::ScriptManager() : _luaState(0), _regNestingLevel(0) {
 }
 
 ScriptManager::~ScriptManager() {
-	closeLuaState();
-
-	if (!_objectLuaInstances.empty()) {
-		warning("Lua instances were not freed properly");
+	try {
+		deinit();
+	} catch (...) {
 	}
 }
 
@@ -68,7 +67,11 @@ void ScriptManager::init() {
 }
 
 void ScriptManager::deinit() {
-	assert(ready());
+	if (!_objectLuaInstances.empty()) {
+		warning("Lua instances were not freed properly");
+
+		_objectLuaInstances.clear();
+	}
 
 	closeLuaState();
 }
