@@ -199,3 +199,8 @@ check_PROGRAMS                += tests/common/test_md5
 tests_common_test_md5_SOURCES  = tests/common/md5.cpp
 tests_common_test_md5_LDADD    = $(common_LIBS)
 tests_common_test_md5_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/common/test_deflate
+tests_common_test_deflate_SOURCES  = tests/common/deflate.cpp
+tests_common_test_deflate_LDADD    = $(common_LIBS)
+tests_common_test_deflate_CXXFLAGS = $(test_CXXFLAGS)
