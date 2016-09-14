@@ -214,3 +214,8 @@ check_PROGRAMS                 += tests/common/test_lzma
 tests_common_test_lzma_SOURCES  = tests/common/lzma.cpp
 tests_common_test_lzma_LDADD    = $(common_LIBS)
 tests_common_test_lzma_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                += tests/common/test_xml
+tests_common_test_xml_SOURCES  = tests/common/xml.cpp
+tests_common_test_xml_LDADD    = $(common_LIBS)
+tests_common_test_xml_CXXFLAGS = $(test_CXXFLAGS)
