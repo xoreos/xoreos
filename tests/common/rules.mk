@@ -219,3 +219,8 @@ check_PROGRAMS                += tests/common/test_xml
 tests_common_test_xml_SOURCES  = tests/common/xml.cpp
 tests_common_test_xml_LDADD    = $(common_LIBS)
 tests_common_test_xml_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                            += tests/common/test_streamtokenizer
+tests_common_test_streamtokenizer_SOURCES  = tests/common/streamtokenizer.cpp
+tests_common_test_streamtokenizer_LDADD    = $(common_LIBS)
+tests_common_test_streamtokenizer_CXXFLAGS = $(test_CXXFLAGS)
