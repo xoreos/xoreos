@@ -135,7 +135,12 @@ public:
 	 */
 	void skipChunk(SeekableReadStream &stream);
 
-	/** Skip past end of chunk characters. */
+	/** Skip past end of chunk characters.
+	 *
+	 *  If the next character is a chunk end character, position the
+	 *  stream directly past it. If the next character is not a chunk
+	 *  end character, do nothing.
+	 */
 	void nextChunk(SeekableReadStream &stream);
 
 private:
