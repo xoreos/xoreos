@@ -129,7 +129,10 @@ public:
 	/** Skip a number of tokens. */
 	void skipToken(SeekableReadStream &stream, size_t n = 1);
 
-	/** Skip to the end of the chunk. */
+	/** Skip to the end of the chunk.
+	 *
+	 *  The stream will be positioned before the next end chunk.
+	 */
 	void skipChunk(SeekableReadStream &stream);
 
 	/** Skip past end of chunk characters. */
