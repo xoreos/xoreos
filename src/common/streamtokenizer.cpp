@@ -42,18 +42,26 @@ bool StreamTokenizer::isIn(uint32 c, const std::list<uint32> &list) {
 }
 
 void StreamTokenizer::addSeparator(uint32 c) {
+	assert(!isIn(c, _separators) && !isIn(c, _quotes) && !isIn(c, _chunkEnds) && !isIn(c, _ignores));
+
 	_separators.push_back(c);
 }
 
 void StreamTokenizer::addQuote(uint32 c) {
+	assert(!isIn(c, _separators) && !isIn(c, _quotes) && !isIn(c, _chunkEnds) && !isIn(c, _ignores));
+
 	_quotes.push_back(c);
 }
 
 void StreamTokenizer::addChunkEnd(uint32 c) {
+	assert(!isIn(c, _separators) && !isIn(c, _quotes) && !isIn(c, _chunkEnds) && !isIn(c, _ignores));
+
 	_chunkEnds.push_back(c);
 }
 
 void StreamTokenizer::addIgnore(uint32 c) {
+	assert(!isIn(c, _separators) && !isIn(c, _quotes) && !isIn(c, _chunkEnds) && !isIn(c, _ignores));
+
 	_ignores.push_back(c);
 }
 
