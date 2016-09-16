@@ -48,7 +48,6 @@ dnl We want a make install
 AC_PROG_INSTALL
 
 dnl Standard C++
-AC_C_CONST
 AC_HEADER_STDC
 
 dnl Endianness
