@@ -43,7 +43,7 @@ LT_INIT([disable-shared])
 dnl We're C++
 AC_PROG_CXX
 AC_LANG([C++])
-AM_PROG_CC_C_O
+
 dnl We want a make install
 AC_PROG_INSTALL
 
