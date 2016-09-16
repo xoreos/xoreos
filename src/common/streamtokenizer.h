@@ -92,7 +92,23 @@ public:
 	 */
 	void addIgnore   (uint32 c);
 
-	/** Parse a token out of the stream. */
+	/** Parse a token out of the stream.
+	 *
+	 *  Go through the stream, character by character, collecting characters
+	 *  for a token. Collection will stop on any of these conditions:
+	 *
+	 *  - We reached the end of the stream
+	 *  - We reached a separator character
+	 *  - We reached a chunk end character
+	 *
+	 *  When we find a separator character, the stream will be positioned
+	 *  after this character (potentially skipping over following separators
+	 *  depending on the ConsecutiveSeparatorRule value).
+	 *
+	 *  When we find a chunk end character, the stream will be positioned
+	 *  before this character. Only a call to nextChunk() will move the
+	 *  stream past it.
+	 */
 	UString getToken(SeekableReadStream &stream);
 
 	/** Parse tokens out of the stream.
