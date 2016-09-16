@@ -113,6 +113,9 @@ public:
 
 	/** Parse tokens out of the stream.
 	 *
+	 *  This method calls getToken() repeatedly and collects all tokens
+	 *  into a list.
+	 *
 	 *  @param  stream The stream to parse out of.
 	 *  @param  list The list to parse into.
 	 *  @param  min Minimum number of tokens to parse.
