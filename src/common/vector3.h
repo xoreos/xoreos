@@ -151,7 +151,7 @@ public:
 		return *this;
 	}
 
-	float angle(const Vector3 &v) {
+	float angle(const Vector3 &v) const {
 		return acos((dot(v) / (sqrt(((_x * _x) + (_y * _y) + (_z * _z)) * ((v._x * v._x) + (v._y * v._y) + (v._z * v._z))))));
 	}
 };
