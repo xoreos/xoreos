@@ -132,13 +132,13 @@ public:
 		               _x * v._y - _y * v._x);
 	}
 
-	Vector3 cross(const Vector3 & v) const {
+	Vector3 cross(const Vector3 &v) const {
 		return Vector3(_y * v._z - _z * v._y,
 		               _z * v._x - _x * v._z,
 		               _x * v._y - _y * v._x);
 	}
 
-	float dot(const Vector3 & v) const {
+	float dot(const Vector3 &v) const {
 		return _x * v._x + _y * v._y + _z * v._z;
 	}
 
@@ -146,7 +146,7 @@ public:
 		return sqrtf((*this).dot(*this));
 	}
 
-	Vector3 & norm() {
+	Vector3 &norm() {
 		(*this) = (*this) * (1.0f / length());
 		return *this;
 	}
