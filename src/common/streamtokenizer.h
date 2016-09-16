@@ -50,13 +50,46 @@ public:
 
 	StreamTokenizer(ConsecutiveSeparatorRule conSepRule = kRuleHeed);
 
-	/** Add a character on where to split. */
+	/** Add a character on where to split tokens.
+	 *
+	 *  For example, with the separator character ',', the string
+	 *  "foo,bar" will be split into two tokens: "foo" and "bar".
+	 *
+	 *  Several different characters can act as separator characters at the
+	 *  same time.
+	 *
+	 *  The ConsecutiveSeparatorRule value signals how consecutive separator
+	 *  characters are handled.
+	 */
 	void addSeparator(uint32 c);
-	/** Add a character able to enclose separators. */
-	void addQuote    (uint32 c);
-	/** Add a character marking the end of a chunk. */
+
+	/** Add a character marking the end of a chunk.
+	 *
+	 *  A chunk end is essentially a higher-order separator. Parsing tokens
+	 *  will stop at chunk end characters and will not move past them. Only a
+	 *  call to nextChunk() will move past a chunk end character.
+	 */
 	void addChunkEnd (uint32 c);
-	/** Add a character to ignore. */
+
+	/** Add a character able to enclose (quote) separators and chunk ends.
+	 *
+	 *  For example, with the quote character '\'' and separator character
+	 *  ',', the string "foo\',\'bar,foo" will be split into two tokens:
+	 *  "foo,bar" and "bar".
+	 *
+	 *  Every quote character is handled as if it's the same! So with the
+	 *  quote characters '\'' and '\"', the string "foo\',\"bar,foo" will
+	 *  also yield the two tokens "foo,bar" and "bar.
+	 */
+	void addQuote    (uint32 c);
+
+	/** Add a character to ignore.
+	 *
+	 *  A character that is ignored will never be added to the token.
+	 *  For example, with the ignore character '#' and the separator
+	 *  character ',', the string "fo#o,#bar" will be splut into two
+	 *  tokens: "foo" and "bar".
+	 */
 	void addIgnore   (uint32 c);
 
 	/** Parse a token out of the stream. */
