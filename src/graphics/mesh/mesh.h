@@ -27,7 +27,6 @@
 
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
-#include "src/common/matrix.h"
 #include "src/common/transmatrix.h"
 
 #include "src/graphics/graphics.h"

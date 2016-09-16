@@ -67,7 +67,6 @@
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
-#include "src/common/matrix.h"
 
 #include "src/graphics/texture.h"
 

@@ -25,7 +25,6 @@
 #ifndef COMMON_TRANSMATRIX_H
 #define COMMON_TRANSMATRIX_H
 
-#include "src/common/matrix.h"
 #include "src/common/vector3.h"
 
 namespace Common {
