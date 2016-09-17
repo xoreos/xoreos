@@ -520,7 +520,7 @@ void TransformationMatrix::transform(const TransformationMatrix &a, const Transf
 	}
 }
 
-TransformationMatrix TransformationMatrix::getInverse() {
+TransformationMatrix TransformationMatrix::getInverse() const {
 	TransformationMatrix t(false);
 	float A0 = (_elements[ 0] * _elements[ 5]) - (_elements[ 1] * _elements[ 4]);
 	float A1 = (_elements[ 0] * _elements[ 6]) - (_elements[ 2] * _elements[ 4]);

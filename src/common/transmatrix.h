@@ -83,7 +83,7 @@ public:
 	void transform(const TransformationMatrix &a, const TransformationMatrix &b);
 
 	/** Calculate the inverse matrix, return a copy. */
-	TransformationMatrix getInverse();
+	TransformationMatrix getInverse() const;
 
 	/** Returns a transposed matrix of this. */
 	TransformationMatrix getTranspose();
