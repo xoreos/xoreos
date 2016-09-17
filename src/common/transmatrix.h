@@ -106,7 +106,7 @@ public:
 	TransformationMatrix operator*(const TransformationMatrix &m) const;
 	Vector3 operator*(const Vector3 &v) const;
 
-	Vector3 vectorRotate(Vector3 &v) const;
+	Vector3 vectorRotate(const Vector3 &v) const;
 	Vector3 vectorRotateReverse(Vector3 &v) const;
 
 private:

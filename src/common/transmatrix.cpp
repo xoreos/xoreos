@@ -681,7 +681,7 @@ Vector3 TransformationMatrix::operator*(const Vector3 &v) const {
 	               v._x * _elements[ 3] + v._y * _elements[ 7] + v._z * _elements[11] + v._w * _elements[15]);
 }
 
-Vector3 TransformationMatrix::vectorRotate(Vector3 &v) const {
+Vector3 TransformationMatrix::vectorRotate(const Vector3 &v) const {
 	return Vector3(v._x * _elements[0] + v._y * _elements[4] + v._z * _elements[8],
 	               v._x * _elements[1] + v._y * _elements[5] + v._z * _elements[9],
 	               v._x * _elements[2] + v._y * _elements[6] + v._z * _elements[10]);
