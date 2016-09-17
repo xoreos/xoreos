@@ -107,7 +107,7 @@ public:
 	Vector3 operator*(const Vector3 &v) const;
 
 	Vector3 vectorRotate(const Vector3 &v) const;
-	Vector3 vectorRotateReverse(Vector3 &v) const;
+	Vector3 vectorRotateReverse(const Vector3 &v) const;
 
 private:
 	float _elements[16];
