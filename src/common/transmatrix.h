@@ -86,7 +86,7 @@ public:
 	TransformationMatrix getInverse() const;
 
 	/** Returns a transposed matrix of this. */
-	TransformationMatrix getTranspose();
+	TransformationMatrix getTranspose() const;
 
 	/** Rotate matrix to look at the given point. */
 	void lookAt(const Vector3 &v);

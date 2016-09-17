@@ -563,7 +563,7 @@ TransformationMatrix TransformationMatrix::getInverse() const {
 	return t;
 }
 
-TransformationMatrix TransformationMatrix::getTranspose() {
+TransformationMatrix TransformationMatrix::getTranspose() const {
 	TransformationMatrix t(false);
 	for (unsigned int i = 0; i < 4; i++) {
 		for (unsigned int j = 0; j < 4; j++) {
