@@ -234,3 +234,8 @@ check_PROGRAMS                    += tests/common/test_vector3
 tests_common_test_vector3_SOURCES  = tests/common/vector3.cpp
 tests_common_test_vector3_LDADD    = $(common_LIBS)
 tests_common_test_vector3_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                      += tests/common/test_matrix4x4
+tests_common_test_matrix4x4_SOURCES  = tests/common/matrix4x4.cpp
+tests_common_test_matrix4x4_LDADD    = $(common_LIBS)
+tests_common_test_matrix4x4_CXXFLAGS = $(test_CXXFLAGS)
