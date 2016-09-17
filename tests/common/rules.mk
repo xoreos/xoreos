@@ -54,3 +54,8 @@ check_PROGRAMS                   += tests/common/test_ptrmap
 tests_common_test_ptrmap_SOURCES  = tests/common/ptrmap.cpp
 tests_common_test_ptrmap_LDADD    = $(common_LIBS)
 tests_common_test_ptrmap_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/common/test_ustring
+tests_common_test_ustring_SOURCES  = tests/common/ustring.cpp
+tests_common_test_ustring_LDADD    = $(common_LIBS)
+tests_common_test_ustring_CXXFLAGS = $(test_CXXFLAGS)
