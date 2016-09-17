@@ -239,3 +239,8 @@ check_PROGRAMS                      += tests/common/test_matrix4x4
 tests_common_test_matrix4x4_SOURCES  = tests/common/matrix4x4.cpp
 tests_common_test_matrix4x4_LDADD    = $(common_LIBS)
 tests_common_test_matrix4x4_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                        += tests/common/test_boundingbox
+tests_common_test_boundingbox_SOURCES  = tests/common/boundingbox.cpp
+tests_common_test_boundingbox_LDADD    = $(common_LIBS)
+tests_common_test_boundingbox_CXXFLAGS = $(test_CXXFLAGS)
