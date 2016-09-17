@@ -257,6 +257,7 @@ void BoundingBox::add(const BoundingBox &box) {
 
 void BoundingBox::translate(float x, float y, float z) {
 	_origin.translate(x, y, z);
+	_absolute = false;
 }
 
 void BoundingBox::scale(float x, float y, float z) {
