@@ -145,7 +145,7 @@ bool BoundingBox::isIn(float x, float y, float z) const {
 		return false;
 	if ((y < minY) || (y > maxY))
 		return false;
-	if ((z < minZ) || (y > maxZ))
+	if ((z < minZ) || (z > maxZ))
 		return false;
 
 	return true;
