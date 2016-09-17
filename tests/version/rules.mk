@@ -17,21 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Unit tests.
+# Unit test mock of libversion.la.
 
-# Our Unit test framework, Google Test
+check_LTLIBRARIES += tests/version/libversion.la
 
-include tests/googletest/rules.mk
-
-test_LIBS  = \
-    tests/googletest/libgtest.la \
-    tests/googletest/libgtest_main.la \
-    $(GTEST_LIBS)
+tests_version_libversion_la_SOURCES = \
+    tests/version/version.cpp \
     $(EMPTY)
-
-test_CXXFLAGS = $(GTEST_FLAGS) $(AM_CXXFLAGS)
-
-include tests/version/rules.mk
-include tests/common/rules.mk
-
-TESTS += $(check_PROGRAMS)

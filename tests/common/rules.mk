@@ -17,21 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Unit tests.
+# Unit tests for the Common namespace.
 
-# Our Unit test framework, Google Test
+common_LIBS = \
+    $(test_LIBS) \
+    src/common/libcommon.la \
+    tests/version/libversion.la \
+    $(LDADD)
 
-include tests/googletest/rules.mk
-
-test_LIBS  = \
-    tests/googletest/libgtest.la \
-    tests/googletest/libgtest_main.la \
-    $(GTEST_LIBS)
-    $(EMPTY)
-
-test_CXXFLAGS = $(GTEST_FLAGS) $(AM_CXXFLAGS)
-
-include tests/version/rules.mk
-include tests/common/rules.mk
-
-TESTS += $(check_PROGRAMS)
+check_PROGRAMS                 += tests/common/test_util
+tests_common_test_util_SOURCES  = tests/common/util.cpp
+tests_common_test_util_LDADD    = $(common_LIBS)
+tests_common_test_util_CXXFLAGS = $(test_CXXFLAGS)

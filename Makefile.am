@@ -33,9 +33,12 @@ EMPTY =
 
 noinst_HEADERS     =
 noinst_LTLIBRARIES =
-check_LTLIBRARIES  =
 
 bin_PROGRAMS =
+
+check_LTLIBRARIES =
+check_PROGRAMS    =
+TESTS             =
 
 CLEANFILES =
 

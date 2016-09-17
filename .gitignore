@@ -77,6 +77,8 @@ Makefile.am.cmake
 
 # Unit tests
 /test-suite.log
+/tests/common/testfile_*
+/tests/common/test_*
 
 # Unix binary
 /src/xoreos
