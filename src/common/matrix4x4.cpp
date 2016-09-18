@@ -19,12 +19,12 @@
  */
 
 /** @file
- *  A transformation matrix.
+ *  A 4x4 matrix, usable for transformations in 3D space.
  */
 
 #include <cstring>
 
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 #include "src/common/maths.h"
 
 static const float kIdentity[] = {
@@ -36,61 +36,61 @@ static const float kIdentity[] = {
 
 namespace Common {
 
-TransformationMatrix::TransformationMatrix(bool identity) {
+Matrix4x4::Matrix4x4(bool identity) {
 	if (identity)
 		loadIdentity();
 }
 
-TransformationMatrix::TransformationMatrix(const TransformationMatrix &m) {
+Matrix4x4::Matrix4x4(const Matrix4x4 &m) {
 	std::memcpy(_elements, &m, 16 * sizeof(float));
 }
 
-TransformationMatrix::TransformationMatrix(const float *m) {
+Matrix4x4::Matrix4x4(const float *m) {
 	std::memcpy(_elements, m, 16 * sizeof(float));
 }
 
-TransformationMatrix::~TransformationMatrix() {
+Matrix4x4::~Matrix4x4() {
 }
 
-const float *TransformationMatrix::get() const {
+const float *Matrix4x4::get() const {
 	return _elements;
 }
 
-float TransformationMatrix::getX() const {
+float Matrix4x4::getX() const {
 	return _elements[12];
 }
 
-float TransformationMatrix::getY() const {
+float Matrix4x4::getY() const {
 	return _elements[13];
 }
 
-float TransformationMatrix::getZ() const {
+float Matrix4x4::getZ() const {
 	return _elements[14];
 }
 
-void TransformationMatrix::getPosition(float &x, float &y, float &z) const {
+void Matrix4x4::getPosition(float &x, float &y, float &z) const {
 	x = _elements[12];
 	y = _elements[13];
 	z = _elements[14];
 }
 
-const float *TransformationMatrix::getPosition() const {
+const float *Matrix4x4::getPosition() const {
 	return &(_elements[12]);
 }
 
-const float *TransformationMatrix::getXAxis() const {
+const float *Matrix4x4::getXAxis() const {
 	return &(_elements[0]);
 }
 
-const float *TransformationMatrix::getYAxis() const {
+const float *Matrix4x4::getYAxis() const {
 	return &(_elements[4]);
 }
 
-const float *TransformationMatrix::getZAxis() const {
+const float *Matrix4x4::getZAxis() const {
 	return &(_elements[8]);
 }
 
-void TransformationMatrix::getAxisAngle(float &angle, float &x, float &y, float &z) const {
+void Matrix4x4::getAxisAngle(float &angle, float &x, float &y, float &z) const {
 	const float epsilon1 = 0.001f, epsilon2 = 0.01f, epsilon3 = 0.1f;
 
 		// Look for symmetry to avoid singularities near 0°/180°
@@ -169,17 +169,17 @@ void TransformationMatrix::getAxisAngle(float &angle, float &x, float &y, float 
 	z /= r;
 }
 
-void TransformationMatrix::getScale(float &x, float &y, float &z) const {
+void Matrix4x4::getScale(float &x, float &y, float &z) const {
 	x = sqrtf(_elements[0] * _elements[0] + _elements[4] * _elements[4] + _elements[ 8] * _elements[ 8]);
 	y = sqrtf(_elements[1] * _elements[1] + _elements[5] * _elements[5] + _elements[ 9] * _elements[ 9]);
 	z = sqrtf(_elements[2] * _elements[2] + _elements[6] * _elements[6] + _elements[10] * _elements[10]);
 }
 
-void TransformationMatrix::loadIdentity() {
+void Matrix4x4::loadIdentity() {
 	std::memcpy(_elements, kIdentity, 16 * sizeof(float));
 }
 
-void TransformationMatrix::translate(float x, float y, float z) {
+void Matrix4x4::translate(float x, float y, float z) {
 	float xx, yy, zz, ww;
 	xx = _elements[0] * x + _elements[4] * y + _elements[8]  * z + _elements[12];
 	yy = _elements[1] * x + _elements[5] * y + _elements[9]  * z + _elements[13];
@@ -191,7 +191,7 @@ void TransformationMatrix::translate(float x, float y, float z) {
 	_elements[15] = ww;
 }
 
-void TransformationMatrix::translate(const Vector3 &v) {
+void Matrix4x4::translate(const Vector3 &v) {
 	/* As a minor optimisation, the 'w' component can be left out. This is safe
 	 * if we assume that the matrix in question is not used for perspective
 	 * calculations. Generally this is acceptable.
@@ -209,7 +209,7 @@ void TransformationMatrix::translate(const Vector3 &v) {
 	_elements[15] = w;
 }
 
-void TransformationMatrix::scale(float x, float y, float z) {
+void Matrix4x4::scale(float x, float y, float z) {
 	_elements[0]  *= x;
 	_elements[1]  *= x;
 	_elements[2]  *= x;
@@ -224,7 +224,7 @@ void TransformationMatrix::scale(float x, float y, float z) {
 	_elements[11] *= z;
 }
 
-void TransformationMatrix::scale(const Vector3 &v) {
+void Matrix4x4::scale(const Vector3 &v) {
 	_elements[0]  *= v._x;
 	_elements[1]  *= v._x;
 	_elements[2]  *= v._x;
@@ -247,7 +247,7 @@ void TransformationMatrix::scale(const Vector3 &v) {
 	*/
 }
 
-void TransformationMatrix::rotate(float angle, float x, float y, float z, bool normalise) {
+void Matrix4x4::rotate(float angle, float x, float y, float z, bool normalise) {
 	// Normalize the axis vector
 	if (normalise) {
 		float length = x * x + y * y + z * z;
@@ -292,7 +292,7 @@ void TransformationMatrix::rotate(float angle, float x, float y, float z, bool n
 	std::memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
-void TransformationMatrix::rotateAxisLocal(const Vector3 &vin, float angle, bool normalise) {
+void Matrix4x4::rotateAxisLocal(const Vector3 &vin, float angle, bool normalise) {
 	angle = deg2rad(angle);
 
 	/* Slightly optimised matrix calculation for generic rotation. Note that
@@ -329,7 +329,7 @@ void TransformationMatrix::rotateAxisLocal(const Vector3 &vin, float angle, bool
 	std::memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
-void TransformationMatrix::rotateXAxisLocal(float angle, bool normalise) {
+void Matrix4x4::rotateXAxisLocal(float angle, bool normalise) {
 	/* x-axis is [1,0,0], hence some optimisations can be made to the
 	 * basic arbitrary axis rotation method.
 	 */
@@ -354,7 +354,7 @@ void TransformationMatrix::rotateXAxisLocal(float angle, bool normalise) {
 	}
 }
 
-void TransformationMatrix::rotateYAxisLocal(float angle, bool normalise) {
+void Matrix4x4::rotateYAxisLocal(float angle, bool normalise) {
 	/* y-axis is [0,1,0], hence some optimisations can be made to the
 	 * basic arbitrary axis rotation method.
 	 */
@@ -379,7 +379,7 @@ void TransformationMatrix::rotateYAxisLocal(float angle, bool normalise) {
 	}
 }
 
-void TransformationMatrix::rotateZAxisLocal(float angle, bool normalise) {
+void Matrix4x4::rotateZAxisLocal(float angle, bool normalise) {
 	/* y-axis is [0,1,0], hence some optimisations can be made to the
 	 * basic arbitrary axis rotation method.
 	 */
@@ -404,7 +404,7 @@ void TransformationMatrix::rotateZAxisLocal(float angle, bool normalise) {
 	}
 }
 
-void TransformationMatrix::rotateAxisWorld(const Vector3 &vin, float angle, bool normalise) {
+void Matrix4x4::rotateAxisWorld(const Vector3 &vin, float angle, bool normalise) {
 	angle = deg2rad(angle);
 
 	float result[16];
@@ -440,19 +440,19 @@ void TransformationMatrix::rotateAxisWorld(const Vector3 &vin, float angle, bool
 	std::memcpy(_elements, result, 16 * sizeof(float));  // Copy the rotation into the matrix.
 }
 
-void TransformationMatrix::rotateXAxisWorld(float angle, bool normalise) {
+void Matrix4x4::rotateXAxisWorld(float angle, bool normalise) {
 	this->rotateAxisWorld(Vector3(1.0f, 0.0f, 0.0f), angle, normalise);
 }
 
-void TransformationMatrix::rotateYAxisWorld(float angle, bool normalise) {
+void Matrix4x4::rotateYAxisWorld(float angle, bool normalise) {
 	this->rotateAxisWorld(Vector3(0.0f, 1.0f, 0.0f), angle, normalise);
 }
 
-void TransformationMatrix::rotateZAxisWorld(float angle, bool normalise) {
+void Matrix4x4::rotateZAxisWorld(float angle, bool normalise) {
 	this->rotateAxisWorld(Vector3(0.0f, 0.0f, 1.0f), angle, normalise);
 }
 
-void TransformationMatrix::setRotation(const TransformationMatrix &m) {
+void Matrix4x4::setRotation(const Matrix4x4 &m) {
 	_elements[0]  = m[0];
 	_elements[1]  = m[1];
 	_elements[2]  = m[2];
@@ -466,7 +466,7 @@ void TransformationMatrix::setRotation(const TransformationMatrix &m) {
 	_elements[10] = m[10];
 }
 
-void TransformationMatrix::resetRotation() {
+void Matrix4x4::resetRotation() {
 	_elements[0]  = 1.0f;
 	_elements[1]  = 0.0f;
 	_elements[2]  = 0.0f;
@@ -480,7 +480,7 @@ void TransformationMatrix::resetRotation() {
 	_elements[10] = 1.0f;
 }
 
-void TransformationMatrix::transform(const TransformationMatrix &m) {
+void Matrix4x4::transform(const Matrix4x4 &m) {
 	float result[16];
 	for (uint32 i = 0; i < 16; i+=4) {
 		// __m128 r, __m128 a, __m128 b
@@ -505,7 +505,7 @@ void TransformationMatrix::transform(const TransformationMatrix &m) {
 	std::memcpy(_elements, result, 16 * sizeof(float));
 }
 
-void TransformationMatrix::transform(const TransformationMatrix &a, const TransformationMatrix &b) {
+void Matrix4x4::transform(const Matrix4x4 &a, const Matrix4x4 &b) {
 	for (uint32 i = 0; i < 16; i+=4) {
 		_elements[i + 0] = a[0 + 0] * b[i];
 		_elements[i + 1] = a[0 + 1] * b[i];
@@ -520,8 +520,8 @@ void TransformationMatrix::transform(const TransformationMatrix &a, const Transf
 	}
 }
 
-TransformationMatrix TransformationMatrix::getInverse() const {
-	TransformationMatrix t(false);
+Matrix4x4 Matrix4x4::getInverse() const {
+	Matrix4x4 t(false);
 	float A0 = (_elements[ 0] * _elements[ 5]) - (_elements[ 1] * _elements[ 4]);
 	float A1 = (_elements[ 0] * _elements[ 6]) - (_elements[ 2] * _elements[ 4]);
 	float A2 = (_elements[ 0] * _elements[ 7]) - (_elements[ 3] * _elements[ 4]);
@@ -563,8 +563,8 @@ TransformationMatrix TransformationMatrix::getInverse() const {
 	return t;
 }
 
-TransformationMatrix TransformationMatrix::getTranspose() const {
-	TransformationMatrix t(false);
+Matrix4x4 Matrix4x4::getTranspose() const {
+	Matrix4x4 t(false);
 	for (unsigned int i = 0; i < 4; i++) {
 		for (unsigned int j = 0; j < 4; j++) {
 			t[(i << 2) + j] = _elements[(j << 2) + i];
@@ -573,7 +573,7 @@ TransformationMatrix TransformationMatrix::getTranspose() const {
 	return t;
 }
 
-void TransformationMatrix::lookAt(const Vector3 &v) {
+void Matrix4x4::lookAt(const Vector3 &v) {
 	/* [x,y,z] is the z-axis vector. Cross this with [0,1,0] to create the x-axis, and
 	 * calculate the y-axis with (z-axis x x-axis).
 	 * Most of this was taken from stock standard gluLookAt components, however there's
@@ -602,9 +602,9 @@ void TransformationMatrix::lookAt(const Vector3 &v) {
 	_elements[8] = z._x;  _elements[9] = z._y;  _elements[10] = z._z;
 }
 
-void TransformationMatrix::perspective(float fovy, float aspectRatio, float znear, float zfar) {
+void Matrix4x4::perspective(float fovy, float aspectRatio, float znear, float zfar) {
 	float xmin, xmax, ymin, ymax;
-	TransformationMatrix pMatrix(false);
+	Matrix4x4 pMatrix(false);
 	std::memset(&pMatrix, 0, 16 * sizeof(float));
 
 	ymax = znear * tan(deg2rad(0.5f * fovy));
@@ -623,9 +623,9 @@ void TransformationMatrix::perspective(float fovy, float aspectRatio, float znea
 	this->transform(pMatrix);
 }
 
-void TransformationMatrix::ortho(float l, float r, float b, float t, float n, float f)
+void Matrix4x4::ortho(float l, float r, float b, float t, float n, float f)
 {
-	TransformationMatrix mMatrix(false);
+	Matrix4x4 mMatrix(false);
 	std::memset(&mMatrix, 0, 16*sizeof(float));
 
 	mMatrix[0]  =  2.0f / (r - l);
@@ -639,55 +639,55 @@ void TransformationMatrix::ortho(float l, float r, float b, float t, float n, fl
 	this->transform(mMatrix);
 }
 
-const TransformationMatrix &TransformationMatrix::operator=(const TransformationMatrix &m) {
+const Matrix4x4 &Matrix4x4::operator=(const Matrix4x4 &m) {
 	std::memcpy(_elements, &m, 16 * sizeof(float));
 	return *this;
 }
 
-const TransformationMatrix &TransformationMatrix::operator=(const float *m) {
+const Matrix4x4 &Matrix4x4::operator=(const float *m) {
 	std::memcpy(_elements, m, 16 * sizeof(float));
 	return *this;
 }
 
-float &TransformationMatrix::operator[](unsigned int index) {
+float &Matrix4x4::operator[](unsigned int index) {
 	return _elements[index];
 }
 
-float  TransformationMatrix::operator[](unsigned int index) const {
+float  Matrix4x4::operator[](unsigned int index) const {
 	return _elements[index];
 }
 
-float &TransformationMatrix::operator()(int row, int column) {
+float &Matrix4x4::operator()(int row, int column) {
 	return _elements[(column << 2) + row];
 }
 
-float  TransformationMatrix::operator()(int row, int column) const {
+float  Matrix4x4::operator()(int row, int column) const {
 	return _elements[(column << 2) + row];
 }
 
-const TransformationMatrix &TransformationMatrix::operator*=(const TransformationMatrix &m) {
+const Matrix4x4 &Matrix4x4::operator*=(const Matrix4x4 &m) {
 	this->transform(m);
 	return *this;
 }
 
-TransformationMatrix TransformationMatrix::operator*(const TransformationMatrix &m) const {
-	return TransformationMatrix(*this) *= m;
+Matrix4x4 Matrix4x4::operator*(const Matrix4x4 &m) const {
+	return Matrix4x4(*this) *= m;
 }
 
-Vector3 TransformationMatrix::operator*(const Vector3 &v) const {
+Vector3 Matrix4x4::operator*(const Vector3 &v) const {
 	return Vector3(v._x * _elements[ 0] + v._y * _elements[ 4] + v._z * _elements[ 8] + v._w * _elements[12],
 	               v._x * _elements[ 1] + v._y * _elements[ 5] + v._z * _elements[ 9] + v._w * _elements[13],
 	               v._x * _elements[ 2] + v._y * _elements[ 6] + v._z * _elements[10] + v._w * _elements[14],
 	               v._x * _elements[ 3] + v._y * _elements[ 7] + v._z * _elements[11] + v._w * _elements[15]);
 }
 
-Vector3 TransformationMatrix::vectorRotate(const Vector3 &v) const {
+Vector3 Matrix4x4::vectorRotate(const Vector3 &v) const {
 	return Vector3(v._x * _elements[0] + v._y * _elements[4] + v._z * _elements[8],
 	               v._x * _elements[1] + v._y * _elements[5] + v._z * _elements[9],
 	               v._x * _elements[2] + v._y * _elements[6] + v._z * _elements[10]);
 }
 
-Vector3 TransformationMatrix::vectorRotateReverse(const Vector3 &v) const {
+Vector3 Matrix4x4::vectorRotateReverse(const Vector3 &v) const {
 	return Vector3(v._x * _elements[0] + v._y * _elements[1] + v._z * _elements[2],
 	               v._x * _elements[4] + v._y * _elements[5] + v._z * _elements[6],
 	               v._x * _elements[8] + v._y * _elements[9] + v._z * _elements[10]);

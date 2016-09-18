@@ -25,7 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 
 #include "src/graphics/graphics.h"
 
@@ -55,7 +55,7 @@ CubeSide::~CubeSide() {
 }
 
 void CubeSide::calculateDistance() {
-	Common::TransformationMatrix m;
+	Common::Matrix4x4 m;
 
 	_parent->applyTransformation(_n, m);
 
@@ -181,7 +181,7 @@ void Cube::applyTransformation(int n) {
 	}
 }
 
-void Cube::applyTransformation(int n, Common::TransformationMatrix &m) {
+void Cube::applyTransformation(int n, Common::Matrix4x4 &m) {
 	m.translate(0.0f, 0.0f, -3.0f);
 
 	m.rotate(-_rotation, 1.0f, 0.0f, 0.0f);

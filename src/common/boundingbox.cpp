@@ -59,7 +59,7 @@ bool BoundingBox::empty() const {
 	return _empty;
 }
 
-const TransformationMatrix &BoundingBox::getOrigin() const {
+const Matrix4x4 &BoundingBox::getOrigin() const {
 	return _origin;
 }
 
@@ -71,10 +71,10 @@ void BoundingBox::getMin(float &x, float &y, float &z) const {
 		return;
 	}
 
-	TransformationMatrix min = _origin;
+	Matrix4x4 min = _origin;
 	min.translate(_min[0], _min[1], _min[2]);
 
-	TransformationMatrix max = _origin;
+	Matrix4x4 max = _origin;
 	max.translate(_max[0], _max[1], _max[2]);
 
 	x = MIN(min.getX(), max.getX());
@@ -90,10 +90,10 @@ void BoundingBox::getMax(float &x, float &y, float &z) const {
 		return;
 	}
 
-	TransformationMatrix min = _origin;
+	Matrix4x4 min = _origin;
 	min.translate(_min[0], _min[1], _min[2]);
 
-	TransformationMatrix max = _origin;
+	Matrix4x4 max = _origin;
 	max.translate(_max[0], _max[1], _max[2]);
 
 	x = MAX(min.getX(), max.getX());
@@ -270,7 +270,7 @@ void BoundingBox::rotate(float angle, float x, float y, float z) {
 	_absolute = false;
 }
 
-void BoundingBox::transform(const TransformationMatrix &m) {
+void BoundingBox::transform(const Matrix4x4 &m) {
 	_origin *= m;
 	_absolute = false;
 }
@@ -304,7 +304,7 @@ void BoundingBox::absolutize() {
 
 	float coords[8][3];
 	for (int i = 0; i < 8; i++) {
-		TransformationMatrix c = _origin;
+		Matrix4x4 c = _origin;
 
 		c.translate(_coords[i][0], _coords[i][1], _coords[i][2]);
 

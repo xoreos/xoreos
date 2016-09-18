@@ -34,7 +34,7 @@
 namespace Common {
 	class UString;
 	class SeekableReadStream;
-	class TransformationMatrix;
+	class Matrix4x4;
 }
 
 namespace Graphics {
@@ -83,7 +83,7 @@ private:
 	TextureHandle _texture;
 
 	void applyTransformation(int n);
-	void applyTransformation(int n, Common::TransformationMatrix &m);
+	void applyTransformation(int n, Common::Matrix4x4 &m);
 	void setTexture();
 	void callList();
 

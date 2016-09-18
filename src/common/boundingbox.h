@@ -25,7 +25,7 @@
 #ifndef COMMON_BOUNDINGBOX_H
 #define COMMON_BOUNDINGBOX_H
 
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 
 namespace Common {
 
@@ -39,7 +39,7 @@ public:
 
 	bool empty() const;
 
-	const TransformationMatrix &getOrigin() const;
+	const Matrix4x4 &getOrigin() const;
 
 	void getMin(float &x, float &y, float &z) const;
 	void getMax(float &x, float &y, float &z) const;
@@ -61,7 +61,7 @@ public:
 
 	void rotate(float angle, float x, float y, float z);
 
-	void transform(const TransformationMatrix &m);
+	void transform(const Matrix4x4 &m);
 
 	/** Apply the origin transformations directly to the coordinates. */
 	void absolutize();
@@ -73,7 +73,7 @@ private:
 	bool _empty;
 	bool _absolute;
 
-	TransformationMatrix _origin;
+	Matrix4x4 _origin;
 
 	float _coords[8][3];
 

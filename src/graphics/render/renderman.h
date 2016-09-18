@@ -38,7 +38,7 @@ public:
 
 	void setCameraReference(const Common::Vector3 &reference);
 
-	void queueRenderable(Shader::ShaderRenderable *renderable, const Common::TransformationMatrix *transform);
+	void queueRenderable(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform);
 
 	void sort();
 

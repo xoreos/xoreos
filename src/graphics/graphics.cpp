@@ -34,7 +34,7 @@
 #include "src/common/configman.h"
 #include "src/common/debugman.h"
 #include "src/common/threads.h"
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 #include "src/common/vector3.h"
 
 #include "src/events/requests.h"
@@ -705,12 +705,12 @@ void GraphicsManager::ortho(float left, float right, float bottom, float top, fl
 
 bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, float &sZ) {
 	// This is our projection matrix
-	Common::TransformationMatrix proj(_projection);
+	Common::Matrix4x4 proj(_projection);
 
 
 	// Generate the model matrix
 
-	Common::TransformationMatrix model;
+	Common::Matrix4x4 model;
 
 	float cPos[3];
 	float cOrient[3];
@@ -766,7 +766,7 @@ bool GraphicsManager::unproject(float x, float y,
 	try {
 		// Generate the inverse of the model matrix
 
-		Common::TransformationMatrix model;
+		Common::Matrix4x4 model;
 
 		float cPos[3];
 		float cOrient[3];
@@ -1287,27 +1287,27 @@ void GraphicsManager::renderScene() {
 	_frameEndSignal.store(true, boost::memory_order_release);
 }
 
-const Common::TransformationMatrix &GraphicsManager::getProjectionMatrix() const {
+const Common::Matrix4x4 &GraphicsManager::getProjectionMatrix() const {
 	return _projection;
 }
 
-Common::TransformationMatrix &GraphicsManager::getProjectionMatrix() {
+Common::Matrix4x4 &GraphicsManager::getProjectionMatrix() {
 	return _projection;
 }
 
-const Common::TransformationMatrix &GraphicsManager::getProjectionInverseMatrix() const {
+const Common::Matrix4x4 &GraphicsManager::getProjectionInverseMatrix() const {
 	return _projectionInv;
 }
 
-const Common::TransformationMatrix &GraphicsManager::getModelviewMatrix() const {
+const Common::Matrix4x4 &GraphicsManager::getModelviewMatrix() const {
 	return _modelview;
 }
 
-Common::TransformationMatrix &GraphicsManager::getModelviewMatrix() {
+Common::Matrix4x4 &GraphicsManager::getModelviewMatrix() {
 	return _modelview;
 }
 
-const Common::TransformationMatrix &GraphicsManager::getModelviewInverseMatrix() const {
+const Common::Matrix4x4 &GraphicsManager::getModelviewInverseMatrix() const {
 	return _modelviewInv;
 }
 

@@ -41,14 +41,14 @@ public:
 		Shader::ShaderSurface *surface;
 		Shader::ShaderMaterial *material;
 		Mesh::Mesh *mesh;
-		const Common::TransformationMatrix *transform;
+		const Common::Matrix4x4 *transform;
 		float reference;  ///< Reference point to the camera location, primarily used for depth sorting.
 		float padding;    ///< Padding for 64bit architectures.
 
 		RenderQueueNode() : program(0), surface(0), material(0), mesh(0), transform(0), reference(0.0f) {}
 		RenderQueueNode(const RenderQueueNode &src) : program(src.program), surface(src.surface), material(src.material), mesh(src.mesh), transform(src.transform), reference(src.reference) {}
-		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const Common::TransformationMatrix *t) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(0.0f) {}
-		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const Common::TransformationMatrix *t, float ref) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(ref) {}
+		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const Common::Matrix4x4 *t) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(0.0f) {}
+		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const Common::Matrix4x4 *t, float ref) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(ref) {}
 
 		inline const RenderQueueNode &operator=(const RenderQueueNode &src) { material = src.material; surface = src.surface; mesh = src.mesh; transform = src.transform; reference = src.reference; return *this; }
 	};
@@ -58,8 +58,8 @@ public:
 
 	void setCameraReference(const Common::Vector3 &reference);
 
-	void queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const Common::TransformationMatrix *transform);
-	void queueItem(Shader::ShaderRenderable *renderable, const Common::TransformationMatrix *transform);
+	void queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const Common::Matrix4x4 *transform);
+	void queueItem(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform);
 
 	void sortShader(); ///< Sort queue elements by shader program.
 	void sortDepth();  ///< Sort queue elements by depth.

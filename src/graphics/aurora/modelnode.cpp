@@ -162,8 +162,8 @@ void ModelNode::getAbsolutePosition(float &x, float &y, float &z) const {
 	z = _absolutePosition.getZ() * _model->_scale[2];
 }
 
-Common::TransformationMatrix ModelNode::getAsolutePosition() const {
-	Common::TransformationMatrix absolutePosition = _absolutePosition;
+Common::Matrix4x4 ModelNode::getAsolutePosition() const {
+	Common::Matrix4x4 absolutePosition = _absolutePosition;
 	absolutePosition.scale(_model->_scale[0], _model->_scale[1], _model->_scale[2]);
 
 	return absolutePosition;
@@ -411,7 +411,7 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 	}
 
 	if (_attachedModel) {
-		Common::TransformationMatrix modelPosition = _absoluteBoundBox.getOrigin();
+		Common::Matrix4x4 modelPosition = _absoluteBoundBox.getOrigin();
 
 		modelPosition.translate(_attachedModel->_position[0], _attachedModel->_position[1], _attachedModel->_position[2]);
 		modelPosition.rotate(_attachedModel->_orientation[3], _attachedModel->_orientation[0], _attachedModel->_orientation[1], _attachedModel->_orientation[2]);
@@ -593,8 +593,8 @@ void ModelNode::render(RenderPass pass) {
 	}
 }
 
-void ModelNode::drawSkeleton(const Common::TransformationMatrix &parent, bool showInvisible) {
-	Common::TransformationMatrix mine = parent;
+void ModelNode::drawSkeleton(const Common::Matrix4x4 &parent, bool showInvisible) {
+	Common::Matrix4x4 mine = parent;
 
 	mine.translate(_position[0], _position[1], _position[2]);
 	mine.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);

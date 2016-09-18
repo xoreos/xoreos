@@ -28,7 +28,7 @@
 #include <list>
 
 #include "src/common/ustring.h"
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 #include "src/common/boundingbox.h"
 
 #include "src/graphics/types.h"

@@ -19,26 +19,26 @@
  */
 
 /** @file
- *  A transformation matrix.
+ *  A 4x4 matrix, usable for transformations in 3D space.
  */
 
-#ifndef COMMON_TRANSMATRIX_H
-#define COMMON_TRANSMATRIX_H
+#ifndef COMMON_MATRIX4X4_H
+#define COMMON_MATRIX4X4_H
 
 #include "src/common/vector3.h"
 
 namespace Common {
 
-/** A transformation matrix. */
-class TransformationMatrix {
+/** A 4x4 matrix. */
+class Matrix4x4 {
 public:
 	/** If set true, load identity matrix. Allows removal of redundant
 	 *  assignment of transform internal array in some cases.
 	 */
-	TransformationMatrix(bool identity = true);
-	TransformationMatrix(const TransformationMatrix &m);
-	TransformationMatrix(const float *m);
-	~TransformationMatrix();
+	Matrix4x4(bool identity = true);
+	Matrix4x4(const Matrix4x4 &m);
+	Matrix4x4(const float *m);
+	~Matrix4x4();
 
 	/** Get the matrix elements in a flat array, column-major order. */
 	const float *get() const;
@@ -73,20 +73,20 @@ public:
 	void rotateXAxisWorld(float angle, bool normalise = true);
 	void rotateYAxisWorld(float angle, bool normalise = true);
 	void rotateZAxisWorld(float angle, bool normalise = true);
-	void setRotation(const TransformationMatrix &m);
+	void setRotation(const Matrix4x4 &m);
 	void resetRotation();
 
 	/** Multiply this matrix by the provided, store result in this matrix. */
-	void transform(const TransformationMatrix &m);
+	void transform(const Matrix4x4 &m);
 
 	/** Multiply matrices A.B, store result in this matrix. */
-	void transform(const TransformationMatrix &a, const TransformationMatrix &b);
+	void transform(const Matrix4x4 &a, const Matrix4x4 &b);
 
 	/** Calculate the inverse matrix, return a copy. */
-	TransformationMatrix getInverse() const;
+	Matrix4x4 getInverse() const;
 
 	/** Returns a transposed matrix of this. */
-	TransformationMatrix getTranspose() const;
+	Matrix4x4 getTranspose() const;
 
 	/** Rotate matrix to look at the given point. */
 	void lookAt(const Vector3 &v);
@@ -94,16 +94,16 @@ public:
 	void perspective(float fovy, float aspectRatio, float znear, float zfar);
 	void ortho(float l, float r, float b, float t, float n, float f);
 
-	const TransformationMatrix &operator=(const TransformationMatrix &m);
-	const TransformationMatrix &operator=(const float *m);
+	const Matrix4x4 &operator=(const Matrix4x4 &m);
+	const Matrix4x4 &operator=(const float *m);
 
 	float &operator[](unsigned int index);
 	float  operator[](unsigned int index) const;
 	float &operator()(int row, int column);
 	float  operator()(int row, int column) const;
 
-	const TransformationMatrix &operator*=(const TransformationMatrix &m);
-	TransformationMatrix operator*(const TransformationMatrix &m) const;
+	const Matrix4x4 &operator*=(const Matrix4x4 &m);
+	Matrix4x4 operator*(const Matrix4x4 &m) const;
 	Vector3 operator*(const Vector3 &v) const;
 
 	Vector3 vectorRotate(const Vector3 &v) const;
@@ -115,4 +115,4 @@ private:
 
 } // End of namespace Common
 
-#endif // COMMON_TRANSMATRIX_H
+#endif // COMMON_MATRIX4X4_H

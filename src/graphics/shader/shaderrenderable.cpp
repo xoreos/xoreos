@@ -71,7 +71,7 @@ void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
 	_mesh = mesh;
 }
 
-void ShaderRenderable::renderImmediate(const Common::TransformationMatrix &tform) {
+void ShaderRenderable::renderImmediate(const Common::Matrix4x4 &tform) {
 	glUseProgram(_program->glid);
 	_material->bindProgram(_program);
 	_material->bindGLState();

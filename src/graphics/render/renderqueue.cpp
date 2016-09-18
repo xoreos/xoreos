@@ -66,14 +66,14 @@ void RenderQueue::setCameraReference(const Common::Vector3 &reference) {
 	_cameraReference = reference;
 }
 
-void RenderQueue::queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const Common::TransformationMatrix *transform) {
+void RenderQueue::queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const Common::Matrix4x4 *transform) {
 	Common::Vector3 ref = transform->getPosition();
 	ref -= _cameraReference;
 	// Length squared of ref serves as a suitable depth sorting value.
 	_nodeArray.push_back(RenderQueueNode(program, surface, material, mesh, transform, ref.dot(ref)));
 }
 
-void RenderQueue::queueItem(Shader::ShaderRenderable *renderable, const Common::TransformationMatrix *transform) {
+void RenderQueue::queueItem(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform) {
 	Common::Vector3 ref = transform->getPosition();
 	ref -= _cameraReference;
 	// Length squared of ref serves as a suitable depth sorting value.

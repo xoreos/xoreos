@@ -27,7 +27,7 @@
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/vector3.h"
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 
 #include "src/graphics/camera.h"
 #include "src/graphics/graphics.h"
@@ -147,7 +147,7 @@ void CameraManager::move(float x, float y, float z) {
 }
 
 void CameraManager::moveRelative(float x, float y, float z) {
-	Common::TransformationMatrix orientation;
+	Common::Matrix4x4 orientation;
 
 	orientation.rotate(_orientation[2], 0.0f, 0.0f, 1.0f);
 	orientation.rotate(_orientation[1], 0.0f, 1.0f, 0.0f);

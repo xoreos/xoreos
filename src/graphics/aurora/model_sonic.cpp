@@ -330,13 +330,13 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 		const float pivotA = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 		const float pivotB = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
-		const Common::TransformationMatrix pivot = createPivot(pivotA, pivotB, pivotSelect, pivotNegate);
+		const Common::Matrix4x4 pivot = createPivot(pivotA, pivotB, pivotSelect, pivotNegate);
 
 		bone.transform *= pivot;
 	}
 
 	if (hasRotate) {
-		Common::TransformationMatrix rotateMatrix;
+		Common::Matrix4x4 rotateMatrix;
 
 		rotateMatrix[ 0] = rotate0;
 		rotateMatrix[ 1] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
@@ -1163,7 +1163,7 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 		 * position of its base node. Use an identity matrix as a fallback. */
 
 		// TODO: For some primitives, we need to calculate the weighted average of several matrices
-		Common::TransformationMatrix matrix;
+		Common::Matrix4x4 matrix;
 		if (!v->nodes.empty() && v->nodes[0].node)
 			matrix = v->nodes[0].node->getAsolutePosition();
 
@@ -1276,7 +1276,7 @@ uint8 Model_Sonic::getPolygonParameterCount(PolygonCommandID cmd) {
 	}
 }
 
-Common::TransformationMatrix Model_Sonic::createPivot(double a, double b, uint8 select, uint8 negate) {
+Common::Matrix4x4 Model_Sonic::createPivot(double a, double b, uint8 select, uint8 negate) {
 	float pivot[16] = {
 		0.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 0.0f,
@@ -1326,7 +1326,7 @@ Common::TransformationMatrix Model_Sonic::createPivot(double a, double b, uint8 
 			break;
 	}
 
-	return Common::TransformationMatrix(pivot);
+	return Common::Matrix4x4(pivot);
 }
 
 void Model_Sonic::render(RenderPass pass) {

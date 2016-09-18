@@ -39,7 +39,7 @@ void RenderManager::setCameraReference(const Common::Vector3 &reference) {
 	_queueColorTransparent.setCameraReference(reference);
 }
 
-void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const Common::TransformationMatrix *transform) {
+void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform) {
 	if (renderable->getMaterial()->getFlags() & SHADER_MATERIAL_TRANSPARENT) {
 		_queueColorTransparent.queueItem(renderable, transform);
 	} else {

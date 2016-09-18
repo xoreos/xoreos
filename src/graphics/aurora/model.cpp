@@ -315,7 +315,7 @@ void Model::scale(float x, float y, float z) {
 }
 
 void Model::rotate(float x, float y, float z, float angle) {
-	Common::TransformationMatrix orientation;
+	Common::Matrix4x4 orientation;
 
 	orientation.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
 	orientation.rotate(angle, x, y, z);
@@ -330,7 +330,7 @@ void Model::move(float x, float y, float z) {
 }
 
 void Model::getTooltipAnchor(float &x, float &y, float &z) const {
-	Common::TransformationMatrix pos = _absolutePosition;
+	Common::Matrix4x4 pos = _absolutePosition;
 
 	pos.translate(0.0f, 0.0f, _absoluteBoundBox.getDepth());
 
@@ -528,7 +528,7 @@ void Model::calculateDistance() {
 	}
 
 
-	Common::TransformationMatrix center = _absolutePosition;
+	Common::Matrix4x4 center = _absolutePosition;
 
 	center.translate(_center[0], _center[1], _center[2]);
 
@@ -703,7 +703,7 @@ void Model::doDrawBound() {
 	glEnd();
 	*/
 
-	Common::TransformationMatrix tform = _absolutePosition;
+	Common::Matrix4x4 tform = _absolutePosition;
 	tform.translate((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f);
 	tform.scale((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f);
 	_boundRenderable->renderImmediate(tform);
@@ -713,7 +713,7 @@ void Model::doDrawSkeleton() {
 	if (!_drawSkeleton)
 		return;
 
-	Common::TransformationMatrix tform;
+	Common::Matrix4x4 tform;
 
 	if (_type == kModelTypeObject)
 		glDisable(GL_DEPTH_TEST);

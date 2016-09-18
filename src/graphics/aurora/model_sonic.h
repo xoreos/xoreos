@@ -29,7 +29,7 @@
 #include <list>
 #include <map>
 
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 #include "src/common/vector3.h"
 
 #include "src/aurora/nitrofile.h"
@@ -229,7 +229,7 @@ private:
 		Common::UString name;
 
 		/** Complete local transformation this bone specifies. */
-		Common::TransformationMatrix transform;
+		Common::Matrix4x4 transform;
 
 		uint16 nodeID;   ///< ID of this bone.
 		uint16 parentID; ///< ID of parent bone.
@@ -406,7 +406,7 @@ private:
 	static uint8 getBoneParameterCount(BoneCommandID cmd, uint8 count);
 
 	/** Create a specific pivot matrix. */
-	static Common::TransformationMatrix createPivot(double a, double b, uint8 select, uint8 negate);
+	static Common::Matrix4x4 createPivot(double a, double b, uint8 select, uint8 negate);
 	// '---
 
 	// === Run-time ===

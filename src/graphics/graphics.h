@@ -35,7 +35,7 @@
 #include "src/common/types.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 #include "src/common/vector3.h"
 #include "src/common/ustring.h"
 
@@ -163,16 +163,16 @@ public:
 
 	// Block of functions below may or may not be modified in the future.
 	/** Return the current screen projection view matrix. */
-	const Common::TransformationMatrix &getProjectionMatrix() const;
-	Common::TransformationMatrix &getProjectionMatrix();
+	const Common::Matrix4x4 &getProjectionMatrix() const;
+	Common::Matrix4x4 &getProjectionMatrix();
 	/** Return the inverse screen projection view matrix. */
-	const Common::TransformationMatrix &getProjectionInverseMatrix() const;
+	const Common::Matrix4x4 &getProjectionInverseMatrix() const;
 
 	/** Return the current modelview matrix (camera view). */
-	const Common::TransformationMatrix &getModelviewMatrix() const;
-	Common::TransformationMatrix &getModelviewMatrix();
+	const Common::Matrix4x4 &getModelviewMatrix() const;
+	Common::Matrix4x4 &getModelviewMatrix();
 	/** Return the inverse modelview matrix (camera view). */
-	const Common::TransformationMatrix &getModelviewInverseMatrix() const;
+	const Common::Matrix4x4 &getModelviewInverseMatrix() const;
 
 private:
 	enum CursorState {
@@ -224,10 +224,10 @@ private:
 
 	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
 	uint32 _lastSampled; ///< Timestamp used to advance animations.
-	Common::TransformationMatrix _projection;    ///< Our projection matrix.
-	Common::TransformationMatrix _projectionInv; ///< The inverse of our projection matrix.
-	Common::TransformationMatrix _modelview;     ///< Our base modelview matrix (i.e camera view).
-	Common::TransformationMatrix _modelviewInv;  ///< The inverse of our modelview matrix.
+	Common::Matrix4x4 _projection;    ///< Our projection matrix.
+	Common::Matrix4x4 _projectionInv; ///< The inverse of our projection matrix.
+	Common::Matrix4x4 _modelview;     ///< Our base modelview matrix (i.e camera view).
+	Common::Matrix4x4 _modelviewInv;  ///< The inverse of our modelview matrix.
 
 	boost::atomic<uint32> _frameLock;
 	boost::atomic<bool>   _frameEndSignal;

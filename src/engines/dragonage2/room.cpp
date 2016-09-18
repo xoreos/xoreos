@@ -26,7 +26,7 @@
 #include "src/common/strutil.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/gff4file.h"
@@ -115,7 +115,7 @@ void Room::loadLayout(const Common::UString &roomFile) {
 	rmlTop.getVector4(kGFF4Orientation, roomOrient[0], roomOrient[1], roomOrient[2], roomOrient[3]);
 	roomOrient[3] = Common::rad2deg(acos(roomOrient[3]) * 2.0);
 
-	Common::TransformationMatrix roomTransform;
+	Common::Matrix4x4 roomTransform;
 	roomTransform.translate(roomPos[0], roomPos[1], roomPos[2]);
 	roomTransform.rotate(roomOrient[3], roomOrient[0], roomOrient[1], roomOrient[2]);
 
@@ -145,7 +145,7 @@ void Room::loadLayout(const Common::UString &roomFile) {
 
 		_models.push_back(model);
 
-		Common::TransformationMatrix modelTransform(roomTransform);
+		Common::Matrix4x4 modelTransform(roomTransform);
 
 		modelTransform.translate(pos[0], pos[1], pos[2]);
 		modelTransform.rotate(orient[3], orient[0], orient[1], orient[2]);

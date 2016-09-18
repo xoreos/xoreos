@@ -30,7 +30,7 @@
 #include <map>
 
 #include "src/common/ustring.h"
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 #include "src/common/boundingbox.h"
 
 #include "src/graphics/types.h"
@@ -237,7 +237,7 @@ protected:
 
 	float _center[3]; ///< Model's center.
 
-	Common::TransformationMatrix _absolutePosition;
+	Common::Matrix4x4 _absolutePosition;
 
 	/** The model's bounding box. */
 	Common::BoundingBox _boundBox;

@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_SHADER_SHADERSURFACE_H
 #define GRAPHICS_SHADER_SHADERSURFACE_H
 
-#include "src/common/transmatrix.h"
+#include "src/common/matrix4x4.h"
 
 #include "src/graphics/shader/shader.h"
 
@@ -71,8 +71,8 @@ public:
 	void addUBO(uint32 index, GLuint glid);
 
 	void bindProgram(Shader::ShaderProgram *program);
-	void bindProgram(Shader::ShaderProgram *program, const Common::TransformationMatrix *t);
-	void bindObjectModelview(Shader::ShaderProgram *program, const Common::TransformationMatrix *t);
+	void bindProgram(Shader::ShaderProgram *program, const Common::Matrix4x4 *t);
+	void bindObjectModelview(Shader::ShaderProgram *program, const Common::Matrix4x4 *t);
 
 	void bindGLState();
 	void unbindGLState();
