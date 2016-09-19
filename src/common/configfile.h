@@ -28,6 +28,7 @@
 #define COMMON_CONFIGFILE_H
 
 #include <list>
+#include <map>
 
 #include "src/common/ustring.h"
 #include "src/common/stringmap.h"
