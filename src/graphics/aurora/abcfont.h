@@ -25,6 +25,8 @@
 #ifndef GRAPHICS_AURORA_ABCFONT_H
 #define GRAPHICS_AURORA_ABCFONT_H
 
+#include <map>
+
 #include "src/common/types.h"
 
 #include "src/graphics/font.h"
