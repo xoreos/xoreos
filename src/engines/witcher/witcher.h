@@ -25,6 +25,8 @@
 #ifndef ENGINES_WITCHER_WITCHER_H
 #define ENGINES_WITCHER_WITCHER_H
 
+#include <list>
+
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 

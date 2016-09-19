@@ -25,6 +25,9 @@
 #ifndef ENGINES_WITCHER_AREA_H
 #define ENGINES_WITCHER_AREA_H
 
+#include <list>
+#include <map>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
