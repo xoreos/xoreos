@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_OPTIONS_RESOLUTION_H
 #define ENGINES_NWN_GUI_OPTIONS_RESOLUTION_H
 
+#include <vector>
+
 #include "src/graphics/resolution.h"
 
 #include "src/engines/nwn/gui/gui.h"

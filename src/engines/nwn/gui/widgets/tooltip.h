@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_TOOLTIP_H
 #define ENGINES_NWN_GUI_WIDGETS_TOOLTIP_H
 
+#include <vector>
+
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 

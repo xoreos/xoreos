@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_PORTRAIT_H
 #define ENGINES_NWN_GUI_WIDGETS_PORTRAIT_H
 
+#include <vector>
+
 #include <src/graphics/guielement.h>
 
 #include "src/graphics/aurora/texturehandle.h"

@@ -26,6 +26,7 @@
 #define ENGINES_NWN_GUI_CHARGEN_CHARGENCHOICES_H
 
 #include <vector>
+#include <list>
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"

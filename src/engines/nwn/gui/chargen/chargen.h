@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARGEN_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARGEN_H
 
+#include <vector>
+
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {

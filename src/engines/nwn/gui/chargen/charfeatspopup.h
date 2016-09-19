@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARFEATSPOPUP_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARFEATSPOPUP_H
 
+#include <vector>
+
 #include "src/engines/nwn/gui/chargen/charfeats.h"
 #include "src/engines/nwn/gui/gui.h"
 

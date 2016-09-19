@@ -25,6 +25,10 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARFEATS_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARFEATS_H
 
+#include <vector>
+#include <list>
+#include <map>
+
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 

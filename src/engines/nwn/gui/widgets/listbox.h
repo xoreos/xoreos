@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_LISTBOX_H
 #define ENGINES_NWN_GUI_WIDGETS_LISTBOX_H
 
+#include <vector>
+
 #include "src/common/types.h"
 
 #include "src/graphics/aurora/types.h"

@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_INGAME_DIALOG_H
 #define ENGINES_NWN_GUI_INGAME_DIALOG_H
 
+#include <list>
+
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 

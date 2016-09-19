@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_MAIN_CHARPREMADE_H
 #define ENGINES_NWN_GUI_MAIN_CHARPREMADE_H
 
+#include <vector>
+
 #include "src/aurora/types.h"
 
 #include "src/engines/nwn/types.h"

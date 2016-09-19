@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_MAIN_NEWMODULE_H
 #define ENGINES_NWN_GUI_MAIN_NEWMODULE_H
 
+#include <vector>
+
 #include "src/common/ustring.h"
 
 #include "src/graphics/aurora/types.h"

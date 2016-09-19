@@ -27,6 +27,8 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_BUTTONSGROUP_H
 #define ENGINES_NWN_GUI_WIDGETS_BUTTONSGROUP_H
 
+#include <vector>
+
 namespace Common {
 	class UString;
 }

@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARSPELLS_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARSPELLS_H
 
+#include <vector>
+
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
