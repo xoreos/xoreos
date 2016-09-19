@@ -40,7 +40,7 @@
 #include "src/events/notifyable.h"
 
 #include "src/graphics/types.h"
-#include <src/graphics/guielement.h>
+#include "src/graphics/guielement.h"
 
 #include "src/graphics/aurora/types.h"
 #include "src/graphics/aurora/fonthandle.h"
