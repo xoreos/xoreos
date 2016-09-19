@@ -25,6 +25,10 @@
 #ifndef ENGINES_AURORA_CONSOLE_H
 #define ENGINES_AURORA_CONSOLE_H
 
+#include <vector>
+#include <list>
+#include <map>
+
 #include <boost/function.hpp>
 
 #include "src/common/types.h"
