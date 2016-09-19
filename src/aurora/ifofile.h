@@ -25,6 +25,8 @@
 #ifndef AURORA_IFOFILE_H
 #define AURORA_IFOFILE_H
 
+#include <vector>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 

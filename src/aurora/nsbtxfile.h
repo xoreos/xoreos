@@ -26,6 +26,8 @@
 #ifndef AURORA_NSBTXFILE_H
 #define AURORA_NSBTXFILE_H
 
+#include <vector>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 

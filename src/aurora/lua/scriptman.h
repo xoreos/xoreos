@@ -26,7 +26,9 @@
 #define ENGINES_AURORA_LUA_SCRIPTMAN_H
 
 #include <cassert>
+
 #include <set>
+#include <map>
 
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"

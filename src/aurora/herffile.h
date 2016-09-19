@@ -25,6 +25,7 @@
 #ifndef AURORA_HERFFILE_H
 #define AURORA_HERFFILE_H
 
+#include <vector>
 #include <map>
 
 #include "src/common/types.h"

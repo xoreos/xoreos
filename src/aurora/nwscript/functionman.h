@@ -25,6 +25,7 @@
 #ifndef AURORA_NWSCRIPT_FUNCTIONMAN_H
 #define AURORA_NWSCRIPT_FUNCTIONMAN_H
 
+#include <vector>
 #include <map>
 
 #include "src/common/ustring.h"
