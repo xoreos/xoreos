@@ -25,6 +25,8 @@
 #ifndef SOUND_INTERLEAVER_H
 #define SOUND_INTERLEAVER_H
 
+#include <vector>
+
 namespace Sound {
 
 class AudioStream;

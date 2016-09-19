@@ -25,8 +25,6 @@
 #include <cassert>
 #include <cstring>
 
-#include <vector>
-
 #include "src/common/error.h"
 
 #include "src/sound/audiostream.h"
