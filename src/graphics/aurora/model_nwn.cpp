@@ -849,7 +849,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 		// Assign this face to all vertices belonging to this face
 		for (int i = 0; i < 3; i++) {
-			assert((f->index[i] * 3) < vertices.size());
+			assert((size_t)(f->index[i] * 3) < vertices.size());
 
 			const float *fV = &vertices[f->index[i] * 3];
 
@@ -893,7 +893,7 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 		for (uint32 j = 0; j < 3; j++) {
 			const uint16 index = face.index[j];
-			assert((index * 3) < vertices.size());
+			assert((size_t)(index * 3) < vertices.size());
 
 			// Vertices
 			*v++ = vertices[index * 3 + 0];
