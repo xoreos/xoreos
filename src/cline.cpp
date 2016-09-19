@@ -27,8 +27,9 @@
 
 #include "src/cline.h"
 
+#include "src/version/version.h"
+
 #include "src/common/util.h"
-#include "src/common/version.h"
 #include "src/common/platform.h"
 #include "src/common/configman.h"
 

@@ -27,7 +27,8 @@
 
 #include <boost/bind.hpp>
 
-#include "src/common/version.h"
+#include "src/version/version.h"
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"

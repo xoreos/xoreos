@@ -22,7 +22,7 @@
  *  The NWN ingame main menu.
  */
 
-#include "src/common/version.h"
+#include "src/version/version.h"
 
 #include "src/aurora/talkman.h"
 

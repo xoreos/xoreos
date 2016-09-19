@@ -26,6 +26,7 @@ include $(top_srcdir)/Makefile.common
 	$(AM_V_GEN)$(RC) -DHAVE_CONFIG_H -I$(top_srcdir) -o $@ $<
 
 SUBDIRS = \
+          version \
           common \
           aurora \
           graphics \
@@ -58,6 +59,7 @@ xoreos_LDADD = \
                graphics/libgraphics.la \
                aurora/libaurora.la \
                common/libcommon.la \
+               version/libversion.la \
                ../lua/liblua.la \
                ../toluapp/libtoluapp.la \
                $(LDADD) \

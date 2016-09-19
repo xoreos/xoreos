@@ -22,7 +22,7 @@
  *  The options menu.
  */
 
-#include "src/common/version.h"
+#include "src/version/version.h"
 
 #include "src/engines/nwn/version.h"
 

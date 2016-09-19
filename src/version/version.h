@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  Basic xoreos version information
+ *  Basic xoreos version information.
  */
 
-#ifndef COMMON_VERSION_H
-#define COMMON_VERSION_H
+#ifndef VERSION_VERSION_H
+#define VERSION_VERSION_H
 
 // "xoreos"
 extern const char *XOREOS_NAME;
@@ -43,4 +43,4 @@ extern const char *XOREOS_URL;
 // Very shortened authors/copyright message
 extern const char *XOREOS_AUTHORS;
 
-#endif // COMMON_VERSION_H
+#endif // VERSION_VERSION_H

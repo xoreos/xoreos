@@ -19,10 +19,10 @@
  */
 
 /** @file
- *  Basic xoreos version information
+ *  Basic xoreos version information.
  */
 
-#include "src/common/version.h"
+#include "src/version/version.h"
 
 #if defined(HAVE_CONFIG_H)
 	#include "config.h"

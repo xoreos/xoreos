@@ -334,11 +334,11 @@ target_link_libraries(xoreos ${XOREOS_LIBRARIES})
 
 
 # -------------------------------------------------------------------------
-# try to add version information from git to src/common/version.cpp
+# try to add version information from git to src/version/version.cpp
 # this is not 100% clean, and doesn't reconfigure when there's only a local change since last
 #  build (so it does not always add the .dirty suffix)
 string(TIMESTAMP XOREOS_BUILDDATE "%Y-%m-%dT%H:%M:%SZ" UTC)
-set_property(SOURCE src/common/version.cpp APPEND PROPERTY COMPILE_DEFINITIONS XOREOS_BUILDDATE="${XOREOS_BUILDDATE}")
+set_property(SOURCE src/version/version.cpp APPEND PROPERTY COMPILE_DEFINITIONS XOREOS_BUILDDATE="${XOREOS_BUILDDATE}")
 
 find_package(Git)
 if(GIT_FOUND)
@@ -358,8 +358,8 @@ if(GIT_FOUND)
   string(REGEX REPLACE "^[^+]*\\+" "" XOREOS_REV "${XOREOS_REVDESC}")
   message(STATUS "Building version: ${XOREOS_REVDESC}")
 
-  set_property(SOURCE src/common/version.cpp APPEND PROPERTY COMPILE_DEFINITIONS XOREOS_REVDESC="${XOREOS_REVDESC}")
-  set_property(SOURCE src/common/version.cpp APPEND PROPERTY COMPILE_DEFINITIONS XOREOS_REV="${XOREOS_REV}")
+  set_property(SOURCE src/version/version.cpp APPEND PROPERTY COMPILE_DEFINITIONS XOREOS_REVDESC="${XOREOS_REVDESC}")
+  set_property(SOURCE src/version/version.cpp APPEND PROPERTY COMPILE_DEFINITIONS XOREOS_REV="${XOREOS_REV}")
 
   # use .git/logs/HEAD to track if git state has changed and if we need to reconfigure
   if(EXISTS ${CMAKE_SOURCE_DIR}/.git/logs/HEAD)

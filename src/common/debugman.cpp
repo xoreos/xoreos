@@ -24,13 +24,14 @@
  *  The debug manager, managing debug channels.
  */
 
+#include "src/version/version.h"
+
 #include "src/common/maths.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/filepath.h"
 #include "src/common/debugman.h"
 #include "src/common/configman.h"
-#include "src/common/version.h"
 #include "src/common/datetime.h"
 
 DECLARE_SINGLETON(Common::DebugManager)
