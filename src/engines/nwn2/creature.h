@@ -25,6 +25,9 @@
 #ifndef ENGINES_NWN2_CREATURE_H
 #define ENGINES_NWN2_CREATURE_H
 
+#include <vector>
+#include <list>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 

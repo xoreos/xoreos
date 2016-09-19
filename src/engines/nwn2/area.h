@@ -26,6 +26,8 @@
 #define ENGINES_NWN2_AREA_H
 
 #include <vector>
+#include <list>
+#include <map>
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
