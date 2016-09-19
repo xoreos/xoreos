@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include <src/graphics/guielement.h>
+#include "src/graphics/guielement.h"
 
 #include "src/graphics/aurora/texturehandle.h"
 
