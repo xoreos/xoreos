@@ -26,6 +26,7 @@
 #define ENGINES_DRAGONAGE_CAMPAIGNS_H
 
 #include <vector>
+#include <list>
 
 #include "src/common/ustring.h"
 
