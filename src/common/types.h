@@ -220,4 +220,18 @@ typedef unsigned int uint;
 	#define UINT64_C(c) (c ## ULL)
 #endif
 
+// Fallback macros for type limits.
+#ifndef UINT8_MAX
+	#define UINT8_MAX 0xFF
+#endif
+#ifndef UINT16_MAX
+	#define UINT16_MAX 0xFFFF
+#endif
+#ifndef UINT32_MAX
+	#define UINT32_MAX 0xFFFFFFFF
+#endif
+#ifndef UINT64_MAX
+	#define UINT64_MAX UINT64_C(0xFFFFFFFFFFFFFFFF)
+#endif
+
 #endif // COMMON_TYPES_H
