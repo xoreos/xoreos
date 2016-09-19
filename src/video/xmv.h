@@ -25,6 +25,8 @@
 #ifndef VIDEO_XMV_H
 #define VIDEO_XMV_H
 
+#include <vector>
+
 #include "src/video/decoder.h"
 
 namespace Common {

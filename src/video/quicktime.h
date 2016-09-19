@@ -55,6 +55,8 @@
 #ifndef VIDEO_QUICKTIME_H
 #define VIDEO_QUICKTIME_H
 
+#include <vector>
+
 #include "src/video/decoder.h"
 
 namespace Common {
