@@ -553,8 +553,11 @@ static void createmeta (lua_State *L) {
 */
 
 static int io_execute (lua_State *L) {
-  lua_pushnumber(L, system(luaL_checkstring(L, 1)));
-  return 1;
+  // [xoreos: disable system()! We don't need it, we don't want it]
+  const char *command = luaL_checkstring(L, 1);
+
+  luaL_error(L, "Attempted system(\"%s\")", command);
+  return 0;
 }
 
 
