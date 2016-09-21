@@ -25,8 +25,8 @@ LIBS =
 # Get git version information
 .PHONY: gitstamp
 gitstamp:
-	@-$(eval $@_REVLINE := $(shell cd $(top_srcdir); git describe --long --match desc/\* | cut -d '/' -f 2- | sed -e 's/\(.*\)-\([^-]*\)-\([^-]*\)/\1+\2.\3/'))
-	@-$(eval $@_REVDIRT := $(shell cd $(top_srcdir); git update-index --refresh --unmerged 1>/dev/null 2>&1; git diff-index --quiet HEAD || echo ".dirty"))
+	@-$(eval $@_REVLINE := $(shell cd $(top_srcdir); git describe --long --match desc/\* 2>/dev/null | cut -d '/' -f 2- | sed -e 's/\(.*\)-\([^-]*\)-\([^-]*\)/\1+\2.\3/'))
+	@-$(eval $@_REVDIRT := $(shell cd $(top_srcdir); git update-index --refresh --unmerged 1>/dev/null 2>&1; git diff-index --quiet HEAD 2>/dev/null || echo ".dirty"))
 	@-$(eval $@_REVDESC := $(shell if test x$($@_REVLINE) != "x"; then echo $($@_REVLINE)$($@_REVDIRT); fi ))
 	@[ -f $@ ] || touch $@
 	$(AM_V_GEN)echo $($@_REVDESC) | cmp -s $@ - || echo $($@_REVDESC) > $@
