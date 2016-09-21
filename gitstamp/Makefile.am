@@ -31,8 +31,7 @@ gitstamp:
 	@[ -f $@ ] || touch $@
 	@echo $($@_REVDESC) | cmp -s $@ - || ( echo "  GEN      $@ ($($@_REVDESC))" ; echo $($@_REVDESC) > $@ )
 
-clean-local:
-	rm -f gitstamp
+CLEANFILES = gitstamp
 
 noinst_LTLIBRARIES = libgitstamp.la
 
