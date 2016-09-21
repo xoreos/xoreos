@@ -16,3 +16,4 @@ Changes:
   CHUNK_VERSION0
 - Added our NORETURN macros to luaD_throw() and its callers
 - #include'd src/common/types.h in llimits.h
+- Disabled io_popen()

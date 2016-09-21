@@ -38,6 +38,8 @@ typedef struct FileHandle {
 #endif
 #endif
 
+// [xoreos: disable popen()! We don't need it, we don't want it]
+#define USE_POPEN	0
 
 /*
 ** by default, posix systems get `popen'
@@ -214,17 +216,12 @@ static int io_open (lua_State *L) {
 
 
 static int io_popen (lua_State *L) {
-#if !USE_POPEN
-  luaL_error(L, "`popen' not supported");
-  return 0;
-#else
+  // [xoreos: disable popen()! We don't need it, we don't want it]
   const char *filename = luaL_checkstring(L, 1);
   const char *mode = luaL_optstring(L, 2, "r");
-  FileHandle *fh = newfileh(L);
-  fh->f = popen(filename, mode);
-  fh->ispipe = 1;
-  return (fh->f == NULL) ? pushresult(L, 0, filename) : 1;
-#endif
+
+  luaL_error(L, "Attempted popen(\"%s\", \"%s\")", filename, mode);
+  return 0;
 }
 
 
