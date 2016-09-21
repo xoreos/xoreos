@@ -29,7 +29,7 @@ gitstamp:
 	@-$(eval $@_REVDIRT := $(shell cd $(top_srcdir); git update-index --refresh --unmerged 1>/dev/null 2>&1; git diff-index --quiet HEAD 2>/dev/null || echo ".dirty"))
 	@-$(eval $@_REVDESC := $(shell if test x$($@_REVLINE) != "x"; then echo $($@_REVLINE)$($@_REVDIRT); fi ))
 	@[ -f $@ ] || touch $@
-	$(AM_V_GEN)echo $($@_REVDESC) | cmp -s $@ - || echo $($@_REVDESC) > $@
+	@echo $($@_REVDESC) | cmp -s $@ - || ( echo "  GEN      $@ ($($@_REVDESC))" ; echo $($@_REVDESC) > $@ )
 
 clean-local:
 	rm -f gitstamp
