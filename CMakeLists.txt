@@ -301,13 +301,12 @@ if(NOT GLEW_FOUND)
   message(STATUS "Using internal GLEW library")
 
   add_definitions(-DGLEW_STATIC)
-  set(GLEW_LIBRARIES    glew)
-  set(GLEW_INCLUDE_DIRS glew)
+  set(GLEW_LIBRARIES glew_glew)
 
   add_definitions(-DXOREOS_INTERNAL_GLEW)
   set(INTERNAL_GLEW 1)
 
-  parse_configure(configure.ac glew)
+  parse_automake(glew/rules.mk)
 else()
   message(STATUS "Using external GLEW library")
 endif()
@@ -316,20 +315,18 @@ list(APPEND XOREOS_LIBRARIES ${GLEW_LIBRARIES})
 
 
 # use our own version of lua, as we will have to support the Witcher lua scripts
-parse_configure(configure.ac "^lua")
-include_directories(lua)
-list(APPEND XOREOS_LIBRARIES lua)
+parse_automake(lua/rules.mk)
+list(APPEND XOREOS_LIBRARIES lua_lua)
 
-parse_configure(configure.ac toluapp)
-include_directories(toluapp)
-list(APPEND XOREOS_LIBRARIES toluapp)
+parse_automake(toluapp/rules.mk)
+list(APPEND XOREOS_LIBRARIES toluapp_toluapp)
 
 
 # -------------------------------------------------------------------------
-# xoreos main targets, parsed from configure.ac and */Makefile.am
-include_directories(${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/src)
+# xoreos main targets, parsed from the Automake rules.mk files
+include_directories(${PROJECT_SOURCE_DIR})
 add_definitions(-DPACKAGE_STRING="xoreos ${xoreos_VERSION}")
-parse_configure(configure.ac src)
+parse_automake(src/rules.mk)
 target_link_libraries(xoreos ${XOREOS_LIBRARIES})
 
 
