@@ -73,7 +73,7 @@ Makefile.am.cmake
 /doc/doxygen/*.db
 
 # git versioning stamp
-/gitstamp/gitstamp
+/src/version/gitstamp
 
 # Unix binary
 /src/xoreos

@@ -17,101 +17,80 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Top-level automake build recipe.
+# The main "controller" automake recipe. We're setting up all our
+# global build variables here, then recursively include all other
+# build recipe, creating a flat non-recursive automake setup.
 
-include $(top_srcdir)/Makefile.common
-
+# Use the m4 directory for extra m4 autoconf scripts.
 ACLOCAL_AMFLAGS = -I m4 --install
+# Build objects in the same directory as their source files.
+AUTOMAKE_OPTIONS = subdir-objects
 
-EXTRA_DIST = \
-             autogen.sh \
-             BUILDDEP.md \
-             Doxyfile \
-             doc/doxygen/README \
-             dists/macosx/Info.plist \
-             dists/macosx/xoreos.icns \
-             dists/win32/xoreos.ico \
-             dists/win32/xoreos.rc \
-             dists/arch/PKGBUILD \
-             dists/debian/changelog \
-             dists/debian/compat \
-             dists/debian/control \
-             dists/debian/copyright \
-             dists/debian/rules \
-             dists/debian/xoreos.lintian-overrides \
-             dists/debian/source/format \
-             dists/fedora/build-from-git.sh \
-             dists/fedora/xoreos.spec \
-             .uncrustifyrc \
-             CMakeLists.txt \
-             cmake/CMakeAM.cmake \
-             cmake/FindFaad.cmake \
-             cmake/FindGLEW.cmake \
-             cmake/FindIconv.cmake \
-             cmake/FindLibLZMA.cmake \
-             cmake/FindMad.cmake \
-             cmake/FindOgg.cmake \
-             cmake/FindSDL2.cmake \
-             cmake/FindVorbis.cmake \
-             cmake/FindXviD.cmake \
-             cmake/SetCheckCompilerFlag.cmake \
-             cmake/toolchain/i686-windows-mingw.cmake \
-             cmake/toolchain/x86_64-windows-mingw.cmake \
-             $(EMPTY)
+# Empty element to make the source lists easier editable.
+EMPTY =
 
-dist_doc_DATA = \
-                COPYING \
-                COPYING.Bitstream \
-                COPYING.Arev \
-                COPYING.GPLv2 \
-                COPYING.LGPLv2.1 \
-                AUTHORS \
-                ChangeLog \
-                NEWS.md \
-                TODO \
-                README.md \
-                FAQ.md \
-                CONTRIBUTING.md \
-                CODE_OF_CONDUCT.md \
-                doc/xoreos.conf.example \
-                $(EMPTY)
+# Initialize the global lists.
 
-dist_man6_MANS = \
-                 man/xoreos.6 \
-                 $(EMPTY)
+noinst_HEADERS     =
+noinst_LTLIBRARIES =
 
-SUBDIRS =
+bin_PROGRAMS =
 
-if INTERNAL_GLEW
-SUBDIRS += glew
-endif
+CLEANFILES =
 
-SUBDIRS += \
-           utf8cpp \
-           lua \
-           toluapp \
-           gitstamp \
-           src \
-           $(EMPTY)
+EXTRA_DIST     =
+dist_doc_DATA  =
+dist_man1_MANS =
 
-doxygen:
-	doxygen
+# Library compile flags
 
-doxygen-clean:
-	rm -rf doc/doxygen/html/
-	rm -rf doc/doxygen/latex/
-	rm -rf doc/doxygen/man/
-	rm -rf doc/doxygen/*.tmp
-	rm -rf doc/doxygen/*.db
+LIBSF_XOREOS  = $(XOREOS_CFLAGS)
+LIBSF_GENERAL = $(ZLIB_CFLAGS) $(LZMA_FLAGS) $(XML2_CFLAGS)
+LIBSF_GRAPHIC = $(SDL2_CFLAGS) $(GL_CFLAGS) $(GLEW_CFLAGS) \
+                $(FT2_CFLAGS) $(XVID_CFLAGS)
+LIBSF_SOUND   = $(AL_CFLAGS) $(FAAD_CFLAGS) $(MAD_CFLAGS) \
+                $(OGG_CFLAGS) $(VORBIS_CFLAGS)
+LIBSF_BOOST   = $(BOOST_CPPFLAGS)
 
-# TODO: Make a static target for this (would involve changing sdl-config to use static libs, static versions of SDL_sound and SDL_mixer, and creating a framework folder for OpenGL).
-BUNDLE_NAME = Xoreos.app
-bundle: all
-	mkdir -p $(BUNDLE_NAME)/Contents/MacOS
-	mkdir -p $(BUNDLE_NAME)/Contents/Resources
-	echo "APPL????" > $(BUNDLE_NAME)/Contents/PkgInfo
-	cp dists/macosx/Info.plist $(BUNDLE_NAME)/Contents/
-	cp dists/macosx/xoreos.icns $(BUNDLE_NAME)/Contents/
-	cp src/xoreos $(BUNDLE_NAME)/Contents/MacOS/xoreos
-	chmod 755 $(BUNDLE_NAME)/Contents/MacOS/xoreos
-	$(STRIP) $(BUNDLE_NAME)/Contents/MacOS/xoreos
+LIBSF         = $(LIBSF_XOREOS) $(LIBSF_GENERAL) $(LIBSF_GRAPHIC) \
+                $(LIBSF_SOUND) $(LIBSF_BOOST)
+
+# Library linking flags
+
+LIBSL_XOREOS  = $(XOREOS_LIBS)
+LIBSL_GENERAL = $(LTLIBICONV) $(ZLIB_LIBS) $(LZMA_LIBS) $(XML2_LIBS)
+LIBSL_GRAPHIC = $(SDL2_LIBS) $(GL_LIBS) $(GLEW_LIBS) \
+                $(FT2_LIBS) $(XVID_LIBS)
+LIBSL_SOUND   = $(AL_LIBS) $(FAAD_LIBS) $(MAD_LIBS) \
+                $(OGG_LIBS) $(VORBIS_LIBS)
+LIBSL_BOOST   = $(BOOST_SYSTEM_LDFLAGS) $(BOOST_SYSTEM_LIBS) \
+                $(BOOST_FILESYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LIBS) \
+                $(BOOST_REGEX_LDFLAGS) $(BOOST_REGEX_LIBS) \
+                $(BOOST_ATOMIC_LDFLAGS) $(BOOST_ATOMIC_LIBS) \
+                $(BOOST_LOCALE_LDFLAGS) $(BOOST_LOCALE_LIBS)
+
+LIBSL         = $(LIBSL_XOREOS) $(LIBSL_GENERAL) $(LIBSL_GRAPHIC) \
+                $(LIBSL_SOUND) $(LIBSL_BOOST)
+
+# Other compiler flags
+
+FLAGS_DIR     = -I$(srcdir)
+FLAGS_DEBUG   = $(GGDB)
+FLAGS_STD     = $(STD)
+FLAGS_OPT     = $(LTO) $(NATIVE)
+FLAGS_WARN    = $(WARN) $(WERROR)
+
+FLAGS         = $(FLAGS_DIR) $(FLAGS_DEBUG) $(FLAGS_STD) \
+                $(FLAGS_OPT) $(FLAGS_WARN)
+
+# Putting it all together...
+
+AM_CXXFLAGS   = $(FLAGS) $(LIBSF)
+AM_LDFLAGS    = $(FLAGS_OPT)
+LDADD         = $(LIBSL)
+LIBS          =
+
+# Now include the top-level recipe file and through it, all the
+# other build recipes.
+
+include rules.mk
