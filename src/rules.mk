@@ -42,6 +42,15 @@ src_xoreos_SOURCES += dists/win32/xoreos.rc
 endif
 
 src_xoreos_LDADD = \
+    src/engines/dragonage2/libdragonage2.la \
+    src/engines/dragonage/libdragonage.la \
+    src/engines/sonic/libsonic.la \
+    src/engines/witcher/libwitcher.la \
+    src/engines/jade/libjade.la \
+    src/engines/kotor2/libkotor2.la \
+    src/engines/kotor/libkotor.la \
+    src/engines/nwn2/libnwn2.la \
+    src/engines/nwn/libnwn.la \
     src/engines/libengines.la \
     src/events/libevents.la \
     src/video/libvideo.la \
