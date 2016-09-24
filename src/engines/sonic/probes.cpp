@@ -27,6 +27,8 @@
 
 #include "src/aurora/ndsrom.h"
 
+#include "src/engines/engineprobe.h"
+
 #include "src/engines/sonic/probes.h"
 #include "src/engines/sonic/sonic.h"
 
@@ -34,7 +36,7 @@ namespace Engines {
 
 namespace Sonic {
 
-static const class EngineProbe : public Engines::EngineProbe {
+class EngineProbe : public Engines::EngineProbe {
 private:
 	static const Common::UString kGameName;
 
@@ -70,15 +72,14 @@ public:
 		return title == "SONICCHRON";
 	}
 
-} kEngineProbe;
+};
 
 const Common::UString EngineProbe::kGameName = "Sonic Chronicles: The Dark Brotherhood";
 
 
-const Engines::EngineProbe * const kProbes[] = {
-	&kEngineProbe,
-	0
-};
+void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
+	probes.push_back(new EngineProbe);
+}
 
 } // End of namespace Sonic
 

@@ -25,6 +25,8 @@
 #include "src/common/ustring.h"
 #include "src/common/filelist.h"
 
+#include "src/engines/engineprobe.h"
+
 #include "src/engines/dragonage2/probes.h"
 #include "src/engines/dragonage2/dragonage2.h"
 
@@ -32,7 +34,7 @@ namespace Engines {
 
 namespace DragonAge2 {
 
-static const class EngineProbe : public Engines::EngineProbe {
+class EngineProbe : public Engines::EngineProbe {
 private:
 	static const Common::UString kGameName;
 
@@ -69,15 +71,14 @@ public:
 		return false;
 	}
 
-} kEngineProbe;
+};
 
 const Common::UString EngineProbe::kGameName = "Dragon Age II";
 
 
-const Engines::EngineProbe * const kProbes[] = {
-	&kEngineProbe,
-	0
-};
+void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
+	probes.push_back(new EngineProbe);
+}
 
 } // End of namespace DragonAge2
 

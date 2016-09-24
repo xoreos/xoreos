@@ -26,6 +26,8 @@
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 
+#include "src/engines/engineprobe.h"
+
 #include "src/engines/kotor/probes.h"
 #include "src/engines/kotor/kotor.h"
 
@@ -61,10 +63,10 @@ public:
 const Common::UString EngineProbe::kGameName = "Star Wars: Knights of the Old Republic";
 
 
-static const class EngineProbeWin : public EngineProbe {
+class EngineProbeWindows : public EngineProbe {
 public:
-	EngineProbeWin() {}
-	~EngineProbeWin() {}
+	EngineProbeWindows() {}
+	~EngineProbeWindows() {}
 
 	Aurora::Platform getPlatform() const { return Aurora::kPlatformWindows; }
 
@@ -74,9 +76,9 @@ public:
 		return rootFiles.contains("/swkotor.exe", true);
 	}
 
-} kEngineProbeWin;
+};
 
-static const class EngineProbeMac : public EngineProbe {
+class EngineProbeMac : public EngineProbe {
 public:
 	EngineProbeMac() {}
 	~EngineProbeMac() {}
@@ -93,9 +95,9 @@ public:
 		return !appDirectory.empty();
 	}
 
-} kEngineProbeMac;
+};
 
-static const class EngineProbeXbox : public EngineProbe {
+class EngineProbeXbox : public EngineProbe {
 public:
 	EngineProbeXbox() {}
 	~EngineProbeXbox() {}
@@ -111,15 +113,14 @@ public:
 		return !appDirectory.empty() && rootFiles.contains("/players.erf", true);
 	}
 
-} kEngineProbeXbox;
-
-
-const Engines::EngineProbe * const kProbes[] = {
-	&kEngineProbeWin,
-	&kEngineProbeMac,
-	&kEngineProbeXbox,
-	0
 };
+
+
+void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
+	probes.push_back(new EngineProbeWindows);
+	probes.push_back(new EngineProbeMac);
+	probes.push_back(new EngineProbeXbox);
+}
 
 } // End of namespace KotOR
 

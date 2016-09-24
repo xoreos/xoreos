@@ -25,6 +25,8 @@
 #include "src/common/ustring.h"
 #include "src/common/filelist.h"
 
+#include "src/engines/engineprobe.h"
+
 #include "src/engines/jade/probes.h"
 #include "src/engines/jade/jade.h"
 
@@ -60,7 +62,7 @@ public:
 const Common::UString EngineProbe::kGameName = "Jade Empire";
 
 
-static const class EngineProbeWindows : public EngineProbe {
+class EngineProbeWindows : public EngineProbe {
 public:
 	EngineProbeWindows() {}
 	~EngineProbeWindows() {}
@@ -75,9 +77,9 @@ public:
 		return false;
 	}
 
-} kEngineProbeWin;
+};
 
-static const class EngineProbeXbox : public EngineProbe {
+class EngineProbeXbox : public EngineProbe {
 public:
 	EngineProbeXbox() {}
 	~EngineProbeXbox() {}
@@ -91,14 +93,14 @@ public:
 		return false;
 	}
 
-} kEngineProbeXbox;
-
-
-const Engines::EngineProbe * const kProbes[] = {
-	&kEngineProbeWin,
-	&kEngineProbeXbox,
-	0
 };
+
+
+void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
+	probes.push_back(new EngineProbeWindows);
+	probes.push_back(new EngineProbeXbox);
+
+}
 
 } // End of namespace Jade
 

@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "src/cline.h"
+#include "src/engines.h"
 
 #include "src/common/ustring.h"
 #include "src/common/util.h"
@@ -158,6 +159,8 @@ int main(int argc, char **argv) {
 	if (!Common::FilePath::isDirectory(baseDir) && !Common::FilePath::isRegularFile(baseDir))
 		error("No such file or directory \"%s\"", baseDir.c_str());
 
+	std::list<const Engines::EngineProbe *> probes;
+
 	Engines::GameThread *gameThread = new Engines::GameThread;
 	try {
 		// Enable requested debug channels
@@ -166,8 +169,11 @@ int main(int argc, char **argv) {
 		// Initialize all necessary subsystems
 		init();
 
+		// Create all our engine probes
+		createEngineProbes(probes);
+
 		// Probe and create the game engine
-		gameThread->init(baseDir);
+		gameThread->init(baseDir, probes);
 
 		if (ConfigMan.getBool("listdebug", false)) {
 			// List debug channels
@@ -193,6 +199,8 @@ int main(int argc, char **argv) {
 		delete gameThread;
 	} catch (...) {
 	}
+
+	destroyEngineProbes(probes);
 
 	try {
 		// Sync changed debug channel settings

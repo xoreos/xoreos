@@ -19,25 +19,22 @@
  */
 
 /** @file
- *  Probing for an installation of Star Wars: Knights of the Old Republic II - The Sith Lords.
+ *  Utility functions to handle the engines.
  */
 
-#ifndef ENGINES_KOTOR2_PROBES_H
-#define ENGINES_KOTOR2_PROBES_H
+#ifndef ENGINES_H
+#define ENGINES_H
 
 #include <list>
 
 namespace Engines {
+	class EngineProbe;
+}
 
-class EngineProbe;
+/** Create all probes for all our engines. */
+void createEngineProbes(std::list<const Engines::EngineProbe *> &probes);
 
-namespace KotOR2 {
+/** Destroy all the probes again. */
+void destroyEngineProbes(std::list<const Engines::EngineProbe *> &probes);
 
-/** Create all probes for this engine and add them to the list. */
-void createEngineProbes(std::list<const EngineProbe *> &probes);
-
-} // End of namespace KotOR2
-
-} // End of namespace Engines
-
-#endif // ENGINES_KOTOR2_PROBES_H
+#endif // ENGINES_H

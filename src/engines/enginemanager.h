@@ -25,6 +25,8 @@
 #ifndef ENGINES_ENGINEMANAGER_H
 #define ENGINES_ENGINEMANAGER_H
 
+#include <list>
+
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
 
@@ -34,6 +36,8 @@ namespace Common {
 }
 
 namespace Engines {
+
+class EngineProbe;
 
 class GameInstance {
 public:
@@ -49,7 +53,8 @@ protected:
 class EngineManager : public Common::Singleton<EngineManager> {
 public:
 	/** Return a game instance capable of running the game in this directory. */
-	GameInstance *probeGame(const Common::UString &target) const;
+	GameInstance *probeGame(const Common::UString &target,
+	                        const std::list<const EngineProbe *> &probes) const;
 
 	/** Run this game instance. */
 	void run(GameInstance &game) const;

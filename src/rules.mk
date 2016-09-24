@@ -28,10 +28,12 @@ src_xoreos_SOURCES =
 
 src_xoreos_SOURCES += \
     src/cline.h \
+    src/engines.h \
     $(EMPTY)
 
 src_xoreos_SOURCES += \
     src/cline.cpp \
+    src/engines.cpp \
     src/xoreos.cpp \
     $(EMPTY)
 

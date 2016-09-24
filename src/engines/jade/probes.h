@@ -25,13 +25,16 @@
 #ifndef ENGINES_JADE_PROBES_H
 #define ENGINES_JADE_PROBES_H
 
-#include "src/engines/engineprobe.h"
+#include <list>
 
 namespace Engines {
 
+class EngineProbe;
+
 namespace Jade {
 
-extern const Engines::EngineProbe * const kProbes[];
+/** Create all probes for this engine and add them to the list. */
+void createEngineProbes(std::list<const EngineProbe *> &probes);
 
 } // End of namespace Jade
 

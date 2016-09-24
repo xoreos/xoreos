@@ -25,11 +25,14 @@
 #ifndef ENGINES_GAMETHREAD_H
 #define ENGINES_GAMETHREAD_H
 
+#include <list>
+
 #include "src/common/thread.h"
 
 namespace Engines {
 
 class GameInstance;
+class EngineProbe;
 
 /** The game thread, running all game logic. */
 class GameThread : public Common::Thread {
@@ -37,7 +40,7 @@ public:
 	GameThread();
 	~GameThread();
 
-	void init(const Common::UString &baseDir);
+	void init(const Common::UString &baseDir, const std::list<const EngineProbe *> &probes);
 
 	void run();
 

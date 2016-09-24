@@ -26,6 +26,8 @@
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 
+#include "src/engines/engineprobe.h"
+
 #include "src/engines/witcher/probes.h"
 #include "src/engines/witcher/witcher.h"
 
@@ -33,7 +35,7 @@ namespace Engines {
 
 namespace Witcher {
 
-static const class EngineProbe : public Engines::EngineProbe {
+class EngineProbe : public Engines::EngineProbe {
 private:
 	static const Common::UString kGameName;
 
@@ -77,15 +79,14 @@ public:
 		return systemFiles.containsGlob(".*/witcher.(exe|ini)", true);
 	}
 
-} kEngineProbe;
+};
 
 const Common::UString EngineProbe::kGameName = "The Witcher";
 
 
-const Engines::EngineProbe * const kProbes[] = {
-	&kEngineProbe,
-	0
-};
+void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
+	probes.push_back(new EngineProbe);
+}
 
 } // End of namespace Witcher
 

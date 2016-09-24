@@ -49,13 +49,13 @@ GameThread::~GameThread() {
 	delete _game;
 }
 
-void GameThread::init(const Common::UString &baseDir) {
+void GameThread::init(const Common::UString &baseDir, const std::list<const EngineProbe *> &probes) {
 	// Detecting the game
 
 	delete _game;
 	_game = 0;
 
-	if (!(_game = EngineMan.probeGame(baseDir)))
+	if (!(_game = EngineMan.probeGame(baseDir, probes)))
 		throw Common::Exception("Unable to detect the game");
 
 	// Get the game description from the config, or alternatively

@@ -57,32 +57,9 @@
 
 #include "src/engines/engine.h"
 
-// The engines
-#include "src/engines/nwn/probes.h"
-#include "src/engines/nwn2/probes.h"
-#include "src/engines/kotor/probes.h"
-#include "src/engines/kotor2/probes.h"
-#include "src/engines/jade/probes.h"
-#include "src/engines/witcher/probes.h"
-#include "src/engines/sonic/probes.h"
-#include "src/engines/dragonage/probes.h"
-#include "src/engines/dragonage2/probes.h"
-
 DECLARE_SINGLETON(Engines::EngineManager)
 
 namespace Engines {
-
-static const EngineProbe * const * const kProbes[] = {
-	NWN::kProbes,
-	NWN2::kProbes,
-	KotOR::kProbes,
-	KotOR2::kProbes,
-	Jade::kProbes,
-	Witcher::kProbes,
-	Sonic::kProbes,
-	DragonAge::kProbes,
-	DragonAge2::kProbes
-};
 
 GameInstance::GameInstance() {
 }
@@ -99,7 +76,7 @@ public:
 	Common::UString getGameName(bool platform) const;
 
 	/** Find an engine capable of running the game found in the GameInstance's target. */
-	bool probe();
+	bool probe(const std::list<const EngineProbe *> &probes);
 	/** Reset the GameInstance to a pre-probe state. */
 	void reset();
 
@@ -115,8 +92,8 @@ private:
 	const EngineProbe *_probe;
 	Engine *_engine;
 
-	bool probe(const Common::FileList &rootFiles);
-	bool probe(Common::SeekableReadStream &stream);
+	bool probe(const Common::FileList &rootFiles, const std::list<const EngineProbe *> &probes);
+	bool probe(Common::SeekableReadStream &stream, const std::list<const EngineProbe *> &probes);
 
 	void createEngine();
 	void destroyEngine();
@@ -135,7 +112,7 @@ void GameInstanceEngine::reset() {
 	_probe = 0;
 }
 
-bool GameInstanceEngine::probe() {
+bool GameInstanceEngine::probe(const std::list<const EngineProbe *> &probes) {
 	if (Common::FilePath::isDirectory(_target)) {
 		// Try to probe from that directory
 
@@ -145,7 +122,7 @@ bool GameInstanceEngine::probe() {
 			// Fatal: can't read the directory
 			return false;
 
-		return probe(rootFiles);
+		return probe(rootFiles, probes);
 	}
 
 	if (Common::FilePath::isRegularFile(_target)) {
@@ -153,42 +130,34 @@ bool GameInstanceEngine::probe() {
 
 		Common::ReadFile file;
 		if (file.open(_target))
-			return probe(file);
+			return probe(file, probes);
 	}
 
 	return false;
 }
 
-bool GameInstanceEngine::probe(const Common::FileList &rootFiles) {
+bool GameInstanceEngine::probe(const Common::FileList &rootFiles,
+                               const std::list<const EngineProbe *> &probes) {
+
 	// Try to find the first engine able to handle the directory's data
-	for (size_t i = 0; i < ARRAYSIZE(kProbes); i++) {
-		const EngineProbe * const * probes = kProbes[i];
-
-		while (probes && *probes) {
-			if ((*probes)->probe(_target, rootFiles)) {
-				_probe = *probes;
-				return true;
-			}
-
-			probes++;
+	for (std::list<const EngineProbe *>::const_iterator p = probes.begin(); p != probes.end(); ++p) {
+		if ((*p)->probe(_target, rootFiles)) {
+			_probe = *p;
+			return true;
 		}
 	}
 
 	return false;
 }
 
-bool GameInstanceEngine::probe(Common::SeekableReadStream &stream) {
+bool GameInstanceEngine::probe(Common::SeekableReadStream &stream,
+                               const std::list<const EngineProbe *> &probes) {
+
 	// Try to find the first engine able to handle the directory's data
-	for (size_t i = 0; i < ARRAYSIZE(kProbes); i++) {
-		const EngineProbe * const * probes = kProbes[i];
-
-		while (probes && *probes) {
-			if ((*probes)->probe(stream)) {
-				_probe = *probes;
-				return true;
-			}
-
-			probes++;
+	for (std::list<const EngineProbe *>::const_iterator p = probes.begin(); p != probes.end(); ++p) {
+		if ((*p)->probe(stream)) {
+			_probe = *p;
+			return true;
 		}
 	}
 
@@ -258,9 +227,11 @@ void GameInstanceEngine::run() {
 }
 
 
-GameInstance *EngineManager::probeGame(const Common::UString &target) const {
+GameInstance *EngineManager::probeGame(const Common::UString &target,
+                                       const std::list<const EngineProbe *> &probes) const {
+
 	GameInstanceEngine *game = new GameInstanceEngine(target);
-	if (game->probe())
+	if (game->probe(probes))
 		return game;
 
 	delete game;

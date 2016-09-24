@@ -26,6 +26,8 @@
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
 
+#include "src/engines/engineprobe.h"
+
 #include "src/engines/nwn/probes.h"
 #include "src/engines/nwn/nwn.h"
 
@@ -61,7 +63,7 @@ public:
 const Common::UString EngineProbe::kGameName = "Neverwinter Nights";
 
 
-static const class EngineProbeWindows : public EngineProbe {
+class EngineProbeWindows : public EngineProbe {
 public:
 	EngineProbeWindows() {}
 	~EngineProbeWindows() {}
@@ -74,9 +76,9 @@ public:
 		return rootFiles.contains("/nwmain.exe", true);
 	}
 
-} kEngineProbeWin;
+};
 
-static const class EngineProbeMac : public EngineProbe {
+class EngineProbeMac : public EngineProbe {
 public:
 	EngineProbeMac() {}
 	~EngineProbeMac() {}
@@ -89,9 +91,9 @@ public:
 		return !Common::FilePath::findSubDirectory(directory, "Neverwinter Nights.app", true).empty();
 	}
 
-} kEngineProbeMac;
+};
 
-static const class EngineProbeLinux: public EngineProbe {
+class EngineProbeLinux: public EngineProbe {
 public:
 	EngineProbeLinux() {}
 	~EngineProbeLinux() {}
@@ -104,9 +106,9 @@ public:
 		return rootFiles.contains("/nwmain", true);
 	}
 
-} kEngineProbeLinux;
+};
 
-static const class EngineProbeFallback : public EngineProbe {
+class EngineProbeFallback : public EngineProbe {
 public:
 	EngineProbeFallback() {}
 	~EngineProbeFallback() {}
@@ -127,16 +129,15 @@ public:
 		       rootFiles.contains("/nwncdkey.ini", true);
 	}
 
-} kEngineProbeFallback;
-
-
-const Engines::EngineProbe * const kProbes[] = {
-	&kEngineProbeWin,
-	&kEngineProbeMac,
-	&kEngineProbeLinux,
-	&kEngineProbeFallback,
-	0
 };
+
+
+void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
+	probes.push_back(new EngineProbeWindows);
+	probes.push_back(new EngineProbeMac);
+	probes.push_back(new EngineProbeLinux);
+	probes.push_back(new EngineProbeFallback);
+}
 
 } // End of namespace NWN
 
