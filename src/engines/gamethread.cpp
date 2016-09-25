@@ -64,7 +64,7 @@ void GameThread::init(const Common::UString &baseDir) {
 	if (!ConfigMan.getKey("description", description))
 		description = _game->getGameName(true);
 
-	GfxMan.setWindowTitle(Common::UString(XOREOS_NAMEVERSION) + " -- " + description);
+	GfxMan.setWindowTitle(Common::UString(Version::getProjectName()) + " -- " + description);
 
 	status("Detected game \"%s\"", _game->getGameName(false).c_str());
 }

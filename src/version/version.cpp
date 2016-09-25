@@ -65,15 +65,44 @@
 	#define XOREOS_REV XOREOS_DISTRO
 #endif
 
-const char *XOREOS_NAME            = PACKAGE_NAME;
-const char *XOREOS_VERSION         = PACKAGE_VERSION;
-const char *XOREOS_NAMEVERSION     = PACKAGE_NAME " " PACKAGE_VERSION XOREOS_REVSEP XOREOS_REV;
-const char *XOREOS_NAMEVERSIONFULL = PACKAGE_NAME " " PACKAGE_VERSION XOREOS_REVSEP XOREOS_REV " [" XOREOS_REVDESC "] (" XOREOS_BUILDDATE ")";
-const char *XOREOS_URL             = "https://xoreos.org/";
+namespace Version {
 
-const char *XOREOS_AUTHORS =
+static const char *kProjectName            = PACKAGE_NAME;
+static const char *kProjectVersion         = PACKAGE_VERSION;
+static const char *kProjectNameVersion     = PACKAGE_NAME " " PACKAGE_VERSION XOREOS_REVSEP XOREOS_REV;
+static const char *kProjectNameVersionFull = PACKAGE_NAME " " PACKAGE_VERSION XOREOS_REVSEP XOREOS_REV " [" XOREOS_REVDESC "] (" XOREOS_BUILDDATE ")";
+
+static const char *kProjectURL = "https://xoreos.org/";
+
+static const char *kProjectAuthors =
 	"Copyright (c) 2010-2016 by the xoreos team.\n"
 	"Please see the AUTHORS file for details.\n"
 	"\n"
 	"This is free software; see the source for copying conditions.  There is NO\n"
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.";
+
+const char *getProjectName() {
+	return kProjectName;
+}
+
+const char *getProjectVersion() {
+	return kProjectVersion;
+}
+
+const char *getProjectNameVersion() {
+	return kProjectNameVersion;
+}
+
+const char *getProjectNameVersionFull() {
+	return kProjectNameVersionFull;
+}
+
+const char *getProjectURL() {
+	return kProjectURL;
+}
+
+const char *getProjectAuthors() {
+	return kProjectAuthors;
+}
+
+} // End of namespace Version

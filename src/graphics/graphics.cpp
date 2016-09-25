@@ -95,7 +95,7 @@ GraphicsManager::GraphicsManager() {
 	_clipNear  = 1.0f;
 	_clipFar   = 1000.0f;
 
-	_windowTitle = XOREOS_NAMEVERSION;
+	_windowTitle = Version::getProjectNameVersion();
 
 	_screen = 0;
 
@@ -522,7 +522,7 @@ void GraphicsManager::checkGLExtensions() {
 void GraphicsManager::setWindowTitle(const Common::UString &title) {
 	_windowTitle = title;
 	if (_windowTitle.empty())
-		_windowTitle = XOREOS_NAMEVERSION;
+		_windowTitle = Version::getProjectNameVersion();
 
 	SDL_SetWindowTitle(_screen, _windowTitle.c_str());
 }

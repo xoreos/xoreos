@@ -233,7 +233,7 @@ bool DebugManager::openLogFile(const UString &file) {
 	if (!_logFile.open(path))
 		return false;
 
-	logString(XOREOS_NAMEVERSIONFULL);
+	logString(Version::getProjectNameVersionFull());
 	logString("\n");
 
 	return true;

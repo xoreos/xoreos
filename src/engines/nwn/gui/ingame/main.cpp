@@ -78,7 +78,8 @@ IngameMainMenu::~IngameMainMenu() {
 
 void IngameMainMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "BuildNumber") {
-		Common::UString version = Common::UString(XOREOS_NAMEVERSION) + " v" + _gameVersion->getVersionString();
+		Common::UString version = Common::UString(::Version::getProjectNameVersion()) +
+		                          " v" + _gameVersion->getVersionString();
 
 		dynamic_cast<WidgetLabel &>(widget).setText(version);
 		dynamic_cast<WidgetLabel &>(widget).setColor(0.6f, 0.6f, 0.6f, 1.0f);

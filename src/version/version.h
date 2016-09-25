@@ -25,22 +25,26 @@
 #ifndef VERSION_VERSION_H
 #define VERSION_VERSION_H
 
+namespace Version {
+
 // "xoreos"
-extern const char *XOREOS_NAME;
+const char *getProjectName();
 
 // "0.0.1+2197.g19f9c1b"
-extern const char *XOREOS_VERSION;
+const char *getProjectVersion();
 
 // "xoreos 0.0.1+2197.g19f9c1b"
-extern const char *XOREOS_NAMEVERSION;
+const char *getProjectNameVersion();
 
 // "xoreos 0.0.1+2197.g19f9c1b [0.0.1+2197.g19f9c1b] (2013-07-28T13:32:04)"
-extern const char *XOREOS_NAMEVERSIONFULL;
+const char *getProjectNameVersionFull();
 
 // "https://..."
-extern const char *XOREOS_URL;
+const char *getProjectURL();
 
 // Very shortened authors/copyright message
-extern const char *XOREOS_AUTHORS;
+const char *getProjectAuthors();
+
+} // End of namespace Version
 
 #endif // VERSION_VERSION_H

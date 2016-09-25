@@ -94,10 +94,10 @@ static void displayUsage(const Common::UString &name) {
 }
 
 static void displayVersion() {
-	std::printf("%s\n", XOREOS_NAMEVERSIONFULL);
-	std::printf("%s\n", XOREOS_URL);
+	std::printf("%s\n", Version::getProjectNameVersionFull());
+	std::printf("%s\n", Version::getProjectURL());
 	std::printf("\n");
-	std::printf("%s\n", XOREOS_AUTHORS);
+	std::printf("%s\n", Version::getProjectAuthors());
 	std::printf("\n");
 }
 
