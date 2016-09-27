@@ -59,7 +59,7 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
 
 /** Decompress (inflate) using zlib's DEFLATE algorithm.
  *
- *  @param  stream     The compressed input data.
+ *  @param  input      The compressed input data.
  *  @param  inputSize  The size of the input data to read in bytes.
  *  @param  outputSize The size of the decompressed output data.
  *                     It is assumed that this information is known and that
