@@ -51,7 +51,7 @@ Variable::Variable(float value) : _type(kTypeNone) {
 	*this = value;
 }
 
-Variable::Variable(const char *value) {
+Variable::Variable(const char *value) : _type(kTypeNone) {
 	setType(kTypeString);
 	*this = value;
 }
