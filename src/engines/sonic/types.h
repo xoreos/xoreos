@@ -45,11 +45,11 @@ static const float kCameraAngle  = 45.0f;
 
 enum ObjectType {
 	kObjectTypeInvalid      = 0,
-	kObjectTypeModule       = 1 << 0,
-	kObjectTypeArea         = 1 << 1,
-	kObjectTypePlaceable    = 1 << 2,
-	kObjectTypeItem         = 1 << 3,
-	kObjectTypeCreature     = 1 << 4,
+	kObjectTypeModule       = 1U << 0,
+	kObjectTypeArea         = 1U << 1,
+	kObjectTypePlaceable    = 1U << 2,
+	kObjectTypeItem         = 1U << 3,
+	kObjectTypeCreature     = 1U << 4,
 
 	kObjectTypeAll          = 0x7FFF,
 
