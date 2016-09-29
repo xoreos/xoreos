@@ -60,28 +60,28 @@ enum Worksheet {
 enum ObjectType {
 	kObjectTypeInvalid            = 0,
 
-	kObjectTypeGUI                = 1 <<  0,
-	kObjectTypeTile               = 1 <<  1,
-	kObjectTypeModule             = 1 <<  2,
-	kObjectTypeArea               = 1 <<  3,
-	kObjectTypeStore              = 1 <<  4,
-	kObjectTypeCreature           = 1 <<  5,
-	kObjectTypeItem               = 1 <<  6,
-	kObjectTypeTrigger            = 1 <<  7,
-	kObjectTypeProjectile         = 1 <<  8,
-	kObjectTypePlaceable          = 1 <<  9,
-	kObjectTypeAreaOfEffectObject = 1 << 11,
-	kObjectTypeWaypoint           = 1 << 12,
-	kObjectTypeSound              = 1 << 14,
-	kObjectTypeParty              = 1 << 15,
-	kObjectTypeMapPatch           = 1 << 16,
-	kObjectTypeVfx                = 1 << 17,
-	kObjectTypeMap                = 1 << 18,
+	kObjectTypeGUI                = 1U <<  0,
+	kObjectTypeTile               = 1U <<  1,
+	kObjectTypeModule             = 1U <<  2,
+	kObjectTypeArea               = 1U <<  3,
+	kObjectTypeStore              = 1U <<  4,
+	kObjectTypeCreature           = 1U <<  5,
+	kObjectTypeItem               = 1U <<  6,
+	kObjectTypeTrigger            = 1U <<  7,
+	kObjectTypeProjectile         = 1U <<  8,
+	kObjectTypePlaceable          = 1U <<  9,
+	kObjectTypeAreaOfEffectObject = 1U << 11,
+	kObjectTypeWaypoint           = 1U << 12,
+	kObjectTypeSound              = 1U << 14,
+	kObjectTypeParty              = 1U << 15,
+	kObjectTypeMapPatch           = 1U << 16,
+	kObjectTypeVfx                = 1U << 17,
+	kObjectTypeMap                = 1U << 18,
 
 	kObjectTypeMAX,
 	kObjectTypeAll                = 0xFFFFFFFF,
 
-	kObjectTypeSelf               = 1 << 31  ///< Fake value to describe the calling object in a script.
+	kObjectTypeSelf               = 1U << 31  ///< Fake value to describe the calling object in a script.
 };
 
 /** Slot in a creature's inventory. */
