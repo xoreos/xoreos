@@ -99,6 +99,8 @@ if test "x$with_warnings" = "xno"; then
 	WARN=""
 else
 	WARN="-Wall"
+
+	dnl Extra warnings valid for both C and C++
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wignored-qualifiers])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wpointer-arith])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wshadow])
@@ -107,10 +109,15 @@ else
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wuninitialized])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-parameter])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-but-set-parameter])
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wlong-long], [-Wno-long-long])
 
+	dnl Extra warnings valid for C++
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wnon-virtual-dtor])
+
+	dnl Disable warnings about hiding virtual functions from a base class. We don't care
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Woverloaded-virtual], [-Wno-overloaded-virtual])
+
+	dnl Disable warnings about the long long type. We need it
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wlong-long], [-Wno-long-long])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wc++11-long-long], [-Wno-c++11-long-long])
 fi
 
