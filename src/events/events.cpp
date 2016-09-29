@@ -192,7 +192,7 @@ bool EventsManager::parseITC(const Event &event) {
 		throw Common::Exception("Request type does not match the ITC type");
 
 	// Call its request handler
-	if ((itcEvent >= 0) || (itcEvent < kITCEventMAX)) {
+	if ((itcEvent >= 0) && (itcEvent < kITCEventMAX)) {
 		RequestHandler handler = _requestHandler[itcEvent];
 
 		if (handler)
