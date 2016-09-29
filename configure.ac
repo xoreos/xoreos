@@ -109,6 +109,10 @@ else
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wuninitialized])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-parameter])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-but-set-parameter])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wduplicated-cond])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wlogical-op])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wshift-negative-value])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wshift-overflow=2])
 
 	dnl Extra warnings valid for C++
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wnon-virtual-dtor])

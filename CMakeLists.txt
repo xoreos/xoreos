@@ -70,6 +70,10 @@ set_check_compiler_flag_cxx("-Wtype-limits")
 set_check_compiler_flag_cxx("-Wuninitialized")
 set_check_compiler_flag_cxx("-Wunused-parameter")
 set_check_compiler_flag_cxx("-Wunused-but-set-parameter")
+set_check_compiler_flag_cxx("-Wduplicated-cond")
+set_check_compiler_flag_cxx("-Wlogical-op")
+set_check_compiler_flag_cxx("-Wshift-negative-value")
+set_check_compiler_flag_cxx("-Wshift-overflow=2")
 
 # Extra warnings valid for C++
 set_check_compiler_flag_cxx("-Wnon-virtual-dtor")
