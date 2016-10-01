@@ -25,6 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/debugman.h"
 
+#include <cassert>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
@@ -158,6 +159,8 @@ uint64 convertIEEEDouble(double value) {
 double readNintendoFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits) {
 	/* The Nintendo DS uses fixed point values of various formats. This method can
 	 * convert them all into a usual floating point double. */
+
+	assert((iBits + fBits + (sign ? 1 : 0)) <= 32);
 
 	// Masks for the integer, fractional and sign parts
 	const uint32 fMask =  (1 <<          fBits)  - 1;
