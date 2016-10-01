@@ -163,9 +163,9 @@ double readNintendoFixedPoint(uint32 value, bool sign, uint8 iBits, uint8 fBits)
 	assert((iBits + fBits + (sign ? 1 : 0)) <= 32);
 
 	// Masks for the integer, fractional and sign parts
-	const uint32 fMask =  (1 <<          fBits)  - 1;
-	const uint32 iMask = ((1 << (iBits + fBits)) - 1) - fMask;
-	const uint32 sMask =   1 << (iBits + fBits);
+	const uint32 fMask =  (UINT64_C(1) <<          fBits)  - 1;
+	const uint32 iMask = ((UINT64_C(1) << (iBits + fBits)) - 1) - fMask;
+	const uint32 sMask =   UINT64_C(1) << (iBits + fBits);
 
 	// Step of a fractional unit
 	const uint32 fDiv  =  (1 <<          fBits);
