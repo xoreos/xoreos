@@ -269,6 +269,9 @@ UString readString(SeekableReadStream &stream, Encoding encoding) {
 }
 
 UString readStringFixed(SeekableReadStream &stream, Encoding encoding, size_t length) {
+	if (length == 0)
+		return "";
+
 	std::vector<byte> output;
 	output.resize(length);
 
@@ -296,6 +299,9 @@ UString readStringLine(SeekableReadStream &stream, Encoding encoding) {
 }
 
 UString readString(const byte *data, size_t size, Encoding encoding) {
+	if (size == 0)
+		return "";
+
 	std::vector<byte> output;
 	output.resize(size);
 
@@ -323,6 +329,9 @@ size_t writeString(WriteStream &stream, const Common::UString &str, Encoding enc
 }
 
 void writeStringFixed(WriteStream &stream, const Common::UString &str, Encoding encoding, size_t length) {
+	if (length == 0)
+		return;
+
 	MemoryReadStream *data = 0;
 	try {
 		data = convertString(str, encoding, false);
