@@ -34,7 +34,7 @@ namespace Engines {
 namespace KotOR2 {
 
 Waypoint::Waypoint(const Aurora::GFF3Struct &waypoint) : Object(kObjectTypeWaypoint),
-	_hasMapNote(false) {
+	_hasMapNote(false), _enabledMapNote(false) {
 
 	load(waypoint);
 }
