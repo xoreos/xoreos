@@ -37,7 +37,7 @@ namespace Engines {
 namespace Jade {
 
 Waypoint::Waypoint(const Aurora::GFF3Struct &waypoint) : Object(kObjectTypeWaypoint),
-	_hasMapNote(false) {
+	_hasMapNote(false), _displayMapNote(false) {
 
 	load(waypoint);
 }
