@@ -22,6 +22,8 @@
  *  Implementing the stream writing interfaces for files.
  */
 
+#include <cassert>
+
 #include "src/common/writefile.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
@@ -89,6 +91,7 @@ size_t WriteFile::write(const void *dataPtr, size_t dataSize) {
 	if (!_handle)
 		return 0;
 
+	assert(dataPtr);
 	return std::fwrite(dataPtr, 1, dataSize, _handle);
 }
 

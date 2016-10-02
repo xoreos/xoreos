@@ -47,6 +47,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <cassert>
 #include <cstring>
 
 #include "src/common/types.h"
@@ -61,6 +62,8 @@ MemoryWriteStream::~MemoryWriteStream() {
 }
 
 size_t MemoryWriteStream::write(const void *dataPtr, size_t dataSize) {
+	assert(dataPtr);
+
 	// Write at most as many bytes as are still available...
 	if (dataSize > _bufSize - _pos)
 		dataSize = _bufSize - _pos;
@@ -122,6 +125,8 @@ void MemoryWriteStreamDynamic::ensureCapacity(size_t newLen) {
 }
 
 size_t MemoryWriteStreamDynamic::write(const void *dataPtr, size_t dataSize) {
+	assert(dataPtr);
+
 	ensureCapacity(_pos + dataSize);
 
 	std::memcpy(_ptr, dataPtr, dataSize);

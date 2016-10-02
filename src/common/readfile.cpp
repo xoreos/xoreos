@@ -22,6 +22,8 @@
  *  Implementing the stream reading interfaces for files.
  */
 
+#include <cassert>
+
 #include "src/common/readfile.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
@@ -133,6 +135,7 @@ size_t ReadFile::read(void *dataPtr, size_t dataSize) {
 	if (!_handle)
 		return 0;
 
+	assert(dataPtr);
 	return std::fread(dataPtr, 1, dataSize, _handle);
 }
 

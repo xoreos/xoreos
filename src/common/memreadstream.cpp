@@ -68,6 +68,8 @@ MemoryReadStream::~MemoryReadStream() {
 }
 
 size_t MemoryReadStream::read(void *dataPtr, size_t dataSize) {
+	assert(dataPtr);
+
 	// Read at most as many bytes as are still available...
 	if (dataSize > _size - _pos) {
 		dataSize = _size - _pos;
