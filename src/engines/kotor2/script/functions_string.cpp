@@ -209,9 +209,8 @@ void Functions::findSubString(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::getStringByStrRef(Aurora::NWScript::FunctionContext &ctx) {
 	const uint32 strRef = (uint32) ctx.getParams()[0].getInt();
-	const Aurora::LanguageGender gender = (Aurora::LanguageGender) ctx.getParams()[1].getInt();
 
-	ctx.getReturn() = TalkMan.getString(strRef, gender);
+	ctx.getReturn() = TalkMan.getString(strRef);
 }
 
 } // End of namespace KotOR2
