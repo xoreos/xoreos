@@ -279,11 +279,14 @@ void NSBTXFile::getPalette(ReadContext &ctx) const {
 		throw Common::Exception("Couldn't find a palette for texture \"%s\"", ctx.texture->name.c_str());
 
 	byte *palData = new byte[size];
+	memset(palData, 0, size);
 
 	try {
 		ctx.nsbtx->seek(palette->offset);
 
-		for (uint16 i = 0; i < size; i += 3) {
+		const uint16 palDataSize = MIN<size_t>(size, ((ctx.nsbtx->size() - ctx.nsbtx->pos()) / 2) * 3);
+
+		for (uint16 i = 0; i < palDataSize; i += 3) {
 			const uint16 pixel = ctx.nsbtx->readUint16();
 
 			palData[i + 0] = ( pixel        & 0x1F) << 3;
