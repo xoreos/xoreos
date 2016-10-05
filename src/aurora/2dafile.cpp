@@ -252,7 +252,11 @@ void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda,
 	while (!twoda.eos()) {
 		TwoDARow *row = new TwoDARow(*this);
 
-		// Skip the first token, which is the row index. It's implicit in the data anyway
+		/* Skip the first token, which is the row index, possibly indented.
+		 * The row index is implicit in the data and its use in the 2DA
+		 * file is only meant as a guideline for people editing the file by
+		 * hand. It might even be completely incorrect. */
+		tokenize.findFirstToken(twoda);
 		tokenize.skipToken(twoda);
 
 		// Read all the cells in the row
