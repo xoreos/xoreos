@@ -260,7 +260,7 @@ void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda,
 		tokenize.skipToken(twoda);
 
 		// Read all the cells in the row
-		size_t count = tokenize.getTokens(twoda, row->_data, columnCount, columnCount);
+		size_t count = tokenize.getTokens(twoda, row->_data, columnCount, columnCount, "****");
 
 		// And move to the next line
 		tokenize.nextChunk(twoda);
