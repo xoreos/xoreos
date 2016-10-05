@@ -210,6 +210,16 @@ size_t StreamTokenizer::getTokens(SeekableReadStream &stream, std::vector<UStrin
 	return realTokenCount;
 }
 
+void StreamTokenizer::findFirstToken(SeekableReadStream &stream) {
+	uint32 c;
+	while ((c = stream.readChar()) != ReadStream::kEOF) {
+		if (!isIn(c, _separators) && !(isIn(c, _ignores))) {
+			stream.seek(-1, SeekableReadStream::kOriginCurrent);
+			break;
+		}
+	}
+}
+
 void StreamTokenizer::skipToken(SeekableReadStream &stream, size_t n) {
 	while (n-- > 0)
 		UString token = getToken(stream);

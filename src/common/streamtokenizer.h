@@ -126,6 +126,15 @@ public:
 	size_t getTokens(SeekableReadStream &stream, std::vector<UString> &list,
 			size_t min = 0, size_t max = SIZE_MAX, const UString &def = "");
 
+	/** Find the first token character, skipping past separators.
+	 *
+	 *  Position the stream at the first character that is neither
+	 *  a separator or an ignored characted. This is useful if the
+	 *  first token of a chunk might be indented with separator
+	 *  characters.
+	 */
+	void findFirstToken(SeekableReadStream &stream);
+
 	/** Skip a number of tokens. */
 	void skipToken(SeekableReadStream &stream, size_t n = 1);
 
