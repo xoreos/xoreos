@@ -117,7 +117,8 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	size_t inBufferSize = stream.size();
 
 	boost::scoped_array<byte> inBuffer(new byte[inBufferSize]);
-	stream.read(inBuffer.get(), inBufferSize);
+	if (stream.read(inBuffer.get(), inBufferSize) != inBufferSize)
+		throw Common::Exception(Common::kReadError);
 
 	QueuingAudioStream *audioStream = makeQueuingAudioStream(_rate, _channels);
 
