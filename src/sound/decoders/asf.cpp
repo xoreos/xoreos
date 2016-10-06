@@ -215,6 +215,9 @@ void ASFStream::clear() {
 
 	delete _codec;
 	_codec = 0;
+
+	delete _extraData;
+	_extraData = 0;
 }
 
 void ASFStream::load() {
