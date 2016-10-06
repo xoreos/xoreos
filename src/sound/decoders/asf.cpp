@@ -287,6 +287,9 @@ void ASFStream::parseFileHeader() {
 }
 
 void ASFStream::parseStreamHeader() {
+	if (_codec)
+		throw Common::Exception("ASFStream::parseStreamHeader(): Multiple stream headers found");
+
 	ASFGUID guid = ASFGUID(*_stream);
 
 	if (guid != s_asfAudioStream)
