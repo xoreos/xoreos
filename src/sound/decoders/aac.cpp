@@ -49,6 +49,8 @@
 
 #include <cstring>
 
+#include <boost/scoped_array.hpp>
+
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 
@@ -113,15 +115,16 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	// read everything into a buffer
 	size_t inBufferPos = 0;
 	size_t inBufferSize = stream.size();
-	byte *inBuffer = new byte[inBufferSize];
-	stream.read(inBuffer, inBufferSize);
+
+	boost::scoped_array<byte> inBuffer(new byte[inBufferSize]);
+	stream.read(inBuffer.get(), inBufferSize);
 
 	QueuingAudioStream *audioStream = makeQueuingAudioStream(_rate, _channels);
 
 	// Decode until we have enough samples (or there's no more left)
 	while (inBufferPos < inBufferSize) {
 		NeAACDecFrameInfo frameInfo;
-		void *decodedSamples = NeAACDecDecode(_handle, &frameInfo, inBuffer + inBufferPos, inBufferSize - inBufferPos);
+		void *decodedSamples = NeAACDecDecode(_handle, &frameInfo, inBuffer.get() + inBufferPos, inBufferSize - inBufferPos);
 
 		if (frameInfo.error != 0)
 			throw Common::Exception("Failed to decode AAC frame: %s", NeAACDecGetErrorMessage(frameInfo.error));
