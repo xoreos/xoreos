@@ -50,3 +50,8 @@ check_PROGRAMS                    += tests/aurora/test_visfile
 tests_aurora_test_visfile_SOURCES  = tests/aurora/visfile.cpp
 tests_aurora_test_visfile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_visfile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_zipfile
+tests_aurora_test_zipfile_SOURCES  = tests/aurora/zipfile.cpp
+tests_aurora_test_zipfile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_zipfile_CXXFLAGS = $(test_CXXFLAGS)
