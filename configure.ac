@@ -87,7 +87,8 @@ AC_SUBST(GGDB)
 dnl --with-werror
 AC_ARG_WITH([werror], [AS_HELP_STRING([--with-werror], [Compile with -Werror @<:@default=no@:>@])], [], [with_werror=no])
 if test "x$with_werror" = "xyes"; then
-	WERROR="-Werror -Werror=unused-but-set-variable"
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WERROR], [-Werror])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WERROR], [-Werror=unused-but-set-variable])
 fi
 
 AC_SUBST(WERROR)
