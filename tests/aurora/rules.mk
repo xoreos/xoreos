@@ -30,3 +30,8 @@ check_PROGRAMS                 += tests/aurora/test_util
 tests_aurora_test_util_SOURCES  = tests/aurora/util.cpp
 tests_aurora_test_util_LDADD    = $(aurora_LIBS)
 tests_aurora_test_util_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                     += tests/aurora/test_language
+tests_aurora_test_language_SOURCES  = tests/aurora/language.cpp
+tests_aurora_test_language_LDADD    = $(aurora_LIBS)
+tests_aurora_test_language_CXXFLAGS = $(test_CXXFLAGS)
