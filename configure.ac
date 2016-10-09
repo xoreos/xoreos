@@ -86,6 +86,8 @@ AC_SUBST(GGDB)
 
 dnl --with-werror
 AC_ARG_WITH([werror], [AS_HELP_STRING([--with-werror], [Compile with -Werror @<:@default=no@:>@])], [], [with_werror=no])
+
+WERROR=""
 if test "x$with_werror" = "xyes"; then
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WERROR], [-Werror])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WERROR], [-Werror=unused-but-set-variable])
@@ -96,9 +98,8 @@ AC_SUBST(WERROR)
 dnl Compiler warning flags
 AC_ARG_WITH([warnings], [AS_HELP_STRING([--without-warnings], [Compile without extra warnings @<:@default=no@:>@])], [], [with_warnings=yes])
 
-if test "x$with_warnings" = "xno"; then
-	WARN=""
-else
+WARN=""
+if test "x$with_warnings" = "xyes"; then
 	WARN="-Wall"
 
 	dnl Extra warnings valid for both C and C++
@@ -131,9 +132,8 @@ AC_SUBST(WARN)
 dnl C++ dialect
 AC_ARG_WITH([std], [AS_HELP_STRING([--without-std], [Compile without specifying the C++ standard to follow @<:@default=no@:>@])], [], [with_std=yes])
 
-if test "x$with_std" = "xno"; then
-	STD=""
-else
+STD=""
+if test "x$with_std" = "xyes"; then
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [STD], [-std=c++03])
 fi
 
