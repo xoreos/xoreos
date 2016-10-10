@@ -107,6 +107,9 @@ private:
 	ArtPlaceableArray _artPlaceables;
 	DoorHookArray _doorHooks;
 	Common::UString _fileDependency;
+
+	void assertTokenCount(const std::vector<Common::UString> &tokens, size_t n,
+	                      const Common::UString &name);
 };
 
 } // End of namespace Aurora
