@@ -128,8 +128,8 @@ void LYTFile::load(Common::SeekableReadStream &lyt) {
 				tokenizer.nextChunk(lyt);
 				tokenizer.getTokens(lyt, strings);
 
-				_doorHooks[i].name = strings[0];
-				_doorHooks[i].unk0 = strings[1];
+				_doorHooks[i].room = strings[0];
+				_doorHooks[i].name = strings[1];
 
 				Common::parseString(strings[2], _doorHooks[i].x);
 				Common::parseString(strings[3], _doorHooks[i].y);

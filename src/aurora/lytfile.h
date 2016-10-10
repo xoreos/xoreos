@@ -68,8 +68,8 @@ public:
 
 	/** A place a door hooks into. */
 	struct DoorHook {
+		Common::UString room;
 		Common::UString name;
-		Common::UString unk0;
 		float x, y, z;
 		float unk1, unk2, unk3, unk4, unk5;
 	};
