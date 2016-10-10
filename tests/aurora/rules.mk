@@ -35,3 +35,8 @@ check_PROGRAMS                     += tests/aurora/test_language
 tests_aurora_test_language_SOURCES  = tests/aurora/language.cpp
 tests_aurora_test_language_LDADD    = $(aurora_LIBS)
 tests_aurora_test_language_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                      += tests/aurora/test_locstring
+tests_aurora_test_locstring_SOURCES  = tests/aurora/locstring.cpp
+tests_aurora_test_locstring_LDADD    = $(aurora_LIBS)
+tests_aurora_test_locstring_CXXFLAGS = $(test_CXXFLAGS)
