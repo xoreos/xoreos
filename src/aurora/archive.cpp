@@ -46,6 +46,9 @@ Common::HashAlgo Archive::getNameHashAlgo() const {
 }
 
 uint32 Archive::findResource(uint64 hash) const {
+	if (getNameHashAlgo() == Common::kHashNone)
+		return 0xFFFFFFFF;
+
 	for (ResourceList::const_iterator r = getResources().begin(); r != getResources().end(); ++r)
 		if (r->hash == hash)
 			return r->index;
