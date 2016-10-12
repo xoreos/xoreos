@@ -35,6 +35,10 @@
  *  the specified level for the specified channel.
  *
  *  Automatically appends a newline.
+ *
+ *  The debug message is printed to both stderr and the global log file
+ *  (if a global log file has been opened). See Common::DebugManager for
+ *  details.
  */
 void debugC(Common::DebugChannel channel, uint32 level, const char *s, ...) GCC_PRINTF(3, 4);
 
@@ -42,6 +46,10 @@ void debugC(Common::DebugChannel channel, uint32 level, const char *s, ...) GCC_
  *  the specified level for the specified channel.
  *
  *  Doesn't automatically append a newline.
+ *
+ *  The debug message is printed to both stderr and the global log file
+ *  (if a global log file has been opened). See Common::DebugManager for
+ *  details.
  */
 void debugCN(Common::DebugChannel channel, uint32 level, const char *s, ...) GCC_PRINTF(3, 4);
 
