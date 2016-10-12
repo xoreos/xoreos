@@ -130,21 +130,27 @@ template<> inline float MAX(float a, float b) { return fmaxf(a, b); }
  */
 #define ARRAYSIZE(x) (sizeof(x) / sizeof(x[0]))
 
-/**
-* Print a warning message to the text console (stderr).
-* Automatically prepends the text "WARNING: " and appends
-* an exclamation mark and a newline.
-*/
+/** Print a warning message to both stderr and the global
+ *  log file (if a global log file has been opened).
+ *  See Common::DebugManager for details.
+ *
+ *  Automatically prepends the text "WARNING: " and appends
+ *  an exclamation mark and a newline.
+ */
 void warning(const char *s, ...) GCC_PRINTF(1, 2);
-/**
-* Print a status message to the text console (stderr).
-* Automatically appends a newline.
-*/
+/** Print a status message to both stderr and the global
+ *  log file (if a global log file has been opened).
+ *  See Common::DebugManager for details.
+ *
+ *  Automatically appends a newline.
+ */
 void status(const char *s, ...) GCC_PRINTF(1, 2);
-/**
-* Print an info message to the text console (stdout).
-* Automatically appends a newline.
-*/
+/** Print an info message to both stdout and the global
+ *  log file (if a global log file has been opened).
+ *  See Common::DebugManager for details.
+ *
+ *  Automatically appends a newline.
+ */
 void info(const char *s, ...) GCC_PRINTF(1, 2);
 
 void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
