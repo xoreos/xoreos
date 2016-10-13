@@ -58,10 +58,9 @@ endif()
 # C++ standard we're compiling against
 set_check_compiler_flag_cxx("-std=c++03")
 
-# Compiler warning flags
-
-# Extra warnings valid for both C and C++
+# Compiler warning flags, not for MSVC
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+  # Extra warnings valid for both C and C++
   set_check_compiler_flag_cxx("-Wall")
   set_check_compiler_flag_cxx("-Wignored-qualifiers")
   set_check_compiler_flag_cxx("-Wpointer-arith")
