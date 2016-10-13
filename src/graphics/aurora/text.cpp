@@ -155,6 +155,17 @@ void Text::setPosition(float x, float y, float z) {
 	unlockFrameIfVisible();
 }
 
+void Text::setSize(float width, float height) {
+	lockFrameIfVisible();
+
+	_width = roundf(width);
+	_height = roundf(height);
+
+	_lineCount = _font.getFont().getLineCount(_str, _width, _height);
+
+	unlockFrameIfVisible();
+}
+
 bool Text::empty() {
 	return _str.empty();
 }

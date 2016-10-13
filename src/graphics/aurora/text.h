@@ -56,6 +56,7 @@ public:
 	void set(const Common::UString &str, float maxWidth = 0.0f, float maxHeight = 0.0f);
 	void setText(const Common::UString &str);
 	void setPosition(float x, float y, float z = -FLT_MAX);
+	void setSize(float width, float height);
 	void setColor(float r, float g, float b, float a);
 	void unsetColor();
 	void setHorizontalAlign(float halign);
