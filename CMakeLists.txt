@@ -61,7 +61,7 @@ set_check_compiler_flag_cxx("-std=c++03")
 # Compiler warning flags
 
 # Extra warnings valid for both C and C++
-if ("${CMAKE_CXX_COMPILER_ID}" NOT STREQUAL "MSVC")
+if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   set_check_compiler_flag_cxx("-Wall")
   set_check_compiler_flag_cxx("-Wignored-qualifiers")
   set_check_compiler_flag_cxx("-Wpointer-arith")
