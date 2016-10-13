@@ -26,7 +26,9 @@
 
 if(WIN32)
   find_path(VORBIS_INCLUDE_DIR vorbis/vorbisfile.h $ENV{PROGRAMFILES}/vorbis/include DOC "The directory where vorbis/vorbisfile.h resides")
-  find_library(VORBIS_LIBRARY NAMES vorbisfile PATHS $ENV{PROGRAMFILES}/vorbis/lib DOC "The libvorbisfile library")
+  find_library(VORBIS_ENC_LIBRARY NAMES vorbisenc PATHS $ENV{PROGRAMFILES}/vorbis/lib DOC "The libvorbisenc library")
+  find_library(VORBIS_FILE_LIBRARY NAMES vorbisfile PATHS $ENV{PROGRAMFILES}/vorbis/lib DOC "The libvorbisfile library")
+  find_library(VORBIS_LIBRARY NAMES vorbis PATHS $ENV{PROGRAMFILES}/vorbis/lib DOC "The libvorbis library")
 
 else(WIN32)
   find_path(VORBIS_INCLUDE_DIR vorbis/vorbisfile.h DOC "The directory where vorbis/vorbisfile.h resides")
@@ -36,7 +38,7 @@ endif(WIN32)
 
 if(VORBIS_INCLUDE_DIR AND VORBIS_LIBRARY)
   set(VORBIS_FOUND 1)
-  set(VORBIS_LIBRARIES ${VORBIS_LIBRARY})
+  set(VORBIS_LIBRARIES ${VORBIS_LIBRARY} ${VORBIS_ENC_LIBRARY} ${VORBIS_FILE_LIBRARY})
   set(VORBIS_INCLUDE_DIRS ${VORBIS_INCLUDE_DIR})
 else(VORBIS_INCLUDE_DIR AND VORBIS_LIBRARY)
   set(VORBIS_FOUND 0)
