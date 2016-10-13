@@ -92,7 +92,6 @@ install:
   - choco install nasm
   - set PATH="C:\Program Files (x86)\NASM";%PATH%
   - cmake -E chdir libs cmake -E tar xf %LIBXVID%.tar.gz
-  - tree /f libs\xvidcore\build\win32
   - if not exist libs\xvidcore\build\win32\libxvidcore.vcxproj cmake -E chdir libs/xvidcore devenv /upgrade build\win32\libxvidcore.sln
   - cmake -E chdir libs/xvidcore msbuild build\win32\libxvidcore.vcxproj /p:Configuration=Release /p:Platform=%MSBUILD_PLATFORM% /verbosity:quiet
   - cmake -E make_directory %LIBXVID_DESTDIR%
