@@ -61,29 +61,31 @@ set_check_compiler_flag_cxx("-std=c++03")
 # Compiler warning flags
 
 # Extra warnings valid for both C and C++
-set_check_compiler_flag_cxx("-Wall")
-set_check_compiler_flag_cxx("-Wignored-qualifiers")
-set_check_compiler_flag_cxx("-Wpointer-arith")
-set_check_compiler_flag_cxx("-Wshadow")
-set_check_compiler_flag_cxx("-Wsign-compare")
-set_check_compiler_flag_cxx("-Wtype-limits")
-set_check_compiler_flag_cxx("-Wuninitialized")
-set_check_compiler_flag_cxx("-Wunused-parameter")
-set_check_compiler_flag_cxx("-Wunused-but-set-parameter")
-set_check_compiler_flag_cxx("-Wduplicated-cond")
-set_check_compiler_flag_cxx("-Wlogical-op")
-set_check_compiler_flag_cxx("-Wshift-negative-value")
-set_check_compiler_flag_cxx("-Wshift-overflow=2")
+if ("${CMAKE_CXX_COMPILER_ID}" NOT STREQUAL "MSVC")
+  set_check_compiler_flag_cxx("-Wall")
+  set_check_compiler_flag_cxx("-Wignored-qualifiers")
+  set_check_compiler_flag_cxx("-Wpointer-arith")
+  set_check_compiler_flag_cxx("-Wshadow")
+  set_check_compiler_flag_cxx("-Wsign-compare")
+  set_check_compiler_flag_cxx("-Wtype-limits")
+  set_check_compiler_flag_cxx("-Wuninitialized")
+  set_check_compiler_flag_cxx("-Wunused-parameter")
+  set_check_compiler_flag_cxx("-Wunused-but-set-parameter")
+  set_check_compiler_flag_cxx("-Wduplicated-cond")
+  set_check_compiler_flag_cxx("-Wlogical-op")
+  set_check_compiler_flag_cxx("-Wshift-negative-value")
+  set_check_compiler_flag_cxx("-Wshift-overflow=2")
 
-# Extra warnings valid for C++
-set_check_compiler_flag_cxx("-Wnon-virtual-dtor")
+  # Extra warnings valid for C++
+  set_check_compiler_flag_cxx("-Wnon-virtual-dtor")
 
-# Disable warnings about hiding virtual functions from a base class. We don't care
-set_check_compiler_flag_cxx("-Woverloaded-virtual" "-Wno-overloaded-virtual")
+  # Disable warnings about hiding virtual functions from a base class. We don't care
+  set_check_compiler_flag_cxx("-Woverloaded-virtual" "-Wno-overloaded-virtual")
 
-# Disable warnings about the long long type. We need it
-set_check_compiler_flag_cxx("-Wlong-long" "-Wno-long-long")
-set_check_compiler_flag_cxx("-Wc++11-long-long" "-Wno-c++11-long-long")
+  # Disable warnings about the long long type. We need it
+  set_check_compiler_flag_cxx("-Wlong-long" "-Wno-long-long")
+  set_check_compiler_flag_cxx("-Wc++11-long-long" "-Wno-c++11-long-long")
+endif()
 
 # platform specific warning settings
 if(CMAKE_HOST_WIN32)
