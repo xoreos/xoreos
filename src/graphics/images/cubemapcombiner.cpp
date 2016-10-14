@@ -78,7 +78,7 @@ CubeMapCombiner::CubeMapCombiner(ImageDecoder *(&sides)[6]) {
 				                        width, height, sides[i]->getMipMap(0).width, sides[i]->getMipMap(0).height);
 		}
 
-	} catch (Common::Exception &e) {
+	} catch (...) {
 		for (size_t i = 0; i < ARRAYSIZE(sides); i++)
 			delete sides[i];
 
