@@ -143,7 +143,7 @@ static bool isWindowsVersionOrGreater(uint16 majorVersion, uint16 minorVersion) 
 	osvi.dwMajorVersion = majorVersion;
 	osvi.dwMinorVersion = minorVersion;
 
-	return VerifyVersionInfo(&osvi, VER_MAJORVERSION | VER_MINORVERSION, condition);
+	return VerifyVersionInfo(&osvi, VER_MAJORVERSION | VER_MINORVERSION, condition) != 0;
 }
 
 static WindowsVersion getWindowsVersion() {
