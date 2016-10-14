@@ -1023,7 +1023,7 @@ bool WMACodec::decodeSpectralCoef(Common::BitStream &bits, bool msStereo, bool *
 		}
 
 		if ((_version == 1) && (_channels >= 2))
-			bits.skip(-bits.pos() & 7);
+			bits.skip(-((ptrdiff_t)(bits.pos() & 7)));
 	}
 
 	return true;
