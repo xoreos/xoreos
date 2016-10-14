@@ -22,6 +22,8 @@
  *  The context holding a Dragon Age: Origins campaign.
  */
 
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -186,43 +188,41 @@ void Campaign::readCIFStatic(const Common::UString &path) {
 }
 
 Campaign::RIMNode *Campaign::readRIMs(const GFF4Struct &node, const RIMNode *parent) {
-	RIMNode *rim = new RIMNode(parent);
+	std::auto_ptr<RIMNode> rim(new RIMNode(parent));
 
-	try {
-		rim->tag  = node.getString(kGFF4RimTreeNodeTag);
-		rim->area = node.getString(kGFF4RimTreeNodeResRef);
+	// General node information
+	rim->tag  = node.getString(kGFF4RimTreeNodeTag);
+	rim->area = node.getString(kGFF4RimTreeNodeResRef);
 
-		std::vector<Common::UString> rims;
-		node.getString(kGFF4RimTreeRimList, rims);
+	// RIM files for this node
+	std::vector<Common::UString> rims;
+	node.getString(kGFF4RimTreeRimList, rims);
 
-		if (!rims.empty()) {
-			if (rims.size() != 2)
-				throw Common::Exception("RIMList of node \"%s\" (\"%s\") with length != 2 (%u)",
-				                        rim->tag.c_str(), rim->area.c_str(), (uint) rims.size());
+	if (!rims.empty()) {
+		if (rims.size() != 2)
+			throw Common::Exception("RIMList of node \"%s\" (\"%s\") with length != 2 (%u)",
+			                        rim->tag.c_str(), rim->area.c_str(), (uint) rims.size());
 
-			rim->environment = rims[0];
-			rim->rim         = rims[1];
-		}
-
-		const GFF4List &children = node.getList(kGFF4RimTreeChildList);
-		rim->children.reserve(children.size());
-
-		for (GFF4List::const_iterator c = children.begin(); c != children.end(); ++c)
-			if (*c)
-				rim->children.push_back(readRIMs(**c, rim));
-
-	} catch (...) {
-		delete rim;
-		throw;
+		rim->environment = rims[0];
+		rim->rim         = rims[1];
 	}
 
+	// Decend into child nodes
+	const GFF4List &children = node.getList(kGFF4RimTreeChildList);
+	rim->children.reserve(children.size());
+
+	for (GFF4List::const_iterator c = children.begin(); c != children.end(); ++c)
+		if (*c)
+			rim->children.push_back(readRIMs(**c, rim.get()));
+
+	// If this node defines an area, remember it
 	if (!rim->area.empty()) {
-		_areaMap.insert(std::make_pair(rim->area, rim));
+		_areaMap.insert(std::make_pair(rim->area, rim.get()));
 
 		_areas.push_back(rim->area);
 	}
 
-	return rim;
+	return rim.release();
 }
 
 void Campaign::readManifest(const Common::UString &path) {
