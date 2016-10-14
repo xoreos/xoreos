@@ -330,7 +330,7 @@ Common::UString Campaign::getName(const Common::UString &campaign) {
 
 		return mmd.getTopLevel().getString("Meta_Name");
 
-	} catch (Common::Exception &e) {
+	} catch (...) {
 	}
 
 	return "";
@@ -342,7 +342,7 @@ Common::UString Campaign::getDescription(const Common::UString &campaign) {
 
 		return mmd.getTopLevel().getString("Meta_Desc");
 
-	} catch (Common::Exception &e) {
+	} catch (...) {
 	}
 
 	return "";
