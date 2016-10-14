@@ -135,7 +135,7 @@ bool Stack::getBooleanAt(int index) const {
 	if (!isBooleanAt(index)) {
 		throw Common::Exception("Failed to get a boolean value from the Lua stack (index: %d)", index);
 	}
-	return lua_toboolean(&_luaState, index);
+	return lua_toboolean(&_luaState, index) != 0;
 }
 
 float Stack::getFloatAt(int index) const {
