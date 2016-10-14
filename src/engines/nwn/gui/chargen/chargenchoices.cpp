@@ -594,7 +594,7 @@ void CharGenChoices::getSkillItems(std::vector<SkillItem> &skills) {
 		Common::UString icon      = skillRow.getString("Icon");
 		Common::UString helpText  = TalkMan.getString(skillRow.getInt("Description"));
 
-		bool classSkill = (bool) skillsClassRow.getInt("ClassSkill");
+		bool classSkill = skillsClassRow.getInt("ClassSkill") != 0;
 
 		uint8 maxRank = 4 + _creature->getHitDice();
 
