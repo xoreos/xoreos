@@ -81,7 +81,7 @@ public:
 	 * The same holds true for more channels. Channel configurations recognized:
 	 * - 5.1: front left, front right, front center, low frequency rear left, rear right
 	 */
-	virtual size_t readBuffer(int16 *buffer, size_t numSamples) = 0;
+	virtual size_t readBuffer(int16 *buffer, const size_t numSamples) = 0;
 
 	/** Return the number channels in this stream. */
 	virtual int getChannels() const = 0;
