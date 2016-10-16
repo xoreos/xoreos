@@ -8,15 +8,31 @@ compiler:
 
 env:
   global:
-   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-   #   via the "travis encrypt" command using the project repo's public key
-   - secure: "oYIV1EmOvP2ruIxyCTPuGuqUsUzTxxu3P+IdlQZgV6aXaBxtFCuoQaLVMOlnx8xSI2V4mb5I/wK5fAtgUAomzDHQmaBNSbJc3xBTy2xgckup60ehKtFqf+ifm+AYcLQQgLtMUDmLNNcJIKUGPZ8GYwjNfWKt3VGuLHV+UFiRuQI="
-   - coverity_scan_run_condition='"$CC" = gcc'
-   - coverity_scan_script_test_mode=false
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "oYIV1EmOvP2ruIxyCTPuGuqUsUzTxxu3P+IdlQZgV6aXaBxtFCuoQaLVMOlnx8xSI2V4mb5I/wK5fAtgUAomzDHQmaBNSbJc3xBTy2xgckup60ehKtFqf+ifm+AYcLQQgLtMUDmLNNcJIKUGPZ8GYwjNfWKt3VGuLHV+UFiRuQI="
+    - coverity_scan_run_condition='\( "$CC" = gcc \) -a \( $USECMAKE -eq 0 \)'
+    - coverity_scan_script_test_mode=false
+  matrix:
+    # Let's test both our autoconf and CMake build systems
+    - USECMAKE=0
+    - USECMAKE=1
+
+# Only test gcc with autotools, not CMake.
+# We now have three builds: autoconf+gcc, autoconf+clang, CMake+clang
+# Note: In the other xoreos repositories, we use gcc for the CMake test.
+#       However, for the main xoreos repository, it fails to link in
+#       the Travis CI Trusty worker, for some reason. It does work on
+#       other systems, so it might be an intermittent gcc bug?
+matrix:
+  exclude:
+    - compiler: gcc
+      env: USECMAKE=1
 
 script:
-  - if [ "$COVERITY_SCAN_BRANCH" != 1 ]; then ./autogen.sh; fi
-  - if [ "$COVERITY_SCAN_BRANCH" != 1 ]; then ./configure || cat config.log; fi
+  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 0 \) ]; then ./autogen.sh; fi
+  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 0 \) ]; then ./configure || cat config.log; fi
+  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 1 \) ]; then cmake .; fi
   - if [ "$COVERITY_SCAN_BRANCH" != 1 ]; then make -j4; fi
 
 addons:
