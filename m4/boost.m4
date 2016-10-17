@@ -1088,6 +1088,13 @@ BOOST_DEFUN([Regex],
 ])# BOOST_REGEX
 
 
+# BOOST_SCOPE_EXIT()
+# ------------
+# Look for Boost.ScopeExit.
+BOOST_DEFUN([SCOPE_EXIT],
+[BOOST_FIND_HEADER([boost/scope_exit.hpp])])
+
+
 # BOOST_SERIALIZATION([PREFERRED-RT-OPT])
 # ---------------------------------------
 # Look for Boost.Serialization.  For the documentation of PREFERRED-RT-OPT, see
