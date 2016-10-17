@@ -278,13 +278,13 @@ static UString findSubDirectory_internal(const UString &directory, const UString
 
 	try {
 		// Special case: . is the same, current directory
-		if (subDirectory == ".")
+		if (subDirectory == UString("."))
 			return directory;
 
 		const path dirPath(directory.c_str());
 
 		// Special case: .. is the parent directory
-		if (subDirectory == "..") {
+		if (subDirectory == UString("..")) {
 			path parent = dirPath.parent_path();
 			if (parent == dirPath)
 				return "";
