@@ -204,6 +204,9 @@ public:
 	/** Escape a string literal for use in a regexp. */
 	static UString escapeStringLiteral(const UString &str);
 
+	/** Format this file size into a human readable string. */
+	static UString getHumanReadableSize(size_t size);
+
 	/** Return the OS-specific path of the user's home directory.
 	 *
 	 *  If no home directory was accessible, an empty string is returned.

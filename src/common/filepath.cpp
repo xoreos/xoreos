@@ -352,6 +352,20 @@ UString FilePath::escapeStringLiteral(const UString &str) {
 	return boost::regex_replace(std::string(str.c_str()), esc, rep, boost::match_default | boost::format_sed);
 }
 
+UString FilePath::getHumanReadableSize(size_t size) {
+	static const char * const sizes[] = {"B", "K", "M", "G"};
+
+	double s = size;
+	size_t n = 0;
+
+	while ((s >= 1024) && ((n + 1) < ARRAYSIZE(sizes))) {
+		n++;
+		s /= 1024;
+	}
+
+	return UString::format("%.2lf%s", s, sizes[n]);
+}
+
 UString FilePath::getHomeDirectory() {
 	return Platform::getHomeDirectory();
 }
