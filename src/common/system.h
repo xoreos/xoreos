@@ -396,6 +396,13 @@
 	#define HAVE_STRTOULL 1
 #endif
 
+// Compatibility macro for dealing with the explicit bool cast problem.
+#if __cplusplus < 201103L
+	#define XOREOS_EXPLICIT_OPERATOR_CONV
+#else
+	#define XOREOS_EXPLICIT_OPERATOR_CONV explicit
+#endif
+
 //
 // Fallbacks / default values for various special macros
 //
