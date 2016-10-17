@@ -34,7 +34,7 @@ BuildRequires:  libtool, gettext
 
 # Boost dependencies.
 BuildRequires:  boost-devel, boost-system, boost-filesystem, boost-atomic,
-BuildRequires:  boost-regex, boost-locale
+BuildRequires:  boost-regex, boost-locale, boost-date-time
 
 # Isolated; these are rpmfusion-free dependencies.
 BuildRequires:  faad2-devel, libmad-devel, xvidcore-devel
