@@ -104,18 +104,11 @@ UString PEResourceID::toString() const {
 PEResources::PEResources(SeekableReadStream *exe) : _exe(exe) {
 	assert(_exe);
 
-	try {
-		if (!loadFromEXE(*_exe))
-			throw Exception("Failed to parse exe");
-
-	} catch (...) {
-		delete _exe;
-		throw;
-	}
+	if (!loadFromEXE(*_exe))
+		throw Exception("Failed to parse exe");
 }
 
 PEResources::~PEResources() {
-	delete _exe;
 }
 
 bool PEResources::loadFromEXE(SeekableReadStream &exe) {

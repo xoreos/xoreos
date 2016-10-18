@@ -32,6 +32,7 @@
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
+#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -138,7 +139,7 @@ private:
 	std::map<UString, Section> _sections;
 
 
-	SeekableReadStream *_exe;
+	ScopedPtr<SeekableReadStream> _exe;
 
 	PEResourceID _curType;
 	PEResourceID _curName;
