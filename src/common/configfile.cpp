@@ -28,6 +28,7 @@
 
 #include "src/common/error.h"
 #include "src/common/encoding.h"
+#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 #include "src/common/writestream.h"
 #include "src/common/strutil.h"
@@ -287,104 +288,98 @@ void ConfigFile::clear() {
 void ConfigFile::load(SeekableReadStream &stream) {
 	UString comment;
 
-	ConfigDomain *domain = 0;
+	ScopedPtr<ConfigDomain> domain;
 
-	try {
-		int lineNumber = 0;
-		int domainLineNumber = 0;
-		while (!stream.eos()) {
-			lineNumber++;
+	int lineNumber = 0;
+	int domainLineNumber = 0;
+	while (!stream.eos()) {
+		lineNumber++;
 
-			// Read a line
-			UString line = readStringLine(stream, kEncodingUTF8);
+		// Read a line
+		UString line = readStringLine(stream, kEncodingUTF8);
 
-			// Parse it
-			UString domainName;
-			UString key, value, lineComment;
-			parseConfigLine(line, domainName, key, value, lineComment, lineNumber);
+		// Parse it
+		UString domainName;
+		UString key, value, lineComment;
+		parseConfigLine(line, domainName, key, value, lineComment, lineNumber);
 
-			if (!domainName.empty()) {
-				// New domain
+		if (!domainName.empty()) {
+			// New domain
 
-				// Finish up the old domain
-				addDomain(domain, domainLineNumber);
-				domain = 0;
+			// Finish up the old domain
+			addDomain(domain.get(), domainLineNumber);
+			domain.release();
 
-				// Check that the name is actually valid
-				if (!isValidName(domainName))
-					throw Exception("\"%s\" isn't a valid domain name (line %d)",
-							domainName.c_str(), lineNumber);
+			// Check that the name is actually valid
+			if (!isValidName(domainName))
+				throw Exception("\"%s\" isn't a valid domain name (line %d)",
+				                domainName.c_str(), lineNumber);
 
-				// Create the new domain
-				domain = new ConfigDomain(domainName);
+			// Create the new domain
+			domain.reset(new ConfigDomain(domainName));
 
-				domain->_prologue = comment;
-				domain->_comment  = lineComment;
+			domain->_prologue = comment;
+			domain->_comment  = lineComment;
 
-				comment.clear();
-				lineComment.clear();
+			comment.clear();
+			lineComment.clear();
 
-				domainLineNumber = lineNumber;
-			}
-
-			if (!key.empty()) {
-				// New key
-
-				if (!domain)
-					throw Exception("Found a key outside a domain (line %d)", lineNumber);
-
-				if (!isValidName(key))
-					throw Exception("\"%s\" isn't a valid key name (line %d)",
-							key.c_str(), lineNumber);
-
-				// Add collected comments to the domain
-				if (!comment.empty())
-					addDomainKey(*domain, "", "", comment, lineNumber);
-
-				// Add the key to the domain
-				addDomainKey(*domain, key, value, lineComment, lineNumber);
-
-				comment.clear();
-				lineComment.clear();
-			}
-
-			// Collect comments, we don't yet know where those belong to.
-			if (!lineComment.empty()) {
-				if (!comment.empty())
-					comment += '\n';
-				comment += lineComment;
-			}
-
-			// Empty line, associate collected comments with the current domain
-			if (domainName.empty() && key.empty() && value.empty() && lineComment.empty()) {
-				if (!comment.empty() && !stream.eos()) {
-
-					if (!domain) {
-						// We have no domain yet, add it to the file's prologue
-						if (!_prologue.empty())
-							_prologue += '\n';
-						_prologue += comment;
-					} else
-						addDomainKey(*domain, "", "", comment, lineNumber);
-
-					comment.clear();
-				}
-			}
-
+			domainLineNumber = lineNumber;
 		}
 
-		// Finish up the last domain
-		addDomain(domain, domainLineNumber);
-		domain = 0;
+		if (!key.empty()) {
+			// New key
 
-		// We still have comments, those apparently belong to the bottom of the file
-		if (!comment.empty())
-			_epilogue = comment;
+			if (!domain)
+				throw Exception("Found a key outside a domain (line %d)", lineNumber);
 
-	} catch (...) {
-		delete domain;
-		throw;
+			if (!isValidName(key))
+				throw Exception("\"%s\" isn't a valid key name (line %d)",
+				                key.c_str(), lineNumber);
+
+			// Add collected comments to the domain
+			if (!comment.empty())
+				addDomainKey(*domain, "", "", comment, lineNumber);
+
+			// Add the key to the domain
+			addDomainKey(*domain, key, value, lineComment, lineNumber);
+
+			comment.clear();
+			lineComment.clear();
+		}
+
+		// Collect comments, we don't yet know where those belong to.
+		if (!lineComment.empty()) {
+			if (!comment.empty())
+				comment += '\n';
+			comment += lineComment;
+		}
+
+		// Empty line, associate collected comments with the current domain
+		if (domainName.empty() && key.empty() && value.empty() && lineComment.empty()) {
+			if (!comment.empty() && !stream.eos()) {
+
+				if (!domain) {
+					// We have no domain yet, add it to the file's prologue
+					if (!_prologue.empty())
+						_prologue += '\n';
+					_prologue += comment;
+				} else
+					addDomainKey(*domain, "", "", comment, lineNumber);
+
+				comment.clear();
+			}
+		}
+
 	}
+
+	// Finish up the last domain
+	addDomain(domain.get(), domainLineNumber);
+	domain.release();
+
+	// We still have comments, those apparently belong to the bottom of the file
+	if (!comment.empty())
+		_epilogue = comment;
 }
 
 void ConfigFile::addDomainKey(ConfigDomain &domain, const UString &key,

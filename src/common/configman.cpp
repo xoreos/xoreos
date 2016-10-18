@@ -39,21 +39,12 @@ namespace Common {
 
 const char *ConfigManager::kDomainApp = "xoreos";
 
-ConfigManager::ConfigManager() : _changed(false), _config(0), _domainApp(0), _domainGame(0) {
-	_domainDefaultApp  = new ConfigDomain("appDefault");
-	_domainDefaultGame = 0;
-
-	_domainCommandline = new ConfigDomain("commandline");
-
-	_domainGameTemp = 0;
+ConfigManager::ConfigManager() : _changed(false) {
+	_domainDefaultApp.reset(new ConfigDomain("appDefault"));
+	_domainCommandline.reset(new ConfigDomain("commandline"));
 }
 
 ConfigManager::~ConfigManager() {
-	delete _domainGameTemp;
-	delete _domainCommandline;
-	delete _domainDefaultGame;
-	delete _domainDefaultApp;
-	delete _config;
 }
 
 void ConfigManager::setConfigFile(const UString &file) {
@@ -66,22 +57,15 @@ void ConfigManager::clear() {
 	_domainGame = 0;
 	_domainApp  = 0;
 
-	delete _domainGameTemp;
-	delete _domainDefaultGame;
-	delete _domainDefaultApp;
-	delete _config;
+	_domainGameTemp.reset();
+	_domainDefaultGame.reset();
+	_domainDefaultApp.reset(new ConfigDomain("appDefault"));
 
-	_config = 0;
-
-	_domainDefaultApp  = new ConfigDomain("appDefault");
-	_domainDefaultGame = 0;
-
-	_domainGameTemp = 0;
+	_config.reset();
 }
 
 void ConfigManager::clearCommandline() {
-	delete _domainCommandline;
-	_domainCommandline = new ConfigDomain("commandline");
+	_domainCommandline.reset(new ConfigDomain("commandline"));
 }
 
 bool ConfigManager::fileExists() const {
@@ -107,7 +91,7 @@ bool ConfigManager::load() {
 		if (!config.open(file))
 			throw Exception(kOpenError);
 
-		_config = new ConfigFile;
+		_config.reset(new ConfigFile);
 		_config->load(config);
 
 		// Get the application domain
@@ -155,7 +139,7 @@ bool ConfigManager::save() {
 void ConfigManager::create() {
 	clear();
 
-	_config = new ConfigFile;
+	_config.reset(new ConfigFile);
 
 	_domainApp = _config->addDomain(kDomainApp);
 }
@@ -242,12 +226,9 @@ bool ConfigManager::hasGame(const UString &gameID) {
 
 bool ConfigManager::setGame(const UString &gameID) {
 	// Clear the current game domain
-	delete _domainDefaultGame;
-	delete _domainGameTemp;
-
-	_domainGame        = 0;
-	_domainDefaultGame = 0;
-	_domainGameTemp    = 0;
+	_domainDefaultGame.reset();
+	_domainGameTemp.reset();
+	_domainGame = 0;
 
 	if (gameID.empty())
 		// No ID specified, work done
@@ -264,9 +245,9 @@ bool ConfigManager::setGame(const UString &gameID) {
 		return false;
 
 	// Create a new defaults domain for the game too
-	_domainDefaultGame = new ConfigDomain("gameDefault");
+	_domainDefaultGame.reset(new ConfigDomain("gameDefault"));
 	// And a temporary settings domain too
-	_domainGameTemp    = new ConfigDomain("gameTemp");
+	_domainGameTemp.reset(new ConfigDomain("gameTemp"));
 
 	return true;
 }
@@ -277,19 +258,19 @@ bool ConfigManager::isInGame() const {
 
 bool ConfigManager::hasKey(const UString &key) const {
 	// Look up the key in order of priority
-	return hasKey(_domainCommandline, key) || // First command line
-	       hasKey(_domainGame, key)        || // Then game
-	       hasKey(_domainApp, key);           // Then application
+	return hasKey(_domainCommandline.get(), key) || // First command line
+	       hasKey(_domainGame             , key) || // Then game
+	       hasKey(_domainApp              , key);   // Then application
 }
 
 bool ConfigManager::getKey(const UString &key, UString &value) const {
 	// Look up the key in order of priority
-	return getKey(_domainCommandline, key, value) || // First command line
-	       getKey(_domainGameTemp   , key, value) || // Then temporary game settings
-	       getKey(_domainGame       , key, value) || // Then game
-	       getKey(_domainApp        , key, value) || // Then application
-	       getKey(_domainDefaultGame, key, value) || // Then game defaults
-	       getKey(_domainDefaultApp , key, value);   // Then application defaults
+	return getKey(_domainCommandline.get(), key, value) || // First command line
+	       getKey(_domainGameTemp.get()   , key, value) || // Then temporary game settings
+	       getKey(_domainGame             , key, value) || // Then game
+	       getKey(_domainApp              , key, value) || // Then application
+	       getKey(_domainDefaultGame.get(), key, value) || // Then game defaults
+	       getKey(_domainDefaultApp.get() , key, value);   // Then application defaults
 }
 
 UString ConfigManager::getString(const UString &key, const UString &def) const {
@@ -387,16 +368,16 @@ void ConfigManager::setKey(ConfigRealm realm, const UString &key, const UString 
 	if        (realm == kConfigRealmDefault) {
 
 		// If we're in a game, set the game defaults
-		if (setKey(_domainDefaultGame, key, value))
+		if (setKey(_domainDefaultGame.get(), key, value))
 			return;
 
 		// Else, set the application defaults
-		setKey(_domainDefaultApp, key, value);
+		setKey(_domainDefaultApp.get(), key, value);
 
 	} else if (realm == kConfigRealmGameTemp) {
 
 		// Set a temporary game setting
-		setKey(_domainGameTemp, key, value);
+		setKey(_domainGameTemp.get(), key, value);
 
 	}
 }
@@ -430,7 +411,7 @@ void ConfigManager::setDefaults() {
 }
 
 void ConfigManager::setCommandlineKey(const UString &key, const UString &value) {
-	setKey(_domainCommandline, key, value);
+	setKey(_domainCommandline.get(), key, value);
 }
 
 UString ConfigManager::getConfigFile() const {

@@ -29,6 +29,7 @@
 
 #include "src/common/types.h"
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
 
@@ -125,14 +126,15 @@ private:
 
 	bool _changed;
 
-	ConfigFile *_config; ///< The actual config.
+	ScopedPtr<ConfigFile> _config; ///< The actual config.
 
-	ConfigDomain *_domainApp;         ///< Application domain.
-	ConfigDomain *_domainGame;        ///< Game domain.
-	ConfigDomain *_domainDefaultApp;  ///< Application defaults domain.
-	ConfigDomain *_domainDefaultGame; ///< Game defaults domain.
-	ConfigDomain *_domainCommandline; ///< Command line domain.
-	ConfigDomain *_domainGameTemp;    ///< Temporary game settings domain.
+	ScopedPtr<ConfigDomain> _domainDefaultApp;  ///< Application defaults domain.
+	ScopedPtr<ConfigDomain> _domainDefaultGame; ///< Game defaults domain.
+	ScopedPtr<ConfigDomain> _domainCommandline; ///< Command line domain.
+	ScopedPtr<ConfigDomain> _domainGameTemp;    ///< Temporary game settings domain.
+
+	ConfigDomain *_domainApp;  ///< Application domain, pointer into the config file.
+	ConfigDomain *_domainGame; ///< Game domain, pointer into the config file.
 
 	static UString getDefaultConfigFile();
 
