@@ -31,6 +31,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 namespace Common {
@@ -69,7 +70,7 @@ private:
 
 	typedef std::vector<IFile> IFileList;
 
-	SeekableReadStream *_zip;
+	ScopedPtr<SeekableReadStream> _zip;
 
 	/** External list of file names and types. */
 	FileList _files;

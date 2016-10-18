@@ -36,16 +36,10 @@ namespace Common {
 ZipFile::ZipFile(SeekableReadStream *zip) : _zip(zip) {
 	assert(_zip);
 
-	try {
-		load(*_zip);
-	} catch (...) {
-		delete _zip;
-		throw;
-	}
+	load(*_zip);
 }
 
 ZipFile::~ZipFile() {
-	delete _zip;
 }
 
 void ZipFile::load(SeekableReadStream &zip) {
@@ -171,7 +165,7 @@ SeekableReadStream *ZipFile::getFile(uint32 index, bool tryNoCopy) const {
 	getFileProperties(*_zip, file, compMethod, compSize, realSize);
 
 	if (tryNoCopy && (compMethod == 0))
-		return new SeekableSubReadStream(_zip, _zip->pos(), _zip->pos() + compSize);
+		return new SeekableSubReadStream(_zip.get(), _zip->pos(), _zip->pos() + compSize);
 
 	return decompressFile(*_zip, compMethod, compSize, realSize);
 }
@@ -193,27 +187,22 @@ SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 meth
 
 #define BUFREADCOMMENT (0x400)
 size_t ZipFile::findCentralDirectoryEnd(SeekableReadStream &zip) {
-	size_t uSizeFile = zip.size();
+	const size_t uSizeFile = zip.size();
+	const size_t uMaxBack  = MIN<size_t>(0xFFFF, uSizeFile); // Maximum size of global comment
 
-	size_t uMaxBack = MIN<size_t>(0xFFFF, uSizeFile); // Maximum size of global comment
-
-	byte *buf = new byte[BUFREADCOMMENT + 4];
+	byte buf[BUFREADCOMMENT + 4];
 
 	size_t uPosFound = 0;
 	size_t uBackRead = 4;
 	while ((uPosFound == 0) && (uBackRead < uMaxBack)) {
-		size_t uReadSize, uReadPos;
-
 		uBackRead = MIN<size_t>(uMaxBack, uBackRead + BUFREADCOMMENT);
 
-		uReadPos  = uSizeFile - uBackRead;
-
-		uReadSize = MIN<size_t>(BUFREADCOMMENT + 4, uSizeFile - uReadPos);
+		const size_t uReadPos  = uSizeFile - uBackRead;
+		const size_t uReadSize = MIN<size_t>(BUFREADCOMMENT + 4, uSizeFile - uReadPos);
 
 		try {
 			zip.seek(uReadPos);
 		} catch (...) {
-			delete[] buf;
 			return 0;
 		}
 
@@ -230,7 +219,6 @@ size_t ZipFile::findCentralDirectoryEnd(SeekableReadStream &zip) {
 
 	}
 
-	delete[] buf;
 	return uPosFound;
 }
 
