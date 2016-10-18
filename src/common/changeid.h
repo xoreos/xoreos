@@ -25,6 +25,8 @@
 #ifndef COMMON_CHANGEID_H
 #define COMMON_CHANGEID_H
 
+#include "src/common/scopedptr.h"
+
 namespace Common {
 
 class ChangeContent;
@@ -46,7 +48,7 @@ public:
 	void setContent(ChangeContent *content);
 
 protected:
-	ChangeContent *_content;
+	ScopedPtr<ChangeContent> _content;
 };
 
 class ChangeContent {

@@ -26,46 +26,39 @@
 
 namespace Common {
 
-ChangeID::ChangeID() : _content(0) {
+ChangeID::ChangeID() {
 }
 
-ChangeID::ChangeID(const ChangeID &change) : _content(0) {
+ChangeID::ChangeID(const ChangeID &change) {
 	*this = change;
 }
 
 ChangeID::~ChangeID() {
-	clear();
 }
 
 ChangeID &ChangeID::operator=(const ChangeID &change) {
 	if (this == &change)
 		return *this;
 
-	clear();
-
-	if (change._content)
-		_content = change._content->clone();
+	_content.reset(change._content ? change._content->clone() : 0);
 
 	return *this;
 }
 
 bool ChangeID::empty() const {
-	return _content != 0;
-}
-
-void ChangeID::clear() {
-	delete _content;
-	_content = 0;
-}
-
-ChangeContent *ChangeID::getContent() const {
 	return _content;
 }
 
-void ChangeID::setContent(ChangeContent *content) {
-	clear();
+void ChangeID::clear() {
+	_content.reset();
+}
 
-	_content = content;
+ChangeContent *ChangeID::getContent() const {
+	return _content.get();
+}
+
+void ChangeID::setContent(ChangeContent *content) {
+	_content.reset(content);
 }
 
 } // End of namespace Common
