@@ -24,8 +24,11 @@
 
 #include <zlib.h>
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/deflate.h"
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 #include "src/common/memreadstream.h"
 
 namespace Common {
@@ -33,7 +36,7 @@ namespace Common {
 byte *decompressDeflate(const byte *data, size_t inputSize,
                         size_t outputSize, int windowBits) {
 
-	byte *decompressedData = new byte[outputSize];
+	ScopedArray<byte> decompressedData(new byte[outputSize]);
 
 	/* Initialize the zlib data stream for decompression with our input data.
 	 *
@@ -50,25 +53,22 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
 	strm.next_in  = const_cast<byte *>(data);
 
 	int zResult = inflateInit2(&strm, windowBits);
-	if (zResult != Z_OK) {
+	BOOST_SCOPE_EXIT( (&strm) ) {
 		inflateEnd(&strm);
+	} BOOST_SCOPE_EXIT_END
 
-		delete[] decompressedData;
+	if (zResult != Z_OK)
 		throw Exception("Could not initialize zlib inflate: %s (%d)", zError(zResult), zResult);
-	}
 
 	// Set the output data pointer and size
 	strm.avail_out = outputSize;
-	strm.next_out  = decompressedData;
+	strm.next_out  = decompressedData.get();
 
 	// Decompress. Z_FINISH, because we want to decompress the whole thing in one go.
 	zResult = inflate(&strm, Z_FINISH);
 
 	// Was the end of the input stream correctly reached?
 	if ((zResult != Z_STREAM_END) || (strm.avail_out != 0)) {
-		inflateEnd(&strm);
-		delete[] decompressedData;
-
 		if (zResult == Z_OK)
 			throw Exception("Failed to inflate: premature end of output buffer");
 
@@ -78,28 +78,18 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
 		throw Exception("Failed to inflate: %s (%d)", zError(zResult), zResult);
 	}
 
-	inflateEnd(&strm);
-	return decompressedData;
+	return decompressedData.release();
 }
 
 SeekableReadStream *decompressDeflate(ReadStream &input, size_t inputSize,
                                       size_t outputSize, int windowBits) {
 
-	byte *compressedData = new byte[inputSize];
-	const byte *decompressedData = 0;
+	ScopedArray<byte> compressedData(new byte[inputSize]);
+	if (input.read(compressedData.get(), inputSize) != inputSize)
+		throw Exception(kReadError);
 
-	try {
-		if (input.read(compressedData, inputSize) != inputSize)
-			throw Exception(kReadError);
+	const byte *decompressedData = decompressDeflate(compressedData.get(), inputSize, outputSize, windowBits);
 
-		decompressedData = decompressDeflate(compressedData, inputSize, outputSize, windowBits);
-
-	} catch (...) {
-		delete[] compressedData;
-		throw;
-	}
-
-	delete[] compressedData;
 	return new MemoryReadStream(decompressedData, outputSize, true);
 }
 
