@@ -44,6 +44,7 @@
 
 #include "src/common/platform.h"
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 #include "src/common/encoding.h"
 #include "src/common/filepath.h"
 
@@ -162,19 +163,14 @@ static inline UString getWindowsVariable(const wchar_t *variable) {
 	if (!length)
 		return "";
 
-	size_t size = length * sizeof(wchar_t);
-	byte  *data = new byte[size];
+	const size_t size = length * sizeof(wchar_t);
+	ScopedArray<byte> data(new byte[size]);
 
-	DWORD newLength = GetEnvironmentVariableW(variable, reinterpret_cast<wchar_t *>(data), length);
-	if (!newLength || (newLength > length)) {
-		delete[] data;
+	DWORD newLength = GetEnvironmentVariableW(variable, reinterpret_cast<wchar_t *>(data.get()), length);
+	if (!newLength || (newLength > length))
 		return "";
-	}
 
-	UString value = readString(data, size, kEncodingUTF16LE);
-	delete[] data;
-
-	return value;
+	return readString(data.get(), size, kEncodingUTF16LE);
 }
 
 #endif
