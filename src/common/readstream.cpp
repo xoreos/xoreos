@@ -52,6 +52,7 @@
 #include "src/common/readstream.h"
 #include "src/common/memreadstream.h"
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -62,19 +63,12 @@ ReadStream::~ReadStream() {
 }
 
 MemoryReadStream *ReadStream::readStream(size_t dataSize) {
-	byte *buf = new byte[dataSize];
+	ScopedArray<byte> buf(new byte[dataSize]);
 
-	try {
+	if (read(buf.get(), dataSize) != dataSize)
+		throw Exception(kReadError);
 
-		if (read(buf, dataSize) != dataSize)
-			throw Exception(kReadError);
-
-	} catch (...) {
-		delete[] buf;
-		throw;
-	}
-
-	return new MemoryReadStream(buf, dataSize, true);
+	return new MemoryReadStream(buf.release(), dataSize, true);
 }
 
 
