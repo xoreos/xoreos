@@ -31,6 +31,7 @@
 
 #include "src/common/encoding.h"
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
 #include "src/common/memreadstream.h"
@@ -105,9 +106,9 @@ private:
 		size_t inBytes  = nIn;
 		size_t outBytes = nOut;
 
-		byte *convData = new byte[outBytes];
+		ScopedArray<byte> convData(new byte[outBytes]);
 
-		byte *outBuf = convData;
+		byte *outBuf = convData.get();
 
 		// Reset the converter's state
 		iconv(ctx, 0, 0, 0, 0);
@@ -115,15 +116,14 @@ private:
 		// Convert
 		if (iconv(ctx, const_cast<ICONV_CONST char **>(reinterpret_cast<char **>(&data)), &inBytes,
 		          reinterpret_cast<char **>(&outBuf), &outBytes) == ((size_t) -1)) {
-			warning("iconv() failed: %s", strerror(errno));
-			delete[] convData;
 
+			warning("iconv() failed: %s", strerror(errno));
 			return 0;
 		}
 
 		size = nOut - outBytes;
 
-		return convData;
+		return convData.release();
 	}
 
 	UString convert(iconv_t &ctx, byte *data, size_t n, size_t growth, size_t termSize) {
@@ -131,17 +131,14 @@ private:
 			return "[!!!]";
 
 		size_t size;
-		byte *dataOut = doConvert(ctx, data, n, n * growth + termSize, size);
+		ScopedArray<byte> dataOut(doConvert(ctx, data, n, n * growth + termSize, size));
 		if (!dataOut)
 			return "[!?!]";
 
 		while (termSize-- > 0)
 			dataOut[size++] = '\0';
 
-		UString str(reinterpret_cast<const char *>(dataOut));
-		delete[] dataOut;
-
-		return str;
+		return UString(reinterpret_cast<const char *>(dataOut.get()));
 	}
 
 	MemoryReadStream *convert(iconv_t &ctx, const UString &str, size_t growth, size_t termSize) {
@@ -153,14 +150,14 @@ private:
 		size_t nOut   = nIn * growth + termSize;
 
 		size_t size;
-		byte *dataOut = doConvert(ctx, dataIn, nIn, nOut, size);
+		ScopedArray<byte> dataOut(doConvert(ctx, dataIn, nIn, nOut, size));
 		if (!dataOut)
 			return 0;
 
 		while (termSize-- > 0)
 			dataOut[size++] = '\0';
 
-		return new MemoryReadStream(dataOut, size, true);
+		return new MemoryReadStream(dataOut.release(), size, true);
 	}
 };
 
@@ -311,19 +308,9 @@ UString readString(const byte *data, size_t size, Encoding encoding) {
 }
 
 size_t writeString(WriteStream &stream, const Common::UString &str, Encoding encoding, bool terminate) {
-	size_t n = 0;
+	ScopedPtr<MemoryReadStream> data(convertString(str, encoding, terminate));
 
-	MemoryReadStream *data = 0;
-	try {
-		data = convertString(str, encoding, terminate);
-
-		n = stream.writeStream(*data);
-	} catch (...) {
-		delete data;
-		throw;
-	}
-
-	delete data;
+	const size_t n = stream.writeStream(*data);
 
 	return n;
 }
@@ -332,20 +319,11 @@ void writeStringFixed(WriteStream &stream, const Common::UString &str, Encoding 
 	if (length == 0)
 		return;
 
-	MemoryReadStream *data = 0;
-	try {
-		data = convertString(str, encoding, false);
+	ScopedPtr<MemoryReadStream> data(convertString(str, encoding, false));
 
-		size_t n = stream.writeStream(*data, length);
-		while (n++ < length)
-			stream.writeByte(0);
-
-	} catch (...) {
-		delete data;
-		throw;
-	}
-
-	delete data;
+	size_t n = stream.writeStream(*data, length);
+	while (n++ < length)
+		stream.writeByte(0);
 }
 
 MemoryReadStream *convertString(const UString &str, Encoding encoding, bool terminateString) {
