@@ -26,6 +26,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 #include "src/common/memreadstream.h"
 #include "src/common/blowfish.h"
 
@@ -343,31 +344,26 @@ MemoryReadStream *blowfishEBC(SeekableReadStream &input, const std::vector<byte>
 
 	// Round up to the next multiple of the block size
 	const size_t outputSize = ((inputSize + kBlockSize - 1) / kBlockSize) * kBlockSize;
-	byte *output = new byte[outputSize];
 
-	try {
-		byte buffer[kBlockSize];
-		byte *data = output;
-		while (inputSize > 0) {
-			const size_t toRead = MIN<size_t>(inputSize, kBlockSize);
+	ScopedArray<byte> output(new byte[outputSize]);
 
-			if (input.read(buffer, toRead) != toRead)
-				throw Exception(kReadError);
+	byte buffer[kBlockSize];
+	byte *data = output.get();
+	while (inputSize > 0) {
+		const size_t toRead = MIN<size_t>(inputSize, kBlockSize);
 
-			std::memset(buffer + toRead, 0, kBlockSize - toRead);
+		if (input.read(buffer, toRead) != toRead)
+			throw Exception(kReadError);
 
-			blowfishECB(ctx, mode, buffer, data);
+		std::memset(buffer + toRead, 0, kBlockSize - toRead);
 
-			data      += toRead;
-			inputSize -= toRead;
-		}
+		blowfishECB(ctx, mode, buffer, data);
 
-	} catch (...) {
-		delete[] output;
-		throw;
+		data      += toRead;
+		inputSize -= toRead;
 	}
 
-	return new MemoryReadStream(output, outputSize, true);
+	return new MemoryReadStream(output.release(), outputSize, true);
 }
 
 MemoryReadStream *encryptBlowfishEBC(SeekableReadStream &input, const std::vector<byte> &key) {
