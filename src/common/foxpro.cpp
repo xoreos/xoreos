@@ -27,6 +27,7 @@
 
 #include "src/common/foxpro.h"
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 #include "src/common/encoding.h"
 #include "src/common/memreadstream.h"
 #include "src/common/writestream.h"
@@ -481,13 +482,12 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
 	size_t dataSize = size;
 
 	// Read the data
-	byte *data    = new byte[size];
-	byte *dataPtr = data;
+	ScopedArray<byte> data(new byte[size]);
+	byte *dataPtr = data.get();
+
 	while (size > 0) {
-		if (block >= _memos.size()) {
-			delete[] data;
+		if (block >= _memos.size())
 			throw Exception("Memo block #%u >= memo block count %u", (uint)block, (uint)_memos.size());
-		}
 
 		size_t n = MIN<size_t>(size, _memoBlockSize - (first ? 8 : 0));
 
@@ -500,7 +500,7 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
 		first = false;
 	}
 
-	return new MemoryReadStream(data, dataSize, true);
+	return new MemoryReadStream(data.release(), dataSize, true);
 }
 
 void FoxPro::deleteRecord(size_t record) {
