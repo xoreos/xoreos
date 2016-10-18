@@ -540,11 +540,11 @@ void GraphicsManager::setGamma(float gamma) {
 	}
 
 	_gamma = gamma;
-	uint16* gammaRamp = 0;
+	uint16 gammaRamp[256];
+
 	SDL_CalculateGammaRamp(gamma, gammaRamp);
 
 	SDL_SetWindowGammaRamp(_screen, gammaRamp, gammaRamp, gammaRamp);
-	delete gammaRamp;
 }
 
 void GraphicsManager::setupScene() {
