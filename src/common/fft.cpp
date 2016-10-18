@@ -65,22 +65,19 @@ FFT::FFT(int bits, bool inverse) : _bits(bits), _inverse(inverse) {
 
 	int n = 1 << bits;
 
-	_tmpBuf = new Complex[n];
-	_expTab = new Complex[n / 2];
-	_revTab = new uint16[n];
+	_tmpBuf.reset(new Complex[n]);
+	_expTab.reset(new Complex[n / 2]);
+	_revTab.reset(new uint16[n]);
 
 	for (int i = 0; i < n; i++)
 		_revTab[-splitRadixPermutation(i, n, _inverse) & (n - 1)] = i;
 }
 
 FFT::~FFT() {
-	delete[] _revTab;
-	delete[] _expTab;
-	delete[] _tmpBuf;
 }
 
 const uint16 *FFT::getRevTab() const {
-	return _revTab;
+	return _revTab.get();
 }
 
 void FFT::permute(Complex *z) {
@@ -90,7 +87,7 @@ void FFT::permute(Complex *z) {
 		for (int j = 0; j < np; j++)
 			_tmpBuf[_revTab[j]] = z[j];
 
-		std::memcpy(z, _tmpBuf, np * sizeof(Complex));
+		std::memcpy(z, _tmpBuf.get(), np * sizeof(Complex));
 
 		return;
 	}

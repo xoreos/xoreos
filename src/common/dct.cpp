@@ -57,22 +57,20 @@
 
 namespace Common {
 
-DCT::DCT(int bits, TransformType trans) : _bits(bits), _trans(trans), _rdft(0) {
+DCT::DCT(int bits, TransformType trans) : _bits(bits), _trans(trans) {
 	int n = 1 << _bits;
 
 	_tCos = getCosineTable(_bits + 2);
 
-	_csc2 = new float[n / 2];
+	_csc2.reset(new float[n / 2]);
 
-	_rdft = new RDFT(_bits, (_trans == DCT_III) ? RDFT::IDFT_C2R : RDFT::DFT_R2C);
+	_rdft.reset(new RDFT(_bits, (_trans == DCT_III) ? RDFT::IDFT_C2R : RDFT::DFT_R2C));
 
 	for (int i = 0; i < (n / 2); i++)
 		_csc2[i] = 0.5 / sin((M_PI / (2 * n) * (2 * i + 1)));
 }
 
 DCT::~DCT() {
-	delete _rdft;
-	delete[] _csc2;
 }
 
 void DCT::calc(float *data) {

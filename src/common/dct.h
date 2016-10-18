@@ -56,6 +56,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -82,9 +83,9 @@ private:
 
 	const float *_tCos;
 
-	float *_csc2;
+	ScopedPtr<RDFT> _rdft;
 
-	RDFT *_rdft;
+	ScopedArray<float> _csc2;
 
 	void calcDCTI  (float *data);
 	void calcDCTII (float *data);

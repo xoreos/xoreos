@@ -55,16 +55,16 @@
 
 namespace Common {
 
-MDCT::MDCT(int bits, bool inverse, double scale) : _bits(bits), _fft(0) {
+MDCT::MDCT(int bits, bool inverse, double scale) : _bits(bits) {
 	_size = 1 << bits;
 
-	_fft = new FFT(_bits - 2, inverse);
+	_fft.reset(new FFT(_bits - 2, inverse));
 
 	const int size2 = _size >> 1;
 	const int size4 = _size >> 2;
 
-	_tCos = new float[size2];
-	_tSin = _tCos + size4;
+	_tCos.reset(new float[size2]);
+	_tSin = _tCos.get() + size4;
 
 	const double theta = 1.0 / 8.0 + (scale < 0 ? size4 : 0);
 
@@ -78,8 +78,6 @@ MDCT::MDCT(int bits, bool inverse, double scale) : _bits(bits), _fft(0) {
 }
 
 MDCT::~MDCT() {
-	delete[] _tCos;
-	delete _fft;
 }
 
 #define CMUL(dre, dim, are, aim, bre, bim) do { \

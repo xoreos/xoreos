@@ -54,6 +54,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -75,10 +76,10 @@ private:
 	int _bits;
 	int _size;
 
-	float *_tCos;
+	ScopedArray<float> _tCos;
 	float *_tSin;
 
-	FFT *_fft;
+	ScopedPtr<FFT> _fft;
 
 	/** Compute the middle half of the inverse MDCT of size N = 2^nbits,
 	 *  thus excluding the parts that can be derived by symmetry.

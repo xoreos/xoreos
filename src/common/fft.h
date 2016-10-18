@@ -56,6 +56,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -83,10 +84,10 @@ private:
 	int  _bits;
 	bool _inverse;
 
-	uint16 *_revTab;
+	ScopedArray<uint16> _revTab;
 
-	Complex *_expTab;
-	Complex *_tmpBuf;
+	ScopedArray<Complex> _expTab;
+	ScopedArray<Complex> _tmpBuf;
 
 	static int splitRadixPermutation(int i, int n, bool inverse);
 };

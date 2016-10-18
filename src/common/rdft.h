@@ -54,6 +54,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -82,7 +83,7 @@ private:
 	const float *_tSin;
 	const float *_tCos;
 
-	FFT *_fft;
+	ScopedPtr<FFT> _fft;
 };
 
 } // End of namespace Common
