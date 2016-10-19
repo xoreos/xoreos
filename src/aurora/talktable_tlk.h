@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/aurorafile.h"
@@ -90,7 +91,7 @@ private:
 	typedef std::vector<Entry> Entries;
 
 
-	Common::SeekableReadStream *_tlk;
+	Common::ScopedPtr<Common::SeekableReadStream> _tlk;
 
 	uint32 _stringsOffset;
 	uint32 _languageID;

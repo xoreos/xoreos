@@ -42,7 +42,7 @@ static const uint32 kVersion05 = MKTAG('V', '0', '.', '5');
 namespace Aurora {
 
 TalkTable_GFF::TalkTable_GFF(Common::SeekableReadStream *tlk, Common::Encoding encoding) :
-	TalkTable(encoding), _gff(0) {
+	TalkTable(encoding) {
 
 	load(tlk);
 }
@@ -54,8 +54,6 @@ TalkTable_GFF::~TalkTable_GFF() {
 void TalkTable_GFF::clean() {
 	for (Entries::iterator e = _entries.begin(); e != _entries.end(); ++e)
 		delete e->second;
-
-	delete _gff;
 }
 
 bool TalkTable_GFF::hasEntry(uint32 strRef) const {
@@ -81,7 +79,7 @@ void TalkTable_GFF::load(Common::SeekableReadStream *tlk) {
 	assert(tlk);
 
 	try {
-		_gff = new GFF4File(tlk, kTLKID);
+		_gff.reset(new GFF4File(tlk, kTLKID));
 
 		const GFF4Struct &top = _gff->getTopLevel();
 
@@ -114,11 +112,11 @@ void TalkTable_GFF::load02(const GFF4Struct &top) {
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
-		Entry *entry = new Entry(*s);
+		Common::ScopedPtr<Entry> entry(new Entry(*s));
 
-		std::pair<Entries::iterator, bool> result = _entries.insert(std::make_pair(strRef, entry));
-		if (!result.second)
-			delete entry;
+		std::pair<Entries::iterator, bool> result = _entries.insert(std::make_pair(strRef, entry.get()));
+		if (result.second)
+			entry.release();
 	}
 }
 
@@ -138,11 +136,11 @@ void TalkTable_GFF::load05(const GFF4Struct &top) {
 		if (strRef == 0xFFFFFFFF)
 			continue;
 
-		Entry *entry = new Entry(*s);
+		Common::ScopedPtr<Entry> entry(new Entry(*s));
 
-		std::pair<Entries::iterator, bool> result = _entries.insert(std::make_pair(strRef, entry));
-		if (!result.second)
-			delete entry;
+		std::pair<Entries::iterator, bool> result = _entries.insert(std::make_pair(strRef, entry.get()));
+		if (result.second)
+			entry.release();
 	}
 }
 
@@ -166,13 +164,11 @@ void TalkTable_GFF::readString02(Entry &entry) const {
 }
 
 void TalkTable_GFF::readString05(Entry &entry) const {
-	Common::SeekableReadStream *huffTree  = _gff->getTopLevel().getData(kGFF4HuffTalkStringHuffTree);
-	Common::SeekableReadStream *bitStream = _gff->getTopLevel().getData(kGFF4HuffTalkStringBitStream);
+	Common::ScopedPtr<Common::SeekableReadStream>
+		huffTree (_gff->getTopLevel().getData(kGFF4HuffTalkStringHuffTree)),
+		bitStream(_gff->getTopLevel().getData(kGFF4HuffTalkStringBitStream));
 
-	readString05(huffTree, bitStream, entry);
-
-	delete huffTree;
-	delete bitStream;
+	readString05(huffTree.get(), bitStream.get(), entry);
 }
 
 void TalkTable_GFF::readString05(Common::SeekableReadStream *huffTree,

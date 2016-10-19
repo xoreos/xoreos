@@ -22,6 +22,7 @@
  *  The global talk manager for Aurora strings.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
@@ -67,15 +68,11 @@ static TalkTable *loadTable(const Common::UString &name, Common::Encoding encodi
 static void loadTables(const Common::UString &nameM, const Common::UString &nameF,
                        TalkTable *&tableM, TalkTable *&tableF, Common::Encoding encoding) {
 
-	try {
-		tableM = loadTable(nameM, encoding);
-		tableF = loadTable(nameF, encoding);
+	Common::ScopedPtr<TalkTable> m(loadTable(nameM, encoding));
+	Common::ScopedPtr<TalkTable> f(loadTable(nameF, encoding));
 
-	} catch (...) {
-		delete tableM;
-		delete tableF;
-		throw;
-	}
+	tableM = m.release();
+	tableF = f.release();
 }
 
 void TalkManager::addTable(const Common::UString &nameMale, const Common::UString &nameFemale,

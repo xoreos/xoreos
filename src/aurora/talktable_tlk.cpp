@@ -46,16 +46,15 @@ namespace Aurora {
 TalkTable_TLK::TalkTable_TLK(Common::SeekableReadStream *tlk, Common::Encoding encoding) :
 	TalkTable(encoding), _tlk(tlk) {
 
+	assert(_tlk);
+
 	load();
 }
 
 TalkTable_TLK::~TalkTable_TLK() {
-	delete _tlk;
 }
 
 void TalkTable_TLK::load() {
-	assert(_tlk);
-
 	try {
 		readHeader(*_tlk);
 
@@ -87,8 +86,6 @@ void TalkTable_TLK::load() {
 			readEntryTableV4();
 
 	} catch (Common::Exception &e) {
-		delete _tlk;
-
 		e.add("Failed reading TLK file");
 		throw;
 	}
@@ -128,16 +125,13 @@ void TalkTable_TLK::readString(Entry &entry) const {
 	if (length == 0)
 		return;
 
-	Common::MemoryReadStream *data   = _tlk->readStream(length);
-	Common::MemoryReadStream *parsed = LangMan.preParseColorCodes(*data);
+	Common::ScopedPtr<Common::MemoryReadStream> data(_tlk->readStream(length));
+	Common::ScopedPtr<Common::MemoryReadStream> parsed(LangMan.preParseColorCodes(*data));
 
 	if (_encoding != Common::kEncodingInvalid)
 		entry.text = Common::readString(*parsed, _encoding);
 	else
 		entry.text = "[???]";
-
-	delete parsed;
-	delete data;
 }
 
 uint32 TalkTable_TLK::getLanguageID() const {

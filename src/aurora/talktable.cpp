@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 #include "src/aurora/aurorafile.h"
@@ -42,25 +43,25 @@ TalkTable::~TalkTable() {
 }
 
 TalkTable *TalkTable::load(Common::SeekableReadStream *tlk, Common::Encoding encoding) {
-	if (!tlk)
+	Common::ScopedPtr<Common::SeekableReadStream> tlkStream(tlk);
+	if (!tlkStream)
 		return 0;
 
-	size_t pos = tlk->pos();
+	size_t pos = tlkStream->pos();
 
 	uint32 id, version;
 	bool utf16le;
 
-	AuroraFile::readHeader(*tlk, id, version, utf16le);
+	AuroraFile::readHeader(*tlkStream, id, version, utf16le);
 
-	tlk->seek(pos);
+	tlkStream->seek(pos);
 
 	if (id == kTLKID)
-		return new TalkTable_TLK(tlk, encoding);
+		return new TalkTable_TLK(tlkStream.release(), encoding);
 
 	if (id == kGFFID)
-		return new TalkTable_GFF(tlk, encoding);
+		return new TalkTable_GFF(tlkStream.release(), encoding);
 
-	delete tlk;
 	return 0;
 }
 
