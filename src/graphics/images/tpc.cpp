@@ -24,6 +24,7 @@
 
 #include <cstring>
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -182,7 +183,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, byte &encoding) {
 		uint32 layerSize   = dataSize;
 
 		for (size_t i = 0; i < mipMapCount; i++) {
-			MipMap *mipMap = new MipMap(this);
+			Common::ScopedPtr<MipMap> mipMap(new MipMap(this));
 
 			mipMap->width  = MAX<uint32>(layerWidth,  1);
 			mipMap->height = MAX<uint32>(layerHeight, 1);
@@ -193,15 +194,13 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, byte &encoding) {
 
 			const size_t mipMapDataSize = getDataSize(_formatRaw, mipMap->width, mipMap->height);
 
-			if ((fullDataSize < mipMap->size) || (mipMap->size < mipMapDataSize)) {
-				// Wouldn't fit
-				delete mipMap;
+			// Wouldn't fit
+			if ((fullDataSize < mipMap->size) || (mipMap->size < mipMapDataSize))
 				break;
-			}
 
 			fullDataSize -= mipMap->size;
 
-			_mipMaps.push_back(mipMap);
+			_mipMaps.push_back(mipMap.release());
 
 			layerWidth  >>= 1;
 			layerHeight >>= 1;
@@ -290,15 +289,13 @@ void TPC::readData(Common::SeekableReadStream &tpc, byte encoding) {
 
 			// Unpacking 8bpp grayscale data into RGB
 			if (encoding == kEncodingGray) {
-				byte *dataGray = (*mipMap)->data;
+				Common::ScopedArray<byte> dataGray((*mipMap)->data);
 
 				(*mipMap)->size = (*mipMap)->width * (*mipMap)->height * 3;
 				(*mipMap)->data = new byte[(*mipMap)->size];
 
 				for (int i = 0; i < ((*mipMap)->width * (*mipMap)->height); i++)
 					std::memset((*mipMap)->data + i * 3, dataGray[i], 3);
-
-				delete[] dataGray;
 			}
 		}
 
@@ -310,14 +307,12 @@ void TPC::readTXI(Common::SeekableReadStream &tpc) {
 	if (txiDataSize == 0)
 		return;
 
-	Common::SeekableReadStream *txiData = tpc.readStream(txiDataSize);
+	Common::ScopedPtr<Common::SeekableReadStream> txiData(tpc.readStream(txiDataSize));
 
 	try {
 		_txi.load(*txiData);
 	} catch (...) {
 	}
-
-	delete txiData;
 }
 
 void TPC::fixupCubeMap() {
