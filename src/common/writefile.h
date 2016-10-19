@@ -36,7 +36,7 @@ namespace Common {
 class UString;
 
 /** A simple streaming file writing class. */
-class WriteFile : public WriteStream, public NonCopyable {
+class WriteFile : NonCopyable, public WriteStream {
 public:
 	WriteFile();
 	WriteFile(const UString &fileName);

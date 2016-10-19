@@ -33,7 +33,7 @@
 namespace Common {
 
 /** A mutex. */
-class Mutex : public NonCopyable {
+class Mutex : NonCopyable {
 public:
 	Mutex();
 	~Mutex();
@@ -48,7 +48,7 @@ private:
 };
 
 /** A semaphore . */
-class Semaphore : public NonCopyable {
+class Semaphore : NonCopyable {
 public:
 	Semaphore(uint value = 0);
 	~Semaphore();
@@ -64,7 +64,7 @@ private:
 };
 
 /** Convenience class that locks a mutex on creation and unlocks it on destruction. */
-class StackLock : public NonCopyable {
+class StackLock : NonCopyable {
 public:
 	StackLock(Mutex &mutex);
 	StackLock(Semaphore &semaphore);
@@ -76,7 +76,7 @@ private:
 };
 
 /** A condition. */
-class Condition : public NonCopyable {
+class Condition : NonCopyable {
 public:
 	Condition();
 	Condition(Mutex &mutex);
