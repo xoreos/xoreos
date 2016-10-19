@@ -120,7 +120,7 @@ void CharGenChoices::applyChoices() {
 	// Set appearance.
 	// TODO: Apply choices from user and not default values.
 	_creature->setAppearance(_creature->getRace());
-	Aurora::GFF3File gff = Aurora::GFF3File("NW_CLOTH001", Aurora::kFileTypeUTI);
+	Aurora::GFF3File gff("NW_CLOTH001", Aurora::kFileTypeUTI);
 	Item *armor = new Item(gff.getTopLevel());
 	_creature->addEquippedItem(armor);
 
