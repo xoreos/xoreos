@@ -30,6 +30,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/readstream.h"
@@ -247,10 +248,10 @@ void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda,
 
 	/* And now read the individual cells in the rows. */
 
-	size_t columnCount = _headers.size();
+	const size_t columnCount = _headers.size();
 
 	while (!twoda.eos()) {
-		TwoDARow *row = new TwoDARow(*this);
+		Common::ScopedPtr<TwoDARow> row(new TwoDARow(*this));
 
 		/* Skip the first token, which is the row index, possibly indented.
 		 * The row index is implicit in the data and its use in the 2DA
@@ -265,13 +266,11 @@ void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda,
 		// And move to the next line
 		tokenize.nextChunk(twoda);
 
-		if (count == 0) {
-			// Ignore empty lines
-			delete row;
+		// Ignore empty lines
+		if (count == 0)
 			continue;
-		}
 
-		_rows.push_back(row);
+		_rows.push_back(row.release());
 	}
 }
 
@@ -319,11 +318,11 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 	 * cell data.
 	 */
 
-	size_t columnCount = _headers.size();
-	size_t rowCount    = _rows.size();
-	size_t cellCount   = columnCount * rowCount;
+	const size_t columnCount = _headers.size();
+	const size_t rowCount    = _rows.size();
+	const size_t cellCount   = columnCount * rowCount;
 
-	uint32 *offsets = new uint32[cellCount];
+	Common::ScopedArray<uint32> offsets(new uint32[cellCount]);
 
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
@@ -334,7 +333,7 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 
 	twoda.skip(2); // Size of the data segment in bytes
 
-	size_t dataOffset = twoda.pos();
+	const size_t dataOffset = twoda.pos();
 
 	for (size_t i = 0; i < rowCount; i++) {
 		_rows[i] = new TwoDARow(*this);
@@ -342,22 +341,15 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 		_rows[i]->_data.resize(columnCount);
 
 		for (size_t j = 0; j < columnCount; j++) {
-			size_t offset = dataOffset + offsets[i * columnCount + j];
+			const size_t offset = dataOffset + offsets[i * columnCount + j];
 
-			try {
-				twoda.seek(offset);
-			} catch (...) {
-				delete[] offsets;
-				throw;
-			}
+			twoda.seek(offset);
 
 			_rows[i]->_data[j] = tokenize.getToken(twoda);
 			if (_rows[i]->_data[j].empty())
 				_rows[i]->_data[j] = "****";
 		}
 	}
-
-	delete[] offsets;
 }
 
 void TwoDAFile::createHeaderMap() {

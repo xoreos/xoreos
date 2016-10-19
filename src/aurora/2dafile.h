@@ -90,6 +90,9 @@ private:
 	const Common::UString &getCell(size_t n) const;
 
 	friend class TwoDAFile;
+
+	template<typename T>
+	friend void Common::DeallocatorDefault::destroy(T *);
 };
 
 /** Class to hold the two-dimensional array of a 2DA file.

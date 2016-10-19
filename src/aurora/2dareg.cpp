@@ -23,6 +23,7 @@
  */
 
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 #include "src/aurora/2dareg.h"
@@ -157,46 +158,41 @@ void TwoDARegistry::removeGDA(const Common::UString &name) {
 }
 
 TwoDAFile *TwoDARegistry::load2DA(const Common::UString &name) {
-	Common::SeekableReadStream *twodaFile = 0;
-	TwoDAFile *twoda = 0;
+	Common::ScopedPtr<Common::SeekableReadStream> twodaFile;
+	Common::ScopedPtr<TwoDAFile> twoda;
 
 	try {
-		if (!(twodaFile = ResMan.getResource(name, kFileType2DA)))
+		twodaFile.reset(ResMan.getResource(name, kFileType2DA));
+		if (!twodaFile)
 			throw Common::Exception("No such 2DA");
 
-		twoda = new TwoDAFile(*twodaFile);
+		twoda.reset(new TwoDAFile(*twodaFile));
+
 	} catch (Common::Exception &e) {
-		delete twoda;
-
 		e.add("Failed loading 2DA \"%s\"", name.c_str());
-		throw;
-
-	} catch (...) {
-		delete twoda;
 		throw;
 	}
 
-	delete twodaFile;
-
-	return twoda;
+	return twoda.release();
 }
 
 GDAFile *TwoDARegistry::loadGDA(const Common::UString &name) {
-	Common::SeekableReadStream *gdaFile = 0;
-	GDAFile *gda = 0;
+	Common::ScopedPtr<Common::SeekableReadStream> gdaFile;
+	Common::ScopedPtr<GDAFile> gda;
 
 	try {
-		if (!(gdaFile = ResMan.getResource(name, kFileTypeGDA)))
+		gdaFile.reset(ResMan.getResource(name, kFileTypeGDA));
+		if (!gdaFile)
 			throw Common::Exception("No such GDA");
 
-		gda = new GDAFile(gdaFile);
-	} catch (Common::Exception &e) {
+		gda.reset(new GDAFile(gdaFile.release()));
 
+	} catch (Common::Exception &e) {
 		e.add("Failed loading GDA \"%s\"", name.c_str());
 		throw;
 	}
 
-	return gda;
+	return gda.release();
 }
 
 GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
@@ -210,7 +206,8 @@ GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
 	std::list<ResourceManager::ResourceID> gdas;
 	ResMan.getAvailableResources(kFileTypeGDA, gdas);
 
-	GDAFile *gda = 0;
+	Common::ScopedPtr<GDAFile> gda;
+
 	try {
 		for (std::list<ResourceManager::ResourceID>::const_iterator g = gdas.begin(); g != gdas.end(); ++g) {
 			// Find all GDAs that match the prefix
@@ -218,28 +215,27 @@ GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
 				continue;
 
 			// Load the GDA
-			Common::SeekableReadStream *stream = ResMan.getResource(g->name, kFileTypeGDA);
+
+			Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource(g->name, kFileTypeGDA));
 			if (!stream)
 				throw Common::Exception("No such GDA \"%s\"", g->name.c_str());
 
 			// If this is the first GDA, plain load it. Otherwise, merge it into the first one
 			if (!gda)
-				gda = new GDAFile(stream);
+				gda.reset(new GDAFile(stream.release()));
 			else
-				gda->add(stream);
+				gda->add(stream.release());
 		}
 
 		if (!gda)
 			throw Common::Exception("No such GDA");
 
 	} catch (Common::Exception &e) {
-		delete gda;
-
 		e.add("Failed loading multiple GDA \"%s\"", prefix.c_str());
 		throw;
 	}
 
-	return gda;
+	return gda.release();
 }
 
 } // End of namespace Aurora
