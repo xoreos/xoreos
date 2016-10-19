@@ -29,6 +29,7 @@
 #include <cstring>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -98,16 +99,16 @@ static inline void flipHorizontally(byte *data, int width, int height, int bpp) 
 	const size_t halfWidth = width / 2;
 	const size_t pitch     = bpp * width;
 
-	byte *buffer = new byte[bpp];
+	Common::ScopedArray<byte> buffer(new byte[bpp]);
 
 	while (height-- > 0) {
 		byte *dataStart = data;
 		byte *dataEnd   = data + pitch - bpp;
 
 		for (size_t j = 0; j < halfWidth; j++) {
-			memcpy(buffer   , dataStart, bpp);
-			memcpy(dataStart, dataEnd  , bpp);
-			memcpy(dataEnd  , buffer   , bpp);
+			memcpy(buffer.get(), dataStart   , bpp);
+			memcpy(dataStart   , dataEnd     , bpp);
+			memcpy(dataEnd     , buffer.get(), bpp);
 
 			dataStart += bpp;
 			dataEnd   -= bpp;
@@ -115,8 +116,6 @@ static inline void flipHorizontally(byte *data, int width, int height, int bpp) 
 
 		data += pitch;
 	}
-
-	delete[] buffer;
 }
 
 /** Flip an image vertically. */
@@ -129,19 +128,17 @@ static inline void flipVertically(byte *data, int width, int height, int bpp) {
 	byte *dataStart = data;
 	byte *dataEnd   = data + (pitch * height) - pitch;
 
-	byte *buffer = new byte[pitch];
+	Common::ScopedArray<byte> buffer(new byte[pitch]);
 
 	size_t halfHeight = height / 2;
 	while (halfHeight--) {
-		memcpy(buffer   , dataStart, pitch);
-		memcpy(dataStart, dataEnd  , pitch);
-		memcpy(dataEnd  , buffer   , pitch);
+		memcpy(buffer.get(), dataStart   , pitch);
+		memcpy(dataStart   , dataEnd     , pitch);
+		memcpy(dataEnd     , buffer.get(), pitch);
 
 		dataStart += pitch;
 		dataEnd   -= pitch;
 	}
-
-	delete[] buffer;
 }
 
 /** Rotate a square image in 90° steps. */
