@@ -22,6 +22,7 @@
  *  Screenshot writing.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/writefile.h"
 #include "src/common/filepath.h"
@@ -34,7 +35,7 @@
 
 namespace Graphics {
 
-static bool constructFilename(Common::UString &filename) {
+ bool constructFilename(Common::UString &filename) {
 	try {
 		filename = Common::DateTime(Common::DateTime::kUTC).formatDateTimeISO('T') + ".bmp";
 	} catch (...) {
@@ -120,12 +121,10 @@ bool takeScreenshot() {
 	if ((m_viewport[2] <= 0) || (m_viewport[3] <= 0))
 		return false;
 
-	byte *screen = new byte[3 * m_viewport[2] * m_viewport[3]];
+	Common::ScopedArray<byte> screen(new byte[3 * m_viewport[2] * m_viewport[3]]);
 
-	glReadPixels(0, 0, m_viewport[2], m_viewport[3], GL_BGR, GL_UNSIGNED_BYTE, screen);
-	bool success = writeBMP(filename, screen, m_viewport[2], m_viewport[3]);
-
-	delete[] screen;
+	glReadPixels(0, 0, m_viewport[2], m_viewport[3], GL_BGR, GL_UNSIGNED_BYTE, screen.get());
+	const bool success = writeBMP(filename, screen.get(), m_viewport[2], m_viewport[3]);
 
 	if (success) {
 		status("Screenshot taken: %s", filename.c_str());
