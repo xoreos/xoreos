@@ -73,7 +73,7 @@ class GFF3Struct;
  *  See also: GFF4File in gff4file.h for the later V4.0/V4.1 versions of
  *  the GFF format.
  */
-class GFF3File : public Common::NonCopyable, public AuroraFile {
+class GFF3File : Common::NonCopyable, public AuroraFile {
 public:
 	/** Take over this stream and read a GFF3 file out of it. */
 	GFF3File(Common::SeekableReadStream *gff3, uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
