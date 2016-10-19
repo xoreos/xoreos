@@ -39,17 +39,15 @@
 
 namespace Aurora {
 
-IFOFile::IFOFile() : _gff(0) {
+IFOFile::IFOFile() {
 	clear();
 }
 
 IFOFile::~IFOFile() {
-	delete _gff;
 }
 
 void IFOFile::clear() {
-	delete _gff;
-	_gff = 0;
+	_gff.reset();
 
 	std::memset(_id, 0, sizeof(_id));
 
@@ -101,7 +99,7 @@ void IFOFile::unload() {
 void IFOFile::load(bool repairNWNPremium) {
 	unload();
 
-	_gff = new GFF3File("module", kFileTypeIFO, MKTAG('I', 'F', 'O', ' '), repairNWNPremium);
+	_gff.reset(new GFF3File("module", kFileTypeIFO, MKTAG('I', 'F', 'O', ' '), repairNWNPremium));
 
 	const GFF3Struct &ifoTop = _gff->getTopLevel();
 
@@ -127,11 +125,11 @@ void IFOFile::load(bool repairNWNPremium) {
 	ifoTop.getLocString("Mod_Description", _description);
 
 	// ID
-	size_t idSize = _isSave ? 32 : 16;
-	Common::SeekableReadStream *id = ifoTop.getData("Mod_ID");
+	const size_t idSize = _isSave ? 32 : 16;
+	Common::ScopedPtr<Common::SeekableReadStream> id(ifoTop.getData("Mod_ID"));
+
 	if (id && (id->read(_id, idSize) != idSize))
 		throw Common::Exception("Can't read MOD ID");
-	delete id;
 
 	// TLK
 	_customTLK = ifoTop.getString("Mod_CustomTlk");

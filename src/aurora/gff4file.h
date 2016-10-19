@@ -31,6 +31,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/encoding.h"
 
@@ -131,7 +132,7 @@ private:
 
 
 
-	Common::SeekableReadStream *_stream;
+	Common::ScopedPtr<Common::SeekableReadStream> _stream;
 
 	/** This GFF4's header. */
 	Header          _header;

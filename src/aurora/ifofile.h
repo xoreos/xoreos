@@ -30,6 +30,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/locstring.h"
@@ -177,7 +178,7 @@ public:
 	// '---
 
 private:
-	GFF3File *_gff; ///< The module.ifo GFF.
+	Common::ScopedPtr<GFF3File> _gff; ///< The module.ifo GFF.
 
 	byte _id[32]; ///< The module's unique ID.
 

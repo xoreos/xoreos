@@ -70,9 +70,9 @@ GFF3File::GFF3File(Common::SeekableReadStream *gff3, uint32 id, bool repairNWNPr
 }
 
 GFF3File::GFF3File(const Common::UString &gff3, FileType type, uint32 id, bool repairNWNPremium) :
-	_stream(0), _repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
+	_repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
 
-	_stream = ResMan.getResource(gff3, type);
+	_stream.reset(ResMan.getResource(gff3, type));
 	if (!_stream)
 		throw Common::Exception("No such GFF3 \"%s\"", TypeMan.setFileType(gff3, type).c_str());
 
@@ -84,8 +84,7 @@ GFF3File::~GFF3File() {
 }
 
 void GFF3File::clear() {
-	delete _stream;
-	_stream = 0;
+	_stream.reset();
 
 	for (StructArray::iterator strct = _structs.begin(); strct != _structs.end(); ++strct)
 		delete *strct;

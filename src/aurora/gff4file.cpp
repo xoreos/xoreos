@@ -70,9 +70,9 @@ GFF4File::GFF4File(Common::SeekableReadStream *gff4, uint32 type) :
 }
 
 GFF4File::GFF4File(const Common::UString &gff4, FileType fileType, uint32 type) :
-	_stream(0), _topLevelStruct(0) {
+	_topLevelStruct(0) {
 
-	_stream = ResMan.getResource(gff4, fileType);
+	_stream.reset(ResMan.getResource(gff4, fileType));
 	if (!_stream)
 		throw Common::Exception("No such GFF4 \"%s\"", TypeMan.setFileType(gff4, fileType).c_str());
 
@@ -84,8 +84,7 @@ GFF4File::~GFF4File() {
 }
 
 void GFF4File::clear() {
-	delete _stream;
-	_stream = 0;
+	_stream.reset();
 
 	for (StructMap::iterator s = _structs.begin(); s != _structs.end(); ++s)
 		delete s->second;

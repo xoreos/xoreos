@@ -31,6 +31,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -114,7 +115,7 @@ private:
 	typedef std::vector<GFF3List> ListArray;
 
 
-	Common::SeekableReadStream *_stream;
+	Common::ScopedPtr<Common::SeekableReadStream> _stream;
 
 	Header _header; ///< The GFF3's header.
 
