@@ -27,6 +27,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/scopedptr.h"
 #include "src/common/memreadstream.h"
 #include "src/common/encoding.h"
 
@@ -152,24 +153,12 @@ void LocString::readString(uint32 languageID, Common::SeekableReadStream &stream
 
 	s.first->second = "[???]";
 
-	Common::MemoryReadStream *data = 0, *parsed = 0;
+	Common::ScopedPtr<Common::MemoryReadStream> data(stream.readStream(length));
+	Common::ScopedPtr<Common::MemoryReadStream> parsed(LangMan.preParseColorCodes(*data));
 
-	try {
-		data   = stream.readStream(length);
-		parsed = LangMan.preParseColorCodes(*data);
-
-		Common::Encoding encoding = LangMan.getEncodingLocString(LangMan.getLanguageGendered(languageID));
-		if (encoding != Common::kEncodingInvalid)
-			s.first->second = Common::readString(*parsed, encoding);
-
-	} catch (...) {
-		delete parsed;
-		delete data;
-		throw;
-	}
-
-	delete parsed;
-	delete data;
+	Common::Encoding encoding = LangMan.getEncodingLocString(LangMan.getLanguageGendered(languageID));
+	if (encoding != Common::kEncodingInvalid)
+		s.first->second = Common::readString(*parsed, encoding);
 }
 
 void LocString::readLocSubString(Common::SeekableReadStream &stream) {
