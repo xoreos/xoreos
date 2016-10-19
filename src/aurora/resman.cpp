@@ -24,7 +24,10 @@
 
 #include <cassert>
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/util.h"
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/filepath.h"
@@ -302,54 +305,48 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
 	if (changeID)
 		change = newChangeSet(*changeID);
 
-	Archive *archive = 0;
-	try {
-		Common::SeekableReadStream *archiveStream = openArchiveStream(*knownArchive);
+	Common::SeekableReadStream *archiveStream = openArchiveStream(*knownArchive);
 
-		switch (knownArchive->type) {
-			case kArchiveKEY:
-				indexKEY(archiveStream, priority, change);
-				break;
+	Common::ScopedPtr<Archive> archive;
+	switch (knownArchive->type) {
+		case kArchiveKEY:
+			indexKEY(archiveStream, priority, change);
+			break;
 
-			case kArchiveNDS:
-				archive = new NDSFile(archiveStream);
-				break;
+		case kArchiveNDS:
+			archive.reset(new NDSFile(archiveStream));
+			break;
 
-			case kArchiveHERF:
-				archive = new HERFFile(archiveStream);
-				break;
+		case kArchiveHERF:
+			archive.reset(new HERFFile(archiveStream));
+			break;
 
-			case kArchiveERF:
-				archive = new ERFFile(archiveStream, password);
-				break;
+		case kArchiveERF:
+			archive.reset(new ERFFile(archiveStream, password));
+			break;
 
-			case kArchiveRIM:
-				archive = new RIMFile(archiveStream);
-				break;
+		case kArchiveRIM:
+			archive.reset(new RIMFile(archiveStream));
+			break;
 
-			case kArchiveZIP:
-				archive = new ZIPFile(archiveStream);
-				break;
+		case kArchiveZIP:
+			archive.reset(new ZIPFile(archiveStream));
+			break;
 
-			case kArchiveEXE:
-				archive = new PEFile(archiveStream, _cursorRemap);
-				break;
+		case kArchiveEXE:
+			archive.reset(new PEFile(archiveStream, _cursorRemap));
+			break;
 
-			case kArchiveNSBTX:
-				archive = new NSBTXFile(archiveStream);
-				break;
+		case kArchiveNSBTX:
+			archive.reset(new NSBTXFile(archiveStream));
+			break;
 
-			default:
-				throw Common::Exception("Invalid archive type %d", knownArchive->type);
-		}
-
-		if (archive)
-			indexArchive(*knownArchive, archive, priority, change);
-
-	} catch (...) {
-		delete archive;
-		throw;
+		default:
+			throw Common::Exception("Invalid archive type %d", knownArchive->type);
 	}
+
+	if (archive)
+		indexArchive(*knownArchive, archive.release(), priority, change);
 }
 
 void ResourceManager::indexArchive(const Common::UString &file, uint32 priority, Common::ChangeID *changeID) {
@@ -361,35 +358,35 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
 uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
                                     std::vector<KnownArchive *> &archives,
                                     std::vector<BIFFile *> &bifs) {
-	try {
 
-		KEYFile key(*keyStream);
+	bool success = false;
+	BOOST_SCOPE_EXIT( (&success) (&archives) (&bifs) ) {
+		if (!success) {
+			for (std::vector<BIFFile *>::iterator b = bifs.begin(); b != bifs.end(); ++b)
+				delete *b;
 
-		const KEYFile::BIFList &keyBIFs = key.getBIFs();
-		archives.resize(keyBIFs.size(), 0);
-		bifs.resize(keyBIFs.size(), 0);
-
-		for (uint32 i = 0; i < keyBIFs.size(); i++) {
-			archives[i] = findArchive(keyBIFs[i], _knownArchives[kArchiveBIF]);
-			if (!archives[i])
-				throw Common::Exception("BIF \"%s\" not found", keyBIFs[i].c_str());
-
-			bifs[i] = new BIFFile(openArchiveStream(*archives[i]));
-			bifs[i]->mergeKEY(key, i);
+			bifs.clear();
+			archives.clear();
 		}
+	} BOOST_SCOPE_EXIT_END
 
-	} catch (...) {
-		delete keyStream;
+	Common::ScopedPtr<Common::SeekableReadStream> stream(keyStream);
+	KEYFile key(*keyStream);
 
-		for (std::vector<BIFFile *>::iterator b = bifs.begin(); b != bifs.end(); ++b)
-			delete *b;
+	const KEYFile::BIFList &keyBIFs = key.getBIFs();
+	archives.resize(keyBIFs.size(), 0);
+	bifs.resize(keyBIFs.size(), 0);
 
-		bifs.clear();
-		archives.clear();
-		throw;
+	for (uint32 i = 0; i < keyBIFs.size(); i++) {
+		archives[i] = findArchive(keyBIFs[i], _knownArchives[kArchiveBIF]);
+		if (!archives[i])
+			throw Common::Exception("BIF \"%s\" not found", keyBIFs[i].c_str());
+
+		bifs[i] = new BIFFile(openArchiveStream(*archives[i]));
+		bifs[i]->mergeKEY(key, i);
 	}
 
-	delete keyStream;
+	success = true;
 	return archives.size();
 }
 
@@ -411,14 +408,18 @@ void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
 		throw Common::Exception("ResourceManager::indexArchive(): Archive uses a different name hashing "
 		                        "algorithm than we do (%d vs. %d)", (int) hashAlgo, (int) _hashAlgo);
 
+	bool couldSet = false;
 	_openedArchives.push_back(OpenedArchive());
 
-	try {
-		_openedArchives.back().set(knownArchive, *archive);
-	} catch (...) {
-		_openedArchives.pop_back();
-		throw;
-	}
+	BOOST_SCOPE_EXIT( (&couldSet) (&_openedArchives) (&archive) ) {
+		if (!couldSet) {
+			_openedArchives.pop_back();
+			delete archive;
+		}
+	} BOOST_SCOPE_EXIT_END
+
+	_openedArchives.back().set(knownArchive, *archive);
+	couldSet = true;
 
 	// Add the information of the new archive to the change set
 	if (change)
