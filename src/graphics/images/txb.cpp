@@ -22,6 +22,7 @@
  *  TXB (another one of BioWare's own texture formats) loading.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
@@ -145,32 +146,27 @@ void TXB::readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle, uint3
 
 	_mipMaps.reserve(mipMapCount);
 	for (uint32 i = 0; i < mipMapCount; i++) {
-		MipMap *mipMap = new MipMap(this);
+		Common::ScopedPtr<MipMap> mipMap(new MipMap(this));
 
 		mipMap->width  = MAX<uint32>(width,  1);
 		mipMap->height = MAX<uint32>(height, 1);
 
-		if (((mipMap->width < 4) || (mipMap->height < 4)) && (mipMap->width != mipMap->height)) {
-			// Invalid mipmap dimensions
-			delete mipMap;
+		// Invalid mipmap dimensions
+		if (((mipMap->width < 4) || (mipMap->height < 4)) && (mipMap->width != mipMap->height))
 			break;
-		}
 
 		mipMap->size = MAX<uint32>(mipMapSize, minDataSize);
-
 		mipMap->data = 0;
 
 		const size_t mipMapDataSize = getDataSize(_formatRaw, mipMap->width, mipMap->height);
 
-		if ((dataSize < mipMap->size) || (mipMap->size < mipMapDataSize)) {
-			// Wouldn't fit
-			delete mipMap;
+		// Wouldn't fit
+		if ((dataSize < mipMap->size) || (mipMap->size < mipMapDataSize))
 			break;
-		}
 
 		dataSize -= mipMap->size;
 
-		_mipMaps.push_back(mipMap);
+		_mipMaps.push_back(mipMap.release());
 
 		width      >>= 1;
 		height     >>= 1;
@@ -225,14 +221,12 @@ void TXB::readTXI(Common::SeekableReadStream &txb) {
 	if (txiDataSize == 0)
 		return;
 
-	Common::SeekableReadStream *txiData = txb.readStream(txiDataSize);
+	Common::ScopedPtr<Common::SeekableReadStream> txiData(txb.readStream(txiDataSize));
 
 	try {
 		_txi.load(*txiData);
 	} catch (...) {
 	}
-
-	delete txiData;
 }
 
 } // End of namespace Graphics
