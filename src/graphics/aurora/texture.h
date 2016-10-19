@@ -25,6 +25,7 @@
 #ifndef GRAPHICS_AURORA_TEXTURE_H
 #define GRAPHICS_AURORA_TEXTURE_H
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/types.h"
@@ -83,8 +84,8 @@ protected:
 	Common::UString    _name; ///< The name of the texture's image's file.
 	::Aurora::FileType _type; ///< The type of the texture's image's file.
 
-	ImageDecoder *_image; ///< The actual image.
-	TXI *_txi;            ///< The TXI.
+	Common::ScopedPtr<ImageDecoder> _image; ///< The actual image.
+	Common::ScopedPtr<TXI> _txi;            ///< The TXI.
 
 	uint32 _width;
 	uint32 _height;

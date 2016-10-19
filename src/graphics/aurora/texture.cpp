@@ -55,11 +55,11 @@ namespace Graphics {
 
 namespace Aurora {
 
-Texture::Texture() : _type(::Aurora::kFileTypeNone), _image(0), _txi(0), _width(0), _height(0) {
+Texture::Texture() : _type(::Aurora::kFileTypeNone), _width(0), _height(0) {
 }
 
 Texture::Texture(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi) :
-	_name(name), _type(type), _image(0), _txi(0), _width(0), _height(0) {
+	_name(name), _type(type), _width(0), _height(0) {
 
 	set(name, image, type, txi);
 	addToQueues();
@@ -70,9 +70,6 @@ Texture::~Texture() {
 
 	if (_textureID != 0)
 		GfxMan.abandon(&_textureID, 1);
-
-	delete _txi;
-	delete _image;
 }
 
 uint32 Texture::getWidth() const {
@@ -364,13 +361,11 @@ Texture *Texture::create(ImageDecoder *image, ::Aurora::FileType type, TXI *txi)
 }
 
 void Texture::set(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi) {
-	delete _image;
-	delete _txi;
-
 	_name   = name;
-	_image  = image;
 	_type   = type;
-	_txi    = txi;
+
+	_image.reset(image);
+	_txi.reset(txi);
 
 	_width  = _image->getMipMap(0).width;
 	_height = _image->getMipMap(0).height;
