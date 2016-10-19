@@ -143,7 +143,7 @@ public:
 	/** Get the creature's law-chaos alignment. */
 	uint8 getLawChaos() const;
 	/** Set the creature's law-chaos alignment. */
-	void setLawChaos(uint8 loyalty);
+	void setLawChaos(uint8 lawfulness);
 
 	/** Set the creature's sound set. */
 	void setSoundSet(uint32 soundSet);

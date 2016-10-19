@@ -39,9 +39,9 @@ namespace NWN {
 CharAlignment::CharAlignment(CharGenChoices &choices, ::Engines::Console *console) :
 	CharGenBase(console) {
 
-	_choices  = &choices;
-	_loyalty  = 101;
-	_goodness = 101;
+	_choices    = &choices;
+	_lawfulness = 101;
+	_goodness   = 101;
 
 	load("cg_alignment");
 
@@ -72,9 +72,9 @@ void CharAlignment::reset() {
 	getEditBox("HelpEdit", true)->setText("fnt_galahad14", TalkMan.getString(458));
 
 	_buttons->setAllInactive();
-	_goodness = 101;
-	_loyalty = 101;
-	_choices->setAlign(_goodness, _loyalty);
+	_lawfulness = 101;
+	_goodness   = 101;
+	_choices->setAlign(_goodness, _lawfulness);
 }
 
 void CharAlignment::show() {
@@ -92,19 +92,19 @@ void CharAlignment::hide() {
 
 	if (_returnCode == 1) {
 		// If alignment has been previously select, set it back.
-		if (_choices->getAlign(_goodness, _loyalty)) {
+		if (_choices->getAlign(_goodness, _lawfulness)) {
 			uint8 point[3] = { 0, 100, 50 };
 
-			uint loyalButton = 0;
+			uint lawfulnessButton = 0;
 			uint goodnessButton = 0;
 			for (uint a = 0; a < 3; ++a) {
-				if (point[a] == _loyalty)
-					loyalButton = 3 * a;
+				if (point[a] == _lawfulness)
+					lawfulnessButton = 3 * a;
 
 				if (point[a] == _goodness)
 					goodnessButton = a;
 			}
-			_buttons->setActive(loyalButton + goodnessButton);
+			_buttons->setActive(lawfulnessButton + goodnessButton);
 		} else {
 			reset();
 		}
@@ -113,7 +113,7 @@ void CharAlignment::hide() {
 
 void CharAlignment::callbackActive(Widget &widget) {
 	if (widget.getTag() == "OkButton") {
-		_choices->setAlign(_goodness, _loyalty);
+		_choices->setAlign(_goodness, _lawfulness);
 		_returnCode = 2;
 		return;
 	}
@@ -153,12 +153,12 @@ void CharAlignment::setRestrict() {
 	uint axisRestrict[5] = { 0x01, 0x02, 0x04, 0x08, 0x10 };
 	uint good[] = { 1, 4, 7 };
 	uint evil[] = { 0, 3, 6 };
-	uint loyal[] = { 3, 4, 5 };
+	uint lawful[] = { 3, 4, 5 };
 	uint chaos[] = { 0, 1, 2 };
 
 	std::vector<uint> goodAxis(good, good + sizeof(good) / sizeof(uint));
 	std::vector<uint> evilAxis(evil, evil + sizeof(evil) / sizeof(uint));
-	std::vector<uint> loyalAxis(loyal, loyal + sizeof(loyal) / sizeof(uint));
+	std::vector<uint> lawfulAxis(lawful, lawful + sizeof(lawful) / sizeof(uint));
 	std::vector<uint> chaosAxis(chaos, chaos + sizeof(chaos) / sizeof(uint));
 	std::vector<uint> neutralAxis;
 
@@ -181,7 +181,7 @@ void CharAlignment::setRestrict() {
 
 	std::vector<std::vector<uint> > axis;
 	axis.push_back(neutralAxis);
-	axis.push_back(loyalAxis);
+	axis.push_back(lawfulAxis);
 	axis.push_back(chaosAxis);
 	axis.push_back(goodAxis);
 	axis.push_back(evilAxis);
@@ -204,8 +204,8 @@ void CharAlignment::getAlignment() {
 
 	uint8  point[3] = { 0, 100, 50 };
 	size_t rest     = button % 3;
-	_goodness = point[rest];
-	_loyalty  = point[(button - rest) / 3];
+	_goodness   = point[rest];
+	_lawfulness = point[(button - rest) / 3];
 }
 
 } // End of namespace NWN

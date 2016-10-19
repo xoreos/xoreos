@@ -80,7 +80,7 @@ public:
 	void setRace(uint32 race);
 	void setPortrait(const Common::UString &portrait);
 	void setClass(uint32 classId);
-	void setAlign(uint8 goodness, uint8 loyalty);
+	void setAlign(uint8 goodness, uint8 lawfulness);
 	void setAbilities(std::vector<uint8> abilities, std::vector<uint8> racialAbilities);
 	void setPackage(uint8 package);
 	void setSkill(size_t skillIndex, uint8 rank);
@@ -96,7 +96,7 @@ public:
 	bool hasPrereqFeat(uint32 featId, bool isClassFeat);
 	uint32 getClass() const;
 	uint32 getRace() const;
-	bool getAlign(uint8 &goodness, uint8 &loyalty) const;
+	bool getAlign(uint8 &goodness, uint8 &lawfulness) const;
 	uint8 getAbility(Ability ability) const;
 	uint8 getTotalAbility(Ability ability) const;
 	int8 getAbilityModifier(Ability ability);
@@ -127,7 +127,7 @@ private:
 	uint32 _classId;
 	uint32 _soundSet;
 	uint8 _goodness;
-	uint8 _loyalty;
+	uint8 _lawfulness;
 	uint8 _package;
 	uint8 _notUsedSkills;
 	uint8 _spellSchool;

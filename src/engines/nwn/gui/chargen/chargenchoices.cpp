@@ -58,7 +58,7 @@ void CharGenChoices::init() {
 	_classId = 0;
 
 	_goodness = 101;
-	_loyalty = 101;
+	_lawfulness = 101;
 
 	_soundSet = 0;
 	_notUsedSkills = 0;
@@ -75,7 +75,7 @@ void CharGenChoices::applyChoices() {
 
 	// Set Alignment
 	_creature->setGoodEvil(_goodness);
-	_creature->setLawChaos(_loyalty);
+	_creature->setLawChaos(_lawfulness);
 
 	// Set Abilities
 	size_t ab = 0;
@@ -210,9 +210,9 @@ void CharGenChoices::setClass(uint32 classId) {
 	}
 }
 
-void CharGenChoices::setAlign(uint8 goodness, uint8 loyalty) {
-	_goodness = goodness;
-	_loyalty  = loyalty;
+void CharGenChoices::setAlign(uint8 goodness, uint8 lawfulness) {
+	_goodness   = goodness;
+	_lawfulness = lawfulness;
 }
 
 void CharGenChoices::setAbilities(std::vector<uint8> abilities,
@@ -442,13 +442,13 @@ uint32 CharGenChoices::getRace() const {
 	return _creature->getRace();
 }
 
-bool CharGenChoices::getAlign(uint8 &goodness, uint8 &loyalty) const {
+bool CharGenChoices::getAlign(uint8 &goodness, uint8 &lawfulness) const {
 	// Check if alignment has been previously set.
 	if (_goodness > 100)
 		return false;
 
-	goodness = _goodness;
-	loyalty  = _loyalty;
+	goodness   = _goodness;
+	lawfulness = _lawfulness;
 	return true;
 }
 

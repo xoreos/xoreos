@@ -1038,8 +1038,8 @@ uint8 Creature::getLawChaos() const {
 	return _lawChaos;
 }
 
-void Creature::setLawChaos(uint8 loyalty) {
-	_lawChaos = loyalty;
+void Creature::setLawChaos(uint8 lawfulness) {
+	_lawChaos = lawfulness;
 }
 
 void Creature::setSoundSet(uint32 soundSet) {

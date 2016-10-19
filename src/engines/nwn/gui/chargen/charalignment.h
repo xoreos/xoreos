@@ -53,7 +53,7 @@ private:
 	ButtonsGroup *_buttons;
 
 	uint8 _goodness;
-	uint8 _loyalty;
+	uint8 _lawfulness;
 };
 
 } // End of namespace NWN
