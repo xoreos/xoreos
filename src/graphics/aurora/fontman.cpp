@@ -22,6 +22,7 @@
  *  The Aurora font manager.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/systemfonts.h"
 
@@ -81,24 +82,14 @@ bool FontManager::hasFont(const Common::UString &name, int height) {
 FontHandle FontManager::add(Font *font, const Common::UString &name) {
 	Common::StackLock lock(_mutex);
 
-	ManagedFont *managedFont = 0;
-	FontMap::iterator fontIterator = _fonts.end();
+	Common::ScopedPtr<ManagedFont> managedFont(new ManagedFont(font));
 
-	try {
-		managedFont = new ManagedFont(font);
+	std::pair<FontMap::iterator, bool> result = _fonts.insert(std::make_pair(name, managedFont.get()));
+	if (!result.second)
+		throw Common::Exception("Font \"%s\" already exists", name.c_str());
 
-		std::pair<FontMap::iterator, bool> result;
-
-		result = _fonts.insert(std::make_pair(name, managedFont));
-		if (!result.second)
-			throw Common::Exception("Font \"%s\" already exists", name.c_str());
-
-		fontIterator = result.first;
-
-	} catch (...) {
-		delete managedFont;
-		throw;
-	}
+	managedFont.release();
+	FontMap::iterator fontIterator = result.first;
 
 	return FontHandle(fontIterator);
 }
