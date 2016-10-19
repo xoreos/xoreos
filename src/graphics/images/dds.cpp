@@ -22,6 +22,7 @@
  *  DDS (DirectDraw Surface) loading.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -190,22 +191,20 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds, DataType &dataType)
 
 	// Detect how many mip maps are in the DDS
 	do {
-		MipMap *mipMap = new MipMap(this);
+		Common::ScopedPtr<MipMap> mipMap(new MipMap(this));
 
 		mipMap->width  = MAX<uint32>(width,  1);
 		mipMap->height = MAX<uint32>(height, 1);
 
 		setSize(*mipMap);
 
-		if (fullDataSize < mipMap->size) {
-			// Wouldn't fit
-			delete mipMap;
+		// Wouldn't fit
+		if (fullDataSize < mipMap->size)
 			break;
-		}
 
 		fullDataSize -= mipMap->size;
 
-		_mipMaps.push_back(mipMap);
+		_mipMaps.push_back(mipMap.release());
 
 		width  >>= 1;
 		height >>= 1;
