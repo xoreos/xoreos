@@ -70,14 +70,6 @@ NCGR::NCGRFile::~NCGRFile() {
 }
 
 
-NCGR::ReadContext::ReadContext() : pal(0) {
-}
-
-NCGR::ReadContext::~ReadContext() {
-	delete[] pal;
-}
-
-
 NCGR::NCGR(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32 width, uint32 height,
            Common::SeekableReadStream &nclr) {
 
@@ -111,7 +103,8 @@ void NCGR::load(const std::vector<Common::SeekableReadStream *> &ncgrs, uint32 w
 
 	ctx.width  = width;
 	ctx.height = height;
-	ctx.pal    = NCLR::load(nclr);
+
+	ctx.pal.reset(NCLR::load(nclr));
 
 	ctx.ncgrs.resize(ncgrs.size());
 

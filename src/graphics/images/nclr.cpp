@@ -49,6 +49,7 @@
 
 #include <cstring>
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/readstream.h"
@@ -62,22 +63,19 @@ static const uint32 kPLTTID = MKTAG('P', 'L', 'T', 'T');
 namespace Graphics {
 
 const byte *NCLR::load(Common::SeekableReadStream &nclr) {
-	Common::SeekableSubReadStreamEndian *nclrEndian = 0;
+	Common::ScopedPtr<Common::SeekableSubReadStreamEndian> nclrEndian;
+	Common::ScopedArray<const byte> palette;
 
-	const byte *palette = 0;
 	try {
-		nclrEndian = open(nclr);
-		palette = loadNCLR(*nclrEndian);
+		nclrEndian.reset(open(nclr));
+		palette.reset(loadNCLR(*nclrEndian));
 
 	} catch (Common::Exception &e) {
-		delete nclrEndian;
-
 		e.add("Failed reading NCLR file");
 		throw;
 	}
 
-	delete nclrEndian;
-	return palette;
+	return palette.release();
 }
 
 const byte *NCLR::loadNCLR(Common::SeekableSubReadStreamEndian &nclr) {
@@ -140,29 +138,22 @@ const byte *NCLR::readPalette(Common::SeekableSubReadStreamEndian &nclr) {
 
 	nclr.seek(startOffset);
 
-	byte *palette = new byte[colorCount * 3];
+	Common::ScopedArray<byte> palette(new byte[colorCount * 3]);
 
-	try {
+	for (uint32 i = 0; i < colorCount; i += 3) {
+		const uint16 color = nclr.readUint16();
 
-		for (uint32 i = 0; i < colorCount; i += 3) {
-			const uint16 color = nclr.readUint16();
-
-			palette[i + 0] = ((color >> 10) & 0x1F) << 3;
-			palette[i + 1] = ((color >>  5) & 0x1F) << 3;
-			palette[i + 2] = ( color        & 0x1F) << 3;
-		}
-
-	} catch (...) {
-		delete[] palette;
-		throw;
+		palette[i + 0] = ((color >> 10) & 0x1F) << 3;
+		palette[i + 1] = ((color >>  5) & 0x1F) << 3;
+		palette[i + 2] = ( color        & 0x1F) << 3;
 	}
 
 	// Make the rest of the palette pink, for high debug visibility
 	static const byte kPink[3] = { 0xFF, 0x00, 0xFF };
 	for (uint32 i = colorCount; i < 768; i += sizeof(kPink))
-		std::memcpy(palette + i, kPink, sizeof(kPink));
+		std::memcpy(palette.get() + i, kPink, sizeof(kPink));
 
-	return palette;
+	return palette.release();
 }
 
 } // End of namespace Graphics

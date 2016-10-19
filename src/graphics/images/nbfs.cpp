@@ -24,6 +24,7 @@
 
 #include <cstring>
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -44,7 +45,6 @@ NBFS::~NBFS() {
 void NBFS::load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nbfp,
                 uint32 width, uint32 height) {
 
-	const byte *palette = 0;
 	try {
 		if (nbfs.size() != (width * height))
 			throw Common::Exception("Dimensions mismatch (%u * %u != %u)", width, height, (uint)nbfs.size());
@@ -55,40 +55,29 @@ void NBFS::load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nb
 		if (nbfp.size() > 512)
 			throw Common::Exception("Too much palette data (%u bytes)", (uint)nbfp.size());
 
-		palette = readPalette(nbfp);
-		readImage(nbfs, palette, width, height);
+		Common::ScopedArray<const byte> palette(readPalette(nbfp));
+		readImage(nbfs, palette.get(), width, height);
 
 	} catch (Common::Exception &e) {
-		delete[] palette;
-
 		e.add("Failed reading NBFS file");
 		throw;
 	}
-
-	delete[] palette;
 }
 
 const byte *NBFS::readPalette(Common::SeekableReadStream &nbfp) {
-	byte *palette = new byte[768];
-	std::memset(palette, 0, 768);
+	Common::ScopedArray<byte> palette(new byte[768]);
+	std::memset(palette.get(), 0, 768);
 
-	try {
+	const size_t count = MIN<size_t>(nbfp.size() / 2, 256) * 3;
+	for (size_t i = 0; i < count; i += 3) {
+		const uint16 color = nbfp.readUint16LE();
 
-		uint32 count = MIN<size_t>(nbfp.size() / 2, 256) * 3;
-		for (uint32 i = 0; i < count; i += 3) {
-			const uint16 color = nbfp.readUint16LE();
-
-			palette[i + 0] = ((color >> 10) & 0x1F) << 3;
-			palette[i + 1] = ((color >>  5) & 0x1F) << 3;
-			palette[i + 2] = ( color        & 0x1F) << 3;
-		}
-
-	} catch (...) {
-		delete[] palette;
-		throw;
+		palette[i + 0] = ((color >> 10) & 0x1F) << 3;
+		palette[i + 1] = ((color >>  5) & 0x1F) << 3;
+		palette[i + 2] = ( color        & 0x1F) << 3;
 	}
 
-	return palette;
+	return palette.release();
 }
 
 void NBFS::readImage(Common::SeekableReadStream &nbfs, const byte *palette,
