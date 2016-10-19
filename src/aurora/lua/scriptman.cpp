@@ -22,14 +22,13 @@
  *  Lua script manager.
  */
 
-#include <boost/scoped_ptr.hpp>
-
 #include "lua/lualib.h"
 
 #include "toluapp/tolua++.h"
 
 #include "src/common/error.h"
 #include "src/common/util.h"
+#include "src/common/scopedptr.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/util.h"
@@ -87,13 +86,13 @@ void ScriptManager::executeFile(const Common::UString &path) {
 		return;
 	}
 
-	boost::scoped_ptr<Common::SeekableReadStream> stream(ResMan.getResource(path, kFileTypeLUC));
+	Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource(path, kFileTypeLUC));
 	if (!stream) {
 		const Common::UString fileName = TypeMan.setFileType(path, kFileTypeLUC);
 		throw Common::Exception("No such LUC \"%s\"", fileName.c_str());
 	}
 
-	boost::scoped_ptr<Common::MemoryReadStream> memStream(stream->readStream(stream->size()));
+	Common::ScopedPtr<Common::MemoryReadStream> memStream(stream->readStream(stream->size()));
 	const char *data = reinterpret_cast<const char *>(memStream->getData());
 	const int dataSize = memStream->size();
 
