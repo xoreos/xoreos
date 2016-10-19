@@ -22,6 +22,8 @@
  *  A simple TTF renderer outputting BGRA.
  */
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 
@@ -44,52 +46,39 @@ inline int ftCeil26_6(FT_Pos x) {
 } // End of anonymous namespace
 
 TTFRenderer::TTFRenderer(Common::SeekableReadStream &ttfFile, int height) :
-	_library(0), _face(0), _fileBuffer(0),
-	_width(0), _height(0), _ascent(0), _descent(0) {
+	_library(0), _face(0), _width(0), _height(0), _ascent(0), _descent(0) {
 
 	// Initialize a library object of FreeType2
 	if (FT_Init_FreeType(&_library))
 		throw Common::Exception("TTFRenderer: Could not init freetype2");
 
+	bool success = false;
+	BOOST_SCOPE_EXIT( (&success) (&_library)) {
+		if (!success)
+			FT_Done_FreeType(_library);
+	} BOOST_SCOPE_EXIT_END
+
 	const size_t size = ttfFile.size();
-	_fileBuffer = new uint8[size];
-	if (!_fileBuffer) {
-		FT_Done_FreeType(_library);
+	_fileBuffer.reset(new uint8[size]);
 
-		throw Common::Exception("TTFRenderer: Out of memory");
-	}
+	if (ttfFile.read(_fileBuffer.get(), size) != size)
+		throw Common::Exception(Common::kReadError);
 
-	if (ttfFile.read(_fileBuffer, size) != size) {
-		FT_Done_FreeType(_library);
-		delete[] _fileBuffer;
-
-		throw Common::kReadError;
-	}
-
-	if (FT_New_Memory_Face(_library, _fileBuffer, size, 0, &_face)) {
-		FT_Done_FreeType(_library);
-		delete[] _fileBuffer;
-
+	if (FT_New_Memory_Face(_library, _fileBuffer.get(), size, 0, &_face))
 		throw Common::Exception("TTFRenderer: Could not load font file");
-	}
+
+	BOOST_SCOPE_EXIT( (&success) (&_face)) {
+		if (!success)
+			FT_Done_Face(_face);
+	} BOOST_SCOPE_EXIT_END
 
 	// We only support scalable fonts.
-	if (!FT_IS_SCALABLE(_face)) {
-		FT_Done_Face(_face);
-		FT_Done_FreeType(_library);
-		delete[] _fileBuffer;
-
+	if (!FT_IS_SCALABLE(_face))
 		throw Common::Exception("TTFRenderer: Font is not scalable");
-	}
 
 	// Set the font height
-	if (FT_Set_Char_Size(_face, 0, height * 64, 0, 0)) {
-		FT_Done_Face(_face);
-		FT_Done_FreeType(_library);
-		delete[] _fileBuffer;
-
+	if (FT_Set_Char_Size(_face, 0, height * 64, 0, 0))
 		throw Common::Exception("TTFRenderer: Setting height to %d failed", height);
-	}
 
 	FT_Fixed yScale = _face->size->metrics.y_scale;
 
@@ -98,11 +87,12 @@ TTFRenderer::TTFRenderer(Common::SeekableReadStream &ttfFile, int height) :
 
 	_width  = ftCeil26_6(FT_MulFix(_face->max_advance_width, _face->size->metrics.x_scale));
 	_height = _ascent - _descent + 1;
+
+	success = true;
 }
 
 TTFRenderer::~TTFRenderer() {
 	FT_Done_Face(_face);
-	delete[] _fileBuffer;
 	FT_Done_FreeType(_library);
 }
 

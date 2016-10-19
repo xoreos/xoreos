@@ -30,6 +30,7 @@
 #include FT_GLYPH_H
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 namespace Graphics {
@@ -60,7 +61,7 @@ private:
 	FT_Library _library;
 	FT_Face _face;
 
-	byte *_fileBuffer;
+	Common::ScopedArray<byte> _fileBuffer;
 
 	int _width, _height;
 	int _ascent, _descent;
