@@ -130,8 +130,6 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds, DataType &dataType
 
 		setSize(*mipMap);
 
-		mipMap->data = 0;
-
 		width  >>= 1;
 		height >>= 1;
 
@@ -220,11 +218,11 @@ void DDS::setSize(MipMap &mipMap) {
 
 void DDS::readData(Common::SeekableReadStream &dds, DataType dataType) {
 	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
-		(*mipMap)->data = new byte[(*mipMap)->size];
+		(*mipMap)->data.reset(new byte[(*mipMap)->size]);
 
 		if (dataType == kDataType4444) {
 
-			byte *data = (*mipMap)->data;
+			byte *data = (*mipMap)->data.get();
 			for (uint32 i = 0; i < (uint32)((*mipMap)->width * (*mipMap)->height); i++, data += 4) {
 				const uint16 pixel = dds.readUint16LE();
 
@@ -235,7 +233,7 @@ void DDS::readData(Common::SeekableReadStream &dds, DataType dataType) {
 			}
 
 		} else if (dataType == kDataTypeDirect)
-			if (dds.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
+			if (dds.read((*mipMap)->data.get(), (*mipMap)->size) != (*mipMap)->size)
 				throw Common::Exception(Common::kReadError);
 
 	}

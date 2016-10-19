@@ -44,7 +44,7 @@ Surface::Surface(int width, int height) {
 	_mipMaps[0]->height = height;
 	_mipMaps[0]->size   = _mipMaps[0]->width * _mipMaps[0]->height * 4;
 
-	_mipMaps[0]->data = new byte[_mipMaps[0]->size];
+	_mipMaps[0]->data.reset(new byte[_mipMaps[0]->size]);
 }
 
 Surface::~Surface() {
@@ -59,20 +59,20 @@ int Surface::getHeight() const {
 }
 
 byte *Surface::getData() {
-	return _mipMaps[0]->data;
+	return _mipMaps[0]->data.get();
 }
 
 const byte *Surface::getData() const {
-	return _mipMaps[0]->data;
+	return _mipMaps[0]->data.get();
 }
 
 void Surface::fill(byte r, byte g, byte b, byte a) {
 	if ((r == g) && (r == b) && (r == a)) {
-		std::memset(_mipMaps[0]->data, r, _mipMaps[0]->size);
+		std::memset(_mipMaps[0]->data.get(), r, _mipMaps[0]->size);
 		return;
 	}
 
-	byte  *data = _mipMaps[0]->data;
+	byte  *data = _mipMaps[0]->data.get();
 	uint32 size = _mipMaps[0]->size / 4;
 	while (size-- > 0) {
 		*data++ = b;

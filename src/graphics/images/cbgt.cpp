@@ -228,9 +228,8 @@ void CBGT::createImage(uint32 width, uint32 height) {
 	_mipMaps.back()->height = height;
 	_mipMaps.back()->size   = width * height * 4;
 
-	_mipMaps.back()->data = new byte[_mipMaps.back()->size];
-	byte *data = _mipMaps.back()->data;
-	std::memset(data, 0, _mipMaps.back()->size);
+	_mipMaps.back()->data.reset(new byte[_mipMaps.back()->size]);
+	std::memset(_mipMaps.back()->data.get(), 0, _mipMaps.back()->size);
 }
 
 void CBGT::drawImage(ReadContext &ctx) {
@@ -262,7 +261,7 @@ void CBGT::drawImage(ReadContext &ctx) {
 	const uint32 tilesX     = cellWidth  / tileWidth;
 	const uint32 tilesY     = cellHeight / tileHeight;
 
-	byte *data = _mipMaps.back()->data;
+	byte *data = _mipMaps.back()->data.get();
 	for (size_t i = 0; i < ctx.cells.size(); i++) {
 		Common::SeekableReadStream *cell = ctx.cells[i];
 		if (!cell)

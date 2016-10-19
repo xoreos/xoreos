@@ -209,7 +209,7 @@ void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kL
 			const uint8 row = palette->getMipMap(0).height - 1 - colors[i];
 
 			// Copy the whole row into the buffer
-			memcpy(rows, palette->getMipMap(0).data + (row * 4 * 256), 4 * 256);
+			memcpy(rows, palette->getMipMap(0).data.get() + (row * 4 * 256), 4 * 256);
 
 		} catch (...) {
 			// On error set to pink (while honoring intensity), for high debug visibility

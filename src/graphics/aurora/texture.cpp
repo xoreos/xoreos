@@ -223,10 +223,10 @@ void Texture::setMipMapData(GLenum target, size_t layer, size_t mipMap) {
 
 	if (_image->isCompressed()) {
 		glCompressedTexImage2D(target, mipMap, _image->getFormatRaw(),
-		                       m.width, m.height, 0, m.size, m.data);
+		                       m.width, m.height, 0, m.size, m.data.get());
 	} else {
 		glTexImage2D(target, mipMap, _image->getFormatRaw(),
-		             m.width, m.height, 0, _image->getFormat(), _image->getDataType(), m.data);
+		             m.width, m.height, 0, _image->getFormat(), _image->getDataType(), m.data.get());
 	}
 }
 

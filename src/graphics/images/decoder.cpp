@@ -38,27 +38,27 @@
 
 namespace Graphics {
 
-ImageDecoder::MipMap::MipMap(const ImageDecoder *i) : width(0), height(0), size(0), data(0), image(i) {
+ImageDecoder::MipMap::MipMap(const ImageDecoder *i) : width(0), height(0), size(0), image(i) {
 }
 
 ImageDecoder::MipMap::MipMap(const MipMap &mipMap, const ImageDecoder *i) :
-	width(mipMap.width), height(mipMap.height), size(mipMap.size), data(0), image(i) {
+	width(mipMap.width), height(mipMap.height), size(mipMap.size), image(i) {
 
-	data = new byte[size];
+	data.reset(new byte[size]);
 
-	std::memcpy(data, mipMap.data, size);
+	std::memcpy(data.get(), mipMap.data.get(), size);
 }
 
 ImageDecoder::MipMap::~MipMap() {
-	delete[] data;
 }
 
 void ImageDecoder::MipMap::swap(MipMap &right) {
 	SWAP(width , right.width );
 	SWAP(height, right.height);
 	SWAP(size  , right.size  );
-	SWAP(data  , right.data  );
 	SWAP(image , right.image );
+
+	data.swap(right.data);
 }
 
 void ImageDecoder::MipMap::getPixel(int x, int y, float &r, float &g, float &b, float &a) const {
@@ -234,16 +234,17 @@ void ImageDecoder::decompress(MipMap &out, const MipMap &in, PixelFormatRaw form
 	out.width  = in.width;
 	out.height = in.height;
 	out.size   = out.width * out.height * 4;
-	out.data   = new byte[out.size];
 
-	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(in.data, in.size));
+	out.data.reset(new byte[out.size]);
+
+	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(in.data.get(), in.size));
 
 	if      (format == kPixelFormatDXT1)
-		decompressDXT1(out.data, *stream, out.width, out.height, out.width * 4);
+		decompressDXT1(out.data.get(), *stream, out.width, out.height, out.width * 4);
 	else if (format == kPixelFormatDXT3)
-		decompressDXT3(out.data, *stream, out.width, out.height, out.width * 4);
+		decompressDXT3(out.data.get(), *stream, out.width, out.height, out.width * 4);
 	else if (format == kPixelFormatDXT5)
-		decompressDXT5(out.data, *stream, out.width, out.height, out.width * 4);
+		decompressDXT5(out.data.get(), *stream, out.width, out.height, out.width * 4);
 }
 
 void ImageDecoder::decompress() {

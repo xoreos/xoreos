@@ -190,8 +190,6 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, byte &encoding) {
 
 			mipMap->size = MAX<uint32>(layerSize, minDataSize);
 
-			mipMap->data = 0;
-
 			const size_t mipMapDataSize = getDataSize(_formatRaw, mipMap->width, mipMap->height);
 
 			// Wouldn't fit
@@ -273,7 +271,7 @@ void TPC::readData(Common::SeekableReadStream &tpc, byte encoding) {
 		const bool widthPOT = ((*mipMap)->width & ((*mipMap)->width - 1)) == 0;
 		const bool swizzled = (encoding == kEncodingSwizzledBGRA) && widthPOT;
 
-		(*mipMap)->data = new byte[(*mipMap)->size];
+		(*mipMap)->data.reset(new byte[(*mipMap)->size]);
 
 		if (swizzled) {
 			std::vector<byte> tmp((*mipMap)->size);
@@ -281,21 +279,21 @@ void TPC::readData(Common::SeekableReadStream &tpc, byte encoding) {
 			if (tpc.read(&tmp[0], (*mipMap)->size) != (*mipMap)->size)
 				throw Common::Exception(Common::kReadError);
 
-			deSwizzle((*mipMap)->data, &tmp[0], (*mipMap)->width, (*mipMap)->height);
+			deSwizzle((*mipMap)->data.get(), &tmp[0], (*mipMap)->width, (*mipMap)->height);
 
 		} else {
-			if (tpc.read((*mipMap)->data, (*mipMap)->size) != (*mipMap)->size)
+			if (tpc.read((*mipMap)->data.get(), (*mipMap)->size) != (*mipMap)->size)
 				throw Common::Exception(Common::kReadError);
 
 			// Unpacking 8bpp grayscale data into RGB
 			if (encoding == kEncodingGray) {
-				Common::ScopedArray<byte> dataGray((*mipMap)->data);
+				Common::ScopedArray<byte> dataGray((*mipMap)->data.release());
 
 				(*mipMap)->size = (*mipMap)->width * (*mipMap)->height * 3;
-				(*mipMap)->data = new byte[(*mipMap)->size];
+				(*mipMap)->data.reset(new byte[(*mipMap)->size]);
 
 				for (int i = 0; i < ((*mipMap)->width * (*mipMap)->height); i++)
-					std::memset((*mipMap)->data + i * 3, dataGray[i], 3);
+					std::memset((*mipMap)->data.get() + i * 3, dataGray[i], 3);
 			}
 		}
 
@@ -356,7 +354,7 @@ void TPC::fixupCubeMap() {
 		MipMap &mipMap0 = *_mipMaps[index0];
 		MipMap &mipMap1 = *_mipMaps[index1];
 
-		SWAP(mipMap0.data, mipMap1.data);
+		mipMap0.data.swap(mipMap1.data);
 	}
 
 	const int bpp = (_formatRaw == kPixelFormatRGB8) ? 3 : ((_formatRaw == kPixelFormatRGBA8) ? 4 : 0);
@@ -373,7 +371,7 @@ void TPC::fixupCubeMap() {
 
 			static const int rotation[6] = { 1, 3, 0, 2, 2, 0 };
 
-			rotate90(mipMap.data, mipMap.width, mipMap.height, bpp, rotation[i]);
+			rotate90(mipMap.data.get(), mipMap.width, mipMap.height, bpp, rotation[i]);
 		}
 	}
 

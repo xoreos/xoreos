@@ -85,7 +85,7 @@ static Common::WriteStream *openTGA(const Common::UString &fileName, int width, 
 }
 
 static void writeMipMap(Common::WriteStream &stream, const ImageDecoder::MipMap &mipMap, PixelFormat format) {
-	const byte *data = mipMap.data;
+	const byte *data = mipMap.data.get();
 
 	uint32 count = mipMap.width * mipMap.height;
 	while (count-- > 0)

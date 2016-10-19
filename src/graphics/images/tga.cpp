@@ -187,7 +187,7 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 			else if (_format == kPixelFormatBGRA)
 				_mipMaps[i]->size *= 4;
 
-			_mipMaps[i]->data = new byte[_mipMaps[i]->size];
+			_mipMaps[i]->data.reset(new byte[_mipMaps[i]->size]);
 
 			if (imageType == kImageTypeTrueColor) {
 				if (pixelDepth == 16) {
@@ -196,7 +196,7 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 					// Hopefully Sonic is the only game that needs 16bpp TGAs.
 
 					uint16 count = _mipMaps[i]->width * _mipMaps[i]->height;
-					byte *dst = _mipMaps[i]->data;
+					byte *dst = _mipMaps[i]->data.get();
 
 					while (count--) {
 						uint16 pixel = tga.readUint16LE();
@@ -208,16 +208,16 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 					}
 				} else {
 					// Read it in raw
-					tga.read(_mipMaps[i]->data, _mipMaps[i]->size);
+					tga.read(_mipMaps[i]->data.get(), _mipMaps[i]->size);
 				}
 			} else {
 				readRLE(tga, pixelDepth, i);
 			}
 		} else if (imageType == kImageTypeBW) {
 			_mipMaps[i]->size = _mipMaps[i]->width * _mipMaps[i]->height * 4;
-			_mipMaps[i]->data = new byte[_mipMaps[i]->size];
+			_mipMaps[i]->data.reset(new byte[_mipMaps[i]->size]);
 
-			byte  *data  = _mipMaps[i]->data;
+			byte  *data  = _mipMaps[i]->data.get();
 			uint32 count = _mipMaps[i]->width * _mipMaps[i]->height;
 
 			while (count-- > 0) {
@@ -233,7 +233,7 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 
 		// Bit 5 of imageDesc set means the origin in upper-left corner
 		if (imageDesc & 0x20)
-			flipVertically(_mipMaps[i]->data, _mipMaps[i]->width, _mipMaps[i]->height, pixelDepth / 8);
+			flipVertically(_mipMaps[i]->data.get(), _mipMaps[i]->width, _mipMaps[i]->height, pixelDepth / 8);
 	}
 }
 
@@ -241,7 +241,7 @@ void TGA::readRLE(Common::SeekableReadStream &tga, byte pixelDepth, size_t layer
 	if (pixelDepth != 24 && pixelDepth != 32)
 		throw Common::Exception("Unhandled RLE depth %d", pixelDepth);
 
-	byte  *data  = _mipMaps[layer]->data;
+	byte  *data  = _mipMaps[layer]->data.get();
 	uint32 count = _mipMaps[layer]->width * _mipMaps[layer]->height;
 
 	while (count > 0) {

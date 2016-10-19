@@ -93,11 +93,11 @@ void NBFS::readImage(Common::SeekableReadStream &nbfs, const byte *palette,
 	_mipMaps.back()->height = height;
 	_mipMaps.back()->size   = width * height * 4;
 
-	_mipMaps.back()->data = new byte[_mipMaps.back()->size];
+	_mipMaps.back()->data.reset(new byte[_mipMaps.back()->size]);
 
 	bool is0Transp = (palette[0] == 0xF8) && (palette[1] == 0x00) && (palette[2] == 0xF8);
 
-	byte *data = _mipMaps.back()->data;
+	byte *data = _mipMaps.back()->data.get();
 	for (uint32 i = 0; i < (width * height); i++, data += 4) {
 		uint8 pixel = nbfs.readByte();
 

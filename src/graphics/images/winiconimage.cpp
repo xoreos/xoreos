@@ -150,10 +150,11 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 	_mipMaps[0]->width  = width;
 	_mipMaps[0]->height = height;
 	_mipMaps[0]->size   = width * height * 4;
-	_mipMaps[0]->data   = new byte[_mipMaps[0]->size];
+
+	_mipMaps[0]->data.reset(new byte[_mipMaps[0]->size]);
 
 	const byte *xorSrc = xorMap.get();
-	      byte *dst    = _mipMaps[0]->data;
+	      byte *dst    = _mipMaps[0]->data.get();
 
 	for (uint32 y = 0; y < height; y++) {
 		const byte *andSrc = andMap.get() + andWidth * y;
