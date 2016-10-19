@@ -22,6 +22,8 @@
  *  A class creating a cube map by combining six images.
  */
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 
@@ -30,64 +32,58 @@
 namespace Graphics {
 
 CubeMapCombiner::CubeMapCombiner(ImageDecoder *(&sides)[6]) {
+	BOOST_SCOPE_EXIT( (&sides) ) {
+		for (size_t i = 0; i < ARRAYSIZE(sides); i++)
+			delete sides[i];
+	} BOOST_SCOPE_EXIT_END
+
 	_layerCount = ARRAYSIZE(sides);
 	_isCubeMap  = true;
 
-	try {
-		const size_t mipMapCount = sides[0] ? sides[0]->getMipMapCount() : 0;
-		if (mipMapCount < 1)
-			throw Common::Exception("CubeMapCombiner: No mip maps");
+	const size_t mipMapCount = sides[0] ? sides[0]->getMipMapCount() : 0;
+	if (mipMapCount < 1)
+		throw Common::Exception("CubeMapCombiner: No mip maps");
 
-		_compressed = sides[0]->isCompressed();
-		_hasAlpha   = sides[0]->hasAlpha();
+	_compressed = sides[0]->isCompressed();
+	_hasAlpha   = sides[0]->hasAlpha();
 
-		_format    = sides[0]->getFormat();
-		_formatRaw = sides[0]->getFormatRaw();
-		_dataType  = sides[0]->getDataType();
+	_format    = sides[0]->getFormat();
+	_formatRaw = sides[0]->getFormatRaw();
+	_dataType  = sides[0]->getDataType();
 
-		for (size_t i = 0; i < ARRAYSIZE(sides); i++) {
-			if (!sides[i])
-				throw Common::Exception("CubeMapCombiner: Side %u is empty", (uint) i);
+	const int32 width  = sides[0]->getMipMap(0).width;
+	const int32 height = sides[0]->getMipMap(0).height;
 
-			if (sides[i]->getLayerCount() != 1)
-				throw Common::Exception("CubeMapCombiner: Side %u is has multiple layers", (uint) i);
+	for (size_t i = 0; i < ARRAYSIZE(sides); i++) {
+		if (!sides[i])
+			throw Common::Exception("CubeMapCombiner: Side %u is empty", (uint) i);
 
-			if (sides[i]->getMipMapCount() != mipMapCount)
-				throw Common::Exception("CubeMapCombiner: Mip map count mismatch (%u != %u)",
-				                        (uint) sides[i]->getMipMapCount(), (uint) mipMapCount);
+		if (sides[i]->getLayerCount() != 1)
+			throw Common::Exception("CubeMapCombiner: Side %u is has multiple layers", (uint) i);
 
-			if ((_compressed != sides[i]->isCompressed()) ||
-			    (_hasAlpha   != sides[i]->hasAlpha    ()) ||
-			    (_format     != sides[i]->getFormat   ()) ||
-			    (_formatRaw  != sides[i]->getFormatRaw()) ||
-			    (_dataType   != sides[i]->getDataType ()))
-				throw Common::Exception("CubeMapCombiner: Format mismatch (%u, %u, %u, %u, %u != %u, %u, %u, %u, %u)",
-				                        (uint) _compressed, (uint) _hasAlpha, (uint) _format,
-				                        (uint) _formatRaw, (uint) _dataType,
-				                        (uint) sides[i]->isCompressed(), (uint) sides[i]->hasAlpha(),
-				                        (uint) sides[i]->getFormat(), (uint) sides[i]->getFormatRaw(),
-				                        (uint) sides[i]->getDataType());
-		}
+		if (sides[i]->getMipMapCount() != mipMapCount)
+			throw Common::Exception("CubeMapCombiner: Mip map count mismatch (%u != %u)",
+			                        (uint) sides[i]->getMipMapCount(), (uint) mipMapCount);
 
-		const int32 width  = sides[0]->getMipMap(0).width;
-		const int32 height = sides[0]->getMipMap(0).height;
+		if ((width != sides[i]->getMipMap(0).width) || (height != sides[i]->getMipMap(0).height))
+			throw Common::Exception("CubeMapCombiner: Dimensions mismatch (%ux%u != %ux%u)",
+			                        width, height, sides[i]->getMipMap(0).width, sides[i]->getMipMap(0).height);
 
-		for (size_t i = 0; i < ARRAYSIZE(sides); i++) {
-			if ((width != sides[i]->getMipMap(0).width) || (height != sides[i]->getMipMap(0).height))
-				throw Common::Exception("CubeMapCombiner: Dimensions mismatch (%ux%u != %ux%u)",
-				                        width, height, sides[i]->getMipMap(0).width, sides[i]->getMipMap(0).height);
-		}
-
-	} catch (...) {
-		for (size_t i = 0; i < ARRAYSIZE(sides); i++)
-			delete sides[i];
-
-		throw;
+		if ((_compressed != sides[i]->isCompressed()) ||
+		    (_hasAlpha   != sides[i]->hasAlpha    ()) ||
+		    (_format     != sides[i]->getFormat   ()) ||
+		    (_formatRaw  != sides[i]->getFormatRaw()) ||
+		    (_dataType   != sides[i]->getDataType ()))
+			throw Common::Exception("CubeMapCombiner: Format mismatch (%u, %u, %u, %u, %u != %u, %u, %u, %u, %u)",
+			                        (uint) _compressed, (uint) _hasAlpha, (uint) _format,
+			                        (uint) _formatRaw, (uint) _dataType,
+			                        (uint) sides[i]->isCompressed(), (uint) sides[i]->hasAlpha(),
+			                        (uint) sides[i]->getFormat(), (uint) sides[i]->getFormatRaw(),
+			                        (uint) sides[i]->getDataType());
 	}
 
 	_txi = sides[0]->getTXI();
 
-	const size_t mipMapCount = sides[0]->getMipMapCount();
 	_mipMaps.resize(_layerCount * mipMapCount);
 
 	for (size_t layer = 0; layer < _layerCount; layer++) {
@@ -97,9 +93,6 @@ CubeMapCombiner::CubeMapCombiner(ImageDecoder *(&sides)[6]) {
 			_mipMaps[index] = new MipMap(sides[layer]->getMipMap(mipMap), this);
 		}
 	}
-
-	for (size_t i = 0; i < ARRAYSIZE(sides); i++)
-		delete sides[i];
 }
 
 CubeMapCombiner::~CubeMapCombiner() {
