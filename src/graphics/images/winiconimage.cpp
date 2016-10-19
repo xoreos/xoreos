@@ -22,6 +22,7 @@
  *  Decoding Windows icon and cursor files (.ICO and .CUR).
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 #include "src/common/error.h"
@@ -131,13 +132,15 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 		cur.read(palette, 256 * 4);
 
 	// The XOR map
-	byte *xorMap = new byte[pitch * height];
-	cur.read(xorMap, pitch * height);
+	Common::ScopedArray<byte> xorMap(new byte[pitch * height]);
+	if (cur.read(xorMap.get(), pitch * height) != (pitch * height))
+		throw Common::Exception(Common::kReadError);
 
 	// The AND map
 	const uint32 andWidth = (width + 7) / 8;
-	byte *andMap = new byte[andWidth * height];
-	cur.read(andMap, andWidth * height);
+	Common::ScopedArray<byte> andMap(new byte[andWidth * height]);
+	if (cur.read(andMap.get(), andWidth * height) != (andWidth * height))
+		throw Common::Exception(Common::kReadError);
 
 	_format    = kPixelFormatBGRA;
 	_formatRaw = kPixelFormatRGBA8;
@@ -149,11 +152,11 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 	_mipMaps[0]->size   = width * height * 4;
 	_mipMaps[0]->data   = new byte[_mipMaps[0]->size];
 
-	const byte *xorSrc = xorMap;
+	const byte *xorSrc = xorMap.get();
 	      byte *dst    = _mipMaps[0]->data;
 
 	for (uint32 y = 0; y < height; y++) {
-		const byte *andSrc = andMap + andWidth * y;
+		const byte *andSrc = andMap.get() + andWidth * y;
 
 		for (uint32 x = 0; x < width; x++) {
 			if (bitsPerPixel == 8) {
@@ -171,9 +174,6 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 			*dst++ = (andSrc[x / 8] & (1 << (7 - x % 8))) ? 0 : 0xff;
 		}
 	}
-
-	delete[] xorMap;
-	delete[] andMap;
 }
 
 int WinIconImage::getHotspotX() const {
