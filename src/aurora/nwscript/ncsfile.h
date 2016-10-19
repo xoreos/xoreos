@@ -29,6 +29,7 @@
 #include <stack>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/aurorafile.h"
@@ -160,7 +161,7 @@ private:
 	Common::UString _name;
 
 	NCSStack _stack;
-	Common::SeekableReadStream *_script;
+	Common::ScopedPtr<Common::SeekableReadStream> _script;
 
 	Variable _return;
 

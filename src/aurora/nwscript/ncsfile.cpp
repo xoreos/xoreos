@@ -274,20 +274,14 @@ void NCSFile::setupOpcodes() {
 
 #undef OPCODE
 
-NCSFile::NCSFile(Common::SeekableReadStream *ncs) : _owner(0), _triggerer(0) {
-	_script = ncs;
+NCSFile::NCSFile(Common::SeekableReadStream *ncs) : _script(ncs), _owner(0), _triggerer(0) {
+	assert(_script);
 
-	try {
-		load();
-	} catch (...) {
-		delete _script;
-	}
+	load();
 }
 
-NCSFile::NCSFile(const Common::UString &ncs) : _name(ncs), _script(0),
-	_owner(0), _triggerer(0) {
-
-	_script = ResMan.getResource(ncs, kFileTypeNCS);
+NCSFile::NCSFile(const Common::UString &ncs) : _name(ncs), _owner(0), _triggerer(0) {
+	_script.reset(ResMan.getResource(ncs, kFileTypeNCS));
 	if (!_script)
 		throw Common::Exception("No such NCS \"%s\"", ncs.c_str());
 
@@ -295,7 +289,6 @@ NCSFile::NCSFile(const Common::UString &ncs) : _name(ncs), _script(0),
 }
 
 NCSFile::~NCSFile() {
-	delete _script;
 }
 
 const Common::UString &NCSFile::getName() const {
@@ -415,11 +408,7 @@ bool NCSFile::executeStep() {
 
 	debugC(kDebugScripts, 1, "NWScript opcode %s [0x%02X]", _opcodes[opcode].desc, opcode);
 
-	try {
-		(this->*(_opcodes[opcode].proc))((InstructionType)type);
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	(this->*(_opcodes[opcode].proc))((InstructionType)type);
 
 	_stack.print();
 	debugC(kDebugScripts, 2, "[RETURN: %d]",
@@ -648,13 +637,9 @@ void NCSFile::o_logand(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_logand(): Illegal type %d", type);
 
-	try {
-		int32 arg1 = _stack.pop().getInt();
-		int32 arg2 = _stack.pop().getInt();
-		_stack.push(arg1 && arg2);
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	int32 arg1 = _stack.pop().getInt();
+	int32 arg2 = _stack.pop().getInt();
+	_stack.push(arg1 && arg2);
 }
 
 /** LOGOR: perform a logical boolean OR (||). */
@@ -662,13 +647,9 @@ void NCSFile::o_logor(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_logor(): Illegal type %d", type);
 
-	try {
-		int32 arg1 = _stack.pop().getInt();
-		int32 arg2 = _stack.pop().getInt();
-		_stack.push(arg1 || arg2);
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	int32 arg1 = _stack.pop().getInt();
+	int32 arg2 = _stack.pop().getInt();
+	_stack.push(arg1 || arg2);
 }
 
 /** INCOR: perform a bit-wise inclusive OR (|). */
@@ -676,13 +657,9 @@ void NCSFile::o_incor(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_incor(): Illegal type %d", type);
 
-	try {
-		int32 arg1 = _stack.pop().getInt();
-		int32 arg2 = _stack.pop().getInt();
-		_stack.push(arg1 | arg2);
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	int32 arg1 = _stack.pop().getInt();
+	int32 arg2 = _stack.pop().getInt();
+	_stack.push(arg1 | arg2);
 }
 
 /** EXCOR: perform a bit-wise exclusive OR (^). */
@@ -690,13 +667,9 @@ void NCSFile::o_excor(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_excor(): Illegal type %d", type);
 
-	try {
-		int32 arg1 = _stack.pop().getInt();
-		int32 arg2 = _stack.pop().getInt();
-		_stack.push(arg1 ^ arg2);
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	int32 arg1 = _stack.pop().getInt();
+	int32 arg2 = _stack.pop().getInt();
+	_stack.push(arg1 ^ arg2);
 }
 
 /** BOOLAND: perform a bit-wise AND (&). */
@@ -704,13 +677,9 @@ void NCSFile::o_booland(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_booland(): Illegal type %d", type);
 
-	try {
-		int32 arg1 = _stack.pop().getInt();
-		int32 arg2 = _stack.pop().getInt();
-		_stack.push(arg1 & arg2);
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	int32 arg1 = _stack.pop().getInt();
+	int32 arg2 = _stack.pop().getInt();
+	_stack.push(arg1 & arg2);
 }
 
 /** EQ: compare the top-most stack elements for equality (==). */
@@ -775,22 +744,18 @@ void NCSFile::o_neq(InstructionType type) {
 void NCSFile::o_geq(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt:
-			try {
+			{
 				int32 arg1 = _stack.pop().getInt();
 				int32 arg2 = _stack.pop().getInt();
 				_stack.push(arg2 >= arg1);
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
 			}
 			break;
 
 		case kInstTypeFloatFloat:
-			try {
+			{
 				float arg1 = _stack.pop().getFloat();
 				float arg2 = _stack.pop().getFloat();
 				_stack.push(arg2 >= arg1);
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
 			}
 			break;
 
@@ -803,22 +768,18 @@ void NCSFile::o_geq(InstructionType type) {
 void NCSFile::o_gt(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt:
-			try {
+			{
 				int32 arg1 = _stack.pop().getInt();
 				int32 arg2 = _stack.pop().getInt();
 				_stack.push(arg2 > arg1);
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
 			}
 			break;
 
 		case kInstTypeFloatFloat:
-			try {
+			{
 				float arg1 = _stack.pop().getFloat();
 				float arg2 = _stack.pop().getFloat();
 				_stack.push(arg2 > arg1);
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
 			}
 			break;
 
@@ -831,22 +792,18 @@ void NCSFile::o_gt(InstructionType type) {
 void NCSFile::o_lt(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt:
-			try {
+			{
 				int32 arg1 = _stack.pop().getInt();
 				int32 arg2 = _stack.pop().getInt();
 				_stack.push(arg2 < arg1);
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
 			}
 			break;
 
 		case kInstTypeFloatFloat:
-			try {
+			{
 				float arg1 = _stack.pop().getFloat();
 				float arg2 = _stack.pop().getFloat();
 				_stack.push(arg2 < arg1);
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
 			}
 			break;
 
@@ -859,22 +816,18 @@ void NCSFile::o_lt(InstructionType type) {
 void NCSFile::o_leq(InstructionType type) {
 	switch (type) {
 		case kInstTypeIntInt:
-			try {
+			{
 				int32 arg1 = _stack.pop().getInt();
 				int32 arg2 = _stack.pop().getInt();
 				_stack.push(arg2 <= arg1);
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
 			}
 			break;
 
 		case kInstTypeFloatFloat:
-			try {
+			{
 				float arg1 = _stack.pop().getFloat();
 				float arg2 = _stack.pop().getFloat();
 				_stack.push(arg2 <= arg1);
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
 			}
 			break;
 
@@ -888,13 +841,9 @@ void NCSFile::o_shleft(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_shleft(): Illegal type %d", type);
 
-	try {
-		int32 arg1 = _stack.pop().getInt();
-		int32 arg2 = _stack.pop().getInt();
-		_stack.push(arg2 << arg1);
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	int32 arg1 = _stack.pop().getInt();
+	int32 arg2 = _stack.pop().getInt();
+	_stack.push(arg2 << arg1);
 }
 
 /** SHRIGHT: signed-shift the top-most stack element to the right (>>>). */
@@ -908,19 +857,14 @@ void NCSFile::o_shright(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_shright(): Illegal type %d", type);
 
-	try {
-		int32 arg1 = _stack.pop().getInt();
-		int32 arg2 = _stack.pop().getInt();
+	int32 arg1 = _stack.pop().getInt();
+	int32 arg2 = _stack.pop().getInt();
 
-		if (arg2 < 0) {
-			arg2 = -arg2;
-			_stack.push(-(arg2 >> arg1));
-		} else
-			_stack.push(arg2 >> arg1);
-
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	if (arg2 < 0) {
+		arg2 = -arg2;
+		_stack.push(-(arg2 >> arg1));
+	} else
+		_stack.push(arg2 >> arg1);
 }
 
 /** USHRIGHT: shift the top-most stack element to the right (>>). */
@@ -933,13 +877,9 @@ void NCSFile::o_ushright(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_ushright(): Illegal type %d", type);
 
-	try {
-		int32 arg1 = _stack.pop().getInt();
-		int32 arg2 = _stack.pop().getInt();
-		_stack.push(arg2 >> arg1);
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	int32 arg1 = _stack.pop().getInt();
+	int32 arg2 = _stack.pop().getInt();
+	_stack.push(arg2 >> arg1);
 }
 
 /** MOD: calculate the remainder (modulo) of an integer division (%). */
@@ -947,38 +887,26 @@ void NCSFile::o_mod(InstructionType type) {
 	if (type != kInstTypeIntInt)
 		throw Common::Exception("NCSFile::o_mod(): Illegal type %d", type);
 
-	try {
-		int32 arg1 = _stack.pop().getInt();
-		int32 arg2 = _stack.pop().getInt();
+	int32 arg1 = _stack.pop().getInt();
+	int32 arg2 = _stack.pop().getInt();
 
-		if (arg1 == 0)
-			throw Common::Exception("NCSFile::o_mod(): Modulus by zero");
-		else if (arg1 < 0 || arg2 < 0)
-			throw Common::Exception("NCSFile::o_mod(): Modulus by negative number (%d %% %d)", arg2, arg1);
+	if (arg1 == 0)
+		throw Common::Exception("NCSFile::o_mod(): Modulus by zero");
+	else if (arg1 < 0 || arg2 < 0)
+		throw Common::Exception("NCSFile::o_mod(): Modulus by negative number (%d %% %d)", arg2, arg1);
 
-		_stack.push(arg2 % arg1);
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	_stack.push(arg2 % arg1);
 }
 
 /** NEQ: negate the top-most stack element (unary -). */
 void NCSFile::o_neg(InstructionType type) {
 	switch (type) {
 		case kInstTypeInt:
-			try {
-				_stack.push(-_stack.pop().getInt());
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
-			}
+			_stack.push(-_stack.pop().getInt());
 			break;
 
 		case kInstTypeFloat:
-			try {
-				_stack.push(-_stack.pop().getFloat());
-			} catch (Common::Exception &UNUSED(e)) {
-				throw;
-			}
+			_stack.push(-_stack.pop().getFloat());
 			break;
 
 		default:
@@ -991,11 +919,7 @@ void NCSFile::o_comp(InstructionType type) {
 	if (type != kInstTypeInt)
 		throw Common::Exception("NCSFile::o_comp(): Illegal type %d", type);
 
-	try {
-		_stack.push(~_stack.pop().getInt());
-	} catch (Common::Exception &UNUSED(e)) {
-		throw;
-	}
+	_stack.push(~_stack.pop().getInt());
 }
 
 /** MOVSP: pop elements off the stack. */
