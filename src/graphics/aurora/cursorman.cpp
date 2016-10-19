@@ -22,6 +22,7 @@
  *  The Aurora cursor manager.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 
@@ -80,10 +81,8 @@ bool CursorManager::add(const Common::UString &name, const Common::UString &grou
 
 	Common::StackLock lock(_mutex);
 
-	Cursor *cursor = 0;
 	try {
-
-		cursor = new Cursor(name, hotspotX, hotspotY);
+		Common::ScopedPtr<Cursor> cursor(new Cursor(name, hotspotX, hotspotY));
 
 		CursorMap::iterator g = _cursors.find(group);
 		if (g == _cursors.end()) {
@@ -96,13 +95,12 @@ bool CursorManager::add(const Common::UString &name, const Common::UString &grou
 
 		std::pair<StateMap::iterator, bool> result;
 
-		result = g->second.insert(std::make_pair(state, cursor));
+		result = g->second.insert(std::make_pair(state, cursor.get()));
 		if (!result.second)
 			throw Common::Exception("Cursor already exists");
 
+		cursor.release();
 	} catch (...) {
-		delete cursor;
-
 		Common::exceptionDispatcherWarning("Could not add cursor \"%s\" as \"%s\":\"%s\"",
 		                                   name.c_str(), group.c_str(), state.c_str());
 		return false;

@@ -22,6 +22,7 @@
  *  A cursor as used in the Aurora engines.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -79,40 +80,32 @@ void Cursor::render() {
 void Cursor::load() {
 	::Aurora::FileType type;
 
-	Common::SeekableReadStream *img = ResMan.getResource(::Aurora::kResourceCursor, _name, &type);
+	Common::ScopedPtr<Common::SeekableReadStream>
+		img(ResMan.getResource(::Aurora::kResourceCursor, _name, &type));
 	if (!img)
 		throw Common::Exception("No such cursor resource \"%s\"", _name.c_str());
 
 	_hotspotX = 0;
 	_hotspotY = 0;
 
-	ImageDecoder *image = 0;
+	Common::ScopedPtr<ImageDecoder> image;
 
-	try {
+	// Loading the different image formats
+	if      (type == ::Aurora::kFileTypeTGA)
+		image.reset(new TGA(*img));
+	else if (type == ::Aurora::kFileTypeDDS)
+		image.reset(new DDS(*img));
+	else if (type == ::Aurora::kFileTypeCUR) {
+		Common::ScopedPtr<WinIconImage> cursor(new WinIconImage(*img));
 
-		// Loading the different image formats
-		if      (type == ::Aurora::kFileTypeTGA)
-			image = new TGA(*img);
-		else if (type == ::Aurora::kFileTypeDDS)
-			image = new DDS(*img);
-		else if (type == ::Aurora::kFileTypeCUR) {
-			WinIconImage *cursor = new WinIconImage(*img);
+		if (_hotspotX < 0)
+			_hotspotX = cursor->getHotspotX();
+		if (_hotspotY < 0)
+			_hotspotY = cursor->getHotspotY();
 
-			if (_hotspotX < 0)
-				_hotspotX = cursor->getHotspotX();
-			if (_hotspotY < 0)
-				_hotspotY = cursor->getHotspotY();
-
-			image = cursor;
-		} else
-			throw Common::Exception("Unsupported cursor resource type %d", (int) type);
-
-	} catch (...) {
-		delete img;
-		throw;
-	}
-
-	delete img;
+		image.reset(cursor.release());
+	} else
+		throw Common::Exception("Unsupported cursor resource type %d", (int) type);
 
 	_width  = image->getMipMap(0).width;
 	_height = image->getMipMap(0).height;
@@ -120,7 +113,7 @@ void Cursor::load() {
 	TXI *txi = new TXI();
 	txi->getFeatures().filter = false;
 
-	_texture = TextureMan.add(Texture::create(image, type, txi), _name);
+	_texture = TextureMan.add(Texture::create(image.release(), type, txi), _name);
 
 	_hotspotX = CLIP(_hotspotX, 0, _width  - 1);
 	_hotspotY = CLIP(_hotspotY, 0, _height - 1);
