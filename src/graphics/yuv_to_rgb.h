@@ -25,7 +25,9 @@
 #ifndef GRAPHICS_YUV_TO_RGB_H
 #define GRAPHICS_YUV_TO_RGB_H
 
+#include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
+
 #include "src/graphics/types.h"
 
 namespace Graphics {
@@ -80,7 +82,7 @@ private:
 
 	const YUVToRGBLookup *getLookup(LuminanceScale scale);
 
-	YUVToRGBLookup *_lookup;
+	Common::ScopedPtr<YUVToRGBLookup> _lookup;
 	int16 _colorTab[4 * 256]; // 2048 bytes
 };
 

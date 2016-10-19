@@ -159,8 +159,6 @@ YUVToRGBLookup::YUVToRGBLookup(YUVToRGBManager::LuminanceScale scale) {
 }
 
 YUVToRGBManager::YUVToRGBManager() {
-	_lookup = 0;
-
 	int16 *Cr_r_tab = &_colorTab[0 * 256];
 	int16 *Cr_g_tab = &_colorTab[1 * 256];
 	int16 *Cb_g_tab = &_colorTab[2 * 256];
@@ -181,16 +179,14 @@ YUVToRGBManager::YUVToRGBManager() {
 }
 
 YUVToRGBManager::~YUVToRGBManager() {
-	delete _lookup;
 }
 
 const YUVToRGBLookup *YUVToRGBManager::getLookup(LuminanceScale scale) {
 	if (_lookup && _lookup->getScale() == scale)
-		return _lookup;
+		return _lookup.get();
 
-	delete _lookup;
-	_lookup = new YUVToRGBLookup(scale);
-	return _lookup;
+	_lookup.reset(new YUVToRGBLookup(scale));
+	return _lookup.get();
 }
 
 #define PUT_PIXEL(s, a, d) \
