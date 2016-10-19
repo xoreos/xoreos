@@ -28,8 +28,9 @@
 #include <vector>
 #include <map>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
-#include "src/common/noncopyable.h"
 #include "src/common/ustring.h"
 #include "src/common/encoding.h"
 
@@ -73,7 +74,7 @@ class GFF4Struct;
  *  See also: GFF3File in gff3file.h for the earlier V3.2/V3.3 versions of
  *  the GFF format.
  */
-class GFF4File : Common::NonCopyable, public AuroraFile {
+class GFF4File : boost::noncopyable, public AuroraFile {
 public:
 	/** Take over this stream and read a GFF4 file out of it. */
 	GFF4File(Common::SeekableReadStream *gff4, uint32 type = 0xFFFFFFFF);

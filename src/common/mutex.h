@@ -27,13 +27,14 @@
 
 #include <SDL_thread.h>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
-#include "src/common/noncopyable.h"
 
 namespace Common {
 
 /** A mutex. */
-class Mutex : NonCopyable {
+class Mutex : boost::noncopyable {
 public:
 	Mutex();
 	~Mutex();
@@ -48,7 +49,7 @@ private:
 };
 
 /** A semaphore . */
-class Semaphore : NonCopyable {
+class Semaphore : boost::noncopyable {
 public:
 	Semaphore(uint value = 0);
 	~Semaphore();
@@ -64,7 +65,7 @@ private:
 };
 
 /** Convenience class that locks a mutex on creation and unlocks it on destruction. */
-class StackLock : NonCopyable {
+class StackLock : boost::noncopyable {
 public:
 	StackLock(Mutex &mutex);
 	StackLock(Semaphore &semaphore);
@@ -76,7 +77,7 @@ private:
 };
 
 /** A condition. */
-class Condition : NonCopyable {
+class Condition : boost::noncopyable {
 public:
 	Condition();
 	Condition(Mutex &mutex);

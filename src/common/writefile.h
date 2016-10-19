@@ -27,16 +27,17 @@
 
 #include <cstdio>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 #include "src/common/writestream.h"
-#include "src/common/noncopyable.h"
 
 namespace Common {
 
 class UString;
 
 /** A simple streaming file writing class. */
-class WriteFile : NonCopyable, public WriteStream {
+class WriteFile : boost::noncopyable, public WriteStream {
 public:
 	WriteFile();
 	WriteFile(const UString &fileName);

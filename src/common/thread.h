@@ -29,12 +29,12 @@
 
 #include <SDL_thread.h>
 
-#include "src/common/noncopyable.h"
+#include <boost/noncopyable.hpp>
 
 namespace Common {
 
 /** A class that creates its own thread. */
-class Thread : NonCopyable {
+class Thread : boost::noncopyable {
 public:
 	Thread();
 	virtual ~Thread();
