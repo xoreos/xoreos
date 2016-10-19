@@ -29,6 +29,7 @@
 #include <map>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 #include "src/graphics/font.h"
 
@@ -88,7 +89,7 @@ private:
 	};
 
 
-	TTFRenderer *_ttf;
+	Common::ScopedPtr<TTFRenderer> _ttf;
 
 	std::vector<Page *> _pages;
 	std::map<uint32, Char> _chars;

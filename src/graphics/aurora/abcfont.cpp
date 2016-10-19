@@ -22,6 +22,7 @@
  *  An ABC/SBM font, as used by Jade Empire.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -73,7 +74,7 @@ void ABCFont::draw(uint32 c) const {
 }
 
 void ABCFont::load(const Common::UString &name) {
-	Common::SeekableReadStream *abc = ResMan.getResource(name, ::Aurora::kFileTypeABC);
+	Common::ScopedPtr<Common::SeekableReadStream> abc(ResMan.getResource(name, ::Aurora::kFileTypeABC));
 	if (!abc)
 		throw Common::Exception("No such font \"%s\"", name.c_str());
 
@@ -95,55 +96,47 @@ void ABCFont::load(const Common::UString &name) {
 
 	bool hasInvalid = false;
 
-	try {
-		if (abc->size() != 524280)
-			throw Common::Exception("Invalid font (%u)", (uint)abc->size());
+	if (abc->size() != 524280)
+		throw Common::Exception("Invalid font (%u)", (uint)abc->size());
 
-		_base = abc->readByte();
+	_base = abc->readByte();
 
-		abc->skip(7); // Probably random garbage
+	abc->skip(7); // Probably random garbage
 
-		// Read the ASCII character
-		for (int i = 1; i < 128; i++) {
-			Char &c = _ascii[i];
+	// Read the ASCII character
+	for (int i = 1; i < 128; i++) {
+		Char &c = _ascii[i];
 
-			readCharDesc(c, *abc);
-			calcCharVertices(c);
+		readCharDesc(c, *abc);
+		calcCharVertices(c);
 
-			// Points to the "invalid character"
-			if (!hasInvalid && (c.dataX == 0) && (c.dataY == 0)) {
+		// Points to the "invalid character"
+		if (!hasInvalid && (c.dataX == 0) && (c.dataY == 0)) {
+			_invalid   = c;
+			hasInvalid = true;
+		}
+	}
+
+	// Read the UTF16 extended characters
+	for (int i = 128; i < 65535; i++) {
+		Char c;
+
+		readCharDesc(c, *abc);
+
+		// Points to the "invalid character"
+		if ((c.dataX == 0) && (c.dataY == 0)) {
+			if (!hasInvalid) {
+				calcCharVertices(c);
 				_invalid   = c;
 				hasInvalid = true;
 			}
+
+			continue;
 		}
 
-		// Read the UTF16 extended characters
-		for (int i = 128; i < 65535; i++) {
-			Char c;
-
-			readCharDesc(c, *abc);
-
-			// Points to the "invalid character"
-			if ((c.dataX == 0) && (c.dataY == 0)) {
-				if (!hasInvalid) {
-					calcCharVertices(c);
-					_invalid   = c;
-					hasInvalid = true;
-				}
-
-				continue;
-			}
-
-			calcCharVertices(c);
-			_extended.insert(std::make_pair(Common::UString::fromUTF16((uint16) i), c));
-		}
-
-	} catch (...) {
-		delete abc;
-		throw;
+		calcCharVertices(c);
+		_extended.insert(std::make_pair(Common::UString::fromUTF16((uint16) i), c));
 	}
-
-	delete abc;
 }
 
 void ABCFont::readCharDesc(Char &c, Common::SeekableReadStream &abc) {

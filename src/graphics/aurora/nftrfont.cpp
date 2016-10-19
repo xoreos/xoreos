@@ -51,6 +51,7 @@
 #include <cassert>
 #include <cstring>
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/ustring.h"
@@ -90,16 +91,9 @@ NFTRFont::NFTRFont(Common::SeekableReadStream *nftr, bool invertPalette) :
 
 	assert(nftr);
 
-	Common::SeekableSubReadStreamEndian *nftrEndian = 0;
-	try {
-		nftrEndian = open(nftr);
-		load(*nftrEndian);
-	} catch (...) {
-		delete nftrEndian;
-		throw;
-	}
+	Common::ScopedPtr<Common::SeekableSubReadStreamEndian> nftrEndian(open(nftr));
 
-	delete nftrEndian;
+	load(*nftrEndian);
 }
 
 NFTRFont::NFTRFont(const Common::UString &name, bool invertPalette) :
@@ -109,16 +103,9 @@ NFTRFont::NFTRFont(const Common::UString &name, bool invertPalette) :
 	if (!nftr)
 		throw Common::Exception("No such font \"%s\"", name.c_str());
 
-	Common::SeekableSubReadStreamEndian *nftrEndian = 0;
-	try {
-		nftrEndian = open(nftr);
-		load(*nftrEndian);
-	} catch (...) {
-		delete nftrEndian;
-		throw;
-	}
+	Common::ScopedPtr<Common::SeekableSubReadStreamEndian> nftrEndian(open(nftr));
 
-	delete nftrEndian;
+	load(*nftrEndian);
 }
 
 NFTRFont::~NFTRFont() {
