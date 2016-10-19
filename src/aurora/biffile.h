@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/archive.h"
@@ -103,7 +104,7 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
-	Common::SeekableReadStream *_bif;
+	Common::ScopedPtr<Common::SeekableReadStream> _bif;
 
 	/** External list of resource names and types. */
 	ResourceList _resources;

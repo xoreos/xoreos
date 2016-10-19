@@ -22,6 +22,8 @@
  *  A portable executable archive.
  */
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/error.h"
 #include "src/common/pe_exe.h"
 #include "src/common/memreadstream.h"
@@ -31,19 +33,15 @@
 
 namespace Aurora {
 
-PEFile::PEFile(Common::SeekableReadStream *exe, const std::vector<Common::UString> &remap) : _peFile(0) {
-	_peFile = new Common::PEResources(exe);
+PEFile::PEFile(Common::SeekableReadStream *exe, const std::vector<Common::UString> &remap) {
+	assert(exe);
 
-	try {
-		load(remap);
-	} catch (...) {
-		delete _peFile;
-		throw;
-	}
+	_peFile.reset(new Common::PEResources(exe));
+
+	load(remap);
 }
 
 PEFile::~PEFile() {
-	delete _peFile;
 }
 
 const Archive::ResourceList &PEFile::getResources() const {
@@ -54,24 +52,43 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoC
 	// Convert from the PE cursor group/cursor format to the standalone
 	// cursor format.
 
-	Common::MemoryWriteStreamDynamic out;
-	Common::SeekableReadStream *cursorGroup = _peFile->getResource(Common::kPEGroupCursor, index);
+	Common::ScopedPtr<Common::SeekableReadStream>
+		cursorGroup(_peFile->getResource(Common::kPEGroupCursor, index));
 
 	if (!cursorGroup)
 		throw Common::Exception("No such PE resource %u", index);
 
+
+	Common::MemoryWriteStreamDynamic out;
+	bool success = false;
+
+	BOOST_SCOPE_EXIT( (&success) (&out) ) {
+		if (!success)
+			out.dispose();
+	} BOOST_SCOPE_EXIT_END
+
+
 	// Cursor Group Header
 	out.writeUint16LE(cursorGroup->readUint16LE());
 	out.writeUint16LE(cursorGroup->readUint16LE());
-	uint16 cursorCount = cursorGroup->readUint16LE();
+
+	const size_t cursorCount = cursorGroup->readUint16LE();
 	out.writeUint16LE(cursorCount);
+
 
 	std::vector<Common::SeekableReadStream *> cursorStreams;
 	cursorStreams.resize(cursorCount);
 
+	BOOST_SCOPE_EXIT( (&cursorStreams) ) {
+		for (std::vector<Common::SeekableReadStream *>::iterator s = cursorStreams.begin();
+		     s != cursorStreams.end(); ++s)
+			delete *s;
+	} BOOST_SCOPE_EXIT_END
+
+
 	uint32 startOffset = 6 + cursorCount * 16;
 
-	for (uint16 i = 0; i < cursorCount; i++) {
+	for (size_t i = 0; i < cursorCount; i++) {
 		out.writeByte(cursorGroup->readUint16LE());     // width
 		out.writeByte(cursorGroup->readUint16LE() / 2); // height
 		cursorGroup->readUint16LE();                    // planes
@@ -81,31 +98,21 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoC
 		cursorGroup->readUint32LE();                    // data size
 		uint16 id = cursorGroup->readUint16LE();
 
-		Common::SeekableReadStream *cursor = _peFile->getResource(Common::kPECursor, id);
-		if (!cursor) {
-			delete cursorGroup;
-
+		cursorStreams[i] = _peFile->getResource(Common::kPECursor, id);
+		if (!cursorStreams[i])
 			throw Common::Exception("Could not get cursor resource %d", id);
-		}
 
-		out.writeUint16LE(cursor->readUint16LE());      // hotspot X
-		out.writeUint16LE(cursor->readUint16LE());      // hotspot Y
-		out.writeUint32LE(cursor->size() - 4);          // size
-		out.writeUint32LE(startOffset);                 // offset
-		startOffset += cursor->size() - 4;
-
-		cursorStreams[i] = cursor;
+		out.writeUint16LE(cursorStreams[i]->readUint16LE()); // hotspot X
+		out.writeUint16LE(cursorStreams[i]->readUint16LE()); // hotspot Y
+		out.writeUint32LE(cursorStreams[i]->size() - 4);     // size
+		out.writeUint32LE(startOffset);                      // offset
+		startOffset += cursorStreams[i]->size() - 4;
 	}
 
-	for (uint32 i = 0; i < cursorStreams.size(); i++) {
-		byte *data = new byte[cursorStreams[i]->size() - 4];
-		cursorStreams[i]->read(data, cursorStreams[i]->size() - 4);
-		out.write(data, cursorStreams[i]->size() - 4);
-		delete[] data;
-		delete cursorStreams[i];
-	}
+	for (size_t i = 0; i < cursorCount; i++)
+		out.writeStream(*cursorStreams[i], cursorStreams[i]->size() - 4);
 
-	delete cursorGroup;
+	success = true;
 	return new Common::MemoryReadStream(out.getData(), out.size(), true);
 }
 

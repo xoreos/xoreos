@@ -39,16 +39,10 @@ namespace Aurora {
 HERFFile::HERFFile(Common::SeekableReadStream *herf) : _herf(herf), _dictOffset(0xFFFFFFFF), _dictSize(0) {
 	assert(_herf);
 
-	try {
-		load(*_herf);
-	} catch (...) {
-		delete _herf;
-		throw;
-	}
+	load(*_herf);
 }
 
 HERFFile::~HERFFile() {
-	delete _herf;
 }
 
 void HERFFile::load(Common::SeekableReadStream &herf) {
@@ -161,7 +155,7 @@ Common::SeekableReadStream *HERFFile::getResource(uint32 index, bool tryNoCopy) 
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy)
-		return new Common::SeekableSubReadStream(_herf, res.offset, res.offset + res.size);
+		return new Common::SeekableSubReadStream(_herf.get(), res.offset, res.offset + res.size);
 
 	_herf->seek(res.offset);
 

@@ -30,14 +30,13 @@
 
 namespace Aurora {
 
-ZIPFile::ZIPFile(Common::SeekableReadStream *zip) : _zipFile(0) {
-	_zipFile = new Common::ZipFile(zip);
+ZIPFile::ZIPFile(Common::SeekableReadStream *zip) {
+	_zipFile.reset(new Common::ZipFile(zip));
 
 	load();
 }
 
 ZIPFile::~ZIPFile() {
-	delete _zipFile;
 }
 
 const Archive::ResourceList &ZIPFile::getResources() const {

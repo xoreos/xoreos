@@ -38,30 +38,19 @@
 
 namespace Aurora {
 
-NDSFile::NDSFile(const Common::UString &fileName) : _nds(0) {
-	_nds = new Common::ReadFile(fileName);
+NDSFile::NDSFile(const Common::UString &fileName) {
+	_nds.reset(new Common::ReadFile(fileName));
 
-	try {
-		load(*_nds);
-	} catch (...) {
-		delete _nds;
-		throw;
-	}
+	load(*_nds);
 }
 
 NDSFile::NDSFile(Common::SeekableReadStream *nds) : _nds(nds) {
 	assert(_nds);
 
-	try {
-		load(*_nds);
-	} catch (...) {
-		delete _nds;
-		throw;
-	}
+	load(*_nds);
 }
 
 NDSFile::~NDSFile() {
-	delete _nds;
 }
 
 void NDSFile::load(Common::SeekableReadStream &nds) {
@@ -180,7 +169,7 @@ Common::SeekableReadStream *NDSFile::getResource(uint32 index, bool tryNoCopy) c
 	_nds->seek(res.offset);
 
 	if (tryNoCopy)
-		return new Common::SeekableSubReadStream(_nds, res.offset, res.offset + res.size);
+		return new Common::SeekableSubReadStream(_nds.get(), res.offset, res.offset + res.size);
 
 	_nds->seek(res.offset);
 

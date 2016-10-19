@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -55,7 +56,7 @@ public:
 
 private:
 	/** The actual exe. */
-	Common::PEResources *_peFile;
+	Common::ScopedPtr<Common::PEResources> _peFile;
 
 	/** External list of resource names and types. */
 	ResourceList _resources;

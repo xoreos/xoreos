@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -81,7 +82,7 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
-	Common::SeekableReadStream *_nds;
+	Common::ScopedPtr<Common::SeekableReadStream> _nds;
 
 	Common::UString _title;
 	Common::UString _code;

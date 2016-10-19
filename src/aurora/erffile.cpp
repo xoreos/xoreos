@@ -90,12 +90,11 @@ static const byte kNWNPremiumKeys[][kNWNPremiumKeyLength] = {
 };
 
 
-ERFFile::ERFHeader::ERFHeader() : stringTable(0) {
+ERFFile::ERFHeader::ERFHeader() {
 	clear();
 }
 
 ERFFile::ERFHeader::~ERFHeader() {
-	delete[] stringTable;
 }
 
 void ERFFile::ERFHeader::clear() {
@@ -124,9 +123,8 @@ void ERFFile::ERFHeader::clear() {
 }
 
 void ERFFile::ERFHeader::clearStringTable() {
-	delete[] stringTable;
+	stringTable.reset();
 
-	stringTable     = 0;
 	stringTableSize = 0;
 }
 
@@ -153,16 +151,10 @@ ERFFile::ERFFile(Common::SeekableReadStream *erf, const std::vector<byte> &passw
 
 	assert(_erf);
 
-	try {
-		load();
-	} catch (...) {
-		delete _erf;
-		throw;
-	}
+	load();
 }
 
 ERFFile::~ERFFile() {
-	delete _erf;
 }
 
 void ERFFile::verifyVersion(uint32 id, uint32 version, bool utf16le) {
@@ -217,19 +209,12 @@ void ERFFile::verifyPasswordDigest() {
 			buffer[i] = i;
 
 		Common::MemoryReadStream bufferStream(buffer, sizeof(buffer));
-		Common::SeekableReadStream *bufferEncrypted = Common::encryptBlowfishEBC(bufferStream, _password);
+		Common::ScopedPtr<Common::SeekableReadStream>
+			bufferEncrypted(Common::encryptBlowfishEBC(bufferStream, _password));
 
-		try {
+		if (!Common::compareMD5Digest(*bufferEncrypted, _header.passwordDigest))
+			throw Common::Exception("Password digest does not match");
 
-			if (!Common::compareMD5Digest(*bufferEncrypted,  _header.passwordDigest))
-				throw Common::Exception("Password digest does not match");
-
-		} catch (...) {
-			delete bufferEncrypted;
-			throw;
-		}
-
-		delete bufferEncrypted;
 		return;
 	}
 
@@ -239,18 +224,10 @@ void ERFFile::verifyPasswordDigest() {
 bool ERFFile::decryptNWNPremiumHeader(Common::SeekableReadStream &erf, ERFHeader &header,
                                       const std::vector<byte> &password) {
 
-	Common::SeekableReadStream *decryptERF = decrypt(erf, erf.pos(), 152, kEncryptionBlowfishNWN, password);
+	Common::ScopedPtr<Common::SeekableReadStream>
+		decryptERF(decrypt(erf, erf.pos(), 152, kEncryptionBlowfishNWN, password));
 
-	try {
-
-		readV11Header(*decryptERF, header);
-
-	} catch (...) {
-		delete decryptERF;
-		throw;
-	}
-
-	delete decryptERF;
+	readV11Header(*decryptERF, header);
 
 	return header.isSensible(erf.size());
 }
@@ -326,10 +303,7 @@ void ERFFile::decryptNWNPremium() {
 
 	_erf->seek(0);
 
-	Common::SeekableReadStream *decryptERF = decrypt(*_erf, kEncryptionBlowfishNWN, _password);
-
-	delete _erf;
-	_erf = decryptERF;
+	_erf.reset(decrypt(*_erf, kEncryptionBlowfishNWN, _password));
 
 	_header.encryption = kEncryptionNone;
 }
@@ -426,8 +400,8 @@ void ERFFile::readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, 
 	if (erf.read(&header.passwordDigest[0], Common::kMD5Length) != Common::kMD5Length)
 		throw Common::Exception(Common::kReadError);
 
-	header.stringTable = new char[header.stringTableSize];
-	if (erf.read(header.stringTable, header.stringTableSize) != header.stringTableSize) {
+	header.stringTable.reset(new char[header.stringTableSize]);
+	if (erf.read(header.stringTable.get(), header.stringTableSize) != header.stringTableSize) {
 		header.clearStringTable();
 		throw Common::Exception("Failed to read ERF string table");
 	}
@@ -636,7 +610,7 @@ void ERFFile::readV30ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 			if ((uint32)nameOffset >= header.stringTableSize)
 				throw Common::Exception("Invalid ERF string table offset");
 
-			Common::UString name = header.stringTable + nameOffset;
+			Common::UString name = header.stringTable.get() + nameOffset;
 			res->name = TypeMan.setFileType(name, kFileTypeNone);
 			res->type = TypeMan.getFileType(name);
 		}
@@ -689,7 +663,7 @@ Common::SeekableReadStream *ERFFile::getResource(uint32 index, bool tryNoCopy) c
 	const IResource &res = getIResource(index);
 
 	if (tryNoCopy && (_header.encryption == kEncryptionNone) && (_header.compression == kCompressionNone))
-		return new Common::SeekableSubReadStream(_erf, res.offset, res.offset + res.packedSize);
+		return new Common::SeekableSubReadStream(_erf.get(), res.offset, res.offset + res.packedSize);
 
 	_erf->seek(res.offset);
 
@@ -722,17 +696,9 @@ Common::MemoryReadStream *ERFFile::decrypt(Common::SeekableReadStream *cryptStre
 
 	assert(cryptStream);
 
-	Common::MemoryReadStream *decryptStream = 0;
+	Common::ScopedPtr<Common::SeekableReadStream> stream(cryptStream);
 
-	try {
-		decryptStream = decrypt(*cryptStream, encryption, password);
-	} catch (...) {
-		delete cryptStream;
-		throw;
-	}
-
-	delete cryptStream;
-	return decryptStream;
+	return decrypt(*stream, encryption, password);
 }
 
 Common::SeekableReadStream *ERFFile::decrypt(Common::SeekableReadStream &erf, size_t pos, size_t size,
@@ -749,23 +715,27 @@ Common::SeekableReadStream *ERFFile::decrypt(Common::SeekableReadStream &erf, si
 
 Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packedStream,
                                                 uint32 unpackedSize) const {
+
+	Common::ScopedPtr<Common::MemoryReadStream> stream(packedStream);
+
 	switch (_header.compression) {
 		case kCompressionNone:
-			if (packedStream->size() == unpackedSize)
-				return packedStream;
+			if (stream->size() == unpackedSize)
+				return stream.release();
 
-			return new Common::SeekableSubReadStream(packedStream, 0, unpackedSize, true);
+			return new Common::SeekableSubReadStream(stream.release(), 0, unpackedSize, true);
 
 		case kCompressionBioWareZlib:
-			return decompressBiowareZlib(packedStream, unpackedSize);
+			return decompressBiowareZlib(stream.release(), unpackedSize);
 
 		case kCompressionHeaderlessZlib:
-			return decompressHeaderlessZlib(packedStream, unpackedSize);
+			return decompressHeaderlessZlib(stream.release(), unpackedSize);
 
 		default:
-			delete packedStream;
-			throw Common::Exception("Invalid ERF compression %u", (uint) _header.compression);
+			break;
 	}
+
+	throw Common::Exception("Invalid ERF compression %u", (uint) _header.compression);
 }
 
 Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStream *packedStream,
@@ -773,19 +743,14 @@ Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStr
 
 	/* Decompress using raw inflate. An extra one byte header specifies the window size. */
 
-	const byte * const compressedData = packedStream->getData();
-	const uint32 packedSize = packedStream->size();
+	assert(packedStream);
 
-	Common::SeekableReadStream *stream = 0;
-	try {
-		stream = decompressZlib(compressedData + 1, packedSize - 1, unpackedSize, *compressedData >> 4);
-	} catch (...) {
-		delete packedStream;
-		throw;
-	}
+	Common::ScopedPtr<Common::MemoryReadStream> stream(packedStream);
 
-	delete packedStream;
-	return stream;
+	const byte * const compressedData = stream->getData();
+	const uint32 packedSize = stream->size();
+
+	return decompressZlib(compressedData + 1, packedSize - 1, unpackedSize, *compressedData >> 4);
 }
 
 Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
@@ -793,19 +758,14 @@ Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryRead
 
 	/* Decompress using raw inflate. Use the default maximum window size (15). */
 
-	const byte * const compressedData = packedStream->getData();
-	const uint32 packedSize = packedStream->size();
+	assert(packedStream);
 
-	Common::SeekableReadStream *stream = 0;
-	try {
-		stream = decompressZlib(compressedData, packedSize, unpackedSize, Common::kWindowBitsMax);
-	} catch (...) {
-		delete packedStream;
-		throw;
-	}
+	Common::ScopedPtr<Common::MemoryReadStream> stream(packedStream);
 
-	delete packedStream;
-	return stream;
+	const byte * const compressedData = stream->getData();
+	const uint32 packedSize = stream->size();
+
+	return decompressZlib(compressedData, packedSize, unpackedSize, Common::kWindowBitsMax);
 }
 
 Common::SeekableReadStream *ERFFile::decompressZlib(const byte *compressedData, uint32 packedSize,
