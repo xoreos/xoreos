@@ -32,16 +32,15 @@
 
 namespace Graphics {
 
-FPSCounter::FPSCounter(uint32 secs) : _seconds(secs) {
+FPSCounter::FPSCounter(size_t secs) : _seconds(secs) {
 	assert(_seconds > 0);
 
-	_frames = new uint32[_seconds];
+	_frames.reset(new uint32[_seconds]);
 
 	reset();
 }
 
 FPSCounter::~FPSCounter() {
-	delete[] _frames;
 }
 
 uint32 FPSCounter::getFPS() const {
@@ -57,7 +56,7 @@ void FPSCounter::reset() {
 
 	_fps = 0;
 
-	for (uint32 i = 0; i < _seconds; i++)
+	for (size_t i = 0; i < _seconds; i++)
 		_frames[i] = 0;
 }
 
@@ -90,9 +89,9 @@ void FPSCounter::finishedFrame() {
 }
 
 void FPSCounter::calculateFPS() {
-	uint32 seconds = _hasFullSeconds ? _seconds : _currentSecond;
+	size_t seconds = _hasFullSeconds ? _seconds : _currentSecond;
 	uint32 frames = 0;
-	for (uint32 i = 0; i < seconds; i++)
+	for (size_t i = 0; i < seconds; i++)
 		frames += _frames[i];
 
 	_fps = seconds ? (frames / seconds) : 0;

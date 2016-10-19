@@ -26,6 +26,7 @@
 #define GRAPHICS_FPSCOUNTER_H
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 namespace Graphics {
 
@@ -33,7 +34,7 @@ namespace Graphics {
 class FPSCounter  {
 public:
 	/** Average the FPS over that many seconds. */
-	FPSCounter(uint32 secs);
+	FPSCounter(size_t secs);
 	~FPSCounter();
 
 	/** Get the current FPS value. */
@@ -48,14 +49,14 @@ public:
 private:
 	uint32 _lastSampled;     ///< The last time a finished frame was signaled.
 
-	uint32 _seconds;       ///< Number of seconds over which to average the FPS.
-	uint32 _currentSecond; ///< Current second we measure.
+	size_t _seconds;       ///< Number of seconds over which to average the FPS.
+	size_t _currentSecond; ///< Current second we measure.
 
 	bool _hasFullSeconds; ///< Got all samples?
 
 	uint32 _fps; ///< The current FPS value.
 
-	uint32 *_frames; ///< All frame counters.
+	Common::ScopedArray<uint32> _frames; ///< All frame counters.
 
 	void calculateFPS(); ///< Calculate the average FPS value.
 };
