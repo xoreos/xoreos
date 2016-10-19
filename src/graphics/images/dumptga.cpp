@@ -24,6 +24,7 @@
 
 #include <cstdio>
 
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/writefile.h"
@@ -107,13 +108,12 @@ void dumpTGA(const Common::UString &fileName, const ImageDecoder *image) {
 		height += mipMap.height;
 	}
 
-	Common::WriteStream *file = openTGA(fileName, width, height);
+	Common::ScopedPtr<Common::WriteStream> file(openTGA(fileName, width, height));
 
 	for (size_t i = 0; i < image->getLayerCount(); i++)
 		writeMipMap(*file, image->getMipMap(0, i), image->getFormat());
 
 	file->flush();
-	delete file;
 }
 
 } // End of namespace Graphics
