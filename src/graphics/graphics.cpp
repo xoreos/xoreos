@@ -87,7 +87,7 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 	_clipNear  = 1.0f;
 	_clipFar   = 1000.0f;
 
-	_fpsCounter = new FPSCounter(3);
+	_fpsCounter.reset(new FPSCounter(3));
 
 	_frameLock.store(0);
 
@@ -106,8 +106,6 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 
 GraphicsManager::~GraphicsManager() {
 	deinit();
-
-	delete _fpsCounter;
 }
 
 void GraphicsManager::init() {

@@ -30,15 +30,16 @@
 #include <vector>
 #include <list>
 
-#include "src/graphics/windowman.h"
-#include "src/graphics/types.h"
-
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
 #include "src/common/matrix4x4.h"
 #include "src/common/vector3.h"
 #include "src/common/ustring.h"
+
+#include "src/graphics/types.h"
+#include "src/graphics/windowman.h"
 
 #include "src/events/notifyable.h"
 
@@ -167,8 +168,10 @@ private:
 	float _clipNear;
 	float _clipFar;
 
-	FPSCounter *_fpsCounter; ///< Counts the current frames per seconds value.
+	Common::ScopedPtr<FPSCounter> _fpsCounter; ///< Counts the current frames per seconds value.
+
 	uint32 _lastSampled; ///< Timestamp used to advance animations.
+
 	Common::Matrix4x4 _projection;    ///< Our projection matrix.
 	Common::Matrix4x4 _projectionInv; ///< The inverse of our projection matrix.
 	Common::Matrix4x4 _modelview;     ///< Our base modelview matrix (i.e camera view).
