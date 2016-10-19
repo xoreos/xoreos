@@ -68,7 +68,7 @@ namespace Graphics {
 namespace Aurora {
 
 PLTFile::PLTFile(const Common::UString &name, Common::SeekableReadStream &plt) :
-	_name(name), _surface(0), _dataImage(0), _dataLayers(0) {
+	_name(name), _surface(0) {
 
 	for (size_t i = 0; i < kLayerMAX; i++)
 		_colors[i] = 0;
@@ -77,8 +77,6 @@ PLTFile::PLTFile(const Common::UString &name, Common::SeekableReadStream &plt) :
 }
 
 PLTFile::~PLTFile() {
-	delete[] _dataImage;
-	delete[] _dataLayers;
 }
 
 bool PLTFile::isDynamic() const {
@@ -116,21 +114,21 @@ void PLTFile::load(Common::SeekableReadStream &plt) {
 
 	plt.skip(4); // Unknown
 
-	const uint32 width  = plt.readUint32LE();
-	const uint32 height = plt.readUint32LE();
+	const size_t width  = plt.readUint32LE();
+	const size_t height = plt.readUint32LE();
 
 	if ((plt.size() - plt.pos()) < (2 * width * height))
 		throw Common::Exception("Not enough data");
 
 	// --- PLT layer data ---
 
-	uint32 size = width * height;
+	size_t size = width * height;
 
-	_dataImage  = new uint8[size];
-	_dataLayers = new uint8[size];
+	_dataImage.reset(new uint8[size]);
+	_dataLayers.reset(new uint8[size]);
 
-	uint8 *image = _dataImage;
-	uint8 *layer = _dataLayers;
+	uint8 *image = _dataImage.get();
+	uint8 *layer = _dataLayers.get();
 	while (size-- > 0) {
 		*image++ = plt.readByte();
 		*layer++ = MIN<uint8>(plt.readByte(), kLayerMAX - 1);
@@ -153,14 +151,14 @@ void PLTFile::build() {
 	byte rows[4 * 256 * kLayerMAX];
 	getColorRows(rows, _colors);
 
-	const uint32 pixels = _width * _height;
-	const uint8 *image  = _dataImage;
-	const uint8 *layer  = _dataLayers;
+	const size_t pixels = _width * _height;
+	const uint8 *image  = _dataImage.get();
+	const uint8 *layer  = _dataLayers.get();
 	      byte  *dst    = _surface->getData();
 
 	/* Now iterate over all pixels, each time copying the correct BGRA values
 	 * for the pixel's intensity into the final image. */
-	for (uint32 i = 0; i < pixels; i++, image++, layer++, dst += 4)
+	for (size_t i = 0; i < pixels; i++, image++, layer++, dst += 4)
 		memcpy(dst, rows + (*layer * 4 * 256) + (*image * 4), 4);
 }
 
@@ -183,36 +181,29 @@ ImageDecoder *PLTFile::getLayerPalette(uint32 layer, uint8 row) {
 	assert(layer < kLayerMAX);
 
 	// TODO: We may want to cache these somehow...
-	ImageDecoder *palette = loadImage(kPalettes[layer]);
-	try {
-		if (palette->getFormat() != kPixelFormatBGRA)
-			throw Common::Exception("Invalid format (%d)", palette->getFormat());
+	Common::ScopedPtr<ImageDecoder> palette(loadImage(kPalettes[layer]));
 
-		if (palette->getMipMapCount() < 1)
-			throw Common::Exception("No mip maps");
+	if (palette->getFormat() != kPixelFormatBGRA)
+		throw Common::Exception("Invalid format (%d)", palette->getFormat());
 
-		const ImageDecoder::MipMap &mipMap = palette->getMipMap(0);
+	if (palette->getMipMapCount() < 1)
+		throw Common::Exception("No mip maps");
 
-		if (mipMap.width != 256)
-			throw Common::Exception("Invalid width (%d)", mipMap.width);
+	const ImageDecoder::MipMap &mipMap = palette->getMipMap(0);
 
-		if (row >= mipMap.height)
-			throw Common::Exception("Invalid height (%d >= %d)", row, mipMap.height);
+	if (mipMap.width != 256)
+		throw Common::Exception("Invalid width (%d)", mipMap.width);
 
-	} catch (...) {
-		delete palette;
-		throw;
-	}
+	if (row >= mipMap.height)
+		throw Common::Exception("Invalid height (%d >= %d)", row, mipMap.height);
 
-	return palette;
+	return palette.release();
 }
 
 void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kLayerMAX]) {
 	for (size_t i = 0; i < kLayerMAX; i++, rows += 4 * 256) {
-		ImageDecoder *palette = 0;
-
 		try {
-			palette = getLayerPalette(i, colors[i]);
+			Common::ScopedPtr<ImageDecoder> palette(getLayerPalette(i, colors[i]));
 
 			// The images have their origin at the bottom left, so we flip the color row
 			const uint8 row = palette->getMipMap(0).height - 1 - colors[i];
@@ -222,7 +213,7 @@ void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kL
 
 		} catch (...) {
 			// On error set to pink (while honoring intensity), for high debug visibility
-			for (uint32 p = 0; p < 256; p++) {
+			for (size_t p = 0; p < 256; p++) {
 				rows[p * 4 + 0] = p;
 				rows[p * 4 + 1] = 0x00;
 				rows[p * 4 + 2] = p;
@@ -231,8 +222,6 @@ void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kL
 
 			Common::exceptionDispatcherWarning("Failed to load palette \"%s\"", kPalettes[i]);
 		}
-
-		delete palette;
 	}
 }
 
