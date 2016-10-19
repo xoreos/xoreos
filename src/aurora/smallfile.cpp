@@ -22,6 +22,7 @@
  *  Decompressing "small" files, Nintendo DS LZSS (types 0x00 and 0x10), found in Sonic.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 #include "src/common/memwritestream.h"
@@ -131,26 +132,28 @@ void Small::decompress(Common::ReadStream &small, Common::WriteStream &out) {
 }
 
 Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small) {
+	Common::ScopedPtr<Common::SeekableReadStream> in(small);
+
 	uint32 type, size;
-	readSmallHeader(*small, type, size);
+	readSmallHeader(*in, type, size);
+
+	const size_t pos = in->pos();
 
 	if (type == 0x00)
 		// Uncompressed. Just return a sub stream for the raw data
-		return new Common::SeekableSubReadStream(small, small->pos(), small->pos() + size, true);
+		return new Common::SeekableSubReadStream(in.release(), pos, pos + size, true);
 
 	Common::MemoryWriteStreamDynamic out(false, size);
 
 	try {
-		::Aurora::decompress(*small, out, type, size);
+		::Aurora::decompress(*in, out, type, size);
 	} catch (Common::Exception &e) {
-		delete small;
 		out.dispose();
 
 		e.add("Failed to decompress \"small\" file");
 		throw e;
 	}
 
-	delete small;
 	return new Common::MemoryReadStream(out.getData(), out.size(), true);
 }
 
@@ -173,17 +176,9 @@ Common::SeekableReadStream *Small::decompress(Common::ReadStream &small) {
 }
 
 Common::SeekableReadStream *Small::decompress(Common::ReadStream *small) {
-	Common::SeekableReadStream *decompressed = 0;
+	Common::ScopedPtr<Common::ReadStream> in(small);
 
-	try {
-		decompressed = decompress(*small);
-	} catch (...) {
-		delete small;
-		throw;
-	}
-
-	delete small;
-	return decompressed;
+	return decompress(*in);
 }
 
 } // End of namespace Aurora

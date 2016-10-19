@@ -25,6 +25,7 @@
 #include <cstring>
 
 #include "src/common/util.h"
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
@@ -43,17 +44,15 @@ struct ReadContext {
 	uint32 width;
 	uint32 height;
 
-	uint16 *depth;
+	Common::ScopedArray<uint16> depth;
 
 	ReadContext(Common::SeekableReadStream &c, uint32 w, uint32 h) :
-		cdpth(&c), width(w), height(h), depth(0) {
+		cdpth(&c), width(w), height(h) {
 	}
 
 	~ReadContext() {
 		for (Cells::iterator c = cells.begin(); c != cells.end(); ++c)
 			delete *c;
-
-		delete depth;
 	}
 };
 
@@ -78,24 +77,13 @@ const uint16 *CDPTH::load(Common::SeekableReadStream &cdpth, uint32 width, uint3
 		throw;
 	}
 
-	const uint16 *depth = ctx.depth;
-	ctx.depth = 0;
-
-	return depth;
+	return ctx.depth.release();
 }
 
 const uint16 *CDPTH::load(Common::SeekableReadStream *cdpth, uint32 width, uint32 height) {
-	const uint16 *depth = 0;
+	Common::ScopedPtr<Common::SeekableReadStream> stream(cdpth);
 
-	try {
-		depth = load(*cdpth, width, height);
-	} catch (...) {
-		delete cdpth;
-		throw;
-	}
-
-	delete cdpth;
-	return depth;
+	return load(*stream, width, height);
 }
 
 static void loadCDPTH(ReadContext &ctx) {
@@ -152,14 +140,14 @@ static void checkConsistency(ReadContext &ctx) {
 static void createDepth(ReadContext &ctx) {
 	/* Create the actual depth data, which is made up of 64x64 pixel cells. */
 
-	ctx.depth = new uint16[ctx.width * ctx.height];
-	std::memset(ctx.depth, 0xFF, ctx.width * ctx.height * sizeof(uint16));
+	ctx.depth.reset(new uint16[ctx.width * ctx.height]);
+	std::memset(ctx.depth.get(), 0xFF, ctx.width * ctx.height * sizeof(uint16));
 
 	const uint32 cellWidth  = 64;
 	const uint32 cellHeight = 64;
 	const uint32 cellsX     = ctx.width  / cellWidth;
 
-	uint16 *data = ctx.depth;
+	uint16 *data = ctx.depth.get();
 	for (size_t i = 0; i < ctx.cells.size(); i++) {
 		Common::SeekableReadStream *cell = ctx.cells[i];
 		if (!cell)

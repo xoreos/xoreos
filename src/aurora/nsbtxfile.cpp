@@ -52,6 +52,8 @@
 
 #include <cassert>
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -74,28 +76,22 @@ namespace Aurora {
 
 NSBTXFile::ReadContext::ReadContext(Common::SeekableSubReadStreamEndian &n, const Texture &t,
                                     Common::WriteStream &s) :
-	texture(&t), palette(0), nsbtx(&n), stream(&s) {
+	texture(&t), nsbtx(&n), stream(&s) {
 }
 
 NSBTXFile::ReadContext::~ReadContext() {
-	delete[] palette;
 }
 
 
-NSBTXFile::NSBTXFile(Common::SeekableReadStream *nsbtx) : _nsbtx(0) {
+NSBTXFile::NSBTXFile(Common::SeekableReadStream *nsbtx) {
 	assert(nsbtx);
 
-	try {
-		_nsbtx = open(nsbtx);
-		load(*_nsbtx);
-	} catch (...) {
-		delete _nsbtx;
-		throw;
-	}
+	_nsbtx.reset(open(nsbtx));
+
+	load(*_nsbtx);
 }
 
 NSBTXFile::~NSBTXFile() {
-	delete _nsbtx;
 }
 
 const Archive::ResourceList &NSBTXFile::getResources() const {
@@ -278,28 +274,22 @@ void NSBTXFile::getPalette(ReadContext &ctx) const {
 	if (!palette)
 		throw Common::Exception("Couldn't find a palette for texture \"%s\"", ctx.texture->name.c_str());
 
-	byte *palData = new byte[size];
-	memset(palData, 0, size);
+	Common::ScopedArray<byte> palData(new byte[size]);
+	memset(palData.get(), 0, size);
 
-	try {
-		ctx.nsbtx->seek(palette->offset);
+	ctx.nsbtx->seek(palette->offset);
 
-		const uint16 palDataSize = MIN<size_t>(size, ((ctx.nsbtx->size() - ctx.nsbtx->pos()) / 2) * 3);
+	const uint16 palDataSize = MIN<size_t>(size, ((ctx.nsbtx->size() - ctx.nsbtx->pos()) / 2) * 3);
 
-		for (uint16 i = 0; i < palDataSize; i += 3) {
-			const uint16 pixel = ctx.nsbtx->readUint16();
+	for (uint16 i = 0; i < palDataSize; i += 3) {
+		const uint16 pixel = ctx.nsbtx->readUint16();
 
-			palData[i + 0] = ( pixel        & 0x1F) << 3;
-			palData[i + 1] = ((pixel >>  5) & 0x1F) << 3;
-			palData[i + 2] = ((pixel >> 10) & 0x1F) << 3;
-		}
-
-	} catch (...) {
-		delete[] palData;
-		throw;
+		palData[i + 0] = ( pixel        & 0x1F) << 3;
+		palData[i + 1] = ((pixel >>  5) & 0x1F) << 3;
+		palData[i + 2] = ((pixel >> 10) & 0x1F) << 3;
 	}
 
-	ctx.palette = palData;
+	ctx.palette.reset(palData.release());
 }
 
 void NSBTXFile::getTexture(const ReadContext &ctx) {
@@ -341,18 +331,20 @@ Common::SeekableReadStream *NSBTXFile::getResource(uint32 index, bool UNUSED(try
 		throw Common::Exception("Texture index out of range (%u/%u)", index, (uint)_textures.size());
 
 	Common::MemoryWriteStreamDynamic stream(false, getITEXSize(_textures[index]));
+	bool success = false;
 
-	try {
-		ReadContext ctx(*_nsbtx, _textures[index], stream);
-		writeITEXHeader(ctx);
+	BOOST_SCOPE_EXIT( (&success) (&stream)) {
+		if (!success)
+			stream.dispose();
+	} BOOST_SCOPE_EXIT_END
 
-		getPalette(ctx);
-		getTexture(ctx);
+	ReadContext ctx(*_nsbtx, _textures[index], stream);
+	writeITEXHeader(ctx);
 
-	} catch (...) {
-		delete[] stream.getData();
-		throw;
-	}
+	getPalette(ctx);
+	getTexture(ctx);
+
+	success = true;
 
 	return new Common::MemoryReadStream(stream.getData(), stream.size(), true);
 }

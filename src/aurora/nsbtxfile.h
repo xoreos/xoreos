@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -100,7 +101,8 @@ private:
 
 	struct ReadContext {
 		const Texture *texture;
-		const byte    *palette;
+
+		Common::ScopedArray<const byte> palette;
 
 		Common::SeekableSubReadStreamEndian *nsbtx;
 		Common::WriteStream *stream;
@@ -114,7 +116,7 @@ private:
 
 
 	/** The name of the NSBTX file. */
-	Common::SeekableSubReadStreamEndian *_nsbtx;
+	Common::ScopedPtr<Common::SeekableSubReadStreamEndian> _nsbtx;
 
 	/** External list of resource names and types. */
 	ResourceList _resources;

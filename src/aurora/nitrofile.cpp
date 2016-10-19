@@ -32,6 +32,7 @@
  */
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 #include "src/aurora/nitrofile.h"
@@ -58,18 +59,14 @@ Common::SeekableSubReadStreamEndian *NitroFile::open(Common::SeekableReadStream 
 }
 
 Common::SeekableSubReadStreamEndian *NitroFile::open(Common::SeekableReadStream *stream) {
-	const size_t begin = stream->pos();
-	const size_t end   = stream->size();
+	Common::ScopedPtr<Common::SeekableReadStream> nitroStream(stream);
 
-	bool bigEndian = false;
-	try {
-		bigEndian = isBigEndian(*stream);
-	} catch (...) {
-		delete stream;
-		throw;
-	}
+	const size_t begin = nitroStream->pos();
+	const size_t end   = nitroStream->size();
 
-	return new Common::SeekableSubReadStreamEndian(stream, begin, end, bigEndian, true);
+	const bool bigEndian = isBigEndian(*nitroStream);
+
+	return new Common::SeekableSubReadStreamEndian(nitroStream.release(), begin, end, bigEndian, true);
 }
 
 } // End of namespace Aurora
