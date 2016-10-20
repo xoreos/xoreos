@@ -57,9 +57,6 @@ public:
 	Vector3(float x, float y, float z, float w = 1.0f) : _x(x), _y(y), _z(z), _w(w) {
 	}
 
-	Vector3(const Vector3 &b) : _x(b._x), _y(b._y), _z(b._z), _w(b._w) {
-	}
-
 	Vector3(const float *b) : _x(b[0]), _y(b[1]), _z(b[2]), _w(1.0f) {
 	}
 
@@ -69,11 +66,6 @@ public:
 
 	inline float &operator[](int i) {
 		return (&_x)[i];
-	}
-
-	inline const Vector3 &operator=(const Vector3 &v) {
-		_x = v._x; _y = v._y; _z = v._z; _w = v._w;
-		return *this;
 	}
 
 	inline const Vector3 &operator=(const float *v) {
