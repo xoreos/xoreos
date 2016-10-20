@@ -185,8 +185,6 @@ int main(int argc, char **argv) {
 		}
 
 	} catch (...) {
-		EventMan.raiseFatalError();
-
 		Common::exceptionDispatcherError();
 	}
 

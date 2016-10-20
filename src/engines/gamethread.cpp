@@ -90,8 +90,6 @@ void GameThread::threadMethod() {
 	try {
 		EngineMan.run(*_game);
 	} catch (...) {
-		EventMan.raiseFatalError();
-
 		Common::exceptionDispatcherError();
 	}
 
