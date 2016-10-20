@@ -41,10 +41,6 @@ Matrix4x4::Matrix4x4(bool identity) {
 		loadIdentity();
 }
 
-Matrix4x4::Matrix4x4(const Matrix4x4 &m) {
-	std::memcpy(_elements, &m, 16 * sizeof(float));
-}
-
 Matrix4x4::Matrix4x4(const float *m) {
 	std::memcpy(_elements, m, 16 * sizeof(float));
 }
@@ -637,11 +633,6 @@ void Matrix4x4::ortho(float l, float r, float b, float t, float n, float f)
 	mMatrix[15] =  1.0f;
 
 	this->transform(mMatrix);
-}
-
-const Matrix4x4 &Matrix4x4::operator=(const Matrix4x4 &m) {
-	std::memcpy(_elements, &m, 16 * sizeof(float));
-	return *this;
 }
 
 const Matrix4x4 &Matrix4x4::operator=(const float *m) {

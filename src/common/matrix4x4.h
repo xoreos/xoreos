@@ -36,7 +36,6 @@ public:
 	 *  assignment of transform internal array in some cases.
 	 */
 	Matrix4x4(bool identity = true);
-	Matrix4x4(const Matrix4x4 &m);
 	Matrix4x4(const float *m);
 	~Matrix4x4();
 
@@ -94,7 +93,6 @@ public:
 	void perspective(float fovy, float aspectRatio, float znear, float zfar);
 	void ortho(float l, float r, float b, float t, float n, float f);
 
-	const Matrix4x4 &operator=(const Matrix4x4 &m);
 	const Matrix4x4 &operator=(const float *m);
 
 	float &operator[](unsigned int index);
