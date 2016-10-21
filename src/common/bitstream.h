@@ -27,6 +27,8 @@
 
 #include <cassert>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -79,7 +81,7 @@ protected:
  * from the data stream and hands out the bits in the order of LSB to MSB.
  */
 template<int valueBits, bool isLE, bool isMSB2LSB>
-class BitStreamImpl : public BitStream {
+class BitStreamImpl : boost::noncopyable, public BitStream {
 private:
 	SeekableReadStream *_stream; ///< The input stream.
 	bool _disposeAfterUse;       ///< Should we delete the stream on destruction?
