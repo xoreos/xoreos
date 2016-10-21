@@ -27,6 +27,9 @@
 
 #include <map>
 #include <vector>
+
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -95,7 +98,7 @@ enum PEResourceType {
  * A class able to load resources from a Windows Portable Executable, such
  * as cursors, bitmaps, and sounds.
  */
-class PEResources {
+class PEResources : boost::noncopyable {
 public:
 	PEResources(SeekableReadStream *exe);
 	~PEResources();
