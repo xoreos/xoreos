@@ -53,6 +53,8 @@
 #ifndef COMMON_FFT_H
 #define COMMON_FFT_H
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -60,7 +62,7 @@ namespace Common {
 struct Complex;
 
 /** (Inverse) Fast Fourier Transform. */
-class FFT {
+class FFT : boost::noncopyable {
 public:
 	FFT(int bits, bool inverse);
 	~FFT();

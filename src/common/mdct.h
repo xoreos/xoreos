@@ -51,6 +51,8 @@
 #ifndef COMMON_MDCT_H
 #define COMMON_MDCT_H
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -58,7 +60,7 @@ namespace Common {
 class FFT;
 
 /** (Inverse) Modified Discrete Cosine Transforms. */
-class MDCT {
+class MDCT : boost::noncopyable {
 public:
 	MDCT(int bits, bool inverse, double scale);
 	~MDCT();

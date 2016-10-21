@@ -51,6 +51,8 @@
 #ifndef COMMON_RDFT_H
 #define COMMON_RDFT_H
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -58,7 +60,7 @@ namespace Common {
 class FFT;
 
 /** (Inverse) Real Discrete Fourier Transform. */
-class RDFT {
+class RDFT : boost::noncopyable {
 public:
 	enum TransformType {
 		DFT_R2C,

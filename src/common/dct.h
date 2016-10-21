@@ -53,6 +53,8 @@
 #ifndef COMMON_DCT_H
 #define COMMON_DCT_H
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -60,7 +62,7 @@ namespace Common {
 class RDFT;
 
 /** (Inverse) Discrete Cosine Transforms. */
-class DCT {
+class DCT : boost::noncopyable {
 public:
 	enum TransformType {
 		DCT_II,
