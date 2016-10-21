@@ -25,18 +25,20 @@
 #ifndef COMMON_ZIPFILE_H
 #define COMMON_ZIPFILE_H
 
-#include "src/common/types.h"
-#include "src/common/ustring.h"
-
 #include <list>
 #include <vector>
+
+#include <boost/noncopyable.hpp>
+
+#include "src/common/types.h"
+#include "src/common/ustring.h"
 
 namespace Common {
 
 class SeekableReadStream;
 
 /** A class encapsulating ZIP file access. */
-class ZipFile {
+class ZipFile : boost::noncopyable {
 public:
 	/** A file. */
 	struct File {
