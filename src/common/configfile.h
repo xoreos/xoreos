@@ -30,6 +30,8 @@
 #include <list>
 #include <map>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/ustring.h"
 #include "src/common/stringmap.h"
 
@@ -108,7 +110,7 @@ private:
  * Lines starting with a '#' are ignored (i.e. treated as comments).
  * Some effort is made to preserve comments, though.
  */
-class ConfigFile {
+class ConfigFile : boost::noncopyable {
 public:
 	typedef std::list<ConfigDomain *> DomainList;
 
