@@ -58,6 +58,8 @@
 
 #include "src/engines/engine.h"
 
+#include "src/graphics/shader/materialman.h"
+
 DECLARE_SINGLETON(Engines::EngineManager)
 
 namespace Engines {

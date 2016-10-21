@@ -69,14 +69,20 @@ void RenderQueue::setCameraReference(const glm::vec3 &reference) {
 }
 
 void RenderQueue::queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const glm::mat4 *transform, float alpha) {
-	Common::Vector3 ref = transform->getPosition();
+	if (program->glid == 0) {
+		return;
+	}
+	glm::vec3 ref = transform->getPosition();
 	ref -= _cameraReference;
 	// Length squared of ref serves as a suitable depth sorting value.
 	_nodeArray.push_back(RenderQueueNode(program, surface, material, mesh, transform, alpha, ref.dot(ref)));
 }
 
 void RenderQueue::queueItem(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha) {
-	Common::Vector3 ref = transform->getPosition();
+	if (renderable->getProgram()->glid == 0) {
+		return;
+	}
+	glm::vec3 ref = transform->getPosition();
 	ref -= _cameraReference;
 	// Length squared of ref serves as a suitable depth sorting value.
 	_nodeArray.push_back(RenderQueueNode(renderable->getProgram(), renderable->getSurface(), renderable->getMaterial(), renderable->getMesh(), transform, alpha, ref.dot(ref)));

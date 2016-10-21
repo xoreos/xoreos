@@ -83,7 +83,9 @@ ModelNode::ModelNode(Model &model)
 		  _nodeNumber(0),
 		  _positionBuffered(false),
 		  _orientationBuffered(false),
-		  _vertexCoordsBuffered(false) {
+		  _vertexCoordsBuffered(false),
+		  _dirtyRender(true),
+		  _rootStateNode(0) {
 
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
@@ -287,7 +289,7 @@ void ModelNode::setEnvironmentMap(const Common::UString &environmentMap) {
 		} catch (...) {
 		}
 	}
-	this->buildMaterial();
+	_dirtyRender = true;
 }
 
 void ModelNode::setInvisible(bool invisible) {
@@ -398,13 +400,11 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 		_mesh->isTransparent = hasAlpha;
 	}
 
+	_dirtyRender = true;
 	// If the node has no actual texture, we just assume
 	// that the geometry shouldn't be rendered.
 	if (!hasTexture)
 		_render = false;
-	else {
-		this->buildMaterial();
-	}
 }
 
 void ModelNode::createBound() {
@@ -625,7 +625,7 @@ bool ModelNode::renderableMesh(Mesh *mesh) {
 	return mesh && mesh->data && mesh->data->rawMesh;
 }
 
-void ModelNode::render(RenderPass pass, const Common::TransformationMatrix &parentTransform) {
+void ModelNode::render(RenderPass pass, const Common::Matrix4x4 &parentTransform) {
 	// Apply the node's transformation
 
 	glTranslatef(_position[0], _position[1], _position[2]);
@@ -692,18 +692,42 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 	_renderTransform.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
 	_renderTransform.scale(_scale[0], _scale[1], _scale[2]);
 
-	if (_render) {
-		for (size_t i = 0; i < _renderableArray.size(); ++i) {
-			RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, _mesh->alpha);
+	/**
+	 * Ignoring _render for now because it's being falsely set to false.
+	 */
+//	if (_render) {}
+
+	if (_dirtyRender) {
+		/**
+		 * Do this regardless of if the modelnode is actually visible or not, to prevent
+		 * stutter when things are first brought into view. Most things are loaded at the
+		 * start of a level, so stutter won't be noticed then.
+		 */
+		this->buildMaterial();
+	} else {
+		if (_renderableArray.size() == 0) {
+			if (_rootStateNode) {
+				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
+					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, 1.0f);//_mesh->alpha);
+				}
+			}
+		} else {
+			for (size_t i = 0; i < _renderableArray.size(); ++i) {
+				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, 1.0f);//_mesh->alpha);
+			}
 		}
 	}
 
+	if (_attachedModel) {
+		_attachedModel->queueRender(_renderTransform);
+	}
 	// Render the node's children
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
 		(*c)->queueRender(_renderTransform);
 	}
 }
 
+<<<<<<< HEAD
 void ModelNode::drawSkeleton(const glm::mat4 &parent, bool showInvisible) {
 	glm::mat4 mine = parent;
 
@@ -711,6 +735,10 @@ void ModelNode::drawSkeleton(const glm::mat4 &parent, bool showInvisible) {
 		mine = glm::rotate(mine,
 				Common::deg2rad(_orientation[3]),
 				glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
+=======
+void ModelNode::drawSkeleton(const Common::Matrix4x4 &parent, bool showInvisible) {
+	Common::Matrix4x4 mine = parent;
+>>>>>>> GRAPHICS: Rework material construction for ModelNodes
 
 	mine = glm::scale(mine, glm::vec3(_scale[0], _scale[1], _scale[2]));
 
@@ -862,24 +890,131 @@ void ModelNode::computeAbsoluteTransform() {
 	}
 }
 
+ModelNode::Mesh *ModelNode::getMesh() {
+	if (_mesh) {
+		return _mesh;
+	}
+
+	if (_model->getState().empty()) {
+		return NULL; // Stateless and no internal _mesh.
+	}
+
+	ModelNode *rootStateNode = _model->getNode("", _name);
+	if (rootStateNode && rootStateNode != this) {
+		return rootStateNode->_mesh;
+	}
+
+	return NULL; // No mesh found in the root state.
+}
+
+TextureHandle *ModelNode::getTextures(uint32 &count) {
+	TextureHandle *rval = NULL;
+	count = 0;
+	if (_mesh && _mesh->data) {
+		count = _mesh->data->textures.size();
+		if (count) {
+			rval = &(_mesh->data->textures[0]);
+		}
+	}
+
+	if (!rval) {
+		// Nothing here, see if the parent has something for us.
+		ModelNode *rootStateNode = _model->getNode("", _name);
+		if (rootStateNode && rootStateNode != this) {
+			rval = rootStateNode->getTextures(count);
+		}
+	}
+
+	return rval;
+}
+
+TextureHandle *ModelNode::getEnvironmentMap(EnvironmentMapMode &mode) {
+	TextureHandle *rval = NULL;
+	if (_mesh && _mesh->data) {
+		if (!_mesh->data->envMap.empty()) {
+			rval = &(_mesh->data->envMap);
+			mode = _mesh->data->envMapMode;
+		}
+	}
+
+	if (!rval) {
+		// Nothing here, see if the parent has something for us.
+		ModelNode *rootStateNode = _model->getNode("", _name);
+		if (rootStateNode && rootStateNode != this) {
+			rval = rootStateNode->getEnvironmentMap(mode);
+		}
+	}
+
+	return rval;
+}
+
 void ModelNode::buildMaterial() {
+	ModelNode::Mesh *pmesh  = 0;  // TODO: if anything is changed in here, ensure there's a local copy instead that shares the root data.
+	TextureHandle *phandles = 0; // Take from self first, or root state, if there is one, otherwise.
+	TextureHandle *penvmap  = 0;  // Maybe it's only the environment map that's overriden.
+	EnvironmentMapMode envmapmode;
+
+	uint32 textureCount = 0;
+
+	_renderableArray.clear();
+
+	/**
+	 * If there's no override of mesh, textures, or environment mapping, then don't bother
+	 * to create any new renderables. Just make sure _rootStateNode has some, and have the
+	 * render queuing use the renderables from there instead. This isn't really a problem,
+	 * as the per-modelnode data (modelview matrix in this case) is still supplied from
+	 * _this_ object.
+	 */
+
+	if (!_model->getState().empty()) {
+		_rootStateNode = _model->getNode("", _name);
+		if (_rootStateNode == this) {
+			_rootStateNode = 0;
+		}
+	} else {
+		_rootStateNode = 0;
+	}
+
+	_dirtyRender = false;
+
 	if (!_mesh) {
+		//printf("%s: no mesh when building material\n", _name.c_str());
 		return;
 	}
 
 	if (!_mesh->data) {
+		//printf("%s: no mesh data when building material\n", _name.c_str());
 		return;
 	}
 
-	if (_mesh->data->textures.size() == 0) {
+	if (_mesh->data->textures.size() == 0 && _mesh->data->envMap.empty() && !_mesh->data->rawMesh) {
+		//printf("%s: no texture or environment map data when building material\n", _name.c_str());
 		return;
 	}
+	/**
+	 * To get here, _mesh must exist and have some data. This is required to consider making
+	 * a new renderable - otherwise, the renderable of the parent can be used directly. This
+	 * may change depending what information the renderable is dependent on during creation.
+	 * Important information in this case means texture or environment maps are overidden from
+	 * any potential parent.
+	 */
+	pmesh = _mesh; // getMesh();
+	phandles = getTextures(textureCount);
+	penvmap = getEnvironmentMap(envmapmode);
+
+	if (textureCount == 0) {
+		//printf("%s: no texture data when building material\n", _name.c_str());
+		return;
+	}
+
+	printf("attempting to build material with mesh: %s, environment map: %u, texture count: %u\n", pmesh->data->rawMesh->getName().c_str(), penvmap ? 1 : 0, textureCount);
 
 	if (!_render) {
-		return;
+		//printf("%s: rendering disabled when building material\n", _name.c_str());
 	}
 
-	if (!_mesh->data->rawMesh) {
+	if (!pmesh->data->rawMesh) {
+		//printf("%s: no raw mesh when building material\n", _name.c_str());
 		return;
 	}
 
@@ -897,21 +1032,21 @@ void ModelNode::buildMaterial() {
 	_renderableArray.clear();
 
 	if (_name == "Plane237") {
-		_mesh->isTransparent = true;  // Hack hack hack hack. For NWN.
+		pmesh->isTransparent = true;  // Hack hack hack hack. For NWN.
 	}
 
 	ShaderBuild.initShaderName(vertexShaderName);
 	ShaderBuild.initShaderName(fragmentShaderName);
 
-	if (!_mesh->data->envMap.empty()) {
-		if (_mesh->data->envMapMode == kModeEnvironmentBlendedUnder) {
-			materialName += _mesh->data->envMap.getName();
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedUnder) {
+			materialName += penvmap->getName();
 			// Figure out if a cube or sphere map is used.
-			if (_mesh->data->envMap.getTexture().getImage().isCubeMap()) {
+			if (penvmap->getTexture().getImage().isCubeMap()) {
 				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE));
 				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
 				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
-				if (!_mesh->isTransparent) {
+				if (!pmesh->isTransparent) {
 					materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
 				}
 			} else {
@@ -924,57 +1059,59 @@ void ModelNode::buildMaterial() {
 				 * other game titles as well.
 				 */
 				materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
-				_mesh->isTransparent = false;
+				// pmesh->isTransparent = false;
 			}
 		}
 	}
 
-	if (_mesh->isTransparent) {
+	if (pmesh->isTransparent && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
-
-	uint32 tcount = _mesh->data->textures.size();
 	/**
 	 * Sometimes the _textures handler array isn't matched up against what
 	 * is properly loaded (missing files from disk). So do some brief sanity
 	 * checks on this.
 	 */
-	if (tcount >= 1) {
-		if (!_mesh->data->textures[0].empty()) {
-			materialName += _mesh->data->textures[0].getName();
-			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_ONE));
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			materialName += phandles[0].getName();
+			if (penvmap && envmapmode == kModeEnvironmentBlendedUnder) {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_SRC_ALPHA));
+			} else {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_ONE));
+			}
 		}
 	}
 
-	if (tcount >= 2) {
-		if (!_mesh->data->textures[1].empty()) {
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
 			materialName += ".";
-			materialName += _mesh->data->textures[1].getName();
+			materialName += phandles[1].getName();
 			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::ShaderBuilder::BLEND_MULTIPLY));
 		} else {
 			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
 		}
 	}
 
-	if (tcount >= 3) {
-		if (!_mesh->data->textures[2].empty()) {
+	if (textureCount >= 3) {
+		if (!phandles[2].empty()) {
 			materialName += ".";
-			materialName += _mesh->data->textures[2].getName();
+			materialName += phandles[2].getName();
 		} else {
 			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
 		}
 	}
 
-	if (tcount >= 4) {
+	if (textureCount >= 4) {
 		// Don't know yet what this extra texture is supposed to be.
 		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
 	}
 
-	if (!_mesh->data->envMap.empty()) {
-		if (_mesh->data->envMapMode == kModeEnvironmentBlendedOver) {
-			materialName += _mesh->data->envMap.getName();
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedOver) {
+			materialName += penvmap->getName();
 			// Figure out if a cube or sphere map is used.
-			if (_mesh->data->envMap.getTexture().getImage().isCubeMap()) {
+			if (penvmap->getTexture().getImage().isCubeMap()) {
 				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
 			} else {
 				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
@@ -989,7 +1126,8 @@ void ModelNode::buildMaterial() {
 	material = MaterialMan.getMaterial(materialName);
 	if (material) {
 		surface = SurfaceMan.getSurface(materialName);
-		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh->data->rawMesh));
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
+		//printf("material already found: %s, for node %s, size: %u\n", materialName.c_str(), _name.c_str(), _renderableArray.size());
 		return;
 	}
 
@@ -1022,36 +1160,36 @@ void ModelNode::buildMaterial() {
 	MaterialMan.addMaterial(material);
 	SurfaceMan.addSurface(surface);
 
-	if (!_mesh->data->envMap.empty()) {
+	if (penvmap) {
 		// Figure out if a cube or sphere map is used.
-		if (_mesh->data->envMap.getTexture().getImage().isCubeMap()) {
+		if (penvmap->getTexture().getImage().isCubeMap()) {
 			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureCube0"));
 		} else {
 			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureSphere0"));
 		}
-		sampler->handle = _mesh->data->envMap;
+		sampler->handle = *penvmap;
 	}
 
-	if (tcount >= 1) {
-		if (!_mesh->data->textures[0].empty()) {
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
 			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
-			sampler->handle = _mesh->data->textures[0];
+			sampler->handle = phandles[0];
 		}
 	}
 
-	if (tcount >= 2) {
-		if (!_mesh->data->textures[1].empty()) {
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
 			sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
-			sampler->handle = _mesh->data->textures[1];
+			sampler->handle = phandles[1];
 		}
 	}
 
-	if (tcount >= 3) {
-		if (!_mesh->data->textures[2].empty()) {
+	if (textureCount >= 3) {
+		if (!phandles[2].empty()) {
 		}
 	}
 
-	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, _mesh->data->rawMesh));
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
 }
 
 void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {

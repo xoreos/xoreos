@@ -233,8 +233,10 @@ protected:
 	glm::mat4 _renderTransform;
 
 	bool _render; ///< Render the node?
+	bool _dirtyRender; ///< Rendering information needs updating.
 
 	Mesh *_mesh;
+	ModelNode *_rootStateNode;
 
 	Common::BoundingBox _boundBox;
 	Common::BoundingBox _absoluteBoundBox;
@@ -276,6 +278,10 @@ protected:
 	void setBufferedPosition(float x, float y, float z);
 	void setBufferedOrientation(float x, float y, float z, float angle);
 	void flushBuffers();
+
+	ModelNode::Mesh *getMesh();
+	TextureHandle *getTextures(uint32 &count);
+	TextureHandle *getEnvironmentMap(EnvironmentMapMode &mode);
 
 	void buildMaterial();
 

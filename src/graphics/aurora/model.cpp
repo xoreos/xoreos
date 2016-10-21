@@ -676,6 +676,22 @@ void Model::queueRender() {
 	}
 }
 
+void Model::queueRender(const Common::Matrix4x4 &parentTransform) {
+	if (!_currentState) {
+		return;
+	}
+
+	Common::Matrix4x4 tform = parentTransform;
+	//tform *= _absolutePosition;
+	queueDrawBound();
+
+	// Queue the nodes
+	for (NodeList::iterator n = _currentState->rootNodes.begin();
+	     n != _currentState->rootNodes.end(); ++n) {
+		(*n)->queueRender(tform);
+	}
+}
+
 void Model::queueDrawBound() {
 	if (!_drawBound)
 		return;
