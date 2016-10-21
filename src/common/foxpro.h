@@ -28,6 +28,8 @@
 #include <vector>
 #include <list>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -37,7 +39,7 @@ class SeekableReadStream;
 class WriteStream;
 
 /** A database in FoxPro 2.0 format. */
-class FoxPro {
+class FoxPro : boost::noncopyable {
 public:
 	/** A field type. */
 	enum Type {
