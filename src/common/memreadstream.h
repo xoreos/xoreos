@@ -52,6 +52,8 @@
 
 #include <cstring>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 #include "src/common/readstream.h"
 
@@ -60,7 +62,7 @@ namespace Common {
 /** Simple memory based 'stream', which implements the ReadStream interface for
  *  a plain memory block.
  */
-class MemoryReadStream : public SeekableReadStream {
+class MemoryReadStream : boost::noncopyable, public SeekableReadStream {
 public:
 	/** This constructor takes a pointer to a memory buffer and a length, and
 	 *  wraps it. If disposeMemory is true, the MemoryReadStream takes ownership

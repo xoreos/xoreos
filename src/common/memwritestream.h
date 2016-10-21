@@ -50,6 +50,8 @@
 #ifndef COMMON_MEMWRITESTREAM_H
 #define COMMON_MEMWRITESTREAM_H
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 #include "src/common/writestream.h"
 
@@ -58,7 +60,7 @@ namespace Common {
 /** Simple memory based 'stream', which implements the WriteStream interface for
  *  a plain memory block.
  */
-class MemoryWriteStream : public WriteStream {
+class MemoryWriteStream : boost::noncopyable, public WriteStream {
 public:
 	MemoryWriteStream(byte *buf, size_t len);
 	~MemoryWriteStream();
@@ -78,7 +80,7 @@ private:
 /** A sort of hybrid between MemoryWriteStream and Array classes. A stream
  *  that grows as it's written to.
  */
-class MemoryWriteStreamDynamic : public WriteStream {
+class MemoryWriteStreamDynamic : boost::noncopyable, public WriteStream {
 public:
 	MemoryWriteStreamDynamic(bool disposeMemory = false, size_t capacity = 0);
 	~MemoryWriteStreamDynamic();
