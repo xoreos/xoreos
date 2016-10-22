@@ -25,6 +25,7 @@ src_graphics_libgraphics_la_SOURCES =
 src_graphics_libgraphics_la_SOURCES += \
     src/graphics/types.h \
     src/graphics/util.h \
+    src/graphics/windowman.h \
     src/graphics/graphics.h \
     src/graphics/fpscounter.h \
     src/graphics/icon.h \
@@ -46,6 +47,7 @@ src_graphics_libgraphics_la_SOURCES += \
     $(EMPTY)
 
 src_graphics_libgraphics_la_SOURCES += \
+    src/graphics/windowman.cpp \
     src/graphics/graphics.cpp \
     src/graphics/fpscounter.cpp \
     src/graphics/icon.cpp \
