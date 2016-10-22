@@ -28,6 +28,8 @@
 #include <vector>
 #include <map>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -56,7 +58,7 @@ namespace Aurora {
  *  identified by raw row index (since this index is now meaningless),
  *  but by an "ID" column.
  */
-class GDAFile {
+class GDAFile : boost::noncopyable {
 public:
 	static const size_t kInvalidColumn = SIZE_MAX;
 	static const size_t kInvalidRow    = SIZE_MAX;

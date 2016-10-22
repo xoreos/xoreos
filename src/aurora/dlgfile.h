@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -57,7 +59,7 @@ namespace NWScript {
 //         "Active{,2}"; "Param[1-5]{,b}", "ParamStr{A,B}"
 //         "Not{,2}", "Logic"
 
-class DLGFile {
+class DLGFile : boost::noncopyable {
 public:
 	static const uint32 kEndLine     = 0xFFFFFFFE;
 	static const uint32 kInvalidLine = 0xFFFFFFFF;
