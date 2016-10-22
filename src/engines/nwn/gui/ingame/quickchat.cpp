@@ -116,7 +116,7 @@ Quickchat::Quickchat(float position) {
 	addWidget(modeButton);
 
 
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notifyResized(0, 0, WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
 Quickchat::~Quickchat() {

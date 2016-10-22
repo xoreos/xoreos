@@ -562,7 +562,7 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj,
 	playSound(playHello);
 	playAnimation();
 
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notifyResized(0, 0, WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
 Dialog::~Dialog() {

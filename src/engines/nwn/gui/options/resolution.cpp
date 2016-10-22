@@ -53,8 +53,8 @@ OptionsResolutionMenu::~OptionsResolutionMenu() {
 void OptionsResolutionMenu::show() {
 	initResolutionsBox(*getListBox("VideoModeList", true));
 
-	_width  = GfxMan.getScreenWidth ();
-	_height = GfxMan.getScreenHeight();
+	_width  = WindowMan.getWindowWidth ();
+	_height = WindowMan.getWindowHeight();
 
 	GUI::show();
 }
@@ -97,10 +97,10 @@ void OptionsResolutionMenu::callbackActive(Widget &widget) {
 void OptionsResolutionMenu::initResolutionsBox(WidgetListBox &resList) {
 	_useableResolutions.clear();
 
-	int maxWidth  = GfxMan.getSystemWidth ();
-	int maxHeight = GfxMan.getSystemHeight();
-	int curWidth  = GfxMan.getScreenWidth ();
-	int curHeight = GfxMan.getScreenHeight();
+	int maxWidth  = WindowMan.getSystemWidth ();
+	int maxHeight = WindowMan.getSystemHeight();
+	int curWidth  = WindowMan.getWindowWidth ();
+	int curHeight = WindowMan.getWindowHeight();
 
 	// Find the max allowed resolution in the list
 	size_t maxRes = 0;
@@ -150,16 +150,16 @@ void OptionsResolutionMenu::setResolution(size_t n) {
 	if (n >= _useableResolutions.size())
 		return;
 
-	GfxMan.setScreenSize(_useableResolutions[n].width, _useableResolutions[n].height);
+	WindowMan.setWindowSize(_useableResolutions[n].width, _useableResolutions[n].height);
 }
 
 void OptionsResolutionMenu::adoptChanges() {
-	ConfigMan.setInt("width" , GfxMan.getScreenWidth (), true);
-	ConfigMan.setInt("height", GfxMan.getScreenHeight(), true);
+	ConfigMan.setInt("width" , WindowMan.getWindowWidth (), true);
+	ConfigMan.setInt("height", WindowMan.getWindowHeight(), true);
 }
 
 void OptionsResolutionMenu::revertChanges() {
-	GfxMan.setScreenSize(_width, _height);
+	WindowMan.setWindowSize(_width, _height);
 }
 
 } // End of namespace NWN

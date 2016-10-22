@@ -467,13 +467,13 @@ void GUI::mouseWheel(const Events::Event &event) {
 }
 
 float GUI::toGUIX(int x) {
-	float sW = GfxMan.getScreenWidth();
+	float sW = WindowMan.getWindowWidth();
 
 	return (x - (sW / 2.0f));
 }
 
 float GUI::toGUIY(int y) {
-	float sH = GfxMan.getScreenHeight();
+	float sH = WindowMan.getWindowHeight();
 
 	return ((sH - y) - (sH / 2.0f));
 }

@@ -34,7 +34,7 @@
 #include "src/engines/gamethread.h"
 #include "src/engines/enginemanager.h"
 
-#include "src/graphics/graphics.h"
+#include "src/graphics/windowman.h"
 
 #include "src/events/events.h"
 
@@ -64,7 +64,7 @@ void GameThread::init(const Common::UString &baseDir, const std::list<const Engi
 	if (!ConfigMan.getKey("description", description))
 		description = _game->getGameName(true);
 
-	GfxMan.setWindowTitle(Common::UString(Version::getProjectName()) + " -- " + description);
+	WindowMan.setWindowTitle(Common::UString(Version::getProjectName()) + " -- " + description);
 
 	status("Detected game \"%s\"", _game->getGameName(false).c_str());
 }

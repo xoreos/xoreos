@@ -112,7 +112,7 @@ PartyLeader::PartyLeader(Module &module) : _module(&module),
 
 
 	updatePortraitTooltip();
-	notifyResized(0, 0, GfxMan.getScreenWidth(), GfxMan.getScreenHeight());
+	notifyResized(0, 0, WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
 PartyLeader::~PartyLeader() {
