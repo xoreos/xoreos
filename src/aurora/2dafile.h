@@ -28,6 +28,8 @@
 #include <vector>
 #include <map>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -55,7 +57,7 @@ class GDAFile;
  *
  *  See also class TwoDAFile.
  */
-class TwoDARow {
+class TwoDARow : boost::noncopyable {
 public:
 	/** Return the contents of a cell as a string. */
 	const Common::UString &getString(size_t column) const;
@@ -115,7 +117,7 @@ private:
  *
  *  See also classes TwoDARow and TwoDARegistry.
  */
-class TwoDAFile : public AuroraFile {
+class TwoDAFile : boost::noncopyable, public AuroraFile {
 public:
 	TwoDAFile(Common::SeekableReadStream &twoda);
 	TwoDAFile(const GDAFile &gda);
