@@ -50,6 +50,8 @@
 #ifndef SOUND_AUDIOSTREAM_H
 #define SOUND_AUDIOSTREAM_H
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/util.h"
 #include "src/common/types.h"
 
@@ -59,7 +61,7 @@ namespace Sound {
  * Generic audio input stream. Subclasses of this are used to feed arbitrary
  * sampled audio data into xoreos' SoundManager.
  */
-class AudioStream {
+class AudioStream : boost::noncopyable {
 public:
 	static const size_t kSizeInvalid = SIZE_MAX;
 
