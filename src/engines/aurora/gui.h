@@ -28,6 +28,8 @@
 #include <list>
 #include <map>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/ustring.h"
 
 #include "src/events/types.h"
@@ -38,7 +40,7 @@ class Widget;
 class Console;
 
 /** A GUI. */
-class GUI {
+class GUI : boost::noncopyable {
 public:
 	static const uint32 kStartCodeNone   = 0;
 	static const uint32 kReturnCodeNone  = 0;

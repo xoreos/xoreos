@@ -27,6 +27,8 @@
 
 #include <list>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
@@ -35,7 +37,7 @@ namespace Engines {
 class GUI;
 
 /** A widget in a GUI. */
-class Widget {
+class Widget : boost::noncopyable {
 public:
 	Widget(GUI &gui, const Common::UString &tag);
 	virtual ~Widget();
