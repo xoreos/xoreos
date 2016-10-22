@@ -30,6 +30,7 @@
 #include <vector>
 #include <list>
 
+#include "src/graphics/windowman.h"
 #include "src/graphics/types.h"
 
 #include "src/common/types.h"
@@ -39,6 +40,8 @@
 #include "src/common/vector3.h"
 #include "src/common/ustring.h"
 
+#include "src/events/notifyable.h"
+
 namespace Graphics {
 
 class FPSCounter;
@@ -46,7 +49,7 @@ class Cursor;
 class Renderable;
 
 /** The graphics manager. */
-class GraphicsManager : public Common::Singleton<GraphicsManager> {
+class GraphicsManager : public Common::Singleton<GraphicsManager>, public Events::Notifyable {
 public:
 	GraphicsManager();
 	~GraphicsManager();
@@ -195,6 +198,8 @@ private:
 	bool   _supportMultipleTextures; ///< Do we have support for multiple textures?
 	size_t _multipleTextureCount;    ///< The number of texture units for multiple textures.
 
+	WindowManager::RenderType _renderType;
+
 	bool _fullScreen; ///< Are we currently in fullscreen mode?
 
 	bool _gl3;
@@ -249,12 +254,11 @@ private:
 
 	Common::Mutex _abandonMutex; ///< A mutex protecting abandoned structures.
 
-	void initSize(int width, int height, bool fullscreen);
 	void setupScene();
 
 	int probeFSAA(int width, int height, uint32 flags);
 
-	bool setupSDLGL(int width, int height, uint32 flags);
+	bool setupSDLGL();
 	void checkGLExtensions();
 
 	/** Set up a projection matrix. Analog to gluPerspective. */
@@ -284,6 +288,8 @@ private:
 	bool renderGUIBack();
 	bool renderCursor();
 	void endScene();
+
+	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
 };
 
 } // End of namespace Graphics
