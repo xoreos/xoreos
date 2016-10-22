@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -43,7 +45,7 @@ namespace Engines {
 class Console;
 
 /** The base class for an engine within BioWare's Aurora family. */
-class Engine {
+class Engine : boost::noncopyable {
 public:
 	Engine();
 	virtual ~Engine();
