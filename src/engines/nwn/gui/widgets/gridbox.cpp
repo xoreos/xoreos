@@ -58,13 +58,19 @@ void WidgetGridBox::subActive(Widget &widget) {
 	}
 
 	if (widget.getTag().endsWith("#Bar")) {
-		if (_items.size() - _visibleItems.size() == 0)
+		if (_itemsByRow == 0)
 			return;
 
-		size_t maxIfFilled = _items.size() + _itemsByRow - _items.size() % _itemsByRow;
-		size_t maxVisible  = floor(_contentHeight / _items.front()->getHeight()) * _itemsByRow;
+		//                                                     Round up
+		const size_t rowCount   = (_items.size()        + (_itemsByRow - 1)) / _itemsByRow;
+		const size_t visibleRow = (_visibleItems.size() + (_itemsByRow - 1)) / _itemsByRow;
 
-		size_t startItem = floor(_scrollbar->getState() * (maxIfFilled - maxVisible) / _itemsByRow) * _itemsByRow;
+		const ptrdiff_t maxStartRow = rowCount - visibleRow;
+		if (maxStartRow <= 0)
+			return;
+
+		const size_t startRow  = _scrollbar->getState() * maxStartRow;
+		const size_t startItem = startRow * _itemsByRow;
 
 		if (startItem == _startItem)
 			return;
@@ -116,7 +122,9 @@ void WidgetGridBox::unlock() {
 
 	_itemsByRow = MIN<size_t>(_contentWidth / _items.front()->getWidth(), _items.size());
 
-	size_t vCount = MIN<size_t>(_contentHeight / _items.front()->getHeight(), _items.size()) * _itemsByRow;
+	const size_t itemsByColumn = MIN<size_t>(_contentHeight / _items.front()->getHeight(), _items.size());
+
+	const size_t vCount = MIN<size_t>(_itemsByRow * itemsByColumn, _items.size() - _startItem);
 
 	if ((vCount == 0) || (vCount == _visibleItems.size())) {
 		GfxMan.unlockFrame();
@@ -128,14 +136,10 @@ void WidgetGridBox::unlock() {
 
 	size_t start = _startItem + _visibleItems.size();
 
-	float  itemHeight = _items.front()->getHeight();
-	float  itemWidth  = _items.front()->getWidth();
-	size_t row        = 0;
-	size_t column     = 0;
+	const float itemHeight = _items.front()->getHeight();
+	const float itemWidth  = _items.front()->getWidth();
 
-	// If we reach the last row, compute the items that remains.
-	if (_items.size() - _startItem <= _visibleItems.size())
-		vCount -= _items.size() % _itemsByRow;
+	size_t row = 0, column = 0;
 
 	while (_visibleItems.size() < vCount) {
 		WidgetListItem *item = _items[start++];
@@ -187,17 +191,14 @@ void WidgetGridBox::updateVisible() {
 	if (_visibleItems.size() > _items.size())
 		_visibleItems.resize(_items.size());
 
-	float itemHeight = _items.front()->getHeight() + _innerVSpace;
-	float itemWidth  = _items.front()->getWidth() + _innerHSpace;
-	float itemY      = _contentY - itemHeight + _innerVSpace;
+	const float itemHeight = _items.front()->getHeight() + _innerVSpace;
+	const float itemWidth  = _items.front()->getWidth() + _innerHSpace;
 
-	size_t column = 0;
-	size_t count  = 0;
+	const size_t count = MIN<size_t>(_visibleItems.size(), _items.size() - _startItem);
 
-	if (_items.size() - _startItem <= _visibleItems.size())
-		count = _items.size() % _itemsByRow;
+	float itemY = _contentY - itemHeight + _innerVSpace;
 
-	for (size_t i = 0; i < (_visibleItems.size() - count); i++) {
+	for (size_t i = 0, column = 0; i < count; i++, column++) {
 		WidgetListItem *item = _items[_startItem + i];
 
 		if (column == _itemsByRow) {
@@ -212,8 +213,6 @@ void WidgetGridBox::updateVisible() {
 
 		if (isVisible())
 			_visibleItems[i]->show();
-
-		++column;
 	}
 
 	GfxMan.unlockFrame();
