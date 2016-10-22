@@ -66,7 +66,7 @@ namespace Graphics {
 
 PFNGLCOMPRESSEDTEXIMAGE2DPROC glCompressedTexImage2D;
 
-GraphicsManager::GraphicsManager() {
+GraphicsManager::GraphicsManager() : Events::Notifyable() {
 	_ready = false;
 
 	_debugGL = false;
@@ -85,6 +85,10 @@ GraphicsManager::GraphicsManager() {
 	_fsaaMax = 0;
 
 	_gamma = 1.0f;
+
+	// Default to an OpenGL 3.2 compatibility context. GL3.x will be available on most modern systems.
+	_renderType = WindowManager::kOpenGL32Compat;
+	_fsaa       = 0;
 
 	_cullFaceEnabled = true;
 	_cullFaceMode    = GL_BACK;
@@ -129,18 +133,12 @@ GraphicsManager::~GraphicsManager() {
 void GraphicsManager::init() {
 	Common::enforceMainThread();
 
+	WindowMan.init();
+
 	_debugGL = ConfigMan.getBool("debuggl", false);
 
-	const uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK;
-	if (SDL_Init(sdlInitFlags) < 0)
-		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
-
-	int  width  = ConfigMan.getInt ("width"     , _width);
-	int  height = ConfigMan.getInt ("height"    , _height);
-	bool fs     = ConfigMan.getBool("fullscreen", false);
-
-	initSize(width, height, fs);
-	setupScene();
+	if (!setupSDLGL())
+		throw Common::Exception("Failed initializing the OpenGL renderer");
 
 	// Try to change the FSAA settings to the config value
 	if (_fsaa != ConfigMan.getInt("fsaa"))
@@ -148,9 +146,15 @@ void GraphicsManager::init() {
 			// If that fails, set the config to the current level
 			ConfigMan.setInt("fsaa", _fsaa);
 
-	// Set the gamma correction to what the config specifies
-	if (ConfigMan.hasKey("gamma"))
-		setGamma(ConfigMan.getDouble("gamma", 1.0));
+	// Initialize glew, for the extension entry points
+	GLenum glewErr = glewInit();
+	if (glewErr != GLEW_OK)
+		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
+
+	// Check if we have all needed OpenGL extensions
+	checkGLExtensions();
+
+	setupScene();
 
 	ShaderMan.init();
 	SurfaceMan.init();
@@ -172,8 +176,7 @@ void GraphicsManager::deinit() {
 	MaterialMan.deinit();
 	SurfaceMan.deinit();
 	ShaderMan.deinit();
-
-	SDL_Quit();
+	WindowMan.deinit();
 
 	_ready = false;
 
@@ -199,7 +202,7 @@ size_t GraphicsManager::getMultipleTextureCount() const {
 }
 
 int GraphicsManager::getMaxFSAA() const {
-	return _fsaaMax;
+	return WindowMan.getMaxFSAA();
 }
 
 int GraphicsManager::getCurrentFSAA() const {
@@ -208,28 +211,6 @@ int GraphicsManager::getCurrentFSAA() const {
 
 uint32 GraphicsManager::getFPS() const {
 	return _fpsCounter->getFPS();
-}
-
-void GraphicsManager::initSize(int width, int height, bool fullscreen) {
-	uint32 flags = SDL_WINDOW_OPENGL;
-
-	_fullScreen = fullscreen;
-	if (_fullScreen)
-		flags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_RESIZABLE ;
-
-	if (!setupSDLGL(width, height, flags))
-		throw Common::Exception("Failed setting the video mode: %s", SDL_GetError());
-
-	// Initialize glew, for the extension entry points
-	GLenum glewErr = glewInit();
-	if (glewErr != GLEW_OK)
-		throw Common::Exception("Failed initializing glew: %s", glewGetErrorString(glewErr));
-
-	// Check if we have all needed OpenGL extensions
-	checkGLExtensions();
-
-	_width = width;
-	_height = height;
 }
 
 bool GraphicsManager::setFSAA(int level) {
@@ -245,62 +226,19 @@ bool GraphicsManager::setFSAA(int level) {
 		return true;
 
 	// Check if we have the support for that level
-	if (level > _fsaaMax)
+	if (level > WindowMan.getMaxFSAA())
 		return false;
-
-	// Backup the old level and set the new level
-	int oldFSAA = _fsaa;
-	_fsaa = level;
 
 	destroyContext();
 
-	uint32 flags = SDL_GetWindowFlags(_screen);
+	if (WindowMan.initRender(_renderType, _debugGL, level))
+		_fsaa = level;
 
-	int x, y;
-	SDL_GetWindowPosition(_screen, &x, &y);
-
-	SDL_GL_DeleteContext(_glContext);
-	SDL_DestroyWindow(_screen);
-
-	// Set the multisample level
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
-
-	// Now try to change the screen
-	_screen = SDL_CreateWindow(_windowTitle.c_str(), x, y, _width, _height, flags);
-
-	if (!_screen) {
-		// Failed changing, back up
-
-		_fsaa = oldFSAA;
-
-		// Set the multisample level
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, (_fsaa > 0) ? 1 : 0);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, _fsaa);
-		_screen = SDL_CreateWindow(_windowTitle.c_str(), x, y, _width, _height, flags);
-
+	// Failed changing, back up
+	else if (!WindowMan.initRender(_renderType, _debugGL, _fsaa))
 		// There's no reason how this could possibly fail, but ok...
-		if (!_screen)
-			throw Common::Exception("Failed reverting to the old FSAA settings");
-	}
+		throw Common::Exception("Failed reverting to the old FSAA settings");
 
-	setWindowIcon(*_screen);
-
-	// Initial call to setupSDLGL has already identified which GL context we can use.
-	if (_gl3) {
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, _glProfile);
-	} else {
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, _glProfile);
-	}
-
-	// Create a debug context?
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, _debugGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0);
-
-	_glContext = SDL_GL_CreateContext(_screen);
 	rebuildContext();
 
 	return _fsaa == level;
@@ -329,78 +267,25 @@ int GraphicsManager::probeFSAA(int width, int height, uint32 flags) {
 	return 0;
 }
 
-bool GraphicsManager::setupSDLGL(int width, int height, uint32 flags) {
-	_fsaaMax = probeFSAA(width, height, flags);
-
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE    ,   8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE  ,   8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE   ,   8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE  ,   8);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,   1);
-
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
-
-	int x = ConfigMan.getInt("x", SDL_WINDOWPOS_UNDEFINED);
-	int y = ConfigMan.getInt("y", SDL_WINDOWPOS_UNDEFINED);
-
-	_screen = SDL_CreateWindow(_windowTitle.c_str(), x, y, width, height, flags);
-	if (!_screen)
-		return false;
-
-	setWindowIcon(*_screen);
-
-	_gl3       = true;
-	_glProfile = SDL_GL_CONTEXT_PROFILE_COMPATIBILITY;
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK , _glProfile);
-
-	// Create a debug context?
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, _debugGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0);
-
-	_glContext = SDL_GL_CreateContext(_screen);
-	if (_glContext)
+bool GraphicsManager::setupSDLGL() {
+	if (WindowMan.initRender(_renderType, _debugGL, _fsaa))
 		return true;
 
 	// OpenGL 3.2 context not created. Spit out an error message, and try a 2.1 core context.
 
-	_gl3       = false;
-	_glProfile = SDL_GL_CONTEXT_PROFILE_CORE;
-
-	warning("Could not create OpenGL 3.2 context: %s", SDL_GetError());
 	warning("Your graphics card hardware or driver does not support OpenGL 3.2. "
 	        "Attempting to create OpenGL 2.1 context instead");
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK , _glProfile);
-
-	// Create a debug context?
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, _debugGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0);
-
-	_glContext = SDL_GL_CreateContext(_screen);
-	if (_glContext)
+	_renderType = WindowManager::kOpenGL21Core;
+	if (WindowMan.initRender(_renderType, _debugGL, _fsaa))
 		return true;
 
 	// No OpenGL 2.1 core context. Let SDL decide what to give us.
 
-	_gl3       = false;
-	_glProfile = 0;
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK , _glProfile);
-
-	// Create a debug context?
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, _debugGL ? SDL_GL_CONTEXT_DEBUG_FLAG : 0);
-
-	_glContext = SDL_GL_CreateContext(_screen);
-	if (_glContext)
+	_renderType = WindowManager::kOpenGL21;
+	if (WindowMan.initRender(_renderType, _debugGL, _fsaa))
 		return true;
 
-	SDL_DestroyWindow(_screen);
 	return false;
 }
 
@@ -520,41 +405,22 @@ void GraphicsManager::checkGLExtensions() {
 }
 
 void GraphicsManager::setWindowTitle(const Common::UString &title) {
-	_windowTitle = title;
-	if (_windowTitle.empty())
-		_windowTitle = Version::getProjectNameVersion();
-
-	SDL_SetWindowTitle(_screen, _windowTitle.c_str());
+	WindowMan.setWindowTitle(title);
 }
 
 float GraphicsManager::getGamma() const {
-	return _gamma;
+	return WindowMan.getGamma();
 }
 
 void GraphicsManager::setGamma(float gamma) {
-	// Force calling it from the main thread
-	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setGamma, this, gamma));
-
-		return RequestMan.callInMainThread(functor);
-	}
-
-	_gamma = gamma;
-	uint16 gammaRamp[256];
-
-	SDL_CalculateGammaRamp(gamma, gammaRamp);
-
-	SDL_SetWindowGammaRamp(_screen, gammaRamp, gammaRamp, gammaRamp);
+	WindowMan.setGamma(gamma);
 }
 
 void GraphicsManager::setupScene() {
-	if (!_screen)
-		throw Common::Exception("No screen initialized");
-
 	glClearColor(0, 0, 0, 0);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glViewport(0, 0, _width, _height);
+	glViewport(0, 0, WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -577,11 +443,11 @@ void GraphicsManager::setupScene() {
 
 	switch (_projectType) {
 		case kProjectTypePerspective:
-			perspective(_viewAngle, ((float) _width) / ((float) _height), _clipNear, _clipFar);
+			perspective(_viewAngle, ((float) WindowMan.getWindowWidth()) / ((float) WindowMan.getWindowHeight()), _clipNear, _clipFar);
 			break;
 
 		case kProjectTypeOrthogonal:
-			ortho(0.0f, _width, 0.0f, _height, _clipNear, _clipFar);
+			ortho(0.0f, WindowMan.getWindowWidth(), 0.0f, WindowMan.getWindowHeight(), _clipNear, _clipFar);
 			break;
 
 		default:
@@ -617,7 +483,7 @@ void GraphicsManager::setPerspective(float viewAngle, float clipNear, float clip
 		return RequestMan.callInMainThread(functor);
 	}
 
-	perspective(viewAngle, ((float) _width) / ((float) _height), clipNear, clipFar);
+	perspective(viewAngle, ((float) WindowMan.getWindowWidth()) / ((float) WindowMan.getWindowHeight()), clipNear, clipFar);
 
 	_projectType = kProjectTypePerspective;
 
@@ -669,7 +535,7 @@ void GraphicsManager::setOrthogonal(float clipNear, float clipFar) {
 		return RequestMan.callInMainThread(functor);
 	}
 
-	ortho(0.0f, _width, 0.0f, _height, clipNear, clipFar);
+	ortho(0.0f, WindowMan.getWindowWidth(), 0.0f, WindowMan.getWindowHeight(), clipNear, clipFar);
 
 	_projectType = kProjectTypeOrthogonal;
 
@@ -747,8 +613,8 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 
 	view[0] = 0.0f;
 	view[1] = 0.0f;
-	view[2] = _width;
-	view[3] = _height;
+	view[2] = WindowMan.getWindowWidth();
+	view[3] = WindowMan.getWindowHeight();
 
 
 	sX = view[0] + view[2] * (v._x + 1.0f) / 2.0f;
@@ -795,7 +661,7 @@ bool GraphicsManager::unproject(float x, float y,
 			/* With a perspective projection, the viewport runs from -1.0 to 0.0
 			 * on the x and y axes, and the clipping planes are at 0.0 and 1.0. */
 
-			const float view[4] = { 0.0f, 0.0f, (float) _width, (float) _height };
+			const float view[4] = { 0.0f, 0.0f, (float) WindowMan.getWindowWidth(), (float) WindowMan.getWindowHeight() };
 			const float zNear   = 0.0f;
 			const float zFar    = 1.0f;
 
@@ -942,7 +808,7 @@ void GraphicsManager::setCursor(Cursor *cursor) {
 }
 
 void GraphicsManager::setCursorPosition(int x, int y) {
-	SDL_WarpMouseInWindow(_screen, x, y);
+	WindowMan.setCursorPosition(x, y);
 }
 
 void GraphicsManager::takeScreenshot() {
@@ -958,8 +824,8 @@ Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
 		return 0;
 
 	// Map the screen coordinates to our OpenGL GUI screen coordinates
-	x =            x  - (_width  / 2.0f);
-	y = (_height - y) - (_height / 2.0f);
+	x = x - (WindowMan.getWindowWidth() / 2.0f);
+	y = (WindowMan.getWindowHeight() - y) - (WindowMan.getWindowHeight() / 2.0f);
 
 	Renderable *object = 0;
 
@@ -990,7 +856,7 @@ Renderable *GraphicsManager::getWorldObjectAt(float x, float y) const {
 		return 0;
 
 		// Map the screen coordinates to OpenGL world screen coordinates
-	y = _height - y;
+	y = WindowMan.getWindowHeight() - y;
 
 	float x1, y1, z1, x2, y2, z2;
 	if (!unproject(x, y, x1, y1, z1, x2, y2, z2))
@@ -1047,9 +913,7 @@ void GraphicsManager::buildNewTextures() {
 }
 
 void GraphicsManager::beginScene() {
-	// Switch cursor on/off
-	if (_cursorState != kCursorStateStay)
-		handleCursorSwitch();
+	WindowMan.beginScene();
 
 	if (_fsaa > 0)
 		glEnable(GL_MULTISAMPLE_ARB);
@@ -1066,7 +930,7 @@ bool GraphicsManager::playVideo() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0f / _width, 2.0f / _height, 0.0f);
+	glScalef(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1168,7 +1032,7 @@ bool GraphicsManager::renderGUIFront() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0f / _width, 2.0f / _height, 0.0f);
+	glScalef(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1201,7 +1065,7 @@ bool GraphicsManager::renderGUIBack() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0f / _width, 2.0f / _height, 0.0f);
+	glScalef(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1235,8 +1099,8 @@ bool GraphicsManager::renderCursor() {
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glScalef(2.0f / _width, 2.0f / _height, 0.0f);
-	glTranslatef(- (_width / 2.0f), _height / 2.0f, 0.0f);
+	glScalef(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
+	glTranslatef(- (WindowMan.getWindowWidth() / 2.0f), WindowMan.getWindowHeight() / 2.0f, 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1247,7 +1111,7 @@ bool GraphicsManager::renderCursor() {
 }
 
 void GraphicsManager::endScene() {
-	SDL_GL_SwapWindow(_screen);
+	WindowMan.endScene();
 
 	if (_takeScreenshot) {
 		Graphics::takeScreenshot();
@@ -1313,43 +1177,27 @@ const Common::Matrix4x4 &GraphicsManager::getModelviewInverseMatrix() const {
 }
 
 int GraphicsManager::getScreenWidth() const {
-	if (!_screen)
-		return 0;
-
-	return _width;
+	return WindowMan.getWindowWidth();
 }
 
 int GraphicsManager::getScreenHeight() const {
-	if (!_screen)
-		return 0;
-
-	return _height;
+	return WindowMan.getWindowHeight();
 }
 
 int GraphicsManager::getSystemWidth() const {
-	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
-	SDL_DisplayMode maxWidth;
-	// The display mode are sorted by, in this order, greater bpp, largest width, largest height and higher refresh rate.
-	SDL_GetDisplayMode(displayIndex, 0, &maxWidth);
-
-	return maxWidth.w;
+	return WindowMan.getSystemWidth();
 }
 
 int GraphicsManager::getSystemHeight() const {
-	int displayIndex = SDL_GetWindowDisplayIndex(_screen);
-	SDL_DisplayMode maxHeight;
-	// The display mode are sorted by, in this order, greater bpp, largest width, largest height and higher refresh rate.
-	SDL_GetDisplayMode(displayIndex, 0, &maxHeight);
-
-	return maxHeight.h;
+	return WindowMan.getSystemHeight();
 }
 
 bool GraphicsManager::isFullScreen() const {
-	return _fullScreen;
+	return WindowMan.isFullScreen();
 }
 
 bool GraphicsManager::isGL3() const {
-	return _gl3;
+	return _renderType == WindowManager::kOpenGL32Compat;
 }
 
 void GraphicsManager::rebuildGLContainers() {
@@ -1424,11 +1272,11 @@ void GraphicsManager::cleanupAbandoned() {
 }
 
 void GraphicsManager::toggleFullScreen() {
-	setFullScreen(!_fullScreen);
+	WindowMan.toggleFullScreen();
 }
 
 void GraphicsManager::setFullScreen(bool fullScreen) {
-	if (_fullScreen == fullScreen)
+	if (WindowMan.isFullScreen() == fullScreen)
 		// Nothing to do
 		return;
 
@@ -1441,28 +1289,13 @@ void GraphicsManager::setFullScreen(bool fullScreen) {
 
 	destroyContext();
 
-	// uint32 flags = SDL_GetWindowFlags(_screen);
-	// Now try to change modes
-	SDL_SetWindowFullscreen(_screen, SDL_WINDOW_FULLSCREEN);
-
-	// If we could not go full screen, revert back.
-	if (!_screen)
-		SDL_SetWindowFullscreen(_screen, 0);
-	else
-		_fullScreen = fullScreen;
-
-	// There's no reason how this could possibly fail, but ok...
-	if (!_screen)
-		throw Common::Exception("Failed going to fullscreen and then failed reverting.");
+	WindowMan.setFullScreen(fullScreen);
 
 	rebuildContext();
 }
 
 void GraphicsManager::toggleMouseGrab() {
-	if (!_screen)
-		return;
-
-	SDL_SetWindowGrab(_screen, (SDL_bool) !SDL_GetWindowGrab(_screen));
+	WindowMan.toggleMouseGrab();
 }
 
 void GraphicsManager::setScreenSize(int width, int height) {
@@ -1478,51 +1311,20 @@ void GraphicsManager::setScreenSize(int width, int height) {
 
 	destroyContext();
 
-	SDL_DisplayMode displayMode;
-	// Now try to change modes
-	if (!_fullScreen) {
-		SDL_SetWindowSize(_screen, width, height);
-	} else {
-		SDL_SetWindowFullscreen(_screen, 0);
-		displayMode.w = width;
-		displayMode.h = height;
-		displayMode.driverdata = 0;
-		displayMode.refresh_rate = 0;
-		displayMode.format = 0;
-		SDL_SetWindowDisplayMode(_screen, &displayMode);
-		SDL_SetWindowFullscreen(_screen, SDL_WINDOW_FULLSCREEN);
-	}
+	WindowMan.setWindowSize(width, height);
 
-	if (!_screen) {
-		// Could not change mode, revert back.
-		if (!_fullScreen)
-			SDL_SetWindowSize(_screen, _width, _height);
-		else {
-			displayMode.w = _width;
-			displayMode.h = _height;
-			SDL_SetWindowDisplayMode(_screen,  &displayMode);
-		}
-
-		// There's no reason how this could possibly fail, but ok...
-		if (!_screen)
-			throw Common::Exception("Failed changing the resolution and then failed reverting.");
-
-		return;
-	}
-
-	_width = width;
-	_height = height;
 	rebuildContext();
-
-	// Let the NotificationManager notify the Notifyables that the resolution changed
-		NotificationMan.resized(_width, _height, width, height);
-
 }
 
 void GraphicsManager::showCursor(bool show) {
-	Common::StackLock lock(_cursorMutex);
+	WindowMan.showCursor(show);
+}
 
-	_cursorState = show ? kCursorStateSwitchOn : kCursorStateSwitchOff;
+void GraphicsManager::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
+                                    int UNUSED(newWidth), int UNUSED(newHeight)) {
+
+	destroyContext();
+	rebuildContext();
 }
 
 } // End of namespace Graphics
