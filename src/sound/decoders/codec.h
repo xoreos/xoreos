@@ -25,6 +25,8 @@
 #ifndef SOUND_DECODERS_CODEC_H
 #define SOUND_DECODERS_CODEC_H
 
+#include <boost/noncopyable.hpp>
+
 namespace Common {
 	class SeekableReadStream;
 }
@@ -33,7 +35,7 @@ namespace Sound {
 
 class AudioStream;
 
-class Codec {
+class Codec : boost::noncopyable {
 public:
 	Codec();
 	virtual ~Codec();
