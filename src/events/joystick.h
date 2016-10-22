@@ -27,11 +27,13 @@
 
 #include <SDL_joystick.h>
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/ustring.h"
 
 namespace Events {
 
-class Joystick {
+class Joystick : boost::noncopyable {
 public:
 	/** Return the joystick's name. */
 	const Common::UString &getName() const;
