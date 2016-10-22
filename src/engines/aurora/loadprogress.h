@@ -25,6 +25,8 @@
 #ifndef ENGINES_AURORA_LOADPROGRESS_H
 #define ENGINES_AURORA_LOADPROGRESS_H
 
+#include <boost/noncopyable.hpp>
+
 #include "src/common/ustring.h"
 
 namespace Graphics {
@@ -35,7 +37,7 @@ namespace Graphics {
 
 namespace Engines {
 
-class LoadProgress {
+class LoadProgress : boost::noncopyable {
 public:
 	/** Create a load progress display.
 	 *
