@@ -25,6 +25,8 @@
 #ifndef VIDEO_CODECS_CODEC_H
 #define VIDEO_CODECS_CODEC_H
 
+#include <boost/noncopyable.hpp>
+
 namespace Common {
 	class SeekableReadStream;
 }
@@ -35,7 +37,7 @@ namespace Graphics {
 
 namespace Video {
 
-class Codec {
+class Codec : boost::noncopyable {
 public:
 	Codec();
 	virtual ~Codec();
