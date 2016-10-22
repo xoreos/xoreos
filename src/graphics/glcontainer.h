@@ -25,12 +25,14 @@
 #ifndef GRAPHICS_GLCONTAINER_H
 #define GRAPHICS_GLCONTAINER_H
 
+#include <boost/noncopyable.hpp>
+
 #include "src/graphics/queueable.h"
 
 namespace Graphics {
 
 /** A container of OpenGL elements. */
-class GLContainer : public Queueable {
+class GLContainer : boost::noncopyable, public Queueable {
 public:
 	GLContainer();
 	~GLContainer();
