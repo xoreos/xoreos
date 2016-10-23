@@ -74,7 +74,7 @@ private:
 	void addState(ParserContext &ctx);
 
 	void load(ParserContext &ctx);
-	void readAnim(ParserContext &ctx, uint32 offset);
+	bool readAnim(ParserContext &ctx, uint32 offset);
 
 	void loadSuperModel(ModelCache *modelCache, bool kotor2);
 

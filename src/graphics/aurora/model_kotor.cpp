@@ -235,18 +235,33 @@ void Model_KotOR::load(ParserContext &ctx) {
 	for (std::vector<uint32>::const_iterator offset = animOffsets.begin(); offset != animOffsets.end(); ++offset) {
 		newState(ctx);
 
-		readAnim(ctx, ctx.offModelData + *offset);
+		if (readAnim(ctx, ctx.offModelData + *offset))
+			addState(ctx);
 
-		addState(ctx);
+		ctx.clear();
 	}
 }
 
-void Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
+bool Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
 	ctx.mdl->seek(offset);
 
 	ctx.mdl->skip(8); // Function pointers
 
 	ctx.state->name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+
+	if (_stateMap.find(ctx.state->name) != _stateMap.end()) {
+		/* TODO: This happens on two models in module 001EBO, the first area of
+		 * KotOR2 (the Ebon Hawk drifting in space):
+		 * - "f3p1a" in model "S_Female01" (90 and 93 model nodes)
+		 * - "walkinj" in model "P_HK47" (53 and 38 model nodes)
+		 *
+		 * We currently keep the first animation and throw away all subsequent
+		 * duplicates. Maybe that's the right way, maybe not.
+		 */
+
+		warning("Duplicate animation \"%s\" in model \"%s\"", ctx.state->name.c_str(), _name.c_str());
+		return false;
+	}
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -286,6 +301,8 @@ void Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
 
 		anim->addAnimNode(animnode);
 	}
+
+	return true;
 }
 
 void Model_KotOR::loadSuperModel(ModelCache *modelCache, bool kotor2) {
