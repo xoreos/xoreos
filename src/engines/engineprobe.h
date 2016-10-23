@@ -26,6 +26,8 @@
 #ifndef ENGINES_ENGINEPROBE_H
 #define ENGINES_ENGINEPROBE_H
 
+#include <boost/noncopyable.hpp>
+
 #include "src/aurora/types.h"
 
 namespace Common {
@@ -39,7 +41,7 @@ namespace Engines {
 class Engine;
 
 /** A probe able to detect one specific game. */
-class EngineProbe {
+class EngineProbe : boost::noncopyable {
 public:
 	virtual ~EngineProbe() {}
 

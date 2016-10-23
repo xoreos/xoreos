@@ -27,8 +27,10 @@
 
 #include <list>
 
-#include "src/common/ustring.h"
+#include <boost/noncopyable.hpp>
+
 #include "src/common/singleton.h"
+#include "src/common/ustring.h"
 
 namespace Common {
 	class SeekableReadStream;
@@ -39,7 +41,7 @@ namespace Engines {
 
 class EngineProbe;
 
-class GameInstance {
+class GameInstance : boost::noncopyable {
 public:
 	virtual ~GameInstance();
 
