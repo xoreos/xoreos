@@ -30,6 +30,7 @@
 #include <map>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -183,8 +184,8 @@ private:
 	uint32 _width;  ///< Width  of the area in tiles, as seen from top-down.
 	uint32 _height; ///< Height of the area in tiles, as seen from top-down.
 
-	TRXFile          *_terrain; ///< The area's terrain.
-	std::vector<Tile> _tiles;   ///< The area's tiles.
+	Common::ScopedPtr<TRXFile> _terrain; ///< The area's terrain.
+	std::vector<Tile>          _tiles;   ///< The area's tiles.
 
 	ObjectList _objects;   ///< List of all objects in the area.
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.

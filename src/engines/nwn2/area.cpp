@@ -57,7 +57,7 @@ namespace NWN2 {
 
 Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
 	_module(&module), _resRef(resRef), _visible(false),
-	_terrain(0), _activeObject(0), _highlightAll(false) {
+	_activeObject(0), _highlightAll(false) {
 
 	try {
 		// Load ARE and GIT
@@ -102,8 +102,7 @@ void Area::clear() {
 
 	_tiles.clear();
 
-	delete _terrain;
-	_terrain = 0;
+	_terrain.reset();
 }
 
 Common::UString Area::getName(const Common::UString &resRef) {
@@ -369,7 +368,7 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 
 void Area::loadTerrain() {
 	try {
-		_terrain = new TRXFile(_resRef);
+		_terrain.reset(new TRXFile(_resRef));
 	} catch (...) {
 		Common::exceptionDispatcherWarning();
 	}
