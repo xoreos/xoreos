@@ -24,6 +24,7 @@
 
 #include <algorithm>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/readfile.h"
 #include "src/common/filelist.h"
@@ -147,23 +148,19 @@ bool Version::detect(const Common::UString &directory) {
 // from the VERSIONINFO resource. They're UTF-16LE strings.
 bool Version::detectWindows(const Common::UString &directory) {
 	size_t size;
-	byte *binary = readFile(directory, "/nwmain.exe", size);
+	Common::ScopedArray<byte> binary(readFile(directory, "/nwmain.exe", size));
 	if (!binary)
 		return false;
 
 	// Search for the pattern where the version information in the binary starts
-	byte *version = std::search(binary, binary + size, kVersionWin, kVersionWin + sizeof(kVersionWin));
-	if ((size - (version - binary)) < (sizeof(kVersionWin) + 24)) {
-		delete[] binary;
+	byte *version = std::search(binary.get(), binary.get() + size, kVersionWin, kVersionWin + sizeof(kVersionWin));
+	if ((size - (version - binary.get())) < (sizeof(kVersionWin) + 24))
 		return false;
-	}
 
 	// Search for the pattern where the build information in the binary starts
-	byte *build = std::search(binary, binary + size, kBuildWin, kBuildWin + sizeof(kBuildWin));
-	if ((size - (build - binary)) < (sizeof(kBuildWin) + 10)) {
-		delete[] binary;
+	byte *build = std::search(binary.get(), binary.get() + size, kBuildWin, kBuildWin + sizeof(kBuildWin));
+	if ((size - (build - binary.get())) < (sizeof(kBuildWin) + 10))
 		return false;
-	}
 
 	bool success = false;
 
@@ -219,7 +216,6 @@ bool Version::detectWindows(const Common::UString &directory) {
 		}
 	}
 
-	delete[] binary;
 	return success;
 }
 
@@ -232,16 +228,14 @@ bool Version::detectMacOSX(const Common::UString &directory) {
 		return false;
 
 	size_t size;
-	byte *binary = readFile(appDir, "Neverwinter Nights", size);
+	Common::ScopedArray<byte> binary(readFile(appDir, "Neverwinter Nights", size));
 	if (!binary)
 		return false;
 
 	// Search for the pattern where the version information in the binary starts
-	byte *version = std::search(binary, binary + size, kVersionUnix, kVersionUnix + sizeof(kVersionUnix));
-	if ((version - binary) < 15) {
-		delete[] binary;
+	byte *version = std::search(binary.get(), binary.get() + size, kVersionUnix, kVersionUnix + sizeof(kVersionUnix));
+	if ((version - binary.get()) < 15)
 		return false;
-	}
 
 	bool success = false;
 
@@ -281,7 +275,6 @@ bool Version::detectMacOSX(const Common::UString &directory) {
 		}
 	}
 
-	delete[] binary;
 	return success;
 }
 
@@ -289,16 +282,14 @@ bool Version::detectMacOSX(const Common::UString &directory) {
 // follow the name "Neverwinter Nights", each field separated by a 0-byte.
 bool Version::detectLinux(const Common::UString &directory) {
 	size_t size;
-	byte *binary = readFile(directory, "/nwmain", size);
+	Common::ScopedArray<byte> binary(readFile(directory, "/nwmain", size));
 	if (!binary)
 		return false;
 
 	// Search for the pattern where the version information in the binary starts
-	byte *version = std::search(binary, binary + size, kVersionUnix, kVersionUnix + sizeof(kVersionUnix));
-	if ((size - (version - binary)) < (sizeof(kVersionUnix) + 21)) {
-		delete[] binary;
+	byte *version = std::search(binary.get(), binary.get() + size, kVersionUnix, kVersionUnix + sizeof(kVersionUnix));
+	if ((size - (version - binary.get())) < (sizeof(kVersionUnix) + 21))
 		return false;
-	}
 
 	bool success = false;
 
@@ -334,7 +325,6 @@ bool Version::detectLinux(const Common::UString &directory) {
 		}
 	}
 
-	delete[] binary;
 	return success;
 }
 
@@ -357,13 +347,11 @@ byte *Version::readFile(const Common::UString &path, size_t &size) {
 
 	size = file.size();
 
-	byte *buffer = new byte[size];
-	if (file.read(buffer, size) != size) {
-		delete[] buffer;
+	Common::ScopedArray<byte> buffer(new byte[size]);
+	if (file.read(buffer.get(), size) != size)
 		return 0;
-	}
 
-	return buffer;
+	return buffer.release();
 }
 
 } // End of namespace NWN
