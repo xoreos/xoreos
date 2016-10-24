@@ -47,14 +47,12 @@ namespace Engines {
 namespace NWN2 {
 
 Game::Game(NWN2Engine &engine, ::Engines::Console &console) :
-	_engine(&engine), _campaign(0), _functions(0), _console(&console) {
+	_engine(&engine), _console(&console) {
 
-	_functions = new Functions(*this);
+	_functions.reset(new Functions(*this));
 }
 
 Game::~Game() {
-	delete _campaign;
-	delete _functions;
 }
 
 Campaign &Game::getCampaign() {
@@ -70,14 +68,13 @@ Module &Game::getModule() {
 }
 
 void Game::run() {
-	_campaign = new Campaign(*_console);
+	_campaign.reset(new Campaign(*_console));
 
 	while (!EventMan.quitRequested()) {
 		runCampaign();
 	}
 
-	delete _campaign;
-	_campaign = 0;
+	_campaign.reset();
 }
 
 void Game::runCampaign() {

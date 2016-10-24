@@ -27,6 +27,7 @@
 
 #include <vector>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/sound/types.h"
@@ -71,9 +72,9 @@ public:
 
 private:
 	NWN2Engine *_engine;
-	Campaign   *_campaign;
 
-	Functions *_functions;
+	Common::ScopedPtr<Campaign>  _campaign;
+	Common::ScopedPtr<Functions> _functions;
 
 	::Engines::Console *_console;
 
