@@ -81,7 +81,7 @@ OptionsSoundMenu::OptionsSoundMenu(bool isMain, ::Engines::Console *console) : G
 	if (soundHeadphones)
 		soundHeadphones->setDisabled(true);
 
-	_advanced = new OptionsSoundAdvancedMenu(isMain, _console);
+	_advanced.reset(new OptionsSoundAdvancedMenu(isMain, _console));
 }
 
 void OptionsSoundMenu::show() {
@@ -102,7 +102,6 @@ void OptionsSoundMenu::show() {
 }
 
 OptionsSoundMenu::~OptionsSoundMenu() {
-	delete _advanced;
 }
 
 void OptionsSoundMenu::initWidget(Widget &widget) {

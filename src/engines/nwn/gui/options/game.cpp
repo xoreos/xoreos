@@ -63,13 +63,11 @@ OptionsGameMenu::OptionsGameMenu(bool isMain, ::Engines::Console *console) : GUI
 	// TODO: Violence level
 	getWidget("ViolenceSlider", true)->setDisabled(true);
 
-	_gorepass = new OptionsGorePasswordMenu(isMain, _console);
-	_feedback = new OptionsFeedbackMenu    (isMain, _console);
+	_gorepass.reset(new OptionsGorePasswordMenu(isMain, _console));
+	_feedback.reset(new OptionsFeedbackMenu    (isMain, _console));
 }
 
 OptionsGameMenu::~OptionsGameMenu() {
-	delete _feedback;
-	delete _gorepass;
 }
 
 void OptionsGameMenu::show() {

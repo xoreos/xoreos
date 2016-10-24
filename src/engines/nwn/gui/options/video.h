@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_OPTIONS_VIDEO_H
 #define ENGINES_NWN_GUI_OPTIONS_VIDEO_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
@@ -44,8 +46,8 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	GUI *_resolution;
-	GUI *_advanced;
+	Common::ScopedPtr<GUI> _resolution;
+	Common::ScopedPtr<GUI> _advanced;
 
 	float _gamma;
 

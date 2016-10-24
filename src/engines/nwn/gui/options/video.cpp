@@ -64,13 +64,11 @@ OptionsVideoMenu::OptionsVideoMenu(bool isMain, ::Engines::Console *console) : G
 	// TODO: Creature shadows
 	getWidget("ShadowSlider", true)->setDisabled(true);
 
-	_resolution = new OptionsResolutionMenu   (isMain, _console);
-	_advanced   = new OptionsVideoAdvancedMenu(isMain, _console);
+	_resolution.reset(new OptionsResolutionMenu   (isMain, _console));
+	_advanced.reset  (new OptionsVideoAdvancedMenu(isMain, _console));
 }
 
 OptionsVideoMenu::~OptionsVideoMenu() {
-	delete _advanced;
-	delete _resolution;
 }
 
 void OptionsVideoMenu::show() {
