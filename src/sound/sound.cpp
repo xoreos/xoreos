@@ -25,8 +25,10 @@
 #include <cassert>
 #include <cstring>
 
-#include "src/common/readstream.h"
+#include <boost/scope_exit.hpp>
+
 #include "src/common/util.h"
+#include "src/common/readstream.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
@@ -65,9 +67,6 @@ SoundManager::~SoundManager() {
 }
 
 void SoundManager::init() {
-	for (size_t i = 0; i < kChannelCount; i++)
-		_channels[i] = 0;
-
 	for (size_t i = 0; i < kSoundTypeMAX; i++)
 		_types[i].gain = 1.0f;
 
@@ -188,7 +187,7 @@ bool SoundManager::isPlaying(size_t channel) const {
 	alGetSourcei(_channels[channel]->source, AL_SOURCE_STATE, &val);
 	if ((error = alGetError()) != AL_NO_ERROR)
 		throw Common::Exception("OpenAL error while getting source state in %s: 0x%X",
-		                        formatChannel(_channels[channel]).c_str(), error);
+		                        formatChannel(_channels[channel].get()).c_str(), error);
 
 	if (val != AL_PLAYING) {
 		if (!_channels[channel]->stream || _channels[channel]->stream->endOfStream()) {
@@ -196,13 +195,13 @@ bool SoundManager::isPlaying(size_t channel) const {
 			alGetSourcei(_channels[channel]->source, AL_BUFFERS_QUEUED, &buffersQueued);
 			if ((error = alGetError()) != AL_NO_ERROR)
 				throw Common::Exception("OpenAL error while getting queued buffers in %s: 0x%X",
-				                        formatChannel(_channels[channel]).c_str(), error);
+				                        formatChannel(_channels[channel].get()).c_str(), error);
 
 			ALint buffersProcessed;
 			alGetSourcei(_channels[channel]->source, AL_BUFFERS_PROCESSED, &buffersProcessed);
 			if ((error = alGetError()) != AL_NO_ERROR)
 				throw Common::Exception("OpenAL error while getting processed buffers in %s: 0x%X",
-				                        formatChannel(_channels[channel]).c_str(), error);
+				                        formatChannel(_channels[channel].get()).c_str(), error);
 
 			if (buffersQueued == buffersProcessed)
 				return false;
@@ -319,7 +318,13 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 
 	ChannelHandle handle = newChannel();
 
-	_channels[handle.channel] = new Channel;
+	bool success = false;
+	BOOST_SCOPE_EXIT ( (&success) (&handle) (this_) ) {
+		if (!success)
+			this_->freeChannel(handle);
+	} BOOST_SCOPE_EXIT_END
+
+	_channels[handle.channel].reset(new Channel);
 	Channel &channel = *_channels[handle.channel];
 
 	channel.id              = handle.id;
@@ -333,56 +338,50 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 	channel.finishedBuffers = 0;
 	channel.gain            = 1.0f;
 
-	try {
+	if (!channel.stream)
+		throw Common::Exception("Could not detect stream type");
 
-		if (!channel.stream)
-			throw Common::Exception("Could not detect stream type");
+	ALenum error = AL_NO_ERROR;
 
-		ALenum error = AL_NO_ERROR;
+	if (_hasSound) {
+		// Create the source
+		alGenSources(1, &channel.source);
+		if ((error = alGetError()) != AL_NO_ERROR)
+			throw Common::Exception("OpenAL error while generating sources: 0x%X", error);
 
-		if (_hasSound) {
-			// Create the source
-			alGenSources(1, &channel.source);
+		// Create all needed buffers
+		for (size_t i = 0; i < kOpenALBufferCount; i++) {
+			ALuint buffer;
+
+			alGenBuffers(1, &buffer);
 			if ((error = alGetError()) != AL_NO_ERROR)
-				throw Common::Exception("OpenAL error while generating sources: 0x%X", error);
+				throw Common::Exception("OpenAL error while generating buffers: 0x%X", error);
 
-			// Create all needed buffers
-			for (size_t i = 0; i < kOpenALBufferCount; i++) {
-				ALuint buffer;
+			if (fillBuffer(channel, buffer, channel.stream, channel.bufferSize[buffer])) {
+				// If we could fill the buffer with data, queue it
 
-				alGenBuffers(1, &buffer);
+				alSourceQueueBuffers(channel.source, 1, &buffer);
 				if ((error = alGetError()) != AL_NO_ERROR)
-					throw Common::Exception("OpenAL error while generating buffers: 0x%X", error);
+					throw Common::Exception("OpenAL error while queueing buffers: 0x%X", error);
 
-				if (fillBuffer(channel, buffer, channel.stream, channel.bufferSize[buffer])) {
-					// If we could fill the buffer with data, queue it
+			} else
+				// If not, put it into our free list
+				channel.freeBuffers.push_back(buffer);
 
-					alSourceQueueBuffers(channel.source, 1, &buffer);
-					if ((error = alGetError()) != AL_NO_ERROR)
-						throw Common::Exception("OpenAL error while queueing buffers: 0x%X", error);
-
-				} else
-					// If not, put it into our free list
-					channel.freeBuffers.push_back(buffer);
-
-				channel.buffers.push_back(buffer);
-			}
-
-			// Set the gain to the current sound type gain
-			alSourcef(channel.source, AL_GAIN, _types[channel.type].gain);
+			channel.buffers.push_back(buffer);
 		}
 
-		// Add the channel to the correct type list
-		_types[channel.type].list.push_back(&channel);
-		channel.typeIt = --_types[channel.type].list.end();
-
-	} catch (...) {
-		freeChannel(handle);
-		throw;
+		// Set the gain to the current sound type gain
+		alSourcef(channel.source, AL_GAIN, _types[channel.type].gain);
 	}
+
+	// Add the channel to the correct type list
+	_types[channel.type].list.push_back(&channel);
+	channel.typeIt = --_types[channel.type].list.end();
 
 	debugC(Common::kDebugSound, 2, "Created sound channel %s", formatChannel(handle).c_str());
 
+	success = true;
 	return handle;
 }
 
@@ -415,7 +414,7 @@ const SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handl
 	if (_channels[handle.channel]->id != handle.id)
 		return 0;
 
-	return _channels[handle.channel];
+	return _channels[handle.channel].get();
 }
 
 SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handle) {
@@ -428,7 +427,7 @@ SoundManager::Channel *SoundManager::getChannel(const ChannelHandle &handle) {
 	if (_channels[handle.channel]->id != handle.id)
 		return 0;
 
-	return _channels[handle.channel];
+	return _channels[handle.channel].get();
 }
 
 void SoundManager::startChannel(ChannelHandle &handle) {
@@ -481,7 +480,7 @@ void SoundManager::pauseAll(bool pause) {
 	Common::StackLock lock(_mutex);
 
 	for (size_t i = 0; i < kChannelCount; i++)
-		pauseChannel(_channels[i], pause);
+		pauseChannel(_channels[i].get(), pause);
 }
 
 void SoundManager::stopAll() {
@@ -641,26 +640,21 @@ bool SoundManager::fillBuffer(const Channel &channel, ALuint alBuffer,
 	// Read in the required amount of samples
 	size_t numSamples = kOpenALBufferSize / 2;
 
-	byte *buffer = new byte[kOpenALBufferSize];
-	std::memset(buffer, 0, kOpenALBufferSize);
+	Common::ScopedArray<byte> buffer(new byte[kOpenALBufferSize]);
+	std::memset(buffer.get(), 0, kOpenALBufferSize);
 
-	numSamples = stream->readBuffer(reinterpret_cast<int16 *>(buffer), numSamples);
+	numSamples = stream->readBuffer(reinterpret_cast<int16 *>(buffer.get()), numSamples);
 	if (numSamples == AudioStream::kSizeInvalid) {
-		delete[] buffer;
-
 		warning("Failed reading from stream while filling buffer in %s", formatChannel(&channel).c_str());
 		return false;
 	}
 
 	bufferedSize = numSamples * 2;
-	alBufferData(alBuffer, format, buffer, bufferedSize, stream->getRate());
-
-	delete[] buffer;
+	alBufferData(alBuffer, format, buffer.get(), bufferedSize, stream->getRate());
 
 	ALenum error = alGetError();
 	if (error != AL_NO_ERROR) {
-		warning("OpenAL error while filling buffer in %s: 0x%X",
-		        formatChannel(&channel).c_str(), error);
+		warning("OpenAL error while filling buffer in %s: 0x%X", formatChannel(&channel).c_str(), error);
 		return false;
 	}
 
@@ -820,7 +814,7 @@ void SoundManager::freeChannel(size_t channel) {
 	if (channel >= kChannelCount)
 		return;
 
-	Channel *c = _channels[channel];
+	Channel *c = _channels[channel].get();
 	if (!c)
 		// Nothing to do
 		return;
@@ -844,8 +838,7 @@ void SoundManager::freeChannel(size_t channel) {
 		_types[c->type].list.erase(c->typeIt);
 
 	// And finally delete the channel itself
-	delete c;
-	_channels[channel] = 0;
+	_channels[channel].reset();
 }
 
 void SoundManager::threadMethod() {

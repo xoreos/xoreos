@@ -39,6 +39,7 @@
 #include <map>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
 #include "src/common/thread.h"
 #include "src/common/mutex.h"
@@ -219,8 +220,8 @@ private:
 	bool _hasMultiChannel; ///< Do we have the multi-channel extension?
 	ALenum _format51; ///< The value for the 5.1 multi-channel format.
 
-	Channel *_channels[kChannelCount]; ///< The sound channels.
-	Type     _types   [kSoundTypeMAX]; ///< The sound types.
+	Common::ScopedPtr<Channel> _channels[kChannelCount]; ///< The sound channels.
+	Type _types[kSoundTypeMAX]; ///< The sound types.
 
 	uint32 _curID; ///< The ID the next sound will get.
 
