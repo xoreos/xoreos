@@ -55,14 +55,12 @@ namespace Engines {
 namespace NWN {
 
 Game::Game(NWNEngine &engine, ::Engines::Console &console, const Version &version) :
-	_engine(&engine), _module(0), _functions(0), _console(&console), _version(&version) {
+	_engine(&engine), _console(&console), _version(&version) {
 
-	_functions = new Functions(*this);
+	_functions.reset(new Functions(*this));
 }
 
 Game::~Game() {
-	delete _module;
-	delete _functions;
 }
 
 const Version &Game::getVersion() const {
@@ -78,15 +76,14 @@ Module &Game::getModule() {
 void Game::run() {
 	bool first = true;
 
-	_module = new Module(*_console, *_version);
+	_module.reset(new Module(*_console, *_version));
 
 	while (!EventMan.quitRequested()) {
 		mainMenu(first, first);
 		runModule();
 	}
 
-	delete _module;
-	_module = 0;
+	_module.reset();
 }
 
 void Game::runModule() {
