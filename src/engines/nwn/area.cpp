@@ -53,7 +53,7 @@ namespace Engines {
 namespace NWN {
 
 Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
-	_module(&module), _resRef(resRef), _visible(false), _tileset(0),
+	_module(&module), _resRef(resRef), _visible(false),
 	_activeObject(0), _highlightAll(false) {
 
 	try {
@@ -101,8 +101,7 @@ void Area::clear() {
 
 	_tiles.clear();
 
-	delete _tileset;
-	_tileset = 0;
+	_tileset.reset();
 }
 
 Common::UString Area::getName(const Common::UString &resRef) {
@@ -432,7 +431,7 @@ void Area::loadTileset() {
 		throw Common::Exception("Area \"%s\" has no tileset", _resRef.c_str());
 
 	try {
-		_tileset = new Tileset(_tilesetName);
+		_tileset.reset(new Tileset(_tilesetName));
 	} catch (Common::Exception &e) {
 		e.add("Failed loading tileset \"%s\"", _resRef.c_str());
 		throw;
@@ -442,8 +441,7 @@ void Area::loadTileset() {
 }
 
 void Area::unloadTileset() {
-	delete _tileset;
-	_tileset = 0;
+	_tileset.reset();
 }
 
 void Area::loadTiles() {

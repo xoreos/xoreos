@@ -182,7 +182,7 @@ private:
 	uint32 _height; ///< Height of the area in tiles, as seen from top-down.
 
 	Common::UString _tilesetName; ///< Name of the tileset.
-	Tileset *_tileset; ///< The actual tileset.
+	Common::ScopedPtr<Tileset> _tileset; ///< The actual tileset.
 
 	std::vector<Tile> _tiles; ///< The area's tiles.
 
