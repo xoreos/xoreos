@@ -44,34 +44,24 @@ namespace NWN {
 IngameGUI::IngameGUI(Module &module, ::Engines::Console *console) :
 	_module(&module), _lastCompassChange(0) {
 
-	_main = new IngameMainMenu(_module->getGameVersion(), console);
+	_main.reset(new IngameMainMenu(_module->getGameVersion(), console));
 
-	_quickbar  = new Quickbar;
-	_quickchat = new Quickchat(_quickbar->getHeight() - 3.0f);
-	_compass   = new Compass(_quickbar->getHeight() + _quickchat->getHeight() - 6.0f);
+	_quickbar.reset (new Quickbar);
+	_quickchat.reset(new Quickchat(_quickbar->getHeight() - 3.0f));
+	_compass.reset  (new Compass(_quickbar->getHeight() + _quickchat->getHeight() - 6.0f));
 
 	_party.resize(1);
 	_party[0] = new PartyLeader(module);
 
 	_lastPartyMemberChange.resize(1);
 	_lastPartyMemberChange[0] = 0;
-
-	_dialog = 0;
 }
 
 IngameGUI::~IngameGUI() {
 	hide();
 
-	delete _dialog;
-
 	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
 		delete *p;
-
-	delete _compass;
-	delete _quickchat;
-	delete _quickbar;
-
-	delete _main;
 }
 
 uint32 IngameGUI::showMain() {
@@ -197,12 +187,11 @@ bool IngameGUI::startConversation(const Common::UString &conv,
 		return true;
 
 	try {
-		_dialog = new Dialog(conv, pc, obj, *_module, playHello);
+		_dialog.reset(new Dialog(conv, pc, obj, *_module, playHello));
 
 		_dialog->show();
 	} catch (...) {
-		delete _dialog;
-		_dialog = 0;
+		_dialog.reset();
 
 		Common::exceptionDispatcherWarning("Failed starting conversation \"%s\"", conv.c_str());
 		return false;
@@ -216,10 +205,7 @@ void IngameGUI::stopConversation() {
 		return;
 
 	_dialog->abort();
-
-	delete _dialog;
-
-	_dialog = 0;
+	_dialog.reset();
 }
 
 } // End of namespace NWN

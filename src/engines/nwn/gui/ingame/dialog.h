@@ -27,6 +27,8 @@
 
 #include <list>
 
+#include "src/common/scopedptr.h"
+
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
@@ -150,9 +152,9 @@ private:
 	float _z; ///< The box's Z position.
 
 	/** The current speaker's portrait. */
-	Portrait *_portrait;
+	Common::ScopedPtr<Portrait> _portrait;
 	/** The current speaker's name. */
-	Graphics::Aurora::Text *_name;
+	Common::ScopedPtr<Graphics::Aurora::Text> _name;
 
 	/** The dialog font. */
 	Graphics::Aurora::FontHandle _font;
@@ -213,9 +215,9 @@ private:
 
 	Module *_module; ///< The module this dialog is in.
 
-	DialogBox *_dlgBox; ///< The actual dialog box.
+	Common::ScopedPtr<DialogBox> _dlgBox; ///< The actual dialog box.
 
-	Aurora::DLGFile *_dlg; ///< The conversation file.
+	Common::ScopedPtr<Aurora::DLGFile> _dlg; ///< The conversation file.
 
 	std::list<Events::Event> _eventQueue; ///< The event queue.
 

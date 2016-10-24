@@ -58,22 +58,16 @@ IngameMainMenu::IngameMainMenu(const Version &gameVersion, ::Engines::Console *c
 	// TODO: Save character
 	getWidget("SaveCharButton", true)->setDisabled(true);
 
-	_game     = new OptionsGameMenu    (false, _console);
-	_video    = new OptionsVideoMenu   (false, _console);
-	_sound    = new OptionsSoundMenu   (false, _console);
-	_controls = new OptionsControlsMenu(false, _console);
+	_game.reset    (new OptionsGameMenu    (false, _console));
+	_video.reset   (new OptionsVideoMenu   (false, _console));
+	_sound.reset   (new OptionsSoundMenu   (false, _console));
+	_controls.reset(new OptionsControlsMenu(false, _console));
 
-	_quitPrompt = new OKCancelDialog(TalkMan.getString(10308),
-	                                 TalkMan.getString(8274), TalkMan.getString(8275));
+	_quitPrompt.reset(new OKCancelDialog(TalkMan.getString(10308),
+	                                     TalkMan.getString(8274), TalkMan.getString(8275)));
 }
 
 IngameMainMenu::~IngameMainMenu() {
-	delete _quitPrompt;
-
-	delete _controls;
-	delete _sound;
-	delete _video;
-	delete _game;
 }
 
 void IngameMainMenu::initWidget(Widget &widget) {

@@ -47,14 +47,14 @@ QuickbarButton::QuickbarButton(::Engines::GUI &gui, size_t n) : NWNWidget(gui, "
 
 	if (_buttonNumber == 11) {
 
-		_model = loadModelGUI("qb_but67end");
+		_model.reset(loadModelGUI("qb_but67end"));
 		if (!_model)
 			throw Common::Exception("Failed to load quickbar model");
 		invisible = _model->getNode("Plane72");
 
 	} else {
 
-		_model = loadModelGUI("qb_but67");
+		_model.reset(loadModelGUI("qb_but67"));
 		if (!_model)
 			throw Common::Exception("Failed to load quickbar model");
 		invisible = _model->getNode("Plane52");
@@ -70,7 +70,6 @@ QuickbarButton::QuickbarButton(::Engines::GUI &gui, size_t n) : NWNWidget(gui, "
 }
 
 QuickbarButton::~QuickbarButton() {
-	delete _model;
 }
 
 void QuickbarButton::show() {
@@ -137,12 +136,10 @@ void Quickbar::callbackActive(Widget &UNUSED(widget)) {
 }
 
 void Quickbar::getSlotSize() {
-	Graphics::Aurora::Model *_model = loadModelGUI("qb_but67");
+	Common::ScopedPtr<Graphics::Aurora::Model> _model(loadModelGUI("qb_but67"));
 
 	_slotWidth  = floorf(_model->getWidth());
 	_slotHeight = floorf(_model->getHeight());
-
-	delete _model;
 }
 
 void Quickbar::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),

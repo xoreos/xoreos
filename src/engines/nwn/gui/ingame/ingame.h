@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 #include "src/events/types.h"
 
@@ -85,13 +86,13 @@ public:
 private:
 	Module *_module;
 
-	IngameMainMenu *_main; ///< The ingame main menu.
+	Common::ScopedPtr<IngameMainMenu> _main; ///< The ingame main menu.
 
-	Quickbar  *_quickbar;  ///< The quick bar.
-	Quickchat *_quickchat; ///< The quick chat.
-	Compass   *_compass;   ///< The compass.
+	Common::ScopedPtr<Quickbar>  _quickbar;  ///< The quick bar.
+	Common::ScopedPtr<Quickchat> _quickchat; ///< The quick chat.
+	Common::ScopedPtr<Compass>   _compass;   ///< The compass.
 
-	Dialog *_dialog; ///< The current dialog.
+	Common::ScopedPtr<Dialog> _dialog; ///< The current dialog.
 
 	/** The time the compass was changed last. */
 	uint32 _lastCompassChange;

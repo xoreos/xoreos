@@ -89,10 +89,10 @@ DialogBox::DialogBox(float width, float height) :
 		ConfigMan.getBool("largefonts") ? "fnt_dialog_big16" : "fnt_dialog16x16";
 	_font = FontMan.get(fontName);
 
-	_portrait = new Portrait("", Portrait::kSizeMedium);
+	_portrait.reset(new Portrait("", Portrait::kSizeMedium));
 
-	_name = new Graphics::Aurora::Text(FontMan.get("fnt_galahad14"), " ",
-	                                   kLightBlueR, kLightBlueG, kLightBlueB);
+	_name.reset(new Graphics::Aurora::Text(FontMan.get("fnt_galahad14"), " ",
+	                                       kLightBlueR, kLightBlueG, kLightBlueB));
 
 	_highlightedReply = _replyLines.end();
 	_pickedReply      = _replies.end();
@@ -101,9 +101,6 @@ DialogBox::DialogBox(float width, float height) :
 DialogBox::~DialogBox() {
 	clearReplies();
 	clearEntry();
-
-	delete _name;
-	delete _portrait;
 }
 
 void DialogBox::show() {
@@ -553,10 +550,10 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj,
 
 	_object->setPCSpeaker(&pc);
 
-	_dlg = new Aurora::DLGFile(conv, _object, true);
+	_dlg.reset(new Aurora::DLGFile(conv, _object, true));
 	_dlg->startConversation();
 
-	_dlgBox = new DialogBox(kDialogWidth, kDialogHeight);
+	_dlgBox.reset(new DialogBox(kDialogWidth, kDialogHeight));
 
 	updateBox();
 	playSound(playHello);
@@ -567,9 +564,6 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj,
 
 Dialog::~Dialog() {
 	abort();
-
-	delete _dlg;
-	delete _dlgBox;
 }
 
 bool Dialog::hasEnded() const {
