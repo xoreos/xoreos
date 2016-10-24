@@ -26,6 +26,7 @@
 #define VIDEO_DECODER_H
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 #include "src/graphics/types.h"
 #include "src/graphics/glcontainer.h"
@@ -86,7 +87,7 @@ protected:
 	uint32 _width;  ///< The video's width.
 	uint32 _height; ///< The video's height.
 
-	Graphics::Surface *_surface; ///< The video's surface.
+	Common::ScopedPtr<Graphics::Surface> _surface; ///< The video's surface.
 
 	/** Create a surface for video of these dimensions.
 	 *
@@ -131,10 +132,11 @@ private:
 
 	Scale _scale;
 
-	Sound::QueuingAudioStream *_sound;
-	Sound::ChannelHandle       _soundHandle;
-	uint16                     _soundRate;
-	byte                       _soundFlags;
+	Common::ScopedPtr<Sound::QueuingAudioStream> _sound;
+	Sound::ChannelHandle _soundHandle;
+
+	uint16 _soundRate;
+	byte   _soundFlags;
 
 
 	/** Update the video, if necessary. */

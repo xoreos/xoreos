@@ -43,9 +43,9 @@ namespace Video {
 
 VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
 	_started(false), _finished(false), _needCopy(false),
-	_width(0), _height(0), _surface(0), _texture(0),
+	_width(0), _height(0), _texture(0),
 	_textureWidth(0.0f), _textureHeight(0.0f), _scale(kScaleNone),
-	_sound(0), _soundRate(0), _soundFlags(0) {
+	_soundRate(0), _soundFlags(0) {
 
 }
 
@@ -54,8 +54,6 @@ VideoDecoder::~VideoDecoder() {
 
 	if (_texture != 0)
 		GfxMan.abandon(&_texture, 1);
-
-	delete _surface;
 
 	deinitSound();
 }
@@ -78,8 +76,7 @@ void VideoDecoder::initVideo(uint32 width, uint32 height) {
 	_textureWidth  = ((float) _width ) / ((float) realWidth );
 	_textureHeight = ((float) _height) / ((float) realHeight);
 
-	delete _surface;
-	_surface = new Graphics::Surface(realWidth, realHeight);
+	_surface.reset(new Graphics::Surface(realWidth, realHeight));
 
 	_surface->fill(0, 0, 0, 0);
 
@@ -99,9 +96,9 @@ void VideoDecoder::initSound(uint16 rate, int channels, bool is16) {
 	if (is16)
 		_soundFlags |= Sound::FLAG_16BITS;
 
-	_sound = Sound::makeQueuingAudioStream(_soundRate, channels);
+	_sound.reset(Sound::makeQueuingAudioStream(_soundRate, channels));
 
-	_soundHandle = SoundMan.playAudioStream(_sound, Sound::kSoundTypeVideo, false);
+	_soundHandle = SoundMan.playAudioStream(_sound.get(), Sound::kSoundTypeVideo, false);
 }
 
 void VideoDecoder::deinitSound() {
@@ -113,31 +110,40 @@ void VideoDecoder::deinitSound() {
 
 	SoundMan.stopChannel(_soundHandle);
 
-	delete _sound;
-	_sound = 0;
+	_sound.reset();
 }
 
 void VideoDecoder::queueSound(const byte *data, uint32 dataSize) {
+	assert(data && dataSize);
+
+	Common::ScopedArray<const byte> audioData(data);
+
 	if (!_sound)
 		return;
 
-	assert(data && dataSize);
+	Common::ScopedPtr<Common::MemoryReadStream>
+		dataStream(new Common::MemoryReadStream(audioData.release(), dataSize, true));
 
-	Common::MemoryReadStream *dataStream = new Common::MemoryReadStream(data, dataSize, true);
-	Sound::RewindableAudioStream *dataPCM = Sound::makePCMStream(dataStream, _soundRate, _soundFlags, _sound->getChannels());
+	Common::ScopedPtr<Sound::RewindableAudioStream>
+		dataPCM(Sound::makePCMStream(dataStream.get(), _soundRate, _soundFlags, _sound->getChannels()));
+	dataStream.release();
 
-	_sound->queueAudioStream(dataPCM);
+	_sound->queueAudioStream(dataPCM.get());
+	dataPCM.release();
 
 	SoundMan.startChannel(_soundHandle);
 }
 
 void VideoDecoder::queueSound(Sound::AudioStream *stream) {
+	assert(stream);
+
+	Common::ScopedPtr<Sound::AudioStream> audioStream(stream);
+
 	if (!_sound)
 		return;
 
-	assert(stream);
-
-	_sound->queueAudioStream(stream);
+	_sound->queueAudioStream(audioStream.get());
+	audioStream.release();
 
 	SoundMan.startChannel(_soundHandle);
 }
