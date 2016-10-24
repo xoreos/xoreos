@@ -55,6 +55,8 @@
 #include <cassert>
 #include <cstring>
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/system.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
@@ -91,13 +93,13 @@ static const char *tag2str(uint32 tag) {
 	return string;
 }
 
-QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : VideoDecoder() {
+QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : _fd(stream),
+	_foundMOOV(false), _curFrame(-1), _startTime(0), _audioTrackIndex(-1),
+	_nextFrameStartTime(0), _videoTrackIndex(-1) {
+
+	assert(_fd);
+
 	initParseTable();
-	_fd = stream;
-	_foundMOOV = false;
-	_videoTrackIndex = _audioTrackIndex = -1;
-	_startTime = _nextFrameStartTime = 0;
-	_curFrame = -1;
 
 	try {
 		load();
@@ -116,10 +118,6 @@ void QuickTimeDecoder::clear() {
 
 	for (size_t i = 0; i < _tracks.size(); i++)
 		delete _tracks[i];
-	_tracks.clear();
-
-	delete _fd;
-	_fd = 0;
 }
 
 void QuickTimeDecoder::load() {
@@ -182,7 +180,7 @@ void QuickTimeDecoder::load() {
 
 QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uint32 format) {
 	if (track->codecType == CODEC_TYPE_VIDEO) {
-		VideoSampleDesc *entry = new VideoSampleDesc(track, format);
+		Common::ScopedPtr<VideoSampleDesc> entry(new VideoSampleDesc(track, format));
 
 		_fd->readUint16BE(); // version
 		_fd->readUint16BE(); // revision level
@@ -223,9 +221,9 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uin
 		if (colorDepth == 2 || colorDepth == 4 || colorDepth == 8)
 			throw Common::Exception("No paletted video support");
 
-		return entry;
+		return entry.release();
 	} else if (track->codecType == CODEC_TYPE_AUDIO) {
-		AudioSampleDesc *entry = new AudioSampleDesc(track, format);
+		Common::ScopedPtr<AudioSampleDesc> entry(new AudioSampleDesc(track, format));
 
 		uint16 stsdVersion = _fd->readUint16BE();
 		_fd->readUint16BE(); // revision level
@@ -250,7 +248,6 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uin
 			_fd->readUint32BE(); // bytes per sample
 		} else {
 			warning("Unsupported QuickTime STSD audio version %d", stsdVersion);
-			delete entry;
 			return 0;
 		}
 
@@ -264,7 +261,7 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uin
 		if (entry->_sampleRate == 0 && track->timeScale > 1)
 			entry->_sampleRate = track->timeScale;
 
-		return entry;
+		return entry.release();
 	}
 
 	return 0;
@@ -297,7 +294,7 @@ Codec *QuickTimeDecoder::findDefaultVideoCodec() const {
 	if (_videoTrackIndex < 0 || _tracks[_videoTrackIndex]->sampleDescs.empty())
 		return 0;
 
-	return dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[0])._videoCodec;
+	return dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[0])._videoCodec.get();
 }
 
 void QuickTimeDecoder::startVideo() {
@@ -322,12 +319,10 @@ void QuickTimeDecoder::processData() {
 
 	// Get the next packet
 	uint32 descId;
-	Common::SeekableReadStream *frameData = getNextFramePacket(descId);
+	Common::ScopedPtr<Common::SeekableReadStream> frameData(getNextFramePacket(descId));
 
-	if (!frameData || !descId || descId > _tracks[_videoTrackIndex]->sampleDescs.size()) {
-		delete frameData;
+	if (!frameData || !descId || descId > _tracks[_videoTrackIndex]->sampleDescs.size())
 		return;
-	}
 
 	// Find which video description entry we want
 	VideoSampleDesc &entry = dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[descId - 1]);
@@ -338,8 +333,6 @@ void QuickTimeDecoder::processData() {
 		entry._videoCodec->decodeFrame(*_surface, *frameData);
 		_needCopy = true;
 	}
-
-	delete frameData;
 }
 
 uint32 QuickTimeDecoder::getElapsedTime() const {
@@ -633,7 +626,7 @@ int QuickTimeDecoder::readSTSC(Atom UNUSED(atom)) {
 
 	track->sampleToChunkCount = _fd->readUint32BE();
 
-	track->sampleToChunk = new SampleToChunkEntry[track->sampleToChunkCount];
+	track->sampleToChunk.reset(new SampleToChunkEntry[track->sampleToChunkCount]);
 
 	if (!track->sampleToChunk)
 		return -1;
@@ -655,7 +648,7 @@ int QuickTimeDecoder::readSTSS(Atom UNUSED(atom)) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	track->keyframeCount = _fd->readUint32BE();
-	track->keyframes = new uint32[track->keyframeCount];
+	track->keyframes.reset(new uint32[track->keyframeCount]);
 
 	if (!track->keyframes)
 		return -1;
@@ -678,7 +671,7 @@ int QuickTimeDecoder::readSTSZ(Atom UNUSED(atom)) {
 	if (track->sampleSize)
 		return 0; // there isn't any table following
 
-	track->sampleSizes = new uint32[track->sampleCount];
+	track->sampleSizes.reset(new uint32[track->sampleCount]);
 
 	if (!track->sampleSizes)
 		return -1;
@@ -697,7 +690,7 @@ int QuickTimeDecoder::readSTTS(Atom UNUSED(atom)) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	track->timeToSampleCount = _fd->readUint32BE();
-	track->timeToSample = new TimeToSampleEntry[track->timeToSampleCount];
+	track->timeToSample.reset(new TimeToSampleEntry[track->timeToSampleCount]);
 
 	for (int32 i = 0; i < track->timeToSampleCount; i++) {
 		track->timeToSample[i].count = _fd->readUint32BE();
@@ -718,7 +711,7 @@ int QuickTimeDecoder::readSTCO(Atom UNUSED(atom)) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	track->chunkCount = _fd->readUint32BE();
-	track->chunkOffsets = new uint32[track->chunkCount];
+	track->chunkOffsets.reset(new uint32[track->chunkCount]);
 
 	if (!track->chunkOffsets)
 		return -1;
@@ -767,13 +760,13 @@ int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 	byte tag;
 	int length;
 
-	readMP4Desc(_fd, tag, length);
+	readMP4Desc(_fd.get(), tag, length);
 	_fd->readUint16BE(); // id
 	if (tag == kMP4ESDescTag)
 		_fd->readByte(); // priority
 
 	// Check if we've got the Config MPEG-4 header
-	readMP4Desc(_fd, tag, length);
+	readMP4Desc(_fd.get(), tag, length);
 	if (tag != kMP4DecConfigDescTag)
 		return 0;
 
@@ -784,11 +777,11 @@ int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 	_fd->readUint32BE();                  // avg bitrate
 
 	// Check if we've got the Specific MPEG-4 header
-	readMP4Desc(_fd, tag, length);
+	readMP4Desc(_fd.get(), tag, length);
 	if (tag != kMP4DecSpecificDescTag)
 		return 0;
 
-	track->extraData = _fd->readStream(length);
+	track->extraData.reset(_fd->readStream(length));
 
 	return 0;
 }
@@ -844,7 +837,13 @@ Common::SeekableReadStream *QuickTimeDecoder::getNextFramePacket(uint32 &descId)
 
 void QuickTimeDecoder::queueNextAudioChunk() {
 	AudioSampleDesc &entry = dynamic_cast<AudioSampleDesc &>(*_tracks[_audioTrackIndex]->sampleDescs[0]);
-	Common::MemoryWriteStreamDynamic *wStream = new Common::MemoryWriteStreamDynamic();
+	Common::MemoryWriteStreamDynamic wStream;
+
+	bool success = false;
+	BOOST_SCOPE_EXIT( (&success) (&wStream)) {
+		if (!success)
+			wStream.dispose();
+	} BOOST_SCOPE_EXIT_END
 
 	_fd->seek(_tracks[_audioTrackIndex]->chunkOffsets[_curAudioChunk]);
 
@@ -871,7 +870,7 @@ void QuickTimeDecoder::queueNextAudioChunk() {
 			}
 
 			// Now, we read in the data for this data and output it
-			wStream->writeStream(*_fd, size);
+			wStream.writeStream(*_fd, size);
 			sampleCount -= samples;
 		}
 	} else {
@@ -886,13 +885,14 @@ void QuickTimeDecoder::queueNextAudioChunk() {
 			uint32 size = (_tracks[_audioTrackIndex]->sampleSize != 0) ? _tracks[_audioTrackIndex]->sampleSize : _tracks[_audioTrackIndex]->sampleSizes[i + startSample];
 
 			// Now, we read in the data for this data and output it
-			wStream->writeStream(*_fd, size);
+			wStream.writeStream(*_fd, size);
 		}
 	}
 
+	success = true;
+
 	// Now queue the buffer
-	queueSound(entry.createAudioStream(new Common::MemoryReadStream(wStream->getData(), wStream->size(), true)));
-	delete wStream;
+	queueSound(entry.createAudioStream(new Common::MemoryReadStream(wStream.getData(), wStream.size(), true)));
 
 	_curAudioChunk++;
 }
@@ -935,37 +935,13 @@ QuickTimeDecoder::SampleDesc::SampleDesc(QuickTimeDecoder::Track *parentTrack, u
 	_codecTag = codecTag;
 }
 
-QuickTimeDecoder::Track::Track() {
-	chunkCount = 0;
-	chunkOffsets = 0;
-	timeToSampleCount = 0;
-	timeToSample = 0;
-	sampleToChunkCount = 0;
-	sampleToChunk = 0;
-	sampleSize = 0;
-	sampleCount = 0;
-	sampleSizes = 0;
-	keyframeCount = 0;
-	keyframes = 0;
-	timeScale = 0;
-	width = 0;
-	height = 0;
-	codecType = CODEC_TYPE_MOV_OTHER;
-	extraData = 0;
-	frameCount = 0;
-	duration = 0;
-	startTime = 0;
-	objectTypeMP4 = 0;
+QuickTimeDecoder::Track::Track() : chunkCount(0), timeToSampleCount(0), sampleToChunkCount(0),
+	sampleSize(0), sampleCount(0), keyframeCount(0), timeScale(0), width(0), height(0),
+	codecType(CODEC_TYPE_MOV_OTHER), frameCount(0), duration(0), startTime(0), objectTypeMP4(0) {
+
 }
 
 QuickTimeDecoder::Track::~Track() {
-	delete[] chunkOffsets;
-	delete[] timeToSample;
-	delete[] sampleToChunk;
-	delete[] sampleSizes;
-	delete[] keyframes;
-	delete extraData;
-
 	for (size_t i = 0; i < sampleDescs.size(); i++)
 		delete sampleDescs[i];
 }
@@ -976,11 +952,9 @@ QuickTimeDecoder::AudioSampleDesc::AudioSampleDesc(QuickTimeDecoder::Track *pare
 	_samplesPerFrame = 0;
 	_bytesPerFrame = 0;
 	_bitsPerSample = 0;
-	_codec = 0;
 }
 
 QuickTimeDecoder::AudioSampleDesc::~AudioSampleDesc() {
-	delete _codec;
 }
 
 bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
@@ -1022,35 +996,46 @@ Sound::AudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStream(Common:
 	if (!stream)
 		return 0;
 
-	if (_codec) {
-		// If we've loaded a codec, make sure we use first
-		Sound::AudioStream *audioStream = _codec->decodeFrame(*stream);
-		delete stream;
-		return audioStream;
-	} else if (_codecTag == MKTAG('t', 'w', 'o', 's') || _codecTag == MKTAG('r', 'a', 'w', ' ')) {
-		// Standard PCM
+	Common::ScopedPtr<Common::SeekableReadStream> dataStream(stream);
+
+	// If we've loaded a codec, make sure we use first
+	if (_codec)
+		return _codec->decodeFrame(*dataStream);
+
+	// Standard PCM
+	if (_codecTag == MKTAG('t', 'w', 'o', 's') || _codecTag == MKTAG('r', 'a', 'w', ' ')) {
 		uint16 flags = 0;
 		if (_codecTag == MKTAG('r', 'a', 'w', ' '))
 			flags |= Sound::FLAG_UNSIGNED;
 		if (_bitsPerSample == 16)
 			flags |= Sound::FLAG_16BITS;
 
-		return Sound::makePCMStream(stream, _sampleRate, flags, _channels);
-	} else if (_codecTag == MKTAG('i', 'm', 'a', '4')) {
-		// QuickTime IMA ADPCM
-		return Sound::makeADPCMStream(stream, true, stream->size(), Sound::kADPCMApple, _sampleRate, _channels, 34);
+		Sound::AudioStream *audioStream = Sound::makePCMStream(dataStream.get(), _sampleRate, flags, _channels);
+
+		dataStream.release();
+		return audioStream;
+	}
+
+	// QuickTime IMA ADPCM
+	if (_codecTag == MKTAG('i', 'm', 'a', '4')) {
+		Sound::AudioStream *audioStream =
+			Sound::makeADPCMStream(dataStream.get(), true, dataStream->size(),
+			                       Sound::kADPCMApple, _sampleRate, _channels, 34);
+
+		dataStream.release();
+		return audioStream;
 	}
 
 	return 0;
 }
 
 void QuickTimeDecoder::AudioSampleDesc::initCodec() {
-	delete _codec; _codec = 0;
+	_codec.reset();
 
 	switch (_codecTag) {
 	case MKTAG('m', 'p', '4', 'a'):
 		if (_parentTrack->objectTypeMP4 == 0x40)
-			_codec = Sound::makeAACDecoder(_parentTrack->extraData);
+			_codec.reset(Sound::makeAACDecoder(_parentTrack->extraData.get()));
 		break;
 	default:
 		break;
@@ -1060,14 +1045,10 @@ void QuickTimeDecoder::AudioSampleDesc::initCodec() {
 QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::Track *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
 	std::memset(_codecName, 0, 32);
 	_colorTableId = 0;
-	_palette = 0;
-	_videoCodec = 0;
 	_bitsPerSample = 0;
 }
 
 QuickTimeDecoder::VideoSampleDesc::~VideoSampleDesc() {
-	delete[] _palette;
-	delete _videoCodec;
 }
 
 void QuickTimeDecoder::VideoSampleDesc::initCodec(Graphics::Surface &surface) {
@@ -1079,7 +1060,7 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec(Graphics::Surface &surface) {
 		case 0x20:
 			videoType = "h.263";
 
-			_videoCodec = new H263Codec(_parentTrack->width, _parentTrack->height);
+			_videoCodec.reset(new H263Codec(_parentTrack->width, _parentTrack->height));
 			if (_parentTrack->extraData)
 				_videoCodec->decodeFrame(surface, *_parentTrack->extraData);
 			break;

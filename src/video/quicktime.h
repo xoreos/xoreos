@@ -57,6 +57,9 @@
 
 #include <vector>
 
+#include "src/common/types.h"
+#include "src/common/scopedptr.h"
+
 #include "src/video/decoder.h"
 
 namespace Common {
@@ -91,7 +94,7 @@ protected:
 
 private:
 	// This is the file handle from which data is read from. It can be the actual file handle or a decompressed stream.
-	Common::SeekableReadStream *_fd;
+	Common::ScopedPtr<Common::SeekableReadStream> _fd;
 
 	struct Atom {
 		uint32 type;
@@ -146,7 +149,7 @@ private:
 		uint32 _samplesPerFrame;
 		uint32 _bytesPerFrame;
 
-		Sound::Codec *_codec;
+		Common::ScopedPtr<Sound::Codec> _codec;
 	};
 
 	class VideoSampleDesc : public SampleDesc {
@@ -160,8 +163,8 @@ private:
 		uint16 _bitsPerSample;
 		char _codecName[32];
 		uint16 _colorTableId;
-		byte *_palette;
-		Codec *_videoCodec;
+		Common::ScopedArray<byte> _palette;
+		Common::ScopedPtr<Codec> _videoCodec;
 	};
 
 	enum CodecType {
@@ -175,16 +178,16 @@ private:
 		~Track();
 
 		uint32 chunkCount;
-		uint32 *chunkOffsets;
+		Common::ScopedArray<uint32> chunkOffsets;
 		int timeToSampleCount;
-		TimeToSampleEntry *timeToSample;
+		Common::ScopedArray<TimeToSampleEntry> timeToSample;
 		uint32 sampleToChunkCount;
-		SampleToChunkEntry *sampleToChunk;
+		Common::ScopedArray<SampleToChunkEntry> sampleToChunk;
 		uint32 sampleSize;
 		uint32 sampleCount;
-		uint32 *sampleSizes;
+		Common::ScopedArray<uint32> sampleSizes;
 		uint32 keyframeCount;
-		uint32 *keyframes;
+		Common::ScopedArray<uint32> keyframes;
 		int32 timeScale;
 
 		uint16 width;
@@ -193,7 +196,7 @@ private:
 
 		std::vector<SampleDesc *> sampleDescs;
 
-		Common::SeekableReadStream *extraData;
+		Common::ScopedPtr<Common::SeekableReadStream> extraData;
 
 		uint32 frameCount;
 		uint32 duration;
