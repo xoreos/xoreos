@@ -62,15 +62,15 @@ bool dumpResList(const Common::UString &name);
 /** Debug method to quickly dump a stream to disk. */
 bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileName);
 /** Debug method to quickly dump a resource to disk. */
-bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::UString file = "");
+bool dumpResource(const Common::UString &name, Aurora::FileType type, const Common::UString &file = "");
 /** Debug method to quickly dump a resource to disk. */
 bool dumpResource(const Common::UString &name, const Common::UString &file = "");
 
 /** Debug method to quickly dump an image resource to disk. */
-bool dumpTGA(const Common::UString &name, Common::UString file = "");
+bool dumpTGA(const Common::UString &name, const Common::UString &file = "");
 
 /** Debug method to quickly dump a 2DA to disk. */
-bool dump2DA(const Common::UString &name, Common::UString file = "");
+bool dump2DA(const Common::UString &name, const Common::UString &file = "");
 
 } // End of namespace Engines
 

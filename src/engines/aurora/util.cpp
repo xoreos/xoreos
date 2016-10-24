@@ -24,6 +24,7 @@
 
 #include <cstdlib>
 
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/writefile.h"
@@ -160,7 +161,7 @@ bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileN
 	if (!file.open(fileName))
 		return false;
 
-	size_t pos = stream.pos();
+	const size_t pos = stream.pos();
 	try {
 		stream.seek(0);
 
@@ -178,19 +179,12 @@ bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileN
 	return true;
 }
 
-bool dumpResource(const Common::UString &name, Aurora::FileType type, Common::UString file) {
-	Common::SeekableReadStream *res = ResMan.getResource(name, type);
+bool dumpResource(const Common::UString &name, Aurora::FileType type, const Common::UString &file) {
+	Common::ScopedPtr<Common::SeekableReadStream> res(ResMan.getResource(name, type));
 	if (!res)
 		return false;
 
-	if (file.empty())
-		file = TypeMan.setFileType(name, type);
-
-	bool success = dumpStream(*res, file);
-
-	delete res;
-
-	return success;
+	return dumpStream(*res, file.empty() ? TypeMan.setFileType(name, type) : file);
 }
 
 bool dumpResource(const Common::UString &name, const Common::UString &file) {
@@ -199,44 +193,30 @@ bool dumpResource(const Common::UString &name, const Common::UString &file) {
 	return dumpResource(TypeMan.setFileType(name, Aurora::kFileTypeNone), type, file);
 }
 
-bool dumpTGA(const Common::UString &name, Common::UString file) {
-	if (file.empty())
-		file = name + ".tga";
-
-	bool success = false;
-	Graphics::ImageDecoder *image = 0;
+bool dumpTGA(const Common::UString &name, const Common::UString &file) {
 	try {
-		image = Graphics::Aurora::Texture::loadImage(name);
+		Common::ScopedPtr<Graphics::ImageDecoder> image(Graphics::Aurora::Texture::loadImage(name));
 
-		success = image->dumpTGA(file);
+		return image->dumpTGA(file.empty() ? (name + ".tga") : file);
 	} catch (...) {
 	}
 
-	delete image;
-	return success;
+	return false;
 }
 
-bool dump2DA(const Common::UString &name, Common::UString file) {
-	if (file.empty())
-		file = name + ".2da";
-
-	Common::SeekableReadStream *twoDAFile = 0;
-	bool success = false;
+bool dump2DA(const Common::UString &name, const Common::UString &file) {
+	Common::ScopedPtr<Common::SeekableReadStream> twoDAFile(ResMan.getResource(name, Aurora::kFileType2DA));
+	if (!twoDAFile)
+		return false;
 
 	try {
-
-		if (!(twoDAFile = ResMan.getResource(name, Aurora::kFileType2DA)))
-			return false;
-
 		Aurora::TwoDAFile twoda(*twoDAFile);
 
-		success = twoda.writeASCII(file);
-
+		return twoda.writeASCII(file.empty() ? (name + ".2da") : file);
 	} catch (...) {
 	}
 
-	delete twoDAFile;
-	return success;
+	return false;
 }
 
 } // End of namespace Engines
