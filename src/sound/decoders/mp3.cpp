@@ -50,15 +50,15 @@
 #include <cassert>
 #include <cstring>
 
-#include "src/sound/decoders/mp3.h"
+#include <mad.h>
 
-#include "src/common/readstream.h"
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
+#include "src/common/readstream.h"
 
 #include "src/sound/audiostream.h"
 
-#include <mad.h>
-
+#include "src/sound/decoders/mp3.h"
 
 namespace Sound {
 
@@ -352,16 +352,12 @@ size_t MP3Stream::readBuffer(int16 *buffer, const size_t numSamples) {
 	return samples;
 }
 
-RewindableAudioStream *makeMP3Stream(
-	Common::SeekableReadStream *stream,
-	bool disposeAfterUse) {
-	RewindableAudioStream *s = new MP3Stream(stream, disposeAfterUse);
-	if (s && s->endOfData()) {
-		delete s;
+RewindableAudioStream *makeMP3Stream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
+	Common::ScopedPtr<RewindableAudioStream> s(new MP3Stream(stream, disposeAfterUse));
+	if (s && s->endOfData())
 		return 0;
-	} else {
-		return s;
-	}
+
+	return s.release();
 }
 
 } // End of namespace Sound
