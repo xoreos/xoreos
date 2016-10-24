@@ -36,14 +36,10 @@
 
 namespace Engines {
 
-Engine::Engine() : _game(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnknown),
-	_console(0), _fps(0) {
-
+Engine::Engine() : _game(Aurora::kGameIDUnknown), _platform(Aurora::kPlatformUnknown) {
 }
 
 Engine::~Engine() {
-	delete _console;
-	delete _fps;
 }
 
 bool Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &UNUSED(target),
@@ -97,13 +93,12 @@ void Engine::showFPS() {
 
 	if        ( show && !_fps) {
 
-		_fps = new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
+		_fps.reset(new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13)));
 		_fps->show();
 
 	} else if (!show &&  _fps) {
 
-		delete _fps;
-		_fps = 0;
+		_fps.reset();
 
 	}
 }

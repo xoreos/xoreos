@@ -63,7 +63,7 @@ namespace Jade {
 JadeEngine::JadeEngine() : _language(Aurora::kLanguageInvalid),
 	_game(0) {
 
-	_console = new Console(*this);
+	_console.reset(new Console(*this));
 }
 
 JadeEngine::~JadeEngine() {

@@ -53,7 +53,7 @@ namespace DragonAge2 {
 DragonAge2Engine::DragonAge2Engine() : _language(Aurora::kLanguageInvalid),
 	_game(0) {
 
-	_console = new Console(*this);
+	_console.reset(new Console(*this));
 }
 
 DragonAge2Engine::~DragonAge2Engine() {

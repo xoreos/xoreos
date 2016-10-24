@@ -57,7 +57,7 @@ namespace KotOR2 {
 KotOR2Engine::KotOR2Engine() : _language(Aurora::kLanguageInvalid),
 	_game(0) {
 
-	_console = new Console(*this);
+	_console.reset(new Console(*this));
 }
 
 KotOR2Engine::~KotOR2Engine() {

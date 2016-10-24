@@ -29,6 +29,7 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -83,9 +84,9 @@ protected:
 	Aurora::Platform _platform;
 	Common::UString  _target;
 
-	Console *_console;
+	Common::ScopedPtr<Console> _console;
 
-	Graphics::Aurora::FPS *_fps;
+	Common::ScopedPtr<Graphics::Aurora::FPS> _fps;
 
 
 	/** Run the game. */

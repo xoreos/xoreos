@@ -60,7 +60,7 @@ namespace NWN {
 NWNEngine::NWNEngine() : _version(0), _language(Aurora::kLanguageInvalid),
 	_hasXP1(false), _hasXP2(false), _hasXP3(false), _game(0) {
 
-	_console = new Console(*this);
+	_console.reset(new Console(*this));
 }
 
 NWNEngine::~NWNEngine() {

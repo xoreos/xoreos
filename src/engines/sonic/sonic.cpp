@@ -60,7 +60,7 @@ namespace Engines {
 namespace Sonic {
 
 SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid), _game(0) {
-	_console = new Console(*this);
+	_console.reset(new Console(*this));
 }
 
 SonicEngine::~SonicEngine() {

@@ -58,7 +58,7 @@ WitcherEngine::WitcherEngine() :
 	_languageText(Aurora::kLanguageInvalid), _languageVoice(Aurora::kLanguageInvalid),
 	_game(0) {
 
-	_console = new Console(*this);
+	_console.reset(new Console(*this));
 }
 
 WitcherEngine::~WitcherEngine() {
