@@ -47,11 +47,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "src/common/scopedptr.h"
+#include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
-#include "src/common/util.h"
 
 #include "src/sound/audiostream.h"
+
 #include "src/sound/decoders/asf.h"
 #include "src/sound/decoders/wma.h"
 #include "src/sound/decoders/wave_types.h"
@@ -151,9 +153,9 @@ private:
 
 	size_t _rewindPos;
 	uint64 _curPacket;
-	Packet *_lastPacket;
-	Codec *_codec;
-	AudioStream *_curAudioStream;
+	Common::ScopedPtr<Packet> _lastPacket;
+	Common::ScopedPtr<Codec> _codec;
+	Common::ScopedPtr<AudioStream> _curAudioStream;
 	byte _curSequenceNumber;
 
 	// Header object variables
@@ -169,7 +171,7 @@ private:
 	uint32 _bitRate;
 	uint16 _blockAlign;
 	uint16 _bitsPerCodedSample;
-	Common::SeekableReadStream *_extraData;
+	Common::ScopedPtr<Common::SeekableReadStream> _extraData;
 };
 
 ASFStream::Packet::Packet() {
@@ -182,11 +184,7 @@ ASFStream::Packet::~Packet() {
 }
 
 ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream(stream), _disposeAfterUse(dispose) {
-	_extraData = 0;
-	_lastPacket = 0;
 	_curPacket = 0;
-	_codec = 0;
-	_curAudioStream = 0;
 	_curSequenceNumber = 1; // They always start at one
 
 	try {
@@ -204,20 +202,6 @@ ASFStream::~ASFStream() {
 void ASFStream::clear() {
 	if (_disposeAfterUse)
 		delete _stream;
-
-	_stream = 0;
-
-	delete _lastPacket;
-	_lastPacket = 0;
-
-	delete _curAudioStream;
-	_curAudioStream = 0;
-
-	delete _codec;
-	_codec = 0;
-
-	delete _extraData;
-	_extraData = 0;
 }
 
 void ASFStream::load() {
@@ -313,10 +297,10 @@ void ASFStream::parseStreamHeader() {
 	if (typeSpecificSize >= 18) {
 		uint32 cbSize = _stream->readUint16LE();
 		cbSize = MIN<int>(cbSize, typeSpecificSize - 18);
-		_extraData = _stream->readStream(cbSize);
+		_extraData.reset(_stream->readStream(cbSize));
 	}
 
-	_codec = createCodec();
+	_codec.reset(createCodec());
 }
 
 uint64 ASFStream::getLength() const {
@@ -333,10 +317,10 @@ bool ASFStream::rewind() {
 
 	// Reset our packet counter
 	_curPacket = 0;
-	delete _lastPacket; _lastPacket = 0;
+	_lastPacket.reset();
 
 	// Delete a stream if we have one
-	delete _curAudioStream; _curAudioStream = 0;
+	_curAudioStream.reset();
 
 	// Reset this too
 	_curSequenceNumber = 1;
@@ -435,7 +419,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 Codec *ASFStream::createCodec() {
 	switch (_compression) {
 	case kWaveWMAv2:
-		return new WMACodec(2, _sampleRate, _channels, _bitRate, _blockAlign, _extraData);
+		return new WMACodec(2, _sampleRate, _channels, _bitRate, _blockAlign, _extraData.get());
 	default:
 		throw Common::Exception("ASFStream::createAudioStream(): Unknown compression 0x%04x", _compression);
 	}
@@ -444,8 +428,7 @@ Codec *ASFStream::createCodec() {
 }
 
 AudioStream *ASFStream::createAudioStream() {
-	delete _lastPacket;
-	_lastPacket = readPacket();
+	_lastPacket.reset(readPacket());
 
 	// TODO
 	if (_lastPacket->segments.size() != 1)
@@ -486,17 +469,15 @@ size_t ASFStream::readBuffer(int16 *buffer, const size_t numSamples) {
 
 			samplesDecoded += n;
 
-			if (_curAudioStream->endOfData()) {
-				delete _curAudioStream;
-				_curAudioStream = 0;
-			}
+			if (_curAudioStream->endOfData())
+				_curAudioStream.reset();
 		}
 
 		if (samplesDecoded == numSamples || endOfData())
 			break;
 
 		if (!_curAudioStream) {
-			_curAudioStream = createAudioStream();
+			_curAudioStream.reset(createAudioStream());;
 		}
 
 	}
@@ -508,17 +489,12 @@ bool ASFStream::endOfData() const {
 	return _curPacket == _packetCount && !_curAudioStream;
 }
 
-RewindableAudioStream *makeASFStream(
-	Common::SeekableReadStream *stream,
-	bool disposeAfterUse) {
-	RewindableAudioStream *s = new ASFStream(stream, disposeAfterUse);
-
-	if (s && s->endOfData()) {
-		delete s;
+RewindableAudioStream *makeASFStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
+	Common::ScopedPtr<RewindableAudioStream> s(new ASFStream(stream, disposeAfterUse));
+	if (s && s->endOfData())
 		return 0;
-	}
 
-	return s;
+	return s.release();
 }
 
 } // End of namespace Sound
