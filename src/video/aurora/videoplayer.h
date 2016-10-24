@@ -25,6 +25,8 @@
 #ifndef VIDEO_AURORA_VIDEOPLAYER_H
 #define VIDEO_AURORA_VIDEOPLAYER_H
 
+#include "src/common/scopedptr.h"
+
 namespace Common {
 	class UString;
 }
@@ -44,7 +46,7 @@ public:
 	void play();
 
 private:
-	VideoDecoder *_video;
+	Common::ScopedPtr<VideoDecoder> _video;
 
 	void load(const Common::UString &name);
 };

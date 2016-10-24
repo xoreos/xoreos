@@ -22,8 +22,10 @@
  *  A video player.
  */
 
-#include "src/common/error.h"
+#include <boost/scope_exit.hpp>
+
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
 #include "src/common/debug.h"
@@ -45,41 +47,41 @@ namespace Video {
 
 namespace Aurora {
 
-VideoPlayer::VideoPlayer(const Common::UString &video) : _video(0) {
+VideoPlayer::VideoPlayer(const Common::UString &video) {
 	load(video);
 }
 
 VideoPlayer::~VideoPlayer() {
-	delete _video;
 }
 
 void VideoPlayer::load(const Common::UString &name) {
-	delete _video;
-	_video = 0;
-
 	::Aurora::FileType type;
-	Common::SeekableReadStream *video = ResMan.getResource(::Aurora::kResourceVideo, name, &type);
+
+	Common::ScopedPtr<Common::SeekableReadStream>
+		video(ResMan.getResource(::Aurora::kResourceVideo, name, &type));
 	if (!video)
 		throw Common::Exception("No such video resource \"%s\"", name.c_str());
 
-	// Loading the different image formats
+	// Loading the different video formats
 	switch (type) {
-	case ::Aurora::kFileTypeBIK:
-		_video = new Bink(video);
-		break;
-	case ::Aurora::kFileTypeMOV:
-		_video = new QuickTimeDecoder(video);
-		break;
-	case ::Aurora::kFileTypeXMV:
-		_video = new XboxMediaVideo(video);
-		break;
-	case ::Aurora::kFileTypeVX:
-		_video = new ActimagineDecoder(video);
-		break;
-	default:
-		delete video;
-		throw Common::Exception("Unsupported video resource type %d", (int) type);
+		case ::Aurora::kFileTypeBIK:
+			_video.reset(new Bink(video.release()));
+			break;
+		case ::Aurora::kFileTypeMOV:
+			_video.reset(new QuickTimeDecoder(video.release()));
+			break;
+		case ::Aurora::kFileTypeXMV:
+			_video.reset(new XboxMediaVideo(video.release()));
+			break;
+		case ::Aurora::kFileTypeVX:
+			_video.reset(new ActimagineDecoder(video.release()));
+			break;
+		default:
+			break;
 	}
+
+	if (!_video)
+		throw Common::Exception("Unsupported video resource type %d", (int) type);
 
 	_video->setScale(VideoDecoder::kScaleUpDown);
 }
@@ -89,6 +91,10 @@ void VideoPlayer::play() {
 
 	_video->start();
 
+	BOOST_SCOPE_EXIT( (&_video) ) {
+		_video->abort();
+	} BOOST_SCOPE_EXIT_END
+
 	uint32 width, height;
 	_video->getSize(width, height);
 
@@ -96,32 +102,25 @@ void VideoPlayer::play() {
 
 	bool brk = false;
 
-	try {
-		Events::Event event;
-		while (!EventMan.quitRequested()) {
+	Events::Event event;
+	while (!EventMan.quitRequested()) {
 
-			while (EventMan.pollEvent(event)) {
-				if ((event.type == Events::kEventKeyDown && event.key.keysym.sym == SDLK_ESCAPE) ||
-				    (event.type == Events::kEventMouseUp))
-					brk = true;
-			}
-
-			if (brk || !_video->isPlaying())
-				break;
-
-			EventMan.delay(10);
+		while (EventMan.pollEvent(event)) {
+			if ((event.type == Events::kEventKeyDown && event.key.keysym.sym == SDLK_ESCAPE) ||
+			    (event.type == Events::kEventMouseUp))
+				brk = true;
 		}
-	} catch (...) {
-		_video->abort();
-		throw;
+
+		if (brk || !_video->isPlaying())
+			break;
+
+		EventMan.delay(10);
 	}
 
 	if (EventMan.quitRequested() || brk)
 		debugC(Common::kDebugVideo, 1, "Aborting video");
 	else
 		debugC(Common::kDebugVideo, 1, "Ending video");
-
-	_video->abort();
 }
 
 } // End of namespace Aurora
