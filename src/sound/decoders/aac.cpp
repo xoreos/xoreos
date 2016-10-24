@@ -49,17 +49,19 @@
 
 #include <cstring>
 
+#include <neaacdec.h>
+
 #include <boost/scoped_array.hpp>
 
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 
 #include "src/sound/audiostream.h"
+
 #include "src/sound/decoders/aac.h"
 #include "src/sound/decoders/codec.h"
 #include "src/sound/decoders/pcm.h"
-
-#include <neaacdec.h>
 
 namespace Sound {
 
@@ -89,14 +91,12 @@ AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraD
 
 	// Copy the extra data to a buffer
 	extraData->seek(0);
-	byte *extraDataBuf = new byte[extraData->size()];
-	extraData->read(extraDataBuf, extraData->size());
+	Common::ScopedArray<byte> extraDataBuf(new byte[extraData->size()]);
+	extraData->read(extraDataBuf.get(), extraData->size());
 
 	// Initialize with our extra data
 	// NOTE: This code assumes the extra data is coming from an MPEG-4 file!
-	int err = NeAACDecInit2(_handle, extraDataBuf, extraData->size(), &_rate, &_channels);
-	delete[] extraDataBuf;
-
+	int err = NeAACDecInit2(_handle, extraDataBuf.get(), extraData->size(), &_rate, &_channels);
 	if (err < 0) {
 		NeAACDecClose(_handle);
 
