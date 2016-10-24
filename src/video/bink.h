@@ -74,6 +74,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 #include "src/video/decoder.h"
 
@@ -137,6 +138,8 @@ private:
 	struct Huffman {
 		int  index;       ///< Index of the Huffman codebook to use.
 		byte symbols[16]; ///< Huffman symbol => Bink symbol translation list.
+
+		Huffman();
 	};
 
 	/** Data structure used for decoding a single Bink data type. */
@@ -146,11 +149,13 @@ private:
 
 		Huffman huffman; ///< Huffman codebook.
 
-		byte *data;    ///< Buffer for decoded symbols.
-		byte *dataEnd; ///< Buffer end.
+		Common::ScopedArray<byte> data; ///< Buffer for decoded symbols.
 
-		byte *curDec; ///< Pointer to the data that wasn't yet decoded.
-		byte *curPtr; ///< Pointer to the data that wasn't yet read.
+		byte *dataEnd; ///< Pointer to the data end end.
+		byte *curDec;  ///< Pointer to the data that wasn't yet decoded.
+		byte *curPtr;  ///< Pointer to the data that wasn't yet read.
+
+		Bundle();
 	};
 
 	enum AudioCodec {
@@ -235,7 +240,7 @@ private:
 		int coordScaledMap4[64];
 	};
 
-	Common::SeekableReadStream *_bink;
+	Common::ScopedPtr<Common::SeekableReadStream> _bink;
 
 	uint32 _id; ///< The BIK FourCC.
 
@@ -259,7 +264,7 @@ private:
 
 	uint32 _audioTrack; ///< Audio track to use.
 
-	Common::Huffman *_huffman[16]; ///< The 16 Huffman codebooks used in Bink decoding.
+	Common::ScopedPtr<Common::Huffman> _huffman[16]; ///< The 16 Huffman codebooks used in Bink decoding.
 
 	Bundle _bundles[kSourceMAX]; ///< Bundles for decoding all data types.
 
@@ -268,17 +273,14 @@ private:
 	/** Value of the last decoded high nibble in color data types. */
 	int _colLastVal;
 
-	byte *_curPlanes[4]; ///< The 4 color planes, YUVA, current frame.
-	byte *_oldPlanes[4]; ///< The 4 color planes, YUVA, last frame.
+	Common::ScopedArray<byte> _curPlanes[4]; ///< The 4 color planes, YUVA, current frame.
+	Common::ScopedArray<byte> _oldPlanes[4]; ///< The 4 color planes, YUVA, last frame.
 
 	/** Load a Bink file. */
 	void load();
-	void clear();
 
 	/** Initialize the bundles. */
 	void initBundles();
-	/** Deinitialize the bundles. */
-	void deinitBundles();
 
 	/** Initialize the Huffman decoders. */
 	void initHuffman();

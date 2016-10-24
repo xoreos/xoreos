@@ -107,6 +107,17 @@ static const uint32 kDCStartBits = 11;
 
 namespace Video {
 
+Bink::Huffman::Huffman() : index(0) {
+	for (size_t i = 0; i < 16; i++)
+		symbols[i] = i;
+}
+
+
+Bink::Bundle::Bundle() : countLength(0), dataEnd(0), curDec(0), curPtr(0) {
+	countLengths[0] = countLengths[1] = 0;
+}
+
+
 Bink::VideoFrame::VideoFrame() : bits(0) {
 }
 
@@ -133,65 +144,10 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false)
 
 	assert(_bink);
 
-	for (int i = 0; i < 16; i++)
-		_huffman[i] = 0;
-
-	for (int i = 0; i < kSourceMAX; i++) {
-		_bundles[i].countLength = 0;
-
-		_bundles[i].huffman.index = 0;
-		for (int j = 0; j < 16; j++)
-			_bundles[i].huffman.symbols[j] = j;
-
-		_bundles[i].data     = 0;
-		_bundles[i].dataEnd  = 0;
-		_bundles[i].curDec   = 0;
-		_bundles[i].curPtr   = 0;
-	}
-
-	for (int i = 0; i < 16; i++) {
-		_colHighHuffman[i].index = 0;
-		for (int j = 0; j < 16; j++)
-			_colHighHuffman[i].symbols[j] = j;
-	}
-
-	for (int i = 0; i < 4; i++) {
-		_curPlanes[i] = 0;
-		_oldPlanes[i] = 0;
-	}
-
-	try {
-		load();
-	} catch (...) {
-		clear();
-		throw;
-	}
+	load();
 }
 
 Bink::~Bink() {
-	clear();
-}
-
-void Bink::clear() {
-	VideoDecoder::deinit();
-
-	for (int i = 0; i < 4; i++) {
-		delete[] _curPlanes[i];
-		_curPlanes[i] = 0;
-
-		delete[] _oldPlanes[i];
-		_oldPlanes[i] = 0;
-	}
-
-	deinitBundles();
-
-	for (int i = 0; i < 16; i++) {
-		delete _huffman[i];
-		_huffman[i] = 0;
-	}
-
-	delete _bink;
-	_bink = 0;
 }
 
 uint32 Bink::getTimeToNextFrame() const {
@@ -253,7 +209,7 @@ void Bink::processData() {
 				audio.sampleCount = _bink->readUint32LE() / (2 * audio.channels);
 
 				audio.bits =
-					new Common::BitStream32LELSB(new Common::SeekableSubReadStream(_bink,
+					new Common::BitStream32LELSB(new Common::SeekableSubReadStream(_bink.get(),
 					    audioPacketStart + 4, audioPacketEnd), true);
 
 				audioPacket(audio);
@@ -272,7 +228,7 @@ void Bink::processData() {
 	size_t videoPacketEnd   = _bink->pos() + frameSize;
 
 	frame.bits =
-		new Common::BitStream32LELSB(new Common::SeekableSubReadStream(_bink,
+		new Common::BitStream32LELSB(new Common::SeekableSubReadStream(_bink.get(),
 		    videoPacketStart, videoPacketEnd), true);
 
 	videoPacket(frame);
@@ -291,17 +247,14 @@ void Bink::audioPacket(AudioTrack &audio) {
 
 	int outSize = audio.frameLen * audio.channels;
 	while (!_disableAudio && (audio.bits->pos() < audio.bits->size())) {
-		int16 *out = new int16[outSize];
-		std::memset(out, 0, outSize * 2);
+		Common::ScopedArray<int16> out(new int16[outSize]);
+		std::memset(out.get(), 0, outSize * 2);
 
-		audioBlock(audio, out);
-
-		if (_disableAudio) {
-			delete[] out;
+		audioBlock(audio, out.get());
+		if (_disableAudio)
 			return;
-		}
 
-		queueSound(reinterpret_cast<const byte *>(out), audio.blockSize * 2);
+		queueSound(reinterpret_cast<const byte *>(out.release()), audio.blockSize * 2);
 
 		if (audio.bits->pos() & 0x1F) // next data block starts at a 32-byte boundary
 			audio.bits->skip(32 - (audio.bits->pos() & 0x1F));
@@ -334,12 +287,12 @@ void Bink::videoPacket(VideoFrame &video) {
 	assert(_surface && _curPlanes[0] && _curPlanes[1] && _curPlanes[2] && _curPlanes[3]);
 	YUVToRGBMan.convert420(Graphics::YUVToRGBManager::kScaleITU,
 			_surface->getData(), _surface->getWidth() * 4,
-			_curPlanes[0], _curPlanes[1], _curPlanes[2], _curPlanes[3],
+			_curPlanes[0].get(), _curPlanes[1].get(), _curPlanes[2].get(), _curPlanes[3].get(),
 			_width, _height, _width, _width >> 1);
 
 	// And swap the planes with the reference planes
 	for (int i = 0; i < 4; i++)
-		SWAP(_curPlanes[i], _oldPlanes[i]);
+		_oldPlanes[i].swap(_curPlanes[i]);
 }
 
 void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
@@ -353,10 +306,10 @@ void Bink::decodePlane(VideoFrame &video, int planeIdx, bool isChroma) {
 
 	ctx.video     = &video;
 	ctx.planeIdx  = planeIdx;
-	ctx.destStart = _curPlanes[planeIdx];
-	ctx.destEnd   = _curPlanes[planeIdx] + width * height;
-	ctx.prevStart = _oldPlanes[planeIdx];
-	ctx.prevEnd   = _oldPlanes[planeIdx] + width * height;
+	ctx.destStart = _curPlanes[planeIdx].get();
+	ctx.destEnd   = _curPlanes[planeIdx].get() + width * height;
+	ctx.prevStart = _oldPlanes[planeIdx].get();
+	ctx.prevEnd   = _oldPlanes[planeIdx].get() + width * height;
 	ctx.pitch     = width;
 
 	for (int i = 0; i < 64; i++) {
@@ -464,8 +417,8 @@ void Bink::readBundle(VideoFrame &video, Source source) {
 	if ((source != kSourceIntraDC) && (source != kSourceInterDC))
 		readHuffman(video, _bundles[source].huffman);
 
-	_bundles[source].curDec = _bundles[source].data;
-	_bundles[source].curPtr = _bundles[source].data;
+	_bundles[source].curDec = _bundles[source].data.get();
+	_bundles[source].curPtr = _bundles[source].data.get();
 }
 
 void Bink::readHuffman(VideoFrame &video, Huffman &huffman) {
@@ -619,24 +572,24 @@ void Bink::load() {
 	width  = _width  + 32;
 	height = _height + 32;
 
-	_curPlanes[0] = new byte[ width       *  height      ]; // Y
-	_curPlanes[1] = new byte[(width >> 1) * (height >> 1)]; // U, 1/4 resolution
-	_curPlanes[2] = new byte[(width >> 1) * (height >> 1)]; // V, 1/4 resolution
-	_curPlanes[3] = new byte[ width       *  height      ]; // A
-	_oldPlanes[0] = new byte[ width       *  height      ]; // Y
-	_oldPlanes[1] = new byte[(width >> 1) * (height >> 1)]; // U, 1/4 resolution
-	_oldPlanes[2] = new byte[(width >> 1) * (height >> 1)]; // V, 1/4 resolution
-	_oldPlanes[3] = new byte[ width       *  height      ]; // A
+	_curPlanes[0].reset(new byte[ width       *  height      ]); // Y
+	_curPlanes[1].reset(new byte[(width >> 1) * (height >> 1)]); // U, 1/4 resolution
+	_curPlanes[2].reset(new byte[(width >> 1) * (height >> 1)]); // V, 1/4 resolution
+	_curPlanes[3].reset(new byte[ width       *  height      ]); // A
+	_oldPlanes[0].reset(new byte[ width       *  height      ]); // Y
+	_oldPlanes[1].reset(new byte[(width >> 1) * (height >> 1)]); // U, 1/4 resolution
+	_oldPlanes[2].reset(new byte[(width >> 1) * (height >> 1)]); // V, 1/4 resolution
+	_oldPlanes[3].reset(new byte[ width       *  height      ]); // A
 
 	// Initialize the video with solid black
-	std::memset(_curPlanes[0],   0,  width       *  height      );
-	std::memset(_curPlanes[1],   0, (width >> 1) * (height >> 1));
-	std::memset(_curPlanes[2],   0, (width >> 1) * (height >> 1));
-	std::memset(_curPlanes[3], 255,  width       *  height      );
-	std::memset(_oldPlanes[0],   0,  width       *  height      );
-	std::memset(_oldPlanes[1],   0, (width >> 1) * (height >> 1));
-	std::memset(_oldPlanes[2],   0, (width >> 1) * (height >> 1));
-	std::memset(_oldPlanes[3], 255,  width       *  height      );
+	std::memset(_curPlanes[0].get(),   0,  width       *  height      );
+	std::memset(_curPlanes[1].get(),   0, (width >> 1) * (height >> 1));
+	std::memset(_curPlanes[2].get(),   0, (width >> 1) * (height >> 1));
+	std::memset(_curPlanes[3].get(), 255,  width       *  height      );
+	std::memset(_oldPlanes[0].get(),   0,  width       *  height      );
+	std::memset(_oldPlanes[1].get(),   0, (width >> 1) * (height >> 1));
+	std::memset(_oldPlanes[2].get(),   0, (width >> 1) * (height >> 1));
+	std::memset(_oldPlanes[3].get(), 255,  width       *  height      );
 
 	initBundles();
 	initHuffman();
@@ -721,8 +674,8 @@ void Bink::initBundles() {
 	uint32 blocks = bw * bh;
 
 	for (int i = 0; i < kSourceMAX; i++) {
-		_bundles[i].data    = new byte[blocks * 64];
-		_bundles[i].dataEnd = _bundles[i].data + blocks * 64;
+		_bundles[i].data.reset(new byte[blocks * 64]);
+		_bundles[i].dataEnd = _bundles[i].data.get() + blocks * 64;
 	}
 
 	uint32 cbw[2] = { (_width + 7) >> 3, (_width  + 15) >> 4 };
@@ -744,16 +697,9 @@ void Bink::initBundles() {
 	}
 }
 
-void Bink::deinitBundles() {
-	for (int i = 0; i < kSourceMAX; i++) {
-		delete[] _bundles[i].data;
-		_bundles[i].data = 0;
-	}
-}
-
 void Bink::initHuffman() {
 	for (int i = 0; i < 16; i++)
-		_huffman[i] = new Common::Huffman(binkHuffmanLengths[i][15], 16, binkHuffmanCodes[i], binkHuffmanLengths[i]);
+		_huffman[i].reset(new Common::Huffman(binkHuffmanLengths[i][15], 16, binkHuffmanCodes[i], binkHuffmanLengths[i]));
 }
 
 byte Bink::getHuffmanSymbol(VideoFrame &video, Huffman &huffman) {
