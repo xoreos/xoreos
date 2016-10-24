@@ -40,9 +40,6 @@ src_engines_dragonage2_libdragonage2_la_SOURCES += \
     src/engines/dragonage2/placeable.h \
     src/engines/dragonage2/creature.h \
     src/engines/dragonage2/objectcontainer.h \
-    src/engines/dragonage2/script/container.h \
-    src/engines/dragonage2/script/functions.h \
-    src/engines/dragonage2/script/function_tables.h \
     $(EMPTY)
 
 src_engines_dragonage2_libdragonage2_la_SOURCES += \
@@ -62,12 +59,6 @@ src_engines_dragonage2_libdragonage2_la_SOURCES += \
     src/engines/dragonage2/placeable.cpp \
     src/engines/dragonage2/creature.cpp \
     src/engines/dragonage2/objectcontainer.cpp \
-    src/engines/dragonage2/script/container.cpp \
-    src/engines/dragonage2/script/functions.cpp \
-    src/engines/dragonage2/script/functions_math.cpp \
-    src/engines/dragonage2/script/functions_string.cpp \
-    src/engines/dragonage2/script/functions_module.cpp \
-    src/engines/dragonage2/script/functions_object.cpp \
-    src/engines/dragonage2/script/functions_creature.cpp \
-    src/engines/dragonage2/script/functions_event.cpp \
     $(EMPTY)
+
+include src/engines/dragonage2/script/rules.mk

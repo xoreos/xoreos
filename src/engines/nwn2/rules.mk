@@ -42,9 +42,6 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/door.h \
     src/engines/nwn2/placeable.h \
     src/engines/nwn2/creature.h \
-    src/engines/nwn2/script/container.h \
-    src/engines/nwn2/script/functions.h \
-    src/engines/nwn2/script/function_tables.h \
     $(EMPTY)
 
 src_engines_nwn2_libnwn2_la_SOURCES += \
@@ -67,16 +64,6 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/door.cpp \
     src/engines/nwn2/placeable.cpp \
     src/engines/nwn2/creature.cpp \
-    src/engines/nwn2/script/container.cpp \
-    src/engines/nwn2/script/functions.cpp \
-    src/engines/nwn2/script/functions_math.cpp \
-    src/engines/nwn2/script/functions_string.cpp \
-    src/engines/nwn2/script/functions_campaign.cpp \
-    src/engines/nwn2/script/functions_module.cpp \
-    src/engines/nwn2/script/functions_object.cpp \
-    src/engines/nwn2/script/functions_situated.cpp \
-    src/engines/nwn2/script/functions_creature.cpp \
-    src/engines/nwn2/script/functions_action.cpp \
-    src/engines/nwn2/script/functions_conversation.cpp \
-    src/engines/nwn2/script/functions_sound.cpp \
     $(EMPTY)
+
+include src/engines/nwn2/script/rules.mk

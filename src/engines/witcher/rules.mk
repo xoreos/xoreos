@@ -40,10 +40,6 @@ src_engines_witcher_libwitcher_la_SOURCES += \
     src/engines/witcher/door.h \
     src/engines/witcher/placeable.h \
     src/engines/witcher/creature.h \
-    src/engines/witcher/nwscript/container.h \
-    src/engines/witcher/nwscript/functions.h \
-    src/engines/witcher/nwscript/function_tables.h \
-    src/engines/witcher/lua/bindings.h \
     $(EMPTY)
 
 src_engines_witcher_libwitcher_la_SOURCES += \
@@ -63,16 +59,7 @@ src_engines_witcher_libwitcher_la_SOURCES += \
     src/engines/witcher/door.cpp \
     src/engines/witcher/placeable.cpp \
     src/engines/witcher/creature.cpp \
-    src/engines/witcher/nwscript/container.cpp \
-    src/engines/witcher/nwscript/functions.cpp \
-    src/engines/witcher/nwscript/functions_math.cpp \
-    src/engines/witcher/nwscript/functions_string.cpp \
-    src/engines/witcher/nwscript/functions_module.cpp \
-    src/engines/witcher/nwscript/functions_object.cpp \
-    src/engines/witcher/nwscript/functions_situated.cpp \
-    src/engines/witcher/nwscript/functions_creature.cpp \
-    src/engines/witcher/nwscript/functions_action.cpp \
-    src/engines/witcher/nwscript/functions_conversation.cpp \
-    src/engines/witcher/nwscript/functions_sound.cpp \
-    src/engines/witcher/lua/bindings.cpp \
     $(EMPTY)
+
+include src/engines/witcher/nwscript/rules.mk
+include src/engines/witcher/lua/rules.mk

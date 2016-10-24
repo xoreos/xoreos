@@ -40,10 +40,6 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/waypoint.h \
     src/engines/jade/location.h \
     src/engines/jade/event.h \
-    src/engines/jade/gui/main/main.h \
-    src/engines/jade/script/container.h \
-    src/engines/jade/script/functions.h \
-    src/engines/jade/script/function_tables.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
@@ -63,16 +59,7 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/waypoint.cpp \
     src/engines/jade/location.cpp \
     src/engines/jade/event.cpp \
-    src/engines/jade/gui/main/main.cpp \
-    src/engines/jade/script/container.cpp \
-    src/engines/jade/script/functions.cpp \
-    src/engines/jade/script/functions_math.cpp \
-    src/engines/jade/script/functions_string.cpp \
-    src/engines/jade/script/functions_object.cpp \
-    src/engines/jade/script/functions_event.cpp \
-    src/engines/jade/script/functions_module.cpp \
-    src/engines/jade/script/functions_creature.cpp \
-    src/engines/jade/script/functions_action.cpp \
-    src/engines/jade/script/functions_2da.cpp \
-    src/engines/jade/script/functions_game.cpp \
     $(EMPTY)
+
+include src/engines/jade/script/rules.mk
+include src/engines/jade/gui/rules.mk

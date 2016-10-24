@@ -39,12 +39,6 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/room.h \
     src/engines/kotor2/objectcontainer.h \
     src/engines/kotor2/module.h \
-    src/engines/kotor2/gui/widgets/kotorwidget.h \
-    src/engines/kotor2/gui/gui.h \
-    src/engines/kotor2/gui/main/main.h \
-    src/engines/kotor2/script/container.h \
-    src/engines/kotor2/script/functions.h \
-    src/engines/kotor2/script/function_tables.h \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
@@ -63,16 +57,7 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/room.cpp \
     src/engines/kotor2/objectcontainer.cpp \
     src/engines/kotor2/module.cpp \
-    src/engines/kotor2/gui/main/main.cpp \
-    src/engines/kotor2/script/container.cpp \
-    src/engines/kotor2/script/container.cpp \
-    src/engines/kotor2/script/functions.cpp \
-    src/engines/kotor2/script/functions_math.cpp \
-    src/engines/kotor2/script/functions_string.cpp \
-    src/engines/kotor2/script/functions_module.cpp \
-    src/engines/kotor2/script/functions_object.cpp \
-    src/engines/kotor2/script/functions_situated.cpp \
-    src/engines/kotor2/script/functions_action.cpp \
-    src/engines/kotor2/script/functions_sound.cpp \
-    src/engines/kotor2/script/functions_movie.cpp \
     $(EMPTY)
+
+include src/engines/kotor2/script/rules.mk
+include src/engines/kotor2/gui/rules.mk
