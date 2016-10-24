@@ -25,6 +25,7 @@
 #ifndef ENGINES_NWN2_NWN2_H
 #define ENGINES_NWN2_NWN2_H
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -66,7 +67,7 @@ private:
 	bool _hasXP2; // Storm of Zehir (SoZ)
 	bool _hasXP3; // Mysteries of Westgate (MoW)
 
-	Game *_game;
+	Common::ScopedPtr<Game> _game;
 
 
 	void init();

@@ -57,13 +57,12 @@ namespace Engines {
 namespace NWN2 {
 
 NWN2Engine::NWN2Engine() : _language(Aurora::kLanguageInvalid),
-	_hasXP1(false), _hasXP2(false), _hasXP3(false), _game(0) {
+	_hasXP1(false), _hasXP2(false), _hasXP3(false) {
 
 	_console.reset(new Console(*this));
 }
 
 NWN2Engine::~NWN2Engine() {
-	delete _game;
 }
 
 bool NWN2Engine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -127,7 +126,7 @@ void NWN2Engine::run() {
 
 	CursorMan.showCursor();
 
-	_game = new Game(*this, *_console);
+	_game.reset(new Game(*this, *_console));
 	_game->run();
 
 	deinit();
@@ -377,9 +376,7 @@ void NWN2Engine::initGameConfig() {
 }
 
 void NWN2Engine::deinit() {
-	delete _game;
-
-	_game = 0;
+	_game.reset();
 }
 
 void NWN2Engine::playIntroVideos() {
