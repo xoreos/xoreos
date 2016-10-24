@@ -48,8 +48,8 @@ namespace Engines {
 namespace NWN {
 
 WidgetListItemSkill::WidgetListItemSkill(::Engines::GUI &gui, SkillItem skill) :
-                                         WidgetListItemButton(gui, "ctl_cg_btn_skill", skill.name, skill.icon),
-                                         _skill(skill) {
+	WidgetListItemButton(gui, "ctl_cg_btn_skill", skill.name, skill.icon),
+	_upButton(0), _downButton(0), _skillPointPanel(0), _skillPoint(0), _skill(skill) {
 
 	setTag("Item#" + skill.name);
 
@@ -57,11 +57,11 @@ WidgetListItemSkill::WidgetListItemSkill(::Engines::GUI &gui, SkillItem skill) :
 	_text->set(skill.name, 230.f);
 
 	// Up and down buttons.
-	_downButton = new WidgetButton(gui, _tag + "#Down", "ctl_cg_btn_skdn");
-	_upButton   = new WidgetButton(gui, _tag + "#Up", "ctl_cg_btn_skup");
-
+	_upButton = new WidgetButton(gui, _tag + "#Up", "ctl_cg_btn_skup");
 	addChild(*_upButton);
 	addSub(*_upButton);
+
+	_downButton = new WidgetButton(gui, _tag + "#Down", "ctl_cg_btn_skdn");
 	addChild(*_downButton);
 	addSub(*_downButton);
 

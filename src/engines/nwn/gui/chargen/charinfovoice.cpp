@@ -42,12 +42,11 @@ namespace NWN {
 WidgetListItemVoice::WidgetListItemVoice(::Engines::GUI &gui, const Common::UString &title, const Common::UString &soundSet, uint16 soundSetID) :
     WidgetListItemButton(gui, "ctl_cg_btn_snds", title, "", kNoButton), _soundSetID(soundSetID) {
 
-	_soundSet = new Aurora::SSFFile(soundSet);
+	_soundSet.reset(new Aurora::SSFFile(soundSet));
 	_currentSound = SIZE_MAX;
 }
 
 WidgetListItemVoice::~WidgetListItemVoice() {
-	delete _soundSet;
 }
 
 void WidgetListItemVoice::mouseDown(uint8 state, float x, float y) {

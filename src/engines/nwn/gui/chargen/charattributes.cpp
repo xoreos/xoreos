@@ -56,12 +56,9 @@ CharAttributes::CharAttributes(CharGenChoices &choices, ::Engines::Console *cons
 	_pointLeft = 30;
 
 	init();
-
-	_attrButtons = 0;
 }
 
 CharAttributes::~CharAttributes() {
-	delete _attrButtons;
 }
 
 void CharAttributes::reset() {
@@ -164,8 +161,7 @@ void CharAttributes::init() {
 void CharAttributes::initButtonsGroup() {
 	//TODO Help text should implement racial bonus as well as current attribute value.
 
-	delete _attrButtons;
-	_attrButtons = new ButtonsGroup(getEditBox("HelpEdit", true));
+	_attrButtons.reset(new ButtonsGroup(getEditBox("HelpEdit", true)));
 	_attrButtons->addButton(getButton("StrLabel", true), TalkMan.getString(473), TalkMan.getString(459));
 	_attrButtons->addButton(getButton("DexLabel", true), TalkMan.getString(474), TalkMan.getString(460));
 	_attrButtons->addButton(getButton("ConLabel", true), TalkMan.getString(475), TalkMan.getString(461));

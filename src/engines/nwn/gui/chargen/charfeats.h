@@ -29,6 +29,8 @@
 #include <list>
 #include <map>
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
@@ -80,8 +82,9 @@ private:
 
 	void setRecommendedFeats();
 
-	CharHelp   *_featHelp;
-	CharFeatsPopup *_featsPopup;
+	Common::ScopedPtr<CharHelp>       _featHelp;
+	Common::ScopedPtr<CharFeatsPopup> _featsPopup;
+
 	WidgetListBox  *_availListBox;
 	WidgetListBox  *_knownListBox;
 

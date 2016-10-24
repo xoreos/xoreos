@@ -81,8 +81,8 @@ CharFeats::CharFeats(CharGenChoices &choices, ::Engines::Console *console) : Cha
 	_normalFeats = 0;
 	_bonusFeats = 0;
 
-	_featHelp   = new CharHelp("cg_featinfo", console);
-	_featsPopup = new CharFeatsPopup(console);
+	_featHelp.reset(new CharHelp("cg_featinfo", console));
+	_featsPopup.reset(new CharFeatsPopup(console));
 
 	_availListBox = getListBox("AvailBox", true);
 	_knownListBox = getListBox("KnownBox", true);
@@ -107,8 +107,6 @@ CharFeats::~CharFeats() {
 	_knownListBox->lock();
 	_knownListBox->clear();
 	_knownListBox->unlock();
-
-	delete _featHelp;
 }
 
 void CharFeats::reset() {

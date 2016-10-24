@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
@@ -78,7 +80,7 @@ private:
 	void updateRemainLabel();
 	void setRecommendedSpells();
 
-	CharHelp *_spellHelp;
+	Common::ScopedPtr<CharHelp> _spellHelp;
 
 	WidgetListBox  *_availListBox;
 	WidgetListBox  *_knownListBox;

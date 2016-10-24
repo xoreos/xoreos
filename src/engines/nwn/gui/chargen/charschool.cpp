@@ -39,7 +39,7 @@ CharSchool::CharSchool(CharGenChoices &choices, Console *console) : CharGenBase(
 	load("cg_school");
 
 	// Init buttons and helpbox.
-	_buttons = new ButtonsGroup(getEditBox("HelpBox", true));
+	_buttons.reset(new ButtonsGroup(getEditBox("HelpBox", true)));
 
 	uint32 textID = 10320;
 	uint32 titleID = 373;
@@ -57,7 +57,6 @@ CharSchool::CharSchool(CharGenChoices &choices, Console *console) : CharGenBase(
 }
 
 CharSchool::~CharSchool() {
-	delete _buttons;
 }
 
 void CharSchool::reset() {

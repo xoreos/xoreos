@@ -38,7 +38,7 @@ CharHelp::CharHelp(const Common::UString &GUIResRef, ::Engines::Console *console
 
 	setPosition(0, 0, -220);
 
-	_icon = new PortraitWidget(*this, "FeatIcon", "", Portrait::kSizeIcon);
+	_icon.reset(new PortraitWidget(*this, "FeatIcon", "", Portrait::kSizeIcon));
 
 	float pX, pY, pZ;
 	getEditBox("EditBox", true)->getPosition(pX, pY, pZ);
@@ -54,7 +54,6 @@ CharHelp::CharHelp(const Common::UString &GUIResRef, ::Engines::Console *console
 }
 
 CharHelp::~CharHelp() {
-	delete _icon;
 }
 
 void CharHelp::setContent(const Common::UString title, const Common::UString desc, const Common::UString icon) {

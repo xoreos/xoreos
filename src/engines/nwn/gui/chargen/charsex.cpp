@@ -43,7 +43,7 @@ CharSex::CharSex(CharGenChoices &choices, ::Engines::Console *console) : CharGen
 	getEditBox("HelpBox", true)->setTitle("fnt_galahad14", TalkMan.getString(203));
 	getEditBox("HelpBox", true)->setText("fnt_galahad14", TalkMan.getString(447), 1.0f);
 
-	_buttons = new ButtonsGroup(getEditBox("HelpBox", true));
+	_buttons.reset(new ButtonsGroup(getEditBox("HelpBox", true)));
 	_buttons->addButton(getButton("MaleButton", true), TalkMan.getString(203), TalkMan.getString(199));
 	_buttons->addButton(getButton("FemaleButton", true), TalkMan.getString(203), TalkMan.getString(200));
 
@@ -51,7 +51,6 @@ CharSex::CharSex(CharGenChoices &choices, ::Engines::Console *console) : CharGen
 }
 
 CharSex::~CharSex() {
-	delete _buttons;
 }
 
 void CharSex::reset() {

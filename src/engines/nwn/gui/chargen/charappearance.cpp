@@ -33,10 +33,10 @@ namespace Engines {
 
 namespace NWN {
 
-CharAppearance::CharAppearance(CharGenChoices &choices, ::Engines::Console *console) : CharGenBase(console) {
-	_choices = &choices;
-	_charInfo = 0;
+CharAppearance::CharAppearance(CharGenChoices &choices, ::Engines::Console *console) :
+	CharGenBase(console) {
 
+	_choices = &choices;
 	load("cg_appearance");
 
 	// TODO: Show character.
@@ -50,8 +50,6 @@ CharAppearance::CharAppearance(CharGenChoices &choices, ::Engines::Console *cons
 }
 
 CharAppearance::~CharAppearance() {
-	if (_charInfo)
-		delete _charInfo;
 }
 
 void CharAppearance::reset() {
@@ -60,7 +58,7 @@ void CharAppearance::reset() {
 void CharAppearance::callbackActive(Widget& widget) {
 	if (widget.getTag() == "OkButton") {
 		if (!_charInfo)
-			_charInfo = new CharInfoVoice(*_choices, _console);
+			_charInfo.reset(new CharInfoVoice(*_choices, _console));
 
 		if (sub(*_charInfo, 0, false) == 1) {
 			reset();

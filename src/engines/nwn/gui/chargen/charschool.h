@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARSCHOOL_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARSCHOOL_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
@@ -44,7 +46,7 @@ public:
 private:
 	void callbackActive(Widget &widget);
 
-	ButtonsGroup *_buttons;
+	Common::ScopedPtr<ButtonsGroup> _buttons;
 };
 
 } // End of namespace NWN

@@ -45,7 +45,7 @@ CharRace::CharRace(CharGenChoices &choices, ::Engines::Console *console) : CharG
 	getWidget("SubRaceButton", true)->setDisabled(true);
 
 	// Init buttons and helpbox.
-	_buttons = new ButtonsGroup(getEditBox("HelpBox", true));
+	_buttons.reset(new ButtonsGroup(getEditBox("HelpBox", true)));
 
 	uint textID = 251;
 	uint titleID = 1985;
@@ -69,7 +69,6 @@ CharRace::CharRace(CharGenChoices &choices, ::Engines::Console *console) : CharG
 }
 
 CharRace::~CharRace() {
-	delete _buttons;
 }
 
 void CharRace::reset() {

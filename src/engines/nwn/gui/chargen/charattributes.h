@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
@@ -60,7 +62,8 @@ private:
 	std::vector<uint8> _attributes;
 	std::vector<uint8> _attrAdjust;
 	std::vector<WidgetLabel *> _labelAttributes;
-	ButtonsGroup *_attrButtons;
+
+	Common::ScopedPtr<ButtonsGroup> _attrButtons;
 
 	uint8 _pointLeft;
 };

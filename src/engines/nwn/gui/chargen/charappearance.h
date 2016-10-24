@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARAPPEARANCE_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARAPPEARANCE_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
@@ -44,7 +46,7 @@ private:
 	void callbackActive(Widget& widget);
 	void adjustButtons(const Common::UString &tag);
 
-	CharInfoVoice *_charInfo;
+	Common::ScopedPtr<CharInfoVoice> _charInfo;
 };
 
 } // End of namespace NWN

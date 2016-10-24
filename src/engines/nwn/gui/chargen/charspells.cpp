@@ -78,7 +78,7 @@ CharSpells::CharSpells(CharGenChoices &choices, Console *console) : CharGenBase(
 	_currentSpellLevel = SIZE_MAX;
 	_abilityLimit = 0;
 
-	_spellHelp = new CharHelp("cg_spellinfo", console);
+	_spellHelp.reset(new CharHelp("cg_spellinfo", console));
 
 	_availListBox = getListBox("AvailBox", true);
 	_availListBox->setMode(WidgetListBox::kModeSelectable);
@@ -105,8 +105,6 @@ CharSpells::~CharSpells() {
 	_knownListBox->lock();
 	_knownListBox->clear();
 	_knownListBox->unlock();
-
-	delete _spellHelp;
 }
 
 void CharSpells::reset() {
