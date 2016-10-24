@@ -102,15 +102,10 @@ WMACodec::WMACodec(int version, uint32 sampleRate, uint8 channels,
 	_resetBlockLengths(true), _curFrame(0), _frameLen(0), _frameLenBits(0),
 	_blockSizeCount(0), _framePos(0), _curBlock(0), _blockLen(0), _blockLenBits(0),
 	_nextBlockLenBits(0), _prevBlockLenBits(0), _byteOffsetBits(0),
-	_hgainHuffman(0), _expHuffman(0), _lastSuperframeLen(0), _lastBitoffset(0) {
+	_lastSuperframeLen(0), _lastBitoffset(0) {
 
-	for (int i = 0; i < 2; i++) {
-		_coefHuffman[i] = 0;
-
-		_coefHuffmanRunTable  [i] = 0;
-		_coefHuffmanLevelTable[i] = 0;
-		_coefHuffmanIntTable  [i] = 0;
-	}
+	for (int i = 0; i < 2; i++)
+		_coefHuffmanParam[i] = 0;
 
 	if ((_version != 1) && (_version != 2))
 		throw Common::Exception("WMACodec::init(): Unsupported WMA version %d", _version);
@@ -131,17 +126,6 @@ WMACodec::WMACodec(int version, uint32 sampleRate, uint8 channels,
 }
 
 WMACodec::~WMACodec() {
-	delete _expHuffman;
-	delete _hgainHuffman;
-
-	for (int i = 0; i < 2; i++) {
-		delete[] _coefHuffmanRunTable  [i];
-		delete[] _coefHuffmanLevelTable[i];
-		delete[] _coefHuffmanIntTable  [i];
-
-		delete _coefHuffman[i];
-	}
-
 	for (std::vector<Common::MDCT *>::iterator m = _mdct.begin(); m != _mdct.end(); ++m)
 		delete *m;
 }
@@ -460,8 +444,7 @@ void WMACodec::initNoise() {
 		_noiseTable[i] = (float)((int)seed) * norm;
 	}
 
-	_hgainHuffman = new Common::Huffman(0, ARRAYSIZE(hgainHuffCodes),
-	                                    hgainHuffCodes, hgainHuffBits);
+	_hgainHuffman.reset(new Common::Huffman(0, ARRAYSIZE(hgainHuffCodes), hgainHuffCodes, hgainHuffBits));
 }
 
 void WMACodec::initCoefHuffman(float bps) {
@@ -478,10 +461,10 @@ void WMACodec::initCoefHuffman(float bps) {
 	_coefHuffmanParam[0] = &coefHuffmanParam[coefHuffTable * 2    ];
 	_coefHuffmanParam[1] = &coefHuffmanParam[coefHuffTable * 2 + 1];
 
-	_coefHuffman[0] = initCoefHuffman(_coefHuffmanRunTable[0], _coefHuffmanLevelTable[0],
-	                                  _coefHuffmanIntTable[0], *_coefHuffmanParam[0]);
-	_coefHuffman[1] = initCoefHuffman(_coefHuffmanRunTable[1], _coefHuffmanLevelTable[1],
-	                                  _coefHuffmanIntTable[1], *_coefHuffmanParam[1]);
+	_coefHuffman[0].reset(initCoefHuffman(_coefHuffmanRunTable[0], _coefHuffmanLevelTable[0],
+	                                      _coefHuffmanIntTable[0], *_coefHuffmanParam[0]));
+	_coefHuffman[1].reset(initCoefHuffman(_coefHuffmanRunTable[1], _coefHuffmanLevelTable[1],
+	                                      _coefHuffmanIntTable[1], *_coefHuffmanParam[1]));
 }
 
 void WMACodec::initMDCT() {
@@ -497,23 +480,24 @@ void WMACodec::initMDCT() {
 
 void WMACodec::initExponents() {
 	if (_useExpHuffman)
-		_expHuffman = new Common::Huffman(0, ARRAYSIZE(scaleHuffCodes),
-		                                  scaleHuffCodes, scaleHuffBits);
+		_expHuffman.reset(new Common::Huffman(0, ARRAYSIZE(scaleHuffCodes), scaleHuffCodes, scaleHuffBits));
 	else
 		initLSPToCurve();
 }
 
-Common::Huffman *WMACodec::initCoefHuffman(uint16 *&runTable, float *&levelTable,
-		uint16 *&intTable, const WMACoefHuffmanParam &params) {
+Common::Huffman *WMACodec::initCoefHuffman(Common::ScopedArray<uint16> &runTable,
+                                           Common::ScopedArray<float>  &levelTable,
+                                           Common::ScopedArray<uint16> &intTable,
+                                           const WMACoefHuffmanParam &params) {
 
 	Common::Huffman *huffman =
 		new Common::Huffman(0, params.n, params.huffCodes, params.huffBits);
 
-	runTable   = new uint16[params.n];
-	levelTable = new  float[params.n];
-	intTable   = new uint16[params.n];
+	runTable.reset  (new uint16[params.n]);
+	levelTable.reset(new  float[params.n]);
+	intTable.reset  (new uint16[params.n]);
 
-	uint16 *iLevelTable = new uint16[params.n];
+	Common::ScopedArray<uint16> iLevelTable(new uint16[params.n]);
 
 	int i = 2;
 	int level = 1;
@@ -534,8 +518,6 @@ Common::Huffman *WMACodec::initCoefHuffman(uint16 *&runTable, float *&levelTable
 
 		level++;
 	}
-
-	delete[] iLevelTable;
 
 	return huffman;
 }
@@ -588,8 +570,8 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 
 	Common::BitStream8MSB bits(data);
 
-	int    outputDataSize = 0;
-	int16 *outputData     = 0;
+	int outputDataSize = 0;
+	Common::ScopedArray<int16> outputData;
 
 	_curFrame = 0;
 
@@ -617,9 +599,9 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 
 		// PCM output data
 		outputDataSize = frameCount * _channels * _frameLen;
-		outputData     = new int16[outputDataSize];
+		outputData.reset(new int16[outputDataSize]);
 
-		std::memset(outputData, 0, outputDataSize * 2);
+		std::memset(outputData.get(), 0, outputDataSize * 2);
 
 		// Number of bits data that completes the last superframe's overhang.
 		int bitOffset = bits.getBits(_byteOffsetBits + 3);
@@ -650,7 +632,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 
 			lastBits.skip(_lastBitoffset);
 
-			decodeFrame(lastBits, outputData);
+			decodeFrame(lastBits, outputData.get());
 
 			_curFrame++;
 		}
@@ -662,12 +644,9 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 		_resetBlockLengths = true;
 
 		// Decode the frames
-		for (int i = 0; i < newFrameCount; i++, _curFrame++) {
-			if (!decodeFrame(bits, outputData)) {
-				delete[] outputData;
+		for (int i = 0; i < newFrameCount; i++, _curFrame++)
+			if (!decodeFrame(bits, outputData.get()))
 				return 0;
-			}
-		}
 
 		// Check if we've got new overhang data
 		int remainingBits = bits.size() - bits.pos();
@@ -694,15 +673,13 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 
 		// PCM output data
 		outputDataSize = _channels * _frameLen;
-		outputData     = new int16[outputDataSize];
+		outputData.reset(new int16[outputDataSize]);
 
-		std::memset(outputData, 0, outputDataSize * 2);
+		std::memset(outputData.get(), 0, outputDataSize * 2);
 
 		// Decode the frame
-		if (!decodeFrame(bits, outputData)) {
-			delete[] outputData;
+		if (!decodeFrame(bits, outputData.get()))
 			return 0;
-		}
 	}
 
 	// And return our PCM output data as a stream, if available
@@ -711,7 +688,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 		return 0;
 
 	// TODO: This might be a problem alignment-wise?
-	return new Common::MemoryReadStream(reinterpret_cast<byte *>(outputData), outputDataSize * 2, true);
+	return new Common::MemoryReadStream(reinterpret_cast<byte *>(outputData.release()), outputDataSize * 2, true);
 }
 
 bool WMACodec::decodeFrame(Common::BitStream &bits, int16 *outputData) {
@@ -1017,7 +994,7 @@ bool WMACodec::decodeSpectralCoef(Common::BitStream &bits, bool msStereo, bool *
 			std::memset(ptr, 0, _blockLen * sizeof(float));
 
 			if (!decodeRunLevel(bits, *_coefHuffman[tindex],
-			                    _coefHuffmanLevelTable[tindex], _coefHuffmanRunTable[tindex],
+			                    _coefHuffmanLevelTable[tindex].get(), _coefHuffmanRunTable[tindex].get(),
 			                    0, ptr, 0, coefCount[i], _blockLen, _frameLenBits, coefBitCount))
 				return false;
 		}

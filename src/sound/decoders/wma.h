@@ -53,6 +53,9 @@
 
 #include <vector>
 
+#include "src/common/types.h"
+#include "src/common/scopedptr.h"
+
 #include "src/sound/decoders/codec.h"
 
 namespace Common {
@@ -134,26 +137,27 @@ private:
 	int    _exponentHighSizes[kBlockNBSizes];
 	int    _exponentHighBands[kBlockNBSizes][kHighBandSizeMax];
 
-	Common::Huffman *_coefHuffman[2];                ///< Coefficients Huffman codes.
+	Common::ScopedPtr<Common::Huffman> _coefHuffman[2]; ///< Coefficients Huffman codes.
+
 	const WMACoefHuffmanParam *_coefHuffmanParam[2]; ///< Params for coef Huffman codes.
 
-	uint16 *_coefHuffmanRunTable[2];   ///< Run table for the coef Huffman.
-	float  *_coefHuffmanLevelTable[2]; ///< Level table for the coef Huffman.
-	uint16 *_coefHuffmanIntTable[2];   ///< Int table for the coef Huffman.
+	Common::ScopedArray<uint16> _coefHuffmanRunTable[2];   ///< Run table for the coef Huffman.
+	Common::ScopedArray<float>  _coefHuffmanLevelTable[2]; ///< Level table for the coef Huffman.
+	Common::ScopedArray<uint16> _coefHuffmanIntTable[2];   ///< Int table for the coef Huffman.
 
 	// Noise
 	float _noiseMult;                 ///< Noise multiplier.
 	float _noiseTable[kNoiseTabSize]; ///< Noise table.
 	int   _noiseIndex;
 
-	Common::Huffman *_hgainHuffman; ///< Perceptual noise Huffman code.
+	Common::ScopedPtr<Common::Huffman> _hgainHuffman; ///< Perceptual noise Huffman code.
 
 	// Exponents
 	int   _exponentsBSize[kChannelsMax];
 	float _exponents[kChannelsMax][kBlockSizeMax];
 	float _maxExponent[kChannelsMax];
 
-	Common::Huffman *_expHuffman; ///< Exponents Huffman code.
+	Common::ScopedPtr<Common::Huffman> _expHuffman; ///< Exponents Huffman code.
 
 	// Coded values in high bands
 	bool _highBandCoded [kChannelsMax][kHighBandSizeMax];
@@ -199,8 +203,10 @@ private:
 	void initMDCT();
 	void initExponents();
 
-	Common::Huffman *initCoefHuffman(uint16 *&runTable, float *&levelTable,
-	                                 uint16 *&intTable, const WMACoefHuffmanParam &params);
+	Common::Huffman *initCoefHuffman(Common::ScopedArray<uint16> &runTable,
+	                                 Common::ScopedArray<float>  &levelTable,
+	                                 Common::ScopedArray<uint16> &intTable,
+	                                 const WMACoefHuffmanParam &params);
 	void initLSPToCurve();
 
 	// Decoding
