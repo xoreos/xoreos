@@ -103,11 +103,10 @@ bool Module::Action::operator<(const Action &s) const {
 
 
 Module::Module(::Engines::Console &console, const Version &gameVersion) : Object(kObjectTypeModule),
-	_console(&console), _gameVersion(&gameVersion),
-	_hasModule(false), _running(false), _pc(0),
-	_currentTexturePack(-1), _exit(false), _currentArea(0) {
+	_console(&console), _gameVersion(&gameVersion), _hasModule(false),
+	_running(false), _currentTexturePack(-1), _exit(false), _currentArea(0) {
 
-	_ingameGUI = new IngameGUI(*this, _console);
+	_ingameGUI.reset(new IngameGUI(*this, _console));
 }
 
 Module::~Module() {
@@ -115,8 +114,6 @@ Module::~Module() {
 		clear();
 	} catch (...) {
 	}
-
-	delete _ingameGUI;
 }
 
 const Version &Module::getGameVersion() const {
@@ -275,7 +272,7 @@ void Module::usePC(const Common::UString &bic, bool local) {
 		throw Common::Exception("Tried to load an empty PC");
 
 	try {
-		_pc = new Creature(bic, local);
+		_pc.reset(new Creature(bic, local));
 	} catch (Common::Exception &e) {
 		e.add("Can't load PC \"%s\"", bic.c_str());
 		throw e;
@@ -290,7 +287,7 @@ void Module::usePC(const Common::UString &bic, bool local) {
 void Module::usePC(Creature *creature) {
 	unloadPC();
 
-	_pc = creature;
+	_pc.reset(creature);
 
 	setPCTokens();
 	LangMan.setCurrentGender(_pc->isFemale() ? Aurora::kLanguageGenderFemale : Aurora::kLanguageGenderMale);
@@ -299,7 +296,7 @@ void Module::usePC(Creature *creature) {
 }
 
 Creature *Module::getPC() {
-	return _pc;
+	return _pc.get();
 }
 
 void Module::changeModule(const Common::UString &module) {
@@ -363,9 +360,9 @@ void Module::enter() {
 	_running = true;
 	_exit    = false;
 
-	runScript(kScriptModuleLoad , this, _pc);
-	runScript(kScriptModuleStart, this, _pc);
-	runScript(kScriptEnter      , this, _pc);
+	runScript(kScriptModuleLoad , this, _pc.get());
+	runScript(kScriptModuleStart, this, _pc.get());
+	runScript(kScriptEnter      , this, _pc.get());
 
 	// The entry scripts might have already determined that we should quit
 	if (_exit)
@@ -404,7 +401,7 @@ void Module::enterArea() {
 	if (_currentArea) {
 		_pc->hide();
 
-		_currentArea->runScript(kScriptExit, _currentArea, _pc);
+		_currentArea->runScript(kScriptExit, _currentArea, _pc.get());
 		_currentArea->hide();
 
 		_currentArea = 0;
@@ -433,7 +430,7 @@ void Module::enterArea() {
 
 	_pc->setArea(_currentArea);
 
-	_currentArea->runScript(kScriptEnter, _currentArea, _pc);
+	_currentArea->runScript(kScriptEnter, _currentArea, _pc.get());
 
 	_console->printf("Entering area \"%s\"", _currentArea->getResRef().c_str());
 }
@@ -545,7 +542,7 @@ void Module::unload(bool completeUnload) {
 }
 
 void Module::unloadModule() {
-	runScript(kScriptExit, this, _pc);
+	runScript(kScriptExit, this, _pc.get());
 	handleActions();
 
 	_eventQueue.clear();
@@ -574,8 +571,7 @@ void Module::unloadPC() {
 
 	removePCTokens();
 
-	delete _pc;
-	_pc = 0;
+	_pc.reset();
 }
 
 void Module::loadTLK() {

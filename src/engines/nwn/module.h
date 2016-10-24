@@ -29,6 +29,7 @@
 #include <map>
 #include <set>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -177,7 +178,7 @@ private:
 	bool _hasModule; ///< Do we have a module?
 	bool _running;   ///< Are we currently running a module?
 
-	IngameGUI *_ingameGUI; ///< The ingame GUI elements.
+	Common::ScopedPtr<IngameGUI> _ingameGUI; ///< The ingame GUI elements.
 
 	/** Resources added by the module. */
 	Common::ChangeID _resModule;
@@ -189,7 +190,7 @@ private:
 
 	Aurora::IFOFile _ifo; ///< The module's IFO.
 
-	Creature *_pc; ///< The player character we use.
+	Common::ScopedPtr<Creature> _pc; ///< The player character we use.
 
 	// Texture pack
 	int _currentTexturePack;
