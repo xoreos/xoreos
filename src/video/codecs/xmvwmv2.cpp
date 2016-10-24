@@ -227,16 +227,7 @@ void XMVWMV2Codec::DecodeContext::finishMacroBlock() {
 
 XMVWMV2Codec::XMVWMV2Codec(uint32 width, uint32 height,
                            Common::SeekableReadStream &extraData) :
-	_width(width), _height(height), _cbp(0), _currentFrame(0) {
-
-	// Clear everything, so that a throw in the init doesn't mess everything up
-	std::memset(_curPlanes, 0, sizeof(_curPlanes));
-	std::memset(_oldPlanes, 0, sizeof(_oldPlanes));
-	std::memset(_huffCBP  , 0, sizeof(_huffCBP));
-	std::memset(_huffDC   , 0, sizeof(_huffDC));
-	std::memset(_predAC   , 0, sizeof(_predAC));
-	std::memset(_decoderAC, 0, sizeof(_decoderAC));
-	std::memset(_decoderMV, 0, sizeof(_decoderMV));
+	_width(width), _height(height), _currentFrame(0) {
 
 	init();
 
@@ -244,28 +235,6 @@ XMVWMV2Codec::XMVWMV2Codec(uint32 width, uint32 height,
 }
 
 XMVWMV2Codec::~XMVWMV2Codec() {
-	for (int i = 0; i < 2; i ++)
-		delete _decoderMV[i].huffman;
-
-	for (int i = 0; i < 2; i ++)
-		for (int j = 0; j < 3; j++)
-			delete _decoderAC[i][j].huffman;
-	for (int i = 0; i < 3; i++)
-		delete[] _predAC[i];
-
-	for (int i = 0; i < 2; i ++)
-		for (int j = 0; j < 2; j++)
-			delete _huffDC[i][j];
-
-	for (int i = 0; i < 4; i++)
-		delete _huffCBP[i];
-
-	delete[] _cbp;
-
-	for (int i = 0; i < 3; i++) {
-		delete[] _curPlanes[i];
-		delete[] _oldPlanes[i];
-	}
 }
 
 void XMVWMV2Codec::init() {
@@ -281,41 +250,41 @@ void XMVWMV2Codec::init() {
 
 
 	// Color planes
-	_curPlanes[0] = new byte[_lumaWidth   * _lumaHeight  ];
-	_curPlanes[1] = new byte[_chromaWidth * _chromaHeight];
-	_curPlanes[2] = new byte[_chromaWidth * _chromaHeight];
-	_oldPlanes[0] = new byte[_lumaWidth   * _lumaHeight  ];
-	_oldPlanes[1] = new byte[_chromaWidth * _chromaHeight];
-	_oldPlanes[2] = new byte[_chromaWidth * _chromaHeight];
+	_curPlanes[0].reset(new byte[_lumaWidth   * _lumaHeight  ]);
+	_curPlanes[1].reset(new byte[_chromaWidth * _chromaHeight]);
+	_curPlanes[2].reset(new byte[_chromaWidth * _chromaHeight]);
+	_oldPlanes[0].reset(new byte[_lumaWidth   * _lumaHeight  ]);
+	_oldPlanes[1].reset(new byte[_chromaWidth * _chromaHeight]);
+	_oldPlanes[2].reset(new byte[_chromaWidth * _chromaHeight]);
 
-	std::memset(_curPlanes[0], 0, _lumaWidth   * _lumaHeight  );
-	std::memset(_curPlanes[1], 0, _chromaWidth * _chromaHeight);
-	std::memset(_curPlanes[2], 0, _chromaWidth * _chromaHeight);
-	std::memset(_oldPlanes[0], 0, _lumaWidth   * _lumaHeight  );
-	std::memset(_oldPlanes[1], 0, _chromaWidth * _chromaHeight);
-	std::memset(_oldPlanes[2], 0, _chromaWidth * _chromaHeight);
+	std::memset(_curPlanes[0].get(), 0, _lumaWidth   * _lumaHeight  );
+	std::memset(_curPlanes[1].get(), 0, _chromaWidth * _chromaHeight);
+	std::memset(_curPlanes[2].get(), 0, _chromaWidth * _chromaHeight);
+	std::memset(_oldPlanes[0].get(), 0, _lumaWidth   * _lumaHeight  );
+	std::memset(_oldPlanes[1].get(), 0, _chromaWidth * _chromaHeight);
+	std::memset(_oldPlanes[2].get(), 0, _chromaWidth * _chromaHeight);
 
 
 	// Coded block pattern
-	_cbp = new CBP[_mbCountWidth + 1]; // +1 border for the start of the row
+	_cbp.reset(new CBP[_mbCountWidth + 1]); // +1 border for the start of the row
 
-	_huffCBP[0] = new Common::Huffman(wmv2HuffmanIMB);
-	_huffCBP[1] = new Common::Huffman(wmv2HuffmanPMB[0]);
-	_huffCBP[2] = new Common::Huffman(wmv2HuffmanPMB[1]);
-	_huffCBP[3] = new Common::Huffman(wmv2HuffmanPMB[2]);
+	_huffCBP[0].reset(new Common::Huffman(wmv2HuffmanIMB));
+	_huffCBP[1].reset(new Common::Huffman(wmv2HuffmanPMB[0]));
+	_huffCBP[2].reset(new Common::Huffman(wmv2HuffmanPMB[1]));
+	_huffCBP[3].reset(new Common::Huffman(wmv2HuffmanPMB[2]));
 
 
 	// DC Huffman decoders
-	_huffDC[0][0] = new Common::Huffman(wmv2HuffmanDC[0][0]);
-	_huffDC[0][1] = new Common::Huffman(wmv2HuffmanDC[0][1]);
-	_huffDC[1][0] = new Common::Huffman(wmv2HuffmanDC[1][0]);
-	_huffDC[1][1] = new Common::Huffman(wmv2HuffmanDC[1][1]);
+	_huffDC[0][0].reset(new Common::Huffman(wmv2HuffmanDC[0][0]));
+	_huffDC[0][1].reset(new Common::Huffman(wmv2HuffmanDC[0][1]));
+	_huffDC[1][0].reset(new Common::Huffman(wmv2HuffmanDC[1][0]));
+	_huffDC[1][1].reset(new Common::Huffman(wmv2HuffmanDC[1][1]));
 
 
 	// AC predictors
-	_predAC[0] = new int32[_lumaWidth];
-	_predAC[1] = new int32[_chromaWidth];
-	_predAC[2] = new int32[_chromaWidth];
+	_predAC[0].reset(new int32[_lumaWidth]);
+	_predAC[1].reset(new int32[_chromaWidth]);
+	_predAC[2].reset(new int32[_chromaWidth]);
 
 
 	// AC decoders
@@ -324,7 +293,7 @@ void XMVWMV2Codec::init() {
 			const WMV2ACCoefficientTable *params = &wmv2AC[i][j];
 
 			_decoderAC[i][j].parameters = params;
-			_decoderAC[i][j].huffman    = new Common::Huffman(params->huffman);
+			_decoderAC[i][j].huffman.reset(new Common::Huffman(params->huffman));
 		}
 	}
 
@@ -333,7 +302,7 @@ void XMVWMV2Codec::init() {
 		const WMV2MVTable *params = &wmv2MV[i];
 
 		_decoderMV[i].parameters = params;
-		_decoderMV[i].huffman    = new Common::Huffman(params->huffman);
+		_decoderMV[i].huffman.reset(new Common::Huffman(params->huffman));
 	}
 }
 
@@ -373,12 +342,12 @@ void XMVWMV2Codec::decodeFrame(Graphics::Surface &surface,
 	// Convert the YUV data we have to BGRA
 	YUVToRGBMan.convert420(Graphics::YUVToRGBManager::kScaleITU,
 			surface.getData(), surface.getWidth() * 4,
-			_curPlanes[0], _curPlanes[1], _curPlanes[2],
+			_curPlanes[0].get(), _curPlanes[1].get(), _curPlanes[2].get(),
 			_lumaWidth, _lumaHeight, _lumaWidth, _chromaWidth);
 
 	// And swap the planes with the reference planes
 	for (int i = 0; i < 3; i++)
-		SWAP(_curPlanes[i], _oldPlanes[i]);
+		_oldPlanes[i].swap(_curPlanes[i]);
 
 	_currentFrame++;
 }
@@ -409,29 +378,31 @@ void XMVWMV2Codec::parseExtraData(Common::SeekableReadStream &extraData) {
 }
 
 void XMVWMV2Codec::initDecodeContext(DecodeContext &ctx) {
-	ctx.acQuantTop = _predAC;
+	ctx.acQuantTop[0] = _predAC[0].get();
+	ctx.acQuantTop[1] = _predAC[1].get();
+	ctx.acQuantTop[2] = _predAC[2].get();
 
 	for (int i = 0; i < 4; i++) {
 		const uint32 offset = kBlockSize * (i & 1) + kBlockSize * _lumaWidth * (i >> 1);
 
-		ctx.block[i].refPlane = _oldPlanes[0] + offset;
-		ctx.block[i].curPlane = _curPlanes[0] + offset;
+		ctx.block[i].refPlane = _oldPlanes[0].get() + offset;
+		ctx.block[i].curPlane = _curPlanes[0].get() + offset;
 
 		ctx.block[i].planePitch = _lumaWidth;
 		ctx.block[i].blockPitch = kMacroBlockSize;
 	}
 
 	for (int i = 4; i < 6; i++) {
-		ctx.block[i].refPlane = _oldPlanes[i - 3];
-		ctx.block[i].curPlane = _curPlanes[i - 3];
+		ctx.block[i].refPlane = _oldPlanes[i - 3].get();
+		ctx.block[i].curPlane = _curPlanes[i - 3].get();
 
 		ctx.block[i].planePitch = _chromaWidth;
 		ctx.block[i].blockPitch = kBlockSize;
 	}
 
-	std::memset(_cbp, 0, sizeof(CBP) * (_mbCountWidth + 1));
+	std::memset(_cbp.get(), 0, sizeof(CBP) * (_mbCountWidth + 1));
 
-	ctx.rowCBP = _cbp + 1;
+	ctx.rowCBP = _cbp.get() + 1;
 }
 
 void XMVWMV2Codec::decodeIFrame(DecodeContext &ctx) {
@@ -450,8 +421,8 @@ void XMVWMV2Codec::decodeIFrame(DecodeContext &ctx) {
 	// DC Huffman table index
 	uint8 dcTableIndex = ctx.bits.getBit();
 
-	ctx.huffDC[0] = _huffDC[0][dcTableIndex];
-	ctx.huffDC[1] = _huffDC[1][dcTableIndex];
+	ctx.huffDC[0] = _huffDC[0][dcTableIndex].get();
+	ctx.huffDC[1] = _huffDC[1][dcTableIndex].get();
 
 
 	// Decode the macro blocks, row-major order
@@ -500,16 +471,16 @@ void XMVWMV2Codec::decodeJFrame(DecodeContext &UNUSED(ctx)) {
 	warning("XMV: J-Frame %d", _currentFrame);
 
 	// Just copy the reference planes for now
-	std::memcpy(_curPlanes[0], _oldPlanes[0], _lumaWidth   * _lumaHeight  );
-	std::memcpy(_curPlanes[1], _oldPlanes[1], _chromaWidth * _chromaHeight);
-	std::memcpy(_curPlanes[2], _oldPlanes[2], _chromaWidth * _chromaHeight);
+	std::memcpy(_curPlanes[0].get(), _oldPlanes[0].get(), _lumaWidth   * _lumaHeight  );
+	std::memcpy(_curPlanes[1].get(), _oldPlanes[1].get(), _chromaWidth * _chromaHeight);
+	std::memcpy(_curPlanes[2].get(), _oldPlanes[2].get(), _chromaWidth * _chromaHeight);
 }
 
 void XMVWMV2Codec::decodePFrame(DecodeContext &UNUSED(ctx)) {
 	// Just copy the reference planes for now
-	std::memcpy(_curPlanes[0], _oldPlanes[0], _lumaWidth   * _lumaHeight  );
-	std::memcpy(_curPlanes[1], _oldPlanes[1], _chromaWidth * _chromaHeight);
-	std::memcpy(_curPlanes[2], _oldPlanes[2], _chromaWidth * _chromaHeight);
+	std::memcpy(_curPlanes[0].get(), _oldPlanes[0].get(), _lumaWidth   * _lumaHeight  );
+	std::memcpy(_curPlanes[1].get(), _oldPlanes[1].get(), _chromaWidth * _chromaHeight);
+	std::memcpy(_curPlanes[2].get(), _oldPlanes[2].get(), _chromaWidth * _chromaHeight);
 }
 
 void XMVWMV2Codec::decodeIMacroBlock(DecodeContext &ctx) {
