@@ -51,10 +51,7 @@ static const int kAudioFlagADPCM51               = kAudioFlagADPCM51FrontLeftRig
 namespace Video {
 
 XboxMediaVideo::ADPCM51Streams::ADPCM51Streams() : enabled(false) {
-	streams.resize(3);
-	streams[0] = 0;
-	streams[1] = 0;
-	streams[2] = 0;
+	streams.resize(3, 0);
 }
 
 XboxMediaVideo::ADPCM51Streams::~ADPCM51Streams() {
@@ -65,30 +62,14 @@ XboxMediaVideo::ADPCM51Streams::~ADPCM51Streams() {
 
 
 XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) :
-	_xmv(xmv), _startTime(0), _videoCodec(0) {
+	_xmv(xmv), _startTime(0) {
 
 	assert(_xmv);
 
-	try {
-		load();
-	} catch (...) {
-		clear();
-		throw;
-	}
+	load();
 }
 
 XboxMediaVideo::~XboxMediaVideo() {
-	clear();
-}
-
-void XboxMediaVideo::clear() {
-	VideoDecoder::deinit();
-
-	delete _videoCodec;
-	_videoCodec = 0;
-
-	delete _xmv;
-	_xmv = 0;
 }
 
 uint32 XboxMediaVideo::getTimeToNextFrame() const {
@@ -155,7 +136,8 @@ void XboxMediaVideo::processNextFrame(PacketVideo &videoPacket) {
 		if (_videoCodec) {
 			assert(_surface);
 
-			Common::SeekableSubReadStream frameData(_xmv, _xmv->pos(), _xmv->pos() + videoPacket.currentFrameSize);
+			Common::SeekableSubReadStream frameData(_xmv.get(), _xmv->pos(),
+			                                        _xmv->pos() + videoPacket.currentFrameSize);
 
 			_videoCodec->decodeFrame(*_surface, frameData);
 			_needCopy = true;
@@ -386,12 +368,9 @@ void XboxMediaVideo::processPacketHeader(Packet &packet) {
 
 	if (packet.video.dataSize >= 4) {
 		if (hasExtraData) {
-			Common::SeekableSubReadStream extraData(_xmv, _xmv->pos(), _xmv->pos() + 4);
+			Common::SeekableSubReadStream extraData(_xmv.get(), _xmv->pos(), _xmv->pos() + 4);
 
-			delete _videoCodec;
-			_videoCodec = 0;
-
-			_videoCodec = new XMVWMV2Codec(_width, _height, extraData);
+			_videoCodec.reset(new XMVWMV2Codec(_width, _height, extraData));
 
 			packet.video.dataSize   -= 4;
 			packet.video.dataOffset += 4;
@@ -422,76 +401,72 @@ void XboxMediaVideo::processData() {
 void XboxMediaVideo::queueAudioStream(Common::SeekableReadStream *stream,
                                       const AudioTrack &track) {
 
-	// No stream or not a supported track
-	if (!stream || !track.supported) {
-		delete stream;
-		return;
-	}
+	Common::ScopedPtr<Common::SeekableReadStream> dataStream(stream);
 
-	Sound::AudioStream *audioStream = 0;
+	// No stream or not a supported track
+	if (!stream || !track.supported)
+		return;
+
+	Common::ScopedPtr<Sound::AudioStream> audioStream;
 
 	// Create the audio stream
 	switch (track.compression) {
 		case Sound::kWavePCM:
-			audioStream =
-				Sound::makePCMStream(stream, track.rate, track.audioStreamFlags, track.channels, true);
+			audioStream.reset(Sound::makePCMStream(dataStream.release(),
+			                  track.rate, track.audioStreamFlags, track.channels, true));
 			break;
 
 		case Sound::kWaveMSIMAADPCM2:
-			audioStream =
-				Sound::makeADPCMStream(stream, true, stream->size(),
-				                       Sound::kADPCMMSIma, track.rate,
-				                       track.channels, 36 * track.channels);
+			audioStream.reset(Sound::makeADPCMStream(dataStream.release(),
+			                  true, stream->size(), Sound::kADPCMMSIma, track.rate,
+			                  track.channels, 36 * track.channels));
 			break;
 
 		default:
-			delete stream;
 			break;
 	}
 
-	// Queue it
-	if (audioStream) {
+	if (!audioStream)
+		return;
 
-		// Look if we have to do ADPCM 5.1 interleaving
-		if (_adpcm51Streams.enabled) {
-			Sound::AudioStream **targetStream = 0;
-
-			// Find the right target for this stream
-			     if (track.flags & kAudioFlagADPCM51FrontLeftRight)
-				targetStream = &_adpcm51Streams.streams[0];
-			else if (track.flags & kAudioFlagADPCM51FrontCenterLow)
-				targetStream = &_adpcm51Streams.streams[1];
-			else if (track.flags & kAudioFlagADPCM51RearLeftRight)
-				targetStream = &_adpcm51Streams.streams[2];
-
-			if (!targetStream) {
-				warning("XboxMediaVideo::queueAudioStream(): Broken ADPCM 5.1 flags: 0x%04X",
-				        track.flags);
-				delete audioStream;
-				return;
-			}
-
-			// Assign it
-			delete *targetStream;
-			*targetStream = audioStream;
-
-			// If we have all 3 streams filled, create an interleaver and queue that
-			if (_adpcm51Streams.streams[0] &&
-			    _adpcm51Streams.streams[1] &&
-			    _adpcm51Streams.streams[2]) {
-
-				audioStream = Sound::makeInterleaver(track.rate, _adpcm51Streams.streams, true);
-
-				_adpcm51Streams.streams[0] = 0;
-				_adpcm51Streams.streams[1] = 0;
-				_adpcm51Streams.streams[2] = 0;
-
-				queueSound(audioStream);
-			}
-
-		} else
-			queueSound(audioStream);
+	// If we don't have to do ADPCM 5.1 interleaving, just queue the sound
+	if (!_adpcm51Streams.enabled) {
+		queueSound(audioStream.release());
+		return;
 	}
+
+	Sound::AudioStream **targetStream = 0;
+
+	// Find the right target for this stream
+	     if (track.flags & kAudioFlagADPCM51FrontLeftRight)
+		targetStream = &_adpcm51Streams.streams[0];
+	else if (track.flags & kAudioFlagADPCM51FrontCenterLow)
+		targetStream = &_adpcm51Streams.streams[1];
+	else if (track.flags & kAudioFlagADPCM51RearLeftRight)
+		targetStream = &_adpcm51Streams.streams[2];
+
+	if (!targetStream) {
+		warning("XboxMediaVideo::queueAudioStream(): Broken ADPCM 5.1 flags: 0x%04X", track.flags);
+		return;
+	}
+
+	// Assign it
+	delete *targetStream;
+	*targetStream = audioStream.release();
+
+	// At least one stream still not filled? We're done for now
+	if (!_adpcm51Streams.streams[0] && !_adpcm51Streams.streams[1] && !_adpcm51Streams.streams[2])
+		return;
+
+	// All 3 streams filled? Create an interleaver and queue that
+
+	audioStream.reset(Sound::makeInterleaver(track.rate, _adpcm51Streams.streams, true));
+
+	_adpcm51Streams.streams[0] = 0;
+	_adpcm51Streams.streams[1] = 0;
+	_adpcm51Streams.streams[2] = 0;
+
+	queueSound(audioStream.release());
 }
 
 } // End of namespace Video

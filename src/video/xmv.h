@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include "src/common/scopedptr.h"
+
 #include "src/video/decoder.h"
 
 namespace Common {
@@ -118,7 +120,7 @@ private:
 		~ADPCM51Streams();
 	};
 
-	Common::SeekableReadStream *_xmv;
+	Common::ScopedPtr<Common::SeekableReadStream> _xmv;
 
 	/** The time the XMV was started. */
 	uint32 _startTime;
@@ -133,12 +135,11 @@ private:
 	Packet _curPacket;
 
 	/** The video codec. */
-	Codec *_videoCodec;
+	Common::ScopedPtr<Codec> _videoCodec;
 
 
 	/** Load an XMV file. */
 	void load();
-	void clear();
 
 	/** Evaluate whether and how we support the format of the audio track. */
 	void evaluateAudioTrack(AudioTrack &track);
