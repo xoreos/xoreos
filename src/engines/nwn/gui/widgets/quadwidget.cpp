@@ -39,7 +39,7 @@ QuadWidget::QuadWidget(::Engines::GUI &gui, const Common::UString &tag,
                        float tX1, float tY1, float tX2, float tY2) :
 	NWNWidget(gui, tag) {
 
-	_quad = new Graphics::Aurora::GUIQuad(texture, x1, y1, x2, y2, tX1, tY1, tX2, tY2);
+	_quad.reset(new Graphics::Aurora::GUIQuad(texture, x1, y1, x2, y2, tX1, tY1, tX2, tY2));
 	_quad->setTag(tag);
 	_quad->setClickable(true);
 
@@ -48,7 +48,6 @@ QuadWidget::QuadWidget(::Engines::GUI &gui, const Common::UString &tag,
 }
 
 QuadWidget::~QuadWidget() {
-	delete _quad;
 }
 
 void QuadWidget::show() {

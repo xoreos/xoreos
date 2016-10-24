@@ -25,7 +25,10 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_WIDGETLISTITEMBUTTON_H
 #define ENGINES_NWN_GUI_WIDGETS_WIDGETLISTITEMBUTTON_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/sound/sound.h"
+
 #include "src/engines/nwn/gui/widgets/listbox.h"
 
 namespace Engines {
@@ -58,7 +61,7 @@ protected:
 	bool activate();
 	bool deactivate();
 
-	Graphics::Aurora::Model *_button;
+	Common::ScopedPtr<Graphics::Aurora::Model> _button;
 
 private:
 	float _spacing;
@@ -101,12 +104,14 @@ public:
 protected:
 	virtual void callbackHelp();
 
-	Graphics::Aurora::Text  *_text;
-	Portrait *_icon;
+	Common::ScopedPtr<Graphics::Aurora::Text> _text;
+	Common::ScopedPtr<Portrait> _icon;
+
 	bool _isRight;
 	bool _isMovable;
 
-	Graphics::Aurora::Model *_helpButton;
+	Common::ScopedPtr<Graphics::Aurora::Model> _helpButton;
+
 	WidgetButton *_moveButtonRight;
 	WidgetButton *_moveButtonLeft;
 };

@@ -39,12 +39,11 @@ TextWidget::TextWidget(::Engines::GUI &gui, const Common::UString &tag,
                        const Common::UString &font, const Common::UString &text) :
 	NWNWidget(gui, tag), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {
 
-	_text = new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, 0.5f);
+	_text.reset(new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, 0.5f));
 	_text->setTag(tag);
 }
 
 TextWidget::~TextWidget() {
-	delete _text;
 }
 
 void TextWidget::show() {

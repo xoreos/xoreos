@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 #include "src/graphics/aurora/types.h"
 
@@ -102,7 +103,7 @@ protected:
 	bool deactivate();
 
 private:
-	Graphics::Aurora::Text *_text;
+	Common::ScopedPtr<Graphics::Aurora::Text> _text;
 
 	float _uR, _uG, _uB, _uA;
 	float _sR, _sG, _sB, _sA;

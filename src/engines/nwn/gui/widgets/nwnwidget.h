@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_NWNWIDGET_H
 #define ENGINES_NWN_GUI_WIDGETS_NWNWIDGET_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/aurora/widget.h"
@@ -56,7 +58,7 @@ public:
 	void setTooltipPosition(float x, float y, float z);
 
 private:
-	Tooltip *_tooltip;
+	Common::ScopedPtr<Tooltip> _tooltip;
 
 	void createTooltip();
 };

@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_TEXTWIDGET_H
 #define ENGINES_NWN_GUI_WIDGETS_TEXTWIDGET_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/nwn/gui/widgets/nwnwidget.h"
@@ -62,7 +64,7 @@ public:
 	void setDisabled(bool disabled);
 
 protected:
-	Graphics::Aurora::Text *_text;
+	Common::ScopedPtr<Graphics::Aurora::Text> _text;
 
 	float _r;
 	float _g;

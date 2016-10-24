@@ -46,7 +46,7 @@ WidgetListItemBaseButton::WidgetListItemBaseButton(::Engines::GUI &gui,
                                                    WidgetListItem(gui), _spacing(spacing),
                                                    _sound(soundClick) {
 
-	_button = loadModelGUI(button);
+	_button.reset(loadModelGUI(button));
 	assert(_button);
 
 	_button->setClickable(true);
@@ -54,7 +54,6 @@ WidgetListItemBaseButton::WidgetListItemBaseButton(::Engines::GUI &gui,
 }
 
 WidgetListItemBaseButton::~WidgetListItemBaseButton() {
-	delete _button;
 }
 
 void WidgetListItemBaseButton::show() {
@@ -126,48 +125,29 @@ bool WidgetListItemBaseButton::deactivate() {
 WidgetListItemButton::WidgetListItemButton(::Engines::GUI &gui, const Common::UString &button,
                                            const Common::UString &text, const Common::UString &icon,
                                            uint32 otherButtons, const Common::UString &soundClick) :
-                                           WidgetListItemBaseButton(gui, button, 1.0f, soundClick),
-                                           _isRight(true) {
+	WidgetListItemBaseButton(gui, button, 1.0f, soundClick),
+	_isRight(true), _isMovable(false), _moveButtonRight(0), _moveButtonLeft(0) {
 
-	_text = new Graphics::Aurora::Text(FontMan.get("fnt_galahad14"), text);
+	_text.reset(new Graphics::Aurora::Text(FontMan.get("fnt_galahad14"), text));
 
-	if (icon == "") {
-		_icon = 0;
-	} else {
-		_icon = new Portrait(icon, Portrait::kSizeIcon);
-	}
+	if (!icon.empty())
+		_icon.reset(new Portrait(icon, Portrait::kSizeIcon));
 
-	if (otherButtons & kHelpButton) {
-		_helpButton = loadModelGUI("ctl_cg_btn_help");
-	} else {
-		_helpButton = 0;
-	}
+	if (otherButtons & kHelpButton)
+		_helpButton.reset(loadModelGUI("ctl_cg_btn_help"));
 
 	if (otherButtons & kMoveButton) {
 		_isMovable = true;
+
 		_moveButtonRight = new WidgetButton(gui, "Item#" + text + "#MoveButtonRight", "ctl_cg_btn_right");
-		_moveButtonLeft  = new WidgetButton(gui, "Item#" + text + "#MoveButtonLeft", "ctl_cg_btn_left");
-
 		addSub(*_moveButtonRight);
-		addSub(*_moveButtonLeft);
 
-	} else {
-		_isMovable = false;
-		_moveButtonLeft = 0;
-		_moveButtonRight = 0;
+		_moveButtonLeft = new WidgetButton(gui, "Item#" + text + "#MoveButtonLeft", "ctl_cg_btn_left");
+		addSub(*_moveButtonLeft);
 	}
 }
 
 WidgetListItemButton::~WidgetListItemButton() {
-	delete _text;
-
-	if (_icon)
-		delete _icon;
-
-	if (_moveButtonLeft) {
-		_moveButtonLeft->remove();
-		_moveButtonRight->remove();
-	}
 }
 
 void WidgetListItemButton::show() {

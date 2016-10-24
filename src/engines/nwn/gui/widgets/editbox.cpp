@@ -37,12 +37,9 @@ namespace NWN {
 WidgetEditBox::WidgetEditBox(::Engines::GUI &gui, const Common::UString &tag,
                              const Common::UString &model) :
 	WidgetListBox(gui, tag, model){
-
-	_title = 0;
 }
 
 WidgetEditBox::~WidgetEditBox() {
-	delete _title;
 }
 
 void WidgetEditBox::show() {
@@ -61,7 +58,7 @@ void WidgetEditBox::hide() {
 
 void WidgetEditBox::setTitle(const Common::UString &font, const Common::UString &title) {
 	if (!_title)
-		_title = new Graphics::Aurora::Text(FontMan.get(font), title);
+		_title.reset(new Graphics::Aurora::Text(FontMan.get(font), title));
 
 	_title->set(title);
 

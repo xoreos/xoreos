@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_QUADWIDGET_H
 #define ENGINES_NWN_GUI_WIDGETS_QUADWIDGET_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/nwn/gui/widgets/nwnwidget.h"
@@ -69,7 +71,7 @@ private:
 	float _width;
 	float _height;
 
-	Graphics::Aurora::GUIQuad *_quad;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _quad;
 };
 
 } // End of namespace NWN

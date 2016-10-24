@@ -27,6 +27,7 @@
 
 #include <vector>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -110,9 +111,9 @@ private:
 	bool _showBubble;
 	bool _showPortrait;
 
-	Graphics::Aurora::Model *_bubble;
+	Common::ScopedPtr<Graphics::Aurora::Model> _bubble;
 
-	Portrait *_portrait;
+	Common::ScopedPtr<Portrait> _portrait;
 
 	std::vector<Line> _lines;
 	std::vector<Graphics::Aurora::Text *> _texts;

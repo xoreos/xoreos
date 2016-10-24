@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_EDITBOX_H
 #define ENGINES_NWN_GUI_WIDGETS_EDITBOX_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/widgets/listbox.h"
 
 namespace Common {
@@ -54,7 +56,7 @@ private:
 	// FIXME As there is no mechanism to easily scroll text (like the render-to-texture way),
 	//       lines are shown by WidgetListBox but should ideally use WidgetText
 
-	Graphics::Aurora::Text *_title;
+	Common::ScopedPtr<Graphics::Aurora::Text> _title;
 };
 
 } // End of namespace NWN

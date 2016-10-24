@@ -31,12 +31,10 @@ namespace Engines {
 
 namespace NWN {
 
-NWNWidget::NWNWidget(::Engines::GUI &gui, const Common::UString &tag) : Widget(gui, tag),
-	_tooltip() {
+NWNWidget::NWNWidget(::Engines::GUI &gui, const Common::UString &tag) : Widget(gui, tag) {
 }
 
 NWNWidget::~NWNWidget() {
-	delete _tooltip;
 }
 
 void NWNWidget::hide() {
@@ -83,7 +81,7 @@ void NWNWidget::createTooltip() {
 	if (_tooltip)
 		return;
 
-	_tooltip = new Tooltip(Tooltip::kTypeHelp, *this);
+	_tooltip.reset(new Tooltip(Tooltip::kTypeHelp, *this));
 	_tooltip->setAlign(0.5f);
 }
 

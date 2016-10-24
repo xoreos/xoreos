@@ -49,7 +49,7 @@ namespace NWN {
 Tooltip::Tooltip(Type type) : _type(type),
 	_parentWidget(0), _parentModel(0),
 	_empty(true), _visible(false), _align(0.0f),
-	_bubble(0), _portrait(0), _offscreen(false), _x(0.0f), _y(0.0f), _z(0.0f),
+	_offscreen(false), _x(0.0f), _y(0.0f), _z(0.0f),
 	_lineHeight(0.0f), _lineSpacing(0.0f), _width(0.0f), _height(0.0f),
 	_needCamera(false), _detectEdge(false) {
 
@@ -59,7 +59,7 @@ Tooltip::Tooltip(Type type) : _type(type),
 Tooltip::Tooltip(Type type, Widget &parent) : _type(type),
 	_parentWidget(&parent), _parentModel(0),
 	_empty(true), _visible(false), _align(0.0f),
-	_bubble(0), _portrait(0), _offscreen(false), _x(0.0f), _y(0.0f), _z(0.0f),
+	_offscreen(false), _x(0.0f), _y(0.0f), _z(0.0f),
 	_lineHeight(0.0f), _lineSpacing(0.0f), _width(0.0f), _height(0.0f),
 	_needCamera(false), _detectEdge(true) {
 
@@ -69,7 +69,7 @@ Tooltip::Tooltip(Type type, Widget &parent) : _type(type),
 Tooltip::Tooltip(Type type, Graphics::Aurora::Model &parent) : _type(type),
 	_parentWidget(0), _parentModel(&parent),
 	_empty(true), _visible(false), _align(0.0f),
-	_bubble(0), _portrait(0), _offscreen(false), _x(0.0f), _y(0.0f), _z(0.0f),
+	_offscreen(false), _x(0.0f), _y(0.0f), _z(0.0f),
 	_lineHeight(0.0f), _lineSpacing(0.0f), _width(0.0f), _height(0.0f),
 	_needCamera(true), _detectEdge(false) {
 
@@ -80,9 +80,6 @@ Tooltip::~Tooltip() {
 	hide();
 
 	deleteTexts();
-
-	delete _portrait;
-	delete _bubble;
 }
 
 void Tooltip::clearLines() {
@@ -96,8 +93,7 @@ void Tooltip::clearLines() {
 void Tooltip::clearPortrait() {
 	hide();
 
-	delete _portrait;
-	_portrait = 0;
+	_portrait.reset();
 
 	redoLayout();
 }
@@ -132,7 +128,7 @@ void Tooltip::setPortrait(const Common::UString &image) {
 	if (_portrait)
 		_portrait->setPortrait(image);
 	else
-		_portrait = new Portrait(image, Portrait::kSizeTiny, 1.0f);
+		_portrait.reset(new Portrait(image, Portrait::kSizeTiny, 1.0f));
 
 	redoLayout();
 }
@@ -378,8 +374,7 @@ void Tooltip::redoLines(bool force) {
 }
 
 void Tooltip::redoBubble() {
-	delete _bubble;
-	_bubble = 0;
+	_bubble.reset();
 
 	if (!_showBubble || (_height <= 0.0f))
 		return;
@@ -394,7 +389,7 @@ void Tooltip::redoBubble() {
 
 	Common::UString bubbleModel = getBubbleModel(lines, _width);
 
-	_bubble = loadModelGUI(bubbleModel);
+	_bubble.reset(loadModelGUI(bubbleModel));
 	if (!_bubble) {
 		warning("Tooltip::redoBubble(): Failed loading model \"%s\"", bubbleModel.c_str());
 		return;
