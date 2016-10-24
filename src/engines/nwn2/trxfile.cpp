@@ -22,6 +22,7 @@
  *  Loader for Neverwinter Nights 2 baked terrain files (TRX).
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/encoding.h"
@@ -43,21 +44,17 @@ namespace Engines {
 namespace NWN2 {
 
 TRXFile::TRXFile(const Common::UString &resRef) : _visible(false) {
-	Common::SeekableReadStream *trx = 0;
-
 	try {
-		if (!(trx = ResMan.getResource(resRef, Aurora::kFileTypeTRX)))
+		Common::ScopedPtr<Common::SeekableReadStream> trx(ResMan.getResource(resRef, Aurora::kFileTypeTRX));
+		if (!trx)
 			throw Common::Exception("No such TRX");
 
 		load(*trx);
-	} catch (Common::Exception &e) {
-		delete trx;
 
+	} catch (Common::Exception &e) {
 		e.add("Failed to load TRX \"%s\"", resRef.c_str());
 		throw e;
 	}
-
-	delete trx;
 }
 
 TRXFile::~TRXFile() {
