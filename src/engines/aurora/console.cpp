@@ -83,17 +83,17 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 	_lineHeight = _font.getFont().getHeight() + _font.getFont().getLineSpacing();
 	_height     = floorf(lines * _lineHeight);
 
-	_prompt = new Graphics::Aurora::Text(_font, "");
-	_input  = new Graphics::Aurora::Text(_font, "");
+	_prompt.reset(new Graphics::Aurora::Text(_font, ""));
+	_input.reset (new Graphics::Aurora::Text(_font, ""));
 
 	_prompt->disableColorTokens(true);
 	_input->disableColorTokens(true);
 
 	const float cursorHeight = _font.getFont().getHeight();
-	_cursor = new Graphics::Aurora::GUIQuad("", 0.0f, 1.0f, 0.0f, cursorHeight);
+	_cursor.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 1.0f, 0.0f, cursorHeight));
 	_cursor->setXOR(true);
 
-	_highlight = new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, 0.0f, cursorHeight);
+	_highlight.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, 0.0f, cursorHeight));
 	_highlight->setColor(1.0f, 1.0f, 1.0f, 0.0f);
 	_highlight->setXOR(true);
 
@@ -122,11 +122,6 @@ ConsoleWindow::~ConsoleWindow() {
 	for (std::vector<Graphics::Aurora::Text *>::iterator l = _lines.begin();
 	     l != _lines.end(); ++l)
 		delete *l;
-
-	delete _highlight;
-	delete _cursor;
-	delete _prompt;
-	delete _input;
 }
 
 void ConsoleWindow::show() {
@@ -710,8 +705,8 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 	_lastClickButton(0), _lastClickTime(0), _lastClickX(0), _lastClickY(0),
 	_maxSizeVideos(0), _maxSizeSounds(0) {
 
-	_readLine = new Common::ReadLine(kCommandHistorySize);
-	_console  = new ConsoleWindow(font, kConsoleLines, kConsoleHistory, fontHeight);
+	_readLine.reset(new Common::ReadLine(kCommandHistorySize));
+	_console.reset(new ConsoleWindow(font, kConsoleLines, kConsoleHistory, fontHeight));
 
 	_readLine->historyIgnoreDups(true);
 
@@ -771,9 +766,6 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 
 Console::~Console() {
 	hide();
-
-	delete _console;
-	delete _readLine;
 }
 
 void Console::show() {

@@ -33,6 +33,7 @@
 #include <boost/function.hpp>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/writefile.h"
@@ -124,9 +125,9 @@ public:
 private:
 	Graphics::Aurora::FontHandle _font;
 
-	Graphics::Aurora::Text    *_prompt;
-	Graphics::Aurora::GUIQuad *_cursor;
-	Graphics::Aurora::GUIQuad *_highlight;
+	Common::ScopedPtr<Graphics::Aurora::Text>    _prompt;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _cursor;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _highlight;
 
 	size_t _historySizeMax;
 	size_t _historySizeCurrent;
@@ -135,7 +136,7 @@ private:
 	size_t _historyStart;
 
 	std::vector<Graphics::Aurora::Text *> _lines;
-	Graphics::Aurora::Text *_input;
+	Common::ScopedPtr<Graphics::Aurora::Text> _input;
 
 
 	Common::UString _inputText;
@@ -256,8 +257,8 @@ private:
 	bool _neverShown;
 	bool _visible;
 
-	Common::ReadLine *_readLine;
-	ConsoleWindow *_console;
+	Common::ScopedPtr<Common::ReadLine> _readLine;
+	Common::ScopedPtr<ConsoleWindow> _console;
 
 	CommandMap _commands;
 
