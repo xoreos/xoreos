@@ -23,6 +23,7 @@
  */
 
 #include "src/common/endianness.h"
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/util.h"
 
@@ -91,20 +92,16 @@ GUI::~GUI() {
 void GUI::load(const Common::UString &resref) {
 	_name = resref;
 
-	Aurora::GFF3File *gff = 0;
 	try {
-		gff = new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '), true);
+		Common::ScopedPtr<Aurora::GFF3File>
+			gff(new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '), true));
 
 		loadWidget(gff->getTopLevel(), 0);
 
 	} catch (Common::Exception &e) {
-		delete gff;
-
 		e.add("Can't load GUI \"%s\"", resref.c_str());
 		throw;
 	}
-
-	delete gff;
 }
 
 void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent) {
@@ -273,7 +270,7 @@ WidgetLabel *GUI::createCaption(const Aurora::GFF3Struct &strct, Widget *parent)
 	if (strRef != Aurora::kStrRefInvalid)
 		text = TalkMan.getString(strRef);
 
-	WidgetLabel *label = new WidgetLabel(*this, parent->getTag() + "#Caption", font, text);
+	Common::ScopedPtr<WidgetLabel> label(new WidgetLabel(*this, parent->getTag() + "#Caption", font, text));
 
 	float pX, pY, pZ;
 	parent->getPosition(pX, pY, pZ);
@@ -289,9 +286,9 @@ WidgetLabel *GUI::createCaption(const Aurora::GFF3Struct &strct, Widget *parent)
 	initWidget(*label);
 
 	parent->addChild(*label);
-	addWidget(label);
+	addWidget(label.get());
 
-	return label;
+	return label.release();
 }
 
 void GUI::fixWidgetType(const Common::UString &UNUSED(tag), WidgetType &UNUSED(type)) {
