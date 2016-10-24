@@ -50,14 +50,15 @@
 #include <cassert>
 #include <cstring>
 
-#include "src/sound/decoders/vorbis.h"
+#include <vorbis/vorbisfile.h>
 
-#include "src/common/readstream.h"
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
+#include "src/common/readstream.h"
 
 #include "src/sound/audiostream.h"
 
-#include <vorbis/vorbisfile.h>
+#include "src/sound/decoders/vorbis.h"
 
 namespace Sound {
 
@@ -255,14 +256,11 @@ bool VorbisStream::refill() {
 }
 
 RewindableAudioStream *makeVorbisStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	RewindableAudioStream *s = new VorbisStream(stream, disposeAfterUse);
-
-	if (s && s->endOfData()) {
-		delete s;
+	Common::ScopedPtr<RewindableAudioStream> s(new VorbisStream(stream, disposeAfterUse));
+	if (s && s->endOfData())
 		return 0;
-	}
 
-	return s;
+	return s.release();
 }
 
 } // End of namespace Sound
