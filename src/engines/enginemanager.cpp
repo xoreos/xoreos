@@ -24,6 +24,7 @@
 
 #include <cassert>
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
@@ -90,7 +91,7 @@ private:
 	Common::UString _target;
 
 	const EngineProbe *_probe;
-	Engine *_engine;
+	Common::ScopedPtr<Engine> _engine;
 
 	bool probe(const Common::FileList &rootFiles, const std::list<const EngineProbe *> &probes);
 	bool probe(Common::SeekableReadStream &stream, const std::list<const EngineProbe *> &probes);
@@ -99,12 +100,10 @@ private:
 	void destroyEngine();
 };
 
-GameInstanceEngine::GameInstanceEngine(const Common::UString &target) : _target(target),
-	_probe(0), _engine(0) {
+GameInstanceEngine::GameInstanceEngine(const Common::UString &target) : _target(target), _probe(0) {
 }
 
 GameInstanceEngine::~GameInstanceEngine() {
-	delete _engine;
 }
 
 void GameInstanceEngine::reset() {
@@ -180,12 +179,11 @@ void GameInstanceEngine::createEngine() {
 		throw Common::Exception("GameInstanceEngine::createEngine(): No game probed");
 
 	destroyEngine();
-	_engine = _probe->createEngine();
+	_engine.reset(_probe->createEngine());
 }
 
 void GameInstanceEngine::destroyEngine() {
-	delete _engine;
-	_engine = 0;
+	_engine.reset();
 }
 
 void GameInstanceEngine::listLanguages() {
@@ -230,11 +228,10 @@ void GameInstanceEngine::run() {
 GameInstance *EngineManager::probeGame(const Common::UString &target,
                                        const std::list<const EngineProbe *> &probes) const {
 
-	GameInstanceEngine *game = new GameInstanceEngine(target);
+	Common::ScopedPtr<GameInstanceEngine> game(new GameInstanceEngine(target));
 	if (game->probe(probes))
-		return game;
+		return game.release();
 
-	delete game;
 	return 0;
 }
 
