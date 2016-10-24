@@ -25,6 +25,9 @@
 #ifndef VIDEO_ACTIMAGINE_H
 #define VIDEO_ACTIMAGINE_H
 
+#include "src/common/types.h"
+#include "src/common/scopedptr.h"
+
 #include "src/video/decoder.h"
 
 namespace Common {
@@ -46,11 +49,10 @@ protected:
 	void processData();
 
 private:
-	Common::SeekableReadStream *_vx;
+	Common::ScopedPtr<Common::SeekableReadStream> _vx;
 
 	/** Load an Actimagine file. */
 	void load();
-	void clear();
 };
 
 } // End of namespace Video
