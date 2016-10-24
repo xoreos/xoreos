@@ -40,22 +40,18 @@
 
 namespace Engines {
 
-GameThread::GameThread() : _game(0) {
+GameThread::GameThread() {
 }
 
 GameThread::~GameThread() {
 	destroyThread();
-
-	delete _game;
 }
 
 void GameThread::init(const Common::UString &baseDir, const std::list<const EngineProbe *> &probes) {
 	// Detecting the game
 
-	delete _game;
-	_game = 0;
-
-	if (!(_game = EngineMan.probeGame(baseDir, probes)))
+	_game.reset(EngineMan.probeGame(baseDir, probes));
+	if (!_game)
 		throw Common::Exception("Unable to detect the game");
 
 	// Get the game description from the config, or alternatively

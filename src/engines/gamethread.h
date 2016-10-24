@@ -27,6 +27,7 @@
 
 #include <list>
 
+#include "src/common/scopedptr.h"
 #include "src/common/thread.h"
 
 namespace Engines {
@@ -45,7 +46,7 @@ public:
 	void run();
 
 private:
-	GameInstance *_game;
+	Common::ScopedPtr<GameInstance> _game;
 
 	void threadMethod();
 };
