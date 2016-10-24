@@ -38,8 +38,8 @@
 
 namespace Engines {
 
-LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0), _currentAmount(0.0f),
-	_startTime(0), _description(0), _barUpper(0), _barLower(0), _progressbar(0), _percent(0) {
+LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0),
+	_currentAmount(0.0f), _startTime(0) {
 
 	assert(_steps >= 2);
 
@@ -51,11 +51,11 @@ LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0), _curr
 	const Common::UString barLowerStr = createProgressbarLower(kBarLength);
 	const Common::UString barStr      = createProgressbar(kBarLength, _currentAmount);
 
-	_description = new Graphics::Aurora::Text(font, "");
-	_barUpper    = new Graphics::Aurora::Text(font, barUpperStr);
-	_barLower    = new Graphics::Aurora::Text(font, barLowerStr);
-	_progressbar = new Graphics::Aurora::Text(font, barStr);
-	_percent     = new Graphics::Aurora::Text(font, "");
+	_description.reset(new Graphics::Aurora::Text(font, ""));
+	_barUpper.reset   (new Graphics::Aurora::Text(font, barUpperStr));
+	_barLower.reset   (new Graphics::Aurora::Text(font, barLowerStr));
+	_progressbar.reset(new Graphics::Aurora::Text(font, barStr));
+	_percent.reset    (new Graphics::Aurora::Text(font, ""));
 
 	_description->setPosition(0.0f,  font.getFont().getHeight());
 	_percent    ->setPosition(0.0f, -font.getFont().getHeight());
@@ -66,11 +66,6 @@ LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0), _curr
 }
 
 LoadProgress::~LoadProgress() {
-	delete _description;
-	delete _barUpper;
-	delete _barLower;
-	delete _progressbar;
-	delete _percent;
 }
 
 void LoadProgress::step(const Common::UString &description) {

@@ -27,6 +27,7 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 namespace Graphics {
@@ -72,15 +73,15 @@ private:
 	uint32 _startTime; ///< The timestamp the first step happened.
 
 	/** The text containing the description of the current step. */
-	Graphics::Aurora::Text *_description;
+	Common::ScopedPtr<Graphics::Aurora::Text> _description;
 
 	// The progress bar, in three parts
-	Graphics::Aurora::Text *_barUpper;    ///< The upper border of the progress bar.
-	Graphics::Aurora::Text *_barLower;    ///< The lower border of the progress bar.
-	Graphics::Aurora::Text *_progressbar; ///< The actual progress bar.
+	Common::ScopedPtr<Graphics::Aurora::Text> _barUpper;    ///< The upper border of the progress bar.
+	Common::ScopedPtr<Graphics::Aurora::Text> _barLower;    ///< The lower border of the progress bar.
+	Common::ScopedPtr<Graphics::Aurora::Text> _progressbar; ///< The actual progress bar.
 
 	/** The text containing the current percentage of done-ness. */
-	Graphics::Aurora::Text *_percent;
+	Common::ScopedPtr<Graphics::Aurora::Text> _percent;
 
 
 	static Common::UString createProgressbar(size_t length, double filled);
