@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_MAIN_CHARTYPE_H
 #define ENGINES_NWN_GUI_MAIN_CHARTYPE_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
@@ -45,8 +47,8 @@ protected:
 private:
 	Module *_module;
 
-	GUI *_charGen;
-	GUI *_charPremade;
+	Common::ScopedPtr<GUI> _charGen;
+	Common::ScopedPtr<GUI> _charPremade;
 };
 
 } // End of namespace NWN

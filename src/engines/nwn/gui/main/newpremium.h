@@ -27,6 +27,7 @@
 
 #include <vector>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/aurora/types.h"
@@ -62,8 +63,8 @@ protected:
 	bool deactivate();
 
 private:
-	Graphics::Aurora::Model *_button;
-	Graphics::Aurora::Text  *_text;
+	Common::ScopedPtr<Graphics::Aurora::Model> _button;
+	Common::ScopedPtr<Graphics::Aurora::Text>  _text;
 
 	float _spacing;
 };

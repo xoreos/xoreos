@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_MAIN_MOVIESCAMP_H
 #define ENGINES_NWN_GUI_MAIN_MOVIESCAMP_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
@@ -41,7 +43,7 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	GUI *_base;
+	Common::ScopedPtr<GUI> _base;
 };
 
 } // End of namespace NWN

@@ -49,11 +49,10 @@ MoviesCampMenu::MoviesCampMenu(::Engines::Console *console) : GUI(console) {
 	if (button)
 		button->setDisabled(true);
 
-	_base = new MoviesBaseMenu(_console);
+	_base.reset(new MoviesBaseMenu(_console));
 }
 
 MoviesCampMenu::~MoviesCampMenu() {
-	delete _base;
 }
 
 void MoviesCampMenu::callbackActive(Widget &widget) {

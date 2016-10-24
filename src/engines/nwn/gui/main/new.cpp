@@ -45,13 +45,11 @@ NewMenu::NewMenu(Module &module, GUI &charType, ::Engines::Console *console) : G
 		// already in the campaign menu
 		getWidget("OtherButton", true)->setInvisible(true);
 
-	_modules = 0;
 	if (!_hasXP)
-		_modules = new NewModuleMenu(*_module, *_charType, _console);
+		_modules.reset(new NewModuleMenu(*_module, *_charType, _console));
 }
 
 NewMenu::~NewMenu() {
-	delete _modules;
 }
 
 void NewMenu::callbackActive(Widget &widget) {

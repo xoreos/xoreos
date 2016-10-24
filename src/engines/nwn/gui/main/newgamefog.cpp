@@ -24,6 +24,7 @@
 
 #include <cstdlib>
 
+#include "src/common/scopedptr.h"
 #include "src/common/maths.h"
 #include "src/common/readstream.h"
 
@@ -107,17 +108,11 @@ public:
 
 
 static Graphics::Aurora::Model *createNewGameFog() {
-	Graphics::Aurora::Model *model = 0;
-
-	try {
-		model = new NewGameFog("pnl_fog");
-	} catch (...) {
-		delete model;
-	}
+	Common::ScopedPtr<Graphics::Aurora::Model> model(new NewGameFog("pnl_fog"));
 
 	model->setPosition(0.0f, 0.0f, 100.0f);
 
-	return model;
+	return model.release();
 }
 
 

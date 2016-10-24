@@ -51,7 +51,7 @@ WidgetListItemPremium::WidgetListItemPremium(::Engines::GUI &gui,
     const Common::UString &font, const Common::UString &text, float spacing) :
 	WidgetListItem(gui), _spacing(spacing) {
 
-	_button = loadModelGUI("ctl_btn_txt407");
+	_button.reset(loadModelGUI("ctl_btn_txt407"));
 	assert(_button);
 
 	_button->setClickable(true);
@@ -60,12 +60,10 @@ WidgetListItemPremium::WidgetListItemPremium(::Engines::GUI &gui,
 	Graphics::Aurora::FontHandle f = FontMan.get(font);
 	f.getFont().split(text, splitText, _button->getWidth() - 8.0f);
 
-	_text = new Graphics::Aurora::Text(f, splitText, 1.0f, 1.0f, 1.0f, 1.0f, 0.5f);
+	_text.reset(new Graphics::Aurora::Text(f, splitText, 1.0f, 1.0f, 1.0f, 1.0f, 0.5f));
 }
 
 WidgetListItemPremium::~WidgetListItemPremium() {
-	delete _button;
-	delete _text;
 }
 
 void WidgetListItemPremium::show() {

@@ -68,19 +68,10 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : GUI(console),
 	getWidget("LoadButton" , true)->setDisabled(true);
 	getWidget("MultiButton", true)->setDisabled(true);
 
-	_charType = new CharTypeMenu(*_module, _console);
-
-	_new     = 0;
-	_movies  = 0;
-	_options = 0;
+	_charType.reset(new CharTypeMenu(*_module, _console));
 }
 
 MainMenu::~MainMenu() {
-	delete _options;
-	delete _movies;
-	delete _new;
-
-	delete _charType;
 }
 
 void MainMenu::createNew() {
@@ -89,10 +80,10 @@ void MainMenu::createNew() {
 
 	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection game menu
-		_new = new NewCampMenu(*_module, *_charType, _console);
+		_new.reset(new NewCampMenu(*_module, *_charType, _console));
 	else
 		// If not, create the base game menu
-		_new = new NewMenu(*_module, *_charType, _console);
+		_new.reset(new NewMenu(*_module, *_charType, _console));
 }
 
 void MainMenu::createMovies() {
@@ -101,17 +92,17 @@ void MainMenu::createMovies() {
 
 	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection movies menu
-		_movies = new MoviesCampMenu(_console);
+		_movies.reset(new MoviesCampMenu(_console));
 	else
 		// If not, create the base game movies menu
-		_movies = new MoviesBaseMenu(_console);
+		_movies.reset(new MoviesBaseMenu(_console));
 }
 
 void MainMenu::createOptions() {
 	if (_options)
 		return;
 
-	_options = new OptionsMenu(_module->getGameVersion(), _console);
+	_options.reset(new OptionsMenu(_module->getGameVersion(), _console));
 }
 
 void MainMenu::show() {

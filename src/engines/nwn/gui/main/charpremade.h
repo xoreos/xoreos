@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include "src/common/scopedptr.h"
+
 #include "src/aurora/types.h"
 
 #include "src/engines/nwn/types.h"
@@ -55,9 +57,9 @@ public:
 	void setPosition(float x, float y, float z);
 
 private:
-	Graphics::Aurora::Text  *_textName;
-	Graphics::Aurora::Text  *_textClass;
-	Portrait *_portrait;
+	Common::ScopedPtr<Graphics::Aurora::Text> _textName;
+	Common::ScopedPtr<Graphics::Aurora::Text> _textClass;
+	Common::ScopedPtr<Portrait> _portrait;
 };
 
 /** The NWN character creator. */
@@ -90,7 +92,7 @@ private:
 
 	Module *_module;
 
-	GUI *_charGen;
+	Common::ScopedPtr<GUI> _charGen;
 
 	std::vector<Character> _characters;
 

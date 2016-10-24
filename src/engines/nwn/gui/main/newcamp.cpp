@@ -54,19 +54,14 @@ NewCampMenu::NewCampMenu(Module &module, GUI &charType, ::Engines::Console *cons
 	if (button)
 		button->setDisabled(!Game::hasPremiumModules());
 
-	_base    = new NewMenu       (*_module, *_charType, _console);
-	_xp1     = new NewXP1Menu    (*_module, *_charType, _console);
-	_xp2     = new NewXP2Menu    (*_module, *_charType, _console);
-	_modules = new NewModuleMenu (*_module, *_charType, _console);
-	_premium = new NewPremiumMenu(*_module, *_charType, _console);
+	_base.reset   (new NewMenu       (*_module, *_charType, _console));
+	_xp1.reset    (new NewXP1Menu    (*_module, *_charType, _console));
+	_xp2.reset    (new NewXP2Menu    (*_module, *_charType, _console));
+	_modules.reset(new NewModuleMenu (*_module, *_charType, _console));
+	_premium.reset(new NewPremiumMenu(*_module, *_charType, _console));
 }
 
 NewCampMenu::~NewCampMenu() {
-	delete _premium;
-	delete _modules;
-	delete _xp2;
-	delete _xp1;
-	delete _base;
 }
 
 void NewCampMenu::callbackActive(Widget &widget) {

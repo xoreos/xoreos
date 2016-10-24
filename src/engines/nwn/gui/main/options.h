@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_MAIN_OPTIONS_H
 #define ENGINES_NWN_GUI_MAIN_OPTIONS_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
@@ -46,10 +48,10 @@ protected:
 private:
 	const Version *_gameVersion;
 
-	GUI *_game;
-	GUI *_video;
-	GUI *_sound;
-	GUI *_controls;
+	Common::ScopedPtr<GUI> _game;
+	Common::ScopedPtr<GUI> _video;
+	Common::ScopedPtr<GUI> _sound;
+	Common::ScopedPtr<GUI> _controls;
 };
 
 } // End of namespace NWN

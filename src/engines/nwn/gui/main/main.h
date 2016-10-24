@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_MAIN_MAIN_H
 #define ENGINES_NWN_GUI_MAIN_MAIN_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/nwn/gui/gui.h"
 
 namespace Engines {
@@ -51,11 +53,11 @@ private:
 
 	bool _hasXP;
 
-	GUI *_charType;
+	Common::ScopedPtr<GUI> _charType;
 
-	GUI *_new;
-	GUI *_movies;
-	GUI *_options;
+	Common::ScopedPtr<GUI> _new;
+	Common::ScopedPtr<GUI> _movies;
+	Common::ScopedPtr<GUI> _options;
 
 	void createNew();
 	void createMovies();

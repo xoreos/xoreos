@@ -49,17 +49,13 @@ OptionsMenu::OptionsMenu(const Version &gameVersion, ::Engines::Console *console
 	backdrop->setPosition(0.0f, 0.0f, 100.0f);
 	addWidget(backdrop);
 
-	_game     = new OptionsGameMenu    (true, _console);
-	_video    = new OptionsVideoMenu   (true, _console);
-	_sound    = new OptionsSoundMenu   (true, _console);
-	_controls = new OptionsControlsMenu(true, _console);
+	_game.reset    (new OptionsGameMenu    (true, _console));
+	_video.reset   (new OptionsVideoMenu   (true, _console));
+	_sound.reset   (new OptionsSoundMenu   (true, _console));
+	_controls.reset(new OptionsControlsMenu(true, _console));
 }
 
 OptionsMenu::~OptionsMenu() {
-	delete _controls;
-	delete _sound;
-	delete _video;
-	delete _game;
 }
 
 void OptionsMenu::initWidget(Widget &widget) {
