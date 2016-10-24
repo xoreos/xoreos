@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
@@ -52,10 +54,9 @@ namespace Engines {
 namespace NWN2 {
 
 Campaign::Campaign(::Engines::Console &console) : _console(&console),
-	_hasCampaign(false), _running(false), _exit(true), _module(0), _pc(0),
-	_newCampaignStandalone(false) {
+	_hasCampaign(false), _running(false), _exit(true), _newCampaignStandalone(false) {
 
-	_module = new Module(*_console);
+	_module.reset(new Module(*_console));
 }
 
 Campaign::~Campaign() {
@@ -63,8 +64,6 @@ Campaign::~Campaign() {
 		clear();
 	} catch (...) {
 	}
-
-	delete _module;
 }
 
 void Campaign::clear() {
@@ -120,8 +119,7 @@ void Campaign::unload(bool completeUnload) {
 }
 
 void Campaign::unloadPC() {
-	delete _pc;
-	_pc = 0;
+	_pc.reset();
 }
 
 void Campaign::load(const Common::UString &campaign) {
@@ -155,7 +153,7 @@ void Campaign::usePC(const Common::UString &bic, bool local) {
 		throw Common::Exception("Tried to load an empty PC");
 
 	try {
-		_pc = new Creature(bic, local);
+		_pc.reset(new Creature(bic, local));
 	} catch (Common::Exception &e) {
 		e.add("Can't load PC \"%s\"", bic.c_str());
 		throw e;
@@ -173,24 +171,24 @@ void Campaign::loadCampaignResource(const Common::UString &campaign) {
 	if (directory.empty())
 		throw Common::Exception("No such campaign \"%s\"", campaign.c_str());
 
+	bool success = false;
+	BOOST_SCOPE_EXIT( (&success) (this_) ) {
+		if (!success)
+			this_->clear();
+	} BOOST_SCOPE_EXIT_END
+
 	indexMandatoryDirectory(directory, 0, -1, 1000, &_resCampaign);
 
-	Aurora::GFF3File *gff = 0;
+	Common::ScopedPtr<Aurora::GFF3File> gff;
 	try {
-		gff = new Aurora::GFF3File("campaign", Aurora::kFileTypeCAM, MKTAG('C', 'A', 'M', ' '));
+		gff.reset(new Aurora::GFF3File("campaign", Aurora::kFileTypeCAM, MKTAG('C', 'A', 'M', ' ')));
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed to load campaign information file");
 		throw;
 	}
 
-	if (!gff->getTopLevel().hasField("ModNames") || !gff->getTopLevel().hasField("StartModule")) {
-		delete gff;
-		clear();
-
+	if (!gff->getTopLevel().hasField("ModNames") || !gff->getTopLevel().hasField("StartModule"))
 		throw Common::Exception("Campaign information file is missing modules");
-	}
 
 	_startModule = gff->getTopLevel().getString("StartModule") + ".mod";
 
@@ -201,7 +199,7 @@ void Campaign::loadCampaignResource(const Common::UString &campaign) {
 	_name        = gff->getTopLevel().getString("DisplayName");
 	_description = gff->getTopLevel().getString("Description");
 
-	delete gff;
+	success = true;
 }
 
 void Campaign::setupStandaloneModule(const Common::UString &module) {
