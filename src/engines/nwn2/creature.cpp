@@ -24,6 +24,7 @@
 
 #include <cassert>
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/configman.h"
@@ -348,35 +349,21 @@ void Creature::unloadModel() {
 void Creature::load(const Aurora::GFF3Struct &creature) {
 	Common::UString temp = creature.getString("TemplateResRef");
 
-	Aurora::GFF3File *utc = 0;
+	Common::ScopedPtr<Aurora::GFF3File> utc;
 	if (!temp.empty()) {
 		try {
-			utc = new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
+			utc.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' ')));
 		} catch (...) {
 		}
 	}
 
-	try {
-		load(creature, utc ? &utc->getTopLevel() : 0);
-	} catch (...) {
-		delete utc;
-		throw;
-	}
-
-	delete utc;
+	load(creature, utc ? &utc->getTopLevel() : 0);
 }
 
 void Creature::loadCharacter(const Common::UString &bic, bool local) {
-	Aurora::GFF3File *gff = openPC(bic, local);
+	Common::ScopedPtr<Aurora::GFF3File> gff(openPC(bic, local));
 
-	try {
-		load(gff->getTopLevel(), 0);
-	} catch (...) {
-		delete gff;
-		throw;
-	}
-
-	delete gff;
+	load(gff->getTopLevel(), 0);
 
 	// All BICs should be PCs.
 	_isPC = true;

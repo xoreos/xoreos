@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/scopedptr.h"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
@@ -50,22 +51,15 @@ Placeable::~Placeable() {
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	Common::UString temp = placeable.getString("TemplateResRef");
 
-	Aurora::GFF3File *utp = 0;
+	Common::ScopedPtr<Aurora::GFF3File> utp;
 	if (!temp.empty()) {
 		try {
-			utp = new Aurora::GFF3File(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '));
+			utp.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 		} catch (...) {
 		}
 	}
 
-	try {
-		Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
-	} catch (...) {
-		delete utp;
-		throw;
-	}
-
-	delete utp;
+	Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
 }
 
 void Placeable::setModelState() {

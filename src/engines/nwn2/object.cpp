@@ -49,7 +49,7 @@ namespace Engines {
 namespace NWN2 {
 
 Object::Object(ObjectType type) : _type(type),
-	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(true), _usable(true),
+	_soundSet(Aurora::kFieldIDInvalid), _static(true), _usable(true),
 	_area(0) {
 
 	_position   [0] = 0.0f;
@@ -62,7 +62,6 @@ Object::Object(ObjectType type) : _type(type),
 }
 
 Object::~Object() {
-	delete _ssf;
 }
 
 ObjectType Object::getType() const {
@@ -96,7 +95,7 @@ const Common::UString &Object::getConversation() const {
 const Aurora::SSFFile *Object::getSSF() {
 	loadSSF();
 
-	return _ssf;
+	return _ssf.get();
 }
 
 bool Object::isStatic() const {
@@ -186,7 +185,7 @@ void Object::loadSSF() {
 		return;
 
 	try {
-		_ssf = new Aurora::SSFFile(ssfFile);
+		_ssf.reset(new Aurora::SSFFile(ssfFile));
 	} catch (...) {
 		Common::exceptionDispatcherWarning("Failed to load SSF \"%s\" (object \"%s\")",
 		                                   ssfFile.c_str(), _tag.c_str());

@@ -46,7 +46,7 @@ namespace NWN2 {
 
 Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
 	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
-	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0), _model(0) {
+	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0) {
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 4; j++)
@@ -54,7 +54,6 @@ Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kField
 }
 
 Situated::~Situated() {
-	delete _model;
 }
 
 void Situated::loadModel() {
@@ -66,7 +65,7 @@ void Situated::loadModel() {
 		return;
 	}
 
-	_model = loadModelObject(_modelName);
+	_model.reset(loadModelObject(_modelName));
 	if (!_model)
 		throw Common::Exception("Failed to load situated object model \"%s\"",
 		                        _modelName.c_str());
@@ -96,8 +95,7 @@ void Situated::loadModel() {
 void Situated::unloadModel() {
 	hide();
 
-	delete _model;
-	_model = 0;
+	_model.reset();
 }
 
 void Situated::show() {
