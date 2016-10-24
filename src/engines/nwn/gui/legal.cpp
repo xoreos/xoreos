@@ -124,29 +124,14 @@ public:
 };
 
 
-static FadeModel *createFade(const Common::UString &name) {
-	FadeModel *model = 0;
-
-	try {
-		model = new FadeModel(name);
-	} catch (...) {
-		delete model;
-		throw;
-	}
-
-	return model;
-}
-
-
-Legal::Legal() : _billboard(0) {
-	_billboard = createFade("load_legal");
+Legal::Legal() {
+	_billboard.reset(new FadeModel("load_legal"));
 
 	_billboard->setPosition(0.0f, 0.0f, -1000.0f);
 	_billboard->setTag("Legal");
 }
 
 Legal::~Legal() {
-	delete _billboard;
 }
 
 void Legal::fadeIn() {
@@ -167,8 +152,8 @@ void Legal::fadeIn() {
 	}
 
 	if (abort || EventMan.quitRequested()) {
-		delete _billboard;
-		_billboard = 0;
+		_billboard->hide();
+		_billboard.reset();
 	}
 }
 
@@ -199,8 +184,8 @@ void Legal::show() {
 			break;
 	}
 
-	delete _billboard;
-	_billboard = 0;
+	_billboard->hide();
+	_billboard.reset();
 }
 
 } // End of namespace NWN

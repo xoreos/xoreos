@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_GUI_LEGAL_H
 #define ENGINES_NWN_GUI_LEGAL_H
 
+#include "src/common/scopedptr.h"
+
 namespace Engines {
 
 namespace NWN {
@@ -41,7 +43,7 @@ public:
 	void show();
 
 private:
-	FadeModel *_billboard;
+	Common::ScopedPtr<FadeModel> _billboard;
 };
 
 } // End of namespace NWN
