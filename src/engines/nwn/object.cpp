@@ -49,8 +49,8 @@ namespace Engines {
 namespace NWN {
 
 Object::Object(ObjectType type) : _type(type),
-	_soundSet(Aurora::kFieldIDInvalid), _ssf(0), _static(false), _usable(true),
-	_pcSpeaker(0), _area(0), _tooltip(0) {
+	_soundSet(Aurora::kFieldIDInvalid), _static(false), _usable(true),
+	_pcSpeaker(0), _area(0) {
 
 	_id = Common::generateIDNumber();
 
@@ -65,8 +65,6 @@ Object::Object(ObjectType type) : _type(type),
 
 Object::~Object() {
 	destroyTooltip();
-
-	delete _ssf;
 }
 
 ObjectType Object::getType() const {
@@ -105,7 +103,7 @@ const Common::UString &Object::getConversation() const {
 const Aurora::SSFFile *Object::getSSF() {
 	loadSSF();
 
-	return _ssf;
+	return _ssf.get();
 }
 
 bool Object::isStatic() const {
@@ -199,7 +197,7 @@ void Object::loadSSF() {
 		return;
 
 	try {
-		_ssf = new Aurora::SSFFile(ssfFile);
+		_ssf.reset(new Aurora::SSFFile(ssfFile));
 	} catch (...) {
 		Common::exceptionDispatcherWarning("Failed to load SSF \"%s\" (object \"%s\")",
 		                                   ssfFile.c_str(), _tag.c_str());
@@ -307,8 +305,7 @@ bool Object::createSpeechTooltip(const Common::UString &line) {
 void Object::destroyTooltip() {
 	hideTooltip();
 
-	delete _tooltip;
-	_tooltip = 0;
+	_tooltip.reset();
 }
 
 bool Object::showFeedbackTooltip() {

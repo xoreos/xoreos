@@ -43,12 +43,11 @@ namespace NWN {
 
 Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
 	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
-	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0), _model(0) {
+	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0) {
 
 }
 
 Situated::~Situated() {
-	delete _model;
 }
 
 void Situated::loadModel() {
@@ -60,7 +59,7 @@ void Situated::loadModel() {
 		return;
 	}
 
-	_model = loadModelObject(_modelName);
+	_model.reset(loadModelObject(_modelName));
 	if (!_model)
 		throw Common::Exception("Failed to load situated object model \"%s\"",
 		                        _modelName.c_str());
@@ -88,8 +87,7 @@ void Situated::unloadModel() {
 
 	destroyTooltip();
 
-	delete _model;
-	_model = 0;
+	_model.reset();
 }
 
 void Situated::show() {
@@ -240,7 +238,7 @@ bool Situated::createTooltip(Tooltip::Type type) {
 		return false;
 
 	if (!_tooltip) {
-		_tooltip = new Tooltip(type, *_model);
+		_tooltip.reset(new Tooltip(type, *_model));
 
 		_tooltip->setAlign(0.5f);
 		_tooltip->setPortrait(_portrait);

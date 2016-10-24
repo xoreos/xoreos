@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_SITUATED_H
 #define ENGINES_NWN_SITUATED_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/aurora/types.h"
 
 #include "src/graphics/aurora/types.h"
@@ -87,7 +89,7 @@ protected:
 	Object *_lastClosedBy; ///< The object that last closed this situated object.
 	Object *_lastUsedBy;   ///< The object that last used this situated object.
 
-	Graphics::Aurora::Model *_model; ///< The situated object's model.
+	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The situated object's model.
 
 
 	Situated(ObjectType type);

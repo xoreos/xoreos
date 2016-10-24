@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_ITEM_H
 #define ENGINES_NWN_ITEM_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/aurora/types.h"
 
 #include "src/graphics/aurora/types.h"
@@ -99,7 +101,7 @@ private:
 	uint32 _colors[kColorMAX];         ///< The item's colors.
 	uint32 _armorParts[kArmorPartMAX]; ///< The item's armor parts.
 
-	Graphics::Aurora::Model *_model; ///< The item's model.
+	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The item's model.
 
 	void load(const Aurora::GFF3Struct &item);
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);

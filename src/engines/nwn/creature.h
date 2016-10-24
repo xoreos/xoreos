@@ -29,6 +29,7 @@
 #include <list>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -384,7 +385,7 @@ private:
 	/** Is the creature commandable (has a modifiable action queue)? */
 	bool _isCommandable;
 
-	Graphics::Aurora::Model *_model; ///< The creature's model.
+	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 
 
 	/** Init the creature. */

@@ -54,24 +54,17 @@ Door::~Door() {
 }
 
 void Door::load(const Aurora::GFF3Struct &door) {
-	Common::UString temp = door.getString("TemplateResRef");
+	const Common::UString temp = door.getString("TemplateResRef");
 
-	Aurora::GFF3File *utd = 0;
+	Common::ScopedPtr<Aurora::GFF3File> utd;
 	if (!temp.empty()) {
 		try {
-			utd = new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '), true);
+			utd.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '), true));
 		} catch (...) {
 		}
 	}
 
-	try {
-		Situated::load(door, utd ? &utd->getTopLevel() : 0);
-	} catch (...) {
-		delete utd;
-		throw;
-	}
-
-	delete utd;
+	Situated::load(door, utd ? &utd->getTopLevel() : 0);
 
 	setModelState();
 }

@@ -42,7 +42,7 @@ namespace Engines {
 namespace NWN {
 
 Item::Item(const Aurora::GFF3Struct &item) : Object(kObjectTypeItem),
-	_baseItem(Aurora::kFieldIDInvalid), _model(0) {
+	_baseItem(Aurora::kFieldIDInvalid) {
 
 	for (size_t i = 0; i < kColorMAX; i++)
 		_colors[i] = Aurora::kFieldIDInvalid;
@@ -53,7 +53,6 @@ Item::Item(const Aurora::GFF3Struct &item) : Object(kObjectTypeItem),
 }
 
 Item::~Item() {
-	delete _model;
 }
 
 void Item::load(const Aurora::GFF3Struct &item) {
@@ -61,22 +60,15 @@ void Item::load(const Aurora::GFF3Struct &item) {
 	if (temp.empty())
 		temp = item.getString("TemplateResRef");
 
-	Aurora::GFF3File *uti = 0;
+	Common::ScopedPtr<Aurora::GFF3File> uti;
 	if (!temp.empty()) {
 		try {
-			uti = new Aurora::GFF3File(temp, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '), true);
+			uti.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '), true));
 		} catch (...) {
 		}
 	}
 
-	try {
-		load(item, uti ? &uti->getTopLevel() : 0);
-	} catch (...) {
-		delete uti;
-		throw;
-	}
-
-	delete uti;
+	load(item, uti ? &uti->getTopLevel() : 0);
 }
 
 void Item::loadModel() {
@@ -88,7 +80,7 @@ void Item::loadModel() {
 		return;
 	}
 
-	_model = loadModelObject(_modelName);
+	_model.reset(loadModelObject(_modelName));
 	if (!_model)
 		throw Common::Exception("Failed to load situated object model \"%s\"",
 		                        _modelName.c_str());
@@ -114,8 +106,7 @@ void Item::loadModel() {
 void Item::unloadModel() {
 	hide();
 
-	delete _model;
-	_model = 0;
+	_model.reset();
 }
 
 void Item::show() {

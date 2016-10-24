@@ -92,8 +92,6 @@ Creature::~Creature() {
 
 	hide();
 
-	delete _model;
-
 	for (std::vector<Item *>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e)
 		delete *e;
 }
@@ -143,8 +141,6 @@ void Creature::init() {
 	_master = 0;
 
 	_isCommandable = true;
-
-	_model = 0;
 
 	for (size_t i = 0; i < kAbilityMAX; i++)
 		_abilities[i] = 0;
@@ -618,7 +614,7 @@ void Creature::loadModel() {
 	if (appearance.getString("MODELTYPE") == "P") {
 		getArmorModels();
 		getPartModels();
-		_model = loadModelObject(_partsSuperModelName);
+		_model.reset(loadModelObject(_partsSuperModelName));
 
 		for (size_t i = 0; i < kBodyPartMAX; i++) {
 			if (_bodyParts[i].modelName.empty())
@@ -649,7 +645,7 @@ void Creature::loadModel() {
 		}
 
 	} else
-		_model = loadModelObject(appearance.getString("RACE"));
+		_model.reset(loadModelObject(appearance.getString("RACE")));
 
 	// Positioning
 
@@ -684,21 +680,13 @@ void Creature::unloadModel() {
 
 	destroyTooltip();
 
-	delete _model;
-	_model = 0;
+	_model.reset();
 }
 
 void Creature::loadCharacter(const Common::UString &bic, bool local) {
-	Aurora::GFF3File *gff = openPC(bic, local);
+	Common::ScopedPtr<Aurora::GFF3File> gff(openPC(bic, local));
 
-	try {
-		load(gff->getTopLevel(), 0);
-	} catch (...) {
-		delete gff;
-		throw;
-	}
-
-	delete gff;
+	load(gff->getTopLevel(), 0);
 
 	// All BICs should be PCs.
 	_isPC = true;
@@ -712,24 +700,17 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 }
 
 void Creature::load(const Aurora::GFF3Struct &creature) {
-	Common::UString temp = creature.getString("TemplateResRef");
+	const Common::UString temp = creature.getString("TemplateResRef");
 
-	Aurora::GFF3File *utc = 0;
+	Common::ScopedPtr<Aurora::GFF3File> utc;
 	if (!temp.empty()) {
 		try {
-			utc = new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '), true);
+			utc.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '), true));
 		} catch (...) {
 		}
 	}
 
-	try {
-		load(creature, utc ? &utc->getTopLevel() : 0);
-	} catch (...) {
-		delete utc;
-		throw;
-	}
-
-	delete utc;
+	load(creature, utc ? &utc->getTopLevel() : 0);
 
 	_lastChangedGUIDisplay = EventMan.getTimestamp();
 }
@@ -1135,7 +1116,7 @@ bool Creature::createTooltip(Tooltip::Type type) {
 		return false;
 
 	if (!_tooltip) {
-		_tooltip = new Tooltip(type, *_model);
+		_tooltip.reset(new Tooltip(type, *_model));
 
 		_tooltip->setAlign(0.5f);
 		_tooltip->setPortrait(_portrait);
@@ -1178,42 +1159,35 @@ void Creature::getPCListInfo(const Common::UString &bic, bool local,
                              Common::UString &name, Common::UString &classes,
                              Common::UString &portrait) {
 
-	Aurora::GFF3File *gff = openPC(bic, local);
 
+	Common::ScopedPtr<Aurora::GFF3File> gff(openPC(bic, local));
+
+	const Aurora::GFF3Struct &top = gff->getTopLevel();
+
+	// Reading name
+	const Common::UString firstName = top.getString("FirstName");
+	const Common::UString lastName  = top.getString("LastName");
+
+	name = firstName + " " + lastName;
+	name.trim();
+
+	// Reading portrait (failure non-fatal)
 	try {
-		const Aurora::GFF3Struct &top = gff->getTopLevel();
-
-		// Reading name
-		const Common::UString firstName = top.getString("FirstName");
-		const Common::UString lastName  = top.getString("LastName");
-
-		name = firstName + " " + lastName;
-		name.trim();
-
-		// Reading portrait (failure non-fatal)
-		try {
-			loadPortrait(top, portrait);
-		} catch (...) {
-			portrait.clear();
-
-			Common::exceptionDispatcherWarning("Can't read portrait for PC \"%s\"", bic.c_str());
-		}
-
-		// Reading classes
-		std::vector<Class> classLevels;
-		uint8 hitDice;
-
-		loadClasses(top, classLevels, hitDice);
-		getClassString(classLevels, classes);
-
-		classes = "(" + classes + ")";
-
+		loadPortrait(top, portrait);
 	} catch (...) {
-		delete gff;
-		throw;
+		portrait.clear();
+
+		Common::exceptionDispatcherWarning("Can't read portrait for PC \"%s\"", bic.c_str());
 	}
 
-	delete gff;
+	// Reading classes
+	std::vector<Class> classLevels;
+	uint8 hitDice;
+
+	loadClasses(top, classLevels, hitDice);
+	getClassString(classLevels, classes);
+
+	classes = "(" + classes + ")";
 }
 
 Aurora::GFF3File *Creature::openPC(const Common::UString &bic, bool local) {
