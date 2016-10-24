@@ -26,6 +26,7 @@
 
 #include <xvid.h>
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 
@@ -67,14 +68,14 @@ void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStre
 	//       alternatively do the YUV->BGRA conversion ourselves. We chose the latter.
 
 	size_t dataSize = dataStream.size();
-	byte *data = new byte[dataSize];
-	dataStream.read(data, dataSize);
+	Common::ScopedArray<byte> data(new byte[dataSize]);
+	dataStream.read(data.get(), dataSize);
 
 	xvid_dec_frame_t xvid_dec_frame;
 	std::memset(&xvid_dec_frame, 0, sizeof(xvid_dec_frame_t));
 	xvid_dec_frame.version    = XVID_VERSION;
 	xvid_dec_frame.general    = XVID_DEBLOCKY | XVID_DEBLOCKUV | XVID_DERINGY | XVID_DERINGUV;
-	xvid_dec_frame.bitstream  = data;
+	xvid_dec_frame.bitstream  = data.get();
 	xvid_dec_frame.length     = dataSize;
 	xvid_dec_frame.output.csp = XVID_CSP_INTERNAL;
 
@@ -85,8 +86,6 @@ void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStre
 	int c = xvid_decore(_decHandle, XVID_DEC_DECODE, &xvid_dec_frame, &xvid_dec_stats);
 	if ((dataSize - c) > 1)
 		warning("H263Codec::decodeFrame(): %u bytes left in frame", (uint)(dataSize - c));
-
-	delete[] data;
 
 	if (xvid_dec_frame.output.plane[0] &&
 	    xvid_dec_frame.output.plane[1] &&
