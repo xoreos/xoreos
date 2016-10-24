@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  Graphics related utility functions.
+ *  Image related utility functions.
  */
 
-#ifndef GRAPHICS_UTIL_H
-#define GRAPHICS_UTIL_H
+#ifndef GRAPHICS_IMAGES_UTIL_H
+#define GRAPHICS_IMAGES_UTIL_H
 
 #include <cassert>
 #include <cstring>
@@ -211,4 +211,4 @@ static inline uint32 deSwizzleOffset(uint32 x, uint32 y, uint32 width, uint32 he
 
 } // End of namespace Graphics
 
-#endif // GRAPHICS_UTIL_H
+#endif // GRAPHICS_IMAGES_UTIL_H

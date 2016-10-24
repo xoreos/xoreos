@@ -29,9 +29,9 @@
 #include "src/common/memreadstream.h"
 
 #include "src/graphics/graphics.h"
-#include "src/graphics/util.h"
 
 #include "src/graphics/images/decoder.h"
+#include "src/graphics/images/util.h"
 #include "src/graphics/images/s3tc.h"
 #include "src/graphics/images/dumptga.h"
 

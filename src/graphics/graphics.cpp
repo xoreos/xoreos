@@ -43,7 +43,6 @@
 #include "src/events/notifications.h"
 
 #include "src/graphics/graphics.h"
-#include "src/graphics/util.h"
 #include "src/graphics/icon.h"
 #include "src/graphics/cursor.h"
 #include "src/graphics/fpscounter.h"

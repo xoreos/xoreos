@@ -24,7 +24,6 @@ src_graphics_libgraphics_la_SOURCES =
 
 src_graphics_libgraphics_la_SOURCES += \
     src/graphics/types.h \
-    src/graphics/util.h \
     src/graphics/windowman.h \
     src/graphics/graphics.h \
     src/graphics/fpscounter.h \

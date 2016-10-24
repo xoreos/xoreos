@@ -23,6 +23,7 @@ noinst_LTLIBRARIES += src/graphics/images/libimages.la
 src_graphics_images_libimages_la_SOURCES =
 
 src_graphics_images_libimages_la_SOURCES += \
+    src/graphics/images/util.h \
     src/graphics/images/decoder.h \
     src/graphics/images/dumptga.h \
     src/graphics/images/screenshot.h \

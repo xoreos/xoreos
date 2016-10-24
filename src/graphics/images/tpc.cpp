@@ -29,9 +29,8 @@
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 
-#include "src/graphics/util.h"
-
 #include "src/graphics/images/tpc.h"
+#include "src/graphics/images/util.h"
 
 static const byte kEncodingGray         = 0x01;
 static const byte kEncodingRGB          = 0x02;

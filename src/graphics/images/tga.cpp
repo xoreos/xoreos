@@ -53,8 +53,8 @@
 #include "src/common/readstream.h"
 #include "src/common/error.h"
 
-#include "src/graphics/util.h"
 #include "src/graphics/images/tga.h"
+#include "src/graphics/images/util.h"
 
 namespace Graphics {
 

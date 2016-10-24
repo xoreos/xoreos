@@ -81,7 +81,6 @@
 #include "src/common/rdft.h"
 #include "src/common/dct.h"
 
-#include "src/graphics/util.h"
 #include "src/graphics/yuv_to_rgb.h"
 
 #include "src/graphics/images/surface.h"

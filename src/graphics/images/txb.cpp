@@ -26,9 +26,8 @@
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 
-#include "src/graphics/util.h"
-
 #include "src/graphics/images/txb.h"
+#include "src/graphics/images/util.h"
 
 static const byte kEncodingBGRA = 0x04;
 static const byte kEncodingDXT1 = 0x0A;
