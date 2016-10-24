@@ -57,15 +57,13 @@ namespace Engines {
 
 namespace NWN {
 
-NWNEngine::NWNEngine() : _version(0), _language(Aurora::kLanguageInvalid),
-	_hasXP1(false), _hasXP2(false), _hasXP3(false), _game(0) {
+NWNEngine::NWNEngine() : _language(Aurora::kLanguageInvalid),
+	_hasXP1(false), _hasXP2(false), _hasXP3(false) {
 
 	_console.reset(new Console(*this));
 }
 
 NWNEngine::~NWNEngine() {
-	delete _version;
-	delete _game;
 }
 
 bool NWNEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -129,7 +127,7 @@ void NWNEngine::run() {
 
 	CursorMan.showCursor();
 
-	_game = new Game(*this, *_console, *_version);
+	_game.reset(new Game(*this, *_console, *_version));
 	_game->run();
 
 	deinit();
@@ -176,7 +174,7 @@ void NWNEngine::init() {
 }
 
 void NWNEngine::detectVersion() {
-	_version = new Version(_platform);
+	_version.reset(new Version(_platform));
 
 	if (_version->detect(_target)) {
 		status("This is Neverwinter Nights %s v%s",
@@ -466,11 +464,8 @@ void NWNEngine::checkConfig() {
 void NWNEngine::deinit() {
 	unregisterModelLoader();
 
-	delete _version;
-	delete _game;
-
-	_version = 0;
-	_game    = 0;
+	_version.reset();
+	_game.reset();
 }
 
 void NWNEngine::playIntroVideos() {

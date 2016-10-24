@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include "src/common/scopedptr.h"
+
 #include "src/aurora/types.h"
 
 #include "src/engines/engine.h"
@@ -61,7 +63,7 @@ protected:
 
 
 private:
-	Version *_version;
+	Common::ScopedPtr<Version> _version;
 
 	Aurora::Language _language;
 
@@ -69,7 +71,7 @@ private:
 	bool _hasXP2; // Hordes of the Underdark (HotU)
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
 
-	Game *_game;
+	Common::ScopedPtr<Game> _game;
 
 
 	void init();
