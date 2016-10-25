@@ -39,7 +39,7 @@ namespace Engines {
 namespace Sonic {
 
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
-	_console(&console), _running(false), _exit(false), _newArea(-1), _area(0) {
+	_console(&console), _running(false), _exit(false), _newArea(-1) {
 
 }
 
@@ -106,7 +106,7 @@ void Module::loadArea() {
 		return;
 	}
 
-	_area = new Area(*this, (uint32)_newArea);
+	_area.reset(new Area(*this, (uint32)_newArea));
 
 	_area->enter();
 	_area->show();
@@ -118,8 +118,7 @@ void Module::unloadArea() {
 		_area->hide();
 	}
 
-	delete _area;
-	_area = 0;
+	_area.reset();
 }
 
 void Module::unload() {
@@ -192,7 +191,7 @@ bool Module::handleCameraEvents(const Events::Event &event) {
 }
 
 Area *Module::getCurrentArea() {
-	return _area;
+	return _area.get();
 }
 
 void Module::movePC(int32 area) {

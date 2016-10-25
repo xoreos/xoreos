@@ -26,6 +26,7 @@
 #define ENGINES_SONIC_MODULE_H
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 
 #include "src/events/types.h"
 
@@ -72,7 +73,7 @@ protected:
 
 	int32 _newArea; ///< The new area to enter.
 
-	Area *_area; ///< The current area.
+	Common::ScopedPtr<Area> _area; ///< The current area.
 
 
 	void unload();
