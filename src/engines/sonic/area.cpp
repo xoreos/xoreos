@@ -52,8 +52,7 @@ namespace Sonic {
 Area::Area(Module &module, uint32 id) : Object(kObjectTypeArea),
 	_module(&module), _width(0), _height(0), _startPosX(0.0f), _startPosY(0.0f),
 	_miniMapWidth(0), _miniMapHeight(0), _soundMapBank(-1), _sound(-1), _soundType(-1), _soundBank(-1),
-	_numberRings(0), _numberChaoEggs(0), _bgPanel(0), _mmPanel(0),
-	_activeObject(0), _highlightAll(false) {
+	_numberRings(0), _numberChaoEggs(0), _activeObject(0), _highlightAll(false) {
 
 	_id = id;
 
@@ -67,9 +66,6 @@ Area::~Area() {
 	_module->removeObject(*this);
 
 	hide();
-
-	delete _mmPanel;
-	delete _bgPanel;
 
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
 		_module->removeObject(**o);
@@ -258,7 +254,7 @@ void Area::loadDefinition() {
 }
 
 void Area::loadBackground() {
-	_bgPanel = new AreaBackground(_background);
+	_bgPanel.reset(new AreaBackground(_background));
 
 	if ((_bgPanel->getImageWidth() != _width) || (_bgPanel->getImageHeight() != _height))
 		throw Common::Exception("Background and area dimensions don't match (%ux%u vs. %ux%u)",
@@ -267,7 +263,7 @@ void Area::loadBackground() {
 
 void Area::loadMiniMap() {
 	if (!_miniMap.empty())
-		_mmPanel = new AreaMiniMap(_miniMap);
+		_mmPanel.reset(new AreaMiniMap(_miniMap));
 }
 
 void Area::loadLayout() {

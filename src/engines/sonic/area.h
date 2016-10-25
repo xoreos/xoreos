@@ -29,6 +29,7 @@
 #include <map>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -133,8 +134,8 @@ private:
 
 	std::list<Events::Event> _eventQueue;
 
-	AreaBackground *_bgPanel;
-	AreaMiniMap    *_mmPanel;
+	Common::ScopedPtr<AreaBackground> _bgPanel;
+	Common::ScopedPtr<AreaMiniMap>    _mmPanel;
 
 	ObjectList _objects;
 	ObjectMap  _objectMap;
