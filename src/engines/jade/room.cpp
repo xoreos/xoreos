@@ -35,9 +35,7 @@ namespace Engines {
 
 namespace Jade {
 
-Room::Room(const Common::UString &resRef, uint32 id, float x, float y, float z) :
-	_model(0) {
-
+Room::Room(const Common::UString &resRef, uint32 id, float x, float y, float z) {
 	load(resRef, id, x, y, z);
 }
 
@@ -51,7 +49,7 @@ void Room::load(const Common::UString &resRef, uint32 id, float x, float y, floa
 
 	indexOptionalArchive(resRef + "-a.rim", 1100 + id, &_resources);
 
-	_model = loadModelObject(resRef);
+	_model.reset(loadModelObject(resRef));
 	if (!_model)
 		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
 
@@ -59,8 +57,7 @@ void Room::load(const Common::UString &resRef, uint32 id, float x, float y, floa
 }
 
 void Room::unload() {
-	delete _model;
-	_model = 0;
+	_model.reset();
 
 	deindexResources(_resources);
 }

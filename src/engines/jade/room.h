@@ -25,6 +25,7 @@
 #ifndef ENGINES_JADE_ROOM_H
 #define ENGINES_JADE_ROOM_H
 
+#include "src/common/scopedptr.h"
 #include "src/common/changeid.h"
 
 #include "src/graphics/aurora/types.h"
@@ -43,7 +44,8 @@ public:
 
 private:
 	Common::ChangeID _resources;
-	Graphics::Aurora::Model *_model;
+
+	Common::ScopedPtr<Graphics::Aurora::Model> _model;
 
 	void load(const Common::UString &resRef, uint32 id, float x, float y, float z);
 	void unload();
