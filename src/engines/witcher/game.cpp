@@ -50,17 +50,12 @@ namespace Engines {
 
 namespace Witcher {
 
-Game::Game(WitcherEngine &engine, ::Engines::Console &console) :
-	_engine(&engine), _campaign(0), _functions(0), _console(&console) {
-
-	_functions = new Functions(*this);
-	_bindings = new LuaBindings();
+Game::Game(WitcherEngine &engine, ::Engines::Console &console) : _engine(&engine), _console(&console) {
+	_functions.reset(new Functions(*this));
+	_bindings.reset(new LuaBindings());
 }
 
 Game::~Game() {
-	delete _campaign;
-	delete _functions;
-	delete _bindings;
 }
 
 Campaign &Game::getCampaign() {
@@ -76,7 +71,7 @@ Module &Game::getModule() {
 }
 
 void Game::run() {
-	_campaign = new Campaign(*_console);
+	_campaign.reset(new Campaign(*_console));
 
 	// Don't know what are this file for. Seems to be some internal scripts.
 	// They are absent in game resources.
@@ -96,8 +91,7 @@ void Game::run() {
 		runCampaign();
 	}
 
-	delete _campaign;
-	_campaign = 0;
+	_campaign.reset();
 }
 
 void Game::runCampaign() {

@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "src/common/ustring.h"
+#include "src/common/scopedptr.h"
 
 #include "src/sound/types.h"
 
@@ -73,10 +74,11 @@ public:
 
 private:
 	WitcherEngine *_engine;
-	Campaign      *_campaign;
 
-	Functions *_functions;
-	LuaBindings *_bindings;
+	Common::ScopedPtr<Campaign> _campaign;
+
+	Common::ScopedPtr<Functions>   _functions;
+	Common::ScopedPtr<LuaBindings> _bindings;
 
 	::Engines::Console *_console;
 
