@@ -60,14 +60,11 @@ namespace Engines {
 
 namespace Jade {
 
-JadeEngine::JadeEngine() : _language(Aurora::kLanguageInvalid),
-	_game(0) {
-
+JadeEngine::JadeEngine() : _language(Aurora::kLanguageInvalid) {
 	_console.reset(new Console(*this));
 }
 
 JadeEngine::~JadeEngine() {
-	delete _game;
 }
 
 bool JadeEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -131,7 +128,7 @@ void JadeEngine::run() {
 
 	CursorMan.showCursor();
 
-	_game = new Game(*this, *_console, _platform);
+	_game.reset(new Game(*this, *_console, _platform));
 	_game->run();
 
 	deinit();
@@ -258,9 +255,7 @@ void JadeEngine::initGameConfig() {
 }
 
 void JadeEngine::deinit() {
-	delete _game;
-
-	_game = 0;
+	_game.reset();
 }
 
 void JadeEngine::playIntroVideos() {
