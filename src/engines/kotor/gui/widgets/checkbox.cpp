@@ -33,6 +33,8 @@
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/highlightabletext.h"
 #include "src/graphics/aurora/highlightableguiquad.h"
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/kotor/gui/widgets/checkbox.h"
@@ -51,47 +53,24 @@ WidgetCheckBox::~WidgetCheckBox() {
 }
 
 void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
-	gff.getVector("COLOR", _r, _g, _b);
-	_a = gff.getDouble("ALPHA", 1.0);
-
-	Extend extend = createExtend(gff);
-
-	_width  = extend.w;
-	_height = extend.h;
-
-	Widget::setPosition(extend.x, extend.y, 0.0f);
+	KotORWidget::load(gff);
 
 	Border border = createBorder(gff);
+	Graphics::Aurora::TextureHandle texture = TextureMan.get(border.fill);
 
-	if (!border.fill.empty()) {
-		_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.h * .62, extend.h * .62));
-	} else {
-		_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.h * .62, extend.h * .62));
+	float squareLength = _quad->getHeight();
+	float _quadPosCorrect = (squareLength - (texture.getTexture().getHeight() * 0.625f)) / 2;
+	float x, y, z;
+	if (_quad) {
+		_quad->getPosition(x, y, z);
+		_quad->setPosition(x + _quadPosCorrect, y + _quadPosCorrect, z);
+		_quad->setHeight(texture.getTexture().getHeight() * 0.625f);
+		_quad->setWidth(texture.getTexture().getWidth() * 0.625f);
 	}
-
-	_quad->setPosition(extend.x, extend.y, 0.0f);
-	_quad->setTag(getTag());
-	_quad->setClickable(true);
-
-	if (border.fill.empty())
-		_quad->setColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-	Text text = createText(gff);
-
-	if (!text.text.empty() && !text.font.empty()) {
-		_text.reset(new Graphics::Aurora::HighlightableText(FontMan.get(text.font), text.text,
-		            text.r, text.g, text.b, 1.0f));
-
-		const float hspan = extend.w - _text->getWidth();
-		const float vspan = extend.h - _text->getHeight();
-
-
-		const float x = extend.x + text.halign * hspan;
-		const float y = extend.y + text.valign * vspan;
-
-		_text->setPosition(x, y, -1.0f);
-		_text->setTag(getTag());
-		_text->setClickable(true);
+	if (_text) {
+		_text->getPosition(x, y, z);
+		_text->setPosition(x + squareLength, y, z);
+		_text->setSize(_text->getWidth() - squareLength, _text->getHeight());
 	}
 
 	if (getTextHighlightableComponent() != 0) {
