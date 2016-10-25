@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
 #define ENGINES_KOTOR_GUI_MAIN_MAIN_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
@@ -47,8 +49,8 @@ private:
 	Module *_module;
 	bool _isXbox;
 
-	GUI *_movies;
-	GUI *_options;
+	Common::ScopedPtr<GUI> _movies;
+	Common::ScopedPtr<GUI> _options;
 
 	void createMovies();
 	void createOptions();

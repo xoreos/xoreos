@@ -47,9 +47,6 @@ MainMenu::MainMenu(Module &module, bool isXbox, ::Engines::Console *console) : G
 	load(isXbox ? "mainmenu" : "mainmenu16x12");
 
 	addBackground(kBackgroundTypeMenu);
-
-	_movies = 0;
-	_options = 0;
 }
 
 MainMenu::~MainMenu() {
@@ -61,7 +58,7 @@ void MainMenu::createMovies() {
 		return;
 
 	// Create the movies menu
-	_movies = new MoviesMenu(_console);
+	_movies.reset(new MoviesMenu(_console));
 }
 
 void MainMenu::createOptions() {
@@ -69,7 +66,7 @@ void MainMenu::createOptions() {
 		return;
 
 	// Create the options menu
-	_options = new OptionsMenu(_console);
+	_options.reset(new OptionsMenu(_console));
 
 }
 

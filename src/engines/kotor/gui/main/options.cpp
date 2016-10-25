@@ -41,20 +41,15 @@ namespace KotOR {
 OptionsMenu::OptionsMenu(::Engines::Console *console) : GUI(console) {
 	load("optionsmain");
 
-	_gameplay = new OptionsGameplayMenu(_console);
-	_feedback = new OptionsFeedbackMenu(_console);
-	_autopause = new OptionsAutoPauseMenu(_console);
-	_graphics = new OptionsGraphicsMenu(_console);
-	_sound = new OptionsSoundMenu(_console);
+	_gameplay.reset(new OptionsGameplayMenu(_console));
+	_feedback.reset(new OptionsFeedbackMenu(_console));
+	_autopause.reset(new OptionsAutoPauseMenu(_console));
+	_graphics.reset(new OptionsGraphicsMenu(_console));
+	_sound.reset(new OptionsSoundMenu(_console));
 
 }
 
 OptionsMenu::~OptionsMenu() {
-	delete _gameplay;
-	delete _feedback;
-	delete _autopause;
-	delete _graphics;
-	delete _sound;
 }
 
 void OptionsMenu::callbackActive(Widget &widget) {

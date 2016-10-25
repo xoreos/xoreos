@@ -25,9 +25,11 @@
 #ifndef ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
 #define ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/common/scopedptr.h"
 
 #include "src/graphics/aurora/highlightable.h"
+
+#include "src/engines/kotor/gui/gui.h"
 
 #include "src/engines/kotor/gui/options/gameplay.h"
 
@@ -46,11 +48,11 @@ protected:
 private:
 	void adoptChanges();
 
-	GUI *_gameplay;
-	GUI *_feedback;
-	GUI *_autopause;
-	GUI *_graphics;
-	GUI *_sound;
+	Common::ScopedPtr<GUI> _gameplay;
+	Common::ScopedPtr<GUI> _feedback;
+	Common::ScopedPtr<GUI> _autopause;
+	Common::ScopedPtr<GUI> _graphics;
+	Common::ScopedPtr<GUI> _sound;
 };
 
 } // End of namespace KotOR
