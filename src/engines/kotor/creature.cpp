@@ -42,17 +42,16 @@ namespace Engines {
 
 namespace KotOR {
 
-Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature), _model(0) {
+Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature) {
 	init();
 	load(creature);
 }
 
-Creature::Creature() : Object(kObjectTypeCreature), _model(0) {
+Creature::Creature() : Object(kObjectTypeCreature) {
 	init();
 }
 
 Creature::~Creature() {
-	delete _model;
 }
 
 void Creature::init() {
@@ -94,25 +93,18 @@ void Creature::setOrientation(float x, float y, float z, float angle) {
 void Creature::load(const Aurora::GFF3Struct &creature) {
 	Common::UString temp = creature.getString("TemplateResRef");
 
-	Aurora::GFF3File *utc = 0;
+	Common::ScopedPtr<Aurora::GFF3File> utc;
 	if (!temp.empty()) {
 		try {
-			utc = new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '));
+			utc.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' ')));
 		} catch (...) {
 		}
 	}
 
-	try {
-		load(creature, utc ? &utc->getTopLevel() : 0);
-	} catch (...) {
-		delete utc;
-		throw;
-	}
+	load(creature, utc ? &utc->getTopLevel() : 0);
 
 	if (!utc)
 		warning("Creature \"%s\" has no blueprint", _tag.c_str());
-
-	delete utc;
 }
 
 void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
@@ -231,7 +223,7 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 }
 
 void Creature::loadBody(PartModels &parts) {
-	_model = loadModelObject(parts.body, parts.bodyTexture);
+	_model.reset(loadModelObject(parts.body, parts.bodyTexture));
 	if (!_model)
 		return;
 

@@ -26,6 +26,7 @@
 #define ENGINES_KOTOR_CREATURE_H
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -91,7 +92,7 @@ private:
 
 	uint32 _appearance; ///< The creature's general appearance.
 
-	Graphics::Aurora::Model *_model; ///< The creature's model.
+	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 
 
 	void init();

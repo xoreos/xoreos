@@ -42,12 +42,11 @@ namespace KotOR {
 
 Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
 	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
-	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0), _model(0) {
+	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0) {
 
 }
 
 Situated::~Situated() {
-	delete _model;
 }
 
 void Situated::show() {
@@ -122,7 +121,7 @@ void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	// Model
 
 	if (!_modelName.empty()) {
-		_model = loadModelObject(_modelName);
+		_model.reset(loadModelObject(_modelName));
 
 		if (!_model)
 			throw Common::Exception("Failed to load situated object model \"%s\"",
