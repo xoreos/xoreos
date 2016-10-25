@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_GUI_GUI_H
 #define ENGINES_KOTOR_GUI_GUI_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/aurora/types.h"
 
 #include "src/graphics/aurora/types.h"
@@ -108,7 +110,7 @@ private:
 
 	float _widgetZ;
 
-	GUIBackground *_background;
+	Common::ScopedPtr<GUIBackground> _background;
 
 	Common::UString _name;
 

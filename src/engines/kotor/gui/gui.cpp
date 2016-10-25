@@ -59,11 +59,10 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFF3Struct &s, Widget *p) {
 }
 
 
-GUI::GUI(::Engines::Console *console) : ::Engines::GUI(console), _widgetZ(0), _background(0) {
+GUI::GUI(::Engines::Console *console) : ::Engines::GUI(console), _widgetZ(0) {
 }
 
 GUI::~GUI() {
-	delete _background;
 }
 
 void GUI::show() {
@@ -89,20 +88,16 @@ void GUI::mouseUp() {
 void GUI::load(const Common::UString &resref, float width, float height) {
 	_name = resref;
 
-	Aurora::GFF3File *gff = 0;
 	try {
-		gff = new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '));
+		Common::ScopedPtr<Aurora::GFF3File>
+			gff(new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' ')));
 
 		loadWidget(gff->getTopLevel(), 0, width, height);
 
 	} catch (Common::Exception &e) {
-		delete gff;
-
 		e.add("Can't load GUI \"%s\"", resref.c_str());
 		throw;
 	}
-
-	delete gff;
 }
 
 void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent,
@@ -279,7 +274,7 @@ WidgetListBox *GUI::getListBox(const Common::UString &tag, bool vital) {
 
 void GUI::addBackground(const Common::UString &background) {
 	if (!_background)
-		_background = new GUIBackground(background);
+		_background.reset(new GUIBackground(background));
 	else
 		_background->setType(background);
 }
