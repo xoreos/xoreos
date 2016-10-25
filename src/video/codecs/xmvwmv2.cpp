@@ -160,7 +160,7 @@ void XMVWMV2Codec::DecodeContext::setQScale(int32 qS) {
 
 	defaultPredictor = (1024 + (dcStepSize / 2)) / dcStepSize;
 
-	if (acQuantTop) {
+	if (acQuantTop[0] && acQuantTop[1] && acQuantTop[2]) {
 		std::memset(acQuantTop[0], 0, sizeof(int32) * block[0].planePitch);
 		std::memset(acQuantTop[1], 0, sizeof(int32) * block[4].planePitch);
 		std::memset(acQuantTop[2], 0, sizeof(int32) * block[5].planePitch);
