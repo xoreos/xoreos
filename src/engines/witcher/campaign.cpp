@@ -48,10 +48,9 @@ namespace Engines {
 namespace Witcher {
 
 Campaign::Campaign(::Engines::Console &console) : _console(&console),
-	_hasCampaign(false), _running(false), _exit(true), _module(0), _pc(0),
-	_newCampaignStandalone(false) {
+	_hasCampaign(false), _running(false), _exit(true), _newCampaignStandalone(false) {
 
-	_module = new Module(*_console);
+	_module.reset(new Module(*_console));
 }
 
 Campaign::~Campaign() {
@@ -59,8 +58,6 @@ Campaign::~Campaign() {
 		clear();
 	} catch (...) {
 	}
-
-	delete _module;
 }
 
 void Campaign::clear() {
@@ -112,8 +109,7 @@ void Campaign::unload(bool completeUnload) {
 }
 
 void Campaign::unloadPC() {
-	delete _pc;
-	_pc = 0;
+	_pc.reset();
 }
 
 void Campaign::load(const Common::UString &campaign) {
@@ -226,7 +222,7 @@ void Campaign::usePC(const Common::UString &utc) {
 		throw Common::Exception("Tried to load an empty PC");
 
 	try {
-		_pc = new Creature(utc);
+		_pc.reset(new Creature(utc));
 	} catch (Common::Exception &e) {
 		e.add("Can't load PC \"%s\"", utc.c_str());
 		throw e;

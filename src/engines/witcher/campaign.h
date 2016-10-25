@@ -27,6 +27,7 @@
 
 #include <list>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/locstring.h"
@@ -125,10 +126,10 @@ private:
 	Common::UString _startModule;
 
 	/** The current module of the current campaign. */
-	Module *_module;
+	Common::ScopedPtr<Module> _module;
 
 	/** The player character we use. */
-	Creature *_pc;
+	Common::ScopedPtr<Creature> _pc;
 
 	/** The campaign we should change to. */
 	Common::UString _newCampaign;
