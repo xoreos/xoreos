@@ -22,6 +22,7 @@
  *  Jade Empire engine functions messing with objects.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
@@ -203,12 +204,11 @@ void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	int nth = ctx.getParams()[1].getInt();
 
-	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjectsByTag(tag);
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
 	while (nth-- > 0)
 		search->next();
 
 	ctx.getReturn() = search->get();
-	delete search;
 }
 
 void Functions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
@@ -218,8 +218,8 @@ void Functions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
 	if (tag.empty())
 		return;
 
-	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjectsByTag(tag);
-	Aurora::NWScript::Object       *object = 0;
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
+	Aurora::NWScript::Object *object = 0;
 
 	while ((object = search->next())) {
 		Waypoint *waypoint = Jade::ObjectContainer::toWaypoint(object);
@@ -229,8 +229,6 @@ void Functions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
 			break;
 		}
 	}
-
-	delete search;
 }
 
 void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
@@ -245,8 +243,8 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	// We want the nth nearest object
 	size_t nth  = MAX<int32>(ctx.getParams()[2].getInt() - 1, 0);
 
-	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjects();
-	Aurora::NWScript::Object       *object = 0;
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjects());
+	Aurora::NWScript::Object *object = 0;
 
 	std::list<Object *> objects;
 	while ((object = search->next())) {
@@ -265,8 +263,6 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 		if (type & (1 << (objectType - 1)))
 			objects.push_back(nwnObject);
 	}
-
-	delete search;
 
 	objects.sort(ObjectDistanceSort(*target));
 
