@@ -22,6 +22,7 @@
  *  A door in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 
@@ -51,25 +52,18 @@ Door::~Door() {
 void Door::load(const Aurora::GFF3Struct &door) {
 	Common::UString temp = door.getString("TemplateResRef");
 
-	Aurora::GFF3File *utd = 0;
+	Common::ScopedPtr<Aurora::GFF3File> utd;
 	if (!temp.empty()) {
 		try {
-			utd = new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
+			utd.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' ')));
 		} catch (...) {
 		}
 	}
 
-	try {
-		Situated::load(door, utd ? &utd->getTopLevel() : 0);
-	} catch (...) {
-		delete utd;
-		throw;
-	}
+	Situated::load(door, utd ? &utd->getTopLevel() : 0);
 
 	if (!utd)
 		warning("Door \"%s\" has no blueprint", _tag.c_str());
-
-	delete utd;
 }
 
 void Door::loadObject(const Aurora::GFF3Struct &gff) {
