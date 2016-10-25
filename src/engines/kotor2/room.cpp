@@ -35,19 +35,18 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Room::Room(const Common::UString &resRef, float x, float y, float z) : _model(0) {
+Room::Room(const Common::UString &resRef, float x, float y, float z) {
 	load(resRef, x, y, z);
 }
 
 Room::~Room() {
-	delete _model;
 }
 
 void Room::load(const Common::UString &resRef, float x, float y, float z) {
 	if (resRef == "****")
 		return;
 
-	_model = loadModelObject(resRef);
+	_model.reset(loadModelObject(resRef));
 	if (!_model)
 		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
 
