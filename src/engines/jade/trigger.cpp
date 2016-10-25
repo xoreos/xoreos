@@ -22,7 +22,9 @@
  *  A trigger in a Jade Empire area.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/maths.h"
 
 #include "src/aurora/locstring.h"
@@ -80,16 +82,16 @@ void Trigger::load(const Aurora::GFF3Struct &trigger) {
 	Common::UString temp = trigger.getString("ResRef");
 
 	if (!temp.empty()) {
-		Aurora::GFF3File *trg = 0;
 		try {
-			trg = new Aurora::GFF3File(temp, Aurora::kFileTypeTRG, MKTAG('T', 'R', 'G', ' '));
+			Common::ScopedPtr<Aurora::GFF3File>
+				trg(new Aurora::GFF3File(temp, Aurora::kFileTypeTRG, MKTAG('T', 'R', 'G', ' ')));
+
 			loadBlueprint(trg->getTopLevel());
-		} catch (...) {
-			warning("Trigger \"%s\" has no blueprint", temp.c_str());
-			delete trg;
+
+		} catch (Common::Exception &e) {
+			e.add("Trigger \"%s\" has no blueprint", temp.c_str());
 			throw;
 		}
-		delete trg;
 	}
 
 	loadInstance(trigger);

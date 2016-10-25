@@ -45,17 +45,16 @@ namespace Engines {
 namespace Jade {
 
 Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature), _isPC(false), _autoBalance(0),
-	_appearance(Aurora::kFieldIDInvalid), _headType(0), _model(0) {
+	_appearance(Aurora::kFieldIDInvalid), _headType(0) {
 
 	load(creature);
 }
 
 Creature::Creature() : Object(kObjectTypeCreature), _isPC(false), _autoBalance(0),
-	_appearance(Aurora::kFieldIDInvalid), _headType(0), _model(0) {
+	_appearance(Aurora::kFieldIDInvalid), _headType(0) {
 }
 
 Creature::~Creature() {
-	delete _model;
 }
 
 void Creature::show() {
@@ -96,16 +95,16 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 	Common::UString temp = creature.getString("ResRef");
 
 	if (!temp.empty()) {
-		Aurora::GFF3File *cre = 0;
 		try {
-			cre = new Aurora::GFF3File(temp, Aurora::kFileTypeCRE, MKTAG('C', 'R', 'E', ' '));
+			Common::ScopedPtr<Aurora::GFF3File>
+				cre(new Aurora::GFF3File(temp, Aurora::kFileTypeCRE, MKTAG('C', 'R', 'E', ' ')));
+
 			loadBlueprint(cre->getTopLevel());
-		} catch (...) {
-			warning("Creature \"%s\" has no blueprint", temp.c_str());
-			delete cre;
+
+		} catch (Common::Exception &e) {
+			e.add("Creature \"%s\" has no blueprint", temp.c_str());
 			throw;
 		}
-		delete cre;
 	}
 
 	// Tag
@@ -166,7 +165,7 @@ void Creature::loadBody() {
 
 	const Common::UString bodyModel = appearance.getString(Common::UString("MODELA"));
 
-	_model = loadModelObject(bodyModel);
+	_model.reset(loadModelObject(bodyModel));
 	if (!_model)
 		return;
 

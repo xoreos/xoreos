@@ -42,14 +42,12 @@ namespace Engines {
 namespace Jade {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Object(kObjectTypePlaceable),
-	_appearanceType(Aurora::kFieldIDInvalid), _lastOpenedBy(0), _lastClosedBy(0), _model(0) {
+	_appearanceType(Aurora::kFieldIDInvalid), _lastOpenedBy(0), _lastClosedBy(0) {
 
 	load(placeable);
 }
 
 Placeable::~Placeable() {
-	delete _model;
-	delete _fsm;
 }
 
 void Placeable::show() {
@@ -67,17 +65,17 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	_resRef = placeable.getString("ResRef");
 
 	if (!_resRef.empty()) {
-		Aurora::GFF3File *pla = 0;
 		try {
-			pla = new Aurora::GFF3File(_resRef, Aurora::kFileTypePLA, MKTAG('P', 'L', 'A', ' '));
+			Common::ScopedPtr<Aurora::GFF3File>
+				pla(new Aurora::GFF3File(_resRef, Aurora::kFileTypePLA, MKTAG('P', 'L', 'A', ' ')));
+
 			loadBlueprint(pla->getTopLevel());
 			loadProperties();
-		} catch (...) {
-			warning("Placeable \"%s\" has no blueprint", _tag.c_str());
-			delete pla;
+
+		} catch (Common::Exception &e) {
+			e.add("Placeable \"%s\" has no blueprint", _tag.c_str());
 			throw;
 		}
-		delete pla;
 	}
 
 	loadInstance(placeable);
@@ -137,8 +135,7 @@ void Placeable::loadInstance(const Aurora::GFF3Struct &gff) {
 	_state = gff.getSint("State");
 
 	Common::UString fsmName = gff.getString("FSM");
-	_fsm = new Aurora::GFF3File(fsmName, Aurora::kFileTypeFSM, MKTAG('F', 'S', 'M', ' '));
-
+	_fsm.reset(new Aurora::GFF3File(fsmName, Aurora::kFileTypeFSM, MKTAG('F', 'S', 'M', ' ')));
 }
 
 void Placeable::loadAppearance() {
@@ -146,7 +143,7 @@ void Placeable::loadAppearance() {
 	// Model
 
 	if (!_modelName.empty()) {
-		_model = loadModelObject(_modelName);
+		_model.reset(loadModelObject(_modelName));
 
 		if (!_model)
 			throw Common::Exception("Failed to load placeable model \"%s\"",

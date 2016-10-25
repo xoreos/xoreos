@@ -25,6 +25,8 @@
 #ifndef ENGINES_JADE_PLACEABLE_H
 #define ENGINES_JADE_PLACEABLE_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/aurora/types.h"
 
 #include "src/graphics/aurora/types.h"
@@ -71,10 +73,10 @@ protected:
 	Object *_lastOpenedBy; ///< The object that last opened this placeable object.
 	Object *_lastClosedBy; ///< The object that last closed this placeable object.
 
-	Graphics::Aurora::Model *_model; ///< The placeable's model.
+	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The placeable's model.
 
-	int32 _state;          ///< The placeable's current state.
-	Aurora::GFF3File *_fsm; ///< The placeable's state file.
+	int32 _state; ///< The placeable's current state.
+	Common::ScopedPtr<Aurora::GFF3File> _fsm; ///< The placeable's state file.
 
 private:
 	/** Load from a placeable instance. */
