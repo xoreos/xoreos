@@ -49,22 +49,15 @@ Waypoint::~Waypoint() {
 void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 	Common::UString temp = waypoint.getString("TemplateResRef");
 
-	Aurora::GFF3File *utw = 0;
+	Common::ScopedPtr<Aurora::GFF3File> utw;
 	if (!temp.empty()) {
 		try {
-			utw = new Aurora::GFF3File(temp, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' '));
+			utw.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' ')));
 		} catch (...) {
 		}
 	}
 
-	try {
-		load(waypoint, utw ? &utw->getTopLevel() : 0);
-	} catch (...) {
-		delete utw;
-		throw;
-	}
-
-	delete utw;
+	load(waypoint, utw ? &utw->getTopLevel() : 0);
 }
 
 bool Waypoint::hasMapNote() const {

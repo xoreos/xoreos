@@ -22,6 +22,7 @@
  *  A door in a The Witcher area.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 
 #include "src/aurora/gff3file.h"
@@ -48,22 +49,15 @@ Door::~Door() {
 void Door::load(const Aurora::GFF3Struct &door) {
 	Common::UString temp = door.getString("TemplateResRef");
 
-	Aurora::GFF3File *utd = 0;
+	Common::ScopedPtr<Aurora::GFF3File> utd;
 	if (!temp.empty()) {
 		try {
-			utd = new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '));
+			utd.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' ')));
 		} catch (...) {
 		}
 	}
 
-	try {
-		Situated::load(door, utd ? &utd->getTopLevel() : 0);
-	} catch (...) {
-		delete utd;
-		throw;
-	}
-
-	delete utd;
+	Situated::load(door, utd ? &utd->getTopLevel() : 0);
 }
 
 void Door::setModelState() {
