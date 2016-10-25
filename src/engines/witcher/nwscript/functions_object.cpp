@@ -22,6 +22,7 @@
  *  The Witcher engine functions messing with objects.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
@@ -193,12 +194,11 @@ void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	int nth = ctx.getParams()[1].getInt();
 
-	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjectsByTag(tag);
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
 	while (nth-- > 0)
 		search->next();
 
 	ctx.getReturn() = search->get();
-	delete search;
 }
 
 void Functions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
@@ -208,8 +208,8 @@ void Functions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
 	if (tag.empty())
 		return;
 
-	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjectsByTag(tag);
-	Aurora::NWScript::Object       *object = 0;
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
+	Aurora::NWScript::Object *object = 0;
 
 	while ((object = search->next())) {
 		Waypoint *waypoint = Witcher::ObjectContainer::toWaypoint(object);
@@ -219,8 +219,6 @@ void Functions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
 			break;
 		}
 	}
-
-	delete search;
 }
 
 void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
@@ -235,8 +233,8 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	// We want the nth nearest object
 	size_t nth  = MAX<int32>(ctx.getParams()[2].getInt() - 1, 0);
 
-	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjects();
-	Aurora::NWScript::Object       *object = 0;
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjects());
+	Aurora::NWScript::Object *object = 0;
 
 	std::list<Object *> objects;
 	while ((object = search->next())) {
@@ -253,8 +251,6 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 		if (type & objectType)
 			objects.push_back(witcherObject);
 	}
-
-	delete search;
 
 	objects.sort(ObjectDistanceSort(*target));
 
@@ -279,8 +275,8 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	size_t nth = MAX<int32>(ctx.getParams()[2].getInt() - 1, 0);
 
-	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjectsByTag(tag);
-	Aurora::NWScript::Object       *object = 0;
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
+	Aurora::NWScript::Object *object = 0;
 
 	std::list<Object *> objects;
 	while ((object = search->next())) {
@@ -291,8 +287,6 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 		objects.push_back(witcherObject);
 	}
-
-	delete search;
 
 	objects.sort(ObjectDistanceSort(*target));
 
@@ -323,8 +317,8 @@ void Functions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
 	 * int crit3Value = ctx.getParams()[7].getInt();
 	 */
 
-	Aurora::NWScript::ObjectSearch *search = _game->getModule().findObjects();
-	Aurora::NWScript::Object       *object = 0;
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjects());
+	Aurora::NWScript::Object *object = 0;
 
 	std::list<Object *> creatures;
 	while ((object = search->next())) {
@@ -333,8 +327,6 @@ void Functions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
 		if (creature && (creature != target) && (creature->getArea() == target->getArea()))
 			creatures.push_back(creature);
 	}
-
-	delete search;
 
 	creatures.sort(ObjectDistanceSort(*target));
 
