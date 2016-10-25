@@ -36,7 +36,7 @@ namespace KotOR {
 OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : GUI(console) {
 	load("optgraphics");
 
-	_advanced = new OptionsGraphicsAdvancedMenu(_console);
+	_advanced.reset(new OptionsGraphicsAdvancedMenu(_console));
 
 	//Hardcoded, the gui file returns incorrect values
 	getCheckBox("CB_SHADOWS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
@@ -44,7 +44,6 @@ OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : GUI(cons
 }
 
 OptionsGraphicsMenu::~OptionsGraphicsMenu() {
-	delete _advanced;
 }
 
 void OptionsGraphicsMenu::callbackActive(Widget &widget) {

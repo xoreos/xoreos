@@ -34,11 +34,10 @@ namespace KotOR {
 OptionsSoundMenu::OptionsSoundMenu(::Engines::Console *console) : GUI(console) {
 	load("optsound");
 
-	_advanced = new OptionsSoundAdvancedMenu(_console);
+	_advanced.reset(new OptionsSoundAdvancedMenu(_console));
 }
 
 OptionsSoundMenu::~OptionsSoundMenu() {
-	delete _advanced;
 }
 
 void OptionsSoundMenu::callbackActive(Widget &widget) {

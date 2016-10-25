@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_GAMEPLAY_H
 #define ENGINES_KOTOR_GUI_OPTIONS_GAMEPLAY_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
@@ -48,8 +50,8 @@ private:
 
 	void updateDifficulty(int difficulty);
 
-	GUI *_mousesettings;
-	GUI *_keyboardconfiguration;
+	Common::ScopedPtr<GUI> _mousesettings;
+	Common::ScopedPtr<GUI> _keyboardconfiguration;
 };
 
 } // End of namespace KotOR

@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
 #define ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
@@ -40,7 +42,7 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	GUI *_advanced;
+	Common::ScopedPtr<GUI> _advanced;
 };
 
 } // End of namespace KotOR

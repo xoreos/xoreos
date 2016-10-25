@@ -41,8 +41,10 @@ namespace KotOR {
 
 OptionsGameplayMenu::OptionsGameplayMenu(::Engines::Console *console) : GUI(console) {
 	load("optgameplay");
-	_mousesettings = new OptionsMouseSettingsMenu(_console);
-	_keyboardconfiguration = new OptionsKeyboardConfigurationMenu(_console);
+
+	_mousesettings.reset(new OptionsMouseSettingsMenu(_console));
+	_keyboardconfiguration.reset(new OptionsKeyboardConfigurationMenu(_console));
+
 	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
 	getButton("BTN_DIFFLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getButton("BTN_DIFFRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
@@ -53,8 +55,6 @@ OptionsGameplayMenu::OptionsGameplayMenu(::Engines::Console *console) : GUI(cons
 	getCheckBox("CB_DISABLEMOVE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 }
 OptionsGameplayMenu::~OptionsGameplayMenu() {
-	delete _mousesettings;
-	delete _keyboardconfiguration;
 }
 
 
