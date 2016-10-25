@@ -52,14 +52,12 @@ namespace Engines {
 namespace KotOR {
 
 Game::Game(KotOREngine &engine, ::Engines::Console &console, Aurora::Platform platform) :
-	_engine(&engine), _module(0), _functions(0), _platform(platform), _console(&console) {
+	_engine(&engine), _platform(platform), _console(&console) {
 
-	_functions = new Functions(*this);
+	_functions.reset(new Functions(*this));
 }
 
 Game::~Game() {
-	delete _module;
-	delete _functions;
 }
 
 Module &Game::getModule() {
@@ -69,22 +67,21 @@ Module &Game::getModule() {
 }
 
 void Game::run() {
-	_module = new Module(*_console);
+	_module.reset(new Module(*_console));
 
 	while (!EventMan.quitRequested()) {
 		mainMenu();
 		runModule();
 	}
 
-	delete _module;
-	_module = 0;
+	_module.reset();
 }
 
 void Game::runModule() {
-	Creature *fakePC = new Creature;
+	Common::ScopedPtr<Creature> fakePC(new Creature);
 	fakePC->createFakePC();
 
-	_module->usePC(fakePC);
+	_module->usePC(fakePC.release());
 
 	if (EventMan.quitRequested() || !_module->isLoaded()) {
 		_module->clear();
