@@ -62,9 +62,9 @@ void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
 	Border border = createBorder(gff);
 
 	if (!border.fill.empty()) {
-		_quad = new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.h * .62, extend.h * .62);
+		_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.h * .62, extend.h * .62));
 	} else {
-		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.h * .62, extend.h * .62);
+		_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.h * .62, extend.h * .62));
 	}
 
 	_quad->setPosition(extend.x, extend.y, 0.0f);
@@ -77,8 +77,8 @@ void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
 	Text text = createText(gff);
 
 	if (!text.text.empty() && !text.font.empty()) {
-		_text = new Graphics::Aurora::HighlightableText(FontMan.get(text.font), text.text,
-		                                   text.r, text.g, text.b, 1.0f);
+		_text.reset(new Graphics::Aurora::HighlightableText(FontMan.get(text.font), text.text,
+		            text.r, text.g, text.b, 1.0f));
 
 		const float hspan = extend.w - _text->getWidth();
 		const float vspan = extend.h - _text->getHeight();

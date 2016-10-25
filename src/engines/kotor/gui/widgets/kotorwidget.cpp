@@ -57,14 +57,11 @@ KotORWidget::Text::Text() : strRef(Aurora::kStrRefInvalid), halign(0.0f), valign
 
 
 KotORWidget::KotORWidget(::Engines::GUI &gui, const Common::UString &tag) :
-	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
-	_quad(0), _text(0) {
+	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {
 
 }
 
 KotORWidget::~KotORWidget() {
-	delete _text;
-	delete _quad;
 }
 
 void KotORWidget::show() {
@@ -135,7 +132,7 @@ void KotORWidget::setFill(const Common::UString &fill) {
 		float x, y, z;
 		getPosition(x, y, z);
 
-		_quad = new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width, _height);
+		_quad.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width, _height));
 		_quad->setPosition(x, y, z);
 		_quad->setTag(getTag());
 		_quad->setClickable(true);
@@ -162,9 +159,9 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	Border border = createBorder(gff);
 
 	if (!border.fill.empty()) {
-		_quad = new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h);
+		_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
 	} else {
-		_quad = new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h);
+		_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
 	}
 
 	_quad->setPosition(extend.x, extend.y, 0.0f);
@@ -177,8 +174,8 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	Text text = createText(gff);
 
 	if (!text.text.empty() && !text.font.empty()) {
-		_text = new Graphics::Aurora::HighlightableText(FontMan.get(text.font), text.text,
-		                                   text.r, text.g, text.b, 1.0f);
+		_text.reset(new Graphics::Aurora::HighlightableText(FontMan.get(text.font),
+		            text.text, text.r, text.g, text.b, 1.0f));
 
 		const float hspan = extend.w - _text->getWidth();
 		const float vspan = extend.h - _text->getHeight();
@@ -285,11 +282,11 @@ KotORWidget::Text KotORWidget::createText(const Aurora::GFF3Struct &gff) {
 }
 
 Graphics::Aurora::Highlightable* KotORWidget::getTextHighlightableComponent() const {
-	return static_cast<Graphics::Aurora::Highlightable*>(_text);
+	return static_cast<Graphics::Aurora::Highlightable*>(_text.get());
 }
 
 Graphics::Aurora::Highlightable* KotORWidget::getQuadHighlightableComponent() const {
-	return dynamic_cast<Graphics::Aurora::Highlightable*>(_quad);
+	return dynamic_cast<Graphics::Aurora::Highlightable*>(_quad.get());
 }
 
 } // End of namespace KotOR

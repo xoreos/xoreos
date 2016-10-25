@@ -25,6 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_WIDGETS_KOTORWIDGET_H
 #define ENGINES_KOTOR_GUI_WIDGETS_KOTORWIDGET_H
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -113,8 +114,8 @@ protected:
 	float _b;
 	float _a;
 
-	Graphics::Aurora::GUIQuad *_quad;
-	Graphics::Aurora::HighlightableText *_text;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad>           _quad;
+	Common::ScopedPtr<Graphics::Aurora::HighlightableText> _text;
 
 
 	Extend createExtend(const Aurora::GFF3Struct &gff);
