@@ -22,6 +22,7 @@
  *  The context needed to run a Star Wars: Knights of the Old Republic II - The Sith Lords module.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -60,9 +61,8 @@ bool Module::Action::operator<(const Action &s) const {
 
 
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
-	_console(&console), _hasModule(false), _running(false), _pc(0),
-	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
-	_area(0) {
+	_console(&console), _hasModule(false), _running(false),
+	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll) {
 
 }
 
@@ -118,12 +118,11 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 }
 
 void Module::usePC(Creature *pc) {
-	delete _pc;
-	_pc = pc;
+	_pc.reset(pc);
 }
 
 Creature *Module::getPC() {
-	return _pc;
+	return _pc.get();
 }
 
 bool Module::isLoaded() const {
@@ -188,7 +187,7 @@ void Module::loadIFO() {
 }
 
 void Module::loadArea() {
-	_area = new Area(*this, _ifo.getEntryArea());
+	_area.reset(new Area(*this, _ifo.getEntryArea()));
 }
 
 static const char * const texturePacks[3] = {
@@ -252,13 +251,11 @@ void Module::unloadIFO() {
 }
 
 void Module::unloadArea() {
-	delete _area;
-	_area = 0;
+	_area.reset();
 }
 
 void Module::unloadPC() {
-	delete _pc;
-	_pc = 0;
+	_pc.reset();
 }
 
 void Module::unloadTexturePack() {
@@ -327,7 +324,7 @@ bool Module::getObjectLocation(const Common::UString &object, ObjectType locatio
 	if (object.empty())
 		return false;
 
-	Aurora::NWScript::ObjectSearch *search = findObjectsByTag(object);
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(findObjectsByTag(object));
 
 
 	KotOR2::Object *kotorObject = 0;
@@ -336,8 +333,6 @@ bool Module::getObjectLocation(const Common::UString &object, ObjectType locatio
 		if (!kotorObject || !(kotorObject->getType() & location))
 			kotorObject = 0;
 	}
-
-	delete search;
 
 	if (!kotorObject)
 		return false;
@@ -373,21 +368,21 @@ void Module::leave() {
 void Module::enterArea() {
 	_area->show();
 
-	runScript(kScriptModuleLoad , this, _pc);
-	runScript(kScriptModuleStart, this, _pc);
-	runScript(kScriptEnter      , this, _pc);
+	runScript(kScriptModuleLoad , this, _pc.get());
+	runScript(kScriptModuleStart, this, _pc.get());
+	runScript(kScriptEnter      , this, _pc.get());
 
-	_area->runScript(kScriptEnter, _area, _pc);
+	_area->runScript(kScriptEnter, _area.get(), _pc.get());
 }
 
 void Module::leaveArea() {
 	if (_area) {
-		_area->runScript(kScriptExit, _area, _pc);
+		_area->runScript(kScriptExit, _area.get(), _pc.get());
 
 		_area->hide();
 	}
 
-	runScript(kScriptExit, this, _pc);
+	runScript(kScriptExit, this, _pc.get());
 }
 
 void Module::addEvent(const Events::Event &event) {
@@ -502,7 +497,7 @@ const Common::UString &Module::getName() const {
 }
 
 Area *Module::getCurrentArea() {
-	return _area;
+	return _area.get();
 }
 
 void Module::delayScript(const Common::UString &script,
