@@ -52,7 +52,7 @@ namespace Witcher {
 
 Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
 	_module(&module), _resRef(resRef), _visible(false),
-	_model(0), _activeObject(0), _highlightAll(false) {
+	_activeObject(0), _highlightAll(false) {
 
 	try {
 		// Load ARE and GIT
@@ -93,8 +93,7 @@ void Area::clear() {
 	_objects.clear();
 
 	// Delete area geometry model
-	delete _model;
-	_model = 0;
+	_model.reset();
 }
 
 Aurora::LocString Area::getName(const Common::UString &resRef) {
@@ -290,7 +289,7 @@ void Area::loadAreaModel() {
 	if (_modelName.empty())
 		return;
 
-	_model = loadModelObject(_modelName);
+	_model.reset(loadModelObject(_modelName));
 	if (!_model)
 		throw Common::Exception("Can't load area geometry model \"%s\"", _modelName.c_str());
 
@@ -298,8 +297,7 @@ void Area::loadAreaModel() {
 }
 
 void Area::unloadAreaModel() {
-	delete _model;
-	_model = 0;
+	_model.reset();
 }
 
 void Area::loadObject(Engines::Witcher::Object &object) {
