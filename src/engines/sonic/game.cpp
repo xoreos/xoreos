@@ -46,7 +46,7 @@ namespace Engines {
 namespace Sonic {
 
 Game::Game(SonicEngine &engine, ::Engines::Console &console) :
-	_engine(&engine), _module(0), _console(&console) {
+	_engine(&engine), _console(&console) {
 
 	Aurora::Language language = Aurora::kLanguageInvalid;
 	_engine->getLanguage(language);
@@ -60,7 +60,6 @@ Game::Game(SonicEngine &engine, ::Engines::Console &console) :
 }
 
 Game::~Game() {
-	delete _module;
 }
 
 Module &Game::getModule() {
@@ -81,12 +80,11 @@ void Game::run() {
 	if (!showChapter1())
 		return;
 
-	_module = new Module(*_console);
+	_module.reset(new Module(*_console));
 
 	runModule();
 
-	delete _module;
-	_module = 0;
+	_module.reset();
 }
 
 void Game::runModule() {
