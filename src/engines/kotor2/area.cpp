@@ -22,6 +22,7 @@
  *  The context holding a Star Wars: Knights of the Old Republic II - The Sith Lords area.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -233,32 +234,28 @@ void Area::hide() {
 }
 
 void Area::loadLYT() {
-	Common::SeekableReadStream *lyt = 0;
 	try {
-		if (!(lyt = ResMan.getResource(_resRef, Aurora::kFileTypeLYT)))
+		Common::ScopedPtr<Common::SeekableReadStream> lyt(ResMan.getResource(_resRef, Aurora::kFileTypeLYT));
+		if (!lyt)
 			throw Common::Exception("No such LYT");
 
 		_lyt.load(*lyt);
 
-		delete lyt;
 	} catch (Common::Exception &e) {
-		delete lyt;
 		e.add("Failed loading LYT \"%s\"", _resRef.c_str());
 		throw;
 	}
 }
 
 void Area::loadVIS() {
-	Common::SeekableReadStream *vis = 0;
 	try {
-		if (!(vis = ResMan.getResource(_resRef, Aurora::kFileTypeVIS)))
+		Common::ScopedPtr<Common::SeekableReadStream> vis(ResMan.getResource(_resRef, Aurora::kFileTypeVIS));
+		if (!vis)
 			throw Common::Exception("No such VIS");
 
 		_vis.load(*vis);
 
-		delete vis;
 	} catch (Common::Exception &e) {
-		delete vis;
 		e.add("Failed loading VIS \"%s\"", _resRef.c_str());
 		throw;
 	}
