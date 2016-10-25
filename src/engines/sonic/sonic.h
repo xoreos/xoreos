@@ -25,6 +25,7 @@
 #ifndef ENGINES_SONIC_SONIC_H
 #define ENGINES_SONIC_SONIC_H
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -66,7 +67,7 @@ private:
 	Common::ChangeID _languageHERF;
 	Common::ChangeID _languageTLK;
 
-	Game *_game;
+	Common::ScopedPtr<Game> _game;
 
 
 	void init();

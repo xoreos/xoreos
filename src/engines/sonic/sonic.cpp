@@ -59,12 +59,11 @@ namespace Engines {
 
 namespace Sonic {
 
-SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid), _game(0) {
+SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid) {
 	_console.reset(new Console(*this));
 }
 
 SonicEngine::~SonicEngine() {
-	delete _game;
 }
 
 Common::UString SonicEngine::getLanguageHERF(Aurora::Language language) {
@@ -177,7 +176,7 @@ void SonicEngine::run() {
 	CursorMan.set();
 	CursorMan.showCursor();
 
-	_game = new Game(*this, *_console);
+	_game.reset(new Game(*this, *_console));
 	_game->run();
 
 	deinit();
@@ -282,8 +281,7 @@ void SonicEngine::initGameConfig() {
 }
 
 void SonicEngine::deinit() {
-	delete _game;
-	_game = 0;
+	_game.reset();
 
 	unloadLanguageFiles();
 }
