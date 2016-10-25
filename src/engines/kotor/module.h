@@ -28,6 +28,7 @@
 #include <list>
 #include <set>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 #include "src/common/configman.h"
@@ -156,7 +157,7 @@ private:
 	/** The current module's IFO. */
 	Aurora::IFOFile _ifo;
 
-	Creature *_pc; ///< The player character we use.
+	Common::ScopedPtr<Creature> _pc; ///< The player character we use.
 
 	/** The current texture pack. */
 	int _currentTexturePack;
@@ -173,7 +174,7 @@ private:
 	/** The type(s) of the object in the start location for this module. */
 	ObjectType      _entryLocationType;
 
-	Area *_area; ///< The current module's area.
+	Common::ScopedPtr<Area> _area; ///< The current module's area.
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
