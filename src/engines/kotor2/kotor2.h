@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR2_KOTOR2_H
 #define ENGINES_KOTOR2_KOTOR2_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/aurora/types.h"
 
 #include "src/engines/engine.h"
@@ -60,7 +62,7 @@ protected:
 private:
 	Aurora::Language _language;
 
-	Game *_game;
+	Common::ScopedPtr<Game> _game;
 
 
 	void init();
