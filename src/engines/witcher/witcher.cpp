@@ -55,14 +55,12 @@ namespace Engines {
 namespace Witcher {
 
 WitcherEngine::WitcherEngine() :
-	_languageText(Aurora::kLanguageInvalid), _languageVoice(Aurora::kLanguageInvalid),
-	_game(0) {
+	_languageText(Aurora::kLanguageInvalid), _languageVoice(Aurora::kLanguageInvalid) {
 
 	_console.reset(new Console(*this));
 }
 
 WitcherEngine::~WitcherEngine() {
-	delete _game;
 }
 
 bool WitcherEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -152,7 +150,7 @@ void WitcherEngine::run() {
 
 	CursorMan.showCursor();
 
-	_game = new Game(*this, *_console);
+	_game.reset(new Game(*this, *_console));
 	_game->run();
 
 	deinit();
@@ -322,9 +320,7 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 }
 
 void WitcherEngine::deinit() {
-	delete _game;
-
-	_game = 0;
+	_game.reset();
 
 	LuaScriptMan.deinit();
 	::Aurora::Lua::ScriptManager::destroy();

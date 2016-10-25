@@ -27,6 +27,7 @@
 
 #include <list>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -70,7 +71,7 @@ private:
 	std::list<Common::ChangeID> _languageResources;
 	Common::ChangeID _languageTLK;
 
-	Game *_game;
+	Common::ScopedPtr<Game> _game;
 
 
 	void init();
