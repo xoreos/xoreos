@@ -54,14 +54,12 @@ namespace Engines {
 
 namespace KotOR {
 
-KotOREngine::KotOREngine() : _language(Aurora::kLanguageInvalid),
-	_hasLiveKey(false), _game(0) {
+KotOREngine::KotOREngine() : _language(Aurora::kLanguageInvalid), _hasLiveKey(false) {
 
 	_console.reset(new Console(*this));
 }
 
 KotOREngine::~KotOREngine() {
-	delete _game;
 }
 
 bool KotOREngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
@@ -125,7 +123,7 @@ void KotOREngine::run() {
 
 	CursorMan.showCursor();
 
-	_game = new Game(*this, *_console, _platform);
+	_game.reset(new Game(*this, *_console, _platform));
 	_game->run();
 
 	deinit();
@@ -435,9 +433,7 @@ void KotOREngine::checkConfig() {
 void KotOREngine::deinit() {
 	unregisterModelLoader();
 
-	delete _game;
-
-	_game = 0;
+	_game.reset();
 }
 
 void KotOREngine::playIntroVideos() {

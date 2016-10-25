@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_KOTOR_H
 #define ENGINES_KOTOR_KOTOR_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/aurora/types.h"
 
 #include "src/engines/engine.h"
@@ -62,7 +64,7 @@ private:
 
 	bool _hasLiveKey;
 
-	Game *_game;
+	Common::ScopedPtr<Game> _game;
 
 
 	bool hasYavin4Module() const;
