@@ -98,7 +98,7 @@ bool CursorManager::add(const Common::UString &name, const Common::UString &grou
 
 		result = g->second.insert(std::make_pair(state, cursor));
 		if (!result.second)
-			throw "Cursor already exists";
+			throw Common::Exception("Cursor already exists");
 
 	} catch (...) {
 		delete cursor;
