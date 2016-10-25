@@ -22,6 +22,7 @@
  *  The context needed to run a The Witcher module.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -215,7 +216,7 @@ bool Module::getObjectLocation(const Common::UString &object, Common::UString &a
 	if (object.empty())
 		return false;
 
-	Aurora::NWScript::ObjectSearch *search = findObjectsByTag(object);
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(findObjectsByTag(object));
 
 	Witcher::Object *witcherObject = 0;
 	while (!witcherObject && search->get()) {
@@ -223,8 +224,6 @@ bool Module::getObjectLocation(const Common::UString &object, Common::UString &a
 		if (!witcherObject || (witcherObject->getType() != kObjectTypeWaypoint))
 			witcherObject = 0;
 	}
-
-	delete search;
 
 	if (!witcherObject)
 		return false;
