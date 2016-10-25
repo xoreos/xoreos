@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_ROOM_H
 #define ENGINES_KOTOR_ROOM_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/graphics/aurora/types.h"
 
 namespace Common {
@@ -44,7 +46,7 @@ public:
 	void hide();
 
 private:
-	Graphics::Aurora::Model *_model;
+	Common::ScopedPtr<Graphics::Aurora::Model> _model;
 
 	void load(const Common::UString &resRef, float x, float y, float z);
 };
