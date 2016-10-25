@@ -28,6 +28,7 @@
 #include <list>
 #include <set>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 #include "src/common/configman.h"
@@ -159,14 +160,14 @@ private:
 	/** Resources added by the current module. */
 	std::list<Common::ChangeID> _resources;
 
-	Creature *_pc; ///< The player character we use.
+	Common::ScopedPtr<Creature> _pc; ///< The player character we use.
 
 	bool _exit; ///< Should we exit the module?
 
 	Common::UString _module;    ///< The current module's name.
 	Common::UString _newModule; ///< The module we should change to.
 
-	Area *_area; ///< The current module's area.
+	Common::ScopedPtr<Area> _area; ///< The current module's area.
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;

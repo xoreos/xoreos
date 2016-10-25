@@ -48,7 +48,7 @@ bool Module::Action::operator<(const Action &s) const {
 
 
 Module::Module(::Engines::Console &console) : _console(&console), _hasModule(false),
-	_running(false), _pc(0), _exit(false), _area(0) {
+	_running(false), _exit(false) {
 
 }
 
@@ -99,13 +99,13 @@ void Module::loadModule(const Common::UString &module) {
 void Module::usePC(Creature *pc) {
 	unloadPC();
 
-	_pc = pc;
+	_pc.reset(pc);
 
 	addObject(*_pc);
 }
 
 Creature *Module::getPC() {
-	return _pc;
+	return _pc.get();
 }
 
 bool Module::isLoaded() const {
@@ -135,7 +135,7 @@ void Module::load() {
 }
 
 void Module::loadArea() {
-	_area = new Area(*this, _module);
+	_area.reset(new Area(*this, _module));
 }
 
 void Module::unload(bool completeUnload) {
@@ -156,8 +156,7 @@ void Module::unload(bool completeUnload) {
 }
 
 void Module::unloadArea() {
-	delete _area;
-	_area = 0;
+	_area.reset();
 }
 
 void Module::unloadPC() {
@@ -166,8 +165,7 @@ void Module::unloadPC() {
 
 	removeObject(*_pc);
 
-	delete _pc;
-	_pc = 0;
+	_pc.reset();
 }
 
 void Module::changeModule(const Common::UString &module) {
@@ -219,12 +217,12 @@ void Module::leave() {
 void Module::enterArea() {
 	_area->show();
 
-	_area->runScript(kScriptOnEnter, _area, _pc);
+	_area->runScript(kScriptOnEnter, _area.get(), _pc.get());
 }
 
 void Module::leaveArea() {
 	if (_area) {
-		_area->runScript(kScriptOnExit, _area, _pc);
+		_area->runScript(kScriptOnExit, _area.get(), _pc.get());
 
 		_area->hide();
 	}
@@ -333,7 +331,7 @@ const Common::UString &Module::getName() const {
 }
 
 Area *Module::getCurrentArea() {
-	return _area;
+	return _area.get();
 }
 
 void Module::delayScript(const Common::UString &script,
