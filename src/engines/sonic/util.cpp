@@ -26,6 +26,9 @@
 
 #include <vector>
 
+#include <boost/scope_exit.hpp>
+
+#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
@@ -52,44 +55,39 @@ Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Comm
 	if (!handle.empty())
 		return handle;
 
-	Common::SeekableReadStream *nclrStream = ResMan.getResource(nclr, ::Aurora::kFileTypeNCLR);
+	Common::ScopedPtr<Common::SeekableReadStream> nclrStream(ResMan.getResource(nclr, ::Aurora::kFileTypeNCLR));
 	if (!nclrStream)
 		throw Common::Exception("No such NCLR \"%s\"", nclr.c_str());
 
 	std::vector<Common::SeekableReadStream *> ncgrs;
 	ncgrs.resize(width * height, 0);
 
-	try {
-		va_list va;
-		va_start(va, height);
-
-		for (uint32 i = 0; i < width * height; i++) {
-			const char *str = va_arg(va, const char *);
-			if (!str)
-				continue;
-
-			ncgrs[i] = ResMan.getResource(name + Common::UString(str), ::Aurora::kFileTypeNCGR);
-			if (!ncgrs[i])
-				throw Common::Exception("No such NCGR \"%s\"", (name + Common::UString(str)).c_str());
-		}
-
-		va_end(va);
-
-		Graphics::Aurora::Texture *texture = 0;
-		texture = Graphics::Aurora::Texture::create(new Graphics::NCGR(ncgrs, width, height, *nclrStream));
-		handle  = TextureMan.add(texture, name);
-
-	} catch (...) {
-		delete nclrStream;
+	BOOST_SCOPE_EXIT( (&ncgrs) ) {
 		for (std::vector<Common::SeekableReadStream *>::iterator n = ncgrs.begin(); n != ncgrs.end(); ++n)
 			delete *n;
+	} BOOST_SCOPE_EXIT_END
+
+	va_list va;
+	va_start(va, height);
+
+	for (uint32 i = 0; i < width * height; i++) {
+		const char *str = va_arg(va, const char *);
+		if (!str)
+			continue;
+
+		ncgrs[i] = ResMan.getResource(name + Common::UString(str), ::Aurora::kFileTypeNCGR);
+		if (!ncgrs[i])
+			throw Common::Exception("No such NCGR \"%s\"", (name + Common::UString(str)).c_str());
 	}
 
-	delete nclrStream;
-	for (std::vector<Common::SeekableReadStream *>::iterator n = ncgrs.begin(); n != ncgrs.end(); ++n)
-		delete *n;
+	va_end(va);
 
-	return handle;
+	Common::ScopedPtr<Graphics::NCGR> image(new Graphics::NCGR(ncgrs, width, height, *nclrStream));
+
+	Graphics::Aurora::Texture *texture = Graphics::Aurora::Texture::create(image.get());
+	image.release();
+
+	return TextureMan.add(texture, name);
 }
 
 Graphics::Aurora::FontHandle loadFont(const Common::UString &name, const Common::UString &nftr, bool invert) {
