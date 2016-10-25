@@ -41,14 +41,12 @@ namespace Engines {
 
 namespace Sonic {
 
-AreaMiniMap::AreaMiniMap(const Common::UString &name) : _miniMap(0) {
+AreaMiniMap::AreaMiniMap(const Common::UString &name) {
 	loadMiniMap(name);
 }
 
 AreaMiniMap::~AreaMiniMap() {
 	hide();
-
-	delete _miniMap;
 }
 
 void AreaMiniMap::show() {
@@ -62,33 +60,30 @@ void AreaMiniMap::hide() {
 }
 
 void AreaMiniMap::loadMiniMap(const Common::UString &name) {
-	Common::SeekableReadStream *nbfs = 0, *nbfp = 0;
-	Graphics::NBFS *image = 0;
-	Graphics::Aurora::TextureHandle texture;
-
 	try {
-		if (!(nbfs = ResMan.getResource(name, Aurora::kFileTypeNBFS)))
+		Common::ScopedPtr<Common::SeekableReadStream> nbfs(ResMan.getResource(name, Aurora::kFileTypeNBFS));
+		if (!nbfs)
 			throw Common::Exception("No such NBFS");
-		if (!(nbfp = ResMan.getResource(name, Aurora::kFileTypeNBFP)))
+
+		Common::ScopedPtr<Common::SeekableReadStream> nbfp(ResMan.getResource(name, Aurora::kFileTypeNBFP));
+		if (!nbfp)
 			throw Common::Exception("No such NBFP");
 
-		image   = new Graphics::NBFS(*nbfs, *nbfp, kScreenWidth, kScreenHeight);
-		texture = TextureMan.add(Graphics::Aurora::Texture::create(image, Aurora::kFileTypeNBFS), name);
+		Common::ScopedPtr<Graphics::NBFS> image(new Graphics::NBFS(*nbfs, *nbfp, kScreenWidth, kScreenHeight));
+
+		Graphics::Aurora::TextureHandle texture =
+			TextureMan.add(Graphics::Aurora::Texture::create(image.get(), Aurora::kFileTypeNBFS), name);
+
+		image.release();
+
+		_miniMap.reset(new Graphics::Aurora::GUIQuad(texture, 0.0f, 0.0f, kScreenWidth, kScreenHeight,
+		                                             0.0f, 1.0f, 1.0f, 0.0f));
+		_miniMap->setPosition(kTopScreenX, kTopScreenY, 0.0f);
 
 	} catch (Common::Exception &e) {
-		delete image;
-		delete nbfs;
-		delete nbfp;
-
 		e.add("Failed loading area minimap \"%s\"", name.c_str());
 		throw;
 	}
-
-	delete nbfs;
-	delete nbfp;
-
-	_miniMap = new Graphics::Aurora::GUIQuad(texture, 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
-	_miniMap->setPosition(kTopScreenX, kTopScreenY, 0.0f);
 }
 
 } // End of namespace Sonic
