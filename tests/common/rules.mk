@@ -49,3 +49,8 @@ check_PROGRAMS                      += tests/common/test_ptrvector
 tests_common_test_ptrvector_SOURCES  = tests/common/ptrvector.cpp
 tests_common_test_ptrvector_LDADD    = $(common_LIBS)
 tests_common_test_ptrvector_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                   += tests/common/test_ptrmap
+tests_common_test_ptrmap_SOURCES  = tests/common/ptrmap.cpp
+tests_common_test_ptrmap_LDADD    = $(common_LIBS)
+tests_common_test_ptrmap_CXXFLAGS = $(test_CXXFLAGS)
