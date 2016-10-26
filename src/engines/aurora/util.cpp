@@ -34,6 +34,7 @@
 #include "src/aurora/util.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
+#include "src/aurora/gff4file.h"
 #include "src/aurora/2dafile.h"
 
 #include "src/graphics/images/decoder.h"
@@ -149,6 +150,17 @@ Aurora::GFF3File *loadOptionalGFF3(const Common::UString &gff3, Aurora::FileType
 
 	try {
 		return new Aurora::GFF3File(gff3, type, id, repairNWNPremium);
+	} catch (...) {
+	}
+
+	return 0;
+}
+
+Aurora::GFF4File *loadOptionalGFF4(const Common::UString &gff4,
+                                   Aurora::FileType fileType, uint32 type) {
+
+	try {
+		return new Aurora::GFF4File(gff4, fileType, type);
 	} catch (...) {
 	}
 

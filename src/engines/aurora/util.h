@@ -60,6 +60,10 @@ bool longDelay(uint32 ms);
 Aurora::GFF3File *loadOptionalGFF3(const Common::UString &gff3, Aurora::FileType type,
                                    uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
 
+/** Load a GFF4, but return 0 instead of throwing on error. */
+Aurora::GFF4File *loadOptionalGFF4(const Common::UString &gff4, Aurora::FileType fileType,
+                                   uint32 type = 0xFFFFFFFF);
+
 /** Debug method to quickly dump the current list of resource to disk. */
 bool dumpResList(const Common::UString &name);
 
