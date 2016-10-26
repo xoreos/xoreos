@@ -35,6 +35,7 @@
 
 #include "src/graphics/aurora/model.h"
 
+#include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/dragonage2/creature.h"
@@ -166,12 +167,8 @@ void Creature::load(const GFF3Struct &creature) {
 	_resRef = creature.getString("TemplateResRef");
 
 	Common::ScopedPtr<GFF3File> utc;
-	if (!_resRef.empty()) {
-		try {
-			utc.reset(new GFF3File(_resRef, Aurora::kFileTypeUTC, kUTCID));
-		} catch (...) {
-		}
-	}
+	if (!_resRef.empty())
+		utc.reset(loadOptionalGFF3(_resRef, Aurora::kFileTypeUTC, kUTCID));
 
 	load(creature, utc ? &utc->getTopLevel() : 0);
 }
