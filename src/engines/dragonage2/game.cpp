@@ -46,14 +46,12 @@ namespace Engines {
 namespace DragonAge2 {
 
 Game::Game(DragonAge2Engine &engine, ::Engines::Console &console) :
-	_engine(&engine), _campaigns(0), _functions(0), _console(&console) {
+	_engine(&engine), _console(&console) {
 
-	_functions = new Functions(*this);
+	_functions.reset(new Functions(*this));
 }
 
 Game::~Game() {
-	delete _campaigns;
-	delete _functions;
 }
 
 Campaigns &Game::getCampaigns() {
@@ -63,14 +61,13 @@ Campaigns &Game::getCampaigns() {
 }
 
 void Game::run() {
-	_campaigns = new Campaigns(*_console, *this);
+	_campaigns.reset(new Campaigns(*_console, *this));
 
 	while (!EventMan.quitRequested()) {
 		runCampaigns();
 	}
 
-	delete _campaigns;
-	_campaigns = 0;
+	_campaigns.reset();
 }
 
 void Game::runCampaigns() {
