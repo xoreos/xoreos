@@ -24,6 +24,7 @@
 
 #include <boost/make_shared.hpp>
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
@@ -285,12 +286,11 @@ void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	int nth = ctx.getParams()[1].getInt();
 
-	Aurora::NWScript::ObjectSearch *search = campaign->findObjectsByTag(tag);
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(campaign->findObjectsByTag(tag));
 	while (nth-- > 0)
 		search->next();
 
 	ctx.getReturn() = search->get();
-	delete search;
 }
 
 void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
@@ -324,8 +324,8 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	if (count == 0)
 		return;
 
-	Aurora::NWScript::ObjectSearch *search = campaign->findObjects();
-	Aurora::NWScript::Object       *object = 0;
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(campaign->findObjects());
+	Aurora::NWScript::Object *object = 0;
 
 	std::list<Object *> objects;
 	while ((object = search->next())) {
@@ -342,8 +342,6 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 		if (type & objectType)
 			objects.push_back(daObject);
 	}
-
-	delete search;
 
 	objects.sort(ObjectDistanceSort(*target));
 
@@ -386,7 +384,7 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	if (count == 0)
 		return;
 
-	Aurora::NWScript::ObjectSearch *search = campaign->findObjectsByTag(tag);
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(campaign->findObjectsByTag(tag));
 	Aurora::NWScript::Object       *object = 0;
 
 	std::list<Object *> objects;
@@ -404,8 +402,6 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 		if (type & objectType)
 			objects.push_back(daObject);
 	}
-
-	delete search;
 
 	objects.sort(ObjectDistanceSort(*target));
 
@@ -434,8 +430,8 @@ void Functions::UT_getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx)
 		return;
 	}
 
-	Aurora::NWScript::ObjectSearch *search = campaign->findObjectsByTag(tag);
-	Aurora::NWScript::Object       *object = 0;
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(campaign->findObjectsByTag(tag));
+	Aurora::NWScript::Object *object = 0;
 
 	std::list<Object *> objects;
 	while ((object = search->next())) {
@@ -446,8 +442,6 @@ void Functions::UT_getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx)
 
 		objects.push_back(daObject);
 	}
-
-	delete search;
 
 	objects.sort(ObjectDistanceSort(*target));
 
