@@ -50,14 +50,11 @@ namespace Engines {
 
 namespace DragonAge {
 
-DragonAgeEngine::DragonAgeEngine() : _language(Aurora::kLanguageInvalid),
-	_game(0) {
-
+DragonAgeEngine::DragonAgeEngine() : _language(Aurora::kLanguageInvalid) {
 	_console.reset(new Console(*this));
 }
 
 DragonAgeEngine::~DragonAgeEngine() {
-	delete _game;
 }
 
 Common::UString DragonAgeEngine::getLanguageString(Aurora::Language language) {
@@ -155,7 +152,7 @@ void DragonAgeEngine::run() {
 
 	CursorMan.showCursor();
 
-	_game = new Game(*this, *_console);
+	_game.reset(new Game(*this, *_console));
 	_game->run();
 
 	deinit();
@@ -332,9 +329,7 @@ void DragonAgeEngine::deinit() {
 	Game::unloadTalkTables(_languageTLK);
 	deindexResources(_resources);
 
-	delete _game;
-
-	_game = 0;
+	_game.reset();
 }
 
 void DragonAgeEngine::playIntroVideos() {
