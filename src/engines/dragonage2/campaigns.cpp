@@ -45,7 +45,7 @@ namespace Engines {
 namespace DragonAge2 {
 
 Campaigns::Campaigns(::Engines::Console &console, Game &game) : _console(&console), _game(&game),
-	_hasCampaign(false), _running(false), _exit(true), _currentCampaign(0), _pc(0) {
+	_hasCampaign(false), _running(false), _exit(true), _currentCampaign(0) {
 
 	findCampaigns();
 }
@@ -58,8 +58,6 @@ Campaigns::~Campaigns() {
 }
 
 void Campaigns::clean() {
-	delete _pc;
-
 	if (_currentCampaign)
 		_currentCampaign->unload();
 
@@ -219,8 +217,7 @@ void Campaigns::unload(bool completeUnload) {
 }
 
 void Campaigns::unloadPC() {
-	delete _pc;
-	_pc = 0;
+	_pc.reset();
 }
 
 void Campaigns::loadCampaign(const Campaign &campaign) {
@@ -245,8 +242,7 @@ void Campaigns::loadCampaign(const Campaign &campaign) {
 }
 
 void Campaigns::usePC(Creature *pc) {
-	delete _pc;
-	_pc = pc;
+	_pc.reset(pc);
 }
 
 void Campaigns::enter() {
@@ -323,7 +319,7 @@ Campaign *Campaigns::getCurrentCampaign() const {
 }
 
 Creature *Campaigns::getPC() const {
-	return _pc;
+	return _pc.get();
 }
 
 void Campaigns::changeCampaign(const Campaign &campaign) {

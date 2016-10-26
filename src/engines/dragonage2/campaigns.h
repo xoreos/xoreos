@@ -28,6 +28,7 @@
 #include <vector>
 #include <list>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/events/types.h"
@@ -122,7 +123,7 @@ private:
 	Campaign *_currentCampaign;
 
 	/** The player character we use. */
-	Creature *_pc;
+	Common::ScopedPtr<Creature> _pc;
 
 	/** The UID of the campaign we should change to. */
 	Common::UString _newCampaign;
