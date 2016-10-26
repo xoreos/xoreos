@@ -29,6 +29,8 @@
 
 #include "src/graphics/aurora/model.h"
 
+#include "src/engines/aurora/util.h"
+
 #include "src/engines/witcher/door.h"
 #include "src/engines/witcher/waypoint.h"
 #include "src/engines/witcher/module.h"
@@ -50,12 +52,8 @@ void Door::load(const Aurora::GFF3Struct &door) {
 	Common::UString temp = door.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> utd;
-	if (!temp.empty()) {
-		try {
-			utd.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' ')));
-		} catch (...) {
-		}
-	}
+	if (!temp.empty())
+		utd.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' ')));
 
 	Situated::load(door, utd ? &utd->getTopLevel() : 0);
 }
