@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "src/common/ustring.h"
+#include "src/common/scopedptr.h"
 
 #include "src/aurora/language.h"
 
@@ -77,9 +77,9 @@ public:
 
 private:
 	DragonAgeEngine *_engine;
-	Campaigns       *_campaigns;
 
-	Functions *_functions;
+	Common::ScopedPtr<Campaigns> _campaigns;
+	Common::ScopedPtr<Functions> _functions;
 
 	::Engines::Console *_console;
 
