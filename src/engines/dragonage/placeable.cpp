@@ -30,6 +30,7 @@
 
 #include "src/graphics/aurora/model.h"
 
+#include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/dragonage/placeable.h"
@@ -102,12 +103,8 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	_resRef = placeable.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> utp;
-	if (!_resRef.empty()) {
-		try {
-			utp.reset(new Aurora::GFF3File(_resRef, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
-		} catch (...) {
-		}
-	}
+	if (!_resRef.empty())
+		utp.reset(loadOptionalGFF3(_resRef, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 
 	load(placeable, utp ? &utp->getTopLevel() : 0);
 }
