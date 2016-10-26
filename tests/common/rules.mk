@@ -44,3 +44,8 @@ check_PROGRAMS                    += tests/common/test_ptrlist
 tests_common_test_ptrlist_SOURCES  = tests/common/ptrlist.cpp
 tests_common_test_ptrlist_LDADD    = $(common_LIBS)
 tests_common_test_ptrlist_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                      += tests/common/test_ptrvector
+tests_common_test_ptrvector_SOURCES  = tests/common/ptrvector.cpp
+tests_common_test_ptrvector_LDADD    = $(common_LIBS)
+tests_common_test_ptrvector_CXXFLAGS = $(test_CXXFLAGS)
