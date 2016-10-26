@@ -144,6 +144,17 @@ bool longDelay(uint32 ms) {
 	return EventMan.quitRequested();
 }
 
+Aurora::GFF3File *loadOptionalGFF3(const Common::UString &gff3, Aurora::FileType type,
+                                   uint32 id, bool repairNWNPremium) {
+
+	try {
+		return new Aurora::GFF3File(gff3, type, id, repairNWNPremium);
+	} catch (...) {
+	}
+
+	return 0;
+}
+
 bool dumpResList(const Common::UString &name) {
 	try {
 

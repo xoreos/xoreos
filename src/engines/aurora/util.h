@@ -56,6 +56,10 @@ void checkConfigDouble(const Common::UString &key, double min, double max, doubl
 /** Wait for a "long" amount of time, returning prematurely with true in the case of a requested quit. */
 bool longDelay(uint32 ms);
 
+/** Load a GFF3, but return 0 instead of throwing on error. */
+Aurora::GFF3File *loadOptionalGFF3(const Common::UString &gff3, Aurora::FileType type,
+                                   uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
+
 /** Debug method to quickly dump the current list of resource to disk. */
 bool dumpResList(const Common::UString &name);
 
