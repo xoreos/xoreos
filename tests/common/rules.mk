@@ -39,3 +39,8 @@ check_PROGRAMS                          += tests/common/test_disposableptr
 tests_common_test_disposableptr_SOURCES  = tests/common/disposableptr.cpp
 tests_common_test_disposableptr_LDADD    = $(common_LIBS)
 tests_common_test_disposableptr_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/common/test_ptrlist
+tests_common_test_ptrlist_SOURCES  = tests/common/ptrlist.cpp
+tests_common_test_ptrlist_LDADD    = $(common_LIBS)
+tests_common_test_ptrlist_CXXFLAGS = $(test_CXXFLAGS)
