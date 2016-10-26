@@ -68,8 +68,8 @@ Campaign::Campaign(Game &game, const Common::UString &cifPath,
                    const Common::UString &manifestPath, const Common::UString &addinBase) :
 	Object(kObjectTypeModule), _game(&game), _cifPath(cifPath),
 	_addinBase(addinBase), _enabled(false), _bioware(false), _needsAuth(false),
-	_priority(0xFFFFFFFF), _format(0xFFFFFFFF), _state(0xFFFFFFFF), _rimRoot(0),
-	_loaded(false), _pc(0), _currentArea(0) {
+	_priority(0xFFFFFFFF), _format(0xFFFFFFFF), _state(0xFFFFFFFF),
+	_loaded(false), _pc(0) {
 
 	_entryPosition[0] = 0.0;
 	_entryPosition[1] = 0.0;
@@ -83,9 +83,6 @@ Campaign::Campaign(Game &game, const Common::UString &cifPath,
 }
 
 Campaign::~Campaign() {
-	delete _rimRoot;
-	_rimRoot = 0;
-
 	try {
 		unload();
 	} catch (...) {
@@ -298,7 +295,7 @@ const std::vector<Common::UString> &Campaign::getAreas() const {
 }
 
 Area *Campaign::getCurrentArea() const {
-	return _currentArea;
+	return _currentArea.get();
 }
 
 Creature *Campaign::getPC() const {
@@ -343,7 +340,7 @@ void Campaign::readCIFDynamic(const Common::UString &path) {
 
 	const GFF4Struct *rimRoot = cifTop.getStruct(kGFF4RimTreeRootNode);
 	if (rimRoot)
-		_rimRoot = readRIMs(*rimRoot);
+		_rimRoot.reset(readRIMs(*rimRoot));
 
 	readVarTable(cifTop);
 	readScript(cifTop);
@@ -365,11 +362,8 @@ void Campaign::load() {
 void Campaign::unload() {
 	leave();
 
-	delete _currentArea;
-	_currentArea = 0;
-
-	delete _rimRoot;
-	_rimRoot = 0;
+	_currentArea.reset();
+	_rimRoot.reset();
 
 	_areaMap.clear();
 	_areas.clear();
@@ -415,13 +409,13 @@ void Campaign::enterArea(bool startArea) {
 
 	_eventQueue.clear();
 
-	_currentArea->runScript(kEventTypeEnter              , _currentArea, _pc);
-	_currentArea->runScript(kEventTypeAreaLoadPreLoadExit, _currentArea);
+	_currentArea->runScript(kEventTypeEnter              , _currentArea.get(), _pc);
+	_currentArea->runScript(kEventTypeAreaLoadPreLoadExit, _currentArea.get());
 
 	_currentArea->show();
 
-	_currentArea->runScript(kEventTypeAreaLoadPostLoadExit, _currentArea);
-	_currentArea->runScript(kEventTypeAreaLoadSpecial     , _currentArea);
+	_currentArea->runScript(kEventTypeAreaLoadPostLoadExit, _currentArea.get());
+	_currentArea->runScript(kEventTypeAreaLoadSpecial     , _currentArea.get());
 
 	status("Entered area \"%s\" (\"%s\")", _currentArea->getTag().c_str(), _currentArea->getName().getString().c_str());
 }
@@ -454,7 +448,7 @@ void Campaign::leaveArea() {
 		return;
 
 	if (_pc)
-		_currentArea->runScript(kEventTypeExit, _currentArea, _pc);
+		_currentArea->runScript(kEventTypeExit, _currentArea.get(), _pc);
 
 	_currentArea->hide();
 }
@@ -462,8 +456,7 @@ void Campaign::leaveArea() {
 void Campaign::unloadArea() {
 	leaveArea();
 
-	delete _currentArea;
-	_currentArea = 0;
+	_currentArea.reset();
 
 	clearObjects();
 }
@@ -477,7 +470,7 @@ void Campaign::loadArea() {
 	if (area == _areaMap.end())
 		throw Common::Exception("Area \"%s\" does not exist in this campaign", _newArea.c_str());
 
-	_currentArea = new Area(*this, area->second->area, area->second->environment, area->second->rim);
+	_currentArea.reset(new Area(*this, area->second->area, area->second->environment, area->second->rim));
 }
 
 bool Campaign::changeArea() {
