@@ -34,6 +34,7 @@
 #include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/model.h"
 
+#include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/kotor/creature.h"
@@ -94,12 +95,8 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 	Common::UString temp = creature.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> utc;
-	if (!temp.empty()) {
-		try {
-			utc.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' ')));
-		} catch (...) {
-		}
-	}
+	if (!temp.empty())
+		utc.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' ')));
 
 	load(creature, utc ? &utc->getTopLevel() : 0);
 

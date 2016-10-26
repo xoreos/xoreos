@@ -31,6 +31,8 @@
 
 #include "src/graphics/aurora/model.h"
 
+#include "src/engines/aurora/util.h"
+
 #include "src/engines/kotor/placeable.h"
 
 namespace Engines {
@@ -50,12 +52,8 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	Common::UString temp = placeable.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> utp;
-	if (!temp.empty()) {
-		try {
-			utp.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
-		} catch (...) {
-		}
-	}
+	if (!temp.empty())
+		utp.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 
 	Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
 
