@@ -22,6 +22,7 @@
  *  A creature in a Dragon Age: Origins area.
  */
 
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/maths.h"
@@ -71,18 +72,13 @@ Creature::Creature(const GFF3Struct &creature) : Object(kObjectTypeCreature) {
 	try {
 		load(creature);
 	} catch (...) {
-		for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-			delete *m;
-
+		clean();
 		throw;
 	}
 }
 
 Creature::~Creature() {
-	hide();
-
-	for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-		delete *m;
+	clean();
 }
 
 void Creature::init() {
@@ -93,6 +89,16 @@ void Creature::init() {
 
 	for (size_t i = 0; i < kPartVariationCount; i++)
 		_partVariation[i] = 0xFFFFFFFF;
+}
+
+void Creature::clean() {
+	try {
+		hide();
+
+		for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
+			delete *m;
+	} catch (...) {
+	}
 }
 
 void Creature::setPosition(float x, float y, float z) {
@@ -160,22 +166,15 @@ bool Creature::click(Object *triggerer) {
 void Creature::load(const GFF3Struct &creature) {
 	_resRef = creature.getString("TemplateResRef");
 
-	GFF3File *utc = 0;
+	Common::ScopedPtr<GFF3File> utc;
 	if (!_resRef.empty()) {
 		try {
-			utc = new GFF3File(_resRef, Aurora::kFileTypeUTC, kUTCID);
+			utc.reset(new GFF3File(_resRef, Aurora::kFileTypeUTC, kUTCID));
 		} catch (...) {
 		}
 	}
 
-	try {
-		load(creature, utc ? &utc->getTopLevel() : 0);
-	} catch (...) {
-		delete utc;
-		throw;
-	}
-
-	delete utc;
+	load(creature, utc ? &utc->getTopLevel() : 0);
 }
 
 Common::UString Creature::createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8 gender) {

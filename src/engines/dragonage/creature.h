@@ -143,6 +143,8 @@ private:
 	static Common::UString createModelPrefix(const Aurora::GDAFile &gda, size_t row, uint8 gender);
 	static Common::UString createModelPart(const Aurora::GDAFile &gda, size_t row,
 	                                       const Common::UString &prefix);
+
+	void clean();
 };
 
 } // End of namespace Dragon Age
