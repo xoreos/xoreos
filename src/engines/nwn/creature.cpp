@@ -703,12 +703,8 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 	const Common::UString temp = creature.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> utc;
-	if (!temp.empty()) {
-		try {
-			utc.reset(new Aurora::GFF3File(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '), true));
-		} catch (...) {
-		}
-	}
+	if (!temp.empty())
+		utc.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '), true));
 
 	load(creature, utc ? &utc->getTopLevel() : 0);
 
