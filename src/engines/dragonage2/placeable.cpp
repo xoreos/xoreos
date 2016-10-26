@@ -40,20 +40,13 @@ namespace Engines {
 namespace DragonAge2 {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Object(kObjectTypePlaceable),
-	_appearanceID(0xFFFFFFFF), _model(0) {
+	_appearanceID(0xFFFFFFFF) {
 
-	try {
-		load(placeable);
-	} catch (...) {
-		delete _model;
-		throw;
-	}
+	load(placeable);
 }
 
 Placeable::~Placeable() {
 	hide();
-
-	delete _model;
 }
 
 void Placeable::setPosition(float x, float y, float z) {
@@ -108,22 +101,15 @@ bool Placeable::click(Object *triggerer) {
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	_resRef = placeable.getString("TemplateResRef");
 
-	Aurora::GFF3File *utp = 0;
+	Common::ScopedPtr<Aurora::GFF3File> utp;
 	if (!_resRef.empty()) {
 		try {
-			utp = new Aurora::GFF3File(_resRef, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' '));
+			utp.reset(new Aurora::GFF3File(_resRef, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 		} catch (...) {
 		}
 	}
 
-	try {
-		load(placeable, utp ? &utp->getTopLevel() : 0);
-	} catch (...) {
-		delete utp;
-		throw;
-	}
-
-	delete utp;
+	load(placeable, utp ? &utp->getTopLevel() : 0);
 }
 
 void Placeable::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0) {
@@ -133,7 +119,7 @@ void Placeable::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struc
 
 	const Aurora::GDAFile &gda = getMGDA(kWorksheetPlaceables);
 
-	_model = loadModelObject(gda.getString(gda.findRow(_appearanceID), "Model"));
+	_model.reset(loadModelObject(gda.getString(gda.findRow(_appearanceID), "Model")));
 
 	if (_model) {
 		_model->setTag(_tag);
