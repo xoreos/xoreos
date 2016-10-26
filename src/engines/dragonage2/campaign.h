@@ -29,6 +29,7 @@
 #include <list>
 #include <map>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/locstring.h"
@@ -148,8 +149,8 @@ private:
 
 	std::vector<Common::UString> _packages;
 
-	RIMNode *_rimRoot;
-	AreaMap  _areaMap;
+	Common::ScopedPtr<RIMNode> _rimRoot;
+	AreaMap _areaMap;
 
 	std::vector<Common::UString> _areas;
 
@@ -161,8 +162,8 @@ private:
 	/** The player character we use. */
 	Creature *_pc;
 
-	Common::UString _newArea;     ///< The new area to enter.
-	Area           *_currentArea; ///< The current area.
+	Common::UString _newArea; ///< The new area to enter.
+	Common::ScopedPtr<Area> _currentArea; ///< The current area.
 
 	EventQueue _eventQueue;
 
