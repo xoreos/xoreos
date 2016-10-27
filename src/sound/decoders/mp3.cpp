@@ -53,6 +53,7 @@
 #include <mad.h>
 
 #include "src/common/scopedptr.h"
+#include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 
@@ -70,8 +71,7 @@ protected:
 		MP3_STATE_EOS    // end of data reached (may need to loop)
 	};
 
-	Common::SeekableReadStream *_inStream;
-	bool _disposeAfterUse;
+	Common::DisposablePtr<Common::SeekableReadStream> _inStream;
 
 	size_t _posInFrame;
 	State _state;
@@ -119,8 +119,7 @@ protected:
 };
 
 MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
-	_inStream(inStream),
-	_disposeAfterUse(dispose),
+	_inStream(inStream, dispose),
 	_posInFrame(0),
 	_state(MP3_STATE_INIT),
 	_totalTime(mad_timer_zero),
@@ -155,9 +154,6 @@ MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
 
 MP3Stream::~MP3Stream() {
 	deinitStream();
-
-	if (_disposeAfterUse)
-		delete _inStream;
 }
 
 void MP3Stream::decodeMP3Data() {
