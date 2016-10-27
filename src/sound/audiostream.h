@@ -54,6 +54,7 @@
 
 #include "src/common/util.h"
 #include "src/common/types.h"
+#include "src/common/disposableptr.h"
 
 namespace Sound {
 
@@ -183,8 +184,7 @@ public:
 	uint64 getDurationOnce() const;
 
 private:
-	RewindableAudioStream *_parent;
-	bool _disposeAfterUse;
+	Common::DisposablePtr<RewindableAudioStream> _parent;
 
 	size_t _loops;
 	size_t _completeIterations;

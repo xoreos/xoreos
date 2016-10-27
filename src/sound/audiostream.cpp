@@ -57,12 +57,10 @@
 namespace Sound {
 
 LoopingAudioStream::LoopingAudioStream(RewindableAudioStream *stream, size_t loops, bool disposeAfterUse)
-    : _parent(stream), _disposeAfterUse(disposeAfterUse), _loops(loops), _completeIterations(0) {
+    : _parent(stream, disposeAfterUse), _loops(loops), _completeIterations(0) {
 }
 
 LoopingAudioStream::~LoopingAudioStream() {
-	if (_disposeAfterUse)
-		delete _parent;
 }
 
 size_t LoopingAudioStream::readBuffer(int16 *buffer, const size_t numSamples) {
