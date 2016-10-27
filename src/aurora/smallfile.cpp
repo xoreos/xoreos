@@ -143,17 +143,16 @@ Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small)
 		// Uncompressed. Just return a sub stream for the raw data
 		return new Common::SeekableSubReadStream(in.release(), pos, pos + size, true);
 
-	Common::MemoryWriteStreamDynamic out(false, size);
+	Common::MemoryWriteStreamDynamic out(true, size);
 
 	try {
 		::Aurora::decompress(*in, out, type, size);
 	} catch (Common::Exception &e) {
-		out.dispose();
-
 		e.add("Failed to decompress \"small\" file");
 		throw e;
 	}
 
+	out.setDisposable(false);
 	return new Common::MemoryReadStream(out.getData(), out.size(), true);
 }
 
@@ -161,17 +160,16 @@ Common::SeekableReadStream *Small::decompress(Common::ReadStream &small) {
 	uint32 type, size;
 	readSmallHeader(small, type, size);
 
-	Common::MemoryWriteStreamDynamic out(false, size);
+	Common::MemoryWriteStreamDynamic out(true, size);
 
 	try {
 		::Aurora::decompress(small, out, type, size);
 	} catch (Common::Exception &e) {
-		out.dispose();
-
 		e.add("Failed to decompress \"small\" file");
 		throw e;
 	}
 
+	out.setDisposable(false);
 	return new Common::MemoryReadStream(out.getData(), out.size(), true);
 }
 

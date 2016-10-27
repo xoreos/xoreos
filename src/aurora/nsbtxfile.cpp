@@ -52,8 +52,6 @@
 
 #include <cassert>
 
-#include <boost/scope_exit.hpp>
-
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -330,13 +328,7 @@ Common::SeekableReadStream *NSBTXFile::getResource(uint32 index, bool UNUSED(try
 	if (index >= _textures.size())
 		throw Common::Exception("Texture index out of range (%u/%u)", index, (uint)_textures.size());
 
-	Common::MemoryWriteStreamDynamic stream(false, getITEXSize(_textures[index]));
-	bool success = false;
-
-	BOOST_SCOPE_EXIT( (&success) (&stream)) {
-		if (!success)
-			stream.dispose();
-	} BOOST_SCOPE_EXIT_END
+	Common::MemoryWriteStreamDynamic stream(true, getITEXSize(_textures[index]));
 
 	ReadContext ctx(*_nsbtx, _textures[index], stream);
 	writeITEXHeader(ctx);
@@ -344,8 +336,7 @@ Common::SeekableReadStream *NSBTXFile::getResource(uint32 index, bool UNUSED(try
 	getPalette(ctx);
 	getTexture(ctx);
 
-	success = true;
-
+	stream.setDisposable(false);
 	return new Common::MemoryReadStream(stream.getData(), stream.size(), true);
 }
 

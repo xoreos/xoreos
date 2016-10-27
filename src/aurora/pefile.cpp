@@ -59,14 +59,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoC
 		throw Common::Exception("No such PE resource %u", index);
 
 
-	Common::MemoryWriteStreamDynamic out;
-	bool success = false;
-
-	BOOST_SCOPE_EXIT( (&success) (&out) ) {
-		if (!success)
-			out.dispose();
-	} BOOST_SCOPE_EXIT_END
-
+	Common::MemoryWriteStreamDynamic out(true);
 
 	// Cursor Group Header
 	out.writeUint16LE(cursorGroup->readUint16LE());
@@ -112,7 +105,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoC
 	for (size_t i = 0; i < cursorCount; i++)
 		out.writeStream(*cursorStreams[i], cursorStreams[i]->size() - 4);
 
-	success = true;
+	out.setDisposable(false);
 	return new Common::MemoryReadStream(out.getData(), out.size(), true);
 }
 
