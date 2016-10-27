@@ -60,6 +60,14 @@ static const size_t kOpenALBufferSize = 32768;
 
 namespace Sound {
 
+SoundManager::Channel::Channel(uint32 i, size_t idx, SoundType t,
+                               const TypeList::iterator &ti, AudioStream *s, bool d) :
+	id(i), index(idx), state(AL_PAUSED), stream(s, d), source(0),
+	type(t), typeIt(ti), finishedBuffers(0), gain(1.0f) {
+
+}
+
+
 SoundManager::SoundManager() : _ready(false), _hasSound(false), _hasMultiChannel(false), _format51(0) {
 }
 
@@ -324,19 +332,10 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 			this_->freeChannel(handle);
 	} BOOST_SCOPE_EXIT_END
 
-	_channels[handle.channel].reset(new Channel);
-	Channel &channel = *_channels[handle.channel];
+	const TypeList::iterator typeEndIt = _types[type].list.end();
 
-	channel.id              = handle.id;
-	channel.index           = handle.channel;
-	channel.state           = AL_PAUSED;
-	channel.stream          = audStream;
-	channel.source          = 0;
-	channel.disposeAfterUse = disposeAfterUse;
-	channel.type            = type;
-	channel.typeIt          = _types[channel.type].list.end();
-	channel.finishedBuffers = 0;
-	channel.gain            = 1.0f;
+	_channels[handle.channel].reset(new Channel(handle.id, handle.channel, type, typeEndIt, audStream, disposeAfterUse));
+	Channel &channel = *_channels[handle.channel];
 
 	if (!channel.stream)
 		throw Common::Exception("Could not detect stream type");
@@ -357,7 +356,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 			if ((error = alGetError()) != AL_NO_ERROR)
 				throw Common::Exception("OpenAL error while generating buffers: 0x%X", error);
 
-			if (fillBuffer(channel, buffer, channel.stream, channel.bufferSize[buffer])) {
+			if (fillBuffer(channel, buffer, channel.stream.get(), channel.bufferSize[buffer])) {
 				// If we could fill the buffer with data, queue it
 
 				alSourceQueueBuffers(channel.source, 1, &buffer);
@@ -707,7 +706,7 @@ void SoundManager::bufferData(Channel &channel) {
 	// Buffer as long as we still have data and free buffers
 	std::list<ALuint>::iterator buffer = channel.freeBuffers.begin();
 	while (buffer != channel.freeBuffers.end()) {
-		if (!fillBuffer(channel, *buffer, channel.stream, channel.bufferSize[*buffer]))
+		if (!fillBuffer(channel, *buffer, channel.stream.get(), channel.bufferSize[*buffer]))
 			break;
 
 		alSourceQueueBuffers(channel.source, 1, &*buffer);
@@ -819,9 +818,8 @@ void SoundManager::freeChannel(size_t channel) {
 		// Nothing to do
 		return;
 
-	// Discard the stream, if requested
-	if (c->disposeAfterUse)
-		delete c->stream;
+	// Discard the stream
+	c->stream.reset();
 
 	if (_hasSound) {
 		// Delete the channel's OpenAL source

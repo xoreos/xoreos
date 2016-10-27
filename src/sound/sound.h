@@ -40,6 +40,7 @@
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
+#include "src/common/disposableptr.h"
 #include "src/common/singleton.h"
 #include "src/common/thread.h"
 #include "src/common/mutex.h"
@@ -194,8 +195,7 @@ private:
 
 		ALint state; ///< The sound's state.
 
-		AudioStream *stream;  ///< The actual audio stream.
-		bool disposeAfterUse; ///< Delete the audio stream when done playing?
+		Common::DisposablePtr<AudioStream> stream;  ///< The actual audio stream.
 
 		ALuint source; ///< OpenAL source for this channel.
 
@@ -211,6 +211,8 @@ private:
 		uint64 finishedBuffers;
 
 		float gain; ///< The channel's gain.
+
+		Channel(uint32 i, size_t idx, SoundType t, const TypeList::iterator &ti, AudioStream *s, bool d);
 	};
 
 	bool _ready; ///< Was the sound subsystem successfully initialized?
