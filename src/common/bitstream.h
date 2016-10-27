@@ -30,6 +30,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/disposableptr.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
@@ -83,8 +84,7 @@ protected:
 template<int valueBits, bool isLE, bool isMSB2LSB>
 class BitStreamImpl : boost::noncopyable, public BitStream {
 private:
-	SeekableReadStream *_stream; ///< The input stream.
-	bool _disposeAfterUse;       ///< Should we delete the stream on destruction?
+	DisposablePtr<SeekableReadStream> _stream; ///< The input stream.
 
 	uint64 _value;   ///< Current value.
 	uint8  _inValue; ///< Position within the current value.
@@ -130,7 +130,7 @@ private:
 public:
 	/** Create a bit stream using this input data stream and optionally delete it on destruction. */
 	BitStreamImpl(SeekableReadStream *stream, bool disposeAfterUse = false) :
-		_stream(stream), _disposeAfterUse(disposeAfterUse), _value(0), _inValue(0) {
+		_stream(stream, disposeAfterUse), _value(0), _inValue(0) {
 
 		if ((valueBits != 8) && (valueBits != 16) && (valueBits != 32) && (valueBits != 64))
 			throw Exception("BitStream: Invalid memory layout %d, %d, %d", valueBits, isLE, isMSB2LSB);
@@ -138,15 +138,13 @@ public:
 
 	/** Create a bit stream using this input data stream. */
 	BitStreamImpl(SeekableReadStream &stream) :
-		_stream(&stream), _disposeAfterUse(false), _value(0), _inValue(0) {
+		_stream(&stream, false), _value(0), _inValue(0) {
 
 		if ((valueBits != 8) && (valueBits != 16) && (valueBits != 32) && (valueBits != 64))
 			throw Exception("BitStream: Invalid memory layout %d, %d, %d", valueBits, isLE, isMSB2LSB);
 	}
 
 	~BitStreamImpl() {
-		if (_disposeAfterUse)
-			delete _stream;
 	}
 
 	/** Read a bit from the bit stream. */
