@@ -65,3 +65,8 @@ check_PROGRAMS                      += tests/aurora/test_smallfile
 tests_aurora_test_smallfile_SOURCES  = tests/aurora/smallfile.cpp
 tests_aurora_test_smallfile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_smallfile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_rimfile
+tests_aurora_test_rimfile_SOURCES  = tests/aurora/rimfile.cpp
+tests_aurora_test_rimfile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_rimfile_CXXFLAGS = $(test_CXXFLAGS)
