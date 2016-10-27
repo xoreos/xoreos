@@ -55,8 +55,6 @@
 #include <cassert>
 #include <cstring>
 
-#include <boost/scope_exit.hpp>
-
 #include "src/common/system.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
@@ -837,13 +835,7 @@ Common::SeekableReadStream *QuickTimeDecoder::getNextFramePacket(uint32 &descId)
 
 void QuickTimeDecoder::queueNextAudioChunk() {
 	AudioSampleDesc &entry = dynamic_cast<AudioSampleDesc &>(*_tracks[_audioTrackIndex]->sampleDescs[0]);
-	Common::MemoryWriteStreamDynamic wStream;
-
-	bool success = false;
-	BOOST_SCOPE_EXIT( (&success) (&wStream)) {
-		if (!success)
-			wStream.dispose();
-	} BOOST_SCOPE_EXIT_END
+	Common::MemoryWriteStreamDynamic wStream(true);
 
 	_fd->seek(_tracks[_audioTrackIndex]->chunkOffsets[_curAudioChunk]);
 
@@ -889,7 +881,7 @@ void QuickTimeDecoder::queueNextAudioChunk() {
 		}
 	}
 
-	success = true;
+	wStream.setDisposable(false);
 
 	// Now queue the buffer
 	queueSound(entry.createAudioStream(new Common::MemoryReadStream(wStream.getData(), wStream.size(), true)));
