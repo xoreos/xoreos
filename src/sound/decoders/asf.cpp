@@ -48,6 +48,7 @@
  */
 
 #include "src/common/scopedptr.h"
+#include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
@@ -139,11 +140,9 @@ private:
 		std::vector<Segment> segments;
 	};
 
-	Common::SeekableReadStream *_stream;
-	bool _disposeAfterUse;
+	Common::DisposablePtr<Common::SeekableReadStream> _stream;
 
 	void load();
-	void clear();
 
 	void parseStreamHeader();
 	void parseFileHeader();
@@ -183,25 +182,14 @@ ASFStream::Packet::~Packet() {
 				delete segments[i].data[j];
 }
 
-ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream(stream), _disposeAfterUse(dispose) {
+ASFStream::ASFStream(Common::SeekableReadStream *stream, bool dispose) : _stream(stream, dispose) {
 	_curPacket = 0;
 	_curSequenceNumber = 1; // They always start at one
 
-	try {
-		load();
-	} catch (...) {
-		clear();
-		throw;
-	}
+	load();
 }
 
 ASFStream::~ASFStream() {
-	clear();
-}
-
-void ASFStream::clear() {
-	if (_disposeAfterUse)
-		delete _stream;
 }
 
 void ASFStream::load() {
