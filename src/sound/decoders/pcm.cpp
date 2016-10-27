@@ -47,6 +47,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "src/common/disposableptr.h"
 #include "src/common/readstream.h"
 
 #include "src/sound/audiostream.h"
@@ -76,19 +77,16 @@ protected:
 
 	uint64 _length;
 
-	Common::SeekableReadStream *_stream; ///< Stream to read data from.
-	const bool _disposeAfterUse;         ///< Indicates whether the stream object should be deleted when this RawStream is destructed.
+	Common::DisposablePtr<Common::SeekableReadStream> _stream; ///< Stream to read data from.
 
 public:
 	PCMStream(int rate, int channels, bool disposeStream, Common::SeekableReadStream *stream)
-		: _rate(rate), _channels(channels), _stream(stream), _disposeAfterUse(disposeStream) {
+		: _rate(rate), _channels(channels), _stream(stream, disposeStream) {
 
 		_length = stream->size() / _channels / (is16Bit ? 2 : 1);
 	}
 
 	virtual ~PCMStream() {
-		if (_disposeAfterUse)
-			delete _stream;
 	}
 
 	size_t readBuffer(int16 *buffer, const size_t numSamples);
