@@ -97,15 +97,12 @@ size_t SeekableReadStream::evalSeek(ptrdiff_t offset, Origin whence, size_t pos,
 
 
 SubReadStream::SubReadStream(ReadStream *parentStream, size_t end, bool disposeParentStream) :
-	_parentStream(parentStream), _disposeParentStream(disposeParentStream),
-	_pos(0), _end(end), _eos(false) {
+	_parentStream(parentStream, disposeParentStream), _pos(0), _end(end), _eos(false) {
 
 	assert(parentStream);
 }
 
 SubReadStream::~SubReadStream() {
-	if (_disposeParentStream)
-		delete _parentStream;
 }
 
 bool SubReadStream::eos() const {

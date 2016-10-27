@@ -52,6 +52,7 @@
 
 #include "src/common/types.h"
 #include "src/common/endianness.h"
+#include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 
@@ -339,9 +340,7 @@ public:
 	size_t read(void *dataPtr, size_t dataSize);
 
 protected:
-	ReadStream *_parentStream;
-
-	bool _disposeParentStream;
+	DisposablePtr<ReadStream> _parentStream;
 
 	size_t _pos;
 	size_t _end;

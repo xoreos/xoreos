@@ -86,33 +86,28 @@ size_t MemoryWriteStream::size() const {
 
 
 MemoryWriteStreamDynamic::MemoryWriteStreamDynamic(bool disposeMemory, size_t capacity) :
-	_data(0), _disposeMemory(disposeMemory), _ptr(0), _pos(0), _capacity(0), _size(0) {
+	_data(0, disposeMemory), _ptr(0), _pos(0), _capacity(0), _size(0) {
 
 	reserve(capacity);
 }
 
 MemoryWriteStreamDynamic::~MemoryWriteStreamDynamic() {
-	if (_disposeMemory)
-		delete[] _data;
 }
 
 void MemoryWriteStreamDynamic::reserve(size_t s) {
 	if (s <= _capacity)
 		return;
 
-	byte *oldData = _data;
-
 	while (_capacity < s)
 		_capacity = MAX<size_t>(2, _capacity * 2);
 
-	_data = new byte[_capacity];
-	_ptr = _data + _pos;
+	byte *newData = new byte[_capacity];
+	if (_data)
+		memcpy(newData, _data.get(), _size);
 
-	if (oldData) {
-		// Copy old data
-		std::memcpy(_data, oldData, _size);
-		delete[] oldData;
-	}
+	_data.dispose();
+	_data.reset(newData);
+	_ptr = _data.get() + _pos;
 }
 
 void MemoryWriteStreamDynamic::ensureCapacity(size_t newLen) {
@@ -140,10 +135,13 @@ size_t MemoryWriteStreamDynamic::write(const void *dataPtr, size_t dataSize) {
 	return dataSize;
 }
 
-void MemoryWriteStreamDynamic::dispose() {
-	delete[] _data;
+void MemoryWriteStreamDynamic::setDisposable(bool disposeMemory) {
+	_data.setDisposable(disposeMemory);
+}
 
-	_data     = 0;
+void MemoryWriteStreamDynamic::dispose() {
+	_data.dispose();
+
 	_ptr      = 0;
 	_pos      = 0;
 	_size     = 0;
@@ -159,7 +157,7 @@ size_t MemoryWriteStreamDynamic::size() const {
 }
 
 byte *MemoryWriteStreamDynamic::getData() {
-	return _data;
+	return _data.get();
 }
 
 } // End of namespace Common

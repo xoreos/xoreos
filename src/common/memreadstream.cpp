@@ -57,14 +57,11 @@
 namespace Common {
 
 MemoryReadStream::MemoryReadStream(const byte *dataPtr, size_t dataSize, bool disposeMemory) :
-	_ptrOrig(dataPtr), _ptr(dataPtr), _disposeMemory(disposeMemory),
-	_size(dataSize), _pos(0), _eos(false) {
+	_ptrOrig(dataPtr, disposeMemory), _ptr(dataPtr), _size(dataSize), _pos(0), _eos(false) {
 
 }
 
 MemoryReadStream::~MemoryReadStream() {
-	if (_disposeMemory)
-		delete[] _ptrOrig;
 }
 
 size_t MemoryReadStream::read(void *dataPtr, size_t dataSize) {
@@ -92,7 +89,7 @@ size_t MemoryReadStream::seek(ptrdiff_t offset, Origin whence) {
 		throw Exception(kSeekError);
 
 	_pos = newPos;
-	_ptr = _ptrOrig + newPos;
+	_ptr = _ptrOrig.get() + newPos;
 
 	// Reset end-of-stream flag on a successful seek
 	_eos = false;
@@ -113,7 +110,7 @@ size_t MemoryReadStream::size() const {
 }
 
 const byte *MemoryReadStream::getData() const {
-	return _ptrOrig;
+	return _ptrOrig.get();
 }
 
 

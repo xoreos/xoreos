@@ -55,6 +55,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
+#include "src/common/disposableptr.h"
 #include "src/common/readstream.h"
 
 namespace Common {
@@ -83,10 +84,8 @@ public:
 	const byte *getData() const;
 
 private:
-	const byte * const _ptrOrig;
+	DisposableArray<const byte> _ptrOrig;
 	const byte *_ptr;
-
-	bool _disposeMemory;
 
 	const size_t _size;
 
