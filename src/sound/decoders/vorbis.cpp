@@ -53,6 +53,7 @@
 #include <vorbis/vorbisfile.h>
 
 #include "src/common/scopedptr.h"
+#include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 
@@ -111,8 +112,7 @@ static ov_callbacks g_stream_wrap = {
 
 class VorbisStream : public RewindableAudioStream {
 protected:
-	Common::SeekableReadStream *_inStream;
-	bool _disposeAfterUse;
+	Common::DisposablePtr<Common::SeekableReadStream> _inStream;
 
 	bool _isStereo;
 	int _rate;
@@ -144,8 +144,7 @@ protected:
 };
 
 VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, bool dispose) :
-	_inStream(inStream),
-	_disposeAfterUse(dispose),
+	_inStream(inStream, dispose),
 	_bufferEnd(_buffer + ARRAYSIZE(_buffer)),
 	_length(kInvalidLength) {
 
@@ -171,8 +170,6 @@ VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, bool dispose) :
 
 VorbisStream::~VorbisStream() {
 	ov_clear(&_ovFile);
-	if (_disposeAfterUse)
-		delete _inStream;
 }
 
 size_t VorbisStream::readBuffer(int16 *buffer, const size_t numSamples) {
