@@ -54,6 +54,7 @@
 #include <boost/scoped_array.hpp>
 
 #include "src/common/scopedptr.h"
+#include "src/common/disposableptr.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 
@@ -80,6 +81,8 @@ private:
 };
 
 AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraData) {
+	Common::DisposablePtr<Common::SeekableReadStream> extra(extraData, disposeExtraData);
+
 	// Open the library
 	_handle = NeAACDecOpen();
 
@@ -90,9 +93,9 @@ AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraD
 	NeAACDecSetConfiguration(_handle, conf);
 
 	// Copy the extra data to a buffer
-	extraData->seek(0);
-	Common::ScopedArray<byte> extraDataBuf(new byte[extraData->size()]);
-	extraData->read(extraDataBuf.get(), extraData->size());
+	extra->seek(0);
+	Common::ScopedArray<byte> extraDataBuf(new byte[extra->size()]);
+	extra->read(extraDataBuf.get(), extra->size());
 
 	// Initialize with our extra data
 	// NOTE: This code assumes the extra data is coming from an MPEG-4 file!
@@ -102,9 +105,6 @@ AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraD
 
 		throw Common::Exception("Could not initialize AAC decoder: %s", NeAACDecGetErrorMessage(err));
 	}
-
-	if (disposeExtraData)
-		delete extraData;
 }
 
 AACDecoder::~AACDecoder() {
