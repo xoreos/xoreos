@@ -60,3 +60,8 @@ check_PROGRAMS                    += tests/aurora/test_ssffile
 tests_aurora_test_ssffile_SOURCES  = tests/aurora/ssffile.cpp
 tests_aurora_test_ssffile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_ssffile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                      += tests/aurora/test_smallfile
+tests_aurora_test_smallfile_SOURCES  = tests/aurora/smallfile.cpp
+tests_aurora_test_smallfile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_smallfile_CXXFLAGS = $(test_CXXFLAGS)
