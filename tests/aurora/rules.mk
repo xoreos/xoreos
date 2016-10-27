@@ -70,3 +70,8 @@ check_PROGRAMS                    += tests/aurora/test_rimfile
 tests_aurora_test_rimfile_SOURCES  = tests/aurora/rimfile.cpp
 tests_aurora_test_rimfile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_rimfile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                     += tests/aurora/test_herffile
+tests_aurora_test_herffile_SOURCES  = tests/aurora/herffile.cpp
+tests_aurora_test_herffile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_herffile_CXXFLAGS = $(test_CXXFLAGS)
