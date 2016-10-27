@@ -51,6 +51,7 @@
 #include <cstring>
 
 #include "src/common/endianness.h"
+#include "src/common/disposableptr.h"
 
 #include "src/sound/decoders/adpcm.h"
 #include "src/sound/audiostream.h"
@@ -59,8 +60,7 @@ namespace Sound {
 
 class ADPCMStream : public RewindableAudioStream {
 protected:
-	Common::SeekableReadStream *_stream;
-	const bool _disposeAfterUse;
+	Common::DisposablePtr<Common::SeekableReadStream> _stream;
 	const size_t _startpos;
 	const size_t _endpos;
 	const int _channels;
@@ -101,8 +101,7 @@ public:
 //   <http://wiki.multimedia.cx/index.php?title=Microsoft_IMA_ADPCM>.
 
 ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32 blockAlign)
-	: _stream(stream),
-		_disposeAfterUse(disposeAfterUse),
+	: _stream(stream, disposeAfterUse),
 		_startpos(stream->pos()),
 		_endpos(_startpos + size),
 		_channels(channels),
@@ -114,8 +113,6 @@ ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUs
 }
 
 ADPCMStream::~ADPCMStream() {
-	if (_disposeAfterUse)
-		delete _stream;
 }
 
 void ADPCMStream::reset() {
