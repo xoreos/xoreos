@@ -40,8 +40,6 @@ FoxPro::FoxPro() : _hasIndex(false), _hasMemo(false), _memoBlockSize(512) {
 }
 
 FoxPro::~FoxPro() {
-	for (std::vector<byte *>::iterator it = _memos.begin(); it != _memos.end(); ++it)
-		delete[] *it;
 }
 
 void FoxPro::load(SeekableReadStream *dbf, SeekableReadStream *cdx,

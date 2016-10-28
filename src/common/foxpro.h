@@ -25,12 +25,11 @@
 #ifndef COMMON_FOXPRO_H
 #define COMMON_FOXPRO_H
 
-#include <vector>
-
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
 #include "src/common/ptrlist.h"
+#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 namespace Common {
@@ -141,7 +140,7 @@ private:
 	PtrList<byte, DeallocatorArray> _pool;
 
 	uint16 _memoBlockSize;
-	std::vector<byte *> _memos;
+	PtrVector<byte, DeallocatorArray> _memos;
 
 	// Loading helpers
 	void loadHeader (SeekableReadStream &dbf, uint32 &recordSize, uint32 &recordCount,
