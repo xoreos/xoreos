@@ -138,23 +138,6 @@ TwoDAFile::TwoDAFile(const GDAFile &gda) :
 }
 
 TwoDAFile::~TwoDAFile() {
-	clear();
-}
-
-void TwoDAFile::clear() {
-	AuroraFile::clear();
-
-	_headers.clear();
-
-	for (std::vector<TwoDARow *>::iterator row = _rows.begin(); row != _rows.end(); ++row)
-		delete *row;
-	_rows.clear();
-
-	_headerMap.clear();
-
-	_defaultString.clear();
-	_defaultInt   = 0;
-	_defaultFloat = 0.0f;
 }
 
 void TwoDAFile::load(Common::SeekableReadStream &twoda) {
@@ -180,8 +163,6 @@ void TwoDAFile::load(Common::SeekableReadStream &twoda) {
 		createHeaderMap();
 
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed reading 2DA file");
 		throw;
 	}
@@ -409,8 +390,6 @@ void TwoDAFile::load(const GDAFile &gda) {
 		}
 
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed reading GDA file");
 		throw;
 	}
