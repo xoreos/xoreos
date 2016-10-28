@@ -161,22 +161,17 @@ void RequestManager::callInMainThread(const MainThreadCallerFunctor &caller) {
 void RequestManager::clearList() {
 	Common::StackLock lock(_mutexUse);
 
-	for (RequestList::iterator request = _requests.begin(); request != _requests.end(); ++request)
-		delete *request;
 	_requests.clear();
+}
+
+static bool requestIsGarbage(const Request * const request) {
+	return !request || request->isGarbage();
 }
 
 void RequestManager::collectGarbage() {
 	Common::StackLock lock(_mutexUse);
 
-	RequestList::iterator request = _requests.begin();
-	while (request != _requests.end()) {
-		if ((*request)->isGarbage()) {
-			delete *request;
-			request = _requests.erase(request);
-		} else
-			++request;
-	}
+	_requests.remove_if(requestIsGarbage);
 }
 
 void RequestManager::threadMethod() {

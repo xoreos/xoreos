@@ -30,6 +30,7 @@
 #include <boost/bind.hpp>
 
 #include "src/common/types.h"
+#include "src/common/ptrlist.h"
 #include "src/common/singleton.h"
 #include "src/common/thread.h"
 
@@ -43,7 +44,7 @@ namespace Graphics {
 
 namespace Events {
 
-typedef std::list<Request *>  RequestList;
+typedef Common::PtrList<Request>  RequestList;
 typedef RequestList::iterator RequestID;
 
 /** The request manager, handling all requests.
