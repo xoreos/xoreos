@@ -32,6 +32,7 @@
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -111,7 +112,7 @@ private:
 		void read(Common::SeekableReadStream &gff3);
 	};
 
-	typedef std::vector<GFF3Struct *> StructArray;
+	typedef Common::PtrVector<GFF3Struct> StructArray;
 	typedef std::vector<GFF3List> ListArray;
 
 
@@ -136,8 +137,6 @@ private:
 	void loadHeader(uint32 id);
 	void loadStructs();
 	void loadLists();
-
-	void clear();
 	// '---
 
 	// .--- Helper methods called by GFF3Struct
@@ -284,6 +283,9 @@ private:
 	// '---
 
 	friend class GFF3File;
+
+	template<typename T>
+	friend void Common::DeallocatorDefault::destroy(T *);
 };
 
 } // End of namespace Aurora
