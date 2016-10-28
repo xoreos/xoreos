@@ -29,10 +29,12 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/ptrvector.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
 
 #include "src/events/types.h"
+#include "src/events/joystick.h"
 
 namespace Common {
 	class UString;
@@ -41,7 +43,6 @@ namespace Common {
 namespace Events {
 
 class Request;
-class Joystick;
 
 /** The events manager. */
 class EventsManager : public Common::Singleton<EventsManager> {
@@ -150,7 +151,7 @@ public:
 
 
 private:
-	typedef std::vector<Joystick *> Joysticks;
+	typedef Common::PtrVector<Joystick> Joysticks;
 
 	typedef std::list<Event> EventQueue;
 	typedef void (EventsManager::*RequestHandler)(Request &);

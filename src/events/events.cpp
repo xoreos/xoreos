@@ -364,9 +364,6 @@ void EventsManager::initJoysticks() {
 void EventsManager::deinitJoysticks() {
 	SDL_JoystickEventState(SDL_DISABLE);
 
-	for (Joysticks::iterator j = _joysticks.begin(); j != _joysticks.end(); ++j)
-		delete *j;
-
 	_joysticks.clear();
 }
 

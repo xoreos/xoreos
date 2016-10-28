@@ -29,6 +29,7 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "src/common/deallocator.h"
 #include "src/common/ustring.h"
 
 namespace Events {
@@ -70,6 +71,9 @@ private:
 	~Joystick();
 
 	friend class EventsManager;
+
+	template<typename T>
+	friend void Common::DeallocatorDefault::destroy(T *);
 };
 
 } // End of namespace Events

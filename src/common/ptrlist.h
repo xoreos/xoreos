@@ -92,21 +92,21 @@ public:
 	}
 
 	void remove(const typename std::list<T *>::value_type &val) {
-		for (typename std::list<T *>::iterator it = std::list<T *>::begin(); it != std::list<T *>::end(); ++it) {
+		for (typename std::list<T *>::iterator it = std::list<T *>::begin(); it != std::list<T *>::end(); ) {
 			if (*it == val)
 				it = erase(it);
 			else
-			++it;
+				++it;
 		}
 	}
 
 	template<class Predicate>
 	void remove_if(Predicate pred) {
-		for (typename std::list<T *>::iterator it = std::list<T *>::begin(); it != std::list<T *>::end(); ++it) {
+		for (typename std::list<T *>::iterator it = std::list<T *>::begin(); it != std::list<T *>::end(); ) {
 			if (pred(*it))
 				it = erase(it);
 			else
-			++it;
+				++it;
 		}
 	}
 
