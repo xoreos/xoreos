@@ -22,8 +22,7 @@
  *  A portable executable archive.
  */
 
-#include <boost/scope_exit.hpp>
-
+#include "src/common/ptrvector.h"
 #include "src/common/error.h"
 #include "src/common/pe_exe.h"
 #include "src/common/memreadstream.h"
@@ -69,15 +68,8 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoC
 	out.writeUint16LE(cursorCount);
 
 
-	std::vector<Common::SeekableReadStream *> cursorStreams;
+	Common::PtrVector<Common::SeekableReadStream> cursorStreams;
 	cursorStreams.resize(cursorCount);
-
-	BOOST_SCOPE_EXIT( (&cursorStreams) ) {
-		for (std::vector<Common::SeekableReadStream *>::iterator s = cursorStreams.begin();
-		     s != cursorStreams.end(); ++s)
-			delete *s;
-	} BOOST_SCOPE_EXIT_END
-
 
 	uint32 startOffset = 6 + cursorCount * 16;
 
