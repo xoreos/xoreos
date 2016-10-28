@@ -26,6 +26,7 @@
 
 #include "src/common/util.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
@@ -34,7 +35,7 @@
 
 namespace Aurora {
 
-typedef std::vector<Common::SeekableReadStream *> Cells;
+typedef Common::PtrVector<Common::SeekableReadStream> Cells;
 
 struct ReadContext {
 	Common::SeekableReadStream *cdpth;
@@ -48,11 +49,6 @@ struct ReadContext {
 
 	ReadContext(Common::SeekableReadStream &c, uint32 w, uint32 h) :
 		cdpth(&c), width(w), height(h) {
-	}
-
-	~ReadContext() {
-		for (Cells::iterator c = cells.begin(); c != cells.end(); ++c)
-			delete *c;
 	}
 };
 
