@@ -27,11 +27,11 @@
 #ifndef COMMON_CONFIGFILE_H
 #define COMMON_CONFIGFILE_H
 
-#include <list>
 #include <map>
 
 #include <boost/noncopyable.hpp>
 
+#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/stringmap.h"
 
@@ -112,7 +112,7 @@ private:
  */
 class ConfigFile : boost::noncopyable {
 public:
-	typedef std::list<ConfigDomain *> DomainList;
+	typedef PtrList<ConfigDomain> DomainList;
 
 	ConfigFile();
 	~ConfigFile();

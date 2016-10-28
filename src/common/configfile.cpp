@@ -258,8 +258,6 @@ ConfigFile::ConfigFile() {
 }
 
 ConfigFile::~ConfigFile() {
-	for (DomainList::iterator it = _domainList.begin(); it != _domainList.end(); ++it)
-		delete *it;
 }
 
 bool ConfigFile::isValidName(const UString &name) {
@@ -275,9 +273,6 @@ bool ConfigFile::isValidName(const UString &name) {
 }
 
 void ConfigFile::clear() {
-	for (DomainList::iterator it = _domainList.begin(); it != _domainList.end(); ++it)
-		delete *it;
-
 	_domainList.clear();
 	_domainMap.clear();
 
@@ -598,21 +593,7 @@ bool ConfigFile::removeDomain(const UString &name) {
 		// Domain doesn't exist, can't remove
 		return false;
 
-	bool found = false;
-
-	// Find and remove the domain in the list
-	DomainList::iterator d;
-	for (d = _domainList.begin(); d != _domainList.end(); ++d) {
-		if (*d == domain->second) {
-			delete *d;
-			_domainList.erase(d);
-			found = true;
-			break;
-		}
-	}
-
-	// If we couldn't find the domain in the list, something is *really* broken
-	assert(found == true);
+	_domainList.remove(domain->second);
 
 	// Remove the domain
 	_domainMap.erase(domain);
