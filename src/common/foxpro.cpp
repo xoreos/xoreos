@@ -40,8 +40,6 @@ FoxPro::FoxPro() : _hasIndex(false), _hasMemo(false), _memoBlockSize(512) {
 }
 
 FoxPro::~FoxPro() {
-	for (std::list<byte *>::iterator it = _pool.begin(); it != _pool.end(); ++it)
-		delete[] *it;
 	for (std::vector<byte *>::iterator it = _memos.begin(); it != _memos.end(); ++it)
 		delete[] *it;
 }
