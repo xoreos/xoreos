@@ -30,6 +30,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/deallocator.h \
     src/common/scopedptr.h \
     src/common/disposableptr.h \
+    src/common/ptrlist.h \
     src/common/singleton.h \
     src/common/maths.h \
     src/common/sinetables.h \
