@@ -75,3 +75,8 @@ check_PROGRAMS                     += tests/aurora/test_herffile
 tests_aurora_test_herffile_SOURCES  = tests/aurora/herffile.cpp
 tests_aurora_test_herffile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_herffile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                   += tests/aurora/test_ndsrom
+tests_aurora_test_ndsrom_SOURCES  = tests/aurora/ndsrom.cpp
+tests_aurora_test_ndsrom_LDADD    = $(aurora_LIBS)
+tests_aurora_test_ndsrom_CXXFLAGS = $(test_CXXFLAGS)
