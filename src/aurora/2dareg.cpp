@@ -44,11 +44,6 @@ TwoDARegistry::~TwoDARegistry() {
 }
 
 void TwoDARegistry::clear() {
-	for (TwoDAMap::iterator it = _twodas.begin(); it != _twodas.end(); ++it)
-		delete it->second;
-	for (GDAMap::iterator it = _gdas.begin(); it != _gdas.end(); ++it)
-		delete it->second;
-
 	_twodas.clear();
 	_gdas.clear();
 }
@@ -103,11 +98,9 @@ const GDAFile &TwoDARegistry::getMGDA(const Common::UString &prefix) {
 
 void TwoDARegistry::add2DA(const Common::UString &name) {
 	TwoDAMap::iterator twoda = _twodas.find(name);
-	if (twoda != _twodas.end()) {
+	if (twoda != _twodas.end())
 		// Entry exists => remove first
-		delete twoda->second;
 		_twodas.erase(twoda);
-	}
 
 	// Load and add
 	_twodas[name] = load2DA(name);
@@ -116,20 +109,17 @@ void TwoDARegistry::add2DA(const Common::UString &name) {
 void TwoDARegistry::remove2DA(const Common::UString &name) {
 	TwoDAMap::iterator twoda = _twodas.find(name);
 	if (twoda == _twodas.end())
-		// Does exist, nothing to do
+		// Doesn't exist, nothing to do
 		return;
 
-	delete twoda->second;
 	_twodas.erase(twoda);
 }
 
 void TwoDARegistry::addGDA(const Common::UString &name) {
 	GDAMap::iterator gda = _gdas.find(name);
-	if (gda != _gdas.end()) {
+	if (gda != _gdas.end())
 		// Entry exists => remove first
-		delete gda->second;
 		_gdas.erase(gda);
-	}
 
 	// Load and add
 	_gdas[name] = loadGDA(name);
@@ -137,11 +127,9 @@ void TwoDARegistry::addGDA(const Common::UString &name) {
 
 void TwoDARegistry::addMGDA(const Common::UString &prefix) {
 	GDAMap::iterator gda = _gdas.find(prefix);
-	if (gda != _gdas.end()) {
+	if (gda != _gdas.end())
 		// Entry exists => remove first
-		delete gda->second;
 		_gdas.erase(gda);
-	}
 
 	// Load and add
 	_gdas[prefix] = loadMGDA(prefix);
@@ -150,10 +138,9 @@ void TwoDARegistry::addMGDA(const Common::UString &prefix) {
 void TwoDARegistry::removeGDA(const Common::UString &name) {
 	GDAMap::iterator gda = _gdas.find(name);
 	if (gda == _gdas.end())
-		// Does exist, nothing to do
+		// Doesn't exist, nothing to do
 		return;
 
-	delete gda->second;
 	_gdas.erase(gda);
 }
 

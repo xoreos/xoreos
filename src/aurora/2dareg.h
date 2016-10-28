@@ -25,10 +25,9 @@
 #ifndef AURORA_2DAREG_H
 #define AURORA_2DAREG_H
 
-#include <map>
-
-#include "src/common/ustring.h"
+#include "src/common/ptrmap.h"
 #include "src/common/singleton.h"
+#include "src/common/ustring.h"
 
 namespace Aurora {
 
@@ -82,8 +81,8 @@ public:
 	void removeGDA(const Common::UString &name);
 
 private:
-	typedef std::map<Common::UString, TwoDAFile *> TwoDAMap;
-	typedef std::map<Common::UString, GDAFile *> GDAMap;
+	typedef Common::PtrMap<Common::UString, TwoDAFile> TwoDAMap;
+	typedef Common::PtrMap<Common::UString, GDAFile> GDAMap;
 
 	TwoDAMap _twodas;
 	GDAMap   _gdas;
