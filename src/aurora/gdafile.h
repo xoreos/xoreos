@@ -31,6 +31,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/ustring.h"
+#include "src/common/ptrvector.h"
 
 #include "src/aurora/types.h"
 
@@ -132,7 +133,7 @@ public:
 
 
 private:
-	typedef std::vector<GFF4File *> GFF4s;
+	typedef Common::PtrVector<GFF4File> GFF4s;
 	typedef const GFF4List * Columns;
 	typedef const GFF4List * Row;
 	typedef std::vector<Row> Rows;
@@ -158,7 +159,6 @@ private:
 
 
 	void load(Common::SeekableReadStream *gda);
-	void clear();
 
 	uint32 identifyType(const Columns &columns, const Row &rows, size_t column) const;
 

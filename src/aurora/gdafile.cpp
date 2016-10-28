@@ -44,7 +44,6 @@ GDAFile::GDAFile(Common::SeekableReadStream *gda) : _columns(0), _rowCount(0) {
 }
 
 GDAFile::~GDAFile() {
-	clear();
 }
 
 size_t GDAFile::getColumnCount() const {
@@ -271,8 +270,6 @@ void GDAFile::load(Common::SeekableReadStream *gda) {
 		}
 
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed reading GDA file");
 		throw;
 	}
@@ -307,30 +304,9 @@ void GDAFile::add(Common::SeekableReadStream *gda) {
 		}
 
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed adding GDA file");
 		throw;
 	}
-}
-
-void GDAFile::clear() {
-	for (std::vector<GFF4File *>::iterator g = _gff4s.begin(); g != _gff4s.end(); ++g)
-		delete *g;
-
-	_gff4s.clear();
-
-	_headers.clear();
-
-	_columns = 0;
-	_rows.clear();
-
-	_rowStarts.clear();
-
-	_rowCount = 0;
-
-	_columnHashMap.clear();
-	_columnNameMap.clear();
 }
 
 } // End of namespace Aurora
