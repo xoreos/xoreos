@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/ptrvector.h"
 
 #include "src/graphics/aurora/types.h"
 
@@ -44,7 +45,7 @@ public:
 	void hide();
 
 private:
-	std::vector<Graphics::Aurora::Model *> _fogs;
+	Common::PtrVector<Graphics::Aurora::Model> _fogs;
 };
 
 } // End of namespace NWN

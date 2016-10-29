@@ -124,19 +124,16 @@ NewGameFogs::NewGameFogs(size_t count) {
 }
 
 NewGameFogs::~NewGameFogs() {
-	for (std::vector<Graphics::Aurora::Model *>::iterator f = _fogs.begin(); f != _fogs.end(); ++f) {
-		(*f)->hide();
-		delete *f;
-	}
+	hide();
 }
 
 void NewGameFogs::show() {
-	for (std::vector<Graphics::Aurora::Model *>::iterator f = _fogs.begin(); f != _fogs.end(); ++f)
+	for (Common::PtrVector<Graphics::Aurora::Model>::iterator f = _fogs.begin(); f != _fogs.end(); ++f)
 		(*f)->show();
 }
 
 void NewGameFogs::hide() {
-	for (std::vector<Graphics::Aurora::Model *>::iterator f = _fogs.begin(); f != _fogs.end(); ++f)
+	for (Common::PtrVector<Graphics::Aurora::Model>::iterator f = _fogs.begin(); f != _fogs.end(); ++f)
 		(*f)->hide();
 }
 
