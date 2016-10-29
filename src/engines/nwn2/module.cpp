@@ -409,9 +409,6 @@ void Module::loadAreas() {
 }
 
 void Module::unloadAreas() {
-	for (AreaMap::iterator a = _areas.begin(); a != _areas.end(); ++a)
-		delete a->second;
-
 	_areas.clear();
 	_newArea.clear();
 

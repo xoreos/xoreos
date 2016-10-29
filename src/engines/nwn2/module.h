@@ -30,6 +30,7 @@
 #include <map>
 #include <set>
 
+#include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -141,7 +142,7 @@ private:
 		bool operator<(const Action &s) const;
 	};
 
-	typedef std::map<Common::UString, Area *> AreaMap;
+	typedef Common::PtrMap<Common::UString, Area> AreaMap;
 
 	typedef std::list<Events::Event> EventQueue;
 	typedef std::multiset<Action> ActionQueue;
