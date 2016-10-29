@@ -137,7 +137,6 @@ ImageDecoder::ImageDecoder(const ImageDecoder &image) {
 }
 
 ImageDecoder::~ImageDecoder() {
-	clear();
 }
 
 ImageDecoder &ImageDecoder::operator=(const ImageDecoder &image) {
@@ -156,17 +155,10 @@ ImageDecoder &ImageDecoder::operator=(const ImageDecoder &image) {
 	_mipMaps.clear();
 	_mipMaps.reserve(image._mipMaps.size());
 
-	for (std::vector<MipMap *>::const_iterator m = image._mipMaps.begin(); m != image._mipMaps.end(); ++m)
+	for (MipMaps::const_iterator m = image._mipMaps.begin(); m != image._mipMaps.end(); ++m)
 		_mipMaps.push_back(new MipMap(**m));
 
 	return *this;
-}
-
-void ImageDecoder::clear() {
-	for (std::vector<MipMap *>::iterator m = _mipMaps.begin(); m != _mipMaps.end(); ++m)
-		delete *m;
-
-	_mipMaps.clear();
 }
 
 const TXI &ImageDecoder::getTXI() const {
@@ -251,7 +243,7 @@ void ImageDecoder::decompress() {
 	if (!_compressed)
 		return;
 
-	for (std::vector<MipMap *>::iterator m = _mipMaps.begin(); m != _mipMaps.end(); ++m) {
+	for (MipMaps::iterator m = _mipMaps.begin(); m != _mipMaps.end(); ++m) {
 		MipMap decompressed(this);
 
 		decompress(decompressed, **m, _formatRaw);

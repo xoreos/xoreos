@@ -49,8 +49,6 @@ void WinIconImage::load(Common::SeekableReadStream &cur) {
 		readData  (cur);
 
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed reading CUR file");
 		throw;
 	}

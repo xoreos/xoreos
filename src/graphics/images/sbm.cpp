@@ -51,8 +51,6 @@ void SBM::load(Common::SeekableReadStream &sbm) {
 		readData(sbm);
 
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed reading SBM file");
 		throw;
 	}

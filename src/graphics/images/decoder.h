@@ -31,6 +31,7 @@
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 
 #include "src/graphics/types.h"
 
@@ -113,6 +114,8 @@ public:
 	bool dumpTGA(const Common::UString &fileName) const;
 
 protected:
+	typedef Common::PtrVector<MipMap> MipMaps;
+
 	bool _compressed;
 	bool _hasAlpha;
 
@@ -125,11 +128,9 @@ protected:
 	/** Is this image a cube map? A cube map always needs to have 6 layers! */
 	bool _isCubeMap;
 
-	std::vector<MipMap *> _mipMaps;
+	MipMaps _mipMaps;
 
 	TXI _txi;
-
-	void clear();
 
 	static void decompress(MipMap &out, const MipMap &in, PixelFormatRaw format);
 };

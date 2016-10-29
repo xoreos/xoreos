@@ -57,8 +57,6 @@ void TXB::load(Common::SeekableReadStream &txb) {
 		readTXI(txb);
 
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed reading TXB file");
 		throw;
 	}
@@ -191,7 +189,7 @@ void TXB::deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height) {
 }
 
 void TXB::readData(Common::SeekableReadStream &txb, bool needDeSwizzle) {
-	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
+	for (MipMaps::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
 
 		// If the texture width is a power of two, the texture memory layout is "swizzled"
 		const bool widthPOT = ((*mipMap)->width & ((*mipMap)->width - 1)) == 0;

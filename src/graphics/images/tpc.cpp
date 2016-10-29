@@ -59,8 +59,6 @@ void TPC::load(Common::SeekableReadStream &tpc) {
 		fixupCubeMap();
 
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed reading TPC file");
 		throw;
 	}
@@ -265,7 +263,7 @@ void TPC::deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height) {
 }
 
 void TPC::readData(Common::SeekableReadStream &tpc, byte encoding) {
-	for (std::vector<MipMap *>::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
+	for (MipMaps::iterator mipMap = _mipMaps.begin(); mipMap != _mipMaps.end(); ++mipMap) {
 
 		// If the texture width is a power of two, the texture memory layout is "swizzled"
 		const bool widthPOT = ((*mipMap)->width & ((*mipMap)->width - 1)) == 0;

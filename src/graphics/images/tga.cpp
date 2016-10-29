@@ -81,8 +81,6 @@ void TGA::load(Common::SeekableReadStream &tga) {
 		readData  (tga, imageType, pixelDepth, imageDesc);
 
 	} catch (Common::Exception &e) {
-		clear();
-
 		e.add("Failed reading TGA file");
 		throw;
 	}
