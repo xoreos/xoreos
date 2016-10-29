@@ -83,6 +83,7 @@ Area::Area(Campaign &campaign, const Common::UString &resRef,
 }
 
 Area::~Area() {
+	hide();
 	clean();
 }
 
@@ -96,15 +97,8 @@ const Aurora::LocString &Area::getName() const {
 
 void Area::clean() {
 	try {
-		hide();
-
-		for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+		for (Objects::iterator o = _objects.begin(); o != _objects.end(); ++o)
 			_campaign->removeObject(**o);
-			delete *o;
-		}
-
-		for (Rooms::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-			delete *r;
 
 		deindexResources(_resources);
 	} catch (...) {
