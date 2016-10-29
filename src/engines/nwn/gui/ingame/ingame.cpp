@@ -50,8 +50,7 @@ IngameGUI::IngameGUI(Module &module, ::Engines::Console *console) :
 	_quickchat.reset(new Quickchat(_quickbar->getHeight() - 3.0f));
 	_compass.reset  (new Compass(_quickbar->getHeight() + _quickchat->getHeight() - 6.0f));
 
-	_party.resize(1);
-	_party[0] = new PartyLeader(module);
+	_party.push_back(new PartyLeader(module));
 
 	_lastPartyMemberChange.resize(1);
 	_lastPartyMemberChange[0] = 0;
@@ -59,9 +58,6 @@ IngameGUI::IngameGUI(Module &module, ::Engines::Console *console) :
 
 IngameGUI::~IngameGUI() {
 	hide();
-
-	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
-		delete *p;
 }
 
 uint32 IngameGUI::showMain() {
@@ -81,7 +77,7 @@ void IngameGUI::show() {
 	_quickchat->show();
 	_compass->show();
 
-	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
+	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->show();
 
 	if (_dialog)
@@ -92,7 +88,7 @@ void IngameGUI::hide() {
 	if (_dialog)
 		_dialog->hide();
 
-	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
+	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->hide();
 
 	_compass->hide();
@@ -107,7 +103,7 @@ void IngameGUI::addEvent(const Events::Event &event) {
 		return;
 	}
 
-	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
+	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->addEvent(event);
 
 	_compass->addEvent(event);
@@ -124,7 +120,7 @@ void IngameGUI::processEventQueue() {
 		return;
 	}
 
-	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
+	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->processEventQueue();
 
 	_compass->processEventQueue();
@@ -145,7 +141,7 @@ void IngameGUI::setName(size_t partyMember, const Common::UString &name) {
 }
 
 void IngameGUI::setArea(const Common::UString &area) {
-	for (std::vector<CharacterInfo *>::iterator p = _party.begin(); p != _party.end(); ++p)
+	for (Common::PtrVector<CharacterInfo>::iterator p = _party.begin(); p != _party.end(); ++p)
 		(*p)->setArea(area);
 }
 

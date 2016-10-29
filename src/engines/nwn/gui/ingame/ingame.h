@@ -29,6 +29,7 @@
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 
 #include "src/events/types.h"
 
@@ -99,7 +100,7 @@ private:
 	/** The time that party member was changed last. */
 	std::vector<uint32> _lastPartyMemberChange;
 
-	std::vector<CharacterInfo *> _party; ///< The party member character panels.
+	Common::PtrVector<CharacterInfo> _party; ///< The party member character panels.
 
 
 	/** Set the party member's portrait. */
