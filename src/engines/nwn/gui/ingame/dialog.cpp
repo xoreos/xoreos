@@ -181,7 +181,7 @@ void DialogBox::setPosition(float x, float y, float z) {
 	const float entryX = nameX;
 	      float entryY = nameY - 4.0f;
 
-	for (std::list<Graphics::Aurora::Text *>::iterator e = _entryLines.begin();
+	for (Common::PtrList<Graphics::Aurora::Text>::iterator e = _entryLines.begin();
 	     e != _entryLines.end(); ++e) {
 		entryY -= _font.getFont().getHeight() + _font.getFont().getLineSpacing();
 
@@ -234,13 +234,13 @@ void DialogBox::setName(const Common::UString &name) {
 }
 
 void DialogBox::showEntry() {
-	for (std::list<Graphics::Aurora::Text *>::iterator e = _entryLines.begin();
+	for (Common::PtrList<Graphics::Aurora::Text>::iterator e = _entryLines.begin();
 	     e != _entryLines.end(); ++e)
 		(*e)->show();
 }
 
 void DialogBox::hideEntry() {
-	for (std::list<Graphics::Aurora::Text *>::iterator e = _entryLines.begin();
+	for (Common::PtrList<Graphics::Aurora::Text>::iterator e = _entryLines.begin();
 	     e != _entryLines.end(); ++e)
 		(*e)->hide();
 }
@@ -252,10 +252,6 @@ void DialogBox::clearEntry() {
 	GfxMan.lockFrame();
 
 	hideEntry();
-
-	for (std::list<Graphics::Aurora::Text *>::iterator e = _entryLines.begin();
-	     e != _entryLines.end(); ++e)
-		delete *e;
 
 	_entryLines.clear();
 	_entry.clear();

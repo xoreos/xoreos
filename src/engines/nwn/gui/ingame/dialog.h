@@ -28,6 +28,7 @@
 #include <list>
 
 #include "src/common/scopedptr.h"
+#include "src/common/ptrlist.h"
 
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
@@ -162,8 +163,8 @@ private:
 	Common::UString _entry;    ///< The NPC entry.
 	std::list<Reply> _replies; ///< The PC replies.
 
-	std::list<Graphics::Aurora::Text *> _entryLines; ///< The NPC text lines.
-	std::list<ReplyLine> _replyLines;                ///< The PC text lines.
+	Common::PtrList<Graphics::Aurora::Text> _entryLines; ///< The NPC text lines.
+	std::list<ReplyLine> _replyLines; ///< The PC text lines.
 
 	uint32 _replyCount;      ///< The number of replies.
 	float  _replyCountWidth; ///< The max width of a reply number text.
