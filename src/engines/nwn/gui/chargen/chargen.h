@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include "src/common/ptrvector.h"
+
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
@@ -51,7 +53,8 @@ private:
 
 	Module *_module;
 	std::vector<WidgetButton *> _charButtons;
-	std::vector<CharGenBase *> _chargenGuis;
+
+	Common::PtrVector<CharGenBase> _chargenGuis;
 };
 
 } // End of namespace NWN

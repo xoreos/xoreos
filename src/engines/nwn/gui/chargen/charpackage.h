@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include "src/common/ptrvector.h"
+
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
 namespace Engines {
@@ -51,7 +53,7 @@ protected:
 private:
 	WidgetListBox *_packageListBox;
 
-	std::vector<CharGenBase *>   _subGUIs;
+	Common::PtrVector<CharGenBase> _subGUIs;
 
 	std::vector<Common::UString> _packageNames;
 	std::vector<uint8>           _packageID;

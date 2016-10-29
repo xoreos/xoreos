@@ -54,16 +54,13 @@ CharGenMenu::CharGenMenu(Module &module, ::Engines::Console *console) :
 }
 
 CharGenMenu::~CharGenMenu() {
-	for (size_t it = 0; it < _chargenGuis.size(); ++it)
-		delete _chargenGuis[it];
-
 	delete _choices;
 }
 
 void CharGenMenu::reset() {
 	_choices->reset();
 
-	for (std::vector<CharGenBase *>::iterator g = _chargenGuis.begin(); g != _chargenGuis.end(); ++g)
+	for (Common::PtrVector<CharGenBase>::iterator g = _chargenGuis.begin(); g != _chargenGuis.end(); ++g)
 		(*g)->reset();
 
 	for (std::vector<WidgetButton *>::iterator b = ++_charButtons.begin(); b != _charButtons.end(); ++b)

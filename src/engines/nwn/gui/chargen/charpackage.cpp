@@ -51,9 +51,6 @@ CharPackage::CharPackage(CharGenChoices &choices, ::Engines::Console *console) :
 }
 
 CharPackage::~CharPackage() {
-	for (std::vector<CharGenBase *>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
-		delete *g;
-	}
 }
 
 void CharPackage::reset() {
@@ -62,9 +59,6 @@ void CharPackage::reset() {
 
 	_choices->resetPackage();
 
-	for (std::vector<CharGenBase *>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
-		delete *g;
-	}
 	_subGUIs.clear();
 }
 
@@ -130,7 +124,7 @@ void CharPackage::callbackActive(Widget &widget) {
 		}
 
 		uint32 subReturnCode;
-		for (std::vector<CharGenBase *>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
+		for (Common::PtrVector<CharGenBase>::iterator g = _subGUIs.begin(); g != _subGUIs.end(); ++g) {
 			subReturnCode = sub(**g, 0, false);
 			if (subReturnCode == 1) {
 				reset();
