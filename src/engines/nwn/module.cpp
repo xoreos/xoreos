@@ -658,9 +658,6 @@ void Module::loadAreas() {
 void Module::unloadAreas() {
 	_ingameGUI->stopConversation();
 
-	for (AreaMap::iterator a = _areas.begin(); a != _areas.end(); ++a)
-		delete a->second;
-
 	_areas.clear();
 	_newArea.clear();
 
