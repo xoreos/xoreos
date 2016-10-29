@@ -58,11 +58,6 @@ using namespace ::Aurora::GFF4FieldNamesEnum;
 Campaign::RIMNode::RIMNode(const RIMNode *p) : parent(p) {
 }
 
-Campaign::RIMNode::~RIMNode() {
-	for (Children::iterator c = children.begin(); c != children.end(); ++c)
-		delete *c;
-}
-
 
 Campaign::Campaign(Game &game, const Common::UString &cifPath,
                    const Common::UString &manifestPath, const Common::UString &addinBase) :
