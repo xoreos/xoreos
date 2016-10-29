@@ -29,6 +29,7 @@
 #include <list>
 
 #include "src/common/types.h"
+#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -138,6 +139,8 @@ public:
 	bool click(Object *triggerer = 0);
 
 private:
+	typedef Common::PtrList<Graphics::Aurora::Model> ModelParts;
+
 	/** A class. */
 	struct Class {
 		uint32 classID; ///< Index into classes.2da.
@@ -187,7 +190,7 @@ private:
 	uint8 _appearanceMHair; ///< The model variant used for male hair.
 	uint8 _appearanceFHair; ///< The model variant used for female hair.
 
-	std::list<Graphics::Aurora::Model *> _modelParts;
+	ModelParts _modelParts;
 
 
 	/** Init the creature. */

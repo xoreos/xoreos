@@ -66,8 +66,6 @@ Creature::Creature(const Common::UString &bic, bool local) : Object(kObjectTypeC
 }
 
 Creature::~Creature() {
-	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
-		delete *m;
 }
 
 void Creature::init() {
@@ -111,12 +109,12 @@ void Creature::init() {
 }
 
 void Creature::show() {
-	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
 		(*m)->show();
 }
 
 void Creature::hide() {
-	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
 		(*m)->hide();
 }
 
@@ -124,7 +122,7 @@ void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
 
-	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
 		(*m)->setPosition(x, y, z);
 }
 
@@ -132,7 +130,7 @@ void Creature::setOrientation(float x, float y, float z, float angle) {
 	Object::setOrientation(x, y, z, angle);
 	Object::getOrientation(x, y, z, angle);
 
-	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
 		(*m)->setOrientation(x, y, z, angle);
 }
 
@@ -145,7 +143,7 @@ void Creature::leave() {
 }
 
 void Creature::highlight(bool enabled) {
-	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
+	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
 		(*m)->drawBound(enabled);
 }
 
@@ -329,7 +327,7 @@ void Creature::loadModel() {
 	getOrientation(x, y, z, angle);
 	setOrientation(x, y, z, angle);
 
-	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m) {
+	for (ModelParts::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m) {
 		(*m)->setTag(_tag);
 		(*m)->setClickable(isClickable());
 
@@ -339,9 +337,6 @@ void Creature::loadModel() {
 
 void Creature::unloadModel() {
 	hide();
-
-	for (std::list<Graphics::Aurora::Model *>::iterator m = _modelParts.begin(); m != _modelParts.end(); ++m)
-		delete *m;
 
 	_modelParts.clear();
 }
