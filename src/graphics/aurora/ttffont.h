@@ -30,6 +30,7 @@
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 
 #include "src/graphics/font.h"
 
@@ -91,7 +92,7 @@ private:
 
 	Common::ScopedPtr<TTFRenderer> _ttf;
 
-	std::vector<Page *> _pages;
+	Common::PtrVector<Page> _pages;
 	std::map<uint32, Char> _chars;
 
 	std::map<uint32, Char>::const_iterator _missingChar;
@@ -104,8 +105,6 @@ private:
 	void rebuildPages();
 	void addChar(uint32 c);
 	void drawMissing() const;
-
-	void clear();
 };
 
 } // End of namespace Aurora

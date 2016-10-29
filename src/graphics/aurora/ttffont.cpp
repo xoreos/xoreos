@@ -65,12 +65,7 @@ void TTFFont::Page::rebuild() {
 
 
 TTFFont::TTFFont(Common::SeekableReadStream *ttf, int height) {
-	try {
-		load(ttf, height);
-	} catch (...) {
-		clear();
-		throw;
-	}
+	load(ttf, height);
 }
 
 TTFFont::TTFFont(const Common::UString &name, int height) {
@@ -78,23 +73,10 @@ TTFFont::TTFFont(const Common::UString &name, int height) {
 	if (!ttf)
 		throw Common::Exception("No such font \"%s\"", name.c_str());
 
-	try {
-		load(ttf, height);
-	} catch (...) {
-		clear();
-		throw;
-	}
+	load(ttf, height);
 }
 
 TTFFont::~TTFFont() {
-	clear();
-}
-
-void TTFFont::clear() {
-	for (std::vector<Page *>::iterator p = _pages.begin(); p != _pages.end(); ++p)
-		delete *p;
-
-	_pages.clear();
 }
 
 void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
