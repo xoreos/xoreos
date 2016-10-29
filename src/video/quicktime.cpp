@@ -99,23 +99,10 @@ QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : _fd(str
 
 	initParseTable();
 
-	try {
-		load();
-	} catch (...) {
-		clear();
-		throw;
-	}
+	load();
 }
 
 QuickTimeDecoder::~QuickTimeDecoder() {
-	clear();
-}
-
-void QuickTimeDecoder::clear() {
-	VideoDecoder::deinit();
-
-	for (size_t i = 0; i < _tracks.size(); i++)
-		delete _tracks[i];
 }
 
 void QuickTimeDecoder::load() {
@@ -127,7 +114,6 @@ void QuickTimeDecoder::load() {
 	// Remove unknown/unhandled tracks
 	for (size_t i = 0; i < _tracks.size(); i++) {
 		if (_tracks[i]->codecType == CODEC_TYPE_MOV_OTHER) {
-			delete _tracks[i];
 			_tracks.erase(_tracks.begin() + i);
 			i--;
 		}
@@ -931,11 +917,6 @@ QuickTimeDecoder::Track::Track() : chunkCount(0), timeToSampleCount(0), sampleTo
 	sampleSize(0), sampleCount(0), keyframeCount(0), timeScale(0), width(0), height(0),
 	codecType(CODEC_TYPE_MOV_OTHER), frameCount(0), duration(0), startTime(0), objectTypeMP4(0) {
 
-}
-
-QuickTimeDecoder::Track::~Track() {
-	for (size_t i = 0; i < sampleDescs.size(); i++)
-		delete sampleDescs[i];
 }
 
 QuickTimeDecoder::AudioSampleDesc::AudioSampleDesc(QuickTimeDecoder::Track *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {

@@ -59,6 +59,7 @@
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 
 #include "src/video/decoder.h"
 
@@ -175,7 +176,6 @@ private:
 
 	struct Track {
 		Track();
-		~Track();
 
 		uint32 chunkCount;
 		Common::ScopedArray<uint32> chunkOffsets;
@@ -194,7 +194,7 @@ private:
 		uint16 height;
 		CodecType codecType;
 
-		std::vector<SampleDesc *> sampleDescs;
+		Common::PtrVector<SampleDesc> sampleDescs;
 
 		Common::ScopedPtr<Common::SeekableReadStream> extraData;
 
@@ -210,7 +210,7 @@ private:
 	const ParseTable *_parseTable;
 	bool _foundMOOV;
 	uint32 _timeScale;
-	std::vector<Track *> _tracks;
+	Common::PtrVector<Track> _tracks;
 
 	int32 _curFrame;
 	uint32 _startTime;
@@ -248,7 +248,6 @@ private:
 	int readESDS(Atom atom);
 
 	void load();
-	void clear();
 };
 
 } // End of namespace Video
