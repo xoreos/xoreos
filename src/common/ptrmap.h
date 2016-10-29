@@ -55,7 +55,7 @@ public:
 
 	void erase(typename std::map<Key, T *, Compare>::iterator position) {
 		Deallocator::destroy(position->second);
-		return std::map<Key, T *, Compare>::erase(position);
+		std::map<Key, T *, Compare>::erase(position);
 	}
 
 	typename std::map<Key, T *, Compare>::size_type
