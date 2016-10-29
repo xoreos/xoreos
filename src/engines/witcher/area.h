@@ -30,6 +30,7 @@
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -115,7 +116,7 @@ protected:
 
 
 private:
-	typedef std::list<Engines::Witcher::Object *> ObjectList;
+	typedef Common::PtrList<Engines::Witcher::Object> ObjectList;
 	typedef std::map<uint32, Engines::Witcher::Object *> ObjectMap;
 
 
