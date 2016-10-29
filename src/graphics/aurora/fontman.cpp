@@ -50,9 +50,6 @@ FontManager::~FontManager() {
 void FontManager::clear() {
 	Common::StackLock lock(_mutex);
 
-	for (FontMap::iterator font = _fonts.begin(); font != _fonts.end(); ++font)
-		delete font->second;
-
 	_fonts.clear();
 
 	_format = kFontFormatUnknown;
@@ -160,12 +157,9 @@ void FontManager::assign(FontHandle &font, const FontHandle &from) {
 void FontManager::release(FontHandle &font) {
 	Common::StackLock lock(_mutex);
 
-	if (!font._empty && (font._it != _fonts.end())) {
-		if (--font._it->second->referenceCount == 0) {
-			delete font._it->second;
+	if (!font._empty && (font._it != _fonts.end()))
+		if (--font._it->second->referenceCount == 0)
 			_fonts.erase(font._it);
-		}
-	}
 
 	font._empty = true;
 	font._it    = _fonts.end();
