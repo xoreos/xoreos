@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include "src/common/ptrvector.h"
+
 #include "src/graphics/images/decoder.h"
 
 namespace Common {
@@ -59,9 +61,9 @@ public:
 	~CBGT();
 
 private:
-	typedef std::vector<byte *> Palettes;
+	typedef Common::PtrVector<byte, Common::DeallocatorArray> Palettes;
 	typedef std::vector<size_t> PaletteIndices;
-	typedef std::vector<Common::SeekableReadStream *> Cells;
+	typedef Common::PtrVector<Common::SeekableReadStream> Cells;
 
 	struct ReadContext {
 		Common::SeekableReadStream *cbgt;
@@ -80,7 +82,6 @@ private:
 		ReadContext(Common::SeekableReadStream &c,
 		            Common::SeekableReadStream &p,
 		            Common::SeekableReadStream &t);
-		~ReadContext();
 	};
 
 	void load(ReadContext &ctx);

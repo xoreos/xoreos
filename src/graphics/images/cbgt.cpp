@@ -42,13 +42,6 @@ CBGT::ReadContext::ReadContext(Common::SeekableReadStream &c,
 	cbgt(&c), pal(&p), twoda(&t) {
 }
 
-CBGT::ReadContext::~ReadContext() {
-	for (Palettes::iterator p = palettes.begin(); p != palettes.end(); ++p)
-		delete[] *p;
-	for (Cells::iterator c = cells.begin(); c != cells.end(); ++c)
-		delete *c;
-}
-
 
 CBGT::CBGT(Common::SeekableReadStream &cbgt, Common::SeekableReadStream &pal,
            Common::SeekableReadStream &twoda) {
