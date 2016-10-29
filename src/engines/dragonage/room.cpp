@@ -64,6 +64,7 @@ Room::Room(const Aurora::GFF4Struct &room) {
 }
 
 Room::~Room() {
+	hide();
 	clean();
 }
 
@@ -73,11 +74,6 @@ int32 Room::getID() const {
 
 void Room::clean() {
 	try {
-		hide();
-
-		for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-			delete *m;
-
 		deindexResources(_resources);
 	} catch (...) {
 	}

@@ -27,6 +27,7 @@
 
 #include <vector>
 
+#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -50,7 +51,7 @@ public:
 	void hide();
 
 private:
-	typedef std::vector<Graphics::Aurora::Model *> Models;
+	typedef Common::PtrVector<Graphics::Aurora::Model> Models;
 
 	int32 _id;
 
