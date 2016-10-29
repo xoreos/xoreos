@@ -29,6 +29,7 @@
 #include <list>
 
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 #include "src/events/types.h"
@@ -49,8 +50,8 @@ public:
 	~Campaigns();
 
 	// .--- Available campaigns and addins
-	typedef std::vector<Campaign *> PlayableCampaigns;
-	typedef std::vector<Campaign *> AddinContent;
+	typedef Common::PtrVector<Campaign> PlayableCampaigns;
+	typedef Common::PtrVector<Campaign> AddinContent;
 
 	/** Return all playable campaigns. */
 	const PlayableCampaigns &getCampaigns() const;
