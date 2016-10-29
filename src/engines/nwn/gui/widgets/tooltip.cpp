@@ -288,7 +288,7 @@ void Tooltip::hide() {
 
 void Tooltip::getSize(float &width, float &height) {
 	width = 0.0f;
-	for (std::vector<Graphics::Aurora::Text *>::const_iterator t = _texts.begin(); t != _texts.end(); ++t)
+	for (Common::PtrVector<Graphics::Aurora::Text>::const_iterator t = _texts.begin(); t != _texts.end(); ++t)
 		width = MAX(width, (*t)->getWidth());
 
 	if (_portrait)
@@ -307,9 +307,6 @@ void Tooltip::checkEmpty() {
 }
 
 void Tooltip::deleteTexts() {
-	for (std::vector<Graphics::Aurora::Text *>::iterator t = _texts.begin(); t != _texts.end(); ++t)
-		delete *t;
-
 	_texts.clear();
 }
 
@@ -436,7 +433,7 @@ void Tooltip::doShow() {
 		_portrait->show();
 
 	if (_showText)
-		for (std::vector<Graphics::Aurora::Text *>::iterator t = _texts.begin(); t != _texts.end(); ++t)
+		for (Common::PtrVector<Graphics::Aurora::Text>::iterator t = _texts.begin(); t != _texts.end(); ++t)
 			(*t)->show();
 
 	GfxMan.unlockFrame();
@@ -450,7 +447,7 @@ void Tooltip::doHide() {
 	if (_portrait)
 		_portrait->hide();
 
-	for (std::vector<Graphics::Aurora::Text *>::iterator t = _texts.begin(); t != _texts.end(); ++t)
+	for (Common::PtrVector<Graphics::Aurora::Text>::iterator t = _texts.begin(); t != _texts.end(); ++t)
 		(*t)->hide();
 
 	GfxMan.unlockFrame();

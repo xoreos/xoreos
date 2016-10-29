@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -116,7 +117,7 @@ private:
 	Common::ScopedPtr<Portrait> _portrait;
 
 	std::vector<Line> _lines;
-	std::vector<Graphics::Aurora::Text *> _texts;
+	Common::PtrVector<Graphics::Aurora::Text> _texts;
 
 	bool _offscreen;
 
