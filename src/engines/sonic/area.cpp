@@ -67,11 +67,8 @@ Area::~Area() {
 
 	hide();
 
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		_module->removeObject(**o);
-
-		delete *o;
-	}
 }
 
 const Common::UString &Area::getName() {
