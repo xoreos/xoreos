@@ -26,9 +26,8 @@
 
 #include <vector>
 
-#include <boost/scope_exit.hpp>
-
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
@@ -59,13 +58,8 @@ Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Comm
 	if (!nclrStream)
 		throw Common::Exception("No such NCLR \"%s\"", nclr.c_str());
 
-	std::vector<Common::SeekableReadStream *> ncgrs;
+	Common::PtrVector<Common::SeekableReadStream> ncgrs;
 	ncgrs.resize(width * height, 0);
-
-	BOOST_SCOPE_EXIT( (&ncgrs) ) {
-		for (std::vector<Common::SeekableReadStream *>::iterator n = ncgrs.begin(); n != ncgrs.end(); ++n)
-			delete *n;
-	} BOOST_SCOPE_EXIT_END
 
 	va_list va;
 	va_start(va, height);
