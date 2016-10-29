@@ -91,9 +91,6 @@ Creature::~Creature() {
 		a->associate->setMaster(0);
 
 	hide();
-
-	for (std::vector<Item *>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e)
-		delete *e;
 }
 
 void Creature::init() {
@@ -539,7 +536,7 @@ void Creature::getPartModels() {
 }
 
 void Creature::getArmorModels() {
-	for (std::vector<Item *>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
+	for (Common::PtrVector<Item>::iterator e = _equippedItems.begin(); e != _equippedItems.end(); ++e) {
 		const Item &item = **e;
 		if (!item.isArmor())
 			continue;

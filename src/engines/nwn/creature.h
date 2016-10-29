@@ -30,6 +30,7 @@
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -361,7 +362,7 @@ private:
 
 	std::vector<BodyPart> _bodyParts; ///< The creature's body parts.
 
-	std::vector<Item *> _equippedItems; ///< The creature's equipped items.
+	Common::PtrVector<Item> _equippedItems; ///< The creature's equipped items.
 
 	Common::UString _partsSuperModelName; ///< The supermodel used for parts-based creatures.
 
