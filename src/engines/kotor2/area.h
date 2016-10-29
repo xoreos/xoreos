@@ -29,6 +29,7 @@
 #include <list>
 #include <map>
 
+#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -108,9 +109,9 @@ protected:
 
 
 private:
-	typedef std::list<Room *> RoomList;
+	typedef Common::PtrList<Room> RoomList;
 
-	typedef std::list<KotOR2::Object *> ObjectList;
+	typedef Common::PtrList<KotOR2::Object> ObjectList;
 	typedef std::map<uint32, KotOR2::Object *> ObjectMap;
 
 
