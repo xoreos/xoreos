@@ -33,13 +33,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-ManagedFont::ManagedFont(Font *f) {
-	referenceCount = 0;
-	font = f;
-}
-
-ManagedFont::~ManagedFont() {
-	delete font;
+ManagedFont::ManagedFont(Font *f) : font(f), referenceCount(0) {
 }
 
 

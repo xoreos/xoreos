@@ -28,6 +28,7 @@
 #include <map>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 namespace Graphics {
@@ -38,11 +39,10 @@ namespace Aurora {
 
 /** A managed font, storing how often it's referenced. */
 struct ManagedFont {
-	Font *font;
+	Common::ScopedPtr<Font> font;
 	uint32 referenceCount;
 
 	ManagedFont(Font *f);
-	~ManagedFont();
 };
 
 typedef std::map<Common::UString, ManagedFont *> FontMap;
