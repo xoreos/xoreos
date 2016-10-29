@@ -30,6 +30,7 @@
 #include <map>
 
 #include "src/common/types.h"
+#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -146,7 +147,7 @@ private:
 		Graphics::Aurora::Model *model; ///< The tile's model.
 	};
 
-	typedef std::list<NWN::Object *> ObjectList;
+	typedef Common::PtrList<NWN::Object> ObjectList;
 	typedef std::map<uint32, NWN::Object *> ObjectMap;
 
 
