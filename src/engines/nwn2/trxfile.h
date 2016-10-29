@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "src/common/types.h"
+#include "src/common/ptrlist.h"
 
 namespace Common {
 	class UString;
@@ -78,7 +79,7 @@ private:
 		uint32 size;   ///< Size of the packet.
 	};
 
-	typedef std::list<Graphics::Aurora::GeometryObject *> ObjectList;
+	typedef Common::PtrList<Graphics::Aurora::GeometryObject> ObjectList;
 
 
 	bool _visible;

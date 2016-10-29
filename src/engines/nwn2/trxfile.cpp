@@ -59,11 +59,6 @@ TRXFile::TRXFile(const Common::UString &resRef) : _visible(false) {
 
 TRXFile::~TRXFile() {
 	hide();
-
-	for (ObjectList::iterator t = _terrain.begin(); t != _terrain.end(); ++t)
-		delete *t;
-	for (ObjectList::iterator w = _water.begin(); w != _water.end(); ++w)
-		delete *w;
 }
 
 void TRXFile::show() {
