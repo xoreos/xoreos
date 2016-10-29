@@ -30,6 +30,7 @@
 #include <map>
 
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/locstring.h"
@@ -98,7 +99,7 @@ public:
 private:
 	/** A node in the RIM tree. */
 	struct RIMNode {
-		typedef std::vector<const RIMNode *> Children;
+		typedef Common::PtrVector<const RIMNode> Children;
 
 		Common::UString tag;  ///< Name of the node itself, not unique.
 		Common::UString area; ///< ResRef of the area this node describes, if any.
@@ -110,7 +111,6 @@ private:
 		Children children;
 
 		RIMNode(const RIMNode *p = 0);
-		~RIMNode();
 	};
 	/** Map of area RIMNodes indexed by the area resref. */
 	typedef std::map<Common::UString, const RIMNode *> AreaMap;
