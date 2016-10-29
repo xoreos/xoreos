@@ -85,3 +85,8 @@ check_PROGRAMS                    += tests/aurora/test_keyfile
 tests_aurora_test_keyfile_SOURCES  = tests/aurora/keyfile.cpp
 tests_aurora_test_keyfile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_keyfile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_biffile
+tests_aurora_test_biffile_SOURCES  = tests/aurora/biffile.cpp
+tests_aurora_test_biffile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_biffile_CXXFLAGS = $(test_CXXFLAGS)
