@@ -28,6 +28,7 @@
 #include <vector>
 #include <list>
 
+#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -101,7 +102,7 @@ private:
 	};
 	typedef std::vector<EquipItem> Items;
 
-	typedef std::list<Graphics::Aurora::Model *> Models;
+	typedef Common::PtrList<Graphics::Aurora::Model> Models;
 
 
 	bool _isPC; ///< Is the creature a PC?
@@ -144,8 +145,6 @@ private:
 	static Common::UString createModelPrefix(const Aurora::GDAFile &gda, size_t row);
 	static Common::UString createModelPart(const Aurora::GDAFile &gda, size_t row,
 	                                       const Common::UString &prefix);
-
-	void clean();
 };
 
 } // End of namespace Dragon Age
