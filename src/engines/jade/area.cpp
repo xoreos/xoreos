@@ -89,14 +89,8 @@ void Area::load() {
 
 void Area::clear() {
 	// Delete objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
+	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		_module->removeObject(**o);
-
-		delete *o;
-	}
-
-	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		delete *r;
 
 	_objects.clear();
 	_rooms.clear();

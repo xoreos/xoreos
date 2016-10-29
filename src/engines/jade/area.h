@@ -28,6 +28,7 @@
 #include <list>
 #include <map>
 
+#include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 #include "src/common/mutex.h"
@@ -87,8 +88,8 @@ protected:
 
 
 private:
-	typedef std::list<Room *>   RoomList;
-	typedef std::list<Object *> ObjectList;
+	typedef Common::PtrList<Room>   RoomList;
+	typedef Common::PtrList<Object> ObjectList;
 
 	typedef std::map<uint32, Object *> ObjectMap;
 
