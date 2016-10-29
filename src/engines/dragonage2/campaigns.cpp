@@ -60,12 +60,6 @@ Campaigns::~Campaigns() {
 void Campaigns::clean() {
 	if (_currentCampaign)
 		_currentCampaign->unload();
-
-	for (PlayableCampaigns::iterator c = _campaigns.begin(); c != _campaigns.end(); ++c)
-		delete *c;
-
-	for (AddinContent::iterator a = _addins.begin(); a != _addins.end(); ++a)
-		delete *a;
 }
 
 const Campaigns::PlayableCampaigns &Campaigns::getCampaigns() const {

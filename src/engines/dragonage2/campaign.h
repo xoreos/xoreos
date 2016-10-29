@@ -211,6 +211,9 @@ private:
 	// '---
 
 	friend class Campaigns;
+
+	template<typename T>
+	friend void Common::DeallocatorDefault::destroy(T *);
 };
 
 } // End of namespace DragonAge2
