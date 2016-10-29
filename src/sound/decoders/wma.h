@@ -55,6 +55,7 @@
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 
 #include "src/sound/decoders/codec.h"
 
@@ -174,7 +175,7 @@ private:
 	float _lspPowMTable2[(1 << kLSPPowBits)];
 
 	// MDCT
-	std::vector<Common::MDCT *> _mdct;       ///< MDCT contexts.
+	Common::PtrVector<Common::MDCT> _mdct;       ///< MDCT contexts.
 	std::vector<const float *>  _mdctWindow; ///< MDCT window functions.
 
 	/** Overhang from the last superframe. */

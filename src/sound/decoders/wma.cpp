@@ -126,8 +126,6 @@ WMACodec::WMACodec(int version, uint32 sampleRate, uint8 channels,
 }
 
 WMACodec::~WMACodec() {
-	for (std::vector<Common::MDCT *>::iterator m = _mdct.begin(); m != _mdct.end(); ++m)
-		delete *m;
 }
 
 void WMACodec::init(Common::SeekableReadStream *extraData) {
