@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN_MODELLOADER_H
 #define ENGINES_NWN_MODELLOADER_H
 
+#include "src/graphics/aurora/model.h"
+
 #include "src/engines/aurora/modelloader.h"
 
 namespace Engines {
@@ -33,8 +35,6 @@ namespace NWN {
 
 class NWNModelLoader : public ModelLoader {
 public:
-	~NWNModelLoader();
-
 	Graphics::Aurora::Model *load(const Common::UString &resref,
 			Graphics::Aurora::ModelType type, const Common::UString &texture);
 

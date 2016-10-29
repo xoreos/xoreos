@@ -33,20 +33,11 @@ namespace Engines {
 
 namespace NWN {
 
-NWNModelLoader::~NWNModelLoader() {
-	/* TODO: Modules and HAKs can overwrite model files, so we actually need
-	 *       to clean the cache after every module unload. */
-
-	for (Graphics::Aurora::ModelCache::iterator m = _modelCache.begin(); m != _modelCache.end(); ++m)
-		delete m->second;
-}
-
 Graphics::Aurora::Model *NWNModelLoader::load(const Common::UString &resref,
 		Graphics::Aurora::ModelType type, const Common::UString &texture) {
 
-	// if supermodel
-	// check model cache
-	// else load supermodel and insert into cache
+	/* TODO: Modules and HAKs can overwrite model files, so we actually need
+	 *       to clean the cache after every module unload. */
 
 	return new Graphics::Aurora::Model_NWN(resref, type, texture, &_modelCache);
 }

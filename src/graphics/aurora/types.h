@@ -27,6 +27,7 @@
 
 #include <map>
 
+#include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/types.h"
@@ -49,7 +50,7 @@ class ModelNode;
 class Text;
 class GUIQuad;
 
-typedef std::map<Common::UString, class Model *, Common::UString::iless> ModelCache;
+typedef Common::PtrMap<Common::UString, class Model, Common::UString::iless> ModelCache;
 
 } // End of namespace Aurora
 
