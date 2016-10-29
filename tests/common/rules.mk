@@ -209,3 +209,8 @@ check_PROGRAMS                    += tests/common/test_zipfile
 tests_common_test_zipfile_SOURCES  = tests/common/zipfile.cpp
 tests_common_test_zipfile_LDADD    = $(common_LIBS)
 tests_common_test_zipfile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                 += tests/common/test_lzma
+tests_common_test_lzma_SOURCES  = tests/common/lzma.cpp
+tests_common_test_lzma_LDADD    = $(common_LIBS)
+tests_common_test_lzma_CXXFLAGS = $(test_CXXFLAGS)
