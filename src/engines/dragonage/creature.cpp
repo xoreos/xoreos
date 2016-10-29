@@ -70,16 +70,11 @@ Creature::Creature() : Object(kObjectTypeCreature) {
 Creature::Creature(const GFF3Struct &creature) : Object(kObjectTypeCreature) {
 	init();
 
-	try {
-		load(creature);
-	} catch (...) {
-		clean();
-		throw;
-	}
+	load(creature);
 }
 
 Creature::~Creature() {
-	clean();
+	hide();
 }
 
 void Creature::init() {
@@ -90,16 +85,6 @@ void Creature::init() {
 
 	for (size_t i = 0; i < kPartVariationCount; i++)
 		_partVariation[i] = 0xFFFFFFFF;
-}
-
-void Creature::clean() {
-	try {
-		hide();
-
-		for (Models::iterator m = _models.begin(); m != _models.end(); ++m)
-			delete *m;
-	} catch (...) {
-	}
 }
 
 void Creature::setPosition(float x, float y, float z) {
