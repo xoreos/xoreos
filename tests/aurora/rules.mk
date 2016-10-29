@@ -80,3 +80,8 @@ check_PROGRAMS                   += tests/aurora/test_ndsrom
 tests_aurora_test_ndsrom_SOURCES  = tests/aurora/ndsrom.cpp
 tests_aurora_test_ndsrom_LDADD    = $(aurora_LIBS)
 tests_aurora_test_ndsrom_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_keyfile
+tests_aurora_test_keyfile_SOURCES  = tests/aurora/keyfile.cpp
+tests_aurora_test_keyfile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_keyfile_CXXFLAGS = $(test_CXXFLAGS)
