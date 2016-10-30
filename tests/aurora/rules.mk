@@ -95,3 +95,8 @@ check_PROGRAMS                    += tests/aurora/test_bzffile
 tests_aurora_test_bzffile_SOURCES  = tests/aurora/bzffile.cpp
 tests_aurora_test_bzffile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_bzffile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_erffile
+tests_aurora_test_erffile_SOURCES  = tests/aurora/erffile.cpp
+tests_aurora_test_erffile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_erffile_CXXFLAGS = $(test_CXXFLAGS)
