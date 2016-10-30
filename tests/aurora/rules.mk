@@ -90,3 +90,8 @@ check_PROGRAMS                    += tests/aurora/test_biffile
 tests_aurora_test_biffile_SOURCES  = tests/aurora/biffile.cpp
 tests_aurora_test_biffile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_biffile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_bzffile
+tests_aurora_test_bzffile_SOURCES  = tests/aurora/bzffile.cpp
+tests_aurora_test_bzffile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_bzffile_CXXFLAGS = $(test_CXXFLAGS)
