@@ -120,3 +120,8 @@ check_PROGRAMS                    += tests/aurora/test_gdafile
 tests_aurora_test_gdafile_SOURCES  = tests/aurora/gdafile.cpp
 tests_aurora_test_gdafile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_gdafile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                          += tests/aurora/test_talktable_tlk
+tests_aurora_test_talktable_tlk_SOURCES  = tests/aurora/talktable_tlk.cpp
+tests_aurora_test_talktable_tlk_LDADD    = $(aurora_LIBS)
+tests_aurora_test_talktable_tlk_CXXFLAGS = $(test_CXXFLAGS)
