@@ -516,17 +516,18 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		childNode->load(ctx);
 	}
 
-	Common::UString meshName = ctx.mdlName;
-	meshName += ".";
-	if (ctx.state->name.size() != 0) {
-		meshName += ctx.state->name;
-	} else {
-		meshName += "xoreos.default";
-	}
-	meshName += ".";
-	meshName += _name;
+	if (_mesh && _mesh->data) {
+		Common::UString meshName = ctx.mdlName;
+		meshName += ".";
+		if (ctx.state->name.size() != 0) {
+			meshName += ctx.state->name;
+		} else {
+			meshName += "xoreos.default";
+		}
+		meshName += ".";
+		meshName += _name;
 
-	/**
+		/**
 	 * Dirty hack around an issue in KotOR2 where a tile can have multiple meshes
 	 * of exactly the same name. This dirty hack will double up on static objects
 	 * without state, but hopefully they're relatively few and it won't impact
@@ -535,27 +536,28 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	 * loaded and to use that directly: that should prevent models with an empty
 	 * state from being affected by this dirty hack.
 	 */
-	Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
-	if (ctx.state->name.size() == 0) {
-		while (mystery_mesh) {
-			meshName += "_";
-			mystery_mesh = MeshMan.getMesh(meshName);
+		Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
+		if (ctx.state->name.size() == 0) {
+			while (mystery_mesh) {
+				meshName += "_";
+				mystery_mesh = MeshMan.getMesh(meshName);
+			}
 		}
-	}
 
-	if (!mystery_mesh) {
-		_mesh->data->rawMesh->setName(meshName);
-		_mesh->data->rawMesh->init();
-		if (MeshMan.getMesh(meshName)) {
-			warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+		if (!mystery_mesh) {
+			_mesh->data->rawMesh->setName(meshName);
+			_mesh->data->rawMesh->init();
+			if (MeshMan.getMesh(meshName)) {
+				warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+			}
+			MeshMan.addMesh(_mesh->data->rawMesh);
+		} else {
+			delete _mesh->data->rawMesh;
+			_mesh->data->rawMesh = mystery_mesh;
 		}
-		MeshMan.addMesh(_mesh->data->rawMesh);
-	} else {
-		delete _mesh->data->rawMesh;
-		_mesh->data->rawMesh = mystery_mesh;
-	}
 
-	this->buildMaterial();
+		this->buildMaterial();
+	}
 }
 
 void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
@@ -751,6 +753,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
 	_mesh->data->envMapMode = kModeEnvironmentBlendedOver;
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 	uint32 endPos = ctx.mdl->pos();
 

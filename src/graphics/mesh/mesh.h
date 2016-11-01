@@ -69,6 +69,8 @@ public:
 	void useDecrement();
 	uint32 useCount() const;
 
+	const Common::Vector3 &getCentre() const;
+
 protected:
 	// For each attrib, when calculating VBOs, do (attrib address) - (base data address) to find initial data offset.
 	VertexBuffer _vertexBuffer;
@@ -87,6 +89,10 @@ private:
 	uint32 _usageCount;
 
 	GLuint _vao;  ///< Vertex Array Object handle. GL3.x only.
+
+	Common::Vector3 _centre;
+	Common::Vector3 _max;
+	Common::Vector3 _min;
 };
 
 } // End of namespace Mesh

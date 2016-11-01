@@ -73,6 +73,7 @@ void RenderQueue::queueItem(Shader::ShaderProgram *program, Shader::ShaderSurfac
 		return;
 	}
 	glm::vec3 ref = transform->getPosition();
+	ref += mesh->getCentre();
 	ref -= _cameraReference;
 	// Length squared of ref serves as a suitable depth sorting value.
 	_nodeArray.push_back(RenderQueueNode(program, surface, material, mesh, transform, alpha, ref.dot(ref)));
@@ -96,7 +97,10 @@ void RenderQueue::sortShader() {
 
 void RenderQueue::sortDepth() {
 	if (_nodeArray.size() > 1) {
-		std::sort(_nodeArray.begin(), _nodeArray.end(), compareDepth);
+		//std::sort(_nodeArray.begin(), _nodeArray.end(), compareDepth);
+		//for (uint32 i = 0; i < _nodeArray.size(); ++i) {
+		//	printf("sorted %u; %s\n", i, _nodeArray[i].material->getName().c_str());
+		//}
 	}
 }
 

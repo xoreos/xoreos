@@ -234,9 +234,15 @@ void ShaderMaterial::bindFade(Shader::ShaderProgram *program, float alpha) {
 }
 
 void ShaderMaterial::bindGLState() {
+	if (_flags & ShaderMaterial::MATERIAL_SPECIAL_BLEND) {
+		glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+	}
 }
 
 void ShaderMaterial::unbindGLState() {
+	if (_flags & ShaderMaterial::MATERIAL_SPECIAL_BLEND) {
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
 }
 
 void ShaderMaterial::restoreGLState() {

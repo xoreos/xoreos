@@ -696,6 +696,22 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 	 * Ignoring _render for now because it's being falsely set to false.
 	 */
 //	if (_render) {}
+/*
+	if (_name == "Plane17" ||
+	    _name == "Plane05" ||
+	    _name == "Plane21" ||
+	    _name == "Plane09" ||
+	    _name == "Plane10" ||
+	    _name == "Plane07" ||
+	    _name == "Plane20" ||
+	    _name == "window") {
+
+	} else if (_dirtyRender) {
+*/
+	float alpah = 1.0f;
+	if (_name == "window") {
+		alpah = 0.7f;
+	}
 
 	if (_dirtyRender) {
 		/**
@@ -708,12 +724,12 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 		if (_renderableArray.size() == 0) {
 			if (_rootStateNode) {
 				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, 1.0f);//_mesh->alpha);
+					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, alpah);//_mesh->alpha);
 				}
 			}
 		} else {
 			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, 1.0f);//_mesh->alpha);
+				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, alpah);//_mesh->alpha);
 			}
 		}
 	}
@@ -1007,14 +1023,20 @@ void ModelNode::buildMaterial() {
 		return;
 	}
 
-	printf("attempting to build material with mesh: %s, environment map: %u, texture count: %u\n", pmesh->data->rawMesh->getName().c_str(), penvmap ? 1 : 0, textureCount);
+	//printf("attempting to build material with mesh: %s, environment map: %u, texture count: %u\n", pmesh->data->rawMesh->getName().c_str(), penvmap ? 1 : 0, textureCount);
 
 	if (!_render) {
 		//printf("%s: rendering disabled when building material\n", _name.c_str());
+		return;
 	}
 
 	if (!pmesh->data->rawMesh) {
 		//printf("%s: no raw mesh when building material\n", _name.c_str());
+		return;
+	}
+
+	if (phandles[0].empty()) {
+		//printf("%s: no diffuse colour texture, abandoning material construction.\n", _name.c_str());
 		return;
 	}
 
@@ -1075,6 +1097,10 @@ void ModelNode::buildMaterial() {
 	if (textureCount >= 1) {
 		if (!phandles[0].empty()) {
 			materialName += phandles[0].getName();
+			//if (_name == "window")
+			if (phandles[0].getTexture().getTXI().getFeatures().blending) {
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_SPECIAL_BLEND;
+			}
 			if (penvmap && envmapmode == kModeEnvironmentBlendedUnder) {
 				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_SRC_ALPHA));
 			} else {

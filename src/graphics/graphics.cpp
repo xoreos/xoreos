@@ -1044,7 +1044,7 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 		glDepthMask(GL_FALSE);
 
 	_projection.loadIdentity();
-	_projection.scale(2.0f / _width, 2.0f / _height, 0.0f);
+	_projection.scale(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
