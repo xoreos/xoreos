@@ -100,3 +100,8 @@ check_PROGRAMS                    += tests/aurora/test_erffile
 tests_aurora_test_erffile_SOURCES  = tests/aurora/erffile.cpp
 tests_aurora_test_erffile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_erffile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                     += tests/aurora/test_gff3file
+tests_aurora_test_gff3file_SOURCES  = tests/aurora/gff3file.cpp
+tests_aurora_test_gff3file_LDADD    = $(aurora_LIBS)
+tests_aurora_test_gff3file_CXXFLAGS = $(test_CXXFLAGS)
