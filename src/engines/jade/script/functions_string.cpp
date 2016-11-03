@@ -200,9 +200,12 @@ void Functions::findSubString(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &str = ctx.getParams()[0].getString();
 	const Common::UString &sub = ctx.getParams()[1].getString();
 
+	ctx.getReturn() = -1;
+
 	Common::UString::iterator it = str.findFirst(sub);
 	if (it == str.end())
-		ctx.getReturn() = -1;
+		return;
+
 	ctx.getReturn() = (int32) str.getPosition(it);
 }
 
