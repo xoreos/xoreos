@@ -292,14 +292,22 @@ void Functions::subString(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::findSubString(Aurora::NWScript::FunctionContext &ctx) {
-	const Common::UString &str = ctx.getParams()[0].getString();
-	const Common::UString &sub = ctx.getParams()[1].getString();
+	const Common::UString &str   = ctx.getParams()[0].getString();
+	const Common::UString &sub   = ctx.getParams()[1].getString();
+	const int32            start = ctx.getParams()[2].getInt();
 
-	Common::UString::iterator it = str.findFirst(sub);
-	if (it == str.end())
-		ctx.getReturn() = -1;
+	ctx.getReturn() = -1;
 
-	ctx.getReturn() = (int32) str.getPosition(it);
+	if ((start < 0) || ((size_t)start >= str.size()))
+		return;
+
+	const Common::UString subStr = str.substr(str.getPosition(start), str.end());
+
+	Common::UString::iterator it = subStr.findFirst(sub);
+	if (it == subStr.end())
+		return;
+
+	ctx.getReturn() = (int32) (subStr.getPosition(it) + start);
 }
 
 void Functions::getStringByStringId(Aurora::NWScript::FunctionContext &ctx) {
