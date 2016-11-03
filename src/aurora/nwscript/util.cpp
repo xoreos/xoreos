@@ -118,6 +118,15 @@ Common::UString formatParams(const FunctionContext &ctx) {
 	return params;
 }
 
+Common::UString formatReturn(const FunctionContext &ctx) {
+	Common::UString r;
+
+	if (ctx.getReturn().getType() != kTypeVoid)
+		formatVariable(r, ctx.getReturn());
+
+	return r;
+}
+
 Common::UString formatType(Type type) {
 	switch (type) {
 		case kTypeVoid:

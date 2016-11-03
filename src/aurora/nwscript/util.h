@@ -40,6 +40,9 @@ Common::UString formatTag(const Object *object);
 /** Construct a string describing parameters of this function. */
 Common::UString formatParams(const FunctionContext &ctx);
 
+/** Construct a string describing the return value of this function. */
+Common::UString formatReturn(const FunctionContext &ctx);
+
 /** Construct a string describing this variable type. */
 Common::UString formatType(Type type);
 

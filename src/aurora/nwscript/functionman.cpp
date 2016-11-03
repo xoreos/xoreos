@@ -24,6 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/debug.h"
 
 #include "src/aurora/nwscript/functionman.h"
 
@@ -84,7 +85,17 @@ FunctionContext FunctionManager::createContext(const Common::UString &function) 
 }
 
 void FunctionManager::call(const Common::UString &function, FunctionContext &ctx) const {
+	debugCN(Common::kDebugEngineScripts, 5, "%s %s(%s)", formatType(ctx.getReturn().getType()).c_str(),
+	        ctx.getName().c_str(), formatParams(ctx).c_str());
+
 	find(function).func(ctx);
+
+	const Common::UString r = formatReturn(ctx);
+	debugC(Common::kDebugEngineScripts, 5, "%s%s", r.empty() ? "" : " => ", r.c_str());
+
+	if (DebugMan.getVerbosityLevel(Common::kDebugEngineScripts) < 5)
+		debugC(Common::kDebugEngineScripts, 1, "%s %s(%s)%s%s", formatType(ctx.getReturn().getType()).c_str(),
+		       ctx.getName().c_str(), formatParams(ctx).c_str(), r.empty() ? "" : " => ", r.c_str());
 }
 
 FunctionContext FunctionManager::createContext(uint32 function) const {
@@ -92,7 +103,17 @@ FunctionContext FunctionManager::createContext(uint32 function) const {
 }
 
 void FunctionManager::call(uint32 function, FunctionContext &ctx) const {
+	debugCN(Common::kDebugEngineScripts, 5, "%s %s(%s)", formatType(ctx.getReturn().getType()).c_str(),
+	        ctx.getName().c_str(), formatParams(ctx).c_str());
+
 	find(function).func(ctx);
+
+	const Common::UString r = formatReturn(ctx);
+	debugC(Common::kDebugEngineScripts, 5, "%s%s", r.empty() ? "" : " => ", r.c_str());
+
+	if (DebugMan.getVerbosityLevel(Common::kDebugEngineScripts) < 5)
+		debugC(Common::kDebugEngineScripts, 1, "%s %s(%s)%s%s", formatType(ctx.getReturn().getType()).c_str(),
+		       ctx.getName().c_str(), formatParams(ctx).c_str(), r.empty() ? "" : " => ", r.c_str());
 }
 
 const FunctionManager::FunctionEntry &FunctionManager::find(const Common::UString &function) const {
