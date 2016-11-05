@@ -95,8 +95,6 @@ private:
 	void readVarResTable(Common::SeekableReadStream &bzf, uint32 offset);
 
 	const IResource &getIResource(uint32 index) const;
-
-	Common::SeekableReadStream *decompress(Common::MemoryReadStream &packedStream, uint32 unpackedSize) const;
 };
 
 } // End of namespace Aurora

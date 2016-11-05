@@ -34,6 +34,7 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
+#include "src/common/lzma.h"
 
 #include "src/aurora/bzffile.h"
 #include "src/aurora/keyfile.h"
@@ -147,52 +148,7 @@ Common::SeekableReadStream *BZFFile::getResource(uint32 index, bool UNUSED(tryNo
 
 	_bzf->seek(res.offset);
 
-	Common::ScopedPtr<Common::MemoryReadStream> packedStream(_bzf->readStream(res.packedSize));
-
-	return decompress(*packedStream, res.size);
-}
-
-Common::SeekableReadStream *BZFFile::decompress(Common::MemoryReadStream &packedStream,
-                                                uint32 unpackedSize) const {
-	lzma_filter filters[2];
-	filters[0].id      = LZMA_FILTER_LZMA1;
-	filters[0].options = 0;
-	filters[1].id      = LZMA_VLI_UNKNOWN;
-	filters[1].options = 0;
-
-	const byte *compressedData = packedStream.getData();
-	uint32 packedSize = packedStream.size();
-
-	if (!lzma_filter_decoder_is_supported(filters[0].id))
-		throw Common::Exception("LZMA1 compression not supported");
-
-	uint32 propsSize;
-	if (lzma_properties_size(&propsSize, &filters[0]) != LZMA_OK)
-		throw Common::Exception("Can't get LZMA1 properties size");
-
-	if (lzma_properties_decode(&filters[0], 0, compressedData, propsSize) != LZMA_OK)
-		throw Common::Exception("Failed to decode LZMA properties");
-
-	compressedData += propsSize;
-	packedSize     -= propsSize;
-
-	Common::ScopedArray<byte> uncompressedData(new byte[unpackedSize]);
-	size_t posIn = 0, posOut = 0;
-
-	lzma_ret decodeRet = lzma_raw_buffer_decode(filters, 0,
-			compressedData        , &posIn , packedSize,
-			uncompressedData.get(), &posOut, unpackedSize);
-
-	/* Ignore LZMA_DATA_ERROR and LZMA_BUF_ERROR thrown from the uncompressor.
-	 * LZMA data in BZF may or may not contain an end marker.
-	 * - If there is no end marker, LZMA_BUF_ERROR is thrown
-	 * - If there is an end marker, LZMA_DATA_ERROR is thrown because we already
-	 *   know the size of the uncompressed data
-	 */
-	if ((decodeRet != LZMA_OK) && (decodeRet != LZMA_DATA_ERROR) && (decodeRet != LZMA_BUF_ERROR))
-		throw Common::Exception("Failed to uncompress LZMA data: %d", (int) decodeRet);
-
-	return new Common::MemoryReadStream(uncompressedData.release(), unpackedSize, true);
+	return Common::decompressLZMA1(*_bzf, res.packedSize, res.size);
 }
 
 } // End of namespace Aurora
