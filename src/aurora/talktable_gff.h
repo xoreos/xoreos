@@ -46,6 +46,10 @@ namespace Aurora {
  *  is implicit in the talk tables file name), nor any other data
  *  besides the raw strings. getSoundResRef() always returns an empty
  *  string.
+ *
+ *  There are two versions of GFF'd talk tables known and supported
+ *  - V0.2, used by Sonic Chronicles and Dragon Age: Origins
+ *  - V0.5, used by Dragon Age II
  */
 class TalkTable_GFF : public TalkTable {
 public:

@@ -44,6 +44,11 @@ namespace Aurora {
  *  format. It has a numerical, game-local ID of the language it
  *  contains, and stores a few more optional data points per string,
  *  like a reference to a voice-over file.
+ *
+ *  There are two versions of TLK files known and supported
+ *  - V3.0, used by Neverwinter Nights, Neverwinter Nights 2, Knight of
+ *    the Old Republic, Knight of the Old Republic II and The Witcher
+ *  - V4.0, used by Jade Empire
  */
 class TalkTable_TLK : public AuroraFile, public TalkTable {
 public:
