@@ -74,14 +74,14 @@ void TalkTable_TLK::load() {
 		if (_version == kVersion4)
 			tableOffset = _tlk->readUint32LE();
 
-		_stringsOffset = _tlk->readUint32LE();
+		const uint32 stringsOffset = _tlk->readUint32LE();
 
 		// Go to the table
 		_tlk->seek(tableOffset);
 
 		// Read in all the table data
 		if (_version == kVersion3)
-			readEntryTableV3();
+			readEntryTableV3(stringsOffset);
 		else
 			readEntryTableV4();
 
@@ -91,13 +91,13 @@ void TalkTable_TLK::load() {
 	}
 }
 
-void TalkTable_TLK::readEntryTableV3() {
+void TalkTable_TLK::readEntryTableV3(uint32 stringsOffset) {
 	for (Entries::iterator entry = _entries.begin(); entry != _entries.end(); ++entry) {
 		entry->flags          = _tlk->readUint32LE();
 		entry->soundResRef    = Common::readStringFixed(*_tlk, Common::kEncodingASCII, 16);
 		entry->volumeVariance = _tlk->readUint32LE();
 		entry->pitchVariance  = _tlk->readUint32LE();
-		entry->offset         = _tlk->readUint32LE() + _stringsOffset;
+		entry->offset         = _tlk->readUint32LE() + stringsOffset;
 		entry->length         = _tlk->readUint32LE();
 		entry->soundLength    = _tlk->readIEEEFloatLE();
 	}

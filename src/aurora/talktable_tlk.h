@@ -98,14 +98,13 @@ private:
 
 	Common::ScopedPtr<Common::SeekableReadStream> _tlk;
 
-	uint32 _stringsOffset;
 	uint32 _languageID;
 
 	mutable Entries _entries;
 
 	void load();
 
-	void readEntryTableV3();
+	void readEntryTableV3(uint32 stringsOffset);
 	void readEntryTableV4();
 
 	void readString(Entry &entry) const;
