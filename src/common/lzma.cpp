@@ -26,6 +26,8 @@
 #include "src/common/types.h"
 #include <lzma.h>
 
+#include <boost/scope_exit.hpp>
+
 #include "src/common/lzma.h"
 #include "src/common/scopedptr.h"
 #include "src/common/error.h"
@@ -34,11 +36,10 @@
 namespace Common {
 
 byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize) {
-	lzma_filter filters[2];
-	filters[0].id      = LZMA_FILTER_LZMA1;
-	filters[0].options = 0;
-	filters[1].id      = LZMA_VLI_UNKNOWN;
-	filters[1].options = 0;
+	lzma_filter filters[2] = {
+		{ LZMA_FILTER_LZMA1, 0 },
+		{ LZMA_VLI_UNKNOWN , 0 }
+	};
 
 	if (!lzma_filter_decoder_is_supported(filters[0].id))
 		throw Exception("LZMA1 compression not supported");
@@ -51,26 +52,39 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize) {
 		throw Exception("LZMA1 properties size larger than input data");
 
 	if (lzma_properties_decode(&filters[0], 0, data, propsSize) != LZMA_OK)
-		throw Exception("Failed to decode LZMA properties");
+		throw Exception("Failed to decode LZMA1 properties");
 
 	data      += propsSize;
 	inputSize -= propsSize;
 
+	lzma_stream strm = LZMA_STREAM_INIT;
+	BOOST_SCOPE_EXIT( (&strm) ) {
+		lzma_end(&strm);
+	} BOOST_SCOPE_EXIT_END
+
+	lzma_ret lzmaRet = LZMA_OK;
+
+	if ((lzmaRet = lzma_raw_decoder(&strm, filters)) != LZMA_OK)
+		throw Exception("Failed to create raw LZMA1 decoder: %d", (int) lzmaRet);
+
 	ScopedArray<byte> outputData(new byte[outputSize]);
 
-	size_t posIn = 0, posOut = 0;
-	lzma_ret decodeRet = lzma_raw_buffer_decode(filters, 0,
-			data            , &posIn , inputSize,
-			outputData.get(), &posOut, outputSize);
+	strm.next_in   = data;
+	strm.avail_in  = inputSize;
+	strm.next_out  = outputData.get();
+	strm.avail_out = outputSize;
 
-	/* Ignore LZMA_DATA_ERROR and LZMA_BUF_ERROR thrown from the uncompressor.
-	 * These are also thrown when there is no end marker (which happens in data
-	 * found in BZF files). Unfortunately, LZMA provides no way to differentiate
-	 * between "real" buffer/data errors and missing end markers. So we have
-	 * no way to detect actual truncated input data, for example. */
+	lzmaRet = lzma_code(&strm, LZMA_FINISH);
 
-	if ((decodeRet != LZMA_OK) && (decodeRet != LZMA_DATA_ERROR) && (decodeRet != LZMA_BUF_ERROR))
-		throw Exception("Failed to uncompress LZMA data: %d", (int) decodeRet);
+	if ((lzmaRet != LZMA_STREAM_END) || (strm.avail_out != 0)) {
+		if (lzmaRet == LZMA_OK)
+			throw Exception("Failed to uncompress LZMA1 data: premature end of output buffer");
+
+		if (strm.avail_out != 0)
+			throw Exception("Failed to uncompress LZMA1 data: output buffer not completely filled");
+
+		throw Exception("Failed to uncompress LZMA1 data: %d", (int) lzmaRet);
+	}
 
 	return outputData.release();
 }
