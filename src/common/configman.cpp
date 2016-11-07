@@ -39,7 +39,7 @@ namespace Common {
 
 const char *ConfigManager::kDomainApp = "xoreos";
 
-ConfigManager::ConfigManager() : _changed(false) {
+ConfigManager::ConfigManager() : _changed(false), _domainApp(0), _domainGame(0) {
 	_domainDefaultApp.reset(new ConfigDomain("appDefault"));
 	_domainCommandline.reset(new ConfigDomain("commandline"));
 }
