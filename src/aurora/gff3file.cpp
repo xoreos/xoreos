@@ -637,6 +637,10 @@ Common::SeekableReadStream *GFF3Struct::getData(const Common::UString &field) co
 	const Field *f = getField(field);
 	if (!f)
 		return 0;
+	if ((f->type != kFieldTypeVoid) &&
+	    (f->type != kFieldTypeExoString) &&
+	    (f->type != kFieldTypeResRef))
+		throw Common::Exception("GFF3: Field is not a data type");
 
 	Common::SeekableReadStream &data = getData(*f);
 
