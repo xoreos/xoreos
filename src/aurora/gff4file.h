@@ -65,6 +65,12 @@ class GFF4Struct;
  *  that no such type ID enforcement should be done. In both cases, the type
  *  ID read from the file can get access through getType().
  *
+ *  GFF V4.1 files exclusively appear in Dragon Age 2 (but Dragon Age 2 also
+ *  has GFF V4.0 files). The only difference between these versions is that
+ *  V4.1 has support for a global string table and every string field can
+ *  reference a string within this table, so that duplicated strings don't
+ *  need to be stored multiple times.
+ *
  *  Notes:
  *  - Generics and lists of generics are mapped to structs, with the field ID
  *    being the list element indices (or just 0 on non-list generics).
