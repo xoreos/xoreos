@@ -32,6 +32,7 @@
 #include "src/common/readstream.h"
 #include "src/common/encoding.h"
 #include "src/common/strutil.h"
+#include "src/common/matrix4x4.h"
 
 #include "src/aurora/gff4file.h"
 #include "src/aurora/util.h"
@@ -969,6 +970,15 @@ bool GFF4Struct::getMatrix4x4(uint32 field, float (&m)[16]) const {
 	return true;
 }
 
+bool GFF4Struct::getMatrix4x4(uint32 field, Common::Matrix4x4 &m) const {
+	float f[16];
+	if (!getMatrix4x4(field, f))
+		return false;
+
+	m = f;
+	return true;
+}
+
 bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<double> &vectorMatrix) const {
 	const Field *f;
 	Common::SeekableReadStream *data = getField(field, f);
@@ -1181,6 +1191,28 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<float> >
 		list[i].resize(length);
 		for (uint32 j = 0; j < length; j++)
 			list[i][j] = getFloat(*data, kFieldTypeFloat32);
+	}
+
+	return true;
+}
+
+bool GFF4Struct::getMatrix4x4(uint32 field, std::vector<Common::Matrix4x4> &list) const {
+	const Field *f;
+	Common::SeekableReadStream *data = getField(field, f);
+	if (!data)
+		return false;
+
+	const uint32 length = getVectorMatrixLength(*f, 0, 16);
+	const uint32 count  = getListCount(*data, *f);
+
+	list.resize(count);
+	for (uint32 i = 0; i < count; i++) {
+		float m[16];
+
+		for (uint32 j = 0; j < length; j++)
+			m[j] = getFloat(*data, kFieldTypeFloat32);
+
+		list[i] = m;
 	}
 
 	return true;

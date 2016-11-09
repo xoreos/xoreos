@@ -41,6 +41,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class Matrix4x4;
 }
 
 namespace Aurora {
@@ -275,6 +276,8 @@ public:
 	bool getVectorMatrix(uint32 field, std::vector<double> &vectorMatrix) const;
 	/** Return a field vector or a matrix type as a std::vector of doubles. */
 	bool getVectorMatrix(uint32 field, std::vector<float > &vectorMatrix) const;
+
+	bool getMatrix4x4(uint32 field, Common::Matrix4x4 &m) const;
 	// '---
 
 	// .--- Lists of values
@@ -303,6 +306,8 @@ public:
 	bool getVectorMatrix(uint32 field, std::vector< std::vector<double> > &list) const;
 	/** Return field vector or a matrix types as std::vectors of floats. */
 	bool getVectorMatrix(uint32 field, std::vector< std::vector<float > > &list) const;
+
+	bool getMatrix4x4(uint32 field, std::vector<Common::Matrix4x4> &list) const;
 	// '---
 
 	// .--- Structs and lists of structs
