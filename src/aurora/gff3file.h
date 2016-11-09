@@ -73,6 +73,12 @@ class GFF3Struct;
  *  parameter is set to false, no detection will take place, and these
  *  broken files will lead the loader to throw an exception.
  *
+ *  There is no functional difference between GFF V3.2 and V3.3 files. GFF
+ *  V3.3 files exclusively appear in The Witcher (and every GFF file there
+ *  is of version V3.3), simply to denote that the language table used for
+ *  LocStrings is different. Since xoreos has more flexible handling of
+ *  language IDs anyway, this doesn't concern us.
+ *
  *  See also: GFF4File in gff4file.h for the later V4.0/V4.1 versions of
  *  the GFF format.
  */
