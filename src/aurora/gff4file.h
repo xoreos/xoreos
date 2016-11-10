@@ -58,6 +58,10 @@ class GFF4Struct;
  *  a human-readable string. A collection of currently known field values
  *  and their meanings can be found in gff4fields.h.
  *
+ *  Unlike GFF3, GFF4 has a new concept, the generic. A generic is a field
+ *  of variable type. I.e. a field can contain any other type. A list of
+ *  generics can even contain different types at different indices.
+ *
  *  GFF V4.0/V4.1 files come in a multitude of types (ARE, DLG, ...), each
  *  with its own 4-byte type ID ('ARE ', 'DLG ', ...). When specified in
  *  the GFF4File constructor, the loader will enforce that it matches, and
