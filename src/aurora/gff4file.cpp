@@ -53,6 +53,7 @@ void GFF4File::Header::read(Common::SeekableReadStream &gff4, uint32 version) {
 	stringCount  = 0;
 	stringOffset = 0xFFFFFFFF;
 
+	// Only V4.1 has the global string table
 	if (version == kVersion41) {
 		stringCount  = gff4.readUint32LE();
 		stringOffset = gff4.readUint32LE();
@@ -149,7 +150,16 @@ void GFF4File::loadHeader(uint32 type) {
 }
 
 void GFF4File::loadStructs() {
-	// Load the struct templates
+	/* Load the struct templates.
+	 *
+	 * The struct template defines the structure of a struct, i.e. how
+	 * many fields there are and of what type. Each field of a struct type
+	 * references one of these templates. When two structs contain the same
+	 * structure (but not necessarily the same field *values*), they can
+	 * both reference the same struct template.
+	 *
+	 * So while in a GFF3, each individual struct said how its fields
+	 * looked, in a GFF4 this has been sourced out into these templates. */
 
 	static const uint32 kStructTemplateSize = 16;
 	const uint32 structTemplateStart = _stream->pos();
@@ -193,12 +203,19 @@ void GFF4File::loadStructs() {
 		}
 	}
 
-	// And load the top level struct, which itself recurses into field structs
+	/* And load the top level struct, which itself recurses into field structs.
+	 * The top level struct is always constructed using the first template. */
 	_topLevelStruct = new GFF4Struct(*this, _header.dataOffset, _structTemplates[0]);
 	_topLevelStruct->_refCount++;
 }
 
 void GFF4File::loadStrings() {
+	/* Load the global, shared string table.
+	 *
+	 * If this GFF4 file has such a table (which is only supported in V4.1),
+	 * each individual string field in a struct doesn't provide its own data.
+	 * Instead, they then reference this shared string table. */
+
 	if (!_header.hasSharedStrings)
 		return;
 
@@ -212,6 +229,16 @@ void GFF4File::loadStrings() {
 // --- Helpers for GFF4Struct ---
 
 void GFF4File::registerStruct(uint64 id, GFF4Struct *strct) {
+	/* Each struct, on creation, registers itself to the GFF4 files it
+	 * belongs in.
+	 *
+	 * This is especially necessary for finding reference duplicates:
+	 * a struct can be referenced by multiple struct type fields. For
+	 * example, let there be structs A, B, C, and D. Structs, A, B and C
+	 * can each contain a field "x" of type struct, each linking to
+	 * struct D. Moreover, D can even contain field "y" of type struct,
+	 * linking back to A, thus creating a loop. */
+
 	std::pair<StructMap::iterator, bool> result;
 
 	result = _structs.insert(std::make_pair(id, strct));
@@ -296,6 +323,8 @@ GFF4Struct::Field::~Field() {
 GFF4Struct::GFF4Struct(GFF4File &parent, uint32 offset, const GFF4File::StructTemplate &tmplt) :
 	_parent(&parent), _label(tmplt.label), _refCount(0), _fieldCount(0) {
 
+	// Constructor for a real struct, from a template
+
 	_id = generateID(offset, &tmplt);
 	parent.registerStruct(_id, this);
 
@@ -309,6 +338,8 @@ GFF4Struct::GFF4Struct(GFF4File &parent, uint32 offset, const GFF4File::StructTe
 
 GFF4Struct::GFF4Struct(GFF4File &parent, const Field &genericParent) :
 	_parent(&parent), _label(0), _refCount(0), _fieldCount(0) {
+
+	// Constructor for a generic, converted into a struct
 
 	_id = generateID(genericParent.offset);
 	parent.registerStruct(_id, this);
@@ -339,6 +370,13 @@ uint32 GFF4Struct::getLabel() const {
 // --- Loader ---
 
 void GFF4Struct::load(GFF4File &parent, uint32 offset, const GFF4File::StructTemplate &tmplt) {
+	/* Loader for a real struct, from a template.
+	 *
+	 * Go through all the fields in the template and create field
+	 * instances within this struct instance. If the field is itself
+	 * a struct, recursively create a new struct instance for it. If
+	 * the field is a generic, create a struct for it as well. */
+
 	for (size_t i = 0; i < tmplt.fields.size(); i++) {
 		const GFF4File::StructTemplate::Field &field = tmplt.fields[i];
 
@@ -363,6 +401,21 @@ void GFF4Struct::load(GFF4File &parent, uint32 offset, const GFF4File::StructTem
 void GFF4Struct::loadStructs(GFF4File &parent, Field &field) {
 	if (field.offset == 0xFFFFFFFF)
 		return;
+
+	/* Loader for fields of struct type.
+	 *
+	 * This field can be
+	 * a) a list of structs
+	 * b) a reference (pointer) to a struct
+	 * c) both
+	 *
+	 * We figure out how many structs there are (1 if not a list),
+	 * where the offset is (dependent on whether it's a reference)
+	 * and then we load every single one of them. However, we also
+	 * ask the parent GFF4 if we already have loaded the struct in
+	 * question (which can happen, because more than one reference
+	 * can point to the same struct). If that is the case, we don't
+	 * need to load it again. */
 
 	const GFF4File::StructTemplate &tmplt = parent.getStructTemplate(field.structIndex);
 
@@ -393,6 +446,8 @@ void GFF4Struct::loadGeneric(GFF4File &parent, Field &field) {
 	if (field.offset == 0xFFFFFFFF)
 		return;
 
+	// Loader for fields of generic type. We map the generic to a struct.
+
 	GFF4Struct *strct = parent.findStruct(generateID(field.offset));
 	if (!strct)
 		strct = new GFF4Struct(parent, field);
@@ -403,6 +458,12 @@ void GFF4Struct::loadGeneric(GFF4File &parent, Field &field) {
 }
 
 void GFF4Struct::load(GFF4File &parent, const Field &genericParent) {
+	/* Loader for generic, converting it into a struct.
+	 *
+	 * Go through all the elements of the generic and create fields
+	 * for them in this struct instance. If the element itself is a
+	 * struct, recursively create a new struct instance for it. */
+
 	static const uint32 kGenericSize = 8;
 
 	Common::SeekableReadStream &data = parent.getStream(genericParent.offset);
@@ -433,6 +494,13 @@ void GFF4Struct::load(GFF4File &parent, const Field &genericParent) {
 }
 
 uint64 GFF4Struct::generateID(uint32 offset, const GFF4File::StructTemplate *tmplt) {
+	/* Generate a unique ID identifying this struct within the GFF4 file.
+	 * The offset is an obvious choice. We also add the template index,
+	 * just to make sure.
+	 *
+	 * (However, if this struct is actually a mapped generic, there is
+	 * no template index). */
+
 	return (((uint64) offset) << 32) | (tmplt ? tmplt->index : 0xFFFFFFFF);
 }
 
