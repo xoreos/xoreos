@@ -490,6 +490,8 @@ void GFF4Struct::load(GFF4File &parent, const Field &genericParent) {
 		Field &f = _fields[i] = Field(i, fieldType, fieldFlags, fieldOffset, true);
 		if (f.type == kFieldTypeStruct)
 			loadStructs(parent, f);
+		if (f.type == kFieldTypeGeneric)
+			throw Common::Exception("GFF4: Found a generic with type generic?");
 	}
 
 	_fieldCount = genericCount;
