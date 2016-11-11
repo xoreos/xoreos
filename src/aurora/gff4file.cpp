@@ -284,7 +284,9 @@ Common::UString GFF4File::getSharedString(uint32 i) const {
 	if (i == 0xFFFFFFFF)
 		return "";
 
-	assert(i < _sharedStrings.size());
+	if (i >= _sharedStrings.size())
+		throw Common::Exception("GFF4: Shared string index out of range (%u >= %u)",
+		                        i, (uint) _sharedStrings.size());
 
 	return _sharedStrings[i];
 }
