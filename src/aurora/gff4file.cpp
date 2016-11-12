@@ -316,6 +316,15 @@ GFF4Struct::Field::Field(uint32 l, uint16 t, uint16 f, uint32 o, bool g) :
 	// A string is always read by reference. An extra reference flag is superfluous.
 	if (type == kFieldTypeString)
 		isReference = false;
+
+	if ((isList && (type == kFieldTypeASCIIString)) ||
+	    (isList && (type == kFieldTypeTlkString)))
+		throw Common::Exception("GFF4: TODO: Field type %d, isList %d, isReference %d",
+		                        (int) type, isList, isReference);
+
+	if (isList && isReference && (type != kFieldTypeStruct) && (type != kFieldTypeGeneric))
+		throw Common::Exception("GFF4: TODO: Field type %d, isList %d, isReference %d",
+		                        (int) type, isList, isReference);
 }
 
 GFF4Struct::Field::~Field() {
