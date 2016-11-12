@@ -935,8 +935,12 @@ bool GFF4Struct::getTalkString(uint32 field, Common::Encoding encoding,
 	const uint32 offset = getUint(*data, kFieldTypeUint32);
 
 	str.clear();
-	if ((offset != 0xFFFFFFFF) && (offset != 0))
-		str = getString(*data, encoding, _parent->getDataOffset() + offset);
+	if (offset != 0xFFFFFFFF) {
+		if (_parent->hasSharedStrings())
+			str = _parent->getSharedString(offset);
+		else if (offset != 0)
+			str = getString(*data, encoding, _parent->getDataOffset() + offset);
+	}
 
 	return true;
 }
@@ -1224,8 +1228,13 @@ bool GFF4Struct::getTalkString(uint32 field, Common::Encoding encoding,
 		strRefs[i] = getUint(*data, kFieldTypeUint32);
 
 		const uint32 offset = getUint(*data, kFieldTypeUint32);
-		if ((offset != 0xFFFFFFFF) && (offset != 0))
-			strs[i] = getString(*data, encoding, _parent->getDataOffset() + offset);
+
+		if (offset != 0xFFFFFFFF) {
+			if (_parent->hasSharedStrings())
+				strs[i] = _parent->getSharedString(offset);
+			else if (offset != 0)
+				strs[i] = getString(*data, encoding, _parent->getDataOffset() + offset);
+		}
 	}
 
 	return true;
