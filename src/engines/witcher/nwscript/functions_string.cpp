@@ -124,7 +124,11 @@ void Functions::intToHexString(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::stringToInt(Aurora::NWScript::FunctionContext &ctx) {
 	int32 i = 0;
-	Common::parseString(ctx.getParams()[0].getString(), i);
+
+	try {
+		Common::parseString(ctx.getParams()[0].getString(), i);
+	} catch (...) {
+	}
 
 	ctx.getReturn() = i;
 }
