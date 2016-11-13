@@ -188,8 +188,12 @@ void Functions::stringToInt(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::stringToFloat(Aurora::NWScript::FunctionContext &ctx) {
-	float f = 0;
-	Common::parseString(ctx.getParams()[0].getString(), f);
+	float f = 0.0f;
+
+	try {
+		Common::parseString(ctx.getParams()[0].getString(), f);
+	} catch (...) {
+	}
 
 	ctx.getReturn() = f;
 }
