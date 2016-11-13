@@ -206,9 +206,13 @@ void Functions::stringToVector(Aurora::NWScript::FunctionContext &ctx) {
 	if (Common::UString::split(ctx.getParams()[0].getString(), ' ', parts) != 3)
 		return;
 
-	Common::parseString(parts[0], x);
-	Common::parseString(parts[1], y);
-	Common::parseString(parts[2], z);
+	try {
+		Common::parseString(parts[0], x);
+		Common::parseString(parts[1], y);
+		Common::parseString(parts[2], z);
+	} catch (...) {
+		return;
+	}
 
 	ctx.getReturn().setVector(x, y, z);
 }
