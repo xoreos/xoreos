@@ -24,6 +24,8 @@
 
 #include "src/common/util.h"
 #include "src/common/ustring.h"
+#include "src/common/debug.h"
+#include "src/common/error.h"
 #include "src/common/strutil.h"
 #include "src/common/datetime.h"
 
@@ -181,7 +183,9 @@ void Functions::stringToInt(Aurora::NWScript::FunctionContext &ctx) {
 
 	try {
 		Common::parseString(ctx.getParams()[0].getString(), i);
-	} catch (...) {
+	} catch (Common::Exception &e) {
+		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: %s (\"%s\")",
+		       ctx.getName().c_str(), e.what(), ctx.getParams()[0].getString().c_str());
 	}
 
 	ctx.getReturn() = i;
@@ -192,7 +196,9 @@ void Functions::stringToFloat(Aurora::NWScript::FunctionContext &ctx) {
 
 	try {
 		Common::parseString(ctx.getParams()[0].getString(), f);
-	} catch (...) {
+	} catch (Common::Exception &e) {
+		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: %s (\"%s\")",
+		       ctx.getName().c_str(), e.what(), ctx.getParams()[0].getString().c_str());
 	}
 
 	ctx.getReturn() = f;
@@ -203,14 +209,19 @@ void Functions::stringToVector(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn().setVector(x, y, z);
 
 	std::vector<Common::UString> parts;
-	if (Common::UString::split(ctx.getParams()[0].getString(), ' ', parts) != 3)
+	if (Common::UString::split(ctx.getParams()[0].getString(), ' ', parts) != 3) {
+		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: \"%s\"",
+		       ctx.getName().c_str(), ctx.getParams()[0].getString().c_str());
 		return;
+	}
 
 	try {
 		Common::parseString(parts[0], x);
 		Common::parseString(parts[1], y);
 		Common::parseString(parts[2], z);
-	} catch (...) {
+	} catch (Common::Exception &e) {
+		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: %s (\"%s\")",
+		       ctx.getName().c_str(), e.what(), ctx.getParams()[0].getString().c_str());
 		return;
 	}
 
@@ -256,8 +267,11 @@ void Functions::stringRight(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &str = ctx.getParams()[0].getString();
 
 	const int32 n = ctx.getParams()[1].getInt();
-	if ((n <= 0) || ((size_t)n > str.size()))
+	if ((n <= 0) || ((size_t)n > str.size())) {
+		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: \"%s\", %d",
+		       ctx.getName().c_str(), str.c_str(), n);
 		return;
+	}
 
 	ctx.getReturn() = str.substr(str.getPosition(str.size() - (size_t) n), str.end());
 }
@@ -268,16 +282,22 @@ void Functions::stringLeft(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &str = ctx.getParams()[0].getString();
 
 	const int32 n = ctx.getParams()[1].getInt();
-	if ((n < 0) || ((size_t)n >= str.size()))
+	if ((n < 0) || ((size_t)n >= str.size())) {
+		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: \"%s\", %d",
+		       ctx.getName().c_str(), str.c_str(), n);
 		return;
+	}
 
 	ctx.getReturn() = str.substr(str.begin(), str.getPosition((size_t) n));
 }
 
 void Functions::insertString(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn().getString().clear();
-	if (ctx.getParams()[2].getInt() < 0)
+	if (ctx.getParams()[2].getInt() < 0) {
+		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: %d",
+		       ctx.getName().c_str(), ctx.getParams()[2].getInt());
 		return;
+	}
 
 	Common::UString str = ctx.getParams()[0].getString();
 
@@ -294,8 +314,11 @@ void Functions::subString(Aurora::NWScript::FunctionContext &ctx) {
 	const int32 offset = ctx.getParams()[1].getInt();
 	const int32 count  = ctx.getParams()[2].getInt();
 
-	if ((offset < 0) || ((size_t)offset >= str.size()) || (count <= 0))
+	if ((offset < 0) || ((size_t)offset >= str.size()) || (count <= 0)) {
+		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: \"%s\", %d, %d",
+		       ctx.getName().c_str(), str.c_str(), offset, count);
 		return;
+	}
 
 	Common::UString::iterator from = str.getPosition((size_t) offset);
 	Common::UString::iterator to   = str.getPosition(MIN<size_t>(offset + count, str.size()));
@@ -310,8 +333,11 @@ void Functions::findSubString(Aurora::NWScript::FunctionContext &ctx) {
 
 	ctx.getReturn() = -1;
 
-	if ((start < 0) || ((size_t)start >= str.size()))
+	if ((start < 0) || ((size_t)start >= str.size())) {
+		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: \"%s\", \"%s\", %d",
+		       ctx.getName().c_str(), str.c_str(), sub.c_str(), start);
 		return;
+	}
 
 	const Common::UString subStr = str.substr(str.getPosition(start), str.end());
 
