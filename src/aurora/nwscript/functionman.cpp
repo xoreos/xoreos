@@ -94,7 +94,7 @@ void FunctionManager::call(const Common::UString &function, FunctionContext &ctx
 	debugC(Common::kDebugEngineScripts, 5, "%s%s", r.empty() ? "" : " => ", r.c_str());
 
 	if (DebugMan.getVerbosityLevel(Common::kDebugEngineScripts) < 5)
-		debugC(Common::kDebugEngineScripts, 1, "%s %s(%s)%s%s", formatType(ctx.getReturn().getType()).c_str(),
+		debugC(Common::kDebugEngineScripts, 2, "%s %s(%s)%s%s", formatType(ctx.getReturn().getType()).c_str(),
 		       ctx.getName().c_str(), formatParams(ctx).c_str(), r.empty() ? "" : " => ", r.c_str());
 }
 
@@ -112,7 +112,7 @@ void FunctionManager::call(uint32 function, FunctionContext &ctx) const {
 	debugC(Common::kDebugEngineScripts, 5, "%s%s", r.empty() ? "" : " => ", r.c_str());
 
 	if (DebugMan.getVerbosityLevel(Common::kDebugEngineScripts) < 5)
-		debugC(Common::kDebugEngineScripts, 1, "%s %s(%s)%s%s", formatType(ctx.getReturn().getType()).c_str(),
+		debugC(Common::kDebugEngineScripts, 2, "%s %s(%s)%s%s", formatType(ctx.getReturn().getType()).c_str(),
 		       ctx.getName().c_str(), formatParams(ctx).c_str(), r.empty() ? "" : " => ", r.c_str());
 }
 
