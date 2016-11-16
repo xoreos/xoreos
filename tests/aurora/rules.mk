@@ -115,3 +115,8 @@ check_PROGRAMS                    += tests/aurora/test_2dafile
 tests_aurora_test_2dafile_SOURCES  = tests/aurora/2dafile.cpp
 tests_aurora_test_2dafile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_2dafile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_gdafile
+tests_aurora_test_gdafile_SOURCES  = tests/aurora/gdafile.cpp
+tests_aurora_test_gdafile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_gdafile_CXXFLAGS = $(test_CXXFLAGS)
