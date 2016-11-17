@@ -125,3 +125,8 @@ check_PROGRAMS                          += tests/aurora/test_talktable_tlk
 tests_aurora_test_talktable_tlk_SOURCES  = tests/aurora/talktable_tlk.cpp
 tests_aurora_test_talktable_tlk_LDADD    = $(aurora_LIBS)
 tests_aurora_test_talktable_tlk_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                          += tests/aurora/test_talktable_gff
+tests_aurora_test_talktable_gff_SOURCES  = tests/aurora/talktable_gff.cpp
+tests_aurora_test_talktable_gff_LDADD    = $(aurora_LIBS)
+tests_aurora_test_talktable_gff_CXXFLAGS = $(test_CXXFLAGS)
