@@ -317,12 +317,19 @@ GFF4Struct::Field::Field(uint32 l, uint16 t, uint16 f, uint32 o, bool g) :
 	if (type == kFieldTypeString)
 		isReference = false;
 
-	if ((isList && (type == kFieldTypeASCIIString)) ||
-	    (isList && (type == kFieldTypeTlkString)))
-		throw Common::Exception("GFF4: TODO: Field type %d, isList %d, isReference %d",
-		                        (int) type, isList, isReference);
+	bool supportedConfig = true;
 
-	if (isList && isReference && (type != kFieldTypeStruct) && (type != kFieldTypeGeneric))
+	// We don't know how any of these work
+	if (isList && (type == kFieldTypeASCIIString))
+		supportedConfig = false;
+	if (isList && (type == kFieldTypeTlkString))
+		supportedConfig = false;
+	if (isList &&  isReference && (type != kFieldTypeStruct) && (type != kFieldTypeGeneric))
+		supportedConfig = false;
+	if (isList && !isReference && (type == kFieldTypeGeneric))
+		supportedConfig = false;
+
+	if (!supportedConfig)
 		throw Common::Exception("GFF4: TODO: Field type %d, isList %d, isReference %d",
 		                        (int) type, isList, isReference);
 }
