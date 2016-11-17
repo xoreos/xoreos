@@ -411,6 +411,9 @@ void GFF4Struct::load(GFF4File &parent, uint32 offset, const GFF4File::StructTem
 			loadStructs(parent, f);
 		if (f.type == kFieldTypeGeneric)
 			loadGeneric(parent, f);
+
+		if ((f.type == kFieldTypeASCIIString) && parent.hasSharedStrings())
+			throw Common::Exception("GFF4: TODO: ASCII string field in a file with shared strings");
 	}
 
 	_fieldCount = _fields.size();
@@ -508,6 +511,9 @@ void GFF4Struct::load(GFF4File &parent, const Field &genericParent) {
 			loadStructs(parent, f);
 		if (f.type == kFieldTypeGeneric)
 			throw Common::Exception("GFF4: Found a generic with type generic?");
+
+		if ((f.type == kFieldTypeASCIIString) && parent.hasSharedStrings())
+			throw Common::Exception("GFF4: TODO: ASCII string field in a file with shared strings");
 	}
 
 	_fieldCount = genericCount;
