@@ -209,22 +209,22 @@ float GDAFile::getFloat(size_t row, const Common::UString &columnName, float def
 	return gdaRow->getDouble(gdaColumn, def);
 }
 
-uint32 GDAFile::identifyType(const Columns &columns, const Row &rows, size_t column) const {
+GDAFile::Type GDAFile::identifyType(const Columns &columns, const Row &rows, size_t column) const {
 	if (!columns || (column >= columns->size()) || !(*columns)[column])
-		return 0xFFFFFFFF;
+		return kTypeEmpty;
 
 	if ((*columns)[column]->hasField(kGFF4G2DAColumnType))
-		return (uint32) (*columns)[column]->getUint(kGFF4G2DAColumnType, -1);
+		return (Type) (*columns)[column]->getUint(kGFF4G2DAColumnType, -1);
 
 	if (!rows || rows->empty() || !(*rows)[0])
-		return 0xFFFFFFFF;
+		return kTypeEmpty;
 
 	GFF4Struct::FieldType fieldType = (*rows)[0]->getFieldType(kGFF4G2DAColumn1 + column);
 
 	switch (fieldType) {
 		case GFF4Struct::kFieldTypeString:
 		case GFF4Struct::kFieldTypeASCIIString:
-			return 0;
+			return kTypeString;
 
 		case GFF4Struct::kFieldTypeUint8:
 		case GFF4Struct::kFieldTypeUint16:
@@ -234,17 +234,17 @@ uint32 GDAFile::identifyType(const Columns &columns, const Row &rows, size_t col
 		case GFF4Struct::kFieldTypeSint16:
 		case GFF4Struct::kFieldTypeSint32:
 		case GFF4Struct::kFieldTypeSint64:
-			return 1;
+			return kTypeInt;
 
 		case GFF4Struct::kFieldTypeFloat32:
 		case GFF4Struct::kFieldTypeFloat64:
-			return 2;
+			return kTypeFloat;
 
 		default:
 			break;
 	}
 
-	return 0xFFFFFFFF;
+	return kTypeEmpty;
 }
 
 void GDAFile::load(Common::SeekableReadStream *gda) {
@@ -265,7 +265,7 @@ void GDAFile::load(Common::SeekableReadStream *gda) {
 				continue;
 
 			_headers[i].hash  = (uint32) (*_columns)[i]->getUint(kGFF4G2DAColumnHash);
-			_headers[i].type  = (Type)   identifyType(_columns, _rows.back(), i);
+			_headers[i].type  =          identifyType(_columns, _rows.back(), i);
 			_headers[i].field = (uint32) kGFF4G2DAColumn1 + i;
 		}
 
@@ -295,12 +295,12 @@ void GDAFile::add(Common::SeekableReadStream *gda) {
 			const uint32 hash1 = (uint32) (* columns)[i]->getUint(kGFF4G2DAColumnHash);
 			const uint32 hash2 = (uint32) (*_columns)[i]->getUint(kGFF4G2DAColumnHash);
 
-			const uint32 type1 = identifyType( columns, _rows.back(), i);
-			const uint32 type2 = identifyType(_columns, _rows[0]    , i);
+			const Type type1 = identifyType( columns, _rows.back(), i);
+			const Type type2 = identifyType(_columns, _rows[0]    , i);
 
 			if ((hash1 != hash2) || (type1 != type2))
-				throw Common::Exception("Columns don't match (%u: %u+%u vs. %u+%u)", (uint) i,
-				                        hash1, type1, hash2, type2);
+				throw Common::Exception("Columns don't match (%u: %u+%d vs. %u+%d)", (uint) i,
+				                        hash1, (int)type1, hash2, (int)type2);
 		}
 
 	} catch (Common::Exception &e) {
