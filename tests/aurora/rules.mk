@@ -130,3 +130,8 @@ check_PROGRAMS                          += tests/aurora/test_talktable_gff
 tests_aurora_test_talktable_gff_SOURCES  = tests/aurora/talktable_gff.cpp
 tests_aurora_test_talktable_gff_LDADD    = $(aurora_LIBS)
 tests_aurora_test_talktable_gff_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_ifofile
+tests_aurora_test_ifofile_SOURCES  = tests/aurora/ifofile.cpp
+tests_aurora_test_ifofile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_ifofile_CXXFLAGS = $(test_CXXFLAGS)
