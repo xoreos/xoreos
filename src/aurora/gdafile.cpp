@@ -213,8 +213,24 @@ GDAFile::Type GDAFile::identifyType(const Columns &columns, const Row &rows, siz
 	if (!columns || (column >= columns->size()) || !(*columns)[column])
 		return kTypeEmpty;
 
-	if ((*columns)[column]->hasField(kGFF4G2DAColumnType))
-		return (Type) (*columns)[column]->getUint(kGFF4G2DAColumnType, -1);
+	if ((*columns)[column]->hasField(kGFF4G2DAColumnType)) {
+		const Type type = (Type) (*columns)[column]->getUint(kGFF4G2DAColumnType, -1);
+
+		switch (type) {
+			case kTypeEmpty:
+			case kTypeString:
+			case kTypeInt:
+			case kTypeFloat:
+			case kTypeBool:
+			case kTypeResource:
+				break;
+
+			default:
+				throw Common::Exception("Invalid GDA column type %d", (int) type);
+		}
+
+		return type;
+	}
 
 	if (!rows || rows->empty() || !(*rows)[0])
 		return kTypeEmpty;
