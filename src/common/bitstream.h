@@ -132,6 +132,8 @@ public:
 	BitStreamImpl(SeekableReadStream *stream, bool disposeAfterUse = false) :
 		_stream(stream, disposeAfterUse), _value(0), _inValue(0) {
 
+		assert(_stream);
+
 		if ((valueBits != 8) && (valueBits != 16) && (valueBits != 32) && (valueBits != 64))
 			throw Exception("BitStream: Invalid memory layout %d, %d, %d", valueBits, isLE, isMSB2LSB);
 	}
