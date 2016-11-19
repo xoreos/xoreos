@@ -31,6 +31,8 @@
 namespace Aurora {
 
 ZIPFile::ZIPFile(Common::SeekableReadStream *zip) {
+	assert(zip);
+
 	_zipFile.reset(new Common::ZipFile(zip));
 
 	load();
