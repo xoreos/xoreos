@@ -68,6 +68,8 @@ void GFF4File::Header::read(Common::SeekableReadStream &gff4, uint32 version) {
 GFF4File::GFF4File(Common::SeekableReadStream *gff4, uint32 type) :
 	_stream(gff4), _topLevelStruct(0) {
 
+	assert(_stream);
+
 	load(type);
 }
 
