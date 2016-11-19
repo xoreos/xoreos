@@ -79,6 +79,7 @@ const uint16 *CDPTH::load(Common::SeekableReadStream &cdpth, uint32 width, uint3
 const uint16 *CDPTH::load(Common::SeekableReadStream *cdpth, uint32 width, uint32 height) {
 	Common::ScopedPtr<Common::SeekableReadStream> stream(cdpth);
 
+	assert(stream);
 	return load(*stream, width, height);
 }
 
