@@ -45,6 +45,8 @@ namespace Aurora {
 DLGFile::DLGFile(Common::SeekableReadStream *dlg, NWScript::Object *owner, bool repairNWNPremium) :
 	_owner(owner), _ended(true) {
 
+	assert(dlg);
+
 	GFF3File gff(dlg, kDLGID, repairNWNPremium);
 
 	load(gff.getTopLevel());
