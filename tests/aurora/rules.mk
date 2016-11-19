@@ -135,3 +135,8 @@ check_PROGRAMS                    += tests/aurora/test_ifofile
 tests_aurora_test_ifofile_SOURCES  = tests/aurora/ifofile.cpp
 tests_aurora_test_ifofile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_ifofile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_dlgfile
+tests_aurora_test_dlgfile_SOURCES  = tests/aurora/dlgfile.cpp
+tests_aurora_test_dlgfile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_dlgfile_CXXFLAGS = $(test_CXXFLAGS)
