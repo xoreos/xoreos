@@ -134,6 +134,8 @@ void Small::decompress(Common::ReadStream &small, Common::WriteStream &out) {
 Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small) {
 	Common::ScopedPtr<Common::SeekableReadStream> in(small);
 
+	assert(in);
+
 	uint32 type, size;
 	readSmallHeader(*in, type, size);
 
@@ -176,6 +178,7 @@ Common::SeekableReadStream *Small::decompress(Common::ReadStream &small) {
 Common::SeekableReadStream *Small::decompress(Common::ReadStream *small) {
 	Common::ScopedPtr<Common::ReadStream> in(small);
 
+	assert(in);
 	return decompress(*in);
 }
 
