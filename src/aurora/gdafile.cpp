@@ -31,11 +31,14 @@
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/hash.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/gdafile.h"
 #include "src/aurora/gff4file.h"
 
-static const uint32 kG2DAID = MKTAG('G', '2', 'D', 'A');
+static const uint32 kG2DAID    = MKTAG('G', '2', 'D', 'A');
+static const uint32 kVersion01 = MKTAG('V', '0', '.', '1');
+static const uint32 kVersion02 = MKTAG('V', '0', '.', '2');
 
 namespace Aurora {
 
@@ -267,6 +270,10 @@ void GDAFile::load(Common::SeekableReadStream *gda) {
 	try {
 		_gff4s.push_back(new GFF4File(gda, kG2DAID));
 
+		const uint32 version = _gff4s.back()->getTypeVersion();
+		if ((version != kVersion01) && (version != kVersion02))
+			throw Common::Exception("Unsupported GDA file version %s", Common::debugTag(version).c_str());
+
 		const GFF4Struct &top = _gff4s.back()->getTopLevel();
 
 		_columns = &top.getList(kGFF4G2DAColumnList);
@@ -294,6 +301,10 @@ void GDAFile::load(Common::SeekableReadStream *gda) {
 void GDAFile::add(Common::SeekableReadStream *gda) {
 	try {
 		_gff4s.push_back(new GFF4File(gda, kG2DAID));
+
+		const uint32 version = _gff4s.back()->getTypeVersion();
+		if ((version != kVersion01) && (version != kVersion02))
+			throw Common::Exception("Unsupported GDA file version %s", Common::debugTag(version).c_str());
 
 		const GFF4Struct &top = _gff4s.back()->getTopLevel();
 
