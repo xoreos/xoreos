@@ -43,6 +43,8 @@ static const uint32 kVersion02 = MKTAG('V', '0', '.', '2');
 namespace Aurora {
 
 GDAFile::GDAFile(Common::SeekableReadStream *gda) : _columns(0), _rowCount(0) {
+	assert(gda);
+
 	load(gda);
 }
 
