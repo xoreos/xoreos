@@ -66,6 +66,8 @@ void GFF3File::Header::read(Common::SeekableReadStream &gff3) {
 GFF3File::GFF3File(Common::SeekableReadStream *gff3, uint32 id, bool repairNWNPremium) :
 	_stream(gff3), _repairNWNPremium(repairNWNPremium), _offsetCorrection(0) {
 
+	assert(_stream);
+
 	load(id);
 }
 
