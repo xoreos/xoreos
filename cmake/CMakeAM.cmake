@@ -105,7 +105,9 @@ function(convert_automake_internal AM_INPUT_FILE CMAKE_OUTPUT_FILE)
     string(REGEX REPLACE "^(.*)\\+=(.*)$" "list(APPEND \\1 \\2)" AM_FILE_LINE "${AM_FILE_LINE}")
     string(REGEX REPLACE "^(.*)=(.*)$"    "set(\\1 \\2)" AM_FILE_LINE "${AM_FILE_LINE}")
 
+    string(REGEX REPLACE "^if !(.*)$"     "if(NOT \\1)" AM_FILE_LINE "${AM_FILE_LINE}")
     string(REGEX REPLACE "^if (.*)$"      "if(\\1)" AM_FILE_LINE "${AM_FILE_LINE}")
+    string(REGEX REPLACE "^else$"         "else()" AM_FILE_LINE "${AM_FILE_LINE}")
     string(REGEX REPLACE "^endif$"        "endif()" AM_FILE_LINE "${AM_FILE_LINE}")
 
     set(AM_FILE_LINE "#${AM_FILE_LINE}")
@@ -113,6 +115,7 @@ function(convert_automake_internal AM_INPUT_FILE CMAKE_OUTPUT_FILE)
     string(REPLACE "#set("   "set("   AM_FILE_LINE "${AM_FILE_LINE}")
     string(REPLACE "#list("  "list("  AM_FILE_LINE "${AM_FILE_LINE}")
     string(REPLACE "#if("    "if("    AM_FILE_LINE "${AM_FILE_LINE}")
+    string(REPLACE "#else("  "else(" AM_FILE_LINE "${AM_FILE_LINE}")
     string(REPLACE "#endif(" "endif(" AM_FILE_LINE "${AM_FILE_LINE}")
 
     # Comment out the gitstamp Automake rule hackery
