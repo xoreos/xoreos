@@ -140,8 +140,10 @@ function(parse_automake AM_FILE_NAME)
 
   include(${CMAKE_OUTPUT_FILE})
 
-  # Search for convenience libraries, creating CMake targets
   set(AM_TARGETS)
+
+  # Search for convenience libraries, creating CMake targets
+  set(AM_STATIC_LIBRARIES)
   foreach(AM_FILE ${noinst_LTLIBRARIES})
     string(REPLACE "." "_" AM_NAME "${AM_FILE}")
     string(REPLACE "/" "_" AM_NAME "${AM_NAME}")
@@ -150,9 +152,11 @@ function(parse_automake AM_FILE_NAME)
     am_target_name(${AM_FOLDER} ${AM_FILE} AM_TARGET)
     set(${AM_TARGET}_LINK_TARGETS ${${AM_TARGET}_LINK_TARGETS} PARENT_SCOPE)
     list(APPEND AM_TARGETS ${AM_TARGET})
+    list(APPEND AM_STATIC_LIBRARIES ${AM_TARGET})
   endforeach()
 
   # Search for programs, creating CMake targets
+  set(AM_PROGRAMS)
   foreach(AM_FILE ${bin_PROGRAMS})
     string(REPLACE "." "_" AM_NAME "${AM_FILE}")
     string(REPLACE "/" "_" AM_NAME "${AM_NAME}")
@@ -161,7 +165,10 @@ function(parse_automake AM_FILE_NAME)
     am_target_name(${AM_FOLDER} ${AM_FILE} AM_TARGET)
     set(${AM_TARGET}_LINK_TARGETS ${${AM_TARGET}_LINK_TARGETS} PARENT_SCOPE)
     list(APPEND AM_TARGETS ${AM_TARGET})
+    list(APPEND AM_PROGRAMS ${AM_TARGET})
   endforeach()
 
   set(AM_TARGETS ${AM_TARGETS} PARENT_SCOPE)
+  set(AM_STATIC_LIBRARIES ${AM_STATIC_LIBRARIES} PARENT_SCOPE)
+  set(AM_PROGRAMS ${AM_PROGRAMS} PARENT_SCOPE)
 endfunction()
