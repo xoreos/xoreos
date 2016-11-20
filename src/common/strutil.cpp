@@ -266,34 +266,53 @@ template void parseString<double            >(const UString &str, double        
 
 
 template<typename T> UString composeString(T value) {
-	char buf[64], *bufEnd = buf + sizeof(buf) - 1;
+	/* Create a string representation of the value, in decimal notation.
+	 *
+	 * Build up the string digit by digit, least significant digit first
+	 * (thus filling up the string back to front), by repeatedly dividing
+	 * the value by 10.
+	 */
 
-	char *strStart = buf, *strEnd = buf;
+	/* Remember whether the value is negative. We use that afterwards to
+	 * prepend the negative sign. */
+	const bool isNegative = value < 0;
 
-	// Write the sign, if negative
-	if (value < 0) {
-		*strStart = '-';
+	/* Our string buffer and a pointer to the start of the string. We
+	 * fill back to front, so it points at the end of the buffer now. */
+	char buf[64], *strStart = buf + sizeof(buf) - 1;
 
-		strStart++;
-		strEnd++;
-	}
+	/* Start by putting the final string terminator into the string. */
+	*strStart-- = '\0';
 
-	// Collect all the digits (least significant ones first)
+	/* Collect all the digits, back to front.
+	 *
+	 * Note that the value might be negative [1]. The sign of the result
+	 * of the %-operator on negative numbers is implementation-defined,
+	 * so we ABS() the result (0-9) back to positive.
+	 *
+	 * In UTF-8 (as well as ASCII, but we only care about UTF-8 here),
+	 * the digits are continuous, so we can just add this remainder to
+	 * '0' to get the UTF-8 codepoint for the digit in question.
+	 *
+	 * [1] We also don't just want to negate a negative number to make
+	 * it positive: this would break with INT8_MIN, INT16_MIN, etc.,
+	 * because -INT8_MIN (128) is not a valid int8_t value. */
 	do {
-		*strEnd++ = ABS(value % 10) + '0';
-	} while ((value /= 10) && (strEnd < bufEnd));
+		*strStart-- = ABS(value % 10) + '0';
+	} while ((value /= 10) && (strStart != buf));
 
-	*strEnd-- = '\0';
+	/* Sanity check; shouldn't happen because the buffer is big enough. */
+	if (strStart == buf)
+		throw Exception("Buffer overrun in composeString()");
 
-	// Reverse the digits
-	while (strStart < strEnd) {
-		SWAP(*strStart, *strEnd);
+	/* Write the sign, if the value was negative. */
+	if (isNegative)
+		*strStart-- = '-';
 
-		strStart++;
-		strEnd--;
-	}
+	/* We've moved one past the actual start of the string now. */
+	strStart++;
 
-	return UString(buf);
+	return UString(strStart);
 }
 
 template<> UString composeString(bool value) {
