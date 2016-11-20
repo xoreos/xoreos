@@ -273,7 +273,6 @@ template<typename T> UString composeString(T value) {
 	// Write the sign, if negative
 	if (value < 0) {
 		*strStart = '-';
-		value = -value;
 
 		strStart++;
 		strEnd++;
@@ -281,7 +280,7 @@ template<typename T> UString composeString(T value) {
 
 	// Collect all the digits (least significant ones first)
 	do {
-		*strEnd++ = (value % 10) + '0';
+		*strEnd++ = ABS(value % 10) + '0';
 	} while ((value /= 10) && (strEnd < bufEnd));
 
 	*strEnd-- = '\0';
