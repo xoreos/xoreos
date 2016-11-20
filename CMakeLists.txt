@@ -301,7 +301,7 @@ if(NOT GLEW_FOUND)
   message(STATUS "Using internal GLEW library")
 
   add_definitions(-DGLEW_STATIC)
-  set(GLEW_LIBRARIES glew_glew)
+  set(GLEW_LIBRARIES glew)
 
   add_definitions(-DXOREOS_INTERNAL_GLEW)
   set(INTERNAL_GLEW 1)
@@ -316,10 +316,10 @@ list(APPEND XOREOS_LIBRARIES ${GLEW_LIBRARIES})
 
 # use our own version of lua, as we will have to support the Witcher lua scripts
 parse_automake(lua/rules.mk)
-list(APPEND XOREOS_LIBRARIES lua_lua)
+list(APPEND XOREOS_LIBRARIES lua)
 
 parse_automake(toluapp/rules.mk)
-list(APPEND XOREOS_LIBRARIES toluapp_toluapp)
+list(APPEND XOREOS_LIBRARIES toluapp)
 
 
 # -------------------------------------------------------------------------

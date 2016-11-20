@@ -33,7 +33,7 @@ endfunction()
 
 
 function(am_target_name AM_FOLDER AM_FILE_NAME AM_OUTPUT)
-  get_filename_component(AM_FULLPATH  "${AM_FOLDER}/${AM_FILE_NAME}" ABSOLUTE)
+  get_filename_component(AM_FULLPATH  "${AM_FILE_NAME}" ABSOLUTE)
   get_filename_component(AM_FOLDER    "${AM_FULLPATH}" PATH)
   get_filename_component(AM_FOLDER    "${AM_FOLDER}"   NAME)
   get_filename_component(AM_FILE_NAME "${AM_FULLPATH}" NAME_WE)
