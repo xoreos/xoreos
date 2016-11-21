@@ -102,8 +102,8 @@ function(convert_automake_internal AM_INPUT_FILE CMAKE_OUTPUT_FILE)
     string(REGEX REPLACE " *= *"   "="   AM_FILE_LINE "${AM_FILE_LINE}")
     string(REGEX REPLACE "^ +"             ""   AM_FILE_LINE "${AM_FILE_LINE}")
 
-    string(REGEX REPLACE "^(.*)\\+=(.*)$" "list(APPEND \\1 \\2)" AM_FILE_LINE "${AM_FILE_LINE}")
-    string(REGEX REPLACE "^(.*)=(.*)$"    "set(\\1 \\2)" AM_FILE_LINE "${AM_FILE_LINE}")
+    string(REGEX REPLACE "^([^=]*[^+])=(.*)$"    "set(\\1 \\2)" AM_FILE_LINE "${AM_FILE_LINE}")
+    string(REGEX REPLACE "^([^=]*)\\+=(.*)$" "list(APPEND \\1 \\2)" AM_FILE_LINE "${AM_FILE_LINE}")
 
     string(REGEX REPLACE "^if !(.*)$"     "if(NOT \\1)" AM_FILE_LINE "${AM_FILE_LINE}")
     string(REGEX REPLACE "^if (.*)$"      "if(\\1)" AM_FILE_LINE "${AM_FILE_LINE}")
