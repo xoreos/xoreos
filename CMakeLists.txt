@@ -24,6 +24,13 @@ set(xoreos_VERSION 0.0.4)
 
 
 # -------------------------------------------------------------------------
+# options!
+option(Boost_USE_STATIC_LIBS "Use Boost static libraries" OFF)
+option(GLEW_INTERNAL "Use internal glew libraries" OFF)
+option(XOREOS_BUILD_DOCUMENTATION "Use Doxygen to create the HTML based API documentation" OFF)
+
+
+# -------------------------------------------------------------------------
 # load some cmake modules from cmake/ subfolder
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(GNUInstallDirs)
@@ -225,8 +232,6 @@ find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${ZLIB_LIBRARIES})
 
-option(Boost_USE_STATIC_LIBS "Use Boost static libraries" OFF)
-
 find_package(Boost COMPONENTS system filesystem regex date_time atomic locale REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
@@ -289,8 +294,6 @@ else(ICONV_SECOND_ARGUMENT_IS_CONST)
 endif(ICONV_SECOND_ARGUMENT_IS_CONST)
 
 add_definitions(-DGLEW_NO_GLU)
-
-option(GLEW_INTERNAL "Use internal glew libraries" OFF)
 
 set(GLEW_FOUND 0)
 if(NOT GLEW_INTERNAL)
@@ -384,7 +387,6 @@ endif()
 
 # -------------------------------------------------------------------------
 # documentation
-option(XOREOS_BUILD_DOCUMENTATION "Use Doxygen to create the HTML based API documentation" OFF)
 if(XOREOS_BUILD_DOCUMENTATION)
   find_package(Doxygen)
   if (NOT DOXYGEN_FOUND)
