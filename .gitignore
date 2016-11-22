@@ -80,6 +80,7 @@ Makefile.am.cmake
 /tests/common/testfile_*
 /tests/common/test_*
 /tests/aurora/test_*
+/tests/images/test_*
 
 # Unix binary
 /src/xoreos

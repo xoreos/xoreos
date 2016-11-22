@@ -17,27 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Unit tests.
+# Unit tests for the image decoders in the Graphics namespace.
 
-# Our Unit test framework, Google Test
+images_LIBS = \
+    $(test_LIBS) \
+    src/graphics/libgraphics.la \
+    src/aurora/libaurora.la \
+    src/common/libcommon.la \
+    tests/version/libversion.la \
+    $(LDADD)
 
-include tests/googletest/rules.mk
-
-test_LIBS  = \
-    tests/googletest/libgtest.la \
-    tests/googletest/libgtest_main.la \
-    $(GTEST_LIBS)
-    $(EMPTY)
-
-test_CXXFLAGS = $(GTEST_FLAGS) $(AM_CXXFLAGS)
-
-noinst_HEADERS += \
-    tests/skip.h \
-    $(EMPTY)
-
-include tests/version/rules.mk
-include tests/common/rules.mk
-include tests/aurora/rules.mk
-include tests/images/rules.mk
-
-TESTS += $(check_PROGRAMS)
+check_PROGRAMS                 += tests/images/test_util
+tests_images_test_util_SOURCES  = tests/images/util.cpp
+tests_images_test_util_LDADD    = $(images_LIBS)
+tests_images_test_util_CXXFLAGS = $(test_CXXFLAGS)
