@@ -31,3 +31,8 @@ check_PROGRAMS                 += tests/images/test_util
 tests_images_test_util_SOURCES  = tests/images/util.cpp
 tests_images_test_util_LDADD    = $(images_LIBS)
 tests_images_test_util_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/images/test_surface
+tests_images_test_surface_SOURCES  = tests/images/surface.cpp
+tests_images_test_surface_LDADD    = $(images_LIBS)
+tests_images_test_surface_CXXFLAGS = $(test_CXXFLAGS)
