@@ -36,3 +36,8 @@ check_PROGRAMS                    += tests/images/test_surface
 tests_images_test_surface_SOURCES  = tests/images/surface.cpp
 tests_images_test_surface_LDADD    = $(images_LIBS)
 tests_images_test_surface_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                       += tests/images/test_xoreositex
+tests_images_test_xoreositex_SOURCES  = tests/images/xoreositex.cpp
+tests_images_test_xoreositex_LDADD    = $(images_LIBS)
+tests_images_test_xoreositex_CXXFLAGS = $(test_CXXFLAGS)
