@@ -97,10 +97,7 @@ void RenderQueue::sortShader() {
 
 void RenderQueue::sortDepth() {
 	if (_nodeArray.size() > 1) {
-		//std::sort(_nodeArray.begin(), _nodeArray.end(), compareDepth);
-		//for (uint32 i = 0; i < _nodeArray.size(); ++i) {
-		//	printf("sorted %u; %s\n", i, _nodeArray[i].material->getName().c_str());
-		//}
+		std::sort(_nodeArray.begin(), _nodeArray.end(), compareDepth);
 	}
 }
 

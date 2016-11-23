@@ -955,12 +955,16 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 	meshName += ".";
 	meshName += _name;
 
-	_mesh->data->rawMesh->setName(meshName);
-	_mesh->data->rawMesh->init();
-	if (MeshMan.getMesh(meshName)) {
-		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+	if (checkMesh) {
+		//warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
+		delete _mesh->data->rawMesh;
+		_mesh->data->rawMesh = checkMesh;
+	} else {
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		MeshMan.addMesh(_mesh->data->rawMesh);
 	}
-	MeshMan.addMesh(_mesh->data->rawMesh);
 
 	this->buildMaterial();
 }

@@ -71,6 +71,13 @@ void RenderManager::sort() {
 	_queueColorSolidDecal.sortShader();
 	_queueColorTransparentPrimary.sortDepth();
 	_queueColorTransparentSecondary.sortDepth();
+	/*
+	_queueColorSolidPrimary.sortDepth();
+	_queueColorSolidSecondary.sortDepth();
+	_queueColorSolidDecal.sortDepth();
+	_queueColorTransparentPrimary.sortDepth();
+	_queueColorTransparentSecondary.sortDepth();
+	*/
 }
 
 void RenderManager::render() {

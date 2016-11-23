@@ -28,7 +28,7 @@ namespace Graphics {
 
 namespace Mesh {
 
-Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), _usageCount(0), _vao(0), _centre(), _min(), _max() {
+Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), _usageCount(0), _vao(0), _centre(), _max(), _min() {
 }
 
 Mesh::~Mesh() {
@@ -86,7 +86,6 @@ void Mesh::init() {
 					vertices += (decl[0].stride / sizeof(float)) - (3);
 				}
 			}
-			printf("====== mesh extents: %f, %f, %f | %f, %f, %f\n", minx, miny, minz, maxx, maxy, maxz);
 			_min = Common::Vector3(minx, miny, minz);
 			_max = Common::Vector3(maxx, maxy, maxz);
 			_centre = _min;

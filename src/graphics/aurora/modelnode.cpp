@@ -994,17 +994,17 @@ void ModelNode::buildMaterial() {
 	_dirtyRender = false;
 
 	if (!_mesh) {
-		//printf("%s: no mesh when building material\n", _name.c_str());
+		//status("%s: no mesh when building material\n", _name.c_str());
 		return;
 	}
 
 	if (!_mesh->data) {
-		//printf("%s: no mesh data when building material\n", _name.c_str());
+		//status("%s: no mesh data when building material\n", _name.c_str());
 		return;
 	}
 
 	if (_mesh->data->textures.size() == 0 && _mesh->data->envMap.empty() && !_mesh->data->rawMesh) {
-		//printf("%s: no texture or environment map data when building material\n", _name.c_str());
+		//status("%s: no texture or environment map data when building material\n", _name.c_str());
 		return;
 	}
 	/**
@@ -1019,24 +1019,24 @@ void ModelNode::buildMaterial() {
 	penvmap = getEnvironmentMap(envmapmode);
 
 	if (textureCount == 0) {
-		//printf("%s: no texture data when building material\n", _name.c_str());
+		//status("%s: no texture data when building material\n", _name.c_str());
 		return;
 	}
 
-	//printf("attempting to build material with mesh: %s, environment map: %u, texture count: %u\n", pmesh->data->rawMesh->getName().c_str(), penvmap ? 1 : 0, textureCount);
+	//status("attempting to build material with mesh: %s, environment map: %u, texture count: %u\n", pmesh->data->rawMesh->getName().c_str(), penvmap ? 1 : 0, textureCount);
 
 	if (!_render) {
-		//printf("%s: rendering disabled when building material\n", _name.c_str());
+		//status("%s: rendering disabled when building material\n", _name.c_str());
 		return;
 	}
 
 	if (!pmesh->data->rawMesh) {
-		//printf("%s: no raw mesh when building material\n", _name.c_str());
+		//status("%s: no raw mesh when building material\n", _name.c_str());
 		return;
 	}
 
 	if (phandles[0].empty()) {
-		//printf("%s: no diffuse colour texture, abandoning material construction.\n", _name.c_str());
+		//status("%s: no diffuse colour texture, abandoning material construction.\n", _name.c_str());
 		return;
 	}
 
@@ -1153,7 +1153,6 @@ void ModelNode::buildMaterial() {
 	if (material) {
 		surface = SurfaceMan.getSurface(materialName);
 		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
-		//printf("material already found: %s, for node %s, size: %u\n", materialName.c_str(), _name.c_str(), _renderableArray.size());
 		return;
 	}
 
