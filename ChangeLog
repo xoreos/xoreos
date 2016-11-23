@@ -1,26 +1,54 @@
 Someday, ????-??-?? (Version 0.0.5)
+	- DOCS:
+		- Improved documentation in various files
+	- BUILD:
+		- Simplified compilation to only use a C++ compiler
+		- Added more optional compilation warning flags
+		- Sped up boost.m4 by caching the library suffix
+		- Changed our autotools setup to be non-recursive
 	- MAIN:
 		- Made --help display the user directories and config file
 		- Changed the behaviour of debug channels. Each debug channel
 		  now has its own verbosity level. The options "debuglevel"
 		  and "debugchannel" (--debuglevel and --debugchannel) have
 		  been replaced by "debug" (--debug)
+		- Changed the error handler to also run deinit code on error
+	- COMMON:
+		- Added missing kEncodingCP1251 handling in several functions
+		- Moved DEFLATE and LZMA decompression into their own files
+		- Corrected the StreamTokenizer behaviour in a corner case
+		- Deleted Matrix, renamed TransformationMatrix to Matrix4x4
+		- Added checks for nullptr in stream and encoding methods
+		- Fixed composeString() for the INT*_MIN cases
 	- AURORA:
 		- Unified some code between xoreos and xoreos-tools
 		- Fixed a potential field overflow in the binary 2DA writer
 		- Fixed SSF V1.1 loading for NWN2
+		- Fixed reading of NSBTX with truncated palette
+		- Fixed reading of 2DA with indented rows
+		- Added exceptions for as of yet unknown GFF4 configurations
 	- GRAPHICS:
 		- Loosened restrictions on textures, allowing NPOT textures
 		- Fixed a potential race condition between environment
 		  mapping and cursor drawing
 		- Added option to create an OpenGL debug config ("debuggl")
 		- Fixed some OpenGL warnings that appeared in debug mode
+		- Added detection for duplicate NWN model nodes
+		- Fixed GraphicsManager::setGamma() to actually work
+		- Separated window handling into a new WindowManager
+		- Added detection for duplicate KotOR model animations
 	- SOUND:
 		- Unified sound code between xoreos and Phaethon
 		- Added debug messages for easier sound issue tracing
+		- Fixed an undefined shift in the WMA decoder
+		- Corrected the signature of AudioStream::readBuffer()
 	- VIDEO:
 		- Added debug messages for easier video issue tracing
+		- Fixed an invalid negative shift in the Bink decoder
 	- ENGINES:
+		- Restructured probes again
+		- Added debug messages for engine-level script execution
+		- Fixed various script engine functions in all engines
 		- NWN:
 			- Partially implemented the character generator
 			- Fixed various issues and glitches in the animation
@@ -34,6 +62,9 @@ Someday, ????-??-?? (Version 0.0.5)
 		- Added Fedora package build files
 	- MISC:
 		- Improved code consistency in some places
+		- Marked several classes correctly as noncopyable
+		- Introduced various smart pointer templates into the codebase,
+		  making it cleaner and more leak-free
 
 Monday, 2016-02-01 (Version 0.0.4)
 	- DOCS:
