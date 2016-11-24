@@ -63,8 +63,13 @@ public:
 
 	size_t write(const void *dataPtr, size_t dataSize);
 
+	/** Return the number of bytes written to the current file in total. */
+	size_t size() const;
+
 protected:
 	std::FILE *_handle; ///< The actual file handle.
+
+	size_t _size;
 };
 
 } // End of namespace Common

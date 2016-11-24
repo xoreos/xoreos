@@ -35,7 +35,7 @@ namespace Common {
 WriteFile::WriteFile() : _handle(0) {
 }
 
-WriteFile::WriteFile(const UString &fileName) : _handle(0) {
+WriteFile::WriteFile(const UString &fileName) : _handle(0), _size(0) {
 	if (!open(fileName))
 		throw Exception("Can't open file \"%s\" for writing", fileName.c_str());
 }
@@ -73,6 +73,7 @@ void WriteFile::close() {
 		std::fclose(_handle);
 
 	_handle = 0;
+	_size   = 0;
 }
 
 bool WriteFile::isOpen() const {
@@ -92,7 +93,15 @@ size_t WriteFile::write(const void *dataPtr, size_t dataSize) {
 		return 0;
 
 	assert(dataPtr);
-	return std::fwrite(dataPtr, 1, dataSize, _handle);
+
+	const size_t written = std::fwrite(dataPtr, 1, dataSize, _handle);
+	_size += written;
+
+	return written;
+}
+
+size_t WriteFile::size() const {
+	return _size;
 }
 
 } // End of namespace Common
