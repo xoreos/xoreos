@@ -82,8 +82,9 @@ private:
 	size_t _pos;
 };
 
-/** A sort of hybrid between MemoryWriteStream and Array classes. A stream
- *  that grows as it's written to.
+/** A stream that dynamically grows as it's written to.
+ *
+ *  As long as more memory can be allocated, writing into the stream won't fail.
  */
 class MemoryWriteStreamDynamic : boost::noncopyable, public WriteStream {
 public:
@@ -97,6 +98,7 @@ public:
 	void setDisposable(bool disposeMemory);
 	void dispose();
 
+	/** Return the number of bytes written to this stream in total. */
 	size_t size() const;
 
 	byte *getData();
