@@ -60,6 +60,8 @@ namespace Common {
 
 /** Simple memory based 'stream', which implements the WriteStream interface for
  *  a plain memory block.
+ *
+ *  Writing past the size of the memory block will fail with an exception.
  */
 class MemoryWriteStream : boost::noncopyable, public WriteStream {
 public:
@@ -68,7 +70,9 @@ public:
 
 	size_t write(const void *dataPtr, size_t dataSize);
 
+	/** Return the current writing position within the memory block. */
 	size_t pos() const;
+	/** Return the total size of the memory block. */
 	size_t size() const;
 
 private:
