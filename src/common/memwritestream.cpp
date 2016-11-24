@@ -86,7 +86,7 @@ size_t MemoryWriteStream::size() const {
 
 
 MemoryWriteStreamDynamic::MemoryWriteStreamDynamic(bool disposeMemory, size_t capacity) :
-	_data(0, disposeMemory), _ptr(0), _pos(0), _capacity(0), _size(0) {
+	_data(0, disposeMemory), _ptr(0), _capacity(0), _size(0) {
 
 	reserve(capacity);
 }
@@ -107,7 +107,7 @@ void MemoryWriteStreamDynamic::reserve(size_t s) {
 
 	_data.dispose();
 	_data.reset(newData);
-	_ptr = _data.get() + _pos;
+	_ptr = _data.get() + _size;
 }
 
 void MemoryWriteStreamDynamic::ensureCapacity(size_t newLen) {
@@ -115,22 +115,17 @@ void MemoryWriteStreamDynamic::ensureCapacity(size_t newLen) {
 		return;
 
 	reserve(newLen);
-
-	_size = newLen;
 }
 
 size_t MemoryWriteStreamDynamic::write(const void *dataPtr, size_t dataSize) {
 	assert(dataPtr);
 
-	ensureCapacity(_pos + dataSize);
+	ensureCapacity(_size + dataSize);
 
 	std::memcpy(_ptr, dataPtr, dataSize);
 
-	_ptr += dataSize;
-	_pos += dataSize;
-
-	if ((size_t)_pos > _size)
-		_size = _pos;
+	_ptr  += dataSize;
+	_size += dataSize;
 
 	return dataSize;
 }
@@ -143,13 +138,8 @@ void MemoryWriteStreamDynamic::dispose() {
 	_data.dispose();
 
 	_ptr      = 0;
-	_pos      = 0;
 	_size     = 0;
 	_capacity = 0;
-}
-
-size_t MemoryWriteStreamDynamic::pos() const {
-	return _pos;
 }
 
 size_t MemoryWriteStreamDynamic::size() const {

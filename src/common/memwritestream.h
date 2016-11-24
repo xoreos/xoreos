@@ -93,7 +93,6 @@ public:
 	void setDisposable(bool disposeMemory);
 	void dispose();
 
-	size_t pos() const;
 	size_t size() const;
 
 	byte *getData();
@@ -102,7 +101,6 @@ private:
 	DisposableArray<byte> _data;
 
 	byte *_ptr;
-	size_t _pos;
 
 	size_t _capacity;
 	size_t _size;
