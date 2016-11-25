@@ -1086,9 +1086,22 @@ void ModelNode::buildMaterial() {
 		}
 	}
 
+	// Because screw you bioware. KotOR2 has skybox troubles.
+	if (pmesh->data->rawMesh->getName().contains("sky")) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+	}
+
 	if (pmesh->isTransparent && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
+
+	// For KotOR2, this helps to move some things to the back of the render queue. Windows and such.
+	if (pmesh->hasTransparencyHint &&
+	    pmesh->data->rawMesh->getVertexBuffer()->getCount() < 10 &&
+	    !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+
 	/**
 	 * Sometimes the _textures handler array isn't matched up against what
 	 * is properly loaded (missing files from disk). So do some brief sanity
@@ -1097,9 +1110,12 @@ void ModelNode::buildMaterial() {
 	if (textureCount >= 1) {
 		if (!phandles[0].empty()) {
 			materialName += phandles[0].getName();
-			//if (_name == "window")
 			if (phandles[0].getTexture().getTXI().getFeatures().blending) {
 				materialFlags |= Shader::ShaderMaterial::MATERIAL_SPECIAL_BLEND;
+				// For KotOR2, this is required to get some windows showing up properly.
+				if (pmesh->hasTransparencyHint && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+					materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+				}
 			}
 			if (penvmap && envmapmode == kModeEnvironmentBlendedUnder) {
 				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_SRC_ALPHA));
