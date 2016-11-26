@@ -133,6 +133,11 @@ void HERFFile::readResList(Common::SeekableReadStream &herf) {
 			res->name = Common::FilePath::getStem(name->second);
 			res->type = TypeMan.getFileType(name->second);
 		}
+
+		if ((iRes->offset == _dictOffset) && (iRes->size == _dictSize)) {
+			res->name = "erf";
+			res->type = kFileTypeDICT;
+		}
 	}
 }
 
