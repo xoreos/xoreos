@@ -49,6 +49,18 @@ public:
 	 */
 	static Common::SeekableReadStream *decompress(Common::SeekableReadStream *small);
 
+
+	/** "Compress" this stream into an uncompressed small file.
+	 *
+	 *  This is basically just the input stream with a 4 byte header prepended.
+	 */
+	static void compress00(Common::SeekableReadStream &in, Common::WriteStream &small);
+	/** Compress this stream into a small file of type 0x10.
+	 *
+	 *  Note that, depending on the input data, the result may be bigger
+	 *  that the input stream.
+	 */
+	static void compress10(Common::SeekableReadStream &in, Common::WriteStream &small);
 };
 
 } // End of namespace Aurora
