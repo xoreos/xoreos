@@ -165,10 +165,34 @@ void info(const char *s, ...) GCC_PRINTF(1, 2);
  */
 void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
 
-float  convertIEEEFloat(uint32 data);
+/** Convert a uint32 holding the bit pattern of a 32-bit IEEE 754 single
+ *  precision floating point value into a real, native float.
+ *
+ *  NOTE: Currently, this function assumes native floats are 32-bit IEEE
+ *  754 single precision floating point values!
+ */
+float convertIEEEFloat(uint32 data);
+/** Convert a uint64 holding the bit pattern of a 64-bit IEEE 754 double
+ *  precision floating point value into a real, native double.
+ *
+ *  NOTE: Currently, this function assumes native doubles are 64-bit IEEE
+ *  754 double precision floating point values!
+ */
 double convertIEEEDouble(uint64 data);
 
+/** Convert a native float into a uint32 holding the bit pattern a 32-bit
+ *  IEEE 754 single precision floating point value.
+ *
+ *  NOTE: Currently, this function assumes native floats are 32-bit IEEE
+ *  754 single precision floating point values!
+ */
 uint32 convertIEEEFloat(float value);
+/** Convert a native double into a uint64 holding the bit pattern a 64-bit
+ *  IEEE 754 double precision floating point value.
+ *
+ *  NOTE: Currently, this function assumes native doubles are 64-bit IEEE
+ *  754 double precision floating point values!
+ */
 uint64 convertIEEEDouble(double value);
 
 /** Read a fixed-point value, in a format used by the Nintendo DS.
