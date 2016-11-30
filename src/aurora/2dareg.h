@@ -51,6 +51,9 @@ class GDAFile;
  *  the same resource type, each GDA holding the information for a
  *  range of resources. These GDAs complete each other instead of
  *  overwriting each other.
+ *
+ *  All 2DA and GDA files are directly and automatically loaded from
+ *  the ResourceManager.
  */
 class TwoDARegistry : public Common::Singleton<TwoDARegistry> {
 public:
