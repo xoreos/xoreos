@@ -29,11 +29,11 @@
 
 namespace Graphics {
 
-static uint32 convert565To8888(uint16 color) {
+static inline uint32 convert565To8888(uint16 color) {
 	return ((color & 0x1F) << 11) | ((color & 0x7E0) << 13) | ((color & 0xF800) << 16) | 0xFF;
 }
 
-static uint32 interpolate32(double weight, uint32 color_0, uint32 color_1) {
+static inline uint32 interpolate32(double weight, uint32 color_0, uint32 color_1) {
 	byte r[3], g[3], b[3], a[3];
 	r[0] = color_0 >> 24;
 	r[1] = color_1 >> 24;
