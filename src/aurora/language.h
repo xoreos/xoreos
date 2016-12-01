@@ -71,6 +71,45 @@ enum LanguageGender {
 	kLanguageGenderCurrent = 0xFF ///< Pseudo value that means the current language gender.
 };
 
+/** The global language manager.
+ *
+ *  The language manager holds all known supported languages of a game, as well
+ *  as the currently selected language(s) and gender (see below for details).
+ *
+ *  A language consists of these parts:
+ *  - A value of the Language type, describing what exact language this is.
+ *  - A numerical language ID by which the language is referenced in game data
+ *    files. This is the ungendered version of the language ID (see below for
+ *    details).
+ *  - The encoding to use when reading or writing text strings of this language.
+ *  - The encoding to use when reading or writing LocStrings of this language.
+ *    This can, but does not have to, be the same encoding as other strings of
+ *    this language.
+ *
+ *  Since the encoding can be different when reading LocStrings, two different
+ *  functions exist to query the encoding of language strings: one for
+ *  LocStrings and one for other string.s
+ *
+ *  Depending on the game, two different languages might be selected at the
+ *  same time, differentiating between use: the current language for text and
+ *  the current language for speech. Therefore, there are also two functions to
+ *  query the current language: one for the current text language, one for the
+ *  current speech language.
+ *
+ *  A language ID exists in two variants: gendered and ungendered. Some data
+ *  files specify ungendered language IDs, some gendered. A gendered language
+ *  ID is used to describe strings that may exist in two versions: one for
+ *  male player characters and one for female player characters. The ungendered
+ *  language ID used when describing a language as such.
+ *
+ *  The ungendered language IDs of a game are usually a simple running index.
+ *  The gendered variant of an ungendered language ID x is 2 * x + 0 for male
+ *  and 2 * x + 1 for female. The LanguageManager has functions to convert
+ *  between gendered language IDs and ungendered language IDs plus Gender value.
+ *
+ *  Likewise, the LanguageManager holds the value of the current gender of
+ *  the player character.
+ */
 class LanguageManager : public Common::Singleton<LanguageManager> {
 public:
 	struct Declaration {
