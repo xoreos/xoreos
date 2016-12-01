@@ -42,11 +42,11 @@ public:
 private:
 	// Loading helpers
 	void load(Common::SeekableReadStream &txb);
-	void readHeader(Common::SeekableReadStream &txb, bool &needDeSwizzle, uint32 &dataSize);
-	void readData(Common::SeekableReadStream &txb, bool needDeSwizzle);
+	void readHeader(Common::SeekableReadStream &txb, byte &encoding, uint32 &dataSize);
+	void readData(Common::SeekableReadStream &txb, byte encoding);
 	void readTXI(Common::SeekableReadStream &txb);
 
-	static void deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height);
+	static void deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height, uint8 bpp);
 };
 
 } // End of namespace Graphics
