@@ -217,7 +217,7 @@ public:
 	static Common::UString getLanguageName(Language language);
 
 	/** Parse this string into a language. */
-	static Language parseLanguage(Common::UString str);
+	static Language parseLanguage(const Common::UString &str);
 
 	/** Convert an ungendered language ID to a gendered language ID. */
 	static uint32 convertLanguageIDToGendered(uint32 languageID, LanguageGender gender);

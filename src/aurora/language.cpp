@@ -249,18 +249,18 @@ Common::UString LanguageManager::getLanguageName(Language language) {
 	return kLanguageNames[language];
 }
 
-Language LanguageManager::parseLanguage(Common::UString str) {
+Language LanguageManager::parseLanguage(const Common::UString &str) {
 	if (str.empty())
 		return kLanguageInvalid;
 
-	str.makeLower();
+	Common::UString lowerStr = str.toLower();
 
 	for (size_t i = 0; i < ARRAYSIZE(kLanguageStrings); i++) {
 		for (size_t j = 0; j < ARRAYSIZE(kLanguageStrings[i].strings); j++) {
 			if (!kLanguageStrings[i].strings[j])
 				break;
 
-			if (str == kLanguageStrings[i].strings[j])
+			if (lowerStr == kLanguageStrings[i].strings[j])
 				return kLanguageStrings[i].language;
 		}
 	}
