@@ -68,9 +68,6 @@ void LocString::setID(uint32 id) {
 }
 
 bool LocString::hasString(Language language, LanguageGender gender) const {
-	if (gender == kLanguageGenderCurrent)
-		gender = LangMan.getCurrentGender();
-
 	return hasString(LangMan.getLanguageID(language, gender));
 }
 
@@ -79,9 +76,6 @@ bool LocString::hasString(uint32 languageID) const {
 }
 
 const Common::UString &LocString::getString(Language language, LanguageGender gender) const {
-	if (gender == kLanguageGenderCurrent)
-		gender = LangMan.getCurrentGender();
-
 	return getString(LangMan.getLanguageID(language, gender));
 }
 
@@ -95,9 +89,6 @@ const Common::UString &LocString::getString(uint32 languageID) const {
 }
 
 void LocString::setString(Language language, LanguageGender gender, const Common::UString &str) {
-	if (gender == kLanguageGenderCurrent)
-		gender = LangMan.getCurrentGender();
-
 	return setString(LangMan.getLanguageID(language, gender), str);
 }
 
