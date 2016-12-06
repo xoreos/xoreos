@@ -49,7 +49,7 @@ static const LanguageStrings kLanguageStrings[] = {
 	{ kLanguageFrench,
 		{ "french", "francais", "fran\303\207ais", "franc\314\247ais", "france",
 		  "fr-fr", "fr_fr", "fra-fr", "fra_fr", "fre-fr", "fre_fr",
-		  "f", "fra", "fre", 0
+		  "f", "fr", "fra", "fre", 0
 		}
 	},
 	{ kLanguageGerman,
