@@ -235,7 +235,7 @@ bool SSFFile::existNonASCIISoundFile() const {
 }
 
 void SSFFile::checkVersionFeatures(Version version) const {
-	if (_sounds.size() >= 0xFFFFFFFF)
+	if (_sounds.size() >= UINT32_MAX)
 		throw Common::Exception("Too many sounds");
 
 	if (existNonASCIISoundFile())
