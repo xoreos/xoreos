@@ -324,10 +324,16 @@ void SSFFile::writeNWN(Common::WriteStream &out, size_t soundFileLen) const {
 	for (size_t i = 16; i < kOffsetEntryTable; i++)
 		out.writeByte(0);
 
-	uint32 offsetData = kOffsetEntryTable + _sounds.size() * 4;
+	size_t offsetData = kOffsetEntryTable + _sounds.size() * 4;
 
-	for (SoundSet::const_iterator s = _sounds.begin(); s != _sounds.end(); ++s, offsetData += soundFileLen + 4)
+	for (SoundSet::const_iterator s = _sounds.begin(); s != _sounds.end();
+	     ++s, offsetData += soundFileLen + 4) {
+
+		if (offsetData >= UINT32_MAX)
+			throw Common::Exception(Common::kSeekError);
+
 		out.writeUint32LE(offsetData);
+	}
 
 	for (SoundSet::const_iterator s = _sounds.begin(); s != _sounds.end(); ++s) {
 		Common::writeStringFixed(out, s->soundFile, Common::kEncodingASCII, soundFileLen);
