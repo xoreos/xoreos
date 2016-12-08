@@ -315,13 +315,13 @@ bool SSFFile::writeSSF(const Common::UString &fileName, Version version) const {
 }
 
 void SSFFile::writeNWN(Common::WriteStream &out, size_t soundFileLen) const {
-	static const uint32 kOffsetEntryTable = 0x28;
+	static const size_t kOffsetEntryTable = 0x28;
 
 	out.writeUint32LE(_sounds.size());
 	out.writeUint32LE(kOffsetEntryTable);
 
 	// Reserved
-	for (uint32 i = 16; i < kOffsetEntryTable; i++)
+	for (size_t i = 16; i < kOffsetEntryTable; i++)
 		out.writeByte(0);
 
 	uint32 offsetData = kOffsetEntryTable + _sounds.size() * 4;
