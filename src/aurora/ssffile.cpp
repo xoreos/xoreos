@@ -94,6 +94,9 @@ SSFFile::Version SSFFile::readSSFHeader(Common::SeekableReadStream &ssf,
 	entryCount    = ssf.readUint32LE();
 	offEntryTable = ssf.readUint32LE();
 
+	if (entryCount >= UINT32_MAX)
+		throw Common::Exception("Invalid SSF header");
+
 	// Plain old version V1.0 used in NWN (and NWN2)
 	if (_version == kVersion10)
 		return kVersion10_NWN;
@@ -196,6 +199,9 @@ void SSFFile::getSound(size_t index, Common::UString &soundFile, uint32 &strRef)
 }
 
 void SSFFile::setSoundFile(size_t index, const Common::UString &soundFile) {
+	if (index >= UINT32_MAX)
+		throw Common::Exception("Sound index out of range");
+
 	if (_sounds.size() <= index)
 		_sounds.resize(index + 1);
 
@@ -203,6 +209,9 @@ void SSFFile::setSoundFile(size_t index, const Common::UString &soundFile) {
 }
 
 void SSFFile::setStrRef(size_t index, uint32 strRef) {
+	if (index >= UINT32_MAX)
+		throw Common::Exception("Sound index out of range");
+
 	if (_sounds.size() <= index)
 		_sounds.resize(index + 1);
 
@@ -210,6 +219,9 @@ void SSFFile::setStrRef(size_t index, uint32 strRef) {
 }
 
 void SSFFile::setSound(size_t index, const Common::UString &soundFile, uint32 strRef) {
+	if (index >= UINT32_MAX)
+		throw Common::Exception("Sound index out of range");
+
 	if (_sounds.size() <= index)
 		_sounds.resize(index + 1);
 
@@ -235,8 +247,7 @@ bool SSFFile::existNonASCIISoundFile() const {
 }
 
 void SSFFile::checkVersionFeatures(Version version) const {
-	if (_sounds.size() >= UINT32_MAX)
-		throw Common::Exception("Too many sounds");
+	assert(_sounds.size() < UINT32_MAX);
 
 	if (existNonASCIISoundFile())
 		throw Common::Exception("SSF files do not support non-ASCII sound filenames");
