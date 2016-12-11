@@ -69,6 +69,10 @@ const Common::UString &TalkTable_GFF::getSoundResRef(uint32 UNUSED(strRef)) cons
 	return kEmptyString;
 }
 
+uint32 TalkTable_GFF::getSoundID(uint32 UNUSED(strRef)) const {
+	return kFieldIDInvalid;
+}
+
 void TalkTable_GFF::load(Common::SeekableReadStream *tlk) {
 	assert(tlk);
 

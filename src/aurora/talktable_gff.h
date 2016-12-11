@@ -62,6 +62,8 @@ public:
 	const Common::UString &getString     (uint32 strRef) const;
 	const Common::UString &getSoundResRef(uint32 strRef) const;
 
+	uint32 getSoundID(uint32 strRef) const;
+
 
 private:
 	struct Entry {

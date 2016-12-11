@@ -64,6 +64,8 @@ public:
 	const Common::UString &getString     (uint32 strRef) const;
 	const Common::UString &getSoundResRef(uint32 strRef) const;
 
+	uint32 getSoundID(uint32 strRef) const;
+
 	static uint32 getLanguageID(Common::SeekableReadStream &tlk);
 	static uint32 getLanguageID(const Common::UString &file);
 

@@ -100,6 +100,7 @@ void TalkTable_TLK::readEntryTableV3(uint32 stringsOffset) {
 		entry->offset         = _tlk->readUint32LE() + stringsOffset;
 		entry->length         = _tlk->readUint32LE();
 		entry->soundLength    = _tlk->readIEEEFloatLE();
+		entry->soundID        = kFieldIDInvalid;
 	}
 }
 
@@ -157,6 +158,13 @@ const Common::UString &TalkTable_TLK::getSoundResRef(uint32 strRef) const {
 		return kEmptyString;
 
 	return _entries[strRef].soundResRef;
+}
+
+uint32 TalkTable_TLK::getSoundID(uint32 strRef) const {
+	if (strRef >= _entries.size())
+		return kFieldIDInvalid;
+
+	return _entries[strRef].soundID;
 }
 
 uint32 TalkTable_TLK::getLanguageID(Common::SeekableReadStream &tlk) {
