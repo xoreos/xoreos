@@ -71,7 +71,7 @@ static inline uint32 getDataSize(PixelFormatRaw format, int32 width, int32 heigh
 
 /** Are these image dimensions valid for this format? */
 static inline bool hasValidDimensions(PixelFormatRaw format, int32 width, int32 height) {
-	if ((width < 0) || (height < 0))
+	if ((width < 0) || (width >= 0x8000) || (height < 0) || (height >= 0x8000))
 		return false;
 
 	switch (format) {
