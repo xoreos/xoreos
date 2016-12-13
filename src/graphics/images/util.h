@@ -141,7 +141,7 @@ static inline void flipVertically(byte *data, int width, int height, int bpp) {
 	}
 }
 
-/** Rotate a square image in 90° steps. */
+/** Rotate a square image in 90° steps, clock-wise. */
 static inline void rotate90(byte *data, int width, int height, int bpp, int steps) {
 	if ((width <= 0) || (height <= 0) || (bpp <= 0))
 		return;
