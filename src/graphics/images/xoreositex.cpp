@@ -70,13 +70,13 @@ void XEOSITEX::readHeader(Common::SeekableReadStream &xeositex) {
 		throw Common::Exception("Invalid XEOSITEX pixel format %u", pixelFormat);
 
 	if        (pixelFormat == 3) {
-	_format    = kPixelFormatBGR;
-	_formatRaw = kPixelFormatRGB8;
-	_dataType  = kPixelDataType8;
+		_format    = kPixelFormatBGR;
+		_formatRaw = kPixelFormatRGB8;
+		_dataType  = kPixelDataType8;
 	} else if (pixelFormat == 4) {
-	_format    = kPixelFormatBGRA;
-	_formatRaw = kPixelFormatRGBA8;
-	_dataType  = kPixelDataType8;
+		_format    = kPixelFormatBGRA;
+		_formatRaw = kPixelFormatRGBA8;
+		_dataType  = kPixelDataType8;
 	}
 
 	_wrapX = xeositex.readByte() != 0;
