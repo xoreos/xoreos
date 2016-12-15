@@ -96,7 +96,7 @@ void XEOSITEX::readHeader(Common::SeekableReadStream &xeositex) {
 
 void XEOSITEX::readMipMaps(Common::SeekableReadStream &xeositex) {
 	for (size_t i = 0; i < _mipMaps.size(); i++) {
-		_mipMaps[i] = new MipMap;
+		_mipMaps[i] = new MipMap(this);
 
 		_mipMaps[i]->width  = xeositex.readUint32LE();
 		_mipMaps[i]->height = xeositex.readUint32LE();
