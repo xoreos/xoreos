@@ -73,10 +73,12 @@ void XEOSITEX::readHeader(Common::SeekableReadStream &xeositex) {
 		_format    = kPixelFormatBGR;
 		_formatRaw = kPixelFormatRGB8;
 		_dataType  = kPixelDataType8;
+		_hasAlpha  = false;
 	} else if (pixelFormat == 4) {
 		_format    = kPixelFormatBGRA;
 		_formatRaw = kPixelFormatRGBA8;
 		_dataType  = kPixelDataType8;
+		_hasAlpha  = true;
 	}
 
 	_wrapX = xeositex.readByte() != 0;
