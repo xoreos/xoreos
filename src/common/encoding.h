@@ -58,6 +58,12 @@ enum Encoding {
 	kEncodingMAX      ///< For range checks.
 };
 
+/** Do we have support for this encoding?
+ *
+ *  To support an encoding, we need to be able to convert it to and from UTF-8.
+ */
+bool hasSupportEncoding(Encoding encoding);
+
 /** Read a string with the given encoding of a stream.
  *
  *  Reading stops after an end-of-string terminating sequence has been read.

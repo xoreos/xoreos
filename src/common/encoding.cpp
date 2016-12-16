@@ -83,6 +83,20 @@ public:
 		}
 	}
 
+	bool hasSupportTranscode(Encoding from, Encoding to) {
+		if ((((size_t) from) >= kEncodingMAX) ||
+		    (((size_t) to  ) >= kEncodingMAX))
+			return false;
+
+		if (from == kEncodingUTF8)
+			return _contextTo[to] != ((iconv_t) -1);
+
+		if (to == kEncodingUTF8)
+			return _contextFrom[from] != ((iconv_t) -1);
+
+		return false;
+	}
+
 	UString convert(Encoding encoding, byte *data, size_t n) {
 		if (((size_t) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
@@ -168,6 +182,11 @@ private:
 DECLARE_SINGLETON(Common::ConversionManager)
 
 namespace Common {
+
+bool hasSupportEncoding(Encoding encoding) {
+	return ConvMan.hasSupportTranscode(Common::kEncodingUTF8, encoding             ) &&
+	       ConvMan.hasSupportTranscode(encoding             , Common::kEncodingUTF8);
+}
 
 static uint32 readFakeChar(SeekableReadStream &stream, Encoding encoding) {
 	byte data[2];
