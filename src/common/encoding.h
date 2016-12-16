@@ -58,6 +58,9 @@ enum Encoding {
 	kEncodingMAX      ///< For range checks.
 };
 
+/** Return the human readable name of an encoding. */
+UString getEncodingName(Encoding encoding);
+
 /** Do we have support for this encoding?
  *
  *  To support an encoding, we need to be able to convert it to and from UTF-8.

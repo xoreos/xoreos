@@ -183,6 +183,13 @@ DECLARE_SINGLETON(Common::ConversionManager)
 
 namespace Common {
 
+UString getEncodingName(Encoding encoding) {
+	if (((size_t) encoding) >= kEncodingMAX)
+		return "Invalid";
+
+	return kEncodingName[encoding];
+}
+
 bool hasSupportEncoding(Encoding encoding) {
 	return ConvMan.hasSupportTranscode(Common::kEncodingUTF8, encoding             ) &&
 	       ConvMan.hasSupportTranscode(encoding             , Common::kEncodingUTF8);
