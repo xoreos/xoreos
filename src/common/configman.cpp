@@ -129,17 +129,25 @@ bool ConfigManager::save() {
 		if (!config.open(file))
 			throw Exception(kOpenError);
 
-		_config->save(config);
+		save(config, true);
 
 	} catch (...) {
 		exceptionDispatcherWarning("Failed saving config file \"%s\"", file.c_str());
 		return false;
 	}
 
-	// We saved our changes, so we're no in a not-changed state again
-	_changed = false;
-
 	return true;
+}
+
+void ConfigManager::save(WriteStream &stream, bool clearChanged) {
+	if (!_config)
+		throw Exception("No config");
+
+	_config->save(stream);
+
+	// We saved our changes, so we're no in a not-changed state again
+	if (clearChanged)
+		_changed = false;
 }
 
 void ConfigManager::create() {

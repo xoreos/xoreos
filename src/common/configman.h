@@ -39,6 +39,7 @@ class ConfigFile;
 class ConfigDomain;
 
 class SeekableReadStream;
+class WriteStream;
 
 /** Special config realms. */
 enum ConfigRealm {
@@ -74,7 +75,10 @@ public:
 	/** Load from a generic read stream. */
 	void load(SeekableReadStream &stream);
 
+	/** Save to the default config file. */
 	bool save();
+	/** Save to a generic write stream. */
+	void save(WriteStream &stream, bool clearChanged = false);
 
 	/** Create a new, empty config. */
 	void create();
