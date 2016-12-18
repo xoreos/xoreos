@@ -38,6 +38,8 @@ namespace Common {
 class ConfigFile;
 class ConfigDomain;
 
+class SeekableReadStream;
+
 /** Special config realms. */
 enum ConfigRealm {
 	kConfigRealmDefault , ///< Application or game defaults.
@@ -67,7 +69,11 @@ public:
 	/** Was at least on setting changed? */
 	bool changed() const;
 
+	/** Load from the default config file. */
 	bool load();
+	/** Load from a generic read stream. */
+	void load(SeekableReadStream &stream);
+
 	bool save();
 
 	/** Create a new, empty config. */

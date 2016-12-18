@@ -91,11 +91,7 @@ bool ConfigManager::load() {
 		if (!config.open(file))
 			throw Exception(kOpenError);
 
-		_config.reset(new ConfigFile);
-		_config->load(config);
-
-		// Get the application domain
-		_domainApp = _config->addDomain(kDomainApp);
+		load(config);
 
 	} catch (...) {
 		exceptionDispatcherWarning("Failed loading config file \"%s\"", file.c_str());
@@ -103,6 +99,16 @@ bool ConfigManager::load() {
 	}
 
 	return true;
+}
+
+void ConfigManager::load(SeekableReadStream &stream) {
+	clear();
+
+	_config.reset(new ConfigFile);
+	_config->load(stream);
+
+	// Get the application domain
+	_domainApp = _config->addDomain(kDomainApp);
 }
 
 bool ConfigManager::save() {
