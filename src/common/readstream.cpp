@@ -56,6 +56,8 @@
 
 namespace Common {
 
+const uint32 ReadStream::kEOF;
+
 ReadStream::ReadStream() {
 }
 
