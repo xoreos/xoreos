@@ -30,10 +30,17 @@ matrix:
       env: USECMAKE=1
 
 script:
+  # Configure, autotools
   - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 0 \) ]; then ./autogen.sh; fi
   - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 0 \) ]; then ./configure || cat config.log; fi
+  # Configure, CMake
   - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 1 \) ]; then cmake .; fi
+  # Compile
   - if [ "$COVERITY_SCAN_BRANCH" != 1 ]; then make -j4; fi
+  # Unit tests, autotools
+  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 0 \) ]; then echo "" > test-suite.log; make -j4 check || cat test-suite.log; fi
+  # Unit tests, CMake
+  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 1 \) ]; then make -j4 check; fi
 
 addons:
   apt:
