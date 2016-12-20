@@ -26,6 +26,7 @@
  * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
  */
 
+#include <cassert>
 #include <cstdio>
 #include <cstring>
 
@@ -36,6 +37,7 @@
 
 #include "src/aurora/ifofile.h"
 #include "src/aurora/gff3file.h"
+#include "src/aurora/resman.h"
 
 namespace Aurora {
 
@@ -96,10 +98,11 @@ void IFOFile::unload() {
 	clear();
 }
 
-void IFOFile::load(bool repairNWNPremium) {
+void IFOFile::load(Common::SeekableReadStream *stream, bool repairNWNPremium) {
 	unload();
 
-	_gff.reset(new GFF3File("module", kFileTypeIFO, MKTAG('I', 'F', 'O', ' '), repairNWNPremium));
+	assert(stream);
+	_gff.reset(new GFF3File(stream, MKTAG('I', 'F', 'O', ' '), repairNWNPremium));
 
 	const GFF3Struct &ifoTop = _gff->getTopLevel();
 
@@ -221,6 +224,16 @@ void IFOFile::load(bool repairNWNPremium) {
 
 	// XP Scale
 	_xpScale = ifoTop.getUint("Mod_XPScale", 100) / 100.0f;
+}
+
+void IFOFile::load(bool repairNWNPremium) {
+	unload();
+
+	Common::SeekableReadStream *stream = ResMan.getResource("module", kFileTypeIFO);
+	if (!stream)
+		throw Common::Exception("No module.ifo available");
+
+	load(stream, repairNWNPremium);
 }
 
 void IFOFile::parseVersion(const Common::UString &version) {
