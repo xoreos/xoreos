@@ -147,6 +147,7 @@ build_script:
   - copy /y libs\%LIBICONV%-bin\bin\*.dll build\bin\Debug
   - copy /y %BOOST_ROOT%\lib32-msvc-14.0\*.dll build\bin\Debug
   - copy /y %LIBXZ_DESTDIR%\lib\lzma.dll build\bin\Debug\liblzma.dll
+  - cmake --build build --target check
 
 cache:
   - libs
