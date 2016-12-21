@@ -76,7 +76,7 @@ public:
 		     it != std::map<Key, T *, Compare>::end(); ++it)
 			Deallocator::destroy(it->second);
 
-		return std::map<Key, T *, Compare>::erase(first, last);
+		std::map<Key, T *, Compare>::erase(first, last);
 	}
 };
 
