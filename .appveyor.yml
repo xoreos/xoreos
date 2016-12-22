@@ -144,6 +144,9 @@ build_script:
           -DSDL2_INCLUDE_DIR=%LIBSDL2_DESTDIR%/include/SDL2 -DSDL2_LIBRARY=%LIBSDL2_DESTDIR%/lib/SDL2.lib
           -DOPENAL_INCLUDE_DIR=%LIBOPENAL_DESTDIR%/include -DOPENAL_LIBRARY=%LIBOPENAL_DESTDIR%/lib/OpenAL32.lib
   - cmake --build build
+  - copy /y libs\%LIBICONV%-bin\bin\*.dll build\bin\Debug
+  - copy /y %BOOST_ROOT%\lib32-msvc-14.0\*.dll build\bin\Debug
+  - copy /y %LIBXZ_DESTDIR%\lib\lzma.dll build\bin\Debug\liblzma.dll
 
 cache:
   - libs
