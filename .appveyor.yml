@@ -58,6 +58,7 @@ install:
   - if not exist libs\%LIBSDL2%.tar.gz   cmake -E chdir libs curl -OfsSL https://www.libsdl.org/release/%LIBSDL2%.tar.gz
   - if not exist libs\%LIBFT2%-lib.zip   cmake -E chdir libs curl -OfsSL http://sourceforge.net/projects/gnuwin32/files/freetype/2.3.5-1/%LIBFT2%-lib.zip
   - if not exist libs\%LIBICONV%-lib.zip cmake -E chdir libs curl -OfsSL http://sourceforge.net/projects/gnuwin32/files/libiconv/1.9.2-1/%LIBICONV%-lib.zip
+  - if not exist libs\%LIBICONV%-bin.zip cmake -E chdir libs curl -OfsSL http://sourceforge.net/projects/gnuwin32/files/libiconv/1.9.2-1/%LIBICONV%-bin.zip
   - if not exist libs\%LIBMAD%.tar.gz    cmake -E chdir libs curl -OfsSL ftp://ftp.mars.org/pub/mpeg/%LIBMAD%.tar.gz
   - if not exist libs\%LIBFAAD%.tar.bz2  cmake -E chdir libs curl -OfsSL http://downloads.sourceforge.net/faac/%LIBFAAD%.tar.bz2
   - if not exist libs\%LIBOGG%.tar.xz    cmake -E chdir libs curl -OfsSL http://downloads.xiph.org/releases/ogg/%LIBOGG%.tar.xz
@@ -79,6 +80,9 @@ install:
 
   - cmake -E make_directory libs\%LIBICONV%-lib
   - cmake -E chdir libs/%LIBICONV%-lib cmake -E tar xf ../%LIBICONV%-lib.zip
+
+  - cmake -E make_directory libs\%LIBICONV%-bin
+  - cmake -E chdir libs/%LIBICONV%-bin cmake -E tar xf ../%LIBICONV%-bin.zip
 
   - cmake -E chdir libs/xz msbuild windows\xz_win.sln /p:Configuration=Release /p:Platform=%MSBUILD_PLATFORM% /verbosity:quiet
   - cmake -E make_directory %LIBXZ_DESTDIR%
