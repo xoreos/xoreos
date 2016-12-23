@@ -122,11 +122,18 @@ UString debugTag(uint32 tag, bool trim) {
 
 // Helper functions for parseString()
 
+static void errorOnSign(const char *str) {
+	if (strchr(str, '-') != 0)
+		errno = ERANGE;
+}
+
 static inline void parse(const char *nptr, char **endptr, signed long long &value) {
 	value = strtoll(nptr, endptr, 0);
 }
 
 static inline void parse(const char *nptr, char **endptr, unsigned long long &value) {
+	errorOnSign(nptr);
+
 	value = strtoull(nptr, endptr, 0);
 }
 
@@ -135,6 +142,8 @@ static inline void parse(const char *nptr, char **endptr, signed long &value) {
 }
 
 static inline void parse(const char *nptr, char **endptr, unsigned long &value) {
+	errorOnSign(nptr);
+
 	value = strtoul(nptr, endptr, 0);
 }
 
@@ -147,6 +156,8 @@ static inline void parse(const char *nptr, char **endptr, signed int &value) {
 }
 
 static inline void parse(const char *nptr, char **endptr, unsigned int &value) {
+	errorOnSign(nptr);
+
 	unsigned long tmp = strtoul(nptr, endptr, 0);
 	if (tmp > UINT_MAX)
 		errno = ERANGE;
@@ -163,6 +174,8 @@ static inline void parse(const char *nptr, char **endptr, signed short &value) {
 }
 
 static inline void parse(const char *nptr, char **endptr, unsigned short &value) {
+	errorOnSign(nptr);
+
 	unsigned long tmp = strtoul(nptr, endptr, 0);
 	if (tmp > USHRT_MAX)
 		errno = ERANGE;
@@ -179,6 +192,8 @@ static inline void parse(const char *nptr, char **endptr, signed char &value) {
 }
 
 static inline void parse(const char *nptr, char **endptr, unsigned char &value) {
+	errorOnSign(nptr);
+
 	unsigned long tmp = strtoul(nptr, endptr, 0);
 	if (tmp > UCHAR_MAX)
 		errno = ERANGE;
