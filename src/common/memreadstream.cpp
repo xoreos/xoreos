@@ -56,14 +56,6 @@
 
 namespace Common {
 
-MemoryReadStream::MemoryReadStream(const byte *dataPtr, size_t dataSize, bool disposeMemory) :
-	_ptrOrig(dataPtr, disposeMemory), _ptr(dataPtr), _size(dataSize), _pos(0), _eos(false) {
-
-}
-
-MemoryReadStream::~MemoryReadStream() {
-}
-
 size_t MemoryReadStream::read(void *dataPtr, size_t dataSize) {
 	assert(dataPtr);
 

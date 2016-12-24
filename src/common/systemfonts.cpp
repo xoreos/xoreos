@@ -20761,7 +20761,7 @@ static const byte kDejaVuSansMonoBold[] = {
 
 
 SeekableReadStream *getSystemFontMono() {
-	return new MemoryReadStream(kDejaVuSansMonoBold, sizeof(kDejaVuSansMonoBold));
+	return new MemoryReadStream(kDejaVuSansMonoBold);
 }
 
 } // End of namespace Common

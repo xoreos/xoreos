@@ -67,10 +67,21 @@ class MemoryReadStream : boost::noncopyable, public SeekableReadStream {
 public:
 	/** This constructor takes a pointer to a memory buffer and a length, and
 	 *  wraps it. If disposeMemory is true, the MemoryReadStream takes ownership
-	 *  of the buffer and hence delete[]'s it when destructed.
-	 */
-	MemoryReadStream(const byte *dataPtr, size_t dataSize, bool disposeMemory = false);
-	~MemoryReadStream();
+	 *  of the buffer and hence delete[]'s it when destructed. */
+	MemoryReadStream(const byte *dataPtr, size_t dataSize, bool disposeMemory = false) :
+		_ptrOrig(dataPtr, disposeMemory), _ptr(dataPtr), _size(dataSize), _pos(0), _eos(false) {
+
+	}
+
+	/** Template constructor to create a MemoryReadStream around a static array buffer.
+	 *  Never disposes its memory. */
+	template<size_t N>
+	MemoryReadStream(const byte (&array)[N]) :
+		_ptrOrig(array, false), _ptr(array), _size(N), _pos(0), _eos(false) {
+
+	}
+
+	~MemoryReadStream() { }
 
 	size_t read(void *dataPtr, size_t dataSize);
 

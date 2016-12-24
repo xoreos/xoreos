@@ -208,7 +208,7 @@ void ERFFile::verifyPasswordDigest() {
 		for (size_t i = 0; i < sizeof(buffer); i++)
 			buffer[i] = i;
 
-		Common::MemoryReadStream bufferStream(buffer, sizeof(buffer));
+		Common::MemoryReadStream bufferStream(buffer);
 		Common::ScopedPtr<Common::SeekableReadStream>
 			bufferEncrypted(Common::encryptBlowfishEBC(bufferStream, _password));
 
