@@ -65,8 +65,12 @@ namespace Common {
  */
 class MemoryWriteStream : boost::noncopyable, public WriteStream {
 public:
-	MemoryWriteStream(byte *buf, size_t len);
-	~MemoryWriteStream();
+	MemoryWriteStream(byte *buf, size_t len) : _ptr(buf), _bufSize(len), _pos(0) { }
+	~MemoryWriteStream() { }
+
+	/** Template constructor to create a MemoryWriteStream around an array buffer. */
+	template<size_t N>
+	MemoryWriteStream(byte (&array)[N]) : _ptr(array), _bufSize(N), _pos(0) { }
 
 	size_t write(const void *dataPtr, size_t dataSize);
 

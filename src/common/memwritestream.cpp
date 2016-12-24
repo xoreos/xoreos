@@ -55,12 +55,6 @@
 
 namespace Common {
 
-MemoryWriteStream::MemoryWriteStream(byte *buf, size_t len) : _ptr(buf), _bufSize(len), _pos(0) {
-}
-
-MemoryWriteStream::~MemoryWriteStream() {
-}
-
 size_t MemoryWriteStream::write(const void *dataPtr, size_t dataSize) {
 	assert(dataPtr);
 
