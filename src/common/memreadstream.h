@@ -73,6 +73,14 @@ public:
 
 	}
 
+	/** Create a MemoryReadStream around a static string buffer, optionally including the
+	 *  terminating \0. Never disposes its memory. */
+	MemoryReadStream(const char *str, bool useTerminator = false) :
+		_ptrOrig(reinterpret_cast<const byte *>(str), false), _ptr(reinterpret_cast<const byte *>(str)),
+		_size(strlen(str) + (useTerminator ? 1 : 0)), _pos(0), _eos(false) {
+
+	}
+
 	/** Template constructor to create a MemoryReadStream around a static array buffer.
 	 *  Never disposes its memory. */
 	template<size_t N>
