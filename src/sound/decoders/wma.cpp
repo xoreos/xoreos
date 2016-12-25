@@ -1039,7 +1039,9 @@ void WMACodec::calculateMDCTCoefficients(int bSize, bool *hasChannel,
 			}
 
 			// Compute power of high bands
-			float expPower[kHighBandSizeMax];
+			float expPower[kHighBandSizeMax] = {
+				1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f
+			};
 
 			const int n1 = _exponentHighSizes[bSize];
 			exponents = _exponents[i] + ((_highBandStart[bSize] << bSize) >> eSize);
