@@ -32,7 +32,7 @@
 
 namespace Common {
 
-WriteFile::WriteFile() : _handle(0) {
+WriteFile::WriteFile() : _handle(0), _size(0) {
 }
 
 WriteFile::WriteFile(const UString &fileName) : _handle(0), _size(0) {
