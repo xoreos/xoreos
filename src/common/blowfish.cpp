@@ -355,7 +355,8 @@ MemoryReadStream *blowfishEBC(SeekableReadStream &input, const std::vector<byte>
 		if (input.read(buffer, toRead) != toRead)
 			throw Exception(kReadError);
 
-		std::memset(buffer + toRead, 0, kBlockSize - toRead);
+		if (toRead < kBlockSize)
+			std::memset(buffer + toRead, 0, kBlockSize - toRead);
 
 		blowfishECB(ctx, mode, buffer, data);
 
