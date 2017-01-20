@@ -42,6 +42,11 @@
 #include "src/graphics/shader/materialman.h"
 #include "src/graphics/shader/surfaceman.h"
 
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
+
+#include "src/graphics/images/decoder.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -544,7 +549,6 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 			}
 		}
 
-		printf("mesh name: %s\n", meshName.c_str());
 		if (!mystery_mesh) {
 			Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
 			if (checkMesh) {
@@ -586,6 +590,271 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 		}
 	}
 	ctx.mdl->seek(pos);
+}
+
+void ModelNode_KotOR::buildMaterial() {
+	ModelNode::Mesh *pmesh  = 0;  // TODO: if anything is changed in here, ensure there's a local copy instead that shares the root data.
+	TextureHandle *phandles = 0; // Take from self first, or root state, if there is one, otherwise.
+	TextureHandle *penvmap  = 0;  // Maybe it's only the environment map that's overriden.
+	EnvironmentMapMode envmapmode;
+
+	uint32 textureCount = 0;
+
+	_renderableArray.clear();
+
+	/**
+	 * If there's no override of mesh, textures, or environment mapping, then don't bother
+	 * to create any new renderables. Just make sure _rootStateNode has some, and have the
+	 * render queuing use the renderables from there instead. This isn't really a problem,
+	 * as the per-modelnode data (modelview matrix in this case) is still supplied from
+	 * _this_ object.
+	 */
+
+	if (!_model->getState().empty()) {
+		_rootStateNode = _model->getNode("", _name);
+		if (_rootStateNode == this) {
+			_rootStateNode = 0;
+		}
+	} else {
+		_rootStateNode = 0;
+	}
+
+	_dirtyRender = false;
+
+	if (!_mesh) {
+		//status("%s: no mesh when building material\n", _name.c_str());
+		return;
+	}
+
+	if (!_mesh->data) {
+		//status("%s: no mesh data when building material\n", _name.c_str());
+		return;
+	}
+
+	if (_mesh->data->textures.size() == 0 && _mesh->data->envMap.empty() && !_mesh->data->rawMesh) {
+		//status("%s: no texture or environment map data when building material\n", _name.c_str());
+		return;
+	}
+	/**
+	 * To get here, _mesh must exist and have some data. This is required to consider making
+	 * a new renderable - otherwise, the renderable of the parent can be used directly. This
+	 * may change depending what information the renderable is dependent on during creation.
+	 * Important information in this case means texture or environment maps are overidden from
+	 * any potential parent.
+	 */
+	pmesh = _mesh; // getMesh();
+	phandles = getTextures(textureCount);
+	penvmap = getEnvironmentMap(envmapmode);
+
+	if (textureCount == 0) {
+		//status("%s: no texture data when building material\n", _name.c_str());
+		return;
+	}
+
+	//status("attempting to build material with mesh: %s, environment map: %u, texture count: %u\n", pmesh->data->rawMesh->getName().c_str(), penvmap ? 1 : 0, textureCount);
+
+	if (!_render) {
+		//status("%s: rendering disabled when building material\n", _name.c_str());
+		return;
+	}
+
+	if (!pmesh->data->rawMesh) {
+		//status("%s: no raw mesh when building material\n", _name.c_str());
+		return;
+	}
+
+	if (phandles[0].empty()) {
+		//status("%s: no diffuse colour texture, abandoning material construction.\n", _name.c_str());
+		return;
+	}
+
+	Common::UString vertexShaderName;
+	Common::UString fragmentShaderName;
+	Common::UString materialName = "xoreos.";
+
+	Shader::ShaderMaterial *material;
+	Shader::ShaderSampler *sampler;
+	Shader::ShaderSurface *surface;
+
+	uint32 materialFlags = 0;
+
+	std::vector<Shader::ShaderBuilder::BuildPass> shaderPasses;
+	_renderableArray.clear();
+
+	ShaderBuild.initShaderName(vertexShaderName);
+	ShaderBuild.initShaderName(fragmentShaderName);
+
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedUnder) {
+			materialName += penvmap->getName();
+			// Figure out if a cube or sphere map is used.
+			if (penvmap->getTexture().getImage().isCubeMap()) {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE));
+				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
+				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
+				if (!pmesh->isTransparent) {
+					materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				}
+			} else {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE));
+				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
+				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
+				/**
+				 * Seems that, regardless of _isTransparent, anything with shperical env mapping is opaque. This mostly comes from
+				 * NWN, where it's seen that things marked as transparent actually shouldn't be. It's assumed this carries over to
+				 * other game titles as well.
+				 */
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				// pmesh->isTransparent = false;
+			}
+		}
+	}
+
+	// Because screw you bioware. KotOR2 has skybox troubles.
+	if (pmesh->data->rawMesh->getName().contains("sky")) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+	}
+
+	if (pmesh->isTransparent && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+
+	// For KotOR2, this helps to move some things to the back of the render queue. Windows and such.
+	if (pmesh->hasTransparencyHint &&
+	    pmesh->data->rawMesh->getVertexBuffer()->getCount() < 10 &&
+	    !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+
+	/**
+	 * Sometimes the _textures handler array isn't matched up against what
+	 * is properly loaded (missing files from disk). So do some brief sanity
+	 * checks on this.
+	 */
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			materialName += phandles[0].getName();
+			if (phandles[0].getTexture().getTXI().getFeatures().blending) {
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_SPECIAL_BLEND;
+				// For KotOR2, this is required to get some windows showing up properly.
+				if (pmesh->hasTransparencyHint && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+					materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+				}
+			}
+			if (penvmap && envmapmode == kModeEnvironmentBlendedUnder) {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_SRC_ALPHA));
+			} else {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_ONE));
+			}
+		}
+	}
+
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
+			materialName += ".";
+			materialName += phandles[1].getName();
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::ShaderBuilder::BLEND_MULTIPLY));
+		} else {
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+		}
+	}
+
+	if (textureCount >= 3) {
+		if (!phandles[2].empty()) {
+			materialName += ".";
+			materialName += phandles[2].getName();
+		} else {
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+		}
+	}
+
+	if (textureCount >= 4) {
+		// Don't know yet what this extra texture is supposed to be.
+		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+	}
+
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedOver) {
+			materialName += penvmap->getName();
+			// Figure out if a cube or sphere map is used.
+			if (penvmap->getTexture().getImage().isCubeMap()) {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
+			} else {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
+			}
+		}
+	}
+
+	if (materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
+		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+	}
+
+	material = MaterialMan.getMaterial(materialName);
+	if (material) {
+		surface = SurfaceMan.getSurface(materialName);
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
+		return;
+	}
+
+	vertexShaderName = ShaderBuild.genVertexShaderName(&shaderPasses[0], shaderPasses.size());
+	fragmentShaderName = ShaderBuild.genFragmentShaderName(&shaderPasses[0], shaderPasses.size());
+
+	// Ok, material doesn't exist. Check on the shaders.
+	Shader::ShaderObject *vertexObject = ShaderMan.getShaderObject(vertexShaderName, Shader::SHADER_VERTEX);
+	Shader::ShaderObject *fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, Shader::SHADER_FRAGMENT);
+
+	// Should be checking vert and frag shader separately, but they really should exist together anyway.
+	if (!vertexObject) {
+		// No object found. Generate a shader then.
+		bool isGL3 = GfxMan.isGL3();
+
+		Common::UString vertexStringFinal;
+		Common::UString fragmentStringFinal;
+
+		vertexStringFinal = ShaderBuild.genVertexShader(&shaderPasses[0], shaderPasses.size(), isGL3);
+		fragmentStringFinal = ShaderBuild.genFragmentShader(&shaderPasses[0], shaderPasses.size(), isGL3);
+
+		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
+		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);
+	}
+
+	// Shader objects should now exist, so go ahead and make the material and surface.
+	surface = new Shader::ShaderSurface(vertexObject, materialName);
+	material = new Shader::ShaderMaterial(fragmentObject, materialName);
+	material->setFlags(materialFlags);
+	MaterialMan.addMaterial(material);
+	SurfaceMan.addSurface(surface);
+
+	if (penvmap) {
+		// Figure out if a cube or sphere map is used.
+		if (penvmap->getTexture().getImage().isCubeMap()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureCube0"));
+		} else {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureSphere0"));
+		}
+		sampler->handle = *penvmap;
+	}
+
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
+			sampler->handle = phandles[0];
+		}
+	}
+
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
+			sampler->handle = phandles[1];
+		}
+	}
+
+	if (textureCount >= 3) {
+		if (!phandles[2].empty()) {
+		}
+	}
+
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
 }
 
 void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,

@@ -345,6 +345,18 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	meshName += ".";
 	meshName += _name;
 
+	if (!_mesh) {
+		return;
+	}
+
+	if (!_mesh->data) {
+		return;
+	}
+
+	if (!_mesh->data->rawMesh) {
+		return;
+	}
+
 	_mesh->data->rawMesh->setName(meshName);
 	_mesh->data->rawMesh->init();
 	if (MeshMan.getMesh(meshName)) {
@@ -623,6 +635,7 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 	loadTextures(ctx.textures);
 

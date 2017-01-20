@@ -1086,11 +1086,6 @@ void ModelNode::buildMaterial() {
 		}
 	}
 
-	// Because screw you bioware. KotOR2 has skybox troubles.
-	if (pmesh->data->rawMesh->getName().contains("sky")) {
-		materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
-	}
-
 	if (pmesh->isTransparent && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}

@@ -283,7 +283,7 @@ protected:
 	TextureHandle *getTextures(uint32 &count);
 	TextureHandle *getEnvironmentMap(EnvironmentMapMode &mode);
 
-	void buildMaterial();
+	virtual void buildMaterial();
 
 
 private:
