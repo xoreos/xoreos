@@ -204,6 +204,7 @@ void TXB::readData(Common::SeekableReadStream &txb, byte encoding) {
 			}
 
 			(*mipMap)->data.swap(tmp1);
+			(*mipMap)->size = newSize;
 
 		} else if (swizzled) {
 			Common::ScopedArray<byte> tmp(new byte[(*mipMap)->size]);
