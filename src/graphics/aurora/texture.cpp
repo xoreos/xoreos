@@ -174,17 +174,38 @@ void Texture::setWrap(GLenum target, GLint wrapModeX, GLint wrapModeY) {
 }
 
 void Texture::setAlign() {
-	/* If this is a texture with a non-power-of-two width, we need to
-	 * loosen the alignment constraints for the pixel rows. */
+	/* Set the correct alignment depending on the texture data we have.
+	   Can be used for optimized reading of texture data by the driver. */
 
-	int alignment = 4;
+	int alignment = 1;
 
-	if (!ISPOWER2(_image->getMipMap(0).width)) {
-		if      ((_image->getFormatRaw() == kPixelFormatRGB5) ||
-		         (_image->getFormatRaw() == kPixelFormatRGB5A1))
+	switch (_image->getFormatRaw()) {
+		// 4 byte per texel, so always neatly 4-byte aligned
+		case kPixelFormatRGBA8:
+			alignment = 4;
+			break;
+
+		// 2 byte per texel, so always neatly 2-byte aligned
+		case kPixelFormatRGB5A1:
+		case kPixelFormatRGB5:
 			alignment = 2;
-		else if  (_image->getFormatRaw() == kPixelFormatRGB8)
+			break;
+
+		// All bets are off here
+		case kPixelFormatRGB8:
 			alignment = 1;
+			break;
+
+		// DXT texture rows should always be 4-byte aligned
+		case kPixelFormatDXT1:
+		case kPixelFormatDXT3:
+		case kPixelFormatDXT5:
+			alignment = 4;
+
+		// Unknown
+		default:
+			alignment = 1;
+			break;
 	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
