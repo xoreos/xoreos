@@ -50,11 +50,18 @@ CLEANFILES += $(GITSTAMP_FILE)
 -include gitstamp
 
 # Now get the information out of the gitstamp file again and store
-# it in the these variables. Also get the current date and time.
+# it in the these variables.
 
 VERSION_REVDESC = $(shell cat $(GITSTAMP_FILE))
 VERSION_REV     = $(shell cat $(GITSTAMP_FILE) | cut -d '+' -f 2-)
-VERSION_DATE    = $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+# Get the current date and time. But we also heed SOURCE_DATE_EPOCH
+# for reproducible builds.
+
+DATE_FMT           = %Y-%m-%dT%H:%M:%SZ
+SOURCE_DATE_EPOCH ?= $(shell date "+%s")
+
+VERSION_DATE = $(shell date -u -d "@$(SOURCE_DATE_EPOCH)" "+$(DATE_FMT)"  2>/dev/null || date -u -r "$(SOURCE_DATE_EPOCH)" "+$(DATE_FMT)" 2>/dev/null || date -u "+$(DATE_FMT)")
 
 # And assemble this version data into a compiler command line.
 
