@@ -334,7 +334,21 @@ target_link_libraries(xoreos ${XOREOS_LIBRARIES})
 # try to add version information from git to src/version/version.cpp
 # this is not 100% clean, and doesn't reconfigure when there's only a local change since last
 #  build (so it does not always add the .dirty suffix)
-string(TIMESTAMP XOREOS_BUILDDATE "%Y-%m-%dT%H:%M:%SZ" UTC)
+
+# get build timestamp, but heed SOURCE_DATE_EPOCH
+set(DATE_FMT "%Y-%m-%dT%H:%M:%SZ")
+if(DEFINED ENV{SOURCE_DATE_EPOCH})
+  execute_process(COMMAND "date" "-u" "-d" "@$ENV{SOURCE_DATE_EPOCH}" "+${DATE_FMT}" OUTPUT_VARIABLE XOREOS_BUILDDATE OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE DATE_RETCODE ERROR_QUIET)
+  if(NOT "${DATE_RETCODE}" STREQUAL "0")
+    execute_process(COMMAND "date" "-u" "-r" "$ENV{SOURCE_DATE_EPOCH}" "+${DATE_FMT}" OUTPUT_VARIABLE XOREOS_BUILDDATE OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE DATE_RETCODE ERROR_QUIET)
+    if(NOT "${DATE_RETCODE}" STREQUAL "0")
+      string(TIMESTAMP XOREOS_BUILDDATE "${DATE_FMT}" UTC)
+    endif()
+  endif()
+else()
+  string(TIMESTAMP XOREOS_BUILDDATE "${DATE_FMT}" UTC)
+endif()
+
 set_property(SOURCE src/version/version.cpp APPEND PROPERTY COMPILE_DEFINITIONS XOREOS_BUILDDATE="${XOREOS_BUILDDATE}")
 
 find_package(Git)
