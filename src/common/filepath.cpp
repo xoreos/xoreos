@@ -140,11 +140,13 @@ UString FilePath::absolutize(const UString &p) {
 }
 
 UString FilePath::relativize(const UString &basePath, const UString &path) {
+	const Common::UString normPath = normalize(path, false);
+	const Common::UString normBase = normalize(basePath, false);
+
 	UString relative = "";
 
-	if (path.beginsWith(basePath)) {
-		relative = path.substr(path.getPosition(basePath.size() + 1), path.end());
-	}
+	if (normPath.beginsWith(normBase))
+		relative = normPath.substr(normPath.getPosition(normBase.size() + 1), normPath.end());
 
 	return relative;
 }
