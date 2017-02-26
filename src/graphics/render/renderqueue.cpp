@@ -119,6 +119,9 @@ void RenderQueue::render() {
 			currentProgram = _nodeArray[i].program;
 			glUseProgram(currentProgram->glid);
 
+			if (currentSurface != 0) {
+				currentSurface->unbindGLState();
+			}
 			if (currentMaterial != 0) {
 				currentMaterial->unbindGLState();
 			}
@@ -139,6 +142,14 @@ void RenderQueue::render() {
 		assert(_nodeArray[i].surface);
 		assert(_nodeArray[i].mesh);
 
+		if (currentSurface != _nodeArray[i].surface) {
+			if (currentSurface != 0) {
+				currentSurface->unbindGLState();
+			}
+			currentSurface = _nodeArray[i].surface;
+			currentSurface->bindGLState();
+		}
+
 		currentSurface = _nodeArray[i].surface;
 		currentMesh = _nodeArray[i].mesh;
 		currentMesh->renderBind();  // Binds VAO ready for rendering.
@@ -146,7 +157,7 @@ void RenderQueue::render() {
 		// There's at least one mesh to be rendering here.
 		assert(_nodeArray[i].transform);
 		currentSurface->bindProgram(currentProgram, _nodeArray[i].transform);
-		currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
+		//currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
 		currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
 		currentMesh->render();
 

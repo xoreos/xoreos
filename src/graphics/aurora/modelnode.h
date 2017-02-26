@@ -196,6 +196,9 @@ protected:
 
 		bool hasTransparencyHint;
 		bool transparencyHint;
+		uint32 transparencyHintFull;
+
+		bool isBackgroundGeometry;
 
 		MeshData *data;
 		Dangly   *dangly;

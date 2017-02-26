@@ -39,6 +39,7 @@
 #include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/fontman.h"
+#include "src/graphics/render/renderman.h"
 
 #include "src/sound/sound.h"
 
@@ -205,6 +206,12 @@ void JadeEngine::init() {
 
 	GfxMan.setGUIScale(Graphics::GraphicsManager::kScalingWindowSize);
 	GfxMan.setGUISize(640, 480);
+	/**
+	 * Jade Empire is proving to be a difficult beast to figure out what is opaque, and what is
+	 * truly transparent. For this reason, doing things normally results in many rendering
+	 * artefacts. Just sort everything by depth and be done with it.
+	 */
+	RenderMan.setSortingHint(Graphics::Render::RenderManager::SORT_HINT_ALLDEPTH);
 }
 
 void JadeEngine::declareLanguages() {

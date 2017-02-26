@@ -40,8 +40,16 @@ namespace Render {
 
 class RenderManager : public Common::Singleton<RenderManager> {
 public:
+
+	enum SortingHints {
+		SORT_HINT_NORMAL = 0,   // Set normal render order sorting.
+		SORT_HINT_ALLDEPTH = 1  // Sort _everything_ by depth. Not optimal for rendering, but some games require it.
+	};
+
 	RenderManager();
 	~RenderManager();
+
+	void setSortingHint(SortingHints hint);
 
 	void setCameraReference(const glm::vec3 &reference);
 
@@ -64,6 +72,9 @@ private:
 	RenderQueue _queueColorTransparentPrimary;
 	RenderQueue _queueColorTransparentSecondary;
 	RenderQueue _queueLast;
+
+	SortingHints _sortingHints;
+
 	//std::vector<GLContainer *> _queueColorImmediate; // For anything special outside the normal render path.
 };
 

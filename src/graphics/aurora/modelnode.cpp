@@ -713,6 +713,10 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 		alpah = 0.7f;
 	}
 
+	if (_mesh) {
+		alpah = _mesh->alpha;
+	}
+
 	if (_dirtyRender) {
 		/**
 		 * Do this regardless of if the modelnode is actually visible or not, to prevent
@@ -1014,7 +1018,7 @@ void ModelNode::buildMaterial() {
 	 * Important information in this case means texture or environment maps are overidden from
 	 * any potential parent.
 	 */
-	pmesh = _mesh; // getMesh();
+	pmesh = _mesh;
 	phandles = getTextures(textureCount);
 	penvmap = getEnvironmentMap(envmapmode);
 
@@ -1022,8 +1026,6 @@ void ModelNode::buildMaterial() {
 		//status("%s: no texture data when building material\n", _name.c_str());
 		return;
 	}
-
-	//status("attempting to build material with mesh: %s, environment map: %u, texture count: %u\n", pmesh->data->rawMesh->getName().c_str(), penvmap ? 1 : 0, textureCount);
 
 	if (!_render) {
 		//status("%s: rendering disabled when building material\n", _name.c_str());
@@ -1086,16 +1088,28 @@ void ModelNode::buildMaterial() {
 		}
 	}
 
+//	if (pmesh->isBackgroundGeometry) {
+//		materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+//	}
+
 	if (pmesh->isTransparent && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
+/*
+	if (pmesh->isTransparent) {
+		materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+*/
 
+/*
 	// For KotOR2, this helps to move some things to the back of the render queue. Windows and such.
 	if (pmesh->hasTransparencyHint &&
 	    pmesh->data->rawMesh->getVertexBuffer()->getCount() < 10 &&
 	    !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
+*/
 
 	/**
 	 * Sometimes the _textures handler array isn't matched up against what
@@ -1111,6 +1125,10 @@ void ModelNode::buildMaterial() {
 				if (pmesh->hasTransparencyHint && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
 					materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 				}
+			}
+			// Check to see if it's actually a decal texture.
+			if (phandles[0].getTexture().getTXI().getFeatures().decal) {
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_DECAL;
 			}
 			if (penvmap && envmapmode == kModeEnvironmentBlendedUnder) {
 				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_SRC_ALPHA));
@@ -1160,11 +1178,22 @@ void ModelNode::buildMaterial() {
 		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
 	}
 
+	if (materialFlags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {
+		if (pmesh->data->rawMesh->getVertexBuffer()->getCount() <= 6) {
+			materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B;
+		}
+	}
+
 	material = MaterialMan.getMaterial(materialName);
 	if (material) {
 		surface = SurfaceMan.getSurface(materialName);
 		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
 		return;
+	}
+
+	if (_mesh->alpha < 1.0f) {
+		materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // Make sure it's not actually opaque.
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
 
 	vertexShaderName = ShaderBuild.genVertexShaderName(&shaderPasses[0], shaderPasses.size());

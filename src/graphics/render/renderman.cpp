@@ -32,10 +32,14 @@ namespace Graphics {
 
 namespace Render {
 
-RenderManager::RenderManager() {
+RenderManager::RenderManager() : _sortingHints(SORT_HINT_NORMAL) {
 }
 
 RenderManager::~RenderManager() {
+}
+
+void RenderManager::setSortingHint(SortingHints hint) {
+	_sortingHints = hint;
 }
 
 void RenderManager::setCameraReference(const glm::vec3 &reference) {
@@ -47,13 +51,22 @@ void RenderManager::setCameraReference(const glm::vec3 &reference) {
 }
 
 void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform, float alpha) {
-
-	if (renderable->getMaterial()->getFlags() & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {
+	uint32 flags = renderable->getMaterial()->getFlags();
+	if (flags & Shader::ShaderMaterial::MATERIAL_DECAL) {
+		_queueColorSolidDecal.queueItem(renderable, transform, alpha);
+	} else if (flags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {
+		if (flags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B) {
+			_queueColorTransparentSecondary.queueItem(renderable, transform, alpha);
+		} else {
+			_queueColorTransparentPrimary.queueItem(renderable, transform, alpha);
+		}
+		/*
 		if (renderable->getMesh()->getVertexBuffer()->getCount() > 6) {
 			_queueColorTransparentPrimary.queueItem(renderable, transform, alpha);
 		} else {
 			_queueColorTransparentSecondary.queueItem(renderable, transform, alpha);
 		}
+		*/
 	} else {
 		if (renderable->getMaterial()->getFlags() & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
 			_queueColorSolidPrimary.queueItem(renderable, transform, alpha);
@@ -66,18 +79,24 @@ void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const 
 }
 
 void RenderManager::sort() {
-	_queueColorSolidPrimary.sortShader();
-	_queueColorSolidSecondary.sortShader();
-	_queueColorSolidDecal.sortShader();
-	_queueColorTransparentPrimary.sortDepth();
-	_queueColorTransparentSecondary.sortDepth();
-	/*
-	_queueColorSolidPrimary.sortDepth();
-	_queueColorSolidSecondary.sortDepth();
-	_queueColorSolidDecal.sortDepth();
-	_queueColorTransparentPrimary.sortDepth();
-	_queueColorTransparentSecondary.sortDepth();
-	*/
+
+	switch (_sortingHints) {
+	case SORT_HINT_NORMAL:
+		_queueColorSolidPrimary.sortShader();
+		_queueColorSolidSecondary.sortShader();
+		_queueColorSolidDecal.sortShader();
+		_queueColorTransparentPrimary.sortDepth();
+		_queueColorTransparentSecondary.sortDepth();
+		break;
+	case SORT_HINT_ALLDEPTH:
+		_queueColorSolidPrimary.sortDepth();
+		_queueColorSolidSecondary.sortDepth();
+		_queueColorSolidDecal.sortDepth();
+		_queueColorTransparentPrimary.sortDepth();
+		_queueColorTransparentSecondary.sortDepth();
+		break;
+	default: break;
+	}
 }
 
 void RenderManager::render() {

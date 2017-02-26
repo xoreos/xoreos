@@ -71,6 +71,8 @@ public:
 
 	const Common::Vector3 &getCentre() const;
 
+	float getRadius() const;
+
 protected:
 	// For each attrib, when calculating VBOs, do (attrib address) - (base data address) to find initial data offset.
 	VertexBuffer _vertexBuffer;
@@ -93,6 +95,7 @@ private:
 	Common::Vector3 _centre;
 	Common::Vector3 _max;
 	Common::Vector3 _min;
+	float _radius;
 };
 
 } // End of namespace Mesh

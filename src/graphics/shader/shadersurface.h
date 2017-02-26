@@ -35,6 +35,7 @@ namespace Shader {
 
 #define SHADER_SURFACE_WIREFRAME            (0x00000001)  // Surface should be rendered in wireframe mode.
 #define SHADER_SURFACE_INSTANCED            (0x00000002)  // Surface is used for mesh instancing.
+#define SHADER_SURFACE_NOCULL               (0x00000004)  // No face culling is applied.
 
 class ShaderSurface {
 public:
@@ -44,6 +45,9 @@ public:
 	const Common::UString &getName() const;
 
 	Shader::ShaderObject *getVertexShader() const;
+
+	uint32 getFlags() const;
+	void setFlags(uint32 flags);
 
 	uint32 getVariableCount() const;
 

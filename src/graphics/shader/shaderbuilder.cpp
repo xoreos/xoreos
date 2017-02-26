@@ -427,8 +427,7 @@ void ShaderBuilder::initVertexShaderString(Common::UString &header, Common::UStr
 	}
 }
 
-void ShaderBuilder::addVertexShaderString(Common::UString &header, Common::UString &body, uint32 passType, uint32 blendType, bool isGL3) {
-	UNUSED(blendType);  // Kept as a parameter for now, for consistency and possible future changes.
+void ShaderBuilder::addVertexShaderString(Common::UString &header, Common::UString &body, uint32 passType, uint32 UNUSED(blendType), bool isGL3) {
 	if (isGL3) {
 		switch (passType) {
 		case ShaderBuilder::ENV_CUBE:

@@ -82,7 +82,7 @@ void Mesh::init() {
 				if (maxx < vx) maxx = vx;
 				if (maxy < vy) maxy = vy;
 				if (maxz < vz) maxz = vz;
-				if (decl[0].stride > (3 * sizeof(float))) {
+				if (decl[0].stride > (int32)(3 * sizeof(float))) {
 					vertices += (decl[0].stride / sizeof(float)) - (3);
 				}
 			}
@@ -91,6 +91,7 @@ void Mesh::init() {
 			_centre = _min;
 			_centre += _max;
 			_centre *= 0.5f;
+			_radius = (_max - _centre).length();
 			//_centre = 0.5f * (_min + _max);
 		}
 	}
@@ -258,6 +259,10 @@ uint32 Mesh::useCount() const {
 
 const Common::Vector3 &Mesh::getCentre() const {
 	return _centre;
+}
+
+float Mesh::getRadius() const {
+	return _radius;
 }
 
 void Mesh::doRebuild() {

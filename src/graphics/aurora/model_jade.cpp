@@ -38,6 +38,14 @@
 
 #include "src/graphics/aurora/model_jade.h"
 
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/render/renderman.h"
+
+#include "src/graphics/images/decoder.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -367,6 +375,409 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	this->buildMaterial();
 }
 
+void ModelNode_Jade::buildMaterial() {
+	ModelNode::Mesh *pmesh  = 0;  // TODO: if anything is changed in here, ensure there's a local copy instead that shares the root data.
+	TextureHandle *phandles = 0; // Take from self first, or root state, if there is one, otherwise.
+	TextureHandle *penvmap  = 0;  // Maybe it's only the environment map that's overriden.
+	EnvironmentMapMode envmapmode;
+
+	uint32 textureCount = 0;
+
+	_renderableArray.clear();
+
+	/**
+	 * If there's no override of mesh, textures, or environment mapping, then don't bother
+	 * to create any new renderables. Just make sure _rootStateNode has some, and have the
+	 * render queuing use the renderables from there instead. This isn't really a problem,
+	 * as the per-modelnode data (modelview matrix in this case) is still supplied from
+	 * _this_ object.
+	 */
+
+	if (!_model->getState().empty()) {
+		_rootStateNode = _model->getNode("", _name);
+		if (_rootStateNode == this) {
+			_rootStateNode = 0;
+		}
+	} else {
+		_rootStateNode = 0;
+	}
+
+	_dirtyRender = false;
+
+	if (!_mesh) {
+		//status("%s: no mesh when building material\n", _name.c_str());
+		return;
+	}
+
+	if (!_mesh->data) {
+		//status("%s: no mesh data when building material\n", _name.c_str());
+		return;
+	}
+
+	if (_mesh->data->textures.size() == 0 && _mesh->data->envMap.empty() && !_mesh->data->rawMesh) {
+		//status("%s: no texture or environment map data when building material\n", _name.c_str());
+		return;
+	}
+	/**
+	 * To get here, _mesh must exist and have some data. This is required to consider making
+	 * a new renderable - otherwise, the renderable of the parent can be used directly. This
+	 * may change depending what information the renderable is dependent on during creation.
+	 * Important information in this case means texture or environment maps are overidden from
+	 * any potential parent.
+	 */
+	pmesh = _mesh; // getMesh();
+	phandles = getTextures(textureCount);
+	penvmap = getEnvironmentMap(envmapmode);
+
+	if (textureCount == 0) {
+		//status("%s: no texture data when building material\n", _name.c_str());
+		return;
+	}
+
+	//status("attempting to build material with mesh: %s, environment map: %u, texture count: %u\n", pmesh->data->rawMesh->getName().c_str(), penvmap ? 1 : 0, textureCount);
+
+	if (!_render) {
+		//status("%s: rendering disabled when building material\n", _name.c_str());
+		return;
+	}
+
+	if (!pmesh->data->rawMesh) {
+		//status("%s: no raw mesh when building material\n", _name.c_str());
+		return;
+	}
+
+	if (phandles[0].empty()) {
+		//status("%s: no diffuse colour texture, abandoning material construction.\n", _name.c_str());
+		return;
+	}
+
+	Common::UString vertexShaderName;
+	Common::UString fragmentShaderName;
+	Common::UString materialName = "xoreos.";
+
+	Shader::ShaderMaterial *material;
+	Shader::ShaderSampler *sampler;
+	Shader::ShaderSurface *surface;
+
+	uint32 materialFlags = 0;
+	uint32 surfaceFlags = 0;
+
+	std::vector<Shader::ShaderBuilder::BuildPass> shaderPasses;
+	_renderableArray.clear();
+
+	if (_name == "Plane237") {
+		pmesh->isTransparent = true;  // Hack hack hack hack. For NWN.
+	}
+
+	ShaderBuild.initShaderName(vertexShaderName);
+	ShaderBuild.initShaderName(fragmentShaderName);
+
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedUnder) {
+			materialName += penvmap->getName();
+			// Figure out if a cube or sphere map is used.
+			if (penvmap->getTexture().getImage().isCubeMap()) {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE));
+				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
+				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
+				if (!pmesh->isTransparent) {
+					materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				}
+			} else {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE));
+				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
+				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
+				/**
+				 * Seems that, regardless of _isTransparent, anything with shperical env mapping is opaque. This mostly comes from
+				 * NWN, where it's seen that things marked as transparent actually shouldn't be. It's assumed this carries over to
+				 * other game titles as well.
+				 */
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+			}
+		}
+	}
+
+	if (pmesh->isBackgroundGeometry) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+	}
+	// Because screw you bioware.
+	if (pmesh->data->rawMesh->getName().contains("sky")) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+	}
+
+	if (pmesh->isTransparent && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+
+	/**
+	 * Sometimes the _textures handler array isn't matched up against what
+	 * is properly loaded (missing files from disk). So do some brief sanity
+	 * checks on this.
+	 */
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			materialName += phandles[0].getName();
+
+			if (phandles[0].getTexture().getTXI().getFeatures().blending) {
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_SPECIAL_BLEND;
+				if (!(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+					materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // No, it's not really opaque.
+					materialFlags |=  Shader::ShaderMaterial::MATERIAL_TRANSPARENT;  // It's actually transparent.
+				}
+			}
+
+			if (phandles[0].getTexture().getTXI().getFeatures().decal) {
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_DECAL;  // Texture says decal.
+			}
+
+			if (penvmap && envmapmode == kModeEnvironmentBlendedUnder) {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_SRC_ALPHA));
+			} else {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_ONE));
+			}
+		}
+	}
+
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
+			materialName += ".";
+			materialName += phandles[1].getName();
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::ShaderBuilder::BLEND_MULTIPLY));
+		} else {
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+		}
+	}
+
+	if (textureCount >= 3) {
+		if (!phandles[2].empty()) {
+			materialName += ".";
+			materialName += phandles[2].getName();
+		} else {
+			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+		}
+	}
+
+	if (textureCount >= 4) {
+		// Don't know yet what this extra texture is supposed to be.
+		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+	}
+
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedOver) {
+			materialName += penvmap->getName();
+			// Figure out if a cube or sphere map is used.
+			if (penvmap->getTexture().getImage().isCubeMap()) {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
+			} else {
+				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
+			}
+		}
+	}
+
+	if (materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
+		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+	}
+
+	/*
+	if (materialName.contains("branch")) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+		printf("material flags for branch: %08X\n", materialFlags);
+		_mesh->alpha = 0.2f;
+	}
+	*/
+
+	material = MaterialMan.getMaterial(materialName);
+	if (material) {
+		surface = SurfaceMan.getSurface(materialName);
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
+		return;
+	}
+
+	// Tree branches are evil.
+	if ( (_jadeMaterialData.blending1 > 1 ||
+	      _jadeMaterialData.blending2 > 1   ) &&
+	     !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+
+	if (_mesh->alpha < 1.0f) {
+		materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // Make sure it's not actually opaque.
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+
+	printf("-----------------------------\n");
+	printf("jade empire mesh:\n");
+	printf("    node name: %s\n", _name.c_str());
+	printf("    mesh name: %s\n", _mesh->data->rawMesh->getName().c_str());
+	printf("    alpha: %f\n", _mesh->alpha);
+	printf("    render: %u\n", _mesh->render ? 1 : 0);
+	printf("    shadow: %u\n", _mesh->shadow ? 1 : 0);
+	printf("    beaming: %u\n", _mesh->beaming ? 1 : 0);
+	printf("    inheritcolor: %u\n", _mesh->inheritcolor ? 1 : 0);
+	printf("    rotatetexture: %u\n", _mesh->rotatetexture ? 1 : 0);
+	printf("    isTransparent: %u\n", _mesh->isTransparent ? 1 : 0);
+	printf("    hasTransparencyHint: %u\n", _mesh->hasTransparencyHint ? 1 : 0);
+	printf("    transparencyHint: %u\n", _mesh->transparencyHint ? 1 : 0);
+	printf("    transparencyHintFull: %u\n", _mesh->transparencyHintFull);
+	printf("    isBackgroundGeometry: %u\n", _mesh->isBackgroundGeometry ? 1 : 0);
+	printf("jade empire material data:\n");
+	printf("    renderPathID: %u\n", _jadeMaterialData.renderPathID);
+	printf("    opacity1: %u\n", _jadeMaterialData.opacity1);
+	printf("    opacity2: %u\n", _jadeMaterialData.opacity2);
+	printf("    cubeMultiplier: %f\n", _jadeMaterialData.cubeMultiplier);
+	printf("    bumpCoordMultiplier: %f\n", _jadeMaterialData.bumpCoordMultiplier);
+	printf("    terrainCoordMultiplier: %f\n", _jadeMaterialData.terrainCoordMultiplier);
+	printf("    falloff: %f\n", _jadeMaterialData.falloff);
+	printf("    waterAlpha: %f\n", _jadeMaterialData.waterAlpha);
+	printf("    bumpMapIsSpecular: %u\n", _jadeMaterialData.bumpMapIsSpecular);
+	printf("    doubleSided: %u\n", _jadeMaterialData.doubleSided);
+	printf("    blending1: %08X\n", _jadeMaterialData.blending1);
+	printf("    blending2: %08X\n", _jadeMaterialData.blending2);
+	printf("-----------------------------\n");
+
+	printf("jade empire material:\n");
+	printf("    name: %s\n", materialName.c_str());
+	printf("    texture count: %u\n", textureCount);
+	printf("    texture has alpha: %u\n", phandles[0].getTexture().hasAlpha() ? 1 : 0);
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			const Graphics::TXI::Features &features = phandles[0].getTexture().getTXI().getFeatures();
+			printf("    alphaMean: %f\n", features.alphaMean);
+			printf("    arturoHeight: %u\n", features.arturoHeight);
+			printf("    arturoWidth: %u\n", features.arturoWidth);
+			printf("    baselineHeight: %f\n", features.baselineHeight);
+			printf("    blending: %u\n", features.blending);
+			printf("    bumpMapScaling: %f\n", features.bumpMapScaling);
+			printf("    bumpMapTexture: %s\n", features.bumpMapTexture.c_str());
+			printf("    bumpyShinyTexture: %s\n", features.bumpyShinyTexture.c_str());
+			printf("    canDownsample: %u\n", features.canDownsample ? 1 : 0);
+			printf("    caretIndent: %f\n", features.caretIndent);
+			printf("    channelScale: %u\n", features.channelScale);
+			printf("    channelTranslate: %u\n", features.channelTranslate);
+			printf("    clamp: %u\n", features.clamp);
+			printf("    codepage: %u\n", features.codepage);
+			printf("    cols: %u\n", features.cols);
+			printf("    compressTexture: %u\n", features.compressTexture ? 1 : 0);
+			printf("    controllerScript: %s\n", features.controllerScript.c_str());
+			printf("    cube: %u\n", features.cube ? 1 : 0);
+			printf("    dbMapping: %u\n", features.dbMapping);
+			printf("    decal: %u\n", features.decal ? 1 : 0);
+			printf("    defaultBPP: %u\n", features.defaultBPP);
+			printf("    defaultHeight: %u\n", features.defaultHeight);
+			printf("    defaultWidth: %u\n", features.defaultWidth);
+			printf("    distort: %u\n", features.distort);
+			printf("    distortAngle: %u\n", features.distortAngle);
+			printf("    distortionAmplitude: %u\n", features.distortionAmplitude);
+			printf("    downsampleFactor: %u\n", features.downsampleFactor);
+			printf("    downsampleMax: %u\n", features.downsampleMax);
+			printf("    downsampleMin: %u\n", features.downsampleMin);
+			printf("    envMapTexture: %s\n", features.envMapTexture.c_str());
+			printf("    fileRange: %u\n", features.fileRange);
+			printf("    filter: %u\n", features.filter ? 1 : 0);
+			printf("    fontHeight: %f\n", features.fontHeight);
+			printf("    fontWidth: %f\n", features.fontWidth);
+			printf("    fps: %u\n", features.fps);
+			printf("    isBumpMap: %u\n", features.isBumpMap ? 1 : 0);
+			printf("    isDoubleByte: %u\n", features.isDoubleByte ? 1 : 0);
+			printf("    isLightMap: %u\n", features.isLightMap ? 1 : 0);
+			printf("    maxSizeHQ: %u\n", features.maxSizeHQ);
+			printf("    maxSizeLQ: %u\n", features.maxSizeLQ);
+			printf("    minSizeHQ: %u\n", features.minSizeHQ);
+			printf("    minSizeLQ: %u\n", features.minSizeLQ);
+			printf("    mipMap: %u\n", features.mipMap ? 1 : 0);
+			printf("    numChars: %u\n", features.numChars);
+			printf("    numCharsPerSheet: %u\n", features.numCharsPerSheet);
+			printf("    numX: %u\n", features.numX);
+			printf("    numY: %u\n", features.numY);
+			printf("    onDemand: %u\n", features.onDemand ? 1 : 0);
+			printf("    priority: %f\n", features.priority);
+			printf("    procedureType: %s\n", features.procedureType.c_str());
+			printf("    rows: %u\n", features.rows);
+			printf("    spacingB: %f\n", features.spacingB);
+			printf("    spacingR: %f\n", features.spacingR);
+			printf("    speed: %u\n", features.speed);
+			printf("    temporary: %u\n", features.temporary ? 1 : 0);
+			printf("    textureWidth: %f\n", features.textureWidth);
+			printf("    unique: %u\n", features.unique ? 1 : 0);
+			printf("    waterHeight: %u\n", features.waterHeight);
+			printf("    waterWidth: %u\n", features.waterWidth);
+			printf("    xBoxDownsample: %u\n", features.xBoxDownsample);
+			printf("-----------------------------\n\n");
+		}
+	}
+
+	if (materialFlags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT &&
+	    _mesh->transparencyHintFull > 2) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B;
+	}
+
+	if (_jadeMaterialData.doubleSided) {
+		surfaceFlags |= SHADER_SURFACE_NOCULL;
+	}
+
+	vertexShaderName = ShaderBuild.genVertexShaderName(&shaderPasses[0], shaderPasses.size());
+	fragmentShaderName = ShaderBuild.genFragmentShaderName(&shaderPasses[0], shaderPasses.size());
+
+	printf("shader name is: %s\n", fragmentShaderName.c_str());
+	// Ok, material doesn't exist. Check on the shaders.
+	Shader::ShaderObject *vertexObject = ShaderMan.getShaderObject(vertexShaderName, Shader::SHADER_VERTEX);
+	Shader::ShaderObject *fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, Shader::SHADER_FRAGMENT);
+
+	// Should be checking vert and frag shader separately, but they really should exist together anyway.
+	if (!vertexObject) {
+		// No object found. Generate a shader then.
+		bool isGL3 = GfxMan.isGL3();
+
+		Common::UString vertexStringFinal;
+		Common::UString fragmentStringFinal;
+
+		vertexStringFinal = ShaderBuild.genVertexShader(&shaderPasses[0], shaderPasses.size(), isGL3);
+		fragmentStringFinal = ShaderBuild.genFragmentShader(&shaderPasses[0], shaderPasses.size(), isGL3);
+
+		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
+		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);
+	}
+
+	// Shader objects should now exist, so go ahead and make the material and surface.
+	surface = new Shader::ShaderSurface(vertexObject, materialName);
+	material = new Shader::ShaderMaterial(fragmentObject, materialName);
+	material->setFlags(materialFlags);
+	surface->setFlags(surfaceFlags);
+	MaterialMan.addMaterial(material);
+	SurfaceMan.addSurface(surface);
+
+	if (penvmap) {
+		// Figure out if a cube or sphere map is used.
+		if (penvmap->getTexture().getImage().isCubeMap()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureCube0"));
+		} else {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureSphere0"));
+		}
+		sampler->handle = *penvmap;
+	}
+
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
+			sampler->handle = phandles[0];
+		}
+	}
+
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
+			sampler->handle = phandles[1];
+		}
+	}
+
+	if (textureCount >= 3) {
+		if (!phandles[2].empty()) {
+		}
+	}
+
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
+}
+
 void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	ctx.mdl->skip(12); // Unknown
 
@@ -396,9 +807,11 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	_mesh->render  = (flags & kNodeFlagsRender) != 0;
 	_mesh->beaming = (flags & kNodeFlagsBeaming) != 0;
+	_mesh->isBackgroundGeometry = (flags & kNodeFlagsBackgroundGeometry) != 0;
 
 	_mesh->hasTransparencyHint = true;
 	_mesh->transparencyHint    = (transparencyHint == 1);
+	_mesh->transparencyHintFull = transparencyHint;
 
 	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
@@ -445,6 +858,7 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	uint32 materialID      = ctx.mdl->readUint32LE();
 	uint32 materialGroupID = ctx.mdl->readUint32LE();
+	printf("materialGroupID:: %u\n", materialGroupID);
 
 	_mesh->selfIllum[0] = ctx.mdl->readIEEEFloatLE();
 	_mesh->selfIllum[1] = ctx.mdl->readIEEEFloatLE();
@@ -695,7 +1109,37 @@ void ModelNode_Jade::readMaterialTextures(uint32 materialID, std::vector<Common:
 		if (size != 292)
 			throw Common::Exception("Invalid size in binary material %s.mab", mabFile.c_str());
 
-		mab->skip(96);
+		_jadeMaterialData.renderPathID = mab->readUint32LE();
+
+		_jadeMaterialData.opacity1 = mab->readUint32LE();
+		_jadeMaterialData.opacity2 = mab->readUint32LE();
+
+		_jadeMaterialData.cubeMultiplier         = mab->readIEEEFloatLE();
+		_jadeMaterialData.bumpCoordMultiplier    = mab->readIEEEFloatLE();
+		_jadeMaterialData.terrainCoordMultiplier = mab->readIEEEFloatLE();
+
+		_jadeMaterialData.falloff = mab->readIEEEFloatLE();
+
+		_jadeMaterialData.waterAlpha = mab->readIEEEFloatLE();
+
+		_jadeMaterialData.bumpMapIsSpecular = mab->readByte();
+		_jadeMaterialData.doubleSided       = mab->readByte();
+
+		mab->skip(2); // Unknown, padding?
+
+		_jadeMaterialData.diffuseColor[0] = mab->readIEEEFloatLE();
+		_jadeMaterialData.diffuseColor[1] = mab->readIEEEFloatLE();
+		_jadeMaterialData.diffuseColor[2] = mab->readIEEEFloatLE();
+		_jadeMaterialData.ambientColor[0] = mab->readIEEEFloatLE();
+		_jadeMaterialData.ambientColor[1] = mab->readIEEEFloatLE();
+		_jadeMaterialData.ambientColor[2] = mab->readIEEEFloatLE();
+
+		mab->skip(24); // Unknown
+
+		_jadeMaterialData.blending1 = mab->readUint32LE();
+		_jadeMaterialData.blending2 = mab->readUint32LE();
+
+		mab->skip(4); // Unknown
 
 		for (int i = 0; i < 4; i++) {
 			textures.push_back(Common::readStringFixed(*mab, Common::kEncodingASCII, 32));

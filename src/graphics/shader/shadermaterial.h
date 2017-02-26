@@ -34,9 +34,11 @@ namespace Shader {
 class ShaderMaterial {
 public:
 	enum {
-		MATERIAL_OPAQUE        = 0x01,  ///< Render hint; material has no transparency.
-		MATERIAL_TRANSPARENT   = 0x02,  ///< Material definitely has transparency.
-		MATERIAL_SPECIAL_BLEND = 0x04
+		MATERIAL_OPAQUE        = 0x0001,  ///< Render hint; material has no transparency.
+		MATERIAL_TRANSPARENT   = 0x0002,  ///< Material definitely has transparency.
+		MATERIAL_TRANSPARENT_B = 0x0004,  ///< Material definitely has transparency.
+		MATERIAL_DECAL         = 0x0008,  ///< Material is a decal.
+		MATERIAL_SPECIAL_BLEND = 0x0010   ///< Different to default blending. Maybe this should be extended one day.
 	};
 
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");
