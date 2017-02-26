@@ -44,7 +44,13 @@ Makefile.in
 /CMakeCache.txt
 /CMakeFiles/
 /cmake_install.cmake
-Makefile.am.cmake
+/lua/rules.mk.cmake
+/toluapp/rules.mk.cmake
+/src/rules.mk.cmake
+/bin/
+/tests/rules.mk.cmake
+/CTestTestfile.cmake
+/Testing/
 
 # Eclipse project files
 /.autotools
