@@ -44,6 +44,17 @@ Text::Text(const FontHandle &font, const Common::UString &str,
 	_distance = -FLT_MAX;
 }
 
+Text::Text(const FontHandle &font, float w, float h, const Common::UString &str,
+		float r, float g, float b, float a, float halign, float valign) :
+	Graphics::GUIElement(Graphics::GUIElement::kGUIElementFront), _r(r), _g(g), _b(b), _a(a),
+	_font(font), _x(0.0f), _y(0.0f), _width(w), _height(h), _halign(halign),_valign(valign),
+	_disableColorTokens(false) {
+
+	set(str);
+
+	_distance = -FLT_MAX;
+}
+
 Text::~Text() {
 	hide();
 }
