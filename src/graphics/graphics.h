@@ -52,6 +52,11 @@ class Renderable;
 /** The graphics manager. */
 class GraphicsManager : public Common::Singleton<GraphicsManager>, public Events::Notifyable {
 public:
+	enum ScalingType {
+		kScalingNone = 0,
+		kScalingWindowSize
+	};
+
 	GraphicsManager();
 	~GraphicsManager();
 
@@ -84,6 +89,11 @@ public:
 
 	/** Enable/Disable face culling. */
 	void setCullFace(bool enabled, GLenum mode = GL_BACK);
+
+	/** Configure scaling type for the GUI. */
+	void setGUIScale(ScalingType scaling);
+	/** Configure the original size of the GUI. */
+	void setGUISize(int guiWidth, int guiHeight);
 
 	/** Change the perspective projection matrix. */
 	void setPerspective(float viewAngle, float clipNear, float clipFar);
@@ -167,6 +177,10 @@ private:
 	float _viewAngle;
 	float _clipNear;
 	float _clipFar;
+
+	ScalingType _scalingType;
+	int _guiHeight;
+	int _guiWidth;
 
 	Common::ScopedPtr<FPSCounter> _fpsCounter; ///< Counts the current frames per seconds value.
 

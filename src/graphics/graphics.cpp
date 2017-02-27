@@ -87,6 +87,10 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 	_clipNear  = 1.0f;
 	_clipFar   = 1000.0f;
 
+	_scalingType = kScalingNone;
+	_guiWidth = 800;
+	_guiHeight = 600;
+
 	_fpsCounter.reset(new FPSCounter(3));
 
 	_frameLock.store(0);
@@ -412,6 +416,15 @@ void GraphicsManager::setCullFace(bool enabled, GLenum mode) {
 
 	_cullFaceEnabled = enabled;
 	_cullFaceMode    = mode;
+}
+
+void GraphicsManager::setGUIScale(ScalingType scaling) {
+	_scalingType = scaling;
+}
+
+void GraphicsManager::setGUISize(int guiWidth, int guiHeight) {
+	_guiWidth = guiWidth;
+	_guiHeight = guiHeight;
 }
 
 void GraphicsManager::setPerspective(float viewAngle, float clipNear, float clipFar) {
