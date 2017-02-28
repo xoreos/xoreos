@@ -69,6 +69,8 @@ Someday, ????-??-?? (Version 0.0.5)
 		- Marked several classes correctly as noncopyable
 		- Introduced various smart pointer templates into the codebase,
 		  making it cleaner and more leak-free
+		- Added support for and implemented unit tests for many classes
+		  in the Common and Aurora namespaces
 
 Monday, 2016-02-01 (Version 0.0.4)
 	- DOCS:
