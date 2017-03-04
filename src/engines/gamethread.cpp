@@ -76,7 +76,7 @@ void GameThread::run() {
 		return;
 	}
 
-	if (!createThread())
+	if (!createThread("GameInstance"))
 		throw Common::Exception("Failed creating game logic thread");
 }
 
