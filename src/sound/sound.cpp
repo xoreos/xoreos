@@ -105,7 +105,7 @@ void SoundManager::init() {
 		_hasMultiChannel = alIsExtensionPresent("AL_EXT_MCFORMATS") != 0;
 		_format51        = alGetEnumValue("AL_FORMAT_51CHN16");
 
-		if (!createThread())
+		if (!createThread("SoundManager"))
 			throw Common::Exception("Failed to create sound thread: %s", SDL_GetError());
 
 		_hasSound = true;
