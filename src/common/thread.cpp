@@ -41,13 +41,13 @@ Thread::~Thread() {
 	destroyThread();
 }
 
-bool Thread::createThread() {
+bool Thread::createThread(const UString &name) {
 	if (_threadRunning)
 		// Already running, nothing to do
 		return true;
 
 	// Try to create the thread
-	if (!(_thread = SDL_CreateThread(threadHelper, 0, static_cast<void *>(this))))
+	if (!(_thread = SDL_CreateThread(threadHelper, name.empty() ? 0 : name.c_str(), static_cast<void *>(this))))
 		return false;
 
 	return true;

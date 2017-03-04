@@ -31,6 +31,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "src/common/ustring.h"
+
 namespace Common {
 
 /** A class that creates its own thread. */
@@ -39,7 +41,7 @@ public:
 	Thread();
 	virtual ~Thread();
 
-	bool createThread();
+	bool createThread(const UString &name = "");
 	bool destroyThread();
 
 protected:
