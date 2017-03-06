@@ -37,7 +37,6 @@ namespace Aurora {
 class FPS : public Text, public Events::Notifyable {
 public:
 	FPS(const FontHandle &font);
-	FPS(const FontHandle &font, float r, float g, float b, float a);
 	~FPS();
 
 	// Renderable

@@ -38,12 +38,6 @@ FPS::FPS(const FontHandle &font) : Text(font, "0 fps"), _fps(0) {
 	init();
 }
 
-FPS::FPS(const FontHandle &font, float r, float g, float b, float a) :
-	Text(font, "0 fps", r, g, b, a), _fps(0) {
-
-	init();
-}
-
 FPS::~FPS() {
 	hide();
 }
