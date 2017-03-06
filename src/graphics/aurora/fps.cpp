@@ -34,7 +34,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-FPS::FPS(const FontHandle &font) : Text(font, "0 fps"), _fps(0) {
+FPS::FPS(const FontHandle &font) : Text(font, WindowMan.getWindowWidth(), WindowMan.getWindowHeight(), "0 fps"), _fps(0) {
 	init();
 }
 
@@ -57,7 +57,7 @@ void FPS::render(RenderPass pass) {
 	if (fps != _fps) {
 		_fps = fps;
 
-		set(Common::UString::format("%d fps", _fps));
+		setText(Common::UString::format("%d fps", _fps));
 	}
 
 	Text::render(pass);
@@ -65,9 +65,10 @@ void FPS::render(RenderPass pass) {
 
 void FPS::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight), int newWidth, int newHeight) {
 	float posX = -(newWidth  / 2.0f);
-	float posY =  (newHeight / 2.0f) - getHeight();
+	float posY = -(newHeight / 2.0f);
 
 	setPosition(posX, posY);
+	setSize(newWidth, newHeight);
 }
 
 } // End of namespace Aurora
