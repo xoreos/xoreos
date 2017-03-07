@@ -51,18 +51,22 @@ LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0),
 	const Common::UString barLowerStr = createProgressbarLower(kBarLength);
 	const Common::UString barStr      = createProgressbar(kBarLength, _currentAmount);
 
-	_description.reset(new Graphics::Aurora::Text(font, ""));
-	_barUpper.reset   (new Graphics::Aurora::Text(font, barUpperStr));
-	_barLower.reset   (new Graphics::Aurora::Text(font, barLowerStr));
-	_progressbar.reset(new Graphics::Aurora::Text(font, barStr));
-	_percent.reset    (new Graphics::Aurora::Text(font, ""));
+	float left = -(WindowMan.getWindowWidth() / 2.0f);
+	float width = WindowMan.getWindowWidth();
+	float height = font.getFont().getHeight();
 
-	_description->setPosition(0.0f,  font.getFont().getHeight());
-	_percent    ->setPosition(0.0f, -font.getFont().getHeight());
+	_description.reset(new Graphics::Aurora::Text(font, width, height, "",          1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignBottom));
+	_barUpper.reset   (new Graphics::Aurora::Text(font, width, height, barUpperStr, 1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignBottom));
+	_barLower.reset   (new Graphics::Aurora::Text(font, width, height, barLowerStr, 1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignTop));
+	_progressbar.reset(new Graphics::Aurora::Text(font, width, height, barStr,      1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignMiddle));
+	_percent.reset    (new Graphics::Aurora::Text(font, width, height, "",          1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignTop));
 
-	_barUpper   ->setPosition(-(_barUpper   ->getWidth() / 2.0f), 0.0f);
-	_barLower   ->setPosition(-(_barLower   ->getWidth() / 2.0f), 0.0f);
-	_progressbar->setPosition(-(_progressbar->getWidth() / 2.0f), 0.0f);
+	_description->setPosition(left,  height);
+	_percent    ->setPosition(left, -height);
+
+	_barUpper   ->setPosition(left, 0.0f);
+	_barLower   ->setPosition(left, 0.0f);
+	_progressbar->setPosition(left, 0.0f);
 }
 
 LoadProgress::~LoadProgress() {
@@ -95,21 +99,11 @@ void LoadProgress::step(const Common::UString &description) {
 		const Common::UString percentStr = Common::UString::format("%d%%", percentage);
 		const Common::UString barStr     = createProgressbar(kBarLength, _currentAmount);
 
-		float x, y, z;
-
 		GfxMan.lockFrame();
 
-		// Update the description text and center it
-		_description->getPosition(x, y, z);
-		_description->set(description + " " + timeStr);
-		_description->setPosition(-(_description->getWidth() / 2.0f), y);
-
-		// Update the percentage text and center it
-		_percent->getPosition(x, y, z);
-		_percent->set(percentStr);
-		_percent->setPosition(-(_percent->getWidth() / 2.0f), y);
-
-		_progressbar->set(barStr);
+		_description->setText(description + " " + timeStr);
+		_percent->setText(percentStr);
+		_progressbar->setText(barStr);
 
 		_description->show();
 		_barUpper   ->show();
