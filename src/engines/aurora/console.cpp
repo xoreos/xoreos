@@ -83,7 +83,7 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 	_lineHeight = _font.getFont().getHeight() + _font.getFont().getLineSpacing();
 	_height     = floorf(lines * _lineHeight);
 
-	_prompt.reset(new Graphics::Aurora::Text(_font, ""));
+	_prompt.reset(new Graphics::Aurora::Text(_font, kPrompt));
 	_input.reset (new Graphics::Aurora::Text(_font, ""));
 
 	_prompt->disableColorTokens(true);
@@ -758,8 +758,6 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 	registerCommand("setcamera"  , boost::bind(&Console::cmdSetCamera  , this, _1),
 			"Usage: setcamera <posX> <posY> <posZ> [<orientX> <orientY> <orientZ>]\n"
 			"Set the camera position (and orientation)");
-
-	_console->setPrompt(kPrompt);
 
 	_console->print("Console ready...");
 }
