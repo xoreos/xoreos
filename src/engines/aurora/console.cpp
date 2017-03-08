@@ -40,6 +40,7 @@
 #include "src/graphics/graphics.h"
 #include "src/graphics/font.h"
 #include "src/graphics/camera.h"
+//#include "src/graphics/windowman.h"
 
 #include "src/sound/sound.h"
 
@@ -83,8 +84,8 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 	_lineHeight = _font.getFont().getHeight() + _font.getFont().getLineSpacing();
 	_height     = floorf(lines * _lineHeight);
 
-	_prompt.reset(new Graphics::Aurora::Text(_font, kPrompt));
-	_input.reset (new Graphics::Aurora::Text(_font, ""));
+	_prompt.reset(new Graphics::Aurora::Text(_font, _font.getFont().getLineWidth(kPrompt), _lineHeight, kPrompt));
+	_input.reset (new Graphics::Aurora::Text(_font, WindowMan.getWindowWidth() - _font.getFont().getLineWidth(kPrompt), _lineHeight, ""));
 
 	_prompt->disableColorTokens(true);
 	_input->disableColorTokens(true);
@@ -99,7 +100,7 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 
 	_lines.reserve(lines - 1);
 	for (size_t i = 0; i < (lines - 1); i++) {
-		_lines.push_back(new Graphics::Aurora::Text(_font, ""));
+		_lines.push_back(new Graphics::Aurora::Text(_font, WindowMan.getWindowWidth(), _lineHeight, ""));
 		_lines.back()->disableColorTokens(true);
 	}
 
@@ -224,7 +225,7 @@ size_t ConsoleWindow::getColumns() const {
 void ConsoleWindow::setPrompt(const Common::UString &prompt) {
 	GfxMan.lockFrame();
 
-	_prompt->set(prompt);
+	_prompt->setText(prompt);
 
 	_input->setPosition(_x + _prompt->getWidth(), _y, -1001.0f);
 	recalcCursor();
@@ -244,7 +245,7 @@ void ConsoleWindow::setInput(const Common::UString &input, size_t cursorPos,
 	_cursorBlinkState = false;
 	_lastCursorBlink  = 0;
 
-	_input->set(input);
+	_input->setText(input);
 	recalcCursor();
 
 	GfxMan.unlockFrame();
@@ -263,7 +264,7 @@ void ConsoleWindow::clear() {
 
 	for (std::vector<Graphics::Aurora::Text *>::iterator l = _lines.begin();
 	     l != _lines.end(); ++l)
-		(*l)->set("");
+		(*l)->setText("");
 	GfxMan.unlockFrame();
 }
 
@@ -672,7 +673,7 @@ void ConsoleWindow::redrawLines() {
 	for (size_t i = 0; (i < _historyStart) && (h != _history.rend()); i++, ++h);
 
 	for (int i = _lines.size() - 1; (i >= 0) && (h != _history.rend()); i--, ++h)
-		_lines[i]->set(*h);
+		_lines[i]->setText(*h);
 
 	GfxMan.unlockFrame();
 }
