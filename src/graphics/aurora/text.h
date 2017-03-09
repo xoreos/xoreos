@@ -50,6 +50,7 @@ public:
 	~Text();
 
 	const Common::UString &get() const;
+	const Common::UString &getFont() const;
 	void getPosition(float &x, float &y, float &z) const;
 	void getColor(float &r, float &g, float &b, float &a) const;
 

@@ -69,8 +69,8 @@ void CharAttributes::reset() {
 	_attrAdjust.assign(6, 0);
 	_pointLeft = 30;
 
-	getLabel("PointsEdit#Caption", true)->setText(Common::composeString<uint32>(_pointLeft));
-	getLabel("CostEdit#Caption", true)->setText("");
+	getButton("PointsEdit", true)->setText(Common::composeString<uint32>(_pointLeft));
+	getButton("CostEdit", true)->setText("");
 
 	getButton("OkButton", true)->setDisabled(true);
 }
@@ -152,10 +152,6 @@ void CharAttributes::init() {
 	_labelAttributes.push_back(getLabel("WisEdit", true));
 	_labelAttributes.push_back(getLabel("IntEdit", true));
 	_labelAttributes.push_back(getLabel("ChaEdit", true));
-
-	// Set correct position for PointsEdit (points left) and CostEdit (next point cost).
-	getLabel("PointsEdit#Caption", true)->movePosition(-5, -7, 0);
-	getLabel("CostEdit#Caption", true)->movePosition(-7, -7, 0);
 }
 
 void CharAttributes::initButtonsGroup() {
@@ -173,17 +169,6 @@ void CharAttributes::initButtonsGroup() {
 	const std::vector< WidgetButton* > buttonsList = _attrButtons->getButtonsList();
 	for (std::vector<WidgetButton *>::const_iterator it = buttonsList.begin(); it != buttonsList.end(); ++it)
 		(*it)->setMode(WidgetButton::kModeUnchanged);
-
-	// Adjust text position.
-	for (std::vector<WidgetButton *>::const_iterator it = buttonsList.begin(); it != buttonsList.end(); ++it) {
-		WidgetButton *b = *it;
-		WidgetLabel *l = getLabel(b->getTag() + "#Caption");
-
-		float pX, pY, pZ, bX, bY, bZ;
-		b->getNode("text")->getPosition(pX, pY, pZ);
-		b->getPosition(bX, bY, bZ);
-		l->setPosition(bX + pX, bY + pY - l->getHeight()/2, bZ - pZ);
-	}
 }
 
 void CharAttributes::show() {
@@ -220,7 +205,7 @@ void CharAttributes::hide() {
 			sum += _attributes[ab];
 		}
 		_pointLeft = 0;
-		getLabel("PointsEdit#Caption", true)->setText("0");
+		getButton("PointsEdit", true)->setText("0");
 
 		// Attributes were never saved if sum equals 48.
 		if (sum == 48)
@@ -249,20 +234,20 @@ void CharAttributes::genTextAttributes(size_t attribute) {
 
 uint8 CharAttributes::pointCost(uint8 attrValue) {
 	if (attrValue < 15) {
-		getLabel("CostEdit#Caption", true)->setText("1");
+		getButton("CostEdit", true)->setText("1");
 		return 1;
 	}
 
 	attrValue -= 15;
 	uint8 cost = ((attrValue - attrValue % 2) / 2) + 2;
 
-	getLabel("CostEdit#Caption", true)->setText(Common::composeString<uint8>(cost));
+	getButton("CostEdit", true)->setText(Common::composeString<uint8>(cost));
 
 	return cost;
 }
 
 void CharAttributes::updateText(uint8 attribute) {
-	getLabel("PointsEdit#Caption", true)->setText(Common::composeString<uint8>(_pointLeft));
+	getButton("PointsEdit", true)->setText(Common::composeString<uint8>(_pointLeft));
 	pointCost(_attributes[attribute] + 1);
 }
 
@@ -275,7 +260,7 @@ void CharAttributes::setRecommend() {
 		genTextAttributes(it);
 	}
 
-	getLabel("PointsEdit#Caption", true)->setText("0");
+	getButton("PointsEdit", true)->setText("0");
 
 	getButton("OkButton", true)->setDisabled(false);
 }

@@ -28,6 +28,7 @@
 
 #include "src/engines/nwn/version.h"
 
+#include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/widgets/label.h"
 
 #include "src/engines/nwn/gui/dialogs/yesnocancel.h"
@@ -80,8 +81,8 @@ void IngameMainMenu::initWidget(Widget &widget) {
 		return;
 	}
 
-	if (widget.getTag() == "SaveCharButton#Caption") {
-		dynamic_cast<WidgetLabel &>(widget).setText(TalkMan.getString(6560));
+	if (widget.getTag() == "SaveCharButton") {
+		dynamic_cast<WidgetButton &>(widget).setText(TalkMan.getString(6560));
 		return;
 	}
 }

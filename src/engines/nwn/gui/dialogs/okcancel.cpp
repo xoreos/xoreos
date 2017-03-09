@@ -24,6 +24,7 @@
 
 #include "src/engines/aurora/gui.h"
 
+#include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/widgets/panel.h"
 #include "src/engines/nwn/gui/widgets/label.h"
 
@@ -50,15 +51,15 @@ void OKCancelDialog::initWidget(Widget &widget) {
 		return;
 	}
 
-	if (widget.getTag() == "OkButton#Caption") {
+	if (widget.getTag() == "OkButton") {
 		if (!_ok.empty())
-			dynamic_cast<WidgetLabel &>(widget).setText(_ok);
+			dynamic_cast<WidgetButton &>(widget).setText(_ok);
 		return;
 	}
 
-	if (widget.getTag() == "CancelButton#Caption") {
+	if (widget.getTag() == "CancelButton") {
 		if (!_cancel.empty())
-			dynamic_cast<WidgetLabel &>(widget).setText(_cancel);
+			dynamic_cast<WidgetButton &>(widget).setText(_cancel);
 		return;
 	}
 }

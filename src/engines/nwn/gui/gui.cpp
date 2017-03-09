@@ -65,21 +65,6 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFF3Struct &s, Widget *p) {
 	tag = strct->getString("Obj_Tag");
 
 	model = strct->getString("Obj_ResRef");
-
-	if (strct->hasField("Obj_Caption")) {
-		const Aurora::GFF3Struct &caption = strct->getStruct("Obj_Caption");
-
-		font = caption.getString("AurString_Font");
-
-		uint32 strRef = caption.getUint("Obj_StrRef", Aurora::kStrRefInvalid);
-		if (strRef != Aurora::kStrRefInvalid)
-			text = TalkMan.getString(strRef);
-		else
-			text = caption.getString("AurString_Text");
-
-		if (text.empty())
-			text = " ";
-	}
 }
 
 
@@ -116,74 +101,11 @@ void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent) {
 			throw Common::Exception("Parent's tag != Obj_Parent");
 
 		parent->addChild(*ctx.widget);
-
-		float pX, pY, pZ;
-		parent->getPosition(pX, pY, pZ);
-
-		float x = ctx.strct->getDouble("Obj_X") * 100.0 + pX;
-		float y = ctx.strct->getDouble("Obj_Y") * 100.0 + pY;
-		float z = pZ - ctx.strct->getDouble("Obj_Z") * 100.0;
-
-		ctx.widget->setPosition(x, y, z);
 	} else {
 		// We'll ignore these for now, centering the GUI
 	}
 
 	initWidget(ctx);
-
-	// Create a caption/label and move the label to its destined position
-	WidgetLabel *label = createCaption(ctx);
-	if (label && ctx.strct->hasField("Obj_Caption")) {
-		const Aurora::GFF3Struct &caption = ctx.strct->getStruct("Obj_Caption");
-
-		float alignH = caption.getDouble("AurString_AlignH");
-		float alignV = caption.getDouble("AurString_AlignV");
-
-		float labelX = ctx.strct->getDouble("Obj_Label_X") * 100.0;
-		float labelY = ctx.strct->getDouble("Obj_Label_Y") * 100.0;
-		float labelZ = ctx.strct->getDouble("Obj_Label_Z") * 100.0;
-
-		if (ctx.type != kWidgetTypeLabel) {
-			if (label->getWidth() > ctx.widget->getWidth() || label->getHeight() > ctx.widget->getHeight())
-				label->setText(label->getText(), alignH, ctx.widget->getWidth(), ctx.widget->getHeight());
-
-			labelX += ctx.widget->getWidth () * alignV;
-			labelY += ctx.widget->getHeight() * alignH;
-
-			labelX -= label->getWidth () / 2;
-			labelY -= label->getHeight() / 2;
-		} else {
-			float labelWidth = 0.0;
-			if (ctx.strct->hasField("Obj_Label_Width"))
-				labelWidth = ctx.strct->getDouble("Obj_Label_Width") * 100.0;
-
-			float labelHeight = 0.0;
-			if (ctx.strct->hasField("Obj_Label_Height"))
-				labelHeight = ctx.strct->getDouble("Obj_Label_Height") * 100.0;
-
-			if (alignV == 0.5) {
-				bool multilines = false;
-				if (label->getWidth() > labelWidth)
-					multilines = true;
-
-				label->setText(label->getText(), alignH, labelWidth, labelHeight);
-				labelX += labelWidth * alignH;
-
-				if (multilines)
-					labelY += label->getHeight() * alignV;
-			}
-
-			labelX -= label->getWidth () * alignH;
-
-			labelY -= label->getHeight();
-			labelY -= label->getHeight() * alignV;
-		}
-
-		label->movePosition(labelX, labelY, -labelZ);
-	}
-
-	// uint32 layer = strct.getUint("Obj_Layer");
-	// bool locked = strct.getUint("Obj_Locked") != 0;
 
 	// Go down to the children
 	if (ctx.strct->hasField("Obj_ChildList")) {
@@ -207,7 +129,7 @@ void GUI::createWidget(WidgetContext &ctx) {
 	else if (ctx.type == kWidgetTypePanel)
 		ctx.widget = new WidgetPanel(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeLabel)
-		ctx.widget = new WidgetLabel(*this, ctx.tag, ctx.font, ctx.text);
+		ctx.widget = new WidgetLabel(*this, ctx.tag);
 	else if (ctx.type == kWidgetTypeSlider)
 		ctx.widget = new WidgetSlider(*this, ctx.tag, ctx.model);
 	else if (ctx.type == kWidgetTypeEditBox)
@@ -219,49 +141,54 @@ void GUI::createWidget(WidgetContext &ctx) {
 	else
 		throw Common::Exception("No such widget type %d", ctx.type);
 
+	WidgetLabel *widgetLabel = dynamic_cast<WidgetLabel *>(ctx.widget);
+	if (widgetLabel)
+		initWidget(ctx, *widgetLabel);
+
 	ModelWidget *widgetModel = dynamic_cast<ModelWidget *>(ctx.widget);
 	if (widgetModel)
 		initWidget(ctx, *widgetModel);
-
-	NWNWidgetWithCaption  *widgetText  = dynamic_cast<NWNWidgetWithCaption  *>(ctx.widget);
-	if (widgetText)
-		initWidget(ctx, *widgetText);
 }
 
-void GUI::initWidget(WidgetContext &UNUSED(ctx), ModelWidget &UNUSED(widget)) {
+void GUI::initWidget(WidgetContext &ctx, WidgetLabel &widget) {
+	float width = ctx.strct->getDouble("Obj_Label_Width") * 100.0;
+	float height = ctx.strct->getDouble("Obj_Label_Height") * 100.0;
+
+	widget.setSize(width, height);
+
+	float pX, pY, pZ;
+	ctx.parent->getPosition(pX, pY, pZ);
+
+	float x = ctx.strct->getDouble("Obj_Label_X") * 100.0 + pX;
+	float y = ctx.strct->getDouble("Obj_Label_Y") * 100.0 + pY - height;
+	float z = pZ - ctx.strct->getDouble("Obj_Label_Z") * 100.0;
+
+	ctx.widget->setPosition(x, y, z);
+
+	initCaption(ctx, widget);
 }
 
-void GUI::initWidget(WidgetContext &ctx, NWNWidgetWithCaption &widget) {
+void GUI::initWidget(WidgetContext &ctx, ModelWidget &widget) {
+	initCaption(ctx, widget);
+
+	if (!ctx.parent)
+		return;
+
+	float pX, pY, pZ;
+	ctx.parent->getPosition(pX, pY, pZ);
+
+	float x = ctx.strct->getDouble("Obj_X") * 100.0 + pX;
+	float y = ctx.strct->getDouble("Obj_Y") * 100.0 + pY;
+	float z = pZ - ctx.strct->getDouble("Obj_Z") * 100.0;
+
+	widget.setPosition(x, y, z);
+}
+
+void GUI::initCaption(WidgetContext &ctx, NWNWidgetWithCaption &widget) {
 	if (!ctx.strct->hasField("Obj_Caption"))
 		return;
 
 	const Aurora::GFF3Struct &caption = ctx.strct->getStruct("Obj_Caption");
-
-	float r = caption.getDouble("AurString_ColorR", 1.0);
-	float g = caption.getDouble("AurString_ColorG", 1.0);
-	float b = caption.getDouble("AurString_ColorB", 1.0);
-	float a = caption.getDouble("AurString_ColorA", 1.0);
-
-	widget.setColor(r, g, b, a);
-}
-
-void GUI::initWidget(WidgetContext &ctx) {
-
-	initWidget(*ctx.widget);
-}
-
-WidgetLabel *GUI::createCaption(WidgetContext &ctx) {
-	if (ctx.type == kWidgetTypeLabel)
-		return dynamic_cast<WidgetLabel *>(ctx.widget);
-
-	return createCaption(*ctx.strct, ctx.widget);
-}
-
-WidgetLabel *GUI::createCaption(const Aurora::GFF3Struct &strct, Widget *parent) {
-	if (!strct.hasField("Obj_Caption"))
-		return 0;
-
-	const Aurora::GFF3Struct &caption = strct.getStruct("Obj_Caption");
 
 	Common::UString font = caption.getString("AurString_Font");
 
@@ -270,25 +197,20 @@ WidgetLabel *GUI::createCaption(const Aurora::GFF3Struct &strct, Widget *parent)
 	if (strRef != Aurora::kStrRefInvalid)
 		text = TalkMan.getString(strRef);
 
-	Common::ScopedPtr<WidgetLabel> label(new WidgetLabel(*this, parent->getTag() + "#Caption", font, text));
-
-	float pX, pY, pZ;
-	parent->getPosition(pX, pY, pZ);
-	label->setPosition(pX, pY, pZ - 5.0f);
-
 	float r = caption.getDouble("AurString_ColorR", 1.0);
 	float g = caption.getDouble("AurString_ColorG", 1.0);
 	float b = caption.getDouble("AurString_ColorB", 1.0);
 	float a = caption.getDouble("AurString_ColorA", 1.0);
 
-	label->setColor(r, g, b, a);
+	float halign = caption.getDouble("AurString_AlignH", Graphics::Aurora::kHAlignLeft);
+	float valign = caption.getDouble("AurString_AlignV", Graphics::Aurora::kVAlignTop);
 
-	initWidget(*label);
+	widget.initCaption(font, text, r, g, b, a, halign, valign);
+}
 
-	parent->addChild(*label);
-	addWidget(label.get());
+void GUI::initWidget(WidgetContext &ctx) {
 
-	return label.release();
+	initWidget(*ctx.widget);
 }
 
 void GUI::fixWidgetType(const Common::UString &UNUSED(tag), WidgetType &UNUSED(type)) {
