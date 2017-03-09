@@ -46,12 +46,17 @@ namespace NWN {
  */
 class NWNWidgetWithCaption : public NWNWidget {
 public:
+	NWNWidgetWithCaption(::Engines::GUI &gui, const Common::UString &tag);
 	NWNWidgetWithCaption(::Engines::GUI &gui, const Common::UString &tag,
 	           const Common::UString &font, const Common::UString &text);
 	~NWNWidgetWithCaption();
 
 	void show();
 	void hide();
+
+	virtual void initCaption(const Common::UString &font, const Common::UString &text,
+	                         float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f,
+	                         float halign = Graphics::Aurora::kHAlignLeft, float valign = Graphics::Aurora::kVAlignTop);
 
 	void setPosition(float x, float y, float z);
 	void setColor(float r, float g, float b, float a);
@@ -60,6 +65,9 @@ public:
 
 	float getWidth () const;
 	float getHeight() const;
+
+	float getHorizontalAlign() const;
+	float getVerticalAlign  () const;
 
 	void setDisabled(bool disabled);
 

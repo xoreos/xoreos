@@ -53,6 +53,9 @@ public:
 	void getPosition(float &x, float &y, float &z) const;
 	void getColor(float &r, float &g, float &b, float &a) const;
 
+	float getHorizontalAlign() const;
+	float getVerticalAlign  () const;
+
 	void set(const Common::UString &str, float maxWidth = 0.0f, float maxHeight = 0.0f);
 	void setText(const Common::UString &str);
 	void setPosition(float x, float y, float z = -FLT_MAX);
