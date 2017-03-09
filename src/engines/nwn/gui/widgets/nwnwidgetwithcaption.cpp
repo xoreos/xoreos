@@ -35,6 +35,11 @@ namespace Engines {
 
 namespace NWN {
 
+NWNWidgetWithCaption::NWNWidgetWithCaption(::Engines::GUI &gui, const Common::UString &tag) :
+	NWNWidget(gui, tag), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {
+
+}
+
 NWNWidgetWithCaption::NWNWidgetWithCaption(::Engines::GUI &gui, const Common::UString &tag,
                        const Common::UString &font, const Common::UString &text) :
 	NWNWidget(gui, tag), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {
@@ -50,7 +55,7 @@ void NWNWidgetWithCaption::show() {
 	if (isVisible())
 		return;
 
-	if (!isInvisible())
+	if (_caption && !isInvisible())
 		_caption->show();
 
 	NWNWidget::show();
@@ -60,15 +65,28 @@ void NWNWidgetWithCaption::hide() {
 	if (!isVisible())
 		return;
 
-	_caption->hide();
+	if (_caption)
+		_caption->hide();
 	NWNWidget::hide();
+}
+
+void NWNWidgetWithCaption::initCaption(const Common::UString &font, const Common::UString &text,
+                                       float r, float g, float b, float a, float halign, float valign) {
+
+	_caption.reset(new Graphics::Aurora::Text(FontMan.get(font), getWidth(), getHeight(), text, r, g, b, a, halign, valign));
+	_caption->setTag(getTag() + "#Caption");
+
+	float x, y, z;
+	getPosition(x, y, z);
+	_caption->setPosition(x, y, z - 1.0);
 }
 
 void NWNWidgetWithCaption::setPosition(float x, float y, float z) {
 	NWNWidget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
-	_caption->setPosition(x, y, z);
+	if (_caption)
+		_caption->setPosition(x, y, z - 1.0);
 }
 
 void NWNWidgetWithCaption::setColor(float r, float g, float b, float a) {
@@ -77,24 +95,46 @@ void NWNWidgetWithCaption::setColor(float r, float g, float b, float a) {
 	_b = b;
 	_a = a;
 
-	_caption->setColor(_r, _g, _b, _a);
+	if (_caption)
+		_caption->setColor(_r, _g, _b, _a);
 }
 
 void NWNWidgetWithCaption::setText(const Common::UString &text, float halign, float maxWidth, float maxHeight) {
+	if (!_caption)
+		return;
+
 	_caption->set(text, maxWidth, maxHeight);
 	_caption->setHorizontalAlign(halign);
 }
 
 const Common::UString NWNWidgetWithCaption::getText() const {
-	return _caption->get();
+	if (_caption)
+		return _caption->get();
+	return "";
 }
 
 float NWNWidgetWithCaption::getWidth() const {
-	return _caption->getWidth();
+	if (_caption)
+		return _caption->getWidth();
+	return 0.0f;
 }
 
 float NWNWidgetWithCaption::getHeight() const {
-	return _caption->getHeight();
+	if (_caption)
+		return _caption->getHeight();
+	return 0.0f;
+}
+
+float NWNWidgetWithCaption::getHorizontalAlign() const {
+	if (_caption)
+		return _caption->getHorizontalAlign();
+	return Graphics::Aurora::kHAlignLeft;
+}
+
+float NWNWidgetWithCaption::getVerticalAlign() const {
+	if (_caption)
+		return _caption->getVerticalAlign();
+	return Graphics::Aurora::kVAlignTop;
 }
 
 void NWNWidgetWithCaption::setDisabled(bool disabled) {
@@ -103,7 +143,8 @@ void NWNWidgetWithCaption::setDisabled(bool disabled) {
 
 	_a = disabled ? (_a * 0.6f) : (_a / 0.6f);
 
-	_caption->setColor(_r, _g, _b, _a);
+	if (_caption)
+		_caption->setColor(_r, _g, _b, _a);
 
 	NWNWidget::setDisabled(disabled);
 }

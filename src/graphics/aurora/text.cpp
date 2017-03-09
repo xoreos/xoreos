@@ -125,8 +125,16 @@ void Text::unsetColor() {
 	setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+float Text::getHorizontalAlign() const {
+	return _halign;
+}
+
 void Text::setHorizontalAlign(float halign) {
 	_halign = halign;
+}
+
+float Text::getVerticalAlign() const {
+	return _valign;
 }
 
 void Text::setVerticalAlign(float valign) {
