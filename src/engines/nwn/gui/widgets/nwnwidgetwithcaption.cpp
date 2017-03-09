@@ -39,8 +39,8 @@ NWNWidgetWithCaption::NWNWidgetWithCaption(::Engines::GUI &gui, const Common::US
                        const Common::UString &font, const Common::UString &text) :
 	NWNWidget(gui, tag), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {
 
-	_text.reset(new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, Graphics::Aurora::kHAlignCenter));
-	_text->setTag(tag);
+	_caption.reset(new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, Graphics::Aurora::kHAlignCenter));
+	_caption->setTag(tag);
 }
 
 NWNWidgetWithCaption::~NWNWidgetWithCaption() {
@@ -51,7 +51,7 @@ void NWNWidgetWithCaption::show() {
 		return;
 
 	if (!isInvisible())
-		_text->show();
+		_caption->show();
 
 	NWNWidget::show();
 }
@@ -60,7 +60,7 @@ void NWNWidgetWithCaption::hide() {
 	if (!isVisible())
 		return;
 
-	_text->hide();
+	_caption->hide();
 	NWNWidget::hide();
 }
 
@@ -68,7 +68,7 @@ void NWNWidgetWithCaption::setPosition(float x, float y, float z) {
 	NWNWidget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
-	_text->setPosition(x, y, z);
+	_caption->setPosition(x, y, z);
 }
 
 void NWNWidgetWithCaption::setColor(float r, float g, float b, float a) {
@@ -77,24 +77,24 @@ void NWNWidgetWithCaption::setColor(float r, float g, float b, float a) {
 	_b = b;
 	_a = a;
 
-	_text->setColor(_r, _g, _b, _a);
+	_caption->setColor(_r, _g, _b, _a);
 }
 
 void NWNWidgetWithCaption::setText(const Common::UString &text, float halign, float maxWidth, float maxHeight) {
-	_text->set(text, maxWidth, maxHeight);
-	_text->setHorizontalAlign(halign);
+	_caption->set(text, maxWidth, maxHeight);
+	_caption->setHorizontalAlign(halign);
 }
 
 const Common::UString NWNWidgetWithCaption::getText() const {
-	return _text->get();
+	return _caption->get();
 }
 
 float NWNWidgetWithCaption::getWidth() const {
-	return _text->getWidth();
+	return _caption->getWidth();
 }
 
 float NWNWidgetWithCaption::getHeight() const {
-	return _text->getHeight();
+	return _caption->getHeight();
 }
 
 void NWNWidgetWithCaption::setDisabled(bool disabled) {
@@ -103,7 +103,7 @@ void NWNWidgetWithCaption::setDisabled(bool disabled) {
 
 	_a = disabled ? (_a * 0.6f) : (_a / 0.6f);
 
-	_text->setColor(_r, _g, _b, _a);
+	_caption->setColor(_r, _g, _b, _a);
 
 	NWNWidget::setDisabled(disabled);
 }

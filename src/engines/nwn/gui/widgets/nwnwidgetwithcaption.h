@@ -64,7 +64,7 @@ public:
 	void setDisabled(bool disabled);
 
 protected:
-	Common::ScopedPtr<Graphics::Aurora::Text> _text;
+	Common::ScopedPtr<Graphics::Aurora::Text> _caption;
 
 	float _r;
 	float _g;
