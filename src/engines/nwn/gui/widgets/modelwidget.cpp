@@ -37,7 +37,7 @@ namespace Engines {
 namespace NWN {
 
 ModelWidget::ModelWidget(::Engines::GUI &gui, const Common::UString &tag,
-                         const Common::UString &model) : NWNWidget(gui, tag) {
+                         const Common::UString &model) : NWNWidgetWithCaption(gui, tag) {
 
 	if (!(_model = loadModelGUI(model)))
 		throw Common::Exception("Can't load model \"%s\" for widget \"%s\"",
@@ -57,7 +57,7 @@ void ModelWidget::show() {
 	if (!isInvisible())
 		_model->show();
 
-	NWNWidget::show();
+	NWNWidgetWithCaption::show();
 }
 
 void ModelWidget::hide() {
@@ -65,11 +65,11 @@ void ModelWidget::hide() {
 		return;
 
 	_model->hide();
-	NWNWidget::hide();
+	NWNWidgetWithCaption::hide();
 }
 
 void ModelWidget::setPosition(float x, float y, float z) {
-	NWNWidget::setPosition(x, y, z);
+	NWNWidgetWithCaption::setPosition(x, y, z);
 
 	getPosition(x, y, z);
 	_model->setPosition(x, y, z);

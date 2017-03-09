@@ -27,7 +27,7 @@
 
 #include "src/graphics/aurora/types.h"
 
-#include "src/engines/nwn/gui/widgets/nwnwidget.h"
+#include "src/engines/nwn/gui/widgets/nwnwidgetwithcaption.h"
 
 namespace Common {
 	class UString;
@@ -42,7 +42,7 @@ namespace NWN {
  *  One of the base NWN widget classes, the ModelWidget consists of a
  *  single Aurora Model.
  */
-class ModelWidget : public NWNWidget {
+class ModelWidget : public NWNWidgetWithCaption {
 public:
 	ModelWidget(::Engines::GUI &gui, const Common::UString &tag,
 	            const Common::UString &model);
