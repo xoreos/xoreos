@@ -44,57 +44,21 @@ ChatModeButton::ChatModeButton(::Engines::GUI &gui, const Common::UString &tag,
                                const Common::UString &model, ChatMode mode) :
 	WidgetButton(gui, tag, model) {
 
-	_label = new WidgetLabel(*_gui, getTag() + "#Label", "fnt_dialog16x16", "");
-	_label->setColor(1.0f, 1.0f, 1.0f, 0.6f);
+	initCaption("fnt_dialog16x16", "", 1.0f, 1.0f, 1.0f, 0.6f);
 
 	setMode(mode);
 
 	setPosition(0.0f, 0.0f, 0.0f);
-
-	addSub(*_label);
 }
 
 ChatModeButton::~ChatModeButton() {
 }
 
-void ChatModeButton::show() {
-	_label->show();
-
-	WidgetButton::show();
-}
-
-void ChatModeButton::hide() {
-	_label->hide();
-
-	WidgetButton::hide();
-}
-
 void ChatModeButton::setMode(ChatMode mode) {
 	_mode = mode;
 
-	_label->setText(TalkMan.getString(66751 + (uint) _mode) + ":");
+	setText(TalkMan.getString(66751 + (uint) _mode) + ":");
 }
-
-void ChatModeButton::setPosition(float x, float y, float z) {
-	WidgetButton::setPosition(x, y, z);
-
-	getPosition(x, y, z);
-
-	Graphics::Aurora::ModelNode *node = 0;
-
-	float tX = 0.0f, tY = 0.0f, tZ = 0.0f;
-	if ((node = _model->getNode("text")))
-		node->getPosition(tX, tY, tZ);
-
-	_label->setPosition(x + tX, y + tY - (_label->getHeight() / 2.0f), z - tZ);
-}
-
-void ChatModeButton::setTag(const Common::UString &tag) {
-	WidgetButton::setTag(tag);
-
-	_label->setTag(getTag() + "#Label");
-}
-
 
 Quickchat::Quickchat(float position) {
 	// Prompt
