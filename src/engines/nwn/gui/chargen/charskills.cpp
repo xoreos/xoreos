@@ -49,7 +49,7 @@ namespace NWN {
 
 WidgetListItemSkill::WidgetListItemSkill(::Engines::GUI &gui, SkillItem skill) :
 	WidgetListItemButton(gui, "ctl_cg_btn_skill", skill.name, skill.icon),
-	_upButton(0), _downButton(0), _skillPointPanel(0), _skillPoint(0), _skill(skill) {
+	_upButton(0), _downButton(0), _skillPointPanel(0), _skill(skill) {
 
 	setTag("Item#" + skill.name);
 
@@ -66,14 +66,12 @@ WidgetListItemSkill::WidgetListItemSkill(::Engines::GUI &gui, SkillItem skill) :
 	addSub(*_downButton);
 
 	_skillPointPanel = new WidgetPanel(gui, _tag + "#SkillPointPanel", "ctl_cg_numbox3");
+	_skillPointPanel->initCaption("fnt_galahad14", "0", 1.0f, 1.0f, 1.0f, 1.0f,
+	                              Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignMiddle);
 	addChild(*_skillPointPanel);
-
-	_skillPoint = new WidgetLabel(gui, _tag + "#SkillPointLabel", "fnt_galahad14", "0");
-	addChild(*_skillPoint);
 }
 
 WidgetListItemSkill::~WidgetListItemSkill() {
-	_skillPoint->remove();
 	_skillPointPanel->remove();
 }
 
@@ -88,14 +86,11 @@ void WidgetListItemSkill::setPosition(float x, float y, float z) {
 
 	_button->getNode("skillrank")->getPosition(pX, pY, pZ);
 	_skillPointPanel->setPosition(pX + x, pY + y, z - pZ);
-	_skillPoint->setPosition(pX + x + _skillPointPanel->getWidth() / 2.f,
-	                         pY + y + _skillPointPanel->getHeight() / 2.f - 7.f,
-	                         z - pZ - 1.f);
 }
 
 void WidgetListItemSkill::reset() {
 	_skill.rank = _skill.minRank;
-	_skillPoint->setText(Common::composeString<uint8>(_skill.rank));
+	_skillPointPanel->setText(Common::composeString<uint8>(_skill.rank));
 }
 
 void WidgetListItemSkill::mouseDown(uint8 state, float x, float y) {
@@ -136,7 +131,7 @@ bool WidgetListItemSkill::changeRank(bool isIncreasing) {
 		--_skill.rank;
 	}
 
-	_skillPoint->setText(Common::composeString<uint8>(_skill.rank));
+	_skillPointPanel->setText(Common::composeString<uint8>(_skill.rank));
 	return true;
 }
 

@@ -34,7 +34,6 @@ namespace NWN {
 
 class WidgetButton;
 class WidgetPanel;
-class WidgetLabel;
 class WidgetEditBox;
 
 class WidgetListItemSkill : public WidgetListItemButton {
@@ -54,7 +53,6 @@ private:
 	WidgetButton *_upButton;
 	WidgetButton *_downButton;
 	WidgetPanel  *_skillPointPanel;
-	WidgetLabel  *_skillPoint;
 
 	SkillItem _skill;
 
