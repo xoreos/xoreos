@@ -40,14 +40,6 @@ NWNWidgetWithCaption::NWNWidgetWithCaption(::Engines::GUI &gui, const Common::US
 
 }
 
-NWNWidgetWithCaption::NWNWidgetWithCaption(::Engines::GUI &gui, const Common::UString &tag,
-                       const Common::UString &font, const Common::UString &text) :
-	NWNWidget(gui, tag), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {
-
-	_caption.reset(new Graphics::Aurora::Text(FontMan.get(font), text, _r, _g, _b, _a, Graphics::Aurora::kHAlignCenter));
-	_caption->setTag(tag);
-}
-
 NWNWidgetWithCaption::~NWNWidgetWithCaption() {
 }
 

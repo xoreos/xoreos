@@ -47,8 +47,6 @@ namespace NWN {
 class NWNWidgetWithCaption : public NWNWidget {
 public:
 	NWNWidgetWithCaption(::Engines::GUI &gui, const Common::UString &tag);
-	NWNWidgetWithCaption(::Engines::GUI &gui, const Common::UString &tag,
-	           const Common::UString &font, const Common::UString &text);
 	~NWNWidgetWithCaption();
 
 	void show();
