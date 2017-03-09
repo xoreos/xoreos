@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  A NWN text widget.
+ *  A NWN widget with a text caption.
  */
 
-#ifndef ENGINES_NWN_GUI_WIDGETS_TEXTWIDGET_H
-#define ENGINES_NWN_GUI_WIDGETS_TEXTWIDGET_H
+#ifndef ENGINES_NWN_GUI_WIDGETS_NWNWIDGETWITHCAPTION_H
+#define ENGINES_NWN_GUI_WIDGETS_NWNWIDGETWITHCAPTION_H
 
 #include "src/common/scopedptr.h"
 
@@ -39,16 +39,16 @@ namespace Engines {
 
 namespace NWN {
 
-/** A NWN text widget.
+/** A NWN widget with a text caption.
  *
- *  One of the base NWN widget classes, the TextWidget consists of a
+ *  One of the base NWN widget classes, the NWNWidgetWithCaption consists of a
  *  single Aurora Text.
  */
-class TextWidget : public NWNWidget {
+class NWNWidgetWithCaption : public NWNWidget {
 public:
-	TextWidget(::Engines::GUI &gui, const Common::UString &tag,
+	NWNWidgetWithCaption(::Engines::GUI &gui, const Common::UString &tag,
 	           const Common::UString &font, const Common::UString &text);
-	~TextWidget();
+	~NWNWidgetWithCaption();
 
 	void show();
 	void hide();
@@ -76,4 +76,4 @@ protected:
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_GUI_WIDGETS_TEXTWIDGET_H
+#endif // ENGINES_NWN_GUI_WIDGETS_NWNWIDGETWITHCAPTION_H

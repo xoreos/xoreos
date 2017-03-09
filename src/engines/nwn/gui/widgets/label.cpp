@@ -30,7 +30,7 @@ namespace NWN {
 
 WidgetLabel::WidgetLabel(::Engines::GUI &gui, const Common::UString &tag,
                          const Common::UString &font, const Common::UString &text) :
-	TextWidget(gui, tag, font, text) {
+	NWNWidgetWithCaption(gui, tag, font, text) {
 
 }
 

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A NWN text widget.
+ *  A NWN widget with a text caption.
  */
 
 #include "src/common/ustring.h"
@@ -29,13 +29,13 @@
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/fontman.h"
 
-#include "src/engines/nwn/gui/widgets/textwidget.h"
+#include "src/engines/nwn/gui/widgets/nwnwidgetwithcaption.h"
 
 namespace Engines {
 
 namespace NWN {
 
-TextWidget::TextWidget(::Engines::GUI &gui, const Common::UString &tag,
+NWNWidgetWithCaption::NWNWidgetWithCaption(::Engines::GUI &gui, const Common::UString &tag,
                        const Common::UString &font, const Common::UString &text) :
 	NWNWidget(gui, tag), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {
 
@@ -43,10 +43,10 @@ TextWidget::TextWidget(::Engines::GUI &gui, const Common::UString &tag,
 	_text->setTag(tag);
 }
 
-TextWidget::~TextWidget() {
+NWNWidgetWithCaption::~NWNWidgetWithCaption() {
 }
 
-void TextWidget::show() {
+void NWNWidgetWithCaption::show() {
 	if (isVisible())
 		return;
 
@@ -56,7 +56,7 @@ void TextWidget::show() {
 	NWNWidget::show();
 }
 
-void TextWidget::hide() {
+void NWNWidgetWithCaption::hide() {
 	if (!isVisible())
 		return;
 
@@ -64,14 +64,14 @@ void TextWidget::hide() {
 	NWNWidget::hide();
 }
 
-void TextWidget::setPosition(float x, float y, float z) {
+void NWNWidgetWithCaption::setPosition(float x, float y, float z) {
 	NWNWidget::setPosition(x, y, z);
 
 	getPosition(x, y, z);
 	_text->setPosition(x, y, z);
 }
 
-void TextWidget::setColor(float r, float g, float b, float a) {
+void NWNWidgetWithCaption::setColor(float r, float g, float b, float a) {
 	_r = r;
 	_g = g;
 	_b = b;
@@ -80,24 +80,24 @@ void TextWidget::setColor(float r, float g, float b, float a) {
 	_text->setColor(_r, _g, _b, _a);
 }
 
-void TextWidget::setText(const Common::UString &text, float halign, float maxWidth, float maxHeight) {
+void NWNWidgetWithCaption::setText(const Common::UString &text, float halign, float maxWidth, float maxHeight) {
 	_text->set(text, maxWidth, maxHeight);
 	_text->setHorizontalAlign(halign);
 }
 
-const Common::UString TextWidget::getText() const {
+const Common::UString NWNWidgetWithCaption::getText() const {
 	return _text->get();
 }
 
-float TextWidget::getWidth() const {
+float NWNWidgetWithCaption::getWidth() const {
 	return _text->getWidth();
 }
 
-float TextWidget::getHeight() const {
+float NWNWidgetWithCaption::getHeight() const {
 	return _text->getHeight();
 }
 
-void TextWidget::setDisabled(bool disabled) {
+void NWNWidgetWithCaption::setDisabled(bool disabled) {
 	if (disabled == isDisabled())
 		return;
 
