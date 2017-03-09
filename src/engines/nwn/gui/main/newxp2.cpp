@@ -26,7 +26,7 @@
 
 #include "src/engines/nwn/module.h"
 
-#include "src/engines/nwn/gui/widgets/label.h"
+#include "src/engines/nwn/gui/widgets/button.h"
 
 #include "src/engines/nwn/gui/main/newxp2.h"
 
@@ -48,18 +48,18 @@ NewXP2Menu::~NewXP2Menu() {
 }
 
 void NewXP2Menu::initWidget(Widget &widget) {
-	if (widget.getTag() == "Chapter1Button#Caption") {
-		dynamic_cast<WidgetLabel &>(widget).setText(TalkMan.getString(100777));
+	if (widget.getTag() == "Chapter1Button") {
+		dynamic_cast<WidgetButton &>(widget).setText(TalkMan.getString(100777));
 		return;
 	}
 
-	if (widget.getTag() == "Chapter2Button#Caption") {
-		dynamic_cast<WidgetLabel &>(widget).setText(TalkMan.getString(100778));
+	if (widget.getTag() == "Chapter2Button") {
+		dynamic_cast<WidgetButton &>(widget).setText(TalkMan.getString(100778));
 		return;
 	}
 
-	if (widget.getTag() == "Chapter3Button#Caption") {
-		dynamic_cast<WidgetLabel &>(widget).setText(TalkMan.getString(100779));
+	if (widget.getTag() == "Chapter3Button") {
+		dynamic_cast<WidgetButton &>(widget).setText(TalkMan.getString(100779));
 		return;
 	}
 }

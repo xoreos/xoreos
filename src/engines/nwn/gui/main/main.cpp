@@ -108,7 +108,7 @@ void MainMenu::createOptions() {
 void MainMenu::show() {
 	GUI::show();
 
-	getWidget("NewButton#Caption", true)->show();
+	getWidget("NewButton", true)->show();
 }
 
 void MainMenu::abort() {

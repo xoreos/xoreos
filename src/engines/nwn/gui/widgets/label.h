@@ -40,9 +40,22 @@ namespace NWN {
 /** A NWN label widget. */
 class WidgetLabel : public NWNWidgetWithCaption {
 public:
-	WidgetLabel(::Engines::GUI &gui, const Common::UString &tag,
-	            const Common::UString &font, const Common::UString &text);
+	WidgetLabel(::Engines::GUI &gui, const Common::UString &tag);
 	~WidgetLabel();
+
+	void initCaption(const Common::UString &font, const Common::UString &text,
+	                 float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f,
+	                 float halign = Graphics::Aurora::kHAlignLeft, float valign = Graphics::Aurora::kVAlignTop);
+
+	void setText(const Common::UString &text);
+
+	float getWidth () const; ///< Get the widget's width.
+	float getHeight() const; ///< Get the widget's height.
+	void setSize(float width, float height);
+
+private:
+	float _width;
+	float _height;
 };
 
 } // End of namespace NWN

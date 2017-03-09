@@ -145,6 +145,10 @@ const Common::UString &Text::get() const {
 	return _str;
 }
 
+const Common::UString &Text::getFont() const {
+	return _font.getName();
+}
+
 void Text::getPosition(float &x, float &y, float &z) const {
 	x = _x;
 	y = _y;

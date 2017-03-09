@@ -48,7 +48,6 @@ CharHelp::CharHelp(const Common::UString &GUIResRef, ::Engines::Console *console
 
 	// Remove unnecessary button.
 	if (hasWidget("OkButton")) {
-		getLabel("OkButton#Caption", true)->remove();
 		getButton("OkButton", true)->remove();
 	}
 }

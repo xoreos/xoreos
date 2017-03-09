@@ -80,7 +80,7 @@ void CharAppearance::adjustButtons(const Common::UString &tag) {
 	float cX, cY, cZ;
 	getWidget(tag, true)->getPosition(wX,wY,wZ);
 	getButton(tag, true)->getNode("text")->getPosition(cX,cY,cZ);
-	getWidget(tag + "#Caption", true)->setPosition(wX + cX, wY + cY - 7.f, wZ - cZ);
+	getWidget(tag, true)->setPosition(wX + cX, wY + cY - 7.f, wZ - cZ);
 }
 
 } // End of namespace NWN

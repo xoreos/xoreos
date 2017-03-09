@@ -100,8 +100,6 @@ private:
 		Widget *parent;
 
 		Common::UString model;
-		Common::UString font;
-		Common::UString text;
 
 		WidgetContext(const Aurora::GFF3Struct &s, Widget *p);
 	};
@@ -111,12 +109,10 @@ private:
 	void loadWidget(const Aurora::GFF3Struct &strct, Widget *parent);
 
 	void createWidget(WidgetContext &ctx);
-	void initWidget(WidgetContext &ctx, ModelWidget &widget);
-	void initWidget(WidgetContext &ctx, NWNWidgetWithCaption  &widget);
 	void initWidget(WidgetContext &ctx);
-
-	WidgetLabel *createCaption(WidgetContext &ctx);
-	WidgetLabel *createCaption(const Aurora::GFF3Struct &strct, Widget *parent);
+	void initWidget(WidgetContext &ctx, WidgetLabel &widget);
+	void initWidget(WidgetContext &ctx, ModelWidget &widget);
+	void initCaption(WidgetContext &ctx, NWNWidgetWithCaption  &widget);
 };
 
 } // End of namespace NWN
