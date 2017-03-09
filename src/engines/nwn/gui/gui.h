@@ -36,7 +36,7 @@ namespace Engines {
 namespace NWN {
 
 class ModelWidget;
-class TextWidget;
+class NWNWidgetWithCaption;
 class QuadWidget;
 
 class WidgetFrame;
@@ -112,7 +112,7 @@ private:
 
 	void createWidget(WidgetContext &ctx);
 	void initWidget(WidgetContext &ctx, ModelWidget &widget);
-	void initWidget(WidgetContext &ctx, TextWidget  &widget);
+	void initWidget(WidgetContext &ctx, NWNWidgetWithCaption  &widget);
 	void initWidget(WidgetContext &ctx);
 
 	WidgetLabel *createCaption(WidgetContext &ctx);

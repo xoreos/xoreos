@@ -33,7 +33,7 @@
 #include "src/engines/aurora/util.h"
 
 #include "src/engines/nwn/gui/widgets/modelwidget.h"
-#include "src/engines/nwn/gui/widgets/textwidget.h"
+#include "src/engines/nwn/gui/widgets/nwnwidgetwithcaption.h"
 #include "src/engines/nwn/gui/widgets/quadwidget.h"
 #include "src/engines/nwn/gui/widgets/button.h"
 #include "src/engines/nwn/gui/widgets/checkbox.h"
@@ -223,7 +223,7 @@ void GUI::createWidget(WidgetContext &ctx) {
 	if (widgetModel)
 		initWidget(ctx, *widgetModel);
 
-	TextWidget  *widgetText  = dynamic_cast<TextWidget  *>(ctx.widget);
+	NWNWidgetWithCaption  *widgetText  = dynamic_cast<NWNWidgetWithCaption  *>(ctx.widget);
 	if (widgetText)
 		initWidget(ctx, *widgetText);
 }
@@ -231,7 +231,7 @@ void GUI::createWidget(WidgetContext &ctx) {
 void GUI::initWidget(WidgetContext &UNUSED(ctx), ModelWidget &UNUSED(widget)) {
 }
 
-void GUI::initWidget(WidgetContext &ctx, TextWidget &widget) {
+void GUI::initWidget(WidgetContext &ctx, NWNWidgetWithCaption &widget) {
 	if (!ctx.strct->hasField("Obj_Caption"))
 		return;
 

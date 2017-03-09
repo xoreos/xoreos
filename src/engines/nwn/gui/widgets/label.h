@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_LABEL_H
 #define ENGINES_NWN_GUI_WIDGETS_LABEL_H
 
-#include "src/engines/nwn/gui/widgets/textwidget.h"
+#include "src/engines/nwn/gui/widgets/nwnwidgetwithcaption.h"
 
 namespace Common {
 	class UString;
@@ -38,7 +38,7 @@ class GUI;
 namespace NWN {
 
 /** A NWN label widget. */
-class WidgetLabel : public TextWidget {
+class WidgetLabel : public NWNWidgetWithCaption {
 public:
 	WidgetLabel(::Engines::GUI &gui, const Common::UString &tag,
 	            const Common::UString &font, const Common::UString &text);

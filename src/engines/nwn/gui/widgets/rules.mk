@@ -22,9 +22,9 @@
 src_engines_nwn_libnwn_la_SOURCES += \
     src/engines/nwn/gui/widgets/tooltip.h \
     src/engines/nwn/gui/widgets/nwnwidget.h \
+    src/engines/nwn/gui/widgets/nwnwidgetwithcaption.h \
     src/engines/nwn/gui/widgets/modelwidget.h \
     src/engines/nwn/gui/widgets/quadwidget.h \
-    src/engines/nwn/gui/widgets/textwidget.h \
     src/engines/nwn/gui/widgets/button.h \
     src/engines/nwn/gui/widgets/checkbox.h \
     src/engines/nwn/gui/widgets/close.h \
@@ -44,9 +44,9 @@ src_engines_nwn_libnwn_la_SOURCES += \
 src_engines_nwn_libnwn_la_SOURCES += \
     src/engines/nwn/gui/widgets/tooltip.cpp \
     src/engines/nwn/gui/widgets/nwnwidget.cpp \
+    src/engines/nwn/gui/widgets/nwnwidgetwithcaption.cpp \
     src/engines/nwn/gui/widgets/modelwidget.cpp \
     src/engines/nwn/gui/widgets/quadwidget.cpp \
-    src/engines/nwn/gui/widgets/textwidget.cpp \
     src/engines/nwn/gui/widgets/button.cpp \
     src/engines/nwn/gui/widgets/checkbox.cpp \
     src/engines/nwn/gui/widgets/close.cpp \
