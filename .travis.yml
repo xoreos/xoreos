@@ -63,7 +63,7 @@ addons:
       name: $TRAVIS_REPO_SLUG
     notification_email: drmccoy@drmccoy.de
     build_command_prepend: "./autogen.sh && ./configure"
-    build_command: "make -j4"
+    build_command: "make -j4 check"
     branch_pattern: coverity_scan
 
 notifications:
