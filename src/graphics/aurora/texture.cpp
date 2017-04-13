@@ -201,6 +201,7 @@ void Texture::setAlign() {
 		case kPixelFormatDXT3:
 		case kPixelFormatDXT5:
 			alignment = 4;
+			break;
 
 		// Unknown
 		default:
