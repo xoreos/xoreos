@@ -22,8 +22,7 @@
  *  The context holding a Dragon Age II campaign.
  */
 
-#include <memory>
-
+#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -180,7 +179,7 @@ void Campaign::readCIFStatic(const Common::UString &path) {
 }
 
 Campaign::RIMNode *Campaign::readRIMs(const GFF4Struct &node, const RIMNode *parent) {
-	std::auto_ptr<RIMNode> rim(new RIMNode(parent));
+	Common::ScopedPtr<RIMNode> rim(new RIMNode(parent));
 
 	// General node information
 	rim->tag  = node.getString(kGFF4RimTreeNodeTag);
