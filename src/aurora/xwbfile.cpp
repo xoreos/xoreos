@@ -1,6 +1,26 @@
-//
-// Created by patrick on 06.05.17.
-//
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**@file
+ * 	for reading xact xwb files, both ascii and binary
+ */
 
 #include "xwbfile.h"
 
@@ -39,13 +59,13 @@ XWBFile::XWBFile(Common::SeekableReadStream *xwb)
 	unsigned int numWaves = atoi(tokens[2].c_str());
 	
 	int tokenoffset = 3;
+	if(tokenoffset + numWaves*8 > tokens.size())
+	{
+		throw Common::Exception("xwb file is too short");
+	}
+	
 	for (unsigned int i = 0; i < numWaves; ++i)
 	{
-		/*if(tokenoffset + i*8 + 1 > tokens.size())
-		{
-			throw Common::Exception("xwb file is too short");
-		}*/
-		
 		Common::UString file = tokens[tokenoffset + i*8 + 1];
 		Common::UString fileid, filesuffix;
 		std::vector<Common::UString> filenameparts;
