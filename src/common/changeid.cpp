@@ -46,7 +46,7 @@ ChangeID &ChangeID::operator=(const ChangeID &change) {
 }
 
 bool ChangeID::empty() const {
-	return _content;
+	return _content.get() != 0;
 }
 
 void ChangeID::clear() {
