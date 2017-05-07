@@ -30,6 +30,8 @@
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/graphics/images/decoder.h"
 #include "src/graphics/images/txi.h"
 #include "src/graphics/images/tga.h"
@@ -112,6 +114,11 @@ void Cursor::load() {
 
 	TXI *txi = new TXI();
 	txi->getFeatures().filter = false;
+
+	// If we need manual DeS3TC, we decompress the cursor image
+	if (GfxMan.needManualDeS3TC()) {
+		image->decompress();
+	}
 
 	_texture = TextureMan.add(Texture::create(image.release(), type, txi), _name);
 
