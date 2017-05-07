@@ -172,7 +172,7 @@ void IngameGUI::updatePartyMember(size_t partyMember, const Creature &creature, 
 }
 
 bool IngameGUI::hasRunningConversation() const {
-	return _dialog != 0;
+	return _dialog.get() != 0;
 }
 
 bool IngameGUI::startConversation(const Common::UString &conv,
