@@ -42,8 +42,133 @@ namespace Graphics {
 
 namespace Shader {
 
+class ShaderDescriptor
+{
+	///< Vertex shader input data. Each should have a corresponding output.
+	enum Input {
+		INPUT_POSITION0,
+		INPUT_POSITION1,
+		INPUT_POSITION2,
+		INPUT_POSITION3,
+		INPUT_NORMAL0,
+		INPUT_NORMAL1,
+		INPUT_NORMAL2,
+		INPUT_NORMAL3,
+		INPUT_UV0,
+		INPUT_UV1,
+		INPUT_UV2,
+		INPUT_UV3,
+		INPUT_UV_CUBE,    ///< Not strictly speaking an input, but generated for an output.
+		INPUT_UV_SPHERE   ///< Not strictly speaking an input, but generated for an output.
+	};
+
+	enum Sampler {
+		SAMPLER_TEXTURE_0,
+		SAMPLER_TEXTURE_1,
+		SAMPLER_TEXTURE_2,
+		SAMPLER_TEXTURE_3,
+		SAMPLER_TEXTURE_4,
+		SAMPLER_TEXTURE_5,
+		SAMPLER_TEXTURE_6,
+		SAMPLER_TEXTURE_7
+	};
+
+	enum SamplerType {
+		SAMPLER_CUBE,
+		SAMPLER_SPHERE,
+		SAMPLER_DIFFUSE,
+		SAMPLER_LIGHTMAP,
+		SAMPLER_BUMPMAP
+	};
+
+	enum Action {
+		ENV_CUBE,
+		ENV_SPHERE,
+		COLOUR,
+		TEXTURE_DIFFUSE,
+		TEXTURE_LIGHTMAP,
+		TEXTURE_BUMPMAP,
+		FORCE_OPAQUE,
+		NOOP
+	};
+
+	enum Blend {
+		BLEND_SRC_ALPHA,
+		BLEND_DST_ALPHA,
+		BLEND_ZERO,
+		BLEND_ONE,
+		BLEND_MULTIPLY,   ///< Not really blending, but component-wise multiply.
+		BLEND_IGNORED     ///< Blending not applicable to the component.
+	};
+
+	ShaderDescriptor();
+
+	~ShaderDescriptor();
+
+	void declareInput(ShaderDescriptor::Input input);
+
+	void declareSampler(ShaderDescriptor::Sampler sampler);
+
+	void connect(ShaderDescriptor::Sampler sampler, ShaderDescriptor::SamplerType type, ShaderDescriptor::Input uv_coords);
+
+	void addPass(ShaderDescriptor::Action action, ShaderDescriptor::Blend blend);
+
+	void build();
+private:
+	// Input descriptors.
+	// Sampler descriptors.
+	// sampler -> uv coord descriptors (from inputs)
+	// render passes
+	struct InputDescriptor {
+		Input input;
+	};
+
+	struct SamplerDescriptor {
+		Sampler sampler;
+	};
+
+	struct SamplerCoordConnector {
+		Sampler sampler;
+		SamplerType type;
+		Input uv_coords;
+	};
+
+	struct Pass {
+		Action action;
+		Blend blend;
+	};
+
+	std::vector<Input> _inputDescriptors;
+	std::vector<Sampler> _samplerDescriptors;
+	std::vector<SamplerCoordConnector> _samplerCoordConnectors;
+	std::vector<Pass> _passes;
+};
+
 class ShaderBuilder : public Common::Singleton<ShaderBuilder> {
 public:
+
+	///< Vertex shader input data. Each should have a corresponding output.
+	enum {
+		INPUT_POSITION0,
+		INPUT_POSITION1,
+		INPUT_POSITION2,
+		INPUT_POSITION3,
+		INPUT_NORMAL0,
+		INPUT_NORMAL1,
+		INPUT_NORMAL2,
+		INPUT_NORMAL3,
+		INPUT_UV0,
+		INPUT_UV1,
+		INPUT_UV2,
+		INPUT_UV3
+	};
+
+	///< UV coordinates used for different purposes.
+	enum {
+		UV_DIFFUSE,
+		UV_LIGHTMAP,
+		UV_BUMPMAP
+	};
 
 	enum {
 		ENV_CUBE,

@@ -127,7 +127,6 @@ public:
 	float getScaleY() { return _scale[1]; }
 	float getScaleZ() { return _scale[2]; }
 
-protected:
 	/** The way the environment map is applied to a model node. */
 	enum EnvironmentMapMode {
 		kModeEnvironmentBlendedUnder, ///< Environment map first, then blend the diffuse textures in.
@@ -160,8 +159,6 @@ protected:
 
 	struct MeshData {
 		Graphics::Mesh::Mesh *rawMesh; ///< Node raw mesh data.
-		// VertexBuffer vertexBuffer; ///< Node geometry vertex buffer.
-		// IndexBuffer indexBuffer;   ///< Node geometry index buffer.
 
 		std::vector<float> initialVertexCoords; ///< Initial node vertex coordinates.
 
@@ -258,6 +255,8 @@ protected:
 	bool _vertexCoordsBuffered;
 	// '---
 
+	Shader::ShaderMaterial *_material;
+	Shader::ShaderRenderable *_shaderRenderable;
 
 	// Loading helpers
 	void loadTextures(const std::vector<Common::UString> &textures);
@@ -283,11 +282,12 @@ protected:
 	void flushBuffers();
 
 	ModelNode::Mesh *getMesh();
+
 	TextureHandle *getTextures(uint32 &count);
 	TextureHandle *getEnvironmentMap(EnvironmentMapMode &mode);
 
+	void setMaterial(Shader::ShaderMaterial *material);
 	virtual void buildMaterial();
-
 
 private:
 	const Common::BoundingBox &getAbsoluteBound() const;

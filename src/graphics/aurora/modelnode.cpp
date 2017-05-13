@@ -310,10 +310,6 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 	unlockFrameIfVisible();
 }
 
-ModelNode::Mesh *ModelNode::getMesh() const {
-	return _mesh;
-}
-
 void ModelNode::setMaterial(Shader::ShaderMaterial *material) {
 	_material = material;
 	if (_shaderRenderable) {
@@ -695,19 +691,8 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 	/**
 	 * Ignoring _render for now because it's being falsely set to false.
 	 */
-//	if (_render) {}
-/*
-	if (_name == "Plane17" ||
-	    _name == "Plane05" ||
-	    _name == "Plane21" ||
-	    _name == "Plane09" ||
-	    _name == "Plane10" ||
-	    _name == "Plane07" ||
-	    _name == "Plane20" ||
-	    _name == "window") {
+	/* if (_render) {} */
 
-	} else if (_dirtyRender) {
-*/
 	float alpah = 1.0f;
 	if (_name == "window") {
 		alpah = 0.7f;
@@ -728,12 +713,12 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 		if (_renderableArray.size() == 0) {
 			if (_rootStateNode) {
 				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, alpah);//_mesh->alpha);
+					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, alpah);
 				}
 			}
 		} else {
 			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, alpah);//_mesh->alpha);
+				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, alpah);
 			}
 		}
 	}
@@ -747,7 +732,6 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 	}
 }
 
-<<<<<<< HEAD
 void ModelNode::drawSkeleton(const glm::mat4 &parent, bool showInvisible) {
 	glm::mat4 mine = parent;
 
@@ -755,10 +739,6 @@ void ModelNode::drawSkeleton(const glm::mat4 &parent, bool showInvisible) {
 		mine = glm::rotate(mine,
 				Common::deg2rad(_orientation[3]),
 				glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
-=======
-void ModelNode::drawSkeleton(const Common::Matrix4x4 &parent, bool showInvisible) {
-	Common::Matrix4x4 mine = parent;
->>>>>>> GRAPHICS: Rework material construction for ModelNodes
 
 	mine = glm::scale(mine, glm::vec3(_scale[0], _scale[1], _scale[2]));
 
@@ -910,7 +890,7 @@ void ModelNode::computeAbsoluteTransform() {
 	}
 }
 
-ModelNode::Mesh *ModelNode::getMesh() {
+ModelNode::Mesh *ModelNode::getMesh() const {
 	if (_mesh) {
 		return _mesh;
 	}

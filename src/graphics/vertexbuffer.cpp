@@ -183,7 +183,7 @@ void VertexBuffer::setVertexDeclLinear(uint32 vertCount, VertexDecl &decl) {
 	_decl.clear();
 	for (VertexDecl::iterator a = decl.begin(); a != decl.end(); ++a) {
 		vertSize += a->size * getTypeSize(a->type);
-		_decl.push_back(*a);
+		//_decl.push_back(*a);
 	}
 
 	setSize(vertCount, vertSize);
@@ -194,6 +194,8 @@ void VertexBuffer::setVertexDeclLinear(uint32 vertCount, VertexDecl &decl) {
 		a->pointer = data;
 
 		data += vertCount * a->size * getTypeSize(a->type);
+
+		_decl.push_back(*a);
 	}
 }
 

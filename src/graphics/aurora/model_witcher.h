@@ -48,6 +48,8 @@ private:
 	struct ParserContext {
 		Common::SeekableReadStream *mdb;
 
+		Common::UString mdlName;
+
 		State *state;
 
 		std::list<ModelNode_Witcher *> nodes;
@@ -107,6 +109,9 @@ private:
 	void evaluateTextures(int n, std::vector<Common::UString> &textures,
 	                      const Common::UString *staticTextures, const uint32 *tVertsCount,
 	                      bool lightMapDayNight, const Common::UString &lightMapName);
+
+protected:
+	virtual void buildMaterial();
 };
 
 } // End of namespace Aurora

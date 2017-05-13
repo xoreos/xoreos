@@ -304,6 +304,91 @@ static const Common::UString body_force_opaque_2frag =
 "	fraggle.a = 1.0f;\n";
 // ---------------------------------------------------------
 
+ShaderDescriptor::ShaderDescriptor() {
+}
+
+ShaderDescriptor::~ShaderDescriptor() {
+}
+
+void ShaderDescriptor::declareInput(ShaderDescriptor::Input input) {
+	_inputDescriptors.push_back(input);
+}
+
+void ShaderDescriptor::declareSampler(ShaderDescriptor::Sampler sampler) {
+	_samplerDescriptors.push_back(sampler);
+}
+
+void ShaderDescriptor::connect(ShaderDescriptor::Sampler sampler, ShaderDescriptor::SamplerType type, ShaderDescriptor::Input uv_coords) {
+	SamplerCoordConnector descriptor = {};
+	descriptor.sampler = sampler;
+	descriptor.type = type;
+	descriptor.uv_coords = uv_coords;
+	_samplerCoordConnectors.push_back(descriptor);
+}
+
+void ShaderDescriptor::addPass(ShaderDescriptor::Action action, ShaderDescriptor::Blend blend) {
+}
+
+void ShaderDescriptor::build() {
+	bool isGL3 = true;
+
+	Common::UString header;
+	Common::UString body;
+
+	Common::UString input_declare_string = "in ";
+
+	for (size_t i = 0; i < _inputDescriptors.size(); ++i) {
+		Common::UString input_desc_string =  input_declare_string;
+		switch (_inputDescriptors[i]) {
+		case INPUT_POSITION0:
+			input_desc_string += "vec3 inputPosition0;\n";
+			//input_desc_string = "#define inputPosition0 gl_Vertex\n";
+			break;
+		case INPUT_POSITION1:
+			input_desc_string += "vec3 inputPosition1;\n";
+			break;
+		case INPUT_POSITION2:
+			input_desc_string += "vec3 inputPosition2;\n";
+			break;
+		case INPUT_POSITION3:
+			input_desc_string += "vec3 inputPosition3;\n";
+			break;
+		case INPUT_NORMAL0:
+			input_desc_string += "vec3 inputNormal0;\n";
+			break;
+		case INPUT_NORMAL1:
+			input_desc_string += "vec3 inputNormal1;\n";
+			break;
+		case INPUT_NORMAL2:
+			input_desc_string += "vec3 inputNormal2;\n";
+			break;
+		case INPUT_NORMAL3:
+			input_desc_string += "vec3 inputNormal3;\n";
+			break;
+		case INPUT_UV0:
+			input_desc_string += "vec2 inputUV0;\n";
+			break;
+		case INPUT_UV1:
+			input_desc_string += "vec2 inputUV1;\n";
+			break;
+		case INPUT_UV2:
+			input_desc_string += "vec2 inputUV2;\n";
+			break;
+		case INPUT_UV3:
+			input_desc_string += "vec2 inputUV3;\n";
+			break;
+		case INPUT_UV_CUBE:
+			input_desc_string = "// Declare UV cube coordinates, always uses inputPosition0 and inputNormal0.\n";
+			break;
+		case INPUT_UV_SPHERE:
+			input_desc_string = "// Declare UV Spherical coordinates.\n";
+			break;
+		}
+		header += input_desc_string;
+	}
+}
+
+
 ShaderBuilder::ShaderBuilder() {
 }
 

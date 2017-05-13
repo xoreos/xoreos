@@ -28,7 +28,7 @@ namespace Graphics {
 
 namespace Mesh {
 
-Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), _usageCount(0), _vao(0), _centre(), _max(), _min() {
+Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _vertexBuffer(), _indexBuffer(), _type(type), _hint(hint), _usageCount(0), _vao(0), _centre(), _max(), _min() {
 }
 
 Mesh::~Mesh() {

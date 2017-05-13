@@ -532,7 +532,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		meshName += ".";
 		meshName += _name;
 
-		/**
+	/**
 	 * Dirty hack around an issue in KotOR2 where a tile can have multiple meshes
 	 * of exactly the same name. This dirty hack will double up on static objects
 	 * without state, but hopefully they're relatively few and it won't impact
@@ -1052,11 +1052,11 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
 	_mesh->data->initialVertexCoords.resize(3 * ctx.vertexCount);
 
-	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
-	float *iv = &_mesh->data->initialVertexCoords[0];
+	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
+	float *iv = _mesh->data->initialVertexCoords.data();
 
 	for (uint32 i = 0; i < ctx.vertexCount; i++) {
 		// Position
