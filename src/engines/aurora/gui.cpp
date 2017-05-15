@@ -70,6 +70,11 @@ void GUI::show() {
 			widget.show();
 	}
 
+	std::list<GUI*>::iterator iter;
+	for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+		(*iter)->show();
+	}
+
 	GfxMan.unlockFrame();
 }
 
@@ -79,6 +84,11 @@ void GUI::hide() {
 	// Hide all widgets
 	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
 		(*widget)->hide();
+
+	std::list<GUI*>::iterator iter;
+	for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+		(*iter)->hide();
+	}
 
 	GfxMan.unlockFrame();
 }
@@ -96,6 +106,13 @@ uint32 GUI::run(uint32 startCode) {
 	while (_returnCode == kReturnCodeNone) {
 		// Call the periodic run callback
 		callbackRun();
+
+		std::list<GUI*>::iterator iter;
+		// Call the periodic run callback of the children guis
+		for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+			(*iter)->callbackRun();
+		}
+
 		if (_returnCode != kReturnCodeNone)
 			break;
 
@@ -105,10 +122,25 @@ uint32 GUI::run(uint32 startCode) {
 
 		// Handle events
 		Events::Event event;
-		while (EventMan.pollEvent(event))
+		while (EventMan.pollEvent(event)) {
 			addEvent(event);
+			for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+				(*iter)->addEvent(event);
+			}
+		}
 
 		processEventQueue();
+		for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+			(*iter)->processEventQueue();
+		}
+
+		// If the _returnCode changed of a child gui we propagate it to the
+		// main gui
+		for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+			if((*iter)->_returnCode != _returnCode) {
+				_returnCode = (*iter)->_returnCode;
+			}
+		}
 
 		// Delay for a while
 		if (!EventMan.quitRequested() && (_returnCode != kReturnCodeNone))
@@ -184,6 +216,18 @@ void GUI::callbackRun() {
 }
 
 void GUI::callbackActive(Widget &UNUSED(widget)) {
+}
+
+
+void GUI::addChild(GUI* gui)
+{
+	_childrenguis.push_back(gui);
+}
+
+void GUI::removeChild(GUI * gui)
+{
+	gui->hide();
+	_childrenguis.remove(gui);
 }
 
 void GUI::addWidget(Widget *widget) {
