@@ -31,7 +31,6 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/ustring.h"
-#include "src/common/scopedptr.h"
 
 #include "src/events/types.h"
 
@@ -75,6 +74,7 @@ protected:
 
 	GUI *_sub; ///< The currently running sub GUI.
 
+
 	/** Add a widget. */
 	void addWidget(Widget *widget);
 	/** Remove a widget. */
@@ -115,13 +115,15 @@ protected:
 	/** Callback that's triggered when a widget was activated. */
 	virtual void callbackActive(Widget &widget);
 
-	void addChild(GUI*);
-	void removeChild(GUI*);
+	/** Add a child GUI object to this GUI. Ownership of the pointer is not transferred */
+	void addChild(GUI *gui);
+	/** Remove a child GUI object from this. Pointer will not deallocated */
+	void removeChild(GUI *gui);
 private:
 	typedef std::list<Widget *> WidgetList;
 	typedef std::map<Common::UString, Widget *> WidgetMap;
 
-	std::list<GUI*> _childrenguis;
+	std::list<GUI *> _childGUIs;
 
 	WidgetList _widgets;   ///< All widgets in the GUI.
 	WidgetMap  _widgetMap; ///< All widgets in the GUI, index by their tag.

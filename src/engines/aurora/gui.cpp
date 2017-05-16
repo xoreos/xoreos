@@ -70,8 +70,7 @@ void GUI::show() {
 			widget.show();
 	}
 
-	std::list<GUI*>::iterator iter;
-	for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+	for (std::list<GUI *>::iterator iter = _childGUIs.begin(); iter != _childGUIs.end(); ++iter)	{
 		(*iter)->show();
 	}
 
@@ -85,8 +84,7 @@ void GUI::hide() {
 	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget)
 		(*widget)->hide();
 
-	std::list<GUI*>::iterator iter;
-	for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+	for (std::list<GUI *>::iterator iter = _childGUIs.begin(); iter != _childGUIs.end(); ++iter)	{
 		(*iter)->hide();
 	}
 
@@ -104,12 +102,14 @@ uint32 GUI::run(uint32 startCode) {
 
 	// Run as long as we don't have a return code
 	while (_returnCode == kReturnCodeNone) {
+
+		std::list<GUI *> childGUIs = _childGUIs;
+
 		// Call the periodic run callback
 		callbackRun();
 
-		std::list<GUI*>::iterator iter;
 		// Call the periodic run callback of the children guis
-		for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+		for (std::list<GUI *>::iterator iter = childGUIs.begin(); iter != childGUIs.end(); ++iter)	{
 			(*iter)->callbackRun();
 		}
 
@@ -124,20 +124,20 @@ uint32 GUI::run(uint32 startCode) {
 		Events::Event event;
 		while (EventMan.pollEvent(event)) {
 			addEvent(event);
-			for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+			for (std::list<GUI *>::iterator iter = childGUIs.begin(); iter != childGUIs.end(); ++iter)	{
 				(*iter)->addEvent(event);
 			}
 		}
 
 		processEventQueue();
-		for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
+		for (std::list<GUI *>::iterator iter = childGUIs.begin(); iter != childGUIs.end(); ++iter)	{
 			(*iter)->processEventQueue();
 		}
 
 		// If the _returnCode changed of a child gui we propagate it to the
 		// main gui
-		for (iter = _childrenguis.begin(); iter != _childrenguis.end(); iter++)	{
-			if((*iter)->_returnCode != _returnCode) {
+		for (std::list<GUI *>::iterator iter = childGUIs.begin(); iter != childGUIs.end(); ++iter)	{
+			if ((*iter)->_returnCode != _returnCode) {
 				_returnCode = (*iter)->_returnCode;
 			}
 		}
@@ -219,15 +219,14 @@ void GUI::callbackActive(Widget &UNUSED(widget)) {
 }
 
 
-void GUI::addChild(GUI* gui)
-{
-	_childrenguis.push_back(gui);
+void GUI::addChild(GUI *gui) {
+	_childGUIs.push_back(gui);
+	gui->show();
 }
 
-void GUI::removeChild(GUI * gui)
-{
+void GUI::removeChild(GUI *gui) {
 	gui->hide();
-	_childrenguis.remove(gui);
+	_childGUIs.remove(gui);
 }
 
 void GUI::addWidget(Widget *widget) {
