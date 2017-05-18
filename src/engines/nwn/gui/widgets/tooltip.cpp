@@ -117,6 +117,8 @@ void Tooltip::addLine(const Common::UString &text, float r, float g, float b, fl
 		_lines.back().b    = b;
 		_lines.back().a    = a;
 		_lines.back().line = *l;
+		_lines.back().text = new Graphics::Aurora::Text(FontMan.get(getFontName()), *l, r, g, b, a);
+		_lines.back().text->setTag("Tooltip#Text");
 	}
 
 	redoLines(true);
