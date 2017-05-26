@@ -173,7 +173,7 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 
 	Text text = createText(gff);
 
-	if (!text.text.empty() && !text.font.empty()) {
+	if (!text.font.empty()) {
 		_text.reset(new Graphics::Aurora::HighlightableText(FontMan.get(text.font),
 		            text.text, text.r, text.g, text.b, 1.0f));
 
