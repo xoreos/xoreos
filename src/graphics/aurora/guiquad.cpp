@@ -40,7 +40,7 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
-	_xor(false) {
+	_xor(false), _scissor(false) {
 
 	try {
 
@@ -63,7 +63,7 @@ GUIQuad::GUIQuad(TextureHandle texture,
 	_texture(texture), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
-	_xor(false) {
+	_xor(false), _scissor(false) {
 
 	_distance = -FLT_MAX;
 }
@@ -140,6 +140,13 @@ void GUIQuad::setTexture(TextureHandle texture) {
 	unlockFrameIfVisible();
 }
 
+void GUIQuad::setScissor(int x, int y, int width, int height) {
+	_scissorX = x;
+	_scissorY = y;
+	_scissorWidth = width;
+	_scissorHeight = height;
+}
+
 float GUIQuad::getWidth() const {
 	return ABS(_x2 - _x1);
 }
@@ -172,6 +179,14 @@ void GUIQuad::setXOR(bool enabled) {
 	unlockFrameIfVisible();
 }
 
+void GUIQuad::setScissor(bool enabled) {
+	lockFrameIfVisible();
+
+	_scissor = enabled;
+
+	unlockFrameIfVisible();
+}
+
 bool GUIQuad::isIn(float x, float y) const {
 	if ((x < _x1) || (x > _x2))
 		return false;
@@ -199,6 +214,16 @@ void GUIQuad::render(RenderPass pass) {
 		glLogicOp(GL_XOR);
 	}
 
+	if (_scissor) {
+		glEnable(GL_SCISSOR_TEST);
+		GLint viewport[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		glScissor(viewport[2]/2 + _x1 + _scissorX,
+		          viewport[3]/2 + _y1 + _scissorY,
+		          _scissorWidth,
+		          _scissorHeight);
+	}
+
 	glBegin(GL_QUADS);
 		glTexCoord2f(_tX1, _tY1);
 		glVertex2f(_x1, _y1);
@@ -209,6 +234,9 @@ void GUIQuad::render(RenderPass pass) {
 		glTexCoord2f(_tX1, _tY2);
 		glVertex2f(_x1, _y2);
 	glEnd();
+
+	if (_scissor)
+		glDisable(GL_SCISSOR_TEST);
 
 	if (_xor)
 		glDisable(GL_COLOR_LOGIC_OP);
