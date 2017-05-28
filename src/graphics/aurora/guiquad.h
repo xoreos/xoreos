@@ -63,6 +63,9 @@ public:
 	/** Set the current texture of the quad. */
 	void setTexture(TextureHandle texture);
 
+	/** Set the scissor test parameters. */
+	void setScissor(int x, int y, int width, int height);
+
 	float getWidth () const; ///< Return the quad's width.
 	float getHeight() const; ///< Return the quad's height.
 
@@ -70,6 +73,8 @@ public:
 	void setHeight(float h); ///< Set the quad's height.
 
 	void setXOR(bool enabled); ///< Enable/Disable XOR mode.
+
+	void setScissor(bool enabled); ///< Enable/Disable Scissor Test.
 
 	/** Is the point within the quad? */
 	bool isIn(float x, float y) const;
@@ -96,7 +101,13 @@ private:
 	float _tX2;
 	float _tY2;
 
+	int _scissorX;
+	int _scissorY;
+	int _scissorWidth;
+	int _scissorHeight;
+
 	bool _xor;
+	bool _scissor;
 };
 
 } // End of namespace Aurora
