@@ -114,6 +114,8 @@ protected:
 	virtual void callbackRun();
 	/** Callback that's triggered when a widget was activated. */
 	virtual void callbackActive(Widget &widget);
+	/** Callback that's triggered when a widget is hovered or unhovered */
+	virtual void callbackHover(Widget &widget);
 
 	/** Add a child GUI object to this GUI. Ownership of the pointer is not transferred. */
 	void addChild(GUI *gui);
@@ -140,6 +142,7 @@ private:
 
 	void changedWidget(Widget *widget);     ///< The current widget has changed.
 	void checkWidgetActive(Widget *widget); ///< Check if a widget was activated.
+	void checkWidgetHovered(Widget *widget);///< Check if a widget was hovered.
 
 	void mouseMove(const Events::Event &event); ///< Mouse move event triggered.
 	void mouseDown(const Events::Event &event); ///< Mouse down event triggered.
