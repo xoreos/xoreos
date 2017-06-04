@@ -441,9 +441,14 @@ void FoxPro::getDate(const Record &record, size_t field, uint16 &year, uint8 &mo
 	if (f.size != 8)
 			throw Exception("Date field size != 8 (%d)", f.size);
 
+	// Date fields are not 0-terminated, so create a 0-terminated copy for reading
+
+	char tmp[9];
+	memcpy(tmp, record.fields[field], MIN<size_t>(f.size, sizeof(tmp)));
+	tmp[sizeof(tmp) - 1] = '\0';
+
 	uint fieldYear, fieldMonth, fieldDay;
-	if (std::sscanf(reinterpret_cast<const char *>(record.fields[field]),
-	                "%4u%2u%2u", &fieldYear, &fieldMonth, &fieldDay) != 3)
+	if (std::sscanf(tmp, "%4u%2u%2u", &fieldYear, &fieldMonth, &fieldDay) != 3)
 		throw Exception("Failed reading the date");
 
 	year  = fieldYear;
