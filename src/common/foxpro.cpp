@@ -833,10 +833,15 @@ void FoxPro::setDate(size_t record, size_t field, uint16 year, uint8 month, uint
 
 	if (f.type != kTypeDate)
 		throw Exception("Field is not of date type ('%c')", f.type);
+	if (f.size != 8)
+		throw Exception("Date field size != 8 (%d)", f.size);
 
-	char *data = reinterpret_cast<char *>(r.fields[field]);
+	// Date fields are not 0-terminated, so copy the date after creation
 
-	snprintf(data, 8, "%04u%02u%02u", (uint) year, (uint) month, (uint) day);
+	char tmp[12];
+	snprintf(tmp, sizeof(tmp), "%04u%02u%02u", (uint) year, (uint) month, (uint) day);
+
+	memcpy(r.fields[field], tmp, f.size);
 
 	updateUpdate();
 }
