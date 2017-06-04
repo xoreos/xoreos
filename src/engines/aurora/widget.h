@@ -51,6 +51,7 @@ public:
 	bool isVisible  () const; ///< Is the widget visible?
 	bool isDisabled () const; ///< Is the widget disabled?
 	bool isInvisible() const; ///< Is the widget invisible (never visible)?
+	bool isHovered  () const; ///< Is the widget hovered?
 
 	virtual void show(); ///< Show the widget.
 	virtual void hide(); ///< Hide the widget.
@@ -119,13 +120,15 @@ protected:
 	/** A fellow group member signaled that it is now active. */
 	virtual void signalGroupMemberActive();
 
-	void setActive(bool active); ///< The widget's active state.
+	void setActive(bool active);       ///< The widget's active state.
+	void setHovered(bool hovered);     ///< The widget's hovered state.
 
 private:
 	bool _active;    ///< Was the widget activated?
 	bool _visible;   ///< Is the widget visible?
 	bool _disabled;  ///< Is the widget disabled?
 	bool _invisible; ///< Is the widget invisible (never visible)?
+	bool _hovered;   ///< Is the widget hovered?
 
 	float _x; ///< The widget X position.
 	float _y; ///< The widget Y position.

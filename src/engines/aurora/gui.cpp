@@ -217,6 +217,9 @@ void GUI::callbackRun() {
 void GUI::callbackActive(Widget &UNUSED(widget)) {
 }
 
+void GUI::callbackHover(Widget &UNUSED(widget)) {
+}
+
 
 void GUI::addChild(GUI *gui) {
 	_childGUIs.push_back(gui);
@@ -451,6 +454,16 @@ void GUI::checkWidgetActive(Widget *widget) {
 	widget->setActive(false);
 }
 
+void GUI::checkWidgetHovered(Widget *widget) {
+	if (!widget)
+		return;
+
+	if (widget->isHovered()) {
+		callbackHover(*widget);
+		widget->setHovered(false);
+	}
+}
+
 void GUI::mouseMove(const Events::Event &event) {
 	Widget *widget = getWidgetAt(event.motion.x, event.motion.y);
 
@@ -463,6 +476,8 @@ void GUI::mouseMove(const Events::Event &event) {
 		// Moves without a mouse button can change the current widget
 		if (widget != _currentWidget)
 			changedWidget(widget);
+
+	checkWidgetHovered(_currentWidget);
 }
 
 void GUI::mouseDown(const Events::Event &event) {

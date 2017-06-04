@@ -33,7 +33,7 @@ namespace Engines {
 
 Widget::Widget(GUI &gui, const Common::UString &tag) : _gui(&gui), _tag(tag),
 	_parent(0), _owner(0),
-	_active(false), _visible(false), _disabled(false), _invisible(false),
+	_active(false), _visible(false), _disabled(false), _invisible(false), _hovered(false),
 	_x(0.0f), _y(0.0f), _z(0.0f),
 	_lastClickButton(0), _lastClickTime(0), _lastClickX(0.0f), _lastClickY(0.0f) {
 
@@ -66,6 +66,10 @@ bool Widget::isDisabled() const {
 
 bool Widget::isInvisible() const {
 	return _invisible;
+}
+
+bool Widget::isHovered() const {
+	return _hovered;
 }
 
 void Widget::show() {
@@ -276,6 +280,10 @@ void Widget::setActive(bool active) {
 	if (_active)
 		for (std::list<Widget *>::iterator it = _groupMembers.begin(); it != _groupMembers.end(); ++it)
 			(*it)->signalGroupMemberActive();
+}
+
+void Widget::setHovered(bool hovered) {
+	_hovered = hovered;
 }
 
 } // End of namespace Engines
