@@ -114,6 +114,12 @@ void Cursor::load() {
 
 	TXI *txi = new TXI();
 	txi->getFeatures().filter = false;
+	
+	//if we need DeS3TC, we decompress the cursor image
+	if(GfxMan.needManualDeS3TC())
+	{
+		image->decompress();
+	}
 
 	// If we need manual DeS3TC, we decompress the cursor image
 	if (GfxMan.needManualDeS3TC()) {
