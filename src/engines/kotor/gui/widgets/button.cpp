@@ -40,10 +40,25 @@ namespace Engines {
 namespace KotOR {
 
 WidgetButton::WidgetButton(::Engines::GUI &gui, const Common::UString &tag) :
-	KotORWidget(gui, tag) {
+	KotORWidget(gui, tag),
+	_permanentHighlight(false) {
 }
 
 WidgetButton::~WidgetButton() {
+}
+
+void WidgetButton::setPermanentHighlight(bool permanentHighlight) {
+	_permanentHighlight = permanentHighlight;
+
+	if (_permanentHighlight) {
+		startHighlight();
+	} else {
+		stopHighlight();
+	}
+}
+
+void WidgetButton::setDisableHoverSound(bool disableHoverSound) {
+	_disableHoverSound = disableHoverSound;
 }
 
 void WidgetButton::load(const Aurora::GFF3Struct &gff) {
@@ -65,8 +80,26 @@ void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)
 }
 
 void WidgetButton::enter() {
+	if (!_disableHoverSound)
+		_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
+
+	if (!_permanentHighlight) {
+		startHighlight();
+	}
+}
+
+void WidgetButton::leave() {
+	if (!_disableHoverSound)
+		SoundMan.stopChannel(_sound);
+
+	if (!_permanentHighlight) {
+		stopHighlight();
+	}
+}
+
+void WidgetButton::startHighlight() {
 	float r, g, b, a;
-	_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
+
 	if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
 		_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 		_text->getHighlightedLowerBound(r, g, b, a);
@@ -80,11 +113,9 @@ void WidgetButton::enter() {
 		_quad->setColor(r, g, b, a);
 		getQuadHighlightableComponent()->setHighlighted(true);
 	}
-
 }
 
-void WidgetButton::leave() {
-	SoundMan.stopChannel(_sound);
+void WidgetButton::stopHighlight() {
 	if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
 		_text->setHighlighted(false);
 		_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
