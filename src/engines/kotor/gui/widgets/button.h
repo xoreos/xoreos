@@ -39,6 +39,7 @@ public:
 	~WidgetButton();
 
     void setPermanentHighlight(bool);
+	void setDisableHoverSound(bool);
 
 	virtual void load(const Aurora::GFF3Struct &gff);
 
@@ -53,6 +54,7 @@ private:
 	void stopHighlight();
 
 	bool _permanentHighlight;
+	bool _disableHoverSound;
 
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 	Sound::ChannelHandle _sound;

@@ -57,6 +57,10 @@ void WidgetButton::setPermanentHighlight(bool permanentHighlight) {
 	}
 }
 
+void WidgetButton::setDisableHoverSound(bool disableHoverSound) {
+	_disableHoverSound = disableHoverSound;
+}
+
 void WidgetButton::load(const Aurora::GFF3Struct &gff) {
 	KotORWidget::load(gff);
 	if (getTextHighlightableComponent() != 0) {
@@ -76,17 +80,19 @@ void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)
 }
 
 void WidgetButton::enter() {
-	_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
+	if (!_disableHoverSound)
+		_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
 
-	if(!_permanentHighlight) {
+	if (!_permanentHighlight) {
 		startHighlight();
 	}
 }
 
 void WidgetButton::leave() {
-	SoundMan.stopChannel(_sound);
+	if (!_disableHoverSound)
+		SoundMan.stopChannel(_sound);
 
-	if(!_permanentHighlight) {
+	if (!_permanentHighlight) {
 		stopHighlight();
 	}
 }
