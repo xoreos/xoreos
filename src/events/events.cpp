@@ -283,14 +283,16 @@ void EventsManager::enableTextInput(bool textInput) {
 	if (!textInput && _textInputCounter == 0)
 		throw Common::Exception("EventsManager::enableTextInput(): Counter underrun");
 
-	if (textInput) {
-		if (_textInputCounter == 0)
-			SDL_StartTextInput();
+	if(textInput) {
 		_textInputCounter++;
 	} else {
-		if (_textInputCounter == 1)
-			SDL_StopTextInput();
-		_textInputCounter--;
+		_textInputCounter--;	
+	}
+	
+ 	if (_textInputCounter > 0) {
+ 		SDL_StartTextInput();
+ 	} else {
+		SDL_StopTextInput();
 	}
 }
 
