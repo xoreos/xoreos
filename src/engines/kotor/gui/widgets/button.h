@@ -38,6 +38,8 @@ public:
 	WidgetButton(::Engines::GUI &gui, const Common::UString &tag);
 	~WidgetButton();
 
+    void setPermanentHighlight(bool);
+
 	virtual void load(const Aurora::GFF3Struct &gff);
 
 	void mouseUp(uint8 state, float x, float y);
@@ -47,6 +49,10 @@ public:
 	virtual void leave();
 
 private:
+	void startHighlight();
+	void stopHighlight();
+
+	bool _permanentHighlight;
 
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 	Sound::ChannelHandle _sound;
