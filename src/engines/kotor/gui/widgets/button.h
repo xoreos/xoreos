@@ -45,6 +45,8 @@ public:
 
 	void mouseUp(uint8 state, float x, float y);
 
+	bool isHovered();
+
 	virtual void enter();
 
 	virtual void leave();
@@ -55,6 +57,8 @@ private:
 
 	Sound::ChannelHandle _sound;
 	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
+
+	bool _hovered;
 
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 

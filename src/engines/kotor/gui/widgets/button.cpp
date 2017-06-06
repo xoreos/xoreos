@@ -40,7 +40,7 @@ namespace Engines {
 namespace KotOR {
 
 WidgetButton::WidgetButton(::Engines::GUI &gui, const Common::UString &tag) :
-	KotORWidget(gui, tag), _permanentHighlight(false) {
+	KotORWidget(gui, tag), _permanentHighlight(false), _hovered(false) {
 }
 
 WidgetButton::~WidgetButton() {
@@ -70,6 +70,10 @@ void WidgetButton::load(const Aurora::GFF3Struct &gff) {
 	}
 }
 
+bool WidgetButton::isHovered() {
+	return _hovered;
+}
+
 void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
@@ -85,6 +89,9 @@ void WidgetButton::enter() {
 	if (!_permanentHighlight) {
 		startHighlight();
 	}
+
+	// The button is hovered at the moment
+	_hovered = true;
 }
 
 void WidgetButton::leave() {
@@ -94,6 +101,9 @@ void WidgetButton::leave() {
 	if (!_permanentHighlight) {
 		stopHighlight();
 	}
+
+	// The buttone is not hovered anymore
+	_hovered = false;
 }
 
 void WidgetButton::startHighlight() {
