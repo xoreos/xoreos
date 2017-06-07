@@ -57,7 +57,7 @@ KotORWidget::Text::Text() : strRef(Aurora::kStrRefInvalid), halign(0.0f), valign
 
 
 KotORWidget::KotORWidget(::Engines::GUI &gui, const Common::UString &tag) :
-	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {
+	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _wrapped(false) {
 
 }
 
@@ -86,6 +86,10 @@ void KotORWidget::hide() {
 		_text->hide();
 
 	Widget::hide();
+}
+
+void KotORWidget::setWrapped(bool wrapped) {
+	_wrapped = wrapped;
 }
 
 void KotORWidget::setTag(const Common::UString &tag) {
@@ -201,7 +205,11 @@ void KotORWidget::setText(const Common::UString &text) {
 
 		const float halign = (textX - extendX) / (_width - _text->getWidth());
 		const float valign = (textY - extendY) / (_height - _text->getHeight());
-		 _text->set(text);
+
+		if (_wrapped)
+			_text->set(text, _width);
+		else
+			_text->set(text);
 
 		const float hspan = _width - _text->getWidth();
 		const float vspan = _height - _text->getHeight();
