@@ -20,7 +20,9 @@
 # Character generation menu in Star Wars: Knights of the Old Republic.
 
 src_engines_kotor_libkotor_la_SOURCES += \
+    src/engines/kotor/gui/chargen/classselection.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
+    src/engines/kotor/gui/chargen/classselection.cpp \
     $(EMPTY)

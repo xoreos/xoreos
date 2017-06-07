@@ -142,7 +142,7 @@ void Game::stopMusic() {
 }
 
 void Game::mainMenu() {
-	playMenuMusic();
+	//playMenuMusic();
 
 	EventMan.flushEvents();
 
@@ -158,7 +158,7 @@ void Game::mainMenu() {
 	_console->enableCommand("loadmodule");
 	_console->enableCommand("exitmodule");
 
-	stopMenuMusic();
+	//stopMenuMusic();
 }
 
 void Game::getModules(std::vector<Common::UString> &modules) {
