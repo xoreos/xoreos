@@ -142,8 +142,6 @@ void Game::stopMusic() {
 }
 
 void Game::mainMenu() {
-	playMenuMusic();
-
 	EventMan.flushEvents();
 
 	MainMenu menu(*_module, _platform == Aurora::kPlatformXbox, _console);
@@ -157,8 +155,6 @@ void Game::mainMenu() {
 
 	_console->enableCommand("loadmodule");
 	_console->enableCommand("exitmodule");
-
-	stopMenuMusic();
 }
 
 void Game::getModules(std::vector<Common::UString> &modules) {

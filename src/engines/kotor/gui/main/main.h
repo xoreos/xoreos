@@ -49,9 +49,17 @@ private:
 	Module *_module;
 	bool _isXbox;
 
+	Common::ScopedPtr<GUI> _classSelection;
 	Common::ScopedPtr<GUI> _movies;
 	Common::ScopedPtr<GUI> _options;
 
+	Sound::ChannelHandle _menuMusic;
+
+	void startMainMusic();
+	void startCharGenMusic();
+	void stopMenuMusic();
+
+	void createClassSelection();
 	void createMovies();
 	void createOptions();
 };
