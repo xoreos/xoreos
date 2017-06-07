@@ -51,6 +51,8 @@ public:
 	void show();
 	void hide();
 
+	void setWrapped(bool wrapped);
+
 	void setTag(const Common::UString &tag);
 
 	void setPosition(float x, float y, float z);
@@ -113,6 +115,8 @@ protected:
 	float _g;
 	float _b;
 	float _a;
+
+	bool _wrapped;
 
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad>           _quad;
 	Common::ScopedPtr<Graphics::Aurora::HighlightableText> _text;
