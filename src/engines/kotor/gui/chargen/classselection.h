@@ -40,8 +40,12 @@ public:
 	ClassSelectionMenu(Module *module, ::Engines::Console *console = 0);
 
 private:
+	void createCharacterGeneration();
+
 	void callbackRun();
 	void callbackActive(Widget &widget);
+
+	Common::ScopedPtr<GUI> _charGen;
 
 	WidgetLabel *_labelDesc;
 	WidgetLabel *_labelTitle;

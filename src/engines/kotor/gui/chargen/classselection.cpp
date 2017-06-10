@@ -26,6 +26,7 @@
 
 #include "src/engines/kotor/gui/chargen/classselection.h"
 #include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/chargen/charactergeneration.h"
 
 namespace Engines {
 
@@ -70,6 +71,13 @@ ClassSelectionMenu::ClassSelectionMenu(Module *module, ::Engines::Console *conso
 	_scoutFemaleTitle = femalePrefix + " " + TalkMan.getString(133);
 	_scoundrelMaleTitle = malePrefix + " " + TalkMan.getString(135);
 	_scoundrelFemaleTitle = femalePrefix + " " + TalkMan.getString(135);
+}
+
+void ClassSelectionMenu::createCharacterGeneration() {
+	if(_charGen)
+		return;
+
+	_charGen.reset(new CharacterGenerationMenu(_module));
 }
 
 void ClassSelectionMenu::callbackRun() {
@@ -119,18 +127,30 @@ void ClassSelectionMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-	// TODO: add class specific character generation code
+	// start the character generation with
 	if (widget.getTag() == "BTN_SEL1") {
+		createCharacterGeneration();
+		sub(*_charGen);
 	}
 	if (widget.getTag() == "BTN_SEL2") {
+		createCharacterGeneration();
+		sub(*_charGen);
 	}
 	if (widget.getTag() == "BTN_SEL3") {
+		createCharacterGeneration();
+		sub(*_charGen);
 	}
 	if (widget.getTag() == "BTN_SEL4") {
+		createCharacterGeneration();
+		sub(*_charGen);
 	}
 	if (widget.getTag() == "BTN_SEL5") {
+		createCharacterGeneration();
+		sub(*_charGen);
 	}
 	if (widget.getTag() == "BTN_SEL6") {
+		createCharacterGeneration();
+		sub(*_charGen);
 	}
 }
 
