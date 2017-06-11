@@ -57,6 +57,9 @@ public:
 
 	void setPosition(float x, float y, float z);
 
+	/** Create a scissor test over this widget. */
+	void setScissor(int x, int y, int width, int height);
+
 	float getWidth () const;
 	float getHeight() const;
 
