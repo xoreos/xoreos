@@ -23,12 +23,15 @@
  */
 
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
+#include "src/engines/kotor/gui/chargen/quickorcustom.h"
+#include "src/engines/kotor/gui/chargen/quickchar.h"
+#include "src/engines/kotor/gui/chargen/customchar.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-CharacterGenerationMenu::CharacterGenerationMenu(Module *UNUSED(module), Console *console) : GUI(console) {
+CharacterGenerationMenu::CharacterGenerationMenu(Module *module, Console *console) : GUI(console) {
 	load("maincg");
 
 	addBackground(kBackgroundTypeMenu);
@@ -48,6 +51,41 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *UNUSED(module), Console
 
 	getWidget("LBL_LEVEL_VAL")->setInvisible(true);
 	getWidget("LBL_LEVEL")->setInvisible(true);
+
+	showQuickOrCustom();
+}
+
+CharacterGenerationMenu::~CharacterGenerationMenu() {
+}
+
+void CharacterGenerationMenu::showQuickOrCustom() {
+	if (_quickChar)
+		removeChild(_quickChar.get());
+	if (_customChar)
+		removeChild(_customChar.get());
+
+	_quickOrCustom.reset(new QuickOrCustomPanel(this));
+	addChild(_quickOrCustom.get());
+}
+
+void CharacterGenerationMenu::showQuick() {
+	if (_quickOrCustom)
+		removeChild(_quickOrCustom.get());
+	if (_customChar)
+		removeChild(_customChar.get());
+
+	_quickChar.reset(new QuickCharPanel(this));
+	addChild(_quickChar.get());
+}
+
+void CharacterGenerationMenu::showCustom() {
+	if(_quickOrCustom)
+		removeChild(_quickOrCustom.get());
+	if(_quickChar)
+		removeChild(_quickChar.get());
+
+	_customChar.reset(new CustomCharPanel(this));
+	addChild(_customChar.get());
 }
 
 } // End of namespace KotOR

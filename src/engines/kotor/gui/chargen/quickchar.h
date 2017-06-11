@@ -19,37 +19,31 @@
  */
 
 /** @file
- *  The primary character generation menu.
+ *  The panel to customize a custom character.
  */
 
-#ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
-#define ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
+#ifndef ENGINES_KOTOR_GUI_CHARGEN_QUICKCHAR_H
+#define ENGINES_KOTOR_GUI_CHARGEN_QUICKCHAR_H
 
-#include "src/engines/kotor/module.h"
 #include "src/engines/kotor/gui/gui.h"
-#include "src/engines/kotor/gui/chargen/classselection.h"
+#include "src/engines/kotor/gui/chargen/charactergeneration.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class CharacterGenerationMenu : public GUI {
+class QuickCharPanel : public GUI {
 public:
-	CharacterGenerationMenu(Module *module, ::Engines::Console *console = 0);
-	~CharacterGenerationMenu();
-
-	void showQuickOrCustom();
-	void showQuick();
-	void showCustom();
+	QuickCharPanel(CharacterGenerationMenu *charGenMenu, Console *console = 0);
 
 private:
-	Common::ScopedPtr<GUI> _quickOrCustom;
-	Common::ScopedPtr<GUI> _quickChar;
-	Common::ScopedPtr<GUI> _customChar;
+	void callbackActive(Widget &widget);
+
+	CharacterGenerationMenu *_charGen;
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
+#endif // ENGINES_KOTOR_GUI_CHARGEN_QUICKCHAR_H

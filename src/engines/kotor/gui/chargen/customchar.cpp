@@ -19,37 +19,34 @@
  */
 
 /** @file
- *  The primary character generation menu.
+ *  The panel to customize a quick character.
  */
-
-#ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
-#define ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
-
-#include "src/engines/kotor/module.h"
-#include "src/engines/kotor/gui/gui.h"
-#include "src/engines/kotor/gui/chargen/classselection.h"
+#include "src/engines/kotor/gui/chargen/customchar.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class CharacterGenerationMenu : public GUI {
-public:
-	CharacterGenerationMenu(Module *module, ::Engines::Console *console = 0);
-	~CharacterGenerationMenu();
+CustomCharPanel::CustomCharPanel(CharacterGenerationMenu *charGenMenu, Console *console) :
+		GUI(console), _charGen(charGenMenu) {
 
-	void showQuickOrCustom();
-	void showQuick();
-	void showCustom();
+	load("custpnl");
 
-private:
-	Common::ScopedPtr<GUI> _quickOrCustom;
-	Common::ScopedPtr<GUI> _quickChar;
-	Common::ScopedPtr<GUI> _customChar;
-};
+	setPosition(137, 16, 0);
+
+	float width, height;
+	width = getLabel("LBL_BG")->getWidth();
+	height = getLabel("LBL_BG")->getHeight();
+	getLabel("LBL_BG")->setScissor(5, 40, width-5, height-60);
+}
+
+void CustomCharPanel::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_CANCEL") {
+		_charGen->showQuickOrCustom();
+		return;
+	}
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
