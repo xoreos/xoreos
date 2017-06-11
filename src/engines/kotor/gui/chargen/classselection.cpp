@@ -76,9 +76,6 @@ ClassSelectionMenu::ClassSelectionMenu(Module *module, ::Engines::Console *conso
 }
 
 void ClassSelectionMenu::createCharacterGeneration() {
-	if(_charGen)
-		return;
-
 	_charGen.reset(new CharacterGenerationMenu(_module));
 }
 
