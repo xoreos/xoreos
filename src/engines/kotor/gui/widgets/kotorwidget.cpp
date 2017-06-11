@@ -123,6 +123,11 @@ void KotORWidget::setPosition(float x, float y, float z) {
 	}
 }
 
+void KotORWidget::setScissor(int x, int y, int width, int height) {
+	_quad->setScissor(true);
+	_quad->setScissor(x, y, width, height);
+}
+
 float KotORWidget::getWidth() const {
 	return _width;
 }

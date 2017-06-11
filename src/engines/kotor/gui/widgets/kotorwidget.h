@@ -56,6 +56,7 @@ public:
 	void setTag(const Common::UString &tag);
 
 	void setPosition(float x, float y, float z);
+	void setScissor(int x, int y, int width, int height); //< create a scissor test over this widget
 
 	float getWidth () const;
 	float getHeight() const;
