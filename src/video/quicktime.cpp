@@ -159,7 +159,7 @@ void QuickTimeDecoder::load() {
 
 	// Initialize video codec, if present
 	for (size_t i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
-		dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[i]).initCodec(*_surface);
+		dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[i]).initCodec();
 }
 
 QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uint32 format) {
@@ -1024,7 +1024,7 @@ QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::Track *pare
 QuickTimeDecoder::VideoSampleDesc::~VideoSampleDesc() {
 }
 
-void QuickTimeDecoder::VideoSampleDesc::initCodec(Graphics::Surface &UNUSED(surface)) {
+void QuickTimeDecoder::VideoSampleDesc::initCodec() {
 	if (_codecTag == MKTAG('m', 'p', '4', 'v')) {
 		Common::UString videoType;
 

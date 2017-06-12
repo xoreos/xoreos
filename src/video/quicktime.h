@@ -158,7 +158,7 @@ private:
 		VideoSampleDesc(Track *parentTrack, uint32 codecTag);
 		~VideoSampleDesc();
 
-		void initCodec(Graphics::Surface &surface);
+		void initCodec();
 
 		// TODO: Make private in the long run
 		uint16 _bitsPerSample;
