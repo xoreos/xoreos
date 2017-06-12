@@ -1024,7 +1024,7 @@ QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::Track *pare
 QuickTimeDecoder::VideoSampleDesc::~VideoSampleDesc() {
 }
 
-void QuickTimeDecoder::VideoSampleDesc::initCodec(Graphics::Surface &surface) {
+void QuickTimeDecoder::VideoSampleDesc::initCodec(Graphics::Surface &UNUSED(surface)) {
 	if (_codecTag == MKTAG('m', 'p', '4', 'v')) {
 		Common::UString videoType;
 
@@ -1033,9 +1033,12 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec(Graphics::Surface &surface) {
 		case 0x20:
 			videoType = "h.263";
 
-			_videoCodec.reset(new H263Codec(_parentTrack->width, _parentTrack->height));
-			if (_parentTrack->extraData)
-				_videoCodec->decodeFrame(surface, *_parentTrack->extraData);
+			if (!_parentTrack->extraData) {
+				warning("Missing h.263 extra data; cannot decode");
+				break;
+			}
+
+			_videoCodec.reset(new H263Codec(_parentTrack->width, _parentTrack->height, *_parentTrack->extraData));
 			break;
 
 		default:

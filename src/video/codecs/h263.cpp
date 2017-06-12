@@ -38,7 +38,7 @@
 
 namespace Video {
 
-H263Codec::H263Codec(uint32 width, uint32 height) : _width(width), _height(height) {
+H263Codec::H263Codec(uint32 width, uint32 height, Common::SeekableReadStream &extraData) : _width(width), _height(height) {
 	xvid_gbl_init_t xvid_gbl_init;
 	std::memset(&xvid_gbl_init, 0, sizeof(xvid_gbl_init_t));
 	xvid_gbl_init.version = XVID_VERSION;
@@ -54,13 +54,18 @@ H263Codec::H263Codec(uint32 width, uint32 height) : _width(width), _height(heigh
 		error("Could not initialize xvid decoder");
 
 	_decHandle = xvid_dec_create.handle;
+
+	// Run the first extra data through the frame decoder, but don't bother
+	// decoding to a surface.
+	extraData.seek(0);
+	decodeInternal(extraData);
 }
 
 H263Codec::~H263Codec() {
 	xvid_decore(_decHandle, XVID_DEC_DESTROY, 0, 0);
 }
 
-void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream) {
+void H263Codec::decodeInternal(Common::SeekableReadStream &dataStream, Graphics::Surface *surface) {
 	// NOTE: When asking libxvidcore to decode the video into BGRA, it fills the alpha
 	//       values with 0x00, rendering the output invisible (!).
 	//       Since we, surprise, actually want to see the video, we would have to pass
@@ -87,15 +92,20 @@ void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStre
 	if ((dataSize - c) > 1)
 		warning("H263Codec::decodeFrame(): %u bytes left in frame", (uint)(dataSize - c));
 
-	if (xvid_dec_frame.output.plane[0] &&
+	if (surface &&
+	    xvid_dec_frame.output.plane[0] &&
 	    xvid_dec_frame.output.plane[1] &&
 	    xvid_dec_frame.output.plane[2])
 		YUVToRGBMan.convert420(Graphics::YUVToRGBManager::kScaleFull,
-				surface.getData(), surface.getWidth() * 4,
+				surface->getData(), surface->getWidth() * 4,
 				static_cast<const byte *>(xvid_dec_frame.output.plane[0]),
 				static_cast<const byte *>(xvid_dec_frame.output.plane[1]),
 				static_cast<const byte *>(xvid_dec_frame.output.plane[2]), _width, _height,
 				xvid_dec_frame.output.stride[0], xvid_dec_frame.output.stride[1]);
+}
+
+void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream) {
+	decodeInternal(dataStream, &surface);
 }
 
 } // End of namespace Video

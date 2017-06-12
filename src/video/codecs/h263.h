@@ -33,7 +33,7 @@ namespace Video {
 
 class H263Codec : public Codec {
 public:
-	H263Codec(uint32 width, uint32 height);
+	H263Codec(uint32 width, uint32 height, Common::SeekableReadStream &extraData);
 	~H263Codec();
 
 	void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream);
@@ -43,6 +43,11 @@ private:
 	uint32 _height;
 
 	void *_decHandle;
+
+	/**
+	 * Internal decode function
+	 */
+	void decodeInternal(Common::SeekableReadStream &dataStream, Graphics::Surface *surface = 0);
 };
 
 } // End of namespace Video
