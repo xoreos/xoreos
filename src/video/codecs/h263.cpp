@@ -29,14 +29,37 @@
 #include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
+#include "src/common/types.h"
 
 #include "src/graphics/yuv_to_rgb.h"
 
 #include "src/graphics/images/surface.h"
 
+#include "src/video/codecs/codec.h"
 #include "src/video/codecs/h263.h"
 
 namespace Video {
+
+namespace {
+
+class H263Codec : public Codec {
+public:
+	H263Codec(uint32 width, uint32 height, Common::SeekableReadStream &extraData);
+	~H263Codec();
+
+	void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream);
+
+private:
+	uint32 _width;
+	uint32 _height;
+
+	void *_decHandle;
+
+	/**
+	 * Internal decode function
+	 */
+	void decodeInternal(Common::SeekableReadStream &dataStream, Graphics::Surface *surface = 0);
+};
 
 H263Codec::H263Codec(uint32 width, uint32 height, Common::SeekableReadStream &extraData) : _width(width), _height(height) {
 	xvid_gbl_init_t xvid_gbl_init;
@@ -106,6 +129,12 @@ void H263Codec::decodeInternal(Common::SeekableReadStream &dataStream, Graphics:
 
 void H263Codec::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream) {
 	decodeInternal(dataStream, &surface);
+}
+
+} // End of anonymous namespace
+
+Codec *makeH263Codec(int width, int height, Common::SeekableReadStream &extraData) {
+	return new H263Codec(width, height, extraData);
 }
 
 } // End of namespace Video

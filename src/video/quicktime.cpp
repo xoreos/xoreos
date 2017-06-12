@@ -61,11 +61,13 @@
 #include "src/common/memwritestream.h"
 
 #include "src/video/quicktime.h"
+#include "src/video/codecs/codec.h"
 
 #include "src/sound/audiostream.h"
 #include "src/sound/decoders/codec.h"
 
 #include "src/events/events.h"
+
 
 // Audio codecs
 #include "src/sound/decoders/aac.h"
@@ -1038,7 +1040,7 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec() {
 				break;
 			}
 
-			_videoCodec.reset(new H263Codec(_parentTrack->width, _parentTrack->height, *_parentTrack->extraData));
+			_videoCodec.reset(makeH263Codec(_parentTrack->width, _parentTrack->height, *_parentTrack->extraData));
 			break;
 
 		default:

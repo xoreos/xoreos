@@ -25,30 +25,18 @@
 #ifndef VIDEO_CODECS_H263_H
 #define VIDEO_CODECS_H263_H
 
-#include "src/common/types.h"
-
-#include "src/video/codecs/codec.h"
+namespace Common {
+class SeekableReadStream;
+} // End of namespace Common
 
 namespace Video {
 
-class H263Codec : public Codec {
-public:
-	H263Codec(uint32 width, uint32 height, Common::SeekableReadStream &extraData);
-	~H263Codec();
+class Codec;
 
-	void decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &dataStream);
-
-private:
-	uint32 _width;
-	uint32 _height;
-
-	void *_decHandle;
-
-	/**
-	 * Internal decode function
-	 */
-	void decodeInternal(Common::SeekableReadStream &dataStream, Graphics::Surface *surface = 0);
-};
+/**
+ * Create a Codec capable of decoding h.263 frames
+ */
+Codec *makeH263Codec(int width, int height, Common::SeekableReadStream &extraData);
 
 } // End of namespace Video
 
