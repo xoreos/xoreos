@@ -73,8 +73,10 @@ H263Codec::H263Codec(uint32 width, uint32 height, Common::SeekableReadStream &ex
 	xvid_dec_create.version = XVID_VERSION;
 	xvid_dec_create.width = width;
 	xvid_dec_create.height = height;
-	if (xvid_decore(0, XVID_DEC_CREATE, &xvid_dec_create, 0) != 0)
-		error("Could not initialize xvid decoder");
+
+	int result = xvid_decore(0, XVID_DEC_CREATE, &xvid_dec_create, 0);
+	if (result != 0)
+		throw Common::Exception("H263Codec::H263Codec(): Failed to create the decore context: %d", result);
 
 	_decHandle = xvid_dec_create.handle;
 
@@ -111,9 +113,9 @@ void H263Codec::decodeInternal(Common::SeekableReadStream &dataStream, Graphics:
 	std::memset(&xvid_dec_stats, 0, sizeof(xvid_dec_stats_t));
 	xvid_dec_stats.version = XVID_VERSION;
 
-	int c = xvid_decore(_decHandle, XVID_DEC_DECODE, &xvid_dec_frame, &xvid_dec_stats);
-	if ((dataSize - c) > 1)
-		warning("H263Codec::decodeFrame(): %u bytes left in frame", (uint)(dataSize - c));
+	int result = xvid_decore(_decHandle, XVID_DEC_DECODE, &xvid_dec_frame, &xvid_dec_stats);
+	if (result < 0)
+		throw Common::Exception("H263Codec::decodeFrame(): Failed to decode frame: %d", result);
 
 	if (surface &&
 	    xvid_dec_frame.output.plane[0] &&
