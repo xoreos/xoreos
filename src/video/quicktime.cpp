@@ -1027,6 +1027,8 @@ QuickTimeDecoder::VideoSampleDesc::~VideoSampleDesc() {
 }
 
 void QuickTimeDecoder::VideoSampleDesc::initCodec() {
+	_videoCodec.reset();
+
 	if (_codecTag == MKTAG('m', 'p', '4', 'v')) {
 		Common::UString videoType;
 
