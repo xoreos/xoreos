@@ -27,6 +27,7 @@
 #include "src/engines/kotor/gui/chargen/classselection.h"
 #include "src/engines/kotor/gui/widgets/kotorwidget.h"
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
+#include "src/engines/kotor/creature.h"
 
 namespace Engines {
 
@@ -71,10 +72,28 @@ ClassSelectionMenu::ClassSelectionMenu(Module *module, ::Engines::Console *conso
 	_scoutFemaleTitle = femalePrefix + " " + TalkMan.getString(133);
 	_scoundrelMaleTitle = malePrefix + " " + TalkMan.getString(135);
 	_scoundrelFemaleTitle = femalePrefix + " " + TalkMan.getString(135);
+
+	// Create the random Characters
+	_maleSoldier = CharacterGenerationInfo::createRandomMaleSoldier();
+	_maleScout = CharacterGenerationInfo::createRandomMaleScout();
+	_maleScoundrel = CharacterGenerationInfo::createRandomMaleScoundrel();
+	_femaleSoldier = CharacterGenerationInfo::createRandomFemaleSoldier();
+	_femaleScout = CharacterGenerationInfo::createRandomFemaleScout();
+	_femaleScoundrel = CharacterGenerationInfo::createRandomFemaleScoundrel();
 }
 
-void ClassSelectionMenu::createCharacterGeneration() {
-	_charGen.reset(new CharacterGenerationMenu(_module));
+ClassSelectionMenu::~ClassSelectionMenu()
+{
+	delete _maleSoldier;
+	delete _maleScout;
+	delete _maleScoundrel;
+	delete _femaleSoldier;
+	delete _femaleScout;
+	delete _femaleScoundrel;
+}
+
+void ClassSelectionMenu::createCharacterGeneration(CharacterGenerationInfo* info) {
+	_charGen.reset(new CharacterGenerationMenu(_module, info));
 }
 
 void ClassSelectionMenu::callbackRun() {
@@ -124,30 +143,42 @@ void ClassSelectionMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-	// start the character generation with
+	// Start the character generation with
 	if (widget.getTag() == "BTN_SEL1") {
-		createCharacterGeneration();
-		sub(*_charGen);
+		createCharacterGeneration(_maleScoundrel);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
 	}
 	if (widget.getTag() == "BTN_SEL2") {
-		createCharacterGeneration();
-		sub(*_charGen);
+		createCharacterGeneration(_maleScout);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
 	}
 	if (widget.getTag() == "BTN_SEL3") {
-		createCharacterGeneration();
-		sub(*_charGen);
+		createCharacterGeneration(_maleSoldier);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
 	}
 	if (widget.getTag() == "BTN_SEL4") {
-		createCharacterGeneration();
-		sub(*_charGen);
+		createCharacterGeneration(_femaleSoldier);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
 	}
 	if (widget.getTag() == "BTN_SEL5") {
-		createCharacterGeneration();
-		sub(*_charGen);
+		createCharacterGeneration(_femaleScout);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
 	}
 	if (widget.getTag() == "BTN_SEL6") {
-		createCharacterGeneration();
-		sub(*_charGen);
+		createCharacterGeneration(_femaleScoundrel);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
 	}
 }
 

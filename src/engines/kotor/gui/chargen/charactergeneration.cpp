@@ -22,17 +22,27 @@
  *  The primary character generation menu.
  */
 
+#include "src/aurora/talkman.h"
+
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
 #include "src/engines/kotor/gui/chargen/quickorcustom.h"
 #include "src/engines/kotor/gui/chargen/quickchar.h"
 #include "src/engines/kotor/gui/chargen/customchar.h"
 
+#include "chargenportrait.h"
+#include "chargenname.h"
+
 namespace Engines {
 
 namespace KotOR {
 
-CharacterGenerationMenu::CharacterGenerationMenu(Module *module, Console *console) : GUI(console) {
+CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenerationInfo *pc, Console *console) :
+		GUI(console) {
 	load("maincg");
+
+	_step = 0;
+	_module = module;
+	_pc = pc;
 
 	addBackground(kBackgroundTypeMenu);
 
@@ -40,11 +50,27 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, Console *consol
 	getLabel("DEF_ARROW_LBL")->setText("");
 
 	getLabel("LBL_NAME")->setText("");
-	getLabel("LBL_CLASS")->setText("");
+
+	// Set the Class title according to the class of the Character
+	switch (pc->getClass()) {
+		case kClassSoldier:
+			getLabel("LBL_CLASS")->setText(TalkMan.getString(134));
+			break;
+		case kClassScout:
+			getLabel("LBL_CLASS")->setText(TalkMan.getString(133));
+			break;
+		case kClassScoundrel:
+			getLabel("LBL_CLASS")->setText(TalkMan.getString(135));
+			break;
+		default:
+			getLabel("LBL_CLASS")->setText("");
+	}
 
 	getLabel("WILL_ARROW_LBL")->setText("");
 	getLabel("REFL_ARROW_LBL")->setText("");
 	getLabel("FORT_ARROW_LBL")->setText("");
+
+	getLabel("PORTRAIT_LBL")->setFill(_pc->getPortrait());
 
 	getWidget("NEW_LBL")->setInvisible(true);
 	getWidget("OLD_LBL")->setInvisible(true);
@@ -63,6 +89,8 @@ void CharacterGenerationMenu::showQuickOrCustom() {
 		removeChild(_quickChar.get());
 	if (_customChar)
 		removeChild(_customChar.get());
+
+	_step = 0;
 
 	_quickOrCustom.reset(new QuickOrCustomPanel(this));
 	addChild(_quickOrCustom.get());
@@ -86,6 +114,57 @@ void CharacterGenerationMenu::showCustom() {
 
 	_customChar.reset(new CustomCharPanel(this));
 	addChild(_customChar.get());
+}
+
+void CharacterGenerationMenu::showPotrait()
+{
+	// Copy the Character object for possible cancelling of the portrait choosing
+	CharacterGenerationInfo info = *_pc;
+
+	_charGenMenu.reset(new CharacterGenerationPortraitMenu(info));
+
+	sub(*_charGenMenu);
+	if (_charGenMenu->isAccepted()) {
+		*_pc = info;
+		getLabel("PORTRAIT_LBL")->setFill(_pc->getPortrait());
+		_step += 1;
+	}
+}
+
+void CharacterGenerationMenu::showName()
+{
+	// Copy the Character object for possible cancelling of the portrait choosing
+	CharacterGenerationInfo info = *_pc;
+
+	_charGenMenu.reset(new CharacterGenerationNameMenu(info));
+
+	sub(*_charGenMenu);
+	if (_charGenMenu->isAccepted()) {
+		*_pc = info;
+		getLabel("LBL_NAME")->setText(info.getName());
+		_step += 1;
+	}
+}
+
+int CharacterGenerationMenu::getStep()
+{
+	return _step;
+}
+
+void CharacterGenerationMenu::decStep()
+{
+	_step = std::min(0, _step-1);
+}
+
+void CharacterGenerationMenu::start()
+{
+	try {
+		_module->usePC(_pc->getCharacter());
+		_module->load("end_m01aa");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
+		return;
+	}
 }
 
 } // End of namespace KotOR

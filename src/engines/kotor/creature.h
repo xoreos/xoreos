@@ -39,6 +39,8 @@ namespace Engines {
 
 namespace KotOR {
 
+class CharacterGenerationInfo;
+
 class Creature : public Object {
 public:
 	/** Create a dummy creature instance. Not playable as it is.*/
@@ -49,6 +51,8 @@ public:
 
 	/** Create a fake player character creature for testing purposes. */
 	void createFakePC();
+	/** Create a player character creature from a character info class. */
+	void createPC(CharacterGenerationInfo*);
 
 	// Basic visuals
 

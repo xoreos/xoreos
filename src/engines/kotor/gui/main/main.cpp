@@ -144,7 +144,11 @@ void MainMenu::callbackActive(Widget &widget) {
 
 		// start the charGen Music
 		startCharGenMusic();
-		sub(*_classSelection);
+		if (sub(*_classSelection) == 2) {
+			_returnCode = 2;
+			stopMenuMusic();
+			return;
+		}
 
 		/* if we return from the chargen we stop the music
 		 * and play the main music. */

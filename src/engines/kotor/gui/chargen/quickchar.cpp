@@ -40,12 +40,82 @@ QuickCharPanel::QuickCharPanel(CharacterGenerationMenu *charGenMenu, Console *co
 	width = getLabel("LBL_DECORATION")->getWidth();
 	height = getLabel("LBL_DECORATION")->getHeight();
 	getLabel("LBL_DECORATION")->setScissor(5, 40, width-5, height-40-40);
+
+	getButton("BTN_STEPNAME1")->setDisableHoverSound(true);
+	getButton("BTN_STEPNAME2")->setDisableHoverSound(true);
+	getButton("BTN_STEPNAME3")->setDisableHoverSound(true);
+
+	updateButtons();
 }
 
 void QuickCharPanel::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_CANCEL") {
 		_charGen->showQuickOrCustom();
 		return;
+	}
+
+	if (widget.getTag() == "BTN_BACK") {
+		_charGen->decStep();
+		updateButtons();
+		return;
+	}
+
+	if (widget.getTag() == "BTN_STEPNAME1") {
+		_charGen->showPotrait();
+		updateButtons();
+		return;
+	}
+	if (widget.getTag() == "BTN_STEPNAME2") {
+		_charGen->showName();
+		updateButtons();
+		return;
+	}
+	if (widget.getTag() == "BTN_STEPNAME3") {
+		_charGen->start();
+		_returnCode = 2;
+		return;
+	}
+}
+
+void QuickCharPanel::updateButtons()
+{
+	switch (_charGen->getStep()) {
+		case 0:
+			getButton("BTN_STEPNAME1")->setDisabled(false);
+			getButton("BTN_STEPNAME2")->setDisabled(true);
+			getButton("BTN_STEPNAME3")->setDisabled(true);
+
+			getButton("BTN_STEPNAME1")->setPermanentHighlight(true);
+			getButton("BTN_STEPNAME2")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME3")->setPermanentHighlight(false);
+			break;
+
+		case 1:
+			getButton("BTN_STEPNAME1")->setDisabled(true);
+			getButton("BTN_STEPNAME2")->setDisabled(false);
+			getButton("BTN_STEPNAME3")->setDisabled(true);
+
+			getButton("BTN_STEPNAME1")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME2")->setPermanentHighlight(true);
+			getButton("BTN_STEPNAME3")->setPermanentHighlight(false);
+			break;
+
+		default:
+		case 2:
+			getButton("BTN_STEPNAME1")->setDisabled(true);
+			getButton("BTN_STEPNAME2")->setDisabled(true);
+			getButton("BTN_STEPNAME3")->setDisabled(false);
+
+			getButton("BTN_STEPNAME1")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME2")->setPermanentHighlight(false);
+			getButton("BTN_STEPNAME3")->setPermanentHighlight(true);
+			break;
+	}
+
+	if (_charGen->getStep() == 0) {
+		getWidget("BTN_BACK")->setDisabled(true);
+	} else {
+		getWidget("BTN_BACK")->setDisabled(false);
 	}
 }
 

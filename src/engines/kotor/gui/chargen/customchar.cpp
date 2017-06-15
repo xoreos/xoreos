@@ -45,6 +45,13 @@ void CustomCharPanel::callbackActive(Widget &widget) {
 		_charGen->showQuickOrCustom();
 		return;
 	}
+
+	if (widget.getTag() == "BTN_BACK") {
+		_charGen->decStep();
+		return;
+	}
+
+	// TODO implement the custom character generation
 }
 
 } // End of namespace KotOR

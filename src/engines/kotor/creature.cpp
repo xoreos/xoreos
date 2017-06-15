@@ -22,6 +22,7 @@
  *  A creature in a Star Wars: Knights of the Old Republic area.
  */
 
+#include "src/common/strutil.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -38,6 +39,7 @@
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/kotor/creature.h"
+#include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 
@@ -246,6 +248,66 @@ void Creature::createFakePC() {
 	_tag  = Common::UString::format("[PC: %s]", _name.c_str());
 
 	_isPC = true;
+}
+
+void Creature::createPC(CharacterGenerationInfo* info)
+{
+	_name = info->getName();
+	_isPC = true;
+
+	PartModels parts;
+
+	parts.body = "p";
+	parts.head = "p";
+
+	switch (info->getGender()) {
+		case kGenderMale:
+			parts.body += "m";
+			parts.head += "m";
+			break;
+		case kGenderFemale:
+			parts.body += "f";
+			parts.head += "f";
+			break;
+		default:
+			throw Common::Exception("unknown gender");
+	}
+
+	parts.body += "bb";
+	parts.head += "h";
+
+	switch (info->getClass()) {
+		case kClassSoldier:
+			parts.body += "l";
+			break;
+		case kClassScout:
+			parts.body += "s";
+			break;
+		default:
+		case kClassScoundrel:
+			parts.body += "m";
+			break;
+	}
+
+	loadBody(parts);
+
+	switch (info->getSkin()) {
+		case kSkinA:
+			parts.head += "a";
+			break;
+		case kSkinB:
+			parts.head += "b";
+			break;
+		default:
+		case kSkinC:
+			parts.head += "c";
+			break;
+	}
+
+	parts.head += "0";
+	parts.head += Common::composeString(info->getFace() + 1);
+
+	loadHead(parts);
 }
 
 void Creature::enter() {

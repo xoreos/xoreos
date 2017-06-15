@@ -38,6 +38,7 @@ public:
 
 private:
 	void callbackActive(Widget &widget);
+	void updateButtons();
 
 	CharacterGenerationMenu *_charGen;
 };

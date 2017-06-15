@@ -33,6 +33,8 @@ namespace Engines {
 
 namespace KotOR {
 
+class Creature;
+
 class CharacterGenerationInfo {
 public:
 	/** Create a random character from the six stereotypes. */
