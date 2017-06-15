@@ -105,6 +105,28 @@ enum Script {
 	kScriptMAX
 };
 
+enum Gender {
+	kGenderMale = 0,
+	kGenderFemale,
+	kGenderNone
+};
+
+
+enum Skin {
+	kSkinA = 0,
+	kSkinB,
+	kSkinC,
+
+	kSkinMAX
+};
+
+enum Class {
+	kClassNone = 0,
+	kClassSoldier,
+	kClassScout,
+	kClassScoundrel
+};
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
