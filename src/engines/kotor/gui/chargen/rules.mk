@@ -26,6 +26,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/chargen/quickchar.h \
     src/engines/kotor/gui/chargen/customchar.h \
     src/engines/kotor/gui/chargen/chargeninfo.h \
+    src/engines/kotor/gui/chargen/chargenbase.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
@@ -35,4 +36,5 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/chargen/quickchar.cpp \
     src/engines/kotor/gui/chargen/customchar.cpp \
     src/engines/kotor/gui/chargen/chargeninfo.cpp \
+	src/engines/kotor/gui/chargen/chargenbase.cpp \
     $(EMPTY)
