@@ -28,7 +28,7 @@
 #include "src/engines/kotor/module.h"
 
 #include "src/engines/kotor/gui/gui.h"
-
+#include "src/engines/kotor/gui/chargen/chargeninfo.h"
 #include "src/engines/kotor/gui/widgets/button.h"
 #include "src/engines/kotor/gui/widgets/label.h"
 
@@ -41,9 +41,10 @@ namespace KotOR {
 class ClassSelectionMenu : public GUI {
 public:
 	ClassSelectionMenu(Module *module, ::Engines::Console *console = 0);
+	virtual ~ClassSelectionMenu();
 
 private:
-	void createCharacterGeneration();
+	void createCharacterGeneration(CharacterGenerationInfo*);
 
 	void callbackRun();
 	void callbackActive(Widget &widget);
@@ -74,6 +75,13 @@ private:
 	Common::UString _scoundrelFemaleTitle;
 	Common::UString _scoutMaleTitle;
 	Common::UString _scoutFemaleTitle;
+
+	CharacterGenerationInfo *_maleSoldier;
+	CharacterGenerationInfo *_maleScout;
+	CharacterGenerationInfo *_maleScoundrel;
+	CharacterGenerationInfo *_femaleSoldier;
+	CharacterGenerationInfo *_femaleScout;
+	CharacterGenerationInfo *_femaleScoundrel;
 };
 
 } // End of namespace KotOR

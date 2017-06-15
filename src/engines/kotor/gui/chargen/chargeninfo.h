@@ -34,6 +34,8 @@ namespace Engines {
 
 namespace KotOR {
 
+class Creature;
+
 class CharacterGenerationInfo {
 public:
 	// Create a random character for each of the six archetypes

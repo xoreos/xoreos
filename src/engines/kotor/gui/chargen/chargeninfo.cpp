@@ -163,7 +163,9 @@ void CharacterGenerationInfo::setFace(uint8 face) {
 }
 
 Creature *CharacterGenerationInfo::getCharacter() {
-	return new Creature();
+	Creature *creature = new Creature();
+	creature->createPC(this);
+	return creature;
 }
 
 CharacterGenerationInfo::CharacterGenerationInfo() {

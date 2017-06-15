@@ -30,24 +30,42 @@
 #include "src/engines/kotor/gui/gui.h"
 
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"
+#include "src/engines/kotor/gui/chargen/chargenbase.h"
 
 namespace Engines {
 
 namespace KotOR {
 
+class CharacterGenerationInfo;
+
 class CharacterGenerationMenu : public GUI {
 public:
-	CharacterGenerationMenu(Module *module, ::Engines::Console *console = 0);
+	CharacterGenerationMenu(Module *module, CharacterGenerationInfo *pc, ::Engines::Console *console = 0);
 	~CharacterGenerationMenu();
 
 	void showQuickOrCustom();
 	void showQuick();
 	void showCustom();
 
+	void showPortrait();
+	void showName();
+
+	int getStep();
+	void decStep();
+
+	void start();
+
 private:
+	Module *_module;
+	CharacterGenerationInfo *_pc;
+
+	int _step;
+
 	Common::ScopedPtr<GUI> _quickOrCustom;
 	Common::ScopedPtr<GUI> _quickChar;
 	Common::ScopedPtr<GUI> _customChar;
+
+	Common::ScopedPtr<CharacterGenerationBaseMenu> _charGenMenu;
 };
 
 } // End of namespace KotOR
