@@ -40,7 +40,8 @@ namespace Engines {
 namespace KotOR {
 
 WidgetButton::WidgetButton(::Engines::GUI &gui, const Common::UString &tag) :
-	KotORWidget(gui, tag), _permanentHighlight(false), _hovered(false) {
+	KotORWidget(gui, tag), _permanentHighlight(false), _disableHighlight(false),
+	_disableHoverSound(false),  _hovered(false) {
 }
 
 WidgetButton::~WidgetButton() {
@@ -52,6 +53,14 @@ void WidgetButton::setPermanentHighlight(bool permanentHighlight) {
 	if (_permanentHighlight) {
 		startHighlight();
 	} else {
+		stopHighlight();
+	}
+}
+
+void WidgetButton::setDisableHighlight(bool disableHighlight) {
+	_disableHighlight = disableHighlight;
+
+	if (_disableHighlight) {
 		stopHighlight();
 	}
 }
@@ -86,7 +95,7 @@ void WidgetButton::enter() {
 	if (!_disableHoverSound)
 		_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
 
-	if (!_permanentHighlight) {
+	if (!_permanentHighlight && !_disableHighlight) {
 		startHighlight();
 	}
 
@@ -98,7 +107,7 @@ void WidgetButton::leave() {
 	if (!_disableHoverSound)
 		SoundMan.stopChannel(_sound);
 
-	if (!_permanentHighlight) {
+	if (!_permanentHighlight && !_disableHighlight) {
 		stopHighlight();
 	}
 
