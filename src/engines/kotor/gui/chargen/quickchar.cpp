@@ -88,6 +88,10 @@ void QuickCharPanel::updateButtons() {
 			getButton("BTN_STEPNAME1")->setPermanentHighlight(true);
 			getButton("BTN_STEPNAME2")->setPermanentHighlight(false);
 			getButton("BTN_STEPNAME3")->setPermanentHighlight(false);
+
+			getButton("BTN_STEPNAME1")->setDisableHighlight(false);
+			getButton("BTN_STEPNAME2")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME3")->setDisableHighlight(true);
 			break;
 
 		case 1:
@@ -98,6 +102,10 @@ void QuickCharPanel::updateButtons() {
 			getButton("BTN_STEPNAME1")->setPermanentHighlight(false);
 			getButton("BTN_STEPNAME2")->setPermanentHighlight(true);
 			getButton("BTN_STEPNAME3")->setPermanentHighlight(false);
+
+			getButton("BTN_STEPNAME1")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME2")->setDisableHighlight(false);
+			getButton("BTN_STEPNAME3")->setDisableHighlight(true);
 			break;
 
 		default:
@@ -109,6 +117,10 @@ void QuickCharPanel::updateButtons() {
 			getButton("BTN_STEPNAME1")->setPermanentHighlight(false);
 			getButton("BTN_STEPNAME2")->setPermanentHighlight(false);
 			getButton("BTN_STEPNAME3")->setPermanentHighlight(true);
+
+			getButton("BTN_STEPNAME1")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME2")->setDisableHighlight(true);
+			getButton("BTN_STEPNAME3")->setDisableHighlight(false);
 			break;
 	}
 
