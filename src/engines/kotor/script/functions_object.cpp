@@ -60,6 +60,18 @@ void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = KotOR::ObjectContainer::toPC(getParamObject(ctx, 0)) != 0;
 }
 
+void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
+	Common::UString name = ctx.getParams()[0].getString();
+	int nth = ctx.getParams()[1].getInt();
+
+	Aurora::NWScript::ObjectSearch* search = _game->getModule().findObjectsByTag(name);
+	for (int i = 0; i < nth; ++i) {
+		search->next();
+	}
+
+	ctx.getReturn() = search->get();
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
