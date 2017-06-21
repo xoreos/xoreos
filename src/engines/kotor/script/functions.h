@@ -166,6 +166,9 @@ private:
 
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
+
+	void setGlobalFadeOut(Aurora::NWScript::FunctionContext &ctx);
+	void setGlobalFadeIn(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- General object functions, functions_object.cpp
