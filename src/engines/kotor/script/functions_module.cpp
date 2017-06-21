@@ -48,6 +48,36 @@ void Functions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 }
 
+void Functions::setGlobalFadeOut(Aurora::NWScript::FunctionContext &ctx) {
+	float wait = ctx.getParams()[0].getFloat();
+	float run = ctx.getParams()[1].getFloat();
+	float r = ctx.getParams()[2].getFloat();
+	float g = ctx.getParams()[3].getFloat();
+	float b = ctx.getParams()[4].getFloat();
+
+	Graphics::Aurora::FadeQuad &fadeQuad = _game->getModule().getFadeQuad();
+
+	fadeQuad.setColor(r, g, b);
+	fadeQuad.setWaitTime(wait);
+	fadeQuad.setRunTime(run);
+	fadeQuad.fadeOut();
+}
+
+void Functions::setGlobalFadeIn(Aurora::NWScript::FunctionContext &ctx) {
+	float wait = ctx.getParams()[0].getFloat();
+	float run = ctx.getParams()[1].getFloat();
+	float r = ctx.getParams()[2].getFloat();
+	float g = ctx.getParams()[3].getFloat();
+	float b = ctx.getParams()[4].getFloat();
+
+	Graphics::Aurora::FadeQuad &fadeQuad = _game->getModule().getFadeQuad();
+
+	fadeQuad.setColor(r, g, b);
+	fadeQuad.setWaitTime(wait);
+	fadeQuad.setRunTime(run);
+	fadeQuad.fadeOut();
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
