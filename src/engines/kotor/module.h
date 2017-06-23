@@ -35,6 +35,8 @@
 
 #include "src/aurora/ifofile.h"
 
+#include "src/graphics/aurora/fadequad.h"
+
 #include "src/events/types.h"
 
 #include "src/engines/kotor/objectcontainer.h"
@@ -85,6 +87,8 @@ public:
 	Area *getCurrentArea();
 	/** Return the currently playing PC. */
 	Creature *getPC();
+	/** Return the fade quad. */
+	Graphics::Aurora::FadeQuad &getFadeQuad();
 	// '---
 
 	// .--- Interact with the current module
@@ -175,6 +179,8 @@ private:
 	ObjectType      _entryLocationType;
 
 	Common::ScopedPtr<Area> _area; ///< The current module's area.
+
+	Common::ScopedPtr<Graphics::Aurora::FadeQuad> _fade;
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;

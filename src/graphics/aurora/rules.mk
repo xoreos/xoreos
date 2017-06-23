@@ -48,6 +48,7 @@ src_graphics_aurora_libaurora_la_SOURCES += \
     src/graphics/aurora/model.h \
     src/graphics/aurora/animnode.h \
     src/graphics/aurora/animation.h \
+    src/graphics/aurora/fadequad.h \
     src/graphics/aurora/model_nwn.h \
     src/graphics/aurora/model_nwn2.h \
     src/graphics/aurora/model_kotor.h \
@@ -82,6 +83,7 @@ src_graphics_aurora_libaurora_la_SOURCES += \
     src/graphics/aurora/model.cpp \
     src/graphics/aurora/animnode.cpp \
     src/graphics/aurora/animation.cpp \
+    src/graphics/aurora/fadequad.cpp \
     src/graphics/aurora/model_nwn.cpp \
     src/graphics/aurora/model_nwn2.cpp \
     src/graphics/aurora/model_kotor.cpp \

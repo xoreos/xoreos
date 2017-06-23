@@ -61,8 +61,8 @@ bool Module::Action::operator<(const Action &s) const {
 
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
-	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll) {
-
+	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
+	_fade(new Graphics::Aurora::FadeQuad()) {
 }
 
 Module::~Module() {
@@ -122,6 +122,10 @@ void Module::usePC(Creature *pc) {
 
 Creature *Module::getPC() {
 	return _pc.get();
+}
+
+Graphics::Aurora::FadeQuad &Module::getFadeQuad() {
+	return *_fade;
 }
 
 bool Module::isLoaded() const {
