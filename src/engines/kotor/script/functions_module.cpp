@@ -75,7 +75,7 @@ void Functions::setGlobalFadeIn(Aurora::NWScript::FunctionContext &ctx) {
 	fadeQuad.setColor(r, g, b);
 	fadeQuad.setWaitTime(wait);
 	fadeQuad.setRunTime(run);
-	fadeQuad.fadeOut();
+	fadeQuad.fadeIn();
 }
 
 } // End of namespace KotOR
