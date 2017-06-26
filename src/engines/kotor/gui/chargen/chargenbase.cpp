@@ -19,53 +19,28 @@
  */
 
 /** @file
- *  The KotOR main menu.
+ *  A base class for all character creation menus.
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
-
-#include "src/common/scopedptr.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include <src/engines/kotor/console.h>
+#include "chargenbase.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+CharacterGenerationBaseMenu::CharacterGenerationBaseMenu(CharacterGenerationInfo &info, Engines::Console *console) :
+		GUI(console), _info(info), _accepted(false) {
+}
 
-class MainMenu : public GUI {
-public:
-	MainMenu(Module &module, bool isXbox, ::Engines::Console *console = 0);
-	~MainMenu();
+bool CharacterGenerationBaseMenu::isAccepted() {
+	return _accepted;
+}
 
-protected:
-	void initWidget(Widget &widget);
-
-	void callbackActive(Widget &widget);
-
-private:
-	Module *_module;
-	bool _isXbox;
-
-	Common::ScopedPtr<GUI> _classSelection;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
-
-	Sound::ChannelHandle _menuMusic;
-
-	void startMainMusic();
-	void startCharGenMusic();
-	void stopMenuMusic();
-
-	void createClassSelection();
-	void createMovies();
-	void createOptions();
-};
+void CharacterGenerationBaseMenu::accept() {
+	_accepted = true;
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H

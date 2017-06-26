@@ -19,53 +19,41 @@
  */
 
 /** @file
- *  The KotOR main menu.
+ *  The panel to customize a quick character.
  */
-
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
-
-#include "src/common/scopedptr.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/chargen/customchar.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+CustomCharPanel::CustomCharPanel(CharacterGenerationMenu *charGenMenu, Console *console) :
+		GUI(console), _charGen(charGenMenu) {
 
-class MainMenu : public GUI {
-public:
-	MainMenu(Module &module, bool isXbox, ::Engines::Console *console = 0);
-	~MainMenu();
+	load("custpnl");
 
-protected:
-	void initWidget(Widget &widget);
+	setPosition(137, 16, 0);
 
-	void callbackActive(Widget &widget);
+	float width, height;
+	width = getLabel("LBL_BG")->getWidth();
+	height = getLabel("LBL_BG")->getHeight();
+	getLabel("LBL_BG")->setScissor(5, 40, width-5, height-60);
+}
 
-private:
-	Module *_module;
-	bool _isXbox;
+void CustomCharPanel::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_CANCEL") {
+		_charGen->showQuickOrCustom();
+		return;
+	}
 
-	Common::ScopedPtr<GUI> _classSelection;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
+	if (widget.getTag() == "BTN_BACK") {
+		_charGen->decStep();
+		return;
+	}
 
-	Sound::ChannelHandle _menuMusic;
-
-	void startMainMusic();
-	void startCharGenMusic();
-	void stopMenuMusic();
-
-	void createClassSelection();
-	void createMovies();
-	void createOptions();
-};
+	// TODO implement the custom character generation
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H

@@ -39,11 +39,14 @@ public:
 	~WidgetButton();
 
 	void setPermanentHighlight(bool);
+	void setDisableHighlight(bool);
 	void setDisableHoverSound(bool);
 
 	virtual void load(const Aurora::GFF3Struct &gff);
 
 	void mouseUp(uint8 state, float x, float y);
+
+	bool isHovered();
 
 	virtual void enter();
 
@@ -51,10 +54,13 @@ public:
 
 private:
 	bool _permanentHighlight;
+	bool _disableHighlight;
 	bool _disableHoverSound;
 
 	Sound::ChannelHandle _sound;
 	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
+
+	bool _hovered;
 
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 

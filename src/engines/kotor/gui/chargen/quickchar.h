@@ -19,53 +19,32 @@
  */
 
 /** @file
- *  The KotOR main menu.
+ *  The panel to customize a custom character.
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
-
-#include "src/common/scopedptr.h"
+#ifndef ENGINES_KOTOR_GUI_CHARGEN_QUICKCHAR_H
+#define ENGINES_KOTOR_GUI_CHARGEN_QUICKCHAR_H
 
 #include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/chargen/charactergeneration.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
-
-class MainMenu : public GUI {
+class QuickCharPanel : public GUI {
 public:
-	MainMenu(Module &module, bool isXbox, ::Engines::Console *console = 0);
-	~MainMenu();
-
-protected:
-	void initWidget(Widget &widget);
-
-	void callbackActive(Widget &widget);
+	QuickCharPanel(CharacterGenerationMenu *charGenMenu, Console *console = 0);
 
 private:
-	Module *_module;
-	bool _isXbox;
+	void callbackActive(Widget &widget);
+	void updateButtons();
 
-	Common::ScopedPtr<GUI> _classSelection;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
-
-	Sound::ChannelHandle _menuMusic;
-
-	void startMainMusic();
-	void startCharGenMusic();
-	void stopMenuMusic();
-
-	void createClassSelection();
-	void createMovies();
-	void createOptions();
+	CharacterGenerationMenu *_charGen;
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#endif // ENGINES_KOTOR_GUI_CHARGEN_QUICKCHAR_H

@@ -24,17 +24,20 @@
 
 #include "src/common/util.h"
 
+#include "src/engines/aurora/util.h"
+
+#include "src/sound/sound.h"
+
 #include "src/events/events.h"
 
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/module.h"
-
 #include "src/engines/kotor/gui/guibackground.h"
 #include "src/engines/kotor/gui/main/main.h"
 #include "src/engines/kotor/gui/main/movies.h"
 #include "src/engines/kotor/gui/main/options.h"
-
+#include "src/engines/kotor/gui/chargen/classselection.h"
 #include "src/engines/kotor/gui/widgets/button.h"
 
 namespace Engines {
@@ -47,11 +50,20 @@ MainMenu::MainMenu(Module &module, bool isXbox, ::Engines::Console *console) : G
 	load(isXbox ? "mainmenu" : "mainmenu16x12");
 
 	addBackground(kBackgroundTypeMenu);
+
+	startMainMusic();
 }
 
 MainMenu::~MainMenu() {
 }
 
+void MainMenu::createClassSelection() {
+	if (_classSelection)
+		return;
+
+	// Create the class selection menu
+	_classSelection.reset(new ClassSelectionMenu(_module, _console));
+}
 
 void MainMenu::createMovies() {
 	if (_movies)
@@ -68,6 +80,18 @@ void MainMenu::createOptions() {
 	// Create the options menu
 	_options.reset(new OptionsMenu(_console));
 
+}
+
+void MainMenu::startMainMusic() {
+	_menuMusic = playSound("mus_theme_cult", Sound::kSoundTypeMusic, true);
+}
+
+void MainMenu::startCharGenMusic() {
+	_menuMusic = playSound("mus_theme_rep", Sound::kSoundTypeMusic, true);
+}
+
+void MainMenu::stopMenuMusic() {
+	SoundMan.stopChannel(_menuMusic);
 }
 
 void MainMenu::initWidget(Widget &widget) {
@@ -113,14 +137,24 @@ void MainMenu::initWidget(Widget &widget) {
 void MainMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_NEWGAME") {
-		try {
-			_module->load("end_m01aa");
-		} catch (...) {
-			Common::exceptionDispatcherWarning();
+		// stop the currently running main music
+		stopMenuMusic();
+
+		createClassSelection();
+
+		// start the charGen Music
+		startCharGenMusic();
+		if (sub(*_classSelection) == 2) {
+			_returnCode = 2;
+			stopMenuMusic();
 			return;
 		}
 
-		_returnCode = 2;
+		/* if we return from the chargen we stop the music
+		 * and play the main music. */
+		stopMenuMusic();
+		startMainMusic();
+
 		return;
 	}
 

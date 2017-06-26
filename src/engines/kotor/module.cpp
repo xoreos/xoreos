@@ -63,6 +63,7 @@ Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
 	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
 	_fade(new Graphics::Aurora::FadeQuad()) {
+	loadTexturePack();
 }
 
 Module::~Module() {
@@ -297,9 +298,6 @@ void Module::enter() {
 	if (!_hasModule)
 		throw Common::Exception("Module::enter(): Lacking a module?!?");
 
-	if (!_pc)
-		throw Common::Exception("Module::enter(): Lacking a PC?!?");
-
 	_console->printf("Entering module \"%s\"", _name.c_str());
 
 	Common::UString startMovie = _ifo.getStartMovie();
@@ -309,6 +307,17 @@ void Module::enter() {
 	float entryX, entryY, entryZ, entryAngle;
 	if (!getEntryObjectLocation(entryX, entryY, entryZ, entryAngle))
 		getEntryIFOLocation(entryX, entryY, entryZ, entryAngle);
+
+	if (_pc) {
+		_pc->setPosition(entryX, entryY, entryZ);
+		_pc->show();
+	} else {
+		usePC(new Creature());
+		_pc->createFakePC();
+	}
+
+	if (!_pc)
+		throw Common::Exception("Module::enter(): Lacking a PC?!?");
 
 	// Roughly head position
 	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);

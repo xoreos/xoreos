@@ -32,3 +32,4 @@ src_engines_kotor_libkotor_la_SOURCES += \
 include src/engines/kotor/gui/widgets/rules.mk
 include src/engines/kotor/gui/main/rules.mk
 include src/engines/kotor/gui/options/rules.mk
+include src/engines/kotor/gui/chargen/rules.mk

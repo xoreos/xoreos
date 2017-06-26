@@ -19,53 +19,31 @@
  */
 
 /** @file
- *  The KotOR main menu.
+ *  The menu for modifying the portrait of the.
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
-
-#include "src/common/scopedptr.h"
+#ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARGENPOTRAIT_H
+#define ENGINES_KOTOR_GUI_CHARGEN_CHARGENPOTRAIT_H
 
 #include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/chargen/chargenbase.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+class CharacterGenerationInfo;
 
-class MainMenu : public GUI {
+class CharacterGenerationPortraitMenu : public CharacterGenerationBaseMenu {
 public:
-	MainMenu(Module &module, bool isXbox, ::Engines::Console *console = 0);
-	~MainMenu();
-
-protected:
-	void initWidget(Widget &widget);
-
-	void callbackActive(Widget &widget);
+	CharacterGenerationPortraitMenu(CharacterGenerationInfo &chargen, ::Engines::Console *console = 0);
 
 private:
-	Module *_module;
-	bool _isXbox;
-
-	Common::ScopedPtr<GUI> _classSelection;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
-
-	Sound::ChannelHandle _menuMusic;
-
-	void startMainMusic();
-	void startCharGenMusic();
-	void stopMenuMusic();
-
-	void createClassSelection();
-	void createMovies();
-	void createOptions();
+	void callbackActive(Widget &widget);
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#endif // ENGINES_KOTOR_GUI_CHARGEN_CHARGENPOTRAIT_H

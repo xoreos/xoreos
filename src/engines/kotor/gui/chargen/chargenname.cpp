@@ -19,53 +19,40 @@
  */
 
 /** @file
- *  The KotOR main menu.
+ *  The menu for modifying the name of the character
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
-
-#include "src/common/scopedptr.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/chargen/chargenname.h"
+#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/widgets/label.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+CharacterGenerationNameMenu::CharacterGenerationNameMenu(CharacterGenerationInfo &info, Console *console) :
+		CharacterGenerationBaseMenu(info, console) {
 
-class MainMenu : public GUI {
-public:
-	MainMenu(Module &module, bool isXbox, ::Engines::Console *console = 0);
-	~MainMenu();
+	load("name");
 
-protected:
-	void initWidget(Widget &widget);
+	addBackground(kBackgroundTypeMenu);
 
-	void callbackActive(Widget &widget);
+	getLabel("NAME_BOX_EDIT")->setText("");
+}
 
-private:
-	Module *_module;
-	bool _isXbox;
+void CharacterGenerationNameMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_BACK") {
+		_returnCode = 1;
+		return;
+	}
 
-	Common::ScopedPtr<GUI> _classSelection;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
-
-	Sound::ChannelHandle _menuMusic;
-
-	void startMainMusic();
-	void startCharGenMusic();
-	void stopMenuMusic();
-
-	void createClassSelection();
-	void createMovies();
-	void createOptions();
-};
+	if (widget.getTag() == "END_BTN") {
+		_returnCode = 1;
+		accept();
+		return;
+	}
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H

@@ -78,11 +78,6 @@ void Game::run() {
 }
 
 void Game::runModule() {
-	Common::ScopedPtr<Creature> fakePC(new Creature);
-	fakePC->createFakePC();
-
-	_module->usePC(fakePC.release());
-
 	if (EventMan.quitRequested() || !_module->isLoaded()) {
 		_module->clear();
 		return;
@@ -142,7 +137,7 @@ void Game::stopMusic() {
 }
 
 void Game::mainMenu() {
-	playMenuMusic();
+	//playMenuMusic();
 
 	EventMan.flushEvents();
 
@@ -158,7 +153,7 @@ void Game::mainMenu() {
 	_console->enableCommand("loadmodule");
 	_console->enableCommand("exitmodule");
 
-	stopMenuMusic();
+	//stopMenuMusic();
 }
 
 void Game::getModules(std::vector<Common::UString> &modules) {
