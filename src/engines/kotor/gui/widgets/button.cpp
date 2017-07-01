@@ -41,7 +41,7 @@ namespace KotOR {
 
 WidgetButton::WidgetButton(::Engines::GUI &gui, const Common::UString &tag) :
 	KotORWidget(gui, tag), _permanentHighlight(false), _disableHighlight(false),
-	_disableHoverSound(false),  _hovered(false) {
+	_disableHoverSound(false),  _hovered(false), _highlighted(false) {
 }
 
 WidgetButton::~WidgetButton() {
@@ -51,9 +51,11 @@ void WidgetButton::setPermanentHighlight(bool permanentHighlight) {
 	_permanentHighlight = permanentHighlight;
 
 	if (_permanentHighlight) {
-		startHighlight();
+		if (!_highlighted)
+			startHighlight();
 	} else {
-		stopHighlight();
+		if (_highlighted)
+			stopHighlight();
 	}
 }
 
@@ -61,7 +63,11 @@ void WidgetButton::setDisableHighlight(bool disableHighlight) {
 	_disableHighlight = disableHighlight;
 
 	if (_disableHighlight) {
-		stopHighlight();
+		if (_highlighted)
+			stopHighlight();
+	} else {
+		if (_hovered)
+			startHighlight();
 	}
 }
 
@@ -131,6 +137,8 @@ void WidgetButton::startHighlight() {
 		_quad->setColor(r, g, b, a);
 		getQuadHighlightableComponent()->setHighlighted(true);
 	}
+
+	_highlighted = true;
 }
 
 void WidgetButton::stopHighlight() {
@@ -142,6 +150,8 @@ void WidgetButton::stopHighlight() {
 		getQuadHighlightableComponent()->setHighlighted(false);
 		_quad->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 	}
+
+	_highlighted = false;
 }
 
 void WidgetButton::setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable) {

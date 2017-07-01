@@ -61,6 +61,7 @@ private:
 	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
 
 	bool _hovered;
+	bool _highlighted;
 
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 
