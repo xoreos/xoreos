@@ -130,7 +130,7 @@ fi
 AC_SUBST(WARN)
 
 dnl C++ dialect
-AC_ARG_WITH([std], [AS_HELP_STRING([--without-std], [Compile without specifying the C++ standard to follow @<:@default=no@:>@])], [], [with_std=yes])
+AC_ARG_WITH([std], [AS_HELP_STRING([--with-std], [Compile with specifying the C++ standard to follow @<:@default=no@:>@])], [], [with_std=no])
 
 STD=""
 if test "x$with_std" = "xyes"; then
