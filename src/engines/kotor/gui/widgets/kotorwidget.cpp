@@ -136,6 +136,16 @@ void KotORWidget::setScissor(int x, int y, int width, int height) {
 	_quad->setScissor(x, y, width, height);
 }
 
+void KotORWidget::setWidth(float width) {
+	if (_quad)
+		_quad->setWidth(width);
+}
+
+void KotORWidget::setHeight(float height) {
+	if (_quad)
+		_quad->setHeight(height);
+}
+
 float KotORWidget::getWidth() const {
 	return _width;
 }
