@@ -64,6 +64,11 @@ public:
 	/** Change the font for this widget. */
 	void setFont(const Common::UString &fnt);
 
+	/** Set the width of the widget. */
+	void setWidth(float width);
+	/** Set the height of the widget. */
+	void setHeight(float height);
+
 	float getWidth () const;
 	float getHeight() const;
 
