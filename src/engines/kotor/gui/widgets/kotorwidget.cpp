@@ -171,6 +171,12 @@ void KotORWidget::setFont(const Common::UString &fnt) {
 }
 
 void KotORWidget::setFill(const Common::UString &fill) {
+	if (fill.empty()) {
+		_quad->hide();
+		_quad.release();
+		return;
+	}
+
 	if (!_quad) {
 		float x, y, z;
 		getPosition(x, y, z);
