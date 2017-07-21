@@ -22,22 +22,69 @@
  *  A KotOR listbox widget.
  */
 
-#include "src/common/system.h"
+#include "src/aurora/gff3file.h"
 
+#include "src/engines/kotor/gui/gui.h"
 #include "src/engines/kotor/gui/widgets/listbox.h"
+#include "src/engines/kotor/gui/widgets/button.h"
 
 namespace Engines {
 
 namespace KotOR {
 
 WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag) :
-	KotORWidget(gui, tag) {
+	KotORWidget(gui, tag), _itemCount(0), _padding(0) {
 }
 
 WidgetListBox::~WidgetListBox() {
 }
 
-void WidgetListBox::load(const Aurora::GFF3Struct &UNUSED(gff)) {
+void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
+	KotORWidget::load(gff);
+
+	if (gff.hasField("PROTOITEM")) {
+		_protoItem = &gff.getStruct("PROTOITEM");
+	}
+
+	if (gff.hasField("SCROLLBAR")) {
+
+	}
+
+	if (gff.hasField("PADDING")) {
+		_padding = gff.getSint("PADDING");
+	}
+}
+
+KotORWidget *WidgetListBox::createItem(Common::UString name) {
+	KotORWidget *item;
+
+	// Create a new widget.
+	switch (_protoItem->getUint("CONTROLTYPE"))
+	{
+		case 6:
+			item = new WidgetButton(*_gui, name);
+			break;
+		default:
+			throw Common::Exception("TODO: Add other supported widget types to the ListBox");
+	}
+
+	// Load the prototype item.
+	item->load(*_protoItem);
+
+	// Calculate the new position for managing it in a list.
+	float x, y, z;
+	getPosition(x, y, z);
+
+	assert(getHeight() > 0);
+
+	y = y - _itemCount * (item->getHeight() + _padding) + getHeight() - item->getHeight();
+
+	item->setPosition(x, y, z);
+	item->show();
+
+	_itemCount += 1;
+
+	return item;
 }
 
 } // End of namespace KotOR
