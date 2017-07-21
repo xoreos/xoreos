@@ -37,6 +37,14 @@ public:
 	~WidgetListBox();
 
 	void load(const Aurora::GFF3Struct &gff);
+
+	KotORWidget *createItem(Common::UString name);
+
+private:
+	const Aurora::GFF3Struct *_protoItem;
+
+	int _itemCount;
+	int _padding;
 };
 
 } // End of namespace KotOR
