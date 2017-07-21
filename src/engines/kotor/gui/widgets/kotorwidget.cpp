@@ -337,7 +337,10 @@ KotORWidget::Text KotORWidget::createText(const Aurora::GFF3Struct &gff) {
 			text.text = TalkMan.getString(text.strRef);
 
 		// TODO: KotORWidget::getText(): Alignment
-		if (alignment == 18) {
+		if (alignment == 10) {
+			text.halign = 0.5f;
+			text.valign = 1.0f;
+		} else if (alignment == 18) {
 			text.halign = 0.5f;
 			text.valign = 0.5f;
 		}
