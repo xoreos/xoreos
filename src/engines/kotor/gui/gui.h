@@ -28,6 +28,7 @@
 #include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/graphics/aurora/types.h"
 #include "src/graphics/aurora/highlightable.h"
@@ -114,6 +115,8 @@ private:
 	float _widgetZ;
 
 	Common::ScopedPtr<GUIBackground> _background;
+
+	Common::ScopedPtr<Aurora::GFF3File> _gff;
 
 	Common::UString _name;
 

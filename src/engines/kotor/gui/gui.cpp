@@ -89,10 +89,9 @@ void GUI::load(const Common::UString &resref, float width, float height) {
 	_name = resref;
 
 	try {
-		Common::ScopedPtr<Aurora::GFF3File>
-			gff(new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' ')));
+		_gff.reset(new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' ')));
 
-		loadWidget(gff->getTopLevel(), 0, width, height);
+		loadWidget(_gff->getTopLevel(), 0, width, height);
 
 	} catch (Common::Exception &e) {
 		e.add("Can't load GUI \"%s\"", resref.c_str());
