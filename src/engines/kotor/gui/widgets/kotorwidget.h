@@ -117,6 +117,12 @@ protected:
 		Text();
 	};
 
+	struct Hilight {
+		Common::UString fill;
+
+		Hilight();
+	};
+
 	Graphics::Aurora::Highlightable *getTextHighlightableComponent() const;
 	Graphics::Aurora::Highlightable *getQuadHighlightableComponent() const;
 
@@ -131,13 +137,15 @@ protected:
 	bool _wrapped;
 
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad>           _quad;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad>           _highlight;
 	Common::ScopedPtr<Graphics::Aurora::HighlightableText> _text;
 	Common::ScopedPtr<Graphics::Aurora::BorderQuad>        _border;
 
 
-	Extend createExtend(const Aurora::GFF3Struct &gff);
-	Border createBorder(const Aurora::GFF3Struct &gff);
-	Text   createText  (const Aurora::GFF3Struct &gff);
+	Extend  createExtend (const Aurora::GFF3Struct &gff);
+	Border  createBorder (const Aurora::GFF3Struct &gff);
+	Text    createText   (const Aurora::GFF3Struct &gff);
+	Hilight createHilight(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace KotOR
