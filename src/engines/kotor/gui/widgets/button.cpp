@@ -128,31 +128,41 @@ void WidgetButton::leave() {
 void WidgetButton::startHighlight() {
 	float r, g, b, a;
 
-	if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
-		_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
-		_text->getHighlightedLowerBound(r, g, b, a);
-		_text->setColor(r, g, b, a);
-		_text->setHighlighted(true);
-	}
+	if (_highlight) {
+		_highlight->show();
+	} else {
 
-	if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
-		_quad->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
-		getQuadHighlightableComponent()->getHighlightedLowerBound(r, g, b, a);
-		_quad->setColor(r, g, b, a);
-		getQuadHighlightableComponent()->setHighlighted(true);
+		if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
+			_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+			_text->getHighlightedLowerBound(r, g, b, a);
+			_text->setColor(r, g, b, a);
+			_text->setHighlighted(true);
+		}
+
+		if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+			_quad->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+			getQuadHighlightableComponent()->getHighlightedLowerBound(r, g, b, a);
+			_quad->setColor(r, g, b, a);
+			getQuadHighlightableComponent()->setHighlighted(true);
+		}
 	}
 
 	_highlighted = true;
 }
 
 void WidgetButton::stopHighlight() {
-	if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
-		_text->setHighlighted(false);
-		_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
-	}
-	if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
-		getQuadHighlightableComponent()->setHighlighted(false);
-		_quad->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+	if (_highlight) {
+		_highlight->hide();
+	} else {
+
+		if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
+			_text->setHighlighted(false);
+			_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+		}
+		if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+			getQuadHighlightableComponent()->setHighlighted(false);
+			_quad->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+		}
 	}
 
 	_highlighted = false;
