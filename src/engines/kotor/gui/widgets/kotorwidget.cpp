@@ -74,12 +74,16 @@ void KotORWidget::show() {
 		_quad->show();
 	if (_text)
 		_text->show();
+	if (_border)
+		_border->show();
 }
 
 void KotORWidget::hide() {
 	if (isInvisible())
 		return;
 
+	if (_border)
+		_border->hide();
 	if (_quad)
 		_quad->hide();
 	if (_text)
@@ -120,6 +124,10 @@ void KotORWidget::setPosition(float x, float y, float z) {
 		_text->getPosition(tX, tY, tZ);
 
 		_text->setPosition(tX - oX + x, tY - oY + y, tZ - oZ + z);
+	}
+
+	if (_border) {
+		_border->setPosition(x, y, z);
 	}
 }
 
@@ -183,6 +191,10 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 
 	if (border.fill.empty())
 		_quad->setColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+	if (!border.edge.empty() && !border.corner.empty()) {
+		_border.reset(new Graphics::Aurora::BorderQuad(border.edge, border.corner, extend.x, extend.y, extend.w, extend.h));
+	}
 
 	Text text = createText(gff);
 

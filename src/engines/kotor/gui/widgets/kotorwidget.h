@@ -33,6 +33,7 @@
 #include "src/graphics/aurora/types.h"
 #include "src/graphics/aurora/highlightable.h"
 #include "src/graphics/aurora/highlightabletext.h"
+#include "src/graphics/aurora/borderquad.h"
 
 #include "src/engines/aurora/widget.h"
 
@@ -126,6 +127,7 @@ protected:
 
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad>           _quad;
 	Common::ScopedPtr<Graphics::Aurora::HighlightableText> _text;
+	Common::ScopedPtr<Graphics::Aurora::BorderQuad>        _border;
 
 
 	Extend createExtend(const Aurora::GFF3Struct &gff);
