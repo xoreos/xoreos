@@ -37,6 +37,11 @@ public:
 	~WidgetSlider();
 
 	void load(const Aurora::GFF3Struct &gff);
+
+	virtual void mouseMove(uint8 state, float x, float y);
+
+private:
+	int _value;
 };
 
 } // End of namespace KotOR
