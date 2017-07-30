@@ -24,6 +24,7 @@
 
 #include "src/common/system.h"
 
+#include "src/graphics/aurora/guiquad.h"
 #include "src/engines/kotor/gui/widgets/slider.h"
 
 namespace Engines {
@@ -39,6 +40,20 @@ WidgetSlider::~WidgetSlider() {
 
 void WidgetSlider::load(const Aurora::GFF3Struct &gff) {
   KotORWidget::load(gff);
+}
+
+void WidgetSlider::mouseMove(uint8 state, float x, float y) {
+	if (state == SDL_BUTTON_LMASK && _quad->isIn(x, y)) {
+		float posInSlider = _width+x+20.0;
+
+		float qx, qy, qz;
+		_quad->getPosition(qx, qy, qz);
+
+		_quad->setScissor(true);
+		_quad->setScissor(0, 0, posInSlider, _height);
+
+		_value = (int)((posInSlider / _width) * 100.0);
+	}
 }
 
 } // End of namespace KotOR
