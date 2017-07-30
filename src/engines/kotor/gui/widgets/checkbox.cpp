@@ -42,7 +42,8 @@ namespace Engines {
 namespace KotOR {
 
 WidgetCheckBox::WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag) :
-	KotORWidget(gui, tag) {
+	KotORWidget(gui, tag),
+	_checked(false) {
 }
 
 WidgetCheckBox::~WidgetCheckBox() {
@@ -106,6 +107,18 @@ void WidgetCheckBox::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(
 
 	playSound("gui_actuse", Sound::kSoundTypeSFX);
 	setActive(true);
+
+	_checked = !_checked;
+
+	float tr, tg, tb, ta;
+	float qr, qg, qb, qa;
+	_text->getColor(tr, tg, tb, ta);
+	_quad->getColor(qr, qg, qb, qa);
+
+	setFill(_checked ? "i_checkbox02" : "i_checkbox01");
+
+	_text->setColor(tr, tg, tb, ta);
+	_quad->setColor(qr, qg, qb, qa);
 }
 
 void WidgetCheckBox::enter() {

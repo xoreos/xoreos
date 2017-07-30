@@ -51,6 +51,7 @@ private:
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 	Sound::ChannelHandle _sound;
 	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
+	bool _checked;
 };
 
 } // End of namespace KotOR
