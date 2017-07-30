@@ -46,9 +46,6 @@ void WidgetSlider::mouseMove(uint8 state, float x, float y) {
 	if (state == SDL_BUTTON_LMASK && _quad->isIn(x, y)) {
 		float posInSlider = _width+x+20.0;
 
-		float qx, qy, qz;
-		_quad->getPosition(qx, qy, qz);
-
 		_quad->setScissor(true);
 		_quad->setScissor(0, 0, posInSlider, _height);
 
