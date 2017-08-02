@@ -136,6 +136,10 @@ float KotORWidget::getHeight() const {
 	return _height;
 }
 
+void KotORWidget::setFont(const Common::UString &fnt) {
+	_text->setFont(fnt);
+}
+
 void KotORWidget::setFill(const Common::UString &fill) {
 	if (!_quad) {
 		float x, y, z;

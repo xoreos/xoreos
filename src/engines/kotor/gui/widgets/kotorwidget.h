@@ -60,6 +60,9 @@ public:
 	/** Create a scissor test over this widget. */
 	void setScissor(int x, int y, int width, int height);
 
+	/** Change the font for this widget. */
+	void setFont(const Common::UString &fnt);
+
 	float getWidth () const;
 	float getHeight() const;
 
