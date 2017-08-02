@@ -26,6 +26,7 @@
 
 #include "src/graphics/font.h"
 
+#include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/text.h"
 
 namespace Graphics {
@@ -240,6 +241,10 @@ void Text::parseColors(const Common::UString &str, Common::UString &parsed,
 			parsed += *t;
 
 	}
+}
+
+void Text::setFont(const Common::UString &fnt) {
+	_font = FontMan.get(fnt);
 }
 
 } // End of namespace Aurora
