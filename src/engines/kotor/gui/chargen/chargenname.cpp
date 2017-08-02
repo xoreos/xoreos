@@ -38,7 +38,8 @@ CharacterGenerationNameMenu::CharacterGenerationNameMenu(CharacterGenerationInfo
 
 	addBackground(kBackgroundTypeMenu);
 
-	getLabel("NAME_BOX_EDIT")->setText("");
+	getLabel("NAME_BOX_EDIT")->setFont("fnt_d16x16b");
+	getLabel("NAME_BOX_EDIT")->setText("_");
 }
 
 void CharacterGenerationNameMenu::callbackActive(Widget &widget) {
