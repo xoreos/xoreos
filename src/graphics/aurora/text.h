@@ -54,6 +54,9 @@ public:
 	void unsetColor();
 	void setAlign(float align);
 
+	/** Change the font of the text. */
+	void setFont(const Common::UString &fnt);
+
 	/** Disable parsing <c color tokens into actual coloring. */
 	void disableColorTokens(bool disabled);
 
