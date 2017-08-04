@@ -452,3 +452,12 @@ if(XOREOS_BUILD_DOCUMENTATION)
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   )
 endif()
+
+# -------------------------------------------------------------------------
+# installation
+if(UNIX)
+  include(GNUInstallDirs)
+  install(TARGETS xoreos
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}
+  )
+endif()
