@@ -1433,6 +1433,7 @@ if test x$boost_cv_inc_path != xno; then
   for i in \
     _BOOST_gcc_test(7, 1) \
     _BOOST_gcc_test(7, 0) \
+    _BOOST_gcc_test(6, 4) \
     _BOOST_gcc_test(6, 3) \
     _BOOST_gcc_test(6, 2) \
     _BOOST_gcc_test(6, 1) \
