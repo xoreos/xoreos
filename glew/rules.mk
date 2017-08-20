@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# GLEW (OpenGL Extension Wrangler) 2.0.0 (<http://glew.sourceforge.net/>).
+# GLEW (OpenGL Extension Wrangler) 2.1.0 (<http://glew.sourceforge.net/>).
 
 if INTERNAL_GLEW
 

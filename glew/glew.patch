@@ -1,6 +1,6 @@
 diff -ur a/eglew.h b/eglew.h
---- a/eglew.h	2016-07-24 02:43:37.000000000 +0200
-+++ b/eglew.h	2016-08-29 19:13:06.000000000 +0200
+--- a/eglew.h	2017-08-20 12:01:35.410583684 +0200
++++ b/eglew.h	2017-08-20 12:02:48.134928758 +0200
 @@ -106,7 +106,7 @@
  #include <KHR/khrplatform.h>
  #include <EGL/eglplatform.h>
@@ -11,22 +11,30 @@ diff -ur a/eglew.h b/eglew.h
  #ifdef __cplusplus
  extern "C" {
 diff -ur a/glew.c b/glew.c
---- a/glew.c	2016-07-24 02:43:37.000000000 +0200
-+++ b/glew.c	2016-08-29 19:37:32.000000000 +0200
-@@ -30,17 +30,17 @@
- ** THE POSSIBILITY OF SUCH DAMAGE.
+--- a/glew.c	2017-08-20 12:01:29.324638491 +0200
++++ b/glew.c	2017-08-20 12:04:10.590186200 +0200
+@@ -31,7 +31,7 @@
  */
  
+ #ifndef GLEW_INCLUDE
 -#include <GL/glew.h>
 +#include "glew/glew.h"
- 
- #if defined(GLEW_OSMESA)
+ #else
+ #include GLEW_INCLUDE
+ #endif
+@@ -40,7 +40,7 @@
  #  define GLAPI extern
  #  include <GL/osmesa.h>
  #elif defined(GLEW_EGL)
 -#  include <GL/eglew.h>
 +#  include "glew/eglew.h"
  #elif defined(_WIN32)
+ /*
+  * If NOGDI is defined, wingdi.h won't be included by windows.h, and thus
+@@ -50,9 +50,9 @@
+ #  if defined(NOGDI)
+ #    undef NOGDI
+ #  endif
 -#  include <GL/wglew.h>
 +#  include "glew/wglew.h"
  #elif !defined(__ANDROID__) && !defined(__native_client__) && !defined(__HAIKU__) && (!defined(__APPLE__) || defined(GLEW_APPLE_GLX))
@@ -35,7 +43,7 @@ diff -ur a/glew.c b/glew.c
  #endif
  
  #include <stddef.h>  /* For size_t */
-@@ -13535,7 +13535,7 @@
+@@ -16218,7 +16218,7 @@
  
    if (GLEW_VERSION_3_0)
    {
@@ -44,7 +52,7 @@ diff -ur a/glew.c b/glew.c
      GLint i;
      PFNGLGETINTEGERVPROC getIntegerv;
      PFNGLGETSTRINGIPROC getStringi;
-@@ -13549,12 +13549,12 @@
+@@ -16232,12 +16232,12 @@
      #endif
  
      if (getIntegerv)
@@ -60,8 +68,8 @@ diff -ur a/glew.c b/glew.c
          ext = (const char *) getStringi(GL_EXTENSIONS, i);
  
 diff -ur a/glxew.h b/glxew.h
---- a/glxew.h	2016-07-24 02:43:37.000000000 +0200
-+++ b/glxew.h	2016-08-29 19:14:18.000000000 +0200
+--- a/glxew.h	2017-08-20 12:01:35.410583684 +0200
++++ b/glxew.h	2017-08-20 12:02:48.137928731 +0200
 @@ -98,7 +98,7 @@
  #include <X11/Xlib.h>
  #include <X11/Xutil.h>

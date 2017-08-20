@@ -172,7 +172,7 @@ License: CC0-1.0
 
 Files: glew/*.h
        glew/*.c
-Copyright: 2008-2015 Nigel Stewart <nigels[]users sourceforge net>
+Copyright: 2008-2017 Nigel Stewart <nigels[]users sourceforge net>
            2002-2008 Milan Ikits <milan.ikits@ieee.org>
            2002-2008 Marcelo E. Magallon <mmagallo@debian.org>
            2002 Lev Povalahev
