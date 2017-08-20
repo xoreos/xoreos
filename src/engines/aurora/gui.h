@@ -114,6 +114,8 @@ protected:
 	virtual void callbackRun();
 	/** Callback that's triggered when a widget was activated. */
 	virtual void callbackActive(Widget &widget);
+	/** Callback that's triggered when a text input is received. */
+	virtual void callbackTextInput(const Common::UString &text);
 
 	/** Add a child GUI object to this GUI. Ownership of the pointer is not transferred. */
 	void addChild(GUI *gui);
@@ -145,6 +147,7 @@ private:
 	void mouseDown(const Events::Event &event); ///< Mouse down event triggered.
 	void mouseUp(const Events::Event &event);   ///< Mouse up event triggered.
 	void mouseWheel(const Events::Event &event); ///< Mouse wheel event triggered.
+	void textInput(const Events::Event &event); ///< Text input event received.
 
 	float toGUIX(int x); // Convert an event X coordinate to a GUI X coordinate
 	float toGUIY(int y); // Convert an event Y coordinate to a GUI Y coordinate
