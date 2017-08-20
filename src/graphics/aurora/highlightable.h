@@ -21,6 +21,8 @@
 #ifndef GRAPHICS_AURORA_HIGHLIGHTABLE_H
 #define GRAPHICS_AURORA_HIGHLIGHTABLE_H
 
+#include "src/common/types.h"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -76,6 +78,8 @@ private:
 	float _lowerBoundG;
 	float _lowerBoundB;
 	float _lowerBoundA;
+
+	uint32 _prevIncTime;
 };
 
 } // End of namespace Aurora
