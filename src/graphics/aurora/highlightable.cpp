@@ -18,6 +18,7 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "src/events/events.h"
 #include "src/graphics/aurora/highlightable.h"
 
 namespace Graphics {
@@ -27,7 +28,8 @@ namespace Aurora {
 Highlightable::Highlightable() : _highlightable(false), _isHighlighted(false),
 	_deltaR(0), _deltaG(0), _deltaB(0), _deltaA(0),
 	_upperBoundR(0), _upperBoundG(0), _upperBoundB(0), _upperBoundA(0),
-	_lowerBoundR(0), _lowerBoundG(0), _lowerBoundB(0), _lowerBoundA(0) {
+	_lowerBoundR(0), _lowerBoundG(0), _lowerBoundB(0), _lowerBoundA(0),
+	_prevIncTime(EventMan.getTimestamp()) {
 
 }
 
@@ -88,10 +90,13 @@ void Highlightable::flipHighlightDelta() {
 
 void Highlightable::incrementColor(float initialR, float initialG, float initialB, float initialA,
                                    float &r, float &g, float &b, float &a) {
-	r = initialR + _deltaR;
-	g = initialG + _deltaG;
-	b = initialB + _deltaB;
-	a = initialA + _deltaA;
+	uint32 time = EventMan.getTimestamp();
+	double dt = (time - _prevIncTime) / 50.f;
+
+	r = initialR + _deltaR * dt;
+	g = initialG + _deltaG * dt;
+	b = initialB + _deltaB * dt;
+	a = initialA + _deltaA * dt;
 
 	if (_upperBoundR < r || _upperBoundG < g || _upperBoundB < b || _upperBoundA < a ||
 		  _lowerBoundR > r || _lowerBoundG > g || _lowerBoundB > b || _lowerBoundA > a) {
@@ -102,6 +107,8 @@ void Highlightable::incrementColor(float initialR, float initialG, float initial
 		b = initialB;
 		a = initialA;
 	}
+	
+	_prevIncTime = time;
 }
 
 } // End of namespace Aurora
