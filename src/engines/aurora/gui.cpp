@@ -200,6 +200,8 @@ uint32 GUI::processEventQueue() {
 			mouseUp(*e);
 		else if (e->type == Events::kEventMouseWheel)
 			mouseWheel(*e);
+		else if (e->type == Events::kEventTextInput)
+			textInput(*e);
 	}
 
 	_eventQueue.clear();
@@ -217,6 +219,8 @@ void GUI::callbackRun() {
 void GUI::callbackActive(Widget &UNUSED(widget)) {
 }
 
+void GUI::callbackTextInput(const Common::UString &UNUSED(text)) {
+}
 
 void GUI::addChild(GUI *gui) {
 	_childGUIs.push_back(gui);
@@ -506,6 +510,10 @@ void GUI::mouseWheel(const Events::Event &event) {
 		changedWidget(widget);
 
 	mouseWheel(_currentWidget, event);
+}
+
+void GUI::textInput(const Events::Event &event) {
+	callbackTextInput(event.text.text);
 }
 
 float GUI::toGUIX(int x) {
