@@ -94,7 +94,7 @@ install:
   - cmake -E copy libs\xz\windows\Release\%MSBUILD_PLATFORM%\liblzma_dll\liblzma.lib %LIBXZ_DESTDIR%\lib\lzma.lib
 
   - choco install nasm
-  - set PATH="C:\Program Files (x86)\NASM";%PATH%
+  - set PATH="C:\Program Files\NASM";%PATH%
   - cmake -E chdir libs cmake -E tar xf %LIBXVID%.tar.gz
   - if not exist libs\xvidcore\build\win32\libxvidcore.vcxproj cmake -E chdir libs/xvidcore devenv /upgrade build\win32\libxvidcore.sln
   - cmake -E chdir libs/xvidcore msbuild build\win32\libxvidcore.vcxproj /p:Configuration=Release /p:Platform=%MSBUILD_PLATFORM% /verbosity:quiet
