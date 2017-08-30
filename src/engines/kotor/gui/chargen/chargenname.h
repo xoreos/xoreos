@@ -39,6 +39,11 @@ public:
 
 private:
 	void callbackActive(Widget &widget);
+	void callbackTextInput(const Common::UString &text);
+	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
+
+	WidgetLabel *_nameLabel;
+	Common::UString _name;
 };
 
 } // End of namespace KotOR
