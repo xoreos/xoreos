@@ -78,6 +78,8 @@ public:
 	/** Get the specified node. */
 	const ModelNode *getNode(const Common::UString &node) const;
 
+	void fillAnimNodeMap(Model *model);
+
 protected:
 	typedef std::list<AnimNode *> NodeList;
 	typedef std::map<Common::UString, AnimNode *, Common::UString::iless> NodeMap;

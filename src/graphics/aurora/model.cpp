@@ -76,6 +76,8 @@ Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_boundRenderable->setSurface(SurfaceMan.getSurface("defaultSurface"));
 	_boundRenderable->setMaterial(MaterialMan.getMaterial("defaultWhite"));
 	_boundRenderable->setMesh(MeshMan.getMesh("defaultWireBox"));
+
+	memset(_animNodeMap, 0, 128 * sizeof(ModelNode *));
 }
 
 Model::~Model() {
@@ -230,12 +232,15 @@ void Model::setCurrentAnimation(Animation *anim) {
 
 	_currentAnimation  = anim;
 	_animationLoopTime = 0.0f;
+	anim->fillAnimNodeMap(this);
 
 	for (NodeList::iterator n = _currentState->nodeList.begin(); n != _currentState->nodeList.end(); ++n)
 		if ((*n)->_attachedModel) {
 			(*n)->_attachedModel->_currentAnimation  = anim;
 			(*n)->_attachedModel->_animationLoopTime = 0.0f;
+			anim->fillAnimNodeMap((*n)->_attachedModel);
 		}
+
 }
 
 void Model::getScale(float &x, float &y, float &z) const {
