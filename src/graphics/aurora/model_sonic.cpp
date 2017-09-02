@@ -1165,7 +1165,7 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 		// TODO: For some primitives, we need to calculate the weighted average of several matrices
 		Common::Matrix4x4 matrix;
 		if (!v->nodes.empty() && v->nodes[0].node)
-			matrix = v->nodes[0].node->getAsolutePosition();
+			matrix = v->nodes[0].node->getAbsolutePosition();
 
 		const Common::Vector3 pos = matrix * v->vertex;
 

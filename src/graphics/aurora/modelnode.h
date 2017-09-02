@@ -91,7 +91,9 @@ public:
 	void getAbsolutePosition(float &x, float &y, float &z) const;
 
 	/** Get the position of the node after translate/rotate. */
-	Common::Matrix4x4 getAsolutePosition() const;
+	Common::Matrix4x4 getAbsolutePosition() const;
+
+	uint16 getNodeNumber() const;
 
 	/** Set the position of the node. */
 	void setPosition(float x, float y, float z);
@@ -108,7 +110,6 @@ public:
 	/** Set textures to the node. */
 	void setTextures(const std::vector<Common::UString> &textures);
 
-protected:
 	/** The way the environment map is applied to a model node. */
 	enum EnvironmentMapMode {
 		kModeEnvironmentBlendedUnder, ///< Environment map first, then blend the diffuse textures in.
@@ -129,9 +130,20 @@ protected:
 		Dangly();
 	};
 
+	struct Skin {
+		float      *boneMapping;
+		uint32      boneMappingCount;
+		float      *boneWeights;
+		float      *boneMappingId;
+		ModelNode **boneNodeMap;
+
+		Skin();
+	};
+
 	struct MeshData {
 		VertexBuffer vertexBuffer; ///< Node geometry vertex buffer.
 		IndexBuffer indexBuffer;   ///< Node geometry index buffer.
+		float *initialVertexCoords;
 
 		std::vector<TextureHandle> textures; ///< Textures.
 
@@ -167,11 +179,15 @@ protected:
 
 		MeshData *data;
 		Dangly *dangly;
+		Skin *skin;
 		// TODO Anim, Skin, AABB Meshes
 
 		Mesh();
 	};
 
+	Mesh *getMesh() const;
+
+protected:
 	Model *_model; ///< The model this node belongs to.
 
 	ModelNode *_parent;               ///< The node's parent.
@@ -201,6 +217,8 @@ protected:
 
 	Common::BoundingBox _boundBox;
 	Common::BoundingBox _absoluteBoundBox;
+
+	uint16 _nodeNumber;
 
 
 	// Loading helpers

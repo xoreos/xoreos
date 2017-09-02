@@ -177,6 +177,8 @@ public:
 	void render(RenderPass pass);
 	void advanceTime(float dt);
 
+	bool _isSkinned;
+
 
 protected:
 	typedef std::list<ModelNode *> NodeList;
@@ -279,6 +281,7 @@ private:
 	float _animationLoopLength; ///< The length of one loop of the current animation.
 	float _animationLoopTime;   ///< The time the current loop of the current animation has played.
 
+	ModelNode *_animNodeMap[128];
 
 	/** Create the list of all state names. */
 	void createStateNamesList(std::list<Common::UString> *stateNames = 0);
@@ -307,6 +310,7 @@ public:
 	                      uint32 offset, uint32 count, std::vector<T> &values);
 
 	friend class ModelNode;
+	friend class Animation;
 };
 
 } // End of namespace Aurora

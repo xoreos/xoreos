@@ -78,6 +78,8 @@ public:
 	/** Get the specified node. */
 	const ModelNode *getNode(const Common::UString &node) const;
 
+	void fillAnimNodeMap(Model *model);
+
 protected:
 	typedef std::list<AnimNode *> NodeList;
 	typedef std::map<Common::UString, AnimNode *, Common::UString::iless> NodeMap;
@@ -92,8 +94,11 @@ protected:
 	float _transtime;
 
 private:
-	void interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale) const;
+	void interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale,
+	                         bool relative) const;
 	void interpolateOrientation(ModelNode *animNode, ModelNode *target, float time) const;
+	void updateSkinnedModel(Model *model) const;
+	void computeNodeTransform(ModelNode *node, float *outInvBindPose, float *outTransform) const;
 };
 
 } // End of namespace Aurora
