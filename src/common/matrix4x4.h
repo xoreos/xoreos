@@ -93,6 +93,8 @@ public:
 	void perspective(float fovy, float aspectRatio, float znear, float zfar);
 	void ortho(float l, float r, float b, float t, float n, float f);
 
+	void multiply(const float *vin, float *vout) const;
+
 	const Matrix4x4 &operator=(const float *m);
 
 	float &operator[](unsigned int index);

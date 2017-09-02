@@ -46,17 +46,22 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 	return a->isInFrontOf(*b);
 }
 
+ModelNode::Skin::Skin() : boneMapping(0), boneMappingCount(0), boneWeights(0), boneMappingId(0),
+	boneNodeMap(0) {
+}
+
 ModelNode::Dangly::Dangly() : period(1.0f), tightness(1.0f), displacement(1.0f),
 	data(0) {
 }
 
-ModelNode::MeshData::MeshData() : envMapMode(kModeEnvironmentBlendedUnder) {
+ModelNode::MeshData::MeshData() :
+	initialVertexCoords(0), envMapMode(kModeEnvironmentBlendedUnder) {
 }
 
 ModelNode::Mesh::Mesh() : shininess(1.0f), alpha(1.0f), tilefade(0), render(false),
 	shadow(false), beaming(false), inheritcolor(false), rotatetexture(false),
 	isTransparent(false), hasTransparencyHint(false), transparencyHint(false),
-	data(0), dangly(0) {
+	data(0), dangly(0), skin(0) {
 }
 
 
@@ -82,7 +87,22 @@ ModelNode::~ModelNode() {
 			delete _mesh->dangly->data;
 			delete _mesh->dangly;
 		}
-		delete _mesh->data;
+		if (_mesh->skin) {
+			if (_mesh->skin->boneMapping)
+				delete[] _mesh->skin->boneMapping;
+			if (_mesh->skin->boneWeights)
+				delete[] _mesh->skin->boneWeights;
+			if (_mesh->skin->boneMappingId)
+				delete[] _mesh->skin->boneMappingId;
+			if (_mesh->skin->boneNodeMap)
+				delete[] _mesh->skin->boneNodeMap;
+			delete _mesh->skin;
+		}
+		if (_mesh->data) {
+			if (_mesh->data->initialVertexCoords)
+				delete[] _mesh->data->initialVertexCoords;
+			delete _mesh->data;
+		}
 	}
 	delete _mesh;
 	_mesh = 0;
@@ -162,11 +182,15 @@ void ModelNode::getAbsolutePosition(float &x, float &y, float &z) const {
 	z = _absolutePosition.getZ() * _model->_scale[2];
 }
 
-Common::Matrix4x4 ModelNode::getAsolutePosition() const {
+Common::Matrix4x4 ModelNode::getAbsolutePosition() const {
 	Common::Matrix4x4 absolutePosition = _absolutePosition;
 	absolutePosition.scale(_model->_scale[0], _model->_scale[1], _model->_scale[2]);
 
 	return absolutePosition;
+}
+
+uint16 ModelNode::getNodeNumber() const {
+	return _nodeNumber;
 }
 
 void ModelNode::setPosition(float x, float y, float z) {
@@ -260,6 +284,10 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 	loadTextures(textures);
 
 	unlockFrameIfVisible();
+}
+
+ModelNode::Mesh *ModelNode::getMesh() const {
+	return _mesh;
 }
 
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {

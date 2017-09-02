@@ -635,6 +635,16 @@ void Matrix4x4::ortho(float l, float r, float b, float t, float n, float f)
 	this->transform(mMatrix);
 }
 
+void Matrix4x4::multiply(const float *vin, float *vout) const {
+	vout[0] = vin[0] * _elements[ 0] + vin[1] * _elements[ 4] + vin[2] * _elements[ 8] + _elements[12];
+	vout[1] = vin[0] * _elements[ 1] + vin[1] * _elements[ 5] + vin[2] * _elements[ 9] + _elements[13];
+	vout[2] = vin[0] * _elements[ 2] + vin[1] * _elements[ 6] + vin[2] * _elements[10] + _elements[14];
+	float w = vin[0] * _elements[ 3] + vin[1] * _elements[ 7] + vin[2] * _elements[11] + _elements[15];
+	vout[0] /= w;
+	vout[1] /= w;
+	vout[2] /= w;
+}
+
 const Matrix4x4 &Matrix4x4::operator=(const float *m) {
 	std::memcpy(_elements, m, 16 * sizeof(float));
 	return *this;

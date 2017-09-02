@@ -177,6 +177,8 @@ public:
 	void render(RenderPass pass);
 	void advanceTime(float dt);
 
+	bool _isSkinned;
+
 
 protected:
 	typedef std::list<ModelNode *> NodeList;

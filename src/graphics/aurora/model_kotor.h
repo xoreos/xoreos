@@ -82,6 +82,8 @@ private:
 			const std::vector<uint32> &offsets, uint32 offset,
 			std::vector<Common::UString> &strings);
 
+	void makeBoneNodeMap();
+
 	friend class ModelNode_KotOR;
 };
 
@@ -93,9 +95,14 @@ public:
 	void load(Model_KotOR::ParserContext &ctx);
 
 private:
+	uint32 _mdxStructSize;
+	uint16 _vertexCount;
+	uint32 _offNodeData;
+
 	void readNodeControllers(Model_KotOR::ParserContext &ctx, uint32 offset,
 	                         uint32 count, std::vector<float> &data);
 	void readMesh(Model_KotOR::ParserContext &ctx);
+	void readSkin(Model_KotOR::ParserContext &ctx);
 };
 
 } // End of namespace Aurora

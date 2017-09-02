@@ -92,8 +92,11 @@ protected:
 	float _transtime;
 
 private:
-	void interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale) const;
+	void interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale,
+	                         bool relative) const;
 	void interpolateOrientation(ModelNode *animNode, ModelNode *target, float time) const;
+	void updateSkinnedModel(Model *model) const;
+	void computeNodeTransform(ModelNode *node, float *outInvBindPose, float *outTransform) const;
 };
 
 } // End of namespace Aurora
