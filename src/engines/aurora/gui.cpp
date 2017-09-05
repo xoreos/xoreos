@@ -202,6 +202,10 @@ uint32 GUI::processEventQueue() {
 			mouseWheel(*e);
 		else if (e->type == Events::kEventTextInput)
 			textInput(*e);
+		else if (e->type == Events::kEventKeyDown)
+			keyDown(*e);
+		else if (e->type == Events::kEventKeyUp)
+			keyUp(*e);
 	}
 
 	_eventQueue.clear();
@@ -220,6 +224,9 @@ void GUI::callbackActive(Widget &UNUSED(widget)) {
 }
 
 void GUI::callbackTextInput(const Common::UString &UNUSED(text)) {
+}
+
+void GUI::callbackKeyInput(const Events::Key &UNUSED(key), const Events::EventType &UNUSED(type)) {
 }
 
 void GUI::addChild(GUI *gui) {
@@ -514,6 +521,14 @@ void GUI::mouseWheel(const Events::Event &event) {
 
 void GUI::textInput(const Events::Event &event) {
 	callbackTextInput(event.text.text);
+}
+
+void GUI::keyDown(const Events::Event &event) {
+	callbackKeyInput(Events::Key(event.key.keysym.sym), Events::kEventKeyDown);
+}
+
+void GUI::keyUp(const Events::Event &event) {
+	callbackKeyInput(Events::Key(event.key.keysym.sym), Events::kEventKeyUp);
 }
 
 float GUI::toGUIX(int x) {
