@@ -123,10 +123,16 @@ enum Skin {
 };
 
 enum Class {
-	kClassNone = 0,
-	kClassSoldier,
+	kClassSoldier = 0,
 	kClassScout,
-	kClassScoundrel
+	kClassScoundrel,
+	kClassJediGuardian,
+	kClassJediConsular,
+	kClassJediSentinel,
+	kClassExpertDroid,
+	kClassCombatDroid,
+	kClassMinion,
+	kClassInvalid = 255
 };
 
 } // End of namespace KotOR
