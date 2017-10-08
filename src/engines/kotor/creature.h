@@ -62,7 +62,9 @@ public:
 	// Basic properties
 
 	bool isPC() const; ///< Is the creature a player character?
+
 	Gender getGender() const; ///< Get the gender of the creature.
+	int getLevel(const Class &c) const; ///< Get the level of the creature regarding a specific class.
 
 	// Positioning
 
@@ -98,6 +100,8 @@ private:
 	uint32 _appearance; ///< The creature's general appearance.
 
 	Gender _gender;
+	std::map<Class, int> _levels; ///< The levels of the creature.
+
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 
 
