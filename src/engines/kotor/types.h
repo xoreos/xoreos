@@ -108,6 +108,8 @@ enum Script {
 enum Gender {
 	kGenderMale = 0,
 	kGenderFemale,
+	kGenderBoth,
+	kGenderOther,
 	kGenderNone
 };
 
