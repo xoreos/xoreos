@@ -62,6 +62,7 @@ public:
 	// Basic properties
 
 	bool isPC() const; ///< Is the creature a player character?
+	int getLevel(const Class &c) const; ///< Get the level of the creature regarding a specific class
 
 	// Positioning
 
@@ -96,6 +97,7 @@ private:
 
 	uint32 _appearance; ///< The creature's general appearance.
 
+	std::map<Class, int> _levels; ///< The levels of the creature.
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 
 
