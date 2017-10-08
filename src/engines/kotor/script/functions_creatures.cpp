@@ -47,6 +47,18 @@ void Functions::getGender(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature->getGender();
 }
 
+void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
+	Class creatureClass = Class(ctx.getParams()[0].getInt());
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+
+	Creature *creature = ObjectContainer::toCreature(object);
+
+	if (!creature)
+		throw Common::Exception("Functions::getLevelByClass(): Object is not a creature");
+
+	ctx.getReturn() = creature->getLevel(creatureClass);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

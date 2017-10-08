@@ -215,6 +215,7 @@ private:
 
 	// .--- Creatures, functions_creatures.cpp
 	void getGender(Aurora::NWScript::FunctionContext &ctx);
+	void getLevelByClass(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 

@@ -461,7 +461,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 340, "GetNextItemInInventory"              , 0                                                },
 	{ 341, "GetClassByPosition"                  , 0                                                },
 	{ 342, "GetLevelByPosition"                  , 0                                                },
-	{ 343, "GetLevelByClass"                     , 0                                                },
+	{ 343, "GetLevelByClass"                     , &Functions::getLevelByClass                      },
 	{ 344, "GetDamageDealtByType"                , 0                                                },
 	{ 345, "GetTotalDamageDealt"                 , 0                                                },
 	{ 346, "GetLastDamager"                      , 0                                                },
