@@ -212,6 +212,10 @@ private:
 	// .--- Movies, functions_movie.cpp
 	void playMovie(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Creatures, functions_creatures.cpp
+	void getGender(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace KotOR
