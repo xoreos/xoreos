@@ -62,6 +62,8 @@ void Creature::init() {
 	_isPC = false;
 
 	_appearance = Aurora::kFieldIDInvalid;
+
+	_gender = kGenderNone;
 }
 
 void Creature::show() {
@@ -76,6 +78,10 @@ void Creature::hide() {
 
 bool Creature::isPC() const {
 	return _isPC;
+}
+
+Gender Creature::getGender() const {
+	return _gender;
 }
 
 void Creature::setPosition(float x, float y, float z) {
@@ -272,6 +278,8 @@ void Creature::createPC(CharacterGenerationInfo *info) {
 		default:
 			throw Common::Exception("Unknown gender");
 	}
+
+	_gender = info->getGender();
 
 	parts.body += "bb";
 	parts.head += "h";

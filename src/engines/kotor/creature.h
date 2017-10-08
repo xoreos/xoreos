@@ -62,6 +62,7 @@ public:
 	// Basic properties
 
 	bool isPC() const; ///< Is the creature a player character?
+	Gender getGender() const; ///< Get the gender of the creature
 
 	// Positioning
 
@@ -96,6 +97,7 @@ private:
 
 	uint32 _appearance; ///< The creature's general appearance.
 
+	Gender _gender;
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 
 
