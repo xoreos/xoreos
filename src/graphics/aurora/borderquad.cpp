@@ -33,17 +33,30 @@ namespace Graphics {
 namespace Aurora {
 
 BorderQuad::BorderQuad(const Common::UString &edge, const Common::UString &corner,
-                       float x, float y, float w, float h) :
+                       float x, float y, float w, float h, int dimension) :
 	Renderable(kRenderableTypeGUIFront), _edgeWidth(0), _edgeHeight(0), _cornerWidth(0), _cornerHeight(0),
 	_x(x), _y(y), _w(w), _h(h) {
 
 	_edge = TextureMan.get(edge);
 	_corner = TextureMan.get(corner);
 
-	_cornerWidth = _corner.getTexture().getWidth();
-	_cornerHeight = _corner.getTexture().getHeight();
-	_edgeWidth = _edge.getTexture().getWidth();
-	_edgeHeight = _edge.getTexture().getHeight();
+	if (dimension == 0) {
+		_cornerWidth = _corner.getTexture().getWidth();
+		_cornerHeight = _corner.getTexture().getHeight();
+		_edgeWidth = _edge.getTexture().getWidth();
+		_edgeHeight = _edge.getTexture().getHeight();
+	} else {
+		/*
+		 * because we do not have a proper factor for modifying the corners, we simply calculate the
+		 * factor with the difference of the edge to the dimension
+		 */
+		float widthFactor = static_cast<float>(dimension) / static_cast<float>(_edge.getTexture().getWidth());
+		float heightFactor = static_cast<float>(dimension) / static_cast<float>(_edge.getTexture().getHeight());
+		_cornerWidth = widthFactor * _corner.getTexture().getWidth();
+		_cornerHeight = heightFactor * _corner.getTexture().getHeight();
+		_edgeWidth = dimension;
+		_edgeHeight = dimension;
+	}
 
 	_distance = -FLT_MAX;
 
