@@ -37,7 +37,8 @@ namespace Aurora {
 
 class BorderQuad : public Renderable {
 public:
-	BorderQuad(const Common::UString &edge, const Common::UString &corner, float x, float y, float w, float h);
+	BorderQuad(const Common::UString &edge, const Common::UString &corner, float x, float y, float w, float h,
+	           int dimension = 0);
 
 	void setPosition(float x, float y, float z);
 	void getPosition(float &x, float &y, float &z);
