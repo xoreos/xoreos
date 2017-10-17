@@ -37,7 +37,7 @@ namespace Engines {
 namespace KotOR2 {
 
 MainMenu::MainMenu(Module &module, ::Engines::Console *console) : GUI(console), _module(&module) {
-	load("mainmenu16x12_p");
+	load("mainmenu8x6_p");
 }
 
 MainMenu::~MainMenu() {
