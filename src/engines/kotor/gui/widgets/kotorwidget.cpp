@@ -193,7 +193,9 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 		_quad->setColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	if (!border.edge.empty() && !border.corner.empty()) {
-		_border.reset(new Graphics::Aurora::BorderQuad(border.edge, border.corner, extend.x, extend.y, extend.w, extend.h));
+		_border.reset(new Graphics::Aurora::BorderQuad(border.edge, border.corner,
+		                                               extend.x, extend.y, extend.w, extend.h,
+		                                               border.dimension));
 	}
 
 	Text text = createText(gff);
