@@ -17,15 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# GUI system in Star Wars: Knights of the Old Republic II - The Sith Lords.
-
-src_engines_kotor2_libkotor2_la_SOURCES += \
-    src/engines/kotor2/gui/gui.h \
-    $(EMPTY)
+# Character Generation system in Star Wars: Knights of the Old Republic II - The Sith Lords.
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
     $(EMPTY)
 
-include src/engines/kotor2/gui/widgets/rules.mk
-include src/engines/kotor2/gui/main/rules.mk
-include src/engines/kotor2/gui/chargen/rules.mk
+src_engines_kotor2_libkotor2_la_SOURCES += \
+    $(EMPTY)
