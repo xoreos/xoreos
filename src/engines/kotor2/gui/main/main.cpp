@@ -31,6 +31,7 @@
 #include "src/engines/kotor2/gui/widgets/kotorwidget.h"
 
 #include "src/engines/kotor2/gui/main/main.h"
+#include "src/engines/kotor2/gui/chargen/classselection.h"
 
 namespace Engines {
 
@@ -69,6 +70,11 @@ void MainMenu::initWidget(Widget &widget) {
 	}
 }
 
+void MainMenu::createClassSelection() {
+	if (!_classSelection)
+		_classSelection.reset(new ClassSelection(_module));
+}
+
 void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_EXIT") {
 		EventMan.requestQuit();
@@ -78,14 +84,8 @@ void MainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_NEWGAME") {
-		try {
-			_module->load("001EBO");
-		} catch (...) {
-			Common::exceptionDispatcherWarning();
-			return;
-		}
-
-		_returnCode = 2;
+		createClassSelection();
+		sub(*_classSelection);
 		return;
 	}
 }

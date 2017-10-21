@@ -19,40 +19,57 @@
  */
 
 /** @file
- *  The KotOR 2 main menu.
+ *  The KotOR 2 class selection.
  */
 
-#ifndef ENGINES_KOTOR2_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR2_GUI_MAIN_MAIN_H
+#ifndef ENGINES_KOTOR2_GUI_CHARGEN_CLASSSELECTION_H
+#define ENGINES_KOTOR2_GUI_CHARGEN_CLASSSELECTION_H
 
 #include "src/engines/kotor2/module.h"
-
 #include "src/engines/kotor2/gui/gui.h"
+#include "src/engines/kotor2/gui/widgets/label.h"
+#include "src/engines/kotor2/gui/widgets/button.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class MainMenu : public GUI {
+class ClassSelection : public GUI {
 public:
-	MainMenu(Module &module, ::Engines::Console *console = 0);
-	~MainMenu();
+	ClassSelection(Module *module, Engines::Console *console = 0);
 
 protected:
-	void initWidget(Widget &widget);
-
+	void callbackRun();
 	void callbackActive(Widget &widget);
 
 private:
-	void createClassSelection();
-
-	Common::ScopedPtr<GUI> _classSelection;
-
 	Module *_module;
+
+	WidgetButton *_consularMaleButton;
+	WidgetButton *_sentinelMaleButton;
+	WidgetButton *_guardianMaleButton;
+	WidgetButton *_guardianFemaleButton;
+	WidgetButton *_sentinelFemaleButton;
+	WidgetButton *_consularFemaleButton;
+	WidgetButton *_hoveredButton;
+
+	WidgetLabel *_labelDesc;
+	WidgetLabel *_labelTitle;
+
+	Common::UString _guardianMaleTitle;
+	Common::UString _guardianFemaleTitle;
+	Common::UString _consularMaleTitle;
+	Common::UString _consularFemaleTitle;
+	Common::UString _sentinelMaleTitle;
+	Common::UString _sentinelFemaleTitle;
+
+	Common::UString _guardianDescription;
+	Common::UString _consularDescription;
+	Common::UString _sentinelDescription;
 };
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_GUI_MAIN_MAIN_H
+#endif // ENGINES_KOTOR2_GUI_CHARGEN_CLASSSELECTION_H

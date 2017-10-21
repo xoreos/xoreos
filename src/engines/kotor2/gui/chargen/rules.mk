@@ -20,7 +20,9 @@
 # Character Generation system in Star Wars: Knights of the Old Republic II - The Sith Lords.
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
+    src/engines/kotor2/gui/chargen/classselection.h \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
+    src/engines/kotor2/gui/chargen/classselection.cpp \
     $(EMPTY)
