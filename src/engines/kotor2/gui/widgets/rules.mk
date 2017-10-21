@@ -22,6 +22,7 @@
 src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/gui/widgets/kotorwidget.h \
     src/engines/kotor2/gui/widgets/label.h \
+    src/engines/kotor2/gui/widgets/button.h \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
