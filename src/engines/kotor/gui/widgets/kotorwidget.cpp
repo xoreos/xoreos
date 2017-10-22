@@ -28,6 +28,8 @@
 #include "src/aurora/gff3file.h"
 #include "src/aurora/talkman.h"
 
+#include "src/graphics/windowman.h"
+
 #include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/guiquad.h"
 #include "src/graphics/aurora/text.h"
@@ -57,7 +59,8 @@ KotORWidget::Text::Text() : strRef(Aurora::kStrRefInvalid), halign(0.0f), valign
 
 
 KotORWidget::KotORWidget(::Engines::GUI &gui, const Common::UString &tag) :
-	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _wrapped(false) {
+	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _wrapped(false),
+	_subScene(NULL) {
 
 }
 
@@ -76,12 +79,16 @@ void KotORWidget::show() {
 		_text->show();
 	if (_border)
 		_border->show();
+	if (_subScene)
+		_subScene->show();
 }
 
 void KotORWidget::hide() {
 	if (isInvisible())
 		return;
 
+	if (_subScene)
+		_subScene->hide();
 	if (_border)
 		_border->hide();
 	if (_quad)
@@ -129,6 +136,24 @@ void KotORWidget::setPosition(float x, float y, float z) {
 	if (_border) {
 		_border->setPosition(x, y, z);
 	}
+}
+
+void KotORWidget::setSubScene(Graphics::Aurora::SubSceneQuad *subscene) {
+	if (!subscene) {
+		_subScene = NULL;
+		return;
+	}
+
+	_subScene = subscene;
+	_subScene->setSize(_width, _height);
+
+	float wWidth, wHeight;
+	wWidth = WindowMan.getWindowWidth();
+	wHeight = WindowMan.getWindowHeight();
+
+	float x, y, z;
+	getPosition(x, y, z);
+	_subScene->setPosition(x + wWidth/2, y + wHeight/2);
 }
 
 void KotORWidget::setScissor(int x, int y, int width, int height) {
