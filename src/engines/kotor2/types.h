@@ -105,6 +105,37 @@ enum Script {
 	kScriptMAX
 };
 
+enum Gender {
+	kGenderMale = 0,
+	kGenderFemale,
+	kGenderBoth,
+	kGenderOther,
+	kGenderNone
+};
+
+enum Class {
+	kClassSoldier = 0,
+	kClassScout,
+	kClassScoundrel,
+	kClassJediGuardian,
+	kClassJediConsular,
+	kClassJediSentinel,
+	kClassExpertDroid,
+	kClassCombatDroid,
+	kClassMinion,
+
+	kClassTechSpecialist,
+	kClassBountyHunter,
+	kClassJediWeaponMaster,
+	kClassJediMaster,
+	kClassJediWatchMan,
+	kClassSithMarauder,
+	kClassSithLord,
+	kClassSithAssassin,
+
+	kClassInvalid = 255
+};
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
