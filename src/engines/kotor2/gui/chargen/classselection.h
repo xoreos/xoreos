@@ -29,6 +29,8 @@
 #include "src/engines/kotor2/gui/gui.h"
 #include "src/engines/kotor2/gui/widgets/label.h"
 #include "src/engines/kotor2/gui/widgets/button.h"
+#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
+#include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 
 namespace Engines {
 
@@ -37,6 +39,7 @@ namespace KotOR2 {
 class ClassSelection : public GUI {
 public:
 	ClassSelection(Module *module, Engines::Console *console = 0);
+	~ClassSelection();
 
 protected:
 	void callbackRun();
@@ -44,6 +47,15 @@ protected:
 
 private:
 	Module *_module;
+
+	Common::ScopedPtr<CharacterGeneration> _chargen;
+
+	CharacterGenerationInfo *_consularMaleInfo;
+	CharacterGenerationInfo *_sentinelMaleInfo;
+	CharacterGenerationInfo *_guardianMaleInfo;
+	CharacterGenerationInfo *_consularFemaleInfo;
+	CharacterGenerationInfo *_sentinelFemaleInfo;
+	CharacterGenerationInfo *_guardianFemaleInfo;
 
 	WidgetButton *_consularMaleButton;
 	WidgetButton *_sentinelMaleButton;

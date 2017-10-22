@@ -25,6 +25,7 @@
 #include "src/aurora/talkman.h"
 
 #include "src/engines/kotor2/gui/chargen/classselection.h"
+#include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 
 namespace Engines {
 
@@ -34,6 +35,13 @@ ClassSelection::ClassSelection(Module *module, Console *console) : GUI(console) 
 	load("classsel_p");
 
 	_module = module;
+
+	_consularMaleInfo = CharacterGenerationInfo::createRandomMaleConsular();
+	_guardianMaleInfo = CharacterGenerationInfo::createRandomMaleGuardian();
+	_sentinelMaleInfo = CharacterGenerationInfo::createRandomMaleSentinel();
+	_consularFemaleInfo = CharacterGenerationInfo::createRandomFemaleConsular();
+	_guardianFemaleInfo = CharacterGenerationInfo::createRandomFemaleGuardian();
+	_sentinelFemaleInfo = CharacterGenerationInfo::createRandomFemaleSentinel();
 
 	Common::UString malePrefix, femalePrefix;
 	malePrefix = TalkMan.getString(646);
@@ -67,6 +75,15 @@ ClassSelection::ClassSelection(Module *module, Console *console) : GUI(console) 
 	_hoveredButton = _consularMaleButton;
 }
 
+ClassSelection::~ClassSelection() {
+	delete _consularMaleInfo;
+	delete _guardianMaleInfo;
+	delete _sentinelMaleInfo;
+	delete _consularFemaleInfo;
+	delete _guardianFemaleInfo;
+	delete _sentinelFemaleInfo;
+}
+
 void ClassSelection::callbackRun() {
 	if (_consularMaleButton->isHovered() && _hoveredButton != _consularMaleButton) {
 		_labelDesc->setText(_consularDescription);
@@ -96,23 +113,34 @@ void ClassSelection::callbackRun() {
 }
 
 void ClassSelection::callbackActive(Widget &widget) {
-	//TODO Add different character generations
 	if (widget.getTag() == "BTN_SEL1") {
+		_chargen.reset(new CharacterGeneration(_module, _consularMaleInfo));
+		sub(*_chargen);
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL2") {
+		_chargen.reset(new CharacterGeneration(_module, _guardianMaleInfo));
+		sub(*_chargen);
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL3") {
+		_chargen.reset(new CharacterGeneration(_module, _sentinelMaleInfo));
+		sub(*_chargen);
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL4") {
+		_chargen.reset(new CharacterGeneration(_module, _sentinelFemaleInfo));
+		sub(*_chargen);
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL5") {
+		_chargen.reset(new CharacterGeneration(_module, _guardianFemaleInfo));
+		sub(*_chargen);
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL6") {
+		_chargen.reset(new CharacterGeneration(_module, _consularFemaleInfo));
+		sub(*_chargen);
 		return;
 	}
 

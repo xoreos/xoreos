@@ -21,8 +21,12 @@
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/gui/chargen/classselection.h \
+    src/engines/kotor2/gui/chargen/charactergeneration.h \
+    src/engines/kotor2/gui/chargen/chargeninfo.h \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/gui/chargen/classselection.cpp \
+    src/engines/kotor2/gui/chargen/charactergeneration.cpp \
+    src/engines/kotor2/gui/chargen/chargeninfo.cpp \
     $(EMPTY)
