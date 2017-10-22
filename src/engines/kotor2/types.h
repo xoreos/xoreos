@@ -105,6 +105,14 @@ enum Script {
 	kScriptMAX
 };
 
+enum Skin {
+	kSkinA = 0,
+	kSkinB,
+	kSkinC,
+	kSkinH,
+	kSkinMAX
+};
+
 enum Gender {
 	kGenderMale = 0,
 	kGenderFemale,
