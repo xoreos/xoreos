@@ -62,6 +62,17 @@ void Creature::init() {
 	_isPC = false;
 
 	_appearance = Aurora::kFieldIDInvalid;
+
+	_levels[kClassSoldier] = 0;
+	_levels[kClassScout] = 0;
+	_levels[kClassScoundrel] = 0;
+	_levels[kClassJediGuardian] = 0;
+	_levels[kClassJediConsular] = 0;
+	_levels[kClassJediSentinel] = 0;
+	_levels[kClassCombatDroid] = 0;
+	_levels[kClassExpertDroid] = 0;
+	_levels[kClassMinion] = 0;
+	_levels[kClassInvalid] = 0;
 }
 
 void Creature::show() {
@@ -76,6 +87,10 @@ void Creature::hide() {
 
 bool Creature::isPC() const {
 	return _isPC;
+}
+
+int Creature::getLevel(const Class &c) const {
+	return _levels.at(c);
 }
 
 void Creature::setPosition(float x, float y, float z) {
@@ -288,6 +303,9 @@ void Creature::createPC(CharacterGenerationInfo *info) {
 			parts.body += "m";
 			break;
 	}
+
+	// set the specific class to level 1
+	_levels[info->getClass()] = 1;
 
 	loadBody(parts);
 
