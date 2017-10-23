@@ -51,6 +51,8 @@ CharacterGeneration::CharacterGeneration(Module *module, CharacterGenerationInfo
 
 	getLabel("LBL_NAME")->setText("");
 	getLabel("LBL_LEVEL_VAL")->setText("");
+
+	getLabel("PORTRAIT_LBL")->setFill(_chargenInfo->getPortrait());
 }
 
 } // End of namespace KotOR2

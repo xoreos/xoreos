@@ -44,6 +44,8 @@ public:
 
 	Class getClass() const;
 
+	Common::UString getPortrait() const;
+
 private:
 	Gender _gender;
 	Class _class;

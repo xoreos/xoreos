@@ -138,6 +138,101 @@ Class CharacterGenerationInfo::getClass() const {
 	return _class;
 }
 
+Common::UString CharacterGenerationInfo::getPortrait() const {
+	Common::UString portrait;
+	portrait += "po_p";
+
+	switch (_gender) {
+		case kGenderMale:
+			portrait += "m";
+			break;
+		case kGenderFemale:
+			portrait += "f";
+			break;
+		default:
+			throw Common::Exception("Gender unknown for creating portrait string");
+	}
+
+	portrait += "h";
+
+	switch (_skin) {
+		case kSkinA:
+			switch (_face) {
+				case 0:
+					portrait += "a01";
+					break;
+				case 1:
+					portrait += "a03";
+					break;
+				case 2:
+					if (_gender == kGenderFemale)
+						portrait += "a04";
+					else if (_gender == kGenderMale)
+						portrait += "a05";
+					break;
+				case 3:
+					if (_gender == kGenderFemale)
+						portrait += "a05";
+					else if (_gender == kGenderMale)
+						portrait += "a06";
+					break;
+				case 4:
+					if (_gender == kGenderFemale)
+						portrait += "a06";
+					else if (_gender == kGenderMale)
+						portrait += "a07";
+					break;
+				default:
+					throw Common::Exception("invalid face id");
+			}
+			break;
+		case kSkinB:
+			portrait += "b";
+			if (_gender == kGenderFemale)
+				portrait += ("0" + Common::composeString(_face + 1));
+			else
+				if (_face + 6 >= 10)
+					portrait += Common::composeString(_face + 6);
+				else
+					portrait += ("0" + Common::composeString(_face + 6));
+			break;
+		case kSkinC:
+			switch (_face) {
+				case 0:
+					portrait += "c01";
+					break;
+				case 1:
+					if (_gender == kGenderFemale)
+						portrait += "c02";
+					else if (_gender == kGenderMale)
+						portrait += "c03";
+					break;
+				case 2:
+					if (_gender == kGenderFemale)
+						portrait += "c05";
+					else if (_gender == kGenderMale)
+						portrait += "c04";
+					break;
+				case 3:
+					portrait += "c06";
+					break;
+				case 4:
+					portrait += "c07";
+					break;
+				default:
+					throw Common::Exception("invalid face id");
+			}
+			break;
+		case kSkinH:
+			portrait += ("h0" + Common::composeString(_face + 1));
+			break;
+		default:
+			throw Common::Exception("invalid skin id");
+	}
+
+	return portrait;
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
