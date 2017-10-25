@@ -42,6 +42,9 @@ public:
 	void setDisableHighlight(bool);
 	void setDisableHoverSound(bool);
 
+    void setHighlightEdgeTexture();
+    void setHighlightCornerTexture();
+
 	virtual void load(const Aurora::GFF3Struct &gff);
 
 	void mouseUp(uint8 state, float x, float y);

@@ -43,6 +43,9 @@ public:
 	void getPosition(float &x, float &y, float &z);
 	void setSize(float w, float h);
 
+    void setCornerTexture(const TextureHandle &corner);
+    void setEdgeTexture(const TextureHandle &edge);
+
 	virtual void calculateDistance();
 
 	void render(RenderPass pass);

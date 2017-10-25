@@ -23,14 +23,16 @@
  */
 
 #include "src/common/system.h"
-
 #include "src/aurora/gff3file.h"
 
 #include "src/sound/sound.h"
 
 #include "src/graphics/aurora/guiquad.h"
+
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/highlightabletext.h"
+#include "src/graphics/aurora/highlightableborder.h"
+#include "src/graphics/aurora/textureman.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/kotor/gui/widgets/button.h"
@@ -83,6 +85,9 @@ void WidgetButton::load(const Aurora::GFF3Struct &gff) {
 	if (getQuadHighlightableComponent() != 0) {
 		  setDefaultHighlighting(getQuadHighlightableComponent());
 	}
+    if (getBorderHighlightableComponent() != 0) {
+        setDefaultHighlighting(getBorderHighlightableComponent());
+    }
 }
 
 bool WidgetButton::isHovered() {
@@ -138,6 +143,10 @@ void WidgetButton::startHighlight() {
 		getQuadHighlightableComponent()->setHighlighted(true);
 	}
 
+    if (getBorderHighlightableComponent() && getBorderHighlightableComponent()->isHighlightable()) {
+        getBorderHighlightableComponent()->setHighlighted(true);
+    }
+
 	_highlighted = true;
 }
 
@@ -151,6 +160,10 @@ void WidgetButton::stopHighlight() {
 		_quad->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
 	}
 
+    if (getBorderHighlightableComponent() && getBorderHighlightableComponent()->isHighlightable()) {
+        getBorderHighlightableComponent()->setHighlighted(false);
+    }
+
 	_highlighted = false;
 }
 
@@ -159,6 +172,18 @@ void WidgetButton::setDefaultHighlighting(Graphics::Aurora::Highlightable *highl
 	highlightable->setHighlightDelta(0, 0, 0, .05);
 	highlightable->setHighlightLowerBound(1, 1, 0, .2);
 	highlightable->setHighlightUpperBound(1, 1, 0, 1);
+}
+
+void WidgetButton::setHighlightEdgeTexture() {
+    if(getBorderHighlightableComponent() != 0) {
+        ((Graphics::Aurora::HighlightableBorder*) getBorderHighlightableComponent())->setHighlightEdgeTexture(TextureMan.get("boxline6"));
+    }
+}
+
+void WidgetButton::setHighlightCornerTexture() {
+    if(getBorderHighlightableComponent() != 0) {
+        ((Graphics::Aurora::HighlightableBorder*) getBorderHighlightableComponent())->setHighlightCornerTexture(TextureMan.get("boxline5"));
+    }
 }
 
 } // End of namespace KotOR

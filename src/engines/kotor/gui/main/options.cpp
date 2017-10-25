@@ -85,6 +85,13 @@ void OptionsMenu::callbackActive(Widget &widget) {
 	}
 }
 
+void OptionsMenu::initWidget(Widget &widget) {
+    if(widget.getTag().beginsWith("BTN_")){
+        ((WidgetButton&) widget).setHighlightCornerTexture();
+        ((WidgetButton&) widget).setHighlightEdgeTexture();
+    }
+}
+
 void OptionsMenu::adoptChanges() {
 	dynamic_cast<OptionsGameplayMenu &>(*_gameplay).adoptChanges();
 }

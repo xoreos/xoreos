@@ -23,16 +23,17 @@
  */
 
 #include "src/common/util.h"
-
 #include "src/aurora/types.h"
+
 #include "src/aurora/gff3file.h"
 #include "src/aurora/talkman.h"
-
 #include "src/graphics/aurora/fontman.h"
+
 #include "src/graphics/aurora/guiquad.h"
 #include "src/graphics/aurora/text.h"
 #include "src/graphics/aurora/highlightabletext.h"
 #include "src/graphics/aurora/highlightableguiquad.h"
+#include <src/graphics/aurora/highlightableborder.h>
 
 #include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
@@ -178,6 +179,7 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	Widget::setPosition(extend.x, extend.y, 0.0f);
 
 	Border border = createBorder(gff);
+	Border highlight = createHighlightBorder(gff);
 
 	if (!border.fill.empty()) {
 		_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
@@ -195,6 +197,9 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	if (!border.edge.empty() && !border.corner.empty()) {
 		_border.reset(new Graphics::Aurora::BorderQuad(border.edge, border.corner, extend.x, extend.y, extend.w, extend.h));
 	}
+    if (!border.edge.empty() && !border.corner.empty() && !highlight.edge.empty() && !highlight.corner.empty()) {
+        _border.reset(new Graphics::Aurora::HighlightableBorder(border.edge, border.corner, extend.x, extend.y, extend.w, extend.h, highlight.corner, highlight.edge));
+    }
 
 	Text text = createText(gff);
 
@@ -277,6 +282,27 @@ KotORWidget::Border KotORWidget::createBorder(const Aurora::GFF3Struct &gff) {
 	return border;
 }
 
+KotORWidget::Border KotORWidget::createHighlightBorder(const Aurora::GFF3Struct &gff) {
+    Border border;
+
+    if (gff.hasField("HILIGHT")) {
+        const Aurora::GFF3Struct &b = gff.getStruct("HILIGHT");
+
+        border.corner = b.getString("CORNER");
+        border.edge   = b.getString("EDGE");
+        border.fill   = b.getString("FILL");
+
+        border.fillStyle   = b.getUint("FILLSTYLE");
+        border.dimension   = b.getUint("DIMENSION");
+        border.innerOffset = b.getUint("INNEROFFSET");
+
+        b.getVector("COLOR", border.r, border.g, border.b);
+
+        border.pulsing = b.getBool("PULSING");
+    }
+    return border;
+}
+
 KotORWidget::Text KotORWidget::createText(const Aurora::GFF3Struct &gff) {
 	Text text;
 
@@ -316,6 +342,10 @@ Graphics::Aurora::Highlightable* KotORWidget::getTextHighlightableComponent() co
 
 Graphics::Aurora::Highlightable* KotORWidget::getQuadHighlightableComponent() const {
 	return dynamic_cast<Graphics::Aurora::Highlightable*>(_quad.get());
+}
+
+Graphics::Aurora::Highlightable *KotORWidget::getBorderHighlightableComponent() const {
+    return dynamic_cast<Graphics::Aurora::Highlightable*>(_border.get());
 }
 
 } // End of namespace KotOR
