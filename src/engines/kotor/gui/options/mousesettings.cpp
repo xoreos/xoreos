@@ -25,6 +25,7 @@
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/options/mousesettings.h"
+#include "src/engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
 
@@ -32,6 +33,8 @@ namespace KotOR {
 
 OptionsMouseSettingsMenu::OptionsMouseSettingsMenu(::Engines::Console *console) : GUI(console) {
 	load("optmouse");
+
+	getCheckBox("CB_REVBUTTONS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 }
 
 OptionsMouseSettingsMenu::~OptionsMouseSettingsMenu() {
