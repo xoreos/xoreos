@@ -36,8 +36,17 @@ public:
 	OptionsGraphicsAdvancedMenu(::Engines::Console *console = 0);
 	~OptionsGraphicsAdvancedMenu();
 
+	virtual void show();
+
+	virtual void adoptChanges();
+
 protected:
 	void callbackActive(Widget &widget);
+
+private:
+	bool _frameBufferEffects;
+	bool _softShadows;
+	bool _vsync;
 };
 
 } // End of namespace KotOR

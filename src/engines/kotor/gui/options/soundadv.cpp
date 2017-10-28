@@ -22,6 +22,8 @@
  *  The advanced sound menu.
  */
 
+#include "src/common/configman.h"
+
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/options/soundadv.h"
@@ -43,10 +45,18 @@ OptionsSoundAdvancedMenu::~OptionsSoundAdvancedMenu() {
 
 }
 
+void OptionsSoundAdvancedMenu::show() {
+	GUI::show();
+
+	_forceSoftware = ConfigMan.getBool("forcesoftware", false);
+	setCheckBoxState("CB_FORCESOFTWARE", _forceSoftware);
+}
+
 void OptionsSoundAdvancedMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_DEFAULT") {
-
+		_forceSoftware = false;
+		setCheckBoxState("CB_FORCESOFTWARE", _forceSoftware);
 	}
 
 	if (widget.getTag() == "BTN_CANCEL") {
@@ -55,9 +65,19 @@ void OptionsSoundAdvancedMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
+		adoptChanges();
 		_returnCode = 1;
 		return;
 	}
+
+	if (widget.getTag() == "CB_FORCESOFTWARE") {
+		_forceSoftware = getCheckBoxState("CB_FORCESOFTWARE");
+		return;
+	}
+}
+
+void OptionsSoundAdvancedMenu::adoptChanges() {
+	ConfigMan.setBool("forcesoftware", _forceSoftware, true);
 }
 
 } // End of namespace KotOR

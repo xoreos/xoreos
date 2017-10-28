@@ -38,10 +38,17 @@ public:
 	OptionsGraphicsMenu(::Engines::Console *console = 0);
 	~OptionsGraphicsMenu();
 
+	virtual void show();
+
+	virtual void adoptChanges();
+
 protected:
 	void callbackActive(Widget &widget);
 
 private:
+	bool _shadows;
+	bool _grass;
+
 	Common::ScopedPtr<GUI> _advanced;
 };
 

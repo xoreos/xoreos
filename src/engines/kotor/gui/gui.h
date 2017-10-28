@@ -94,6 +94,9 @@ protected:
 
 	void addBackground(const Common::UString &background);
 
+	void setCheckBoxState(const Common::UString &tag, bool state);
+	bool getCheckBoxState(const Common::UString &tag);
+
 private:
 	struct WidgetContext {
 		const Aurora::GFF3Struct *strct;

@@ -36,8 +36,20 @@ public:
 	OptionsAutoPauseMenu(::Engines::Console *console = 0);
 	~OptionsAutoPauseMenu();
 
+	virtual void show();
+
+	virtual void adoptChanges();
+
 protected:
 	void callbackActive(Widget &widget);
+
+private:
+	bool _endOfCombatRound;
+	bool _enemySighted;
+	bool _mineSighted;
+	bool _partyMemberDown;
+	bool _actionMenuUsed;
+	bool _newTargetSelected;
 };
 
 } // End of namespace KotOR

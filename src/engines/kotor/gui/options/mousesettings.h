@@ -36,8 +36,15 @@ public:
 	OptionsMouseSettingsMenu(::Engines::Console *console = 0);
 	~OptionsMouseSettingsMenu();
 
+	virtual void show();
+
+	virtual void adoptChanges();
+
 protected:
 	void callbackActive(Widget &widget);
+
+private:
+	bool _reverseMouseButtons;
 };
 
 } // End of namespace KotOR

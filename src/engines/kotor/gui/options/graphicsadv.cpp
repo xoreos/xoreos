@@ -22,6 +22,8 @@
  *  The advanced graphics menu.
  */
 
+#include "src/common/configman.h"
+
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/options/graphicsadv.h"
@@ -46,10 +48,30 @@ OptionsGraphicsAdvancedMenu::~OptionsGraphicsAdvancedMenu() {
 
 }
 
+void OptionsGraphicsAdvancedMenu::show() {
+	GUI::show();
+
+	_frameBufferEffects = ConfigMan.getBool("framebuffereffects", false);
+	setCheckBoxState("CB_FRAMEBUFF", _frameBufferEffects);
+
+	_softShadows = ConfigMan.getBool("softshadows", false);
+	setCheckBoxState("CB_SOFTSHADOWS", _softShadows);
+
+	_vsync = ConfigMan.getBool("vsync", false);
+	setCheckBoxState("CB_VSYNC", _vsync);
+}
+
 void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_DEFAULT") {
+		_frameBufferEffects = false;
+		setCheckBoxState("CB_FRAMEBUFF", _frameBufferEffects);
 
+		_softShadows = false;
+		setCheckBoxState("CB_SOFTSHADOWS", _softShadows);
+
+		_vsync = false;
+		setCheckBoxState("CB_VSYNC", _vsync);
 	}
 
 	if (widget.getTag() == "BTN_CANCEL") {
@@ -58,9 +80,31 @@ void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
+		adoptChanges();
 		_returnCode = 1;
 		return;
 	}
+
+	if (widget.getTag() == "CB_FRAMEBUFF") {
+		_frameBufferEffects = getCheckBoxState("CB_FRAMEBUFF");
+		return;
+	}
+
+	if (widget.getTag() == "CB_SOFTSHADOWS") {
+		_softShadows = getCheckBoxState("CB_SOFTSHADOWS");
+		return;
+	}
+
+	if (widget.getTag() == "CB_VSYNC") {
+		_vsync = getCheckBoxState("CB_VSYNC");
+		return;
+	}
+}
+
+void OptionsGraphicsAdvancedMenu::adoptChanges() {
+	ConfigMan.setBool("framebuffereffects", _softShadows, true);
+	ConfigMan.setBool("softshadows", _softShadows, true);
+	ConfigMan.setBool("vsync", _vsync, true);
 }
 
 } // End of namespace KotOR

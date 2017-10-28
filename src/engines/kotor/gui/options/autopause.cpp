@@ -22,6 +22,8 @@
  *  The auto pause menu.
  */
 
+#include "src/common/configman.h"
+
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/options/autopause.h"
@@ -47,18 +49,95 @@ OptionsAutoPauseMenu::~OptionsAutoPauseMenu() {
 
 }
 
+void OptionsAutoPauseMenu::show() {
+	GUI::show();
+
+	_endOfCombatRound = ConfigMan.getBool("endofcombatround", false);
+	setCheckBoxState("CB_ENDROUND", _endOfCombatRound);
+
+	_enemySighted = ConfigMan.getBool("enemysighted", false);
+	setCheckBoxState("CB_ENEMYSIGHTED", _enemySighted);
+
+	_mineSighted = ConfigMan.getBool("minesighted", false);
+	setCheckBoxState("CB_MINESIGHTED", _mineSighted);
+
+	_partyMemberDown = ConfigMan.getBool("partymemberdown", false);
+	setCheckBoxState("CB_PARTYKILLED", _partyMemberDown);
+
+	_actionMenuUsed = ConfigMan.getBool("actionmenuused", false);
+	setCheckBoxState("CB_ACTIONMENU", _actionMenuUsed);
+
+	_newTargetSelected = ConfigMan.getBool("newtargetselected", false);
+	setCheckBoxState("CB_TRIGGERS", _newTargetSelected);
+}
+
 void OptionsAutoPauseMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_DEFAULT") {
+		_endOfCombatRound = false;
+		setCheckBoxState("CB_ENDROUND", _endOfCombatRound);
 
+		_enemySighted = false;
+		setCheckBoxState("CB_ENEMYSIGHTED", _enemySighted);
+
+		_mineSighted = false;
+		setCheckBoxState("CB_MINESIGHTED", _mineSighted);
+
+		_partyMemberDown = false;
+		setCheckBoxState("CB_PARTYKILLED", _partyMemberDown);
+
+		_actionMenuUsed = false;
+		setCheckBoxState("CB_ACTIONMENU", _actionMenuUsed);
+
+		_newTargetSelected = false;
+		setCheckBoxState("CB_TRIGGERS", _newTargetSelected);
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
+		adoptChanges();
 		_returnCode = 1;
+		return;
+	}
+
+	if (widget.getTag() == "CB_ENDROUND") {
+		_endOfCombatRound = getCheckBoxState("CB_ENDROUND");
+		return;
+	}
+
+	if (widget.getTag() == "CB_ENEMYSIGHTED") {
+		_enemySighted = getCheckBoxState("CB_ENEMYSIGHTED");
+		return;
+	}
+
+	if (widget.getTag() == "CB_MINESIGHTED") {
+		_mineSighted = getCheckBoxState("CB_MINESIGHTED");
+		return;
+	}
+
+	if (widget.getTag() == "CB_PARTYKILLED") {
+		_partyMemberDown = getCheckBoxState("CB_PARTYKILLED");
+		return;
+	}
+
+	if (widget.getTag() == "CB_ACTIONMENU") {
+		_actionMenuUsed = getCheckBoxState("CB_ACTIONMENU");
+		return;
+	}
+
+	if (widget.getTag() == "CB_TRIGGERS") {
+		_newTargetSelected = getCheckBoxState("CB_TRIGGERS");
 		return;
 	}
 }
 
+void OptionsAutoPauseMenu::adoptChanges() {
+	ConfigMan.setBool("endofcombatround", _endOfCombatRound, true);
+	ConfigMan.setBool("enemysighted", _enemySighted, true);
+	ConfigMan.setBool("minesighted", _mineSighted, true);
+	ConfigMan.setBool("partymemberdown", _partyMemberDown, true);
+	ConfigMan.setBool("actionmenuused", _actionMenuUsed, true);
+	ConfigMan.setBool("newtargetselected", _newTargetSelected, true);
+}
 
 } // End of namespace KotOR
 

@@ -22,6 +22,8 @@
  *  The graphics menu.
  */
 
+#include "src/common/configman.h"
+
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/options/graphics.h"
@@ -46,21 +48,52 @@ OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : GUI(cons
 OptionsGraphicsMenu::~OptionsGraphicsMenu() {
 }
 
+void OptionsGraphicsMenu::show() {
+	GUI::show();
+
+	_shadows = ConfigMan.getBool("shadows", false);
+	setCheckBoxState("CB_SHADOWS", _shadows);
+
+	_grass = ConfigMan.getBool("grass", false);
+	setCheckBoxState("CB_GRASS", _grass);
+}
+
 void OptionsGraphicsMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_ADVANCED") {
+		adoptChanges();
 		sub(*_advanced);
 		return;
 	}
 
 	if (widget.getTag() == "BTN_DEFAULT") {
+		_shadows = false;
+		setCheckBoxState("CB_SHADOWS", _shadows);
 
+		_grass = false;
+		setCheckBoxState("CB_GRASS", _grass);
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
+		adoptChanges();
 		_returnCode = 1;
 		return;
 	}
+
+	if (widget.getTag() == "CB_SHADOWS") {
+		_shadows = getCheckBoxState("CB_SHADOWS");
+		return;
+	}
+
+	if (widget.getTag() == "CB_GRASS") {
+		_grass = getCheckBoxState("CB_GRASS");
+		return;
+	}
+}
+
+void OptionsGraphicsMenu::adoptChanges() {
+	ConfigMan.setBool("shadows", _shadows, false);
+	ConfigMan.setBool("grass", _grass, false);
 }
 
 } // End of namespace KotOR

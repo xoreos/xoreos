@@ -61,8 +61,23 @@ OptionsGameplayMenu::~OptionsGameplayMenu() {
 void OptionsGameplayMenu::show() {
 	GUI::show();
 
-	_difficulty = CLIP(ConfigMan.getInt("Difficulty Level", 0), 0, 2);
+	_difficulty = CLIP(ConfigMan.getInt("difficultylevel", 0), 0, 2);
 	updateDifficulty(_difficulty);
+
+	_autoLevelUp = ConfigMan.getBool("autolevelup", false);
+	setCheckBoxState("CB_LEVELUP", _autoLevelUp);
+
+	_mouseMove = ConfigMan.getBool("mousemove", false);
+	setCheckBoxState("CB_INVERTCAM", _mouseMove);
+
+	_autoSave = ConfigMan.getBool("autosave", false);
+	setCheckBoxState("CB_AUTOSAVE", _autoSave);
+
+	_reverseMinigameY = ConfigMan.getBool("reverseminigameyaxis", false);
+	setCheckBoxState("CB_REVERSE", _reverseMinigameY);
+
+	_combatMovement = ConfigMan.getBool("combatmovement", false);
+	setCheckBoxState("CB_DISABLEMOVE", _combatMovement);
 }
 
 
@@ -87,11 +102,13 @@ void OptionsGameplayMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_MOUSE") {
+		adoptChanges();
 		sub(*_mousesettings);
 		return;
 	}
 
 	if (widget.getTag() == "BTN_KEYMAP") {
+		adoptChanges();
 		sub(*_keyboardconfiguration);
 		return;
 	}
@@ -99,10 +116,50 @@ void OptionsGameplayMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_DEFAULT") {
 		_difficulty = 1;
 		updateDifficulty(_difficulty);
+
+		_autoLevelUp = false;
+		setCheckBoxState("CB_LEVELUP", _autoLevelUp);
+
+		_mouseMove = false;
+		setCheckBoxState("CB_INVERTCAM", _mouseMove);
+
+		_autoSave = false;
+		setCheckBoxState("CB_AUTOSAVE", _autoSave);
+
+		_reverseMinigameY = false;
+		setCheckBoxState("CB_REVERSE", _reverseMinigameY);
+
+		_combatMovement = false;
+		setCheckBoxState("CB_DISABLEMOVE", _combatMovement);
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
 		_returnCode = 1;
+		return;
+	}
+
+	if (widget.getTag() == "CB_LEVELUP") {
+		_autoLevelUp = getCheckBoxState("CB_LEVELUP");
+		return;
+	}
+
+	if (widget.getTag() == "CB_INVERTCAM") {
+		_mouseMove = getCheckBoxState("CB_INVERTCAM");
+		return;
+	}
+
+	if (widget.getTag() == "CB_AUTOSAVE") {
+		_autoSave = getCheckBoxState("CB_AUTOSAVE");
+		return;
+	}
+
+	if (widget.getTag() == "CB_REVERSE") {
+		_reverseMinigameY = getCheckBoxState("CB_REVERSE");
+		return;
+	}
+
+	if (widget.getTag() == "CB_DISABLEMOVE") {
+		_combatMovement = getCheckBoxState("CB_DISABLEMOVE");
 		return;
 	}
 }
@@ -128,7 +185,12 @@ void OptionsGameplayMenu::updateDifficulty(int difficulty) {
 }
 
 void OptionsGameplayMenu::adoptChanges() {
-	ConfigMan.setInt("Difficulty Level", _difficulty, true);
+	ConfigMan.setInt("difficultylevel", _difficulty, true);
+	ConfigMan.setBool("autolevelup", _autoLevelUp, true);
+	ConfigMan.setBool("mousemove", _mouseMove, true);
+	ConfigMan.setBool("autosave", _autoSave, true);
+	ConfigMan.setBool("reverseminigameyaxis", _reverseMinigameY, true);
+	ConfigMan.setBool("combatmovement", _combatMovement, true);
 }
 
 } // End of namespace KotOR

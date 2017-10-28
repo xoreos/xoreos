@@ -43,6 +43,7 @@ namespace KotOR {
 
 WidgetCheckBox::WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag) :
 	KotORWidget(gui, tag) {
+	_state = false;
 }
 
 WidgetCheckBox::~WidgetCheckBox() {
@@ -93,18 +94,40 @@ void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
 	}
 
 	if (getTextHighlightableComponent() != 0) {
-		  setDefaultHighlighting(getTextHighlightableComponent());
+		setTextHighlighting(getTextHighlightableComponent());
 	}
 	if (getQuadHighlightableComponent() != 0) {
-		  setDefaultHighlighting(getQuadHighlightableComponent());
+		setQuadHighlighting(getQuadHighlightableComponent());
 	}
+}
+
+bool WidgetCheckBox::getState() const {
+	return _state;
+}
+
+void WidgetCheckBox::setState(bool state) {
+	_state = state;
+
+	// Preserve the current color after replacing the texture
+	float textR, textG, textB, textA;
+	float quadR, quadG, quadB, quadA;
+	_text->getColor(textR, textG, textB, textA);
+	_quad->getColor(quadR, quadG, quadB, quadA);
+
+	setFill(_state ? "i_checkbox02" : "i_checkbox01");
+
+	_text->setColor(textR, textG, textB, textA);
+	_quad->setColor(quadR, quadG, quadB, quadA);
+
+	setActive(true);
 }
 
 void WidgetCheckBox::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
 	if (isDisabled())
 		return;
 
-	playSound("gui_actuse", Sound::kSoundTypeSFX);
+	setState(!_state);
+	playSound("gui_check", Sound::kSoundTypeSFX);
 	setActive(true);
 }
 
@@ -139,11 +162,16 @@ void WidgetCheckBox::leave() {
 	}
 }
 
-void WidgetCheckBox::setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable) {
+void WidgetCheckBox::setTextHighlighting(Graphics::Aurora::Highlightable *highlightable) {
 	highlightable->setHighlightable(true);
 	highlightable->setHighlightDelta(0, 0, 0, .05);
 	highlightable->setHighlightLowerBound(1, 1, 0, .2);
 	highlightable->setHighlightUpperBound(1, 1, 0, 1);
+}
+
+void WidgetCheckBox::setQuadHighlighting(Graphics::Aurora::Highlightable *highlightable) {
+	highlightable->setHighlightable(true);
+	highlightable->setHighlightLowerBound(1, 1, 0, 1);
 }
 
 } // End of namespace KotOR

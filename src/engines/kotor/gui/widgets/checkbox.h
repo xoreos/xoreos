@@ -40,15 +40,19 @@ public:
 
 	void load(const Aurora::GFF3Struct &gff);
 
+	void setState(bool state);
+	bool getState() const;
+
 	virtual void mouseUp(uint8 state, float x, float y);
 
 	virtual void enter();
-
 	virtual void leave();
 
 private:
+	bool _state;
 
-	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
+	void setTextHighlighting(Graphics::Aurora::Highlightable *highlightable);
+	void setQuadHighlighting(Graphics::Aurora::Highlightable *highlightable);
 	Sound::ChannelHandle _sound;
 	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
 };

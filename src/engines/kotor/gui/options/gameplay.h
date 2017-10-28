@@ -47,6 +47,11 @@ protected:
 
 private:
 	int _difficulty;
+	bool _autoLevelUp;
+	bool _mouseMove;
+	bool _autoSave;
+	bool _reverseMinigameY;
+	bool _combatMovement;
 
 	void updateDifficulty(int difficulty);
 

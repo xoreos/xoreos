@@ -279,6 +279,16 @@ void GUI::addBackground(const Common::UString &background) {
 		_background->setType(background);
 }
 
+void GUI::setCheckBoxState(const Common::UString &tag, bool state) {
+	WidgetCheckBox &checkbox = *getCheckBox(tag, true);
+	checkbox.setState(state);
+}
+
+bool GUI::getCheckBoxState(const Common::UString &tag) {
+	WidgetCheckBox &checkbox = *getCheckBox(tag, true);
+	return checkbox.getState();
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

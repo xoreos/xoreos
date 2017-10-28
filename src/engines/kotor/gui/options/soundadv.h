@@ -36,8 +36,15 @@ public:
 	OptionsSoundAdvancedMenu(::Engines::Console *console = 0);
 	~OptionsSoundAdvancedMenu();
 
+	virtual void show();
+
+	virtual void adoptChanges();
+
 protected:
 	void callbackActive(Widget &widget);
+
+private:
+	bool _forceSoftware;
 };
 
 } // End of namespace KotOR

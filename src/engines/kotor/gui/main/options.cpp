@@ -87,6 +87,7 @@ void OptionsMenu::callbackActive(Widget &widget) {
 
 void OptionsMenu::adoptChanges() {
 	dynamic_cast<OptionsGameplayMenu &>(*_gameplay).adoptChanges();
+	dynamic_cast<OptionsAutoPauseMenu &>(*_autopause).adoptChanges();
 }
 
 
