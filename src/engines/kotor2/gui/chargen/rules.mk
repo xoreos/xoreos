@@ -23,10 +23,16 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/gui/chargen/classselection.h \
     src/engines/kotor2/gui/chargen/charactergeneration.h \
     src/engines/kotor2/gui/chargen/chargeninfo.h \
+    src/engines/kotor2/gui/chargen/quickorcustom.h \
+    src/engines/kotor2/gui/chargen/quickchar.h \
+    src/engines/kotor2/gui/chargen/customchar.h \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/gui/chargen/classselection.cpp \
     src/engines/kotor2/gui/chargen/charactergeneration.cpp \
     src/engines/kotor2/gui/chargen/chargeninfo.cpp \
+    src/engines/kotor2/gui/chargen/quickorcustom.cpp \
+    src/engines/kotor2/gui/chargen/quickchar.cpp \
+    src/engines/kotor2/gui/chargen/customchar.cpp \
     $(EMPTY)

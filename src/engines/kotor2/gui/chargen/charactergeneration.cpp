@@ -26,6 +26,9 @@
 
 #include "src/engines/kotor2/gui/widgets/label.h"
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
+#include "src/engines/kotor2/gui/chargen/quickorcustom.h"
+#include "src/engines/kotor2/gui/chargen/quickchar.h"
+#include "src/engines/kotor2/gui/chargen/customchar.h"
 
 namespace Engines {
 
@@ -53,6 +56,32 @@ CharacterGeneration::CharacterGeneration(Module *module, CharacterGenerationInfo
 	getLabel("LBL_LEVEL_VAL")->setText("");
 
 	getLabel("PORTRAIT_LBL")->setFill(_chargenInfo->getPortrait());
+
+	showQuickOrCustom();
+}
+
+void CharacterGeneration::showQuickOrCustom() {
+	if (_quickCharPanel)
+		removeChild(_quickCharPanel.get());
+	if (_customCharPanel)
+		removeChild(_customCharPanel.get());
+
+	_quickOrCustomPanel.reset(new QuickOrCustomPanel(this));
+	addChild(_quickOrCustomPanel.get());
+}
+
+void CharacterGeneration::showQuickChar() {
+	removeChild(_quickOrCustomPanel.get());
+
+	_quickCharPanel.reset(new QuickCharPanel(this));
+	addChild(_quickCharPanel.get());
+}
+
+void CharacterGeneration::showCustomChar() {
+	removeChild(_quickOrCustomPanel.get());
+
+	_customCharPanel.reset(new CustomCharPanel(this));
+	addChild(_customCharPanel.get());
 }
 
 } // End of namespace KotOR2
