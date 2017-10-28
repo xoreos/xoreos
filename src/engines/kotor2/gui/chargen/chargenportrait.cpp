@@ -19,40 +19,35 @@
  */
 
 /** @file
- *  The KotOR 2 quick character panel.
+ *  The KotOR 2 character generation portrait menu.
  */
 
 #include "src/engines/kotor2/gui/widgets/kotorwidget.h"
-#include "src/engines/kotor2/gui/chargen/quickchar.h"
+
+#include "src/engines/kotor2/gui/chargen/chargenportrait.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-QuickCharPanel::QuickCharPanel(CharacterGeneration *chargen, Console *console) : GUI(console), _chargenMenu(chargen) {
-	load("quickpnl_p");
+CharacterGenerationPortraitMenu::CharacterGenerationPortraitMenu(CharacterGenerationInfo &info,
+                                                                 Engines::Console *console) :
+		CharacterGenerationBaseMenu(info, console) {
+	load("portcust_p");
 }
 
-void QuickCharPanel::callbackActive(Widget &widget) {
+void CharacterGenerationPortraitMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_ACCEPT") {
+		accept();
+		_returnCode = kReturnCodeAbort;
+		return;
+	}
 	if (widget.getTag() == "BTN_CANCEL") {
-		_chargenMenu->showQuickOrCustom();
-		return;
-	}
-
-	if (widget.getTag() == "BTN_STEPNAME1") {
-		_chargenMenu->showPortrait();
-		return;
-	}
-	if (widget.getTag() == "BTN_STEPNAME2") {
-		_chargenMenu->showName();
-		return;
-	}
-	if (widget.getTag() == "BTN_STEPNAME3") {
-		_chargenMenu->start();
+		_returnCode = kReturnCodeAbort;
 		return;
 	}
 }
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines

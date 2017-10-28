@@ -29,6 +29,8 @@
 #include "src/engines/kotor2/gui/chargen/quickorcustom.h"
 #include "src/engines/kotor2/gui/chargen/quickchar.h"
 #include "src/engines/kotor2/gui/chargen/customchar.h"
+#include "src/engines/kotor2/gui/chargen/chargenname.h"
+#include "src/engines/kotor2/gui/chargen/chargenportrait.h"
 
 namespace Engines {
 
@@ -82,6 +84,27 @@ void CharacterGeneration::showCustomChar() {
 
 	_customCharPanel.reset(new CustomCharPanel(this));
 	addChild(_customCharPanel.get());
+}
+
+void CharacterGeneration::showName() {
+	_charGenMenu.reset(new CharacterGenerationNameMenu(*_chargenInfo));
+	sub(*_charGenMenu, kStartCodeNone, true, false);
+}
+
+void CharacterGeneration::showPortrait() {
+	_charGenMenu.reset(new CharacterGenerationPortraitMenu(*_chargenInfo));
+	sub(*_charGenMenu);
+}
+
+void CharacterGeneration::start() {
+	try {
+		_module->load("001EBO");
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
+		return;
+	}
+
+	_returnCode = 2;
 }
 
 } // End of namespace KotOR2

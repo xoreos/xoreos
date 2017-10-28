@@ -19,50 +19,27 @@
  */
 
 /** @file
- *  The KotOR 2 character generation.
+ *  The KotOR 2 character generation base menu.
  */
 
-#ifndef ENGINES_KOTOR2_GUI_CHARGEN_CHARACTERGENERATION_H
-#define ENGINES_KOTOR2_GUI_CHARGEN_CHARACTERGENERATION_H
-
-#include "src/engines/aurora/console.h"
-
-#include "src/engines/kotor2/module.h"
-#include "src/engines/kotor2/gui/gui.h"
-#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 #include "src/engines/kotor2/gui/chargen/chargenbase.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class CharacterGeneration : public GUI {
-public:
-	CharacterGeneration(Module *module, CharacterGenerationInfo *info, Engines::Console *console = 0);
+CharacterGenerationBaseMenu::CharacterGenerationBaseMenu(CharacterGenerationInfo &info, Engines::Console *console) :
+		GUI(console), _info(info), _accepted(false) {
+}
 
-	void showQuickOrCustom();
-	void showQuickChar();
-	void showCustomChar();
+bool CharacterGenerationBaseMenu::isAccepted() {
+	return _accepted;
+}
 
-	void showName();
-	void showPortrait();
-
-	void start();
-
-private:
-	Module* _module;
-
-	CharacterGenerationInfo *_chargenInfo;
-
-	Common::ScopedPtr<GUI> _quickOrCustomPanel;
-	Common::ScopedPtr<GUI> _quickCharPanel;
-	Common::ScopedPtr<GUI> _customCharPanel;
-
-	Common::ScopedPtr<CharacterGenerationBaseMenu> _charGenMenu;
-};
+void CharacterGenerationBaseMenu::accept() {
+	_accepted = true;
+}
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR2_GUI_CHARGEN_CHARACTERGENERATION_H
