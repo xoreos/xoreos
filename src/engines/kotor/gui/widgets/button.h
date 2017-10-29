@@ -39,6 +39,7 @@ public:
 	~WidgetButton();
 
 	void setPermanentHighlight(bool);
+	void setStaticHighlight();
 	void setDisableHighlight(bool);
 	void setDisableHoverSound(bool);
 

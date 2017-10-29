@@ -28,6 +28,7 @@
 
 #include "src/engines/kotor/gui/options/graphicsadv.h"
 
+#include "src/engines/kotor/gui/widgets/button.h"
 #include "src/engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
@@ -38,6 +39,18 @@ OptionsGraphicsAdvancedMenu::OptionsGraphicsAdvancedMenu(::Engines::Console *con
 	load("optgraphicsadv");
 
 	//Hardcoded, the gui file returns incorrect values
+	getButton("BTN_TEXQUALLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_TEXQUALLEFT", true)->setStaticHighlight();
+	getButton("BTN_TEXQUALRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_TEXQUALRIGHT", true)->setStaticHighlight();
+	getButton("BTN_ANTIALIASLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_ANTIALIASLEFT", true)->setStaticHighlight();
+	getButton("BTN_ANTIALIASRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_ANTIALIASRIGHT", true)->setStaticHighlight();
+	getButton("BTN_ANISOTROPYLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_ANISOTROPYLEFT", true)->setStaticHighlight();
+	getButton("BTN_ANISOTROPYRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_ANISOTROPYRIGHT", true)->setStaticHighlight();
 	getCheckBox("CB_FRAMEBUFF", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_VSYNC", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_SOFTSHADOWS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);

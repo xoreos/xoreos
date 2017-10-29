@@ -28,6 +28,7 @@
 
 #include "src/engines/kotor/gui/options/soundadv.h"
 
+#include "src/engines/kotor/gui/widgets/button.h"
 #include "src/engines/kotor/gui/widgets/checkbox.h"
 
 namespace Engines {
@@ -38,6 +39,10 @@ OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(::Engines::Console *console) 
 	load("optsoundadv");
 
 	//Hardcoded, the gui file returns incorrect values
+	getButton("BTN_EAXLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_EAXLEFT", true)->setStaticHighlight();
+	getButton("BTN_EAXRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_EAXRIGHT", true)->setStaticHighlight();
 	getCheckBox("CB_FORCESOFTWARE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 }
 

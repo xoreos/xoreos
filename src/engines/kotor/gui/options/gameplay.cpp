@@ -47,7 +47,9 @@ OptionsGameplayMenu::OptionsGameplayMenu(::Engines::Console *console) : GUI(cons
 
 	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
 	getButton("BTN_DIFFLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_DIFFLEFT", true)->setStaticHighlight();
 	getButton("BTN_DIFFRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+	getButton("BTN_DIFFRIGHT", true)->setStaticHighlight();
 	getCheckBox("CB_LEVELUP", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_INVERTCAM", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_AUTOSAVE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
