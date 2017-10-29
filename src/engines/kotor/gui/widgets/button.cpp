@@ -59,6 +59,10 @@ void WidgetButton::setPermanentHighlight(bool permanentHighlight) {
 	}
 }
 
+void WidgetButton::setStaticHighlight() {
+	getQuadHighlightableComponent()->setHighlightLowerBound(1, 1, 0, 1);
+}
+
 void WidgetButton::setDisableHighlight(bool disableHighlight) {
 	_disableHighlight = disableHighlight;
 
