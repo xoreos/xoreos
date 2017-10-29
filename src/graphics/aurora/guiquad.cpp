@@ -25,6 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 
+#include "src/graphics/images/txi.h"
 #include "src/graphics/aurora/guiquad.h"
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
@@ -40,7 +41,7 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
-	_xor(false), _scissor(false) {
+	_xor(false), _scissor(false), _additiveBlending(false) {
 
 	try {
 
@@ -51,6 +52,10 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 		_texture.clear();
 
 		_r = _g = _b = _a = 0.0f;
+	}
+
+	if (!_texture.empty()) {
+		_additiveBlending = (_texture.getTexture().getTXI().getFeatures().blending == TXI::kBlendingAdditive);
 	}
 
 	_distance = -FLT_MAX;
@@ -209,6 +214,11 @@ void GUIQuad::render(RenderPass pass) {
 
 	glColor4f(_r, _g, _b, _a);
 
+	if (_additiveBlending) {
+		glPushAttrib(GL_COLOR_BUFFER_BIT);
+		glBlendFunc(GL_ONE, GL_ONE);
+	}
+
 	if (_xor) {
 		glEnable(GL_COLOR_LOGIC_OP);
 		glLogicOp(GL_XOR);
@@ -240,6 +250,10 @@ void GUIQuad::render(RenderPass pass) {
 
 	if (_xor)
 		glDisable(GL_COLOR_LOGIC_OP);
+
+	if (_additiveBlending) {
+		glPopAttrib();
+	}
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }

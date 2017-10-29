@@ -108,6 +108,7 @@ private:
 
 	bool _xor;
 	bool _scissor;
+	bool _additiveBlending;
 };
 
 } // End of namespace Aurora
