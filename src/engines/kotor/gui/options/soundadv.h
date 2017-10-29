@@ -44,7 +44,10 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	int _eax;
 	bool _forceSoftware;
+
+	void updateEAX(int eax);
 };
 
 } // End of namespace KotOR

@@ -24,6 +24,8 @@
 
 #include "src/common/configman.h"
 
+#include "src/aurora/talkman.h"
+
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/options/graphicsadv.h"
@@ -64,6 +66,15 @@ OptionsGraphicsAdvancedMenu::~OptionsGraphicsAdvancedMenu() {
 void OptionsGraphicsAdvancedMenu::show() {
 	GUI::show();
 
+	_textureQuality = CLIP(ConfigMan.getInt("texturequality", 0), 0, 2);
+	updateTextureQuality(_textureQuality);
+
+	_antiAliasing = CLIP(ConfigMan.getInt("antialiasing", 0), 0, 3);
+	updateAntiAliasing(_antiAliasing);
+
+	_anisotropy = CLIP(ConfigMan.getInt("anisotropy", 0), 0, 4);
+	updateAnisotropy(_anisotropy);
+
 	_frameBufferEffects = ConfigMan.getBool("framebuffereffects", false);
 	setCheckBoxState("CB_FRAMEBUFF", _frameBufferEffects);
 
@@ -76,7 +87,70 @@ void OptionsGraphicsAdvancedMenu::show() {
 
 void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
 
+	if (widget.getTag() == "BTN_TEXQUALRIGHT") {
+		_textureQuality++;
+		if (_textureQuality > 2) {
+			_textureQuality = 2;
+		}
+		updateTextureQuality(_textureQuality);
+		return;
+	}
+
+	if (widget.getTag() == "BTN_TEXQUALLEFT") {
+		_textureQuality--;
+		if (_textureQuality < 0) {
+			_textureQuality = 0;
+		}
+		updateTextureQuality(_textureQuality);
+		return;
+	}
+
+	if (widget.getTag() == "BTN_ANTIALIASRIGHT") {
+		_antiAliasing++;
+		if (_antiAliasing > 3) {
+			_antiAliasing = 3;
+		}
+		updateAntiAliasing(_antiAliasing);
+		return;
+	}
+
+	if (widget.getTag() == "BTN_ANTIALIASLEFT") {
+		_antiAliasing--;
+		if (_antiAliasing < 0) {
+			_antiAliasing = 0;
+		}
+		updateAntiAliasing(_antiAliasing);
+		return;
+	}
+
+	if (widget.getTag() == "BTN_ANISOTROPYRIGHT") {
+		_anisotropy++;
+		if (_anisotropy > 4) {
+			_anisotropy = 4;
+		}
+		updateAnisotropy(_anisotropy);
+		return;
+	}
+
+	if (widget.getTag() == "BTN_ANISOTROPYLEFT") {
+		_anisotropy--;
+		if (_anisotropy < 0) {
+			_anisotropy = 0;
+		}
+		updateAnisotropy(_anisotropy);
+		return;
+	}
+
 	if (widget.getTag() == "BTN_DEFAULT") {
+		_textureQuality = 0;
+		updateTextureQuality(_textureQuality);
+
+		_antiAliasing = 0;
+		updateAntiAliasing(_antiAliasing);
+
+		_anisotropy = 0;
+		updateAnisotropy(_anisotropy);
+
 		_frameBufferEffects = false;
 		setCheckBoxState("CB_FRAMEBUFF", _frameBufferEffects);
 
@@ -114,7 +188,81 @@ void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
 	}
 }
 
+void OptionsGraphicsAdvancedMenu::updateTextureQuality(int textureQuality) {
+	WidgetButton &texQualButton = *getButton("BTN_TEXQUAL", true);
+	WidgetButton &leftButton = *getButton("BTN_TEXQUALLEFT", true);
+	WidgetButton &rightButton = *getButton("BTN_TEXQUALRIGHT", true);
+
+	texQualButton.setText(TalkMan.getString(48003 + textureQuality));
+
+	if (_textureQuality == 0) {
+		leftButton.hide();
+	} else {
+		leftButton.show();
+	}
+
+	if (_textureQuality == 2) {
+		rightButton.hide();
+	} else {
+		rightButton.show();
+	}
+}
+
+void OptionsGraphicsAdvancedMenu::updateAntiAliasing(int antiAliasing) {
+	WidgetButton &antiAliasButton = *getButton("BTN_ANTIALIAS", true);
+	WidgetButton &leftButton = *getButton("BTN_ANTIALIASLEFT", true);
+	WidgetButton &rightButton = *getButton("BTN_ANTIALIASRIGHT", true);
+
+	Common::UString text;
+
+	if (antiAliasing == 0)
+		text = TalkMan.getString(47996);
+	else if (antiAliasing == 1)
+		text = TalkMan.getString(47997);
+	else if (antiAliasing == 2)
+		text = TalkMan.getString(47999);
+	else if (antiAliasing == 3)
+		text = TalkMan.getString(49125);
+
+	antiAliasButton.setText(text);
+
+	if (_antiAliasing == 0) {
+		leftButton.hide();
+	} else {
+		leftButton.show();
+	}
+
+	if (_antiAliasing == 3) {
+		rightButton.hide();
+	} else {
+		rightButton.show();
+	}
+}
+
+void OptionsGraphicsAdvancedMenu::updateAnisotropy(int anisotropy) {
+	WidgetButton &anisotropyButton = *getButton("BTN_ANISOTROPY", true);
+	WidgetButton &leftButton = *getButton("BTN_ANISOTROPYLEFT", true);
+	WidgetButton &rightButton = *getButton("BTN_ANISOTROPYRIGHT", true);
+
+	anisotropyButton.setText(TalkMan.getString(49079 + anisotropy));
+
+	if (_anisotropy == 0) {
+		leftButton.hide();
+	} else {
+		leftButton.show();
+	}
+
+	if (_anisotropy == 4) {
+		rightButton.hide();
+	} else {
+		rightButton.show();
+	}
+}
+
 void OptionsGraphicsAdvancedMenu::adoptChanges() {
+	ConfigMan.setInt("texturequality", _textureQuality, true);
+	ConfigMan.setInt("antialiasing", _antiAliasing, true);
+	ConfigMan.setInt("anisotropy", _anisotropy, true);
 	ConfigMan.setBool("framebuffereffects", _softShadows, true);
 	ConfigMan.setBool("softshadows", _softShadows, true);
 	ConfigMan.setBool("vsync", _vsync, true);

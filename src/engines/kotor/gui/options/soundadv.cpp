@@ -24,6 +24,8 @@
 
 #include "src/common/configman.h"
 
+#include "src/aurora/talkman.h"
+
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/options/soundadv.h"
@@ -53,13 +55,39 @@ OptionsSoundAdvancedMenu::~OptionsSoundAdvancedMenu() {
 void OptionsSoundAdvancedMenu::show() {
 	GUI::show();
 
+	_eax = CLIP(ConfigMan.getInt("eax", 0), 0, 3);
+	updateEAX(_eax);
+
 	_forceSoftware = ConfigMan.getBool("forcesoftware", false);
 	setCheckBoxState("CB_FORCESOFTWARE", _forceSoftware);
 }
 
 void OptionsSoundAdvancedMenu::callbackActive(Widget &widget) {
 
+	if (widget.getTag() == "BTN_EAXRIGHT") {
+		if (0) { // if we have EAX
+			_eax++;
+			if (_eax > 3) {
+				_eax = 3;
+			}
+			updateEAX(_eax);
+		}
+		return;
+	}
+
+	if (widget.getTag() == "BTN_EAXLEFT") {
+		_eax--;
+		if (_eax < 0) {
+			_eax = 0;
+		}
+		updateEAX(_eax);
+		return;
+	}
+
 	if (widget.getTag() == "BTN_DEFAULT") {
+		_eax = 0;
+		updateEAX(_eax);
+
 		_forceSoftware = false;
 		setCheckBoxState("CB_FORCESOFTWARE", _forceSoftware);
 	}
@@ -81,7 +109,28 @@ void OptionsSoundAdvancedMenu::callbackActive(Widget &widget) {
 	}
 }
 
+void OptionsSoundAdvancedMenu::updateEAX(int eax) {
+	WidgetButton &eaxButton = *getButton("BTN_EAX", true);
+	WidgetButton &leftButton = *getButton("BTN_EAXLEFT", true);
+	WidgetButton &rightButton = *getButton("BTN_EAXRIGHT", true);
+
+	eaxButton.setText(TalkMan.getString(48573 + eax));
+
+	if (_eax == 0) {
+		leftButton.hide();
+	} else {
+		leftButton.show();
+	}
+
+	if (_eax == 3) {
+		rightButton.hide();
+	} else {
+		rightButton.show();
+	}
+}
+
 void OptionsSoundAdvancedMenu::adoptChanges() {
+	ConfigMan.setInt("eax", _eax, true);
 	ConfigMan.setBool("forcesoftware", _forceSoftware, true);
 }
 

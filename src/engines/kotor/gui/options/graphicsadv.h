@@ -44,9 +44,17 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
+	int _textureQuality;
+	int _antiAliasing;
+	int _anisotropy;
+
 	bool _frameBufferEffects;
 	bool _softShadows;
 	bool _vsync;
+
+	void updateTextureQuality(int textureQuality);
+	void updateAntiAliasing(int antiAliasing);
+	void updateAnisotropy(int anisotropy);
 };
 
 } // End of namespace KotOR
