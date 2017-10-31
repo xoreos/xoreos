@@ -49,6 +49,7 @@
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/creature.h"
+#include "src/engines/kotor/gui/ingame/ingame.h"
 
 namespace Engines {
 
@@ -62,7 +63,7 @@ bool Module::Action::operator<(const Action &s) const {
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
 	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
-	_fade(new Graphics::Aurora::FadeQuad()) {
+	_fade(new Graphics::Aurora::FadeQuad()), _ingame(new IngameGUI(*this)) {
 	loadTexturePack();
 }
 
@@ -324,6 +325,8 @@ void Module::enter() {
 	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
 	CameraMan.update();
 
+	_ingame->show();
+
 	enterArea();
 
 	_running = true;
@@ -371,6 +374,8 @@ void Module::getEntryIFOLocation(float &entryX, float &entryY, float &entryZ, fl
 }
 
 void Module::leave() {
+	_ingame->hide();
+
 	leaveArea();
 
 	_running = false;
@@ -442,6 +447,7 @@ void Module::handleEvents() {
 				continue;
 
 		_area->addEvent(*event);
+		_ingame->addEvent(*event);
 	}
 
 	_eventQueue.clear();
@@ -449,6 +455,7 @@ void Module::handleEvents() {
 	CameraMan.update();
 
 	_area->processEventQueue();
+	_ingame->processEventQueue();
 }
 
 void Module::handleActions() {

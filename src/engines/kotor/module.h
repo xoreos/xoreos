@@ -50,6 +50,7 @@ namespace KotOR {
 
 class Area;
 class Creature;
+class IngameGUI;
 
 class Module : public KotOR::Object, public KotOR::ObjectContainer {
 public:
@@ -181,6 +182,8 @@ private:
 	Common::ScopedPtr<Area> _area; ///< The current module's area.
 
 	Common::ScopedPtr<Graphics::Aurora::FadeQuad> _fade;
+
+	Common::ScopedPtr<IngameGUI> _ingame; ///< The ingame ui.
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;

@@ -20,7 +20,11 @@
 # Ingame system in Star Wars: Knights of the Old Republic.
 
 src_engines_kotor_libkotor_la_SOURCES += \
+    src/engines/kotor/gui/ingame/ingame.h \
+    src/engines/kotor/gui/ingame/hud.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
+    src/engines/kotor/gui/ingame/ingame.cpp \
+    src/engines/kotor/gui/ingame/hud.cpp \
     $(EMPTY)
