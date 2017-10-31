@@ -58,11 +58,16 @@ public:
 
 	void setPosition(float x, float y, float z);
 
+	virtual void setInvisible(bool invisible);
+
 	/** Create a scissor test over this widget. */
 	void setScissor(int x, int y, int width, int height);
 
 	/** Change the font for this widget. */
 	void setFont(const Common::UString &fnt);
+
+	/** Set the widget clickable, or not clickable. */
+	void setClickable(bool clickable);
 
 	/** Set the width of the widget. */
 	void setWidth(float width);

@@ -194,6 +194,13 @@ void KotORWidget::setFill(const Common::UString &fill) {
 	_quad->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+void KotORWidget::setClickable(bool clickable) {
+	if (_quad)
+		_quad->setClickable(clickable);
+	if (_text)
+		_text->setClickable(clickable);
+}
+
 void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	gff.getVector("COLOR", _r, _g, _b);
 	_a = gff.getDouble("ALPHA", 1.0);
@@ -367,6 +374,12 @@ Graphics::Aurora::Highlightable* KotORWidget::getTextHighlightableComponent() co
 
 Graphics::Aurora::Highlightable* KotORWidget::getQuadHighlightableComponent() const {
 	return dynamic_cast<Graphics::Aurora::Highlightable*>(_quad.get());
+}
+
+void KotORWidget::setInvisible(bool invisible) {
+	Widget::setInvisible(invisible);
+
+	setClickable(!invisible);
 }
 
 } // End of namespace KotOR
