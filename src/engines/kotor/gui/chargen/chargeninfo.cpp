@@ -25,6 +25,8 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 
+#include "src/engines/aurora/model.h"
+
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
 namespace Engines {
@@ -168,7 +170,85 @@ Creature *CharacterGenerationInfo::getCharacter() {
 	return creature;
 }
 
-CharacterGenerationInfo::CharacterGenerationInfo() {
+Graphics::Aurora::Model *CharacterGenerationInfo::getModel() {
+	if (_body)
+		return _body.get();
+
+	Common::UString body, head;
+
+	body = "p";
+	head = "p";
+
+	switch (getGender()) {
+		case kGenderMale:
+			body += "m";
+			head += "m";
+			break;
+		case kGenderFemale:
+			body += "f";
+			head += "f";
+			break;
+		default:
+			throw Common::Exception("Unknown gender");
+	}
+
+	body += "bb";
+	head += "h";
+
+	switch (getClass()) {
+		case kClassSoldier:
+			body += "l";
+			break;
+		case kClassScout:
+			body += "s";
+			break;
+		default:
+		case kClassScoundrel:
+			body += "m";
+			break;
+	}
+
+	_body.reset(loadModelObject(body, ""));
+
+	switch (getSkin()) {
+		case kSkinA:
+			head += "a";
+			break;
+		case kSkinB:
+			head += "b";
+			break;
+		default:
+		case kSkinC:
+			head += "c";
+			break;
+	}
+
+	head += "0";
+	head += Common::composeString(getFace() + 1);
+
+	Graphics::Aurora::Model *headModel = loadModelObject(head, "");
+	_body->attachModel("headhook", headModel);
+
+	return _body.get();
+}
+
+CharacterGenerationInfo::CharacterGenerationInfo(const CharacterGenerationInfo &info) {
+	_class = info._class;
+	_gender = info._gender;
+	_skin = info._skin;
+	_face = info._face;
+	_name = info._name;
+}
+
+void CharacterGenerationInfo::operator=(const CharacterGenerationInfo &info) {
+	_class = info._class;
+	_gender = info._gender;
+	_skin = info._skin;
+	_face = info._face;
+	_name = info._name;
+}
+
+CharacterGenerationInfo::CharacterGenerationInfo() : _body(0) {
 
 }
 
