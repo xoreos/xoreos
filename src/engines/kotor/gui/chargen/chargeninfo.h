@@ -27,6 +27,8 @@
 
 #include "src/common/ustring.h"
 
+#include "src/graphics/aurora/model.h"
+
 #include "src/engines/kotor/types.h"
 #include "src/engines/kotor/creature.h"
 
@@ -38,6 +40,9 @@ class Creature;
 
 class CharacterGenerationInfo {
 public:
+	CharacterGenerationInfo(const CharacterGenerationInfo &info);
+	void operator=(const CharacterGenerationInfo &info);
+
 	// Create a random character for each of the six archetypes
 	static CharacterGenerationInfo *createRandomMaleSoldier();
 	static CharacterGenerationInfo *createRandomMaleScout();
@@ -67,6 +72,7 @@ public:
 	void setFace(uint8 face);
 
 	Creature *getCharacter();
+	Graphics::Aurora::Model *getModel();
 
 private:
 	CharacterGenerationInfo();
@@ -77,6 +83,8 @@ private:
 	uint8 _face;
 
 	Common::UString _name;
+
+	Common::ScopedPtr<Graphics::Aurora::Model> _body;
 };
 
 } // End of namespace KotOR
