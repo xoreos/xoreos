@@ -63,7 +63,7 @@ OptionsGameplayMenu::~OptionsGameplayMenu() {
 void OptionsGameplayMenu::show() {
 	GUI::show();
 
-	_difficulty = CLIP(ConfigMan.getInt("difficultylevel", 0), 0, 2);
+	_difficulty = CLIP(ConfigMan.getInt("difficultylevel", 1), 0, 2);
 	updateDifficulty(_difficulty);
 
 	_autoLevelUp = ConfigMan.getBool("autolevelup", false);
@@ -72,13 +72,13 @@ void OptionsGameplayMenu::show() {
 	_mouseMove = ConfigMan.getBool("mousemove", false);
 	setCheckBoxState("CB_INVERTCAM", _mouseMove);
 
-	_autoSave = ConfigMan.getBool("autosave", false);
+	_autoSave = ConfigMan.getBool("autosave", true);
 	setCheckBoxState("CB_AUTOSAVE", _autoSave);
 
 	_reverseMinigameY = ConfigMan.getBool("reverseminigameyaxis", false);
 	setCheckBoxState("CB_REVERSE", _reverseMinigameY);
 
-	_combatMovement = ConfigMan.getBool("combatmovement", false);
+	_combatMovement = ConfigMan.getBool("combatmovement", true);
 	setCheckBoxState("CB_DISABLEMOVE", _combatMovement);
 }
 
@@ -125,13 +125,13 @@ void OptionsGameplayMenu::callbackActive(Widget &widget) {
 		_mouseMove = false;
 		setCheckBoxState("CB_INVERTCAM", _mouseMove);
 
-		_autoSave = false;
+		_autoSave = true;
 		setCheckBoxState("CB_AUTOSAVE", _autoSave);
 
 		_reverseMinigameY = false;
 		setCheckBoxState("CB_REVERSE", _reverseMinigameY);
 
-		_combatMovement = false;
+		_combatMovement = true;
 		setCheckBoxState("CB_DISABLEMOVE", _combatMovement);
 	}
 

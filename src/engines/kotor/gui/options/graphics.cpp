@@ -51,10 +51,10 @@ OptionsGraphicsMenu::~OptionsGraphicsMenu() {
 void OptionsGraphicsMenu::show() {
 	GUI::show();
 
-	_shadows = ConfigMan.getBool("shadows", false);
+	_shadows = ConfigMan.getBool("shadows", true);
 	setCheckBoxState("CB_SHADOWS", _shadows);
 
-	_grass = ConfigMan.getBool("grass", false);
+	_grass = ConfigMan.getBool("grass", true);
 	setCheckBoxState("CB_GRASS", _grass);
 }
 
@@ -67,10 +67,10 @@ void OptionsGraphicsMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_DEFAULT") {
-		_shadows = false;
+		_shadows = true;
 		setCheckBoxState("CB_SHADOWS", _shadows);
 
-		_grass = false;
+		_grass = true;
 		setCheckBoxState("CB_GRASS", _grass);
 	}
 

@@ -77,19 +77,19 @@ void OptionsAutoPauseMenu::callbackActive(Widget &widget) {
 		_endOfCombatRound = false;
 		setCheckBoxState("CB_ENDROUND", _endOfCombatRound);
 
-		_enemySighted = false;
+		_enemySighted = true;
 		setCheckBoxState("CB_ENEMYSIGHTED", _enemySighted);
 
-		_mineSighted = false;
+		_mineSighted = true;
 		setCheckBoxState("CB_MINESIGHTED", _mineSighted);
 
-		_partyMemberDown = false;
+		_partyMemberDown = true;
 		setCheckBoxState("CB_PARTYKILLED", _partyMemberDown);
 
 		_actionMenuUsed = false;
 		setCheckBoxState("CB_ACTIONMENU", _actionMenuUsed);
 
-		_newTargetSelected = false;
+		_newTargetSelected = true;
 		setCheckBoxState("CB_TRIGGERS", _newTargetSelected);
 	}
 

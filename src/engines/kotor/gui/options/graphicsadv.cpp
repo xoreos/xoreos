@@ -75,10 +75,10 @@ void OptionsGraphicsAdvancedMenu::show() {
 	_anisotropy = CLIP(ConfigMan.getInt("anisotropy", 0), 0, 4);
 	updateAnisotropy(_anisotropy);
 
-	_frameBufferEffects = ConfigMan.getBool("framebuffereffects", false);
+	_frameBufferEffects = ConfigMan.getBool("framebuffereffects", true);
 	setCheckBoxState("CB_FRAMEBUFF", _frameBufferEffects);
 
-	_softShadows = ConfigMan.getBool("softshadows", false);
+	_softShadows = ConfigMan.getBool("softshadows", true);
 	setCheckBoxState("CB_SOFTSHADOWS", _softShadows);
 
 	_vsync = ConfigMan.getBool("vsync", false);
@@ -151,10 +151,10 @@ void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
 		_anisotropy = 0;
 		updateAnisotropy(_anisotropy);
 
-		_frameBufferEffects = false;
+		_frameBufferEffects = true;
 		setCheckBoxState("CB_FRAMEBUFF", _frameBufferEffects);
 
-		_softShadows = false;
+		_softShadows = true;
 		setCheckBoxState("CB_SOFTSHADOWS", _softShadows);
 
 		_vsync = false;
