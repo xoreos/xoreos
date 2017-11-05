@@ -66,6 +66,8 @@ private:
 	Common::ScopedPtr<GUI> _customChar;
 
 	Common::ScopedPtr<CharacterGenerationBaseMenu> _charGenMenu;
+
+	Common::ScopedPtr<Graphics::Aurora::SubSceneQuad> _charSubScene;
 };
 
 } // End of namespace KotOR
