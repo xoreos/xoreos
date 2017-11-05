@@ -25,6 +25,8 @@
 #ifndef GRAPHICS_AURORA_SUBSCENEQUAD_H
 #define GRAPHICS_AURORA_SUBSCENEQUAD_H
 
+#include "src/common/matrix4x4.h"
+
 #include "src/graphics/guielement.h"
 
 namespace Graphics {
@@ -41,7 +43,20 @@ public:
 	void setPosition(int x, int y);
 	void setSize(int width, int height);
 
+	void setProjectionMatrix(const Common::Matrix4x4 &projection);
+	void setGlobalTransformationMatrix(const Common::Matrix4x4 &transformation);
+
+	/** Add a renderable to the sub scene. */
+	void add(Renderable *renderable);
+	/** Remove a renderable from the sub scene. */
+	void remove(Renderable *renderable);
+
 private:
+	std::vector<Renderable *> _renderables;
+
+	Common::Matrix4x4 _projection;
+	Common::Matrix4x4 _transformation;
+
 	int _x, _y;
 	int _width, _height;
 };
