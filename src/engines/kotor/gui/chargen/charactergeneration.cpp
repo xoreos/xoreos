@@ -39,8 +39,8 @@ namespace Engines {
 
 namespace KotOR {
 
-CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenerationInfo *pc,
-		Console *console) : GUI(console), _module(module), _pc(pc), _step(0) {
+CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenerationInfo *pc, Console *console) :
+		GUI(console), _module(module), _pc(pc), _step(0), _charSubScene(new Graphics::Aurora::SubSceneQuad) {
 
 	load("maincg");
 
@@ -77,6 +77,31 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 
 	getWidget("LBL_LEVEL_VAL")->setInvisible(true);
 	getWidget("LBL_LEVEL")->setInvisible(true);
+
+	float subSceneWidth = getLabel("MODEL_LBL")->getWidth();
+	float subSceneHeight = getLabel("MODEL_LBL")->getHeight();
+
+	Common::Matrix4x4 projection;
+	projection.perspective(22.72f, subSceneWidth/subSceneHeight, 0.1f, 10.0f);
+
+	/*
+	 * TODO: These values are extracted using apitrace from the original game.
+	 * They should be replaced with a more straight forward matrix transformation expression.
+	 */
+	float modelView[] = {
+			0.000900542, 0.0176735, 0.999843, 0,
+			0.999999, 0.000900542, -0.00091657, 0,
+			-0.00091657, 0.999843, -0.0176727, 0,
+			0, 0, 0, 1
+	};
+	Common::Matrix4x4 transformation(modelView);
+	transformation.translate(-4.87251f, 0.0f, -0.776371f);
+	transformation.rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+
+	getLabel("MODEL_LBL")->setSubScene(_charSubScene.get());
+	_charSubScene->add(_pc->getModel());
+	_charSubScene->setProjectionMatrix(projection);
+	_charSubScene->setGlobalTransformationMatrix(transformation);
 
 	showQuickOrCustom();
 }
