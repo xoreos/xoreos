@@ -81,6 +81,51 @@ ClassSelectionMenu::ClassSelectionMenu(Module *module, ::Engines::Console *conso
 	_femaleSoldier = CharacterGenerationInfo::createRandomFemaleSoldier();
 	_femaleScout = CharacterGenerationInfo::createRandomFemaleScout();
 	_femaleScoundrel = CharacterGenerationInfo::createRandomFemaleScoundrel();
+
+	float subSceneWidth = getLabel("3D_MODEL2")->getWidth();
+	float subSceneHeight = getLabel("3D_MODEL2")->getHeight();
+
+	Common::Matrix4x4 projection;
+	projection.perspective(22.72f, subSceneWidth/subSceneHeight, 0.1f, 10.0f);
+
+	/*
+	 * TODO: These values are extracted using apitrace from the original game.
+	 * They should be replaced with a more straight forward matrix transformation expression.
+	 */
+	float modelView[] = {
+			0.00979373, -0.040304, 0.999139, 0,
+			0.999952, 0.000393929, -0.00978577, 0,
+			8.34465e-7, 0.999187, 0.0403059, 0,
+			0, 0, 0, 1
+	};
+	Common::Matrix4x4 transformation(modelView);
+	transformation.translate(-4.87294f, 0.0880559f, -1.06834f);
+	transformation.rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+
+	getLabel("3D_MODEL1")->setSubScene(&_maleScoundrelSubScene);
+	_maleScoundrelSubScene.add(_maleScoundrel->getModel());
+	_maleScoundrelSubScene.setProjectionMatrix(projection);
+	_maleScoundrelSubScene.setGlobalTransformationMatrix(transformation);
+	getLabel("3D_MODEL2")->setSubScene(&_maleScoutSubScene);
+	_maleScoutSubScene.add(_maleScout->getModel());
+	_maleScoutSubScene.setProjectionMatrix(projection);
+	_maleScoutSubScene.setGlobalTransformationMatrix(transformation);
+	getLabel("3D_MODEL3")->setSubScene(&_maleSoldierSubScene);
+	_maleSoldierSubScene.add(_maleSoldier->getModel());
+	_maleSoldierSubScene.setProjectionMatrix(projection);
+	_maleSoldierSubScene.setGlobalTransformationMatrix(transformation);
+	getLabel("3D_MODEL6")->setSubScene(&_femaleScoundrelSubScene);
+	_femaleScoundrelSubScene.add(_femaleScoundrel->getModel());
+	_femaleScoundrelSubScene.setProjectionMatrix(projection);
+	_femaleScoundrelSubScene.setGlobalTransformationMatrix(transformation);
+	getLabel("3D_MODEL5")->setSubScene(&_femaleScoutSubScene);
+	_femaleScoutSubScene.add(_femaleScout->getModel());
+	_femaleScoutSubScene.setProjectionMatrix(projection);
+	_femaleScoutSubScene.setGlobalTransformationMatrix(transformation);
+	getLabel("3D_MODEL4")->setSubScene(&_femaleSoldierSubScene);
+	_femaleSoldierSubScene.add(_femaleSoldier->getModel());
+	_femaleSoldierSubScene.setProjectionMatrix(projection);
+	_femaleSoldierSubScene.setGlobalTransformationMatrix(transformation);
 }
 
 ClassSelectionMenu::~ClassSelectionMenu() {
