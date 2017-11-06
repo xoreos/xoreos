@@ -18,45 +18,43 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file
- *  The options menu.
- */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
-#define ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
+#ifndef XOREOS_HIGHLIGHTABLEBORDER_H
+#define XOREOS_HIGHLIGHTABLEBORDER_H
 
-#include "src/common/scopedptr.h"
 
+
+#include "src/graphics/aurora/borderquad.h"
 #include "src/graphics/aurora/highlightable.h"
 
-#include "src/engines/kotor/gui/gui.h"
+namespace Graphics {
 
-#include "src/engines/kotor/gui/options/gameplay.h"
+namespace Aurora {
 
-namespace Engines {
+class HighlightableBorder : public Highlightable, public BorderQuad {
 
-namespace KotOR {
-
-class OptionsMenu : public GUI {
 public:
-	OptionsMenu(::Engines::Console *console = 0);
-	~OptionsMenu();
+    HighlightableBorder(const Common::UString &edge, const Common::UString &corner, float x, float y, float w, float h, const Common::UString &cornerH, const Common::UString &edgeH);
+    ~HighlightableBorder();
 
-protected:
-	void callbackActive(Widget &widget);
-	void initWidget(Widget &widget);
+    void render(RenderPass pass);
+
+    void setHighlightCornerTexture(const TextureHandle& corner);
+    void setHighlightEdgeTexture(const TextureHandle& edge);
+
 private:
-	void adoptChanges();
+    TextureHandle _cornerH;
+    TextureHandle _edgeH;
 
-	Common::ScopedPtr<GUI> _gameplay;
-	Common::ScopedPtr<GUI> _feedback;
-	Common::ScopedPtr<GUI> _autopause;
-	Common::ScopedPtr<GUI> _graphics;
-	Common::ScopedPtr<GUI> _sound;
+    TextureHandle _edge;
+    TextureHandle _corner;
 };
 
-} // End of namespace KotOR
 
-} // End of namespace Engines
+}
 
-#endif // ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
+}
+
+
+
+#endif //XOREOS_HIGHLIGHTABLEBORDER_H

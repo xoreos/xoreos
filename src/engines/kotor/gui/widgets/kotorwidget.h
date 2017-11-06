@@ -114,6 +114,7 @@ protected:
 
 	Graphics::Aurora::Highlightable *getTextHighlightableComponent() const;
 	Graphics::Aurora::Highlightable *getQuadHighlightableComponent() const;
+	Graphics::Aurora::Highlightable *getBorderHighlightableComponent() const;
 
 	float _width;
 	float _height;
@@ -133,6 +134,8 @@ protected:
 	Extend createExtend(const Aurora::GFF3Struct &gff);
 	Border createBorder(const Aurora::GFF3Struct &gff);
 	Text   createText  (const Aurora::GFF3Struct &gff);
+
+    Border createHighlightBorder(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace KotOR
