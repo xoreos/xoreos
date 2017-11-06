@@ -101,10 +101,6 @@ void Game::runModule() {
 }
 
 void Game::mainMenu() {
-	// TODO: implement main menu
-	_module->load("j01_town");
-	return;
-
 	EventMan.flushEvents();
 
 	MainMenu menu(*_module, _console);

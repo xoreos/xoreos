@@ -55,6 +55,9 @@ KotORWidget::Text::Text() : strRef(Aurora::kStrRefInvalid), halign(0.0f), valign
 
 }
 
+KotORWidget::Hilight::Hilight() : fill("") {
+
+}
 
 KotORWidget::KotORWidget(::Engines::GUI &gui, const Common::UString &tag) :
 	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _wrapped(false) {
@@ -84,6 +87,8 @@ void KotORWidget::hide() {
 
 	if (_border)
 		_border->hide();
+	if (_highlight)
+		_highlight->hide();
 	if (_quad)
 		_quad->hide();
 	if (_text)
@@ -126,6 +131,13 @@ void KotORWidget::setPosition(float x, float y, float z) {
 		_text->setPosition(tX - oX + x, tY - oY + y, tZ - oZ + z);
 	}
 
+	if (_highlight) {
+		float hX, hY, hZ;
+		_highlight->getPosition(hX, hY, hZ);
+
+		_highlight->setPosition(hX - oX + x, hY - oY + y, hZ - oZ + z);
+	}
+
 	if (_border) {
 		_border->setPosition(x, y, z);
 	}
@@ -134,6 +146,16 @@ void KotORWidget::setPosition(float x, float y, float z) {
 void KotORWidget::setScissor(int x, int y, int width, int height) {
 	_quad->setScissor(true);
 	_quad->setScissor(x, y, width, height);
+}
+
+void KotORWidget::setWidth(float width) {
+	if (_quad)
+		_quad->setWidth(width);
+}
+
+void KotORWidget::setHeight(float height) {
+	if (_quad)
+		_quad->setHeight(height);
 }
 
 float KotORWidget::getWidth() const {
@@ -149,6 +171,12 @@ void KotORWidget::setFont(const Common::UString &fnt) {
 }
 
 void KotORWidget::setFill(const Common::UString &fill) {
+	if (fill.empty()) {
+		_quad->hide();
+		_quad.release();
+		return;
+	}
+
 	if (!_quad) {
 		float x, y, z;
 		getPosition(x, y, z);
@@ -178,6 +206,12 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	Widget::setPosition(extend.x, extend.y, 0.0f);
 
 	Border border = createBorder(gff);
+	Hilight hilight = createHilight(gff);
+
+	if (!hilight.fill.empty()) {
+		_highlight.reset(new Graphics::Aurora::GUIQuad(hilight.fill, 0, 0, extend.w, extend.h));
+		_highlight->setPosition(extend.x, extend.y, 0.0f);
+	}
 
 	if (!border.fill.empty()) {
 		_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
@@ -303,13 +337,28 @@ KotORWidget::Text KotORWidget::createText(const Aurora::GFF3Struct &gff) {
 			text.text = TalkMan.getString(text.strRef);
 
 		// TODO: KotORWidget::getText(): Alignment
-		if (alignment == 18) {
+		if (alignment == 10) {
+			text.halign = 0.5f;
+			text.valign = 1.0f;
+		} else if (alignment == 18) {
 			text.halign = 0.5f;
 			text.valign = 0.5f;
 		}
 	}
 
 	return text;
+}
+
+KotORWidget::Hilight KotORWidget::createHilight(const Aurora::GFF3Struct &gff) {
+	Hilight hilight;
+
+	if (gff.hasField("HILIGHT")) {
+		const Aurora::GFF3Struct &h = gff.getStruct("HILIGHT");
+
+		hilight.fill   = h.getString("FILL");
+	}
+
+	return hilight;
 }
 
 Graphics::Aurora::Highlightable* KotORWidget::getTextHighlightableComponent() const {
