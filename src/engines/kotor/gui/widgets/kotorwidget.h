@@ -34,6 +34,7 @@
 #include "src/graphics/aurora/highlightable.h"
 #include "src/graphics/aurora/highlightabletext.h"
 #include "src/graphics/aurora/borderquad.h"
+#include "src/graphics/aurora/subscenequad.h"
 
 #include "src/engines/aurora/widget.h"
 
@@ -57,6 +58,7 @@ public:
 	void setTag(const Common::UString &tag);
 
 	void setPosition(float x, float y, float z);
+	void setSubScene(Graphics::Aurora::SubSceneQuad *subscene);
 
 	virtual void setInvisible(bool invisible);
 
@@ -145,6 +147,8 @@ protected:
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad>           _highlight;
 	Common::ScopedPtr<Graphics::Aurora::HighlightableText> _text;
 	Common::ScopedPtr<Graphics::Aurora::BorderQuad>        _border;
+
+	Graphics::Aurora::SubSceneQuad *_subScene;
 
 
 	Extend  createExtend (const Aurora::GFF3Struct &gff);

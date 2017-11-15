@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_GUI_CHARGEN_CLASSSELECTION_H
 #define ENGINES_KOTOR_GUI_CHARGEN_CLASSSELECTION_H
 
+#include "src/graphics/aurora/subscenequad.h"
+
 #include "src/engines/kotor/module.h"
 
 #include "src/engines/kotor/gui/gui.h"
@@ -50,6 +52,13 @@ private:
 	void callbackActive(Widget &widget);
 
 	Common::ScopedPtr<GUI> _charGen;
+
+	Graphics::Aurora::SubSceneQuad _maleSoldierSubScene;
+	Graphics::Aurora::SubSceneQuad _maleScoutSubScene;
+	Graphics::Aurora::SubSceneQuad _maleScoundrelSubScene;
+	Graphics::Aurora::SubSceneQuad _femaleSoldierSubScene;
+	Graphics::Aurora::SubSceneQuad _femaleScoutSubScene;
+	Graphics::Aurora::SubSceneQuad _femaleScoundrelSubScene;
 
 	WidgetLabel *_labelDesc;
 	WidgetLabel *_labelTitle;
