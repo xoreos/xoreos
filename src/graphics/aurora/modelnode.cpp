@@ -162,7 +162,7 @@ void ModelNode::getAbsolutePosition(float &x, float &y, float &z) const {
 	z = _absolutePosition.getZ() * _model->_scale[2];
 }
 
-Common::Matrix4x4 ModelNode::getAsolutePosition() const {
+Common::Matrix4x4 ModelNode::getAbsolutePosition() const {
 	Common::Matrix4x4 absolutePosition = _absolutePosition;
 	absolutePosition.scale(_model->_scale[0], _model->_scale[1], _model->_scale[2]);
 

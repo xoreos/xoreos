@@ -91,7 +91,7 @@ public:
 	void getAbsolutePosition(float &x, float &y, float &z) const;
 
 	/** Get the position of the node after translate/rotate. */
-	Common::Matrix4x4 getAsolutePosition() const;
+	Common::Matrix4x4 getAbsolutePosition() const;
 
 	/** Set the position of the node. */
 	void setPosition(float x, float y, float z);
