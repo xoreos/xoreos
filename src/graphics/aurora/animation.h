@@ -78,6 +78,9 @@ public:
 	/** Get the specified node. */
 	const ModelNode *getNode(const Common::UString &node) const;
 
+	/** Map node numbers to animation nodes for better performance. */
+	void makeAnimNodeMap(Model *model);
+
 protected:
 	typedef std::list<AnimNode *> NodeList;
 	typedef std::map<Common::UString, AnimNode *, Common::UString::iless> NodeMap;
@@ -92,8 +95,22 @@ protected:
 	float _transtime;
 
 private:
-	void interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale) const;
+	std::vector<float>       _invBindPoseMatrices;
+	std::vector<float>       _boneTransMatrices;
+	std::vector<ModelNode *> _nodeChain;
+
+	void interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale,
+	                         bool relative) const;
 	void interpolateOrientation(ModelNode *animNode, ModelNode *target, float time) const;
+
+	/** Transform vertices for each node of the specified model based on current animation. */
+	void updateSkinnedModel(Model *model);
+
+	/** Compute node transformation and inverse bind pose matrices.
+	 *  @param outInvBindPose Pointer to a 16-value array to store inverse bind pose matrix.
+	 *  @param outTransform Pointer to a 16-value array to store transformation matrix.
+	 */
+	void computeNodeTransform(ModelNode *node, float *outInvBindPose, float *outTransform);
 };
 
 } // End of namespace Aurora

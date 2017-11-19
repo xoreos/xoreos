@@ -74,6 +74,9 @@ public:
 	/** Change the environment map on this model. */
 	void setEnvironmentMap(const Common::UString &environmentMap = "");
 
+	/** Set the flag if the model has skinned animations. */
+	void setSkinned(bool skinned);
+
 	/** Is that point within the model's bounding box? */
 	bool isIn(float x, float y) const;
 	/** Is that point within the model's bounding box? */
@@ -134,6 +137,10 @@ public:
 	ModelNode *getNode(const Common::UString &stateName, const Common::UString &node);
 	/** Get the specified node, from the named state, if it exists. */
 	const ModelNode *getNode(const Common::UString &stateName, const Common::UString &node) const;
+	/** Get node by node number. */
+	ModelNode *getNode(uint16 nodeNumber);
+	/** Get node by node number. */
+	const ModelNode *getNode(uint16 nodeNumber) const;
 
 	/** Get all nodes in the current state. */
 	const std::list<ModelNode *> &getNodes();
@@ -244,6 +251,8 @@ protected:
 	/** The model's box after translate/rotate. */
 	Common::BoundingBox _absoluteBoundBox;
 
+	bool _skinned;
+
 
 	// Rendering
 
@@ -279,6 +288,7 @@ private:
 	float _animationLoopLength; ///< The length of one loop of the current animation.
 	float _animationLoopTime;   ///< The time the current loop of the current animation has played.
 
+	std::vector<ModelNode *> _animNodeMap;
 
 	/** Create the list of all state names. */
 	void createStateNamesList(std::list<Common::UString> *stateNames = 0);
@@ -307,6 +317,7 @@ public:
 	                      uint32 offset, uint32 count, std::vector<T> &values);
 
 	friend class ModelNode;
+	friend class Animation;
 };
 
 } // End of namespace Aurora

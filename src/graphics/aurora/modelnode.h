@@ -93,6 +93,8 @@ public:
 	/** Get the position of the node after translate/rotate. */
 	Common::Matrix4x4 getAbsolutePosition() const;
 
+	uint16 getNodeNumber() const;
+
 	/** Set the position of the node. */
 	void setPosition(float x, float y, float z);
 	/** Set the rotation of the node. */
@@ -108,7 +110,6 @@ public:
 	/** Set textures to the node. */
 	void setTextures(const std::vector<Common::UString> &textures);
 
-protected:
 	/** The way the environment map is applied to a model node. */
 	enum EnvironmentMapMode {
 		kModeEnvironmentBlendedUnder, ///< Environment map first, then blend the diffuse textures in.
@@ -129,9 +130,21 @@ protected:
 		Dangly();
 	};
 
+	struct Skin {
+		std::vector<float>       boneMapping;
+		uint32                   boneMappingCount;
+		std::vector<float>       boneWeights;
+		std::vector<float>       boneMappingId;
+		std::vector<ModelNode *> boneNodeMap;
+
+		Skin();
+	};
+
 	struct MeshData {
 		VertexBuffer vertexBuffer; ///< Node geometry vertex buffer.
 		IndexBuffer indexBuffer;   ///< Node geometry index buffer.
+
+		std::vector<float> initialVertexCoords; ///< Initial node vertex coordinates.
 
 		std::vector<TextureHandle> textures; ///< Textures.
 
@@ -166,12 +179,14 @@ protected:
 		bool transparencyHint;
 
 		MeshData *data;
-		Dangly *dangly;
-		// TODO Anim, Skin, AABB Meshes
+		Dangly   *dangly;
+		Skin     *skin;
+		// TODO Anim, AABB Meshes
 
 		Mesh();
 	};
 
+protected:
 	Model *_model; ///< The model this node belongs to.
 
 	ModelNode *_parent;               ///< The node's parent.
@@ -201,6 +216,8 @@ protected:
 
 	Common::BoundingBox _boundBox;
 	Common::BoundingBox _absoluteBoundBox;
+
+	uint16 _nodeNumber;
 
 
 	// Loading helpers
@@ -242,6 +259,8 @@ public:
 	void setParent(ModelNode *parent); ///< Set the node's parent.
 
 	std::list<ModelNode *> &getChildren(); ///< Get the node's children.
+
+	Mesh *getMesh() const;
 
 	/** Is this node in front of that other node? */
 	bool isInFrontOf(const ModelNode &node) const;

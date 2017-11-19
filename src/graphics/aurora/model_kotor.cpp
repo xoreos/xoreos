@@ -107,7 +107,8 @@ namespace Aurora {
 
 Model_KotOR::ParserContext::ParserContext(const Common::UString &name,
                                           const Common::UString &t, bool k2) :
-	mdl(0), mdx(0), state(0), texture(t), kotor2(k2) {
+	mdl(0), mdx(0), state(0), texture(t), kotor2(k2), mdxStructSize(0), vertexCount(0),
+	offNodeData(0) {
 
 	try {
 
@@ -149,6 +150,9 @@ Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, ModelType typ
 	ParserContext ctx(name, texture, kotor2);
 
 	load(ctx);
+
+	if (_skinned)
+		makeBoneNodeMap();
 
 	loadSuperModel(modelCache, kotor2);
 
@@ -375,8 +379,27 @@ void Model_KotOR::addState(ParserContext &ctx) {
 	ctx.nodes.clear();
 }
 
+void Model_KotOR::makeBoneNodeMap() {
+	const NodeList &nodes = getNodes();
+	for (NodeList::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+		ModelNode *node = *it;
+		ModelNode::Mesh *mesh = node->getMesh();
+		if (mesh && mesh->skin) {
+			ModelNode::Skin *skin = mesh->skin;
+			skin->boneNodeMap.reserve(skin->boneMappingCount);
+			for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
+				int index = static_cast<int>(skin->boneMapping[i]);
+				if (index != -1) {
+					skin->boneNodeMap[index] = getNode(i);
+				}
+			}
+		}
+	}
+}
 
-ModelNode_KotOR::ModelNode_KotOR(Model &model) : ModelNode(model) {
+
+ModelNode_KotOR::ModelNode_KotOR(Model &model) :
+	ModelNode(model) {
 }
 
 ModelNode_KotOR::~ModelNode_KotOR() {
@@ -385,10 +408,11 @@ ModelNode_KotOR::~ModelNode_KotOR() {
 void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	uint16 flags      = ctx.mdl->readUint16LE();
 	uint16 superNode  = ctx.mdl->readUint16LE();
-	uint16 nodeNumber = ctx.mdl->readUint16LE();
 
-	if (nodeNumber < ctx.names.size())
-		_name = ctx.names[nodeNumber];
+	_nodeNumber = ctx.mdl->readUint16LE();
+
+	if (_nodeNumber < ctx.names.size())
+		_name = ctx.names[_nodeNumber];
 
 	ctx.mdl->skip(6 + 4); // Unknown + parent pointer
 
@@ -442,8 +466,8 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	}
 
 	if (flags & kNodeFlagHasSkin) {
-		// TODO: Skin
-		ctx.mdl->skip(0x64);
+		readSkin(ctx);
+		_model->setSkinned(true);
 	}
 
 	if (flags & kNodeFlagHasAnim) {
@@ -472,10 +496,74 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	}
 }
 
-void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &UNUSED(ctx),
-		uint32 UNUSED(offset), uint32 UNUSED(count), std::vector<float> &UNUSED(data)) {
+void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
+		uint32 offset, uint32 count, std::vector<float> &data) {
+	uint32 pos = ctx.mdl->seek(offset);
+	for (uint32 i = 0; i < count; i++) {
+		uint32 type = ctx.mdl->readUint32LE();
+		ctx.mdl->skip(2);
+		uint16 rowCount = ctx.mdl->readUint16LE();
+		uint16 timeIndex = ctx.mdl->readUint16LE();
+		uint16 dataIndex = ctx.mdl->readUint16LE();
+		uint8 columnCount = ctx.mdl->readByte();
+		ctx.mdl->skip(3);
+		switch (type) {
+			case kControllerTypePosition:
+				readPositionController(columnCount, rowCount, timeIndex, dataIndex, data);
+				break;
+			case kControllerTypeOrientation:
+				readOrientationController(columnCount, rowCount, timeIndex, dataIndex, data);
+				break;
+		}
+	}
+	ctx.mdl->seek(pos);
+}
 
-	// TODO
+void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
+		uint16 dataIndex, std::vector<float> &data) {
+	switch (columnCount) {
+		case 3:
+			for (int r = 0; r < rowCount; r++) {
+				PositionKeyFrame p;
+				p.time = data[timeIndex + r];
+				int index = dataIndex + 3 * r;
+				p.x = data[index + 0];
+				p.y = data[index + 1];
+				p.z = data[index + 2];
+				_positionFrames.push_back(p);
+			}
+			break;
+		case 19:
+			// TODO: 19 column position controller
+			break;
+		default:
+			warning("Position controller with %d values", columnCount);
+			break;
+	}
+}
+
+void ModelNode_KotOR::readOrientationController(uint8 columnCount, uint16 rowCount,
+		uint16 timeIndex, uint16 dataIndex, std::vector<float> &data) {
+	switch (columnCount) {
+		case 2:
+			// TODO: 2 column orientation controller
+			break;
+		case 4:
+			for (int r = 0; r < rowCount; r++) {
+				QuaternionKeyFrame q;
+				q.time = data[timeIndex + r];
+				int index = dataIndex + 4 * r;
+				q.x = data[index + 0];
+				q.y = data[index + 1];
+				q.z = data[index + 2];
+				q.q = data[index + 3];
+				_orientationFrames.push_back(q);
+			}
+			break;
+		default:
+			warning("Orientation controller with %d values", columnCount);
+			break;
+	}
 }
 
 void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
@@ -541,7 +629,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.mdl->skip(24 + 16); // Unknown
 
-	uint32 mdxStructSize = ctx.mdl->readUint32LE();
+	ctx.mdxStructSize = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(8); // Unknown
 
@@ -555,7 +643,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.mdl->skip(24); // Unknown
 
-	uint16 vertexCount  = ctx.mdl->readUint16LE();
+	ctx.vertexCount  = ctx.mdl->readUint16LE();
 	uint16 textureCount = ctx.mdl->readUint16LE();
 
 	ctx.mdl->skip(2);
@@ -570,11 +658,11 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	if (ctx.kotor2)
 		ctx.mdl->skip(8);
 
-	uint32 offNodeData = ctx.mdl->readUint32LE();
+	ctx.offNodeData = ctx.mdl->readUint32LE();
 
 	ctx.mdl->skip(4);
 
-	if ((offOffVertsCount < 1) || (vertexCount == 0) || (facesCount == 0))
+	if ((offOffVertsCount < 1) || (ctx.vertexCount == 0) || (facesCount == 0))
 		return;
 
 	_render = _mesh->render;
@@ -604,15 +692,22 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->vertexBuffer.setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
+	_mesh->data->initialVertexCoords.reserve(3 * ctx.vertexCount);
 
 	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
-	for (uint32 i = 0; i < vertexCount; i++) {
+	float *iv = _mesh->data->initialVertexCoords.data();
+
+	for (uint32 i = 0; i < ctx.vertexCount; i++) {
 		// Position
-		ctx.mdx->seek(offNodeData + i * mdxStructSize);
-		*v++ = ctx.mdx->readIEEEFloatLE();
-		*v++ = ctx.mdx->readIEEEFloatLE();
-		*v++ = ctx.mdx->readIEEEFloatLE();
+		ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize);
+		iv[0] = ctx.mdx->readIEEEFloatLE();
+		iv[1] = ctx.mdx->readIEEEFloatLE();
+		iv[2] = ctx.mdx->readIEEEFloatLE();
+		*v++ = iv[0];
+		*v++ = iv[1];
+		*v++ = iv[2];
+		iv += 3;
 
 		// Normal
 		//ctx.mdx->seek(offNodeData + i * mdxStructSize + offNormals);
@@ -623,7 +718,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 		// TexCoords
 		for (uint16 t = 0; t < textureCount; t++) {
 			if (offUV[t] != 0xFFFFFFFF) {
-				ctx.mdx->seek(offNodeData + i * mdxStructSize + offUV[t]);
+				ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize + offUV[t]);
 				*v++ = ctx.mdx->readIEEEFloatLE();
 				*v++ = ctx.mdx->readIEEEFloatLE();
 			} else {
@@ -650,6 +745,42 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	createBound();
 
 	ctx.mdl->seek(endPos);
+}
+
+void ModelNode_KotOR::readSkin(Model_KotOR::ParserContext &ctx) {
+	ctx.mdl->skip(12);
+	uint32 mdxOffsetBoneWeights = ctx.mdl->readUint32LE();
+	uint32 mdxOffsetBoneMappingId = ctx.mdl->readUint32LE();
+	uint32 boneMappingOffset = ctx.mdl->readUint32LE();
+	uint32 boneMappingCount = ctx.mdl->readUint32LE();
+	ctx.mdl->skip(72);
+
+	_mesh->skin = new Skin();
+	_mesh->skin->boneMappingCount = boneMappingCount;
+
+	uint32 pos = ctx.mdl->seek(ctx.offModelData + boneMappingOffset);
+	for (uint32 i = 0; i < boneMappingCount; i++)
+		_mesh->skin->boneMapping.push_back(ctx.mdl->readIEEEFloatLE());
+	ctx.mdl->seek(pos);
+
+	std::vector<float> &boneWeights = _mesh->skin->boneWeights;
+	std::vector<float> &boneMappingId = _mesh->skin->boneMappingId;
+
+	for (int i = 0; i < ctx.vertexCount; i++) {
+		// Bone weights
+		ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize + mdxOffsetBoneWeights);
+		boneWeights.push_back(ctx.mdx->readIEEEFloatLE());
+		boneWeights.push_back(ctx.mdx->readIEEEFloatLE());
+		boneWeights.push_back(ctx.mdx->readIEEEFloatLE());
+		boneWeights.push_back(ctx.mdx->readIEEEFloatLE());
+
+		// Bone mapping identifiers
+		ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize + mdxOffsetBoneMappingId);
+		boneMappingId.push_back(ctx.mdx->readIEEEFloatLE());
+		boneMappingId.push_back(ctx.mdx->readIEEEFloatLE());
+		boneMappingId.push_back(ctx.mdx->readIEEEFloatLE());
+		boneMappingId.push_back(ctx.mdx->readIEEEFloatLE());
+	}
 }
 
 } // End of namespace Aurora

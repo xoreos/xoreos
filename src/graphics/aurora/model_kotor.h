@@ -63,6 +63,10 @@ private:
 
 		std::vector<Common::UString> names;
 
+		uint32 mdxStructSize;
+		uint16 vertexCount;
+		uint32 offNodeData;
+
 		ParserContext(const Common::UString &name, const Common::UString &t, bool k2);
 		~ParserContext();
 
@@ -82,6 +86,9 @@ private:
 			const std::vector<uint32> &offsets, uint32 offset,
 			std::vector<Common::UString> &strings);
 
+	/** Map bone indices to model node references for better peformance. */
+	void makeBoneNodeMap();
+
 	friend class ModelNode_KotOR;
 };
 
@@ -95,7 +102,12 @@ public:
 private:
 	void readNodeControllers(Model_KotOR::ParserContext &ctx, uint32 offset,
 	                         uint32 count, std::vector<float> &data);
+	void readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
+	                            uint16 dataIndex, std::vector<float> &data);
+	void readOrientationController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
+	                               uint16 dataIndex, std::vector<float> &data);
 	void readMesh(Model_KotOR::ParserContext &ctx);
+	void readSkin(Model_KotOR::ParserContext &ctx);
 };
 
 } // End of namespace Aurora

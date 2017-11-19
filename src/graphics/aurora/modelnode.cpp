@@ -46,6 +46,9 @@ static bool nodeComp(ModelNode *a, ModelNode *b) {
 	return a->isInFrontOf(*b);
 }
 
+ModelNode::Skin::Skin() : boneMappingCount(0) {
+}
+
 ModelNode::Dangly::Dangly() : period(1.0f), tightness(1.0f), displacement(1.0f),
 	data(0) {
 }
@@ -56,12 +59,13 @@ ModelNode::MeshData::MeshData() : envMapMode(kModeEnvironmentBlendedUnder) {
 ModelNode::Mesh::Mesh() : shininess(1.0f), alpha(1.0f), tilefade(0), render(false),
 	shadow(false), beaming(false), inheritcolor(false), rotatetexture(false),
 	isTransparent(false), hasTransparencyHint(false), transparencyHint(false),
-	data(0), dangly(0) {
+	data(0), dangly(0), skin(0) {
 }
 
 
 ModelNode::ModelNode(Model &model) :
-	_model(&model), _parent(0), _attachedModel(0), _level(0), _render(false), _mesh(0) {
+	_model(&model), _parent(0), _attachedModel(0), _level(0), _render(false), _mesh(0),
+	_nodeNumber(0) {
 
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
@@ -82,7 +86,12 @@ ModelNode::~ModelNode() {
 			delete _mesh->dangly->data;
 			delete _mesh->dangly;
 		}
-		delete _mesh->data;
+		if (_mesh->skin) {
+			delete _mesh->skin;
+		}
+		if (_mesh->data) {
+			delete _mesh->data;
+		}
 	}
 	delete _mesh;
 	_mesh = 0;
@@ -167,6 +176,10 @@ Common::Matrix4x4 ModelNode::getAbsolutePosition() const {
 	absolutePosition.scale(_model->_scale[0], _model->_scale[1], _model->_scale[2]);
 
 	return absolutePosition;
+}
+
+uint16 ModelNode::getNodeNumber() const {
+	return _nodeNumber;
 }
 
 void ModelNode::setPosition(float x, float y, float z) {
@@ -260,6 +273,10 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 	loadTextures(textures);
 
 	unlockFrameIfVisible();
+}
+
+ModelNode::Mesh *ModelNode::getMesh() const {
+	return _mesh;
 }
 
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {

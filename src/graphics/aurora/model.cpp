@@ -230,12 +230,15 @@ void Model::setCurrentAnimation(Animation *anim) {
 
 	_currentAnimation  = anim;
 	_animationLoopTime = 0.0f;
+	anim->makeAnimNodeMap(this);
 
 	for (NodeList::iterator n = _currentState->nodeList.begin(); n != _currentState->nodeList.end(); ++n)
 		if ((*n)->_attachedModel) {
 			(*n)->_attachedModel->_currentAnimation  = anim;
 			(*n)->_attachedModel->_animationLoopTime = 0.0f;
+			anim->makeAnimNodeMap((*n)->_attachedModel);
 		}
+
 }
 
 void Model::getScale(float &x, float &y, float &z) const {
@@ -474,6 +477,32 @@ const ModelNode *Model::getNode(const Common::UString &stateName, const Common::
 	return n->second;
 }
 
+ModelNode *Model::getNode(uint16 nodeNumber) {
+	if (_currentState) {
+		const std::list<ModelNode *> &nodes = _currentState->nodeList;
+		for (NodeList::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+			ModelNode *node = *it;
+			if (node->getNodeNumber() == nodeNumber) {
+				return node;
+			}
+		}
+	}
+	return 0;
+}
+
+const ModelNode *Model::getNode(uint16 nodeNumber) const {
+	if (_currentState) {
+		const std::list<ModelNode *> &nodes = _currentState->nodeList;
+		for (NodeList::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+			ModelNode *node = *it;
+			if (node->getNodeNumber() == nodeNumber) {
+				return node;
+			}
+		}
+	}
+	return 0;
+}
+
 static std::list<ModelNode *> kEmptyNodeList;
 const std::list<ModelNode *> &Model::getNodes() {
 	if (!_currentState)
@@ -547,6 +576,10 @@ void Model::calculateDistance() {
 
 void Model::advanceTime(float dt) {
 	manageAnimations(dt);
+}
+
+void Model::setSkinned(bool skinned) {
+	_skinned = skinned;
 }
 
 void Model::manageAnimations(float dt) {

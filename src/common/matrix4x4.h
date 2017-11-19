@@ -93,6 +93,12 @@ public:
 	void perspective(float fovy, float aspectRatio, float znear, float zfar);
 	void ortho(float l, float r, float b, float t, float n, float f);
 
+	/** Multiply this matrix by the provided, store result in the specified matrix.
+	 *  @param vin Pointer to a 16-value array containing the matrix to multiply by.
+	 *  @param vout Pointer to a 16-value array to store the resulting matrix.
+	 */
+	void multiply(const float *vin, float *vout) const;
+
 	const Matrix4x4 &operator=(const float *m);
 
 	float &operator[](unsigned int index);
