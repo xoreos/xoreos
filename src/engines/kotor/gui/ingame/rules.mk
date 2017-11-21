@@ -22,9 +22,11 @@
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/ingame/ingame.h \
     src/engines/kotor/gui/ingame/hud.h \
+    src/engines/kotor/gui/ingame/menu.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/ingame/ingame.cpp \
     src/engines/kotor/gui/ingame/hud.cpp \
+    src/engines/kotor/gui/ingame/menu.cpp \
     $(EMPTY)

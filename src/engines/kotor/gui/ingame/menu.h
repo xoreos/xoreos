@@ -19,37 +19,40 @@
  */
 
 /** @file
- *  The ingame HUD.
+ *  The ingame menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_INGAME_HUD_H
-#define ENGINES_KOTOR_GUI_INGAME_HUD_H
+#ifndef ENGINES_KOTOR_GUI_INGAME_MENU_H
+#define ENGINES_KOTOR_GUI_INGAME_MENU_H
 
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotor/gui/gui.h"
-
-#include "src/engines/kotor/gui/ingame/menu.h"
+#include "src/engines/kotor/gui/widgets/protoitem.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class HUD : public GUI {
+class Menu : public GUI {
 public:
-	HUD(::Engines::Console *console = 0);
+	Menu(::Engines::Console *console = 0);
 
 private:
-	Menu _menu;
+	void callbackActive(Widget &widget);
 
-	void initWidget(Widget &widget);
-
-protected:
-	virtual void callbackActive(Widget &widget);
+	WidgetProtoItem *_protoEqu;
+	WidgetProtoItem *_protoInv;
+	WidgetProtoItem *_protoChar;
+	WidgetProtoItem *_protoAbi;
+	WidgetProtoItem *_protoMsg;
+	WidgetProtoItem *_protoJou;
+	WidgetProtoItem *_protoMap;
+	WidgetProtoItem *_protoOpt;
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_INGAME_HUD_H
+#endif // ENGINES_KOTOR_GUI_INGAME_MENU_H
