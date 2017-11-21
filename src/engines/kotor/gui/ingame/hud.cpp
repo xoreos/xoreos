@@ -117,6 +117,41 @@ void HUD::initWidget(Engines::Widget &widget) {
 		widget.setInvisible(true);
 }
 
+void HUD::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_EQU") {
+		sub(_menu);
+		return;
+	}
+	if (widget.getTag() == "BTN_INV") {
+		sub(_menu);
+		return;
+	}
+	if (widget.getTag() == "BTN_CHAR") {
+		sub(_menu);
+		return;
+	}
+	if (widget.getTag() == "BTN_ABI") {
+		sub(_menu);
+		return;
+	}
+	if (widget.getTag() == "BTN_MSG") {
+		sub(_menu);
+		return;
+	}
+	if (widget.getTag() == "BTN_JOU") {
+		sub(_menu);
+		return;
+	}
+	if (widget.getTag() == "BTN_MAP") {
+		sub(_menu);
+		return;
+	}
+	if (widget.getTag() == "BTN_OPT") {
+		sub(_menu);
+		return;
+	}
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
