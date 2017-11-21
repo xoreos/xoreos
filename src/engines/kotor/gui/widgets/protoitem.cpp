@@ -37,7 +37,8 @@ WidgetProtoItem::WidgetProtoItem(::Engines::GUI &gui, const Common::UString &tag
 WidgetProtoItem::~WidgetProtoItem() {
 }
 
-void WidgetProtoItem::load(const Aurora::GFF3Struct &UNUSED(gff)) {
+void WidgetProtoItem::load(const Aurora::GFF3Struct &gff) {
+	KotORWidget::load(gff);
 }
 
 } // End of namespace KotOR
