@@ -49,7 +49,7 @@ static const Common::UString &kBackgroundTypeStore  = "store";
 
 class GUIBackground : public Graphics::GUIElement, public Events::Notifyable {
 public:
-	GUIBackground(const Common::UString &type = kBackgroundTypeMenu);
+	GUIBackground(const Common::UString &type = kBackgroundTypeMenu, bool front = false);
 	~GUIBackground();
 
 	void setType(const Common::UString &type);

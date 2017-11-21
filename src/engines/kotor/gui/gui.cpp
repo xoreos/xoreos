@@ -271,9 +271,9 @@ WidgetListBox *GUI::getListBox(const Common::UString &tag, bool vital) {
 	return listBox;
 }
 
-void GUI::addBackground(const Common::UString &background) {
+void GUI::addBackground(const Common::UString &background, bool front) {
 	if (!_background)
-		_background.reset(new GUIBackground(background));
+		_background.reset(new GUIBackground(background, front));
 	else
 		_background->setType(background);
 }
