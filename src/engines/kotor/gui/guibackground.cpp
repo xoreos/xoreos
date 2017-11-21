@@ -73,6 +73,7 @@ void GUIBackground::render(Graphics::RenderPass pass) {
 	glDepthMask(GL_FALSE);
 
 	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
 	glLoadIdentity();
 	glOrtho(0.0, _screenWidth, 0.0, _screenHeight, -1.0, 1.0);
 
@@ -93,6 +94,11 @@ void GUIBackground::render(Graphics::RenderPass pass) {
 	glEnd();
 
 	glPopMatrix();
+
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+
+	glMatrixMode(GL_MODELVIEW);
 
 	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
