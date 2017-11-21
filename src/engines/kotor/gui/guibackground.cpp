@@ -41,8 +41,8 @@ namespace Engines {
 
 namespace KotOR {
 
-GUIBackground::GUIBackground(const Common::UString &type) :
-	Graphics::GUIElement(Graphics::GUIElement::kGUIElementBack), _type(type) {
+GUIBackground::GUIBackground(const Common::UString &type, bool front) :
+	Graphics::GUIElement(front ? Graphics::GUIElement::kGUIElementFront : Graphics::GUIElement::kGUIElementBack), _type(type) {
 
 	_distance = FLT_MAX;
 

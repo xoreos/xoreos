@@ -93,7 +93,7 @@ protected:
 	WidgetProgressbar *getProgressbar(const Common::UString &tag, bool vital = false);
 	WidgetListBox     *getListBox    (const Common::UString &tag, bool vital = false);
 
-	void addBackground(const Common::UString &background);
+	void addBackground(const Common::UString &background, bool front = false);
 
 	void setCheckBoxState(const Common::UString &tag, bool state);
 	bool getCheckBoxState(const Common::UString &tag);
