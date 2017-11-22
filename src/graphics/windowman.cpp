@@ -117,6 +117,17 @@ bool WindowManager::initRender(RenderType type, bool useDebug, int fsaa) {
 		return false;
 	}
 
+	/* It is possible, that OSX operating systems create an opengl 3.x/4.x core context even if a
+	 * 2.1 core context is requested. This condition checks, that if we create a 2.1 core context
+	 * that the returned context is actually a 2.1 core context, and if not return false. */
+	if (type == kOpenGL21Core) {
+		Common::UString version(reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+
+		if (!version.beginsWith("2.1")) {
+			return false;
+		}
+	}
+
 	status("OpenGL context successfully created:");
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &majorVersion);
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minorVersion);
