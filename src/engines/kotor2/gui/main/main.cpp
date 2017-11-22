@@ -61,6 +61,12 @@ void MainMenu::initWidget(Widget &widget) {
 		widget.setInvisible(true);
 		return;
 	}
+
+	// Whatever this module stuff is about
+	if (widget.getTag() == "LB_MODULES") {
+		widget.setInvisible(true);
+		return;
+	}
 }
 
 void MainMenu::callbackActive(Widget &widget) {
