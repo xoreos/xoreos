@@ -38,8 +38,36 @@ class Menu : public GUI {
 public:
 	Menu(::Engines::Console *console = 0);
 
+	/** Show the equipment menu */
+	void showEquipment();
+	/** Show the inventory menu */
+	void showInventory();
+	/** Show the character menu */
+	void showCharacter();
+	/** Show the abilities menu */
+	void showAbilities();
+	/** Show the messages menu */
+	void showMessages();
+	/** Show the journal menu */
+	void showJournal();
+	/** Show the map menu */
+	void showMap();
+	/** Show the options menu */
+	void showOptions();
+
 private:
 	void callbackActive(Widget &widget);
+
+	GUI* _currentMenu;
+
+	Common::ScopedPtr<GUI> _menuEqu;
+	Common::ScopedPtr<GUI> _menuInv;
+	Common::ScopedPtr<GUI> _menuChar;
+	Common::ScopedPtr<GUI> _menuAbi;
+	Common::ScopedPtr<GUI> _menuMsg;
+	Common::ScopedPtr<GUI> _menuJou;
+	Common::ScopedPtr<GUI> _menuMap;
+	Common::ScopedPtr<GUI> _menuOpt;
 
 	WidgetProtoItem *_protoEqu;
 	WidgetProtoItem *_protoInv;

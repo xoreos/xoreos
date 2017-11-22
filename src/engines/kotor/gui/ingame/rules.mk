@@ -23,10 +23,26 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/ingame/ingame.h \
     src/engines/kotor/gui/ingame/hud.h \
     src/engines/kotor/gui/ingame/menu.h \
+    src/engines/kotor/gui/ingame/menu_equ.h \
+    src/engines/kotor/gui/ingame/menu_inv.h \
+    src/engines/kotor/gui/ingame/menu_char.h \
+    src/engines/kotor/gui/ingame/menu_abi.h \
+    src/engines/kotor/gui/ingame/menu_msg.h \
+    src/engines/kotor/gui/ingame/menu_jou.h \
+    src/engines/kotor/gui/ingame/menu_map.h \
+    src/engines/kotor/gui/ingame/menu_opt.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/ingame/ingame.cpp \
     src/engines/kotor/gui/ingame/hud.cpp \
     src/engines/kotor/gui/ingame/menu.cpp \
+    src/engines/kotor/gui/ingame/menu_equ.cpp \
+    src/engines/kotor/gui/ingame/menu_inv.cpp \
+    src/engines/kotor/gui/ingame/menu_char.cpp \
+    src/engines/kotor/gui/ingame/menu_abi.cpp \
+    src/engines/kotor/gui/ingame/menu_msg.cpp \
+    src/engines/kotor/gui/ingame/menu_jou.cpp \
+    src/engines/kotor/gui/ingame/menu_map.cpp \
+    src/engines/kotor/gui/ingame/menu_opt.cpp \
     $(EMPTY)

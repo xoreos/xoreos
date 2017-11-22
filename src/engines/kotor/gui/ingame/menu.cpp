@@ -23,6 +23,14 @@
  */
 
 #include "src/engines/kotor/gui/ingame/menu.h"
+#include "src/engines/kotor/gui/ingame/menu_equ.h"
+#include "src/engines/kotor/gui/ingame/menu_inv.h"
+#include "src/engines/kotor/gui/ingame/menu_char.h"
+#include "src/engines/kotor/gui/ingame/menu_abi.h"
+#include "src/engines/kotor/gui/ingame/menu_msg.h"
+#include "src/engines/kotor/gui/ingame/menu_jou.h"
+#include "src/engines/kotor/gui/ingame/menu_map.h"
+#include "src/engines/kotor/gui/ingame/menu_opt.h"
 
 #include "src/engines/kotor/gui/widgets/button.h"
 
@@ -30,10 +38,19 @@ namespace Engines {
 
 namespace KotOR {
 
-Menu::Menu(Console *console) : GUI(console) {
+Menu::Menu(Console *console) : GUI(console), _currentMenu(0) {
 	load("top");
 
 	addBackground(kBackgroundTypeMenu, true);
+
+	_menuEqu.reset(new MenuEquipment(console));
+	_menuInv.reset(new MenuInventory(console));
+	_menuChar.reset(new MenuCharacter(console));
+	_menuAbi.reset(new MenuAbilities(console));
+	_menuMsg.reset(new MenuMessages(console));
+	_menuJou.reset(new MenuJournal(console));
+	_menuMap.reset(new MenuMap(console));
+	_menuOpt.reset(new MenuOptions(console));
 
 	_protoEqu = getProtoItem("LBLH_EQU");
 	_protoInv = getProtoItem("LBLH_INV");
@@ -105,26 +122,109 @@ Menu::Menu(Console *console) : GUI(console) {
 	buttonOpt->setPosition(x, y + 197, z);
 }
 
+void Menu::showEquipment() {
+	if (_currentMenu != _menuEqu.get()) {
+		if (_currentMenu)
+			removeChild(_currentMenu);
+		_currentMenu = _menuEqu.get();
+		addChild(_menuEqu.get());
+	}
+}
+
+void Menu::showInventory() {
+	if (_currentMenu != _menuInv.get()) {
+		if (_currentMenu)
+			removeChild(_currentMenu);
+		_currentMenu = _menuInv.get();
+		addChild(_menuInv.get());
+	}
+}
+
+void Menu::showCharacter() {
+	if (_currentMenu != _menuChar.get()) {
+		if (_currentMenu)
+			removeChild(_currentMenu);
+		_currentMenu = _menuChar.get();
+		addChild(_menuChar.get());
+	}
+}
+
+void Menu::showAbilities() {
+	if (_currentMenu != _menuAbi.get()) {
+		if (_currentMenu)
+			removeChild(_currentMenu);
+		_currentMenu = _menuAbi.get();
+		addChild(_menuAbi.get());
+	}
+}
+
+void Menu::showMessages() {
+	if (_currentMenu != _menuMsg.get()) {
+		if (_currentMenu)
+			removeChild(_currentMenu);
+		_currentMenu = _menuMsg.get();
+		addChild(_menuMsg.get());
+	}
+}
+
+void Menu::showJournal() {
+	if (_currentMenu != _menuJou.get()) {
+		if (_currentMenu)
+			removeChild(_currentMenu);
+		_currentMenu = _menuJou.get();
+		addChild(_menuJou.get());
+	}
+}
+
+void Menu::showMap() {
+	if (_currentMenu != _menuMap.get()) {
+		if (_currentMenu)
+			removeChild(_currentMenu);
+		_currentMenu = _menuMap.get();
+		addChild(_menuMap.get());
+	}
+}
+
+void Menu::showOptions() {
+	if (_currentMenu != _menuOpt.get()) {
+		if (_currentMenu)
+			removeChild(_currentMenu);
+		_currentMenu = _menuOpt.get();
+		addChild(_menuOpt.get());
+	}
+}
+
 void Menu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_EQU") {
+		showEquipment();
 		return;
 	}
 	if (widget.getTag() == "BTN_INV") {
+		showInventory();
 		return;
 	}
 	if (widget.getTag() == "BTN_CHAR") {
+		showCharacter();
 		return;
 	}
 	if (widget.getTag() == "BTN_ABI") {
+		showAbilities();
+		return;
+	}
+	if (widget.getTag() == "BTN_MSG") {
+		showMessages();
 		return;
 	}
 	if (widget.getTag() == "BTN_JOU") {
+		showJournal();
 		return;
 	}
 	if (widget.getTag() == "BTN_MAP") {
+		showMap();
 		return;
 	}
 	if (widget.getTag() == "BTN_OPT") {
+		showOptions();
 		return;
 	}
 }
