@@ -24,6 +24,8 @@
 
 #include "src/common/system.h"
 
+#include "src/aurora/gff3file.h"
+
 #include "src/engines/kotor/gui/widgets/progressbar.h"
 
 namespace Engines {
@@ -37,7 +39,100 @@ WidgetProgressbar::WidgetProgressbar(::Engines::GUI &gui, const Common::UString 
 WidgetProgressbar::~WidgetProgressbar() {
 }
 
-void WidgetProgressbar::load(const Aurora::GFF3Struct &UNUSED(gff)) {
+void WidgetProgressbar::load(const Aurora::GFF3Struct &gff) {
+	KotORWidget::load(gff);
+
+	if (gff.hasField("MAXVALUE")) {
+		_maxValue = gff.getSint("MAXVALUE");
+	} else {
+		_maxValue = 0;
+	}
+
+	if (gff.hasField("CURVALUE")) {
+		_curValue = gff.getSint("CURVALUE");
+	} else {
+		_curValue = 0;
+	}
+
+	if (gff.hasField("STARTFROMLEFT")) {
+		_horizontal = gff.getBool("STARTFROMLEFT");
+	} else {
+		_horizontal = true;
+	}
+
+	if (gff.hasField("PROGRESS")) {
+		const Aurora::GFF3Struct &progress = gff.getStruct("PROGRESS");
+
+		Common::UString fill = progress.getString("FILL");
+
+		_progress.reset(new Graphics::Aurora::GUIQuad(fill, 0.0f, 0.0f, getWidth(), getHeight()));
+
+		float x, y, z;
+		getPosition(x, y, z);
+		_progress->setPosition(x, y, -FLT_MAX);
+
+		update();
+	}
+}
+
+void WidgetProgressbar::setPosition(float x, float y, float z) {
+	float oX, oY, oZ;
+	getPosition(oX, oY, oZ);
+
+	KotORWidget::setPosition(x, y, z);
+
+	if (_progress) {
+		float pX, pY, pZ;
+		_progress->getPosition(pX, pY, pZ);
+
+		_progress->setPosition(pX - oX + x, pY - oY + y);
+	}
+}
+
+void WidgetProgressbar::show() {
+	if (isInvisible())
+		return;
+
+	KotORWidget::show();
+
+	if (_progress)
+		_progress->show();
+}
+
+void WidgetProgressbar::hide() {
+	if (isInvisible())
+		return;
+
+	KotORWidget::hide();
+
+	if (_progress)
+		_progress->hide();
+}
+
+void WidgetProgressbar::setCurrentValue(int curValue) {
+	_curValue = curValue;
+	update();
+}
+
+void WidgetProgressbar::setMaxValue(int maxValue) {
+	_maxValue = maxValue;
+	update();
+}
+
+int WidgetProgressbar::getCurrentValue() {
+	return _curValue;
+}
+
+int WidgetProgressbar::getMaxValue() {
+	return _maxValue;
+}
+
+void WidgetProgressbar::update() {
+	if (_horizontal) {
+		_progress->setWidth(getWidth() * (static_cast<float>(_curValue) / static_cast<float>(_maxValue)));
+	} else {
+		_progress->setHeight(getHeight() * (static_cast<float>(_curValue) / static_cast<float>(_maxValue)));
+	}
 }
 
 } // End of namespace KotOR
