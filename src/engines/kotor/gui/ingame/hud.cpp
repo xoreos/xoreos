@@ -100,6 +100,9 @@ HUD::HUD(Engines::Console *console) : GUI(console) {
 	getWidget("LBL_DARKSHIFT")->setInvisible(true);
 	getWidget("LBL_ITEMRCVD")->setInvisible(true);
 	getWidget("LBL_ITEMLOST")->setInvisible(true);
+
+	// Make the health bar invisible
+	getWidget("PB_HEALTH")->setInvisible(true);
 }
 
 void HUD::initWidget(Engines::Widget &widget) {
