@@ -76,7 +76,7 @@ void Animation::update(Model *model, float UNUSED(lastFrame), float nextFrame) {
 	float scale = model->getAnimationScale(_name);
 	for (NodeList::iterator n = nodeList.begin(); n != nodeList.end(); ++n) {
 		ModelNode *animNode = (*n)->_nodedata;
-		ModelNode *target = model->_animNodeMap[animNode->_nodeNumber];
+		ModelNode *target = model->getNode(animNode->getName());
 		if (!target)
 			continue;
 
@@ -114,23 +114,6 @@ const ModelNode *Animation::getNode(const Common::UString &node) const {
 		return 0;
 
 	return n->second->_nodedata;
-}
-
-void Animation::makeAnimNodeMap(Model *model) {
-	int maxNodeNumber = -1;
-	for (NodeList::iterator it = nodeList.begin(); it != nodeList.end(); ++it) {
-		ModelNode *node = (*it)->_nodedata;
-		if (node->_nodeNumber > maxNodeNumber) {
-			maxNodeNumber = node->_nodeNumber;
-		}
-	}
-	if (maxNodeNumber != -1) {
-		model->_animNodeMap.reserve(maxNodeNumber + 1);
-		for (NodeList::iterator it = nodeList.begin(); it != nodeList.end(); ++it) {
-			ModelNode *node = (*it)->_nodedata;
-			model->_animNodeMap[node->_nodeNumber] = model->getNode(node->getName());
-		}
-	}
 }
 
 /** Return the dot product of two quaternions. */
