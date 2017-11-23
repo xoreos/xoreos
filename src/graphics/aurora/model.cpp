@@ -49,7 +49,7 @@ namespace Aurora {
 
 Model::Model(ModelType type) : Renderable((RenderableType) type),
 	_type(type), _superModel(0), _currentState(0),
-	_currentAnimation(0), _nextAnimation(0), _drawBound(false),
+	_currentAnimation(0), _nextAnimation(0), _skinned(false), _drawBound(false),
 	_drawSkeleton(false), _drawSkeletonInvisible(false) {
 
 	_scale   [0] = 1.0f; _scale   [1] = 1.0f; _scale   [2] = 1.0f;
@@ -230,13 +230,11 @@ void Model::setCurrentAnimation(Animation *anim) {
 
 	_currentAnimation  = anim;
 	_animationLoopTime = 0.0f;
-	anim->makeAnimNodeMap(this);
 
 	for (NodeList::iterator n = _currentState->nodeList.begin(); n != _currentState->nodeList.end(); ++n)
 		if ((*n)->_attachedModel) {
 			(*n)->_attachedModel->_currentAnimation  = anim;
 			(*n)->_attachedModel->_animationLoopTime = 0.0f;
-			anim->makeAnimNodeMap((*n)->_attachedModel);
 		}
 
 }
