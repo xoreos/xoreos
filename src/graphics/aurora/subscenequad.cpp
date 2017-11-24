@@ -28,6 +28,8 @@
 
 #include "src/graphics/aurora/subscenequad.h"
 
+#include "src/events/events.h"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -70,7 +72,12 @@ void SubSceneQuad::render(RenderPass pass) {
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	uint32 now = EventMan.getTimestamp();
+	float elapsedTime = (now - _lastSampled) / 1000.0f;
+	_lastSampled = now;
+
 	for (unsigned int i = 0; i < _renderables.size(); ++i) {
+		_renderables[i]->advanceTime(elapsedTime);
 		_renderables[i]->render(pass);
 	}
 

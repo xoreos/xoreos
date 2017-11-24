@@ -57,6 +57,8 @@ private:
 	Common::Matrix4x4 _projection;
 	Common::Matrix4x4 _transformation;
 
+	uint32 _lastSampled;
+
 	int _x, _y;
 	int _width, _height;
 };
