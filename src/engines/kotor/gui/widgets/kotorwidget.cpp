@@ -64,7 +64,7 @@ KotORWidget::Hilight::Hilight() : fill("") {
 
 KotORWidget::KotORWidget(::Engines::GUI &gui, const Common::UString &tag) :
 	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _wrapped(false),
-	_subScene(NULL) {
+	_subScene(NULL), _highlighted(false) {
 
 }
 
@@ -174,6 +174,54 @@ void KotORWidget::setScissor(int x, int y, int width, int height) {
 	_quad->setScissor(x, y, width, height);
 }
 
+void KotORWidget::setHighlight(bool highlight) {
+	float r, g, b, a;
+
+	if (_highlighted == highlight)
+		return;
+
+	if (highlight) {
+		if (_highlight) {
+			_quad->hide();
+			_highlight->show();
+		} else {
+			if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
+				_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+				_text->getHighlightedLowerBound(r, g, b, a);
+				_text->setColor(r, g, b, a);
+				_text->setHighlighted(true);
+			}
+
+			if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+				_quad->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+				getQuadHighlightableComponent()->getHighlightedLowerBound(r, g, b, a);
+				_quad->setColor(r, g, b, a);
+				getQuadHighlightableComponent()->setHighlighted(true);
+			}
+		}
+	} else {
+		if (_highlight) {
+			_quad->show();
+			_highlight->hide();
+		} else {
+			if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
+				_text->setHighlighted(false);
+				_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+			}
+			if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
+				getQuadHighlightableComponent()->setHighlighted(false);
+				_quad->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
+			}
+		}
+	}
+
+	_highlighted = highlight;
+}
+
+bool KotORWidget::isHighlight() {
+	return _highlighted;
+}
+
 void KotORWidget::setWidth(float width) {
 	if (_quad)
 		_quad->setWidth(width);
@@ -225,6 +273,8 @@ void KotORWidget::setClickable(bool clickable) {
 		_quad->setClickable(clickable);
 	if (_text)
 		_text->setClickable(clickable);
+	if (_highlight)
+		_highlight->setClickable(clickable);
 }
 
 void KotORWidget::load(const Aurora::GFF3Struct &gff) {
@@ -244,6 +294,8 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	if (!hilight.fill.empty()) {
 		_highlight.reset(new Graphics::Aurora::GUIQuad(hilight.fill, 0, 0, extend.w, extend.h));
 		_highlight->setPosition(extend.x, extend.y, 0.0f);
+		_highlight->setTag(getTag());
+		_highlight->setClickable(true);
 	}
 
 	if (!border.fill.empty()) {
