@@ -77,6 +77,8 @@ private:
 	WidgetProtoItem *_protoJou;
 	WidgetProtoItem *_protoMap;
 	WidgetProtoItem *_protoOpt;
+
+	WidgetProtoItem *_lastProto;
 };
 
 } // End of namespace KotOR
