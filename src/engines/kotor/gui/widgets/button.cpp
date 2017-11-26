@@ -41,7 +41,7 @@ namespace KotOR {
 
 WidgetButton::WidgetButton(::Engines::GUI &gui, const Common::UString &tag) :
 	KotORWidget(gui, tag), _permanentHighlight(false), _disableHighlight(false),
-	_disableHoverSound(false),  _hovered(false), _highlighted(false) {
+	_disableHoverSound(false),  _hovered(false) {
 }
 
 WidgetButton::~WidgetButton() {
@@ -51,11 +51,9 @@ void WidgetButton::setPermanentHighlight(bool permanentHighlight) {
 	_permanentHighlight = permanentHighlight;
 
 	if (_permanentHighlight) {
-		if (!_highlighted)
-			startHighlight();
+		setHighlight(true);
 	} else {
-		if (_highlighted)
-			stopHighlight();
+		setHighlight(false);
 	}
 }
 
@@ -67,11 +65,10 @@ void WidgetButton::setDisableHighlight(bool disableHighlight) {
 	_disableHighlight = disableHighlight;
 
 	if (_disableHighlight) {
-		if (_highlighted)
-			stopHighlight();
+		setHighlight(false);
 	} else {
 		if (_hovered)
-			startHighlight();
+			setHighlight(true);
 	}
 }
 
@@ -106,7 +103,7 @@ void WidgetButton::enter() {
 		_sound = playSound("gui_actscroll", Sound::kSoundTypeSFX);
 
 	if (!_permanentHighlight && !_disableHighlight) {
-		startHighlight();
+		setHighlight(true);
 	}
 
 	// The button is hovered at the moment
@@ -118,54 +115,11 @@ void WidgetButton::leave() {
 		SoundMan.stopChannel(_sound);
 
 	if (!_permanentHighlight && !_disableHighlight) {
-		stopHighlight();
+		setHighlight(false);
 	}
 
 	// The buttone is not hovered anymore
 	_hovered = false;
-}
-
-void WidgetButton::startHighlight() {
-	float r, g, b, a;
-
-	if (_highlight) {
-		_highlight->show();
-	} else {
-
-		if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
-			_text->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
-			_text->getHighlightedLowerBound(r, g, b, a);
-			_text->setColor(r, g, b, a);
-			_text->setHighlighted(true);
-		}
-
-		if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
-			_quad->getColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
-			getQuadHighlightableComponent()->getHighlightedLowerBound(r, g, b, a);
-			_quad->setColor(r, g, b, a);
-			getQuadHighlightableComponent()->setHighlighted(true);
-		}
-	}
-
-	_highlighted = true;
-}
-
-void WidgetButton::stopHighlight() {
-	if (_highlight) {
-		_highlight->hide();
-	} else {
-
-		if (getTextHighlightableComponent() && getTextHighlightableComponent()->isHighlightable()) {
-			_text->setHighlighted(false);
-			_text->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
-		}
-		if (getQuadHighlightableComponent() && getQuadHighlightableComponent()->isHighlightable()) {
-			getQuadHighlightableComponent()->setHighlighted(false);
-			_quad->setColor(_unselectedR, _unselectedG, _unselectedB, _unselectedA);
-		}
-	}
-
-	_highlighted = false;
 }
 
 void WidgetButton::setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable) {

@@ -59,15 +59,10 @@ private:
 	bool _disableHoverSound;
 
 	Sound::ChannelHandle _sound;
-	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
 
 	bool _hovered;
-	bool _highlighted;
 
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
-
-	void startHighlight();
-	void stopHighlight();
 };
 
 } // End of namespace KotOR
