@@ -50,7 +50,7 @@ Text::Text(const FontHandle &font, float w, float h, const Common::UString &str,
 	_font(font), _x(0.0f), _y(0.0f), _width(w), _height(h), _halign(halign),_valign(valign),
 	_disableColorTokens(false) {
 
-	set(str);
+	setText(str);
 
 	_distance = -FLT_MAX;
 }
@@ -79,6 +79,23 @@ void Text::set(const Common::UString &str, float maxWidth, float maxHeight) {
 
 	_height = font.getHeight(_str, maxWidth, maxHeight);
 	_width  = font.getWidth (_str, maxWidth);
+
+	unlockFrameIfVisible();
+}
+
+void Text::setText(const Common::UString &str) {
+	lockFrameIfVisible();
+
+	if (!_disableColorTokens)
+		parseColors(str, _str, _colors);
+	else
+		_str = str;
+
+	Font &font = _font.getFont();
+
+	font.buildChars(str);
+
+	_lineCount = font.getLineCount(_str, _width, _height);
 
 	unlockFrameIfVisible();
 }
@@ -167,10 +184,12 @@ void Text::render(RenderPass pass) {
 	glColor4f(_r, _g, _b, _a);
 
 	std::vector<Common::UString> lines;
-	float maxLength = font.split(_str, lines, _width, _height, false);
+	font.split(_str, lines, _width, _height, false);
+
+	float blockSize = lines.size() * lineHeight;
 
 	// Move position to the top
-	glTranslatef(0.0f, (lines.size() - 1) * lineHeight, 0.0f);
+	glTranslatef(0.0f, ((_height - blockSize) * _valign) + blockSize - lineHeight, 0.0f);
 
 	size_t position = 0;
 
@@ -181,7 +200,7 @@ void Text::render(RenderPass pass) {
 		// Save the current position
 		glPushMatrix();
 
-		drawLine(*l, maxLength, color, position);
+		drawLine(*l, color, position);
 
 		// Restore position to the start of the line
 		glPopMatrix();
@@ -294,13 +313,13 @@ void Text::setFont(const Common::UString &fnt) {
 	_font = FontMan.get(fnt);
 }
 
-void Text::drawLine(const Common::UString &line, float maxLength,
+void Text::drawLine(const Common::UString &line,
                     ColorPositions::const_iterator color, size_t position) {
 
 	Font &font = _font.getFont();
 
 	// Horizontal Align
-	glTranslatef(roundf((maxLength - font.getLineWidth(line)) * _halign), 0.0f, 0.0f);
+	glTranslatef(roundf((_width - font.getLineWidth(line)) * _halign), 0.0f, 0.0f);
 
 	// Draw line
 	for (Common::UString::iterator s = line.begin(); s != line.end(); ++s, position++) {

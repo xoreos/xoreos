@@ -54,6 +54,7 @@ public:
 	void getColor(float &r, float &g, float &b, float &a) const;
 
 	void set(const Common::UString &str, float maxWidth = 0.0f, float maxHeight = 0.0f);
+	void setText(const Common::UString &str);
 	void setPosition(float x, float y, float z = -FLT_MAX);
 	void setColor(float r, float g, float b, float a);
 	void unsetColor();
@@ -101,7 +102,7 @@ private:
 	void parseColors(const Common::UString &str, Common::UString &parsed,
 	                 ColorPositions &colors);
 
-	void drawLine(const Common::UString &line, float maxLength, ColorPositions::const_iterator color, size_t position);
+	void drawLine(const Common::UString &line, ColorPositions::const_iterator color, size_t position);
 };
 
 } // End of namespace Aurora
