@@ -36,6 +36,7 @@
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/modelnode.h"
+#include "src/graphics/aurora/animnode.h"
 
 #include "src/graphics/shader/surfaceman.h"
 #include "src/graphics/shader/materialman.h"
@@ -228,15 +229,45 @@ void Model::setCurrentAnimation(Animation *anim) {
 	if (!_currentState)
 		return;
 
+	makeAnimationNodeMap(anim);
+
 	_currentAnimation  = anim;
 	_animationLoopTime = 0.0f;
 
 	for (NodeList::iterator n = _currentState->nodeList.begin(); n != _currentState->nodeList.end(); ++n)
 		if ((*n)->_attachedModel) {
+			(*n)->_attachedModel->makeAnimationNodeMap(anim);
+
 			(*n)->_attachedModel->_currentAnimation  = anim;
 			(*n)->_attachedModel->_animationLoopTime = 0.0f;
 		}
 
+}
+
+void Model::makeAnimationNodeMap(Animation *anim) {
+	if (!anim)
+		return;
+
+	const std::list<AnimNode *> &nodes = anim->getNodes();
+	int maxNodeNumber = -1;
+
+	for (std::list<AnimNode *>::const_iterator n = nodes.begin(); n != nodes.end(); ++n) {
+		int nodeNumber = (*n)->getNodeData()->getNodeNumber();
+		if (nodeNumber > maxNodeNumber) {
+			maxNodeNumber = nodeNumber;
+		}
+	}
+
+	_animationNodeMap.clear();
+
+	if (maxNodeNumber >= 0) {
+		_animationNodeMap.resize(maxNodeNumber + 1, 0);
+		for (std::list<AnimNode *>::const_iterator n = nodes.begin(); n != nodes.end(); ++n) {
+			ModelNode *animNode = (*n)->getNodeData();
+			int nodeNumber = animNode->getNodeNumber();
+			_animationNodeMap[nodeNumber] = getNode(animNode->getName());
+		}
+	}
 }
 
 void Model::getScale(float &x, float &y, float &z) const {
@@ -782,6 +813,7 @@ void Model::finalize() {
 			(*n)->orderChildren();
 
 	_currentAnimation = selectDefaultAnimation();
+	makeAnimationNodeMap(_currentAnimation);
 }
 
 void Model::createStateNamesList(std::list<Common::UString> *stateNames) {

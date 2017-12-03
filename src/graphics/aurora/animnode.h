@@ -46,6 +46,8 @@ public:
 
 	/** Get the node's name. */
 	const Common::UString &getName() const;
+	/** Get the node's model node. */
+	ModelNode *getNodeData();
 
 protected:
 	// Animation *_animation; ///< The animation this node belongs to.

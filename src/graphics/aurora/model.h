@@ -288,6 +288,8 @@ private:
 	float _animationLoopLength; ///< The length of one loop of the current animation.
 	float _animationLoopTime;   ///< The time the current loop of the current animation has played.
 
+	std::vector<ModelNode *> _animationNodeMap;
+
 	/** Create the list of all state names. */
 	void createStateNamesList(std::list<Common::UString> *stateNames = 0);
 	/** Create the model's bounding box. */
@@ -300,6 +302,9 @@ private:
 	Animation *selectDefaultAnimation() const;
 
 	void setCurrentAnimation(Animation *anim);
+
+	/** Map animation node numbers to model nodes for better performance. */
+	void makeAnimationNodeMap(Animation *anim);
 
 public:
 	// General loading helpers

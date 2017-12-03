@@ -62,6 +62,10 @@ const Common::UString &AnimNode::getName() const {
 	return _name;
 }
 
+ModelNode *AnimNode::getNodeData() {
+	return _nodedata;
+}
+
 } // End of namespace Aurora
 
 } // End of namespace Graphics

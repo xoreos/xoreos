@@ -546,7 +546,8 @@ void ModelNode_NWN_Binary::load(Model_NWN::ParserContext &ctx) {
 	ctx.mdl->skip(24); // Function pointers
 
 	uint32 inheritColorFlag = ctx.mdl->readUint32LE();
-	uint32 partNumber       = ctx.mdl->readUint32LE();
+
+	_nodeNumber = ctx.mdl->readUint32LE();
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 

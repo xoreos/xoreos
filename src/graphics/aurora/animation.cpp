@@ -76,7 +76,7 @@ void Animation::update(Model *model, float UNUSED(lastFrame), float nextFrame) {
 	float scale = model->getAnimationScale(_name);
 	for (NodeList::iterator n = nodeList.begin(); n != nodeList.end(); ++n) {
 		ModelNode *animNode = (*n)->_nodedata;
-		ModelNode *target = model->getNode(animNode->getName());
+		ModelNode *target = model->_animationNodeMap[animNode->_nodeNumber];
 		if (!target)
 			continue;
 
@@ -114,6 +114,10 @@ const ModelNode *Animation::getNode(const Common::UString &node) const {
 		return 0;
 
 	return n->second->_nodedata;
+}
+
+const std::list<AnimNode *> &Animation::getNodes() const {
+	return nodeList;
 }
 
 /** Return the dot product of two quaternions. */

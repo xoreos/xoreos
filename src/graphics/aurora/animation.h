@@ -77,6 +77,8 @@ public:
 	ModelNode *getNode(const Common::UString &node);
 	/** Get the specified node. */
 	const ModelNode *getNode(const Common::UString &node) const;
+	/** Get all animation nodes. */
+	const std::list<AnimNode *> &getNodes() const;
 
 protected:
 	typedef std::list<AnimNode *> NodeList;
