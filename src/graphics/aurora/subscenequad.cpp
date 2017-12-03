@@ -35,7 +35,7 @@ namespace Graphics {
 namespace Aurora {
 
 SubSceneQuad::SubSceneQuad() :
-		GUIElement(GUIElement::kGUIElementFront),
+		GUIElement(GUIElement::kGUIElementFront), _lastSampled(0),
 		_x(0), _y(0), _width(0), _height(0) {
 	/*
 	 * This distance value should ensure, that the subscene stays before panels and background
@@ -72,8 +72,12 @@ void SubSceneQuad::render(RenderPass pass) {
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	uint32 now = EventMan.getTimestamp();
-	float elapsedTime = (now - _lastSampled) / 1000.0f;
+	float elapsedTime = 0;
+	const uint32 now = EventMan.getTimestamp();
+
+	if (_lastSampled != 0)
+		elapsedTime = (now - _lastSampled) / 1000.0f;
+
 	_lastSampled = now;
 
 	for (unsigned int i = 0; i < _renderables.size(); ++i) {
