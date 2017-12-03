@@ -60,6 +60,7 @@ public:
 
 private:
 	enum FadeType {
+		kFadeNone,
 		kFadeIn,
 		kFadeOut
 	};

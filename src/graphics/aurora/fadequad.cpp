@@ -34,8 +34,8 @@ namespace Graphics {
 namespace Aurora {
 
 FadeQuad::FadeQuad() : Renderable(kRenderableTypeGUIFront),
-	_fadeType(kFadeIn), _r(1.0f), _g(0.0f), _b(0.0f),
-	_opacity(0.0f), _wait(0.0f), _run(0.0f) {
+	_fadeType(kFadeNone), _r(1.0f), _g(0.0f), _b(0.0f),
+	_opacity(0.0f), _wait(0), _run(0), _start(0) {
 }
 
 void FadeQuad::getColor(float &r, float &g, float &b) const {
@@ -85,6 +85,9 @@ void FadeQuad::render(Graphics::RenderPass pass) {
 	bool isTransparent = _opacity < 1.0f;
 	if (((pass == Graphics::kRenderPassOpaque     ) &&  isTransparent) ||
 	    ((pass == Graphics::kRenderPassTransparent) && !isTransparent))
+		return;
+
+	if (_fadeType == kFadeNone)
 		return;
 
 	uint32 time = EventMan.getTimestamp() - _start;
