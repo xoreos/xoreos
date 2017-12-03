@@ -102,30 +102,18 @@ ClassSelectionMenu::ClassSelectionMenu(Module *module, ::Engines::Console *conso
 	transformation.translate(-4.87294f, 0.0880559f, -1.06834f);
 	transformation.rotate(-90.0f, 0.0f, 0.0f, 1.0f);
 
-	getLabel("3D_MODEL1")->setSubScene(&_maleScoundrelSubScene);
-	_maleScoundrelSubScene.add(_maleScoundrel->getModel());
-	_maleScoundrelSubScene.setProjectionMatrix(projection);
-	_maleScoundrelSubScene.setGlobalTransformationMatrix(transformation);
-	getLabel("3D_MODEL2")->setSubScene(&_maleScoutSubScene);
-	_maleScoutSubScene.add(_maleScout->getModel());
-	_maleScoutSubScene.setProjectionMatrix(projection);
-	_maleScoutSubScene.setGlobalTransformationMatrix(transformation);
-	getLabel("3D_MODEL3")->setSubScene(&_maleSoldierSubScene);
-	_maleSoldierSubScene.add(_maleSoldier->getModel());
-	_maleSoldierSubScene.setProjectionMatrix(projection);
-	_maleSoldierSubScene.setGlobalTransformationMatrix(transformation);
-	getLabel("3D_MODEL6")->setSubScene(&_femaleScoundrelSubScene);
-	_femaleScoundrelSubScene.add(_femaleScoundrel->getModel());
-	_femaleScoundrelSubScene.setProjectionMatrix(projection);
-	_femaleScoundrelSubScene.setGlobalTransformationMatrix(transformation);
-	getLabel("3D_MODEL5")->setSubScene(&_femaleScoutSubScene);
-	_femaleScoutSubScene.add(_femaleScout->getModel());
-	_femaleScoutSubScene.setProjectionMatrix(projection);
-	_femaleScoutSubScene.setGlobalTransformationMatrix(transformation);
-	getLabel("3D_MODEL4")->setSubScene(&_femaleSoldierSubScene);
-	_femaleSoldierSubScene.add(_femaleSoldier->getModel());
-	_femaleSoldierSubScene.setProjectionMatrix(projection);
-	_femaleSoldierSubScene.setGlobalTransformationMatrix(transformation);
+	setupClassSubScene("3D_MODEL1", _maleScoundrelSubScene, _maleScoundrel->getModel(),
+	                   projection, transformation);
+	setupClassSubScene("3D_MODEL2", _maleScoutSubScene, _maleScout->getModel(),
+	                   projection, transformation);
+	setupClassSubScene("3D_MODEL3", _maleSoldierSubScene, _maleSoldier->getModel(),
+	                   projection, transformation);
+	setupClassSubScene("3D_MODEL4", _femaleSoldierSubScene, _femaleSoldier->getModel(),
+	                   projection, transformation);
+	setupClassSubScene("3D_MODEL5", _femaleScoutSubScene, _femaleScout->getModel(),
+	                   projection, transformation);
+	setupClassSubScene("3D_MODEL6", _femaleScoundrelSubScene, _femaleScoundrel->getModel(),
+	                   projection, transformation);
 }
 
 ClassSelectionMenu::~ClassSelectionMenu() {
@@ -225,6 +213,17 @@ void ClassSelectionMenu::callbackActive(Widget &widget) {
 			_returnCode = 2;
 		}
 	}
+}
+
+void ClassSelectionMenu::setupClassSubScene(const Common::UString &widgetName,
+		Graphics::Aurora::SubSceneQuad &subScene, Graphics::Aurora::Model *model,
+		Common::Matrix4x4 &projection, Common::Matrix4x4 &transformation) {
+	getLabel(widgetName)->setSubScene(&subScene);
+	// TODO: Should randomly switch between pause1, pause2 and pause3
+	model->playAnimation("pause1", true, -1);
+	subScene.add(model);
+	subScene.setProjectionMatrix(projection);
+	subScene.setGlobalTransformationMatrix(transformation);
 }
 
 } // End of namespace KotOR

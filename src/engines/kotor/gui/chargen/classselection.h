@@ -51,6 +51,10 @@ private:
 	void callbackRun();
 	void callbackActive(Widget &widget);
 
+	void setupClassSubScene(const Common::UString &widgetName,
+			Graphics::Aurora::SubSceneQuad &subScene, Graphics::Aurora::Model *model,
+			Common::Matrix4x4 &projection, Common::Matrix4x4 &transformation);
+
 	Common::ScopedPtr<GUI> _charGen;
 
 	Graphics::Aurora::SubSceneQuad _maleSoldierSubScene;
