@@ -56,6 +56,9 @@ void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
 }
 
 KotORWidget *WidgetListBox::createItem(Common::UString name) {
+	if (!_protoItem)
+		throw Common::Exception("ListBox widget has no PROTOITEM");
+
 	KotORWidget *item;
 
 	// Create a new widget.
