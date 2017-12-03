@@ -33,7 +33,7 @@ namespace Engines {
 namespace KotOR {
 
 WidgetProgressbar::WidgetProgressbar(::Engines::GUI &gui, const Common::UString &tag) :
-	KotORWidget(gui, tag) {
+	KotORWidget(gui, tag), _maxValue(0), _curValue(0), _horizontal(true) {
 }
 
 WidgetProgressbar::~WidgetProgressbar() {
@@ -42,28 +42,13 @@ WidgetProgressbar::~WidgetProgressbar() {
 void WidgetProgressbar::load(const Aurora::GFF3Struct &gff) {
 	KotORWidget::load(gff);
 
-	if (gff.hasField("MAXVALUE")) {
-		_maxValue = gff.getSint("MAXVALUE");
-	} else {
-		_maxValue = 0;
-	}
-
-	if (gff.hasField("CURVALUE")) {
-		_curValue = gff.getSint("CURVALUE");
-	} else {
-		_curValue = 0;
-	}
-
-	if (gff.hasField("STARTFROMLEFT")) {
-		_horizontal = gff.getBool("STARTFROMLEFT");
-	} else {
-		_horizontal = true;
-	}
+	_maxValue = gff.getSint("MAXVALUE");
+	_curValue = gff.getSint("CURVALUE");
+	_horizontal = gff.getBool("STARTFROMLEFT", true);
 
 	if (gff.hasField("PROGRESS")) {
 		const Aurora::GFF3Struct &progress = gff.getStruct("PROGRESS");
-
-		Common::UString fill = progress.getString("FILL");
+		const Common::UString fill = progress.getString("FILL");
 
 		_progress.reset(new Graphics::Aurora::GUIQuad(fill, 0.0f, 0.0f, getWidth(), getHeight()));
 
