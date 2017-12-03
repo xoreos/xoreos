@@ -334,12 +334,22 @@ uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf) {
 	// Show the sub GUI
 	if (startCode == 0)
 		gui.show();
-	hide();
+
+	if (showSelf)
+		hide();
 
 	GfxMan.unlockFrame();
 
+	// Move the gui a bit behind the sub gui
+	float x, y, z;
+	getPosition(x, y, z);
+	setPosition(x, y, z + 100.0f);
+
 	// Run the sub GUI
 	uint32 code = gui.run(startCode);
+
+	// Reset the position
+	setPosition(x, y, z);
 
 	GfxMan.lockFrame();
 
