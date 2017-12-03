@@ -129,9 +129,20 @@ int WidgetProgressbar::getMaxValue() {
 
 void WidgetProgressbar::update() {
 	if (_horizontal) {
-		_progress->setWidth(getWidth() * (static_cast<float>(_curValue) / static_cast<float>(_maxValue)));
+		if ((_maxValue <= 0) || (_curValue >= _maxValue))
+			_progress->setWidth(getWidth());
+		else if (_curValue <= 0)
+			_progress->setWidth(0.0f);
+		else
+			_progress->setWidth(getWidth() * (static_cast<float>(_curValue) / static_cast<float>(_maxValue)));
+
 	} else {
-		_progress->setHeight(getHeight() * (static_cast<float>(_curValue) / static_cast<float>(_maxValue)));
+		if ((_maxValue <= 0) || (_curValue >= _maxValue))
+			_progress->setHeight(getHeight());
+		else if (_curValue <= 0)
+			_progress->setHeight(0.0f);
+		else
+			_progress->setHeight(getHeight() * (static_cast<float>(_curValue) / static_cast<float>(_maxValue)));
 	}
 }
 
