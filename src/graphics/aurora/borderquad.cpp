@@ -64,12 +64,13 @@ BorderQuad::BorderQuad(const Common::UString &edge, const Common::UString &corne
 	assert(!_edge.empty());
 }
 
-void BorderQuad::setPosition(float x, float y, float UNUSED(z)) {
+void BorderQuad::setPosition(float x, float y, float z) {
 	lockFrameIfVisible();
 
 	// Because of some graphic glitches with non-integer floats, i have to floor the values
 	_x = std::floor(x);
 	_y = std::floor(y);
+	_distance = z;
 
 	unlockFrameIfVisible();
 }
@@ -77,7 +78,7 @@ void BorderQuad::setPosition(float x, float y, float UNUSED(z)) {
 void BorderQuad::getPosition(float &x, float &y, float &z) {
 	x = _x;
 	y = _y;
-	z = -FLT_MAX;
+	z = _distance;
 }
 
 void BorderQuad::setSize(float w, float h) {
