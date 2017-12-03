@@ -59,8 +59,7 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 	KotORWidget *item;
 
 	// Create a new widget.
-	switch (_protoItem->getUint("CONTROLTYPE"))
-	{
+	switch (_protoItem->getUint("CONTROLTYPE")) {
 		case 6:
 			item = new WidgetButton(*_gui, name);
 			break;
