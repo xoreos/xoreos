@@ -80,7 +80,7 @@ void SubSceneQuad::render(RenderPass pass) {
 
 	_lastSampled = now;
 
-	for (unsigned int i = 0; i < _renderables.size(); ++i) {
+	for (size_t i = 0; i < _renderables.size(); ++i) {
 		_renderables[i]->advanceTime(elapsedTime);
 		_renderables[i]->render(pass);
 	}
