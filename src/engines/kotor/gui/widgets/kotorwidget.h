@@ -71,6 +71,11 @@ public:
 	/** Set the widget clickable, or not clickable. */
 	void setClickable(bool clickable);
 
+	/** Set if the widget should be highlighted */
+	void setHighlight(bool highlight);
+	/** If the widget is highlighted */
+	bool isHighlight();
+
 	/** Set the width of the widget. */
 	void setWidth(float width);
 	/** Set the height of the widget. */
@@ -141,6 +146,8 @@ protected:
 	float _b;
 	float _a;
 
+	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
+
 	bool _wrapped;
 
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad>           _quad;
@@ -150,6 +157,7 @@ protected:
 
 	Graphics::Aurora::SubSceneQuad *_subScene;
 
+	bool _highlighted;
 
 	Extend  createExtend (const Aurora::GFF3Struct &gff);
 	Border  createBorder (const Aurora::GFF3Struct &gff);

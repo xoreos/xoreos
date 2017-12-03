@@ -38,7 +38,7 @@ namespace Engines {
 
 namespace KotOR {
 
-Menu::Menu(Console *console) : GUI(console), _currentMenu(0) {
+Menu::Menu(Console *console) : GUI(console), _currentMenu(0), _lastProto(0) {
 	load("top");
 
 	addBackground(kBackgroundTypeMenu, true);
@@ -128,6 +128,12 @@ void Menu::showEquipment() {
 			removeChild(_currentMenu);
 		_currentMenu = _menuEqu.get();
 		addChild(_menuEqu.get());
+		_protoEqu->setHighlight(true);
+
+		if (_lastProto)
+			_lastProto->setHighlight(false);
+		_protoEqu->setHighlight(true);
+		_lastProto = _protoEqu;
 	}
 }
 
@@ -137,6 +143,12 @@ void Menu::showInventory() {
 			removeChild(_currentMenu);
 		_currentMenu = _menuInv.get();
 		addChild(_menuInv.get());
+		_protoInv->setHighlight(true);
+
+		if (_lastProto)
+			_lastProto->setHighlight(false);
+		_protoInv->setHighlight(true);
+		_lastProto = _protoInv;
 	}
 }
 
@@ -146,6 +158,12 @@ void Menu::showCharacter() {
 			removeChild(_currentMenu);
 		_currentMenu = _menuChar.get();
 		addChild(_menuChar.get());
+		_protoChar->setHighlight(true);
+
+		if (_lastProto)
+			_lastProto->setHighlight(false);
+		_protoChar->setHighlight(true);
+		_lastProto = _protoChar;
 	}
 }
 
@@ -155,6 +173,11 @@ void Menu::showAbilities() {
 			removeChild(_currentMenu);
 		_currentMenu = _menuAbi.get();
 		addChild(_menuAbi.get());
+
+		if (_lastProto)
+			_lastProto->setHighlight(false);
+		_protoAbi->setHighlight(true);
+		_lastProto = _protoAbi;
 	}
 }
 
@@ -164,6 +187,11 @@ void Menu::showMessages() {
 			removeChild(_currentMenu);
 		_currentMenu = _menuMsg.get();
 		addChild(_menuMsg.get());
+
+		if (_lastProto)
+			_lastProto->setHighlight(false);
+		_protoMsg->setHighlight(true);
+		_lastProto = _protoMsg;
 	}
 }
 
@@ -173,6 +201,12 @@ void Menu::showJournal() {
 			removeChild(_currentMenu);
 		_currentMenu = _menuJou.get();
 		addChild(_menuJou.get());
+		_protoJou->setHighlight(true);
+
+		if (_lastProto)
+			_lastProto->setHighlight(false);
+		_protoJou->setHighlight(true);
+		_lastProto = _protoJou;
 	}
 }
 
@@ -182,6 +216,12 @@ void Menu::showMap() {
 			removeChild(_currentMenu);
 		_currentMenu = _menuMap.get();
 		addChild(_menuMap.get());
+		_protoMap->setHighlight(true);
+
+		if (_lastProto)
+			_lastProto->setHighlight(false);
+		_protoMap->setHighlight(true);
+		_lastProto = _protoMap;
 	}
 }
 
@@ -191,6 +231,12 @@ void Menu::showOptions() {
 			removeChild(_currentMenu);
 		_currentMenu = _menuOpt.get();
 		addChild(_menuOpt.get());
+		_protoOpt->setHighlight(true);
+
+		if (_lastProto)
+			_lastProto->setHighlight(false);
+		_protoOpt->setHighlight(true);
+		_lastProto = _protoOpt;
 	}
 }
 
