@@ -200,11 +200,11 @@ Graphics::Aurora::Model *CharacterGenerationInfo::getModel() {
 			body += "l";
 			break;
 		case kClassScout:
-			body += "s";
+			body += "m";
 			break;
 		default:
 		case kClassScoundrel:
-			body += "m";
+			body += "s";
 			break;
 	}
 

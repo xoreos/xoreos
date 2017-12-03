@@ -304,11 +304,11 @@ void Creature::createPC(CharacterGenerationInfo *info) {
 			parts.body += "l";
 			break;
 		case kClassScout:
-			parts.body += "s";
+			parts.body += "m";
 			break;
 		default:
 		case kClassScoundrel:
-			parts.body += "m";
+			parts.body += "s";
 			break;
 	}
 
