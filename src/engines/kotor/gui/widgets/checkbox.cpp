@@ -42,8 +42,9 @@ namespace Engines {
 namespace KotOR {
 
 WidgetCheckBox::WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag) :
-	KotORWidget(gui, tag) {
-	_state = false;
+	KotORWidget(gui, tag), _state(false),
+	_unselectedR(1.0f), _unselectedG(1.0f), _unselectedB(1.0f), _unselectedA(1.0f) {
+
 }
 
 WidgetCheckBox::~WidgetCheckBox() {
