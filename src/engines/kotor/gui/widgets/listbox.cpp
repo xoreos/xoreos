@@ -33,7 +33,7 @@ namespace Engines {
 namespace KotOR {
 
 WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag) :
-	KotORWidget(gui, tag), _itemCount(0), _padding(0) {
+	KotORWidget(gui, tag), _protoItem(0), _itemCount(0), _padding(0) {
 }
 
 WidgetListBox::~WidgetListBox() {
