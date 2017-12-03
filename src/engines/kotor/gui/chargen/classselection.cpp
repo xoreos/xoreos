@@ -36,7 +36,7 @@ namespace Engines {
 namespace KotOR {
 
 ClassSelectionMenu::ClassSelectionMenu(Module *module, ::Engines::Console *console) : GUI(console),
-	_module(module) {
+	_hoveredButton(0), _module(module) {
 
 	load("classsel");
 
