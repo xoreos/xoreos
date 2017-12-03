@@ -63,8 +63,9 @@ KotORWidget::Hilight::Hilight() : fill("") {
 }
 
 KotORWidget::KotORWidget(::Engines::GUI &gui, const Common::UString &tag) :
-	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _wrapped(false),
-	_subScene(NULL), _highlighted(false) {
+	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
+	_unselectedR(1.0f), _unselectedG(1.0f), _unselectedB(1.0f), _unselectedA(1.0f),
+	_wrapped(false), _subScene(NULL), _highlighted(false) {
 
 }
 
