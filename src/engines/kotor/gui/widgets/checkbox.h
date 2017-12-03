@@ -51,10 +51,11 @@ public:
 private:
 	bool _state;
 
-	void setTextHighlighting(Graphics::Aurora::Highlightable *highlightable);
-	void setQuadHighlighting(Graphics::Aurora::Highlightable *highlightable);
 	Sound::ChannelHandle _sound;
 	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
+
+	void setTextHighlighting(Graphics::Aurora::Highlightable *highlightable);
+	void setQuadHighlighting(Graphics::Aurora::Highlightable *highlightable);
 };
 
 } // End of namespace KotOR
