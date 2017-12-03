@@ -70,7 +70,7 @@ GUIQuad::GUIQuad(TextureHandle texture,
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
-	_xor(false), _scissor(false) {
+	_xor(false), _scissor(false), _additiveBlending(false) {
 
 	_distance = -FLT_MAX;
 }
