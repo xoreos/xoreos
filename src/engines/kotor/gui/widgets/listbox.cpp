@@ -27,6 +27,7 @@
 #include "src/engines/kotor/gui/gui.h"
 #include "src/engines/kotor/gui/widgets/listbox.h"
 #include "src/engines/kotor/gui/widgets/button.h"
+#include "src/engines/kotor/gui/widgets/label.h"
 
 namespace Engines {
 
@@ -63,6 +64,9 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 
 	// Create a new widget.
 	switch (_protoItem->getUint("CONTROLTYPE")) {
+		case 4:
+			item = new WidgetLabel(*_gui, name);
+			break;
 		case 6:
 			item = new WidgetButton(*_gui, name);
 			break;
