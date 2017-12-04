@@ -91,12 +91,11 @@ void NWNWidgetWithCaption::setColor(float r, float g, float b, float a) {
 		_caption->setColor(_r, _g, _b, _a);
 }
 
-void NWNWidgetWithCaption::setText(const Common::UString &text, float halign, float maxWidth, float maxHeight) {
+void NWNWidgetWithCaption::setText(const Common::UString &text) {
 	if (!_caption)
 		return;
 
-	_caption->set(text, maxWidth, maxHeight);
-	_caption->setHorizontalAlign(halign);
+	_caption->setText(text);
 }
 
 const Common::UString NWNWidgetWithCaption::getText() const {
