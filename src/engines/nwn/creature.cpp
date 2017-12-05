@@ -306,8 +306,8 @@ void Creature::setKnownSpell(uint32 classID, size_t spellLevel, uint16 spell) {
 	if (!creatureClass)
 		return;
 
-	if (creatureClass->knownList.size() < spellLevel)
-		creatureClass->knownList.resize(spellLevel);
+	if (creatureClass->knownList.size() < spellLevel + 1)
+		creatureClass->knownList.resize(spellLevel + 1);
 
 	std::vector<uint16> &spellLvlList = creatureClass->knownList[spellLevel];
 	// Check if the creature already knows the spell.
@@ -324,8 +324,8 @@ void Creature::setMemorizedSpell(uint32 classID, size_t spellLevel, uint16 spell
 	if (!creatureClass)
 		return;
 
-	if (creatureClass->memorizedList.size() < spellLevel)
-		creatureClass->memorizedList.resize(spellLevel);
+	if (creatureClass->memorizedList.size() < spellLevel + 1)
+		creatureClass->memorizedList.resize(spellLevel + 1);
 
 	std::vector<uint16> &spellLvlList = creatureClass->memorizedList[spellLevel];
 	// Check if the creature already knows the spell.
