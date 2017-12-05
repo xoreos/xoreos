@@ -481,7 +481,7 @@ void CharGenChoices::getFeats(std::vector<uint32> &feats) {
 }
 
 uint8 CharGenChoices::getPrefSpellSchool() {
-	const Aurora::TwoDAFile &twodaPackage = TwoDAReg.get2DA("package");
+	const Aurora::TwoDAFile &twodaPackage = TwoDAReg.get2DA("packages");
 	const Aurora::TwoDARow  &row          = twodaPackage.getRow(_package == UINT8_MAX ? _classId : _package);
 
 	if (row.empty("School"))
