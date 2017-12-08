@@ -25,6 +25,7 @@
 #include "src/common/system.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/text.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -66,6 +67,16 @@ void WidgetButton::leave() {
 
 	if (_mode == kModeNormal)
 		_model->setState("up");
+}
+
+void WidgetButton::setPosition(float x, float y, float z) {
+	ModelWidget::setPosition(x, y, z);
+
+	// Don't write on the border
+	if (_caption && getHorizontalAlign() == Graphics::Aurora::kHAlignLeft) {
+		_caption->getPosition(x, y, z);
+		_caption->setPosition(x + 7, y, z);
+	}
 }
 
 void WidgetButton::setMode(WidgetButton::Mode mode) {
