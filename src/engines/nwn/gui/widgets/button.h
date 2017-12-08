@@ -51,6 +51,8 @@ public:
 	void enter();
 	void leave();
 
+	void setPosition(float x, float y, float z);
+
 	void setMode(Mode mode);
 	Mode getMode() const;
 	void setPressed(bool pushed);
