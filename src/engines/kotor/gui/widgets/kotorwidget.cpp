@@ -28,6 +28,7 @@
 #include "src/aurora/gff3file.h"
 #include "src/aurora/talkman.h"
 
+#include "src/graphics/font.h"
 #include "src/graphics/windowman.h"
 
 #include "src/graphics/aurora/fontman.h"
@@ -321,10 +322,20 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	Text text = createText(gff);
 
 	if (!text.font.empty()) {
-		_text.reset(new Graphics::Aurora::HighlightableText(FontMan.get(text.font), extend.w, extend.h,
+		// Buttons in Jade are too small for their text
+		// If widget height is less than the font needs
+		// increase to font height and reposition
+		float fontHeight = FontMan.get(text.font).getFont().getHeight();
+		float tY = extend.y;
+		float tH = extend.h;
+		if (extend.h < fontHeight) {
+			tH = fontHeight;
+			tY = extend.y - (fontHeight - extend.h);
+		}
+		_text.reset(new Graphics::Aurora::HighlightableText(FontMan.get(text.font), extend.w, tH,
 		            text.text, text.r, text.g, text.b, 1.0f, text.halign, text.valign));
 
-		_text->setPosition(extend.x, extend.y, -1.0f);
+		_text->setPosition(extend.x, tY, -1.0f);
 		_text->setTag(getTag());
 		_text->setClickable(true);
 	}
