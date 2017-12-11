@@ -94,7 +94,7 @@ bool WidgetButton::isPressed() const {
 }
 
 void WidgetButton::setDisabled(bool disabled) {
-	NWNWidget::setDisabled(disabled);
+	ModelWidget::setDisabled(disabled);
 
 	if (isDisabled())
 		_model->setState("disabled");
