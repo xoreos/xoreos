@@ -169,15 +169,9 @@ bool Game::showMainMenu() {
 	button.show();
 
 
-	Graphics::Aurora::Text buttonText(_guiFont, TalkMan.getString(15860));
-
-	float buttonX, buttonY, buttonZ;
-	button.getPosition(buttonX, buttonY, buttonZ);
-
-	const float buttonTextX = buttonX + ((button.getWidth()  - buttonText.getWidth())  / 2.0f);
-	const float buttonTextY = buttonY + ((button.getHeight() - buttonText.getHeight()) / 2.0f);
-
-	buttonText.setPosition(buttonTextX, buttonTextY, -2.0f);
+	Graphics::Aurora::Text buttonText(_guiFont, 240.0f, 48.0f, TalkMan.getString(15860), 1.0f, 1.0f, 1.0f, 1.0f,
+	                                  Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignMiddle);
+	buttonText.setPosition(-120.0f, -120.0f, -2.0f);
 	buttonText.show();
 
 
