@@ -203,7 +203,7 @@ void Text::render(RenderPass pass) {
 	float blockSize = lines.size() * lineHeight;
 
 	// Move position to the top
-	glTranslatef(0.0f, ((_height - blockSize) * _valign) + blockSize - lineHeight, 0.0f);
+	glTranslatef(0.0f, roundf(((_height - blockSize) * _valign) + blockSize - lineHeight), 0.0f);
 
 	size_t position = 0;
 
