@@ -203,19 +203,14 @@ bool Game::showQuote() {
 	Aurora::Language language = Aurora::kLanguageInvalid;
 	_engine->getLanguage(language);
 
-	const float length = (language == Aurora::kLanguageJapanese) ? 236.0f : 256.0f;
-	const float halign = (language == Aurora::kLanguageJapanese) ?
-	                                        Graphics::Aurora::kHAlignLeft : Graphics::Aurora::kHAlignCenter;
-
 	Common::UString quote = TalkMan.getString(21712);
-	_guiFont.getFont().split(quote, length, 0.0f, false);
 
-	Graphics::Aurora::Text quoteText(_quoteFont, quote, 1.0f, 1.0f, 1.0f, 1.0f, halign);
+	const float halign = (language == Aurora::kLanguageJapanese) ?
+	                      Graphics::Aurora::kHAlignLeft : Graphics::Aurora::kHAlignCenter;
+	Graphics::Aurora::Text quoteText(_quoteFont, kScreenWidth, kScreenHeight, quote, 1.0f, 1.0f, 1.0f, 1.0f,
+	                                 halign, Graphics::Aurora::kVAlignMiddle);
 
-	const float quoteTextX = kTopScreenX + ((kScreenWidth  - quoteText.getWidth())  / 2.0f);
-	const float quoteTextY = kTopScreenY + ((kScreenHeight - quoteText.getHeight()) / 2.0f);
-
-	quoteText.setPosition(quoteTextX, quoteTextY, 0.0f);
+	quoteText.setPosition(kTopScreenX, kTopScreenY, 0.0f);
 	quoteText.show();
 
 	GfxMan.unlockFrame();
