@@ -175,12 +175,9 @@ bool Game::showMainMenu() {
 	buttonText.show();
 
 
-	Graphics::Aurora::Text helpText(_guiFont, TalkMan.getString(18707));
-
-	const float helpTextX = kBottomScreenX + ((kScreenWidth - helpText.getWidth()) / 2.0f);
-	const float helpTextY = kBottomScreenY;
-
-	helpText.setPosition(helpTextX, helpTextY, -2.0f);
+	Graphics::Aurora::Text helpText(_guiFont, kScreenWidth, kScreenHeight, TalkMan.getString(18707), 1.0f, 1.0f, 1.0f, 1.0f,
+	                                Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignBottom);
+	helpText.setPosition(kBottomScreenX, kBottomScreenY, -2.0f);
 	helpText.show();
 
 
