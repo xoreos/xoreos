@@ -24,10 +24,6 @@ namespace Graphics {
 
 namespace Aurora {
 
-HighlightableText::HighlightableText(const FontHandle &font, const Common::UString &str, float r, float g, float b, float a, float halign, float valign) :
-	Text(font, str, r, g, b, a, halign, valign) {
-}
-
 HighlightableText::HighlightableText(const FontHandle &font, float w, float h, const Common::UString &str, float r, float g, float b, float a, float halign, float valign) :
 	Text(font, w, h, str, r, g, b, a, halign, valign) {
 }
