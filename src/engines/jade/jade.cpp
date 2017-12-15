@@ -165,6 +165,9 @@ void JadeEngine::init() {
 	initGameConfig();
 
 	progress.step("Successfully initialized the engine");
+
+	GfxMan.setGUIScale(Graphics::GraphicsManager::kScalingWindowSize);
+	GfxMan.setGUISize(640, 480);
 }
 
 void JadeEngine::declareLanguages() {

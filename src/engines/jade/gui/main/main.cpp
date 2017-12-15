@@ -79,60 +79,6 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::Kot
 	// No clue for this text, we make it invisible
 	getLabel("LabelLegend")->setInvisible(true);
 	getLabel("Labellegends")->setInvisible(true);
-
-	/*
-	 * The original menu was intended for xbox based typical
-	 * "press start" screen. Because of that the main menu needs to be
-	 * dynamically modified to match the pc menu
-	 */
-
-	float wWidth = static_cast<float>(WindowMan.getWindowWidth());
-	float wHeight = static_cast<float>(WindowMan.getWindowHeight());
-
-	// If the window is not 640x480 the sizes and positions have to be modified
-	if (wWidth != 640 || wHeight != 480) {
-		float x, y, z;
-		float w, h;
-
-		// The "Jade Empire" Logo
-		getLabel("TitleLabel")->getPosition(x, y, z);
-		x = (x / 640.0f) * wWidth;
-		y = (y / 480.0f) * wHeight;
-		getLabel("TitleLabel")->setPosition(x, y, z);
-
-		w = getLabel("TitleLabel")->getWidth();
-		h = getLabel("TitleLabel")->getHeight();
-		w = (w / 640.0f) * wWidth;
-		h = (h / 480.0f) * wHeight;
-		getLabel("TitleLabel")->setWidth(w);
-		getLabel("TitleLabel")->setHeight(h);
-
-		// The Bioware and Gray Matter Logos
-		getLabel("LabelLogos")->getPosition(x, y, z);
-		x = (x / 640.0f) * wWidth;
-		y = (y / 480.0f) * wHeight;
-		getLabel("LabelLogos")->setPosition(x, y, z);
-
-		w = getLabel("LabelLogos")->getWidth();
-		h = getLabel("LabelLogos")->getHeight();
-		w = (w / 640.0f) * wWidth;
-		h = (h / 480.0f) * wHeight;
-		getLabel("LabelLogos")->setWidth(w);
-		getLabel("LabelLogos")->setHeight(h);
-
-		// The lower middle strip
-		getLabel("LabelHelp")->getPosition(x, y, z);
-		x = (x / 640.0f) * wWidth;
-		y = (y / 480.0f) * wHeight;
-		getLabel("LabelHelp")->setPosition(x, y, z);
-
-		w = getLabel("LabelHelp")->getWidth();
-		h = getLabel("LabelHelp")->getHeight();
-		w = (w / 640.0f) * wWidth;
-		h = (h / 480.0f) * wHeight;
-		getLabel("LabelHelp")->setWidth(w);
-		getLabel("LabelHelp")->setHeight(h);
-	}
 }
 
 MainMenu::~MainMenu() {
