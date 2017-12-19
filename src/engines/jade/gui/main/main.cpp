@@ -22,12 +22,15 @@
  *  The Jade Empire main menu.
  */
 
-#include "src/common/util.h"
+#include "src/common/configman.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
 
+#include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
 #include "src/aurora/talkman.h"
 
-#include "src/graphics/windowman.h"
-
+#include "src/engines/jade/arealayout.h"
 #include "src/engines/jade/module.h"
 
 #include "src/engines/jade/gui/main/main.h"
@@ -41,7 +44,7 @@ namespace Engines {
 namespace Jade {
 
 MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::KotOR::GUI(console),
-	_module(&module) {
+	_module(&module), _background(0) {
 
 	load("maingame");
 
@@ -75,9 +78,25 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::Kot
 	float tX, tY, tZ;
 	getLabel("TitleLabel")->getPosition(tX, tY, tZ);
 	getLabel("TitleLabel")->setPosition(tX-80, tY+52, tZ);
+
+	addBackground();
 }
 
 MainMenu::~MainMenu() {
+	delete _background;
+	_background = NULL;
+}
+
+void MainMenu::show() {
+	if (_background)
+		_background->show();
+	::Engines::KotOR::GUI::show();
+}
+
+void MainMenu::hide() {
+	if (_background)
+		_background->hide();
+	::Engines::KotOR::GUI::hide();
 }
 
 void MainMenu::callbackActive(Widget &widget) {
@@ -91,6 +110,18 @@ void MainMenu::callbackActive(Widget &widget) {
 		}
 		return;
 	}
+}
+
+void MainMenu::addBackground() {
+	const Aurora::TwoDAFile &startrooms = TwoDAReg.get2DA("startrooms");
+
+	Common::UString currentChapter = ConfigMan.getString("chapter", "1");
+	if (startrooms.getRow("chapter", currentChapter).empty("room"))
+		currentChapter = "1";
+
+	const Common::UString &room = startrooms.getRow("chapter", currentChapter).getString("room");
+
+	_background = new AreaLayout(room);
 }
 
 } // End of namespace Jade

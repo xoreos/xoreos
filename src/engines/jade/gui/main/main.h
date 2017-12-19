@@ -31,6 +31,7 @@ namespace Engines {
 
 namespace Jade {
 
+class AreaLayout;
 class Module;
 
 class MainMenu : public ::Engines::KotOR::GUI {
@@ -38,11 +39,17 @@ public:
 	MainMenu(Module &module, ::Engines::Console *console = 0);
 	~MainMenu();
 
+	void show(); ///< Show the GUI.
+	void hide(); ///< Hide the GUI.
+
 protected:
 	void callbackActive(Widget &widget);
+	void addBackground();
 
 private:
 	Module *_module;
+
+	AreaLayout *_background;
 };
 
 } // End of namespace Jade
