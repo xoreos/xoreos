@@ -31,6 +31,7 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/game.h \
     src/engines/jade/module.h \
     src/engines/jade/area.h \
+    src/engines/jade/arealayout.h \
     src/engines/jade/room.h \
     src/engines/jade/object.h \
     src/engines/jade/objectcontainer.h \
@@ -50,6 +51,7 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/game.cpp \
     src/engines/jade/module.cpp \
     src/engines/jade/area.cpp \
+    src/engines/jade/arealayout.cpp \
     src/engines/jade/room.cpp \
     src/engines/jade/object.cpp \
     src/engines/jade/objectcontainer.cpp \

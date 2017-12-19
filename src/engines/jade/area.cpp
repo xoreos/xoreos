@@ -38,7 +38,6 @@
 #include "src/engines/aurora/resources.h"
 
 #include "src/engines/jade/area.h"
-#include "src/engines/jade/room.h"
 #include "src/engines/jade/creature.h"
 #include "src/engines/jade/placeable.h"
 #include "src/engines/jade/trigger.h"
@@ -49,7 +48,9 @@ namespace Engines {
 namespace Jade {
 
 Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
-	_module(&module), _resRef(resRef), _visible(false), _activeObject(0), _highlightAll(false) {
+	_module(&module), _activeObject(0), _highlightAll(false) {
+
+	_resRef = resRef;
 
 	try {
 		load();
@@ -76,15 +77,10 @@ void Area::load() {
 	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 	loadARE(are.getTopLevel());
 
-	loadResources();
+	AreaLayout::load();
 
 	Aurora::GFF3File sav(_resRef, Aurora::kFileTypeSAV, MKTAG('S', 'A', 'V', ' '));
 	loadSAV(sav.getTopLevel());
-
-	loadLYT(); // Room layout
-	loadVIS(); // Room visibilities
-
-	loadRooms();
 }
 
 void Area::clear() {
@@ -93,11 +89,8 @@ void Area::clear() {
 		_module->removeObject(**o);
 
 	_objects.clear();
-	_rooms.clear();
-}
 
-const Common::UString &Area::getResRef() {
-	return _resRef;
+	AreaLayout::clear();
 }
 
 void Area::show() {
@@ -105,10 +98,6 @@ void Area::show() {
 		return;
 
 	GfxMan.lockFrame();
-
-	// Show rooms
-	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		(*r)->show();
 
 	// Show objects
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o) {
@@ -120,7 +109,7 @@ void Area::show() {
 
 	GfxMan.unlockFrame();
 
-	_visible = true;
+	AreaLayout::show();
 }
 
 void Area::hide() {
@@ -135,13 +124,9 @@ void Area::hide() {
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->hide();
 
-	// Hide rooms
-	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		(*r)->hide();
-
 	GfxMan.unlockFrame();
 
-	_visible = false;
+	AreaLayout::hide();
 }
 
 void Area::loadARE(const Aurora::GFF3Struct &are) {
@@ -199,40 +184,6 @@ void Area::loadResources() {
 
 	_resources.push_back(Common::ChangeID());
 	indexMandatoryArchive(_resRef + "/" + _layout + "-a.rim", 1001, &_resources.back());
-}
-
-void Area::loadLYT() {
-	try {
-		Common::ScopedPtr<Common::SeekableReadStream> lyt(ResMan.getResource(_layout, Aurora::kFileTypeLYT));
-		if (!lyt)
-			throw Common::Exception("No such LYT");
-
-		_lyt.load(*lyt);
-
-	} catch (Common::Exception &e) {
-		e.add("Failed loading LYT \"%s\"", _layout.c_str());
-		throw;
-	}
-}
-
-void Area::loadVIS() {
-	try {
-		Common::ScopedPtr<Common::SeekableReadStream> vis(ResMan.getResource(_layout, Aurora::kFileTypeVIS));
-		if (!vis)
-			throw Common::Exception("No such VIS");
-
-		_vis.load(*vis);
-
-	} catch (Common::Exception &e) {
-		e.add("Failed loading VIS \"%s\"", _layout.c_str());
-		throw;
-	}
-}
-
-void Area::loadRooms() {
-	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
-	for (size_t i = 0; i < rooms.size(); i++)
-		_rooms.push_back(new Room(rooms[i].model, i, rooms[i].x, rooms[i].y, rooms[i].z));
 }
 
 void Area::loadObject(Object &object) {

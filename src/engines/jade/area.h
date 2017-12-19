@@ -29,17 +29,14 @@
 #include <map>
 
 #include "src/common/ptrlist.h"
-#include "src/common/ustring.h"
-#include "src/common/changeid.h"
 #include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/lytfile.h"
-#include "src/aurora/visfile.h"
 
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
+#include "src/engines/jade/arealayout.h"
 #include "src/engines/jade/module.h"
 #include "src/engines/jade/object.h"
 
@@ -57,15 +54,10 @@ class Room;
  *  from the top down. The negative Z axis goes down into the ground, while the
  *  positive Y axis points due north and the positive X axis points due east.
  */
-class Area : public Object, public Events::Notifyable {
+class Area : public AreaLayout, public Object, public Events::Notifyable {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();
-
-	// General properties
-
-	/** Return the area's resref (resource ID). */
-	const Common::UString &getResRef();
 
 	// Visibility
 
@@ -88,25 +80,12 @@ protected:
 
 
 private:
-	typedef Common::PtrList<Room>   RoomList;
 	typedef Common::PtrList<Object> ObjectList;
-
 	typedef std::map<uint32, Object *> ObjectMap;
 
 
 	Module *_module; ///< The module this area is in.
 
-	Common::UString _resRef;      ///< The area's resref (resource ID).
-	Common::UString _layout;      ///< The area's layout resref (resource ID).
-
-	bool _visible; ///< Is the area currently visible?
-
-	std::list<Common::ChangeID> _resources; ///< The area's resource archives.
-
-	Aurora::LYTFile _lyt; ///< The area's layout description.
-	Aurora::VISFile _vis; ///< The area's inter-room visibility description.
-
-	RoomList _rooms; ///< All rooms in the area.
 
 	ObjectList _objects;   ///< List of all objects in the area.
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
@@ -130,19 +109,12 @@ private:
 
 	void loadResources();
 
-	void loadLYT();
-	void loadVIS();
-
-	void loadRooms();
-
 	void loadObject(Jade::Object &object);
 
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadCreatures (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
 	void loadTriggers  (const Aurora::GFF3List &list);
-
-	void unload();
 
 	// Highlight / active helpers
 
