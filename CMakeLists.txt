@@ -93,7 +93,7 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   set_check_compiler_flag_cxx("-Wc++11-long-long" "-Wno-c++11-long-long")
 
   # clang is far too trigger-happy on this warning, so let's disable it
-  set_check_compiler_flag_cxx("-Wundefined-var-template", "-Wno-undefined-var-template")
+  set_check_compiler_flag_cxx("-Wundefined-var-template" "-Wno-undefined-var-template")
 endif()
 
 # platform specific warning settings
