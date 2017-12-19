@@ -75,10 +75,6 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::Kot
 	float tX, tY, tZ;
 	getLabel("TitleLabel")->getPosition(tX, tY, tZ);
 	getLabel("TitleLabel")->setPosition(tX-80, tY+52, tZ);
-
-	// No clue for this text, we make it invisible
-	getLabel("LabelLegend")->setInvisible(true);
-	getLabel("Labellegends")->setInvisible(true);
 }
 
 MainMenu::~MainMenu() {
