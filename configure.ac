@@ -118,17 +118,17 @@ if test "x$with_warnings" = "xyes"; then
 
 	dnl Extra warnings valid for C++
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wnon-virtual-dtor])
-
-	dnl Disable warnings about hiding virtual functions from a base class. We don't care
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Woverloaded-virtual], [-Wno-overloaded-virtual])
-
-	dnl Disable warnings about the long long type. We need it
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wlong-long], [-Wno-long-long])
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wc++11-long-long], [-Wno-c++11-long-long])
-
-	dnl clang is far too trigger-happy on this warning, so let's disable it
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wundefined-var-template], [-Wno-undefined-var-template])
 fi
+
+dnl Disable warnings about hiding virtual functions from a base class. We don't care
+AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Woverloaded-virtual], [-Wno-overloaded-virtual])
+
+dnl Disable warnings about the long long type. We need it
+AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wlong-long], [-Wno-long-long])
+AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wc++11-long-long], [-Wno-c++11-long-long])
+
+dnl clang is far too trigger-happy on this warning, so let's disable it
+AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wundefined-var-template], [-Wno-undefined-var-template])
 
 AC_SUBST(WARN)
 
