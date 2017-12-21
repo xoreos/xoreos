@@ -57,6 +57,9 @@ public:
 	virtual void show();
 	virtual void hide();
 
+	// Update Camera with configuration from the current room.
+	void updateCamera();
+
 protected:
 	// Only used to init class Area.
 	AreaLayout();
@@ -90,6 +93,8 @@ private:
 	void loadART();
 
 	void loadRooms();
+
+	Room *currentRoom() const;
 };
 
 } // End of namespace Jade

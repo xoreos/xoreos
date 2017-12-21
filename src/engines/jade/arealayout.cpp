@@ -22,11 +22,15 @@
  *  A rooms layout for an area.
  */
 
+#include <vector>
+
 #include "src/common/error.h"
 #include "src/common/readstream.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/resman.h"
 
+#include "src/graphics/camera.h"
 #include "src/graphics/graphics.h"
 
 #include "src/engines/aurora/resources.h"
@@ -71,6 +75,8 @@ void AreaLayout::show() {
 	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		(*r)->show();
 
+	updateCamera();
+
 	GfxMan.unlockFrame();
 
 	_visible = true;
@@ -89,6 +95,55 @@ void AreaLayout::hide() {
 	GfxMan.unlockFrame();
 
 	_visible = false;
+}
+
+void AreaLayout::updateCamera() {
+	Room *current = currentRoom();
+	if (!current)
+		return;
+
+	Common::ConfigDomain *roomProps = _art.getDomain(current->getResRef());
+	if (!roomProps)
+		return;
+
+	// Set the camera to a specific position.
+	if (roomProps->getInt("CamStationary", 0) == 1) {
+		uint camPointCount = roomProps->getUint("CamPointCount", 0);
+		if (camPointCount > 0) {
+			// Choose one at random.
+			int selectedCamPoint = std::rand() % camPointCount;
+			Common::UString camPoint = roomProps->getString(Common::UString::format("CamPoint%u", selectedCamPoint), "");
+
+			std::vector<Common::UString> camPos;
+			Common::UString::split(camPoint, ' ', camPos);
+
+			float posX, posY, posZ;
+			parseString(camPos[0], posX);
+			parseString(camPos[1], posY);
+			parseString(camPos[2], posZ);
+
+			CameraMan.setPosition(posX, posY, posZ);
+			// TODO camera orientation is always set to 0.0 0.0 0.0 0.0 0.0 0.0?
+			CameraMan.setOrientation(90.0f, 0.0f, -45.0f);
+			CameraMan.update();
+		}
+	}
+
+	// TODO Set the other camera attributes for the room.
+	// CamAllowFirstPerson
+	// CamDistance
+	// CamFOV
+	// CamGroundFollow
+	// CamHeight
+	// CamHeightMax
+	// CamPathOffset
+	// CamStartPosition
+	// CamTargetDistance
+	// CamTargetDistanceMin
+	// CamTargetOffset
+	// CamTargetType
+	// CamTransitions
+	// CamTranstime
 }
 
 void AreaLayout::load() {
@@ -157,9 +212,25 @@ void AreaLayout::loadART() {
 void AreaLayout::loadRooms() {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	for (size_t i = 0; i < rooms.size(); i++)
-		_rooms.push_back(new Room(rooms[i].model, i, rooms[i].x, rooms[i].y, rooms[i].z));
+		_rooms.push_back(new Room(rooms[i].model, i, rooms[i].x, rooms[i].y, rooms[i].z, rooms[i].canWalk));
 }
 
+Room *AreaLayout::currentRoom() const {
+	for (RoomList::const_iterator r = _rooms.begin(); r != _rooms.end(); ++r) {
+		if ((*r)->isWalkable()) {
+			const Common::ConfigDomain *roomProps = _art.getDomain((*r)->getResRef());
+			if (!roomProps)
+				continue;
+
+			// Prefer rooms with a stationary camera
+			// Only relevant for special areas the Player cannot normally enter
+			if (roomProps->getUint("CamStationary", 0) == 1)
+				return *r;
+		}
+	}
+	// TODO find the room with the player.
+	return NULL;
+}
 } // End of namespace Jade
 
 } // End of namespace Engines

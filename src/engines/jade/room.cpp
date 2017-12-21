@@ -35,12 +35,22 @@ namespace Engines {
 
 namespace Jade {
 
-Room::Room(const Common::UString &resRef, uint32 id, float x, float y, float z) {
+Room::Room(const Common::UString &resRef, uint32 id, float x, float y, float z, bool walkable) :
+           _resRef(resRef), _walkable(walkable) {
+
 	load(resRef, id, x, y, z);
 }
 
 Room::~Room() {
 	unload();
+}
+
+const Common::UString &Room::getResRef() const {
+	return _resRef;
+}
+
+bool Room::isWalkable() const {
+	return _walkable;
 }
 
 void Room::load(const Common::UString &resRef, uint32 id, float x, float y, float z) {

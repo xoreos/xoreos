@@ -36,8 +36,12 @@ namespace Jade {
 
 class Room {
 public:
-	Room(const Common::UString &resRef, uint32 id, float x, float y, float z);
+	Room(const Common::UString &resRef, uint32 id, float x, float y, float z, bool walkable);
 	~Room();
+
+	const Common::UString &getResRef() const;
+
+	bool isWalkable() const;
 
 	void show();
 	void hide();
@@ -45,7 +49,11 @@ public:
 private:
 	Common::ChangeID _resources;
 
+	const Common::UString &_resRef;
+
 	Common::ScopedPtr<Graphics::Aurora::Model> _model;
+
+	bool _walkable;
 
 	void load(const Common::UString &resRef, uint32 id, float x, float y, float z);
 	void unload();
