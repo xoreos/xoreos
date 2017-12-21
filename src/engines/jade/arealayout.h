@@ -27,6 +27,7 @@
 
 #include <list>
 
+#include "src/common/configfile.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -82,9 +83,11 @@ private:
 
 	Aurora::LYTFile _lyt; ///< The area's layout description.
 	Aurora::VISFile _vis; ///< The area's inter-room visibility description.
+	Common::ConfigFile _art; ///< The area's environment properties.
 
 	void loadLYT();
 	void loadVIS();
+	void loadART();
 
 	void loadRooms();
 };

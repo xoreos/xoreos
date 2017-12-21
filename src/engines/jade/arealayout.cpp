@@ -96,6 +96,7 @@ void AreaLayout::load() {
 
 	loadLYT(); // Room layout
 	loadVIS(); // Room visibilities
+	loadART(); // Room properties
 
 	loadRooms();
 }
@@ -135,6 +136,20 @@ void AreaLayout::loadVIS() {
 
 	} catch (Common::Exception &e) {
 		e.add("Failed loading VIS \"%s\"", _layout.c_str());
+		throw;
+	}
+}
+
+void AreaLayout::loadART() {
+	try {
+		Common::ScopedPtr<Common::SeekableReadStream> art(ResMan.getResource(_layout, Aurora::kFileTypeART));
+		if (!art)
+			throw Common::Exception("No such ART");
+
+		_art.load(*art);
+
+	} catch (Common::Exception &e) {
+		e.add("Failed loading ART \"%s\"", _layout.c_str());
 		throw;
 	}
 }
