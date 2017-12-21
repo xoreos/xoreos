@@ -58,6 +58,7 @@ public:
 	struct Room {
 		Common::UString model;
 		float x, y, z;
+		bool canWalk;
 	};
 
 	/** A simple, non-interactive placeable. */

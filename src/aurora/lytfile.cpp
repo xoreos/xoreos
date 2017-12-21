@@ -92,6 +92,7 @@ void LYTFile::load(Common::SeekableReadStream &lyt) {
 				Common::parseString(strings[1], _rooms[i].x);
 				Common::parseString(strings[2], _rooms[i].y);
 				Common::parseString(strings[3], _rooms[i].z);
+				_rooms[i].canWalk = false;
 			}
 
 		} else if (strings[0] == "trackcount") {
@@ -138,15 +139,24 @@ void LYTFile::load(Common::SeekableReadStream &lyt) {
 			}
 
 		} else if (strings[0] == "walkmeshRooms") {
-			// TODO: Walkmesh rooms?
+			// Only relevant for Jade
 
 			assertTokenCount(strings, 2, "walkmeshRooms");
 
 			int walkmeshRoomCount;
 			Common::parseString(strings[1], walkmeshRoomCount);
 
-			for (int i = 0; i < walkmeshRoomCount; i++)
+			for (int i = 0; i < walkmeshRoomCount; i++) {
 				tokenizer.nextChunk(lyt);
+				tokenizer.getTokens(lyt, strings);
+
+				assertTokenCount(strings, 1, "walkmesh room");
+
+				for (size_t j = 0; j < _rooms.size(); j++) {
+					if (_rooms[j].model.equals(strings[0]))
+						_rooms[j].canWalk = true;
+				}
+			}
 
 		} else if (strings[0] == "doorhookcount") {
 			// Door hooks
