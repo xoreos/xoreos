@@ -47,6 +47,9 @@ public:
 	Text(const FontHandle &font, float w, float h, const Common::UString &str,
 	     float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f,
 	     float halign = kHAlignLeft, float valign = kVAlignTop);
+	Text(Graphics::GUIElement::GUIElementType type, const FontHandle &font, float w, float h, const Common::UString &str,
+	     float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f,
+	     float halign = kHAlignLeft, float valign = kVAlignTop);
 	~Text();
 
 	const Common::UString &get() const;

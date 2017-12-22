@@ -70,7 +70,7 @@ namespace Engines {
 
 ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t history,
                              int fontHeight) :
-	Graphics::GUIElement(Graphics::GUIElement::kGUIElementFront),
+	Graphics::GUIElement(Graphics::GUIElement::kGUIElementConsole),
 	_font(FontMan.get(font, fontHeight)), _historySizeMax(history),
 	_historySizeCurrent(0), _historyStart(0), _cursorPosition(0),
 	_overwrite(false), _cursorBlinkState(false), _lastCursorBlink(0) {
@@ -84,23 +84,23 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 	_lineHeight = _font.getFont().getHeight() + _font.getFont().getLineSpacing();
 	_height     = floorf(lines * _lineHeight);
 
-	_prompt.reset(new Graphics::Aurora::Text(_font, _font.getFont().getLineWidth(kPrompt), _lineHeight, kPrompt));
-	_input.reset (new Graphics::Aurora::Text(_font, WindowMan.getWindowWidth() - _font.getFont().getLineWidth(kPrompt), _lineHeight, ""));
+	_prompt.reset(new Graphics::Aurora::Text(Graphics::GUIElement::kGUIElementConsole, _font, _font.getFont().getLineWidth(kPrompt), _lineHeight, kPrompt));
+	_input.reset (new Graphics::Aurora::Text(Graphics::GUIElement::kGUIElementConsole, _font, WindowMan.getWindowWidth() - _font.getFont().getLineWidth(kPrompt), _lineHeight, ""));
 
 	_prompt->disableColorTokens(true);
 	_input->disableColorTokens(true);
 
 	const float cursorHeight = _font.getFont().getHeight();
-	_cursor.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 1.0f, 0.0f, cursorHeight));
+	_cursor.reset(new Graphics::Aurora::GUIQuad(Graphics::GUIElement::kGUIElementConsole, "", 0.0f, 1.0f, 0.0f, cursorHeight));
 	_cursor->setXOR(true);
 
-	_highlight.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, 0.0f, cursorHeight));
+	_highlight.reset(new Graphics::Aurora::GUIQuad(Graphics::GUIElement::kGUIElementConsole, "", 0.0f, 0.0f, 0.0f, cursorHeight));
 	_highlight->setColor(1.0f, 1.0f, 1.0f, 0.0f);
 	_highlight->setXOR(true);
 
 	_lines.reserve(lines - 1);
 	for (size_t i = 0; i < (lines - 1); i++) {
-		_lines.push_back(new Graphics::Aurora::Text(_font, WindowMan.getWindowWidth(), _lineHeight, ""));
+		_lines.push_back(new Graphics::Aurora::Text(Graphics::GUIElement::kGUIElementConsole, _font, WindowMan.getWindowWidth(), _lineHeight, ""));
 		_lines.back()->disableColorTokens(true);
 	}
 

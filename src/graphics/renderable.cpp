@@ -52,6 +52,11 @@ Renderable::Renderable(RenderableType type) : _clickable(false), _distance(0.0f)
 			_queueVisible = kQueueVisibleGUIBackObject;
 			break;
 
+		case kRenderableTypeConsole:
+			_queueExists  = kQueueGUIConsoleObject;
+			_queueVisible = kQueueVisibleGUIConsoleObject;
+			break;
+
 		default:
 			throw Common::Exception("Unknown Renderable type %d", type);
 	}

@@ -978,14 +978,18 @@ bool GraphicsManager::renderWorld() {
 }
 
 bool GraphicsManager::renderGUIFront() {
-	return renderGUI(kQueueVisibleGUIFrontObject, false);
+	return renderGUI(_scalingType, kQueueVisibleGUIFrontObject, false);
 }
 
 bool GraphicsManager::renderGUIBack() {
-	return renderGUI(kQueueVisibleGUIBackObject, true);
+	return renderGUI(_scalingType, kQueueVisibleGUIBackObject, true);
 }
 
-bool GraphicsManager::renderGUI(QueueType guiQueue, bool disableDepthMask) {
+bool GraphicsManager::renderGUIConsole() {
+	return renderGUI(kScalingNone, kQueueVisibleGUIConsoleObject, true);
+}
+
+bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, bool disableDepthMask) {
 	if (QueueMan.isQueueEmpty(guiQueue))
 		return false;
 
@@ -998,8 +1002,8 @@ bool GraphicsManager::renderGUI(QueueType guiQueue, bool disableDepthMask) {
 
 	int windowWidth = WindowMan.getWindowWidth();
 	int windowHeight = WindowMan.getWindowHeight();
-	int rasterWidth  = (_scalingType == kScalingWindowSize || _guiWidth  > windowWidth)  ? _guiWidth  : windowWidth;
-	int rasterHeight = (_scalingType == kScalingWindowSize || _guiHeight > windowHeight) ? _guiHeight : windowHeight;
+	int rasterWidth  = (scalingType == kScalingWindowSize || _guiWidth  > windowWidth)  ? _guiWidth  : windowWidth;
+	int rasterHeight = (scalingType == kScalingWindowSize || _guiHeight > windowHeight) ? _guiHeight : windowHeight;
 	glScalef(2.0f / rasterWidth, 2.0f / rasterHeight, 0.0f);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -1084,6 +1088,7 @@ void GraphicsManager::renderScene() {
 	renderGUIBack();
 	renderWorld();
 	renderGUIFront();
+	renderGUIConsole();
 	renderCursor();
 
 	endScene();

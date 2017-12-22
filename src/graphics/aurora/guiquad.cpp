@@ -62,6 +62,34 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 	_distance = -FLT_MAX;
 }
 
+GUIQuad::GUIQuad(Graphics::GUIElement::GUIElementType type, const Common::UString &texture,
+                 float x1 , float y1 , float x2 , float y2,
+                 float tX1, float tY1, float tX2, float tY2) :
+	GUIElement(type),
+	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
+	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
+	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
+	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
+	_xor(false), _scissor(false), _additiveBlending(false) {
+
+	try {
+
+		if (!texture.empty())
+			_texture = TextureMan.get(texture);
+
+	} catch (...) {
+		_texture.clear();
+
+		_r = _g = _b = _a = 0.0f;
+	}
+
+	if (!_texture.empty()) {
+		_additiveBlending = (_texture.getTexture().getTXI().getFeatures().blending == TXI::kBlendingAdditive);
+	}
+
+	_distance = -FLT_MAX;
+}
+
 GUIQuad::GUIQuad(TextureHandle texture,
                  float x1 , float y1 , float x2 , float y2,
                  float tX1, float tY1, float tX2, float tY2) :

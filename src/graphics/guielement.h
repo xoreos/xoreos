@@ -34,7 +34,8 @@ class GUIElement : public Renderable {
 public:
 	enum GUIElementType {
 		kGUIElementFront = kRenderableTypeGUIFront,
-		kGUIElementBack = kRenderableTypeGUIBack
+		kGUIElementBack = kRenderableTypeGUIBack,
+		kGUIElementConsole = kRenderableTypeConsole
 	};
 
 	GUIElement(GUIElementType type) : Renderable(static_cast<RenderableType>(type)) { }

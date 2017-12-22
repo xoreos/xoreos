@@ -44,6 +44,9 @@ public:
 	GUIQuad(const Common::UString &texture,
 	        float  x1       , float  y1       , float  x2       , float  y2,
 	        float tX1 = 0.0f, float tY1 = 0.0f, float tX2 = 1.0f, float tY2 = 1.0f);
+	GUIQuad(Graphics::GUIElement::GUIElementType type, const Common::UString &texture,
+	        float  x1       , float  y1       , float  x2       , float  y2,
+	        float tX1 = 0.0f, float tY1 = 0.0f, float tX2 = 1.0f, float tY2 = 1.0f);
 	GUIQuad(TextureHandle texture,
 	        float  x1       , float  y1       , float  x2       , float  y2,
 	        float tX1 = 0.0f, float tY1 = 0.0f, float tX2 = 1.0f, float tY2 = 1.0f);
