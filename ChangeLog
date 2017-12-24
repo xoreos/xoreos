@@ -8,6 +8,8 @@ Someday, ????-??-?? (Version 0.0.5)
 		- Changed our autotools setup to be non-recursive
 		- Added support for SOURCE_DATE_EPOCH when building, which
 		  is necessary for reproducible builds
+		- Dropped telling the compiler to build in C++03 mode, many
+		  Linux distros build libraries with C++11 features now
 	- MAIN:
 		- Made --help display the user directories and config file
 		- Changed the behaviour of debug channels. Each debug channel
