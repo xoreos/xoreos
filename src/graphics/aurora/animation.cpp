@@ -247,10 +247,10 @@ void Animation::updateSkinnedModel(Model *model) {
 		ModelNode::Skin *skin = node->_mesh->skin;
 
 		_invBindPoseMatrices.reserve(16 * skin->boneMappingCount);
-		float *invBindPoseArr = _invBindPoseMatrices.data();
+		float *invBindPoseArr = &_invBindPoseMatrices[0];
 
 		_boneTransMatrices.reserve(16 * skin->boneMappingCount);
-		float *boneTransArr = _boneTransMatrices.data();
+		float *boneTransArr = &_boneTransMatrices[0];
 
 		for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
 			int index = static_cast<int>(skin->boneMapping[i]);
@@ -268,9 +268,9 @@ void Animation::updateSkinnedModel(Model *model) {
 		uint32 vertexCount = vertexBuffer.getCount();
 		uint32 stride = vertexBuffer.getSize() / sizeof(float);
 		float *v = reinterpret_cast<float *>(vertexBuffer.getData());
-		float *iv = meshData->initialVertexCoords.data();
-		float *boneWeights = skin->boneWeights.data();
-		float *boneMappingId = skin->boneMappingId.data();
+		float *iv = &meshData->initialVertexCoords[0];
+		float *boneWeights = &skin->boneWeights[0];
+		float *boneMappingId = &skin->boneMappingId[0];
 		Common::Matrix4x4 invBindPose;
 		Common::Matrix4x4 boneTransform;
 

@@ -696,7 +696,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_mesh->data->initialVertexCoords.reserve(3 * ctx.vertexCount);
 
 	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
-	float *iv = _mesh->data->initialVertexCoords.data();
+	float *iv = &_mesh->data->initialVertexCoords[0];
 
 	for (uint32 i = 0; i < ctx.vertexCount; i++) {
 		// Position
