@@ -31,7 +31,7 @@ namespace Engines {
 
 namespace KotOR {
 
-ConfirmDialog::ConfirmDialog(Console *console) : GUI(console) {
+ConfirmDialog::ConfirmDialog(Console *console) : GUI(console), _accepted(false) {
 	load("confirm");
 
 	WidgetPanel *guiPanel = getPanel("TGuiPanel");
