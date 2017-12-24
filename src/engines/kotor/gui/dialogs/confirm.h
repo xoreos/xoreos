@@ -39,7 +39,7 @@ public:
 	bool getAccepted();
 
 protected:
-	void callbackActive(Widget &widget) override;
+	void callbackActive(Widget &widget);
 
 private:
 	bool _accepted;
