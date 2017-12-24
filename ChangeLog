@@ -59,6 +59,11 @@ Someday, ????-??-?? (Version 0.0.5)
 			- Fixed various issues and glitches in the animation
 			  system, including scaling and frame interpolation
 			- Implemented PlayAnimation() for creatures
+		- KOTOR:
+			- Implemented animations
+			- Added more main menu dialogs
+			- Partially implemented the character generator
+			- Added ingame GUI elements
 		- JADE:
 			- Implemented more engine script functions
 			- Implemented loading of lightmap textures
