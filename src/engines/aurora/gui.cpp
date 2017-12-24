@@ -324,7 +324,7 @@ void GUI::declareGroup(const std::list<Widget *> &group) {
 				(*a)->addGroupMember(**b);
 }
 
-uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf) {
+uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf, bool hideSelf) {
 	GfxMan.lockFrame();
 
 	_sub = &gui;
@@ -335,7 +335,7 @@ uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf) {
 	if (startCode == 0)
 		gui.show();
 
-	if (showSelf)
+	if (hideSelf)
 		hide();
 
 	GfxMan.unlockFrame();
@@ -354,7 +354,7 @@ uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf) {
 	GfxMan.lockFrame();
 
 	// Hide the sub GUI
-	if (showSelf)
+	if (hideSelf && showSelf)
 		show();
 	gui.hide();
 

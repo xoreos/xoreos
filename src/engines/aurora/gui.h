@@ -102,7 +102,7 @@ protected:
 	virtual void mouseDown();
 
 	/** Open up a sub GUI. */
-	uint32 sub(GUI &gui, uint32 startCode = kStartCodeNone, bool showSelf = true);
+	uint32 sub(GUI &gui, uint32 startCode = kStartCodeNone, bool showSelf = true, bool hideSelf = true);
 
 	/** Set the GUI's position. */
 	void setPosition(float x, float y, float z);
