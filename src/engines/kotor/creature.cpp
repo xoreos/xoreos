@@ -96,7 +96,11 @@ Gender Creature::getGender() const {
 }
 
 int Creature::getLevel(const Class &c) const {
-	return _levels.at(c);
+	const std::map<Class, int>::const_iterator it = _levels.find(c);
+	if (it == _levels.end())
+		return 0;
+
+	return it->second;
 }
 
 void Creature::setPosition(float x, float y, float z) {
