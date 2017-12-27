@@ -22,6 +22,8 @@
  *  An object in a Star Wars: Knights of the Old Republic area.
  */
 
+#include "src/common/util.h"
+
 #include "src/engines/kotor/object.h"
 
 #include "src/sound/sound.h"
@@ -32,7 +34,8 @@ namespace Engines {
 
 namespace KotOR {
 
-Object::Object(ObjectType type) : _type(type), _static(false), _usable(true) {
+Object::Object(ObjectType type) : _type(type), _static(false), _usable(true), _currentHitPoints(0), _maxHitPoints(0),
+                                  _minOneHitPoint(false) {
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
 	_position   [2] = 0.0f;
@@ -65,6 +68,33 @@ const Common::UString &Object::getDescription() const {
 
 const Common::UString &Object::getPortrait() const {
 	return _portrait;
+}
+
+void Object::setMaxHitPoints(int maxHP) {
+	_maxHitPoints = maxHP;
+}
+
+int Object::getMaxHitPoints() {
+	return _maxHitPoints;
+}
+
+void Object::setCurrentHitPoints(int hitpoints) {
+	if (_minOneHitPoint)
+		_currentHitPoints = MIN(1, MIN(hitpoints, _maxHitPoints));
+	else
+		_currentHitPoints = MIN(hitpoints, _maxHitPoints);
+}
+
+int Object::getCurrentHitPoints() {
+	return _currentHitPoints;
+}
+
+void Object::setMinOneHitPoints(bool enabled) {
+	_minOneHitPoint = enabled;
+}
+
+bool Object::getMinOneHitPoints() const {
+	return _minOneHitPoint;
 }
 
 bool Object::isStatic() const {

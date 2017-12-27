@@ -67,6 +67,19 @@ public:
 	/** Return the object's portrait. */
 	const Common::UString &getPortrait() const;
 
+	/** Set the maximum hit points for the objects. */
+	void setMaxHitPoints(int maxHP);
+	/** Get the maximum hit points for the objects. */
+	int getMaxHitPoints();
+	/** Set the current hitpoints. */
+	void setCurrentHitPoints(int hitpoints);
+	/** Return the objects current hitpoints. */
+	int getCurrentHitPoints();
+	/** Set if the object has a minimum of one hp. */
+	void setMinOneHitPoints(bool enabled);
+	/** Get if the object has a minimum of one hp. */
+	bool getMinOneHitPoints() const;
+
 	// Interactive properties
 
 	bool isStatic() const; ///< Is the object static (not manipulable at all)?
@@ -114,6 +127,10 @@ protected:
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
+
+	int _currentHitPoints; ///< The current hitpoints of the object.
+	int _maxHitPoints; ///< The maximum hitpoints of the object.
+	bool _minOneHitPoint; ///< If the object should have at least one hitpoint.
 
 	std::list<uint32> _ids; ///< The object's model IDs.
 
