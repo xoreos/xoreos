@@ -33,7 +33,10 @@ namespace Common {
 
 namespace Graphics {
 
-/** SBM font bitmap data. */
+/** SBM font bitmap data.
+ *
+ *  This format is used for fonts in Jade Empire.
+ */
 class SBM : public ImageDecoder {
 public:
 	SBM(Common::SeekableReadStream &sbm);

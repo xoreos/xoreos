@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  DDS (DirectDraw Surface) loading.
+ *  DDS texture (DirectDraw Surface or BioWare's own format) loading).
  */
 
 #include "src/common/scopedptr.h"

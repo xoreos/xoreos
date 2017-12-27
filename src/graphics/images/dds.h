@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  DDS (DirectDraw Surface) loading.
+ *  DDS texture (DirectDraw Surface or BioWare's own format) loading).
  */
 
 #ifndef GRAPHICS_IMAGES_DDS_H
@@ -33,9 +33,13 @@ namespace Common {
 
 namespace Graphics {
 
-/** DirectDraw Surface.
+/** DDS texture.
  *
- *  Both standard DDS files and BioWare's own version are supported.
+ * There are two different DDS file formats:
+ * - One is the standard DirectDraw Surface format, introduced by Microsoft
+ *   with DirectX 7.0. This format is used by Neverwinter Nights 2,
+ *   The Witcher and the two Dragon Age games.
+ * - The other is BioWare's own texture format, used by Neverwinter Nights.
  */
 class DDS : public ImageDecoder {
 public:

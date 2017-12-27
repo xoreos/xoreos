@@ -58,7 +58,11 @@ namespace Common {
 
 namespace Graphics {
 
-/** TarGa image. */
+/** TarGa image.
+ *
+ *  This format is used in the two Neverwinter Nights games, the two
+ *  Knights of the Old Republic games, Jade Empire and Sonic.
+ */
 class TGA : public ImageDecoder {
 public:
 	TGA(Common::SeekableReadStream &tga, bool cubeMap = false);
