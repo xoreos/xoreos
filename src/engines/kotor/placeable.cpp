@@ -73,6 +73,13 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
 
 	_hasInventory = gff.getBool("HasInventory", _hasInventory);
+
+	// Hit Points
+
+	_currentHitPoints = gff.getSint("CurrentHP");
+	_maxHitPoints = gff.getSint("HP");
+
+	_minOneHitPoint = gff.getBool("Min1HP");
 }
 
 void Placeable::loadAppearance() {
