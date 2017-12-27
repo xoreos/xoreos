@@ -183,6 +183,13 @@ private:
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 
 	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);
+
+	void getMinOneHP(Aurora::NWScript::FunctionContext &ctx);
+	void setMinOneHP(Aurora::NWScript::FunctionContext &ctx);
+
+	void getCurrentHitPoints(Aurora::NWScript::FunctionContext &ctx);
+	void getMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
+	void setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp

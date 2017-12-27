@@ -22,6 +22,8 @@
  *  Star Wars: Knights of the Old Republic engine functions messing with objects.
  */
 
+// TODO: check what happens on using invalid objects.
+
 #include "src/common/util.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
@@ -70,6 +72,60 @@ void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	}
 
 	ctx.getReturn() = search->get();
+}
+
+void Functions::getMinOneHP(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+
+	Object *kotorObject = ObjectContainer::toObject(object);
+
+	if (!kotorObject)
+		throw Common::Exception("Functions::getMinOneHP(): invalid object");
+
+	ctx.getReturn() = kotorObject->getMinOneHitPoints();
+}
+
+void Functions::setMinOneHP(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	bool enabled = ctx.getParams()[1].getInt();
+
+	Object *kotorObject = ObjectContainer::toObject(object);
+
+	if (!kotorObject)
+		throw Common::Exception("Functions::setMinOneHP(): invalid object");
+
+	kotorObject->setMinOneHitPoints(enabled);
+}
+
+void Functions::getCurrentHitPoints(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+
+	Object *kotorObject = ObjectContainer::toObject(object);
+
+	ctx.getReturn() = kotorObject ? kotorObject->getCurrentHitPoints() : 0;
+}
+
+void Functions::getMaxHitPoints(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+
+	Object *kotorObject = ObjectContainer::toObject(object);
+
+	ctx.getReturn() = kotorObject ? kotorObject->getMaxHitPoints() : 0;
+}
+
+void Functions::setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	int maxHitPoints = ctx.getParams()[1].getInt();
+
+	if (maxHitPoints == 0)
+		maxHitPoints = 1;
+
+	Object *kotorObject = ObjectContainer::toObject(object);
+	if (!kotorObject)
+		throw Common::Exception("Functions::getSubRace(): Invalid object");
+
+	kotorObject->setCurrentHitPoints(maxHitPoints);
+	kotorObject->setMaxHitPoints(maxHitPoints);
 }
 
 } // End of namespace KotOR
