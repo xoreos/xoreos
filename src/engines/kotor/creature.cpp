@@ -207,6 +207,12 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	_race = Race(gff.getSint("Race", _race));
 	_subRace = SubRace(gff.getSint("SubraceIndex", _subRace));
 
+	// Hit Points
+	_currentHitPoints = gff.getSint("CurrentHitPoints", _maxHitPoints);
+	_maxHitPoints = gff.getSint("MaxHitPoints", _currentHitPoints);
+
+	_minOneHitPoint = gff.getBool("Min1HP", _minOneHitPoint);
+
 	// Class Levels
 	if (gff.hasField("ClassList")) {
 		Aurora::GFF3List classList = gff.getList("ClassList");
