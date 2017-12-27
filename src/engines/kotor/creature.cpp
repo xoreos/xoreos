@@ -186,6 +186,9 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// PC
 	_isPC = gff.getBool("IsPC", _isPC);
 
+	// Gender
+	_gender = Gender(gff.getUint("Gender"));
+
 	// Scripts
 	readScripts(gff);
 }
