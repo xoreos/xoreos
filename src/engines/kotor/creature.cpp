@@ -66,17 +66,6 @@ void Creature::init() {
 	_gender = kGenderNone;
 	_race = kRaceUnknown;
 	_subRace = kSubRaceNone;
-
-	_levels[kClassSoldier] = 0;
-	_levels[kClassScout] = 0;
-	_levels[kClassScoundrel] = 0;
-	_levels[kClassJediGuardian] = 0;
-	_levels[kClassJediConsular] = 0;
-	_levels[kClassJediSentinel] = 0;
-	_levels[kClassCombatDroid] = 0;
-	_levels[kClassExpertDroid] = 0;
-	_levels[kClassMinion] = 0;
-	_levels[kClassInvalid] = 0;
 }
 
 void Creature::show() {
@@ -98,11 +87,12 @@ Gender Creature::getGender() const {
 }
 
 int Creature::getLevel(const Class &c) const {
-	const std::map<Class, int>::const_iterator it = _levels.find(c);
-	if (it == _levels.end())
-		return 0;
+	for (size_t i = 0; i < _levels.size(); ++i) {
+		if (_levels[i].characterClass == c)
+			return _levels[i].level;
+	}
 
-	return it->second;
+	return 0;
 }
 
 Race Creature::getRace() const {
@@ -337,7 +327,9 @@ void Creature::createPC(CharacterGenerationInfo *info) {
 	}
 
 	// set the specific class to level 1
-	_levels[info->getClass()] = 1;
+	_levels.resize(1);
+	_levels[0].level = 1;
+	_levels[0].characterClass = info->getClass();
 
 	loadBody(parts);
 

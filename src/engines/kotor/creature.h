@@ -98,6 +98,12 @@ private:
 		Common::UString bodyTexture;
 	};
 
+	/** A class level. */
+	struct ClassLevel {
+		Class characterClass;
+		int level;
+	};
+
 	bool _isPC; ///< Is the creature a PC?
 
 	uint32 _appearance; ///< The creature's general appearance.
@@ -106,7 +112,7 @@ private:
 	SubRace _subRace; ///< The subrace of the creature.
 
 	Gender _gender;
-	std::map<Class, int> _levels; ///< The levels of the creature.
+	std::vector<ClassLevel> _levels; ///< The levels of the creature.
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 
