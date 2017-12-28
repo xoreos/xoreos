@@ -69,6 +69,9 @@ public:
 	Race getRace() const; ///< Get the race of the creature.
 	SubRace getSubRace() const; ///< Get the subrace of the creature.
 
+	int getLevelByPosition(int position) const; ///< Get the level by its position in the level vector.
+	Class getClassByPosition(int position) const; ///< Get the class by its position in the level vector.
+
 	// Positioning
 
 	/** Set the creature's position. */

@@ -95,6 +95,20 @@ int Creature::getLevel(const Class &c) const {
 	return 0;
 }
 
+int Creature::getLevelByPosition(int position) const {
+	if (_levels.size() >= static_cast<unsigned int>(position + 1))
+		return _levels[position].level;
+
+	return 0;
+}
+
+Class Creature::getClassByPosition(int position) const {
+	if (_levels.size() >= static_cast<unsigned int>(position + 1))
+		return _levels[position].characterClass;
+
+	return kClassInvalid;
+}
+
 Race Creature::getRace() const {
 	return _race;
 }
