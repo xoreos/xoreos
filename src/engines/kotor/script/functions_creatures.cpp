@@ -59,6 +59,30 @@ void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature->getLevel(creatureClass);
 }
 
+void Functions::getLevelByPosition(Aurora::NWScript::FunctionContext &ctx) {
+	int position = ctx.getParams()[0].getInt();
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+
+	Creature *creature = ObjectContainer::toCreature(object);
+
+	if (!creature)
+		throw Common::Exception("Functions::getLevelByPosition(): Object is not a creature");
+
+	ctx.getReturn() = creature->getLevelByPosition(position - 1);
+}
+
+void Functions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {
+	int position = ctx.getParams()[0].getInt();
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+
+	Creature *creature = ObjectContainer::toCreature(object);
+
+	if (!creature)
+		throw Common::Exception("Functions::getClassByPosition(): Object is not a creature");
+
+	ctx.getReturn() = creature->getClassByPosition(position - 1);
+}
+
 void Functions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
 
