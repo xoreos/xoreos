@@ -1404,6 +1404,13 @@ m4_define([_BOOST_gcc_test],
 "defined __GNUC__ && __GNUC__ == $1 && __GNUC_MINOR__ == $2 && !defined __ICC @ gcc$1$2"])dnl
 
 
+# _BOOST_clang_test(MAJOR, MINOR)
+# -----------------------------
+# Internal helper for _BOOST_FIND_COMPILER_TAG.
+m4_define([_BOOST_clang_test],
+["defined __clang__ && __clang_major__ == $1 && __clang_minor__ == $2 @ clang$1$2"])dnl
+
+
 # _BOOST_FIND_COMPILER_TAG()
 # --------------------------
 # Internal.  When Boost is installed without --layout=system, each library
@@ -1431,6 +1438,18 @@ if test x$boost_cv_inc_path != xno; then
   # I'm not sure about my test for `il' (be careful: Intel's ICC pre-defines
   # the same defines as GCC's).
   for i in \
+    _BOOST_clang_test(5, 0) \
+    _BOOST_clang_test(4, 0) \
+    _BOOST_clang_test(3, 9) \
+    _BOOST_clang_test(3, 8) \
+    _BOOST_clang_test(3, 7) \
+    _BOOST_clang_test(3, 6) \
+    _BOOST_clang_test(3, 5) \
+    _BOOST_clang_test(3, 4) \
+    _BOOST_clang_test(3, 3) \
+    _BOOST_clang_test(3, 2) \
+    _BOOST_clang_test(3, 1) \
+    _BOOST_clang_test(3, 0) \
     _BOOST_gcc_test(7, 2) \
     _BOOST_gcc_test(7, 1) \
     _BOOST_gcc_test(7, 0) \
