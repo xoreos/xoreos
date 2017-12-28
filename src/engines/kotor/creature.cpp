@@ -207,6 +207,20 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	_race = Race(gff.getSint("Race", _race));
 	_subRace = SubRace(gff.getSint("SubraceIndex", _subRace));
 
+	// Class Levels
+	if (gff.hasField("ClassList")) {
+		Aurora::GFF3List classList = gff.getList("ClassList");
+		for (Aurora::GFF3List::const_iterator iter = classList.begin(); iter != classList.end(); iter++) {
+			const Aurora::GFF3Struct &charClass = **iter;
+
+			ClassLevel classLevel;
+			classLevel.characterClass = Class(charClass.getSint("Class"));
+			classLevel.level = charClass.getSint("ClassLevel");
+
+			_levels.push_back(classLevel);
+		}
+	}
+
 	// Scripts
 	readScripts(gff);
 }
