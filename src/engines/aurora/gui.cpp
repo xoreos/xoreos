@@ -136,6 +136,9 @@ uint32 GUI::run(uint32 startCode) {
 
 		// If the _returnCode changed of a child GUI we propagate it to the main GUI
 		for (std::list<GUI *>::iterator iter = childGUIs.begin(); iter != childGUIs.end(); ++iter) {
+			if ((*iter)->_returnCode == kReturnCodeNone)
+				continue;
+
 			if ((*iter)->_returnCode != _returnCode) {
 				_returnCode = (*iter)->_returnCode;
 				(*iter)->_returnCode = 0;
