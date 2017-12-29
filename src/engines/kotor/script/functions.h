@@ -216,6 +216,9 @@ private:
 	// .--- Creatures, functions_creatures.cpp
 	void getGender(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByClass(Aurora::NWScript::FunctionContext &ctx);
+
+	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
+	void getSubRace(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
