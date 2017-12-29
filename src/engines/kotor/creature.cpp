@@ -317,6 +317,9 @@ void Creature::createPC(CharacterGenerationInfo *info) {
 
 	_gender = info->getGender();
 
+	_race = kRaceHuman;
+	_subRace = kSubRaceNone;
+
 	parts.body += "bb";
 	parts.head += "h";
 
