@@ -135,6 +135,23 @@ enum Class {
 	kClassInvalid = 255
 };
 
+enum Race {
+	kRaceUnknown = 0,
+	kRaceElf,
+	kRaceGnome,
+	kRaceHalfling,
+	kRaceHalfElf,
+	kRaceDroid,
+	kRaceHuman,
+	kRaceAll,
+	kRaceInvalid
+};
+
+enum SubRace {
+	kSubRaceNone = 0,
+	kSubRaceWookie
+};
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

@@ -59,6 +59,31 @@ void Functions::getLevelByClass(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature->getLevel(creatureClass);
 }
 
+void Functions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+
+	Creature *creature = ObjectContainer::toCreature(object);
+
+	Race race;
+	if (!creature)
+		race = kRaceInvalid;
+	else
+		race = creature->getRace();
+
+	ctx.getReturn() = race;
+}
+
+void Functions::getSubRace(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+
+	Creature *creature = ObjectContainer::toCreature(object);
+
+	if (!creature)
+		throw Common::Exception("Functions::getSubRace(): Object is not a creature");
+
+	ctx.getReturn() = creature->getSubRace();
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
