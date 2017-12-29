@@ -147,6 +147,11 @@ enum Race {
 	kRaceInvalid
 };
 
+enum SubRace {
+	kSubRaceNone = 0,
+	kSubRaceWookie
+};
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
