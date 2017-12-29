@@ -66,6 +66,9 @@ public:
 	Gender getGender() const; ///< Get the gender of the creature.
 	int getLevel(const Class &c) const; ///< Get the level of the creature regarding a specific class.
 
+	Race getRace() const; ///< Get the race of the creature
+	SubRace getSubRace() const; ///< Get the subrace of the creature
+
 	// Positioning
 
 	/** Set the creature's position. */
@@ -98,6 +101,9 @@ private:
 	bool _isPC; ///< Is the creature a PC?
 
 	uint32 _appearance; ///< The creature's general appearance.
+
+	Race _race; ///< The race of the creature
+	SubRace _subRace; ///< The sub race of the creature
 
 	Gender _gender;
 	std::map<Class, int> _levels; ///< The levels of the creature.

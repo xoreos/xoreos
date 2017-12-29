@@ -64,6 +64,8 @@ void Creature::init() {
 	_appearance = Aurora::kFieldIDInvalid;
 
 	_gender = kGenderNone;
+	_race = kRaceUnknown;
+	_subRace = kSubRaceNone;
 
 	_levels[kClassSoldier] = 0;
 	_levels[kClassScout] = 0;
@@ -101,6 +103,14 @@ int Creature::getLevel(const Class &c) const {
 		return 0;
 
 	return it->second;
+}
+
+Race Creature::getRace() const {
+	return _race;
+}
+
+SubRace Creature::getSubRace() const {
+	return _subRace;
 }
 
 void Creature::setPosition(float x, float y, float z) {
@@ -185,6 +195,10 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// PC
 	_isPC = gff.getBool("IsPC", _isPC);
+
+	// race
+	_race = Race(gff.getSint("Race", _race));
+	_subRace = SubRace(gff.getSint("Subrace", _subRace));
 
 	// Scripts
 	readScripts(gff);
