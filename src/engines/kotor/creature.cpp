@@ -201,7 +201,12 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Race
 	_race = Race(gff.getSint("Race", _race));
-	_subRace = SubRace(gff.getSint("Subrace", _subRace));
+
+	try {
+		_subRace = SubRace(gff.getSint("Subrace", _subRace));
+	} catch (Common::Exception &e) {
+		warning(e.what());
+	}
 
 	// Scripts
 	readScripts(gff);
