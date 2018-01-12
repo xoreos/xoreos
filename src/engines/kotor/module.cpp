@@ -41,6 +41,8 @@
 #include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/textureman.h"
 
+#include "src/sound/sound.h"
+
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
@@ -646,6 +648,11 @@ void Module::handlePCMovement() {
 			}
 		}
 	}
+
+	const float *position = CameraMan.getPosition();
+	SoundMan.setListenerPosition(position[0], position[1], position[2]);
+	const float *orientation = CameraMan.getOrientation();
+	SoundMan.setListenerOrientation(orientation[0], orientation[1], orientation[2], 0.0f, 1.0f, 0.0f);
 
 	if (haveMovement && !_pcRunning) {
 		_pc->playAnimation(Common::UString("run"), false, -1.0f);
