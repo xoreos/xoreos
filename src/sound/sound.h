@@ -143,6 +143,10 @@ public:
 	// .--- Listener properties
 	/** Set the gain of the listener (= the global master volume). */
 	void setListenerGain(float gain);
+	/** Set the position of the listener. */
+	void setListenerPosition(float x, float y, float z);
+	/** Set the orientation of the listener. */
+	void setListenerOrientation(float dirX, float dirY, float dirZ, float upX, float upY, float upZ);
 	// '---
 
 	// .--- Channel properties
