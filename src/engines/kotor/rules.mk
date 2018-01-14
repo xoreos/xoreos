@@ -36,6 +36,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/placeable.h \
     src/engines/kotor/door.h \
     src/engines/kotor/creature.h \
+    src/engines/kotor/sound.h \
     src/engines/kotor/area.h \
     src/engines/kotor/room.h \
     src/engines/kotor/objectcontainer.h \
@@ -63,6 +64,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/placeable.cpp \
     src/engines/kotor/door.cpp \
     src/engines/kotor/creature.cpp \
+    src/engines/kotor/sound.cpp \
     src/engines/kotor/area.cpp \
     src/engines/kotor/room.cpp \
     src/engines/kotor/objectcontainer.cpp \
