@@ -27,6 +27,7 @@
 #include "src/engines/kotor/objectcontainer.h"
 #include "src/engines/kotor/object.h"
 #include "src/engines/kotor/area.h"
+#include "src/engines/kotor/sound.h"
 
 #include "src/engines/kotor/script/functions.h"
 
@@ -68,6 +69,24 @@ void Functions::musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &
 	Area *area = KotOR::ObjectContainer::toArea(getParamObject(ctx, 0));
 
 	ctx.getReturn() = area ? (int32)area->getMusicNightTrack() : -1;
+}
+
+void Functions::soundObjectPlay(Aurora::NWScript::FunctionContext &ctx) {
+	SoundObject *sound = KotOR::ObjectContainer::toSoundObject(getParamObject(ctx, 0));
+
+	if (!sound)
+		throw Common::Exception("Function::soundObjectPlay(): object is not a sound");
+
+	sound->play();
+}
+
+void Functions::soundObjectStop(Aurora::NWScript::FunctionContext &ctx) {
+	SoundObject *sound = KotOR::ObjectContainer::toSoundObject(getParamObject(ctx, 0));
+
+	if (!sound)
+		throw Common::Exception("Function::soundObjectStop(): object is not a sound");
+
+	sound->stop();
 }
 
 } // End of namespace KotOR
