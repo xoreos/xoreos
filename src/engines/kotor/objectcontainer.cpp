@@ -34,6 +34,7 @@
 #include "src/engines/kotor/placeable.h"
 #include "src/engines/kotor/door.h"
 #include "src/engines/kotor/creature.h"
+#include "src/engines/kotor/sound.h"
 
 namespace Engines {
 
@@ -151,6 +152,10 @@ Door *ObjectContainer::toDoor(Aurora::NWScript::Object *object) {
 
 Creature *ObjectContainer::toCreature(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Creature *>(object);
+}
+
+SoundObject *ObjectContainer::toSoundObject(Aurora::NWScript::Object *object) {
+	return dynamic_cast<SoundObject *>(object);
 }
 
 Creature *ObjectContainer::toPC(Aurora::NWScript::Object *object) {
