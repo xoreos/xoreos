@@ -227,6 +227,9 @@ private:
 
 	void musicBackgroundGetDayTrack(Aurora::NWScript::FunctionContext &ctx);
 	void musicBackgroundGetNightTrack(Aurora::NWScript::FunctionContext &ctx);
+
+	void soundObjectPlay(Aurora::NWScript::FunctionContext &ctx);
+	void soundObjectStop(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Movies, functions_movie.cpp
