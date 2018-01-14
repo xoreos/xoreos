@@ -51,6 +51,7 @@
 #include "src/engines/kotor/creature.h"
 #include "src/engines/kotor/trigger.h"
 #include "src/engines/kotor/actionexecutor.h"
+#include "src/engines/kotor/sound.h"
 
 namespace Engines {
 
@@ -350,6 +351,9 @@ void Area::loadGIT(const Aurora::GFF3Struct &git) {
 	if (git.hasField("Creature List"))
 		loadCreatures(git.getList("Creature List"));
 
+	if (git.hasField("SoundList"))
+		loadSounds(git.getList("SoundList"));
+
 	if (git.hasField("TriggerList"))
 		loadTriggers(git.getList("TriggerList"));
 }
@@ -446,6 +450,14 @@ void Area::loadTriggers(const Aurora::GFF3List &list) {
 
 		loadObject(*trigger);
 		_triggers.push_back(trigger);
+	}
+}
+
+void Area::loadSounds(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
+		SoundObject *soundObject = new SoundObject(**c);
+
+		loadObject(*soundObject);
 	}
 }
 

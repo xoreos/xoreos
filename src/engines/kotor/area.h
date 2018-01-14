@@ -245,6 +245,7 @@ private:
 	void loadPlaceables(const Aurora::GFF3List &list);
 	void loadDoors     (const Aurora::GFF3List &list);
 	void loadCreatures (const Aurora::GFF3List &list);
+	void loadSounds    (const Aurora::GFF3List &list);
 	void loadTriggers  (const Aurora::GFF3List &list);
 
 	void unload();
