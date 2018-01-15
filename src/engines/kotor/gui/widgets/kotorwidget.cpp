@@ -301,16 +301,12 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	}
 
 	if (!border.fill.empty()) {
-		_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f,
-		                                                       extend.w - 2*border.dimension,
-		                                                       extend.h - 2*border.dimension));
+		_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
 	} else {
-		_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f,
-		                                          extend.w - 2*border.dimension,
-		                                          extend.h - 2*border.dimension));
+		_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
 	}
 
-	_quad->setPosition(extend.x + border.dimension, extend.y + border.dimension, 0.0f);
+	_quad->setPosition(extend.x, extend.y, 0.0f);
 	_quad->setTag(getTag());
 	_quad->setClickable(true);
 
