@@ -300,28 +300,34 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 		_highlight->setClickable(true);
 	}
 
-	if (!border.fill.empty()) {
-		_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f,
-		                                                       extend.w - 2*border.dimension,
-		                                                       extend.h - 2*border.dimension));
+	if (!border.edge.empty() && !border.corner.empty()) {
+		_border.reset(new Graphics::Aurora::BorderQuad(border.edge, border.corner,
+		                                               extend.x, extend.y, extend.w, extend.h,
+		                                               border.dimension));
+		if (!border.fill.empty()) {
+			_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f,
+			                                                       extend.w - 2*border.dimension,
+			                                                       extend.h - 2*border.dimension));
+		} else {
+			_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f,
+			                                          extend.w - 2*border.dimension,
+			                                          extend.h - 2*border.dimension));
+		}
+		_quad->setPosition(extend.x + border.dimension, extend.y + border.dimension, 0.0f);
 	} else {
-		_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f,
-		                                          extend.w - 2*border.dimension,
-		                                          extend.h - 2*border.dimension));
+		if (!border.fill.empty()) {
+			_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
+		} else {
+			_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
+		}
+		_quad->setPosition(extend.x, extend.y, 0.0f);
 	}
 
-	_quad->setPosition(extend.x + border.dimension, extend.y + border.dimension, 0.0f);
 	_quad->setTag(getTag());
 	_quad->setClickable(true);
 
 	if (border.fill.empty())
 		_quad->setColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-	if (!border.edge.empty() && !border.corner.empty()) {
-		_border.reset(new Graphics::Aurora::BorderQuad(border.edge, border.corner,
-		                                               extend.x, extend.y, extend.w, extend.h,
-		                                               border.dimension));
-	}
 
 	Text text = createText(gff);
 
