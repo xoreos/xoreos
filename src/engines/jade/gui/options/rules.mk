@@ -20,7 +20,9 @@
 # Options menu in Jade Empire.
 
 src_engines_jade_libjade_la_SOURCES += \
+    src/engines/jade/gui/options/audio.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
+    src/engines/jade/gui/options/audio.cpp \
     $(EMPTY)
