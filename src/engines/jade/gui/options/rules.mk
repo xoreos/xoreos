@@ -23,10 +23,12 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/options/audio.h \
     src/engines/jade/gui/options/video.h \
     src/engines/jade/gui/options/diff.h \
+    src/engines/jade/gui/options/feed.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/options/audio.cpp \
     src/engines/jade/gui/options/video.cpp \
     src/engines/jade/gui/options/diff.cpp \
+    src/engines/jade/gui/options/feed.cpp \
     $(EMPTY)
