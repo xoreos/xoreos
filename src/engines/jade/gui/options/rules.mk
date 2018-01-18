@@ -24,6 +24,7 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/options/video.h \
     src/engines/jade/gui/options/diff.h \
     src/engines/jade/gui/options/feed.h \
+    src/engines/jade/gui/options/control.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
@@ -31,4 +32,5 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/options/video.cpp \
     src/engines/jade/gui/options/diff.cpp \
     src/engines/jade/gui/options/feed.cpp \
+    src/engines/jade/gui/options/control.cpp \
     $(EMPTY)
