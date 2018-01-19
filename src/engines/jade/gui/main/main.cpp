@@ -30,6 +30,8 @@
 #include "src/aurora/2dafile.h"
 #include "src/aurora/talkman.h"
 
+#include "src/engines/aurora/util.h"
+
 #include "src/engines/jade/arealayout.h"
 #include "src/engines/jade/module.h"
 
@@ -108,6 +110,11 @@ void MainMenu::callbackActive(Widget &widget) {
 			Common::exceptionDispatcherWarning();
 			return;
 		}
+		return;
+	}
+
+	if (widget.getTag() == "CREDITS") {
+		playVideo("creditmovie");
 		return;
 	}
 }
