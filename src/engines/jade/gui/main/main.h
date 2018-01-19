@@ -50,6 +50,10 @@ private:
 	Module *_module;
 
 	AreaLayout *_background;
+
+	Common::ScopedPtr<GUI> _options;
+
+	void createOptions();
 };
 
 } // End of namespace Jade
