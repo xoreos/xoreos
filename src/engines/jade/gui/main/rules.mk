@@ -21,8 +21,10 @@
 
 src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/main/main.h \
+    src/engines/jade/gui/main/options.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/main/main.cpp \
+    src/engines/jade/gui/main/options.cpp \
     $(EMPTY)
