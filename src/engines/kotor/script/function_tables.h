@@ -270,7 +270,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 149, "EffectSpellImmunity"                 , 0                                                },
 	{ 150, "SetItemStackSize"                    , 0                                                },
 	{ 151, "GetDistanceBetween"                  , 0                                                },
-	{ 152, "SetReturnStrref"                     , 0                                                },
+	{ 152, "SetReturnStrref"                     , &Functions::setReturnStrref                      },
 	{ 153, "EffectForceJump"                     , 0                                                },
 	{ 154, "EffectSleep"                         , 0                                                },
 	{ 155, "GetItemInSlot"                       , 0                                                },
