@@ -169,6 +169,8 @@ private:
 
 	void setGlobalFadeOut(Aurora::NWScript::FunctionContext &ctx);
 	void setGlobalFadeIn(Aurora::NWScript::FunctionContext &ctx);
+
+	void setReturnStrref(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- General object functions, functions_object.cpp

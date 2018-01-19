@@ -78,6 +78,21 @@ void Functions::setGlobalFadeIn(Aurora::NWScript::FunctionContext &ctx) {
 	fadeQuad.fadeIn();
 }
 
+void Functions::setReturnStrref(Aurora::NWScript::FunctionContext &ctx) {
+	bool show = (ctx.getParams()[0].getInt() != 0);
+	int returnStrref = ctx.getParams()[1].getInt();
+	int returnQueryStrref = ctx.getParams()[2].getInt();
+
+	if (show) {
+		_game->getModule().setReturnStrref(returnStrref);
+		_game->getModule().setReturnQueryStrref(returnQueryStrref);
+	} else {
+		// if the travel system is deactivated change the string to "Travelsystem deactivated"
+		_game->getModule().setReturnStrref(38550);
+	}
+	_game->getModule().setReturnEnabled(show);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
