@@ -22,17 +22,9 @@
  *  The ingame menu.
  */
 
-#include "src/engines/kotor/gui/ingame/menu.h"
-#include "src/engines/kotor/gui/ingame/menu_equ.h"
-#include "src/engines/kotor/gui/ingame/menu_inv.h"
-#include "src/engines/kotor/gui/ingame/menu_char.h"
-#include "src/engines/kotor/gui/ingame/menu_abi.h"
-#include "src/engines/kotor/gui/ingame/menu_msg.h"
-#include "src/engines/kotor/gui/ingame/menu_jou.h"
-#include "src/engines/kotor/gui/ingame/menu_map.h"
-#include "src/engines/kotor/gui/ingame/menu_opt.h"
-
 #include "src/engines/kotor/gui/widgets/button.h"
+
+#include "src/engines/kotor/gui/ingame/menu.h"
 
 namespace Engines {
 
@@ -120,6 +112,18 @@ Menu::Menu(Console *console) : GUI(console), _currentMenu(0), _lastProto(0) {
 
 	buttonOpt->getPosition(x, y, z);
 	buttonOpt->setPosition(x, y + 197, z);
+}
+
+void Menu::setReturnStrref(uint32 id) {
+	_menuMap->setReturnStrref(id);
+}
+
+void Menu::setReturnQueryStrref(uint32 id) {
+	_menuMap->setReturnQueryStrref(id);
+}
+
+void Menu::setReturnEnabled(bool enabled) {
+	_menuMap->setReturnEnabled(enabled);
 }
 
 void Menu::showEquipment() {

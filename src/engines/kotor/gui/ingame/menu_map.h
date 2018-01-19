@@ -35,6 +35,13 @@ class MenuMap : public GUI {
 public:
 	MenuMap(::Engines::Console *console = 0);
 
+	void setReturnStrref(uint32 id);
+	void setReturnQueryStrref(uint32 id);
+	void setReturnEnabled(bool enabled);
+
+private:
+	Common::UString _returnQueryMessage;
+
 protected:
 	void callbackActive(Widget &widget);
 };

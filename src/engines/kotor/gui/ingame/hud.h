@@ -39,6 +39,10 @@ class HUD : public GUI {
 public:
 	HUD(::Engines::Console *console = 0);
 
+	void setReturnStrref(uint32 id);
+	void setReturnQueryStrref(uint32 id);
+	void setReturnEnabled(bool);
+
 private:
 	Menu _menu;
 

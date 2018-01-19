@@ -105,6 +105,18 @@ HUD::HUD(Engines::Console *console) : GUI(console) {
 	getWidget("PB_HEALTH")->setInvisible(true);
 }
 
+void HUD::setReturnStrref(uint32 id) {
+	_menu.setReturnStrref(id);
+}
+
+void HUD::setReturnQueryStrref(uint32 id) {
+	_menu.setReturnQueryStrref(id);
+}
+
+void HUD::setReturnEnabled(bool enabled) {
+	_menu.setReturnEnabled(enabled);
+}
+
 void HUD::initWidget(Engines::Widget &widget) {
 	// Don't know what these two are doing, but they spawn over the complete screen blocking the 3d picking.
 	if (widget.getTag() == "LBL_MAP")
