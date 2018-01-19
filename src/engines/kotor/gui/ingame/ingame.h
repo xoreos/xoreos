@@ -41,6 +41,10 @@ public:
 	void show(); ///< Show the ingame GUI elements.
 	void hide(); ///< Hide the ingame GUI elements.
 
+	void setReturnStrref(uint32 id);
+	void setReturnQueryStrref(uint32 id);
+	void setReturnEnabled(bool enabled);
+
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
 

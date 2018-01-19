@@ -111,6 +111,15 @@ public:
 	void movedPC();
 	// '---
 
+	// .--- Gui management
+	/** Set the return string for the 'Return to Ebon Hawk' button. */
+	void setReturnStrref(uint32 id);
+	/** Set the string for the return dialog */
+	void setReturnQueryStrref(uint32 id);
+	/** Enable or disable the 'Return to Ebon Hawk' button. */
+	void setReturnEnabled(bool enabled);
+	// '---
+
 	// .--- Static utility methods
 	static Common::UString getName(const Common::UString &module);
 	// '---

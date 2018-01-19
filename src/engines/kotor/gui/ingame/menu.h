@@ -30,6 +30,15 @@
 #include "src/engines/kotor/gui/gui.h"
 #include "src/engines/kotor/gui/widgets/protoitem.h"
 
+#include "src/engines/kotor/gui/ingame/menu_equ.h"
+#include "src/engines/kotor/gui/ingame/menu_inv.h"
+#include "src/engines/kotor/gui/ingame/menu_char.h"
+#include "src/engines/kotor/gui/ingame/menu_abi.h"
+#include "src/engines/kotor/gui/ingame/menu_msg.h"
+#include "src/engines/kotor/gui/ingame/menu_jou.h"
+#include "src/engines/kotor/gui/ingame/menu_map.h"
+#include "src/engines/kotor/gui/ingame/menu_opt.h"
+
 namespace Engines {
 
 namespace KotOR {
@@ -37,6 +46,13 @@ namespace KotOR {
 class Menu : public GUI {
 public:
 	Menu(::Engines::Console *console = 0);
+
+	/** Set the return string ref. */
+	void setReturnStrref(uint32);
+	/** Set the return query string ref. */
+	void setReturnQueryStrref(uint32);
+	/** Set the return button enabled/disabled. */
+	void setReturnEnabled(bool);
 
 	/** Show the equipment menu */
 	void showEquipment();
@@ -60,14 +76,14 @@ private:
 
 	GUI* _currentMenu;
 
-	Common::ScopedPtr<GUI> _menuEqu;
-	Common::ScopedPtr<GUI> _menuInv;
-	Common::ScopedPtr<GUI> _menuChar;
-	Common::ScopedPtr<GUI> _menuAbi;
-	Common::ScopedPtr<GUI> _menuMsg;
-	Common::ScopedPtr<GUI> _menuJou;
-	Common::ScopedPtr<GUI> _menuMap;
-	Common::ScopedPtr<GUI> _menuOpt;
+	Common::ScopedPtr<MenuEquipment> _menuEqu;
+	Common::ScopedPtr<MenuInventory> _menuInv;
+	Common::ScopedPtr<MenuCharacter> _menuChar;
+	Common::ScopedPtr<MenuAbilities> _menuAbi;
+	Common::ScopedPtr<MenuMessages> _menuMsg;
+	Common::ScopedPtr<MenuJournal> _menuJou;
+	Common::ScopedPtr<MenuMap> _menuMap;
+	Common::ScopedPtr<MenuOptions> _menuOpt;
 
 	WidgetProtoItem *_protoEqu;
 	WidgetProtoItem *_protoInv;

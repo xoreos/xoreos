@@ -507,6 +507,18 @@ void Module::movedPC() {
 	CameraMan.update();
 }
 
+void Module::setReturnStrref(uint32 id) {
+	_ingame->setReturnStrref(id);
+}
+
+void Module::setReturnQueryStrref(uint32 id) {
+	_ingame->setReturnQueryStrref(id);
+}
+
+void Module::setReturnEnabled(bool enabled) {
+	_ingame->setReturnEnabled(enabled);
+}
+
 const Aurora::IFOFile &Module::getIFO() const {
 	return _ifo;
 }

@@ -22,9 +22,14 @@
  *  The ingame map menu.
  */
 
+#include "src/aurora/talkman.h"
+
 #include "src/engines/kotor/gui/ingame/menu_map.h"
 
 #include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/widgets/button.h"
+
+#include "src/engines/kotor/gui/dialogs/confirm.h"
 
 namespace Engines {
 
@@ -34,7 +39,28 @@ MenuMap::MenuMap(Console *console) : GUI(console) {
 	load("map");
 }
 
+void MenuMap::setReturnStrref(uint32 id) {
+	getButton("BTN_RETURN")->setText(TalkMan.getString(id));
+}
+
+void MenuMap::setReturnQueryStrref(uint32 id) {
+	_returnQueryMessage = TalkMan.getString(id);
+}
+
+void MenuMap::setReturnEnabled(bool enabled) {
+	getButton("BTN_RETURN")->setDisabled(!enabled);
+}
+
 void MenuMap::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_RETURN") {
+		ConfirmDialog dialog(_console);
+		dialog.setText(_returnQueryMessage);
+
+		sub(dialog, kStartCodeNone, true, false);
+
+		// TODO: Return to the hideout/ebon hawk
+	}
+
 	if (widget.getTag() == "BTN_EXIT") {
 		_returnCode = 1;
 		return;

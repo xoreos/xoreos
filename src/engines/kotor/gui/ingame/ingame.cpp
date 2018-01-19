@@ -40,6 +40,18 @@ void IngameGUI::hide() {
 	_hud->hide();
 }
 
+void IngameGUI::setReturnStrref(uint32 id) {
+	_hud->setReturnStrref(id);
+}
+
+void IngameGUI::setReturnQueryStrref(uint32 id) {
+	_hud->setReturnQueryStrref(id);
+}
+
+void IngameGUI::setReturnEnabled(bool enabled) {
+	_hud->setReturnEnabled(enabled);
+}
+
 void IngameGUI::addEvent(const Events::Event &event) {
 	_hud->addEvent(event);
 }
