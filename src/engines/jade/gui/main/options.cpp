@@ -24,6 +24,8 @@
 
 #include "src/aurora/talkman.h"
 
+#include "src/engines/aurora/util.h"
+
 #include "src/engines/jade/gui/main/options.h"
 
 #include "src/engines/jade/gui/options/audio.h"
@@ -170,6 +172,11 @@ void OptionsMenu::callbackActive(Widget &widget) {
 			createControlOptions();
 
 		sub(*_controlOptions);
+		return;
+	}
+
+	if (widget.getTag() == "CREDITS") {
+		playVideo("creditmovie");
 		return;
 	}
 
