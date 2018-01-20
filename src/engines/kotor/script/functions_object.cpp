@@ -122,7 +122,7 @@ void Functions::setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx) {
 
 	Object *kotorObject = ObjectContainer::toObject(object);
 	if (!kotorObject)
-		throw Common::Exception("Functions::getSubRace(): Invalid object");
+		throw Common::Exception("Functions::setMaxHitPoints(): Invalid object");
 
 	kotorObject->setCurrentHitPoints(maxHitPoints);
 	kotorObject->setMaxHitPoints(maxHitPoints);
