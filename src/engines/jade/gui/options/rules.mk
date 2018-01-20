@@ -17,14 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Main menu in Jade Empire.
+# Options menu in Jade Empire.
 
 src_engines_jade_libjade_la_SOURCES += \
-    src/engines/jade/gui/main/main.h \
-    src/engines/jade/gui/main/options.h \
+    src/engines/jade/gui/options/audio.h \
+    src/engines/jade/gui/options/video.h \
+    src/engines/jade/gui/options/diff.h \
+    src/engines/jade/gui/options/feed.h \
+    src/engines/jade/gui/options/control.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
-    src/engines/jade/gui/main/main.cpp \
-    src/engines/jade/gui/main/options.cpp \
+    src/engines/jade/gui/options/audio.cpp \
+    src/engines/jade/gui/options/video.cpp \
+    src/engines/jade/gui/options/diff.cpp \
+    src/engines/jade/gui/options/feed.cpp \
+    src/engines/jade/gui/options/control.cpp \
     $(EMPTY)

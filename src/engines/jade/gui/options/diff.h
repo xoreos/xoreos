@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  The Jade Empire main menu.
+ *  The Jade Empire difficulty options menu.
  */
 
-#ifndef ENGINES_JADE_GUI_MAIN_MAIN_H
-#define ENGINES_JADE_GUI_MAIN_MAIN_H
+#ifndef ENGINES_JADE_GUI_OPTIONS_DIFF_H
+#define ENGINES_JADE_GUI_OPTIONS_DIFF_H
 
 #include "src/engines/kotor/gui/gui.h"
 
@@ -31,33 +31,16 @@ namespace Engines {
 
 namespace Jade {
 
-class AreaLayout;
-class Module;
-
-class MainMenu : public ::Engines::KotOR::GUI {
+class DifficultyOptionsMenu : public Engines::KotOR::GUI {
 public:
-	MainMenu(Module &module, ::Engines::Console *console = 0);
-	~MainMenu();
-
-	void show(); ///< Show the GUI.
-	void hide(); ///< Hide the GUI.
+	DifficultyOptionsMenu(::Engines::Console *console = 0);
 
 protected:
-	void callbackActive(Widget &widget);
-	void addBackground();
-
-private:
-	Module *_module;
-
-	AreaLayout *_background;
-
-	Common::ScopedPtr<GUI> _options;
-
-	void createOptions();
+	virtual void callbackActive(Widget &widget);
 };
 
 } // End of namespace Jade
 
 } // End of namespace Engines
 
-#endif // ENGINES_JADE_GUI_MAIN_MAIN_H
+#endif // ENGINES_JADE_GUI_OPTIONS_DIFF_H

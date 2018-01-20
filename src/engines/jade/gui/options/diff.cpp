@@ -19,45 +19,26 @@
  */
 
 /** @file
- *  The Jade Empire main menu.
+ *  The Jade Empire difficulty options menu.
  */
 
-#ifndef ENGINES_JADE_GUI_MAIN_MAIN_H
-#define ENGINES_JADE_GUI_MAIN_MAIN_H
+#include "src/engines/jade/gui/options/diff.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
 
 namespace Jade {
 
-class AreaLayout;
-class Module;
+DifficultyOptionsMenu::DifficultyOptionsMenu(Console *console) : GUI(console) {
+	load("opt_diff");
+}
 
-class MainMenu : public ::Engines::KotOR::GUI {
-public:
-	MainMenu(Module &module, ::Engines::Console *console = 0);
-	~MainMenu();
-
-	void show(); ///< Show the GUI.
-	void hide(); ///< Hide the GUI.
-
-protected:
-	void callbackActive(Widget &widget);
-	void addBackground();
-
-private:
-	Module *_module;
-
-	AreaLayout *_background;
-
-	Common::ScopedPtr<GUI> _options;
-
-	void createOptions();
-};
+void DifficultyOptionsMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "ButtonCancel")
+		_returnCode = kReturnCodeAbort;
+}
 
 } // End of namespace Jade
 
 } // End of namespace Engines
-
-#endif // ENGINES_JADE_GUI_MAIN_MAIN_H

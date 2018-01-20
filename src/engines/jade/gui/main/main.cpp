@@ -36,6 +36,7 @@
 #include "src/engines/jade/module.h"
 
 #include "src/engines/jade/gui/main/main.h"
+#include "src/engines/jade/gui/main/options.h"
 
 #include "src/engines/kotor/gui/widgets/label.h"
 #include "src/engines/kotor/gui/widgets/listbox.h"
@@ -102,6 +103,13 @@ void MainMenu::hide() {
 }
 
 void MainMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "OPTIONS") {
+		if (!_options)
+			createOptions();
+
+		sub(*_options);
+	}
+
 	if (widget.getTag() == "NEW_GAME") {
 		try {
 			_module->load("j01_town");
@@ -129,6 +137,10 @@ void MainMenu::addBackground() {
 	const Common::UString &room = startrooms.getRow("chapter", currentChapter).getString("room");
 
 	_background = new AreaLayout(room);
+}
+
+void MainMenu::createOptions() {
+	_options.reset(new OptionsMenu());
 }
 
 } // End of namespace Jade
