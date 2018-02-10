@@ -58,6 +58,8 @@
 
 #include "src/engines/kotor/gui/ingame/ingame.h"
 
+#include "src/engines/kotor/gui/loadscreen/loadscreen.h"
+
 namespace Engines {
 
 namespace KotOR {
@@ -119,6 +121,10 @@ void Module::load(const Common::UString &module, const Common::UString &entryLoc
 
 void Module::loadModule(const Common::UString &module, const Common::UString &entryLocation,
                         ObjectType entryLocationType) {
+	_ingame->hide();
+
+	LoadScreen loadScreen(module, _console);
+	loadScreen.show();
 
 	unload(false);
 
@@ -160,6 +166,10 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 	_newModule.clear();
 
 	_hasModule = true;
+
+	loadScreen.hide();
+
+	_ingame->show();
 }
 
 void Module::usePC(Creature *pc) {
