@@ -186,6 +186,8 @@ void CharacterGenerationMenu::decStep() {
 }
 
 void CharacterGenerationMenu::start() {
+	hide();
+
 	try {
 		_module->usePC(_pc->getCharacter());
 		_module->load("end_m01aa");
@@ -193,6 +195,8 @@ void CharacterGenerationMenu::start() {
 		Common::exceptionDispatcherWarning();
 		return;
 	}
+
+	show();
 }
 
 } // End of namespace KotOR
