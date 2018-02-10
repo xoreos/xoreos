@@ -20,7 +20,9 @@
 # Load screen system in Star Wars: Knights of the Old Republic.
 
 src_engines_kotor_libkotor_la_SOURCES += \
+    src/engines/kotor/gui/loadscreen/loadscreen.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
+    src/engines/kotor/gui/loadscreen/loadscreen.cpp \
     $(EMPTY)
