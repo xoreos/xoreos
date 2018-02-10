@@ -22,6 +22,8 @@
  *  The KotOR main menu.
  */
 
+#include <boost/bind.hpp>
+
 #include "src/common/util.h"
 
 #include "src/sound/sound.h"
@@ -35,6 +37,8 @@
 
 #include "src/engines/kotor/gui/guibackground.h"
 #include "src/engines/kotor/gui/saveload.h"
+
+#include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
 #include "src/engines/kotor/gui/widgets/button.h"
 
@@ -62,11 +66,15 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::createClassSelection() {
-	if (_classSelection)
-		return;
+	hide();
+	LoadScreen loadScreen("chargen", _console);
+	loadScreen.show();
 
 	// Create the class selection menu
 	_classSelection.reset(new ClassSelectionMenu(_module, _console));
+
+	loadScreen.hide();
+	show();
 }
 
 void MainMenu::createMovies() {
@@ -149,10 +157,10 @@ void MainMenu::initWidget(Widget &widget) {
 void MainMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_NEWGAME") {
+		createClassSelection();
+
 		// Stop the currently running main music
 		stopMenuMusic();
-
-		createClassSelection();
 
 		// Start the charGen music
 		startCharGenMusic();
