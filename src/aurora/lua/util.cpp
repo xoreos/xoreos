@@ -40,6 +40,7 @@ void *getRawCppObjectFromStack(const Stack &stack, int index) {
 				return instance.getRawUserTypeAt("CPP_instance");
 			}
 		}
+		// Fallthrough
 		case Aurora::Lua::kTypeUserType:
 			return stack.getRawUserTypeAt(index);
 		default:
@@ -57,6 +58,7 @@ void *getRawCppObjectFromVariable(const Variable &var) {
 				return instance.getRawUserTypeAt("CPP_instance");
 			}
 		}
+		// Fallthrough
 		case Aurora::Lua::kTypeUserType:
 			return var.getRawUserType();
 		default:
