@@ -1244,6 +1244,7 @@ void Bink::readDCTCoeffs(VideoFrame &video, int16 *block, bool isIntra) {
 			case 0:
 				coefList[listPos] = ccoef + 4;
 				modeList[listPos] = 1;
+				// Fallthrough
 			case 2:
 				if (mode == 2) {
 					coefList[listPos]   = 0;
@@ -1351,6 +1352,7 @@ void Bink::readResidue(VideoFrame &video, int16 *block, int masksCount) {
 			case 0:
 				coefList[listPos] = ccoef + 4;
 				modeList[listPos] = 1;
+				// Fallthrough
 			case 2:
 				if (mode == 2) {
 					coefList[listPos]   = 0;
