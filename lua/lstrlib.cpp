@@ -731,6 +731,7 @@ static int str_format (lua_State *L) {
             break;
           }
         }
+        // Fallthrough
         default: {  /* also treat cases `pnLlh' */
           return luaL_error(L, "invalid option to `format'");
         }
