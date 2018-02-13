@@ -1186,6 +1186,24 @@ void ModelNode::buildMaterial() {
 	// Should be checking vert and frag shader separately, but they really should exist together anyway.
 	if (!vertexObject) {
 		// No object found. Generate a shader then.
+
+		Graphics::Shader::ShaderDescriptor cripter;
+		cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
+		cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_NORMAL0);
+		cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0);
+
+		cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+		                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
+
+		cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+		                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0,
+		                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE);
+
+		cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
+		                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
+
+		cripter.build();
+
 		bool isGL3 = GfxMan.isGL3();
 
 		Common::UString vertexStringFinal;

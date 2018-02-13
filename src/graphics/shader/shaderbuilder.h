@@ -44,6 +44,7 @@ namespace Shader {
 
 class ShaderDescriptor
 {
+public:
 	///< Vertex shader input data. Each should have a corresponding output.
 	enum Input {
 		INPUT_POSITION0,
@@ -70,10 +71,14 @@ class ShaderDescriptor
 		SAMPLER_TEXTURE_4,
 		SAMPLER_TEXTURE_5,
 		SAMPLER_TEXTURE_6,
-		SAMPLER_TEXTURE_7
+		SAMPLER_TEXTURE_7,
+		SAMPLER_TEXTURE_NONE
 	};
 
 	enum SamplerType {
+		SAMPLER_1D,
+		SAMPLER_2D,
+		SAMPLER_3D,
 		SAMPLER_CUBE,
 		SAMPLER_SPHERE,
 		SAMPLER_DIFFUSE,
@@ -107,9 +112,17 @@ class ShaderDescriptor
 
 	void declareInput(ShaderDescriptor::Input input);
 
-	void declareSampler(ShaderDescriptor::Sampler sampler);
+	void declareSampler(ShaderDescriptor::Sampler sampler, ShaderDescriptor::SamplerType type);
 
-	void connect(ShaderDescriptor::Sampler sampler, ShaderDescriptor::SamplerType type, ShaderDescriptor::Input uv_coords);
+	/**
+	 * @brief Connect an input to a sampler and an action.
+	 * @param sampler  Sampler to associate with the input and the action. Use SAMPLER_TEXTURE_NONE if this is to be ignored.
+	 * @param input
+	 * @param action
+	 */
+	void connect(ShaderDescriptor::Sampler sampler,
+	             ShaderDescriptor::Input input,
+	             ShaderDescriptor::Action action);
 
 	void addPass(ShaderDescriptor::Action action, ShaderDescriptor::Blend blend);
 
@@ -125,12 +138,13 @@ private:
 
 	struct SamplerDescriptor {
 		Sampler sampler;
+		SamplerType type;
 	};
 
-	struct SamplerCoordConnector {
+	struct Connector {
 		Sampler sampler;
-		SamplerType type;
-		Input uv_coords;
+		Input input;
+		Action action;
 	};
 
 	struct Pass {
@@ -139,8 +153,8 @@ private:
 	};
 
 	std::vector<Input> _inputDescriptors;
-	std::vector<Sampler> _samplerDescriptors;
-	std::vector<SamplerCoordConnector> _samplerCoordConnectors;
+	std::vector<SamplerDescriptor> _samplerDescriptors;
+	std::vector<Connector> _connectors;
 	std::vector<Pass> _passes;
 };
 
