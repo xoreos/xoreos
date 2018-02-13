@@ -1244,9 +1244,9 @@ bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 		int n = *ptr++;
 
 		switch (n & 3) do {
-			case 0: *q++ = iv;
-			case 3: *q++ = iv;
-			case 2: *q++ = iv;
+			case 0: *q++ = iv; // Fallthrough
+			case 3: *q++ = iv; // Fallthrough
+			case 2: *q++ = iv; // Fallthrough
 			case 1: *q++ = iv;
 		} while ((n -= 4) > 0);
 
@@ -1276,9 +1276,9 @@ bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 		int n = *ptr++;
 
 		switch (n & 3) do {
-			case 0: *q++ = iv;
-			case 3: *q++ = iv;
-			case 2: *q++ = iv;
+			case 0: *q++ = iv; // Fallthrough
+			case 3: *q++ = iv; // Fallthrough
+			case 2: *q++ = iv; // Fallthrough
 			case 1: *q++ = iv;
 		} while ((n -= 4) > 0);
 
