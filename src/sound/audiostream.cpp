@@ -212,6 +212,11 @@ public:
 		_finished = true;
 	}
 
+	virtual bool isFinished() const {
+		Common::StackLock lock(_mutex);
+		return _finished;
+	}
+
 	size_t numQueuedStreams() const {
 		Common::StackLock lock(_mutex);
 		return _queue.size();

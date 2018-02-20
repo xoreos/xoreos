@@ -227,6 +227,11 @@ public:
 	virtual void finish() = 0;
 
 	/**
+	 * Is the stream marked as finished?
+	 */
+	virtual bool isFinished() const = 0;
+
+	/**
 	 * Return the number of streams still queued for playback (including
 	 * the currently playing stream).
 	 */
