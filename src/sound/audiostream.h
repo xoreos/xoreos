@@ -56,6 +56,10 @@
 #include "src/common/types.h"
 #include "src/common/disposableptr.h"
 
+namespace Common {
+class SeekableReadStream;
+}
+
 namespace Sound {
 
 /**
@@ -233,6 +237,35 @@ public:
  * Factory function for an QueuingAudioStream.
  */
 QueuingAudioStream *makeQueuingAudioStream(int rate, int channels);
+
+/**
+ * An AudioStream designed to work in terms of packets.
+ *
+ * It is similar in concept to QueuingAudioStream, but does not
+ * necessarily rely on the data from each queued AudioStream
+ * being separate.
+ */
+class PacketizedAudioStream : public virtual AudioStream {
+public:
+	virtual ~PacketizedAudioStream() {}
+
+	/**
+	 * Queue the next packet to be decoded.
+	 */
+	virtual void queuePacket(Common::SeekableReadStream *data) = 0;
+
+	/**
+	 * Mark this stream as finished. That is, signal that no further data
+	 * will be queued to it. Only after this has been done can this
+	 * stream ever 'end'.
+	 */
+	virtual void finish() = 0;
+
+	/**
+	 * Is the stream marked as finished?
+	 */
+	virtual bool isFinished() const = 0;
+};
 
 } // End of namespace Sound
 
