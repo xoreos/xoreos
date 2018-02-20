@@ -58,6 +58,7 @@ namespace Common {
 
 namespace Sound {
 
+class PacketizedAudioStream;
 class RewindableAudioStream;
 
 /**
@@ -71,6 +72,33 @@ class RewindableAudioStream;
 RewindableAudioStream *makeVorbisStream(
 	Common::SeekableReadStream *stream,
 	bool disposeAfterUse);
+
+/**
+ * Create a new PacketizedAudioStream capable of decoding vorbis audio data.
+ *
+ * @param extraData
+ *    The vorbis header data, combined into one stream, as used in non-ogg
+ *    containers.
+ * @return a new PacketizedAudioStream, or NULL if an error occurred
+ */
+PacketizedAudioStream *makePacketizedVorbisStream(
+	Common::SeekableReadStream &extraData);
+
+/**
+ * Create a new PacketizedAudioStream capable of decoding vorbis audio data.
+ *
+ * @param packet1
+ *    The first vorbis header, as used in ogg
+ * @param packet2
+ *    The second vorbis header, as used in ogg
+ * @param packet3
+ *    The third vorbis header, as used in ogg
+ * @return a new PacketizedAudioStream, or NULL if an error occurred
+ */
+PacketizedAudioStream *makePacketizedVorbisStream(
+	Common::SeekableReadStream &packet1,
+	Common::SeekableReadStream &packet2,
+	Common::SeekableReadStream &packet3);
 
 } // End of namespace Sound
 
