@@ -179,7 +179,7 @@ private:
 	 * A mutex to avoid access problems (causing e.g. corruption of
 	 * the linked list) in thread aware environments.
 	 */
-	Common::Mutex _mutex;
+	mutable Common::Mutex _mutex;
 
 	/**
 	 * The queue of audio streams.
@@ -196,17 +196,24 @@ public:
 	virtual int getChannels() const { return _channels; }
 	virtual int getRate() const { return _rate; }
 	virtual bool endOfData() const {
-		//Common::StackLock lock(_mutex);
+		Common::StackLock lock(_mutex);
 		return _queue.empty();
 	}
-	virtual bool endOfStream() const { return _finished && _queue.empty(); }
+	virtual bool endOfStream() const {
+		Common::StackLock lock(_mutex);
+		return _finished && _queue.empty();
+	}
 
 	// Implement the QueuingAudioStream API
 	virtual void queueAudioStream(AudioStream *stream, bool disposeAfterUse);
-	virtual void finish() { _finished = true; }
+
+	virtual void finish() {
+		Common::StackLock lock(_mutex);
+		_finished = true;
+	}
 
 	size_t numQueuedStreams() const {
-		//Common::StackLock lock(_mutex);
+		Common::StackLock lock(_mutex);
 		return _queue.size();
 	}
 };
