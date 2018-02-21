@@ -66,8 +66,6 @@
 #include "src/sound/audiostream.h"
 #include "src/sound/decoders/codec.h"
 
-#include "src/events/events.h"
-
 
 // Audio codecs
 #ifdef ENABLE_FAAD
@@ -288,7 +286,6 @@ Codec *QuickTimeDecoder::findDefaultVideoCodec() const {
 }
 
 void QuickTimeDecoder::startVideo() {
-	_startTime = EventMan.getTimestamp();
 	_started   = true;
 }
 
@@ -325,25 +322,12 @@ void QuickTimeDecoder::processData() {
 	}
 }
 
-uint32 QuickTimeDecoder::getElapsedTime() const {
-	// TODO: Extend decoder to get the elapsed time of the sound
-	//	return g_system->getMixer()->getSoundElapsedTime(_audHandle);
-
-	return EventMan.getTimestamp() - _startTime;
-}
-
-uint32 QuickTimeDecoder::getTimeToNextFrame() const {
+uint32 QuickTimeDecoder::getNextFrameStartTime() const {
 	if (!_started || _curFrame < 0)
 		return 0;
 
 	// Convert from the QuickTime rate base to 1000
-	uint32 nextFrameStartTime = _nextFrameStartTime * 1000 / _tracks[_videoTrackIndex]->timeScale;
-	uint32 elapsedTime = getElapsedTime();
-
-	if (nextFrameStartTime <= elapsedTime)
-		return 0;
-
-	return nextFrameStartTime - elapsedTime;
+	return _nextFrameStartTime * 1000 / _tracks[_videoTrackIndex]->timeScale;
 }
 
 void QuickTimeDecoder::initParseTable() {

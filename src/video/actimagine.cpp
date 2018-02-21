@@ -41,7 +41,7 @@ ActimagineDecoder::ActimagineDecoder(Common::SeekableReadStream *vx) : _vx(vx) {
 ActimagineDecoder::~ActimagineDecoder() {
 }
 
-uint32 ActimagineDecoder::getTimeToNextFrame() const {
+uint32 ActimagineDecoder::getNextFrameStartTime() const {
 	return 0;
 }
 

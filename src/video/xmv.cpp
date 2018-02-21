@@ -35,8 +35,6 @@
 #include "src/sound/decoders/pcm.h"
 #include "src/sound/decoders/adpcm.h"
 
-#include "src/events/events.h"
-
 #include "src/video/xmv.h"
 
 #include "src/video/codecs/xmvwmv2.h"
@@ -62,7 +60,7 @@ XboxMediaVideo::ADPCM51Streams::~ADPCM51Streams() {
 
 
 XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) :
-	_xmv(xmv), _startTime(0) {
+	_xmv(xmv) {
 
 	assert(_xmv);
 
@@ -72,21 +70,16 @@ XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) :
 XboxMediaVideo::~XboxMediaVideo() {
 }
 
-uint32 XboxMediaVideo::getTimeToNextFrame() const {
+uint32 XboxMediaVideo::getNextFrameStartTime() const {
 	if (!_started)
 		return 0;
 
-	uint32 curTime = EventMan.getTimestamp() - _startTime;
-	if (curTime >= _curPacket.video.currentFrameTimestamp)
-		return 0;
-
-	return _curPacket.video.currentFrameTimestamp - curTime;
+	return _curPacket.video.currentFrameTimestamp;
 }
 
 void XboxMediaVideo::startVideo() {
 	queueNewAudio(_curPacket);
 
-	_startTime = EventMan.getTimestamp();
 	_started   = true;
 }
 

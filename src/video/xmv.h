@@ -49,7 +49,7 @@ public:
 	XboxMediaVideo(Common::SeekableReadStream *xmv);
 	~XboxMediaVideo();
 
-	uint32 getTimeToNextFrame() const;
+	uint32 getNextFrameStartTime() const;
 
 protected:
 	void startVideo();
@@ -121,9 +121,6 @@ private:
 	};
 
 	Common::ScopedPtr<Common::SeekableReadStream> _xmv;
-
-	/** The time the XMV was started. */
-	uint32 _startTime;
 
 	/** All audio tracks within the XMV. */
 	std::vector<AudioTrack> _audioTracks;

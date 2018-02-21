@@ -72,8 +72,11 @@ public:
 	/** Abort the playing of the video. */
 	void abort();
 
+	/** Returns the time position (in ms) of the current video. */
+	uint32 getTime() const;
+
 	/** Return the time, in milliseconds, to the next frame. */
-	virtual uint32 getTimeToNextFrame() const = 0;
+	uint32 getTimeToNextFrame() const;
 
 	// Renderable
 	void calculateDistance();
@@ -116,6 +119,9 @@ protected:
 	/** Process the video's image and sound data further. */
 	virtual void processData() = 0;
 
+	/** Return the time, in milliseconds, of the next frame's time. */
+	virtual uint32 getNextFrameStartTime() const = 0;
+
 	void finish();
 
 	void deinit();
@@ -137,6 +143,9 @@ private:
 
 	uint16 _soundRate;
 	byte   _soundFlags;
+
+	/** The start time of the video, or -1 for not set */
+	uint32 _startTime;
 
 
 	/** Update the video, if necessary. */

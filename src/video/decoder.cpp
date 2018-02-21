@@ -29,6 +29,8 @@
 #include "src/common/threads.h"
 #include "src/common/debug.h"
 
+#include "src/events/events.h"
+
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/images/surface.h"
@@ -45,7 +47,7 @@ VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
 	_started(false), _finished(false), _needCopy(false),
 	_width(0), _height(0), _texture(0),
 	_textureWidth(0.0f), _textureHeight(0.0f), _scale(kScaleNone),
-	_soundRate(0), _soundFlags(0) {
+	_soundRate(0), _soundFlags(0), _startTime(0) {
 
 }
 
@@ -208,7 +210,7 @@ void VideoDecoder::setScale(Scale scale) {
 }
 
 bool VideoDecoder::isPlaying() const {
-	return !_finished || SoundMan.isPlaying(_soundHandle);
+	return _startTime != 0 && (!_finished || SoundMan.isPlaying(_soundHandle));
 }
 
 void VideoDecoder::getSize(uint32 &width, uint32 &height) const {
@@ -300,6 +302,8 @@ void VideoDecoder::finish() {
 void VideoDecoder::start() {
 	startVideo();
 
+	_startTime = EventMan.getTimestamp();
+
 	show();
 }
 
@@ -307,6 +311,27 @@ void VideoDecoder::abort() {
 	hide();
 
 	finish();
+}
+
+uint32 VideoDecoder::getTime() const {
+	if (!isPlaying())
+		return 0;
+
+	return EventMan.getTimestamp() - _startTime;
+}
+
+uint32 VideoDecoder::getTimeToNextFrame() const {
+	// TODO: Use the sound time if possible
+
+	uint32 curTime = getTime();
+	if (curTime == 0)
+		return 0;
+
+	uint32 nextFrameStartTime = getNextFrameStartTime();
+	if (nextFrameStartTime <= curTime)
+		return 0;
+
+	return nextFrameStartTime - curTime;
 }
 
 } // End of namespace Video

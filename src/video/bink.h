@@ -95,7 +95,7 @@ public:
 	Bink(Common::SeekableReadStream *bink);
 	~Bink();
 
-	uint32 getTimeToNextFrame() const;
+	uint32 getNextFrameStartTime() const;
 
 protected:
 	void startVideo();
@@ -255,9 +255,6 @@ private:
 	bool _disableAudio; ///< Should the sound be disabled?
 
 	uint32 _curFrame; ///< Current Frame.
-
-	uint32 _startTime;     ///< Timestamp of when the video was started.
-	uint32 _lastFrameTime; ///< Timestamp of when the last frame was decoded.
 
 	std::vector<AudioTrack> _audioTracks; ///< All audio tracks.
 	std::vector<VideoFrame> _frames;      ///< All video frames.

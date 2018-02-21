@@ -42,7 +42,7 @@ public:
 	ActimagineDecoder(Common::SeekableReadStream *vx);
 	~ActimagineDecoder();
 
-	uint32 getTimeToNextFrame() const;
+	uint32 getNextFrameStartTime() const;
 
 protected:
 	void startVideo();

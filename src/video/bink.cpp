@@ -91,8 +91,6 @@
 #include "src/video/bink.h"
 #include "src/video/binkdata.h"
 
-#include "src/events/events.h"
-
 static const uint32 kBIKfID = MKTAG('B', 'I', 'K', 'f');
 static const uint32 kBIKgID = MKTAG('B', 'I', 'K', 'g');
 static const uint32 kBIKhID = MKTAG('B', 'I', 'K', 'h');
@@ -163,26 +161,14 @@ Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false)
 Bink::~Bink() {
 }
 
-uint32 Bink::getTimeToNextFrame() const {
+uint32 Bink::getNextFrameStartTime() const {
 	if (!_started)
 		return 0;
 
-	uint32 curTime   = EventMan.getTimestamp() - _startTime;
-	uint32 frameTime = ((uint64) (_curFrame * 1000 * ((uint64) _fpsDen))) / _fpsNum;
-
-	// We need the next frame now
-	if (frameTime <= curTime)
-		return 0;
-
-	// We need the next frame later
-	return frameTime - curTime;
+	return ((uint64) (_curFrame * 1000 * ((uint64) _fpsDen))) / _fpsNum;
 }
 
 void Bink::startVideo() {
-	uint32 curTime = EventMan.getTimestamp();
-
-	_startTime     = curTime;
-	_lastFrameTime = curTime;
 	_started       = true;
 }
 
