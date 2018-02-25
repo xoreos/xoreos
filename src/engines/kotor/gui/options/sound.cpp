@@ -34,6 +34,8 @@ namespace KotOR {
 OptionsSoundMenu::OptionsSoundMenu(::Engines::Console *console) : GUI(console) {
 	load("optsound");
 
+	addBackground(kBackgroundTypeMenu);
+
 	_advanced.reset(new OptionsSoundAdvancedMenu(_console));
 }
 

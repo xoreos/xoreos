@@ -38,6 +38,8 @@ namespace KotOR {
 OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : GUI(console) {
 	load("optgraphics");
 
+	addBackground(kBackgroundTypeMenu);
+
 	_advanced.reset(new OptionsGraphicsAdvancedMenu(_console));
 
 	//Hardcoded, the gui file returns incorrect values

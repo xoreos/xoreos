@@ -36,6 +36,9 @@ namespace KotOR {
 
 OptionsAutoPauseMenu::OptionsAutoPauseMenu(::Engines::Console *console) : GUI(console) {
 	load("optautopause");
+
+	addBackground(kBackgroundTypeMenu);
+
 	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
 	getCheckBox("CB_ENDROUND", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_ENEMYSIGHTED", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);

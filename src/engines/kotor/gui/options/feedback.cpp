@@ -32,6 +32,8 @@ namespace KotOR {
 
 OptionsFeedbackMenu::OptionsFeedbackMenu(::Engines::Console *console) : GUI(console) {
 	load("optfeedback");
+
+	addBackground(kBackgroundTypeMenu);
 }
 
 OptionsFeedbackMenu::~OptionsFeedbackMenu() {

@@ -40,6 +40,8 @@ namespace KotOR {
 OptionsGraphicsAdvancedMenu::OptionsGraphicsAdvancedMenu(::Engines::Console *console) : GUI(console) {
 	load("optgraphicsadv");
 
+	addBackground(kBackgroundTypeMenu);
+
 	//Hardcoded, the gui file returns incorrect values
 	getButton("BTN_TEXQUALLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getButton("BTN_TEXQUALLEFT", true)->setStaticHighlight();

@@ -34,6 +34,8 @@ OptionsKeyboardConfigurationMenu::OptionsKeyboardConfigurationMenu(::Engines::Co
 	GUI(console) {
 
 	load("optkeymapping");
+
+	addBackground(kBackgroundTypeMenu);
 }
 
 OptionsKeyboardConfigurationMenu::~OptionsKeyboardConfigurationMenu() {

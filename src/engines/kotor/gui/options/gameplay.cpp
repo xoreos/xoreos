@@ -42,6 +42,8 @@ namespace KotOR {
 OptionsGameplayMenu::OptionsGameplayMenu(::Engines::Console *console) : GUI(console) {
 	load("optgameplay");
 
+	addBackground(kBackgroundTypeMenu);
+
 	_mousesettings.reset(new OptionsMouseSettingsMenu(_console));
 	_keyboardconfiguration.reset(new OptionsKeyboardConfigurationMenu(_console));
 

@@ -41,6 +41,8 @@ namespace KotOR {
 OptionsMenu::OptionsMenu(::Engines::Console *console) : GUI(console) {
 	load("optionsmain");
 
+	addBackground(kBackgroundTypeMenu);
+
 	_gameplay.reset(new OptionsGameplayMenu(_console));
 	_feedback.reset(new OptionsFeedbackMenu(_console));
 	_autopause.reset(new OptionsAutoPauseMenu(_console));
