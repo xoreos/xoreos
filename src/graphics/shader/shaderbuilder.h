@@ -79,11 +79,7 @@ public:
 		SAMPLER_1D,
 		SAMPLER_2D,
 		SAMPLER_3D,
-		SAMPLER_CUBE,
-		SAMPLER_SPHERE,
-		SAMPLER_DIFFUSE,
-		SAMPLER_LIGHTMAP,
-		SAMPLER_BUMPMAP
+		SAMPLER_CUBE
 	};
 
 	enum Action {
@@ -117,8 +113,8 @@ public:
 	/**
 	 * @brief Connect an input to a sampler and an action.
 	 * @param sampler  Sampler to associate with the input and the action. Use SAMPLER_TEXTURE_NONE if this is to be ignored.
-	 * @param input
-	 * @param action
+	 * @param input    Associate a sampler with an input to be used for UVW coordinates.
+	 * @param action   Associate the connection to an action to be performed with them.
 	 */
 	void connect(ShaderDescriptor::Sampler sampler,
 	             ShaderDescriptor::Input input,
@@ -126,7 +122,14 @@ public:
 
 	void addPass(ShaderDescriptor::Action action, ShaderDescriptor::Blend blend);
 
-	void build();
+	void build(bool isGL3, Common::UString &v_string, Common::UString &f_string);
+
+	/**
+	 * @brief Generate a name to asscoiate with the current description. Does not require building first.
+	 * @param n_string String name of description.
+	 */
+	void genName(Common::UString &n_string);
+
 private:
 	// Input descriptors.
 	// Sampler descriptors.

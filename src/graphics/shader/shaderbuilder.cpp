@@ -336,9 +336,7 @@ void ShaderDescriptor::addPass(ShaderDescriptor::Action action, ShaderDescriptor
 	_passes.push_back(pass);
 }
 
-void ShaderDescriptor::build() {
-	bool isGL3 = false;//true;
-
+void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UString &f_string) {
 	Common::UString v_header, f_header;
 	Common::UString v_body, f_body;
 
@@ -819,8 +817,126 @@ void ShaderDescriptor::build() {
 	Common::UString v_shader_string = v_header + v_body;
 	Common::UString f_shader_string = f_header + f_body;
 
-	printf("Vertex Shader:\n%s\n", v_shader_string.c_str());
-	printf("Fragment Shader:\n%s\n", f_shader_string.c_str());
+	v_string = v_header + v_body;
+	f_string = f_header + f_body;
+
+	//printf("Vertex Shader:\n%s\n", v_shader_string.c_str());
+	//printf("Fragment Shader:\n%s\n", f_shader_string.c_str());
+}
+
+void ShaderDescriptor::genName(Common::UString &n_string) {
+	for (size_t i = 0; i < _inputDescriptors.size(); ++i) {
+		n_string += "__";
+		switch (_inputDescriptors[i]) {
+		case INPUT_POSITION0: n_string += "input_position0"; break;
+		case INPUT_POSITION1: n_string += "input_position1"; break;
+		case INPUT_POSITION2: n_string += "input_position2"; break;
+		case INPUT_POSITION3: n_string += "input_position3"; break;
+		case INPUT_NORMAL0: n_string += "input_normal0"; break;
+		case INPUT_NORMAL1: n_string += "input_normal1"; break;
+		case INPUT_NORMAL2: n_string += "input_normal2"; break;
+		case INPUT_NORMAL3: n_string += "input_normal3"; break;
+		case INPUT_UV0: n_string += "input_uv0"; break;
+		case INPUT_UV1: n_string += "input_uv1"; break;
+		case INPUT_UV2: n_string += "input_uv2"; break;
+		case INPUT_UV3: n_string += "input_uv3"; break;
+		case INPUT_UV_CUBE: n_string += "input_uv_cube"; break;
+		case INPUT_UV_SPHERE: n_string += "input_uv_sphere"; break;
+		}
+	}
+
+	for (size_t i = 0; i < _samplerDescriptors.size(); ++i) {
+		n_string += "__";
+		switch (_samplerDescriptors[i].type) {
+		case SAMPLER_1D: n_string += "sampler_1d"; break;
+		case SAMPLER_2D: n_string += "sampler_2d"; break;
+		case SAMPLER_3D: n_string += "sampler_3d"; break;
+		case SAMPLER_CUBE: n_string += "sampler_cube"; break;
+		default: break;
+		}
+
+		n_string += "-";
+		switch (_samplerDescriptors[i].sampler) {
+		case SAMPLER_TEXTURE_0: n_string += "texture0"; break;
+		case SAMPLER_TEXTURE_1: n_string += "texture1"; break;
+		case SAMPLER_TEXTURE_2: n_string += "texture2"; break;
+		case SAMPLER_TEXTURE_3: n_string += "texture3"; break;
+		case SAMPLER_TEXTURE_4: n_string += "texture4"; break;
+		case SAMPLER_TEXTURE_5: n_string += "texture5"; break;
+		case SAMPLER_TEXTURE_6: n_string += "texture6"; break;
+		case SAMPLER_TEXTURE_7: n_string += "texture7"; break;
+		case SAMPLER_TEXTURE_NONE: n_string += "textureUV"; break;
+		}
+	}
+
+	for (size_t i = 0; i < _connectors.size(); ++i) {
+		n_string += "__";
+		switch (_connectors[i].sampler) {
+		case SAMPLER_TEXTURE_0: n_string += "texture0"; break;
+		case SAMPLER_TEXTURE_1: n_string += "texture1"; break;
+		case SAMPLER_TEXTURE_2: n_string += "texture2"; break;
+		case SAMPLER_TEXTURE_3: n_string += "texture3"; break;
+		case SAMPLER_TEXTURE_4: n_string += "texture4"; break;
+		case SAMPLER_TEXTURE_5: n_string += "texture5"; break;
+		case SAMPLER_TEXTURE_6: n_string += "texture6"; break;
+		case SAMPLER_TEXTURE_7: n_string += "texture7"; break;
+		case SAMPLER_TEXTURE_NONE: n_string += "textureUV"; break;
+		}
+
+		n_string += "-";
+		switch (_connectors[i].input) {
+		case INPUT_POSITION0: n_string += "input_position0"; break;
+		case INPUT_POSITION1: n_string += "input_position1"; break;
+		case INPUT_POSITION2: n_string += "input_position2"; break;
+		case INPUT_POSITION3: n_string += "input_position3"; break;
+		case INPUT_NORMAL0: n_string += "input_normal0"; break;
+		case INPUT_NORMAL1: n_string += "input_normal1"; break;
+		case INPUT_NORMAL2: n_string += "input_normal2"; break;
+		case INPUT_NORMAL3: n_string += "input_normal3"; break;
+		case INPUT_UV0: n_string += "input_uv0"; break;
+		case INPUT_UV1: n_string += "input_uv1"; break;
+		case INPUT_UV2: n_string += "input_uv2"; break;
+		case INPUT_UV3: n_string += "input_uv3"; break;
+		case INPUT_UV_CUBE: n_string += "input_uv_cube"; break;
+		case INPUT_UV_SPHERE: n_string += "input_uv_sphere"; break;
+		}
+
+		n_string += "-";
+		switch (_connectors[i].action) {
+		case ENV_CUBE: n_string += "env_cube"; break;
+		case ENV_SPHERE: n_string += "env_sphere"; break;
+		case COLOUR: n_string += "colour"; break;
+		case TEXTURE_DIFFUSE: n_string += "diffuse"; break;
+		case TEXTURE_LIGHTMAP: n_string += "lightmap"; break;
+		case TEXTURE_BUMPMAP: n_string += "bumpmap"; break;
+		case FORCE_OPAQUE: n_string += "force_opaque"; break;
+		case NOOP: n_string += "noop"; break;
+		}
+	}
+
+	for (size_t i = 0; i < _passes.size(); ++i) {
+		n_string += "__";
+		switch (_passes[i].action) {
+		case ENV_CUBE: n_string += "env_cube"; break;
+		case ENV_SPHERE: n_string += "env_sphere"; break;
+		case COLOUR: n_string += "colour"; break;
+		case TEXTURE_DIFFUSE: n_string += "diffuse"; break;
+		case TEXTURE_LIGHTMAP: n_string += "lightmap"; break;
+		case TEXTURE_BUMPMAP: n_string += "bumpmap"; break;
+		case FORCE_OPAQUE: n_string += "force_opaque"; break;
+		case NOOP: n_string += "noop"; break;
+		}
+
+		n_string += "-";
+		switch (_passes[i].blend) {
+		case BLEND_SRC_ALPHA: n_string += "blend_src_alpha"; break;
+		case BLEND_DST_ALPHA: n_string += "blend_dst_alpha"; break;
+		case BLEND_ZERO: n_string += "blend_zero"; break;
+		case BLEND_ONE: n_string += "blend_one"; break;
+		case BLEND_MULTIPLY: n_string += "blend_multiply"; break;
+		case BLEND_IGNORED: n_string += "blend_ignored"; break;
+		}
+	}
 }
 
 

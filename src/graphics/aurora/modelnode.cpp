@@ -1025,6 +1025,7 @@ void ModelNode::buildMaterial() {
 	Common::UString vertexShaderName;
 	Common::UString fragmentShaderName;
 	Common::UString materialName = "xoreos.";
+	Graphics::Shader::ShaderDescriptor cripter;
 
 	Shader::ShaderMaterial *material;
 	Shader::ShaderSampler *sampler;
@@ -1032,37 +1033,50 @@ void ModelNode::buildMaterial() {
 
 	uint32 materialFlags = 0;
 
-	std::vector<Shader::ShaderBuilder::BuildPass> shaderPasses;
 	_renderableArray.clear();
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_NORMAL0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0);
 
 	if (_name == "Plane237") {
 		pmesh->isTransparent = true;  // Hack hack hack hack. For NWN.
 	}
 
-	ShaderBuild.initShaderName(vertexShaderName);
-	ShaderBuild.initShaderName(fragmentShaderName);
-
 	if (penvmap) {
+		if (penvmap->getTexture().getImage().isCubeMap()) {
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV_CUBE);
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_7,
+			                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_CUBE);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_7,
+			                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV_CUBE,
+			                Graphics::Shader::ShaderDescriptor::Action::ENV_CUBE);
+		} else {
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV_SPHERE);
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_7,
+			                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_7,
+			                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV_SPHERE,
+			                Graphics::Shader::ShaderDescriptor::Action::ENV_SPHERE);
+		}
+
 		if (envmapmode == kModeEnvironmentBlendedUnder) {
 			materialName += penvmap->getName();
 			// Figure out if a cube or sphere map is used.
 			if (penvmap->getTexture().getImage().isCubeMap()) {
-				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE));
-				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
-				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_ONE);
 				if (!pmesh->isTransparent) {
 					materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
 				}
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::ENV_CUBE,
+				                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
 			} else {
-				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE));
-				ShaderBuild.addShaderName(vertexShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
-				ShaderBuild.addShaderName(fragmentShaderName, Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_ONE);
 				/**
 				 * Seems that, regardless of _isTransparent, anything with shperical env mapping is opaque. This mostly comes from
 				 * NWN, where it's seen that things marked as transparent actually shouldn't be. It's assumed this carries over to
 				 * other game titles as well.
 				 */
 				materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::ENV_SPHERE,
+				                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
 				// pmesh->isTransparent = false;
 			}
 		}
@@ -1099,6 +1113,12 @@ void ModelNode::buildMaterial() {
 	if (textureCount >= 1) {
 		if (!phandles[0].empty()) {
 			materialName += phandles[0].getName();
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+			                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+			                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0,
+			                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE);
+
 			if (phandles[0].getTexture().getTXI().getFeatures().blending) {
 				materialFlags |= Shader::ShaderMaterial::MATERIAL_SPECIAL_BLEND;
 				// For KotOR2, this is required to get some windows showing up properly.
@@ -1111,9 +1131,11 @@ void ModelNode::buildMaterial() {
 				materialFlags |= Shader::ShaderMaterial::MATERIAL_DECAL;
 			}
 			if (penvmap && envmapmode == kModeEnvironmentBlendedUnder) {
-				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_SRC_ALPHA));
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
+				                Graphics::Shader::ShaderDescriptor::Blend::BLEND_SRC_ALPHA);
 			} else {
-				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE, Shader::ShaderBuilder::BLEND_ONE));
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
+				                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
 			}
 		}
 	}
@@ -1122,9 +1144,16 @@ void ModelNode::buildMaterial() {
 		if (!phandles[1].empty()) {
 			materialName += ".";
 			materialName += phandles[1].getName();
-			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::TEXTURE_LIGHTMAP, Shader::ShaderBuilder::BLEND_MULTIPLY));
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_1,
+			                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_1,
+			                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0,
+			                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_LIGHTMAP);
+			cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_LIGHTMAP,
+			                Graphics::Shader::ShaderDescriptor::Blend::BLEND_MULTIPLY);
 		} else {
-			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+			cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::FORCE_OPAQUE,
+			                Graphics::Shader::ShaderDescriptor::Blend::BLEND_IGNORED);
 		}
 	}
 
@@ -1132,14 +1161,18 @@ void ModelNode::buildMaterial() {
 		if (!phandles[2].empty()) {
 			materialName += ".";
 			materialName += phandles[2].getName();
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_2,
+			                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
 		} else {
-			shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+			cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::FORCE_OPAQUE,
+			                Graphics::Shader::ShaderDescriptor::Blend::BLEND_IGNORED);
 		}
 	}
 
 	if (textureCount >= 4) {
 		// Don't know yet what this extra texture is supposed to be.
-		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+		cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::FORCE_OPAQUE,
+		                Graphics::Shader::ShaderDescriptor::Blend::BLEND_IGNORED);
 	}
 
 	if (penvmap) {
@@ -1147,15 +1180,18 @@ void ModelNode::buildMaterial() {
 			materialName += penvmap->getName();
 			// Figure out if a cube or sphere map is used.
 			if (penvmap->getTexture().getImage().isCubeMap()) {
-				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_CUBE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::ENV_CUBE,
+				                Graphics::Shader::ShaderDescriptor::Blend::BLEND_DST_ALPHA);
 			} else {
-				shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::ENV_SPHERE, Shader::ShaderBuilder::BLEND_DST_ALPHA));
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::ENV_SPHERE,
+				                Graphics::Shader::ShaderDescriptor::Blend::BLEND_DST_ALPHA);
 			}
 		}
 	}
 
 	if (materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
-		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
+		cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::FORCE_OPAQUE,
+		                Graphics::Shader::ShaderDescriptor::Blend::BLEND_IGNORED);
 	}
 
 	if (materialFlags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {
@@ -1176,8 +1212,9 @@ void ModelNode::buildMaterial() {
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
 
-	vertexShaderName = ShaderBuild.genVertexShaderName(&shaderPasses[0], shaderPasses.size());
-	fragmentShaderName = ShaderBuild.genFragmentShaderName(&shaderPasses[0], shaderPasses.size());
+	cripter.genName(vertexShaderName);
+	fragmentShaderName = vertexShaderName + ".frag";
+	vertexShaderName += ".vert";
 
 	// Ok, material doesn't exist. Check on the shaders.
 	Shader::ShaderObject *vertexObject = ShaderMan.getShaderObject(vertexShaderName, Shader::SHADER_VERTEX);
@@ -1186,31 +1223,15 @@ void ModelNode::buildMaterial() {
 	// Should be checking vert and frag shader separately, but they really should exist together anyway.
 	if (!vertexObject) {
 		// No object found. Generate a shader then.
-
-		Graphics::Shader::ShaderDescriptor cripter;
-		cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
-		cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_NORMAL0);
-		cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0);
-
-		cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
-		                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
-
-		cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
-		                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0,
-		                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE);
-
-		cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
-		                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
-
-		cripter.build();
-
 		bool isGL3 = GfxMan.isGL3();
 
 		Common::UString vertexStringFinal;
 		Common::UString fragmentStringFinal;
 
-		vertexStringFinal = ShaderBuild.genVertexShader(&shaderPasses[0], shaderPasses.size(), isGL3);
-		fragmentStringFinal = ShaderBuild.genFragmentShader(&shaderPasses[0], shaderPasses.size(), isGL3);
+		cripter.build(isGL3, vertexStringFinal, fragmentStringFinal);
+
+		//vertexStringFinal = ShaderBuild.genVertexShader(&shaderPasses[0], shaderPasses.size(), isGL3);
+		//fragmentStringFinal = ShaderBuild.genFragmentShader(&shaderPasses[0], shaderPasses.size(), isGL3);
 
 		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
 		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);
@@ -1226,23 +1247,23 @@ void ModelNode::buildMaterial() {
 	if (penvmap) {
 		// Figure out if a cube or sphere map is used.
 		if (penvmap->getTexture().getImage().isCubeMap()) {
-			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureCube0"));
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_7_id"));
 		} else {
-			sampler = (Shader::ShaderSampler *)(material->getVariableData("_textureSphere0"));
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_7_id"));
 		}
 		sampler->handle = *penvmap;
 	}
 
 	if (textureCount >= 1) {
 		if (!phandles[0].empty()) {
-			sampler = (Shader::ShaderSampler *)(material->getVariableData("_texture0"));
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_0_id"));
 			sampler->handle = phandles[0];
 		}
 	}
 
 	if (textureCount >= 2) {
 		if (!phandles[1].empty()) {
-			sampler = (Shader::ShaderSampler *)(material->getVariableData("_lightmap"));
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_1_id"));
 			sampler->handle = phandles[1];
 		}
 	}
