@@ -1245,12 +1245,7 @@ void ModelNode::buildMaterial() {
 	SurfaceMan.addSurface(surface);
 
 	if (penvmap) {
-		// Figure out if a cube or sphere map is used.
-		if (penvmap->getTexture().getImage().isCubeMap()) {
-			sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_7_id"));
-		} else {
-			sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_7_id"));
-		}
+		sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_7_id"));
 		sampler->handle = *penvmap;
 	}
 
