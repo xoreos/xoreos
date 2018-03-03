@@ -363,8 +363,8 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 
 		f_body =   "out vec4 outColor;\n"
 		           "void main(void) {\n"
-		           "	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
-		           "	vec4 froggle = vec4(0.0, 0.0, 0.0, 0.0);\n";
+		           "	vec4 fraggle = vec4(1.0, 0.0, 0.0, 1.0);\n"
+		           "	vec4 froggle = vec4(1.0, 0.0, 0.0, 1.0);\n";
 	} else {
 		v_header = "#version 120\n\n"
 		           "uniform mat4 _objectModelviewMatrix;\n"
@@ -378,8 +378,8 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		           "uniform float _alpha;\n";
 
 		f_body =   "void main(void) {\n"
-		           "	vec4 fraggle = vec4(0.0, 0.0, 0.0, 0.0);\n"
-		           "	vec4 froggle = vec4(0.0, 0.0, 0.0, 0.0);\n";
+		           "	vec4 fraggle = vec4(1.0, 0.0, 0.0, 1.0);\n"
+		           "	vec4 froggle = vec4(1.0, 0.0, 0.0, 1.0);\n";
 	}
 
 	/**
@@ -736,7 +736,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			}
 			break;
 		case COLOUR:
-			f_action_string = "froggle = _colour; // TODO: colour is not a sampler.\n";
+			f_action_string = "froggle = vec4(1.0, 1.0, 1.0, 1.0); // TODO: colour is not a sampler.\n";
 			break;
 		case TEXTURE_DIFFUSE:
 			if (isGL3) {
@@ -747,9 +747,9 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			break;
 		case TEXTURE_LIGHTMAP:
 			if (isGL3) {
-				f_action_string = "froggle = texture(action_env_sphere_sampler, action_env_sphere_coords);\n";
+				f_action_string = "froggle = vec4(texture(action_lightmap_sampler, action_lightmap_coords).xyz, 1.0);\n";
 			} else {
-				f_action_string = "froggle = texture2D(action_env_sphere_sampler, action_env_sphere_coords);\n";
+				f_action_string = "froggle = vec4(texture2D(action_lightmap_sampler, action_lightmap_coords).xyz, 1.0);\n";
 			}
 			break;
 		case TEXTURE_BUMPMAP:
