@@ -597,7 +597,7 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 		_mesh->data->rawMesh = mystery_mesh;
 	}
 
-	this->buildMaterial();
+	//this->buildMaterial();
 }
 
 void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
@@ -820,11 +820,13 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 		ctx.mdb->skip(68); // Unknown
 	}
 
+	_mesh->data->rawMesh->init();
+
 	createBound();
 
 	ctx.mdb->seek(endPos);
 
-	this->buildMaterial();
+	//this->buildMaterial();
 }
 
 void ModelNode_Witcher::readTextures(Model_Witcher::ParserContext &ctx,
@@ -993,10 +995,15 @@ void ModelNode_Witcher::buildMaterial() {
 	 * _this_ object.
 	 */
 
-	if (!_model->getState().empty()) {
+	pmesh = _mesh;
+
+	if (!_model->getState().empty() && !pmesh) {
 		_rootStateNode = _model->getNode("", _name);
 		if (_rootStateNode == this) {
 			_rootStateNode = 0;
+		}
+		if (_rootStateNode) {
+			pmesh = _rootStateNode->getMesh();
 		}
 	} else {
 		_rootStateNode = 0;
@@ -1004,15 +1011,18 @@ void ModelNode_Witcher::buildMaterial() {
 
 	_dirtyRender = false;
 
-	if (!_mesh) {
+	if (!pmesh) {
+		//status("no mesh discovered on modelnode %s", _name.c_str());
 		return;
 	}
 
-	if (!_mesh->data) {
+	if (!pmesh->data) {
+		//status("no mesh data discovered on modelnode %s", _name.c_str());
 		return;
 	}
 
-	if (_mesh->data->textures.size() == 0 && _mesh->data->envMap.empty() && !_mesh->data->rawMesh) {
+	if (pmesh->data->textures.size() == 0 && pmesh->data->envMap.empty() && !pmesh->data->rawMesh) {
+		//status("no texture, envmap, or rawmesh on modelnode %s", _name.c_str());
 		return;
 	}
 	/**
@@ -1022,11 +1032,12 @@ void ModelNode_Witcher::buildMaterial() {
 	 * Important information in this case means texture or environment maps are overidden from
 	 * any potential parent.
 	 */
-	pmesh = _mesh;
+	//pmesh = _mesh;
 	phandles = getTextures(textureCount);
 	penvmap = getEnvironmentMap(envmapmode);
 
 	if (textureCount == 0) {
+		//status("texture count 0 on modelnode %s", _name.c_str());
 		return;
 	}
 
@@ -1035,12 +1046,14 @@ void ModelNode_Witcher::buildMaterial() {
 	}
 
 	if (!pmesh->data->rawMesh) {
+		//status("no raw mesh discovered on modelnode %s", _name.c_str());
 		return;
 	}
-
+/*
 	if (textureCount == 1 && phandles[0].empty()) {
 		return;
 	}
+*/
 
 	Common::UString vertexShaderName;
 	Common::UString fragmentShaderName;
