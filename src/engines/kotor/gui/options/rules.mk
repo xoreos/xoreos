@@ -29,6 +29,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/options/graphicsadv.h \
     src/engines/kotor/gui/options/sound.h \
     src/engines/kotor/gui/options/soundadv.h \
+    src/engines/kotor/gui/options/resolution.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
@@ -41,4 +42,5 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/options/graphicsadv.cpp \
     src/engines/kotor/gui/options/sound.cpp \
     src/engines/kotor/gui/options/soundadv.cpp \
+    src/engines/kotor/gui/options/resolution.cpp \
     $(EMPTY)

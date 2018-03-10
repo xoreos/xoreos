@@ -19,13 +19,11 @@
  */
 
 /** @file
- *  The graphics menu.
+ *  The graphics resolution menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
-#define ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
-
-#include "src/common/scopedptr.h"
+#ifndef ENGINES_KOTOR_GUI_OPTIONS_RESOLUTION_H
+#define ENGINES_KOTOR_GUI_OPTIONS_RESOLUTION_H
 
 #include "src/engines/kotor/gui/gui.h"
 
@@ -33,28 +31,16 @@ namespace Engines {
 
 namespace KotOR {
 
-class OptionsGraphicsMenu : public GUI {
+class OptionsResolutionMenu : public GUI {
 public:
-	OptionsGraphicsMenu(::Engines::Console *console = 0);
-	~OptionsGraphicsMenu();
-
-	virtual void show();
-
-	virtual void adoptChanges();
+	OptionsResolutionMenu(::Engines::Console *console = 0);
 
 protected:
 	void callbackActive(Widget &widget);
-
-private:
-	bool _shadows;
-	bool _grass;
-
-	Common::ScopedPtr<GUI> _resolution;
-	Common::ScopedPtr<GUI> _advanced;
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
+#endif // ENGINES_KOTOR_GUI_OPTIONS_RESOLUTION_H

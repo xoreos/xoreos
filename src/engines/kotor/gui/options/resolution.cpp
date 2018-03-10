@@ -19,42 +19,33 @@
  */
 
 /** @file
- *  The graphics menu.
+ *  The graphics resolution menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
-#define ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
+#include "src/engines/kotor/gui/options/resolution.h"
 
-#include "src/common/scopedptr.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/widgets/panel.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsGraphicsMenu : public GUI {
-public:
-	OptionsGraphicsMenu(::Engines::Console *console = 0);
-	~OptionsGraphicsMenu();
+OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : GUI(console) {
+	load("optresolution");
 
-	virtual void show();
+	WidgetPanel *guiPanel = getPanel("TGuiPanel");
+	guiPanel->setPosition(-guiPanel->getWidth()/2, -guiPanel->getHeight()/2, 0);
+}
 
-	virtual void adoptChanges();
+void OptionsResolutionMenu::callbackActive(Widget &widget) {
+	// TODO: Add changing of resolutions
 
-protected:
-	void callbackActive(Widget &widget);
-
-private:
-	bool _shadows;
-	bool _grass;
-
-	Common::ScopedPtr<GUI> _resolution;
-	Common::ScopedPtr<GUI> _advanced;
-};
+	if (widget.getTag() == "BTN_CANCEL") {
+		_returnCode = kReturnCodeAbort;
+		return;
+	}
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
