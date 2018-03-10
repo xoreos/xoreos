@@ -232,6 +232,11 @@ private:
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
 	void getSubRace(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Global values, functions_global.cpp
+	void getGlobalNumber(Aurora::NWScript::FunctionContext &ctx);
+	void setGlobalNumber(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace KotOR
