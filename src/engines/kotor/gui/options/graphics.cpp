@@ -28,6 +28,7 @@
 
 #include "src/engines/kotor/gui/options/graphics.h"
 #include "src/engines/kotor/gui/options/graphicsadv.h"
+#include "src/engines/kotor/gui/options/resolution.h"
 
 #include "src/engines/kotor/gui/widgets/checkbox.h"
 
@@ -41,6 +42,7 @@ OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : GUI(cons
 	addBackground(kBackgroundTypeMenu);
 
 	_advanced.reset(new OptionsGraphicsAdvancedMenu(_console));
+	_resolution.reset(new OptionsResolutionMenu(_console));
 
 	//Hardcoded, the gui file returns incorrect values
 	getCheckBox("CB_SHADOWS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
@@ -65,6 +67,11 @@ void OptionsGraphicsMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_ADVANCED") {
 		adoptChanges();
 		sub(*_advanced);
+		return;
+	}
+
+	if (widget.getTag() == "BTN_RESOLUTION") {
+		sub(*_resolution, kStartCodeNone, true, false);
 		return;
 	}
 
