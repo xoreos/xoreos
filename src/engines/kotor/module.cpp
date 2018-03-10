@@ -226,6 +226,8 @@ void Module::unload(bool completeUnload) {
 	if (completeUnload) {
 		unloadPC();
 		unloadTexturePack();
+
+		_globalNumbers.clear();
 	}
 
 	unloadIFO();
@@ -517,6 +519,18 @@ void Module::setReturnQueryStrref(uint32 id) {
 
 void Module::setReturnEnabled(bool enabled) {
 	_ingame->setReturnEnabled(enabled);
+}
+
+void Module::setGlobalNumber(const Common::UString &id, int value) {
+	_globalNumbers[id] = value;
+}
+
+int Module::getGlobalNumber(const Common::UString &id) const {
+	std::map<Common::UString, int>::const_iterator iter = _globalNumbers.find(id);
+	if (iter != _globalNumbers.end())
+		return iter->second;
+	else
+		return 0;
 }
 
 const Aurora::IFOFile &Module::getIFO() const {

@@ -120,6 +120,13 @@ public:
 	void setReturnEnabled(bool enabled);
 	// '---
 
+	// .--- Global values
+	/** Get a global number. */
+	void setGlobalNumber(const Common::UString &id, int value);
+	/** Set a global number. */
+	int getGlobalNumber(const Common::UString &id) const;
+	// '---
+
 	// .--- Static utility methods
 	static Common::UString getName(const Common::UString &module);
 	// '---
@@ -193,6 +200,10 @@ private:
 	Common::ScopedPtr<Graphics::Aurora::FadeQuad> _fade;
 
 	Common::ScopedPtr<IngameGUI> _ingame; ///< The ingame ui.
+
+	// .--- Global values
+	std::map<Common::UString, int> _globalNumbers;
+	// '---
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
