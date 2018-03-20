@@ -34,6 +34,11 @@ src_video_codecs_libcodecs_la_SOURCES += \
     src/video/codecs/xmvwmv2.cpp \
     $(EMPTY)
 
+vpx_source = \
+    src/video/codecs/vpx.cpp \
+    src/video/codecs/vpx.h \
+    $(EMPTY)
+
 xvid_source = \
 	src/video/codecs/h263.cpp \
 	src/video/codecs/h263.h \
@@ -43,5 +48,11 @@ if ENABLE_XVIDCORE
 src_video_codecs_libcodecs_la_SOURCES += $(xvid_source)
 else
 EXTRA_DIST += $(xvid_source)
+endif
+
+if ENABLE_VPX
+src_video_codecs_libcodecs_la_SOURCES += $(vpx_source)
+else
+EXTRA_DIST += $(vpx_source)
 endif
 
