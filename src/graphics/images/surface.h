@@ -36,6 +36,7 @@ public:
 
 	int getWidth () const;
 	int getHeight() const;
+	int getPitch() const { return getWidth() * 4; }
 
 	byte *getData();
 	const byte *getData() const;
