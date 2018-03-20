@@ -191,6 +191,7 @@ AC_ARG_ENABLE([vorbis], [AS_HELP_STRING([--disable-vorbis], [Disable building wi
 AC_ARG_ENABLE([mad], [AS_HELP_STRING([--disable-mad], [Disable building with MP3 support @<:@default=no@:>@])], [], [enable_mad=yes])
 AC_ARG_ENABLE([faad], [AS_HELP_STRING([--disable-faad], [Disable building with AAC support @<:@default=no@:>@])], [], [enable_faad=yes])
 AC_ARG_ENABLE([xvidcore], [AS_HELP_STRING([--disable-xvidcore], [Disable building with H.263 support @<:@default=no@:>@])], [], [enable_xvidcore=yes])
+AC_ARG_ENABLE([vpx], [AS_HELP_STRING([--disable-vpx], [Disabling building with VP8/VP9 support @<:@default=no@:>@])], [], [enable_vpx=yes])
 
 dnl General purpose libraries
 AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found!]))
@@ -244,6 +245,17 @@ else
 	XVID_CFLAGS=""
 	XVID_LIBS=""
 	AM_CONDITIONAL(ENABLE_XVIDCORE, false)
+fi
+if test "x$enable_vpx" = "xyes"; then
+	AX_CHECK_VPX(4, , [enable_vpx=no])
+fi
+if test "x$enable_vpx" = "xyes"; then
+	AC_DEFINE([ENABLE_VPX], 1, [Defined to 1 if we are using libvpx])
+	AM_CONDITIONAL(ENABLE_VPX, true)
+else
+	VPX_CFLAGS=""
+	VPX_LIBS=""
+	AM_CONDITIONAL(ENABLE_VPX, false)
 fi
 
 dnl Sound libraries
@@ -343,3 +355,4 @@ AC_MSG_NOTICE([ libmad: $enable_mad])
 AC_MSG_NOTICE([ libvorbis: $enable_vorbis])
 AC_MSG_NOTICE([ libfaad: $enable_faad])
 AC_MSG_NOTICE([ xvidcore: $enable_xvidcore])
+AC_MSG_NOTICE([ libvpx: $enable_vpx])
