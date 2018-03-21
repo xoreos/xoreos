@@ -86,7 +86,8 @@ src_common_libcommon_la_SOURCES += \
     src/common/systemfonts.h \
     src/common/changeid.h \
     src/common/xml.h \
-    src/common/rect.h \
+    src/common/rational.h \
+    src/common/algorithm.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
@@ -137,4 +138,5 @@ src_common_libcommon_la_SOURCES += \
     src/common/changeid.cpp \
     src/common/xml.cpp \
     src/common/rect.cpp \
+    src/common/rational.cpp \
     $(EMPTY)
