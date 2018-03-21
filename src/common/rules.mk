@@ -88,6 +88,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/xml.h \
     src/common/rational.h \
     src/common/algorithm.h \
+    src/common/timestamp.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
@@ -139,4 +140,5 @@ src_common_libcommon_la_SOURCES += \
     src/common/xml.cpp \
     src/common/rect.cpp \
     src/common/rational.cpp \
+    src/common/timestamp.cpp \
     $(EMPTY)
