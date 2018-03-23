@@ -52,6 +52,9 @@
 
 namespace Sound {
 
+class PacketizedAudioStream;
+class RewindableAudioStream;
+
 /**
  * Various flags which can be bit-ORed and then passed to
  * makeRawMemoryStream and some other AudioStream factories
@@ -87,6 +90,17 @@ enum PCMFlags {
 RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
                                    int rate, byte flags, int channels,
                                    bool disposeAfterUse = true);
+
+/**
+ * Creates a PacketizedAudioStream that will automatically queue
+ * packets as individual AudioStreams like returned by makePCMStream.
+ *
+ * @param rate   Rate of the sound data.
+ * @param flags	 Audio flags combination.
+ * @see PCMFlags
+ * @return The new PacketizedAudioStream.
+ */
+PacketizedAudioStream *makePacketizedPCMStream(int rate, byte flags, int channels);
 
 } // End of namespace Sound
 

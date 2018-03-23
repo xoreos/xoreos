@@ -152,4 +152,24 @@ RewindableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
 	}
 }
 
+class PacketizedPCMStream : public StatelessPacketizedAudioStream {
+public:
+	PacketizedPCMStream(int rate, byte flags, int channels) :
+		StatelessPacketizedAudioStream(rate, channels), _flags(flags) {}
+
+protected:
+	AudioStream *makeStream(Common::SeekableReadStream *data);
+
+private:
+	byte _flags;
+};
+
+AudioStream *PacketizedPCMStream::makeStream(Common::SeekableReadStream *data) {
+	return makePCMStream(data, getRate(), _flags, getChannels());
+}
+
+PacketizedAudioStream *makePacketizedPCMStream(int rate, byte flags, int channels) {
+	return new PacketizedPCMStream(rate, flags, channels);
+}
+
 } // End of namespace Sound
