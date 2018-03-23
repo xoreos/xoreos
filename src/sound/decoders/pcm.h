@@ -72,7 +72,14 @@ enum PCMFlags {
 	FLAG_16BITS = 1 << 1,
 
 	/** samples are little endian (default: big endian) */
-	FLAG_LITTLE_ENDIAN = 1 << 2
+	FLAG_LITTLE_ENDIAN = 1 << 2,
+
+	/** samples are in native endianness */
+#ifdef XOREOS_LITTLE_ENDIAN
+	FLAG_NATIVE_ENDIAN = FLAG_LITTLE_ENDIAN
+#else
+	FLAG_NATIVE_ENDIAN = 0
+#endif
 };
 
 /**
