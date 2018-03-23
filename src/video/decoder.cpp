@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include <boost/pointer_cast.hpp>
+
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 #include "src/common/threads.h"
@@ -47,7 +49,8 @@ VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
 	_started(false), _finished(false), _needCopy(false),
 	_width(0), _height(0), _texture(0),
 	_textureWidth(0.0f), _textureHeight(0.0f), _scale(kScaleNone),
-	_soundRate(0), _soundFlags(0), _startTime(0) {
+	_soundRate(0), _soundFlags(0), _startTime(0),
+	_pauseLevel(0), _pauseStartTime(0) {
 
 }
 
@@ -57,6 +60,10 @@ VideoDecoder::~VideoDecoder() {
 	if (_texture != 0)
 		GfxMan.abandon(&_texture, 1);
 
+	// New API:
+	stopAudio();
+
+	// Old API:
 	deinitSound();
 }
 
@@ -159,6 +166,111 @@ uint32 VideoDecoder::getNumQueuedStreams() const {
 	return _sound ? _sound->numQueuedStreams() : 0;
 }
 
+bool VideoDecoder::endOfVideo() const {
+	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
+		if (!(*it)->endOfTrack())
+			return false;
+
+	return !_finished;
+}
+
+bool VideoDecoder::endOfVideoTracks() const {
+	return !_finished;
+}
+
+void VideoDecoder::pauseVideo(bool pause) {
+	if (pause) {
+		_pauseLevel++;
+
+	// We can't go negative
+	} else if (_pauseLevel) {
+		_pauseLevel--;
+
+	// Do nothing
+	} else {
+		return;
+	}
+
+	if (_pauseLevel == 1 && pause) {
+		_pauseStartTime = EventMan.getTimestamp(); // Store the starting time from pausing to keep it for later
+
+		for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++)
+			(*it)->pause(true);
+	} else if (_pauseLevel == 0) {
+		for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++)
+			(*it)->pause(false);
+
+		_startTime += (EventMan.getTimestamp() - _pauseStartTime);
+	}
+}
+
+void VideoDecoder::addTrack(Track *track, bool isExternal) {
+	TrackPtr owned(track);
+	_tracks.push_back(owned);
+
+	if (isExternal)
+		_externalTracks.push_back(owned);
+	else
+		_internalTracks.push_back(owned);
+
+	if (track->getTrackType() == Track::kTrackTypeAudio) {
+		// Update volume settings if it's an audio track
+		// TODO: Make this setting available via an external interface
+		boost::static_pointer_cast<AudioTrack>(owned)->setGain(1.0f);
+	}
+
+	// Keep the track paused if we're paused
+	if (isPaused())
+		track->pause(true);
+
+	// Start the track if we're playing
+	if (isPlaying() && track->getTrackType() == Track::kTrackTypeAudio)
+		boost::static_pointer_cast<AudioTrack>(owned)->start();
+}
+
+VideoDecoder::TrackPtr VideoDecoder::getTrack(uint track) {
+	if (track > _internalTracks.size())
+		return 0;
+
+	return _internalTracks[track];
+}
+
+VideoDecoder::ConstTrackPtr VideoDecoder::getTrack(uint track) const {
+	if (track > _internalTracks.size())
+		return 0;
+
+	return _internalTracks[track];
+}
+
+VideoDecoder::ConstTrackList VideoDecoder::getInternalTracks() const {
+	ConstTrackList tracks;
+
+	for (TrackList::const_iterator it = _internalTracks.begin(); it != _internalTracks.end(); it++)
+		tracks.push_back(*it);
+
+	return tracks;
+}
+
+void VideoDecoder::startAudio() {
+	for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++)
+		if ((*it)->getTrackType() == Track::kTrackTypeAudio)
+			boost::static_pointer_cast<AudioTrack>(*it)->start();
+}
+
+void VideoDecoder::stopAudio() {
+	for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++)
+		if ((*it)->getTrackType() == Track::kTrackTypeAudio)
+			boost::static_pointer_cast<AudioTrack>(*it)->stop();
+}
+
+bool VideoDecoder::hasAudio() const {
+	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
+		if ((*it)->getTrackType() == Track::kTrackTypeAudio)
+			return true;
+
+	return false;
+}
+
 void VideoDecoder::doRebuild() {
 	if (!_surface)
 		return;
@@ -210,7 +322,18 @@ void VideoDecoder::setScale(Scale scale) {
 }
 
 bool VideoDecoder::isPlaying() const {
-	return _startTime != 0 && (!_finished || SoundMan.isPlaying(_soundHandle));
+	if (_startTime == 0)
+		return false;
+
+	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
+		if (!(*it)->endOfTrack())
+			return true;
+
+	// Old API:
+	if (SoundMan.isPlaying(_soundHandle))
+		return true;
+
+	return !_finished;
 }
 
 void VideoDecoder::getSize(uint32 &width, uint32 &height) const {
@@ -226,6 +349,18 @@ void VideoDecoder::update() {
 
 	processData();
 	copyData();
+
+	// Figure out how much audio we need
+	Common::Timestamp audioNeeded;
+	if (endOfVideoTracks())
+		audioNeeded = Common::Timestamp(0xFFFFFFFF);
+	else
+		audioNeeded = Common::Timestamp(getTimeToNextFrame() + 500, 1000);
+
+	// Ensure we have enough audio by the time we get to the next frame
+	for (TrackList::iterator it = _internalTracks.begin(); it != _internalTracks.end(); it++)
+		if ((*it)->getTrackType() == Track::kTrackTypeAudio && boost::static_pointer_cast<AudioTrack>(*it)->canBufferData())
+			checkAudioBuffer(static_cast<AudioTrack&>(**it), audioNeeded);
 }
 
 void VideoDecoder::getQuadDimensions(float &width, float &height) const {
@@ -304,6 +439,9 @@ void VideoDecoder::start() {
 
 	_startTime = EventMan.getTimestamp();
 
+	// New API:
+	startAudio();
+
 	show();
 }
 
@@ -311,18 +449,24 @@ void VideoDecoder::abort() {
 	hide();
 
 	finish();
+
+	// New API:
+	stopAudio();
 }
 
 uint32 VideoDecoder::getTime() const {
 	if (!isPlaying())
 		return 0;
 
+	if (isPaused())
+		return _pauseStartTime - _startTime;
+
+	// TODO: Use the sound time if possible
+
 	return EventMan.getTimestamp() - _startTime;
 }
 
 uint32 VideoDecoder::getTimeToNextFrame() const {
-	// TODO: Use the sound time if possible
-
 	uint32 curTime = getTime();
 	if (curTime == 0)
 		return 0;
@@ -332,6 +476,98 @@ uint32 VideoDecoder::getTimeToNextFrame() const {
 		return 0;
 
 	return nextFrameStartTime - curTime;
+}
+
+void VideoDecoder::checkAudioBuffer(AudioTrack &UNUSED(track), const Common::Timestamp &UNUSED(endTime)) {
+}
+
+Common::Timestamp VideoDecoder::getDuration() const {
+	// New API only
+	Common::Timestamp maxDuration(0, 1000);
+
+	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++) {
+		Common::Timestamp duration = (*it)->getDuration();
+
+		if (duration > maxDuration)
+			maxDuration = duration;
+	}
+
+	return maxDuration;
+}
+
+VideoDecoder::Track::Track() {
+	_paused = false;
+}
+
+void VideoDecoder::Track::pause(bool shouldPause) {
+	_paused = shouldPause;
+	pauseIntern(shouldPause);
+}
+
+void VideoDecoder::Track::pauseIntern(bool UNUSED(shouldPause)) {
+}
+
+Common::Timestamp VideoDecoder::Track::getDuration() const {
+	return Common::Timestamp(0, 1000);
+}
+
+VideoDecoder::AudioTrack::AudioTrack() : _gain(1.0f), _muted(false) {
+}
+
+bool VideoDecoder::AudioTrack::endOfTrack() const {
+	return !getAudioStream() || !SoundMan.isPlaying(_handle);
+}
+
+void VideoDecoder::AudioTrack::setGain(float gain) {
+	_gain = gain;
+
+	if (SoundMan.isPlaying(_handle))
+		SoundMan.setChannelGain(_handle, _muted ? 0.0f : _gain);
+}
+
+void VideoDecoder::AudioTrack::start() {
+	stop();
+
+	Sound::AudioStream *stream = getAudioStream();
+	assert(stream);
+
+	_handle = SoundMan.playAudioStream(stream, Sound::kSoundTypeVideo, false);
+
+	// Apply the gain
+	SoundMan.setChannelGain(_handle, _muted ? 0.0f : _gain);
+
+	// Pause the audio again if we're still paused
+	if (isPaused())
+		SoundMan.pauseChannel(_handle, true);
+
+	// Actually start playback of the channel
+	SoundMan.startChannel(_handle);
+}
+
+void VideoDecoder::AudioTrack::stop() {
+	SoundMan.stopChannel(_handle);
+}
+
+uint32 VideoDecoder::AudioTrack::getRunningTime() const {
+	if (SoundMan.isPlaying(_handle))
+		return (uint32)SoundMan.getChannelDurationPlayed(_handle);
+
+	return 0;
+}
+
+void VideoDecoder::AudioTrack::setMute(bool mute) {
+	// Update the mute settings, if required
+	if (_muted != mute) {
+		_muted = mute;
+
+		if (SoundMan.isPlaying(_handle))
+			SoundMan.setChannelGain(_handle, _muted ? 0.0f : _gain);
+	}
+}
+
+void VideoDecoder::AudioTrack::pauseIntern(bool shouldPause) {
+	if (SoundMan.isPlaying(_handle))
+		SoundMan.pauseChannel(_handle, shouldPause);
 }
 
 } // End of namespace Video
