@@ -166,7 +166,7 @@ void QuickTimeDecoder::load() {
 		dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[i]).initCodec();
 }
 
-QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(Track *track, uint32 format) {
+QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *track, uint32 format) {
 	if (track->codecType == CODEC_TYPE_VIDEO) {
 		Common::ScopedPtr<VideoSampleDesc> entry(new VideoSampleDesc(track, format));
 
@@ -467,7 +467,7 @@ int QuickTimeDecoder::readMVHD(Atom UNUSED(atom)) {
 }
 
 int QuickTimeDecoder::readTRAK(Atom atom) {
-	Track *track = new Track();
+	QuickTimeTrack *track = new QuickTimeTrack();
 
 	if (!track)
 		return -1;
@@ -498,7 +498,7 @@ int QuickTimeDecoder::readELST(Atom UNUSED(atom)) {
 }
 
 int QuickTimeDecoder::readHDLR(Atom atom) {
-	Track *track = _tracks.back();
+	QuickTimeTrack *track = _tracks.back();
 
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
@@ -529,7 +529,7 @@ int QuickTimeDecoder::readHDLR(Atom atom) {
 }
 
 int QuickTimeDecoder::readMDHD(Atom UNUSED(atom)) {
-	Track *track = _tracks.back();
+	QuickTimeTrack *track = _tracks.back();
 	byte version = _fd->readByte();
 
 	if (version > 1)
@@ -556,7 +556,7 @@ int QuickTimeDecoder::readMDHD(Atom UNUSED(atom)) {
 }
 
 int QuickTimeDecoder::readSTSD(Atom UNUSED(atom)) {
-	Track *track = _tracks.back();
+	QuickTimeTrack *track = _tracks.back();
 
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
@@ -593,7 +593,7 @@ int QuickTimeDecoder::readSTSD(Atom UNUSED(atom)) {
 }
 
 int QuickTimeDecoder::readSTSC(Atom UNUSED(atom)) {
-	Track *track = _tracks.back();
+	QuickTimeTrack *track = _tracks.back();
 
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
@@ -616,7 +616,7 @@ int QuickTimeDecoder::readSTSC(Atom UNUSED(atom)) {
 }
 
 int QuickTimeDecoder::readSTSS(Atom UNUSED(atom)) {
-	Track *track = _tracks.back();
+	QuickTimeTrack *track = _tracks.back();
 
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
@@ -634,7 +634,7 @@ int QuickTimeDecoder::readSTSS(Atom UNUSED(atom)) {
 }
 
 int QuickTimeDecoder::readSTSZ(Atom UNUSED(atom)) {
-	Track *track = _tracks.back();
+	QuickTimeTrack *track = _tracks.back();
 
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
@@ -657,7 +657,7 @@ int QuickTimeDecoder::readSTSZ(Atom UNUSED(atom)) {
 }
 
 int QuickTimeDecoder::readSTTS(Atom UNUSED(atom)) {
-	Track *track = _tracks.back();
+	QuickTimeTrack *track = _tracks.back();
 	uint32 totalSampleCount = 0;
 
 	_fd->readByte(); // version
@@ -679,7 +679,7 @@ int QuickTimeDecoder::readSTTS(Atom UNUSED(atom)) {
 }
 
 int QuickTimeDecoder::readSTCO(Atom UNUSED(atom)) {
-	Track *track = _tracks.back();
+	QuickTimeTrack *track = _tracks.back();
 
 	_fd->readByte(); // version
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
@@ -727,7 +727,7 @@ int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 	if (_tracks.empty())
 		return 0;
 
-	Track *track = _tracks.back();
+	QuickTimeTrack *track = _tracks.back();
 
 	_fd->readUint32BE(); // version + flags
 
@@ -898,18 +898,18 @@ void QuickTimeDecoder::updateAudioBuffer() {
 		queueNextAudioChunk();
 }
 
-QuickTimeDecoder::SampleDesc::SampleDesc(QuickTimeDecoder::Track *parentTrack, uint32 codecTag) {
+QuickTimeDecoder::SampleDesc::SampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32 codecTag) {
 	_parentTrack = parentTrack;
 	_codecTag = codecTag;
 }
 
-QuickTimeDecoder::Track::Track() : chunkCount(0), timeToSampleCount(0), sampleToChunkCount(0),
+QuickTimeDecoder::QuickTimeTrack::QuickTimeTrack() : chunkCount(0), timeToSampleCount(0), sampleToChunkCount(0),
 	sampleSize(0), sampleCount(0), keyframeCount(0), timeScale(0), width(0), height(0),
 	codecType(CODEC_TYPE_MOV_OTHER), frameCount(0), duration(0), startTime(0), objectTypeMP4(0) {
 
 }
 
-QuickTimeDecoder::AudioSampleDesc::AudioSampleDesc(QuickTimeDecoder::Track *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
+QuickTimeDecoder::AudioSampleDesc::AudioSampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
 	_channels = 0;
 	_sampleRate = 0;
 	_samplesPerFrame = 0;
@@ -1009,7 +1009,7 @@ void QuickTimeDecoder::AudioSampleDesc::initCodec() {
 	}
 }
 
-QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::Track *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
+QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
 	std::memset(_codecName, 0, 32);
 	_colorTableId = 0;
 	_bitsPerSample = 0;

@@ -119,23 +119,23 @@ private:
 		uint32 id;
 	};
 
-	struct Track;
+	struct QuickTimeTrack;
 
 	class SampleDesc {
 	public:
-		SampleDesc(Track *parentTrack, uint32 codecTag);
+		SampleDesc(QuickTimeTrack *parentTrack, uint32 codecTag);
 		virtual ~SampleDesc() {}
 
 		uint32 getCodecTag() const { return _codecTag; }
 
 	protected:
-		Track *_parentTrack;
+		QuickTimeTrack *_parentTrack;
 		uint32 _codecTag;
 	};
 
 	class AudioSampleDesc : public SampleDesc {
 	public:
-		AudioSampleDesc(Track *parentTrack, uint32 codecTag);
+		AudioSampleDesc(QuickTimeTrack *parentTrack, uint32 codecTag);
 		~AudioSampleDesc();
 
 		bool isAudioCodecSupported() const;
@@ -155,7 +155,7 @@ private:
 
 	class VideoSampleDesc : public SampleDesc {
 	public:
-		VideoSampleDesc(Track *parentTrack, uint32 codecTag);
+		VideoSampleDesc(QuickTimeTrack *parentTrack, uint32 codecTag);
 		~VideoSampleDesc();
 
 		void initCodec();
@@ -174,8 +174,8 @@ private:
 		CODEC_TYPE_AUDIO
 	};
 
-	struct Track {
-		Track();
+	struct QuickTimeTrack {
+		QuickTimeTrack();
 
 		uint32 chunkCount;
 		Common::ScopedArray<uint32> chunkOffsets;
@@ -205,12 +205,12 @@ private:
 		byte objectTypeMP4;
 	};
 
-	SampleDesc *readSampleDesc(Track *track, uint32 format);
+	SampleDesc *readSampleDesc(QuickTimeTrack *track, uint32 format);
 
 	const ParseTable *_parseTable;
 	bool _foundMOOV;
 	uint32 _timeScale;
-	Common::PtrVector<Track> _tracks;
+	Common::PtrVector<QuickTimeTrack> _tracks;
 
 	int32 _curFrame;
 	uint32 _startTime;
