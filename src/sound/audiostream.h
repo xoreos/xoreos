@@ -55,6 +55,7 @@
 #include "src/common/util.h"
 #include "src/common/types.h"
 #include "src/common/disposableptr.h"
+#include "src/common/scopedptr.h"
 
 namespace Common {
 class SeekableReadStream;
@@ -270,6 +271,43 @@ public:
 	 * Is the stream marked as finished?
 	 */
 	virtual bool isFinished() const = 0;
+};
+
+/**
+ * A PacketizedAudioStream that works closer to a QueuingAudioStream.
+ * It queues individual packets as whole AudioStream to an internal
+ * QueuingAudioStream. This is used for writing quick wrappers against
+ * e.g. PCMStream, which can be made into PacketizedAudioStreams with
+ * little effort.
+ */
+class StatelessPacketizedAudioStream : public PacketizedAudioStream {
+public:
+	StatelessPacketizedAudioStream(int rate, int channels) :
+		_rate(rate), _channels(channels), _stream(makeQueuingAudioStream(rate, channels)) {}
+	virtual ~StatelessPacketizedAudioStream() {}
+
+	// AudioStream API
+	int getChannels() const { return _channels; }
+	int getRate() const { return _rate; }
+	size_t readBuffer(int16 *data, const size_t numSamples) { return _stream->readBuffer(data, numSamples); }
+	bool endOfData() const { return _stream->endOfData(); }
+	bool endOfStream() const { return _stream->endOfStream(); }
+
+	// PacketizedAudioStream API
+	void queuePacket(Common::SeekableReadStream *data) { _stream->queueAudioStream(makeStream(data)); }
+	void finish() { _stream->finish(); }
+	bool isFinished() const { return _stream->isFinished(); }
+
+protected:
+	/**
+	 * Make the AudioStream for a given packet
+	 */
+	virtual AudioStream *makeStream(Common::SeekableReadStream *data) = 0;
+
+private:
+	int _rate;
+	int _channels;
+	Common::ScopedPtr<QueuingAudioStream> _stream;
 };
 
 } // End of namespace Sound
