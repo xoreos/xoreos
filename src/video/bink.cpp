@@ -75,6 +75,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
+#include "src/common/memreadstream.h"
 #include "src/common/strutil.h"
 #include "src/common/readstream.h"
 #include "src/common/bitstream.h"
@@ -86,6 +87,8 @@
 
 #include "src/graphics/images/surface.h"
 
+#include "src/sound/audiostream.h"
+#include "src/sound/decoders/pcm.h"
 #include "src/sound/decoders/util.h"
 
 #include "src/video/bink.h"
@@ -137,10 +140,10 @@ Bink::VideoFrame::~VideoFrame() {
 }
 
 
-Bink::AudioTrack::AudioTrack() : bits(0), bands(0), rdft(0), dct(0) {
+Bink::AudioInfo::AudioInfo() : bits(0), bands(0), rdft(0), dct(0) {
 }
 
-Bink::AudioTrack::~AudioTrack() {
+Bink::AudioInfo::~AudioInfo() {
 	delete bits;
 
 	delete[] bands;
@@ -150,7 +153,7 @@ Bink::AudioTrack::~AudioTrack() {
 }
 
 
-Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink), _disableAudio(false),
+Bink::Bink(Common::SeekableReadStream *bink) : _bink(bink),
 	_curFrame(0), _audioTrack(0) {
 
 	assert(_bink);
@@ -177,6 +180,11 @@ void Bink::processData() {
 		return;
 
 	if (_curFrame >= _frames.size()) {
+		TrackList tracks = getInternalTracks();
+		for (TrackList::iterator it = tracks.begin(); it != tracks.end(); it++)
+			if ((*it)->getTrackType() == Track::kTrackTypeAudio)
+				static_cast<BinkAudioTrack &>(**it).setEndOfData();
+
 		finish();
 		return;
 	}
@@ -188,7 +196,7 @@ void Bink::processData() {
 	size_t frameSize = frame.size;
 
 	for (size_t i = 0; i < _audioTracks.size(); i++) {
-		AudioTrack &audio = _audioTracks[i];
+		AudioInfo &audio = _audioTracks[i];
 
 		uint32 audioPacketLength = _bink->readUint32LE();
 
@@ -204,6 +212,9 @@ void Bink::processData() {
 			if (i == _audioTrack) {
 				// Only play one audio track
 
+				// Get our track - audio index plus one as the first track is video
+				BinkAudioTrack& audioTrack = static_cast<BinkAudioTrack &>(*getTrack(i /* + 1*/));
+
 				//                  Number of samples in bytes
 				audio.sampleCount = _bink->readUint32LE() / (2 * audio.channels);
 
@@ -211,7 +222,7 @@ void Bink::processData() {
 					new Common::BitStream32LELSB(new Common::SeekableSubReadStream(_bink.get(),
 					    audioPacketStart + 4, audioPacketEnd), true);
 
-				audioPacket(audio);
+				audioTrack.decodePacket();
 
 				delete audio.bits;
 				audio.bits = 0;
@@ -238,26 +249,6 @@ void Bink::processData() {
 	_needCopy = true;
 
 	_curFrame++;
-}
-
-void Bink::audioPacket(AudioTrack &audio) {
-	if (_disableAudio)
-		return;
-
-	int outSize = audio.frameLen * audio.channels;
-	while (!_disableAudio && (audio.bits->pos() < audio.bits->size())) {
-		Common::ScopedArray<int16> out(new int16[outSize]);
-		std::memset(out.get(), 0, outSize * 2);
-
-		audioBlock(audio, out.get());
-		if (_disableAudio)
-			return;
-
-		queueSound(reinterpret_cast<const byte *>(out.release()), audio.blockSize * 2);
-
-		if (audio.bits->pos() & 0x1F) // next data block starts at a 32-byte boundary
-			audio.bits->skip(32 - (audio.bits->pos() & 0x1F));
-	}
 }
 
 void Bink::videoPacket(VideoFrame &video) {
@@ -542,7 +533,7 @@ void Bink::load() {
 
 		// Reading audio track properties
 		for (uint32 i = 0; i < audioTrackCount; i++) {
-			AudioTrack &track = _audioTracks[i];
+			AudioInfo &track = _audioTracks[i];
 
 			track.sampleRate = _bink->readUint16LE();
 			track.flags      = _bink->readUint16LE();
@@ -598,14 +589,11 @@ void Bink::load() {
 	initBundles();
 	initHuffman();
 
-	if (_audioTrack < _audioTracks.size()) {
-		const AudioTrack &audio = _audioTracks[_audioTrack];
-
-		initSound(audio.outSampleRate, audio.outChannels, true);
-	}
+	if (_audioTrack < _audioTracks.size())
+		addTrack(new BinkAudioTrack(_audioTracks[_audioTrack]));
 }
 
-void Bink::initAudioTrack(AudioTrack &audio) {
+void Bink::initAudioTrack(AudioInfo &audio) {
 	audio.sampleCount = 0;
 	audio.bits        = 0;
 
@@ -1406,64 +1394,100 @@ void Bink::readResidue(VideoFrame &video, int16 *block, int masksCount) {
 	}
 }
 
-float Bink::getFloat(AudioTrack &audio) {
-	int power = audio.bits->getBits(5);
+Bink::BinkAudioTrack::BinkAudioTrack(Bink::AudioInfo &audio) : _audioInfo(&audio) {
+	_audioStream = Sound::makePacketizedPCMStream(_audioInfo->outSampleRate, Sound::FLAG_16BITS | Sound::FLAG_NATIVE_ENDIAN, _audioInfo->outChannels);
+}
 
-	float f = ldexpf(audio.bits->getBits(23), power - 23);
+Bink::BinkAudioTrack::~BinkAudioTrack() {
+	delete _audioStream;
+}
 
-	if (audio.bits->getBit())
+Sound::AudioStream *Bink::BinkAudioTrack::getAudioStream() const {
+	return _audioStream;
+}
+
+void Bink::BinkAudioTrack::decodePacket() {
+	int outSize = _audioInfo->frameLen * _audioInfo->channels;
+
+	while (_audioInfo->bits->pos() < _audioInfo->bits->size()) {
+		Common::ScopedArray<int16> out(new int16[outSize]);
+		std::memset(out.get(), 0, outSize * 2);
+
+		audioBlock(out.get());
+
+		_audioStream->queuePacket(new Common::MemoryReadStream(reinterpret_cast<byte *>(out.release()), _audioInfo->blockSize * 2, true));
+
+		if (_audioInfo->bits->pos() & 0x1F) // next data block starts at a 32-byte boundary
+			_audioInfo->bits->skip(32 - (_audioInfo->bits->pos() & 0x1F));
+	}
+}
+
+float Bink::BinkAudioTrack::getFloat() {
+	int power = _audioInfo->bits->getBits(5);
+
+	float f = ldexpf(_audioInfo->bits->getBits(23), power - 23);
+
+	if (_audioInfo->bits->getBit())
 		f = -f;
 
 	return f;
 }
 
-void Bink::audioBlock(AudioTrack &audio, int16 *out) {
-	if      (audio.codec == kAudioCodecDCT)
-		audioBlockDCT (audio);
-	else if (audio.codec == kAudioCodecRDFT)
-		audioBlockRDFT(audio);
+bool Bink::BinkAudioTrack::canBufferData() const {
+	return !_audioStream->isFinished();
+}
 
-	Sound::floatToInt16Interleave(out, const_cast<const float **>(audio.coeffsPtr),
-	                              audio.frameLen, audio.channels);
+void Bink::BinkAudioTrack::setEndOfData() {
+	_audioStream->finish();
+}
 
-	if (!audio.first) {
-		int count = audio.overlapLen * audio.channels;
+void Bink::BinkAudioTrack::audioBlock(int16 *out) {
+	if      (_audioInfo->codec == kAudioCodecDCT)
+		audioBlockDCT ();
+	else if (_audioInfo->codec == kAudioCodecRDFT)
+		audioBlockRDFT();
+
+	Sound::floatToInt16Interleave(out, const_cast<const float **>(_audioInfo->coeffsPtr),
+	                              _audioInfo->frameLen, _audioInfo->channels);
+
+	if (!_audioInfo->first) {
+		int count = _audioInfo->overlapLen * _audioInfo->channels;
 		int shift = Common::intLog2(count);
 		for (int i = 0; i < count; i++) {
-			out[i] = (audio.prevCoeffs[i] * (count - i) + out[i] * i) >> shift;
+			out[i] = (_audioInfo->prevCoeffs[i] * (count - i) + out[i] * i) >> shift;
 		}
 	}
 
-	std::memcpy(audio.prevCoeffs, out + audio.blockSize, audio.overlapLen * audio.channels * sizeof(*out));
+	std::memcpy(_audioInfo->prevCoeffs, out + _audioInfo->blockSize, _audioInfo->overlapLen * _audioInfo->channels * sizeof(*out));
 
-	audio.first = false;
+	_audioInfo->first = false;
 }
 
-void Bink::audioBlockDCT(AudioTrack &audio) {
-	audio.bits->skip(2);
+void Bink::BinkAudioTrack::audioBlockDCT() {
+	_audioInfo->bits->skip(2);
 
-	for (uint8 i = 0; i < audio.channels; i++) {
-		float *coeffs = audio.coeffsPtr[i];
+	for (uint8 i = 0; i < _audioInfo->channels; i++) {
+		float *coeffs = _audioInfo->coeffsPtr[i];
 
-		readAudioCoeffs(audio, coeffs);
+		readAudioCoeffs(coeffs);
 
 		coeffs[0] /= 0.5f;
 
-		audio.dct->calc(coeffs);
+		_audioInfo->dct->calc(coeffs);
 
-		for (uint32 j = 0; j < audio.frameLen; j++)
-			coeffs[j] *= (audio.frameLen / 2.0f);
+		for (uint32 j = 0; j < _audioInfo->frameLen; j++)
+			coeffs[j] *= (_audioInfo->frameLen / 2.0f);
 	}
 
 }
 
-void Bink::audioBlockRDFT(AudioTrack &audio) {
-	for (uint8 i = 0; i < audio.channels; i++) {
-		float *coeffs = audio.coeffsPtr[i];
+void Bink::BinkAudioTrack::audioBlockRDFT() {
+	for (uint8 i = 0; i < _audioInfo->channels; i++) {
+		float *coeffs = _audioInfo->coeffsPtr[i];
 
-		readAudioCoeffs(audio, coeffs);
+		readAudioCoeffs(coeffs);
 
-		audio.rdft->calc(coeffs);
+		_audioInfo->rdft->calc(coeffs);
 	}
 }
 
@@ -1471,56 +1495,56 @@ static const uint8 rleLengthTab[16] = {
 	2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32, 64
 };
 
-void Bink::readAudioCoeffs(AudioTrack &audio, float *coeffs) {
-	coeffs[0] = getFloat(audio) * audio.root;
-	coeffs[1] = getFloat(audio) * audio.root;
+void Bink::BinkAudioTrack::readAudioCoeffs(float *coeffs) {
+	coeffs[0] = getFloat() * _audioInfo->root;
+	coeffs[1] = getFloat() * _audioInfo->root;
 
 	float quant[25];
 
-	for (uint32 i = 0; i < audio.bandCount; i++) {
-		int value = audio.bits->getBits(8);
+	for (uint32 i = 0; i < _audioInfo->bandCount; i++) {
+		int value = _audioInfo->bits->getBits(8);
 
 		//                               0.066399999 / log10(M_E)
-		quant[i] = expf(MIN(value, 95) * 0.15289164787221953823f) * audio.root;
+		quant[i] = expf(MIN(value, 95) * 0.15289164787221953823f) * _audioInfo->root;
 	}
 
 	float q = 0.0f;
 
 	// Find band (k)
 	int k;
-	for (k = 0; audio.bands[k] < 1; k++)
+	for (k = 0; _audioInfo->bands[k] < 1; k++)
 		q = quant[k];
 
 	// Parse coefficients
 	uint32 i = 2;
-	while (i < audio.frameLen) {
+	while (i < _audioInfo->frameLen) {
 
 		uint32 j = 0;
-		if (audio.bits->getBit())
-			j = i + rleLengthTab[audio.bits->getBits(4)] * 8;
+		if (_audioInfo->bits->getBit())
+			j = i + rleLengthTab[_audioInfo->bits->getBits(4)] * 8;
 		else
 			j = i + 8;
 
-		j = MIN(j, audio.frameLen);
+		j = MIN(j, _audioInfo->frameLen);
 
-		int width = audio.bits->getBits(4);
+		int width = _audioInfo->bits->getBits(4);
 		if (width == 0) {
 
 			std::memset(coeffs + i, 0, (j - i) * sizeof(*coeffs));
 			i = j;
-			while (audio.bands[k] * 2 < i)
+			while (_audioInfo->bands[k] * 2 < i)
 				q = quant[k++];
 
 		} else {
 
 			while (i < j) {
-				if (audio.bands[k] * 2 == i)
+				if (_audioInfo->bands[k] * 2 == i)
 					q = quant[k++];
 
-				int coeff = audio.bits->getBits(width);
+				int coeff = _audioInfo->bits->getBits(width);
 				if (coeff) {
 
-					if (audio.bits->getBit())
+					if (_audioInfo->bits->getBit())
 						coeffs[i] = -q * coeff;
 					else
 						coeffs[i] =  q * coeff;

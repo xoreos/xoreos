@@ -87,6 +87,10 @@ namespace Common {
 	class DCT;
 }
 
+namespace Sound {
+	class PacketizedAudioStream;
+}
+
 namespace Video {
 
 /** A decoder for RAD Game Tools' Bink videos. */
@@ -164,7 +168,7 @@ private:
 	};
 
 	/** An audio track. */
-	struct AudioTrack {
+	struct AudioInfo {
 		uint16 flags;
 
 		uint32 sampleRate;
@@ -199,8 +203,8 @@ private:
 		Common::RDFT *rdft;
 		Common::DCT  *dct;
 
-		AudioTrack();
-		~AudioTrack();
+		AudioInfo();
+		~AudioInfo();
 	};
 
 	/** A video frame. */
@@ -252,11 +256,9 @@ private:
 	bool _hasAlpha;   ///< Do video frames have alpha?
 	bool _swapPlanes; ///< Are the planes ordered (A)YVU instead of (A)YUV?
 
-	bool _disableAudio; ///< Should the sound be disabled?
-
 	uint32 _curFrame; ///< Current Frame.
 
-	std::vector<AudioTrack> _audioTracks; ///< All audio tracks.
+	std::vector<AudioInfo> _audioTracks; ///< All audio tracks.
 	std::vector<VideoFrame> _frames;      ///< All video frames.
 
 	uint32 _audioTrack; ///< Audio track to use.
@@ -282,8 +284,6 @@ private:
 	/** Initialize the Huffman decoders. */
 	void initHuffman();
 
-	/** Decode an audio packet. */
-	void audioPacket(AudioTrack &audio);
 	/** Decode a video packet. */
 	void videoPacket(VideoFrame &video);
 
@@ -334,23 +334,45 @@ private:
 	void readDCTCoeffs   (VideoFrame &video, int16 *block, bool isIntra);
 	void readResidue     (VideoFrame &video, int16 *block, int masksCount);
 
-	void initAudioTrack(AudioTrack &audio);
-
-	float getFloat(AudioTrack &audio);
-
-	/** Decode an audio block. */
-	void audioBlock    (AudioTrack &audio, int16 *out);
-	/** Decode a DCT'd audio block. */
-	void audioBlockDCT (AudioTrack &audio);
-	/** Decode a RDFT'd audio block. */
-	void audioBlockRDFT(AudioTrack &audio);
-
-	void readAudioCoeffs(AudioTrack &audio, float *coeffs);
-
 	// Bink video IDCT
 	void IDCT(int16 *block);
 	void IDCTPut(DecodeContext &ctx, int16 *block);
 	void IDCTAdd(DecodeContext &ctx, int16 *block);
+
+	class BinkAudioTrack : public AudioTrack {
+	public:
+		BinkAudioTrack(AudioInfo &audio);
+		~BinkAudioTrack();
+
+		bool canBufferData() const;
+
+		/** Decode an audio packet. */
+		void decodePacket();
+
+		void setEndOfData();
+
+	protected:
+		Sound::AudioStream *getAudioStream() const;
+
+	private:
+		AudioInfo *_audioInfo;
+		Sound::PacketizedAudioStream *_audioStream;
+
+		float getFloat();
+
+		/** Decode an audio block. */
+		void audioBlock(int16 *out);
+		/** Decode a DCT'd audio block. */
+		void audioBlockDCT();
+		/** Decode a RDFT'd audio block. */
+		void audioBlockRDFT();
+
+		void readAudioCoeffs(float *coeffs);
+
+		static void floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels);
+	};
+
+	void initAudioTrack(AudioInfo &audio);
 };
 
 } // End of namespace Video
