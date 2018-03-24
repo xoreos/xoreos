@@ -296,14 +296,6 @@ protected:
 	 */
 	void initVideo(uint32 width, uint32 height);
 
-	// Old, deprecated sound API
-	void initSound(uint16 rate, int channels, bool is16);
-	void deinitSound();
-	void queueSound(const byte *data, uint32 dataSize);
-	void queueSound(Sound::AudioStream *stream);
-	void finishSound();
-	uint32 getNumQueuedStreams() const;
-
 	/** Start the video processing. */
 	virtual void startVideo() = 0;
 	/** Process the video's image and sound data further. */
@@ -375,12 +367,6 @@ private:
 	float _textureHeight;
 
 	Scale _scale;
-
-	// Old, deprecated sound API
-	Common::ScopedPtr<Sound::QueuingAudioStream> _sound;
-	Sound::ChannelHandle _soundHandle;
-	uint16 _soundRate;
-	byte   _soundFlags;
 
 
 	/** The start time of the video, or -1 for not set */

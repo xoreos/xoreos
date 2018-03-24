@@ -49,8 +49,7 @@ VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
 	_started(false), _finished(false), _needCopy(false),
 	_width(0), _height(0), _texture(0),
 	_textureWidth(0.0f), _textureHeight(0.0f), _scale(kScaleNone),
-	_soundRate(0), _soundFlags(0), _startTime(0),
-	_pauseLevel(0), _pauseStartTime(0) {
+	_startTime(0), _pauseLevel(0), _pauseStartTime(0) {
 
 }
 
@@ -60,11 +59,7 @@ VideoDecoder::~VideoDecoder() {
 	if (_texture != 0)
 		GfxMan.abandon(&_texture, 1);
 
-	// New API:
 	stopAudio();
-
-	// Old API:
-	deinitSound();
 }
 
 void VideoDecoder::deinit() {
@@ -90,80 +85,6 @@ void VideoDecoder::initVideo(uint32 width, uint32 height) {
 	_surface->fill(0, 0, 0, 0);
 
 	rebuild();
-}
-
-void VideoDecoder::initSound(uint16 rate, int channels, bool is16) {
-	deinitSound();
-
-	_soundRate  = rate;
-	_soundFlags = 0;
-
-#ifdef XOREOS_LITTLE_ENDIAN
-	_soundFlags |= Sound::FLAG_LITTLE_ENDIAN;
-#endif
-
-	if (is16)
-		_soundFlags |= Sound::FLAG_16BITS;
-
-	_sound.reset(Sound::makeQueuingAudioStream(_soundRate, channels));
-
-	_soundHandle = SoundMan.playAudioStream(_sound.get(), Sound::kSoundTypeVideo, false);
-}
-
-void VideoDecoder::deinitSound() {
-	if (!_sound)
-		return;
-
-	_sound->finish();
-	SoundMan.triggerUpdate();
-
-	SoundMan.stopChannel(_soundHandle);
-
-	_sound.reset();
-}
-
-void VideoDecoder::queueSound(const byte *data, uint32 dataSize) {
-	assert(data && dataSize);
-
-	Common::ScopedArray<const byte> audioData(data);
-
-	if (!_sound)
-		return;
-
-	Common::ScopedPtr<Common::MemoryReadStream>
-		dataStream(new Common::MemoryReadStream(audioData.release(), dataSize, true));
-
-	Common::ScopedPtr<Sound::RewindableAudioStream>
-		dataPCM(Sound::makePCMStream(dataStream.get(), _soundRate, _soundFlags, _sound->getChannels()));
-	dataStream.release();
-
-	_sound->queueAudioStream(dataPCM.get());
-	dataPCM.release();
-
-	SoundMan.startChannel(_soundHandle);
-}
-
-void VideoDecoder::queueSound(Sound::AudioStream *stream) {
-	assert(stream);
-
-	Common::ScopedPtr<Sound::AudioStream> audioStream(stream);
-
-	if (!_sound)
-		return;
-
-	_sound->queueAudioStream(audioStream.get());
-	audioStream.release();
-
-	SoundMan.startChannel(_soundHandle);
-}
-
-void VideoDecoder::finishSound() {
-	if (_sound)
-		_sound->finish();
-}
-
-uint32 VideoDecoder::getNumQueuedStreams() const {
-	return _sound ? _sound->numQueuedStreams() : 0;
 }
 
 bool VideoDecoder::endOfVideo() const {
@@ -329,10 +250,6 @@ bool VideoDecoder::isPlaying() const {
 		if (!(*it)->endOfTrack())
 			return true;
 
-	// Old API:
-	if (SoundMan.isPlaying(_soundHandle))
-		return true;
-
 	return !_finished;
 }
 
@@ -429,8 +346,6 @@ void VideoDecoder::render(Graphics::RenderPass pass) {
 }
 
 void VideoDecoder::finish() {
-	finishSound();
-
 	_finished = true;
 }
 
@@ -439,7 +354,6 @@ void VideoDecoder::start() {
 
 	_startTime = EventMan.getTimestamp();
 
-	// New API:
 	startAudio();
 
 	show();
@@ -450,7 +364,6 @@ void VideoDecoder::abort() {
 
 	finish();
 
-	// New API:
 	stopAudio();
 }
 
