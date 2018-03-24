@@ -58,8 +58,11 @@
 #include <vector>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
+#include "src/common/scopedptr.h"
+#include "src/common/timestamp.h"
+
+#include "src/sound/audiostream.h"
 
 #include "src/video/decoder.h"
 
@@ -69,10 +72,6 @@ namespace Common {
 
 namespace Graphics {
 	class Surface;
-}
-
-namespace Sound {
-	class Codec;
 }
 
 namespace Video {
@@ -128,6 +127,9 @@ private:
 
 		uint32 getCodecTag() const { return _codecTag; }
 
+		Common::ScopedPtr<Common::SeekableReadStream> _extraData;
+		byte _objectTypeMP4;
+
 	protected:
 		QuickTimeTrack *_parentTrack;
 		uint32 _codecTag;
@@ -136,12 +138,9 @@ private:
 	class AudioSampleDesc : public SampleDesc {
 	public:
 		AudioSampleDesc(QuickTimeTrack *parentTrack, uint32 codecTag);
-		~AudioSampleDesc();
 
 		bool isAudioCodecSupported() const;
-		uint32 getAudioChunkSampleCount(uint chunk) const;
-		Sound::AudioStream *createAudioStream(Common::SeekableReadStream *stream) const;
-		void initCodec();
+		Sound::PacketizedAudioStream *createAudioStream() const;
 
 		// TODO: Make private in the long run
 		uint16 _bitsPerSample;
@@ -149,8 +148,6 @@ private:
 		uint32 _sampleRate;
 		uint32 _samplesPerFrame;
 		uint32 _bytesPerFrame;
-
-		Common::ScopedPtr<Sound::Codec> _codec;
 	};
 
 	class VideoSampleDesc : public SampleDesc {
@@ -196,13 +193,60 @@ private:
 
 		Common::PtrVector<SampleDesc> sampleDescs;
 
-		Common::ScopedPtr<Common::SeekableReadStream> extraData;
-
 		uint32 frameCount;
 		uint32 duration;
 		uint32 startTime;
+	};
 
-		byte objectTypeMP4;
+	class QuickTimeAudioTrack : public Sound::AudioStream {
+	public:
+		QuickTimeAudioTrack(QuickTimeDecoder *decoder, QuickTimeTrack *parentTrack);
+
+		// AudioStream API
+		size_t readBuffer(int16 *data, const size_t numSamples) { return _stream->readBuffer(data, numSamples); }
+		int getChannels() const { return _stream->getChannels(); }
+		int getRate() const { return _stream->getRate(); }
+		bool endOfData() const { return _stream->endOfData(); }
+		bool endOfStream() const { return _stream->endOfStream(); }
+
+		// Queue *at least* "length" audio
+		// If length is zero, it queues the next logical block of audio whether
+		// that be a whole edit or just one chunk within an edit
+		void queueAudio(const Common::Timestamp &length = Common::Timestamp());
+
+	private:
+		QuickTimeDecoder *_decoder;
+		QuickTimeTrack *_parentTrack;
+		uint _curChunk;
+		Common::Timestamp _curMediaPos;
+		uint32 _samplesQueued;
+		bool _skipAACPrimer;
+		Common::ScopedPtr<Sound::PacketizedAudioStream> _stream;
+
+		Common::SeekableReadStream *readAudioChunk(uint chunk);
+		bool isOldDemuxing() const;
+		uint32 getAudioChunkSampleCount(uint chunk) const;
+		Common::Timestamp getChunkLength(uint chunk, bool skipAACPrimer = false) const;
+		uint32 getAACSampleTime(uint32 totalSampleCount, bool skipAACPrimer = false) const;
+		bool allAudioQueued() const { return _curChunk >= _parentTrack->chunkCount; }
+	};
+
+	// The AudioTrackHandler is currently just a wrapper around some
+	// QuickTimeDecoder functions.
+	class AudioTrackHandler : public AudioTrack {
+	public:
+		AudioTrackHandler(QuickTimeDecoder *decoder, QuickTimeAudioTrack *audioTrack);
+
+		bool canBufferData() const;
+
+		void updateBuffer(const Common::Timestamp &endTime);
+
+	protected:
+		Sound::AudioStream *getAudioStream() const;
+
+	private:
+		QuickTimeDecoder *_decoder;
+		QuickTimeAudioTrack *_audioTrack;
 	};
 
 	SampleDesc *readSampleDesc(QuickTimeTrack *track, uint32 format);
@@ -217,11 +261,8 @@ private:
 
 	void initParseTable();
 
-	bool isOldDemuxing() const;
-	void queueNextAudioChunk();
-	void updateAudioBuffer();
-	int _audioTrackIndex;
-	uint _curAudioChunk;
+	void checkAudioBuffer(AudioTrack &track, const Common::Timestamp &endTime);
+	Common::PtrVector<QuickTimeAudioTrack> _audioTracks;
 
 	Codec *findDefaultVideoCodec() const;
 	uint32 _nextFrameStartTime;

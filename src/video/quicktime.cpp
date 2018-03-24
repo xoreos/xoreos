@@ -64,7 +64,6 @@
 #include "src/video/codecs/codec.h"
 
 #include "src/sound/audiostream.h"
-#include "src/sound/decoders/codec.h"
 
 
 // Audio codecs
@@ -96,7 +95,7 @@ static const char *tag2str(uint32 tag) {
 }
 
 QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : _fd(stream),
-	_foundMOOV(false), _curFrame(-1), _startTime(0), _audioTrackIndex(-1),
+	_foundMOOV(false), _curFrame(-1), _startTime(0),
 	_nextFrameStartTime(0), _videoTrackIndex(-1) {
 
 	assert(_fd);
@@ -123,47 +122,34 @@ void QuickTimeDecoder::load() {
 		}
 	}
 
-	// Adjust time scale
+	// Adjust time scale and find the video track
 	for (size_t i = 0; i < _tracks.size(); i++) {
 		if (!_tracks[i]->timeScale)
 			_tracks[i]->timeScale = _timeScale;
 
 		if (_tracks[i]->codecType == CODEC_TYPE_VIDEO && _videoTrackIndex < 0)
 			_videoTrackIndex = i;
-		else if (_tracks[i]->codecType == CODEC_TYPE_AUDIO && _audioTrackIndex < 0)
-			_audioTrackIndex = i;
 
 	}
 
-	// Initialize audio, if present
-	if (_audioTrackIndex >= 0) {
-		AudioSampleDesc &entry = dynamic_cast<AudioSampleDesc &>(*_tracks[_audioTrackIndex]->sampleDescs[0]);
-
-		if (entry.isAudioCodecSupported()) {
-			_curAudioChunk = 0;
-
-			// Make sure the bits per sample transfers to the sample size
-			if (entry.getCodecTag() == MKTAG('r', 'a', 'w', ' ') ||
-			    entry.getCodecTag() == MKTAG('t', 'w', 'o', 's'))
-				_tracks[_audioTrackIndex]->sampleSize = (entry._bitsPerSample / 8) * entry._channels;
-
-			// Initialize the codec (if necessary)
-			entry.initCodec();
-
-			initSound(entry._sampleRate, entry._channels, true);
-			updateAudioBuffer();
-		} else
-			_audioTrackIndex = -1; // Invalidate the stream
-	}
-
-	// Yeah, this wouldn't be a video if there's no video stream :P
-	assert(_videoTrackIndex >= 0);
+	// We only support playing if there is a video track
+	if (_videoTrackIndex < 0)
+		throw Common::Exception("No video tracks");
 
 	initVideo(_tracks[_videoTrackIndex]->width, _tracks[_videoTrackIndex]->height);
 
 	// Initialize video codec, if present
 	for (size_t i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
 		dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[i]).initCodec();
+
+	// Initialize all the audio tracks, but ignore ones we can't process
+	for (uint32 i = 0; i < _tracks.size(); i++) {
+		if (_tracks[i]->codecType == CODEC_TYPE_AUDIO && static_cast<AudioSampleDesc *>(_tracks[i]->sampleDescs[0])->isAudioCodecSupported()) {
+			_audioTracks.push_back(new QuickTimeAudioTrack(this, _tracks[i]));
+			addTrack(new AudioTrackHandler(this, _audioTracks.back()));
+			break;
+		}
+	}
 }
 
 QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *track, uint32 format) {
@@ -255,11 +241,6 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *t
 	return 0;
 }
 
-bool QuickTimeDecoder::isOldDemuxing() const {
-	assert(_audioTrackIndex >= 0);
-	return _tracks[_audioTrackIndex]->timeToSampleCount == 1 && _tracks[_audioTrackIndex]->timeToSample[0].duration == 1;
-}
-
 uint32 QuickTimeDecoder::getFrameDuration() {
 	if (_videoTrackIndex < 0)
 		return 0;
@@ -300,9 +281,6 @@ void QuickTimeDecoder::processData() {
 
 	_curFrame++;
 	_nextFrameStartTime += getFrameDuration();
-
-	// Update the audio while we're at it
-	updateAudioBuffer();
 
 	// Get the next packet
 	uint32 descId;
@@ -562,7 +540,7 @@ int QuickTimeDecoder::readSTSD(Atom UNUSED(atom)) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	uint32 entryCount = _fd->readUint32BE();
-	track->sampleDescs.resize(entryCount);
+	track->sampleDescs.reserve(entryCount);
 
 	for (uint32 i = 0; i < entryCount; i++) { // Parsing Sample description table
 		Atom a = { 0, 0, 0 };
@@ -574,7 +552,7 @@ int QuickTimeDecoder::readSTSD(Atom UNUSED(atom)) {
 		_fd->readUint16BE(); // reserved
 		_fd->readUint16BE(); // index
 
-		track->sampleDescs[i] = readSampleDesc(track, format);
+		track->sampleDescs.push_back(readSampleDesc(track, format));
 
 		if (!track->sampleDescs[i]) {
 			// other codec type, just skip (rtp, mp4s, tmcd ...)
@@ -729,6 +707,12 @@ int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 
 	QuickTimeTrack *track = _tracks.back();
 
+	// We should only get here within an stsd atom
+	if (track->sampleDescs.empty())
+		return -1;
+
+	SampleDesc *sampleDesc = track->sampleDescs.back();
+
 	_fd->readUint32BE(); // version + flags
 
 	byte tag;
@@ -744,7 +728,7 @@ int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 	if (tag != kMP4DecConfigDescTag)
 		return 0;
 
-	track->objectTypeMP4 = _fd->readByte();
+	sampleDesc->_objectTypeMP4 = _fd->readByte();
 	_fd->readByte();                      // stream type
 	_fd->readUint16BE(); _fd->readByte(); // buffer size
 	_fd->readUint32BE();                  // max bitrate
@@ -755,7 +739,7 @@ int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 	if (tag != kMP4DecSpecificDescTag)
 		return 0;
 
-	track->extraData.reset(_fd->readStream(length));
+	sampleDesc->_extraData.reset(_fd->readStream(length));
 
 	return 0;
 }
@@ -809,103 +793,15 @@ Common::SeekableReadStream *QuickTimeDecoder::getNextFramePacket(uint32 &descId)
 	return _fd->readStream(_tracks[_videoTrackIndex]->sampleSizes[_curFrame]);
 }
 
-void QuickTimeDecoder::queueNextAudioChunk() {
-	AudioSampleDesc &entry = dynamic_cast<AudioSampleDesc &>(*_tracks[_audioTrackIndex]->sampleDescs[0]);
-	Common::MemoryWriteStreamDynamic wStream(true);
-
-	_fd->seek(_tracks[_audioTrackIndex]->chunkOffsets[_curAudioChunk]);
-
-	// First, we have to get the sample count
-	uint32 sampleCount = entry.getAudioChunkSampleCount(_curAudioChunk);
-	assert(sampleCount);
-
-	if (isOldDemuxing()) {
-		// Old-style audio demuxing
-
-		// Then calculate the right sizes
-		while (sampleCount > 0) {
-			uint32 samples = 0, size = 0;
-
-			if (entry._samplesPerFrame >= 160) {
-				samples = entry._samplesPerFrame;
-				size = entry._bytesPerFrame;
-			} else if (entry._samplesPerFrame > 1) {
-				samples = MIN<uint32>((1024 / entry._samplesPerFrame) * entry._samplesPerFrame, sampleCount);
-				size = (samples / entry._samplesPerFrame) * entry._bytesPerFrame;
-			} else {
-				samples = MIN<uint32>(1024, sampleCount);
-				size = samples * _tracks[_audioTrackIndex]->sampleSize;
-			}
-
-			// Now, we read in the data for this data and output it
-			wStream.writeStream(*_fd, size);
-			sampleCount -= samples;
-		}
-	} else {
-		// New-style audio demuxing
-
-		// Find our starting sample
-		uint32 startSample = 0;
-		for (uint32 i = 0; i < _curAudioChunk; i++)
-			startSample += entry.getAudioChunkSampleCount(i);
-
-		for (uint32 i = 0; i < sampleCount; i++) {
-			uint32 size = (_tracks[_audioTrackIndex]->sampleSize != 0) ? _tracks[_audioTrackIndex]->sampleSize : _tracks[_audioTrackIndex]->sampleSizes[i + startSample];
-
-			// Now, we read in the data for this data and output it
-			wStream.writeStream(*_fd, size);
-		}
-	}
-
-	wStream.setDisposable(false);
-
-	// Now queue the buffer
-	queueSound(entry.createAudioStream(new Common::MemoryReadStream(wStream.getData(), wStream.size(), true)));
-
-	_curAudioChunk++;
-}
-
-void QuickTimeDecoder::updateAudioBuffer() {
-	if (_audioTrackIndex < 0)
-		return;
-
-	uint32 numberOfChunksNeeded = 0;
-
-	if (_curFrame == (int32)_tracks[_videoTrackIndex]->frameCount - 1) {
-		// If we're on the last frame, make sure all audio remaining is buffered
-		numberOfChunksNeeded = _tracks[_audioTrackIndex]->chunkCount;
-	} else {
-		AudioSampleDesc &entry = dynamic_cast<AudioSampleDesc &>(*_tracks[_audioTrackIndex]->sampleDescs[0]);
-
-		// Calculate the amount of chunks we need in memory until the next frame
-		uint32 timeToNextFrame = getTimeToNextFrame();
-		uint32 timeFilled = 0;
-		uint32 curAudioChunk = _curAudioChunk - getNumQueuedStreams();
-
-		for (; timeFilled < timeToNextFrame && curAudioChunk < _tracks[_audioTrackIndex]->chunkCount; numberOfChunksNeeded++, curAudioChunk++) {
-			uint32 sampleCount = entry.getAudioChunkSampleCount(curAudioChunk);
-			assert(sampleCount);
-
-			timeFilled += sampleCount * 1000 / entry._sampleRate;
-		}
-
-		// Add a couple extra to ensure we don't underrun
-		numberOfChunksNeeded += 3;
-	}
-
-	// Keep three streams in buffer so that if/when the first two end, it goes right into the next
-	while (getNumQueuedStreams() < numberOfChunksNeeded && _curAudioChunk < _tracks[_audioTrackIndex]->chunkCount)
-		queueNextAudioChunk();
-}
-
 QuickTimeDecoder::SampleDesc::SampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32 codecTag) {
 	_parentTrack = parentTrack;
 	_codecTag = codecTag;
+	_objectTypeMP4 = 0;
 }
 
 QuickTimeDecoder::QuickTimeTrack::QuickTimeTrack() : chunkCount(0), timeToSampleCount(0), sampleToChunkCount(0),
 	sampleSize(0), sampleCount(0), keyframeCount(0), timeScale(0), width(0), height(0),
-	codecType(CODEC_TYPE_MOV_OTHER), frameCount(0), duration(0), startTime(0), objectTypeMP4(0) {
+	codecType(CODEC_TYPE_MOV_OTHER), frameCount(0), duration(0), startTime(0) {
 
 }
 
@@ -915,9 +811,6 @@ QuickTimeDecoder::AudioSampleDesc::AudioSampleDesc(QuickTimeDecoder::QuickTimeTr
 	_samplesPerFrame = 0;
 	_bytesPerFrame = 0;
 	_bitsPerSample = 0;
-}
-
-QuickTimeDecoder::AudioSampleDesc::~AudioSampleDesc() {
 }
 
 bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
@@ -930,9 +823,14 @@ bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
 	if (_codecTag == MKTAG('m', 'p', '4', 'a')) {
 		Common::UString audioType;
 
-		switch (_parentTrack->objectTypeMP4) {
+		switch (_objectTypeMP4) {
 		case 0x40:
+#ifdef ENABLE_FAAD
 			return true;
+#else
+			audioType = "AAC";
+			break;
+#endif
 		default:
 			audioType = "Unknown";
 			break;
@@ -945,68 +843,32 @@ bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
 	return false;
 }
 
-uint32 QuickTimeDecoder::AudioSampleDesc::getAudioChunkSampleCount(uint chunk) const {
-	uint32 sampleCount = 0;
-
-	for (uint32 j = 0; j < _parentTrack->sampleToChunkCount; j++)
-		if (chunk >= _parentTrack->sampleToChunk[j].first)
-			sampleCount = _parentTrack->sampleToChunk[j].count;
-
-	return sampleCount;
-}
-
-Sound::AudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStream(Common::SeekableReadStream *stream) const {
-	if (!stream)
-		return 0;
-
-	Common::ScopedPtr<Common::SeekableReadStream> dataStream(stream);
-
-	// If we've loaded a codec, make sure we use first
-	if (_codec)
-		return _codec->decodeFrame(*dataStream);
-
-	// Standard PCM
-	if (_codecTag == MKTAG('t', 'w', 'o', 's') || _codecTag == MKTAG('r', 'a', 'w', ' ')) {
+Sound::PacketizedAudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStream() const {
+	switch (_codecTag) {
+	case MKTAG('t', 'w', 'o', 's'):
+	case MKTAG('r', 'a', 'w', ' '): {
 		uint16 flags = 0;
 		if (_codecTag == MKTAG('r', 'a', 'w', ' '))
 			flags |= Sound::FLAG_UNSIGNED;
 		if (_bitsPerSample == 16)
 			flags |= Sound::FLAG_16BITS;
-
-		Sound::AudioStream *audioStream = Sound::makePCMStream(dataStream.get(), _sampleRate, flags, _channels);
-
-		dataStream.release();
-		return audioStream;
+		return Sound::makePacketizedPCMStream(_sampleRate, flags, _channels);
 	}
-
-	// QuickTime IMA ADPCM
-	if (_codecTag == MKTAG('i', 'm', 'a', '4')) {
-		Sound::AudioStream *audioStream =
-			Sound::makeADPCMStream(dataStream.get(), true, dataStream->size(),
-			                       Sound::kADPCMApple, _sampleRate, _channels, 34);
-
-		dataStream.release();
-		return audioStream;
+	case MKTAG('i', 'm', 'a', '4'):
+		return Sound::makePacketizedADPCMStream(Sound::kADPCMApple, _sampleRate, _channels, 34);
+	case MKTAG('m', 'p', '4', 'a'):
+		switch (_objectTypeMP4) {
+		case 0x40:
+			return Sound::makeAACStream(*_extraData);
+		}
+		break;
 	}
 
 	return 0;
 }
 
-void QuickTimeDecoder::AudioSampleDesc::initCodec() {
-	_codec.reset();
-
-	switch (_codecTag) {
-	case MKTAG('m', 'p', '4', 'a'):
-		if (_parentTrack->objectTypeMP4 == 0x40)
-#ifdef ENABLE_FAAD
-			_codec.reset(Sound::makeAACDecoder(_parentTrack->extraData.get()));
-#else
-			warning("AAC decoding disabled when building without libfaad");
-#endif
-		break;
-	default:
-		break;
-	}
+void QuickTimeDecoder::checkAudioBuffer(AudioTrack &track, const Common::Timestamp &endTime) {
+	static_cast<AudioTrackHandler &>(track).updateBuffer(endTime);
 }
 
 QuickTimeDecoder::VideoSampleDesc::VideoSampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32 codecTag) : QuickTimeDecoder::SampleDesc(parentTrack, codecTag) {
@@ -1025,17 +887,17 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec() {
 		Common::UString videoType;
 
 		// Parse the object type
-		switch (_parentTrack->objectTypeMP4) {
+		switch (_objectTypeMP4) {
 		case 0x20:
 			videoType = "h.263";
 
-			if (!_parentTrack->extraData) {
+			if (!_extraData) {
 				warning("Missing h.263 extra data; cannot decode");
 				break;
 			}
 
 #ifdef ENABLE_XVIDCORE
-			_videoCodec.reset(makeH263Codec(_parentTrack->width, _parentTrack->height, *_parentTrack->extraData));
+			_videoCodec.reset(makeH263Codec(_parentTrack->width, _parentTrack->height, *_extraData));
 #else
 			warning("H.263 decoding disabled when building without xvidcore");
 #endif
@@ -1055,6 +917,168 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec() {
 	} else {
 		warning("Unsupported codec \'%s\'", tag2str(_codecTag));
 	}
+}
+
+QuickTimeDecoder::QuickTimeAudioTrack::QuickTimeAudioTrack(QuickTimeDecoder *decoder, QuickTimeTrack *parentTrack) {
+	_decoder = decoder;
+	_parentTrack = parentTrack;
+	_curChunk = 0;
+	_samplesQueued = 0;
+
+	AudioSampleDesc *entry = (AudioSampleDesc *)_parentTrack->sampleDescs[0];
+
+	if (entry->getCodecTag() == MKTAG('r', 'a', 'w', ' ') || entry->getCodecTag() == MKTAG('t', 'w', 'o', 's'))
+		_parentTrack->sampleSize = (entry->_bitsPerSample / 8) * entry->_channels;
+
+	// Create the new packetized audio stream
+	_stream.reset(static_cast<AudioSampleDesc *>(_parentTrack->sampleDescs[0])->createAudioStream());
+	_skipAACPrimer = true;
+}
+
+void QuickTimeDecoder::QuickTimeAudioTrack::queueAudio(const Common::Timestamp &length) {
+	if (allAudioQueued() || (length.totalNumberOfFrames() != 0 && Common::Timestamp(0, _samplesQueued, getRate()) >= length))
+		return;
+
+	do {
+		// Normal audio
+		Common::ScopedPtr<Common::SeekableReadStream> stream(readAudioChunk(_curChunk));
+		Common::Timestamp chunkLength = getChunkLength(_curChunk, _skipAACPrimer);
+		_skipAACPrimer = false;
+		_curChunk++;
+
+		// Queue up the packet
+		_stream->queuePacket(stream.release());
+		_samplesQueued += chunkLength.convertToFramerate(getRate()).totalNumberOfFrames();
+	} while (!allAudioQueued() && Common::Timestamp(0, _samplesQueued, getRate()) < length);
+
+	if (allAudioQueued())
+		_stream->finish();
+}
+
+bool QuickTimeDecoder::QuickTimeAudioTrack::isOldDemuxing() const {
+	return _parentTrack->timeToSampleCount == 1 && _parentTrack->timeToSample[0].duration == 1;
+}
+
+Common::SeekableReadStream *QuickTimeDecoder::QuickTimeAudioTrack::readAudioChunk(uint chunk) {
+	AudioSampleDesc *entry = (AudioSampleDesc *)_parentTrack->sampleDescs[0];
+	Common::ScopedPtr<Common::MemoryWriteStreamDynamic> wStream(new Common::MemoryWriteStreamDynamic());
+
+	_decoder->_fd->seek(_parentTrack->chunkOffsets[chunk]);
+
+	// First, we have to get the sample count
+	uint32 sampleCount = getAudioChunkSampleCount(chunk);
+	assert(sampleCount != 0);
+
+	if (isOldDemuxing()) {
+		// Old-style audio demuxing
+
+		// Then calculate the right sizes
+		while (sampleCount > 0) {
+			uint32 samples = 0, size = 0;
+
+			if (entry->_samplesPerFrame >= 160) {
+				samples = entry->_samplesPerFrame;
+				size = entry->_bytesPerFrame;
+			} else if (entry->_samplesPerFrame > 1) {
+				samples = MIN<uint32>((1024 / entry->_samplesPerFrame) * entry->_samplesPerFrame, sampleCount);
+				size = (samples / entry->_samplesPerFrame) * entry->_bytesPerFrame;
+			} else {
+				samples = MIN<uint32>(1024, sampleCount);
+				size = samples * _parentTrack->sampleSize;
+			}
+
+			// Now, we read in the data for this data and output it
+			Common::ScopedArray<byte> data(new byte[size]);
+			_decoder->_fd->read(data.get(), size);
+			wStream->write(data.get(), size);
+			sampleCount -= samples;
+		}
+	} else {
+		// New-style audio demuxing
+
+		// Find our starting sample
+		uint32 startSample = 0;
+		for (uint32 i = 0; i < chunk; i++)
+			startSample += getAudioChunkSampleCount(i);
+
+		for (uint32 i = 0; i < sampleCount; i++) {
+			uint32 size = (_parentTrack->sampleSize != 0) ? _parentTrack->sampleSize : _parentTrack->sampleSizes[i + startSample];
+
+			// Now, we read in the data for this data and output it
+			Common::ScopedArray<byte> data(new byte[size]);
+			_decoder->_fd->read(data.get(), size);
+			wStream->write(data.get(), size);
+		}
+	}
+
+	return new Common::MemoryReadStream(wStream->getData(), wStream->size(), true);
+}
+
+uint32 QuickTimeDecoder::QuickTimeAudioTrack::getAudioChunkSampleCount(uint chunk) const {
+	uint32 sampleCount = 0;
+
+	for (uint32 i = 0; i < _parentTrack->sampleToChunkCount; i++)
+		if (chunk >= _parentTrack->sampleToChunk[i].first)
+			sampleCount = _parentTrack->sampleToChunk[i].count;
+
+	return sampleCount;
+}
+
+Common::Timestamp QuickTimeDecoder::QuickTimeAudioTrack::getChunkLength(uint chunk, bool skipAACPrimer) const {
+	uint32 chunkSampleCount = getAudioChunkSampleCount(chunk);
+
+	if (isOldDemuxing())
+		return Common::Timestamp(0, chunkSampleCount, getRate());
+
+	// AAC needs some extra handling, of course
+	return Common::Timestamp(0, getAACSampleTime(chunkSampleCount, skipAACPrimer), getRate());
+}
+
+uint32 QuickTimeDecoder::QuickTimeAudioTrack::getAACSampleTime(uint32 totalSampleCount, bool skipAACPrimer) const{
+	uint32 curSample = 0;
+	uint32 time = 0;
+
+	for (int32 i = 0; i < _parentTrack->timeToSampleCount; i++) {
+		uint32 sampleCount = _parentTrack->timeToSample[i].count;
+
+		if (totalSampleCount < curSample + sampleCount) {
+			time += (totalSampleCount - curSample) * _parentTrack->timeToSample[i].duration;
+			break;
+		}
+
+		time += _parentTrack->timeToSample[i].count * _parentTrack->timeToSample[i].duration;
+		curSample += sampleCount;
+	}
+
+	// The first chunk of AAC contains "duration" samples that are used as a primer
+	// We need to subtract that number from the duration for the first chunk. See:
+	// http://developer.apple.com/library/mac/#documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html#//apple_ref/doc/uid/TP40000939-CH2-SW1
+	// The skipping of both the primer and the remainder are handled by the AAC code,
+	// whereas the timing of the remainder are handled by this time-to-sample chunk
+	// code already.
+	// We have to do this after each time we reinitialize the codec
+	if (skipAACPrimer) {
+		assert(_parentTrack->timeToSampleCount > 0);
+		time -= _parentTrack->timeToSample[0].duration;
+	}
+
+	return time;
+}
+
+QuickTimeDecoder::AudioTrackHandler::AudioTrackHandler(QuickTimeDecoder *decoder, QuickTimeAudioTrack *audioTrack)
+		: _decoder(decoder), _audioTrack(audioTrack) {
+}
+
+void QuickTimeDecoder::AudioTrackHandler::updateBuffer(const Common::Timestamp &endTime) {
+	_audioTrack->queueAudio(endTime);
+}
+
+Sound::AudioStream *QuickTimeDecoder::AudioTrackHandler::getAudioStream() const  {
+	return _audioTrack;
+}
+
+bool QuickTimeDecoder::AudioTrackHandler::canBufferData() const {
+	return !_audioTrack->endOfStream();
 }
 
 } // End of namespace Video
