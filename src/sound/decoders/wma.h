@@ -57,6 +57,7 @@
 #include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 
+#include "src/sound/audiostream.h"
 #include "src/sound/decoders/codec.h"
 
 namespace Common {
@@ -69,13 +70,26 @@ namespace Sound {
 
 struct WMACoefHuffmanParam;
 
-class WMACodec : public Codec {
+class WMACodec : public Codec, public PacketizedAudioStream {
 public:
 	WMACodec(int version, uint32 sampleRate, uint8 channels,
 	         uint32 bitRate, uint32 blockAlign, Common::SeekableReadStream *extraData = 0);
 	~WMACodec();
 
+	// Codec API
 	AudioStream *decodeFrame(Common::SeekableReadStream &data);
+
+	// AudioStream API
+	int getChannels() const { return _channels; }
+	int getRate() const { return _sampleRate; }
+	bool endOfData() const { return _audStream->endOfData(); }
+	bool endOfStream() const { return _audStream->endOfStream(); }
+	size_t readBuffer(int16 *buffer, const size_t numSamples) { return _audStream->readBuffer(buffer, numSamples); }
+
+	// PacketizedAudioStream API
+	void finish() { _audStream->finish(); }
+	bool isFinished() const { return _audStream->isFinished(); }
+	void queuePacket(Common::SeekableReadStream *data);
 
 private:
 	static const int kChannelsMax = 2; ///< Max number of channels we support.
@@ -187,6 +201,8 @@ private:
 	float _output[kBlockSizeMax * 2];
 	float _frameOut[kChannelsMax][kBlockSizeMax * 2];
 
+	// Backing stream for PacketizedAudioStream
+	Common::ScopedPtr<QueuingAudioStream> _audStream;
 
 	// Init helpers
 

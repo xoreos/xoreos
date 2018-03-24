@@ -123,6 +123,8 @@ WMACodec::WMACodec(int version, uint32 sampleRate, uint8 channels,
 #endif
 
 	init(extraData);
+
+	_audStream.reset(makeQueuingAudioStream(getRate(), getChannels()));
 }
 
 WMACodec::~WMACodec() {
@@ -1514,6 +1516,13 @@ uint32 WMACodec::getLargeVal(Common::BitStream &bits) {
 	}
 
 	return bits.getBits(count);
+}
+
+void WMACodec::queuePacket(Common::SeekableReadStream *data) {
+	Common::ScopedPtr<Common::SeekableReadStream> capture(data);
+	AudioStream* stream = decodeFrame(*data);
+	if (stream)
+		_audStream->queueAudioStream(stream);
 }
 
 } // End of namespace Sound
