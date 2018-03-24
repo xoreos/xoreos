@@ -58,7 +58,6 @@
 #include "src/common/ptrvector.h"
 
 #include "src/sound/audiostream.h"
-#include "src/sound/decoders/codec.h"
 
 namespace Common {
 	class BitStream;
@@ -70,14 +69,11 @@ namespace Sound {
 
 struct WMACoefHuffmanParam;
 
-class WMACodec : public Codec, public PacketizedAudioStream {
+class WMACodec : public PacketizedAudioStream {
 public:
 	WMACodec(int version, uint32 sampleRate, uint8 channels,
 	         uint32 bitRate, uint32 blockAlign, Common::SeekableReadStream *extraData = 0);
 	~WMACodec();
-
-	// Codec API
-	AudioStream *decodeFrame(Common::SeekableReadStream &data);
 
 	// AudioStream API
 	int getChannels() const { return _channels; }
@@ -231,6 +227,7 @@ private:
 	Common::SeekableReadStream *decodeSuperFrame(Common::SeekableReadStream &data);
 	bool decodeFrame(Common::BitStream &bits, int16 *outputData);
 	int decodeBlock(Common::BitStream &bits);
+	AudioStream *decodeFrame(Common::SeekableReadStream &data);
 
 	// Decoding helpers
 
