@@ -127,7 +127,7 @@ bool Interleaver::endOfStream() const {
 
 	for (std::vector<AudioStream *>::const_iterator s = _streams.begin();
 	     s != _streams.end(); ++s)
-		if (!(*s)->endOfData())
+		if (!(*s)->endOfStream())
 			return false;
 
 	return true;
