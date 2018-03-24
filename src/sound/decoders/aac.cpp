@@ -22,31 +22,6 @@
  *  Decoding AAC.
  */
 
-/* Based on ScummVM (<http://scummvm.org>) code, which is released
- * under the terms of version 2 or later of the GNU General Public
- * License.
- *
- * The original copyright note in ScummVM reads as follows:
- *
- * ScummVM is the legal property of its developers, whose names
- * are too numerous to list here. Please refer to the COPYRIGHT
- * file distributed with this source distribution.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
-
 #include <cstring>
 
 #include <neaacdec.h>
@@ -61,19 +36,14 @@
 #include "src/sound/audiostream.h"
 
 #include "src/sound/decoders/aac.h"
-#include "src/sound/decoders/codec.h"
 #include "src/sound/decoders/pcm.h"
 
 namespace Sound {
 
-class AACDecoder : public Codec, public PacketizedAudioStream {
+class AACDecoder : public PacketizedAudioStream {
 public:
-	AACDecoder(Common::SeekableReadStream *extraData,
-	           bool disposeExtraData);
+	AACDecoder(Common::SeekableReadStream &stream);
 	~AACDecoder();
-
-	// Codec API
-	AudioStream *decodeFrame(Common::SeekableReadStream &stream);
 
 	// AudioStream API
 	int getChannels() const { return _channels; }
@@ -94,11 +64,11 @@ private:
 
 	// Backing stream for PacketizedAudioStream
 	Common::ScopedPtr<QueuingAudioStream> _audStream;
+
+	AudioStream *decodeFrame(Common::SeekableReadStream &stream);
 };
 
-AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraData) {
-	Common::DisposablePtr<Common::SeekableReadStream> extra(extraData, disposeExtraData);
-
+AACDecoder::AACDecoder(Common::SeekableReadStream &extraData) {
 	// Open the library
 	_handle = NeAACDecOpen();
 
@@ -109,13 +79,13 @@ AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraD
 	NeAACDecSetConfiguration(_handle, conf);
 
 	// Copy the extra data to a buffer
-	extra->seek(0);
-	Common::ScopedArray<byte> extraDataBuf(new byte[extra->size()]);
-	extra->read(extraDataBuf.get(), extra->size());
+	extraData.seek(0);
+	Common::ScopedArray<byte> extraDataBuf(new byte[extraData.size()]);
+	extraData.read(extraDataBuf.get(), extraData.size());
 
 	// Initialize with our extra data
 	// NOTE: This code assumes the extra data is coming from an MPEG-4 file!
-	int err = NeAACDecInit2(_handle, extraDataBuf.get(), extraData->size(), &_rate, &_channels);
+	int err = NeAACDecInit2(_handle, extraDataBuf.get(), extraData.size(), &_rate, &_channels);
 	if (err < 0) {
 		NeAACDecClose(_handle);
 
@@ -167,13 +137,8 @@ void AACDecoder::queuePacket(Common::SeekableReadStream *data) {
 	_audStream->queueAudioStream(decodeFrame(*data));
 }
 
-// Factory function
-Codec *makeAACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraData) {
-	return new AACDecoder(extraData, disposeExtraData);
-}
-
 PacketizedAudioStream *makeAACStream(Common::SeekableReadStream &extraData) {
-	return new AACDecoder(&extraData, false);
+	return new AACDecoder(extraData);
 }
 
 } // End of namespace Sound
