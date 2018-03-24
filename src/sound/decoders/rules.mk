@@ -24,7 +24,6 @@ src_sound_decoders_libdecoders_la_SOURCES =
 
 src_sound_decoders_libdecoders_la_SOURCES += \
     src/sound/decoders/util.h \
-    src/sound/decoders/codec.h \
     src/sound/decoders/adpcm.h \
     src/sound/decoders/wave_types.h \
     src/sound/decoders/wave.h \
@@ -37,7 +36,6 @@ src_sound_decoders_libdecoders_la_SOURCES += \
     $(EMPTY)
 
 src_sound_decoders_libdecoders_la_SOURCES += \
-    src/sound/decoders/codec.cpp \
     src/sound/decoders/adpcm.cpp \
     src/sound/decoders/wave.cpp \
     src/sound/decoders/pcm.cpp \
