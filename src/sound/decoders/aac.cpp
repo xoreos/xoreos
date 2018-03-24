@@ -66,18 +66,34 @@
 
 namespace Sound {
 
-class AACDecoder : public Codec {
+class AACDecoder : public Codec, public PacketizedAudioStream {
 public:
 	AACDecoder(Common::SeekableReadStream *extraData,
 	           bool disposeExtraData);
 	~AACDecoder();
 
+	// Codec API
 	AudioStream *decodeFrame(Common::SeekableReadStream &stream);
+
+	// AudioStream API
+	int getChannels() const { return _channels; }
+	int getRate() const { return _rate; }
+	bool endOfData() const { return _audStream->endOfData(); }
+	bool endOfStream() const { return _audStream->endOfStream(); }
+	size_t readBuffer(int16 *buffer, const size_t numSamples) { return _audStream->readBuffer(buffer, numSamples); }
+
+	// PacketizedAudioStream API
+	void finish() { _audStream->finish(); }
+	bool isFinished() const { return _audStream->isFinished(); }
+	void queuePacket(Common::SeekableReadStream *data);
 
 private:
 	NeAACDecHandle _handle;
 	byte _channels;
 	unsigned long _rate;
+
+	// Backing stream for PacketizedAudioStream
+	Common::ScopedPtr<QueuingAudioStream> _audStream;
 };
 
 AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraData) {
@@ -105,6 +121,8 @@ AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraD
 
 		throw Common::Exception("Could not initialize AAC decoder: %s", NeAACDecGetErrorMessage(err));
 	}
+
+	_audStream.reset(makeQueuingAudioStream(_rate, _channels));
 }
 
 AACDecoder::~AACDecoder() {
@@ -133,23 +151,29 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 		byte *buffer = new byte[frameInfo.samples * 2];
 		std::memcpy(buffer, decodedSamples, frameInfo.samples * 2);
 
-		byte flags = FLAG_16BITS;
-
-#ifdef XOREOS_LITTLE_ENDIAN
-		flags |= FLAG_LITTLE_ENDIAN;
-#endif
+		static const byte flags = FLAG_16BITS | FLAG_NATIVE_ENDIAN;
 
 		audioStream->queueAudioStream(makePCMStream(new Common::MemoryReadStream(buffer, frameInfo.samples * 2, true), _rate, flags, _channels, true), true);
 
 		inBufferPos += frameInfo.bytesconsumed;
 	}
 
+	audioStream->finish();
 	return audioStream;
+}
+
+void AACDecoder::queuePacket(Common::SeekableReadStream *data) {
+	Common::ScopedPtr<Common::SeekableReadStream> capture(data);
+	_audStream->queueAudioStream(decodeFrame(*data));
 }
 
 // Factory function
 Codec *makeAACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraData) {
 	return new AACDecoder(extraData, disposeExtraData);
+}
+
+PacketizedAudioStream *makeAACStream(Common::SeekableReadStream &extraData) {
+	return new AACDecoder(&extraData, false);
 }
 
 } // End of namespace Sound

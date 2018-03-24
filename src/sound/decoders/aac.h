@@ -59,6 +59,7 @@ namespace Common {
 namespace Sound {
 
 class Codec;
+class PacketizedAudioStream;
 
 /**
  * Create a new Codec for decoding AAC data of an MPEG-4 file in the given stream.
@@ -73,6 +74,14 @@ class Codec;
 Codec *makeAACDecoder(
 	Common::SeekableReadStream *extraData,
 	bool disposeExtraData = false);
+
+/**
+ * Create a PacketizedAudioStream that decodes AAC sound
+ *
+ * @param extraData  The stream containing the extra data needed for initialization
+ * @return             A new PacketizedAudioStream, or NULL on error
+ */
+PacketizedAudioStream *makeAACStream(Common::SeekableReadStream &extraData);
 
 } // End of namespace Sound
 
