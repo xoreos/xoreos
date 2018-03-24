@@ -147,14 +147,13 @@ private:
 	void parseStreamHeader();
 	void parseFileHeader();
 	Packet *readPacket();
-	Codec *createCodec();
-	AudioStream *createAudioStream();
+	PacketizedAudioStream *createAudioStream();
+	void feedAudioData();
+	bool allDataLoaded() const;
 
 	size_t _rewindPos;
 	uint64 _curPacket;
-	Common::ScopedPtr<Packet> _lastPacket;
-	Common::ScopedPtr<Codec> _codec;
-	Common::ScopedPtr<AudioStream> _curAudioStream;
+	Common::ScopedPtr<PacketizedAudioStream> _curAudioStream;
 	byte _curSequenceNumber;
 
 	// Header object variables
@@ -256,10 +255,14 @@ void ASFStream::parseFileHeader() {
 	// We only know how to support packets of one length
 	if (_minPacketSize != _maxPacketSize)
 		throw Common::Exception("ASFStream::parseFileHeader(): Mismatched packet sizes: Min = %d, Max = %d", _minPacketSize, _maxPacketSize);
+
+	// If we have no packets, bail out
+	if (_packetCount == 0)
+		throw Common::Exception("ASFStream::parseFileHeader(): No packets");
 }
 
 void ASFStream::parseStreamHeader() {
-	if (_codec)
+	if (_curAudioStream)
 		throw Common::Exception("ASFStream::parseStreamHeader(): Multiple stream headers found");
 
 	ASFGUID guid = ASFGUID(*_stream);
@@ -288,7 +291,7 @@ void ASFStream::parseStreamHeader() {
 		_extraData.reset(_stream->readStream(cbSize));
 	}
 
-	_codec.reset(createCodec());
+	_curAudioStream.reset(createAudioStream());
 }
 
 uint64 ASFStream::getLength() const {
@@ -305,10 +308,9 @@ bool ASFStream::rewind() {
 
 	// Reset our packet counter
 	_curPacket = 0;
-	_lastPacket.reset();
 
-	// Delete a stream if we have one
-	_curAudioStream.reset();
+	// Reset our underlying stream
+	_curAudioStream.reset(createAudioStream());
 
 	// Reset this too
 	_curSequenceNumber = 1;
@@ -404,7 +406,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 	return packet;
 }
 
-Codec *ASFStream::createCodec() {
+PacketizedAudioStream *ASFStream::createAudioStream() {
 	switch (_compression) {
 	case kWaveWMAv2:
 		return new WMACodec(2, _sampleRate, _channels, _bitRate, _blockAlign, _extraData.get());
@@ -415,74 +417,69 @@ Codec *ASFStream::createCodec() {
 	return 0;
 }
 
-AudioStream *ASFStream::createAudioStream() {
-	_lastPacket.reset(readPacket());
+void ASFStream::feedAudioData() {
+	Common::ScopedPtr<Packet> packet(readPacket());
 
 	// TODO
-	if (_lastPacket->segments.size() != 1)
-		throw Common::Exception("ASFStream::createAudioStream(): Only single segment packets supported");
+	if (packet->segments.size() != 1)
+		throw Common::Exception("ASFStream::feedAudioData(): Only single segment packets supported");
 
-	Packet::Segment &segment = _lastPacket->segments[0];
+	Packet::Segment &segment = packet->segments[0];
 
 	// We should only have one stream in a ASF audio file
 	if (segment.streamID != _streamID)
-		throw Common::Exception("ASFStream::createAudioStream(): Packet stream ID mismatch");
+		throw Common::Exception("ASFStream::feedAudioData(): Packet stream ID mismatch");
 
 	// TODO
 	if (segment.sequenceNumber != _curSequenceNumber)
-		throw Common::Exception("ASFStream::createAudioStream(): Only one sequence number per packet supported");
+		throw Common::Exception("ASFStream::feedAudioData(): Only one sequence number per packet supported");
 
 	// This can overflow and needs to overflow!
 	_curSequenceNumber++;
 
 	// TODO
 	if (segment.data.size() != 1)
-		throw Common::Exception("ASFStream::createAudioStream(): Packet grouping not supported");
+		throw Common::Exception("ASFStream::feedAudioData(): Packet grouping not supported");
 
-	Common::SeekableReadStream *stream = segment.data[0];
-	if (_codec)
-		return _codec->decodeFrame(*stream);
+	_curAudioStream->queuePacket(segment.data[0]);
 
-	return 0;
+	// The PacketizedAudioStream has taken ownership of the pointer; reset it here
+	segment.data[0] = 0;
 }
 
 size_t ASFStream::readBuffer(int16 *buffer, const size_t numSamples) {
 	size_t samplesDecoded = 0;
 
-	for (;;) {
-		if (_curAudioStream) {
-			const size_t n = _curAudioStream->readBuffer(buffer + samplesDecoded, numSamples - samplesDecoded);
-			if (n == kSizeInvalid)
-				return kSizeInvalid;
+	while (true) {
+		// Read as much out of the stream as possible
+		const size_t n = _curAudioStream->readBuffer(buffer + samplesDecoded, numSamples - samplesDecoded);
+		if (n == kSizeInvalid)
+			return kSizeInvalid;
 
-			samplesDecoded += n;
+		samplesDecoded += n;
 
-			if (_curAudioStream->endOfData())
-				_curAudioStream.reset();
-		}
-
-		if (samplesDecoded == numSamples || endOfData())
+		// If we have decoded up to what is requested or have no more data, bail
+		if (samplesDecoded == numSamples || allDataLoaded())
 			break;
 
-		if (!_curAudioStream) {
-			_curAudioStream.reset(createAudioStream());;
-		}
-
+		// If we have no data, feed the beast
+		if (_curAudioStream->endOfData())
+			feedAudioData();
 	}
 
 	return samplesDecoded;
 }
 
+bool ASFStream::allDataLoaded() const {
+	return _curPacket == _packetCount;
+}
+
 bool ASFStream::endOfData() const {
-	return _curPacket == _packetCount && !_curAudioStream;
+	return allDataLoaded() && _curAudioStream->endOfData();
 }
 
 RewindableAudioStream *makeASFStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	Common::ScopedPtr<RewindableAudioStream> s(new ASFStream(stream, disposeAfterUse));
-	if (s && s->endOfData())
-		return 0;
-
-	return s.release();
+	return new ASFStream(stream, disposeAfterUse);
 }
 
 } // End of namespace Sound
