@@ -56,8 +56,8 @@ protected:
 	void processData();
 
 private:
-	/** An audio track. */
-	struct AudioTrack {
+	/** An audio track's information. */
+	struct AudioInfo {
 		uint16 compression;   ///< The compression method.
 		uint16 channels;      ///< The number of channels.
 		uint32 rate;          ///< The sampling rate.
@@ -91,7 +91,7 @@ private:
 		uint32 dataSize;   ///< The audio data size.
 		uint32 dataOffset; ///< The audio data offset within the XMV stream.
 
-		AudioTrack *track; ///< The track this packet belongs to.
+		AudioInfo *info; ///< The audio info related to this packet.
 
 		bool newSlice; ///< Is a new slice that needs to be queue available?
 	};
@@ -122,8 +122,8 @@ private:
 
 	Common::ScopedPtr<Common::SeekableReadStream> _xmv;
 
-	/** All audio tracks within the XMV. */
-	std::vector<AudioTrack> _audioTracks;
+	/** All audio info within the XMV. */
+	std::vector<AudioInfo> _audioTrackInfo;
 
 	/** Streams needed for 5.1 interleaving. */
 	ADPCM51Streams _adpcm51Streams;
@@ -139,7 +139,7 @@ private:
 	void load();
 
 	/** Evaluate whether and how we support the format of the audio track. */
-	void evaluateAudioTrack(AudioTrack &track);
+	void evaluateAudioTrack(AudioInfo &track);
 
 	/** Fetch the next packet. */
 	void fetchNextPacket(Packet &packet);
@@ -156,7 +156,7 @@ private:
 	void processNextFrame(PacketVideo &videoPacket);
 
 	/** Queue audio stream data belonging to this track. */
-	void queueAudioStream(Common::SeekableReadStream *stream, const AudioTrack &track);
+	void queueAudioStream(Common::SeekableReadStream *stream, const AudioInfo &track);
 };
 
 } // End of namespace Video
