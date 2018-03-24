@@ -409,7 +409,7 @@ ASFStream::Packet *ASFStream::readPacket() {
 PacketizedAudioStream *ASFStream::createAudioStream() {
 	switch (_compression) {
 	case kWaveWMAv2:
-		return new WMACodec(2, _sampleRate, _channels, _bitRate, _blockAlign, _extraData.get());
+		return makeWMAStream(2, _sampleRate, _channels, _bitRate, _blockAlign, *_extraData);
 	default:
 		throw Common::Exception("ASFStream::createAudioStream(): Unknown compression 0x%04x", _compression);
 	}
