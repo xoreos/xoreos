@@ -28,6 +28,7 @@
 #include "src/aurora/types.h"
 
 #include "src/engines/kotor/situated.h"
+#include "src/engines/kotor/item.h"
 
 namespace Engines {
 
@@ -91,6 +92,7 @@ private:
 	State _state; ///< The current state of the placeable.
 
 	bool _hasInventory; ///< Does this placeable have an inventory?
+	std::list<Item> _inventory; ///< The current items of this placeable if it has an inventory.
 
 	/** Load from a placeable instance. */
 	void load(const Aurora::GFF3Struct &placeable);

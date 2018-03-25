@@ -72,7 +72,17 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
 
+	// Inventory
+
 	_hasInventory = gff.getBool("HasInventory", _hasInventory);
+
+	if (_hasInventory && gff.hasField("ItemList")) {
+		Aurora::GFF3List classList = gff.getList("ItemList");
+		for (Aurora::GFF3List::const_iterator iter = classList.begin(); iter != classList.end(); ++iter) {
+			const Aurora::GFF3Struct &item = **iter;
+			_inventory.push_back(Item(item.getString("InventoryRes")));
+		}
+	}
 
 	// Hit Points
 
