@@ -131,6 +131,11 @@ void HUD::setPosition(float x, float y) {
 		_minimap->setPosition(x, y);
 }
 
+void HUD::showContainer() {
+	_container.reset(new ContainerMenu());
+	sub(*_container, kStartCodeNone, true, false);
+}
+
 void HUD::initWidget(Engines::Widget &widget) {
 	// Don't know what these two are doing, but they spawn over the complete screen blocking the 3d picking.
 	if (widget.getTag() == "LBL_MAP")

@@ -29,6 +29,7 @@
 
 #include "src/engines/kotor/gui/gui.h"
 
+#include "src/engines/kotor/gui/ingame/container.h"
 #include "src/engines/kotor/gui/ingame/menu.h"
 #include "src/engines/kotor/gui/ingame/minimap.h"
 
@@ -50,8 +51,11 @@ public:
 
 	void setPosition(float x, float y);
 
+	void showContainer();
+
 private:
 	Menu _menu;
+	Common::ScopedPtr<ContainerMenu> _container;
 
 	Common::ScopedPtr<Minimap> _minimap;
 
