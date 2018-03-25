@@ -137,6 +137,9 @@ public:
 	/** Leave the running module, quitting it. */
 	void leave();
 
+	/** Open the inventory of a container. */
+	void clickObject(Object *object);
+
 	/** Add a single event for consideration into the event queue. */
 	void addEvent(const Events::Event &event);
 	/** Process the current event queue. */

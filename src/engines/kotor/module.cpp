@@ -51,6 +51,7 @@
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/creature.h"
+#include "src/engines/kotor/placeable.h"
 #include "src/engines/kotor/gui/ingame/ingame.h"
 
 namespace Engines {
@@ -431,6 +432,16 @@ void Module::leaveArea() {
 	}
 
 	runScript(kScriptExit, this, _pc.get());
+}
+
+void Module::clickObject(Object *object) {
+	Placeable *placeable = ObjectContainer::toPlaceable(object);
+	if (placeable) {
+		if (placeable->hasInventory()) {
+			_ingame->showContainer();
+			placeable->close(_pc.get());
+		}
+	}
 }
 
 void Module::addEvent(const Events::Event &event) {
