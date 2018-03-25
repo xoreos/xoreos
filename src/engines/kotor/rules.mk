@@ -39,6 +39,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/room.h \
     src/engines/kotor/objectcontainer.h \
     src/engines/kotor/module.h \
+    src/engines/kotor/item.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
@@ -57,6 +58,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/room.cpp \
     src/engines/kotor/objectcontainer.cpp \
     src/engines/kotor/module.cpp \
+    src/engines/kotor/item.cpp \
     $(EMPTY)
 
 include src/engines/kotor/script/rules.mk
