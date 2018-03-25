@@ -22,6 +22,7 @@
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/ingame/ingame.h \
     src/engines/kotor/gui/ingame/hud.h \
+    src/engines/kotor/gui/ingame/container.h \
     src/engines/kotor/gui/ingame/menu.h \
     src/engines/kotor/gui/ingame/menu_equ.h \
     src/engines/kotor/gui/ingame/menu_inv.h \
@@ -37,6 +38,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/ingame/ingame.cpp \
     src/engines/kotor/gui/ingame/hud.cpp \
+    src/engines/kotor/gui/ingame/container.cpp \
     src/engines/kotor/gui/ingame/menu.cpp \
     src/engines/kotor/gui/ingame/menu_equ.cpp \
     src/engines/kotor/gui/ingame/menu_inv.cpp \
