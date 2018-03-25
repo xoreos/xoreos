@@ -71,6 +71,10 @@ public:
 	/** The user object deactivates this placeable. */
 	bool deactivate(Object *closer);
 
+	// Inventory
+
+	bool hasInventory();
+
 	// Object/Cursor interactions
 
 	void enter(); ///< The cursor entered the placeable.

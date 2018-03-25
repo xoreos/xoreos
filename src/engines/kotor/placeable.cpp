@@ -230,6 +230,10 @@ bool Placeable::deactivate(Object *user) {
 	return true;
 }
 
+bool Placeable::hasInventory() {
+	return _hasInventory;
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
