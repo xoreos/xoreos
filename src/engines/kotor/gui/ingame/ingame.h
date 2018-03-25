@@ -52,6 +52,9 @@ public:
 	void setReturnQueryStrref(uint32 id);
 	void setReturnEnabled(bool enabled);
 
+	// Container inventory handling
+	void showContainer();
+
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
 

@@ -63,6 +63,10 @@ void IngameGUI::setReturnEnabled(bool enabled) {
 	_hud->setReturnEnabled(enabled);
 }
 
+void IngameGUI::showContainer() {
+	_hud->showContainer();
+}
+
 void IngameGUI::addEvent(const Events::Event &event) {
 	_hud->addEvent(event);
 }
