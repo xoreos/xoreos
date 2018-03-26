@@ -36,6 +36,8 @@ public:
 	QuickCharPanel(CharacterGeneration* chargen, Console *console = 0);
 
 private:
+	void updateButtons();
+
 	void callbackActive(Widget &widget);
 
 	CharacterGeneration *_chargenMenu;

@@ -37,7 +37,7 @@ namespace Engines {
 namespace KotOR2 {
 
 CharacterGeneration::CharacterGeneration(Module *module, CharacterGenerationInfo *info, Engines::Console *console) :
-		GUI(console), _module(module), _chargenInfo(info) {
+		GUI(console), _module(module), _chargenInfo(info), _step(0) {
 	load("maincg_p");
 
 	switch (_chargenInfo->getClass()) {
@@ -89,11 +89,27 @@ void CharacterGeneration::showCustomChar() {
 void CharacterGeneration::showName() {
 	_charGenMenu.reset(new CharacterGenerationNameMenu(*_chargenInfo));
 	sub(*_charGenMenu, kStartCodeNone, true, false);
+
+	if (_charGenMenu->isAccepted()) {
+		_step += 1;
+	}
 }
 
 void CharacterGeneration::showPortrait() {
 	_charGenMenu.reset(new CharacterGenerationPortraitMenu(*_chargenInfo));
 	sub(*_charGenMenu);
+
+	if (_charGenMenu->isAccepted()) {
+		_step += 1;
+	}
+}
+
+int CharacterGeneration::getStep() {
+	return _step;
+}
+
+void CharacterGeneration::decStep() {
+	_step = MIN(0, _step - 1);
 }
 
 void CharacterGeneration::start() {

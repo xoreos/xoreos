@@ -47,12 +47,17 @@ public:
 	void showName();
 	void showPortrait();
 
+	int getStep();
+	void decStep();
+
 	void start();
 
 private:
 	Module* _module;
 
 	CharacterGenerationInfo *_chargenInfo;
+
+	int _step;
 
 	Common::ScopedPtr<GUI> _quickOrCustomPanel;
 	Common::ScopedPtr<GUI> _quickCharPanel;
