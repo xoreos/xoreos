@@ -33,6 +33,8 @@
 
 #include "src/engines/nwn/gui/widgets/nwnwidget.h"
 
+#include "src/graphics/shader/shaderrenderable.h"
+
 namespace Common {
 	class UString;
 }
@@ -99,6 +101,10 @@ private:
 
 	Quad _qPortrait;
 	std::vector<Quad> _qBorder;
+
+	Graphics::Shader::ShaderSurface *_surface;
+	Graphics::Shader::ShaderMaterial *_material;
+	Graphics::Shader::ShaderRenderable *_renderable;
 
 	void setSize();
 	void createBorder();

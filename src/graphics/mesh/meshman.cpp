@@ -28,6 +28,7 @@
 #include "src/graphics/mesh/meshman.h"
 #include "src/graphics/mesh/meshwirebox.h"
 #include "src/graphics/mesh/meshfont.h"
+#include "src/graphics/mesh/meshquad.h"
 
 DECLARE_SINGLETON(Graphics::Mesh::MeshManager)
 
@@ -54,6 +55,11 @@ void MeshManager::init() {
 	meshFont->init();
 	meshFont->setName("defaultMeshFont");
 	_resourceMap[meshFont->getName()] = meshFont;
+
+	MeshQuad *meshQuad = new MeshQuad();
+	meshQuad->init();
+	meshQuad->setName("defaultMeshQuad");
+	_resourceMap[meshQuad->getName()] = meshQuad;
 }
 
 void MeshManager::deinit() {

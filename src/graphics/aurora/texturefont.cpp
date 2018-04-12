@@ -40,6 +40,7 @@
 
 #include "src/graphics/mesh/meshman.h"
 #include "src/graphics/shader/surfaceman.h"
+
 namespace Graphics {
 
 namespace Aurora {

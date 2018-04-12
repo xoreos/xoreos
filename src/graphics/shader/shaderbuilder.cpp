@@ -1,4 +1,4 @@
-/* xoreos - A reimplementation of BioWare's Aurora engine
+﻿/* xoreos - A reimplementation of BioWare's Aurora engine
  *
  * xoreos is the legal property of its developers, whose names
  * can be found in the AUTHORS file distributed with this source
@@ -531,29 +531,33 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			}
 			body_desc_string = "uv1 = inputUV1.xy;\n";
 			break;
-		case INPUT_UV2:
+		case INPUT_UV0_MATRIX:
 			if (isGL3) {
-				input_desc_string = "in vec2 inputUV2;\n";
-				output_desc_string = "out vec2 uv2;\n";
-				f_desc_string = "in vec2 uv2;\n";
+				input_desc_string = "in vec2 inputUV0;\n"
+				                    "uniform mat4 _uv0Matrix;\n";
+				output_desc_string = "out vec2 uv0;\n";
+				f_desc_string = "in vec2 uv0;\n";
 			} else {
-				input_desc_string = "#define inputUV2 gl_MultiTexCoord2\n";
-				output_desc_string = "varying vec2 uv2;\n";
-				f_desc_string = "varying vec2 uv2;\n";
+				input_desc_string = "#define inputUV0 gl_MultiTexCoord0\n"
+				                    "uniform mat4 _uv0Matrix;\n";
+				output_desc_string = "varying vec2 uv0;\n";
+				f_desc_string = "varying vec2 uv0;\n";
 			}
-			body_desc_string = "uv2 = inputUV2.xy;\n";
+			body_desc_string = "uv0 = (_uv0Matrix * vec4(inputUV0.xy, 0.0, 1.0)).xy;\n";
 			break;
-		case INPUT_UV3:
+		case INPUT_UV1_MATRIX:
 			if (isGL3) {
-				input_desc_string = "in vec2 inputUV3;\n";
-				output_desc_string = "out vec2 uv3;\n";
-				f_desc_string = "in vec2 uv3;\n";
+				input_desc_string = "in vec2 inputUV1;\n"
+				                    "uniform mat2 _uv1Matrix;\n";
+				output_desc_string = "out vec2 uv1;\n";
+				f_desc_string = "in vec2 uv1;\n";
 			} else {
-				input_desc_string = "#define inputUV3 gl_MultiTexCoord3\n";
-				output_desc_string = "varying vec2 uv3;\n";
-				f_desc_string = "varying vec2 uv3;\n";
+				input_desc_string = "#define inputUV1 gl_MultiTexCoord1\n"
+				                    "uniform mat2 _uv1Matrix;\n";
+				output_desc_string = "varying vec2 uv1;\n";
+				f_desc_string = "varying vec2 uv1;\n";
 			}
-			body_desc_string = "uv3 = inputUV3.xy;\n";
+			body_desc_string = "uv1 = (_uv1Matrix * vec4(inputUV1.xy, 0.0, 1.0)).xy;\n";
 			break;
 		case INPUT_UV_CUBE:
 			if (isGL3) {
@@ -681,8 +685,8 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case INPUT_NORMAL3: f_input_string = "normal3"; break;
 		case INPUT_UV0: f_input_string = "uv0"; break;
 		case INPUT_UV1: f_input_string = "uv1"; break;
-		case INPUT_UV2: f_input_string = "uv2"; break;
-		case INPUT_UV3: f_input_string = "uv3"; break;
+		case INPUT_UV0_MATRIX: f_input_string = "uv0"; break;
+		case INPUT_UV1_MATRIX: f_input_string = "uv1"; break;
 		case INPUT_UV_CUBE: f_input_string = "uvCube"; break;
 		case INPUT_UV_SPHERE: f_input_string = "uvSphere"; break;
 		case INPUT_COLOUR: f_input_string = "xColour"; break;
@@ -840,6 +844,13 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 	//printf("Fragment Shader:\n%s\n", f_shader_string.c_str());
 }
 
+void ShaderDescriptor::clear() {
+	_inputDescriptors.clear();
+	_samplerDescriptors.clear();
+	_connectors.clear();
+	_passes.clear();
+}
+
 void ShaderDescriptor::genName(Common::UString &n_string) {
 	for (size_t i = 0; i < _inputDescriptors.size(); ++i) {
 		n_string += "__";
@@ -854,8 +865,8 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case INPUT_NORMAL3: n_string += "input_normal3"; break;
 		case INPUT_UV0: n_string += "input_uv0"; break;
 		case INPUT_UV1: n_string += "input_uv1"; break;
-		case INPUT_UV2: n_string += "input_uv2"; break;
-		case INPUT_UV3: n_string += "input_uv3"; break;
+		case INPUT_UV0_MATRIX: n_string += "input_uv0"; break;
+		case INPUT_UV1_MATRIX: n_string += "input_uv1"; break;
 		case INPUT_UV_CUBE: n_string += "input_uv_cube"; break;
 		case INPUT_UV_SPHERE: n_string += "input_uv_sphere"; break;
 		case INPUT_COLOUR: n_string += "input_colour"; break;
@@ -912,8 +923,8 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case INPUT_NORMAL3: n_string += "input_normal3"; break;
 		case INPUT_UV0: n_string += "input_uv0"; break;
 		case INPUT_UV1: n_string += "input_uv1"; break;
-		case INPUT_UV2: n_string += "input_uv2"; break;
-		case INPUT_UV3: n_string += "input_uv3"; break;
+		case INPUT_UV0_MATRIX: n_string += "input_uv0"; break;
+		case INPUT_UV1_MATRIX: n_string += "input_uv1"; break;
 		case INPUT_UV_CUBE: n_string += "input_uv_cube"; break;
 		case INPUT_UV_SPHERE: n_string += "input_uv_sphere"; break;
 		case INPUT_COLOUR: n_string += "input_colour"; break;

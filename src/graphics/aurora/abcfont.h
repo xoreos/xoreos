@@ -33,6 +33,10 @@
 
 #include "src/graphics/aurora/texturehandle.h"
 
+#include "src/graphics/mesh/meshfont.h"
+
+#include "src/graphics/shader/shaderrenderable.h"
+
 namespace Common {
 	class UString;
 	class SeekableReadStream;
@@ -53,6 +57,10 @@ public:
 
 	void draw(uint32 c) const;
 
+	virtual void renderBind() const;
+	virtual void render(uint32 c, float &x, float &y, float *rgba) const;
+	virtual void renderUnbind() const;
+
 private:
 	/** A font character. */
 	struct Char {
@@ -67,6 +75,9 @@ private:
 	};
 
 	TextureHandle _texture;
+	Mesh::MeshFont *_mesh;
+	Shader::ShaderMaterial *_material;
+	Shader::ShaderRenderable *_renderable;
 
 	uint8 _base;
 

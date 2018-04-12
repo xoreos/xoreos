@@ -57,8 +57,8 @@ public:
 		INPUT_NORMAL3,
 		INPUT_UV0,
 		INPUT_UV1,
-		INPUT_UV2,
-		INPUT_UV3,
+		INPUT_UV0_MATRIX, ///< Same as INPUT_UV0, but specifies input matrix too.
+		INPUT_UV1_MATRIX, ///< Same as INPUT_UV1, but specifies input matrix too.
 		INPUT_UV_CUBE,    ///< Not strictly speaking an input, but generated for an output.
 		INPUT_UV_SPHERE,  ///< Not strictly speaking an input, but generated for an output.
 		INPUT_COLOUR
@@ -129,6 +129,11 @@ public:
 	void addPass(ShaderDescriptor::Action action, ShaderDescriptor::Blend blend);
 
 	void build(bool isGL3, Common::UString &v_string, Common::UString &f_string);
+
+	/**
+	 * @brief Clear shader descriptor information. Reset everything to default state.
+	 */
+	void clear();
 
 	/**
 	 * @brief Generate a name to asscoiate with the current description. Does not require building first.

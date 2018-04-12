@@ -32,6 +32,8 @@
 
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/mesh/meshman.h"
 
 #include "src/engines/nwn/gui/widgets/portrait.h"
 
@@ -50,6 +52,13 @@ Portrait::Portrait(const Common::UString &name, Size size,
 
 	assert((_size >= kSizeHuge) && (_size < kSizeMAX));
 
+	_surface = new Graphics::Shader::ShaderSurface(ShaderMan.getShaderObject("default/textureMatrix.vert", Graphics::Shader::SHADER_FRAGMENT), "portrait");
+	_material = new Graphics::Shader::ShaderMaterial(ShaderMan.getShaderObject("default/texture.frag", Graphics::Shader::SHADER_FRAGMENT), "portrait");
+	// Sampler should be changed when the portrait texture is changed.
+	_renderable = new Graphics::Shader::ShaderRenderable(_surface,
+	                                                     _material,
+	                                                     MeshMan.getMesh("defaultMeshQuad"));
+
 	setSize();
 	setPortrait(name);
 
@@ -57,6 +66,9 @@ Portrait::Portrait(const Common::UString &name, Size size,
 }
 
 Portrait::~Portrait() {
+	delete _renderable;
+	delete _surface;
+	delete _material;
 }
 
 void Portrait::createBorder() {
@@ -154,7 +166,7 @@ void Portrait::render(Graphics::RenderPass pass) {
 			((pass == Graphics::kRenderPassTransparent) && !isTransparent))
 		return;
 
-
+#if 0
 	// Border
 
 	TextureMan.set();
@@ -178,6 +190,15 @@ void Portrait::render(Graphics::RenderPass pass) {
 		glVertex2f  (_qPortrait.vX[i], _qPortrait.vY[i]);
 	}
 	glEnd();
+#endif
+	Common::Matrix4x4 tform;
+	tform.loadIdentity();
+	tform.translate(_qPortrait.vX[0], _qPortrait.vY[0], -10.0f);
+	//tform.translate(0.0f, 0.0f, -10.0f);
+	tform.scale(_qPortrait.vX[2] - _qPortrait.vX[0],
+	            _qPortrait.vY[2] - _qPortrait.vY[0],
+	            1.0f);
+	_renderable->renderImmediate(tform);
 }
 
 void Portrait::setPortrait(const Common::UString &name) {
@@ -201,6 +222,10 @@ void Portrait::setPortrait(const Common::UString &name) {
 			_texture.clear();
 		}
 	}
+
+	Graphics::Shader::ShaderSampler *sampler;
+	sampler = (Graphics::Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
+	sampler->handle = _texture;
 }
 
 void Portrait::setBorderColor(float bR, float bG, float bB, float bA) {
@@ -230,6 +255,12 @@ void Portrait::setSize() {
 	_qPortrait.tX[1] = 1.0f; _qPortrait.tY[1] = portraitCutRatio;
 	_qPortrait.tX[2] = 1.0f; _qPortrait.tY[2] = 1.0f;
 	_qPortrait.tX[3] = 0.0f; _qPortrait.tY[3] = 1.0f;
+
+	Common::Matrix4x4 tmatrix;
+	tmatrix.loadIdentity();
+	tmatrix.translate(0.0f, portraitCutRatio, 0.0f);
+	tmatrix.scale(1.0f, 1.0f - portraitCutRatio, 1.0f);
+	memcpy(_surface->getVariableData("_uv0Matrix"), &tmatrix[0], 16 * sizeof(float));
 }
 
 

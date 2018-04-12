@@ -27,6 +27,7 @@ src_graphics_mesh_libmesh_la_SOURCES += \
     src/graphics/mesh/meshman.h \
     src/graphics/mesh/meshwirebox.h \
     src/graphics/mesh/meshfont.h \
+    src/graphics/mesh/meshquad.h \
     $(EMPTY)
 
 src_graphics_mesh_libmesh_la_SOURCES += \
@@ -34,4 +35,5 @@ src_graphics_mesh_libmesh_la_SOURCES += \
     src/graphics/mesh/meshman.cpp \
     src/graphics/mesh/meshwirebox.cpp \
     src/graphics/mesh/meshfont.cpp \
+    src/graphics/mesh/meshquad.cpp \
     $(EMPTY)
