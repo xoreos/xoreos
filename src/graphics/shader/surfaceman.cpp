@@ -32,8 +32,15 @@ namespace Graphics {
 
 namespace Shader {
 
+static Common::Matrix4x4 surfaceIdentityMatrix;
+
 SurfaceManager::SurfaceManager() {
+	surfaceIdentityMatrix.loadIdentity();
+
 	ShaderSurface *surface = new ShaderSurface(ShaderMan.getShaderObject("default/default.vert", SHADER_VERTEX), "defaultSurface");
+	_resourceMap[surface->getName()] = surface;
+
+	surface = new ShaderSurface(ShaderMan.getShaderObject("default/text.vert", SHADER_VERTEX), "textSurface");
 	_resourceMap[surface->getName()] = surface;
 }
 

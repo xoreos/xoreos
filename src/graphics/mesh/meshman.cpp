@@ -27,6 +27,7 @@
 
 #include "src/graphics/mesh/meshman.h"
 #include "src/graphics/mesh/meshwirebox.h"
+#include "src/graphics/mesh/meshfont.h"
 
 DECLARE_SINGLETON(Graphics::Mesh::MeshManager)
 
@@ -47,8 +48,12 @@ void MeshManager::init() {
 	MeshWireBox *wirebox = new MeshWireBox();
 	wirebox->init();
 	wirebox->setName("defaultWireBox");
-
 	_resourceMap[wirebox->getName()] = wirebox;
+
+	MeshFont *meshFont = new MeshFont();
+	meshFont->init();
+	meshFont->setName("defaultMeshFont");
+	_resourceMap[meshFont->getName()] = meshFont;
 }
 
 void MeshManager::deinit() {

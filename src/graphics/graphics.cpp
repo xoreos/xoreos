@@ -1012,20 +1012,6 @@ bool GraphicsManager::renderWorld() {
 bool GraphicsManager::renderGUIFront() {
 	return renderGUI(_scalingType, kQueueVisibleGUIFrontObject, false);
 }
-#if 0
-	RenderMan.clear();
-	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
-	     g != gui.rend(); ++g) {
-
-		glPushMatrix();
-		static_cast<Renderable *>(*g)->render(kRenderPassAll);
-		glPopMatrix();
-		// Uncomment below to render the gui. Text won't be shown yet however.
-		//static_cast<Renderable *>(*g)->queueRender();
-	}
-	RenderMan.sort();
-	RenderMan.render();
-#endif
 
 bool GraphicsManager::renderGUIBack() {
 	return renderGUI(_scalingType, kQueueVisibleGUIBackObject, true);
@@ -1070,12 +1056,13 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 
 		glPushMatrix();
 		static_cast<Renderable *>(*g)->render(kRenderPassAll);
+		//static_cast<Renderable *>(*g)->queueRender();
 		glPopMatrix();
 		// Uncomment below to render the gui. Text won't be shown yet however.
 		//static_cast<Renderable *>(*g)->queueRender();
 	}
 	RenderMan.sort();
-	RenderMan.render();
+	//RenderMan.render();
 
 	QueueMan.unlockQueue(guiQueue);
 

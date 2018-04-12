@@ -62,6 +62,9 @@ public:
 
 	/** Draw this character. */
 	virtual void draw(uint32 c) const = 0;
+	virtual void draw2Prepare() {}
+	virtual void draw2(uint32 c, float &x, float &y) {}
+	virtual void draw2Done() {}
 
 	float split(const Common::UString &line, std::vector<Common::UString> &lines,
 	            float maxWidth = 0.0f, float maxHeight = 0.0f, bool trim = true) const;

@@ -60,6 +60,14 @@ GLuint Mesh::getType() const {
 	return _type;
 }
 
+void Mesh::setHint(GLuint hint) {
+	_hint = hint;
+}
+
+GLuint Mesh::getHint() const {
+	return _hint;
+}
+
 void Mesh::init() {
 	float minx = 0.0f, miny = 0.0f, minz = 0.0f, maxx = 0.0f, maxy = 0.0f, maxz = 0.0f;
 	float *vertices = static_cast<float *>(_vertexBuffer.getData());
@@ -101,8 +109,8 @@ void Mesh::init() {
 }
 
 void Mesh::initGL() {
-	_vertexBuffer.initGL();
-	_indexBuffer.initGL();
+	_vertexBuffer.initGL(_hint);
+	_indexBuffer.initGL(_hint);
 
 	// GL3.x render path uses Vertex Array (attribute) Objects.
 	if (GfxMan.isGL3()) {

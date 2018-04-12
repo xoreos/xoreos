@@ -623,7 +623,7 @@ bool ModelNode::renderableMesh(Mesh *mesh) {
 
 void ModelNode::render(RenderPass pass, const Common::Matrix4x4 &parentTransform) {
 	// Apply the node's transformation
-
+#if 0
 	glTranslatef(_position[0], _position[1], _position[2]);
 	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
 
@@ -674,6 +674,58 @@ void ModelNode::render(RenderPass pass, const Common::Matrix4x4 &parentTransform
 		glPushMatrix();
 		(*c)->render(pass, _renderTransform);
 		glPopMatrix();
+	}
+#endif
+
+	_renderTransform = parentTransform;
+	_renderTransform.translate(_position[0], _position[1], _position[2]);
+	_renderTransform.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+	_renderTransform.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
+	_renderTransform.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
+	_renderTransform.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
+	_renderTransform.scale(_scale[0], _scale[1], _scale[2]);
+
+	/**
+	 * Ignoring _render for now because it's being falsely set to false.
+	 */
+	/* if (_render) {} */
+
+	float alpah = 1.0f;
+	if (_name == "window") {
+		alpah = 0.7f;
+	}
+
+	if (_mesh) {
+		alpah = _mesh->alpha;
+	}
+
+	if (_dirtyRender) {
+		/**
+		 * Do this regardless of if the modelnode is actually visible or not, to prevent
+		 * stutter when things are first brought into view. Most things are loaded at the
+		 * start of a level, so stutter won't be noticed then.
+		 */
+		this->buildMaterial();
+	} else {
+		if (_renderableArray.size() == 0) {
+			if (_rootStateNode) {
+				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
+					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform, alpah);
+				}
+			}
+		} else {
+			for (size_t i = 0; i < _renderableArray.size(); ++i) {
+				_renderableArray[i].renderImmediate(_renderTransform, alpah);
+			}
+		}
+	}
+
+	if (_attachedModel) {
+		_attachedModel->render(pass);
+	}
+	// Render the node's children
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+		(*c)->render(pass, _renderTransform);
 	}
 }
 

@@ -60,9 +60,11 @@ public:
 		INPUT_UV2,
 		INPUT_UV3,
 		INPUT_UV_CUBE,    ///< Not strictly speaking an input, but generated for an output.
-		INPUT_UV_SPHERE   ///< Not strictly speaking an input, but generated for an output.
+		INPUT_UV_SPHERE,  ///< Not strictly speaking an input, but generated for an output.
+		INPUT_COLOUR
 	};
 
+	///< Sampler definitions. Limit to the OpenGL minimum requirement.
 	enum Sampler {
 		SAMPLER_TEXTURE_0,
 		SAMPLER_TEXTURE_1,
@@ -75,6 +77,7 @@ public:
 		SAMPLER_TEXTURE_NONE
 	};
 
+	///< Type of sampler. Obviously.
 	enum SamplerType {
 		SAMPLER_1D,
 		SAMPLER_2D,
@@ -82,10 +85,12 @@ public:
 		SAMPLER_CUBE
 	};
 
+	///< Fragment shader action. Multiple actions can be used in a single shader.
 	enum Action {
 		ENV_CUBE,
 		ENV_SPHERE,
-		COLOUR,
+		COLOUR,           ///< Uniform variable colour information.
+		X_COLOUR,         ///< Per-vertex colour information.
 		TEXTURE_DIFFUSE,
 		TEXTURE_LIGHTMAP,
 		TEXTURE_BUMPMAP,
@@ -93,6 +98,7 @@ public:
 		NOOP
 	};
 
+	///< Blending applied to each Action.
 	enum Blend {
 		BLEND_SRC_ALPHA,
 		BLEND_DST_ALPHA,

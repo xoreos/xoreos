@@ -38,6 +38,8 @@
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
+#include "src/graphics/mesh/meshman.h"
+#include "src/graphics/shader/surfaceman.h"
 namespace Graphics {
 
 namespace Aurora {
@@ -61,9 +63,18 @@ TextureFont::TextureFont(const Common::UString &name) : _height(1.0f), _spaceR(0
 	_texture = TextureMan.get(name);
 
 	load();
+
+	_mesh = static_cast<Mesh::MeshFont *>(MeshMan.getMesh("defaultMeshFont"));
+	_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/text.frag", Shader::SHADER_FRAGMENT), "text");
+	Shader::ShaderSampler *sampler;
+	sampler = (Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
+	sampler->handle = _texture;
+	_renderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("textSurface"), _material, _mesh);
 }
 
 TextureFont::~TextureFont() {
+	delete _renderable;
+	delete _material;
 }
 
 float TextureFont::getWidth(uint32 c) const {
@@ -118,6 +129,48 @@ void TextureFont::draw(uint32 c) const {
 	glEnd();
 
 	glTranslatef(cC->second.width + _spaceR, 0.0f, 0.0f);
+}
+
+void TextureFont::draw2Prepare() {
+	Common::Matrix4x4 ident;
+	ident.loadIdentity();
+
+	glUseProgram(_renderable->getProgram()->glid);
+	_material->bindProgram(_renderable->getProgram(), 1.0f);
+	_material->bindGLState();
+	_renderable->getSurface()->bindProgram(_renderable->getProgram(), &ident);
+	_renderable->getSurface()->bindGLState();
+	_mesh->renderBind();
+}
+
+void TextureFont::draw2(uint32 c, float &x, float &y) {
+	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+
+	if (cC == _chars.end()) {
+		//drawMissing();
+		return;
+	}
+
+	float pos[12];
+	float uv[8];
+
+	for (int i = 0; i < 4; ++i) {
+		uv[i*2] = cC->second.tX[i];
+		uv[i*2 +1] = cC->second.tY[i];
+		pos[i*3] = x + cC->second.vX[i];
+		pos[i*3 +1] = y + cC->second.vY[i];
+		pos[i*3 +2] = 0.0f;
+	}
+	_mesh->render(pos, uv);
+	x += cC->second.width + _spaceR;
+}
+
+void TextureFont::draw2Done() {
+	_mesh->renderUnbind();
+
+	_renderable->getSurface()->unbindGLState();
+	_material->unbindGLState();
+	glUseProgram(0);
 }
 
 void TextureFont::load() {

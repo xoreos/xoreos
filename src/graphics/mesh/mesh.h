@@ -51,6 +51,9 @@ public:
 	void setType(GLuint type);
 	GLuint getType() const;
 
+	void setHint(GLuint hint);
+	GLuint getHint() const;
+
 	/** General mesh initialisation, queuing the mesh for GL resource creation. */
 	void init();
 
@@ -84,9 +87,10 @@ protected:
 	/** Free GL resources. */
 	virtual void doDestroy();
 
-private:
 	GLuint _type;
 	GLuint _hint;
+
+private:
 	Common::UString _name;
 	uint32 _usageCount;
 

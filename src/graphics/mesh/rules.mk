@@ -26,10 +26,12 @@ src_graphics_mesh_libmesh_la_SOURCES += \
     src/graphics/mesh/mesh.h \
     src/graphics/mesh/meshman.h \
     src/graphics/mesh/meshwirebox.h \
+    src/graphics/mesh/meshfont.h \
     $(EMPTY)
 
 src_graphics_mesh_libmesh_la_SOURCES += \
     src/graphics/mesh/mesh.cpp \
     src/graphics/mesh/meshman.cpp \
     src/graphics/mesh/meshwirebox.cpp \
+    src/graphics/mesh/meshfont.cpp \
     $(EMPTY)

@@ -33,6 +33,10 @@
 
 #include "src/graphics/aurora/texturehandle.h"
 
+#include "src/graphics/mesh/meshfont.h"
+
+#include "src/graphics/shader/shaderrenderable.h"
+
 namespace Common {
 	class UString;
 }
@@ -55,6 +59,10 @@ public:
 	float getLineSpacing() const;
 
 	void draw(uint32 c) const;
+	virtual void draw2Prepare();
+	virtual void draw2(uint32 c, float &x, float &y);
+	virtual void draw2Done();
+
 
 private:
 	/** A font character. */
@@ -71,6 +79,10 @@ private:
 	float _height;
 	float _spaceR;
 	float _spaceB;
+
+	Mesh::MeshFont *_mesh;
+	Shader::ShaderMaterial *_material;
+	Shader::ShaderRenderable *_renderable;
 
 	void load();
 

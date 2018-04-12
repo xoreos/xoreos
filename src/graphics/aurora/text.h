@@ -27,6 +27,7 @@
 
 #include "src/common/ustring.h"
 #include "src/common/maths.h"
+#include "src/common/matrix4x4.h"
 
 #include "src/graphics/types.h"
 #include <src/graphics/guielement.h>
@@ -113,6 +114,11 @@ private:
 	                 ColorPositions &colors);
 
 	void drawLine(const Common::UString &line, ColorPositions::const_iterator color, size_t position);
+	void drawLine2(const Common::UString &line,
+	               ColorPositions::const_iterator color,
+	               size_t position,
+	               float &x,
+	               float &y);
 };
 
 } // End of namespace Aurora

@@ -585,6 +585,17 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			                   "	float msphere = 2.0 * sqrt(rsphere.x * rsphere.x + rsphere.y * rsphere.y + (rsphere.z + 1.0) * (rsphere.z + 1.0));\n"
 			                   "	uvSphere = vec2(rsphere.x / msphere + 0.5, rsphere.y / msphere + 0.5);\n";
 			break;
+		case INPUT_COLOUR:
+			if (isGL3) {
+				input_desc_string = "in vec4 inputColour;\n";
+				output_desc_string = "out vec4 xColour;\n";
+				f_desc_string = "in vec4 xColour;\n";
+			} else {
+				input_desc_string = "#define inputColour gl_Color\n";
+				output_desc_string = "varying vec4 xColour;\n";
+				f_desc_string = "varying vec4 xColour;\n";
+			}
+			body_desc_string = "xColour = inputColour;\n";
 		}
 		v_header += input_desc_string;
 		v_header += output_desc_string;
@@ -674,6 +685,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case INPUT_UV3: f_input_string = "uv3"; break;
 		case INPUT_UV_CUBE: f_input_string = "uvCube"; break;
 		case INPUT_UV_SPHERE: f_input_string = "uvSphere"; break;
+		case INPUT_COLOUR: f_input_string = "xColour"; break;
 		}
 
 		Common::UString f_action_string;
@@ -681,6 +693,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case ENV_CUBE: f_action_string = "env_cube"; break;
 		case ENV_SPHERE: f_action_string = "env_sphere"; break;
 		case COLOUR: f_action_string = "colour"; break;
+		case X_COLOUR: f_action_string = "xcolour"; break;
 		case TEXTURE_DIFFUSE: f_action_string = "diffuse"; break;
 		case TEXTURE_LIGHTMAP: f_action_string = "lightmap"; break;
 		case TEXTURE_BUMPMAP: f_action_string = "bumpmap"; break;
@@ -737,6 +750,9 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 			break;
 		case COLOUR:
 			f_action_string = "froggle = vec4(1.0, 1.0, 1.0, 1.0); // TODO: colour is not a sampler.\n";
+			break;
+		case X_COLOUR:
+			f_action_string = "froggle = xColour; // TODO: colour is not a sampler.\n";
 			break;
 		case TEXTURE_DIFFUSE:
 			if (isGL3) {
@@ -842,6 +858,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case INPUT_UV3: n_string += "input_uv3"; break;
 		case INPUT_UV_CUBE: n_string += "input_uv_cube"; break;
 		case INPUT_UV_SPHERE: n_string += "input_uv_sphere"; break;
+		case INPUT_COLOUR: n_string += "input_colour"; break;
 		}
 	}
 
@@ -899,6 +916,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case INPUT_UV3: n_string += "input_uv3"; break;
 		case INPUT_UV_CUBE: n_string += "input_uv_cube"; break;
 		case INPUT_UV_SPHERE: n_string += "input_uv_sphere"; break;
+		case INPUT_COLOUR: n_string += "input_colour"; break;
 		}
 
 		n_string += "-";
@@ -906,6 +924,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case ENV_CUBE: n_string += "env_cube"; break;
 		case ENV_SPHERE: n_string += "env_sphere"; break;
 		case COLOUR: n_string += "colour"; break;
+		case X_COLOUR: n_string += "xcolour"; break;
 		case TEXTURE_DIFFUSE: n_string += "diffuse"; break;
 		case TEXTURE_LIGHTMAP: n_string += "lightmap"; break;
 		case TEXTURE_BUMPMAP: n_string += "bumpmap"; break;
@@ -920,6 +939,7 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case ENV_CUBE: n_string += "env_cube"; break;
 		case ENV_SPHERE: n_string += "env_sphere"; break;
 		case COLOUR: n_string += "colour"; break;
+		case X_COLOUR: n_string += "xcolour"; break;
 		case TEXTURE_DIFFUSE: n_string += "diffuse"; break;
 		case TEXTURE_LIGHTMAP: n_string += "lightmap"; break;
 		case TEXTURE_BUMPMAP: n_string += "bumpmap"; break;

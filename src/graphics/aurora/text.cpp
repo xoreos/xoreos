@@ -239,8 +239,12 @@ void Text::render(RenderPass pass) {
 
 	ColorPositions::const_iterator color = _colors.begin();
 
+	_font.getFont().draw2Prepare();
+	float x = _x;
+	float y = _y + roundf(((_height - blockSize) * _valign) + blockSize - lineHeight);
 	// Draw lines
 	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l) {
+#if OLD
 		// Save the current position
 		glPushMatrix();
 
@@ -251,11 +255,13 @@ void Text::render(RenderPass pass) {
 
 		// Move to the next line
 		glTranslatef(0.0f, -lineHeight, 0.0f);
-
+#endif
+		drawLine2(*l, color, position, x, y);
+		y -= lineHeight;
 		// \n character
 		position++;
 	}
-
+_font.getFont().draw2Done();
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
@@ -378,6 +384,34 @@ void Text::drawLine(const Common::UString &line,
 		}
 
 		font.draw(*s);
+	}
+}
+
+void Text::drawLine2(const Common::UString &line,
+                     ColorPositions::const_iterator color,
+                     size_t position,
+                     float &x,
+                     float &y) {
+
+	Font &font = _font.getFont();
+
+	// Horizontal Align
+	x += round((_width - font.getLineWidth(line)) * _halign);
+
+	// Draw line
+	for (Common::UString::iterator s = line.begin(); s != line.end(); ++s, position++) {
+#if 0
+		// If we have color changes, apply them
+		while ((color != _colors.end()) && (color->position <= position)) {
+			if (color->defaultColor)
+				glColor4f(_r, _g, _b, _a);
+			else
+				glColor4f(color->r, color->g, color->b, color->a);
+
+			++color;
+		}
+#endif
+		font.draw2(*s, x, y);
 	}
 }
 
