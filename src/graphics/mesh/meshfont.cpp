@@ -96,12 +96,23 @@ MeshFont::MeshFont() : Mesh(GL_QUADS, GL_DYNAMIC_DRAW) {
 MeshFont::~MeshFont() {
 }
 
-void MeshFont::render(float *pos, float *uv) {
+void MeshFont::render(float *pos, float *uv, float *rgba) {
 	/**
 	 * This is somewhat simpler than the normal mesh rendering method. There are not
 	 * indices into the vertex array, so that can be stripped out. It's also assumed
 	 * that GL_ARRAY_BUFFER is bound, so it can be overwritten entirely with dynamic
 	 * data. This is the same between GL3 and GL2, so there's no need to check for that.
+	 */
+
+	/**
+	 * Also note that this is really a most inefficient way of updating the vertex buffer.
+	 * Basically creating all vertices on the stack, passing them in here to be copied
+	 * into an internal vertex buffer, and then updating that internal buffer to server
+	 * side resources. It could happily be updated directly from stack values.
+	 *
+	 * Alternatively, sub-allocating from a very large pool of vertices and then using
+	 * an offset (index value start) for the actual draw call is an even better way of
+	 * doing things. Most text doesn't change per-frame.
 	 */
 
 	float *verts = static_cast<float *>(_vertexBuffer.getData());
@@ -111,12 +122,9 @@ void MeshFont::render(float *pos, float *uv) {
 	for (uint32 i = 0; i < 8; ++i) {
 		verts[i+12] = uv[i];
 	}
-#if 0
-	printf("v0: %f, %f, %f\n", verts[0], verts[1], verts[2]);
-	printf("v1: %f, %f, %f\n", verts[3], verts[4], verts[5]);
-	printf("v2: %f, %f, %f\n", verts[6], verts[7], verts[8]);
-	printf("v3: %f, %f, %f\n", verts[9], verts[10], verts[11]);
-#endif
+	for (uint32 i = 0; i < 16; ++i) {
+		verts[i+20] = rgba[i];
+	}
 	_vertexBuffer.updateGLBound();
 	glDrawArrays(_type, 0, _vertexBuffer.getCount());
 }

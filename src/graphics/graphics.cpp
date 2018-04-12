@@ -1050,19 +1050,14 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 
 	buildNewTextures();
 
-	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
 	     g != gui.rend(); ++g) {
 
-		glPushMatrix();
+//		glPushMatrix();
 		static_cast<Renderable *>(*g)->render(kRenderPassAll);
 		//static_cast<Renderable *>(*g)->queueRender();
-		glPopMatrix();
-		// Uncomment below to render the gui. Text won't be shown yet however.
-		//static_cast<Renderable *>(*g)->queueRender();
+//		glPopMatrix();
 	}
-	RenderMan.sort();
-	//RenderMan.render();
 
 	QueueMan.unlockQueue(guiQueue);
 

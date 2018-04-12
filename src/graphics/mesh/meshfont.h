@@ -37,7 +37,7 @@ public:
 	~MeshFont();
 
 	/** Dynamic data prior to render call. */
-	void render(float *pos, float *uv);
+	void render(float *pos, float *uv, float *rgba);
 
 protected:
 

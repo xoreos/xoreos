@@ -131,7 +131,7 @@ void TextureFont::draw(uint32 c) const {
 	glTranslatef(cC->second.width + _spaceR, 0.0f, 0.0f);
 }
 
-void TextureFont::draw2Prepare() {
+void TextureFont::renderBind() const {
 	Common::Matrix4x4 ident;
 	ident.loadIdentity();
 
@@ -143,7 +143,7 @@ void TextureFont::draw2Prepare() {
 	_mesh->renderBind();
 }
 
-void TextureFont::draw2(uint32 c, float &x, float &y) {
+void TextureFont::render(uint32 c, float &x, float &y, float *rgba) const {
 	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
 
 	if (cC == _chars.end()) {
@@ -151,21 +151,26 @@ void TextureFont::draw2(uint32 c, float &x, float &y) {
 		return;
 	}
 
-	float pos[12];
-	float uv[8];
+	float v_pos[12];
+	float v_uv[8];
+	float v_rgba[4*4];
 
 	for (int i = 0; i < 4; ++i) {
-		uv[i*2] = cC->second.tX[i];
-		uv[i*2 +1] = cC->second.tY[i];
-		pos[i*3] = x + cC->second.vX[i];
-		pos[i*3 +1] = y + cC->second.vY[i];
-		pos[i*3 +2] = 0.0f;
+		v_uv[i*2] = cC->second.tX[i];
+		v_uv[i*2 +1] = cC->second.tY[i];
+		v_pos[i*3] = x + cC->second.vX[i];
+		v_pos[i*3 +1] = y + cC->second.vY[i];
+		v_pos[i*3 +2] = 0.0f;
+		v_rgba[i*4] = rgba[0];
+		v_rgba[i*4 +1] = rgba[1];
+		v_rgba[i*4 +2] = rgba[2];
+		v_rgba[i*4 +3] = rgba[3];
 	}
-	_mesh->render(pos, uv);
+	_mesh->render(v_pos, v_uv, v_rgba);
 	x += cC->second.width + _spaceR;
 }
 
-void TextureFont::draw2Done() {
+void TextureFont::renderUnbind() const {
 	_mesh->renderUnbind();
 
 	_renderable->getSurface()->unbindGLState();

@@ -59,9 +59,10 @@ public:
 	float getLineSpacing() const;
 
 	void draw(uint32 c) const;
-	virtual void draw2Prepare();
-	virtual void draw2(uint32 c, float &x, float &y);
-	virtual void draw2Done();
+
+	virtual void renderBind() const;
+	virtual void render(uint32 c, float &x, float &y, float *rgba) const;
+	virtual void renderUnbind() const;
 
 
 private:
