@@ -70,6 +70,7 @@ include src/version/rules.mk
 include src/common/rules.mk
 include src/aurora/rules.mk
 include src/graphics/rules.mk
+include src/network/rules.mk
 include src/sound/rules.mk
 include src/video/rules.mk
 include src/events/rules.mk
