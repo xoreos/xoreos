@@ -17,23 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# GUI system in Neverwinter Nights.
+# Multiplayer specific GUI in Neverwinter Nights.
 
 src_engines_nwn_libnwn_la_SOURCES += \
-    src/engines/nwn/gui/gui.h \
-    src/engines/nwn/gui/legal.h \
     $(EMPTY)
 
 src_engines_nwn_libnwn_la_SOURCES += \
-    src/engines/nwn/gui/gui.cpp \
-    src/engines/nwn/gui/legal.cpp \
     $(EMPTY)
-
-include src/engines/nwn/gui/widgets/rules.mk
-include src/engines/nwn/gui/dialogs/rules.mk
-include src/engines/nwn/gui/main/rules.mk
-include src/engines/nwn/gui/chargen/rules.mk
-include src/engines/nwn/gui/options/rules.mk
-include src/engines/nwn/gui/ingame/rules.mk
-include src/engines/nwn/gui/multiplayer/rules.mk
-
