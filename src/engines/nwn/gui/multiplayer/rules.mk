@@ -20,7 +20,9 @@
 # Multiplayer specific GUI in Neverwinter Nights.
 
 src_engines_nwn_libnwn_la_SOURCES += \
+    src/engines/nwn/gui/multiplayer/multiplayer.h \
     $(EMPTY)
 
 src_engines_nwn_libnwn_la_SOURCES += \
+    src/engines/nwn/gui/multiplayer/multiplayer.cpp \
     $(EMPTY)

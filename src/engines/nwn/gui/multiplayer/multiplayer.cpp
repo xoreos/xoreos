@@ -19,55 +19,41 @@
  */
 
 /** @file
- *  The main menu.
+ *  The multiplayer menu.
  */
 
-#ifndef ENGINES_NWN_GUI_MAIN_MAIN_H
-#define ENGINES_NWN_GUI_MAIN_MAIN_H
-
-#include "src/common/scopedptr.h"
-
-#include "src/engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/widgets/nwnwidget.h"
+#include "src/engines/nwn/gui/multiplayer/multiplayer.h"
 
 namespace Engines {
 
 namespace NWN {
 
-class Module;
+MultiplayerMenu::MultiplayerMenu(::Engines::Console *console) : GUI(console) {
+	load("pre_multiplayer");
+}
 
-/** The NWN main menu. */
-class MainMenu : public GUI {
-public:
-	MainMenu(Module &module, ::Engines::Console *console = 0);
-	~MainMenu();
+void MultiplayerMenu::initWidget(Widget &widget) {
+	GUI::initWidget(widget);
 
-	void show();
+	if (widget.getTag() == "NewButton") {
+		widget.setDisabled(true);
+	}
+	if (widget.getTag() == "IntJoinButton") {
+		widget.setDisabled(true);
+	}
+	if (widget.getTag() == "LoadButton") {
+		widget.setDisabled(true);
+	}
+}
 
-	void abort();
-
-protected:
-	void callbackActive(Widget &widget);
-
-private:
-	Module *_module;
-
-	bool _hasXP;
-
-	Common::ScopedPtr<GUI> _charType;
-
-	Common::ScopedPtr<GUI> _new;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
-	Common::ScopedPtr<GUI> _multi;
-
-	void createNew();
-	void createMovies();
-	void createOptions();
-	void createMulti();
-};
+void MultiplayerMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "CancelButton") {
+		_returnCode = kReturnCodeAbort;
+		return;
+	}
+}
 
 } // End of namespace NWN
 
 } // End of namespace Engines
-
-#endif // ENGINES_NWN_GUI_MAIN_MAIN_H

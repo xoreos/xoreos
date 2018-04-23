@@ -19,13 +19,13 @@
  */
 
 /** @file
- *  The main menu.
+ *  The multiplayer menu.
  */
 
-#ifndef ENGINES_NWN_GUI_MAIN_MAIN_H
-#define ENGINES_NWN_GUI_MAIN_MAIN_H
+#ifndef ENGINES_NWN_MULTIPLAYER_MULTIPLAYER_H
+#define ENGINES_NWN_MULTIPLAYER_MULTIPLAYER_H
 
-#include "src/common/scopedptr.h"
+#include "src/engines/aurora/console.h"
 
 #include "src/engines/nwn/gui/gui.h"
 
@@ -33,41 +33,18 @@ namespace Engines {
 
 namespace NWN {
 
-class Module;
-
-/** The NWN main menu. */
-class MainMenu : public GUI {
+/** The NWN multiplayer menu. */
+class MultiplayerMenu : public GUI {
 public:
-	MainMenu(Module &module, ::Engines::Console *console = 0);
-	~MainMenu();
-
-	void show();
-
-	void abort();
+	MultiplayerMenu(::Engines::Console *console = 0);
 
 protected:
+	void initWidget(Widget &widget);
 	void callbackActive(Widget &widget);
-
-private:
-	Module *_module;
-
-	bool _hasXP;
-
-	Common::ScopedPtr<GUI> _charType;
-
-	Common::ScopedPtr<GUI> _new;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
-	Common::ScopedPtr<GUI> _multi;
-
-	void createNew();
-	void createMovies();
-	void createOptions();
-	void createMulti();
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_GUI_MAIN_MAIN_H
+#endif // ENGINES_NWN_MULTIPLAYER_MULTIPLAYER_H

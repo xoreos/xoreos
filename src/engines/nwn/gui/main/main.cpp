@@ -39,6 +39,8 @@
 #include "src/engines/nwn/gui/main/options.h"
 #include "src/engines/nwn/gui/main/chartype.h"
 
+#include "src/engines/nwn/gui/multiplayer/multiplayer.h"
+
 namespace Engines {
 
 namespace NWN {
@@ -66,7 +68,6 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : GUI(console),
 	}
 
 	getWidget("LoadButton" , true)->setDisabled(true);
-	getWidget("MultiButton", true)->setDisabled(true);
 
 	_charType.reset(new CharTypeMenu(*_module, _console));
 }
@@ -103,6 +104,13 @@ void MainMenu::createOptions() {
 		return;
 
 	_options.reset(new OptionsMenu(_module->getGameVersion(), _console));
+}
+
+void MainMenu::createMulti() {
+	if (_multi)
+		return;
+
+	_multi.reset(new MultiplayerMenu());
 }
 
 void MainMenu::show() {
@@ -150,6 +158,13 @@ void MainMenu::callbackActive(Widget &widget) {
 		createOptions();
 
 		sub(*_options);
+		return;
+	}
+
+	if (widget.getTag() == "MultiButton") {
+		MultiplayerMenu mm;
+		sub(mm);
+
 		return;
 	}
 
