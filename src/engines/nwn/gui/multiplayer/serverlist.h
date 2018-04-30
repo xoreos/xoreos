@@ -19,13 +19,11 @@
  */
 
 /** @file
- *  The multiplayer menu.
+ *  The multiplayer lobby.
  */
 
-#ifndef ENGINES_NWN_MULTIPLAYER_MULTIPLAYER_H
-#define ENGINES_NWN_MULTIPLAYER_MULTIPLAYER_H
-
-#include "src/engines/aurora/console.h"
+#ifndef ENGINES_NWN_GUI_MULTIPLAYER_SERVERLIST_H
+#define ENGINES_NWN_GUI_MULTIPLAYER_SERVERLIST_H
 
 #include "src/engines/nwn/gui/gui.h"
 
@@ -33,23 +31,18 @@ namespace Engines {
 
 namespace NWN {
 
-/** The NWN multiplayer menu. */
-class MultiplayerMenu : public GUI {
+/** The NWN LAN Server List menu. */
+class ServerList : public GUI {
 public:
-	MultiplayerMenu(::Engines::Console *console = 0);
+	ServerList(::Engines::Console *console = 0);
 
 protected:
-	void initWidget(Widget &widget);
 	void callbackActive(Widget &widget);
-
-private:
-	void createJoinLAN();
-
-	Common::ScopedPtr<GUI> _joinLAN;
 };
 
 } // End of namespace NWN
 
 } // End of namespace Engines
 
-#endif // ENGINES_NWN_MULTIPLAYER_MULTIPLAYER_H
+
+#endif // ENGINES_NWN_GUI_MULTIPLAYER_SERVERLIST_H

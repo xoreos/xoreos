@@ -19,37 +19,29 @@
  */
 
 /** @file
- *  The multiplayer menu.
+ *  The multiplayer lobby.
  */
 
-#ifndef ENGINES_NWN_MULTIPLAYER_MULTIPLAYER_H
-#define ENGINES_NWN_MULTIPLAYER_MULTIPLAYER_H
-
 #include "src/engines/aurora/console.h"
+#include "src/engines/aurora/widget.h"
 
-#include "src/engines/nwn/gui/gui.h"
+#include "src/engines/nwn/gui/multiplayer/serverlist.h"
 
 namespace Engines {
 
 namespace NWN {
 
-/** The NWN multiplayer menu. */
-class MultiplayerMenu : public GUI {
-public:
-	MultiplayerMenu(::Engines::Console *console = 0);
+ServerList::ServerList(::Engines::Console *console) {
+	load("serverlist_lan");
+}
 
-protected:
-	void initWidget(Widget &widget);
-	void callbackActive(Widget &widget);
-
-private:
-	void createJoinLAN();
-
-	Common::ScopedPtr<GUI> _joinLAN;
-};
+void ServerList::callbackActive(Widget &widget) {
+	if (widget.getTag() == "CancelButton") {
+		_returnCode = kReturnCodeAbort;
+		return;
+	}
+}
 
 } // End of namespace NWN
 
 } // End of namespace Engines
-
-#endif // ENGINES_NWN_MULTIPLAYER_MULTIPLAYER_H

@@ -21,8 +21,10 @@
 
 src_engines_nwn_libnwn_la_SOURCES += \
     src/engines/nwn/gui/multiplayer/multiplayer.h \
+    src/engines/nwn/gui/multiplayer/serverlist.h \
     $(EMPTY)
 
 src_engines_nwn_libnwn_la_SOURCES += \
     src/engines/nwn/gui/multiplayer/multiplayer.cpp \
+    src/engines/nwn/gui/multiplayer/serverlist.cpp \
     $(EMPTY)

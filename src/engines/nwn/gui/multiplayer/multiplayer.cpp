@@ -24,6 +24,7 @@
 
 #include "src/engines/nwn/gui/widgets/nwnwidget.h"
 #include "src/engines/nwn/gui/multiplayer/multiplayer.h"
+#include "src/engines/nwn/gui/multiplayer/serverlist.h"
 
 namespace Engines {
 
@@ -52,6 +53,19 @@ void MultiplayerMenu::callbackActive(Widget &widget) {
 		_returnCode = kReturnCodeAbort;
 		return;
 	}
+	if (widget.getTag() == "LANJoinButton") {
+		createJoinLAN();
+		sub(*_joinLAN);
+
+		return;
+	}
+}
+
+void MultiplayerMenu::createJoinLAN() {
+	if (_joinLAN)
+		return;
+
+	_joinLAN.reset(new ServerList(_console));
 }
 
 } // End of namespace NWN
