@@ -56,6 +56,7 @@ src_xoreos_LDADD = \
     src/video/libvideo.la \
     src/sound/libsound.la \
     src/graphics/libgraphics.la \
+    src/network/libnetwork.la \
     src/aurora/libaurora.la \
     src/common/libcommon.la \
     src/version/libversion.la \
