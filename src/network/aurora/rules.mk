@@ -17,24 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Networking subsystem.
-
-noinst_LTLIBRARIES += src/network/libnetwork.la
-src_network_libnetwork_la_SOURCES =
+# Aurora-specific Networking subsystem.
 
 src_network_libnetwork_la_SOURCES += \
-    src/network/socket.h \
-    src/network/types.h \
-    src/network/packet.h \
-    src/network/udpsocket.h \
-    src/network/networkman.h \
+    src/network/aurora/lobbypacket.h \
+    src/network/aurora/bnes_packet.h \
+    src/network/aurora/bner_packet.h \
+    src/network/aurora/bnxi_packet.h \
+    src/network/aurora/bnxr_packet.h \
     $(EMPTY)
 
 src_network_libnetwork_la_SOURCES += \
-    src/network/socket.cpp \
-    src/network/packet.cpp \
-    src/network/udpsocket.cpp \
-    src/network/networkman.cpp \
+    src/network/aurora/lobbypacket.cpp \
+    src/network/aurora/bnes_packet.cpp \
+    src/network/aurora/bner_packet.cpp \
+    src/network/aurora/bnxi_packet.cpp \
+    src/network/aurora/bnxr_packet.cpp \
     $(EMPTY)
-
-include src/network/aurora/rules.mk
