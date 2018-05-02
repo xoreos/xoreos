@@ -83,6 +83,7 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   set_check_compiler_flag_cxx("-Wshift-negative-value")
   set_check_compiler_flag_cxx("-Wshift-overflow=2")
   set_check_compiler_flag_cxx("-Wimplicit-fallthrough")
+  set_check_compiler_flag_cxx("-Wvla")
 
   # Extra warnings valid for C++
   set_check_compiler_flag_cxx("-Wnon-virtual-dtor")
