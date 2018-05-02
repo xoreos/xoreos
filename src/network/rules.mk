@@ -26,9 +26,11 @@ src_network_libnetwork_la_SOURCES += \
     src/network/socket.h \
     src/network/types.h \
     src/network/packet.h \
+    src/network/udpsocket.h \
     $(EMPTY)
 
 src_network_libnetwork_la_SOURCES += \
     src/network/socket.cpp \
     src/network/packet.cpp \
+    src/network/udpsocket.cpp \
     $(EMPTY)
