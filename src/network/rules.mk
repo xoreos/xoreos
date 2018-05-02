@@ -25,8 +25,10 @@ src_network_libnetwork_la_SOURCES =
 src_network_libnetwork_la_SOURCES += \
     src/network/socket.h \
     src/network/types.h \
+    src/network/packet.h \
     $(EMPTY)
 
 src_network_libnetwork_la_SOURCES += \
     src/network/socket.cpp \
+    src/network/packet.cpp \
     $(EMPTY)
