@@ -23,6 +23,7 @@ noinst_LTLIBRARIES += src/network/libnetwork.la
 src_network_libnetwork_la_SOURCES =
 
 src_network_libnetwork_la_SOURCES += \
+    src/network/types.h \
     $(EMPTY)
 
 src_network_libnetwork_la_SOURCES += \
