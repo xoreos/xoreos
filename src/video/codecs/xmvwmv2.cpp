@@ -400,7 +400,8 @@ void XMVWMV2Codec::initDecodeContext(DecodeContext &ctx) {
 		ctx.block[i].blockPitch = kBlockSize;
 	}
 
-	std::memset(_cbp.get(), 0, sizeof(CBP) * (_mbCountWidth + 1));
+	for (size_t i = 0; i < (_mbCountWidth + 1); i++)
+		_cbp[i].clear();
 
 	ctx.rowCBP = _cbp.get() + 1;
 }
