@@ -118,6 +118,7 @@ if test "x$with_warnings" = "xyes"; then
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wshift-overflow=2])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wimplicit-fallthrough])
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wvla])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wcast-function-type])
 
 	dnl Extra warnings valid for C++
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wnon-virtual-dtor])
