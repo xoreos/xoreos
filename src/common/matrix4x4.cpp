@@ -601,7 +601,7 @@ void Matrix4x4::lookAt(const Vector3 &v) {
 void Matrix4x4::perspective(float fovy, float aspectRatio, float znear, float zfar) {
 	float xmin, xmax, ymin, ymax;
 	Matrix4x4 pMatrix(false);
-	std::memset(&pMatrix, 0, 16 * sizeof(float));
+	std::memset(pMatrix._elements, 0, 16 * sizeof(float));
 
 	ymax = znear * tan(deg2rad(0.5f * fovy));
 	ymin = -ymax;
@@ -622,7 +622,7 @@ void Matrix4x4::perspective(float fovy, float aspectRatio, float znear, float zf
 void Matrix4x4::ortho(float l, float r, float b, float t, float n, float f)
 {
 	Matrix4x4 mMatrix(false);
-	std::memset(&mMatrix, 0, 16*sizeof(float));
+	std::memset(mMatrix._elements, 0, 16*sizeof(float));
 
 	mMatrix[0]  =  2.0f / (r - l);
 	mMatrix[5]  =  2.0f / (t - b);
