@@ -61,6 +61,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/nsbtxfile.h \
     src/aurora/cdpth.h \
     src/aurora/nfofile.h \
+    src/aurora/ltrfile.h \
     $(EMPTY)
 
 src_aurora_libaurora_la_SOURCES += \
@@ -99,6 +100,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/nsbtxfile.cpp \
     src/aurora/cdpth.cpp \
     src/aurora/nfofile.cpp \
+    src/aurora/ltrfile.cpp \
     $(EMPTY)
 
 src_aurora_libaurora_la_LIBADD = \
