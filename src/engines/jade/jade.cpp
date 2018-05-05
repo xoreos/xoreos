@@ -47,7 +47,6 @@
 #include "src/engines/aurora/loadprogress.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/model.h"
-#include "src/engines/aurora/camera.h"
 
 #include "src/engines/jade/gui/main/main.h"
 

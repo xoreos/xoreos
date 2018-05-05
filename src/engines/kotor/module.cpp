@@ -37,14 +37,16 @@
 
 #include "src/graphics/camera.h"
 
+#include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/textureman.h"
 
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/resources.h"
-#include "src/engines/aurora/camera.h"
 #include "src/engines/aurora/console.h"
+#include "src/engines/aurora/freeroamcamera.h"
+#include "src/engines/aurora/satellitecamera.h"
 
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
@@ -55,6 +57,8 @@ namespace Engines {
 
 namespace KotOR {
 
+const float PC_MOVEMENT_SPEED = 0.1f;
+
 bool Module::Action::operator<(const Action &s) const {
 	return timestamp < s.timestamp;
 }
@@ -63,7 +67,8 @@ bool Module::Action::operator<(const Action &s) const {
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
 	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
-	_fade(new Graphics::Aurora::FadeQuad()), _ingame(new IngameGUI(*this)) {
+	_fade(new Graphics::Aurora::FadeQuad()), _ingame(new IngameGUI(*this)),
+	_freeCamEnabled(false) {
 	loadTexturePack();
 }
 
@@ -320,10 +325,17 @@ void Module::enter() {
 	if (!_pc)
 		throw Common::Exception("Module::enter(): Lacking a PC?!?");
 
+	Graphics::Aurora::Model *model = _pc->getModel().get();
+	model->clearDefaultAnimations();
+	model->addDefaultAnimation(Common::UString("pause3"), 25);
+	model->addDefaultAnimation(Common::UString("pause2"), 25);
+	model->addDefaultAnimation(Common::UString("pause1"), 50);
+
 	// Roughly head position
-	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);
-	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
-	CameraMan.update();
+	SatelliteCam.setTarget(entryX, entryY, entryZ + 1.8f);
+	SatelliteCam.setDistance(3.2f);
+	SatelliteCam.setPitch(83);
+	SatelliteCam.update();
 
 	_ingame->show();
 
@@ -439,12 +451,29 @@ void Module::handleEvents() {
 				_console->show();
 				continue;
 			}
+
+			// PC movement
+			if (!_freeCamEnabled) {
+				switch (event->key.keysym.sym) {
+					case SDLK_w:
+						movePC(kForward);
+						break;
+					case SDLK_s:
+						movePC(kBackwards);
+						break;
+				}
+			}
 		}
 
 		// Camera
-		if (!_console->isVisible())
-			if (handleCameraInput(*event))
+		if (!_console->isVisible()) {
+			if (_freeCamEnabled) {
+				if (FreeRoamCam.handleCameraInput(*event))
+					continue;
+			}
+			else if (SatelliteCam.handleCameraInput(*event))
 				continue;
+		}
 
 		_area->addEvent(*event);
 		_ingame->addEvent(*event);
@@ -452,10 +481,34 @@ void Module::handleEvents() {
 
 	_eventQueue.clear();
 
-	CameraMan.update();
+	if (_freeCamEnabled) {
+		CameraMan.update();
+	}
 
 	_area->processEventQueue();
 	_ingame->processEventQueue();
+}
+
+void Module::movePC(MovementDirection direction) {
+	if (!_pc)
+		return;
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+	float yaw = SatelliteCam.getYaw();
+
+	switch (direction) {
+		case kForward:
+			_pc->setOrientation(0, 0, 1, Common::rad2deg(yaw));
+			movePC(x - PC_MOVEMENT_SPEED * sin(yaw), y + PC_MOVEMENT_SPEED * cos(yaw), z);
+			break;
+		case kBackwards:
+			_pc->setOrientation(0, 0, 1, 180 + Common::rad2deg(yaw));
+			movePC(x + PC_MOVEMENT_SPEED * sin(yaw), y - PC_MOVEMENT_SPEED * cos(yaw), z);
+			break;
+	}
+
+	_pc->getModel().get()->playAnimation(Common::UString("run"), false);
 }
 
 void Module::handleActions() {
@@ -503,8 +556,14 @@ void Module::movedPC() {
 	_pc->getPosition(x, y, z);
 
 	// Roughly head position
-	CameraMan.setPosition(x, y, z + 1.8f);
-	CameraMan.update();
+
+	SatelliteCam.setTarget(x, y, z + 1.8f);
+
+	if (_freeCamEnabled) {
+		CameraMan.setPosition(x, y, z + 1.8f);
+		CameraMan.update();
+	} else
+		SatelliteCam.update();
 }
 
 void Module::setReturnStrref(uint32 id) {
@@ -581,6 +640,10 @@ Common::UString Module::getName(const Common::UString &module) {
 	}
 
 	return "";
+}
+
+void Module::toggleFreeRoamCamera() {
+	_freeCamEnabled = !_freeCamEnabled;
 }
 
 } // End of namespace KotOR

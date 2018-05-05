@@ -45,8 +45,8 @@
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/tokenman.h"
-#include "src/engines/aurora/camera.h"
 #include "src/engines/aurora/console.h"
+#include "src/engines/aurora/freeroamcamera.h"
 
 #include "src/engines/nwn/types.h"
 #include "src/engines/nwn/version.h"
@@ -496,7 +496,7 @@ void Module::handleEvents() {
 
 		// Camera
 		if (!_console->isVisible())
-			if (handleCameraInput(*event))
+			if (FreeRoamCam.handleCameraInput(*event))
 				continue;
 
 		_ingameGUI->addEvent(*event);

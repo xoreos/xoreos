@@ -90,6 +90,8 @@ public:
 	/** The creature was clicked. */
 	bool click(Object *triggerer = 0);
 
+	Common::ScopedPtr<Graphics::Aurora::Model> &getModel();
+
 private:
 	/** Parts of a creature's body. */
 	struct PartModels {

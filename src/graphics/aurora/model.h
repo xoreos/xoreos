@@ -178,6 +178,9 @@ public:
 	/** Play a default idle animation. */
 	void playDefaultAnimation();
 
+	void clearDefaultAnimations();
+	void addDefaultAnimation(const Common::UString &name, uint8 probability);
+
 
 	// Renderable
 	void calculateDistance();
