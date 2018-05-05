@@ -32,6 +32,8 @@ namespace KotOR {
 
 MoviesMenu::MoviesMenu(::Engines::Console *console) : GUI(console) {
 	load("titlemovie");
+
+	addBackground(kBackgroundTypeMenu);
 }
 
 MoviesMenu::~MoviesMenu() {
