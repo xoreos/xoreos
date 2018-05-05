@@ -213,6 +213,21 @@ void Model::playDefaultAnimation() {
 	}
 }
 
+void Model::clearDefaultAnimations() {
+	_defaultAnimations.clear();
+}
+
+void Model::addDefaultAnimation(const Common::UString &name, uint8 probability) {
+	Animation *anim = getAnimation(name);
+	if (!anim)
+		return;
+
+	DefaultAnimation da;
+	da.animation = anim;
+	da.probability = probability;
+	_defaultAnimations.push_back(da);
+}
+
 Animation *Model::selectDefaultAnimation() const {
 	uint8 pick = std::rand() % 100;
 	for (DefaultAnimations::const_iterator a = _defaultAnimations.begin(); a != _defaultAnimations.end(); ++a) {

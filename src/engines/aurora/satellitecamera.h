@@ -19,23 +19,42 @@
  */
 
 /** @file
- *  Engine utility functions for camera handling.
+ *  Engine utility class for camera handling where camera rotates around PC.
  */
 
-#ifndef ENGINES_AURORA_CAMERA_H
-#define ENGINES_AURORA_CAMERA_H
+#ifndef ENGINES_AURORA_SATELLITECAMERA_H
+#define ENGINES_AURORA_SATELLITECAMERA_H
+
+#include "src/common/singleton.h"
+#include "src/common/vector3.h"
 
 #include "src/events/types.h"
 
 namespace Engines {
 
-/** Evaluate all input events that modify the camera position / orientation. */
-bool handleCameraInput(const Events::Event &e);
-/** Evaluate keyboard input events that modify the camera position / orientation. */
-bool handleCameraKeyboardInput(const Events::Event &e);
-/** Evaluate mouse input events that modify the camera position / orientation. */
-bool handleCameraMouseInput(const Events::Event &e);
+class SatelliteCamera : public Common::Singleton<SatelliteCamera> {
+public:
+	SatelliteCamera();
+	void setTarget(float x, float y, float z);
+	void setDistance(float value);
+	void setPitch(float value);
+	float getYaw() const;
+	bool handleCameraInput(const Events::Event &e);
+	void update();
+private:
+	Common::Vector3 _target;
+	float _distance;
+	float _yaw;
+	float _pitch;
+	float _pitchSin;
+	float _pitchCos;
+
+	void updatePosition();
+	void updateOrientation();
+};
 
 } // End of namespace Engines
 
-#endif // ENGINES_AURORA_CAMERA_H
+#define SatelliteCam ::Engines::SatelliteCamera::instance()
+
+#endif // ENGINES_AURORA_SATELLITECAMERA_H

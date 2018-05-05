@@ -33,7 +33,7 @@
 #include "src/events/events.h"
 
 #include "src/engines/aurora/console.h"
-#include "src/engines/aurora/camera.h"
+#include "src/engines/aurora/freeroamcamera.h"
 
 #include "src/engines/dragonage/game.h"
 #include "src/engines/dragonage/campaigns.h"
@@ -293,7 +293,7 @@ void Campaigns::handleEvents() {
 		}
 
 		// Camera
-		if (handleCameraInput(*event))
+		if (FreeRoamCam.handleCameraInput(*event))
 			continue;
 
 		if (_currentCampaign)

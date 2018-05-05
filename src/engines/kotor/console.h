@@ -57,12 +57,13 @@ private:
 	void updateMusic();
 
 	// The commands
-	void cmdExitModule (const CommandLine &cl);
-	void cmdListModules(const CommandLine &cl);
-	void cmdLoadModule (const CommandLine &cl);
-	void cmdListMusic  (const CommandLine &cl);
-	void cmdStopMusic  (const CommandLine &cl);
-	void cmdPlayMusic  (const CommandLine &cl);
+	void cmdExitModule   (const CommandLine &cl);
+	void cmdListModules  (const CommandLine &cl);
+	void cmdLoadModule   (const CommandLine &cl);
+	void cmdListMusic    (const CommandLine &cl);
+	void cmdStopMusic    (const CommandLine &cl);
+	void cmdPlayMusic    (const CommandLine &cl);
+	void cmdToggleFreeCam(const CommandLine &cl);
 };
 
 } // End of namespace KotOR

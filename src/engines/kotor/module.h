@@ -136,10 +136,17 @@ public:
 	void processEventQueue();
 	// '---
 
+	void toggleFreeRoamCamera();
+
 private:
 	enum ActionType {
 		kActionNone   = 0,
 		kActionScript = 1
+	};
+
+	enum MovementDirection {
+		kForward   = 0,
+		kBackwards = 1
 	};
 
 	struct Action {
@@ -197,6 +204,8 @@ private:
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
 
+	bool _freeCamEnabled;
+
 
 	// .--- Unloading
 	/** Unload the whole shebang.
@@ -243,6 +252,7 @@ private:
 	void handleEvents();
 
 	void handleActions();
+	void movePC(MovementDirection direction);
 };
 
 } // End of namespace KotOR

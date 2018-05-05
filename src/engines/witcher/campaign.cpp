@@ -37,7 +37,7 @@
 #include "src/events/events.h"
 
 #include "src/engines/aurora/console.h"
-#include "src/engines/aurora/camera.h"
+#include "src/engines/aurora/freeroamcamera.h"
 
 #include "src/engines/witcher/campaign.h"
 #include "src/engines/witcher/module.h"
@@ -287,7 +287,7 @@ void Campaign::handleEvents() {
 		}
 
 		// Camera
-		if (handleCameraInput(*event))
+		if (FreeRoamCam.handleCameraInput(*event))
 			continue;
 
 		_module->addEvent(*event);

@@ -44,8 +44,8 @@
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/resources.h"
-#include "src/engines/aurora/camera.h"
 #include "src/engines/aurora/console.h"
+#include "src/engines/aurora/freeroamcamera.h"
 
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/area.h"
@@ -426,7 +426,7 @@ void Module::handleEvents() {
 
 		// Camera
 		if (!_console->isVisible())
-			if (handleCameraInput(*event))
+			if (FreeRoamCam.handleCameraInput(*event))
 				continue;
 
 		_area->addEvent(*event);

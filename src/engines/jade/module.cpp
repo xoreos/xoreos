@@ -31,8 +31,8 @@
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
-#include "src/engines/aurora/camera.h"
 #include "src/engines/aurora/console.h"
+#include "src/engines/aurora/freeroamcamera.h"
 
 #include "src/engines/jade/module.h"
 #include "src/engines/jade/area.h"
@@ -269,7 +269,7 @@ void Module::handleEvents() {
 
 		// Camera
 		if (!_console->isVisible())
-			if (handleCameraInput(*event))
+			if (FreeRoamCam.handleCameraInput(*event))
 				continue;
 
 		_area->addEvent(*event);

@@ -32,7 +32,8 @@ src_engines_aurora_libaurora_la_SOURCES += \
     src/engines/aurora/gui.h \
     src/engines/aurora/console.h \
     src/engines/aurora/loadprogress.h \
-    src/engines/aurora/camera.h \
+    src/engines/aurora/freeroamcamera.h \
+    src/engines/aurora/satellitecamera.h \
     $(EMPTY)
 
 src_engines_aurora_libaurora_la_SOURCES += \
@@ -45,5 +46,6 @@ src_engines_aurora_libaurora_la_SOURCES += \
     src/engines/aurora/gui.cpp \
     src/engines/aurora/console.cpp \
     src/engines/aurora/loadprogress.cpp \
-    src/engines/aurora/camera.cpp \
+    src/engines/aurora/freeroamcamera.cpp \
+    src/engines/aurora/satellitecamera.cpp \
     $(EMPTY)
