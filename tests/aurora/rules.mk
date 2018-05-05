@@ -145,3 +145,8 @@ check_PROGRAMS                    += tests/aurora/test_nfofile
 tests_aurora_test_nfofile_SOURCES  = tests/aurora/nfofile.cpp
 tests_aurora_test_nfofile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_nfofile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                    += tests/aurora/test_ltrfile
+tests_aurora_test_ltrfile_SOURCES  = tests/aurora/ltrfile.cpp
+tests_aurora_test_ltrfile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_ltrfile_CXXFLAGS = $(test_CXXFLAGS)
