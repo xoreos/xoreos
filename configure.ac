@@ -313,3 +313,9 @@ AC_SUBST(XOREOS_LIBS)
 AC_CONFIG_FILES([Makefile])
 
 AC_OUTPUT
+
+AC_MSG_NOTICE([Enabled libraries:])
+AC_MSG_NOTICE([ libmad: $enable_mad])
+AC_MSG_NOTICE([ libvorbis: $enable_vorbis])
+AC_MSG_NOTICE([ libfaad: $enable_faad])
+AC_MSG_NOTICE([ xvidcore: $enable_xvidcore])
