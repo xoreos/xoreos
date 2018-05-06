@@ -674,7 +674,19 @@ bool GraphicsManager::unproject(float x, float y,
 }
 
 void GraphicsManager::lockFrame() {
-	uint32 lock = _frameLock.fetch_add(1, boost::memory_order_acquire);
+	// Increase the lock counter and make sure we don't overflow
+	const uint32 lock = _frameLock.fetch_add(1, boost::memory_order_acquire);
+	assert(lock != 0xFFFFFFFF);
+
+	/* Wait for the frame to end, because the caller doesn't want to do
+	 * updates in the middle of the frame.
+	 *
+	 * However, we should skip that if:
+	 * - We're in the main thread, so we know we're not rendering a frame now
+	 * - We want to quit anyway, so no further rendering is being done
+	 * - The frame is already locked
+	 */
+
 	if (Common::isMainThread() || EventMan.quitRequested() || (lock > 0))
 		return;
 
@@ -683,8 +695,8 @@ void GraphicsManager::lockFrame() {
 }
 
 void GraphicsManager::unlockFrame() {
-	uint32 lock = _frameLock.fetch_sub(1, boost::memory_order_release);
-
+	// Decrease the lock counter and make sure we don't underflow
+	const uint32 lock = _frameLock.fetch_sub(1, boost::memory_order_release);
 	assert(lock != 0);
 }
 

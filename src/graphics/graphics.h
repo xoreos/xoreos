@@ -120,9 +120,24 @@ public:
 	/** Recalculate all object distances to the camera and resort the objects. */
 	void recalculateObjectDistances();
 
-	/** Lock the frame mutex. */
+	/** Increase the frame lock counter, disabling all frame rendering.
+	 *
+	 *  Frame locking is useful for updating several things in one batch,
+	 *  where only the end result should be visible and not the individual
+	 *  steps.
+	 *
+	 *  Frame locking is re-entrant: you can lock the frame multiple times
+	 *  without causing a deadlock. As long as the frame lock counter is
+	 *  at least 1, no rendering is being done.
+	 */
 	void lockFrame();
-	/** Unlock the frame mutex. */
+	/** Decrease the frame lock counter, potentially re-enabling frame rendering.
+	 *
+	 *  Whereas lockFrame() increases the frame lock counter, this method
+	 *  decreases it again. As soon as the frame lock counter reaches 0, i.e.
+	 *  the frame has been unlocked the same number of times it has been locked
+	 *  previously, all frame rendering is re-enabled.
+	 */
 	void unlockFrame();
 
 	/** Create a new unique renderable ID. */
