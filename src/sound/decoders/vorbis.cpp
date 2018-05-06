@@ -47,6 +47,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_VORBIS
 #include <cassert>
 #include <cstring>
 
@@ -261,3 +266,4 @@ RewindableAudioStream *makeVorbisStream(Common::SeekableReadStream *stream, bool
 }
 
 } // End of namespace Sound
+#endif
