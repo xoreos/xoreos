@@ -75,7 +75,9 @@
 #include "src/sound/decoders/pcm.h"
 
 // Video codecs
+#ifdef ENABLE_XVIDCORE
 #include "src/video/codecs/h263.h"
+#endif
 
 namespace Video {
 
@@ -1042,7 +1044,11 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec() {
 				break;
 			}
 
+#ifdef ENABLE_XVIDCORE
 			_videoCodec.reset(makeH263Codec(_parentTrack->width, _parentTrack->height, *_parentTrack->extraData));
+#else
+			warning("H.263 decoding disabled when building without xvidcore");
+#endif
 			break;
 
 		default:

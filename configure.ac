@@ -180,6 +180,9 @@ fi
 dnl Force compiling against the internal GLEW library
 AC_ARG_ENABLE([external-glew], [AS_HELP_STRING([--disable-external-glew], [Do not check for an external GLEW library and always compile against the internal GLEW library @<:@default=no@:>@])], [], [enable_external_glew=yes])
 
+dnl Disable optional external libraries
+AC_ARG_ENABLE([xvidcore], [AS_HELP_STRING([--disable-xvidcore], [Disable building with H.263 support @<:@default=no@:>@])], [], [enable_xvidcore=yes])
+
 dnl General purpose libraries
 AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found!]))
 AX_CHECK_ZLIB(1, 2, 3, 0, , AC_MSG_ERROR([zlib(>= 1.2.3) is required and could not be found!]))
@@ -212,7 +215,15 @@ dnl Graphic libraries
 AX_CHECK_SDL2(2000, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
 AX_CHECK_GL( , AC_MSG_ERROR([OpenGL is required and could not be found!]))
 AX_CHECK_FT2([11.0.5], , AC_MSG_ERROR([FreeType2 (>= 11.0.5) is required and could not be found!]))
-AX_CHECK_XVID(1, 2, 2, , AC_MSG_ERROR([libxvidcore (>= 1.2.2) is required and could not be found!]))
+if test "x$enable_xvidcore" = "xyes"; then
+	AX_CHECK_XVID(1, 2, 2, , [enable_xvidcore=no])
+fi
+if test "x$enable_xvidcore" = "xyes"; then
+	AC_DEFINE([ENABLE_XVIDCORE], 1, [Defined to 1 if we are using libxvidcore])
+else
+	XVID_CFLAGS=""
+	XVID_LIBS=""
+fi
 
 dnl Sound libraries
 AX_CHECK_AL( , AC_MSG_ERROR([OpenAL Soft (>= 1.12) is required and could not be found!]))
