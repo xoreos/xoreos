@@ -151,11 +151,6 @@ private:
 		kActionScript = 1
 	};
 
-	enum MovementDirection {
-		kForward   = 0,
-		kBackwards = 1
-	};
-
 	struct Action {
 		ActionType type;
 
@@ -216,6 +211,11 @@ private:
 	ActionQueue _delayedActions;
 
 	bool _freeCamEnabled;
+	uint32 _prevTimestamp;
+	float _frameTime;
+	float _forwardBtnPressed;
+	float _backwardsBtnPressed;
+	bool _pcRunning;
 
 
 	// .--- Unloading
@@ -263,7 +263,7 @@ private:
 	void handleEvents();
 
 	void handleActions();
-	void movePC(MovementDirection direction);
+	void handlePCMovement();
 };
 
 } // End of namespace KotOR

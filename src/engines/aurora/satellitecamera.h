@@ -40,7 +40,7 @@ public:
 	void setPitch(float value);
 	float getYaw() const;
 	bool handleCameraInput(const Events::Event &e);
-	void update();
+	void update(float dt);
 private:
 	Common::Vector3 _target;
 	float _distance;
@@ -48,9 +48,9 @@ private:
 	float _pitch;
 	float _pitchSin;
 	float _pitchCos;
-
-	void updatePosition();
-	void updateOrientation();
+	bool _leftBtnPressed;
+	bool _rightBtnPressed;
+	bool _dirty;
 };
 
 } // End of namespace Engines

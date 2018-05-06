@@ -32,20 +32,23 @@ DECLARE_SINGLETON(Engines::SatelliteCamera)
 
 namespace Engines {
 
-const float ROTATION_SPEED = M_PI / 16.f;
+const float ROTATION_SPEED = M_PI / 2.f;
 
 SatelliteCamera::SatelliteCamera()
-		: _distance(0), _yaw(0), _pitch(0), _pitchSin(0), _pitchCos(1) {
+		: _distance(0), _yaw(0), _pitch(0), _pitchSin(0), _pitchCos(1),
+		  _leftBtnPressed(false), _rightBtnPressed(false), _dirty(true) {
 }
 
 void SatelliteCamera::setTarget(float x, float y, float z) {
 	_target._x = x;
 	_target._y = y;
 	_target._z = z;
+	_dirty = true;
 }
 
 void SatelliteCamera::setDistance(float value) {
 	_distance = value;
+	_dirty = true;
 }
 
 void SatelliteCamera::setPitch(float value) {
@@ -53,6 +56,7 @@ void SatelliteCamera::setPitch(float value) {
 	float pitchRad = Common::deg2rad(_pitch);
 	_pitchSin = sin(pitchRad);
 	_pitchCos = cos(pitchRad);
+	_dirty = true;
 }
 
 float SatelliteCamera::getYaw() const {
@@ -60,29 +64,48 @@ float SatelliteCamera::getYaw() const {
 }
 
 bool SatelliteCamera::handleCameraInput(const Events::Event &e) {
-	if (e.type == Events::kEventKeyDown) {
-		switch (e.key.keysym.scancode) {
-			case SDL_SCANCODE_A:
-				_yaw += ROTATION_SPEED;
-				break;
-			case SDL_SCANCODE_D:
-				_yaw -= ROTATION_SPEED;
-				break;
-			default:
-				return false;
-		}
+	switch (e.type) {
+		case Events::kEventKeyDown:
+		case Events::kEventKeyUp:
+			switch (e.key.keysym.scancode) {
+				case SDL_SCANCODE_A:
+					_leftBtnPressed = e.type == Events::kEventKeyDown;
+					break;
+				case SDL_SCANCODE_D:
+					_rightBtnPressed = e.type == Events::kEventKeyDown;
+					break;
+				default:
+					return false;
+			}
+		default:
+			return false;
 	}
-	update();
 	return true;
 }
 
-void SatelliteCamera::update() {
-	float x = _target._x + _distance * sin(_yaw);
-	float y = _target._y - _distance * cos(_yaw) * _pitchSin;
-	float z = _target._z + _distance * _pitchCos;
-	CameraMan.setPosition(x, y, z);
-	CameraMan.setOrientation(_pitch, 0, Common::rad2deg(_yaw));
-	CameraMan.update();
+void SatelliteCamera::update(float dt) {
+	if (_dirty ||
+			(_leftBtnPressed && !_rightBtnPressed) ||
+			(_rightBtnPressed && !_leftBtnPressed)) {
+		if (_leftBtnPressed && !_rightBtnPressed) {
+			_yaw += ROTATION_SPEED * dt;
+			_yaw = fmodf(_yaw, 2 * M_PI);
+		}
+		if (_rightBtnPressed && !_leftBtnPressed) {
+			_yaw -= ROTATION_SPEED * dt;
+			_yaw = fmodf(_yaw, 2 * M_PI);
+		}
+
+		float x = _target._x + _distance * sin(_yaw);
+		float y = _target._y - _distance * cos(_yaw) * _pitchSin;
+		float z = _target._z + _distance * _pitchCos;
+
+		CameraMan.setPosition(x, y, z);
+		CameraMan.setOrientation(_pitch, 0, Common::rad2deg(_yaw));
+		CameraMan.update();
+
+		_dirty = false;
+	}
 }
 
 } // End of namespace Engines

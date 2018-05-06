@@ -57,7 +57,7 @@ namespace Engines {
 
 namespace KotOR {
 
-const float PC_MOVEMENT_SPEED = 0.1f;
+const float PC_MOVEMENT_SPEED = 5;
 
 bool Module::Action::operator<(const Action &s) const {
 	return timestamp < s.timestamp;
@@ -68,7 +68,8 @@ Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
 	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
 	_fade(new Graphics::Aurora::FadeQuad()), _ingame(new IngameGUI(*this)),
-	_freeCamEnabled(false) {
+	_freeCamEnabled(false), _prevTimestamp(0), _frameTime(0),
+	_forwardBtnPressed(false), _backwardsBtnPressed(false), _pcRunning(false) {
 	loadTexturePack();
 }
 
@@ -337,7 +338,7 @@ void Module::enter() {
 	SatelliteCam.setTarget(entryX, entryY, entryZ + 1.8f);
 	SatelliteCam.setDistance(3.2f);
 	SatelliteCam.setPitch(83);
-	SatelliteCam.update();
+	SatelliteCam.update(0);
 
 	_ingame->show();
 
@@ -429,8 +430,19 @@ void Module::processEventQueue() {
 	if (!isRunning())
 		return;
 
+	uint32 now = SDL_GetTicks();
+	_frameTime = (now - _prevTimestamp) / 1000.f;
+	_prevTimestamp = now;
+
 	handleEvents();
 	handleActions();
+
+	if (!_freeCamEnabled) {
+		GfxMan.lockFrame();
+		handlePCMovement();
+		SatelliteCam.update(_frameTime);
+		GfxMan.unlockFrame();
+	}
 }
 
 void Module::handleEvents() {
@@ -453,18 +465,21 @@ void Module::handleEvents() {
 				_console->show();
 				continue;
 			}
+		}
 
-			// PC movement
-			if (!_freeCamEnabled) {
+		// PC movement
+		switch (event->type) {
+			case Events::kEventKeyDown:
+			case Events::kEventKeyUp:
 				switch (event->key.keysym.sym) {
 					case SDLK_w:
-						movePC(kForward);
+						_forwardBtnPressed = event->type == Events::kEventKeyDown;
 						break;
 					case SDLK_s:
-						movePC(kBackwards);
+						_backwardsBtnPressed = event->type == Events::kEventKeyDown;
 						break;
 				}
-			}
+				break;
 		}
 
 		// Camera
@@ -483,34 +498,46 @@ void Module::handleEvents() {
 
 	_eventQueue.clear();
 
-	if (_freeCamEnabled) {
+	if (_freeCamEnabled)
 		CameraMan.update();
-	}
 
 	_area->processEventQueue();
 	_ingame->processEventQueue();
 }
 
-void Module::movePC(MovementDirection direction) {
+void Module::handlePCMovement() {
 	if (!_pc)
 		return;
 
-	float x, y, z;
-	_pc->getPosition(x, y, z);
-	float yaw = SatelliteCam.getYaw();
+	bool haveMovement = false;
 
-	switch (direction) {
-		case kForward:
+	if (_forwardBtnPressed || _backwardsBtnPressed) {
+		float x, y, z;
+		_pc->getPosition(x, y, z);
+		float yaw = SatelliteCam.getYaw();
+
+		if (_forwardBtnPressed && !_backwardsBtnPressed) {
 			_pc->setOrientation(0, 0, 1, Common::rad2deg(yaw));
-			movePC(x - PC_MOVEMENT_SPEED * sin(yaw), y + PC_MOVEMENT_SPEED * cos(yaw), z);
-			break;
-		case kBackwards:
+			movePC(x - PC_MOVEMENT_SPEED * sin(yaw) * _frameTime,
+			       y + PC_MOVEMENT_SPEED * cos(yaw) * _frameTime,
+			       z);
+			haveMovement = true;
+		} else if (_backwardsBtnPressed && !_forwardBtnPressed) {
 			_pc->setOrientation(0, 0, 1, 180 + Common::rad2deg(yaw));
-			movePC(x + PC_MOVEMENT_SPEED * sin(yaw), y - PC_MOVEMENT_SPEED * cos(yaw), z);
-			break;
+			movePC(x + PC_MOVEMENT_SPEED * sin(yaw) * _frameTime,
+			       y - PC_MOVEMENT_SPEED * cos(yaw) * _frameTime,
+			       z);
+			haveMovement = true;
+		}
 	}
 
-	_pc->getModel().get()->playAnimation(Common::UString("run"), false);
+	if (haveMovement && !_pcRunning) {
+		_pc->getModel().get()->playAnimation(Common::UString("run"), false, -1);
+		_pcRunning = true;
+	} else if (!haveMovement && _pcRunning) {
+		_pc->getModel().get()->playDefaultAnimation();
+		_pcRunning = false;
+	}
 }
 
 void Module::handleActions() {
@@ -564,8 +591,7 @@ void Module::movedPC() {
 	if (_freeCamEnabled) {
 		CameraMan.setPosition(x, y, z + 1.8f);
 		CameraMan.update();
-	} else
-		SatelliteCam.update();
+	}
 }
 
 void Module::setReturnStrref(uint32 id) {
