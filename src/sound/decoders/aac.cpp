@@ -47,6 +47,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_FAAD
 #include <cstring>
 
 #include <neaacdec.h>
@@ -153,3 +158,4 @@ Codec *makeAACDecoder(Common::SeekableReadStream *extraData, bool disposeExtraDa
 }
 
 } // End of namespace Sound
+#endif

@@ -70,7 +70,9 @@
 
 
 // Audio codecs
+#ifdef ENABLE_FAAD
 #include "src/sound/decoders/aac.h"
+#endif
 #include "src/sound/decoders/adpcm.h"
 #include "src/sound/decoders/pcm.h"
 
@@ -1012,7 +1014,11 @@ void QuickTimeDecoder::AudioSampleDesc::initCodec() {
 	switch (_codecTag) {
 	case MKTAG('m', 'p', '4', 'a'):
 		if (_parentTrack->objectTypeMP4 == 0x40)
+#ifdef ENABLE_FAAD
 			_codec.reset(Sound::makeAACDecoder(_parentTrack->extraData.get()));
+#else
+			warning("AAC decoding disabled when building without libfaad");
+#endif
 		break;
 	default:
 		break;
