@@ -28,6 +28,7 @@ set(xoreos_VERSION 0.0.4)
 option(Boost_USE_STATIC_LIBS "Use Boost static libraries" OFF)
 option(GLEW_INTERNAL "Use internal glew libraries" OFF)
 option(XOREOS_BUILD_DOCUMENTATION "Use Doxygen to create the HTML based API documentation" OFF)
+option(ENABLE_XVIDCORE "Enable building with H.263 support" ON)
 
 
 # -------------------------------------------------------------------------
@@ -278,9 +279,14 @@ find_package(Vorbis REQUIRED)
 include_directories(${VORBIS_INCLUDE_DIR})
 list(APPEND XOREOS_LIBRARIES ${VORBIS_LIBRARIES})
 
-find_package(XviD REQUIRED)
-include_directories(${XVID_INCLUDE_DIR})
-list(APPEND XOREOS_LIBRARIES ${XVID_LIBRARY})
+if(ENABLE_XVIDCORE)
+  find_package(XviD)
+  if(XVID_FOUND)
+    add_definitions(-DENABLE_XVIDCORE)
+    include_directories(${XVID_INCLUDE_DIR})
+    list(APPEND XOREOS_LIBRARIES ${XVID_LIBRARY})
+  endif()
+endif()
 
 find_package(LibLZMA REQUIRED)
 include_directories(${LIBLZMA_INCLUDE_DIR})
