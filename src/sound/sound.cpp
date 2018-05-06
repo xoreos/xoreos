@@ -40,7 +40,9 @@
 #ifdef ENABLE_MAD
 #include "src/sound/decoders/mp3.h"
 #endif
+#ifdef ENABLE_VORBIS
 #include "src/sound/decoders/vorbis.h"
+#endif
 #include "src/sound/decoders/wave.h"
 
 #include "src/events/events.h"
@@ -285,8 +287,12 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 
 	} else if (tag == MKTAG('O', 'g', 'g', 'S')) {
 
+#ifdef ENABLE_VORBIS
 		stream->seek(0);
 		return makeVorbisStream(stream, true);
+#else
+		throw Common::Exception("Vorbis decoding disabled when building without libvorbis");
+#endif
 
 	} else if (tag == 0x3026B275) {
 
