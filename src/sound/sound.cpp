@@ -37,7 +37,9 @@
 #include "src/sound/sound.h"
 #include "src/sound/audiostream.h"
 #include "src/sound/decoders/asf.h"
+#ifdef ENABLE_MAD
 #include "src/sound/decoders/mp3.h"
+#endif
 #include "src/sound/decoders/vorbis.h"
 #include "src/sound/decoders/wave.h"
 
@@ -309,7 +311,11 @@ AudioStream *SoundManager::makeAudioStream(Common::SeekableReadStream *stream) {
 		throw Common::Exception("Unknown sound format %s", Common::debugTag(tag).c_str());
 
 	if (isMP3)
+#ifdef ENABLE_MAD
 		return makeMP3Stream(stream, true);
+#else
+		throw Common::Exception("MP3 decoding disabled when building without libmad");
+#endif
 
 	return makeWAVStream(stream, true);
 }
