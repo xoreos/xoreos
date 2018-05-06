@@ -181,6 +181,7 @@ dnl Force compiling against the internal GLEW library
 AC_ARG_ENABLE([external-glew], [AS_HELP_STRING([--disable-external-glew], [Do not check for an external GLEW library and always compile against the internal GLEW library @<:@default=no@:>@])], [], [enable_external_glew=yes])
 
 dnl Disable optional external libraries
+AC_ARG_ENABLE([faad], [AS_HELP_STRING([--disable-faad], [Disable building with AAC support @<:@default=no@:>@])], [], [enable_faad=yes])
 AC_ARG_ENABLE([xvidcore], [AS_HELP_STRING([--disable-xvidcore], [Disable building with H.263 support @<:@default=no@:>@])], [], [enable_xvidcore=yes])
 
 dnl General purpose libraries
@@ -227,7 +228,15 @@ fi
 
 dnl Sound libraries
 AX_CHECK_AL( , AC_MSG_ERROR([OpenAL Soft (>= 1.12) is required and could not be found!]))
-AX_CHECK_FAAD(, AC_MSG_ERROR([libfaad (>= 2.7) is required and could not be found!]))
+if test "x$enable_faad" = "xyes"; then
+	AX_CHECK_FAAD(, [enable_faad=no])
+fi
+if test "x$enable_faad" = "xyes"; then
+	AC_DEFINE([ENABLE_FAAD], 1, [Defined to 1 if we are using libfaad])
+else
+	FAAD_CFLAGS=""
+	FAAD_LIBS=""
+fi
 AX_CHECK_MAD(0, 15, 1, , AC_MSG_ERROR([libMAD (>= 0.15.1) is required and could not be found!]))
 AX_CHECK_OGG(, AC_MSG_ERROR([libOgg (>= 1.2.0) is required and could not be found!]))
 AX_CHECK_VORBIS(, AC_MSG_ERROR([libVorbisFile (>= 1.3.1) is required and could not be found!]))
