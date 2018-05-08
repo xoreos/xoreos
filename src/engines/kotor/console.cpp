@@ -64,6 +64,8 @@ Console::Console(KotOREngine &engine) :
 			"If none was specified, play the default area music.");
 	registerCommand("tfc"        , boost::bind(&Console::cmdToggleFreeCam, this, _1),
 			"Usage: tfc\nToggle free roam camera mode");
+	registerCommand("tw"         , boost::bind(&Console::cmdToggleWalkmesh, this, _1),
+			"Usage: tw\nToggle walkmesh display");
 }
 
 Console::~Console() {
@@ -145,6 +147,10 @@ void Console::cmdPlayMusic(const CommandLine &cl) {
 
 void Console::cmdToggleFreeCam(const CommandLine &UNUSED(cl)) {
 	_engine->getGame().getModule().toggleFreeRoamCamera();
+}
+
+void Console::cmdToggleWalkmesh(const CommandLine &UNUSED(cl)) {
+	_engine->getGame().getModule().toggleWalkmesh();
 }
 
 } // End of namespace KotOR

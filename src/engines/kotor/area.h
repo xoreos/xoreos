@@ -42,7 +42,9 @@
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
+#include "src/engines/aurora/walkeleveval.h"
 #include "src/engines/kotor/object.h"
+#include "src/engines/kotor/walkmesh.h"
 
 namespace Engines {
 
@@ -103,6 +105,10 @@ public:
 	/** Forcibly remove the focus from the currently highlighted object. */
 	void removeFocus();
 
+	// Walkmesh
+	float getElevationAt(float x, float y) const;
+	void toggleWalkmesh();
+
 
 protected:
 	void notifyCameraMoved();
@@ -158,6 +164,7 @@ private:
 	std::list<Events::Event> _eventQueue; ///< The event queue.
 
 	Common::Mutex _mutex; ///< Mutex securing access to the area.
+	KotOR::Walkmesh _walkmesh; ///< Walkmesh for collision detection.
 
 
 	// Loading helpers

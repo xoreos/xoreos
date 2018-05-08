@@ -32,7 +32,7 @@ DECLARE_SINGLETON(Engines::SatelliteCamera)
 
 namespace Engines {
 
-const float ROTATION_SPEED = M_PI / 2.f;
+static const float kRotationSpeed = M_PI / 2.f;
 
 SatelliteCamera::SatelliteCamera()
 		: _distance(0), _yaw(0), _pitch(0), _pitchSin(0), _pitchCos(1),
@@ -88,11 +88,11 @@ void SatelliteCamera::update(float dt) {
 			(_leftBtnPressed && !_rightBtnPressed) ||
 			(_rightBtnPressed && !_leftBtnPressed)) {
 		if (_leftBtnPressed && !_rightBtnPressed) {
-			_yaw += ROTATION_SPEED * dt;
+			_yaw += kRotationSpeed * dt;
 			_yaw = fmodf(_yaw, 2 * M_PI);
 		}
 		if (_rightBtnPressed && !_leftBtnPressed) {
-			_yaw -= ROTATION_SPEED * dt;
+			_yaw -= kRotationSpeed * dt;
 			_yaw = fmodf(_yaw, 2 * M_PI);
 		}
 

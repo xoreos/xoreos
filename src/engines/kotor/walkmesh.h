@@ -19,56 +19,41 @@
  */
 
 /** @file
- *  Star Wars: Knights of the Old Republic (debug) console.
+ *  KotOR walkmesh (.wok) file loader. Ported from Supermanu's pathfinding
+ *  branch.
  */
 
-#ifndef ENGINES_KOTOR_CONSOLE_H
-#define ENGINES_KOTOR_CONSOLE_H
+#ifndef ENGINES_KOTOR_WALKMESH_H
+#define ENGINES_KOTOR_WALKMESH_H
 
 #include <vector>
 
-#include "src/engines/aurora/console.h"
+#include "src/common/readstream.h"
+#include "src/common/types.h"
+
+#include "src/engines/aurora/walkmesh.h"
+
+#include "src/graphics/renderable.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class KotOREngine;
-
-class Console : public ::Engines::Console {
+class Walkmesh
+		: public Engines::Walkmesh, public Graphics::Renderable {
 public:
-	Console(KotOREngine &engine);
-	~Console();
-
-
+	Walkmesh();
+	void appendFromStream(Common::SeekableReadStream &stream);
+	void calculateDistance();
+	void render(Graphics::RenderPass pass);
 private:
-	KotOREngine *_engine;
-
-	// Caches
-	std::vector<Common::UString> _modules; ///< All known modules.
-	std::vector<Common::UString> _music;   ///< All known music resources.
-
-	size_t _maxSizeMusic;
-
-
-	// Updating the caches
-	void updateCaches();
-	void updateModules();
-	void updateMusic();
-
-	// The commands
-	void cmdExitModule    (const CommandLine &cl);
-	void cmdListModules   (const CommandLine &cl);
-	void cmdLoadModule    (const CommandLine &cl);
-	void cmdListMusic     (const CommandLine &cl);
-	void cmdStopMusic     (const CommandLine &cl);
-	void cmdPlayMusic     (const CommandLine &cl);
-	void cmdToggleFreeCam (const CommandLine &cl);
-	void cmdToggleWalkmesh(const CommandLine &cl);
+	void appendFaceTypes(Common::SeekableReadStream &stream, uint32 faceCount, uint32 faceTypeOffset);
+	void appendIndices(Common::SeekableReadStream &stream, uint32 faceCount, uint32 faceOffset);
+	void appendVertices(Common::SeekableReadStream &stream, uint32 vertexCount, uint32 vertexOffset);
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_CONSOLE_H
+#endif // ENGINES_KOTOR_WALKMESH_H

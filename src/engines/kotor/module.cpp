@@ -57,7 +57,7 @@ namespace Engines {
 
 namespace KotOR {
 
-const float PC_MOVEMENT_SPEED = 5;
+static const float kPCMovementSpeed = 5;
 
 bool Module::Action::operator<(const Action &s) const {
 	return timestamp < s.timestamp;
@@ -515,27 +515,33 @@ void Module::handlePCMovement() {
 		float x, y, z;
 		_pc->getPosition(x, y, z);
 		float yaw = SatelliteCam.getYaw();
+		float newX, newY;
 
 		if (_forwardBtnPressed && !_backwardsBtnPressed) {
 			_pc->setOrientation(0, 0, 1, Common::rad2deg(yaw));
-			movePC(x - PC_MOVEMENT_SPEED * sin(yaw) * _frameTime,
-			       y + PC_MOVEMENT_SPEED * cos(yaw) * _frameTime,
-			       z);
+			newX = x - kPCMovementSpeed * sin(yaw) * _frameTime;
+			newY = y + kPCMovementSpeed * cos(yaw) * _frameTime;
 			haveMovement = true;
 		} else if (_backwardsBtnPressed && !_forwardBtnPressed) {
 			_pc->setOrientation(0, 0, 1, 180 + Common::rad2deg(yaw));
-			movePC(x + PC_MOVEMENT_SPEED * sin(yaw) * _frameTime,
-			       y - PC_MOVEMENT_SPEED * cos(yaw) * _frameTime,
-			       z);
+			newX = x + kPCMovementSpeed * sin(yaw) * _frameTime;
+			newY = y - kPCMovementSpeed * cos(yaw) * _frameTime;
 			haveMovement = true;
+		}
+
+		if (haveMovement) {
+			z = _area->getElevationAt(newX, newY);
+			if (z != FLT_MIN) {
+				movePC(newX, newY, z);
+			}
 		}
 	}
 
 	if (haveMovement && !_pcRunning) {
-		_pc->getModel().get()->playAnimation(Common::UString("run"), false, -1);
+		_pc->getModel()->playAnimation(Common::UString("run"), false, -1);
 		_pcRunning = true;
 	} else if (!haveMovement && _pcRunning) {
-		_pc->getModel().get()->playDefaultAnimation();
+		_pc->getModel()->playDefaultAnimation();
 		_pcRunning = false;
 	}
 }
@@ -684,6 +690,10 @@ Common::UString Module::getName(const Common::UString &module) {
 
 void Module::toggleFreeRoamCamera() {
 	_freeCamEnabled = !_freeCamEnabled;
+}
+
+void Module::toggleWalkmesh() {
+	_area->toggleWalkmesh();
 }
 
 } // End of namespace KotOR
