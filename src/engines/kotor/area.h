@@ -71,6 +71,19 @@ public:
 	/** Return the area's resref (resource ID). */
 	const Common::UString &getResRef();
 
+	// Minimap
+
+	/** Get the north axis id. */
+	int getNorthAxis();
+	/** Get the first map point. */
+	void getMapPoint1(float &x, float &y);
+	/** Get the second map point. */
+	void getMapPoint2(float &x, float &y);
+	/** Get the first world point. */
+	void getWorldPoint1(float &x, float &y);
+	/** Get the second world point. */
+	void getWorldPoint2(float &x, float &y);
+
 	// Visibility
 
 	void show();
@@ -144,6 +157,10 @@ private:
 	float _ambientNightVol; ///< Night ambient sound volume.
 
 	bool _visible; ///< Is the area currently visible?
+
+	float _worldPt1X, _worldPt1Y, _worldPt2X, _worldPt2Y;
+	float _mapPt1X, _mapPt1Y, _mapPt2X, _mapPt2Y;
+	int _northAxis;
 
 	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
 	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.

@@ -182,6 +182,30 @@ void Area::playAmbientSound(Common::UString sound) {
 	_ambientSound = ::Engines::playSound(sound, Sound::kSoundTypeSFX, true, _ambientDayVol);
 }
 
+int Area::getNorthAxis() {
+	return _northAxis;
+}
+
+void Area::getMapPoint1(float &x, float &y) {
+	x = _mapPt1X;
+	y = _mapPt1Y;
+}
+
+void Area::getMapPoint2(float &x, float &y) {
+	x = _mapPt2X;
+	y = _mapPt2Y;
+}
+
+void Area::getWorldPoint1(float &x, float &y) {
+	x = _worldPt1X;
+	y = _worldPt1Y;
+}
+
+void Area::getWorldPoint2(float &x, float &y) {
+	x = _worldPt2X;
+	y = _worldPt2Y;
+}
+
 void Area::show() {
 	if (_visible)
 		return;
@@ -262,6 +286,18 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 
 	// Name
 	_name = are.getString("Name");
+
+	// Minimap data
+	const Aurora::GFF3Struct &map = are.getStruct("Map");
+	_mapPt1X = map.getDouble("MapPt1X");
+	_mapPt1Y = map.getDouble("MapPt1Y");
+	_mapPt2X = map.getDouble("MapPt2X");
+	_mapPt2Y = map.getDouble("MapPt2Y");
+	_worldPt1X = map.getDouble("WorldPt1X");
+	_worldPt1Y = map.getDouble("WorldPt1Y");
+	_worldPt2X = map.getDouble("WorldPt2X");
+	_worldPt2Y = map.getDouble("WorldPt2Y");
+	_northAxis = map.getSint("NorthAxis");
 
 	// Scripts
 	readScripts(are);
