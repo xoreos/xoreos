@@ -119,6 +119,21 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 		throw e;
 	}
 
+	int northAxis;
+	float mapPt1X, mapPt1Y, mapPt2X, mapPt2Y;
+	float worldPt1X, worldPt1Y, worldPt2X, worldPt2Y;
+
+	northAxis = _area->getNorthAxis();
+	_area->getMapPoint1(mapPt1X, mapPt1Y);
+	_area->getMapPoint2(mapPt2X, mapPt2Y);
+	_area->getWorldPoint1(worldPt1X, worldPt1Y);
+	_area->getWorldPoint2(worldPt2X, worldPt2Y);
+
+	Common::UString mapId = _module.substr(++_module.findFirst("_"), _module.end());
+	_ingame->setMinimap(mapId, northAxis,
+	                    worldPt1X, worldPt1Y, worldPt2X, worldPt2Y,
+	                    mapPt1X, mapPt1Y, mapPt2X, mapPt2Y);
+
 	_newModule.clear();
 
 	_hasModule = true;
@@ -319,6 +334,7 @@ void Module::enter() {
 
 	if (_pc) {
 		_pc->setPosition(entryX, entryY, entryZ);
+		_ingame->setPosition(entryX, entryY);
 		_pc->show();
 	} else {
 		usePC(new Creature());
@@ -568,6 +584,7 @@ void Module::movePC(float x, float y, float z) {
 		return;
 
 	_pc->setPosition(x, y, z);
+	_ingame->setPosition(x, y);
 	movedPC();
 }
 
