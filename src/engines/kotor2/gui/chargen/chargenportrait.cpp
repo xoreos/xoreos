@@ -23,6 +23,7 @@
  */
 
 #include "src/engines/kotor2/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor2/gui/widgets/label.h"
 
 #include "src/engines/kotor2/gui/chargen/chargenportrait.h"
 
@@ -34,6 +35,8 @@ CharacterGenerationPortraitMenu::CharacterGenerationPortraitMenu(CharacterGenera
                                                                  Engines::Console *console) :
 		CharacterGenerationBaseMenu(info, console) {
 	load("portcust_p");
+
+	getLabel("LBL_PORTRAIT")->setFill(_info.getPortrait());
 }
 
 void CharacterGenerationPortraitMenu::callbackActive(Widget &widget) {
@@ -44,6 +47,62 @@ void CharacterGenerationPortraitMenu::callbackActive(Widget &widget) {
 	}
 	if (widget.getTag() == "BTN_CANCEL") {
 		_returnCode = kReturnCodeAbort;
+		return;
+	}
+
+	if (widget.getTag() == "BTN_ARRL") {
+		// Get the current skin and face
+		Skin skin = _info.getSkin();
+		unsigned int face = _info.getFace();
+
+		// Move them to left and go in another skin type if needed
+		if (face == 0) {
+			if (skin == kSkinA)
+				skin = kSkinH;
+			else
+				skin = Skin(skin - 1);
+
+			if (skin == kSkinH)
+				face = 1;
+			else
+				face = 4;
+		} else {
+			face -= 1;
+		}
+
+		// Set the new skin and face values
+		_info.setSkin(skin);
+		_info.setFace(face);
+
+		// And then reset the portrait
+		getLabel("LBL_PORTRAIT")->setFill(_info.getPortrait());
+
+		return;
+	}
+
+	if (widget.getTag() == "BTN_ARRR") {
+		// Get the current skin and face
+		Skin skin = _info.getSkin();
+		unsigned int face = _info.getFace();
+
+		// Move them to right and go in another skin type if needed
+		if (face == ((skin == kSkinH) ? 1 : 4)) {
+			if (skin == kSkinH)
+				skin = kSkinA;
+			else
+				skin = Skin(skin + 1);
+			face = 0;
+		} else {
+			face += 1;
+		}
+
+		// Set the new skin and face values
+		_info.setSkin(skin);
+		_info.setFace(face);
+
+		// And then reset the portrait
+		getLabel("LBL_PORTRAIT")->setFill(_info.getPortrait());
+
 		return;
 	}
 }
