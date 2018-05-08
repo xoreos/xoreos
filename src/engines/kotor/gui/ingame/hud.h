@@ -30,6 +30,7 @@
 #include "src/engines/kotor/gui/gui.h"
 
 #include "src/engines/kotor/gui/ingame/menu.h"
+#include "src/engines/kotor/gui/ingame/minimap.h"
 
 namespace Engines {
 
@@ -43,8 +44,17 @@ public:
 	void setReturnQueryStrref(uint32 id);
 	void setReturnEnabled(bool);
 
+	void setMinimap(
+			const Common::UString &map, int northAxis,
+			float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
+			float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y);
+
+	void setPosition(float x, float y);
+
 private:
 	Menu _menu;
+
+	Common::ScopedPtr<Minimap> _minimap;
 
 	void initWidget(Widget &widget);
 
