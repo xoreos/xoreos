@@ -115,32 +115,44 @@ void ClassSelection::callbackRun() {
 void ClassSelection::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_SEL1") {
 		_chargen.reset(new CharacterGeneration(_module, _consularMaleInfo));
-		sub(*_chargen);
+		if (sub(*_chargen) == 2) {
+			_returnCode = 2;
+		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL2") {
 		_chargen.reset(new CharacterGeneration(_module, _guardianMaleInfo));
-		sub(*_chargen);
+		if (sub(*_chargen) == 2) {
+			_returnCode = 2;
+		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL3") {
 		_chargen.reset(new CharacterGeneration(_module, _sentinelMaleInfo));
-		sub(*_chargen);
+		if (sub(*_chargen) == 2) {
+			_returnCode = 2;
+		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL4") {
 		_chargen.reset(new CharacterGeneration(_module, _sentinelFemaleInfo));
-		sub(*_chargen);
+		if (sub(*_chargen) == 2) {
+			_returnCode = 2;
+		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL5") {
 		_chargen.reset(new CharacterGeneration(_module, _guardianFemaleInfo));
-		sub(*_chargen);
+		if (sub(*_chargen) == 2) {
+			_returnCode = 2;
+		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL6") {
 		_chargen.reset(new CharacterGeneration(_module, _consularFemaleInfo));
-		sub(*_chargen);
+		if (sub(*_chargen) == 2) {
+			_returnCode = 2;
+		}
 		return;
 	}
 

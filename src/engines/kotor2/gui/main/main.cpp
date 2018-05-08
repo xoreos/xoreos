@@ -85,7 +85,9 @@ void MainMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_NEWGAME") {
 		createClassSelection();
-		sub(*_classSelection);
+		if (sub(*_classSelection) == 2) {
+			_returnCode = 2;
+		}
 		return;
 	}
 }
