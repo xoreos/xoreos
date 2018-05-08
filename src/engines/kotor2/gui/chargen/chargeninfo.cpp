@@ -130,6 +130,10 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleSentinel() {
 CharacterGenerationInfo::CharacterGenerationInfo() {
 }
 
+const Common::UString &CharacterGenerationInfo::getName() const {
+	return _name;
+}
+
 Skin CharacterGenerationInfo::getSkin() const {
 	return _skin;
 }
@@ -144,6 +148,10 @@ Gender CharacterGenerationInfo::getGender() const {
 
 Class CharacterGenerationInfo::getClass() const {
 	return _class;
+}
+
+void CharacterGenerationInfo::setName(const Common::UString &name) {
+	_name = name;
 }
 
 void CharacterGenerationInfo::setSkin(Skin skin) {
