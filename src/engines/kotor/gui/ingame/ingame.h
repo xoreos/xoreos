@@ -41,6 +41,13 @@ public:
 	void show(); ///< Show the ingame GUI elements.
 	void hide(); ///< Hide the ingame GUI elements.
 
+	/** Set the minimap with the specified id and both scaling points. */
+	void setMinimap(const Common::UString &map, int northAxis,
+					float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
+					float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y);
+	/** Set the position for the minimap. */
+	void setPosition(float x, float y);
+
 	void setReturnStrref(uint32 id);
 	void setReturnQueryStrref(uint32 id);
 	void setReturnEnabled(bool enabled);

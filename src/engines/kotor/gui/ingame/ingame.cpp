@@ -40,6 +40,16 @@ void IngameGUI::hide() {
 	_hud->hide();
 }
 
+void IngameGUI::setMinimap(const Common::UString &map, int northAxis,
+						   float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
+						   float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y) {
+	_hud->setMinimap(map, northAxis, worldPt1X, worldPt1Y, worldPt2X, worldPt2Y, mapPt1X, mapPt1Y, mapPt2X, mapPt2Y);
+}
+
+void IngameGUI::setPosition(float x, float y) {
+	_hud->setPosition(x, y);
+}
+
 void IngameGUI::setReturnStrref(uint32 id) {
 	_hud->setReturnStrref(id);
 }

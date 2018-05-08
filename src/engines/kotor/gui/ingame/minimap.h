@@ -19,51 +19,38 @@
  */
 
 /** @file
- *  The ingame HUD.
+ *  The ingame minimap.
  */
 
-#ifndef ENGINES_KOTOR_GUI_INGAME_HUD_H
-#define ENGINES_KOTOR_GUI_INGAME_HUD_H
+#ifndef ENGINES_KOTOR_GUI_INGAME_MINIMAP_H
+#define ENGINES_KOTOR_GUI_INGAME_MINIMAP_H
 
-#include "src/engines/aurora/console.h"
-
-#include "src/engines/kotor/gui/gui.h"
-
-#include "src/engines/kotor/gui/ingame/menu.h"
-#include "src/engines/kotor/gui/ingame/minimap.h"
+#include "src/graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/subscenequad.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class HUD : public GUI {
+class Minimap : public Graphics::Aurora::SubSceneQuad {
 public:
-	HUD(::Engines::Console *console = 0);
-
-	void setReturnStrref(uint32 id);
-	void setReturnQueryStrref(uint32 id);
-	void setReturnEnabled(bool);
-
-	void setMinimap(
-			const Common::UString &map, int northAxis,
-			float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
-			float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y);
+	Minimap(const Common::UString &map, int northAxis,
+			float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y,
+			float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y);
 
 	void setPosition(float x, float y);
 
 private:
-	Menu _menu;
+	Graphics::Aurora::GUIQuad _mapQuad;
 
-	Common::ScopedPtr<Minimap> _minimap;
-
-	void initWidget(Widget &widget);
-
-protected:
-	virtual void callbackActive(Widget &widget);
+	int _northAxis;
+	float _mapPt1X, _mapPt1Y, _mapPt2X, _mapPt2Y;
+	float _worldPt1X, _worldPt1Y, _worldPt2X, _worldPt2Y;
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_INGAME_HUD_H
+
+#endif // ENGINES_KOTOR_INGAME_GUI_MINIMAP_H

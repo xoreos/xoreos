@@ -26,6 +26,7 @@
 
 #include "src/engines/kotor/gui/ingame/hud.h"
 #include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/widgets/label.h"
 
 namespace Engines {
 
@@ -115,6 +116,18 @@ void HUD::setReturnQueryStrref(uint32 id) {
 
 void HUD::setReturnEnabled(bool enabled) {
 	_menu.setReturnEnabled(enabled);
+}
+
+void HUD::setMinimap(const Common::UString &map, int northAxis,
+					 float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
+					 float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y) {
+	_minimap.reset(new Minimap(map, northAxis, mapPt1X, mapPt1Y, mapPt2X, mapPt2Y, worldPt1X, worldPt1Y, worldPt2X, worldPt2Y));
+	getLabel("LBL_MAPVIEW")->setSubScene(_minimap.get());
+}
+
+void HUD::setPosition(float x, float y) {
+	if (_minimap)
+		_minimap->setPosition(x, y);
 }
 
 void HUD::initWidget(Engines::Widget &widget) {
