@@ -144,6 +144,7 @@ public:
 	// '---
 
 	void toggleFreeRoamCamera();
+	void toggleWalkmesh();
 
 private:
 	enum ActionType {
