@@ -40,9 +40,19 @@ public:
 	static CharacterGenerationInfo *createRandomMaleSentinel();
 	static CharacterGenerationInfo *createRandomFemaleSentinel();
 
+	/** Get the skin type of the character. */
+	Skin getSkin() const;
+	/** Get the current face index of the character. */
+	unsigned int getFace() const;
+
 	Gender getGender() const;
 
 	Class getClass() const;
+
+	/** Set the skin type of the Character. */
+	void setSkin(Skin skin);
+	/** Set the face index of the character. */
+	void setFace(unsigned int face);
 
 	Common::UString getPortrait() const;
 
