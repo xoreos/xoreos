@@ -63,7 +63,7 @@ bool Module::Action::operator<(const Action &s) const {
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
 	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll) {
-
+	loadTexturePack();
 }
 
 Module::~Module() {
@@ -306,6 +306,11 @@ void Module::enter() {
 	float entryX, entryY, entryZ, entryAngle;
 	if (!getEntryObjectLocation(entryX, entryY, entryZ, entryAngle))
 		getEntryIFOLocation(entryX, entryY, entryZ, entryAngle);
+
+	if (_pc) {
+		_pc->setPosition(entryX, entryY, entryZ);
+		_pc->show();
+	}
 
 	// Roughly head position
 	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);

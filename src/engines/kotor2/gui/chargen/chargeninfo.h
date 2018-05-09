@@ -25,6 +25,7 @@
 #ifndef ENGINES_KOTOR2_GUI_CHARGEN_CHARACTERGENERATIONINFO_H
 #define ENGINES_KOTOR2_GUI_CHARGEN_CHARACTERGENERATIONINFO_H
 
+#include "src/engines/kotor2/creature.h"
 #include "src/engines/kotor2/types.h"
 
 namespace Engines {
@@ -58,9 +59,21 @@ public:
 	/** Set the face index of the character. */
 	void setFace(unsigned int face);
 
+	/** Get the Id for the body mesh. */
+	Common::UString getBodyId() const;
+	/** Get the Id for the body mesh texture. */
+	Common::UString getBodyTextureId() const;
+	/** Get the Id for the head mesh. */
+	Common::UString getHeadId() const;
+
 	Common::UString getPortrait() const;
+	/** Create a creature object from the info. */
+	Creature *getCharacter() const;
 
 private:
+	/** Get the face id regarding the skin and gender. */
+	unsigned int getFaceId() const;
+
 	Gender _gender;
 	Class _class;
 	Skin _skin;

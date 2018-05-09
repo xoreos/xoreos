@@ -114,6 +114,7 @@ void CharacterGeneration::decStep() {
 
 void CharacterGeneration::start() {
 	try {
+		_module->usePC(_chargenInfo->getCharacter());
 		_module->load("001EBO");
 	} catch (...) {
 		Common::exceptionDispatcherWarning();

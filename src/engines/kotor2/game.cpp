@@ -78,11 +78,6 @@ void Game::run() {
 }
 
 void Game::runModule() {
-	Common::ScopedPtr<Creature> fakePC(new Creature);
-	fakePC->createFakePC();
-
-	_module->usePC(fakePC.release());
-
 	if (EventMan.quitRequested() || !_module->isLoaded()) {
 		_module->clear();
 		return;

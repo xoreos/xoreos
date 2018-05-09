@@ -26,6 +26,7 @@
 #include "src/common/maths.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -38,6 +39,7 @@
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/kotor2/creature.h"
+#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 
@@ -246,6 +248,20 @@ void Creature::createFakePC() {
 	_tag  = Common::UString::format("[PC: %s]", _name.c_str());
 
 	_isPC = true;
+}
+
+void Creature::createPC(const CharacterGenerationInfo *info) {
+	_name = info->getName();
+	_isPC = true;
+
+	PartModels parts;
+
+	parts.body = info->getBodyId();
+	parts.bodyTexture = info->getBodyTextureId();
+	parts.head = info->getHeadId();
+
+	loadBody(parts);
+	loadHead(parts);
 }
 
 void Creature::enter() {
