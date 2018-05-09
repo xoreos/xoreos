@@ -112,6 +112,10 @@ void CharacterGeneration::decStep() {
 	_step = MIN(0, _step - 1);
 }
 
+void CharacterGeneration::resetStep() {
+	_step = 0;
+}
+
 void CharacterGeneration::start() {
 	try {
 		_module->usePC(_chargenInfo->getCharacter());

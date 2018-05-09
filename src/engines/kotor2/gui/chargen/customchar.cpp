@@ -36,6 +36,7 @@ CustomCharPanel::CustomCharPanel(CharacterGeneration *chargen, Console *console)
 
 void CustomCharPanel::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_CANCEL") {
+		_chargenMenu->resetStep();
 		_chargenMenu->showQuickOrCustom();
 		return;
 	}

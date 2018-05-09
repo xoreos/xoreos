@@ -49,6 +49,7 @@ public:
 
 	int getStep();
 	void decStep();
+	void resetStep();
 
 	void start();
 

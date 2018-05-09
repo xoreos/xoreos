@@ -95,6 +95,7 @@ void QuickCharPanel::updateButtons() {
 
 void QuickCharPanel::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_CANCEL") {
+		_chargenMenu->resetStep();
 		_chargenMenu->showQuickOrCustom();
 		return;
 	}
