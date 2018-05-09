@@ -87,20 +87,29 @@ void CharacterGeneration::showCustomChar() {
 }
 
 void CharacterGeneration::showName() {
-	_charGenMenu.reset(new CharacterGenerationNameMenu(*_chargenInfo));
+	CharacterGenerationInfo info = *_chargenInfo;
+
+	_charGenMenu.reset(new CharacterGenerationNameMenu(info));
 	sub(*_charGenMenu, kStartCodeNone, true, false);
 
 	if (_charGenMenu->isAccepted()) {
 		_step += 1;
+		_chargenInfo->setName(info.getName());
+		getLabel("LBL_NAME")->setText(_chargenInfo->getName());
 	}
 }
 
 void CharacterGeneration::showPortrait() {
-	_charGenMenu.reset(new CharacterGenerationPortraitMenu(*_chargenInfo));
+	CharacterGenerationInfo info = *_chargenInfo;
+
+	_charGenMenu.reset(new CharacterGenerationPortraitMenu(info));
 	sub(*_charGenMenu);
 
 	if (_charGenMenu->isAccepted()) {
 		_step += 1;
+		_chargenInfo->setFace(info.getFace());
+		_chargenInfo->setSkin(info.getSkin());
+		getLabel("PORTRAIT_LBL")->setFill(_chargenInfo->getPortrait());
 	}
 }
 
