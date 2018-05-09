@@ -22,7 +22,10 @@
  *  The KotOR 2 character generation name menu.
  */
 
+#include "src/events/events.h"
+
 #include "src/engines/kotor2/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor2/gui/widgets/label.h"
 #include "src/engines/kotor2/gui/chargen/chargenname.h"
 
 namespace Engines {
@@ -32,18 +35,48 @@ namespace KotOR2 {
 CharacterGenerationNameMenu::CharacterGenerationNameMenu(CharacterGenerationInfo &info, Engines::Console *console) :
 		CharacterGenerationBaseMenu(info, console) {
 	load("name_p");
+
+	_nameLabel = getLabel("NAME_BOX_EDIT");
+	_nameLabel->setText("_");
+
+	EventMan.enableTextInput(true);
+	EventMan.enableKeyRepeat(true);
 }
 
 void CharacterGenerationNameMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_BACK") {
 		_returnCode = kReturnCodeAbort;
+		EventMan.enableTextInput(false);
+		EventMan.enableKeyRepeat(false);
 		return;
 	}
 	if (widget.getTag() == "END_BTN") {
 		accept();
 		_returnCode = kReturnCodeAbort;
+		EventMan.enableTextInput(false);
+		EventMan.enableKeyRepeat(false);
 		return;
 	}
+}
+
+void CharacterGenerationNameMenu::callbackKeyInput(const Events::Key &key, const Events::EventType &type) {
+	if (key == Events::kKeyBackspace && type == Events::kEventKeyDown) {
+		if (!_name.empty()) {
+			_name.erase(--_name.end());
+			_nameLabel->setText(_name + "_");
+		}
+	}
+}
+
+void CharacterGenerationNameMenu::callbackTextInput(const Common::UString &text) {
+	// The name should not be longer than 18 letters (according to the original game).
+	if (_name.size() == 18) {
+		return;
+	}
+
+	_name += text;
+	_info.setName(_name);
+	_nameLabel->setText(_name + "_");
 }
 
 } // End of namespace KotOR

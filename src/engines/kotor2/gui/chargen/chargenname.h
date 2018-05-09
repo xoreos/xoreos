@@ -28,6 +28,7 @@
 #include "src/engines/aurora/console.h"
 #include "src/engines/kotor2/gui/chargen/chargenbase.h"
 #include "src/engines/kotor2/gui/chargen/chargeninfo.h"
+#include "src/engines/kotor2/gui/widgets/label.h"
 
 namespace Engines {
 
@@ -39,6 +40,11 @@ public:
 
 private:
 	virtual void callbackActive(Widget &widget);
+	virtual void callbackTextInput(const Common::UString &text);
+	virtual void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
+
+	Common::UString _name;
+	Engines::KotOR2::WidgetLabel *_nameLabel;
 };
 
 } // End of namespace KotOR2
