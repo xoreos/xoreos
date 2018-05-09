@@ -24,7 +24,11 @@
 
 #include "src/common/util.h"
 
+#include "src/sound/sound.h"
+
 #include "src/events/events.h"
+
+#include "src/engines/aurora/util.h"
 
 #include "src/engines/kotor2/module.h"
 
@@ -39,6 +43,8 @@ namespace KotOR2 {
 
 MainMenu::MainMenu(Module &module, ::Engines::Console *console) : GUI(console), _module(&module) {
 	load("mainmenu8x6_p");
+
+	startMainMusic();
 }
 
 MainMenu::~MainMenu() {
@@ -75,6 +81,18 @@ void MainMenu::createClassSelection() {
 		_classSelection.reset(new ClassSelection(_module));
 }
 
+void MainMenu::startMainMusic() {
+	_menuMusic = playSound("mus_sion", Sound::kSoundTypeMusic, true);
+}
+
+void MainMenu::startChargenMusic() {
+	_menuMusic = playSound("mus_main", Sound::kSoundTypeMusic, true);
+}
+
+void MainMenu::stopMusic() {
+	SoundMan.stopChannel(_menuMusic);
+}
+
 void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_EXIT") {
 		EventMan.requestQuit();
@@ -85,9 +103,15 @@ void MainMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_NEWGAME") {
 		createClassSelection();
+		stopMusic();
+		startChargenMusic();
 		if (sub(*_classSelection) == 2) {
+			stopMusic();
 			_returnCode = 2;
+			return;
 		}
+		stopMusic();
+		startMainMusic();
 		return;
 	}
 }

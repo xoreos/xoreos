@@ -46,7 +46,13 @@ protected:
 private:
 	void createClassSelection();
 
+	void startMainMusic();
+	void startChargenMusic();
+	void stopMusic();
+
 	Common::ScopedPtr<GUI> _classSelection;
+
+	Sound::ChannelHandle _menuMusic;
 
 	Module *_module;
 };
