@@ -243,7 +243,7 @@ void GUI::removeChild(GUI *gui) {
 	_childGUIs.remove(gui);
 }
 
-void GUI::addWidget(Widget *widget) {
+void GUI::addWidget(Widget *widget, bool show) {
 	if (!widget)
 		return;
 
@@ -258,6 +258,9 @@ void GUI::addWidget(Widget *widget) {
 
 	_widgets.push_back(widget);
 	_widgetMap[widget->getTag()] = widget;
+
+	if (show)
+		widget->show();
 }
 
 void GUI::removeWidget(Widget *widget) {

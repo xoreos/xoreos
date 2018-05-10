@@ -75,8 +75,10 @@ protected:
 	GUI *_sub; ///< The currently running sub GUI.
 
 
-	/** Add a widget. */
-	void addWidget(Widget *widget);
+	/** Add a widget.
+	 *  @param show show it immediately
+	 */
+	void addWidget(Widget *widget, bool show = false);
 	/** Remove a widget. */
 	void removeWidget(Widget *widget);
 
