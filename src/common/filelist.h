@@ -77,6 +77,14 @@ public:
 	 */
 	bool addDirectory(const UString &directory, int recurseDepth = 0);
 
+	/** Add subdirectories of a directory to the list.
+	 *
+	 *  @param  directory The directory to scan.
+	 *  @return true if the subdirectories were successfully added to the list,
+	 *          false otherwise.
+	 */
+	bool addSubDirectories(const UString &directory);
+
 	/** Add files ending with the given string into another FileList.
 	 *
 	 *  @param  str A file ending to match file names against.
