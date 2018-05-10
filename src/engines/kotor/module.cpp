@@ -130,7 +130,11 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 	_area->getWorldPoint1(worldPt1X, worldPt1Y);
 	_area->getWorldPoint2(worldPt2X, worldPt2Y);
 
-	Common::UString mapId = _module.substr(++_module.findFirst("_"), _module.end());
+	Common::UString mapId;
+	if (_module.contains('_'))
+		mapId = _module.substr(++_module.findFirst("_"), _module.end());
+	else
+		mapId = _module.substr(_module.getPosition(3), _module.end());
 	_ingame->setMinimap(mapId, northAxis,
 	                    worldPt1X, worldPt1Y, worldPt2X, worldPt2Y,
 	                    mapPt1X, mapPt1Y, mapPt2X, mapPt2Y);
