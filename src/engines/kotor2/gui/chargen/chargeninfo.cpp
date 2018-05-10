@@ -203,6 +203,7 @@ Common::UString CharacterGenerationInfo::getBodyTextureId() const {
 
 	switch (_skin) {
 		case kSkinA:
+		case kSkinH:
 			body += "a";
 			break;
 		case kSkinB:
@@ -210,9 +211,6 @@ Common::UString CharacterGenerationInfo::getBodyTextureId() const {
 			break;
 		case kSkinC:
 			body += "c";
-			break;
-		case kSkinH:
-			body += "d";
 			break;
 		default:
 			throw Common::Exception("Invalid skin");
@@ -252,7 +250,7 @@ Common::UString CharacterGenerationInfo::getHeadId() const {
 			head += "c";
 			break;
 		case kSkinH:
-			head += "d";
+			head += "h";
 			break;
 		default:
 			throw Common::Exception("Invalid skin");
