@@ -50,6 +50,8 @@ HUD::HUD(Engines::Console *console) : GUI(console) {
 		return;
 	}
 
+	_circle.reset(new Graphics::Aurora::GUIQuad("friendlyreticle", 0, 0, 64, 64));
+
 	// Make the action stuff invisible.
 	getWidget("LBL_HEALTHBG")->setInvisible(true);
 	getWidget("LBL_NAMEBG")->setInvisible(true);
@@ -129,6 +131,19 @@ void HUD::setMinimap(const Common::UString &map, int northAxis,
 void HUD::setPosition(float x, float y) {
 	if (_minimap)
 		_minimap->setPosition(x, y);
+}
+
+void HUD::showSelectionCircle() {
+	_circle->show();
+}
+
+void HUD::hideSelectionCircle() {
+	_circle->hide();
+}
+
+void HUD::setSelectionPosition(float x, float y) {
+	if (_circle)
+		_circle->setPosition(x - 32, y - 32);
 }
 
 void HUD::showContainer() {

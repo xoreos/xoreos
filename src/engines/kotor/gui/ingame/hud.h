@@ -51,10 +51,17 @@ public:
 
 	void setPosition(float x, float y);
 
+	void showSelectionCircle();
+	void hideSelectionCircle();
+	void setSelectionPosition(float x, float y);
+
 	void showContainer();
 
 private:
 	Menu _menu;
+
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _circle;
+
 	Common::ScopedPtr<ContainerMenu> _container;
 
 	Common::ScopedPtr<Minimap> _minimap;
