@@ -19,55 +19,48 @@
  */
 
 /** @file
- *  The KotOR main menu.
+ *  Load/save game menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
-#define ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#ifndef ENGINES_KOTOR_GUI_SAVELOAD_H
+#define ENGINES_KOTOR_GUI_SAVELOAD_H
+
+#include <vector>
 
 #include "src/common/scopedptr.h"
 
+#include "src/engines/aurora/console.h"
 #include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module;
+enum {
+	kSaveLoadMenuTypeSave = 0,
+	kSaveLoadMenuTypeLoad = 1
+};
 
-class MainMenu : public GUI {
+class SaveLoadMenu : public GUI {
 public:
-	MainMenu(Module &module, bool isXbox, ::Engines::Console *console = 0);
-	~MainMenu();
-
+	SaveLoadMenu(::Engines::Console *console,
+	             uint8 type = kSaveLoadMenuTypeLoad,
+	             bool frontBackground = false);
 protected:
-	void initWidget(Widget &widget);
+	uint8 _type;
 
 	void callbackActive(Widget &widget);
-
 private:
-	Module *_module;
-	bool _isXbox;
+	std::vector<KotORWidget *> _slots;
+	std::vector<Common::UString> _savedGames;
 
-	Common::ScopedPtr<GUI> _classSelection;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
-	Common::ScopedPtr<GUI> _loadGame;
-
-	Sound::ChannelHandle _menuMusic;
-
-	void startMainMusic();
-	void startCharGenMusic();
-	void stopMenuMusic();
-
-	void createClassSelection();
-	void createMovies();
-	void createOptions();
-	void createLoadGame();
+	void createSlotWidgets();
+	void addNewSlotItem();
+	void addSavedGameItems();
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_MAIN_MAIN_H
+#endif // ENGINES_KOTOR_GUI_SAVELOAD_H

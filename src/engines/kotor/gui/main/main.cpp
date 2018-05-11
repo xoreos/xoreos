@@ -34,6 +34,7 @@
 #include "src/engines/kotor/module.h"
 
 #include "src/engines/kotor/gui/guibackground.h"
+#include "src/engines/kotor/gui/saveload.h"
 
 #include "src/engines/kotor/gui/widgets/button.h"
 
@@ -83,6 +84,14 @@ void MainMenu::createOptions() {
 	// Create the options menu
 	_options.reset(new OptionsMenu(_console));
 
+}
+
+void MainMenu::createLoadGame() {
+	if (_loadGame)
+		return;
+
+	// Create the load game menu
+	_loadGame.reset(new SaveLoadMenu(_console));
 }
 
 void MainMenu::startMainMusic() {
@@ -161,7 +170,10 @@ void MainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_LOADGAME") {
+		createLoadGame();
 
+		sub(*_loadGame);
+		return;
 	}
 
 	if (widget.getTag() == "BTN_MOVIES") {

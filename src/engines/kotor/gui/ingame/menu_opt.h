@@ -25,17 +25,27 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_MENU_OPT_H
 #define ENGINES_KOTOR_GUI_INGAME_MENU_OPT_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
+enum {
+	kOptionsItemNone     = 0,
+	kOptionsItemLoadGame = 1,
+	kOptionsItemSaveGame = 2
+};
+
 class MenuOptions : public GUI {
 public:
 	MenuOptions(::Engines::Console *console = 0);
-
+	uint8 pollSelectedItem();
 protected:
+	uint8 _selectedItem;
+
 	void callbackActive(Widget &widget);
 };
 

@@ -24,17 +24,34 @@
 
 #include "menu_opt.h"
 
+#include "src/engines/kotor/gui/saveload.h"
 #include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-MenuOptions::MenuOptions(Console *console) : GUI(console) {
+MenuOptions::MenuOptions(Console *console) : GUI(console), _selectedItem(0) {
 	load("optionsingame");
 }
 
+uint8 MenuOptions::pollSelectedItem() {
+	uint8 result = _selectedItem;
+	_selectedItem = 0;
+	return result;
+}
+
 void MenuOptions::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_LOADGAME") {
+		_selectedItem = kOptionsItemLoadGame;
+		return;
+	}
+
+	if (widget.getTag() == "BTN_SAVEGAME") {
+		_selectedItem = kOptionsItemSaveGame;
+		return;
+	}
+
 	if (widget.getTag() == "BTN_EXIT") {
 		_returnCode = 1;
 		return;
