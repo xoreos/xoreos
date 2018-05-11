@@ -42,9 +42,11 @@ public:
 
 private:
 	const Aurora::GFF3Struct *_protoItem;
+	const Aurora::GFF3Struct *_scrollBar;
 
 	int _itemCount;
 	int _padding;
+	bool _leftScrollBar;
 };
 
 } // End of namespace KotOR
