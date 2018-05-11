@@ -57,12 +57,12 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::Kot
 	 */
 	getListBox("ListBoxButtons")->setFill("");
 
-	addWidget(getListBox("ListBoxButtons")->createItem("NEW_GAME"));
-	addWidget(getListBox("ListBoxButtons")->createItem("LOAD_GAME"));
-	addWidget(getListBox("ListBoxButtons")->createItem("MINIGAMES"));
-	addWidget(getListBox("ListBoxButtons")->createItem("OPTIONS"));
-	addWidget(getListBox("ListBoxButtons")->createItem("CREDITS"));
-	addWidget(getListBox("ListBoxButtons")->createItem("EXIT"));
+	addWidget(getListBox("ListBoxButtons")->createItem("NEW_GAME"), true);
+	addWidget(getListBox("ListBoxButtons")->createItem("LOAD_GAME"), true);
+	addWidget(getListBox("ListBoxButtons")->createItem("MINIGAMES"), true);
+	addWidget(getListBox("ListBoxButtons")->createItem("OPTIONS"), true);
+	addWidget(getListBox("ListBoxButtons")->createItem("CREDITS"), true);
+	addWidget(getListBox("ListBoxButtons")->createItem("EXIT"), true);
 
 	getButton("NEW_GAME")->setText(TalkMan.getString(111));
 	getButton("LOAD_GAME")->setText(TalkMan.getString(112));

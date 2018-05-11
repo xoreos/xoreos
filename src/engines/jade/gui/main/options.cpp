@@ -51,12 +51,12 @@ OptionsMenu::OptionsMenu(Console *console) : GUI(console) {
 
 	Engines::KotOR::WidgetListBox *optionsListBox = getListBox("OptionsListBox");
 
-	addWidget(optionsListBox->createItem("AUDIO_SETTINGS"));
-	addWidget(optionsListBox->createItem("GRAPHIC_SETTINGS"));
-	addWidget(optionsListBox->createItem("DIFFICULTY"));
-	addWidget(optionsListBox->createItem("GAME_INFO"));
-	addWidget(optionsListBox->createItem("CONTROLS"));
-	addWidget(optionsListBox->createItem("CREDITS"));
+	addWidget(optionsListBox->createItem("AUDIO_SETTINGS"), true);
+	addWidget(optionsListBox->createItem("GRAPHIC_SETTINGS"), true);
+	addWidget(optionsListBox->createItem("DIFFICULTY"), true);
+	addWidget(optionsListBox->createItem("GAME_INFO"), true);
+	addWidget(optionsListBox->createItem("CONTROLS"), true);
+	addWidget(optionsListBox->createItem("CREDITS"), true);
 
 	_audioOptionsButton = getButton("AUDIO_SETTINGS");
 	_videoOptionsButton = getButton("GRAPHIC_SETTINGS");
