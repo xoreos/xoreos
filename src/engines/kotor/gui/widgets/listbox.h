@@ -40,6 +40,8 @@ public:
 
 	KotORWidget *createItem(Common::UString name);
 
+	int getItemCount() const;
+
 private:
 	const Aurora::GFF3Struct *_protoItem;
 	const Aurora::GFF3Struct *_scrollBar;
