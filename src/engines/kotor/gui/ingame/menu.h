@@ -28,6 +28,7 @@
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/saveload.h"
 #include "src/engines/kotor/gui/widgets/protoitem.h"
 
 #include "src/engines/kotor/gui/ingame/menu_equ.h"
@@ -72,6 +73,7 @@ public:
 	void showOptions();
 
 private:
+	void callbackRun();
 	void callbackActive(Widget &widget);
 
 	GUI* _currentMenu;
@@ -84,6 +86,8 @@ private:
 	Common::ScopedPtr<MenuJournal> _menuJou;
 	Common::ScopedPtr<MenuMap> _menuMap;
 	Common::ScopedPtr<MenuOptions> _menuOpt;
+	Common::ScopedPtr<SaveLoadMenu> _menuLoad;
+	Common::ScopedPtr<SaveLoadMenu> _menuSave;
 
 	WidgetProtoItem *_protoEqu;
 	WidgetProtoItem *_protoInv;

@@ -22,11 +22,13 @@
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/gui.h \
     src/engines/kotor/gui/guibackground.h \
+    src/engines/kotor/gui/saveload.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/gui.cpp \
     src/engines/kotor/gui/guibackground.cpp \
+    src/engines/kotor/gui/saveload.cpp \
     $(EMPTY)
 
 include src/engines/kotor/gui/widgets/rules.mk
