@@ -52,6 +52,7 @@ private:
 	Common::ScopedPtr<GUI> _classSelection;
 	Common::ScopedPtr<GUI> _movies;
 	Common::ScopedPtr<GUI> _options;
+	Common::ScopedPtr<GUI> _loadGame;
 
 	Sound::ChannelHandle _menuMusic;
 
@@ -62,6 +63,7 @@ private:
 	void createClassSelection();
 	void createMovies();
 	void createOptions();
+	void createLoadGame();
 };
 
 } // End of namespace KotOR

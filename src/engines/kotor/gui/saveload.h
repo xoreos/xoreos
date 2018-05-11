@@ -19,40 +19,48 @@
  */
 
 /** @file
- *  A KotOR listbox widget.
+ *  Load/save game menu.
  */
 
-#ifndef ENGINES_KOTOR_GUI_WIDGETS_LISTBOX_H
-#define ENGINES_KOTOR_GUI_WIDGETS_LISTBOX_H
+#ifndef ENGINES_KOTOR_GUI_SAVELOAD_H
+#define ENGINES_KOTOR_GUI_SAVELOAD_H
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include <vector>
+
+#include "src/common/scopedptr.h"
+
+#include "src/engines/aurora/console.h"
+#include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class WidgetListBox : public KotORWidget {
+enum {
+	kSaveLoadMenuTypeSave = 0,
+	kSaveLoadMenuTypeLoad = 1
+};
+
+class SaveLoadMenu : public GUI {
 public:
-	WidgetListBox(::Engines::GUI &gui, const Common::UString &tag);
-	~WidgetListBox();
+	SaveLoadMenu(::Engines::Console *console,
+	             uint8 type = kSaveLoadMenuTypeLoad,
+	             bool frontBackground = false);
+protected:
+	uint8 _type;
 
-	void load(const Aurora::GFF3Struct &gff);
-
-	KotORWidget *createItem(Common::UString name);
-
-	int getItemCount() const;
-
+	void callbackActive(Widget &widget);
 private:
-	const Aurora::GFF3Struct *_protoItem;
-	const Aurora::GFF3Struct *_scrollBar;
+	std::vector<KotORWidget *> _slots;
+	std::vector<Common::UString> _savedGames;
 
-	int _itemCount;
-	int _padding;
-	bool _leftScrollBar;
+	void createSlotWidgets();
+	void addNewSlotItem();
+	void addSavedGameItems();
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_WIDGETS_LISTBOX_H
+#endif // ENGINES_KOTOR_GUI_SAVELOAD_H

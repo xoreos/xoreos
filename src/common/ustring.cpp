@@ -26,6 +26,8 @@
 #include <cstdio>
 #include <cctype>
 
+#include <boost/algorithm/string/replace.hpp>
+
 #include "src/common/ustring.h"
 #include "src/common/error.h"
 #include "src/common/util.h"
@@ -462,6 +464,10 @@ void UString::replaceAll(uint32 what, uint32 with) {
 		Exception e(se);
 		throw e;
 	}
+}
+
+void UString::replaceAll(const UString &what, const UString &with) {
+	boost::replace_all(_string, what._string, with._string);
 }
 
 void UString::makeLower() {

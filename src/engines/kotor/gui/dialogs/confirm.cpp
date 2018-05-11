@@ -38,7 +38,7 @@ ConfirmDialog::ConfirmDialog(Console *console) : GUI(console), _accepted(false) 
 	guiPanel->setPosition(-guiPanel->getWidth()/2, -guiPanel->getHeight()/2, 0);
 
 	_label = getListBox("LB_MESSAGE")->createItem("LBL_MESSAGE");
-	addWidget(_label);
+	addWidget(_label, true);
 }
 
 void ConfirmDialog::setText(const Common::UString &text) {

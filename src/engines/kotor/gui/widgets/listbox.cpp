@@ -33,8 +33,9 @@ namespace Engines {
 
 namespace KotOR {
 
-WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag) :
-	KotORWidget(gui, tag), _protoItem(0), _itemCount(0), _padding(0) {
+WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag)
+		: KotORWidget(gui, tag), _protoItem(0), _scrollBar(0), _itemCount(0),
+		  _padding(0), _leftScrollBar(false) {
 }
 
 WidgetListBox::~WidgetListBox() {
@@ -47,8 +48,12 @@ void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
 		_protoItem = &gff.getStruct("PROTOITEM");
 	}
 
-	if (gff.hasField("SCROLLBAR")) {
+	if (gff.hasField("LEFTSCROLLBAR")) {
+		_leftScrollBar = gff.getBool("LEFTSCROLLBAR");
+	}
 
+	if (gff.hasField("SCROLLBAR")) {
+		_scrollBar = &gff.getStruct("SCROLLBAR");
 	}
 
 	if (gff.hasField("PADDING")) {
@@ -81,16 +86,23 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 	float x, y, z;
 	getPosition(x, y, z);
 
+	if (_scrollBar && _leftScrollBar)
+		x += _scrollBar->getStruct("BORDER").getSint("DIMENSION") +
+		     _scrollBar->getStruct("EXTENT").getSint("WIDTH");
+
 	assert(getHeight() > 0);
 
 	y = y - _itemCount * (item->getHeight() + _padding) + getHeight() - item->getHeight();
 
 	item->setPosition(x, y, z);
-	item->show();
 
 	_itemCount += 1;
 
 	return item;
+}
+
+int WidgetListBox::getItemCount() const {
+	return _itemCount;
 }
 
 } // End of namespace KotOR

@@ -128,6 +128,24 @@ bool FileList::addDirectory(const UString &directory, int recurseDepth) {
 	return true;
 }
 
+bool FileList::addSubDirectories(const UString &directory) {
+	if (!FilePath::isDirectory(directory))
+		return false;
+
+	try {
+		// Iterator over the directory's contents
+		for (directory_iterator itEnd, itDir(directory.c_str()); itDir != itEnd; ++itDir) {
+			const UString path = itDir->path().generic_string();
+			if (FilePath::isDirectory(path))
+				_files.push_back(FilePath::canonicalize(path, false));
+		}
+	} catch (...) {
+		return false;
+	}
+
+	return true;
+}
+
 bool FileList::getSubList(const UString &str, bool caseInsensitive, FileList &subList) const {
 	UString match = caseInsensitive ? str.toLower() : str;
 

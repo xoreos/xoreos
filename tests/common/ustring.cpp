@@ -342,12 +342,20 @@ GTEST_TEST(UString, trim) {
 	EXPECT_STREQ(str3.c_str(), "Foobar");
 }
 
-GTEST_TEST(UString, replaceAll) {
+GTEST_TEST(UString, replaceAllChars) {
 	Common::UString str("Foobar Barfoo");
 
 	str.replaceAll('o', 'x');
 
 	EXPECT_STREQ(str.c_str(), "Fxxbar Barfxx");
+}
+
+GTEST_TEST(UString, replaceAllSubstrings) {
+	Common::UString str("Foobar Barfoo");
+
+	str.replaceAll("ar", "ay");
+
+	EXPECT_STREQ(str.c_str(), "Foobay Bayfoo");
 }
 
 GTEST_TEST(UString, upper) {

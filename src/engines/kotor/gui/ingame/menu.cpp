@@ -43,6 +43,8 @@ Menu::Menu(Console *console) : GUI(console), _currentMenu(0), _lastProto(0) {
 	_menuJou.reset(new MenuJournal(console));
 	_menuMap.reset(new MenuMap(console));
 	_menuOpt.reset(new MenuOptions(console));
+	_menuLoad.reset(new SaveLoadMenu(console, kSaveLoadMenuTypeLoad, true));
+	_menuSave.reset(new SaveLoadMenu(console, kSaveLoadMenuTypeSave, true));
 
 	_protoEqu = getProtoItem("LBLH_EQU");
 	_protoInv = getProtoItem("LBLH_INV");
@@ -241,6 +243,20 @@ void Menu::showOptions() {
 			_lastProto->setHighlight(false);
 		_protoOpt->setHighlight(true);
 		_lastProto = _protoOpt;
+	}
+}
+
+void Menu::callbackRun() {
+	if (_currentMenu == _menuOpt.get()) {
+		uint8 selectedItem = _menuOpt->pollSelectedItem();
+		switch (selectedItem) {
+			case kOptionsItemLoadGame:
+				sub(*_menuLoad);
+				break;
+			case kOptionsItemSaveGame:
+				sub(*_menuSave);
+				break;
+		}
 	}
 }
 
