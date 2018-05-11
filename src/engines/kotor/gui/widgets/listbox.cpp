@@ -102,6 +102,10 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 	return item;
 }
 
+int WidgetListBox::getItemCount() const {
+	return _itemCount;
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
