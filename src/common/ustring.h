@@ -144,6 +144,8 @@ public:
 
 	/** Replace all occurrences of a character with another character. */
 	void replaceAll(uint32 what, uint32 with);
+	/** Replace all occurrences of a substring with another substring. */
+	void replaceAll(const UString &what, const UString &with);
 
 	/** Convert the string to lowercase. */
 	void makeLower();
