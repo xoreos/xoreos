@@ -48,6 +48,13 @@ public:
 	/** Set the position for the minimap. */
 	void setPosition(float x, float y);
 
+	/** Shows the selection circle. */
+	void showSelectionCircle();
+	/** Hide selection circle. */
+	void hideSelectionCicle();
+	/** Sets the screen position for the selection pointer. */
+	void setSelectionPosition(float x, float y);
+
 	void setReturnStrref(uint32 id);
 	void setReturnQueryStrref(uint32 id);
 	void setReturnEnabled(bool enabled);

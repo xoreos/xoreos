@@ -51,6 +51,18 @@ void IngameGUI::setPosition(float x, float y) {
 	_hud->setPosition(x, y);
 }
 
+void IngameGUI::showSelectionCircle() {
+	_hud->showSelectionCircle();
+}
+
+void IngameGUI::hideSelectionCicle() {
+	_hud->hideSelectionCircle();
+}
+
+void IngameGUI::setSelectionPosition(float x, float y) {
+	_hud->setSelectionPosition(x, y);
+}
+
 void IngameGUI::setReturnStrref(uint32 id) {
 	_hud->setReturnStrref(id);
 }
