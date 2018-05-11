@@ -95,7 +95,6 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 	y = y - _itemCount * (item->getHeight() + _padding) + getHeight() - item->getHeight();
 
 	item->setPosition(x, y, z);
-	item->show();
 
 	_itemCount += 1;
 
