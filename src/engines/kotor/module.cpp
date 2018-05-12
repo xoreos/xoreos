@@ -69,7 +69,7 @@ Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
 	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
 	_fade(new Graphics::Aurora::FadeQuad()), _ingame(new IngameGUI(*this)),
-	_freeCamEnabled(false), _prevTimestamp(0), _frameTime(0),
+	_selected(0), _freeCamEnabled(false), _prevTimestamp(0), _frameTime(0),
 	_forwardBtnPressed(false), _backwardsBtnPressed(false), _pcRunning(false) {
 	loadTexturePack();
 }
@@ -448,6 +448,37 @@ void Module::clickObject(Object *object) {
 	}
 }
 
+void Module::enterObject(Object *object) {
+	Placeable *placeable = ObjectContainer::toPlaceable(object);
+	if (placeable) {
+		_selected = placeable;
+		updateSelection();
+		return;
+	}
+}
+
+void Module::leaveObject(Object *UNUSED(object)) {
+	if (_selected) {
+		_selected = 0;
+		_ingame->hideSelectionCicle();
+	}
+}
+
+void Module::updateSelection() {
+	if (_selected) {
+		float x, y, z;
+		Placeable *placeable = ObjectContainer::toPlaceable(_selected);
+		if (placeable) {
+			placeable->getTooltipAnchor(x, y, z);
+
+			float sX, sY, sZ;
+			assert(GfxMan.project(x, y, z, sX, sY, sZ));
+			_ingame->showSelectionCircle();
+			_ingame->setSelectionPosition(sX, sY);
+		}
+	}
+}
+
 void Module::addEvent(const Events::Event &event) {
 	_eventQueue.push_back(event);
 }
@@ -516,8 +547,10 @@ void Module::handleEvents() {
 		// Camera
 		if (!_console->isVisible()) {
 			if (_freeCamEnabled) {
-				if (FreeRoamCam.handleCameraInput(*event))
+				if (FreeRoamCam.handleCameraInput(*event)) {
+					updateSelection();
 					continue;
+				}
 			}
 			else if (SatelliteCam.handleCameraInput(*event))
 				continue;
@@ -575,6 +608,8 @@ void Module::handlePCMovement() {
 		_pc->getModel()->playDefaultAnimation();
 		_pcRunning = false;
 	}
+
+	updateSelection();
 }
 
 void Module::handleActions() {

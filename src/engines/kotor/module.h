@@ -139,6 +139,13 @@ public:
 
 	/** Open the inventory of a container. */
 	void clickObject(Object *object);
+	/** If an object is hovered. */
+	void enterObject(Object *object);
+	/** If an object is not hovered anymore. */
+	void leaveObject(Object *object);
+
+	/** Update the selected object. */
+	void updateSelection();
 
 	/** Add a single event for consideration into the event queue. */
 	void addEvent(const Events::Event &event);
@@ -171,7 +178,6 @@ private:
 
 	typedef std::list<Events::Event> EventQueue;
 	typedef std::multiset<Action> ActionQueue;
-
 
 	::Engines::Console *_console;
 
@@ -213,6 +219,8 @@ private:
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
+
+	Object *_selected;
 
 	bool _freeCamEnabled;
 	uint32 _prevTimestamp;
