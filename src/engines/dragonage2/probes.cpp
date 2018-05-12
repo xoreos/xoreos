@@ -50,10 +50,6 @@ public:
 		return kGameName;
 	}
 
-	Aurora::Platform getPlatform() const {
-		return Aurora::kPlatformWindows;
-	}
-
 	Engines::Engine *createEngine() const {
 		return new DragonAge2Engine;
 	}
@@ -61,23 +57,43 @@ public:
 	bool probe(Common::SeekableReadStream &UNUSED(stream)) const {
 		return false;
 	}
+};
 
+class EngineProbeWindows : public EngineProbe {
+public:
+	Aurora::Platform getPlatform() const {
+		return Aurora::kPlatformWindows;
+	}
+};
+
+class EngineProbeWindowsRetail : public EngineProbeWindows {
+public:
 	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
-
 		// If the launcher binary is found, this should be a valid path
 		if (rootFiles.contains("/dragonage2launcher.exe", true))
 			return true;
 
 		return false;
 	}
+};
 
+class EngineProbeWindowsOrigin : public EngineProbeWindows {
+public:
+	bool probe(const Common::UString &directory, const Common::FileList &UNUSED(rootFiles)) const {
+		// If the executable is found, this should be a valid path
+		if (Common::FileList(directory + "/bin_ship").contains("/dragonage2.exe", true))
+			return true;
+
+		return false;
+	}
 };
 
 const Common::UString EngineProbe::kGameName = "Dragon Age II";
 
 
 void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
-	probes.push_back(new EngineProbe);
+	probes.push_back(new EngineProbeWindowsRetail);
+	probes.push_back(new EngineProbeWindowsOrigin);
 }
 
 } // End of namespace DragonAge2
