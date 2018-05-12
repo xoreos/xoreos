@@ -52,6 +52,8 @@ public:
 
 	// Basic visuals
 
+	void getTooltipAnchor(float &x, float &y, float &z);
+
 	void hide(); ///< Hide the placeable's model.
 
 	// Basic properties

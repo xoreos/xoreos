@@ -61,6 +61,10 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 		warning("Placeable \"%s\" has no blueprint", _tag.c_str());
 }
 
+void Placeable::getTooltipAnchor(float &x, float &y, float &z) {
+	_model->getTooltipAnchor(x, y, z);
+}
+
 void Placeable::hide() {
 	leave();
 
