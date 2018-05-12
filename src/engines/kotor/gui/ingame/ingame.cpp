@@ -28,8 +28,8 @@ namespace Engines {
 
 namespace KotOR {
 
-IngameGUI::IngameGUI(Module &UNUSED(module), Console *console) {
-	_hud.reset(new HUD(console));
+IngameGUI::IngameGUI(Module &module, Console *console) {
+	_hud.reset(new HUD(module, console));
 }
 
 void IngameGUI::show() {

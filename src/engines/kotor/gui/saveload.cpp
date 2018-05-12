@@ -42,8 +42,13 @@ namespace KotOR {
 
 static const int kMaxVisibleSlots = 6;
 
-SaveLoadMenu::SaveLoadMenu(::Engines::Console *console, uint8 type,
-		bool frontBackground) : GUI(console), _type(type) {
+SaveLoadMenu::SaveLoadMenu(Module &module,
+                           ::Engines::Console *console,
+                           uint8 type,
+                           bool frontBackground)
+		: GUI(console),
+		  _module(&module),
+		  _type(type) {
 	load("saveload");
 	addBackground(kBackgroundTypeMenu, frontBackground);
 	createSlotWidgets();

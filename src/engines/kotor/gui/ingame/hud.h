@@ -27,6 +27,7 @@
 
 #include "src/engines/aurora/console.h"
 
+#include "src/engines/kotor/module.h"
 #include "src/engines/kotor/gui/gui.h"
 
 #include "src/engines/kotor/gui/ingame/container.h"
@@ -39,7 +40,7 @@ namespace KotOR {
 
 class HUD : public GUI {
 public:
-	HUD(::Engines::Console *console = 0);
+	HUD(Module &module, ::Engines::Console *console = 0);
 
 	void setReturnStrref(uint32 id);
 	void setReturnQueryStrref(uint32 id);

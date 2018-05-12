@@ -30,6 +30,9 @@
 #include "src/common/scopedptr.h"
 
 #include "src/engines/aurora/console.h"
+
+#include "src/engines/kotor/module.h"
+
 #include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
@@ -43,16 +46,17 @@ enum {
 
 class SaveLoadMenu : public GUI {
 public:
-	SaveLoadMenu(::Engines::Console *console,
+	SaveLoadMenu(Module &module,
+	             ::Engines::Console *console,
 	             uint8 type = kSaveLoadMenuTypeLoad,
 	             bool frontBackground = false);
-protected:
-	uint8 _type;
-
-	void callbackActive(Widget &widget);
 private:
+	Module *_module;
+	uint8 _type;
 	std::vector<KotORWidget *> _slots;
 	std::vector<Common::UString> _savedGames;
+
+	void callbackActive(Widget &widget);
 
 	void createSlotWidgets();
 	void addNewSlotItem();

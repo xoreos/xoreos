@@ -91,7 +91,7 @@ void MainMenu::createLoadGame() {
 		return;
 
 	// Create the load game menu
-	_loadGame.reset(new SaveLoadMenu(_console));
+	_loadGame.reset(new SaveLoadMenu(*_module, _console));
 }
 
 void MainMenu::startMainMusic() {

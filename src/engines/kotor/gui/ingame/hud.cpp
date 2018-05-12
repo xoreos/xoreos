@@ -32,7 +32,8 @@ namespace Engines {
 
 namespace KotOR {
 
-HUD::HUD(Engines::Console *console) : GUI(console) {
+HUD::HUD(Module &module, Engines::Console *console)
+		: GUI(console), _menu(module, console) {
 	unsigned int wWidth = WindowMan.getWindowWidth();
 	unsigned int wHeight = WindowMan.getWindowHeight();
 

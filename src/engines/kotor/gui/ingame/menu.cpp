@@ -30,7 +30,8 @@ namespace Engines {
 
 namespace KotOR {
 
-Menu::Menu(Console *console) : GUI(console), _currentMenu(0), _lastProto(0) {
+Menu::Menu(Module &module, Console *console)
+		: GUI(console), _currentMenu(0), _lastProto(0) {
 	load("top");
 
 	addBackground(kBackgroundTypeMenu, true);
@@ -43,8 +44,8 @@ Menu::Menu(Console *console) : GUI(console), _currentMenu(0), _lastProto(0) {
 	_menuJou.reset(new MenuJournal(console));
 	_menuMap.reset(new MenuMap(console));
 	_menuOpt.reset(new MenuOptions(console));
-	_menuLoad.reset(new SaveLoadMenu(console, kSaveLoadMenuTypeLoad, true));
-	_menuSave.reset(new SaveLoadMenu(console, kSaveLoadMenuTypeSave, true));
+	_menuLoad.reset(new SaveLoadMenu(module, console, kSaveLoadMenuTypeLoad, true));
+	_menuSave.reset(new SaveLoadMenu(module, console, kSaveLoadMenuTypeSave, true));
 
 	_protoEqu = getProtoItem("LBLH_EQU");
 	_protoInv = getProtoItem("LBLH_INV");

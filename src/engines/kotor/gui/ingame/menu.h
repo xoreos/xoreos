@@ -46,7 +46,7 @@ namespace KotOR {
 
 class Menu : public GUI {
 public:
-	Menu(::Engines::Console *console = 0);
+	Menu(Module &module, ::Engines::Console *console = 0);
 
 	/** Set the return string ref. */
 	void setReturnStrref(uint32);
