@@ -29,43 +29,48 @@
 #include "src/common/deflate.h"
 #include "src/common/error.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ptrvector.h"
 #include "src/common/memreadstream.h"
 
 namespace Common {
 
-byte *decompressDeflate(const byte *data, size_t inputSize,
-                        size_t outputSize, int windowBits) {
-
-	ScopedArray<byte> decompressedData(new byte[outputSize]);
-
+static void initZStream(z_stream &strm, int windowBits, size_t size, const byte *data) {
 	/* Initialize the zlib data stream for decompression with our input data.
 	 *
 	 * This ugly const cast is necessary because the zlib API wants a non-const
 	 * next_in pointer by default. Unless we define ZLIB_CONST, but that only
 	 * appeared in zlib 1.2.5.3. Not really worth bumping our required zlib
 	 * version for, IMHO. */
-
-	z_stream strm;
 	strm.zalloc   = Z_NULL;
 	strm.zfree    = Z_NULL;
 	strm.opaque   = Z_NULL;
-	strm.avail_in = inputSize;
+
+	strm.avail_in = size;
 	strm.next_in  = const_cast<byte *>(data);
 
 	int zResult = inflateInit2(&strm, windowBits);
-	BOOST_SCOPE_EXIT( (&strm) ) {
-		inflateEnd(&strm);
-	} BOOST_SCOPE_EXIT_END
-
 	if (zResult != Z_OK)
 		throw Exception("Could not initialize zlib inflate: %s (%d)", zError(zResult), zResult);
+}
+
+byte *decompressDeflate(const byte *data, size_t inputSize,
+                        size_t outputSize, int windowBits) {
+
+	ScopedArray<byte> decompressedData(new byte[outputSize]);
+
+	z_stream strm;
+	BOOST_SCOPE_EXIT( (&strm) ) {
+			inflateEnd(&strm);
+	} BOOST_SCOPE_EXIT_END
+
+	initZStream(strm, windowBits, inputSize, data);
 
 	// Set the output data pointer and size
 	strm.avail_out = outputSize;
 	strm.next_out  = decompressedData.get();
 
 	// Decompress. Z_FINISH, because we want to decompress the whole thing in one go.
-	zResult = inflate(&strm, Z_FINISH);
+	int zResult = inflate(&strm, Z_FINISH);
 
 	// Was the end of the input stream correctly reached?
 	if ((zResult != Z_STREAM_END) || (strm.avail_out != 0)) {
@@ -81,6 +86,46 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
 	return decompressedData.release();
 }
 
+byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, size_t &outputSize,
+                                         int windowBits, unsigned int frameSize) {
+	z_stream strm;
+	BOOST_SCOPE_EXIT( (&strm) ) {
+			inflateEnd(&strm);
+	} BOOST_SCOPE_EXIT_END
+
+	initZStream(strm, windowBits, inputSize, data);
+
+	Common::PtrVector<byte, Common::DeallocatorArray> buffers;
+
+	int zResult = 0;
+	do {
+		buffers.push_back(new byte[frameSize]);
+
+		// Set the output data pointer and size
+		strm.avail_out = frameSize;
+		strm.next_out = buffers.back();
+
+		// Decompress. Z_FULL_FLUSH, because we want to decompress partwise.
+		zResult = inflate(&strm, Z_FULL_FLUSH);
+		if (zResult != Z_STREAM_END && zResult != Z_OK)
+			throw Exception("Failed to inflate: %s (%d)", zError(zResult), zResult);
+	} while (strm.avail_in != 0);
+
+	if (zResult != Z_STREAM_END)
+		throw Exception("Failed to inflate: %s (%d)", zError(zResult), zResult);
+
+	ScopedArray<byte> decompressedData(new byte[strm.total_out]);
+	for (size_t i = 0; i < buffers.size(); ++i) {
+		if (i == buffers.size() - 1)
+			std::memcpy(decompressedData.get() + i * frameSize, buffers[i], strm.total_out % frameSize);
+		else
+			std::memcpy(decompressedData.get() + i * frameSize, buffers[i], frameSize);
+	}
+
+	outputSize = strm.total_out;
+	return decompressedData.release();
+}
+
 SeekableReadStream *decompressDeflate(ReadStream &input, size_t inputSize,
                                       size_t outputSize, int windowBits) {
 
@@ -91,6 +136,18 @@ SeekableReadStream *decompressDeflate(ReadStream &input, size_t inputSize,
 	const byte *decompressedData = decompressDeflate(compressedData.get(), inputSize, outputSize, windowBits);
 
 	return new MemoryReadStream(decompressedData, outputSize, true);
+}
+
+SeekableReadStream *decompressDeflateWithoutOutputSize(ReadStream &input, size_t inputSize,
+                                                       int windowBits, unsigned int frameSize) {
+	ScopedArray<byte> compressedData(new byte[inputSize]);
+	if (input.read(compressedData.get(), inputSize) != inputSize)
+		throw Exception(kReadError);
+
+	size_t size = 0;
+	byte *decompressedData = decompressDeflateWithoutOutputSize(compressedData.get(), inputSize, size, windowBits, frameSize);
+
+	return new MemoryReadStream(decompressedData, size, true);
 }
 
 } // End of namespace Common

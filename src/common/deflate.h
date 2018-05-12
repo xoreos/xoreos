@@ -57,6 +57,20 @@ static const int kWindowBitsMaxRaw = -kWindowBitsMax;
 byte *decompressDeflate(const byte *data, size_t inputSize,
                         size_t outputSize, int windowBits);
 
+/** Decompress (inflate) using zlib's DEFLATE algorithm without knowing the output size.
+ *
+ *  @param  data       The compressed input data.
+ *  @param  inputSize  The size of the input data in bytes.
+ *  @param  outputSize The size of the decompressed output data.
+ *  @param windowBits  The base two logarithm of the window size (the size of
+ *                     the history buffer). See the zlib documentation on
+ *                     inflateInit2() for details.
+ *  @param frameSize   The size of the extracted frames, defaults to 4096.
+ *  @return The decompressed data
+ */
+byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, size_t &outputSize,
+                                         int windowBits, unsigned int frameSize = 4096);
+
 /** Decompress (inflate) using zlib's DEFLATE algorithm.
  *
  *  @param  input      The compressed input data.
@@ -72,6 +86,19 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
  */
 SeekableReadStream *decompressDeflate(ReadStream &input, size_t inputSize,
                                       size_t outputSize, int windowBits);
+
+/** Decompress (inflate) using zlib's DEFLATE algorithm without knowing the output size.
+ *
+ *  @param  input      The compressed input data.
+ *  @param  inputSize  The size of the input data to read in bytes.
+ *  @param windowBits  The base two logarithm of the window size (the size of
+ *                     the history buffer). See the zlib documentation on
+ *                     inflateInit2() for details.
+ *  @param frameSize   The size of the extracted frames, defaults to 4096.
+ *  @return A stream of the decompressed data.
+ */
+SeekableReadStream *decompressDeflateWithoutOutputSize(ReadStream &input, size_t inputSize,
+                                                       int windowBits, unsigned int frameSize = 4096);
 
 } // End of namespace Common
 
