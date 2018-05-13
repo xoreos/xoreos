@@ -172,7 +172,11 @@ void MainMenu::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_LOADGAME") {
 		createLoadGame();
 
-		sub(*_loadGame);
+		if (sub(*_loadGame) == 2) {
+			_returnCode = 2;
+			stopMenuMusic();
+		}
+
 		return;
 	}
 

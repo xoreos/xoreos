@@ -252,10 +252,12 @@ void Menu::callbackRun() {
 		uint8 selectedItem = _menuOpt->pollSelectedItem();
 		switch (selectedItem) {
 			case kOptionsItemLoadGame:
-				sub(*_menuLoad);
+				if (sub(*_menuLoad) == 2)
+					_returnCode = 2;
 				break;
 			case kOptionsItemSaveGame:
-				sub(*_menuSave);
+				if (sub(*_menuSave) == 2)
+					_returnCode = 2;
 				break;
 		}
 	}
