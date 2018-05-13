@@ -523,8 +523,12 @@ void Module::handlePCMovement() {
 			haveMovement = true;
 		}
 
-		if (haveMovement)
-			movePC(newX, newY, z);
+		if (haveMovement) {
+			z = _area->getElevationAt(newX, newY);
+			if (z != FLT_MIN) {
+				movePC(newX, newY, z);
+			}
+		}
 	}
 }
 
@@ -631,6 +635,10 @@ Common::UString Module::getName(const Common::UString &module) {
 
 void Module::toggleFreeRoamCamera() {
 	_freeCamEnabled = !_freeCamEnabled;
+}
+
+void Module::toggleWalkmesh() {
+	_area->toggleWalkmesh();
 }
 
 } // End of namespace KotOR2

@@ -40,6 +40,7 @@
 #include "src/sound/sound.h"
 
 #include "src/engines/aurora/util.h"
+#include "src/engines/aurora/walkeleveval.h"
 
 #include "src/engines/kotor2/area.h"
 #include "src/engines/kotor2/room.h"
@@ -314,9 +315,24 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 }
 
 void Area::loadRooms() {
+	_walkmesh.clear();
+
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
-	for (Aurora::LYTFile::RoomArray::const_iterator r = rooms.begin(); r != rooms.end(); ++r)
+	for (Aurora::LYTFile::RoomArray::const_iterator r = rooms.begin(); r != rooms.end(); ++r) {
 		_rooms.push_back(new Room(r->model, r->x, r->y, r->z));
+		Common::ScopedPtr<Common::SeekableReadStream> wok(ResMan.getResource(r->model, ::Aurora::kFileTypeWOK));
+
+		if (wok) {
+			try {
+				_walkmesh.appendFromStream(*wok);
+			} catch (Common::Exception &e) {
+				warning("Walkmesh load failed: %s %s", r->model.c_str(), e.what());
+			}
+		} else
+			warning("Walkmesh file not found: %s", r->model.c_str());
+	}
+
+	_walkmesh.refreshIndexGroups();
 }
 
 void Area::loadObject(KotOR2::Object &object) {
@@ -461,6 +477,17 @@ void Area::removeFocus() {
 
 void Area::notifyCameraMoved() {
 	checkActive();
+}
+
+float Area::getElevationAt(float x, float y) const {
+	return WalkmeshElevationEvaluator::getElevationAt(_walkmesh, x, y);
+}
+
+void Area::toggleWalkmesh() {
+	if (_walkmesh.isVisible())
+		_walkmesh.hide();
+	else
+		_walkmesh.show();
 }
 
 } // End of namespace KotOR2
