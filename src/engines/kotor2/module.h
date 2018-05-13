@@ -122,6 +122,8 @@ public:
 	void processEventQueue();
 	// '---
 
+	void toggleFreeRoamCamera();
+
 private:
 	enum ActionType {
 		kActionNone   = 0,
@@ -178,6 +180,10 @@ private:
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
+
+	bool _freeCamEnabled;
+	uint32 _prevTimestamp;
+	float _frameTime;
 
 
 	// .--- Unloading

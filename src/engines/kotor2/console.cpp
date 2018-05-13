@@ -49,19 +49,21 @@ Console::Console(KotOR2Engine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
 	_engine(&engine), _maxSizeMusic(0) {
 
-	registerCommand("exitmodule" , boost::bind(&Console::cmdExitModule , this, _1),
+	registerCommand("exitmodule" , boost::bind(&Console::cmdExitModule   , this, _1),
 			"Usage: exitmodule\nExit the module, returning to the main menu");
-	registerCommand("listmodules", boost::bind(&Console::cmdListModules, this, _1),
+	registerCommand("listmodules", boost::bind(&Console::cmdListModules  , this, _1),
 			"Usage: listmodules\nList all modules");
-	registerCommand("loadmodule" , boost::bind(&Console::cmdLoadModule , this, _1),
+	registerCommand("loadmodule" , boost::bind(&Console::cmdLoadModule   , this, _1),
 			"Usage: loadmodule <module>\nLoad and enter the specified module");
-	registerCommand("listmusic"  , boost::bind(&Console::cmdListMusic  , this, _1),
+	registerCommand("listmusic"  , boost::bind(&Console::cmdListMusic    , this, _1),
 			"Usage: listmusic\nList all available music resources");
-	registerCommand("stopmusic"  , boost::bind(&Console::cmdStopMusic  , this, _1),
+	registerCommand("stopmusic"  , boost::bind(&Console::cmdStopMusic    , this, _1),
 			"Usage: stopmusic\nStop the currently playing music resource");
-	registerCommand("playmusic"  , boost::bind(&Console::cmdPlayMusic  , this, _1),
+	registerCommand("playmusic"  , boost::bind(&Console::cmdPlayMusic    , this, _1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
+	registerCommand("tfc"        , boost::bind(&Console::cmdToggleFreeCam, this, _1),
+			"Usage: tfc\nToggle free roam camera mode");
 }
 
 Console::~Console() {
@@ -139,6 +141,10 @@ void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
 
 void Console::cmdPlayMusic(const CommandLine &cl) {
 	_engine->getGame().playMusic(cl.args);
+}
+
+void Console::cmdToggleFreeCam(const CommandLine &UNUSED(cl)) {
+	_engine->getGame().getModule().toggleFreeRoamCamera();
 }
 
 } // End of namespace KotOR2

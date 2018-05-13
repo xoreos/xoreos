@@ -37,6 +37,7 @@
 #include "src/aurora/gff3file.h"
 
 #include "src/graphics/camera.h"
+#include "src/graphics/graphics.h"
 
 #include "src/graphics/aurora/textureman.h"
 
@@ -46,6 +47,7 @@
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/console.h"
 #include "src/engines/aurora/freeroamcamera.h"
+#include "src/engines/aurora/satellitecamera.h"
 
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/area.h"
@@ -62,7 +64,8 @@ bool Module::Action::operator<(const Action &s) const {
 
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
-	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll) {
+	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
+	_freeCamEnabled(false) {
 	loadTexturePack();
 }
 
@@ -313,9 +316,10 @@ void Module::enter() {
 	}
 
 	// Roughly head position
-	CameraMan.setPosition(entryX, entryY, entryZ + 1.8f);
-	CameraMan.setOrientation(90.0f, 0.0f, entryAngle);
-	CameraMan.update();
+	SatelliteCam.setTarget(entryX, entryY, entryZ + 1.8f);
+	SatelliteCam.setDistance(3.2f);
+	SatelliteCam.setPitch(83);
+	SatelliteCam.update(0);
 
 	enterArea();
 
@@ -403,8 +407,18 @@ void Module::processEventQueue() {
 	if (!isRunning())
 		return;
 
+	uint32 now = SDL_GetTicks();
+	_frameTime = (now - _prevTimestamp) / 1000.f;
+	_prevTimestamp = now;
+
 	handleEvents();
 	handleActions();
+
+	if (!_freeCamEnabled) {
+		GfxMan.lockFrame();
+		SatelliteCam.update(_frameTime);
+		GfxMan.unlockFrame();
+	}
 }
 
 void Module::handleEvents() {
@@ -430,16 +444,21 @@ void Module::handleEvents() {
 		}
 
 		// Camera
-		if (!_console->isVisible())
-			if (FreeRoamCam.handleCameraInput(*event))
+		if (!_console->isVisible()) {
+			if (_freeCamEnabled) {
+				if (FreeRoamCam.handleCameraInput(*event))
+					continue;
+			} else if (SatelliteCam.handleCameraInput(*event))
 				continue;
+		}
 
 		_area->addEvent(*event);
 	}
 
 	_eventQueue.clear();
 
-	CameraMan.update();
+	if (_freeCamEnabled)
+		CameraMan.update();
 
 	_area->processEventQueue();
 }
@@ -555,6 +574,10 @@ Common::UString Module::getName(const Common::UString &module) {
 	}
 
 	return "";
+}
+
+void Module::toggleFreeRoamCamera() {
+	_freeCamEnabled = !_freeCamEnabled;
 }
 
 } // End of namespace KotOR2
