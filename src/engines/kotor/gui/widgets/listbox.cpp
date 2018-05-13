@@ -22,6 +22,8 @@
  *  A KotOR listbox widget.
  */
 
+#include "src/common/strutil.h"
+
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/kotor/gui/gui.h"
@@ -33,9 +35,16 @@ namespace Engines {
 
 namespace KotOR {
 
-WidgetListBox::WidgetListBox(::Engines::GUI &gui, const Common::UString &tag)
-		: KotORWidget(gui, tag), _protoItem(0), _scrollBar(0), _itemCount(0),
-		  _padding(0), _leftScrollBar(false) {
+WidgetListBox::WidgetListBox(::Engines::GUI &gui,
+                             const Common::UString &tag)
+		: KotORWidget(gui, tag),
+		  _protoItem(0),
+		  _scrollBar(0),
+		  _padding(0),
+		  _leftScrollBar(false),
+		  _permanentHighlightEnabled(false),
+		  _selectedIndex(-1),
+		  _startIndex(0) {
 }
 
 WidgetListBox::~WidgetListBox() {
@@ -61,6 +70,42 @@ void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
 	}
 }
 
+void WidgetListBox::setPermanentHighlightEnabled(bool value) {
+	_permanentHighlightEnabled = value;
+}
+
+const std::vector<KotORWidget *> &WidgetListBox::createItemWidgets(int count) {
+	if (!_protoItem)
+		throw Common::Exception("ListBox widget has no PROTOITEM");
+
+	int widgetCount = count > 0 ? count :
+			getHeight() / _protoItem->getStruct("EXTENT").getSint("HEIGHT");
+
+	for (int i = 0; i < widgetCount; ++i) {
+		Common::UString name = Common::UString::format("%s_ITEM_%d", _tag.c_str(), i);
+		createItem(name);
+	}
+
+	return _itemWidgets;
+}
+
+void WidgetListBox::addItem(const Common::UString &text) {
+	_items.push_back(text);
+}
+
+void WidgetListBox::refreshItemWidgets() {
+	for (size_t i = 0; i < _itemWidgets.size(); ++i) {
+		KotORWidget *itemWidget = _itemWidgets[i];
+		int itemIndex = _startIndex + i;
+		if (itemIndex < (int)_items.size()) { // have item to display?
+			itemWidget->setInvisible(false);
+			itemWidget->setText(_items[itemIndex]);
+			itemWidget->setHighlight(itemIndex == _selectedIndex);
+		} else
+			itemWidget->setInvisible(true);
+	}
+}
+
 KotORWidget *WidgetListBox::createItem(Common::UString name) {
 	if (!_protoItem)
 		throw Common::Exception("ListBox widget has no PROTOITEM");
@@ -74,6 +119,8 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 			break;
 		case 6:
 			item = new WidgetButton(*_gui, name);
+			if (_permanentHighlightEnabled)
+				static_cast<WidgetButton *>(item)->setDisableHighlight(true);
 			break;
 		default:
 			throw Common::Exception("TODO: Add other supported widget types to the ListBox");
@@ -92,17 +139,61 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 
 	assert(getHeight() > 0);
 
-	y = y - _itemCount * (item->getHeight() + _padding) + getHeight() - item->getHeight();
+	y = y - _itemWidgets.size() * (item->getHeight() + _padding) + getHeight() - item->getHeight();
 
 	item->setPosition(x, y, z);
-
-	_itemCount += 1;
+	_itemWidgets.push_back(item);
 
 	return item;
 }
 
-int WidgetListBox::getItemCount() const {
-	return _itemCount;
+void WidgetListBox::onClickItemWidget(const Common::UString &tag) {
+	if (!_permanentHighlightEnabled)
+		return;
+
+	Common::UString tmp(tag);
+	tmp.replaceAll(_tag + "_ITEM_", "");
+	int index;
+	Common::parseString(tmp, index);
+
+	if (_selectedIndex != _startIndex + index) {
+		_selectedIndex = _startIndex + index;
+		refreshItemWidgets();
+	}
+}
+
+void WidgetListBox::selectNextItem() {
+	if (!_permanentHighlightEnabled)
+		return;
+
+	if (_selectedIndex < 0 && !_items.empty()) {
+		_selectedIndex = 0;
+		refreshItemWidgets();
+	} else if (_selectedIndex < (int)_items.size() - 1) {
+		++_selectedIndex;
+		if (_selectedIndex - _startIndex >= (int)_itemWidgets.size())
+			_startIndex = _selectedIndex - _itemWidgets.size() + 1;
+		refreshItemWidgets();
+	}
+}
+
+void WidgetListBox::selectPreviousItem() {
+	if (!_permanentHighlightEnabled)
+		return;
+
+	if (_selectedIndex < 0 && !_items.empty()) {
+		_selectedIndex = _items.size() - 1;
+		refreshItemWidgets();
+	} else if (_selectedIndex > 0) {
+		--_selectedIndex;
+		if (_selectedIndex < _startIndex)
+			_startIndex = _selectedIndex;
+		refreshItemWidgets();
+	}
+}
+
+int WidgetListBox::getSelectedIndex() const {
+	return _selectedIndex;
 }
 
 } // End of namespace KotOR

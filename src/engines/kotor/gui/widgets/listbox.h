@@ -37,18 +37,36 @@ public:
 	~WidgetListBox();
 
 	void load(const Aurora::GFF3Struct &gff);
+	void setPermanentHighlightEnabled(bool value);
+
+	/** Create item widgets and return pointers to them.
+	 *
+	 *  @param count number of items to add or 0 to add maximum number of
+	 *               items that fit into the listbox
+	 */
+	const std::vector<KotORWidget *> &createItemWidgets(int count = 0);
+
+	void addItem(const Common::UString &text);
+	void refreshItemWidgets();
 
 	KotORWidget *createItem(Common::UString name);
 
-	int getItemCount() const;
+	void onClickItemWidget(const Common::UString &tag);
+	void selectNextItem();
+	void selectPreviousItem();
+
+	int getSelectedIndex() const;
 
 private:
 	const Aurora::GFF3Struct *_protoItem;
 	const Aurora::GFF3Struct *_scrollBar;
-
-	int _itemCount;
+	std::vector<Common::UString> _items;
+	std::vector<KotORWidget *> _itemWidgets;
 	int _padding;
 	bool _leftScrollBar;
+	bool _permanentHighlightEnabled;
+	int _selectedIndex;
+	int _startIndex;
 };
 
 } // End of namespace KotOR
