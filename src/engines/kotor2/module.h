@@ -187,6 +187,7 @@ private:
 	float _frameTime;
 	float _forwardBtnPressed;
 	float _backwardsBtnPressed;
+	bool _pcRunning;
 
 
 	// .--- Unloading

@@ -288,6 +288,10 @@ bool Creature::click(Object *triggerer) {
 	return false;
 }
 
+Common::ScopedPtr<Graphics::Aurora::Model> &Creature::getModel() {
+	return _model;
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines

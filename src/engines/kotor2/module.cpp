@@ -40,6 +40,7 @@
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/model.h"
 
 #include "src/events/events.h"
 
@@ -68,7 +69,7 @@ Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
 	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
 	_freeCamEnabled(false), _prevTimestamp(0), _frameTime(0),
-	_forwardBtnPressed(false), _backwardsBtnPressed(false) {
+	_forwardBtnPressed(false), _backwardsBtnPressed(false), _pcRunning(false) {
 	loadTexturePack();
 }
 
@@ -318,6 +319,12 @@ void Module::enter() {
 		_pc->show();
 	}
 
+	Graphics::Aurora::Model *model = _pc->getModel().get();
+	model->clearDefaultAnimations();
+	model->addDefaultAnimation(Common::UString("pause3"), 25);
+	model->addDefaultAnimation(Common::UString("pause2"), 25);
+	model->addDefaultAnimation(Common::UString("pause1"), 50);
+
 	// Roughly head position
 	SatelliteCam.setTarget(entryX, entryY, entryZ + 1.8f);
 	SatelliteCam.setDistance(3.2f);
@@ -529,6 +536,14 @@ void Module::handlePCMovement() {
 				movePC(newX, newY, z);
 			}
 		}
+	}
+
+	if (haveMovement && !_pcRunning) {
+		_pc->getModel()->playAnimation(Common::UString("run"), false, -1);
+		_pcRunning = true;
+	} else if (!haveMovement && _pcRunning) {
+		_pc->getModel()->playDefaultAnimation();
+		_pcRunning = false;
 	}
 }
 
