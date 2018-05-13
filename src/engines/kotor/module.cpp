@@ -70,7 +70,8 @@ Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
 	_fade(new Graphics::Aurora::FadeQuad()), _ingame(new IngameGUI(*this)),
 	_freeCamEnabled(false), _prevTimestamp(0), _frameTime(0),
-	_forwardBtnPressed(false), _backwardsBtnPressed(false), _pcRunning(false) {
+	_forwardBtnPressed(false), _backwardsBtnPressed(false), _pcRunning(false),
+	_pcPositionLoaded(false) {
 	loadTexturePack();
 }
 
@@ -338,7 +339,12 @@ void Module::enter() {
 		getEntryIFOLocation(entryX, entryY, entryZ, entryAngle);
 
 	if (_pc) {
-		_pc->setPosition(entryX, entryY, entryZ);
+		if (_pcPositionLoaded) {
+			_pc->getPosition(entryX, entryY, entryZ);
+			_pcPositionLoaded = false;
+		} else
+			_pc->setPosition(entryX, entryY, entryZ);
+
 		_ingame->setPosition(entryX, entryY);
 		_pc->show();
 	} else {
@@ -726,6 +732,16 @@ void Module::toggleFreeRoamCamera() {
 
 void Module::toggleWalkmesh() {
 	_area->toggleWalkmesh();
+}
+
+void Module::loadSavedGame(SavedGame *save) {
+	try {
+		usePC(save->getPC());
+		load(save->getModuleName());
+		_pcPositionLoaded = save->isPCLoaded();
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
+	}
 }
 
 } // End of namespace KotOR

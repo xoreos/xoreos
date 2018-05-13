@@ -41,6 +41,7 @@
 
 #include "src/engines/kotor/objectcontainer.h"
 #include "src/engines/kotor/object.h"
+#include "src/engines/kotor/savedgame.h"
 
 namespace Engines {
 
@@ -148,6 +149,7 @@ public:
 
 	void toggleFreeRoamCamera();
 	void toggleWalkmesh();
+	void loadSavedGame(SavedGame *save);
 
 private:
 	enum ActionType {
@@ -220,6 +222,7 @@ private:
 	float _forwardBtnPressed;
 	float _backwardsBtnPressed;
 	bool _pcRunning;
+	bool _pcPositionLoaded;
 
 
 	// .--- Unloading

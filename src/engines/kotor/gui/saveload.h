@@ -39,6 +39,8 @@ namespace Engines {
 
 namespace KotOR {
 
+class WidgetListBox;
+
 enum {
 	kSaveLoadMenuTypeSave = 0,
 	kSaveLoadMenuTypeLoad = 1
@@ -53,14 +55,15 @@ public:
 private:
 	Module *_module;
 	uint8 _type;
-	std::vector<KotORWidget *> _slots;
-	std::vector<Common::UString> _savedGames;
+	std::vector<Common::UString> _saveDirs;
 
 	void callbackActive(Widget &widget);
-
-	void createSlotWidgets();
-	void addNewSlotItem();
-	void addSavedGameItems();
+	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
+	void addSavedGameItems(WidgetListBox *listBox);
+	void tryLoadGame(const Common::UString &dir);
+	void trySaveGame(const Common::UString &dir);
+	Common::UString getNewSaveDirectory() const;
+	Common::UString getBaseNameFromDirectory(const Common::UString &dir) const;
 };
 
 } // End of namespace KotOR

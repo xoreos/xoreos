@@ -40,8 +40,6 @@ namespace Engines {
 
 namespace KotOR {
 
-static const int kMaxVisibleSlots = 6;
-
 SaveLoadMenu::SaveLoadMenu(Module &module,
                            ::Engines::Console *console,
                            uint8 type,
@@ -51,55 +49,143 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 		  _type(type) {
 	load("saveload");
 	addBackground(kBackgroundTypeMenu, frontBackground);
-	createSlotWidgets();
+
+	WidgetListBox *lbGames = getListBox("LB_GAMES");
+	lbGames->setPermanentHighlightEnabled(true);
+	const std::vector<KotORWidget *> &itemWidgets = lbGames->createItemWidgets();
+
+	for (std::vector<KotORWidget *>::const_iterator it = itemWidgets.begin();
+			it != itemWidgets.end(); ++it) {
+		addWidget(*it);
+	}
 
 	if (_type == kSaveLoadMenuTypeLoad) {
 		getLabel("LBL_PANELNAME")->setText(TalkMan.getString(1585)); // Load Game
+		getLabel("LBL_PLANETNAME")->setText("");
+		getLabel("LBL_AREANAME")->setText("");
 		getButton("BTN_SAVELOAD")->setText(TalkMan.getString(1589)); // Load
 	} else
-		addNewSlotItem();
+		lbGames->addItem(TalkMan.getString(1590));
 
-	addSavedGameItems();
+	addSavedGameItems(lbGames);
+	lbGames->refreshItemWidgets();
 }
 
 void SaveLoadMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "BTN_BACK")
+	const Common::UString &tag = widget.getTag();
+	if (tag.beginsWith("LB_GAMES_ITEM"))
+		getListBox("LB_GAMES")->onClickItemWidget(tag);
+	else if (tag == "BTN_SAVELOAD") {
+		int selectedIndex = getListBox("LB_GAMES")->getSelectedIndex();
+		if (selectedIndex == -1)
+			return;
+		switch (_type) {
+			case kSaveLoadMenuTypeLoad:
+				tryLoadGame(_saveDirs[selectedIndex]);
+				break;
+			case kSaveLoadMenuTypeSave:
+				trySaveGame(selectedIndex > 0 ? _saveDirs[selectedIndex - 1] : getNewSaveDirectory());
+				break;
+			default:
+				break;
+		}
+	} else if (tag == "BTN_BACK")
 		_returnCode = 1;
 }
 
-void SaveLoadMenu::createSlotWidgets() {
-	WidgetListBox *lbGames = static_cast<WidgetListBox *>(getWidget("LB_GAMES"));
-	for (int i = 0; i < kMaxVisibleSlots; ++i) {
-		Common::UString tag = Common::UString::format("BTN_SLOT%d", i);
-		KotORWidget *slot = lbGames->createItem(tag);
-		_slots.push_back(slot);
-		addWidget(slot);
+void SaveLoadMenu::callbackKeyInput(const Events::Key &key, const Events::EventType &type) {
+	if (type == Events::kEventKeyDown) {
+		switch (key) {
+			case Events::kKeyUp:
+				getListBox("LB_GAMES")->selectPreviousItem();
+				break;
+			case Events::kKeyDown:
+				getListBox("LB_GAMES")->selectNextItem();
+				break;
+			default:
+				break;
+		}
 	}
 }
 
-void SaveLoadMenu::addNewSlotItem() {
-	_slots[0]->setText(TalkMan.getString(1590)); // New Slot
-}
-
-void SaveLoadMenu::addSavedGameItems() {
+void SaveLoadMenu::addSavedGameItems(WidgetListBox *listBox) {
 	Common::FileList dirs;
 	Common::UString savesDir = Common::FilePath::normalize(ConfigMan.getString("path") + "/saves");
 	dirs.addSubDirectories(savesDir);
 	Common::UString slotTextFormat = TalkMan.getString(1594);
-	int gameIndex = 1;
-	int slotIndex = _type == kSaveLoadMenuTypeSave ? 1 : 0;
 
 	for (Common::FileList::const_iterator it = dirs.begin(); it != dirs.end(); ++it) {
-		_savedGames.push_back(*it);
+		Common::UString saveDir = *it;
+		Common::UString baseName;
 
-		if (slotIndex < kMaxVisibleSlots) {
-			Common::UString slotText(slotTextFormat);
-			slotText.replaceAll("<CUSTOM0>", Common::composeString(gameIndex++));
-			slotText.replaceAll("<CUSTOM1>", "0");
-			slotText.replaceAll("<CUSTOM2>", "0");
-			_slots[slotIndex++]->setText(slotText);
+		try {
+			baseName = getBaseNameFromDirectory(saveDir);
+		} catch (Common::Exception &e) {
+			warning("Failed to get base name from directory: %s", e.what());
+			continue;
 		}
+
+		if (_type == kSaveLoadMenuTypeSave && !baseName.contains("Game"))
+			continue;
+
+		_saveDirs.push_back(saveDir);
+		SavedGame *save = SavedGame::load(saveDir);
+		uint32 timePlayed = save->getTimePlayed();
+		Common::UString slotText(slotTextFormat);
+
+		slotText.replaceAll("Game <CUSTOM0>", baseName);
+		slotText.replaceAll("<CUSTOM1>", Common::composeString(timePlayed / 3600));
+		slotText.replaceAll("<CUSTOM2>", Common::composeString(timePlayed % 3600 / 60));
+
+		if (baseName.contains("Game"))
+			slotText += "\r\n" + save->getName();
+
+		delete save;
+		listBox->addItem(slotText);
 	}
+}
+
+void SaveLoadMenu::tryLoadGame(const Common::UString &dir) {
+	try {
+		Common::ScopedPtr<SavedGame> save(SavedGame::load(dir, true));
+		_module->loadSavedGame(save.get());
+		_returnCode = 2;
+	} catch (Common::Exception &e) {
+		warning("Failed to load saved game: %s %s", dir.c_str(), e.what());
+	}
+}
+
+void SaveLoadMenu::trySaveGame(const Common::UString &UNUSED(dir)) {
+
+}
+
+Common::UString SaveLoadMenu::getNewSaveDirectory() const {
+	return "";
+}
+
+Common::UString SaveLoadMenu::getBaseNameFromDirectory(const Common::UString &dir) const {
+	Common::UString result;
+	Common::UString relativeDir(Common::FilePath::getFile(dir));
+
+	if (relativeDir.contains("QUICKSAVE"))
+		result = "Quick Save";
+	else if (relativeDir.contains("AUTOSAVE"))
+		result = "Auto Save";
+	else if (relativeDir.contains("Game")) {
+		Common::UString::iterator it = relativeDir.findFirst("Game");
+		size_t pos = relativeDir.getPosition(it) + 4;
+		const char *dirChars = relativeDir.c_str() + pos;
+		while (dirChars[0] == '0') {
+			++dirChars;
+		}
+		Common::UString tmp(dirChars);
+		int gameIndex;
+		Common::parseString(tmp, gameIndex);
+		result = "Game " + Common::composeString(gameIndex);
+	} else
+		throw Common::Exception("Invalid saved game directory: %s", relativeDir.c_str());
+
+	return result;
 }
 
 } // End of namespace KotOR
