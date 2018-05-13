@@ -184,6 +184,8 @@ private:
 	bool _freeCamEnabled;
 	uint32 _prevTimestamp;
 	float _frameTime;
+	float _forwardBtnPressed;
+	float _backwardsBtnPressed;
 
 
 	// .--- Unloading
@@ -231,6 +233,7 @@ private:
 	void handleEvents();
 
 	void handleActions();
+	void handlePCMovement();
 };
 
 } // End of namespace KotOR2

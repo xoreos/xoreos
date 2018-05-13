@@ -57,6 +57,8 @@ namespace Engines {
 
 namespace KotOR2 {
 
+static const float kPCMovementSpeed = 5;
+
 bool Module::Action::operator<(const Action &s) const {
 	return timestamp < s.timestamp;
 }
@@ -65,7 +67,8 @@ bool Module::Action::operator<(const Action &s) const {
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _hasModule(false), _running(false),
 	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
-	_freeCamEnabled(false) {
+	_freeCamEnabled(false), _prevTimestamp(0), _frameTime(0),
+	_forwardBtnPressed(false), _backwardsBtnPressed(false) {
 	loadTexturePack();
 }
 
@@ -416,6 +419,7 @@ void Module::processEventQueue() {
 
 	if (!_freeCamEnabled) {
 		GfxMan.lockFrame();
+		handlePCMovement();
 		SatelliteCam.update(_frameTime);
 		GfxMan.unlockFrame();
 	}
@@ -441,6 +445,21 @@ void Module::handleEvents() {
 				_console->show();
 				continue;
 			}
+		}
+
+		// PC movement
+		switch (event->type) {
+			case Events::kEventKeyDown:
+			case Events::kEventKeyUp:
+				switch (event->key.keysym.sym) {
+					case SDLK_w:
+						_forwardBtnPressed = event->type == Events::kEventKeyDown;
+						break;
+					case SDLK_s:
+						_backwardsBtnPressed = event->type == Events::kEventKeyDown;
+						break;
+				}
+				break;
 		}
 
 		// Camera
@@ -480,6 +499,35 @@ void Module::handleActions() {
 	}
 }
 
+void Module::handlePCMovement() {
+	if (!_pc)
+		return;
+
+	bool haveMovement = false;
+
+	if (_forwardBtnPressed || _backwardsBtnPressed) {
+		float x, y, z;
+		_pc->getPosition(x, y, z);
+		float yaw = SatelliteCam.getYaw();
+		float newX, newY;
+
+		if (_forwardBtnPressed && !_backwardsBtnPressed) {
+			_pc->setOrientation(0, 0, 1, Common::rad2deg(yaw));
+			newX = x - kPCMovementSpeed * sin(yaw) * _frameTime;
+			newY = y + kPCMovementSpeed * cos(yaw) * _frameTime;
+			haveMovement = true;
+		} else if (_backwardsBtnPressed && !_forwardBtnPressed) {
+			_pc->setOrientation(0, 0, 1, 180 + Common::rad2deg(yaw));
+			newX = x + kPCMovementSpeed * sin(yaw) * _frameTime;
+			newY = y - kPCMovementSpeed * cos(yaw) * _frameTime;
+			haveMovement = true;
+		}
+
+		if (haveMovement)
+			movePC(newX, newY, z);
+	}
+}
+
 void Module::movePC(float x, float y, float z) {
 	if (!_pc)
 		return;
@@ -508,8 +556,13 @@ void Module::movedPC() {
 	_pc->getPosition(x, y, z);
 
 	// Roughly head position
-	CameraMan.setPosition(x, y, z + 1.8f);
-	CameraMan.update();
+
+	SatelliteCam.setTarget(x, y, z + 1.8f);
+
+	if (_freeCamEnabled) {
+		CameraMan.setPosition(x, y, z + 1.8f);
+		CameraMan.update();
+	}
 }
 
 const Aurora::IFOFile &Module::getIFO() const {
