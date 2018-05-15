@@ -172,16 +172,33 @@ Common::UString SaveLoadMenu::getBaseNameFromDirectory(const Common::UString &di
 	else if (relativeDir.contains("AUTOSAVE"))
 		result = "Auto Save";
 	else if (relativeDir.contains("Game")) {
-		Common::UString::iterator it = relativeDir.findFirst("Game");
-		size_t pos = relativeDir.getPosition(it) + 4;
-		const char *dirChars = relativeDir.c_str() + pos;
-		while (dirChars[0] == '0') {
-			++dirChars;
-		}
-		Common::UString tmp(dirChars);
-		int gameIndex;
+		/* The format of a normal save directory is something like "000043 - Game42".
+		 * The original game seems to ignore the GameXX part, and instead parses
+		 * the first number, and then substracts 1 from the result.
+		 *
+		 * I.e. "000062 - Game42" will appears as "Game 61".
+		 *
+		 * Directories that fail this parsing, for example "abc - Game 42", simply
+		 * won't appear in the save list.
+		 */
+
+		Common::UString::iterator it = relativeDir.begin();
+		while ((it != relativeDir.end()) && (*it == '0'))
+			++it;
+
+		Common::UString tmp(it, relativeDir.end());
+		tmp.truncate(tmp.findFirst(' '));
+
+		int gameIndex = -1;
+
 		Common::parseString(tmp, gameIndex);
+		gameIndex--;
+
+		if (gameIndex < 0)
+			throw Common::Exception("Game index is negative (%d)", gameIndex);
+
 		result = "Game " + Common::composeString(gameIndex);
+
 	} else
 		throw Common::Exception("Invalid saved game directory: %s", relativeDir.c_str());
 
