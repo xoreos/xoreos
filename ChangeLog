@@ -10,6 +10,7 @@ Someday, ????-??-?? (Version 0.0.5)
 		  is necessary for reproducible builds
 		- Dropped telling the compiler to build in C++03 mode, many
 		  Linux distros build libraries with C++11 features now
+		- Changed configure script to use pkg-config for FreeType2
 	- MAIN:
 		- Made --help display the user directories and config file
 		- Changed the behaviour of debug channels. Each debug channel
