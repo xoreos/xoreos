@@ -250,15 +250,15 @@ void Creature::createFakePC() {
 	_isPC = true;
 }
 
-void Creature::createPC(const CharacterGenerationInfo *info) {
-	_name = info->getName();
+void Creature::createPC(const CharacterGenerationInfo &info) {
+	_name = info.getName();
 	_isPC = true;
 
 	PartModels parts;
 
-	parts.body = info->getBodyId();
-	parts.bodyTexture = info->getBodyTextureId();
-	parts.head = info->getHeadId();
+	parts.body = info.getBodyId();
+	parts.bodyTexture = info.getBodyTextureId();
+	parts.head = info.getHeadId();
 
 	loadBody(parts);
 	loadHead(parts);

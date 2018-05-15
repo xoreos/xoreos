@@ -363,7 +363,7 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 Creature *CharacterGenerationInfo::getCharacter() const {
 	Common::ScopedPtr<Creature> creature(new Creature());
 
-	creature->createPC(this);
+	creature->createPC(*this);
 	return creature.release();
 }
 
