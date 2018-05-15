@@ -48,7 +48,7 @@ KotORWidget::Extend::Extend() : x(0.0f), y(0.0f), w(0.0f), h(0.0f) {
 }
 
 
-KotORWidget::Border::Border() : fillStyle(0), dimension(0), innerOffset(0),
+KotORWidget::Border::Border() : fillStyle(0), dimension(0), innerOffset(0), hasColor(false),
 	r(0.0f), g(0.0f), b(0.0f), pulsing(false) {
 
 }
@@ -304,6 +304,8 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 		_border.reset(new Graphics::Aurora::BorderQuad(border.edge, border.corner,
 		                                               extend.x, extend.y, extend.w, extend.h,
 		                                               border.dimension));
+
+		_border->setColor(border.r, border.g, border.b);
 		if (!border.fill.empty()) {
 			_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f,
 			                                                       extend.w - 2*border.dimension,
@@ -328,6 +330,10 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 
 	if (border.fill.empty())
 		_quad->setColor(0.0f, 0.0f, 0.0f, 0.0f);
+	else if (!border.hasColor)
+		_quad->setColor(1.0f, 1.0f, 1.0f, 1.0f);
+	else
+		_quad->setColor(border.r, border.g, border.b, 1.0f);
 
 	Text text = createText(gff);
 
@@ -388,6 +394,7 @@ KotORWidget::Border KotORWidget::createBorder(const Aurora::GFF3Struct &gff) {
 		border.dimension   = b.getUint("DIMENSION");
 		border.innerOffset = b.getUint("INNEROFFSET");
 
+		border.hasColor = b.hasField("COLOR");
 		b.getVector("COLOR", border.r, border.g, border.b);
 
 		border.pulsing = b.getBool("PULSING");
