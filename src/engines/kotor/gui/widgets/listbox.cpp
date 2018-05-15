@@ -156,10 +156,11 @@ void WidgetListBox::onClickItemWidget(const Common::UString &tag) {
 
 	Common::UString tmp(tag);
 	tmp.replaceAll(_tag + "_ITEM_", "");
-	int index;
+
+	int index = -1;
 	Common::parseString(tmp, index);
 
-	if (_selectedIndex != _startIndex + index) {
+	if ((index >= 0) && (_selectedIndex != _startIndex + index)) {
 		_selectedIndex = _startIndex + index;
 		refreshItemWidgets();
 	}
