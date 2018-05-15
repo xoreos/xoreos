@@ -165,9 +165,10 @@ void CharacterGenerationInfo::setFace(uint8 face) {
 }
 
 Creature *CharacterGenerationInfo::getCharacter() const {
-	Creature *creature = new Creature();
+	Common::ScopedPtr<Creature> creature(new Creature());
+
 	creature->createPC(*this);
-	return creature;
+	return creature.release();
 }
 
 Graphics::Aurora::Model *CharacterGenerationInfo::getModel() {
