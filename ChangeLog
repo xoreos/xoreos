@@ -64,8 +64,12 @@ Someday, ????-??-?? (Version 0.0.5)
 			- Added more main menu dialogs
 			- Partially implemented the character generator
 			- Added ingame GUI elements
+			- Implemented simple PC walking, with area walkmesh
+			  evaluation and over-the-shoulder camera
 		- KOTOR2:
 			- Partially implemented the character generator
+			- Implemented simple PC walking, with area walkmesh
+			  evaluation and over-the-shoulder camera
 		- JADE:
 			- Implemented more engine script functions
 			- Implemented loading of lightmap textures
