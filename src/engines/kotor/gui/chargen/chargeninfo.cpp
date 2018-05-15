@@ -172,6 +172,8 @@ Creature *CharacterGenerationInfo::getCharacter() const {
 }
 
 Graphics::Aurora::Model *CharacterGenerationInfo::getModel() {
+	// TODO: This duplicates code in Creature::createPC()
+
 	if (_body)
 		return _body.get();
 
