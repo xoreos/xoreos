@@ -317,7 +317,7 @@ void Creature::createFakePC() {
 	_isPC = true;
 }
 
-void Creature::createPC(CharacterGenerationInfo *info) {
+void Creature::createPC(const CharacterGenerationInfo *info) {
 	_name = info->getName();
 	_isPC = true;
 

@@ -52,7 +52,7 @@ public:
 	/** Create a fake player character creature for testing purposes. */
 	void createFakePC();
 	/** Create a player character creature from a character info class. */
-	void createPC(CharacterGenerationInfo *info);
+	void createPC(const CharacterGenerationInfo *info);
 
 	// Basic visuals
 

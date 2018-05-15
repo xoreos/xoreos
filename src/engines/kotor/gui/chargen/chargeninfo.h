@@ -53,17 +53,17 @@ public:
 	static CharacterGenerationInfo *createRandomFemaleScoundrel();
 
 	/** Get the name of the character. */
-	const Common::UString &getName();
+	const Common::UString &getName() const;
 	/** Get the name of the portrait of this character. */
-	Common::UString getPortrait();
+	Common::UString getPortrait() const;
 	/** Get the skin type of the character. */
-	Skin getSkin();
+	Skin getSkin() const;
 	/** Get the current face index of the character. */
-	uint8_t getFace();
+	uint8_t getFace() const;
 	/** Get the class of the character, defined in types.h. */
-	Class getClass();
+	Class getClass() const;
 	/** Get the gender of the Character. */
-	Gender getGender();
+	Gender getGender() const;
 
 	/** Set the name of the Character. */
 	void setName(const Common::UString &name);
@@ -72,7 +72,7 @@ public:
 	/** Set the face index of the character. */
 	void setFace(uint8 face);
 
-	Creature *getCharacter();
+	Creature *getCharacter() const;
 	Graphics::Aurora::Model *getModel();
 
 private:

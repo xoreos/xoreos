@@ -99,11 +99,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleScoundrel() 
 	return info;
 }
 
-const Common::UString &CharacterGenerationInfo::getName() {
+const Common::UString &CharacterGenerationInfo::getName() const {
 	return _name;
 }
 
-Common::UString CharacterGenerationInfo::getPortrait() {
+Common::UString CharacterGenerationInfo::getPortrait() const {
 	Common::UString portrait = "po_p";
 
 	switch (_gender) {
@@ -136,19 +136,19 @@ Common::UString CharacterGenerationInfo::getPortrait() {
 	return portrait;
 }
 
-Skin CharacterGenerationInfo::getSkin() {
+Skin CharacterGenerationInfo::getSkin() const {
 	return _skin;
 }
 
-uint8_t CharacterGenerationInfo::getFace() {
+uint8_t CharacterGenerationInfo::getFace() const {
 	return _face;
 }
 
-Class CharacterGenerationInfo::getClass() {
+Class CharacterGenerationInfo::getClass() const {
 	return _class;
 }
 
-Gender CharacterGenerationInfo::getGender() {
+Gender CharacterGenerationInfo::getGender() const {
 	return _gender;
 }
 
@@ -164,7 +164,7 @@ void CharacterGenerationInfo::setFace(uint8 face) {
 	_face = face;
 }
 
-Creature *CharacterGenerationInfo::getCharacter() {
+Creature *CharacterGenerationInfo::getCharacter() const {
 	Creature *creature = new Creature();
 	creature->createPC(this);
 	return creature;
