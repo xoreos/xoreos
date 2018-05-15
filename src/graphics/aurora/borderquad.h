@@ -40,6 +40,9 @@ public:
 	BorderQuad(const Common::UString &edge, const Common::UString &corner, float x, float y, float w, float h,
 	           int dimension = 0);
 
+	/** Set the color of the border quad. */
+	void setColor(float r, float g, float b, float a = 1.0f);
+
 	void setPosition(float x, float y, float z);
 	void getPosition(float &x, float &y, float &z);
 	void setSize(float w, float h);
@@ -53,6 +56,11 @@ private:
 
 	int _edgeWidth, _edgeHeight;
 	int _cornerWidth, _cornerHeight;
+
+	float _r;
+	float _g;
+	float _b;
+	float _a;
 
 	float _x;
 	float _y;
