@@ -64,6 +64,8 @@ Someday, ????-??-?? (Version 0.0.5)
 			- Added more main menu dialogs
 			- Partially implemented the character generator
 			- Added ingame GUI elements
+		- KOTOR2:
+			- Partially implemented the character generator
 		- JADE:
 			- Implemented more engine script functions
 			- Implemented loading of lightmap textures
