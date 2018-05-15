@@ -44,7 +44,7 @@ public:
 	 *  @param count number of items to add or 0 to add maximum number of
 	 *               items that fit into the listbox
 	 */
-	const std::vector<KotORWidget *> &createItemWidgets(int count = 0);
+	const std::vector<KotORWidget *> &createItemWidgets(uint count = 0);
 
 	void addItem(const Common::UString &text);
 	void refreshItemWidgets();

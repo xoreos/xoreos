@@ -74,15 +74,18 @@ void WidgetListBox::setPermanentHighlightEnabled(bool value) {
 	_permanentHighlightEnabled = value;
 }
 
-const std::vector<KotORWidget *> &WidgetListBox::createItemWidgets(int count) {
+const std::vector<KotORWidget *> &WidgetListBox::createItemWidgets(uint count) {
 	if (!_protoItem)
 		throw Common::Exception("ListBox widget has no PROTOITEM");
 
-	int widgetCount = count > 0 ? count :
-			getHeight() / _protoItem->getStruct("EXTENT").getSint("HEIGHT");
+	const int64 itemHeight = _protoItem->getStruct("EXTENT").getSint("HEIGHT");
 
-	for (int i = 0; i < widgetCount; ++i) {
-		Common::UString name = Common::UString::format("%s_ITEM_%d", _tag.c_str(), i);
+	uint widgetCount = count;
+	if ((count == 0) && (itemHeight > 0))
+		widgetCount = getHeight() / itemHeight;
+
+	for (uint i = 0; i < widgetCount; ++i) {
+		Common::UString name = Common::UString::format("%s_ITEM_%u", _tag.c_str(), i);
 		createItem(name);
 	}
 
