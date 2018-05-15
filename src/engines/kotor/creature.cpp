@@ -317,8 +317,8 @@ void Creature::createFakePC() {
 	_isPC = true;
 }
 
-void Creature::createPC(const CharacterGenerationInfo *info) {
-	_name = info->getName();
+void Creature::createPC(const CharacterGenerationInfo &info) {
+	_name = info.getName();
 	_isPC = true;
 
 	PartModels parts;
@@ -326,7 +326,7 @@ void Creature::createPC(const CharacterGenerationInfo *info) {
 	parts.body = "p";
 	parts.head = "p";
 
-	switch (info->getGender()) {
+	switch (info.getGender()) {
 		case kGenderMale:
 			parts.body += "m";
 			parts.head += "m";
@@ -339,7 +339,7 @@ void Creature::createPC(const CharacterGenerationInfo *info) {
 			throw Common::Exception("Unknown gender");
 	}
 
-	_gender = info->getGender();
+	_gender = info.getGender();
 
 	_race = kRaceHuman;
 	_subRace = kSubRaceNone;
@@ -347,7 +347,7 @@ void Creature::createPC(const CharacterGenerationInfo *info) {
 	parts.body += "bb";
 	parts.head += "h";
 
-	switch (info->getClass()) {
+	switch (info.getClass()) {
 		case kClassSoldier:
 			parts.body += "l";
 			break;
@@ -363,11 +363,11 @@ void Creature::createPC(const CharacterGenerationInfo *info) {
 	// set the specific class to level 1
 	_levels.resize(1);
 	_levels[0].level = 1;
-	_levels[0].characterClass = info->getClass();
+	_levels[0].characterClass = info.getClass();
 
 	loadBody(parts);
 
-	switch (info->getSkin()) {
+	switch (info.getSkin()) {
 		case kSkinA:
 			parts.head += "a";
 			break;
@@ -381,7 +381,7 @@ void Creature::createPC(const CharacterGenerationInfo *info) {
 	}
 
 	parts.head += "0";
-	parts.head += Common::composeString(info->getFace() + 1);
+	parts.head += Common::composeString(info.getFace() + 1);
 
 	loadHead(parts);
 }
