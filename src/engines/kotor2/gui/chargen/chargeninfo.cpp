@@ -24,6 +24,7 @@
 
 #include "src/common/strutil.h"
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 
 #include "chargeninfo.h"
 
@@ -360,9 +361,10 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 }
 
 Creature *CharacterGenerationInfo::getCharacter() const {
-	Creature *creature = new Creature();
+	Common::ScopedPtr<Creature> creature(new Creature());
+
 	creature->createPC(this);
-	return creature;
+	return creature.release();
 }
 
 unsigned int CharacterGenerationInfo::getFaceId() const {
