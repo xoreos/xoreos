@@ -121,7 +121,9 @@ void SaveLoadMenu::addSavedGameItems(WidgetListBox *listBox) {
 		try {
 			baseName = getBaseNameFromDirectory(saveDir);
 		} catch (Common::Exception &e) {
-			warning("Failed to get base name from directory: %s", e.what());
+			e.add("Failed to get save base name from directory \"%s\"", saveDir.c_str());
+
+			printException(e, "WARNING: ");
 			continue;
 		}
 
@@ -200,7 +202,7 @@ Common::UString SaveLoadMenu::getBaseNameFromDirectory(const Common::UString &di
 		result = "Game " + Common::composeString(gameIndex);
 
 	} else
-		throw Common::Exception("Invalid saved game directory: %s", relativeDir.c_str());
+		throw Common::Exception("Unknown save type");
 
 	return result;
 }
