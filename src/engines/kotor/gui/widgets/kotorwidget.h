@@ -107,6 +107,7 @@ protected:
 		uint32 dimension;
 		uint32 innerOffset;
 
+		bool hasColor;
 		float r, g, b;
 
 		bool pulsing;
