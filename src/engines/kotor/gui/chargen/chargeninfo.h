@@ -26,6 +26,7 @@
 #define ENGINES_KOTOR_GUI_CHARGEN_CHARGENCHAR_H
 
 #include "src/common/ustring.h"
+#include "src/common/scopedptr.h"
 
 #include "src/graphics/aurora/model.h"
 
