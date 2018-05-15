@@ -64,6 +64,13 @@ BorderQuad::BorderQuad(const Common::UString &edge, const Common::UString &corne
 	assert(!_edge.empty());
 }
 
+void BorderQuad::setColor(float r, float g, float b, float a) {
+	_r = r;
+	_g = g;
+	_b = b;
+	_a = a;
+}
+
 void BorderQuad::setPosition(float x, float y, float z) {
 	lockFrameIfVisible();
 
@@ -97,6 +104,8 @@ void BorderQuad::render(RenderPass pass) {
 		return;
 
 	TextureMan.set(_corner);
+
+	glColor4f(_r, _g, _b, _a);
 
 	// Upper left corner
 	glBegin(GL_QUADS);
@@ -195,6 +204,8 @@ void BorderQuad::render(RenderPass pass) {
 	glTexCoord2f(1, 1);
 	glVertex2f(_x + _cornerWidth, _y + _h);
 	glEnd();
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 } // End of namespace Aurora
