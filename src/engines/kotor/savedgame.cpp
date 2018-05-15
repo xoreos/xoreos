@@ -23,6 +23,7 @@
  */
 
 #include "src/common/error.h"
+#include "src/common/scopedptr.h"
 #include "src/common/filepath.h"
 #include "src/common/readfile.h"
 
@@ -135,14 +136,14 @@ Creature *SavedGame::getPC() {
 	if (_pc)
 		return _pc;
 
-	CharacterGenerationInfo *info;
+	Common::ScopedPtr<CharacterGenerationInfo> info;
 
 	switch (_pcGender) {
 		case kGenderFemale:
-			info = CharacterGenerationInfo::createRandomFemaleSoldier();
+			info.reset(CharacterGenerationInfo::createRandomFemaleSoldier());
 			break;
 		default:
-			info = CharacterGenerationInfo::createRandomMaleSoldier();
+			info.reset(CharacterGenerationInfo::createRandomMaleSoldier());
 			break;
 	}
 
