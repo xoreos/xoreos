@@ -114,6 +114,7 @@ void SaveLoadMenu::addSavedGameItems(WidgetListBox *listBox) {
 	dirs.addSubDirectories(savesDir);
 	Common::UString slotTextFormat = TalkMan.getString(1594);
 
+	dirs.sort(true);
 	for (Common::FileList::const_iterator it = dirs.begin(); it != dirs.end(); ++it) {
 		Common::UString saveDir = *it;
 		Common::UString baseName;
