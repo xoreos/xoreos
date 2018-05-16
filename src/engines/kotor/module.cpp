@@ -72,7 +72,7 @@ Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_freeCamEnabled(false), _prevTimestamp(0), _frameTime(0),
 	_forwardBtnPressed(false), _backwardsBtnPressed(false), _pcRunning(false),
 	_pcPositionLoaded(false) {
-	loadTexturePack();
+
 }
 
 Module::~Module() {

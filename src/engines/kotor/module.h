@@ -70,6 +70,8 @@ public:
 	/** Load a module. */
 	void load(const Common::UString &module, const Common::UString &entryLocation = "",
 	          ObjectType entryLocationType = kObjectTypeAll);
+	/** Load texture pack used by the module. */
+	void loadTexturePack();
 	/** Use this character as the player character. */
 	void usePC(Creature *pc);
 	/** Exit the currently running module. */
@@ -247,7 +249,6 @@ private:
 	void loadResources();
 	void loadIFO();
 	void loadArea();
-	void loadTexturePack();
 	// '---
 
 	/** Load the actual module. */
