@@ -25,6 +25,7 @@
 // TODO: check what happens on using invalid objects.
 
 #include "src/common/util.h"
+#include "src/common/scopedptr.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
 
@@ -66,7 +67,7 @@ void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	Common::UString name = ctx.getParams()[0].getString();
 	int nth = ctx.getParams()[1].getInt();
 
-	Aurora::NWScript::ObjectSearch* search = _game->getModule().findObjectsByTag(name);
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(name));
 	for (int i = 0; i < nth; ++i) {
 		search->next();
 	}
