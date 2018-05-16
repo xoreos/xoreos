@@ -36,7 +36,8 @@ namespace KotOR {
 enum {
 	kOptionsItemNone     = 0,
 	kOptionsItemLoadGame = 1,
-	kOptionsItemSaveGame = 2
+	kOptionsItemSaveGame = 2,
+	kOptionsItemExitGame = 3
 };
 
 class MenuOptions : public GUI {

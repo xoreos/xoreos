@@ -52,6 +52,11 @@ void MenuOptions::callbackActive(Widget &widget) {
 		return;
 	}
 
+	if (widget.getTag() == "BTN_QUIT") {
+		_selectedItem = kOptionsItemExitGame;
+		return;
+	}
+
 	if (widget.getTag() == "BTN_EXIT") {
 		_returnCode = 1;
 		return;

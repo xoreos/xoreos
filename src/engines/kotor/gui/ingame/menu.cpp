@@ -31,7 +31,7 @@ namespace Engines {
 namespace KotOR {
 
 Menu::Menu(Module &module, Console *console)
-		: GUI(console), _currentMenu(0), _lastProto(0) {
+		: GUI(console), _module(module), _currentMenu(0), _lastProto(0) {
 	load("top");
 
 	addBackground(kBackgroundTypeMenu, true);
@@ -258,6 +258,10 @@ void Menu::callbackRun() {
 			case kOptionsItemSaveGame:
 				if (sub(*_menuSave) == 2)
 					_returnCode = 2;
+				break;
+			case kOptionsItemExitGame:
+				_module.leave();
+				_returnCode = 1;
 				break;
 		}
 	}

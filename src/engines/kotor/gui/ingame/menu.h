@@ -76,6 +76,7 @@ private:
 	void callbackRun();
 	void callbackActive(Widget &widget);
 
+	Module &_module;
 	GUI* _currentMenu;
 
 	Common::ScopedPtr<MenuEquipment> _menuEqu;
