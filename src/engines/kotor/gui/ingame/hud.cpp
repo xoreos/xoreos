@@ -123,8 +123,14 @@ void HUD::setMinimap(const Common::UString &map, int northAxis,
                      float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
                      float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y) {
 
+	WidgetLabel *mapView = getLabel("LBL_MAPVIEW");
+	if (!mapView) {
+		warning("No such GUI element \"LBL_MAPVIEW\"");
+		return;
+	}
+
 	_minimap.reset(new Minimap(map, northAxis, mapPt1X, mapPt1Y, mapPt2X, mapPt2Y, worldPt1X, worldPt1Y, worldPt2X, worldPt2Y));
-	getLabel("LBL_MAPVIEW")->setSubScene(_minimap.get());
+	mapView->setSubScene(_minimap.get());
 }
 
 void HUD::setPosition(float x, float y) {
