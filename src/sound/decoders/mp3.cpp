@@ -68,6 +68,8 @@
 
 namespace Sound {
 
+static const mad_timer_t timer_zero = {0, 0};
+
 class MP3Stream : public RewindableAudioStream {
 protected:
 	enum State {
@@ -127,7 +129,7 @@ MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, bool dispose) :
 	_inStream(inStream, dispose),
 	_posInFrame(0),
 	_state(MP3_STATE_INIT),
-	_totalTime(mad_timer_zero),
+	_totalTime(timer_zero),
 	_length(kInvalidLength),
 	_samples(0) {
 
@@ -257,7 +259,7 @@ void MP3Stream::initStream() {
 
 	// Reset the stream data
 	_inStream->seek(0);
-	_totalTime = mad_timer_zero;
+	_totalTime = timer_zero;
 	_samples = 0;
 	_posInFrame = 0;
 
