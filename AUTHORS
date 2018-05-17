@@ -127,6 +127,14 @@ UTF-8 CPP
    UTF-8 CPP is licensed under the Boost Software License. See utf8cpp/utf8.h
    for details.
 
+GLM
+***
+   xoreos uses the header-only C++ mathematics library for graphics software
+   OpenGL Mathematics (GLM) (<https://glm.g-truc.net/>), completely including
+   the GLM headers. GLM can be distributed and/or modified under the terms of
+   either a) The Happy Bunny License, or b) the MIT License. For the full
+   license text, see glm/copying.txt.
+
 ScummVM code
 ************
    xoreos uses some ScummVM (<http://scummvm.org/>) code, most prominently the
