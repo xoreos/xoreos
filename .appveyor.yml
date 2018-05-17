@@ -10,8 +10,8 @@ configuration: Debug
 
 environment:
   global:
-    BOOST_ROOT: C:\Libraries\boost_1_59_0
-    BOOST_INCLUDEDIR: C:\Libraries\boost_1_59_0
+    BOOST_ROOT: C:\Libraries\boost_1_66_0
+    BOOST_INCLUDEDIR: C:\Libraries\boost_1_66_0
     FREETYPE_DIR: C:\projects\xoreos\libs\freetype-2.3.5-1-lib
     LIBSDL2: SDL2-2.0.4
     LIBFT2: freetype-2.3.5-1
@@ -32,7 +32,7 @@ environment:
       MSBUILD_PLATFORM: Win32
       PROGRAM_FILES_DIR: C:\Program Files (x86)
 
-      BOOST_LIBRARYDIR: C:/Libraries/boost_1_59_0/lib32-msvc-14.0
+      BOOST_LIBRARYDIR: C:/Libraries/boost_1_66_0/lib32-msvc-14.0
 
       LIBOPENAL_DESTDIR: C:/Programs/OpenAL
       LIBSDL2_DESTDIR: C:/Programs/SDL2
