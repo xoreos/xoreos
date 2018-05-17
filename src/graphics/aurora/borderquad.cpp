@@ -34,7 +34,8 @@ namespace Aurora {
 
 BorderQuad::BorderQuad(const Common::UString &edge, const Common::UString &corner,
                        float x, float y, float w, float h, int dimension) :
-	Renderable(kRenderableTypeGUIFront), _edgeWidth(0), _edgeHeight(0), _cornerWidth(0), _cornerHeight(0),
+	Renderable(kRenderableTypeGUIFront), _verticalCut(false),
+	_edgeWidth(0), _edgeHeight(0), _cornerWidth(0), _cornerHeight(0),
 	_x(x), _y(y), _w(w), _h(h) {
 
 	_edge = TextureMan.get(edge);
@@ -56,6 +57,10 @@ BorderQuad::BorderQuad(const Common::UString &edge, const Common::UString &corne
 		_cornerHeight = heightFactor * _corner.getTexture().getHeight();
 		_edgeWidth = dimension;
 		_edgeHeight = dimension;
+	}
+
+	if (_h < 2 * _edgeHeight) {
+		_verticalCut = true;
 	}
 
 	_distance = -FLT_MAX;
@@ -119,18 +124,6 @@ void BorderQuad::render(RenderPass pass) {
 	glVertex2f(_x, _y + _h);
 	glEnd();
 
-	// Lower left corner
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 1);
-	glVertex2f(_x, _y);
-	glTexCoord2f(1, 1);
-	glVertex2f(_x + _cornerWidth, _y);
-	glTexCoord2f(1, 0);
-	glVertex2f(_x + _cornerWidth, _y + _cornerHeight);
-	glTexCoord2f(0, 0);
-	glVertex2f(_x, _y + _cornerHeight);
-	glEnd();
-
 	// Upper right corner
 	glBegin(GL_QUADS);
 	glTexCoord2f(1, 0);
@@ -141,6 +134,28 @@ void BorderQuad::render(RenderPass pass) {
 	glVertex2f(_x + _w, _y + _h);
 	glTexCoord2f(0, 0);
 	glVertex2f(_x + _w - _cornerWidth, _y + _h);
+	glEnd();
+
+	if (_verticalCut) {
+		glEnable(GL_SCISSOR_TEST);
+		GLint viewport[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		glScissor(
+				viewport[2]/2 + _x, viewport[3]/2 + _y,
+				_w, _h - _edgeHeight
+		);
+	}
+
+	// Lower left corner
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);
+	glVertex2f(_x, _y);
+	glTexCoord2f(1, 1);
+	glVertex2f(_x + _cornerWidth, _y);
+	glTexCoord2f(1, 0);
+	glVertex2f(_x + _cornerWidth, _y + _cornerHeight);
+	glTexCoord2f(0, 0);
+	glVertex2f(_x, _y + _cornerHeight);
 	glEnd();
 
 	// Lower right corner
@@ -156,6 +171,22 @@ void BorderQuad::render(RenderPass pass) {
 	glEnd();
 
 	TextureMan.set(_edge);
+
+	// Lower edge
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);
+	glVertex2f(_x + _cornerWidth, _y);
+	glTexCoord2f(1, 1);
+	glVertex2f(_x + _w - _cornerWidth, _y);
+	glTexCoord2f(1, 0);
+	glVertex2f(_x + _w - _cornerWidth, _y + _edgeHeight);
+	glTexCoord2f(0, 0);
+	glVertex2f(_x + _cornerWidth, _y + _edgeHeight);
+	glEnd();
+
+	if (_verticalCut) {
+		glDisable(GL_SCISSOR_TEST);
+	}
 
 	// Left edge
 	glBegin(GL_QUADS);
@@ -179,18 +210,6 @@ void BorderQuad::render(RenderPass pass) {
 	glVertex2f(_x + _cornerWidth, _y + _h - _cornerHeight);
 	glTexCoord2f(1, 1);
 	glVertex2f(_x, _y + _h - _cornerHeight);
-	glEnd();
-
-	// Lower edge
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 1);
-	glVertex2f(_x + _cornerWidth, _y);
-	glTexCoord2f(1, 1);
-	glVertex2f(_x + _w - _cornerWidth, _y);
-	glTexCoord2f(1, 0);
-	glVertex2f(_x + _w - _cornerWidth, _y + _edgeHeight);
-	glTexCoord2f(0, 0);
-	glVertex2f(_x + _cornerWidth, _y + _edgeHeight);
 	glEnd();
 
 	// Upper Edge
