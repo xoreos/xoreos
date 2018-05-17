@@ -54,6 +54,8 @@ public:
 private:
 	TextureHandle _edge, _corner;
 
+	bool _verticalCut;
+
 	int _edgeWidth, _edgeHeight;
 	int _cornerWidth, _cornerHeight;
 
