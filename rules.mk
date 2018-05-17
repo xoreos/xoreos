@@ -117,6 +117,8 @@ include utf8cpp/rules.mk
 include lua/rules.mk
 include toluapp/rules.mk
 
+include glm/rules.mk
+
 include src/rules.mk
 
 include tests/rules.mk
