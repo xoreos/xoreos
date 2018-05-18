@@ -58,7 +58,7 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize) {
 	inputSize -= propsSize;
 
 	lzma_stream strm = LZMA_STREAM_INIT;
-	BOOST_SCOPE_EXIT( (&strm) (&filters) ) {
+	BOOST_SCOPE_EXIT( (&strm) ) {
 		lzma_end(&strm);
 	} BOOST_SCOPE_EXIT_END
 
