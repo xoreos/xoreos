@@ -62,6 +62,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/cdpth.h \
     src/aurora/nfofile.h \
     src/aurora/ltrfile.h \
+    src/aurora/textureatlasfile.h \
     $(EMPTY)
 
 src_aurora_libaurora_la_SOURCES += \
@@ -101,6 +102,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/cdpth.cpp \
     src/aurora/nfofile.cpp \
     src/aurora/ltrfile.cpp \
+    src/aurora/textureatlasfile.cpp \
     $(EMPTY)
 
 src_aurora_libaurora_la_LIBADD = \
