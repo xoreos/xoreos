@@ -6,3 +6,4 @@ it:
 - Modified include files to silence compiler warnings about variable
   shadowing
 - Fixed GCC version detection for GCC 7.3+
+- Silenced a compiler warning about if-branches being identical
