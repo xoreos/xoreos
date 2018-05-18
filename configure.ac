@@ -134,6 +134,9 @@ AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wc++11-long-long], [-Wno-c++11-long
 dnl clang is far too trigger-happy on this warning, so let's disable it
 AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wundefined-var-template], [-Wno-undefined-var-template])
 
+dnl Disable warnings about unused local typedefs that came with GLM
+AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-local-typedefs], [-Wno-unused-local-typedefs])
+
 AC_SUBST(WARN)
 
 dnl C++ dialect
