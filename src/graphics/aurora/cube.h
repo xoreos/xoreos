@@ -25,6 +25,8 @@
 #ifndef GRAPHICS_AURORA_CUBE_H
 #define GRAPHICS_AURORA_CUBE_H
 
+#include "glm/mat4x4.hpp"
+
 #include "src/graphics/types.h"
 #include "src/graphics/glcontainer.h"
 #include "src/graphics/object.h"
@@ -34,7 +36,6 @@
 namespace Common {
 	class UString;
 	class SeekableReadStream;
-	class Matrix4x4;
 }
 
 namespace Graphics {
@@ -83,7 +84,7 @@ private:
 	TextureHandle _texture;
 
 	void applyTransformation(int n);
-	void applyTransformation(int n, Common::Matrix4x4 &m);
+	void applyTransformation(int n, glm::mat4 &m);
 	void setTexture();
 	void callList();
 

@@ -22,6 +22,8 @@
  *  Shader renderable, a class for easier managing of a collection of items (surface, material, mesh) to render with.
  */
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "src/graphics/shader/shaderrenderable.h"
 
 namespace Graphics {
@@ -71,7 +73,7 @@ void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
 	_mesh = mesh;
 }
 
-void ShaderRenderable::renderImmediate(const Common::Matrix4x4 &tform) {
+void ShaderRenderable::renderImmediate(const glm::mat4 &tform) {
 	glUseProgram(_program->glid);
 	_material->bindProgram(_program);
 	_material->bindGLState();

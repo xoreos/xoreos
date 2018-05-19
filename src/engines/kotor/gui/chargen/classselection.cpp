@@ -22,6 +22,9 @@
  *  The class selection menu.
  */
 
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/aurora/talkman.h"
 
 #include "src/engines/kotor/creature.h"
@@ -85,22 +88,27 @@ ClassSelectionMenu::ClassSelectionMenu(Module *module, ::Engines::Console *conso
 	float subSceneWidth = getLabel("3D_MODEL2")->getWidth();
 	float subSceneHeight = getLabel("3D_MODEL2")->getHeight();
 
-	Common::Matrix4x4 projection;
-	projection.perspective(22.72f, subSceneWidth/subSceneHeight, 0.1f, 10.0f);
+	glm::mat4 projection(glm::perspective(Common::deg2rad(22.72f), subSceneWidth/subSceneHeight, 0.1f, 10.0f));
 
 	/*
 	 * TODO: These values are extracted using apitrace from the original game.
 	 * They should be replaced with a more straight forward matrix transformation expression.
 	 */
+
 	float modelView[] = {
 			0.00979373, -0.040304, 0.999139, 0,
 			0.999952, 0.000393929, -0.00978577, 0,
 			8.34465e-7, 0.999187, 0.0403059, 0,
 			0, 0, 0, 1
 	};
-	Common::Matrix4x4 transformation(modelView);
-	transformation.translate(-4.87294f, 0.0880559f, -1.06834f);
-	transformation.rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+
+	glm::mat4 transformation(glm::make_mat4(modelView));
+
+	transformation = glm::translate(transformation, glm::vec3(-4.87294f, 0.0880559f, -1.06834f));
+
+	transformation = glm::rotate(transformation,
+			Common::deg2rad(-90.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f));
 
 	setupClassSubScene("3D_MODEL1", _maleScoundrelSubScene, _maleScoundrel->getModel(),
 	                   projection, transformation);
@@ -217,7 +225,7 @@ void ClassSelectionMenu::callbackActive(Widget &widget) {
 
 void ClassSelectionMenu::setupClassSubScene(const Common::UString &widgetName,
 		Graphics::Aurora::SubSceneQuad &subScene, Graphics::Aurora::Model *model,
-		Common::Matrix4x4 &projection, Common::Matrix4x4 &transformation) {
+		glm::mat4 &projection, glm::mat4 &transformation) {
 	getLabel(widgetName)->setSubScene(&subScene);
 	// TODO: Should randomly switch between pause1, pause2 and pause3
 	model->playAnimation("pause1", true, -1);

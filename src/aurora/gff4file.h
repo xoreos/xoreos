@@ -28,6 +28,8 @@
 #include <vector>
 #include <map>
 
+#include "glm/mat4x4.hpp"
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
@@ -41,7 +43,6 @@
 
 namespace Common {
 	class SeekableReadStream;
-	class Matrix4x4;
 }
 
 namespace Aurora {
@@ -287,7 +288,7 @@ public:
 	/** Return a field vector or a matrix type as a std::vector of doubles. */
 	bool getVectorMatrix(uint32 field, std::vector<float > &vectorMatrix) const;
 
-	bool getMatrix4x4(uint32 field, Common::Matrix4x4 &m) const;
+	bool getMatrix4x4(uint32 field, glm::mat4 &m) const;
 	// '---
 
 	// .--- Lists of values
@@ -317,7 +318,7 @@ public:
 	/** Return field vector or a matrix types as std::vectors of floats. */
 	bool getVectorMatrix(uint32 field, std::vector< std::vector<float > > &list) const;
 
-	bool getMatrix4x4(uint32 field, std::vector<Common::Matrix4x4> &list) const;
+	bool getMatrix4x4(uint32 field, std::vector<glm::mat4> &list) const;
 	// '---
 
 	// .--- Structs and lists of structs

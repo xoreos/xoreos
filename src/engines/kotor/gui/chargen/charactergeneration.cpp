@@ -22,6 +22,10 @@
  *  The primary character generation menu.
  */
 
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/util.h"
 
 #include "src/aurora/talkman.h"
@@ -81,8 +85,7 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 	float subSceneWidth = getLabel("MODEL_LBL")->getWidth();
 	float subSceneHeight = getLabel("MODEL_LBL")->getHeight();
 
-	Common::Matrix4x4 projection;
-	projection.perspective(22.72f, subSceneWidth/subSceneHeight, 0.1f, 10.0f);
+	glm::mat4 projection(glm::perspective(Common::deg2rad(22.72f), subSceneWidth/subSceneHeight, 0.1f, 10.0f));
 
 	/*
 	 * TODO: These values are extracted using apitrace from the original game.
@@ -94,9 +97,14 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 			-0.00091657, 0.999843, -0.0176727, 0,
 			0, 0, 0, 1
 	};
-	Common::Matrix4x4 transformation(modelView);
-	transformation.translate(-4.87251f, 0.0f, -0.776371f);
-	transformation.rotate(-90.0f, 0.0f, 0.0f, 1.0f);
+
+	glm::mat4 transformation(glm::make_mat4(modelView));
+
+	transformation = glm::translate(transformation, glm::vec3(-4.87251f, 0.0f, -0.776371f));
+
+	transformation = glm::rotate(transformation,
+			Common::deg2rad(-90.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f));
 
 	getLabel("MODEL_LBL")->setSubScene(_charSubScene.get());
 	_charSubScene->add(_pc->getModel());

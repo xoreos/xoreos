@@ -28,11 +28,12 @@
 
 #include <cassert>
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/encoding.h"
 #include "src/common/strutil.h"
-#include "src/common/matrix4x4.h"
 
 #include "src/aurora/gff4file.h"
 #include "src/aurora/util.h"
@@ -1070,12 +1071,12 @@ bool GFF4Struct::getMatrix4x4(uint32 field, float (&m)[16]) const {
 	return true;
 }
 
-bool GFF4Struct::getMatrix4x4(uint32 field, Common::Matrix4x4 &m) const {
+bool GFF4Struct::getMatrix4x4(uint32 field, glm::mat4 &m) const {
 	float f[16];
 	if (!getMatrix4x4(field, f))
 		return false;
 
-	m = f;
+	m = glm::make_mat4(f);
 	return true;
 }
 
@@ -1301,7 +1302,7 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<float> >
 	return true;
 }
 
-bool GFF4Struct::getMatrix4x4(uint32 field, std::vector<Common::Matrix4x4> &list) const {
+bool GFF4Struct::getMatrix4x4(uint32 field, std::vector<glm::mat4> &list) const {
 	const Field *f;
 	Common::SeekableReadStream *data = getField(field, f);
 	if (!data)
@@ -1317,7 +1318,7 @@ bool GFF4Struct::getMatrix4x4(uint32 field, std::vector<Common::Matrix4x4> &list
 		for (uint32 j = 0; j < length; j++)
 			m[j] = getFloat(*data, kFieldTypeFloat32);
 
-		list[i] = m;
+		list[i] = glm::make_mat4(m);
 	}
 
 	return true;

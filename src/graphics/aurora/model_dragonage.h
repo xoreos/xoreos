@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_AURORA_MODEL_DRAGONAGE_H
 #define GRAPHICS_AURORA_MODEL_DRAGONAGE_H
 
-#include "src/common/vector3.h"
+#include "glm/vec4.hpp"
 
 #include "src/aurora/types.h"
 
@@ -162,7 +162,7 @@ private:
 		Common::UString defaultSemantic;
 
 		std::map<Common::UString, float> floats;
-		std::map<Common::UString, Common::Vector3> vectors;
+		std::map<Common::UString, glm::vec4> vectors;
 		std::map<Common::UString, Common::UString> textures;
 	};
 

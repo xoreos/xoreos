@@ -25,6 +25,9 @@
 #ifndef GRAPHICS_RENDER_RENDERMANAGER_H
 #define GRAPHICS_RENDER_RENDERMANAGER_H
 
+#include "glm/vec3.hpp"
+#include "glm/mat4x4.hpp"
+
 #include "src/graphics/render/renderqueue.h"
 
 namespace Graphics {
@@ -36,9 +39,9 @@ public:
 	RenderManager();
 	~RenderManager();
 
-	void setCameraReference(const Common::Vector3 &reference);
+	void setCameraReference(const glm::vec3 &reference);
 
-	void queueRenderable(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform);
+	void queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform);
 
 	void sort();
 

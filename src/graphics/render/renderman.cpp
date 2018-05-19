@@ -22,6 +22,8 @@
  *  Render queue manager.
  */
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "src/graphics/render/renderman.h"
 
 namespace Graphics {
@@ -34,12 +36,12 @@ RenderManager::RenderManager() {
 RenderManager::~RenderManager() {
 }
 
-void RenderManager::setCameraReference(const Common::Vector3 &reference) {
+void RenderManager::setCameraReference(const glm::vec3 &reference) {
 	_queueColorSolid.setCameraReference(reference);
 	_queueColorTransparent.setCameraReference(reference);
 }
 
-void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform) {
+void RenderManager::queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform) {
 	if (renderable->getMaterial()->getFlags() & SHADER_MATERIAL_TRANSPARENT) {
 		_queueColorTransparent.queueItem(renderable, transform);
 	} else {
