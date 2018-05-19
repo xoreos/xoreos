@@ -70,17 +70,22 @@ bool SatelliteCamera::handleCameraInput(const Events::Event &e) {
 			switch (e.key.keysym.scancode) {
 				case SDL_SCANCODE_A:
 					_leftBtnPressed = e.type == Events::kEventKeyDown;
-					break;
+					return true;
+
 				case SDL_SCANCODE_D:
 					_rightBtnPressed = e.type == Events::kEventKeyDown;
-					break;
+					return true;
+
 				default:
-					return false;
+					break;
 			}
+			break;
+
 		default:
-			return false;
+			break;
 	}
-	return true;
+
+	return false;
 }
 
 void SatelliteCamera::update(float dt) {
