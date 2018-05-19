@@ -29,8 +29,9 @@
 #include <list>
 #include <map>
 
-#include "src/common/matrix4x4.h"
-#include "src/common/vector3.h"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
+#include "glm/mat4x4.hpp"
 
 #include "src/aurora/nitrofile.h"
 
@@ -229,7 +230,7 @@ private:
 		Common::UString name;
 
 		/** Complete local transformation this bone specifies. */
-		Common::Matrix4x4 transform;
+		glm::mat4 transform;
 
 		uint16 nodeID;   ///< ID of this bone.
 		uint16 parentID; ///< ID of parent bone.
@@ -406,7 +407,7 @@ private:
 	static uint8 getBoneParameterCount(BoneCommandID cmd, uint8 count);
 
 	/** Create a specific pivot matrix. */
-	static Common::Matrix4x4 createPivot(double a, double b, uint8 select, uint8 negate);
+	static glm::mat4 createPivot(double a, double b, uint8 select, uint8 negate);
 	// '---
 
 	// === Run-time ===
@@ -434,10 +435,10 @@ private:
 	struct PrimitiveVertex {
 		PrimitiveNodes nodes;
 
-		Common::Vector3 vertex;
-		Common::Vector3 normal;
-		Common::Vector3 color;
-		Common::Vector3 texCoord;
+		glm::vec3 vertex;
+		glm::vec3 normal;
+		glm::vec4 color;
+		glm::vec3 texCoord;
 
 		PrimitiveVertex() : vertex(0.0f, 0.0f, 0.0f), normal(0.0f, 0.0f, 0.0f),
 		color(1.0f, 1.0f, 1.0f, 1.0f), texCoord(0.0f, 0.0f, 0.0f) { }

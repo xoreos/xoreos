@@ -25,6 +25,8 @@
 #ifndef GRAPHICS_SHADER_SHADERRENDERABLE_H
 #define GRAPHICS_SHADER_SHADERRENDERABLE_H
 
+#include "glm/mat4x4.hpp"
+
 #include "src/graphics/shader/shader.h"
 #include "src/graphics/shader/shadermaterial.h"
 #include "src/graphics/shader/shadersurface.h"
@@ -51,7 +53,7 @@ public:
 	void setMaterial(Shader::ShaderMaterial *material);
 	void setMesh(Mesh::Mesh *mesh);
 
-	void renderImmediate(const Common::Matrix4x4 &tform);
+	void renderImmediate(const glm::mat4 &tform);
 
 private:
 	ShaderSurface *_surface;

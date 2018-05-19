@@ -28,8 +28,9 @@
 #include <list>
 #include <vector>
 
+#include "glm/mat4x4.hpp"
+
 #include "src/common/ustring.h"
-#include "src/common/matrix4x4.h"
 #include "src/common/boundingbox.h"
 
 #include "src/graphics/types.h"
@@ -91,7 +92,7 @@ public:
 	void getAbsolutePosition(float &x, float &y, float &z) const;
 
 	/** Get the position of the node after translate/rotate. */
-	Common::Matrix4x4 getAbsolutePosition() const;
+	glm::mat4 getAbsolutePosition() const;
 
 	uint16 getNodeNumber() const;
 
@@ -208,7 +209,7 @@ protected:
 	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation.
 
 	/** Position of the node after translate/rotate. */
-	Common::Matrix4x4 _absolutePosition;
+	glm::mat4 _absolutePosition;
 
 	bool _render; ///< Render the node?
 
@@ -229,7 +230,7 @@ protected:
 	void createAbsoluteBound(Common::BoundingBox parentPosition);
 
 	void render(RenderPass pass);
-	void drawSkeleton(const Common::Matrix4x4 &parent, bool showInvisible);
+	void drawSkeleton(const glm::mat4 &parent, bool showInvisible);
 
 	void lockFrame();
 	void unlockFrame();

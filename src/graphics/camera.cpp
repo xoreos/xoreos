@@ -24,10 +24,13 @@
 
 #include <cstring>
 
+#include "glm/vec3.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
-#include "src/common/vector3.h"
-#include "src/common/matrix4x4.h"
 
 #include "src/graphics/camera.h"
 #include "src/graphics/graphics.h"
@@ -147,13 +150,13 @@ void CameraManager::move(float x, float y, float z) {
 }
 
 void CameraManager::moveRelative(float x, float y, float z) {
-	Common::Matrix4x4 orientation;
+	glm::mat4 orientation;
 
-	orientation.rotate(_orientation[2], 0.0f, 0.0f, 1.0f);
-	orientation.rotate(_orientation[1], 0.0f, 1.0f, 0.0f);
-	orientation.rotate(_orientation[0], 1.0f, 0.0f, 0.0f);
+	orientation = glm::rotate(orientation, Common::deg2rad(_orientation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+	orientation = glm::rotate(orientation, Common::deg2rad(_orientation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+	orientation = glm::rotate(orientation, Common::deg2rad(_orientation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
 
-	const Common::Vector3 relative = orientation * Common::Vector3(x, y, z);
+	const glm::vec4 relative = orientation * glm::vec4(x, y, z, 0);
 
 	move(relative[0], relative[1], relative[2]);
 }

@@ -25,7 +25,7 @@
 #ifndef COMMON_BOUNDINGBOX_H
 #define COMMON_BOUNDINGBOX_H
 
-#include "src/common/matrix4x4.h"
+#include "glm/mat4x4.hpp"
 
 namespace Common {
 
@@ -39,7 +39,7 @@ public:
 
 	bool empty() const;
 
-	const Matrix4x4 &getOrigin() const;
+	const glm::mat4 &getOrigin() const;
 
 	void getMin(float &x, float &y, float &z) const;
 	void getMax(float &x, float &y, float &z) const;
@@ -61,7 +61,7 @@ public:
 
 	void rotate(float angle, float x, float y, float z);
 
-	void transform(const Matrix4x4 &m);
+	void transform(const glm::mat4 &m);
 
 	/** Apply the origin transformations directly to the coordinates. */
 	void absolutize();
@@ -73,7 +73,7 @@ private:
 	bool _empty;
 	bool _absolute;
 
-	Matrix4x4 _origin;
+	glm::mat4 _origin;
 
 	float _coords[8][3];
 

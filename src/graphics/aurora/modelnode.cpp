@@ -25,6 +25,9 @@
 #include <cassert>
 #include <cstring>
 
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -166,14 +169,14 @@ void ModelNode::getOrientation(float &x, float &y, float &z, float &a) const {
 }
 
 void ModelNode::getAbsolutePosition(float &x, float &y, float &z) const {
-	x = _absolutePosition.getX() * _model->_scale[0];
-	y = _absolutePosition.getY() * _model->_scale[1];
-	z = _absolutePosition.getZ() * _model->_scale[2];
+	x = _absolutePosition[3][0] * _model->_scale[0];
+	y = _absolutePosition[3][1] * _model->_scale[1];
+	z = _absolutePosition[3][2] * _model->_scale[2];
 }
 
-Common::Matrix4x4 ModelNode::getAbsolutePosition() const {
-	Common::Matrix4x4 absolutePosition = _absolutePosition;
-	absolutePosition.scale(_model->_scale[0], _model->_scale[1], _model->_scale[2]);
+glm::mat4 ModelNode::getAbsolutePosition() const {
+	glm::mat4 absolutePosition = _absolutePosition;
+	absolutePosition = glm::scale(absolutePosition, glm::vec3(_model->_scale[0], _model->_scale[1], _model->_scale[2]));
 
 	return absolutePosition;
 }
@@ -428,11 +431,24 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 	}
 
 	if (_attachedModel) {
-		Common::Matrix4x4 modelPosition = _absoluteBoundBox.getOrigin();
+		glm::mat4 modelPosition = _absoluteBoundBox.getOrigin();
 
-		modelPosition.translate(_attachedModel->_position[0], _attachedModel->_position[1], _attachedModel->_position[2]);
-		modelPosition.rotate(_attachedModel->_orientation[3], _attachedModel->_orientation[0], _attachedModel->_orientation[1], _attachedModel->_orientation[2]);
-		modelPosition.scale(_attachedModel->_scale[0], _attachedModel->_scale[1], _attachedModel->_scale[2]);
+		modelPosition = glm::translate(modelPosition, glm::vec3(_attachedModel->_position[0],
+		                                                        _attachedModel->_position[1],
+		                                                        _attachedModel->_position[2]));
+
+		if (_attachedModel->_orientation[0] != 0 ||
+				_attachedModel->_orientation[1] != 0 ||
+				_attachedModel->_orientation[2] != 0)
+			modelPosition = glm::rotate(modelPosition,
+					Common::deg2rad(_attachedModel->_orientation[3]),
+					glm::vec3(_attachedModel->_orientation[0],
+					          _attachedModel->_orientation[1],
+					          _attachedModel->_orientation[2]));
+
+		modelPosition = glm::scale(modelPosition, glm::vec3(_attachedModel->_scale[0],
+		                                                    _attachedModel->_scale[1],
+		                                                    _attachedModel->_scale[2]));
 
 		_attachedModel->_absolutePosition = modelPosition;
 		_attachedModel->createBound();
@@ -610,12 +626,17 @@ void ModelNode::render(RenderPass pass) {
 	}
 }
 
-void ModelNode::drawSkeleton(const Common::Matrix4x4 &parent, bool showInvisible) {
-	Common::Matrix4x4 mine = parent;
+void ModelNode::drawSkeleton(const glm::mat4 &parent, bool showInvisible) {
+	glm::mat4 mine = parent;
 
-	mine.translate(_position[0], _position[1], _position[2]);
-	mine.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-	mine.scale(_scale[0], _scale[1], _scale[2]);
+	mine = glm::translate(mine, glm::vec3(_position[0], _position[1], _position[2]));
+
+	if (_orientation[0] != 0 || _orientation[1] != 0 || _orientation[2] != 0)
+		mine = glm::rotate(mine,
+				Common::deg2rad(_orientation[3]),
+				glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
+
+	mine = glm::scale(mine, glm::vec3(_scale[0], _scale[1], _scale[2]));
 
 	if (_render || showInvisible) {
 		glPointSize(5.0f);
@@ -626,15 +647,15 @@ void ModelNode::drawSkeleton(const Common::Matrix4x4 &parent, bool showInvisible
 			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 
 		glBegin(GL_POINTS);
-			glVertex3f(mine.getX(), mine.getY(), mine.getZ());
+			glVertex3f(mine[3][0], mine[3][1], mine[3][2]);
 		glEnd();
 
 		glLineWidth(2.0f);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 		glBegin(GL_LINES);
-			glVertex3f(parent.getX(), parent.getY(), parent.getZ());
-			glVertex3f(mine.getX(), mine.getY(), mine.getZ());
+			glVertex3f(parent[3][0], parent[3][1], parent[3][2]);
+			glVertex3f(mine[3][0], mine[3][1], mine[3][2]);
 		glEnd();
 	}
 

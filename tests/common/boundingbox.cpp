@@ -22,20 +22,22 @@
  *  Unit tests for the BoundingBox class.
  */
 
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "gtest/gtest.h"
 
 #include "src/common/boundingbox.h"
-#include "src/common/matrix4x4.h"
 #include "src/common/maths.h"
 
-static void compareULP(const Common::Matrix4x4 &m, const float *f, size_t t = 0) {
+static void compareULP(const glm::mat4 &m, const float *f, size_t t = 0) {
 	for (size_t i = 0; i < 16; i++)
-		EXPECT_FLOAT_EQ(m.get()[i], f[i]) << "At case " << t << ", index " << i;
+		EXPECT_FLOAT_EQ(glm::value_ptr(m)[i], f[i]) << "At case " << t << ", index " << i;
 }
 
-static void compareNear(const Common::Matrix4x4 &m, const float *f, float range, size_t t = 0) {
+static void compareNear(const glm::mat4 &m, const float *f, float range, size_t t = 0) {
 	for (size_t i = 0; i < 16; i++)
-		EXPECT_NEAR(m.get()[i], f[i], range) << "At case " << t << ", index " << i;
+		EXPECT_NEAR(glm::value_ptr(m)[i], f[i], range) << "At case " << t << ", index " << i;
 }
 
 GTEST_TEST(BoundingBox, empty) {
@@ -246,8 +248,9 @@ GTEST_TEST(BoundingBox, transform) {
 
 	Common::BoundingBox b;
 
-	Common::Matrix4x4 m;
-	m.rotate(180.0f, 1.0f, 0.0f, 0.0f);
+	glm::mat4 m;
+
+	m = glm::rotate(m, Common::deg2rad(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 	b.transform(m);
 

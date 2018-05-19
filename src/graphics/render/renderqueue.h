@@ -25,6 +25,9 @@
 #ifndef GRAPHICS_RENDER_RENDERQUEUE_H
 #define GRAPHICS_RENDER_RENDERQUEUE_H
 
+#include "glm/vec3.hpp"
+#include "glm/mat4x4.hpp"
+
 #include "src/graphics/graphics.h"
 #include "src/graphics/shader/shaderrenderable.h"
 
@@ -41,14 +44,14 @@ public:
 		Shader::ShaderSurface *surface;
 		Shader::ShaderMaterial *material;
 		Mesh::Mesh *mesh;
-		const Common::Matrix4x4 *transform;
+		const glm::mat4 *transform;
 		float reference;  ///< Reference point to the camera location, primarily used for depth sorting.
 		float padding;    ///< Padding for 64bit architectures.
 
 		RenderQueueNode() : program(0), surface(0), material(0), mesh(0), transform(0), reference(0.0f) {}
 		RenderQueueNode(const RenderQueueNode &src) : program(src.program), surface(src.surface), material(src.material), mesh(src.mesh), transform(src.transform), reference(src.reference) {}
-		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const Common::Matrix4x4 *t) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(0.0f) {}
-		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const Common::Matrix4x4 *t, float ref) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(ref) {}
+		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const glm::mat4 *t) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(0.0f) {}
+		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const glm::mat4 *t, float ref) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(ref) {}
 
 		inline const RenderQueueNode &operator=(const RenderQueueNode &src) { material = src.material; surface = src.surface; mesh = src.mesh; transform = src.transform; reference = src.reference; return *this; }
 	};
@@ -56,10 +59,10 @@ public:
 	RenderQueue(uint32 precache = 1000);
 	~RenderQueue();
 
-	void setCameraReference(const Common::Vector3 &reference);
+	void setCameraReference(const glm::vec3 &reference);
 
-	void queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const Common::Matrix4x4 *transform);
-	void queueItem(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform);
+	void queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const glm::mat4 *transform);
+	void queueItem(Shader::ShaderRenderable *renderable, const glm::mat4 *transform);
 
 	void sortShader(); ///< Sort queue elements by shader program.
 	void sortDepth();  ///< Sort queue elements by depth.
@@ -71,7 +74,7 @@ public:
 private:
 
 	std::vector<RenderQueueNode>_nodeArray;
-	Common::Vector3 _cameraReference;
+	glm::vec3 _cameraReference;
 };
 
 } // namespace Render

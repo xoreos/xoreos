@@ -22,6 +22,9 @@
  *  An animation to be applied to a model.
  */
 
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/readstream.h"
 #include "src/common/debug.h"
 
@@ -236,28 +239,30 @@ void Animation::updateSkinnedModel(Model *model) {
 		if (!node->_mesh || !node->_mesh->skin)
 			continue;
 
-		Common::Matrix4x4 transform;
-		transform.translate(node->_position[0], node->_position[1], node->_position[2]);
-		transform.rotate(node->_orientation[3],
-		                 node->_orientation[0],
-		                 node->_orientation[1],
-		                 node->_orientation[2]);
-		Common::Matrix4x4 invTransform = transform.getInverse();
+		glm::mat4 transform;
+
+		transform = glm::translate(transform, glm::vec3(node->_position[0],
+		                                                node->_position[1],
+		                                                node->_position[2]));
+
+		if (node->_orientation[0] != 0 || node->_orientation[1] != 0 || node->_orientation[2] != 0)
+			transform = glm::rotate(transform,
+					Common::deg2rad(node->_orientation[3]),
+					glm::vec3(node->_orientation[0], node->_orientation[1], node->_orientation[2]));
+
+		glm::mat4 invTransform = glm::inverse(transform);
 
 		ModelNode::Skin *skin = node->_mesh->skin;
 
-		_invBindPoseMatrices.reserve(16 * skin->boneMappingCount);
-		float *invBindPoseArr = &_invBindPoseMatrices[0];
-
-		_boneTransMatrices.reserve(16 * skin->boneMappingCount);
-		float *boneTransArr = &_boneTransMatrices[0];
+		_invBindPoseMatrices.resize(skin->boneMappingCount);
+		_boneTransMatrices.resize(skin->boneMappingCount);
 
 		for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
 			int index = static_cast<int>(skin->boneMapping[i]);
 			if (index != -1) {
-				uint32 off = index * 16;
-				computeNodeTransform(skin->boneNodeMap[index], invBindPoseArr + off,
-				                     boneTransArr + off);
+				computeNodeTransform(skin->boneNodeMap[index],
+				                     _invBindPoseMatrices[index],
+				                     _boneTransMatrices[index]);
 			}
 		}
 
@@ -271,8 +276,6 @@ void Animation::updateSkinnedModel(Model *model) {
 		float *iv = &meshData->initialVertexCoords[0];
 		float *boneWeights = &skin->boneWeights[0];
 		float *boneMappingId = &skin->boneMappingId[0];
-		Common::Matrix4x4 invBindPose;
-		Common::Matrix4x4 boneTransform;
 
 		for (uint32 i = 0; i < vertexCount; ++i) {
 			v[0] = 0;
@@ -281,19 +284,15 @@ void Animation::updateSkinnedModel(Model *model) {
 			for (uint8 j = 0; j < 4; ++j) {
 				int index = static_cast<int>(boneMappingId[j]);
 				if (index != -1) {
-					uint32 off = index * 16;
 					float rv[3];
 					float tv[3];
+					const glm::mat4 &invBindPose = _invBindPoseMatrices[index];
+					const glm::mat4 &boneTransform = _boneTransMatrices[index];
 
-					transform.multiply(iv, rv);
-
-					invBindPose = invBindPoseArr + off;
-					invBindPose.multiply(rv, tv);
-
-					boneTransform = boneTransArr + off;
-					boneTransform.multiply(tv, rv);
-
-					invTransform.multiply(rv, tv);
+					multiply(iv, transform, rv);
+					multiply(rv, invBindPose, tv);
+					multiply(tv, boneTransform, rv);
+					multiply(rv, invTransform, tv);
 
 					v[0] += tv[0] * boneWeights[j];
 					v[1] += tv[1] * boneWeights[j];
@@ -308,32 +307,49 @@ void Animation::updateSkinnedModel(Model *model) {
 	}
 }
 
-void Animation::computeNodeTransform(ModelNode *node, float *outInvBindPose, float *outTransform) {
+void Animation::multiply(const float *v, const glm::mat4 &m, float *rv) {
+	rv[0]   = v[0] * m[0][0] + v[1] * m[1][0] + v[2] * m[2][0] + m[3][0];
+	rv[1]   = v[0] * m[0][1] + v[1] * m[1][1] + v[2] * m[2][1] + m[3][1];
+	rv[2]   = v[0] * m[0][2] + v[1] * m[1][2] + v[2] * m[2][2] + m[3][2];
+	float w = v[0] * m[0][3] + v[1] * m[1][3] + v[2] * m[2][3] + m[3][3];
+	rv[0] /= w;
+	rv[1] /= w;
+	rv[2] /= w;
+}
+
+void Animation::computeNodeTransform(ModelNode *node, glm::mat4 &outInvBindPose, glm::mat4 &outTransform) {
 	_nodeChain.clear();
 	for (ModelNode *node2 = node; node2; node2 = node2->_parent)
 		_nodeChain.push_back(node2);
 
-	Common::Matrix4x4 bindPose;
-	Common::Matrix4x4 transform;
+	glm::mat4 bindPose;
+	glm::mat4 transform;
+
 	for (int i = _nodeChain.size() - 1; i >= 0; --i) {
 		const ModelNode *node2 = _nodeChain[i];
+
 		if (node2->_positionFrames.size() > 0) {
 			const PositionKeyFrame &pos = node2->_positionFrames[0];
-			bindPose.translate(pos.x, pos.y, pos.z);
+			bindPose = glm::translate(bindPose, glm::vec3(pos.x, pos.y, pos.z));
 		}
 		if (node2->_orientationFrames.size() > 0) {
 			const QuaternionKeyFrame &ori = node2->_orientationFrames[0];
-			bindPose.rotate(Common::rad2deg(acos(ori.q) * 2.0), ori.x, ori.y, ori.z);
+			if (ori.x != 0 || ori.y != 0 || ori.z != 0)
+				bindPose = glm::rotate(bindPose, acosf(ori.q) * 2.0f, glm::vec3(ori.x, ori.y, ori.z));
 		}
-		transform.translate(node2->_position[0], node2->_position[1], node2->_position[2]);
-		transform.rotate(node2->_orientation[3],
-		                 node2->_orientation[0],
-		                 node2->_orientation[1],
-		                 node2->_orientation[2]);
+
+		transform = glm::translate(transform, glm::vec3(node2->_position[0],
+		                                                node2->_position[1],
+		                                                node2->_position[2]));
+
+		if (node2->_orientation[0] != 0 || node2->_orientation[1] != 0 || node2->_orientation[2] != 0)
+			transform = glm::rotate(transform,
+					Common::deg2rad(node2->_orientation[3]),
+					glm::vec3(node2->_orientation[0], node2->_orientation[1], node2->_orientation[2]));
 	}
 
-	memcpy(outInvBindPose, bindPose.getInverse().get(), 16 * sizeof(float));
-	memcpy(outTransform, transform.get(), 16 * sizeof(float));
+	outInvBindPose = glm::inverse(bindPose);
+	outTransform = transform;
 }
 
 } // End of namespace Aurora

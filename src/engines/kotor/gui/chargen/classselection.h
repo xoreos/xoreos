@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_GUI_CHARGEN_CLASSSELECTION_H
 #define ENGINES_KOTOR_GUI_CHARGEN_CLASSSELECTION_H
 
+#include "glm/mat4x4.hpp"
+
 #include "src/graphics/aurora/subscenequad.h"
 
 #include "src/engines/kotor/module.h"
@@ -53,7 +55,7 @@ private:
 
 	void setupClassSubScene(const Common::UString &widgetName,
 			Graphics::Aurora::SubSceneQuad &subScene, Graphics::Aurora::Model *model,
-			Common::Matrix4x4 &projection, Common::Matrix4x4 &transformation);
+			glm::mat4 &projection, glm::mat4 &transformation);
 
 	Common::ScopedPtr<GUI> _charGen;
 

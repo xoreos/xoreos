@@ -22,10 +22,13 @@
  *  A simple cube object, for testing.
  */
 
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
-#include "src/common/matrix4x4.h"
+#include "src/common/maths.h"
 
 #include "src/graphics/graphics.h"
 
@@ -55,11 +58,11 @@ CubeSide::~CubeSide() {
 }
 
 void CubeSide::calculateDistance() {
-	Common::Matrix4x4 m;
+	glm::mat4 m;
 
 	_parent->applyTransformation(_n, m);
 
-	_distance = ABS(m.getX()) + ABS(m.getY()) + ABS(m.getZ());
+	_distance = ABS(m[3][0]) + ABS(m[3][1]) + ABS(m[3][2]);
 }
 
 void CubeSide::render(RenderPass pass) {
@@ -181,37 +184,37 @@ void Cube::applyTransformation(int n) {
 	}
 }
 
-void Cube::applyTransformation(int n, Common::Matrix4x4 &m) {
-	m.translate(0.0f, 0.0f, -3.0f);
+void Cube::applyTransformation(int n, glm::mat4 &m) {
+	m = glm::translate(m, glm::vec3(0.0f, 0.0f, -3.0f));
 
-	m.rotate(-_rotation, 1.0f, 0.0f, 0.0f);
-	m.rotate( _rotation, 0.0f, 1.0f, 0.0f);
-	m.rotate( _rotation, 0.0f, 0.0f, 1.0f);
+	m = glm::rotate(m, Common::deg2rad(-_rotation), glm::vec3(1.0f, 0.0f, 0.0f));
+	m = glm::rotate(m, Common::deg2rad(_rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+	m = glm::rotate(m, Common::deg2rad(_rotation), glm::vec3(0.0f, 0.0f, 1.0f));
 
-	m.scale(0.5f, 0.5f, 0.5f);
+	m = glm::scale(m, glm::vec3(0.5f, 0.5f, 0.5f));
 
 	switch (n) {
 		case 0:
-			m.translate(0.0f, 0.0f, 1.0f);
+			m = glm::translate(m, glm::vec3(0.0f, 0.0f, 1.0f));
 			break;
 		case 1:
-			m.translate(0.0f, 0.0f, -1.0f);
+			m = glm::translate(m, glm::vec3(0.0f, 0.0f, -1.0f));
 			break;
 		case 2:
-			m.rotate(90.0f, 0.0f, 1.0f, 0.0f);
-			m.translate(0.0f, 0.0f, 1.0f);
+			m = glm::rotate(m, Common::deg2rad(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			m = glm::translate(m, glm::vec3(0.0f, 0.0f, 1.0f));
 			break;
 		case 3:
-			m.rotate(90.0f, 0.0f, 1.0f, 0.0f);
-			m.translate(0.0f, 0.0f, -1.0f);
+			m = glm::rotate(m, Common::deg2rad(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			m = glm::translate(m, glm::vec3(0.0f, 0.0f, -1.0f));
 			break;
 		case 4:
-			m.rotate(90.0f, 1.0f, 0.0f, 0.0f);
-			m.translate(0.0f, 0.0f, 1.0f);
+			m = glm::rotate(m, Common::deg2rad(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			m = glm::translate(m, glm::vec3(0.0f, 0.0f, 1.0f));
 			break;
 		case 5:
-			m.rotate(90.0f, 1.0f, 0.0f, 0.0f);
-			m.translate(0.0f, 0.0f, -1.0f);
+			m = glm::rotate(m, Common::deg2rad(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			m = glm::translate(m, glm::vec3(0.0f, 0.0f, -1.0f));
 			break;
 	}
 }

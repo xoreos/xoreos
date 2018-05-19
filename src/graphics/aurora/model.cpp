@@ -27,6 +27,10 @@
 
 #include <SDL_timer.h>
 
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/matrix_interpolation.hpp"
+
 #include "src/common/readstream.h"
 #include "src/common/debug.h"
 
@@ -306,9 +310,9 @@ void Model::getPosition(float &x, float &y, float &z) const {
 }
 
 void Model::getAbsolutePosition(float &x, float &y, float &z) const {
-	x = _absolutePosition.getX();
-	y = _absolutePosition.getY();
-	z = _absolutePosition.getZ();
+	x = _absolutePosition[3][0];
+	y = _absolutePosition[3][1];
+	z = _absolutePosition[3][2];
 }
 
 void Model::setScale(float x, float y, float z) {
@@ -362,14 +366,23 @@ void Model::scale(float x, float y, float z) {
 }
 
 void Model::rotate(float x, float y, float z, float angle) {
-	Common::Matrix4x4 orientation;
+	glm::mat4 orientation;
 
-	orientation.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-	orientation.rotate(angle, x, y, z);
+	if (_orientation[0] != 0 || _orientation[1] != 0 || _orientation[2] != 0)
+		orientation = glm::rotate(orientation,
+				Common::deg2rad(_orientation[3]),
+				glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
 
-	orientation.getAxisAngle(angle, x, y, z);
+	if (x != 0 || y != 0 || z != 0)
+		orientation = glm::rotate(orientation,
+				Common::deg2rad(angle),
+				glm::vec3(x, y, z));
 
-	setOrientation(x, y, z, angle);
+	glm::vec3 axis;
+	glm::axisAngle(orientation, axis, angle);
+	angle = Common::rad2deg(angle);
+
+	setOrientation(axis.x, axis.y, axis.z, angle);
 }
 
 void Model::move(float x, float y, float z) {
@@ -377,19 +390,26 @@ void Model::move(float x, float y, float z) {
 }
 
 void Model::getTooltipAnchor(float &x, float &y, float &z) const {
-	Common::Matrix4x4 pos = _absolutePosition;
+	glm::mat4 pos = _absolutePosition;
 
-	pos.translate(0.0f, 0.0f, _absoluteBoundBox.getDepth());
+	pos = glm::translate(pos, glm::vec3(0.0f, 0.0f, _absoluteBoundBox.getDepth()));
 
-	pos.getPosition(x, y, z);
+	x = pos[3][0];
+	y = pos[3][1];
+	z = pos[3][2];
 }
 
 void Model::createAbsolutePosition() {
-	_absolutePosition.loadIdentity();
+	_absolutePosition = glm::mat4();
 
-	_absolutePosition.translate(_position[0], _position[1], _position[2]);
-	_absolutePosition.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-	_absolutePosition.scale(_scale[0], _scale[1], _scale[2]);
+	_absolutePosition = glm::translate(_absolutePosition, glm::vec3(_position[0], _position[1], _position[2]));
+
+	if (_orientation[0] != 0 || _orientation[1] != 0 || _orientation[2] != 0)
+		_absolutePosition = glm::rotate(_absolutePosition,
+				Common::deg2rad(_orientation[3]),
+				glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
+
+	_absolutePosition = glm::scale(_absolutePosition, glm::vec3(_scale[0], _scale[1], _scale[2]));
 
 	_absoluteBoundBox = _boundBox;
 	_absoluteBoundBox.transform(_absolutePosition);
@@ -601,18 +621,18 @@ void Model::calculateDistance() {
 	}
 
 
-	Common::Matrix4x4 center = _absolutePosition;
+	glm::mat4 center = _absolutePosition;
 
-	center.translate(_center[0], _center[1], _center[2]);
+	center = glm::translate(center, glm::vec3(_center[0], _center[1], _center[2]));
 
 
 	const float cameraX = -CameraMan.getPosition()[0];
 	const float cameraY = -CameraMan.getPosition()[1];
 	const float cameraZ = -CameraMan.getPosition()[2];
 
-	const float x = ABS(center.getX() - cameraX);
-	const float y = ABS(center.getY() - cameraY);
-	const float z = ABS(center.getZ() - cameraZ);
+	const float x = ABS(center[3][0] - cameraX);
+	const float y = ABS(center[3][1] - cameraY);
+	const float z = ABS(center[3][2] - cameraZ);
 
 
 	_distance = x + y + z;
@@ -780,9 +800,9 @@ void Model::doDrawBound() {
 	glEnd();
 	*/
 
-	Common::Matrix4x4 tform = _absolutePosition;
-	tform.translate((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f);
-	tform.scale((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f);
+	glm::mat4 tform = _absolutePosition;
+	tform = glm::translate(tform, glm::vec3((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f));
+	tform = glm::scale(tform, glm::vec3((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f));
 	_boundRenderable->renderImmediate(tform);
 }
 
@@ -790,7 +810,7 @@ void Model::doDrawSkeleton() {
 	if (!_drawSkeleton)
 		return;
 
-	Common::Matrix4x4 tform;
+	glm::mat4 tform;
 
 	if (_type == kModelTypeObject)
 		glDisable(GL_DEPTH_TEST);
