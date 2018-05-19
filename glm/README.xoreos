@@ -5,3 +5,4 @@ it:
 
 - Modified include files to silence compiler warnings about variable
   shadowing
+- Fixed GCC version detection for GCC 7.3+
