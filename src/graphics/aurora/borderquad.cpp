@@ -36,7 +36,7 @@ BorderQuad::BorderQuad(const Common::UString &edge, const Common::UString &corne
                        float x, float y, float w, float h, int dimension) :
 	Renderable(kRenderableTypeGUIFront), _verticalCut(false),
 	_edgeWidth(0), _edgeHeight(0), _cornerWidth(0), _cornerHeight(0),
-	_x(x), _y(y), _w(w), _h(h) {
+	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _x(x), _y(y), _w(w), _h(h) {
 
 	_edge = TextureMan.get(edge);
 	_corner = TextureMan.get(corner);
