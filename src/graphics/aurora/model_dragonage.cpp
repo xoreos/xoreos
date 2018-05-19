@@ -734,7 +734,7 @@ void ModelNode_DragonAge::readMAOGFF(Common::SeekableReadStream *maoStream, Mate
 			double v1 = 0.0, v2 = 0.0, v3 = 0.0, v4 = 1.0;
 			(*v)->getVector4(kGFF4MAOVectorValue, v1, v2, v3, v4);
 
-			material.vectors[(*v)->getString(kGFF4MAOVectorName)] = Common::Vector3(v1, v2, v3, v4);
+			material.vectors[(*v)->getString(kGFF4MAOVectorName)] = glm::vec4(v1, v2, v3, v4);
 		}
 	}
 
@@ -782,7 +782,7 @@ void ModelNode_DragonAge::readMAOXML(Common::SeekableReadStream *maoStream, Mate
 				float v1 = 0.0f, v2 = 0.0f, v3 = 0.0f, v4 = 0.0f;
 				std::sscanf((*n)->getProperty("value").c_str(), "%f %f %f %f", &v1, &v2, &v3, &v4);
 
-				material.vectors[(*n)->getProperty("name")] = Common::Vector3(v1, v2, v3, v4);
+				material.vectors[(*n)->getProperty("name")] = glm::vec4(v1, v2, v3, v4);
 
 			} else if ((*n)->getName() == "texture") {
 

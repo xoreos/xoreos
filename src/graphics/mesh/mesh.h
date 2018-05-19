@@ -27,7 +27,6 @@
 
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
-#include "src/common/matrix4x4.h"
 
 #include "src/graphics/graphics.h"
 #include "src/graphics/glcontainer.h"

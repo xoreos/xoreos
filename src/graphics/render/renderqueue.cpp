@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "src/graphics/render/renderqueue.h"
 #include "src/common/util.h"
 
@@ -62,22 +64,22 @@ RenderQueue::~RenderQueue()
 	_nodeArray.clear();
 }
 
-void RenderQueue::setCameraReference(const Common::Vector3 &reference) {
+void RenderQueue::setCameraReference(const glm::vec3 &reference) {
 	_cameraReference = reference;
 }
 
-void RenderQueue::queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const Common::Matrix4x4 *transform) {
-	Common::Vector3 ref = transform->getPosition();
+void RenderQueue::queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const glm::mat4 *transform) {
+	glm::vec3 ref((*transform)[3][0], (*transform)[3][1], (*transform)[3][2]);
 	ref -= _cameraReference;
 	// Length squared of ref serves as a suitable depth sorting value.
-	_nodeArray.push_back(RenderQueueNode(program, surface, material, mesh, transform, ref.dot(ref)));
+	_nodeArray.push_back(RenderQueueNode(program, surface, material, mesh, transform, glm::dot(ref, ref)));
 }
 
-void RenderQueue::queueItem(Shader::ShaderRenderable *renderable, const Common::Matrix4x4 *transform) {
-	Common::Vector3 ref = transform->getPosition();
+void RenderQueue::queueItem(Shader::ShaderRenderable *renderable, const glm::mat4 *transform) {
+	glm::vec3 ref((*transform)[3][0], (*transform)[3][1], (*transform)[3][2]);
 	ref -= _cameraReference;
 	// Length squared of ref serves as a suitable depth sorting value.
-	_nodeArray.push_back(RenderQueueNode(renderable->getProgram(), renderable->getSurface(), renderable->getMaterial(), renderable->getMesh(), transform, ref.dot(ref)));
+	_nodeArray.push_back(RenderQueueNode(renderable->getProgram(), renderable->getSurface(), renderable->getMaterial(), renderable->getMesh(), transform, glm::dot(ref, ref)));
 }
 
 void RenderQueue::sortShader() {

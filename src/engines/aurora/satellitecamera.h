@@ -25,8 +25,9 @@
 #ifndef ENGINES_AURORA_SATELLITECAMERA_H
 #define ENGINES_AURORA_SATELLITECAMERA_H
 
+#include "glm/vec3.hpp"
+
 #include "src/common/singleton.h"
-#include "src/common/vector3.h"
 
 #include "src/events/types.h"
 
@@ -42,7 +43,7 @@ public:
 	bool handleCameraInput(const Events::Event &e);
 	void update(float dt);
 private:
-	Common::Vector3 _target;
+	glm::vec3 _target;
 	float _distance;
 	float _yaw;
 	float _pitch;

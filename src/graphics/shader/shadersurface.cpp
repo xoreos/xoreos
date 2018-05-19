@@ -154,7 +154,7 @@ void ShaderSurface::bindProgram(Shader::ShaderProgram *program) {
 	}
 }
 
-void ShaderSurface::bindProgram(Shader::ShaderProgram *program, const Common::Matrix4x4 *t) {
+void ShaderSurface::bindProgram(Shader::ShaderProgram *program, const glm::mat4 *t) {
 	for (uint32 i = 0; i < _variableData.size(); i++) {
 		if (_objectModelviewIndex == i) {
 			ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[i], program->vertexVariableLocations[i], t);
@@ -164,7 +164,7 @@ void ShaderSurface::bindProgram(Shader::ShaderProgram *program, const Common::Ma
 	}
 }
 
-void ShaderSurface::bindObjectModelview(Shader::ShaderProgram *program, const Common::Matrix4x4 *t) {
+void ShaderSurface::bindObjectModelview(Shader::ShaderProgram *program, const glm::mat4 *t) {
 	if (_objectModelviewIndex != 0xFFFFFFFF) {
 		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_objectModelviewIndex], program->vertexVariableLocations[_objectModelviewIndex], t);
 	}

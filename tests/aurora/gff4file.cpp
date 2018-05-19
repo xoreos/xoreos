@@ -40,7 +40,6 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/encoding.h"
-#include "src/common/matrix4x4.h"
 #include "src/common/memreadstream.h"
 
 #include "src/aurora/gff4file.h"
@@ -515,25 +514,25 @@ GTEST_TEST(GFF4StructSingle, getMatrix4x4Matrix) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4SingleValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	Common::Matrix4x4 m;
+	glm::mat4 m;
 	EXPECT_TRUE(strct.getMatrix4x4(772, m));
 
-	EXPECT_FLOAT_EQ(m[ 0], 40.0f);
-	EXPECT_FLOAT_EQ(m[ 1], 40.1f);
-	EXPECT_FLOAT_EQ(m[ 2], 40.2f);
-	EXPECT_FLOAT_EQ(m[ 3], 40.3f);
-	EXPECT_FLOAT_EQ(m[ 4], 41.0f);
-	EXPECT_FLOAT_EQ(m[ 5], 41.1f);
-	EXPECT_FLOAT_EQ(m[ 6], 41.2f);
-	EXPECT_FLOAT_EQ(m[ 7], 41.3f);
-	EXPECT_FLOAT_EQ(m[ 8], 42.0f);
-	EXPECT_FLOAT_EQ(m[ 9], 42.1f);
-	EXPECT_FLOAT_EQ(m[10], 42.2f);
-	EXPECT_FLOAT_EQ(m[11], 42.3f);
-	EXPECT_FLOAT_EQ(m[12], 43.0f);
-	EXPECT_FLOAT_EQ(m[13], 43.1f);
-	EXPECT_FLOAT_EQ(m[14], 43.2f);
-	EXPECT_FLOAT_EQ(m[15], 43.3f);
+	EXPECT_FLOAT_EQ(m[0][0], 40.0f);
+	EXPECT_FLOAT_EQ(m[0][1], 40.1f);
+	EXPECT_FLOAT_EQ(m[0][2], 40.2f);
+	EXPECT_FLOAT_EQ(m[0][3], 40.3f);
+	EXPECT_FLOAT_EQ(m[1][0], 41.0f);
+	EXPECT_FLOAT_EQ(m[1][1], 41.1f);
+	EXPECT_FLOAT_EQ(m[1][2], 41.2f);
+	EXPECT_FLOAT_EQ(m[1][3], 41.3f);
+	EXPECT_FLOAT_EQ(m[2][0], 42.0f);
+	EXPECT_FLOAT_EQ(m[2][1], 42.1f);
+	EXPECT_FLOAT_EQ(m[2][2], 42.2f);
+	EXPECT_FLOAT_EQ(m[2][3], 42.3f);
+	EXPECT_FLOAT_EQ(m[3][0], 43.0f);
+	EXPECT_FLOAT_EQ(m[3][1], 43.1f);
+	EXPECT_FLOAT_EQ(m[3][2], 43.2f);
+	EXPECT_FLOAT_EQ(m[3][3], 43.3f);
 
 	EXPECT_FALSE(strct.getMatrix4x4(9999, m));
 
@@ -914,27 +913,27 @@ GTEST_TEST(GFF4StructSingle, getMatrix4x4MatrixList) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4SingleValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	std::vector<Common::Matrix4x4> list;
+	std::vector<glm::mat4> list;
 
 	EXPECT_TRUE(strct.getMatrix4x4(772, list));
 	ASSERT_EQ(list.size(), 1);
 
-	EXPECT_FLOAT_EQ(list[0][ 0], 40.0f);
-	EXPECT_FLOAT_EQ(list[0][ 1], 40.1f);
-	EXPECT_FLOAT_EQ(list[0][ 2], 40.2f);
-	EXPECT_FLOAT_EQ(list[0][ 3], 40.3f);
-	EXPECT_FLOAT_EQ(list[0][ 4], 41.0f);
-	EXPECT_FLOAT_EQ(list[0][ 5], 41.1f);
-	EXPECT_FLOAT_EQ(list[0][ 6], 41.2f);
-	EXPECT_FLOAT_EQ(list[0][ 7], 41.3f);
-	EXPECT_FLOAT_EQ(list[0][ 8], 42.0f);
-	EXPECT_FLOAT_EQ(list[0][ 9], 42.1f);
-	EXPECT_FLOAT_EQ(list[0][10], 42.2f);
-	EXPECT_FLOAT_EQ(list[0][11], 42.3f);
-	EXPECT_FLOAT_EQ(list[0][12], 43.0f);
-	EXPECT_FLOAT_EQ(list[0][13], 43.1f);
-	EXPECT_FLOAT_EQ(list[0][14], 43.2f);
-	EXPECT_FLOAT_EQ(list[0][15], 43.3f);
+	EXPECT_FLOAT_EQ(list[0][0][0], 40.0f);
+	EXPECT_FLOAT_EQ(list[0][0][1], 40.1f);
+	EXPECT_FLOAT_EQ(list[0][0][2], 40.2f);
+	EXPECT_FLOAT_EQ(list[0][0][3], 40.3f);
+	EXPECT_FLOAT_EQ(list[0][1][0], 41.0f);
+	EXPECT_FLOAT_EQ(list[0][1][1], 41.1f);
+	EXPECT_FLOAT_EQ(list[0][1][2], 41.2f);
+	EXPECT_FLOAT_EQ(list[0][1][3], 41.3f);
+	EXPECT_FLOAT_EQ(list[0][2][0], 42.0f);
+	EXPECT_FLOAT_EQ(list[0][2][1], 42.1f);
+	EXPECT_FLOAT_EQ(list[0][2][2], 42.2f);
+	EXPECT_FLOAT_EQ(list[0][2][3], 42.3f);
+	EXPECT_FLOAT_EQ(list[0][3][0], 43.0f);
+	EXPECT_FLOAT_EQ(list[0][3][1], 43.1f);
+	EXPECT_FLOAT_EQ(list[0][3][2], 43.2f);
+	EXPECT_FLOAT_EQ(list[0][3][3], 43.3f);
 
 	EXPECT_FALSE(strct.getMatrix4x4(9999, list));
 
@@ -1546,59 +1545,59 @@ GTEST_TEST(GFF4StructList, getMatrix4x4Matrix) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4ListValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	std::vector<Common::Matrix4x4> list;
+	std::vector<glm::mat4> list;
 
 	EXPECT_TRUE(strct.getMatrix4x4(772, list));
 	ASSERT_EQ(list.size(), 3);
 
-	EXPECT_FLOAT_EQ(list[0][ 0], 120.0f);
-	EXPECT_FLOAT_EQ(list[0][ 1], 120.1f);
-	EXPECT_FLOAT_EQ(list[0][ 2], 120.2f);
-	EXPECT_FLOAT_EQ(list[0][ 3], 120.3f);
-	EXPECT_FLOAT_EQ(list[0][ 4], 121.0f);
-	EXPECT_FLOAT_EQ(list[0][ 5], 121.1f);
-	EXPECT_FLOAT_EQ(list[0][ 6], 121.2f);
-	EXPECT_FLOAT_EQ(list[0][ 7], 121.3f);
-	EXPECT_FLOAT_EQ(list[0][ 8], 122.0f);
-	EXPECT_FLOAT_EQ(list[0][ 9], 122.1f);
-	EXPECT_FLOAT_EQ(list[0][10], 122.2f);
-	EXPECT_FLOAT_EQ(list[0][11], 122.3f);
-	EXPECT_FLOAT_EQ(list[0][12], 123.0f);
-	EXPECT_FLOAT_EQ(list[0][13], 123.1f);
-	EXPECT_FLOAT_EQ(list[0][14], 123.2f);
-	EXPECT_FLOAT_EQ(list[0][15], 123.3f);
-	EXPECT_FLOAT_EQ(list[1][ 0], 130.0f);
-	EXPECT_FLOAT_EQ(list[1][ 1], 130.1f);
-	EXPECT_FLOAT_EQ(list[1][ 2], 130.2f);
-	EXPECT_FLOAT_EQ(list[1][ 3], 130.3f);
-	EXPECT_FLOAT_EQ(list[1][ 4], 131.0f);
-	EXPECT_FLOAT_EQ(list[1][ 5], 131.1f);
-	EXPECT_FLOAT_EQ(list[1][ 6], 131.2f);
-	EXPECT_FLOAT_EQ(list[1][ 7], 131.3f);
-	EXPECT_FLOAT_EQ(list[1][ 8], 132.0f);
-	EXPECT_FLOAT_EQ(list[1][ 9], 132.1f);
-	EXPECT_FLOAT_EQ(list[1][10], 132.2f);
-	EXPECT_FLOAT_EQ(list[1][11], 132.3f);
-	EXPECT_FLOAT_EQ(list[1][12], 133.0f);
-	EXPECT_FLOAT_EQ(list[1][13], 133.1f);
-	EXPECT_FLOAT_EQ(list[1][14], 133.2f);
-	EXPECT_FLOAT_EQ(list[1][15], 133.3f);
-	EXPECT_FLOAT_EQ(list[2][ 0], 140.0f);
-	EXPECT_FLOAT_EQ(list[2][ 1], 140.1f);
-	EXPECT_FLOAT_EQ(list[2][ 2], 140.2f);
-	EXPECT_FLOAT_EQ(list[2][ 3], 140.3f);
-	EXPECT_FLOAT_EQ(list[2][ 4], 141.0f);
-	EXPECT_FLOAT_EQ(list[2][ 5], 141.1f);
-	EXPECT_FLOAT_EQ(list[2][ 6], 141.2f);
-	EXPECT_FLOAT_EQ(list[2][ 7], 141.3f);
-	EXPECT_FLOAT_EQ(list[2][ 8], 142.0f);
-	EXPECT_FLOAT_EQ(list[2][ 9], 142.1f);
-	EXPECT_FLOAT_EQ(list[2][10], 142.2f);
-	EXPECT_FLOAT_EQ(list[2][11], 142.3f);
-	EXPECT_FLOAT_EQ(list[2][12], 143.0f);
-	EXPECT_FLOAT_EQ(list[2][13], 143.1f);
-	EXPECT_FLOAT_EQ(list[2][14], 143.2f);
-	EXPECT_FLOAT_EQ(list[2][15], 143.3f);
+	EXPECT_FLOAT_EQ(list[0][0][0], 120.0f);
+	EXPECT_FLOAT_EQ(list[0][0][1], 120.1f);
+	EXPECT_FLOAT_EQ(list[0][0][2], 120.2f);
+	EXPECT_FLOAT_EQ(list[0][0][3], 120.3f);
+	EXPECT_FLOAT_EQ(list[0][1][0], 121.0f);
+	EXPECT_FLOAT_EQ(list[0][1][1], 121.1f);
+	EXPECT_FLOAT_EQ(list[0][1][2], 121.2f);
+	EXPECT_FLOAT_EQ(list[0][1][3], 121.3f);
+	EXPECT_FLOAT_EQ(list[0][2][0], 122.0f);
+	EXPECT_FLOAT_EQ(list[0][2][1], 122.1f);
+	EXPECT_FLOAT_EQ(list[0][2][2], 122.2f);
+	EXPECT_FLOAT_EQ(list[0][2][3], 122.3f);
+	EXPECT_FLOAT_EQ(list[0][3][0], 123.0f);
+	EXPECT_FLOAT_EQ(list[0][3][1], 123.1f);
+	EXPECT_FLOAT_EQ(list[0][3][2], 123.2f);
+	EXPECT_FLOAT_EQ(list[0][3][3], 123.3f);
+	EXPECT_FLOAT_EQ(list[1][0][0], 130.0f);
+	EXPECT_FLOAT_EQ(list[1][0][1], 130.1f);
+	EXPECT_FLOAT_EQ(list[1][0][2], 130.2f);
+	EXPECT_FLOAT_EQ(list[1][0][3], 130.3f);
+	EXPECT_FLOAT_EQ(list[1][1][0], 131.0f);
+	EXPECT_FLOAT_EQ(list[1][1][1], 131.1f);
+	EXPECT_FLOAT_EQ(list[1][1][2], 131.2f);
+	EXPECT_FLOAT_EQ(list[1][1][3], 131.3f);
+	EXPECT_FLOAT_EQ(list[1][2][0], 132.0f);
+	EXPECT_FLOAT_EQ(list[1][2][1], 132.1f);
+	EXPECT_FLOAT_EQ(list[1][2][2], 132.2f);
+	EXPECT_FLOAT_EQ(list[1][2][3], 132.3f);
+	EXPECT_FLOAT_EQ(list[1][3][0], 133.0f);
+	EXPECT_FLOAT_EQ(list[1][3][1], 133.1f);
+	EXPECT_FLOAT_EQ(list[1][3][2], 133.2f);
+	EXPECT_FLOAT_EQ(list[1][3][3], 133.3f);
+	EXPECT_FLOAT_EQ(list[2][0][0], 140.0f);
+	EXPECT_FLOAT_EQ(list[2][0][1], 140.1f);
+	EXPECT_FLOAT_EQ(list[2][0][2], 140.2f);
+	EXPECT_FLOAT_EQ(list[2][0][3], 140.3f);
+	EXPECT_FLOAT_EQ(list[2][1][0], 141.0f);
+	EXPECT_FLOAT_EQ(list[2][1][1], 141.1f);
+	EXPECT_FLOAT_EQ(list[2][1][2], 141.2f);
+	EXPECT_FLOAT_EQ(list[2][1][3], 141.3f);
+	EXPECT_FLOAT_EQ(list[2][2][0], 142.0f);
+	EXPECT_FLOAT_EQ(list[2][2][1], 142.1f);
+	EXPECT_FLOAT_EQ(list[2][2][2], 142.2f);
+	EXPECT_FLOAT_EQ(list[2][2][3], 142.3f);
+	EXPECT_FLOAT_EQ(list[2][3][0], 143.0f);
+	EXPECT_FLOAT_EQ(list[2][3][1], 143.1f);
+	EXPECT_FLOAT_EQ(list[2][3][2], 143.2f);
+	EXPECT_FLOAT_EQ(list[2][3][3], 143.3f);
 
 	EXPECT_FALSE(strct.getMatrix4x4(9999, list));
 
@@ -2327,25 +2326,25 @@ GTEST_TEST(GFF4StructRef, getMatrix4x4Matrix) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4RefValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	Common::Matrix4x4 m;
+	glm::mat4 m;
 	EXPECT_TRUE(strct.getMatrix4x4(772, m));
 
-	EXPECT_FLOAT_EQ(m[ 0], 40.0f);
-	EXPECT_FLOAT_EQ(m[ 1], 40.1f);
-	EXPECT_FLOAT_EQ(m[ 2], 40.2f);
-	EXPECT_FLOAT_EQ(m[ 3], 40.3f);
-	EXPECT_FLOAT_EQ(m[ 4], 41.0f);
-	EXPECT_FLOAT_EQ(m[ 5], 41.1f);
-	EXPECT_FLOAT_EQ(m[ 6], 41.2f);
-	EXPECT_FLOAT_EQ(m[ 7], 41.3f);
-	EXPECT_FLOAT_EQ(m[ 8], 42.0f);
-	EXPECT_FLOAT_EQ(m[ 9], 42.1f);
-	EXPECT_FLOAT_EQ(m[10], 42.2f);
-	EXPECT_FLOAT_EQ(m[11], 42.3f);
-	EXPECT_FLOAT_EQ(m[12], 43.0f);
-	EXPECT_FLOAT_EQ(m[13], 43.1f);
-	EXPECT_FLOAT_EQ(m[14], 43.2f);
-	EXPECT_FLOAT_EQ(m[15], 43.3f);
+	EXPECT_FLOAT_EQ(m[0][0], 40.0f);
+	EXPECT_FLOAT_EQ(m[0][1], 40.1f);
+	EXPECT_FLOAT_EQ(m[0][2], 40.2f);
+	EXPECT_FLOAT_EQ(m[0][3], 40.3f);
+	EXPECT_FLOAT_EQ(m[1][0], 41.0f);
+	EXPECT_FLOAT_EQ(m[1][1], 41.1f);
+	EXPECT_FLOAT_EQ(m[1][2], 41.2f);
+	EXPECT_FLOAT_EQ(m[1][3], 41.3f);
+	EXPECT_FLOAT_EQ(m[2][0], 42.0f);
+	EXPECT_FLOAT_EQ(m[2][1], 42.1f);
+	EXPECT_FLOAT_EQ(m[2][2], 42.2f);
+	EXPECT_FLOAT_EQ(m[2][3], 42.3f);
+	EXPECT_FLOAT_EQ(m[3][0], 43.0f);
+	EXPECT_FLOAT_EQ(m[3][1], 43.1f);
+	EXPECT_FLOAT_EQ(m[3][2], 43.2f);
+	EXPECT_FLOAT_EQ(m[3][3], 43.3f);
 
 	EXPECT_FALSE(strct.getMatrix4x4(9999, m));
 
@@ -2726,27 +2725,27 @@ GTEST_TEST(GFF4StructRef, getMatrix4x4MatrixList) {
 	Aurora::GFF4File gff4(new Common::MemoryReadStream(kGFF4RefValues));
 	const Aurora::GFF4Struct &strct = gff4.getTopLevel();
 
-	std::vector<Common::Matrix4x4> list;
+	std::vector<glm::mat4> list;
 
 	EXPECT_TRUE(strct.getMatrix4x4(772, list));
 	ASSERT_EQ(list.size(), 1);
 
-	EXPECT_FLOAT_EQ(list[0][ 0], 40.0f);
-	EXPECT_FLOAT_EQ(list[0][ 1], 40.1f);
-	EXPECT_FLOAT_EQ(list[0][ 2], 40.2f);
-	EXPECT_FLOAT_EQ(list[0][ 3], 40.3f);
-	EXPECT_FLOAT_EQ(list[0][ 4], 41.0f);
-	EXPECT_FLOAT_EQ(list[0][ 5], 41.1f);
-	EXPECT_FLOAT_EQ(list[0][ 6], 41.2f);
-	EXPECT_FLOAT_EQ(list[0][ 7], 41.3f);
-	EXPECT_FLOAT_EQ(list[0][ 8], 42.0f);
-	EXPECT_FLOAT_EQ(list[0][ 9], 42.1f);
-	EXPECT_FLOAT_EQ(list[0][10], 42.2f);
-	EXPECT_FLOAT_EQ(list[0][11], 42.3f);
-	EXPECT_FLOAT_EQ(list[0][12], 43.0f);
-	EXPECT_FLOAT_EQ(list[0][13], 43.1f);
-	EXPECT_FLOAT_EQ(list[0][14], 43.2f);
-	EXPECT_FLOAT_EQ(list[0][15], 43.3f);
+	EXPECT_FLOAT_EQ(list[0][0][0], 40.0f);
+	EXPECT_FLOAT_EQ(list[0][0][1], 40.1f);
+	EXPECT_FLOAT_EQ(list[0][0][2], 40.2f);
+	EXPECT_FLOAT_EQ(list[0][0][3], 40.3f);
+	EXPECT_FLOAT_EQ(list[0][1][0], 41.0f);
+	EXPECT_FLOAT_EQ(list[0][1][1], 41.1f);
+	EXPECT_FLOAT_EQ(list[0][1][2], 41.2f);
+	EXPECT_FLOAT_EQ(list[0][1][3], 41.3f);
+	EXPECT_FLOAT_EQ(list[0][2][0], 42.0f);
+	EXPECT_FLOAT_EQ(list[0][2][1], 42.1f);
+	EXPECT_FLOAT_EQ(list[0][2][2], 42.2f);
+	EXPECT_FLOAT_EQ(list[0][2][3], 42.3f);
+	EXPECT_FLOAT_EQ(list[0][3][0], 43.0f);
+	EXPECT_FLOAT_EQ(list[0][3][1], 43.1f);
+	EXPECT_FLOAT_EQ(list[0][3][2], 43.2f);
+	EXPECT_FLOAT_EQ(list[0][3][3], 43.3f);
 
 	EXPECT_FALSE(strct.getMatrix4x4(9999, list));
 

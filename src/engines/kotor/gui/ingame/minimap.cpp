@@ -22,6 +22,10 @@
  *  The ingame minimap.
  */
 
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/util.h"
 
 #include "src/engines/kotor/gui/ingame/minimap.h"
@@ -39,14 +43,13 @@ Minimap::Minimap(const Common::UString &map, int northAxis,
 
 	add(&_mapQuad);
 
-	Common::Matrix4x4 projection;
-	projection.ortho(0, 120, 0, 120, -1, 1);
+	glm::mat4 projection(glm::ortho(0.0f, 120.0f, 0.0f, 120.0f, -1.0f, 1.0f));
 
 	setProjectionMatrix(projection);
 }
 
 void Minimap::setPosition(float x, float y) {
-	Common::Matrix4x4 transformation;
+	glm::mat4 transformation;
 
 	float scaleX, scaleY, relX, relY;
 	switch (_northAxis) {
@@ -55,7 +58,7 @@ void Minimap::setPosition(float x, float y) {
 			scaleX = (_mapPt1X - _mapPt2X) / (_worldPt1X - _worldPt2X);
 			relX = (x - _worldPt1X) * scaleX + _mapPt1X;
 			relY = (y - _worldPt1Y) * scaleY + _mapPt1Y;
-			transformation.translate(-(relX * 435) + 60, -(256 - relY * 256) + 60, 0);
+			transformation = glm::translate(transformation, glm::vec3(-(relX * 435) + 60, -(256 - relY * 256) + 60, 0));
 			break;
 
 		case 3:
@@ -63,7 +66,7 @@ void Minimap::setPosition(float x, float y) {
 			scaleY = (_mapPt1X - _mapPt2X) / (_worldPt1Y - _worldPt2Y);
 			relX = (y - _worldPt1Y) * scaleY + _mapPt1X;
 			relY = (x - _worldPt1X) * scaleX + _mapPt1Y;
-			transformation.translate(-(relX * 435) + 60, -(256 - relY * 256) + 60, 0);
+			transformation = glm::translate(transformation, glm::vec3(-(relX * 435) + 60, -(256 - relY * 256) + 60, 0));
 			break;
 
 		default:

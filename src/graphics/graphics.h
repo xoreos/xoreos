@@ -30,12 +30,12 @@
 #include <vector>
 #include <list>
 
+#include "glm/mat4x4.hpp"
+
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
 #include "src/common/mutex.h"
-#include "src/common/matrix4x4.h"
-#include "src/common/vector3.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/types.h"
@@ -154,16 +154,16 @@ public:
 
 	// Block of functions below may or may not be modified in the future.
 	/** Return the current screen projection view matrix. */
-	const Common::Matrix4x4 &getProjectionMatrix() const;
-	Common::Matrix4x4 &getProjectionMatrix();
+	const glm::mat4 &getProjectionMatrix() const;
+	glm::mat4 &getProjectionMatrix();
 	/** Return the inverse screen projection view matrix. */
-	const Common::Matrix4x4 &getProjectionInverseMatrix() const;
+	const glm::mat4 &getProjectionInverseMatrix() const;
 
 	/** Return the current modelview matrix (camera view). */
-	const Common::Matrix4x4 &getModelviewMatrix() const;
-	Common::Matrix4x4 &getModelviewMatrix();
+	const glm::mat4 &getModelviewMatrix() const;
+	glm::mat4 &getModelviewMatrix();
 	/** Return the inverse modelview matrix (camera view). */
-	const Common::Matrix4x4 &getModelviewInverseMatrix() const;
+	const glm::mat4 &getModelviewInverseMatrix() const;
 
 private:
 	enum ProjectType {
@@ -201,10 +201,10 @@ private:
 
 	uint32 _lastSampled; ///< Timestamp used to advance animations.
 
-	Common::Matrix4x4 _projection;    ///< Our projection matrix.
-	Common::Matrix4x4 _projectionInv; ///< The inverse of our projection matrix.
-	Common::Matrix4x4 _modelview;     ///< Our base modelview matrix (i.e camera view).
-	Common::Matrix4x4 _modelviewInv;  ///< The inverse of our modelview matrix.
+	glm::mat4 _projection;    ///< Our projection matrix.
+	glm::mat4 _projectionInv; ///< The inverse of our projection matrix.
+	glm::mat4 _modelview;     ///< Our base modelview matrix (i.e camera view).
+	glm::mat4 _modelviewInv;  ///< The inverse of our modelview matrix.
 
 	boost::atomic<uint32> _frameLock;
 	boost::atomic<bool>   _frameEndSignal;

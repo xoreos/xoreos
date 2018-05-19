@@ -27,6 +27,9 @@
 
 #include <boost/bind.hpp>
 
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/version/version.h"
 
 #include "src/common/util.h"
@@ -35,8 +38,6 @@
 #include "src/common/configman.h"
 #include "src/common/debugman.h"
 #include "src/common/threads.h"
-#include "src/common/matrix4x4.h"
-#include "src/common/vector3.h"
 
 #include "src/events/requests.h"
 #include "src/events/events.h"
@@ -60,6 +61,8 @@
 #include "src/graphics/mesh/meshman.h"
 
 DECLARE_SINGLETON(Graphics::GraphicsManager)
+
+static glm::mat4 inverse(const glm::mat4 &m);
 
 namespace Graphics {
 
@@ -456,27 +459,27 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	const float t1 = (zFar + zNear) / (zNear - zFar);
 	const float t2 = (2 * zFar * zNear) / (zNear - zFar);
 
-	_projection(0, 0) =  f / aspect;
-	_projection(0, 1) =  0.0f;
-	_projection(0, 2) =  0.0f;
-	_projection(0, 3) =  0.0f;
+	_projection[0][0] =  f / aspect;
+	_projection[1][0] =  0.0f;
+	_projection[2][0] =  0.0f;
+	_projection[3][0] =  0.0f;
 
-	_projection(1, 0) =  0.0f;
-	_projection(1, 1) =  f;
-	_projection(1, 2) =  0.0f;
-	_projection(1, 3) =  0.0f;
+	_projection[0][1] =  0.0f;
+	_projection[1][1] =  f;
+	_projection[2][1] =  0.0f;
+	_projection[3][1] =  0.0f;
 
-	_projection(2, 0) =  0.0f;
-	_projection(2, 1) =  0.0f;
-	_projection(2, 2) =  t1;
-	_projection(2, 3) =  t2;
+	_projection[0][2] =  0.0f;
+	_projection[1][2] =  0.0f;
+	_projection[2][2] =  t1;
+	_projection[3][2] =  t2;
 
-	_projection(3, 0) =  0.0f;
-	_projection(3, 1) =  0.0f;
-	_projection(3, 2) = -1.0f;
-	_projection(3, 3) =  0.0f;
+	_projection[0][3] =  0.0f;
+	_projection[1][3] =  0.0f;
+	_projection[2][3] = -1.0f;
+	_projection[3][3] =  0.0f;
 
-	_projectionInv = _projection.getInverse();
+	_projectionInv = glm::inverse(_projection);
 }
 
 void GraphicsManager::setOrthogonal(float clipNear, float clipFar) {
@@ -499,37 +502,37 @@ void GraphicsManager::ortho(float left, float right, float bottom, float top, fl
 	assert(zFar > zNear);
 	assert((zFar - zNear) > 0.001f);
 
-	_projection(0, 0) = 2.0f / (right - left);
-	_projection(0, 1) = 0.0f;
-	_projection(0, 2) = 0.0f;
-	_projection(0, 3) = - ((right + left) / (right - left));
+	_projection[0][0] = 2.0f / (right - left);
+	_projection[1][0] = 0.0f;
+	_projection[2][0] = 0.0f;
+	_projection[3][0] = - ((right + left) / (right - left));
 
-	_projection(1, 0) = 0.0f;
-	_projection(1, 1) = 2.0f / (top - bottom);
-	_projection(1, 2) = 0.0f;
-	_projection(1, 3) = - ((top + bottom) / (top - bottom));
+	_projection[0][1] = 0.0f;
+	_projection[1][1] = 2.0f / (top - bottom);
+	_projection[2][1] = 0.0f;
+	_projection[3][1] = - ((top + bottom) / (top - bottom));
 
-	_projection(2, 0) = 0.0f;
-	_projection(2, 1) = 0.0f;
-	_projection(2, 2) = - (2.0f / (zFar - zNear));
-	_projection(2, 3) = - ((zFar + zNear) / (zFar - zNear));
+	_projection[0][2] = 0.0f;
+	_projection[1][2] = 0.0f;
+	_projection[2][2] = - (2.0f / (zFar - zNear));
+	_projection[3][2] = - ((zFar + zNear) / (zFar - zNear));
 
-	_projection(3, 0) = 0.0f;
-	_projection(3, 1) = 0.0f;
-	_projection(3, 2) = 0.0f;
-	_projection(3, 3) = 1.0f;
+	_projection[0][3] = 0.0f;
+	_projection[1][3] = 0.0f;
+	_projection[2][3] = 0.0f;
+	_projection[3][3] = 1.0f;
 
-	_projectionInv = _projection.getInverse();
+	_projectionInv = inverse(_projection);
 }
 
 bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, float &sZ) {
 	// This is our projection matrix
-	Common::Matrix4x4 proj(_projection);
+	glm::mat4 proj(_projection);
 
 
 	// Generate the model matrix
 
-	Common::Matrix4x4 model;
+	glm::mat4 model;
 
 	float cPos[3];
 	float cOrient[3];
@@ -538,25 +541,25 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
 
 	// Apply camera orientation
-	model.rotate(-cOrient[0], 1.0f, 0.0f, 0.0f);
-	model.rotate(-cOrient[1], 0.0f, 1.0f, 0.0f);
-	model.rotate(-cOrient[2], 0.0f, 0.0f, 1.0f);
+	model = glm::rotate(model, Common::deg2rad(-cOrient[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, Common::deg2rad(-cOrient[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, Common::deg2rad(-cOrient[2]), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	// Apply camera position
-	model.translate(-cPos[0], -cPos[1], -cPos[2]);
+	model = glm::translate(model, glm::vec3(-cPos[0], -cPos[1], -cPos[2]));
 
 
-	Common::Vector3 coords(x, y, z);
+	glm::vec4 coords(x, y, z, 1);
 
 	// Multiply them
-	Common::Vector3 v(proj * model * coords);
+	glm::vec4 v(proj * model * coords);
 
 	// Projection divide
 
-	if (v._w == 0.0f)
+	if (v.w == 0.0f)
 		return false;
 
-	float divider = 1.0f / v._w;
+	float divider = 1.0f / v.w;
 	v *= divider;
 
 	// Viewport coordinates
@@ -569,9 +572,9 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 	view[3] = WindowMan.getWindowHeight();
 
 
-	sX = view[0] + view[2] * (v._x + 1.0f) / 2.0f;
-	sY = view[1] + view[3] * (v._y + 1.0f) / 2.0f;
-	sZ =                     (v._z + 1.0f) / 2.0f;
+	sX = view[0] + view[2] * (v.x + 1.0f) / 2.0f;
+	sY = view[1] + view[3] * (v.y + 1.0f) / 2.0f;
+	sZ =                     (v.z + 1.0f) / 2.0f;
 
 	sX -= view[2] / 2.0f;
 	sY -= view[3] / 2.0f;
@@ -585,7 +588,7 @@ bool GraphicsManager::unproject(float x, float y,
 	try {
 		// Generate the inverse of the model matrix
 
-		Common::Matrix4x4 model;
+		glm::mat4 model;
 
 		float cPos[3];
 		float cOrient[3];
@@ -594,12 +597,12 @@ bool GraphicsManager::unproject(float x, float y,
 		memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
 
 		// Apply camera position
-		model.translate(cPos[0], cPos[1], cPos[2]);
+		model = glm::translate(model, glm::vec3(cPos[0], cPos[1], cPos[2]));
 
 		// Apply camera orientation
-		model.rotate(cOrient[2], 0.0f, 0.0f, 1.0f);
-		model.rotate(cOrient[1], 0.0f, 1.0f, 0.0f);
-		model.rotate(cOrient[0], 1.0f, 0.0f, 0.0f);
+		model = glm::rotate(model, Common::deg2rad(cOrient[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::rotate(model, Common::deg2rad(cOrient[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, Common::deg2rad(cOrient[0]), glm::vec3(1.0f, 0.0f, 0.0f));
 
 
 		// Multiply with the inverse of our projection matrix
@@ -607,7 +610,7 @@ bool GraphicsManager::unproject(float x, float y,
 
 
 		// Coordinates at the near and far clipping planes
-		Common::Vector3 coordsNear, coordsFar;
+		glm::vec4 coordsNear, coordsFar;
 
 		if (_projectType == kProjectTypePerspective) {
 			/* With a perspective projection, the viewport runs from -1.0 to 0.0
@@ -617,15 +620,15 @@ bool GraphicsManager::unproject(float x, float y,
 			const float zNear   = 0.0f;
 			const float zFar    = 1.0f;
 
-			coordsNear._x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
-			coordsNear._y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
-			coordsNear._z = (2 * zNear) - 1.0f;
-			coordsNear._w = 1.0f;
+			coordsNear.x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
+			coordsNear.y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
+			coordsNear.z = (2 * zNear) - 1.0f;
+			coordsNear.w = 1.0f;
 
-			coordsFar._x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
-			coordsFar._y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
-			coordsFar._z = (2 * zFar) - 1.0f;
-			coordsFar._w = 1.0f;
+			coordsFar.x = ((2 * (x - view[0])) / (view[2])) - 1.0f;
+			coordsFar.y = ((2 * (y - view[1])) / (view[3])) - 1.0f;
+			coordsFar.z = (2 * zFar) - 1.0f;
+			coordsFar.w = 1.0f;
 
 		} else if (_projectType == kProjectTypeOrthogonal) {
 			/* With an orthogonal projection, the viewport runs from 0.0 to width
@@ -633,37 +636,37 @@ bool GraphicsManager::unproject(float x, float y,
 			 * matches the coordinates we were given), and the clipping planes are
 			 * at -clipNear and -clipFar. */
 
-			coordsNear._x = x;
-			coordsNear._y = y;
-			coordsNear._z = -_clipNear;
-			coordsNear._w = 1.0f;
+			coordsNear.x = x;
+			coordsNear.y = y;
+			coordsNear.z = -_clipNear;
+			coordsNear.w = 1.0f;
 
-			coordsFar._x = x;
-			coordsFar._y = y;
-			coordsFar._z = -_clipFar;
-			coordsFar._w = 1.0f;
+			coordsFar.x = x;
+			coordsFar.y = y;
+			coordsFar.z = -_clipFar;
+			coordsFar.w = 1.0f;
 		}
 
 		// Unproject
-		Common::Vector3 oNear(model * coordsNear);
-		Common::Vector3 oFar (model * coordsFar );
-		if ((oNear._w == 0.0f) || (oFar._w == 0.0f))
+		glm::vec4 oNear(model * coordsNear);
+		glm::vec4 oFar (model * coordsFar );
+		if ((oNear.w == 0.0f) || (oFar.w == 0.0f))
 			return false; // TODO: check for close to 0.0f, not exactly 0.0f.
 
 
 		// And return the values
 
-		oNear._w = 1.0f / oNear._w;
+		oNear.w = 1.0f / oNear.w;
 
-		x1 = oNear._x * oNear._w;
-		y1 = oNear._y * oNear._w;
-		z1 = oNear._z * oNear._w;
+		x1 = oNear.x * oNear.w;
+		y1 = oNear.y * oNear.w;
+		z1 = oNear.z * oNear.w;
 
-		oFar._w = 1.0f / oFar._w;
+		oFar.w = 1.0f / oFar.w;
 
-		x2 = oFar._x * oFar._w;
-		y2 = oFar._y * oFar._w;
-		z2 = oFar._z * oFar._w;
+		x2 = oFar.x * oFar.w;
+		y2 = oFar.y * oFar.w;
+		z2 = oFar.z * oFar.w;
 
 	} catch (...) {
 		Common::exceptionDispatcherWarning();
@@ -926,7 +929,7 @@ bool GraphicsManager::renderWorld() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glMultMatrixf(_projection.get());
+	glMultMatrixf(glm::value_ptr(_projection));
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -939,11 +942,11 @@ bool GraphicsManager::renderWorld() {
 	// Apply camera position
 	glTranslatef(-cPos[0], -cPos[1], -cPos[2]);
 
-	_modelview.loadIdentity();
-	_modelview.rotate(-cOrient[0], 1.0f, 0.0f, 0.0f);
-	_modelview.rotate(-cOrient[1], 0.0f, 1.0f, 0.0f);
-	_modelview.rotate(-cOrient[2], 0.0f, 0.0f, 1.0f);
-	_modelview.translate(-cPos[0], -cPos[1], -cPos[2]);
+	_modelview = glm::mat4();
+	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+	_modelview = glm::translate(_modelview, glm::vec3(-cPos[0], -cPos[1], -cPos[2]));
 
 	QueueMan.lockQueue(kQueueVisibleWorldObject);
 	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
@@ -1108,27 +1111,27 @@ void GraphicsManager::renderScene() {
 	_frameEndSignal.store(true, boost::memory_order_release);
 }
 
-const Common::Matrix4x4 &GraphicsManager::getProjectionMatrix() const {
+const glm::mat4 &GraphicsManager::getProjectionMatrix() const {
 	return _projection;
 }
 
-Common::Matrix4x4 &GraphicsManager::getProjectionMatrix() {
+glm::mat4 &GraphicsManager::getProjectionMatrix() {
 	return _projection;
 }
 
-const Common::Matrix4x4 &GraphicsManager::getProjectionInverseMatrix() const {
+const glm::mat4 &GraphicsManager::getProjectionInverseMatrix() const {
 	return _projectionInv;
 }
 
-const Common::Matrix4x4 &GraphicsManager::getModelviewMatrix() const {
+const glm::mat4 &GraphicsManager::getModelviewMatrix() const {
 	return _modelview;
 }
 
-Common::Matrix4x4 &GraphicsManager::getModelviewMatrix() {
+glm::mat4 &GraphicsManager::getModelviewMatrix() {
 	return _modelview;
 }
 
-const Common::Matrix4x4 &GraphicsManager::getModelviewInverseMatrix() const {
+const glm::mat4 &GraphicsManager::getModelviewInverseMatrix() const {
 	return _modelviewInv;
 }
 
@@ -1204,3 +1207,45 @@ void GraphicsManager::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),
 }
 
 } // End of namespace Graphics
+
+static glm::mat4 inverse(const glm::mat4 &m) {
+	float A0 = (m[0][0] * m[1][1]) - (m[0][1] * m[1][0]);
+	float A1 = (m[0][0] * m[1][2]) - (m[0][2] * m[1][0]);
+	float A2 = (m[0][0] * m[1][3]) - (m[0][3] * m[1][0]);
+	float A3 = (m[0][1] * m[1][2]) - (m[0][2] * m[1][1]);
+	float A4 = (m[0][1] * m[1][3]) - (m[0][3] * m[1][1]);
+	float A5 = (m[0][2] * m[1][3]) - (m[0][3] * m[1][2]);
+	float B0 = (m[2][0] * m[3][1]) - (m[2][1] * m[3][0]);
+	float B1 = (m[2][0] * m[3][2]) - (m[2][2] * m[3][0]);
+	float B2 = (m[2][0] * m[3][3]) - (m[2][3] * m[3][0]);
+	float B3 = (m[2][1] * m[3][2]) - (m[2][2] * m[3][1]);
+	float B4 = (m[2][1] * m[3][3]) - (m[2][3] * m[3][1]);
+	float B5 = (m[2][2] * m[3][3]) - (m[2][3] * m[3][2]);
+
+	float det = A0*B5 - A1*B4 + A2*B3 + A3*B2 - A4*B1 + A5*B0;
+
+	if (fabs(det) <= 0.00001f)
+		return glm::mat4();
+
+	det = 1.0f / det;
+	glm::mat4 t;
+
+	t[0][0] = (m[1][1] * B5 - m[1][2] * B4 + m[1][3] * B3) * det;
+	t[1][0] = (m[1][2] * B2 - m[1][3] * B1 - m[1][0] * B5) * det;
+	t[2][0] = (m[1][0] * B4 - m[1][1] * B2 + m[1][3] * B0) * det;
+	t[3][0] = (m[1][1] * B1 - m[1][0] * B3 - m[1][2] * B0) * det;
+	t[0][1] = (m[0][2] * B4 - m[0][3] * B3 - m[0][1] * B5) * det;
+	t[1][1] = (m[0][0] * B5 - m[0][2] * B2 + m[0][3] * B1) * det;
+	t[2][1] = (m[0][1] * B2 - m[0][3] * B0 - m[0][0] * B4) * det;
+	t[3][1] = (m[0][0] * B3 - m[0][1] * B1 + m[0][2] * B0) * det;
+	t[0][2] = (m[3][1] * A5 - m[3][2] * A4 + m[3][3] * A3) * det;
+	t[1][2] = (m[3][2] * A2 - m[3][3] * A1 - m[3][0] * A5) * det;
+	t[2][2] = (m[3][0] * A4 - m[3][1] * A2 + m[3][3] * A0) * det;
+	t[3][2] = (m[3][1] * A1 - m[3][0] * A3 - m[3][2] * A0) * det;
+	t[0][3] = (m[2][2] * A4 - m[2][3] * A3 - m[2][1] * A5) * det;
+	t[1][3] = (m[2][0] * A5 - m[2][2] * A2 + m[2][3] * A1) * det;
+	t[2][3] = (m[2][1] * A2 - m[2][3] * A0 - m[2][0] * A4) * det;
+	t[3][3] = (m[2][0] * A3 - m[2][1] * A1 + m[2][2] * A0) * det;
+
+	return t;
+}

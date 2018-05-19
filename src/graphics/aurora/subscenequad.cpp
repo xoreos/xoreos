@@ -24,6 +24,8 @@
 
 #include <algorithm>
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "src/common/maths.h"
 
 #include "src/graphics/aurora/subscenequad.h"
@@ -60,12 +62,12 @@ void SubSceneQuad::render(RenderPass pass) {
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	glMultMatrixf(_projection.get());
+	glMultMatrixf(glm::value_ptr(_projection));
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glMultMatrixf(_transformation.get());
+	glMultMatrixf(glm::value_ptr(_transformation));
 
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(_x, _y, _width, _height);
@@ -107,11 +109,11 @@ void SubSceneQuad::setSize(int width, int height) {
 	_height = height;
 }
 
-void SubSceneQuad::setProjectionMatrix(const Common::Matrix4x4 &projection) {
+void SubSceneQuad::setProjectionMatrix(const glm::mat4 &projection) {
 	_projection = projection;
 }
 
-void SubSceneQuad::setGlobalTransformationMatrix(const Common::Matrix4x4 &transformation) {
+void SubSceneQuad::setGlobalTransformationMatrix(const glm::mat4 &transformation) {
 	_transformation = transformation;
 }
 

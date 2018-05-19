@@ -28,7 +28,6 @@
 #include <stdlib.h>
 
 #include "src/common/util.h"
-#include "src/common/matrix4x4.h"
 
 #include "src/graphics/graphics.h"
 

@@ -55,6 +55,10 @@
 #include <cassert>
 #include <cstring>
 
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/matrix_interpolation.hpp"
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/strutil.h"
@@ -301,7 +305,7 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 
 	bone.name = info.name;
 
-	bone.transform.loadIdentity();
+	bone.transform = glm::mat4();
 
 
 	const uint16 flags = ctx.nsbmd->readUint16();
@@ -323,32 +327,32 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 		const float y = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
 		const float z = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
 
-		bone.transform.translate(x, y, z);
+		bone.transform = glm::translate(bone.transform, glm::vec3(x, y, z));
 	}
 
 	if (hasPivot) {
 		const float pivotA = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 		const float pivotB = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
-		const Common::Matrix4x4 pivot = createPivot(pivotA, pivotB, pivotSelect, pivotNegate);
+		const glm::mat4 pivot = createPivot(pivotA, pivotB, pivotSelect, pivotNegate);
 
 		bone.transform *= pivot;
 	}
 
 	if (hasRotate) {
-		Common::Matrix4x4 rotateMatrix;
+		glm::mat4 rotateMatrix;
 
-		rotateMatrix[ 0] = rotate0;
-		rotateMatrix[ 1] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotateMatrix[ 2] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[0][0] = rotate0;
+		rotateMatrix[0][1] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[0][2] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
-		rotateMatrix[ 4] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotateMatrix[ 5] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotateMatrix[ 6] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[1][0] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[1][1] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[1][2] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
-		rotateMatrix[ 8] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotateMatrix[ 9] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
-		rotateMatrix[10] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[2][0] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[2][1] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
+		rotateMatrix[2][2] = readNintendoFixedPoint(ctx.nsbmd->readUint16(), true, 3, 12);
 
 		bone.transform *= rotateMatrix;
 	}
@@ -358,7 +362,7 @@ void Model_Sonic::readBone(ParserContext &ctx, Bone &bone, Info &info) {
 		const float y = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
 		const float z = readNintendoFixedPoint(ctx.nsbmd->readUint32(), true, 19, 12);
 
-		bone.transform.scale(x, y, z);
+		bone.transform = glm::scale(bone.transform, glm::vec3(x, y, z));
 	}
 }
 
@@ -793,7 +797,7 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 	if (defaultNode)
 		vertex.nodes.push_back(PrimitiveNode(defaultNode, 1.0f));
 
-	Common::Vector3 primScale(ctx.defaultScale, ctx.defaultScale, ctx.defaultScale);
+	glm::vec3 primScale(ctx.defaultScale, ctx.defaultScale, ctx.defaultScale);
 
 	// Texture dimensions, to convert the texture coordinates to OpenGL notation
 
@@ -953,7 +957,7 @@ void Model_Sonic::createPrimitives(ParserContext &ctx, Geometry &geometry, Polyg
 				primitive->invalid = true;
 
 			primitive->vertices.push_back(vertex);
-			primitive->vertices.back().vertex.multiply(primScale);
+			primitive->vertices.back().vertex *= primScale;
 
 			hasVertex = false;
 		}
@@ -1163,11 +1167,11 @@ void Model_Sonic::evaluatePrimitive(Primitive &primitive) {
 		 * position of its base node. Use an identity matrix as a fallback. */
 
 		// TODO: For some primitives, we need to calculate the weighted average of several matrices
-		Common::Matrix4x4 matrix;
+		glm::mat4 matrix;
 		if (!v->nodes.empty() && v->nodes[0].node)
 			matrix = v->nodes[0].node->getAbsolutePosition();
 
-		const Common::Vector3 pos = matrix * v->vertex;
+		const glm::vec4 pos = matrix * glm::vec4(v->vertex.x, v->vertex.y, v->vertex.z, 1);
 
 		*vData++ = pos[0];
 		*vData++ = pos[1];
@@ -1276,7 +1280,7 @@ uint8 Model_Sonic::getPolygonParameterCount(PolygonCommandID cmd) {
 	}
 }
 
-Common::Matrix4x4 Model_Sonic::createPivot(double a, double b, uint8 select, uint8 negate) {
+glm::mat4 Model_Sonic::createPivot(double a, double b, uint8 select, uint8 negate) {
 	float pivot[16] = {
 		0.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 0.0f,
@@ -1326,7 +1330,7 @@ Common::Matrix4x4 Model_Sonic::createPivot(double a, double b, uint8 select, uin
 			break;
 	}
 
-	return Common::Matrix4x4(pivot);
+	return glm::make_mat4(pivot);
 }
 
 void Model_Sonic::render(RenderPass pass) {
@@ -1382,9 +1386,23 @@ void ModelNode_Sonic::load(Model_Sonic::ParserContext &ctx, Model_Sonic::Bone &b
 	_render    = true;
 
 	// Decompose the bone's transformation matrix into TRS
-	bone.transform.getPosition(_position[0], _position[1], _position[2]);
-	bone.transform.getAxisAngle(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-	bone.transform.getScale(_scale[0], _scale[1], _scale[2]);
+
+	const glm::mat4 &m = bone.transform;
+
+	_position[0] = m[3][0];
+	_position[1] = m[3][1];
+	_position[2] = m[3][2];
+
+	glm::vec3 axis;
+	glm::axisAngle(m, axis, _orientation[3]);
+	_orientation[3] = Common::rad2deg(_orientation[3]);
+	_orientation[0] = axis.x;
+	_orientation[1] = axis.y;
+	_orientation[2] = axis.z;
+
+	_scale[0] = sqrtf(m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0]);
+	_scale[1] = sqrtf(m[0][1] * m[0][1] + m[1][1] * m[1][1] + m[2][1] * m[2][1]);
+	_scale[2] = sqrtf(m[0][2] * m[0][2] + m[1][2] * m[1][2] + m[2][2] * m[2][2]);
 
 	if (bone.parent)
 		setParent(bone.parent->modelNode);

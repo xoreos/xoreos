@@ -22,11 +22,14 @@
  *  A room in a Dragon Age: Origins area.
  */
 
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/matrix_interpolation.hpp"
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
-#include "src/common/matrix4x4.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/gff4file.h"
@@ -111,9 +114,14 @@ void Room::loadLayout(const Common::UString &roomFile) {
 	rmlTop.getVector4(kGFF4Orientation, roomOrient[0], roomOrient[1], roomOrient[2], roomOrient[3]);
 	roomOrient[3] = Common::rad2deg(acos(roomOrient[3]) * 2.0);
 
-	Common::Matrix4x4 roomTransform;
-	roomTransform.translate(roomPos[0], roomPos[1], roomPos[2]);
-	roomTransform.rotate(roomOrient[3], roomOrient[0], roomOrient[1], roomOrient[2]);
+	glm::mat4 roomTransform;
+
+	roomTransform = glm::translate(roomTransform, glm::vec3(roomPos[0], roomPos[1], roomPos[2]));
+
+	if (roomOrient[0] != 0 || roomOrient[1] != 0 || roomOrient[2] != 0)
+		roomTransform = glm::rotate(roomTransform,
+				Common::deg2rad(roomOrient[3]),
+				glm::vec3(roomOrient[0], roomOrient[1], roomOrient[2]));
 
 	status("Loading room \"%s\" (%d)", roomFile.c_str(), _id);
 
@@ -141,13 +149,25 @@ void Room::loadLayout(const Common::UString &roomFile) {
 
 		_models.push_back(model);
 
-		Common::Matrix4x4 modelTransform(roomTransform);
+		glm::mat4 modelTransform(roomTransform);
 
-		modelTransform.translate(pos[0], pos[1], pos[2]);
-		modelTransform.rotate(orient[3], orient[0], orient[1], orient[2]);
+		modelTransform = glm::translate(modelTransform, glm::vec3(pos[0], pos[1], pos[2]));
 
-		modelTransform.getPosition(pos[0], pos[1], pos[2]);
-		modelTransform.getAxisAngle(orient[3], orient[0], orient[1], orient[2]);
+		if (orient[0] != 0 || orient[1] != 0 || orient[2] != 0)
+			modelTransform = glm::rotate(modelTransform,
+					Common::deg2rad(orient[3]),
+					glm::vec3(orient[0], orient[1], orient[2]));
+
+		pos[0] = modelTransform[3][0];
+		pos[1] = modelTransform[3][1];
+		pos[2] = modelTransform[3][2];
+
+		glm::vec3 axis;
+		glm::axisAngle(modelTransform, axis, orient[3]);
+		orient[3] = Common::rad2deg(orient[3]);
+		orient[0] = axis.x;
+		orient[1] = axis.y;
+		orient[2] = axis.z;
 
 		model->setPosition(pos[0], pos[1], pos[2]);
 		model->setOrientation(orient[0], orient[1], orient[2], orient[3]);

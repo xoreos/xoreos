@@ -1,0 +1,8 @@
+This is GLM 0.9.8.5 source package. This file will list changes applied to
+it:
+
+# Changes
+
+- Modified include files to silence compiler warnings about variable
+  shadowing
+- Fixed GCC version detection for GCC 7.3+

@@ -32,6 +32,8 @@
 
 #include <boost/unordered_set.hpp>
 
+#include "glm/glm.hpp"
+
 #include "src/common/system.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
@@ -40,7 +42,6 @@
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/streamtokenizer.h"
-#include "src/common/vector3.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
@@ -902,20 +903,20 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 			*v++ = vertices[index * 3 + 2];
 
 			// Normals, smoothed
-			Common::Vector3 normal(0.0f, 0.0f, 0.0f);
+			glm::vec3 normal(0.0f, 0.0f, 0.0f);
 			uint32 n = 0;
 
 			for (std::list<Face *>::const_iterator vF = vFaces[index].begin(); vF != vFaces[index].end(); ++vF) {
 				if (face.smooth != (*vF)->smooth)
 					continue;
 
-				normal += Common::Vector3((*vF)->normal[0], (*vF)->normal[1], (*vF)->normal[2]);
+				normal += glm::vec3((*vF)->normal[0], (*vF)->normal[1], (*vF)->normal[2]);
 				n++;
 			}
 
 			if (n > 0) {
 				normal /= (float) n;
-				normal.norm();
+				normal = glm::normalize(normal);
 			}
 
 			*v++ = normal[0];
@@ -1284,7 +1285,7 @@ void ModelNode_NWN_ASCII::readFaces(Model_NWN::ParserContext &ctx, Mesh &mesh) {
 	}
 }
 
-typedef Common::Vector3 Vec3;
+typedef glm::vec3 Vec3;
 
 struct FaceVert {
 	uint32 p, t; // position, texture coord indices
@@ -1338,7 +1339,7 @@ void ModelNode_NWN_ASCII::processMesh(Mesh &mesh) {
 		const Vec3 p1(mesh.vX[v[0]], mesh.vY[v[0]], mesh.vZ[v[0]]);
 		const Vec3 p2(mesh.vX[v[1]], mesh.vY[v[1]], mesh.vZ[v[1]]);
 		const Vec3 p3(mesh.vX[v[2]], mesh.vY[v[2]], mesh.vZ[v[2]]);
-		const Vec3 n = (p2 - p1).cross(p3 - p2).norm();
+		const Vec3 n = glm::normalize(glm::cross(p2 - p1, p3 - p2));
 
 		for (uint32 j = 0; j < 3; j++) {
 			FaceVert fv;

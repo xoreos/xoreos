@@ -29,8 +29,9 @@
 #include <list>
 #include <map>
 
+#include "glm/mat4x4.hpp"
+
 #include "src/common/ustring.h"
-#include "src/common/matrix4x4.h"
 #include "src/common/boundingbox.h"
 
 #include "src/graphics/types.h"
@@ -247,7 +248,7 @@ protected:
 
 	float _center[3]; ///< Model's center.
 
-	Common::Matrix4x4 _absolutePosition;
+	glm::mat4 _absolutePosition;
 
 	/** The model's bounding box. */
 	Common::BoundingBox _boundBox;

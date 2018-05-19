@@ -40,9 +40,9 @@ SatelliteCamera::SatelliteCamera()
 }
 
 void SatelliteCamera::setTarget(float x, float y, float z) {
-	_target._x = x;
-	_target._y = y;
-	_target._z = z;
+	_target.x = x;
+	_target.y = y;
+	_target.z = z;
 	_dirty = true;
 }
 
@@ -96,9 +96,9 @@ void SatelliteCamera::update(float dt) {
 			_yaw = fmodf(_yaw, 2 * M_PI);
 		}
 
-		float x = _target._x + _distance * sin(_yaw);
-		float y = _target._y - _distance * cos(_yaw) * _pitchSin;
-		float z = _target._z + _distance * _pitchCos;
+		float x = _target.x + _distance * sin(_yaw);
+		float y = _target.y - _distance * cos(_yaw) * _pitchSin;
+		float z = _target.z + _distance * _pitchCos;
 
 		CameraMan.setPosition(x, y, z);
 		CameraMan.setOrientation(_pitch, 0, Common::rad2deg(_yaw));

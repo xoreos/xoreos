@@ -102,6 +102,9 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 
   # clang is far too trigger-happy on this warning, so let's disable it
   set_check_compiler_flag_cxx("-Wundefined-var-template" "-Wno-undefined-var-template")
+
+  # Disable warnings about unused local typedefs that came with GLM
+  set_check_compiler_flag_cxx("-Wunused-local-typedefs" "-Wno-unused-local-typedefs")
 endif()
 
 # platform specific warning settings

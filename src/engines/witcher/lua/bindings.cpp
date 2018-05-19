@@ -23,8 +23,9 @@
  *  Mostly stubs at the moment.
  */
 
+#include "glm/vec3.hpp"
+
 #include "src/common/error.h"
-#include "src/common/vector3.h"
 #include "src/common/util.h"
 
 #include "src/aurora/lua/scriptman.h"
@@ -1144,7 +1145,7 @@ void LuaBindings::Vector::registerLuaBindings() {
 
 	LuaScriptMan.beginRegister();
 
-	LuaScriptMan.beginRegisterClass(getLuaType(), "", LUA_DEFAULT_DELETER(Common::Vector3));
+	LuaScriptMan.beginRegisterClass(getLuaType(), "", LUA_DEFAULT_DELETER(glm::vec3));
 	LuaScriptMan.registerVariable("x", &luaGetX, &luaSetX);
 	LuaScriptMan.registerVariable("y", &luaGetY, &luaSetY);
 	LuaScriptMan.registerVariable("z", &luaGetZ, &luaSetZ);
@@ -1165,14 +1166,14 @@ int LuaBindings::Vector::luaNewLocal(lua_State *state) {
 	Aurora::Lua::Stack stack(*state);
 	assert(stack.getSize() == 1 || stack.getSize() == 4);
 
-	Common::Vector3* v = new Common::Vector3;
+	glm::vec3* v = new glm::vec3;
 	if (stack.getSize() == 4) {
-		v->_x = stack.getFloatAt(2);
-		v->_y = stack.getFloatAt(3);
-		v->_z = stack.getFloatAt(4);
+		v->x = stack.getFloatAt(2);
+		v->y = stack.getFloatAt(3);
+		v->z = stack.getFloatAt(4);
 	}
 
-	stack.pushUserType<Common::Vector3>(*v, getLuaType());
+	stack.pushUserType<glm::vec3>(*v, getLuaType());
 	stack.registerGCForTopObject();
 	return 1;
 }
@@ -1183,12 +1184,12 @@ int LuaBindings::Vector::luaSet(lua_State *state) {
 	Aurora::Lua::Stack stack(*state);
 	assert(stack.getSize() == 4);
 
-	Common::Vector3* v = Aurora::Lua::getCppObjectFromStack<Common::Vector3>(stack, 1);
+	glm::vec3* v = Aurora::Lua::getCppObjectFromStack<glm::vec3>(stack, 1);
 	assert(v);
 
-	v->_x = stack.getFloatAt(2);
-	v->_y = stack.getFloatAt(3);
-	v->_z = stack.getFloatAt(4);
+	v->x = stack.getFloatAt(2);
+	v->y = stack.getFloatAt(3);
+	v->z = stack.getFloatAt(4);
 	return 0;
 }
 
@@ -1198,10 +1199,10 @@ int LuaBindings::Vector::luaGetX(lua_State *state) {
 	Aurora::Lua::Stack stack(*state);
 	assert(stack.getSize() == 2);
 
-	Common::Vector3* v = Aurora::Lua::getCppObjectFromStack<Common::Vector3>(stack, 1);
+	glm::vec3* v = Aurora::Lua::getCppObjectFromStack<glm::vec3>(stack, 1);
 	assert(v);
 
-	stack.pushFloat(v->_x);
+	stack.pushFloat(v->x);
 	return 1;
 }
 
@@ -1211,10 +1212,10 @@ int LuaBindings::Vector::luaSetX(lua_State *state) {
 	Aurora::Lua::Stack stack(*state);
 	assert(stack.getSize() == 2);
 
-	Common::Vector3* v = Aurora::Lua::getCppObjectFromStack<Common::Vector3>(stack, 1);
+	glm::vec3* v = Aurora::Lua::getCppObjectFromStack<glm::vec3>(stack, 1);
 	assert(v);
 
-	v->_x = stack.getFloatAt(2);
+	v->x = stack.getFloatAt(2);
 	return 0;
 }
 
@@ -1224,10 +1225,10 @@ int LuaBindings::Vector::luaGetY(lua_State *state) {
 	Aurora::Lua::Stack stack(*state);
 	assert(stack.getSize() == 2);
 
-	Common::Vector3* v = Aurora::Lua::getCppObjectFromStack<Common::Vector3>(stack, 1);
+	glm::vec3* v = Aurora::Lua::getCppObjectFromStack<glm::vec3>(stack, 1);
 	assert(v);
 
-	stack.pushFloat(v->_y);
+	stack.pushFloat(v->y);
 	return 1;
 }
 
@@ -1237,10 +1238,10 @@ int LuaBindings::Vector::luaSetY(lua_State *state) {
 	Aurora::Lua::Stack stack(*state);
 	assert(stack.getSize() == 2);
 
-	Common::Vector3* v = Aurora::Lua::getCppObjectFromStack<Common::Vector3>(stack, 1);
+	glm::vec3* v = Aurora::Lua::getCppObjectFromStack<glm::vec3>(stack, 1);
 	assert(v);
 
-	v->_y = stack.getFloatAt(2);
+	v->y = stack.getFloatAt(2);
 	return 0;
 }
 
@@ -1250,10 +1251,10 @@ int LuaBindings::Vector::luaGetZ(lua_State *state) {
 	Aurora::Lua::Stack stack(*state);
 	assert(stack.getSize() == 2);
 
-	Common::Vector3* v = Aurora::Lua::getCppObjectFromStack<Common::Vector3>(stack, 1);
+	glm::vec3* v = Aurora::Lua::getCppObjectFromStack<glm::vec3>(stack, 1);
 	assert(v);
 
-	stack.pushFloat(v->_z);
+	stack.pushFloat(v->z);
 	return 1;
 }
 
@@ -1263,10 +1264,10 @@ int LuaBindings::Vector::luaSetZ(lua_State *state) {
 	Aurora::Lua::Stack stack(*state);
 	assert(stack.getSize() == 2);
 
-	Common::Vector3* v = Aurora::Lua::getCppObjectFromStack<Common::Vector3>(stack, 1);
+	glm::vec3* v = Aurora::Lua::getCppObjectFromStack<glm::vec3>(stack, 1);
 	assert(v);
 
-	v->_z = stack.getFloatAt(2);
+	v->z = stack.getFloatAt(2);
 	return 0;
 }
 

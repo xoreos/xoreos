@@ -22,6 +22,8 @@
  *  A bounding box.
  */
 
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/boundingbox.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
@@ -52,14 +54,14 @@ void BoundingBox::clear() {
 	_min[0] = 0.0f; _min[1] = 0.0f; _min[2] = 0.0f;
 	_max[0] = 0.0f; _max[1] = 0.0f; _max[2] = 0.0f;
 
-	_origin.loadIdentity();
+	_origin = glm::mat4();
 }
 
 bool BoundingBox::empty() const {
 	return _empty;
 }
 
-const Matrix4x4 &BoundingBox::getOrigin() const {
+const glm::mat4 &BoundingBox::getOrigin() const {
 	return _origin;
 }
 
@@ -71,15 +73,15 @@ void BoundingBox::getMin(float &x, float &y, float &z) const {
 		return;
 	}
 
-	Matrix4x4 min = _origin;
-	min.translate(_min[0], _min[1], _min[2]);
+	glm::mat4 min = _origin;
+	min = glm::translate(min, glm::vec3(_min[0], _min[1], _min[2]));
 
-	Matrix4x4 max = _origin;
-	max.translate(_max[0], _max[1], _max[2]);
+	glm::mat4 max = _origin;
+	max = glm::translate(max, glm::vec3(_max[0], _max[1], _max[2]));
 
-	x = MIN(min.getX(), max.getX());
-	y = MIN(min.getY(), max.getY());
-	z = MIN(min.getZ(), max.getZ());
+	x = MIN(min[3][0], max[3][0]);
+	y = MIN(min[3][1], max[3][1]);
+	z = MIN(min[3][2], max[3][2]);
 }
 
 void BoundingBox::getMax(float &x, float &y, float &z) const {
@@ -90,15 +92,15 @@ void BoundingBox::getMax(float &x, float &y, float &z) const {
 		return;
 	}
 
-	Matrix4x4 min = _origin;
-	min.translate(_min[0], _min[1], _min[2]);
+	glm::mat4 min = _origin;
+	min = glm::translate(min, glm::vec3(_min[0], _min[1], _min[2]));
 
-	Matrix4x4 max = _origin;
-	max.translate(_max[0], _max[1], _max[2]);
+	glm::mat4 max = _origin;
+	max = glm::translate(max, glm::vec3(_max[0], _max[1], _max[2]));
 
-	x = MAX(min.getX(), max.getX());
-	y = MAX(min.getY(), max.getY());
-	z = MAX(min.getZ(), max.getZ());
+	x = MAX(min[3][0], max[3][0]);
+	y = MAX(min[3][1], max[3][1]);
+	z = MAX(min[3][2], max[3][2]);
 }
 
 float BoundingBox::getWidth() const {
@@ -256,21 +258,24 @@ void BoundingBox::add(const BoundingBox &box) {
 }
 
 void BoundingBox::translate(float x, float y, float z) {
-	_origin.translate(x, y, z);
+	_origin = glm::translate(_origin, glm::vec3(x, y, z));
 	_absolute = false;
 }
 
 void BoundingBox::scale(float x, float y, float z) {
-	_origin.scale(x, y, z);
+	_origin = glm::scale(_origin, glm::vec3(x, y, z));
 	_absolute = false;
 }
 
 void BoundingBox::rotate(float angle, float x, float y, float z) {
-	_origin.rotate(angle, x, y, z);
+	if (x == 0 && y == 0 && z == 0)
+		return;
+
+	_origin = glm::rotate(_origin, Common::deg2rad(angle), glm::vec3(x, y, z));
 	_absolute = false;
 }
 
-void BoundingBox::transform(const Matrix4x4 &m) {
+void BoundingBox::transform(const glm::mat4 &m) {
 	_origin *= m;
 	_absolute = false;
 }
@@ -304,11 +309,12 @@ void BoundingBox::absolutize() {
 
 	float coords[8][3];
 	for (int i = 0; i < 8; i++) {
-		Matrix4x4 c = _origin;
+		glm::mat4 c = _origin;
+		c = glm::translate(c, glm::vec3(_coords[i][0], _coords[i][1], _coords[i][2]));
 
-		c.translate(_coords[i][0], _coords[i][1], _coords[i][2]);
-
-		c.getPosition(coords[i][0], coords[i][1], coords[i][2]);
+		coords[i][0] = c[3][0];
+		coords[i][1] = c[3][1];
+		coords[i][2] = c[3][2];
 	}
 
 	clear();
