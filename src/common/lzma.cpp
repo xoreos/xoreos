@@ -35,6 +35,33 @@
 
 namespace Common {
 
+/* Custom allocator to work around an issue when linking with liblzma that was
+ * built with a different libc than the one we are build with. This happens
+ * on our AppVeyor builds, for example.
+ *
+ * The underlying issue is that liblzma expects us to free() memory that was
+ * allocated within liblzma in lzma_properties_decode(). liblzma (at the time
+ * of writing) provides no wrapper function for free either. So if our free()
+ * uses different structures from the malloc() in liblzma, this will crash
+ * and burn.
+ *
+ * So instead, we provide lzma_properties_decode() with a custom allocator,
+ * which uses our malloc(), so we can also use our free().
+ */
+
+static void * LZMA_API_CALL lzmaAlloc(void *UNUSED(opaque), size_t nmemb, size_t size) {
+	return malloc(nmemb * size);
+}
+
+static void LZMA_API_CALL lzmaFree(void *UNUSED(opaque), void *ptr) {
+	free(ptr);
+}
+
+// Allocators in liblzma < 5.1.3alpha were not const. We allow liblzma >= 5.0.3.
+static lzma_allocator kLZMAAllocator = {
+	&lzmaAlloc, &lzmaFree, 0
+};
+
 byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize) {
 	lzma_filter filters[2] = {
 		{ LZMA_FILTER_LZMA1, 0 },
@@ -51,14 +78,15 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize) {
 	if (propsSize > inputSize)
 		throw Exception("LZMA1 properties size larger than input data");
 
-	if (lzma_properties_decode(&filters[0], 0, data, propsSize) != LZMA_OK)
+	if (lzma_properties_decode(&filters[0], &kLZMAAllocator, data, propsSize) != LZMA_OK)
 		throw Exception("Failed to decode LZMA1 properties");
 
 	data      += propsSize;
 	inputSize -= propsSize;
 
 	lzma_stream strm = LZMA_STREAM_INIT;
-	BOOST_SCOPE_EXIT( (&strm) ) {
+	BOOST_SCOPE_EXIT( (&strm) (&filters) ) {
+		kLZMAAllocator.free(0, filters[0].options);
 		lzma_end(&strm);
 	} BOOST_SCOPE_EXIT_END
 
