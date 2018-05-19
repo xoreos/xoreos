@@ -150,3 +150,8 @@ check_PROGRAMS                    += tests/aurora/test_ltrfile
 tests_aurora_test_ltrfile_SOURCES  = tests/aurora/ltrfile.cpp
 tests_aurora_test_ltrfile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_ltrfile_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                             += tests/aurora/test_textureatlasfile
+tests_aurora_test_textureatlasfile_SOURCES  = tests/aurora/textureatlasfile.cpp
+tests_aurora_test_textureatlasfile_LDADD    = $(aurora_LIBS)
+tests_aurora_test_textureatlasfile_CXXFLAGS = $(test_CXXFLAGS)
