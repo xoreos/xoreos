@@ -110,8 +110,13 @@ void WidgetListBox::refreshItemWidgets() {
 			itemWidget->setInvisible(false);
 			itemWidget->setText(_items[itemIndex]);
 			itemWidget->setHighlight(itemIndex == _selectedIndex);
-		} else
+			if (isVisible())
+				itemWidget->show();
+		} else {
+			if (isVisible())
+				itemWidget->hide();
 			itemWidget->setInvisible(true);
+		}
 	}
 }
 
