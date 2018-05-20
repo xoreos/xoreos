@@ -77,6 +77,8 @@ public:
 
 	bool empty();
 
+	float getHeight(const Common::UString &text) const;
+
 	size_t getLineCount() const;
 
 	float getWidth()  const;

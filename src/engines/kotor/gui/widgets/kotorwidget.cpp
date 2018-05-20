@@ -253,6 +253,10 @@ float KotORWidget::getHeight() const {
 	return _height;
 }
 
+float KotORWidget::getTextHeight(const Common::UString &text) const {
+	return _text ? _text->getHeight(text) : 0.0f;
+}
+
 void KotORWidget::setFont(const Common::UString &fnt) {
 	_text->setFont(fnt);
 }

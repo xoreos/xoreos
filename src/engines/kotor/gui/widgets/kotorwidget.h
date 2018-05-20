@@ -86,6 +86,8 @@ public:
 	float getWidth () const;
 	float getHeight() const;
 
+	float getTextHeight(const Common::UString &text) const;
+
 	void setFill(const Common::UString &fill);
 	void setColor(float r, float g, float b, float a);
 	void setText(const Common::UString &text);
