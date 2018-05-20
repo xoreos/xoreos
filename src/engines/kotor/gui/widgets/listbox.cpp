@@ -26,6 +26,8 @@
 
 #include "src/aurora/gff3file.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/engines/kotor/gui/gui.h"
 #include "src/engines/kotor/gui/widgets/listbox.h"
 #include "src/engines/kotor/gui/widgets/button.h"
@@ -43,8 +45,10 @@ WidgetListBox::WidgetListBox(::Engines::GUI &gui,
 		  _padding(0),
 		  _leftScrollBar(false),
 		  _itemSelectionEnabled(false),
+		  _adjustHeight(false),
 		  _selectedIndex(-1),
-		  _startIndex(0) {
+		  _startIndex(0),
+		  _numVisibleItems(0) {
 }
 
 WidgetListBox::~WidgetListBox() {
@@ -72,6 +76,10 @@ void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
 
 void WidgetListBox::setItemSelectionEnabled(bool value) {
 	_itemSelectionEnabled = value;
+}
+
+void WidgetListBox::setAdjustHeight(bool value) {
+	_adjustHeight = value;
 }
 
 const std::vector<KotORWidget *> &WidgetListBox::createItemWidgets(uint count) {
@@ -103,21 +111,54 @@ void WidgetListBox::removeAllItems() {
 }
 
 void WidgetListBox::refreshItemWidgets() {
+	_numVisibleItems = 0;
+	float totalHeight = 0;
+
+	float x, y, z;
+	getPosition(x, y, z);
+	y += getHeight();
+
+	if (_scrollBar && _leftScrollBar)
+		x += _scrollBar->getStruct("BORDER").getSint("DIMENSION") +
+		     _scrollBar->getStruct("EXTENT").getSint("WIDTH");
+
+	GfxMan.lockFrame();
+
 	for (size_t i = 0; i < _itemWidgets.size(); ++i) {
 		KotORWidget *itemWidget = _itemWidgets[i];
+		bool visible = false;
+
 		int itemIndex = _startIndex + i;
 		if (itemIndex < (int)_items.size()) { // have item to display?
-			itemWidget->setInvisible(false);
-			itemWidget->setText(_items[itemIndex]);
+			const Common::UString &text = _items[itemIndex];
+
+			if (_adjustHeight) {
+				float textHeight = itemWidget->getTextHeight(text);
+				if (totalHeight + textHeight > getHeight())
+					break;
+				itemWidget->setSize(itemWidget->getWidth(), textHeight);
+				itemWidget->setPosition(x, y -= textHeight + _padding, z);
+				totalHeight += textHeight;
+			}
+
+			itemWidget->setText(text);
 			itemWidget->setHighlight(itemIndex == _selectedIndex);
+			visible = true;
+		}
+
+		if (visible) {
+			itemWidget->setInvisible(false);
 			if (isVisible())
 				itemWidget->show();
+			++_numVisibleItems;
 		} else {
 			if (isVisible())
 				itemWidget->hide();
 			itemWidget->setInvisible(true);
 		}
 	}
+
+	GfxMan.unlockFrame();
 }
 
 KotORWidget *WidgetListBox::createItem(Common::UString name) {
@@ -186,8 +227,8 @@ void WidgetListBox::selectNextItem() {
 		refreshItemWidgets();
 	} else if (_selectedIndex < (int)_items.size() - 1) {
 		++_selectedIndex;
-		if (_selectedIndex - _startIndex >= (int)_itemWidgets.size())
-			_startIndex = _selectedIndex - _itemWidgets.size() + 1;
+		if (_selectedIndex - _startIndex >= _numVisibleItems)
+			_startIndex = _selectedIndex - _numVisibleItems + 1;
 		refreshItemWidgets();
 	}
 }

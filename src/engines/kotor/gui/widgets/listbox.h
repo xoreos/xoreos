@@ -38,6 +38,7 @@ public:
 
 	void load(const Aurora::GFF3Struct &gff);
 	void setItemSelectionEnabled(bool value);
+	void setAdjustHeight(bool value);
 
 	/** Create item widgets and return pointers to them.
 	 *
@@ -66,8 +67,10 @@ private:
 	int _padding;
 	bool _leftScrollBar;
 	bool _itemSelectionEnabled;
+	bool _adjustHeight;
 	int _selectedIndex;
 	int _startIndex;
+	int _numVisibleItems;
 };
 
 } // End of namespace KotOR
