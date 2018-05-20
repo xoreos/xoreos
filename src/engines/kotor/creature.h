@@ -91,6 +91,7 @@ public:
 	bool click(Object *triggerer = 0);
 
 	Common::ScopedPtr<Graphics::Aurora::Model> &getModel();
+	const Common::UString &getConversation() const;
 
 private:
 	/** Parts of a creature's body. */
@@ -120,6 +121,7 @@ private:
 	std::vector<ClassLevel> _levels; ///< The levels of the creature.
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
+	Common::UString _conversation;
 
 
 	void init();
