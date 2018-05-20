@@ -196,6 +196,10 @@ bool Text::empty() {
 	return _str.empty();
 }
 
+float Text::getHeight(const Common::UString &text) const {
+	return _font.getFont().getHeight(text, _width);
+}
+
 size_t Text::getLineCount() const {
 	return _lineCount;
 }
