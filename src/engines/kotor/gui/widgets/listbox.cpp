@@ -42,7 +42,7 @@ WidgetListBox::WidgetListBox(::Engines::GUI &gui,
 		  _scrollBar(0),
 		  _padding(0),
 		  _leftScrollBar(false),
-		  _permanentHighlightEnabled(false),
+		  _itemSelectionEnabled(false),
 		  _selectedIndex(-1),
 		  _startIndex(0) {
 }
@@ -70,8 +70,8 @@ void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
 	}
 }
 
-void WidgetListBox::setPermanentHighlightEnabled(bool value) {
-	_permanentHighlightEnabled = value;
+void WidgetListBox::setItemSelectionEnabled(bool value) {
+	_itemSelectionEnabled = value;
 }
 
 const std::vector<KotORWidget *> &WidgetListBox::createItemWidgets(uint count) {
@@ -128,7 +128,7 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 			break;
 		case 6:
 			item = new WidgetButton(*_gui, name);
-			if (_permanentHighlightEnabled)
+			if (_itemSelectionEnabled)
 				static_cast<WidgetButton *>(item)->setDisableHighlight(true);
 			break;
 		default:
@@ -157,7 +157,7 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 }
 
 void WidgetListBox::onClickItemWidget(const Common::UString &tag) {
-	if (!_permanentHighlightEnabled)
+	if (!_itemSelectionEnabled)
 		return;
 
 	Common::UString tmp(tag);
@@ -173,7 +173,7 @@ void WidgetListBox::onClickItemWidget(const Common::UString &tag) {
 }
 
 void WidgetListBox::selectNextItem() {
-	if (!_permanentHighlightEnabled)
+	if (!_itemSelectionEnabled)
 		return;
 
 	if (_selectedIndex < 0 && !_items.empty()) {
@@ -188,7 +188,7 @@ void WidgetListBox::selectNextItem() {
 }
 
 void WidgetListBox::selectPreviousItem() {
-	if (!_permanentHighlightEnabled)
+	if (!_itemSelectionEnabled)
 		return;
 
 	if (_selectedIndex < 0 && !_items.empty()) {

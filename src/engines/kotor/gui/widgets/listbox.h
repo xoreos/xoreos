@@ -37,7 +37,7 @@ public:
 	~WidgetListBox();
 
 	void load(const Aurora::GFF3Struct &gff);
-	void setPermanentHighlightEnabled(bool value);
+	void setItemSelectionEnabled(bool value);
 
 	/** Create item widgets and return pointers to them.
 	 *
@@ -65,7 +65,7 @@ private:
 	std::vector<KotORWidget *> _itemWidgets;
 	int _padding;
 	bool _leftScrollBar;
-	bool _permanentHighlightEnabled;
+	bool _itemSelectionEnabled;
 	int _selectedIndex;
 	int _startIndex;
 };

@@ -51,7 +51,7 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 	addBackground(kBackgroundTypeMenu, frontBackground);
 
 	WidgetListBox *lbGames = getListBox("LB_GAMES");
-	lbGames->setPermanentHighlightEnabled(true);
+	lbGames->setItemSelectionEnabled(true);
 	const std::vector<KotORWidget *> &itemWidgets = lbGames->createItemWidgets();
 
 	for (std::vector<KotORWidget *>::const_iterator it = itemWidgets.begin();
