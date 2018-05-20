@@ -87,6 +87,8 @@ public:
 	void setFill(const Common::UString &fill);
 	void setColor(float r, float g, float b, float a);
 	void setText(const Common::UString &text);
+	void setHorizontalTextAlign(float halign);
+	void setVerticalTextAlign(float valign);
 
 protected:
 	struct Extend {
