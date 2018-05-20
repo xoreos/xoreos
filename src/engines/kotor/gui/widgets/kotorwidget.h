@@ -76,6 +76,8 @@ public:
 	/** If the widget is highlighted. */
 	bool isHighlight();
 
+	/** Set size of the widget. */
+	void setSize(float width, float height);
 	/** Set the width of the widget. */
 	void setWidth(float width);
 	/** Set the height of the widget. */

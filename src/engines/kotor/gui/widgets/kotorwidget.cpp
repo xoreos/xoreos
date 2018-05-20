@@ -224,6 +224,17 @@ bool KotORWidget::isHighlight() {
 	return _highlighted;
 }
 
+void KotORWidget::setSize(float width, float height) {
+	if (_quad) {
+		_quad->setWidth(width);
+		_quad->setHeight(height);
+	}
+	if (_text)
+		_text->setSize(width, height);
+	_width = width;
+	_height = height;
+}
+
 void KotORWidget::setWidth(float width) {
 	if (_quad)
 		_quad->setWidth(width);
