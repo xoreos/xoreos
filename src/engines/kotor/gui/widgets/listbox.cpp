@@ -96,6 +96,12 @@ void WidgetListBox::addItem(const Common::UString &text) {
 	_items.push_back(text);
 }
 
+void WidgetListBox::removeAllItems() {
+	_selectedIndex = -1;
+	_startIndex = 0;
+	_items.clear();
+}
+
 void WidgetListBox::refreshItemWidgets() {
 	for (size_t i = 0; i < _itemWidgets.size(); ++i) {
 		KotORWidget *itemWidget = _itemWidgets[i];

@@ -47,6 +47,7 @@ public:
 	const std::vector<KotORWidget *> &createItemWidgets(uint count = 0);
 
 	void addItem(const Common::UString &text);
+	void removeAllItems();
 	void refreshItemWidgets();
 
 	KotORWidget *createItem(Common::UString name);
