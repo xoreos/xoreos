@@ -365,6 +365,14 @@ void KotORWidget::setText(const Common::UString &text) {
 	_text->setText(text);
 }
 
+void KotORWidget::setHorizontalTextAlign(float halign) {
+	_text->setHorizontalAlign(halign);
+}
+
+void KotORWidget::setVerticalTextAlign(float valign) {
+	_text->setVerticalAlign(valign);
+}
+
 KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFF3Struct &gff) {
 	Extend extend;
 
