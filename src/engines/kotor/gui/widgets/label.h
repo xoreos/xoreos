@@ -41,6 +41,7 @@ public:
 	void load(const Aurora::GFF3Struct &gff);
 	void enter();
 	void leave();
+	void mouseUp(uint8 state, float x, float y);
 };
 
 } // End of namespace KotOR

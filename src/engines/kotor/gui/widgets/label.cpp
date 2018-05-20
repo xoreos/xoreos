@@ -61,6 +61,12 @@ void WidgetLabel::leave() {
 	setHighlight(false);
 }
 
+void WidgetLabel::mouseUp(uint8 UNUSED(state),
+                          float UNUSED(x),
+                          float UNUSED(y)) {
+	setActive(true);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
