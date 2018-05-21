@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A KotOR listbox widget.
+ *  Listbox widget for Star Wars: Knights of the Old Republic.
  */
 
 #include "src/common/strutil.h"
