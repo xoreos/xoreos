@@ -58,6 +58,7 @@ src_graphics_aurora_libaurora_la_SOURCES += \
     src/graphics/aurora/model_witcher.h \
     src/graphics/aurora/model_sonic.h \
     src/graphics/aurora/model_dragonage.h \
+    src/graphics/aurora/kotordialogframe.h \
     $(EMPTY)
 
 src_graphics_aurora_libaurora_la_SOURCES += \
@@ -95,4 +96,5 @@ src_graphics_aurora_libaurora_la_SOURCES += \
     src/graphics/aurora/model_witcher.cpp \
     src/graphics/aurora/model_sonic.cpp \
     src/graphics/aurora/model_dragonage.cpp \
+    src/graphics/aurora/kotordialogframe.cpp \
     $(EMPTY)

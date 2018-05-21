@@ -52,6 +52,7 @@ namespace KotOR {
 class Area;
 class Creature;
 class IngameGUI;
+class DialogGUI;
 
 class Module : public KotOR::Object, public KotOR::ObjectContainer {
 public:
@@ -152,6 +153,7 @@ public:
 	void toggleFreeRoamCamera();
 	void toggleWalkmesh();
 	void loadSavedGame(SavedGame *save);
+	void startConversation(const Common::UString &name);
 
 private:
 	enum ActionType {
@@ -211,6 +213,8 @@ private:
 
 	Common::ScopedPtr<IngameGUI> _ingame; ///< The ingame ui.
 
+	Common::ScopedPtr<DialogGUI> _dialog; ///< Conversation/cutscene GUI.
+
 	// .--- Global values
 	std::map<Common::UString, int> _globalNumbers;
 	// '---
@@ -225,6 +229,7 @@ private:
 	float _backwardsBtnPressed;
 	bool _pcRunning;
 	bool _pcPositionLoaded;
+	bool _inDialog;
 
 
 	// .--- Unloading

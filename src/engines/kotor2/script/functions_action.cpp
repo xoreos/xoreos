@@ -59,6 +59,11 @@ void Functions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
 	_game->getModule().delayScript(script, state, ctx.getCaller(), ctx.getTriggerer(), delay);
 }
 
+void Functions::actionStartConversation(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &convName = ctx.getParams()[1].getString();
+	_game->getModule().startConversation(convName);
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines

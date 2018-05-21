@@ -162,6 +162,8 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Scripts
 	readScripts(gff);
+
+	_conversation = gff.getString("Conversation", _conversation);
 }
 
 void Creature::loadPortrait(const Aurora::GFF3Struct &gff) {
@@ -290,6 +292,10 @@ bool Creature::click(Object *triggerer) {
 
 Common::ScopedPtr<Graphics::Aurora::Model> &Creature::getModel() {
 	return _model;
+}
+
+const Common::UString &Creature::getConversation() const {
+	return _conversation;
 }
 
 } // End of namespace KotOR2

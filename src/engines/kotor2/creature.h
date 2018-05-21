@@ -82,6 +82,7 @@ public:
 	bool click(Object *triggerer = 0);
 
 	Common::ScopedPtr<Graphics::Aurora::Model> &getModel();
+	const Common::UString &getConversation() const;
 
 private:
 	/** Parts of a creature's body. */
@@ -99,6 +100,7 @@ private:
 	uint32 _appearance; ///< The creature's general appearance.
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
+	Common::UString _conversation;
 
 
 	void init();

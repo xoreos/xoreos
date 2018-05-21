@@ -40,6 +40,8 @@
 #include "src/engines/kotor2/objectcontainer.h"
 #include "src/engines/kotor2/object.h"
 
+#include "src/engines/kotor2/gui/dialog.h"
+
 namespace Engines {
 
 class Console;
@@ -116,6 +118,8 @@ public:
 	/** Leave the running module, quitting it. */
 	void leave();
 
+	void clickObject(Object *object);
+
 	/** Add a single event for consideration into the event queue. */
 	void addEvent(const Events::Event &event);
 	/** Process the current event queue. */
@@ -124,6 +128,7 @@ public:
 
 	void toggleFreeRoamCamera();
 	void toggleWalkmesh();
+	void startConversation(const Common::UString &name);
 
 private:
 	enum ActionType {
@@ -178,6 +183,7 @@ private:
 	ObjectType      _entryLocationType;
 
 	Common::ScopedPtr<Area> _area; ///< The current module's area.
+	Common::ScopedPtr<DialogGUI> _dialog; ///< Conversation/cutscene GUI.
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
@@ -188,6 +194,7 @@ private:
 	float _forwardBtnPressed;
 	float _backwardsBtnPressed;
 	bool _pcRunning;
+	bool _inDialog;
 
 
 	// .--- Unloading
