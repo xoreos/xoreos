@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A KotOR listbox widget.
+ *  Listbox widget for Star Wars: Knights of the Old Republic.
  */
 
 #ifndef ENGINES_KOTOR_GUI_WIDGETS_LISTBOX_H
@@ -37,25 +37,48 @@ public:
 	~WidgetListBox();
 
 	void load(const Aurora::GFF3Struct &gff);
+
+	/** Toggle item selection mode. When enabled listbox items can be
+	 *  selected by clicking on them. One can also scroll through the
+	 *  list of items (see selectNextItem and selectPreviousItem).
+	 */
 	void setItemSelectionEnabled(bool value);
+
+	/** Toggle height adjustment mode. When enabled item widgets will
+	 *  adjust their height during refresh based on the size of their
+	 *  contents.
+	 */
 	void setAdjustHeight(bool value);
+
+	// .--- Item widgets management
 
 	/** Create item widgets and return pointers to them.
 	 *
-	 *  @param count number of items to add or 0 to add maximum number of
-	 *               items that fit into the listbox
+	 *  @param count Number of widgets to create or 0 to create a
+	 *               maximum number of widgets that could fit into the
+	 *               listbox
 	 */
 	const std::vector<KotORWidget *> &createItemWidgets(uint count = 0);
 
-	void addItem(const Common::UString &text);
-	void removeAllItems();
+	KotORWidget *createItem(Common::UString name);
 	void refreshItemWidgets();
 
-	KotORWidget *createItem(Common::UString name);
+	// '---
+
+	// .--- Underlying items management
+
+	void addItem(const Common::UString &text);
+	void removeAllItems();
+
+	// '---
+
+	// .--- Event handlers
 
 	void onClickItemWidget(const Common::UString &tag);
 	void selectNextItem();
 	void selectPreviousItem();
+
+	// '---
 
 	int getSelectedIndex() const;
 
