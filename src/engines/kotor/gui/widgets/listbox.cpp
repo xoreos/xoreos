@@ -105,7 +105,6 @@ void WidgetListBox::addItem(const Common::UString &text) {
 }
 
 void WidgetListBox::removeAllItems() {
-	_selectedIndex = -1;
 	_startIndex = 0;
 	_items.clear();
 }
