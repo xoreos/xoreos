@@ -455,6 +455,7 @@ void Area::click(int x, int y) {
 		return;
 
 	o->click(_module->getPC());
+	_module->clickObject(o);
 }
 
 void Area::highlightAll(bool enabled) {

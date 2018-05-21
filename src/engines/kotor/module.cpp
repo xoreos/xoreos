@@ -34,6 +34,7 @@
 #include "src/aurora/types.h"
 #include "src/aurora/rimfile.h"
 #include "src/aurora/gff3file.h"
+#include "src/aurora/dlgfile.h"
 
 #include "src/graphics/camera.h"
 
@@ -52,6 +53,9 @@
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/creature.h"
 #include "src/engines/kotor/placeable.h"
+
+#include "src/engines/kotor/gui/dialog.h"
+
 #include "src/engines/kotor/gui/ingame/ingame.h"
 
 namespace Engines {
@@ -65,13 +69,25 @@ bool Module::Action::operator<(const Action &s) const {
 }
 
 
-Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
-	_console(&console), _hasModule(false), _running(false),
-	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
-	_fade(new Graphics::Aurora::FadeQuad()), _ingame(new IngameGUI(*this)),
-	_freeCamEnabled(false), _prevTimestamp(0), _frameTime(0),
-	_forwardBtnPressed(false), _backwardsBtnPressed(false), _pcRunning(false),
-	_pcPositionLoaded(false) {
+Module::Module(::Engines::Console &console)
+		: Object(kObjectTypeModule),
+		  _console(&console),
+		  _hasModule(false),
+		  _running(false),
+		  _currentTexturePack(-1),
+		  _exit(false),
+		  _entryLocationType(kObjectTypeAll),
+		  _fade(new Graphics::Aurora::FadeQuad()),
+		  _ingame(new IngameGUI(*this)),
+		  _dialog(new DialogGUI()),
+		  _freeCamEnabled(false),
+		  _prevTimestamp(0),
+		  _frameTime(0),
+		  _forwardBtnPressed(false),
+		  _backwardsBtnPressed(false),
+		  _pcRunning(false),
+		  _pcPositionLoaded(false),
+		  _inDialog(false) {
 
 }
 
@@ -445,6 +461,12 @@ void Module::leaveArea() {
 }
 
 void Module::clickObject(Object *object) {
+	Creature *creature = ObjectContainer::toCreature(object);
+	if (creature && !creature->getConversation().empty()) {
+		startConversation(creature->getConversation());
+		return;
+	}
+
 	Placeable *placeable = ObjectContainer::toPlaceable(object);
 	if (placeable) {
 		if (placeable->hasInventory()) {
@@ -487,6 +509,12 @@ void Module::handleEvents() {
 		// Handle console
 		if (_console->isVisible()) {
 			_console->processEvent(*event);
+			continue;
+		}
+
+		// Conversation/cutscene
+		if (_inDialog) {
+			_dialog->addEvent(*event);
 			continue;
 		}
 
@@ -540,6 +568,13 @@ void Module::handleEvents() {
 
 	_area->processEventQueue();
 	_ingame->processEventQueue();
+	_dialog->processEventQueue();
+
+	if (_inDialog && !_dialog->isConversationActive()) {
+		_dialog->hide();
+		_ingame->show();
+		_inDialog = false;
+	}
 }
 
 void Module::handlePCMovement() {
@@ -741,6 +776,19 @@ void Module::loadSavedGame(SavedGame *save) {
 		_pcPositionLoaded = save->isPCLoaded();
 	} catch (...) {
 		Common::exceptionDispatcherWarning();
+	}
+}
+
+void Module::startConversation(const Common::UString &name) {
+	if (_inDialog || name.empty())
+		return;
+
+	_dialog->startConversation(name);
+
+	if (_dialog->isConversationActive()) {
+		_ingame->hide();
+		_dialog->show();
+		_inDialog = true;
 	}
 }
 

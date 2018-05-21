@@ -35,6 +35,7 @@
 #include "src/aurora/types.h"
 #include "src/aurora/rimfile.h"
 #include "src/aurora/gff3file.h"
+#include "src/aurora/dlgfile.h"
 
 #include "src/graphics/camera.h"
 #include "src/graphics/graphics.h"
@@ -65,11 +66,22 @@ bool Module::Action::operator<(const Action &s) const {
 }
 
 
-Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
-	_console(&console), _hasModule(false), _running(false),
-	_currentTexturePack(-1), _exit(false), _entryLocationType(kObjectTypeAll),
-	_freeCamEnabled(false), _prevTimestamp(0), _frameTime(0),
-	_forwardBtnPressed(false), _backwardsBtnPressed(false), _pcRunning(false) {
+Module::Module(::Engines::Console &console)
+		: Object(kObjectTypeModule),
+		  _console(&console),
+		  _hasModule(false),
+		  _running(false),
+		  _currentTexturePack(-1),
+		  _exit(false),
+		  _entryLocationType(kObjectTypeAll),
+		  _dialog(new DialogGUI(true)),
+		  _freeCamEnabled(false),
+		  _prevTimestamp(0),
+		  _frameTime(0),
+		  _forwardBtnPressed(false),
+		  _backwardsBtnPressed(false),
+		  _pcRunning(false),
+		  _inDialog(false) {
 	loadTexturePack();
 }
 
@@ -384,6 +396,12 @@ void Module::leave() {
 	_exit    = true;
 }
 
+void Module::clickObject(Object *object) {
+	Creature *creature = ObjectContainer::toCreature(object);
+	if (creature && !creature->getConversation().empty())
+		startConversation(creature->getConversation());
+}
+
 void Module::enterArea() {
 	_area->show();
 
@@ -454,6 +472,12 @@ void Module::handleEvents() {
 			}
 		}
 
+		// Conversation/cutscene
+		if (_inDialog) {
+			_dialog->addEvent(*event);
+			continue;
+		}
+
 		// PC movement
 		switch (event->type) {
 			case Events::kEventKeyDown:
@@ -487,6 +511,12 @@ void Module::handleEvents() {
 		CameraMan.update();
 
 	_area->processEventQueue();
+	_dialog->processEventQueue();
+
+	if (_inDialog && !_dialog->isConversationActive()) {
+		_dialog->hide();
+		_inDialog = false;
+	}
 }
 
 void Module::handleActions() {
@@ -654,6 +684,18 @@ void Module::toggleFreeRoamCamera() {
 
 void Module::toggleWalkmesh() {
 	_area->toggleWalkmesh();
+}
+
+void Module::startConversation(const Common::UString &name) {
+	if (_inDialog || name.empty())
+		return;
+
+	_dialog->startConversation(name);
+
+	if (_dialog->isConversationActive()) {
+		_dialog->show();
+		_inDialog = true;
+	}
 }
 
 } // End of namespace KotOR2
