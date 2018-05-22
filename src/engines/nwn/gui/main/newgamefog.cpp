@@ -36,6 +36,8 @@
 
 #include "src/engines/nwn/gui/main/newgamefog.h"
 
+#include "glm/gtc/matrix_transform.hpp"
+
 namespace Engines {
 
 namespace NWN {
@@ -81,17 +83,13 @@ public:
 		uint32 curTime = EventMan.getTimestamp();
 
 		uint32 diffRotate = curTime - _timeRotate;
-		glRotatef(diffRotate / _rotateSpeed, 0.0f, 0.0f, -1.0f);
+		glm::mat4 bob = _absolutePosition;
+		bob *= glm::rotate(glm::mat4(), diffRotate / _rotateSpeed, glm::vec3(0.0f, 0.0f, -1.0f));
+		bob *= glm::scale(glm::mat4(), glm::vec3(_curZoom * 10.0f, _curZoom * 10.0f, 1.0f));
 
-		glScalef(_curZoom, _curZoom, 1.0f);
-		Common::Matrix4x4 bob = _absolutePosition;
-		_absolutePosition.loadIdentity();
-		_absolutePosition.rotate(diffRotate / _rotateSpeed, 0.0f, 0.0f, -1.0f);
-		_absolutePosition.scale(_curZoom * 10.0f, _curZoom * 10.0f, 1.0f);
-
-		_absolutePosition.translate(_position[0], _position[1], _position[2]);
-		_absolutePosition.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-		_absolutePosition.scale(_scale[0], _scale[1], _scale[2]);
+		bob *= glm::translate(glm::mat4(), glm::vec3(_position[0], _position[1], _position[2]));
+		bob *= glm::rotate(glm::mat4(), _orientation[3], glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
+		bob *= glm::scale(glm::mat4(), glm::vec3(_scale[0], _scale[1], _scale[2]));
 		_curZoom += ((curTime - _lastTime) / 3000.0f) * _curZoom;
 
 		if (_curFade >= 1.0f)
@@ -102,8 +100,6 @@ public:
 		_curFade += (curTime - _lastTime) * _fadeStep;
 		if (_curFade < 0.0f)
 			_curZoom = 0.8f;
-
-		glColor4f(1.0f, 1.0f, 1.0f, _curFade);
 
 		for (NodeList::iterator n = _currentState->rootNodes.begin();
 			 n != _currentState->rootNodes.end(); ++n) {

@@ -79,13 +79,13 @@ ModelNode::ModelNode(Model &model)
 		  _attachedModel(0),
 		  _level(0),
 		  _render(false),
+		  _dirtyRender(true),
 		  _mesh(0),
+		  _rootStateNode(0),
 		  _nodeNumber(0),
 		  _positionBuffered(false),
 		  _orientationBuffered(false),
-		  _vertexCoordsBuffered(false),
-		  _dirtyRender(true),
-		  _rootStateNode(0) {
+		  _vertexCoordsBuffered(false) {
 
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
@@ -109,8 +109,6 @@ ModelNode::ModelNode(Model &model)
 	_orientationBuffer[3] = 0.0f;
 
 	_mesh = 0; // Should also be added to MeshMan, so this class won't "own" it.
-
-	_alpha = 1.0f;
 }
 
 ModelNode::~ModelNode() {
@@ -621,70 +619,34 @@ bool ModelNode::renderableMesh(Mesh *mesh) {
 	return mesh && mesh->data && mesh->data->rawMesh;
 }
 
-void ModelNode::render(RenderPass pass, const Common::Matrix4x4 &parentTransform) {
+void ModelNode::render(RenderPass pass, const glm::mat4 &parentTransform) {
 	// Apply the node's transformation
-#if 0
-	glTranslatef(_position[0], _position[1], _position[2]);
-	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-
-	glRotatef(_rotation[0], 1.0f, 0.0f, 0.0f);
-	glRotatef(_rotation[1], 0.0f, 1.0f, 0.0f);
-	glRotatef(_rotation[2], 0.0f, 0.0f, 1.0f);
-
-	glScalef(_scale[0], _scale[1], _scale[2]);
-
-	Mesh *mesh = _mesh;
-	bool doRender = _render;
-	if (!_model->getState().empty() && !renderableMesh(mesh)) {
-		ModelNode *rootStateNode = _model->getNode("", _name);
-		if (rootStateNode && renderableMesh(rootStateNode->_mesh)) {
-			mesh = rootStateNode->_mesh;
-			doRender = rootStateNode->_render;
+	_renderTransform = parentTransform;
+	_renderTransform = glm::translate(_renderTransform, glm::vec3(_position[0], _position[1], _position[2]));
+	if (_orientation[0] != 0.0f || _orientation[1] != 0.0f || _orientation[2] != 0.0f) {
+		if (_orientation[3] != 0.0f) {
+			_renderTransform = glm::rotate(_renderTransform, _orientation[3], glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
 		}
 	}
+	if (_rotation[0] != 0.0f) {
+		_renderTransform = glm::rotate(_renderTransform, _rotation[0], glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	if (_rotation[1] != 0.0f) {
+		_renderTransform = glm::rotate(_renderTransform, _rotation[1], glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+	if (_rotation[2] != 0.0f) {
+		_renderTransform = glm::rotate(_renderTransform, _rotation[2], glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+	_renderTransform = glm::scale(_renderTransform, glm::vec3(_scale[0], _scale[1], _scale[2]));
 
-	//_renderTransform.loadIdentity();
-	_renderTransform = parentTransform;
+/*
 	_renderTransform.translate(_position[0], _position[1], _position[2]);
 	_renderTransform.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
 	_renderTransform.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
 	_renderTransform.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
 	_renderTransform.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
 	_renderTransform.scale(_scale[0], _scale[1], _scale[2]);
-
-	// Render the node's geometry
-
-	bool isTransparent = mesh && mesh->isTransparent;
-	bool shouldRender = doRender && renderableMesh(mesh);
-	if (((pass == kRenderPassOpaque)      &&  isTransparent) ||
-	    ((pass == kRenderPassTransparent) && !isTransparent))
-		shouldRender = false;
-
-	if (shouldRender)
-		renderGeometry(*mesh);
-
-	if (_attachedModel) {
-		glPushMatrix();
-		_attachedModel->render(pass);
-		glPopMatrix();
-	}
-
-	// Render the node's children
-	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
-		glPushMatrix();
-		(*c)->render(pass, _renderTransform);
-		glPopMatrix();
-	}
-#endif
-
-	_renderTransform = parentTransform;
-	_renderTransform.translate(_position[0], _position[1], _position[2]);
-	_renderTransform.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-	_renderTransform.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
-	_renderTransform.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
-	_renderTransform.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
-	_renderTransform.scale(_scale[0], _scale[1], _scale[2]);
-
+*/
 	/**
 	 * Ignoring _render for now because it's being falsely set to false.
 	 */
@@ -729,29 +691,37 @@ void ModelNode::render(RenderPass pass, const Common::Matrix4x4 &parentTransform
 	}
 }
 
-void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
+void ModelNode::queueRender(const glm::mat4 &parentTransform) {
 	// Apply the node's transformation
-
 	_renderTransform = parentTransform;
-	_renderTransform.translate(_position[0], _position[1], _position[2]);
-	_renderTransform.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-	_renderTransform.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
-	_renderTransform.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
-	_renderTransform.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
-	_renderTransform.scale(_scale[0], _scale[1], _scale[2]);
+	_renderTransform = glm::translate(_renderTransform, glm::vec3(_position[0], _position[1], _position[2]));
+	if (_orientation[0] != 0.0f ||
+	    _orientation[1] != 0.0f ||
+	    _orientation[2] != 0.0f) {
+		_renderTransform = glm::rotate(_renderTransform,
+		                               _orientation[3],
+		                               glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
+	}
+	_renderTransform = glm::rotate(_renderTransform, _rotation[0], glm::vec3(1.0f, 0.0f, 0.0f));
+	_renderTransform = glm::rotate(_renderTransform, _rotation[1], glm::vec3(0.0f, 1.0f, 0.0f));
+	_renderTransform = glm::rotate(_renderTransform, _rotation[2], glm::vec3(0.0f, 0.0f, 1.0f));
+	_renderTransform = glm::scale(_renderTransform, glm::vec3(_scale[0], _scale[1], _scale[2]));
+
 
 	/**
 	 * Ignoring _render for now because it's being falsely set to false.
 	 */
 	/* if (_render) {} */
 
-	float alpah = 1.0f;
+	float alpha = 1.0f;
+#if 0
 	if (_name == "window") {
-		alpah = 0.7f;
+		alpha = 0.7f;
 	}
+#endif
 
 	if (_mesh) {
-		alpah = _mesh->alpha;
+		alpha = _mesh->alpha;
 	}
 
 	if (_dirtyRender) {
@@ -762,15 +732,19 @@ void ModelNode::queueRender(const Common::Matrix4x4 &parentTransform) {
 		 */
 		this->buildMaterial();
 	} else {
+		/**
+		 * @todo Ideally there should be some kind of check in here to determine visibility.
+		 * if the node isn't (camera) visible, then don't bother trying to render it.
+		 */
 		if (_renderableArray.size() == 0) {
 			if (_rootStateNode) {
 				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, alpah);
+					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, alpha);
 				}
 			}
 		} else {
 			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, alpah);
+				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, alpha);
 			}
 		}
 	}
@@ -868,7 +842,7 @@ void ModelNode::flushBuffers() {
 
 	if (_vertexCoordsBuffered) {
 		const float *vcb = &_vertexCoordsBuffer[0];
-		VertexBuffer &vb = _mesh->data->vertexBuffer;
+		VertexBuffer &vb = *(_mesh->data->rawMesh->getVertexBuffer());
 		int vertexCount = vb.getCount();
 		int stride = vb.getSize() / sizeof(float);
 		float *v = reinterpret_cast<float *>(vb.getData());
@@ -1322,7 +1296,7 @@ void ModelNode::buildMaterial() {
 
 	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
 }
-
+#if 0
 void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {
 	// If less than 2 keyframes, don't interpolate, just return the only position
 	if (_positionFrames.size() < 2) {
@@ -1389,7 +1363,7 @@ void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z,
 	const float q = f * next.q + (1.0f - f) * last.q;
 	a = Common::rad2deg(acos(q) * 2.0);
 }
-
+#endif
 } // End of namespace Aurora
 
 } // End of namespace Graphics

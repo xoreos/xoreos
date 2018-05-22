@@ -27,7 +27,6 @@
 
 #include "src/common/ustring.h"
 #include "src/common/maths.h"
-#include "src/common/matrix4x4.h"
 
 #include "src/graphics/types.h"
 #include <src/graphics/guielement.h>

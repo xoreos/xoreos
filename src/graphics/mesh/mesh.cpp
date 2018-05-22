@@ -94,8 +94,8 @@ void Mesh::init() {
 					vertices += (decl[0].stride / sizeof(float)) - (3);
 				}
 			}
-			_min = Common::Vector3(minx, miny, minz);
-			_max = Common::Vector3(maxx, maxy, maxz);
+			_min = glm::vec3(minx, miny, minz);
+			_max = glm::vec3(maxx, maxy, maxz);
 			_centre = _min;
 			_centre += _max;
 			_centre *= 0.5f;
@@ -265,7 +265,7 @@ uint32 Mesh::useCount() const {
 	return _usageCount;
 }
 
-const Common::Vector3 &Mesh::getCentre() const {
+const glm::vec3 &Mesh::getCentre() const {
 	return _centre;
 }
 

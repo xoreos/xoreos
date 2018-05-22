@@ -488,6 +488,9 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	_projection[3][3] =  0.0f;
 
 	_projectionInv = glm::inverse(_projection);
+
+	_perspective = _projection;
+	_perspectiveInv = _projectionInv;
 }
 
 void GraphicsManager::setOrthogonal(float clipNear, float clipFar) {
@@ -531,6 +534,9 @@ void GraphicsManager::ortho(float left, float right, float bottom, float top, fl
 	_projection[3][3] = 1.0f;
 
 	_projectionInv = inverse(_projection);
+
+	_ortho = _projection;
+	_orthoInv = _projectionInv;
 }
 
 bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, float &sZ) {
@@ -939,14 +945,14 @@ bool GraphicsManager::renderWorld() {
 	if (QueueMan.isQueueEmpty(kQueueVisibleWorldObject))
 		return false;
 
+	_projection = _perspective;
+	_projectionInv = _perspectiveInv;
+
 	float cPos[3];
 	float cOrient[3];
 
 	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
 	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
-
-	_projection = _perspective;
-	_projectionInv = _perspective.getInverse();
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -1001,6 +1007,7 @@ bool GraphicsManager::renderWorld() {
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
 		static_cast<Renderable *>(*o)->queueRender();
+		//static_cast<Renderable *>(*o)->render(kRenderPassAll);
 	}
 	RenderMan.sort();
 	RenderMan.render();
@@ -1029,8 +1036,9 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 	if (disableDepthMask)
 		glDepthMask(GL_FALSE);
 
-	_projection.loadIdentity();
-	_projection.scale(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
+	//_projection = glm::mat4();  // Load identity matrix.
+	//_projection.scale(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
+	_projection = glm::scale(glm::mat4(), glm::vec3(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f));
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -1046,7 +1054,7 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 
 	QueueMan.lockQueue(guiQueue);
 	const std::list<Queueable *> &gui = QueueMan.getQueue(guiQueue);
-	_modelview.loadIdentity();
+	_modelview = glm::mat4();
 
 	buildNewTextures();
 

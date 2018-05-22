@@ -184,7 +184,7 @@ public:
 	void calculateDistance();
 	void render(RenderPass pass);
 	void queueRender();
-	void queueRender(const Common::Matrix4x4 &parentTransform);
+	void queueRender(const glm::mat4 &parentTransform);
 	void advanceTime(float dt);
 
 	/** Apply buffered changes to model nodes position and geometry. */
@@ -272,7 +272,7 @@ protected:
 
 	// Shader renderable, containing information on rendering something.
 	Shader::ShaderRenderable _boundRenderable;
-	Common::Matrix4x4 _boundTransform;
+	glm::mat4 _boundTransform;
 
 private:
 	bool _drawBound;

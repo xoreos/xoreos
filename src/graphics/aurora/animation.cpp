@@ -280,7 +280,6 @@ void Animation::updateSkinnedModel(Model *model) {
 		ModelNode::MeshData *meshData = node->_mesh->data;
 		VertexBuffer &vertexBuffer = *(meshData->rawMesh->getVertexBuffer());
 		uint32 vertexCount = vertexBuffer.getCount();
-		uint32 stride = vertexBuffer.getSize() / sizeof(float);
 		float *v = reinterpret_cast<float *>(vertexBuffer.getData());
 		float *iv = &meshData->initialVertexCoords[0];
 		float *boneWeights = &skin->boneWeights[0];

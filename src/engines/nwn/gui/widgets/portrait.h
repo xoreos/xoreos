@@ -83,28 +83,26 @@ public:
 	void render(Graphics::RenderPass pass);
 
 private:
-	struct Quad {
-		float vX[4], vY[4];
-		float tX[4], tY[4];
-	};
-
 	Graphics::Aurora::TextureHandle _texture;
 
 	Size _size;
 
 	float _border;
+	float _x;
+	float _y;
+	float _width;
+	float _height;
 
 	float _bR;
 	float _bG;
 	float _bB;
 	float _bA;
 
-	Quad _qPortrait;
-	std::vector<Quad> _qBorder;
-
 	Graphics::Shader::ShaderSurface *_surface;
 	Graphics::Shader::ShaderMaterial *_material;
 	Graphics::Shader::ShaderRenderable *_renderable;
+
+	Graphics::Shader::ShaderRenderable *_borderRenderable;
 
 	void setSize();
 	void createBorder();

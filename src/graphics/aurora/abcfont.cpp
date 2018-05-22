@@ -84,8 +84,7 @@ void ABCFont::draw(uint32 c) const {
 }
 
 void ABCFont::renderBind() const {
-	Common::Matrix4x4 ident;
-	ident.loadIdentity();
+	glm::mat4 ident;
 
 	glUseProgram(_renderable->getProgram()->glid);
 	_material->bindProgram(_renderable->getProgram(), 1.0f);

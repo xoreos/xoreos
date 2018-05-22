@@ -269,7 +269,7 @@ protected:
 	void render(RenderPass pass, const glm::mat4 &parentTransform);
 	void drawSkeleton(const glm::mat4 &parent, bool showInvisible);
 
-	void queueRender(const Common::Matrix4x4 &parentTransform);
+	void queueRender(const glm::mat4 &parentTransform);
 
 	void lockFrame();
 	void unlockFrame();
@@ -280,8 +280,6 @@ protected:
 	void setBufferedPosition(float x, float y, float z);
 	void setBufferedOrientation(float x, float y, float z, float angle);
 	void flushBuffers();
-
-	ModelNode::Mesh *getMesh();
 
 	TextureHandle *getTextures(uint32 &count);
 	TextureHandle *getEnvironmentMap(EnvironmentMapMode &mode);

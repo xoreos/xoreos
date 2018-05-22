@@ -72,7 +72,7 @@ public:
 	void useDecrement();
 	uint32 useCount() const;
 
-	const Common::Vector3 &getCentre() const;
+	const glm::vec3 &getCentre() const;
 
 	float getRadius() const;
 
@@ -96,9 +96,9 @@ private:
 
 	GLuint _vao;  ///< Vertex Array Object handle. GL3.x only.
 
-	Common::Vector3 _centre;
-	Common::Vector3 _max;
-	Common::Vector3 _min;
+	glm::vec3 _centre;
+	glm::vec3 _max;
+	glm::vec3 _min;
 	float _radius;
 };
 

@@ -676,12 +676,12 @@ void Model::queueRender() {
 	}
 }
 
-void Model::queueRender(const Common::Matrix4x4 &parentTransform) {
+void Model::queueRender(const glm::mat4 &parentTransform) {
 	if (!_currentState) {
 		return;
 	}
 
-	Common::Matrix4x4 tform = parentTransform;
+	glm::mat4 tform = parentTransform;
 	//tform *= _absolutePosition;
 	queueDrawBound();
 
@@ -706,8 +706,8 @@ void Model::queueDrawBound() {
 	object.getMax(maxX, maxY, maxZ);
 
 	_boundTransform = _absolutePosition;
-	_boundTransform.translate((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f);
-	_boundTransform.scale((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f);
+	_boundTransform *= glm::translate(glm::mat4(), glm::vec3((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f));
+	_boundTransform *= glm::scale(glm::mat4(), glm::vec3((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f));
 
 	RenderMan.queueRenderable(&_boundRenderable, &_boundTransform, 1.0f);
 }

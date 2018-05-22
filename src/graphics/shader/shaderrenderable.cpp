@@ -149,6 +149,8 @@ void ShaderRenderable::copyRenderable(ShaderRenderable *src) {
 }
 
 void ShaderRenderable::renderImmediate(const glm::mat4 &tform, float alpha) {
+	if (!_program->glid)
+		return;
 	glUseProgram(_program->glid);
 	_material->bindProgram(_program, alpha);
 	_material->bindGLState();
