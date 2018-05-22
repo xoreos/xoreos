@@ -155,6 +155,10 @@ void DialogGUI::callbackKeyInput(const Events::Key &key,
 }
 
 void DialogGUI::refresh() {
+	const Aurora::DLGFile::Line *curEntry = _dlg->getCurrentEntry();
+	if (!curEntry)
+		return;
+
 	stopSounds();
 	playSounds();
 
@@ -165,7 +169,6 @@ void DialogGUI::refresh() {
 
 	Common::UString text;
 	WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
-	const Aurora::DLGFile::Line *curEntry = _dlg->getCurrentEntry();
 
 	if (curEntry) {
 		text = curEntry->text.getString();
