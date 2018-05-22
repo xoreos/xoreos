@@ -113,4 +113,9 @@ void SatelliteCamera::update(float dt) {
 	}
 }
 
+void SatelliteCamera::clearInput() {
+	_leftBtnPressed = false;
+	_rightBtnPressed = false;
+}
+
 } // End of namespace Engines

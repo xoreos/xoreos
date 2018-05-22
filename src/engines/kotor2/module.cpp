@@ -693,6 +693,9 @@ void Module::startConversation(const Common::UString &name) {
 	_dialog->startConversation(name);
 
 	if (_dialog->isConversationActive()) {
+		_forwardBtnPressed = false;
+		_backwardsBtnPressed = false;
+		SatelliteCam.clearInput();
 		_dialog->show();
 		_inDialog = true;
 	}

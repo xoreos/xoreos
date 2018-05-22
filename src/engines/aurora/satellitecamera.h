@@ -42,6 +42,7 @@ public:
 	float getYaw() const;
 	bool handleCameraInput(const Events::Event &e);
 	void update(float dt);
+	void clearInput();
 private:
 	glm::vec3 _target;
 	float _distance;
