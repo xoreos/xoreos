@@ -226,6 +226,8 @@ void DLGFile::readEntry(const GFF3Struct &gff, Entry &entry) {
 
 	entry.line.sound = gff.getString("Sound");
 
+	entry.line.voice = gff.getString("VO_ResRef");
+
 	entry.line.animation = gff.getUint("Animation", 0);
 
 	entry.line.quest      = gff.getString("Quest");

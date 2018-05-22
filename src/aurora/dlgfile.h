@@ -71,6 +71,7 @@ public:
 		LocString       text;    ///< The actual text of the entry.
 
 		Common::UString sound; ///< ResRef of the sound to play while speaking this entry.
+		Common::UString voice; ///< ResRef of the voice over for KotOR games.
 
 		uint32 animation; ///< Animation to play while speaking this entry.
 
