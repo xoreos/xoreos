@@ -39,8 +39,26 @@ WidgetLabel::WidgetLabel(::Engines::GUI &gui, const Common::UString &tag) :
 WidgetLabel::~WidgetLabel() {
 }
 
+void WidgetLabel::enableHighlight() {
+	Graphics::Aurora::Highlightable *highlightable = getTextHighlightableComponent();
+	if (highlightable) {
+		highlightable->setHighlightable(true);
+		highlightable->setHighlightDelta(0, 0, 0, .05);
+		highlightable->setHighlightLowerBound(1, 1, 0, .2);
+		highlightable->setHighlightUpperBound(1, 1, 0, 1);
+	}
+}
+
 void WidgetLabel::load(const Aurora::GFF3Struct &gff) {
 	KotORWidget::load(gff);
+}
+
+void WidgetLabel::enter() {
+	setHighlight(true);
+}
+
+void WidgetLabel::leave() {
+	setHighlight(false);
 }
 
 } // End of namespace KotOR

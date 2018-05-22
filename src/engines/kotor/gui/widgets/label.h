@@ -36,7 +36,11 @@ public:
 	WidgetLabel(::Engines::GUI &gui, const Common::UString &tag);
 	~WidgetLabel();
 
+	void enableHighlight();
+
 	void load(const Aurora::GFF3Struct &gff);
+	void enter();
+	void leave();
 };
 
 } // End of namespace KotOR
