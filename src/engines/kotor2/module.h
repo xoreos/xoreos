@@ -128,6 +128,7 @@ public:
 
 	void toggleFreeRoamCamera();
 	void toggleWalkmesh();
+	void toggleTriggers();
 	void startConversation(const Common::UString &name);
 
 private:

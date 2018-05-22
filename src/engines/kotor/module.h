@@ -152,6 +152,7 @@ public:
 
 	void toggleFreeRoamCamera();
 	void toggleWalkmesh();
+	void toggleTriggers();
 	void loadSavedGame(SavedGame *save);
 	void startConversation(const Common::UString &name);
 

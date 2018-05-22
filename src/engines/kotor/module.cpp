@@ -671,6 +671,8 @@ void Module::movedPC() {
 		CameraMan.setPosition(x, y, z + 1.8f);
 		CameraMan.update();
 	}
+
+	_area->evaluateTriggers(x, y);
 }
 
 void Module::setReturnStrref(uint32 id) {
@@ -767,6 +769,10 @@ void Module::toggleFreeRoamCamera() {
 
 void Module::toggleWalkmesh() {
 	_area->toggleWalkmesh();
+}
+
+void Module::toggleTriggers() {
+	_area->toggleTriggers();
 }
 
 void Module::loadSavedGame(SavedGame *save) {

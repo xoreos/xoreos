@@ -39,6 +39,7 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/room.h \
     src/engines/kotor2/objectcontainer.h \
     src/engines/kotor2/module.h \
+    src/engines/kotor2/trigger.h \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
@@ -57,6 +58,7 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/room.cpp \
     src/engines/kotor2/objectcontainer.cpp \
     src/engines/kotor2/module.cpp \
+    src/engines/kotor2/trigger.cpp \
     $(EMPTY)
 
 include src/engines/kotor2/script/rules.mk

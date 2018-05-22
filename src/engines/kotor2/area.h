@@ -45,6 +45,7 @@
 #include "src/engines/kotor/walkmesh.h"
 
 #include "src/engines/kotor2/object.h"
+#include "src/engines/kotor2/trigger.h"
 
 namespace Engines {
 
@@ -109,6 +110,11 @@ public:
 	float getElevationAt(float x, float y) const;
 	void toggleWalkmesh();
 
+	// .--- Triggers
+	void toggleTriggers();
+	void evaluateTriggers(float x, float y);
+	// '---
+
 
 protected:
 	void notifyCameraMoved();
@@ -167,6 +173,13 @@ private:
 
 	KotOR::Walkmesh _walkmesh; ///< Walkmesh for collision detection.
 
+	/// .--- Triggers
+	std::vector<Trigger *> _triggers;
+	bool _triggersVisible;
+	Trigger *_activeTrigger;
+	/// '---
+
+
 	// Loading helpers
 
 	void clear();
@@ -188,6 +201,7 @@ private:
 	void loadPlaceables(const Aurora::GFF3List &list);
 	void loadDoors     (const Aurora::GFF3List &list);
 	void loadCreatures (const Aurora::GFF3List &list);
+	void loadTriggers  (const Aurora::GFF3List &list);
 
 	void unload();
 

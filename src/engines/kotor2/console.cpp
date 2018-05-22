@@ -66,6 +66,8 @@ Console::Console(KotOR2Engine &engine) :
 			"Usage: tfc\nToggle free roam camera mode");
 	registerCommand("tw"         , boost::bind(&Console::cmdToggleWalkmesh, this, _1),
 			"Usage: tw\nToggle walkmesh display");
+	registerCommand("tt"         , boost::bind(&Console::cmdToggleTriggers, this, _1),
+			"Usage: tt\nToggle triggers display");
 }
 
 Console::~Console() {
@@ -151,6 +153,10 @@ void Console::cmdToggleFreeCam(const CommandLine &UNUSED(cl)) {
 
 void Console::cmdToggleWalkmesh(const CommandLine &UNUSED(cl)) {
 	_engine->getGame().getModule().toggleWalkmesh();
+}
+
+void Console::cmdToggleTriggers(const CommandLine &UNUSED(cl)) {
+	_engine->getGame().getModule().toggleTriggers();
 }
 
 } // End of namespace KotOR2

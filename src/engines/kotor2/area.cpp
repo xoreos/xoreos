@@ -54,8 +54,15 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
-	_module(&module), _resRef(resRef), _visible(false), _activeObject(0), _highlightAll(false) {
+Area::Area(Module &module, const Common::UString &resRef)
+		: Object(kObjectTypeArea),
+		  _module(&module),
+		  _resRef(resRef),
+		  _visible(false),
+		  _activeObject(0),
+		  _highlightAll(false),
+		  _triggersVisible(false),
+		  _activeTrigger(0) {
 
 	try {
 		load();
@@ -97,6 +104,8 @@ void Area::clear() {
 
 	_objects.clear();
 	_rooms.clear();
+	_triggers.clear();
+	_activeTrigger = 0;
 }
 
 uint32 Area::getMusicDayTrack() const {
@@ -282,6 +291,9 @@ void Area::loadGIT(const Aurora::GFF3Struct &git) {
 
 	if (git.hasField("Creature List"))
 		loadCreatures(git.getList("Creature List"));
+
+	if (git.hasField("TriggerList"))
+		loadTriggers(git.getList("TriggerList"));
 }
 
 void Area::loadProperties(const Aurora::GFF3Struct &props) {
@@ -376,6 +388,15 @@ void Area::loadCreatures(const Aurora::GFF3List &list) {
 		Creature *creature = new Creature(**c);
 
 		loadObject(*creature);
+	}
+}
+
+void Area::loadTriggers(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator t = list.begin(); t != list.end(); ++t) {
+		Trigger *trigger = new Trigger(**t);
+
+		loadObject(*trigger);
+		_triggers.push_back(trigger);
 	}
 }
 
@@ -489,6 +510,37 @@ void Area::toggleWalkmesh() {
 		_walkmesh.hide();
 	else
 		_walkmesh.show();
+}
+
+void Area::toggleTriggers() {
+	_triggersVisible = !_triggersVisible;
+	for (std::vector<Trigger *>::const_iterator it = _triggers.begin();
+			it != _triggers.end();
+			++it) {
+		(*it)->setVisible(_triggersVisible);
+	}
+}
+
+void Area::evaluateTriggers(float x, float y) {
+	Trigger *trigger = 0;
+
+	for (std::vector<Trigger *>::iterator it = _triggers.begin();
+			it != _triggers.end();
+			++it) {
+		Trigger *t = *it;
+		if (t->contains(x, y)) {
+			trigger = t;
+			break;
+		}
+	}
+
+	if (_activeTrigger != trigger) {
+		if (_activeTrigger)
+			_activeTrigger->runScript(kScriptExit, this, _module->getPC());
+		_activeTrigger = trigger;
+		if (_activeTrigger)
+			_activeTrigger->runScript(kScriptEnter, this, _module->getPC());
+	}
 }
 
 } // End of namespace KotOR2

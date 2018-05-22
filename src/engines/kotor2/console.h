@@ -65,6 +65,7 @@ private:
 	void cmdPlayMusic     (const CommandLine &cl);
 	void cmdToggleFreeCam (const CommandLine &cl);
 	void cmdToggleWalkmesh(const CommandLine &cl);
+	void cmdToggleTriggers(const CommandLine &cl);
 };
 
 } // End of namespace KotOR2

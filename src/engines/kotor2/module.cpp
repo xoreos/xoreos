@@ -612,6 +612,8 @@ void Module::movedPC() {
 		CameraMan.setPosition(x, y, z + 1.8f);
 		CameraMan.update();
 	}
+
+	_area->evaluateTriggers(x, y);
 }
 
 const Aurora::IFOFile &Module::getIFO() const {
@@ -684,6 +686,10 @@ void Module::toggleFreeRoamCamera() {
 
 void Module::toggleWalkmesh() {
 	_area->toggleWalkmesh();
+}
+
+void Module::toggleTriggers() {
+	_area->toggleTriggers();
 }
 
 void Module::startConversation(const Common::UString &name) {

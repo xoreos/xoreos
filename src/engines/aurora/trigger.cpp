@@ -1,0 +1,93 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file
+ *  Generic trigger.
+ */
+
+#include "glm/gtc/type_ptr.hpp"
+
+#include "src/common/intersect.h"
+
+#include "src/aurora/gff3file.h"
+#include "src/aurora/resman.h"
+
+#include "src/engines/aurora/trigger.h"
+
+namespace Engines {
+
+Trigger::Trigger()
+		: Renderable(Graphics::kRenderableTypeObject),
+		  _visible(false) {
+
+}
+
+void Trigger::setVisible(bool visible) {
+	_visible = visible;
+}
+
+bool Trigger::contains(float x, float y) const {
+	size_t vertexCount = _geometry.size();
+	if (vertexCount < 3)
+		return false;
+
+	glm::vec3 p0(x, y, 1000);
+	glm::vec3 p1(x, y, -1000);
+	glm::vec3 intersection;
+
+	for (size_t i = 2; i < vertexCount; ++i) {
+		if (Common::intersectRayTriangle(p0, p1,
+					_geometry[0],
+					_geometry[i - 1],
+					_geometry[i],
+					intersection) == 1) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void Trigger::calculateDistance() {
+
+}
+
+void Trigger::render(Graphics::RenderPass pass) {
+	if (!_visible || pass != Graphics::kRenderPassTransparent)
+		return;
+
+	size_t vertexCount = _geometry.size();
+	if (vertexCount < 3)
+		return;
+
+	glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+	glBegin(GL_TRIANGLES);
+
+	for (size_t i = 2; i < vertexCount; ++i) {
+		glVertex3fv(glm::value_ptr(_geometry[0]));
+		glVertex3fv(glm::value_ptr(_geometry[i - 1]));
+		glVertex3fv(glm::value_ptr(_geometry[i]));
+	}
+
+	glEnd();
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+} // End of namespace Engines
