@@ -172,8 +172,10 @@ void KotORWidget::setSubScene(Graphics::Aurora::SubSceneQuad *subscene) {
 }
 
 void KotORWidget::setScissor(int x, int y, int width, int height) {
-	_quad->setScissor(true);
-	_quad->setScissor(x, y, width, height);
+	if (_quad) {
+		_quad->setScissor(true);
+		_quad->setScissor(x, y, width, height);
+	}
 }
 
 void KotORWidget::setHighlight(bool highlight) {
@@ -258,7 +260,8 @@ float KotORWidget::getTextHeight(const Common::UString &text) const {
 }
 
 void KotORWidget::setFont(const Common::UString &fnt) {
-	_text->setFont(fnt);
+	if (_text)
+		_text->setFont(fnt);
 }
 
 void KotORWidget::setFill(const Common::UString &fill) {
@@ -373,19 +376,23 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 }
 
 void KotORWidget::setColor(float r, float g, float b, float a) {
+	if (_quad)
 		_quad->setColor(r, g, b, a);
 }
 
 void KotORWidget::setText(const Common::UString &text) {
-	_text->setText(text);
+	if (_text)
+		_text->setText(text);
 }
 
 void KotORWidget::setHorizontalTextAlign(float halign) {
-	_text->setHorizontalAlign(halign);
+	if (_text)
+		_text->setHorizontalAlign(halign);
 }
 
 void KotORWidget::setVerticalTextAlign(float valign) {
-	_text->setVerticalAlign(valign);
+	if (_text)
+		_text->setVerticalAlign(valign);
 }
 
 KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFF3Struct &gff) {
