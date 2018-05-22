@@ -19,8 +19,7 @@
  */
 
 /** @file
- *  Class to evaluate walkmesh elevation at given coordinates. Code ported from
- *  http://geomalgorithms.com/a06-_intersect-2.html
+ *  Class to evaluate walkmesh elevation at given coordinates.
  */
 
 #ifndef ENGINES_AURORA_WALKELEVEVAL_H
