@@ -235,6 +235,8 @@ private:
 	// '---
 
 	// .--- Global values, functions_global.cpp
+	void getGlobalBoolean(Aurora::NWScript::FunctionContext &ctx);
+	void setGlobalBoolean(Aurora::NWScript::FunctionContext &ctx);
 	void getGlobalNumber(Aurora::NWScript::FunctionContext &ctx);
 	void setGlobalNumber(Aurora::NWScript::FunctionContext &ctx);
 	// '---

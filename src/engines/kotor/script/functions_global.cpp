@@ -35,6 +35,19 @@ namespace Engines {
 
 namespace KotOR {
 
+void Functions::getGlobalBoolean(Aurora::NWScript::FunctionContext &ctx) {
+	Common::UString id = ctx.getParams()[0].getString();
+
+	ctx.getReturn() = _game->getModule().getGlobalBoolean(id);
+}
+
+void Functions::setGlobalBoolean(Aurora::NWScript::FunctionContext &ctx) {
+	Common::UString id = ctx.getParams()[0].getString();
+	bool value = ctx.getParams()[1].getInt() != 0;
+
+	_game->getModule().setGlobalNumber(id, value);
+}
+
 void Functions::getGlobalNumber(Aurora::NWScript::FunctionContext &ctx) {
 	Common::UString id = ctx.getParams()[0].getString();
 
