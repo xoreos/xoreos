@@ -25,6 +25,7 @@
 
 bin_PROGRAMS += src/xoreos
 src_xoreos_SOURCES =
+src_xoreos_LDADD =
 
 src_xoreos_SOURCES += \
     src/cline.h \
@@ -41,16 +42,35 @@ if WIN32
 src_xoreos_SOURCES += dists/win32/xoreos.rc
 endif
 
-src_xoreos_LDADD = \
-    src/engines/dragonage2/libdragonage2.la \
-    src/engines/dragonage/libdragonage.la \
-    src/engines/sonic/libsonic.la \
-    src/engines/witcher/libwitcher.la \
-    src/engines/jade/libjade.la \
-    src/engines/kotor2/libkotor2.la \
-    src/engines/kotor/libkotor.la \
-    src/engines/nwn2/libnwn2.la \
-    src/engines/nwn/libnwn.la \
+if ENABLE_DRAGONAGE2
+src_xoreos_LDADD += src/engines/dragonage2/libdragonage2.la
+endif
+if ENABLE_DRAGONAGE2
+src_xoreos_LDADD += src/engines/dragonage/libdragonage.la
+endif
+if ENABLE_SONIC
+src_xoreos_LDADD += src/engines/sonic/libsonic.la
+endif
+if ENABLE_WITCHER
+src_xoreos_LDADD += src/engines/witcher/libwitcher.la
+endif
+if ENABLE_JADE
+src_xoreos_LDADD += src/engines/jade/libjade.la
+endif
+if ENABLE_KOTOR2
+src_xoreos_LDADD += src/engines/kotor2/libkotor2.la
+endif
+if ENABLE_KOTOR
+src_xoreos_LDADD += src/engines/kotor/libkotor.la
+endif
+if ENABLE_NWN2
+src_xoreos_LDADD += src/engines/nwn2/libnwn2.la
+endif
+if ENABLE_NWN
+src_xoreos_LDADD += src/engines/nwn/libnwn.la
+endif
+
+src_xoreos_LDADD += \
     src/engines/libengines.la \
     src/events/libevents.la \
     src/video/libvideo.la \

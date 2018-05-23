@@ -319,6 +319,30 @@ dnl pthread
 AX_PTHREAD()
 AM_CONDITIONAL([HAVE_PTHREAD], [test x"$ax_pthread_ok" = xyes])
 
+AC_DEFUN([AX_ADD_ENGINE], [
+AC_ARG_ENABLE([$1], [AS_HELP_STRING([--disable-$1], [Disable building with support for $3 @<:@default=no@:>@])], [], [enable_$1=yes])
+if test "x$enable_$1" = "xyes"; then
+	AC_DEFINE([ENABLE_$2], 1, [Defined to 1 if we are building with support for $3])
+	AM_CONDITIONAL(ENABLE_$2, true)
+	ENGINE_SUMMARY="$ENGINE_SUMMARY
+	$3: yes"
+else
+	AM_CONDITIONAL(ENABLE_$2, false)
+	ENGINE_SUMMARY="$ENGINE_SUMMARY
+	$3: no"
+fi
+])
+
+AX_ADD_ENGINE([nwn], [NWN], [Neverwinter Nights], [])
+AX_ADD_ENGINE([nwn2], [NWN2], [Neverwinter Nights 2], [])
+AX_ADD_ENGINE([kotor], [KOTOR], [Star Wars: Knights of the Old Republic], [lzma])
+AX_ADD_ENGINE([kotor2], [KOTOR2], [Star Wars: Knights of the Old Republic II: The Sith Lords], [])
+AX_ADD_ENGINE([jade], [JADE], [Jade Empire], [])
+AX_ADD_ENGINE([witcher], [WITCHER], [The Witcher], [])
+AX_ADD_ENGINE([sonic], [SONIC], [Sonic Chronicles: The Dark Brotherhood], [])
+AX_ADD_ENGINE([dragonage], [DRAGONAGE], [Dragon Age: Origins], [libxml2])
+AX_ADD_ENGINE([dragonage2], [DRAGONAGE2], [Dragon Age II], [libxml2])
+
 dnl Extra flags
 case "$target" in
 	*darwin*)
@@ -349,6 +373,8 @@ AC_SUBST(XOREOS_LIBS)
 AC_CONFIG_FILES([Makefile])
 
 AC_OUTPUT
+
+AC_MSG_NOTICE([Enabled engines: $ENGINE_SUMMARY])
 
 AC_MSG_NOTICE([Enabled libraries:])
 AC_MSG_NOTICE([ libmad: $enable_mad])
