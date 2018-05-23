@@ -49,25 +49,25 @@ Console::Console(KotOR2Engine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
 	_engine(&engine), _maxSizeMusic(0) {
 
-	registerCommand("exitmodule" , boost::bind(&Console::cmdExitModule    , this, _1),
+	registerCommand("exitmodule"  , boost::bind(&Console::cmdExitModule  , this, _1),
 			"Usage: exitmodule\nExit the module, returning to the main menu");
-	registerCommand("listmodules", boost::bind(&Console::cmdListModules   , this, _1),
+	registerCommand("listmodules" , boost::bind(&Console::cmdListModules , this, _1),
 			"Usage: listmodules\nList all modules");
-	registerCommand("loadmodule" , boost::bind(&Console::cmdLoadModule    , this, _1),
+	registerCommand("loadmodule"  , boost::bind(&Console::cmdLoadModule  , this, _1),
 			"Usage: loadmodule <module>\nLoad and enter the specified module");
-	registerCommand("listmusic"  , boost::bind(&Console::cmdListMusic     , this, _1),
+	registerCommand("listmusic"   , boost::bind(&Console::cmdListMusic   , this, _1),
 			"Usage: listmusic\nList all available music resources");
-	registerCommand("stopmusic"  , boost::bind(&Console::cmdStopMusic     , this, _1),
+	registerCommand("stopmusic"   , boost::bind(&Console::cmdStopMusic   , this, _1),
 			"Usage: stopmusic\nStop the currently playing music resource");
-	registerCommand("playmusic"  , boost::bind(&Console::cmdPlayMusic     , this, _1),
+	registerCommand("playmusic"   , boost::bind(&Console::cmdPlayMusic   , this, _1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
-	registerCommand("tfc"        , boost::bind(&Console::cmdToggleFreeCam , this, _1),
-			"Usage: tfc\nToggle free roam camera mode");
-	registerCommand("tw"         , boost::bind(&Console::cmdToggleWalkmesh, this, _1),
-			"Usage: tw\nToggle walkmesh display");
-	registerCommand("tt"         , boost::bind(&Console::cmdToggleTriggers, this, _1),
-			"Usage: tt\nToggle triggers display");
+	registerCommand("flycam"      , boost::bind(&Console::cmdFlyCam      , this, _1),
+			"Usage: flycam\nToggle free roam camera mode");
+	registerCommand("showwalkmesh", boost::bind(&Console::cmdShowWalkmesh, this, _1),
+			"Usage: showwalkmesh\nToggle walkmesh display");
+	registerCommand("showtriggers", boost::bind(&Console::cmdShowTriggers, this, _1),
+			"Usage: showtriggers\nToggle triggers display");
 }
 
 Console::~Console() {
@@ -147,15 +147,15 @@ void Console::cmdPlayMusic(const CommandLine &cl) {
 	_engine->getGame().playMusic(cl.args);
 }
 
-void Console::cmdToggleFreeCam(const CommandLine &UNUSED(cl)) {
+void Console::cmdFlyCam(const CommandLine &UNUSED(cl)) {
 	_engine->getGame().getModule().toggleFreeRoamCamera();
 }
 
-void Console::cmdToggleWalkmesh(const CommandLine &UNUSED(cl)) {
+void Console::cmdShowWalkmesh(const CommandLine &UNUSED(cl)) {
 	_engine->getGame().getModule().toggleWalkmesh();
 }
 
-void Console::cmdToggleTriggers(const CommandLine &UNUSED(cl)) {
+void Console::cmdShowTriggers(const CommandLine &UNUSED(cl)) {
 	_engine->getGame().getModule().toggleTriggers();
 }
 
