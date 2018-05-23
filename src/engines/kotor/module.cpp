@@ -271,6 +271,7 @@ void Module::unload(bool completeUnload) {
 		unloadTexturePack();
 
 		_globalNumbers.clear();
+		_globalBooleans.clear();
 	}
 
 	unloadIFO();
@@ -685,6 +686,18 @@ void Module::setReturnQueryStrref(uint32 id) {
 
 void Module::setReturnEnabled(bool enabled) {
 	_ingame->setReturnEnabled(enabled);
+}
+
+void Module::setGlobalBoolean(const Common::UString &id, bool value) {
+	_globalBooleans[id] = value;
+}
+
+bool Module::getGlobalBoolean(const Common::UString &id) const {
+	std::map<Common::UString, bool>::const_iterator iter = _globalBooleans.find(id);
+	if (iter != _globalBooleans.end())
+		return iter->second;
+	else
+		return false;
 }
 
 void Module::setGlobalNumber(const Common::UString &id, int value) {

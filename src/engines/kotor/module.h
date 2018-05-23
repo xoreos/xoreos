@@ -125,6 +125,10 @@ public:
 	// '---
 
 	// .--- Global values
+	/** Set a global boolean. */
+	void setGlobalBoolean(const Common::UString &id, bool value);
+	/** Get a global boolean. */
+	bool getGlobalBoolean(const Common::UString &id) const;
 	/** Get a global number. */
 	void setGlobalNumber(const Common::UString &id, int value);
 	/** Set a global number. */
@@ -217,6 +221,7 @@ private:
 	Common::ScopedPtr<DialogGUI> _dialog; ///< Conversation/cutscene GUI.
 
 	// .--- Global values
+	std::map<Common::UString, bool> _globalBooleans;
 	std::map<Common::UString, int> _globalNumbers;
 	// '---
 
