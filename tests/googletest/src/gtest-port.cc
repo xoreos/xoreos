@@ -1075,7 +1075,11 @@ std::string TempDir() {
 
 size_t GetFileSize(FILE* file) {
   fseek(file, 0, SEEK_END);
-  return static_cast<size_t>(ftell(file));
+
+  const long file_size = ftell(file);
+  GTEST_CHECK_(file_size >= 0);
+
+  return static_cast<size_t>(file_size);
 }
 
 std::string ReadEntireFile(FILE* file) {
