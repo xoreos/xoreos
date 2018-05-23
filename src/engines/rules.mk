@@ -42,12 +42,30 @@ src_engines_libengines_la_LIBADD = \
 # Subdirectories
 
 include src/engines/aurora/rules.mk
+if ENABLE_NWN
 include src/engines/nwn/rules.mk
+endif
+if ENABLE_NWN2
 include src/engines/nwn2/rules.mk
+endif
+if ENABLE_KOTOR
 include src/engines/kotor/rules.mk
+endif
+if ENABLE_KOTOR2
 include src/engines/kotor2/rules.mk
+endif
+if ENABLE_JADE
 include src/engines/jade/rules.mk
+endif
+if ENABLE_WITCHER
 include src/engines/witcher/rules.mk
+endif
+if ENABLE_SONIC
 include src/engines/sonic/rules.mk
+endif
+if ENABLE_DRAGONAGE
 include src/engines/dragonage/rules.mk
+endif
+if ENABLE_DRAGONAGE2
 include src/engines/dragonage2/rules.mk
+endif

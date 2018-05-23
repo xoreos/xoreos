@@ -24,28 +24,64 @@
 
 #include "src/engines/engineprobe.h"
 
+#ifdef ENABLE_NWN
 #include "src/engines/nwn/probes.h"
+#endif
+#ifdef ENABLE_NWN2
 #include "src/engines/nwn2/probes.h"
+#endif
+#ifdef ENABLE_KOTOR
 #include "src/engines/kotor/probes.h"
+#endif
+#ifdef ENABLE_KOTOR2
 #include "src/engines/kotor2/probes.h"
+#endif
+#ifdef ENABLE_JADE
 #include "src/engines/jade/probes.h"
+#endif
+#ifdef ENABLE_WITCHER
 #include "src/engines/witcher/probes.h"
+#endif
+#ifdef ENABLE_SONIC
 #include "src/engines/sonic/probes.h"
+#endif
+#ifdef ENABLE_DRAGONAGE
 #include "src/engines/dragonage/probes.h"
+#endif
+#ifdef ENABLE_DRAGONAGE2
 #include "src/engines/dragonage2/probes.h"
+#endif
 
 #include "src/engines.h"
 
 void createEngineProbes(std::list<const Engines::EngineProbe *> &probes) {
+#ifdef ENABLE_NWN
 	Engines::NWN::createEngineProbes(probes);
+#endif
+#ifdef ENABLE_NWN2
 	Engines::NWN2::createEngineProbes(probes);
+#endif
+#ifdef ENABLE_KOTOR
 	Engines::KotOR::createEngineProbes(probes);
+#endif
+#ifdef ENABLE_KOTOR2
 	Engines::KotOR2::createEngineProbes(probes);
+#endif
+#ifdef ENABLE_JADE
 	Engines::Jade::createEngineProbes(probes);
+#endif
+#ifdef ENABLE_WITCHER
 	Engines::Witcher::createEngineProbes(probes);
+#endif
+#ifdef ENABLE_SONIC
 	Engines::Sonic::createEngineProbes(probes);
+#endif
+#ifdef ENABLE_DRAGONAGE
 	Engines::DragonAge::createEngineProbes(probes);
+#endif
+#ifdef ENABLE_DRAGONAGE2
 	Engines::DragonAge2::createEngineProbes(probes);
+#endif
 }
 
 void destroyEngineProbes(std::list<const Engines::EngineProbe *> &probes) {
