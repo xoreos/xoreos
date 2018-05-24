@@ -259,6 +259,8 @@ void Creature::loadAppearance() {
 
 	loadBody(parts);
 	loadHead(parts);
+
+	setDefaultAnimations();
 }
 
 void Creature::getPartModels(PartModels &parts, uint32 state) {
@@ -386,6 +388,8 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 	parts.head += Common::composeString(info.getFace() + 1);
 
 	loadHead(parts);
+
+	setDefaultAnimations();
 }
 
 void Creature::enter() {
@@ -418,6 +422,15 @@ Common::ScopedPtr<Graphics::Aurora::Model> &Creature::getModel() {
 
 const Common::UString &Creature::getConversation() const {
 	return _conversation;
+}
+
+void Creature::setDefaultAnimations() {
+	if (!_model)
+		return;
+
+	_model->addDefaultAnimation("pause3", 25);
+	_model->addDefaultAnimation("pause2", 25);
+	_model->addDefaultAnimation("pause1", 50);
 }
 
 } // End of namespace KotOR

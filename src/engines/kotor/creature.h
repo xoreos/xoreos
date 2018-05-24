@@ -136,6 +136,8 @@ private:
 	void getPartModels(PartModels &parts, uint32 state = 'b');
 	void loadBody(PartModels &parts);
 	void loadHead(PartModels &parts);
+
+	void setDefaultAnimations();
 };
 
 } // End of namespace KotOR

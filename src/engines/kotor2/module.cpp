@@ -331,12 +331,6 @@ void Module::enter() {
 		_pc->show();
 	}
 
-	Graphics::Aurora::Model *model = _pc->getModel().get();
-	model->clearDefaultAnimations();
-	model->addDefaultAnimation(Common::UString("pause3"), 25);
-	model->addDefaultAnimation(Common::UString("pause2"), 25);
-	model->addDefaultAnimation(Common::UString("pause1"), 50);
-
 	// Roughly head position
 	SatelliteCam.setTarget(entryX, entryY, entryZ + 1.8f);
 	SatelliteCam.setDistance(3.2f);
