@@ -26,13 +26,19 @@
 #include "lundump.h"
 #include "lvm.h"
 
+#if 0
+/* Not really used, but intended to put a certain string into the
+ * output binary. This will be reaped by the compiler nowadays, though.
+ *
+ * We might want to add an __attribute__((used)) or something in the
+ * future.
+ */
 
 const char lua_ident[] =
   "$Lua: " LUA_VERSION " " LUA_COPYRIGHT " $\n"
   "$Authors: " LUA_AUTHORS " $\n"
   "$URL: www.lua.org $\n";
-
-
+#endif
 
 #ifndef api_check
 #define api_check(L, o)		/*{ assert(o); }*/
