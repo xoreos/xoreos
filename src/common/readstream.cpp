@@ -84,7 +84,7 @@ size_t SeekableReadStream::evalSeek(ptrdiff_t offset, Origin whence, size_t pos,
 	switch (whence) {
 		case kOriginEnd:
 			offset = size + offset;
-			// fallthrough
+			XOREOS_FALLTHROUGH;
 		case kOriginBegin:
 			return begin + offset;
 		case kOriginCurrent:
