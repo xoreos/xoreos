@@ -111,6 +111,9 @@ public:
 	/** Set textures to the node. */
 	void setTextures(const std::vector<Common::UString> &textures);
 
+	void computeInverseBindPose();
+	void computeAbsoluteTransform();
+
 	/** The way the environment map is applied to a model node. */
 	enum EnvironmentMapMode {
 		kModeEnvironmentBlendedUnder, ///< Environment map first, then blend the diffuse textures in.
@@ -220,6 +223,18 @@ protected:
 
 	uint16 _nodeNumber;
 
+	glm::mat4 _invBindPose;       ///< Inverse bind pose matrix used for animations.
+	glm::mat4 _absoluteTransform; ///< Absolute transformation matrix used for animations.
+
+	// .--- Node position and geometry buffers
+	float _positionBuffer[3];
+	bool _positionBuffered;
+	float _orientationBuffer[4];
+	bool _orientationBuffered;
+	std::vector<float> _vertexCoordsBuffer;
+	bool _vertexCoordsBuffered;
+	// '---
+
 
 	// Loading helpers
 	void loadTextures(const std::vector<Common::UString> &textures);
@@ -237,6 +252,10 @@ protected:
 
 	void lockFrameIfVisible();
 	void unlockFrameIfVisible();
+
+	void setBufferedPosition(float x, float y, float z);
+	void setBufferedOrientation(float x, float y, float z, float angle);
+	void flushBuffers();
 
 
 private:

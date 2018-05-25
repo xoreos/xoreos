@@ -263,6 +263,8 @@ void Module::loadTexturePack() {
 }
 
 void Module::unload(bool completeUnload) {
+	GfxMan.pauseAnimations();
+
 	leaveArea();
 	unloadArea();
 
@@ -381,6 +383,8 @@ void Module::enter() {
 	_ingame->show();
 
 	enterArea();
+
+	GfxMan.resumeAnimations();
 
 	_running = true;
 	_exit    = false;

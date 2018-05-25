@@ -146,6 +146,11 @@ void GraphicsManager::init() {
 	MaterialMan.init();
 	MeshMan.init();
 
+	_dedicatedAnimThread = ConfigMan.getBool("animthread", true);
+
+	if (_dedicatedAnimThread)
+		_animationThread.createThread();
+
 	_ready = true;
 }
 
@@ -156,6 +161,11 @@ void GraphicsManager::deinit() {
 		return;
 
 	QueueMan.clearAllQueues();
+
+	if (_dedicatedAnimThread) {
+		_animationThread.pause();
+		_animationThread.destroyThread();
+	}
 
 	MeshMan.deinit();
 	MaterialMan.deinit();
@@ -953,21 +963,25 @@ bool GraphicsManager::renderWorld() {
 
 	buildNewTextures();
 
-	// Get the current time
-	uint32 now = EventMan.getTimestamp();
-	if (_lastSampled == 0)
+	if (_dedicatedAnimThread)
+		_animationThread.flush();
+	else {
+		// Get the current time
+		uint32 now = EventMan.getTimestamp();
+		if (_lastSampled == 0)
+			_lastSampled = now;
+
+		// Calc elapsed time
+		float elapsedTime = (now - _lastSampled) / 1000.0f;
 		_lastSampled = now;
 
-	// Calc elapsed time
-	float elapsedTime = (now - _lastSampled) / 1000.0f;
-	_lastSampled = now;
+		// If game paused, skip the advanceTime loop below
 
-	// If game paused, skip the advanceTime loop below
-
-	// Advance time for animation queues
-	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
-	     o != objects.rend(); ++o) {
-		static_cast<Renderable *>(*o)->advanceTime(elapsedTime);
+		// Advance time for animation queues
+		for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
+				o != objects.rend(); ++o) {
+			static_cast<Renderable *>(*o)->advanceTime(elapsedTime);
+		}
 	}
 
 	// Draw opaque objects
@@ -1133,6 +1147,26 @@ glm::mat4 &GraphicsManager::getModelviewMatrix() {
 
 const glm::mat4 &GraphicsManager::getModelviewInverseMatrix() const {
 	return _modelviewInv;
+}
+
+void GraphicsManager::pauseAnimations() {
+	if (_dedicatedAnimThread)
+		_animationThread.pause();
+}
+
+void GraphicsManager::resumeAnimations() {
+	if (_dedicatedAnimThread)
+		_animationThread.resume();
+}
+
+void GraphicsManager::registerAnimatedModel(Aurora::Model *model) {
+	if (_dedicatedAnimThread)
+		_animationThread.registerModel(model);
+}
+
+void GraphicsManager::unregisterAnimatedModel(Aurora::Model *model) {
+	if (_dedicatedAnimThread)
+		_animationThread.unregisterModel(model);
 }
 
 bool GraphicsManager::isGL3() const {

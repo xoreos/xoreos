@@ -41,9 +41,15 @@
 #include "src/graphics/types.h"
 #include "src/graphics/windowman.h"
 
+#include "src/graphics/aurora/animationthread.h"
+
 #include "src/events/notifyable.h"
 
 namespace Graphics {
+
+namespace Aurora {
+	class Model;
+}
 
 class FPSCounter;
 class Cursor;
@@ -165,6 +171,16 @@ public:
 	/** Return the inverse modelview matrix (camera view). */
 	const glm::mat4 &getModelviewInverseMatrix() const;
 
+	/** Pause animation thread. */
+	void pauseAnimations();
+	/** Resume animation thread. */
+	void resumeAnimations();
+
+	/** Register a model with the animation thread. */
+	void registerAnimatedModel(Aurora::Model *model);
+	/** Unregister a model from the animation thread. */
+	void unregisterAnimatedModel(Aurora::Model *model);
+
 private:
 	enum ProjectType {
 		kProjectTypePerspective,
@@ -222,6 +238,9 @@ private:
 	std::list<ListID>      _abandonLists;    ///< Abandoned lists.
 
 	Common::Mutex _abandonMutex; ///< A mutex protecting abandoned structures.
+
+	Aurora::AnimationThread _animationThread;
+	bool _dedicatedAnimThread; ///< Use dedicated thread for animations?
 
 	void setupScene();
 

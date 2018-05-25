@@ -998,6 +998,9 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 					_position[0] = p.x;
 					_position[1] = p.y;
 					_position[2] = p.z;
+					_positionBuffer[0] = _position[0];
+					_positionBuffer[1] = _position[1];
+					_positionBuffer[2] = _position[2];
 					ctx.hasPosition = true;
 				}
 			}
@@ -1021,6 +1024,10 @@ void ModelNode_NWN_Binary::readNodeControllers(Model_NWN::ParserContext &ctx,
 					_orientation[1] = data[dataIndex + 1];
 					_orientation[2] = data[dataIndex + 2];
 					_orientation[3] = Common::rad2deg(acos(data[dataIndex + 3]) * 2.0);
+					_orientationBuffer[0] = _orientation[0];
+					_orientationBuffer[1] = _orientation[1];
+					_orientationBuffer[2] = _orientation[2];
+					_orientationBuffer[3] = _orientation[3];
 
 					ctx.hasOrientation = true;
 				}

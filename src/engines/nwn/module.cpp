@@ -382,6 +382,8 @@ void Module::enter() {
 	CameraMan.update();
 
 	_ingameGUI->show();
+
+	GfxMan.resumeAnimations();
 }
 
 void Module::leave() {
@@ -529,6 +531,8 @@ void Module::handleActions() {
 }
 
 void Module::unload(bool completeUnload) {
+	GfxMan.pauseAnimations();
+
 	unloadAreas();
 	unloadHAKs();
 	unloadTLK();

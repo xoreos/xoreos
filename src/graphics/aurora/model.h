@@ -52,11 +52,15 @@ namespace Graphics {
 namespace Aurora {
 
 class Animation;
+class AnimationThread;
 
 class Model : public GLContainer, public Renderable {
 public:
 	Model(ModelType type = kModelTypeObject);
 	~Model();
+
+	void show();
+	void hide();
 
 	ModelType getType() const; ///< Return the model's type.
 
@@ -187,6 +191,9 @@ public:
 	void calculateDistance();
 	void render(RenderPass pass);
 	void advanceTime(float dt);
+
+	/** Apply buffered changes to model nodes position and geometry. */
+	void flushNodeBuffers();
 
 
 protected:
@@ -325,6 +332,7 @@ public:
 
 	friend class ModelNode;
 	friend class Animation;
+	friend class AnimationThread;
 };
 
 } // End of namespace Aurora

@@ -66,9 +66,17 @@ ModelNode::Mesh::Mesh() : shininess(1.0f), alpha(1.0f), tilefade(0), render(fals
 }
 
 
-ModelNode::ModelNode(Model &model) :
-	_model(&model), _parent(0), _attachedModel(0), _level(0), _render(false), _mesh(0),
-	_nodeNumber(0) {
+ModelNode::ModelNode(Model &model)
+		: _model(&model),
+		  _parent(0),
+		  _attachedModel(0),
+		  _level(0),
+		  _render(false),
+		  _mesh(0),
+		  _nodeNumber(0),
+		  _positionBuffered(false),
+		  _orientationBuffered(false),
+		  _vertexCoordsBuffered(false) {
 
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
@@ -81,6 +89,15 @@ ModelNode::ModelNode(Model &model) :
 	_scale[0] = 1.0f;
 	_scale[1] = 1.0f;
 	_scale[2] = 1.0f;
+
+	_positionBuffer[0] = 0.0f;
+	_positionBuffer[1] = 0.0f;
+	_positionBuffer[2] = 0.0f;
+
+	_orientationBuffer[0] = 0.0f;
+	_orientationBuffer[1] = 0.0f;
+	_orientationBuffer[2] = 0.0f;
+	_orientationBuffer[3] = 0.0f;
 }
 
 ModelNode::~ModelNode() {
@@ -677,6 +694,113 @@ void ModelNode::lockFrameIfVisible() {
 
 void ModelNode::unlockFrameIfVisible() {
 	_model->unlockFrameIfVisible();
+}
+
+void ModelNode::setBufferedPosition(float x, float y, float z) {
+	_positionBuffer[0] = x;
+	_positionBuffer[1] = y;
+	_positionBuffer[2] = z;
+	_positionBuffered = true;
+}
+
+void ModelNode::setBufferedOrientation(float x, float y, float z, float angle) {
+	_orientationBuffer[0] = x;
+	_orientationBuffer[1] = y;
+	_orientationBuffer[2] = z;
+	_orientationBuffer[3] = angle;
+	_orientationBuffered = true;
+}
+
+void ModelNode::flushBuffers() {
+	if (_positionBuffered) {
+		_position[0] = _positionBuffer[0] / _model->_scale[0];
+		_position[1] = _positionBuffer[1] / _model->_scale[1];
+		_position[2] = _positionBuffer[2] / _model->_scale[2];
+		_positionBuffered = false;
+	}
+
+	if (_orientationBuffered) {
+		_orientation[0] = _orientationBuffer[0];
+		_orientation[1] = _orientationBuffer[1];
+		_orientation[2] = _orientationBuffer[2];
+		_orientation[3] = _orientationBuffer[3];
+		_orientationBuffered = false;
+	}
+
+	if (_vertexCoordsBuffered) {
+		const float *vcb = &_vertexCoordsBuffer[0];
+		VertexBuffer &vb = _mesh->data->vertexBuffer;
+		int vertexCount = vb.getCount();
+		int stride = vb.getSize() / sizeof(float);
+		float *v = reinterpret_cast<float *>(vb.getData());
+		for (int i = 0; i < vertexCount; ++i) {
+			v[0] = vcb[0];
+			v[1] = vcb[1];
+			v[2] = vcb[2];
+			v += stride;
+			vcb += 3;
+		}
+		_vertexCoordsBuffered = false;
+	}
+}
+
+void ModelNode::computeInverseBindPose() {
+	std::vector<ModelNode *> nodeChain;
+	for (ModelNode *node = this; node; node = node->_parent) {
+		nodeChain.push_back(node);
+	}
+
+	_invBindPose = glm::mat4();
+
+	for (std::vector<ModelNode *>::reverse_iterator n = nodeChain.rbegin();
+			n != nodeChain.rend();
+			++n) {
+		const ModelNode *node = *n;
+
+		if (node->_positionFrames.size() > 0) {
+			const PositionKeyFrame &pos = node->_positionFrames[0];
+			_invBindPose = glm::translate(_invBindPose, glm::vec3(pos.x, pos.y, pos.z));
+		}
+
+		if (node->_orientationFrames.size() > 0) {
+			const QuaternionKeyFrame &ori = node->_orientationFrames[0];
+			if (ori.x != 0 || ori.y != 0 || ori.z != 0)
+				_invBindPose = glm::rotate(_invBindPose,
+						acosf(ori.q) * 2.0f,
+						glm::vec3(ori.x, ori.y, ori.z));
+		}
+	}
+
+	_invBindPose = glm::inverse(_invBindPose);
+}
+
+void ModelNode::computeAbsoluteTransform() {
+	std::vector<ModelNode *> nodeChain;
+	for (ModelNode *node = this; node; node = node->_parent) {
+		nodeChain.push_back(node);
+	}
+
+	_absoluteTransform = glm::mat4();
+
+	for (std::vector<ModelNode *>::reverse_iterator n = nodeChain.rbegin();
+			n != nodeChain.rend();
+			++n) {
+		const ModelNode *node = *n;
+
+		_absoluteTransform = glm::translate(_absoluteTransform,
+				glm::vec3(node->_positionBuffer[0],
+				          node->_positionBuffer[1],
+				          node->_positionBuffer[2]));
+
+		if (node->_orientationBuffer[0] != 0 ||
+				node->_orientationBuffer[1] != 0 ||
+				node->_orientationBuffer[2] != 0)
+			_absoluteTransform = glm::rotate(_absoluteTransform,
+					Common::deg2rad(node->_orientationBuffer[3]),
+					glm::vec3(node->_orientationBuffer[0],
+					          node->_orientationBuffer[1],
+					          node->_orientationBuffer[2]));
+	}
 }
 
 } // End of namespace Aurora

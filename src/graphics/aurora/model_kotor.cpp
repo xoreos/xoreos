@@ -390,7 +390,9 @@ void Model_KotOR::makeBoneNodeMap() {
 			for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
 				int index = static_cast<int>(skin->boneMapping[i]);
 				if (index != -1) {
-					skin->boneNodeMap[index] = getNode(i);
+					ModelNode *node2 = getNode(i);
+					node2->computeInverseBindPose();
+					skin->boneNodeMap[index] = node2;
 				}
 			}
 		}
@@ -423,6 +425,15 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	_orientation[0] = ctx.mdl->readIEEEFloatLE();
 	_orientation[1] = ctx.mdl->readIEEEFloatLE();
 	_orientation[2] = ctx.mdl->readIEEEFloatLE();
+
+	_positionBuffer[0] = _position[0];
+	_positionBuffer[1] = _position[1];
+	_positionBuffer[2] = _position[2];
+
+	_orientationBuffer[0] = _orientation[0];
+	_orientationBuffer[1] = _orientation[1];
+	_orientationBuffer[2] = _orientation[2];
+	_orientationBuffer[3] = _orientation[3];
 
 	uint32 childrenOffset, childrenCount;
 	Model::readArrayDef(*ctx.mdl, childrenOffset, childrenCount);

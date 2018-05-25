@@ -99,6 +99,16 @@ Model::~Model() {
 	delete _boundRenderable;
 }
 
+void Model::show() {
+	Renderable::show();
+	GfxMan.registerAnimatedModel(this);
+}
+
+void Model::hide() {
+	GfxMan.unregisterAnimatedModel(this);
+	Renderable::hide();
+}
+
 ModelType Model::getType() const {
 	return _type;
 }
@@ -640,6 +650,19 @@ void Model::calculateDistance() {
 
 void Model::advanceTime(float dt) {
 	manageAnimations(dt);
+	flushNodeBuffers();
+}
+
+void Model::flushNodeBuffers() {
+	if (!_currentState)
+		return;
+
+	NodeList &nodes = _currentState->nodeList;
+	for (NodeList::iterator n = nodes.begin();
+			n != nodes.end();
+			++n) {
+		(*n)->flushBuffers();
+	}
 }
 
 void Model::setSkinned(bool skinned) {

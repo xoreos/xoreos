@@ -93,22 +93,12 @@ protected:
 	float _transtime;
 
 private:
-	std::vector<glm::mat4>   _invBindPoseMatrices;
-	std::vector<glm::mat4>   _boneTransMatrices;
-	std::vector<ModelNode *> _nodeChain;
-
 	void interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale,
 	                         bool relative) const;
 	void interpolateOrientation(ModelNode *animNode, ModelNode *target, float time) const;
 
 	/** Transform vertices for each node of the specified model based on current animation. */
 	void updateSkinnedModel(Model *model);
-
-	/** Multiplies first vector by a matrix, stores result in second vector. */
-	void multiply(const float *v, const glm::mat4 &m, float *rv);
-
-	/** Compute node transformation and inverse bind pose matrices. */
-	void computeNodeTransform(ModelNode *node, glm::mat4 &outInvBindPose, glm::mat4 &outTransform);
 };
 
 } // End of namespace Aurora
