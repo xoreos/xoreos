@@ -13,6 +13,8 @@
 
 #define lstrlib_c
 
+#include "src/common/fallthrough.h"
+
 #include "lua.h"
 
 #include "lauxlib.h"
@@ -731,7 +733,7 @@ static int str_format (lua_State *L) {
             break;
           }
         }
-        // Fallthrough
+          break;
         default: {  /* also treat cases `pnLlh' */
           return luaL_error(L, "invalid option to `format'");
         }
