@@ -25,6 +25,7 @@ src_common_libcommon_la_SOURCES =
 src_common_libcommon_la_SOURCES += \
     src/common/system.h \
     src/common/noreturn.h \
+    src/common/fallthrough.h \
     src/common/types.h \
     src/common/endianness.h \
     src/common/deallocator.h \
