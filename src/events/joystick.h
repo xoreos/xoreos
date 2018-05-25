@@ -25,7 +25,10 @@
 #ifndef EVENTS_JOYSTICK_H
 #define EVENTS_JOYSTICK_H
 
+#include "src/common/fallthrough.h"
+START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_joystick.h>
+STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 #include <boost/noncopyable.hpp>
 

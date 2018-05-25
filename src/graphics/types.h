@@ -27,7 +27,10 @@
 
 #include <vector>
 
+#include "src/common/fallthrough.h"
+START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL.h>
+STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 #include "src/common/types.h"
 

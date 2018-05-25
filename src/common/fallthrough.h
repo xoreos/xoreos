@@ -60,4 +60,24 @@
 	#define XOREOS_FALLTHROUGH // Fallthrough
 #endif
 
+#if defined(__clang__)
+	/* Macros to make clang ignore implicit fallthroughs in certain includes.
+	 *
+	 * This is needed for the SDL2 headers. Because sdl2-config puts the SDL2
+	 * path into -I instead of -isystem, and SDL2 marks implicit fallthroughs
+	 * with a comment instead of an attribute -- something which clang doesn't
+	 * understand -- clang spits out a warning for the SDL2 headers.
+	 *
+	 * We don't want this, so we disable this warning for the SDL2 headers.
+	 *
+	 * Usage: wrap the include in these two macros.
+	 */
+	#define START_IGNORE_IMPLICIT_FALLTHROUGH _Pragma("clang diagnostic push") \
+	                                          _Pragma("clang diagnostic ignored \"-Wimplicit-fallthrough\"")
+	#define STOP_IGNORE_IMPLICIT_FALLTHROUGH _Pragma("clang diagnostic pop")
+#else
+	#define START_IGNORE_IMPLICIT_FALLTHROUGH
+	#define STOP_IGNORE_IMPLICIT_FALLTHROUGH
+#endif
+
 #endif // COMMON_FALLTHROUGH_H

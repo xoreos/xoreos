@@ -25,7 +25,10 @@
 #ifndef EVENTS_TIMERMAN_H
 #define EVENTS_TIMERMAN_H
 
+#include "src/common/fallthrough.h"
+START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_timer.h>
+STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 #include <list>
 

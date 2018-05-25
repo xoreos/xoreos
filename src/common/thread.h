@@ -27,7 +27,10 @@
 #ifndef COMMON_THREAD_H
 #define COMMON_THREAD_H
 
+#include "src/common/fallthrough.h"
+START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_thread.h>
+STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 #include <boost/noncopyable.hpp>
 

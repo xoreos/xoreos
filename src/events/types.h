@@ -32,7 +32,10 @@
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "src/common/fallthrough.h"
+START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_events.h>
+STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 namespace Events {
 

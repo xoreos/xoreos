@@ -24,7 +24,10 @@
 
 #include <cstdlib>
 
+#include "src/common/fallthrough.h"
+START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_timer.h>
+STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 #include "src/common/util.h"
 #include "src/common/error.h"

@@ -26,7 +26,10 @@
 
 #include <cassert>
 
+#include "src/common/fallthrough.h"
+START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_thread.h>
+STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 #include "src/common/types.h"
 #include "src/common/error.h"

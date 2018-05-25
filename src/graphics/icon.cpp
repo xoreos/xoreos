@@ -25,7 +25,11 @@
 #ifdef WIN32
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
+
+	#include "src/common/fallthrough.h"
+	START_IGNORE_IMPLICIT_FALLTHROUGH
 	#include <SDL_syswm.h>
+	STOP_IGNORE_IMPLICIT_FALLTHROUGH
 #endif
 
 #include <cstring>
