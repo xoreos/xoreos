@@ -119,6 +119,9 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   # clang is far too trigger-happy on this warning, so let's disable it
   set_check_compiler_flag_cxx("-Wundefined-var-template" "-Wno-undefined-var-template")
 
+  # We do not yet mark any of our overrides. Let's disable this for now
+  set_check_compiler_flag_cxx("-Winconsistent-missing-override" "-Wno-inconsistent-missing-override")
+
   # We're far from stable, so we still have several of those
   set_check_compiler_flag_cxx("-Wunused-private-field" "-Wno-unused-private-field")
 

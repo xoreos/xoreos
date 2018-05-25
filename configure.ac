@@ -137,6 +137,9 @@ AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wc++11-long-long], [-Wno-c++11-long
 dnl clang is far too trigger-happy on this warning, so let's disable it
 AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wundefined-var-template], [-Wno-undefined-var-template])
 
+dnl We do not yet mark any of our overrides. Let's disable this for now
+AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Winconsistent-missing-override], [-Wno-inconsistent-missing-override])
+
 dnl We're far from stable, so we still have several of those
 AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-private-field], [-Wno-unused-private-field])
 
