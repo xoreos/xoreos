@@ -82,6 +82,10 @@ bool Creature::isPC() const {
 	return _isPC;
 }
 
+bool Creature::isPartyMember() const {
+	return _isPC;
+}
+
 Gender Creature::getGender() const {
 	return _gender;
 }

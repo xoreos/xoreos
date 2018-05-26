@@ -77,6 +77,10 @@ bool Creature::isPC() const {
 	return _isPC;
 }
 
+bool Creature::isPartyMember() const {
+	return _isPC;
+}
+
 void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);

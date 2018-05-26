@@ -80,14 +80,15 @@ public:
 
 	static KotOR::Object *toObject(::Aurora::NWScript::Object *object);
 
-	static Module    *toModule   (Aurora::NWScript::Object *object);
-	static Area      *toArea     (Aurora::NWScript::Object *object);
-	static Waypoint  *toWaypoint (Aurora::NWScript::Object *object);
-	static Situated  *toSituated (Aurora::NWScript::Object *object);
-	static Placeable *toPlaceable(Aurora::NWScript::Object *object);
-	static Door      *toDoor     (Aurora::NWScript::Object *object);
-	static Creature  *toCreature (Aurora::NWScript::Object *object);
-	static Creature  *toPC       (Aurora::NWScript::Object *object);
+	static Module    *toModule     (Aurora::NWScript::Object *object);
+	static Area      *toArea       (Aurora::NWScript::Object *object);
+	static Waypoint  *toWaypoint   (Aurora::NWScript::Object *object);
+	static Situated  *toSituated   (Aurora::NWScript::Object *object);
+	static Placeable *toPlaceable  (Aurora::NWScript::Object *object);
+	static Door      *toDoor       (Aurora::NWScript::Object *object);
+	static Creature  *toCreature   (Aurora::NWScript::Object *object);
+	static Creature  *toPC         (Aurora::NWScript::Object *object);
+	static Creature  *toPartyMember(Aurora::NWScript::Object *object);
 
 private:
 	typedef std::list<KotOR::Object *> ObjectList;

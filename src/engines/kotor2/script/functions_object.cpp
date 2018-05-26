@@ -60,6 +60,10 @@ void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = KotOR2::ObjectContainer::toPC(getParamObject(ctx, 0)) != 0;
 }
 
+void Functions::isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = KotOR2::ObjectContainer::toPartyMember(getParamObject(ctx, 0)) != 0;
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines

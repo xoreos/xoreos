@@ -63,6 +63,10 @@ void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = KotOR::ObjectContainer::toPC(getParamObject(ctx, 0)) != 0;
 }
 
+void Functions::isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = KotOR::ObjectContainer::toPartyMember(getParamObject(ctx, 0)) != 0;
+}
+
 void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	Common::UString name = ctx.getParams()[0].getString();
 	int nth = ctx.getParams()[1].getInt();

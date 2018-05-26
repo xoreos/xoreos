@@ -176,6 +176,7 @@ private:
 	void getIsObjectValid(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
+	void isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp

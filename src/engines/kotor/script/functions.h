@@ -181,6 +181,7 @@ private:
 	void getIsObjectValid(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
+	void isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx);
 
 	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 

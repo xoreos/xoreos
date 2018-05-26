@@ -62,6 +62,7 @@ public:
 	// Basic properties
 
 	bool isPC() const; ///< Is the creature a player character?
+	bool isPartyMember() const;
 
 	Gender getGender() const; ///< Get the gender of the creature.
 	int getLevel(const Class &c) const; ///< Get the level of the creature regarding a specific class.

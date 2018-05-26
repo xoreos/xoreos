@@ -161,6 +161,14 @@ Creature *ObjectContainer::toPC(Aurora::NWScript::Object *object) {
 	return pc;
 }
 
+Creature *ObjectContainer::toPartyMember(Aurora::NWScript::Object *object) {
+	Creature *partyMember = dynamic_cast<Creature *>(object);
+	if (!partyMember || !partyMember->isPartyMember())
+		return 0;
+
+	return partyMember;
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines

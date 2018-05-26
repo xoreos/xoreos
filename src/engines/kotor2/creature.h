@@ -62,6 +62,7 @@ public:
 	// Basic properties
 
 	bool isPC() const; ///< Is the creature a player character?
+	bool isPartyMember() const;
 
 	// Positioning
 
