@@ -56,6 +56,7 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 
 	for (std::vector<KotORWidget *>::const_iterator it = itemWidgets.begin();
 			it != itemWidgets.end(); ++it) {
+		(*it)->setBorderColor(0.0f, 0.667969f, 0.988281f, 1.0f);
 		addWidget(*it);
 	}
 
