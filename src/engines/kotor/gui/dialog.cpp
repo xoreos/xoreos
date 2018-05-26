@@ -62,6 +62,14 @@ DialogGUI::DialogGUI(bool k2)
 	lblMessage->setHorizontalTextAlign(Graphics::Aurora::kHAlignCenter);
 	lblMessage->setVerticalTextAlign(Graphics::Aurora::kVAlignBottom);
 
+	// Dialog entries in KotOR and KotOR II have invalid text color in
+	// GUI files. Override it with appropriate color for each game.
+
+	if (k2)
+		lblMessage->setTextColor(0.101961f, 0.698039f, 0.549020, 1.0f);
+	else
+		lblMessage->setTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
+
 	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
 	lbReplies->setItemSelectionEnabled(true);
 	lbReplies->setAdjustHeight(true);
@@ -73,6 +81,10 @@ DialogGUI::DialogGUI(bool k2)
 			it != itemWidgets.end();
 			++it) {
 		WidgetLabel *label = static_cast<WidgetLabel *>(*it);
+
+		if (!k2)
+			label->setTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
+
 		label->enableHighlight();
 		addWidget(label);
 	}
