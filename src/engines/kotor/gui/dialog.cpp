@@ -39,6 +39,7 @@
 
 #include "src/engines/kotor/gui/widgets/label.h"
 #include "src/engines/kotor/gui/widgets/listbox.h"
+#include "src/engines/kotor/gui/widgets/scrollbar.h"
 
 namespace Engines {
 
@@ -73,8 +74,12 @@ DialogGUI::DialogGUI(bool k2)
 	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
 	lbReplies->setItemSelectionEnabled(true);
 	lbReplies->setAdjustHeight(true);
+	lbReplies->setHideScrollBar(true);
 	lbReplies->setPosition(-w / 2.f, -hh, -1.f);
 	lbReplies->setSize(w, rh);
+
+	WidgetScrollbar *scrollBar = lbReplies->createScrollBar();
+	addWidget(scrollBar);
 
 	const std::vector<KotORWidget *> itemWidgets = lbReplies->createItemWidgets();
 	for (std::vector<KotORWidget *>::const_iterator it = itemWidgets.begin();

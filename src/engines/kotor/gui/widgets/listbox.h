@@ -37,6 +37,7 @@ public:
 	~WidgetListBox();
 
 	void load(const Aurora::GFF3Struct &gff);
+	WidgetScrollbar *createScrollBar();
 
 	/** Toggle item selection mode. When enabled listbox items can be
 	 *  selected by clicking on them. One can also scroll through the
@@ -49,6 +50,12 @@ public:
 	 *  contents.
 	 */
 	void setAdjustHeight(bool value);
+
+	/** Toggle scroll bar visibility mode. When enabled it will only
+	 *  be displayed when number of underlying items exceeds number
+	 *  of item widgets.
+	 */
+	void setHideScrollBar(bool value);
 
 	// .--- Item widgets management
 
@@ -86,6 +93,7 @@ private:
 	const Aurora::GFF3Struct *_protoItem;
 	const Aurora::GFF3Struct *_scrollBar;
 	std::vector<Common::UString> _items;
+	WidgetScrollbar *_scrollBarWidget;
 	std::vector<KotORWidget *> _itemWidgets;
 	int _padding;
 	bool _leftScrollBar;
@@ -94,6 +102,7 @@ private:
 	int _selectedIndex;
 	int _startIndex;
 	int _numVisibleItems;
+	bool _hideScrollBar;
 };
 
 } // End of namespace KotOR

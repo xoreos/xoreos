@@ -32,6 +32,7 @@
 #include "src/engines/kotor/gui/widgets/listbox.h"
 #include "src/engines/kotor/gui/widgets/button.h"
 #include "src/engines/kotor/gui/widgets/label.h"
+#include "src/engines/kotor/gui/widgets/scrollbar.h"
 
 namespace Engines {
 
@@ -48,7 +49,8 @@ WidgetListBox::WidgetListBox(::Engines::GUI &gui,
 		  _adjustHeight(false),
 		  _selectedIndex(-1),
 		  _startIndex(0),
-		  _numVisibleItems(0) {
+		  _numVisibleItems(0),
+		  _hideScrollBar(false) {
 }
 
 WidgetListBox::~WidgetListBox() {
@@ -74,12 +76,31 @@ void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
 	}
 }
 
+WidgetScrollbar *WidgetListBox::createScrollBar() {
+	if (!_scrollBar)
+		return 0;
+
+	_scrollBarWidget = new WidgetScrollbar(*_gui, _scrollBar->getString("TAG"));
+	_scrollBarWidget->load(*_scrollBar);
+
+	float x, y, z;
+	getPosition(x, y, z);
+	_scrollBarWidget->setPosition(x, y, z);
+
+	_scrollBarWidget->setSize(_scrollBarWidget->getWidth(), _height);
+	return _scrollBarWidget;
+}
+
 void WidgetListBox::setItemSelectionEnabled(bool value) {
 	_itemSelectionEnabled = value;
 }
 
 void WidgetListBox::setAdjustHeight(bool value) {
 	_adjustHeight = value;
+}
+
+void WidgetListBox::setHideScrollBar(bool value) {
+	_hideScrollBar = value;
 }
 
 const std::vector<KotORWidget *> &WidgetListBox::createItemWidgets(uint count) {
@@ -123,26 +144,34 @@ void WidgetListBox::refreshItemWidgets() {
 
 	GfxMan.lockFrame();
 
+	bool heightExceeded = false;
+
 	for (size_t i = 0; i < _itemWidgets.size(); ++i) {
 		KotORWidget *itemWidget = _itemWidgets[i];
 		bool visible = false;
 
-		int itemIndex = _startIndex + i;
-		if (itemIndex < (int)_items.size()) { // have item to display?
-			const Common::UString &text = _items[itemIndex];
+		if (!heightExceeded) {
+			int itemIndex = _startIndex + i;
+			if (itemIndex < (int)_items.size()) { // have item to display?
+				const Common::UString &text = _items[itemIndex];
 
-			if (_adjustHeight) {
-				float textHeight = itemWidget->getTextHeight(text);
-				if (totalHeight + textHeight > getHeight())
-					break;
-				itemWidget->setSize(itemWidget->getWidth(), textHeight);
-				itemWidget->setPosition(x, y -= textHeight + _padding, z);
-				totalHeight += textHeight;
+				if (_adjustHeight) {
+					float textHeight = itemWidget->getTextHeight(text);
+					if (totalHeight + textHeight > getHeight())
+						heightExceeded = true;
+					else {
+						itemWidget->setSize(itemWidget->getWidth(), textHeight);
+						itemWidget->setPosition(x, y -= textHeight + _padding, z);
+						totalHeight += textHeight;
+					}
+				}
+
+				if (!heightExceeded) {
+					itemWidget->setText(text);
+					itemWidget->setHighlight(itemIndex == _selectedIndex);
+					visible = true;
+				}
 			}
-
-			itemWidget->setText(text);
-			itemWidget->setHighlight(itemIndex == _selectedIndex);
-			visible = true;
 		}
 
 		if (visible) {
@@ -154,6 +183,18 @@ void WidgetListBox::refreshItemWidgets() {
 			if (isVisible())
 				itemWidget->hide();
 			itemWidget->setInvisible(true);
+		}
+	}
+
+	if (_hideScrollBar) {
+		if (_numVisibleItems < (int)_items.size()) {
+			_scrollBarWidget->setInvisible(false);
+			if (isVisible())
+				_scrollBarWidget->show();
+		} else {
+			if (isVisible())
+				_scrollBarWidget->hide();
+			_scrollBarWidget->setInvisible(true);
 		}
 	}
 
@@ -237,7 +278,7 @@ void WidgetListBox::selectPreviousItem() {
 		return;
 
 	if (_selectedIndex < 0 && !_items.empty()) {
-		_selectedIndex = _items.size() - 1;
+		_selectedIndex = 0;
 		refreshItemWidgets();
 	} else if (_selectedIndex > 0) {
 		--_selectedIndex;

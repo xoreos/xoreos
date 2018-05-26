@@ -24,6 +24,8 @@
 
 #include "src/common/system.h"
 
+#include "src/graphics/aurora/guiquad.h"
+
 #include "src/engines/kotor/gui/widgets/scrollbar.h"
 
 namespace Engines {
@@ -37,7 +39,46 @@ WidgetScrollbar::WidgetScrollbar(::Engines::GUI &gui, const Common::UString &tag
 WidgetScrollbar::~WidgetScrollbar() {
 }
 
-void WidgetScrollbar::load(const Aurora::GFF3Struct &UNUSED(gff)) {
+void WidgetScrollbar::load(const Aurora::GFF3Struct &gff) {
+	KotORWidget::load(gff);
+}
+
+void WidgetScrollbar::setPosition(float x, float y, float z) {
+	float oX, oY, oZ;
+	getPosition(oX, oY, oZ);
+
+	Widget::setPosition(x, y, z);
+	getPosition(x, y, z);
+
+	if (_quad) {
+		float qX, qY, qZ;
+		_quad->getPosition(qX, qY, qZ);
+		_quad->setPosition(qX - oX + x, qY - oY + y, qZ - oZ + z);
+	}
+
+	if (_border) {
+		float bX, bY, bZ;
+		_border->getPosition(bX, bY, bZ);
+		_border->setPosition(bX - oX + x, bY - oY + y, bZ - oZ + z);
+	}
+
+	if (_upArrow) {
+		float aX, aY, aZ;
+		_upArrow->getPosition(aX, aY, aZ);
+		_upArrow->setPosition(aX - oX + x, aY - oY + y, aZ - oZ + z);
+	}
+
+	if (_downArrow) {
+		float aX, aY, aZ;
+		_downArrow->getPosition(aX, aY, aZ);
+		_downArrow->setPosition(aX - oX + x, aY - oY + y, aZ - oZ + z);
+	}
+
+	if (_thumb) {
+		float tX, tY, tZ;
+		_thumb->getPosition(tX, tY, tZ);
+		_thumb->setPosition(tX - oX + x, tY - oY + y, tZ - oZ + z);
+	}
 }
 
 } // End of namespace KotOR

@@ -37,6 +37,7 @@ public:
 	~WidgetScrollbar();
 
 	void load(const Aurora::GFF3Struct &gff);
+	void setPosition(float x, float y, float z);
 };
 
 } // End of namespace KotOR

@@ -57,7 +57,7 @@ public:
 
 	void setTag(const Common::UString &tag);
 
-	void setPosition(float x, float y, float z);
+	virtual void setPosition(float x, float y, float z);
 	void setSubScene(Graphics::Aurora::SubSceneQuad *subscene);
 
 	virtual void setInvisible(bool invisible);
@@ -149,6 +149,7 @@ protected:
 
 	float _width;
 	float _height;
+	uint32 _borderDimension;
 
 	float _r;
 	float _g;
@@ -167,6 +168,13 @@ protected:
 	Graphics::Aurora::SubSceneQuad *_subScene;
 
 	bool _highlighted;
+
+	/// .--- Scroll bar elements
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _upArrow;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _downArrow;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _thumb;
+	float _arrowHeight;
+	/// '---
 
 	Extend  createExtend (const Aurora::GFF3Struct &gff);
 	Border  createBorder (const Aurora::GFF3Struct &gff);

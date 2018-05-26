@@ -37,6 +37,7 @@
 #include "src/graphics/aurora/highlightabletext.h"
 #include "src/graphics/aurora/highlightableguiquad.h"
 #include "src/graphics/aurora/types.h"
+#include "src/graphics/aurora/textureman.h"
 
 #include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
@@ -63,10 +64,23 @@ KotORWidget::Hilight::Hilight() : fill("") {
 
 }
 
-KotORWidget::KotORWidget(::Engines::GUI &gui, const Common::UString &tag) :
-	Widget(gui, tag), _width(0.0f), _height(0.0f), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
-	_unselectedR(1.0f), _unselectedG(1.0f), _unselectedB(1.0f), _unselectedA(1.0f),
-	_wrapped(false), _subScene(NULL), _highlighted(false) {
+KotORWidget::KotORWidget(::Engines::GUI &gui, const Common::UString &tag)
+		: Widget(gui, tag),
+		  _width(0.0f),
+		  _height(0.0f),
+		  _borderDimension(0),
+		  _r(1.0f),
+		  _g(1.0f),
+		  _b(1.0f),
+		  _a(1.0f),
+		  _unselectedR(1.0f),
+		  _unselectedG(1.0f),
+		  _unselectedB(1.0f),
+		  _unselectedA(1.0f),
+		  _wrapped(false),
+		  _subScene(NULL),
+		  _highlighted(false),
+		  _arrowHeight(0) {
 
 }
 
@@ -87,12 +101,24 @@ void KotORWidget::show() {
 		_border->show();
 	if (_subScene)
 		_subScene->show();
+	if (_upArrow)
+		_upArrow->show();
+	if (_downArrow)
+		_downArrow->show();
+	if (_thumb)
+		_thumb->show();
 }
 
 void KotORWidget::hide() {
 	if (isInvisible())
 		return;
 
+	if (_thumb)
+		_thumb->hide();
+	if (_downArrow)
+		_downArrow->hide();
+	if (_upArrow)
+		_upArrow->hide();
 	if (_subScene)
 		_subScene->hide();
 	if (_border)
@@ -227,6 +253,20 @@ bool KotORWidget::isHighlight() {
 }
 
 void KotORWidget::setSize(float width, float height) {
+	if (_upArrow) {
+		float x, y, z;
+		getPosition(x, y, z);
+
+		float oX, oY, oZ;
+		_upArrow->getPosition(oX, oY, oZ);
+		_upArrow->setPosition(oX, y + height - _arrowHeight, oZ);
+	}
+	if (_thumb) {
+		_thumb->setWidth(width - 2 * _borderDimension);
+		_thumb->setHeight(height - 2 * (_borderDimension + _arrowHeight));
+	}
+	if (_border)
+		_border->setSize(width, height - 2 * _arrowHeight);
 	if (_quad) {
 		_quad->setWidth(width);
 		_quad->setHeight(height);
@@ -311,36 +351,65 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 	Border border = createBorder(gff);
 	Hilight hilight = createHilight(gff);
 
+	// Scroll bar properties
+
+	if (gff.hasField("DIR")) {
+		const Aurora::GFF3Struct &dir = gff.getStruct("DIR");
+		Graphics::Aurora::TextureHandle arrowTex = TextureMan.get(dir.getString("IMAGE"));
+		_arrowHeight = arrowTex.getTexture().getHeight();
+
+		_upArrow.reset(new Graphics::Aurora::GUIQuad(arrowTex, 0.0f, 0.0f, _width, _arrowHeight));
+		_upArrow->setPosition(extend.x, extend.y + _height - _arrowHeight, 0.0f);
+
+		_downArrow.reset(new Graphics::Aurora::GUIQuad(arrowTex, 0.0f, 0.0f, _width, _arrowHeight, 0.0f, 1.0f, 1.0f, 0.0f));
+		_downArrow->setPosition(extend.x, extend.y, 0.0f);
+	}
+
+	if (gff.hasField("THUMB")) {
+		const Aurora::GFF3Struct &thumb = gff.getStruct("THUMB");
+
+		_thumb.reset(new Graphics::Aurora::GUIQuad(thumb.getString("IMAGE"), 0.0f, 0.0f,
+				_width - 2 * border.dimension,
+				_height - 2 * (border.dimension + _arrowHeight)));
+
+		_thumb->setPosition(extend.x + border.dimension, extend.y + _arrowHeight + border.dimension, 0.0f);
+	}
+
+	//-
+
 	if (!hilight.fill.empty()) {
-		_highlight.reset(new Graphics::Aurora::GUIQuad(hilight.fill, 0, 0, extend.w, extend.h));
-		_highlight->setPosition(extend.x, extend.y, 0.0f);
+		_highlight.reset(new Graphics::Aurora::GUIQuad(hilight.fill, 0, 0, extend.w, extend.h - 2*_arrowHeight));
+		_highlight->setPosition(extend.x, extend.y + _arrowHeight, 0.0f);
 		_highlight->setTag(getTag());
 		_highlight->setClickable(true);
 	}
 
 	if (!border.edge.empty() && !border.corner.empty()) {
 		_border.reset(new Graphics::Aurora::BorderQuad(border.edge, border.corner,
-		                                               extend.x, extend.y, extend.w, extend.h,
+		                                               extend.x,
+		                                               extend.y + _arrowHeight,
+		                                               extend.w,
+		                                               extend.h - 2*_arrowHeight,
 		                                               border.dimension));
 
 		_border->setColor(border.r, border.g, border.b);
 		if (!border.fill.empty()) {
 			_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f,
-			                                                       extend.w - 2*border.dimension,
-			                                                       extend.h - 2*border.dimension));
+			                                                       extend.w - 2 * border.dimension,
+			                                                       extend.h - 2 * (border.dimension - _arrowHeight)));
 		} else {
 			_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f,
-			                                          extend.w - 2*border.dimension,
-			                                          extend.h - 2*border.dimension));
+			                                          extend.w - 2 * border.dimension,
+			                                          extend.h - 2 * (border.dimension - _arrowHeight)));
 		}
-		_quad->setPosition(extend.x + border.dimension, extend.y + border.dimension, 0.0f);
+		_quad->setPosition(extend.x + border.dimension, extend.y + border.dimension + _arrowHeight, 0.0f);
 	} else {
 		if (!border.fill.empty()) {
-			_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
+			_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h - 2*_arrowHeight));
 		} else {
-			_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
+			_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h - 2*_arrowHeight));
 		}
-		_quad->setPosition(extend.x, extend.y, 0.0f);
+		_quad->setPosition(extend.x, extend.y + _arrowHeight, 0.0f);
 	}
 
 	_quad->setTag(getTag());
@@ -377,6 +446,8 @@ void KotORWidget::load(const Aurora::GFF3Struct &gff) {
 		_text->setTag(getTag());
 		_text->setClickable(true);
 	}
+
+	_borderDimension = border.dimension;
 }
 
 void KotORWidget::setColor(float r, float g, float b, float a) {

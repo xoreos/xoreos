@@ -35,6 +35,7 @@
 #include "src/engines/kotor/gui/widgets/button.h"
 #include "src/engines/kotor/gui/widgets/label.h"
 #include "src/engines/kotor/gui/widgets/listbox.h"
+#include "src/engines/kotor/gui/widgets/scrollbar.h"
 
 namespace Engines {
 
@@ -52,8 +53,10 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 
 	WidgetListBox *lbGames = getListBox("LB_GAMES");
 	lbGames->setItemSelectionEnabled(true);
-	const std::vector<KotORWidget *> &itemWidgets = lbGames->createItemWidgets();
+	WidgetScrollbar *scrollBar = lbGames->createScrollBar();
+	addWidget(scrollBar);
 
+	const std::vector<KotORWidget *> &itemWidgets = lbGames->createItemWidgets();
 	for (std::vector<KotORWidget *>::const_iterator it = itemWidgets.begin();
 			it != itemWidgets.end(); ++it) {
 		(*it)->setBorderColor(0.0f, 0.667969f, 0.988281f, 1.0f);
