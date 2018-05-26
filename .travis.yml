@@ -6,12 +6,16 @@ compiler:
   - gcc
   - clang
 
+os:
+  - linux
+  - osx
+
 env:
   global:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "oYIV1EmOvP2ruIxyCTPuGuqUsUzTxxu3P+IdlQZgV6aXaBxtFCuoQaLVMOlnx8xSI2V4mb5I/wK5fAtgUAomzDHQmaBNSbJc3xBTy2xgckup60ehKtFqf+ifm+AYcLQQgLtMUDmLNNcJIKUGPZ8GYwjNfWKt3VGuLHV+UFiRuQI="
-    - coverity_scan_run_condition='\( "$CC" = gcc \) -a \( $USECMAKE -eq 0 \)'
+    - coverity_scan_run_condition='\( "$CC" = gcc \) -a \( $USECMAKE -eq 0 \) -a \( "$TRAVIS_OS_NAME" = linux \)'
     - coverity_scan_script_test_mode=false
   matrix:
     # Let's test both our autoconf and CMake build systems
@@ -28,6 +32,13 @@ matrix:
   exclude:
     - compiler: gcc
       env: USECMAKE=1
+    # Exclude gcc build for osx
+    - compiler: gcc
+      os: osx
+
+# If building on osx, use brew to install dependencies
+before_install:
+  - if [ $TRAVIS_OS_NAME = osx ]; then brew install sdl2 openal-soft freetype mad faad2 libvorbis xvid zlib xz libxml2; fi
 
 script:
   # Configure, autotools
