@@ -94,6 +94,7 @@ public:
 	void setHorizontalTextAlign(float halign);
 	void setVerticalTextAlign(float valign);
 	void setTextColor(float r, float g, float b, float a);
+	void setBorderColor(float r, float g, float b, float a);
 
 protected:
 	struct Extend {

@@ -404,6 +404,11 @@ void KotORWidget::setTextColor(float r, float g, float b, float a) {
 		_text->setColor(r, g, b, a);
 }
 
+void KotORWidget::setBorderColor(float r, float g, float b, float a) {
+	if (_border)
+		_border->setColor(r, g, b, a);
+}
+
 KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFF3Struct &gff) {
 	Extend extend;
 
