@@ -469,8 +469,12 @@ void Module::clickObject(Object *object) {
 	Placeable *placeable = ObjectContainer::toPlaceable(object);
 	if (placeable) {
 		if (placeable->hasInventory()) {
+			stopCameraMovement();
+			stopPCMovement();
+
 			_ingame->showContainer();
 			placeable->close(_pc.get());
+			_prevTimestamp = EventMan.getTimestamp();
 		}
 	}
 }
@@ -803,13 +807,24 @@ void Module::startConversation(const Common::UString &name) {
 	_dialog->startConversation(name);
 
 	if (_dialog->isConversationActive()) {
-		_forwardBtnPressed = false;
-		_backwardsBtnPressed = false;
-		SatelliteCam.clearInput();
+		stopCameraMovement();
+		stopPCMovement();
+
 		_ingame->hide();
 		_dialog->show();
 		_inDialog = true;
 	}
+}
+
+void Module::stopCameraMovement() {
+	SatelliteCam.clearInput();
+}
+
+void Module::stopPCMovement() {
+	_forwardBtnPressed = false;
+	_backwardsBtnPressed = false;
+	_pc->getModel()->playDefaultAnimation();
+	_pcRunning = false;
 }
 
 } // End of namespace KotOR

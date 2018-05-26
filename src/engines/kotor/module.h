@@ -283,6 +283,9 @@ private:
 
 	void handleActions();
 	void handlePCMovement();
+
+	void stopCameraMovement();
+	void stopPCMovement();
 };
 
 } // End of namespace KotOR
