@@ -61,7 +61,6 @@ DialogGUI::DialogGUI(bool k2)
 	lblMessage->setSize(w, rh);
 	lblMessage->setHorizontalTextAlign(Graphics::Aurora::kHAlignCenter);
 	lblMessage->setVerticalTextAlign(Graphics::Aurora::kVAlignBottom);
-	lblMessage->setFont("fnt_d16x16b");
 
 	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
 	lbReplies->setItemSelectionEnabled(true);
@@ -75,7 +74,6 @@ DialogGUI::DialogGUI(bool k2)
 			++it) {
 		WidgetLabel *label = static_cast<WidgetLabel *>(*it);
 		label->enableHighlight();
-		label->setFont("fnt_d16x16b");
 		addWidget(label);
 	}
 }

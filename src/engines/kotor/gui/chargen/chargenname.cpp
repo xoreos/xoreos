@@ -42,7 +42,6 @@ CharacterGenerationNameMenu::CharacterGenerationNameMenu(CharacterGenerationInfo
 	addBackground(kBackgroundTypeMenu);
 
 	_nameLabel = getLabel("NAME_BOX_EDIT");
-	_nameLabel->setFont("fnt_d16x16b");
 	_nameLabel->setText("_");
 
 	EventMan.enableTextInput(true);
