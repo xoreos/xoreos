@@ -23,8 +23,7 @@
  */
 
 #include "glm/gtc/type_ptr.hpp"
-
-#include "src/common/intersect.h"
+#include "glm/gtx/intersect.hpp"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/resman.h"
@@ -48,12 +47,12 @@ bool Trigger::contains(float x, float y) const {
 	if (vertexCount < 3)
 		return false;
 
-	glm::vec3 p0(x, y, 1000);
-	glm::vec3 p1(x, y, -1000);
+	glm::vec3 orig(x, y, 1000);
 	glm::vec3 intersection;
 
 	for (size_t i = 2; i < vertexCount; ++i) {
-		if (Common::intersectRayTriangle(p0, p1,
+		if (glm::intersectRayTriangle(orig,
+					glm::vec3(0, 0, -1),
 					_geometry[0],
 					_geometry[i - 1],
 					_geometry[i],

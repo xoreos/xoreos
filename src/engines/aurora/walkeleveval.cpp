@@ -23,10 +23,10 @@
  */
 
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/intersect.hpp"
 
 #include "src/common/maths.h"
 #include "src/common/util.h"
-#include "src/common/intersect.h"
 
 #include "src/engines/aurora/walkeleveval.h"
 
@@ -36,8 +36,7 @@ float WalkmeshElevationEvaluator::getElevationAt(const Walkmesh &w,
 		float x,
 		float y,
 		uint32 &faceIndex) {
-	glm::vec3 p0 = glm::vec3(x, y, 1000);
-	glm::vec3 p1 = glm::vec3(x, y, -1000);
+	glm::vec3 orig = glm::vec3(x, y, 1000);
 
 	const std::vector<uint32> &indicesWalkable = w.getIndicesWalkable();
 	size_t faceCount = indicesWalkable.size() / 3;
@@ -52,9 +51,11 @@ float WalkmeshElevationEvaluator::getElevationAt(const Walkmesh &w,
 		index += 3;
 
 		glm::vec3 intersection;
-		if (Common::intersectRayTriangle(p0, p1, v0, v1, v2, intersection) == 1) {
+		if (glm::intersectRayTriangle(orig, glm::vec3(0, 0, -1), v0, v1, v2, intersection)) {
 			faceIndex = i;
-			return intersection.z;
+			return (v0 * (1.0f - intersection.x - intersection.y) +
+			        v1 * intersection.x +
+			        v2 * intersection.y).z;
 		}
 	}
 
