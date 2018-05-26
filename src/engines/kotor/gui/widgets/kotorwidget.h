@@ -93,6 +93,7 @@ public:
 	void setText(const Common::UString &text);
 	void setHorizontalTextAlign(float halign);
 	void setVerticalTextAlign(float valign);
+	void setTextColor(float r, float g, float b, float a);
 
 protected:
 	struct Extend {

@@ -399,6 +399,11 @@ void KotORWidget::setVerticalTextAlign(float valign) {
 		_text->setVerticalAlign(valign);
 }
 
+void KotORWidget::setTextColor(float r, float g, float b, float a) {
+	if (_text)
+		_text->setColor(r, g, b, a);
+}
+
 KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFF3Struct &gff) {
 	Extend extend;
 
