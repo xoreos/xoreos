@@ -55,6 +55,12 @@ namespace Engines {
 
 namespace KotOR {
 
+Area::CameraStyle::CameraStyle()
+		: distance(0.0f),
+		  pitch(0.0f),
+		  height(0.0f) {
+}
+
 Area::Area(Module &module, const Common::UString &resRef)
 		: Object(kObjectTypeArea),
 		  _module(&module),
@@ -309,8 +315,19 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 	_worldPt2Y = map.getDouble("WorldPt2Y");
 	_northAxis = map.getSint("NorthAxis");
 
+	// Camera style
+	loadCameraStyle(are.getUint("CameraStyle"));
+
 	// Scripts
 	readScripts(are);
+}
+
+void Area::loadCameraStyle(uint32 id) {
+	const Aurora::TwoDAFile &tda = TwoDAReg.get2DA("camerastyle");
+	const Aurora::TwoDARow &row = tda.getRow(id);
+	_cameraStyle.distance = row.getFloat("distance");
+	_cameraStyle.pitch = row.getFloat("pitch");
+	_cameraStyle.height = row.getFloat("height");
 }
 
 void Area::loadGIT(const Aurora::GFF3Struct &git) {
@@ -581,6 +598,12 @@ void Area::evaluateTriggers(float x, float y) {
 		if (_activeTrigger)
 			_activeTrigger->runScript(kScriptEnter, this, _module->getPC());
 	}
+}
+
+void Area::getCameraStyle(float &distance, float &pitch, float &height) const {
+	distance = _cameraStyle.distance;
+	pitch = _cameraStyle.pitch;
+	height = _cameraStyle.height;
 }
 
 } // End of namespace KotOR

@@ -236,6 +236,7 @@ private:
 	bool _pcRunning;
 	bool _pcPositionLoaded;
 	bool _inDialog;
+	float _cameraHeight;
 
 
 	// .--- Unloading

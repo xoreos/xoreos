@@ -35,8 +35,15 @@ namespace Engines {
 static const float kRotationSpeed = M_PI / 2.f;
 
 SatelliteCamera::SatelliteCamera()
-		: _distance(0), _yaw(0), _pitch(0), _pitchSin(0), _pitchCos(1),
-		  _leftBtnPressed(false), _rightBtnPressed(false), _dirty(true) {
+		: _distance(0.0f),
+		  _yaw(0.0f),
+		  _pitch(0.0f),
+		  _pitchSin(0.0f),
+		  _pitchCos(1.0f),
+		  _height(0.0f),
+		  _leftBtnPressed(false),
+		  _rightBtnPressed(false),
+		  _dirty(true) {
 }
 
 void SatelliteCamera::setTarget(float x, float y, float z) {
@@ -57,6 +64,10 @@ void SatelliteCamera::setPitch(float value) {
 	_pitchSin = sin(pitchRad);
 	_pitchCos = cos(pitchRad);
 	_dirty = true;
+}
+
+void SatelliteCamera::setHeight(float value) {
+	_height = value;
 }
 
 float SatelliteCamera::getYaw() const {
@@ -94,19 +105,19 @@ void SatelliteCamera::update(float dt) {
 			(_rightBtnPressed && !_leftBtnPressed)) {
 		if (_leftBtnPressed && !_rightBtnPressed) {
 			_yaw += kRotationSpeed * dt;
-			_yaw = fmodf(_yaw, 2 * M_PI);
+			_yaw = fmodf(_yaw, 2.0f * M_PI);
 		}
 		if (_rightBtnPressed && !_leftBtnPressed) {
 			_yaw -= kRotationSpeed * dt;
-			_yaw = fmodf(_yaw, 2 * M_PI);
+			_yaw = fmodf(_yaw, 2.0f * M_PI);
 		}
 
 		float x = _target.x + _distance * sin(_yaw);
-		float y = _target.y - _distance * cos(_yaw) * _pitchSin;
-		float z = _target.z + _distance * _pitchCos;
+		float y = _target.y - _distance * cos(_yaw);
+		float z = _target.z + _height;
 
 		CameraMan.setPosition(x, y, z);
-		CameraMan.setOrientation(_pitch, 0, Common::rad2deg(_yaw));
+		CameraMan.setOrientation(_pitch, 0.0f, Common::rad2deg(_yaw));
 		CameraMan.update();
 
 		_dirty = false;

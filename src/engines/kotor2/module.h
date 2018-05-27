@@ -196,6 +196,7 @@ private:
 	float _backwardsBtnPressed;
 	bool _pcRunning;
 	bool _inDialog;
+	float _cameraHeight;
 
 
 	// .--- Unloading

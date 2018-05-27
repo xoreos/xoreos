@@ -36,10 +36,14 @@ namespace Engines {
 class SatelliteCamera : public Common::Singleton<SatelliteCamera> {
 public:
 	SatelliteCamera();
+
 	void setTarget(float x, float y, float z);
 	void setDistance(float value);
 	void setPitch(float value);
+	void setHeight(float value);
+
 	float getYaw() const;
+
 	bool handleCameraInput(const Events::Event &e);
 	void update(float dt);
 	void clearInput();
@@ -50,6 +54,7 @@ private:
 	float _pitch;
 	float _pitchSin;
 	float _pitchCos;
+	float _height;
 	bool _leftBtnPressed;
 	bool _rightBtnPressed;
 	bool _dirty;

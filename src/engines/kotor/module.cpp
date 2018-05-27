@@ -87,7 +87,8 @@ Module::Module(::Engines::Console &console)
 		  _backwardsBtnPressed(false),
 		  _pcRunning(false),
 		  _pcPositionLoaded(false),
-		  _inDialog(false) {
+		  _inDialog(false),
+		  _cameraHeight(0.0f) {
 
 }
 
@@ -374,10 +375,24 @@ void Module::enter() {
 	if (!_pc)
 		throw Common::Exception("Module::enter(): Lacking a PC?!?");
 
-	// Roughly head position
-	SatelliteCam.setTarget(entryX, entryY, entryZ + 1.8f);
-	SatelliteCam.setDistance(3.2f);
-	SatelliteCam.setPitch(83);
+	_cameraHeight = 1.8f;
+
+	if (_pc->getModel()) {
+		const Graphics::Aurora::ModelNode *node = _pc->getModel()->getNode("camerahook");
+		if (node) {
+			float x, y, z;
+			node->getPosition(x, y, z);
+			_cameraHeight = z;
+		}
+	}
+
+	float cameraDistance, cameraPitch, cameraHeight;
+	_area->getCameraStyle(cameraDistance, cameraPitch, cameraHeight);
+
+	SatelliteCam.setTarget(entryX, entryY, entryZ + _cameraHeight);
+	SatelliteCam.setDistance(cameraDistance);
+	SatelliteCam.setPitch(cameraPitch);
+	SatelliteCam.setHeight(cameraHeight);
 	SatelliteCam.update(0);
 
 	_ingame->show();
@@ -666,12 +681,10 @@ void Module::movedPC() {
 	float x, y, z;
 	_pc->getPosition(x, y, z);
 
-	// Roughly head position
-
-	SatelliteCam.setTarget(x, y, z + 1.8f);
+	SatelliteCam.setTarget(x, y, z + _cameraHeight);
 
 	if (_freeCamEnabled) {
-		CameraMan.setPosition(x, y, z + 1.8f);
+		CameraMan.setPosition(x, y, z + _cameraHeight);
 		CameraMan.update();
 	}
 

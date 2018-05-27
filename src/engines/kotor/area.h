@@ -128,11 +128,21 @@ public:
 	void evaluateTriggers(float x, float y);
 	/// '---
 
+	void getCameraStyle(float &distance, float &pitch, float &height) const;
+
 protected:
 	void notifyCameraMoved();
 
 
 private:
+	struct CameraStyle {
+		float distance;
+		float pitch;
+		float height;
+
+		CameraStyle();
+	};
+
 	typedef Common::PtrList<Room> RoomList;
 
 	typedef Common::PtrList<KotOR::Object> ObjectList;
@@ -194,6 +204,8 @@ private:
 	Trigger *_activeTrigger;
 	/// '---
 
+	CameraStyle _cameraStyle;
+
 
 	// Loading helpers
 
@@ -205,6 +217,8 @@ private:
 
 	void loadARE(const Aurora::GFF3Struct &are);
 	void loadGIT(const Aurora::GFF3Struct &git);
+
+	void loadCameraStyle(uint32 id);
 
 	void loadRooms();
 
