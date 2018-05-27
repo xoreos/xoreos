@@ -338,15 +338,18 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 
 	parts.body = "p";
 	parts.head = "p";
+	parts.bodyTexture = "p";
 
 	switch (info.getGender()) {
 		case kGenderMale:
 			parts.body += "m";
 			parts.head += "m";
+			parts.bodyTexture += "m";
 			break;
 		case kGenderFemale:
 			parts.body += "f";
 			parts.head += "f";
+			parts.bodyTexture += "f";
 			break;
 		default:
 			throw Common::Exception("Unknown gender");
@@ -357,19 +360,23 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 	_race = kRaceHuman;
 	_subRace = kSubRaceNone;
 
-	parts.body += "bb";
+	parts.body += "ba";
 	parts.head += "h";
+	parts.bodyTexture  += "ba";
 
 	switch (info.getClass()) {
 		case kClassSoldier:
 			parts.body += "l";
+			parts.bodyTexture += "l";
 			break;
 		case kClassScout:
 			parts.body += "m";
+			parts.bodyTexture += "m";
 			break;
 		default:
 		case kClassScoundrel:
 			parts.body += "s";
+			parts.bodyTexture += "s";
 			break;
 	}
 
@@ -378,14 +385,14 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 	_levels[0].level = 1;
 	_levels[0].characterClass = info.getClass();
 
-	loadBody(parts);
-
 	switch (info.getSkin()) {
 		case kSkinA:
 			parts.head += "a";
+			parts.bodyTexture += "A";
 			break;
 		case kSkinB:
 			parts.head += "b";
+			parts.bodyTexture += "B";
 			break;
 		default:
 		case kSkinC:
@@ -396,6 +403,9 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 	parts.head += "0";
 	parts.head += Common::composeString(info.getFace() + 1);
 
+	parts.bodyTexture += "01";
+
+	loadBody(parts);
 	loadHead(parts);
 
 	setDefaultAnimations();
