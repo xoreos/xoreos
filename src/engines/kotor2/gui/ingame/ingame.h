@@ -28,6 +28,7 @@
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotor2/module.h"
+#include "src/engines/kotor2/gui/ingame/hud.h"
 
 namespace Engines {
 
@@ -42,6 +43,9 @@ public:
 
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
+
+private:
+	Common::ScopedPtr<HUD> _hud;
 };
 
 } // End of namespace KotOR

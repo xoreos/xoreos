@@ -29,18 +29,23 @@ namespace Engines {
 namespace KotOR2 {
 
 IngameGUI::IngameGUI(Module &module, Console *console) {
+	_hud.reset(new HUD(module, console));
 }
 
 void IngameGUI::show() {
+	_hud->show();
 }
 
 void IngameGUI::hide() {
+	_hud->hide();
 }
 
 void IngameGUI::addEvent(const Events::Event &event) {
+	_hud->addEvent(event);
 }
 
 void IngameGUI::processEventQueue() {
+	_hud->processEventQueue();
 }
 
 } // End of namespace KotOR
