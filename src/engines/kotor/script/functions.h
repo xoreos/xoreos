@@ -241,6 +241,13 @@ private:
 	void getGlobalNumber(Aurora::NWScript::FunctionContext &ctx);
 	void setGlobalNumber(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Local variables, functions_local.cpp
+	void getLocalBoolean(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalBoolean(Aurora::NWScript::FunctionContext &ctx);
+	void getLocalNumber(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalNumber(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace KotOR

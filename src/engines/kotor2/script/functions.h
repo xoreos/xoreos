@@ -209,6 +209,13 @@ private:
 	// .--- Movies, functions_movie.cpp
 	void playMovie(Aurora::NWScript::FunctionContext &ctx);
 	// '---
+
+	// .--- Local variables
+	void getLocalBoolean(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalBoolean(Aurora::NWScript::FunctionContext &ctx);
+	void getLocalNumber(Aurora::NWScript::FunctionContext &ctx);
+	void setLocalNumber(Aurora::NWScript::FunctionContext &ctx);
+	// '---
 };
 
 } // End of namespace KotOR2

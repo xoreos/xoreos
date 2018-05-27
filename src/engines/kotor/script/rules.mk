@@ -38,4 +38,5 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/script/functions_movie.cpp \
     src/engines/kotor/script/functions_creatures.cpp \
     src/engines/kotor/script/functions_global.cpp \
+    src/engines/kotor/script/functions_local.cpp \
     $(EMPTY)

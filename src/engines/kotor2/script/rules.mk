@@ -36,4 +36,5 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/script/functions_action.cpp \
     src/engines/kotor2/script/functions_sound.cpp \
     src/engines/kotor2/script/functions_movie.cpp \
+    src/engines/kotor2/script/functions_local.cpp \
     $(EMPTY)
