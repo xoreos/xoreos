@@ -538,8 +538,11 @@ void Area::notifyCameraMoved() {
 	checkActive();
 }
 
-float Area::getElevationAt(float x, float y) const {
-	return WalkmeshElevationEvaluator::getElevationAt(_walkmesh, x, y);
+float Area::getElevationAt(float x, float y) {
+	uint32 faceIndex;
+	float z = WalkmeshElevationEvaluator::getElevationAt(_walkmesh, x, y, faceIndex);
+	_walkmesh.highlightFace(z == FLT_MIN ? -1 : faceIndex);
+	return z;
 }
 
 void Area::toggleWalkmesh() {

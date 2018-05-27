@@ -26,6 +26,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
+#include "src/common/maths.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
@@ -501,8 +502,11 @@ void Area::notifyCameraMoved() {
 	checkActive();
 }
 
-float Area::getElevationAt(float x, float y) const {
-	return WalkmeshElevationEvaluator::getElevationAt(_walkmesh, x, y);
+float Area::getElevationAt(float x, float y) {
+	uint32 faceIndex;
+	float z = WalkmeshElevationEvaluator::getElevationAt(_walkmesh, x, y, faceIndex);
+	_walkmesh.highlightFace(z == FLT_MIN ? -1 : faceIndex);
+	return z;
 }
 
 void Area::toggleWalkmesh() {

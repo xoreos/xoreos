@@ -31,8 +31,12 @@ namespace Engines {
 
 class WalkmeshElevationEvaluator {
 public:
-	/** Return elevation at given coordinates or FLT_MIN if can't walk there. */
-	static float getElevationAt(const Walkmesh &w, float x, float y);
+	/** Return elevation at given coordinates or FLT_MIN if can't walk
+	 *  there.
+	 *
+	 *  @param faceIndex Index of the intersected walkmesh face
+	 */
+	static float getElevationAt(const Walkmesh &w, float x, float y, uint32 &faceIndex);
 };
 
 } // End of namespace Engines

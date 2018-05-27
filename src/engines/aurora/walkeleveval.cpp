@@ -32,7 +32,10 @@
 
 namespace Engines {
 
-float WalkmeshElevationEvaluator::getElevationAt(const Walkmesh &w, float x, float y) {
+float WalkmeshElevationEvaluator::getElevationAt(const Walkmesh &w,
+		float x,
+		float y,
+		uint32 &faceIndex) {
 	glm::vec3 p0 = glm::vec3(x, y, 1000);
 	glm::vec3 p1 = glm::vec3(x, y, -1000);
 
@@ -49,8 +52,10 @@ float WalkmeshElevationEvaluator::getElevationAt(const Walkmesh &w, float x, flo
 		index += 3;
 
 		glm::vec3 intersection;
-		if (Common::intersectRayTriangle(p0, p1, v0, v1, v2, intersection) == 1)
+		if (Common::intersectRayTriangle(p0, p1, v0, v1, v2, intersection) == 1) {
+			faceIndex = i;
 			return intersection.z;
+		}
 	}
 
 	return FLT_MIN;

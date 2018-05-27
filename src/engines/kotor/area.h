@@ -120,7 +120,7 @@ public:
 	void removeFocus();
 
 	// Walkmesh
-	float getElevationAt(float x, float y) const;
+	float getElevationAt(float x, float y);
 	void toggleWalkmesh();
 
 	/// .--- Triggers

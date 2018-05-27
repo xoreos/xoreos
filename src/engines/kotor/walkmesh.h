@@ -43,9 +43,21 @@ class Walkmesh : public Engines::Walkmesh, public Graphics::Renderable {
 public:
 	Walkmesh();
 	void appendFromStream(Common::SeekableReadStream &stream);
+
+	/** Highlight face with specified index.
+	 *
+	 *  @param index Index of the face to highlight or -1 to disable
+	 *               highlighting
+	 */
+	void highlightFace(int index);
+
+	// .--- Renderable
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
+	// '---
 private:
+	int _highlightFaceIndex;
+
 	void appendFaceTypes(Common::SeekableReadStream &stream, uint32 faceCount, uint32 faceTypeOffset);
 	void appendIndices(Common::SeekableReadStream &stream, uint32 faceCount, uint32 faceOffset);
 	void appendVertices(Common::SeekableReadStream &stream, uint32 vertexCount, uint32 vertexOffset);

@@ -29,7 +29,9 @@ namespace Engines {
 
 namespace KotOR {
 
-Walkmesh::Walkmesh() : Renderable(Graphics::kRenderableTypeObject) {
+Walkmesh::Walkmesh()
+		: Renderable(Graphics::kRenderableTypeObject),
+		  _highlightFaceIndex(-1) {
 }
 
 void Walkmesh::appendFromStream(Common::SeekableReadStream &stream) {
@@ -112,6 +114,10 @@ void Walkmesh::appendVertices(Common::SeekableReadStream &stream, uint32 vertexC
 	}
 }
 
+void Walkmesh::highlightFace(int index) {
+	_highlightFaceIndex = index;
+}
+
 void Walkmesh::calculateDistance() {
 }
 
@@ -120,13 +126,26 @@ void Walkmesh::render(Graphics::RenderPass pass) {
 		glVertexPointer(3, GL_FLOAT, 0, _data.vertices.data());
 		glEnableClientState(GL_VERTEX_ARRAY);
 
-		glColor4f(1, 0, 0, 0.5f);
+		glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
 		glDrawElements(GL_TRIANGLES, _indicesNonWalkable.size(), GL_UNSIGNED_INT, _indicesNonWalkable.data());
 
-		glColor4f(0, 1, 0, 0.5f);
+		glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
 		glDrawElements(GL_TRIANGLES, _indicesWalkable.size(), GL_UNSIGNED_INT, _indicesWalkable.data());
 
 		glDisableClientState(GL_VERTEX_ARRAY);
+
+		// Render highlighted face
+		if (_highlightFaceIndex > -1) {
+			glColor4f(0.0f, 1.0f, 1.0f, 0.5f);
+			glBegin(GL_TRIANGLES);
+				uint32 index = 3 * _highlightFaceIndex;
+				glVertex3fv(&_data.vertices[3 * _indicesWalkable[index + 0]]);
+				glVertex3fv(&_data.vertices[3 * _indicesWalkable[index + 1]]);
+				glVertex3fv(&_data.vertices[3 * _indicesWalkable[index + 2]]);
+			glEnd();
+		}
+
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 }
 
