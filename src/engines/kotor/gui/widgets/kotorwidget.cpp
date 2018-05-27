@@ -328,6 +328,30 @@ void KotORWidget::setFill(const Common::UString &fill) {
 	_quad->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+void KotORWidget::setHighlight(const Common::UString &hilight) {
+	if (hilight.empty()) {
+		_highlight->hide();
+		_highlight.release();
+		return;
+	}
+
+	if (!_highlight) {
+		float x, y, z;
+		getPosition(x, y, z);
+
+		_highlight.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width, _height));
+		_highlight->setPosition(x, y, z);
+		_highlight->setTag(getTag());
+		_highlight->setClickable(true);
+
+		if (isVisible())
+			_highlight->show();
+	}
+
+	_highlight->setTexture(hilight);
+	_highlight->setColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
 void KotORWidget::setClickable(bool clickable) {
 	if (_quad)
 		_quad->setClickable(clickable);
