@@ -297,6 +297,11 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 }
 
 void Creature::loadBody(PartModels &parts) {
+	// Model "P_BastilaBB" has broken animations. Replace it with the
+	// correct one.
+	if (parts.body.stricmp("P_BastilaBB") == 0)
+		parts.body = "P_BastilaBB02";
+
 	_model.reset(loadModelObject(parts.body, parts.bodyTexture));
 	if (!_model)
 		return;
