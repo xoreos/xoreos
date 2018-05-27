@@ -58,6 +58,11 @@ void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
 	Border border = createBorder(gff);
 	Graphics::Aurora::TextureHandle texture = TextureMan.get(border.fill);
 
+	_selected = gff.getStruct("SELECTED").getString("FILL");
+	_unselected = gff.getStruct("BORDER").getString("FILL");
+	_selectedHighlighted = gff.getStruct("HILIGHTSELECTED").getString("FILL");
+	_unselectedHighlighted = gff.getStruct("HILIGHT").getString("FILL");
+
 	float squareLength = _quad->getHeight();
 	float _quadPosCorrect = (squareLength - (texture.getTexture().getHeight() * 0.625f)) / 2;
 	float x, y, z;
@@ -94,7 +99,8 @@ void WidgetCheckBox::setState(bool state) {
 	_text->getColor(textR, textG, textB, textA);
 	_quad->getColor(quadR, quadG, quadB, quadA);
 
-	setFill(_state ? "i_checkbox02" : "i_checkbox01");
+	setFill(_state ? _selected : _unselected);
+	setHighlight(_state ? _selectedHighlighted : _unselectedHighlighted);
 
 	_text->setColor(textR, textG, textB, textA);
 	_quad->setColor(quadR, quadG, quadB, quadA);

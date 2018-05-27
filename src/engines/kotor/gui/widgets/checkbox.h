@@ -49,6 +49,8 @@ public:
 	virtual void leave();
 
 private:
+	Common::UString _selected, _unselected;
+	Common::UString _selectedHighlighted,  _unselectedHighlighted;
 	bool _state;
 
 	Sound::ChannelHandle _sound;
