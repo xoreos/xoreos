@@ -20,7 +20,9 @@
 # Ingame system in Star Wars: Knights of the Old Republic II - The Sith Lords.
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
+    src/engines/kotor2/gui/ingame/ingame.h \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
+    src/engines/kotor2/gui/ingame/ingame.cpp \
     $(EMPTY)
