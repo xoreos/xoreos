@@ -89,6 +89,7 @@ public:
 	float getTextHeight(const Common::UString &text) const;
 
 	void setFill(const Common::UString &fill);
+	void setHighlight(const Common::UString &hilight);
 	void setColor(float r, float g, float b, float a);
 	void setText(const Common::UString &text);
 	void setHorizontalTextAlign(float halign);
