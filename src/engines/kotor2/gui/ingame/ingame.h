@@ -28,6 +28,7 @@
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotor2/module.h"
+#include "src/engines/kotor2/gui/ingame/hud.h"
 
 namespace Engines {
 
@@ -37,11 +38,14 @@ class IngameGUI {
 public:
 	IngameGUI(Module &module, ::Engines::Console *console = 0);
 
-	void show(); ///< Show all ingame elements
-	void hide(); ///< Hide all ingame elements
+	void show(); ///< Show all ingame elements.
+	void hide(); ///< Hide all ingame elements.
 
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
+
+private:
+	Common::ScopedPtr<HUD> _hud;
 };
 
 } // End of namespace KotOR
