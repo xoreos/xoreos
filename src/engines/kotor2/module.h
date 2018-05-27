@@ -50,6 +50,7 @@ namespace KotOR2 {
 
 class Area;
 class Creature;
+class IngameGUI;
 
 class Module : public KotOR2::Object, public KotOR2::ObjectContainer {
 public:
@@ -198,6 +199,7 @@ private:
 	bool _inDialog;
 	float _cameraHeight;
 
+	Common::ScopedPtr<Engines::KotOR2::IngameGUI> _ingame; ///< The ingame gui.
 
 	// .--- Unloading
 	/** Unload the whole shebang.

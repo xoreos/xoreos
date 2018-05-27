@@ -54,6 +54,7 @@
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/area.h"
 #include "src/engines/kotor2/creature.h"
+#include "src/engines/kotor2/gui/ingame/ingame.h"
 
 namespace Engines {
 
@@ -82,7 +83,9 @@ Module::Module(::Engines::Console &console)
 		  _backwardsBtnPressed(false),
 		  _pcRunning(false),
 		  _inDialog(false),
-		  _cameraHeight(0.0f) {
+		  _cameraHeight(0.0f),
+		  _ingame(new IngameGUI(*this, _console)) {
+
 	loadTexturePack();
 }
 
@@ -354,6 +357,8 @@ void Module::enter() {
 	SatelliteCam.setHeight(cameraHeight);
 	SatelliteCam.update(0);
 
+	_ingame->show();
+
 	enterArea();
 
 	if (!_freeCamEnabled)
@@ -406,6 +411,8 @@ void Module::getEntryIFOLocation(float &entryX, float &entryY, float &entryZ, fl
 }
 
 void Module::leave() {
+	_ingame->hide();
+
 	leaveArea();
 
 	_running = false;
@@ -519,6 +526,7 @@ void Module::handleEvents() {
 		}
 
 		_area->addEvent(*event);
+		_ingame->addEvent(*event);
 	}
 
 	_eventQueue.clear();
@@ -528,9 +536,11 @@ void Module::handleEvents() {
 
 	_area->processEventQueue();
 	_dialog->processEventQueue();
+	_ingame->processEventQueue();
 
 	if (_inDialog && !_dialog->isConversationActive()) {
 		_dialog->hide();
+		_ingame->show();
 		_inDialog = false;
 	}
 }
@@ -718,6 +728,7 @@ void Module::startConversation(const Common::UString &name) {
 	_dialog->startConversation(name);
 
 	if (_dialog->isConversationActive()) {
+		_ingame->hide();
 		_forwardBtnPressed = false;
 		_backwardsBtnPressed = false;
 		SatelliteCam.clearInput();
