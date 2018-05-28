@@ -27,9 +27,11 @@
  */
 
 #include <cassert>
+#include <iterator>
 
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
+#include "src/common/writestream.h"
 #include "src/common/encoding.h"
 #include "src/common/ustring.h"
 #include "src/common/strutil.h"
@@ -90,6 +92,338 @@ uint32 GFF3File::getType() const {
 
 const GFF3Struct &GFF3File::getTopLevel() const {
 	return getStruct(0);
+}
+
+void GFF3File::write(Common::WriteStream &stream) {
+	stream.writeUint32BE(_id);
+	stream.writeUint32BE(_version);
+
+	// Get a set of all unique labels.
+	std::set<Common::UString> labels;
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); ++iter) {
+		const std::vector<Common::UString> structlabels = (*iter)->getFieldNames();
+		for (int i = 0; i < structlabels.size(); ++i) {
+			labels.insert(structlabels[i]);
+		}
+	}
+
+	// Calculate the offsets and counts for the gff file.
+	uint32 structOffset = 56;
+	uint32 structCount = _structs.size();
+
+	uint32 fieldOffset = structOffset + structCount * 12;
+	uint32 fieldCount = 0;
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); ++iter) {
+		fieldCount += (*iter)->getFieldCount();
+	}
+
+	uint32 labelOffset = fieldOffset + fieldCount * 12;
+	uint32 labelCount = labels.size();
+
+	unsigned int counter = 0;
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); iter++) {
+		GFF3Struct::FieldMap fieldMap = (*iter)->_fields;
+		for (GFF3Struct::FieldMap::const_iterator field_iter = fieldMap.begin(); field_iter != fieldMap.end();
+			 field_iter++) {
+			switch ((*field_iter).second.type) {
+				case GFF3Struct::kFieldTypeUint64:
+				case GFF3Struct::kFieldTypeSint64:
+				case GFF3Struct::kFieldTypeDouble:
+					counter += 8;
+					break;
+				case GFF3Struct::kFieldTypeExoString:
+					counter += 4 + (*iter)->getString((*field_iter).first).size();
+					break;
+				case GFF3Struct::kFieldTypeLocString: {
+					// TODO: Add more detailed loc string writing
+					LocString locString;
+					(*iter)->getLocString((*field_iter).first, locString);
+					assert(locString.getID() != -1);
+					counter += 4;
+					counter += 4;
+					counter += 4;
+					counter += 4;
+					counter += 4;
+					counter += locString.getString().size();
+					break;
+				}
+				case GFF3Struct::kFieldTypeOrientation:
+					counter += 16;
+					break;
+				case GFF3Struct::kFieldTypeVector:
+					counter += 12;
+					break;
+				case GFF3Struct::kFieldTypeResRef: {
+					Common::SeekableReadStream *data = (*iter)->getData((*field_iter).first);
+					counter += 1 + data->size();
+					break;
+				}
+				case GFF3Struct::kFieldTypeStrRef:
+					counter += 8;
+					break;
+				case GFF3Struct::kFieldTypeVoid: {
+					Common::SeekableReadStream *data = (*iter)->getData((*field_iter).first);
+					counter += 4 + data->size();
+					break;
+				}
+			}
+		}
+	}
+
+	uint32 fieldDataOffset = labelOffset + labelCount * 16;
+	uint32 fieldDataCount = counter;
+
+	uint32 fieldIndicesOffset = fieldDataOffset + fieldDataCount;
+	uint32 fieldIndicesCount = 0;
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); iter++) {
+		if ((*iter)->getFieldCount() > 1)
+			fieldIndicesCount += (*iter)->getFieldCount();
+	}
+	fieldIndicesCount *= 4;
+
+	uint32 listIndicesOffset = fieldIndicesOffset + fieldIndicesCount;
+	uint32 listIndicesCount = 0;
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); ++iter) {
+		const std::vector<Common::UString> structlabels = (*iter)->getFieldNames();
+		for (int i = 0; i < structlabels.size(); ++i) {
+			if ((*iter)->getFieldType(structlabels[i]) == GFF3Struct::kFieldTypeList)
+				listIndicesCount += ((*iter)->getList(structlabels[i]).size() + 1) * 4;
+		}
+	}
+
+	// Write the header.
+	stream.writeUint32LE(structOffset);
+	stream.writeUint32LE(structCount);
+	stream.writeUint32LE(fieldOffset);
+	stream.writeUint32LE(fieldCount);
+	stream.writeUint32LE(labelOffset);
+	stream.writeUint32LE(labelCount);
+	stream.writeUint32LE(fieldDataOffset);
+	stream.writeUint32LE(fieldDataCount);
+	stream.writeUint32LE(fieldIndicesOffset);
+	stream.writeUint32LE(fieldIndicesCount);
+	stream.writeUint32LE(listIndicesOffset);
+	stream.writeUint32LE(listIndicesCount);
+
+	// Write structs
+	counter = 0;
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); iter++) {
+		stream.writeUint32LE((*iter)->_id);
+		if ((*iter)->getFieldCount() > 1)
+			stream.writeUint32LE(counter * 4);
+		else
+			stream.writeUint32LE(counter);
+		stream.writeUint32LE((*iter)->_fieldCount);
+
+		counter += (*iter)->_fieldCount;
+	}
+
+	// Write fields.
+	counter = 0;
+	unsigned int listCounter = 0;
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); iter++) {
+		GFF3Struct::FieldMap fieldMap = (*iter)->_fields;
+		for (GFF3Struct::FieldMap::const_iterator field_iter = fieldMap.begin(); field_iter != fieldMap.end();
+		     field_iter++) {
+			// Write the field type.
+			stream.writeUint32LE((*field_iter).second.type);
+
+			// Write the label index.
+			stream.writeUint32LE(std::distance(labels.begin(), labels.find((*field_iter).first)));
+
+			// increase the counter by the size of the data.
+			switch ((*field_iter).second.type) {
+				case GFF3Struct::kFieldTypeByte:
+				case GFF3Struct::kFieldTypeChar:
+					stream.writeUint32LE((*iter)->getUint((*field_iter).first));
+					break;
+				case GFF3Struct::kFieldTypeSint16:
+				case GFF3Struct::kFieldTypeSint32:
+					stream.writeUint32LE((*iter)->getSint((*field_iter).first));
+					break;
+				case GFF3Struct::kFieldTypeUint16:
+				case GFF3Struct::kFieldTypeUint32:
+					stream.writeUint32LE((*iter)->getUint((*field_iter).first));
+					break;
+				case GFF3Struct::kFieldTypeFloat:
+					stream.writeIEEEFloatLE((*iter)->getDouble((*field_iter).first));
+					break;
+				case GFF3Struct::kFieldTypeList:
+					stream.writeUint32LE(listCounter * 4);
+					break;
+				default:
+					stream.writeUint32LE(counter);
+					break;
+			}
+
+			switch ((*field_iter).second.type) {
+				case GFF3Struct::kFieldTypeUint64:
+				case GFF3Struct::kFieldTypeSint64:
+				case GFF3Struct::kFieldTypeDouble:
+					counter += 8;
+					break;
+				case GFF3Struct::kFieldTypeExoString:
+					counter += 4 + (*iter)->getString((*field_iter).first).size();
+					break;
+				case GFF3Struct::kFieldTypeLocString: {
+					LocString locString;
+					(*iter)->getLocString((*field_iter).first, locString);
+					assert(locString.getID() != -1);
+					counter += 4; // total size
+					counter += 4; // id
+					counter += 4; // count
+					counter += 4; // language id
+					counter += 4; // string size
+					counter += locString.getString().size();
+					break;
+				}
+				case GFF3Struct::kFieldTypeOrientation:
+					counter += 16;
+					break;
+				case GFF3Struct::kFieldTypeVector:
+					counter += 12;
+					break;
+				case GFF3Struct::kFieldTypeResRef: {
+					Common::SeekableReadStream *data = (*iter)->getData((*field_iter).first);
+					counter += 1 + data->size();
+					break;
+				}
+				case GFF3Struct::kFieldTypeStrRef:
+					counter += 8;
+					break;
+				case GFF3Struct::kFieldTypeVoid: {
+					Common::SeekableReadStream *data = (*iter)->getData((*field_iter).first);
+					counter += 4 + data->size();
+					break;
+				}
+				case GFF3Struct::kFieldTypeList:
+					listCounter += 1 + (*iter)->getList((*field_iter).first).size();
+					break;
+			}
+		}
+	}
+
+	// Write labels.
+	for (std::set<Common::UString>::const_iterator iter = labels.begin(); iter != labels.end(); iter++) {
+		Common::UString label = (*iter);
+		char clabel[16];
+		memset(clabel, '\0', 16);
+		memcpy(clabel, label.c_str(), MIN((size_t)16, label.size()));
+		stream.write(clabel, 16);
+	}
+
+	// Write field data.
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); iter++) {
+		GFF3Struct::FieldMap fieldMap = (*iter)->_fields;
+		for (GFF3Struct::FieldMap::const_iterator field_iter = fieldMap.begin(); field_iter != fieldMap.end();
+			 field_iter++) {
+			const Common::UString &label = (*field_iter).first;
+			switch ((*field_iter).second.type) {
+				case GFF3Struct::kFieldTypeUint64:
+					stream.writeUint64LE((*iter)->getUint(label));
+					break;
+				case GFF3Struct::kFieldTypeSint64:
+					stream.writeSint64LE((*iter)->getSint(label));
+					break;
+				case GFF3Struct::kFieldTypeDouble:
+					stream.writeIEEEDoubleLE((*iter)->getDouble(label));
+					break;
+				case GFF3Struct::kFieldTypeExoString: {
+					const Common::UString &value = (*iter)->getString(label);
+					stream.writeUint32LE(value.size());
+					stream.writeString(value);
+					break;
+				}
+				case GFF3Struct::kFieldTypeLocString: {
+					LocString locString;
+					(*iter)->getLocString((*field_iter).first, locString);
+					stream.writeUint32LE(locString.getString().size() + 16);
+					stream.writeUint32LE(locString.getID());
+					stream.writeUint32LE(1);
+					stream.writeUint32LE(0);
+					stream.writeUint32LE(locString.getString().size());
+					stream.writeString(locString.getString());
+					break;
+				}
+				case GFF3Struct::kFieldTypeOrientation: {
+					float a, b, c, d;
+					(*iter)->getOrientation((*field_iter).first, a, b, c, d);
+					stream.writeIEEEFloatLE(a);
+					stream.writeIEEEFloatLE(b);
+					stream.writeIEEEFloatLE(c);
+					stream.writeIEEEFloatLE(d);
+					break;
+				}
+				case GFF3Struct::kFieldTypeVector: {
+					float x, y, z;
+					(*iter)->getVector((*field_iter).first, x, y, z);
+					stream.writeIEEEFloatLE(x);
+					stream.writeIEEEFloatLE(y);
+					stream.writeIEEEFloatLE(z);
+					break;
+				}
+				case GFF3Struct::kFieldTypeResRef: {
+					Common::SeekableReadStream *data = (*iter)->getData((*field_iter).first);
+					stream.writeByte(data->size());
+					Common::ScopedArray<byte> dataBuffer(new byte[data->size()]);
+					data->read(dataBuffer.get(), data->size());
+					stream.write(dataBuffer.get(), data->size());
+					break;
+				}
+				case GFF3Struct::kFieldTypeStrRef: {
+					unsigned int id =(*iter)->getUint((*field_iter).first);
+					stream.writeUint32LE(4);
+					stream.writeUint32LE(id);
+					break;
+				}
+				case GFF3Struct::kFieldTypeVoid: {
+					Common::SeekableReadStream *data = (*iter)->getData((*field_iter).first);
+					stream.writeUint32LE(data->size());
+					Common::ScopedArray<byte> dataBuffer(new byte[data->size()]);
+					data->read(dataBuffer.get(), data->size());
+					stream.write(dataBuffer.get(), data->size());
+				}
+			}
+		}
+	}
+
+	// Write field indices.
+	counter = 0;
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); iter++) {
+		if ((*iter)->getFieldCount() <= 1)
+			continue;
+
+		GFF3Struct::FieldMap fieldMap = (*iter)->_fields;
+		for (GFF3Struct::FieldMap::const_iterator field_iter = fieldMap.begin(); field_iter != fieldMap.end();
+			 field_iter++) {
+			stream.writeUint32LE(counter);
+			counter += 1;
+		}
+	}
+
+	// Write Lists.
+	for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); iter++) {
+		GFF3Struct::FieldMap fieldMap = (*iter)->_fields;
+		for (GFF3Struct::FieldMap::const_iterator field_iter = fieldMap.begin(); field_iter != fieldMap.end();
+			 field_iter++) {
+			if ((*field_iter).second.type != GFF3Struct::kFieldTypeList)
+				continue;
+
+			GFF3List list = (*iter)->getList((*field_iter).first);
+			stream.writeUint32LE(list.size());
+
+			for (int i = 0; i < list.size(); ++i) {
+				counter = 0;
+				for (StructArray::iterator iter = _structs.begin(); iter != _structs.end(); iter++) {
+					if (list[i]->getID() == (*iter)->getID()) {
+						stream.writeUint32LE(counter);
+						break;
+					}
+					counter += 1;
+				}
+			}
+		}
+	}
 }
 
 // --- Loader ---

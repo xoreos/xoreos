@@ -40,6 +40,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class WriteStream;
 }
 
 namespace Aurora {
@@ -95,6 +96,9 @@ public:
 
 	/** Returns the top-level struct. */
 	const GFF3Struct &getTopLevel() const;
+
+	/** Write the gff3 file to an output stream. */
+	void write(Common::WriteStream &stream);
 
 
 private:
@@ -209,7 +213,6 @@ public:
 	/** Return the type of this field, or kFieldTypeNone if such a field doesn't exist. */
 	FieldType getFieldType(const Common::UString &field) const;
 
-
 	// .--- Read field values
 	char   getChar(const Common::UString &field, char   def = '\0' ) const;
 	uint64 getUint(const Common::UString &field, uint64 def = 0    ) const;
@@ -270,6 +273,11 @@ private:
 	// .--- Loader
 	GFF3Struct(const GFF3File &parent, uint32 offset);
 	~GFF3Struct();
+
+	/** Calculate the struct size. */
+	std::vector<Common::UString> getLabels();
+	/** Write the gff struct to the given write stream. */
+	void write(Common::WriteStream &stream);
 
 	void load(uint32 offset);
 
