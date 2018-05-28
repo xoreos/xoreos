@@ -401,6 +401,33 @@ foreach(AM_PROGRAM ${AM_PROGRAMS})
   target_link_libraries(${AM_PROGRAM} ${XOREOS_LIBRARIES})
 endforeach()
 
+# install programs to bin dir
+install(
+ TARGETS ${AM_PROGRAMS}
+ RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+# -------------------------------------------------------------------------
+# xoreos man pages and docs
+parse_automake(man/rules.mk)
+
+# install man pages
+install(
+  FILES ${AM_MAN1_MANS}
+  DESTINATION ${CMAKE_INSTALL_MANDIR}/man1
+)
+install(
+  FILES ${AM_MAN6_MANS}
+  DESTINATION ${CMAKE_INSTALL_MANDIR}/man6
+)
+
+parse_automake(doc/rules.mk)
+
+# install docs
+install(
+  FILES ${AM_DOCS}
+  DESTINATION ${CMAKE_INSTALL_DOCDIR}
+)
 
 # -------------------------------------------------------------------------
 # unit tests, parsed from the Automake rules.mk files
