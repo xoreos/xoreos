@@ -1205,7 +1205,7 @@ void Console::cmdDumpRes(const CommandLine &cl) {
 	Common::UString file = Common::FilePath::getUserDataFile(cl.args);
 
 	if (dumpResource(cl.args, file))
-		printf("Dumped resource \"%s\"to \"%s\"", cl.args.c_str(), file.c_str());
+		printf("Dumped resource \"%s\" to \"%s\"", cl.args.c_str(), file.c_str());
 	else
 		printf("Failed dumping resource \"%s\"", cl.args.c_str());
 }
