@@ -22,9 +22,13 @@
  *  Dedicated animation thread.
  */
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "src/common/threads.h"
 
 #include "src/events/events.h"
+
+#include "src/graphics/camera.h"
 
 #include "src/graphics/aurora/animationthread.h"
 #include "src/graphics/aurora/model.h"
@@ -35,7 +39,8 @@ namespace Aurora {
 
 AnimationThread::PoolModel::PoolModel(Model *m)
 		: model(m),
-		  lastChanged(0) {
+		  lastChanged(0),
+		  skippedCount(0) {
 }
 
 AnimationThread::AnimationThread()
@@ -122,6 +127,12 @@ void AnimationThread::threadMethod() {
 			if (EventMan.quitRequested() || _paused.load())
 				break;
 
+			if (m->skippedCount < getNumIterationsToSkip(m->model)) {
+				++m->skippedCount;
+				continue;
+			} else
+				m->skippedCount = 0;
+
 			if (_flushing.load()) {
 				_modelsSem.unlock();
 				while (_flushing.load()) // Spin until flushing is complete
@@ -160,6 +171,16 @@ void AnimationThread::unregisterModelInternal(Model *model) {
 	}
 	if (m != _models.end())
 		_models.erase(m);
+}
+
+uint8 AnimationThread::getNumIterationsToSkip(Model *model) const {
+	const float *campos = CameraMan.getPosition();
+
+	float x, y, z;
+	model->getPosition(x, y, z);
+
+	float dist = glm::distance(glm::make_vec3(campos), glm::vec3(x, y, z));
+	return roundf(dist) / 8;
 }
 
 } // End of namespace Aurora

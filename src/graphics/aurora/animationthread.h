@@ -59,6 +59,7 @@ private:
 	struct PoolModel {
 		Model *model;
 		uint32 lastChanged;
+		uint8 skippedCount; ///< Number of skipped loop iterations.
 
 		PoolModel(Model *m);
 	};
@@ -78,6 +79,7 @@ private:
 	void threadMethod();
 	void registerModelInternal(Model *model);
 	void unregisterModelInternal(Model *model);
+	uint8 getNumIterationsToSkip(Model *model) const;
 };
 
 } // End of namespace Aurora
