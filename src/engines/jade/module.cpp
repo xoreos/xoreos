@@ -169,6 +169,11 @@ void Module::unloadPC() {
 }
 
 void Module::changeModule(const Common::UString &module) {
+	if (module == getName()) {
+		warning("Module \"%s\" is already currently loaded", module.c_str());
+		return;
+	}
+
 	_newModule = module;
 }
 
