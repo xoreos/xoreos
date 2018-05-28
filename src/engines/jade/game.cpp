@@ -28,6 +28,8 @@
 
 #include "src/events/events.h"
 
+#include "src/sound/sound.h"
+
 #include "src/engines/aurora/util.h"
 
 #include "src/engines/jade/game.h"
@@ -100,6 +102,15 @@ void Game::runModule() {
 	_module->clear();
 }
 
+void Game::playMenuMusic() {
+	stopMenuMusic();
+	_menuMusic = playSound("background", Sound::kSoundTypeMusic, true);
+}
+
+void Game::stopMenuMusic() {
+  SoundMan.stopChannel(_menuMusic);
+}
+
 void Game::mainMenu() {
 	EventMan.flushEvents();
 
@@ -109,7 +120,9 @@ void Game::mainMenu() {
 	_console->disableCommand("exitmodule", "not available in the main menu");
 
 	menu.show();
+	playMenuMusic();
 	menu.run();
+	stopMenuMusic();
 	menu.hide();
 
 	_console->enableCommand("loadmodule");

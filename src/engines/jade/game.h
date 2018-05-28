@@ -30,6 +30,8 @@
 #include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
+#include "src/sound/sound.h"
+
 #include "src/aurora/nwscript/variablecontainer.h"
 
 namespace Engines {
@@ -68,6 +70,10 @@ private:
 
 	::Engines::Console *_console;
 
+	Sound::ChannelHandle _menuMusic;
+
+	void playMenuMusic();
+	void stopMenuMusic();
 
 	void mainMenu();
 	void runModule();
