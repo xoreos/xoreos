@@ -48,32 +48,6 @@ EXTRA_DIST += \
     cmake/toolchain/x86_64-windows-mingw.cmake \
     $(EMPTY)
 
-# Licenses and credits
-dist_doc_DATA += \
-    COPYING \
-    COPYING.Bitstream \
-    COPYING.Arev \
-    COPYING.GPLv2 \
-    COPYING.LGPLv2.1 \
-    AUTHORS \
-    $(EMPTY)
-
-# User documentation
-dist_doc_DATA += \
-    ChangeLog \
-    NEWS.md \
-    TODO \
-    README.md \
-    FAQ.md \
-    doc/xoreos.conf.example \
-    $(EMPTY)
-
-# Documents for contributors
-dist_doc_DATA += \
-    CONTRIBUTING.md \
-    CODE_OF_CONDUCT.md \
-    $(EMPTY)
-
 # Doxygen
 
 EXTRA_DIST += \
@@ -109,6 +83,7 @@ bundle: all
 
 include dists/rules.mk
 include man/rules.mk
+include doc/rules.mk
 
 include glew/rules.mk
 
