@@ -26,6 +26,8 @@
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 
+#include "src/events/events.h"
+
 #include "src/aurora/2dareg.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/talkman.h"
@@ -125,6 +127,9 @@ void MainMenu::callbackActive(Widget &widget) {
 		playVideo("creditmovie");
 		return;
 	}
+
+	if (widget.getTag() == "EXIT")
+		EventMan.requestQuit();
 }
 
 void MainMenu::addBackground() {
