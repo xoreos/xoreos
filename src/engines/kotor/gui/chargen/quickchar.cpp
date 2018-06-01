@@ -73,6 +73,7 @@ void QuickCharPanel::callbackActive(Widget &widget) {
 	}
 	if (widget.getTag() == "BTN_STEPNAME3") {
 		_charGen->start();
+		GfxMan.lockFrame();
 		_returnCode = 2;
 		return;
 	}
