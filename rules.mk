@@ -34,6 +34,7 @@ EXTRA_DIST += \
 EXTRA_DIST += \
     CMakeLists.txt \
     cmake/CMakeAM.cmake \
+    cmake/CMakeUninstall.cmake \
     cmake/FindFaad.cmake \
     cmake/FindGLEW.cmake \
     cmake/FindIconv.cmake \

@@ -451,6 +451,14 @@ foreach(AM_PROGRAM ${AM_PROGRAMS})
   add_test(NAME ${AM_PROGRAM} COMMAND ${AM_PROGRAM})
 endforeach()
 
+# -------------------------------------------------------------------------
+# uninstall target
+# Code taken from https://gitlab.kitware.com/cmake/community/wikis/FAQ#can-i-do-make-uninstall-with-cmake
+if(NOT TARGET uninstall)
+  configure_file("${CMAKE_SOURCE_DIR}/cmake/CMakeUninstall.cmake" "${CMAKE_BINARY_DIR}/CMakeUninstall.cmake" IMMEDIATE @ONLY)
+  add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/CMakeUninstall.cmake)
+endif()
+
 
 # -------------------------------------------------------------------------
 # try to add version information from git to src/version/version.cpp
