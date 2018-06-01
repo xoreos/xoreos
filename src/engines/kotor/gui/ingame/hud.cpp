@@ -23,6 +23,7 @@
  */
 
 #include "src/graphics/windowman.h"
+#include "src/graphics/graphics.h"
 
 #include "src/engines/kotor/gui/ingame/hud.h"
 #include "src/engines/kotor/gui/widgets/kotorwidget.h"
@@ -129,8 +130,12 @@ void HUD::setMinimap(const Common::UString &map, int northAxis,
 		return;
 	}
 
+	GfxMan.lockFrame();
+
 	_minimap.reset(new Minimap(map, northAxis, mapPt1X, mapPt1Y, mapPt2X, mapPt2Y, worldPt1X, worldPt1Y, worldPt2X, worldPt2Y));
 	mapView->setSubScene(_minimap.get());
+
+	GfxMan.unlockFrame();
 }
 
 void HUD::setPosition(float x, float y) {
