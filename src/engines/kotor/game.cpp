@@ -30,6 +30,8 @@
 #include "src/common/filelist.h"
 #include "src/common/configman.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/events/events.h"
 
 #include "src/sound/sound.h"
@@ -146,7 +148,9 @@ void Game::mainMenu() {
 	_console->disableCommand("exitmodule", "not available in the main menu");
 
 	menu.show();
-	menu.run();
+	int ret = menu.run();
+	if (ret == 2)
+		GfxMan.unlockFrame();
 	menu.hide();
 
 	_console->enableCommand("loadmodule");
