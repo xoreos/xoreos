@@ -40,6 +40,8 @@
 #include "src/engines/kotor/kotor.h"
 #include "src/engines/kotor/game.h"
 #include "src/engines/kotor/module.h"
+#include "src/engines/kotor/room.h"
+#include "src/engines/kotor/area.h"
 
 namespace Engines {
 
@@ -49,25 +51,29 @@ Console::Console(KotOREngine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
 	_engine(&engine), _maxSizeMusic(0) {
 
-	registerCommand("exitmodule"  , boost::bind(&Console::cmdExitModule  , this, _1),
+	registerCommand("exitmodule"          , boost::bind(&Console::cmdExitModule          , this, _1),
 			"Usage: exitmodule\nExit the module, returning to the main menu");
-	registerCommand("listmodules" , boost::bind(&Console::cmdListModules , this, _1),
+	registerCommand("listmodules"         , boost::bind(&Console::cmdListModules         , this, _1),
 			"Usage: listmodules\nList all modules");
-	registerCommand("loadmodule"  , boost::bind(&Console::cmdLoadModule  , this, _1),
+	registerCommand("loadmodule"          , boost::bind(&Console::cmdLoadModule          , this, _1),
 			"Usage: loadmodule <module>\nLoad and enter the specified module");
-	registerCommand("listmusic"   , boost::bind(&Console::cmdListMusic   , this, _1),
+	registerCommand("listmusic"           , boost::bind(&Console::cmdListMusic           , this, _1),
 			"Usage: listmusic\nList all available music resources");
-	registerCommand("stopmusic"   , boost::bind(&Console::cmdStopMusic   , this, _1),
+	registerCommand("stopmusic"           , boost::bind(&Console::cmdStopMusic           , this, _1),
 			"Usage: stopmusic\nStop the currently playing music resource");
-	registerCommand("playmusic"   , boost::bind(&Console::cmdPlayMusic   , this, _1),
+	registerCommand("playmusic"           , boost::bind(&Console::cmdPlayMusic           , this, _1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
-	registerCommand("flycam"      , boost::bind(&Console::cmdFlyCam      , this, _1),
+	registerCommand("flycam"              , boost::bind(&Console::cmdFlyCam              , this, _1),
 			"Usage: flycam\nToggle free roam camera mode");
-	registerCommand("showwalkmesh", boost::bind(&Console::cmdShowWalkmesh, this, _1),
+	registerCommand("showwalkmesh"        , boost::bind(&Console::cmdShowWalkmesh        , this, _1),
 			"Usage: showwalkmesh\nToggle walkmesh display");
-	registerCommand("showtriggers", boost::bind(&Console::cmdShowTriggers, this, _1),
+	registerCommand("showtriggers"        , boost::bind(&Console::cmdShowTriggers        , this, _1),
 			"Usage: showtriggers\nToggle triggers display");
+	registerCommand("getpcroom"           , boost::bind(&Console::cmdGetPCRoom           , this, _1),
+			"Usage: getpcroom\nGet a room PC is in");
+	registerCommand("listroomsvisiblefrom", boost::bind(&Console::cmdListRoomsVisibleFrom, this, _1),
+			"Usage: listroomsvisiblefrom <room>\nList rooms that are visible from the specified room");
 
 }
 
@@ -158,6 +164,24 @@ void Console::cmdShowWalkmesh(const CommandLine &UNUSED(cl)) {
 
 void Console::cmdShowTriggers(const CommandLine &UNUSED(cl)) {
 	_engine->getGame().getModule().toggleTriggers();
+}
+
+void Console::cmdGetPCRoom(const CommandLine &UNUSED(cl)) {
+	const Room *room = _engine->getGame().getModule().getPC()->getRoom();
+	printf("%s", room->getResRef().c_str());
+}
+
+void Console::cmdListRoomsVisibleFrom(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	const std::vector<Common::UString> &rooms = _engine->getGame().getModule().getCurrentArea()->getRoomsVisibleFrom(cl.args);
+	for (std::vector<Common::UString>::const_iterator r = rooms.begin();
+			r != rooms.end(); ++r) {
+		printf("%s", r->c_str());
+	}
 }
 
 } // End of namespace KotOR

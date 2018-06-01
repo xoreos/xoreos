@@ -111,6 +111,9 @@ void Door::hide() {
 	Situated::hide();
 }
 
+void Door::hideSoft() {
+}
+
 void Door::enter() {
 	highlight(true);
 }

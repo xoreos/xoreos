@@ -23,6 +23,12 @@
  *  branch.
  */
 
+#include "src/common/scopedptr.h"
+
+#include "src/aurora/resman.h"
+
+#include "src/engines/aurora/walkeleveval.h"
+
 #include "src/engines/kotor/walkmesh.h"
 
 namespace Engines {
@@ -31,7 +37,36 @@ namespace KotOR {
 
 Walkmesh::Walkmesh()
 		: Renderable(Graphics::kRenderableTypeObject),
-		  _highlightFaceIndex(-1) {
+		  _highlightFaceIndex(-1),
+		  _invisible(true) {
+}
+
+void Walkmesh::load(const Common::UString &resRef) {
+	clear();
+	Common::ScopedPtr<Common::SeekableReadStream> wok(ResMan.getResource(resRef, ::Aurora::kFileTypeWOK));
+
+	if (wok) {
+		try {
+			appendFromStream(*wok);
+		} catch (Common::Exception &e) {
+			warning("Walkmesh load failed: %s %s", resRef.c_str(), e.what());
+		}
+	} else
+		warning("Walkmesh file not found: %s", resRef.c_str());
+
+	refreshIndexGroups();
+}
+
+float Walkmesh::getElevationAt(float x, float y, uint32 &faceIndex) const {
+	return WalkmeshElevationEvaluator::getElevationAt(*this, x, y, faceIndex);
+}
+
+void Walkmesh::highlightFace(uint32 index) {
+	_highlightFaceIndex = index;
+}
+
+void Walkmesh::setInvisible(bool invisible) {
+	_invisible = invisible;
 }
 
 void Walkmesh::appendFromStream(Common::SeekableReadStream &stream) {
@@ -114,15 +149,11 @@ void Walkmesh::appendVertices(Common::SeekableReadStream &stream, uint32 vertexC
 	}
 }
 
-void Walkmesh::highlightFace(int index) {
-	_highlightFaceIndex = index;
-}
-
 void Walkmesh::calculateDistance() {
 }
 
 void Walkmesh::render(Graphics::RenderPass pass) {
-	if (pass == Graphics::kRenderPassTransparent) {
+	if (pass == Graphics::kRenderPassTransparent && !_invisible) {
 		glVertexPointer(3, GL_FLOAT, 0, _data.vertices.data());
 		glEnableClientState(GL_VERTEX_ARRAY);
 

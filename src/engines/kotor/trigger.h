@@ -40,6 +40,8 @@ public:
 	// .--- Object
 	void show();
 	void hide();
+	void hideSoft();
+	bool isVisible() const;
 	// '---
 protected:
 	void load(const Aurora::GFF3Struct &gff);

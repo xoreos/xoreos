@@ -34,8 +34,14 @@ namespace Engines {
 
 namespace KotOR {
 
-Object::Object(ObjectType type) : _type(type), _static(false), _usable(true), _currentHitPoints(0), _maxHitPoints(0),
-                                  _minOneHitPoint(false) {
+Object::Object(ObjectType type)
+		: _type(type),
+		  _static(false),
+		  _usable(true),
+		  _currentHitPoints(0),
+		  _maxHitPoints(0),
+		  _minOneHitPoint(false),
+		  _room(0) {
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
 	_position   [2] = 0.0f;
@@ -56,6 +62,14 @@ void Object::show() {
 }
 
 void Object::hide() {
+}
+
+void Object::hideSoft() {
+	hide();
+}
+
+bool Object::isVisible() const {
+	return false;
 }
 
 const Common::UString &Object::getName() const {
@@ -138,6 +152,14 @@ void Object::setOrientation(float x, float y, float z, float angle) {
 	_orientation[1] = y;
 	_orientation[2] = z;
 	_orientation[3] = angle;
+}
+
+Room *Object::getRoom() {
+	return _room;
+}
+
+void Object::setRoom(Room *room) {
+	_room = room;
 }
 
 void Object::enter() {

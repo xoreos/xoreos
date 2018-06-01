@@ -52,6 +52,7 @@ public:
 	// Basic visuals
 
 	void hide(); ///< Hide the door's model.
+	void hideSoft(); ///< Hide the door's model if applicable.
 
 	// Basic properties
 

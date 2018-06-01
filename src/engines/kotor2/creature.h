@@ -58,6 +58,7 @@ public:
 
 	void show(); ///< Show the creature's model.
 	void hide(); ///< Hide the creature's model.
+	bool isVisible() const; ///< Is the creature's model visible?
 
 	// Basic properties
 

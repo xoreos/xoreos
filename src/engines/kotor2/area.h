@@ -42,8 +42,6 @@
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
-#include "src/engines/kotor/walkmesh.h"
-
 #include "src/engines/kotor2/object.h"
 #include "src/engines/kotor2/trigger.h"
 
@@ -107,7 +105,7 @@ public:
 	void removeFocus();
 
 	// Walkmesh
-	float getElevationAt(float x, float y);
+	float evaluateElevation(float x, float y);
 	void toggleWalkmesh();
 
 	// .--- Triggers
@@ -115,7 +113,13 @@ public:
 	void evaluateTriggers(float x, float y);
 	// '---
 
+	void showAllRooms();
+
+	void notifyObjectMoved(Object &o);
+	void notifyPCMoved();
+
 	void getCameraStyle(float &distance, float &pitch, float &height) const;
+	const std::vector<Common::UString> &getRoomsVisibleFrom(const Common::UString &room) const;
 
 
 protected:
@@ -181,8 +185,6 @@ private:
 
 	Common::Mutex _mutex; ///< Mutex securing access to the area.
 
-	KotOR::Walkmesh _walkmesh; ///< Walkmesh for collision detection.
-
 	/// .--- Triggers
 	std::vector<Trigger *> _triggers;
 	bool _triggersVisible;
@@ -190,6 +192,7 @@ private:
 	/// '---
 
 	CameraStyle _cameraStyle;
+	bool _walkmeshInvisible;
 
 
 	// Loading helpers
@@ -228,6 +231,8 @@ private:
 	void highlightAll(bool enabled);
 
 	void click(int x, int y);
+
+	Room *getRoomAt(float x, float y) const;
 
 
 	friend class Console;

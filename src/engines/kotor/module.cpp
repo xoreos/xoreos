@@ -399,6 +399,9 @@ void Module::enter() {
 
 	enterArea();
 
+	if (!_freeCamEnabled)
+		_area->notifyPCMoved();
+
 	GfxMan.resumeAnimations();
 
 	_running = true;
@@ -620,7 +623,7 @@ void Module::handlePCMovement() {
 		}
 
 		if (haveMovement) {
-			z = _area->getElevationAt(newX, newY);
+			z = _area->evaluateElevation(newX, newY);
 			if (z != FLT_MIN) {
 				movePC(newX, newY, z);
 			}
@@ -689,6 +692,9 @@ void Module::movedPC() {
 	}
 
 	_area->evaluateTriggers(x, y);
+
+	if (!_freeCamEnabled)
+		_area->notifyPCMoved();
 }
 
 void Module::setReturnStrref(uint32 id) {
@@ -793,6 +799,8 @@ Common::UString Module::getName(const Common::UString &module) {
 
 void Module::toggleFreeRoamCamera() {
 	_freeCamEnabled = !_freeCamEnabled;
+	if (_freeCamEnabled && ConfigMan.getBool("flycamallrooms", true))
+		_area->showAllRooms();
 }
 
 void Module::toggleWalkmesh() {

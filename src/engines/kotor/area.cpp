@@ -69,7 +69,8 @@ Area::Area(Module &module, const Common::UString &resRef)
 		  _activeObject(0),
 		  _highlightAll(false),
 		  _triggersVisible(false),
-		  _activeTrigger(0) {
+		  _activeTrigger(0),
+		  _walkmeshInvisible(true) {
 
 	try {
 		load();
@@ -381,24 +382,10 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 }
 
 void Area::loadRooms() {
-	_walkmesh.clear();
-
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	for (Aurora::LYTFile::RoomArray::const_iterator r = rooms.begin(); r != rooms.end(); ++r) {
 		_rooms.push_back(new Room(r->model, r->x, r->y, r->z));
-		Common::ScopedPtr<Common::SeekableReadStream> wok(ResMan.getResource(r->model, ::Aurora::kFileTypeWOK));
-
-		if (wok) {
-			try {
-				_walkmesh.appendFromStream(*wok);
-			} catch (Common::Exception &e) {
-				warning("Walkmesh load failed: %s %s", r->model.c_str(), e.what());
-			}
-		} else
-			warning("Walkmesh file not found: %s", r->model.c_str());
 	}
-
-	_walkmesh.refreshIndexGroups();
 }
 
 void Area::loadObject(KotOR::Object &object) {
@@ -411,6 +398,8 @@ void Area::loadObject(KotOR::Object &object) {
 		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
 			_objectMap.insert(std::make_pair(*id, &object));
 	}
+
+	notifyObjectMoved(object);
 }
 
 void Area::loadWaypoints(const Aurora::GFF3List &list) {
@@ -555,18 +544,35 @@ void Area::notifyCameraMoved() {
 	checkActive();
 }
 
-float Area::getElevationAt(float x, float y) {
-	uint32 faceIndex;
-	float z = WalkmeshElevationEvaluator::getElevationAt(_walkmesh, x, y, faceIndex);
-	_walkmesh.highlightFace(z == FLT_MIN ? -1 : faceIndex);
-	return z;
+float Area::evaluateElevation(float x, float y) {
+	Room *room = _module->getPC()->getRoom();
+
+	float result = room ? room->evaluateElevation(x, y, true) : FLT_MIN;
+	if (result != FLT_MIN)
+		return result;
+
+	if (room)
+		room->disableWalkmeshHighlight();
+
+	for (RoomList::iterator r = _rooms.begin();
+			r != _rooms.end(); ++r) {
+		if (*r != room) {
+			result = (*r)->evaluateElevation(x, y, true);
+			if (result != FLT_MIN)
+				break;
+		}
+	}
+
+	return result;
 }
 
 void Area::toggleWalkmesh() {
-	if (_walkmesh.isVisible())
-		_walkmesh.hide();
-	else
-		_walkmesh.show();
+	_walkmeshInvisible = !_walkmeshInvisible;
+
+	for (RoomList::iterator r = _rooms.begin();
+			r != _rooms.end(); ++r) {
+		(*r)->setWalkmeshInvisible(_walkmeshInvisible);
+	}
 }
 
 void Area::toggleTriggers() {
@@ -600,10 +606,96 @@ void Area::evaluateTriggers(float x, float y) {
 	}
 }
 
+void Area::showAllRooms() {
+	GfxMan.pauseAnimations();
+
+	for (RoomList::iterator r = _rooms.begin();
+			r != _rooms.end(); ++r) {
+		if (!(*r)->isVisible())
+			(*r)->show();
+	}
+
+	for (ObjectList::iterator o = _objects.begin();
+			o != _objects.end(); ++o) {
+		if (!(*o)->isVisible())
+			(*o)->show();
+	}
+
+	GfxMan.resumeAnimations();
+}
+
+void Area::notifyObjectMoved(Object &o) {
+	float x, y, z;
+	o.getPosition(x, y, z);
+	o.setRoom(getRoomAt(x, y));
+}
+
+void Area::notifyPCMoved() {
+	Creature *pc = _module->getPC();
+
+	const Room *prevPCRoom = pc->getRoom();
+	notifyObjectMoved(*pc);
+	const Room *pcRoom = pc->getRoom();
+
+	if (pcRoom == prevPCRoom)
+		return;
+
+	std::vector<Common::UString> visRooms;
+	if (pcRoom) {
+		visRooms.push_back(pcRoom->getResRef());
+
+		const std::vector<Common::UString> va = _vis.getVisibilityArray(pcRoom->getResRef());
+		for (std::vector<Common::UString>::const_iterator v = va.begin();
+				v != va.end(); ++v) {
+			Common::UString lcResRef(v->toLower());
+			if (std::find(visRooms.begin(), visRooms.end(), lcResRef) == visRooms.end())
+				visRooms.push_back(lcResRef);
+		}
+	}
+
+	GfxMan.pauseAnimations();
+
+	for (RoomList::iterator r = _rooms.begin();
+			r != _rooms.end(); ++r) {
+		bool visible = std::find(visRooms.begin(), visRooms.end(), (*r)->getResRef()) != visRooms.end();
+		if (visible) {
+			if (!(*r)->isVisible())
+				(*r)->show();
+		} else if ((*r)->isVisible())
+			(*r)->hide();
+	}
+
+	for (ObjectList::iterator o = _objects.begin();
+			o != _objects.end(); ++o) {
+		const Room *objRoom = (*o)->getRoom();
+		bool visible = objRoom && objRoom->isVisible();
+		if (visible) {
+			if (!(*o)->isVisible())
+				(*o)->show();
+		} else if ((*o)->isVisible())
+			(*o)->hideSoft();
+	}
+
+	GfxMan.resumeAnimations();
+}
+
 void Area::getCameraStyle(float &distance, float &pitch, float &height) const {
 	distance = _cameraStyle.distance;
 	pitch = _cameraStyle.pitch;
 	height = _cameraStyle.height;
+}
+
+const std::vector<Common::UString> &Area::getRoomsVisibleFrom(const Common::UString &room) const {
+	return _vis.getVisibilityArray(room);
+}
+
+Room *Area::getRoomAt(float x, float y) const {
+	for (RoomList::const_iterator r = _rooms.begin();
+			r != _rooms.end(); ++r) {
+		if ((*r)->evaluateElevation(x, y) != FLT_MIN)
+			return *r;
+	}
+	return 0;
 }
 
 } // End of namespace KotOR

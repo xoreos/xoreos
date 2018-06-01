@@ -44,6 +44,13 @@ void Trigger::hide() {
 	Renderable::hide();
 }
 
+void Trigger::hideSoft() {
+}
+
+bool Trigger::isVisible() const {
+	return Renderable::isVisible();
+}
+
 void Trigger::load(const Aurora::GFF3Struct &gff) {
 	Common::UString resRef = gff.getString("TemplateResRef");
 	if (!resRef.empty())

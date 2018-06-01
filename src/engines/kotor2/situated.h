@@ -45,6 +45,7 @@ public:
 
 	void show(); ///< Show the situated object's model.
 	void hide(); ///< Hide the situated object's model.
+	bool isVisible() const; ///< Is the situated object's model visible?
 
 	// Basic properties
 

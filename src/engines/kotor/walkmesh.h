@@ -42,14 +42,17 @@ namespace KotOR {
 class Walkmesh : public Engines::Walkmesh, public Graphics::Renderable {
 public:
 	Walkmesh();
-	void appendFromStream(Common::SeekableReadStream &stream);
+	void load(const Common::UString &resRef);
+	float getElevationAt(float x, float y, uint32 &faceIndex) const;
 
 	/** Highlight face with specified index.
 	 *
 	 *  @param index Index of the face to highlight or -1 to disable
 	 *               highlighting
 	 */
-	void highlightFace(int index);
+	void highlightFace(uint32 index);
+
+	void setInvisible(bool invisible);
 
 	// .--- Renderable
 	void calculateDistance();
@@ -57,7 +60,9 @@ public:
 	// '---
 private:
 	int _highlightFaceIndex;
+	bool _invisible;
 
+	void appendFromStream(Common::SeekableReadStream &stream);
 	void appendFaceTypes(Common::SeekableReadStream &stream, uint32 faceCount, uint32 faceTypeOffset);
 	void appendIndices(Common::SeekableReadStream &stream, uint32 faceCount, uint32 faceOffset);
 	void appendVertices(Common::SeekableReadStream &stream, uint32 vertexCount, uint32 vertexOffset);

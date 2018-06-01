@@ -78,6 +78,10 @@ void Creature::hide() {
 		_model->hide();
 }
 
+bool Creature::isVisible() const {
+	return _model && _model->isVisible();
+}
+
 bool Creature::isPC() const {
 	return _isPC;
 }

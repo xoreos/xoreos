@@ -29,6 +29,10 @@
 
 #include "src/graphics/aurora/types.h"
 
+#include "src/engines/kotor/walkmesh.h"
+
+#include "src/engines/kotor2/creature.h"
+
 namespace Common {
 	class UString;
 }
@@ -42,11 +46,19 @@ public:
 	Room(const Common::UString &resRef, float x, float y, float z);
 	~Room();
 
+	Common::UString getResRef() const;
+	float evaluateElevation(float x, float y, bool highlight = false);
+	void disableWalkmeshHighlight();
+	void setWalkmeshInvisible(bool invisible);
+
 	void show();
 	void hide();
+	bool isVisible() const;
 
 private:
+	Common::UString _resRef;
 	Common::ScopedPtr<Graphics::Aurora::Model> _model;
+	KotOR::Walkmesh _walkmesh;
 
 	void load(const Common::UString &resRef, float x, float y, float z);
 };

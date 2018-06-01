@@ -59,6 +59,10 @@ void Situated::hide() {
 		_model->hide();
 }
 
+bool Situated::isVisible() const {
+	return _model && _model->isVisible();
+}
+
 void Situated::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);

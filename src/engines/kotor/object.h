@@ -42,6 +42,8 @@ namespace Engines {
 
 namespace KotOR {
 
+class Room;
+
 class Object : public Aurora::NWScript::Object, public KotOR::ScriptContainer {
 public:
 	Object(ObjectType type = kObjectTypeInvalid);
@@ -54,6 +56,8 @@ public:
 
 	virtual void show(); ///< Show the object's model(s).
 	virtual void hide(); ///< Hide the object's model(s).
+	virtual void hideSoft(); ///< Hide the object's model(s) if applicable.
+	virtual bool isVisible() const; ///< Is the object's model(s) visible?
 
 	/** Return the object's model IDs. */
 	const std::list<uint32> &getIDs() const;
@@ -99,6 +103,11 @@ public:
 	/** Set the object's orientation. */
 	virtual void setOrientation(float x, float y, float z, float angle);
 
+	/** Get a room the object is in. */
+	Room *getRoom();
+	/** Set a room the object is in. */
+	void setRoom(Room *room);
+
 	// Object/Cursor interactions
 
 	virtual void enter(); ///< The cursor entered the object.
@@ -138,6 +147,8 @@ protected:
 	float _orientation[4]; ///< The object's orientation.
 
 	Sound::ChannelHandle _sound; ///< The currently playing object sound.
+
+	Room *_room; ///< Room the object is in.
 };
 
 } // End of namespace KotOR
