@@ -395,8 +395,6 @@ void Module::enter() {
 	SatelliteCam.setHeight(cameraHeight);
 	SatelliteCam.update(0);
 
-	_ingame->show();
-
 	enterArea();
 
 	if (!_freeCamEnabled)
@@ -406,6 +404,8 @@ void Module::enter() {
 
 	_running = true;
 	_exit    = false;
+
+	_ingame->show();
 }
 
 bool Module::getObjectLocation(const Common::UString &object, ObjectType location,
@@ -458,11 +458,15 @@ void Module::leave() {
 }
 
 void Module::enterArea() {
+	GfxMan.lockFrame();
+
 	_area->show();
 
 	runScript(kScriptModuleLoad , this, _pc.get());
 	runScript(kScriptModuleStart, this, _pc.get());
 	runScript(kScriptEnter      , this, _pc.get());
+
+	GfxMan.unlockFrame();
 
 	_area->runScript(kScriptEnter, _area.get(), _pc.get());
 }
