@@ -404,6 +404,9 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 			break;
 	}
 
+	_portrait = "po_" + parts.head;
+	_portrait += Common::composeString(info.getFace() + 1);
+
 	parts.head += "0";
 	parts.head += Common::composeString(info.getFace() + 1);
 
