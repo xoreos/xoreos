@@ -266,6 +266,8 @@ void Module::loadTexturePack() {
 void Module::unload(bool completeUnload) {
 	GfxMan.pauseAnimations();
 
+	_party.clear();
+
 	leaveArea();
 	unloadArea();
 
@@ -370,6 +372,10 @@ void Module::enter() {
 	} else {
 		usePC(new Creature());
 		_pc->createFakePC();
+	}
+
+	if (_party.empty()) {
+		addToParty(_pc.get());
 	}
 
 	if (!_pc)
@@ -699,6 +705,27 @@ void Module::movedPC() {
 
 	if (!_freeCamEnabled)
 		_area->notifyPCMoved();
+}
+
+size_t Module::getPartyMemberCount() {
+	return _party.size();
+}
+
+void Module::addToParty(Creature *creature) {
+	_party.push_back(creature);
+
+	if (_party.size() == 1)
+		_ingame->setPartyLeader(creature);
+	else if (_party.size() == 2)
+		_ingame->setPartyMember1(creature);
+	else if (_party.size() == 3)
+		_ingame->setPartyMember2(creature);
+
+	// TODO: If the party size increases over 3 show the character selection screen.
+}
+
+bool Module::isObjectPartyMember(Creature *creature) {
+	return std::find(_party.begin(), _party.end(), creature) != _party.end();
 }
 
 void Module::setReturnStrref(uint32 id) {
