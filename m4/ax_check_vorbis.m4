@@ -1,7 +1,7 @@
 #serial 1000
 dnl @synopsis AX_CHECK_VORBIS(action-if, action-if-not)
 dnl
-dnl @summary check for libVorbisFile
+dnl @summary check for libvorbis and libvorbisfile
 dnl
 dnl Defines VORBIS_LIBS, VORBIS_CFLAGS.
 dnl
@@ -11,14 +11,14 @@ dnl @version 2013-12-14
 dnl @license Creative Commons CC0 1.0 Universal Public Domain Dedication
 
 AC_DEFUN([AX_CHECK_VORBIS], [
-	AC_ARG_VAR(VORBIS_CFLAGS, [C compiler flags for libvorbisfile])
-	AC_ARG_VAR(VORBIS_LIBS, [libraries to pass to the linker for libvorbisfile])
+	AC_ARG_VAR(VORBIS_CFLAGS, [C compiler flags for libvorbis and libvorbisfile])
+	AC_ARG_VAR(VORBIS_LIBS, [libraries to pass to the linker for libvorbis and libvorbisfile])
 
 	if test -z "$VORBIS_CFLAGS"; then
 		VORBIS_CFLAGS=""
 	fi
 	if test -z "$VORBIS_LIBS"; then
-		VORBIS_LIBS="-lvorbisfile"
+		VORBIS_LIBS="-lvorbis -lvorbisfile"
 	fi
 
 	save_CFLAGS="$CFLAGS"
@@ -28,6 +28,7 @@ AC_DEFUN([AX_CHECK_VORBIS], [
 	CXXFLAGS="$CXXFLAGS $VORBIS_CFLAGS"
 	LIBS="$LIBS $VORBIS_LIBS"
 
+	AC_CHECK_HEADER([vorbis/codec.h], , novorbis=1)
 	AC_CHECK_HEADER([vorbis/vorbisfile.h], , novorbis=1)
 
 	CFLAGS="$save_CFLAGS"
