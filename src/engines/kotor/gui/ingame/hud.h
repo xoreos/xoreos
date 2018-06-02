@@ -54,6 +54,10 @@ public:
 
 	void showContainer();
 
+	void setPartyLeader(Creature *creature);
+	void setPartyMember1(Creature *creature);
+	void setPartyMember2(Creature *creature);
+
 private:
 	Menu _menu;
 	Common::ScopedPtr<ContainerMenu> _container;
