@@ -64,6 +64,18 @@ void Functions::isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = KotOR2::ObjectContainer::toPartyMember(getParamObject(ctx, 0)) != 0;
 }
 
+void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
+	Common::UString name = ctx.getParams()[0].getString();
+	int nth = ctx.getParams()[1].getInt();
+
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(name));
+	for (int i = 0; i < nth; ++i) {
+		search->next();
+	}
+
+	ctx.getReturn() = search->get();
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
