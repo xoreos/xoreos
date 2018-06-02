@@ -21,6 +21,7 @@
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/gui/gui.h \
+    src/engines/kotor2/gui/dialog.h \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
