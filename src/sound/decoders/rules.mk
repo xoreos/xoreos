@@ -25,13 +25,10 @@ src_sound_decoders_libdecoders_la_SOURCES =
 src_sound_decoders_libdecoders_la_SOURCES += \
     src/sound/decoders/util.h \
     src/sound/decoders/codec.h \
-    src/sound/decoders/mp3.h \
-    src/sound/decoders/vorbis.h \
     src/sound/decoders/adpcm.h \
     src/sound/decoders/wave_types.h \
     src/sound/decoders/wave.h \
     src/sound/decoders/pcm.h \
-    src/sound/decoders/aac.h \
     src/sound/decoders/asf.h \
     src/sound/decoders/wma.h \
     src/sound/decoders/wmadata.h \
@@ -39,12 +36,42 @@ src_sound_decoders_libdecoders_la_SOURCES += \
 
 src_sound_decoders_libdecoders_la_SOURCES += \
     src/sound/decoders/codec.cpp \
-    src/sound/decoders/mp3.cpp \
-    src/sound/decoders/vorbis.cpp \
     src/sound/decoders/adpcm.cpp \
     src/sound/decoders/wave.cpp \
     src/sound/decoders/pcm.cpp \
-    src/sound/decoders/aac.cpp \
     src/sound/decoders/asf.cpp \
     src/sound/decoders/wma.cpp \
     $(EMPTY)
+
+aac_sources = \
+	src/sound/decoders/aac.cpp \
+	src/sound/decoders/aac.h \
+	$(EMPTY)
+
+if ENABLE_FAAD
+src_sound_decoders_libdecoders_la_SOURCES += $(aac_sources)
+else
+EXTRA_DIST += $(aac_sources)
+endif
+
+mp3_sources = \
+	src/sound/decoders/mp3.cpp \
+	src/sound/decoders/mp3.h \
+	$(EMPTY)
+
+if ENABLE_MAD
+src_sound_decoders_libdecoders_la_SOURCES += $(mp3_sources)
+else
+EXTRA_DIST += $(mp3_sources)
+endif
+
+vorbis_sources = \
+	src/sound/decoders/vorbis.cpp \
+	src/sound/decoders/vorbis.h \
+	$(EMPTY)
+
+if ENABLE_VORBIS
+src_sound_decoders_libdecoders_la_SOURCES += $(vorbis_sources)
+else
+EXTRA_DIST += $(vorbis_sources)
+endif

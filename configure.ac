@@ -239,9 +239,11 @@ if test "x$enable_xvidcore" = "xyes"; then
 fi
 if test "x$enable_xvidcore" = "xyes"; then
 	AC_DEFINE([ENABLE_XVIDCORE], 1, [Defined to 1 if we are using libxvidcore])
+	AM_CONDITIONAL(ENABLE_XVIDCORE, true)
 else
 	XVID_CFLAGS=""
 	XVID_LIBS=""
+	AM_CONDITIONAL(ENABLE_XVIDCORE, false)
 fi
 
 dnl Sound libraries
@@ -251,18 +253,22 @@ if test "x$enable_faad" = "xyes"; then
 fi
 if test "x$enable_faad" = "xyes"; then
 	AC_DEFINE([ENABLE_FAAD], 1, [Defined to 1 if we are using libfaad])
+	AM_CONDITIONAL(ENABLE_FAAD, true)
 else
 	FAAD_CFLAGS=""
 	FAAD_LIBS=""
+	AM_CONDITIONAL(ENABLE_FAAD, false)
 fi
 if test "x$enable_mad" = "xyes"; then
 	AX_CHECK_MAD(0, 15, 1, , [enable_mad=no])
 fi
 if test "x$enable_mad" = "xyes"; then
 	AC_DEFINE([ENABLE_MAD], 1, [Defined to 1 if we are using libmad])
+	AM_CONDITIONAL(ENABLE_MAD, true)
 else
 	MAD_CFLAGS=""
 	MAD_LIBS=""
+	AM_CONDITIONAL(ENABLE_MAD, false)
 fi
 if test "x$enable_vorbis" = "xyes"; then
 	AX_CHECK_OGG(, [enable_vorbis=no])
@@ -270,11 +276,13 @@ if test "x$enable_vorbis" = "xyes"; then
 fi
 if test "x$enable_vorbis" = "xyes"; then
 	AC_DEFINE([ENABLE_VORBIS], 1, [Defined to 1 if we are using libvorbis])
+	AM_CONDITIONAL(ENABLE_VORBIS, true)
 else
 	OGG_CFLAGS=""
 	OGG_LIBS=""
 	VORBIS_CFLAGS=""
 	VORBIS_LIBS=""
+	AM_CONDITIONAL(ENABLE_VORBIS, false)
 fi
 
 dnl Boost

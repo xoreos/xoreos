@@ -24,14 +24,24 @@ src_video_codecs_libcodecs_la_SOURCES =
 
 src_video_codecs_libcodecs_la_SOURCES += \
     src/video/codecs/codec.h \
-    src/video/codecs/h263.h \
     src/video/codecs/wmv2data.h \
     src/video/codecs/xmvwmv2.h \
     $(EMPTY)
 
 src_video_codecs_libcodecs_la_SOURCES += \
     src/video/codecs/codec.cpp \
-    src/video/codecs/h263.cpp \
     src/video/codecs/wmv2data.cpp \
     src/video/codecs/xmvwmv2.cpp \
     $(EMPTY)
+
+xvid_source = \
+	src/video/codecs/h263.cpp \
+	src/video/codecs/h263.h \
+	$(EMPTY)
+
+if ENABLE_XVIDCORE
+src_video_codecs_libcodecs_la_SOURCES += $(xvid_source)
+else
+EXTRA_DIST += $(xvid_source)
+endif
+
