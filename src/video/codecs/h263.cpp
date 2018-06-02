@@ -22,11 +22,6 @@
  *  h.263 video codec.
  */
 
-#ifdef HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
-#ifdef ENABLE_XVIDCORE
 #include <cstring>
 
 #include <xvid.h>
@@ -145,4 +140,3 @@ Codec *makeH263Codec(int width, int height, Common::SeekableReadStream &extraDat
 }
 
 } // End of namespace Video
-#endif
