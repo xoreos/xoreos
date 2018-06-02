@@ -181,7 +181,6 @@ private:
 	void getIsObjectValid(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
-	void isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx);
 
 	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 
@@ -247,6 +246,10 @@ private:
 	void setLocalBoolean(Aurora::NWScript::FunctionContext &ctx);
 	void getLocalNumber(Aurora::NWScript::FunctionContext &ctx);
 	void setLocalNumber(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
+	// .--- Party, functions_party.cpp
+	void isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
