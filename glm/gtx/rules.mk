@@ -49,6 +49,7 @@ noinst_HEADERS += \
     glm/gtx/matrix_operation.hpp \
     glm/gtx/matrix_query.hpp \
     glm/gtx/matrix_transform_2d.hpp \
+    glm/gtx/mixed_product.hpp \
     glm/gtx/norm.hpp \
     glm/gtx/normal.hpp \
     glm/gtx/normalize_dot.hpp \
@@ -105,6 +106,7 @@ noinst_HEADERS += \
     glm/gtx/matrix_operation.inl \
     glm/gtx/matrix_query.inl \
     glm/gtx/matrix_transform_2d.inl \
+    glm/gtx/mixed_product.inl \
     glm/gtx/norm.inl \
     glm/gtx/normal.inl \
     glm/gtx/normalize_dot.inl \
