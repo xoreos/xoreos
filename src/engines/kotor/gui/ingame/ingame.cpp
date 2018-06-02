@@ -67,6 +67,18 @@ void IngameGUI::showContainer() {
 	_hud->showContainer();
 }
 
+void IngameGUI::setPartyLeader(Creature *creature) {
+	_hud->setPartyLeader(creature);
+}
+
+void IngameGUI::setPartyMember1(Creature *creature) {
+	_hud->setPartyMember1(creature);
+}
+
+void IngameGUI::setPartyMember2(Creature *creature) {
+	_hud->setPartyMember2(creature);
+}
+
 void IngameGUI::addEvent(const Events::Event &event) {
 	_hud->addEvent(event);
 }
