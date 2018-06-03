@@ -92,8 +92,24 @@ public:
 	/** The creature was clicked. */
 	bool click(Object *triggerer = 0);
 
-	Common::ScopedPtr<Graphics::Aurora::Model> &getModel();
 	const Common::UString &getConversation() const;
+
+	float getCameraHeight() const;
+
+	// Animation
+
+	void playDefaultAnimation();
+	void playDefaultHeadAnimation();
+
+	void playAnimation(const Common::UString &anim,
+	                   bool restart = true,
+	                   float length = 0.0f,
+	                   float speed = 1.0f);
+
+	void playHeadAnimation(const Common::UString &anim,
+	                       bool restart = true,
+	                       float length = 0.0f,
+	                       float speed = 1.0f);
 
 private:
 	/** Parts of a creature's body. */

@@ -439,21 +439,56 @@ bool Creature::click(Object *triggerer) {
 	return false;
 }
 
-Common::ScopedPtr<Graphics::Aurora::Model> &Creature::getModel() {
-	return _model;
-}
-
 const Common::UString &Creature::getConversation() const {
 	return _conversation;
+}
+
+float Creature::getCameraHeight() const {
+	float height = 1.8f;
+	if (_model) {
+		Graphics::Aurora::ModelNode *node = _model->getNode("camerahook");
+		if (node) {
+			float x, y, z;
+			node->getPosition(x, y, z);
+			height = z;
+		}
+	}
+	return height;
+}
+
+void Creature::playDefaultAnimation() {
+	if (_model)
+		_model->playDefaultAnimation();
+}
+
+void Creature::playDefaultHeadAnimation() {
+	if (!_model)
+		return;
+
+	Graphics::Aurora::Model *head = _model->getAttachedModel("headhook");
+	if (head)
+		head->playDefaultAnimation();
+}
+
+void Creature::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
+	if (_model)
+		_model->playAnimation(anim, restart, length, speed);
+}
+
+void Creature::playHeadAnimation(const Common::UString &anim, bool restart, float length, float speed) {
+	if (!_model)
+		return;
+
+	Graphics::Aurora::Model *head = _model->getAttachedModel("headhook");
+	if (head)
+		head->playAnimation(anim, restart, length, speed);
 }
 
 void Creature::setDefaultAnimations() {
 	if (!_model)
 		return;
 
-	_model->addDefaultAnimation("pause3", 25);
-	_model->addDefaultAnimation("pause2", 25);
-	_model->addDefaultAnimation("pause1", 50);
+	_model->addDefaultAnimation("pause1", 100);
 }
 
 } // End of namespace KotOR

@@ -375,16 +375,7 @@ void Module::enter() {
 	if (!_pc)
 		throw Common::Exception("Module::enter(): Lacking a PC?!?");
 
-	_cameraHeight = 1.8f;
-
-	if (_pc->getModel()) {
-		const Graphics::Aurora::ModelNode *node = _pc->getModel()->getNode("camerahook");
-		if (node) {
-			float x, y, z;
-			node->getPosition(x, y, z);
-			_cameraHeight = z;
-		}
-	}
+	_cameraHeight = _pc->getCameraHeight();
 
 	float cameraDistance, cameraPitch, cameraHeight;
 	_area->getCameraStyle(cameraDistance, cameraPitch, cameraHeight);
@@ -635,10 +626,10 @@ void Module::handlePCMovement() {
 	}
 
 	if (haveMovement && !_pcRunning) {
-		_pc->getModel()->playAnimation(Common::UString("run"), false, -1);
+		_pc->playAnimation(Common::UString("run"), false, -1.0f);
 		_pcRunning = true;
 	} else if (!haveMovement && _pcRunning) {
-		_pc->getModel()->playDefaultAnimation();
+		_pc->playDefaultAnimation();
 		_pcRunning = false;
 	}
 }
@@ -841,6 +832,23 @@ void Module::startConversation(const Common::UString &name) {
 	}
 }
 
+void Module::playAnimationOnActiveObject(const Common::UString &baseAnim,
+                                         const Common::UString &headAnim) {
+	KotOR::Object *o = _area->getActiveObject();
+	if (!o)
+		return;
+
+	Creature *creature = ObjectContainer::toCreature(o);
+	if (creature) {
+		creature->playAnimation(baseAnim, true, -1.0f);
+
+		if (headAnim.empty())
+			creature->playDefaultHeadAnimation();
+		else
+			creature->playHeadAnimation(headAnim, true, -1.0f, 0.5f);
+	}
+}
+
 void Module::stopCameraMovement() {
 	SatelliteCam.clearInput();
 }
@@ -848,7 +856,7 @@ void Module::stopCameraMovement() {
 void Module::stopPCMovement() {
 	_forwardBtnPressed = false;
 	_backwardsBtnPressed = false;
-	_pc->getModel()->playDefaultAnimation();
+	_pc->playDefaultAnimation();
 	_pcRunning = false;
 }
 

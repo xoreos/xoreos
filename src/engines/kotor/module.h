@@ -160,6 +160,9 @@ public:
 	void loadSavedGame(SavedGame *save);
 	void startConversation(const Common::UString &name);
 
+	void playAnimationOnActiveObject(const Common::UString &baseAnim,
+	                                 const Common::UString &headAnim);
+
 private:
 	enum ActionType {
 		kActionNone   = 0,

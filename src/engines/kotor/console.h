@@ -68,6 +68,7 @@ private:
 	void cmdShowTriggers        (const CommandLine &cl);
 	void cmdGetPCRoom           (const CommandLine &cl);
 	void cmdListRoomsVisibleFrom(const CommandLine &cl);
+	void cmdPlayAnim            (const CommandLine &cl);
 };
 
 } // End of namespace KotOR

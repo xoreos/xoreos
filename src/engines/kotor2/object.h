@@ -113,6 +113,13 @@ public:
 	/** Play an object sound. */
 	void playSound(const Common::UString &sound, bool pitchVariance = false);
 
+	// Animation
+
+	virtual void playAnimation(const Common::UString &anim,
+	                           bool restart = true,
+	                           float length = 0.0f,
+	                           float speed = 1.0f);
+
 protected:
 	ObjectType _type; ///< The object's type.
 

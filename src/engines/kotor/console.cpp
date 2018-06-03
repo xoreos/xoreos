@@ -74,6 +74,8 @@ Console::Console(KotOREngine &engine) :
 			"Usage: getpcroom\nGet a room PC is in");
 	registerCommand("listroomsvisiblefrom", boost::bind(&Console::cmdListRoomsVisibleFrom, this, _1),
 			"Usage: listroomsvisiblefrom <room>\nList rooms that are visible from the specified room");
+	registerCommand("playanim"            , boost::bind(&Console::cmdPlayAnim            , this, _1),
+			"Usage: playanim <base> [<head>]\nPlay the specified animations on the active object");
 
 }
 
@@ -182,6 +184,18 @@ void Console::cmdListRoomsVisibleFrom(const CommandLine &cl) {
 			r != rooms.end(); ++r) {
 		printf("%s", r->c_str());
 	}
+}
+
+void Console::cmdPlayAnim(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+	std::vector<Common::UString> anims;
+	Common::UString::split(cl.args, ' ', anims);
+	size_t animCount = anims.size();
+	_engine->getGame().getModule().playAnimationOnActiveObject(anims[0],
+			animCount >= 2 ? anims[1] : "");
 }
 
 } // End of namespace KotOR

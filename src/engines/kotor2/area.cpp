@@ -653,6 +653,10 @@ const std::vector<Common::UString> &Area::getRoomsVisibleFrom(const Common::UStr
 	return _vis.getVisibilityArray(room);
 }
 
+KotOR2::Object *Area::getActiveObject() {
+	return _activeObject;
+}
+
 Room *Area::getRoomAt(float x, float y) const {
 	for (RoomList::const_iterator r = _rooms.begin();
 			r != _rooms.end(); ++r) {

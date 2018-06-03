@@ -155,6 +155,9 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice, false, 1.0f, pitchVariance);
 }
 
+void Object::playAnimation(const Common::UString &UNUSED(anim), bool UNUSED(restart), float UNUSED(length), float UNUSED(speed)) {
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
