@@ -195,6 +195,8 @@ public:
 	/** Apply buffered changes to model nodes position and geometry. */
 	void flushNodeBuffers();
 
+	Model *getAttachedModel(const Common::UString &node);
+
 
 protected:
 	typedef std::list<ModelNode *> NodeList;
@@ -300,6 +302,7 @@ private:
 	float _animationLoopTime;   ///< The time the current loop of the current animation has played.
 
 	std::vector<ModelNode *> _animationNodeMap;
+	std::map<Common::UString, Model *> _attachedModels;
 
 	/** Create the list of all state names. */
 	void createStateNamesList(std::list<Common::UString> *stateNames = 0);

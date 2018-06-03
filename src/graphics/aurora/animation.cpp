@@ -320,6 +320,13 @@ void Animation::updateSkinnedModel(Model *model) {
 
 		node->_vertexCoordsBuffered = true;
 	}
+
+	for (std::map<Common::UString, Model *>::iterator m = model->_attachedModels.begin();
+			m != model->_attachedModels.end(); ++m) {
+		Model *attachedModel = m->second;
+		if (attachedModel->_skinned)
+			updateSkinnedModel(attachedModel);
+	}
 }
 
 } // End of namespace Aurora

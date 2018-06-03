@@ -265,15 +265,6 @@ void Model::setCurrentAnimation(Animation *anim) {
 
 	_currentAnimation  = anim;
 	_animationLoopTime = 0.0f;
-
-	for (NodeList::iterator n = _currentState->nodeList.begin(); n != _currentState->nodeList.end(); ++n)
-		if ((*n)->_attachedModel) {
-			(*n)->_attachedModel->makeAnimationNodeMap(anim);
-
-			(*n)->_attachedModel->_currentAnimation  = anim;
-			(*n)->_attachedModel->_animationLoopTime = 0.0f;
-		}
-
 }
 
 void Model::makeAnimationNodeMap(Animation *anim) {
@@ -294,10 +285,29 @@ void Model::makeAnimationNodeMap(Animation *anim) {
 
 	if (maxNodeNumber >= 0) {
 		_animationNodeMap.resize(maxNodeNumber + 1, 0);
-		for (std::list<AnimNode *>::const_iterator n = nodes.begin(); n != nodes.end(); ++n) {
-			ModelNode *animNode = (*n)->getNodeData();
+		for (std::list<AnimNode *>::const_iterator an = nodes.begin();
+				an != nodes.end(); ++an) {
+			ModelNode *animNode = (*an)->getNodeData();
 			int nodeNumber = animNode->getNodeNumber();
-			_animationNodeMap[nodeNumber] = getNode(animNode->getName());
+			const Common::UString &animNodeName = animNode->getName();
+
+			NodeMap::iterator n = _currentState->nodeMap.find(animNodeName);
+			if (n != _currentState->nodeMap.end())
+				_animationNodeMap[nodeNumber] = n->second;
+			else {
+				for (std::map<Common::UString, Model *>::iterator m = _attachedModels.begin();
+						m != _attachedModels.end(); ++m) {
+					State *state = m->second->_currentState;
+					if (!state)
+						continue;
+
+					n = state->nodeMap.find(animNodeName);
+					if (n != state->nodeMap.end()) {
+						_animationNodeMap[nodeNumber] = n->second;
+						break;
+					}
+				}
+			}
 		}
 	}
 }
@@ -593,6 +603,11 @@ void Model::attachModel(const Common::UString &nodeName, Model *model) {
 	if (node) {
 		node->_attachedModel = model;
 		createBound();
+
+		std::map<Common::UString, Model *>::iterator m = _attachedModels.find(nodeName);
+		if (m != _attachedModels.end())
+			_attachedModels.erase(m);
+		_attachedModels.insert(std::pair<Common::UString, Model *>(nodeName, model));
 	}
 }
 
@@ -657,6 +672,11 @@ void Model::advanceTime(float dt) {
 }
 
 void Model::flushNodeBuffers() {
+	for (std::map<Common::UString, Model *>::iterator m = _attachedModels.begin();
+			m != _attachedModels.end(); ++m) {
+		m->second->flushNodeBuffers();
+	}
+
 	if (!_currentState)
 		return;
 
@@ -666,6 +686,11 @@ void Model::flushNodeBuffers() {
 			++n) {
 		(*n)->flushBuffers();
 	}
+}
+
+Model *Model::getAttachedModel(const Common::UString &node) {
+	std::map<Common::UString, Model *>::iterator m = _attachedModels.find(node);
+	return m == _attachedModels.end() ? 0 : m->second;
 }
 
 void Model::setSkinned(bool skinned) {
@@ -733,6 +758,11 @@ void Model::manageAnimations(float dt) {
 
 	if (nextFrame == 0.0f)
 		createBound();
+
+	for (std::map<Common::UString, Model *>::iterator m = _attachedModels.begin();
+			m != _attachedModels.end(); ++m) {
+		m->second->manageAnimations(dt);
+	}
 }
 
 void Model::render(RenderPass pass) {
