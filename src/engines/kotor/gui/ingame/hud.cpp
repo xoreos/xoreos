@@ -74,6 +74,10 @@ HUD::HUD(Module &module, Engines::Console *console)
 	// Whatever this combat stuff is about.
 	getWidget("LBL_CMBTMODEMSG")->setInvisible(true);
 	getWidget("LBL_CMBTMSGBG")->setInvisible(true);
+	getWidget("LBL_COMBATBG1")->setInvisible(true);
+	getWidget("LBL_COMBATBG2")->setInvisible(true);
+	getWidget("LBL_COMBATBG3")->setInvisible(true);
+	getWidget("BTN_CLEARALL")->setInvisible(true);
 
 	// Remove the modifiers.
 	getWidget("LBL_CMBTEFCTINC1")->setInvisible(true);
