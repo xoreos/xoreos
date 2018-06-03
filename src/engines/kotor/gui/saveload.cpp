@@ -29,6 +29,8 @@
 #include "src/common/filepath.h"
 #include "src/common/strutil.h"
 
+#include "src/graphics/graphics.h"
+
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/saveload.h"
@@ -156,6 +158,7 @@ void SaveLoadMenu::tryLoadGame(const Common::UString &dir) {
 	try {
 		Common::ScopedPtr<SavedGame> save(SavedGame::load(dir, true));
 		_module->loadSavedGame(save.get());
+		GfxMan.lockFrame();
 		_returnCode = 2;
 	} catch (Common::Exception &e) {
 		warning("Failed to load saved game: %s %s", dir.c_str(), e.what());
