@@ -193,11 +193,11 @@ AC_ARG_ENABLE([faad], [AS_HELP_STRING([--disable-faad], [Disable building with A
 AC_ARG_ENABLE([xvidcore], [AS_HELP_STRING([--disable-xvidcore], [Disable building with H.263 support @<:@default=no@:>@])], [], [enable_xvidcore=yes])
 AC_ARG_ENABLE([vpx], [AS_HELP_STRING([--disable-vpx], [Disabling building with VP8/VP9 support @<:@default=no@:>@])], [], [enable_vpx=yes])
 AC_ARG_ENABLE([lzma], [AS_HELP_STRING([--disable-lzma], [Disable building with LZMA support @<:@default=no@:>@])], [], [enable_lzma=yes])
+AC_ARG_ENABLE([xml], [AS_HELP_STRING([--disable-xml], [Disable building with XML support @<:@default=no@:>@])], [], [enable_xml=yes])
 
 dnl General purpose libraries
 AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found!]))
 AX_CHECK_ZLIB(1, 2, 3, 0, , AC_MSG_ERROR([zlib(>= 1.2.3) is required and could not be found!]))
-AX_CHECK_XML2(2, 8, 0, , AC_MSG_ERROR([libxml2(>= 2.8.0) is required and could not be found!]))
 if test "x$enable_lzma" = "xyes"; then
 	AX_CHECK_LZMA(5, 0, 3, 2, , [enable_lzma=no])
 fi
@@ -208,6 +208,17 @@ else
 	AM_CONDITIONAL(ENABLE_LZMA, false)
 	LZMA_CFLAGS=""
 	LZMA_LIBS=""
+fi
+if test "x$enable_xml" = "xyes"; then
+	AX_CHECK_XML2(2, 8, 0, , [enable_xml=no])
+fi
+if test "x$enable_xml" = "xyes"; then
+	AC_DEFINE([ENABLE_XML], 1, [Defined to 1 if we are using libxml2])
+	AM_CONDITIONAL(ENABLE_XML, true)
+else
+	AM_CONDITIONAL(ENABLE_XML, false)
+	XML2_CFLAGS=""
+	XML2_LIBS=""
 fi
 
 dnl Use Wincrypt instead of BCrypt in Boost.Uuid
@@ -351,8 +362,8 @@ AX_ADD_ENGINE([kotor2], [KOTOR2], [Star Wars: Knights of the Old Republic II: Th
 AX_ADD_ENGINE([jade], [JADE], [Jade Empire], [])
 AX_ADD_ENGINE([witcher], [WITCHER], [The Witcher], [])
 AX_ADD_ENGINE([sonic], [SONIC], [Sonic Chronicles: The Dark Brotherhood], [])
-AX_ADD_ENGINE([dragonage], [DRAGONAGE], [Dragon Age: Origins], [libxml2])
-AX_ADD_ENGINE([dragonage2], [DRAGONAGE2], [Dragon Age II], [libxml2])
+AX_ADD_ENGINE([dragonage], [DRAGONAGE], [Dragon Age: Origins], [xml])
+AX_ADD_ENGINE([dragonage2], [DRAGONAGE2], [Dragon Age II], [xml])
 
 dnl Extra flags
 case "$target" in
@@ -394,3 +405,4 @@ AC_MSG_NOTICE([ libfaad: $enable_faad])
 AC_MSG_NOTICE([ xvidcore: $enable_xvidcore])
 AC_MSG_NOTICE([ libvpx: $enable_vpx])
 AC_MSG_NOTICE([ liblzma: $enable_lzma])
+AC_MSG_NOTICE([ libxml2: $enable_xml])

@@ -22,6 +22,11 @@
  *  XML parsing helpers, using libxml2.
  */
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_XML
 #include <cstdarg>
 #include <cstdio>
 
@@ -178,3 +183,4 @@ void XMLNode::load(_xmlNode &node, bool makeLower) {
 }
 
 } // End of namespace Common
+#endif

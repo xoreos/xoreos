@@ -38,7 +38,9 @@
 #include "src/common/readstream.h"
 #include "src/common/encoding.h"
 #include "src/common/filepath.h"
+#ifdef ENABLE_XML
 #include "src/common/xml.h"
+#endif
 
 #include "src/aurora/util.h"
 #include "src/aurora/resman.h"
@@ -58,8 +60,10 @@ namespace Graphics {
 
 namespace Aurora {
 
+#ifdef ENABLE_XML
 using Common::XMLParser;
 using Common::XMLNode;
+#endif
 
 // .--- GFF4 helpers
 static const uint32 kMMHID     = MKTAG('M', 'M', 'H', ' ');
@@ -772,6 +776,7 @@ void ModelNode_DragonAge::readMAOGFF(Common::SeekableReadStream *maoStream, Mate
 	}
 }
 
+#ifdef ENABLE_XML
 /** Read a MAO encoded in an XML file. */
 void ModelNode_DragonAge::readMAOXML(Common::SeekableReadStream *maoStream, MaterialObject &material,
                                      const Common::UString &fileName) {
@@ -821,6 +826,7 @@ void ModelNode_DragonAge::readMAOXML(Common::SeekableReadStream *maoStream, Mate
 
 	delete maoStream;
 }
+#endif
 
 /** Read a material object MAO, which can be encoded in either XML or GFF. */
 void ModelNode_DragonAge::readMAO(const Common::UString &materialName, MaterialObject &material) {
@@ -833,11 +839,16 @@ void ModelNode_DragonAge::readMAO(const Common::UString &materialName, MaterialO
 		const uint32 tag = ::Aurora::AuroraFile::readHeaderID(*maoStream);
 		maoStream->seek(0);
 
-		if      (tag == kGFFID)
+		if        (tag == kGFFID) {
 			readMAOGFF(maoStream, material);
-		else if (tag == kXMLID)
+		} else if (tag == kXMLID) {
+#ifdef ENABLE_XML
 			readMAOXML(maoStream, material, TypeMan.setFileType(materialName, kFileTypeMAO));
-		else {
+#else
+			delete maoStream;
+			throw Common::Exception("XML parsing disabled when building without libxml2");
+#endif
+		} else {
 			delete maoStream;
 			throw Common::Exception("Invalid MAO type %s", Common::debugTag(tag).c_str());
 		}

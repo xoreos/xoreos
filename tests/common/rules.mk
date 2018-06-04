@@ -224,10 +224,12 @@ tests_common_test_lzma_LDADD    = $(common_LIBS)
 tests_common_test_lzma_CXXFLAGS = $(test_CXXFLAGS)
 endif
 
+if ENABLE_XML
 check_PROGRAMS                += tests/common/test_xml
 tests_common_test_xml_SOURCES  = tests/common/xml.cpp
 tests_common_test_xml_LDADD    = $(common_LIBS)
 tests_common_test_xml_CXXFLAGS = $(test_CXXFLAGS)
+endif
 
 check_PROGRAMS                            += tests/common/test_streamtokenizer
 tests_common_test_streamtokenizer_SOURCES  = tests/common/streamtokenizer.cpp

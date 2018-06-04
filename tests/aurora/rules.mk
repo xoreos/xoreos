@@ -153,10 +153,12 @@ tests_aurora_test_ltrfile_SOURCES  = tests/aurora/ltrfile.cpp
 tests_aurora_test_ltrfile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_ltrfile_CXXFLAGS = $(test_CXXFLAGS)
 
+if ENABLE_XML
 check_PROGRAMS                             += tests/aurora/test_textureatlasfile
 tests_aurora_test_textureatlasfile_SOURCES  = tests/aurora/textureatlasfile.cpp
 tests_aurora_test_textureatlasfile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_textureatlasfile_CXXFLAGS = $(test_CXXFLAGS)
+endif
 
 check_PROGRAMS                         += tests/aurora/test_actionscript
 tests_aurora_test_actionscript_SOURCES  = tests/aurora/actionscript.cpp
