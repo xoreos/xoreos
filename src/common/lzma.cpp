@@ -22,6 +22,11 @@
  *  Decompress LZMA, using liblzma.
  */
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_LZMA
 // We need to include our types.h before lzma.h to stop it redefining macros
 #include "src/common/types.h"
 #include <lzma.h>
@@ -131,3 +136,4 @@ SeekableReadStream *decompressLZMA1(ReadStream &input, size_t inputSize, size_t 
 }
 
 } // End of namespace Common
+#endif

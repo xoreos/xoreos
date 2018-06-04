@@ -217,10 +217,12 @@ tests_common_test_zipfile_SOURCES  = tests/common/zipfile.cpp
 tests_common_test_zipfile_LDADD    = $(common_LIBS)
 tests_common_test_zipfile_CXXFLAGS = $(test_CXXFLAGS)
 
+if ENABLE_LZMA
 check_PROGRAMS                 += tests/common/test_lzma
 tests_common_test_lzma_SOURCES  = tests/common/lzma.cpp
 tests_common_test_lzma_LDADD    = $(common_LIBS)
 tests_common_test_lzma_CXXFLAGS = $(test_CXXFLAGS)
+endif
 
 check_PROGRAMS                += tests/common/test_xml
 tests_common_test_xml_SOURCES  = tests/common/xml.cpp

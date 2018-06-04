@@ -31,7 +31,9 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
+#ifdef ENABLE_LZMA
 #include "src/common/lzma.h"
+#endif
 
 #include "src/aurora/bzffile.h"
 #include "src/aurora/keyfile.h"
@@ -145,7 +147,11 @@ Common::SeekableReadStream *BZFFile::getResource(uint32 index, bool UNUSED(tryNo
 
 	_bzf->seek(res.offset);
 
+#ifdef ENABLE_LZMA
 	return Common::decompressLZMA1(*_bzf, res.packedSize, res.size, true);
+#else
+	throw Common::Exception("LZMA decompression disabled when building without liblzma");
+#endif
 }
 
 } // End of namespace Aurora

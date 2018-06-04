@@ -91,10 +91,12 @@ tests_aurora_test_biffile_SOURCES  = tests/aurora/biffile.cpp
 tests_aurora_test_biffile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_biffile_CXXFLAGS = $(test_CXXFLAGS)
 
+if ENABLE_LZMA
 check_PROGRAMS                    += tests/aurora/test_bzffile
 tests_aurora_test_bzffile_SOURCES  = tests/aurora/bzffile.cpp
 tests_aurora_test_bzffile_LDADD    = $(aurora_LIBS)
 tests_aurora_test_bzffile_CXXFLAGS = $(test_CXXFLAGS)
+endif
 
 check_PROGRAMS                    += tests/aurora/test_erffile
 tests_aurora_test_erffile_SOURCES  = tests/aurora/erffile.cpp
