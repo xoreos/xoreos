@@ -101,11 +101,11 @@ public:
 
 private:
 	void readNodeControllers(Model_KotOR::ParserContext &ctx, uint32 offset,
-	                         uint32 count, std::vector<float> &data);
+	                         uint32 count, std::vector<float> &dataFloat, std::vector<uint32> &dataInt);
 	void readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
 	                            uint16 dataIndex, std::vector<float> &data);
 	void readOrientationController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
-	                               uint16 dataIndex, std::vector<float> &data);
+	                               uint16 dataIndex, std::vector<float> &dataFloat, std::vector<uint32> &dataInt);
 	void readMesh(Model_KotOR::ParserContext &ctx);
 	void readSkin(Model_KotOR::ParserContext &ctx);
 };

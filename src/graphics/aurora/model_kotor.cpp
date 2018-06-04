@@ -447,12 +447,16 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	uint32 controllerDataOffset, controllerDataCount;
 	Model::readArrayDef(*ctx.mdl, controllerDataOffset, controllerDataCount);
 
-	std::vector<float> controllerData;
+	std::vector<float> controllerDataFloat;
 	Model::readArray(*ctx.mdl, ctx.offModelData + controllerDataOffset,
-	                 controllerDataCount, controllerData);
+	                 controllerDataCount, controllerDataFloat);
+
+	std::vector<uint32> controllerDataInt;
+	Model::readArray(*ctx.mdl, ctx.offModelData + controllerDataOffset,
+	                 controllerDataCount, controllerDataInt);
 
 	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
-	                    controllerKeyCount, controllerData);
+	                    controllerKeyCount, controllerDataFloat, controllerDataInt);
 
 	if ((flags & 0xFC00) != 0)
 		throw Common::Exception("Unknown node flags %04X", flags);
@@ -508,7 +512,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 }
 
 void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
-		uint32 offset, uint32 count, std::vector<float> &data) {
+		uint32 offset, uint32 count, std::vector<float> &dataFloat, std::vector<uint32> &dataInt) {
 	uint32 pos = ctx.mdl->seek(offset);
 	for (uint32 i = 0; i < count; i++) {
 		uint32 type = ctx.mdl->readUint32LE();
@@ -520,10 +524,10 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 		ctx.mdl->skip(3);
 		switch (type) {
 			case kControllerTypePosition:
-				readPositionController(columnCount, rowCount, timeIndex, dataIndex, data);
+				readPositionController(columnCount, rowCount, timeIndex, dataIndex, dataFloat);
 				break;
 			case kControllerTypeOrientation:
-				readOrientationController(columnCount, rowCount, timeIndex, dataIndex, data);
+				readOrientationController(columnCount, rowCount, timeIndex, dataIndex, dataFloat, dataInt);
 				break;
 		}
 	}
@@ -534,6 +538,7 @@ void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount,
 		uint16 dataIndex, std::vector<float> &data) {
 	switch (columnCount) {
 		case 3:
+		case 19:
 			for (int r = 0; r < rowCount; r++) {
 				PositionKeyFrame p;
 				p.time = data[timeIndex + r];
@@ -544,9 +549,6 @@ void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount,
 				_positionFrames.push_back(p);
 			}
 			break;
-		case 19:
-			// TODO: 19 column position controller
-			break;
 		default:
 			warning("Position controller with %d values", columnCount);
 			break;
@@ -554,20 +556,41 @@ void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount,
 }
 
 void ModelNode_KotOR::readOrientationController(uint8 columnCount, uint16 rowCount,
-		uint16 timeIndex, uint16 dataIndex, std::vector<float> &data) {
+		uint16 timeIndex, uint16 dataIndex, std::vector<float> &dataFloat, std::vector<uint32> &dataInt) {
 	switch (columnCount) {
 		case 2:
-			// TODO: 2 column orientation controller
+			for (int r = 0; r < rowCount; r++) {
+				QuaternionKeyFrame q;
+				q.time = dataFloat[timeIndex + r];
+
+				uint32 temp = dataInt[dataIndex + r];
+				q.x = 1.0f - static_cast<float>(temp & 0x7ff) / 1023.0f;
+				q.y = 1.0f - static_cast<float>((temp >> 11) & 0x7ff) / 1023.0f;
+				q.z = 1.0f - static_cast<float>(temp >> 22) / 511.0f;
+
+				float temp2 = q.x * q.x + q.y * q.y + q.z * q.z;
+				if (temp2 < 1.0f)
+					q.q = -sqrtf(1.0f - temp2);
+				else {
+					temp2 = sqrtf(temp2);
+					q.x = q.x / temp2;
+					q.y = q.y / temp2;
+					q.z = q.z / temp2;
+					q.q = 0.0f;
+				}
+
+				_orientationFrames.push_back(q);
+			}
 			break;
 		case 4:
 			for (int r = 0; r < rowCount; r++) {
 				QuaternionKeyFrame q;
-				q.time = data[timeIndex + r];
+				q.time = dataFloat[timeIndex + r];
 				int index = dataIndex + 4 * r;
-				q.x = data[index + 0];
-				q.y = data[index + 1];
-				q.z = data[index + 2];
-				q.q = data[index + 3];
+				q.x = dataFloat[index + 0];
+				q.y = dataFloat[index + 1];
+				q.z = dataFloat[index + 2];
+				q.q = dataFloat[index + 3];
 				_orientationFrames.push_back(q);
 			}
 			break;
