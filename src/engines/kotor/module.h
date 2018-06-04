@@ -115,6 +115,15 @@ public:
 	void movedPC();
 	// '---
 
+	// .--- Party Management
+	/** Get the count of party members. */
+	size_t getPartyMemberCount();
+	/** Add a creature to the party. */
+	void addToParty(Creature *creature);
+	/** Check if the specified creature is a party member. */
+	bool isObjectPartyMember(Creature *creature);
+	// '---
+
 	// .--- Gui management
 	/** Set the return string for the 'Return to Ebon Hawk' button. */
 	void setReturnStrref(uint32 id);
@@ -226,6 +235,10 @@ private:
 	// .--- Global values
 	std::map<Common::UString, bool> _globalBooleans;
 	std::map<Common::UString, int> _globalNumbers;
+	// '---
+
+	// .--- Party
+	std::list<Creature *> _party;
 	// '---
 
 	EventQueue  _eventQueue;

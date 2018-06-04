@@ -55,6 +55,11 @@ public:
 	// Container inventory handling
 	void showContainer();
 
+	// Party handling.
+	void setPartyLeader(Creature *creature);
+	void setPartyMember1(Creature *creature);
+	void setPartyMember2(Creature *creature);
+
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
 
