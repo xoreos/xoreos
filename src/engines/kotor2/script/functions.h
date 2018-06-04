@@ -177,6 +177,8 @@ private:
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 	void isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx);
+
+	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp
