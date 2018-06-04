@@ -40,7 +40,9 @@
 #include "src/common/threads.h"
 #include "src/common/debugman.h"
 #include "src/common/configman.h"
+#ifdef ENABLE_XML
 #include "src/common/xml.h"
+#endif
 
 #include "src/aurora/resman.h"
 #include "src/aurora/2dareg.h"
@@ -285,8 +287,10 @@ static void init() {
 	// Init threading system
 	Common::initThreads();
 
+#ifdef ENABLE_XML
 	// Init libxml2
 	Common::initXML();
+#endif
 
 	// Init subsystems
 	GfxMan.init();
@@ -308,8 +312,10 @@ static void deinit() {
 	} catch (...) {
 	}
 
+#ifdef ENABLE_XML
 	// Deinit libxml2
 	Common::deinitXML();
+#endif
 
 	// Destroy global singletons
 	Graphics::Aurora::FontManager::destroy();
