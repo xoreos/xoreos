@@ -192,12 +192,23 @@ AC_ARG_ENABLE([mad], [AS_HELP_STRING([--disable-mad], [Disable building with MP3
 AC_ARG_ENABLE([faad], [AS_HELP_STRING([--disable-faad], [Disable building with AAC support @<:@default=no@:>@])], [], [enable_faad=yes])
 AC_ARG_ENABLE([xvidcore], [AS_HELP_STRING([--disable-xvidcore], [Disable building with H.263 support @<:@default=no@:>@])], [], [enable_xvidcore=yes])
 AC_ARG_ENABLE([vpx], [AS_HELP_STRING([--disable-vpx], [Disabling building with VP8/VP9 support @<:@default=no@:>@])], [], [enable_vpx=yes])
+AC_ARG_ENABLE([lzma], [AS_HELP_STRING([--disable-lzma], [Disable building with LZMA support @<:@default=no@:>@])], [], [enable_lzma=yes])
 
 dnl General purpose libraries
 AX_CHECK_ICONV( , AC_MSG_ERROR([No useable iconv() function found!]))
 AX_CHECK_ZLIB(1, 2, 3, 0, , AC_MSG_ERROR([zlib(>= 1.2.3) is required and could not be found!]))
-AX_CHECK_LZMA(5, 0, 3, 2, , AC_MSG_ERROR([liblzma(>= 5.0.3) is required and could not be found!]))
 AX_CHECK_XML2(2, 8, 0, , AC_MSG_ERROR([libxml2(>= 2.8.0) is required and could not be found!]))
+if test "x$enable_lzma" = "xyes"; then
+	AX_CHECK_LZMA(5, 0, 3, 2, , [enable_lzma=no])
+fi
+if test "x$enable_lzma" = "xyes"; then
+	AC_DEFINE([ENABLE_LZMA], 1, [Defined to 1 if we are using liblzma])
+	AM_CONDITIONAL(ENABLE_LZMA, true)
+else
+	AM_CONDITIONAL(ENABLE_LZMA, false)
+	LZMA_CFLAGS=""
+	LZMA_LIBS=""
+fi
 
 dnl Use Wincrypt instead of BCrypt in Boost.Uuid
 AC_ARG_WITH([boost-uuid-wincrypt], [AS_HELP_STRING([--with-boost-uuid-wincrypt], [Make Boost.Uuid use Wincrypt instead of BCrypt on Windows @<:@default=no@:>@])], [], [with_boost_uuid_wincrypt=no])
@@ -382,3 +393,4 @@ AC_MSG_NOTICE([ libvorbis: $enable_vorbis])
 AC_MSG_NOTICE([ libfaad: $enable_faad])
 AC_MSG_NOTICE([ xvidcore: $enable_xvidcore])
 AC_MSG_NOTICE([ libvpx: $enable_vpx])
+AC_MSG_NOTICE([ liblzma: $enable_lzma])
