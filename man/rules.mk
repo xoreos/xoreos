@@ -19,6 +19,6 @@
 
 # Man pages.
 
-dist_man1_MANS += \
+dist_man6_MANS += \
     man/xoreos.6 \
     $(EMPTY)

@@ -44,7 +44,7 @@ CLEANFILES =
 
 EXTRA_DIST     =
 dist_doc_DATA  =
-dist_man1_MANS =
+dist_man6_MANS =
 
 # Library compile flags
 
