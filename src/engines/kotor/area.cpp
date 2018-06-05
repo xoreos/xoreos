@@ -693,6 +693,15 @@ KotOR::Object *Area::getActiveObject() {
 	return _activeObject;
 }
 
+KotOR::Object *Area::getObjectByTag(const Common::UString &tag) {
+	for (ObjectList::iterator o = _objects.begin();
+			o != _objects.end(); ++o) {
+		if ((*o)->getTag().stricmp(tag) == 0)
+			return *o;
+	}
+	return 0;
+}
+
 Room *Area::getRoomAt(float x, float y) const {
 	for (RoomList::const_iterator r = _rooms.begin();
 			r != _rooms.end(); ++r) {

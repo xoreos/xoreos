@@ -35,6 +35,10 @@
 
 #include "src/engines/aurora/util.h"
 
+#include "src/engines/kotor/module.h"
+#include "src/engines/kotor/area.h"
+#include "src/engines/kotor/creature.h"
+
 #include "src/engines/kotor/gui/dialog.h"
 
 #include "src/engines/kotor/gui/widgets/label.h"
@@ -45,7 +49,7 @@ namespace Engines {
 
 namespace KotOR {
 
-DialogGUI::DialogGUI(bool k2)
+DialogGUIBase::DialogGUIBase(bool k2)
 		: _kotor2(k2),
 		  _isActive(false),
 		  _frame(new Graphics::Aurora::KotORDialogFrame()) {
@@ -95,31 +99,32 @@ DialogGUI::DialogGUI(bool k2)
 	}
 }
 
-void DialogGUI::startConversation(const Common::UString &name) {
+void DialogGUIBase::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
 	try {
-		_dlg.reset(new Aurora::DLGFile(name));
+		_dlg.reset(new Aurora::DLGFile(name, owner));
 		_dlg->startConversation();
+		_owner = owner ? owner->getTag() : "";
 		refresh();
 	} catch (Common::Exception &e) {
 		warning("Failed to start conversation %s: %s", name.c_str(), e.what());
 	}
 }
 
-bool DialogGUI::isConversationActive() const {
+bool DialogGUIBase::isConversationActive() const {
 	return _isActive;
 }
 
-void DialogGUI::show() {
+void DialogGUIBase::show() {
 	GUI::show();
 	_frame->show();
 }
 
-void DialogGUI::hide() {
+void DialogGUIBase::hide() {
 	_frame->hide();
 	GUI::hide();
 }
 
-void DialogGUI::callbackActive(Widget &widget) {
+void DialogGUIBase::callbackActive(Widget &widget) {
 	const Common::UString &tag = widget.getTag();
 	if (tag.beginsWith("LB_REPLIES_ITEM")) {
 		WidgetListBox *lbReplies = getListBox("LB_REPLIES");
@@ -131,7 +136,7 @@ void DialogGUI::callbackActive(Widget &widget) {
 	}
 }
 
-void DialogGUI::callbackKeyInput(const Events::Key &key,
+void DialogGUIBase::callbackKeyInput(const Events::Key &key,
                                  const Events::EventType &type) {
 	if (type == Events::kEventKeyDown) {
 		switch (key) {
@@ -169,7 +174,7 @@ void DialogGUI::callbackKeyInput(const Events::Key &key,
 	}
 }
 
-void DialogGUI::refresh() {
+void DialogGUIBase::refresh() {
 	const Aurora::DLGFile::Line *curEntry = _dlg->getCurrentEntry();
 	if (!curEntry)
 		return;
@@ -191,6 +196,16 @@ void DialogGUI::refresh() {
 			eraseDeveloperNotes(text);
 	} else
 		text = "";
+
+	if (curEntry->speaker.empty())
+		_curSpeaker = _owner;
+	else
+		_curSpeaker = curEntry->speaker;
+
+	if (!_curSpeaker.empty()) {
+		makeLookAtPC(_curSpeaker);
+		playTalkAnimations(_curSpeaker);
+	}
 
 	lblMessage->setText(text);
 	_replyIds.clear();
@@ -217,7 +232,7 @@ void DialogGUI::refresh() {
 	lbReplies->refreshItemWidgets();
 }
 
-void DialogGUI::playSounds() {
+void DialogGUIBase::playSounds() {
 	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
 
 	if (!entry->voice.empty())
@@ -229,7 +244,7 @@ void DialogGUI::playSounds() {
 				::Engines::playSound(entry->sound, Sound::kSoundTypeSFX)));
 }
 
-void DialogGUI::stopSounds() {
+void DialogGUIBase::stopSounds() {
 	if (_voice) {
 		SoundMan.stopChannel(*_voice.get());
 		_voice.reset();
@@ -240,9 +255,14 @@ void DialogGUI::stopSounds() {
 	}
 }
 
-void DialogGUI::pickReply(int index) {
+void DialogGUIBase::pickReply(int index) {
 	if ((int)_replyIds.size() <= index)
 		return;
+
+	if (!_curSpeaker.empty()) {
+		playDefaultAnimations(_curSpeaker);
+		_curSpeaker.clear();
+	}
 
 	_dlg->pickReply(_replyIds[index]);
 	if (_dlg->hasEnded()) {
@@ -252,7 +272,7 @@ void DialogGUI::pickReply(int index) {
 		refresh();
 }
 
-void DialogGUI::eraseDeveloperNotes(Common::UString &str) {
+void DialogGUIBase::eraseDeveloperNotes(Common::UString &str) {
 	while (true) {
 		Common::UString::iterator obit = str.findFirst('{');
 		if (obit == str.end())
@@ -264,6 +284,58 @@ void DialogGUI::eraseDeveloperNotes(Common::UString &str) {
 
 		str.erase(obit, ++cbit);
 	}
+}
+
+DialogGUI::DialogGUI(Module &module)
+		: DialogGUIBase(false),
+		  _module(module) {
+}
+
+void DialogGUI::makeLookAtPC(const Common::UString &tag) {
+	Creature *pc = _module.getPC();
+	if (!pc)
+		return;
+
+	KotOR::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	if (!o)
+		return;
+
+	float ox, oy, oz;
+	o->getPosition(ox, oy, oz);
+
+	float px, py, pz;
+	pc->getPosition(px, py, pz);
+
+	float dx = px - ox;
+	float dy = py - oy;
+
+	o->setOrientation(0.0f, 0.0f, 1.0f, Common::rad2deg(std::atan2(dy, dx)) - 90.0f);
+}
+
+void DialogGUI::playDefaultAnimations(const Common::UString &tag) {
+	KotOR::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	if (!o)
+		return;
+
+	Creature *creature = ObjectContainer::toCreature(o);
+	if (!creature)
+		return;
+
+	creature->playDefaultHeadAnimation();
+	creature->playDefaultAnimation();
+}
+
+void DialogGUI::playTalkAnimations(const Common::UString &tag) {
+	KotOR::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	if (!o)
+		return;
+
+	Creature *creature = ObjectContainer::toCreature(o);
+	if (!creature)
+		return;
+
+	creature->playAnimation("tlknorm", true, -1.0f);
+	creature->playHeadAnimation("talk", true, -1.0f, 0.25f);
 }
 
 } // End of namespace KotOR

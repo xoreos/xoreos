@@ -75,7 +75,7 @@ Module::Module(::Engines::Console &console)
 		  _currentTexturePack(-1),
 		  _exit(false),
 		  _entryLocationType(kObjectTypeAll),
-		  _dialog(new DialogGUI(true)),
+		  _dialog(new DialogGUI(*this)),
 		  _freeCamEnabled(false),
 		  _prevTimestamp(0),
 		  _frameTime(0),
@@ -413,7 +413,7 @@ void Module::leave() {
 void Module::clickObject(Object *object) {
 	Creature *creature = ObjectContainer::toCreature(object);
 	if (creature && !creature->getConversation().empty())
-		startConversation(creature->getConversation());
+		startConversation(creature->getConversation(), creature);
 }
 
 void Module::enterArea() {
@@ -712,11 +712,11 @@ void Module::toggleTriggers() {
 	_area->toggleTriggers();
 }
 
-void Module::startConversation(const Common::UString &name) {
+void Module::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
 	if (_inDialog || name.empty())
 		return;
 
-	_dialog->startConversation(name);
+	_dialog->startConversation(name, owner);
 
 	if (_dialog->isConversationActive()) {
 		_ingame->hide();
