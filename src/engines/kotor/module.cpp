@@ -79,7 +79,7 @@ Module::Module(::Engines::Console &console)
 		  _entryLocationType(kObjectTypeAll),
 		  _fade(new Graphics::Aurora::FadeQuad()),
 		  _ingame(new IngameGUI(*this)),
-		  _dialog(new DialogGUI()),
+		  _dialog(new DialogGUI(*this)),
 		  _freeCamEnabled(false),
 		  _prevTimestamp(0),
 		  _frameTime(0),
@@ -481,7 +481,7 @@ void Module::leaveArea() {
 void Module::clickObject(Object *object) {
 	Creature *creature = ObjectContainer::toCreature(object);
 	if (creature && !creature->getConversation().empty()) {
-		startConversation(creature->getConversation());
+		startConversation(creature->getConversation(), creature);
 		return;
 	}
 
@@ -843,11 +843,11 @@ void Module::loadSavedGame(SavedGame *save) {
 	}
 }
 
-void Module::startConversation(const Common::UString &name) {
+void Module::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
 	if (_inDialog || name.empty())
 		return;
 
-	_dialog->startConversation(name);
+	_dialog->startConversation(name, owner);
 
 	if (_dialog->isConversationActive()) {
 		stopCameraMovement();
@@ -872,7 +872,7 @@ void Module::playAnimationOnActiveObject(const Common::UString &baseAnim,
 		if (headAnim.empty())
 			creature->playDefaultHeadAnimation();
 		else
-			creature->playHeadAnimation(headAnim, true, -1.0f, 0.5f);
+			creature->playHeadAnimation(headAnim, true, -1.0f, 0.25f);
 	}
 }
 

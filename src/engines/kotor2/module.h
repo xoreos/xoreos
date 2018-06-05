@@ -130,7 +130,7 @@ public:
 	void toggleFreeRoamCamera();
 	void toggleWalkmesh();
 	void toggleTriggers();
-	void startConversation(const Common::UString &name);
+	void startConversation(const Common::UString &name, Aurora::NWScript::Object *owner = 0);
 
 	void playAnimationOnActiveObject(const Common::UString &baseAnim,
 	                                 const Common::UString &headAnim);

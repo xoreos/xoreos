@@ -41,11 +41,13 @@ namespace Engines {
 
 namespace KotOR {
 
-class DialogGUI : public GUI {
-public:
-	DialogGUI(bool k2 = false);
+class Module;
 
-	void startConversation(const Common::UString &name);
+class DialogGUIBase : public GUI {
+public:
+	DialogGUIBase(bool k2);
+
+	void startConversation(const Common::UString &name, Aurora::NWScript::Object *owner = 0);
 	bool isConversationActive() const;
 
 	void show();
@@ -54,6 +56,10 @@ public:
 	void callbackActive(Widget &widget);
 	void callbackKeyInput(const Events::Key &key,
 	                      const Events::EventType &type);
+protected:
+	virtual void makeLookAtPC(const Common::UString &tag) = 0;
+	virtual void playDefaultAnimations(const Common::UString &tag) = 0;
+	virtual void playTalkAnimations(const Common::UString &tag) = 0;
 private:
 	bool _kotor2;
 	bool _isActive;
@@ -62,6 +68,8 @@ private:
 	std::vector<uint32> _replyIds;
 	Common::ScopedPtr<Sound::ChannelHandle> _voice;
 	Common::ScopedPtr<Sound::ChannelHandle> _sound;
+	Common::UString _owner;
+	Common::UString _curSpeaker;
 
 	void refresh();
 	void playSounds();
@@ -72,6 +80,17 @@ private:
 	 *  curly braces. Erase those.
 	 */
 	void eraseDeveloperNotes(Common::UString &str);
+};
+
+class DialogGUI : public DialogGUIBase {
+public:
+	DialogGUI(Module &module);
+protected:
+	void makeLookAtPC(const Common::UString &tag);
+	void playDefaultAnimations(const Common::UString &tag);
+	void playTalkAnimations(const Common::UString &tag);
+private:
+	Module &_module;
 };
 
 } // End of namespace KotOR

@@ -121,6 +121,7 @@ public:
 	void getCameraStyle(float &distance, float &pitch, float &height) const;
 	const std::vector<Common::UString> &getRoomsVisibleFrom(const Common::UString &room) const;
 	KotOR2::Object *getActiveObject();
+	KotOR2::Object *getObjectByTag(const Common::UString &tag);
 
 
 protected:
