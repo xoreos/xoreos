@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_HUD_H
 #define ENGINES_KOTOR_GUI_INGAME_HUD_H
 
+#include "src/common/ustring.h"
+
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotor/module.h"
@@ -65,6 +67,7 @@ private:
 	Common::ScopedPtr<Minimap> _minimap;
 
 	void initWidget(Widget &widget);
+	void setPortrait(uint8 n, bool visible, const Common::UString &portrait = "");
 
 protected:
 	virtual void callbackActive(Widget &widget);

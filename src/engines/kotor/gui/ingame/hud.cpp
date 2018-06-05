@@ -22,6 +22,8 @@
  *  The ingame HUD.
  */
 
+#include "src/common/strutil.h"
+
 #include "src/graphics/windowman.h"
 #include "src/graphics/graphics.h"
 
@@ -149,55 +151,32 @@ void HUD::showContainer() {
 	sub(*_container, kStartCodeNone, true, false);
 }
 
-void HUD::setPartyLeader(Creature *creature) {
-	if (!creature) {
-		getLabel("LBL_BACK1")->setInvisible(true);
-		getLabel("LBL_CHAR1")->setInvisible(true);
-		getProgressbar("PB_VIT1")->setInvisible(true);
+void HUD::setPortrait(uint8 n, bool visible, const Common::UString &portrait) {
+	WidgetLabel *labelBack = getLabel(Common::UString("LBL_BACK") + Common::composeString(n));
+	if (labelBack)
+		labelBack->setInvisible(!visible);
 
-		return;
+	WidgetLabel *labelChar = getLabel(Common::UString("LBL_CHAR") + Common::composeString(n));
+	if (labelChar) {
+		labelChar->setInvisible(!visible);
+		labelChar->setFill(portrait);
 	}
 
-	getLabel("LBL_BACK1")->setInvisible(false);
+	WidgetProgressbar *vitals = getProgressbar(Common::UString("PB_VIT") + Common::composeString(n));
+	if (vitals)
+		vitals->setInvisible(!visible);
+}
 
-	getLabel("LBL_CHAR1")->setInvisible(false);
-	getLabel("LBL_CHAR1")->setFill(creature->getPortrait());
-
-	getProgressbar("PB_VIT1")->setInvisible(false);
+void HUD::setPartyLeader(Creature *creature) {
+	setPortrait(1, creature != 0, creature ? creature->getPortrait() : "");
 }
 
 void HUD::setPartyMember1(Creature *creature) {
-	if (!creature) {
-		getLabel("LBL_BACK2")->setInvisible(true);
-		getLabel("LBL_CHAR2")->setInvisible(true);
-		getProgressbar("PB_VIT2")->setInvisible(true);
-
-		return;
-	}
-
-	getLabel("LBL_BACK2")->setInvisible(false);
-
-	getLabel("LBL_CHAR2")->setInvisible(false);
-	getLabel("LBL_CHAR2")->setFill(creature->getPortrait());
-
-	getProgressbar("PB_VIT2")->setInvisible(false);
+	setPortrait(2, creature != 0, creature ? creature->getPortrait() : "");
 }
 
 void HUD::setPartyMember2(Creature *creature) {
-	if (!creature) {
-		getLabel("LBL_BACK3")->setInvisible(true);
-		getLabel("LBL_CHAR3")->setInvisible(true);
-		getProgressbar("PB_VIT3")->setInvisible(true);
-
-		return;
-	}
-
-	getLabel("LBL_BACK3")->setInvisible(false);
-
-	getLabel("LBL_CHAR3")->setInvisible(false);
-	getLabel("LBL_CHAR3")->setFill(creature->getPortrait());
-
-	getProgressbar("PB_VIT3")->setInvisible(false);
+	setPortrait(3, creature != 0, creature ? creature->getPortrait() : "");
 }
 
 void HUD::initWidget(Engines::Widget &widget) {
