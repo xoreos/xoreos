@@ -192,9 +192,9 @@ void Creature::loadAppearance() {
 
 	getPartModels(parts);
 
-	if ((parts.type == "P") || parts.body.empty()) {
+	if ((_modelType == "P") || parts.body.empty()) {
 		warning("TODO: Model \"%s\": ModelType \"%s\" (\"%s\")",
-		        _tag.c_str(), parts.type.c_str(), parts.body.c_str());
+		        _tag.c_str(), _modelType.c_str(), parts.body.c_str());
 		return;
 	}
 
@@ -207,7 +207,7 @@ void Creature::loadAppearance() {
 void Creature::getPartModels(PartModels &parts, uint32 state) {
 	const Aurora::TwoDARow &appearance = TwoDAReg.get2DA("appearance").getRow(_appearance);
 
-	parts.type = appearance.getString("modeltype");
+	_modelType = appearance.getString("modeltype");
 
 	parts.body = appearance.getString(Common::UString("model") + state);
 	if (parts.body.empty())
@@ -220,7 +220,7 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 	if (parts.bodyTexture.empty())
 		parts.bodyTexture = appearance.getString("racetex");
 
-	if ((parts.type == "B") || (parts.type == "P")) {
+	if ((_modelType == "B") || (_modelType == "P")) {
 		const int headNormalID = appearance.getInt("normalhead");
 		const int headBackupID = appearance.getInt("backuphead");
 
@@ -351,7 +351,10 @@ void Creature::setDefaultAnimations() {
 	if (!_model)
 		return;
 
-	_model->addDefaultAnimation("pause1", 100);
+	if (_modelType == "S" || _modelType == "L")
+		_model->addDefaultAnimation("cpause1", 100);
+	else
+		_model->addDefaultAnimation("pause1", 100);
 }
 
 } // End of namespace KotOR2

@@ -140,6 +140,7 @@ private:
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 	Common::UString _conversation;
+	Common::UString _modelType;
 
 
 	void init();
