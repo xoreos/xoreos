@@ -190,12 +190,9 @@ void DialogGUIBase::refresh() {
 	Common::UString text;
 	WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
 
-	if (curEntry) {
-		text = curEntry->text.getString();
-		if (_kotor2 && !ConfigMan.getBool("showdevnotes", false))
-			eraseDeveloperNotes(text);
-	} else
-		text = "";
+	text = curEntry->text.getString();
+	if (_kotor2 && !ConfigMan.getBool("showdevnotes", false))
+		eraseDeveloperNotes(text);
 
 	if (curEntry->speaker.empty())
 		_curSpeaker = _owner;
