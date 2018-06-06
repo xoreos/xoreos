@@ -344,6 +344,18 @@ AM_CONDITIONAL([HAVE_PTHREAD], [test x"$ax_pthread_ok" = xyes])
 AC_DEFUN([AX_ADD_ENGINE], [
 AC_ARG_ENABLE([$1], [AS_HELP_STRING([--disable-$1], [Disable building with support for $3 @<:@default=no@:>@])], [], [enable_$1=yes])
 if test "x$enable_$1" = "xyes"; then
+	missing_$1=""
+	for i in $4; do
+		if test "x$(eval printf '%s' "\${enable_${i}}")" != "xyes"; then
+			enable_$1=no
+			missing_$1="$missing_$1 $i"
+		fi
+	done
+	if test "x$enable_$1" != "xyes"; then
+		AC_MSG_NOTICE([Disabling $3 as the following dependencies are missing: $missing_$1])
+	fi
+fi
+if test "x$enable_$1" = "xyes"; then
 	AC_DEFINE([ENABLE_$2], 1, [Defined to 1 if we are building with support for $3])
 	AM_CONDITIONAL(ENABLE_$2, true)
 	ENGINE_SUMMARY="$ENGINE_SUMMARY
@@ -358,7 +370,7 @@ fi
 AX_ADD_ENGINE([nwn], [NWN], [Neverwinter Nights], [])
 AX_ADD_ENGINE([nwn2], [NWN2], [Neverwinter Nights 2], [])
 AX_ADD_ENGINE([kotor], [KOTOR], [Star Wars: Knights of the Old Republic], [lzma])
-AX_ADD_ENGINE([kotor2], [KOTOR2], [Star Wars: Knights of the Old Republic II: The Sith Lords], [])
+AX_ADD_ENGINE([kotor2], [KOTOR2], [Star Wars: Knights of the Old Republic II: The Sith Lords], [kotor])
 AX_ADD_ENGINE([jade], [JADE], [Jade Empire], [])
 AX_ADD_ENGINE([witcher], [WITCHER], [The Witcher], [])
 AX_ADD_ENGINE([sonic], [SONIC], [Sonic Chronicles: The Dark Brotherhood], [])
