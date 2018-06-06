@@ -15,59 +15,55 @@ env:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "oYIV1EmOvP2ruIxyCTPuGuqUsUzTxxu3P+IdlQZgV6aXaBxtFCuoQaLVMOlnx8xSI2V4mb5I/wK5fAtgUAomzDHQmaBNSbJc3xBTy2xgckup60ehKtFqf+ifm+AYcLQQgLtMUDmLNNcJIKUGPZ8GYwjNfWKt3VGuLHV+UFiRuQI="
-    - coverity_scan_run_condition='\( "$CC" = gcc \) -a \( $USECMAKE -eq 0 \) -a \( "$TRAVIS_OS_NAME" = linux \)'
+    - coverity_scan_run_condition='\( "$CC" = "gcc" \) -a \( $USECMAKE -eq 0 \) -a \( "$TRAVIS_OS_NAME" = "linux" \)'
     - coverity_scan_script_test_mode=false
+    # Various conditions where the Travis CI scripts should behave differently
+    - is_coverity_branch='\( "$TRAVIS_BRANCH" = "coverity_scan" \)'
+    - is_valid_config='\( ! '"$is_coverity_branch"' \) -o \( '"$coverity_scan_run_condition"' \)'
+    - is_valid_osx='\( "$TRAVIS_OS_NAME" = "osx" \) -a \( '"$is_valid_config"' \)'
+    - is_valid_linux='\( "$TRAVIS_OS_NAME" = "linux" \) -a \( '"$is_valid_config"' \)'
+    - is_notcoverity_autot='\( ! '"$is_coverity_branch"' \) -a \( $USECMAKE -eq 0 \)'
+    - is_notcoverity_cmake='\( ! '"$is_coverity_branch"' \) -a \( $USECMAKE -eq 1 \)'
   matrix:
     # Let's test both our autoconf and CMake build systems
     - USECMAKE=0
     - USECMAKE=1
 
-# Only test gcc with autotools, not CMake.
-# We now have three builds: autoconf+gcc, autoconf+clang, CMake+clang
-# Note: In the other xoreos repositories, we use gcc for the CMake test.
-#       However, for the main xoreos repository, it fails to link in
-#       the Travis CI Trusty worker, for some reason. It does work on
-#       other systems, so it might be an intermittent gcc bug?
 matrix:
   exclude:
+    # On Linux, we only need to test one compiler with both autools and CMake.
+    # This gives us three builds on Linux: autotools+gcc, autotools+clang, CMake+clang
+    # Note: In the other xoreos repositories, we use gcc for the CMake test.
+    #       However, for the main xoreos repository, it fails to link in
+    #       the Travis CI Trusty worker, for some reason. It does work on
+    #       other systems, so it might be an intermittent gcc bug?
     - compiler: gcc
+      os: linux
       env: USECMAKE=1
-    # Exclude gcc build for osx
+    # On macOS, gcc is deprecated, so we only build with clang there.
+    # This gives us two builds on macOS: autotools+clang, CMake+clang
     - compiler: gcc
       os: osx
 
-# If building on osx, use brew to install dependencies
 before_install:
-  - if [ $TRAVIS_OS_NAME = osx ]; then brew install sdl2 openal-soft freetype mad faad2 libvorbis xvid zlib xz libxml2; fi
+  # Installing macOS dependencies, using brew
+  - if eval [ $is_valid_osx ]; then brew install sdl2 openal-soft freetype mad faad2 libvorbis xvid zlib xz libxml2; fi
+  # Installing Linux dependencies, using apt-get
+  - if eval [ $is_valid_linux ]; then sudo apt-get update -qq; fi
+  - if eval [ $is_valid_linux ]; then sudo apt-get install -qq libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libegl1-mesa-dev libgles2-mesa-dev libgl1-mesa-dev zlib1g-dev liblzma-dev libxml2-dev; fi
 
 script:
-  # Configure, autotools
-  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 0 \) ]; then ./autogen.sh; fi
-  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 0 \) ]; then ./configure || cat config.log; fi
-  # Configure, CMake
-  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 1 \) ]; then cmake .; fi
-  # Compile
-  - if [ "$COVERITY_SCAN_BRANCH" != 1 ]; then make -j4; fi
-  # Unit tests, autotools
-  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 0 \) ]; then echo "" > test-suite.log; make -j4 check || cat test-suite.log; fi
-  # Unit tests, CMake
-  - if [ \( "$COVERITY_SCAN_BRANCH" != 1 \) -a \( $USECMAKE -eq 1 \) ]; then make -j4 check; fi
+  # autotools build system: ./autogen.sh && ./configure && make && make check
+  - if eval [ $is_notcoverity_autot ]; then ./autogen.sh; fi
+  - if eval [ $is_notcoverity_autot ]; then ./configure || cat config.log; fi
+  - if eval [ $is_notcoverity_autot ]; then make -j4; fi
+  - if eval [ $is_notcoverity_autot ]; then echo "" > test-suite.log; make -j4 check || cat test-suite.log; fi
+  # CMake build system: cmake . && make && make check
+  - if eval [ $is_notcoverity_cmake ]; then cmake .; fi
+  - if eval [ $is_notcoverity_cmake ]; then make -j4; fi
+  - if eval [ $is_notcoverity_cmake ]; then make -j4 check; fi
 
 addons:
-  apt:
-    packages:
-      - libboost-all-dev
-      - libsdl2-dev
-      - libopenal-dev
-      - libfreetype6-dev
-      - libmad0-dev
-      - libfaad-dev
-      - libvorbis-dev
-      - libxvidcore-dev
-      - libgl1-mesa-dev
-      - zlib1g-dev
-      - liblzma-dev
-      - libxml2-dev
   coverity_scan:
     build_script_url: https://raw.githubusercontent.com/$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/.travis_coverity.sh
     project:
