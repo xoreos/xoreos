@@ -22,6 +22,8 @@
  *  The ingame menu.
  */
 
+#include "src/graphics/graphics.h"
+
 #include "src/engines/kotor/gui/widgets/button.h"
 
 #include "src/engines/kotor/gui/ingame/menu.h"
@@ -252,8 +254,10 @@ void Menu::callbackRun() {
 		uint8 selectedItem = _menuOpt->pollSelectedItem();
 		switch (selectedItem) {
 			case kOptionsItemLoadGame:
-				if (sub(*_menuLoad) == 2)
+				if (sub(*_menuLoad) == 2) {
+					GfxMan.unlockFrame();
 					_returnCode = 2;
+				}
 				break;
 			case kOptionsItemSaveGame:
 				if (sub(*_menuSave) == 2)
