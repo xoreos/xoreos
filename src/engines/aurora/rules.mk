@@ -34,8 +34,6 @@ src_engines_aurora_libaurora_la_SOURCES += \
     src/engines/aurora/loadprogress.h \
     src/engines/aurora/freeroamcamera.h \
     src/engines/aurora/satellitecamera.h \
-    src/engines/aurora/walkmesh.h \
-    src/engines/aurora/walkeleveval.h \
     src/engines/aurora/trigger.h \
     $(EMPTY)
 
@@ -51,7 +49,5 @@ src_engines_aurora_libaurora_la_SOURCES += \
     src/engines/aurora/loadprogress.cpp \
     src/engines/aurora/freeroamcamera.cpp \
     src/engines/aurora/satellitecamera.cpp \
-    src/engines/aurora/walkmesh.cpp \
-    src/engines/aurora/walkeleveval.cpp \
     src/engines/aurora/trigger.cpp \
     $(EMPTY)

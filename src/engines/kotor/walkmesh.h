@@ -19,53 +19,45 @@
  */
 
 /** @file
- *  KotOR walkmesh (.wok) file loader. Ported from Supermanu's pathfinding
- *  branch.
+ *  KotOR walkmesh (BWM).
  */
 
 #ifndef ENGINES_KOTOR_WALKMESH_H
 #define ENGINES_KOTOR_WALKMESH_H
 
-#include <vector>
+#include "glm/mat4x4.hpp"
 
 #include "src/common/readstream.h"
 #include "src/common/types.h"
 
-#include "src/engines/aurora/walkmesh.h"
+#include "src/aurora/types.h"
 
-#include "src/graphics/renderable.h"
+#include "src/graphics/aurora/walkmesh.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Walkmesh : public Engines::Walkmesh, public Graphics::Renderable {
+class Walkmesh : public Graphics::Aurora::Walkmesh {
 public:
-	Walkmesh();
-	void load(const Common::UString &resRef);
-	float getElevationAt(float x, float y, uint32 &faceIndex) const;
-
-	/** Highlight face with specified index.
-	 *
-	 *  @param index Index of the face to highlight or -1 to disable
-	 *               highlighting
-	 */
-	void highlightFace(uint32 index);
-
-	void setInvisible(bool invisible);
-
-	// .--- Renderable
-	void calculateDistance();
-	void render(Graphics::RenderPass pass);
-	// '---
+	void load(const Common::UString &resRef,
+	          ::Aurora::FileType type = ::Aurora::kFileTypeWOK,
+	          const glm::mat4 &transform = glm::mat4());
 private:
-	int _highlightFaceIndex;
-	bool _invisible;
+	void appendFromStream(Common::SeekableReadStream &stream, const glm::mat4 &transform);
 
-	void appendFromStream(Common::SeekableReadStream &stream);
-	void appendFaceTypes(Common::SeekableReadStream &stream, uint32 faceCount, uint32 faceTypeOffset);
-	void appendIndices(Common::SeekableReadStream &stream, uint32 faceCount, uint32 faceOffset);
-	void appendVertices(Common::SeekableReadStream &stream, uint32 vertexCount, uint32 vertexOffset);
+	void appendFaceTypes(Common::SeekableReadStream &stream,
+	                     uint32 faceCount,
+	                     uint32 faceTypeOffset);
+
+	void appendIndices(Common::SeekableReadStream &stream,
+	                   uint32 faceCount,
+	                   uint32 faceOffset);
+
+	void appendVertices(Common::SeekableReadStream &stream,
+	                    uint32 vertexCount,
+	                    uint32 vertexOffset,
+	                    const glm::mat4 &transform);
 };
 
 } // End of namespace KotOR

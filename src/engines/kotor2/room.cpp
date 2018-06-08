@@ -53,6 +53,7 @@ void Room::load(const Common::UString &resRef, float x, float y, float z) {
 		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
 
 	_model->setPosition(x, y, z);
+
 	_walkmesh.load(resRef);
 }
 

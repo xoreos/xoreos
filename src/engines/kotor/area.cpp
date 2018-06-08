@@ -113,6 +113,7 @@ void Area::clear() {
 	_objects.clear();
 	_rooms.clear();
 	_triggers.clear();
+	_situatedObjects.clear();
 	_activeTrigger = 0;
 }
 
@@ -415,6 +416,7 @@ void Area::loadPlaceables(const Aurora::GFF3List &list) {
 		Placeable *placeable = new Placeable(**p);
 
 		loadObject(*placeable);
+		_situatedObjects.push_back(placeable);
 	}
 }
 
@@ -423,6 +425,7 @@ void Area::loadDoors(const Aurora::GFF3List &list) {
 		Door *door = new Door(*_module, **d);
 
 		loadObject(*door);
+		_situatedObjects.push_back(door);
 	}
 }
 
@@ -566,12 +569,26 @@ float Area::evaluateElevation(float x, float y) {
 	return result;
 }
 
+bool Area::testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const {
+	for (std::list<Situated *>::const_iterator s = _situatedObjects.begin();
+			s != _situatedObjects.end(); ++s) {
+		if ((*s)->testCollision(orig, dest))
+			return true;
+	}
+	return false;
+}
+
 void Area::toggleWalkmesh() {
 	_walkmeshInvisible = !_walkmeshInvisible;
 
 	for (RoomList::iterator r = _rooms.begin();
 			r != _rooms.end(); ++r) {
 		(*r)->setWalkmeshInvisible(_walkmeshInvisible);
+	}
+
+	for (std::list<Situated *>::iterator s = _situatedObjects.begin();
+			s != _situatedObjects.end(); ++s) {
+		(*s)->setWalkmeshInvisible(_walkmeshInvisible);
 	}
 }
 

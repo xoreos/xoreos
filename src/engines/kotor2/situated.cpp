@@ -52,11 +52,13 @@ Situated::~Situated() {
 void Situated::show() {
 	if (_model)
 		_model->show();
+	_walkmesh.show();
 }
 
 void Situated::hide() {
 	if (_model)
 		_model->hide();
+	_walkmesh.hide();
 }
 
 bool Situated::isVisible() const {
@@ -77,6 +79,19 @@ void Situated::setOrientation(float x, float y, float z, float angle) {
 
 	if (_model)
 		_model->setOrientation(x, y, z, angle);
+}
+
+bool Situated::testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const {
+	return _walkmesh.testCollision(orig, dest);
+}
+
+void Situated::setWalkmeshInvisible(bool invisible) {
+	_walkmesh.setInvisible(invisible);
+}
+
+void Situated::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
+	if (_model)
+		_model->playAnimation(anim, restart, length, speed);
 }
 
 bool Situated::isLocked() const {

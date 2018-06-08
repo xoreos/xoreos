@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_SITUATED_H
 #define ENGINES_KOTOR_SITUATED_H
 
+#include "glm/vec3.hpp"
+
 #include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
@@ -32,6 +34,7 @@
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/kotor/object.h"
+#include "src/engines/kotor/walkmesh.h"
 
 namespace Engines {
 
@@ -69,6 +72,16 @@ public:
 	/** Set the situated object's orientation. */
 	void setOrientation(float x, float y, float z, float angle);
 
+	// Walkmesh
+
+	virtual bool testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const;
+	void setWalkmeshInvisible(bool invisible);
+
+	void playAnimation(const Common::UString &anim,
+	                   bool restart = true,
+	                   float length = 0.0f,
+	                   float speed = 1.0f);
+
 protected:
 	Common::UString _modelName; ///< The model's resource name.
 
@@ -88,6 +101,8 @@ protected:
 	Object *_lastUsedBy;   ///< The object that last used this situated object.
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The situated object's model.
+
+	Walkmesh _walkmesh;
 
 
 	Situated(ObjectType type);

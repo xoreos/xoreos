@@ -58,7 +58,7 @@ public:
 private:
 	Common::UString _resRef;
 	Common::ScopedPtr<Graphics::Aurora::Model> _model;
-	KotOR::Walkmesh _walkmesh;
+	Engines::KotOR::Walkmesh _walkmesh;
 
 	void load(const Common::UString &resRef, float x, float y, float z);
 };

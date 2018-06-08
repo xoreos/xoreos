@@ -51,6 +51,7 @@ namespace KotOR2 {
 
 class Module;
 class Room;
+class Situated;
 
 /** An area in Star Wars: Knights of the Old Republic II - The Sith Lords,
  *  holding all objects and rooms within, as well as general area properties
@@ -106,6 +107,7 @@ public:
 
 	// Walkmesh
 	float evaluateElevation(float x, float y);
+	bool testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const;
 	void toggleWalkmesh();
 
 	// .--- Triggers
@@ -195,6 +197,7 @@ private:
 
 	CameraStyle _cameraStyle;
 	bool _walkmeshInvisible;
+	std::list<Situated *> _situatedObjects;
 
 
 	// Loading helpers

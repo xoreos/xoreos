@@ -626,7 +626,9 @@ void Module::handlePCMovement() {
 		if (haveMovement) {
 			z = _area->evaluateElevation(newX, newY);
 			if (z != FLT_MIN) {
-				movePC(newX, newY, z);
+				if (!_area->testCollision(glm::vec3(x, y, z + 0.1f),
+				                          glm::vec3(newX, newY, z + 0.1f)))
+					movePC(newX, newY, z);
 			}
 		}
 	}
@@ -865,10 +867,10 @@ void Module::playAnimationOnActiveObject(const Common::UString &baseAnim,
 	if (!o)
 		return;
 
+	o->playAnimation(baseAnim, true, -1.0f);
+
 	Creature *creature = ObjectContainer::toCreature(o);
 	if (creature) {
-		creature->playAnimation(baseAnim, true, -1.0f);
-
 		if (headAnim.empty())
 			creature->playDefaultHeadAnimation();
 		else
