@@ -109,6 +109,8 @@ ModelNode::ModelNode(Model &model)
 	_orientationBuffer[3] = 0.0f;
 
 	_mesh = 0; // Should also be added to MeshMan, so this class won't "own" it.
+
+	_alpha = 1.0f;
 }
 
 ModelNode::~ModelNode() {
@@ -317,17 +319,18 @@ void ModelNode::setMaterial(Shader::ShaderMaterial *material) {
 
 float ModelNode::getAlpha() {
 	if (!_mesh) {
-		return 1.0f;
+		return _alpha;
+	} else {
+		return _mesh->alpha;
 	}
-	return _mesh->alpha;
 }
 
 void ModelNode::setAlpha(float alpha, bool isRecursive) {
 	if (!_mesh) {
-		return;
+		_alpha = alpha;
+	} else {
+		_mesh->alpha = alpha;
 	}
-
-	_mesh->alpha = alpha;
 
 	if (isRecursive) {
 		for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
@@ -651,16 +654,6 @@ void ModelNode::render(RenderPass pass, const glm::mat4 &parentTransform) {
 	 * Ignoring _render for now because it's being falsely set to false.
 	 */
 	/* if (_render) {} */
-
-	float alpah = 1.0f;
-	if (_name == "window") {
-		alpah = 0.7f;
-	}
-
-	if (_mesh) {
-		alpah = _mesh->alpha;
-	}
-
 	if (_dirtyRender) {
 		/**
 		 * Do this regardless of if the modelnode is actually visible or not, to prevent
@@ -672,12 +665,12 @@ void ModelNode::render(RenderPass pass, const glm::mat4 &parentTransform) {
 		if (_renderableArray.size() == 0) {
 			if (_rootStateNode) {
 				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform, alpah);
+					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
 				}
 			}
 		} else {
 			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				_renderableArray[i].renderImmediate(_renderTransform, alpah);
+				_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
 			}
 		}
 	}
@@ -713,17 +706,6 @@ void ModelNode::queueRender(const glm::mat4 &parentTransform) {
 	 */
 	/* if (_render) {} */
 
-	float alpha = 1.0f;
-#if 0
-	if (_name == "window") {
-		alpha = 0.7f;
-	}
-#endif
-
-	if (_mesh) {
-		alpha = _mesh->alpha;
-	}
-
 	if (_dirtyRender) {
 		/**
 		 * Do this regardless of if the modelnode is actually visible or not, to prevent
@@ -739,12 +721,12 @@ void ModelNode::queueRender(const glm::mat4 &parentTransform) {
 		if (_renderableArray.size() == 0) {
 			if (_rootStateNode) {
 				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, alpha);
+					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, this->getAlpha());
 				}
 			}
 		} else {
 			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, alpha);
+				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, this->getAlpha());
 			}
 		}
 	}

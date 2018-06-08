@@ -83,13 +83,17 @@ public:
 		uint32 curTime = EventMan.getTimestamp();
 
 		uint32 diffRotate = curTime - _timeRotate;
-		glm::mat4 bob = _absolutePosition;
-		bob *= glm::rotate(glm::mat4(), diffRotate / _rotateSpeed, glm::vec3(0.0f, 0.0f, -1.0f));
-		bob *= glm::scale(glm::mat4(), glm::vec3(_curZoom * 10.0f, _curZoom * 10.0f, 1.0f));
+		glm::mat4 transform = glm::mat4();
+		transform = glm::rotate(transform, Common::deg2rad(diffRotate / _rotateSpeed), glm::vec3(0.0f, 0.0f, -1.0f));
+		transform = glm::scale(transform, glm::vec3(_curZoom * 10.0f, _curZoom * 10.0f, 1.0f));
 
-		bob *= glm::translate(glm::mat4(), glm::vec3(_position[0], _position[1], _position[2]));
-		bob *= glm::rotate(glm::mat4(), _orientation[3], glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
-		bob *= glm::scale(glm::mat4(), glm::vec3(_scale[0], _scale[1], _scale[2]));
+		transform = glm::translate(transform, glm::vec3(_position[0], _position[1], _position[2]));
+		if (_orientation[0] != 0.0f ||
+		    _orientation[1] != 0.0f ||
+		    _orientation[2] != 0.0f) {
+			transform = glm::rotate(transform, _orientation[3], glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
+		}
+		transform = glm::scale(transform, glm::vec3(_scale[0], _scale[1], _scale[2]));
 		_curZoom += ((curTime - _lastTime) / 3000.0f) * _curZoom;
 
 		if (_curFade >= 1.0f)
@@ -107,13 +111,12 @@ public:
 		}
 
 		Graphics::Aurora::Model_NWN::render(pass);
-		_absolutePosition = bob;
+		_absolutePosition = transform;
 
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 		_lastTime = curTime;
 	}
-
 };
 
 
