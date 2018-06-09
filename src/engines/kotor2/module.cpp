@@ -352,8 +352,7 @@ void Module::enter() {
 
 	enterArea();
 
-	if (!_freeCamEnabled)
-		_area->notifyPCMoved();
+	_area->notifyPCMoved();
 
 	GfxMan.resumeAnimations();
 
