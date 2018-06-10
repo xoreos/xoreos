@@ -146,6 +146,7 @@ Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, ModelType typ
 	Model(type) {
 
 	_fileName = name;
+	_positionRelative = true;
 
 	ParserContext ctx(name, texture, kotor2);
 
@@ -536,13 +537,14 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 
 void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
 		uint16 dataIndex, std::vector<float> &data) {
+	bool bezier = columnCount & 16;
 	switch (columnCount) {
 		case 3:
 		case 19:
 			for (int r = 0; r < rowCount; r++) {
 				PositionKeyFrame p;
 				p.time = data[timeIndex + r];
-				int index = dataIndex + 3 * r;
+				int index = dataIndex + (bezier ? 9 : 3) * r;
 				p.x = data[index + 0];
 				p.y = data[index + 1];
 				p.z = data[index + 2];
