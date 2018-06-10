@@ -74,7 +74,10 @@ public:
 
 	// .--- Underlying items management
 
-	void addItem(const Common::UString &text);
+	void addItem(const Common::UString &text,
+	             const Common::UString &icon = "",
+	             int count = 1);
+
 	void removeAllItems();
 
 	// '---
@@ -90,9 +93,15 @@ public:
 	int getSelectedIndex() const;
 
 private:
+	struct Item {
+		Common::UString text;
+		Common::UString icon;
+		int count;
+	};
+
 	const Aurora::GFF3Struct *_protoItem;
 	const Aurora::GFF3Struct *_scrollBar;
-	std::vector<Common::UString> _items;
+	std::vector<Item> _items;
 	WidgetScrollbar *_scrollBarWidget;
 	std::vector<KotORWidget *> _itemWidgets;
 	int _padding;

@@ -491,7 +491,7 @@ void Module::clickObject(Object *object) {
 			stopCameraMovement();
 			stopPCMovement();
 
-			_ingame->showContainer();
+			_ingame->showContainer(placeable->getInventory());
 			placeable->close(_pc.get());
 			_prevTimestamp = EventMan.getTimestamp();
 		}

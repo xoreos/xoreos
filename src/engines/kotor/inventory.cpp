@@ -19,36 +19,49 @@
  */
 
 /** @file
- *  The ingame container inventory menu.
+ *  Collection of items.
  */
 
-#ifndef ENGINES_KOTOR_GUI_INGAME_CONTAINER_H
-#define ENGINES_KOTOR_GUI_INGAME_CONTAINER_H
-
-#include "src/engines/aurora/console.h"
-
-#include "src/engines/kotor/module.h"
 #include "src/engines/kotor/inventory.h"
-
-#include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class ContainerMenu : public GUI {
-public:
-	ContainerMenu(Engines::Console *console = 0);
-	void fillFromInventory(const Inventory &inv);
+void Inventory::addItem(const Common::UString &tag, int count) {
+	assert(count > 0);
 
-protected:
-	void callbackActive(Widget &widget);
-	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
-};
+	ItemMap::iterator i = _items.find(tag);
+	if (i == _items.end()) {
+		InventoryItem item;
+		item.tag = tag;
+		item.count = count;
+		_items.insert(std::pair<Common::UString, InventoryItem>(tag, item));
+	} else
+		i->second.count += count;
+}
+
+void Inventory::removeItem(const Common::UString &tag, int count) {
+	assert(count > 0);
+
+	ItemMap::iterator i = _items.find(tag);
+	if (i == _items.end())
+		return;
+
+	if (i->second.count > count)
+		i->second.count -= count;
+	else
+		_items.erase(i);
+}
+
+const std::map<Common::UString, InventoryItem> &Inventory::getItems() const {
+	return _items;
+}
+
+bool Inventory::hasItem(const Common::UString &tag) const {
+	return _items.find(tag) != _items.end();
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-
-#endif // ENGINES_KOTOR_GUI_INGAME_CONTAINER_H

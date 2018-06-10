@@ -43,6 +43,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/walkmesh.h \
     src/engines/kotor/savedgame.h \
     src/engines/kotor/trigger.h \
+    src/engines/kotor/inventory.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
@@ -65,6 +66,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/walkmesh.cpp \
     src/engines/kotor/savedgame.cpp \
     src/engines/kotor/trigger.cpp \
+    src/engines/kotor/inventory.cpp \
     $(EMPTY)
 
 include src/engines/kotor/script/rules.mk

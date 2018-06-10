@@ -35,11 +35,15 @@ class Item : public Object {
 public:
 	Item(const Common::UString &item);
 
+	const Common::UString &getName() const;
+	const Common::UString getIcon() const;
+
 private:
 	int _baseItem;
 	Common::UString _itemClass;
 
 	int _modelVariation;
+	int _textureVariation;
 
 	void load(const Aurora::GFF3Struct &gff);
 };

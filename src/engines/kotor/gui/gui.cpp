@@ -88,6 +88,10 @@ void GUI::convertToGUI(float &x, float &y, const float widgetHeight) const {
 	y = widgetHeight + (-1.0f * (y - (_guiHeight / 2.0f)));
 }
 
+Common::UString GUI::getName() const {
+	return _name;
+}
+
 void GUI::mouseDown() {
 	CursorMan.setState("down");
 }

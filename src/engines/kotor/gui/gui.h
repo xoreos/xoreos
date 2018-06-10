@@ -75,6 +75,8 @@ public:
 	 */
 	void convertToGUI(float &x, float &y, const float widgetHeight) const;
 
+	Common::UString getName() const;
+
 protected:
 	enum WidgetType {
 		kWidgetTypeInvalid     = - 1,
