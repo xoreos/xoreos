@@ -55,10 +55,18 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model::Model(ModelType type) : Renderable((RenderableType) type),
-	_type(type), _superModel(0), _currentState(0),
-	_currentAnimation(0), _nextAnimation(0), _skinned(false), _drawBound(false),
-	_drawSkeleton(false), _drawSkeletonInvisible(false) {
+Model::Model(ModelType type)
+		: Renderable((RenderableType) type),
+		  _type(type),
+		  _superModel(0),
+		  _currentState(0),
+		  _currentAnimation(0),
+		  _nextAnimation(0),
+		  _skinned(false),
+		  _positionRelative(false),
+		  _drawBound(false),
+		  _drawSkeleton(false),
+		  _drawSkeletonInvisible(false) {
 
 	_scale   [0] = 1.0f; _scale   [1] = 1.0f; _scale   [2] = 1.0f;
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;

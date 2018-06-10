@@ -265,6 +265,7 @@ protected:
 	Common::BoundingBox _absoluteBoundBox;
 
 	bool _skinned;
+	bool _positionRelative;
 
 
 	// Rendering
