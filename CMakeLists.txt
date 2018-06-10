@@ -405,6 +405,37 @@ parse_automake(toluapp/rules.mk)
 list(APPEND XOREOS_LIBRARIES toluapp)
 
 
+function(add_engine ENGINE_NAME ENGINE_FULLNAME ENGINE_DEPS)
+  option(ENABLE_${ENGINE_NAME} "Enable building with support for ${ENGINE_FULLNAME}" ON)
+  if(ENABLE_${ENGINE_NAME} AND ENGINE_DEPS)
+    set(MISSING_DEPS "")
+    foreach(ENGINE_DEP ${ENGINE_DEPS})
+      if(NOT ENABLE_${ENGINE_DEP})
+        set(ENABLE_${ENGINE_NAME} OFF)
+        set(ENABLE_${ENGINE_NAME} OFF PARENT_SCOPE)
+        set(MISSING_DEPS "${MISSING_DEPS} ${ENGINE_DEP}")
+      endif()
+    endforeach(ENGINE_DEP)
+    if(NOT ENABLE_${ENGINE_NAME})
+      message(STATUS "Disabling ${ENGINE_FULLNAME} as the following dependencies are missing: ${MISSING_DEPS}")
+    endif()
+  endif()
+  if(ENABLE_${ENGINE_NAME})
+    add_definitions(-DENABLE_${ENGINE_NAME})
+  endif()
+endfunction()
+
+add_engine(NWN "Neverwinter Nights" "")
+add_engine(NWN2 "Neverwinter Nights 2" "")
+add_engine(KOTOR "Star Wars: Knights of the Old Republic" "LZMA")
+add_engine(KOTOR2 "Star Wars: Knights of the Old Republic II: The Sith Lords" "KOTOR")
+add_engine(JADE "Jade Empire" "")
+add_engine(WITCHER "The Witcher" "")
+add_engine(SONIC "Sonic Chronicles: The Dark Brotherhood" "")
+add_engine(DRAGONAGE "Dragon Age: Origins" "XML")
+add_engine(DRAGONAGE2 "Dragon Age II" "XML")
+
+
 # -------------------------------------------------------------------------
 # custom unit testing target, because CMake's make test is pretty useless
 add_custom_target(check ${CMAKE_COMMAND} -E echo CWD=${CMAKE_BINARY_DIR}
@@ -558,6 +589,17 @@ if(XOREOS_BUILD_DOCUMENTATION)
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   )
 endif()
+
+message(STATUS "Enabled engines:")
+message(STATUS " Neverwinter Nights: ${ENABLE_NWN}")
+message(STATUS " Neverwinter Nights 2: ${ENABLE_NWN2}")
+message(STATUS " Star Wars: Knights of the Old Republic: ${ENABLE_KOTOR}")
+message(STATUS " Star Wars: Knights of the Old Republic II: The Sith Lords: ${ENABLE_KOTOR2}")
+message(STATUS " Jade Empire: ${ENABLE_JADE}")
+message(STATUS " The Witcher: ${ENABLE_WITCHER}")
+message(STATUS " Sonic Chronicles: The Dark Brotherhood: ${ENABLE_SONIC}")
+message(STATUS " Dragon Age: Origins: ${ENABLE_DRAGONAGE}")
+message(STATUS " Dragon Age II: ${ENABLE_DRAGONAGE2}")
 
 message(STATUS "Enabled libraries:")
 message(STATUS " libmad: ${ENABLE_MAD}")
