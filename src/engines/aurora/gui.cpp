@@ -220,6 +220,10 @@ uint32 GUI::processEventQueue() {
 	return _returnCode;
 }
 
+Common::UString GUI::getName() const {
+	return "";
+}
+
 void GUI::callbackRun() {
 	_startCode = kStartCodeNone;
 }

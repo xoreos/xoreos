@@ -22,7 +22,12 @@
  *  The ingame container inventory menu.
  */
 
+#include "src/engines/kotor/item.h"
+
 #include "src/engines/kotor/gui/widgets/panel.h"
+#include "src/engines/kotor/gui/widgets/scrollbar.h"
+#include "src/engines/kotor/gui/widgets/listbox.h"
+
 #include "src/engines/kotor/gui/ingame/container.h"
 
 namespace Engines {
@@ -34,6 +39,33 @@ ContainerMenu::ContainerMenu(Console *console) : GUI(console) {
 
 	WidgetPanel *guiPanel = getPanel("TGuiPanel");
 	guiPanel->setPosition(-guiPanel->getWidth()/2, -guiPanel->getHeight()/2, 0);
+
+	WidgetListBox *lbItems = getListBox("LB_ITEMS");
+	lbItems->setItemSelectionEnabled(true);
+	lbItems->setHideScrollBar(true);
+
+	WidgetScrollbar *scrollBar = lbItems->createScrollBar();
+	addWidget(scrollBar);
+
+	const std::vector<KotORWidget *> &itemWidgets = lbItems->createItemWidgets(3);
+	for (std::vector<KotORWidget *>::const_iterator w = itemWidgets.begin();
+			w != itemWidgets.end(); ++w) {
+		addWidget(*w);
+	}
+}
+
+void ContainerMenu::fillFromInventory(const Inventory &inv) {
+	WidgetListBox *lbItems = getListBox("LB_ITEMS");
+	lbItems->removeAllItems();
+
+	const std::map<Common::UString, InventoryItem> &invItems = inv.getItems();
+	for (std::map<Common::UString, InventoryItem>::const_iterator i = invItems.begin();
+			i != invItems.end(); ++i) {
+		Item item(i->second.tag);
+		lbItems->addItem(item.getName(), item.getIcon(), i->second.count);
+	}
+
+	lbItems->refreshItemWidgets();
 }
 
 void ContainerMenu::callbackActive(Widget &widget) {
@@ -42,6 +74,22 @@ void ContainerMenu::callbackActive(Widget &widget) {
 		return;
 	}
 }
+
+void ContainerMenu::callbackKeyInput(const Events::Key &key, const Events::EventType &type) {
+	if (type == Events::kEventKeyDown) {
+		switch (key) {
+			case Events::kKeyUp:
+				getListBox("LB_ITEMS")->selectPreviousItem();
+				break;
+			case Events::kKeyDown:
+				getListBox("LB_ITEMS")->selectNextItem();
+				break;
+			default:
+				break;
+		}
+	}
+}
+
 
 } // End of namespace KotOR
 

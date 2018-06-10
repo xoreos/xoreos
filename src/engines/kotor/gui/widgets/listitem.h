@@ -19,36 +19,29 @@
  */
 
 /** @file
- *  The ingame container inventory menu.
+ *  Inventory item widget.
  */
 
-#ifndef ENGINES_KOTOR_GUI_INGAME_CONTAINER_H
-#define ENGINES_KOTOR_GUI_INGAME_CONTAINER_H
+#ifndef ENGINES_KOTOR_GUI_WIDGETS_LISTITEM_H
+#define ENGINES_KOTOR_GUI_WIDGETS_LISTITEM_H
 
-#include "src/engines/aurora/console.h"
+#include "src/engines/aurora/gui.h"
 
-#include "src/engines/kotor/module.h"
-#include "src/engines/kotor/inventory.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class ContainerMenu : public GUI {
+class WidgetListItem : public KotORWidget {
 public:
-	ContainerMenu(Engines::Console *console = 0);
-	void fillFromInventory(const Inventory &inv);
-
-protected:
-	void callbackActive(Widget &widget);
-	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
+	WidgetListItem(Engines::GUI &gui, const Common::UString &tag);
+	void load(const Aurora::GFF3Struct &gff);
+	void setCount(int count);
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-
-#endif // ENGINES_KOTOR_GUI_INGAME_CONTAINER_H
+#endif // ENGINES_KOTOR_GUI_WIDGETS_LISTITEM_H

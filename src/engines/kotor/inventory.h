@@ -19,36 +19,40 @@
  */
 
 /** @file
- *  The ingame container inventory menu.
+ *  Collection of items.
  */
 
-#ifndef ENGINES_KOTOR_GUI_INGAME_CONTAINER_H
-#define ENGINES_KOTOR_GUI_INGAME_CONTAINER_H
+#ifndef ENGINES_KOTOR_INVENTORY_H
+#define ENGINES_KOTOR_INVENTORY_H
 
-#include "src/engines/aurora/console.h"
+#include <map>
 
-#include "src/engines/kotor/module.h"
-#include "src/engines/kotor/inventory.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include <src/common/ustring.h>
 
 namespace Engines {
 
 namespace KotOR {
 
-class ContainerMenu : public GUI {
-public:
-	ContainerMenu(Engines::Console *console = 0);
-	void fillFromInventory(const Inventory &inv);
+struct InventoryItem {
+	Common::UString tag;
+	int count;
+};
 
-protected:
-	void callbackActive(Widget &widget);
-	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
+class Inventory {
+public:
+	void addItem(const Common::UString &tag, int count = 1);
+	void removeItem(const Common::UString &tag, int count = 1);
+
+	const std::map<Common::UString, InventoryItem> &getItems() const;
+	bool hasItem(const Common::UString &tag) const;
+private:
+	typedef std::map<Common::UString, InventoryItem> ItemMap;
+
+	ItemMap _items;
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-
-#endif // ENGINES_KOTOR_GUI_INGAME_CONTAINER_H
+#endif // ENGINES_KOTOR_INVENTORY_H

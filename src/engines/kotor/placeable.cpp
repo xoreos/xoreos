@@ -92,7 +92,7 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 		Aurora::GFF3List classList = gff.getList("ItemList");
 		for (Aurora::GFF3List::const_iterator iter = classList.begin(); iter != classList.end(); ++iter) {
 			const Aurora::GFF3Struct &item = **iter;
-			_inventory.push_back(Item(item.getString("InventoryRes")));
+			_inventory.addItem(item.getString("InventoryRes"));
 		}
 	}
 
@@ -244,6 +244,10 @@ bool Placeable::deactivate(Object *user) {
 
 bool Placeable::hasInventory() {
 	return _hasInventory;
+}
+
+Inventory &Placeable::getInventory() {
+	return _inventory;
 }
 
 } // End of namespace KotOR

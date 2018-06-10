@@ -150,8 +150,9 @@ void HUD::setPosition(float x, float y) {
 		_minimap->setPosition(x, y);
 }
 
-void HUD::showContainer() {
+void HUD::showContainer(Inventory &inv) {
 	_container.reset(new ContainerMenu());
+	_container->fillFromInventory(inv);
 	sub(*_container, kStartCodeNone, true, false);
 }
 

@@ -107,12 +107,24 @@ void KotORWidget::show() {
 		_downArrow->show();
 	if (_thumb)
 		_thumb->show();
+	if (_iconFrame)
+		_iconFrame->show();
+	if (_icon)
+		_icon->show();
+	if (_countText)
+		_countText->show();
 }
 
 void KotORWidget::hide() {
 	if (isInvisible())
 		return;
 
+	if (_countText)
+		_countText->hide();
+	if (_icon)
+		_icon->hide();
+	if (_iconFrame)
+		_iconFrame->hide();
 	if (_thumb)
 		_thumb->hide();
 	if (_downArrow)
@@ -176,6 +188,24 @@ void KotORWidget::setPosition(float x, float y, float z) {
 
 	if (_border) {
 		_border->setPosition(x, y, z);
+	}
+
+	if (_icon) {
+		float iX, iY, iZ;
+		_icon->getPosition(iX, iY, iZ);
+		_icon->setPosition(iX - oX + x, iY - oY + y, iZ - oZ + z);
+	}
+
+	if (_iconFrame) {
+		float iX, iY, iZ;
+		_iconFrame->getPosition(iX, iY, iZ);
+		_iconFrame->setPosition(iX - oX + x, iY - oY + y, iZ - oZ + z);
+	}
+
+	if (_countText) {
+		float cX, cY, cZ;
+		_countText->getPosition(cX, cY, cZ);
+		_countText->setPosition(cX - oX + x, cY - oY + y, cZ - oZ + z);
 	}
 }
 
@@ -502,6 +532,14 @@ void KotORWidget::setTextColor(float r, float g, float b, float a) {
 void KotORWidget::setBorderColor(float r, float g, float b, float a) {
 	if (_border)
 		_border->setColor(r, g, b, a);
+}
+
+void KotORWidget::setIconTexture(const Common::UString &texture) {
+	if (_icon)
+		_icon->setTexture(texture);
+}
+
+void KotORWidget::setCount(int UNUSED(count)) {
 }
 
 KotORWidget::Extend KotORWidget::createExtend(const Aurora::GFF3Struct &gff) {
