@@ -96,6 +96,9 @@ public:
 	void setVerticalTextAlign(float valign);
 	void setTextColor(float r, float g, float b, float a);
 	void setBorderColor(float r, float g, float b, float a);
+	void setIconTexture(const Common::UString &texture);
+
+	virtual void setCount(int count);
 
 protected:
 	struct Extend {
@@ -175,6 +178,12 @@ protected:
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _downArrow;
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _thumb;
 	float _arrowHeight;
+	/// '---
+
+	/// .--- Inventory item
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _icon;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _iconFrame;
+	Common::ScopedPtr<Graphics::Aurora::Text>    _countText;
 	/// '---
 
 	Extend  createExtend (const Aurora::GFF3Struct &gff);

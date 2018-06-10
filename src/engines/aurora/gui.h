@@ -63,6 +63,8 @@ public:
 	/** Process the current event queue. */
 	uint32 processEventQueue();
 
+	virtual Common::UString getName() const;
+
 
 protected:
 	Console *_console;

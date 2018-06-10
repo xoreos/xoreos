@@ -30,6 +30,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/widgets/protoitem.h \
     src/engines/kotor/gui/widgets/scrollbar.h \
     src/engines/kotor/gui/widgets/slider.h \
+    src/engines/kotor/gui/widgets/listitem.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
@@ -43,4 +44,5 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/widgets/protoitem.cpp \
     src/engines/kotor/gui/widgets/scrollbar.cpp \
     src/engines/kotor/gui/widgets/slider.cpp \
+    src/engines/kotor/gui/widgets/listitem.cpp \
     $(EMPTY)

@@ -28,6 +28,8 @@
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotor/module.h"
+#include "src/engines/kotor/inventory.h"
+
 #include "src/engines/kotor/gui/ingame/hud.h"
 
 namespace Engines {
@@ -53,7 +55,7 @@ public:
 	void setReturnEnabled(bool enabled);
 
 	// Container inventory handling
-	void showContainer();
+	void showContainer(Inventory &inv);
 
 	// Party handling.
 	void setPartyLeader(Creature *creature);

@@ -34,6 +34,7 @@
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/kotor/object.h"
+#include "src/engines/kotor/inventory.h"
 
 namespace Engines {
 
@@ -141,6 +142,8 @@ private:
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 	Common::UString _conversation;
 	Common::UString _modelType;
+
+	Inventory _inventory;
 
 
 	void init();

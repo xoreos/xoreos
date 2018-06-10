@@ -29,10 +29,12 @@
 #include "src/graphics/graphics.h"
 
 #include "src/engines/kotor/gui/gui.h"
+
 #include "src/engines/kotor/gui/widgets/listbox.h"
 #include "src/engines/kotor/gui/widgets/button.h"
 #include "src/engines/kotor/gui/widgets/label.h"
 #include "src/engines/kotor/gui/widgets/scrollbar.h"
+#include "src/engines/kotor/gui/widgets/listitem.h"
 
 namespace Engines {
 
@@ -73,6 +75,9 @@ void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
 
 	if (gff.hasField("PADDING")) {
 		_padding = gff.getSint("PADDING");
+
+		if (_gui->getName().stricmp("container") == 0)
+			_padding = 18;
 	}
 }
 
@@ -121,8 +126,14 @@ const std::vector<KotORWidget *> &WidgetListBox::createItemWidgets(uint count) {
 	return _itemWidgets;
 }
 
-void WidgetListBox::addItem(const Common::UString &text) {
-	_items.push_back(text);
+void WidgetListBox::addItem(const Common::UString &text,
+                            const Common::UString &icon,
+                            int count) {
+	Item item;
+	item.text = text;
+	item.icon = icon;
+	item.count = count;
+	_items.push_back(item);
 }
 
 void WidgetListBox::removeAllItems() {
@@ -153,7 +164,8 @@ void WidgetListBox::refreshItemWidgets() {
 		if (!heightExceeded) {
 			int itemIndex = _startIndex + i;
 			if (itemIndex < (int)_items.size()) { // have item to display?
-				const Common::UString &text = _items[itemIndex];
+				Item &item = _items[itemIndex];
+				const Common::UString &text = item.text;
 
 				if (_adjustHeight) {
 					float textHeight = itemWidget->getTextHeight(text);
@@ -168,6 +180,8 @@ void WidgetListBox::refreshItemWidgets() {
 
 				if (!heightExceeded) {
 					itemWidget->setText(text);
+					itemWidget->setIconTexture(item.icon);
+					itemWidget->setCount(item.count);
 					itemWidget->setHighlight(itemIndex == _selectedIndex);
 					visible = true;
 				}
@@ -211,6 +225,9 @@ KotORWidget *WidgetListBox::createItem(Common::UString name) {
 	switch (_protoItem->getUint("CONTROLTYPE")) {
 		case 4:
 			item = new WidgetLabel(*_gui, name);
+			break;
+		case 5:
+			item = new WidgetListItem(*_gui, name);
 			break;
 		case 6:
 			item = new WidgetButton(*_gui, name);

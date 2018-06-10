@@ -26,6 +26,7 @@
 #include "src/aurora/2dafile.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
+#include "src/aurora/talkman.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -43,15 +44,27 @@ Item::Item(const Common::UString &item) {
 
 void Item::load(const Aurora::GFF3Struct &gff) {
 	// Name and description
-	_name = gff.getString("Name");
+	_name = gff.getString("LocalizedName");
 	_description = gff.getString("Description");
 
 	// Base item
 	_baseItem = gff.getSint("BaseItem");
 	_itemClass = TwoDAReg.get2DA("baseitems").getRow(_baseItem).getString("itemclass");
 
-	// Model variation
+	// Model and texture variation
 	_modelVariation = gff.getSint("ModelVariation");
+	_textureVariation = gff.getSint("TextureVariation");
+}
+
+const Common::UString &Item::getName() const {
+	return _name;
+}
+
+const Common::UString Item::getIcon() const {
+	int variation = _modelVariation == 0 ? _textureVariation : _modelVariation;
+	if (variation == 0)
+		variation = 1;
+	return Common::UString::format("i%s_%03d", _itemClass.c_str(), variation);
 }
 
 } // End of namespace KotOR

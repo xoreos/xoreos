@@ -30,6 +30,8 @@
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotor/module.h"
+#include "src/engines/kotor/inventory.h"
+
 #include "src/engines/kotor/gui/gui.h"
 
 #include "src/engines/kotor/gui/ingame/container.h"
@@ -54,7 +56,7 @@ public:
 
 	void setPosition(float x, float y);
 
-	void showContainer();
+	void showContainer(Inventory &inv);
 
 	void setPartyLeader(Creature *creature);
 	void setPartyMember1(Creature *creature);
