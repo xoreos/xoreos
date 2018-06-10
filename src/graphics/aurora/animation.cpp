@@ -85,7 +85,7 @@ void Animation::update(Model *model, float UNUSED(lastFrame), float nextFrame) {
 
 		// Update position and orientation based on time
 		if (!animNode->_positionFrames.empty())
-			interpolatePosition(animNode, target, nextFrame, scale, model->_skinned);
+			interpolatePosition(animNode, target, nextFrame, scale, model->_positionRelative);
 		if (!animNode->_orientationFrames.empty())
 			interpolateOrientation(animNode, target, nextFrame);
 	}
