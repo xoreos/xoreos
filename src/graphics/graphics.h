@@ -240,7 +240,6 @@ private:
 	Common::Mutex _abandonMutex; ///< A mutex protecting abandoned structures.
 
 	Aurora::AnimationThread _animationThread;
-	bool _dedicatedAnimThread; ///< Use dedicated thread for animations?
 
 	void setupScene();
 
