@@ -34,6 +34,7 @@
 #include "src/sound/sound.h"
 
 #include "src/engines/aurora/util.h"
+#include "src/engines/aurora/satellitecamera.h"
 
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
@@ -297,16 +298,12 @@ void DialogGUI::makeLookAtPC(const Common::UString &tag) {
 	if (!o)
 		return;
 
-	float ox, oy, oz;
-	o->getPosition(ox, oy, oz);
+	o->makeLookAt(pc);
+	pc->makeLookAt(o);
 
-	float px, py, pz;
-	pc->getPosition(px, py, pz);
-
-	float dx = px - ox;
-	float dy = py - oy;
-
-	o->setOrientation(0.0f, 0.0f, 1.0f, Common::rad2deg(std::atan2(dy, dx)) - 90.0f);
+	float x, y, z, a;
+	pc->getOrientation(x, y, z, a);
+	SatelliteCam.setYaw(Common::deg2rad(a - 15.0f));
 }
 
 void DialogGUI::playDefaultAnimations(const Common::UString &tag) {
