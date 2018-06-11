@@ -297,16 +297,7 @@ void DialogGUI::makeLookAtPC(const Common::UString &tag) {
 	if (!o)
 		return;
 
-	float ox, oy, oz;
-	o->getPosition(ox, oy, oz);
-
-	float px, py, pz;
-	pc->getPosition(px, py, pz);
-
-	float dx = px - ox;
-	float dy = py - oy;
-
-	o->setOrientation(0.0f, 0.0f, 1.0f, Common::rad2deg(std::atan2(dy, dx)) - 90.0f);
+	o->makeLookAt(pc);
 }
 
 void DialogGUI::playDefaultAnimations(const Common::UString &tag) {

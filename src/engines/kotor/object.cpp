@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/maths.h"
 
 #include "src/engines/kotor/object.h"
 
@@ -152,6 +153,12 @@ void Object::setOrientation(float x, float y, float z, float angle) {
 	_orientation[1] = y;
 	_orientation[2] = z;
 	_orientation[3] = angle;
+}
+
+void Object::makeLookAt(Object *target) {
+	float dx = target->_position[0] - _position[0];
+	float dy = target->_position[1] - _position[1];
+	setOrientation(0.0f, 0.0f, 1.0f, Common::rad2deg(std::atan2(dy, dx)) - 90.0f);
 }
 
 Room *Object::getRoom() {
