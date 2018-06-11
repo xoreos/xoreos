@@ -23,6 +23,7 @@ noinst_LTLIBRARIES += src/aurora/actionscript/libactionscript.la
 src_aurora_actionscript_libactionscript_la_SOURCES =
 
 src_aurora_actionscript_libactionscript_la_SOURCES += \
+    src/aurora/actionscript/types.h \
     $(EMPTY)
 
 src_aurora_actionscript_libactionscript_la_SOURCES += \
