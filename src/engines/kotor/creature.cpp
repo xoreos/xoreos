@@ -276,21 +276,17 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 
 	_modelType = appearance.getString("modeltype");
 
-	parts.body = appearance.getString(Common::UString("model") + state);
-	Common::UString race = appearance.getString("race");
-	if (parts.body.empty() ||
-			// Special case, e.g., sith guards in korr_m35aa
-			(!race.empty() && parts.body.stricmp("N_Smuggler") == 0))
-		parts.body = race;
+	// TODO: load state based on character equipment
+	if (appearance.getString("label").beginsWith("Party_"))
+		state = 'b';
 
-	parts.bodyTexture = appearance.getString(Common::UString("tex") + state);
-	if (!parts.bodyTexture.empty())
-		parts.bodyTexture += "01";
-
-	if (parts.bodyTexture.empty() ||
-			// Special case, e.g., sith guards in korr_m35aa
-			(!race.empty() && parts.bodyTexture.stricmp("N_Smuggler01") == 0))
+	if (_modelType == "B") {
+		parts.body = appearance.getString(Common::UString("model") + state);
+		parts.bodyTexture = appearance.getString(Common::UString("tex") + state) + "01";
+	} else {
+		parts.body = appearance.getString("race");
 		parts.bodyTexture = appearance.getString("racetex");
+	}
 
 	if ((_modelType == "B") || (_modelType == "P")) {
 		const int headNormalID = appearance.getInt("normalhead");

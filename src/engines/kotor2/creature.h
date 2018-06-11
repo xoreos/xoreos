@@ -131,7 +131,7 @@ private:
 	void loadPortrait(const Aurora::GFF3Struct &gff);
 	void loadAppearance();
 
-	void getPartModels(PartModels &parts, uint32 state = 'b');
+	void getPartModels(PartModels &parts, uint32 state = 'a');
 	void loadBody(PartModels &parts);
 	void loadHead(PartModels &parts);
 
