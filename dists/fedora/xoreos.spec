@@ -78,7 +78,7 @@ rm %{buildroot}%{_pkgdocdir}/*
 %{_bindir}/xoreos
 %{_mandir}/man6/xoreos.6*
 %doc *.md AUTHORS ChangeLog TODO doc/xoreos.conf.example
-%license COPYING*
+%license COPYING
 
 %changelog
 * Mon Feb 15 2016 Ben Rosser <rosser.bjr@gmail.com> 0.0.4-1

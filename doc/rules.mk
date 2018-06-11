@@ -22,11 +22,14 @@
 # Licenses and credits
 dist_doc_DATA += \
     COPYING \
-    COPYING.Bitstream \
-    COPYING.Arev \
-    COPYING.GPLv2 \
-    COPYING.LGPLv2.1 \
     AUTHORS \
+    $(EMPTY)
+
+EXTRA_DIST += \
+    doc/LICENSE.Bitstream \
+    doc/LICENSE.Arev \
+    doc/LICENSE.GPLv2 \
+    doc/LICENSE.LGPLv2.1 \
     $(EMPTY)
 
 # User documentation
