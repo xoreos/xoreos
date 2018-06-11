@@ -108,9 +108,11 @@ src_aurora_libaurora_la_SOURCES += \
 src_aurora_libaurora_la_LIBADD = \
     src/aurora/nwscript/libnwscript.la \
     src/aurora/lua/libluascript.la \
+    src/aurora/actionscript/libactionscript.la \
     $(EMPTY)
 
 # Subdirectories
 
 include src/aurora/nwscript/rules.mk
 include src/aurora/lua/rules.mk
+include src/aurora/actionscript/rules.mk
