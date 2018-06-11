@@ -41,6 +41,7 @@ public:
 	void setDistance(float value);
 	void setPitch(float value);
 	void setHeight(float value);
+	void setYaw(float value);
 
 	float getYaw() const;
 

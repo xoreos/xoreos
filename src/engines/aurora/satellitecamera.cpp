@@ -68,6 +68,12 @@ void SatelliteCamera::setPitch(float value) {
 
 void SatelliteCamera::setHeight(float value) {
 	_height = value;
+	_dirty = true;
+}
+
+void SatelliteCamera::setYaw(float value) {
+	_yaw = value;
+	_dirty = true;
 }
 
 float SatelliteCamera::getYaw() const {
