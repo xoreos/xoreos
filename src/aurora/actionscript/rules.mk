@@ -23,6 +23,7 @@ noinst_LTLIBRARIES += src/aurora/actionscript/libactionscript.la
 src_aurora_actionscript_libactionscript_la_SOURCES =
 
 src_aurora_actionscript_libactionscript_la_SOURCES += \
+    src/aurora/actionscript/asbuffer.h \
     src/aurora/actionscript/avm.h \
     src/aurora/actionscript/function.h \
     src/aurora/actionscript/object.h \
@@ -31,6 +32,7 @@ src_aurora_actionscript_libactionscript_la_SOURCES += \
     $(EMPTY)
 
 src_aurora_actionscript_libactionscript_la_SOURCES += \
+    src/aurora/actionscript/asbuffer.cpp \
     src/aurora/actionscript/avm.cpp \
     src/aurora/actionscript/function.cpp \
     src/aurora/actionscript/object.cpp \

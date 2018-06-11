@@ -41,7 +41,7 @@ namespace Common {
 static const char * const kDebugNames[kDebugChannelCount] = {
 	"GGraphics", "GSound", "GVideo", "GEvents", "GScripts",
 	"GGLAPI", "GGLWindow", "GGLShader", "GGL3rd", "GGLApp", "GGLOther",
-	"EGraphics", "ESound", "EVideo", "EEvents", "EScripts", "ELogic"
+	"EGraphics", "ESound", "EVideo", "EEvents", "ELogic", "EScripts", "EActionScript"
 };
 
 static const char * const kDebugDescriptions[kDebugChannelCount] = {
@@ -60,8 +60,9 @@ static const char * const kDebugDescriptions[kDebugChannelCount] = {
 	"Engine sound debug channel",
 	"Engine video debug channel",
 	"Engine events debug channel",
+	"Engine game logic debug channel",
 	"Engine scripts debug channel",
-	"Engine game logic debug channel"
+	"Engine ActionScript debug channel",
 };
 
 static const char * const kDebugGLTypes[kDebugGLTypeMAX] = {
