@@ -255,6 +255,15 @@ void Animation::updateSkinnedModel(Model *model) {
 		if (!node->_mesh || !node->_mesh->skin)
 			continue;
 
+		// TODO:
+		// Handmaiden model in KotOR 2 has a node that is different
+		// from all the others in that it's parent is a bone. Because
+		// of this it has transformations applied twice to it: by the
+		// renderer and by the skeletal animation routine. This should
+		// probably be handled the other way.
+		if (node->_parent && node->_parent->_name.stricmp("f_jaw_g") == 0)
+			continue;
+
 		glm::mat4 invTransform = node->_invBindPose;
 		glm::mat4 transform = glm::inverse(invTransform);
 
