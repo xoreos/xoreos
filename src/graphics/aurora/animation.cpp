@@ -255,22 +255,8 @@ void Animation::updateSkinnedModel(Model *model) {
 		if (!node->_mesh || !node->_mesh->skin)
 			continue;
 
-		glm::mat4 transform;
-
-		transform = glm::translate(transform, glm::vec3(node->_positionBuffer[0],
-		                                                node->_positionBuffer[1],
-		                                                node->_positionBuffer[2]));
-
-		if (node->_orientationBuffer[0] != 0 ||
-				node->_orientationBuffer[1] != 0 ||
-				node->_orientationBuffer[2] != 0)
-			transform = glm::rotate(transform,
-					Common::deg2rad(node->_orientationBuffer[3]),
-					glm::vec3(node->_orientationBuffer[0],
-					          node->_orientationBuffer[1],
-					          node->_orientationBuffer[2]));
-
-		glm::mat4 invTransform = glm::inverse(transform);
+		glm::mat4 invTransform = node->_invBindPose;
+		glm::mat4 transform = glm::inverse(invTransform);
 
 		ModelNode::Skin *skin = node->_mesh->skin;
 

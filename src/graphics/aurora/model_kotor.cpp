@@ -382,19 +382,19 @@ void Model_KotOR::addState(ParserContext &ctx) {
 
 void Model_KotOR::makeBoneNodeMap() {
 	const NodeList &nodes = getNodes();
-	for (NodeList::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
-		ModelNode *node = *it;
+	for (NodeList::const_iterator n = nodes.begin();
+			n != nodes.end(); ++n) {
+		ModelNode *node = *n;
+		node->computeInverseBindPose();
+
 		ModelNode::Mesh *mesh = node->getMesh();
 		if (mesh && mesh->skin) {
 			ModelNode::Skin *skin = mesh->skin;
 			skin->boneNodeMap.reserve(skin->boneMappingCount);
 			for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
 				int index = static_cast<int>(skin->boneMapping[i]);
-				if (index != -1) {
-					ModelNode *node2 = getNode(i);
-					node2->computeInverseBindPose();
-					skin->boneNodeMap[index] = node2;
-				}
+				if (index != -1)
+					skin->boneNodeMap[index] = getNode(i);
 			}
 		}
 	}
