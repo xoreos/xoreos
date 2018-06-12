@@ -1277,7 +1277,7 @@ bool WMACodec::decodeExpHuffman(Common::BitStream &bits, int ch) {
 		int n = *ptr++;
 
 		switch (n & 3) do {
-			XOREOS_FALLTHROUGH
+			XOREOS_FALLTHROUGH;
 			case 0: *q++ = iv; XOREOS_FALLTHROUGH;
 			case 3: *q++ = iv; XOREOS_FALLTHROUGH;
 			case 2: *q++ = iv; XOREOS_FALLTHROUGH;
