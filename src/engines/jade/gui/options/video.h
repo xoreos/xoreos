@@ -25,13 +25,13 @@
 #ifndef ENGINES_JADE_GUI_OPTIONS_VIDEO_H
 #define ENGINES_JADE_GUI_OPTIONS_VIDEO_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/jade/gui/gui.h"
 
 namespace Engines {
 
 namespace Jade {
 
-class VideoOptionsMenu : public Engines::KotOR::GUI {
+class VideoOptionsMenu : public Engines::Jade::GUI {
 public:
 	VideoOptionsMenu(::Engines::Console *console = 0);
 

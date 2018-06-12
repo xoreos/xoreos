@@ -40,15 +40,15 @@
 #include "src/engines/jade/gui/main/main.h"
 #include "src/engines/jade/gui/main/options.h"
 
-#include "src/engines/kotor/gui/widgets/label.h"
-#include "src/engines/kotor/gui/widgets/listbox.h"
-#include "src/engines/kotor/gui/widgets/button.h"
+#include "src/engines/jade/gui/widgets/label.h"
+#include "src/engines/jade/gui/widgets/listbox.h"
+#include "src/engines/jade/gui/widgets/button.h"
 
 namespace Engines {
 
 namespace Jade {
 
-MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::KotOR::GUI(console),
+MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::Jade::GUI(console),
 	_module(&module), _background(0) {
 
 	load("maingame");
@@ -95,13 +95,13 @@ MainMenu::~MainMenu() {
 void MainMenu::show() {
 	if (_background)
 		_background->show();
-	::Engines::KotOR::GUI::show();
+	::Engines::Jade::GUI::show();
 }
 
 void MainMenu::hide() {
 	if (_background)
 		_background->hide();
-	::Engines::KotOR::GUI::hide();
+	::Engines::Jade::GUI::hide();
 }
 
 void MainMenu::callbackActive(Widget &widget) {

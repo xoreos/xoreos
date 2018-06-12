@@ -19,24 +19,41 @@
  */
 
 /** @file
- *  The Jade Empire game info options menu.
+ *  A Jade Empire panel widget.
  */
 
-#include "src/engines/jade/gui/options/feed.h"
+#include "src/aurora/gff3file.h"
 
-#include "src/engines/jade/gui/widgets/jadewidget.h"
+#include "src/graphics/aurora/guiquad.h"
+
+#include "src/engines/jade/gui/widgets/panel.h"
 
 namespace Engines {
 
 namespace Jade {
 
-GameInfoOptionsMenu::GameInfoOptionsMenu(Console *console) : GUI(console) {
-	load("opt_feed");
+WidgetPanel::WidgetPanel(::Engines::GUI &gui, const Common::UString &tag) :
+	JadeWidget(gui, tag) {
 }
 
-void GameInfoOptionsMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "ButtonCancel")
-		_returnCode = kReturnCodeAbort;
+WidgetPanel::WidgetPanel(::Engines::GUI &gui, const Common::UString &tag,
+                         const Common::UString &texture,
+                         float x, float y, float w, float h) : JadeWidget(gui, tag) {
+
+	_width  = w;
+	_height = h;
+
+	Widget::setPosition(x, y, 0.0f);
+
+	_quad.reset(new Graphics::Aurora::GUIQuad(texture, 0.0f, 0.0f, w, h));
+	_quad->setPosition(x, y, 0.0f);
+}
+
+WidgetPanel::~WidgetPanel() {
+}
+
+void WidgetPanel::load(const Aurora::GFF3Struct &gff) {
+	JadeWidget::load(gff);
 }
 
 } // End of namespace Jade

@@ -34,8 +34,8 @@
 #include "src/engines/jade/gui/options/feed.h"
 #include "src/engines/jade/gui/options/control.h"
 
-#include "src/engines/kotor/gui/widgets/listbox.h"
-#include "src/engines/kotor/gui/widgets/label.h"
+#include "src/engines/jade/gui/widgets/listbox.h"
+#include "src/engines/jade/gui/widgets/label.h"
 
 namespace Engines {
 
@@ -49,7 +49,7 @@ OptionsMenu::OptionsMenu(Console *console) : GUI(console) {
 	getWidget("Lopt")->getPosition(x, y, z);
 	getWidget("Lopt")->setPosition(x, y, z + 10);
 
-	Engines::KotOR::WidgetListBox *optionsListBox = getListBox("OptionsListBox");
+	Engines::Jade::WidgetListBox *optionsListBox = getListBox("OptionsListBox");
 
 	addWidget(optionsListBox->createItem("AUDIO_SETTINGS"), true);
 	addWidget(optionsListBox->createItem("GRAPHIC_SETTINGS"), true);

@@ -19,10 +19,13 @@
  */
 
 /** @file
- *  The Jade Empire game info options menu.
+ *  A Jade Empire progressbar widget.
  */
 
-#include "src/engines/jade/gui/options/feed.h"
+#ifndef ENGINES_JADE_GUI_WIDGETS_PROGRESSBAR_H
+#define ENGINES_JADE_GUI_WIDGETS_PROGRESSBAR_H
+
+#include "src/graphics/aurora/guiquad.h"
 
 #include "src/engines/jade/gui/widgets/jadewidget.h"
 
@@ -30,15 +33,41 @@ namespace Engines {
 
 namespace Jade {
 
-GameInfoOptionsMenu::GameInfoOptionsMenu(Console *console) : GUI(console) {
-	load("opt_feed");
-}
+class WidgetProgressbar : public JadeWidget {
+public:
+	WidgetProgressbar(::Engines::GUI &gui, const Common::UString &tag);
+	~WidgetProgressbar();
 
-void GameInfoOptionsMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "ButtonCancel")
-		_returnCode = kReturnCodeAbort;
-}
+	void show();
+	void hide();
+
+	void load(const Aurora::GFF3Struct &gff);
+
+	void setPosition(float x, float y, float z);
+
+	/** Set the current progress bar value */
+	void setCurrentValue(int curValue);
+	/** Set the max progress bar value */
+	void setMaxValue(int maxValue);
+
+	/** Get the current progress bar value */
+	int getCurrentValue();
+	/** Get the max progress bar value */
+	int getMaxValue();
+
+private:
+	void update();
+
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _progress;
+
+	int _maxValue;
+	int _curValue;
+
+	bool _horizontal;
+};
 
 } // End of namespace Jade
 
 } // End of namespace Engines
+
+#endif // ENGINES_JADE_GUI_WIDGETS_PROGRESSBAR_H

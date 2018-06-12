@@ -25,13 +25,13 @@
 #ifndef ENGINES_JADE_GUI_OPTIONS_CONTROL_H
 #define ENGINES_JADE_GUI_OPTIONS_CONTROL_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/jade/gui/gui.h"
 
 namespace Engines {
 
 namespace Jade {
 
-class ControlOptionsMenu : public Engines::KotOR::GUI {
+class ControlOptionsMenu : public Engines::Jade::GUI {
 public:
 	ControlOptionsMenu(::Engines::Console *console = 0);
 
