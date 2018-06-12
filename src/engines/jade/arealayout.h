@@ -27,6 +27,7 @@
 
 #include <list>
 
+#include "src/common/ptrlist.h"
 #include "src/common/configfile.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
@@ -79,7 +80,7 @@ protected:
 	virtual void loadResources();
 
 private:
-	typedef std::list<Room *>   RoomList;
+	typedef Common::PtrList<Room> RoomList;
 
 
 	RoomList _rooms; ///< All rooms in the area.
