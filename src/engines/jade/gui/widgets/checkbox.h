@@ -19,10 +19,13 @@
  */
 
 /** @file
- *  The Jade Empire game info options menu.
+ *  A Jade Empire checkbox widget.
  */
 
-#include "src/engines/jade/gui/options/feed.h"
+#ifndef ENGINES_JADE_GUI_WIDGETS_CHECKBOX_H
+#define ENGINES_JADE_GUI_WIDGETS_CHECKBOX_H
+
+#include "src/sound/types.h"
 
 #include "src/engines/jade/gui/widgets/jadewidget.h"
 
@@ -30,15 +33,35 @@ namespace Engines {
 
 namespace Jade {
 
-GameInfoOptionsMenu::GameInfoOptionsMenu(Console *console) : GUI(console) {
-	load("opt_feed");
-}
+class WidgetCheckBox : public JadeWidget {
+public:
+	WidgetCheckBox(::Engines::GUI &gui, const Common::UString &tag);
+	~WidgetCheckBox();
 
-void GameInfoOptionsMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "ButtonCancel")
-		_returnCode = kReturnCodeAbort;
-}
+	void load(const Aurora::GFF3Struct &gff);
+
+	void setState(bool state);
+	bool getState() const;
+
+	virtual void mouseUp(uint8 state, float x, float y);
+
+	virtual void enter();
+	virtual void leave();
+
+private:
+	Common::UString _selected, _unselected;
+	Common::UString _selectedHighlighted,  _unselectedHighlighted;
+	bool _state;
+
+	Sound::ChannelHandle _sound;
+	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
+
+	void setTextHighlighting(Graphics::Aurora::Highlightable *highlightable);
+	void setQuadHighlighting(Graphics::Aurora::Highlightable *highlightable);
+};
 
 } // End of namespace Jade
 
 } // End of namespace Engines
+
+#endif // ENGINES_JADE_GUI_WIDGETS_CHECKBOX_H

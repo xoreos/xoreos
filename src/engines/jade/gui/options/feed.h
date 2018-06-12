@@ -25,13 +25,13 @@
 #ifndef ENGINES_JADE_GUI_OPTIONS_FEED_H
 #define ENGINES_JADE_GUI_OPTIONS_FEED_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/jade/gui/gui.h"
 
 namespace Engines {
 
 namespace Jade {
 
-class GameInfoOptionsMenu : public Engines::KotOR::GUI {
+class GameInfoOptionsMenu : public Engines::Jade::GUI {
 public:
 	GameInfoOptionsMenu(::Engines::Console *console = 0);
 

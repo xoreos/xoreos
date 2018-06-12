@@ -24,7 +24,7 @@
 
 #include "src/engines/jade/gui/options/control.h"
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/jade/gui/widgets/jadewidget.h"
 
 namespace Engines {
 

@@ -27,9 +27,9 @@
 
 #include "src/common/ustring.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/jade/gui/gui.h"
 
-#include "src/engines/kotor/gui/widgets/button.h"
+#include "src/engines/jade/gui/widgets/button.h"
 
 namespace Engines {
 
@@ -37,7 +37,7 @@ namespace Jade {
 
 class Module;
 
-class OptionsMenu : public Engines::KotOR::GUI {
+class OptionsMenu : public Engines::Jade::GUI {
 public:
 	OptionsMenu(::Engines::Console *console = 0);
 
@@ -54,17 +54,17 @@ private:
 	Common::ScopedPtr<GUI> _gameInfoOptions;
 	Common::ScopedPtr<GUI> _controlOptions;
 
-	Engines::KotOR::WidgetButton *_audioOptionsButton;
-	Engines::KotOR::WidgetButton *_videoOptionsButton;
-	Engines::KotOR::WidgetButton *_difficultyOptionsButton;
-	Engines::KotOR::WidgetButton *_gameInfoOptionsButton;
-	Engines::KotOR::WidgetButton *_controlOptionsButton;
-	Engines::KotOR::WidgetButton *_creditsButton;
+	Engines::Jade::WidgetButton *_audioOptionsButton;
+	Engines::Jade::WidgetButton *_videoOptionsButton;
+	Engines::Jade::WidgetButton *_difficultyOptionsButton;
+	Engines::Jade::WidgetButton *_gameInfoOptionsButton;
+	Engines::Jade::WidgetButton *_controlOptionsButton;
+	Engines::Jade::WidgetButton *_creditsButton;
 
-	Engines::KotOR::WidgetButton *_backButton;
-	Engines::KotOR::WidgetButton *_currentButton;
+	Engines::Jade::WidgetButton *_backButton;
+	Engines::Jade::WidgetButton *_currentButton;
 
-	Engines::KotOR::WidgetLabel *_optionsDescription;
+	Engines::Jade::WidgetLabel *_optionsDescription;
 
 	Common::UString _audioOptionsDescription;
 	Common::UString _videoOptionsDescription;

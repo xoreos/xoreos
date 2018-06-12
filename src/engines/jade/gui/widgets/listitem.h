@@ -19,10 +19,13 @@
  */
 
 /** @file
- *  The Jade Empire game info options menu.
+ *  Inventory item widget.
  */
 
-#include "src/engines/jade/gui/options/feed.h"
+#ifndef ENGINES_JADE_GUI_WIDGETS_LISTITEM_H
+#define ENGINES_JADE_GUI_WIDGETS_LISTITEM_H
+
+#include "src/engines/aurora/gui.h"
 
 #include "src/engines/jade/gui/widgets/jadewidget.h"
 
@@ -30,15 +33,15 @@ namespace Engines {
 
 namespace Jade {
 
-GameInfoOptionsMenu::GameInfoOptionsMenu(Console *console) : GUI(console) {
-	load("opt_feed");
-}
-
-void GameInfoOptionsMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "ButtonCancel")
-		_returnCode = kReturnCodeAbort;
-}
+class WidgetListItem : public JadeWidget {
+public:
+	WidgetListItem(Engines::GUI &gui, const Common::UString &tag);
+	void load(const Aurora::GFF3Struct &gff);
+	void setCount(int count);
+};
 
 } // End of namespace Jade
 
 } // End of namespace Engines
+
+#endif // ENGINES_JADE_GUI_WIDGETS_LISTITEM_H

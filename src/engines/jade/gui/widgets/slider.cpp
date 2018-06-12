@@ -19,24 +19,26 @@
  */
 
 /** @file
- *  The Jade Empire game info options menu.
+ *  A Jade Empire slider widget.
  */
 
-#include "src/engines/jade/gui/options/feed.h"
+#include "src/common/system.h"
 
-#include "src/engines/jade/gui/widgets/jadewidget.h"
+#include "src/engines/jade/gui/widgets/slider.h"
 
 namespace Engines {
 
 namespace Jade {
 
-GameInfoOptionsMenu::GameInfoOptionsMenu(Console *console) : GUI(console) {
-	load("opt_feed");
+WidgetSlider::WidgetSlider(::Engines::GUI &gui, const Common::UString &tag) :
+	JadeWidget(gui, tag) {
 }
 
-void GameInfoOptionsMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "ButtonCancel")
-		_returnCode = kReturnCodeAbort;
+WidgetSlider::~WidgetSlider() {
+}
+
+void WidgetSlider::load(const Aurora::GFF3Struct &gff) {
+  JadeWidget::load(gff);
 }
 
 } // End of namespace Jade

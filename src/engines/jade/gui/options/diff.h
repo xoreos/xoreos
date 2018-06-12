@@ -25,13 +25,13 @@
 #ifndef ENGINES_JADE_GUI_OPTIONS_DIFF_H
 #define ENGINES_JADE_GUI_OPTIONS_DIFF_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/jade/gui/gui.h"
 
 namespace Engines {
 
 namespace Jade {
 
-class DifficultyOptionsMenu : public Engines::KotOR::GUI {
+class DifficultyOptionsMenu : public Engines::Jade::GUI {
 public:
 	DifficultyOptionsMenu(::Engines::Console *console = 0);
 

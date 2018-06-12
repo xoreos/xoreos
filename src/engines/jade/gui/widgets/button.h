@@ -19,10 +19,13 @@
  */
 
 /** @file
- *  The Jade Empire game info options menu.
+ *  A Jade Empire button widget.
  */
 
-#include "src/engines/jade/gui/options/feed.h"
+#ifndef ENGINES_JADE_GUI_WIDGETS_BUTTON_H
+#define ENGINES_JADE_GUI_WIDGETS_BUTTON_H
+
+#include "src/sound/types.h"
 
 #include "src/engines/jade/gui/widgets/jadewidget.h"
 
@@ -30,15 +33,40 @@ namespace Engines {
 
 namespace Jade {
 
-GameInfoOptionsMenu::GameInfoOptionsMenu(Console *console) : GUI(console) {
-	load("opt_feed");
-}
+class WidgetButton : public JadeWidget {
+public:
+	WidgetButton(::Engines::GUI &gui, const Common::UString &tag);
+	~WidgetButton();
 
-void GameInfoOptionsMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "ButtonCancel")
-		_returnCode = kReturnCodeAbort;
-}
+	void setPermanentHighlight(bool);
+	void setStaticHighlight();
+	void setDisableHighlight(bool);
+	void setDisableHoverSound(bool);
+
+	virtual void load(const Aurora::GFF3Struct &gff);
+
+	void mouseUp(uint8 state, float x, float y);
+
+	bool isHovered();
+
+	virtual void enter();
+
+	virtual void leave();
+
+private:
+	bool _permanentHighlight;
+	bool _disableHighlight;
+	bool _disableHoverSound;
+
+	Sound::ChannelHandle _sound;
+
+	bool _hovered;
+
+	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
+};
 
 } // End of namespace Jade
 
 } // End of namespace Engines
+
+#endif // ENGINES_JADE_GUI_WIDGETS_BUTTON_H

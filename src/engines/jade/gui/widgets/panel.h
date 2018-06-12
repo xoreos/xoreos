@@ -19,10 +19,11 @@
  */
 
 /** @file
- *  The Jade Empire game info options menu.
+ *  A Jade Empire panel widget.
  */
 
-#include "src/engines/jade/gui/options/feed.h"
+#ifndef ENGINES_JADE_GUI_WIDGETS_PANEL_H
+#define ENGINES_JADE_GUI_WIDGETS_PANEL_H
 
 #include "src/engines/jade/gui/widgets/jadewidget.h"
 
@@ -30,15 +31,18 @@ namespace Engines {
 
 namespace Jade {
 
-GameInfoOptionsMenu::GameInfoOptionsMenu(Console *console) : GUI(console) {
-	load("opt_feed");
-}
+class WidgetPanel : public JadeWidget {
+public:
+	WidgetPanel(::Engines::GUI &gui, const Common::UString &tag);
+	WidgetPanel(::Engines::GUI &gui, const Common::UString &tag,
+	            const Common::UString &texture, float x, float y, float w, float h);
+	~WidgetPanel();
 
-void GameInfoOptionsMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "ButtonCancel")
-		_returnCode = kReturnCodeAbort;
-}
+	void load(const Aurora::GFF3Struct &gff);
+};
 
 } // End of namespace Jade
 
 } // End of namespace Engines
+
+#endif // ENGINES_JADE_GUI_WIDGETS_PANEL_H
