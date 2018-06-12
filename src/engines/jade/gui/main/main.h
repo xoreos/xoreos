@@ -25,7 +25,7 @@
 #ifndef ENGINES_JADE_GUI_MAIN_MAIN_H
 #define ENGINES_JADE_GUI_MAIN_MAIN_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/jade/gui/gui.h"
 
 namespace Engines {
 
@@ -34,7 +34,7 @@ namespace Jade {
 class AreaLayout;
 class Module;
 
-class MainMenu : public ::Engines::KotOR::GUI {
+class MainMenu : public ::Engines::Jade::GUI {
 public:
 	MainMenu(Module &module, ::Engines::Console *console = 0);
 	~MainMenu();

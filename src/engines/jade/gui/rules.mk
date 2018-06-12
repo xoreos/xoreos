@@ -20,10 +20,15 @@
 # GUI system in Jade Empire.
 
 src_engines_jade_libjade_la_SOURCES += \
+    src/engines/jade/gui/gui.h \
+    src/engines/jade/gui/guibackground.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
+    src/engines/jade/gui/gui.cpp \
+    src/engines/jade/gui/guibackground.cpp \
     $(EMPTY)
 
 include src/engines/jade/gui/main/rules.mk
 include src/engines/jade/gui/options/rules.mk
+include src/engines/jade/gui/widgets/rules.mk
