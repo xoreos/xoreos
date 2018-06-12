@@ -34,6 +34,7 @@
 
 #include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/animationchannel.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
@@ -315,6 +316,9 @@ void Creature::loadBody(PartModels &parts) {
 
 	_model->setTag(_tag);
 	_model->setClickable(isClickable());
+
+	if (_modelType != "B" && _modelType != "P")
+		_model->addAnimationChannel(Graphics::Aurora::kAnimationChannelHead);
 }
 
 void Creature::loadHead(PartModels &parts) {
@@ -469,9 +473,17 @@ void Creature::playDefaultHeadAnimation() {
 	if (!_model)
 		return;
 
-	Graphics::Aurora::Model *head = _model->getAttachedModel("headhook");
-	if (head)
-		head->playDefaultAnimation();
+	Graphics::Aurora::AnimationChannel *headChannel = 0;
+
+	if (_modelType == "B" || _modelType == "P") {
+		Graphics::Aurora::Model *head = _model->getAttachedModel("headhook");
+		if (head)
+			headChannel = head->getAnimationChannel(Graphics::Aurora::kAnimationChannelAll);
+	} else
+		headChannel = _model->getAnimationChannel(Graphics::Aurora::kAnimationChannelHead);
+
+	if (headChannel)
+		headChannel->playDefaultAnimation();
 }
 
 void Creature::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
@@ -483,9 +495,17 @@ void Creature::playHeadAnimation(const Common::UString &anim, bool restart, floa
 	if (!_model)
 		return;
 
-	Graphics::Aurora::Model *head = _model->getAttachedModel("headhook");
-	if (head)
-		head->playAnimation(anim, restart, length, speed);
+	Graphics::Aurora::AnimationChannel *headChannel = 0;
+
+	if (_modelType == "B" || _modelType == "P") {
+		Graphics::Aurora::Model *head = _model->getAttachedModel("headhook");
+		if (head)
+			headChannel = head->getAnimationChannel(Graphics::Aurora::kAnimationChannelAll);
+	} else
+		headChannel = _model->getAnimationChannel(Graphics::Aurora::kAnimationChannelHead);
+
+	if (headChannel)
+		headChannel->playAnimation(anim, restart, length, speed);
 }
 
 void Creature::setDefaultAnimations() {
