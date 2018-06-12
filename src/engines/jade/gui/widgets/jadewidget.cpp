@@ -337,7 +337,7 @@ void JadeWidget::setFont(const Common::UString &fnt) {
 void JadeWidget::setFill(const Common::UString &fill) {
 	if (fill.empty()) {
 		_quad->hide();
-		_quad.release();
+		_quad.reset();
 		return;
 	}
 
@@ -361,7 +361,7 @@ void JadeWidget::setFill(const Common::UString &fill) {
 void JadeWidget::setHighlight(const Common::UString &hilight) {
 	if (hilight.empty()) {
 		_highlight->hide();
-		_highlight.release();
+		_highlight.reset();
 		return;
 	}
 
