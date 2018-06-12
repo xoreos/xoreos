@@ -290,6 +290,7 @@ public:
 
 	friend class Model;
 	friend class Animation;
+	friend class AnimationChannel;
 };
 
 } // End of namespace Aurora

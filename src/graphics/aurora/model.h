@@ -53,6 +53,12 @@ namespace Aurora {
 
 class Animation;
 class AnimationThread;
+class AnimationChannel;
+
+enum AnimationChannelName {
+	kAnimationChannelAll  = 0,
+	kAnimationChannelHead = 1
+};
 
 class Model : public GLContainer, public Renderable {
 public:
@@ -161,30 +167,17 @@ public:
 	/** Determine what animation scaling applies. */
 	float getAnimationScale(const Common::UString &anim);
 
-	/** Play a named animation.
-	 *
-	 *  @param anim      The animation to play.
-	 *  @param restart   Whether to restart the animation if it's already playing.
-	 *  @param length    The length in seconds the animation should play for. If 0.0f,
-	 *                   play the animation for one full loop. If negative, loop indefinitely.
-	 *  @param speed     The speed the animation should play at. 1.0f is normal speed.
-	 */
-	void playAnimation(const Common::UString &anim, bool restart = true,
-	                   float length = 0.0f, float speed = 1.0f);
-
-	/** Play a named animation a number of loop iterations.
-	 *
-	 *  @param anim      The animation to play.
-	 *  @param restart   Whether to restart the animation if it's already playing.
-	 *  @param loopCount Number of times to loop the animation. Negative for loop indefinitely.
-	 */
-	void playAnimationCount(const Common::UString &anim, bool restart = true, int32 loopCount = 0);
-
-	/** Play a default idle animation. */
-	void playDefaultAnimation();
+	void addAnimationChannel(AnimationChannelName name);
+	AnimationChannel *getAnimationChannel(AnimationChannelName name);
 
 	void clearDefaultAnimations();
-	void addDefaultAnimation(const Common::UString &name, uint8 probability);
+	void addDefaultAnimation(const Common::UString &anim, uint8 probability);
+	void playDefaultAnimation();
+
+	void playAnimation(const Common::UString &anim,
+	                   bool restart = true,
+	                   float length = 0.0f,
+	                   float speed = 1.0f);
 
 
 	// Renderable
@@ -202,6 +195,7 @@ protected:
 	typedef std::list<ModelNode *> NodeList;
 	typedef std::map<Common::UString, ModelNode *, Common::UString::iless> NodeMap;
 	typedef std::map<Common::UString, Animation *, Common::UString::iless> AnimationMap;
+	typedef std::map<AnimationChannelName, AnimationChannel *> AnimationChannelMap;
 
 	/** A model state. */
 	struct State {
@@ -215,15 +209,6 @@ protected:
 
 	typedef std::list<State *> StateList;
 	typedef std::map<Common::UString, State *> StateMap;
-
-	/** A default animation. */
-	struct DefaultAnimation {
-		Animation *animation; ///< The animation.
-
-		uint8 probability; ///< The probability (in percent) this animation is selected.
-	};
-
-	typedef std::list<DefaultAnimation> DefaultAnimations;
 
 
 	ModelType _type; ///< The model's type.
@@ -243,13 +228,9 @@ protected:
 
 	AnimationMap _animationMap; ///< Map of all animations in this model.
 
-	Animation *_currentAnimation; ///< The currently playing animations.
-	Animation *_nextAnimation;    ///< The animation that's scheduled next.
+	AnimationChannelMap _animationChannels;
 
 	float _animationScale; ///< The scale of the animation.
-
-	/** All default animations, sorted from least to most probable. */
-	DefaultAnimations _defaultAnimations;
 
 	float _scale      [3]; ///< Model's scale.
 	float _orientation[4]; ///< Model's orientation.
@@ -295,14 +276,6 @@ private:
 	bool _drawSkeleton;
 	bool _drawSkeletonInvisible;
 
-	float _animationSpeed;  ///< The speed the current animation should run at.
-	float _animationLength; ///< The time the current animation should run for.
-	float _animationTime;   ///< The time the current animation has played.
-
-	float _animationLoopLength; ///< The length of one loop of the current animation.
-	float _animationLoopTime;   ///< The time the current loop of the current animation has played.
-
-	std::vector<ModelNode *> _animationNodeMap;
 	std::map<Common::UString, Model *> _attachedModels;
 
 	/** Create the list of all state names. */
@@ -313,13 +286,6 @@ private:
 	void createAbsolutePosition();
 
 	void manageAnimations(float dt);
-
-	Animation *selectDefaultAnimation() const;
-
-	void setCurrentAnimation(Animation *anim);
-
-	/** Map animation node numbers to model nodes for better performance. */
-	void makeAnimationNodeMap(Animation *anim);
 
 public:
 	// General loading helpers
@@ -337,6 +303,7 @@ public:
 	friend class ModelNode;
 	friend class Animation;
 	friend class AnimationThread;
+	friend class AnimationChannel;
 };
 
 } // End of namespace Aurora

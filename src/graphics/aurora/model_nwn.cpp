@@ -49,6 +49,7 @@
 #include "src/graphics/aurora/model_nwn.h"
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/animnode.h"
+#include "src/graphics/aurora/animationchannel.h"
 
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
@@ -515,12 +516,7 @@ void Model_NWN::populateDefaultAnimations() {
 		if (!anim)
 			continue;
 
-		DefaultAnimation defaultAnim;
-
-		defaultAnim.animation   = anim;
-		defaultAnim.probability = kDefaultAnims[i].probability;
-
-		_defaultAnimations.push_back(defaultAnim);
+		addDefaultAnimation(kDefaultAnims[i].name, kDefaultAnims[i].probability);
 	}
 }
 

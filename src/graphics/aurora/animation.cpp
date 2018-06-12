@@ -71,7 +71,10 @@ void Animation::setTransTime(float transtime) {
 	_transtime = transtime;
 }
 
-void Animation::update(Model *model, float UNUSED(lastFrame), float nextFrame) {
+void Animation::update(Model *model,
+                       float UNUSED(lastFrame),
+                       float nextFrame,
+                       const std::vector<ModelNode *> &modelNodeMap) {
 	// TODO: Also need to fire off associated events
 	//       for event in _events event->fire()
 
@@ -79,7 +82,7 @@ void Animation::update(Model *model, float UNUSED(lastFrame), float nextFrame) {
 	float scale = model->getAnimationScale(_name);
 	for (NodeList::iterator n = nodeList.begin(); n != nodeList.end(); ++n) {
 		ModelNode *animNode = (*n)->_nodedata;
-		ModelNode *target = model->_animationNodeMap[animNode->_nodeNumber];
+		ModelNode *target = modelNodeMap[animNode->_nodeNumber];
 		if (!target)
 			continue;
 

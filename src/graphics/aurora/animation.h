@@ -63,7 +63,7 @@ public:
 	void setTransTime(float transtime);
 
 	/** Update the model position and orientation */
-	void update(Model *model, float lastFrame, float nextFrame);
+	void update(Model *model, float lastFrame, float nextFrame, const std::vector<ModelNode *> &modelNodeMap);
 
 	// Nodes
 

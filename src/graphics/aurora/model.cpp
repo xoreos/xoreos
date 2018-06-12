@@ -44,6 +44,7 @@ STOP_IGNORE_IMPLICIT_FALLTHROUGH
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/animnode.h"
+#include "src/graphics/aurora/animationchannel.h"
 
 #include "src/graphics/shader/surfaceman.h"
 #include "src/graphics/shader/materialman.h"
@@ -60,8 +61,6 @@ Model::Model(ModelType type)
 		  _type(type),
 		  _superModel(0),
 		  _currentState(0),
-		  _currentAnimation(0),
-		  _nextAnimation(0),
 		  _skinned(false),
 		  _positionRelative(false),
 		  _drawBound(false),
@@ -81,12 +80,7 @@ Model::Model(ModelType type)
 	// TODO: Is this the same as modelScale for non-UI?
 	_animationScale = 1.0f;
 
-	_animationSpeed  = 1.0f;
-	_animationLength = 1.0f;
-	_animationTime   = 0.0f;
-
-	_animationLoopLength = 1.0f;
-	_animationLoopTime   = 0.0f;
+	addAnimationChannel(kAnimationChannelAll);
 
 	_boundRenderable = new Shader::ShaderRenderable();
 	_boundRenderable->setSurface(SurfaceMan.getSurface("defaultSurface"));
@@ -96,6 +90,11 @@ Model::Model(ModelType type)
 
 Model::~Model() {
 	hide();
+
+	for (AnimationChannelMap::iterator c = _animationChannels.begin();
+			c != _animationChannels.end(); ++c) {
+		delete c->second;
+	}
 
 	for (AnimationMap::iterator a = _animationMap.begin(); a != _animationMap.end(); ++a)
 		delete a->second;
@@ -190,134 +189,6 @@ void Model::setEnvironmentMap(const Common::UString &environmentMap) {
 			(*n)->setEnvironmentMap(environmentMap);
 
 	unlockFrameIfVisible();
-}
-
-void Model::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
-	Animation *animation = getAnimation(anim);
-	if (!animation || (speed <= 0.0f))
-		return;
-
-	if (length == 0.0f)
-		length = animation->getLength() / speed;
-
-	_animationSpeed  = speed;
-	_animationLength = length;
-	_animationTime   = 0.0f;
-
-	_animationLoopLength = animation->getLength();
-
-	if (restart || (animation != _currentAnimation))
-		_nextAnimation = animation;
-}
-
-void Model::playAnimationCount(const Common::UString &anim, bool restart, int32 loopCount) {
-	Animation *animation = getAnimation(anim);
-	if (!animation)
-		return;
-
-	float length = -1.0f;
-	if (loopCount >= 0)
-		length = (loopCount + 1) * animation->getLength();
-
-	playAnimation(anim, restart, length, 1.0f);
-}
-
-void Model::playDefaultAnimation() {
-	_nextAnimation = selectDefaultAnimation();
-
-	_animationSpeed  = 1.0f;
-	_animationLength = 1.0f;
-	_animationTime   = 0.0f;
-
-	_animationLoopLength = 1.0f;
-	_animationLoopTime   = 0.0f;
-
-	if (_nextAnimation) {
-		_animationLength     = _nextAnimation->getLength();
-		_animationLoopLength = _nextAnimation->getLength();
-	}
-}
-
-void Model::clearDefaultAnimations() {
-	_defaultAnimations.clear();
-}
-
-void Model::addDefaultAnimation(const Common::UString &name, uint8 probability) {
-	Animation *anim = getAnimation(name);
-	if (!anim)
-		return;
-
-	DefaultAnimation da;
-	da.animation = anim;
-	da.probability = probability;
-	_defaultAnimations.push_back(da);
-}
-
-Animation *Model::selectDefaultAnimation() const {
-	uint8 pick = std::rand() % 100;
-	for (DefaultAnimations::const_iterator a = _defaultAnimations.begin(); a != _defaultAnimations.end(); ++a) {
-		if (pick < a->probability)
-			return a->animation;
-
-		pick -= a->probability;
-	}
-
-	return 0;
-}
-
-void Model::setCurrentAnimation(Animation *anim) {
-	if (!_currentState)
-		return;
-
-	makeAnimationNodeMap(anim);
-
-	_currentAnimation  = anim;
-	_animationLoopTime = 0.0f;
-}
-
-void Model::makeAnimationNodeMap(Animation *anim) {
-	if (!anim)
-		return;
-
-	const std::list<AnimNode *> &nodes = anim->getNodes();
-	int maxNodeNumber = -1;
-
-	for (std::list<AnimNode *>::const_iterator n = nodes.begin(); n != nodes.end(); ++n) {
-		int nodeNumber = (*n)->getNodeData()->getNodeNumber();
-		if (nodeNumber > maxNodeNumber) {
-			maxNodeNumber = nodeNumber;
-		}
-	}
-
-	_animationNodeMap.clear();
-
-	if (maxNodeNumber >= 0) {
-		_animationNodeMap.resize(maxNodeNumber + 1, 0);
-		for (std::list<AnimNode *>::const_iterator an = nodes.begin();
-				an != nodes.end(); ++an) {
-			ModelNode *animNode = (*an)->getNodeData();
-			int nodeNumber = animNode->getNodeNumber();
-			const Common::UString &animNodeName = animNode->getName();
-
-			NodeMap::iterator n = _currentState->nodeMap.find(animNodeName);
-			if (n != _currentState->nodeMap.end())
-				_animationNodeMap[nodeNumber] = n->second;
-			else {
-				for (std::map<Common::UString, Model *>::iterator m = _attachedModels.begin();
-						m != _attachedModels.end(); ++m) {
-					State *state = m->second->_currentState;
-					if (!state)
-						continue;
-
-					n = state->nodeMap.find(animNodeName);
-					if (n != state->nodeMap.end()) {
-						_animationNodeMap[nodeNumber] = n->second;
-						break;
-					}
-				}
-			}
-		}
-	}
 }
 
 void Model::getScale(float &x, float &y, float &z) const {
@@ -650,6 +521,44 @@ float Model::getAnimationScale(const Common::UString &anim) {
 	return 1.0f;
 }
 
+void Model::addAnimationChannel(AnimationChannelName name) {
+	AnimationChannelMap::iterator c = _animationChannels.find(name);
+	if (c != _animationChannels.end())
+		return;
+
+	_animationChannels.insert(std::pair<AnimationChannelName,
+	                                    AnimationChannel *>(name,
+	                                                        new AnimationChannel(this)));
+}
+
+AnimationChannel *Model::getAnimationChannel(AnimationChannelName name) {
+	AnimationChannelMap::iterator c = _animationChannels.find(name);
+	if (c == _animationChannels.end())
+		return 0;
+
+	return c->second;
+}
+
+void Model::clearDefaultAnimations() {
+	AnimationChannel *channel = _animationChannels.begin()->second;
+	channel->clearDefaultAnimations();
+}
+
+void Model::addDefaultAnimation(const Common::UString &anim, uint8 probability) {
+	AnimationChannel *channel = _animationChannels.begin()->second;
+	channel->addDefaultAnimation(anim, probability);
+}
+
+void Model::playDefaultAnimation() {
+	AnimationChannel *channel = _animationChannels.begin()->second;
+	channel->playDefaultAnimation();
+}
+
+void Model::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
+	AnimationChannel *channel = _animationChannels.begin()->second;
+	channel->playAnimation(anim, restart, length, speed);
+}
+
 void Model::calculateDistance() {
 	if (_type == kModelTypeGUIFront) {
 		_distance = _position[2];
@@ -706,66 +615,10 @@ void Model::setSkinned(bool skinned) {
 }
 
 void Model::manageAnimations(float dt) {
-	float lastFrame = _animationLoopTime;
-	float nextFrame = _animationLoopTime + _animationSpeed * dt;
-
-	// No animation and no new one scheduled? Select a default one
-	if (!_currentAnimation && !_nextAnimation)
-		playDefaultAnimation();
-
-	// Start a new animation if scheduled, interrupting the currently playing animation
-	if (_nextAnimation) {
-		setCurrentAnimation(_nextAnimation);
-		_nextAnimation = 0;
-
-		dt           = 0.0f;
-		lastFrame    = 0.0f;
-		nextFrame    = 0.0f;
+	for (AnimationChannelMap::iterator c = _animationChannels.begin();
+			c != _animationChannels.end(); ++c) {
+		c->second->manageAnimations(dt);
 	}
-
-	if (!_currentAnimation)
-		return;
-
-	// The loop of the animation ended: make sure to play the last frame
-	if ((lastFrame < _animationLoopLength) && (nextFrame >= _animationLoopLength)) {
-		_currentAnimation->update(this, lastFrame, _animationLoopLength);
-
-		_animationTime    += dt;
-		_animationLoopTime = _animationLoopLength;
-		return;
-	}
-
-	// The animation has run its requested course: return to the default animation.
-	if ((_animationLength >= 0.0f) && (_animationTime >= _animationLength)) {
-		playDefaultAnimation();
-		setCurrentAnimation(_nextAnimation);
-		_nextAnimation = 0;
-
-		if (_currentAnimation)
-			_currentAnimation->update(this, 0.0f, 0.0f);
-
-		createBound();
-		return;
-	}
-
-	// Start the next loop of the animation
-	if (lastFrame >= _animationLoopLength) {
-		_currentAnimation->update(this, 0.0f, 0.0f);
-
-		lastFrame = 0.0f;
-		nextFrame = _animationSpeed * dt;
-
-		createBound();
-	}
-
-	// Update the animation
-	_currentAnimation->update(this, lastFrame, nextFrame);
-
-	_animationTime    += dt;
-	_animationLoopTime = nextFrame;
-
-	if (nextFrame == 0.0f)
-		createBound();
 
 	for (std::map<Common::UString, Model *>::iterator m = _attachedModels.begin();
 			m != _attachedModels.end(); ++m) {
@@ -911,8 +764,8 @@ void Model::finalize() {
 		for (NodeList::iterator n = (*s)->rootNodes.begin(); n != (*s)->rootNodes.end(); ++n)
 			(*n)->orderChildren();
 
-	_currentAnimation = selectDefaultAnimation();
-	makeAnimationNodeMap(_currentAnimation);
+	AnimationChannelMap::iterator c = _animationChannels.begin();
+	c->second->playDefaultAnimation();
 }
 
 void Model::createStateNamesList(std::list<Common::UString> *stateNames) {
