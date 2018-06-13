@@ -26,6 +26,12 @@
 #ifndef AURORA_TEXTUREATLASFILE_H
 #define AURORA_TEXTUREATLASFILE_H
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_XML
+
 #include <map>
 
 namespace Aurora {
@@ -51,5 +57,7 @@ private:
 };
 
 } // End of namespace Aurora
+
+#endif // ENABLE_XML
 
 #endif // AURORA_TEXTUREATLASFILE_H

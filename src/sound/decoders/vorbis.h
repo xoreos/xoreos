@@ -50,6 +50,12 @@
 #ifndef SOUND_DECODERS_VORBIS_H
 #define SOUND_DECODERS_VORBIS_H
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_VORBIS
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -101,5 +107,7 @@ PacketizedAudioStream *makePacketizedVorbisStream(
 	Common::SeekableReadStream &packet3);
 
 } // End of namespace Sound
+
+#endif // ENABLE_VORBIS
 
 #endif // SOUND_DECODERS_VORBIS_H

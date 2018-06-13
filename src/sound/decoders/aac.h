@@ -25,6 +25,12 @@
 #ifndef SOUND_DECODERS_AAC_H
 #define SOUND_DECODERS_AAC_H
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_FAAD
+
 namespace Common {
 	class SeekableReadStream;
 }
@@ -42,5 +48,7 @@ class PacketizedAudioStream;
 PacketizedAudioStream *makeAACStream(Common::SeekableReadStream &extraData);
 
 } // End of namespace Sound
+
+#endif // ENABLE_FAAD
 
 #endif // SOUND_DECODERS_AAC_H

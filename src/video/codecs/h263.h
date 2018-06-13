@@ -25,6 +25,12 @@
 #ifndef VIDEO_CODECS_H263_H
 #define VIDEO_CODECS_H263_H
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_XVIDCORE
+
 namespace Common {
 class SeekableReadStream;
 } // End of namespace Common
@@ -39,5 +45,7 @@ class Codec;
 Codec *makeH263Codec(int width, int height, Common::SeekableReadStream &extraData);
 
 } // End of namespace Video
+
+#endif // ENABLE_XVIDCORE
 
 #endif // VIDEO_CODECS_H263_H

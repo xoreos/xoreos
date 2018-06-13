@@ -66,7 +66,6 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/cdpth.h \
     src/aurora/nfofile.h \
     src/aurora/ltrfile.h \
-    src/aurora/textureatlasfile.h \
     src/aurora/thewitchersavefile.h \
     src/aurora/thewitchersavewriter.h \
     src/aurora/sacfile.h \
@@ -114,13 +113,23 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/cdpth.cpp \
     src/aurora/nfofile.cpp \
     src/aurora/ltrfile.cpp \
-    src/aurora/textureatlasfile.cpp \
     src/aurora/thewitchersavefile.cpp \
     src/aurora/thewitchersavewriter.cpp \
     src/aurora/sacfile.cpp \
     src/aurora/fevfile.cpp \
     src/aurora/gfxfile.cpp \
     $(EMPTY)
+
+textureatlasfile_source = \
+    src/aurora/textureatlasfile.cpp \
+    src/aurora/textureatlasfile.h \
+    $(EMPTY)
+
+if ENABLE_XML
+src_aurora_libaurora_la_SOURCES += $(textureatlasfile_source)
+else
+EXTRA_DIST += $(textureatlasfile_source)
+endif
 
 src_aurora_libaurora_la_LIBADD = \
     src/aurora/nwscript/libnwscript.la \

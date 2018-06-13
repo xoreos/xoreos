@@ -50,6 +50,12 @@
 #ifndef SOUND_DECODERS_MP3_H
 #define SOUND_DECODERS_MP3_H
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_MAD
+
 #include "src/common/types.h"
 
 namespace Common {
@@ -75,5 +81,7 @@ RewindableAudioStream *makeMP3Stream(
 	bool disposeAfterUse);
 
 } // End of namespace Sound
+
+#endif // ENABLE_MAD
 
 #endif // SOUND_DECODERS_MP3_H

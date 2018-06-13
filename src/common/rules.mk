@@ -51,7 +51,6 @@ src_common_libcommon_la_SOURCES += \
     src/common/md5.h \
     src/common/blowfish.h \
     src/common/deflate.h \
-    src/common/lzma.h \
     src/common/error.h \
     src/common/util.h \
     src/common/strutil.h \
@@ -85,7 +84,6 @@ src_common_libcommon_la_SOURCES += \
     src/common/pe_exe.h \
     src/common/systemfonts.h \
     src/common/changeid.h \
-    src/common/xml.h \
     src/common/rational.h \
     src/common/algorithm.h \
     src/common/timestamp.h \
@@ -107,7 +105,6 @@ src_common_libcommon_la_SOURCES += \
     src/common/md5.cpp \
     src/common/blowfish.cpp \
     src/common/deflate.cpp \
-    src/common/lzma.cpp \
     src/common/error.cpp \
     src/common/util.cpp \
     src/common/strutil.cpp \
@@ -137,8 +134,29 @@ src_common_libcommon_la_SOURCES += \
     src/common/pe_exe.cpp \
     src/common/systemfonts.cpp \
     src/common/changeid.cpp \
-    src/common/xml.cpp \
     src/common/rect.cpp \
     src/common/rational.cpp \
     src/common/timestamp.cpp \
     $(EMPTY)
+
+lzma_sources = \
+    src/common/lzma.cpp \
+    src/common/lzma.h \
+    $(EMPTY)
+
+if ENABLE_LZMA
+src_common_libcommon_la_SOURCES += $(lzma_sources)
+else
+EXTRA_DIST += $(lzma_sources)
+endif
+
+xml_sources = \
+    src/common/xml.cpp \
+    src/common/xml.h \
+    $(EMPTY)
+
+if ENABLE_XML
+src_common_libcommon_la_SOURCES += $(xml_sources)
+else
+EXTRA_DIST += $(xml_sources)
+endif

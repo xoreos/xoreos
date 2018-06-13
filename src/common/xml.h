@@ -25,6 +25,12 @@
 #ifndef COMMON_XML_H
 #define COMMON_XML_H
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_XML
+
 #include <list>
 #include <map>
 
@@ -116,5 +122,7 @@ private:
 };
 
 } // End of namespace Common
+
+#endif // ENABLE_XML
 
 #endif // COMMON_XML_H

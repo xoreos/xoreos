@@ -23,11 +23,6 @@
  * A loader class for texture atlas XML files for Dragon Age: Origins and Dragon Age 2.
  */
 
-#ifdef HAVE_CONFIG_H
-	#include "config.h"
-#endif
-
-#ifdef ENABLE_XML
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
 #include "src/common/xml.h"
@@ -114,4 +109,3 @@ void TextureAtlasFile::load(Common::SeekableReadStream &stream) {
 }
 
 } // End of namespace Aurora
-#endif
