@@ -25,6 +25,11 @@
 #ifndef COMMON_LZMA_H
 #define COMMON_LZMA_H
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_LZMA
 #include "src/common/types.h"
 
 namespace Common {
@@ -59,5 +64,7 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, boo
 SeekableReadStream *decompressLZMA1(ReadStream &input, size_t inputSize, size_t outputSize, bool noEndMarker = false);
 
 } // End of namespace Common
+
+#endif // ENABLE_LZMA
 
 #endif // COMMON_LZMA_H
