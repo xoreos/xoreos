@@ -222,7 +222,7 @@ void Campaign::readManifest(const Common::UString &path) {
 		return;
 
 	Common::ReadFile  manifest(path);
-	Common::XMLParser xml(manifest, true);
+	Common::XMLParser xml(manifest, true, path);
 
 	const Common::XMLNode &root = xml.getRoot();
 
