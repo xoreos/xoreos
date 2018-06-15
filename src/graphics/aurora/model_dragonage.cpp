@@ -40,6 +40,7 @@
 #include "src/common/filepath.h"
 #include "src/common/xml.h"
 
+#include "src/aurora/util.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/aurorafile.h"
 #include "src/aurora/gff4file.h"
@@ -751,10 +752,11 @@ void ModelNode_DragonAge::readMAOGFF(Common::SeekableReadStream *maoStream, Mate
 }
 
 /** Read a MAO encoded in an XML file. */
-void ModelNode_DragonAge::readMAOXML(Common::SeekableReadStream *maoStream, MaterialObject &material) {
-	try {
+void ModelNode_DragonAge::readMAOXML(Common::SeekableReadStream *maoStream, MaterialObject &material,
+                                     const Common::UString &fileName) {
 
-		XMLParser mao(*maoStream, true);
+	try {
+		XMLParser mao(*maoStream, true, fileName);
 		const XMLNode &maoRoot = mao.getRoot();
 
 		if (maoRoot.getName() != "materialobject")
@@ -813,7 +815,7 @@ void ModelNode_DragonAge::readMAO(const Common::UString &materialName, MaterialO
 		if      (tag == kGFFID)
 			readMAOGFF(maoStream, material);
 		else if (tag == kXMLID)
-			readMAOXML(maoStream, material);
+			readMAOXML(maoStream, material, TypeMan.setFileType(materialName, kFileTypeMAO));
 		else {
 			delete maoStream;
 			throw Common::Exception("Invalid MAO type %s", Common::debugTag(tag).c_str());
