@@ -50,6 +50,11 @@ class XMLNode;
 /** Class to parse a ReadStream into a simple XML tree. */
 class XMLParser : boost::noncopyable {
 public:
+	/** Parse an XML file out of a stream.
+	 *
+	 *  @param stream The stream to read the XML from.
+	 *  @param makeLower Should all tags be converted to lowercase, to ease case-insensitive comparison?
+	 */
 	XMLParser(ReadStream &stream, bool makeLower = false);
 	~XMLParser();
 
