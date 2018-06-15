@@ -37,7 +37,10 @@
 
 namespace Common {
 
-static void errorFuncThrow(void *UNUSED(ctx), const char *msg, ...) {
+static void errorFuncUString(void *ctx, const char *msg, ...) {
+	UString *str = static_cast<UString *>(ctx);
+	assert(str);
+
 	char buf[STRINGBUFLEN];
 	va_list va;
 
@@ -45,7 +48,7 @@ static void errorFuncThrow(void *UNUSED(ctx), const char *msg, ...) {
 	vsnprintf(buf, STRINGBUFLEN, msg, va);
 	va_end(va);
 
-	throw Exception("libxml2 error: %s", buf);
+	*str += buf;
 }
 
 static int readStream(void *context, char *buffer, int len) {
@@ -61,8 +64,6 @@ static int closeStream(void *UNUSED(context)) {
 }
 
 void initXML() {
-	xmlSetGenericErrorFunc(0, errorFuncThrow);
-
 	// Initialize libxml2 and make sure the library version matches
 	LIBXML_TEST_VERSION
 }
@@ -72,12 +73,22 @@ void deinitXML() {
 }
 
 XMLParser::XMLParser(ReadStream &stream, bool makeLower) {
+	UString parseError;
+	xmlSetGenericErrorFunc(static_cast<void *>(&parseError), errorFuncUString);
+
 	const int options = XML_PARSE_NOWARNING | XML_PARSE_NOBLANKS | XML_PARSE_NONET |
 	                    XML_PARSE_NSCLEAN   | XML_PARSE_NOCDATA;
 
 	xmlDocPtr xml = xmlReadIO(readStream, closeStream, static_cast<void *>(&stream), "stream.xml", 0, options);
-	if (!xml)
-		throw Exception("XML document failed to parse");
+	if (!xml) {
+		Exception e;
+
+		if (!parseError.empty())
+			e.add("%s", parseError.c_str());
+
+		e.add("XML document failed to parse");
+		throw e;
+	}
 
 	BOOST_SCOPE_EXIT( (&xml) ) {
 		xmlFreeDoc(xml);
