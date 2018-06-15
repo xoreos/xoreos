@@ -46,14 +46,14 @@ class ASBuffer {
 public:
 	ASBuffer(Common::SeekableReadStream *as);
 
-	void run(AVM& avm);
+	void run(AVM &avm);
 
 	void setConstantPool(std::vector<Common::UString> constantPool);
 
 private:
-	void execute(AVM& avm);
+	void execute(AVM &avm);
 
-	void actionStop(AVM& avm);
+	void actionStop(AVM &avm);
 	void actionToggleQuality();
 	void actionSubtract();
 	void actionMultiply();

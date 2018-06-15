@@ -161,7 +161,7 @@ void ASBuffer::execute(AVM &avm) {
 	debugC(kDebugActionScript, 1, "--- End Actionscript ---");
 }
 
-void ASBuffer::actionStop(AVM& avm) {
+void ASBuffer::actionStop(AVM &avm) {
 	avm.setStopFlag();
 
 	debugC(kDebugActionScript, 1, "actionStop");
