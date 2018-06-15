@@ -72,7 +72,7 @@ Logo and icon
 boost.m4
 ********
    xoreos uses Benoit Sigoure's boost.m4 autoconf macros
-   (<http://github.com/tsuna/boost.m4>) to check for the needed Boost
+   (<https://github.com/tsuna/boost.m4>) to check for the needed Boost
    libraries. boost.m4 is licensed under version 3 or later of the GNU General
    Public License. For the full license text, see COPYING or
    <https://gnu.org/licenses/gpl-3.0.html>.
@@ -97,11 +97,11 @@ glew
 
 lua
 ***
-   xoreos uses lua, a lightweight scripting language (<http://www.lua.org/>), to
-   handle scripts from The Witcher. To minimize dependencies on "uncommon"
+   xoreos uses lua, a lightweight scripting language (<https://www.lua.org/>),
+   to handle scripts from The Witcher. To minimize dependencies on "uncommon"
    libraries, xoreos completely includes the lua 5.0.3 code. Lua is licensed
    under the terms of the MIT license. For the full license text, see
-   lua/COPYRIGHT or <http://www.lua.org/license.html>.
+   lua/COPYRIGHT or <https://www.lua.org/license.html>.
 
 tolua++
 *******
@@ -128,7 +128,7 @@ GLM
 
 ScummVM code
 ************
-   xoreos uses some ScummVM (<http://scummvm.org/>) code, most prominently the
+   xoreos uses some ScummVM (<https://scummvm.org/>) code, most prominently the
    endian, singleton, stream and audio stream code. ScummVM is licensed under
    version 2 or later of the GNU General Public License. For the full license
    text, see doc/LICENSE.GPLv2 or <https://gnu.org/licenses/gpl-2.0.html>.
@@ -136,26 +136,26 @@ ScummVM code
 Bink
 ****
    The Bink decoder used in xoreos is based (heavily) on the Bink decoder in
-   FFmpeg (<http://ffmpeg.org/>), licensed under the GNU Lesser General Public
+   FFmpeg (<https://ffmpeg.org/>), licensed under the GNU Lesser General Public
    License (LGPL) version 2.1 or later. For the full license text, see
    doc/LICENSE.LGPLv2.1 or <https://gnu.org/licenses/lgpl-2.1.html>. Many thanks
-   to Kostya Shishkov (<http://codecs.multimedia.cx/>) for doing the hard work.
+   to Kostya Shishkov (<https://codecs.multimedia.cx/>) for doing the hard work.
 
 WMA
 ***
    The WMA decoder used in xoreos is based (heavily) on the WMA decoder in
-   FFmpeg (<http://ffmpeg.org/>), licensed under the GNU Lesser General Public
+   FFmpeg (<https://ffmpeg.org/>), licensed under the GNU Lesser General Public
    License (LGPL) version 2.1 or later. For the full license text, see
    doc/LICENSE.LGPLv2.1 or <https://gnu.org/licenses/lgpl-2.1.html>.
 
 DejaVu Sans Mono Bold
 *********************
-   xoreos includes DejaVu Sans Mono Bold (<http://dejavu-fonts.org/>) as a
+   xoreos includes DejaVu Sans Mono Bold (<https://dejavu-fonts.org/>) as a
    monospaced system font. The DejaVu font family is based on the Vera Fonts
-   (<http://gnome.org/fonts/>), distributed under the Bitstream Vera Fonts
+   (<https://gnome.org/fonts/>), distributed under the Bitstream Vera Fonts
    license. Glyphs imported from Arev fonts are Copyright 2006 by Tavmjung Bah.
    For the full license texts, see doc/LICENSE.Bitstream and doc/LICENSE.Arev,
-   or <http://dejavu-fonts.org/wiki/License>.
+   or <https://dejavu-fonts.org/wiki/License>.
 
 Nintendo DS formats
 *******************
@@ -165,7 +165,7 @@ Nintendo DS formats
    license text, see COPYING or <https://gnu.org/licenses/gpl-3.0.html>.
    They are also based on lowlines' file format specifications
    (<http://llref.emutalk.net/docs/>) and the Nintendo DS information
-   documentation GBATEK by Martin Korth (<http://problemkaputt.de/gbatek.htm>).
+   documentation GBATEK by Martin Korth (<https://problemkaputt.de/gbatek.htm>).
 
 Google Test
 ***********
