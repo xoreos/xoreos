@@ -72,14 +72,15 @@ void deinitXML() {
 	xmlCleanupParser();
 }
 
-XMLParser::XMLParser(ReadStream &stream, bool makeLower) {
+XMLParser::XMLParser(ReadStream &stream, bool makeLower, const UString &fileName) {
 	UString parseError;
 	xmlSetGenericErrorFunc(static_cast<void *>(&parseError), errorFuncUString);
 
 	const int options = XML_PARSE_NOWARNING | XML_PARSE_NOBLANKS | XML_PARSE_NONET |
 	                    XML_PARSE_NSCLEAN   | XML_PARSE_NOCDATA;
 
-	xmlDocPtr xml = xmlReadIO(readStream, closeStream, static_cast<void *>(&stream), "stream.xml", 0, options);
+	xmlDocPtr xml = xmlReadIO(readStream, closeStream, static_cast<void *>(&stream),
+	                          fileName.c_str(), 0, options);
 	if (!xml) {
 		Exception e;
 

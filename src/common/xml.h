@@ -54,8 +54,9 @@ public:
 	 *
 	 *  @param stream The stream to read the XML from.
 	 *  @param makeLower Should all tags be converted to lowercase, to ease case-insensitive comparison?
+	 *  @param fileName The file name to tell libxml2. Only used for error reporting.
 	 */
-	XMLParser(ReadStream &stream, bool makeLower = false);
+	XMLParser(ReadStream &stream, bool makeLower = false, const UString &fileName = "stream.xml");
 	~XMLParser();
 
 	/** Return the XML root node. */
