@@ -82,7 +82,8 @@ enum Opcodes {
 };
 
 ASBuffer::ASBuffer(Common::SeekableReadStream *as) :
-		_seeked(0), _script(as) {
+		_currentLength(0), _seeked(0), _script(as) {
+
 	assert(as);
 }
 
