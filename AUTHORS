@@ -173,3 +173,22 @@ Google Test
    C++ test framework. Google Test is licensed under the terms of the 3-clause
    BSD license. For the full license text, see tests/googletest/LICENSE or
    <https://github.com/google/googletest/blob/master/googletest/LICENSE>.
+
+Libraries
+*********
+   In addition to the above, xoreos is also only possible because of the people
+   working for the following libraries and organizations. Many thanks!
+   - libiconv <https://www.gnu.org/software/libiconv/>
+   - zlib <https://zlib.net/>
+   - liblzma <https://tukaani.org/xz/>
+   - libxml2 <http://www.xmlsoft.org/>
+   - Boost <https://www.boost.org/>
+   - OpenGL <https://www.opengl.org/>
+   - SDL2 <https://www.libsdl.org/>
+   - FreeType <https://www.freetype.org/>
+   - OpenAL Soft <http://kcat.strangesoft.net/openal.html>
+   - MAD <https://www.underbit.com/products/mad/>
+   - libogg <https://xiph.org/ogg/>
+   - libvorbis and libvorbisfile <https://xiph.org/vorbis/>
+   - libfaad <http://www.audiocoding.com/faad2.html>
+   - libxvidcore <https://www.xvid.com/>
