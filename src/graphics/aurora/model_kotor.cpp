@@ -390,7 +390,7 @@ void Model_KotOR::makeBoneNodeMap() {
 		ModelNode::Mesh *mesh = node->getMesh();
 		if (mesh && mesh->skin) {
 			ModelNode::Skin *skin = mesh->skin;
-			skin->boneNodeMap.reserve(skin->boneMappingCount);
+			skin->boneNodeMap.resize(skin->boneMappingCount);
 			for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
 				int index = static_cast<int>(skin->boneMapping[i]);
 				if (index != -1)
@@ -729,7 +729,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
 	_mesh->data->vertexBuffer.setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
-	_mesh->data->initialVertexCoords.reserve(3 * ctx.vertexCount);
+	_mesh->data->initialVertexCoords.resize(3 * ctx.vertexCount);
 
 	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
 	float *iv = &_mesh->data->initialVertexCoords[0];

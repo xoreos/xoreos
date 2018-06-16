@@ -281,7 +281,7 @@ void Animation::updateSkinnedModel(Model *model) {
 		uint32 vertexCount = meshData->vertexBuffer.getCount();
 
 		std::vector<float> &vcb = node->_vertexCoordsBuffer;
-		vcb.reserve(3 * vertexCount);
+		vcb.resize(3 * vertexCount);
 		float *v = &vcb[0];
 
 		float *iv = &meshData->initialVertexCoords[0];
