@@ -29,9 +29,9 @@
 
 #include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
-#include "src/engines/kotor/gui/widgets/panel.h"
-#include "src/engines/kotor/gui/widgets/progressbar.h"
-#include "src/engines/kotor/gui/widgets/label.h"
+#include "src/engines/aurora/kotorjadegui/panel.h"
+#include "src/engines/aurora/kotorjadegui/progressbar.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
 
 namespace Engines {
 

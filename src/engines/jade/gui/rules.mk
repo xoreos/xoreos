@@ -31,4 +31,3 @@ src_engines_jade_libjade_la_SOURCES += \
 
 include src/engines/jade/gui/main/rules.mk
 include src/engines/jade/gui/options/rules.mk
-include src/engines/jade/gui/widgets/rules.mk

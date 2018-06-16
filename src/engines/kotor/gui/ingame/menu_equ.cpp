@@ -22,9 +22,9 @@
  *  The ingame equipment menu.
  */
 
-#include "src/engines/kotor/gui/ingame/menu_equ.h"
+#include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/ingame/menu_equ.h"
 
 namespace Engines {
 

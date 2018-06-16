@@ -22,7 +22,8 @@
  *  The KotOR 2 custom character panel.
  */
 
-#include "src/engines/kotor2/gui/widgets/kotorwidget.h"
+#include "src/engines/aurora/widget.h"
+
 #include "src/engines/kotor2/gui/chargen/customchar.h"
 
 namespace Engines {

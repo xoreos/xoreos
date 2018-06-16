@@ -24,8 +24,8 @@
 
 #include "src/engines/kotor/gui/dialogs/confirm.h"
 
-#include "src/engines/kotor/gui/widgets/panel.h"
-#include "src/engines/kotor/gui/widgets/listbox.h"
+#include "src/engines/aurora/kotorjadegui/panel.h"
+#include "src/engines/aurora/kotorjadegui/listbox.h"
 
 namespace Engines {
 
@@ -37,12 +37,15 @@ ConfirmDialog::ConfirmDialog(Console *console) : GUI(console), _accepted(false) 
 	WidgetPanel *guiPanel = getPanel("TGuiPanel");
 	guiPanel->setPosition(-guiPanel->getWidth()/2, -guiPanel->getHeight()/2, 0);
 
-	_label = getListBox("LB_MESSAGE")->createItem("LBL_MESSAGE");
-	addWidget(_label, true);
+	WidgetListBox *lbMessage = getListBox("LB_MESSAGE");
+	lbMessage->createItemWidgets(1);
 }
 
 void ConfirmDialog::setText(const Common::UString &text) {
-	_label->setText(text);
+	WidgetListBox *lbMessage = getListBox("LB_MESSAGE");
+	lbMessage->removeAllItems();
+	lbMessage->addItem(text);
+	lbMessage->refreshItemWidgets();
 }
 
 bool ConfirmDialog::getAccepted() {

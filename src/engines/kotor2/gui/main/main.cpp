@@ -29,10 +29,9 @@
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
+#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
 
 #include "src/engines/kotor2/module.h"
-
-#include "src/engines/kotor2/gui/widgets/kotorwidget.h"
 
 #include "src/engines/kotor2/gui/main/main.h"
 #include "src/engines/kotor2/gui/chargen/classselection.h"
@@ -53,7 +52,7 @@ MainMenu::~MainMenu() {
 void MainMenu::initWidget(Widget &widget) {
 	// ...BioWare...
 	if (widget.getTag() == "LBL_GAMELOGO") {
-		dynamic_cast< KotORWidget & >(widget).setFill("kotor2logo");
+		dynamic_cast< KotORJadeWidget & >(widget).setFill("kotor2logo");
 		return;
 	}
 

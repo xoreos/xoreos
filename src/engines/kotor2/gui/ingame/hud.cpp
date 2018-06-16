@@ -24,8 +24,9 @@
 
 #include "src/graphics/windowman.h"
 
+#include "src/engines/aurora/widget.h"
+
 #include "src/engines/kotor2/module.h"
-#include "src/engines/kotor2/gui/widgets/kotorwidget.h"
 #include "src/engines/kotor2/gui/ingame/hud.h"
 
 namespace Engines {

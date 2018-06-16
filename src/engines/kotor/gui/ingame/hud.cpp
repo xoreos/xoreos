@@ -28,9 +28,8 @@
 #include "src/graphics/graphics.h"
 
 #include "src/engines/kotor/gui/ingame/hud.h"
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
-#include "src/engines/kotor/gui/widgets/label.h"
-#include "src/engines/kotor/gui/widgets/progressbar.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/kotorjadegui/progressbar.h"
 
 namespace Engines {
 

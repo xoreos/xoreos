@@ -26,6 +26,11 @@
 
 #include "src/engines/aurora/util.h"
 
+#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/aurora/kotorjadegui/protoitem.h"
+
 #include "src/engines/jade/gui/main/options.h"
 
 #include "src/engines/jade/gui/options/audio.h"
@@ -33,9 +38,6 @@
 #include "src/engines/jade/gui/options/diff.h"
 #include "src/engines/jade/gui/options/feed.h"
 #include "src/engines/jade/gui/options/control.h"
-
-#include "src/engines/jade/gui/widgets/listbox.h"
-#include "src/engines/jade/gui/widgets/label.h"
 
 namespace Engines {
 
@@ -49,21 +51,24 @@ OptionsMenu::OptionsMenu(Console *console) : GUI(console) {
 	getWidget("Lopt")->getPosition(x, y, z);
 	getWidget("Lopt")->setPosition(x, y, z + 10);
 
-	Engines::Jade::WidgetListBox *optionsListBox = getListBox("OptionsListBox");
+	Engines::WidgetListBox *optionsListBox = getListBox("OptionsListBox");
+	optionsListBox->createItemWidgets(6);
 
-	addWidget(optionsListBox->createItem("AUDIO_SETTINGS"), true);
-	addWidget(optionsListBox->createItem("GRAPHIC_SETTINGS"), true);
-	addWidget(optionsListBox->createItem("DIFFICULTY"), true);
-	addWidget(optionsListBox->createItem("GAME_INFO"), true);
-	addWidget(optionsListBox->createItem("CONTROLS"), true);
-	addWidget(optionsListBox->createItem("CREDITS"), true);
+	optionsListBox->addItem(TalkMan.getString(132));   // Audio Settings
+	optionsListBox->addItem(TalkMan.getString(133));   // Graphic Settings
+	optionsListBox->addItem(TalkMan.getString(149));   // Difficulty
+	optionsListBox->addItem(TalkMan.getString(150));   // Game Info
+	optionsListBox->addItem(TalkMan.getString(151));   // Controls
+	optionsListBox->addItem(TalkMan.getString(15709)); // Credits
 
-	_audioOptionsButton = getButton("AUDIO_SETTINGS");
-	_videoOptionsButton = getButton("GRAPHIC_SETTINGS");
-	_difficultyOptionsButton = getButton("DIFFICULTY");
-	_gameInfoOptionsButton = getButton("GAME_INFO");
-	_controlOptionsButton = getButton("CONTROLS");
-	_creditsButton = getButton("CREDITS");
+	optionsListBox->refreshItemWidgets();
+
+	_audioOptionsButton = getProtoItem("OptionsListBox_ITEM_0");
+	_videoOptionsButton = getProtoItem("OptionsListBox_ITEM_1");
+	_difficultyOptionsButton = getProtoItem("OptionsListBox_ITEM_2");
+	_gameInfoOptionsButton = getProtoItem("OptionsListBox_ITEM_3");
+	_controlOptionsButton = getProtoItem("OptionsListBox_ITEM_4");
+	_creditsButton = getProtoItem("OptionsListBox_ITEM_5");
 
 	_backButton = getButton("ButtonBack");
 	_currentButton = 0;
@@ -77,13 +82,6 @@ OptionsMenu::OptionsMenu(Console *console) : GUI(console) {
 	_controlOptionsDescription = TalkMan.getString(154);
 	_creditsDescription = TalkMan.getString(33212);
 	_backButtonDescription = TalkMan.getString(130088);
-
-	_audioOptionsButton->setText(TalkMan.getString(132));
-	_videoOptionsButton->setText(TalkMan.getString(133));
-	_difficultyOptionsButton->setText(TalkMan.getString(149));
-	_gameInfoOptionsButton->setText(TalkMan.getString(150));
-	_controlOptionsButton->setText(TalkMan.getString(151));
-	_creditsButton->setText(TalkMan.getString(15709));
 
 	_optionsDescription->setText("");
 }
@@ -135,7 +133,7 @@ void OptionsMenu::callbackRun() {
 }
 
 void OptionsMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "AUDIO_SETTINGS") {
+	if (widget.getTag() == _audioOptionsButton->getTag()) {
 		if (!_audioOptions)
 			createAudioOptions();
 
@@ -143,7 +141,7 @@ void OptionsMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-	if (widget.getTag() == "GRAPHIC_SETTINGS") {
+	if (widget.getTag() == _videoOptionsButton->getTag()) {
 		if (!_videoOptions)
 			createVideoOptions();
 
@@ -151,7 +149,7 @@ void OptionsMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-	if (widget.getTag() == "DIFFICULTY") {
+	if (widget.getTag() == _difficultyOptionsButton->getTag()) {
 		if (!_difficultyOptions)
 			createDifficultyOptions();
 
@@ -159,7 +157,7 @@ void OptionsMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-	if (widget.getTag() == "GAME_INFO") {
+	if (widget.getTag() == _gameInfoOptionsButton->getTag()) {
 		if (!_gameInfoOptions)
 			createGameInfoOptions();
 
@@ -167,7 +165,7 @@ void OptionsMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-	if (widget.getTag() == "CONTROLS") {
+	if (widget.getTag() == _controlOptionsButton->getTag()) {
 		if (!_controlOptions)
 			createControlOptions();
 
@@ -175,7 +173,7 @@ void OptionsMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-	if (widget.getTag() == "CREDITS") {
+	if (widget.getTag() == _creditsButton->getTag()) {
 		playVideo("creditmovie");
 		return;
 	}

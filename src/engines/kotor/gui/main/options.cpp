@@ -31,8 +31,7 @@
 #include "src/engines/kotor/gui/options/graphics.h"
 #include "src/engines/kotor/gui/options/sound.h"
 
-#include "src/engines/kotor/gui/widgets/button.h"
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
 
 namespace Engines {
 

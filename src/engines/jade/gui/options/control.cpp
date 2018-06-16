@@ -22,9 +22,9 @@
  *  The Jade Empire control options menu.
  */
 
-#include "src/engines/jade/gui/options/control.h"
+#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
 
-#include "src/engines/jade/gui/widgets/jadewidget.h"
+#include "src/engines/jade/gui/options/control.h"
 
 namespace Engines {
 

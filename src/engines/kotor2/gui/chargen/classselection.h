@@ -27,8 +27,8 @@
 
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/gui/gui.h"
-#include "src/engines/kotor2/gui/widgets/label.h"
-#include "src/engines/kotor2/gui/widgets/button.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
 #include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 

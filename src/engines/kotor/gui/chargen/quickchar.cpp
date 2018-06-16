@@ -22,8 +22,8 @@
  *  The panel to customize a custom character.
  */
 
-#include "src/engines/kotor/gui/widgets/label.h"
-#include "src/engines/kotor/gui/widgets/button.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
 
 #include "src/engines/kotor/gui/chargen/quickchar.h"
 

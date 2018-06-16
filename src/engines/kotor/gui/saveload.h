@@ -37,9 +37,9 @@
 
 namespace Engines {
 
-namespace KotOR {
-
 class WidgetListBox;
+
+namespace KotOR {
 
 enum {
 	kSaveLoadMenuTypeSave = 0,

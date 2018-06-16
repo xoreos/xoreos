@@ -24,7 +24,7 @@
 
 #include "src/engines/kotor/gui/options/resolution.h"
 
-#include "src/engines/kotor/gui/widgets/panel.h"
+#include "src/engines/aurora/kotorjadegui/panel.h"
 
 namespace Engines {
 

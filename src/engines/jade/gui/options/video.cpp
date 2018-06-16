@@ -22,9 +22,9 @@
  *  The Jade Empire video options menu.
  */
 
-#include "src/engines/jade/gui/options/video.h"
+#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
 
-#include "src/engines/jade/gui/widgets/jadewidget.h"
+#include "src/engines/jade/gui/options/video.h"
 
 namespace Engines {
 

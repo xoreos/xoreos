@@ -1,0 +1,351 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file
+ *  A list box widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ */
+
+#include "src/common/system.h"
+#include "src/common/strutil.h"
+
+#include "src/aurora/gff3file.h"
+
+#include "src/graphics/graphics.h"
+
+#include "src/engines/aurora/util.h"
+
+#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/kotorjadegui/scrollbar.h"
+#include "src/engines/aurora/kotorjadegui/protoitem.h"
+#include "src/engines/aurora/kotorjadegui/kotorinventoryitem.h"
+
+namespace Engines {
+
+WidgetListBox::WidgetListBox(GUI &gui, const Common::UString &tag)
+		: KotORJadeWidget(gui, tag),
+		  _protoItem(0),
+		  _scrollbar(0),
+		  _itemType(kLBItemTypeDefault),
+		  _padding(0),
+		  _leftScrollbar(false),
+		  _itemSelectionEnabled(false),
+		  _adjustHeight(false),
+		  _hideScrollbar(true),
+		  _selectedIndex(-1),
+		  _startIndex(0),
+		  _numVisibleItems(0),
+		  _textColorChanged(false),
+		  _textR(0.0f), _textG(0.0f), _textB(0.0f), _textA(0.0f),
+		  _borderColorChanged(false),
+		  _borderR(0.0f), _borderG(0.0f), _borderB(0.0f), _borderA(0.0f) {
+}
+
+WidgetListBox::~WidgetListBox() {
+}
+
+void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
+	KotORJadeWidget::load(gff);
+
+	_padding = gff.getSint("PADDING");
+	_leftScrollbar = gff.getBool("LEFTSCROLLBAR");
+
+	if (gff.hasField("SCROLLBAR"))
+		createScrollbar(gff.getStruct("SCROLLBAR"));
+
+	if (gff.hasField("PROTOITEM"))
+		_protoItem = &gff.getStruct("PROTOITEM");
+}
+
+void WidgetListBox::setItemType(ListBoxItemType itemType) {
+	_itemType = itemType;
+}
+
+void WidgetListBox::setItemSelectionEnabled(bool itemSelectionEnabled) {
+	_itemSelectionEnabled = itemSelectionEnabled;
+}
+
+void WidgetListBox::setAdjustHeight(bool adjustHeight) {
+	_adjustHeight = adjustHeight;
+}
+
+void WidgetListBox::setHideScrollbar(bool hideScrollbar) {
+	_hideScrollbar = hideScrollbar;
+}
+
+void WidgetListBox::setPadding(uint32 padding) {
+	_padding = padding;
+}
+
+void WidgetListBox::setItemTextColor(float r, float g, float b, float a) {
+	_textColorChanged = true;
+	_textR = r;
+	_textG = g;
+	_textB = b;
+	_textA = a;
+}
+
+void WidgetListBox::setItemBorderColor(float r, float g, float b, float a) {
+	_borderColorChanged = true;
+	_borderR = r;
+	_borderG = g;
+	_borderB = b;
+	_borderA = a;
+}
+
+void WidgetListBox::addItem(const Common::UString &contents) {
+	_items.push_back(contents);
+}
+
+void WidgetListBox::removeAllItems() {
+	_startIndex = 0;
+	_items.clear();
+}
+
+void WidgetListBox::createItemWidgets(uint32 count) {
+	if ((!_protoItem) || (!_itemWidgets.empty()))
+		return;
+
+	for (uint32 i = 0; i < count; ++i) {
+		Common::UString tag = Common::UString::format("%s_ITEM_%u", _tag.c_str(), i);
+		WidgetProtoItem *item;
+
+		switch (_itemType) {
+			case kLBItemTypeKotORInventory:
+				item = new KotORInventoryItem(*_gui, tag);
+				break;
+			case kLBItemTypeDefault:
+			default:
+				item = new WidgetProtoItem(*_gui, tag);
+				break;
+		}
+
+		item->load(*_protoItem);
+
+		if (_itemSelectionEnabled)
+			item->setDisableHighlight(true);
+		if (_textColorChanged)
+			item->setTextColor(_textR, _textG, _textB, _textA);
+		if (_borderColorChanged)
+			item->setBorderColor(_borderR, _borderG, _borderB, _borderA);
+
+		addChild(*item);
+		addSub(*item);
+
+		_itemWidgets.push_back(item);
+	}
+
+	positionItemWidgets();
+}
+
+void WidgetListBox::refreshItemWidgets() {
+	if (_itemWidgets.empty())
+		return;
+
+	_numVisibleItems = 0;
+	float totalHeight = 0;
+
+	float x, y, z;
+	getPosition(x, y, z);
+	y += _height;
+
+	GfxMan.lockFrame();
+
+	bool heightExceeded = false;
+
+	for (size_t i = 0; i < _itemWidgets.size(); ++i) {
+		WidgetProtoItem *itemWidget = _itemWidgets[i];
+		bool visible = false;
+
+		if (!heightExceeded) {
+			int itemIndex = _startIndex + i;
+			if (itemIndex < (int)_items.size()) { // have item to display?
+				Common::UString &contents = _items[itemIndex];
+
+				if (_adjustHeight) {
+					float textHeight = itemWidget->getTextHeight(contents);
+					if (totalHeight + textHeight > getHeight())
+						heightExceeded = true;
+					else {
+						float iX, iY, iZ;
+						itemWidget->getPosition(iX, iY, iZ);
+						itemWidget->setPosition(iX, y -= textHeight + _padding, iZ);
+						itemWidget->setHeight(textHeight);
+						totalHeight += textHeight + _padding;
+					}
+				}
+
+				if (!heightExceeded) {
+					itemWidget->setContents(contents);
+					itemWidget->setHighlight(itemIndex == _selectedIndex);
+					visible = true;
+				}
+			}
+		}
+
+		if (visible) {
+			itemWidget->setInvisible(false);
+			if (isVisible())
+				itemWidget->show();
+			++_numVisibleItems;
+		} else {
+			if (isVisible())
+				itemWidget->hide();
+			itemWidget->setInvisible(true);
+		}
+	}
+
+	if (_hideScrollbar) {
+		if (_numVisibleItems < (int)_items.size()) {
+			_scrollbar->setInvisible(false);
+			if (isVisible())
+				_scrollbar->show();
+		} else {
+			if (isVisible())
+				_scrollbar->hide();
+			_scrollbar->setInvisible(true);
+		}
+	}
+
+	GfxMan.unlockFrame();
+}
+
+void WidgetListBox::selectItemByWidgetTag(const Common::UString &tag) {
+	if (!tag.beginsWith(_tag + "_ITEM_"))
+		return;
+
+	Common::UString tmp(tag);
+	tmp.replaceAll(_tag + "_ITEM_", "");
+
+	int index = -1;
+	Common::parseString(tmp, index);
+
+	if ((index >= 0) && (_selectedIndex != _startIndex + index)) {
+		_selectedIndex = _startIndex + index;
+		playSound("gui_actscroll", Sound::kSoundTypeSFX);
+		refreshItemWidgets();
+	}
+}
+
+void WidgetListBox::selectNextItem() {
+	if (_itemSelectionEnabled) {
+		bool selectionChanged = false;
+
+		if ((_selectedIndex < 0) && (!_items.empty())) {
+			_selectedIndex = 0;
+			selectionChanged = true;
+			refreshItemWidgets();
+		} else if (_selectedIndex < (int)_items.size() - 1) {
+			++_selectedIndex;
+			if (_selectedIndex - _startIndex >= _numVisibleItems)
+				_startIndex = _selectedIndex - _numVisibleItems + 1;
+			selectionChanged = true;
+			refreshItemWidgets();
+		}
+
+		if (selectionChanged)
+			playSound("gui_actscroll", Sound::kSoundTypeSFX);
+	} else if (_startIndex + _numVisibleItems < (int)_items.size()) {
+		++_startIndex;
+		refreshItemWidgets();
+	}
+}
+
+void WidgetListBox::selectPreviousItem() {
+	if (_itemSelectionEnabled) {
+		bool selectionChanged = false;
+
+		if ((_selectedIndex < 0) && (!_items.empty())) {
+			_selectedIndex = 0;
+			selectionChanged = true;
+			refreshItemWidgets();
+		} else if (_selectedIndex > 0) {
+			--_selectedIndex;
+			if (_selectedIndex < _startIndex)
+				_startIndex = _selectedIndex;
+			selectionChanged = true;
+			refreshItemWidgets();
+		}
+
+		if (selectionChanged)
+			playSound("gui_actscroll", Sound::kSoundTypeSFX);
+	} else if (_startIndex > 0) {
+		--_startIndex;
+		refreshItemWidgets();
+	}
+}
+
+int WidgetListBox::getSelectedIndex() const {
+	return _selectedIndex;
+}
+
+void WidgetListBox::setHeight(float height) {
+	float deltaHeight = height - _height;
+
+	KotORJadeWidget::setHeight(height);
+
+	if (_scrollbar) {
+		height = _scrollbar->getHeight();
+		_scrollbar->setHeight(height + deltaHeight);
+	}
+}
+
+void WidgetListBox::subActive(Widget &widget) {
+	if (_itemSelectionEnabled)
+		selectItemByWidgetTag(widget.getTag());
+	else
+		raiseCallbackActive(widget);
+}
+
+void WidgetListBox::createScrollbar(const Aurora::GFF3Struct &gff) {
+	_scrollbar = new WidgetScrollbar(*_gui, _tag + "#" + gff.getString("TAG"));
+	_scrollbar->load(gff);
+
+	float x, y, z;
+	getPosition(x, y, z);
+
+	if (_leftScrollbar)
+		_scrollbar->setPosition(x, y, -1.0f);
+	else
+		_scrollbar->setPosition(x + _width - _scrollbar->getWidth(), y, -1.0f);
+
+	_scrollbar->setHeight(_height);
+
+	addChild(*_scrollbar);
+	addSub(*_scrollbar);
+}
+
+void WidgetListBox::positionItemWidgets() {
+	float x, y, z;
+	getPosition(x, y, z);
+
+	if (_scrollbar && _leftScrollbar)
+		x += _scrollbar->getWidth() + _scrollbar->getBorderDimension();
+
+	y += _height;
+
+	size_t count = _itemWidgets.size();
+	for (size_t i = 0; i < count; ++i) {
+		_itemWidgets[i]->setPosition(x, y -= _itemWidgets[i]->getHeight() + _padding, -1.0f);
+	}
+}
+
+} // End of namespace Engines

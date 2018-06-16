@@ -46,6 +46,7 @@ public:
 	void setPosition(float x, float y, float z);
 	void getPosition(float &x, float &y, float &z);
 	void setSize(float w, float h);
+	void getSize(float &w, float &h) const;
 
 	virtual void calculateDistance();
 

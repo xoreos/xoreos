@@ -22,9 +22,9 @@
  *  The ingame messages menu.
  */
 
-#include "src/engines/kotor/gui/ingame/menu_msg.h"
+#include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/ingame/menu_msg.h"
 
 namespace Engines {
 

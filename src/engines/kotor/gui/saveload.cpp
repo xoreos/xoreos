@@ -34,10 +34,10 @@
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/saveload.h"
-#include "src/engines/kotor/gui/widgets/button.h"
-#include "src/engines/kotor/gui/widgets/label.h"
-#include "src/engines/kotor/gui/widgets/listbox.h"
-#include "src/engines/kotor/gui/widgets/scrollbar.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/aurora/kotorjadegui/scrollbar.h"
 
 namespace Engines {
 
@@ -55,15 +55,10 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 
 	WidgetListBox *lbGames = getListBox("LB_GAMES");
 	lbGames->setItemSelectionEnabled(true);
-	WidgetScrollbar *scrollBar = lbGames->createScrollBar();
-	addWidget(scrollBar);
-
-	const std::vector<KotORWidget *> &itemWidgets = lbGames->createItemWidgets();
-	for (std::vector<KotORWidget *>::const_iterator it = itemWidgets.begin();
-			it != itemWidgets.end(); ++it) {
-		(*it)->setBorderColor(0.0f, 0.667969f, 0.988281f, 1.0f);
-		addWidget(*it);
-	}
+	lbGames->setHideScrollbar(false);
+	lbGames->setPadding(3);
+	lbGames->setItemBorderColor(0.0f, 0.667969f, 0.988281f, 1.0f);
+	lbGames->createItemWidgets(6);
 
 	if (_type == kSaveLoadMenuTypeLoad) {
 		getLabel("LBL_PANELNAME")->setText(TalkMan.getString(1585)); // Load Game
@@ -79,9 +74,7 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 
 void SaveLoadMenu::callbackActive(Widget &widget) {
 	const Common::UString &tag = widget.getTag();
-	if (tag.beginsWith("LB_GAMES_ITEM"))
-		getListBox("LB_GAMES")->onClickItemWidget(tag);
-	else if (tag == "BTN_SAVELOAD") {
+	if (tag == "BTN_SAVELOAD") {
 		int selectedIndex = getListBox("LB_GAMES")->getSelectedIndex();
 		if (selectedIndex == -1)
 			return;

@@ -32,8 +32,13 @@ namespace Graphics {
 namespace Aurora {
 
 KotORDialogFrame::KotORDialogFrame()
-		: Renderable(kRenderableTypeGUIFront), _rectHeight(0) {
+		: Renderable(kRenderableTypeGUIFront),
+		  _distance(0.0f),
+		  _rectHeight(0) {
+}
 
+void KotORDialogFrame::setDistance(float distance) {
+	_distance = distance;
 }
 
 void KotORDialogFrame::setRectangleHeight(int h) {
@@ -41,30 +46,29 @@ void KotORDialogFrame::setRectangleHeight(int h) {
 }
 
 void KotORDialogFrame::calculateDistance() {
-
 }
 
 void KotORDialogFrame::render(RenderPass pass) {
 	if (pass != kRenderPassAll)
 		return;
 
-	float hw = WindowMan.getWindowWidth() / 2.f;
-	float hh = WindowMan.getWindowHeight() / 2.f;
+	float hw = WindowMan.getWindowWidth() / 2.0f;
+	float hh = WindowMan.getWindowHeight() / 2.0f;
 
-	glColor3f(0.f, 0.f, 0.f);
+	glColor3f(0.0f, 0.0f, 0.0f);
 	glBegin(GL_QUADS);
 		// top rectangle
-		glVertex3f( hw, hh - _rectHeight, 0.f);
-		glVertex3f( hw,               hh, 0.f);
-		glVertex3f(-hw,               hh, 0.f);
-		glVertex3f(-hw, hh - _rectHeight, 0.f);
+		glVertex3f( hw, hh - _rectHeight, _distance);
+		glVertex3f( hw,               hh, _distance);
+		glVertex3f(-hw,               hh, _distance);
+		glVertex3f(-hw, hh - _rectHeight, _distance);
 		// bottom rectangle
-		glVertex3f( hw,             - hh, 0.f);
-		glVertex3f( hw, _rectHeight - hh, 0.f);
-		glVertex3f(-hw, _rectHeight - hh, 0.f);
-		glVertex3f(-hw,             - hh, 0.f);
+		glVertex3f( hw,             - hh, _distance);
+		glVertex3f( hw, _rectHeight - hh, _distance);
+		glVertex3f(-hw, _rectHeight - hh, _distance);
+		glVertex3f(-hw,             - hh, _distance);
 	glEnd();
-	glColor3f(1.f, 1.f, 1.f);
+	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
 } // End of namespace Aurora

@@ -27,7 +27,7 @@
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/gui/options/mousesettings.h"
-#include "src/engines/kotor/gui/widgets/checkbox.h"
+#include "src/engines/aurora/kotorjadegui/checkbox.h"
 
 namespace Engines {
 

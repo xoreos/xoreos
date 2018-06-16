@@ -22,9 +22,9 @@
  *  The ingame journal menu.
  */
 
-#include "src/engines/kotor/gui/ingame/menu_jou.h"
+#include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/ingame/menu_jou.h"
 
 namespace Engines {
 

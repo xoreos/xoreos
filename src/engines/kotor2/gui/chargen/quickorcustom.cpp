@@ -22,7 +22,8 @@
  *  The KotOR 2 quick or custom panel.
  */
 
-#include "src/engines/kotor2/gui/widgets/kotorwidget.h"
+#include "src/engines/aurora/widget.h"
+
 #include "src/engines/kotor2/gui/chargen/quickorcustom.h"
 
 namespace Engines {

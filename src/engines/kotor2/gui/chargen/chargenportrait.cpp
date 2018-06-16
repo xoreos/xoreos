@@ -22,8 +22,7 @@
  *  The KotOR 2 character generation portrait menu.
  */
 
-#include "src/engines/kotor2/gui/widgets/kotorwidget.h"
-#include "src/engines/kotor2/gui/widgets/label.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
 
 #include "src/engines/kotor2/gui/chargen/chargenportrait.h"
 

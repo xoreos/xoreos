@@ -24,8 +24,9 @@
 
 #include "menu_opt.h"
 
+#include "src/engines/aurora/widget.h"
+
 #include "src/engines/kotor/gui/saveload.h"
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
 
 namespace Engines {
 

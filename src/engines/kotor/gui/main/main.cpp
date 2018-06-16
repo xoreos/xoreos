@@ -40,7 +40,8 @@
 
 #include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
-#include "src/engines/kotor/gui/widgets/button.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/aurora/kotorjadegui/listbox.h"
 
 #include "src/engines/kotor/gui/main/main.h"
 #include "src/engines/kotor/gui/main/movies.h"
@@ -56,6 +57,8 @@ MainMenu::MainMenu(Module &module, bool isXbox, ::Engines::Console *console) : G
 	_module(&module), _isXbox(isXbox) {
 
 	load(isXbox ? "mainmenu" : "mainmenu16x12");
+
+	getListBox("LB_MODULES")->setInvisible(true);
 
 	addBackground(kBackgroundTypeMenu);
 

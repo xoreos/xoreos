@@ -42,9 +42,9 @@
 
 #include "src/engines/kotor/gui/dialog.h"
 
-#include "src/engines/kotor/gui/widgets/label.h"
-#include "src/engines/kotor/gui/widgets/listbox.h"
-#include "src/engines/kotor/gui/widgets/scrollbar.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/aurora/kotorjadegui/scrollbar.h"
 
 namespace Engines {
 
@@ -57,47 +57,34 @@ DialogGUIBase::DialogGUIBase(bool k2)
 	load(k2 ? "dialog_p" : "dialog");
 
 	int w = WindowMan.getWindowWidth();
-	float hh = WindowMan.getWindowHeight() / 2.f;
-	float rh = hh / 2.f; // quarter of window height
+	float hh = WindowMan.getWindowHeight() / 2.0f;
+	float rh = hh / 2.0f; // quarter of window height
 
 	_frame->setRectangleHeight(rh);
 
 	WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
-	lblMessage->setPosition(-w / 2.f, hh - rh, -1.f);
-	lblMessage->setSize(w, rh);
 	lblMessage->setHorizontalTextAlign(Graphics::Aurora::kHAlignCenter);
 	lblMessage->setVerticalTextAlign(Graphics::Aurora::kVAlignBottom);
+	lblMessage->setPosition(-w / 2.0f, hh - rh, -1.0f);
+	lblMessage->setWidth(w);
+	lblMessage->setHeight(rh);
+
+	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
+	lbReplies->setAdjustHeight(true);
+	lbReplies->setPosition(-w / 2.0f, -hh, -1.0f);
+	lbReplies->setWidth(w);
+	lbReplies->setHeight(rh);
 
 	// Dialog entries in KotOR and KotOR II have invalid text color in
 	// GUI files. Override it with appropriate color for each game.
-
 	if (k2)
-		lblMessage->setTextColor(0.101961f, 0.698039f, 0.549020, 1.0f);
-	else
+		lblMessage->setTextColor(0.101961f, 0.698039f, 0.549020f, 1.0f);
+	else {
 		lblMessage->setTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
-
-	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
-	lbReplies->setItemSelectionEnabled(true);
-	lbReplies->setAdjustHeight(true);
-	lbReplies->setHideScrollBar(true);
-	lbReplies->setPosition(-w / 2.f, -hh, -1.f);
-	lbReplies->setSize(w, rh);
-
-	WidgetScrollbar *scrollBar = lbReplies->createScrollBar();
-	addWidget(scrollBar);
-
-	const std::vector<KotORWidget *> itemWidgets = lbReplies->createItemWidgets();
-	for (std::vector<KotORWidget *>::const_iterator it = itemWidgets.begin();
-			it != itemWidgets.end();
-			++it) {
-		WidgetLabel *label = static_cast<WidgetLabel *>(*it);
-
-		if (!k2)
-			label->setTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
-
-		label->enableHighlight();
-		addWidget(label);
+		lbReplies->setItemTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
 	}
+
+	lbReplies->createItemWidgets(9);
 }
 
 void DialogGUIBase::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
@@ -127,18 +114,19 @@ void DialogGUIBase::hide() {
 
 void DialogGUIBase::callbackActive(Widget &widget) {
 	const Common::UString &tag = widget.getTag();
-	if (tag.beginsWith("LB_REPLIES_ITEM")) {
-		WidgetListBox *lbReplies = getListBox("LB_REPLIES");
-		lbReplies->onClickItemWidget(tag);
+	if (!tag.beginsWith("LB_REPLIES_ITEM"))
+		return;
 
-		int selectedIndex = lbReplies->getSelectedIndex();
-		if (selectedIndex >= 0)
-			pickReply(selectedIndex);
-	}
+	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
+	lbReplies->selectItemByWidgetTag(tag);
+
+	int selectedIndex = lbReplies->getSelectedIndex();
+	if (selectedIndex >= 0)
+		pickReply(selectedIndex);
 }
 
 void DialogGUIBase::callbackKeyInput(const Events::Key &key,
-                                 const Events::EventType &type) {
+                                     const Events::EventType &type) {
 	if (type == Events::kEventKeyDown) {
 		switch (key) {
 			case Events::kKeyUp:

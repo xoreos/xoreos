@@ -30,15 +30,15 @@
 
 #include "src/graphics/aurora/cursorman.h"
 
-#include "src/engines/jade/gui/widgets/panel.h"
-#include "src/engines/jade/gui/widgets/label.h"
-#include "src/engines/jade/gui/widgets/protoitem.h"
-#include "src/engines/jade/gui/widgets/button.h"
-#include "src/engines/jade/gui/widgets/checkbox.h"
-#include "src/engines/jade/gui/widgets/slider.h"
-#include "src/engines/jade/gui/widgets/scrollbar.h"
-#include "src/engines/jade/gui/widgets/progressbar.h"
-#include "src/engines/jade/gui/widgets/listbox.h"
+#include "src/engines/aurora/kotorjadegui/panel.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/kotorjadegui/protoitem.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/aurora/kotorjadegui/checkbox.h"
+#include "src/engines/aurora/kotorjadegui/slider.h"
+#include "src/engines/aurora/kotorjadegui/scrollbar.h"
+#include "src/engines/aurora/kotorjadegui/progressbar.h"
+#include "src/engines/aurora/kotorjadegui/listbox.h"
 
 #include "src/engines/jade/gui/gui.h"
 

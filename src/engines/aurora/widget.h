@@ -120,6 +120,7 @@ protected:
 	virtual void signalGroupMemberActive();
 
 	void setActive(bool active); ///< The widget's active state.
+	void raiseCallbackActive(Widget &widget);
 
 private:
 	bool _active;    ///< Was the widget activated?

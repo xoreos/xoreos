@@ -40,9 +40,9 @@
 #include "src/engines/jade/gui/main/main.h"
 #include "src/engines/jade/gui/main/options.h"
 
-#include "src/engines/jade/gui/widgets/label.h"
-#include "src/engines/jade/gui/widgets/listbox.h"
-#include "src/engines/jade/gui/widgets/button.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
 
 namespace Engines {
 
@@ -57,21 +57,18 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::Jad
 	 * The list box is initially empty, so we need to create the buttons
 	 * for the main menu
 	 */
-	getListBox("ListBoxButtons")->setFill("");
+	WidgetListBox *listBoxButtons = getListBox("ListBoxButtons");
+	listBoxButtons->setFill("");
+	listBoxButtons->createItemWidgets(6);
 
-	addWidget(getListBox("ListBoxButtons")->createItem("NEW_GAME"), true);
-	addWidget(getListBox("ListBoxButtons")->createItem("LOAD_GAME"), true);
-	addWidget(getListBox("ListBoxButtons")->createItem("MINIGAMES"), true);
-	addWidget(getListBox("ListBoxButtons")->createItem("OPTIONS"), true);
-	addWidget(getListBox("ListBoxButtons")->createItem("CREDITS"), true);
-	addWidget(getListBox("ListBoxButtons")->createItem("EXIT"), true);
+	listBoxButtons->addItem(TalkMan.getString(111));    // New Game
+	listBoxButtons->addItem(TalkMan.getString(112));    // Load Game
+	listBoxButtons->addItem(TalkMan.getString(114));    // Minigames
+	listBoxButtons->addItem(TalkMan.getString(116));    // Options
+	listBoxButtons->addItem(TalkMan.getString(15709));  // Credits
+	listBoxButtons->addItem(TalkMan.getString(112745)); // Exit
 
-	getButton("NEW_GAME")->setText(TalkMan.getString(111));
-	getButton("LOAD_GAME")->setText(TalkMan.getString(112));
-	getButton("MINIGAMES")->setText(TalkMan.getString(114));
-	getButton("OPTIONS")->setText(TalkMan.getString(116));
-	getButton("CREDITS")->setText(TalkMan.getString(15709));
-	getButton("EXIT")->setText(TalkMan.getString(112745));
+	listBoxButtons->refreshItemWidgets();
 
 	/*
 	 * The Jade Empire Logo is placed in the middle of the screen
@@ -105,14 +102,14 @@ void MainMenu::hide() {
 }
 
 void MainMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "OPTIONS") {
+	if (widget.getTag() == "ListBoxButtons_ITEM_3") {
 		if (!_options)
 			createOptions();
 
 		sub(*_options);
 	}
 
-	if (widget.getTag() == "NEW_GAME") {
+	if (widget.getTag() == "ListBoxButtons_ITEM_0") {
 		try {
 			_module->load("j01_town");
 			_returnCode = 1;
@@ -123,12 +120,12 @@ void MainMenu::callbackActive(Widget &widget) {
 		return;
 	}
 
-	if (widget.getTag() == "CREDITS") {
+	if (widget.getTag() == "ListBoxButtons_ITEM_4") {
 		playVideo("creditmovie");
 		return;
 	}
 
-	if (widget.getTag() == "EXIT")
+	if (widget.getTag() == "ListBoxButtons_ITEM_5")
 		EventMan.requestQuit();
 }
 

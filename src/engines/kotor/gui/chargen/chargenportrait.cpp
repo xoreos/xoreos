@@ -22,9 +22,8 @@
  *  The menu for modifying the portrait of the.
  */
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
-#include "src/engines/kotor/gui/widgets/button.h"
-#include "src/engines/kotor/gui/widgets/label.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
 
 #include "src/engines/kotor/gui/chargen/chargenportrait.h"
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"

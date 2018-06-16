@@ -29,8 +29,6 @@
 
 #include "src/engines/kotor/creature.h"
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
-
 #include "src/engines/kotor/gui/chargen/classselection.h"
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
 

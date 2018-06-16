@@ -28,7 +28,6 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/gui/dialog.cpp \
     $(EMPTY)
 
-include src/engines/kotor2/gui/widgets/rules.mk
 include src/engines/kotor2/gui/main/rules.mk
 include src/engines/kotor2/gui/chargen/rules.mk
 include src/engines/kotor2/gui/ingame/rules.mk

@@ -24,7 +24,7 @@
 
 #include "src/engines/jade/gui/options/feed.h"
 
-#include "src/engines/jade/gui/widgets/jadewidget.h"
+#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
 
 namespace Engines {
 

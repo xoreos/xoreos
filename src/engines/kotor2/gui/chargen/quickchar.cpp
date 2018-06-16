@@ -22,8 +22,7 @@
  *  The KotOR 2 quick character panel.
  */
 
-#include "src/engines/kotor2/gui/widgets/kotorwidget.h"
-#include "src/engines/kotor2/gui/widgets/button.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
 
 #include "src/engines/kotor2/gui/chargen/quickchar.h"
 

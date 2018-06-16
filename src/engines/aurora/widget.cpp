@@ -278,4 +278,8 @@ void Widget::setActive(bool active) {
 			(*it)->signalGroupMemberActive();
 }
 
+void Widget::raiseCallbackActive(Widget &widget) {
+	_gui->callbackActive(widget);
+}
+
 } // End of namespace Engines

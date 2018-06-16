@@ -30,7 +30,7 @@
 
 #include "src/aurora/talkman.h"
 
-#include "src/engines/kotor/gui/widgets/label.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
 
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
 #include "src/engines/kotor/gui/chargen/quickorcustom.h"

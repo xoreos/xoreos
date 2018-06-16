@@ -22,7 +22,7 @@
  *  The panel to choose between quick or custom characters.
  */
 
-#include "src/engines/kotor/gui/widgets/label.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
 
 #include "src/engines/kotor/gui/chargen/quickorcustom.h"
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"

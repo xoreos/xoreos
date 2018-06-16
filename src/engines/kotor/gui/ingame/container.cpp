@@ -24,9 +24,9 @@
 
 #include "src/engines/kotor/item.h"
 
-#include "src/engines/kotor/gui/widgets/panel.h"
-#include "src/engines/kotor/gui/widgets/scrollbar.h"
-#include "src/engines/kotor/gui/widgets/listbox.h"
+#include "src/engines/aurora/kotorjadegui/panel.h"
+#include "src/engines/aurora/kotorjadegui/scrollbar.h"
+#include "src/engines/aurora/kotorjadegui/listbox.h"
 
 #include "src/engines/kotor/gui/ingame/container.h"
 
@@ -41,17 +41,9 @@ ContainerMenu::ContainerMenu(Console *console) : GUI(console) {
 	guiPanel->setPosition(-guiPanel->getWidth()/2, -guiPanel->getHeight()/2, 0);
 
 	WidgetListBox *lbItems = getListBox("LB_ITEMS");
-	lbItems->setItemSelectionEnabled(true);
-	lbItems->setHideScrollBar(true);
-
-	WidgetScrollbar *scrollBar = lbItems->createScrollBar();
-	addWidget(scrollBar);
-
-	const std::vector<KotORWidget *> &itemWidgets = lbItems->createItemWidgets(3);
-	for (std::vector<KotORWidget *>::const_iterator w = itemWidgets.begin();
-			w != itemWidgets.end(); ++w) {
-		addWidget(*w);
-	}
+	lbItems->setItemType(kLBItemTypeKotORInventory);
+	lbItems->setPadding(18);
+	lbItems->createItemWidgets(3);
 }
 
 void ContainerMenu::fillFromInventory(const Inventory &inv) {
@@ -62,7 +54,10 @@ void ContainerMenu::fillFromInventory(const Inventory &inv) {
 	for (std::map<Common::UString, InventoryItem>::const_iterator i = invItems.begin();
 			i != invItems.end(); ++i) {
 		Item item(i->second.tag);
-		lbItems->addItem(item.getName(), item.getIcon(), i->second.count);
+		lbItems->addItem(Common::UString::format("%s|%s|%u",
+		                                         item.getName().c_str(),
+		                                         item.getIcon().c_str(),
+		                                         i->second.count));
 	}
 
 	lbItems->refreshItemWidgets();

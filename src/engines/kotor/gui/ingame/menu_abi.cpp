@@ -22,9 +22,9 @@
  *  The ingame abilities menu.
  */
 
-#include "src/engines/kotor/gui/ingame/menu_abi.h"
+#include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/ingame/menu_abi.h"
 
 namespace Engines {
 

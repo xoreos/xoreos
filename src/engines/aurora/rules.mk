@@ -51,3 +51,5 @@ src_engines_aurora_libaurora_la_SOURCES += \
     src/engines/aurora/satellitecamera.cpp \
     src/engines/aurora/trigger.cpp \
     $(EMPTY)
+
+include src/engines/aurora/kotorjadegui/rules.mk

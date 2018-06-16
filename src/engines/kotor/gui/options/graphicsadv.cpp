@@ -30,8 +30,8 @@
 
 #include "src/engines/kotor/gui/options/graphicsadv.h"
 
-#include "src/engines/kotor/gui/widgets/button.h"
-#include "src/engines/kotor/gui/widgets/checkbox.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/aurora/kotorjadegui/checkbox.h"
 
 namespace Engines {
 

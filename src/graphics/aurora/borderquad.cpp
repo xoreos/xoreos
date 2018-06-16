@@ -98,6 +98,11 @@ void BorderQuad::setSize(float w, float h) {
 	_h = h;
 }
 
+void BorderQuad::getSize(float &w, float &h) const {
+	w = _w;
+	h = _h;
+}
+
 void BorderQuad::calculateDistance() {
 }
 

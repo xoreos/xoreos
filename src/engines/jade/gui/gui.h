@@ -39,9 +39,7 @@
 
 namespace Engines {
 
-namespace Jade {
-
-class JadeWidget;
+class KotORJadeWidget;
 
 class WidgetPanel;
 class WidgetLabel;
@@ -52,6 +50,8 @@ class WidgetSlider;
 class WidgetScrollbar;
 class WidgetProgressbar;
 class WidgetListBox;
+
+namespace Jade {
 
 /** A Jade Empire GUI. */
 class GUI : public Engines::GUI {
@@ -120,7 +120,7 @@ private:
 		WidgetType type;
 
 		Common::UString tag;
-		JadeWidget *widget;
+		KotORJadeWidget *widget;
 
 		Widget *parent;
 

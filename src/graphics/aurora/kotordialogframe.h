@@ -35,10 +35,15 @@ namespace Aurora {
 class KotORDialogFrame : public Renderable {
 public:
 	KotORDialogFrame();
-	void setRectangleHeight(int h);
+
+	void setDistance(float distance);
+	void setRectangleHeight(int rectHeight);
+
 	void calculateDistance();
 	void render(RenderPass pass);
+
 private:
+	float _distance;
 	int _rectHeight;
 };
 

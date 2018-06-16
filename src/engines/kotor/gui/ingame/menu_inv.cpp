@@ -22,9 +22,9 @@
  *  The ingame inventar menu.
  */
 
-#include "src/engines/kotor/gui/ingame/menu_inv.h"
+#include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/ingame/menu_inv.h"
 
 namespace Engines {
 

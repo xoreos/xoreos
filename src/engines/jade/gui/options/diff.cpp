@@ -22,9 +22,9 @@
  *  The Jade Empire difficulty options menu.
  */
 
-#include "src/engines/jade/gui/options/diff.h"
+#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
 
-#include "src/engines/jade/gui/widgets/jadewidget.h"
+#include "src/engines/jade/gui/options/diff.h"
 
 namespace Engines {
 

@@ -24,7 +24,7 @@
 
 #include "src/graphics/graphics.h"
 
-#include "src/engines/kotor/gui/widgets/button.h"
+#include "src/engines/aurora/kotorjadegui/button.h"
 
 #include "src/engines/kotor/gui/ingame/menu.h"
 

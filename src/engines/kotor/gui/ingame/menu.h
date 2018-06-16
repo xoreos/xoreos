@@ -29,7 +29,7 @@
 
 #include "src/engines/kotor/gui/gui.h"
 #include "src/engines/kotor/gui/saveload.h"
-#include "src/engines/kotor/gui/widgets/protoitem.h"
+#include "src/engines/aurora/kotorjadegui/protoitem.h"
 
 #include "src/engines/kotor/gui/ingame/menu_equ.h"
 #include "src/engines/kotor/gui/ingame/menu_inv.h"

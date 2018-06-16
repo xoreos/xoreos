@@ -24,8 +24,7 @@
 
 #include "src/events/events.h"
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
-#include "src/engines/kotor/gui/widgets/label.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
 
 #include "src/engines/kotor/gui/chargen/chargenname.h"
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"

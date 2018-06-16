@@ -22,9 +22,9 @@
  *  The ingame character menu.
  */
 
-#include "src/engines/kotor/gui/ingame/menu_char.h"
+#include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor/gui/widgets/kotorwidget.h"
+#include "src/engines/kotor/gui/ingame/menu_char.h"
 
 namespace Engines {
 
