@@ -54,6 +54,10 @@ void Inventory::removeItem(const Common::UString &tag, int count) {
 		_items.erase(i);
 }
 
+void Inventory::removeAllItems() {
+	_items.clear();
+}
+
 const std::map<Common::UString, InventoryItem> &Inventory::getItems() const {
 	return _items;
 }

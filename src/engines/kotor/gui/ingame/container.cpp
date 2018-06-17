@@ -53,18 +53,30 @@ void ContainerMenu::fillFromInventory(const Inventory &inv) {
 	const std::map<Common::UString, InventoryItem> &invItems = inv.getItems();
 	for (std::map<Common::UString, InventoryItem>::const_iterator i = invItems.begin();
 			i != invItems.end(); ++i) {
-		Item item(i->second.tag);
-		lbItems->addItem(Common::UString::format("%s|%s|%u",
-		                                         item.getName().c_str(),
-		                                         item.getIcon().c_str(),
-		                                         i->second.count));
+		try {
+			Item item(i->second.tag);
+			lbItems->addItem(Common::UString::format("%s|%s|%u",
+			                                         item.getName().c_str(),
+			                                         item.getIcon().c_str(),
+			                                         i->second.count));
+		} catch (Common::Exception &e) {
+			e.add("Failed to load item %s", i->second.tag.c_str());
+			Common::printException(e, "WARNING: ");
+		}
 	}
 
 	lbItems->refreshItemWidgets();
 }
 
 void ContainerMenu::callbackActive(Widget &widget) {
-	if (widget.getTag() == "BTN_CANCEL") {
+	const Common::UString &tag = widget.getTag();
+
+	if (tag == "BTN_OK") {
+		_returnCode = 1;
+		return;
+	}
+
+	if (tag == "BTN_CANCEL") {
 		_returnCode = kReturnCodeAbort;
 		return;
 	}

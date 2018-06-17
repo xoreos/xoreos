@@ -36,7 +36,9 @@ namespace Engines {
 namespace KotOR {
 
 HUD::HUD(Module &module, Engines::Console *console)
-		: GUI(console), _menu(module, console) {
+		: GUI(console),
+		  _module(&module),
+		  _menu(module, console) {
 	unsigned int wWidth = WindowMan.getWindowWidth();
 	unsigned int wHeight = WindowMan.getWindowHeight();
 
@@ -152,7 +154,18 @@ void HUD::setPosition(float x, float y) {
 void HUD::showContainer(Inventory &inv) {
 	_container.reset(new ContainerMenu());
 	_container->fillFromInventory(inv);
-	sub(*_container, kStartCodeNone, true, false);
+
+	if (sub(*_container, kStartCodeNone, true, false) == 1) {
+		Inventory &partyInventory = _module->getPC()->getInventory();
+
+		const std::map<Common::UString, InventoryItem> &items = inv.getItems();
+		for (std::map<Common::UString, InventoryItem>::const_iterator i = items.begin();
+				i != items.end(); ++i) {
+			partyInventory.addItem(i->first, i->second.count);
+		}
+
+		inv.removeAllItems();
+	}
 }
 
 void HUD::setPortrait(uint8 n, bool visible, const Common::UString &portrait) {

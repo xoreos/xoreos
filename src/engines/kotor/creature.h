@@ -97,6 +97,13 @@ public:
 
 	float getCameraHeight() const;
 
+	// Inventory and equipment
+
+	void equipItem(Common::UString tag, EquipmentSlot slot);
+
+	Inventory &getInventory();
+	const Common::UString getEquipedItem(EquipmentSlot slot) const;
+
 	// Animation
 
 	void playDefaultAnimation();
@@ -121,6 +128,7 @@ private:
 		Common::UString head;
 
 		Common::UString bodyTexture;
+		Common::UString portrait;
 	};
 
 	/** A class level. */
@@ -138,12 +146,18 @@ private:
 
 	Gender _gender;
 	std::vector<ClassLevel> _levels; ///< The levels of the creature.
+	Skin _skin; ///< The skin type of the creature.
+	uint8 _face; ///< The face of the creature.
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
-	Common::UString _conversation;
 	Common::UString _modelType;
+	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
+	Graphics::Aurora::Model *_headModel; ///< The creature's head model.
+	bool _visible;
+
+	Common::UString _conversation;
 
 	Inventory _inventory;
+	std::map<EquipmentSlot, Common::UString> _equipment;
 
 
 	void init();
@@ -156,8 +170,11 @@ private:
 	void loadAppearance();
 
 	void getPartModels(PartModels &parts, uint32 state = 'a');
+	void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation);
 	void loadBody(PartModels &parts);
 	void loadHead(PartModels &parts);
+	void changeBody();
+	void changeWeapon(EquipmentSlot slot);
 
 	void setDefaultAnimations();
 };

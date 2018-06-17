@@ -40,7 +40,7 @@ public:
 
 	void enter();
 	void leave();
-	
+
 	void mouseUp(uint8 state, float x, float y);
 private:
 	bool _hovered;

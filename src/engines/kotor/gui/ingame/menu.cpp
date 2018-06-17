@@ -144,6 +144,8 @@ void Menu::showEquipment() {
 		_protoEqu->setHighlight(true);
 		_lastProto = _protoEqu;
 	}
+
+	_menuEqu->setPC(_module.getPC());
 }
 
 void Menu::showInventory() {

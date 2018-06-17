@@ -89,7 +89,7 @@ void KotORInventoryItem::load(const Aurora::GFF3Struct &gff) {
 		float tX, tY, tZ;
 		_text->getPosition(tX, tY, tZ);
 		_text->setPosition(tX + frameSize, tY, tZ);
-		
+
 		float width = _text->getWidth();
 		float height = _text->getHeight();
 		_text->setSize(width - frameSize, height);

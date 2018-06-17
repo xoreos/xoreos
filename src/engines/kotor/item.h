@@ -36,13 +36,20 @@ public:
 	Item(const Common::UString &item);
 
 	const Common::UString &getName() const;
+	EquipmentSlot getEquipableSlots() const;
+
+	int getBodyVariation() const;
+	int getTextureVariation() const;
 	const Common::UString getIcon() const;
+	const Common::UString getModelName() const;
 
 private:
 	int _baseItem;
 	Common::UString _itemClass;
+	EquipmentSlot _equipableSlots;
 
 	int _modelVariation;
+	int _bodyVariation;
 	int _textureVariation;
 
 	void load(const Aurora::GFF3Struct &gff);

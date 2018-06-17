@@ -63,6 +63,7 @@ public:
 	void setPartyMember2(Creature *creature);
 
 private:
+	Module *_module;
 	Menu _menu;
 	Common::ScopedPtr<ContainerMenu> _container;
 

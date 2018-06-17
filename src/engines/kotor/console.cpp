@@ -31,6 +31,7 @@
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
 #include "src/common/configman.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/resman.h"
 
@@ -76,6 +77,8 @@ Console::Console(KotOREngine &engine) :
 			"Usage: listroomsvisiblefrom <room>\nList rooms that are visible from the specified room");
 	registerCommand("playanim"            , boost::bind(&Console::cmdPlayAnim            , this, _1),
 			"Usage: playanim <base> [<head>]\nPlay the specified animations on the active object");
+	registerCommand("additem"             , boost::bind(&Console::cmdAddItem             , this, _1),
+			"Usage: additem <item> [<count>]\nAdd the specified item to the active object");
 
 }
 
@@ -196,6 +199,21 @@ void Console::cmdPlayAnim(const CommandLine &cl) {
 	size_t animCount = anims.size();
 	_engine->getGame().getModule().playAnimationOnActiveObject(anims[0],
 			animCount >= 2 ? anims[1] : "");
+}
+
+void Console::cmdAddItem(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	std::vector<Common::UString> args;
+	Common::UString::split(cl.args, ' ', args);
+	int count = 1;
+	if (args.size() >= 2)
+		Common::parseString(args[1], count);
+
+	_engine->getGame().getModule().addItemToActiveObject(args[0], count);
 }
 
 } // End of namespace KotOR

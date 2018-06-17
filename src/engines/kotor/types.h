@@ -152,6 +152,19 @@ enum SubRace {
 	kSubRaceWookie
 };
 
+enum EquipmentSlot {
+	kEquipmentSlotNone    = 0,
+	kEquipmentSlotHead    = 1U << 0,
+	kEquipmentSlotBody    = 1U << 1,
+	kEquipmentSlotHands   = 1U << 3,
+	kEquipmentSlotWeaponR = 1U << 4,
+	kEquipmentSlotWeaponL = 1U << 5,
+	kEquipmentSlotArmR    = 1U << 7,
+	kEquipmentSlotArmL    = 1U << 8,
+	kEquipmentSlotImplant = 1U << 9,
+	kEquipmentSlotBelt    = 1U << 10
+};
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

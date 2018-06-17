@@ -29,14 +29,40 @@
 
 namespace Engines {
 
+class WidgetButton;
+class WidgetLabel;
+
 namespace KotOR {
+
+class Creature;
 
 class MenuEquipment : public GUI {
 public:
 	MenuEquipment(::Engines::Console *console = 0);
 
+	void setPC(Creature *pc);
+
+	void show();
+	void hide();
+
 protected:
+	void callbackRun();
 	void callbackActive(Widget &widget);
+	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
+
+private:
+	Creature *_pc;
+	EquipmentSlot _selectedSlot;
+	bool _slotFixated;
+	std::vector<Common::UString> _visibleItems;
+
+	void fillEquipedItems();
+	Common::UString getItemIcon(const Common::UString &tag) const;
+	void fillEquipableItemsList();
+	EquipmentSlot getSlotByWidgetTag(const Common::UString &tag) const;
+	WidgetButton *getSlotButton(EquipmentSlot slot);
+	Common::UString getSlotName(EquipmentSlot slot) const;
+	void fixateOnSlot(bool fixate);
 };
 
 } // End of namespace KotOR

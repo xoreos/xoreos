@@ -887,6 +887,34 @@ void Module::playAnimationOnActiveObject(const Common::UString &baseAnim,
 	}
 }
 
+void Module::addItemToActiveObject(const Common::UString &item, int count) {
+	Inventory *inv = 0;
+
+	KotOR::Object *o = _area->getActiveObject();
+	if (!o) {
+		if (_pc)
+			inv = &_pc->getInventory();
+	} else {
+		Placeable *placeable = ObjectContainer::toPlaceable(o);
+		if (placeable && placeable->hasInventory())
+			inv = &placeable->getInventory();
+
+		if (!inv) {
+			Creature *creature = ObjectContainer::toCreature(o);
+			if (creature)
+				inv = &creature->getInventory();
+		}
+	}
+
+	if (!inv)
+		return;
+
+	if (count > 0)
+		inv->addItem(item, count);
+	else if (count < 0)
+		inv->removeItem(item, -count);
+}
+
 void Module::stopCameraMovement() {
 	SatelliteCam.clearInput();
 }

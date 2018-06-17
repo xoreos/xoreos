@@ -40,6 +40,7 @@
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/kotor/creature.h"
+#include "src/engines/kotor/item.h"
 
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
@@ -67,20 +68,35 @@ void Creature::init() {
 	_gender = kGenderNone;
 	_race = kRaceUnknown;
 	_subRace = kSubRaceNone;
+	_skin = kSkinMAX;
+	_face = 0;
+
+	_headModel = 0;
+	_visible = false;
 }
 
 void Creature::show() {
+	if (_visible)
+		return;
+
+	_visible = true;
+
 	if (_model)
 		_model->show();
 }
 
 void Creature::hide() {
+	if (!_visible)
+		return;
+
 	if (_model)
 		_model->hide();
+
+	_visible = false;
 }
 
 bool Creature::isVisible() const {
-	return _model && _model->isVisible();
+	return _visible;
 }
 
 bool Creature::isPC() const {
@@ -302,54 +318,12 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 	}
 }
 
-void Creature::loadBody(PartModels &parts) {
-	// Model "P_BastilaBB" has broken animations. Replace it with the
-	// correct one.
-	if (parts.body.stricmp("P_BastilaBB") == 0)
-		parts.body = "P_BastilaBB02";
-
-	_model.reset(loadModelObject(parts.body, parts.bodyTexture));
-	if (!_model)
-		return;
-
-	_ids.push_back(_model->getID());
-
-	_model->setTag(_tag);
-	_model->setClickable(isClickable());
-
-	if (_modelType != "B" && _modelType != "P")
-		_model->addAnimationChannel(Graphics::Aurora::kAnimationChannelHead);
-}
-
-void Creature::loadHead(PartModels &parts) {
-	if (!_model || parts.head.empty())
-		return;
-
-	Graphics::Aurora::Model *headModel = loadModelObject(parts.head);
-	if (!headModel)
-		return;
-
-	_model->attachModel("headhook", headModel);
-}
-
-void Creature::createFakePC() {
-	_name = "Fakoo McFakeston";
-	_tag  = Common::UString::format("[PC: %s]", _name.c_str());
-
-	_isPC = true;
-}
-
-void Creature::createPC(const CharacterGenerationInfo &info) {
-	_name = info.getName();
-	_isPC = true;
-
-	PartModels parts;
-
+void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) {
 	parts.body = "p";
 	parts.head = "p";
 	parts.bodyTexture = "p";
 
-	switch (info.getGender()) {
+	switch (_gender) {
 		case kGenderMale:
 			parts.body += "m";
 			parts.head += "m";
@@ -364,44 +338,59 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 			throw Common::Exception("Unknown gender");
 	}
 
-	_gender = info.getGender();
-
-	_race = kRaceHuman;
-	_subRace = kSubRaceNone;
-
-	parts.body += "ba";
+	parts.body += Common::UString("b") + state;
 	parts.head += "h";
-	parts.bodyTexture  += "ba";
+	parts.bodyTexture  += Common::UString("b") + state;
 
-	switch (info.getClass()) {
-		case kClassSoldier:
-			parts.body += "l";
-			parts.bodyTexture += "l";
-			break;
-		case kClassScout:
-			parts.body += "m";
-			parts.bodyTexture += "m";
+	switch (state) {
+		case 'a':
+		case 'b':
+			switch (_levels.back().characterClass) {
+				case kClassSoldier:
+					parts.body += "l";
+					parts.bodyTexture += "l";
+					break;
+				case kClassScout:
+					parts.body += "m";
+					parts.bodyTexture += "m";
+					break;
+				default:
+				case kClassScoundrel:
+					parts.body += "s";
+					parts.bodyTexture += "s";
+					break;
+			}
+			switch (_skin) {
+				case kSkinA:
+					parts.bodyTexture += "A";
+					break;
+				case kSkinB:
+					parts.bodyTexture += "B";
+					break;
+				default:
+					break;
+			}
 			break;
 		default:
-		case kClassScoundrel:
-			parts.body += "s";
-			parts.bodyTexture += "s";
+			switch (_gender) {
+				case kGenderMale:
+					parts.body += "l";
+					break;
+				case kGenderFemale:
+					parts.body += "s";
+					break;
+				default:
+					return;
+			}
 			break;
 	}
 
-	// set the specific class to level 1
-	_levels.resize(1);
-	_levels[0].level = 1;
-	_levels[0].characterClass = info.getClass();
-
-	switch (info.getSkin()) {
+	switch (_skin) {
 		case kSkinA:
 			parts.head += "a";
-			parts.bodyTexture += "A";
 			break;
 		case kSkinB:
 			parts.head += "b";
-			parts.bodyTexture += "B";
 			break;
 		default:
 		case kSkinC:
@@ -409,13 +398,157 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 			break;
 	}
 
-	_portrait = "po_" + parts.head;
-	_portrait += Common::composeString(info.getFace() + 1);
+	parts.portrait = "po_" + parts.head;
+	parts.portrait += Common::composeString(_face + 1);
 
 	parts.head += "0";
-	parts.head += Common::composeString(info.getFace() + 1);
+	parts.head += Common::composeString(_face + 1);
 
-	parts.bodyTexture += "01";
+	parts.bodyTexture += Common::UString::format("%02u", textureVariation);
+}
+
+void Creature::loadBody(PartModels &parts) {
+	// Model "P_BastilaBB" has broken animations. Replace it with the
+	// correct one.
+	if (parts.body.stricmp("P_BastilaBB") == 0)
+		parts.body = "P_BastilaBB02";
+
+	_model.reset(loadModelObject(parts.body, parts.bodyTexture));
+	if (!_model)
+		return;
+
+	_ids.clear();
+	_ids.push_back(_model->getID());
+
+	_model->setTag(_tag);
+	_model->setClickable(isClickable());
+
+	if (_modelType != "B" && _modelType != "P")
+		_model->addAnimationChannel(Graphics::Aurora::kAnimationChannelHead);
+}
+
+void Creature::loadHead(PartModels &parts) {
+	if (!_model || parts.head.empty())
+		return;
+
+	_headModel = loadModelObject(parts.head);
+	if (!_headModel)
+		return;
+
+	_model->attachModel("headhook", _headModel);
+}
+
+void Creature::changeBody() {
+	uint32 state = 'a';
+	uint8 textureVariation = 1;
+
+	std::map<EquipmentSlot, Common::UString>::const_iterator i = _equipment.find(kEquipmentSlotBody);
+	if (i != _equipment.end()) {
+		try {
+			Item item(i->second);
+			state += item.getBodyVariation() - 1;
+			textureVariation = item.getTextureVariation();
+		} catch (Common::Exception &e) {
+			e.add("Failed to load item %s", i->second.c_str());
+			Common::printException(e, "WARNING: ");
+		}
+	}
+
+	PartModels parts;
+	getPartModelsPC(parts, state, textureVariation);
+
+	loadBody(parts);
+	loadHead(parts);
+
+	if (!_model)
+		return;
+
+	changeWeapon(kEquipmentSlotWeaponL);
+	changeWeapon(kEquipmentSlotWeaponR);
+
+	setDefaultAnimations();
+
+	if (_visible) {
+		float x, y, z;
+		getPosition(x, y, z);
+		_model->setPosition(x, y, z);
+
+		float angle;
+		getOrientation(x, y, z, angle);
+		_model->setOrientation(x, y, z, angle);
+
+		_model->show();
+	}
+}
+
+void Creature::changeWeapon(EquipmentSlot slot) {
+	assert((slot == kEquipmentSlotWeaponL) || (slot == kEquipmentSlotWeaponR));
+
+	Graphics::Aurora::Model *weaponModel = 0;
+
+	const std::map<EquipmentSlot, Common::UString>::iterator i = _equipment.find(slot);
+	if (i != _equipment.end()) {
+		try {
+			Item item(i->second);
+			weaponModel = loadModelObject(item.getModelName());
+		} catch (Common::Exception &e) {
+			e.add("Failed to load item %s", i->second.c_str());
+			Common::printException(e);
+		}
+	}
+
+	Common::UString hookNode;
+
+	switch (slot) {
+		case kEquipmentSlotWeaponL:
+			hookNode = "lhand";
+			break;
+		case kEquipmentSlotWeaponR:
+			hookNode = "rhand";
+			break;
+		default:
+			throw Common::Exception("Unsupported equip slot");
+	}
+
+	_model->attachModel(hookNode, weaponModel);
+}
+
+void Creature::createFakePC() {
+	_name = "Fakoo McFakeston";
+	_tag  = Common::UString::format("[PC: %s]", _name.c_str());
+
+	_isPC = true;
+}
+
+void Creature::createPC(const CharacterGenerationInfo &info) {
+	_name = info.getName();
+	_isPC = true;
+
+	_race = kRaceHuman;
+	_subRace = kSubRaceNone;
+
+	_gender = info.getGender();
+
+	switch (_gender) {
+		case kGenderMale:
+		case kGenderFemale:
+			break;
+		default:
+			throw Common::Exception("Unknown gender");
+	}
+
+	// set the specific class to level 1
+	_levels.resize(1);
+	_levels[0].level = 1;
+	_levels[0].characterClass = info.getClass();
+
+	_skin = info.getSkin();
+	_face = info.getFace();
+
+	PartModels parts;
+	getPartModelsPC(parts, 'a', 1);
+
+	_portrait = parts.portrait;
 
 	loadBody(parts);
 	loadHead(parts);
@@ -462,6 +595,38 @@ float Creature::getCameraHeight() const {
 		}
 	}
 	return height;
+}
+
+void Creature::equipItem(Common::UString tag, EquipmentSlot slot) {
+	std::map<EquipmentSlot, Common::UString>::iterator i = _equipment.find(slot);
+	if (i != _equipment.end()) {
+		_inventory.addItem(i->second);
+		_equipment.erase(i);
+	}
+	if (!tag.empty()) {
+		_inventory.removeItem(tag);
+		_equipment.insert(std::pair<EquipmentSlot, Common::UString>(slot, tag));
+	}
+	switch (slot) {
+		case kEquipmentSlotBody:
+			changeBody();
+			break;
+		case kEquipmentSlotWeaponL:
+		case kEquipmentSlotWeaponR:
+			changeWeapon(slot);
+			break;
+		default:
+			break;
+	}
+}
+
+Inventory &Creature::getInventory() {
+	return _inventory;
+}
+
+const Common::UString Creature::getEquipedItem(EquipmentSlot slot) const {
+	std::map<EquipmentSlot, Common::UString>::const_iterator i = _equipment.find(slot);
+	return i == _equipment.end() ? "" : i->second;
 }
 
 void Creature::playDefaultAnimation() {

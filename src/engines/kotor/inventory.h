@@ -42,6 +42,7 @@ class Inventory {
 public:
 	void addItem(const Common::UString &tag, int count = 1);
 	void removeItem(const Common::UString &tag, int count = 1);
+	void removeAllItems();
 
 	const std::map<Common::UString, InventoryItem> &getItems() const;
 	bool hasItem(const Common::UString &tag) const;

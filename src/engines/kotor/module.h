@@ -172,6 +172,8 @@ public:
 	void playAnimationOnActiveObject(const Common::UString &baseAnim,
 	                                 const Common::UString &headAnim);
 
+	void addItemToActiveObject(const Common::UString &item, int count);
+
 private:
 	enum ActionType {
 		kActionNone   = 0,

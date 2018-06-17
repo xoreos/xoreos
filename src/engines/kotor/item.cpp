@@ -49,15 +49,30 @@ void Item::load(const Aurora::GFF3Struct &gff) {
 
 	// Base item
 	_baseItem = gff.getSint("BaseItem");
-	_itemClass = TwoDAReg.get2DA("baseitems").getRow(_baseItem).getString("itemclass");
+	const Aurora::TwoDARow &twoDA = TwoDAReg.get2DA("baseitems").getRow(_baseItem);
+	_equipableSlots = static_cast<EquipmentSlot>(twoDA.getInt("equipableslots"));
+	_itemClass = twoDA.getString("itemclass");
 
-	// Model and texture variation
+	// Model, body and texture variations
 	_modelVariation = gff.getSint("ModelVariation");
-	_textureVariation = gff.getSint("TextureVariation");
+	_bodyVariation = gff.getSint("BodyVariation");
+	_textureVariation = gff.getSint("TextureVar");
 }
 
 const Common::UString &Item::getName() const {
 	return _name;
+}
+
+EquipmentSlot Item::getEquipableSlots() const {
+	return _equipableSlots;
+}
+
+int Item::getBodyVariation() const {
+	return _bodyVariation;
+}
+
+int Item::getTextureVariation() const {
+	return _textureVariation;
 }
 
 const Common::UString Item::getIcon() const {
@@ -65,6 +80,10 @@ const Common::UString Item::getIcon() const {
 	if (variation == 0)
 		variation = 1;
 	return Common::UString::format("i%s_%03d", _itemClass.c_str(), variation);
+}
+
+const Common::UString Item::getModelName() const {
+	return Common::UString::format("%s_%03d", _itemClass.c_str(), _modelVariation);
 }
 
 } // End of namespace KotOR
