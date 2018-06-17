@@ -31,7 +31,8 @@
 namespace Engines {
 
 WidgetLabel::WidgetLabel(GUI &gui, const Common::UString &tag)
-		: KotORJadeWidget(gui, tag) {
+		: KotORJadeWidget(gui, tag),
+		  _hovered(false) {
 }
 
 WidgetLabel::~WidgetLabel() {
@@ -39,6 +40,22 @@ WidgetLabel::~WidgetLabel() {
 
 void WidgetLabel::load(const Aurora::GFF3Struct &gff) {
 	KotORJadeWidget::load(gff);
+}
+
+bool WidgetLabel::isHovered() const {
+	return _hovered;
+}
+
+void WidgetLabel::enter() {
+	_hovered = true;
+}
+
+void WidgetLabel::leave() {
+	_hovered = false;
+}
+
+void WidgetLabel::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+	setActive(true);
 }
 
 } // End of namespace Engines

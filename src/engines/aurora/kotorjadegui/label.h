@@ -35,6 +35,15 @@ public:
 	~WidgetLabel();
 
 	void load(const Aurora::GFF3Struct &gff);
+
+	bool isHovered() const;
+
+	void enter();
+	void leave();
+	
+	void mouseUp(uint8 state, float x, float y);
+private:
+	bool _hovered;
 };
 
 } // End of namespace Engines
