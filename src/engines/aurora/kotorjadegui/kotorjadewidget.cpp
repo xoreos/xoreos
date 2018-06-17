@@ -373,7 +373,7 @@ void KotORJadeWidget::show() {
 }
 
 void KotORJadeWidget::hide() {
-	if (isInvisible())
+	if (!isVisible())
 		return;
 
 	if (_subScene)
