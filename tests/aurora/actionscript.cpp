@@ -179,7 +179,7 @@ GTEST_TEST(ActionScript, TestClass) {
 	EXPECT_TRUE(prototype.asObject()->hasMember("getI"));
 	EXPECT_TRUE(prototype.asObject()->getMember("getI").isFunction());
 
-	Aurora::ActionScript::ObjectPtr obj = avm.newObject("Test").asObject();
+	Aurora::ActionScript::ObjectPtr obj = avm.createNewObject("Test").asObject();
 	EXPECT_EQ(obj->getMember("i").asNumber(), 1);
 
 	obj->call("dec", avm);
@@ -218,7 +218,7 @@ GTEST_TEST(ActionScript, TestClass2) {
 	arguments[0] = true;
 	arguments[1] = false;
 
-	Aurora::ActionScript::Variable test = avm.newObject("Test2_b", arguments);
+	Aurora::ActionScript::Variable test = avm.createNewObject("Test2_b", arguments);
 	EXPECT_TRUE(test.isObject());
 	EXPECT_TRUE(test.asObject()->hasMember("a"));
 	EXPECT_TRUE(test.asObject()->hasMember("b"));
