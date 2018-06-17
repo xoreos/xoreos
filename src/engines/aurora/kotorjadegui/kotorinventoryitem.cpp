@@ -75,10 +75,24 @@ void KotORInventoryItem::load(const Aurora::GFF3Struct &gff) {
 	_icon.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, frameSize, frameSize));
 	_icon->setPosition(x, y + (_height - frameSize) / 2.0f, 0.0f);
 
+	if (_border) {
+		float bX, bY, bZ;
+		_border->getPosition(bX, bY, bZ);
+		_border->setPosition(bX + frameSize, bY, bZ);
+
+		float width, height;
+		_border->getSize(width, height);
+		_border->setSize(width - frameSize, height);
+	}
+
 	if (_text) {
 		float tX, tY, tZ;
 		_text->getPosition(tX, tY, tZ);
 		_text->setPosition(tX + frameSize, tY, tZ);
+		
+		float width = _text->getWidth();
+		float height = _text->getHeight();
+		_text->setSize(width - frameSize, height);
 
 		_text->setVerticalAlign(Graphics::Aurora::kVAlignMiddle);
 
