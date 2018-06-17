@@ -480,13 +480,17 @@ const std::list<ModelNode *> &Model::getNodes() {
 void Model::attachModel(const Common::UString &nodeName, Model *model) {
 	ModelNode *node = getNode(nodeName);
 	if (node) {
-		node->_attachedModel = model;
-		createBound();
-
 		std::map<Common::UString, Model *>::iterator m = _attachedModels.find(nodeName);
-		if (m != _attachedModels.end())
+		if (m != _attachedModels.end()) {
 			_attachedModels.erase(m);
-		_attachedModels.insert(std::pair<Common::UString, Model *>(nodeName, model));
+		}
+
+		node->_attachedModel = model;
+
+		if (model)
+			_attachedModels.insert(std::pair<Common::UString, Model *>(nodeName, model));
+
+		createBound();
 	}
 }
 
