@@ -190,6 +190,8 @@ private:
 	void getCurrentHitPoints(Aurora::NWScript::FunctionContext &ctx);
 	void getMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
 	void setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
+
+	void createItemOnObject(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp

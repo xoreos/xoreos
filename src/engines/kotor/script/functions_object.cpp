@@ -34,6 +34,7 @@
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/objectcontainer.h"
 #include "src/engines/kotor/object.h"
+#include "src/engines/kotor/placeable.h"
 
 #include "src/engines/kotor/script/functions.h"
 
@@ -127,6 +128,26 @@ void Functions::setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx) {
 
 	kotorObject->setCurrentHitPoints(maxHitPoints);
 	kotorObject->setMaxHitPoints(maxHitPoints);
+}
+
+void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &itemTag = ctx.getParams()[0].getString();
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+	int32 count = ctx.getParams()[2].getInt();
+
+	Creature *creature = ObjectContainer::toCreature(object);
+	if (creature) {
+		creature->getInventory().addItem(itemTag, count);
+		return;
+	}
+
+	Placeable *placeable = ObjectContainer::toPlaceable(object);
+	if (placeable) {
+		placeable->getInventory().addItem(itemTag, count);
+		return;
+	}
+
+	throw Common::Exception("Functions::createItemOnObject(): Invalid object");
 }
 
 } // End of namespace KotOR

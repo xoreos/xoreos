@@ -149,7 +149,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  28, "GetFacing"                           , 0                                                },
 	{  29, "GetItemPossessor"                    , 0                                                },
 	{  30, "GetItemPossessedBy"                  , 0                                                },
-	{  31, "CreateItemOnObject"                  , 0                                                },
+	{  31, "CreateItemOnObject"                  , &Functions::createItemOnObject                   },
 	{  32, "ActionEquipItem"                     , 0                                                },
 	{  33, "ActionUnequipItem"                   , 0                                                },
 	{  34, "ActionPickUpItem"                    , 0                                                },
