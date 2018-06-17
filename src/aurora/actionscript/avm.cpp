@@ -86,7 +86,7 @@ Variable AVM::getVariable(const Common::UString &name) {
 	}
 }
 
-Variable AVM::newObject(const Common::UString &name, std::vector<Variable> arguments) {
+Variable AVM::createNewObject(const Common::UString &name, std::vector<Variable> arguments) {
 	Variable variable = getVariable(name);
 
 	if (!variable.isFunction())
@@ -102,11 +102,11 @@ Variable AVM::newObject(const Common::UString &name, std::vector<Variable> argum
 		throw Common::Exception("Constructor is not a function");
 
 	byte counter = 1;
-	if (constructor->preloadThisFlag()) {
+	if (constructor->getPreloadThisFlag()) {
 		storeRegister(Variable(newObject), counter);
 		counter += 1;
 	}
-	if (constructor->preloadSuperFlag()) {
+	if (constructor->getPreloadSuperFlag()) {
 		storeRegister(Variable(newObject->getMember("constructor")), counter);
 		counter += 1;
 	}

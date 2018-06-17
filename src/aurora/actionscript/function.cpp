@@ -31,11 +31,11 @@ namespace ActionScript {
 Function::Function(bool preloadThisFlag, bool preloadSuperFlag) : _preloadThisFlag(preloadThisFlag), _preloadSuperFlag(preloadSuperFlag) {
 }
 
-bool Function::preloadThisFlag() {
+bool Function::getPreloadThisFlag() {
 	return _preloadThisFlag;
 }
 
-bool Function::preloadSuperFlag() {
+bool Function::getPreloadSuperFlag() {
 	return _preloadSuperFlag;
 }
 

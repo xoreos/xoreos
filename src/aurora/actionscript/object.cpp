@@ -71,7 +71,7 @@ Variable Object::call(Common::UString function, AVM &avm) {
 	Function *f = reinterpret_cast<Function *>(getMember(function).asObject().get());
 
 	byte counter = 1;
-	if (f->preloadThisFlag()) {
+	if (f->getPreloadThisFlag()) {
 		avm.storeRegister(shared_from_this(), counter);
 		counter += 1;
 	}

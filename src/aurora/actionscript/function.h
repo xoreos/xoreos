@@ -42,8 +42,8 @@ class Function : public Object {
 public:
 	Function(bool preloadThisFlag, bool preloadSuperFlag);
 
-	bool preloadThisFlag();
-	bool preloadSuperFlag();
+	bool getPreloadThisFlag();
+	bool getPreloadSuperFlag();
 
 	virtual Variable operator()(AVM &avm) = 0;
 

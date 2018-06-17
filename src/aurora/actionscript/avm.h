@@ -70,7 +70,8 @@ public:
 	void setVariable(const Common::UString &name, Variable value);
 	Variable getVariable(const Common::UString &name);
 
-	Variable newObject(const Common::UString &name, std::vector<Variable> arguments = std::vector<Variable>());
+	Variable createNewObject(const Common::UString &name,
+	                         std::vector<Variable> arguments = std::vector<Variable>());
 
 	void setStopFlag();
 	bool getStopFlag();

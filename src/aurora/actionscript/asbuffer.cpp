@@ -317,7 +317,7 @@ void ASBuffer::actionNewObject(AVM &avm) {
 		_stack.pop();
 	}
 
-	_stack.push(avm.newObject(name, arguments));
+	_stack.push(avm.createNewObject(name, arguments));
 
 	debugC(kDebugActionScript, 1, "actionNewObject");
 }
@@ -422,7 +422,7 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 		throw Common::Exception("Object is not a function");
 
 	byte counter = 1;
-	if (function->preloadThisFlag())
+	if (function->getPreloadThisFlag())
 		counter += 1;
 
 	for (size_t i = 0; i < arguments.size(); ++i) {
