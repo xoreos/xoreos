@@ -81,6 +81,8 @@ void WidgetListBox::setItemType(ListBoxItemType itemType) {
 
 void WidgetListBox::setItemSelectionEnabled(bool itemSelectionEnabled) {
 	_itemSelectionEnabled = itemSelectionEnabled;
+	if (!_itemSelectionEnabled)
+		_selectedIndex = -1;
 }
 
 void WidgetListBox::setAdjustHeight(bool adjustHeight) {
@@ -140,13 +142,6 @@ void WidgetListBox::createItemWidgets(uint32 count) {
 
 		item->load(*_protoItem);
 
-		if (_itemSelectionEnabled)
-			item->setDisableHighlight(true);
-		if (_textColorChanged)
-			item->setTextColor(_textR, _textG, _textB, _textA);
-		if (_borderColorChanged)
-			item->setBorderColor(_borderR, _borderG, _borderB, _borderA);
-
 		addChild(*item);
 		addSub(*item);
 
@@ -203,6 +198,14 @@ void WidgetListBox::refreshItemWidgets() {
 
 		if (visible) {
 			itemWidget->setInvisible(false);
+
+			if (_itemSelectionEnabled)
+				itemWidget->setDisableHighlight(true);
+			if (_textColorChanged)
+				itemWidget->setTextColor(_textR, _textG, _textB, _textA);
+			if (_borderColorChanged)
+				itemWidget->setBorderColor(_borderR, _borderG, _borderB, _borderA);
+
 			if (isVisible())
 				itemWidget->show();
 			++_numVisibleItems;
@@ -341,10 +344,11 @@ void WidgetListBox::positionItemWidgets() {
 		x += _scrollbar->getWidth() + _scrollbar->getBorderDimension();
 
 	y += _height;
+	z -= 1.0f;
 
 	size_t count = _itemWidgets.size();
 	for (size_t i = 0; i < count; ++i) {
-		_itemWidgets[i]->setPosition(x, y -= _itemWidgets[i]->getHeight() + _padding, -1.0f);
+		_itemWidgets[i]->setPosition(x, y -= _itemWidgets[i]->getHeight() + _padding, z);
 	}
 }
 
