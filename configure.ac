@@ -198,6 +198,16 @@ AX_CHECK_ZLIB(1, 2, 3, 0, , AC_MSG_ERROR([zlib(>= 1.2.3) is required and could n
 AX_CHECK_LZMA(5, 0, 3, 2, , AC_MSG_ERROR([liblzma(>= 5.0.3) is required and could not be found!]))
 AX_CHECK_XML2(2, 8, 0, , AC_MSG_ERROR([libxml2(>= 2.8.0) is required and could not be found!]))
 
+dnl Use Wincrypt instead of BCrypt in Boost.Uuid
+AC_ARG_WITH([boost-uuid-wincrypt], [AS_HELP_STRING([--with-boost-uuid-wincrypt], [Make Boost.Uuid use Wincrypt instead of BCrypt on Windows @<:@default=no@:>@])], [], [with_boost_uuid_wincrypt=no])
+
+BOOST_UUID_WINCRYPT=""
+if test "x$with_boost_uuid_wincrypt" = "xyes"; then
+	BOOST_UUID_WINCRYPT="-DBOOST_UUID_RANDOM_PROVIDER_FORCE_WINCRYPT"
+fi
+
+AC_SUBST(BOOST_UUID_WINCRYPT)
+
 dnl GLEW
 if test "x$enable_external_glew" = "xyes"; then
 	AX_CHECK_GLEW( , [enable_external_glew=no])
@@ -279,7 +289,7 @@ BOOST_HASH
 BOOST_DATE_TIME
 BOOST_FUNCTION
 BOOST_BIND
-BOOST_UUID
+BOOST_UUID([${BOOST_UUID_WINCRYPT}])
 BOOST_SMART_PTR
 BOOST_SCOPE_EXIT
 BOOST_ATOMIC
