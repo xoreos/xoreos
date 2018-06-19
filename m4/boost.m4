@@ -1022,11 +1022,68 @@ BOOST_DEFUN([Unordered],
 [BOOST_FIND_HEADER([boost/unordered_map.hpp])])
 
 
-# BOOST_UUID()
-# ------------
-# Look for Boost.Uuid
+# BOOST_UUID([EXTRA-CPP-FLAGS])
+# -----------------------
+# Look for Boost.Uuid.  Beginning with Boost 1.67, Boost.Uuid on
+# Windows might require -lbcrypt.
 BOOST_DEFUN([Uuid],
-[BOOST_FIND_HEADER([boost/uuid/uuid.hpp])])
+[BOOST_FIND_HEADER([boost/uuid/uuid.hpp])
+
+BOOST_UUID_LDFLAGS=
+BOOST_UUID_LIBS=
+
+AC_LANG_PUSH([C++])
+boost_save_CPPFLAGS=$CPPFLAGS
+boost_filesystem_save_LIBS=$LIBS
+boost_filesystem_save_LDFLAGS=$LDFLAGS
+CPPFLAGS="$CPPFLAGS $1"
+
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
+#include <boost/uuid/uuid_generators.hpp>
+int main(void) {
+  boost::uuids::random_generator()();
+  return 0;
+}]])], [boost_link=yes], [boost_link=no])
+
+CPPFLAGS=$boost_save_CPPFLAGS
+LIBS=$boost_filesystem_save_LIBS
+LDFLAGS=$boost_filesystem_save_LDFLAGS
+AC_LANG_POP([C++])
+
+if test x"$boost_link" = xno; then
+
+  AC_LANG_PUSH([C++])
+  boost_save_CPPFLAGS=$CPPFLAGS
+  boost_filesystem_save_LIBS="$LIBS"
+  boost_filesystem_save_LDFLAGS="$LDFLAGS"
+  CPPFLAGS="$CPPFLAGS $1"
+  LIBS="$LIBS -lbcrypt"
+
+  AC_LINK_IFELSE([AC_LANG_SOURCE([[
+  #include <boost/uuid/uuid_generators.hpp>
+  int main(void) {
+    boost::uuids::random_generator()();
+    return 0;
+  }]])], [boost_link=yes], [boost_link=no])
+
+  CPPFLAGS=$boost_save_CPPFLAGS
+  LIBS=$boost_filesystem_save_LIBS
+  LDFLAGS=$boost_filesystem_save_LDFLAGS
+  AC_LANG_POP([C++])
+
+  if test x"$boost_link" = xyes; then
+    BOOST_UUID_LIBS="-lbcrypt"
+  fi
+fi
+
+if test x"$boost_link" = xno; then
+  AC_MSG_ERROR([cannot find the flags to link with Boost UUID])
+fi
+
+AC_SUBST(BOOST_UUID_LDFLAGS)
+AC_SUBST(BOOST_UUID_LIBS)
+
+]) # BOOST_UUID
 
 
 # BOOST_PROGRAM_OPTIONS([PREFERRED-RT-OPT])
