@@ -136,7 +136,7 @@ License: GPL-3.0+
  exception to the GPL to apply to your modified version as well.
 
 Files: m4/ax_check_al.m4
-Copyright: 2013 Sven Hesse <drmccoy@drmccoy.de>
+Copyright: 2013, 2018 Sven Hesse <drmccoy@drmccoy.de>
            2013 Matthew Hoops <clone2727@gmail.com>
 License: CC0-1.0
 

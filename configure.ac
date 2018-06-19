@@ -235,7 +235,7 @@ else
 fi
 
 dnl Sound libraries
-AX_CHECK_AL( , AC_MSG_ERROR([OpenAL Soft (>= 1.12) is required and could not be found!]))
+AX_CHECK_AL([1.12],  , AC_MSG_ERROR([OpenAL Soft (>= 1.12) is required and could not be found!]))
 if test "x$enable_faad" = "xyes"; then
 	AX_CHECK_FAAD(, [enable_faad=no])
 fi
