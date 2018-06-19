@@ -49,6 +49,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/2dareg.h \
     src/aurora/locstring.h \
     src/aurora/gff3file.h \
+    src/aurora/gff3writer.h \
     src/aurora/gff4file.h \
     src/aurora/gff4fields.h \
     src/aurora/dlgfile.h \
@@ -91,6 +92,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/2dareg.cpp \
     src/aurora/locstring.cpp \
     src/aurora/gff3file.cpp \
+    src/aurora/gff3writer.cpp \
     src/aurora/gff4file.cpp \
     src/aurora/dlgfile.cpp \
     src/aurora/lytfile.cpp \
