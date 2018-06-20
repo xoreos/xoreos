@@ -94,14 +94,32 @@ size_t WriteFile::write(const void *dataPtr, size_t dataSize) {
 
 	assert(dataPtr);
 
+	const size_t oldPos = pos();
 	const size_t written = std::fwrite(dataPtr, 1, dataSize, _handle);
-	_size += written;
+	_size += MAX<size_t>(0, -size() + oldPos + written);
 
 	return written;
 }
 
 size_t WriteFile::size() const {
 	return _size;
+}
+
+size_t WriteFile::pos() const {
+	return std::ftell(_handle);
+}
+
+size_t WriteFile::seek(ptrdiff_t offset, SeekableWriteStream::Origin whence) {
+	const size_t oldPos = pos();
+	const size_t newPos = evalSeek(offset, whence, pos(), 0, size());
+
+	if (newPos > _size)
+		throw Exception(kSeekError);
+
+	if (std::fseek(_handle, newPos, SEEK_SET))
+		throw Exception(kSeekError);
+
+	return oldPos;
 }
 
 } // End of namespace Common

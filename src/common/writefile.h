@@ -37,7 +37,7 @@ namespace Common {
 class UString;
 
 /** A simple streaming file writing class. */
-class WriteFile : boost::noncopyable, public WriteStream {
+class WriteFile : boost::noncopyable, public SeekableWriteStream {
 public:
 	WriteFile();
 	WriteFile(const UString &fileName);
@@ -65,6 +65,12 @@ public:
 
 	/** Return the number of bytes written to the current file in total. */
 	size_t size() const;
+
+	/** Return the current position ot the stream in the file. */
+	size_t pos() const;
+
+	/** Seek to the speciied offset from the specified origin. */
+	size_t seek(ptrdiff_t offset, Origin whence = SeekableWriteStream::kOriginBegin);
 
 protected:
 	std::FILE *_handle; ///< The actual file handle.
