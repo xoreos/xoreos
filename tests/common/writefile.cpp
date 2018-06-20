@@ -94,3 +94,74 @@ GTEST_TEST_F(WriteFile, write) {
 	for (size_t i = 0; i < ARRAYSIZE(data); i++)
 		EXPECT_EQ(readData[i], data[i]) << "At index " << i;
 }
+
+GTEST_TEST_F(WriteFile, seek) {
+	ASSERT_FALSE(kFilePath.empty());
+
+	Common::WriteFile file(kFilePath.generic_string());
+	ASSERT_TRUE(file.isOpen());
+
+	file.writeString("Foobar");
+	file.seek(3);
+	file.writeString("Foo");
+	file.seek(-2, Common::SeekableWriteStream::kOriginEnd);
+	file.writeString("uu");
+	file.seek(-6, Common::SeekableWriteStream::kOriginCurrent);
+	file.writeString("bar");
+
+	file.flush();
+	file.close();
+
+	// Read back in the file and compare
+
+	boost::filesystem::ifstream testFile(kFilePath, std::ofstream::binary);
+	byte data[6];
+	testFile.read(reinterpret_cast<char *>(data), 6);
+	ASSERT_FALSE(testFile.fail());
+
+	EXPECT_EQ(data[0], 'b');
+	EXPECT_EQ(data[1], 'a');
+	EXPECT_EQ(data[2], 'r');
+	EXPECT_EQ(data[3], 'F');
+	EXPECT_EQ(data[4], 'u');
+	EXPECT_EQ(data[5], 'u');
+}
+
+GTEST_TEST_F(WriteFile, size) {
+	ASSERT_FALSE(kFilePath.empty());
+	Common::WriteFile file(kFilePath.generic_string());
+
+	ASSERT_TRUE(file.isOpen());
+
+	file.writeUint64BE(0x0123456789ABCDEF);
+	EXPECT_EQ(file.size(), 8);
+
+	file.seek(-2, Common::SeekableWriteStream::kOriginCurrent);
+	file.writeUint64BE(0x0123456789ABCDEF);
+	EXPECT_EQ(file.size(), 14);
+
+	file.flush();
+	file.close();
+
+	// Read back in the file and compare
+
+	boost::filesystem::ifstream testFile(kFilePath, std::ofstream::binary);
+	byte data[14];
+	testFile.read(reinterpret_cast<char *>(data), 14);
+	ASSERT_FALSE(testFile.fail());
+
+	EXPECT_EQ(data[0], 0x01);
+	EXPECT_EQ(data[1], 0x23);
+	EXPECT_EQ(data[2], 0x45);
+	EXPECT_EQ(data[3], 0x67);
+	EXPECT_EQ(data[4], 0x89);
+	EXPECT_EQ(data[5], 0xAB);
+	EXPECT_EQ(data[6], 0x01);
+	EXPECT_EQ(data[7], 0x23);
+	EXPECT_EQ(data[8], 0x45);
+	EXPECT_EQ(data[9], 0x67);
+	EXPECT_EQ(data[10], 0x89);
+	EXPECT_EQ(data[11], 0xAB);
+	EXPECT_EQ(data[12], 0xCD);
+	EXPECT_EQ(data[13], 0xEF);
+}
