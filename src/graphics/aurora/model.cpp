@@ -833,6 +833,8 @@ void Model::finalize() {
 
 	AnimationChannelMap::iterator c = _animationChannels.begin();
 	c->second->playDefaultAnimation();
+
+	createAbsolutePosition();
 }
 
 void Model::createStateNamesList(std::list<Common::UString> *stateNames) {
