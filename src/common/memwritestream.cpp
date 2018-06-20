@@ -78,9 +78,23 @@ size_t MemoryWriteStream::size() const {
 	return _bufSize;
 }
 
+size_t MemoryWriteStream::seek(ptrdiff_t offset, SeekableWriteStream::Origin whence) {
+	assert((size_t)_pos <= _bufSize);
+
+	const size_t oldPos = _pos;
+	const size_t newPos = evalSeek(offset, whence, _pos, 0, size());
+	if (newPos > _bufSize)
+		throw Exception(kSeekError);
+
+	_pos = newPos;
+	_ptr = _ptr - oldPos + newPos;
+
+	return oldPos;
+}
+
 
 MemoryWriteStreamDynamic::MemoryWriteStreamDynamic(bool disposeMemory, size_t capacity) :
-	_data(0, disposeMemory), _ptr(0), _capacity(0), _size(0) {
+		_data(0, disposeMemory), _ptr(0), _capacity(0), _size(0) {
 
 	reserve(capacity);
 }
@@ -99,9 +113,10 @@ void MemoryWriteStreamDynamic::reserve(size_t s) {
 	if (_data)
 		memcpy(newData, _data.get(), _size);
 
+	const size_t oldPos = pos();
 	_data.dispose();
 	_data.reset(newData);
-	_ptr = _data.get() + _size;
+	_ptr = _data.get() + oldPos;
 }
 
 void MemoryWriteStreamDynamic::ensureCapacity(size_t newLen) {
@@ -114,12 +129,14 @@ void MemoryWriteStreamDynamic::ensureCapacity(size_t newLen) {
 size_t MemoryWriteStreamDynamic::write(const void *dataPtr, size_t dataSize) {
 	assert(dataPtr);
 
-	ensureCapacity(_size + dataSize);
+	ensureCapacity(pos() + dataSize);
 
 	std::memcpy(_ptr, dataPtr, dataSize);
 
+	if (pos() + dataSize > _size)
+		_size = MAX(pos() + dataSize, _size);
+
 	_ptr  += dataSize;
-	_size += dataSize;
 
 	return dataSize;
 }
@@ -136,8 +153,25 @@ void MemoryWriteStreamDynamic::dispose() {
 	_capacity = 0;
 }
 
+size_t MemoryWriteStreamDynamic::pos() const {
+	return _ptr - _data.get();
+}
+
 size_t MemoryWriteStreamDynamic::size() const {
 	return _size;
+}
+
+size_t MemoryWriteStreamDynamic::seek(ptrdiff_t offset, SeekableWriteStream::Origin whence) {
+	assert((size_t)pos() <= _size);
+
+	const size_t oldPos = pos();
+	const size_t newPos = evalSeek(offset, whence, pos(), 0, size());
+	if (newPos > _size)
+		throw Exception(kSeekError);
+
+	_ptr = _data.get() + newPos;
+
+	return oldPos;
 }
 
 byte *MemoryWriteStreamDynamic::getData() {
