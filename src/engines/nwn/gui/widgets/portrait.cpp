@@ -150,6 +150,29 @@ void Portrait::render(Graphics::RenderPass pass) {
 	_renderable->renderImmediate(tform);
 }
 
+void Portrait::renderImmediate(const glm::mat4 &parentTransform) {
+	/**
+	 * The "border" in this case is rendered first. The portrait itself is overlaid on
+	 * top afterwards - because depth testing is disabled it would seem. This is unfortunate,
+	 * because there's a few pixels rendered there for absolutely no reason. Could try to sort
+	 * by depth - but then some widgets might actually have to rely on this. So for now, just
+	 * deal with the inefficiency.
+	 * It's not going to have that great of an impact probably, as borders don't seem to be
+	 * used in many places other than the menu system.
+	 */
+	if (_border > 0.0f) {
+		glm::mat4 bform = glm::translate(glm::mat4(), glm::vec3(_x - _border, _y - _border, -10.0f));
+		bform *= glm::scale(glm::mat4(), glm::vec3(_width + 2.0f * _border,
+		                                           _height + 2.0f * _border,
+		                                           1.0f));
+		_borderRenderable->renderImmediate(parentTransform * bform);
+	}
+
+	glm::mat4 tform = glm::translate(glm::mat4(), glm::vec3(_x, _y, -10.0f));
+	tform *= glm::scale(glm::mat4(), glm::vec3(_width, _height, 1.0f));
+	_renderable->renderImmediate(tform);
+}
+
 void Portrait::setPortrait(const Common::UString &name) {
 	Size curSize = _size;
 

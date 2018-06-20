@@ -132,13 +132,11 @@ void TextureFont::draw(uint32 c) const {
 	glTranslatef(cC->second.width + _spaceR, 0.0f, 0.0f);
 }
 
-void TextureFont::renderBind() const {
-	glm::mat4 ident;
-
+void TextureFont::renderBind(const glm::mat4 &transform) const {
 	glUseProgram(_renderable->getProgram()->glid);
 	_material->bindProgram(_renderable->getProgram(), 1.0f);
 	_material->bindGLState();
-	_renderable->getSurface()->bindProgram(_renderable->getProgram(), &ident);
+	_renderable->getSurface()->bindProgram(_renderable->getProgram(), &transform);
 	_renderable->getSurface()->bindGLState();
 	_mesh->renderBind();
 }

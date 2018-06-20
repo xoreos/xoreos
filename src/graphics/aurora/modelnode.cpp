@@ -510,10 +510,20 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 		                                                    _attachedModel->_scale[1],
 		                                                    _attachedModel->_scale[2]));
 
+
+		/**
+		 * @todo So this is a great big dirty hack to keep relative positioning
+		 * in place for rendering purposes, while still allowing bounding volumes
+		 * to be properly created.
+		 * This should be replaced by a _globalTransform / _localTransform system
+		 * one day.
+		 */
+		glm::mat4 apos = _attachedModel->_absolutePosition;  // Hack part A.
 		_attachedModel->_absolutePosition = modelPosition;
 		_attachedModel->createBound();
 
 		_absoluteBoundBox.add(_attachedModel->_absoluteBoundBox);
+		_attachedModel->_absolutePosition = apos;  // Hack part B.
 	}
 }
 
@@ -684,7 +694,7 @@ void ModelNode::render(RenderPass pass, const glm::mat4 &parentTransform) {
 	}
 }
 
-void ModelNode::queueRender(const glm::mat4 &parentTransform) {
+void ModelNode::calcRenderTransform(const glm::mat4 &parentTransform) {
 	// Apply the node's transformation
 	_renderTransform = parentTransform;
 	_renderTransform = glm::translate(_renderTransform, glm::vec3(_position[0], _position[1], _position[2]));
@@ -699,8 +709,51 @@ void ModelNode::queueRender(const glm::mat4 &parentTransform) {
 	_renderTransform = glm::rotate(_renderTransform, _rotation[1], glm::vec3(0.0f, 1.0f, 0.0f));
 	_renderTransform = glm::rotate(_renderTransform, _rotation[2], glm::vec3(0.0f, 0.0f, 1.0f));
 	_renderTransform = glm::scale(_renderTransform, glm::vec3(_scale[0], _scale[1], _scale[2]));
+}
 
+void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
+	calcRenderTransform(parentTransform);
+	/**
+	 * Ignoring _render for now because it's being falsely set to false.
+	 */
+	/* if (_render) {} */
 
+	if (_dirtyRender) {
+		/**
+		 * Do this regardless of if the modelnode is actually visible or not, to prevent
+		 * stutter when things are first brought into view. Most things are loaded at the
+		 * start of a level, so stutter won't be noticed then.
+		 */
+		this->buildMaterial();
+	} else {
+		/**
+		 * @todo Ideally there should be some kind of check in here to determine visibility.
+		 * if the node isn't (camera) visible, then don't bother trying to render it.
+		 */
+		if (_renderableArray.size() == 0) {
+			if (_rootStateNode) {
+				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
+					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
+				}
+			}
+		} else {
+			for (size_t i = 0; i < _renderableArray.size(); ++i) {
+				_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
+			}
+		}
+	}
+
+	if (_attachedModel) {
+		_attachedModel->renderImmediate(_renderTransform);
+	}
+	// Render the node's children
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+		(*c)->renderImmediate(_renderTransform);
+	}
+}
+
+void ModelNode::queueRender(const glm::mat4 &parentTransform) {
+	calcRenderTransform(parentTransform);
 	/**
 	 * Ignoring _render for now because it's being falsely set to false.
 	 */

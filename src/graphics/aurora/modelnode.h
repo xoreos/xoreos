@@ -28,8 +28,6 @@
 #include <list>
 #include <vector>
 
-#include "glm/mat4x4.hpp"
-
 #include "src/common/ustring.h"
 #include "src/common/boundingbox.h"
 
@@ -271,6 +269,9 @@ protected:
 	void render(RenderPass pass, const glm::mat4 &parentTransform);
 	void drawSkeleton(const glm::mat4 &parent, bool showInvisible);
 
+	/** Calculate the transform used for rendering. */
+	void calcRenderTransform(const glm::mat4 &parentTransform);
+	void renderImmediate(const glm::mat4 &parentTransform);
 	void queueRender(const glm::mat4 &parentTransform);
 
 	void lockFrame();

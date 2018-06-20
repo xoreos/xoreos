@@ -57,7 +57,12 @@ public:
 
 	void draw(uint32 c) const;
 
-	virtual void renderBind() const;
+	/**
+	 * @brief Bind the font for rendering. Must be performed before render is called.
+	 * @param transform  Base modelview transform. Under most circumstances this is expected to be the identity matrix.
+	 */
+	virtual void renderBind(const glm::mat4 &transform) const;
+
 	virtual void render(uint32 c, float &x, float &y, float *rgba) const;
 	virtual void renderUnbind() const;
 

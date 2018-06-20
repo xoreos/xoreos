@@ -31,6 +31,8 @@
 
 #include "src/graphics/types.h"
 
+#include "glm/mat4x4.hpp"
+
 namespace Graphics {
 
 /** An abstract font. */
@@ -63,7 +65,7 @@ public:
 	/** Draw this character. */
 	virtual void draw(uint32 c) const = 0;
 
-	virtual void renderBind() const {}
+	virtual void renderBind(const glm::mat4 &UNUSED(transform)) const {}
 	virtual void render(uint32 UNUSED(c), float &UNUSED(x), float &UNUSED(y), float *UNUSED(rgba)) const {}
 	virtual void renderUnbind() const {}
 

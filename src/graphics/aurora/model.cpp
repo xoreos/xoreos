@@ -661,7 +661,7 @@ void Model::render(RenderPass pass) {
 	// Draw the skeleton, if requested
 	doDrawSkeleton();
 }
-
+#if 0
 void Model::queueRender() {
 	if (!_currentState) {
 		return;
@@ -675,20 +675,35 @@ void Model::queueRender() {
 		(*n)->queueRender(_absolutePosition);
 	}
 }
+#endif
+
+void Model::renderImmediate(const glm::mat4 &parentTransform) {
+	if (!_currentState) {
+		return;
+	}
+
+	glm::mat4 transform = parentTransform * _absolutePosition;
+	queueDrawBound();
+
+	// Queue the nodes
+	for (NodeList::iterator n = _currentState->rootNodes.begin();
+	     n != _currentState->rootNodes.end(); ++n) {
+		(*n)->renderImmediate(transform);
+	}
+}
 
 void Model::queueRender(const glm::mat4 &parentTransform) {
 	if (!_currentState) {
 		return;
 	}
 
-	glm::mat4 tform = parentTransform;
-	//tform *= _absolutePosition;
+	glm::mat4 transform = parentTransform * _absolutePosition;
 	queueDrawBound();
 
 	// Queue the nodes
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
 	     n != _currentState->rootNodes.end(); ++n) {
-		(*n)->queueRender(tform);
+		(*n)->queueRender(transform);
 	}
 }
 

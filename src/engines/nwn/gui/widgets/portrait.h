@@ -81,6 +81,7 @@ public:
 	// Renderable
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
+	void renderImmediate(const glm::mat4 &parentTransform);
 
 private:
 	Graphics::Aurora::TextureHandle _texture;

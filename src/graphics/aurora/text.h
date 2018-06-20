@@ -89,6 +89,8 @@ public:
 	void render(RenderPass pass);
 	bool isIn(float x, float y) const;
 
+	void renderImmediate(const glm::mat4 &parentTransform);
+
 private:
 	float _r, _g, _b, _a;
 	FontHandle _font;
@@ -117,6 +119,12 @@ private:
 	              size_t position,
 	              float &x,
 	              float &y);
+
+	void drawLineImmediate(const Common::UString &line,
+	                       ColorPositions::const_iterator color,
+			               size_t position,
+			               float &x,
+			               float &y);
 };
 
 } // End of namespace Aurora

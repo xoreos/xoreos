@@ -1003,11 +1003,11 @@ bool GraphicsManager::renderWorld() {
 	}
 */
 
+	glm::mat4 ident;
 	RenderMan.clear();
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
-		static_cast<Renderable *>(*o)->queueRender();
-		//static_cast<Renderable *>(*o)->render(kRenderPassAll);
+		static_cast<Renderable *>(*o)->queueRender(ident);
 	}
 	RenderMan.sort();
 	RenderMan.render();
@@ -1058,11 +1058,12 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 
 	buildNewTextures();
 
+	glm::mat4 ident;
 	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
 	     g != gui.rend(); ++g) {
 
 //		glPushMatrix();
-		static_cast<Renderable *>(*g)->render(kRenderPassAll);
+		static_cast<Renderable *>(*g)->renderImmediate(ident);
 		//static_cast<Renderable *>(*g)->queueRender();
 //		glPopMatrix();
 	}

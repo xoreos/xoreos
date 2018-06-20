@@ -34,6 +34,8 @@
 #include "src/graphics/types.h"
 #include "src/graphics/queueable.h"
 
+#include "glm/mat4x4.hpp"
+
 namespace Graphics {
 
 /** An object that can be displayed by the graphics manager. */
@@ -53,8 +55,11 @@ public:
 	/** Render the object. */
 	virtual void render(RenderPass pass) = 0;
 
+	/** For shader based systems, don't sort anything, render this _right_now_. */
+	virtual void renderImmediate(const glm::mat4 &UNUSED(parentTransform)) {}
+
 	/** Queue the object for later rendering. */
-	virtual void queueRender() {}
+	virtual void queueRender(const glm::mat4 &UNUSED(parentTransform)) {}
 
 	/** Get the distance of the object from the viewer. */
 	double getDistance() const;

@@ -183,7 +183,7 @@ public:
 	// Renderable
 	void calculateDistance();
 	void render(RenderPass pass);
-	void queueRender();
+	void renderImmediate(const glm::mat4 &parentTransform);
 	void queueRender(const glm::mat4 &parentTransform);
 	void advanceTime(float dt);
 
