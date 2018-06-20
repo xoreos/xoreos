@@ -58,12 +58,12 @@
 
 namespace Common {
 
-/** Simple memory based 'stream', which implements the WriteStream interface for
+/** Simple memory based 'stream', which implements the SeekableWriteStream interface for
  *  a plain memory block.
  *
  *  Writing past the size of the memory block will fail with an exception.
  */
-class MemoryWriteStream : boost::noncopyable, public WriteStream {
+class MemoryWriteStream : boost::noncopyable, public SeekableWriteStream {
 public:
 	MemoryWriteStream(byte *buf, size_t len) : _ptr(buf), _bufSize(len), _pos(0) { }
 	~MemoryWriteStream() { }
@@ -79,6 +79,9 @@ public:
 	/** Return the total size of the memory block. */
 	size_t size() const;
 
+	/** Seek offset bytes from the origin whence. */
+	size_t seek(ptrdiff_t offset, Origin whence = kOriginBegin);
+
 private:
 	byte *_ptr;
 
@@ -90,7 +93,7 @@ private:
  *
  *  As long as more memory can be allocated, writing into the stream won't fail.
  */
-class MemoryWriteStreamDynamic : boost::noncopyable, public WriteStream {
+class MemoryWriteStreamDynamic : boost::noncopyable, public SeekableWriteStream {
 public:
 	MemoryWriteStreamDynamic(bool disposeMemory = false, size_t capacity = 0);
 	~MemoryWriteStreamDynamic();
@@ -102,8 +105,13 @@ public:
 	void setDisposable(bool disposeMemory);
 	void dispose();
 
+	/** Return the current writing position within the stream. */
+	size_t pos() const;
 	/** Return the number of bytes written to this stream in total. */
 	size_t size() const;
+
+	/** Seek offset bytes from the origin whence. */
+	size_t seek(ptrdiff_t offset, Origin whence = kOriginBegin);
 
 	byte *getData();
 
