@@ -96,4 +96,30 @@ void WriteStream::writeString(const UString &str) {
 		throw Exception(kWriteError);
 }
 
+SeekableWriteStream::SeekableWriteStream() {
+
+}
+
+SeekableWriteStream::~SeekableWriteStream() {
+
+}
+
+size_t SeekableWriteStream::evalSeek(ptrdiff_t offset, SeekableWriteStream::Origin whence, size_t pos, size_t begin,
+                                     size_t size) {
+	switch (whence) {
+		case kOriginEnd:
+			offset = size + offset;
+			XOREOS_FALLTHROUGH;
+		case kOriginBegin:
+			return begin + offset;
+		case kOriginCurrent:
+			return pos + offset;
+
+		default:
+			break;
+	}
+
+	throw Exception("Invalid whence (%d)", (int) whence);
+}
+
 } // End of namespace Common
