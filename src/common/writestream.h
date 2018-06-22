@@ -131,6 +131,19 @@ public:
 			throw Exception(kWriteError);
 	}
 
+	/** Write n bytes of value to the stream. */
+	void writeBytes(byte value, size_t n) {
+		for (size_t i = 0; i < n; ++i) {
+			if (write(&value, 1) != 1)
+				throw Exception(kWriteError);
+		}
+	}
+
+	/** Write n zeros to the stream. */
+	FORCEINLINE void writeZeros(size_t n) {
+		writeBytes(0, n);
+	}
+
 	FORCEINLINE void writeSint16LE(int16 value) {
 		writeUint16LE((uint16)value);
 	}
