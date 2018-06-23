@@ -714,10 +714,21 @@ void Module::toggleTriggers() {
 }
 
 void Module::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
-	if (_inDialog || name.empty())
+	if (_inDialog)
 		return;
 
-	_dialog->startConversation(name, owner);
+	Common::UString finalName(name);
+
+	if (finalName.empty() && owner) {
+		Creature *creature = ObjectContainer::toCreature(owner);
+		if (creature)
+			finalName = creature->getConversation();
+	}
+
+	if (finalName.empty())
+		return;
+
+	_dialog->startConversation(finalName, owner);
 
 	if (_dialog->isConversationActive()) {
 		_ingame->hide();
