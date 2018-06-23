@@ -61,7 +61,7 @@ void Functions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::actionStartConversation(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &convName = ctx.getParams()[1].getString();
-	_game->getModule().startConversation(convName);
+	_game->getModule().startConversation(convName, ctx.getCaller());
 }
 
 } // End of namespace KotOR
