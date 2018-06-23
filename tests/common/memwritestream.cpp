@@ -395,6 +395,21 @@ GTEST_TEST(MemoryWriteStream, size) {
 	EXPECT_EQ(data[13], 0x02);
 }
 
+GTEST_TEST(MemoryWriteStream, writeBytes) {
+	byte data[6] = { 0 };
+	Common::MemoryWriteStream stream(data);
+
+	stream.writeBytes(1, 3);
+	stream.writeBytes(2, 3);
+
+	EXPECT_EQ(data[0], 1);
+	EXPECT_EQ(data[1], 1);
+	EXPECT_EQ(data[2], 1);
+	EXPECT_EQ(data[3], 2);
+	EXPECT_EQ(data[4], 2);
+	EXPECT_EQ(data[5], 2);
+}
+
 
 GTEST_TEST(MemoryWriteStreamDynamic, write) {
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
