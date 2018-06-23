@@ -26,6 +26,8 @@
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
+#include "src/engines/aurora/util.h"
+
 #include "src/engines/kotor2/trigger.h"
 
 namespace Engines {
@@ -33,7 +35,8 @@ namespace Engines {
 namespace KotOR2 {
 
 Trigger::Trigger(const Aurora::GFF3Struct &gff)
-		: ::Engines::Trigger() {
+		: ::Engines::Trigger(),
+		  Object(kObjectTypeTrigger) {
 	load(gff);
 }
 
@@ -53,15 +56,23 @@ bool Trigger::isVisible() const {
 }
 
 void Trigger::load(const Aurora::GFF3Struct &gff) {
-	Common::UString resRef = gff.getString("TemplateResRef");
-	if (!resRef.empty())
-		loadBlueprint(resRef);
+	Common::UString temp = gff.getString("TemplateResRef");
+
+	Common::ScopedPtr<Aurora::GFF3File> utt;
+	if (!temp.empty())
+		utt.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTT, MKTAG('U', 'T', 'T', ' ')));
+
+	loadBlueprint(utt->getTopLevel());
+
+	if (!utt)
+		warning("Trigger \"%s\" has no blueprint", temp.c_str());
 
 	float x, y, z;
 	x = (float)gff.getDouble("XPosition");
 	y = (float)gff.getDouble("YPosition");
 	z = (float)gff.getDouble("ZPosition");
 	glm::vec3 position(x, y, z);
+	setPosition(x, y, z);
 
 	x = (float)gff.getDouble("XOrientation");
 	y = (float)gff.getDouble("YOrientation");
@@ -79,12 +90,12 @@ void Trigger::load(const Aurora::GFF3Struct &gff) {
 	}
 }
 
-void Trigger::loadBlueprint(const Common::UString &resRef) {
-	Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource(resRef, Aurora::kFileTypeUTT));
-	if (stream) {
-		Aurora::GFF3File gff(stream.release());
-		readScripts(gff.getTopLevel());
-	}
+void Trigger::loadBlueprint(const Aurora::GFF3Struct &gff) {
+	Object::_tag = gff.getString("Tag");
+
+	_name = gff.getString("LocalizedName");
+
+	readScripts(gff);
 }
 
 } // End of namespace KotOR2

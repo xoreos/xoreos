@@ -46,7 +46,7 @@ public:
 	// '---
 protected:
 	void load(const Aurora::GFF3Struct &gff);
-	void loadBlueprint(const Common::UString &resRef);
+	void loadBlueprint(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace KotOR2
