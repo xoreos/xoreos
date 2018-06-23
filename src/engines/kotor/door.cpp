@@ -199,6 +199,9 @@ bool Door::close(Object *closer) {
 
 	_lastClosedBy = closer;
 
+	if (_model)
+		_model->playAnimation("closing1");
+
 	playSound(_soundClosed);
 	runScript(kScriptClosed, this, closer);
 

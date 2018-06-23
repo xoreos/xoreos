@@ -30,6 +30,7 @@
 #include "src/engines/kotor/game.h"
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/objectcontainer.h"
+#include "src/engines/kotor/door.h"
 
 #include "src/engines/kotor/script/functions.h"
 
@@ -62,6 +63,24 @@ void Functions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::actionStartConversation(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &convName = ctx.getParams()[1].getString();
 	_game->getModule().startConversation(convName, ctx.getCaller());
+}
+
+void Functions::actionOpenDoor(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	Door *door = ObjectContainer::toDoor(object);
+	if (!door)
+		throw Common::Exception("Functions::actionOpenDoor(): Object is not a door");
+
+	door->open(0);
+}
+
+void Functions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	Door *door = ObjectContainer::toDoor(object);
+	if (!door)
+		throw Common::Exception("Functions::actionCloseDoor(): Object is not a door");
+
+	door->close(0);
 }
 
 } // End of namespace KotOR

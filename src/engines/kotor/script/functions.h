@@ -209,6 +209,8 @@ private:
 	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
 	void delayCommand (Aurora::NWScript::FunctionContext &ctx);
 	void actionStartConversation(Aurora::NWScript::FunctionContext &ctx);
+	void actionOpenDoor(Aurora::NWScript::FunctionContext &ctx);
+	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Sound, functions_sound.cpp
