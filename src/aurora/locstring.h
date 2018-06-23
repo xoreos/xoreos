@@ -29,6 +29,7 @@
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
+#include "src/common/writestream.h"
 
 #include "src/aurora/language.h"
 
@@ -51,6 +52,9 @@ public:
 
 	/** Swap the contents of the LocString with this LocString's. */
 	void swap(LocString &str);
+
+	/** Get the number of strings. */
+	uint32 getNumStrings() const;
 
 	/** Return the string ID / StrRef. */
 	uint32 getID() const;
@@ -85,6 +89,11 @@ public:
 	void readLocString(Common::SeekableReadStream &stream, uint32 id, uint32 count);
 	/** Read a LocString out of a stream. */
 	void readLocString(Common::SeekableReadStream &stream);
+
+	/** Get the size, the string table will consume after being written. */
+	uint32 getWrittenSize(bool withNullTerminate = false);
+	/** Write the LocString to a write stream. */
+	void writeLocString(Common::WriteStream &stream, bool withNullTerminate = false);
 
 private:
 	typedef std::map<uint32, Common::UString> StringMap;

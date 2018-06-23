@@ -59,6 +59,10 @@ void LocString::swap(LocString &str) {
 	_strings.swap(str._strings);
 }
 
+uint32 LocString::getNumStrings() const {
+	return _strings.size();
+}
+
 uint32 LocString::getID() const {
 	return _id;
 }
@@ -170,6 +174,30 @@ void LocString::readLocString(Common::SeekableReadStream &stream) {
 	uint32 count = stream.readUint32LE();
 
 	readLocString(stream, id, count);
+}
+
+uint32 LocString::getWrittenSize(bool withNullTerminate) {
+	uint32 size = 0;
+	for (StringMap::iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
+		size += (*iter).second.size();
+
+		if (withNullTerminate)
+			size += 1;
+
+		size += 8;
+	}
+
+	return size;
+}
+
+void LocString::writeLocString(Common::WriteStream &stream, bool withNullTerminate) {
+	for (StringMap::iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
+		stream.writeUint32LE((*iter).first);
+		stream.writeUint32LE((*iter).second.size());
+		stream.write((*iter).second.c_str(), (*iter).second.size());
+		if (withNullTerminate)
+			stream.writeByte(0);
+	}
 }
 
 } // End of namespace Aurora

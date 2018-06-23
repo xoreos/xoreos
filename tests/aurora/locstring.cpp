@@ -30,6 +30,7 @@
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/memreadstream.h"
+#include "src/common/memwritestream.h"
 
 #include "src/aurora/locstring.h"
 #include "src/aurora/language.h"
@@ -273,4 +274,27 @@ GTEST_TEST_F(LocString, unknownEncodingUTF8) {
 	locString.readString(4, stream);
 
 	EXPECT_STREQ(locString.getString().c_str(), "[???]");
+}
+
+GTEST_TEST_F(LocString, write) {
+	Aurora::LocString locString;
+	locString.setString(Aurora::kLanguageEnglish, Aurora::kLanguageGenderMale, "String to test");
+	locString.setString(Aurora::kLanguageFrench, Aurora::kLanguageGenderMale, "String pour tester");
+
+	Common::MemoryWriteStreamDynamic *writeStream = new Common::MemoryWriteStreamDynamic(true);
+	locString.writeLocString(*writeStream);
+
+	Aurora::LocString locString2;
+	Common::MemoryReadStream readStream(writeStream->getData(), writeStream->size());
+	EXPECT_EQ(readStream.readUint32LE(), 0);
+	EXPECT_EQ(readStream.readUint32LE(), 14);
+	Common::UString englishString = Common::readStringFixed(readStream, Common::kEncodingASCII, 14);
+	EXPECT_STREQ(englishString.c_str(), "String to test");
+
+	EXPECT_EQ(readStream.readUint32LE(), 2);
+	EXPECT_EQ(readStream.readUint32LE(), 18);
+	Common::UString frenchString = Common::readStringFixed(readStream, Common::kEncodingASCII, 18);
+	EXPECT_STREQ(frenchString.c_str(), "String pour tester");
+
+	delete writeStream;
 }
