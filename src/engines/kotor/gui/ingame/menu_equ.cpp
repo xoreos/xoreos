@@ -160,15 +160,15 @@ void MenuEquipment::callbackKeyInput(const Events::Key &key, const Events::Event
 }
 
 void MenuEquipment::fillEquipedItems() {
-	Common::UString implant = getItemIcon(_pc->getEquipedItem(kEquipmentSlotImplant));
-	Common::UString head = getItemIcon(_pc->getEquipedItem(kEquipmentSlotHead));
-	Common::UString hands = getItemIcon(_pc->getEquipedItem(kEquipmentSlotHands));
-	Common::UString armL = getItemIcon(_pc->getEquipedItem(kEquipmentSlotArmL));
-	Common::UString body = getItemIcon(_pc->getEquipedItem(kEquipmentSlotBody));
-	Common::UString armR = getItemIcon(_pc->getEquipedItem(kEquipmentSlotArmR));
-	Common::UString weapL = getItemIcon(_pc->getEquipedItem(kEquipmentSlotWeaponL));
-	Common::UString belt = getItemIcon(_pc->getEquipedItem(kEquipmentSlotBelt));
-	Common::UString weapR = getItemIcon(_pc->getEquipedItem(kEquipmentSlotWeaponR));
+	Common::UString implant = getEquipedItemIcon(kEquipmentSlotImplant);
+	Common::UString head = getEquipedItemIcon(kEquipmentSlotHead);
+	Common::UString hands = getEquipedItemIcon(kEquipmentSlotHands);
+	Common::UString armL = getEquipedItemIcon(kEquipmentSlotArmL);
+	Common::UString body = getEquipedItemIcon(kEquipmentSlotBody);
+	Common::UString armR = getEquipedItemIcon(kEquipmentSlotArmR);
+	Common::UString weapL = getEquipedItemIcon(kEquipmentSlotWeaponL);
+	Common::UString belt = getEquipedItemIcon(kEquipmentSlotBelt);
+	Common::UString weapR = getEquipedItemIcon(kEquipmentSlotWeaponR);
 
 	getLabel("LBL_INV_IMPLANT")->setFill(implant.empty() ? "iimplant" : implant);
 	getLabel("LBL_INV_HEAD")->setFill(head.empty() ? "ihead" : head);
@@ -181,21 +181,9 @@ void MenuEquipment::fillEquipedItems() {
 	getLabel("LBL_INV_WEAP_R")->setFill(weapR.empty() ? "iweap_r" : weapR);
 }
 
-Common::UString MenuEquipment::getItemIcon(const Common::UString &tag) const {
-	if (tag.empty())
-		return "";
-
-	Common::UString icon;
-
-	try {
-		Item item(tag);
-		icon = item.getIcon();
-	} catch (Common::Exception &e) {
-		e.add("Failed to load item %s", tag.c_str());
-		Common::printException(e, "WARNING: ");
-	}
-
-	return icon;
+Common::UString MenuEquipment::getEquipedItemIcon(EquipmentSlot slot) const {
+	Item *item = _pc->getEquipedItem(slot);
+	return item ? item->getIcon() : "";
 }
 
 void MenuEquipment::fillEquipableItemsList() {

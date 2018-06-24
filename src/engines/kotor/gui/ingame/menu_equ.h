@@ -57,7 +57,7 @@ private:
 	std::vector<Common::UString> _visibleItems;
 
 	void fillEquipedItems();
-	Common::UString getItemIcon(const Common::UString &tag) const;
+	Common::UString getEquipedItemIcon(EquipmentSlot slot) const;
 	void fillEquipableItemsList();
 	EquipmentSlot getSlotByWidgetTag(const Common::UString &tag) const;
 	WidgetButton *getSlotButton(EquipmentSlot slot);

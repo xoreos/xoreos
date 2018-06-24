@@ -43,7 +43,8 @@ Item::Item(const Common::UString &item) {
 }
 
 void Item::load(const Aurora::GFF3Struct &gff) {
-	// Name and description
+	// Tag, name and description
+	_tag = gff.getString("Tag");
 	_name = gff.getString("LocalizedName");
 	_description = gff.getString("Description");
 

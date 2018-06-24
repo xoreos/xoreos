@@ -444,16 +444,11 @@ void Creature::changeBody() {
 	uint32 state = 'a';
 	uint8 textureVariation = 1;
 
-	std::map<EquipmentSlot, Common::UString>::const_iterator i = _equipment.find(kEquipmentSlotBody);
+	Common::PtrMap<EquipmentSlot, Item>::const_iterator i = _equipment.find(kEquipmentSlotBody);
 	if (i != _equipment.end()) {
-		try {
-			Item item(i->second);
-			state += item.getBodyVariation() - 1;
-			textureVariation = item.getTextureVariation();
-		} catch (Common::Exception &e) {
-			e.add("Failed to load item %s", i->second.c_str());
-			Common::printException(e, "WARNING: ");
-		}
+		Item *item = i->second;
+		state += item->getBodyVariation() - 1;
+		textureVariation = item->getTextureVariation();
 	}
 
 	PartModels parts;
@@ -488,15 +483,10 @@ void Creature::changeWeapon(EquipmentSlot slot) {
 
 	Graphics::Aurora::Model *weaponModel = 0;
 
-	const std::map<EquipmentSlot, Common::UString>::iterator i = _equipment.find(slot);
+	Common::PtrMap<EquipmentSlot, Item>::const_iterator i = _equipment.find(slot);
 	if (i != _equipment.end()) {
-		try {
-			Item item(i->second);
-			weaponModel = loadModelObject(item.getModelName());
-		} catch (Common::Exception &e) {
-			e.add("Failed to load item %s", i->second.c_str());
-			Common::printException(e);
-		}
+		Item *item = i->second;
+		weaponModel = loadModelObject(item->getModelName());
 	}
 
 	Common::UString hookNode;
@@ -600,14 +590,20 @@ float Creature::getCameraHeight() const {
 }
 
 void Creature::equipItem(Common::UString tag, EquipmentSlot slot) {
-	std::map<EquipmentSlot, Common::UString>::iterator i = _equipment.find(slot);
+	Common::PtrMap<EquipmentSlot, Item>::iterator i = _equipment.find(slot);
 	if (i != _equipment.end()) {
-		_inventory.addItem(i->second);
+		_inventory.addItem(i->second->getTag());
 		_equipment.erase(i);
 	}
 	if (!tag.empty()) {
 		_inventory.removeItem(tag);
-		_equipment.insert(std::pair<EquipmentSlot, Common::UString>(slot, tag));
+		try {
+			Item *item = new Item(tag);
+			_equipment.insert(std::pair<EquipmentSlot, Item *>(slot, item));
+		} catch (Common::Exception &e) {
+			e.add("Failed to load item: %s", tag.c_str());
+			Common::printException(e, "WARNING: ");
+		}
 	}
 	switch (slot) {
 		case kEquipmentSlotBody:
@@ -626,9 +622,9 @@ Inventory &Creature::getInventory() {
 	return _inventory;
 }
 
-const Common::UString Creature::getEquipedItem(EquipmentSlot slot) const {
-	std::map<EquipmentSlot, Common::UString>::const_iterator i = _equipment.find(slot);
-	return i == _equipment.end() ? "" : i->second;
+Item *Creature::getEquipedItem(EquipmentSlot slot) const {
+	Common::PtrMap<EquipmentSlot, Item>::const_iterator i = _equipment.find(slot);
+	return i == _equipment.end() ? 0 : i->second;
 }
 
 void Creature::playDefaultAnimation() {

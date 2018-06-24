@@ -28,6 +28,7 @@
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
+#include "src/common/ptrmap.h"
 
 #include "src/aurora/types.h"
 
@@ -41,6 +42,7 @@ namespace Engines {
 namespace KotOR {
 
 class CharacterGenerationInfo;
+class Item;
 
 class Creature : public Object {
 public:
@@ -102,7 +104,7 @@ public:
 	void equipItem(Common::UString tag, EquipmentSlot slot);
 
 	Inventory &getInventory();
-	const Common::UString getEquipedItem(EquipmentSlot slot) const;
+	Item *getEquipedItem(EquipmentSlot slot) const;
 
 	// Animation
 
@@ -157,7 +159,7 @@ private:
 	Common::UString _conversation;
 
 	Inventory _inventory;
-	std::map<EquipmentSlot, Common::UString> _equipment;
+	Common::PtrMap<EquipmentSlot, Item> _equipment;
 
 
 	void init();
