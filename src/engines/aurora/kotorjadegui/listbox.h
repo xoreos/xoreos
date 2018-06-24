@@ -119,6 +119,7 @@ private:
 
 	void createScrollbar(const Aurora::GFF3Struct &gff);
 	void positionItemWidgets();
+	void applyChangesToItemWidgets();
 };
 
 } // End of namespace Engines

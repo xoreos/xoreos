@@ -83,6 +83,8 @@ void WidgetListBox::setItemSelectionEnabled(bool itemSelectionEnabled) {
 	_itemSelectionEnabled = itemSelectionEnabled;
 	if (!_itemSelectionEnabled)
 		_selectedIndex = -1;
+
+	applyChangesToItemWidgets();
 }
 
 void WidgetListBox::setAdjustHeight(bool adjustHeight) {
@@ -103,6 +105,8 @@ void WidgetListBox::setItemTextColor(float r, float g, float b, float a) {
 	_textG = g;
 	_textB = b;
 	_textA = a;
+
+	applyChangesToItemWidgets();
 }
 
 void WidgetListBox::setItemBorderColor(float r, float g, float b, float a) {
@@ -111,6 +115,8 @@ void WidgetListBox::setItemBorderColor(float r, float g, float b, float a) {
 	_borderG = g;
 	_borderB = b;
 	_borderA = a;
+
+	applyChangesToItemWidgets();
 }
 
 void WidgetListBox::addItem(const Common::UString &contents) {
@@ -149,6 +155,7 @@ void WidgetListBox::createItemWidgets(uint32 count) {
 	}
 
 	positionItemWidgets();
+	applyChangesToItemWidgets();
 }
 
 void WidgetListBox::refreshItemWidgets() {
@@ -198,13 +205,6 @@ void WidgetListBox::refreshItemWidgets() {
 
 		if (visible) {
 			itemWidget->setInvisible(false);
-
-			if (_itemSelectionEnabled)
-				itemWidget->setDisableHighlight(true);
-			if (_textColorChanged)
-				itemWidget->setTextColor(_textR, _textG, _textB, _textA);
-			if (_borderColorChanged)
-				itemWidget->setBorderColor(_borderR, _borderG, _borderB, _borderA);
 
 			if (isVisible())
 				itemWidget->show();
@@ -349,6 +349,16 @@ void WidgetListBox::positionItemWidgets() {
 	size_t count = _itemWidgets.size();
 	for (size_t i = 0; i < count; ++i) {
 		_itemWidgets[i]->setPosition(x, y -= _itemWidgets[i]->getHeight() + _padding, z);
+	}
+}
+
+void WidgetListBox::applyChangesToItemWidgets() {
+	for (size_t i = 0; i < _itemWidgets.size(); ++i) {
+		_itemWidgets[i]->setDisableHighlight(_itemSelectionEnabled);
+		if (_textColorChanged)
+			_itemWidgets[i]->setTextColor(_textR, _textG, _textB, _textA);
+		if (_borderColorChanged)
+			_itemWidgets[i]->setBorderColor(_borderR, _borderG, _borderB, _borderA);
 	}
 }
 
