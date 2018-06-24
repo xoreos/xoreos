@@ -140,7 +140,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  19, "GetTimeMillisecond"                  , 0                                                },
 	{  20, "ActionRandomWalk"                    , 0                                                },
 	{  21, "ActionMoveToLocation"                , 0                                                },
-	{  22, "ActionMoveToObject"                  , 0                                                },
+	{  22, "ActionMoveToObject"                  , &Functions::actionMoveToObject                   },
 	{  23, "ActionMoveAwayFromObject"            , 0                                                },
 	{  24, "GetArea"                             , 0                                                },
 	{  25, "GetEnteringObject"                   , &Functions::getEnteringObject                    },

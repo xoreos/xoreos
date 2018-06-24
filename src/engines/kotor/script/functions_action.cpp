@@ -83,6 +83,32 @@ void Functions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
 	door->close(0);
 }
 
+void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
+	Engines::KotOR::Object *caller = ObjectContainer::toObject(ctx.getCaller());
+	if (!caller)
+		throw Common::Exception("Functions::actionMoveToObject(): Invalid caller");
+
+	Engines::KotOR::Object *object = ObjectContainer::toObject(ctx.getParams()[0].getObject());
+	if (!object)
+		object = _game->getModule().getPC();
+
+	float range = ctx.getParams()[2].getFloat();
+
+	float x, y, z;
+	caller->getPosition(x, y, z);
+	glm::vec3 callerPos(x, y, z);
+
+	object->getPosition(x, y, z);
+	glm::vec3 moveToPos(x, y, z);
+
+	if (glm::distance(callerPos, moveToPos) > range) {
+		glm::vec3 dir = glm::normalize(moveToPos - callerPos);
+		moveToPos -= dir * range;
+	}
+
+	caller->setPosition(moveToPos.x, moveToPos.y, moveToPos.z);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

@@ -211,6 +211,7 @@ private:
 	void actionStartConversation(Aurora::NWScript::FunctionContext &ctx);
 	void actionOpenDoor(Aurora::NWScript::FunctionContext &ctx);
 	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
+	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Sound, functions_sound.cpp
