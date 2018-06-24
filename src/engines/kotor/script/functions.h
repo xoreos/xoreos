@@ -195,6 +195,7 @@ private:
 
 	void createItemOnObject(Aurora::NWScript::FunctionContext &ctx);
 	void getArea(Aurora::NWScript::FunctionContext &ctx);
+	void getItemInSlot(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp

@@ -273,7 +273,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 152, "SetReturnStrref"                     , &Functions::setReturnStrref                      },
 	{ 153, "EffectForceJump"                     , 0                                                },
 	{ 154, "EffectSleep"                         , 0                                                },
-	{ 155, "GetItemInSlot"                       , 0                                                },
+	{ 155, "GetItemInSlot"                       , &Functions::getItemInSlot                        },
 	{ 156, "EffectTemporaryForcePoints"          , 0                                                },
 	{ 157, "EffectConfused"                      , 0                                                },
 	{ 158, "EffectFrightened"                    , 0                                                },

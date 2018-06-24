@@ -156,6 +156,24 @@ void Functions::getArea(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = _game->getModule().getCurrentArea();
 }
 
+void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {
+	Engines::KotOR::Creature *creature = 0;
+
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+	if (object)
+		creature = ObjectContainer::toCreature(object);
+	else
+		creature = _game->getModule().getPC();
+
+	if (!creature)
+		throw Common::Exception("Functions::getItemInSlot(): Invalid creature");
+
+	int slot = ctx.getParams()[0].getInt();
+	Item *item = creature->getEquipedItem(static_cast<EquipmentSlot>(1U << slot));
+	if (item)
+		ctx.getReturn() = item;
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

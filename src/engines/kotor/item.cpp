@@ -36,7 +36,8 @@ namespace Engines {
 
 namespace KotOR {
 
-Item::Item(const Common::UString &item) {
+Item::Item(const Common::UString &item)
+		: Object(kObjectTypeItem) {
 	Common::ScopedPtr<Aurora::GFF3File> uti(new Aurora::GFF3File(item, Aurora::kFileTypeUTI));
 
 	load(uti->getTopLevel());
