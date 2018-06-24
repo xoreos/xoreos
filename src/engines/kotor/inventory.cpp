@@ -29,6 +29,9 @@ namespace Engines {
 namespace KotOR {
 
 void Inventory::addItem(const Common::UString &tag, int count) {
+	if (tag.empty())
+		return;
+
 	assert(count > 0);
 
 	ItemMap::iterator i = _items.find(tag);
@@ -42,6 +45,9 @@ void Inventory::addItem(const Common::UString &tag, int count) {
 }
 
 void Inventory::removeItem(const Common::UString &tag, int count) {
+	if (tag.empty())
+		return;
+
 	assert(count > 0);
 
 	ItemMap::iterator i = _items.find(tag);
