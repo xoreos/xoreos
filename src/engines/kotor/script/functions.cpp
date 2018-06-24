@@ -47,7 +47,9 @@ namespace Engines {
 
 namespace KotOR {
 
-Functions::Functions(Game &game) : _game(&game) {
+Functions::Functions(Game &game)
+		: _game(&game),
+		  _lastEvent(0) {
 	registerFunctions();
 }
 

@@ -41,6 +41,7 @@ namespace KotOR {
 class Game;
 class Area;
 class Object;
+class Event;
 
 class Functions {
 public:
@@ -73,6 +74,7 @@ private:
 
 
 	Game *_game;
+	Event *_lastEvent;
 
 	void registerFunctions();
 
@@ -255,6 +257,12 @@ private:
 
 	// .--- Party, functions_party.cpp
 	void isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
+	// .--- Events, functions_events.cpp
+	void signalEvent(Aurora::NWScript::FunctionContext &ctx);
+	void eventUserDefined(Aurora::NWScript::FunctionContext &ctx);
+	void getUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 };
 
