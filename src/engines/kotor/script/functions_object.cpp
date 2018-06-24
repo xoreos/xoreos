@@ -35,6 +35,7 @@
 #include "src/engines/kotor/objectcontainer.h"
 #include "src/engines/kotor/object.h"
 #include "src/engines/kotor/placeable.h"
+#include "src/engines/kotor/area.h"
 
 #include "src/engines/kotor/script/functions.h"
 
@@ -148,6 +149,11 @@ void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {
 	}
 
 	throw Common::Exception("Functions::createItemOnObject(): Invalid object");
+}
+
+void Functions::getArea(Aurora::NWScript::FunctionContext &ctx) {
+	// TODO: return current area of the specified object
+	ctx.getReturn() = _game->getModule().getCurrentArea();
 }
 
 } // End of namespace KotOR
