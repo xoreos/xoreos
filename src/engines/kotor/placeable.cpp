@@ -71,6 +71,8 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 
 		_walkmesh.load(_modelName, ::Aurora::kFileTypePWK, transform);
 	}
+
+	readScripts(utp->getTopLevel());
 }
 
 void Placeable::hide() {

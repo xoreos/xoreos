@@ -502,6 +502,7 @@ void Module::clickObject(Object *object) {
 
 			_ingame->showContainer(placeable->getInventory());
 			placeable->close(_pc.get());
+			placeable->runScript(kScriptDisturbed, placeable, _pc.get());
 			_prevTimestamp = EventMan.getTimestamp();
 		}
 	}
