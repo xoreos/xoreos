@@ -360,15 +360,17 @@ void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVar
 					parts.bodyTexture += "s";
 					break;
 			}
-			switch (_skin) {
-				case kSkinA:
-					parts.bodyTexture += "A";
-					break;
-				case kSkinB:
-					parts.bodyTexture += "B";
-					break;
-				default:
-					break;
+			if (state == 'a') {
+				switch (_skin) {
+					case kSkinA:
+						parts.bodyTexture += "A";
+						break;
+					case kSkinB:
+						parts.bodyTexture += "B";
+						break;
+					default:
+						break;
+				}
 			}
 			break;
 		default:
