@@ -176,9 +176,9 @@ void LocString::readLocString(Common::SeekableReadStream &stream) {
 	readLocString(stream, id, count);
 }
 
-uint32 LocString::getWrittenSize(bool withNullTerminate) {
+uint32 LocString::getWrittenSize(bool withNullTerminate) const {
 	uint32 size = 0;
-	for (StringMap::iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
+	for (StringMap::const_iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
 		size += (*iter).second.size();
 
 		if (withNullTerminate)
@@ -190,8 +190,8 @@ uint32 LocString::getWrittenSize(bool withNullTerminate) {
 	return size;
 }
 
-void LocString::writeLocString(Common::WriteStream &stream, bool withNullTerminate) {
-	for (StringMap::iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
+void LocString::writeLocString(Common::WriteStream &stream, bool withNullTerminate) const {
+	for (StringMap::const_iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
 		stream.writeUint32LE((*iter).first);
 		stream.writeUint32LE((*iter).second.size());
 		stream.write((*iter).second.c_str(), (*iter).second.size());
