@@ -140,6 +140,10 @@ GTEST_TEST_F(WriteFile, size) {
 	file.writeUint64BE(0x0123456789ABCDEF);
 	EXPECT_EQ(file.size(), 14);
 
+	file.seek(0);
+	file.writeByte(0xFF);
+	EXPECT_EQ(file.size(), 14);
+
 	file.flush();
 	file.close();
 
@@ -150,7 +154,7 @@ GTEST_TEST_F(WriteFile, size) {
 	testFile.read(reinterpret_cast<char *>(data), 14);
 	ASSERT_FALSE(testFile.fail());
 
-	EXPECT_EQ(data[0], 0x01);
+	EXPECT_EQ(data[0], 0xFF);
 	EXPECT_EQ(data[1], 0x23);
 	EXPECT_EQ(data[2], 0x45);
 	EXPECT_EQ(data[3], 0x67);
