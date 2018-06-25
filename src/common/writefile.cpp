@@ -96,7 +96,7 @@ size_t WriteFile::write(const void *dataPtr, size_t dataSize) {
 
 	const size_t oldPos = pos();
 	const size_t written = std::fwrite(dataPtr, 1, dataSize, _handle);
-	_size += MAX<size_t>(0, -size() + oldPos + written);
+	_size += MAX<int>(0, -static_cast<int>(size()) + static_cast<int>(oldPos) + static_cast<int>(written));
 
 	return written;
 }
