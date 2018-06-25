@@ -393,6 +393,25 @@ GTEST_TEST(MemoryWriteStream, size) {
 	EXPECT_EQ(data[11], 0xAB);
 	EXPECT_EQ(data[12], 0x01);
 	EXPECT_EQ(data[13], 0x02);
+
+	stream.seek(0);
+	stream.writeByte(0xFF);
+	EXPECT_EQ(stream.size(), 14);
+
+	EXPECT_EQ(data[0], 0xFF);
+	EXPECT_EQ(data[1], 0x23);
+	EXPECT_EQ(data[2], 0x45);
+	EXPECT_EQ(data[3], 0x67);
+	EXPECT_EQ(data[4], 0x89);
+	EXPECT_EQ(data[5], 0xAB);
+	EXPECT_EQ(data[6], 0x01);
+	EXPECT_EQ(data[7], 0x23);
+	EXPECT_EQ(data[8], 0x45);
+	EXPECT_EQ(data[9], 0x67);
+	EXPECT_EQ(data[10], 0x89);
+	EXPECT_EQ(data[11], 0xAB);
+	EXPECT_EQ(data[12], 0x01);
+	EXPECT_EQ(data[13], 0x02);
 }
 
 GTEST_TEST(MemoryWriteStream, writeBytes) {
@@ -470,7 +489,11 @@ GTEST_TEST(MemoryWriteStreamDynamic, size) {
 	stream.writeUint64BE(0x0123456789ABCDEF);
 	EXPECT_EQ(stream.size(), 14);
 
-	EXPECT_EQ(stream.getData()[0], 0x01);
+	stream.seek(0);
+	stream.writeByte(0xFF);
+	EXPECT_EQ(stream.size(), 14);
+
+	EXPECT_EQ(stream.getData()[0], 0xFF);
 	EXPECT_EQ(stream.getData()[1], 0x23);
 	EXPECT_EQ(stream.getData()[2], 0x45);
 	EXPECT_EQ(stream.getData()[3], 0x67);
