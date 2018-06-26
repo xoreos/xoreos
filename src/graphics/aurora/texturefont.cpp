@@ -139,6 +139,14 @@ void TextureFont::renderBind(const glm::mat4 &transform) const {
 	_renderable->getSurface()->bindProgram(_renderable->getProgram(), &transform);
 	_renderable->getSurface()->bindGLState();
 	_mesh->renderBind();
+
+	/**
+	 * Mesh data will be dynamically updated for each character drawn to the screen
+	 * (at least for now), so make sure the mesh VBO is bound. This isn't required
+	 * for GL2.1, but is for GL3.2 because using the VAO doesn't automatically bind
+	 * the VBO for data updates.
+	 */
+	glBindBuffer(GL_ARRAY_BUFFER, _mesh->getVertexBuffer()->getVBO());
 }
 
 void TextureFont::render(uint32 c, float &x, float &y, float *rgba) const {

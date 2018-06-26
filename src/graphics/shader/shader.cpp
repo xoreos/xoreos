@@ -587,10 +587,11 @@ void ShaderManager::genGLProgram(ShaderProgram *program) {
 	// So only bind attribute locations for >= GL3.x, with 2.x using builtin.
 	if (GfxMan.isGL3()) {
 		// Attempt to bind some common attributes. Note that it doesn't hurt if the attributes don't exist in the shader program.
-		glBindAttribLocation(glid, (GLuint)(VERTEX_LOCATION), "inPosition");
-		glBindAttribLocation(glid, (GLuint)(VERTEX_TEXCOORD0), "inTexCoord0");
-		glBindAttribLocation(glid, (GLuint)(VERTEX_NORMAL), "inNormal");
-		glBindAttribLocation(glid, (GLuint)(VERTEX_TEXCOORD1), "inTexCoord1");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_LOCATION), "inputPosition0");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_TEXCOORD0), "inputUV0");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_NORMAL), "inputNormal0");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_TEXCOORD1), "inputUV1");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_COLOR), "inputColour");
 	}
 
 	glLinkProgram(glid);

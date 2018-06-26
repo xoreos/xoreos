@@ -1290,10 +1290,6 @@ void ModelNode::buildMaterial() {
 		Common::UString fragmentStringFinal;
 
 		cripter.build(isGL3, vertexStringFinal, fragmentStringFinal);
-
-		//vertexStringFinal = ShaderBuild.genVertexShader(&shaderPasses[0], shaderPasses.size(), isGL3);
-		//fragmentStringFinal = ShaderBuild.genFragmentShader(&shaderPasses[0], shaderPasses.size(), isGL3);
-
 		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
 		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);
 	}

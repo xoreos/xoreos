@@ -1150,9 +1150,7 @@ void ShaderBuilder::addVertexShaderString(Common::UString &header, Common::UStri
 			body += body_texture_2vert;
 			break;
 		case ShaderBuilder::TEXTURE_LIGHTMAP:
-//			header += header_texture_2vert;
 			header += header_lightmap_2vert;
-//			body += body_texture_2vert;
 			body += body_lightmap_2vert;
 			break;
 		case ShaderBuilder::TEXTURE_BUMPMAP:
