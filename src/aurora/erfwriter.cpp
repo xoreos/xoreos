@@ -92,6 +92,10 @@ void ERFWriter::add(const Common::UString &resRef, FileType resType, Common::Rea
 	// Write the key table entry
 	_stream.seek(_keyTableOffset + _currentFileCount * 24);
 
+	// Files without a type are put into ERF archives as the generic RES type
+	if (resType == kFileTypeNone)
+		resType = kFileTypeRES;
+
 	// TODO: Handle file type aliases and "virtual" file types
 
 	_stream.write(resRef.c_str(), MIN<size_t>(resRef.size(), 16));
