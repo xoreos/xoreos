@@ -208,6 +208,9 @@ enum FileType {
 	kFileTypeBIF            =  9998, ///< Game resource data.
 	kFileTypeKEY            =  9999, ///< Game resource index.
 
+	/** The upper limit for numerical type IDs found in archives. */
+	kFileTypeMAXArchive,
+
 	/* --- Entries for files not found in archives with numerical type IDs --- */
 
 	// Found in NWN
