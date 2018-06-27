@@ -96,7 +96,12 @@ void ERFWriter::add(const Common::UString &resRef, FileType resType, Common::Rea
 	if (resType == kFileTypeNone)
 		resType = kFileTypeRES;
 
-	// TODO: Handle file type aliases and "virtual" file types
+	/* Files with types above this line are not found in ERF archives.
+	 * They have no real numerical type ID usable for ERF archives. */
+	if (resType >= kFileTypeMAXArchive)
+		resType = kFileTypeRES;
+
+	// TODO: Handle file type aliases
 
 	_stream.write(resRef.c_str(), MIN<size_t>(resRef.size(), 16));
 	_stream.writeZeros(16 - MIN<size_t>(resRef.size(), 16));
