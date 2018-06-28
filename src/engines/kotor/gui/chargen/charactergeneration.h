@@ -56,6 +56,8 @@ public:
 	void start();
 
 private:
+	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
+
 	Module *_module;
 	CharacterGenerationInfo *_pc;
 

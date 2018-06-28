@@ -226,6 +226,18 @@ void CharacterGenerationMenu::start() {
 	show();
 }
 
+void CharacterGenerationMenu::callbackKeyInput(const Events::Key &key, const Events::EventType &type) {
+	if (getWidget("DEF_ARROW_LBL"))
+		return;
+
+	if (key != Events::kKeyReturn || type != Events::kEventKeyUp)
+		return;
+
+	start();
+	GfxMan.lockFrame();
+	_returnCode = 2;
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

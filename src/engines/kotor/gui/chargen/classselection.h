@@ -52,6 +52,7 @@ private:
 
 	void callbackRun();
 	void callbackActive(Widget &widget);
+	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
 
 	void setupClassSubScene(const Common::UString &widgetName,
 			Graphics::Aurora::SubSceneQuad &subScene, Graphics::Aurora::Model *model,

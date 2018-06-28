@@ -221,6 +221,51 @@ void ClassSelectionMenu::callbackActive(Widget &widget) {
 	}
 }
 
+void ClassSelectionMenu::callbackKeyInput(const Events::Key &key, const Events::EventType &type) {
+	if (getWidget("BTN_BACK") || !_hoveredButton)
+		return;
+
+	if (key != Events::kKeyReturn || type != Events::kEventKeyUp)
+		return;
+
+	if (_hoveredButton == _maleSoldierButton) {
+		createCharacterGeneration(_maleSoldier);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
+	}
+	if (_hoveredButton == _maleScoutButton) {
+		createCharacterGeneration(_maleScout);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
+	}
+	if (_hoveredButton == _maleScoundrelButton) {
+		createCharacterGeneration(_maleScoundrel);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
+	}
+	if (_hoveredButton == _femaleSoldierButton) {
+		createCharacterGeneration(_femaleSoldier);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
+	}
+	if (_hoveredButton == _femaleScoutButton) {
+		createCharacterGeneration(_femaleScout);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
+	}
+	if (_hoveredButton == _femaleScoundrelButton) {
+		createCharacterGeneration(_femaleScoundrel);
+		if (sub(*_charGen) == 2) {
+			_returnCode = 2;
+		}
+	}
+}
+
 void ClassSelectionMenu::setupClassSubScene(const Common::UString &widgetName,
 		Graphics::Aurora::SubSceneQuad &subScene, Graphics::Aurora::Model *model,
 		glm::mat4 &projection, glm::mat4 &transformation) {
