@@ -140,21 +140,15 @@ void KotORJadeWidget::load(const Aurora::GFF3Struct &gff) {
 	Text text = createText(gff);
 
 	if (!text.font.empty()) {
-		// Font "fnt_d16x16" in KotOR is broken, replace it with
-		// "fnt_d16x16b" which is otherwise identical
-		if (text.font == "fnt_d16x16")
-			text.font = "fnt_d16x16b";
-		// Buttons in Jade are too small for their text
-		// If widget height is less than the font needs
-		// increase to font height and reposition
-		float fontHeight = FontMan.get(text.font).getFont().getHeight();
-		float tY = extend.y;
-		float tH = extend.h;
+		Graphics::Aurora::FontHandle font = FontMan.get(text.font);
+
+		const float fontHeight = font.getFont().getHeight();
+		float tY = extend.y, tH = extend.h;
 		if (extend.h < fontHeight) {
 			tH = fontHeight;
 			tY = extend.y - (fontHeight - extend.h);
 		}
-		_text.reset(new Graphics::Aurora::HighlightableText(FontMan.get(text.font), extend.w, tH,
+		_text.reset(new Graphics::Aurora::HighlightableText(font, extend.w, tH,
 		            text.text, text.r, text.g, text.b, 1.0f, text.halign, text.valign));
 
 		_text->setPosition(extend.x, tY, -1.0f);

@@ -44,7 +44,6 @@ LoadScreen::LoadScreen(const Common::UString &loadScreenName, Console *console)
 	getPanel("TGuiPanel")->setFill("load_" + loadScreenName);
 
 	// TODO: Add loading hints according to loadscreenhints.2da
-	getLabel("LBL_HINT")->setFont("fnt_d16x16b");
 	getLabel("LBL_HINT")->setText("");
 
 	addBackground(kBackgroundTypeLoad);

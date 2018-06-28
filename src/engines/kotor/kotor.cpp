@@ -279,6 +279,9 @@ void KotOREngine::initResources(LoadProgress &progress) {
 	progress.step("Registering file formats");
 	registerModelLoader(new KotORModelLoader);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
+
+	if (ResMan.hasResource("fnt_d16x16b", Aurora::kResourceImage))
+		FontMan.addAlias("fnt_d16x16", "fnt_d16x16b");
 }
 
 void KotOREngine::initCursorsRemap() {
