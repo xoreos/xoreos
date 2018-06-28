@@ -212,6 +212,8 @@ Graphics::Aurora::Model *CharacterGenerationInfo::getModel() {
 	}
 
 	_body.reset(loadModelObject(body, ""));
+	if (!_body)
+		return 0;
 
 	switch (getSkin()) {
 		case kSkinA:

@@ -224,10 +224,15 @@ void ClassSelectionMenu::callbackActive(Widget &widget) {
 void ClassSelectionMenu::setupClassSubScene(const Common::UString &widgetName,
 		Graphics::Aurora::SubSceneQuad &subScene, Graphics::Aurora::Model *model,
 		glm::mat4 &projection, glm::mat4 &transformation) {
+
 	getLabel(widgetName)->setSubScene(&subScene);
-	// TODO: Should randomly switch between pause1, pause2 and pause3
-	model->playAnimation("pause1", true, -1);
-	subScene.add(model);
+
+	if (model) {
+		// TODO: Should randomly switch between pause1, pause2 and pause3
+		model->playAnimation("pause1", true, -1);
+		subScene.add(model);
+	}
+
 	subScene.setProjectionMatrix(projection);
 	subScene.setGlobalTransformationMatrix(transformation);
 }

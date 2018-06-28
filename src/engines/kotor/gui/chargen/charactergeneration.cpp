@@ -50,40 +50,54 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 
 	addBackground(kBackgroundTypeMenu);
 
-	getLabel("VIT_ARROW_LBL")->setText("");
-	getLabel("DEF_ARROW_LBL")->setText("");
+	static const char * const emptyLabels[] = {
+		"VIT_ARROW_LBL", "DEF_ARROW_LBL", "LBL_NAME",
+		"WILL_ARROW_LBL", "REFL_ARROW_LBL", "FORT_ARROW_LBL",
+		"VIT_ARROW_LBL", "DEF_ARROW_LBL", "LBL_NAME"
+	};
 
-	getLabel("LBL_NAME")->setText("");
-
-	// Set the class title according to the class of the character
-	switch (pc->getClass()) {
-		case kClassSoldier:
-			getLabel("LBL_CLASS")->setText(TalkMan.getString(134));
-			break;
-		case kClassScout:
-			getLabel("LBL_CLASS")->setText(TalkMan.getString(133));
-			break;
-		case kClassScoundrel:
-			getLabel("LBL_CLASS")->setText(TalkMan.getString(135));
-			break;
-		default:
-			getLabel("LBL_CLASS")->setText("");
+	for (size_t i = 0; i < ARRAYSIZE(emptyLabels); i++) {
+		WidgetLabel *label = getLabel(emptyLabels[i]);
+		if (label)
+			label->setText("");
 	}
 
-	getLabel("WILL_ARROW_LBL")->setText("");
-	getLabel("REFL_ARROW_LBL")->setText("");
-	getLabel("FORT_ARROW_LBL")->setText("");
+	static const char * const invisibleWidgets[] {
+		"NEW_LBL", "OLD_LBL", "LBL_LEVEL", "LBL_LEVEL_VAL"
+	};
 
-	getLabel("PORTRAIT_LBL")->setFill(_pc->getPortrait());
+	for (size_t i = 0; i < ARRAYSIZE(invisibleWidgets); i++) {
+		Widget *widget = getWidget(invisibleWidgets[i]);
+		if (widget)
+			widget->setInvisible(true);
+	}
 
-	getWidget("NEW_LBL")->setInvisible(true);
-	getWidget("OLD_LBL")->setInvisible(true);
+	WidgetLabel *lblClass = getLabel("LBL_CLASS");
+	if (lblClass) {
+		// Set the class title according to the class of the character
+		switch (pc->getClass()) {
+			case kClassSoldier:
+				lblClass->setText(TalkMan.getString(134));
+				break;
+			case kClassScout:
+				lblClass->setText(TalkMan.getString(133));
+				break;
+			case kClassScoundrel:
+				lblClass->setText(TalkMan.getString(135));
+				break;
+			default:
+				lblClass->setText("");
+		}
+	}
 
-	getWidget("LBL_LEVEL_VAL")->setInvisible(true);
-	getWidget("LBL_LEVEL")->setInvisible(true);
+	WidgetLabel *lblPortrait = getLabel("PORTRAIT_LBL");
+	if (lblPortrait)
+		lblPortrait->setFill(_pc->getPortrait());
 
-	float subSceneWidth = getLabel("MODEL_LBL")->getWidth();
-	float subSceneHeight = getLabel("MODEL_LBL")->getHeight();
+	WidgetLabel *lblModel = getLabel("MODEL_LBL");
+
+	float subSceneWidth  = lblModel ? lblModel->getWidth()  : 1.0f;
+	float subSceneHeight = lblModel ? lblModel->getHeight() : 1.0f;
 
 	glm::mat4 projection(glm::perspective(Common::deg2rad(22.72f), subSceneWidth/subSceneHeight, 0.1f, 10.0f));
 
@@ -106,10 +120,15 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 			Common::deg2rad(-90.0f),
 			glm::vec3(0.0f, 0.0f, 1.0f));
 
-	getLabel("MODEL_LBL")->setSubScene(_charSubScene.get());
-	_charSubScene->add(_pc->getModel());
-	_charSubScene->setProjectionMatrix(projection);
-	_charSubScene->setGlobalTransformationMatrix(transformation);
+	if (lblModel) {
+		lblModel->setSubScene(_charSubScene.get());
+
+		if (_pc->getModel())
+			_charSubScene->add(_pc->getModel());
+
+		_charSubScene->setProjectionMatrix(projection);
+		_charSubScene->setGlobalTransformationMatrix(transformation);
+	}
 
 	showQuickOrCustom();
 }
@@ -158,7 +177,11 @@ void CharacterGenerationMenu::showPortrait() {
 	sub(*_charGenMenu);
 	if (_charGenMenu->isAccepted()) {
 		*_pc = info;
-		getLabel("PORTRAIT_LBL")->setFill(_pc->getPortrait());
+
+		WidgetLabel *lblPortrait = getLabel("PORTRAIT_LBL");
+		if (lblPortrait)
+			lblPortrait->setFill(_pc->getPortrait());
+
 		_step += 1;
 	}
 }
@@ -172,7 +195,11 @@ void CharacterGenerationMenu::showName() {
 	sub(*_charGenMenu);
 	if (_charGenMenu->isAccepted()) {
 		*_pc = info;
-		getLabel("LBL_NAME")->setText(info.getName());
+
+		WidgetLabel *lblName = getLabel("LBL_NAME");
+		if (lblName)
+			lblName->setText(info.getName());
+
 		_step += 1;
 	}
 }
