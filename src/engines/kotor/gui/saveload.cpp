@@ -54,6 +54,9 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 	addBackground(kBackgroundTypeMenu, frontBackground);
 
 	WidgetListBox *lbGames = getListBox("LB_GAMES");
+	if (!lbGames)
+		throw Common::Exception("SaveLoadMenu: No games listbox");
+
 	lbGames->setItemSelectionEnabled(true);
 	lbGames->setHideScrollbar(false);
 	lbGames->setPadding(3);
@@ -61,10 +64,22 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 	lbGames->createItemWidgets(6);
 
 	if (_type == kSaveLoadMenuTypeLoad) {
-		getLabel("LBL_PANELNAME")->setText(TalkMan.getString(1585)); // Load Game
-		getLabel("LBL_PLANETNAME")->setText("");
-		getLabel("LBL_AREANAME")->setText("");
-		getButton("BTN_SAVELOAD")->setText(TalkMan.getString(1589)); // Load
+		WidgetLabel *panelName = getLabel("LBL_PANELNAME");
+		if (panelName)
+			panelName->setText(TalkMan.getString(1585)); // Load Game
+
+		WidgetLabel *planetName = getLabel("LBL_PLANETNAME");
+		if (planetName)
+			planetName->setText("");
+
+		WidgetLabel *areaName = getLabel("LBL_AREANAME");
+		if (areaName)
+			areaName->setText("");
+
+		WidgetButton *saveLoad = getButton("BTN_SAVELOAD");
+		if (saveLoad)
+			saveLoad->setText(TalkMan.getString(1589)); // Load
+
 	} else
 		lbGames->addItem(TalkMan.getString(1590));
 
