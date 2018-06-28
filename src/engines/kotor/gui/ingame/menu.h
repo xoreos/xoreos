@@ -55,51 +55,44 @@ public:
 	/** Set the return button enabled/disabled. */
 	void setReturnEnabled(bool);
 
-	/** Show the equipment menu */
-	void showEquipment();
-	/** Show the inventory menu */
-	void showInventory();
-	/** Show the character menu */
-	void showCharacter();
-	/** Show the abilities menu */
-	void showAbilities();
-	/** Show the messages menu */
-	void showMessages();
-	/** Show the journal menu */
-	void showJournal();
-	/** Show the map menu */
-	void showMap();
-	/** Show the options menu */
-	void showOptions();
+	void showMenu(const Common::UString &tag);
 
 private:
+	enum MenuType {
+		kMenuTypeEquipment,
+		kMenuTypeInventory,
+		kMenuTypeCharacter,
+		kMenuTypeAbilities,
+		kMenuTypeMessages,
+		kMenuTypeJournal,
+		kMenuTypeMap,
+		kMenuTypeOptions,
+
+		kMenuTypeMAX
+	};
+
+	struct SubMenu {
+		WidgetProtoItem *protoItem;
+		WidgetButton *button;
+
+		Common::ScopedPtr<GUI> menu;
+
+		SubMenu() : protoItem(0), button(0) { }
+	};
+
 	void callbackRun();
 	void callbackActive(Widget &widget);
 
 	Module &_module;
-	GUI* _currentMenu;
 
-	Common::ScopedPtr<MenuEquipment> _menuEqu;
-	Common::ScopedPtr<MenuInventory> _menuInv;
-	Common::ScopedPtr<MenuCharacter> _menuChar;
-	Common::ScopedPtr<MenuAbilities> _menuAbi;
-	Common::ScopedPtr<MenuMessages> _menuMsg;
-	Common::ScopedPtr<MenuJournal> _menuJou;
-	Common::ScopedPtr<MenuMap> _menuMap;
-	Common::ScopedPtr<MenuOptions> _menuOpt;
+	SubMenu _menu[kMenuTypeMAX];
+	SubMenu *_currentMenu;
+
 	Common::ScopedPtr<SaveLoadMenu> _menuLoad;
 	Common::ScopedPtr<SaveLoadMenu> _menuSave;
 
-	WidgetProtoItem *_protoEqu;
-	WidgetProtoItem *_protoInv;
-	WidgetProtoItem *_protoChar;
-	WidgetProtoItem *_protoAbi;
-	WidgetProtoItem *_protoMsg;
-	WidgetProtoItem *_protoJou;
-	WidgetProtoItem *_protoMap;
-	WidgetProtoItem *_protoOpt;
 
-	WidgetProtoItem *_lastProto;
+	void showMenu(MenuType type);
 };
 
 } // End of namespace KotOR

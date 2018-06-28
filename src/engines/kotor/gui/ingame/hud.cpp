@@ -221,46 +221,8 @@ void HUD::initWidget(Engines::Widget &widget) {
 }
 
 void HUD::callbackActive(Widget &widget) {
-	if (widget.getTag() == "BTN_EQU") {
-		_menu.showEquipment();
-		sub(_menu);
-		return;
-	}
-	if (widget.getTag() == "BTN_INV") {
-		_menu.showInventory();
-		sub(_menu);
-		return;
-	}
-	if (widget.getTag() == "BTN_CHAR") {
-		_menu.showCharacter();
-		sub(_menu);
-		return;
-	}
-	if (widget.getTag() == "BTN_ABI") {
-		_menu.showAbilities();
-		sub(_menu);
-		return;
-	}
-	if (widget.getTag() == "BTN_MSG") {
-		_menu.showMessages();
-		sub(_menu);
-		return;
-	}
-	if (widget.getTag() == "BTN_JOU") {
-		_menu.showJournal();
-		sub(_menu);
-		return;
-	}
-	if (widget.getTag() == "BTN_MAP") {
-		_menu.showMap();
-		sub(_menu);
-		return;
-	}
-	if (widget.getTag() == "BTN_OPT") {
-		_menu.showOptions();
-		sub(_menu);
-		return;
-	}
+	_menu.showMenu(widget.getTag());
+	sub(_menu);
 }
 
 } // End of namespace KotOR
