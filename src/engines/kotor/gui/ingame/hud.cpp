@@ -22,7 +22,11 @@
  *  The ingame HUD.
  */
 
+#include <set>
+
 #include "src/common/strutil.h"
+
+#include "src/aurora/resman.h"
 
 #include "src/graphics/windowman.h"
 #include "src/graphics/graphics.h"
@@ -35,85 +39,91 @@ namespace Engines {
 
 namespace KotOR {
 
+struct Resolution {
+	int width;
+	int height;
+
+	const char *gui;
+
+	bool operator<(const Resolution &x) const {
+		if (width == x.width)
+			return height < x.height;
+
+		return width < x.width;
+	}
+};
+
+static const Resolution kResolution[] = {
+	{  800,  600, "mipc28x6"   },
+	{  800,  600, "mi8x6"      },
+	{ 1024,  768, "mipc210x7"  },
+	{ 1280,  960, "mipc212x9"  },
+	{ 1600, 1200, "mipc216x12" },
+};
+
 HUD::HUD(Module &module, Engines::Console *console)
 		: GUI(console),
 		  _module(&module),
 		  _menu(module, console) {
-	unsigned int wWidth = WindowMan.getWindowWidth();
-	unsigned int wHeight = WindowMan.getWindowHeight();
 
-	if (wWidth == 800 && wHeight == 600)
-		load("mipc28x6");
-	else if (wWidth == 1024 && wHeight == 768)
-		load("mipc210x7");
-	else if (wWidth == 1280 && wHeight == 960)
-		load("mipc212x9");
-	else if (wWidth == 1600 && wHeight == 1200)
-		load("mipc216x12");
-	else {
-		warning("TODO: Add scaling for custom resolutions. Supported resolutions are "
-						"800x600, 1024x768, 1280x960 and 1600x1200");
+	std::set<Resolution> availableRes;
+
+	for (size_t i = 0; i < ARRAYSIZE(kResolution); i++)
+		if (ResMan.hasResource(kResolution[i].gui, Aurora::kFileTypeGUI))
+			availableRes.insert(kResolution[i]);
+
+	const int wWidth  = WindowMan.getWindowWidth();
+	const int wHeight = WindowMan.getWindowHeight();
+
+	const Resolution *foundRes = 0;
+	for (std::set<Resolution>::const_iterator it = availableRes.begin(); it != availableRes.end(); ++it)
+		if (it->width == wWidth && it->height == wHeight)
+			foundRes = &*it;
+
+	if (!foundRes) {
+		Common::UString resString;
+
+		for (std::set<Resolution>::const_iterator it = availableRes.begin(); it != availableRes.end(); ++it) {
+			if (!resString.empty())
+				resString += ", ";
+
+			resString += Common::UString::format("%dx%d", it->width, it->height);
+		}
+
+		warning("TODO: Add scaling for custom resolutions. Supported resolutions are %s", resString.c_str());
 		return;
 	}
 
-	// Make the action stuff invisible.
-	getWidget("LBL_HEALTHBG")->setInvisible(true);
-	getWidget("LBL_NAMEBG")->setInvisible(true);
-	getWidget("LBL_NAME")->setInvisible(true);
-	getWidget("BTN_TARGET0")->setInvisible(true);
-	getWidget("BTN_TARGET1")->setInvisible(true);
-	getWidget("BTN_TARGET2")->setInvisible(true);
-	getWidget("BTN_TARGETUP0")->setInvisible(true);
-	getWidget("BTN_TARGETUP1")->setInvisible(true);
-	getWidget("BTN_TARGETUP2")->setInvisible(true);
-	getWidget("BTN_TARGETDOWN0")->setInvisible(true);
-	getWidget("BTN_TARGETDOWN1")->setInvisible(true);
-	getWidget("BTN_TARGETDOWN2")->setInvisible(true);
+	load(foundRes->gui);
 
-	// Make the action description invisible
-	getWidget("LBL_ACTIONDESC")->setInvisible(true);
-	getWidget("LBL_ACTIONDESCBG")->setInvisible(true);
+	static const char * const kWidgets[] = {
+		// Actions
+		"LBL_HEALTHBG", "LBL_NAMEBG", "LBL_NAME", "BTN_TARGET0", "BTN_TARGET1", "BTN_TARGET2",
+		"BTN_TARGETUP0", "BTN_TARGETUP1", "BTN_TARGETUP2",
+		"BTN_TARGETDOWN0", "BTN_TARGETDOWN1", "BTN_TARGETDOWN2",
+		// Action description
+		"LBL_ACTIONDESC", "LBL_ACTIONDESCBG",
+		// Combat
+		"LBL_CMBTMODEMSG", "LBL_CMBTMSGBG", "LBL_COMBATBG1", "LBL_COMBATBG2", "LBL_COMBATBG3", "BTN_CLEARALL",
+		// Modifiers
+		"LBL_CMBTEFCTINC1", "LBL_CMBTEFCTINC2", "LBL_CMBTEFCTINC3",
+		"LBL_CMBTEFCTRED1", "LBL_CMBTEFCTRED2", "LBL_CMBTEFCTRED3",
+		"LBL_LEVELUP1", "LBL_LEVELUP2", "LBL_LEVELUP3",
+		"LBL_LVLUPBG1", "LBL_LVLUPBG2", "LBL_LVLUPBG3",
+		"LBL_DISABLE1", "LBL_DISABLE2", "LBL_DISABLE3",
+		"LBL_DEBILATATED1", "LBL_DEBILATATED2", "LBL_DEBILATATED3",
+		"LBL_PLOTXP", "LBL_STEALTHXP", "LBL_CASH", "LBL_JOURNAL",
+		"LBL_LIGHTSHIFT", "LBL_DARKSHIFT", "LBL_ITEMRCVD", "LBL_ITEMLOST",
+		// Health bar
+		"PB_HEALTH"
+	};
 
-	// Whatever this combat stuff is about.
-	getWidget("LBL_CMBTMODEMSG")->setInvisible(true);
-	getWidget("LBL_CMBTMSGBG")->setInvisible(true);
-	getWidget("LBL_COMBATBG1")->setInvisible(true);
-	getWidget("LBL_COMBATBG2")->setInvisible(true);
-	getWidget("LBL_COMBATBG3")->setInvisible(true);
-	getWidget("BTN_CLEARALL")->setInvisible(true);
-
-	// Remove the modifiers.
-	getWidget("LBL_CMBTEFCTINC1")->setInvisible(true);
-	getWidget("LBL_CMBTEFCTINC2")->setInvisible(true);
-	getWidget("LBL_CMBTEFCTINC3")->setInvisible(true);
-	getWidget("LBL_CMBTEFCTRED1")->setInvisible(true);
-	getWidget("LBL_CMBTEFCTRED2")->setInvisible(true);
-	getWidget("LBL_CMBTEFCTRED3")->setInvisible(true);
-	getWidget("LBL_LEVELUP1")->setInvisible(true);
-	getWidget("LBL_LEVELUP2")->setInvisible(true);
-	getWidget("LBL_LEVELUP3")->setInvisible(true);
-	getWidget("LBL_LVLUPBG1")->setInvisible(true);
-	getWidget("LBL_LVLUPBG2")->setInvisible(true);
-	getWidget("LBL_LVLUPBG3")->setInvisible(true);
-	getWidget("LBL_DISABLE1")->setInvisible(true);
-	getWidget("LBL_DISABLE2")->setInvisible(true);
-	getWidget("LBL_DISABLE3")->setInvisible(true);
-	getWidget("LBL_DEBILATATED1")->setInvisible(true);
-	getWidget("LBL_DEBILATATED2")->setInvisible(true);
-	getWidget("LBL_DEBILATATED3")->setInvisible(true);
-
-	// Make the modifiers invisible.
-	getWidget("LBL_PLOTXP")->setInvisible(true);
-	getWidget("LBL_STEALTHXP")->setInvisible(true);
-	getWidget("LBL_CASH")->setInvisible(true);
-	getWidget("LBL_JOURNAL")->setInvisible(true);
-	getWidget("LBL_LIGHTSHIFT")->setInvisible(true);
-	getWidget("LBL_DARKSHIFT")->setInvisible(true);
-	getWidget("LBL_ITEMRCVD")->setInvisible(true);
-	getWidget("LBL_ITEMLOST")->setInvisible(true);
-
-	// Make the health bar invisible
-	getWidget("PB_HEALTH")->setInvisible(true);
+	// Make all the widgets invisible
+	for (size_t i = 0; i < ARRAYSIZE(kWidgets); i++) {
+		Widget *widget = getWidget(kWidgets[i]);
+		if (widget)
+			widget->setInvisible(true);
+	}
 }
 
 void HUD::setReturnStrref(uint32 id) {

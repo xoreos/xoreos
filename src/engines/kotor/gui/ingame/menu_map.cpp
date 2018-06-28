@@ -41,7 +41,9 @@ MenuMap::MenuMap(Console *console) : GUI(console) {
 }
 
 void MenuMap::setReturnStrref(uint32 id) {
-	getButton("BTN_RETURN")->setText(TalkMan.getString(id));
+	WidgetButton *btnReturn = getButton("BTN_RETURN");
+	if (btnReturn)
+		btnReturn->setText(TalkMan.getString(id));
 }
 
 void MenuMap::setReturnQueryStrref(uint32 id) {
@@ -49,7 +51,9 @@ void MenuMap::setReturnQueryStrref(uint32 id) {
 }
 
 void MenuMap::setReturnEnabled(bool enabled) {
-	getButton("BTN_RETURN")->setDisabled(!enabled);
+	WidgetButton *btnReturn = getButton("BTN_RETURN");
+	if (btnReturn)
+		btnReturn->setDisabled(!enabled);
 }
 
 void MenuMap::callbackActive(Widget &widget) {
