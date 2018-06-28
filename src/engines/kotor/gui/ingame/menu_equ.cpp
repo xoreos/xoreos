@@ -46,16 +46,28 @@ MenuEquipment::MenuEquipment(Console *console)
 		  _slotFixated(false) {
 	load("equip");
 
-	getListBox("LB_DESC")->setInvisible(true);
-	getLabel("LBL_CANTEQUIP")->setInvisible(true);
-	getLabel("LBL_SLOTNAME")->setText(getSlotName(kEquipmentSlotBody));
+	WidgetListBox *desc = getListBox("LB_DESC");
+	if (!desc)
+		throw Common::Exception("MenuEquipment: No desription listbox");
+
+	desc->setInvisible(true);
+
+	WidgetLabel *cantEquip = getLabel("LBL_CANTEQUIP");
+	if (cantEquip)
+		cantEquip->setInvisible(true);
+
+	WidgetLabel *slotName = getLabel("LBL_SLOTNAME");
+	if (slotName)
+		slotName->setText(getSlotName(kEquipmentSlotBody));
 
 	WidgetListBox *lbItems = getListBox("LB_ITEMS");
-	lbItems->setItemType(kLBItemTypeKotORInventory);
-	lbItems->setHideScrollbar(false);
-	lbItems->setPadding(6);
-	lbItems->setItemBorderColor(0.0f, 0.0f, 0.0f, 0.0f);
-	lbItems->createItemWidgets(5);
+	if (lbItems) {
+		lbItems->setItemType(kLBItemTypeKotORInventory);
+		lbItems->setHideScrollbar(false);
+		lbItems->setPadding(6);
+		lbItems->setItemBorderColor(0.0f, 0.0f, 0.0f, 0.0f);
+		lbItems->createItemWidgets(5);
+	}
 }
 
 void MenuEquipment::setPC(Creature *pc) {
