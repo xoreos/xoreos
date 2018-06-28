@@ -50,24 +50,24 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 
 	addBackground(kBackgroundTypeMenu);
 
-	static const char * const emptyLabels[] = {
+	static const char * const kEmptyLabels[] = {
 		"VIT_ARROW_LBL", "DEF_ARROW_LBL", "LBL_NAME",
 		"WILL_ARROW_LBL", "REFL_ARROW_LBL", "FORT_ARROW_LBL",
 		"VIT_ARROW_LBL", "DEF_ARROW_LBL", "LBL_NAME"
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(emptyLabels); i++) {
-		WidgetLabel *label = getLabel(emptyLabels[i]);
+	for (size_t i = 0; i < ARRAYSIZE(kEmptyLabels); i++) {
+		WidgetLabel *label = getLabel(kEmptyLabels[i]);
 		if (label)
 			label->setText("");
 	}
 
-	static const char * const invisibleWidgets[] {
+	static const char * const kInvisibleWidgets[] = {
 		"NEW_LBL", "OLD_LBL", "LBL_LEVEL", "LBL_LEVEL_VAL"
 	};
 
-	for (size_t i = 0; i < ARRAYSIZE(invisibleWidgets); i++) {
-		Widget *widget = getWidget(invisibleWidgets[i]);
+	for (size_t i = 0; i < ARRAYSIZE(kInvisibleWidgets); i++) {
+		Widget *widget = getWidget(kInvisibleWidgets[i]);
 		if (widget)
 			widget->setInvisible(true);
 	}
