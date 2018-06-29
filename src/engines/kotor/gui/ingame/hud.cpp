@@ -58,6 +58,7 @@ static const Resolution kResolution[] = {
 	{  800,  600, "mi8x6"      },
 	{ 1024,  768, "mipc210x7"  },
 	{ 1280,  960, "mipc212x9"  },
+	{ 1280, 1024, "mipc212x10" },
 	{ 1600, 1200, "mipc216x12" },
 };
 
