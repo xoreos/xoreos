@@ -1342,9 +1342,6 @@ bool WMACodec::decodeRunLevel(Common::BitStream &bits, const Common::Huffman &hu
 	const float *levelTable, const uint16 *runTable, int version, float *ptr,
 	int offset, int numCoefs, int blockLen, int frameLenBits, int coefNbBits) {
 
-	const uint32 *ilvl = reinterpret_cast<const uint32 *>(levelTable);
-	uint32 *iptr = reinterpret_cast<uint32 *>(ptr);
-
 	const unsigned int coefMask = blockLen - 1;
 
 	for (; offset < numCoefs; offset++) {
@@ -1353,11 +1350,11 @@ bool WMACodec::decodeRunLevel(Common::BitStream &bits, const Common::Huffman &hu
 		if (code > 1) {
 			// Normal code
 
-			const int sign = bits.getBit() - 1;
+			const float sign = bits.getBit() ? 1.0f : -1.0f;
 
 			offset += runTable[code];
 
-			iptr[offset & coefMask] = ilvl[code] ^ (sign << 31);
+			ptr[offset & coefMask] = levelTable[code] * sign;
 
 		} else if (code == 1) {
 			// EOB
