@@ -61,7 +61,7 @@ No actual "normal" gameplay is implemented yet, though.
 
 %build
 ./autogen.sh
-%configure
+%configure --with-release=xFedora
 
 # When building in place we want to do a make clean.
 make clean
