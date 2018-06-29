@@ -265,6 +265,7 @@ void KotOREngine::initResources(LoadProgress &progress) {
 	// Texture packs at 400, in module.cpp
 
 	progress.step("Indexing override files");
+	indexOptionalArchive("patch.erf", 499);
 	indexOptionalDirectory("override", 0, 0, 500);
 
 	if (EventMan.quitRequested())
