@@ -46,6 +46,7 @@
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/kotor/kotor.h"
+#include "src/engines/kotor/version.h"
 #include "src/engines/kotor/modelloader.h"
 #include "src/engines/kotor/console.h"
 #include "src/engines/kotor/game.h"
@@ -130,10 +131,13 @@ void KotOREngine::run() {
 }
 
 void KotOREngine::init() {
-	LoadProgress progress(18);
+	LoadProgress progress(19);
 
 	progress.step("Declare languages");
 	declareLanguages();
+
+	progress.step("Detecting game version");
+	detectVersion();
 
 	if (evaluateLanguage(true, _language))
 		status("Setting the language to %s", LangMan.getLanguageName(_language).c_str());
@@ -166,6 +170,26 @@ void KotOREngine::init() {
 	GfxMan.setPerspective(55.0, 0.1, 10000.0);
 
 	progress.step("Successfully initialized the engine");
+}
+
+void KotOREngine::detectVersion() {
+	_version.reset(new Version(_platform));
+
+	if (_version->detect(_target)) {
+		status("This is Star Wars: Knights of the Old Republic %s v%s",
+		       _version->getPlatformName().c_str(), _version->getVersionString().c_str());
+
+		if        (_version->isTooOld()) {
+			warning("Your version of Star Wars: Knights of the Old Republic is too old");
+			warning("Please update to v%s for optimal support", _version->getOptimumVersionString().c_str());
+		} else if (_version->isTooNew()) {
+			warning("Your version of Star Wars: Knights of the Old Republic is too new!?");
+			warning("Please contact us with detailed information about your version");
+		}
+
+	} else {
+		warning("Failed to detect the patch version of your Star Wars: Knights of the Old Republic installation");
+	}
 }
 
 void KotOREngine::declareLanguages() {
@@ -439,6 +463,7 @@ void KotOREngine::checkConfig() {
 void KotOREngine::deinit() {
 	unregisterModelLoader();
 
+	_version.reset();
 	_game.reset();
 }
 

@@ -37,6 +37,7 @@ class LoadProgress;
 
 namespace KotOR {
 
+class Version;
 class Game;
 
 class KotOREngine : public Engines::Engine {
@@ -60,6 +61,8 @@ protected:
 
 
 private:
+	Common::ScopedPtr<Version> _version;
+
 	Aurora::Language _language;
 
 	bool _hasLiveKey;
@@ -70,6 +73,8 @@ private:
 	bool hasYavin4Module() const;
 
 	void init();
+
+	void detectVersion();
 
 	void initConfig();
 	void declareLanguages();

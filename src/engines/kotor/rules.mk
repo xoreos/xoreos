@@ -28,6 +28,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/types.h \
     src/engines/kotor/console.h \
     src/engines/kotor/modelloader.h \
+    src/engines/kotor/version.h \
     src/engines/kotor/game.h \
     src/engines/kotor/object.h \
     src/engines/kotor/situated.h \
@@ -51,6 +52,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/probes.cpp \
     src/engines/kotor/console.cpp \
     src/engines/kotor/modelloader.cpp \
+    src/engines/kotor/version.cpp \
     src/engines/kotor/game.cpp \
     src/engines/kotor/object.cpp \
     src/engines/kotor/waypoint.cpp \
