@@ -42,11 +42,12 @@ class KotOREngine;
 
 class Functions;
 
+class Version;
 class Module;
 
 class Game {
 public:
-	Game(KotOREngine &engine, ::Engines::Console &console, Aurora::Platform platform);
+	Game(KotOREngine &engine, ::Engines::Console &console, const Version &gameVersion);
 	~Game();
 
 	/** Return the module context. */
@@ -69,7 +70,7 @@ private:
 	Common::ScopedPtr<Module>    _module;
 	Common::ScopedPtr<Functions> _functions;
 
-	Aurora::Platform _platform;
+	const Version *_gameVersion;
 
 	::Engines::Console *_console;
 

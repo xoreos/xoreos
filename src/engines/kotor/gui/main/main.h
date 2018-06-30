@@ -33,11 +33,12 @@ namespace Engines {
 
 namespace KotOR {
 
+class Version;
 class Module;
 
 class MainMenu : public GUI {
 public:
-	MainMenu(Module &module, bool isXbox, ::Engines::Console *console = 0);
+	MainMenu(const Version &gameVersion, Module &module, ::Engines::Console *console = 0);
 	~MainMenu();
 
 protected:
@@ -47,7 +48,7 @@ protected:
 
 private:
 	Module *_module;
-	bool _isXbox;
+	const Version *_gameVersion;
 
 	Common::ScopedPtr<GUI> _classSelection;
 	Common::ScopedPtr<GUI> _movies;

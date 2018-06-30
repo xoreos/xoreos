@@ -53,8 +53,8 @@ namespace Engines {
 
 namespace KotOR {
 
-Game::Game(KotOREngine &engine, ::Engines::Console &console, Aurora::Platform platform) :
-	_engine(&engine), _platform(platform), _console(&console) {
+Game::Game(KotOREngine &engine, ::Engines::Console &console, const Version &gameVersion) :
+	_engine(&engine), _gameVersion(&gameVersion), _console(&console) {
 
 	_functions.reset(new Functions(*this));
 }
@@ -142,7 +142,7 @@ void Game::stopMusic() {
 void Game::mainMenu() {
 	EventMan.flushEvents();
 
-	MainMenu menu(*_module, _platform == Aurora::kPlatformXbox, _console);
+	MainMenu menu(*_gameVersion, *_module, _console);
 
 	_console->disableCommand("loadmodule", "not available in the main menu");
 	_console->disableCommand("exitmodule", "not available in the main menu");

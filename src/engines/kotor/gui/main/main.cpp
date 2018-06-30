@@ -34,6 +34,7 @@
 #include "src/engines/aurora/widget.h"
 
 #include "src/engines/kotor/module.h"
+#include "src/engines/kotor/version.h"
 
 #include "src/engines/kotor/gui/guibackground.h"
 #include "src/engines/kotor/gui/saveload.h"
@@ -53,10 +54,10 @@ namespace Engines {
 
 namespace KotOR {
 
-MainMenu::MainMenu(Module &module, bool isXbox, ::Engines::Console *console) : GUI(console),
-	_module(&module), _isXbox(isXbox) {
+MainMenu::MainMenu(const Version &gameVersion, Module &module, ::Engines::Console *console) : GUI(console),
+	_module(&module), _gameVersion(&gameVersion) {
 
-	load(isXbox ? "mainmenu" : "mainmenu16x12");
+	load((_gameVersion->getPlatform() == Aurora::kPlatformXbox) ? "mainmenu" : "mainmenu16x12");
 
 	getListBox("LB_MODULES")->setInvisible(true);
 
@@ -93,7 +94,7 @@ void MainMenu::createOptions() {
 		return;
 
 	// Create the options menu
-	_options.reset(new OptionsMenu(_console));
+	_options.reset(new OptionsMenu(*_gameVersion, _console));
 
 }
 

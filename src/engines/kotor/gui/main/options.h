@@ -37,9 +37,11 @@ namespace Engines {
 
 namespace KotOR {
 
+class Version;
+
 class OptionsMenu : public GUI {
 public:
-	OptionsMenu(::Engines::Console *console = 0);
+	OptionsMenu(const Version &gameVersion, ::Engines::Console *console = 0);
 	~OptionsMenu();
 
 protected:

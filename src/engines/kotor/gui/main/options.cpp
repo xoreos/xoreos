@@ -22,7 +22,11 @@
  *  The options menu.
  */
 
+#include "src/version/version.h"
+
 #include "src/engines/aurora/widget.h"
+
+#include "src/engines/kotor/version.h"
 
 #include "src/engines/kotor/gui/main/options.h"
 #include "src/engines/kotor/gui/options/gameplay.h"
@@ -32,12 +36,13 @@
 #include "src/engines/kotor/gui/options/sound.h"
 
 #include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-OptionsMenu::OptionsMenu(::Engines::Console *console) : GUI(console) {
+OptionsMenu::OptionsMenu(const Version &gameVersion, ::Engines::Console *console) : GUI(console) {
 	load("optionsmain");
 
 	addBackground(kBackgroundTypeMenu);
@@ -48,6 +53,21 @@ OptionsMenu::OptionsMenu(::Engines::Console *console) : GUI(console) {
 	_graphics.reset(new OptionsGraphicsMenu(_console));
 	_sound.reset(new OptionsSoundMenu(_console));
 
+	Common::UString versionString = Common::UString(::Version::getProjectNameVersion());
+
+	if (gameVersion.hasVersion())
+		versionString += " v" + gameVersion.getVersionString();
+
+	WidgetLabel *lblVersion = new WidgetLabel(*this, "Version");
+	addWidget(lblVersion);
+
+	lblVersion->createText("fnt_console", versionString);
+
+	const float x =  (800.0f / 2.0f) - lblVersion->getWidth();
+	const float y = -(600.0f / 2.0f);
+
+	lblVersion->setPosition(x, y, -50.0f);
+	lblVersion->setTextColor(0.6f, 0.6f, 0.6f, 1.0f);
 }
 
 OptionsMenu::~OptionsMenu() {

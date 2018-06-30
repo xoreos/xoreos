@@ -124,7 +124,7 @@ void KotOREngine::run() {
 
 	CursorMan.showCursor();
 
-	_game.reset(new Game(*this, *_console, _platform));
+	_game.reset(new Game(*this, *_console, *_version));
 	_game->run();
 
 	deinit();
