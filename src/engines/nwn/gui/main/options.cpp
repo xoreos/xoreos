@@ -60,8 +60,10 @@ OptionsMenu::~OptionsMenu() {
 
 void OptionsMenu::initWidget(Widget &widget) {
 	if (widget.getTag() == "BuildNumber") {
-		Common::UString version = Common::UString(::Version::getProjectNameVersion()) +
-		                          " v" + _gameVersion->getVersionString();
+		Common::UString version = Common::UString(::Version::getProjectNameVersion());
+
+		if (_gameVersion->hasVersion())
+			version += " v" + _gameVersion->getVersionString();
 
 		dynamic_cast<WidgetLabel &>(widget).setText(version);
 		dynamic_cast<WidgetLabel &>(widget).setColor(0.6f, 0.6f, 0.6f, 1.0f);
