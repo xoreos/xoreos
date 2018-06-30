@@ -312,6 +312,25 @@ bool KotORJadeWidget::isHighlight() {
 	return _highlighted;
 }
 
+void KotORJadeWidget::createText(const Common::UString &font, const Common::UString &str) {
+	const Graphics::Aurora::FontHandle f = FontMan.get(font);
+	const float width  = f.getFont().getWidth(str);
+	const float height = f.getFont().getHeight();
+
+	_text.reset(new Graphics::Aurora::HighlightableText(f, width, height, str));
+
+	_text->setTag(getTag());
+	_text->setClickable(true);
+
+	float x, y, z;
+	getPosition(x, y, z);
+
+	_text->setPosition(x, y, z);
+
+	_width  = MAX(_width , width);
+	_height = MAX(_height, height);
+}
+
 void KotORJadeWidget::setFont(const Common::UString &fnt) {
 	if (_text)
 		_text->setFont(fnt);

@@ -72,6 +72,8 @@ public:
 	// '---
 
 	// .--- Text
+	/** Initialize the text within this widget. */
+	void createText(const Common::UString &font, const Common::UString &str);
 
 	/** Change the font for this widget. */
 	void setFont(const Common::UString &fnt);
