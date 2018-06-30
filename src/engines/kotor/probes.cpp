@@ -89,10 +89,13 @@ public:
 
 		// If the "Knights of the Old Republic.app" directory exists,
 		// this should be a valid path for the Mac OS X port
-		const Common::UString appDirectory =
+		const Common::UString appDirectory1 =
 			Common::FilePath::findSubDirectory(directory, "Knights of the Old Republic.app", true);
+		// Alternatively, the app directory might just be called "KOTOR"
+		const Common::UString appDirectory2 =
+			Common::FilePath::findSubDirectory(directory, "KOTOR.app", true);
 
-		return !appDirectory.empty();
+		return !appDirectory1.empty() || !appDirectory2.empty();
 	}
 
 };
