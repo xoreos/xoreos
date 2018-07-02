@@ -72,7 +72,6 @@ private:
 	uint16 _versionMajor; ///< v1.03.514078 ->      1
 	uint16 _versionMinor; ///< v1.03.514078 ->      3
 	uint32 _versionBuild; ///< v1.03.514078 -> 514078
-	uint64 _version;      ///< The combined version number.
 
 	bool detectWindows(const Common::UString &directory);
 	bool detectMacOSX (const Common::UString &directory);
