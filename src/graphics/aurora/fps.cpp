@@ -34,7 +34,7 @@ namespace Graphics {
 
 namespace Aurora {
 
-FPS::FPS(const FontHandle &font) : Text(font, WindowMan.getWindowWidth(), WindowMan.getWindowHeight(), "0 fps"), _fps(0) {
+FPS::FPS(const FontHandle &font) : Text(Graphics::GUIElement::kGUIElementConsole, font, WindowMan.getWindowWidth(), WindowMan.getWindowHeight(), "0 fps"), _fps(0) {
 	init();
 }
 
