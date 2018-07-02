@@ -221,23 +221,20 @@ template<typename T> void parseString(const UString &str, T &value, bool allowEm
 	const char *nptr = str.c_str();
 	char *endptr = 0;
 
-	T oldValue = value;
-
 	errno = 0;
-	parse(nptr, &endptr, value);
+
+	T newValue;
+	parse(nptr, &endptr, newValue);
 
 	while (endptr && isspace(*endptr))
 		endptr++;
 
-	try {
-		if (endptr && (*endptr != '\0'))
-			throw Exception("Can't convert \"%s\" to type of size %u", str.c_str(), (uint)sizeof(T));
-		if (errno == ERANGE)
-			throw Exception("\"%s\" out of range for type of size %u", str.c_str(), (uint)sizeof(T));
-	} catch (...) {
-		value = oldValue;
-		throw;
-	}
+	if (endptr && (*endptr != '\0'))
+		throw Exception("Can't convert \"%s\" to type of size %u", str.c_str(), (uint)sizeof(T));
+	if (errno == ERANGE)
+		throw Exception("\"%s\" out of range for type of size %u", str.c_str(), (uint)sizeof(T));
+
+	value = newValue;
 }
 
 template<> void parseString(const UString &str, bool &value, bool allowEmpty) {
@@ -250,19 +247,13 @@ template<> void parseString(const UString &str, bool &value, bool allowEmpty) {
 
 	// Valid true values are "true", "yes", "y", "on" and "1"
 
-	bool oldValue = value;
-
-	try {
-		value = (str.equalsIgnoreCase("true") ||
-		         str.equalsIgnoreCase("yes")  ||
-		         str.equalsIgnoreCase("y")    ||
-		         str.equalsIgnoreCase("on")   ||
-		         str == "1") ?
-			true : false;
-	} catch (...) {
-		value = oldValue;
-		throw;
-	}
+	value =
+		(str.equalsIgnoreCase("true") ||
+		 str.equalsIgnoreCase("yes")  ||
+		 str.equalsIgnoreCase("y")    ||
+		 str.equalsIgnoreCase("on")   ||
+		 str == "1") ?
+		true : false;
 }
 
 template void parseString<  signed char     >(const UString &str,   signed char      &value, bool allowEmpty);
