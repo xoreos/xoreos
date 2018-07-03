@@ -78,7 +78,8 @@ public:
 	static Texture *create(const Common::UString &name);
 	/** Take over the image and create a texture from it. */
 	static Texture *create(ImageDecoder *image, ::Aurora::FileType type = ::Aurora::kFileTypeNone, TXI *txi = 0);
-
+	/** Create a texture from this image stream. */
+	static Texture *create(Common::SeekableReadStream &imageStream, ::Aurora::FileType type);
 
 protected:
 	Common::UString    _name; ///< The name of the texture's image's file.
@@ -117,7 +118,7 @@ protected:
 
 	static TXI *loadTXI(const Common::UString &name);
 	static ImageDecoder *loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
-	                               TXI *txi = 0);
+	                               TXI *txi = 0, bool releaseImageStream = true);
 
 	static ImageDecoder *loadImage(const Common::UString &name, ::Aurora::FileType &type, TXI *txi);
 

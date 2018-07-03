@@ -382,6 +382,12 @@ Texture *Texture::create(ImageDecoder *image, ::Aurora::FileType type, TXI *txi)
 	return new Texture("", image, type, txi);
 }
 
+Texture *Texture::create(Common::SeekableReadStream &imageStream, ::Aurora::FileType type) {
+	ImageDecoder *image = loadImage(&imageStream, type, 0, false);
+
+	return new Texture("", image, type);
+}
+
 void Texture::set(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi) {
 	_name   = name;
 	_type   = type;
@@ -451,7 +457,7 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 }
 
 ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
-                                 TXI *txi) {
+                                 TXI *txi, bool releaseImageStream) {
 
 	// Check for a cube map, but only those that don't use a file for each side
 	const bool isCubeMap = txi && txi->getFeatures().cube && (txi->getFeatures().fileRange == 0);
@@ -488,7 +494,9 @@ ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Auro
 		throw;
 	}
 
-	delete imageStream;
+	if (releaseImageStream)
+		delete imageStream;
+
 	return image;
 }
 
