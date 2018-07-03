@@ -53,6 +53,11 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 	load("saveload");
 	addBackground(kBackgroundTypeMenu, frontBackground);
 
+	getLabel("LBL_PM1")->setFill("");
+	getLabel("LBL_PM2")->setFill("");
+	getLabel("LBL_PM3")->setFill("");
+	getLabel("LBL_SCREENSHOT")->setFill("");
+
 	WidgetListBox *lbGames = getListBox("LB_GAMES");
 	if (!lbGames)
 		throw Common::Exception("SaveLoadMenu: No games listbox");
@@ -85,6 +90,41 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 
 	addSavedGameItems(lbGames);
 	lbGames->refreshItemWidgets();
+
+	lbGames->selectNextItem();
+	refreshMetadata();
+}
+
+void SaveLoadMenu::refreshMetadata() {
+	if (!_userData.getNumSaves())
+		return;
+
+	size_t currentIndex = getListBox("LB_GAMES")->getSelectedIndex();
+
+	Aurora::NFOFile nfoFile(_userData.createMetadataReadStream(currentIndex));
+	if (!nfoFile.getPortrait0().empty())
+		getLabel("LBL_PM1")->setFill(nfoFile.getPortrait0());
+	else
+		getLabel("LBL_PM1")->setFill("");
+
+	if (!nfoFile.getPortrait1().empty())
+		getLabel("LBL_PM2")->setFill(nfoFile.getPortrait1());
+	else
+		getLabel("LBL_PM2")->setFill("");
+
+	if (!nfoFile.getPortrait2().empty())
+		getLabel("LBL_PM3")->setFill(nfoFile.getPortrait2());
+	else
+		getLabel("LBL_PM3")->setFill("");
+
+	getLabel("LBL_SCREENSHOT")->setFill(_userData.getScreenshotTexture(currentIndex));
+
+	std::vector<Common::UString> areaName;
+	Common::UString::split(nfoFile.getAreaName(), '-', areaName);
+	areaName[0].erase(areaName[0].findLast(' '));
+	areaName[1].erase(areaName[1].findFirst(' '));
+	getLabel("LBL_PLANETNAME")->setText(areaName[0]);
+	getLabel("LBL_AREANAME")->setText(areaName[1]);
 }
 
 void SaveLoadMenu::callbackActive(Widget &widget) {
@@ -95,7 +135,7 @@ void SaveLoadMenu::callbackActive(Widget &widget) {
 			return;
 		switch (_type) {
 			case kSaveLoadMenuTypeLoad:
-				tryLoadGame(_saveDirs[selectedIndex]);
+				tryLoadGame(_userData.getSaveDir(selectedIndex));
 				break;
 			case kSaveLoadMenuTypeSave:
 				trySaveGame(selectedIndex > 0 ? _saveDirs[selectedIndex - 1] : getNewSaveDirectory());
@@ -112,9 +152,11 @@ void SaveLoadMenu::callbackKeyInput(const Events::Key &key, const Events::EventT
 		switch (key) {
 			case Events::kKeyUp:
 				getListBox("LB_GAMES")->selectPreviousItem();
+				refreshMetadata();
 				break;
 			case Events::kKeyDown:
 				getListBox("LB_GAMES")->selectNextItem();
+				refreshMetadata();
 				break;
 			default:
 				break;
@@ -123,41 +165,18 @@ void SaveLoadMenu::callbackKeyInput(const Events::Key &key, const Events::EventT
 }
 
 void SaveLoadMenu::addSavedGameItems(WidgetListBox *listBox) {
-	Common::FileList dirs;
-	Common::UString savesDir = Common::FilePath::normalize(ConfigMan.getString("path") + "/saves");
-	dirs.addSubDirectories(savesDir);
 	Common::UString slotTextFormat = TalkMan.getString(1594);
 
-	dirs.sort(true);
-	for (Common::FileList::const_iterator it = dirs.begin(); it != dirs.end(); ++it) {
-		Common::UString saveDir = *it;
-		Common::UString baseName;
+	for (size_t i = 0; i < _userData.getNumSaves(); ++i) {
+		Aurora::NFOFile nfoFile = Aurora::NFOFile(_userData.createMetadataReadStream(i));
 
-		try {
-			baseName = getBaseNameFromDirectory(saveDir);
-		} catch (Common::Exception &e) {
-			e.add("Failed to get save base name from directory \"%s\"", saveDir.c_str());
+		uint32 timePlayed = nfoFile.getTimePlayed();
 
-			printException(e, "WARNING: ");
-			continue;
-		}
-
-		if (_type == kSaveLoadMenuTypeSave && !baseName.contains("Game"))
-			continue;
-
-		_saveDirs.push_back(saveDir);
-		SavedGame *save = SavedGame::load(saveDir);
-		uint32 timePlayed = save->getTimePlayed();
 		Common::UString slotText(slotTextFormat);
-
-		slotText.replaceAll("Game <CUSTOM0>", baseName);
+		slotText.replaceAll(TalkMan.getString(48280) + " <CUSTOM0>", _userData.getSaveId(i));
 		slotText.replaceAll("<CUSTOM1>", Common::composeString(timePlayed / 3600));
 		slotText.replaceAll("<CUSTOM2>", Common::composeString(timePlayed % 3600 / 60));
 
-		if (baseName.contains("Game"))
-			slotText += "\r\n" + save->getName();
-
-		delete save;
 		listBox->addItem(slotText);
 	}
 }
@@ -179,48 +198,6 @@ void SaveLoadMenu::trySaveGame(const Common::UString &UNUSED(dir)) {
 
 Common::UString SaveLoadMenu::getNewSaveDirectory() const {
 	return "";
-}
-
-Common::UString SaveLoadMenu::getBaseNameFromDirectory(const Common::UString &dir) const {
-	Common::UString result;
-	Common::UString relativeDir(Common::FilePath::getFile(dir));
-
-	if (relativeDir.contains("QUICKSAVE"))
-		result = "Quick Save";
-	else if (relativeDir.contains("AUTOSAVE"))
-		result = "Auto Save";
-	else if (relativeDir.contains("Game")) {
-		/* The format of a normal save directory is something like "000043 - Game42".
-		 * The original game seems to ignore the GameXX part, and instead parses
-		 * the first number, and then substracts 1 from the result.
-		 *
-		 * I.e. "000062 - Game42" will appears as "Game 61".
-		 *
-		 * Directories that fail this parsing, for example "abc - Game 42", simply
-		 * won't appear in the save list.
-		 */
-
-		Common::UString::iterator it = relativeDir.begin();
-		while ((it != relativeDir.end()) && (*it == '0'))
-			++it;
-
-		Common::UString tmp(it, relativeDir.end());
-		tmp.truncate(tmp.findFirst(' '));
-
-		int gameIndex = -1;
-
-		Common::parseString(tmp, gameIndex);
-		gameIndex--;
-
-		if (gameIndex < 0)
-			throw Common::Exception("Game index is negative (%d)", gameIndex);
-
-		result = "Game " + Common::composeString(gameIndex);
-
-	} else
-		throw Common::Exception("Unknown save type");
-
-	return result;
 }
 
 } // End of namespace KotOR

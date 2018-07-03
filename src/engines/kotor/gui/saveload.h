@@ -32,6 +32,7 @@
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotor/module.h"
+#include "src/engines/kotor/userdata.h"
 
 #include "src/engines/kotor/gui/gui.h"
 
@@ -56,6 +57,10 @@ private:
 	Module *_module;
 	uint8 _type;
 	std::vector<Common::UString> _saveDirs;
+	UserData _userData;
+
+	/** Refresh the metadata of the currently selected save game. */
+	void refreshMetadata();
 
 	void callbackActive(Widget &widget);
 	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
@@ -63,7 +68,6 @@ private:
 	void tryLoadGame(const Common::UString &dir);
 	void trySaveGame(const Common::UString &dir);
 	Common::UString getNewSaveDirectory() const;
-	Common::UString getBaseNameFromDirectory(const Common::UString &dir) const;
 };
 
 } // End of namespace KotOR
