@@ -1,3 +1,23 @@
+Changes in xoreos version 0.0.5
+===============================
+
+The two Knights of the old Republic games gained animation support, partially
+working character creators, ingame menus, PC walking with walkmesh and trigger
+evaluation, and preliminary conversations. They are now the most implemented
+games in xoreos, overtaking Neverwinter Nights.
+
+Neverwinter Nights received a fix in the animation system. Animations are now
+correctly scaled with the height of the creature. Heads don't fly off of elves
+anymore when they yawn, for example. The character creator was also partially
+implemented.
+
+Jade Empire now has an initial implementation for its main menu and lightmap
+textures are correctly loaded.
+
+And as always, this release includes a ton of code quality changes, bug fixes
+and initial implementations that are user-invisible for now.
+
+
 Changes in xoreos version 0.0.4
 ===============================
 

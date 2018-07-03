@@ -11,7 +11,7 @@
 %global snapshot 0
 
 Name:           xoreos
-Version:        0.0.4
+Version:        0.0.5
 
 # This is a bit ugly but it works.
 %if "%{snapshot}" == "0"
@@ -81,5 +81,8 @@ rm %{buildroot}%{_pkgdocdir}/*
 %license COPYING
 
 %changelog
+* Tue Jul 03 2018 Sven Hesse <drmccoy@drmccoy.de> 0.0.5-1
+- New upstream release.
+
 * Mon Feb 15 2016 Ben Rosser <rosser.bjr@gmail.com> 0.0.4-1
 - Initial package.
