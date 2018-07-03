@@ -200,6 +200,24 @@ void KotORJadeWidget::setFill(const Common::UString &fill) {
 	_quad->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+void KotORJadeWidget::setFill(const Graphics::Aurora::TextureHandle &handle) {
+	if (!_quad) {
+		float x, y, z;
+		getPosition(x, y, z);
+
+		_quad.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width, _height));
+		_quad->setPosition(x, y, z);
+		_quad->setTag(getTag());
+		_quad->setClickable(true);
+
+		if (isVisible())
+			_quad->show();
+	}
+
+	_quad->setTexture(handle);
+	_quad->setColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
 void KotORJadeWidget::setColor(float r, float g, float b, float a) {
 	if (_quad)
 		_quad->setColor(r, g, b, a);

@@ -53,6 +53,7 @@ public:
 	void setScissor(int x, int y, int width, int height);
 
 	void setFill(const Common::UString &fill);
+	void setFill(const Graphics::Aurora::TextureHandle &handle);
 	void setColor(float r, float g, float b, float a);
 	void setBorderColor(float r, float g, float b, float a);
 	void setWrapped(bool wrapped);
