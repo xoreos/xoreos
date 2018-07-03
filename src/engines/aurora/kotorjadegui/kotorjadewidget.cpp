@@ -177,7 +177,8 @@ void KotORJadeWidget::setScissor(int x, int y, int width, int height) {
 
 void KotORJadeWidget::setFill(const Common::UString &fill) {
 	if (fill.empty()) {
-		_quad->hide();
+		if (_quad)
+			_quad->hide();
 		_quad.reset();
 		return;
 	}
