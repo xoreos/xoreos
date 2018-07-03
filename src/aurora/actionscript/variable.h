@@ -40,9 +40,7 @@ class Function;
 
 typedef boost::shared_ptr<Object> ObjectPtr;
 
-/**
- * An action script variable
- */
+/** An action script variable. */
 class Variable {
 public:
 	Variable();

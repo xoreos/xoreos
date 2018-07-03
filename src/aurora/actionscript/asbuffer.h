@@ -90,19 +90,19 @@ private:
 	void actionDefineFunction();
 	void actionIf();
 
-	// Utility methods and variables.
+	// Utility methods and variables
 	Common::UString readString();
 
 	unsigned int _currentLength;
 	unsigned int _seeked;
 
-	// Constant pool.
+	// Constant pool
 	std::vector<Common::UString> _constants;
 
-	// Execution stack.
+	// Execution stack
 	std::stack<Variable> _stack;
 
-	// The script data.
+	// The script data
 	Common::SeekableReadStream *_script;
 };
 

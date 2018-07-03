@@ -36,28 +36,21 @@ namespace Aurora {
 
 namespace ActionScript {
 
-/**
- * Function for receiving fscommand()
- */
+/** Function for receiving fscommand(). */
 typedef boost::function<void(const Common::UString &, const Common::UString &)> FSCommandFunction;
 
-/**
- * The Action script virtual machine (AVM)
- */
+/** The Action script virtual machine (AVM). */
 class AVM {
 public:
 	AVM(FSCommandFunction fscommand);
 	AVM();
 
-	/**
-	 * fscommand is used for communicating with the host program. It is one of
-	 * Scaleforms ways for sending messages from the actionscript code to the
-	 * c++ program.
+	/** fscommand is used for communicating with the host program. It is one of
+	 *  Scaleforms ways for sending messages from the actionscript code to the
+	 *  c++ program.
 	 *
-	 * @param name
-	 * 	The name of the fscommand like "PlayMovie"
-	 * @param value
-	 * 	The parameters of the fscommand
+	 *  @param name The name of the fscommand like "PlayMovie".
+	 *  @param value The parameters of the fscommand.
 	 */
 	void fsCommand(const Common::UString &name, const Common::UString &value);
 
