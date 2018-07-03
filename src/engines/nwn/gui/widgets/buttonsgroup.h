@@ -1,5 +1,4 @@
-/*
- * xoreos - A reimplementation of BioWare's Aurora engine
+/* xoreos - A reimplementation of BioWare's Aurora engine
  *
  * xoreos is the legal property of its developers, whose names
  * can be found in the AUTHORS file distributed with this source
