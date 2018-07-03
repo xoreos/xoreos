@@ -22,10 +22,14 @@
  *  The Aurora texture manager.
  */
 
+#include "src/common/readfile.h"
 #include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/uuid.h"
+
+#include "src/aurora/types.h"
+#include "src/aurora/util.h"
 
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
@@ -180,6 +184,25 @@ TextureHandle TextureManager::getIfExist(const Common::UString &name) {
 		return TextureHandle(texture);
 
 	return TextureHandle();
+}
+
+TextureHandle TextureManager::getFromFile(const Common::UString &file) {
+	Common::StackLock lock(_mutex);
+
+	::Aurora::FileType type = TypeMan.getFileType(file);
+
+	TextureMap::iterator texture = _textures.find(file);
+	if (texture == _textures.end()) {
+		Common::ReadFile imageStream(file);
+		ManagedTexture *managedTexture = new ManagedTexture(Texture::create(imageStream, type));
+
+		std::pair<TextureMap::iterator, bool> result;
+		result = _textures.insert(std::make_pair(file, managedTexture));
+
+		texture = result.first;
+	}
+
+	return TextureHandle(texture);
 }
 
 void TextureManager::startRecordNewTextures() {

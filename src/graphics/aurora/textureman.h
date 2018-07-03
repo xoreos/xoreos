@@ -70,6 +70,8 @@ public:
 	TextureHandle get(Common::UString name);
 	/** Retrieve this named texture, returning an empty handle if it's not managed. */
 	TextureHandle getIfExist(const Common::UString &name);
+	/** Retrieve this texture from a file path. */
+	TextureHandle getFromFile(const Common::UString &file);
 
 	/** Start recording all names of newly created textures. */
 	void startRecordNewTextures();
