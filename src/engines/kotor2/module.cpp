@@ -495,13 +495,10 @@ void Module::handleEvents() {
 		switch (event->type) {
 			case Events::kEventKeyDown:
 			case Events::kEventKeyUp:
-				switch (event->key.keysym.sym) {
-					case SDLK_w:
-						_forwardBtnPressed = event->type == Events::kEventKeyDown;
-						break;
-					case SDLK_s:
-						_backwardsBtnPressed = event->type == Events::kEventKeyDown;
-						break;
+				if (event->key.keysym.scancode == SDL_SCANCODE_W) {
+					_forwardBtnPressed = event->type == Events::kEventKeyDown;
+				} else if (event->key.keysym.scancode == SDL_SCANCODE_S) {
+					_backwardsBtnPressed = event->type == Events::kEventKeyDown;
 				}
 				break;
 		}
