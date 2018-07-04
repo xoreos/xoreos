@@ -75,6 +75,8 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 
 	_debugGL = false;
 
+	_rendererExperimental = false;
+
 	_needManualDeS3TC        = false;
 	_supportMultipleTextures = false;
 	_multipleTextureCount    = 0;
@@ -983,7 +985,6 @@ bool GraphicsManager::renderWorld() {
 
 	_animationThread.flush();
 
-/*
 	// Draw opaque objects
 	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
 	     o != objects.rend(); ++o) {
@@ -1001,16 +1002,6 @@ bool GraphicsManager::renderWorld() {
 		static_cast<Renderable *>(*o)->render(kRenderPassTransparent);
 		glPopMatrix();
 	}
-*/
-
-	glm::mat4 ident;
-	RenderMan.clear();
-	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
-	     o != objects.rend(); ++o) {
-		static_cast<Renderable *>(*o)->queueRender(ident);
-	}
-	RenderMan.sort();
-	RenderMan.render();
 
 	QueueMan.unlockQueue(kQueueVisibleWorldObject);
 	return true;
@@ -1099,6 +1090,115 @@ bool GraphicsManager::renderCursor() {
 	return true;
 }
 
+bool GraphicsManager::renderWorldShader() {
+	if (QueueMan.isQueueEmpty(kQueueVisibleWorldObject))
+		return false;
+
+	_projection = _perspective;
+	_projectionInv = _perspectiveInv;
+
+	float cPos[3];
+	float cOrient[3];
+
+	memcpy(cPos   , CameraMan.getPosition   (), 3 * sizeof(float));
+	memcpy(cOrient, CameraMan.getOrientation(), 3 * sizeof(float));
+
+	_modelview = glm::mat4();
+	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+	_modelview = glm::rotate(_modelview, Common::deg2rad(-cOrient[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+	_modelview = glm::translate(_modelview, glm::vec3(-cPos[0], -cPos[1], -cPos[2]));
+
+	QueueMan.lockQueue(kQueueVisibleWorldObject);
+	const std::list<Queueable *> &objects = QueueMan.getQueue(kQueueVisibleWorldObject);
+
+	buildNewTextures();
+
+	_animationThread.flush();
+
+	glm::mat4 ident;
+	RenderMan.clear();
+	for (std::list<Queueable *>::const_reverse_iterator o = objects.rbegin();
+	     o != objects.rend(); ++o) {
+		static_cast<Renderable *>(*o)->queueRender(ident);
+	}
+	RenderMan.sort();
+	RenderMan.render();
+
+	QueueMan.unlockQueue(kQueueVisibleWorldObject);
+	return true;
+}
+
+bool GraphicsManager::renderGUIFrontShader() {
+	return renderGUIShader(_scalingType, kQueueVisibleGUIFrontObject, false);
+}
+
+bool GraphicsManager::renderGUIBackShader() {
+	return renderGUIShader(_scalingType, kQueueVisibleGUIBackObject, true);
+}
+
+bool GraphicsManager::renderGUIConsoleShader() {
+	return renderGUIShader(kScalingNone, kQueueVisibleGUIConsoleObject, true);
+}
+
+bool GraphicsManager::renderGUIShader(ScalingType scalingType, QueueType guiQueue, bool disableDepthMask) {
+	if (QueueMan.isQueueEmpty(guiQueue))
+		return false;
+
+	glDisable(GL_DEPTH_TEST);
+	if (disableDepthMask)
+		glDepthMask(GL_FALSE);
+
+	int windowWidth = WindowMan.getWindowWidth();
+	int windowHeight = WindowMan.getWindowHeight();
+	int rasterWidth  = (scalingType == kScalingWindowSize || _guiWidth  > windowWidth)  ? _guiWidth  : windowWidth;
+	int rasterHeight = (scalingType == kScalingWindowSize || _guiHeight > windowHeight) ? _guiHeight : windowHeight;
+	_projection = glm::scale(glm::mat4(), glm::vec3(2.0f / rasterWidth, 2.0f / rasterHeight, 0.0f));
+
+	QueueMan.lockQueue(guiQueue);
+	const std::list<Queueable *> &gui = QueueMan.getQueue(guiQueue);
+	_modelview = glm::mat4();
+
+	buildNewTextures();
+
+	glm::mat4 ident;
+	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
+	     g != gui.rend(); ++g) {
+		static_cast<Renderable *>(*g)->renderImmediate(ident);
+		//static_cast<Renderable *>(*g)->queueRender();
+	}
+
+	QueueMan.unlockQueue(guiQueue);
+
+	if (disableDepthMask)
+		glDepthMask(GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
+	return true;
+}
+
+bool GraphicsManager::renderCursorShader() {
+	if (!_cursor)
+		return false;
+
+	buildNewTextures();
+
+	glDisable(GL_DEPTH_TEST);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glScalef(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
+	glTranslatef(- (WindowMan.getWindowWidth() / 2.0f), WindowMan.getWindowHeight() / 2.0f, 0.0f);
+
+	glMatrixMode(GL_TEXTURE);
+	glLoadIdentity();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	_cursor->render();
+	glEnable(GL_DEPTH_TEST);
+	return true;
+}
+
 void GraphicsManager::endScene() {
 	WindowMan.endScene();
 
@@ -1131,11 +1231,19 @@ void GraphicsManager::renderScene() {
 		return;
 	}
 
-	renderGUIBack();
-	renderWorld();
-	renderGUIFront();
-	renderGUIConsole();
-	renderCursor();
+	if (_rendererExperimental) {
+		renderGUIBackShader();
+		renderWorldShader();
+		renderGUIFrontShader();
+		renderGUIConsoleShader();
+		renderCursorShader();
+	} else {
+		renderGUIBack();
+		renderWorld();
+		renderGUIFront();
+		renderGUIConsole();
+		renderCursor();
+	}
 
 	endScene();
 
@@ -1184,6 +1292,10 @@ void GraphicsManager::unregisterAnimatedModel(Aurora::Model *model) {
 
 bool GraphicsManager::isGL3() const {
 	return _renderType == WindowManager::kOpenGL32Compat;
+}
+
+void GraphicsManager::setRendererExperimental() {
+	_rendererExperimental = true;
 }
 
 void GraphicsManager::rebuildGLContainers() {

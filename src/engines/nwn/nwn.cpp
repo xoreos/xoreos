@@ -37,6 +37,9 @@
 
 #include "src/events/events.h"
 
+/** Only included to specify shader render backend. Remove if that becomes default. */
+#include "src/graphics/graphics.h"
+
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/fontman.h"
@@ -134,6 +137,9 @@ void NWNEngine::run() {
 }
 
 void NWNEngine::init() {
+	// NWN renders properly with the shader renderer, so use that if we can.
+	GfxMan.setRendererExperimental();
+
 	LoadProgress progress(20);
 
 	progress.step("Declare languages");
