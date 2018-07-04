@@ -256,3 +256,9 @@ tests_common_test_geometry_SOURCES  = tests/common/geometry.cpp
 tests_common_test_geometry_LDADD    = $(common_LIBS)
 tests_common_test_geometry_CXXFLAGS = $(test_CXXFLAGS)
 
+
+check_PROGRAMS                     += tests/common/test_aabbnode
+tests_common_test_aabbnode_SOURCES  = tests/common/aabbnode.cpp
+tests_common_test_aabbnode_LDADD    = $(common_LIBS)
+tests_common_test_aabbnode_CXXFLAGS = $(test_CXXFLAGS)
+

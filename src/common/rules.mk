@@ -88,6 +88,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/algorithm.h \
     src/common/timestamp.h \
     src/common/geometry.h \
+    src/common/aabbnode.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
@@ -138,6 +139,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/rect.cpp \
     src/common/rational.cpp \
     src/common/timestamp.cpp \
+	src/common/aabbnode.cpp \
     $(EMPTY)
 
 lzma_sources = \
