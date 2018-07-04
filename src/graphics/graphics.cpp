@@ -608,6 +608,9 @@ bool GraphicsManager::unproject(float x, float y,
                                 float &x1, float &y1, float &z1,
                                 float &x2, float &y2, float &z2) const {
 
+	// Map the screen coordinates to OpenGL world screen coordinates
+	y = WindowMan.getWindowHeight() - y;
+
 	try {
 		// Generate the inverse of the model matrix
 
@@ -845,9 +848,6 @@ Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
 Renderable *GraphicsManager::getWorldObjectAt(float x, float y) const {
 	if (QueueMan.isQueueEmpty(kQueueVisibleWorldObject))
 		return 0;
-
-		// Map the screen coordinates to OpenGL world screen coordinates
-	y = WindowMan.getWindowHeight() - y;
 
 	float x1, y1, z1, x2, y2, z2;
 	if (!unproject(x, y, x1, y1, z1, x2, y2, z2))
