@@ -552,44 +552,6 @@ void Module::handleActions() {
 void Module::handlePCMovement() {
 	if (!_pc)
 		return;
-
-	bool haveMovement = false;
-
-	if (_forwardBtnPressed || _backwardsBtnPressed) {
-		float x, y, z;
-		_pc->getPosition(x, y, z);
-		float yaw = SatelliteCam.getYaw();
-		float newX, newY;
-
-		if (_forwardBtnPressed && !_backwardsBtnPressed) {
-			_pc->setOrientation(0, 0, 1, Common::rad2deg(yaw));
-			newX = x - kPCMovementSpeed * sin(yaw) * _frameTime;
-			newY = y + kPCMovementSpeed * cos(yaw) * _frameTime;
-			haveMovement = true;
-		} else if (_backwardsBtnPressed && !_forwardBtnPressed) {
-			_pc->setOrientation(0, 0, 1, 180 + Common::rad2deg(yaw));
-			newX = x + kPCMovementSpeed * sin(yaw) * _frameTime;
-			newY = y - kPCMovementSpeed * cos(yaw) * _frameTime;
-			haveMovement = true;
-		}
-
-		if (haveMovement) {
-			z = _area->evaluateElevation(newX, newY);
-			if (z != FLT_MIN) {
-				if (!_area->testCollision(glm::vec3(x, y, z + 0.1f),
-				                          glm::vec3(newX, newY, z + 0.1f)))
-					movePC(newX, newY, z);
-			}
-		}
-	}
-
-	if (haveMovement && !_pcRunning) {
-		_pc->playAnimation(Common::UString("run"), false, -1);
-		_pcRunning = true;
-	} else if (!haveMovement && _pcRunning) {
-		_pc->playDefaultAnimation();
-		_pcRunning = false;
-	}
 }
 
 void Module::movePC(float x, float y, float z) {
@@ -703,7 +665,6 @@ void Module::toggleFreeRoamCamera() {
 }
 
 void Module::toggleWalkmesh() {
-	_area->toggleWalkmesh();
 }
 
 void Module::toggleTriggers() {

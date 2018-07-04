@@ -19,14 +19,12 @@
  */
 
 /** @file
- *  Generic renderable walkmesh.
+ *  Generic renderable for walkmesh.
  */
 
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtx/intersect.hpp"
-
-#include "src/common/maths.h"
 #include "src/common/util.h"
+
+#include "src/engines/aurora/pathfinding.h"
 
 #include "src/graphics/aurora/walkmesh.h"
 
@@ -34,139 +32,114 @@ namespace Graphics {
 
 namespace Aurora {
 
-Walkmesh::Walkmesh()
-		: Renderable(Graphics::kRenderableTypeObject),
-		  _highlightFaceIndex(-1),
-		  _invisible(true) {
+Walkmesh::Walkmesh(Engines::Pathfinding *pathfinding)
+    : Graphics::Renderable(Graphics::kRenderableTypeObject),
+    _pathfinding(pathfinding) {
+	_heightAdjust = 0.05;
+	_unwalkableFaceColor[0] = 0.1;
+	_unwalkableFaceColor[1] = 0.5;
+	_unwalkableFaceColor[2] = 0.5;
+	_unwalkableFaceColor[3] = 0.4;
+
+	_walkableFaceColor[0] = 0.5;
+	_walkableFaceColor[1] = 0.f;
+	_walkableFaceColor[2] = 0.5;
+	_walkableFaceColor[3] = 0.4;
 }
 
-float Walkmesh::getElevationAt(float x, float y, uint32 &faceIndex) const {
-	if (_indicesWalkable.empty())
-		return FLT_MIN;
-
-	size_t faceCount = _indicesWalkable.size() / 3;
-	const float *vertices = _vertices.data();
-	uint32 index = 0;
-
-	glm::vec3 v0, v1, v2, intersection;
-	glm::vec3 orig = glm::vec3(x, y, 1000.0f);
-
-	for (size_t i = 0; i < faceCount; ++i) {
-		v0 = glm::make_vec3(vertices + 3 * _indicesWalkable[index + 0]);
-		v1 = glm::make_vec3(vertices + 3 * _indicesWalkable[index + 1]);
-		v2 = glm::make_vec3(vertices + 3 * _indicesWalkable[index + 2]);
-		index += 3;
-
-		if (glm::intersectRayTriangle(orig, glm::vec3(0.0f, 0.0f, -1.0f), v0, v1, v2, intersection)) {
-			faceIndex = i;
-			return (v0 * (1.0f - intersection.x - intersection.y) +
-			        v1 * intersection.x +
-			        v2 * intersection.y).z;
-		}
-	}
-
-	return FLT_MIN;
+Walkmesh::~Walkmesh() {
 }
 
-bool Walkmesh::testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const {
-	if (_indicesNonWalkable.empty())
-		return false;
-
-	size_t faceCount = _indicesNonWalkable.size() / 3;
-	const float *vertices = _vertices.data();
-	uint32 index = 0;
-
-	glm::vec3 adjDest = glm::vec3(dest.x, dest.y, 1000.0f);
-	glm::vec3 v0, v1, v2, intersection;
-	glm::vec3 dir = glm::normalize(dest - orig);
-
-	for (size_t i = 0; i < faceCount; ++i) {
-		v0 = glm::make_vec3(vertices + 3 * _indicesNonWalkable[index + 0]);
-		v1 = glm::make_vec3(vertices + 3 * _indicesNonWalkable[index + 1]);
-		v2 = glm::make_vec3(vertices + 3 * _indicesNonWalkable[index + 2]);
-		index += 3;
-
-		// Intersection with horizontal objects
-		if (glm::intersectRayTriangle(adjDest, glm::vec3(0.0f, 0.0f, -1.0f), v0, v1, v2, intersection))
-			return true;
-
-		// Intersection with vertical objects
-		if (glm::intersectRayTriangle(orig, dir, v0, v1, v2, intersection)) {
-			glm::vec3 absIntersection(v0 * (1.0f - intersection.x - intersection.y) +
-			                          v1 * intersection.x +
-			                          v2 * intersection.y);
-			if (glm::distance(orig, absIntersection) <= glm::distance(orig, dest))
-				return true;
-		}
-	}
-
-	return false;
+void Walkmesh::setFaces(std::vector<uint32> &faces) {
+	_highlightedFaces = faces;
 }
 
-void Walkmesh::highlightFace(uint32 index) {
-	_highlightFaceIndex = index;
+void Walkmesh::show() {
+	Renderable::show();
 }
 
-void Walkmesh::setInvisible(bool invisible) {
-	_invisible = invisible;
+void Walkmesh::hide() {
+	Renderable::hide();
+}
+
+void Walkmesh::setAdjustedHeight(float adjustedHeight) {
+	_heightAdjust = adjustedHeight;
+}
+
+void Walkmesh::setWalkableColor(float color[4]) {
+	_walkableFaceColor[0] = color[0];
+	_walkableFaceColor[1] = color[1];
+	_walkableFaceColor[2] = color[2];
+	_walkableFaceColor[3] = color[3];
+}
+
+void Walkmesh::setUnwalkableColor(float color[4]) {
+	_unwalkableFaceColor[0] = color[0];
+	_unwalkableFaceColor[1] = color[1];
+	_unwalkableFaceColor[2] = color[2];
+	_unwalkableFaceColor[3] = color[3];
 }
 
 void Walkmesh::calculateDistance() {
 }
 
 void Walkmesh::render(Graphics::RenderPass pass) {
-	if (_invisible || _vertices.empty() || pass != Graphics::kRenderPassTransparent)
+	if (pass == Graphics::kRenderPassOpaque)
 		return;
 
-	glVertexPointer(3, GL_FLOAT, 0, _vertices.data());
-	glEnableClientState(GL_VERTEX_ARRAY);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	for (uint32 f = 0; f < _pathfinding->_facesCount; ++f) {
+		glBegin(GL_POLYGON);
+		if (_pathfinding->faceWalkable(f)) {
+			glColor4f(1.f, 1.f, 1.f, 0.5);
+		} else {
+			glColor4f(1.f, 1.f, 1.f, 0.3);
+		}
 
-	glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
-	glDrawElements(GL_TRIANGLES, _indicesNonWalkable.size(), GL_UNSIGNED_INT, _indicesNonWalkable.data());
+		std::vector<glm::vec3> vertices;
+		_pathfinding->getVertices(f, vertices, false);
+		for (std::vector<glm::vec3>::iterator v = vertices.begin(); v != vertices.end(); ++v) {
+			glVertex3f((*v)[0], (*v)[1], (*v)[2] + _heightAdjust);
+		}
+		glEnd();
+	}
 
-	glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
-	glDrawElements(GL_TRIANGLES, _indicesWalkable.size(), GL_UNSIGNED_INT, _indicesWalkable.data());
+	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	for (uint32 f = 0; f < _pathfinding->_facesCount; ++f) {
+		glBegin(GL_POLYGON);
+		if (_pathfinding->faceWalkable(f)) {
+			glColor4f(_walkableFaceColor[0], _walkableFaceColor[1], _walkableFaceColor[2], _walkableFaceColor[3]);
+		} else {
+			glColor4f(_unwalkableFaceColor[0], _unwalkableFaceColor[1], _unwalkableFaceColor[2], _unwalkableFaceColor[3]);
+		}
 
-	glDisableClientState(GL_VERTEX_ARRAY);
+		std::vector<glm::vec3> vertices;
+		_pathfinding->getVertices(f, vertices, false);
+		for (std::vector<glm::vec3>::iterator v = vertices.begin(); v != vertices.end(); ++v) {
+			glVertex3f((*v)[0], (*v)[1], (*v)[2] + _heightAdjust);
+		}
+		glEnd();
+	}
 
-	// Render highlighted face
-	if (_highlightFaceIndex > -1) {
-		glColor4f(0.0f, 1.0f, 1.0f, 0.5f);
-		glBegin(GL_TRIANGLES);
-			uint32 index = 3 * _highlightFaceIndex;
-			glVertex3fv(&_vertices[3 * _indicesWalkable[index + 0]]);
-			glVertex3fv(&_vertices[3 * _indicesWalkable[index + 1]]);
-			glVertex3fv(&_vertices[3 * _indicesWalkable[index + 2]]);
+	for (size_t hF = 0; hF < _highlightedFaces.size(); ++hF) {
+		uint32 f = _highlightedFaces[hF];
+		glBegin(GL_POLYGON);
+		if (_pathfinding->faceWalkable(f)) {
+			glColor4f(MIN<float>(_walkableFaceColor[0] + 0.2, 1.f),
+			          MIN<float>(_walkableFaceColor[1] + 0.2, 1.f),
+			          MIN<float>(_walkableFaceColor[2] + 0.2, 1.f), 0.5);
+		} else {
+			glColor4f(_unwalkableFaceColor[0], _unwalkableFaceColor[1], _unwalkableFaceColor[2], 0.5);
+		}
+
+		std::vector<glm::vec3> vertices;
+		_pathfinding->getVertices(f, vertices, false);
+		for (std::vector<glm::vec3>::iterator v = vertices.begin(); v != vertices.end(); ++v)
+			glVertex3f((*v)[0], (*v)[1], (*v)[2] + _heightAdjust);
 		glEnd();
 	}
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-}
-
-void Walkmesh::refreshIndexGroups() {
-	_indicesWalkable.clear();
-	_indicesNonWalkable.clear();
-
-	size_t faceCount = _indices.size() / 3;
-	size_t index = 0;
-
-	for (size_t i = 0; i < faceCount; ++i) {
-		float i0 = _indices[index + 0];
-		float i1 = _indices[index + 1];
-		float i2 = _indices[index + 2];
-
-		if (_faceWalkableMap[i]) {
-			_indicesWalkable.push_back(i0);
-			_indicesWalkable.push_back(i1);
-			_indicesWalkable.push_back(i2);
-		} else {
-			_indicesNonWalkable.push_back(i0);
-			_indicesNonWalkable.push_back(i1);
-			_indicesNonWalkable.push_back(i2);
-		}
-
-		index += 3;
-	}
 }
 
 } // End of namespace Aurora

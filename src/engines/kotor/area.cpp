@@ -566,51 +566,6 @@ void Area::notifyCameraMoved() {
 	checkActive();
 }
 
-float Area::evaluateElevation(Object *object, float x, float y, bool doHighlight) {
-	Room *room = object->getRoom();
-
-	float result = room ? room->evaluateElevation(x, y, doHighlight) : FLT_MIN;
-	if (result != FLT_MIN)
-		return result;
-
-	if (room && doHighlight)
-		room->disableWalkmeshHighlight();
-
-	for (RoomList::iterator r = _rooms.begin();
-			r != _rooms.end(); ++r) {
-		if (*r != room) {
-			result = (*r)->evaluateElevation(x, y, doHighlight);
-			if (result != FLT_MIN)
-				break;
-		}
-	}
-
-	return result;
-}
-
-bool Area::testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const {
-	for (std::list<Situated *>::const_iterator s = _situatedObjects.begin();
-			s != _situatedObjects.end(); ++s) {
-		if ((*s)->testCollision(orig, dest))
-			return true;
-	}
-	return false;
-}
-
-void Area::toggleWalkmesh() {
-	_walkmeshInvisible = !_walkmeshInvisible;
-
-	for (RoomList::iterator r = _rooms.begin();
-			r != _rooms.end(); ++r) {
-		(*r)->setWalkmeshInvisible(_walkmeshInvisible);
-	}
-
-	for (std::list<Situated *>::iterator s = _situatedObjects.begin();
-			s != _situatedObjects.end(); ++s) {
-		(*s)->setWalkmeshInvisible(_walkmeshInvisible);
-	}
-}
-
 void Area::toggleTriggers() {
 	_triggersVisible = !_triggersVisible;
 	for (std::vector<Trigger *>::const_iterator it = _triggers.begin();
@@ -773,11 +728,6 @@ void Area::removeObject(KotOR::Object *object) {
 }
 
 Room *Area::getRoomAt(float x, float y) const {
-	for (RoomList::const_iterator r = _rooms.begin();
-			r != _rooms.end(); ++r) {
-		if ((*r)->evaluateElevation(x, y) != FLT_MIN)
-			return *r;
-	}
 	return 0;
 }
 

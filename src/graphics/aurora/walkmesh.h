@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Generic renderable walkmesh.
+ *  Generic renderable for walkmesh.
  */
 
 #ifndef GRAPHICS_AURORA_WALKMESH_H
@@ -27,54 +27,41 @@
 
 #include <vector>
 
-#include "glm/vec3.hpp"
-
-#include "src/common/types.h"
-#include "src/common/scopedptr.h"
-
 #include "src/graphics/renderable.h"
+
+namespace Engines {
+class Pathfinding;
+}
 
 namespace Graphics {
 
 namespace Aurora {
 
-class Walkmesh : public Graphics::Renderable {
+class Walkmesh : Graphics::Renderable {
 public:
-	Walkmesh();
+	Walkmesh(Engines::Pathfinding *pathfinding);
+	~Walkmesh();
 
-	/** Return elevation at given coordinates or FLT_MIN if can't walk
-	 *  there.
-	 *
-	 *  @param faceIndex Index of the intersected walkmesh face
-	 */
-	float getElevationAt(float x, float y, uint32 &faceIndex) const;
+	void setFaces(std::vector<uint32> &faces);
 
-	bool testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const;
+	void show();
+	void hide();
 
-	// .--- Rendering
+	void setAdjustedHeight(float adjustedHeight);
+	void setWalkableColor(float color[4]);
+	void setUnwalkableColor(float color[4]);
 
-	/** Highlight face with specified index.
-	 *
-	 *  @param index Index of the face to highlight or -1 to disable
-	 *               highlighting
-	 */
-	void highlightFace(uint32 index);
-
-	void setInvisible(bool invisible);
+	// Renderable.
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
 
-	// '---
-protected:
-	std::vector<float> _vertices;
-	std::vector<uint32> _indices;
-	std::vector<bool> _faceWalkableMap;
-	std::vector<uint32> _indicesWalkable;
-	std::vector<uint32> _indicesNonWalkable;
-	int _highlightFaceIndex;
-	bool _invisible;
+private:
+	Engines::Pathfinding *_pathfinding;
+	std::vector<uint32> _highlightedFaces;
 
-	void refreshIndexGroups();
+	float _heightAdjust;
+	float _unwalkableFaceColor[4];
+	float _walkableFaceColor[4];
 };
 
 } // End of namespace Aurora

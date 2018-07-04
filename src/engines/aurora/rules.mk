@@ -35,6 +35,10 @@ src_engines_aurora_libaurora_la_SOURCES += \
     src/engines/aurora/freeroamcamera.h \
     src/engines/aurora/satellitecamera.h \
     src/engines/aurora/trigger.h \
+    src/engines/aurora/pathfinding.h \
+    src/engines/aurora/astar.h \
+    src/engines/aurora/localpathfinding.h \
+    src/engines/aurora/objectwalkmesh.h \
     $(EMPTY)
 
 src_engines_aurora_libaurora_la_SOURCES += \
@@ -50,6 +54,9 @@ src_engines_aurora_libaurora_la_SOURCES += \
     src/engines/aurora/freeroamcamera.cpp \
     src/engines/aurora/satellitecamera.cpp \
     src/engines/aurora/trigger.cpp \
+    src/engines/aurora/pathfinding.cpp \
+    src/engines/aurora/astar.cpp \
+    src/engines/aurora/localpathfinding.cpp \
     $(EMPTY)
 
 include src/engines/aurora/kotorjadegui/rules.mk

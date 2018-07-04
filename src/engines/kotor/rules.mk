@@ -42,7 +42,6 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/objectcontainer.h \
     src/engines/kotor/module.h \
     src/engines/kotor/item.h \
-    src/engines/kotor/walkmesh.h \
     src/engines/kotor/savedgame.h \
     src/engines/kotor/trigger.h \
     src/engines/kotor/inventory.h \
@@ -70,7 +69,6 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/objectcontainer.cpp \
     src/engines/kotor/module.cpp \
     src/engines/kotor/item.cpp \
-    src/engines/kotor/walkmesh.cpp \
     src/engines/kotor/savedgame.cpp \
     src/engines/kotor/trigger.cpp \
     src/engines/kotor/inventory.cpp \

@@ -19,44 +19,33 @@
  */
 
 /** @file
- *  A room within a Star Wars: Knights of the Old Republic area.
+ *  Base class for walkmesh from a static object.
  */
 
-#ifndef ENGINES_KOTOR_ROOM_H
-#define ENGINES_KOTOR_ROOM_H
+#ifndef ENGINES_OBJECTWALKMESH_H
+#define ENGINES_OBJECTWALKMESH_H
 
-#include "src/common/scopedptr.h"
+#include <vector>
 
-#include "src/graphics/aurora/types.h"
+#include "glm/vec2.hpp"
 
-namespace Common {
-	class UString;
-}
+#include "src/common/ustring.h"
 
 namespace Engines {
 
-namespace KotOR {
-
-class Room {
+class ObjectWalkmesh {
 public:
-	Room(const Common::UString &resRef, float x, float y, float z);
-	~Room();
+	virtual ~ObjectWalkmesh() {}
 
-	Common::UString getResRef() const;
+	virtual void load(const Common::UString &resRef,
+	                  float orientation[4], float position[3]) = 0;
 
-	void show();
-	void hide();
-	bool isVisible() const;
-
-private:
-	Common::UString _resRef;
-	Common::ScopedPtr<Graphics::Aurora::Model> _model;
-
-	void load(const Common::UString &resRef, float x, float y, float z);
+	virtual bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const = 0;
+	virtual bool in(glm::vec2 &point) const = 0;
+	virtual const std::vector<float> &getVertices() const = 0;
+	virtual const std::vector<uint32> &getFaces() const = 0;
 };
-
-} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_ROOM_H
+#endif // ENGINES_OBJECTWALKMESH_H

@@ -67,14 +67,6 @@ void Door::load(const Aurora::GFF3Struct &door) {
 
 	if (!utd)
 		warning("Door \"%s\" has no blueprint", _tag.c_str());
-
-	if (!_modelName.empty()) {
-		glm::mat4 transform;
-		transform = glm::translate(transform, glm::make_vec3(_position));
-		transform = glm::rotate(transform, Common::deg2rad(_orientation[3]), glm::make_vec3(_orientation));
-
-		_walkmesh.load(_modelName + "0", ::Aurora::kFileTypeDWK, transform);
-	}
 }
 
 void Door::loadObject(const Aurora::GFF3Struct &gff) {
@@ -165,10 +157,6 @@ bool Door::click(Object *triggerer) {
 
 	// If the door is open and has no script, close it
 	return close(triggerer);
-}
-
-bool Door::testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const {
-	return !isOpen() && _walkmesh.testCollision(orig, dest);
 }
 
 void Door::getTooltipAnchor(float &x, float &y, float &z) const {
