@@ -663,15 +663,6 @@ void Module::handlePCMovement() {
 			newY = y - moveRate * cos(yaw) * _frameTime;
 			haveMovement = true;
 		}
-
-		if (haveMovement) {
-			z = _area->evaluateElevation(_pc.get(), newX, newY);
-			if (z != FLT_MIN) {
-				if (!_area->testCollision(glm::vec3(x, y, z + 0.1f),
-				                          glm::vec3(newX, newY, z + 0.1f)))
-					movePC(newX, newY, z);
-			}
-		}
 	}
 
 	const float *position = CameraMan.getPosition();
@@ -983,7 +974,6 @@ void Module::toggleFreeRoamCamera() {
 }
 
 void Module::toggleWalkmesh() {
-	_area->toggleWalkmesh();
 }
 
 void Module::toggleTriggers() {

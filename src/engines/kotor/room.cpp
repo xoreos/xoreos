@@ -53,42 +53,20 @@ void Room::load(const Common::UString &resRef, float x, float y, float z) {
 		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
 
 	_model->setPosition(x, y, z);
-
-	_walkmesh.load(resRef);
 }
 
 Common::UString Room::getResRef() const {
 	return _resRef;
 }
 
-float Room::evaluateElevation(float x, float y, bool highlight) {
-	uint32 faceIndex;
-	float z = _walkmesh.getElevationAt(x, y, faceIndex);
-
-	if (highlight)
-		_walkmesh.highlightFace(z == FLT_MIN ? -1 : faceIndex);
-
-	return z;
-}
-
-void Room::disableWalkmeshHighlight() {
-	_walkmesh.highlightFace(-1);
-}
-
-void Room::setWalkmeshInvisible(bool invisible) {
-	_walkmesh.setInvisible(invisible);
-}
-
 void Room::show() {
 	if (_model)
 		_model->show();
-	_walkmesh.show();
 }
 
 void Room::hide() {
 	if (_model)
 		_model->hide();
-	_walkmesh.hide();
 }
 
 bool Room::isVisible() const {

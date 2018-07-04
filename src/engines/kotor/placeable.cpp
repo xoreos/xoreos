@@ -65,14 +65,6 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	if (!utp)
 		warning("Placeable \"%s\" has no blueprint", _tag.c_str());
 
-	if (!_modelName.empty()) {
-		glm::mat4 transform;
-		transform = glm::translate(transform, glm::make_vec3(_position));
-		transform = glm::rotate(transform, Common::deg2rad(_orientation[3]), glm::make_vec3(_orientation));
-
-		_walkmesh.load(_modelName, ::Aurora::kFileTypePWK, transform);
-	}
-
 	readScripts(utp->getTopLevel());
 }
 

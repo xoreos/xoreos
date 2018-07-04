@@ -75,8 +75,6 @@ public:
 	/** The door was clicked. */
 	bool click(Object *triggerer = 0);
 
-	bool testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const;
-
 	virtual void getTooltipAnchor(float &x, float &y, float &z) const;
 
 protected:

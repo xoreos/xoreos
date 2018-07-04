@@ -105,11 +105,6 @@ public:
 	/** Forcibly remove the focus from the currently highlighted object. */
 	void removeFocus();
 
-	// Walkmesh
-	float evaluateElevation(float x, float y);
-	bool testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const;
-	void toggleWalkmesh();
-
 	// .--- Triggers
 	void toggleTriggers();
 	void evaluateTriggers(float x, float y);
