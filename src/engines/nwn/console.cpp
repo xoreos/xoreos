@@ -86,6 +86,8 @@ Console::Console(NWNEngine &engine) :
 	registerCommand("playmusic"    , boost::bind(&Console::cmdPlayMusic    , this, _1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
+	registerCommand("showwalkmesh" , boost::bind(&Console::cmdShowWalkmesh  , this, _1),
+			"Usage: showwalkmesh\nToggle walkmesh display");
 }
 
 Console::~Console() {
@@ -263,6 +265,10 @@ void Console::cmdStopMusic(const CommandLine &UNUSED(cl)) {
 
 void Console::cmdPlayMusic(const CommandLine &cl) {
 	_engine->getGame().playMusic(cl.args);
+}
+
+void Console::cmdShowWalkmesh(const CommandLine &UNUSED(cl)) {
+	_engine->getGame().getModule().toggleWalkmesh();
 }
 
 } // End of namespace NWN

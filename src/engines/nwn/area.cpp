@@ -40,10 +40,12 @@
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
+#include "src/engines/aurora/localpathfinding.h"
 
 #include "src/engines/nwn/area.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/waypoint.h"
+#include "src/engines/nwn/pathfinding.h"
 #include "src/engines/nwn/placeable.h"
 #include "src/engines/nwn/door.h"
 #include "src/engines/nwn/creature.h"
@@ -54,7 +56,12 @@ namespace NWN {
 
 Area::Area(Module &module, const Common::UString &resRef) : Object(kObjectTypeArea),
 	_module(&module), _resRef(resRef), _visible(false),
-	_activeObject(0), _highlightAll(false) {
+	_activeObject(0), _highlightAll(false), _walkmeshInvisible(true) {
+
+	_pathfinding = new Pathfinding(_module->getWalkableSurfaces());
+	_pathfinding->showWalkmesh(!_walkmeshInvisible);
+	_localPathfinding = new Engines::LocalPathfinding(_pathfinding);
+	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
 
 	try {
 		load();
@@ -86,6 +93,9 @@ void Area::load() {
 }
 
 void Area::clear() {
+	delete _localPathfinding;
+	delete _pathfinding;
+
 	// Delete objects
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		_module->removeObject(**o);
@@ -234,6 +244,10 @@ void Area::show() {
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->show();
 
+	// Show walkmesh
+	_pathfinding->showWalkmesh(!_walkmeshInvisible);
+	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
+
 	GfxMan.unlockFrame();
 
 	// Play music and sound
@@ -260,6 +274,10 @@ void Area::hide() {
 	// Hide tiles
 	for (std::vector<Tile>::iterator t = _tiles.begin(); t != _tiles.end(); ++t)
 		t->model->hide();
+
+	// Hide walkmesh
+	_pathfinding->showWalkmesh(false);
+	_localPathfinding->showWalkmesh(false);
 
 	GfxMan.unlockFrame();
 
@@ -464,8 +482,17 @@ void Area::loadTiles() {
 
 			t.model->setPosition(tileX, tileY, tileZ);
 			t.model->setOrientation(0.0f, 0.0f, 1.0f, ((int) t.orientation) * 90.0f);
+
+			if (!_pathfinding->loaded()) {
+				float position[3] = { tileX, tileY, tileZ };
+				float orientation[4] = {0.0f, 0.0f, 1.0f, ((int) t.orientation) * (float) M_PI * 0.5f};
+				_pathfinding->addTile(t.tile->model, orientation, position);
+			}
 		}
 	}
+
+	if (!_pathfinding->loaded())
+		_pathfinding->finalize();
 }
 
 void Area::unloadTiles() {
@@ -537,6 +564,9 @@ void Area::processEventQueue() {
 			if (e->button.button == SDL_BUTTON_LMASK) {
 				checkActive(e->button.x, e->button.y);
 				click(e->button.x, e->button.y);
+
+				if (_activeObject)
+					continue;
 			}
 		} else if (e->type == Events::kEventKeyDown) { // Holding down TAB
 			if (e->key.keysym.sym == SDLK_TAB)
@@ -620,6 +650,12 @@ void Area::removeFocus() {
 
 void Area::notifyCameraMoved() {
 	checkActive();
+}
+
+void Area::toggleWalkmesh() {
+	_walkmeshInvisible = !_walkmeshInvisible;
+	_pathfinding->showWalkmesh(!_walkmeshInvisible);
+	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
 }
 
 // "Elfland: The Woods" -> "The Woods"
