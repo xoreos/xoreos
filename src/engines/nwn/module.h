@@ -95,6 +95,8 @@ public:
 	Area *getCurrentArea();
 	/** Return the currently playing PC. */
 	Creature *getPC();
+	/** Return a map between surface type and walkability. */
+	const std::vector<bool> &getWalkableSurfaces() const;
 	// '---
 
 	// .--- Interact with the current module
@@ -147,6 +149,8 @@ public:
 	/** Process the current event queue. */
 	void processEventQueue();
 	// '---
+
+	void toggleWalkmesh();
 
 private:
 	enum ActionType {
@@ -210,6 +214,9 @@ private:
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
 
+	// Surface types
+	/** A map between surface type and walkability. */
+	std::vector<bool> _walkableSurfaces;
 
 	// .--- Unloading
 	/** Unload the whole shebang.
@@ -235,10 +242,11 @@ private:
 	void checkXPs();  ///< Do we have all expansions needed for the module?
 	void checkHAKs(); ///< Do we have all HAKs needed for the module?
 
-	void loadTLK();         ///< Load the TLK used by the module.
-	void loadHAKs();        ///< Load the HAKs required by the module.
-	void loadTexturePack(); ///< Load the texture pack.
-	void loadAreas();       ///< Load the areas.
+	void loadTLK();          ///< Load the TLK used by the module.
+	void loadHAKs();         ///< Load the HAKs required by the module.
+	void loadTexturePack();  ///< Load the texture pack.
+	void loadAreas();        ///< Load the areas.
+	void loadSurfaceTypes(); ///< Load the surface types.
 	// '---
 
 	static Common::UString getDescriptionExtra   (Common::UString module);

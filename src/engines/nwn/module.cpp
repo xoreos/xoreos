@@ -33,6 +33,7 @@
 #include "src/events/events.h"
 
 #include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
 #include "src/aurora/language.h"
 #include "src/aurora/talkman.h"
 #include "src/aurora/erffile.h"
@@ -176,6 +177,7 @@ void Module::loadModule(const Common::UString &module) {
 
 		checkXPs();
 		checkHAKs();
+		loadSurfaceTypes();
 
 		_tag  = _ifo.getTag();
 		_name = _ifo.getName().getString();
@@ -301,6 +303,10 @@ Creature *Module::getPC() {
 
 void Module::changeModule(const Common::UString &module) {
 	_newModule = module;
+}
+
+const std::vector<bool> &Module::getWalkableSurfaces() const {
+	return _walkableSurfaces;
 }
 
 void Module::replaceModule() {
@@ -659,6 +665,16 @@ void Module::loadAreas() {
 	}
 }
 
+void Module::loadSurfaceTypes() {
+	_walkableSurfaces.clear();
+
+	const Aurora::TwoDAFile &surfacematTwoDA = TwoDAReg.get2DA("surfacemat");
+	for (uint32 s = 0; s < surfacematTwoDA.getRowCount(); ++s) {
+		const Aurora::TwoDARow &row = surfacematTwoDA.getRow(s);
+		_walkableSurfaces.push_back(static_cast<bool>(row.getInt("Walk")));
+	}
+}
+
 void Module::unloadAreas() {
 	_ingameGUI->stopConversation();
 
@@ -810,6 +826,10 @@ Common::UString Module::getDescription(const Common::UString &module) {
 		return description;
 
 	return "";
+}
+
+void Module::toggleWalkmesh() {
+	_currentArea->toggleWalkmesh();
 }
 
 } // End of namespace NWN

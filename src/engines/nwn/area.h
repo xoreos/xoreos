@@ -48,9 +48,12 @@
 
 namespace Engines {
 
+class LocalPathfinding;
+
 namespace NWN {
 
 class Module;
+class Pathfinding;
 
 /** An area in Neverwinter Nights, holding all objects and room tiles within, as
  *  well as general area properties like the current background music and
@@ -114,6 +117,9 @@ public:
 
 	/** Return the localized name of an area. */
 	static Common::UString getName(const Common::UString &resRef);
+
+	// Walkmesh
+	void toggleWalkmesh();
 
 
 protected:
@@ -199,6 +205,9 @@ private:
 
 	Common::Mutex _mutex; ///< Mutex securing access to the area.
 
+	bool _walkmeshInvisible;
+	Pathfinding *_pathfinding;
+	Engines::LocalPathfinding *_localPathfinding;
 
 	// Loading helpers
 

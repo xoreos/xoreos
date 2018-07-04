@@ -42,6 +42,9 @@ src_engines_nwn_libnwn_la_SOURCES += \
     src/engines/nwn/door.h \
     src/engines/nwn/creature.h \
     src/engines/nwn/item.h \
+    src/engines/nwn/pathfinding.h \
+    src/engines/nwn/walkmeshloader.h \
+    src/engines/nwn/objectwalkmesh.h \
     $(EMPTY)
 
 src_engines_nwn_libnwn_la_SOURCES += \
@@ -64,6 +67,9 @@ src_engines_nwn_libnwn_la_SOURCES += \
     src/engines/nwn/door.cpp \
     src/engines/nwn/item.cpp \
     src/engines/nwn/location.cpp \
+    src/engines/nwn/pathfinding.cpp \
+    src/engines/nwn/walkmeshloader.cpp \
+    src/engines/nwn/objectwalkmesh.cpp \
     $(EMPTY)
 
 include src/engines/nwn/script/rules.mk
