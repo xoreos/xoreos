@@ -29,6 +29,8 @@
 #include <list>
 #include <map>
 
+#include "glm/vec3.hpp"
+
 #include "src/common/types.h"
 #include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
@@ -46,12 +48,14 @@
 #include "src/engines/nwn/tileset.h"
 #include "src/engines/nwn/object.h"
 
+
 namespace Engines {
 
 class LocalPathfinding;
 
 namespace NWN {
 
+class Pathfinding;
 class Module;
 class Pathfinding;
 
@@ -208,6 +212,7 @@ private:
 	bool _walkmeshInvisible;
 	Pathfinding *_pathfinding;
 	Engines::LocalPathfinding *_localPathfinding;
+	std::vector<glm::vec3> _startEndPoints;
 
 	// Loading helpers
 

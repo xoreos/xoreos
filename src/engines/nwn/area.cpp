@@ -23,9 +23,11 @@
  */
 
 #include <cassert>
+#include <ctime>
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/maths.h"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
@@ -42,12 +44,14 @@
 #include "src/engines/aurora/model.h"
 #include "src/engines/aurora/localpathfinding.h"
 
+#include "src/engines/nwn/objectwalkmesh.h"
 #include "src/engines/nwn/area.h"
 #include "src/engines/nwn/module.h"
 #include "src/engines/nwn/waypoint.h"
 #include "src/engines/nwn/pathfinding.h"
 #include "src/engines/nwn/placeable.h"
 #include "src/engines/nwn/door.h"
+#include "src/engines/nwn/pathfinding.h"
 #include "src/engines/nwn/creature.h"
 
 namespace Engines {
@@ -277,7 +281,9 @@ void Area::hide() {
 
 	// Hide walkmesh
 	_pathfinding->showWalkmesh(false);
+	_pathfinding->showPath(false);
 	_localPathfinding->showWalkmesh(false);
+	_localPathfinding->showPath(false);
 
 	GfxMan.unlockFrame();
 
@@ -530,6 +536,7 @@ void Area::loadPlaceables(const Aurora::GFF3List &list) {
 		Placeable *placeable = new Placeable(**p);
 
 		loadObject(*placeable);
+		_localPathfinding->addStaticObjects(new ObjectWalkmesh(placeable));
 	}
 }
 
@@ -567,6 +574,64 @@ void Area::processEventQueue() {
 
 				if (_activeObject)
 					continue;
+
+				float width = 0.4;
+				float x1, y1, z1, x2, y2, z2;
+				int x, y;
+				CursorMan.getPosition(x, y);
+				GfxMan.unproject((float) x, (float) y, x1, y1, z1, x2, y2, z2);
+				glm::vec3 intersect;
+
+				if (_pathfinding->findIntersection(x1, y1, z1, x2, y2, z2, intersect, true)) {
+					warning("intersection (%f, %f, %f)", intersect[0], intersect[1], intersect[2]);
+					if (_startEndPoints.size() < 2) {
+						_startEndPoints.push_back(intersect);
+					} else {
+						_startEndPoints[0] = _startEndPoints[1];
+						_startEndPoints[1] = intersect;
+					}
+
+					if (_startEndPoints.size() == 2) {
+						std::vector<uint32> path;
+						clock_t startFindPath = std::clock();
+						_pathfinding->showPath(false);
+						_localPathfinding->showPath(false);
+						bool out = _pathfinding->findPath(_startEndPoints[0][0], _startEndPoints[0][1],
+														_startEndPoints[1][0], _startEndPoints[1][1], path, width);
+						clock_t endFindPath = std::clock();
+						warning("Out is %i", out);
+						clock_t startSmooth = std::clock();
+						std::vector<glm::vec3> smoothPath;
+						if (out) {
+							_pathfinding->smoothPath(_startEndPoints[0][0], _startEndPoints[0][1],
+													_startEndPoints[1][0], _startEndPoints[1][1], path, smoothPath);
+							_pathfinding->showPath(true);
+							_startEndPoints.clear();
+						}
+						clock_t endSmooth = std::clock();
+						double findPath = double(endFindPath - startFindPath);
+						double smoothing = double(endSmooth - startSmooth);
+						warning("Time spent find path: %f ms", findPath / CLOCKS_PER_SEC * 1000);
+						warning("Time spent smoothing: %f ms", smoothing / CLOCKS_PER_SEC * 1000);
+						warning("Total time: %f ms", (findPath + smoothing) / CLOCKS_PER_SEC * 1000);
+						if (out) {
+							clock_t startLocal = std::clock();
+							_localPathfinding->buildWalkmeshAround(smoothPath, width / 2);
+							clock_t endLocal = std::clock();
+							double local = double(endLocal - startLocal);
+							warning("Time spent building local: %f ms", local / CLOCKS_PER_SEC * 1000);
+							startLocal = std::clock();
+							bool localFound = _localPathfinding->findPathTo(smoothPath);
+							endLocal = std::clock();
+							local = double(endLocal - startLocal);
+							warning("Time spent finding local: %f ms", local / CLOCKS_PER_SEC * 1000);
+							if (!localFound) {
+								warning("Local path not found");
+							}
+							_localPathfinding->showPath(true);
+						}
+					}
+				}
 			}
 		} else if (e->type == Events::kEventKeyDown) { // Holding down TAB
 			if (e->key.keysym.sym == SDLK_TAB)
