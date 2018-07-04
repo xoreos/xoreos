@@ -138,6 +138,10 @@ Object *Situated::getLastUsedBy() const {
 	return _lastUsedBy;
 }
 
+const Common::UString &Situated::getModelName() const {
+	return _modelName;
+}
+
 void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 
