@@ -87,6 +87,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/rational.h \
     src/common/algorithm.h \
     src/common/timestamp.h \
+    src/common/geometry.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \

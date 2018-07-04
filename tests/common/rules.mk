@@ -250,3 +250,8 @@ check_PROGRAMS                 += tests/common/test_rect
 tests_common_test_rect_SOURCES  = tests/common/rect.cpp
 tests_common_test_rect_LDADD    = $(common_LIBS)
 tests_common_test_rect_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                     += tests/common/test_geometry
+tests_common_test_geometry_SOURCES  = tests/common/geometry.cpp
+tests_common_test_geometry_LDADD    = $(common_LIBS)
+tests_common_test_geometry_CXXFLAGS = $(test_CXXFLAGS)
