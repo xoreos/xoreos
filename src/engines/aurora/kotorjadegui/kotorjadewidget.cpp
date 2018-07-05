@@ -187,7 +187,13 @@ void KotORJadeWidget::setFill(const Common::UString &fill) {
 		float x, y, z;
 		getPosition(x, y, z);
 
-		_quad.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width, _height));
+		_quad.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f,
+		                                          _width - 2 * _borderDimension,
+		                                          _height - 2 * _borderDimension));
+
+		x += _borderDimension;
+		y += _borderDimension;
+
 		_quad->setPosition(x, y, z);
 		_quad->setTag(getTag());
 		_quad->setClickable(true);
@@ -205,7 +211,13 @@ void KotORJadeWidget::setFill(const Graphics::Aurora::TextureHandle &handle) {
 		float x, y, z;
 		getPosition(x, y, z);
 
-		_quad.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width, _height));
+		_quad.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f,
+		                                          _width - 2 * _borderDimension,
+		                                          _height - 2 * _borderDimension));
+
+		x += _borderDimension;
+		y += _borderDimension;
+
 		_quad->setPosition(x, y, z);
 		_quad->setTag(getTag());
 		_quad->setClickable(true);
