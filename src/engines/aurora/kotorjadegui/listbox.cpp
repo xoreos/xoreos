@@ -243,7 +243,7 @@ void WidgetListBox::selectItemByWidgetTag(const Common::UString &tag) {
 
 	if ((index >= 0) && (_selectedIndex != _startIndex + index)) {
 		_selectedIndex = _startIndex + index;
-		playSound("gui_actscroll", Sound::kSoundTypeSFX);
+		playSound(_soundSelectItem, Sound::kSoundTypeSFX);
 		refreshItemWidgets();
 	}
 }
@@ -265,7 +265,7 @@ void WidgetListBox::selectNextItem() {
 		}
 
 		if (selectionChanged)
-			playSound("gui_actscroll", Sound::kSoundTypeSFX);
+			playSound(_soundSelectItem, Sound::kSoundTypeSFX);
 	} else if (_startIndex + _numVisibleItems < (int)_items.size()) {
 		++_startIndex;
 		refreshItemWidgets();
@@ -289,7 +289,7 @@ void WidgetListBox::selectPreviousItem() {
 		}
 
 		if (selectionChanged)
-			playSound("gui_actscroll", Sound::kSoundTypeSFX);
+			playSound(_soundSelectItem, Sound::kSoundTypeSFX);
 	} else if (_startIndex > 0) {
 		--_startIndex;
 		refreshItemWidgets();
@@ -316,6 +316,21 @@ void WidgetListBox::subActive(Widget &widget) {
 		selectItemByWidgetTag(widget.getTag());
 	else
 		raiseCallbackActive(widget);
+}
+
+void WidgetListBox::setSoundSelectItem(const Common::UString &resRef) {
+	_soundSelectItem = resRef;
+	applyChangesToItemWidgets();
+}
+
+void WidgetListBox::setSoundHoverItem(const Common::UString &resRef) {
+	_soundHoverItem = resRef;
+	applyChangesToItemWidgets();
+}
+
+void WidgetListBox::setSoundClickItem(const Common::UString &resRef) {
+	_soundClickItem = resRef;
+	applyChangesToItemWidgets();
 }
 
 void WidgetListBox::createScrollbar(const Aurora::GFF3Struct &gff) {
@@ -355,10 +370,15 @@ void WidgetListBox::positionItemWidgets() {
 void WidgetListBox::applyChangesToItemWidgets() {
 	for (size_t i = 0; i < _itemWidgets.size(); ++i) {
 		_itemWidgets[i]->setDisableHighlight(_itemSelectionEnabled);
+
 		if (_textColorChanged)
 			_itemWidgets[i]->setTextColor(_textR, _textG, _textB, _textA);
+
 		if (_borderColorChanged)
 			_itemWidgets[i]->setBorderColor(_borderR, _borderG, _borderB, _borderA);
+
+		_itemWidgets[i]->setSoundHover(_soundHoverItem);
+		_itemWidgets[i]->setSoundClick(_soundClickItem);
 	}
 }
 

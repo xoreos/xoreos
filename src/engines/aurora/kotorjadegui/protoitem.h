@@ -50,9 +50,15 @@ public:
 
 	void setDisableHighlight(bool disableHighlight);
 
+	void setSoundHover(const Common::UString &resRef);
+	void setSoundClick(const Common::UString &resRef);
+
 private:
 	bool _disableHighlight;
 	bool _hovered;
+
+	Common::UString _soundHover;
+	Common::UString _soundClick;
 
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 };

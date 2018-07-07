@@ -25,6 +25,7 @@
 #include "src/common/system.h"
 
 #include "src/engines/aurora/gui.h"
+#include "src/engines/aurora/util.h"
 
 #include "src/engines/aurora/kotorjadegui/protoitem.h"
 
@@ -64,6 +65,9 @@ void WidgetProtoItem::enter() {
 	if (!_disableHighlight)
 		setHighlight(true);
 
+	if (!_soundHover.empty())
+		playSound(_soundHover, Sound::kSoundTypeSFX);
+
 	_hovered = true;
 }
 
@@ -75,11 +79,22 @@ void WidgetProtoItem::leave() {
 }
 
 void WidgetProtoItem::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+	if (!_soundClick.empty())
+		playSound(_soundClick, Sound::kSoundTypeSFX);
+
 	setActive(true);
 }
 
 void WidgetProtoItem::setDisableHighlight(bool disableHighlight) {
 	_disableHighlight = disableHighlight;
+}
+
+void WidgetProtoItem::setSoundHover(const Common::UString &resRef) {
+	_soundHover = resRef;
+}
+
+void WidgetProtoItem::setSoundClick(const Common::UString &resRef) {
+	_soundClick = resRef;
 }
 
 void WidgetProtoItem::setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable) {

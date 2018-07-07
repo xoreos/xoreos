@@ -95,6 +95,10 @@ public:
 
 	void subActive(Widget &widget);
 
+	void setSoundSelectItem(const Common::UString &resRef);
+	void setSoundHoverItem(const Common::UString &resRef);
+	void setSoundClickItem(const Common::UString &resRef);
+
 private:
 	const Aurora::GFF3Struct *_protoItem;
 	WidgetScrollbar *_scrollbar;
@@ -116,6 +120,10 @@ private:
 
 	bool _borderColorChanged;
 	float _borderR, _borderG, _borderB, _borderA;
+
+	Common::UString _soundSelectItem;
+	Common::UString _soundHoverItem;
+	Common::UString _soundClickItem;
 
 	void createScrollbar(const Aurora::GFF3Struct &gff);
 	void positionItemWidgets();
