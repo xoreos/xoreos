@@ -66,6 +66,7 @@ MenuEquipment::MenuEquipment(Console *console)
 		lbItems->setHideScrollbar(false);
 		lbItems->setPadding(6);
 		lbItems->setItemBorderColor(0.0f, 0.0f, 0.0f, 0.0f);
+		lbItems->setSoundSelectItem("gui_actuse");
 		lbItems->createItemWidgets(5);
 	}
 }

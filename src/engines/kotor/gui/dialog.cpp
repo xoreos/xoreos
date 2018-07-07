@@ -74,6 +74,8 @@ DialogGUIBase::DialogGUIBase(bool k2)
 	lbReplies->setPosition(-w / 2.0f, -hh, -1.0f);
 	lbReplies->setWidth(w);
 	lbReplies->setHeight(rh);
+	lbReplies->setSoundHoverItem("gui_actscroll");
+	lbReplies->setSoundClickItem("gui_actuse");
 
 	// Dialog entries in KotOR and KotOR II have invalid text color in
 	// GUI files. Override it with appropriate color for each game.

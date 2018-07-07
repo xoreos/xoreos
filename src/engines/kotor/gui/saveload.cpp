@@ -61,6 +61,7 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 	lbGames->setHideScrollbar(false);
 	lbGames->setPadding(3);
 	lbGames->setItemBorderColor(0.0f, 0.667969f, 0.988281f, 1.0f);
+	lbGames->setSoundSelectItem("gui_actscroll");
 	lbGames->createItemWidgets(6);
 
 	if (_type == kSaveLoadMenuTypeLoad) {
