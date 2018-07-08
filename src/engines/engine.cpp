@@ -197,9 +197,9 @@ bool Engine::evaluateLanguage(bool find, Aurora::Language &language) const {
 	if (langs.empty())
 		return true;
 
-	Common::UString confLang      = ConfigMan.getString("lang");
-	Common::UString confLangText  = ConfigMan.getString("langtext");
-	Common::UString confLangVoice = ConfigMan.getString("langvoice");
+	Common::UString confLang      = ConfigMan.getString("lang", "");
+	Common::UString confLangText  = ConfigMan.getString("langtext", "");
+	Common::UString confLangVoice = ConfigMan.getString("langvoice", "");
 
 	if (confLangText.empty())
 		confLangText = confLang;
@@ -251,9 +251,9 @@ bool Engine::evaluateLanguage(bool find, Aurora::Language &languageText,
 	if (langsText.empty() || langsVoice.empty())
 		return true;
 
-	Common::UString confLang      = ConfigMan.getString("lang");
-	Common::UString confLangText  = ConfigMan.getString("langtext");
-	Common::UString confLangVoice = ConfigMan.getString("langvoice");
+	Common::UString confLang      = ConfigMan.getString("lang", "");
+	Common::UString confLangText  = ConfigMan.getString("langtext", "");
+	Common::UString confLangVoice = ConfigMan.getString("langvoice", "");
 
 	if (confLangText.empty())
 		confLangText = confLang;

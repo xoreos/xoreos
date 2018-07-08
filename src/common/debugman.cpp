@@ -152,7 +152,7 @@ void DebugManager::setVerbosityLevelsFromConfig() {
 	setVerbosityLevel(kDebugChannelAll, 0);
 
 	std::vector<UString> debug;
-	UString::split(ConfigMan.getString("debug"), ',', debug);
+	UString::split(ConfigMan.getString("debug", ""), ',', debug);
 
 	for (std::vector<UString>::const_iterator d = debug.begin(); d != debug.end(); ++d) {
 		std::vector<UString> config;

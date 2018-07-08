@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
 	 */
 	Common::UString logFile = DebugMan.getDefaultLogFile();
 	if (ConfigMan.hasKey("logfile"))
-		logFile = ConfigMan.getString("logfile");
+		logFile = ConfigMan.getString("logfile", "");
 	if (ConfigMan.getBool("nologfile", false))
 		logFile.clear();
 

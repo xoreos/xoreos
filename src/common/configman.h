@@ -101,10 +101,15 @@ public:
 	bool getKey(const UString &key, UString &value) const;
 
 	// Specialized getters
-	UString getString(const UString &key, const UString &def = ""   ) const;
-	bool    getBool  (const UString &key,       bool     def = false) const;
-	int     getInt   (const UString &key,       int      def = 0    ) const;
-	double  getDouble(const UString &key,       double   def = 0.0  ) const;
+	UString getString(const UString &key) const;
+	bool    getBool  (const UString &key) const;
+	int     getInt   (const UString &key) const;
+	double  getDouble(const UString &key) const;
+
+	UString getString(const UString &key, const UString &def) const;
+	bool    getBool  (const UString &key,       bool     def) const;
+	int     getInt   (const UString &key,       int      def) const;
+	double  getDouble(const UString &key,       double   def) const;
 
 	void setKey(const UString &key, const UString &value, bool update = false);
 

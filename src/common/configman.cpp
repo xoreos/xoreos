@@ -287,6 +287,47 @@ bool ConfigManager::getKey(const UString &key, UString &value) const {
 	       getKey(_domainDefaultApp.get() , key, value);   // Then application defaults
 }
 
+UString ConfigManager::getString(const UString &key) const {
+	UString value;
+	if (!getKey(key, value))
+		value = getDefaultKey(key);
+
+	return value;
+}
+
+bool ConfigManager::getBool(const UString &key) const {
+	UString value;
+	if (!getKey(key, value))
+		value = getDefaultKey(key);
+
+	bool x;
+	parseString(value, x);
+
+	return x;
+}
+
+int ConfigManager::getInt(const UString &key) const {
+	UString value;
+	if (!getKey(key, value))
+		value = getDefaultKey(key);
+
+	int x;
+	parseString(value, x);
+
+	return x;
+}
+
+double ConfigManager::getDouble(const UString &key) const {
+	UString value;
+	if (!getKey(key, value))
+		value = getDefaultKey(key);
+
+	double x;
+	parseString(value, x);
+
+	return x;
+}
+
 UString ConfigManager::getString(const UString &key, const UString &def) const {
 	UString value;
 	if (!getKey(key, value))
