@@ -100,7 +100,7 @@ public:
 	bool hasKey(const UString &key) const;
 	bool getKey(const UString &key, UString &value) const;
 
-	// Specialized getters. */
+	// Specialized getters
 	UString getString(const UString &key, const UString &def = ""   ) const;
 	bool    getBool  (const UString &key,       bool     def = false) const;
 	int     getInt   (const UString &key,       int      def = 0    ) const;
@@ -108,7 +108,7 @@ public:
 
 	void setKey(const UString &key, const UString &value, bool update = false);
 
-	// Specialized setters. */
+	// Specialized setters
 	void setString(const UString &key, const UString &value, bool update = false);
 	void setBool  (const UString &key,       bool     value, bool update = false);
 	void setInt   (const UString &key,       int      value, bool update = false);
@@ -117,7 +117,7 @@ public:
 	/** Set a config value in a specific realm. */
 	void setKey(ConfigRealm realm, const UString &key, const UString &value);
 
-	// Specialized realm setters. */
+	// Specialized realm setters
 	void setString(ConfigRealm realm, const UString &key, const UString &value);
 	void setBool  (ConfigRealm realm, const UString &key,       bool     value);
 	void setInt   (ConfigRealm realm, const UString &key,       int      value);
@@ -125,6 +125,15 @@ public:
 
 	/** Overwrite the current config with the defaults. */
 	void setDefaults();
+
+	bool hasDefaultKey(const UString &key) const;
+	UString getDefaultKey(const UString &key) const;
+
+	// Specialized defaults getters
+	UString getDefaultString(const UString &key) const;
+	bool    getDefaultBool  (const UString &key) const;
+	int     getDefaultInt   (const UString &key) const;
+	double  getDefaultDouble(const UString &key) const;
 
 	/** Set a config value that came from the command line. */
 	void setCommandlineKey(const UString &key, const UString &value);

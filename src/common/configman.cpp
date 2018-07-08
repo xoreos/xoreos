@@ -424,6 +424,47 @@ void ConfigManager::setDefaults() {
 	_changed = true;
 }
 
+bool ConfigManager::hasDefaultKey(const UString &key) const {
+	return hasKey(_domainDefaultGame.get(), key) ||
+	       hasKey(_domainDefaultApp.get(), key);
+}
+
+UString ConfigManager::getDefaultKey(const UString &key) const {
+	UString value;
+
+	if (getKey(_domainDefaultGame.get(), key, value))
+		return value;
+	if (getKey(_domainDefaultApp.get(), key, value))
+		return value;
+
+	throw Exception("No such default config key \"%s\"", key.c_str());
+}
+
+UString ConfigManager::getDefaultString(const UString &key) const {
+	return getDefaultKey(key);
+}
+
+bool ConfigManager::getDefaultBool(const UString &key) const {
+	bool x;
+	parseString(getDefaultKey(key), x);
+
+	return x;
+}
+
+int ConfigManager::getDefaultInt(const UString &key) const {
+	int x;
+	parseString(getDefaultKey(key), x);
+
+	return x;
+}
+
+double ConfigManager::getDefaultDouble(const UString &key) const {
+	double x;
+	parseString(getDefaultKey(key), x);
+
+	return x;
+}
+
 void ConfigManager::setCommandlineKey(const UString &key, const UString &value) {
 	setKey(_domainCommandline.get(), key, value);
 }
