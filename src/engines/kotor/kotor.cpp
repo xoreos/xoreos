@@ -502,7 +502,13 @@ void KotOREngine::initGameConfig() {
 }
 
 void KotOREngine::checkConfig() {
+	checkConfigInt("difficulty", 0, 2);
+
 	checkConfigInt("texturepack", 0, 2);
+	checkConfigInt("antialiasing", 0, 3);
+	checkConfigInt("anisotropy", 0, 4);
+
+	checkConfigInt("eax", 0, 3);
 }
 
 void KotOREngine::deinit() {
