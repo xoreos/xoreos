@@ -48,8 +48,6 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	void adoptChanges();
-
 	Common::ScopedPtr<GUI> _gameplay;
 	Common::ScopedPtr<GUI> _feedback;
 	Common::ScopedPtr<GUI> _autopause;

@@ -38,8 +38,6 @@ public:
 
 	virtual void show();
 
-	void adoptChanges();
-
 protected:
 	void callbackActive(Widget &widget);
 
@@ -54,6 +52,8 @@ private:
 	void setDefault();
 	void readConfig();
 	void displayConfig();
+
+	void adoptChanges();
 };
 
 } // End of namespace KotOR

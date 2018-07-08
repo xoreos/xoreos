@@ -40,8 +40,6 @@ public:
 
 	virtual void show();
 
-	void adoptChanges();
-
 protected:
 	void callbackActive(Widget &widget);
 
@@ -61,6 +59,8 @@ private:
 	void displayConfig();
 
 	void updateDifficulty(int difficulty);
+
+	void adoptChanges();
 };
 
 } // End of namespace KotOR

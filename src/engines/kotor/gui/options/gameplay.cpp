@@ -109,6 +109,7 @@ void OptionsGameplayMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
+		adoptChanges();
 		_returnCode = 1;
 		return;
 	}

@@ -100,17 +100,10 @@ void OptionsMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
-		adoptChanges();
 		_returnCode = 1;
 		return;
 	}
 }
-
-void OptionsMenu::adoptChanges() {
-	dynamic_cast<OptionsGameplayMenu &>(*_gameplay).adoptChanges();
-	dynamic_cast<OptionsAutoPauseMenu &>(*_autopause).adoptChanges();
-}
-
 
 } // End of namespace KotOR
 
