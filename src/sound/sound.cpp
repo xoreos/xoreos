@@ -135,8 +135,7 @@ void SoundManager::deinit() {
 	if (!_ready)
 		return;
 
-	if (!destroyThread())
-		warning("SoundManager::deinit(): Sound thread had to be killed");
+	destroyThread();
 
 	for (size_t i = 0; i < kChannelCount; i++)
 		freeChannel(i);
@@ -852,7 +851,7 @@ void SoundManager::freeChannel(size_t channel) {
 }
 
 void SoundManager::threadMethod() {
-	while (!_killThread) {
+	while (!_killThread.load(boost::memory_order_relaxed)) {
 		update();
 		_needUpdate.wait(100);
 	}

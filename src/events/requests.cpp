@@ -47,8 +47,7 @@ void RequestManager::init() {
 }
 
 void RequestManager::deinit() {
-	if (!destroyThread())
-		warning("RequestManager::deinit(): Requests thread had to be killed");
+	destroyThread();
 
 	clearList();
 }
@@ -175,7 +174,7 @@ void RequestManager::collectGarbage() {
 }
 
 void RequestManager::threadMethod() {
-	while (!_killThread) {
+	while (!_killThread.load(boost::memory_order_relaxed)) {
 		collectGarbage();
 		EventMan.delay(100);
 	}

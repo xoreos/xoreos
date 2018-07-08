@@ -27,6 +27,8 @@
 #ifndef COMMON_THREAD_H
 #define COMMON_THREAD_H
 
+#include "src/common/atomic.h"
+
 #include "src/common/fallthrough.h"
 START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_thread.h>
@@ -48,12 +50,13 @@ public:
 	bool destroyThread();
 
 protected:
-	volatile bool _killThread;
+	boost::atomic<bool> _killThread;
 
 private:
 	SDL_Thread *_thread;
+	Common::UString _name;
 
-	bool _threadRunning;
+	boost::atomic<bool> _threadRunning;
 
 	virtual void threadMethod() = 0;
 
