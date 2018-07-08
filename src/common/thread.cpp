@@ -62,8 +62,12 @@ bool Thread::createThread(const UString &name) {
 }
 
 bool Thread::destroyThread() {
-	if (!_threadRunning.load(boost::memory_order_seq_cst))
+	if (!_threadRunning.load(boost::memory_order_seq_cst)) {
+		SDL_WaitThread(_thread, 0);
+		_thread = 0;
+
 		return true;
+	}
 
 	// Signal the thread that it should die
 	_killThread.store(true, boost::memory_order_seq_cst);
