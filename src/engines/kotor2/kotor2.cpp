@@ -409,7 +409,7 @@ void KotOR2Engine::initGameConfig() {
 }
 
 void KotOR2Engine::checkConfig() {
-	checkConfigInt("texturepack", 0, 2, 2);
+	checkConfigInt("texturepack", 0, 2);
 }
 
 void KotOR2Engine::deinit() {

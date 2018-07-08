@@ -454,11 +454,11 @@ void NWNEngine::initGameConfig() {
 }
 
 void NWNEngine::checkConfig() {
-	checkConfigInt("menufogcount" ,   0,    5,   4);
-	checkConfigInt("texturepack"  ,   0,    3,   1);
-	checkConfigInt("difficulty"   ,   0,    3,   0);
-	checkConfigInt("feedbackmode" ,   0,    2,   2);
-	checkConfigInt("tooltipdelay" , 100, 2700, 100);
+	checkConfigInt("menufogcount" ,   0,    5);
+	checkConfigInt("texturepack"  ,   0,    3);
+	checkConfigInt("difficulty"   ,   0,    3);
+	checkConfigInt("feedbackmode" ,   0,    2);
+	checkConfigInt("tooltipdelay" , 100, 2700);
 }
 
 void NWNEngine::deinit() {

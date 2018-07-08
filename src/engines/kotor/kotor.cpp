@@ -502,7 +502,7 @@ void KotOREngine::initGameConfig() {
 }
 
 void KotOREngine::checkConfig() {
-	checkConfigInt("texturepack", 0, 2, 2);
+	checkConfigInt("texturepack", 0, 2);
 }
 
 void KotOREngine::deinit() {

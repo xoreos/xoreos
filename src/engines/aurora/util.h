@@ -49,9 +49,9 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 		bool loop = false, float volume = 1.0f, bool pitchVariance = false);
 
 /** Make sure that an int config value is in the right range. */
-void checkConfigInt   (const Common::UString &key, int    min, int    max, int    def);
+void checkConfigInt   (const Common::UString &key, int    min, int    max);
 /** Make sure that a double config value is in the right range. */
-void checkConfigDouble(const Common::UString &key, double min, double max, double def);
+void checkConfigDouble(const Common::UString &key, double min, double max);
 
 /** Wait for a "long" amount of time, returning prematurely with true in the case of a requested quit. */
 bool longDelay(uint32 ms);
