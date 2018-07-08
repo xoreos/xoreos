@@ -448,7 +448,52 @@ void KotOREngine::initCursors() {
 }
 
 void KotOREngine::initConfig() {
+	// Gameplay
+
+	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty", 1);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "autolevelup", false);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "mousemove", false);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "autosave", true);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "reverseminigameyaxis", false);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "combatmovement", true);
+
+	// Gameplay -> Mouse settings
+
+	ConfigMan.setBool(Common::kConfigRealmDefault, "reversemousebuttons", false);
+
+	// Gameplay -> Key mapping
+
+	// Feedback
+
+	// Auto-pause
+
+	ConfigMan.setBool(Common::kConfigRealmDefault, "endofcombatround", false);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "enemysighted", true);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "minesighted", true);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "partymemberdown", true);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "actionmenuused", false);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "newtargetselected", true);
+
+	// Graphics
+
+	ConfigMan.setBool(Common::kConfigRealmDefault, "shadows", true);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "grass", true);
+
+	// Graphics -> Advanced options
+
 	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack", 2);
+	ConfigMan.setInt(Common::kConfigRealmDefault, "antialiasing", 0);
+	ConfigMan.setInt(Common::kConfigRealmDefault, "anisotropy", 0);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "framebuffereffects", true);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "softshadows", true);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "vsync", false);
+
+	// Sound
+
+	// Sound -> Advanced options
+
+	ConfigMan.setInt(Common::kConfigRealmDefault, "eax", 0);
+	ConfigMan.setBool(Common::kConfigRealmDefault, "forcesoftware", false);
 }
 
 void KotOREngine::initGameConfig() {
