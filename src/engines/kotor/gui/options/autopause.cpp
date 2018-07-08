@@ -113,14 +113,12 @@ void OptionsAutoPauseMenu::setDefault() {
 }
 
 void OptionsAutoPauseMenu::readConfig() {
-	setDefault();
-
-	_endOfCombatRound = ConfigMan.getBool("endofcombatround", _endOfCombatRound);
-	_enemySighted = ConfigMan.getBool("enemysighted", _enemySighted);
-	_mineSighted = ConfigMan.getBool("minesighted", _mineSighted);
-	_partyMemberDown = ConfigMan.getBool("partymemberdown", _partyMemberDown);
-	_actionMenuUsed = ConfigMan.getBool("actionmenuused", _actionMenuUsed);
-	_newTargetSelected = ConfigMan.getBool("newtargetselected", _newTargetSelected);
+	_endOfCombatRound = ConfigMan.getBool("endofcombatround");
+	_enemySighted = ConfigMan.getBool("enemysighted");
+	_mineSighted = ConfigMan.getBool("minesighted");
+	_partyMemberDown = ConfigMan.getBool("partymemberdown");
+	_actionMenuUsed = ConfigMan.getBool("actionmenuused");
+	_newTargetSelected = ConfigMan.getBool("newtargetselected");
 }
 
 void OptionsAutoPauseMenu::displayConfig() {

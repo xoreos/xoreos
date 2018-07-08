@@ -101,10 +101,8 @@ void OptionsGraphicsMenu::setDefault() {
 }
 
 void OptionsGraphicsMenu::readConfig() {
-	setDefault();
-
-	_shadows = ConfigMan.getBool("shadows", _shadows);
-	_grass = ConfigMan.getBool("grass", _grass);
+	_shadows = ConfigMan.getBool("shadows");
+	_grass = ConfigMan.getBool("grass");
 }
 
 void OptionsGraphicsMenu::displayConfig() {

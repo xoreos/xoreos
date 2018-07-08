@@ -256,7 +256,7 @@ static const char * const texturePacks[3] = {
 };
 
 void Module::loadTexturePack() {
-	int level = ConfigMan.getInt("texturepack", 2);
+	int level = ConfigMan.getInt("texturepack");
 	if (_currentTexturePack == level)
 		// Nothing to do
 		return;

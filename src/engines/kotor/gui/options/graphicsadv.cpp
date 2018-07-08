@@ -169,15 +169,13 @@ void OptionsGraphicsAdvancedMenu::setDefault() {
 }
 
 void OptionsGraphicsAdvancedMenu::readConfig() {
-	setDefault();
+	_textureQuality = CLIP(ConfigMan.getInt("texturepack"), 0, 2);
+	_antiAliasing = CLIP(ConfigMan.getInt("antialiasing"), 0, 3);
+	_anisotropy = CLIP(ConfigMan.getInt("anisotropy"), 0, 4);
 
-	_textureQuality = CLIP(ConfigMan.getInt("texturepack", _textureQuality), 0, 2);
-	_antiAliasing = CLIP(ConfigMan.getInt("antialiasing", _antiAliasing), 0, 3);
-	_anisotropy = CLIP(ConfigMan.getInt("anisotropy", _anisotropy), 0, 4);
-
-	_frameBufferEffects = ConfigMan.getBool("framebuffereffects", _frameBufferEffects);
-	_softShadows = ConfigMan.getBool("softshadows", _softShadows);
-	_vsync = ConfigMan.getBool("vsync", _vsync);
+	_frameBufferEffects = ConfigMan.getBool("framebuffereffects");
+	_softShadows = ConfigMan.getBool("softshadows");
+	_vsync = ConfigMan.getBool("vsync");
 }
 
 void OptionsGraphicsAdvancedMenu::displayConfig() {

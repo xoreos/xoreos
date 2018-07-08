@@ -112,10 +112,8 @@ void OptionsSoundAdvancedMenu::setDefault() {
 }
 
 void OptionsSoundAdvancedMenu::readConfig() {
-	setDefault();
-
-	_eax = CLIP(ConfigMan.getInt("eax", _eax), 0, 3);
-	_forceSoftware = ConfigMan.getBool("forcesoftware", _forceSoftware);
+	_eax = CLIP(ConfigMan.getInt("eax"), 0, 3);
+	_forceSoftware = ConfigMan.getBool("forcesoftware");
 }
 
 void OptionsSoundAdvancedMenu::displayConfig() {

@@ -151,15 +151,13 @@ void OptionsGameplayMenu::setDefault() {
 }
 
 void OptionsGameplayMenu::readConfig() {
-	setDefault();
+	_difficulty = CLIP(ConfigMan.getInt("difficulty"), 0, 2);
 
-	_difficulty = CLIP(ConfigMan.getInt("difficulty", _difficulty), 0, 2);
-
-	_autoLevelUp = ConfigMan.getBool("autolevelup", _autoLevelUp);
-	_mouseMove = ConfigMan.getBool("mousemove", _mouseMove);
-	_autoSave = ConfigMan.getBool("autosave", _autoSave);
-	_reverseMinigameY = ConfigMan.getBool("reverseminigameyaxis", _reverseMinigameY);
-	_combatMovement = ConfigMan.getBool("combatmovement", _combatMovement);
+	_autoLevelUp = ConfigMan.getBool("autolevelup");
+	_mouseMove = ConfigMan.getBool("mousemove");
+	_autoSave = ConfigMan.getBool("autosave");
+	_reverseMinigameY = ConfigMan.getBool("reverseminigameyaxis");
+	_combatMovement = ConfigMan.getBool("combatmovement");
 }
 
 void OptionsGameplayMenu::displayConfig() {
