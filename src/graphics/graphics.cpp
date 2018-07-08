@@ -146,7 +146,8 @@ void GraphicsManager::init() {
 	MaterialMan.init();
 	MeshMan.init();
 
-	_animationThread.createThread("Animations");
+	if (!_animationThread.createThread("Animations"))
+		throw Common::Exception("Failed to create the animation thread");
 
 	_ready = true;
 }
