@@ -163,7 +163,7 @@ void OptionsVideoAdvancedMenu::updateFSAALabel(int n) {
 void OptionsVideoAdvancedMenu::adoptChanges() {
 	if (_fsaa != _oldFSAA) {
 		GfxMan.setFSAA(_fsaa);
-		ConfigMan.setInt("fsaa", _fsaa, true);
+		ConfigMan.setInt("antialiasing", _fsaa, true);
 	}
 
 	WidgetCheckBox *largeFonts = getCheckBox("UseLargeFont");

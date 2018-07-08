@@ -160,7 +160,7 @@ void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
 }
 
 void OptionsGraphicsAdvancedMenu::setDefault() {
-	_textureQuality = 0;
+	_textureQuality = 2;
 	_antiAliasing = 0;
 	_anisotropy = 0;
 	_frameBufferEffects = true;
@@ -171,7 +171,7 @@ void OptionsGraphicsAdvancedMenu::setDefault() {
 void OptionsGraphicsAdvancedMenu::readConfig() {
 	setDefault();
 
-	_textureQuality = CLIP(ConfigMan.getInt("texturequality", _textureQuality), 0, 2);
+	_textureQuality = CLIP(ConfigMan.getInt("texturepack", _textureQuality), 0, 2);
 	_antiAliasing = CLIP(ConfigMan.getInt("antialiasing", _antiAliasing), 0, 3);
 	_anisotropy = CLIP(ConfigMan.getInt("anisotropy", _anisotropy), 0, 4);
 
@@ -262,7 +262,7 @@ void OptionsGraphicsAdvancedMenu::updateAnisotropy(int anisotropy) {
 }
 
 void OptionsGraphicsAdvancedMenu::adoptChanges() {
-	ConfigMan.setInt("texturequality", _textureQuality, true);
+	ConfigMan.setInt("texturepack", _textureQuality, true);
 	ConfigMan.setInt("antialiasing", _antiAliasing, true);
 	ConfigMan.setInt("anisotropy", _anisotropy, true);
 	ConfigMan.setBool("framebuffereffects", _softShadows, true);

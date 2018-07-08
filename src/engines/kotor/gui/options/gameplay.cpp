@@ -151,7 +151,7 @@ void OptionsGameplayMenu::setDefault() {
 void OptionsGameplayMenu::readConfig() {
 	setDefault();
 
-	_difficulty = CLIP(ConfigMan.getInt("difficultylevel", _difficulty), 0, 2);
+	_difficulty = CLIP(ConfigMan.getInt("difficulty", _difficulty), 0, 2);
 
 	_autoLevelUp = ConfigMan.getBool("autolevelup", _autoLevelUp);
 	_mouseMove = ConfigMan.getBool("mousemove", _mouseMove);
@@ -191,7 +191,7 @@ void OptionsGameplayMenu::updateDifficulty(int difficulty) {
 }
 
 void OptionsGameplayMenu::adoptChanges() {
-	ConfigMan.setInt("difficultylevel", _difficulty, true);
+	ConfigMan.setInt("difficulty", _difficulty, true);
 	ConfigMan.setBool("autolevelup", _autoLevelUp, true);
 	ConfigMan.setBool("mousemove", _mouseMove, true);
 	ConfigMan.setBool("autosave", _autoSave, true);
