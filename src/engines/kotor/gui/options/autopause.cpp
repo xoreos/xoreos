@@ -104,12 +104,12 @@ void OptionsAutoPauseMenu::callbackActive(Widget &widget) {
 }
 
 void OptionsAutoPauseMenu::setDefault() {
-	_endOfCombatRound = false;
-	_enemySighted = true;
-	_mineSighted = true;
-	_partyMemberDown = true;
-	_actionMenuUsed = false;
-	_newTargetSelected = true;
+	_endOfCombatRound = ConfigMan.getDefaultBool("endofcombatround");
+	_enemySighted = ConfigMan.getDefaultBool("enemysighted");
+	_mineSighted = ConfigMan.getDefaultBool("minesighted");
+	_partyMemberDown = ConfigMan.getDefaultBool("partymemberdown");
+	_actionMenuUsed = ConfigMan.getDefaultBool("actionmenuused");
+	_newTargetSelected = ConfigMan.getDefaultBool("newtargetselected");
 }
 
 void OptionsAutoPauseMenu::readConfig() {

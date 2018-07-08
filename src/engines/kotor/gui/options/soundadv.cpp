@@ -107,8 +107,8 @@ void OptionsSoundAdvancedMenu::callbackActive(Widget &widget) {
 }
 
 void OptionsSoundAdvancedMenu::setDefault() {
-	_eax = 0;
-	_forceSoftware = false;
+	_eax = ConfigMan.getDefaultInt("eax");
+	_forceSoftware = ConfigMan.getDefaultBool("forcesoftware");
 }
 
 void OptionsSoundAdvancedMenu::readConfig() {

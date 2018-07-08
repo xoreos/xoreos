@@ -160,12 +160,12 @@ void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
 }
 
 void OptionsGraphicsAdvancedMenu::setDefault() {
-	_textureQuality = 2;
-	_antiAliasing = 0;
-	_anisotropy = 0;
-	_frameBufferEffects = true;
-	_softShadows = true;
-	_vsync = false;
+	_textureQuality = ConfigMan.getDefaultInt("texturepack");
+	_antiAliasing = ConfigMan.getDefaultInt("antialiasing");
+	_anisotropy = ConfigMan.getDefaultInt("anisotropy");
+	_frameBufferEffects = ConfigMan.getDefaultBool("framebuffereffects");
+	_softShadows = ConfigMan.getDefaultBool("softshadows");
+	_vsync = ConfigMan.getDefaultBool("vsync");
 }
 
 void OptionsGraphicsAdvancedMenu::readConfig() {

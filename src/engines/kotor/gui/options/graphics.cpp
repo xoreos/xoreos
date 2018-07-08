@@ -96,8 +96,8 @@ void OptionsGraphicsMenu::callbackActive(Widget &widget) {
 }
 
 void OptionsGraphicsMenu::setDefault() {
-	_shadows = true;
-	_grass = true;
+	_shadows = ConfigMan.getDefaultBool("shadows");
+	_grass = ConfigMan.getDefaultBool("grass");
 }
 
 void OptionsGraphicsMenu::readConfig() {

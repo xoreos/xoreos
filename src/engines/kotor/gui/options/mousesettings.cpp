@@ -72,7 +72,7 @@ void OptionsMouseSettingsMenu::callbackActive(Widget &widget) {
 }
 
 void OptionsMouseSettingsMenu::setDefault() {
-	_reverseMouseButtons = false;
+	_reverseMouseButtons = ConfigMan.getDefaultBool("reversemousebuttons");
 }
 
 void OptionsMouseSettingsMenu::readConfig() {
