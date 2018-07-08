@@ -146,7 +146,7 @@ void GraphicsManager::init() {
 	MaterialMan.init();
 	MeshMan.init();
 
-	_animationThread.createThread();
+	_animationThread.createThread("Animations");
 
 	_ready = true;
 }
