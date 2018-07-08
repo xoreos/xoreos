@@ -37,13 +37,10 @@ OptionsFeedbackMenu::OptionsFeedbackMenu(::Engines::Console *console) : GUI(cons
 }
 
 OptionsFeedbackMenu::~OptionsFeedbackMenu() {
-
 }
 
 void OptionsFeedbackMenu::callbackActive(Widget &widget) {
-
 	if (widget.getTag() == "BTN_DEFAULT") {
-
 	}
 
 	if (widget.getTag() == "BTN_BACK") {

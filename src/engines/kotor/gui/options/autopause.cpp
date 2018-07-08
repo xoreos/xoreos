@@ -39,61 +39,31 @@ OptionsAutoPauseMenu::OptionsAutoPauseMenu(::Engines::Console *console) : GUI(co
 
 	addBackground(kBackgroundTypeMenu);
 
-	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
+	// Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
 	getCheckBox("CB_ENDROUND", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_ENEMYSIGHTED", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_MINESIGHTED", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_PARTYKILLED", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_ACTIONMENU", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_TRIGGERS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+
+	readConfig();
 }
 
 OptionsAutoPauseMenu::~OptionsAutoPauseMenu() {
-
 }
 
 void OptionsAutoPauseMenu::show() {
+	readConfig();
+	displayConfig();
+
 	GUI::show();
-
-	_endOfCombatRound = ConfigMan.getBool("endofcombatround", false);
-	setCheckBoxState("CB_ENDROUND", _endOfCombatRound);
-
-	_enemySighted = ConfigMan.getBool("enemysighted", false);
-	setCheckBoxState("CB_ENEMYSIGHTED", _enemySighted);
-
-	_mineSighted = ConfigMan.getBool("minesighted", false);
-	setCheckBoxState("CB_MINESIGHTED", _mineSighted);
-
-	_partyMemberDown = ConfigMan.getBool("partymemberdown", false);
-	setCheckBoxState("CB_PARTYKILLED", _partyMemberDown);
-
-	_actionMenuUsed = ConfigMan.getBool("actionmenuused", false);
-	setCheckBoxState("CB_ACTIONMENU", _actionMenuUsed);
-
-	_newTargetSelected = ConfigMan.getBool("newtargetselected", false);
-	setCheckBoxState("CB_TRIGGERS", _newTargetSelected);
 }
 
 void OptionsAutoPauseMenu::callbackActive(Widget &widget) {
-
 	if (widget.getTag() == "BTN_DEFAULT") {
-		_endOfCombatRound = false;
-		setCheckBoxState("CB_ENDROUND", _endOfCombatRound);
-
-		_enemySighted = true;
-		setCheckBoxState("CB_ENEMYSIGHTED", _enemySighted);
-
-		_mineSighted = true;
-		setCheckBoxState("CB_MINESIGHTED", _mineSighted);
-
-		_partyMemberDown = true;
-		setCheckBoxState("CB_PARTYKILLED", _partyMemberDown);
-
-		_actionMenuUsed = false;
-		setCheckBoxState("CB_ACTIONMENU", _actionMenuUsed);
-
-		_newTargetSelected = true;
-		setCheckBoxState("CB_TRIGGERS", _newTargetSelected);
+		setDefault();
+		displayConfig();
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
@@ -133,6 +103,35 @@ void OptionsAutoPauseMenu::callbackActive(Widget &widget) {
 	}
 }
 
+void OptionsAutoPauseMenu::setDefault() {
+	_endOfCombatRound = false;
+	_enemySighted = true;
+	_mineSighted = true;
+	_partyMemberDown = true;
+	_actionMenuUsed = false;
+	_newTargetSelected = true;
+}
+
+void OptionsAutoPauseMenu::readConfig() {
+	setDefault();
+
+	_endOfCombatRound = ConfigMan.getBool("endofcombatround", _endOfCombatRound);
+	_enemySighted = ConfigMan.getBool("enemysighted", _enemySighted);
+	_mineSighted = ConfigMan.getBool("minesighted", _mineSighted);
+	_partyMemberDown = ConfigMan.getBool("partymemberdown", _partyMemberDown);
+	_actionMenuUsed = ConfigMan.getBool("actionmenuused", _actionMenuUsed);
+	_newTargetSelected = ConfigMan.getBool("newtargetselected", _newTargetSelected);
+}
+
+void OptionsAutoPauseMenu::displayConfig() {
+	setCheckBoxState("CB_ENDROUND", _endOfCombatRound);
+	setCheckBoxState("CB_ENEMYSIGHTED", _enemySighted);
+	setCheckBoxState("CB_MINESIGHTED", _mineSighted);
+	setCheckBoxState("CB_PARTYKILLED", _partyMemberDown);
+	setCheckBoxState("CB_ACTIONMENU", _actionMenuUsed);
+	setCheckBoxState("CB_TRIGGERS", _newTargetSelected);
+}
+
 void OptionsAutoPauseMenu::adoptChanges() {
 	ConfigMan.setBool("endofcombatround", _endOfCombatRound, true);
 	ConfigMan.setBool("enemysighted", _enemySighted, true);
@@ -145,4 +144,3 @@ void OptionsAutoPauseMenu::adoptChanges() {
 } // End of namespace KotOR
 
 } // End of namespace Engines
-

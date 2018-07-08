@@ -47,7 +47,7 @@ OptionsGameplayMenu::OptionsGameplayMenu(::Engines::Console *console) : GUI(cons
 	_mousesettings.reset(new OptionsMouseSettingsMenu(_console));
 	_keyboardconfiguration.reset(new OptionsKeyboardConfigurationMenu(_console));
 
-	//Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
+	// Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
 	getButton("BTN_DIFFLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getButton("BTN_DIFFLEFT", true)->setStaticHighlight();
 	getButton("BTN_DIFFRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
@@ -57,33 +57,19 @@ OptionsGameplayMenu::OptionsGameplayMenu(::Engines::Console *console) : GUI(cons
 	getCheckBox("CB_AUTOSAVE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_REVERSE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_DISABLEMOVE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+
+	readConfig();
 }
+
 OptionsGameplayMenu::~OptionsGameplayMenu() {
 }
 
-
 void OptionsGameplayMenu::show() {
+	readConfig();
+	displayConfig();
+
 	GUI::show();
-
-	_difficulty = CLIP(ConfigMan.getInt("difficultylevel", 1), 0, 2);
-	updateDifficulty(_difficulty);
-
-	_autoLevelUp = ConfigMan.getBool("autolevelup", false);
-	setCheckBoxState("CB_LEVELUP", _autoLevelUp);
-
-	_mouseMove = ConfigMan.getBool("mousemove", false);
-	setCheckBoxState("CB_INVERTCAM", _mouseMove);
-
-	_autoSave = ConfigMan.getBool("autosave", true);
-	setCheckBoxState("CB_AUTOSAVE", _autoSave);
-
-	_reverseMinigameY = ConfigMan.getBool("reverseminigameyaxis", false);
-	setCheckBoxState("CB_REVERSE", _reverseMinigameY);
-
-	_combatMovement = ConfigMan.getBool("combatmovement", true);
-	setCheckBoxState("CB_DISABLEMOVE", _combatMovement);
 }
-
 
 void OptionsGameplayMenu::callbackActive(Widget &widget) {
 
@@ -118,23 +104,8 @@ void OptionsGameplayMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_DEFAULT") {
-		_difficulty = 1;
-		updateDifficulty(_difficulty);
-
-		_autoLevelUp = false;
-		setCheckBoxState("CB_LEVELUP", _autoLevelUp);
-
-		_mouseMove = false;
-		setCheckBoxState("CB_INVERTCAM", _mouseMove);
-
-		_autoSave = true;
-		setCheckBoxState("CB_AUTOSAVE", _autoSave);
-
-		_reverseMinigameY = false;
-		setCheckBoxState("CB_REVERSE", _reverseMinigameY);
-
-		_combatMovement = true;
-		setCheckBoxState("CB_DISABLEMOVE", _combatMovement);
+		setDefault();
+		displayConfig();
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
@@ -166,6 +137,37 @@ void OptionsGameplayMenu::callbackActive(Widget &widget) {
 		_combatMovement = getCheckBoxState("CB_DISABLEMOVE");
 		return;
 	}
+}
+
+void OptionsGameplayMenu::setDefault() {
+	_difficulty = 1;
+	_autoLevelUp = false;
+	_mouseMove = false;
+	_autoSave = true;
+	_reverseMinigameY = false;
+	_combatMovement = true;
+}
+
+void OptionsGameplayMenu::readConfig() {
+	setDefault();
+
+	_difficulty = CLIP(ConfigMan.getInt("difficultylevel", _difficulty), 0, 2);
+
+	_autoLevelUp = ConfigMan.getBool("autolevelup", _autoLevelUp);
+	_mouseMove = ConfigMan.getBool("mousemove", _mouseMove);
+	_autoSave = ConfigMan.getBool("autosave", _autoSave);
+	_reverseMinigameY = ConfigMan.getBool("reverseminigameyaxis", _reverseMinigameY);
+	_combatMovement = ConfigMan.getBool("combatmovement", _combatMovement);
+}
+
+void OptionsGameplayMenu::displayConfig() {
+	updateDifficulty(_difficulty);
+
+	setCheckBoxState("CB_LEVELUP", _autoLevelUp);
+	setCheckBoxState("CB_INVERTCAM", _mouseMove);
+	setCheckBoxState("CB_AUTOSAVE", _autoSave);
+	setCheckBoxState("CB_REVERSE", _reverseMinigameY);
+	setCheckBoxState("CB_DISABLEMOVE", _combatMovement);
 }
 
 void OptionsGameplayMenu::updateDifficulty(int difficulty) {
@@ -200,6 +202,3 @@ void OptionsGameplayMenu::adoptChanges() {
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-
-

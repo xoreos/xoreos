@@ -38,13 +38,17 @@ public:
 
 	virtual void show();
 
-	virtual void adoptChanges();
-
 protected:
 	void callbackActive(Widget &widget);
 
 private:
 	bool _reverseMouseButtons;
+
+	void setDefault();
+	void readConfig();
+	void displayConfig();
+
+	void adoptChanges();
 };
 
 } // End of namespace KotOR

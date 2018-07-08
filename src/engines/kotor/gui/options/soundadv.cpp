@@ -42,26 +42,24 @@ OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(::Engines::Console *console) 
 
 	addBackground(kBackgroundTypeMenu);
 
-	//Hardcoded, the gui file returns incorrect values
+	// Hardcoded, the gui file returns incorrect values
 	getButton("BTN_EAXLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getButton("BTN_EAXLEFT", true)->setStaticHighlight();
 	getButton("BTN_EAXRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getButton("BTN_EAXRIGHT", true)->setStaticHighlight();
 	getCheckBox("CB_FORCESOFTWARE", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+
+	readConfig();
 }
 
 OptionsSoundAdvancedMenu::~OptionsSoundAdvancedMenu() {
-
 }
 
 void OptionsSoundAdvancedMenu::show() {
+	readConfig();
+	displayConfig();
+
 	GUI::show();
-
-	_eax = CLIP(ConfigMan.getInt("eax", 0), 0, 3);
-	updateEAX(_eax);
-
-	_forceSoftware = ConfigMan.getBool("forcesoftware", false);
-	setCheckBoxState("CB_FORCESOFTWARE", _forceSoftware);
 }
 
 void OptionsSoundAdvancedMenu::callbackActive(Widget &widget) {
@@ -87,11 +85,8 @@ void OptionsSoundAdvancedMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_DEFAULT") {
-		_eax = 0;
-		updateEAX(_eax);
-
-		_forceSoftware = false;
-		setCheckBoxState("CB_FORCESOFTWARE", _forceSoftware);
+		setDefault();
+		readConfig();
 	}
 
 	if (widget.getTag() == "BTN_CANCEL") {
@@ -109,6 +104,24 @@ void OptionsSoundAdvancedMenu::callbackActive(Widget &widget) {
 		_forceSoftware = getCheckBoxState("CB_FORCESOFTWARE");
 		return;
 	}
+}
+
+void OptionsSoundAdvancedMenu::setDefault() {
+	_eax = 0;
+	_forceSoftware = false;
+}
+
+void OptionsSoundAdvancedMenu::readConfig() {
+	setDefault();
+
+	_eax = CLIP(ConfigMan.getInt("eax", _eax), 0, 3);
+	_forceSoftware = ConfigMan.getBool("forcesoftware", _forceSoftware);
+}
+
+void OptionsSoundAdvancedMenu::displayConfig() {
+	updateEAX(_eax);
+
+	setCheckBoxState("CB_FORCESOFTWARE", _forceSoftware);
 }
 
 void OptionsSoundAdvancedMenu::updateEAX(int eax) {
@@ -139,4 +152,3 @@ void OptionsSoundAdvancedMenu::adoptChanges() {
 } // End of namespace KotOR
 
 } // End of namespace Engines
-

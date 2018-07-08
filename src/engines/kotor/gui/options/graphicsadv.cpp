@@ -42,7 +42,7 @@ OptionsGraphicsAdvancedMenu::OptionsGraphicsAdvancedMenu(::Engines::Console *con
 
 	addBackground(kBackgroundTypeMenu);
 
-	//Hardcoded, the gui file returns incorrect values
+	// Hardcoded, the gui file returns incorrect values
 	getButton("BTN_TEXQUALLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getButton("BTN_TEXQUALLEFT", true)->setStaticHighlight();
 	getButton("BTN_TEXQUALRIGHT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
@@ -59,36 +59,20 @@ OptionsGraphicsAdvancedMenu::OptionsGraphicsAdvancedMenu(::Engines::Console *con
 	getCheckBox("CB_VSYNC", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_SOFTSHADOWS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 
+	readConfig();
 }
 
 OptionsGraphicsAdvancedMenu::~OptionsGraphicsAdvancedMenu() {
-
 }
 
 void OptionsGraphicsAdvancedMenu::show() {
+	readConfig();
+	displayConfig();
+
 	GUI::show();
-
-	_textureQuality = CLIP(ConfigMan.getInt("texturequality", 0), 0, 2);
-	updateTextureQuality(_textureQuality);
-
-	_antiAliasing = CLIP(ConfigMan.getInt("antialiasing", 0), 0, 3);
-	updateAntiAliasing(_antiAliasing);
-
-	_anisotropy = CLIP(ConfigMan.getInt("anisotropy", 0), 0, 4);
-	updateAnisotropy(_anisotropy);
-
-	_frameBufferEffects = ConfigMan.getBool("framebuffereffects", true);
-	setCheckBoxState("CB_FRAMEBUFF", _frameBufferEffects);
-
-	_softShadows = ConfigMan.getBool("softshadows", true);
-	setCheckBoxState("CB_SOFTSHADOWS", _softShadows);
-
-	_vsync = ConfigMan.getBool("vsync", false);
-	setCheckBoxState("CB_VSYNC", _vsync);
 }
 
 void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
-
 	if (widget.getTag() == "BTN_TEXQUALRIGHT") {
 		_textureQuality++;
 		if (_textureQuality > 2) {
@@ -144,23 +128,8 @@ void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_DEFAULT") {
-		_textureQuality = 0;
-		updateTextureQuality(_textureQuality);
-
-		_antiAliasing = 0;
-		updateAntiAliasing(_antiAliasing);
-
-		_anisotropy = 0;
-		updateAnisotropy(_anisotropy);
-
-		_frameBufferEffects = true;
-		setCheckBoxState("CB_FRAMEBUFF", _frameBufferEffects);
-
-		_softShadows = true;
-		setCheckBoxState("CB_SOFTSHADOWS", _softShadows);
-
-		_vsync = false;
-		setCheckBoxState("CB_VSYNC", _vsync);
+		setDefault();
+		displayConfig();
 	}
 
 	if (widget.getTag() == "BTN_CANCEL") {
@@ -188,6 +157,37 @@ void OptionsGraphicsAdvancedMenu::callbackActive(Widget &widget) {
 		_vsync = getCheckBoxState("CB_VSYNC");
 		return;
 	}
+}
+
+void OptionsGraphicsAdvancedMenu::setDefault() {
+	_textureQuality = 0;
+	_antiAliasing = 0;
+	_anisotropy = 0;
+	_frameBufferEffects = true;
+	_softShadows = true;
+	_vsync = false;
+}
+
+void OptionsGraphicsAdvancedMenu::readConfig() {
+	setDefault();
+
+	_textureQuality = CLIP(ConfigMan.getInt("texturequality", _textureQuality), 0, 2);
+	_antiAliasing = CLIP(ConfigMan.getInt("antialiasing", _antiAliasing), 0, 3);
+	_anisotropy = CLIP(ConfigMan.getInt("anisotropy", _anisotropy), 0, 4);
+
+	_frameBufferEffects = ConfigMan.getBool("framebuffereffects", _frameBufferEffects);
+	_softShadows = ConfigMan.getBool("softshadows", _softShadows);
+	_vsync = ConfigMan.getBool("vsync", _vsync);
+}
+
+void OptionsGraphicsAdvancedMenu::displayConfig() {
+	updateTextureQuality(_textureQuality);
+	updateAntiAliasing(_antiAliasing);
+	updateAnisotropy(_anisotropy);
+
+	setCheckBoxState("CB_FRAMEBUFF", _frameBufferEffects);
+	setCheckBoxState("CB_SOFTSHADOWS", _softShadows);
+	setCheckBoxState("CB_VSYNC", _vsync);
 }
 
 void OptionsGraphicsAdvancedMenu::updateTextureQuality(int textureQuality) {
@@ -273,6 +273,3 @@ void OptionsGraphicsAdvancedMenu::adoptChanges() {
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-
-

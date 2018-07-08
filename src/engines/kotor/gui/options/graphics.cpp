@@ -44,26 +44,24 @@ OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : GUI(cons
 	_advanced.reset(new OptionsGraphicsAdvancedMenu(_console));
 	_resolution.reset(new OptionsResolutionMenu(_console));
 
-	//Hardcoded, the gui file returns incorrect values
+	// Hardcoded, the gui file returns incorrect values
 	getCheckBox("CB_SHADOWS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 	getCheckBox("CB_GRASS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+
+	readConfig();
 }
 
 OptionsGraphicsMenu::~OptionsGraphicsMenu() {
 }
 
 void OptionsGraphicsMenu::show() {
+	readConfig();
+	displayConfig();
+
 	GUI::show();
-
-	_shadows = ConfigMan.getBool("shadows", true);
-	setCheckBoxState("CB_SHADOWS", _shadows);
-
-	_grass = ConfigMan.getBool("grass", true);
-	setCheckBoxState("CB_GRASS", _grass);
 }
 
 void OptionsGraphicsMenu::callbackActive(Widget &widget) {
-
 	if (widget.getTag() == "BTN_ADVANCED") {
 		adoptChanges();
 		sub(*_advanced);
@@ -76,11 +74,8 @@ void OptionsGraphicsMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_DEFAULT") {
-		_shadows = true;
-		setCheckBoxState("CB_SHADOWS", _shadows);
-
-		_grass = true;
-		setCheckBoxState("CB_GRASS", _grass);
+		setDefault();
+		displayConfig();
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
@@ -100,9 +95,26 @@ void OptionsGraphicsMenu::callbackActive(Widget &widget) {
 	}
 }
 
+void OptionsGraphicsMenu::setDefault() {
+	_shadows = true;
+	_grass = true;
+}
+
+void OptionsGraphicsMenu::readConfig() {
+	setDefault();
+
+	_shadows = ConfigMan.getBool("shadows", _shadows);
+	_grass = ConfigMan.getBool("grass", _grass);
+}
+
+void OptionsGraphicsMenu::displayConfig() {
+	setCheckBoxState("CB_SHADOWS", _shadows);
+	setCheckBoxState("CB_GRASS", _grass);
+}
+
 void OptionsGraphicsMenu::adoptChanges() {
-	ConfigMan.setBool("shadows", _shadows, false);
-	ConfigMan.setBool("grass", _grass, false);
+	ConfigMan.setBool("shadows", _shadows, true);
+	ConfigMan.setBool("grass", _grass, true);
 }
 
 } // End of namespace KotOR

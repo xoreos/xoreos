@@ -39,24 +39,24 @@ OptionsMouseSettingsMenu::OptionsMouseSettingsMenu(::Engines::Console *console) 
 	addBackground(kBackgroundTypeMenu);
 
 	getCheckBox("CB_REVBUTTONS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
+
+	readConfig();
 }
 
 OptionsMouseSettingsMenu::~OptionsMouseSettingsMenu() {
-
 }
 
 void OptionsMouseSettingsMenu::show() {
-	GUI::show();
+	readConfig();
+	displayConfig();
 
-	_reverseMouseButtons = ConfigMan.getBool("reversemousebuttons", false);
-	setCheckBoxState("CB_REVBUTTONS", _reverseMouseButtons);
+	GUI::show();
 }
 
 void OptionsMouseSettingsMenu::callbackActive(Widget &widget) {
-
 	if (widget.getTag() == "BTN_DEFAULT") {
-		_reverseMouseButtons = false;
-		setCheckBoxState("CB_REVBUTTONS", _reverseMouseButtons);
+		setDefault();
+		displayConfig();
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
@@ -71,6 +71,20 @@ void OptionsMouseSettingsMenu::callbackActive(Widget &widget) {
 	}
 }
 
+void OptionsMouseSettingsMenu::setDefault() {
+	_reverseMouseButtons = false;
+}
+
+void OptionsMouseSettingsMenu::readConfig() {
+	setDefault();
+
+	_reverseMouseButtons = ConfigMan.getBool("reversemousebuttons", _reverseMouseButtons);
+}
+
+void OptionsMouseSettingsMenu::displayConfig() {
+	setCheckBoxState("CB_REVBUTTONS", _reverseMouseButtons);
+}
+
 void OptionsMouseSettingsMenu::adoptChanges() {
 	ConfigMan.setBool("reversemousebuttons", _reverseMouseButtons, true);
 }
@@ -78,4 +92,3 @@ void OptionsMouseSettingsMenu::adoptChanges() {
 } // End of namespace KotOR
 
 } // End of namespace Engines
-

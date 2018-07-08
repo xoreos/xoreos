@@ -38,7 +38,7 @@ public:
 
 	virtual void show();
 
-	virtual void adoptChanges();
+	void adoptChanges();
 
 protected:
 	void callbackActive(Widget &widget);
@@ -50,6 +50,10 @@ private:
 	bool _partyMemberDown;
 	bool _actionMenuUsed;
 	bool _newTargetSelected;
+
+	void setDefault();
+	void readConfig();
+	void displayConfig();
 };
 
 } // End of namespace KotOR

@@ -38,10 +38,10 @@ public:
 	OptionsGameplayMenu(::Engines::Console *console = 0);
 	~OptionsGameplayMenu();
 
-
-	void show();
+	virtual void show();
 
 	void adoptChanges();
+
 protected:
 	void callbackActive(Widget &widget);
 
@@ -53,10 +53,14 @@ private:
 	bool _reverseMinigameY;
 	bool _combatMovement;
 
-	void updateDifficulty(int difficulty);
-
 	Common::ScopedPtr<GUI> _mousesettings;
 	Common::ScopedPtr<GUI> _keyboardconfiguration;
+
+	void setDefault();
+	void readConfig();
+	void displayConfig();
+
+	void updateDifficulty(int difficulty);
 };
 
 } // End of namespace KotOR

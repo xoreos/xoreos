@@ -38,8 +38,6 @@ public:
 
 	virtual void show();
 
-	virtual void adoptChanges();
-
 protected:
 	void callbackActive(Widget &widget);
 
@@ -47,7 +45,13 @@ private:
 	int _eax;
 	bool _forceSoftware;
 
+	void setDefault();
+	void readConfig();
+	void displayConfig();
+
 	void updateEAX(int eax);
+
+	void adoptChanges();
 };
 
 } // End of namespace KotOR

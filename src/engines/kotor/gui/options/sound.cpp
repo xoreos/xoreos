@@ -49,7 +49,6 @@ void OptionsSoundMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "BTN_DEFAULT") {
-
 	}
 
 	if (widget.getTag() == "BTN_BACK") {
@@ -61,4 +60,3 @@ void OptionsSoundMenu::callbackActive(Widget &widget) {
 } // End of namespace KotOR
 
 } // End of namespace Engines
-

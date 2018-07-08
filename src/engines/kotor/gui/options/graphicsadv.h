@@ -38,8 +38,6 @@ public:
 
 	virtual void show();
 
-	virtual void adoptChanges();
-
 protected:
 	void callbackActive(Widget &widget);
 
@@ -52,9 +50,15 @@ private:
 	bool _softShadows;
 	bool _vsync;
 
+	void setDefault();
+	void readConfig();
+	void displayConfig();
+
 	void updateTextureQuality(int textureQuality);
 	void updateAntiAliasing(int antiAliasing);
 	void updateAnisotropy(int anisotropy);
+
+	void adoptChanges();
 };
 
 } // End of namespace KotOR

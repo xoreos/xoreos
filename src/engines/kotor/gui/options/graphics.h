@@ -40,8 +40,6 @@ public:
 
 	virtual void show();
 
-	virtual void adoptChanges();
-
 protected:
 	void callbackActive(Widget &widget);
 
@@ -51,6 +49,12 @@ private:
 
 	Common::ScopedPtr<GUI> _resolution;
 	Common::ScopedPtr<GUI> _advanced;
+
+	void setDefault();
+	void readConfig();
+	void displayConfig();
+
+	void adoptChanges();
 };
 
 } // End of namespace KotOR

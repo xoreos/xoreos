@@ -39,13 +39,10 @@ OptionsKeyboardConfigurationMenu::OptionsKeyboardConfigurationMenu(::Engines::Co
 }
 
 OptionsKeyboardConfigurationMenu::~OptionsKeyboardConfigurationMenu() {
-
 }
 
 void OptionsKeyboardConfigurationMenu::callbackActive(Widget &widget) {
-
 	if (widget.getTag() == "BTN_Default") {
-
 	}
 
 	if (widget.getTag() == "BTN_Cancel") {
@@ -57,11 +54,8 @@ void OptionsKeyboardConfigurationMenu::callbackActive(Widget &widget) {
 		_returnCode = 1;
 		return;
 	}
-
 }
-
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
