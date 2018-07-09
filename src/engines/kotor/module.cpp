@@ -256,10 +256,12 @@ static const char * const texturePacks[3] = {
 };
 
 void Module::loadTexturePack() {
-	int level = ConfigMan.getInt("texturepack");
+	const int level = ConfigMan.getInt("texturepack");
 	if (_currentTexturePack == level)
 		// Nothing to do
 		return;
+
+	const int oldTexturePack = _currentTexturePack;
 
 	unloadTexturePack();
 
@@ -267,7 +269,7 @@ void Module::loadTexturePack() {
 	indexOptionalArchive(texturePacks[level], 400, &_textures);
 
 	// If we already had a texture pack loaded, reload all textures
-	if (_currentTexturePack != -1)
+	if (oldTexturePack != -1)
 		TextureMan.reloadAll();
 
 	_currentTexturePack = level;
