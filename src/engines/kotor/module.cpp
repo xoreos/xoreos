@@ -830,7 +830,7 @@ Common::UString Module::getName(const Common::UString &module) {
 
 void Module::toggleFreeRoamCamera() {
 	_freeCamEnabled = !_freeCamEnabled;
-	if (_freeCamEnabled && ConfigMan.getBool("flycamallrooms", true))
+	if (_freeCamEnabled && ConfigMan.getBool("flycamallrooms"))
 		_area->showAllRooms();
 }
 

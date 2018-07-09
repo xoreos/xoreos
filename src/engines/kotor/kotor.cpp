@@ -494,6 +494,11 @@ void KotOREngine::initConfig() {
 
 	ConfigMan.setInt(Common::kConfigRealmDefault, "eax", 0);
 	ConfigMan.setBool(Common::kConfigRealmDefault, "forcesoftware", false);
+
+	// xoreos-specific options
+
+	// Should we disable hiding of far rooms when the fly cam is enabled?
+	ConfigMan.setBool(Common::kConfigRealmDefault, "flycamallrooms", true);
 }
 
 void KotOREngine::initGameConfig() {
