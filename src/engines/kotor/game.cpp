@@ -72,7 +72,6 @@ void Game::run() {
 	_module.reset(new Module(*_console));
 
 	while (!EventMan.quitRequested()) {
-		_module->loadTexturePack();
 		mainMenu();
 		runModule();
 	}

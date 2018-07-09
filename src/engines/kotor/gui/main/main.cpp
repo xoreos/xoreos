@@ -74,6 +74,9 @@ void MainMenu::createClassSelection() {
 	LoadScreen loadScreen("chargen", _console);
 	loadScreen.show();
 
+	// Load the texture pack, needed for the character generator
+	_module->loadTexturePack();
+
 	// Create the class selection menu
 	_classSelection.reset(new ClassSelectionMenu(_module, _console));
 
