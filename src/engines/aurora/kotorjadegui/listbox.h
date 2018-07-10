@@ -95,6 +95,8 @@ public:
 
 	void subActive(Widget &widget);
 
+	void mouseWheel(uint8 state, int x, int y);
+
 	void setSoundSelectItem(const Common::UString &resRef);
 	void setSoundHoverItem(const Common::UString &resRef);
 	void setSoundClickItem(const Common::UString &resRef);

@@ -31,10 +31,11 @@
 
 namespace Engines {
 
-WidgetProtoItem::WidgetProtoItem(GUI &gui, const Common::UString &tag)
+WidgetProtoItem::WidgetProtoItem(GUI &gui, const Common::UString &tag, WidgetListBox *parentList)
 		: KotORJadeWidget(gui, tag),
 		  _disableHighlight(false),
-		  _hovered(false) {
+		  _hovered(false),
+		  _parentList(parentList) {
 }
 
 WidgetProtoItem::~WidgetProtoItem() {
@@ -102,6 +103,11 @@ void WidgetProtoItem::setDefaultHighlighting(Graphics::Aurora::Highlightable *hi
 	highlightable->setHighlightDelta(0.0f, 0.0f, 0.0f, 0.05f);
 	highlightable->setHighlightLowerBound(1.0f, 1.0f, 0.0f, 0.2f);
 	highlightable->setHighlightUpperBound(1.0f, 1.0f, 0.0f, 1.0f);
+}
+
+void WidgetProtoItem::mouseWheel(uint8 state, int x, int y) {
+	if (_parentList)
+		_parentList->mouseWheel(state, x, y);
 }
 
 } // End of namespace Engines
