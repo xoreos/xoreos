@@ -33,6 +33,8 @@
 
 namespace Graphics {
 
+typedef SDL_DisplayMode DisplayMode;
+
 /** The graphics manager. */
 class WindowManager : public Common::Singleton<WindowManager> {
 public:
@@ -66,6 +68,9 @@ public:
 	int getWindowHeight() const;
 	/** Set the window size. */
 	void setWindowSize(int width, int height);
+
+	/** Get all possible display modes. */
+	std::vector<DisplayMode> getDisplayModes();
 
 	/** Return the system's screen width. */
 	int getSystemWidth() const;

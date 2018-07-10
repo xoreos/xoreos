@@ -227,6 +227,21 @@ void WindowManager::setWindowSize(int width, int height) {
 	NotificationMan.resized(oldWidth, oldHight, _width, _height);
 }
 
+std::vector<DisplayMode> WindowManager::getDisplayModes() {
+	std::vector<DisplayMode> modes;
+	int numDisplays = SDL_GetNumVideoDisplays();
+	for (int i = 0; i < numDisplays; ++i) {
+		int numModes = SDL_GetNumDisplayModes(i);
+		for (int j = 0; j < numModes; ++j) {
+			DisplayMode mode;
+			SDL_GetDisplayMode(i, j, &mode);
+			modes.push_back(mode);
+		}
+	}
+
+	return modes;
+}
+
 int WindowManager::getSystemWidth() const {
 	int displayIndex = SDL_GetWindowDisplayIndex(_window);
 	SDL_DisplayMode maxWidth;
