@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_RESOLUTION_H
 #define ENGINES_KOTOR_GUI_OPTIONS_RESOLUTION_H
 
+#include "src/graphics/windowman.h"
+
 #include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
@@ -37,6 +39,11 @@ public:
 
 protected:
 	void callbackActive(Widget &widget);
+
+private:
+	int _newWidth, _newHeight;
+
+	std::vector<Graphics::DisplayMode> _modes;
 };
 
 } // End of namespace KotOR

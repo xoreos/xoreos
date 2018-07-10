@@ -382,13 +382,13 @@ void WidgetListBox::applyChangesToItemWidgets() {
 	}
 }
 
-void WidgetListBox::mouseWheel(uint8 state, int x, int y) {
+void WidgetListBox::mouseWheel(uint8 UNUSED(state), int UNUSED(x), int y) {
 	if (y == 0 || !_adjustHeight)
 		return;
 
 	_startIndex = MIN(
 		MAX(_startIndex - y, 0),
-		MIN(static_cast<int>(_itemWidgets.size()) - _numVisibleItems, 0)
+		MAX<int>(_itemWidgets.size() - _numVisibleItems, 0)
 	);
 	refreshItemWidgets();
 }
