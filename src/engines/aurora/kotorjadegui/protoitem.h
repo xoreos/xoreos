@@ -26,12 +26,13 @@
 #define ENGINES_AURORA_KOTORJADEGUI_PROTOITEM_H
 
 #include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/aurora/kotorjadegui/listbox.h"
 
 namespace Engines {
 
 class WidgetProtoItem : public KotORJadeWidget {
 public:
-	WidgetProtoItem(GUI &gui, const Common::UString &tag);
+	WidgetProtoItem(GUI &gui, const Common::UString &tag, WidgetListBox *parentList = 0);
 	~WidgetProtoItem();
 
 	/** Set item contents. If not overriden this method will only
@@ -48,6 +49,8 @@ public:
 
 	void mouseUp(uint8 state, float x, float y);
 
+	virtual void mouseWheel(uint8 state, int x, int y);
+
 	void setDisableHighlight(bool disableHighlight);
 
 	void setSoundHover(const Common::UString &resRef);
@@ -56,6 +59,8 @@ public:
 private:
 	bool _disableHighlight;
 	bool _hovered;
+
+	WidgetListBox *_parentList;
 
 	Common::UString _soundHover;
 	Common::UString _soundClick;

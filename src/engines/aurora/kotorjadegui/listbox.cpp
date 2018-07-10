@@ -142,7 +142,7 @@ void WidgetListBox::createItemWidgets(uint32 count) {
 				break;
 			case kLBItemTypeDefault:
 			default:
-				item = new WidgetProtoItem(*_gui, tag);
+				item = new WidgetProtoItem(*_gui, tag, this);
 				break;
 		}
 
@@ -380,6 +380,17 @@ void WidgetListBox::applyChangesToItemWidgets() {
 		_itemWidgets[i]->setSoundHover(_soundHoverItem);
 		_itemWidgets[i]->setSoundClick(_soundClickItem);
 	}
+}
+
+void WidgetListBox::mouseWheel(uint8 state, int x, int y) {
+	if (y == 0 || !_adjustHeight)
+		return;
+
+	_startIndex = MIN(
+		MAX(_startIndex - y, 0),
+		MIN(static_cast<int>(_itemWidgets.size()) - _numVisibleItems, 0)
+	);
+	refreshItemWidgets();
 }
 
 } // End of namespace Engines
