@@ -52,6 +52,7 @@ namespace KotOR {
 class Module;
 class Room;
 class Situated;
+class Creature;
 
 /** An area in Star Wars: Knights of the Old Republic, holding all objects and
  *  rooms within, as well as general area properties like the current background
@@ -138,6 +139,8 @@ public:
 	KotOR::Object *getActiveObject();
 	KotOR::Object *getObjectByTag(const Common::UString &tag);
 
+	void processCreaturesActions(float dt);
+
 
 protected:
 	void notifyCameraMoved();
@@ -196,6 +199,8 @@ private:
 
 	ObjectList _objects;   ///< List of all objects in the area.
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
+
+	std::vector<Creature *> _creatures;
 
 	/** The currently active (highlighted) object. */
 	KotOR::Object *_activeObject;

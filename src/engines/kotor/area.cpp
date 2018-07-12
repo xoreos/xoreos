@@ -111,6 +111,7 @@ void Area::clear() {
 		_module->removeObject(**o);
 
 	_objects.clear();
+	_creatures.clear();
 	_rooms.clear();
 	_triggers.clear();
 	_situatedObjects.clear();
@@ -434,6 +435,7 @@ void Area::loadCreatures(const Aurora::GFF3List &list) {
 		Creature *creature = new Creature(**c);
 
 		loadObject(*creature);
+		_creatures.push_back(creature);
 	}
 }
 
@@ -717,6 +719,13 @@ KotOR::Object *Area::getObjectByTag(const Common::UString &tag) {
 			return *o;
 	}
 	return 0;
+}
+
+void Area::processCreaturesActions(float dt) {
+	for (std::vector<Creature *>::iterator c = _creatures.begin();
+			c != _creatures.end(); ++c) {
+		(*c)->processActionQueue(dt);
+	}
 }
 
 Room *Area::getRoomAt(float x, float y) const {

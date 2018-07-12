@@ -84,7 +84,7 @@ void Functions::actionCloseDoor(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
-	Engines::KotOR::Object *caller = ObjectContainer::toObject(ctx.getCaller());
+	Creature *caller = ObjectContainer::toCreature(ctx.getCaller());
 	if (!caller)
 		throw Common::Exception("Functions::actionMoveToObject(): Invalid caller");
 
@@ -95,18 +95,14 @@ void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
 	float range = ctx.getParams()[2].getFloat();
 
 	float x, y, z;
-	caller->getPosition(x, y, z);
-	glm::vec3 callerPos(x, y, z);
-
 	object->getPosition(x, y, z);
-	glm::vec3 moveToPos(x, y, z);
 
-	if (glm::distance(callerPos, moveToPos) > range) {
-		glm::vec3 dir = glm::normalize(moveToPos - callerPos);
-		moveToPos -= dir * range;
-	}
+	Action action(kActionMoveToPoint);
+	action.setRange(range);
+	action.setPoint(x, y, z);
 
-	caller->setPosition(moveToPos.x, moveToPos.y, moveToPos.z);
+	caller->clearActionQueue();
+	caller->enqueueAction(action);
 }
 
 } // End of namespace KotOR
