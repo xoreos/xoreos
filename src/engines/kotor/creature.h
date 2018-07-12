@@ -36,6 +36,7 @@
 
 #include "src/engines/kotor/object.h"
 #include "src/engines/kotor/inventory.h"
+#include "src/engines/kotor/action.h"
 
 namespace Engines {
 
@@ -121,6 +122,15 @@ public:
 	                       float length = 0.0f,
 	                       float speed = 1.0f);
 
+	// Action queue
+
+	void clearActionQueue();
+
+	/** Append action to the character's action queue. */
+	void enqueueAction(const Action &action);
+
+	void processActionQueue(float dt);
+
 private:
 	/** Parts of a creature's body. */
 	struct PartModels {
@@ -161,6 +171,8 @@ private:
 	Inventory _inventory;
 	Common::PtrMap<EquipmentSlot, Item> _equipment;
 
+	std::vector<Action> _actionQueue;
+
 
 	void init();
 
@@ -179,6 +191,8 @@ private:
 	void changeWeapon(EquipmentSlot slot);
 
 	void setDefaultAnimations();
+
+	void handleActionMoveToPoint(const Action &action, float dt);
 };
 
 } // End of namespace KotOR
