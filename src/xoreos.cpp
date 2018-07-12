@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
 
 	// Check the requested target
 	if (target.empty() || !ConfigMan.hasGame(target)) {
-		Common::UString path = ConfigMan.getString("path");
+		Common::UString path = ConfigMan.getString("path", "");
 		if (path.empty()) {
 			if (ConfigMan.getBool("listdebug", false)) {
 				listDebug();
@@ -145,7 +145,7 @@ int main(int argc, char **argv) {
 
 	status("Target \"%s\"", target.c_str());
 
-	Common::UString dirArg = ConfigMan.getString("path");
+	Common::UString dirArg = ConfigMan.getString("path", "");
 	if (dirArg.empty())
 		error("Target \"%s\" is missing a path", target.c_str());
 
