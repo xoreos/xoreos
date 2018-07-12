@@ -165,6 +165,38 @@ enum EquipmentSlot {
 	kEquipmentSlotBelt    = 1U << 10
 };
 
+enum ActionType {
+	kActionMoveToPoint   = 0,
+	kActionPickUpItem    = 1,
+	kActionDropItem      = 2,
+	kActionAttackObject  = 3,
+	kActionCastSpell     = 4,
+	kActionOpenDoor      = 5,
+	kActionCloseDoor     = 6,
+	kActionDialogObject  = 7,
+	kActionDisableTrap   = 8,
+	kActionRecoverTrap   = 9,
+	kActionFlagTrap      = 10,
+	kActionExamineTrap   = 11,
+	kActionSetTrap       = 12,
+	kActionOpenLock      = 13,
+	kActionLock          = 14,
+	kActionUseObject     = 15,
+	kActionAnimalEmpathy = 16,
+	kActionRest          = 17,
+	kActionTaunt         = 18,
+	kActionItemCastSpell = 19,
+	kActionCounterSpell  = 31,
+	kActionHeal          = 33,
+	kActionPickpocket    = 34,
+	kActionFollow        = 35,
+	kActionWait          = 36,
+	kActionSit           = 37,
+	kActionFollowLeader  = 38,
+	kActionQueueEmpty    = 65534,
+	kActionInvalid       = 65535
+};
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

@@ -530,6 +530,8 @@ void Module::processEventQueue() {
 	handleEvents();
 	handleActions();
 
+	_area->processCreaturesActions(_frameTime);
+
 	if (!_freeCamEnabled) {
 		GfxMan.lockFrame();
 		handlePCMovement();
