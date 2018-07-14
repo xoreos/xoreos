@@ -53,7 +53,10 @@ namespace Engines {
 
 namespace KotOR {
 
-Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature) {
+Creature::Creature(const Aurora::GFF3Struct &creature)
+		: Object(kObjectTypeCreature),
+		  _walkRate(0.0f),
+		  _runRate(0.0f) {
 	init();
 	load(creature);
 }
@@ -145,6 +148,14 @@ Race Creature::getRace() const {
 
 SubRace Creature::getSubRace() const {
 	return _subRace;
+}
+
+float Creature::getWalkRate() const {
+	return _walkRate;
+}
+
+float Creature::getRunRate() const {
+	return _runRate;
 }
 
 void Creature::setPosition(float x, float y, float z) {
@@ -321,6 +332,8 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 		else if (headBackupID >= 0)
 			parts.head = heads.getRow(headBackupID).getString("head");
 	}
+
+	loadMovementRate(appearance.getString("moverate"));
 }
 
 void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) {
@@ -412,6 +425,8 @@ void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVar
 	parts.head += Common::composeString(_face + 1);
 
 	parts.bodyTexture += Common::UString::format("%02u", textureVariation);
+
+	loadMovementRate("PLAYER");
 }
 
 void Creature::loadBody(PartModels &parts) {
@@ -443,6 +458,13 @@ void Creature::loadHead(PartModels &parts) {
 		return;
 
 	_model->attachModel("headhook", _headModel);
+}
+
+void Creature::loadMovementRate(const Common::UString &name) {
+	const Aurora::TwoDARow &speed = TwoDAReg.get2DA("creaturespeed").getRow("2daname", name);
+
+	_walkRate = speed.getFloat("walkrate");
+	_runRate = speed.getFloat("runrate");
 }
 
 void Creature::changeBody() {
