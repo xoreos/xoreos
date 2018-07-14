@@ -50,6 +50,7 @@
 #include "src/engines/kotor/door.h"
 #include "src/engines/kotor/creature.h"
 #include "src/engines/kotor/trigger.h"
+#include "src/engines/kotor/actionexecutor.h"
 
 namespace Engines {
 
@@ -724,7 +725,7 @@ KotOR::Object *Area::getObjectByTag(const Common::UString &tag) {
 void Area::processCreaturesActions(float dt) {
 	for (std::vector<Creature *>::iterator c = _creatures.begin();
 			c != _creatures.end(); ++c) {
-		(*c)->processActionQueue(dt);
+		ActionExecutor::executeActions(**c, *this, dt);
 	}
 }
 

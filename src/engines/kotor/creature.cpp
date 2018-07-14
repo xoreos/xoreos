@@ -22,9 +22,6 @@
  *  A creature in a Star Wars: Knights of the Old Republic area.
  */
 
-#include "glm/vec3.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -46,8 +43,6 @@
 #include "src/engines/kotor/item.h"
 
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"
-
-static const float kMovementSpeed = 5.0f;
 
 namespace Engines {
 
@@ -706,39 +701,18 @@ void Creature::enqueueAction(const Action &action) {
 	_actionQueue.push_back(action);
 }
 
-void Creature::processActionQueue(float dt) {
+const Action *Creature::peekAction() const {
 	if (_actionQueue.empty())
-		return;
+		return 0;
 
-	const Action &action = _actionQueue.front();
-
-	switch (action.getType()) {
-		case kActionMoveToPoint:
-			handleActionMoveToPoint(action, dt);
-			break;
-		default:
-			break;
-	}
+	return &_actionQueue.front();
 }
 
-void Creature::handleActionMoveToPoint(const Action &action, float dt) {
-	glm::vec3 origin(glm::make_vec3(_position));
-
-	float x, y, z;
-	action.getPoint(x, y, z);
-	glm::vec3 dest(x, y, z);
-
-	glm::vec3 diff = dest - origin;
-	if (glm::length(diff) <= action.getRange()) {
-		playDefaultAnimation();
+const Action *Creature::dequeueAction() {
+	Action *action = _actionQueue.empty() ? 0 : &_actionQueue.front();
+	if (action)
 		_actionQueue.erase(_actionQueue.begin());
-	} else {
-		glm::vec3 dir = glm::normalize(diff);
-		playAnimation("run", false, -1.0f);
-		setPosition(origin.x + kMovementSpeed * dir.x * dt,
-		            origin.y + kMovementSpeed * dir.y * dt,
-		            origin.z + kMovementSpeed * dir.z * dt);
-	}
+	return action;
 }
 
 void Creature::setDefaultAnimations() {

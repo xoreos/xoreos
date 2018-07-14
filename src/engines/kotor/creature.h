@@ -132,7 +132,8 @@ public:
 	/** Append action to the character's action queue. */
 	void enqueueAction(const Action &action);
 
-	void processActionQueue(float dt);
+	const Action *peekAction() const;
+	const Action *dequeueAction();
 
 private:
 	/** Parts of a creature's body. */
@@ -199,8 +200,6 @@ private:
 	void changeWeapon(EquipmentSlot slot);
 
 	void setDefaultAnimations();
-
-	void handleActionMoveToPoint(const Action &action, float dt);
 };
 
 } // End of namespace KotOR
