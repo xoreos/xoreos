@@ -90,6 +90,7 @@ public:
 	/** Set the object's orientation. */
 	virtual void setOrientation(float x, float y, float z, float angle);
 
+	void makeLookAt(float x, float y);
 	void makeLookAt(Object *target);
 
 	/** Get a room the object is in. */
