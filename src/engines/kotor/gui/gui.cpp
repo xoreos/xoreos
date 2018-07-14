@@ -171,7 +171,11 @@ void GUI::createWidget(WidgetContext &ctx) {
 	else
 		throw Common::Exception("No such widget type %d", ctx.type);
 
-	ctx.widget->load(*ctx.strct);
+	try {
+		ctx.widget->load(*ctx.strct);
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
+	}
 
 	initWidget(*ctx.widget);
 }
