@@ -263,6 +263,7 @@ private:
 
 
 	friend class Console;
+	friend class ActionExecutor;
 };
 
 } // End of namespace KotOR
