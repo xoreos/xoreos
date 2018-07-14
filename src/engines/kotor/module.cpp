@@ -65,8 +65,6 @@ namespace Engines {
 
 namespace KotOR {
 
-static const float kPCMovementSpeed = 5;
-
 bool Module::Action::operator<(const Action &s) const {
 	return timestamp < s.timestamp;
 }
@@ -622,17 +620,18 @@ void Module::handlePCMovement() {
 		float x, y, z;
 		_pc->getPosition(x, y, z);
 		float yaw = SatelliteCam.getYaw();
+		float moveRate = _pc->getRunRate();
 		float newX, newY;
 
 		if (_forwardBtnPressed && !_backwardsBtnPressed) {
 			_pc->setOrientation(0, 0, 1, Common::rad2deg(yaw));
-			newX = x - kPCMovementSpeed * sin(yaw) * _frameTime;
-			newY = y + kPCMovementSpeed * cos(yaw) * _frameTime;
+			newX = x - moveRate * sin(yaw) * _frameTime;
+			newY = y + moveRate * cos(yaw) * _frameTime;
 			haveMovement = true;
 		} else if (_backwardsBtnPressed && !_forwardBtnPressed) {
 			_pc->setOrientation(0, 0, 1, 180 + Common::rad2deg(yaw));
-			newX = x + kPCMovementSpeed * sin(yaw) * _frameTime;
-			newY = y - kPCMovementSpeed * cos(yaw) * _frameTime;
+			newX = x + moveRate * sin(yaw) * _frameTime;
+			newY = y - moveRate * cos(yaw) * _frameTime;
 			haveMovement = true;
 		}
 
