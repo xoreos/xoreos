@@ -124,10 +124,14 @@ void Object::setOrientation(float x, float y, float z, float angle) {
 	_orientation[3] = angle;
 }
 
-void Object::makeLookAt(Object *target) {
-	float dx = target->_position[0] - _position[0];
-	float dy = target->_position[1] - _position[1];
+void Object::makeLookAt(float x, float y) {
+	float dx = x - _position[0];
+	float dy = y - _position[1];
 	setOrientation(0.0f, 0.0f, 1.0f, Common::rad2deg(std::atan2(dy, dx)) - 90.0f);
+}
+
+void Object::makeLookAt(Object *target) {
+	makeLookAt(target->_position[0], target->_position[1]);
 }
 
 Room *Object::getRoom() {
