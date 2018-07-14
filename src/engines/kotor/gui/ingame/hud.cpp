@@ -39,6 +39,134 @@ namespace Engines {
 
 namespace KotOR {
 
+enum Position {
+	kPositionUpperLeft,
+	kPositionUpperRight,
+	kPositionLowerLeft,
+	kPositionLowerRight,
+	kPositionUpperMid,
+	kPositionLowerMid,
+	kPositionNotSpecified
+};
+
+struct KnownWidget {
+	const char *name;
+	bool visible;
+	Position position;
+};
+
+static const KnownWidget kKnownWidgets[] = {
+	{ "LBL_MAPVIEW", true, kPositionUpperLeft },
+	{ "LBL_MAPBORDER", true, kPositionUpperLeft },
+	{ "LBL_ARROW", true, kPositionUpperLeft },
+	{ "LBL_PLOTXP", false, kPositionUpperLeft },
+	{ "LBL_STEALTHXP", false, kPositionUpperLeft },
+	{ "LBL_CASH", false, kPositionUpperLeft },
+	{ "LBL_JOURNAL", false, kPositionUpperLeft },
+	{ "LBL_LIGHTSHIFT", false, kPositionUpperLeft },
+	{ "LBL_DARKSHIFT", false, kPositionUpperLeft },
+	{ "LBL_ITEMRCVD", false, kPositionUpperLeft },
+	{ "LBL_ITEMLOST", false, kPositionUpperLeft },
+
+	{ "LBL_MENUBG", true, kPositionUpperRight },
+	{ "BTN_MSG", true, kPositionUpperRight },
+	{ "BTN_ABI", true, kPositionUpperRight },
+	{ "BTN_JOU", true, kPositionUpperRight },
+	{ "BTN_INV", true, kPositionUpperRight },
+	{ "BTN_CHAR", true, kPositionUpperRight },
+	{ "BTN_EQU", true, kPositionUpperRight },
+	{ "BTN_MAP", true, kPositionUpperRight },
+	{ "BTN_OPT", true, kPositionUpperRight },
+
+	{ "LBL_MOULDING1", true, kPositionLowerLeft },
+	{ "TB_SOLO", true, kPositionLowerLeft },
+	{ "TB_STEALTH", true, kPositionLowerLeft },
+	{ "TB_PAUSE", true, kPositionLowerLeft },
+	{ "LBL_CHAR1", false, kPositionLowerLeft },
+	{ "LBL_CHAR2", false, kPositionLowerLeft },
+	{ "LBL_CHAR3", false, kPositionLowerLeft },
+	{ "LBL_DEBILATATED1", false, kPositionLowerLeft },
+	{ "LBL_DEBILATATED2", false, kPositionLowerLeft },
+	{ "LBL_DEBILATATED3", false, kPositionLowerLeft },
+	{ "LBL_DISABLE1", false, kPositionLowerLeft },
+	{ "LBL_DISABLE2", false, kPositionLowerLeft },
+	{ "LBL_DISABLE3", false, kPositionLowerLeft },
+	{ "LBL_CMBTEFCTRED1", false, kPositionLowerLeft },
+	{ "LBL_CMBTEFCTRED2", false, kPositionLowerLeft },
+	{ "LBL_CMBTEFCTRED3", false, kPositionLowerLeft },
+	{ "LBL_CMBTEFCTINC1", false, kPositionLowerLeft },
+	{ "LBL_CMBTEFCTINC2", false, kPositionLowerLeft },
+	{ "LBL_CMBTEFCTINC3", false, kPositionLowerLeft },
+	{ "LBL_BACK1", false, kPositionLowerLeft },
+	{ "LBL_BACK2", false, kPositionLowerLeft },
+	{ "LBL_BACK3", false, kPositionLowerLeft },
+	{ "BTN_CHAR1", false, kPositionLowerLeft },
+	{ "BTN_CHAR2", false, kPositionLowerLeft },
+	{ "BTN_CHAR3", false, kPositionLowerLeft },
+	{ "LBL_LVLUPBG1", false, kPositionLowerLeft },
+	{ "LBL_LVLUPBG2", false, kPositionLowerLeft },
+	{ "LBL_LVLUPBG3", false, kPositionLowerLeft },
+	{ "LBL_LEVELUP1", false, kPositionLowerLeft },
+	{ "LBL_LEVELUP2", false, kPositionLowerLeft },
+	{ "LBL_LEVELUP3", false, kPositionLowerLeft },
+	{ "PB_VIT1", false, kPositionLowerLeft },
+	{ "PB_VIT2", false, kPositionLowerLeft },
+	{ "PB_VIT3", false, kPositionLowerLeft },
+	{ "PB_FORCE1", false, kPositionLowerLeft },
+	{ "PB_FORCE2", false, kPositionLowerLeft },
+	{ "PB_FORCE3", false, kPositionLowerLeft },
+
+	{ "LBL_MOULDING3", true, kPositionLowerRight },
+	{ "BTN_ACTIONDOWN0", true, kPositionLowerRight },
+	{ "BTN_ACTIONDOWN1", true, kPositionLowerRight },
+	{ "BTN_ACTIONDOWN2", true, kPositionLowerRight },
+	{ "BTN_ACTIONDOWN3", true, kPositionLowerRight },
+	{ "BTN_ACTIONUP0", true, kPositionLowerRight },
+	{ "BTN_ACTIONUP1", true, kPositionLowerRight },
+	{ "BTN_ACTIONUP2", true, kPositionLowerRight },
+	{ "BTN_ACTIONUP3", true, kPositionLowerRight },
+	{ "BTN_ACTION0", true, kPositionLowerRight },
+	{ "BTN_ACTION1", true, kPositionLowerRight },
+	{ "BTN_ACTION2", true, kPositionLowerRight },
+	{ "BTN_ACTION3", true, kPositionLowerRight },
+	{ "LBL_ACTION0", true, kPositionLowerRight },
+	{ "LBL_ACTION1", true, kPositionLowerRight },
+	{ "LBL_ACTION2", true, kPositionLowerRight },
+	{ "LBL_ACTION3", true, kPositionLowerRight },
+	{ "LBL_ACTIONDESC", false, kPositionLowerRight },
+	{ "LBL_ACTIONDESCBG", false, kPositionLowerRight },
+
+	{ "LBL_CMBTMSGBG", false, kPositionUpperMid },
+	{ "LBL_CMBTMODEMSG", false, kPositionUpperMid },
+
+	{ "LBL_COMBATBG1", false, kPositionLowerMid },
+	{ "LBL_COMBATBG2", false, kPositionLowerMid },
+	{ "LBL_COMBATBG3", false, kPositionLowerMid },
+	{ "LBL_QUEUE0", false, kPositionLowerMid },
+	{ "LBL_QUEUE1", false, kPositionLowerMid },
+	{ "LBL_QUEUE2", false, kPositionLowerMid },
+	{ "LBL_QUEUE3", false, kPositionLowerMid },
+	{ "BTN_CLEARALL", false, kPositionLowerMid },
+	{ "BTN_CLEARONE", false, kPositionLowerMid },
+	{ "BTN_CLEARONE2", false, kPositionLowerMid },
+
+	{ "PB_HEALTH", false, kPositionNotSpecified },
+	{ "LBL_HEALTHBG", false, kPositionNotSpecified },
+	{ "LBL_NAMEBG", false, kPositionNotSpecified },
+	{ "LBL_NAME", false, kPositionNotSpecified },
+	{ "BTN_TARGET0", false, kPositionNotSpecified },
+	{ "BTN_TARGET1", false, kPositionNotSpecified },
+	{ "BTN_TARGET2", false, kPositionNotSpecified },
+	{ "BTN_TARGETUP0", false, kPositionNotSpecified },
+	{ "BTN_TARGETUP1", false, kPositionNotSpecified },
+	{ "BTN_TARGETUP2", false, kPositionNotSpecified },
+	{ "BTN_TARGETDOWN0", false, kPositionNotSpecified },
+	{ "BTN_TARGETDOWN1", false, kPositionNotSpecified },
+	{ "BTN_TARGETDOWN2", false, kPositionNotSpecified },
+
+	// TODO: Add xbox ui widgets.
+};
+
 struct Resolution {
 	int width;
 	int height;
@@ -81,49 +209,60 @@ HUD::HUD(Module &module, Engines::Console *console)
 		if (it->width == wWidth && it->height == wHeight)
 			foundRes = &*it;
 
+	bool scale = false;
 	if (!foundRes) {
-		Common::UString resString;
-
 		for (std::set<Resolution>::const_iterator it = availableRes.begin(); it != availableRes.end(); ++it) {
-			if (!resString.empty())
-				resString += ", ";
-
-			resString += Common::UString::format("%dx%d", it->width, it->height);
+			if ((it->width == 800) && (it->height == 600)) {
+				foundRes = &*it;
+				break;
+			}
 		}
-
-		warning("TODO: Add scaling for custom resolutions. Supported resolutions are %s", resString.c_str());
-		return;
+		if (!foundRes)
+			throw Common::Exception("No gui with 800x600 resolution found.");
+		scale = true;
 	}
 
 	load(foundRes->gui);
 
-	static const char * const kWidgets[] = {
-		// Actions
-		"LBL_HEALTHBG", "LBL_NAMEBG", "LBL_NAME", "BTN_TARGET0", "BTN_TARGET1", "BTN_TARGET2",
-		"BTN_TARGETUP0", "BTN_TARGETUP1", "BTN_TARGETUP2",
-		"BTN_TARGETDOWN0", "BTN_TARGETDOWN1", "BTN_TARGETDOWN2",
-		// Action description
-		"LBL_ACTIONDESC", "LBL_ACTIONDESCBG",
-		// Combat
-		"LBL_CMBTMODEMSG", "LBL_CMBTMSGBG", "LBL_COMBATBG1", "LBL_COMBATBG2", "LBL_COMBATBG3", "BTN_CLEARALL",
-		// Modifiers
-		"LBL_CMBTEFCTINC1", "LBL_CMBTEFCTINC2", "LBL_CMBTEFCTINC3",
-		"LBL_CMBTEFCTRED1", "LBL_CMBTEFCTRED2", "LBL_CMBTEFCTRED3",
-		"LBL_LEVELUP1", "LBL_LEVELUP2", "LBL_LEVELUP3",
-		"LBL_LVLUPBG1", "LBL_LVLUPBG2", "LBL_LVLUPBG3",
-		"LBL_DISABLE1", "LBL_DISABLE2", "LBL_DISABLE3",
-		"LBL_DEBILATATED1", "LBL_DEBILATATED2", "LBL_DEBILATATED3",
-		"LBL_PLOTXP", "LBL_STEALTHXP", "LBL_CASH", "LBL_JOURNAL",
-		"LBL_LIGHTSHIFT", "LBL_DARKSHIFT", "LBL_ITEMRCVD", "LBL_ITEMLOST",
-		// Health bar
-		"PB_HEALTH"
-	};
+	// Make all the widgets invisible and scale them if needed.
+	for (size_t i = 0; i < ARRAYSIZE(kKnownWidgets); i++) {
+		Widget *widget = getWidget(kKnownWidgets[i].name);
+		if (!widget)
+			continue;
 
-	// Make all the widgets invisible
-	for (size_t i = 0; i < ARRAYSIZE(kWidgets); i++) {
-		Widget *widget = getWidget(kWidgets[i]);
-		if (widget)
-			widget->setInvisible(true);
+		widget->setInvisible(!kKnownWidgets[i].visible);
+
+		float x, y, z;
+		if (scale) {
+			switch (kKnownWidgets[i].position) {
+				case kPositionUpperLeft:
+					widget->getPosition(x, y, z);
+					widget->setPosition(-wWidth/2 + (400 + x), wHeight/2 - (300 - y), z);
+					break;
+				case kPositionUpperRight:
+					widget->getPosition(x, y, z);
+					widget->setPosition(wWidth/2 - (400 - x), wHeight/2 - (300 - y), z);
+					break;
+				case kPositionUpperMid:
+					widget->getPosition(x, y, z);
+					widget->setPosition(x, wHeight/2 - (300 - y), z);
+					break;
+				case kPositionLowerLeft:
+					widget->getPosition(x, y, z);
+					widget->setPosition(-wWidth/2 + (400 + x), -wHeight/2 + (300 + y), z);
+					break;
+				case kPositionLowerRight:
+					widget->getPosition(x, y, z);
+					widget->setPosition(wWidth/2 - (400 - x), -wHeight/2 + (300 + y), z);
+					break;
+				case kPositionLowerMid:
+					widget->getPosition(x, y, z);
+					widget->setPosition(x, -wHeight/2 + (300 + y), z);
+					break;
+				default:
+					break;
+			}
+		}
 	}
 }
 
