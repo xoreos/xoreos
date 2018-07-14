@@ -53,6 +53,7 @@ class Area;
 class Creature;
 class IngameGUI;
 class DialogGUI;
+class PartySelectionGUI;
 
 class Module : public KotOR::Object, public KotOR::ObjectContainer {
 public:
@@ -122,6 +123,8 @@ public:
 	void addToParty(Creature *creature);
 	/** Check if the specified creature is a party member. */
 	bool isObjectPartyMember(Creature *creature);
+	/** Show the party selection GUI. */
+	void showPartySelectionGUI(const Common::UString &exitScript, int forceNPC1 = -1, int forceNPC2 = -1);
 	// '---
 
 	// .--- Gui management
@@ -233,6 +236,8 @@ private:
 	Common::ScopedPtr<IngameGUI> _ingame; ///< The ingame ui.
 
 	Common::ScopedPtr<DialogGUI> _dialog; ///< Conversation/cutscene GUI.
+
+	Common::ScopedPtr<PartySelectionGUI> _partySelection;
 
 	// .--- Global values
 	std::map<Common::UString, bool> _globalBooleans;

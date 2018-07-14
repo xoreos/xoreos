@@ -50,6 +50,14 @@ void Functions::isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = _game->getModule().isObjectPartyMember(creature);
 }
 
+void Functions::showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &exitScript = ctx.getParams()[0].getString();
+	int forceNPC1 = ctx.getParams()[1].getInt();
+	int forceNPC2 = ctx.getParams()[2].getInt();
+
+	_game->getModule().showPartySelectionGUI(exitScript, forceNPC1, forceNPC2);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

@@ -33,6 +33,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/ingame/menu_map.h \
     src/engines/kotor/gui/ingame/menu_opt.h \
     src/engines/kotor/gui/ingame/minimap.h \
+    src/engines/kotor/gui/ingame/partyselection.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
@@ -49,4 +50,5 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/ingame/menu_map.cpp \
     src/engines/kotor/gui/ingame/menu_opt.cpp \
     src/engines/kotor/gui/ingame/minimap.cpp \
+    src/engines/kotor/gui/ingame/partyselection.cpp \
     $(EMPTY)

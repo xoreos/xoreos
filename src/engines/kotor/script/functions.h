@@ -259,6 +259,7 @@ private:
 
 	// .--- Party, functions_party.cpp
 	void isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx);
+	void showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Events, functions_events.cpp

@@ -830,7 +830,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 709, "GetNPCSelectability"                 , 0                                                },
 	{ 710, "ClearAllEffects"                     , 0                                                },
 	{ 711, "GetLastConversation"                 , 0                                                },
-	{ 712, "ShowPartySelectionGUI"               , 0                                                },
+	{ 712, "ShowPartySelectionGUI"               , &Functions::showPartySelectionGUI                },
 	{ 713, "GetStandardFaction"                  , 0                                                },
 	{ 714, "GivePlotXP"                          , 0                                                },
 	{ 715, "GetMinOneHP"                         , &Functions::getMinOneHP                          },

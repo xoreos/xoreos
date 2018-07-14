@@ -57,6 +57,7 @@
 #include "src/engines/kotor/gui/dialog.h"
 
 #include "src/engines/kotor/gui/ingame/ingame.h"
+#include "src/engines/kotor/gui/ingame/partyselection.h"
 
 #include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
@@ -82,6 +83,7 @@ Module::Module(::Engines::Console &console)
 		  _fade(new Graphics::Aurora::FadeQuad()),
 		  _ingame(new IngameGUI(*this)),
 		  _dialog(new DialogGUI(*this)),
+		  _partySelection(new PartySelectionGUI()),
 		  _freeCamEnabled(false),
 		  _prevTimestamp(0),
 		  _frameTime(0),
@@ -730,6 +732,24 @@ void Module::addToParty(Creature *creature) {
 
 bool Module::isObjectPartyMember(Creature *creature) {
 	return std::find(_party.begin(), _party.end(), creature) != _party.end();
+}
+
+void Module::showPartySelectionGUI(const Common::UString &exitScript, int UNUSED(forceNPC1), int UNUSED(forceNPC2)) {
+	if (_inDialog)
+		_dialog->hide();
+	else
+		_ingame->hide();
+
+	_partySelection->show();
+	_partySelection->run();
+	_partySelection->hide();
+
+	if (_inDialog)
+		_dialog->show();
+	else
+		_ingame->show();
+
+	runScript(exitScript);
 }
 
 void Module::setReturnStrref(uint32 id) {
