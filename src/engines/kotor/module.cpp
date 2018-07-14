@@ -636,7 +636,7 @@ void Module::handlePCMovement() {
 		}
 
 		if (haveMovement) {
-			z = _area->evaluateElevation(newX, newY);
+			z = _area->evaluateElevation(_pc.get(), newX, newY);
 			if (z != FLT_MIN) {
 				if (!_area->testCollision(glm::vec3(x, y, z + 0.1f),
 				                          glm::vec3(newX, newY, z + 0.1f)))
