@@ -24,6 +24,7 @@
 
 #include "src/common/util.h"
 
+#include "src/aurora/nwscript/ncsfile.h"
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/dragonage2/game.h"
