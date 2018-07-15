@@ -530,14 +530,16 @@ void Module::processEventQueue() {
 	handleEvents();
 	handleActions();
 
+	GfxMan.lockFrame();
+
 	_area->processCreaturesActions(_frameTime);
 
 	if (!_freeCamEnabled) {
-		GfxMan.lockFrame();
 		handlePCMovement();
 		SatelliteCam.update(_frameTime);
-		GfxMan.unlockFrame();
 	}
+
+	GfxMan.unlockFrame();
 }
 
 void Module::handleEvents() {
