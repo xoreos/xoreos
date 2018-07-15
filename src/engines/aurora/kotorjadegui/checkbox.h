@@ -46,6 +46,11 @@ public:
 
 	void mouseUp(uint8 state, float x, float y);
 
+	void setSelected(const Common::UString &selected);
+	void setUnselected(const Common::UString &unselected);
+	void setSelectedHighlighted(const Common::UString &selectedHighlighted);
+	void setUnselectedHighlighted(const Common::UString &unselectedHighlighted);
+
 private:
 	Common::UString _selected, _unselected;
 	Common::UString _selectedHighlighted, _unselectedHighlighted;

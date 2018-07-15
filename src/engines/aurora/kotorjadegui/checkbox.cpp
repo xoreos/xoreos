@@ -172,6 +172,22 @@ void WidgetCheckBox::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(
 	setActive(true);
 }
 
+void WidgetCheckBox::setSelected(const Common::UString &selected) {
+	_selected = selected;
+}
+
+void WidgetCheckBox::setUnselected(const Common::UString &unselected) {
+	_unselected = unselected;
+}
+
+void WidgetCheckBox::setSelectedHighlighted(const Common::UString &selectedHighlighted) {
+	_selectedHighlighted = selectedHighlighted;
+}
+
+void WidgetCheckBox::setUnselectedHighlighted(const Common::UString &unselectedHighlighted) {
+	_unselectedHighlighted = unselectedHighlighted;
+}
+
 void WidgetCheckBox::setTextHighlighting(Graphics::Aurora::Highlightable *highlightable) {
 	highlightable->setHighlightable(true);
 	highlightable->setHighlightDelta(0.0f, 0.0f, 0.0f, 0.05f);
