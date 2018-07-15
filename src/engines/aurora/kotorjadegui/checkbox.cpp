@@ -100,16 +100,23 @@ void WidgetCheckBox::setState(bool state) {
 	_state = state;
 
 	// Preserve the current color after replacing the texture
+
 	float textR, textG, textB, textA;
-	float quadR, quadG, quadB, quadA;
 	_text->getColor(textR, textG, textB, textA);
-	_quad->getColor(quadR, quadG, quadB, quadA);
+
+	float quadR, quadG, quadB, quadA;
+	if (_quad)
+		_quad->getColor(quadR, quadG, quadB, quadA);
+
+	//-
 
 	setFill(_state ? _selected : _unselected);
 	setHighlight(_state ? _selectedHighlighted : _unselectedHighlighted);
 
 	_text->setColor(textR, textG, textB, textA);
-	_quad->setColor(quadR, quadG, quadB, quadA);
+
+	if (_quad)
+		_quad->setColor(quadR, quadG, quadB, quadA);
 
 	setActive(true);
 }

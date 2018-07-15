@@ -176,7 +176,7 @@ void KotORJadeWidget::setScissor(int x, int y, int width, int height) {
 }
 
 void KotORJadeWidget::setFill(const Common::UString &fill) {
-	if (fill.empty()) {
+	if (fill.empty() && _quad) {
 		_quad->hide();
 		_quad.reset();
 		return;
@@ -236,7 +236,7 @@ float KotORJadeWidget::getBorderDimension() const {
 }
 
 void KotORJadeWidget::setHighlight(const Common::UString &hilight) {
-	if (hilight.empty()) {
+	if (hilight.empty() && _highlight) {
 		_highlight->hide();
 		_highlight.reset();
 		return;
