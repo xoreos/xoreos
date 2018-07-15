@@ -1,3 +1,21 @@
+Someday, ????-??-?? (Version 0.0.6)
+	- COMMON:
+		- Cleaned up threading
+	- ENGINES:
+		- KOTOR:
+			- Changed key input to use scancodes
+			- Restructured config options
+			- Implemented changing texture packs
+			- Partially implemented the action queue
+			- Partially implemented party selection
+			- Partially implemented ingame GUI scaling
+		- KOTOR2:
+			- Changed key input to use scancodes
+			- Restructured config options
+			- Implemented changing texture packs
+		- DRAGONAGE2:
+			- Partially implemented area transitions
+
 Tuesday, 2018-07-03 (Version 0.0.5)
 	- DOCS:
 		- Improved documentation in various files
