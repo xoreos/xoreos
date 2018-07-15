@@ -174,7 +174,7 @@ void GUI::createWidget(WidgetContext &ctx) {
 	try {
 		ctx.widget->load(*ctx.strct);
 	} catch (...) {
-		Common::exceptionDispatcherWarning();
+		Common::exceptionDispatcherWarning("Failed to load widget %s", ctx.tag.c_str());
 	}
 
 	initWidget(*ctx.widget);
