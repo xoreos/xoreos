@@ -870,7 +870,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 742, "GetPlotResRef"                         , 0                                                  },
 	{ 743, "GetPlotFlagName"                       , 0                                                  },
 	{ 744, "DisplayFloatyMessage"                  , 0                                                  },
-	{ 745, "DoAreaTransition"                      , 0                                                  },
+	{ 745, "DoAreaTransition"                      , &Functions::doAreaTransition                       },
 	{ 746, "StartCharGen"                          , 0                                                  },
 	{ 747, "DisplayStatusMessage"                  , 0                                                  },
 	{ 748, "SetQuickslot"                          , 0                                                  },
