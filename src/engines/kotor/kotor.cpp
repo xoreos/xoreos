@@ -302,7 +302,7 @@ void KotOREngine::initResources(LoadProgress &progress) {
 		TalkMan.addTable("live1", "live1f", true, 0);
 
 	progress.step("Registering file formats");
-	registerModelLoader(new KotORModelLoader);
+	registerModelLoader(new KotORModelLoader(_platform == Aurora::kPlatformXbox));
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 
 	if (ResMan.hasResource("fnt_d16x16b", Aurora::kResourceImage))

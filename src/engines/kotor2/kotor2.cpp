@@ -257,7 +257,7 @@ void KotOR2Engine::initResources(LoadProgress &progress) {
 	TalkMan.addTable("dialog", "dialogf", false, 0);
 
 	progress.step("Registering file formats");
-	registerModelLoader(new KotOR2ModelLoader);
+	registerModelLoader(new KotOR2ModelLoader(_platform == Aurora::kPlatformXbox));
 	FontMan.setFormat(Graphics::Aurora::kFontFormatTexture);
 }
 

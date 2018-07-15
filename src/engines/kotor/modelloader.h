@@ -35,10 +35,14 @@ namespace KotOR {
 
 class KotORModelLoader : public ModelLoader {
 public:
+	KotORModelLoader(bool xbox);
+
 	Graphics::Aurora::Model *load(const Common::UString &resref,
 			Graphics::Aurora::ModelType type, const Common::UString &texture);
 
 private:
+	bool _xbox;
+
 	Graphics::Aurora::ModelCache _modelCache;
 };
 

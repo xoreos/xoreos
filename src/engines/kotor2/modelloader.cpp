@@ -33,10 +33,13 @@ namespace Engines {
 
 namespace KotOR2 {
 
+KotOR2ModelLoader::KotOR2ModelLoader(bool xbox) : _xbox(xbox) {
+}
+
 Graphics::Aurora::Model *KotOR2ModelLoader::load(const Common::UString &resref,
 		Graphics::Aurora::ModelType type, const Common::UString &texture) {
 
-	return new Graphics::Aurora::Model_KotOR(resref, true, type, texture, &_modelCache);
+	return new Graphics::Aurora::Model_KotOR(resref, true, _xbox, type, texture, &_modelCache);
 }
 
 } // End of namespace KotOR2

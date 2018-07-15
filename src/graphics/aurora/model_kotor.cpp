@@ -30,6 +30,7 @@
 #include "src/common/maths.h"
 #include "src/common/readstream.h"
 #include "src/common/encoding.h"
+#include "src/common/strutil.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
@@ -106,8 +107,8 @@ namespace Graphics {
 namespace Aurora {
 
 Model_KotOR::ParserContext::ParserContext(const Common::UString &name,
-                                          const Common::UString &t, bool k2) :
-	mdl(0), mdx(0), state(0), texture(t), kotor2(k2), mdxStructSize(0), vertexCount(0),
+                                          const Common::UString &t, bool k2, bool x) :
+	mdl(0), mdx(0), state(0), texture(t), kotor2(k2), xbox(x), mdxStructSize(0), vertexCount(0),
 	offNodeData(0) {
 
 	try {
@@ -141,21 +142,21 @@ void Model_KotOR::ParserContext::clear() {
 }
 
 
-Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, ModelType type,
+Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, bool xbox, ModelType type,
                          const Common::UString &texture, ModelCache *modelCache) :
 	Model(type) {
 
 	_fileName = name;
 	_positionRelative = true;
 
-	ParserContext ctx(name, texture, kotor2);
+	ParserContext ctx(name, texture, kotor2, xbox);
 
 	load(ctx);
 
 	if (_skinned)
 		makeBoneNodeMap();
 
-	loadSuperModel(modelCache, kotor2);
+	loadSuperModel(modelCache, kotor2, xbox);
 
 	finalize();
 }
@@ -310,7 +311,7 @@ bool Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
 	return true;
 }
 
-void Model_KotOR::loadSuperModel(ModelCache *modelCache, bool kotor2) {
+void Model_KotOR::loadSuperModel(ModelCache *modelCache, bool kotor2, bool xbox) {
 	if (!_superModelName.empty() && _superModelName != "NULL") {
 		bool foundInCache = false;
 
@@ -324,7 +325,7 @@ void Model_KotOR::loadSuperModel(ModelCache *modelCache, bool kotor2) {
 		}
 
 		if (!_superModel)
-			_superModel = new Model_KotOR(_superModelName, kotor2, _type, "", modelCache);
+			_superModel = new Model_KotOR(_superModelName, kotor2, xbox, _type, "", modelCache);
 
 		if (modelCache && !foundInCache)
 			modelCache->insert(std::make_pair(_superModelName, _superModel));
@@ -784,7 +785,10 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 }
 
 void ModelNode_KotOR::readSkin(Model_KotOR::ParserContext &ctx) {
-	ctx.mdl->skip(12);
+	/* The models found in the Xbox versions store bone indices as int16,
+	 * while the Windows/Mac/Linux versions use floats. */
+
+	ctx.mdl->skip(ctx.xbox ? 8 : 12);
 	uint32 mdxOffsetBoneWeights = ctx.mdl->readUint32LE();
 	uint32 mdxOffsetBoneMappingId = ctx.mdl->readUint32LE();
 	uint32 boneMappingOffset = ctx.mdl->readUint32LE();
@@ -794,9 +798,14 @@ void ModelNode_KotOR::readSkin(Model_KotOR::ParserContext &ctx) {
 	_mesh->skin = new Skin();
 	_mesh->skin->boneMappingCount = boneMappingCount;
 
-	uint32 pos = ctx.mdl->seek(ctx.offModelData + boneMappingOffset);
-	for (uint32 i = 0; i < boneMappingCount; i++)
-		_mesh->skin->boneMapping.push_back(ctx.mdl->readIEEEFloatLE());
+	const uint32 pos = ctx.mdl->seek(ctx.offModelData + boneMappingOffset);
+
+	for (uint32 i = 0; i < boneMappingCount; i++) {
+		const float index = ctx.xbox ? static_cast<float>(ctx.mdl->readSint16LE()) : ctx.mdl->readIEEEFloatLE();
+
+		_mesh->skin->boneMapping.push_back(index);
+	}
+
 	ctx.mdl->seek(pos);
 
 	std::vector<float> &boneWeights = _mesh->skin->boneWeights;
@@ -812,10 +821,10 @@ void ModelNode_KotOR::readSkin(Model_KotOR::ParserContext &ctx) {
 
 		// Bone mapping identifiers
 		ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize + mdxOffsetBoneMappingId);
-		boneMappingId.push_back(ctx.mdx->readIEEEFloatLE());
-		boneMappingId.push_back(ctx.mdx->readIEEEFloatLE());
-		boneMappingId.push_back(ctx.mdx->readIEEEFloatLE());
-		boneMappingId.push_back(ctx.mdx->readIEEEFloatLE());
+		boneMappingId.push_back(ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE());
+		boneMappingId.push_back(ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE());
+		boneMappingId.push_back(ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE());
+		boneMappingId.push_back(ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE());
 	}
 }
 
