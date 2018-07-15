@@ -120,7 +120,7 @@ public:
 	void removeFocus();
 
 	// Walkmesh
-	float evaluateElevation(float x, float y);
+	float evaluateElevation(Object *object, float x, float y, bool doHighlight = true);
 	bool testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const;
 	void toggleWalkmesh();
 
@@ -263,6 +263,7 @@ private:
 
 
 	friend class Console;
+	friend class ActionExecutor;
 };
 
 } // End of namespace KotOR

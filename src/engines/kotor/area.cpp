@@ -50,6 +50,7 @@
 #include "src/engines/kotor/door.h"
 #include "src/engines/kotor/creature.h"
 #include "src/engines/kotor/trigger.h"
+#include "src/engines/kotor/actionexecutor.h"
 
 namespace Engines {
 
@@ -549,20 +550,20 @@ void Area::notifyCameraMoved() {
 	checkActive();
 }
 
-float Area::evaluateElevation(float x, float y) {
-	Room *room = _module->getPC()->getRoom();
+float Area::evaluateElevation(Object *object, float x, float y, bool doHighlight) {
+	Room *room = object->getRoom();
 
-	float result = room ? room->evaluateElevation(x, y, true) : FLT_MIN;
+	float result = room ? room->evaluateElevation(x, y, doHighlight) : FLT_MIN;
 	if (result != FLT_MIN)
 		return result;
 
-	if (room)
+	if (room && doHighlight)
 		room->disableWalkmeshHighlight();
 
 	for (RoomList::iterator r = _rooms.begin();
 			r != _rooms.end(); ++r) {
 		if (*r != room) {
-			result = (*r)->evaluateElevation(x, y, true);
+			result = (*r)->evaluateElevation(x, y, doHighlight);
 			if (result != FLT_MIN)
 				break;
 		}
@@ -724,7 +725,7 @@ KotOR::Object *Area::getObjectByTag(const Common::UString &tag) {
 void Area::processCreaturesActions(float dt) {
 	for (std::vector<Creature *>::iterator c = _creatures.begin();
 			c != _creatures.end(); ++c) {
-		(*c)->processActionQueue(dt);
+		ActionExecutor::executeActions(**c, *this, dt);
 	}
 }
 

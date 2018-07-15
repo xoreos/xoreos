@@ -78,6 +78,9 @@ public:
 	int getLevelByPosition(int position) const; ///< Get the level by its position in the level vector.
 	Class getClassByPosition(int position) const; ///< Get the class by its position in the level vector.
 
+	float getWalkRate() const;
+	float getRunRate() const;
+
 	// Positioning
 
 	/** Set the creature's position. */
@@ -129,7 +132,8 @@ public:
 	/** Append action to the character's action queue. */
 	void enqueueAction(const Action &action);
 
-	void processActionQueue(float dt);
+	const Action *peekAction() const;
+	const Action *dequeueAction();
 
 private:
 	/** Parts of a creature's body. */
@@ -173,6 +177,9 @@ private:
 
 	std::vector<Action> _actionQueue;
 
+	float _walkRate;
+	float _runRate;
+
 
 	void init();
 
@@ -187,12 +194,12 @@ private:
 	void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation);
 	void loadBody(PartModels &parts);
 	void loadHead(PartModels &parts);
+	void loadMovementRate(const Common::UString &name);
+
 	void changeBody();
 	void changeWeapon(EquipmentSlot slot);
 
 	void setDefaultAnimations();
-
-	void handleActionMoveToPoint(const Action &action, float dt);
 };
 
 } // End of namespace KotOR

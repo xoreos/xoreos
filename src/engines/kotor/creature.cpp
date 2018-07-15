@@ -22,9 +22,6 @@
  *  A creature in a Star Wars: Knights of the Old Republic area.
  */
 
-#include "glm/vec3.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -47,13 +44,14 @@
 
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
-static const float kMovementSpeed = 5.0f;
-
 namespace Engines {
 
 namespace KotOR {
 
-Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature) {
+Creature::Creature(const Aurora::GFF3Struct &creature)
+		: Object(kObjectTypeCreature),
+		  _walkRate(0.0f),
+		  _runRate(0.0f) {
 	init();
 	load(creature);
 }
@@ -145,6 +143,14 @@ Race Creature::getRace() const {
 
 SubRace Creature::getSubRace() const {
 	return _subRace;
+}
+
+float Creature::getWalkRate() const {
+	return _walkRate;
+}
+
+float Creature::getRunRate() const {
+	return _runRate;
 }
 
 void Creature::setPosition(float x, float y, float z) {
@@ -321,6 +327,8 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 		else if (headBackupID >= 0)
 			parts.head = heads.getRow(headBackupID).getString("head");
 	}
+
+	loadMovementRate(appearance.getString("moverate"));
 }
 
 void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) {
@@ -412,6 +420,8 @@ void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVar
 	parts.head += Common::composeString(_face + 1);
 
 	parts.bodyTexture += Common::UString::format("%02u", textureVariation);
+
+	loadMovementRate("PLAYER");
 }
 
 void Creature::loadBody(PartModels &parts) {
@@ -443,6 +453,13 @@ void Creature::loadHead(PartModels &parts) {
 		return;
 
 	_model->attachModel("headhook", _headModel);
+}
+
+void Creature::loadMovementRate(const Common::UString &name) {
+	const Aurora::TwoDARow &speed = TwoDAReg.get2DA("creaturespeed").getRow("2daname", name);
+
+	_walkRate = speed.getFloat("walkrate");
+	_runRate = speed.getFloat("runrate");
 }
 
 void Creature::changeBody() {
@@ -684,39 +701,18 @@ void Creature::enqueueAction(const Action &action) {
 	_actionQueue.push_back(action);
 }
 
-void Creature::processActionQueue(float dt) {
+const Action *Creature::peekAction() const {
 	if (_actionQueue.empty())
-		return;
+		return 0;
 
-	const Action &action = _actionQueue.front();
-
-	switch (action.getType()) {
-		case kActionMoveToPoint:
-			handleActionMoveToPoint(action, dt);
-			break;
-		default:
-			break;
-	}
+	return &_actionQueue.front();
 }
 
-void Creature::handleActionMoveToPoint(const Action &action, float dt) {
-	glm::vec3 origin(glm::make_vec3(_position));
-
-	float x, y, z;
-	action.getPoint(x, y, z);
-	glm::vec3 dest(x, y, z);
-
-	glm::vec3 diff = dest - origin;
-	if (glm::length(diff) <= action.getRange()) {
-		playDefaultAnimation();
+const Action *Creature::dequeueAction() {
+	Action *action = _actionQueue.empty() ? 0 : &_actionQueue.front();
+	if (action)
 		_actionQueue.erase(_actionQueue.begin());
-	} else {
-		glm::vec3 dir = glm::normalize(diff);
-		playAnimation("run", false, -1.0f);
-		setPosition(origin.x + kMovementSpeed * dir.x * dt,
-		            origin.y + kMovementSpeed * dir.y * dt,
-		            origin.z + kMovementSpeed * dir.z * dt);
-	}
+	return action;
 }
 
 void Creature::setDefaultAnimations() {

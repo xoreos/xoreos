@@ -176,7 +176,11 @@ void AnimationChannel::manageAnimations(float dt) {
 }
 
 void AnimationChannel::playDefaultAnimationInternal() {
-	_nextAnimation = selectDefaultAnimation();
+	Animation *anim = selectDefaultAnimation();
+	if (_currentAnimation == anim)
+		return;
+
+	_nextAnimation = anim;
 	_animationSpeed = 1.0f;
 	_animationLength = 1.0f;
 	_animationTime = 0.0f;

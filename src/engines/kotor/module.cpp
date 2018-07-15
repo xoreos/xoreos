@@ -65,8 +65,6 @@ namespace Engines {
 
 namespace KotOR {
 
-static const float kPCMovementSpeed = 5;
-
 bool Module::Action::operator<(const Action &s) const {
 	return timestamp < s.timestamp;
 }
@@ -532,14 +530,16 @@ void Module::processEventQueue() {
 	handleEvents();
 	handleActions();
 
+	GfxMan.lockFrame();
+
 	_area->processCreaturesActions(_frameTime);
 
 	if (!_freeCamEnabled) {
-		GfxMan.lockFrame();
 		handlePCMovement();
 		SatelliteCam.update(_frameTime);
-		GfxMan.unlockFrame();
 	}
+
+	GfxMan.unlockFrame();
 }
 
 void Module::handleEvents() {
@@ -622,22 +622,23 @@ void Module::handlePCMovement() {
 		float x, y, z;
 		_pc->getPosition(x, y, z);
 		float yaw = SatelliteCam.getYaw();
+		float moveRate = _pc->getRunRate();
 		float newX, newY;
 
 		if (_forwardBtnPressed && !_backwardsBtnPressed) {
 			_pc->setOrientation(0, 0, 1, Common::rad2deg(yaw));
-			newX = x - kPCMovementSpeed * sin(yaw) * _frameTime;
-			newY = y + kPCMovementSpeed * cos(yaw) * _frameTime;
+			newX = x - moveRate * sin(yaw) * _frameTime;
+			newY = y + moveRate * cos(yaw) * _frameTime;
 			haveMovement = true;
 		} else if (_backwardsBtnPressed && !_forwardBtnPressed) {
 			_pc->setOrientation(0, 0, 1, 180 + Common::rad2deg(yaw));
-			newX = x + kPCMovementSpeed * sin(yaw) * _frameTime;
-			newY = y - kPCMovementSpeed * cos(yaw) * _frameTime;
+			newX = x + moveRate * sin(yaw) * _frameTime;
+			newY = y - moveRate * cos(yaw) * _frameTime;
 			haveMovement = true;
 		}
 
 		if (haveMovement) {
-			z = _area->evaluateElevation(newX, newY);
+			z = _area->evaluateElevation(_pc.get(), newX, newY);
 			if (z != FLT_MIN) {
 				if (!_area->testCollision(glm::vec3(x, y, z + 0.1f),
 				                          glm::vec3(newX, newY, z + 0.1f)))
