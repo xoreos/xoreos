@@ -186,8 +186,8 @@ void KotORJadeWidget::setFill(const Common::UString &fill) {
 		float x, y, z;
 		getPosition(x, y, z);
 
-		_quad.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width, _height));
-		_quad->setPosition(x, y, z);
+		_quad.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width - 2 * _borderDimension, _height - 2 * _borderDimension));
+		_quad->setPosition(x + _borderDimension, y + _borderDimension, z);
 		_quad->setTag(getTag());
 		_quad->setClickable(true);
 
@@ -246,8 +246,8 @@ void KotORJadeWidget::setHighlight(const Common::UString &hilight) {
 		float x, y, z;
 		getPosition(x, y, z);
 
-		_highlight.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width, _height));
-		_highlight->setPosition(x, y, z);
+		_highlight.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width - 2 * _borderDimension, _height - 2 * _borderDimension));
+		_highlight->setPosition(x + _borderDimension, y + _borderDimension, z);
 		_highlight->setTag(getTag());
 		_highlight->setClickable(true);
 
