@@ -50,6 +50,17 @@ void Functions::getHero(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) campaign->getPC();
 }
 
+void Functions::doAreaTransition(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString newArea = ctx.getParams()[0].getString();
+	const Common::UString waypoint = ctx.getParams()[1].getString();
+
+	_game->getCampaigns().getCurrentCampaign()->movePC(newArea);
+
+	// TODO: Move Characters to waypoint.
+
+	ctx.getReturn() = true;
+}
+
 } // End of namespace DragonAge2
 
 } // End of namespace Engines

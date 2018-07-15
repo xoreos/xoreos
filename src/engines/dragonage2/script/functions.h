@@ -177,6 +177,8 @@ private:
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
 
 	void getHero(Aurora::NWScript::FunctionContext &ctx);
+
+	void doAreaTransition(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- General object functions, functions_object.cpp
