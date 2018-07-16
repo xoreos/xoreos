@@ -32,17 +32,26 @@ namespace Engines {
 namespace KotOR2 {
 
 CharacterGenerationNameMenu::CharacterGenerationNameMenu(CharacterGenerationInfo &info, Engines::Console *console) :
-		CharacterGenerationBaseMenu(info, console) {
+		CharacterGenerationBaseMenu(info, console),
+		_humanFirst(info.getGender() == kGenderMale ? "humanm" : "humanf"), _humanLast("humanl"),
+		_name(_info.getName()) {
 	load("name_p");
 
 	_nameLabel = getLabel("NAME_BOX_EDIT");
-	_nameLabel->setText("_");
+	_nameLabel->setText(_info.getName() + "_");
 
 	EventMan.enableTextInput(true);
 	EventMan.enableKeyRepeat(true);
 }
 
 void CharacterGenerationNameMenu::callbackActive(Widget &widget) {
+	if (widget.getTag() == "BTN_RANDOM") {
+		_name = _humanFirst.generateRandomName(8) + " " + _humanLast.generateRandomName(8);
+		_nameLabel->setText(_name + "_");
+		_info.setName(_name);
+		return;
+	}
+
 	if (widget.getTag() == "BTN_BACK") {
 		_returnCode = kReturnCodeAbort;
 		EventMan.enableTextInput(false);
@@ -63,6 +72,7 @@ void CharacterGenerationNameMenu::callbackKeyInput(const Events::Key &key, const
 		if (!_name.empty()) {
 			_name.erase(--_name.end());
 			_nameLabel->setText(_name + "_");
+			_info.setName(_name);
 		}
 	}
 }
