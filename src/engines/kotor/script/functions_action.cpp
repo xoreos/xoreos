@@ -105,6 +105,14 @@ void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
 	caller->enqueueAction(action);
 }
 
+void Functions::clearAllActions(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *caller = ObjectContainer::toCreature(ctx.getCaller());
+	if (!caller)
+		caller = _game->getModule().getPC();
+
+	caller->clearActionQueue();
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

@@ -127,7 +127,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{   6, "AssignCommand"                       , &Functions::assignCommand                        },
 	{   7, "DelayCommand"                        , &Functions::delayCommand                         },
 	{   8, "ExecuteScript"                       , 0                                                },
-	{   9, "ClearAllActions"                     , 0                                                },
+	{   9, "ClearAllActions"                     , &Functions::clearAllActions                      },
 	{  10, "SetFacing"                           , 0                                                },
 	{  11, "SwitchPlayerCharacter"               , 0                                                },
 	{  12, "SetTime"                             , 0                                                },
