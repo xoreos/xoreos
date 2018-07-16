@@ -25,6 +25,8 @@
 #include "src/common/strutil.h"
 #include "src/common/error.h"
 
+#include "src/aurora/ltrfile.h"
+
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"
@@ -39,7 +41,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleSoldier() {
 	info->_class = kClassSoldier;
 	info->_face = std::rand() % 5;
 	info->_skin = Skin(std::rand() % kSkinMAX);
-	info->_name = "";
+
+	Aurora::LTRFile humanMale("humanm");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanMale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
 
 	return info;
 }
@@ -50,7 +56,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleScout() {
 	info->_class = kClassScout;
 	info->_face = std::rand() % 5;
 	info->_skin = Skin(std::rand() % kSkinMAX);
-	info->_name = "";
+
+	Aurora::LTRFile humanMale("humanm");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanMale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
 
 	return info;
 }
@@ -61,7 +71,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleScoundrel() {
 	info->_class = kClassScoundrel;
 	info->_face = std::rand() % 5;
 	info->_skin = Skin(std::rand() % kSkinMAX);
-	info->_name = "";
+
+	Aurora::LTRFile humanMale("humanm");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanMale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
 
 	return info;
 }
@@ -72,7 +86,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleSoldier() {
 	info->_class = kClassSoldier;
 	info->_face = std::rand() % 5;
 	info->_skin = Skin(std::rand() % kSkinMAX);
-	info->_name = "";
+
+	Aurora::LTRFile humanFemale("humanf");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanFemale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
 
 	return info;
 }
@@ -83,7 +101,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleScout() {
 	info->_class = kClassScout;
 	info->_face = std::rand() % 5;
 	info->_skin = Skin(std::rand() % kSkinMAX);
-	info->_name = "";
+
+	Aurora::LTRFile humanFemale("humanf");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanFemale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
 
 	return info;
 }
@@ -94,7 +116,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleScoundrel() 
 	info->_class = kClassScoundrel;
 	info->_face = std::rand() % 5;
 	info->_skin = Skin(std::rand() % kSkinMAX);
-	info->_name = "";
+
+	Aurora::LTRFile humanFemale("humanf");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanFemale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
 
 	return info;
 }
