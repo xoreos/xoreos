@@ -125,6 +125,8 @@ public:
 	bool isObjectPartyMember(Creature *creature);
 	/** Show the party selection GUI. */
 	void showPartySelectionGUI(const Common::UString &exitScript, int forceNPC1 = -1, int forceNPC2 = -1);
+	/** Add available party member by template. */
+	void addAvailablePartyMember(int slot, const Common::UString &templ);
 	// '---
 
 	// .--- Gui management
@@ -246,6 +248,7 @@ private:
 
 	// .--- Party
 	std::list<Creature *> _party;
+	std::map<int, Common::UString> _availableParty;
 	// '---
 
 	EventQueue  _eventQueue;

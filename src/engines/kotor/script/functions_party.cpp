@@ -58,6 +58,13 @@ void Functions::showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx) {
 	_game->getModule().showPartySelectionGUI(exitScript, forceNPC1, forceNPC2);
 }
 
+void Functions::addAvailableNPCByTemplate(Aurora::NWScript::FunctionContext &ctx) {
+	const int slot = ctx.getParams()[0].getInt();
+	const Common::UString &templ = ctx.getParams()[1].getString();
+
+	_game->getModule().addAvailablePartyMember(slot, templ);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

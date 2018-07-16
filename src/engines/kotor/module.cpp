@@ -753,6 +753,14 @@ void Module::showPartySelectionGUI(const Common::UString &exitScript, int UNUSED
 	runScript(exitScript);
 }
 
+void Module::addAvailablePartyMember(int slot, const Common::UString &templ) {
+	std::map<int, Common::UString>::iterator i = _availableParty.find(slot);
+	if (i != _availableParty.end())
+		_availableParty.erase(i);
+
+	_availableParty.insert(std::pair<int, Common::UString>(slot, templ));
+}
+
 void Module::setReturnStrref(uint32 id) {
 	_ingame->setReturnStrref(id);
 }
