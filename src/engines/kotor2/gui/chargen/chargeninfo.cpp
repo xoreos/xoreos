@@ -26,6 +26,8 @@
 #include "src/common/error.h"
 #include "src/common/scopedptr.h"
 
+#include "src/aurora/ltrfile.h"
+
 #include "chargeninfo.h"
 
 namespace Engines {
@@ -45,6 +47,12 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleConsular() {
 			info->_face = std::rand() % 5;
 			break;
 	}
+
+	Aurora::LTRFile humanMale("humanm");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanMale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
+
 	return info;
 }
 
@@ -61,6 +69,12 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleConsular() {
 			info->_face = std::rand() % 5;
 			break;
 	}
+
+	Aurora::LTRFile humanFemale("humanf");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanFemale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
+
 	return info;
 }
 
@@ -77,6 +91,12 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleGuardian() {
 			info->_face = std::rand() % 5;
 			break;
 	}
+
+	Aurora::LTRFile humanMale("humanm");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanMale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
+
 	return info;
 }
 
@@ -93,6 +113,12 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleGuardian() {
 			info->_face = std::rand() % 5;
 			break;
 	}
+
+	Aurora::LTRFile humanFemale("humanf");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanFemale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
+
 	return info;
 }
 
@@ -109,6 +135,12 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleSentinel() {
 			info->_face = std::rand() % 5;
 			break;
 	}
+
+	Aurora::LTRFile humanMale("humanm");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanMale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
+
 	return info;
 }
 
@@ -125,6 +157,12 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleSentinel() {
 			info->_face = std::rand() % 5;
 			break;
 	}
+
+	Aurora::LTRFile humanFemale("humanf");
+	Aurora::LTRFile humanLast("humanl");
+
+	info->_name = humanFemale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
+
 	return info;
 }
 
