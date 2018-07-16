@@ -58,7 +58,10 @@ void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
 	KotORJadeWidget::load(gff);
 
 	Border border = createBorder(gff);
-	Graphics::Aurora::TextureHandle texture = TextureMan.get(border.fill);
+	Graphics::Aurora::TextureHandle texture;
+
+	if (!border.fill.empty())
+		texture = TextureMan.get(border.fill);
 
 	_selected = gff.getStruct("SELECTED").getString("FILL");
 	_unselected = gff.getStruct("BORDER").getString("FILL");
@@ -66,14 +69,18 @@ void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
 	_unselectedHighlighted = gff.getStruct("HILIGHT").getString("FILL");
 
 	float squareLength = _quad->getHeight();
-	float _quadPosCorrect = (squareLength - (texture.getTexture().getHeight() * 0.625f)) / 2;
 	float x, y, z;
-	if (_quad) {
-		_quad->getPosition(x, y, z);
-		_quad->setPosition(x + _quadPosCorrect, y + _quadPosCorrect, z);
-		_quad->setHeight(texture.getTexture().getHeight() * 0.625f);
-		_quad->setWidth(texture.getTexture().getWidth() * 0.625f);
+
+	if (!border.fill.empty()) {
+		float _quadPosCorrect = (squareLength - (texture.getTexture().getHeight() * 0.625f)) / 2;
+		if (_quad) {
+			_quad->getPosition(x, y, z);
+			_quad->setPosition(x + _quadPosCorrect, y + _quadPosCorrect, z);
+			_quad->setHeight(texture.getTexture().getHeight() * 0.625f);
+			_quad->setWidth(texture.getTexture().getWidth() * 0.625f);
+		}
 	}
+
 	if (_text) {
 		_text->getPosition(x, y, z);
 		_text->setPosition(x + squareLength, y, z);
