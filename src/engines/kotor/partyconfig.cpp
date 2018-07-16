@@ -19,43 +19,36 @@
  */
 
 /** @file
- *  Party selection GUI for Star Wars: Knights of the Old Republic.
+ *  Party configuration for Star Wars: Knights of the Old Republic.
  */
-
-#ifndef ENGINES_KOTOR_GUI_INGAME_PARTYSELECTION_H
-#define ENGINES_KOTOR_GUI_INGAME_PARTYSELECTION_H
 
 #include "src/engines/kotor/partyconfig.h"
 
-#include "src/engines/kotor/gui/gui.h"
+static const int kMaxSlotCount = 10;
 
 namespace Engines {
 
 namespace KotOR {
 
-class PartySelectionGUI : public GUI {
-public:
-	PartySelectionGUI(bool k2 = false);
+PartyConfiguration::PartyConfiguration()
+		: forceNPC1(-1),
+		  forceNPC2(-1),
+		  canCancel(true) {
+	for (int i = 0; i < kMaxSlotCount; ++i) {
+		slotSelected[i] = false;
+	}
+}
 
-	void loadConfiguration(const PartyConfiguration &config);
-
-protected:
-	void callbackActive(Widget &widget);
-
-private:
-	bool _kotor2;
-	PartyConfiguration _config;
-	int _numSelectedSlots;
-	int _activeSlot;
-
-	const Common::UString getPortrait(const Common::UString &templ);
-	void setSlotTexture(int index, const Common::UString &portrait);
-	void toggleSlot(int index, bool enabled);
-	void onSelectionChanged();
-};
+PartyConfiguration::PartyConfiguration(const PartyConfiguration &config)
+		: forceNPC1(config.forceNPC1),
+		  forceNPC2(config.forceNPC2),
+		  canCancel(config.canCancel) {
+	for (int i = 0; i < kMaxSlotCount; ++i) {
+		slotTemplate[i] = config.slotTemplate[i];
+		slotSelected[i] = config.slotSelected[i];
+	}
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_GUI_INGAME_PARTYSELECTION_H

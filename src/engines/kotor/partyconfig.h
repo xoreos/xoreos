@@ -19,43 +19,33 @@
  */
 
 /** @file
- *  Party selection GUI for Star Wars: Knights of the Old Republic.
+ *  Party configuration for Star Wars: Knights of the Old Republic.
  */
 
-#ifndef ENGINES_KOTOR_GUI_INGAME_PARTYSELECTION_H
-#define ENGINES_KOTOR_GUI_INGAME_PARTYSELECTION_H
+#ifndef ENGINES_KOTOR_PARTYCONFIG_H
+#define ENGINES_KOTOR_PARTYCONFIG_H
 
-#include "src/engines/kotor/partyconfig.h"
+#include <vector>
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/common/ustring.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class PartySelectionGUI : public GUI {
-public:
-	PartySelectionGUI(bool k2 = false);
+struct PartyConfiguration {
+	Common::UString slotTemplate[10];
+	bool slotSelected[10];
+	int forceNPC1;
+	int forceNPC2;
+	bool canCancel;
 
-	void loadConfiguration(const PartyConfiguration &config);
-
-protected:
-	void callbackActive(Widget &widget);
-
-private:
-	bool _kotor2;
-	PartyConfiguration _config;
-	int _numSelectedSlots;
-	int _activeSlot;
-
-	const Common::UString getPortrait(const Common::UString &templ);
-	void setSlotTexture(int index, const Common::UString &portrait);
-	void toggleSlot(int index, bool enabled);
-	void onSelectionChanged();
+	PartyConfiguration();
+	PartyConfiguration(const PartyConfiguration &config);
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_INGAME_PARTYSELECTION_H
+#endif // ENGINES_KOTOR_PARTYCONFIG_H

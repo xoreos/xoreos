@@ -47,6 +47,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/inventory.h \
     src/engines/kotor/action.h \
     src/engines/kotor/actionexecutor.h \
+    src/engines/kotor/partyconfig.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
@@ -73,6 +74,7 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/inventory.cpp \
     src/engines/kotor/action.cpp \
     src/engines/kotor/actionexecutor.cpp \
+    src/engines/kotor/partyconfig.cpp \
     $(EMPTY)
 
 include src/engines/kotor/script/rules.mk

@@ -735,11 +735,24 @@ bool Module::isObjectPartyMember(Creature *creature) {
 	return std::find(_party.begin(), _party.end(), creature) != _party.end();
 }
 
-void Module::showPartySelectionGUI(const Common::UString &exitScript, int UNUSED(forceNPC1), int UNUSED(forceNPC2)) {
+void Module::showPartySelectionGUI(const Common::UString &exitScript, int forceNPC1, int forceNPC2) {
 	if (_inDialog)
 		_dialog->hide();
 	else
 		_ingame->hide();
+
+	PartyConfiguration config;
+
+	for (std::map<int, Common::UString>::iterator i = _availableParty.begin();
+			i != _availableParty.end(); ++i) {
+		config.slotTemplate[i->first] = i->second;
+	}
+
+	config.forceNPC1 = forceNPC1;
+	config.forceNPC2 = forceNPC2;
+	config.canCancel = false;
+
+	_partySelection->loadConfiguration(config);
 
 	_partySelection->show();
 	_partySelection->run();
