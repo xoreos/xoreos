@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTOR2_GUI_CHARGEN_CHARGENNAME_H
 #define ENGINES_KOTOR2_GUI_CHARGEN_CHARGENNAME_H
 
+#include "src/aurora/ltrfile.h"
+
 #include "src/engines/aurora/console.h"
 #include "src/engines/kotor2/gui/chargen/chargenbase.h"
 #include "src/engines/kotor2/gui/chargen/chargeninfo.h"
@@ -42,6 +44,9 @@ private:
 	virtual void callbackActive(Widget &widget);
 	virtual void callbackTextInput(const Common::UString &text);
 	virtual void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
+
+	Aurora::LTRFile _humanFirst;
+	Aurora::LTRFile _humanLast;
 
 	Common::UString _name;
 	WidgetLabel *_nameLabel;
