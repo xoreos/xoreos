@@ -116,9 +116,7 @@ private:
 
 	void drawLine(const Common::UString &line,
 	              ColorPositions::const_iterator color,
-	              size_t position,
-	              float &x,
-	              float &y);
+	              size_t position);
 
 	void drawLineImmediate(const Common::UString &line,
 	                       ColorPositions::const_iterator color,

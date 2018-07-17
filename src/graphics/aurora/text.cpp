@@ -223,28 +223,40 @@ void Text::render(RenderPass pass) {
 	Font &font = _font.getFont();
 	float lineHeight = font.getHeight() + font.getLineSpacing();
 
+	glTranslatef(_x, _y, 0.0f);
+
+	glColor4f(_r, _g, _b, _a);
+
 	std::vector<Common::UString> lines;
 	font.split(_str, lines, _width, _height, false);
 
 	float blockSize = lines.size() * lineHeight;
 
 	// Move position to the top
+	glTranslatef(0.0f, roundf(((_height - blockSize) * _valign) + blockSize - lineHeight), 0.0f);
+
 	size_t position = 0;
 
 	ColorPositions::const_iterator color = _colors.begin();
 
-	float x = _x;
-	float y = _y + roundf(((_height - blockSize) * _valign) + blockSize - lineHeight);
 	// Draw lines
 	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l) {
-		float saved_x = x;
-		float saved_y = y;
-		drawLine(*l, color, position, x, y);
-		x = saved_x;
-		y = saved_y - lineHeight;
+		// Save the current position
+		glPushMatrix();
+
+		drawLine(*l, color, position);
+
+		// Restore position to the start of the line
+		glPopMatrix();
+
+		// Move to the next line
+		glTranslatef(0.0f, -lineHeight, 0.0f);
+
 		// \n character
 		position++;
 	}
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 bool Text::isIn(float x, float y) const {
@@ -378,36 +390,28 @@ void Text::setFont(const Common::UString &fnt) {
 
 void Text::drawLine(const Common::UString &line,
                     ColorPositions::const_iterator color,
-                    size_t position,
-                    float &x,
-                    float &y) {
+                    size_t position) {
 
 	Font &font = _font.getFont();
 
 	// Horizontal Align
-	x += round((_width - font.getLineWidth(line)) * _halign);
+	glTranslatef(roundf((_width - font.getLineWidth(line)) * _halign), 0.0f, 0.0f);
 
 	// Draw line
-	float rgba[] = { _r, _g, _b, _a };
 	for (Common::UString::iterator s = line.begin(); s != line.end(); ++s, position++) {
 		// If we have color changes, apply them
 		while ((color != _colors.end()) && (color->position <= position)) {
-			if (color->defaultColor) {
-				rgba[0] = _r;
-				rgba[1] = _g;
-				rgba[2] = _b;
-				rgba[3] = _a;
-			} else {
-				rgba[0] = color->r;
-				rgba[1] = color->g;
-				rgba[2] = color->b;
-				rgba[3] = color->a;
-			}
+			if (color->defaultColor)
+				glColor4f(_r, _g, _b, _a);
+			else
+				glColor4f(color->r, color->g, color->b, color->a);
 
 			++color;
 		}
-		font.render(*s, x, y, rgba);
+
+		font.draw(*s);
 	}
+
 }
 
 void Text::drawLineImmediate(const Common::UString &line,

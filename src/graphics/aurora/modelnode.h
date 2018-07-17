@@ -266,7 +266,7 @@ protected:
 	void createAbsoluteBound();
 	void createAbsoluteBound(Common::BoundingBox parentPosition);
 
-	void render(RenderPass pass, const glm::mat4 &parentTransform);
+	void render(RenderPass pass);
 	void drawSkeleton(const glm::mat4 &parent, bool showInvisible);
 
 	/** Calculate the transform used for rendering. */

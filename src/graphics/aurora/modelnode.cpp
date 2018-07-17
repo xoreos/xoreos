@@ -548,7 +548,7 @@ void ModelNode::renderGeometryNormal(Mesh &mesh) {
 	if (mesh.data->textures.empty())
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	mesh.data->rawMesh->render();
+	mesh.data->rawMesh->renderImmediate();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
@@ -566,6 +566,8 @@ void ModelNode::renderGeometryEnvMappedUnder(Mesh &mesh) {
 	 * Neverwinter Nights uses this method.
 	 */
 
+	mesh.data->rawMesh->renderBind();
+
 	TextureMan.set(mesh.data->envMap, TextureManager::kModeEnvironmentMapReflective);
 	mesh.data->rawMesh->render();
 
@@ -580,6 +582,8 @@ void ModelNode::renderGeometryEnvMappedUnder(Mesh &mesh) {
 		TextureMan.activeTexture(t);
 		TextureMan.set();
 	}
+
+	mesh.data->rawMesh->renderUnbind();
 }
 
 void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
@@ -590,6 +594,8 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 	 *
 	 * KotOR and KotOR2 use this method.
 	 */
+
+	mesh.data->rawMesh->renderBind();
 
 	if (!mesh.data->textures.empty()) {
 		for (size_t t = 0; t < mesh.data->textures.size(); t++) {
@@ -620,77 +626,64 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 
 	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
 
+	mesh.data->rawMesh->updateGL();
 	mesh.data->rawMesh->render();
 
 	TextureMan.set();
 
 	glEnable(GL_ALPHA_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	mesh.data->rawMesh->renderUnbind();
 }
 
 bool ModelNode::renderableMesh(Mesh *mesh) {
 	return mesh && mesh->data && mesh->data->rawMesh;
 }
 
-void ModelNode::render(RenderPass pass, const glm::mat4 &parentTransform) {
+void ModelNode::render(RenderPass pass) {
 	// Apply the node's transformation
-	_renderTransform = parentTransform;
-	_renderTransform = glm::translate(_renderTransform, glm::vec3(_position[0], _position[1], _position[2]));
-	if (_orientation[0] != 0.0f || _orientation[1] != 0.0f || _orientation[2] != 0.0f) {
-		if (_orientation[3] != 0.0f) {
-			_renderTransform = glm::rotate(_renderTransform, _orientation[3], glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
-		}
-	}
-	if (_rotation[0] != 0.0f) {
-		_renderTransform = glm::rotate(_renderTransform, _rotation[0], glm::vec3(1.0f, 0.0f, 0.0f));
-	}
-	if (_rotation[1] != 0.0f) {
-		_renderTransform = glm::rotate(_renderTransform, _rotation[1], glm::vec3(0.0f, 1.0f, 0.0f));
-	}
-	if (_rotation[2] != 0.0f) {
-		_renderTransform = glm::rotate(_renderTransform, _rotation[2], glm::vec3(0.0f, 0.0f, 1.0f));
-	}
-	_renderTransform = glm::scale(_renderTransform, glm::vec3(_scale[0], _scale[1], _scale[2]));
 
-/*
-	_renderTransform.translate(_position[0], _position[1], _position[2]);
-	_renderTransform.rotate(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
-	_renderTransform.rotate(_rotation[0], 1.0f, 0.0f, 0.0f);
-	_renderTransform.rotate(_rotation[1], 0.0f, 1.0f, 0.0f);
-	_renderTransform.rotate(_rotation[2], 0.0f, 0.0f, 1.0f);
-	_renderTransform.scale(_scale[0], _scale[1], _scale[2]);
-*/
-	/**
-	 * Ignoring _render for now because it's being falsely set to false.
-	 */
-	/* if (_render) {} */
-	if (_dirtyRender) {
-		/**
-		 * Do this regardless of if the modelnode is actually visible or not, to prevent
-		 * stutter when things are first brought into view. Most things are loaded at the
-		 * start of a level, so stutter won't be noticed then.
-		 */
-		this->buildMaterial();
-	} else {
-		if (_renderableArray.size() == 0) {
-			if (_rootStateNode) {
-				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
-					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
-				}
-			}
-		} else {
-			for (size_t i = 0; i < _renderableArray.size(); ++i) {
-				_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
-			}
+	glTranslatef(_position[0], _position[1], _position[2]);
+	glRotatef(_orientation[3], _orientation[0], _orientation[1], _orientation[2]);
+
+	glRotatef(_rotation[0], 1.0f, 0.0f, 0.0f);
+	glRotatef(_rotation[1], 0.0f, 1.0f, 0.0f);
+	glRotatef(_rotation[2], 0.0f, 0.0f, 1.0f);
+
+	glScalef(_scale[0], _scale[1], _scale[2]);
+
+	Mesh *mesh = _mesh;
+	bool doRender = _render;
+	if (!_model->getState().empty() && !renderableMesh(mesh)) {
+		ModelNode *rootStateNode = _model->getNode("", _name);
+		if (rootStateNode && renderableMesh(rootStateNode->_mesh)) {
+			mesh = rootStateNode->_mesh;
+			doRender = rootStateNode->_render;
 		}
 	}
+
+	// Render the node's geometry
+
+	bool isTransparent = mesh && mesh->isTransparent;
+	bool shouldRender = doRender && renderableMesh(mesh);
+	if (((pass == kRenderPassOpaque)      &&  isTransparent) ||
+	    ((pass == kRenderPassTransparent) && !isTransparent))
+		shouldRender = false;
+
+	if (shouldRender)
+		renderGeometry(*mesh);
 
 	if (_attachedModel) {
+		glPushMatrix();
 		_attachedModel->render(pass);
+		glPopMatrix();
 	}
+
 	// Render the node's children
 	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
-		(*c)->render(pass, _renderTransform);
+		glPushMatrix();
+		(*c)->render(pass);
+		glPopMatrix();
 	}
 }
 

@@ -279,7 +279,10 @@ void Animation::updateSkinnedModel(Model *model) {
 		ModelNode::MeshData *meshData = node->_mesh->data;
 		VertexBuffer &vertexBuffer = *(meshData->rawMesh->getVertexBuffer());
 		uint32 vertexCount = vertexBuffer.getCount();
-		float *v = reinterpret_cast<float *>(vertexBuffer.getData());
+
+		std::vector<float> &vcb = node->_vertexCoordsBuffer;
+		vcb.resize(3 * vertexCount);
+		float *v = &vcb[0];
 		float *iv = &meshData->initialVertexCoords[0];
 		float *boneWeights = &skin->boneWeights[0];
 		float *boneMappingId = &skin->boneMappingId[0];

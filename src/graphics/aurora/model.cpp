@@ -651,7 +651,7 @@ void Model::render(RenderPass pass) {
 	for (NodeList::iterator n = _currentState->rootNodes.begin();
 	     n != _currentState->rootNodes.end(); ++n) {
 		glPushMatrix();
-		(*n)->render(pass, _absolutePosition);
+		(*n)->render(pass);
 		glPopMatrix();
 	}
 
@@ -661,21 +661,6 @@ void Model::render(RenderPass pass) {
 	// Draw the skeleton, if requested
 	doDrawSkeleton();
 }
-#if 0
-void Model::queueRender() {
-	if (!_currentState) {
-		return;
-	}
-
-	queueDrawBound();
-
-	// Queue the nodes
-	for (NodeList::iterator n = _currentState->rootNodes.begin();
-	     n != _currentState->rootNodes.end(); ++n) {
-		(*n)->queueRender(_absolutePosition);
-	}
-}
-#endif
 
 void Model::renderImmediate(const glm::mat4 &parentTransform) {
 	if (!_currentState) {

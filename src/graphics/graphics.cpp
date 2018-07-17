@@ -1027,10 +1027,6 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 	if (disableDepthMask)
 		glDepthMask(GL_FALSE);
 
-	//_projection = glm::mat4();  // Load identity matrix.
-	//_projection.scale(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f);
-	_projection = glm::scale(glm::mat4(), glm::vec3(2.0f / WindowMan.getWindowWidth(), 2.0f / WindowMan.getWindowHeight(), 0.0f));
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -1045,18 +1041,15 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 
 	QueueMan.lockQueue(guiQueue);
 	const std::list<Queueable *> &gui = QueueMan.getQueue(guiQueue);
-	_modelview = glm::mat4();
 
 	buildNewTextures();
 
-	glm::mat4 ident;
 	for (std::list<Queueable *>::const_reverse_iterator g = gui.rbegin();
 	     g != gui.rend(); ++g) {
 
-//		glPushMatrix();
-		static_cast<Renderable *>(*g)->renderImmediate(ident);
-		//static_cast<Renderable *>(*g)->queueRender();
-//		glPopMatrix();
+		glPushMatrix();
+		static_cast<Renderable *>(*g)->render(kRenderPassAll);
+		glPopMatrix();
 	}
 
 	QueueMan.unlockQueue(guiQueue);
