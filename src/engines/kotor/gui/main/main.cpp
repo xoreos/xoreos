@@ -24,6 +24,8 @@
 
 #include <boost/bind.hpp>
 
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/util.h"
 
 #include "src/sound/sound.h"
@@ -41,6 +43,7 @@
 
 #include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
+#include "src/engines/aurora/model.h"
 #include "src/engines/aurora/kotorjadegui/button.h"
 #include "src/engines/aurora/kotorjadegui/listbox.h"
 
@@ -57,6 +60,8 @@ namespace KotOR {
 MainMenu::MainMenu(const Version &gameVersion, Module &module, ::Engines::Console *console) : GUI(console),
 	_module(&module), _gameVersion(&gameVersion) {
 
+	_module->loadTexturePack();
+
 	load((_gameVersion->getPlatform() == Aurora::kPlatformXbox) ? "mainmenu" : "mainmenu16x12");
 
 	getListBox("LB_MODULES")->setInvisible(true);
@@ -64,6 +69,22 @@ MainMenu::MainMenu(const Version &gameVersion, Module &module, ::Engines::Consol
 	addBackground(kBackgroundTypeMenu);
 
 	startMainMusic();
+
+	_malakScene.reset(new Graphics::Aurora::SubSceneQuad);
+
+	_malakModel.reset(loadModelObject("mainmenu"));
+
+	if (_malakModel) {
+		_malakModel->playAnimation("default", true, -1);
+		_malakModel->setOrientation(1.0f, 0.0f, 0.0f, -90.0f);
+
+		_malakScene->add(_malakModel.get());
+
+		getLabel("LBL_3DVIEW")->setSubScene(_malakScene.get());
+		// TODO: Possibly change this to perspective projection.
+		glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -0.2f, 2.6f, -3.0f, 3.0f);
+		_malakScene->setProjectionMatrix(projection);
+	}
 }
 
 MainMenu::~MainMenu() {

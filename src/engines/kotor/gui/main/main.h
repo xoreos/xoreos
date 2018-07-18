@@ -27,6 +27,8 @@
 
 #include "src/common/scopedptr.h"
 
+#include "src/graphics/aurora/subscenequad.h"
+
 #include "src/engines/kotor/gui/gui.h"
 
 namespace Engines {
@@ -49,6 +51,9 @@ protected:
 private:
 	Module *_module;
 	const Version *_gameVersion;
+
+	Common::ScopedPtr<Graphics::Aurora::SubSceneQuad> _malakScene;
+	Common::ScopedPtr<Graphics::Aurora::Model> _malakModel;
 
 	Common::ScopedPtr<GUI> _classSelection;
 	Common::ScopedPtr<GUI> _movies;
