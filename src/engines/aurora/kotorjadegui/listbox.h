@@ -84,6 +84,7 @@ public:
 	// .--- Item selection
 
 	void selectItemByWidgetTag(const Common::UString &tag);
+	void selectItemByIndex(int index);
 	void selectNextItem();
 	void selectPreviousItem();
 
