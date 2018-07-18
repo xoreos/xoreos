@@ -56,6 +56,9 @@ OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : GUI(console), _
 
 		if (modes[i].w >= 800 && modes[i].h >= 600 && !duplicate) {
 			_modes.push_back(modes[i]);
+
+			if (modes[i].w == WindowMan.getWindowWidth() && modes[i].h == WindowMan.getWindowHeight())
+				currentIndex = _modes.size() - 1;
 		}
 	}
 
@@ -68,6 +71,8 @@ OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : GUI(console), _
 
 	listBox->setAdjustHeight(true);
 	listBox->setItemSelectionEnabled(true);
+	if (currentIndex != -1)
+		listBox->selectItemByIndex(currentIndex);
 	listBox->refreshItemWidgets();
 }
 
