@@ -292,6 +292,21 @@ void GUI::removeWidget(Widget *widget) {
 	delete widget;
 }
 
+void GUI::clearWidgets() {
+	// Delete all widgets
+	for (WidgetList::iterator widget = _widgets.begin(); widget != _widgets.end(); ++widget) {
+		delete *widget;
+		*widget = 0;
+	}
+
+	_widgets.clear();
+	_widgetMap.clear();
+}
+
+bool GUI::empty() {
+	return _widgets.empty();
+}
+
 bool GUI::hasWidget(const Common::UString &tag) const {
 	return getWidget(tag) != 0;
 }
