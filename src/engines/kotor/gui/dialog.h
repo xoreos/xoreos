@@ -43,7 +43,7 @@ namespace KotOR {
 
 class Module;
 
-class DialogGUIBase : public GUI {
+class DialogGUIBase : public GUI, Events::Notifyable {
 public:
 	DialogGUIBase(bool k2);
 
@@ -71,6 +71,9 @@ private:
 	Common::UString _owner;
 	Common::UString _curSpeaker;
 
+	/** Updates the gui when a resize occurs or it is created. */
+	void update(int width, int height);
+
 	void refresh();
 	void playSounds();
 	void stopSounds();
@@ -80,6 +83,8 @@ private:
 	 *  curly braces. Erase those.
 	 */
 	void eraseDeveloperNotes(Common::UString &str);
+
+	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
 };
 
 class DialogGUI : public DialogGUIBase {
