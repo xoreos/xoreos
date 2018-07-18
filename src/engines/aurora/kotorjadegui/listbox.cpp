@@ -248,6 +248,13 @@ void WidgetListBox::selectItemByWidgetTag(const Common::UString &tag) {
 	}
 }
 
+void WidgetListBox::selectItemByIndex(int index) {
+	if (index < 0 || static_cast<size_t>(index) >= _items.size())
+		return;
+
+	_selectedIndex = index;
+}
+
 void WidgetListBox::selectNextItem() {
 	if (_itemSelectionEnabled) {
 		bool selectionChanged = false;
