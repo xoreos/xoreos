@@ -195,75 +195,7 @@ HUD::HUD(Module &module, Engines::Console *console)
 		  _module(&module),
 		  _menu(module, console) {
 
-	std::set<Resolution> availableRes;
-
-	for (size_t i = 0; i < ARRAYSIZE(kResolution); i++)
-		if (ResMan.hasResource(kResolution[i].gui, Aurora::kFileTypeGUI))
-			availableRes.insert(kResolution[i]);
-
-	const int wWidth  = WindowMan.getWindowWidth();
-	const int wHeight = WindowMan.getWindowHeight();
-
-	const Resolution *foundRes = 0;
-	for (std::set<Resolution>::const_iterator it = availableRes.begin(); it != availableRes.end(); ++it)
-		if (it->width == wWidth && it->height == wHeight)
-			foundRes = &*it;
-
-	bool scale = false;
-	if (!foundRes) {
-		for (std::set<Resolution>::const_iterator it = availableRes.begin(); it != availableRes.end(); ++it) {
-			if ((it->width == 800) && (it->height == 600)) {
-				foundRes = &*it;
-				break;
-			}
-		}
-		if (!foundRes)
-			throw Common::Exception("No gui with 800x600 resolution found.");
-		scale = true;
-	}
-
-	load(foundRes->gui);
-
-	// Make all the widgets invisible and scale them if needed.
-	for (size_t i = 0; i < ARRAYSIZE(kKnownWidgets); i++) {
-		Widget *widget = getWidget(kKnownWidgets[i].name);
-		if (!widget)
-			continue;
-
-		widget->setInvisible(!kKnownWidgets[i].visible);
-
-		float x, y, z;
-		if (scale) {
-			switch (kKnownWidgets[i].position) {
-				case kPositionUpperLeft:
-					widget->getPosition(x, y, z);
-					widget->setPosition(-wWidth/2 + (400 + x), wHeight/2 - (300 - y), z);
-					break;
-				case kPositionUpperRight:
-					widget->getPosition(x, y, z);
-					widget->setPosition(wWidth/2 - (400 - x), wHeight/2 - (300 - y), z);
-					break;
-				case kPositionUpperMid:
-					widget->getPosition(x, y, z);
-					widget->setPosition(x, wHeight/2 - (300 - y), z);
-					break;
-				case kPositionLowerLeft:
-					widget->getPosition(x, y, z);
-					widget->setPosition(-wWidth/2 + (400 + x), -wHeight/2 + (300 + y), z);
-					break;
-				case kPositionLowerRight:
-					widget->getPosition(x, y, z);
-					widget->setPosition(wWidth/2 - (400 - x), -wHeight/2 + (300 + y), z);
-					break;
-				case kPositionLowerMid:
-					widget->getPosition(x, y, z);
-					widget->setPosition(x, -wHeight/2 + (300 + y), z);
-					break;
-				default:
-					break;
-			}
-		}
-	}
+	update(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
 void HUD::setReturnStrref(uint32 id) {
@@ -346,6 +278,78 @@ void HUD::setPartyMember2(Creature *creature) {
 	setPortrait(3, creature != 0, creature ? creature->getPortrait() : "");
 }
 
+void HUD::update(int width, int height) {
+	std::set<Resolution> availableRes;
+
+	for (size_t i = 0; i < ARRAYSIZE(kResolution); i++)
+		if (ResMan.hasResource(kResolution[i].gui, Aurora::kFileTypeGUI))
+			availableRes.insert(kResolution[i]);
+
+	const int wWidth  = width;
+	const int wHeight = height;
+
+	const Resolution *foundRes = 0;
+	for (std::set<Resolution>::const_iterator it = availableRes.begin(); it != availableRes.end(); ++it)
+		if (it->width == wWidth && it->height == wHeight)
+			foundRes = &*it;
+
+	bool scale = false;
+	if (!foundRes) {
+		for (std::set<Resolution>::const_iterator it = availableRes.begin(); it != availableRes.end(); ++it) {
+			if ((it->width == 800) && (it->height == 600)) {
+				foundRes = &*it;
+				break;
+			}
+		}
+		if (!foundRes)
+			throw Common::Exception("No gui with 800x600 resolution found.");
+		scale = true;
+	}
+
+	load(foundRes->gui);
+
+	// Make all the widgets invisible and scale them if needed.
+	for (size_t i = 0; i < ARRAYSIZE(kKnownWidgets); i++) {
+		Widget *widget = getWidget(kKnownWidgets[i].name);
+		if (!widget)
+			continue;
+
+		widget->setInvisible(!kKnownWidgets[i].visible);
+
+		float x, y, z;
+		if (scale) {
+			switch (kKnownWidgets[i].position) {
+				case kPositionUpperLeft:
+					widget->getPosition(x, y, z);
+					widget->setPosition(-wWidth/2 + (400 + x), wHeight/2 - (300 - y), z);
+					break;
+				case kPositionUpperRight:
+					widget->getPosition(x, y, z);
+					widget->setPosition(wWidth/2 - (400 - x), wHeight/2 - (300 - y), z);
+					break;
+				case kPositionUpperMid:
+					widget->getPosition(x, y, z);
+					widget->setPosition(x, wHeight/2 - (300 - y), z);
+					break;
+				case kPositionLowerLeft:
+					widget->getPosition(x, y, z);
+					widget->setPosition(-wWidth/2 + (400 + x), -wHeight/2 + (300 + y), z);
+					break;
+				case kPositionLowerRight:
+					widget->getPosition(x, y, z);
+					widget->setPosition(wWidth/2 - (400 - x), -wHeight/2 + (300 + y), z);
+					break;
+				case kPositionLowerMid:
+					widget->getPosition(x, y, z);
+					widget->setPosition(x, -wHeight/2 + (300 + y), z);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+}
+
 void HUD::initWidget(Engines::Widget &widget) {
 	// Don't know what these two are doing, but they spawn over the complete screen blocking the 3d picking.
 	if (widget.getTag() == "LBL_MAP")
@@ -373,6 +377,10 @@ void HUD::initWidget(Engines::Widget &widget) {
 void HUD::callbackActive(Widget &widget) {
 	_menu.showMenu(widget.getTag());
 	sub(_menu);
+}
+
+void HUD::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight), int newWidth, int newHeight) {
+	update(newWidth, newHeight);
 }
 
 } // End of namespace KotOR
