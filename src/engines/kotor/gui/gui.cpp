@@ -101,6 +101,12 @@ void GUI::mouseUp() {
 }
 
 void GUI::load(const Common::UString &resref) {
+	if (!empty())
+		clearWidgets();
+
+	_guiWidth = 0;
+	_guiHeight = 0;
+
 	// This is only relevant to Jade Empire.
 	// LTI prefixed GUI definitions for the Windows version of Jade Empire
 	// with lti_ to support mouse and keyboard control.
