@@ -38,12 +38,12 @@ namespace Aurora {
 
 SubSceneQuad::SubSceneQuad() :
 		GUIElement(GUIElement::kGUIElementFront), _lastSampled(0),
-		_x(0), _y(0), _width(0), _height(0) {
+		_x(0), _y(0), _width(0), _height(0), _clearEnabled(true) {
 	/*
 	 * This distance value should ensure, that the subscene stays before panels and background
 	 * but behind anything else.
 	 */
-	_distance = -1;
+	_distance = -100;
 }
 
 void SubSceneQuad::calculateDistance() {
@@ -72,7 +72,8 @@ void SubSceneQuad::render(RenderPass pass) {
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(_x, _y, _width, _height);
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	if (_clearEnabled)
+		glClear(GL_COLOR_BUFFER_BIT);
 
 	float elapsedTime = 0;
 	const uint32 now = EventMan.getTimestamp();
@@ -109,12 +110,20 @@ void SubSceneQuad::setSize(int width, int height) {
 	_height = height;
 }
 
+void SubSceneQuad::setDistance(float distance) {
+	_distance = distance;
+}
+
 void SubSceneQuad::setProjectionMatrix(const glm::mat4 &projection) {
 	_projection = projection;
 }
 
 void SubSceneQuad::setGlobalTransformationMatrix(const glm::mat4 &transformation) {
 	_transformation = transformation;
+}
+
+void SubSceneQuad::setClearEnabled(bool clearEnabled) {
+	_clearEnabled = clearEnabled;
 }
 
 void SubSceneQuad::add(Renderable *renderable) {

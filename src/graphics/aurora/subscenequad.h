@@ -42,9 +42,12 @@ public:
 
 	void setPosition(int x, int y);
 	void setSize(int width, int height);
+	void setDistance(float distance);
 
 	void setProjectionMatrix(const glm::mat4 &projection);
 	void setGlobalTransformationMatrix(const glm::mat4 &transformation);
+
+	void setClearEnabled(bool clearEnabled);
 
 	/** Add a renderable to the sub scene. */
 	void add(Renderable *renderable);
@@ -61,6 +64,8 @@ private:
 
 	int _x, _y;
 	int _width, _height;
+
+	bool _clearEnabled;
 };
 
 } // End of namespace Aurora
