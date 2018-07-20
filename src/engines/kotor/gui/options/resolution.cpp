@@ -27,11 +27,19 @@
 #include "src/common/ustring.h"
 
 #include "src/graphics/windowman.h"
+#include "src/graphics/resolution.h"
 
 #include "src/engines/kotor/gui/options/resolution.h"
 
 #include "src/engines/aurora/kotorjadegui/panel.h"
 #include "src/engines/aurora/kotorjadegui/listbox.h"
+
+static bool operator<(const Graphics::DisplayMode &d1, const Graphics::DisplayMode &d2) {
+	if (d1.w == d2.w)
+		return d1.h < d2.h;
+	else
+		return d1.w < d2.w;
+}
 
 namespace Engines {
 
@@ -46,6 +54,22 @@ OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : GUI(console), _
 	int currentIndex = -1;
 	std::vector<Graphics::DisplayMode> modes = WindowMan.getDisplayModes();
 
+	// sort and then get the highest resolution.
+	std::sort(modes.begin(), modes.end());
+	Graphics::DisplayMode maxMode = modes.back();
+
+	// If we have no fullscreen, we add some other common resolutions.
+	if (!WindowMan.isFullScreen()) {
+		for (size_t i = 0; i < ARRAYSIZE(Graphics::kResolutions); ++i) {
+			Graphics::DisplayMode mode;
+			mode.w = Graphics::kResolutions[i].width;
+			mode.h = Graphics::kResolutions[i].height;
+			modes.push_back(mode);
+		}
+
+		std::sort(modes.begin(), modes.end());
+	}
+
 	// Filter every resolution smaller than 800x600
 	for (size_t i = 0; i < modes.size(); ++i) {
 		bool duplicate = false;
@@ -54,7 +78,8 @@ OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : GUI(console), _
 				duplicate = true;
 		}
 
-		if (modes[i].w >= 800 && modes[i].h >= 600 && !duplicate) {
+		if (modes[i].w >= 800 && modes[i].h >= 600 &&
+			modes[i].w <= maxMode.w && modes[i].h <= maxMode.h && !duplicate) {
 			_modes.push_back(modes[i]);
 
 			if (modes[i].w == WindowMan.getWindowWidth() && modes[i].h == WindowMan.getWindowHeight())
