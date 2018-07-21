@@ -369,6 +369,14 @@ enum FileType {
 	// Found in The Witcher
 	kFileTypeADV            = 27000, ///< Extra adventure modules, ERF.
 
+	// Found in the Android version of Jade Empire
+	kFileTypeJSON           = 28000, ///< JavaScript Object Notation.
+	kFileTypeTLK_EXPERT     = 28001, ///< Talk table for extra expert-level control strings, plain text.
+	kFileTypeTLK_MOBILE     = 28002, ///< Talk table for extra mobile port strings, plain text.
+	kFileTypeTLK_TOUCH      = 28003, ///< Talk table for extra touch control strings, plain text.
+	kFileTypeOTF            = 28004, ///< OpenType Font.
+	kFileTypePAR            = 28005,
+
 	// Our own types
 	kFileTypeXEOSITEX       = 40000  ///< Intermediate texture.
 };
