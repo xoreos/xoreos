@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Utility templates and functions for working with strings.
+ *  Utility templates and functions for working with strings and streams.
  */
 
 #include <cctype>
@@ -27,12 +27,14 @@
 #include <cerrno>
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 
 #include "src/common/system.h"
 #include "src/common/strutil.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
+#include "src/common/scopedptr.h"
 #include "src/common/memreadstream.h"
 
 namespace Common {
@@ -343,5 +345,44 @@ template UString composeString<  signed long     >(  signed long      value);
 template UString composeString<unsigned long     >(unsigned long      value);
 template UString composeString<  signed long long>(  signed long long value);
 template UString composeString<unsigned long long>(unsigned long long value);
+
+size_t searchBackwards(SeekableReadStream &haystack, const byte *needle, size_t needleSize,
+                       size_t maxReadBack) {
+
+	if (needleSize == 0 || maxReadBack == 0)
+		return SIZE_MAX;
+
+	assert(maxReadBack >= needleSize);
+
+	static const size_t kReadBufferSize = 0x400;
+
+	const size_t sizeFile = haystack.size();
+	const size_t maxBack  = MIN<size_t>(maxReadBack, sizeFile);
+
+	ScopedArray<byte> buf(new byte[kReadBufferSize + needleSize]);
+
+	size_t backRead = needleSize;
+	while (backRead < maxBack) {
+		backRead = MIN<size_t>(maxBack, backRead + kReadBufferSize);
+
+		const size_t readPos  = sizeFile - backRead;
+		const size_t readSize = MIN<size_t>(kReadBufferSize + needleSize, sizeFile - readPos);
+
+		try {
+			haystack.seek(readPos);
+		} catch (...) {
+			break;
+		}
+
+		if (haystack.read(buf.get(), readSize) != readSize)
+			break;
+
+		for (size_t i = (readSize - (needleSize - 1)); i-- > 0; )
+			if (!memcmp(buf.get() + i, needle, needleSize))
+				return readPos + i;
+	}
+
+	return SIZE_MAX;
+}
 
 } // End of namespace Common

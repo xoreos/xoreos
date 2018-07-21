@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Unit tests for our string utilities.
+ *  Unit tests for our string and stream utilities.
  */
 
 #include "gtest/gtest.h"
@@ -27,6 +27,7 @@
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/strutil.h"
+#include "src/common/memreadstream.h"
 
 GTEST_TEST(StrUtil, composeBool) {
 	EXPECT_STREQ(Common::composeString(true ).c_str(), "true" );
@@ -346,4 +347,19 @@ GTEST_TEST(StrUtil, parseDouble) {
 
 	Common::parseString( "0.0", x);
 	EXPECT_DOUBLE_EQ(x, 0.0);
+}
+
+GTEST_TEST(StrUtil, searchBackwards) {
+	static const byte kHaystack[] = { 'a','x',' ','a','b','c',' ','a','x','y',' ','a','z','x' };
+	Common::MemoryReadStream haystack(kHaystack, sizeof(kHaystack));
+
+	static const byte kNeedle1[] = { 'a','x' };
+	static const byte kNeedle2[] = { 'n','o' };
+
+	EXPECT_EQ(Common::searchBackwards(haystack, kNeedle1, sizeof(kNeedle1)), 7);
+	EXPECT_EQ(Common::searchBackwards(haystack, kNeedle1, sizeof(kNeedle1), 3), SIZE_MAX);
+
+	EXPECT_EQ(Common::searchBackwards(haystack, kNeedle2, sizeof(kNeedle2)), SIZE_MAX);
+
+	EXPECT_EQ(Common::searchBackwards(haystack, 0, 0), SIZE_MAX);
 }

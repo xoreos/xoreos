@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Utility templates and functions for working with strings.
+ *  Utility templates and functions for working with strings and streams.
  */
 
 #ifndef COMMON_STRUTIL_H
@@ -56,6 +56,25 @@ template<typename T> void parseString(const UString &str, T &value, bool allowEm
 
 /** Convert any POD integer, float/double or bool type into a string. */
 template<typename T> UString composeString(T value);
+
+/** Search the stream, backwards, for the last occurrence of a set of bytes.
+ *
+ *  Example:
+ *  - haystack contains "ax abc axy azx"
+ *  - needle is "ax"
+ *  - needleSize is 2
+ *
+ *  This example returns 7.
+ *
+ *  @param  haystack The stream to search through.
+ *  @param  needle The bytes to search for.
+ *  @param  needleSize The length of the needle in bytes.
+ *  @param  maxReadBack Only look at the last maxReadBack bytes of the stream.
+ *  @return The offset, in bytes, of the needle from the start of the stream, or
+ *          SIZE_MAX if the needle couldn't be found.
+ */
+size_t searchBackwards(SeekableReadStream &haystack, const byte *needle, size_t needleSize,
+                       size_t maxReadBack = SIZE_MAX);
 
 } // End of namespace Common
 

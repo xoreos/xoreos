@@ -74,6 +74,8 @@ public:
 		if (rootFiles.contains("/JadeEmpire.exe", true))
 			return true;
 
+		if (rootFiles.contains("/jadeempire.par", true))
+			return true;
 		return false;
 	}
 
