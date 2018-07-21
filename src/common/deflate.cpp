@@ -105,8 +105,8 @@ byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, siz
 		strm.avail_out = frameSize;
 		strm.next_out = buffers.back();
 
-		// Decompress. Z_FULL_FLUSH, because we want to decompress partwise.
-		zResult = inflate(&strm, Z_FULL_FLUSH);
+		// Decompress. Z_SYNC_FLUSH, because we want to decompress partwise.
+		zResult = inflate(&strm, Z_SYNC_FLUSH);
 		if (zResult != Z_STREAM_END && zResult != Z_OK)
 			throw Exception("Failed to inflate: %s (%d)", zError(zResult), zResult);
 	} while (strm.avail_in != 0);
