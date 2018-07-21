@@ -34,19 +34,26 @@
 
 namespace Common {
 
-static void initZStream(z_stream &strm, int windowBits, size_t size, const byte *data) {
-	/* Initialize the zlib data stream for decompression with our input data.
+static void setZStreamInput(z_stream &strm, size_t size, const byte *data) {
+	/* Set the input data for the zlib data stream.
 	 *
 	 * This ugly const cast is necessary because the zlib API wants a non-const
 	 * next_in pointer by default. Unless we define ZLIB_CONST, but that only
 	 * appeared in zlib 1.2.5.3. Not really worth bumping our required zlib
 	 * version for, IMHO. */
+
+	strm.avail_in = size;
+	strm.next_in  = const_cast<byte *>(data);
+}
+
+static void initZStream(z_stream &strm, int windowBits, size_t size, const byte *data) {
+	/* Initialize the zlib data stream for decompression with our input data. */
+
 	strm.zalloc   = Z_NULL;
 	strm.zfree    = Z_NULL;
 	strm.opaque   = Z_NULL;
 
-	strm.avail_in = size;
-	strm.next_in  = const_cast<byte *>(data);
+	setZStreamInput(strm, size, data);
 
 	int zResult = inflateInit2(&strm, windowBits);
 	if (zResult != Z_OK)
@@ -148,6 +155,52 @@ SeekableReadStream *decompressDeflateWithoutOutputSize(ReadStream &input, size_t
 	byte *decompressedData = decompressDeflateWithoutOutputSize(compressedData.get(), inputSize, size, windowBits, frameSize);
 
 	return new MemoryReadStream(decompressedData, size, true);
+}
+
+size_t decompressDeflateChunk(SeekableReadStream &input, int windowBits,
+                              byte *output, size_t outputSize, unsigned int frameSize) {
+
+	z_stream strm;
+	BOOST_SCOPE_EXIT( (&strm) ) {
+			inflateEnd(&strm);
+	} BOOST_SCOPE_EXIT_END
+
+	initZStream(strm, windowBits, 0, 0);
+
+	strm.avail_out = outputSize;
+	strm.next_out  = output;
+
+	ScopedArray<byte> inputData(new byte[frameSize]);
+
+	/* As long as the zlib stream has not ended, the chunk end was not reached.
+	 * Read a frame from the input buffer and decompress. */
+
+	int zResult = 0;
+	do {
+		if (strm.avail_in == 0) {
+			const size_t inputSize = MIN<size_t>(input.size() - input.pos(), frameSize);
+			if (inputSize == 0)
+				throw Exception("Failed to inflate: input buffer empty, stream not ended");
+
+			if (input.read(inputData.get(), inputSize) != inputSize)
+				throw Exception(kReadError);
+
+			setZStreamInput(strm, inputSize, inputData.get());
+		}
+
+		// Decompress. Z_SYNC_FLUSH, because we want to decompress partwise.
+		zResult = inflate(&strm, Z_SYNC_FLUSH);
+		if (zResult != Z_STREAM_END && zResult != Z_OK)
+			throw Exception("Failed to inflate: %s (%d)", zError(zResult), zResult);
+
+	} while (zResult != Z_STREAM_END);
+
+	/* Since we don't know where the chunk ends beforehand, we probably have
+	 * read past the chunk. Now that we know where the zlib stream ends, we
+	 * know where the chunk ended, so we can seek back to that place. */
+	input.seek(- static_cast<ptrdiff_t>(strm.avail_in), SeekableReadStream::kOriginCurrent);
+
+	return strm.total_out;
 }
 
 } // End of namespace Common

@@ -100,6 +100,23 @@ SeekableReadStream *decompressDeflate(ReadStream &input, size_t inputSize,
 SeekableReadStream *decompressDeflateWithoutOutputSize(ReadStream &input, size_t inputSize,
                                                        int windowBits, unsigned int frameSize = 4096);
 
+/** Decompress (inflate) using zlib's DEFLATE algorithm, until a stream end marker was reached.
+ *
+ *  Used for decompressing and reassembling a file that was split into multiple,
+ *  individually compressed chunks. This function decompresses a single chunk.
+ *
+ *  @param  input      The compressed input data.
+ *  @param windowBits  The base two logarithm of the window size (the size of
+ *                     the history buffer). See the zlib documentation on
+ *                     inflateInit2() for details.
+ *  @param output      The output of the current chunk is stored here.
+ *  @param outputSize  Maximum number of bytes to write into output.
+ *  @param frameSize   The size of frame for reading from the input stream.
+ *  @return The number of bytes written to output.
+ */
+size_t decompressDeflateChunk(SeekableReadStream &input, int windowBits, byte *output, size_t outputSize,
+                              unsigned int frameSize = 4096);
+
 } // End of namespace Common
 
 #endif // COMMON_DEFLATE_H
