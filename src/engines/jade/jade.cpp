@@ -171,15 +171,16 @@ void JadeEngine::init() {
 
 void JadeEngine::declareLanguages() {
 	static const Aurora::LanguageManager::Declaration kLanguageDeclarations[] = {
-		{ Aurora::kLanguageEnglish  ,   0, Common::kEncodingUTF8, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageFrench   ,   1, Common::kEncodingUTF8, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageGerman   ,   2, Common::kEncodingUTF8, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageItalian  ,   3, Common::kEncodingUTF8, Common::kEncodingCP1252 },
-		{ Aurora::kLanguageSpanish  ,   4, Common::kEncodingUTF8, Common::kEncodingCP1252 },
-		{ Aurora::kLanguagePolish   ,   5, Common::kEncodingUTF8, Common::kEncodingCP1250 },
-		{ Aurora::kLanguageCzech    ,   6, Common::kEncodingUTF8, Common::kEncodingCP1250 },
-		{ Aurora::kLanguageHungarian,   7, Common::kEncodingUTF8, Common::kEncodingCP1250 },
-		{ Aurora::kLanguageRussian  , 132, Common::kEncodingUTF8, Common::kEncodingCP1251 }
+		{ Aurora::kLanguageEnglish          ,   0, Common::kEncodingUTF8, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageFrench           ,   1, Common::kEncodingUTF8, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageGerman           ,   2, Common::kEncodingUTF8, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageItalian          ,   3, Common::kEncodingUTF8, Common::kEncodingCP1252 },
+		{ Aurora::kLanguageSpanish          ,   4, Common::kEncodingUTF8, Common::kEncodingCP1252 },
+		{ Aurora::kLanguagePolish           ,   5, Common::kEncodingUTF8, Common::kEncodingCP1250 },
+		{ Aurora::kLanguageCzech            ,   6, Common::kEncodingUTF8, Common::kEncodingCP1250 },
+		{ Aurora::kLanguageHungarian        ,   7, Common::kEncodingUTF8, Common::kEncodingCP1250 },
+		{ Aurora::kLanguageChineseSimplified, 130, Common::kEncodingUTF8, Common::kEncodingCP936  },
+		{ Aurora::kLanguageRussian          , 132, Common::kEncodingUTF8, Common::kEncodingCP1251 }
 	};
 
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
