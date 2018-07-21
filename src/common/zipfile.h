@@ -79,7 +79,6 @@ private:
 	IFileList _iFiles;
 
 	void load(SeekableReadStream &zip);
-	size_t findCentralDirectoryEnd(SeekableReadStream &zip);
 
 	static SeekableReadStream *decompressFile(SeekableReadStream &zip, uint32 method,
 			uint32 compSize, uint32 realSize);

@@ -27,6 +27,7 @@
 #include "src/common/zipfile.h"
 #include "src/common/error.h"
 #include "src/common/util.h"
+#include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/memreadstream.h"
 #include "src/common/deflate.h"
@@ -43,8 +44,10 @@ ZipFile::~ZipFile() {
 }
 
 void ZipFile::load(SeekableReadStream &zip) {
-	size_t endPos = findCentralDirectoryEnd(zip);
-	if (endPos == 0)
+	static const byte kEndRecord[4] = { 0x50, 0x4B, 0x05, 0x06 };
+
+	const size_t endPos = searchBackwards(zip, kEndRecord, sizeof(kEndRecord), 0xFFFF);
+	if (endPos == SIZE_MAX)
 		throw Exception("End of central directory record not found");
 
 	zip.seek(endPos);
@@ -183,43 +186,6 @@ SeekableReadStream *ZipFile::decompressFile(SeekableReadStream &zip, uint32 meth
 		throw Exception("Unhandled Zip compression %d", method);
 
 	return decompressDeflate(zip, compSize, realSize, kWindowBitsMaxRaw);
-}
-
-#define BUFREADCOMMENT (0x400)
-size_t ZipFile::findCentralDirectoryEnd(SeekableReadStream &zip) {
-	const size_t uSizeFile = zip.size();
-	const size_t uMaxBack  = MIN<size_t>(0xFFFF, uSizeFile); // Maximum size of global comment
-
-	byte buf[BUFREADCOMMENT + 4];
-
-	size_t uPosFound = 0;
-	size_t uBackRead = 4;
-	while ((uPosFound == 0) && (uBackRead < uMaxBack)) {
-		uBackRead = MIN<size_t>(uMaxBack, uBackRead + BUFREADCOMMENT);
-
-		const size_t uReadPos  = uSizeFile - uBackRead;
-		const size_t uReadSize = MIN<size_t>(BUFREADCOMMENT + 4, uSizeFile - uReadPos);
-
-		try {
-			zip.seek(uReadPos);
-		} catch (...) {
-			return 0;
-		}
-
-		if (zip.read(buf, uReadSize) != uReadSize) {
-			uPosFound = 0;
-			break;
-		}
-
-		for (size_t i = (uReadSize - 3); i-- > 0; )
-			if (READ_LE_UINT32(buf + i) == 0x06054B50) {
-				uPosFound = uReadPos + i;
-				break;
-			}
-
-	}
-
-	return uPosFound;
 }
 
 } // End of namespace Common
