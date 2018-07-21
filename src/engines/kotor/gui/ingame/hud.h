@@ -42,7 +42,7 @@ namespace Engines {
 
 namespace KotOR {
 
-class HUD : public GUI {
+class HUD : public GUI, Events::Notifyable {
 public:
 	HUD(Module &module, ::Engines::Console *console = 0);
 
@@ -69,8 +69,12 @@ private:
 
 	Common::ScopedPtr<Minimap> _minimap;
 
+	void update(int width, int height);
+
 	void initWidget(Widget &widget);
 	void setPortrait(uint8 n, bool visible, const Common::UString &portrait = "");
+
+	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
 
 protected:
 	virtual void callbackActive(Widget &widget);

@@ -84,6 +84,7 @@ public:
 	// .--- Item selection
 
 	void selectItemByWidgetTag(const Common::UString &tag);
+	void selectItemByIndex(int index);
 	void selectNextItem();
 	void selectPreviousItem();
 
@@ -94,6 +95,8 @@ public:
 	void setHeight(float height);
 
 	void subActive(Widget &widget);
+
+	void mouseWheel(uint8 state, int x, int y);
 
 	void setSoundSelectItem(const Common::UString &resRef);
 	void setSoundHoverItem(const Common::UString &resRef);

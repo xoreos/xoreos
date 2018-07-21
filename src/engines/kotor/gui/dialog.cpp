@@ -56,37 +56,7 @@ DialogGUIBase::DialogGUIBase(bool k2)
 		  _frame(new Graphics::Aurora::KotORDialogFrame()) {
 	load(k2 ? "dialog_p" : "dialog");
 
-	int w = WindowMan.getWindowWidth();
-	float hh = WindowMan.getWindowHeight() / 2.0f;
-	float rh = hh / 2.0f; // quarter of window height
-
-	_frame->setRectangleHeight(rh);
-
-	WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
-	lblMessage->setHorizontalTextAlign(Graphics::Aurora::kHAlignCenter);
-	lblMessage->setVerticalTextAlign(Graphics::Aurora::kVAlignBottom);
-	lblMessage->setPosition(-w / 2.0f, hh - rh, -1.0f);
-	lblMessage->setWidth(w);
-	lblMessage->setHeight(rh);
-
-	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
-	lbReplies->setAdjustHeight(true);
-	lbReplies->setPosition(-w / 2.0f, -hh, -1.0f);
-	lbReplies->setWidth(w);
-	lbReplies->setHeight(rh);
-	lbReplies->setSoundHoverItem("gui_actscroll");
-	lbReplies->setSoundClickItem("gui_actuse");
-
-	// Dialog entries in KotOR and KotOR II have invalid text color in
-	// GUI files. Override it with appropriate color for each game.
-	if (k2)
-		lblMessage->setTextColor(0.101961f, 0.698039f, 0.549020f, 1.0f);
-	else {
-		lblMessage->setTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
-		lbReplies->setItemTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
-	}
-
-	lbReplies->createItemWidgets(9);
+	update(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
 void DialogGUIBase::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
@@ -163,6 +133,40 @@ void DialogGUIBase::callbackKeyInput(const Events::Key &key,
 				break;
 		}
 	}
+}
+
+void DialogGUIBase::update(int width, int height) {
+	int w = width;
+	float hh = height / 2.0f;
+	float rh = hh / 2.0f; // quarter of window height
+
+	_frame->setRectangleHeight(rh);
+
+	WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
+	lblMessage->setHorizontalTextAlign(Graphics::Aurora::kHAlignCenter);
+	lblMessage->setVerticalTextAlign(Graphics::Aurora::kVAlignBottom);
+	lblMessage->setPosition(-w / 2.0f, hh - rh, -1.0f);
+	lblMessage->setWidth(w);
+	lblMessage->setHeight(rh);
+
+	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
+	lbReplies->setAdjustHeight(true);
+	lbReplies->setPosition(-w / 2.0f, -hh, -1.0f);
+	lbReplies->setWidth(w);
+	lbReplies->setHeight(rh);
+	lbReplies->setSoundHoverItem("gui_actscroll");
+	lbReplies->setSoundClickItem("gui_actuse");
+
+	// Dialog entries in KotOR and KotOR II have invalid text color in
+	// GUI files. Override it with appropriate color for each game.
+	if (_kotor2)
+		lblMessage->setTextColor(0.101961f, 0.698039f, 0.549020f, 1.0f);
+	else {
+		lblMessage->setTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
+		lbReplies->setItemTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
+	}
+
+	lbReplies->createItemWidgets(9);
 }
 
 void DialogGUIBase::refresh() {
@@ -272,6 +276,10 @@ void DialogGUIBase::eraseDeveloperNotes(Common::UString &str) {
 
 		str.erase(obit, ++cbit);
 	}
+}
+
+void DialogGUIBase::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight), int newWidth, int newHeight) {
+	update(newWidth, newHeight);
 }
 
 DialogGUI::DialogGUI(Module &module)

@@ -82,6 +82,11 @@ protected:
 	/** Remove a widget. */
 	void removeWidget(Widget *widget);
 
+	/** Clear all widgets. */
+	void clearWidgets();
+	/** Check if the gui is currently empty. */
+	bool empty();
+
 	/** Does this specific widget exist within the GUI? */
 	bool hasWidget(const Common::UString &tag) const;
 
