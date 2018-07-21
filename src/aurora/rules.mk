@@ -57,6 +57,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/ifofile.h \
     src/aurora/pefile.h \
     src/aurora/herffile.h \
+    src/aurora/obbfile.h \
     src/aurora/smallfile.h \
     src/aurora/nitrofile.h \
     src/aurora/nsbtxfile.h \
@@ -99,6 +100,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/ifofile.cpp \
     src/aurora/pefile.cpp \
     src/aurora/herffile.cpp \
+    src/aurora/obbfile.cpp \
     src/aurora/smallfile.cpp \
     src/aurora/nitrofile.cpp \
     src/aurora/nsbtxfile.cpp \
