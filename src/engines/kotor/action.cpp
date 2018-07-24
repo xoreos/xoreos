@@ -28,7 +28,8 @@ namespace Engines {
 
 namespace KotOR {
 
-Action::Action(ActionType type) : _type(type) {
+Action::Action(ActionType type) : _type(type), _object(0), _range(0.0f) {
+	_point[0] = _point[1] = _point[2] = 0.0f;
 }
 
 Action::Action(const Action &action) : _type(action._type) {
