@@ -52,11 +52,16 @@ Creature::Creature(const Aurora::GFF3Struct &creature)
 		: Object(kObjectTypeCreature),
 		  _walkRate(0.0f),
 		  _runRate(0.0f) {
+
 	init();
 	load(creature);
 }
 
-Creature::Creature() : Object(kObjectTypeCreature) {
+Creature::Creature()
+		: Object(kObjectTypeCreature),
+		  _walkRate(0.0f),
+		  _runRate(0.0f) {
+
 	init();
 }
 
