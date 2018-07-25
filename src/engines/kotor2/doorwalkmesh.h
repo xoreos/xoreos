@@ -19,60 +19,40 @@
  */
 
 /** @file
- *  A room within a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  WalkmeshObject implementation for KotOR2 doors.
  */
 
-#include "src/common/error.h"
-#include "src/common/ustring.h"
-#include "src/common/maths.h"
+#ifndef ENGINES_KOTOR2_DOORWALKMESH_H
+#define ENGINES_KOTOR2_DOORWALKMESH_H
 
-#include "src/graphics/aurora/model.h"
-
-#include "src/engines/aurora/model.h"
-
-#include "src/engines/kotor2/room.h"
+#include "src/engines/kotor2/objectwalkmesh.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-Room::Room(const Common::UString &resRef, float x, float y, float z)
-	    : _resRef(resRef.toLower()) {
-	load(resRef, x, y, z);
-}
+class Door;
 
-Room::~Room() {
-}
+class DoorWalkmesh : public Engines::KotOR2::ObjectWalkmesh {
+public:
+	DoorWalkmesh(Door *door);
+	~DoorWalkmesh();
 
-void Room::load(const Common::UString &resRef, float x, float y, float z) {
-	if (resRef == "****")
-		return;
+	bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const;
+	bool in(glm::vec2 &point) const;
 
-	_model.reset(loadModelObject(resRef));
-	if (!_model)
-		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
+	const std::vector<float> &getVertices() const;
+	const std::vector<uint32> &getFaces() const;
 
-	_model->setPosition(x, y, z);
-}
+private:
+	Door *_door;
 
-Common::UString Room::getResRef() const {
-	return _resRef;
-}
-
-void Room::show() {
-	if (_model)
-		_model->show();
-}
-
-void Room::hide() {
-	if (_model)
-		_model->hide();
-}
-
-bool Room::isVisible() const {
-	return _model && _model->isVisible();
-}
+	std::vector<float> _noVertices;
+	std::vector<uint32> _noFaces;
+};
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTOR2_DOORWALKMESH_H

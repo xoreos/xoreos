@@ -47,9 +47,12 @@
 
 namespace Engines {
 
+class LocalPathfinding;
+
 namespace KotOR2 {
 
 class Module;
+class Pathfinding;
 class Room;
 class Situated;
 
@@ -104,6 +107,11 @@ public:
 
 	/** Forcibly remove the focus from the currently highlighted object. */
 	void removeFocus();
+
+	// Walkmesh
+	float evaluateElevation(float x, float y);
+	bool walkable(const glm::vec3 &orig, const glm::vec3 &dest) const;
+	void toggleWalkmesh();
 
 	// .--- Triggers
 	void toggleTriggers();
@@ -194,6 +202,8 @@ private:
 	bool _walkmeshInvisible;
 	std::list<Situated *> _situatedObjects;
 
+	KotOR2::Pathfinding *_pathfinding;
+	Engines::LocalPathfinding *_localPathfinding;
 
 	// Loading helpers
 
@@ -231,8 +241,6 @@ private:
 	void highlightAll(bool enabled);
 
 	void click(int x, int y);
-
-	Room *getRoomAt(float x, float y) const;
 
 
 	friend class Console;

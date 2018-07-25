@@ -64,6 +64,9 @@ public:
 	/** Return the object that last used this situated object. */
 	Object *getLastUsedBy  () const;
 
+	/** Get the model name. */
+	const Common::UString &getModelName() const;
+
 	// Positioning
 
 	/** Set the situated object's position. */
@@ -96,7 +99,6 @@ protected:
 	Object *_lastUsedBy;   ///< The object that last used this situated object.
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The situated object's model.
-
 
 	Situated(ObjectType type);
 

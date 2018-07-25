@@ -19,60 +19,32 @@
  */
 
 /** @file
- *  A room within a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Pathfinding class for KotOR2.
  */
 
-#include "src/common/error.h"
-#include "src/common/ustring.h"
-#include "src/common/maths.h"
+#ifndef ENGINES_KOTOR2_PATHFINDING_H
+#define ENGINES_KOTOR2_PATHFINDING_H
 
-#include "src/graphics/aurora/model.h"
-
-#include "src/engines/aurora/model.h"
-
-#include "src/engines/kotor2/room.h"
+#include "src/engines/kotor/pathfinding.h"
 
 namespace Engines {
 
 namespace KotOR2 {
+class Room;
 
-Room::Room(const Common::UString &resRef, float x, float y, float z)
-	    : _resRef(resRef.toLower()) {
-	load(resRef, x, y, z);
-}
+class Pathfinding : public KotOR::Pathfinding {
+public:
+	Pathfinding(const std::vector<bool> &walkableProp);
 
-Room::~Room() {
-}
+	void addRoom(Room *room);
+	Room *getRoomAt(float x, float y) const;
 
-void Room::load(const Common::UString &resRef, float x, float y, float z) {
-	if (resRef == "****")
-		return;
-
-	_model.reset(loadModelObject(resRef));
-	if (!_model)
-		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
-
-	_model->setPosition(x, y, z);
-}
-
-Common::UString Room::getResRef() const {
-	return _resRef;
-}
-
-void Room::show() {
-	if (_model)
-		_model->show();
-}
-
-void Room::hide() {
-	if (_model)
-		_model->hide();
-}
-
-bool Room::isVisible() const {
-	return _model && _model->isVisible();
-}
+private:
+	std::vector<Room *> _roomsKotOR2;
+};
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTOR2_PATHFINDING_H

@@ -19,58 +19,48 @@
  */
 
 /** @file
- *  A room within a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Pathfinding class for KotOR2.
  */
 
-#include "src/common/error.h"
-#include "src/common/ustring.h"
-#include "src/common/maths.h"
-
-#include "src/graphics/aurora/model.h"
-
-#include "src/engines/aurora/model.h"
+#include "src/common/aabbnode.h"
 
 #include "src/engines/kotor2/room.h"
+#include "src/engines/kotor2/pathfinding.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-Room::Room(const Common::UString &resRef, float x, float y, float z)
-	    : _resRef(resRef.toLower()) {
-	load(resRef, x, y, z);
+Pathfinding::Pathfinding(const std::vector<bool> &walkableProp)
+    : KotOR::Pathfinding(walkableProp) {
 }
 
-Room::~Room() {
+void Pathfinding::addRoom(Room *room) {
+	_startFace.push_back(_faces.size() / 3);
+
+	std::map<uint32, uint32> adjRooms;
+	_walkmeshLoader.load(Aurora::kFileTypeWOK, room->getResRef(), glm::mat4(),
+	                     _vertices, _faces, _faceProperty, _adjFaces, adjRooms,
+	                     this);
+	_adjRooms.push_back(adjRooms);
+
+	Common::AABBNode *rootNode = _walkmeshLoader.getAABB();
+	_AABBTrees.push_back(rootNode);
+	_roomsKotOR2.push_back(room);
 }
 
-void Room::load(const Common::UString &resRef, float x, float y, float z) {
-	if (resRef == "****")
-		return;
+Room *Pathfinding::getRoomAt(float x, float y) const {
+	for (size_t n = 0; n < _AABBTrees.size(); ++n) {
+		if (!_AABBTrees[n])
+			continue;
 
-	_model.reset(loadModelObject(resRef));
-	if (!_model)
-		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
+		if (!_AABBTrees[n]->isIn(x, y))
+			continue;
 
-	_model->setPosition(x, y, z);
-}
+		return _roomsKotOR2[n];
+	}
 
-Common::UString Room::getResRef() const {
-	return _resRef;
-}
-
-void Room::show() {
-	if (_model)
-		_model->show();
-}
-
-void Room::hide() {
-	if (_model)
-		_model->hide();
-}
-
-bool Room::isVisible() const {
-	return _model && _model->isVisible();
+	return 0;
 }
 
 } // End of namespace KotOR2

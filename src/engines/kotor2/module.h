@@ -90,6 +90,8 @@ public:
 	Area *getCurrentArea();
 	/** Return the currently playing PC. */
 	Creature *getPC();
+	/** Return a map between surface type and whether it is walkable. */
+	const std::vector<bool> &getWalkableSurfaces() const;
 	// '---
 
 	// .--- Interact with the current module
@@ -206,6 +208,10 @@ private:
 
 	Common::ScopedPtr<Engines::KotOR2::IngameGUI> _ingame; ///< The ingame gui.
 
+	// Surface types
+	/** A map between surface type and whether it is walkable. */
+	std::vector<bool> _walkableSurfaces;
+
 	// .--- Unloading
 	/** Unload the whole shebang.
 	 *
@@ -229,6 +235,8 @@ private:
 	void loadIFO();
 	void loadArea();
 	void loadTexturePack();
+	/** Load the surface types. */
+	void loadSurfaceTypes();
 	// '---
 
 	/** Load the actual module. */
