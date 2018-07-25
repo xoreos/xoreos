@@ -19,60 +19,49 @@
  */
 
 /** @file
- *  A room within a Star Wars: Knights of the Old Republic area.
+ *  Pathfinding class for KotOR.
  */
 
-#include "src/common/error.h"
-#include "src/common/ustring.h"
-#include "src/common/maths.h"
+#ifndef ENGINES_KOTOR_PATHFINDING_H
+#define ENGINES_KOTOR_PATHFINDING_H
 
-#include "src/graphics/aurora/model.h"
+#include "glm/mat4x4.hpp"
 
-#include "src/engines/aurora/model.h"
+#include "src/aurora/types.h"
 
-#include "src/engines/kotor/room.h"
+#include "src/engines/aurora/pathfinding.h"
+
+#include "src/engines/kotor/walkmeshloader.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Room::Room(const Common::UString &resRef, float x, float y, float z)
-    : _resRef(resRef.toLower()) {
-	load(resRef, x, y, z);
-}
+class WalkmeshLoader;
+class Room;
 
-Room::~Room() {
-}
+class Pathfinding : public Engines::Pathfinding {
+public:
+	Pathfinding(const std::vector<bool> &walkableProp);
+	~Pathfinding();
 
-void Room::load(const Common::UString &resRef, float x, float y, float z) {
-	if (resRef == "****")
-		return;
+	void addRoom(Room *room);
+	void connectRooms();
 
-	_model.reset(loadModelObject(resRef));
-	if (!_model)
-		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
+	Room *getRoomAt(float x, float y) const;
 
-	_model->setPosition(x, y, z);
-}
+protected:
+	WalkmeshLoader _walkmeshLoader;
+	std::vector<std::map<uint32, uint32> > _adjRooms;
+	std::vector<uint32> _startFace;
 
-Common::UString Room::getResRef() const {
-	return _resRef;
-}
-
-void Room::show() {
-	if (_model)
-		_model->show();
-}
-
-void Room::hide() {
-	if (_model)
-		_model->hide();
-}
-
-bool Room::isVisible() const {
-	return _model && _model->isVisible();
-}
+private:
+	uint32 getFaceFromEdge(uint32 edge, uint32 room) const;
+	std::vector<Room *> _rooms;
+};
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTOR_PATHFINDING_H

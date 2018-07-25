@@ -41,13 +41,17 @@
 #include "src/sound/sound.h"
 
 #include "src/engines/aurora/util.h"
+#include "src/engines/aurora/localpathfinding.h"
 
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/room.h"
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/waypoint.h"
 #include "src/engines/kotor/placeable.h"
+#include "src/engines/kotor/pathfinding.h"
+#include "src/engines/kotor/objectwalkmesh.h"
 #include "src/engines/kotor/door.h"
+#include "src/engines/kotor/doorwalkmesh.h"
 #include "src/engines/kotor/creature.h"
 #include "src/engines/kotor/trigger.h"
 #include "src/engines/kotor/actionexecutor.h"
@@ -74,6 +78,11 @@ Area::Area(Module &module, const Common::UString &resRef)
 		  _activeTrigger(0),
 		  _walkmeshInvisible(true) {
 
+	_pathfinding = new Pathfinding(_module->getWalkableSurfaces());
+	_pathfinding->showWalkmesh(!_walkmeshInvisible);
+	_localPathfinding = new Engines::LocalPathfinding(_pathfinding);
+	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
+
 	try {
 		load();
 	} catch (...) {
@@ -93,6 +102,9 @@ Area::~Area() {
 	removeFocus();
 
 	clear();
+
+	delete _localPathfinding;
+	delete _pathfinding;
 }
 
 void Area::load() {
@@ -241,6 +253,10 @@ void Area::show() {
 	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
 		(*o)->show();
 
+	// Show walkmesh
+	_pathfinding->showWalkmesh(!_walkmeshInvisible);
+	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
+
 	GfxMan.unlockFrame();
 
 	// Play music and sound
@@ -267,6 +283,10 @@ void Area::hide() {
 	// Hide rooms
 	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
 		(*r)->hide();
+
+	// Hide walkmesh
+	_pathfinding->showWalkmesh(false);
+	_localPathfinding->showWalkmesh(false);
 
 	GfxMan.unlockFrame();
 
@@ -391,8 +411,12 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 void Area::loadRooms() {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	for (Aurora::LYTFile::RoomArray::const_iterator r = rooms.begin(); r != rooms.end(); ++r) {
-		_rooms.push_back(new Room(r->model, r->x, r->y, r->z));
+		Room *room = new Room(r->model, r->x, r->y, r->z);
+		_rooms.push_back(room);
+		_pathfinding->addRoom(room);
 	}
+
+	_pathfinding->connectRooms();
 }
 
 void Area::loadObject(KotOR::Object &object) {
@@ -423,6 +447,7 @@ void Area::loadPlaceables(const Aurora::GFF3List &list) {
 
 		loadObject(*placeable);
 		_situatedObjects.push_back(placeable);
+		_localPathfinding->addStaticObjects(new ObjectWalkmesh(placeable));
 	}
 }
 
@@ -432,6 +457,7 @@ void Area::loadDoors(const Aurora::GFF3List &list) {
 
 		loadObject(*door);
 		_situatedObjects.push_back(door);
+		_localPathfinding->addStaticObjects(new DoorWalkmesh(door));
 	}
 }
 
@@ -566,6 +592,26 @@ void Area::notifyCameraMoved() {
 	checkActive();
 }
 
+float Area::evaluateElevation(float x, float y) {
+	return _pathfinding->getHeight(x, y, true);
+}
+
+bool Area::walkable(const glm::vec3 &orig, const glm::vec3 &dest) const {
+	std::vector<glm::vec3> path;
+	path.push_back(orig);
+	path.push_back(dest);
+	_localPathfinding->buildWalkmeshAround(path, 0.1f);
+	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
+
+	return _localPathfinding->walkable(dest);
+}
+
+void Area::toggleWalkmesh() {
+	_walkmeshInvisible = !_walkmeshInvisible;
+	_pathfinding->showWalkmesh(!_walkmeshInvisible);
+	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
+}
+
 void Area::toggleTriggers() {
 	_triggersVisible = !_triggersVisible;
 	for (std::vector<Trigger *>::const_iterator it = _triggers.begin();
@@ -618,7 +664,7 @@ void Area::showAllRooms() {
 void Area::notifyObjectMoved(Object &o) {
 	float x, y, z;
 	o.getPosition(x, y, z);
-	o.setRoom(getRoomAt(x, y));
+	o.setRoom(_pathfinding->getRoomAt(x, y));
 }
 
 void Area::notifyPCMoved() {
@@ -725,10 +771,6 @@ void Area::removeObject(KotOR::Object *object) {
 
 	_module->removeObject(*object);
 	_objects.remove(object);
-}
-
-Room *Area::getRoomAt(float x, float y) const {
-	return 0;
 }
 
 } // End of namespace KotOR

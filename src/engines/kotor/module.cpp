@@ -35,6 +35,8 @@
 #include "src/aurora/rimfile.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/dlgfile.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
 
 #include "src/graphics/camera.h"
 
@@ -94,6 +96,7 @@ Module::Module(::Engines::Console &console)
 		  _inDialog(false),
 		  _cameraHeight(0.0f) {
 
+	loadSurfaceTypes();
 }
 
 Module::~Module() {
@@ -182,6 +185,10 @@ Creature *Module::getPC() {
 	return _pc.get();
 }
 
+const std::vector<bool> &Module::getWalkableSurfaces() const {
+	return _walkableSurfaces;
+}
+
 Graphics::Aurora::FadeQuad &Module::getFadeQuad() {
 	return *_fade;
 }
@@ -249,6 +256,16 @@ void Module::loadIFO() {
 
 void Module::loadArea() {
 	_area.reset(new Area(*this, _ifo.getEntryArea()));
+}
+
+void Module::loadSurfaceTypes() {
+	_walkableSurfaces.clear();
+
+	const Aurora::TwoDAFile &surfacematTwoDA = TwoDAReg.get2DA("surfacemat");
+	for (size_t s = 0; s < surfacematTwoDA.getRowCount(); ++s) {
+		const Aurora::TwoDARow &row = surfacematTwoDA.getRow(s);
+		_walkableSurfaces.push_back(static_cast<bool>(row.getInt("Walk")));
+	}
 }
 
 static const char * const texturePacks[3] = {
@@ -663,6 +680,15 @@ void Module::handlePCMovement() {
 			newY = y - moveRate * cos(yaw) * _frameTime;
 			haveMovement = true;
 		}
+
+		if (haveMovement) {
+			z = _area->evaluateElevation(newX, newY);
+			if (z != FLT_MIN) {
+				if (_area->walkable(glm::vec3(x, y, z + 0.1f),
+				                    glm::vec3(newX, newY, z + 0.1f)))
+					movePC(newX, newY, z);
+			}
+		}
 	}
 
 	const float *position = CameraMan.getPosition();
@@ -974,6 +1000,7 @@ void Module::toggleFreeRoamCamera() {
 }
 
 void Module::toggleWalkmesh() {
+	_area->toggleWalkmesh();
 }
 
 void Module::toggleTriggers() {

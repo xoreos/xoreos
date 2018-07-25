@@ -48,6 +48,10 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/action.h \
     src/engines/kotor/actionexecutor.h \
     src/engines/kotor/partyconfig.h \
+    src/engines/kotor/pathfinding.h \
+    src/engines/kotor/walkmeshloader.h \
+    src/engines/kotor/objectwalkmesh.h \
+    src/engines/kotor/doorwalkmesh.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
@@ -75,6 +79,10 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/action.cpp \
     src/engines/kotor/actionexecutor.cpp \
     src/engines/kotor/partyconfig.cpp \
+    src/engines/kotor/pathfinding.cpp \
+    src/engines/kotor/walkmeshloader.cpp \
+    src/engines/kotor/objectwalkmesh.cpp \
+    src/engines/kotor/doorwalkmesh.cpp \
     $(EMPTY)
 
 include src/engines/kotor/script/rules.mk

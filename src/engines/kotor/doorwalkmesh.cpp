@@ -19,58 +19,49 @@
  */
 
 /** @file
- *  A room within a Star Wars: Knights of the Old Republic area.
+ *  WalkmeshObject implementation for KotOR doors.
  */
 
-#include "src/common/error.h"
-#include "src/common/ustring.h"
-#include "src/common/maths.h"
-
-#include "src/graphics/aurora/model.h"
-
-#include "src/engines/aurora/model.h"
-
-#include "src/engines/kotor/room.h"
+#include "src/engines/kotor/door.h"
+#include "src/engines/kotor/doorwalkmesh.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Room::Room(const Common::UString &resRef, float x, float y, float z)
-    : _resRef(resRef.toLower()) {
-	load(resRef, x, y, z);
+DoorWalkmesh::DoorWalkmesh(Door *door) : ObjectWalkmesh(door, Aurora::kFileTypeDWK),
+    _door(door) {
 }
 
-Room::~Room() {
+DoorWalkmesh::~DoorWalkmesh() {
 }
 
-void Room::load(const Common::UString &resRef, float x, float y, float z) {
-	if (resRef == "****")
-		return;
+bool DoorWalkmesh::in(glm::vec2 &minBox, glm::vec2 &maxBox) const {
+	if (_door->isOpen())
+		return false;
 
-	_model.reset(loadModelObject(resRef));
-	if (!_model)
-		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
-
-	_model->setPosition(x, y, z);
+	return ObjectWalkmesh::in(minBox, maxBox);
 }
 
-Common::UString Room::getResRef() const {
-	return _resRef;
+bool DoorWalkmesh::in(glm::vec2 &point) const {
+	if (_door->isOpen())
+		return false;
+
+	return ObjectWalkmesh::in(point);
 }
 
-void Room::show() {
-	if (_model)
-		_model->show();
+const std::vector<float> &DoorWalkmesh::getVertices() const {
+	if (_door->isOpen())
+		return _noVertices;
+
+	return ObjectWalkmesh::getVertices();
 }
 
-void Room::hide() {
-	if (_model)
-		_model->hide();
-}
+const std::vector<uint32> &DoorWalkmesh::getFaces() const {
+	if (_door->isOpen())
+		return _noFaces;
 
-bool Room::isVisible() const {
-	return _model && _model->isVisible();
+	return ObjectWalkmesh::getFaces();
 }
 
 } // End of namespace KotOR
