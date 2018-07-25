@@ -90,10 +90,10 @@ bool ActionExecutor::moveTo(Creature &creature, Area &area, float x, float y, fl
 	glm::vec2 dir = glm::normalize(diff);
 	float newX = origin.x + moveRate * dir.x * dt;
 	float newY = origin.y + moveRate * dir.y * dt;
-	float z = area.evaluateElevation(&creature, newX, newY, false);
+	float z = area.evaluateElevation(newX, newY);
 
 	bool haveMovement = (z != FLT_MIN) &&
-	                     !area.testCollision(glm::vec3(oX, oY, oZ + 0.1f),
+	                     area.walkable(glm::vec3(oX, oY, oZ + 0.1f),
 	                                         glm::vec3(newX, newY, z + 0.1f));
 
 	if (haveMovement) {

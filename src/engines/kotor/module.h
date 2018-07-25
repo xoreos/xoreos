@@ -95,6 +95,8 @@ public:
 	Area *getCurrentArea();
 	/** Return the currently playing PC. */
 	Creature *getPC();
+	/** Return a map between surface type and whether it is walkable. */
+	const std::vector<bool> &getWalkableSurfaces() const;
 	/** Return the fade quad. */
 	Graphics::Aurora::FadeQuad &getFadeQuad();
 	// '---
@@ -278,6 +280,10 @@ private:
 	float _cameraHeight;
 
 
+	// Surface types
+	/** A map between surface type and whether it is walkable. */
+	std::vector<bool> _walkableSurfaces;
+
 	// .--- Unloading
 	/** Unload the whole shebang.
 	 *
@@ -300,6 +306,8 @@ private:
 	void loadResources();
 	void loadIFO();
 	void loadArea();
+	/** Load the surface types. */
+	void loadSurfaceTypes();
 	// '---
 
 	/** Load the actual module. */

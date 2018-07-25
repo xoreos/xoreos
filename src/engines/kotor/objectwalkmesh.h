@@ -19,60 +19,52 @@
  */
 
 /** @file
- *  A room within a Star Wars: Knights of the Old Republic area.
+ *  WalkmeshObject implementation for KotOR.
  */
 
-#include "src/common/error.h"
-#include "src/common/ustring.h"
-#include "src/common/maths.h"
+#ifndef ENGINES_KOTOR_OBJECTWALKMESH_H
+#define ENGINES_KOTOR_OBJECTWALKMESH_H
 
-#include "src/graphics/aurora/model.h"
+#include "glm/vec2.hpp"
 
-#include "src/engines/aurora/model.h"
+#include "src/aurora/types.h"
 
-#include "src/engines/kotor/room.h"
+#include "src/engines/aurora/objectwalkmesh.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Room::Room(const Common::UString &resRef, float x, float y, float z)
-    : _resRef(resRef.toLower()) {
-	load(resRef, x, y, z);
-}
+class Situated;
 
-Room::~Room() {
-}
+class ObjectWalkmesh : public Engines::ObjectWalkmesh {
+public:
+	ObjectWalkmesh(Situated *situated, Aurora::FileType fileType = Aurora::kFileTypePWK);
+	~ObjectWalkmesh();
 
-void Room::load(const Common::UString &resRef, float x, float y, float z) {
-	if (resRef == "****")
-		return;
+	void load(const Common::UString &resRef,
+	          float orientation[4], float position[3]);
+	bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const;
+	bool in(glm::vec2 &point) const;
 
-	_model.reset(loadModelObject(resRef));
-	if (!_model)
-		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
+	const std::vector<float> &getVertices() const;
+	const std::vector<uint32> &getFaces() const;
 
-	_model->setPosition(x, y, z);
-}
+protected:
+	Aurora::FileType _fileType;
 
-Common::UString Room::getResRef() const {
-	return _resRef;
-}
+private:
+	void computeMinMax();
 
-void Room::show() {
-	if (_model)
-		_model->show();
-}
+	glm::vec2 _min;
+	glm::vec2 _max;
 
-void Room::hide() {
-	if (_model)
-		_model->hide();
-}
-
-bool Room::isVisible() const {
-	return _model && _model->isVisible();
-}
+	std::vector<float>  _vertices;
+	std::vector<uint32> _faces;
+};
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTOR_OBJECTWALKMESH_H
