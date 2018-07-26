@@ -91,9 +91,9 @@ public:
 	void readLocString(Common::SeekableReadStream &stream);
 
 	/** Get the size, the string table will consume after being written. */
-	uint32 getWrittenSize(bool withNullTerminate = false);
+	uint32 getWrittenSize(bool withNullTerminate = false) const;
 	/** Write the LocString to a write stream. */
-	void writeLocString(Common::WriteStream &stream, bool withNullTerminate = false);
+	void writeLocString(Common::WriteStream &stream, bool withNullTerminate = false) const;
 
 private:
 	typedef std::map<uint32, Common::UString> StringMap;
