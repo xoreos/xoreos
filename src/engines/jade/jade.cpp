@@ -66,27 +66,64 @@ JadeEngine::JadeEngine() : _language(Aurora::kLanguageInvalid) {
 JadeEngine::~JadeEngine() {
 }
 
+/** Find all language TLKs in this Jade Empire installation. */
+static void findTLKs(const Common::UString &target, Common::FileList &tlks) {
+	Common::FileList files;
+	if (!files.addDirectory(target))
+		return;
+
+	files.addDirectory(Common::FilePath::findSubDirectory(target, "localizations", true), 1);
+	files.addDirectory(Common::FilePath::findSubDirectory(target, "localized", true), 1);
+
+	const std::vector<Aurora::Language> gameLanguages = LangMan.getLanguages();
+	for (std::vector<Aurora::Language>::const_iterator l = gameLanguages.begin();
+	     l != gameLanguages.end(); ++l)
+		files.addDirectory(Common::FilePath::findSubDirectory(target, LangMan.getLanguageName(*l)), -1);
+
+	files.addDirectory(Common::FilePath::findSubDirectory(target, "Chinese", true), -1);
+
+	files.getSubList("/dialog.tlk", true, tlks);
+}
+
+/** Add the language to the vector if it's a valid language and not yet in the vector. */
+static void addUniqueLanguageIfValid(std::vector<Aurora::Language> &languages, Aurora::Language language) {
+	if ((language == Aurora::kLanguageInvalid) ||
+	    (std::find(languages.begin(), languages.end(), language) != languages.end()))
+		return;
+
+	languages.push_back(language);
+}
+
+/** Return the language of a TLK. */
+static Aurora::Language getTLKLanguage(const Common::UString &tlk) {
+	const uint32 languageID = Aurora::TalkTable_TLK::getLanguageID(tlk);
+	if (languageID == Aurora::kLanguageInvalid)
+		return Aurora::kLanguageInvalid;
+
+	return LangMan.getLanguage(languageID);
+}
+
+/** Return the subdirectory of the game path where the TLK for a specific language is in. */
+static Common::UString getTLKDirectory(const Common::UString &target, Aurora::Language language) {
+	Common::FileList tlks;
+	findTLKs(target, tlks);
+
+	for (Common::FileList::const_iterator tlk = tlks.begin(); tlk != tlks.end(); ++tlk)
+		if (getTLKLanguage(*tlk) == language)
+			return Common::FilePath::getDirectory(Common::FilePath::relativize(target, *tlk));
+
+	return "";
+}
+
 bool JadeEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::UString &target,
                                  Aurora::Platform UNUSED(platform),
                                  std::vector<Aurora::Language> &languages) const {
 	try {
-		Common::FileList files;
-		if (!files.addDirectory(target))
-			return true;
+		Common::FileList tlks;
+		findTLKs(target, tlks);
 
-		Common::UString tlk = files.findFirst("dialog.tlk", true);
-		if (tlk.empty())
-			return true;
-
-		uint32 languageID = Aurora::TalkTable_TLK::getLanguageID(tlk);
-		if (languageID == Aurora::kLanguageInvalid)
-			return true;
-
-		Aurora::Language language = LangMan.getLanguage(languageID);
-		if (language == Aurora::kLanguageInvalid)
-			return true;
-
-		languages.push_back(language);
+		for (Common::FileList::const_iterator tlk = tlks.begin(); tlk != tlks.end(); ++tlk)
+			addUniqueLanguageIfValid(languages, getTLKLanguage(*tlk));
 
 	} catch (...) {
 	}
@@ -134,7 +171,7 @@ void JadeEngine::run() {
 }
 
 void JadeEngine::init() {
-	LoadProgress progress(16);
+	LoadProgress progress(17);
 
 	progress.step("Declare languages");
 	declareLanguages();
@@ -226,6 +263,17 @@ void JadeEngine::initResources(LoadProgress &progress) {
 
 	progress.step("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 150);
+
+	progress.step("Indexing extra language files");
+	const Common::UString langDir = getTLKDirectory(_target, LangMan.getCurrentLanguageText());
+	if (!langDir.empty()) {
+		indexMandatoryDirectory(langDir, 0, 0, 160);
+
+		indexOptionalDirectory(langDir + "/fonts" , 0, -1, 161);
+		indexOptionalDirectory(langDir + "/movies", 0, -1, 162);
+
+		indexOptionalDirectory(langDir + "/override", 0,  0, 163);
+	}
 
 	if (EventMan.quitRequested())
 		return;
