@@ -46,6 +46,8 @@
 #include "src/sound/decoders/wave.h"
 
 #include "src/events/events.h"
+#include "sound.h"
+
 
 DECLARE_SINGLETON(Sound::SoundManager)
 
@@ -129,6 +131,8 @@ void SoundManager::init() {
 	setTypeGain(kSoundTypeSFX  , ConfigMan.getDouble("volume_sfx"  , 1.0));
 	setTypeGain(kSoundTypeVoice, ConfigMan.getDouble("volume_voice", 1.0));
 	setTypeGain(kSoundTypeVideo, ConfigMan.getDouble("volume_video", 1.0));
+
+	alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
 }
 
 void SoundManager::deinit() {
@@ -383,6 +387,8 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 
 		// Set the gain to the current sound type gain
 		alSourcef(channel.source, AL_GAIN, _types[channel.type].gain);
+		// Set the sound per default as relative.
+		alSourcei(channel.source, AL_SOURCE_RELATIVE, 1);
 	}
 
 	// Add the channel to the correct type list
@@ -509,6 +515,23 @@ void SoundManager::setListenerGain(float gain) {
 		alListenerf(AL_GAIN, gain);
 }
 
+void SoundManager::setListenerPosition(float x, float y, float z) {
+	checkReady();
+
+	Common::StackLock lock(_mutex);
+
+	alListener3f(AL_POSITION, x, y, z);
+}
+
+void SoundManager::setListenerOrientation(float dirX, float dirY, float dirZ, float upX, float upY, float upZ) {
+	checkReady();
+
+	Common::StackLock lock(_mutex);
+
+	float orientation[] = {dirX, dirY, dirZ, upX, upY, upZ};
+	alListenerfv(AL_ORIENTATION, orientation);
+}
+
 void SoundManager::setChannelPosition(const ChannelHandle &handle, float x, float y, float z) {
 	Common::StackLock lock(_mutex);
 
@@ -561,6 +584,30 @@ void SoundManager::setChannelPitch(const ChannelHandle &handle, float pitch) {
 
 	if (_hasSound)
 		alSourcef(channel->source, AL_PITCH, pitch);
+}
+
+void SoundManager::setChannelRelative(const ChannelHandle &handle, bool relative) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	if (_hasSound)
+		alSourcei(channel->source, AL_SOURCE_RELATIVE, relative ? AL_TRUE : AL_FALSE);
+}
+
+void SoundManager::setChannelDistance(const ChannelHandle &handle, float minDistance, float maxDistance) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	if (_hasSound) {
+		alSourcef(channel->source, AL_REFERENCE_DISTANCE, minDistance);
+		alSourcef(channel->source, AL_MAX_DISTANCE, maxDistance);
+	}
 }
 
 uint64 SoundManager::getChannelSamplesPlayed(const ChannelHandle &handle) {
