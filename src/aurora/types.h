@@ -426,6 +426,7 @@ enum Platform {
 	kPlatformXbox360,      ///< Microsoft Xbox 360.
 	kPlatformLinux,        ///< GNU/Linux.
 	kPlatformAndroid,      ///< Android mobile phones and tablets.
+	kPlatformIOS,          ///< iOS, Apple mobile phones and tablets.
 	kPlatformUnknown       ///< Unknown (must be last).
 };
 
