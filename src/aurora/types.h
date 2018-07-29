@@ -418,16 +418,16 @@ enum ArchiveType {
 };
 
 enum Platform {
-	kPlatformWindows =  0, ///< Microsoft Windows.
-	kPlatformNDS,          ///< Nintendo DS.
-	kPlatformMacOSX,       ///< Mac OS X.
-	kPlatformXbox,         ///< Microsoft Xbox.
-	kPlatformPS3,          ///< Sony PlayStation 3.
-	kPlatformXbox360,      ///< Microsoft Xbox 360.
-	kPlatformLinux,        ///< GNU/Linux.
-	kPlatformAndroid,      ///< Android mobile phones and tablets.
-	kPlatformIOS,          ///< iOS, Apple mobile phones and tablets.
-	kPlatformUnknown       ///< Unknown (must be last).
+	kPlatformWindows = 0, ///< Microsoft Windows.
+	kPlatformMacOSX,      ///< Mac OS X.
+	kPlatformLinux,       ///< GNU/Linux.
+	kPlatformXbox,        ///< Microsoft Xbox.
+	kPlatformXbox360,     ///< Microsoft Xbox 360.
+	kPlatformPS3,         ///< Sony PlayStation 3.
+	kPlatformNDS,         ///< Nintendo DS.
+	kPlatformAndroid,     ///< Android mobile phones and tablets.
+	kPlatformIOS,         ///< iOS, Apple mobile phones and tablets.
+	kPlatformUnknown      ///< Unknown (must be last).
 };
 
 static const uint32 kObjectIDInvalid = 0xFFFFFFFF;
