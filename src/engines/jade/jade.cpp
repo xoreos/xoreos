@@ -346,11 +346,34 @@ void JadeEngine::deinit() {
 }
 
 void JadeEngine::playIntroVideos() {
-	playVideo("black");
-	playVideo("publisher");
-	playVideo("bwlogo");
-	playVideo("black");
-	playVideo("graymatr");
+	switch (_platform) {
+		case Aurora::kPlatformXbox:
+			playVideo("bwlogo");    // BioWare
+			playVideo("gsl_short"); // Microsoft
+			break;
+
+		default:
+		case Aurora::kPlatformWindows:
+			playVideo("black");     // One second of black
+			playVideo("publisher"); // 2K Games (original DVD version) or Electronic Arts (GOG version)
+			playVideo("black");     // One second of black
+			playVideo("bwlogo");    // BioWare
+			playVideo("black");     // One second of black
+			playVideo("graymatr");  // Gray Matter
+			break;
+
+		case Aurora::kPlatformAndroid:
+		case Aurora::kPlatformIOS:
+			// TODO: These are Bink 2 videos, they don't actually play in xoreos
+
+			playVideo("black");     // One second of black
+			playVideo("publisher"); // EA
+			playVideo("black");     // One second of black
+			playVideo("bwlogo");    // BioWare
+			playVideo("black");     // One second of black
+			playVideo("aspyr");     // Aspyr
+			break;
+	}
 }
 
 } // End of namespace Jade
