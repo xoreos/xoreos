@@ -55,13 +55,14 @@ namespace Graphics {
 
 namespace Aurora {
 
-Texture::Texture() : _type(::Aurora::kFileTypeNone), _width(0), _height(0) {
+Texture::Texture() : _type(::Aurora::kFileTypeNone), _width(0), _height(0), _deswizzle(false) {
 }
 
-Texture::Texture(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi) :
-	_name(name), _type(type), _width(0), _height(0) {
+Texture::Texture(const Common::UString &name, ImageDecoder *image,
+                 ::Aurora::FileType type, TXI *txi, bool deswizzle) :
+	_name(name), _type(type), _width(0), _height(0), _deswizzle(deswizzle) {
 
-	set(name, image, type, txi);
+	set(name, image, type, txi, deswizzle);
 	addToQueues();
 }
 
@@ -119,7 +120,7 @@ bool Texture::reload() {
 	try {
 
 		txi   = loadTXI  (_name);
-		image = loadImage(_name, type, txi);
+		image = loadImage(_name, type, txi, _deswizzle);
 
 	} catch (Common::Exception &e) {
 		delete txi;
@@ -129,7 +130,7 @@ bool Texture::reload() {
 	}
 
 	removeFromQueues();
-	set(_name, image, type, txi);
+	set(_name, image, type, txi, _deswizzle);
 	addToQueues();
 
 	return true;
@@ -319,7 +320,7 @@ Texture *Texture::createPLT(const Common::UString &name, Common::SeekableReadStr
 	return texture;
 }
 
-Texture *Texture::create(const Common::UString &name) {
+Texture *Texture::create(const Common::UString &name, bool deswizzle) {
 	::Aurora::FileType type = ::Aurora::kFileTypeNone;
 	ImageDecoder *image = 0;
 	ImageDecoder *layers[6] = { 0, 0, 0, 0, 0, 0 };
@@ -338,7 +339,7 @@ Texture *Texture::create(const Common::UString &name) {
 				if (!imageStream)
 					throw Common::Exception("No such cube side image resource \"%s\"", side.c_str());
 
-				layers[i] = loadImage(imageStream, type, txi);
+				layers[i] = loadImage(imageStream, type, txi, deswizzle);
 			}
 
 			image = new CubeMapCombiner(layers);
@@ -355,7 +356,7 @@ Texture *Texture::create(const Common::UString &name) {
 				return createPLT(name, imageStream);
 			}
 
-			image = loadImage(imageStream, type, txi);
+			image = loadImage(imageStream, type, txi, deswizzle);
 		}
 
 	} catch (Common::Exception &e) {
@@ -369,34 +370,38 @@ Texture *Texture::create(const Common::UString &name) {
 		throw;
 	}
 
-	return new Texture(name, image, type, txi);
+	return new Texture(name, image, type, txi, deswizzle);
 }
 
-Texture *Texture::create(ImageDecoder *image, ::Aurora::FileType type, TXI *txi) {
+Texture *Texture::create(ImageDecoder *image, ::Aurora::FileType type, TXI *txi, bool deswizzle) {
 	if (!image)
 		throw Common::Exception("Can't create a texture from an empty image");
 
 	if (image->getMipMapCount() < 1)
 		throw Common::Exception("Texture has no images");
 
-	return new Texture("", image, type, txi);
+	return new Texture("", image, type, txi, deswizzle);
 }
 
-void Texture::set(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type, TXI *txi) {
-	_name   = name;
-	_type   = type;
+void Texture::set(const Common::UString &name, ImageDecoder *image, ::Aurora::FileType type,
+                  TXI *txi, bool deswizzle) {
+
+	_name = name;
+	_type = type;
 
 	_image.reset(image);
 	_txi.reset(txi);
 
 	_width  = _image->getMipMap(0).width;
 	_height = _image->getMipMap(0).height;
+
+	_deswizzle = deswizzle;
 }
 
-ImageDecoder *Texture::loadImage(const Common::UString &name) {
+ImageDecoder *Texture::loadImage(const Common::UString &name, bool deswizzle) {
 	::Aurora::FileType type;
 
-	return loadImage(name, type);
+	return loadImage(name, type, deswizzle);
 }
 
 void Texture::addToQueues() {
@@ -414,18 +419,20 @@ void Texture::refresh() {
 	addToQueues();
 }
 
-ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType &type) {
-	return loadImage(name, type, 0);
+ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType &type, bool deswizzle) {
+	return loadImage(name, type, 0, deswizzle);
 }
 
-ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType &type, TXI *txi) {
+ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType &type,
+                                 TXI *txi, bool deswizzle) {
+
 	const bool isFileCubeMap = txi && txi->getFeatures().cube && (txi->getFeatures().fileRange == 6);
 	if (!isFileCubeMap) {
 		Common::SeekableReadStream *imageStream = ResMan.getResource(::Aurora::kResourceImage, name, &type);
 		if (!imageStream)
 			throw Common::Exception("No such image resource \"%s\"", name.c_str());
 
-		return loadImage(imageStream, type, txi);
+		return loadImage(imageStream, type, txi, deswizzle);
 	}
 
 	ImageDecoder *layers[6] = { 0, 0, 0, 0, 0, 0 };
@@ -437,7 +444,7 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 			if (!imageStream)
 				throw Common::Exception("No such cube side image resource \"%s\"", side.c_str());
 
-			layers[i] = loadImage(imageStream, type, txi);
+			layers[i] = loadImage(imageStream, type, txi, deswizzle);
 		}
 
 		return new CubeMapCombiner(layers);
@@ -451,7 +458,7 @@ ImageDecoder *Texture::loadImage(const Common::UString &name, ::Aurora::FileType
 }
 
 ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Aurora::FileType type,
-                                 TXI *txi) {
+                                 TXI *txi, bool deswizzle) {
 
 	// Check for a cube map, but only those that don't use a file for each side
 	const bool isCubeMap = txi && txi->getFeatures().cube && (txi->getFeatures().fileRange == 0);
@@ -468,7 +475,7 @@ ImageDecoder *Texture::loadImage(Common::SeekableReadStream *imageStream, ::Auro
 		else if (type == ::Aurora::kFileTypeTXB)
 			image = new TXB(*imageStream);
 		else if (type == ::Aurora::kFileTypeSBM)
-			image = new SBM(*imageStream);
+			image = new SBM(*imageStream, deswizzle);
 		else if (type == ::Aurora::kFileTypeXEOSITEX)
 			image = new XEOSITEX(*imageStream);
 		else

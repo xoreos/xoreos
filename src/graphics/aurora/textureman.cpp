@@ -80,7 +80,7 @@ static GLenum kTextureUnit[] = {
 static const size_t kTextureUnitCount = ARRAYSIZE(kTextureUnit);
 
 
-TextureManager::TextureManager() : _recordNewTextures(false) {
+TextureManager::TextureManager() : _deswizzleSBM(false), _recordNewTextures(false) {
 }
 
 TextureManager::~TextureManager() {
@@ -96,6 +96,8 @@ void TextureManager::clear() {
 		delete t->second;
 	_textures.clear();
 
+	_deswizzleSBM = false;
+
 	_recordNewTextures = false;
 	_newTextureNames.clear();
 }
@@ -104,6 +106,10 @@ void TextureManager::addBogusTexture(const Common::UString &name) {
 	Common::StackLock lock(_mutex);
 
 	_bogusTextures.insert(name);
+}
+
+void TextureManager::setDeswizzleSBM(bool deswizzle) {
+	_deswizzleSBM = deswizzle;
 }
 
 bool TextureManager::hasTexture(const Common::UString &name) {
@@ -153,7 +159,7 @@ TextureHandle TextureManager::get(Common::UString name) {
 	if (texture == _textures.end()) {
 		std::pair<TextureMap::iterator, bool> result;
 
-		ManagedTexture *managedTexture = new ManagedTexture(Texture::create(name));
+		ManagedTexture *managedTexture = new ManagedTexture(Texture::create(name, _deswizzleSBM));
 
 		if (managedTexture->texture->isDynamic())
 			name = name + "#" + Common::generateIDRandomString();

@@ -61,6 +61,16 @@ public:
 	 */
 	void addBogusTexture(const Common::UString &name);
 
+	/** Do we need to deswizzle SBM images?
+	 *
+	 *  The Xbox version of Jade Empire contains swizzled SBM images,
+	 *  used for the font glyphs. Unfortunately, we can't tell from
+	 *  the SBM image alone whether it needs deswizzling, so the
+	 *  engine needs to tell the TextureManage, which needs to tell
+	 *  the Texture, which tells the image decoder.
+	 */
+	void setDeswizzleSBM(bool deswizzle);
+
 	/** Does this named managed texture exist? */
 	bool hasTexture(const Common::UString &name);
 
@@ -93,6 +103,7 @@ public:
 	// '---
 
 private:
+	bool _deswizzleSBM;
 	TextureMap _textures;
 
 	std::set<Common::UString> _bogusTextures;
