@@ -454,9 +454,8 @@ GTEST_TEST(ERFWriter, WriteMultiLangDescription) {
 }
 
 GTEST_TEST(ERFWriter, WriteFile) {
-	const size_t kFileDataSize = strlen(kFileData) + 1;
-
-	Common::MemoryReadStream dataStream(kFileData, kFileDataSize);
+	Common::MemoryReadStream dataStream(kFileData, true);
+	const size_t kFileDataSize = dataStream.size();
 
 	Common::MemoryWriteStreamDynamic writeStream;
 	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 1, writeStream);
@@ -472,7 +471,7 @@ GTEST_TEST(ERFWriter, WriteFile) {
 	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
 
 	Common::SeekableReadStream *readStream = erf.getResource(0);
-	EXPECT_EQ(readStream->size(), kFileDataSize);
+	ASSERT_EQ(readStream->size(), kFileDataSize);
 
 	Common::ScopedArray<byte> fileData(new byte[readStream->size()]);
 	readStream->read(fileData.get(), readStream->size());
@@ -485,10 +484,10 @@ GTEST_TEST(ERFWriter, WriteFile) {
 }
 
 GTEST_TEST(ERFWriter, WriteMultipleFiles) {
-	const size_t kFileDataSize = strlen(kFileData) + 1;
-	const size_t kLogoDataSize = sizeof(kLogoData);
+	Common::MemoryReadStream dataStream1(kFileData, true);
+	const size_t kFileDataSize = dataStream1.size();
 
-	Common::MemoryReadStream dataStream1(kFileData, kFileDataSize);
+	const size_t kLogoDataSize = sizeof(kLogoData);
 	Common::MemoryReadStream dataStream2(kLogoData, kLogoDataSize);
 
 	Common::MemoryWriteStreamDynamic writeStream;
@@ -512,11 +511,11 @@ GTEST_TEST(ERFWriter, WriteMultipleFiles) {
 	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 
 	Common::SeekableReadStream *readStream1 = erf.getResource(0);
-	EXPECT_EQ(readStream1->size(), kFileDataSize);
+	ASSERT_EQ(readStream1->size(), kFileDataSize);
 	Common::SeekableReadStream *readStream2 = erf.getResource(1);
-	EXPECT_EQ(readStream2->size(), kFileDataSize);
+	ASSERT_EQ(readStream2->size(), kFileDataSize);
 	Common::SeekableReadStream *readStream3 = erf.getResource(2);
-	EXPECT_EQ(readStream3->size(), kLogoDataSize);
+	ASSERT_EQ(readStream3->size(), kLogoDataSize);
 
 	Common::ScopedArray<byte> fileData1(new byte[readStream1->size()]);
 	readStream1->read(fileData1.get(), readStream1->size());
