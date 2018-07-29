@@ -81,6 +81,12 @@ SoundObject::SoundObject(const Aurora::GFF3Struct &sound) {
 
 	SoundMan.setChannelGain(_sound, static_cast<float>(gff.getUint("Volume"))/100.0f);
 	SoundMan.setChannelRelative(_sound, false);
+
+	SoundMan.setChannelDistance(
+		_sound,
+		static_cast<float>(gff.getDouble("MinDistance")),
+		static_cast<float>(gff.getDouble("MaxDistance"))
+	);
 }
 
 void SoundObject::setPosition(float x, float y, float z) {
