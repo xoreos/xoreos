@@ -159,6 +159,10 @@ static bool resolveLangInvalid(const std::vector<Aurora::Language> &langs, Auror
 	if (!conf.empty())
 		warning("Failed to parse \"%s\" into a language", conf.c_str());
 
+	status("Available languages:");
+	for (std::vector<Aurora::Language>::const_iterator l = langs.begin(); l != langs.end(); ++l)
+		status("- %s", LangMan.getLanguageName(*l).c_str());
+
 	lang = langs.front();
 	status("Using the first available language (%s)%s",
 			LangMan.getLanguageName(lang).c_str(), specifier.c_str());
