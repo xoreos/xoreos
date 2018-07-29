@@ -95,11 +95,29 @@ public:
 
 };
 
+class EngineProbeAndroid : public EngineProbe {
+public:
+	EngineProbeAndroid() {}
+	~EngineProbeAndroid() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformAndroid; }
+
+	bool probe(const Common::UString &UNUSED(directory), const Common::FileList &rootFiles) const {
+		// TODO: Detect the unextracted OBBs? Doesn't work with how we index directories, though.
+
+		if (rootFiles.contains("/jadeempire.par", true))
+			return true;
+
+		return false;
+	}
+
+};
+
 
 void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
 	probes.push_back(new EngineProbeWindows);
 	probes.push_back(new EngineProbeXbox);
-
+	probes.push_back(new EngineProbeAndroid);
 }
 
 } // End of namespace Jade

@@ -223,6 +223,26 @@ void JadeEngine::declareLanguages() {
 	LangMan.addLanguages(kLanguageDeclarations, ARRAYSIZE(kLanguageDeclarations));
 }
 
+/** Figure out which localization in an Android installation contains the voices. */
+static Common::UString findAndroidVOLanguageDir(const Common::UString &target) {
+	/* Look into all subdirectories of the directory localized (which are all named after
+	 * a language). In each, see if there's a sound/vo subdirectory. If there is, return
+	 * the subdirectory (i.e the language name). */
+
+	const Common::UString loc = Common::FilePath::findSubDirectory(target, "localized", true);
+	if (loc.empty())
+		return "";
+
+	std::list<Common::UString> langs;
+	Common::FilePath::getSubDirectories(loc, langs);
+
+	for (std::list<Common::UString>::const_iterator l = langs.begin(); l != langs.end(); ++l)
+		if (!Common::FilePath::findSubDirectory(*l, "sound/vo", true).empty())
+			return Common::FilePath::relativize(loc, *l);
+
+	return "";
+}
+
 void JadeEngine::initResources(LoadProgress &progress) {
 	// Some new file types with the same function as old ones re-use the type ID
 	ResMan.addTypeAlias(Aurora::kFileTypeBTC, Aurora::kFileTypeCRE);
@@ -254,25 +274,42 @@ void JadeEngine::initResources(LoadProgress &progress) {
 	progress.step("Indexing extra sound resources");
 	indexMandatoryDirectory("sound"   , 0, -1, 101);
 	progress.step("Indexing extra movie resources");
-	indexMandatoryDirectory("movies"  , 0, -1, 102);
+	indexMandatoryDirectory("movies"  , 0, -1, 103);
 
 	if (_platform == Aurora::kPlatformWindows) {
 		progress.step("Indexing extra shader resources");
-		indexMandatoryDirectory("shaderpc", 0, -1, 103);
+		indexMandatoryDirectory("shaderpc", 0, -1, 104);
 	}
 
 	progress.step("Indexing override files");
 	indexOptionalDirectory("override", 0, 0, 150);
 
 	progress.step("Indexing extra language files");
+
+	/* If we're running an Android version, see which language the voices are in.
+	 * This should only ever be one language, the native language of the installation.
+	 *
+	 * If this is the language we want to play the game in, we're indexing the
+	 * resources below. If it isn't, index them with a lower priority, as a fallback. */
+	const Common::UString androidVO = findAndroidVOLanguageDir(_target);
+	const Aurora::Language androidVOLang = LangMan.parseLanguage(androidVO);
+	if ((androidVOLang != Aurora::kLanguageInvalid) && (androidVOLang != LangMan.getCurrentLanguageText())) {
+		const Common::UString locDir = Common::UString("localized/") + androidVO;
+
+		indexOptionalDirectory(locDir + "/data",  0, -1,   3);
+		indexOptionalDirectory(locDir + "/sound", 0, -1, 102);
+	}
+
 	const Common::UString langDir = getTLKDirectory(_target, LangMan.getCurrentLanguageText());
 	if (!langDir.empty()) {
 		indexMandatoryDirectory(langDir, 0, 0, 160);
 
-		indexOptionalDirectory(langDir + "/fonts" , 0, -1, 161);
-		indexOptionalDirectory(langDir + "/movies", 0, -1, 162);
+		indexOptionalDirectory(langDir + "/data"  , 0, -1, 161);
+		indexOptionalDirectory(langDir + "/fonts" , 0, -1, 162);
+		indexOptionalDirectory(langDir + "/sound" , 0, -1, 163);
+		indexOptionalDirectory(langDir + "/movies", 0, -1, 164);
 
-		indexOptionalDirectory(langDir + "/override", 0,  0, 163);
+		indexOptionalDirectory(langDir + "/override", 0,  0, 170);
 	}
 
 	if (EventMan.quitRequested())
