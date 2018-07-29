@@ -177,10 +177,14 @@ static bool resolveLangUnavailable(const std::vector<Aurora::Language> &langs, A
 
 	Aurora::Language oldLang = lang;
 
-	lang = langs.front();
 	warning("This game version does not come with %s language files%s",
 			LangMan.getLanguageName(oldLang).c_str(), specifier.c_str());
 
+	status("Available languages:");
+	for (std::vector<Aurora::Language>::const_iterator l = langs.begin(); l != langs.end(); ++l)
+		status("- %s", LangMan.getLanguageName(*l).c_str());
+
+	lang = langs.front();
 	status("Using the first available language (%s)%s",
 			LangMan.getLanguageName(lang).c_str(), specifier.c_str());
 
