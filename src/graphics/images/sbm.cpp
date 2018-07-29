@@ -29,26 +29,27 @@
 #include "src/common/error.h"
 
 #include "src/graphics/images/sbm.h"
+#include "src/graphics/images/util.h"
 
 namespace Graphics {
 
-SBM::SBM(Common::SeekableReadStream &sbm) {
+SBM::SBM(Common::SeekableReadStream &sbm, bool deswizzle) {
 	_compressed = false;
 	_hasAlpha   = true;
 	_format     = kPixelFormatBGRA;
 	_formatRaw  = kPixelFormatRGBA8;
 	_dataType   = kPixelDataType8;
 
-	load(sbm);
+	load(sbm, deswizzle);
 }
 
 SBM::~SBM() {
 }
 
-void SBM::load(Common::SeekableReadStream &sbm) {
+void SBM::load(Common::SeekableReadStream &sbm, bool deswizzle) {
 	try {
 
-		readData(sbm);
+		readData(sbm, deswizzle);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed reading SBM file");
@@ -56,11 +57,11 @@ void SBM::load(Common::SeekableReadStream &sbm) {
 	}
 }
 
-void SBM::readData(Common::SeekableReadStream &sbm) {
+void SBM::readData(Common::SeekableReadStream &sbm, bool deswizzle) {
 	if ((sbm.size() % 1024) != 0)
 		throw Common::Exception("Invalid SBM (%u)", (uint)sbm.size());
 
-	size_t rowCount = (sbm.size() / 1024);
+	const size_t rowCount = (sbm.size() / 1024);
 
 	_mipMaps.push_back(new MipMap(this));
 
@@ -75,8 +76,8 @@ void SBM::readData(Common::SeekableReadStream &sbm) {
 	// coordinates but different planes.
 	// We'll unpack them and draw them next to each other instead.
 
-	int masks [4] = { 0x03, 0x0C, 0x30, 0xC0 };
-	int shifts[4] = {    0,    2,    4,    6 };
+	static const int masks [4] = { 0x03, 0x0C, 0x30, 0xC0 };
+	static const int shifts[4] = {    0,    2,    4,    6 };
 
 	byte *data = _mipMaps[0]->data.get();
 	byte buffer[1024];
@@ -86,11 +87,11 @@ void SBM::readData(Common::SeekableReadStream &sbm) {
 			throw Common::Exception(Common::kReadError);
 
 		for (int y = 0; y < 32; y++) {
-			byte *src = buffer + y * 32;
-
 			for (int plane = 0; plane < 4; plane++) {
 				for (int x = 0; x < 32; x++) {
-					byte a = ((src[x] & masks[plane]) >> shifts[plane]) * 0x55;
+					const uint32 offset = deswizzle ? deSwizzleOffset(x, y, 32, rowCount) : (y * 32 + x);
+
+					const byte a = ((buffer[offset] & masks[plane]) >> shifts[plane]) * 0x55;
 
 					*data++ = 0xFF; // B
 					*data++ = 0xFF; // G
