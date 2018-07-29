@@ -161,6 +161,9 @@ public:
 
 	/** Set the pitch of the channel. */
 	void setChannelPitch(const ChannelHandle &handle, float pitch);
+
+	/** Set if the channel is relative. */
+	void setChannelRelative(const ChannelHandle &handle, bool relative);
 	// '---
 
 	// .--- Type properties
