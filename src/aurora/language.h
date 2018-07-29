@@ -26,6 +26,7 @@
 #define AURORA_LANGUAGE_H
 
 #include <map>
+#include <vector>
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
@@ -141,6 +142,9 @@ public:
 	/** Add several supported language for the current game to the LanguageManager,
 	 *  together with their internal (ungendered) language ID and usual encoding. */
 	void addLanguages(const Declaration *languageDeclarations, size_t count);
+
+	/** Return all declared supported languages for the current game. */
+	std::vector<Language> getLanguages() const;
 
 	/** Construct the internal language ID for an ungendered use of a language.
 	 *

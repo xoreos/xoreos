@@ -92,6 +92,15 @@ void LanguageManager::addLanguages(const Declaration *languageDeclarations, size
 		addLanguage(*languageDeclarations++);
 }
 
+std::vector<Language> LanguageManager::getLanguages() const {
+	std::vector<Language> languages;
+
+	for (LanguageByLanguage::const_iterator l = _langByLang.begin(); l != _langByLang.end(); ++l)
+		languages.push_back(l->first);
+
+	return languages;
+}
+
 const LanguageManager::Declaration *LanguageManager::find(Language language) const {
 	LanguageByLanguage::const_iterator l = _langByLang.find(language);
 	if (l != _langByLang.end())

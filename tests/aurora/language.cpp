@@ -22,6 +22,9 @@
  *  Unit tests for our LanguageManager.
  */
 
+#include <vector>
+#include <algorithm>
+
 #include "gtest/gtest.h"
 
 #include "src/common/util.h"
@@ -100,6 +103,20 @@ GTEST_TEST_F(LanguageManager, clear) {
 	for (size_t i = 0; i < ARRAYSIZE(kLanguageDeclarations); i++)
 		EXPECT_EQ(LangMan.getLanguage(kLanguageDeclarations[i].id), Aurora::kLanguageInvalid) <<
 			"At index " << i;
+}
+
+GTEST_TEST_F(LanguageManager, getLanguages) {
+	LangMan.addLanguage(kLanguageDeclarations[0].language, kLanguageDeclarations[0].id,
+	                    kLanguageDeclarations[0].encoding);
+	LangMan.addLanguage(kLanguageDeclarations[1].language, kLanguageDeclarations[1].id,
+	                    kLanguageDeclarations[1].encoding);
+
+	const std::vector<Aurora::Language> langs = LangMan.getLanguages();
+
+	EXPECT_EQ(langs.size(), 2);
+
+	EXPECT_NE(std::find(langs.begin(), langs.end(), kLanguageDeclarations[0].language), langs.end());
+	EXPECT_NE(std::find(langs.begin(), langs.end(), kLanguageDeclarations[1].language), langs.end());
 }
 
 GTEST_TEST_F(LanguageManager, getLanguageIDUngendered) {
