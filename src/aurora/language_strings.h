@@ -111,6 +111,7 @@ static const LanguageStrings kLanguageStrings[] = {
 		  "\351\246\231\346\270\257", "\344\270\255\345\234\213",
 		  "zh-cht", "zh_cht", "zho-cht", "zho_cht", "chi-cht", "chi_cht",
 		  "zh-hk", "zh_hk", "zho-hk", "zho_hk", "chi-hk", "chi_hk",
+		  "zh-hant", "zh_hant", "zho-hant", "zho_hant",
 		  "traditional", "traditional chinese", "traditionalchinese",
 		  "traditional-chinese", "traditional_chinese", 0
 		}
@@ -120,6 +121,7 @@ static const LanguageStrings kLanguageStrings[] = {
 		  "zh\305\215nggu\303\263", "zho\314\204ngguo\314\201",
 		  "zh-chs", "zh_chs", "zho-chs", "zho_chs", "chi-chs", "chi_chs",
 		  "zh-cn", "zh_cn", "zho-cn", "zho_cn", "chi-cn", "chi_cn",
+		  "zh-hans", "zh_hans", "zho-hans", "zho_hans",
 		  "simplified", "simplified chinese", "simplifiedchinese",
 		  "simplified-chinese", "simplified_chinese", 0
 		}
