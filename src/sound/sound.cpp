@@ -383,6 +383,8 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 
 		// Set the gain to the current sound type gain
 		alSourcef(channel.source, AL_GAIN, _types[channel.type].gain);
+		// Set the sound per default as relative.
+		alSourcei(channel.source, AL_SOURCE_RELATIVE, AL_TRUE);
 	}
 
 	// Add the channel to the correct type list
@@ -578,6 +580,17 @@ void SoundManager::setChannelPitch(const ChannelHandle &handle, float pitch) {
 
 	if (_hasSound)
 		alSourcef(channel->source, AL_PITCH, pitch);
+}
+
+void SoundManager::setChannelRelative(const ChannelHandle &handle, bool relative) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	if (_hasSound)
+		alSourcei(channel->source, AL_SOURCE_RELATIVE, relative ? AL_TRUE : AL_FALSE);
 }
 
 uint64 SoundManager::getChannelSamplesPlayed(const ChannelHandle &handle) {
