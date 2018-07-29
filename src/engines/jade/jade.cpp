@@ -37,6 +37,7 @@
 
 #include "src/graphics/aurora/cursorman.h"
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/fontman.h"
 
 #include "src/sound/sound.h"
@@ -320,6 +321,7 @@ void JadeEngine::initResources(LoadProgress &progress) {
 
 	progress.step("Registering file formats");
 	registerModelLoader(new JadeModelLoader);
+	TextureMan.setDeswizzleSBM(_platform == Aurora::kPlatformXbox);
 	FontMan.setFormat(Graphics::Aurora::kFontFormatABC);
 	FontMan.addAlias("sava"       , "eurogui");
 	FontMan.addAlias("cerigo"     , "eurodialog");
