@@ -1,6 +1,8 @@
 Someday, ????-??-?? (Version 0.0.6)
 	- COMMON:
 		- Cleaned up threading
+	- GRAPHICS:
+		- Added support for swizzled SBM images
 	- ENGINES:
 		- KOTOR:
 			- Changed key input to use scancodes
@@ -13,6 +15,10 @@ Someday, ????-??-?? (Version 0.0.6)
 			- Changed key input to use scancodes
 			- Restructured config options
 			- Implemented changing texture packs
+		- JADE:
+			- Fixed TLK encodings for non-English version
+			- Added support for the (extracted) Android version
+			- Fixed font rendering in the Xbox version
 		- DRAGONAGE2:
 			- Partially implemented area transitions
 
