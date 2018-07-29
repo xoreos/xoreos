@@ -11,6 +11,7 @@ Someday, ????-??-?? (Version 0.0.6)
 			- Partially implemented the action queue
 			- Partially implemented party selection
 			- Partially implemented ingame GUI scaling
+			- Added Malak to the main menu
 		- KOTOR2:
 			- Changed key input to use scancodes
 			- Restructured config options
