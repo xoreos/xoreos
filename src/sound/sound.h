@@ -164,6 +164,9 @@ public:
 
 	/** Set if the channel is relative. */
 	void setChannelRelative(const ChannelHandle &handle, bool relative);
+
+	/** Set the min and max distance for the channel. */
+	void setChannelDistance(const ChannelHandle &handle, float minDistance, float maxDistance);
 	// '---
 
 	// .--- Type properties

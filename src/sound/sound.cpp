@@ -131,6 +131,8 @@ void SoundManager::init() {
 	setTypeGain(kSoundTypeSFX  , ConfigMan.getDouble("volume_sfx"  , 1.0));
 	setTypeGain(kSoundTypeVoice, ConfigMan.getDouble("volume_voice", 1.0));
 	setTypeGain(kSoundTypeVideo, ConfigMan.getDouble("volume_video", 1.0));
+
+	alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
 }
 
 void SoundManager::deinit() {
@@ -593,6 +595,19 @@ void SoundManager::setChannelRelative(const ChannelHandle &handle, bool relative
 
 	if (_hasSound)
 		alSourcei(channel->source, AL_SOURCE_RELATIVE, relative ? AL_TRUE : AL_FALSE);
+}
+
+void SoundManager::setChannelDistance(const ChannelHandle &handle, float minDistance, float maxDistance) {
+	Common::StackLock lock(_mutex);
+
+	Channel *channel = getChannel(handle);
+	if (!channel || !channel->stream)
+		throw Common::Exception("Invalid channel");
+
+	if (_hasSound) {
+		alSourcef(channel->source, AL_REFERENCE_DISTANCE, minDistance);
+		alSourcef(channel->source, AL_MAX_DISTANCE, maxDistance);
+	}
 }
 
 uint64 SoundManager::getChannelSamplesPlayed(const ChannelHandle &handle) {
