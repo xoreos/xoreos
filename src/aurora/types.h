@@ -377,6 +377,10 @@ enum FileType {
 	kFileTypeOTF            = 28004, ///< OpenType Font.
 	kFileTypePAR            = 28005,
 
+	// Found in the Xbox version of Jade Empire
+	kFileTypeXWB            = 29000, ///< XACT WaveBank.
+	kFileTypeXSB            = 29001, ///< XACT SoundBank.
+
 	// Our own types
 	kFileTypeXEOSITEX       = 40000  ///< Intermediate texture.
 };
