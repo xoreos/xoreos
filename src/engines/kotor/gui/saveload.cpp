@@ -165,6 +165,7 @@ void SaveLoadMenu::addSavedGameItems(WidgetListBox *listBox) {
 
 void SaveLoadMenu::tryLoadGame(const Common::UString &dir) {
 	try {
+		hide();
 		Common::ScopedPtr<SavedGame> save(SavedGame::load(dir, true));
 		_module->loadSavedGame(save.get());
 		GfxMan.lockFrame();
