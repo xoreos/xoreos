@@ -27,12 +27,18 @@ src_sound_libsound_la_SOURCES += \
     src/sound/sound.h \
     src/sound/audiostream.h \
     src/sound/interleaver.h \
+    src/sound/xactwavebank.h \
+    src/sound/xactwavebank_ascii.h \
+    src/sound/xactwavebank_binary.h \
     $(EMPTY)
 
 src_sound_libsound_la_SOURCES += \
     src/sound/sound.cpp \
     src/sound/audiostream.cpp \
     src/sound/interleaver.cpp \
+    src/sound/xactwavebank.cpp \
+    src/sound/xactwavebank_ascii.cpp \
+    src/sound/xactwavebank_binary.cpp \
     $(EMPTY)
 
 src_sound_libsound_la_LIBADD = \
