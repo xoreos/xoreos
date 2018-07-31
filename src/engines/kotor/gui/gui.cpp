@@ -93,11 +93,11 @@ Common::UString GUI::getName() const {
 }
 
 void GUI::mouseDown() {
-	CursorMan.setState("down");
+	CursorMan.set(CursorMan.getCurrentGroup(), "down");
 }
 
 void GUI::mouseUp() {
-	CursorMan.setState("up");
+	CursorMan.set(CursorMan.getCurrentGroup(), "up");
 }
 
 void GUI::load(const Common::UString &resref) {
