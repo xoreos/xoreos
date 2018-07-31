@@ -35,6 +35,7 @@
 #include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/model.h"
 #include "src/graphics/aurora/animationchannel.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
@@ -576,10 +577,12 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 }
 
 void Creature::enter() {
+	CursorMan.setGroup("talk");
 	highlight(true);
 }
 
 void Creature::leave() {
+	CursorMan.set();
 	highlight(false);
 }
 
