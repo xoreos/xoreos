@@ -446,7 +446,7 @@ int16 ADPCMStream::stepAdjust(byte code) {
 }
 
 static const uint16 imaStepTable[89] = {
-		7,    8,    9,   10,   11,   12,   13,   14,
+	    7,    8,    9,   10,   11,   12,   13,   14,
 	   16,   17,   19,   21,   23,   25,   28,   31,
 	   34,   37,   41,   45,   50,   55,   60,   66,
 	   73,   80,   88,   97,  107,  118,  130,  143,
@@ -472,6 +472,168 @@ int16 Ima_ADPCMStream::decodeIMA(byte code, int channel) {
 	return samp;
 }
 
+/* Xbox ADPCM decoder, heavily based on Luigi Auriemma's xbadpdec tool
+ * (<http://aluigi.altervista.org/papers.htm#xbox>), which is licensed
+ * under the terms of the GPLv2.
+ *
+ * xbadpdec in turn is based on the TXboxAdpcmDecoder class by Benjamin
+ * Haisch.
+ *
+ * The original copyright note in xbadpdec reads as follows:
+ *
+ * Copyright 2005,2006 Luigi Auriemma
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ *
+ * http://www.gnu.org/licenses/gpl.txt
+ */
+class Xbox_ADPCMStream : public ADPCMStream {
+public:
+	Xbox_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
+		: ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign == 0 ? 36 : blockAlign) {
+		std::memset(&_status, 0, sizeof(_status));
+
+		if (_blockAlign != 36)
+			throw Common::Exception("Xbox_ADPCMStream(): invalid blockAlign");
+
+		if ((channels != 1) && (channels != 2))
+			throw Common::Exception("Xbox_ADPCMStream(): invalid channel count");
+
+		/* Calculate the length of the audio in samples (for one channel).
+		 * For each 4 bytes, 8 samples are produced. Additional, the 4 bytes
+		 * header produces 1 sample.
+		 *
+		 * So with a block align of 36, 65 samples are produced for each full
+		 * block. One for the 4 byte header, and 64 for the 32 byte of data.
+		 *
+		 * If we have overhang, i.e. a non-full block at the end of the stream,
+		 * we need to add one for the header, and 8 for each 4 following bytes. */
+
+		const uint32 wholeBlocks = (size / (channels * _blockAlign));
+		const uint32 overhang    = (size % (channels * _blockAlign));
+
+		if ((overhang % 4) != 0)
+			throw Common::Exception("Xbox_ADPCMStream(): unaligned input size");
+
+		const bool hasOverhang = overhang > 4;
+
+		const uint32 blockDataSize = wholeBlocks * (_blockAlign - 4) + (hasOverhang ? (overhang - 4) : 0);
+		const uint32 blockCount    = wholeBlocks + (hasOverhang ? 1 : 0);
+
+		_length = (blockDataSize / 4) * 8 + blockCount;
+
+		reset();
+	}
+
+	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
+
+protected:
+	void reset() {
+		ADPCMStream::reset();
+		std::memset(&_status, 0, sizeof(_status));
+
+		_blockPos[0] = _blockAlign;
+		_blockPos[1] = 8;
+	}
+
+private:
+	struct ADPCMChannelStatus {
+		int8 index;
+		int16 stepSize;
+		int16 predictor;
+
+		int16 buffer[8];
+	};
+
+	struct {
+		ADPCMChannelStatus ch[2];
+	} _status;
+
+	int16 decodeXbox(int code, ADPCMChannelStatus &status);
+};
+
+static const int8 kXboxIndexTable[16] = {
+	-1, -1, -1, -1, 2, 4, 6, 8,
+	-1, -1, -1, -1, 2, 4, 6, 8
+};
+
+int16 Xbox_ADPCMStream::decodeXbox(int code, ADPCMChannelStatus &status) {
+	int delta = status.stepSize >> 3;
+
+	if (code & 4)
+		delta += status.stepSize;
+	if (code & 2)
+		delta += status.stepSize >> 1;
+	if (code & 1)
+		delta += status.stepSize >> 2;
+	if (code & 8)
+		delta = -delta;
+
+	const int16 result = CLIP<int>(status.predictor + delta, -32768, 32767);
+
+	status.index     = CLIP<int>(status.index + kXboxIndexTable[code], 0, 88);
+	status.stepSize  = imaStepTable[status.index];
+	status.predictor = result;
+
+	return result;
+}
+
+size_t Xbox_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
+	if (_channels == 2)
+		assert(numSamples % 2 == 0);
+
+	size_t samples = 0;
+
+	while (samples < numSamples && !_stream->eos() && _stream->pos() < _endpos) {
+		if ((_blockPos[0] == _blockAlign) && (_blockPos[1] == 8)) {
+			for (int c = 0; c < _channels; c++) {
+				_status.ch[c].predictor = _stream->readSint16LE();
+				_status.ch[c].index     = _stream->readSint16LE();
+
+				_status.ch[c].index    = CLIP<int16>(_status.ch[c].index, 0, 88);
+				_status.ch[c].stepSize = imaStepTable[_status.ch[c].index];
+
+				buffer[samples++] = _status.ch[c].predictor;
+			}
+
+			_blockPos[0] = 4;
+			continue;
+		}
+
+		if (_blockPos[1] == 8) {
+			for (int c = 0; c < _channels; c++) {
+				uint32 code = _stream->readUint32LE();
+				for (size_t j = 0; j < 8; j++) {
+					_status.ch[c].buffer[j] = decodeXbox(code & 0x0F, _status.ch[c]);
+					code >>= 4;
+				}
+			}
+
+			_blockPos[0] += 4;
+			_blockPos[1]  = 0;
+		}
+
+		for (int c = 0; c < _channels; c++)
+			buffer[samples++] = _status.ch[c].buffer[_blockPos[1]];
+
+		_blockPos[1]++;
+	}
+
+	return samples;
+}
+
 RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, ADPCMTypes type, int rate, int channels, uint32 blockAlign) {
 	switch (type) {
 	case kADPCMMSIma:
@@ -480,6 +642,8 @@ RewindableAudioStream *makeADPCMStream(Common::SeekableReadStream *stream, bool 
 		return new MS_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
 	case kADPCMApple:
 		return new Apple_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
+	case kADPCMXbox:
+		return new Xbox_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign);
 	default:
 		error("Unsupported ADPCM encoding");
 		break;

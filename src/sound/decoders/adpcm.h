@@ -64,7 +64,8 @@ class RewindableAudioStream;
 enum ADPCMTypes {
 	kADPCMMSIma,    // Microsoft IMA ADPCM
 	kADPCMMS,       // Microsoft ADPCM
-	kADPCMApple     // Apple QuickTime IMA ADPCM
+	kADPCMApple,    // Apple QuickTime IMA ADPCM
+	kADPCMXbox      // Microsoft Xbox ADPCM
 };
 
 /**
