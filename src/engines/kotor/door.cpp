@@ -35,6 +35,7 @@
 #include "src/aurora/2dareg.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -127,10 +128,12 @@ void Door::hideSoft() {
 }
 
 void Door::enter() {
+	CursorMan.setGroup("door");
 	highlight(true);
 }
 
 void Door::leave() {
+	CursorMan.set();
 	highlight(false);
 }
 
