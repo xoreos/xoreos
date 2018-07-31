@@ -196,6 +196,8 @@ HUD::HUD(Module &module, Engines::Console *console)
 		  _menu(module, console) {
 
 	update(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
+
+	_minimapPointer = getLabel("LBL_ARROW");
 }
 
 void HUD::setReturnStrref(uint32 id) {
@@ -232,6 +234,10 @@ void HUD::setMinimap(const Common::UString &map, int northAxis,
 void HUD::setPosition(float x, float y) {
 	if (_minimap)
 		_minimap->setPosition(x, y);
+}
+
+void HUD::setRotation(float angle) {
+	_minimapPointer->setRotation(angle);
 }
 
 void HUD::showContainer(Inventory &inv) {

@@ -55,6 +55,7 @@ public:
 	                float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y);
 
 	void setPosition(float x, float y);
+	void setRotation(float angle);
 
 	void showContainer(Inventory &inv);
 
@@ -68,6 +69,7 @@ private:
 	Common::ScopedPtr<ContainerMenu> _container;
 
 	Common::ScopedPtr<Minimap> _minimap;
+	WidgetLabel *_minimapPointer;
 
 	void update(int width, int height);
 
