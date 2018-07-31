@@ -94,6 +94,9 @@ public:
 
 	virtual void setPosition(float x, float y, float z);
 
+	/** Set the rotation of the widget in degrees. */
+	virtual void setRotation(float angle);
+
 	// .--- Size
 
 	/** Set the width of the widget. */

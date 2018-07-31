@@ -441,6 +441,11 @@ void KotORJadeWidget::setPosition(float x, float y, float z) {
 	}
 }
 
+void KotORJadeWidget::setRotation(float angle) {
+	if (_quad)
+		_quad->setRotation(angle);
+}
+
 void KotORJadeWidget::setWidth(float width) {
 	float deltaWidth = width - _width;
 	_width = width;
