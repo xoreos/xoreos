@@ -38,7 +38,7 @@ GUIQuad::GUIQuad(const Common::UString &texture,
                  float x1 , float y1 , float x2 , float y2,
                  float tX1, float tY1, float tX2, float tY2) :
 	GUIElement(GUIElement::kGUIElementFront),
-	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
+	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _angle(0.0f),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
@@ -66,7 +66,7 @@ GUIQuad::GUIQuad(Graphics::GUIElement::GUIElementType type, const Common::UStrin
                  float x1 , float y1 , float x2 , float y2,
                  float tX1, float tY1, float tX2, float tY2) :
 	GUIElement(type),
-	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
+	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _angle(0.0f),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
@@ -94,7 +94,7 @@ GUIQuad::GUIQuad(TextureHandle texture,
                  float x1 , float y1 , float x2 , float y2,
                  float tX1, float tY1, float tX2, float tY2) :
 	GUIElement(GUIElement::kGUIElementFront),
-	_texture(texture), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
+	_texture(texture), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _angle(0.0f),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
@@ -128,6 +128,9 @@ void GUIQuad::setPosition(float x, float y, float z) {
 	unlockFrameIfVisible();
 }
 
+void GUIQuad::setRotation(float angle) {
+	_angle = angle;
+}
 
 void GUIQuad::getColor(float& r, float& g, float& b, float& a) const {
 	r = _r;
@@ -262,6 +265,12 @@ void GUIQuad::render(RenderPass pass) {
 		          viewport[3]/2 + _y1 + _scissorY,
 		          _scissorWidth,
 		          _scissorHeight);
+	}
+
+	if (_angle != 0.0f) {
+		glTranslatef(_x1 + (_x2 - _x1) / 2.0f, _y1 + (_y2 - _y1) / 2.0f, 0);
+		glRotatef(_angle, 0.0f, 0.0f, 1.0f);
+		glTranslatef(-_x1 - (_x2 - _x1) / 2.0f, -_y1 - (_y2 - _y1) / 2.0f, 0);
 	}
 
 	glBegin(GL_QUADS);

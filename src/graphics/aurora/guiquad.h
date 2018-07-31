@@ -57,6 +57,9 @@ public:
 	/** Set the current position of the quad. */
 	void setPosition(float x, float y, float z = -FLT_MAX);
 
+	/** Set the current rotation of the quad in degrees. */
+	void setRotation(float angle);
+
 	/** Get the current color of the quad */
 	void getColor(float &r, float &g, float &b, float &a) const;
 	/** Set the current color of the quad. */
@@ -93,6 +96,8 @@ private:
 	float _g;
 	float _b;
 	float _a;
+
+	float _angle;
 
 	float _x1;
 	float _y1;
