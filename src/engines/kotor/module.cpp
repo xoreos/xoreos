@@ -654,6 +654,8 @@ void Module::handlePCMovement() {
 	const float *orientation = CameraMan.getOrientation();
 	SoundMan.setListenerOrientation(orientation[0], orientation[1], orientation[2], 0.0f, 1.0f, 0.0f);
 
+	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
+
 	if (haveMovement && !_pcRunning) {
 		_pc->playAnimation(Common::UString("run"), false, -1.0f);
 		_pcRunning = true;
