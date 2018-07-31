@@ -234,6 +234,7 @@ protected:
 
 	bool _render; ///< Render the node?
 	bool _dirtyRender; ///< Rendering information needs updating.
+	bool _dirtyMesh;  ///< Mesh data needs updating.
 
 	Mesh *_mesh;
 	ModelNode *_rootStateNode;

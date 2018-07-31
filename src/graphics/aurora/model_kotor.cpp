@@ -531,7 +531,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		}
 		meshName += ".";
 		meshName += _name;
-
+#ifdef MESH_KOTOR_USE_MESHMAN
 	/**
 	 * Dirty hack around an issue in KotOR2 where a tile can have multiple meshes
 	 * of exactly the same name. This dirty hack will double up on static objects
@@ -564,7 +564,10 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 			delete _mesh->data->rawMesh;
 			_mesh->data->rawMesh = mystery_mesh;
 		}
-
+#else
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+#endif
 		this->buildMaterial();
 	}
 }

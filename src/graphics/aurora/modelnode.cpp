@@ -80,6 +80,7 @@ ModelNode::ModelNode(Model &model)
 		  _level(0),
 		  _render(false),
 		  _dirtyRender(true),
+		  _dirtyMesh(false),
 		  _mesh(0),
 		  _rootStateNode(0),
 		  _nodeNumber(0),
@@ -501,7 +502,7 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 				_attachedModel->_orientation[1] != 0 ||
 				_attachedModel->_orientation[2] != 0)
 			modelPosition = glm::rotate(modelPosition,
-					Common::deg2rad(_attachedModel->_orientation[3]),
+					(_attachedModel->_orientation[3]),
 					glm::vec3(_attachedModel->_orientation[0],
 					          _attachedModel->_orientation[1],
 					          _attachedModel->_orientation[2]));
@@ -626,7 +627,6 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 
 	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
 
-	mesh.data->rawMesh->updateGL();
 	mesh.data->rawMesh->render();
 
 	TextureMan.set();
@@ -660,6 +660,11 @@ void ModelNode::render(RenderPass pass) {
 			mesh = rootStateNode->_mesh;
 			doRender = rootStateNode->_render;
 		}
+	}
+
+	if (_dirtyMesh) {
+		_mesh->data->rawMesh->getVertexBuffer()->updateGL();
+		_dirtyMesh = false;
 	}
 
 	// Render the node's geometry
@@ -791,7 +796,7 @@ void ModelNode::drawSkeleton(const glm::mat4 &parent, bool showInvisible) {
 
 	if (_orientation[0] != 0 || _orientation[1] != 0 || _orientation[2] != 0)
 		mine = glm::rotate(mine,
-				Common::deg2rad(_orientation[3]),
+				(_orientation[3]),
 				glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
 
 	mine = glm::scale(mine, glm::vec3(_scale[0], _scale[1], _scale[2]));
@@ -882,6 +887,7 @@ void ModelNode::flushBuffers() {
 			vcb += 3;
 		}
 		_vertexCoordsBuffered = false;
+		_dirtyMesh = true;
 	}
 }
 
@@ -937,7 +943,7 @@ void ModelNode::computeAbsoluteTransform() {
 				node->_orientationBuffer[1] != 0 ||
 				node->_orientationBuffer[2] != 0)
 			_absoluteTransform = glm::rotate(_absoluteTransform,
-					Common::deg2rad(node->_orientationBuffer[3]),
+					node->_orientationBuffer[3],
 					glm::vec3(node->_orientationBuffer[0],
 					          node->_orientationBuffer[1],
 					          node->_orientationBuffer[2]));
@@ -1320,74 +1326,7 @@ void ModelNode::buildMaterial() {
 
 	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
 }
-#if 0
-void ModelNode::interpolatePosition(float time, float &x, float &y, float &z) const {
-	// If less than 2 keyframes, don't interpolate, just return the only position
-	if (_positionFrames.size() < 2) {
-		getPosition(x, y, z);
-		return;
-	}
 
-	size_t lastFrame = 0;
-	for (size_t i = 0; i < _positionFrames.size(); i++) {
-		const PositionKeyFrame &pos = _positionFrames[i];
-		if (pos.time >= time)
-			break;
-
-		lastFrame = i;
-	}
-
-	const PositionKeyFrame &last = _positionFrames[lastFrame];
-	if (lastFrame + 1 >= _positionFrames.size() || last.time == time) {
-		x = last.x;
-		y = last.y;
-		z = last.z;
-		return;
-	}
-
-	const PositionKeyFrame &next = _positionFrames[lastFrame + 1];
-
-	const float f = (time - last.time) / (next.time - last.time);
-	x = f * next.x + (1.0f - f) * last.x;
-	y = f * next.y + (1.0f - f) * last.y;
-	z = f * next.z + (1.0f - f) * last.z;
-}
-
-void ModelNode::interpolateOrientation(float time, float &x, float &y, float &z, float &a) const {
-	// If less than 2 keyframes, don't interpolate just return the only orientation
-	if (_orientationFrames.size() < 2) {
-		getOrientation(x, y, z, a);
-		return;
-	}
-
-	size_t lastFrame = 0;
-	for (size_t i = 0; i < _orientationFrames.size(); i++) {
-		const QuaternionKeyFrame &pos = _orientationFrames[i];
-		if (pos.time >= time)
-			break;
-
-		lastFrame = i;
-	}
-
-	const QuaternionKeyFrame &last = _orientationFrames[lastFrame];
-	if (lastFrame + 1 >= _orientationFrames.size() || last.time == time) {
-		x = last.x;
-		y = last.y;
-		z = last.z;
-		a = Common::rad2deg(acos(last.q) * 2.0);
-	}
-
-	const QuaternionKeyFrame &next = _orientationFrames[lastFrame + 1];
-
-	const float f = (time - last.time) / (next.time - last.time);
-	x = f * next.x + (1.0f - f) * last.x;
-	y = f * next.y + (1.0f - f) * last.y;
-	z = f * next.z + (1.0f - f) * last.z;
-
-	const float q = f * next.q + (1.0f - f) * last.q;
-	a = Common::rad2deg(acos(q) * 2.0);
-}
-#endif
 } // End of namespace Aurora
 
 } // End of namespace Graphics
