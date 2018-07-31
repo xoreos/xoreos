@@ -34,6 +34,7 @@
 #include "src/aurora/2dareg.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -117,10 +118,12 @@ void Placeable::loadAppearance() {
 }
 
 void Placeable::enter() {
+	CursorMan.setGroup("use");
 	highlight(true);
 }
 
 void Placeable::leave() {
+	CursorMan.set();
 	highlight(false);
 }
 
@@ -138,6 +141,8 @@ bool Placeable::isActivated() const {
 }
 
 bool Placeable::click(Object *triggerer) {
+	CursorMan.set();
+
 	// If the placeable is locked, just play the appropriate sound and bail
 	if (isLocked()) {
 		playSound(_soundLocked);
