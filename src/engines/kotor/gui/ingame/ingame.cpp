@@ -51,6 +51,10 @@ void IngameGUI::setPosition(float x, float y) {
 	_hud->setPosition(x, y);
 }
 
+void IngameGUI::setRotation(float angle) {
+	_hud->setRotation(angle);
+}
+
 void IngameGUI::setReturnStrref(uint32 id) {
 	_hud->setReturnStrref(id);
 }

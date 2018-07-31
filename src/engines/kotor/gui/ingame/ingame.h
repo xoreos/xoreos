@@ -49,6 +49,8 @@ public:
 	                float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y);
 	/** Set the position for the minimap. */
 	void setPosition(float x, float y);
+	/** Set the rotation for the minimap arrow. */
+	void setRotation(float angle);
 
 	void setReturnStrref(uint32 id);
 	void setReturnQueryStrref(uint32 id);
