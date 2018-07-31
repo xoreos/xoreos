@@ -472,7 +472,7 @@ void Area::processEventQueue() {
 
 		if        (e->type == Events::kEventMouseMove) { // Moving the mouse
 			hasMove = true;
-		} else if (e->type == Events::kEventMouseDown) { // Clicking
+		} else if (e->type == Events::kEventMouseUp) { // Clicking
 			if (e->button.button == SDL_BUTTON_LMASK) {
 				checkActive(e->button.x, e->button.y);
 				click(e->button.x, e->button.y);
