@@ -22,6 +22,8 @@
  *  An ASCII XACT WaveBank, found in the non-Xbox versions of Jade Empire as _xwb.txt files.
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 #include "src/common/strutil.h"
 #include "src/common/scopedptr.h"
@@ -38,6 +40,8 @@
 namespace Sound {
 
 XACTWaveBank_ASCII::XACTWaveBank_ASCII(Common::SeekableReadStream *xwb) {
+	assert(xwb);
+
 	Common::ScopedPtr<Common::SeekableReadStream> stream(xwb);
 
 	load(*xwb);

@@ -49,6 +49,8 @@
  * people who supplied xwb files to analyze [to Luigi]: john deo, antti
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -79,6 +81,8 @@ enum WaveFlags {
 };
 
 XACTWaveBank_Binary::XACTWaveBank_Binary(Common::SeekableReadStream *xwb) : _xwb(xwb) {
+	assert(_xwb);
+
 	load(*_xwb);
 }
 
