@@ -44,6 +44,9 @@ namespace Sound {
  *
  *  XWB files are found in the Xbox version of Jade Empire.
  *
+ *  Only version 3 of the XWB format is supported, because that's the
+ *  version used by Jade Empire.
+ *
  *  Interestingly enough, the non-Xbox versions of Jade Empire do not
  *  use XWB files, instead opting for a collection of Ogg Vorbis files
  *  in a directory, plus text files containing the ASCII representation
