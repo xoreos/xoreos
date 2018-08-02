@@ -61,6 +61,7 @@ namespace Sound {
 class ADPCMStream : public RewindableAudioStream {
 protected:
 	Common::DisposablePtr<Common::SeekableReadStream> _stream;
+	const size_t _size;
 	const size_t _startpos;
 	const size_t _endpos;
 	const int _channels;
@@ -102,8 +103,9 @@ public:
 
 ADPCMStream::ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, size_t size, int rate, int channels, uint32 blockAlign)
 	: _stream(stream, disposeAfterUse),
+		_size(size),
 		_startpos(stream->pos()),
-		_endpos(_startpos + size),
+		_endpos(_startpos + _size),
 		_channels(channels),
 		_blockAlign(blockAlign),
 		_rate(rate),
@@ -137,7 +139,7 @@ public:
 		std::memset(&_status, 0, sizeof(_status));
 
 		// 2 samples per input byte
-		_length = stream->size() * 2 / _channels;
+		_length = _size * 2 / _channels;
 	}
 
 	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
@@ -181,7 +183,7 @@ public:
 		_streamPos[1] = _blockAlign;
 
 		// 2 samples per input byte, but 2 byte header per block
-		_length = ((stream->size() / _blockAlign) * (_blockAlign - 2) * 2) / channels;
+		_length = ((_size / _blockAlign) * (_blockAlign - 2) * 2) / channels;
 	}
 
 	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
@@ -266,7 +268,7 @@ public:
 		_samplesLeft[1] = 0;
 
 		// 2 samples per input byte, but 4 byte header per block per channel
-		_length = ((stream->size() / _blockAlign) * (_blockAlign - (4 * channels)) * 2) / channels;
+		_length = ((_size / _blockAlign) * (_blockAlign - (4 * channels)) * 2) / channels;
 	}
 
 	size_t readBuffer(int16 *buffer, const size_t numSamples);
@@ -369,7 +371,7 @@ public:
 		std::memset(&_status, 0, sizeof(_status));
 
 		// 2 samples per input byte, but 7 byte header per block per channel
-		_length = ((stream->size() / _blockAlign) * (_blockAlign - (7 * channels)) * 2) / channels;
+		_length = ((_size / _blockAlign) * (_blockAlign - (7 * channels)) * 2) / channels;
 	}
 
 	virtual size_t readBuffer(int16 *buffer, const size_t numSamples);
@@ -521,8 +523,8 @@ public:
 		 * If we have overhang, i.e. a non-full block at the end of the stream,
 		 * we need to add one for the header, and 8 for each 4 following bytes. */
 
-		const uint32 wholeBlocks = (size / (channels * _blockAlign));
-		const uint32 overhang    = (size % (channels * _blockAlign));
+		const uint32 wholeBlocks = (_size / (channels * _blockAlign));
+		const uint32 overhang    = (_size % (channels * _blockAlign));
 
 		if ((overhang % 4) != 0)
 			throw Common::Exception("Xbox_ADPCMStream(): unaligned input size");
