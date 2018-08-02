@@ -1,0 +1,217 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file
+ *  An FMOD SampleBank, found in Dragon Age: Origins as FSB files.
+ */
+
+/* Based heavily on Luigi Auriemma's fsbext tool
+ * (<http://aluigi.altervista.org/papers.htm#others-file>), which is licensed
+ * under the terms of the GPLv2.
+ *
+ * The original copyright note in fsbext reads as follows:
+ *
+ *  Copyright 2005-2012 Luigi Auriemma
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ *
+ *  http://www.gnu.org/licenses/gpl-2.0.txt
+ */
+
+#include <cassert>
+
+#include "src/common/error.h"
+#include "src/common/util.h"
+#include "src/common/strutil.h"
+#include "src/common/encoding.h"
+
+#include "src/aurora/resman.h"
+
+#include "src/sound/fmodsamplebank.h"
+
+#include "src/sound/decoders/mp3.h"
+#include "src/sound/decoders/adpcm.h"
+
+namespace Sound {
+
+FMODSampleBank::FMODSampleBank(Common::SeekableReadStream *fsb) : _fsb(fsb) {
+	assert(_fsb);
+
+	load(*_fsb);
+}
+
+FMODSampleBank::FMODSampleBank(const Common::UString &name) {
+	_fsb.reset(ResMan.getResource(name, Aurora::kFileTypeFSB));
+	if (!_fsb)
+		throw Common::Exception("No such FSB resource \"%s\"", name.c_str());
+
+	load(*_fsb);
+}
+
+size_t FMODSampleBank::getSampleCount() const {
+	return _samples.size();
+}
+
+const Common::UString &FMODSampleBank::getSampleName(size_t index) const {
+	if (index >= _samples.size())
+		throw Common::Exception("FMODSampleBank::getSampleName(): Index out of range (%s >= %s)",
+		                        Common::composeString(index).c_str(),
+		                        Common::composeString(_samples.size()).c_str());
+
+	return _samples[index].name;
+}
+
+bool FMODSampleBank::hasSample(const Common::UString &name) const {
+	return _sampleMap.find(name) != _sampleMap.end();
+}
+
+enum SampleFlags {
+	kSampleFlagMP3      = 0x00000200,
+	kSampleFlagIMAADPCM = 0x00400000
+};
+
+RewindableAudioStream *FMODSampleBank::getSample(const Sample &sample) const {
+	_fsb->seek(sample.offset);
+	Common::ScopedPtr<Common::SeekableReadStream> dataStream(_fsb->readStream(sample.size));
+
+	if (sample.flags & kSampleFlagMP3) {
+		warning("MP3");
+		return makeMP3Stream(dataStream.release(), true);
+	}
+
+	if (sample.flags & kSampleFlagIMAADPCM) {
+		warning("APCM");
+		return makeADPCMStream(dataStream.release(), true, dataStream->size(),
+		                       kADPCMMSIma, sample.defFreq, sample.channels, 36 * sample.channels);
+	}
+
+	throw Common::Exception("FMODSampleBank::getSample(): Unknown format (0x%08X)", sample.flags);
+}
+
+RewindableAudioStream *FMODSampleBank::getSample(size_t index) const {
+	if (index >= _samples.size())
+		throw Common::Exception("FMODSampleBank::getSampleName(): Index out of range (%s >= %s)",
+		                        Common::composeString(index).c_str(),
+		                        Common::composeString(_samples.size()).c_str());
+
+	return getSample(_samples[index]);
+}
+
+RewindableAudioStream *FMODSampleBank::getSample(const Common::UString &name) const {
+	std::map<Common::UString, const Sample *>::const_iterator s = _sampleMap.find(name);
+	if (s == _sampleMap.end())
+		throw Common::Exception("FMODSampleBank::getSampleName(): No such sample \"%s\"", name.c_str());
+
+	return getSample(*s->second);
+}
+
+enum HeaderFlags {
+	kHeaderFlagSimpleInfo = 0x00000002
+};
+
+void FMODSampleBank::load(Common::SeekableReadStream &fsb) {
+	static const uint32 kFSBID = MKTAG('F', 'S', 'B', '4');
+
+	const uint32 id = fsb.readUint32BE();
+	if (id != kFSBID)
+		throw Common::Exception("Not a FSB file (%s)", Common::debugTag(id).c_str());
+
+	const size_t sampleCount = fsb.readUint32LE();
+
+	const size_t sampleInfoSize = fsb.readUint32LE();
+	fsb.skip(4); // sampleDataSize
+
+	fsb.skip(4); // version
+	const uint32 flags   = fsb.readUint32LE();
+
+	fsb.skip(24); // Unknown
+
+	const size_t offsetInfo = 48;
+	size_t offsetData = offsetInfo + sampleInfoSize;
+
+	fsb.seek(offsetInfo);
+
+	_samples.resize(sampleCount);
+	for (std::vector<Sample>::iterator s = _samples.begin(); s != _samples.end(); ++s) {
+		const bool isSimple = (flags & kHeaderFlagSimpleInfo) && (s != _samples.begin());
+
+		if (isSimple) {
+			*s = _samples[0];
+
+			s->name.clear();
+
+			s->length = fsb.readUint32LE();
+			s->size   = fsb.readUint32LE();
+
+		} else {
+			const size_t infoSize = fsb.readUint16LE();
+
+			if (infoSize < 80)
+				throw Common::Exception("FMODSampleBank::load(): Invalid sample info size %s",
+				                        Common::composeString(infoSize).c_str());
+
+			s->name = Common::readStringFixed(fsb, Common::kEncodingASCII, 30);
+
+			s->length = fsb.readUint32LE();
+			s->size   = fsb.readUint32LE();
+
+			s->loopStart = fsb.readUint32LE();
+			s->loopEnd   = fsb.readUint32LE();
+
+			s->flags = fsb.readUint32LE();
+
+			s->defFreq = fsb.readSint32LE();
+			s->defVol  = fsb.readUint16LE();
+			s->defPan  = fsb.readSint16LE();
+			s->defPri  = fsb.readUint16LE();
+
+			s->channels = fsb.readUint16LE();
+
+			s->minDistance = fsb.readIEEEFloatLE();
+			s->maxDistance = fsb.readIEEEFloatLE();
+
+			s->varFreq = fsb.readSint32LE();
+			s->varVol  = fsb.readUint16LE();
+			s->varPan  = fsb.readSint16LE();
+
+			fsb.skip(infoSize - 80);
+		}
+
+		s->offset   = offsetData;
+		offsetData += s->size;
+
+		if (!s->name.empty())
+			_sampleMap.insert(std::make_pair(s->name, &*s));
+	}
+}
+
+} // End of namespace Sound

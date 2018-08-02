@@ -30,6 +30,7 @@ src_sound_libsound_la_SOURCES += \
     src/sound/xactwavebank.h \
     src/sound/xactwavebank_ascii.h \
     src/sound/xactwavebank_binary.h \
+    src/sound/fmodsamplebank.h \
     $(EMPTY)
 
 src_sound_libsound_la_SOURCES += \
@@ -39,6 +40,7 @@ src_sound_libsound_la_SOURCES += \
     src/sound/xactwavebank.cpp \
     src/sound/xactwavebank_ascii.cpp \
     src/sound/xactwavebank_binary.cpp \
+    src/sound/fmodsamplebank.cpp \
     $(EMPTY)
 
 src_sound_libsound_la_LIBADD = \
