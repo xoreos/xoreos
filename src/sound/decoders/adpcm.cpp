@@ -256,7 +256,8 @@ size_t Apple_ADPCMStream::readBuffer(int16 *buffer, const size_t numSamples) {
 class MSIma_ADPCMStream : public Ima_ADPCMStream {
 public:
 	MSIma_ADPCMStream(Common::SeekableReadStream *stream, bool disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign)
-		: Ima_ADPCMStream(stream, disposeAfterUse, size, rate, channels, blockAlign) {
+		: Ima_ADPCMStream(stream, disposeAfterUse, size - (size % ((blockAlign == 0) ? 1 : blockAlign)),
+		                  rate, channels, blockAlign) {
 
 		if (blockAlign == 0)
 			error("MSIma_ADPCMStream(): blockAlign isn't specified");
