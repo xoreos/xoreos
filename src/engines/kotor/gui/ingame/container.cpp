@@ -22,11 +22,14 @@
  *  The ingame container inventory menu.
  */
 
+#include "src/aurora/talkman.h"
+
 #include "src/engines/kotor/item.h"
 
 #include "src/engines/aurora/kotorjadegui/panel.h"
 #include "src/engines/aurora/kotorjadegui/scrollbar.h"
 #include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/aurora/kotorjadegui/label.h"
 
 #include "src/engines/kotor/gui/ingame/container.h"
 
@@ -47,6 +50,9 @@ ContainerMenu::ContainerMenu(Console *console) : GUI(console) {
 }
 
 void ContainerMenu::fillFromInventory(const Inventory &inv) {
+	if (inv.getItems().empty())
+		getLabel("LBL_MESSAGE")->setText(TalkMan.getString(394));
+
 	WidgetListBox *lbItems = getListBox("LB_ITEMS");
 	lbItems->removeAllItems();
 
