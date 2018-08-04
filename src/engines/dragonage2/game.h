@@ -59,11 +59,14 @@ public:
 
 	void run();
 
+	/** Load all game resource archives in the current language found in this directory. */
+	void loadResources(const Common::UString &dir, uint32 priority, ChangeList &res);
 	/** Load all talk tables in the current language found in this directory. */
 	void loadTalkTables(const Common::UString &dir, uint32 priority, ChangeList &res);
 
 	/** Load all game resource archives found in this directory. */
-	static void loadResources  (const Common::UString &dir, uint32 priority, ChangeList &res);
+	static void loadResources  (const Common::UString &dir, uint32 priority, ChangeList &res,
+	                            Aurora::Language language);
 	/** Load all texture packs found in this directory. */
 	/** Load all talk tables in this language found in this directory. */
 	static void loadTalkTables (const Common::UString &dir, uint32 priority, ChangeList &res,

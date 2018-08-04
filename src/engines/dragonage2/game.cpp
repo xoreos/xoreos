@@ -102,7 +102,9 @@ void Game::runCampaigns() {
 	_campaigns->unload();
 }
 
-void Game::loadResources(const Common::UString &dir, uint32 priority, ChangeList &res) {
+void Game::loadResources(const Common::UString &dir, uint32 priority, ChangeList &res,
+                         Aurora::Language language) {
+
 	indexOptionalDirectory(dir + "/data"           , 0,  0, priority + 10, res);
 	indexOptionalDirectory(dir + "/data/movies"    , 0,  0, priority + 11, res);
 	indexOptionalDirectory(dir + "/data/talktables", 0,  0, priority + 12, res);
@@ -114,6 +116,20 @@ void Game::loadResources(const Common::UString &dir, uint32 priority, ChangeList
 
 	loadResourceDir(dir + "/data"          , priority + 100, res);
 	loadResourceDir(dir + "/data/abilities", priority + 200, res);
+
+	Common::FileList sounds(Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir + "/audio/sound", true));
+	sounds.relativize(ResMan.getDataBase());
+
+	for (Common::FileList::const_iterator f = sounds.begin(); f != sounds.end(); ++f)
+		indexOptionalArchive(*f, priority + 300, res);
+
+	const Common::UString langString = DragonAge2Engine::getLanguageString(language);
+
+	Common::FileList vos(Common::FilePath::findSubDirectory(ResMan.getDataBase(), dir + "/audio/vo/" + langString + "/vo", true));
+	vos.relativize(ResMan.getDataBase());
+
+	for (Common::FileList::const_iterator f = vos.begin(); f != vos.end(); ++f)
+		indexOptionalArchive(*f, priority + 301, res);
 
 	loadResourceDir(dir + "/patch", 0x40000000 | priority, res);
 
@@ -129,6 +145,13 @@ void Game::loadTexturePack(const Common::UString &dir, uint32 priority,
 		throw Common::Exception("Invalid texture quality level");
 
 	loadResourceDir(dir + "/textures/" + kTextureQualityName[quality], priority + 300, res);
+}
+
+void Game::loadResources(const Common::UString &dir, uint32 priority, ChangeList &res) {
+	Aurora::Language language = Aurora::kLanguageInvalid;
+	_engine->getLanguage(language);
+
+	loadResources(dir, priority, res, language);
 }
 
 void Game::loadTalkTables(const Common::UString &dir, uint32 priority, ChangeList &res) {

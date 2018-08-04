@@ -217,7 +217,7 @@ void DragonAge2Engine::initResources(LoadProgress &progress) {
 	progress.step("Adding core archive directories");
 
 	progress.step("Indexing core resources files");
-	Game::loadResources ("/packages/core", 0, _resources);
+	Game::loadResources ("/packages/core", 0, _resources, _language);
 	Game::loadTalkTables("/packages/core", 0, _languageTLK, _language);
 
 	progress.step("Indexing extra core resources files");
@@ -241,7 +241,7 @@ void DragonAge2Engine::initResources(LoadProgress &progress) {
 	indexMandatoryArchive("/packages/core/data/tints.rim",                     467, _resources);
 
 	progress.step("Indexing single-player campaign resources files");
-	Game::loadResources ("/modules/campaign_base", 500, _resources);
+	Game::loadResources ("/modules/campaign_base", 500, _resources, _language);
 	Game::loadTalkTables("/modules/campaign_base", 500, _languageTLK, _language);
 
 	progress.step("Registering file formats");
