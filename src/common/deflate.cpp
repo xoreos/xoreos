@@ -116,18 +116,12 @@ byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, siz
 		zResult = inflate(&strm, Z_SYNC_FLUSH);
 		if (zResult != Z_STREAM_END && zResult != Z_OK)
 			throw Exception("Failed to inflate: %s (%d)", zError(zResult), zResult);
-	} while (strm.avail_in != 0);
 
-	if (zResult != Z_STREAM_END)
-		throw Exception("Failed to inflate: %s (%d)", zError(zResult), zResult);
+	} while (zResult != Z_STREAM_END);
 
 	ScopedArray<byte> decompressedData(new byte[strm.total_out]);
-	for (size_t i = 0; i < buffers.size(); ++i) {
-		if (i == buffers.size() - 1)
-			std::memcpy(decompressedData.get() + i * frameSize, buffers[i], strm.total_out % frameSize);
-		else
-			std::memcpy(decompressedData.get() + i * frameSize, buffers[i], frameSize);
-	}
+	for (size_t i = 0, size = strm.total_out; i < buffers.size(); ++i, size -= frameSize)
+		std::memcpy(decompressedData.get() + i * frameSize, buffers[i], MIN<size_t>(size, frameSize));
 
 	outputSize = strm.total_out;
 	return decompressedData.release();
