@@ -40,9 +40,10 @@ class SeekableReadStream;
  *                     It is assumed that this information is known and that
  *                     the whole decompressed data will fit into a buffer of
  *                     this size.
+ *  @param noEndMarker The compressed stream has no end marker.
  *  @return The decompressed data.
  */
-byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize);
+byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, bool noEndMarker = false);
 
 /** Decompress using the LZMA1 algorithm.
  *
@@ -52,9 +53,10 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize);
  *                     It is assumed that this information is known and that
  *                     the whole decompressed data will fit into a buffer of
  *                     this size.
+ *  @param noEndMarker The compressed stream has no end marker.
  *  @return A stream of the decompressed data.
  */
-SeekableReadStream *decompressLZMA1(ReadStream &input, size_t inputSize, size_t outputSize);
+SeekableReadStream *decompressLZMA1(ReadStream &input, size_t inputSize, size_t outputSize, bool noEndMarker = false);
 
 } // End of namespace Common
 
