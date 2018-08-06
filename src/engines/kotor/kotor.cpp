@@ -524,18 +524,32 @@ void KotOREngine::deinit() {
 }
 
 void KotOREngine::playIntroVideos() {
-	if (_platform == Aurora::kPlatformXbox) {
-		playVideo("logo");
-		// TODO: What the hell is (sizzle|sizzle2).xmv?
-	} else {
-		playVideo("leclogo");
-		playVideo("biologo");
+	switch (_platform) {
+		case Aurora::kPlatformXbox:
+			playVideo("sizzle"); // Logos and a preview of the game
+			break;
 
-		// On Mac OS X, play the Aspyr logo
-		if (_platform == Aurora::kPlatformMacOSX)
-			playVideo("Aspyr_BlueDust_intro");
+		default:
+		case Aurora::kPlatformWindows:
+			playVideo("leclogo"); // LucasArts
+			playVideo("biologo"); // BioWare
+			playVideo("legal");   // Legal billboard
+			break;
 
-		playVideo("legal");
+		case Aurora::kPlatformMacOSX:
+			playVideo("leclogo");              // LucasArts
+			playVideo("biologo");              // BioWare
+			playVideo("Aspyr_BlueDust_intro"); // Aspyr
+			playVideo("legal");                // Legal billboard
+			break;
+
+		case Aurora::kPlatformAndroid:
+		case Aurora::kPlatformIOS:
+			playVideo("leclogo"); // LucasArts
+			playVideo("biologo"); // BioWare
+			playVideo("aspyr");   // Aspyr
+			playVideo("legal");   // Legal billboard
+			break;
 	}
 }
 
