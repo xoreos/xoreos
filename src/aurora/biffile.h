@@ -31,7 +31,7 @@
 #include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/archive.h"
+#include "src/aurora/keydatafile.h"
 #include "src/aurora/aurorafile.h"
 
 namespace Common {
@@ -54,8 +54,8 @@ class KEYFile;
  *  file.
  *
  *  Additionally, there are BZF files. A BZF is a compressed variation
- *  of a BIF file, found exclusively in the iOS version of Knights of
- *  the Old Republic.
+ *  of a BIF file, found exclusively in the Android and iOS version of
+ *  Knights of the Old Republic.
  *
  *  See also classes KEYFile in keyfile.h and BZFFile in bzffile.h.
  *
@@ -68,7 +68,7 @@ class KEYFile;
  *  games (Baldur's Gate et al) are not supported at all, even though
  *  they claim to be V1.
  */
-class BIFFile : public Archive, public AuroraFile {
+class BIFFile : public KEYDataFile, public AuroraFile {
 public:
 	/** Take over this stream and read a BIF file out of it. */
 	BIFFile(Common::SeekableReadStream *bif);
@@ -83,15 +83,15 @@ public:
 	/** Return a stream of the resource's contents. */
 	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
-	/** Merge information from the KEY into the BIF.
+	/** Merge information from the KEY into the data file.
 	 *
-	 *  Without this step, this BIFFile archive does not contain any
+	 *  Without this step, this data file archive does not contain any
 	 *  resource names at all.
 	 *
-	 *  @param key      A KEYFile with information about this BIF.
-	 *  @param bifIndex The index this BIF has within the KEY file.
+	 *  @param key A KEYFile with information about this data file.
+	 *  @param dataFileIndex The index this data file has within the KEY file.
 	 */
-	void mergeKEY(const KEYFile &key, uint32 bifIndex);
+	void mergeKEY(const KEYFile &key, uint32 dataFileIndex);
 
 private:
 	/** Internal resource information. */

@@ -30,6 +30,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/archive.h \
     src/aurora/aurorafile.h \
     src/aurora/keyfile.h \
+    src/aurora/keydatafile.h \
     src/aurora/biffile.h \
     src/aurora/bzffile.h \
     src/aurora/erffile.h \

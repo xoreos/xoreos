@@ -27,9 +27,6 @@
 
 #include <cassert>
 
-#include "src/common/types.h" /* need to include before lzma.h stop it redefining macros */
-#include <lzma.h>
-
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -101,11 +98,11 @@ void BZFFile::readVarResTable(Common::SeekableReadStream &bzf, uint32 offset) {
 		_iResources.back().packedSize = bzf.size() - _iResources.back().offset;
 }
 
-void BZFFile::mergeKEY(const KEYFile &key, uint32 bifIndex) {
+void BZFFile::mergeKEY(const KEYFile &key, uint32 dataFileIndex) {
 	const KEYFile::ResourceList &keyResList = key.getResources();
 
 	for (KEYFile::ResourceList::const_iterator keyRes = keyResList.begin(); keyRes != keyResList.end(); ++keyRes) {
-		if (keyRes->bifIndex != bifIndex)
+		if (keyRes->bifIndex != dataFileIndex)
 			continue;
 
 		if (keyRes->resIndex >= _iResources.size()) {
@@ -148,7 +145,7 @@ Common::SeekableReadStream *BZFFile::getResource(uint32 index, bool UNUSED(tryNo
 
 	_bzf->seek(res.offset);
 
-	return Common::decompressLZMA1(*_bzf, res.packedSize, res.size);
+	return Common::decompressLZMA1(*_bzf, res.packedSize, res.size, true);
 }
 
 } // End of namespace Aurora

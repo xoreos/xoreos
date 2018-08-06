@@ -34,7 +34,7 @@
 #include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
-#include "src/aurora/archive.h"
+#include "src/aurora/keydatafile.h"
 #include "src/aurora/aurorafile.h"
 
 namespace Common {
@@ -48,11 +48,11 @@ class KEYFile;
 /** Class to hold resource data information of a BZF file.
  *
  *  A BZF is a compressed variation of a BIF file, found exclusively
- *  in the iOS version of Knights of the Old Republic.
+ *  in the Android and iOS version of Knights of the Old Republic.
  *
  *  See also classes KEYFile in keyfile.h and BIFFile in biffile.h.
  */
-class BZFFile : public Archive, public AuroraFile {
+class BZFFile : public KEYDataFile, public AuroraFile {
 public:
 	/** Take over this stream and read a BZF file out of it. */
 	BZFFile(Common::SeekableReadStream *bzf);
@@ -67,8 +67,15 @@ public:
 	/** Return a stream of the resource's contents. */
 	Common::SeekableReadStream *getResource(uint32 index, bool tryNoCopy = false) const;
 
-	/** Merge information from the KEY into the BZF. */
-	void mergeKEY(const KEYFile &key, uint32 bifIndex);
+	/** Merge information from the KEY into the data file.
+	 *
+	 *  Without this step, this data file archive does not contain any
+	 *  resource names at all.
+	 *
+	 *  @param key A KEYFile with information about this data file.
+	 *  @param dataFileIndex The index this data file has within the KEY file.
+	 */
+	void mergeKEY(const KEYFile &key, uint32 dataFileIndex);
 
 private:
 	/** Internal resource information. */
@@ -78,7 +85,7 @@ private:
 		uint32 offset; ///< The offset of the resource within the BZF.
 		uint32 size;   ///< The resource's size.
 
-		uint32 packedSize; ///< Raw, uncompressed data size.
+		uint32 packedSize; ///< Raw, compressed data size.
 	};
 
 	typedef std::vector<IResource> IResourceList;

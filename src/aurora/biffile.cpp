@@ -96,11 +96,11 @@ void BIFFile::readVarResTable(Common::SeekableReadStream &bif, uint32 offset) {
 	}
 }
 
-void BIFFile::mergeKEY(const KEYFile &key, uint32 bifIndex) {
+void BIFFile::mergeKEY(const KEYFile &key, uint32 dataFileIndex) {
 	const KEYFile::ResourceList &keyResList = key.getResources();
 
 	for (KEYFile::ResourceList::const_iterator keyRes = keyResList.begin(); keyRes != keyResList.end(); ++keyRes) {
-		if (keyRes->bifIndex != bifIndex)
+		if (keyRes->bifIndex != dataFileIndex)
 			continue;
 
 		if (keyRes->resIndex >= _iResources.size()) {
