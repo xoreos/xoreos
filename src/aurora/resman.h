@@ -47,7 +47,7 @@ namespace Aurora {
 
 class Archive;
 class KEYFile;
-class BIFFile;
+class KEYDataFile;
 
 /** A resource manager holding information about and handling all request for all
  *  resources usable by the game.
@@ -504,7 +504,7 @@ private:
 	// .--- Indexing archives
 	void indexKEY(Common::SeekableReadStream *stream, uint32 priority, Change *change);
 	uint32 openKEYBIFs(Common::SeekableReadStream *keyStream,
-	                   std::vector<KnownArchive *> &archives, std::vector<BIFFile *> &bifs);
+	                   std::vector<KnownArchive *> &archives, std::vector<KEYDataFile *> &keyData);
 
 	void indexArchive(KnownArchive &knownArchive, Archive *archive,
 	                  uint32 priority, Change *change);

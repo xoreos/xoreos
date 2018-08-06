@@ -38,7 +38,9 @@
 #include "src/aurora/util.h"
 
 #include "src/aurora/keyfile.h"
+#include "src/aurora/keydatafile.h"
 #include "src/aurora/biffile.h"
+#include "src/aurora/bzffile.h"
 #include "src/aurora/erffile.h"
 #include "src/aurora/rimfile.h"
 #include "src/aurora/ndsrom.h"
@@ -112,6 +114,7 @@ ResourceManager::ResourceManager() : _hasSmall(false),
 	_archiveTypeTypes[kArchiveKEY].insert(kFileTypeKEY);
 
 	_archiveTypeTypes[kArchiveBIF].insert(kFileTypeBIF);
+	_archiveTypeTypes[kArchiveBIF].insert(kFileTypeBZF);
 
 	_archiveTypeTypes[kArchiveERF].insert(kFileTypeERF);
 	_archiveTypeTypes[kArchiveERF].insert(kFileTypeMOD);
@@ -273,9 +276,15 @@ ResourceManager::KnownArchive *ResourceManager::findArchive(Common::UString file
 	file = (Common::FilePath::isAbsolute(file) ? "" : "/") + file;
 	file = Common::FilePath::normalize(file, false).toLower();
 
-	for (KnownArchives::iterator a = archives.begin(); a != archives.end(); ++a)
+	for (KnownArchives::iterator a = archives.begin(); a != archives.end(); ++a) {
 		if (a->name.toLower().endsWith(file))
 			return &*a;
+
+		// BZF archives are still indexed as BIF in the KEY file
+		if (Common::FilePath::getExtension(file).equalsIgnoreCase(".bif"))
+			if (a->name.toLower().endsWith(Common::FilePath::changeExtension(file, ".bzf")))
+				return &*a;
+	}
 
 	return 0;
 }
@@ -357,15 +366,15 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
 
 uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
                                     std::vector<KnownArchive *> &archives,
-                                    std::vector<BIFFile *> &bifs) {
+                                    std::vector<KEYDataFile *> &keyData) {
 
 	bool success = false;
-	BOOST_SCOPE_EXIT( (&success) (&archives) (&bifs) ) {
+	BOOST_SCOPE_EXIT( (&success) (&archives) (&keyData) ) {
 		if (!success) {
-			for (std::vector<BIFFile *>::iterator b = bifs.begin(); b != bifs.end(); ++b)
+			for (std::vector<KEYDataFile *>::iterator b = keyData.begin(); b != keyData.end(); ++b)
 				delete *b;
 
-			bifs.clear();
+			keyData.clear();
 			archives.clear();
 		}
 	} BOOST_SCOPE_EXIT_END
@@ -375,15 +384,19 @@ uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
 
 	const KEYFile::BIFList &keyBIFs = key.getBIFs();
 	archives.resize(keyBIFs.size(), 0);
-	bifs.resize(keyBIFs.size(), 0);
+	keyData.resize(keyBIFs.size(), 0);
 
 	for (uint32 i = 0; i < keyBIFs.size(); i++) {
 		archives[i] = findArchive(keyBIFs[i], _knownArchives[kArchiveBIF]);
 		if (!archives[i])
 			throw Common::Exception("BIF \"%s\" not found", keyBIFs[i].c_str());
 
-		bifs[i] = new BIFFile(openArchiveStream(*archives[i]));
-		bifs[i]->mergeKEY(key, i);
+		if (Common::FilePath::getExtension(archives[i]->name).equalsIgnoreCase(".bzf"))
+			keyData[i] = new BZFFile(openArchiveStream(*archives[i]));
+		else
+			keyData[i] = new BIFFile(openArchiveStream(*archives[i]));
+
+		keyData[i]->mergeKEY(key, i);
 	}
 
 	success = true;
@@ -392,12 +405,12 @@ uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
 
 void ResourceManager::indexKEY(Common::SeekableReadStream *stream, uint32 priority, Change *change) {
 	std::vector<KnownArchive *> archives;
-	std::vector<BIFFile *> bifs;
+	std::vector<KEYDataFile *> keyData;
 
-	const uint32 count = openKEYBIFs(stream, archives, bifs);
+	const uint32 count = openKEYBIFs(stream, archives, keyData);
 
 	for (uint32 i = 0; i < count; i++)
-		indexArchive(*archives[i], bifs[i], priority, change);
+		indexArchive(*archives[i], keyData[i], priority, change);
 }
 
 void ResourceManager::indexArchive(KnownArchive &knownArchive, Archive *archive,
