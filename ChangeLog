@@ -12,6 +12,7 @@ Someday, ????-??-?? (Version 0.0.6)
 			- Partially implemented party selection
 			- Partially implemented ingame GUI scaling
 			- Added Malak to the main menu
+			- Added support for the (extracted) Android version
 		- KOTOR2:
 			- Changed key input to use scancodes
 			- Restructured config options
