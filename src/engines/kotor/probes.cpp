@@ -118,11 +118,31 @@ public:
 
 };
 
+class EngineProbeAndroid : public EngineProbe {
+public:
+	EngineProbeAndroid() {}
+	~EngineProbeAndroid() {}
+
+	Aurora::Platform getPlatform() const { return Aurora::kPlatformAndroid; }
+
+	bool probe(const Common::UString &directory, const Common::FileList &UNUSED(rootFiles)) const {
+		// TODO: Detect the unextracted OBBs? Doesn't work with how we index directories, though.
+
+		const Common::FileList dataFiles(Common::FilePath::findSubDirectory(directory, "data", true));
+		if (dataFiles.contains("/2da.bzf", true))
+			return true;
+
+		return false;
+	}
+
+};
+
 
 void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
 	probes.push_back(new EngineProbeWindows);
 	probes.push_back(new EngineProbeMac);
 	probes.push_back(new EngineProbeXbox);
+	probes.push_back(new EngineProbeAndroid);
 }
 
 } // End of namespace KotOR
