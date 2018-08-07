@@ -406,6 +406,8 @@ void Module::enter() {
 	SatelliteCam.setHeight(cameraHeight);
 	SatelliteCam.update(0);
 
+	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
+
 	enterArea();
 
 	_area->notifyPCMoved();
