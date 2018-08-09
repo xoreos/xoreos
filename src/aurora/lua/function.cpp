@@ -92,7 +92,7 @@ Variables FunctionRef::call(const Variables &params) const {
 	stack.pushVariables(params);
 
 	if (lua_pcall(&stack.getLuaState(), params.size(), LUA_MULTRET, 0) != 0) {
-		throw Common::Exception("Failed to call Lua function");
+		throw Common::Exception("Failed to call Lua function:\n\t%s", lua_tostring(&stack.getLuaState(), -1));
 	}
 
 	const int retsCount = stack.getSize() - savedTop;
