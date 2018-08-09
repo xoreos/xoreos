@@ -237,7 +237,16 @@ void HUD::setPosition(float x, float y) {
 }
 
 void HUD::setRotation(float angle) {
-	_minimapPointer->setRotation(angle);
+	switch (_minimap->getNorthAxis()) {
+		case 0:
+			_minimapPointer->setRotation(angle);
+			break;
+		case 3:
+			_minimapPointer->setRotation(angle - 90.0f);
+			break;
+		default:
+			warning("Unknown north axis");
+	}
 }
 
 void HUD::showContainer(Inventory &inv) {

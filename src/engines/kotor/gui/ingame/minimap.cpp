@@ -76,6 +76,10 @@ void Minimap::setPosition(float x, float y) {
 	setGlobalTransformationMatrix(transformation);
 }
 
+int Minimap::getNorthAxis() {
+	return _northAxis;
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines

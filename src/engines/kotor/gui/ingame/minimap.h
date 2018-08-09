@@ -39,6 +39,7 @@ public:
 	        float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y);
 
 	void setPosition(float x, float y);
+	int getNorthAxis();
 
 private:
 	Graphics::Aurora::GUIQuad _mapQuad;
