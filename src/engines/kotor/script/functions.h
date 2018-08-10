@@ -176,6 +176,8 @@ private:
 	// '---
 
 	// .--- General object functions, functions_object.cpp
+	void destroyObject(Aurora::NWScript::FunctionContext &ctx);
+
 	void getClickingObject(Aurora::NWScript::FunctionContext &ctx);
 	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
 	void getExitingObject (Aurora::NWScript::FunctionContext &ctx);

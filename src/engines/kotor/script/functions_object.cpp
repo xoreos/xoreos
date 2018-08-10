@@ -43,6 +43,22 @@ namespace Engines {
 
 namespace KotOR {
 
+void Functions::destroyObject(Aurora::NWScript::FunctionContext &ctx) {
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
+	//float delay = ctx.getParams()[1].getFloat();
+	//bool noFade = ctx.getParams()[2].getInt() != 0;
+	//float delayUntilFade = ctx.getParams()[3].getFloat();
+
+	// TODO: Implement fading out objects.
+
+	Object *kotorObject = ObjectContainer::toObject(object);
+	if (!kotorObject)
+		throw Common::Exception("Functions::destroyObject(): invalid object");
+
+	kotorObject->hide();
+	_game->getModule().removeObject(*kotorObject);
+}
+
 void Functions::getClickingObject(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = ctx.getTriggerer();
 }
