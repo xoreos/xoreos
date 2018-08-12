@@ -84,6 +84,8 @@ MainMenu::MainMenu(const Version &gameVersion, Module &module, ::Engines::Consol
 		// TODO: Possibly change this to perspective projection.
 		glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -0.2f, 2.6f, -3.0f, 3.0f);
 		_malakScene->setProjectionMatrix(projection);
+
+		_malakScene->setClearEnabled(false);
 	}
 }
 
