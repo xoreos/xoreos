@@ -197,68 +197,27 @@ Creature *CharacterGenerationInfo::getCharacter() const {
 	return creature.release();
 }
 
-Graphics::Aurora::Model *CharacterGenerationInfo::getModel() {
-	// TODO: This duplicates code in Creature::createPC()
+void CharacterGenerationInfo::recreateHead() {
+	Graphics::Aurora::Model *head = _head;
+	_head = loadModelObject(Creature::getHeadMeshString(getGender(), getSkin(), getFace()), "");
+	_body->attachModel("headhook", _head);
+	delete head;
 
+	// Restart animation to apply it to the new head.
+	// TODO: Possibly there is another way of doing this, without restarting the animation?
+	_body->playAnimation("pause1", true, -1);
+}
+
+Graphics::Aurora::Model *CharacterGenerationInfo::getModel() {
 	if (_body)
 		return _body.get();
 
-	Common::UString body, head;
-
-	body = "p";
-	head = "p";
-
-	switch (getGender()) {
-		case kGenderMale:
-			body += "m";
-			head += "m";
-			break;
-		case kGenderFemale:
-			body += "f";
-			head += "f";
-			break;
-		default:
-			throw Common::Exception("Unknown gender");
-	}
-
-	body += "bb";
-	head += "h";
-
-	switch (getClass()) {
-		case kClassSoldier:
-			body += "l";
-			break;
-		case kClassScout:
-			body += "m";
-			break;
-		default:
-		case kClassScoundrel:
-			body += "s";
-			break;
-	}
-
-	_body.reset(loadModelObject(body, ""));
+	_body.reset(loadModelObject(Creature::getBodyMeshString(getGender(), getClass()), ""));
 	if (!_body)
 		return 0;
 
-	switch (getSkin()) {
-		case kSkinA:
-			head += "a";
-			break;
-		case kSkinB:
-			head += "b";
-			break;
-		default:
-		case kSkinC:
-			head += "c";
-			break;
-	}
-
-	head += "0";
-	head += Common::composeString(getFace() + 1);
-
-	Graphics::Aurora::Model *headModel = loadModelObject(head, "");
-	_body->attachModel("headhook", headModel);
+	_head = loadModelObject(Creature::getHeadMeshString(getGender(), getSkin(), getFace()), "");
+	_body->attachModel("headhook", _head);
 
 	return _body.get();
 }
