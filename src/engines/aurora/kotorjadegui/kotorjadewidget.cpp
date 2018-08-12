@@ -230,11 +230,10 @@ void KotORJadeWidget::setSubScene(Graphics::Aurora::SubSceneQuad *subscene) {
 	getPosition(x, y, z);
 	_subScene->setPosition(x + wWidth/2, y + wHeight/2);
 
-	// If a fill quad already exists, move the subscene a bit before it and disable clearing.
+	// If a fill quad already exists, move the subscene a bit before it.
 	if (_quad) {
 		_quad->getPosition(x, y, z);
 		_subScene->setDistance(z - 0.000001);
-		_subScene->setClearEnabled(false);
 	}
 }
 
