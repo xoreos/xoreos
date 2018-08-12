@@ -73,6 +73,8 @@ public:
 	void setFace(uint8 face);
 
 	Creature *getCharacter() const;
+
+	void recreateHead();
 	Graphics::Aurora::Model *getModel();
 
 private:
@@ -85,6 +87,7 @@ private:
 
 	Common::UString _name;
 
+	Graphics::Aurora::Model *_head;
 	Common::ScopedPtr<Graphics::Aurora::Model> _body;
 };
 
