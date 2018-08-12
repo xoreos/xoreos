@@ -226,7 +226,6 @@ void HUD::setMinimap(const Common::UString &map, int northAxis,
 
 	_minimap.reset(new Minimap(map, northAxis, mapPt1X, mapPt1Y, mapPt2X, mapPt2Y, worldPt1X, worldPt1Y, worldPt2X, worldPt2Y));
 	mapView->setSubScene(_minimap.get());
-	_minimap->setClearEnabled(true);
 
 	GfxMan.unlockFrame();
 }
