@@ -182,6 +182,8 @@ void CharacterGenerationMenu::showPortrait() {
 		if (lblPortrait)
 			lblPortrait->setFill(_pc->getPortrait());
 
+		_pc->recreateHead();
+
 		_step += 1;
 	}
 }
