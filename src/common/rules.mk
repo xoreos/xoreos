@@ -75,6 +75,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/filelist.h \
     src/common/binsearch.h \
     src/common/bitstream.h \
+    src/common/bitstreamwriter.h \
     src/common/huffman.h \
     src/common/boundingbox.h \
     src/common/configfile.h \

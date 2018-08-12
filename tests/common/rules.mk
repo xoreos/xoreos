@@ -100,6 +100,11 @@ tests_common_test_bitstream_SOURCES  = tests/common/bitstream.cpp
 tests_common_test_bitstream_LDADD    = $(common_LIBS)
 tests_common_test_bitstream_CXXFLAGS = $(test_CXXFLAGS)
 
+check_PROGRAMS                            += tests/common/test_bitstreamwriter
+tests_common_test_bitstreamwriter_SOURCES  = tests/common/bitstreamwriter.cpp
+tests_common_test_bitstreamwriter_LDADD    = $(common_LIBS)
+tests_common_test_bitstreamwriter_CXXFLAGS = $(test_CXXFLAGS)
+
 check_PROGRAMS                    += tests/common/test_huffman
 tests_common_test_huffman_SOURCES  = tests/common/huffman.cpp
 tests_common_test_huffman_LDADD    = $(common_LIBS)
