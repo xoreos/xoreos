@@ -502,7 +502,7 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 				_attachedModel->_orientation[1] != 0 ||
 				_attachedModel->_orientation[2] != 0)
 			modelPosition = glm::rotate(modelPosition,
-					(_attachedModel->_orientation[3]),
+					Common::deg2rad(_attachedModel->_orientation[3]),
 					glm::vec3(_attachedModel->_orientation[0],
 					          _attachedModel->_orientation[1],
 					          _attachedModel->_orientation[2]));
@@ -796,7 +796,7 @@ void ModelNode::drawSkeleton(const glm::mat4 &parent, bool showInvisible) {
 
 	if (_orientation[0] != 0 || _orientation[1] != 0 || _orientation[2] != 0)
 		mine = glm::rotate(mine,
-				(_orientation[3]),
+				Common::deg2rad(_orientation[3]),
 				glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
 
 	mine = glm::scale(mine, glm::vec3(_scale[0], _scale[1], _scale[2]));
@@ -913,7 +913,7 @@ void ModelNode::computeInverseBindPose() {
 			const QuaternionKeyFrame &ori = node->_orientationFrames[0];
 			if (ori.x != 0 || ori.y != 0 || ori.z != 0)
 				_invBindPose = glm::rotate(_invBindPose,
-						acosf(ori.q) * 2.0f,
+						(acosf(ori.q) * 2.0f),
 						glm::vec3(ori.x, ori.y, ori.z));
 		}
 	}
@@ -943,7 +943,7 @@ void ModelNode::computeAbsoluteTransform() {
 				node->_orientationBuffer[1] != 0 ||
 				node->_orientationBuffer[2] != 0)
 			_absoluteTransform = glm::rotate(_absoluteTransform,
-					node->_orientationBuffer[3],
+					Common::deg2rad(node->_orientationBuffer[3]),
 					glm::vec3(node->_orientationBuffer[0],
 					          node->_orientationBuffer[1],
 					          node->_orientationBuffer[2]));

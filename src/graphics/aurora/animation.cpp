@@ -198,7 +198,7 @@ void Animation::interpolateOrientation(ModelNode *animNode, ModelNode *target, f
 	// If only one keyframe, don't interpolate just set the only orientation
 	if (animNode->_orientationFrames.size() == 1) {
 		const QuaternionKeyFrame &ori = animNode->_orientationFrames[0];
-		target->setBufferedOrientation(ori.x, ori.y, ori.z, (acos(ori.q) * 2.0));
+		target->setBufferedOrientation(ori.x, ori.y, ori.z, Common::rad2deg(acos(ori.q) * 2.0));
 		return;
 	}
 
@@ -213,7 +213,7 @@ void Animation::interpolateOrientation(ModelNode *animNode, ModelNode *target, f
 
 	const QuaternionKeyFrame &last = animNode->_orientationFrames[lastFrame];
 	if (lastFrame + 1 >= animNode->_orientationFrames.size() || last.time >= time) {
-		target->setBufferedOrientation(last.x, last.y, last.z, (acos(last.q) * 2.0));
+		target->setBufferedOrientation(last.x, last.y, last.z, Common::rad2deg(acos(last.q) * 2.0));
 		return;
 	}
 
@@ -234,7 +234,7 @@ void Animation::interpolateOrientation(ModelNode *animNode, ModelNode *target, f
 	// Normalize the result for slightly better results
 	normQuaternion(x, y, z, q, x, y, z, q);
 
-	target->setBufferedOrientation(x, y, z, (acos(q) * 2.0));
+	target->setBufferedOrientation(x, y, z, Common::rad2deg(acos(q) * 2.0));
 }
 
 static void multiply(const float *v, const glm::mat4 &m, float *rv) {
