@@ -32,6 +32,8 @@ src_sound_decoders_libdecoders_la_SOURCES += \
     src/sound/decoders/asf.h \
     src/sound/decoders/wma.h \
     src/sound/decoders/wmadata.h \
+    src/sound/decoders/wwriffvorbis.h \
+    src/sound/decoders/wwriffvorbisdata.h \
     $(EMPTY)
 
 src_sound_decoders_libdecoders_la_SOURCES += \
@@ -41,6 +43,7 @@ src_sound_decoders_libdecoders_la_SOURCES += \
     src/sound/decoders/pcm.cpp \
     src/sound/decoders/asf.cpp \
     src/sound/decoders/wma.cpp \
+    src/sound/decoders/wwriffvorbis.cpp \
     $(EMPTY)
 
 aac_sources = \
