@@ -151,6 +151,23 @@ public:
 	}
 };
 
+/** An empty audio stream that plays nothing. */
+class EmptyAudioStream : public RewindableAudioStream {
+public:
+	EmptyAudioStream() { }
+
+	size_t readBuffer(int16 *UNUSED(buffer), const size_t UNUSED(numSamples)) { return 0; }
+
+	int getChannels() const { return 1; }
+
+	int getRate() const { return 44100; }
+
+	bool endOfData() const { return true; }
+	bool rewind() { return true; }
+
+	uint64 getLength() const { return 0; }
+};
+
 /**
  * A looping audio stream. This object does nothing besides using
  * a RewindableAudioStream to play a stream in a loop.

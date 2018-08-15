@@ -64,7 +64,7 @@ LoopingAudioStream::~LoopingAudioStream() {
 }
 
 size_t LoopingAudioStream::readBuffer(int16 *buffer, const size_t numSamples) {
-	if ((_loops && _completeIterations == _loops) || !numSamples)
+	if ((_loops && _completeIterations == _loops) || !numSamples || (_parent->getLength() == 0))
 		return 0;
 
 	const size_t samplesRead = _parent->readBuffer(buffer, numSamples);
