@@ -407,6 +407,9 @@ ChannelHandle SoundManager::playSoundFile(Common::SeekableReadStream *wavStream,
 
 	AudioStream *audioStream = makeAudioStream(wavStream);
 
+	if (!audioStream)
+		throw Common::Exception("No audio stream");
+
 	if (loop) {
 		RewindableAudioStream *reAudStream = dynamic_cast<RewindableAudioStream *>(audioStream);
 		if (!reAudStream)
