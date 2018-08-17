@@ -46,6 +46,7 @@ public:
 	Variable();
 
 	Variable(const Common::UString &value);
+	Variable(const char* value);
 	Variable(double value);
 	Variable(unsigned int value);
 	Variable(bool value);

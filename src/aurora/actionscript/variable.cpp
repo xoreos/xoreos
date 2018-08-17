@@ -41,6 +41,10 @@ Variable::Variable(const char *value) : _type(kTypeString) {
 	_value.string = value;
 }
 
+Variable::Variable(const char *value) : _type(kTypeString) {
+	_value.string = value;
+}
+
 Variable::Variable(Object *value) : _type(kTypeObject) {
 	_value.object = ObjectPtr(value);
 }
