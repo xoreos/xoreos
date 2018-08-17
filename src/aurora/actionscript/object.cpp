@@ -65,7 +65,7 @@ void Object::setMember(const Common::UString &id, Function *function) {
 	_members[id] = ObjectPtr(function);
 }
 
-Variable Object::call(Common::UString function, AVM &avm) {
+Variable Object::call(const Common::UString &function, AVM &avm, const std::vector<Variable> &arguments) {
 	if (!hasMember(function))
 		throw Common::Exception("object has no member %s", function.c_str());
 
@@ -77,6 +77,11 @@ Variable Object::call(Common::UString function, AVM &avm) {
 	byte counter = 1;
 	if (f->getPreloadThisFlag()) {
 		avm.storeRegister(shared_from_this(), counter);
+		counter += 1;
+	}
+
+	for (size_t i = 0; i < arguments.size(); ++i) {
+		avm.storeRegister(arguments[i], counter);
 		counter += 1;
 	}
 
