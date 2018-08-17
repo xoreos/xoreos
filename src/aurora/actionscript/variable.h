@@ -49,6 +49,7 @@ public:
 	Variable(const char* value);
 	Variable(double value);
 	Variable(unsigned int value);
+	Variable(unsigned long value);
 	Variable(bool value);
 	Variable(ObjectPtr value);
 
