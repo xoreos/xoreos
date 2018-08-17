@@ -435,8 +435,16 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 		throw Common::Exception("Object is not a function");
 
 	byte counter = 1;
-	if (function->getPreloadThisFlag())
+
+	if (function->getPreloadThisFlag()) {
+		if (!name.empty())
+			avm.storeRegister(object, counter);
 		counter += 1;
+	}
+	if (function->getPreloadSuperFlag()) {
+		// TODO: Add super variable
+		counter += 1;
+	}
 
 	for (size_t i = 0; i < arguments.size(); ++i) {
 		avm.storeRegister(arguments[i], counter);
@@ -444,8 +452,7 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 	}
 
 	avm.setReturnValue(Variable());
-	(*function)(avm);
-	_stack.push(avm.getReturnValue());
+	_stack.push((*function)(avm));
 
 	debugC(kDebugActionScript, 1, "actionCallMethod");
 }
