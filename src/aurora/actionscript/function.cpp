@@ -51,7 +51,19 @@ ScriptedFunction::~ScriptedFunction() {
 
 Variable ScriptedFunction::operator()(AVM &avm) {
 	_buffer.run(avm);
-	return Variable();
+	return avm.getReturnValue();
+}
+
+NativeFunction::NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag)
+	: Function(preloadThisFlag, preloadSuperFlag), _function(function) {
+}
+
+Variable NativeFunction::operator()(AVM &avm) {
+	return _function(avm);
+}
+
+DummyFunction::DummyFunction() : Function(false, false) {
+
 }
 
 } // End of namespace ActionScript
