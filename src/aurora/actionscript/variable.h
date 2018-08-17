@@ -66,6 +66,8 @@ public:
 	const Common::UString &asString() const;
 	bool asBoolean() const;
 
+	template<typename T> boost::shared_ptr<T> as() const;
+
 	void operator=(Variable v);
 
 	bool operator!();
@@ -94,6 +96,10 @@ private:
 		Common::UString string;
 	} _value;
 };
+
+template<typename T> boost::shared_ptr<T> Variable::as() const {
+	return boost::dynamic_pointer_cast<T>(_value.object);
+}
 
 } // End of namespace ActionScript
 
