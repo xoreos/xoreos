@@ -61,6 +61,10 @@ void Object::setMember(Common::UString id, Variable member) {
 	_members[id] = member;
 }
 
+void Object::setMember(const Common::UString &id, Function *function) {
+	_members[id] = ObjectPtr(function);
+}
+
 Variable Object::call(Common::UString function, AVM &avm) {
 	if (!hasMember(function))
 		throw Common::Exception("object has no member %s", function.c_str());

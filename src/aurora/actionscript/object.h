@@ -54,6 +54,7 @@ public:
 
 	Variable getMember(Common::UString);
 	void setMember(Common::UString, Variable);
+	void setMember(const Common::UString &id, Function *function);
 
 	Variable call(Common::UString, AVM &avm);
 
