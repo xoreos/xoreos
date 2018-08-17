@@ -37,6 +37,10 @@ Variable::Variable(const Common::UString &value) : _type(kTypeString) {
 	_value.string = value;
 }
 
+Variable::Variable(const char *value) : _type(kTypeString) {
+	_value.string = value;
+}
+
 Variable::Variable(double value) : _type(kTypeNumber) {
 	_value.number = value;
 }
