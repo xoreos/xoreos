@@ -56,7 +56,7 @@ public:
 	void setMember(Common::UString, Variable);
 	void setMember(const Common::UString &id, Function *function);
 
-	Variable call(Common::UString, AVM &avm);
+	Variable call(const Common::UString &function, AVM &avm, const std::vector<Variable> &arguments = std::vector<Variable>());
 
 private:
 	std::map<Common::UString, Variable> _members;
