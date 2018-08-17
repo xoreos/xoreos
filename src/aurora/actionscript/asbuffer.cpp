@@ -29,6 +29,7 @@
 #include "src/aurora/actionscript/variable.h"
 #include "src/aurora/actionscript/asbuffer.h"
 #include "src/aurora/actionscript/function.h"
+#include "src/aurora/actionscript/array.h"
 
 using Common::kDebugActionScript;
 
@@ -289,7 +290,19 @@ void ASBuffer::actionReturn(AVM &avm) {
 }
 
 void ASBuffer::actionInitArray() {
-	// TODO
+	const Variable nArgs = _stack.top();
+	_stack.pop();
+
+	if (!nArgs.isNumber())
+		throw Common::Exception("Value is not a number");
+
+	std::list<Variable> values;
+	for (int i = 0; i < nArgs.asNumber(); ++i) {
+		values.push_back(_stack.top());
+		_stack.pop();
+	}
+
+	_stack.push(ObjectPtr(new Array(values)));
 
 	debugC(kDebugActionScript, 1, "actionInitArray");
 }
