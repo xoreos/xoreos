@@ -49,6 +49,10 @@ Variable::Variable(unsigned int value) : _type(kTypeNumber) {
 	_value.number = value;
 }
 
+Variable::Variable(unsigned long value) : _type(kTypeNumber) {
+	_value.number = value;
+}
+
 Variable::Variable(bool value) : _type(kTypeBoolean) {
 	_value.boolean = value;
 }
