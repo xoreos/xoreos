@@ -3,6 +3,10 @@ Someday, ????-??-?? (Version 0.0.6)
 		- Cleaned up threading
 	- GRAPHICS:
 		- Added support for swizzled SBM images
+	- SOUND:
+		- Added preliminary support for XACT WaveBank
+		- Added preliminary support for FMOD SampleBanks
+		- Added preliminary support for Wwise SoundBanks
 	- ENGINES:
 		- KOTOR:
 			- Changed key input to use scancodes
