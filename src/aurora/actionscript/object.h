@@ -52,9 +52,9 @@ public:
 
 	bool hasMember(const Common::UString &id);
 
-	Variable getMember(Common::UString);
-	void setMember(Common::UString, Variable);
-	void setMember(const Common::UString &id, Function *function);
+	virtual Variable getMember(const Variable &id);
+	virtual void setMember(const Variable &id, const Variable &value);
+	virtual void setMember(const Common::UString &id, Function *function);
 
 	Variable call(const Common::UString &function, AVM &avm, const std::vector<Variable> &arguments = std::vector<Variable>());
 
