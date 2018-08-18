@@ -41,6 +41,10 @@ Variable::Variable(const char *value) : _type(kTypeString) {
 	_value.string = value;
 }
 
+Variable::Variable(Object *value) : _type(kTypeObject) {
+	_value.object = ObjectPtr(value);
+}
+
 Variable::Variable(double value) : _type(kTypeNumber) {
 	_value.number = value;
 }
@@ -102,7 +106,7 @@ bool Variable::isNumber() const {
 }
 
 bool Variable::isFunction() const {
-	return _type == kTypeObject && dynamic_cast<ScriptedFunction *>(_value.object.get());
+	return _type == kTypeObject && dynamic_cast<Function *>(_value.object.get());
 }
 
 double Variable::asNumber() const {
