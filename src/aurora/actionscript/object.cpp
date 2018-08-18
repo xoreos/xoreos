@@ -48,17 +48,24 @@ bool Object::hasMember(const Common::UString &id) {
 	return _members.find(id) != _members.end();
 }
 
-Variable Object::getMember(Common::UString id) {
-	if (_members.find(id) != _members.end())
-		return _members[id];
+Variable Object::getMember(const Variable &id) {
+	if (!id.isString())
+		throw Common::Exception("Object::getMember id is not a string");
+
+	const Common::UString idString = id.asString();
+	if (_members.find(idString) != _members.end())
+		return _members[idString];
 	else {
-		_members.insert(std::make_pair(id, ObjectPtr(new Object)));
-		return _members[id];
+		_members.insert(std::make_pair(idString, ObjectPtr(new Object)));
+		return _members[idString];
 	}
 }
 
-void Object::setMember(Common::UString id, Variable member) {
-	_members[id] = member;
+void Object::setMember(const Variable &id, const Variable &value) {
+	if (!id.isString())
+		throw Common::Exception("Object::setMember id is not a string");
+
+	_members[id.asString()] = value;
 }
 
 void Object::setMember(const Common::UString &id, Function *function) {
