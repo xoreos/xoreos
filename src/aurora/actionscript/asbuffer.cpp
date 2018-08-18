@@ -435,10 +435,13 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 		throw Common::Exception("Object is not a function");
 
 	byte counter = 1;
+	Variable prevThis;
 
 	if (function->getPreloadThisFlag()) {
-		if (!name.empty())
+		if (!name.empty()) {
+			prevThis = avm.getRegister(counter);
 			avm.storeRegister(object, counter);
+		}
 		counter += 1;
 	}
 	if (function->getPreloadSuperFlag()) {
@@ -453,6 +456,9 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 
 	avm.setReturnValue(Variable());
 	_stack.push((*function)(avm));
+
+	if (!prevThis.isUndefined())
+		avm.storeRegister(prevThis, 1);
 
 	debugC(kDebugActionScript, 1, "actionCallMethod");
 }
