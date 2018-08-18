@@ -64,6 +64,30 @@ Variable Array::pop() {
 	return v;
 }
 
+Variable Array::getMember(const Variable &id) {
+	if (id.isNumber()) {
+		std::list<Variable>::iterator iter = _values.begin();
+		std::advance(iter, static_cast<size_t>(id.asNumber()));
+		return *iter;
+	}
+
+	if (id.isString() && id.asString() == "length")
+		return _values.size();
+
+	return Object::getMember(id);
+}
+
+void Array::setMember(const Variable &id, const Variable &value) {
+	if (id.isNumber()) {
+		std::list<Variable>::iterator iter = _values.begin();
+		std::advance(iter, static_cast<size_t>(id.asNumber()));
+		*iter = value;
+		return;
+	}
+
+	Object::setMember(id, value);
+}
+
 } // End of namespace ActionScript
 
 } // End of namespace Aurora
