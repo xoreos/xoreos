@@ -75,6 +75,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
+#include "src/common/strutil.h"
 #include "src/common/readstream.h"
 #include "src/common/bitstream.h"
 #include "src/common/huffman.h"
@@ -499,7 +500,7 @@ void Bink::mergeHuffmanSymbols(VideoFrame &video, byte *dst, const byte *src, in
 void Bink::load() {
 	_id = _bink->readUint32BE();
 	if ((_id != kBIKfID) && (_id != kBIKgID) && (_id != kBIKhID) && (_id != kBIKiID))
-		throw Common::Exception("Unknown Bink FourCC %04X", _id);
+		throw Common::Exception("Unknown Bink FourCC %s", Common::debugTag(_id).c_str());
 
 	uint32 fileSize         = _bink->readUint32LE() + 8;
 	uint32 frameCount       = _bink->readUint32LE();
