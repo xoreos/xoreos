@@ -98,6 +98,9 @@ static const uint32 kBIKgID = MKTAG('B', 'I', 'K', 'g');
 static const uint32 kBIKhID = MKTAG('B', 'I', 'K', 'h');
 static const uint32 kBIKiID = MKTAG('B', 'I', 'K', 'i');
 
+static const uint32 kBIKbID = MKTAG('B', 'I', 'K', 'b');
+static const uint32 kBIKkID = MKTAG('B', 'I', 'K', 'i');
+
 static const uint32 kKB2aID = MKTAG('K', 'B', '2', 'a');
 static const uint32 kKB2dID = MKTAG('K', 'B', '2', 'd');
 static const uint32 kKB2fID = MKTAG('K', 'B', '2', 'f');
@@ -511,6 +514,8 @@ void Bink::load() {
 	if ((_id == kKB2aID) || (_id == kKB2dID) || (_id == kKB2fID) || (_id == kKB2gID) ||
 	    (_id == kKB2hID) || (_id == kKB2iID) || (_id == kKB2jID) || (_id == kKB2kID))
 		throw Common::Exception("Bink 2 (%s) is not supported", Common::debugTag(_id).c_str());
+	if ((_id == kBIKbID) || (_id == kBIKkID))
+		throw Common::Exception("Untested Bink version %s", Common::debugTag(_id).c_str());
 	if ((_id != kBIKfID) && (_id != kBIKgID) && (_id != kBIKhID) && (_id != kBIKiID))
 		throw Common::Exception("Unknown Bink FourCC %s", Common::debugTag(_id).c_str());
 
