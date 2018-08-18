@@ -98,6 +98,15 @@ static const uint32 kBIKgID = MKTAG('B', 'I', 'K', 'g');
 static const uint32 kBIKhID = MKTAG('B', 'I', 'K', 'h');
 static const uint32 kBIKiID = MKTAG('B', 'I', 'K', 'i');
 
+static const uint32 kKB2aID = MKTAG('K', 'B', '2', 'a');
+static const uint32 kKB2dID = MKTAG('K', 'B', '2', 'd');
+static const uint32 kKB2fID = MKTAG('K', 'B', '2', 'f');
+static const uint32 kKB2gID = MKTAG('K', 'B', '2', 'g');
+static const uint32 kKB2hID = MKTAG('K', 'B', '2', 'h');
+static const uint32 kKB2iID = MKTAG('K', 'B', '2', 'i');
+static const uint32 kKB2jID = MKTAG('K', 'B', '2', 'j');
+static const uint32 kKB2kID = MKTAG('K', 'B', '2', 'k');
+
 static const uint32 kVideoFlagAlpha = 0x00100000;
 
 static const uint16 kAudioFlagDCT    = 0x1000;
@@ -499,6 +508,9 @@ void Bink::mergeHuffmanSymbols(VideoFrame &video, byte *dst, const byte *src, in
 
 void Bink::load() {
 	_id = _bink->readUint32BE();
+	if ((_id == kKB2aID) || (_id == kKB2dID) || (_id == kKB2fID) || (_id == kKB2gID) ||
+	    (_id == kKB2hID) || (_id == kKB2iID) || (_id == kKB2jID) || (_id == kKB2kID))
+		throw Common::Exception("Bink 2 (%s) is not supported", Common::debugTag(_id).c_str());
 	if ((_id != kBIKfID) && (_id != kBIKgID) && (_id != kBIKhID) && (_id != kBIKiID))
 		throw Common::Exception("Unknown Bink FourCC %s", Common::debugTag(_id).c_str());
 
