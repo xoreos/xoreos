@@ -47,6 +47,9 @@ public:
 	void push(const Variable &v);
 	Variable pop();
 
+	Variable getMember(const Variable &id);
+	void setMember(const Variable &id, const Variable &value);
+
 private:
 	std::list<Variable> _values;
 };
