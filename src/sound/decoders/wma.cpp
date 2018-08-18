@@ -54,9 +54,10 @@
 #include <vector>
 
 #include "src/common/util.h"
+#include "src/common/debug.h"
+#include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/sinewindows.h"
-#include "src/common/error.h"
 #include "src/common/memreadstream.h"
 #include "src/common/mdct.h"
 #include "src/common/bitstream.h"
@@ -780,7 +781,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 		// Number of frames in this superframe
 		int newFrameCount = bits.getBits(4) - 1;
 		if (newFrameCount < 0) {
-			warning("WMACodec::decodeSuperFrame(): newFrameCount == %d", newFrameCount);
+			debugC(Common::kDebugSound, 1, "WMACodec::decodeSuperFrame(): newFrameCount == %d", newFrameCount);
 
 			_resetBlockLengths = true;
 			_lastSuperframeLen = 0;
