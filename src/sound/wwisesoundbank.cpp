@@ -43,13 +43,15 @@
 
 namespace Sound {
 
-WwiseSoundBank::WwiseSoundBank(Common::SeekableReadStream *bnk) : _bnk(bnk), _dataOffset(SIZE_MAX) {
+WwiseSoundBank::WwiseSoundBank(Common::SeekableReadStream *bnk) : _bnk(bnk), _bankID(0),
+		_dataOffset(SIZE_MAX) {
+
 	assert(_bnk);
 
 	load(*_bnk);
 }
 
-WwiseSoundBank::WwiseSoundBank(const Common::UString &name) : _dataOffset(SIZE_MAX) {
+WwiseSoundBank::WwiseSoundBank(const Common::UString &name) : _bankID(0), _dataOffset(SIZE_MAX) {
 	_bnk.reset(ResMan.getResource(name, Aurora::kFileTypeBNK));
 	if (!_bnk)
 		throw Common::Exception("No such BNK resource \"%s\"", name.c_str());
@@ -57,7 +59,7 @@ WwiseSoundBank::WwiseSoundBank(const Common::UString &name) : _dataOffset(SIZE_M
 	load(*_bnk);
 }
 
-WwiseSoundBank::WwiseSoundBank(uint64 hash) : _dataOffset(SIZE_MAX) {
+WwiseSoundBank::WwiseSoundBank(uint64 hash) : _bankID(0), _dataOffset(SIZE_MAX) {
 	_bnk.reset(ResMan.getResource(hash));
 	if (!_bnk)
 		throw Common::Exception("No such BNK resource \"%s\"", Common::formatHash(hash).c_str());
@@ -250,13 +252,13 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 		switch (sectionType) {
 			case kSectionBankHeader: {
 				const uint32 version = bnk.readUint32LE();
-				const uint32 bankID  = bnk.readUint32LE();
+				_bankID = bnk.readUint32LE();
 
 				if (version != 48)
 					throw Common::Exception("WwiseSoundBank::load(): Unsupported BNK version %u", version);
 
 				debugC(Common::kDebugSound, 3, "  - Version: %u", version);
-				debugC(Common::kDebugSound, 3, "  - Bank ID: %u", bankID);
+				debugC(Common::kDebugSound, 3, "  - Bank ID: %u", _bankID);
 				break;
 			}
 
