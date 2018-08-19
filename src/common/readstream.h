@@ -401,15 +401,15 @@ public:
 		return _bigEndian ? readUint64BE() : readUint64LE();
 	}
 
-	uint16 readSint16() {
+	int16 readSint16() {
 		return _bigEndian ? readSint16BE() : readSint16LE();
 	}
 
-	uint32 readSint32() {
+	int32 readSint32() {
 		return _bigEndian ? readSint32BE() : readSint32LE();
 	}
 
-	uint64 readSint64() {
+	int64 readSint64() {
 		return _bigEndian ? readSint64BE() : readSint64LE();
 	}
 
