@@ -88,12 +88,32 @@ public:
 	}
 };
 
+class EngineProbeXbox360 : public EngineProbe {
+public:
+	Aurora::Platform getPlatform() const {
+		return Aurora::kPlatformXbox360;
+	}
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+		/*
+		 * If we find the xbox executable and a dragonage2 specific path (./modules/campaign_base),
+		 * this should be a valid path.
+		 */
+		if (rootFiles.contains("default.xex", true) &&
+		    Common::FileList(directory + "/modules/campaign_base").contains("campaign_base.cif", true))
+			return true;
+
+		return false;
+	}
+};
+
 const Common::UString EngineProbe::kGameName = "Dragon Age II";
 
 
 void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
 	probes.push_back(new EngineProbeWindowsRetail);
 	probes.push_back(new EngineProbeWindowsOrigin);
+	probes.push_back(new EngineProbeXbox360);
 }
 
 } // End of namespace DragonAge2
