@@ -381,6 +381,10 @@ enum FileType {
 	kFileTypeXWB            = 29000, ///< XACT WaveBank.
 	kFileTypeXSB            = 29001, ///< XACT SoundBank.
 
+	// Found in the Xbox version of Dragon Age: Origins
+	kFileTypeXDS            = 30000, ///< Texture.
+	kFileTypeWND            = 30001,
+
 	// Our own types
 	kFileTypeXEOSITEX       = 40000  ///< Intermediate texture.
 };
