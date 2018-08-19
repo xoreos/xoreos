@@ -43,6 +43,7 @@
 
 namespace Common {
 	class SeekableReadStream;
+	class SeekableSubReadStreamEndian;
 }
 
 namespace Aurora {
@@ -79,10 +80,12 @@ class GFF4Struct;
  *  Notes:
  *  - Generics and lists of generics are mapped to structs, with the field ID
  *    being the list element indices (or just 0 on non-list generics).
- *  - Strings are generally encoded in UTF-16LE. One exception is the TLK files
- *    in Sonic, which have strings in a language-specific encoding. For example,
- *    the English, French, Italian, German and Spanish (EFIGS) versions have
- *    the strings in TLK files encoded in Windows CP-1252.
+ *  - Strings are generally encoded in UTF-16, with native endianness according
+ *    to the platform ID. "PC" is little endian, while "PS3" and "X360" are
+ *    big endian. One exception to that rule is the TLK files in Sonic, which
+ *    have strings in a language-specific encoding. For example, the English,
+ *    French, Italian, German and Spanish (EFIGS) versions have the strings
+ *    in TLK files encoded in Windows CP-1252.
  *
  *  See also: GFF3File in gff3file.h for the earlier V3.2/V3.3 versions of
  *  the GFF format.
@@ -102,11 +105,22 @@ public:
 	/** Return the platform this GFF4 is for. */
 	uint32 getPlatform() const;
 
+	/** Is the GFF4's platform natively big endian? */
+	bool isBigEndian() const;
+	/** Return the native UTF-16 encoding according to the GFF4's platform. */
+	Common::Encoding getNativeEncoding() const;
+
 	/** Returns the top-level struct. */
 	const GFF4Struct &getTopLevel() const;
 
 
 private:
+	enum Platform {
+		kPlatformPC      = MKTAG('P', 'C', ' ', ' '),
+		kPlatformPS3     = MKTAG('P', 'S', '3', ' '),
+		kPlatformXbox360 = MKTAG('X', '3', '6', '0')
+	};
+
 	/** A GFF4 header. */
 	struct Header {
 		uint32 platformID;   ///< ID of the platform this GFF4 is for.
@@ -120,6 +134,7 @@ private:
 		bool hasSharedStrings;
 
 		void read(Common::SeekableReadStream &gff4, uint32 version);
+		bool isBigEndian() const;
 	};
 
 	/** A template of a struct, used when loading a struct. */
@@ -144,7 +159,8 @@ private:
 
 
 
-	Common::ScopedPtr<Common::SeekableReadStream> _stream;
+	Common::ScopedPtr<Common::SeekableReadStream> _origStream;
+	Common::ScopedPtr<Common::SeekableSubReadStreamEndian> _stream;
 
 	/** This GFF4's header. */
 	Header          _header;
@@ -174,7 +190,7 @@ private:
 	void unregisterStruct(uint64 id);
 	GFF4Struct *findStruct(uint64 id);
 
-	Common::SeekableReadStream &getStream(uint32 offset) const;
+	Common::SeekableSubReadStreamEndian &getStream(uint32 offset) const;
 	const StructTemplate &getStructTemplate(uint32 i) const;
 	uint32 getDataOffset() const;
 
@@ -391,24 +407,24 @@ private:
 	uint32 getDataOffset(bool isReference, uint32 offset) const;
 	uint32 getDataOffset(const Field &field) const;
 
-	Common::SeekableReadStream *getData(const Field &field) const;
-	Common::SeekableReadStream *getField(uint32 fieldID, const Field *&field) const;
+	Common::SeekableSubReadStreamEndian *getData(const Field &field) const;
+	Common::SeekableSubReadStreamEndian *getField(uint32 fieldID, const Field *&field) const;
 	// '---
 
 	// .--- Field reader helpers
-	uint32 getListCount(Common::SeekableReadStream &data, const Field &field) const;
+	uint32 getListCount(Common::SeekableSubReadStreamEndian &data, const Field &field) const;
 	uint32 getFieldSize(FieldType type) const;
 
-	uint64 getUint(Common::SeekableReadStream &data, FieldType type) const;
-	 int64 getSint(Common::SeekableReadStream &data, FieldType type) const;
+	uint64 getUint(Common::SeekableSubReadStreamEndian &data, FieldType type) const;
+	 int64 getSint(Common::SeekableSubReadStreamEndian &data, FieldType type) const;
 
-	double getDouble(Common::SeekableReadStream &data, FieldType type) const;
-	float  getFloat (Common::SeekableReadStream &data, FieldType type) const;
+	double getDouble(Common::SeekableSubReadStreamEndian &data, FieldType type) const;
+	float  getFloat (Common::SeekableSubReadStreamEndian &data, FieldType type) const;
 
-	Common::UString getString(Common::SeekableReadStream &data, Common::Encoding encoding) const;
-	Common::UString getString(Common::SeekableReadStream &data, Common::Encoding encoding,
+	Common::UString getString(Common::SeekableSubReadStreamEndian &data, Common::Encoding encoding) const;
+	Common::UString getString(Common::SeekableSubReadStreamEndian &data, Common::Encoding encoding,
 	                          uint32 offset) const;
-	Common::UString getString(Common::SeekableReadStream &data, const Field &field,
+	Common::UString getString(Common::SeekableSubReadStreamEndian &data, const Field &field,
 	                          Common::Encoding encoding) const;
 
 	uint32 getVectorMatrixLength(const Field &field, uint32 minLength, uint32 maxLength) const;

@@ -47,29 +47,39 @@ namespace Aurora {
 
 void GFF4File::Header::read(Common::SeekableReadStream &gff4, uint32 version) {
 	platformID   = gff4.readUint32BE();
-	type         = gff4.readUint32BE();
-	typeVersion  = gff4.readUint32BE();
-	structCount  = gff4.readUint32LE();
+
+	const size_t pos = gff4.pos();
+	Common::SeekableSubReadStreamEndian gff4Endian(&gff4, 0, gff4.size(), isBigEndian());
+	gff4Endian.seek(pos);
+
+	type         = gff4Endian.readUint32BE();
+	typeVersion  = gff4Endian.readUint32BE();
+	structCount  = gff4Endian.readUint32();
 
 	stringCount  = 0;
 	stringOffset = 0xFFFFFFFF;
 
 	// Only V4.1 has the global string table
 	if (version == kVersion41) {
-		stringCount  = gff4.readUint32LE();
-		stringOffset = gff4.readUint32LE();
+		stringCount  = gff4Endian.readUint32();
+		stringOffset = gff4Endian.readUint32();
 	}
 
 	hasSharedStrings = (stringCount > 0) || (stringOffset != 0xFFFFFFFF);
 
-	dataOffset = gff4.readUint32LE();
+	dataOffset = gff4Endian.readUint32();
+	gff4.seek(gff4Endian.pos());
+}
+
+bool GFF4File::Header::isBigEndian() const {
+	return (platformID == kPlatformPS3) || (platformID == kPlatformXbox360);
 }
 
 
 GFF4File::GFF4File(Common::SeekableReadStream *gff4, uint32 type) :
-	_stream(gff4), _topLevelStruct(0) {
+	_origStream(gff4), _topLevelStruct(0) {
 
-	assert(_stream);
+	assert(_origStream);
 
 	load(type);
 }
@@ -77,8 +87,8 @@ GFF4File::GFF4File(Common::SeekableReadStream *gff4, uint32 type) :
 GFF4File::GFF4File(const Common::UString &gff4, FileType fileType, uint32 type) :
 	_topLevelStruct(0) {
 
-	_stream.reset(ResMan.getResource(gff4, fileType));
-	if (!_stream)
+	_origStream.reset(ResMan.getResource(gff4, fileType));
+	if (!_origStream)
 		throw Common::Exception("No such GFF4 \"%s\"", TypeMan.setFileType(gff4, fileType).c_str());
 
 	load(type);
@@ -89,6 +99,7 @@ GFF4File::~GFF4File() {
 }
 
 void GFF4File::clear() {
+	_origStream.reset();
 	_stream.reset();
 
 	for (StructMap::iterator s = _structs.begin(); s != _structs.end(); ++s)
@@ -108,6 +119,17 @@ uint32 GFF4File::getTypeVersion() const {
 
 uint32 GFF4File::getPlatform() const {
 	return _header.platformID;
+}
+
+bool GFF4File::isBigEndian() const {
+	return _header.isBigEndian();
+}
+
+Common::Encoding GFF4File::getNativeEncoding() const {
+	if (_header.isBigEndian())
+		return Common::kEncodingUTF16BE;
+
+	return Common::kEncodingUTF16LE;
 }
 
 const GFF4Struct &GFF4File::getTopLevel() const {
@@ -134,7 +156,7 @@ void GFF4File::load(uint32 type) {
 }
 
 void GFF4File::loadHeader(uint32 type) {
-	readHeader(*_stream);
+	readHeader(*_origStream);
 
 	if (_id != kGFFID)
 		throw Common::Exception("Not a GFF4 file");
@@ -142,7 +164,12 @@ void GFF4File::loadHeader(uint32 type) {
 	if ((_version != kVersion40) && (_version != kVersion41))
 		throw Common::Exception("Unsupported GFF4 file version %s", Common::debugTag(_version).c_str());
 
-	_header.read(*_stream, _version);
+	_header.read(*_origStream, _version);
+
+	const size_t pos = _origStream->pos();
+	_stream.reset(new Common::SeekableSubReadStreamEndian(_origStream.get(), 0, _origStream->size(),
+	                                                      _header.isBigEndian(), false));
+	_stream->seek(pos);
 
 	if ((type != 0xFFFFFFFF) && (_header.type != type))
 		throw Common::Exception("GFF4 has invalid type (want %s, got %s)",
@@ -178,10 +205,10 @@ void GFF4File::loadStructs() {
 		strct.index = i;
 		strct.label = _stream->readUint32BE();
 
-		const uint32 fieldCount  = _stream->readUint32LE();
-		const uint32 fieldOffset = _stream->readUint32LE();
+		const uint32 fieldCount  = _stream->readUint32();
+		const uint32 fieldOffset = _stream->readUint32();
 
-		strct.size = _stream->readUint32LE();
+		strct.size = _stream->readUint32();
 
 		// Check if we need to read fields
 		if (fieldOffset == 0xFFFFFFFF) {
@@ -199,10 +226,13 @@ void GFF4File::loadStructs() {
 		for (uint32 j = 0; j < fieldCount; j++) {
 			StructTemplate::Field &field = strct.fields[j];
 
-			field.label  = _stream->readUint32LE();
-			field.type   = _stream->readUint16LE();
-			field.flags  = _stream->readUint16LE();
-			field.offset = _stream->readUint32LE();
+			field.label  = _stream->readUint32();
+
+			const uint32 typeAndFlags = _stream->readUint32();
+			field.type  = (typeAndFlags & 0x0000FFFF);
+			field.flags = (typeAndFlags & 0xFFFF0000) >> 16;
+
+			field.offset = _stream->readUint32();
 		}
 	}
 
@@ -261,7 +291,7 @@ GFF4Struct *GFF4File::findStruct(uint64 id) {
 	return s->second;
 }
 
-Common::SeekableReadStream &GFF4File::getStream(uint32 offset) const {
+Common::SeekableSubReadStreamEndian &GFF4File::getStream(uint32 offset) const {
 	_stream->seek(offset);
 
 	return *_stream;
@@ -443,7 +473,7 @@ void GFF4Struct::loadStructs(GFF4File &parent, Field &field) {
 
 	const GFF4File::StructTemplate &tmplt = parent.getStructTemplate(field.structIndex);
 
-	Common::SeekableReadStream &data = parent.getStream(field.offset);
+	Common::SeekableSubReadStreamEndian &data = parent.getStream(field.offset);
 
 	const uint32 structCount = getListCount(data, field);
 	const uint32 structSize  = field.isReference ? 4 : tmplt.size;
@@ -490,16 +520,17 @@ void GFF4Struct::load(GFF4File &parent, const Field &genericParent) {
 
 	static const uint32 kGenericSize = 8;
 
-	Common::SeekableReadStream &data = parent.getStream(genericParent.offset);
+	Common::SeekableSubReadStreamEndian &data = parent.getStream(genericParent.offset);
 
-	const uint32 genericCount = genericParent.isList ? data.readUint32LE() : 1;
+	const uint32 genericCount = genericParent.isList ? data.readUint32() : 1;
 	const uint32 genericStart = data.pos();
 
 	for (uint32 i = 0; i < genericCount; i++) {
 		data.seek(genericStart + i * kGenericSize);
 
-		const uint16 fieldType   = data.readUint16LE();
-		const uint16 fieldFlags  = data.readUint16LE();
+		const uint32 typeAndFlags = data.readUint32();
+		const uint16 fieldType  = (typeAndFlags & 0x0000FFFF);
+		const uint16 fieldFlags = (typeAndFlags & 0xFFFF0000) >> 16;
 
 		const uint32 fieldOffset = getDataOffset(genericParent.isReference, data.pos());
 
@@ -588,9 +619,9 @@ uint32 GFF4Struct::getDataOffset(bool isReference, uint32 offset) const {
 	if (!isReference || (offset == 0xFFFFFFFF))
 		return offset;
 
-	Common::SeekableReadStream &data = _parent->getStream(offset);
+	Common::SeekableSubReadStreamEndian &data = _parent->getStream(offset);
 
-	offset = data.readUint32LE();
+	offset = data.readUint32();
 	if (offset == 0xFFFFFFFF)
 		return offset;
 
@@ -604,7 +635,7 @@ uint32 GFF4Struct::getDataOffset(const Field &field) const {
 	return getDataOffset(field.isReference, field.offset);
 }
 
-Common::SeekableReadStream *GFF4Struct::getData(const Field &field) const {
+Common::SeekableSubReadStreamEndian *GFF4Struct::getData(const Field &field) const {
 	const uint32 offset = getDataOffset(field);
 	if (offset == 0xFFFFFFFF)
 		return 0;
@@ -612,7 +643,7 @@ Common::SeekableReadStream *GFF4Struct::getData(const Field &field) const {
 	return &_parent->getStream(offset);
 }
 
-Common::SeekableReadStream *GFF4Struct::getField(uint32 fieldID, const Field *&field) const {
+Common::SeekableSubReadStreamEndian *GFF4Struct::getField(uint32 fieldID, const Field *&field) const {
 	if (!(field = getField(fieldID)))
 		return 0;
 
@@ -640,17 +671,17 @@ uint32 GFF4Struct::getVectorMatrixLength(const Field &field, uint32 minLength, u
 	return length;
 }
 
-uint32 GFF4Struct::getListCount(Common::SeekableReadStream &data, const Field &field) const {
+uint32 GFF4Struct::getListCount(Common::SeekableSubReadStreamEndian &data, const Field &field) const {
 	if (!field.isList)
 		return 1;
 
-	const uint32 listOffset = data.readUint32LE();
+	const uint32 listOffset = data.readUint32();
 	if (listOffset == 0xFFFFFFFF)
 		return 0;
 
 	data.seek(_parent->getDataOffset() + listOffset);
 
-	return data.readUint32LE();
+	return data.readUint32();
 }
 
 uint32 GFF4Struct::getFieldSize(FieldType type) const {
@@ -704,7 +735,7 @@ uint32 GFF4Struct::getFieldSize(FieldType type) const {
 
 // --- Low-level value readers ---
 
-uint64 GFF4Struct::getUint(Common::SeekableReadStream &data, FieldType type) const {
+uint64 GFF4Struct::getUint(Common::SeekableSubReadStreamEndian &data, FieldType type) const {
 	switch (type) {
 		case kFieldTypeUint8:
 			return (uint64) data.readByte();
@@ -713,22 +744,22 @@ uint64 GFF4Struct::getUint(Common::SeekableReadStream &data, FieldType type) con
 			return (uint64) ((int64) data.readSByte());
 
 		case kFieldTypeUint16:
-			return (uint64) data.readUint16LE();
+			return (uint64) data.readUint16();
 
 		case kFieldTypeSint16:
-			return (uint64) ((int64) data.readSint16LE());
+			return (uint64) ((int64) data.readSint16());
 
 		case kFieldTypeUint32:
-			return (uint64) data.readUint32LE();
+			return (uint64) data.readUint32();
 
 		case kFieldTypeSint32:
-			return (uint64) ((int64) data.readSint32LE());
+			return (uint64) ((int64) data.readSint32());
 
 		case kFieldTypeUint64:
-			return (uint64) data.readUint64LE();
+			return (uint64) data.readUint64();
 
 		case kFieldTypeSint64:
-			return (uint64) ((int64) data.readSint64LE());
+			return (uint64) ((int64) data.readSint64());
 
 		default:
 			break;
@@ -737,7 +768,7 @@ uint64 GFF4Struct::getUint(Common::SeekableReadStream &data, FieldType type) con
 	throw Common::Exception("GFF4: Field is not an int type");
 }
 
-int64 GFF4Struct::getSint(Common::SeekableReadStream &data, FieldType type) const {
+int64 GFF4Struct::getSint(Common::SeekableSubReadStreamEndian &data, FieldType type) const {
 	switch (type) {
 		case kFieldTypeUint8:
 			return (int64) ((uint64) data.readByte());
@@ -746,22 +777,22 @@ int64 GFF4Struct::getSint(Common::SeekableReadStream &data, FieldType type) cons
 			return (int64) data.readSByte();
 
 		case kFieldTypeUint16:
-			return (int64) ((uint64) data.readUint16LE());
+			return (int64) ((uint64) data.readUint16());
 
 		case kFieldTypeSint16:
-			return (int64) data.readSint16LE();
+			return (int64) data.readSint16();
 
 		case kFieldTypeUint32:
-			return (int64) ((uint64) data.readUint32LE());
+			return (int64) ((uint64) data.readUint32());
 
 		case kFieldTypeSint32:
-			return (int64) data.readSint32LE();
+			return (int64) data.readSint32();
 
 		case kFieldTypeUint64:
-			return (int64) ((uint64) data.readUint64LE());
+			return (int64) ((uint64) data.readUint64());
 
 		case kFieldTypeSint64:
-			return (int64) data.readSint64LE();
+			return (int64) data.readSint64();
 
 		default:
 			break;
@@ -770,16 +801,16 @@ int64 GFF4Struct::getSint(Common::SeekableReadStream &data, FieldType type) cons
 	throw Common::Exception("GFF4: Field is not an int type");
 }
 
-double GFF4Struct::getDouble(Common::SeekableReadStream &data, FieldType type) const {
+double GFF4Struct::getDouble(Common::SeekableSubReadStreamEndian &data, FieldType type) const {
 	switch (type) {
 		case kFieldTypeFloat32:
-			return (double) data.readIEEEFloatLE();
+			return (double) data.readIEEEFloat();
 
 		case kFieldTypeFloat64:
-			return (double) data.readIEEEDoubleLE();
+			return (double) data.readIEEEDouble();
 
 		case kFieldTypeNDSFixed:
-			return readNintendoFixedPoint(data.readUint32LE(), true, 19, 12);
+			return readNintendoFixedPoint(data.readUint32(), true, 19, 12);
 
 		default:
 			break;
@@ -788,16 +819,16 @@ double GFF4Struct::getDouble(Common::SeekableReadStream &data, FieldType type) c
 	throw Common::Exception("GFF4: Field is not a float type");
 }
 
-float GFF4Struct::getFloat(Common::SeekableReadStream &data, FieldType type) const {
+float GFF4Struct::getFloat(Common::SeekableSubReadStreamEndian &data, FieldType type) const {
 	switch (type) {
 		case kFieldTypeFloat32:
-			return (float) data.readIEEEFloatLE();
+			return (float) data.readIEEEFloat();
 
 		case kFieldTypeFloat64:
-			return (float) data.readIEEEDoubleLE();
+			return (float) data.readIEEEDouble();
 
 		case kFieldTypeNDSFixed:
-			return (float) readNintendoFixedPoint(data.readUint32LE(), true, 19, 12);
+			return (float) readNintendoFixedPoint(data.readUint32(), true, 19, 12);
 
 		default:
 			break;
@@ -806,14 +837,14 @@ float GFF4Struct::getFloat(Common::SeekableReadStream &data, FieldType type) con
 	throw Common::Exception("GFF4: Field is not a float type");
 }
 
-Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::Encoding encoding) const {
+Common::UString GFF4Struct::getString(Common::SeekableSubReadStreamEndian &data, Common::Encoding encoding) const {
 	/* When the string is encoded in UTF-8, then length field specifies the length in bytes.
 	 * Otherwise, it's the length in characters. */
 	const size_t lengthMult = encoding == Common::kEncodingUTF8 ? 1 : Common::getBytesPerCodepoint(encoding);
 
 	const size_t offset = data.pos();
 
-	const uint32 length = data.readUint32LE();
+	const uint32 length = data.readUint32();
 	const size_t size   = length * lengthMult;
 
 	try {
@@ -824,7 +855,7 @@ Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::
 	return Common::UString::format("GFF4: Invalid string encoding (0x%08X)", (uint) offset);
 }
 
-Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::Encoding encoding,
+Common::UString GFF4Struct::getString(Common::SeekableSubReadStreamEndian &data, Common::Encoding encoding,
                                       uint32 offset) const {
 
 	const uint32 pos = data.seek(offset);
@@ -836,16 +867,16 @@ Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, Common::
 	return str;
 }
 
-Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, const Field &field,
+Common::UString GFF4Struct::getString(Common::SeekableSubReadStreamEndian &data, const Field &field,
                                       Common::Encoding encoding) const {
 
 	if (field.type == kFieldTypeString) {
 		if (_parent->hasSharedStrings())
-			return _parent->getSharedString(data.readUint32LE());
+			return _parent->getSharedString(data.readUint32());
 
 		uint32 offset = data.pos();
 		if (!field.isGeneric) {
-			offset = data.readUint32LE();
+			offset = data.readUint32();
 			if (offset == 0xFFFFFFFF)
 				return "";
 
@@ -865,7 +896,7 @@ Common::UString GFF4Struct::getString(Common::SeekableReadStream &data, const Fi
 
 uint64 GFF4Struct::getUint(uint32 field, uint64 def) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return def;
 
@@ -877,7 +908,7 @@ uint64 GFF4Struct::getUint(uint32 field, uint64 def) const {
 
 int64 GFF4Struct::getSint(uint32 field, int64 def) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return def;
 
@@ -893,7 +924,7 @@ bool GFF4Struct::getBool(uint32 field, bool def) const {
 
 double GFF4Struct::getDouble(uint32 field, double def) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return def;
 
@@ -905,7 +936,7 @@ double GFF4Struct::getDouble(uint32 field, double def) const {
 
 float GFF4Struct::getFloat(uint32 field, float def) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return def;
 
@@ -919,7 +950,7 @@ Common::UString GFF4Struct::getString(uint32 field, Common::Encoding encoding,
                                       const Common::UString &def) const {
 
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return def;
 
@@ -930,14 +961,14 @@ Common::UString GFF4Struct::getString(uint32 field, Common::Encoding encoding,
 }
 
 Common::UString GFF4Struct::getString(uint32 field, const Common::UString &def) const {
-	return getString(field, Common::kEncodingUTF16LE, def);
+	return getString(field, _parent->getNativeEncoding(), def);
 }
 
 bool GFF4Struct::getTalkString(uint32 field, Common::Encoding encoding,
                                uint32 &strRef, Common::UString &str) const {
 
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -962,12 +993,12 @@ bool GFF4Struct::getTalkString(uint32 field, Common::Encoding encoding,
 }
 
 bool GFF4Struct::getTalkString(uint32 field, uint32 &strRef, Common::UString &str) const {
-	return getTalkString(field, Common::kEncodingUTF16LE, strRef, str);
+	return getTalkString(field, _parent->getNativeEncoding(), strRef, str);
 }
 
 bool GFF4Struct::getVector3(uint32 field, double &v1, double &v2, double &v3) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -985,7 +1016,7 @@ bool GFF4Struct::getVector3(uint32 field, double &v1, double &v2, double &v3) co
 
 bool GFF4Struct::getVector3(uint32 field, float &v1, float &v2, float &v3) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1003,7 +1034,7 @@ bool GFF4Struct::getVector3(uint32 field, float &v1, float &v2, float &v3) const
 
 bool GFF4Struct::getVector4(uint32 field, double &v1, double &v2, double &v3, double &v4) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1022,7 +1053,7 @@ bool GFF4Struct::getVector4(uint32 field, double &v1, double &v2, double &v3, do
 
 bool GFF4Struct::getVector4(uint32 field, float &v1, float &v2, float &v3, float &v4) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1041,7 +1072,7 @@ bool GFF4Struct::getVector4(uint32 field, float &v1, float &v2, float &v3, float
 
 bool GFF4Struct::getMatrix4x4(uint32 field, double (&m)[16]) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1057,7 +1088,7 @@ bool GFF4Struct::getMatrix4x4(uint32 field, double (&m)[16]) const {
 
 bool GFF4Struct::getMatrix4x4(uint32 field, float (&m)[16]) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1082,7 +1113,7 @@ bool GFF4Struct::getMatrix4x4(uint32 field, glm::mat4 &m) const {
 
 bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<double> &vectorMatrix) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1100,7 +1131,7 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<double> &vectorMatrix
 
 bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<float> &vectorMatrix) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1120,7 +1151,7 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector<float> &vectorMatrix)
 
 bool GFF4Struct::getUint(uint32 field, std::vector<uint64> &list) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1135,7 +1166,7 @@ bool GFF4Struct::getUint(uint32 field, std::vector<uint64> &list) const {
 
 bool GFF4Struct::getSint(uint32 field, std::vector<int64> &list) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1150,7 +1181,7 @@ bool GFF4Struct::getSint(uint32 field, std::vector<int64> &list) const {
 
 bool GFF4Struct::getBool(uint32 field, std::vector<bool> &list) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1165,7 +1196,7 @@ bool GFF4Struct::getBool(uint32 field, std::vector<bool> &list) const {
 
 bool GFF4Struct::getDouble(uint32 field, std::vector<double> &list) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1180,7 +1211,7 @@ bool GFF4Struct::getDouble(uint32 field, std::vector<double> &list) const {
 
 bool GFF4Struct::getFloat(uint32 field, std::vector<float> &list) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1197,7 +1228,7 @@ bool GFF4Struct::getString(uint32 field, Common::Encoding encoding,
                            std::vector<Common::UString> &list) const {
 
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data) {
 		if (f && !f->isList) {
 			list.push_back("");
@@ -1217,7 +1248,7 @@ bool GFF4Struct::getString(uint32 field, Common::Encoding encoding,
 }
 
 bool GFF4Struct::getString(uint32 field, std::vector<Common::UString> &list) const {
-	return getString(field, Common::kEncodingUTF16LE, list);
+	return getString(field, _parent->getNativeEncoding(), list);
 }
 
 bool GFF4Struct::getTalkString(uint32 field, Common::Encoding encoding,
@@ -1225,7 +1256,7 @@ bool GFF4Struct::getTalkString(uint32 field, Common::Encoding encoding,
 
 
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1259,12 +1290,12 @@ bool GFF4Struct::getTalkString(uint32 field, Common::Encoding encoding,
 bool GFF4Struct::getTalkString(uint32 field,
                                std::vector<uint32> &strRefs, std::vector<Common::UString> &strs) const {
 
-	return getTalkString(field, Common::kEncodingUTF16LE, strRefs, strs);
+	return getTalkString(field, _parent->getNativeEncoding(), strRefs, strs);
 }
 
 bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<double> > &list) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1284,7 +1315,7 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<double> 
 
 bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<float> > &list) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1304,7 +1335,7 @@ bool GFF4Struct::getVectorMatrix(uint32 field, std::vector< std::vector<float> >
 
 bool GFF4Struct::getMatrix4x4(uint32 field, std::vector<glm::mat4> &list) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return false;
 
@@ -1375,7 +1406,7 @@ const GFF4List &GFF4Struct::getList(uint32 field) const {
 
 Common::SeekableReadStream *GFF4Struct::getData(uint32 field) const {
 	const Field *f;
-	Common::SeekableReadStream *data = getField(field, f);
+	Common::SeekableSubReadStreamEndian *data = getField(field, f);
 	if (!data)
 		return 0;
 
