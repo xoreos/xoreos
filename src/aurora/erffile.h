@@ -65,9 +65,14 @@ namespace Aurora {
  *    - Extension saved as a Type ID
  *    - Includes a localized description text field
  *  - 2.0:
- *    - Used in Dragon Age: Origins
+ *    - Used in Dragon Age: Origins (PC)
  *    - 32 UTF-16 characters per resource name
  *    - Resource name includes extension and path
+ *  - 2.1:
+ *    - Used in Dragon Age: Origins (Xbox)
+ *    - 32 UTF-16 characters per resource name
+ *    - Resource name includes extension and path
+ *    - DEFLATE compressed
  *  - 2.2:
  *    - Used in Dragon Age: Origins
  *    - Optionally Blowfish encrypted
@@ -150,7 +155,8 @@ private:
 	enum Compression {
 		kCompressionNone           = 0, ///< No compression as all.
 		kCompressionBioWareZlib    = 1, ///< Compression using DEFLATE with an extra header byte.
-		kCompressionHeaderlessZlib = 7  ///< Compression using DEFLATE with default parameters.
+		kCompressionHeaderlessZlib = 7, ///< Compression using DEFLATE with default parameters.
+		kCompressionStandardZlib   = 8  ///< Compression using DEFLATE, standard zlib chunk.
 	};
 
 	/** The header of an ERF file. */
@@ -245,6 +251,11 @@ private:
 	void readV20ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
 	// '---
 
+	// .--- V2.1
+	static void readV21Header(Common::SeekableReadStream &erf, ERFHeader &header);
+	void readV21ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
+	// '---
+
 	// .--- V2.2
 	static void readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags);
 	void readV22ResList(Common::SeekableReadStream &erf, const ERFHeader &header);
@@ -285,6 +296,8 @@ private:
 	Common::SeekableReadStream *decompressBiowareZlib   (Common::MemoryReadStream *packedStream,
 	                                                     uint32 unpackedSize) const;
 	Common::SeekableReadStream *decompressHeaderlessZlib(Common::MemoryReadStream *packedStream,
+	                                                     uint32 unpackedSize) const;
+	Common::SeekableReadStream *decompressStandardZlib  (Common::MemoryReadStream *packedStream,
 	                                                     uint32 unpackedSize) const;
 
 	Common::SeekableReadStream *decompressZlib(const byte *compressedData, uint32 packedSize,

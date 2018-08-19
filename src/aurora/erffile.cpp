@@ -48,6 +48,7 @@ static const uint32 kSAVID     = MKTAG('S', 'A', 'V', ' ');
 static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
 static const uint32 kVersion11 = MKTAG('V', '1', '.', '1');
 static const uint32 kVersion20 = MKTAG('V', '2', '.', '0');
+static const uint32 kVersion21 = MKTAG('V', '2', '.', '1');
 static const uint32 kVersion22 = MKTAG('V', '2', '.', '2');
 static const uint32 kVersion30 = MKTAG('V', '3', '.', '0');
 
@@ -162,12 +163,12 @@ void ERFFile::verifyVersion(uint32 id, uint32 version, bool utf16le) {
 		throw Common::Exception("Not an ERF file (%s)", Common::debugTag(id).c_str());
 
 	if ((version != kVersion10) && (version != kVersion11) &&
-	    (version != kVersion20) && (version != kVersion22) &&
+	    (version != kVersion20) && (version != kVersion21) && (version != kVersion22) &&
 	    (version != kVersion30))
 		throw Common::Exception("Unsupported ERF file version %s", Common::debugTag(version).c_str());
 
-	if ((version != kVersion10) && (version != kVersion11) && !utf16le)
-		throw Common::Exception("ERF file version 2.0+, but not UTF-16LE");
+	if ((version != kVersion10) && (version != kVersion11) && (version != kVersion21) && !utf16le)
+		throw Common::Exception("ERF file version 2.0 or 2.2+, but not UTF-16LE");
 }
 
 void ERFFile::verifyPasswordDigest() {
@@ -366,6 +367,23 @@ void ERFFile::readV20Header(Common::SeekableReadStream &erf, ERFHeader &header) 
 	header.offResList = 0x00000020; // Resource list always starts at 0x20 in ERF V2.0
 }
 
+void ERFFile::readV21Header(Common::SeekableReadStream &erf, ERFHeader &header) {
+	erf.skip(8); // Unknown, always 0x00000000 0x00000000?
+
+	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
+
+	erf.skip(4); // Unknown, always 0x00000000?
+
+	header.buildYear = erf.readUint16LE() + 1900;
+	header.buildDay  = erf.readUint16LE();
+
+	erf.skip(4); // Unknown, always 0xFFFF0000?
+
+	header.offResList = 0x00000020; // Resource list always starts at 0x20 in ERF V2.1
+
+	header.compression = kCompressionStandardZlib;
+}
+
 void ERFFile::readV22Header(Common::SeekableReadStream &erf, ERFHeader &header, uint32 &flags) {
 	header.resCount  = erf.readUint32LE(); // Number of resources in the ERF
 
@@ -449,9 +467,16 @@ void ERFFile::readERFHeader(Common::SeekableReadStream &erf, ERFHeader &header, 
 	} else if (version == kVersion20) {
 
 		/* Version 2.0:
-		 * Unencrypted data in Dragon Age: Origins. */
+		 * Unencrypted data in Dragon Age: Origins (PC). */
 
 		readV20Header(erf, header);
+
+	} else if (version == kVersion21) {
+
+		/* Version 2.1:
+		 * Unencrypted data in Dragon Age: Origins (Xbox). */
+
+		readV21Header(erf, header);
 
 	} else if (version == kVersion22) {
 
@@ -508,6 +533,11 @@ void ERFFile::readResources(Common::SeekableReadStream &erf, const ERFHeader &he
 
 		// Read the resource list
 		readV20ResList(erf, header);
+
+	} else if (_version == kVersion21) {
+
+		// Read the resource list
+		readV21ResList(erf, header);
 
 	} else if (_version == kVersion22) {
 
@@ -573,6 +603,26 @@ void ERFFile::readV20ResList(Common::SeekableReadStream &erf, const ERFHeader &h
 
 		iRes->offset                          = erf.readUint32LE();
 		iRes->packedSize = iRes->unpackedSize = erf.readUint32LE();
+	}
+
+}
+
+void ERFFile::readV21ResList(Common::SeekableReadStream &erf, const ERFHeader &header) {
+	erf.seek(header.offResList);
+
+	uint32 index = 0;
+	ResourceList::iterator   res = _resources.begin();
+	IResourceList::iterator iRes = _iResources.begin();
+	for (; (res != _resources.end()) && (iRes != _iResources.end()); ++index, ++res, ++iRes) {
+		Common::UString name = Common::readStringFixed(erf, Common::kEncodingASCII, 32);
+
+		res->name  = TypeMan.setFileType(name, kFileTypeNone);
+		res->type  = TypeMan.getFileType(name);
+		res->index = index;
+
+		iRes->offset       = erf.readUint32LE();
+		iRes->packedSize   = erf.readUint32LE();
+		iRes->unpackedSize = erf.readUint32LE();
 	}
 
 }
@@ -731,6 +781,9 @@ Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packed
 		case kCompressionHeaderlessZlib:
 			return decompressHeaderlessZlib(stream.release(), unpackedSize);
 
+		case kCompressionStandardZlib:
+			return decompressStandardZlib(stream.release(), unpackedSize);
+
 		default:
 			break;
 	}
@@ -766,6 +819,21 @@ Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryRead
 	const uint32 packedSize = stream->size();
 
 	return decompressZlib(compressedData, packedSize, unpackedSize, Common::kWindowBitsMax);
+}
+
+Common::SeekableReadStream *ERFFile::decompressStandardZlib(Common::MemoryReadStream *packedStream,
+                                                            uint32 unpackedSize) const {
+
+	/* Decompress using raw inflate. Use the default maximum window size (15), and with zlib header. */
+
+	assert(packedStream);
+
+	Common::ScopedPtr<Common::MemoryReadStream> stream(packedStream);
+
+	const byte * const compressedData = stream->getData();
+	const uint32 packedSize = stream->size();
+
+	return decompressZlib(compressedData, packedSize, unpackedSize, -Common::kWindowBitsMax);
 }
 
 Common::SeekableReadStream *ERFFile::decompressZlib(const byte *compressedData, uint32 packedSize,
