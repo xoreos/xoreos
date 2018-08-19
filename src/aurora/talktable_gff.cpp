@@ -37,6 +37,7 @@
 
 static const uint32 kTLKID     = MKTAG('T', 'L', 'K', ' ');
 static const uint32 kVersion02 = MKTAG('V', '0', '.', '2');
+static const uint32 kVersion04 = MKTAG('V', '0', '.', '4');
 static const uint32 kVersion05 = MKTAG('V', '0', '.', '5');
 
 namespace Aurora {
@@ -83,6 +84,8 @@ void TalkTable_GFF::load(Common::SeekableReadStream *tlk) {
 
 		if      (_gff->getTypeVersion() == kVersion02)
 			load02(top);
+		else if (_gff->getTypeVersion() == kVersion04)
+			load05(top);
 		else if (_gff->getTypeVersion() == kVersion05)
 			load05(top);
 		else
@@ -146,8 +149,10 @@ void TalkTable_GFF::readString(Entry &entry) const {
 
 	if      (_gff->getTypeVersion() == kVersion02)
 		readString02(entry);
+	else if (_gff->getTypeVersion() == kVersion04)
+		readString05(entry, _gff->isBigEndian());
 	else if (_gff->getTypeVersion() == kVersion05)
-		readString05(entry);
+		readString05(entry, false);
 
 	entry.strct = 0;
 }
@@ -159,19 +164,22 @@ void TalkTable_GFF::readString02(Entry &entry) const {
 		entry.text = "[???]";
 }
 
-void TalkTable_GFF::readString05(Entry &entry) const {
+void TalkTable_GFF::readString05(Entry &entry, bool bigEndian) const {
 	Common::ScopedPtr<Common::SeekableReadStream>
 		huffTree (_gff->getTopLevel().getData(kGFF4HuffTalkStringHuffTree)),
 		bitStream(_gff->getTopLevel().getData(kGFF4HuffTalkStringBitStream));
 
-	readString05(huffTree.get(), bitStream.get(), entry);
-}
-
-void TalkTable_GFF::readString05(Common::SeekableReadStream *huffTree,
-                                 Common::SeekableReadStream *bitStream, Entry &entry) const {
-
 	if (!huffTree || !bitStream)
 		return;
+
+	Common::SeekableSubReadStreamEndian huffTreeEndian(huffTree.get(), 0, huffTree->size(), bigEndian);
+	Common::SeekableSubReadStreamEndian bitStreamEndian(bitStream.get(), 0, bitStream->size(), bigEndian);
+
+	readString05(huffTreeEndian, bitStreamEndian, entry);
+}
+
+void TalkTable_GFF::readString05(Common::SeekableSubReadStreamEndian &huffTree,
+                                 Common::SeekableSubReadStreamEndian &bitStream, Entry &entry) const {
 
 	/* Read a string encoded in a Huffman'd bitstream.
 	 *
@@ -190,14 +198,14 @@ void TalkTable_GFF::readString05(Common::SeekableReadStream *huffTree,
 	uint32 shift = startOffset & 0x1F;
 
 	do {
-		ptrdiff_t e = (huffTree->size() / 8) - 1;
+		ptrdiff_t e = (huffTree.size() / 8) - 1;
 
 		while (e >= 0) {
-			bitStream->seek(index * 4);
-			const ptrdiff_t offset = (bitStream->readUint32LE() >> shift) & 1;
+			bitStream.seek(index * 4);
+			const ptrdiff_t offset = (bitStream.readUint32() >> shift) & 1;
 
-			huffTree->seek(((e * 2) + offset) * 4);
-			e = huffTree->readSint32LE();
+			huffTree.seek(((e * 2) + offset) * 4);
+			e = huffTree.readSint32();
 
 			shift++;
 			index += (shift >> 5);
