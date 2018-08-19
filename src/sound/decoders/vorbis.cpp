@@ -321,7 +321,7 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) 
 	byte initialBytes[3];
 	stream.read(initialBytes, sizeof(initialBytes));
 
-	int headerSizes[3];
+	size_t headerSizes[3];
 	Common::ScopedArray<byte> headers[3];
 
 	if (stream.size() >= 6 && READ_BE_UINT16(initialBytes) == 30) {
