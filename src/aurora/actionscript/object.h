@@ -50,7 +50,7 @@ public:
 	Object(Object *object);
 	virtual ~Object();
 
-	bool hasMember(Common::UString);
+	bool hasMember(const Common::UString &id);
 
 	Variable getMember(Common::UString);
 	void setMember(Common::UString, Variable);

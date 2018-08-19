@@ -44,7 +44,7 @@ Object::Object(Object *object) {
 Object::~Object() {
 }
 
-bool Object::hasMember(Common::UString id) {
+bool Object::hasMember(const Common::UString &id) {
 	return _members.find(id) != _members.end();
 }
 
