@@ -24,6 +24,7 @@
 
 #include "src/common/ustring.h"
 #include "src/common/filelist.h"
+#include "src/common/filepath.h"
 
 #include "src/engines/engineprobe.h"
 
@@ -88,12 +89,30 @@ public:
 	}
 };
 
+class EngineProbeXbox360 : public EngineProbe {
+public:
+	Aurora::Platform getPlatform() const {
+		return Aurora::kPlatformXbox360;
+	}
+
+	bool probe(const Common::UString &directory, const Common::FileList &rootFiles) const {
+		/* If we find the Xbox executable and a Dragon Age II specific file,
+		 * this should be a valid path. */
+		if (rootFiles.contains("default.xex", true) &&
+			Common::FileList(Common::FilePath::findSubDirectory(directory, "modules/campaign_base", true)).contains("campaign_base.cif", true))
+			return true;
+
+		return false;
+	}
+};
+
 const Common::UString EngineProbe::kGameName = "Dragon Age II";
 
 
 void createEngineProbes(std::list<const ::Engines::EngineProbe *> &probes) {
 	probes.push_back(new EngineProbeWindowsRetail);
 	probes.push_back(new EngineProbeWindowsOrigin);
+	probes.push_back(new EngineProbeXbox360);
 }
 
 } // End of namespace DragonAge2
