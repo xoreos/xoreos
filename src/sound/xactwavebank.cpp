@@ -44,6 +44,8 @@ XACTWaveBank *XACTWaveBank::load(const Common::UString &name) {
 		if (stream)
 			return new XACTWaveBank_ASCII(stream);
 
+		throw Common::Exception("No such WaveBank");
+
 	} catch (Common::Exception &e) {
 		e.add("Failed loading XACT WaveBank \"%s\"", name.c_str());
 		throw;
