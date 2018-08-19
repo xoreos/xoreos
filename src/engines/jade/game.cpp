@@ -29,6 +29,8 @@
 #include "src/events/events.h"
 
 #include "src/sound/sound.h"
+#include "src/sound/audiostream.h"
+#include "src/sound/xactwavebank.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -63,6 +65,12 @@ Module &Game::getModule() {
 }
 
 void Game::run() {
+	try {
+		_musicBank.reset(Sound::XACTWaveBank::load("musicbank"));
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
+	}
+
 	_module.reset(new Module(*_console));
 
 	while (!EventMan.quitRequested()) {
@@ -104,7 +112,27 @@ void Game::runModule() {
 
 void Game::playMenuMusic() {
 	stopMenuMusic();
-	_menuMusic = playSound("background", Sound::kSoundTypeMusic, true);
+
+	if (_musicBank) {
+		/* TODO: music.2da contains an entry for "mus_thm_MAINTHEME1", but this
+		 * gives us a state number. We will probably need to throw that state
+		 * number at the XACT SoundBank (xsb) somehow.
+		 *
+		 * Until that works, we'll get the main menu music by its index in the
+		 * XACT WaveBank (xwb) instead.
+		 */
+		static const size_t mainMenuMusic = 46;
+
+		try {
+			Sound::AudioStream *stream = Sound::makeLoopingAudioStream(_musicBank->getWave(mainMenuMusic), 0);
+
+			_menuMusic = SoundMan.playAudioStream(stream, Sound::kSoundTypeMusic);
+			SoundMan.startChannel(_menuMusic);
+
+		} catch (...) {
+			Common::exceptionDispatcherWarning();
+		}
+	}
 }
 
 void Game::stopMenuMusic() {

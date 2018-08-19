@@ -34,6 +34,10 @@
 
 #include "src/aurora/nwscript/variablecontainer.h"
 
+namespace Sound {
+	class XACTWaveBank;
+}
+
 namespace Engines {
 
 class Console;
@@ -70,6 +74,7 @@ private:
 
 	::Engines::Console *_console;
 
+	Common::ScopedPtr<Sound::XACTWaveBank> _musicBank;
 	Sound::ChannelHandle _menuMusic;
 
 	void playMenuMusic();
