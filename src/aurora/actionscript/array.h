@@ -19,51 +19,43 @@
  */
 
 /** @file
- *  Abstract object which is inherited by every other class.
+ *  Implementation for an actionscript Array class.
  */
 
-#ifndef AURORA_ACTIONSCRIPT_OBJECT_H
-#define AURORA_ACTIONSCRIPT_OBJECT_H
+#ifndef AURORA_ACTIONSCRIPT_ARRAY_H
+#define AURORA_ACTIONSCRIPT_ARRAY_H
 
-#include <map>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
-
-#include "src/common/ustring.h"
+#include <list>
 
 #include "src/aurora/actionscript/variable.h"
-#include "src/aurora/actionscript/avm.h"
+#include "src/aurora/actionscript/function.h"
 
 namespace Aurora {
 
 namespace ActionScript {
 
-class AVM;
-class Object;
+class Array;
 
-typedef boost::shared_ptr<Object> ObjectPtr;
+typedef boost::shared_ptr<Array> ArrayPtr;
 
-class Object : public boost::enable_shared_from_this<Object> {
+class Array : public Object {
 public:
-	Object();
-	Object(Object *object);
-	virtual ~Object();
+	Array(const std::list<Variable> &values = std::list<Variable>());
 
-	bool hasMember(const Common::UString &id);
+	size_t length() const;
 
-	virtual Variable getMember(const Variable &id);
-	virtual void setMember(const Variable &id, const Variable &value);
-	virtual void setMember(const Common::UString &id, Function *function);
+	void push(const Variable &v);
+	Variable pop();
 
-	Variable call(const Common::UString &function, AVM &avm, const std::vector<Variable> &arguments = std::vector<Variable>());
+	Variable getMember(const Variable &id);
+	void setMember(const Variable &id, const Variable &value);
 
 private:
-	std::map<Common::UString, Variable> _members;
+	std::list<Variable> _values;
 };
 
 } // End of namespace ActionScript
 
 } // End of namespace Aurora
 
-#endif // AURORA_ACTIONSCRIPT_OBJECT_H
+#endif // AURORA_ACTIONSCRIPT_ARRAY_H

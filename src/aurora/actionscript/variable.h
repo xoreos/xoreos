@@ -46,8 +46,11 @@ public:
 	Variable();
 
 	Variable(const Common::UString &value);
+	Variable(const char* value);
+	Variable(Object *value);
 	Variable(double value);
 	Variable(unsigned int value);
+	Variable(unsigned long value);
 	Variable(bool value);
 	Variable(ObjectPtr value);
 
@@ -55,16 +58,18 @@ public:
 
 	~Variable();
 
-	bool isUndefined();
-	bool isObject();
-	bool isString();
-	bool isNumber();
-	bool isFunction();
+	bool isUndefined() const;
+	bool isObject() const;
+	bool isString() const;
+	bool isNumber() const;
+	bool isFunction() const;
 
-	double asNumber();
+	double asNumber() const;
 	ObjectPtr asObject();
-	const Common::UString &asString();
-	bool asBoolean();
+	const Common::UString &asString() const;
+	bool asBoolean() const;
+
+	template<typename T> boost::shared_ptr<T> as() const;
 
 	void operator=(Variable v);
 
@@ -94,6 +99,10 @@ private:
 		Common::UString string;
 	} _value;
 };
+
+template<typename T> boost::shared_ptr<T> Variable::as() const {
+	return boost::dynamic_pointer_cast<T>(_value.object);
+}
 
 } // End of namespace ActionScript
 

@@ -27,6 +27,8 @@
 
 #include <vector>
 
+#include <boost/function.hpp>
+
 #include "src/aurora/actionscript/variable.h"
 #include "src/aurora/actionscript/asbuffer.h"
 
@@ -67,6 +69,23 @@ public:
 private:
 	Common::SeekableReadStream *_stream;
 	ASBuffer _buffer;
+};
+
+class NativeFunction : public Function {
+public:
+	NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag);
+
+	Variable operator()(AVM &avm);
+
+private:
+	boost::function<Variable(AVM &)> _function;
+};
+
+class DummyFunction : public Function {
+public:
+	DummyFunction();
+
+	Variable operator()(AVM &UNUSED(avm)){ return Variable(); };
 };
 
 } // End of namespace ActionScript

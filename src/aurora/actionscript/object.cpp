@@ -44,24 +44,35 @@ Object::Object(Object *object) {
 Object::~Object() {
 }
 
-bool Object::hasMember(Common::UString id) {
+bool Object::hasMember(const Common::UString &id) {
 	return _members.find(id) != _members.end();
 }
 
-Variable Object::getMember(Common::UString id) {
-	if (_members.find(id) != _members.end())
-		return _members[id];
+Variable Object::getMember(const Variable &id) {
+	if (!id.isString())
+		throw Common::Exception("Object::getMember id is not a string");
+
+	Common::UString idString = id.asString();
+	if (_members.find(idString) != _members.end())
+		return _members[idString];
 	else {
-		_members.insert(std::make_pair(id, ObjectPtr(new Object)));
-		return _members[id];
+		_members.insert(std::make_pair(idString, ObjectPtr(new Object)));
+		return _members[idString];
 	}
 }
 
-void Object::setMember(Common::UString id, Variable member) {
-	_members[id] = member;
+void Object::setMember(const Variable &id, const Variable &value) {
+	if (!id.isString())
+		throw Common::Exception("Object::setMember id is not a string");
+
+	_members[id.asString()] = value;
 }
 
-Variable Object::call(Common::UString function, AVM &avm) {
+void Object::setMember(const Common::UString &id, Function *function) {
+	_members[id] = ObjectPtr(function);
+}
+
+Variable Object::call(const Common::UString &function, AVM &avm, const std::vector<Variable> &arguments) {
 	if (!hasMember(function))
 		throw Common::Exception("object has no member %s", function.c_str());
 
@@ -73,6 +84,11 @@ Variable Object::call(Common::UString function, AVM &avm) {
 	byte counter = 1;
 	if (f->getPreloadThisFlag()) {
 		avm.storeRegister(shared_from_this(), counter);
+		counter += 1;
+	}
+
+	for (size_t i = 0; i < arguments.size(); ++i) {
+		avm.storeRegister(arguments[i], counter);
 		counter += 1;
 	}
 

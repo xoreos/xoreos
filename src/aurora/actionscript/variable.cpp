@@ -37,11 +37,23 @@ Variable::Variable(const Common::UString &value) : _type(kTypeString) {
 	_value.string = value;
 }
 
+Variable::Variable(const char *value) : _type(kTypeString) {
+	_value.string = value;
+}
+
+Variable::Variable(Object *value) : _type(kTypeObject) {
+	_value.object = ObjectPtr(value);
+}
+
 Variable::Variable(double value) : _type(kTypeNumber) {
 	_value.number = value;
 }
 
 Variable::Variable(unsigned int value) : _type(kTypeNumber) {
+	_value.number = value;
+}
+
+Variable::Variable(unsigned long value) : _type(kTypeNumber) {
 	_value.number = value;
 }
 
@@ -77,27 +89,27 @@ Variable::Variable(const Variable &variable) {
 Variable::~Variable() {
 }
 
-bool Variable::isUndefined() {
+bool Variable::isUndefined() const {
 	return _type == kTypeUndefined;
 }
 
-bool Variable::isObject() {
+bool Variable::isObject() const {
 	return _type == kTypeObject;
 }
 
-bool Variable::isString() {
+bool Variable::isString() const {
 	return _type == kTypeString;
 }
 
-bool Variable::isNumber() {
+bool Variable::isNumber() const {
 	return _type == kTypeNumber;
 }
 
-bool Variable::isFunction() {
-	return _type == kTypeObject && dynamic_cast<ScriptedFunction *>(_value.object.get());
+bool Variable::isFunction() const {
+	return _type == kTypeObject && dynamic_cast<Function *>(_value.object.get());
 }
 
-double Variable::asNumber() {
+double Variable::asNumber() const {
 	switch (_type) {
 		case kTypeNumber:
 			return _value.number;
@@ -116,11 +128,11 @@ ObjectPtr Variable::asObject() {
 	return _value.object;
 }
 
-const Common::UString &Variable::asString() {
+const Common::UString &Variable::asString() const {
 	return _value.string;
 }
 
-bool Variable::asBoolean() {
+bool Variable::asBoolean() const {
 	if (_type == kTypeNumber)
 		return _value.number != 0;
 	else if (_type == kTypeBoolean)

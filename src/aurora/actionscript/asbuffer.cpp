@@ -29,6 +29,7 @@
 #include "src/aurora/actionscript/variable.h"
 #include "src/aurora/actionscript/asbuffer.h"
 #include "src/aurora/actionscript/function.h"
+#include "src/aurora/actionscript/array.h"
 
 using Common::kDebugActionScript;
 
@@ -289,7 +290,19 @@ void ASBuffer::actionReturn(AVM &avm) {
 }
 
 void ASBuffer::actionInitArray() {
-	// TODO
+	const Variable nArgs = _stack.top();
+	_stack.pop();
+
+	if (!nArgs.isNumber())
+		throw Common::Exception("Value is not a number");
+
+	std::list<Variable> values;
+	for (int i = 0; i < nArgs.asNumber(); ++i) {
+		values.push_back(_stack.top());
+		_stack.pop();
+	}
+
+	_stack.push(ObjectPtr(new Array(values)));
 
 	debugC(kDebugActionScript, 1, "actionInitArray");
 }
@@ -422,8 +435,19 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 		throw Common::Exception("Object is not a function");
 
 	byte counter = 1;
-	if (function->getPreloadThisFlag())
+	Variable prevThis;
+
+	if (function->getPreloadThisFlag()) {
+		if (!name.empty()) {
+			prevThis = avm.getRegister(counter);
+			avm.storeRegister(object, counter);
+		}
 		counter += 1;
+	}
+	if (function->getPreloadSuperFlag()) {
+		// TODO: Add super variable
+		counter += 1;
+	}
 
 	for (size_t i = 0; i < arguments.size(); ++i) {
 		avm.storeRegister(arguments[i], counter);
@@ -431,8 +455,10 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 	}
 
 	avm.setReturnValue(Variable());
-	(*function)(avm);
-	_stack.push(avm.getReturnValue());
+	_stack.push((*function)(avm));
+
+	if (!prevThis.isUndefined())
+		avm.storeRegister(prevThis, 1);
 
 	debugC(kDebugActionScript, 1, "actionCallMethod");
 }
