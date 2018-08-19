@@ -55,16 +55,16 @@ public:
 
 	~Variable();
 
-	bool isUndefined();
-	bool isObject();
-	bool isString();
-	bool isNumber();
-	bool isFunction();
+	bool isUndefined() const;
+	bool isObject() const;
+	bool isString() const;
+	bool isNumber() const;
+	bool isFunction() const;
 
-	double asNumber();
+	double asNumber() const;
 	ObjectPtr asObject();
-	const Common::UString &asString();
-	bool asBoolean();
+	const Common::UString &asString() const;
+	bool asBoolean() const;
 
 	void operator=(Variable v);
 
