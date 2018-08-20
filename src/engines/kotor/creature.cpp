@@ -356,27 +356,21 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 }
 
 void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) {
-	parts.body = "p";
-	parts.head = "p";
+	parts.body = getBodyMeshString(_gender, getClassByPosition(0), state);
+	parts.head = getHeadMeshString(_gender, _skin, _face);
 	parts.bodyTexture = "p";
 
 	switch (_gender) {
 		case kGenderMale:
-			parts.body += "m";
-			parts.head += "m";
 			parts.bodyTexture += "m";
 			break;
 		case kGenderFemale:
-			parts.body += "f";
-			parts.head += "f";
 			parts.bodyTexture += "f";
 			break;
 		default:
 			throw Common::Exception("Unknown gender");
 	}
 
-	parts.body += Common::UString("b") + state;
-	parts.head += "h";
 	parts.bodyTexture  += Common::UString("b") + state;
 
 	switch (state) {
@@ -384,16 +378,13 @@ void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVar
 		case 'b':
 			switch (_levels.back().characterClass) {
 				case kClassSoldier:
-					parts.body += "l";
 					parts.bodyTexture += "l";
 					break;
 				case kClassScout:
-					parts.body += "m";
 					parts.bodyTexture += "m";
 					break;
 				default:
 				case kClassScoundrel:
-					parts.body += "s";
 					parts.bodyTexture += "s";
 					break;
 			}
@@ -424,25 +415,8 @@ void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVar
 			break;
 	}
 
-	switch (_skin) {
-		case kSkinA:
-			parts.head += "a";
-			break;
-		case kSkinB:
-			parts.head += "b";
-			break;
-		default:
-		case kSkinC:
-			parts.head += "c";
-			break;
-	}
-
 	parts.portrait = "po_" + parts.head;
-	parts.portrait += Common::composeString(_face + 1);
-
-	parts.head += "0";
-	parts.head += Common::composeString(_face + 1);
-
+	parts.portrait.replaceAll("0", "");
 	parts.bodyTexture += Common::UString::format("%02u", textureVariation);
 
 	loadMovementRate("PLAYER");
@@ -717,6 +691,78 @@ void Creature::playHeadAnimation(const Common::UString &anim, bool restart, floa
 
 	if (headChannel)
 		headChannel->playAnimation(anim, restart, length, speed);
+}
+
+Common::UString Creature::getBodyMeshString(Gender gender, Class charClass, char state) {
+	Common::UString body, head;
+
+	body = "p";
+
+	switch (gender) {
+		case kGenderMale:
+			body += "m";
+			break;
+		case kGenderFemale:
+			body += "f";
+			break;
+		default:
+			throw Common::Exception("Unknown gender");
+	}
+
+	body += "b";
+	body += state;
+
+	switch (charClass) {
+		case kClassSoldier:
+			body += "l";
+			break;
+		case kClassScout:
+			body += "m";
+			break;
+		default:
+		case kClassScoundrel:
+			body += "s";
+			break;
+	}
+
+	return body;
+}
+
+Common::UString Creature::getHeadMeshString(Gender gender, Skin skin, uint32 faceId) {
+	Common::UString head;
+
+	head = "p";
+
+	switch (gender) {
+		case kGenderMale:
+			head += "m";
+			break;
+		case kGenderFemale:
+			head += "f";
+			break;
+		default:
+			throw Common::Exception("Unknown gender");
+	}
+
+	head += "h";
+
+	switch (skin) {
+		case kSkinA:
+			head += "a";
+			break;
+		case kSkinB:
+			head += "b";
+			break;
+		default:
+		case kSkinC:
+			head += "c";
+			break;
+	}
+
+	head += "0";
+	head += Common::composeString(faceId + 1);
+
+	return head;
 }
 
 void Creature::clearActionQueue() {

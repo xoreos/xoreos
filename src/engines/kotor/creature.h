@@ -127,6 +127,13 @@ public:
 	                       float length = 0.0f,
 	                       float speed = 1.0f);
 
+	// PC Mesh string generation
+
+	/** Generate a string for the body mesh. */
+	static Common::UString getBodyMeshString(Gender gender, Class charClass, char state = 'b');
+	/** Generate a string for the head mesh. */
+	static Common::UString getHeadMeshString(Gender gender, Skin skin, uint32 faceId);
+
 	// Action queue
 
 	void clearActionQueue();
