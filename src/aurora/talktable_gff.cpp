@@ -152,7 +152,7 @@ void TalkTable_GFF::readString(Entry &entry) const {
 	else if (_gff->getTypeVersion() == kVersion04)
 		readString05(entry, _gff->isBigEndian());
 	else if (_gff->getTypeVersion() == kVersion05)
-		readString05(entry, false);
+		readString05(entry, _gff->isBigEndian());
 
 	entry.strct = 0;
 }
