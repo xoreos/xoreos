@@ -318,6 +318,7 @@ enum FileType {
 	kFileTypeCIF            = 22034, ///< Campaign Information File, GFF4.
 	kFileTypeCUB            = 22035,
 	kFileTypeDLB            = 22036,
+	kFileTypeNSC            = 22037, ///< NWScript client script source.
 
 	// Found in KotOR Mac
 	kFileTypeMOV            = 23000, ///< Video, QuickTime/MPEG-4.

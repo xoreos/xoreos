@@ -288,6 +288,7 @@ const FileTypeManager::Type FileTypeManager::types[] = {
 	{kFileTypeCIF,            ".cif"},
 	{kFileTypeCUB,            ".cub"},
 	{kFileTypeDLB,            ".dlb"},
+	{kFileTypeNSC,            ".nsc"},
 
 	{kFileTypeMOV,            ".mov"},
 	{kFileTypeCURS,           ".curs"},
