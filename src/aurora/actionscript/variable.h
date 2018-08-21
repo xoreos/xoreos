@@ -43,6 +43,8 @@ typedef boost::shared_ptr<Object> ObjectPtr;
 /** An action script variable. */
 class Variable {
 public:
+	static Variable Null();
+
 	Variable();
 
 	Variable(const Common::UString &value);
