@@ -50,6 +50,8 @@ public:
 	Object(Object *object);
 	virtual ~Object();
 
+	std::vector<Common::UString> getSlots() const;
+
 	bool hasMember(const Common::UString &id);
 
 	virtual Variable getMember(const Variable &id);
