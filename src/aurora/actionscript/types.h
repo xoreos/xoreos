@@ -31,6 +31,7 @@ namespace ActionScript {
 
 enum Type {
 	kTypeUndefined,
+	kTypeNull,
 	kTypeNumber,
 	kTypeBoolean,
 	kTypeObject,

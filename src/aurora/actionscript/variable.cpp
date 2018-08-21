@@ -30,6 +30,12 @@ namespace Aurora {
 
 namespace ActionScript {
 
+Variable Variable::Null() {
+	Variable v;
+	v._type = kTypeNull;
+	return v;
+}
+
 Variable::Variable() : _type(kTypeUndefined) {
 }
 
@@ -193,6 +199,8 @@ Variable Variable::operator==(Variable v) {
 		return false;
 
 	switch (_type) {
+		case kTypeNull:
+			return v._type == kTypeNull;
 		case kTypeNumber:
 			return v._value.number == _value.number;
 		default:
