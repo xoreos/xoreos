@@ -99,7 +99,7 @@ static const uint32 kBIKhID = MKTAG('B', 'I', 'K', 'h');
 static const uint32 kBIKiID = MKTAG('B', 'I', 'K', 'i');
 
 static const uint32 kBIKbID = MKTAG('B', 'I', 'K', 'b');
-static const uint32 kBIKkID = MKTAG('B', 'I', 'K', 'i');
+static const uint32 kBIKkID = MKTAG('B', 'I', 'K', 'k');
 
 static const uint32 kKB2aID = MKTAG('K', 'B', '2', 'a');
 static const uint32 kKB2dID = MKTAG('K', 'B', '2', 'd');
