@@ -125,7 +125,7 @@ void ASBuffer::execute(AVM &avm) {
 			case kActionGetVariable:     actionGetVariable(avm); break;
 			case kActionSetVariable:     actionSetVariable(avm); break;
 			case kActionTrace:           actionTrace(); break;
-			case kActionDefineLocal:     actionDefineLocal(); break;
+			case kActionDefineLocal:     actionDefineLocal(avm); break;
 			case kActionCallFunction:    actionCallFunction(); break;
 			case kActionReturn:          actionReturn(avm); break;
 			case kActionNewObject:       actionNewObject(avm); break;
@@ -268,8 +268,17 @@ void ASBuffer::actionTrace() {
 	debugC(kDebugActionScript, 1, "actionTrace");
 }
 
-void ASBuffer::actionDefineLocal() {
-	// TODO
+void ASBuffer::actionDefineLocal(AVM &avm) {
+	const Variable value = _stack.top();
+	_stack.pop();
+	const Variable name = _stack.top();
+	_stack.pop();
+
+	if (!name.isString())
+		throw Common::Exception("actionDefineLocal: name is not a string!");
+
+	// TODO: There is probably a better way, then defining local variables as global persistent variables.
+	avm.setVariable(name.asString(), value);
 
 	debugC(kDebugActionScript, 1, "actionDefineLocal");
 }
