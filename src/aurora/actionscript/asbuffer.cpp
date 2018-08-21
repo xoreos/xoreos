@@ -601,7 +601,7 @@ void ASBuffer::actionPush(AVM &avm) {
 			case 2: {
 				// null
 				debugC(kDebugActionScript, 1, "actionPush null");
-				_stack.push(Variable());
+				_stack.push(Variable::Null());
 				break;
 			}
 			case 3: {
