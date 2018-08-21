@@ -464,7 +464,20 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 }
 
 void ASBuffer::actionEnumerate2() {
-	// TODO
+	if (!_stack.top().isObject())
+		throw Common::Exception("actionEnumerate2: not an object");
+
+	const ObjectPtr object = _stack.top().asObject();
+	_stack.pop();
+
+	// Push null as the end of the enumeration.
+	_stack.push(Variable::Null());
+
+	// Go through every slot and push the name to the stack.
+	std::vector<Common::UString> slotNames = object->getSlots();
+	for (size_t i = 0; i < slotNames.size(); ++i) {
+		_stack.push(slotNames[i]);
+	}
 
 	debugC(kDebugActionScript, 1, "actionEnumerate2");
 }
