@@ -29,6 +29,7 @@
 #include "src/aurora/actionscript/object.h"
 #include "src/aurora/actionscript/function.h"
 #include "src/aurora/actionscript/array.h"
+#include "src/aurora/actionscript/string.h"
 
 namespace Aurora {
 
@@ -49,6 +50,8 @@ AVM::AVM() {
 	_variables["_global"] = ObjectPtr(new Object());
 	_variables["Array"] = ObjectPtr(new DummyFunction());
 	_variables["Array"].asObject()->setMember("prototype", ObjectPtr(new Array()));
+	_variables["String"] = ObjectPtr(new DummyFunction());
+	_variables["String"].asObject()->setMember("prototype", ObjectPtr(new String()));
 }
 
 void AVM::storeRegister(Variable value, byte index) {
