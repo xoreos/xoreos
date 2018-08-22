@@ -670,7 +670,7 @@ void ASBuffer::actionPush(AVM &avm) {
 }
 
 void ASBuffer::actionJump() {
-	unsigned short offset = _script->readUint16LE();
+	short offset = _script->readSint16LE();
 
 	_script->seek(offset, Common::SeekableReadStream::kOriginCurrent);
 	_seeked = offset;

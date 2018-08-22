@@ -94,7 +94,7 @@ private:
 	Common::UString readString();
 
 	unsigned int _currentLength;
-	unsigned int _seeked;
+	int _seeked;
 
 	// Constant pool
 	std::vector<Common::UString> _constants;
