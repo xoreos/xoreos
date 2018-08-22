@@ -31,6 +31,7 @@
 #include "src/aurora/actionscript/array.h"
 #include "src/aurora/actionscript/string.h"
 #include "src/aurora/actionscript/movieclip.h"
+#include "src/aurora/actionscript/textfield.h"
 
 namespace Aurora {
 
@@ -55,6 +56,8 @@ AVM::AVM() {
 	_variables["String"].asObject()->setMember("prototype", ObjectPtr(new String()));
 	_variables["MovieClip"] = ObjectPtr(new DummyFunction());
 	_variables["MovieClip"].asObject()->setMember("prototype", ObjectPtr(new MovieClip()));
+	_variables["TextField"] = ObjectPtr(new DummyFunction());
+	_variables["TextField"].asObject()->setMember("prototype", ObjectPtr(new TextField()));
 }
 
 void AVM::storeRegister(Variable value, byte index) {
