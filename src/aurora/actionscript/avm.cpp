@@ -30,6 +30,7 @@
 #include "src/aurora/actionscript/function.h"
 #include "src/aurora/actionscript/array.h"
 #include "src/aurora/actionscript/string.h"
+#include "src/aurora/actionscript/movieclip.h"
 
 namespace Aurora {
 
@@ -52,6 +53,8 @@ AVM::AVM() {
 	_variables["Array"].asObject()->setMember("prototype", ObjectPtr(new Array()));
 	_variables["String"] = ObjectPtr(new DummyFunction());
 	_variables["String"].asObject()->setMember("prototype", ObjectPtr(new String()));
+	_variables["MovieClip"] = ObjectPtr(new DummyFunction());
+	_variables["MovieClip"].asObject()->setMember("prototype", ObjectPtr(new MovieClip()));
 }
 
 void AVM::storeRegister(Variable value, byte index) {
