@@ -30,6 +30,7 @@ src_aurora_actionscript_libactionscript_la_SOURCES += \
     src/aurora/actionscript/variable.h \
     src/aurora/actionscript/array.h \
     src/aurora/actionscript/string.h \
+    src/aurora/actionscript/movieclip.h \
     src/aurora/actionscript/types.h \
     $(EMPTY)
 
@@ -41,4 +42,5 @@ src_aurora_actionscript_libactionscript_la_SOURCES += \
     src/aurora/actionscript/variable.cpp \
     src/aurora/actionscript/array.cpp \
     src/aurora/actionscript/string.cpp \
+    src/aurora/actionscript/movieclip.cpp \
     $(EMPTY)
