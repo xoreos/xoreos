@@ -93,8 +93,8 @@ private:
 	// Utility methods and variables
 	Common::UString readString();
 
-	unsigned int _currentLength;
-	unsigned int _seeked;
+	size_t _currentLength;
+	ptrdiff_t _seeked;
 
 	// Constant pool
 	std::vector<Common::UString> _constants;

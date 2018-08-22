@@ -104,7 +104,7 @@ void ASBuffer::execute(AVM &avm) {
 		_seeked = 0;
 		opcode = _script->readByte();
 
-		uint16 length = 0;
+		size_t length = 0;
 		if (opcode >= 0x80)
 			length = _script->readUint16LE();
 
@@ -155,7 +155,7 @@ void ASBuffer::execute(AVM &avm) {
 					warning("Unknown opcode");
 		}
 
-		if (_script->pos() - startPos != length + _seeked)
+		if (_script->pos() - startPos != static_cast<size_t>(length + _seeked))
 			throw Common::Exception("Invalid tag");
 	} while (opcode != 0 && _script->pos() != _script->size());
 
@@ -670,7 +670,7 @@ void ASBuffer::actionPush(AVM &avm) {
 }
 
 void ASBuffer::actionJump() {
-	unsigned short offset = _script->readUint16LE();
+	int16 offset = _script->readSint16LE();
 
 	_script->seek(offset, Common::SeekableReadStream::kOriginCurrent);
 	_seeked = offset;
