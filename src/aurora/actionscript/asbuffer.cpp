@@ -72,6 +72,7 @@ enum Opcodes {
 	kActionEnumerate2      = 0x55,
 	kActionStrictEquals    = 0x66,
 	kActionExtends         = 0x69,
+	kActionGetURL          = 0x83,
 	kActionStoreRegister   = 0x87,
 	kActionConstantPool    = 0x88,
 	kActionDefineFunction2 = 0x8E,
@@ -141,6 +142,7 @@ void ASBuffer::execute(AVM &avm) {
 			case kActionCallMethod:      actionCallMethod(avm); break;
 			case kActionEnumerate2:      actionEnumerate2(); break;
 			case kActionExtends:         actionExtends(); break;
+			case kActionGetURL:          actionGetURL(avm); break;
 			case kActionStoreRegister:   actionStoreRegister(avm); break;
 			case kActionDefineFunction2: actionDefineFunction2(); break;
 			case kActionConstantPool:    actionConstantPool(); break;
@@ -503,6 +505,24 @@ void ASBuffer::actionExtends() {
 	subClass->setMember("prototype", scriptObject);
 
 	debugC(kDebugActionScript, 1, "actionExtends");
+}
+
+void ASBuffer::actionGetURL(AVM &avm) {
+	const Variable url = _stack.top();
+	if (url.isString())
+		throw Common::Exception("actionGetURL: url is not a string");
+	_stack.pop();
+	const Variable target = _stack.top();
+	if (target.isString())
+		throw Common::Exception("actionGetURL: target is not a string");
+	_stack.pop();
+
+	const Common::UString urlString = url.asString();
+	const Common::UString targetString = target.asString();
+
+	avm.fsCommand(urlString, targetString);
+
+	debugC(kDebugActionScript, 1, "actionGetURL \"%s\" \"%s\"", urlString.c_str(), targetString.c_str());
 }
 
 void ASBuffer::actionStoreRegister(AVM &avm) {
