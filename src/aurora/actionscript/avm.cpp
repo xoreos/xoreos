@@ -50,6 +50,8 @@ AVM::AVM() {
 	_stopFlag = false;
 
 	_variables["_global"] = ObjectPtr(new Object());
+	_variables["Object"] = ObjectPtr(new DummyFunction());
+	_variables["Object"].asObject()->setMember("prototype", ObjectPtr(new Object()));
 	_variables["Array"] = ObjectPtr(new DummyFunction());
 	_variables["Array"].asObject()->setMember("prototype", ObjectPtr(new Array()));
 	_variables["String"] = ObjectPtr(new DummyFunction());
