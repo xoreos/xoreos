@@ -81,6 +81,7 @@ private:
 	void actionCallMethod(AVM &avm);
 	void actionEnumerate2();
 	void actionExtends();
+	void actionGetURL(AVM &avm);
 	void actionStoreRegister(AVM &avm);
 	void actionConstantPool();
 	void actionDefineFunction2();
