@@ -63,7 +63,11 @@ RewindableAudioStream *XACTWaveBank_ASCII::getWave(size_t index) const {
 	if (!dataStream)
 		throw Common::Exception("XACTWaveBank_ASCII::getWave(): No such resource \"%s\"", wave.name.c_str());
 
+#ifdef ENABLE_VORBIS
 	return makeVorbisStream(dataStream.release(), true);
+#else
+	throw Common::Exception("XACTWaveBank_ASCII::getWave(): Vorbis decoding disabled when building without libvorbis");
+#endif
 }
 
 static Common::UString getFirst(Common::StreamTokenizer &tokenizer, Common::SeekableReadStream &stream) {
