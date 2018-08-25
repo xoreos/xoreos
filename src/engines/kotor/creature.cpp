@@ -281,8 +281,12 @@ void Creature::loadPortrait(const Aurora::GFF3Struct &gff) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("portraits");
 
 		Common::UString portrait = twoda.getRow(portraitID).getString("BaseResRef");
-		if (!portrait.empty())
-			_portrait = "po_" + portrait;
+		if (!portrait.empty()) {
+			if (portrait.beginsWith("po_"))
+				_portrait = portrait;
+			else
+				_portrait = "po_" + portrait;
+		}
 	}
 
 	_portrait = gff.getString("Portrait", _portrait);
