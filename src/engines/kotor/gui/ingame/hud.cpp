@@ -296,11 +296,11 @@ void HUD::setPartyLeader(Creature *creature) {
 }
 
 void HUD::setPartyMember1(Creature *creature) {
-	setPortrait(2, creature != 0, creature ? creature->getPortrait() : "");
+	setPortrait(3, creature != 0, creature ? creature->getPortrait() : "");
 }
 
 void HUD::setPartyMember2(Creature *creature) {
-	setPortrait(3, creature != 0, creature ? creature->getPortrait() : "");
+	setPortrait(2, creature != 0, creature ? creature->getPortrait() : "");
 }
 
 void HUD::update(int width, int height) {
