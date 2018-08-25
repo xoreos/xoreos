@@ -169,6 +169,8 @@ private:
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
 
+	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
+
 	void setGlobalFadeOut(Aurora::NWScript::FunctionContext &ctx);
 	void setGlobalFadeIn(Aurora::NWScript::FunctionContext &ctx);
 

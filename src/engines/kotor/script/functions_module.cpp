@@ -48,6 +48,10 @@ void Functions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 }
 
+void Functions::getPCSpeaker(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (Aurora::NWScript::Object *) _game->getModule().getPC();
+}
+
 void Functions::setGlobalFadeOut(Aurora::NWScript::FunctionContext &ctx) {
 	float wait = ctx.getParams()[0].getFloat();
 	float run = ctx.getParams()[1].getFloat();
