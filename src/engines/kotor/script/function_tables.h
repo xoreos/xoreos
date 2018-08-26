@@ -814,7 +814,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 693, "SetGlobalLocation"                   , 0                                                },
 	{ 694, "AddAvailableNPCByObject"             , 0                                                },
 	{ 695, "RemoveAvailableNPC"                  , 0                                                },
-	{ 696, "IsAvailableCreature"                 , 0                                                },
+	{ 696, "IsAvailableCreature"                 , &Functions::isAvailableCreature                  },
 	{ 697, "AddAvailableNPCByTemplate"           , &Functions::addAvailableNPCByTemplate            },
 	{ 698, "SpawnAvailableNPC"                   , 0                                                },
 	{ 699, "IsNPCPartyMember"                    , 0                                                },

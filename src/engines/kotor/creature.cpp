@@ -49,6 +49,20 @@ namespace Engines {
 
 namespace KotOR {
 
+Creature::Creature(const Common::UString &resRef)
+		: Object(kObjectTypeCreature),
+		  _walkRate(0.0f),
+		  _runRate(0.0f) {
+
+	init();
+
+	Common::ScopedPtr<Aurora::GFF3File> utc(loadOptionalGFF3(resRef, Aurora::kFileTypeUTC));
+	if (!utc)
+		throw Common::Exception("Creature \"%s\" has no blueprint", resRef.c_str());
+
+	load(utc->getTopLevel());
+}
+
 Creature::Creature(const Aurora::GFF3Struct &creature)
 		: Object(kObjectTypeCreature),
 		  _walkRate(0.0f),
@@ -281,8 +295,12 @@ void Creature::loadPortrait(const Aurora::GFF3Struct &gff) {
 		const Aurora::TwoDAFile &twoda = TwoDAReg.get2DA("portraits");
 
 		Common::UString portrait = twoda.getRow(portraitID).getString("BaseResRef");
-		if (!portrait.empty())
-			_portrait = "po_" + portrait;
+		if (!portrait.empty()) {
+			if (portrait.beginsWith("po_"))
+				_portrait = portrait;
+			else
+				_portrait = "po_" + portrait;
+		}
 	}
 
 	_portrait = gff.getString("Portrait", _portrait);

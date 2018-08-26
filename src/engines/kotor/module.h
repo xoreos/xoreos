@@ -127,6 +127,8 @@ public:
 	void showPartySelectionGUI(const Common::UString &exitScript, int forceNPC1 = -1, int forceNPC2 = -1);
 	/** Add available party member by template. */
 	void addAvailablePartyMember(int slot, const Common::UString &templ);
+	/** Check if there is a party member available for this id. */
+	bool isAvailableCreature(int slot);
 	// '---
 
 	// .--- Gui management

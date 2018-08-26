@@ -266,6 +266,7 @@ private:
 	// .--- Party, functions_party.cpp
 	void isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx);
 	void showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx);
+	void isAvailableCreature(Aurora::NWScript::FunctionContext &ctx);
 	void addAvailableNPCByTemplate(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 

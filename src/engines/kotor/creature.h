@@ -51,6 +51,8 @@ public:
 	Creature();
 	/** Load from a creature instance. */
 	Creature(const Aurora::GFF3Struct &creature);
+	/** Load from a creature template. */
+	Creature(const Common::UString &resRef);
 	~Creature();
 
 	/** Create a fake player character creature for testing purposes. */
