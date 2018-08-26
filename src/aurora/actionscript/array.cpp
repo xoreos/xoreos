@@ -72,7 +72,7 @@ Variable Array::getMember(const Variable &id) {
 	}
 
 	if (id.isString() && id.asString() == "length")
-		return _values.size();
+		return Variable((unsigned long)_values.size());
 
 	return Object::getMember(id);
 }
