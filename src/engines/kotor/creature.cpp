@@ -49,6 +49,20 @@ namespace Engines {
 
 namespace KotOR {
 
+Creature::Creature(const Common::UString &resRef)
+		: Object(kObjectTypeCreature),
+		  _walkRate(0.0f),
+		  _runRate(0.0f) {
+
+	init();
+
+	Common::ScopedPtr<Aurora::GFF3File> utc(loadOptionalGFF3(resRef, Aurora::kFileTypeUTC));
+	if (!utc)
+		throw Common::Exception("Creature \"%s\" has no blueprint", resRef.c_str());
+
+	load(utc->getTopLevel());
+}
+
 Creature::Creature(const Aurora::GFF3Struct &creature)
 		: Object(kObjectTypeCreature),
 		  _walkRate(0.0f),
