@@ -279,6 +279,16 @@ void HUD::setPortrait(uint8 n, bool visible, const Common::UString &portrait) {
 	WidgetProgressbar *vitals = getProgressbar(Common::UString("PB_VIT") + Common::composeString(n));
 	if (vitals)
 		vitals->setInvisible(!visible);
+
+	if (visible) {
+		labelBack->show();
+		labelChar->show();
+		vitals->show();
+	} else {
+		labelBack->hide();
+		labelChar->hide();
+		vitals->hide();
+	}
 }
 
 void HUD::setPartyLeader(Creature *creature) {
