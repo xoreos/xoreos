@@ -785,6 +785,10 @@ void Module::addAvailablePartyMember(int slot, const Common::UString &templ) {
 	_availableParty.insert(std::pair<int, Common::UString>(slot, templ));
 }
 
+bool Module::isAvailableCreature(int slot) {
+	return _availableParty.find(slot) != _availableParty.end();
+}
+
 void Module::setReturnStrref(uint32 id) {
 	_ingame->setReturnStrref(id);
 }
