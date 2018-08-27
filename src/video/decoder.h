@@ -30,6 +30,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "src/common/types.h"
+#include "src/common/rational.h"
 #include "src/common/scopedptr.h"
 #include "src/common/timestamp.h"
 
@@ -68,14 +69,40 @@ public:
 	/** Is the video currently playing? */
 	bool isPlaying() const;
 
-	/** Return the size of this video. */
-	void getSize(uint32 &width, uint32 &height) const;
+	/**
+	 * Returns the width of the video's frames.
+	 *
+	 * By default, this finds the largest width between all of the loaded
+	 * tracks. However, a subclass may override this if it does any kind
+	 * of post-processing on it.
+	 *
+	 * @return the width of the video's frames
+	 */
+	virtual uint32 getWidth() const;
+
+	/**
+	 * Returns the height of the video's frames.
+	 *
+	 * By default, this finds the largest height between all of the loaded
+	 * tracks. However, a subclass may override this if it does any kind
+	 * of post-processing on it.
+	 *
+	 * @return the height of the video's frames
+	 */
+	virtual uint32 getHeight() const;
 
 	/** Start playing the video. */
 	void start();
 
 	/** Abort the playing of the video. */
 	void abort();
+
+	/**
+	 * Check whether a new frame should be decoded, i.e. because enough
+	 * time has elapsed since the last frame was decoded.
+	 * @return whether a new frame should be decoded or not
+	 */
+	bool needsUpdate() const;
 
 	/**
 	 * Returns if the video has reached the end or not.
@@ -146,7 +173,12 @@ protected:
 			/**
 			 * The track is an audio track.
 			 */
-			kTrackTypeAudio
+			kTrackTypeAudio,
+
+			/**
+			 * The track is a video track.
+			 */
+			kTrackTypeVideo
 		};
 
 		/**
@@ -186,6 +218,82 @@ protected:
 
 	private:
 		bool _paused; ///< Is the track paused?
+	};
+
+	/**
+	 * An abstract representation of a video track.
+	 */
+	class VideoTrack : public Track {
+	public:
+		VideoTrack() {}
+		virtual ~VideoTrack() {}
+
+		TrackType getTrackType() const  { return kTrackTypeVideo; }
+		virtual bool endOfTrack() const;
+
+		/**
+		 * Get the width of this track.
+		 */
+		virtual uint32 getWidth() const = 0;
+
+		/**
+		 * Get the height of this track.
+		 */
+		virtual uint32 getHeight() const = 0;
+
+		/**
+		 * Get the current frame of this track
+		 */
+		virtual int getCurFrame() const = 0;
+
+		/**
+		 * Get the frame count of this track
+		 *
+		 * @note If the frame count is unknown, return 0 (which is also
+		 * the default implementation of the function). However, one must
+		 * also implement endOfTrack() in that case.
+		 */
+		virtual int getFrameCount() const { return 0; }
+
+		/**
+		 * Get the start time of the next frame since the start of the video.
+		 */
+		virtual Common::Timestamp getNextFrameStartTime() const = 0;
+
+		/**
+		 * Get the time the given frame should be shown.
+		 *
+		 * By default, this returns a negative (invalid) value. This function
+		 * should only be used by VideoDecoder::seekToFrame().
+		 */
+		virtual Common::Timestamp getFrameTime(uint frame) const;
+	};
+
+	/**
+	 * A VideoTrack that is played at a constant rate.
+	 *
+	 * If the frame count is unknown, you must override endOfTrack().
+	 */
+	class FixedRateVideoTrack : public VideoTrack {
+	public:
+		FixedRateVideoTrack() {}
+		virtual ~FixedRateVideoTrack() {}
+
+		Common::Timestamp getNextFrameStartTime() const;
+		virtual Common::Timestamp getDuration() const;
+		Common::Timestamp getFrameTime(uint frame) const;
+
+		/**
+		 * Get the frame that should be displaying at the given time. This is
+		 * helpful for someone implementing seek().
+		 */
+		uint getFrameAtTime(const Common::Timestamp &time) const;
+
+	protected:
+		/**
+		 * Get the rate at which this track is played.
+		 */
+		virtual Common::Rational getFrameRate() const = 0;
 	};
 
 	/**
@@ -266,6 +374,11 @@ protected:
 	typedef boost::shared_ptr<AudioTrack> AudioTrackPtr;
 
 	/**
+	 * A VideoTrack pointer
+	 */
+	typedef boost::shared_ptr<VideoTrack> VideoTrackPtr;
+
+	/**
 	 * A list of tracks
 	 */
 	typedef std::vector<TrackPtr> TrackList;
@@ -276,33 +389,38 @@ protected:
 	typedef std::vector<ConstTrackPtr> ConstTrackList;
 
 	bool _started;  ///< Has playback started?
-	bool _finished; ///< Has playback finished?
 	bool _needCopy; ///< Is new frame content available that needs to by copied?
 
-	uint32 _width;  ///< The video's width.
-	uint32 _height; ///< The video's height.
+	uint32 _width;  ///< The video's width (DEPRECATED).
+	uint32 _height; ///< The video's height (DEPRECATED).
 
 	Common::ScopedPtr<Graphics::Surface> _surface; ///< The video's surface.
 
-	/** Create a surface for video of these dimensions.
-	 *
-	 *  Since the data will be copied into the graphics card memory, the surface's
-	 *  actual dimensions will be rounded up to the next power of two values.
-	 *
-	 *  The surface's width and height will reflects that, while the video's
-	 *  width and height will be stored in _width and _height.
-	 *
-	 *  The surface's pixel format is always BGRA8888.
+	/**
+	 * DEPRECATED: Legacy interface for creating a video track. Use addTrack(),
+	 * and initVideo() instead.
 	 */
 	void initVideo(uint32 width, uint32 height);
 
+	/**
+	 * Create a surface for video of these dimensions.
+	 *
+	 * Since the data will be copied into the graphics card memory, the surface's
+	 * actual dimensions will be rounded up to the next power of two values.
+	 *
+	 * The surface's width and height is taken from getWidth() and getHeight().
+	 *
+	 * The surface's pixel format is always BGRA8888.
+	 */
+	void initVideo();
+
 	/** Start the video processing. */
-	virtual void startVideo() = 0;
+	virtual void startVideo() {}
 	/** Process the video's image and sound data further. */
-	virtual void processData() = 0;
+	virtual void processData();
 
 	/** Return the time, in milliseconds, of the next frame's time. */
-	virtual uint32 getNextFrameStartTime() const = 0;
+	virtual uint32 getNextFrameStartTime() const { return 0; }
 
 	void finish();
 
@@ -311,6 +429,14 @@ protected:
 	// GLContainer
 	void doRebuild();
 	void doDestroy();
+
+	/**
+	 * Decode enough data for the next frame
+	 *
+	 * Currently, audio may be buffered here at the same time. This is deprecated
+	 * in favor of using checkAudioBuffer().
+	 */
+	virtual void decodeNextTrackFrame(VideoTrack &track);
 
 	/**
 	 * Ensure that there is enough audio buffered in the given track
@@ -343,6 +469,13 @@ protected:
 	ConstTrackPtr getTrack(uint track) const;
 
 	/**
+	 * Set _nextVideoTrack to the video track with the lowest start time for the next frame.
+	 *
+	 * @return _nextVideoTrack
+	 */
+	VideoTrackPtr findNextVideoTrack();
+
+	/**
 	 * Get a copy of the internal tracks
 	 */
 	TrackList getInternalTracks() { return _internalTracks; }
@@ -356,6 +489,35 @@ private:
 	TrackList _tracks; ///< Tracks owned by this VideoDecoder (both internal and external).
 	TrackList _internalTracks; ///< Tracks internal to this VideoDecoder.
 	TrackList _externalTracks; ///< Tracks loaded from externals files.
+
+	/** Temporary legacy video track class */
+	class LegacyVideoTrack : public VideoTrack {
+	public:
+		LegacyVideoTrack(const VideoDecoder& decoder, uint32 width, uint32 height) :
+			_decoder(decoder),
+			_width(width),
+			_height(height),
+			_finished(false) {}
+
+		uint32 getWidth() const { return _width; }
+		uint32 getHeight() const { return _height; }
+		bool endOfTrack() const { return _finished; }
+		Common::Timestamp getNextFrameStartTime() const { return Common::Timestamp(_decoder.getNextFrameStartTime()); }
+		int getCurFrame() const { return 0; } // HACK
+
+		void finish() { _finished = true; }
+
+	private:
+		const VideoDecoder &_decoder;
+		uint32 _width;
+		uint32 _height;
+		bool _finished;
+	};
+
+	/** Temporary legacy video track object */
+	LegacyVideoTrack *_legacyVideoTrack;
+
+	VideoTrackPtr _nextVideoTrack; ///< The next video track that needs to display.
 
 	void stopAudio(); ///< Stop all audio tracks.
 	void startAudio(); ///< Start the designated internal audio track and any external audio tracks.

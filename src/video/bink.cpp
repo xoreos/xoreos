@@ -213,7 +213,7 @@ void Bink::processData() {
 				// Only play one audio track
 
 				// Get our track - audio index plus one as the first track is video
-				BinkAudioTrack& audioTrack = static_cast<BinkAudioTrack &>(*getTrack(i /* + 1*/));
+				BinkAudioTrack& audioTrack = static_cast<BinkAudioTrack &>(*getTrack(i + 1));
 
 				//                  Number of samples in bytes
 				audio.sampleCount = _bink->readUint32LE() / (2 * audio.channels);

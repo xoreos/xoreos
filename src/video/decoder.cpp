@@ -46,8 +46,8 @@
 namespace Video {
 
 VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
-	_started(false), _finished(false), _needCopy(false),
-	_width(0), _height(0), _texture(0),
+	_started(false), _needCopy(false),
+	_width(0), _height(0), _legacyVideoTrack(0), _nextVideoTrack(0), _texture(0),
 	_textureWidth(0.0f), _textureHeight(0.0f), _scale(kScaleNone),
 	_startTime(0), _pauseLevel(0), _pauseStartTime(0) {
 
@@ -69,16 +69,30 @@ void VideoDecoder::deinit() {
 }
 
 void VideoDecoder::initVideo(uint32 width, uint32 height) {
-	_width  = width;
+	// Hack a fake video track in
+	LegacyVideoTrack *track = new LegacyVideoTrack(*this, width, height);
+	addTrack(track);
+	_legacyVideoTrack = track;
+
+	// Hack in local width/height
+	_width = width;
 	_height = height;
+
+	// Now do the normal init video routine
+	initVideo();
+}
+
+void VideoDecoder::initVideo() {
+	uint32 width = getWidth();
+	uint32 height = getHeight();
 
 	// The real texture dimensions. Have to be a power of 2
 	int realWidth  = NEXTPOWER2(width);
 	int realHeight = NEXTPOWER2(height);
 
 	// Dimensions of the actual video part of texture
-	_textureWidth  = ((float) _width ) / ((float) realWidth );
-	_textureHeight = ((float) _height) / ((float) realHeight);
+	_textureWidth  = ((float) width ) / ((float) realWidth );
+	_textureHeight = ((float) height) / ((float) realHeight);
 
 	_surface.reset(new Graphics::Surface(realWidth, realHeight));
 
@@ -87,16 +101,40 @@ void VideoDecoder::initVideo(uint32 width, uint32 height) {
 	rebuild();
 }
 
+uint32 VideoDecoder::getWidth() const {
+	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
+		if ((*it)->getTrackType() == Track::kTrackTypeVideo)
+			return boost::static_pointer_cast<const VideoTrack>(*it)->getWidth();
+
+	return 0;
+}
+
+uint32 VideoDecoder::getHeight() const {
+	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
+		if ((*it)->getTrackType() == Track::kTrackTypeVideo)
+			return boost::static_pointer_cast<const VideoTrack>(*it)->getHeight();
+
+	return 0;
+}
+
 bool VideoDecoder::endOfVideo() const {
 	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
 		if (!(*it)->endOfTrack())
 			return false;
 
-	return !_finished;
+	return true;
 }
 
 bool VideoDecoder::endOfVideoTracks() const {
-	return !_finished;
+	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
+		if ((*it)->getTrackType() == Track::kTrackTypeVideo && !(*it)->endOfTrack())
+			return false;
+
+	return true;
+}
+
+bool VideoDecoder::needsUpdate() const {
+	return !endOfVideoTracks() && getTimeToNextFrame() == 0;
 }
 
 void VideoDecoder::pauseVideo(bool pause) {
@@ -138,6 +176,11 @@ void VideoDecoder::addTrack(Track *track, bool isExternal) {
 		// Update volume settings if it's an audio track
 		// TODO: Make this setting available via an external interface
 		boost::static_pointer_cast<AudioTrack>(owned)->setGain(1.0f);
+	} else if (track->getTrackType() == Track::kTrackTypeVideo) {
+		// If this track has a better time, update _nextVideoTrack
+		VideoTrackPtr videoTrack = boost::static_pointer_cast<VideoTrack>(owned);
+		if (!_nextVideoTrack || videoTrack->getNextFrameStartTime() < _nextVideoTrack->getNextFrameStartTime())
+			_nextVideoTrack = videoTrack;
 	}
 
 	// Keep the track paused if we're paused
@@ -161,6 +204,25 @@ VideoDecoder::ConstTrackPtr VideoDecoder::getTrack(uint track) const {
 		return 0;
 
 	return _internalTracks[track];
+}
+
+VideoDecoder::VideoTrackPtr VideoDecoder::findNextVideoTrack() {
+	_nextVideoTrack.reset();
+	Common::Timestamp bestTime(0xFFFFFFFF);
+
+	for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++) {
+		if ((*it)->getTrackType() == Track::kTrackTypeVideo && !(*it)->endOfTrack()) {
+			VideoTrackPtr track = boost::static_pointer_cast<VideoTrack>(*it);
+			Common::Timestamp time = track->getNextFrameStartTime();
+
+			if (time < bestTime) {
+				bestTime = time;
+				_nextVideoTrack = track;
+			}
+		}
+	}
+
+	return _nextVideoTrack;
 }
 
 VideoDecoder::ConstTrackList VideoDecoder::getInternalTracks() const {
@@ -250,29 +312,30 @@ bool VideoDecoder::isPlaying() const {
 		if (!(*it)->endOfTrack())
 			return true;
 
-	return !_finished;
-}
-
-void VideoDecoder::getSize(uint32 &width, uint32 &height) const {
-	width  = _width;
-	height = _height;
+	return false;
 }
 
 void VideoDecoder::update() {
-	if (getTimeToNextFrame() > 0)
+	if (!needsUpdate() || !_nextVideoTrack)
 		return;
 
 	debugC(Common::kDebugVideo, 9, "New video frame");
 
-	processData();
+	// Actually decode the frame for the track
+	decodeNextTrackFrame(*_nextVideoTrack);
+
+	// Copy the data to the screen
 	copyData();
+
+	// Look for the next video track here for the next decode.
+	findNextVideoTrack();
 
 	// Figure out how much audio we need
 	Common::Timestamp audioNeeded;
-	if (endOfVideoTracks())
-		audioNeeded = Common::Timestamp(0xFFFFFFFF);
+	if (_nextVideoTrack)
+		audioNeeded = _nextVideoTrack->getNextFrameStartTime().addMsecs(500);
 	else
-		audioNeeded = Common::Timestamp(getTimeToNextFrame() + 500, 1000);
+		audioNeeded = Common::Timestamp(0xFFFFFFFF);
 
 	// Ensure we have enough audio by the time we get to the next frame
 	for (TrackList::iterator it = _internalTracks.begin(); it != _internalTracks.end(); it++)
@@ -346,7 +409,8 @@ void VideoDecoder::render(Graphics::RenderPass pass) {
 }
 
 void VideoDecoder::finish() {
-	_finished = true;
+	if (_legacyVideoTrack)
+		_legacyVideoTrack->finish();
 }
 
 void VideoDecoder::start() {
@@ -380,15 +444,25 @@ uint32 VideoDecoder::getTime() const {
 }
 
 uint32 VideoDecoder::getTimeToNextFrame() const {
-	uint32 curTime = getTime();
-	if (curTime == 0)
+	if (!_nextVideoTrack || endOfVideo())
 		return 0;
 
-	uint32 nextFrameStartTime = getNextFrameStartTime();
-	if (nextFrameStartTime <= curTime)
+	uint32 currentTime = getTime();
+	uint32 nextFrameStartTime = _nextVideoTrack->getNextFrameStartTime().msecs();
+
+	if (nextFrameStartTime <= currentTime)
 		return 0;
 
-	return nextFrameStartTime - curTime;
+	return nextFrameStartTime - currentTime;
+}
+
+void VideoDecoder::processData() {
+	// Dummy function until the migration away from the old API
+}
+
+void VideoDecoder::decodeNextTrackFrame(VideoTrack &UNUSED(track)) {
+	// For the transition, just forward the call
+	processData();
 }
 
 void VideoDecoder::checkAudioBuffer(AudioTrack &UNUSED(track), const Common::Timestamp &UNUSED(endTime)) {
@@ -481,6 +555,43 @@ void VideoDecoder::AudioTrack::setMute(bool mute) {
 void VideoDecoder::AudioTrack::pauseIntern(bool shouldPause) {
 	if (SoundMan.isPlaying(_handle))
 		SoundMan.pauseChannel(_handle, shouldPause);
+}
+
+bool VideoDecoder::VideoTrack::endOfTrack() const {
+	return getCurFrame() >= (getFrameCount() - 1);
+}
+
+Common::Timestamp VideoDecoder::VideoTrack::getFrameTime(uint UNUSED(frame)) const {
+	// Default implementation: Return an invalid (negative) number
+	return Common::Timestamp().addFrames(-1);
+}
+
+Common::Timestamp VideoDecoder::FixedRateVideoTrack::getNextFrameStartTime() const {
+	if (endOfTrack() || getCurFrame() < 0)
+		return Common::Timestamp();
+
+	return getFrameTime(getCurFrame() + 1);
+}
+
+Common::Timestamp VideoDecoder::FixedRateVideoTrack::getFrameTime(uint frame) const {
+	return Common::Timestamp(0, frame, getFrameRate());
+}
+
+uint VideoDecoder::FixedRateVideoTrack::getFrameAtTime(const Common::Timestamp &time) const {
+	Common::Rational frameRate = getFrameRate();
+
+	// Easy conversion
+	if (frameRate == time.framerate())
+		return time.totalNumberOfFrames();
+
+	// Create the rational based on the time first to hopefully cancel out
+	// *something* when multiplying by the frameRate (which can be large in
+	// some AVI videos).
+	return (Common::Rational(time.totalNumberOfFrames(), time.framerate()) * frameRate).toInt();
+}
+
+Common::Timestamp VideoDecoder::FixedRateVideoTrack::getDuration() const {
+	return getFrameTime(getFrameCount());
 }
 
 } // End of namespace Video
