@@ -741,6 +741,27 @@ void Area::processCreaturesActions(float dt) {
 	}
 }
 
+void Area::removeObject(KotOR::Object *object) {
+	_module->removeObject(*object);
+
+	_objects.remove(object);
+
+	std::vector<Creature *>::iterator crit = std::find(_creatures.begin(), _creatures.end(), object);
+	if (crit != _creatures.end())
+		_creatures.erase(crit);
+
+	std::vector<Trigger *>::iterator tit = std::find(_triggers.begin(), _triggers.end(), object);
+	if (tit != _triggers.end())
+		_triggers.erase(tit);
+
+	std::list<Situated *>::iterator soit = std::find(_situatedObjects.begin(), _situatedObjects.end(), object);
+	if (soit != _situatedObjects.end())
+		_situatedObjects.erase(soit);
+
+	if (object == _activeTrigger)
+		_activeTrigger = 0;
+}
+
 Room *Area::getRoomAt(float x, float y) const {
 	for (RoomList::const_iterator r = _rooms.begin();
 			r != _rooms.end(); ++r) {

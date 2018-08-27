@@ -174,6 +174,12 @@ void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = item;
 }
 
+void Functions::destroyObject(Aurora::NWScript::FunctionContext &ctx) {
+	Engines::KotOR::Object *object = ObjectContainer::toObject(ctx.getParams()[0].getObject());
+	if (object)
+		_game->getModule().getCurrentArea()->removeObject(object);
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
