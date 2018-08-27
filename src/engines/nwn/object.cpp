@@ -35,6 +35,7 @@
 #include "src/aurora/nwscript/util.h"
 #include "src/aurora/nwscript/functioncontext.h"
 #include "src/aurora/nwscript/functionman.h"
+#include "src/aurora/nwscript/objectman.h"
 
 #include "src/sound/sound.h"
 
@@ -53,6 +54,7 @@ Object::Object(ObjectType type) : _type(type),
 	_pcSpeaker(0), _area(0) {
 
 	_id = Common::generateIDNumber();
+	ObjectMan.registerObject(this);
 
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
@@ -64,6 +66,7 @@ Object::Object(ObjectType type) : _type(type),
 }
 
 Object::~Object() {
+	ObjectMan.unregisterObject(this);
 	destroyTooltip();
 }
 
