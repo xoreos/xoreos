@@ -65,6 +65,9 @@ public:
 	/** Return the object that last used this situated object. */
 	Object *getLastUsedBy  () const;
 
+	/** Get the conversation for this object. */
+	const Common::UString &getConversation() const;
+
 	// Positioning
 
 	/** Set the situated object's position. */
@@ -95,6 +98,8 @@ protected:
 	Common::UString _soundDestroyed; ///< The sound the object makes when destroyed.
 	Common::UString _soundUsed;      ///< The sound the object makes when used.
 	Common::UString _soundLocked;    ///< The sound the object makes when locked.
+
+	Common::UString _conversation; ///< The optional conversation with this situated object.
 
 	Object *_lastOpenedBy; ///< The object that last opened this situated object.
 	Object *_lastClosedBy; ///< The object that last closed this situated object.
