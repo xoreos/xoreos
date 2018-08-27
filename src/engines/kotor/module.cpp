@@ -500,6 +500,12 @@ void Module::clickObject(Object *object) {
 		return;
 	}
 
+	Situated *situated = ObjectContainer::toSituated(object);
+	if (situated && !situated->getConversation().empty()) {
+		startConversation(situated->getConversation(), situated);
+		return;
+	}
+
 	Placeable *placeable = ObjectContainer::toPlaceable(object);
 	if (placeable) {
 		if (placeable->hasInventory()) {
