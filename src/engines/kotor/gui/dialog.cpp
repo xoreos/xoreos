@@ -296,7 +296,11 @@ void DialogGUI::makeLookAtPC(const Common::UString &tag) {
 	if (!o)
 		return;
 
-	o->makeLookAt(pc);
+	// Only creatures should orient themselves to the pc.
+	Creature *creature = ObjectContainer::toCreature(o);
+	if (creature)
+		creature->makeLookAt(pc);
+
 	pc->makeLookAt(o);
 
 	float x, y, z, a;
