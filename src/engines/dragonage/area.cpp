@@ -68,7 +68,7 @@ using namespace ::Aurora::GFF4FieldNamesEnum;
 
 Area::Area(Campaign &campaign, const Common::UString &resRef,
            const Common::UString &env, const Common::UString &rim) :
-	Object(kObjectTypeArea), _campaign(&campaign), _resRef(resRef), _activeObject(0), _highlightAll(0) {
+	Object(kObjectTypeArea), _campaign(&campaign), _resRef(resRef), _environmentID(0xFFFFFFFF), _activeObject(0), _highlightAll(0) {
 
 	try {
 
@@ -119,7 +119,7 @@ void Area::loadEnvironment(const Common::UString &resRef) {
 
 	const GFF4Struct &arlTop = arl.getTopLevel();
 
-	_id = (uint32) ((int32) arlTop.getSint(kGFF4EnvAreaID, -1));
+	_environmentID = (uint32) ((int32) arlTop.getSint(kGFF4EnvAreaID, -1));
 
 	_environmentName = arlTop.getString(kGFF4EnvAreaName);
 	_skyDome         = arlTop.getString(kGFF4EnvAreaSkydomeModel);
