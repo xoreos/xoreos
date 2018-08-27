@@ -114,6 +114,10 @@ Object *Situated::getLastUsedBy() const {
 	return _lastUsedBy;
 }
 
+const Common::UString &Situated::getConversation() const {
+	return _conversation;
+}
+
 void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 
@@ -194,6 +198,9 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Locked
 	_locked = gff.getBool("Locked", _locked);
+
+	// Conversation
+	_conversation = gff.getString("Conversation", _conversation);
 
 	// Scripts
 	readScripts(gff);
