@@ -30,6 +30,7 @@
 #include "src/aurora/nwscript/types.h"
 #include "src/aurora/nwscript/util.h"
 #include "src/aurora/nwscript/variable.h"
+#include "src/aurora/nwscript/objectref.h"
 
 namespace Aurora {
 
@@ -61,9 +62,11 @@ public:
 
 	Object *getCaller() const;
 	void setCaller(Object *obj);
+	void setCaller(const ObjectReference &obj);
 
 	Object *getTriggerer() const;
 	void setTriggerer(Object *obj);
+	void setTriggerer(const ObjectReference &obj);
 
 	Variable &getReturn();
 	const Variable &getReturn() const;
@@ -82,8 +85,8 @@ private:
 
 	Signature _signature; ///< The function's signature.
 
-	Object *_caller;    ///< The calling object.
-	Object *_triggerer; ///< The triggering person.
+	ObjectReference _caller;    ///< The calling object.
+	ObjectReference _triggerer; ///< The triggering person.
 
 	Variable   _return;     ///< The function's return value.
 	Parameters _parameters; ///< The function's parameters.

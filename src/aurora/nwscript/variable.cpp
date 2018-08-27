@@ -29,6 +29,7 @@
 
 #include "src/aurora/nwscript/variable.h"
 #include "src/aurora/nwscript/enginetype.h"
+#include "src/aurora/nwscript/objectref.h"
 
 namespace Aurora {
 
@@ -57,6 +58,12 @@ Variable::Variable(const Common::UString &value) : _type(kTypeVoid) {
 }
 
 Variable::Variable(Object *value) : _type(kTypeVoid) {
+	setType(kTypeObject);
+
+	*this = value;
+}
+
+Variable::Variable(const ObjectReference &value) : _type(kTypeVoid) {
 	setType(kTypeObject);
 
 	*this = value;
@@ -93,6 +100,8 @@ void Variable::setType(Type type) {
 
 	if      (_type == kTypeString)
 		delete _value._string;
+	else if (_type == kTypeObject)
+		delete _value._object;
 	else if (_type == kTypeEngineType)
 		delete _value._engineType;
 	else if (_type == kTypeScriptState)
@@ -122,7 +131,7 @@ void Variable::setType(Type type) {
 			break;
 
 		case kTypeObject:
-			_value._object = 0;
+			_value._object = new ObjectReference;
 			break;
 
 		case kTypeVector:
@@ -157,6 +166,8 @@ Variable &Variable::operator=(const Variable &var) {
 
 	if      (_type == kTypeString)
 		*_value._string = *var._value._string;
+	else if (_type == kTypeObject)
+		*_value._object = *var._value._object;
 	else if (_type == kTypeEngineType)
 		*this = var._value._engineType;
 	else if (_type == kTypeScriptState)
@@ -200,7 +211,16 @@ Variable &Variable::operator=(Object *value) {
 	if (_type != kTypeObject)
 		throw Common::Exception("Can't assign an object value to a non-object variable");
 
-	_value._object = value;
+	*_value._object = value;
+
+	return *this;
+}
+
+Variable &Variable::operator=(const ObjectReference &value) {
+	if (_type != kTypeObject)
+		throw Common::Exception("Can't assign an object value to a non-object variable");
+
+	*_value._object = value;
 
 	return *this;
 }
@@ -245,7 +265,7 @@ bool Variable::operator==(const Variable &var) const {
 			return *_value._string == *var._value._string;
 
 		case kTypeObject:
-			return _value._object == var._value._object;
+			return *_value._object == *var._value._object;
 
 		case kTypeVector:
 			return _value._vector[0] == var._value._vector[0] &&
@@ -302,7 +322,7 @@ Object *Variable::getObject() const {
 	if (_type != kTypeObject)
 		throw Common::Exception("Can't get an object value from a non-object variable");
 
-	return _value._object;
+	return **_value._object;
 }
 
 EngineType *Variable::getEngineType() const {
