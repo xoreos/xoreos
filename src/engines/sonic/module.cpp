@@ -24,10 +24,13 @@
 
 #include "src/common/error.h"
 #include "src/common/ustring.h"
+#include "src/common/uuid.h"
 
 #include "src/graphics/camera.h"
 
 #include "src/events/events.h"
+
+#include "src/aurora/nwscript/objectman.h"
 
 #include "src/engines/aurora/console.h"
 
@@ -40,10 +43,13 @@ namespace Sonic {
 
 Module::Module(::Engines::Console &console) : Object(kObjectTypeModule),
 	_console(&console), _running(false), _exit(false), _newArea(-1) {
-
+	_id = Common::generateIDNumber();
+	ObjectMan.registerObject(this);
 }
 
 Module::~Module() {
+	ObjectMan.unregisterObject(this);
+
 	try {
 		clear();
 	} catch (...) {

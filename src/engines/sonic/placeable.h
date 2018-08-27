@@ -70,6 +70,7 @@ protected:
 	/** The placeable's model. */
 	Common::ScopedPtr<Graphics::Aurora::Model> _model;
 
+	uint32 _placeableID;  ///< The placeable's identifer from GFF.
 	uint32 _typeID;       ///< The placeable's type.
 	uint32 _appearanceID; ///< The placeable's appearance.
 
