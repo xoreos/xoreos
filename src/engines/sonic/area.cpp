@@ -30,6 +30,8 @@
 #include "src/aurora/gff4file.h"
 #include "src/aurora/talkman.h"
 
+#include "src/aurora/nwscript/objectman.h"
+
 #include "src/graphics/graphics.h"
 #include "src/graphics/renderable.h"
 #include "src/graphics/camera.h"
@@ -55,6 +57,7 @@ Area::Area(Module &module, uint32 id) : Object(kObjectTypeArea),
 	_numberRings(0), _numberChaoEggs(0), _activeObject(0), _highlightAll(false) {
 
 	_id = id;
+	ObjectMan.registerObject(this);
 
 	load();
 
@@ -63,6 +66,8 @@ Area::Area(Module &module, uint32 id) : Object(kObjectTypeArea),
 }
 
 Area::~Area() {
+	ObjectMan.unregisterObject(this);
+
 	_module->removeObject(*this);
 
 	hide();
