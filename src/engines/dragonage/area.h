@@ -103,6 +103,7 @@ private:
 
 	Common::UString _resRef;
 
+	uint32 _environmentID;
 	Common::UString _environmentName;
 	Common::UString _skyDome;
 

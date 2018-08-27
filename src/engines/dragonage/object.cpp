@@ -24,9 +24,12 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/uuid.h"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/gff4file.h"
+
+#include "src/aurora/nwscript/objectman.h"
 
 #include "src/engines/dragonage/object.h"
 
@@ -47,6 +50,9 @@ using ::Aurora::GFF4List;
 using namespace ::Aurora::GFF4FieldNamesEnum;
 
 Object::Object(ObjectType type) : _type(type), _static(true), _usable(false) {
+	_id = Common::generateIDNumber();
+	ObjectMan.registerObject(this);
+
 	_position[0] = 0.0f;
 	_position[1] = 0.0f;
 	_position[2] = 0.0f;
@@ -58,6 +64,7 @@ Object::Object(ObjectType type) : _type(type), _static(true), _usable(false) {
 }
 
 Object::~Object() {
+	ObjectMan.unregisterObject(this);
 }
 
 ObjectType Object::getType() const {
