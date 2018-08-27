@@ -274,13 +274,13 @@ void NCSFile::setupOpcodes() {
 
 #undef OPCODE
 
-NCSFile::NCSFile(Common::SeekableReadStream *ncs) : _script(ncs), _owner(0), _triggerer(0) {
+NCSFile::NCSFile(Common::SeekableReadStream *ncs) : _script(ncs) {
 	assert(_script);
 
 	load();
 }
 
-NCSFile::NCSFile(const Common::UString &ncs) : _name(ncs), _owner(0), _triggerer(0) {
+NCSFile::NCSFile(const Common::UString &ncs) : _name(ncs) {
 	_script.reset(ResMan.getResource(ncs, kFileTypeNCS));
 	if (!_script)
 		throw Common::Exception("No such NCS \"%s\"", ncs.c_str());

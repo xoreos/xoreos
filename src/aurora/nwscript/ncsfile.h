@@ -37,6 +37,7 @@
 #include "src/aurora/nwscript/types.h"
 #include "src/aurora/nwscript/variable.h"
 #include "src/aurora/nwscript/variablecontainer.h"
+#include "src/aurora/nwscript/objectref.h"
 
 namespace Common {
 	class UString;
@@ -165,8 +166,8 @@ private:
 
 	Variable _return;
 
-	Object *_owner;
-	Object *_triggerer;
+	ObjectReference _owner;
+	ObjectReference _triggerer;
 
 	VariableContainer _env;
 

@@ -33,6 +33,8 @@ src_aurora_nwscript_libnwscript_la_SOURCES += \
     src/aurora/nwscript/objectcontainer.h \
     src/aurora/nwscript/functionman.h \
     src/aurora/nwscript/ncsfile.h \
+    src/aurora/nwscript/objectref.h \
+    src/aurora/nwscript/objectman.h \
     $(EMPTY)
 
 src_aurora_nwscript_libnwscript_la_SOURCES += \
@@ -43,4 +45,6 @@ src_aurora_nwscript_libnwscript_la_SOURCES += \
     src/aurora/nwscript/objectcontainer.cpp \
     src/aurora/nwscript/functionman.cpp \
     src/aurora/nwscript/ncsfile.cpp \
+    src/aurora/nwscript/objectref.cpp \
+    src/aurora/nwscript/objectman.cpp \
     $(EMPTY)

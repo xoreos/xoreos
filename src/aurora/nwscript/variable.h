@@ -45,6 +45,7 @@ namespace NWScript {
 
 class Object;
 class EngineType;
+class ObjectReference;
 
 struct ScriptState {
 	uint32 offset;
@@ -61,6 +62,7 @@ public:
 	Variable(float value);
 	Variable(const Common::UString &value);
 	Variable(Object *value);
+	Variable(const ObjectReference &value);
 	Variable(const EngineType *value);
 	Variable(const EngineType &value);
 	Variable(float x, float y, float z);
@@ -75,6 +77,7 @@ public:
 	Variable &operator=(float value);
 	Variable &operator=(const Common::UString &value);
 	Variable &operator=(Object *value);
+	Variable &operator=(const ObjectReference &value);
 	Variable &operator=(const EngineType *value);
 	Variable &operator=(const EngineType &value);
 
@@ -113,7 +116,7 @@ private:
 		int32 _int;
 		float _float;
 		Common::UString *_string;
-		Object *_object;
+		ObjectReference *_object;
 		float _vector[3];
 		ScriptState *_scriptState;
 		EngineType *_engineType;
