@@ -700,7 +700,7 @@ void ModelNode::calcRenderTransform(const glm::mat4 &parentTransform) {
 	    _orientation[1] != 0.0f ||
 	    _orientation[2] != 0.0f) {
 		_renderTransform = glm::rotate(_renderTransform,
-		                               _orientation[3],
+		                               Common::deg2rad(_orientation[3]),
 		                               glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
 	}
 	_renderTransform = glm::rotate(_renderTransform, _rotation[0], glm::vec3(1.0f, 0.0f, 0.0f));
