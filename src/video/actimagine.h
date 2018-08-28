@@ -42,11 +42,8 @@ public:
 	ActimagineDecoder(Common::SeekableReadStream *vx);
 	~ActimagineDecoder();
 
-	uint32 getNextFrameStartTime() const;
-
 protected:
-	void startVideo();
-	void processData();
+	void decodeNextTrackFrame(VideoTrack &track);
 
 private:
 	Common::ScopedPtr<Common::SeekableReadStream> _vx;

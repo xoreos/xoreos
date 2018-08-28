@@ -41,15 +41,8 @@ ActimagineDecoder::ActimagineDecoder(Common::SeekableReadStream *vx) : _vx(vx) {
 ActimagineDecoder::~ActimagineDecoder() {
 }
 
-uint32 ActimagineDecoder::getNextFrameStartTime() const {
-	return 0;
-}
-
-void ActimagineDecoder::startVideo() {
-}
-
-void ActimagineDecoder::processData() {
-	throw Common::Exception("STUB: ActimagineDecoder::processData()");
+void ActimagineDecoder::decodeNextTrackFrame(VideoTrack &UNUSED(track)) {
+	throw Common::Exception("STUB: ActimagineDecoder::decodeNextTrackFrame()");
 }
 
 void ActimagineDecoder::load() {
