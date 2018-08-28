@@ -28,6 +28,7 @@
 #include "src/common/memreadstream.h"
 #include "src/common/ptrvector.h"
 #include "src/common/strutil.h"
+#include "src/common/timestamp.h"
 
 #include "src/sound/audiostream.h"
 #include "src/sound/interleaver.h"
@@ -50,7 +51,7 @@ static const int kAudioFlagADPCM51               = kAudioFlagADPCM51FrontLeftRig
 namespace Video {
 
 XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) :
-	_xmv(xmv), _audioTrackCount(0) {
+	_xmv(xmv), _videoTrack(0), _audioTrackCount(0) {
 
 	assert(_xmv);
 
@@ -58,19 +59,6 @@ XboxMediaVideo::XboxMediaVideo(Common::SeekableReadStream *xmv) :
 }
 
 XboxMediaVideo::~XboxMediaVideo() {
-}
-
-uint32 XboxMediaVideo::getNextFrameStartTime() const {
-	if (!_started)
-		return 0;
-
-	return _curPacket.video.currentFrameTimestamp;
-}
-
-void XboxMediaVideo::startVideo() {
-	queueNewAudio(_curPacket);
-
-	_started   = true;
 }
 
 void XboxMediaVideo::queueNewAudio(PacketAudio &audioPacket) {
@@ -116,15 +104,10 @@ void XboxMediaVideo::processNextFrame(PacketVideo &videoPacket) {
 	// Decode the frame
 
 	if (videoPacket.currentFrameSize > 0) {
-		if (_videoCodec) {
-			assert(_surface);
+		Common::SeekableSubReadStream frameData(_xmv.get(), _xmv->pos(), _xmv->pos() + videoPacket.currentFrameSize);
+		_needCopy = _videoTrack->decodeFrame(*_surface, frameData);
 
-			Common::SeekableSubReadStream frameData(_xmv.get(), _xmv->pos(),
-			                                        _xmv->pos() + videoPacket.currentFrameSize);
-
-			_videoCodec->decodeFrame(*_surface, frameData);
-			_needCopy = true;
-		} else
+		if (!_needCopy)
 			warning("XboxMediaVideo::processNextFrame(): Video frame without a decoder");
 	}
 
@@ -176,10 +159,6 @@ void XboxMediaVideo::load() {
 		audioTrackInfo[i].bitsPerSample = _xmv->readUint16LE();
 		audioTrackInfo[i].flags         = _xmv->readUint16LE();
 	}
-
-
-	// Initialize the video
-	initVideo(width, height);
 
 	// Initialize the audio tracks
 	Common::PtrVector<XMVAudioTrack> audioTracks;
@@ -244,9 +223,18 @@ void XboxMediaVideo::load() {
 		break;
 	}
 
+	// Add the video track
+	_videoTrack = new XMVVideoTrack(width, height, _curPacket.video.currentFrameTimestamp);
+	addTrack(_videoTrack);
 
 	// Fetch the first packet
 	fetchNextPacket(_curPacket);
+
+	// Feed audio
+	queueNewAudio(_curPacket);
+
+	// Initialize video
+	initVideo();
 }
 
 void XboxMediaVideo::fetchNextPacket(Packet &packet) {
@@ -323,26 +311,24 @@ void XboxMediaVideo::processPacketHeader(Packet &packet) {
 
 	// If we have extra data, (re)create the video codec
 
-	if (hasExtraData && (packet.video.dataSize < 4))
-		warning("XboxMediaVideo::processPacketHeader(): Video extra data doesn't fit");
-
-	if (packet.video.dataSize >= 4) {
-		if (hasExtraData) {
+	if (hasExtraData) {
+		if (packet.video.dataSize >= 4) {
 			Common::SeekableSubReadStream extraData(_xmv.get(), _xmv->pos(), _xmv->pos() + 4);
 
-			_videoCodec.reset(new XMVWMV2Codec(_width, _height, extraData));
+			_videoTrack->initCodec(extraData);
 
 			packet.video.dataSize   -= 4;
 			packet.video.dataOffset += 4;
+		} else {
+			warning("XboxMediaVideo::processPacketHeader(): Video extra data doesn't fit");
 		}
 	}
-
 }
 
-void XboxMediaVideo::processData() {
+void XboxMediaVideo::decodeNextTrackFrame(VideoTrack &track) {
 	// No frames left => we finished playing
 	if (_curPacket.video.frameCount == 0) {
-		finish();
+		static_cast<XMVVideoTrack &>(track).finish();
 
 		for (uint32 i = 0; i < _audioTrackCount; i++)
 			if (_curPacket.audio[i].track)
@@ -361,6 +347,30 @@ void XboxMediaVideo::processData() {
 		fetchNextPacket(_curPacket);
 		queueNewAudio(_curPacket);
 	}
+}
+
+XboxMediaVideo::XMVVideoTrack::XMVVideoTrack(uint32 width, uint32 height, uint32 &timestamp) : _width(width), _height(height), _timestamp(timestamp), _curFrame(-1), _finished(false) {
+}
+
+bool XboxMediaVideo::XMVVideoTrack::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &frameData) {
+	_curFrame++;
+
+	if (!_videoCodec)
+		return false;
+
+	_videoCodec->decodeFrame(surface, frameData);
+	return true;
+}
+
+void XboxMediaVideo::XMVVideoTrack::initCodec(Common::SeekableReadStream &extraData) {
+	_videoCodec.reset(new XMVWMV2Codec(_width, _height, extraData));
+}
+
+Common::Timestamp XboxMediaVideo::XMVVideoTrack::getNextFrameStartTime() const {
+	if (_curFrame < 0)
+		return 0;
+
+	return Common::Timestamp(0, _timestamp, 1000);
 }
 
 XboxMediaVideo::XMVAudioTrack::XMVAudioTrack(const XboxMediaVideo::AudioInfo &info) : _info(info) {

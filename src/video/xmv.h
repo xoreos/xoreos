@@ -50,11 +50,8 @@ public:
 	XboxMediaVideo(Common::SeekableReadStream *xmv);
 	~XboxMediaVideo();
 
-	uint32 getNextFrameStartTime() const;
-
 protected:
-	void startVideo();
-	void processData();
+	void decodeNextTrackFrame(VideoTrack &track);
 
 private:
 	/** An audio track's information. */
@@ -64,6 +61,32 @@ private:
 		uint32 rate;          ///< The sampling rate.
 		uint16 bitsPerSample; ///< The number of bits per encoded sample.
 		uint16 flags;         ///< Flags.
+	};
+
+	class XMVVideoTrack : public VideoTrack {
+	public:
+		XMVVideoTrack(uint32 width, uint32 height, uint32 &timestamp);
+
+		bool endOfTrack() const { return _finished; }
+
+		uint32 getWidth() const { return _width; }
+		uint32 getHeight() const { return _height; }
+		int getCurFrame() const { return _curFrame; }
+		Common::Timestamp getNextFrameStartTime() const;
+
+		bool decodeFrame(Graphics::Surface &surface, Common::SeekableReadStream &frameData);
+		void initCodec(Common::SeekableReadStream &extraData);
+		void finish() { _finished = true; }
+
+	private:
+		uint32 _width;
+		uint32 _height;
+		uint32 &_timestamp;
+		int _curFrame;
+		bool _finished;
+
+		/** The video codec. */
+		Common::ScopedPtr<Codec> _videoCodec;
 	};
 
 	/** An XMV audio track. */
@@ -148,14 +171,14 @@ private:
 
 	Common::ScopedPtr<Common::SeekableReadStream> _xmv;
 
+	/** The current video track. */
+	XMVVideoTrack *_videoTrack;
+
 	/** The audio track count. */
 	uint32 _audioTrackCount;
 
 	/** The current packet. */
 	Packet _curPacket;
-
-	/** The video codec. */
-	Common::ScopedPtr<Codec> _videoCodec;
 
 
 	/** Load an XMV file. */
