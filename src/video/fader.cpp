@@ -32,39 +32,23 @@
 
 namespace Video {
 
-Fader::Fader(uint32 width, uint32 height, int n) : _c(0), _n(n), _lastUpdate(0) {
-	initVideo(width, height);
+Fader::Fader(uint32 width, uint32 height, int n) {
+	addTrack(new FaderVideoTrack(width, height, n));
+	initVideo();
 }
 
-Fader::~Fader() {
+void Fader::decodeNextTrackFrame(VideoTrack &track) {
+	assert(_surface);
+	static_cast<FaderVideoTrack &>(track).drawFrame(*_surface);
+	_needCopy = true;
 }
 
-bool Fader::hasTime() const {
-	if (!_started)
-		return true;
-
-	if ((EventMan.getTimestamp() - _lastUpdate) < 20)
-		return true;
-
-	return false;
+Fader::FaderVideoTrack::FaderVideoTrack(uint32 width, uint32 height, int n) : _width(width), _height(height), _curFrame(-1), _c(0), _n(n) {
 }
 
-void Fader::processData() {
-	uint32 curTime  = EventMan.getTimestamp();
-	uint32 diffTime = curTime - _lastUpdate;
-	if (_started && (diffTime < 20))
-		return;
-
-	if (!_started) {
-		_lastUpdate = curTime;
-		_started    = true;
-
-		_c = 0;
-	} else
-		_c += 2;
-
+void Fader::FaderVideoTrack::drawFrame(Graphics::Surface &surface) {
 	// Fade from black to green
-	byte *data = _surface->getData();
+	byte *data = surface.getData();
 	for (uint32 i = 0; i < _height; i++) {
 		byte *rowData = data;
 
@@ -75,30 +59,25 @@ void Fader::processData() {
 			rowData[3] = 255;
 		}
 
-		data += _surface->getWidth() * 4;
+		data += surface.getWidth() * 4;
 	}
 
 	// Keep a red square in the middle
 	int xPos = (_width  / 2) - 2;
 	int yPos = (_height / 2) - 2;
-	int dPos = (yPos * _surface->getWidth() + xPos) * 4;
+	int dPos = (yPos * surface.getWidth() + xPos) * 4;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
-			_surface->getData()[dPos + j * 4 + 0] =   0;
-			_surface->getData()[dPos + j * 4 + 1] =   0;
-			_surface->getData()[dPos + j * 4 + 2] = 255;
-			_surface->getData()[dPos + j * 4 + 3] = 255;
+			surface.getData()[dPos + j * 4 + 0] =   0;
+			surface.getData()[dPos + j * 4 + 1] =   0;
+			surface.getData()[dPos + j * 4 + 2] = 255;
+			surface.getData()[dPos + j * 4 + 3] = 255;
 		}
-		dPos += _surface->getWidth() * 4;
+		dPos += surface.getWidth() * 4;
 	}
 
-	_lastUpdate = curTime;
-
-	if (_c == 0)
-		if (_n-- <= 0)
-			finish();
-
-	_needCopy = true;
+	_c += 2;
+	_curFrame++;
 }
 
 } // End of namespace Video

@@ -25,6 +25,8 @@
 #ifndef VIDEO_FADER_H
 #define VIDEO_FADER_H
 
+#include "src/common/rational.h"
+
 #include "src/video/decoder.h"
 
 namespace Video {
@@ -33,18 +35,32 @@ namespace Video {
 class Fader : public VideoDecoder {
 public:
 	Fader(uint32 width, uint32 height, int n);
-	~Fader();
-
-	bool hasTime() const;
 
 protected:
-	void processData();
+	void decodeNextTrackFrame(VideoTrack &track);
 
 private:
-	byte _c;
-	int _n;
+	class FaderVideoTrack : public FixedRateVideoTrack {
+	public:
+		FaderVideoTrack(uint32 width, uint32 height, int n);
 
-	uint32 _lastUpdate;
+		uint32 getWidth() const { return _width; }
+		uint32 getHeight() const { return _height; }
+		int getCurFrame() const { return _curFrame; }
+		int getFrameCount() const { return _n * 128; }
+
+		void drawFrame(Graphics::Surface &surface);
+
+	protected:
+		Common::Rational getFrameRate() const { return 50; }
+
+	private:
+		uint32 _width;
+		uint32 _height;
+		int _curFrame;
+		byte _c;
+		int _n;
+	};
 };
 
 } // End of namespace Video
