@@ -291,6 +291,8 @@ void Module::unload(bool completeUnload) {
 
 		_globalNumbers.clear();
 		_globalBooleans.clear();
+
+		_availableParty.clear();
 	}
 
 	unloadIFO();
