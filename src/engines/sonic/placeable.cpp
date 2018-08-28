@@ -24,10 +24,13 @@
 
 #include "src/common/util.h"
 #include "src/common/maths.h"
+#include "src/common/uuid.h"
 
 #include "src/aurora/gff4file.h"
 #include "src/aurora/gdafile.h"
 #include "src/aurora/2dareg.h"
+
+#include "src/aurora/nwscript/objectman.h"
 
 #include "src/graphics/aurora/model.h"
 
@@ -52,12 +55,16 @@ namespace Engines {
 namespace Sonic {
 
 Placeable::Placeable(const Aurora::GFF4Struct &placeable) : Object(kObjectTypePlaceable),
-	_typeID(0xFFFFFFFF), _appearanceID(0xFFFFFFFF), _scale(1.0f) {
+	_placeableID(0xFFFFFFFF), _typeID(0xFFFFFFFF), _appearanceID(0xFFFFFFFF), _scale(1.0f) {
+	_id = Common::generateIDNumber();
+	ObjectMan.registerObject(this);
 
 	load(placeable);
 }
 
 Placeable::~Placeable() {
+	ObjectMan.unregisterObject(this);
+
 	hide();
 
 	try {
@@ -113,8 +120,8 @@ void Placeable::setOrientation(float x, float y, float z, float angle) {
 void Placeable::load(const Aurora::GFF4Struct &placeable) {
 	_tag = placeable.getString(Aurora::kGFF4Tag);
 
-	_id     = placeable.getUint(40023, 0xFFFFFFFF);
-	_typeID = placeable.getUint(40018, 0xFFFFFFFF);
+	_placeableID = placeable.getUint(40023, 0xFFFFFFFF);
+	_typeID      = placeable.getUint(40018, 0xFFFFFFFF);
 
 	_appearanceID = 0xFFFFFFFF;
 	if (_typeID < ARRAYSIZE(kTypeAppearances))

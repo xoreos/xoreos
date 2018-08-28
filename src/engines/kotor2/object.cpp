@@ -23,6 +23,9 @@
  */
 
 #include "src/common/maths.h"
+#include "src/common/uuid.h"
+
+#include "src/aurora/nwscript/objectman.h"
 
 #include "src/engines/kotor2/object.h"
 
@@ -39,6 +42,9 @@ Object::Object(ObjectType type)
 		  _static(false),
 		  _usable(true),
 		  _room(0) {
+	_id = Common::generateIDNumber();
+	ObjectMan.registerObject(this);
+
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
 	_position   [2] = 0.0f;
@@ -49,6 +55,7 @@ Object::Object(ObjectType type)
 }
 
 Object::~Object() {
+	ObjectMan.unregisterObject(this);
 }
 
 ObjectType Object::getType() const {

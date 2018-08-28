@@ -32,7 +32,7 @@ namespace Aurora {
 namespace NWScript {
 
 FunctionContext::FunctionContext(const Common::UString &name) : _name(name),
-	_caller(0), _triggerer(0), _currentScript(0), _defaultCount(0), _paramsSpecified(0) {
+	_currentScript(0), _defaultCount(0), _paramsSpecified(0) {
 
 }
 
@@ -117,18 +117,26 @@ const Signature &FunctionContext::getSignature() const {
 }
 
 Object *FunctionContext::getCaller() const {
-	return _caller;
+	return *_caller;
 }
 
 void FunctionContext::setCaller(Object *obj) {
 	_caller = obj;
 }
 
+void FunctionContext::setCaller(const ObjectReference &obj) {
+	_caller = obj;
+}
+
 Object *FunctionContext::getTriggerer() const {
-	return _triggerer;
+	return *_triggerer;
 }
 
 void FunctionContext::setTriggerer(Object *obj) {
+	_triggerer = obj;
+}
+
+void FunctionContext::setTriggerer(const ObjectReference &obj) {
 	_triggerer = obj;
 }
 

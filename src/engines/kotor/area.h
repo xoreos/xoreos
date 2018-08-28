@@ -141,6 +141,8 @@ public:
 
 	void processCreaturesActions(float dt);
 
+	void removeObject(KotOR::Object *object);
+
 
 protected:
 	void notifyCameraMoved();

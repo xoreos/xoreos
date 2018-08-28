@@ -24,8 +24,11 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/uuid.h"
 
 #include "src/aurora/dlgfile.h"
+
+#include "src/aurora/nwscript/objectman.h"
 
 #include "src/sound/sound.h"
 
@@ -39,6 +42,8 @@ namespace Witcher {
 
 Object::Object(ObjectType type) : _type(type),
 	_static(false), _usable(true), _area(0) {
+	_id = Common::generateIDNumber();
+	ObjectMan.registerObject(this);
 
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
@@ -50,6 +55,7 @@ Object::Object(ObjectType type) : _type(type),
 }
 
 Object::~Object() {
+	ObjectMan.unregisterObject(this);
 }
 
 ObjectType Object::getType() const {

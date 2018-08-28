@@ -30,6 +30,8 @@
 
 #include "src/aurora/types.h"
 
+#include "src/aurora/nwscript/objectref.h"
+
 #include "src/engines/nwn2/types.h"
 
 namespace Aurora {
@@ -51,16 +53,17 @@ public:
 
 	bool hasScript(Script script) const;
 
-	bool runScript(Script script, Aurora::NWScript::Object *owner = 0,
-	               Aurora::NWScript::Object *triggerer = 0);
+	bool runScript(Script script,
+	               const Aurora::NWScript::ObjectReference owner = Aurora::NWScript::ObjectReference(),
+	               const Aurora::NWScript::ObjectReference triggerer = Aurora::NWScript::ObjectReference());
 
 	static bool runScript(const Common::UString &script,
-	                      Aurora::NWScript::Object *owner = 0,
-	                      Aurora::NWScript::Object *triggerer = 0);
+	                      const Aurora::NWScript::ObjectReference owner = Aurora::NWScript::ObjectReference(),
+	                      const Aurora::NWScript::ObjectReference triggerer = Aurora::NWScript::ObjectReference());
 	static bool runScript(const Common::UString &script,
 	                      const Aurora::NWScript::ScriptState &state,
-	                      Aurora::NWScript::Object *owner = 0,
-	                      Aurora::NWScript::Object *triggerer = 0);
+	                      const Aurora::NWScript::ObjectReference owner = Aurora::NWScript::ObjectReference(),
+	                      const Aurora::NWScript::ObjectReference triggerer = Aurora::NWScript::ObjectReference());
 
 protected:
 	void clearScripts();
