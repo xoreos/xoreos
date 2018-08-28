@@ -63,6 +63,9 @@ public:
 	/** Read a multi-bit value from the bit stream. */
 	virtual uint32 getBits(size_t n) = 0;
 
+	/** Read a multi-bit signed value from the bit stream. */
+	virtual int32 getSignedBits(size_t n) = 0;
+
 	/** Add a bit to the n-bit value x, making it an (n+1)-bit value. */
 	virtual void addBit(uint32 &x, size_t n) = 0;
 
@@ -194,6 +197,19 @@ public:
 
 			v >>= (32 - n);
 		}
+
+		return v;
+	}
+
+	/** Read a multi-bit signed value from the bit stream. */
+	int32 getSignedBits(size_t n) {
+		if (n == 0)
+			return 0;
+
+		int32 v = getBits(n);
+
+		if (v >> (n - 1))
+			v |= 0xFFFFFFFF << n;
 
 		return v;
 	}
