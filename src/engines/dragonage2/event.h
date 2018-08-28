@@ -27,6 +27,7 @@
 
 #include "src/aurora/nwscript/enginetype.h"
 #include "src/aurora/nwscript/variablecontainer.h"
+#include "src/aurora/nwscript/objectref.h"
 
 #include "src/engines/dragonage2/types.h"
 
@@ -43,7 +44,8 @@ namespace DragonAge2 {
 class Event : public Aurora::NWScript::EngineType, public Aurora::NWScript::VariableContainer {
 public:
 	Event(EventType type = kEventTypeInvalid,
-	      Aurora::NWScript::Object *creator = 0, Aurora::NWScript::Object *target = 0);
+	      const Aurora::NWScript::ObjectReference &creator = Aurora::NWScript::ObjectReference(),
+	      const Aurora::NWScript::ObjectReference &target = Aurora::NWScript::ObjectReference());
 	~Event();
 
 	Event *clone() const;
@@ -51,17 +53,17 @@ public:
 	EventType getType() const;
 	void setType(EventType type);
 
-	Aurora::NWScript::Object *getCreator() const;
-	void setCreator(Aurora::NWScript::Object *creator);
+	const Aurora::NWScript::ObjectReference &getCreator() const;
+	void setCreator(const Aurora::NWScript::ObjectReference &creator);
 
-	Aurora::NWScript::Object *getTarget() const;
-	void setTarget(Aurora::NWScript::Object *target);
+	const Aurora::NWScript::ObjectReference &getTarget() const;
+	void setTarget(const Aurora::NWScript::ObjectReference &target);
 
 private:
 	EventType _type;
 
-	Aurora::NWScript::Object *_creator;
-	Aurora::NWScript::Object *_target;
+	Aurora::NWScript::ObjectReference _creator;
+	Aurora::NWScript::ObjectReference _target;
 };
 
 } // End of namespace DragonAge2
