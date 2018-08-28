@@ -236,13 +236,15 @@ bool GraphicsManager::setFSAA(int level) {
 }
 
 bool GraphicsManager::setupSDLGL() {
-	if (WindowMan.initRender(_renderType, _debugGL, _fsaa))
-		return true;
+	if (ConfigMan.getBool("opengl3", false)) {
 
-	// OpenGL 3.2 context not created. Spit out an error message, and try a 2.1 core context.
+		if (WindowMan.initRender(_renderType, _debugGL, _fsaa))
+			return true;
 
-	warning("Your graphics card hardware or driver does not support OpenGL 3.2. "
-	        "Attempting to create OpenGL 2.1 context instead");
+		// OpenGL 3.2 context not created. Spit out an error message, and try a 2.1 core context.
+		warning("Your graphics card hardware or driver does not support OpenGL 3.2. "
+		        "Attempting to create OpenGL 2.1 context instead");
+	}
 
 	_renderType = WindowManager::kOpenGL21Core;
 	if (WindowMan.initRender(_renderType, _debugGL, _fsaa))
