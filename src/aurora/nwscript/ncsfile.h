@@ -104,9 +104,14 @@ public:
 
 	/** Run the current script, from start to finish. */
 	const Variable &run(Object *owner = 0, Object *triggerer = 0);
+	const Variable &run(const ObjectReference owner = ObjectReference(),
+	                    const ObjectReference triggerer = ObjectReference());
 
 	/** Run the current script, from this state to finish. */
 	const Variable &run(const ScriptState &state, Object *owner = 0, Object *triggerer = 0);
+	const Variable &run(const ScriptState &state,
+	                    const ObjectReference owner = ObjectReference(),
+	                    const ObjectReference triggerer = ObjectReference());
 
 	static ScriptState getEmptyState();
 
@@ -189,7 +194,8 @@ private:
 	/** Reset the script for another execution. */
 	void reset();
 
-	const Variable &execute(Object *owner = 0, Object *triggerer = 0);
+	const Variable &execute(const ObjectReference owner = ObjectReference(),
+	                        const ObjectReference triggerer = ObjectReference());
 
 	/** Execute one script step. */
 	bool executeStep();
