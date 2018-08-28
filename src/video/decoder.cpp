@@ -46,8 +46,8 @@
 namespace Video {
 
 VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
-	_started(false), _needCopy(false),
-	_width(0), _height(0), _legacyVideoTrack(0), _nextVideoTrack(0), _texture(0),
+	_needCopy(false),
+	_nextVideoTrack(0), _texture(0),
 	_textureWidth(0.0f), _textureHeight(0.0f), _scale(kScaleNone),
 	_startTime(0), _pauseLevel(0), _pauseStartTime(0) {
 
@@ -66,20 +66,6 @@ void VideoDecoder::deinit() {
 	hide();
 
 	GLContainer::removeFromQueue(Graphics::kQueueGLContainer);
-}
-
-void VideoDecoder::initVideo(uint32 width, uint32 height) {
-	// Hack a fake video track in
-	LegacyVideoTrack *track = new LegacyVideoTrack(*this, width, height);
-	addTrack(track);
-	_legacyVideoTrack = track;
-
-	// Hack in local width/height
-	_width = width;
-	_height = height;
-
-	// Now do the normal init video routine
-	initVideo();
 }
 
 void VideoDecoder::initVideo() {
@@ -344,8 +330,8 @@ void VideoDecoder::update() {
 }
 
 void VideoDecoder::getQuadDimensions(float &width, float &height) const {
-	width  = _width;
-	height = _height;
+	width  = getWidth();
+	height = getHeight();
 
 	if (_scale == kScaleNone)
 		// No scaling requested
@@ -380,7 +366,7 @@ void VideoDecoder::render(Graphics::RenderPass pass) {
 	if (pass == Graphics::kRenderPassTransparent)
 		return;
 
-	if (!isPlaying() || !_started || (_texture == 0))
+	if (!isPlaying() || _texture == 0)
 		return;
 
 	// Process and copy the next frame data, if necessary
@@ -408,14 +394,7 @@ void VideoDecoder::render(Graphics::RenderPass pass) {
 	glEnd();
 }
 
-void VideoDecoder::finish() {
-	if (_legacyVideoTrack)
-		_legacyVideoTrack->finish();
-}
-
 void VideoDecoder::start() {
-	startVideo();
-
 	_startTime = EventMan.getTimestamp();
 
 	startAudio();
@@ -425,8 +404,6 @@ void VideoDecoder::start() {
 
 void VideoDecoder::abort() {
 	hide();
-
-	finish();
 
 	stopAudio();
 }
@@ -454,15 +431,6 @@ uint32 VideoDecoder::getTimeToNextFrame() const {
 		return 0;
 
 	return nextFrameStartTime - currentTime;
-}
-
-void VideoDecoder::processData() {
-	// Dummy function until the migration away from the old API
-}
-
-void VideoDecoder::decodeNextTrackFrame(VideoTrack &UNUSED(track)) {
-	// For the transition, just forward the call
-	processData();
 }
 
 void VideoDecoder::checkAudioBuffer(AudioTrack &UNUSED(track), const Common::Timestamp &UNUSED(endTime)) {

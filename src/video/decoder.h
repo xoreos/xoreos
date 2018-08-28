@@ -388,19 +388,9 @@ protected:
 	 */
 	typedef std::vector<ConstTrackPtr> ConstTrackList;
 
-	bool _started;  ///< Has playback started?
 	bool _needCopy; ///< Is new frame content available that needs to by copied?
 
-	uint32 _width;  ///< The video's width (DEPRECATED).
-	uint32 _height; ///< The video's height (DEPRECATED).
-
 	Common::ScopedPtr<Graphics::Surface> _surface; ///< The video's surface.
-
-	/**
-	 * DEPRECATED: Legacy interface for creating a video track. Use addTrack(),
-	 * and initVideo() instead.
-	 */
-	void initVideo(uint32 width, uint32 height);
 
 	/**
 	 * Create a surface for video of these dimensions.
@@ -414,16 +404,6 @@ protected:
 	 */
 	void initVideo();
 
-	/** Start the video processing. */
-	virtual void startVideo() {}
-	/** Process the video's image and sound data further. */
-	virtual void processData();
-
-	/** Return the time, in milliseconds, of the next frame's time. */
-	virtual uint32 getNextFrameStartTime() const { return 0; }
-
-	void finish();
-
 	void deinit();
 
 	// GLContainer
@@ -436,7 +416,7 @@ protected:
 	 * Currently, audio may be buffered here at the same time. This is deprecated
 	 * in favor of using checkAudioBuffer().
 	 */
-	virtual void decodeNextTrackFrame(VideoTrack &track);
+	virtual void decodeNextTrackFrame(VideoTrack &track) = 0;
 
 	/**
 	 * Ensure that there is enough audio buffered in the given track
@@ -489,33 +469,6 @@ private:
 	TrackList _tracks; ///< Tracks owned by this VideoDecoder (both internal and external).
 	TrackList _internalTracks; ///< Tracks internal to this VideoDecoder.
 	TrackList _externalTracks; ///< Tracks loaded from externals files.
-
-	/** Temporary legacy video track class */
-	class LegacyVideoTrack : public VideoTrack {
-	public:
-		LegacyVideoTrack(const VideoDecoder& decoder, uint32 width, uint32 height) :
-			_decoder(decoder),
-			_width(width),
-			_height(height),
-			_finished(false) {}
-
-		uint32 getWidth() const { return _width; }
-		uint32 getHeight() const { return _height; }
-		bool endOfTrack() const { return _finished; }
-		Common::Timestamp getNextFrameStartTime() const { return Common::Timestamp(_decoder.getNextFrameStartTime()); }
-		int getCurFrame() const { return 0; } // HACK
-
-		void finish() { _finished = true; }
-
-	private:
-		const VideoDecoder &_decoder;
-		uint32 _width;
-		uint32 _height;
-		bool _finished;
-	};
-
-	/** Temporary legacy video track object */
-	LegacyVideoTrack *_legacyVideoTrack;
 
 	VideoTrackPtr _nextVideoTrack; ///< The next video track that needs to display.
 
