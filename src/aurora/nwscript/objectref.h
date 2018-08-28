@@ -37,6 +37,7 @@ class Object;
 class ObjectReference {
 public:
 	ObjectReference();
+	ObjectReference(const Object *object);
 
 	uint32 getId() const;
 

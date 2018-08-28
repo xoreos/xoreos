@@ -348,10 +348,18 @@ void NCSFile::reset() {
 }
 
 const Variable &NCSFile::run(Object *owner, Object *triggerer) {
-	return run(getEmptyState(), owner, triggerer);
+	return run(getEmptyState(), ObjectReference(owner), ObjectReference(triggerer));
+}
+
+const Variable &NCSFile::run(const ObjectReference owner, const ObjectReference triggerer) {
+	return run(getEmptyState(), ObjectReference(owner), ObjectReference(triggerer));
 }
 
 const Variable &NCSFile::run(const ScriptState &state, Object *owner, Object *triggerer) {
+	return run(state, ObjectReference(owner), ObjectReference(triggerer));
+}
+
+const Variable &NCSFile::run(const ScriptState &state, const ObjectReference owner, const ObjectReference triggerer) {
 	debugC(kDebugScripts, 1, "=== Running script \"%s\" (%d) ===",
 	       _name.c_str(), state.offset);
 
@@ -373,7 +381,7 @@ const Variable &NCSFile::run(const ScriptState &state, Object *owner, Object *tr
 	return execute(owner, triggerer);
 }
 
-const Variable &NCSFile::execute(Object *owner, Object *triggerer) {
+const Variable &NCSFile::execute(const ObjectReference owner, const ObjectReference triggerer) {
 	_owner     = owner;
 	_triggerer = triggerer;
 
