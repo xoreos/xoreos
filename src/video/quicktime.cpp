@@ -95,8 +95,7 @@ static const char *tag2str(uint32 tag) {
 }
 
 QuickTimeDecoder::QuickTimeDecoder(Common::SeekableReadStream *stream) : _fd(stream),
-	_foundMOOV(false), _curFrame(-1), _startTime(0),
-	_nextFrameStartTime(0), _videoTrackIndex(-1) {
+	_foundMOOV(false), _videoTrackIndex(-1) {
 
 	assert(_fd);
 
@@ -136,11 +135,12 @@ void QuickTimeDecoder::load() {
 	if (_videoTrackIndex < 0)
 		throw Common::Exception("No video tracks");
 
-	initVideo(_tracks[_videoTrackIndex]->width, _tracks[_videoTrackIndex]->height);
-
 	// Initialize video codec, if present
 	for (size_t i = 0; i < _tracks[_videoTrackIndex]->sampleDescs.size(); i++)
 		dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[i]).initCodec();
+
+	// Add the video track
+	addTrack(new VideoTrackHandler(this, _tracks[_videoTrackIndex]));
 
 	// Initialize all the audio tracks, but ignore ones we can't process
 	for (uint32 i = 0; i < _tracks.size(); i++) {
@@ -150,6 +150,8 @@ void QuickTimeDecoder::load() {
 			break;
 		}
 	}
+
+	initVideo();
 }
 
 QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *track, uint32 format) {
@@ -241,24 +243,6 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *t
 	return 0;
 }
 
-uint32 QuickTimeDecoder::getFrameDuration() {
-	if (_videoTrackIndex < 0)
-		return 0;
-
-	uint32 curFrameIndex = 0;
-	for (int32 i = 0; i < _tracks[_videoTrackIndex]->timeToSampleCount; i++) {
-		curFrameIndex += _tracks[_videoTrackIndex]->timeToSample[i].count;
-		if ((uint32)_curFrame < curFrameIndex) {
-			// Ok, now we have what duration this frame has.
-			return _tracks[_videoTrackIndex]->timeToSample[i].duration;
-		}
-	}
-
-	// This should never occur
-	error("Cannot find duration for frame %d", _curFrame);
-	return 0;
-}
-
 Codec *QuickTimeDecoder::findDefaultVideoCodec() const {
 	if (_videoTrackIndex < 0 || _tracks[_videoTrackIndex]->sampleDescs.empty())
 		return 0;
@@ -266,46 +250,8 @@ Codec *QuickTimeDecoder::findDefaultVideoCodec() const {
 	return dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[0])._videoCodec.get();
 }
 
-void QuickTimeDecoder::startVideo() {
-	_started   = true;
-}
-
-void QuickTimeDecoder::processData() {
-	if (_curFrame >= (int32)_tracks[_videoTrackIndex]->frameCount - 1) {
-		finish();
-		return;
-	}
-
-	if (getTimeToNextFrame() > 0)
-		return;
-
-	_curFrame++;
-	_nextFrameStartTime += getFrameDuration();
-
-	// Get the next packet
-	uint32 descId;
-	Common::ScopedPtr<Common::SeekableReadStream> frameData(getNextFramePacket(descId));
-
-	if (!frameData || !descId || descId > _tracks[_videoTrackIndex]->sampleDescs.size())
-		return;
-
-	// Find which video description entry we want
-	VideoSampleDesc &entry = dynamic_cast<VideoSampleDesc &>(*_tracks[_videoTrackIndex]->sampleDescs[descId - 1]);
-
-	if (entry._videoCodec) {
-		assert(_surface);
-
-		entry._videoCodec->decodeFrame(*_surface, *frameData);
-		_needCopy = true;
-	}
-}
-
-uint32 QuickTimeDecoder::getNextFrameStartTime() const {
-	if (!_started || _curFrame < 0)
-		return 0;
-
-	// Convert from the QuickTime rate base to 1000
-	return _nextFrameStartTime * 1000 / _tracks[_videoTrackIndex]->timeScale;
+void QuickTimeDecoder::decodeNextTrackFrame(VideoTrack &track) {
+	_needCopy = static_cast<VideoTrackHandler &>(track).decodeNextFrame(*_surface);
 }
 
 void QuickTimeDecoder::initParseTable() {
@@ -744,55 +690,6 @@ int QuickTimeDecoder::readESDS(Atom UNUSED(atom)) {
 	return 0;
 }
 
-Common::SeekableReadStream *QuickTimeDecoder::getNextFramePacket(uint32 &descId) {
-	if (_videoTrackIndex < 0)
-		return 0;
-
-	// First, we have to track down which chunk holds the sample and which sample in the chunk contains the frame we are looking for.
-	int32 totalSampleCount = 0;
-	int32 sampleInChunk = 0;
-	int32 actualChunk = -1;
-	uint32 sampleToChunkIndex = 0;
-
-	for (uint32 i = 0; i < _tracks[_videoTrackIndex]->chunkCount; i++) {
-		if (sampleToChunkIndex < _tracks[_videoTrackIndex]->sampleToChunkCount && i >= _tracks[_videoTrackIndex]->sampleToChunk[sampleToChunkIndex].first)
-			sampleToChunkIndex++;
-
-		totalSampleCount += _tracks[_videoTrackIndex]->sampleToChunk[sampleToChunkIndex - 1].count;
-
-		if (totalSampleCount > _curFrame) {
-			actualChunk = i;
-			descId = _tracks[_videoTrackIndex]->sampleToChunk[sampleToChunkIndex - 1].id;
-			sampleInChunk = _tracks[_videoTrackIndex]->sampleToChunk[sampleToChunkIndex - 1].count - totalSampleCount + _curFrame;
-			break;
-		}
-	}
-
-	if (actualChunk < 0) {
-		warning("Could not find data for frame %d", _curFrame);
-		return 0;
-	}
-
-	// Next seek to that frame
-	_fd->seek(_tracks[_videoTrackIndex]->chunkOffsets[actualChunk]);
-
-	// Then, if the chunk holds more than one frame, seek to where the frame we want is located
-	for (int32 i = _curFrame - sampleInChunk; i < _curFrame; i++) {
-		if (_tracks[_videoTrackIndex]->sampleSize != 0)
-			_fd->skip(_tracks[_videoTrackIndex]->sampleSize);
-		else
-			_fd->skip(_tracks[_videoTrackIndex]->sampleSizes[i]);
-	}
-
-	// Finally, read in the raw data for the frame
-	//printf ("Frame Data[%d]: Offset = %d, Size = %d\n", getCurFrame(), _fd->pos(), _tracks[_videoTrackIndex]->sampleSizes[getCurFrame()]);
-
-	if (_tracks[_videoTrackIndex]->sampleSize != 0)
-		return _fd->readStream(_tracks[_videoTrackIndex]->sampleSize);
-
-	return _fd->readStream(_tracks[_videoTrackIndex]->sampleSizes[_curFrame]);
-}
-
 QuickTimeDecoder::SampleDesc::SampleDesc(QuickTimeDecoder::QuickTimeTrack *parentTrack, uint32 codecTag) {
 	_parentTrack = parentTrack;
 	_codecTag = codecTag;
@@ -1064,6 +961,111 @@ uint32 QuickTimeDecoder::QuickTimeAudioTrack::getAACSampleTime(uint32 totalSampl
 
 	return time;
 }
+
+QuickTimeDecoder::VideoTrackHandler::VideoTrackHandler(QuickTimeDecoder *decoder, QuickTimeTrack *parent) : _decoder(decoder), _parent(parent), _curFrame(-1), _nextFrameStartTime(0) {
+}
+
+Common::Timestamp QuickTimeDecoder::VideoTrackHandler::getDuration() const {
+	return Common::Timestamp(0, _parent->duration, _decoder->_timeScale);
+}
+
+uint32 QuickTimeDecoder::VideoTrackHandler::getWidth() const {
+	return _parent->width;
+}
+
+uint32 QuickTimeDecoder::VideoTrackHandler::getHeight() const {
+	return _parent->height;
+}
+
+int QuickTimeDecoder::VideoTrackHandler::getFrameCount() const {
+	return _parent->frameCount;
+}
+
+Common::Timestamp QuickTimeDecoder::VideoTrackHandler::getNextFrameStartTime() const {
+	if (endOfTrack())
+		return Common::Timestamp();
+
+	return Common::Timestamp(0, _nextFrameStartTime, _parent->timeScale);
+}
+
+bool QuickTimeDecoder::VideoTrackHandler::decodeNextFrame(Graphics::Surface &surface) {
+	_curFrame++;
+	_nextFrameStartTime += getFrameDuration();
+
+	// Get the next packet
+	uint32 descId;
+	Common::ScopedPtr<Common::SeekableReadStream> frameData(getNextFramePacket(descId));
+
+	if (!frameData || !descId || descId > _parent->sampleDescs.size())
+		return false;
+
+	// Find which video description entry we want
+	VideoSampleDesc &entry = dynamic_cast<VideoSampleDesc &>(*_parent->sampleDescs[descId - 1]);
+	if (!entry._videoCodec)
+		return false;
+
+	entry._videoCodec->decodeFrame(surface, *frameData);
+	return true;
+}
+
+Common::SeekableReadStream *QuickTimeDecoder::VideoTrackHandler::getNextFramePacket(uint32 &descId) {
+	// First, we have to track down which chunk holds the sample and which sample in the chunk contains the frame we are looking for.
+	int32 totalSampleCount = 0;
+	int32 sampleInChunk = 0;
+	int32 actualChunk = -1;
+	uint32 sampleToChunkIndex = 0;
+
+	for (uint32 i = 0; i < _parent->chunkCount; i++) {
+		if (sampleToChunkIndex < _parent->sampleToChunkCount && i >= _parent->sampleToChunk[sampleToChunkIndex].first)
+			sampleToChunkIndex++;
+
+		totalSampleCount += _parent->sampleToChunk[sampleToChunkIndex - 1].count;
+
+		if (totalSampleCount > _curFrame) {
+			actualChunk = i;
+			descId = _parent->sampleToChunk[sampleToChunkIndex - 1].id;
+			sampleInChunk = _parent->sampleToChunk[sampleToChunkIndex - 1].count - totalSampleCount + _curFrame;
+			break;
+		}
+	}
+
+	if (actualChunk < 0)
+		error("Could not find data for frame %d", _curFrame);
+
+	// Next seek to that frame
+	_decoder->_fd->seek(_parent->chunkOffsets[actualChunk]);
+
+	// Then, if the chunk holds more than one frame, seek to where the frame we want is located
+	for (int32 i = _curFrame - sampleInChunk; i < _curFrame; i++) {
+		if (_parent->sampleSize != 0)
+			_decoder->_fd->skip(_parent->sampleSize);
+		else
+			_decoder->_fd->skip(_parent->sampleSizes[i]);
+	}
+
+	// Finally, read in the raw data for the frame
+	//printf("Frame Data[%d]: Offset = %d, Size = %d\n", _curFrame, stream->pos(), _parent->sampleSizes[_curFrame]);
+
+	if (_parent->sampleSize != 0)
+		return _decoder->_fd->readStream(_parent->sampleSize);
+
+	return _decoder->_fd->readStream(_parent->sampleSizes[_curFrame]);
+}
+
+uint32 QuickTimeDecoder::VideoTrackHandler::getFrameDuration() {
+	uint32 curFrameIndex = 0;
+	for (int32 i = 0; i < _parent->timeToSampleCount; i++) {
+		curFrameIndex += _parent->timeToSample[i].count;
+		if ((uint32)_curFrame < curFrameIndex) {
+			// Ok, now we have what duration this frame has.
+			return _parent->timeToSample[i].duration;
+		}
+	}
+
+	// This should never occur
+	throw Common::Exception("Cannot find duration for frame %d", _curFrame);
+}
+
 
 QuickTimeDecoder::AudioTrackHandler::AudioTrackHandler(QuickTimeDecoder *decoder, QuickTimeAudioTrack *audioTrack)
 		: _decoder(decoder), _audioTrack(audioTrack) {

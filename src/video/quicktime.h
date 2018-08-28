@@ -86,11 +86,8 @@ public:
 	QuickTimeDecoder(Common::SeekableReadStream *stream);
 	~QuickTimeDecoder();
 
-	uint32 getNextFrameStartTime() const;
-
 protected:
-	void startVideo();
-	void processData();
+	void decodeNextTrackFrame(VideoTrack &track);
 
 private:
 	// This is the file handle from which data is read from. It can be the actual file handle or a decompressed stream.
@@ -231,6 +228,29 @@ private:
 		bool allAudioQueued() const { return _curChunk >= _parentTrack->chunkCount; }
 	};
 
+	class VideoTrackHandler : public VideoTrack {
+	public:
+		VideoTrackHandler(QuickTimeDecoder *decoder, QuickTimeTrack *parent);
+
+		Common::Timestamp getDuration() const;
+		uint32 getWidth() const;
+		uint32 getHeight() const;
+		int getCurFrame() const { return _curFrame; }
+		int getFrameCount() const;
+		Common::Timestamp getNextFrameStartTime() const;
+
+		bool decodeNextFrame(Graphics::Surface &surface);
+
+	private:
+		QuickTimeDecoder *_decoder;
+		QuickTimeTrack *_parent;
+		int32 _curFrame;
+		uint32 _nextFrameStartTime;
+
+		Common::SeekableReadStream *getNextFramePacket(uint32 &descId);
+		uint32 getFrameDuration();
+	};
+
 	// The AudioTrackHandler is currently just a wrapper around some
 	// QuickTimeDecoder functions.
 	class AudioTrackHandler : public AudioTrack {
@@ -256,19 +276,13 @@ private:
 	uint32 _timeScale;
 	Common::PtrVector<QuickTimeTrack> _tracks;
 
-	int32 _curFrame;
-	uint32 _startTime;
-
 	void initParseTable();
 
 	void checkAudioBuffer(AudioTrack &track, const Common::Timestamp &endTime);
 	Common::PtrVector<QuickTimeAudioTrack> _audioTracks;
 
 	Codec *findDefaultVideoCodec() const;
-	uint32 _nextFrameStartTime;
 	int _videoTrackIndex;
-	Common::SeekableReadStream *getNextFramePacket(uint32 &descId);
-	uint32 getFrameDuration();
 
 	int readDefault(Atom atom);
 	int readLeaf(Atom atom);
