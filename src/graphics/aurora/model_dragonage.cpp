@@ -498,31 +498,32 @@ void ModelNode_DragonAge::load(Model_DragonAge::ParserContext &ctx, const GFF4St
 	readTransformation(nodeGFF);
 
 	// If this is a mesh node, read the mesh
-	if (isType(nodeGFF, kMSHHID))
+	if (isType(nodeGFF, kMSHHID)) {
 		readMesh(ctx, nodeGFF);
+
+		Common::UString meshName = ctx.mmhName + ctx.mshName;
+		meshName += ".";
+		if (ctx.state->name.size() != 0) {
+			meshName += ctx.state->name;
+		} else {
+			meshName += "xoreos.default";
+		}
+		meshName += ".";
+		meshName += _name;
+
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		if (MeshMan.getMesh(meshName)) {
+			warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+		}
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	}
 
 	// Read the children
 	readChildren(ctx, nodeGFF);
 
 	// Create the bounding box
 	createBound();
-
-	Common::UString meshName = ctx.mmhName + ctx.mshName;
-	meshName += ".";
-	if (ctx.state->name.size() != 0) {
-		meshName += ctx.state->name;
-	} else {
-		meshName += "xoreos.default";
-	}
-	meshName += ".";
-	meshName += _name;
-
-	_mesh->data->rawMesh->setName(meshName);
-	_mesh->data->rawMesh->init();
-	if (MeshMan.getMesh(meshName)) {
-		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
-	}
-	MeshMan.addMesh(_mesh->data->rawMesh);
 
 	this->buildMaterial();
 }
@@ -984,6 +985,7 @@ void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GF
 		_mesh = new Mesh();
 		_render =_mesh->render = true;
 		_mesh->data = new MeshData();
+		_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 		createIndexBuffer (*meshChunk, *indexData);
 		createVertexBuffer(*meshChunk, *vertexData, meshDecl);
