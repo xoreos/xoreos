@@ -35,6 +35,8 @@
 
 #include "src/aurora/ifofile.h"
 
+#include "src/aurora/nwscript/objectref.h"
+
 #include "src/graphics/aurora/fadequad.h"
 
 #include "src/events/types.h"
@@ -191,8 +193,8 @@ private:
 		Common::UString script;
 
 		Aurora::NWScript::ScriptState state;
-		Aurora::NWScript::Object *owner;
-		Aurora::NWScript::Object *triggerer;
+		Aurora::NWScript::ObjectReference owner;
+		Aurora::NWScript::ObjectReference triggerer;
 
 		uint32 timestamp;
 

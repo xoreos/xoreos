@@ -147,22 +147,23 @@ void ScriptContainer::readScripts(const ScriptContainer &container) {
 		_scripts[i] = container._scripts[i];
 }
 
-bool ScriptContainer::runScript(Script script, Aurora::NWScript::Object *owner,
-                                Aurora::NWScript::Object *triggerer) {
+bool ScriptContainer::runScript(Script script,
+                                const Aurora::NWScript::ObjectReference owner,
+                                const Aurora::NWScript::ObjectReference triggerer) {
 	return runScript(getScript(script), owner, triggerer);
 }
 
 bool ScriptContainer::runScript(const Common::UString &script,
-                                Aurora::NWScript::Object *owner,
-                                Aurora::NWScript::Object *triggerer) {
+                                const Aurora::NWScript::ObjectReference owner,
+                                const Aurora::NWScript::ObjectReference triggerer) {
 
 	return runScript(script, Aurora::NWScript::NCSFile::getEmptyState(), owner, triggerer);
 }
 
 bool ScriptContainer::runScript(const Common::UString &script,
                                 const Aurora::NWScript::ScriptState &state,
-                                Aurora::NWScript::Object *owner,
-                                Aurora::NWScript::Object *triggerer) {
+                                const Aurora::NWScript::ObjectReference owner,
+                                const Aurora::NWScript::ObjectReference triggerer) {
 	if (script.empty())
 		return true;
 
