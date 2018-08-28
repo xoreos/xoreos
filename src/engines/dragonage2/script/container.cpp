@@ -97,8 +97,9 @@ void ScriptContainer::readScript(const Aurora::GFF4Struct &gff) {
 		_script = gff.getString(kScriptFields[i], _script);
 }
 
-bool ScriptContainer::runScript(EventType event, Aurora::NWScript::Object *owner,
-                                Aurora::NWScript::Object *triggerer) {
+bool ScriptContainer::runScript(EventType event,
+                                const Aurora::NWScript::ObjectReference owner,
+                                const Aurora::NWScript::ObjectReference triggerer) {
 
 	Event e(event, triggerer, owner);
 
@@ -114,16 +115,16 @@ bool ScriptContainer::runScript(Event &event) {
 }
 
 bool ScriptContainer::runScript(const Common::UString &script, EventType event,
-                                Aurora::NWScript::Object *owner,
-                                Aurora::NWScript::Object *triggerer) {
+                                const Aurora::NWScript::ObjectReference owner,
+                                const Aurora::NWScript::ObjectReference triggerer) {
 
 	return runScript(script, event, Aurora::NWScript::NCSFile::getEmptyState(), owner, triggerer);
 }
 
 bool ScriptContainer::runScript(const Common::UString &script, EventType event,
                                 const Aurora::NWScript::ScriptState &state,
-                                Aurora::NWScript::Object *owner,
-                                Aurora::NWScript::Object *triggerer) {
+                                const Aurora::NWScript::ObjectReference owner,
+                                const Aurora::NWScript::ObjectReference triggerer) {
 
 
 	Event e(event, triggerer, owner);

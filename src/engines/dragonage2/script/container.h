@@ -32,6 +32,8 @@
 
 #include "src/aurora/types.h"
 
+#include "src/aurora/nwscript/objectref.h"
+
 #include "src/engines/dragonage2/types.h"
 
 namespace Aurora {
@@ -59,18 +61,19 @@ public:
 	/** Enable/Disable the handling of all events. */
 	void enableEvents(bool enabled);
 
-	bool runScript(EventType event, Aurora::NWScript::Object *owner = 0,
-	               Aurora::NWScript::Object *triggerer = 0);
+	bool runScript(EventType event,
+	               const Aurora::NWScript::ObjectReference owner = Aurora::NWScript::ObjectReference(),
+	               const Aurora::NWScript::ObjectReference triggerer = Aurora::NWScript::ObjectReference());
 
 	bool runScript(Event &event);
 
 	static bool runScript(const Common::UString &script, EventType event,
-	                      Aurora::NWScript::Object *owner = 0,
-	                      Aurora::NWScript::Object *triggerer = 0);
+	                      const Aurora::NWScript::ObjectReference owner = Aurora::NWScript::ObjectReference(),
+	                      const Aurora::NWScript::ObjectReference triggerer = Aurora::NWScript::ObjectReference());
 	static bool runScript(const Common::UString &script, EventType event,
 	                      const Aurora::NWScript::ScriptState &state,
-	                      Aurora::NWScript::Object *owner = 0,
-	                      Aurora::NWScript::Object *triggerer = 0);
+	                      const Aurora::NWScript::ObjectReference owner = Aurora::NWScript::ObjectReference(),
+	                      const Aurora::NWScript::ObjectReference triggerer = Aurora::NWScript::ObjectReference());
 
 	static bool runScript(const Common::UString &script, Event &event);
 	static bool runScript(const Common::UString &script, Event &event,
