@@ -19,27 +19,25 @@
  */
 
 /** @file
- *  Types for ActionScript.
+ *  MovieClip implementation for actionscript.
  */
 
-#ifndef AURORA_ACTIONSCRIPT_TYPES_H
-#define AURORA_ACTIONSCRIPT_TYPES_H
+#ifndef AURORA_ACTIONSCRIPT_MOVIECLIP_H
+#define AURORA_ACTIONSCRIPT_MOVIECLIP_H
+
+#include "src/aurora/actionscript/object.h"
 
 namespace Aurora {
 
 namespace ActionScript {
 
-enum Type {
-	kTypeUndefined,
-	kTypeNull,
-	kTypeNumber,
-	kTypeBoolean,
-	kTypeObject,
-	kTypeString
+class MovieClip : public Object {
+public:
+	MovieClip();
 };
 
 } // End of namespace ActionScript
 
 } // End of namespace Aurora
 
-#endif // AURORA_ACTIONSCRIPT_TYPES_H
+#endif // AURORA_ACTIONSCRIPT_MOVIECLIP_H

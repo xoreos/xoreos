@@ -19,27 +19,18 @@
  */
 
 /** @file
- *  Types for ActionScript.
+ *  TextField implementation for actionscript.
  */
 
-#ifndef AURORA_ACTIONSCRIPT_TYPES_H
-#define AURORA_ACTIONSCRIPT_TYPES_H
+#include "src/aurora/actionscript/textfield.h"
 
 namespace Aurora {
 
 namespace ActionScript {
 
-enum Type {
-	kTypeUndefined,
-	kTypeNull,
-	kTypeNumber,
-	kTypeBoolean,
-	kTypeObject,
-	kTypeString
-};
+TextField::TextField() {
+}
 
 } // End of namespace ActionScript
 
 } // End of namespace Aurora
-
-#endif // AURORA_ACTIONSCRIPT_TYPES_H

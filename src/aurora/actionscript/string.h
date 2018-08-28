@@ -19,53 +19,31 @@
  */
 
 /** @file
- *  Abstract object which is inherited by every other class.
+ *  String implementation for actionscript.
  */
 
-#ifndef AURORA_ACTIONSCRIPT_OBJECT_H
-#define AURORA_ACTIONSCRIPT_OBJECT_H
-
-#include <map>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#ifndef AURORA_ACTIONSCRIPT_STRING_H
+#define AURORA_ACTIONSCRIPT_STRING_H
 
 #include "src/common/ustring.h"
 
-#include "src/aurora/actionscript/variable.h"
-#include "src/aurora/actionscript/avm.h"
+#include "src/aurora/actionscript/object.h"
 
 namespace Aurora {
 
 namespace ActionScript {
 
-class AVM;
-class Object;
+class String;
 
-typedef boost::shared_ptr<Object> ObjectPtr;
+typedef boost::shared_ptr<String> StringPtr;
 
-class Object : public boost::enable_shared_from_this<Object> {
+class String : public Common::UString, public Object {
 public:
-	Object();
-	Object(Object *object);
-	virtual ~Object();
-
-	std::vector<Common::UString> getSlots() const;
-
-	bool hasMember(const Common::UString &id);
-
-	virtual Variable getMember(const Variable &id);
-	virtual void setMember(const Variable &id, const Variable &value);
-	virtual void setMember(const Common::UString &id, Function *function);
-
-	Variable call(const Common::UString &function, AVM &avm, const std::vector<Variable> &arguments = std::vector<Variable>());
-
-private:
-	std::map<Common::UString, Variable> _members;
+	String();
 };
 
 } // End of namespace ActionScript
 
 } // End of namespace Aurora
 
-#endif // AURORA_ACTIONSCRIPT_OBJECT_H
+#endif // AURORA_ACTIONSCRIPT_STRING_H

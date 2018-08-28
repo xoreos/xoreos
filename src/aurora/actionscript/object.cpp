@@ -44,6 +44,14 @@ Object::Object(Object *object) {
 Object::~Object() {
 }
 
+std::vector<Common::UString> Object::getSlots() const {
+	std::vector<Common::UString> slots;
+	for (std::map<Common::UString, Variable>::const_iterator iter = _members.begin(); iter != _members.end() ; iter++) {
+		slots.push_back(iter->first);
+	}
+	return slots;
+}
+
 bool Object::hasMember(const Common::UString &id) {
 	return _members.find(id) != _members.end();
 }

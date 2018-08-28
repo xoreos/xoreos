@@ -72,6 +72,7 @@ enum Opcodes {
 	kActionEnumerate2      = 0x55,
 	kActionStrictEquals    = 0x66,
 	kActionExtends         = 0x69,
+	kActionGetURL          = 0x83,
 	kActionStoreRegister   = 0x87,
 	kActionConstantPool    = 0x88,
 	kActionDefineFunction2 = 0x8E,
@@ -125,7 +126,7 @@ void ASBuffer::execute(AVM &avm) {
 			case kActionGetVariable:     actionGetVariable(avm); break;
 			case kActionSetVariable:     actionSetVariable(avm); break;
 			case kActionTrace:           actionTrace(); break;
-			case kActionDefineLocal:     actionDefineLocal(); break;
+			case kActionDefineLocal:     actionDefineLocal(avm); break;
 			case kActionCallFunction:    actionCallFunction(); break;
 			case kActionReturn:          actionReturn(avm); break;
 			case kActionNewObject:       actionNewObject(avm); break;
@@ -141,6 +142,7 @@ void ASBuffer::execute(AVM &avm) {
 			case kActionCallMethod:      actionCallMethod(avm); break;
 			case kActionEnumerate2:      actionEnumerate2(); break;
 			case kActionExtends:         actionExtends(); break;
+			case kActionGetURL:          actionGetURL(avm); break;
 			case kActionStoreRegister:   actionStoreRegister(avm); break;
 			case kActionDefineFunction2: actionDefineFunction2(); break;
 			case kActionConstantPool:    actionConstantPool(); break;
@@ -268,8 +270,17 @@ void ASBuffer::actionTrace() {
 	debugC(kDebugActionScript, 1, "actionTrace");
 }
 
-void ASBuffer::actionDefineLocal() {
-	// TODO
+void ASBuffer::actionDefineLocal(AVM &avm) {
+	const Variable value = _stack.top();
+	_stack.pop();
+	const Variable name = _stack.top();
+	_stack.pop();
+
+	if (!name.isString())
+		throw Common::Exception("actionDefineLocal: name is not a string!");
+
+	// TODO: There is probably a better way, then defining local variables as global persistent variables.
+	avm.setVariable(name.asString(), value);
 
 	debugC(kDebugActionScript, 1, "actionDefineLocal");
 }
@@ -464,7 +475,20 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 }
 
 void ASBuffer::actionEnumerate2() {
-	// TODO
+	if (!_stack.top().isObject())
+		throw Common::Exception("actionEnumerate2: not an object");
+
+	const ObjectPtr object = _stack.top().asObject();
+	_stack.pop();
+
+	// Push null as the end of the enumeration.
+	_stack.push(Variable::Null());
+
+	// Go through every slot and push the name to the stack.
+	std::vector<Common::UString> slotNames = object->getSlots();
+	for (size_t i = 0; i < slotNames.size(); ++i) {
+		_stack.push(slotNames[i]);
+	}
 
 	debugC(kDebugActionScript, 1, "actionEnumerate2");
 }
@@ -481,6 +505,24 @@ void ASBuffer::actionExtends() {
 	subClass->setMember("prototype", scriptObject);
 
 	debugC(kDebugActionScript, 1, "actionExtends");
+}
+
+void ASBuffer::actionGetURL(AVM &avm) {
+	const Variable url = _stack.top();
+	if (url.isString())
+		throw Common::Exception("actionGetURL: url is not a string");
+	_stack.pop();
+	const Variable target = _stack.top();
+	if (target.isString())
+		throw Common::Exception("actionGetURL: target is not a string");
+	_stack.pop();
+
+	const Common::UString urlString = url.asString();
+	const Common::UString targetString = target.asString();
+
+	avm.fsCommand(urlString, targetString);
+
+	debugC(kDebugActionScript, 1, "actionGetURL \"%s\" \"%s\"", urlString.c_str(), targetString.c_str());
 }
 
 void ASBuffer::actionStoreRegister(AVM &avm) {
@@ -588,7 +630,7 @@ void ASBuffer::actionPush(AVM &avm) {
 			case 2: {
 				// null
 				debugC(kDebugActionScript, 1, "actionPush null");
-				_stack.push(Variable());
+				_stack.push(Variable::Null());
 				break;
 			}
 			case 3: {
@@ -648,7 +690,7 @@ void ASBuffer::actionPush(AVM &avm) {
 }
 
 void ASBuffer::actionJump() {
-	unsigned short offset = _script->readUint16LE();
+	short offset = _script->readSint16LE();
 
 	_script->seek(offset, Common::SeekableReadStream::kOriginCurrent);
 	_seeked = offset;

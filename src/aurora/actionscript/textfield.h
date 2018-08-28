@@ -19,27 +19,29 @@
  */
 
 /** @file
- *  Types for ActionScript.
+ *  TextField implementation for actionscript.
  */
 
-#ifndef AURORA_ACTIONSCRIPT_TYPES_H
-#define AURORA_ACTIONSCRIPT_TYPES_H
+#ifndef AURORA_ACTIONSCRIPT_TEXTFIELD_H
+#define AURORA_ACTIONSCRIPT_TEXTFIELD_H
+
+#include "src/aurora/actionscript/object.h"
 
 namespace Aurora {
 
 namespace ActionScript {
 
-enum Type {
-	kTypeUndefined,
-	kTypeNull,
-	kTypeNumber,
-	kTypeBoolean,
-	kTypeObject,
-	kTypeString
+class TextField;
+
+typedef boost::shared_ptr<TextField> TextFieldPtr;
+
+class TextField : public Object {
+public:
+	TextField();
 };
 
 } // End of namespace ActionScript
 
 } // End of namespace Aurora
 
-#endif // AURORA_ACTIONSCRIPT_TYPES_H
+#endif // AURORA_ACTIONSCRIPT_TEXTFIELD_H

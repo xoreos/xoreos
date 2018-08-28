@@ -65,7 +65,7 @@ private:
 	void actionGetVariable(AVM &avm);
 	void actionSetVariable(AVM &avm);
 	void actionTrace();
-	void actionDefineLocal();
+	void actionDefineLocal(AVM &avm);
 	void actionCallFunction();
 	void actionReturn(AVM &avm);
 	void actionNewObject(AVM &avm);
@@ -81,6 +81,7 @@ private:
 	void actionCallMethod(AVM &avm);
 	void actionEnumerate2();
 	void actionExtends();
+	void actionGetURL(AVM &avm);
 	void actionStoreRegister(AVM &avm);
 	void actionConstantPool();
 	void actionDefineFunction2();
@@ -94,7 +95,7 @@ private:
 	Common::UString readString();
 
 	unsigned int _currentLength;
-	unsigned int _seeked;
+	int _seeked;
 
 	// Constant pool
 	std::vector<Common::UString> _constants;
