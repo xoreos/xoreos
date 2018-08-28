@@ -28,7 +28,9 @@ namespace Engines {
 
 namespace DragonAge {
 
-Event::Event(EventType type, Aurora::NWScript::Object *creator, Aurora::NWScript::Object *target) :
+Event::Event(EventType type,
+             const Aurora::NWScript::ObjectReference creator,
+             const Aurora::NWScript::ObjectReference target) :
 	_type(type), _creator(creator), _target(target) {
 
 }
@@ -48,19 +50,19 @@ void Event::setType(EventType type) {
 	_type = type;
 }
 
-Aurora::NWScript::Object *Event::getCreator() const {
+const Aurora::NWScript::ObjectReference &Event::getCreator() const {
 	return _creator;
 }
 
-void Event::setCreator(Aurora::NWScript::Object *creator) {
+void Event::setCreator(const Aurora::NWScript::ObjectReference &creator) {
 	_creator = creator;
 }
 
-Aurora::NWScript::Object *Event::getTarget() const {
+const Aurora::NWScript::ObjectReference &Event::getTarget() const {
 	return _target;
 }
 
-void Event::setTarget(Aurora::NWScript::Object *target) {
+void Event::setTarget(const Aurora::NWScript::ObjectReference &target) {
 	_target = target;
 }
 
