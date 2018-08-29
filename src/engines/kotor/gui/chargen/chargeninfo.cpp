@@ -200,8 +200,13 @@ Creature *CharacterGenerationInfo::getCharacter() const {
 void CharacterGenerationInfo::recreateHead() {
 	Graphics::Aurora::Model *head = _head;
 	_head = loadModelObject(Creature::getHeadMeshString(getGender(), getSkin(), getFace()), "");
+
+	GfxMan.lockFrame();
+
 	_body->attachModel("headhook", _head);
 	delete head;
+
+	GfxMan.unlockFrame();
 
 	// Restart animation to apply it to the new head.
 	// TODO: Possibly there is another way of doing this, without restarting the animation?
