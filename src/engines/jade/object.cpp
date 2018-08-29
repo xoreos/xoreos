@@ -23,9 +23,12 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/uuid.h"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/talkman.h"
+
+#include "src/aurora/nwscript/objectman.h"
 
 #include "src/engines/jade/object.h"
 #include "src/engines/jade/types.h"
@@ -36,6 +39,8 @@ namespace Jade {
 
 Object::Object(ObjectType type) : _type(type), _conversation(""), _static(false), _usable(true),
 	_active(false), _noCollide(false), _pcSpeaker(0), _area(0), _lastTriggerer(0) {
+	_id = Common::generateIDNumber();
+	ObjectMan.registerObject(this);
 
 	_position   [0] = 0.0f;
 	_position   [1] = 0.0f;
@@ -47,6 +52,7 @@ Object::Object(ObjectType type) : _type(type), _conversation(""), _static(false)
 }
 
 Object::~Object() {
+	ObjectMan.unregisterObject(this);
 }
 
 ObjectType Object::getType() const {
