@@ -46,7 +46,7 @@ GTEST_TEST(BitStream, skip) {
 	EXPECT_EQ(bitStream.pos(), 0);
 }
 
-static void readBitStream(Common::BitStream &bitStream, byte (&data)[11]) {
+static void readBitStream(Common::BitStream &bitStream, int8 (&data)[13]) {
 	for (size_t i = 0; i < 8; i++)
 		data[i] = bitStream.getBit();
 
@@ -57,10 +57,15 @@ static void readBitStream(Common::BitStream &bitStream, byte (&data)[11]) {
 	bitStream.addBit(x, 1);
 
 	data[10] = x;
+
+	bitStream.skip(3);
+
+	data[11] = bitStream.getSignedBits(4);
+	data[12] = bitStream.getSignedBits(4);
 }
 
-static void testBitStream(Common::BitStream &bitStream, const byte (&compValues)[11]) {
-	byte data[11];
+static void testBitStream(Common::BitStream &bitStream, const int8 (&compValues)[13]) {
+	int8 data[13];
 	readBitStream(bitStream, data);
 
 	for (size_t i = 0; i < ARRAYSIZE(compValues); i++)
@@ -68,8 +73,8 @@ static void testBitStream(Common::BitStream &bitStream, const byte (&compValues)
 }
 
 GTEST_TEST(BitStream, BitStream8MSB) {
-	static const byte compValues[11] = { 0, 0, 0, 1, 0, 0, 1, 0, 0x03, 0x04, 0x02 };
-	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
+	static const int8 compValues[13] = { 0, 0, 0, 1, 0, 0, 1, 0, 0x03, 0x04, 0x02, 6, 7 };
+	static const byte data[9] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream8MSB bitStream(stream);
 
@@ -77,7 +82,7 @@ GTEST_TEST(BitStream, BitStream8MSB) {
 }
 
 GTEST_TEST(BitStream, BitStream8LSB) {
-	static const byte compValues[11] = { 0, 1, 0, 0, 1, 0, 0, 0, 0x04, 0x03, 0x01 };
+	static const int8 compValues[13] = { 0, 1, 0, 0, 1, 0, 0, 0, 0x04, 0x03, 0x01, 5, -8 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream8LSB bitStream(stream);
@@ -86,7 +91,7 @@ GTEST_TEST(BitStream, BitStream8LSB) {
 }
 
 GTEST_TEST(BitStream, BitStream16LEMSB) {
-	static const byte compValues[11] = { 0, 0, 1, 1, 0, 1, 0, 0, 0x01, 0x02, 0x02 };
+	static const int8 compValues[13] = { 0, 0, 1, 1, 0, 1, 0, 0, 0x01, 0x02, 0x02, -8, 5 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream16LEMSB bitStream(stream);
@@ -95,7 +100,7 @@ GTEST_TEST(BitStream, BitStream16LEMSB) {
 }
 
 GTEST_TEST(BitStream, BitStream16LELSB) {
-	static const byte compValues[11] = { 0, 1, 0, 0, 1, 0, 0, 0, 0x04, 0x03, 0x01 };
+	static const int8 compValues[13] = { 0, 1, 0, 0, 1, 0, 0, 0, 0x04, 0x03, 0x01, 5, -8 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream16LELSB bitStream(stream);
@@ -104,7 +109,7 @@ GTEST_TEST(BitStream, BitStream16LELSB) {
 }
 
 GTEST_TEST(BitStream, BitStream16BEMSB) {
-	static const byte compValues[11] = { 0, 0, 0, 1, 0, 0, 1, 0, 0x03, 0x04, 0x02 };
+	static const int8 compValues[13] = { 0, 0, 0, 1, 0, 0, 1, 0, 0x03, 0x04, 0x02, 6, 7 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream16BEMSB bitStream(stream);
@@ -113,7 +118,7 @@ GTEST_TEST(BitStream, BitStream16BEMSB) {
 }
 
 GTEST_TEST(BitStream, BitStream16BELSB) {
-	static const byte compValues[11] = { 0, 0, 1, 0, 1, 1, 0, 0, 0x02, 0x01, 0x01 };
+	static const int8 compValues[13] = { 0, 0, 1, 0, 1, 1, 0, 0, 0x02, 0x01, 0x01, 7, 6 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream16BELSB bitStream(stream);
@@ -122,7 +127,7 @@ GTEST_TEST(BitStream, BitStream16BELSB) {
 }
 
 GTEST_TEST(BitStream, BitStream32LEMSB) {
-	static const byte compValues[11] = { 0, 1, 1, 1, 1, 0, 0, 0, 0x05, 0x06, 0x02 };
+	static const int8 compValues[13] = { 0, 1, 1, 1, 1, 0, 0, 0, 0x05, 0x06, 0x02, 4, 1 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream32LEMSB bitStream(stream);
@@ -131,7 +136,7 @@ GTEST_TEST(BitStream, BitStream32LEMSB) {
 }
 
 GTEST_TEST(BitStream, BitStream32LELSB) {
-	static const byte compValues[11] = { 0, 1, 0, 0, 1, 0, 0, 0, 0x04, 0x03, 0x01 };
+	static const int8 compValues[13] = { 0, 1, 0, 0, 1, 0, 0, 0, 0x04, 0x03, 0x01, 5, -8 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream32LELSB bitStream(stream);
@@ -140,7 +145,7 @@ GTEST_TEST(BitStream, BitStream32LELSB) {
 }
 
 GTEST_TEST(BitStream, BitStream32BEMSB) {
-	static const byte compValues[11] = { 0, 0, 0, 1, 0, 0, 1, 0, 0x03, 0x04, 0x02 };
+	static const int8 compValues[13] = { 0, 0, 0, 1, 0, 0, 1, 0, 0x03, 0x04, 0x02, 6, 7 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream32BEMSB bitStream(stream);
@@ -149,7 +154,7 @@ GTEST_TEST(BitStream, BitStream32BEMSB) {
 }
 
 GTEST_TEST(BitStream, BitStream32BELSB) {
-	static const byte compValues[11] = { 0, 0, 0, 1, 1, 1, 1, 0, 0x06, 0x05, 0x01 };
+	static const int8 compValues[13] = { 0, 0, 0, 1, 1, 1, 1, 0, 0x06, 0x05, 0x01, 3, 2 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream32BELSB bitStream(stream);
@@ -158,7 +163,7 @@ GTEST_TEST(BitStream, BitStream32BELSB) {
 }
 
 GTEST_TEST(BitStream, BitStream64LEMSB) {
-	static const byte compValues[11] = { 1, 1, 1, 0, 1, 1, 1, 1, 0x0C, 0x0D, 0x03 };
+	static const int8 compValues[13] = { 1, 1, 1, 0, 1, 1, 1, 1, 0x0C, 0x0D, 0x03, -5, -7 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream64LEMSB bitStream(stream);
@@ -167,7 +172,7 @@ GTEST_TEST(BitStream, BitStream64LEMSB) {
 }
 
 GTEST_TEST(BitStream, BitStream64LELSB) {
-	static const byte compValues[11] = { 0, 1, 0, 0, 1, 0, 0, 0, 0x04, 0x03, 0x01 };
+	static const int8 compValues[13] = { 0, 1, 0, 0, 1, 0, 0, 0, 0x04, 0x03, 0x01, 5, -8 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream64LELSB bitStream(stream);
@@ -176,7 +181,7 @@ GTEST_TEST(BitStream, BitStream64LELSB) {
 }
 
 GTEST_TEST(BitStream, BitStream64BEMSB) {
-	static const byte compValues[11] = { 0, 0, 0, 1, 0, 0, 1, 0, 0x03, 0x04, 0x02 };
+	static const int8 compValues[13] = { 0, 0, 0, 1, 0, 0, 1, 0, 0x03, 0x04, 0x02, 6, 7 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream64BEMSB bitStream(stream);
@@ -185,7 +190,7 @@ GTEST_TEST(BitStream, BitStream64BEMSB) {
 }
 
 GTEST_TEST(BitStream, BitStream64BELSB) {
-	static const byte compValues[11] = { 1, 1, 1, 1, 0, 1, 1, 1, 0x0D, 0x0C, 0x03 };
+	static const int8 compValues[13] = { 1, 1, 1, 1, 0, 1, 1, 1, 0x0D, 0x0C, 0x03, -6, 0 };
 	static const byte data[8] = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF };
 	Common::MemoryReadStream stream(data);
 	Common::BitStream64BELSB bitStream(stream);
