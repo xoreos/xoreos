@@ -742,10 +742,6 @@ void Area::processCreaturesActions(float dt) {
 }
 
 void Area::removeObject(KotOR::Object *object) {
-	_module->removeObject(*object);
-
-	_objects.remove(object);
-
 	std::vector<Creature *>::iterator crit = std::find(_creatures.begin(), _creatures.end(), object);
 	if (crit != _creatures.end())
 		_creatures.erase(crit);
@@ -760,6 +756,16 @@ void Area::removeObject(KotOR::Object *object) {
 
 	if (object == _activeTrigger)
 		_activeTrigger = 0;
+
+	if (!object->isStatic()) {
+		const std::list<uint32> &ids = object->getIDs();
+
+		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+			_objectMap.erase(*id);
+	}
+
+	_module->removeObject(*object);
+	_objects.remove(object);
 }
 
 Room *Area::getRoomAt(float x, float y) const {
