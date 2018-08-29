@@ -1036,8 +1036,9 @@ AC_LANG_PUSH([C++])
 boost_save_CPPFLAGS=$CPPFLAGS
 boost_filesystem_save_LIBS=$LIBS
 boost_filesystem_save_LDFLAGS=$LDFLAGS
+CPPFLAGS="$CPPFLAGS $1"
 if test x"$boost_inc" != x; then
-  CPPFLAGS="$CPPFLAGS -I$boost_inc $1"
+  CPPFLAGS="$CPPFLAGS -I$boost_inc"
 fi
 
 AC_LINK_IFELSE([AC_LANG_SOURCE([[
@@ -1058,8 +1059,9 @@ if test x"$boost_link" = xno; then
   boost_save_CPPFLAGS=$CPPFLAGS
   boost_filesystem_save_LIBS="$LIBS"
   boost_filesystem_save_LDFLAGS="$LDFLAGS"
+  CPPFLAGS="$CPPFLAGS $1"
   if test x"$boost_inc" != x; then
-     CPPFLAGS="$CPPFLAGS -I$boost_inc $1"
+     CPPFLAGS="$CPPFLAGS -I$boost_inc"
   fi
   LIBS="$LIBS -lbcrypt"
 
