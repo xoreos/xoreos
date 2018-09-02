@@ -249,7 +249,14 @@ void ASBuffer::actionGetVariable(AVM &avm) {
 	Common::UString name = _stack.top().asString();
 	_stack.pop();
 
-	_stack.push(avm.getVariable(name));
+	std::vector<Common::UString> split;
+	Common::UString::split(name, '.', split);
+
+	Variable v = avm.getVariable(split[0]);
+	for (size_t i = 1; i < split.size(); ++i) {
+		v = v.asObject()->getMember(split[i]);
+	}
+	_stack.push(v);
 
 	debugC(kDebugActionScript, 1, "actionGetVariable");
 }
@@ -392,7 +399,15 @@ void ASBuffer::actionGetMember() {
 	ObjectPtr object = _stack.top().asObject();
 	_stack.pop();
 
-	_stack.push(object->getMember(name));
+	std::vector<Common::UString> split;
+	Common::UString::split(name, '.', split);
+
+	Variable v = object->getMember(split[0]);
+	for (size_t i = 1; i < split.size(); ++i) {
+		v = v.asObject()->getMember(split[i]);
+	}
+
+	_stack.push(v);
 
 	debugC(kDebugActionScript, 1, "actionGetMember");
 }
