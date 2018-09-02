@@ -42,6 +42,7 @@ AVM::AVM() {
 	_stopFlag = false;
 
 	_variables["_global"] = ObjectPtr(new Object());
+	_variables["_root"] = ObjectPtr(new Object());
 	_variables["Object"] = ObjectPtr(new DummyFunction());
 	_variables["Object"].asObject()->setMember("prototype", ObjectPtr(new Object()));
 	_variables["Array"] = ObjectPtr(new DummyFunction());
@@ -112,6 +113,10 @@ Variable AVM::createNewObject(const Common::UString &name, std::vector<Variable>
 		throw Common::Exception("Constructor is not a function");
 
 	byte counter = 1;
+	if (constructor->getPreloadRootFlag()) {
+		storeRegister(_variables["_root"], counter);
+		counter += 1;
+	}
 	if (constructor->getPreloadThisFlag()) {
 		storeRegister(Variable(newObject), counter);
 		counter += 1;

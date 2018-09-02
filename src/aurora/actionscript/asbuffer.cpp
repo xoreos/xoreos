@@ -449,6 +449,10 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 	byte counter = 1;
 	Variable prevThis;
 
+	if (function->getPreloadRootFlag()) {
+		avm.storeRegister(avm.getVariable("_root"), counter);
+		counter += 1;
+	}
 	if (function->getPreloadThisFlag()) {
 		if (!name.empty()) {
 			prevThis = avm.getRegister(counter);
@@ -579,7 +583,8 @@ void ASBuffer::actionDefineFunction2() {
 							new Common::SeekableSubReadStream(_script, _script->pos(), _script->pos() + codeSize),
 							_constants,
 							preloadThisFlag,
-							preloadSuperFlag
+							preloadSuperFlag,
+							preloadRootFlag
 					)
 			)
 	);
@@ -748,18 +753,7 @@ void ASBuffer::actionDefineFunction() {
 	}
 
 	uint16 codeSize = _script->readUint16LE();
-	_script->seek(codeSize, Common::SeekableReadStream::kOriginCurrent);
-
-	ASBuffer buffer(new Common::SeekableSubReadStream(_script, _script->pos(), _script->pos() + codeSize));
-
-	_stack.push(
-			ObjectPtr(
-					new ScriptedFunction(
-							new Common::SeekableSubReadStream(_script, _script->pos(), _script->pos() + codeSize),
-							_constants, false, false
-					)
-			)
-	);
+	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize), _constants, false, false, false)));
 
 	_seeked = codeSize;
 
