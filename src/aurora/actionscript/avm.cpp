@@ -22,6 +22,8 @@
  *  Context for executing ActionScript.
  */
 
+#include <boost/bind.hpp>
+
 #include "src/common/error.h"
 #include "src/common/util.h"
 
@@ -37,20 +39,14 @@ namespace Aurora {
 
 namespace ActionScript {
 
-AVM::AVM(FSCommandFunction fscommand) {
-	_registers.resize(256);
-	_stopFlag = false;
-	_fscommand = fscommand;
-
-	_variables["_global"] = ObjectPtr(new Object());
-}
-
 AVM::AVM() {
 	_registers.resize(256);
 	_stopFlag = false;
 
 	_variables["_global"] = ObjectPtr(new Object());
+	_variables["_root"] = ObjectPtr(new Object());
 	_variables["Object"] = ObjectPtr(new DummyFunction());
+	_variables["Object"].asObject()->setMember("registerClass", new NativeFunction(boost::bind(&AVM::registerClass, this, _1), false, false, false));
 	_variables["Object"].asObject()->setMember("prototype", ObjectPtr(new Object()));
 	_variables["Array"] = ObjectPtr(new DummyFunction());
 	_variables["Array"].asObject()->setMember("prototype", ObjectPtr(new Array()));
@@ -60,6 +56,14 @@ AVM::AVM() {
 	_variables["MovieClip"].asObject()->setMember("prototype", ObjectPtr(new MovieClip()));
 	_variables["TextField"] = ObjectPtr(new DummyFunction());
 	_variables["TextField"].asObject()->setMember("prototype", ObjectPtr(new TextField()));
+}
+
+void AVM::setRegisterClassFunction(RegisterClassFunction registerClass) {
+	_registerClass = registerClass;
+}
+
+void AVM::setFSCommandCallback(FSCommandFunction fscommand) {
+	_fscommand = fscommand;
 }
 
 void AVM::storeRegister(Variable value, byte index) {
@@ -116,6 +120,10 @@ Variable AVM::createNewObject(const Common::UString &name, std::vector<Variable>
 		throw Common::Exception("Constructor is not a function");
 
 	byte counter = 1;
+	if (constructor->getPreloadRootFlag()) {
+		storeRegister(_variables["_root"], counter);
+		counter += 1;
+	}
 	if (constructor->getPreloadThisFlag()) {
 		storeRegister(Variable(newObject), counter);
 		counter += 1;
@@ -151,6 +159,21 @@ void AVM::setReturnValue(Variable returnValue) {
 
 Variable AVM::getReturnValue() {
 	return _returnValue;
+}
+
+Variable AVM::registerClass(AVM &avm) {
+	Variable name = avm.getRegister(1);
+	Variable object = avm.getRegister(2);
+
+	if (!name.isString())
+		throw Common::Exception("AVM::registerClass() name is not a string");
+	if (!object.isObject())
+		throw Common::Exception("AVM::registerClass() value is not an object");
+
+	if (_registerClass)
+		_registerClass(name.asString(), object.asObject());
+
+	return Variable();
 }
 
 } // End of namespace ActionScript

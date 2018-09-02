@@ -28,7 +28,8 @@ namespace Aurora {
 
 namespace ActionScript {
 
-Function::Function(bool preloadThisFlag, bool preloadSuperFlag) : _preloadThisFlag(preloadThisFlag), _preloadSuperFlag(preloadSuperFlag) {
+Function::Function(bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag) :
+	_preloadThisFlag(preloadThisFlag), _preloadSuperFlag(preloadSuperFlag), _preloadRootFlag(preloadRootFlag) {
 }
 
 bool Function::getPreloadThisFlag() {
@@ -39,9 +40,13 @@ bool Function::getPreloadSuperFlag() {
 	return _preloadSuperFlag;
 }
 
+bool Function::getPreloadRootFlag() {
+	return _preloadRootFlag;
+}
+
 ScriptedFunction::ScriptedFunction(Common::SeekableReadStream *as, std::vector<Common::UString> constants,
-                                   bool preloadThisFlag, bool preloadSuperFlag) :
-	Function(preloadThisFlag, preloadSuperFlag), _stream(as), _buffer(as) {
+                                   bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag) :
+	Function(preloadThisFlag, preloadSuperFlag, preloadRootFlag), _stream(as), _buffer(as) {
 	_buffer.setConstantPool(constants);
 }
 
@@ -54,15 +59,15 @@ Variable ScriptedFunction::operator()(AVM &avm) {
 	return avm.getReturnValue();
 }
 
-NativeFunction::NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag)
-	: Function(preloadThisFlag, preloadSuperFlag), _function(function) {
+NativeFunction::NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag)
+	: Function(preloadThisFlag, preloadSuperFlag, preloadRootFlag), _function(function) {
 }
 
 Variable NativeFunction::operator()(AVM &avm) {
 	return _function(avm);
 }
 
-DummyFunction::DummyFunction() : Function(false, false) {
+DummyFunction::DummyFunction() : Function(false, false, false) {
 
 }
 

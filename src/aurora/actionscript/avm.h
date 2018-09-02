@@ -37,13 +37,20 @@ namespace Aurora {
 namespace ActionScript {
 
 /** Function for receiving fscommand(). */
-typedef boost::function<void(const Common::UString &, const Common::UString &)> FSCommandFunction;
+typedef boost::function<Variable(const Common::UString &, const Common::UString &)> FSCommandFunction;
+
+/** Function for registering classes for widgets. */
+typedef boost::function<void (const Common::UString &, ObjectPtr)> RegisterClassFunction;
 
 /** The Action script virtual machine (AVM). */
 class AVM {
 public:
-	AVM(FSCommandFunction fscommand);
 	AVM();
+
+	/** Set a callback for the Object.registerClass() function. */
+	void setRegisterClassFunction(RegisterClassFunction);
+	/** Set a callback for the fscommand() function. */
+	void setFSCommandCallback(FSCommandFunction);
 
 	/** fscommand is used for communicating with the host program. It is one of
 	 *  Scaleforms ways for sending messages from the actionscript code to the
@@ -73,6 +80,9 @@ public:
 	Variable getReturnValue();
 
 private:
+	Variable registerClass(AVM &avm);
+
+	RegisterClassFunction _registerClass;
 	FSCommandFunction _fscommand;
 
 	std::vector<Variable> _registers;

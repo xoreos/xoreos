@@ -239,7 +239,8 @@ void ASBuffer::actionNot() {
 }
 
 void ASBuffer::actionPop() {
-	_stack.pop();
+	if (!_stack.empty())
+		_stack.pop();
 
 	debugC(kDebugActionScript, 1, "actionPop");
 }
@@ -248,7 +249,14 @@ void ASBuffer::actionGetVariable(AVM &avm) {
 	Common::UString name = _stack.top().asString();
 	_stack.pop();
 
-	_stack.push(avm.getVariable(name));
+	std::vector<Common::UString> split;
+	Common::UString::split(name, '.', split);
+
+	Variable v = avm.getVariable(split[0]);
+	for (int i = 1; i < split.size(); ++i) {
+		v = v.asObject()->getMember(split[i]);
+	}
+	_stack.push(v);
 
 	debugC(kDebugActionScript, 1, "actionGetVariable");
 }
@@ -391,7 +399,15 @@ void ASBuffer::actionGetMember() {
 	ObjectPtr object = _stack.top().asObject();
 	_stack.pop();
 
-	_stack.push(object->getMember(name));
+	std::vector<Common::UString> split;
+	Common::UString::split(name, '.', split);
+
+	Variable v = object->getMember(split[0]);
+	for (int i = 1; i < split.size(); ++i) {
+		v = v.asObject()->getMember(split[i]);
+	}
+
+	_stack.push(v);
 
 	debugC(kDebugActionScript, 1, "actionGetMember");
 }
@@ -448,6 +464,10 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 	byte counter = 1;
 	Variable prevThis;
 
+	if (function->getPreloadRootFlag()) {
+		avm.storeRegister(avm.getVariable("_root"), counter);
+		counter += 1;
+	}
 	if (function->getPreloadThisFlag()) {
 		if (!name.empty()) {
 			prevThis = avm.getRegister(counter);
@@ -578,7 +598,8 @@ void ASBuffer::actionDefineFunction2() {
 							new Common::SeekableSubReadStream(_script, _script->pos(), _script->pos() + codeSize),
 							_constants,
 							preloadThisFlag,
-							preloadSuperFlag
+							preloadSuperFlag,
+							preloadRootFlag
 					)
 			)
 	);
@@ -747,18 +768,7 @@ void ASBuffer::actionDefineFunction() {
 	}
 
 	uint16 codeSize = _script->readUint16LE();
-	_script->seek(codeSize, Common::SeekableReadStream::kOriginCurrent);
-
-	ASBuffer buffer(new Common::SeekableSubReadStream(_script, _script->pos(), _script->pos() + codeSize));
-
-	_stack.push(
-			ObjectPtr(
-					new ScriptedFunction(
-							new Common::SeekableSubReadStream(_script, _script->pos(), _script->pos() + codeSize),
-							_constants, false, false
-					)
-			)
-	);
+	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize), _constants, false, false, false)));
 
 	_seeked = codeSize;
 
