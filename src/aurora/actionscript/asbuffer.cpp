@@ -239,7 +239,8 @@ void ASBuffer::actionNot() {
 }
 
 void ASBuffer::actionPop() {
-	_stack.pop();
+	if (!_stack.empty())
+		_stack.pop();
 
 	debugC(kDebugActionScript, 1, "actionPop");
 }
