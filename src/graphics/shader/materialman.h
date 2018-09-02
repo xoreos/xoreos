@@ -70,7 +70,7 @@ private:
 
 } // End of namespace Graphics
 
-/** Shortcut for accessing the shader manager. */
+/** Shortcut for accessing the shader material manager. */
 #define MaterialMan Graphics::Shader::MaterialManager::instance()
 
 #endif // GRAPHICS_SHADER_MATERIALMAN_H
