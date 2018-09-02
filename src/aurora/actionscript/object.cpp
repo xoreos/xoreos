@@ -90,6 +90,11 @@ Variable Object::call(const Common::UString &function, AVM &avm, const std::vect
 	Function *f = reinterpret_cast<Function *>(getMember(function).asObject().get());
 
 	byte counter = 1;
+	if (f->getPreloadRootFlag()) {
+		avm.storeRegister(avm.getVariable("_root"), counter);
+		counter += 1;
+	}
+
 	if (f->getPreloadThisFlag()) {
 		avm.storeRegister(shared_from_this(), counter);
 		counter += 1;

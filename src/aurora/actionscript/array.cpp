@@ -46,8 +46,8 @@ static Variable as_pop(AVM &avm) {
 }
 
 Array::Array(const std::list<Variable> &values) : _values(values) {
-	setMember("push", new NativeFunction(boost::bind(as_push, _1), true, false));
-	setMember("pop", new NativeFunction(boost::bind(as_pop, _1), true, false));
+	setMember("push", new NativeFunction(boost::bind(as_push, _1), true, false, false));
+	setMember("pop", new NativeFunction(boost::bind(as_pop, _1), true, false, false));
 }
 
 size_t Array::length() const {
