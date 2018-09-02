@@ -878,6 +878,18 @@ Renderable *GraphicsManager::getObjectAt(float x, float y) {
 }
 
 void GraphicsManager::buildNewTextures() {
+	QueueMan.lockQueue(kQueueNewShader);
+	const std::list<Queueable *> &shadq = QueueMan.getQueue(kQueueNewShader);
+	if (shadq.empty()) {
+		QueueMan.unlockQueue(kQueueNewShader);
+	} else {
+		for (std::list<Queueable *>::const_iterator t = shadq.begin(); t != shadq.end(); ++t)
+			static_cast<GLContainer *>(*t)->rebuild();
+
+		QueueMan.clearQueue(kQueueNewShader);
+		QueueMan.unlockQueue(kQueueNewShader);
+	}
+
 	QueueMan.lockQueue(kQueueNewTexture);
 	const std::list<Queueable *> &text = QueueMan.getQueue(kQueueNewTexture);
 	if (text.empty()) {
