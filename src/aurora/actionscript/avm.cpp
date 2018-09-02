@@ -37,14 +37,6 @@ namespace Aurora {
 
 namespace ActionScript {
 
-AVM::AVM(FSCommandFunction fscommand) {
-	_registers.resize(256);
-	_stopFlag = false;
-	_fscommand = fscommand;
-
-	_variables["_global"] = ObjectPtr(new Object());
-}
-
 AVM::AVM() {
 	_registers.resize(256);
 	_stopFlag = false;
@@ -60,6 +52,10 @@ AVM::AVM() {
 	_variables["MovieClip"].asObject()->setMember("prototype", ObjectPtr(new MovieClip()));
 	_variables["TextField"] = ObjectPtr(new DummyFunction());
 	_variables["TextField"].asObject()->setMember("prototype", ObjectPtr(new TextField()));
+}
+
+void AVM::setFSCommandCallback(FSCommandFunction fscommand) {
+	_fscommand = fscommand;
 }
 
 void AVM::storeRegister(Variable value, byte index) {
