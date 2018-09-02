@@ -82,6 +82,7 @@ enum QueueType {
 	kQueueVideo                    , ///< A video.
 	kQueueVisibleVideo             , ///< A currently playing video.
 	kQueueGLContainer              , ///< An object containing OpenGL structures.
+	kQueueNewShader                , ///< An object containing shader information.
 	kQueueMAX                        ///< For range checks.
 };
 
