@@ -26,6 +26,8 @@
 
 #include "src/graphics/render/renderman.h"
 
+DECLARE_SINGLETON(Graphics::Render::RenderManager)
+
 namespace Graphics {
 
 namespace Render {
