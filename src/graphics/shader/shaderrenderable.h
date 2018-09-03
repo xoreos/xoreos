@@ -53,7 +53,7 @@ public:
 	void setMaterial(Shader::ShaderMaterial *material);
 	void setMesh(Mesh::Mesh *mesh);
 
-	void renderImmediate(const glm::mat4 &tform);
+	void renderImmediate(const glm::mat4 &tform, float alpha = 1.0f);
 
 private:
 	ShaderSurface *_surface;
