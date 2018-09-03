@@ -35,6 +35,12 @@ namespace Shader {
 SurfaceManager::SurfaceManager() {
 	ShaderSurface *surface = new ShaderSurface(ShaderMan.getShaderObject("default/default.vert", SHADER_VERTEX), "defaultSurface");
 	_resourceMap[surface->getName()] = surface;
+
+	surface = new ShaderSurface(ShaderMan.getShaderObject("default/text.vert", SHADER_VERTEX), "textSurface");
+	_resourceMap[surface->getName()] = surface;
+
+	surface = new ShaderSurface(ShaderMan.getShaderObject("default/texture.vert", SHADER_VERTEX), "textureSurface");
+	_resourceMap[surface->getName()] = surface;
 }
 
 SurfaceManager::~SurfaceManager() {
