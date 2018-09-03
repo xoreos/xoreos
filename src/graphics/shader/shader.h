@@ -70,6 +70,8 @@
 
 #include "src/graphics/texture.h"
 
+#include "src/graphics/aurora/texturehandle.h"
+
 namespace Graphics {
 
 namespace Shader {
@@ -175,6 +177,7 @@ struct ShaderUBO {
  */
 struct ShaderSampler {
 	Texture *texture;
+	Graphics::Aurora::TextureHandle handle;
 	uint32 unit;
 	ShaderSampler() : texture(0), unit(0) {}
 	ShaderSampler(Texture *t, uint32 u) : texture(t), unit(u) {}
