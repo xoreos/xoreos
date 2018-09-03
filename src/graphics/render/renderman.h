@@ -51,7 +51,7 @@ public:
 
 	void setCameraReference(const glm::vec3 &reference);
 
-	void queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform);
+	void queueRenderable(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha);
 
 	void sort();
 
