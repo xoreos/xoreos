@@ -108,6 +108,8 @@ private:
 	Common::UString _name;
 	uint32 _usageCount;
 
+	uint32 _alphaIndex;
+
 	void *genMaterialVar(uint32 index);
 	void delMaterialVar(uint32 index);
 };
