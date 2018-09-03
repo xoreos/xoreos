@@ -575,10 +575,10 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		 * manager is responsible for later deleting it.
 		 */
 		meshName += "#" + Common::generateIDRandomString();
-		MeshMan.addMesh(_mesh->data->rawMesh);
-
 		_mesh->data->rawMesh->setName(meshName);
 		_mesh->data->rawMesh->init();
+
+		MeshMan.addMesh(_mesh->data->rawMesh);
 #endif
 		this->buildMaterial();
 	}
