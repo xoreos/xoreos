@@ -65,6 +65,7 @@ ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::U
 			_alphaIndex = i;
 		}
 	}
+	this->recalcTextureUnits();
 }
 
 ShaderMaterial::~ShaderMaterial() {
