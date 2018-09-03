@@ -119,6 +119,9 @@ void RenderQueue::render() {
 			currentProgram = _nodeArray[i].program;
 			glUseProgram(currentProgram->glid);
 
+			if (currentSurface != 0) {
+				currentSurface->unbindGLState();
+			}
 			if (currentMaterial != 0) {
 				currentMaterial->unbindGLState();
 			}
@@ -132,12 +135,20 @@ void RenderQueue::render() {
 				currentMaterial->unbindGLState();
 			}
 			currentMaterial = _nodeArray[i].material;
-			currentMaterial->bindProgram(currentProgram);
+			currentMaterial->bindProgramNoFade(currentProgram);
 			currentMaterial->bindGLState();
 		}
 
 		assert(_nodeArray[i].surface);
 		assert(_nodeArray[i].mesh);
+
+		if (currentSurface != _nodeArray[i].surface) {
+			if (currentSurface != 0) {
+				currentSurface->unbindGLState();
+			}
+			currentSurface = _nodeArray[i].surface;
+			currentSurface->bindGLState();
+		}
 
 		currentSurface = _nodeArray[i].surface;
 		currentMesh = _nodeArray[i].mesh;
@@ -146,6 +157,8 @@ void RenderQueue::render() {
 		// There's at least one mesh to be rendering here.
 		assert(_nodeArray[i].transform);
 		currentSurface->bindProgram(currentProgram, _nodeArray[i].transform);
+		//currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
+		currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
 		currentMesh->render();
 
 		++i;  // Move to next object.
@@ -153,18 +166,22 @@ void RenderQueue::render() {
 			// Next object is basically the same, but will have a different object modelview transform. So rebind that, and render again.
 			assert(_nodeArray[i].transform);
 			currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
+			currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
 			currentMesh->render();
 			++i;
 		}
 		// Done rendering, unbind the mesh, and onwards into the queue.
 		currentMesh->renderUnbind();
 	}
+	if (currentMaterial) {
+		currentMaterial->unbindGLState();
+	}
+	if (currentSurface) {
+		currentSurface->unbindGLState();
+	}
 
-	// Restore OpenGL state on exit.
-	glDisable(GL_BLEND);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
+	glUseProgram(0);
+	glActiveTexture(GL_TEXTURE0);
 }
 
 void RenderQueue::clear() {
