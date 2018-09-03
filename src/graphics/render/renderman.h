@@ -30,11 +30,13 @@
 
 #include "src/graphics/render/renderqueue.h"
 
+#include "src/common/singleton.h"
+
 namespace Graphics {
 
 namespace Render {
 
-class RenderManager {
+class RenderManager : public Common::Singleton<RenderManager> {
 public:
 	RenderManager();
 	~RenderManager();
@@ -58,5 +60,8 @@ private:
 } // namespace Render
 
 } // namespace Graphics
+
+/** Shortcut for accessing the render manager. */
+#define RenderMan Graphics::Render::RenderManager::instance()
 
 #endif // GRAPHICS_RENDER_RENDERMANAGER_H
