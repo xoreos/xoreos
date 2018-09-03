@@ -77,6 +77,7 @@ public:
 	void bindProgram(Shader::ShaderProgram *program);
 	void bindProgram(Shader::ShaderProgram *program, const glm::mat4 *t);
 	void bindObjectModelview(Shader::ShaderProgram *program, const glm::mat4 *t);
+	void bindTextureView(Shader::ShaderProgram *program, const glm::mat4 *t);
 
 	void bindGLState();
 	void unbindGLState();
@@ -101,6 +102,7 @@ private:
 	uint32 _usageCount;
 
 	uint32 _objectModelviewIndex;
+	uint32 _textureViewIndex;
 
 	void *genSurfaceVar(uint32 index);
 	void delSurfaceVar(uint32 index);
