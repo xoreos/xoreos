@@ -949,9 +949,6 @@ bool GraphicsManager::renderWorld() {
 	if (QueueMan.isQueueEmpty(kQueueVisibleWorldObject))
 		return false;
 
-	_projection = _perspective;
-	_projectionInv = _perspectiveInv;
-
 	float cPos[3];
 	float cOrient[3];
 
