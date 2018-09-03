@@ -51,6 +51,16 @@ void MaterialManager::init() {
 		color[3] = 1.0f;
 	}
 	_resourceMap[material->getName()] = material;
+
+	material = new ShaderMaterial(ShaderMan.getShaderObject("default/color.frag", SHADER_FRAGMENT), "defaultBlack");
+	color = (float *)(material->getVariableData("_color"));
+	if (color) {
+		color[0] = 0.0f;
+		color[1] = 0.0f;
+		color[2] = 0.0f;
+		color[3] = 1.0f;
+	}
+	_resourceMap[material->getName()] = material;
 }
 
 void MaterialManager::deinit() {
