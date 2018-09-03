@@ -564,7 +564,7 @@ static const char *shaderTypeChararray[] = {
 	"samplerCube",
 	"sampler1DShadow",
 	"sampler2DShadow",
-	"samplery1DArray",
+	"sampler1DArray",
 	"sampler2DArray",
 	"sampler1DArrayShadow",
 	"sampler2DArrayShadow",
