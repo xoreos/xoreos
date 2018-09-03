@@ -49,8 +49,8 @@ public:
 	ShaderProgram *getProgram();
 	Mesh::Mesh *getMesh();
 
-	void setSurface(Shader::ShaderSurface *surface);
-	void setMaterial(Shader::ShaderMaterial *material);
+	void setSurface(Shader::ShaderSurface *surface, bool rebuildProgram = true);
+	void setMaterial(Shader::ShaderMaterial *material, bool rebuildProgram = true);
 	void setMesh(Mesh::Mesh *mesh);
 
 	void renderImmediate(const glm::mat4 &tform, float alpha = 1.0f);
