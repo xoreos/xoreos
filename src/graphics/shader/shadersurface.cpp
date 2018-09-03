@@ -32,7 +32,7 @@ namespace Shader {
 
 #define SHADER_SURFACE_VARIABLE_OWNED (0x00000001)
 
-ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name) : _variableData(), _vertShader(vertShader), _flags(0), _name(name), _usageCount(0), _objectModelviewIndex(0xFFFFFFFF) {
+ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name) : _variableData(), _vertShader(vertShader), _flags(0), _name(name), _usageCount(0), _objectModelviewIndex(0xFFFFFFFF), _textureViewIndex(0xFFFFFFFF) {
 	vertShader->usageCount++;
 
 	uint32 varCount = vertShader->variablesCombined.size();
@@ -43,6 +43,8 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 
 		if (vertShader->variablesCombined[i].name == "_objectModelviewMatrix") {
 			_objectModelviewIndex = i;
+		} else if (vertShader->variablesCombined[i].name == "_textureViewMatrix") {
+			_textureViewIndex = i;
 		} else if (vertShader->variablesCombined[i].name == "_projectionMatrix") {
 			setVariableExternal(i, &(GfxMan.getProjectionMatrix()));
 		} else if (vertShader->variablesCombined[i].name == "_modelviewMatrix") {
@@ -175,6 +177,12 @@ void ShaderSurface::bindProgram(Shader::ShaderProgram *program, const glm::mat4 
 void ShaderSurface::bindObjectModelview(Shader::ShaderProgram *program, const glm::mat4 *t) {
 	if (_objectModelviewIndex != 0xFFFFFFFF) {
 		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_objectModelviewIndex], program->vertexVariableLocations[_objectModelviewIndex], t);
+	}
+}
+
+void ShaderSurface::bindTextureView(Shader::ShaderProgram *program, const glm::mat4 *t) {
+	if (_textureViewIndex != 0xFFFFFFFF) {
+		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_textureViewIndex], program->vertexVariableLocations[_objectModelviewIndex], t);
 	}
 }
 
