@@ -83,11 +83,15 @@ void RenderQueue::queueItem(Shader::ShaderRenderable *renderable, const glm::mat
 }
 
 void RenderQueue::sortShader() {
-	std::sort(_nodeArray.begin(), _nodeArray.end(), compareShader);
+	if (_nodeArray.size() > 1) {
+		std::sort(_nodeArray.begin(), _nodeArray.end(), compareShader);
+	}
 }
 
 void RenderQueue::sortDepth() {
-	std::sort(_nodeArray.begin(), _nodeArray.end(), compareDepth);
+	if (_nodeArray.size() > 1) {
+		std::sort(_nodeArray.begin(), _nodeArray.end(), compareDepth);
+	}
 }
 
 void RenderQueue::render() {
