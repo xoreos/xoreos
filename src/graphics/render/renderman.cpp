@@ -32,10 +32,14 @@ namespace Graphics {
 
 namespace Render {
 
-RenderManager::RenderManager() {
+RenderManager::RenderManager() : _sortingHints(SORT_HINT_NORMAL) {
 }
 
 RenderManager::~RenderManager() {
+}
+
+void RenderManager::setSortingHint(SortingHints hint) {
+	_sortingHints = hint;
 }
 
 void RenderManager::setCameraReference(const glm::vec3 &reference) {
