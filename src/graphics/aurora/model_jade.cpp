@@ -604,7 +604,7 @@ void ModelNode_Jade::buildMaterial() {
 		materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // Make sure it's not actually opaque.
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
 	}
-
+#if 0
 	printf("-----------------------------\n");
 	printf("jade empire mesh:\n");
 	printf("    node name: %s\n", _name.c_str());
@@ -705,7 +705,7 @@ void ModelNode_Jade::buildMaterial() {
 			printf("-----------------------------\n\n");
 		}
 	}
-
+#endif
 	if (materialFlags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT &&
 	    _mesh->transparencyHintFull > 2) {
 		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B;
