@@ -124,6 +124,7 @@ void ShaderRenderable::renderImmediate(const glm::mat4 &tform, float alpha) {
 
 void ShaderRenderable::updateProgram() {
 	if ((_surface != 0) && (_material != 0)) {
+		ShaderMan.registerShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());
 		_program = ShaderMan.getShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());
 	} else {
 		_program = 0;
