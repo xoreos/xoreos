@@ -109,8 +109,8 @@ void Mesh::init() {
 }
 
 void Mesh::initGL() {
-	_vertexBuffer.initGL();
-	_indexBuffer.initGL();
+	_vertexBuffer.initGL(_hint);
+	_indexBuffer.initGL(_hint);
 
 	// GL3.x render path uses Vertex Array (attribute) Objects.
 	if (GfxMan.isGL3()) {
