@@ -34,11 +34,23 @@ ShaderRenderable::ShaderRenderable() : _surface(0), _material(0), _program(0), _
 }
 
 ShaderRenderable::ShaderRenderable(Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh) : _surface(surface), _material(material), _program(0), _mesh(mesh) {
-	_program = ShaderMan.getShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());
+	//_program = ShaderMan.getShaderProgram(_surface->getVertexShader(), _material->getFragmentShader());
+	_surface->useIncrement();
+	_material->useIncrement();
+	_mesh->useIncrement();
+	updateProgram();
 }
 
 ShaderRenderable::~ShaderRenderable() {
-	// TODO: one less surface in use, one less material, one less program usage count, one less mesh pointer.
+	if (_surface) {
+		_surface->useDecrement();
+	}
+	if (_material) {
+		_material->useDecrement();
+	}
+	if (_mesh) {
+		_mesh->useDecrement();
+	}
 }
 
 ShaderSurface *ShaderRenderable::getSurface() {
@@ -59,21 +71,39 @@ Mesh::Mesh *ShaderRenderable::getMesh() {
 
 void ShaderRenderable::setSurface(Shader::ShaderSurface *surface, bool rebuildProgram) {
 	// TODO: check old surface for usage count decrement.
+	if (_surface) {
+		_surface->useDecrement();
+	}
 	_surface = surface;
+	if (_surface) {
+		_surface->useIncrement();
+	}
 	if (rebuildProgram) {
 		updateProgram();
 	}
 }
 
 void ShaderRenderable::setMaterial(Shader::ShaderMaterial *material, bool rebuildProgram) {
+	if (_material) {
+		_material->useDecrement();
+	}
 	_material = material;
+	if (_material) {
+		_material->useIncrement();
+	}
 	if (rebuildProgram) {
 		updateProgram();
 	}
 }
 
 void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
+	if (_mesh) {
+		_mesh->useDecrement();
+	}
 	_mesh = mesh;
+	if (_mesh) {
+		_mesh->useIncrement();
+	}
 }
 
 void ShaderRenderable::renderImmediate(const glm::mat4 &tform, float alpha) {
