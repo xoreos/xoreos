@@ -73,11 +73,11 @@ void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
 	_mesh = mesh;
 }
 
-void ShaderRenderable::renderImmediate(const glm::mat4 &tform) {
+void ShaderRenderable::renderImmediate(const glm::mat4 &tform, float alpha) {
 	if (!_program->glid)
 		return;
 	glUseProgram(_program->glid);
-	_material->bindProgram(_program);
+	_material->bindProgram(_program, alpha);
 	_material->bindGLState();
 	_surface->bindProgram(_program, &tform);
 	_surface->bindGLState();
