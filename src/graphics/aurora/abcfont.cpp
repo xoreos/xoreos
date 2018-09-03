@@ -54,6 +54,8 @@ ABCFont::ABCFont(const Common::UString &name) : _base(0) {
 }
 
 ABCFont::~ABCFont() {
+	delete _renderable;
+	delete _material;
 }
 
 float ABCFont::getHeight() const {
