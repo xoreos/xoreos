@@ -47,6 +47,9 @@
 
 #include "src/graphics/images/decoder.h"
 
+// This is included if a mesh wants a unique name.
+#include "src/common/uuid.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -565,6 +568,15 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 			_mesh->data->rawMesh = mystery_mesh;
 		}
 #else
+		/**
+		 * Because meshes need to be unique right now, at least until animation can use
+		 * vertex shaders instead of vertex data duplication, need to generate a unique
+		 * name for the mesh and add it to the mesh manager. This is important; the mesh
+		 * manager is responsible for later deleting it.
+		 */
+		meshName += "#" + Common::generateIDRandomString();
+		MeshMan.addMesh(_mesh->data->rawMesh);
+
 		_mesh->data->rawMesh->setName(meshName);
 		_mesh->data->rawMesh->init();
 #endif
