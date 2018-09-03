@@ -57,16 +57,19 @@ Mesh::Mesh *ShaderRenderable::getMesh() {
 	return _mesh;
 }
 
-void ShaderRenderable::setSurface(Shader::ShaderSurface *surface) {
+void ShaderRenderable::setSurface(Shader::ShaderSurface *surface, bool rebuildProgram) {
 	// TODO: check old surface for usage count decrement.
 	_surface = surface;
-	updateProgram();
+	if (rebuildProgram) {
+		updateProgram();
+	}
 }
 
-void ShaderRenderable::setMaterial(Shader::ShaderMaterial *material) {
-	// TODO: check old surface for usage count decrement.
+void ShaderRenderable::setMaterial(Shader::ShaderMaterial *material, bool rebuildProgram) {
 	_material = material;
-	updateProgram();
+	if (rebuildProgram) {
+		updateProgram();
+	}
 }
 
 void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
