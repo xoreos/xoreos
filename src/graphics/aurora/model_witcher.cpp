@@ -296,6 +296,52 @@ void ModelNode_Witcher::load(Model_Witcher::ParserContext &ctx) {
 			break;
 	}
 
+	if (_mesh && _mesh->data && _mesh->data->rawMesh) {
+		Common::UString meshName = ctx.mdlName;
+		meshName += ".";
+		if (ctx.state->name.size() != 0) {
+			meshName += ctx.state->name;
+		} else {
+			meshName += "xoreos.default";
+		}
+		meshName += ".";
+		meshName += _name;
+
+		/**
+		 * Dirty hack around an issue where sometimes a tile can have multiple meshes
+		 * of exactly the same name. This dirty hack will double up on static objects
+		 * without state, but hopefully they're relatively few and it won't impact
+		 * performance too much.
+		 * A future improvement will be to see if an entire model has already been
+		 * loaded and to use that directly: that should prevent models with an empty
+		 * state from being affected by this dirty hack.
+		 * Screw you bioware.
+		 */
+		Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
+		if (ctx.state->name.size() == 0) {
+			while (mystery_mesh) {
+				meshName += "_";
+				mystery_mesh = MeshMan.getMesh(meshName);
+			}
+		}
+
+		if (!mystery_mesh) {
+			Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+			if (checkMesh) {
+				warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
+				delete _mesh->data->rawMesh;
+				_mesh->data->rawMesh = checkMesh;
+			} else {
+				_mesh->data->rawMesh->setName(meshName);
+				_mesh->data->rawMesh->init();
+				MeshMan.addMesh(_mesh->data->rawMesh);
+			}
+		} else {
+			delete _mesh->data->rawMesh;
+			_mesh->data->rawMesh = mystery_mesh;
+		}
+	}
+
 	// Only render the highest LOD (0), or if the node is not LODing (-1)
 	if ((minLOD != -1) && (maxLOD != -1) && (minLOD > 0))
 		_render = false;
@@ -551,53 +597,6 @@ void ModelNode_Witcher::readMesh(Model_Witcher::ParserContext &ctx) {
 	createBound();
 
 	ctx.mdb->seek(endPos);
-
-	Common::UString meshName = ctx.mdlName;
-	meshName += ".";
-	if (ctx.state->name.size() != 0) {
-		meshName += ctx.state->name;
-	} else {
-		meshName += "xoreos.default";
-	}
-	meshName += ".";
-	meshName += _name;
-//	meshName += Common::generateIDRandomString();
-
-	/**
-	 * Dirty hack around an issue where sometimes a tile can have multiple meshes
-	 * of exactly the same name. This dirty hack will double up on static objects
-	 * without state, but hopefully they're relatively few and it won't impact
-	 * performance too much.
-	 * A future improvement will be to see if an entire model has already been
-	 * loaded and to use that directly: that should prevent models with an empty
-	 * state from being affected by this dirty hack.
-	 * Screw you bioware.
-	 */
-	Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
-	if (ctx.state->name.size() == 0) {
-		while (mystery_mesh) {
-			meshName += "_";
-			mystery_mesh = MeshMan.getMesh(meshName);
-		}
-	}
-
-	if (!mystery_mesh) {
-		Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
-		if (checkMesh) {
-			warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
-			delete _mesh->data->rawMesh;
-			_mesh->data->rawMesh = checkMesh;
-		} else {
-			_mesh->data->rawMesh->setName(meshName);
-			_mesh->data->rawMesh->init();
-			MeshMan.addMesh(_mesh->data->rawMesh);
-		}
-	} else {
-		delete _mesh->data->rawMesh;
-		_mesh->data->rawMesh = mystery_mesh;
-	}
-
-	//this->buildMaterial();
 }
 
 void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
