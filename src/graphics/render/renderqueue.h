@@ -46,7 +46,6 @@ public:
 		Mesh::Mesh *mesh;
 		const glm::mat4 *transform;
 		float reference;  ///< Reference point to the camera location, primarily used for depth sorting.
-		float padding;    ///< Padding for 64bit architectures.
 
 		RenderQueueNode() : program(0), surface(0), material(0), mesh(0), transform(0), reference(0.0f) {}
 		RenderQueueNode(const RenderQueueNode &src) : program(src.program), surface(src.surface), material(src.material), mesh(src.mesh), transform(src.transform), reference(src.reference) {}
