@@ -486,6 +486,9 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	_projection[3][3] =  0.0f;
 
 	_projectionInv = glm::inverse(_projection);
+
+	_perspective = _projection;
+	_perspectiveInv = _projectionInv;
 }
 
 void GraphicsManager::setOrthogonal(float clipNear, float clipFar) {
@@ -529,6 +532,9 @@ void GraphicsManager::ortho(float left, float right, float bottom, float top, fl
 	_projection[3][3] = 1.0f;
 
 	_projectionInv = inverse(_projection);
+
+	_ortho = _projection;
+	_orthoInv = _projectionInv;
 }
 
 bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, float &sZ) {
