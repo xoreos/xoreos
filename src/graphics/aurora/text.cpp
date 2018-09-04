@@ -269,6 +269,37 @@ bool Text::isIn(float x, float y) const {
 	return true;
 }
 
+void Text::renderImmediate(const glm::mat4 &parentTransform)
+{
+	Font &font = _font.getFont();
+	float lineHeight = font.getHeight() + font.getLineSpacing();
+
+	std::vector<Common::UString> lines;
+	font.split(_str, lines, _width, _height, false);
+
+	float blockSize = lines.size() * lineHeight;
+
+	// Move position to the top
+	size_t position = 0;
+
+	ColorPositions::const_iterator color = _colors.begin();
+
+	_font.getFont().renderBind(parentTransform);
+	float x = _x;
+	float y = _y + roundf(((_height - blockSize) * _valign) + blockSize - lineHeight);
+	// Draw lines
+	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l) {
+		float saved_x = x;
+		float saved_y = y;
+		drawLineImmediate(*l, color, position, x, y);
+		x = saved_x;
+		y = saved_y - lineHeight;
+		// \n character
+		position++;
+	}
+	_font.getFont().renderUnbind();
+}
+
 void Text::parseColors(const Common::UString &str, Common::UString &parsed,
                        ColorPositions &colors) {
 
@@ -358,7 +389,8 @@ void Text::setFont(const Common::UString &fnt) {
 }
 
 void Text::drawLine(const Common::UString &line,
-                    ColorPositions::const_iterator color, size_t position) {
+                    ColorPositions::const_iterator color,
+                    size_t position) {
 
 	Font &font = _font.getFont();
 
@@ -378,6 +410,41 @@ void Text::drawLine(const Common::UString &line,
 		}
 
 		font.draw(*s);
+	}
+
+}
+
+void Text::drawLineImmediate(const Common::UString &line,
+                             ColorPositions::const_iterator color,
+                             size_t position,
+                             float &x,
+                             float &y) {
+
+	Font &font = _font.getFont();
+
+	// Horizontal Align
+	x += round((_width - font.getLineWidth(line)) * _halign);
+
+	// Draw line
+	float rgba[] = { _r, _g, _b, _a };
+	for (Common::UString::iterator s = line.begin(); s != line.end(); ++s, position++) {
+		// If we have color changes, apply them
+		while ((color != _colors.end()) && (color->position <= position)) {
+			if (color->defaultColor) {
+				rgba[0] = _r;
+				rgba[1] = _g;
+				rgba[2] = _b;
+				rgba[3] = _a;
+			} else {
+				rgba[0] = color->r;
+				rgba[1] = color->g;
+				rgba[2] = color->b;
+				rgba[3] = color->a;
+			}
+
+			++color;
+		}
+		font.render(*s, x, y, rgba);
 	}
 }
 
