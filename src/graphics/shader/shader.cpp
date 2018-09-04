@@ -33,6 +33,7 @@
 
 #include "src/graphics/shader/shader.h"
 #include "src/graphics/shader/shadercode.h"
+#include "src/graphics/shader/shaderbuilder.h"
 
 #include "src/graphics/aurora/texture.h"
 
@@ -105,6 +106,63 @@ void ShaderManager::init() {
 		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor2xText, SHADER_FRAGMENT);
 		registerShaderProgram(vObj, fObj);
 	}
+
+	Graphics::Shader::ShaderDescriptor cripter;
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_COLOUR);
+	cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+	                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
+	cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+	                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0,
+	                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
+	                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::X_COLOUR,
+	                Graphics::Shader::ShaderDescriptor::Blend::BLEND_MULTIPLY);
+
+	Common::UString vertexStringFinal;
+	Common::UString fragmentStringFinal;
+	cripter.build(GfxMan.isGL3(), vertexStringFinal, fragmentStringFinal);
+	vObj = ShaderMan.getShaderObject("default/text.vert", vertexStringFinal, Shader::SHADER_VERTEX);
+	fObj = ShaderMan.getShaderObject("default/text.frag", fragmentStringFinal, Shader::SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	cripter.clear();
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0);
+	cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+	                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
+	cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+	                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0,
+	                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
+	                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
+
+	vertexStringFinal.clear();
+	fragmentStringFinal.clear();
+	cripter.build(GfxMan.isGL3(), vertexStringFinal, fragmentStringFinal);
+	vObj = ShaderMan.getShaderObject("default/texture.vert", vertexStringFinal, Shader::SHADER_VERTEX);
+	fObj = ShaderMan.getShaderObject("default/texture.frag", fragmentStringFinal, Shader::SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	cripter.clear();
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0_MATRIX);
+	cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+	                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
+	cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
+	                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0_MATRIX,
+	                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
+	                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
+
+	vertexStringFinal.clear();
+	fragmentStringFinal.clear();
+	cripter.build(GfxMan.isGL3(), vertexStringFinal, fragmentStringFinal);
+	vObj = ShaderMan.getShaderObject("default/textureMatrix.vert", vertexStringFinal, Shader::SHADER_VERTEX);
+	fObj = ShaderMan.getShaderObject("default/texture.frag", Shader::SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
 }
 
 void ShaderManager::deinit() {
