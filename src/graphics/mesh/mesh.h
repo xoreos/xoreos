@@ -72,6 +72,10 @@ public:
 	void useDecrement();
 	uint32 useCount() const;
 
+	const glm::vec3 &getCentre() const;
+
+	float getRadius() const;
+
 protected:
 	// For each attrib, when calculating VBOs, do (attrib address) - (base data address) to find initial data offset.
 	VertexBuffer _vertexBuffer;
@@ -91,6 +95,11 @@ private:
 	uint32 _usageCount;
 
 	GLuint _vao;  ///< Vertex Array Object handle. GL3.x only.
+
+	glm::vec3 _centre;
+	glm::vec3 _max;
+	glm::vec3 _min;
+	float _radius;
 };
 
 } // End of namespace Mesh
