@@ -27,6 +27,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "glm/mat4x4.hpp"
+
 #include "src/common/ustring.h"
 
 #include "src/common/ustring.h"
@@ -52,6 +54,12 @@ public:
 
 	/** Render the object. */
 	virtual void render(RenderPass pass) = 0;
+
+	/** For shader based systems, don't sort anything, render this _right_now_. */
+	virtual void renderImmediate(const glm::mat4 &UNUSED(parentTransform)) {}
+
+	/** Queue the object for later rendering. */
+	virtual void queueRender(const glm::mat4 &UNUSED(parentTransform)) {}
 
 	/** Get the distance of the object from the viewer. */
 	double getDistance() const;
