@@ -114,6 +114,12 @@ public:
 	void computeInverseBindPose();
 	void computeAbsoluteTransform();
 
+	/** Get the alpha (transparency) of the node. */
+	float getAlpha();
+
+	/** Set the alpha (transparency) of the node. */
+	void setAlpha(float alpha, bool isRecursive = true);
+
 	/** The way the environment map is applied to a model node. */
 	enum EnvironmentMapMode {
 		kModeEnvironmentBlendedUnder, ///< Environment map first, then blend the diffuse textures in.
@@ -207,6 +213,8 @@ protected:
 	float _rotation   [3]; ///< Node rotation.
 	float _orientation[4]; ///< Orientation of the node.
 	float _scale      [3]; ///< Scale of the node.
+
+	float _alpha;          ///< Alpha of the node, used if no _mesh is present in this node.
 
 	std::vector<PositionKeyFrame> _positionFrames;      ///< Keyframes for position animation.
 	std::vector<QuaternionKeyFrame> _orientationFrames; ///< Keyframes for orientation animation.
