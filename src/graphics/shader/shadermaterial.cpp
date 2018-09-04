@@ -30,28 +30,6 @@ namespace Shader {
 
 #define SHADER_MATERIAL_VARIABLE_OWNED (0x00000001)
 
-static const GLenum ShaderMaterialBlendfuncArray[] = {
-	GL_ZERO,
-	GL_ONE,
-	GL_SRC_COLOR,
-	GL_ONE_MINUS_SRC_COLOR,
-	GL_DST_COLOR,
-	GL_ONE_MINUS_DST_COLOR,
-	GL_SRC_ALPHA,
-	GL_ONE_MINUS_SRC_ALPHA,
-	GL_DST_ALPHA,
-	GL_ONE_MINUS_DST_ALPHA,
-	GL_CONSTANT_COLOR,
-	GL_ONE_MINUS_CONSTANT_COLOR,
-	GL_CONSTANT_ALPHA,
-	GL_ONE_MINUS_CONSTANT_ALPHA,
-	GL_SRC_ALPHA_SATURATE,
-	GL_SRC1_COLOR,
-	GL_ONE_MINUS_SRC1_COLOR,
-	GL_SRC1_ALPHA,
-	GL_ONE_MINUS_SRC1_ALPHA
-};
-
 ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) : _variableData(), _fragShader(fragShader), _flags(0), _name(name), _usageCount(0), _alphaIndex(0xFFFFFFFF) {
 	fragShader->usageCount++;
 
@@ -256,40 +234,14 @@ void ShaderMaterial::bindFade(Shader::ShaderProgram *program, float alpha) {
 }
 
 void ShaderMaterial::bindGLState() {
-	if (_flags & SHADER_MATERIAL_TRANSPARENT) {
-		glBlendFunc(ShaderMaterialBlendfuncArray[(_flags >> SHADER_MATERIAL_TRANSPARENT_SRC_SHIFT) & SHADER_MATERIAL_TRANSPARENT_SHIFT_MASK],
-		            ShaderMaterialBlendfuncArray[(_flags >> SHADER_MATERIAL_TRANSPARENT_DST_SHIFT) & SHADER_MATERIAL_TRANSPARENT_SHIFT_MASK]);
-		glEnable(GL_BLEND);
-	}
-
-	if (_flags & SHADER_MATERIAL_NOCULLFACE) {
-		glDisable(GL_CULL_FACE);
-	}
-
-	if (_flags & SHADER_MATERIAL_NODEPTHTEST) {
-		glDisable(GL_DEPTH_TEST);
-	}
-
-	if (_flags & SHADER_MATERIAL_NODEPTHMASK) {
-		glDepthMask(GL_FALSE);
+	if (_flags & ShaderMaterial::MATERIAL_SPECIAL_BLEND) {
+		glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 	}
 }
 
 void ShaderMaterial::unbindGLState() {
-	if (_flags & SHADER_MATERIAL_TRANSPARENT) {
-		glDisable(GL_BLEND);
-	}
-
-	if (_flags & SHADER_MATERIAL_NOCULLFACE) {
-		glEnable(GL_CULL_FACE);
-	}
-
-	if (_flags & SHADER_MATERIAL_NODEPTHTEST) {
-		glEnable(GL_DEPTH_TEST);
-	}
-
-	if (_flags & SHADER_MATERIAL_NODEPTHMASK) {
-		glDepthMask(GL_TRUE);
+	if (_flags & ShaderMaterial::MATERIAL_SPECIAL_BLEND) {
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }
 
