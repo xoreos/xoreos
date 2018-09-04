@@ -59,6 +59,10 @@ public:
 
 	void clear();
 
+	void init() {}
+	void deinit() {}
+	void cleanup() {}
+
 private:
 	RenderQueue _queueColorSolid;
 	RenderQueue _queueColorTransparent;
