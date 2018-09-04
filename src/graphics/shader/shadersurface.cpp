@@ -66,6 +66,14 @@ Shader::ShaderObject *ShaderSurface::getVertexShader() const {
 	return _vertShader;
 }
 
+uint32 ShaderSurface::getFlags() const {
+	return _flags;
+}
+
+void ShaderSurface::setFlags(uint32 flags) {
+	_flags = flags;
+}
+
 uint32 ShaderSurface::getVariableCount() const {
 	return _vertShader->variablesCombined.size();
 	// return _variableData.size(); // Should be equal to the frag shader variable count.
