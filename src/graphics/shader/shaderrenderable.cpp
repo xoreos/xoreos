@@ -74,6 +74,8 @@ void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
 }
 
 void ShaderRenderable::renderImmediate(const glm::mat4 &tform) {
+	if (!_program->glid)
+		return;
 	glUseProgram(_program->glid);
 	_material->bindProgram(_program);
 	_material->bindGLState();
