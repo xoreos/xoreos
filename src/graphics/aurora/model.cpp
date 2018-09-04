@@ -50,6 +50,8 @@ STOP_IGNORE_IMPLICIT_FALLTHROUGH
 #include "src/graphics/shader/materialman.h"
 #include "src/graphics/mesh/meshman.h"
 
+#include "src/graphics/render/renderman.h"
+
 using Common::kDebugGraphics;
 
 namespace Graphics {
@@ -659,6 +661,56 @@ void Model::render(RenderPass pass) {
 
 	// Draw the skeleton, if requested
 	doDrawSkeleton();
+}
+
+void Model::renderImmediate(const glm::mat4 &parentTransform) {
+	if (!_currentState) {
+		return;
+	}
+
+	glm::mat4 transform = parentTransform * _absolutePosition;
+	queueDrawBound();
+
+	// Queue the nodes
+	for (NodeList::iterator n = _currentState->rootNodes.begin();
+	     n != _currentState->rootNodes.end(); ++n) {
+		(*n)->renderImmediate(transform);
+	}
+}
+
+void Model::queueRender(const glm::mat4 &parentTransform) {
+	if (!_currentState) {
+		return;
+	}
+
+	glm::mat4 transform = parentTransform * _absolutePosition;
+	queueDrawBound();
+
+	// Queue the nodes
+	for (NodeList::iterator n = _currentState->rootNodes.begin();
+	     n != _currentState->rootNodes.end(); ++n) {
+		(*n)->queueRender(transform);
+	}
+}
+
+void Model::queueDrawBound() {
+	if (!_drawBound)
+		return;
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glLineWidth(1.0f);
+
+	Common::BoundingBox object = _boundBox;
+
+	float minX, minY, minZ, maxX, maxY, maxZ;
+	object.getMin(minX, minY, minZ);
+	object.getMax(maxX, maxY, maxZ);
+
+	_boundTransform = _absolutePosition;
+	_boundTransform *= glm::translate(glm::mat4(), glm::vec3((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f));
+	_boundTransform *= glm::scale(glm::mat4(), glm::vec3((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f));
+
+	RenderMan.queueRenderable(&_boundRenderable, &_boundTransform, 1.0f);
 }
 
 void Model::doDrawBound() {
