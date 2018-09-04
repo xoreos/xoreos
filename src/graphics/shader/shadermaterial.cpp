@@ -231,6 +231,30 @@ void ShaderMaterial::bindProgram(Shader::ShaderProgram *program) {
 	}
 }
 
+void ShaderMaterial::bindProgramNoFade(Shader::ShaderProgram *program) {
+	for (uint32 i = 0; i < _variableData.size(); i++) {
+		if (_alphaIndex != i) {
+			ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], _variableData[i].data);
+		}
+	}
+}
+
+void ShaderMaterial::bindProgram(Shader::ShaderProgram *program, float alpha) {
+	for (uint32 i = 0; i < _variableData.size(); i++) {
+		if (_alphaIndex == i) {
+			ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], &alpha);
+		} else {
+			ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[i], program->fragmentVariableLocations[i], _variableData[i].data);
+		}
+	}
+}
+
+void ShaderMaterial::bindFade(Shader::ShaderProgram *program, float alpha) {
+	if (_alphaIndex != 0xFFFFFFFF) {
+		ShaderMan.bindShaderVariable(program->fragmentObject->variablesCombined[_alphaIndex], program->fragmentVariableLocations[_alphaIndex], &alpha);
+	}
+}
+
 void ShaderMaterial::bindGLState() {
 	if (_flags & SHADER_MATERIAL_TRANSPARENT) {
 		glBlendFunc(ShaderMaterialBlendfuncArray[(_flags >> SHADER_MATERIAL_TRANSPARENT_SRC_SHIFT) & SHADER_MATERIAL_TRANSPARENT_SHIFT_MASK],
