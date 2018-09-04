@@ -490,10 +490,20 @@ void ModelNode::createAbsoluteBound(Common::BoundingBox parentPosition) {
 		                                                    _attachedModel->_scale[1],
 		                                                    _attachedModel->_scale[2]));
 
+
+		/**
+		 * @todo So this is a great big dirty hack to keep relative positioning
+		 * in place for rendering purposes, while still allowing bounding volumes
+		 * to be properly created.
+		 * This should be replaced by a _globalTransform / _localTransform system
+		 * one day.
+		 */
+		glm::mat4 apos = _attachedModel->_absolutePosition;  // Hack part A.
 		_attachedModel->_absolutePosition = modelPosition;
 		_attachedModel->createBound();
 
 		_absoluteBoundBox.add(_attachedModel->_absoluteBoundBox);
+		_attachedModel->_absolutePosition = apos;  // Hack part B.
 	}
 }
 
