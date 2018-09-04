@@ -46,13 +46,13 @@ public:
 		Mesh::Mesh *mesh;
 		const glm::mat4 *transform;
 		float reference;  ///< Reference point to the camera location, primarily used for depth sorting.
+		float alpha;      ///< Custom alpha value applied per-object.
 
-		RenderQueueNode() : program(0), surface(0), material(0), mesh(0), transform(0), reference(0.0f) {}
-		RenderQueueNode(const RenderQueueNode &src) : program(src.program), surface(src.surface), material(src.material), mesh(src.mesh), transform(src.transform), reference(src.reference) {}
-		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const glm::mat4 *t) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(0.0f) {}
-		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const glm::mat4 *t, float ref) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(ref) {}
+		RenderQueueNode() : program(0), surface(0), material(0), mesh(0), transform(0), reference(0.0f), alpha(1.0f) {}
+		RenderQueueNode(const RenderQueueNode &src) : program(src.program), surface(src.surface), material(src.material), mesh(src.mesh), transform(src.transform), reference(src.reference), alpha(src.alpha) {}
+		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const glm::mat4 *t, float a = 1.0f, float ref = 0.0f) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(ref), alpha(a) {}
 
-		inline const RenderQueueNode &operator=(const RenderQueueNode &src) { program = src.program; material = src.material; surface = src.surface; mesh = src.mesh; transform = src.transform; reference = src.reference; return *this; }
+		inline const RenderQueueNode &operator=(const RenderQueueNode &src) { program = src.program; material = src.material; surface = src.surface; mesh = src.mesh; transform = src.transform; reference = src.reference; alpha = src.alpha; return *this; }
 	};
 
 	RenderQueue(uint32 precache = 1000);
@@ -60,8 +60,8 @@ public:
 
 	void setCameraReference(const glm::vec3 &reference);
 
-	void queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const glm::mat4 *transform);
-	void queueItem(Shader::ShaderRenderable *renderable, const glm::mat4 *transform);
+	void queueItem(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh, const glm::mat4 *transform, float alpha);
+	void queueItem(Shader::ShaderRenderable *renderable, const glm::mat4 *transform, float alpha);
 
 	void sortShader(); ///< Sort queue elements by shader program.
 	void sortDepth();  ///< Sort queue elements by depth.
