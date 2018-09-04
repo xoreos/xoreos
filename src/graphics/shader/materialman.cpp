@@ -43,7 +43,7 @@ void MaterialManager::init() {
 	status("Initialising default materials...");
 
 	ShaderMaterial *material = new ShaderMaterial(ShaderMan.getShaderObject("default/color.frag", SHADER_FRAGMENT), "defaultWhite");
-	float *color = (float *)(material->getVariableData("color"));
+	float *color = (float *)(material->getVariableData("_color"));
 	if (color) {
 		color[0] = 1.0f;
 		color[1] = 1.0f;
