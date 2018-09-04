@@ -171,6 +171,10 @@ void ShaderSurface::bindObjectModelview(Shader::ShaderProgram *program, const gl
 }
 
 void ShaderSurface::bindGLState() {
+	if (_flags & SHADER_SURFACE_NOCULL) {
+		glDisable(GL_CULL_FACE);
+	}
+
 	for (uint32 i = 0; i < _uboArray.size(); ++i) {
 		glBindBufferBase(GL_UNIFORM_BUFFER, _uboArray[i].index, _uboArray[i].glid);
 	}
@@ -178,6 +182,10 @@ void ShaderSurface::bindGLState() {
 
 void ShaderSurface::unbindGLState() {
 	// No need to unbind the uniform buffers really. If a shader uses them, new ones should be bound.
+
+	if (_flags & SHADER_SURFACE_NOCULL) {
+		glEnable(GL_CULL_FACE);
+	}
 }
 
 void ShaderSurface::restoreGLState() {
