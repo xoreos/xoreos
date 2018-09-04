@@ -61,6 +61,7 @@ Model_NWN2::ParserContext::ParserContext(const Common::UString &name) : mdb(0), 
 	mdb = ResMan.getResource(name, ::Aurora::kFileTypeMDB);
 	if (!mdb)
 		throw Common::Exception("No such MDB \"%s\"", name.c_str());
+	this->mdlName = name;
 }
 
 Model_NWN2::ParserContext::~ParserContext() {
@@ -243,6 +244,7 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 
 	_render = _mesh->render = true;
 	_mesh->data = new MeshData();
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 	std::vector<Common::UString> textures;
 	textures.push_back(diffuseMap);
@@ -299,6 +301,27 @@ bool ModelNode_NWN2::loadRigid(Model_NWN2::ParserContext &ctx) {
 	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdb->readUint16LE();
+
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
+	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+	if (checkMesh) {
+		warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
+		delete _mesh->data->rawMesh;
+		_mesh->data->rawMesh = checkMesh;
+	} else {
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	}
 
 	createBound();
 
@@ -408,6 +431,27 @@ bool ModelNode_NWN2::loadSkin(Model_NWN2::ParserContext &ctx) {
 		f[i] = ctx.mdb->readUint16LE();
 
 	createBound();
+
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
+	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+	if (checkMesh) {
+		warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
+		delete _mesh->data->rawMesh;
+		_mesh->data->rawMesh = checkMesh;
+	} else {
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	}
 
 	return true;
 }
