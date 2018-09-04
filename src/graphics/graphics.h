@@ -84,6 +84,9 @@ public:
 	/** Are we currently running an OpenGL 3.x context? */
 	bool isGL3() const;
 
+	/** Use fancy new broken rendering pathways. */
+	void setRendererExperimental();
+
 	/** Set the FSAA settings. */
 	bool setFSAA(int level);
 
@@ -191,6 +194,8 @@ private:
 
 	bool _debugGL; ///< Should we create an OpenGL debug context?
 
+	bool _rendererExperimental; ///< Should we use the experimental shader based renderer?
+
 	// Extensions
 	bool   _needManualDeS3TC;        ///< Do we need to do manual S3TC DXTn decompression?
 	bool   _supportMultipleTextures; ///< Do we have support for multiple textures?
@@ -276,6 +281,14 @@ private:
 	bool renderGUIConsole();
 	bool renderGUI(ScalingType scalingType, QueueType guiQueue, bool disableDepthMask);
 	bool renderCursor();
+
+	bool renderWorldShader();
+	bool renderGUIFrontShader();
+	bool renderGUIBackShader();
+	bool renderGUIConsoleShader();
+	bool renderGUIShader(ScalingType scalingType, QueueType guiQueue, bool disableDepthMask);
+	bool renderCursorShader();
+
 	void endScene();
 
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
