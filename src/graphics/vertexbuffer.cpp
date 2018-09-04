@@ -268,6 +268,11 @@ void VertexBuffer::updateGL() {
 	}
 }
 
+void VertexBuffer::updateGLBound() const {
+	//glBufferData(GL_ARRAY_BUFFER, _count * _size, _data, _hint);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, _count * _size, _data);
+}
+
 void VertexBuffer::destroyGL() {
 	if (_vbo != 0) {
 		glDeleteBuffers(1, &_vbo);
