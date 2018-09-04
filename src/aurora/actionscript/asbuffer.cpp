@@ -509,11 +509,11 @@ void ASBuffer::actionExtends() {
 
 void ASBuffer::actionGetURL(AVM &avm) {
 	const Variable url = _stack.top();
-	if (url.isString())
+	if (!url.isString())
 		throw Common::Exception("actionGetURL: url is not a string");
 	_stack.pop();
 	const Variable target = _stack.top();
-	if (target.isString())
+	if (!target.isString())
 		throw Common::Exception("actionGetURL: target is not a string");
 	_stack.pop();
 
