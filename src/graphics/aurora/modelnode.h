@@ -120,6 +120,10 @@ public:
 	/** Set the alpha (transparency) of the node. */
 	void setAlpha(float alpha, bool isRecursive = true);
 
+	float getScaleX() { return _scale[0]; }
+	float getScaleY() { return _scale[1]; }
+	float getScaleZ() { return _scale[2]; }
+
 	/** The way the environment map is applied to a model node. */
 	enum EnvironmentMapMode {
 		kModeEnvironmentBlendedUnder, ///< Environment map first, then blend the diffuse textures in.
