@@ -46,6 +46,9 @@ public:
 
 	Shader::ShaderObject *getVertexShader() const;
 
+	uint32 getFlags() const;
+	void setFlags(uint32 flags);
+
 	uint32 getVariableCount() const;
 
 	Shader::ShaderVariableType getVariableType(uint32 index) const;
