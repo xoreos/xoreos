@@ -46,6 +46,9 @@
 
 #include "src/graphics/images/decoder.h"
 
+// This is included if a mesh wants a unique name.
+#include "src/common/uuid.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -365,17 +368,22 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 		return;
 	}
 
-	_mesh->data->rawMesh->setName(meshName);
 	_mesh->data->rawMesh->init();
 	if (MeshMan.getMesh(meshName)) {
 		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+
+		// TODO: figure out the right thing to handle mesh duplication.
+		meshName += "#" + Common::generateIDRandomString();
 	}
+	_mesh->data->rawMesh->setName(meshName);
 	MeshMan.addMesh(_mesh->data->rawMesh);
 
 	this->buildMaterial();
 }
 
 void ModelNode_Jade::buildMaterial() {
+	// TODO: this entire function needs rewriting to use the new shader builder system.
+
 	ModelNode::Mesh *pmesh  = 0;  // TODO: if anything is changed in here, ensure there's a local copy instead that shares the root data.
 	TextureHandle *phandles = 0; // Take from self first, or root state, if there is one, otherwise.
 	TextureHandle *penvmap  = 0;  // Maybe it's only the environment map that's overriden.
@@ -718,7 +726,6 @@ void ModelNode_Jade::buildMaterial() {
 	vertexShaderName = ShaderBuild.genVertexShaderName(&shaderPasses[0], shaderPasses.size());
 	fragmentShaderName = ShaderBuild.genFragmentShaderName(&shaderPasses[0], shaderPasses.size());
 
-	printf("shader name is: %s\n", fragmentShaderName.c_str());
 	// Ok, material doesn't exist. Check on the shaders.
 	Shader::ShaderObject *vertexObject = ShaderMan.getShaderObject(vertexShaderName, Shader::SHADER_VERTEX);
 	Shader::ShaderObject *fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, Shader::SHADER_FRAGMENT);
@@ -858,7 +865,7 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	uint32 materialID      = ctx.mdl->readUint32LE();
 	uint32 materialGroupID = ctx.mdl->readUint32LE();
-	printf("materialGroupID:: %u\n", materialGroupID);
+	// Group id is likely used to select an appropriate shader.
 
 	_mesh->selfIllum[0] = ctx.mdl->readIEEEFloatLE();
 	_mesh->selfIllum[1] = ctx.mdl->readIEEEFloatLE();
