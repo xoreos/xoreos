@@ -28,7 +28,7 @@ namespace Graphics {
 
 namespace Mesh {
 
-Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), _usageCount(0), _vao(0) {
+Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), _usageCount(0), _vao(0), _radius(0.0f) {
 }
 
 Mesh::~Mesh() {
@@ -69,6 +69,40 @@ GLuint Mesh::getHint() const {
 }
 
 void Mesh::init() {
+	float minx = 0.0f, miny = 0.0f, minz = 0.0f, maxx = 0.0f, maxy = 0.0f, maxz = 0.0f;
+	float *vertices = static_cast<float *>(_vertexBuffer.getData());
+	const VertexDecl &decl = _vertexBuffer.getVertexDecl();
+	if (decl.size() >= 1) {
+		// So...for now, just check on the first batch. It's probably going to be the actual vertex data. We hope.
+		if ((decl[0].type == GL_FLOAT) && (decl[0].size == 3)) {
+			// Make sure it's of type float, and that there's reasonable data to go along with it.
+			minx = maxx = *vertices++;
+			miny = maxy = *vertices++;
+			minz = maxz = *vertices++;
+			size_t vertexCount = _vertexBuffer.getCount() / sizeof(float) / 3;
+			for (size_t i = 0; i < vertexCount; ++i) {
+				float vx = *vertices++;
+				float vy = *vertices++;
+				float vz = *vertices++;
+				if (minx > vx) minx = vx;
+				if (miny > vy) miny = vy;
+				if (minz > vz) minz = vz;
+				if (maxx < vx) maxx = vx;
+				if (maxy < vy) maxy = vy;
+				if (maxz < vz) maxz = vz;
+				if (decl[0].stride > (int32)(3 * sizeof(float))) {
+					vertices += (decl[0].stride / sizeof(float)) - 3;
+				}
+			}
+			_min = glm::vec3(minx, miny, minz);
+			_max = glm::vec3(maxx, maxy, maxz);
+			_centre = _min;
+			_centre += _max;
+			_centre *= 0.5f;
+			_radius = (_max - _centre).length();
+			//_centre = 0.5f * (_min + _max);
+		}
+	}
 	// Borrowing kQueueNewTexture for now as a more generic GLContainer initialiser.
 	removeFromQueue(kQueueNewTexture);
 	addToQueue(kQueueNewTexture);
@@ -229,6 +263,14 @@ void Mesh::useDecrement() {
 
 uint32 Mesh::useCount() const {
 	return _usageCount;
+}
+
+const glm::vec3 &Mesh::getCentre() const {
+	return _centre;
+}
+
+float Mesh::getRadius() const {
+	return _radius;
 }
 
 void Mesh::doRebuild() {
