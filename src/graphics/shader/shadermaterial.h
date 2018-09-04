@@ -86,6 +86,9 @@ public:
 	bool isVariableOwned(const Common::UString &name) const;
 
 	void bindProgram(Shader::ShaderProgram *program);
+	void bindProgramNoFade(Shader::ShaderProgram *program);
+	void bindProgram(Shader::ShaderProgram *program, float fade);
+	void bindFade(Shader::ShaderProgram *program, float fade);
 
 	void bindGLState();
 	void unbindGLState();
