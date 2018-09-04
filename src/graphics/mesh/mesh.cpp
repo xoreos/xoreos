@@ -60,6 +60,14 @@ GLuint Mesh::getType() const {
 	return _type;
 }
 
+void Mesh::setHint(GLuint hint) {
+	_hint = hint;
+}
+
+GLuint Mesh::getHint() const {
+	return _hint;
+}
+
 void Mesh::init() {
 	// Borrowing kQueueNewTexture for now as a more generic GLContainer initialiser.
 	removeFromQueue(kQueueNewTexture);
