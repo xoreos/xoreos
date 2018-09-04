@@ -42,7 +42,11 @@ public:
 
 	ShaderRenderable();
 	ShaderRenderable(Shader::ShaderSurface *surface, Shader::ShaderMaterial *material, Mesh::Mesh *mesh);
+	ShaderRenderable(Shader::ShaderRenderable *src);
+	ShaderRenderable(const ShaderRenderable &src);
 	~ShaderRenderable();
+
+	const ShaderRenderable &operator=(const ShaderRenderable &src);
 
 	ShaderSurface *getSurface();
 	ShaderMaterial *getMaterial();
@@ -52,6 +56,8 @@ public:
 	void setSurface(Shader::ShaderSurface *surface, bool rebuildProgram = true);
 	void setMaterial(Shader::ShaderMaterial *material, bool rebuildProgram = true);
 	void setMesh(Mesh::Mesh *mesh);
+
+	void copyRenderable(Shader::ShaderRenderable *src);
 
 	void renderImmediate(const glm::mat4 &tform, float alpha = 1.0f);
 
