@@ -52,7 +52,7 @@ public:
 		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const glm::mat4 *t) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(0.0f) {}
 		RenderQueueNode(Shader::ShaderProgram *prog, Shader::ShaderSurface *sur, Shader::ShaderMaterial *mat, Mesh::Mesh *mes, const glm::mat4 *t, float ref) : program(prog), surface(sur), material(mat), mesh(mes), transform(t), reference(ref) {}
 
-		inline const RenderQueueNode &operator=(const RenderQueueNode &src) { material = src.material; surface = src.surface; mesh = src.mesh; transform = src.transform; reference = src.reference; return *this; }
+		inline const RenderQueueNode &operator=(const RenderQueueNode &src) { program = src.program; material = src.material; surface = src.surface; mesh = src.mesh; transform = src.transform; reference = src.reference; return *this; }
 	};
 
 	RenderQueue(uint32 precache = 1000);
