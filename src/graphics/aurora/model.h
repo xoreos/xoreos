@@ -183,6 +183,8 @@ public:
 	// Renderable
 	void calculateDistance();
 	void render(RenderPass pass);
+	void renderImmediate(const glm::mat4 &parentTransform);
+	void queueRender(const glm::mat4 &parentTransform);
 	void advanceTime(float dt);
 
 	/** Apply buffered changes to model nodes position and geometry. */
@@ -250,7 +252,7 @@ protected:
 
 
 	// Rendering
-
+	void queueDrawBound();
 	void doDrawBound();
 	void doDrawSkeleton();
 
@@ -270,6 +272,7 @@ protected:
 
 	// Shader renderable, containing information on rendering something.
 	Shader::ShaderRenderable _boundRenderable;
+	glm::mat4 _boundTransform;
 
 private:
 	bool _drawBound;
