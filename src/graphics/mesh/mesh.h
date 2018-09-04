@@ -83,9 +83,10 @@ protected:
 	/** Free GL resources. */
 	virtual void doDestroy();
 
-private:
 	GLuint _type;
 	GLuint _hint;
+
+private:
 	Common::UString _name;
 	uint32 _usageCount;
 
