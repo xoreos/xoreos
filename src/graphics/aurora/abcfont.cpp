@@ -33,6 +33,9 @@
 #include "src/graphics/aurora/texture.h"
 #include "src/graphics/aurora/abcfont.h"
 
+#include "src/graphics/mesh/meshman.h"
+#include "src/graphics/shader/surfaceman.h"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -41,9 +44,18 @@ ABCFont::ABCFont(const Common::UString &name) : _base(0) {
 	_texture = TextureMan.get(name);
 
 	load(name);
+
+	_mesh = static_cast<Mesh::MeshFont *>(MeshMan.getMesh("defaultMeshFont"));
+	_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/text.frag", Shader::SHADER_FRAGMENT), "text");
+	Shader::ShaderSampler *sampler;
+	sampler = (Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
+	sampler->handle = _texture;
+	_renderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("textSurface"), _material, _mesh);
 }
 
 ABCFont::~ABCFont() {
+	delete _renderable;
+	delete _material;
 }
 
 float ABCFont::getHeight() const {
@@ -71,6 +83,47 @@ void ABCFont::draw(uint32 c) const {
 	glEnd();
 
 	glTranslatef(cC.width + cC.spaceR, 0.0f, 0.0f);
+}
+
+void ABCFont::renderBind(const glm::mat4 &transform) const {
+	glUseProgram(_renderable->getProgram()->glid);
+	_material->bindProgram(_renderable->getProgram(), 1.0f);
+	_material->bindGLState();
+	_renderable->getSurface()->bindProgram(_renderable->getProgram(), &transform);
+	_renderable->getSurface()->bindGLState();
+	_mesh->renderBind();
+}
+
+void ABCFont::render(uint32 c, float &x, float &y, float *rgba) const {
+	const Char &cC = findChar(c);
+
+	x += cC.spaceL;
+
+	float v_pos[12];
+	float v_uv[8];
+	float v_rgba[4*4];
+
+	for (int i = 0; i < 4; ++i) {
+		v_uv[i*2] = cC.tX[i];
+		v_uv[i*2 +1] = cC.tY[i];
+		v_pos[i*3] = x + cC.vX[i];
+		v_pos[i*3 +1] = y + cC.vY[i];
+		v_pos[i*3 +2] = 0.0f;
+		v_rgba[i*4] = rgba[0];
+		v_rgba[i*4 +1] = rgba[1];
+		v_rgba[i*4 +2] = rgba[2];
+		v_rgba[i*4 +3] = rgba[3];
+	}
+	_mesh->render(v_pos, v_uv, v_rgba);
+	x += cC.width + cC.spaceR;
+}
+
+void ABCFont::renderUnbind() const {
+	_mesh->renderUnbind();
+
+	_renderable->getSurface()->unbindGLState();
+	_material->unbindGLState();
+	glUseProgram(0);
 }
 
 void ABCFont::load(const Common::UString &name) {

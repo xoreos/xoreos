@@ -33,6 +33,10 @@
 
 #include "src/graphics/aurora/texturehandle.h"
 
+#include "src/graphics/mesh/meshfont.h"
+
+#include "src/graphics/shader/shaderrenderable.h"
+
 namespace Common {
 	class UString;
 	class SeekableReadStream;
@@ -53,6 +57,15 @@ public:
 
 	void draw(uint32 c) const;
 
+	/**
+	 * @brief Bind the font for rendering. Must be performed before render is called.
+	 * @param transform  Base modelview transform. Under most circumstances this is expected to be the identity matrix.
+	 */
+	virtual void renderBind(const glm::mat4 &transform) const;
+
+	virtual void render(uint32 c, float &x, float &y, float *rgba) const;
+	virtual void renderUnbind() const;
+
 private:
 	/** A font character. */
 	struct Char {
@@ -67,6 +80,9 @@ private:
 	};
 
 	TextureHandle _texture;
+	Mesh::MeshFont *_mesh;
+	Shader::ShaderMaterial *_material;
+	Shader::ShaderRenderable *_renderable;
 
 	uint8 _base;
 
