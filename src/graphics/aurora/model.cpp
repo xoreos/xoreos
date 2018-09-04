@@ -82,10 +82,9 @@ Model::Model(ModelType type)
 
 	addAnimationChannel(kAnimationChannelAll);
 
-	_boundRenderable = new Shader::ShaderRenderable();
-	_boundRenderable->setSurface(SurfaceMan.getSurface("defaultSurface"));
-	_boundRenderable->setMaterial(MaterialMan.getMaterial("defaultWhite"));
-	_boundRenderable->setMesh(MeshMan.getMesh("defaultWireBox"));
+	_boundRenderable.setSurface(SurfaceMan.getSurface("defaultSurface"));
+	_boundRenderable.setMaterial(MaterialMan.getMaterial("defaultWhite"));
+	_boundRenderable.setMesh(MeshMan.getMesh("defaultWireBox"));
 }
 
 Model::~Model() {
@@ -105,8 +104,6 @@ Model::~Model() {
 
 		delete *s;
 	}
-
-	delete _boundRenderable;
 }
 
 void Model::show() {
@@ -724,7 +721,7 @@ void Model::doDrawBound() {
 	glm::mat4 tform = _absolutePosition;
 	tform = glm::translate(tform, glm::vec3((maxX + minX) * 0.5f, (maxY + minY) * 0.5f, (maxZ + minZ) * 0.5f));
 	tform = glm::scale(tform, glm::vec3((maxX - minX) * 0.5f, (maxY - minY) * 0.5f, (maxZ - minZ) * 0.5f));
-	_boundRenderable->renderImmediate(tform);
+	_boundRenderable.renderImmediate(tform);
 }
 
 void Model::doDrawSkeleton() {
