@@ -55,7 +55,7 @@ bool compareDepth(const RenderQueue::RenderQueueNode &a, const RenderQueue::Rend
 	//return (a.reference.lengthSquared() <= b.reference.lengthSquared());
 }
 
-RenderQueue::RenderQueue(uint32 precache) : _nodeArray(precache) {
+RenderQueue::RenderQueue(uint32 precache) : _nodeArray(precache), _cameraReference(0.0f, 0.0f, 0.0f) {
 //	_nodeArray.reserve(1000);
 }
 
