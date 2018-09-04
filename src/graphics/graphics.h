@@ -217,10 +217,14 @@ private:
 
 	uint32 _lastSampled; ///< Timestamp used to advance animations.
 
-	glm::mat4 _projection;    ///< Our projection matrix.
-	glm::mat4 _projectionInv; ///< The inverse of our projection matrix.
-	glm::mat4 _modelview;     ///< Our base modelview matrix (i.e camera view).
-	glm::mat4 _modelviewInv;  ///< The inverse of our modelview matrix.
+	glm::mat4 _perspective;    ///< 3D perspective projection matrix.
+	glm::mat4 _perspectiveInv; ///< The inverse of our perspective matrix.
+	glm::mat4 _ortho;          ///< Orthographical projection matrix.
+	glm::mat4 _orthoInv;       ///< The inverse of our othographical matrix.
+	glm::mat4 _projection;     ///< Our projection matrix.
+	glm::mat4 _projectionInv;  ///< The inverse of our projection matrix.
+	glm::mat4 _modelview;      ///< Our base modelview matrix (i.e camera view).
+	glm::mat4 _modelviewInv;   ///< The inverse of our modelview matrix.
 
 	boost::atomic<uint32> _frameLock;
 	boost::atomic<bool>   _frameEndSignal;
