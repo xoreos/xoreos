@@ -125,6 +125,8 @@ public:
 	void addToParty(Creature *creature);
 	/** Check if the specified creature is a party member. */
 	bool isObjectPartyMember(Creature *creature);
+	/** Switch the player character. */
+	void switchPlayerCharacter(int npc);
 	/** Show the party selection GUI. */
 	void showPartySelectionGUI(const Common::UString &exitScript, int forceNPC1 = -1, int forceNPC2 = -1);
 	/** Add available party member by template. */
