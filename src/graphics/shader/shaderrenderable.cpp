@@ -41,6 +41,35 @@ ShaderRenderable::ShaderRenderable(Shader::ShaderSurface *surface, Shader::Shade
 	updateProgram();
 }
 
+ShaderRenderable::ShaderRenderable(Shader::ShaderRenderable *src) : _surface(0), _material(0), _program(0), _mesh(0) {
+	if (src) {
+		setSurface(src->_surface, false);
+		setMaterial(src->_material, false);
+		setMesh(src->_mesh);
+		updateProgram();
+	}
+}
+
+ShaderRenderable::ShaderRenderable(const Shader::ShaderRenderable &src) : _surface(src._surface), _material(src._material), _program(src._program), _mesh(src._mesh) {
+	if (_surface) {
+		_surface->useIncrement();
+	}
+	if (_material) {
+		_material->useIncrement();
+	}
+	if (_mesh) {
+		_mesh->useIncrement();
+	}
+}
+
+const ShaderRenderable &ShaderRenderable::operator=(const Shader::ShaderRenderable &src) {
+	setSurface(src._surface, false);
+	setMaterial(src._material, false);
+	setMesh(src._mesh);
+	_program = src._program;
+	return *this;
+}
+
 ShaderRenderable::~ShaderRenderable() {
 	if (_surface) {
 		_surface->useDecrement();
@@ -104,6 +133,19 @@ void ShaderRenderable::setMesh(Mesh::Mesh *mesh) {
 	if (_mesh) {
 		_mesh->useIncrement();
 	}
+}
+
+void ShaderRenderable::copyRenderable(ShaderRenderable *src) {
+	if (src) {
+		setSurface(src->getSurface(), false);
+		setMaterial(src->getMaterial(), false);
+		setMesh(src->getMesh());
+	} else {
+		setSurface(0, false);
+		setMaterial(0, false);
+		setMesh(0);
+	}
+	updateProgram();
 }
 
 void ShaderRenderable::renderImmediate(const glm::mat4 &tform, float alpha) {
