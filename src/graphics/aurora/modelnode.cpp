@@ -71,6 +71,7 @@ ModelNode::ModelNode(Model &model)
 		  _parent(0),
 		  _attachedModel(0),
 		  _level(0),
+		  _alpha(1.0f),
 		  _render(false),
 		  _mesh(0),
 		  _nodeNumber(0),
@@ -297,6 +298,28 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 
 ModelNode::Mesh *ModelNode::getMesh() const {
 	return _mesh;
+}
+
+float ModelNode::getAlpha() {
+	if (!_mesh) {
+		return _alpha;
+	} else {
+		return _mesh->alpha;
+	}
+}
+
+void ModelNode::setAlpha(float alpha, bool isRecursive) {
+	if (!_mesh) {
+		_alpha = alpha;
+	} else {
+		_mesh->alpha = alpha;
+	}
+
+	if (isRecursive) {
+		for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+			(*c)->setAlpha(alpha, true);
+		}
+	}
 }
 
 void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
