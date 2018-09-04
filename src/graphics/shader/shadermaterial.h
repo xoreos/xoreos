@@ -31,8 +31,6 @@ namespace Graphics {
 
 namespace Shader {
 
-#define SHADER_MATERIAL_TRANSPARENT            (0x00000001)  // Transparency is applied.
-
 class ShaderMaterial {
 public:
 	enum {
