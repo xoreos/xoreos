@@ -32,7 +32,6 @@
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/shader/shader.h"
-#include "src/graphics/shader/shadercode.h"
 #include "src/graphics/shader/shaderbuilder.h"
 
 #include "src/graphics/aurora/texture.h"
@@ -92,22 +91,6 @@ void ShaderManager::init() {
 
 	ShaderObject *vObj;
 	ShaderObject *fObj;
-
-	if (GfxMan.isGL3()) {
-		vObj = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault3xText, SHADER_VERTEX);
-		fObj = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault3xText, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-
-		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor3xText, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-	} else {
-		vObj = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault2xText, SHADER_VERTEX);
-		fObj = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault2xText, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-
-		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor2xText, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-	}
 
 	Graphics::Shader::ShaderDescriptor cripter;
 	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
