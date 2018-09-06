@@ -68,6 +68,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/ltrfile.h \
     src/aurora/textureatlasfile.h \
     src/aurora/sacfile.h \
+    src/aurora/fevfile.h \
     $(EMPTY)
 
 src_aurora_libaurora_la_SOURCES += \
@@ -112,6 +113,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/ltrfile.cpp \
     src/aurora/textureatlasfile.cpp \
     src/aurora/sacfile.cpp \
+    src/aurora/fevfile.cpp \
     $(EMPTY)
 
 src_aurora_libaurora_la_LIBADD = \
