@@ -148,6 +148,20 @@ void ShaderManager::init() {
 	vObj = ShaderMan.getShaderObject("default/textureMatrix.vert", vertexStringFinal, Shader::SHADER_VERTEX);
 	fObj = ShaderMan.getShaderObject("default/texture.frag", Shader::SHADER_FRAGMENT);
 	registerShaderProgram(vObj, fObj);
+
+	cripter.clear();
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0);
+	cripter.declareUniform(Graphics::Shader::ShaderDescriptor::Uniform::UNIFORM_F_COLOUR);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::COLOUR,
+	                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
+
+	vertexStringFinal.clear();
+	fragmentStringFinal.clear();
+	cripter.build(GfxMan.isGL3(), vertexStringFinal, fragmentStringFinal);
+	vObj = ShaderMan.getShaderObject("default/default.vert", vertexStringFinal, Shader::SHADER_VERTEX);
+	fObj = ShaderMan.getShaderObject("default/colour.frag", fragmentStringFinal, Shader::SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
 }
 
 void ShaderManager::deinit() {
