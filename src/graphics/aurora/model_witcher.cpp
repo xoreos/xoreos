@@ -1065,7 +1065,6 @@ void ModelNode_Witcher::buildMaterial() {
 
 	uint32 materialFlags = 0;
 
-	std::vector<Shader::ShaderBuilder::BuildPass> shaderPasses;
 	_renderableArray.clear();
 
 	const VertexDecl &decl = pmesh->data->rawMesh->getVertexBuffer()->getVertexDecl();
@@ -1234,16 +1233,6 @@ void ModelNode_Witcher::buildMaterial() {
 		}
 	}
 
-	if (materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
-		shaderPasses.push_back(Shader::ShaderBuilder::BuildPass(Shader::ShaderBuilder::FORCE_OPAQUE, Shader::ShaderBuilder::BLEND_IGNORED));
-	}
-/*
-	if (materialFlags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {
-		if (pmesh->data->rawMesh->getVertexBuffer()->getCount() <= 6) {
-			materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B;
-		}
-	}
-*/
 	material = MaterialMan.getMaterial(materialName);
 	if (material) {
 		surface = SurfaceMan.getSurface(materialName);
