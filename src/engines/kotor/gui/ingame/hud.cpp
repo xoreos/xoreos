@@ -400,6 +400,19 @@ void HUD::initWidget(Engines::Widget &widget) {
 }
 
 void HUD::callbackActive(Widget &widget) {
+	if (widget.getTag() == "LBL_CHAR1") {
+		_module->switchPlayerCharacter(0);
+		return;
+	}
+	if (widget.getTag() == "LBL_CHAR2") {
+		_module->switchPlayerCharacter(2);
+		return;
+	}
+	if (widget.getTag() == "LBL_CHAR3") {
+		_module->switchPlayerCharacter(1);
+		return;
+	}
+
 	_menu.showMenu(widget.getTag());
 	sub(_menu);
 }

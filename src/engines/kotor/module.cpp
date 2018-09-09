@@ -747,11 +747,46 @@ void Module::addToParty(Creature *creature) {
 	else if (_party.size() == 3)
 		_ingame->setPartyMember2(creature);
 
+	// TODO: The character is in the original game placed on a position somewhere near theplayer character.
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+	creature->show();
+	creature->setPosition(x, y, z);
+
 	// TODO: If the party size increases over 3 show the character selection screen.
 }
 
 bool Module::isObjectPartyMember(Creature *creature) {
 	return std::find(_party.begin(), _party.end(), creature) != _party.end();
+}
+
+void Module::switchPlayerCharacter(int npc) {
+	std::list<Creature *>::iterator iter = _party.begin();
+	if (npc != -1)
+		std::advance(iter, npc);
+	_pc.release();
+	_pc.reset(*iter);
+
+	Creature *pc = *iter;
+	_party.erase(iter);
+	_party.push_front(pc);
+
+	_ingame->setPartyLeader(pc);
+
+	if (_party.size() > 1)
+		_ingame->setPartyMember1(*++_party.begin());
+	if (_party.size() > 2)
+		_ingame->setPartyMember2(_party.back());
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	SatelliteCam.setTarget(x, y, z + _cameraHeight);
+
+	if (_freeCamEnabled) {
+		CameraMan.setPosition(x, y, z + _cameraHeight);
+		CameraMan.update();
+	}
 }
 
 void Module::showPartySelectionGUI(const Common::UString &exitScript, int forceNPC1, int forceNPC2) {
@@ -781,6 +816,26 @@ void Module::showPartySelectionGUI(const Common::UString &exitScript, int forceN
 		_dialog->show();
 	else
 		_ingame->show();
+
+	int npc1 = config.forceNPC1;
+	int npc2 = config.forceNPC2;
+
+	if (npc1 == -1)
+		for (int i = 0; i < 10; ++i)
+			if (config.slotSelected[i]) {
+				config.slotSelected[i] = false;
+				npc1 = i;
+			}
+
+	if (npc2 == -1)
+		for (int i = 0; i < 10; ++i)
+			if (config.slotSelected[i]) {
+				config.slotSelected[i] = false;
+				npc2 = i;
+			}
+
+	if (npc1 != -1)
+		addToParty(new Creature(_availableParty[npc1]));
 
 	runScript(exitScript);
 }
