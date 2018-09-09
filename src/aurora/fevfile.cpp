@@ -118,7 +118,6 @@ void FEVFile::readCategory(Common::SeekableReadStream &fev) {
 
 void FEVFile::readEventCategory(Common::SeekableReadStream &fev) {
 	Common::UString name = readLengthPrefixedString(fev);
-	info(name.c_str());
 
 	fev.skip(4); // Unknown value
 
