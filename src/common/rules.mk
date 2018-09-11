@@ -86,6 +86,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/systemfonts.h \
     src/common/changeid.h \
     src/common/xml.h \
+    src/common/rect.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
