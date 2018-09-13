@@ -130,7 +130,7 @@ public:
 	/** Switch the player character. */
 	void switchPlayerCharacter(int npc);
 	/** Show the party selection GUI. */
-	void showPartySelectionGUI(const Common::UString &exitScript, int forceNPC1 = -1, int forceNPC2 = -1);
+	void showPartySelectionGUI(int forceNPC1, int forceNPC2);
 	/** Add available party member by template. */
 	void addAvailablePartyMember(int slot, const Common::UString &templ);
 	/** Check if there is a party member available for this id. */

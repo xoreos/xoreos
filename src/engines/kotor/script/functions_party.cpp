@@ -61,7 +61,8 @@ void Functions::showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx) {
 	int forceNPC1 = ctx.getParams()[1].getInt();
 	int forceNPC2 = ctx.getParams()[2].getInt();
 
-	_game->getModule().showPartySelectionGUI(exitScript, forceNPC1, forceNPC2);
+	_game->getModule().showPartySelectionGUI(forceNPC1, forceNPC2);
+	ScriptContainer::runScript(exitScript, ctx.getCaller(), ctx.getTriggerer());
 }
 
 void Functions::isAvailableCreature(Aurora::NWScript::FunctionContext &ctx) {

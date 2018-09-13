@@ -799,7 +799,7 @@ void Module::switchPlayerCharacter(int npc) {
 	}
 }
 
-void Module::showPartySelectionGUI(const Common::UString &exitScript, int forceNPC1, int forceNPC2) {
+void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
 	if (_inDialog)
 		_dialog->hide();
 	else
@@ -846,8 +846,6 @@ void Module::showPartySelectionGUI(const Common::UString &exitScript, int forceN
 
 	if (npc1 != -1)
 		addToParty(new Creature(_availableParty[npc1]));
-
-	runScript(exitScript);
 }
 
 void Module::addAvailablePartyMember(int slot, const Common::UString &templ) {
