@@ -125,6 +125,8 @@ public:
 	void addToParty(Creature *creature);
 	/** Check if the specified creature is a party member. */
 	bool isObjectPartyMember(Creature *creature);
+	/** Get a party member by index. */
+	Creature *getPartyMember(int index);
 	/** Switch the player character. */
 	void switchPlayerCharacter(int npc);
 	/** Show the party selection GUI. */

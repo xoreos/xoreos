@@ -761,6 +761,15 @@ bool Module::isObjectPartyMember(Creature *creature) {
 	return std::find(_party.begin(), _party.end(), creature) != _party.end();
 }
 
+Creature *Module::getPartyMember(int index) {
+	if (index >= static_cast<int>(_party.size()) || index < 0)
+		throw Common::Exception("Module::getPartyMember() Invalid index");
+
+	std::list<Creature *>::iterator iter = _party.begin();
+	std::advance(iter, index);
+	return *iter;
+}
+
 void Module::switchPlayerCharacter(int npc) {
 	std::list<Creature *>::iterator iter = _party.begin();
 	if (npc != -1)

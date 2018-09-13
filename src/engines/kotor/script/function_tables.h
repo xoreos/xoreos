@@ -695,7 +695,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 574, "AddPartyMember"                      , 0                                                },
 	{ 575, "RemovePartyMember"                   , 0                                                },
 	{ 576, "IsObjectPartyMember"                 , &Functions::isObjectPartyMember                  },
-	{ 577, "GetPartyMemberByIndex"               , 0                                                },
+	{ 577, "GetPartyMemberByIndex"               , &Functions::getPartyMemberByIndex                },
 	{ 578, "GetGlobalBoolean"                    , &Functions::getGlobalBoolean                     },
 	{ 579, "SetGlobalBoolean"                    , &Functions::setGlobalBoolean                     },
 	{ 580, "GetGlobalNumber"                     , &Functions::getGlobalNumber                      },

@@ -50,6 +50,12 @@ void Functions::isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = _game->getModule().isObjectPartyMember(creature);
 }
 
+void Functions::getPartyMemberByIndex(Aurora::NWScript::FunctionContext &ctx) {
+	int index = ctx.getParams()[0].getInt();
+
+	ctx.getReturn() = _game->getModule().getPartyMember(index);
+}
+
 void Functions::showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &exitScript = ctx.getParams()[0].getString();
 	int forceNPC1 = ctx.getParams()[1].getInt();
