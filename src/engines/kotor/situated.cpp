@@ -203,7 +203,7 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	_conversation = gff.getString("Conversation", _conversation);
 
 	// Scripts
-	readScripts(gff);
+	readScripts(gff, false);
 }
 
 void Situated::loadPortrait(const Aurora::GFF3Struct &gff) {
