@@ -752,6 +752,7 @@ void Module::addToParty(Creature *creature) {
 	_pc->getPosition(x, y, z);
 	creature->show();
 	creature->setPosition(x, y, z);
+	addObject(*creature);
 
 	// TODO: If the party size increases over 3 show the character selection screen.
 }
