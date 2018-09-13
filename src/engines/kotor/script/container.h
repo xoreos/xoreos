@@ -68,7 +68,7 @@ public:
 protected:
 	void clearScripts();
 
-	void readScripts(const Aurora::GFF3Struct &gff);
+	void readScripts(const Aurora::GFF3Struct &gff, bool clear = true);
 	void readScripts(const ScriptContainer &container);
 
 private:

@@ -131,14 +131,22 @@ void ScriptContainer::clearScripts() {
 		_scripts[i].clear();
 }
 
-void ScriptContainer::readScripts(const Aurora::GFF3Struct &gff) {
-	clearScripts();
+void ScriptContainer::readScripts(const Aurora::GFF3Struct &gff, bool clear) {
+	if (clear)
+		clearScripts();
 
 	for (size_t i = 0; i < ARRAYSIZE(kScriptNames); i++) {
 		const Script script = kScriptNames[i].script;
 		const char  *name   = kScriptNames[i].name;
 
-		_scripts[script] = gff.getString(name, _scripts[script]);
+		if (!_scripts[script].empty())
+			continue;
+
+		Common::UString scriptName = gff.getString(name);
+		_scripts[script] = scriptName;
+
+		if (!scriptName.empty())
+			assert(!_scripts[script].empty());
 	}
 }
 
