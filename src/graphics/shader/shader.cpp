@@ -108,18 +108,18 @@ void ShaderManager::init() {
 	}
 
 	Graphics::Shader::ShaderDescriptor cripter;
-	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
-	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0);
-	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_COLOUR);
-	cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
-	                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
-	cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
-	                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0,
-	                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE);
-	cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
-	                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
-	cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::X_COLOUR,
-	                Graphics::Shader::ShaderDescriptor::Blend::BLEND_MULTIPLY);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_COLOUR);
+	cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+	                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+	cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+	                Graphics::Shader::ShaderDescriptor::INPUT_UV0,
+	                Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE,
+	                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::X_COLOUR,
+	                Graphics::Shader::ShaderDescriptor::BLEND_MULTIPLY);
 
 	Common::UString vertexStringFinal;
 	Common::UString fragmentStringFinal;
@@ -129,15 +129,15 @@ void ShaderManager::init() {
 	registerShaderProgram(vObj, fObj);
 
 	cripter.clear();
-	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
-	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0);
-	cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
-	                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
-	cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
-	                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0,
-	                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE);
-	cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
-	                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV0);
+	cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+	                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+	cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+	                Graphics::Shader::ShaderDescriptor::INPUT_UV0,
+	                Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE,
+	                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
 
 	vertexStringFinal.clear();
 	fragmentStringFinal.clear();
@@ -147,15 +147,15 @@ void ShaderManager::init() {
 	registerShaderProgram(vObj, fObj);
 
 	cripter.clear();
-	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_POSITION0);
-	cripter.declareInput(Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0_MATRIX);
-	cripter.declareSampler(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
-	                       Graphics::Shader::ShaderDescriptor::SamplerType::SAMPLER_2D);
-	cripter.connect(Graphics::Shader::ShaderDescriptor::Sampler::SAMPLER_TEXTURE_0,
-	                Graphics::Shader::ShaderDescriptor::Input::INPUT_UV0_MATRIX,
-	                Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE);
-	cripter.addPass(Graphics::Shader::ShaderDescriptor::Action::TEXTURE_DIFFUSE,
-	                Graphics::Shader::ShaderDescriptor::Blend::BLEND_ONE);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV0_MATRIX);
+	cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+	                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+	cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+	                Graphics::Shader::ShaderDescriptor::INPUT_UV0_MATRIX,
+	                Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE,
+	                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
 
 	vertexStringFinal.clear();
 	fragmentStringFinal.clear();

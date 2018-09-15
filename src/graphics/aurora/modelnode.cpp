@@ -41,6 +41,13 @@
 #include "src/graphics/aurora/texture.h"
 #include "src/graphics/aurora/model.h"
 
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+
+#include "src/graphics/render/renderman.h"
+
+#include "src/graphics/images/decoder.h"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -73,7 +80,10 @@ ModelNode::ModelNode(Model &model)
 		  _level(0),
 		  _alpha(1.0f),
 		  _render(false),
+		  _dirtyRender(true),
+		  _dirtyMesh(false),
 		  _mesh(0),
+		  _rootStateNode(0),
 		  _nodeNumber(0),
 		  _positionBuffered(false),
 		  _orientationBuffered(false),
@@ -114,6 +124,7 @@ ModelNode::~ModelNode() {
 			delete _mesh->data;
 		}
 	}
+
 	delete _mesh;
 	_mesh = 0;
 
@@ -276,6 +287,7 @@ void ModelNode::setEnvironmentMap(const Common::UString &environmentMap) {
 		} catch (...) {
 		}
 	}
+	_dirtyRender = true;
 }
 
 void ModelNode::setInvisible(bool invisible) {
@@ -296,8 +308,11 @@ void ModelNode::setTextures(const std::vector<Common::UString> &textures) {
 	unlockFrameIfVisible();
 }
 
-ModelNode::Mesh *ModelNode::getMesh() const {
-	return _mesh;
+void ModelNode::setMaterial(Shader::ShaderMaterial *material) {
+	_material = material;
+	if (_shaderRenderable) {
+		_shaderRenderable->setMaterial(_material);
+	}
 }
 
 float ModelNode::getAlpha() {
@@ -380,6 +395,7 @@ void ModelNode::loadTextures(const std::vector<Common::UString> &textures) {
 		_mesh->isTransparent = hasAlpha;
 	}
 
+	_dirtyRender = true;
 	// If the node has no actual texture, we just assume
 	// that the geometry shouldn't be rendered.
 	if (!hasTexture)
@@ -392,23 +408,25 @@ void ModelNode::createBound() {
 	if (!_mesh || !_mesh->data)
 		return;
 
-	VertexBuffer vertexBuffer = _mesh->data->vertexBuffer;
+	VertexBuffer *vertexBuffer = _mesh->data->rawMesh->getVertexBuffer();
 
-	const VertexDecl vertexDecl = vertexBuffer.getVertexDecl();
+	const VertexDecl &vertexDecl = vertexBuffer->getVertexDecl();
 	for (VertexDecl::const_iterator vA = vertexDecl.begin(); vA != vertexDecl.end(); ++vA) {
-		if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
-			continue;
+		if (vA->pointer) {
+			if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
+				continue;
 
-		const uint32 stride = MAX<uint32>(vA->size, vA->stride / sizeof(float));
+			const uint32 stride = MAX<uint32>(vA->size, vA->stride / sizeof(float));
 
-		const float *vertexData = reinterpret_cast<const float *>(vA->pointer);
+			const float *vertexData = reinterpret_cast<const float *>(vA->pointer);
 
-		const float *vX = vertexData + 0;
-		const float *vY = vertexData + 1;
-		const float *vZ = vertexData + 2;
+			const float *vX = vertexData + 0;
+			const float *vY = vertexData + 1;
+			const float *vZ = vertexData + 2;
 
-		for (uint32 v = 0; v < vertexBuffer.getCount(); v++)
-			_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
+			for (uint32 v = 0; v < vertexBuffer->getCount(); v++)
+				_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
+		}
 	}
 
 	createCenter();
@@ -515,24 +533,7 @@ void ModelNode::orderChildren() {
 		(*c)->orderChildren();
 }
 
-void ModelNode::renderGeometry(Mesh &mesh) {
-	if (!mesh.data->envMap.empty()) {
-		switch (mesh.data->envMapMode) {
-			case kModeEnvironmentBlendedUnder:
-				renderGeometryEnvMappedUnder(mesh);
-				break;
-
-			case kModeEnvironmentBlendedOver:
-				renderGeometryEnvMappedOver(mesh);
-				break;
-
-			default:
-				break;
-		}
-
-		return;
-	}
-
+void ModelNode::renderGeometry(ModelNode::Mesh &mesh) {
 	renderGeometryNormal(mesh);
 }
 
@@ -545,7 +546,7 @@ void ModelNode::renderGeometryNormal(Mesh &mesh) {
 	if (mesh.data->textures.empty())
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->renderImmediate();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
@@ -563,20 +564,24 @@ void ModelNode::renderGeometryEnvMappedUnder(Mesh &mesh) {
 	 * Neverwinter Nights uses this method.
 	 */
 
+	mesh.data->rawMesh->renderBind();
+
 	TextureMan.set(mesh.data->envMap, TextureManager::kModeEnvironmentMapReflective);
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
 		TextureMan.set(mesh.data->textures[t], TextureManager::kModeDiffuse);
 	}
 
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
 		TextureMan.set();
 	}
+
+	mesh.data->rawMesh->renderUnbind();
 }
 
 void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
@@ -588,6 +593,8 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 	 * KotOR and KotOR2 use this method.
 	 */
 
+	mesh.data->rawMesh->renderBind();
+
 	if (!mesh.data->textures.empty()) {
 		for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 			TextureMan.activeTexture(t);
@@ -596,7 +603,7 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 
 		glBlendFunc(GL_ONE, GL_ZERO);
 
-		mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+		mesh.data->rawMesh->render();
 
 		for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 			TextureMan.activeTexture(t);
@@ -609,7 +616,7 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 		glDisable(GL_ALPHA_TEST);
 		glBlendFunc(GL_ZERO, GL_ONE);
 
-		mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+		mesh.data->rawMesh->render();
 	}
 
 	TextureMan.activeTexture(0);
@@ -617,16 +624,17 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 
 	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
 
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	TextureMan.set();
 
 	glEnable(GL_ALPHA_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	mesh.data->rawMesh->renderUnbind();
 }
 
 bool ModelNode::renderableMesh(Mesh *mesh) {
-	return mesh && mesh->data && mesh->data->indexBuffer.getCount() > 0;
+	return mesh && mesh->data && mesh->data->rawMesh;
 }
 
 void ModelNode::render(RenderPass pass) {
@@ -649,6 +657,11 @@ void ModelNode::render(RenderPass pass) {
 			mesh = rootStateNode->_mesh;
 			doRender = rootStateNode->_render;
 		}
+	}
+
+	if (_dirtyMesh) {
+		_mesh->data->rawMesh->getVertexBuffer()->updateGL();
+		_dirtyMesh = false;
 	}
 
 	// Render the node's geometry
@@ -676,10 +689,107 @@ void ModelNode::render(RenderPass pass) {
 	}
 }
 
+void ModelNode::calcRenderTransform(const glm::mat4 &parentTransform) {
+	// Apply the node's transformation
+	_renderTransform = parentTransform;
+	_renderTransform = glm::translate(_renderTransform, glm::vec3(_position[0], _position[1], _position[2]));
+	if (_orientation[0] != 0.0f ||
+	    _orientation[1] != 0.0f ||
+	    _orientation[2] != 0.0f) {
+		_renderTransform = glm::rotate(_renderTransform,
+		                               Common::deg2rad(_orientation[3]),
+		                               glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
+	}
+	_renderTransform = glm::rotate(_renderTransform, _rotation[0], glm::vec3(1.0f, 0.0f, 0.0f));
+	_renderTransform = glm::rotate(_renderTransform, _rotation[1], glm::vec3(0.0f, 1.0f, 0.0f));
+	_renderTransform = glm::rotate(_renderTransform, _rotation[2], glm::vec3(0.0f, 0.0f, 1.0f));
+	_renderTransform = glm::scale(_renderTransform, glm::vec3(_scale[0], _scale[1], _scale[2]));
+}
+
+void ModelNode::renderImmediate(const glm::mat4 &parentTransform) {
+	calcRenderTransform(parentTransform);
+	/**
+	 * Ignoring _render for now because it's being falsely set to false.
+	 */
+	/* if (_render) {} */
+
+	if (_dirtyRender) {
+		/**
+		 * Do this regardless of if the modelnode is actually visible or not, to prevent
+		 * stutter when things are first brought into view. Most things are loaded at the
+		 * start of a level, so stutter won't be noticed then.
+		 */
+		this->buildMaterial();
+	} else {
+		/**
+		 * @todo Ideally there should be some kind of check in here to determine visibility.
+		 * if the node isn't (camera) visible, then don't bother trying to render it.
+		 */
+		if (_renderableArray.size() == 0) {
+			if (_rootStateNode) {
+				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
+					_rootStateNode->_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
+				}
+			}
+		} else {
+			for (size_t i = 0; i < _renderableArray.size(); ++i) {
+				_renderableArray[i].renderImmediate(_renderTransform, this->getAlpha());
+			}
+		}
+	}
+
+	if (_attachedModel) {
+		_attachedModel->renderImmediate(_renderTransform);
+	}
+	// Render the node's children
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+		(*c)->renderImmediate(_renderTransform);
+	}
+}
+
+void ModelNode::queueRender(const glm::mat4 &parentTransform) {
+	calcRenderTransform(parentTransform);
+	/**
+	 * Ignoring _render for now because it's being falsely set to false.
+	 */
+	/* if (_render) {} */
+
+	if (_dirtyRender) {
+		/**
+		 * Do this regardless of if the modelnode is actually visible or not, to prevent
+		 * stutter when things are first brought into view. Most things are loaded at the
+		 * start of a level, so stutter won't be noticed then.
+		 */
+		this->buildMaterial();
+	} else {
+		/**
+		 * @todo Ideally there should be some kind of check in here to determine visibility.
+		 * if the node isn't (camera) visible, then don't bother trying to render it.
+		 */
+		if (_renderableArray.size() == 0) {
+			if (_rootStateNode) {
+				for (size_t i = 0; i < _rootStateNode->_renderableArray.size(); ++i) {
+					RenderMan.queueRenderable(&(_rootStateNode->_renderableArray[i]), &_renderTransform, this->getAlpha());
+				}
+			}
+		} else {
+			for (size_t i = 0; i < _renderableArray.size(); ++i) {
+				RenderMan.queueRenderable(&_renderableArray[i], &_renderTransform, this->getAlpha());
+			}
+		}
+	}
+
+	if (_attachedModel) {
+		_attachedModel->queueRender(_renderTransform);
+	}
+	// Render the node's children
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+		(*c)->queueRender(_renderTransform);
+	}
+}
+
 void ModelNode::drawSkeleton(const glm::mat4 &parent, bool showInvisible) {
 	glm::mat4 mine = parent;
-
-	mine = glm::translate(mine, glm::vec3(_position[0], _position[1], _position[2]));
 
 	if (_orientation[0] != 0 || _orientation[1] != 0 || _orientation[2] != 0)
 		mine = glm::rotate(mine,
@@ -762,7 +872,7 @@ void ModelNode::flushBuffers() {
 
 	if (_vertexCoordsBuffered) {
 		const float *vcb = &_vertexCoordsBuffer[0];
-		VertexBuffer &vb = _mesh->data->vertexBuffer;
+		VertexBuffer &vb = *(_mesh->data->rawMesh->getVertexBuffer());
 		int vertexCount = vb.getCount();
 		int stride = vb.getSize() / sizeof(float);
 		float *v = reinterpret_cast<float *>(vb.getData());
@@ -774,6 +884,7 @@ void ModelNode::flushBuffers() {
 			vcb += 3;
 		}
 		_vertexCoordsBuffered = false;
+		_dirtyMesh = true;
 	}
 }
 
@@ -799,7 +910,7 @@ void ModelNode::computeInverseBindPose() {
 			const QuaternionKeyFrame &ori = node->_orientationFrames[0];
 			if (ori.x != 0 || ori.y != 0 || ori.z != 0)
 				_invBindPose = glm::rotate(_invBindPose,
-						acosf(ori.q) * 2.0f,
+						(acosf(ori.q) * 2.0f),
 						glm::vec3(ori.x, ori.y, ori.z));
 		}
 	}
@@ -834,6 +945,383 @@ void ModelNode::computeAbsoluteTransform() {
 					          node->_orientationBuffer[1],
 					          node->_orientationBuffer[2]));
 	}
+}
+
+ModelNode::Mesh *ModelNode::getMesh() const {
+	if (_mesh) {
+		return _mesh;
+	}
+
+	if (_model->getState().empty()) {
+		return NULL; // Stateless and no internal _mesh.
+	}
+
+	ModelNode *rootStateNode = _model->getNode("", _name);
+	if (rootStateNode && rootStateNode != this) {
+		return rootStateNode->_mesh;
+	}
+
+	return NULL; // No mesh found in the root state.
+}
+
+TextureHandle *ModelNode::getTextures(uint32 &count) {
+	TextureHandle *rval = NULL;
+	count = 0;
+	if (_mesh && _mesh->data) {
+		count = _mesh->data->textures.size();
+		if (count) {
+			rval = &(_mesh->data->textures[0]);
+		}
+	}
+
+	if (!rval) {
+		// Nothing here, see if the parent has something for us.
+		ModelNode *rootStateNode = _model->getNode("", _name);
+		if (rootStateNode && rootStateNode != this) {
+			rval = rootStateNode->getTextures(count);
+		}
+	}
+
+	return rval;
+}
+
+TextureHandle *ModelNode::getEnvironmentMap(EnvironmentMapMode &mode) {
+	TextureHandle *rval = NULL;
+	if (_mesh && _mesh->data) {
+		if (!_mesh->data->envMap.empty()) {
+			rval = &(_mesh->data->envMap);
+			mode = _mesh->data->envMapMode;
+		}
+	}
+
+	if (!rval) {
+		// Nothing here, see if the parent has something for us.
+		ModelNode *rootStateNode = _model->getNode("", _name);
+		if (rootStateNode && rootStateNode != this) {
+			rval = rootStateNode->getEnvironmentMap(mode);
+		}
+	}
+
+	return rval;
+}
+
+void ModelNode::buildMaterial() {
+	ModelNode::Mesh *pmesh  = 0;  // TODO: if anything is changed in here, ensure there's a local copy instead that shares the root data.
+	TextureHandle *phandles = 0; // Take from self first, or root state, if there is one, otherwise.
+	TextureHandle *penvmap  = 0;  // Maybe it's only the environment map that's overriden.
+	EnvironmentMapMode envmapmode;
+
+	uint32 textureCount = 0;
+
+	_renderableArray.clear();
+
+	/**
+	 * If there's no override of mesh, textures, or environment mapping, then don't bother
+	 * to create any new renderables. Just make sure _rootStateNode has some, and have the
+	 * render queuing use the renderables from there instead. This isn't really a problem,
+	 * as the per-modelnode data (modelview matrix in this case) is still supplied from
+	 * _this_ object.
+	 */
+
+	if (!_model->getState().empty()) {
+		_rootStateNode = _model->getNode("", _name);
+		if (_rootStateNode == this) {
+			_rootStateNode = 0;
+		}
+	} else {
+		_rootStateNode = 0;
+	}
+
+	_dirtyRender = false;
+
+	if (!_mesh) {
+		//status("%s: no mesh when building material\n", _name.c_str());
+		return;
+	}
+
+	if (!_mesh->data) {
+		//status("%s: no mesh data when building material\n", _name.c_str());
+		return;
+	}
+
+	if (_mesh->data->textures.size() == 0 && _mesh->data->envMap.empty() && !_mesh->data->rawMesh) {
+		//status("%s: no texture or environment map data when building material\n", _name.c_str());
+		return;
+	}
+	/**
+	 * To get here, _mesh must exist and have some data. This is required to consider making
+	 * a new renderable - otherwise, the renderable of the parent can be used directly. This
+	 * may change depending what information the renderable is dependent on during creation.
+	 * Important information in this case means texture or environment maps are overidden from
+	 * any potential parent.
+	 */
+	pmesh = _mesh;
+	phandles = getTextures(textureCount);
+	penvmap = getEnvironmentMap(envmapmode);
+
+	if (textureCount == 0) {
+		//status("%s: no texture data when building material\n", _name.c_str());
+		return;
+	}
+
+	if (!_render) {
+		//status("%s: rendering disabled when building material\n", _name.c_str());
+		return;
+	}
+
+	if (!pmesh->data->rawMesh) {
+		//status("%s: no raw mesh when building material\n", _name.c_str());
+		return;
+	}
+
+	if (phandles[0].empty()) {
+		//status("%s: no diffuse colour texture, abandoning material construction.\n", _name.c_str());
+		return;
+	}
+
+	Common::UString vertexShaderName;
+	Common::UString fragmentShaderName;
+	Common::UString materialName = "xoreos.";
+	Graphics::Shader::ShaderDescriptor cripter;
+
+	Shader::ShaderMaterial *material;
+	Shader::ShaderSampler *sampler;
+	Shader::ShaderSurface *surface;
+
+	uint32 materialFlags = 0;
+
+	_renderableArray.clear();
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_NORMAL0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV0);
+
+	if (_name == "Plane237") {
+		pmesh->isTransparent = true;  // Hack hack hack hack. For NWN.
+	}
+
+	if (penvmap) {
+		if (penvmap->getTexture().getImage().isCubeMap()) {
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV_CUBE);
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_7,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_CUBE);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_7,
+			                Graphics::Shader::ShaderDescriptor::INPUT_UV_CUBE,
+			                Graphics::Shader::ShaderDescriptor::ENV_CUBE);
+		} else {
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV_SPHERE);
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_7,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_7,
+			                Graphics::Shader::ShaderDescriptor::INPUT_UV_SPHERE,
+			                Graphics::Shader::ShaderDescriptor::ENV_SPHERE);
+		}
+
+		if (envmapmode == kModeEnvironmentBlendedUnder) {
+			materialName += penvmap->getName();
+			// Figure out if a cube or sphere map is used.
+			if (penvmap->getTexture().getImage().isCubeMap()) {
+				if (!pmesh->isTransparent) {
+					materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				}
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::ENV_CUBE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
+			} else {
+				/**
+				 * Seems that, regardless of _isTransparent, anything with shperical env mapping is opaque. This mostly comes from
+				 * NWN, where it's seen that things marked as transparent actually shouldn't be. It's assumed this carries over to
+				 * other game titles as well.
+				 */
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::ENV_SPHERE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
+				// pmesh->isTransparent = false;
+			}
+		}
+	}
+
+//	if (pmesh->isBackgroundGeometry) {
+//		materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+//	}
+
+	if (pmesh->isTransparent && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+/*
+	if (pmesh->isTransparent) {
+		materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+*/
+
+/*
+	// For KotOR2, this helps to move some things to the back of the render queue. Windows and such.
+	if (pmesh->hasTransparencyHint &&
+	    pmesh->data->rawMesh->getVertexBuffer()->getCount() < 10 &&
+	    !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+*/
+
+	/**
+	 * Sometimes the _textures handler array isn't matched up against what
+	 * is properly loaded (missing files from disk). So do some brief sanity
+	 * checks on this.
+	 */
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			materialName += phandles[0].getName();
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+			                Graphics::Shader::ShaderDescriptor::INPUT_UV0,
+			                Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE);
+
+			if (phandles[0].getTexture().getTXI().getFeatures().blending) {
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_SPECIAL_BLEND;
+				// For KotOR2, this is required to get some windows showing up properly.
+				if (pmesh->hasTransparencyHint && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+					materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+				}
+			}
+			// Check to see if it's actually a decal texture.
+			if (phandles[0].getTexture().getTXI().getFeatures().decal) {
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_DECAL;
+			}
+			if (penvmap && envmapmode == kModeEnvironmentBlendedUnder) {
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_SRC_ALPHA);
+			} else {
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
+			}
+		}
+	}
+
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
+			materialName += ".";
+			materialName += phandles[1].getName();
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_1,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_1,
+			                Graphics::Shader::ShaderDescriptor::INPUT_UV0,
+			                Graphics::Shader::ShaderDescriptor::TEXTURE_LIGHTMAP);
+			cripter.addPass(Graphics::Shader::ShaderDescriptor::TEXTURE_LIGHTMAP,
+			                Graphics::Shader::ShaderDescriptor::BLEND_MULTIPLY);
+		} else {
+			cripter.addPass(Graphics::Shader::ShaderDescriptor::FORCE_OPAQUE,
+			                Graphics::Shader::ShaderDescriptor::BLEND_IGNORED);
+		}
+	}
+
+	if (textureCount >= 3) {
+		if (!phandles[2].empty()) {
+			materialName += ".";
+			materialName += phandles[2].getName();
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_2,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+		} else {
+			cripter.addPass(Graphics::Shader::ShaderDescriptor::FORCE_OPAQUE,
+			                Graphics::Shader::ShaderDescriptor::BLEND_IGNORED);
+		}
+	}
+
+	if (textureCount >= 4) {
+		// Don't know yet what this extra texture is supposed to be.
+		cripter.addPass(Graphics::Shader::ShaderDescriptor::FORCE_OPAQUE,
+		                Graphics::Shader::ShaderDescriptor::BLEND_IGNORED);
+	}
+
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedOver) {
+			materialName += penvmap->getName();
+			// Figure out if a cube or sphere map is used.
+			if (penvmap->getTexture().getImage().isCubeMap()) {
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::ENV_CUBE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_DST_ALPHA);
+			} else {
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::ENV_SPHERE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_DST_ALPHA);
+			}
+		}
+	}
+
+	if (materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE) {
+		cripter.addPass(Graphics::Shader::ShaderDescriptor::FORCE_OPAQUE,
+		                Graphics::Shader::ShaderDescriptor::BLEND_IGNORED);
+	}
+
+	if (materialFlags & Shader::ShaderMaterial::MATERIAL_TRANSPARENT) {
+		if (pmesh->data->rawMesh->getVertexBuffer()->getCount() <= 6) {
+			materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT_B;
+		}
+	}
+
+	material = MaterialMan.getMaterial(materialName);
+	if (material) {
+		surface = SurfaceMan.getSurface(materialName);
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
+		return;
+	}
+
+	if (_mesh->alpha < 1.0f) {
+		materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // Make sure it's not actually opaque.
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+
+	cripter.genName(vertexShaderName);
+	fragmentShaderName = vertexShaderName + ".frag";
+	vertexShaderName += ".vert";
+
+	// Ok, material doesn't exist. Check on the shaders.
+	Shader::ShaderObject *vertexObject = ShaderMan.getShaderObject(vertexShaderName, Shader::SHADER_VERTEX);
+	Shader::ShaderObject *fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, Shader::SHADER_FRAGMENT);
+
+	// Should be checking vert and frag shader separately, but they really should exist together anyway.
+	if (!vertexObject) {
+		// No object found. Generate a shader then.
+		bool isGL3 = GfxMan.isGL3();
+
+		Common::UString vertexStringFinal;
+		Common::UString fragmentStringFinal;
+
+		cripter.build(isGL3, vertexStringFinal, fragmentStringFinal);
+		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
+		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);
+	}
+
+	// Shader objects should now exist, so go ahead and make the material and surface.
+	surface = new Shader::ShaderSurface(vertexObject, materialName);
+	material = new Shader::ShaderMaterial(fragmentObject, materialName);
+	material->setFlags(materialFlags);
+	MaterialMan.addMaterial(material);
+	SurfaceMan.addSurface(surface);
+
+	if (penvmap) {
+		sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_7_id"));
+		sampler->handle = *penvmap;
+	}
+
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_0_id"));
+			sampler->handle = phandles[0];
+		}
+	}
+
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_1_id"));
+			sampler->handle = phandles[1];
+		}
+	}
+
+	if (textureCount >= 3) {
+		if (!phandles[2].empty()) {
+		}
+	}
+
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
 }
 
 } // End of namespace Aurora

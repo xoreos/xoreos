@@ -50,6 +50,8 @@ private:
 		Common::SeekableReadStream *mdl;
 		Common::SeekableReadStream *mdx;
 
+		Common::UString mdlName;
+
 		State *state;
 
 		std::list<ModelNode_KotOR *> nodes;
@@ -99,6 +101,8 @@ public:
 	~ModelNode_KotOR();
 
 	void load(Model_KotOR::ParserContext &ctx);
+
+	void buildMaterial();
 
 private:
 	void readNodeControllers(Model_KotOR::ParserContext &ctx, uint32 offset,

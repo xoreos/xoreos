@@ -39,6 +39,17 @@
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/animnode.h"
 
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
+
+#include "src/graphics/images/decoder.h"
+
+// This is included if a mesh wants a unique name.
+#include "src/common/uuid.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -177,6 +188,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	ctx.mdlName = _name;
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -511,6 +523,65 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 		childNode->load(ctx);
 	}
+
+	if (_mesh && _mesh->data) {
+		Common::UString meshName = ctx.mdlName;
+		meshName += ".";
+		if (ctx.state->name.size() != 0) {
+			meshName += ctx.state->name;
+		} else {
+			meshName += "xoreos.default";
+		}
+		meshName += ".";
+		meshName += _name;
+#ifdef MESH_KOTOR_USE_MESHMAN
+	/**
+	 * Dirty hack around an issue in KotOR2 where a tile can have multiple meshes
+	 * of exactly the same name. This dirty hack will double up on static objects
+	 * without state, but hopefully they're relatively few and it won't impact
+	 * performance too much.
+	 * A future improvement will be to see if an entire model has already been
+	 * loaded and to use that directly: that should prevent models with an empty
+	 * state from being affected by this dirty hack.
+	 */
+		Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
+		if (ctx.state->name.size() == 0) {
+			while (mystery_mesh) {
+				meshName += "_";
+				mystery_mesh = MeshMan.getMesh(meshName);
+			}
+		}
+
+		if (!mystery_mesh) {
+			Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+			if (checkMesh) {
+				//warning("Warning: probable mesh duplication of: %s, attempting to correct", meshName.c_str());
+				delete _mesh->data->rawMesh;
+				_mesh->data->rawMesh = checkMesh;
+			} else {
+				_mesh->data->rawMesh->setName(meshName);
+				_mesh->data->rawMesh->init();
+				MeshMan.addMesh(_mesh->data->rawMesh);
+			}
+		} else {
+			delete _mesh->data->rawMesh;
+			_mesh->data->rawMesh = mystery_mesh;
+		}
+#else
+		/**
+		 * Because meshes need to be unique right now, at least until animation can use
+		 * vertex shaders instead of vertex data duplication, need to generate a unique
+		 * name for the mesh and add it to the mesh manager. This is important; the mesh
+		 * manager is responsible for later deleting it.
+		 */
+		meshName += "#" + Common::generateIDRandomString();
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+
+		MeshMan.addMesh(_mesh->data->rawMesh);
+#endif
+		this->buildMaterial();
+	}
 }
 
 void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
@@ -534,6 +605,18 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 		}
 	}
 	ctx.mdl->seek(pos);
+}
+
+void ModelNode_KotOR::buildMaterial() {
+	ModelNode::buildMaterial();
+#if 0
+	// For KotOR2, this helps to move some things to the back of the render queue. Windows and such.
+	if (pmesh->hasTransparencyHint &&
+	    pmesh->data->rawMesh->getVertexBuffer()->getCount() < 10 &&
+	    !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+#endif
 }
 
 void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
@@ -643,6 +726,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_mesh->specular[2] = 0;
 
 	uint32 transparencyHint = ctx.mdl->readUint32LE();
+	//printf("Model %s, hint: %08X\n", ctx.mdlName.c_str(), transparencyHint);
 
 	_mesh->hasTransparencyHint = true;
 	_mesh->transparencyHint    = (transparencyHint != 0);
@@ -705,6 +789,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
 	_mesh->data->envMapMode = kModeEnvironmentBlendedOver;
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 	uint32 endPos = ctx.mdl->pos();
 
@@ -729,11 +814,11 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
 	_mesh->data->initialVertexCoords.resize(3 * ctx.vertexCount);
 
-	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
-	float *iv = &_mesh->data->initialVertexCoords[0];
+	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
+	float *iv = _mesh->data->initialVertexCoords.data();
 
 	for (uint32 i = 0; i < ctx.vertexCount; i++) {
 		// Position
@@ -773,9 +858,9 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.mdl->seek(ctx.offModelData + offVerts);
 
-	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdl->readUint16LE();
 

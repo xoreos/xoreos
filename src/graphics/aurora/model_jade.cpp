@@ -37,6 +37,18 @@
 #include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/model_jade.h"
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
+
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+
+#include "src/graphics/render/renderman.h"
+
+#include "src/graphics/images/decoder.h"
+
+// This is included if a mesh wants a unique name.
+#include "src/common/uuid.h"
 
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
@@ -172,6 +184,7 @@ void Model_Jade::load(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	ctx.mdlName = _name;
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -333,6 +346,44 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 		childNode->load(ctx);
 	}
+
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
+	if (!_mesh) {
+		return;
+	}
+
+	if (!_mesh->data) {
+		return;
+	}
+
+	if (!_mesh->data->rawMesh) {
+		return;
+	}
+
+	_mesh->data->rawMesh->init();
+	if (MeshMan.getMesh(meshName)) {
+		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+
+		// TODO: figure out the right thing to handle mesh duplication.
+		meshName += "#" + Common::generateIDRandomString();
+	}
+	_mesh->data->rawMesh->setName(meshName);
+	MeshMan.addMesh(_mesh->data->rawMesh);
+
+	this->buildMaterial();
+}
+
+void ModelNode_Jade::buildMaterial() {
+	ModelNode::buildMaterial();
 }
 
 void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
@@ -364,9 +415,11 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 
 	_mesh->render  = (flags & kNodeFlagsRender) != 0;
 	_mesh->beaming = (flags & kNodeFlagsBeaming) != 0;
+	_mesh->isBackgroundGeometry = (flags & kNodeFlagsBackgroundGeometry) != 0;
 
 	_mesh->hasTransparencyHint = true;
 	_mesh->transparencyHint    = (transparencyHint == 1);
+	_mesh->transparencyHintFull = transparencyHint;
 
 	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
 
@@ -411,7 +464,9 @@ void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {
 	uint32 vertexOffset = ctx.mdl->readUint32LE();
 	ctx.mdl->skip(4); // Unknown
 
-	uint32 materialID      = ctx.mdl->readUint32LE();
+	uint32 materialID = ctx.mdl->readUint32LE();
+
+	// Group id is likely used to select an appropriate shader.
 	uint32 materialGroupID = ctx.mdl->readUint32LE();
 
 	_mesh->selfIllum[0] = ctx.mdl->readIEEEFloatLE();
@@ -603,6 +658,7 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 	loadTextures(ctx.textures);
 
@@ -614,9 +670,9 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
+	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
 	for (uint32 i = 0; i < vertexCount; i++) {
 		// Position
 		*v++ = ctx.vertices[i * 3 + 0];
@@ -630,9 +686,9 @@ void ModelNode_Jade::createMesh(Model_Jade::ParserContext &ctx) {
 		}
 	}
 
-	_mesh->data->indexBuffer.setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	memcpy(f, &ctx.indices[0], indexCount * sizeof(uint16));
 
 	createBound();
@@ -662,7 +718,37 @@ void ModelNode_Jade::readMaterialTextures(uint32 materialID, std::vector<Common:
 		if (size != 292)
 			throw Common::Exception("Invalid size in binary material %s.mab", mabFile.c_str());
 
-		mab->skip(96);
+		_jadeMaterialData.renderPathID = mab->readUint32LE();
+
+		_jadeMaterialData.opacity1 = mab->readUint32LE();
+		_jadeMaterialData.opacity2 = mab->readUint32LE();
+
+		_jadeMaterialData.cubeMultiplier         = mab->readIEEEFloatLE();
+		_jadeMaterialData.bumpCoordMultiplier    = mab->readIEEEFloatLE();
+		_jadeMaterialData.terrainCoordMultiplier = mab->readIEEEFloatLE();
+
+		_jadeMaterialData.falloff = mab->readIEEEFloatLE();
+
+		_jadeMaterialData.waterAlpha = mab->readIEEEFloatLE();
+
+		_jadeMaterialData.bumpMapIsSpecular = mab->readByte();
+		_jadeMaterialData.doubleSided       = mab->readByte();
+
+		mab->skip(2); // Unknown, padding?
+
+		_jadeMaterialData.diffuseColor[0] = mab->readIEEEFloatLE();
+		_jadeMaterialData.diffuseColor[1] = mab->readIEEEFloatLE();
+		_jadeMaterialData.diffuseColor[2] = mab->readIEEEFloatLE();
+		_jadeMaterialData.ambientColor[0] = mab->readIEEEFloatLE();
+		_jadeMaterialData.ambientColor[1] = mab->readIEEEFloatLE();
+		_jadeMaterialData.ambientColor[2] = mab->readIEEEFloatLE();
+
+		mab->skip(24); // Unknown
+
+		_jadeMaterialData.blending1 = mab->readUint32LE();
+		_jadeMaterialData.blending2 = mab->readUint32LE();
+
+		mab->skip(4); // Unknown
 
 		for (int i = 0; i < 4; i++) {
 			textures.push_back(Common::readStringFixed(*mab, Common::kEncodingASCII, 32));

@@ -51,6 +51,8 @@ private:
 	struct ParserContext {
 		Common::SeekableReadStream *mdl;
 
+		Common::UString mdlName;
+
 		State *state;
 
 		bool isASCII;
@@ -152,7 +154,7 @@ private:
 
 	void readFaces(Model_NWN::ParserContext &ctx, Mesh &mesh);
 
-	void processMesh(Mesh &mesh);
+	void processMesh(ModelNode_NWN_ASCII::Mesh &mesh);
 };
 
 } // End of namespace Aurora

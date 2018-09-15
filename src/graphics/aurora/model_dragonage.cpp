@@ -498,14 +498,34 @@ void ModelNode_DragonAge::load(Model_DragonAge::ParserContext &ctx, const GFF4St
 	readTransformation(nodeGFF);
 
 	// If this is a mesh node, read the mesh
-	if (isType(nodeGFF, kMSHHID))
+	if (isType(nodeGFF, kMSHHID)) {
 		readMesh(ctx, nodeGFF);
+
+		Common::UString meshName = ctx.mmhName + ctx.mshName;
+		meshName += ".";
+		if (ctx.state->name.size() != 0) {
+			meshName += ctx.state->name;
+		} else {
+			meshName += "xoreos.default";
+		}
+		meshName += ".";
+		meshName += _name;
+
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		if (MeshMan.getMesh(meshName)) {
+			warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+		}
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	}
 
 	// Read the children
 	readChildren(ctx, nodeGFF);
 
 	// Create the bounding box
 	createBound();
+
+	this->buildMaterial();
 }
 
 void ModelNode_DragonAge::readTransformation(const GFF4Struct &nodeGFF) {
@@ -621,12 +641,12 @@ void ModelNode_DragonAge::createIndexBuffer(const GFF4Struct &meshChunk,
 		Common::SeekableReadStream &indexData) {
 
 	uint32 indexCount = meshChunk.getUint(kGFF4MeshChunkIndexCount);
-	_mesh->data->indexBuffer.setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(indexCount, sizeof(uint16), GL_UNSIGNED_SHORT);
 
 	const uint32 startIndex = meshChunk.getUint(kGFF4MeshChunkStartIndex);
 	indexData.skip(startIndex * 2);
 
-	uint16 *indices = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
+	uint16 *indices = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	while (indexCount-- > 0)
 		*indices++ = indexData.readUint16LE();
 }
@@ -665,9 +685,9 @@ void ModelNode_DragonAge::createVertexBuffer(const GFF4Struct &meshChunk,
 		}
 	}
 
-	_mesh->data->vertexBuffer.setVertexDeclInterleave(vertexCount, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(vertexCount, vertexDecl);
 
-	float *vData = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
+	float *vData = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
 	for (uint32 v = 0; v < vertexCount; v++) {
 
 		for (MeshDeclarations::const_iterator d = meshDecl.begin(); d != meshDecl.end(); ++d) {
@@ -965,6 +985,7 @@ void ModelNode_DragonAge::readMesh(Model_DragonAge::ParserContext &ctx, const GF
 		_mesh = new Mesh();
 		_render =_mesh->render = true;
 		_mesh->data = new MeshData();
+		_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 		createIndexBuffer (*meshChunk, *indexData);
 		createVertexBuffer(*meshChunk, *vertexData, meshDecl);
