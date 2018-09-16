@@ -67,6 +67,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/nfofile.h \
     src/aurora/ltrfile.h \
     src/aurora/textureatlasfile.h \
+    src/aurora/thewitchersavefile.h \
     src/aurora/sacfile.h \
     src/aurora/fevfile.h \
     $(EMPTY)
@@ -112,6 +113,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/nfofile.cpp \
     src/aurora/ltrfile.cpp \
     src/aurora/textureatlasfile.cpp \
+    src/aurora/thewitchersavefile.cpp \
     src/aurora/sacfile.cpp \
     src/aurora/fevfile.cpp \
     $(EMPTY)
