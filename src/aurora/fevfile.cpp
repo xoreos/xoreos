@@ -119,7 +119,8 @@ void FEVFile::readCategory(Common::SeekableReadStream &fev) {
 void FEVFile::readEventCategory(Common::SeekableReadStream &fev) {
 	Common::UString name = readLengthPrefixedString(fev);
 
-	fev.skip(4); // Unknown value
+	// Read user properties
+	readProperties(fev);
 
 	const uint32 numSubEventCategories = fev.readUint32LE();
 	const uint32 numEvents = fev.readUint32LE();
@@ -174,9 +175,40 @@ void FEVFile::readEvent(Common::SeekableReadStream &fev) {
 	event.spawnIntensity = fev.readIEEEFloatLE();
 	event.spawnIntensityRandomization = fev.readIEEEFloatLE();
 
-	fev.skip(36);
+	fev.skip(26);
+
+	event.userProperties = readProperties(fev);
+
+	fev.skip(4); // Always 1?
 
 	event.category = readLengthPrefixedString(fev);
+}
+
+std::map<Common::UString, FEVFile::Property> FEVFile::readProperties(Common::SeekableReadStream &fev) {
+	const uint32 numUserProperties = fev.readUint32LE();
+	std::map<Common::UString, FEVFile::Property> properties;
+	for (uint32 i = 0; i < numUserProperties; ++i) {
+		Common::UString propertyName = readLengthPrefixedString(fev);
+		Property property;
+		property.type = PropertyType(fev.readUint32LE());
+		switch (property.type) {
+			case kPropertyInt: // Integer value
+				property.value = fev.readSint32LE();
+				break;
+			case kPropertyFloat: // Floating point value
+				property.value = fev.readIEEEFloatLE();
+				break;
+			case kPropertyString: // String value
+				property.value = readLengthPrefixedString(fev);
+				break;
+			default:
+				throw Common::Exception("FEVFile::readEventCategory() Invalid property type %i", property.type);
+		}
+
+		properties.insert(std::make_pair(propertyName, property));
+	}
+
+	return properties;
 }
 
 Common::UString FEVFile::readLengthPrefixedString(Common::SeekableReadStream &fev) {

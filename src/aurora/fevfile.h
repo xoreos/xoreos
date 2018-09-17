@@ -25,6 +25,10 @@
 #ifndef AURORA_FEVFILE_H
 #define AURORA_FEVFILE_H
 
+#include <map>
+
+#include <boost/variant.hpp>
+
 #include "src/common/readstream.h"
 #include "src/common/ustring.h"
 
@@ -45,6 +49,29 @@ public:
 		kStreamFromDisk
 	};
 
+	/** Possible Play modes. */
+	enum PlayMode {
+		kSequential = 0,
+		kRandom,
+		kRandomNoRepeat,
+		kSequentialNoRepeat,
+		kShuffle,
+		kProgrammerSelected
+	};
+
+	/** Possible Property types. */
+	enum PropertyType {
+		kPropertyInt = 0,
+		kPropertyFloat,
+		kPropertyString
+	};
+
+	/** Some objects in FMOD can have generic properties. */
+	struct Property {
+		PropertyType type;
+		boost::variant<int32, float, Common::UString> value;
+	};
+
 	/** Reference to an external wave bank. */
 	struct WaveBank {
 		uint32 maxStreams;
@@ -57,6 +84,11 @@ public:
 		Common::UString name;
 		uint32 volume;
 		uint32 pitch;
+	};
+
+	/** An event category for storing events. */
+	struct EventCategory {
+		Common::UString name;
 	};
 
 	/** An FMOD event.
@@ -97,7 +129,24 @@ public:
 		float spawnIntensity;
 		float spawnIntensityRandomization;
 
+		std::map<Common::UString, Property> userProperties;
 		Common::UString category;
+	};
+
+	/** A sound definition. */
+	struct SoundDefinition {
+		PlayMode playMode;
+
+		Common::UString name;
+
+		uint32 spawnTimeMin;
+		uint32 spawnTimeMax;
+		uint32 maximumSpawnedSounds;
+		float volume;
+		float volumeRandomization;
+		float pitch;
+		float pitchRandomization;
+		float position3DRandomization;
 	};
 
 	FEVFile(const Common::UString &resRef);
@@ -118,6 +167,8 @@ private:
 	/** Read an event. */
 	void readEvent(Common::SeekableReadStream &fev);
 
+	/** Read properties. */
+	std::map<Common::UString, Property> readProperties(Common::SeekableReadStream &fev);
 	/** Read an FEV length prefixed string. */
 	Common::UString readLengthPrefixedString(Common::SeekableReadStream &fev);
 
@@ -125,6 +176,8 @@ private:
 
 	std::vector<WaveBank> _waveBanks;
 	std::vector<Category> _categories;
+	std::vector<Event> _events;
+	std::vector<SoundDefinition> _definitions;
 };
 
 } // End of namespace Aurora
