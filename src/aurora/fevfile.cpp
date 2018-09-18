@@ -97,6 +97,40 @@ void FEVFile::load(Common::SeekableReadStream &fev) {
 	for (uint32 i = 0; i < numEventGroups; ++i) {
 		readEventCategory(fev);
 	}
+
+	uint32 numSoundDefinitionTemplates = fev.readUint32LE();
+	std::vector<SoundDefinition> definitions(numSoundDefinitionTemplates);
+	for (uint32 i = 0; i < numSoundDefinitionTemplates; ++i) {
+		definitions[i].playMode = PlayMode(fev.readUint32LE());
+		definitions[i].spawnTimeMin = fev.readUint32LE();
+		definitions[i].spawnTimeMax = fev.readUint32LE();
+		definitions[i].maximumSpawnedSounds = fev.readUint32LE();
+		definitions[i].volume = fev.readIEEEFloatLE();
+
+		fev.skip(12);
+
+		definitions[i].volumeRandomization = fev.readIEEEFloatLE();
+		definitions[i].pitch = fev.readIEEEFloatLE();
+
+		fev.skip(12);
+
+		definitions[i].pitchRandomization = fev.readIEEEFloatLE();
+		definitions[i].position3DRandomization = fev.readIEEEFloatLE();
+	}
+
+	uint32 numSoundDefinitions = fev.readUint32LE();
+	_definitions.resize(numSoundDefinitions);
+	for (uint32 i = 0; i < numSoundDefinitions; ++i) {
+		Common::UString name = readLengthPrefixedString(fev);
+		fev.skip(4);
+		uint32 templateId = fev.readUint32LE();
+
+		SoundDefinition definition = definitions[templateId];
+
+		definition.name = name;
+
+		_definitions.push_back(definition);
+	}
 }
 
 void FEVFile::readCategory(Common::SeekableReadStream &fev) {
@@ -182,6 +216,8 @@ void FEVFile::readEvent(Common::SeekableReadStream &fev) {
 	fev.skip(4); // Always 1?
 
 	event.category = readLengthPrefixedString(fev);
+
+	_events.push_back(event);
 }
 
 std::map<Common::UString, FEVFile::Property> FEVFile::readProperties(Common::SeekableReadStream &fev) {
