@@ -18,7 +18,7 @@
 */
 
 /** @file
-  *  Unit tests for the base Trigger class.
+  *  Unit tests for the Engines::Trigger class.
   */
 
 #include "gtest/gtest.h"
@@ -61,20 +61,20 @@ void UtilTrigger::load(const float verts[], const size_t size) {
  * Test Region 1:
  *
  *   5 -              -           H
- *     |              :          / \ 6
+ *     |              :          / \ 5 
  *   4 -              -         /   \
  *     |              :        /     \
  *   3 -      B-------C       /       G 
  *     |     /        :\     /       /
- *   2 -    / 3       - \ 4 /       /
+ *   2 -    / 2       - \ 3 /       /
  *     |   /          :  \ /       /
- *   1 -  A           -   /       F 7
+ *   1 -  A           -   /       F 6 
  *     |   \          :  / \       \
  *   0 -..:.\.:...:...*./.:.\.:...:.\.:...:
  *     |     \        :/     \       \
- *  -1 -      \   2   /   8   \       E 
+ *  -1 -      \   1   /   7   \       E 
  *     |       \     /:        \     /
- *  -2 -      1 \   / -         \ 5 /
+ *  -2 -      0 \   / -         \ 4 /
  *     |         \ /  :          \ /
  *  -3 -          I   -           D 
  *     |                                  
@@ -82,14 +82,14 @@ void UtilTrigger::load(const float verts[], const size_t size) {
  *       -3  -2  -1   0   1   2   3   4   5
  */
 static const float kTestClassPos1[] = {
-    -2.0, -3.0, // 1 -- Outside
-    -1.0, -1.0, // 2 -- Inside
-    -2.0,  2.0, // 3 -- Inside
-     1.0,  2.0, // 4 -- Outside
-     3.0, -2.0, // 5 -- Inside
-     3.8,  5.5, // 6 -- Outside
-     3.5,  1.0, // 7 -- Outside
-     1.0, -1.0, // 8 -- Outside
+    -2.0, -3.0, // 0 -- Outside
+    -1.0, -1.0, // 1 -- Inside
+    -2.0,  2.0, // 2 -- Inside
+     1.0,  2.0, // 3 -- Outside
+     3.0, -2.0, // 4 -- Inside
+     3.9,  4.9, // 5 -- Outside
+     3.5,  1.0, // 6 -- Outside
+     1.0, -1.0, // 7 -- Outside
 };
 
 static const float kTestClass1[] = {
@@ -104,22 +104,38 @@ static const float kTestClass1[] = {
     -1.0, -3.0, -0.5  // I
 };
 
+GTEST_TEST(TestTrigger, contains_part_1) {
+	size_t size = ARRAYSIZE(kTestClass1);
+	UtilTrigger trigger(kTestClass1, size);
+	const size_t num = 8;
+	bool result[num] = {
+		false, true, true, false,
+		true, false, false, false };
+	int i = 0;
+
+	for (size_t n = 0; n < num; n++) {
+		float x = kTestClassPos1[i++];
+		float y = kTestClassPos1[i++];
+		EXPECT_EQ(trigger.contains(x, y), result[n]) << "At index " << n;
+	}
+}
+
 /*
  * Test Region 2:
  *
  *   5 -        C---------------------D
  *     |       /      :                \
- *   4 -    1 /       H-----------G   7 \
- *     |     /       /:       6   |      \
+ *   4 -    0 /       H-----------G   6 \
+ *     |     /       /:       5   |      \
  *   3 -    /       / -           F-------E
- *     |   /       /  :             8
+ *     |   /       /  :            7 
  *   2 -  B       J   -   P-----------Q
- *     |  |       |   :   | 5         |
- *   1 -  |   2   |   -   N---M       |
+ *     |  |       |   :   | 4         |
+ *   1 -  |   1   |   -   N---M       |
  *     |  |       |   :       /       |
  *   0 -..:...:...:...*...:../:...:...:...:
  *     |  |       |   :     /         |
- *  -1 -  A       | 3 -    / 4        R 
+ *  -1 -  A       | 2 -    / 3        R 
  *     |   \      K---:---L          /
  *  -2 -    \         -             /
  *     |     \        :            /
@@ -129,18 +145,19 @@ static const float kTestClass1[] = {
  *       -3  -2  -1   0   1   2   3   4   5
  */
 static const float kTestClassPos2[] {
-    -2.5,  4.0, // 1 -- Outside
-    -2.0,  1.0, // 2 -- Inside
-    -0.5, -1.0, // 3 -- Outside
-     1.7,  1.0, // 4 -- Inside
-     1.5,  1.5, // 5 -- Inside
-     2.0,  3.5, // 6 -- Outside
-     4.0,  4.0, // 7 -- Inside
+    -2.5,  4.0, // 0 -- Outside
+    -2.0,  1.0, // 1 -- Inside
+    -0.5, -1.0, // 2 -- Outside
+     1.7,  1.0, // 3 -- Inside
+     1.5,  1.5, // 4 -- Inside
+     2.0,  3.5, // 5 -- Outside
+     4.0,  4.0, // 6 -- Inside
+     3.0,  2.5, // 7 -- Outside
 };
 
 static const float kTestClass2[] = {
-    -1.0, -3.0,  1.0, // A
-    -1.0,  2.0,  1.0, // B
+    -3.0, -1.0,  1.0, // A
+    -3.0,  2.0,  1.0, // B
     -1.5,  5.0,  1.0, // C
      4.0,  5.0, -1.0, // D
      5.0,  3.0, -1.0, // E
@@ -159,41 +176,57 @@ static const float kTestClass2[] = {
     -2.0, -3.0,  1.0, // T
 };
 
+GTEST_TEST(TestTrigger, contains_part_2) {
+	size_t size = ARRAYSIZE(kTestClass2);
+	UtilTrigger trigger(kTestClass2, size);
+	const size_t num = 8;
+	bool result[num] = {
+		false, true, false, true,
+		true, false, true, false };
+	int i = 0;
+
+	for (size_t n = 0; n < num; n++) {
+		float x = kTestClassPos2[i++];
+		float y = kTestClassPos2[i++];
+		EXPECT_EQ(trigger.contains(x, y), result[n]) << "At index " << n;
+	}
+}
+
 /*
  * Test Region 3:
  *
  *   5 -              -               J---K
  *     |              :               |   |
  *   4 -      A---B   -               |   |
- *     |      |   |   :               | 8 |
- *   3 -      | 2 |   -   E---F       |   |
- *     |      |   |   :   |   |     7 |   |   9
+ *     |      |   |   :               | 7 |
+ *   3 -      | 1 |   -   E---F       |   |
+ *     |      |   |   :   |   |     6 |   |   8
  *   2 -      |   |   -   |   G-------H   |
- *     |      |   |   :   |       6       |
- *   1 -  1   |   |   -   |   P-------N   |
- *     |      |   | 3 :   |   | 5     |   |
+ *     |      |   |   :   |       5       |
+ *   1 -  0   |   |   -   |   P-------N   |
+ *     |      |   | 2 :   |   | 4     |   |
  *   0 -..:...:...:...*...:...:...:...:...:
  *     |      |   |   :   |   |       |   |
  *  -1 -      |   C-------D   |       M---L
- *     |      |       :     4 |
+ *     |      |       :     3 |
  *  -2 -      R---------------Q
  *     |              :
- *  -3 -              -  10
+ *  -3 -              -   9 
  *     |                                  
  *     +--|---|---|---|---|---|---|---|---|-
  *       -3  -2  -1   0   1   2   3   4   5
  */
 static const float kTestClassPos3[] {
-    -1.0,  1.0, // 1 -- Outside
-    -1.5,  3.0, // 2 -- Inside
-    -0.5,  0.5, // 3 -- Outside
-     1.5, -1.5, // 4 -- Inside
-     2.5,  0.5, // 5 -- Outside
-     3.0,  1.5, // 6 -- Inside
-     3.5,  2.5, // 7 -- Outside
-     4.5,  3.5, // 8 -- Inside
-     6.0,  2.5, // 9 -- Outside
-     1.0, -3.0, //10 -- Outside
+    -3.0,  1.0, // 0 -- Outside
+    -1.5,  3.0, // 1 -- Inside
+    -0.5,  0.5, // 2 -- Outside
+     1.5, -1.5, // 3 -- Inside
+     2.5,  0.5, // 4 -- Outside
+     3.0,  1.5, // 5 -- Inside
+     3.5,  2.5, // 6 -- Outside
+     4.5,  3.5, // 7 -- Inside
+     6.0,  2.5, // 8 -- Outside
+     1.0, -3.0, // 9 -- Outside
 };
 
 static const float kTestClass3[] = {
@@ -215,73 +248,89 @@ static const float kTestClass3[] = {
     -2.0, -2.0, -1.0, // R
 };
 
+GTEST_TEST(TestTrigger, contains_part_3) {
+	size_t size = ARRAYSIZE(kTestClass3);
+	UtilTrigger trigger(kTestClass3, size);
+	const size_t num = 10;
+	bool result[num] = {
+		false, true, false, true, false,
+		true, false, true, false, false };
+	int i = 0;
+
+	for (size_t n = 0; n < num; n++) {
+		float x = kTestClassPos3[i++];
+		float y = kTestClassPos3[i++];
+		EXPECT_EQ(trigger.contains(x, y), result[n]) << "At index " << n;
+	}
+}
+
 /*
  * Test Region 4:
  *
- *   5 -  1           -
+ *   5 -  0           -
  *     |              :           
  *   4 -      C-----------------------D
- *     |     /        :   4          /
+ *     |     /        :   3          /
  *   3 -    /       Q-----------P   /
  *     |   /       /  :        /   /
- *   2 -  B   2   /   -       /   /
+ *   2 -  B   1   /   -       /   /
  *     |  |      /    :      /   /
- *   1 -  |     /     -     / 5 / G---J
+ *   1 -  |     /     -     / 4 / G---J
  *     |  |    /      :    /   /  |    \
  *   0 -..:...:...:...*.../...:...:...:.\.:
  *     |  |  /        :  /   /    |      \
- *  -1 -  | /     3   - /   / 7   |   8   K  10
+ *  -1 -  | /     2   - /   / 6   |   7   K   9
  *     |  |/          :/   /      |      /
  *  -2 -  A           N   E-------F     /
- *     |              | 6              /9
+ *     |              | 5              / 8
  *  -3 -              M---------------L
  *     |                                  
  *     +--|---|---|---|---|---|---|---|---|-
  *       -3  -2  -1   0   1   2   3   4   5
  */
 static const float kTestClassPos4[] {
-    -3.0,  5.0, // 1 -- Outside
-    -2.0,  2.0, // 2 -- Inside
-    -1.0, -1.0, // 3 -- Outside
-     1.0,  3.5, // 4 -- Inside
-     2.0,  1.0, // 5 -- Inside
-     0.5, -2.5, // 6 -- Inside
-     2.0, -1.0, // 7 -- Outside
-     4.0, -1.0, // 8 -- Inside
-     4.5, -2.5, // 9 -- Outside
-     6.0, -1.0, //10 -- Outside
+    -3.0,  5.0, // 0 -- Outside
+    -2.0,  2.0, // 1 -- Inside
+    -1.0, -1.0, // 2 -- Outside
+     1.0,  3.5, // 3 -- Inside
+     2.0,  1.0, // 4 -- Inside
+     0.5, -2.5, // 5 -- Inside
+     2.0, -1.0, // 6 -- Outside
+     4.0, -1.0, // 7 -- Inside
+     4.8, -2.8, // 8 -- Outside
+     6.0, -1.0, // 9 -- Outside
 };
 
 static const float kTestClass4[] = {
-    -3.0, -2.0, 1.0e20, // A
-    -3.0,  2.0, 2.0e19, // B
-    -2.0,  4.0, 3.0e18, // C
-     4.0,  4.0, 4.0e17, // D
-     1.0, -2.0, 5.0e16, // E
-     3.0, -2.0, 6.0e15, // F
-     3.0,  1.0, 7.0e14, // G
-     4.0,  1.0, 8.0e13, // J
-     5.0, -1.0, 9.0e13, // K
-     4.0, -3.0, 8.0e12, // L
-     0.0, -3.0, 7.0e11, // M
-     0.0, -2.0, 6.0e10, // N
-     2.5,  3.0, 5.0e09, // P
-     0.5,  3.0, 4.0e08, // Q
+    -3.0, -2.0, -1.0, // A
+    -3.0,  2.0, -2.0, // B
+    -2.0,  4.0, -3.0, // C
+     4.0,  4.0, 4.0, // D
+     1.0, -2.0, 5.0, // E
+     3.0, -2.0, 6.0, // F
+     3.0,  1.0, 7.0, // G
+     4.0,  1.0, 8.0, // J
+     5.0, -1.0, 9.0, // K
+     4.0, -3.0, 8.0, // L
+     0.0, -3.0, 7.0, // M
+     0.0, -2.0, 6.0, // N
+     2.5,  3.0, 5.0, // P
+     0.5,  3.0, -4.0, // Q
 };
 
-GTEST_TEST(TestTrigger, contains_part_1) {
-	size_t size = ARRAYSIZE(kTestClass1);
-	UtilTrigger trigger(kTestClass1, size);
-	const size_t num = 8;
+GTEST_TEST(TestTrigger, contains_part_4) {
+	size_t size = ARRAYSIZE(kTestClass4);
+	UtilTrigger trigger(kTestClass4, size);
+	const size_t num = 10;
 	bool result[num] = {
-		false, true, true, false,
-		true, false, false, false };
+		false, true, false, true, true,
+		true, false, true, false, false };
 	int i = 0;
 
 	for (size_t n = 0; n < num; n++) {
-		float x = kTestClassPos1[i++];
-		float y = kTestClassPos1[i++];
-		EXPECT_EQ(trigger.contains(x, y), result[n]);
+		float x = kTestClassPos4[i++];
+		float y = kTestClassPos4[i++];
+		EXPECT_EQ(trigger.contains(x, y), result[n]) << "At index " << n;
 	}
 }
 
