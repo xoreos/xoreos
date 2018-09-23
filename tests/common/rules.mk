@@ -241,3 +241,8 @@ check_PROGRAMS                        += tests/common/test_boundingbox
 tests_common_test_boundingbox_SOURCES  = tests/common/boundingbox.cpp
 tests_common_test_boundingbox_LDADD    = $(common_LIBS)
 tests_common_test_boundingbox_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                 += tests/common/test_rect
+tests_common_test_rect_SOURCES  = tests/common/rect.cpp
+tests_common_test_rect_LDADD    = $(common_LIBS)
+tests_common_test_rect_CXXFLAGS = $(test_CXXFLAGS)
