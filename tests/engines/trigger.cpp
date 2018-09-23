@@ -81,7 +81,7 @@ void UtilTrigger::load(const float verts[], const size_t size) {
  *     +--|---|---|---|---|---|---|---|---|-
  *       -3  -2  -1   0   1   2   3   4   5
  */
-static const float kTestClassPos1[] = {
+static const float kTestClassPos1[16] = {
     -2.0, -3.0, // 0 -- Outside
     -1.0, -1.0, // 1 -- Inside
     -2.0,  2.0, // 2 -- Inside
@@ -92,7 +92,7 @@ static const float kTestClassPos1[] = {
      1.0, -1.0, // 7 -- Outside
 };
 
-static const float kTestClass1[] = {
+static const float kTestClass1[27] = {
     -3.0,  1.0,  0.0, // A
     -2.0,  3.0,  0.5, // B
      0.0,  3.0,  1.5, // C
@@ -144,7 +144,7 @@ GTEST_TEST(TestTrigger, contains_part_1) {
  *     +--|---|---|---|---|---|---|---|---|-
  *       -3  -2  -1   0   1   2   3   4   5
  */
-static const float kTestClassPos2[] {
+static const float kTestClassPos2[16] {
     -2.5,  4.0, // 0 -- Outside
     -2.0,  1.0, // 1 -- Inside
     -0.5, -1.0, // 2 -- Outside
@@ -155,7 +155,7 @@ static const float kTestClassPos2[] {
      3.0,  2.5, // 7 -- Outside
 };
 
-static const float kTestClass2[] = {
+static const float kTestClass2[54] = {
     -3.0, -1.0,  1.0, // A
     -3.0,  2.0,  1.0, // B
     -1.5,  5.0,  1.0, // C
@@ -216,7 +216,7 @@ GTEST_TEST(TestTrigger, contains_part_2) {
  *     +--|---|---|---|---|---|---|---|---|-
  *       -3  -2  -1   0   1   2   3   4   5
  */
-static const float kTestClassPos3[] {
+static const float kTestClassPos3[20] {
     -3.0,  1.0, // 0 -- Outside
     -1.5,  3.0, // 1 -- Inside
     -0.5,  0.5, // 2 -- Outside
@@ -229,7 +229,7 @@ static const float kTestClassPos3[] {
      1.0, -3.0, // 9 -- Outside
 };
 
-static const float kTestClass3[] = {
+static const float kTestClass3[48] = {
     -2.0,  4.0, -1.0, // A
     -1.0,  4.0, -1.0, // B
     -1.0, -1.0, -1.0, // C
@@ -288,7 +288,7 @@ GTEST_TEST(TestTrigger, contains_part_3) {
  *     +--|---|---|---|---|---|---|---|---|-
  *       -3  -2  -1   0   1   2   3   4   5
  */
-static const float kTestClassPos4[] {
+static const float kTestClassPos4[20] {
     -3.0,  5.0, // 0 -- Outside
     -2.0,  2.0, // 1 -- Inside
     -1.0, -1.0, // 2 -- Outside
@@ -301,7 +301,7 @@ static const float kTestClassPos4[] {
      6.0, -1.0, // 9 -- Outside
 };
 
-static const float kTestClass4[] = {
+static const float kTestClass4[42] = {
     -3.0, -2.0, -1.0, // A
     -3.0,  2.0, -2.0, // B
     -2.0,  4.0, -3.0, // C
