@@ -281,13 +281,19 @@ void HUD::setPortrait(uint8 n, bool visible, const Common::UString &portrait) {
 		vitals->setInvisible(!visible);
 
 	if (visible) {
-		labelBack->show();
-		labelChar->show();
-		vitals->show();
+		if (labelBack)
+			labelBack->show();
+		if (labelChar)
+			labelChar->show();
+		if (vital)
+			vitals->show();
 	} else {
-		labelBack->hide();
-		labelChar->hide();
-		vitals->hide();
+		if (labelBack)
+			labelBack->hide();
+		if (labelChar)
+			labelChar->hide();
+		if (vital)
+			vitals->hide();
 	}
 }
 
