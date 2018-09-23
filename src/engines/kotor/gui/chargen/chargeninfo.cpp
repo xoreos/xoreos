@@ -227,7 +227,7 @@ Graphics::Aurora::Model *CharacterGenerationInfo::getModel() {
 	return _body.get();
 }
 
-CharacterGenerationInfo::CharacterGenerationInfo(const CharacterGenerationInfo &info) {
+CharacterGenerationInfo::CharacterGenerationInfo(const CharacterGenerationInfo &info) : _head(0) {
 	_class = info._class;
 	_gender = info._gender;
 	_skin = info._skin;
@@ -243,7 +243,7 @@ void CharacterGenerationInfo::operator=(const CharacterGenerationInfo &info) {
 	_name = info._name;
 }
 
-CharacterGenerationInfo::CharacterGenerationInfo() : _body(0) {
+CharacterGenerationInfo::CharacterGenerationInfo() : _head(0) {
 
 }
 
