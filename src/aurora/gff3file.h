@@ -88,7 +88,7 @@ public:
 	GFF3File(Common::SeekableReadStream *gff3, uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
 	/** Request this resource from the ResourceManager and read a GFF3 file out of it. */
 	GFF3File(const Common::UString &gff3, FileType type, uint32 id = 0xFFFFFFFF, bool repairNWNPremium = false);
-	~GFF3File();
+	virtual ~GFF3File();
 
 	/** Return the GFF3's specific type. */
 	uint32 getType() const;
