@@ -45,7 +45,7 @@ void Trigger::setVisible(bool visible) {
  * Return true if the (x, y) coordinates are located within
  * the horizontal projection of this closed polygon.
  */
-bool Trigger::contains(float x, float y) const {
+bool Trigger::contains(float x, float y) {
 	// Must have a surface defined
 	size_t vertexCount = _geometry.size();
 	if (vertexCount < 3)
@@ -58,21 +58,26 @@ bool Trigger::contains(float x, float y) const {
 	if (!_boundingbox.isIn(x, y))
 		return false;
 	
-	glm::vec3 orig(x, y, 1000);
-	glm::vec3 intersection;
+	// Initialization
+	std::vector<glm::vec3>::iterator it1, it2;
+	int count = 0;
 
-	for (size_t i = 2; i < vertexCount; ++i) {
-		if (glm::intersectRayTriangle(orig,
-					glm::vec3(0, 0, -1),
-					_geometry[0],
-					_geometry[i - 1],
-					_geometry[i],
-					intersection) == 1) {
-			return true;
-		}
+	// Set first iterator to the last vertex
+	it1 = _geometry.end();
+	it1--;
+
+	// Cycle through the vertices, counting the number of ray intersections
+	for (it2 = _geometry.begin(); it2 != _geometry.end(); ++it2) {
+		// Check for a ray intersection
+		if (isRayIntersect(x, y, it1->x, it1->y, it2->x, it2->y))
+			count++;
+
+		// Store for the next loop
+		it1 = it2;
 	}
 
-	return false;
+	// Ray-casting algorithm
+	return (count % 2) ? true : false;
 }
 
 void Trigger::calculateDistance() {
@@ -114,6 +119,16 @@ void Trigger::prepare() {
 
 	// Flag as processed
 	_prepared = true;
+}
+
+/*
+ * Return true if a ray extending from (x, y) to (x, infinity)
+ * intersects the line segment from (x1, y1) to (x2, y2).
+ */
+bool Trigger::isRayIntersect(float  x, float  y,
+                             float x1, float y1,
+			     float x2, float y2) const {
+	return true; // TODO
 }
 
 } // End of namespace Engines
