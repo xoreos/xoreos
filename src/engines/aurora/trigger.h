@@ -54,6 +54,10 @@ protected:
 private:
 	bool _prepared;
 	Common::BoundingBox _boundingbox;
+
+	bool isRayIntersect(float x,  float y,
+	                    float x1, float y1,
+	                    float x2, float y2) const;
 };
 
 } // End of namespace Engines
