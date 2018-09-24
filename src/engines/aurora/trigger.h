@@ -47,6 +47,10 @@ public:
 protected:
 	std::vector<glm::vec3> _geometry;
 	bool _visible;
+
+	void prepare();
+private:
+	bool _prepared;
 };
 
 } // End of namespace Engines

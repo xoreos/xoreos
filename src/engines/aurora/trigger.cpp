@@ -34,7 +34,7 @@ namespace Engines {
 
 Trigger::Trigger()
 		: Renderable(Graphics::kRenderableTypeObject),
-		  _visible(false) {
+		  _visible(false), _prepared(false) {
 
 }
 
@@ -42,11 +42,19 @@ void Trigger::setVisible(bool visible) {
 	_visible = visible;
 }
 
+/*
+ * Return true if the (x, y) coordinates are located within
+ * the horizontal projection of this closed polygon.
+ */
 bool Trigger::contains(float x, float y) const {
+	// Must have a surface defined
 	size_t vertexCount = _geometry.size();
 	if (vertexCount < 3)
 		return false;
 
+	// Check the container data
+	assert(_prepared);
+	
 	glm::vec3 orig(x, y, 1000);
 	glm::vec3 intersection;
 
@@ -76,6 +84,7 @@ void Trigger::render(Graphics::RenderPass pass) {
 	if (vertexCount < 3)
 		return;
 
+	// Semi-transparent blue hue
 	glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
 	glBegin(GL_TRIANGLES);
 
@@ -87,6 +96,15 @@ void Trigger::render(Graphics::RenderPass pass) {
 
 	glEnd();
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+/*
+ * Prepare internal data for the contains(x, y) call.
+ * Run this after the trigger geometry data is loaded.
+ */
+void Trigger::prepare() {
+	// Flag as processed
+	_prepared = true;
 }
 
 } // End of namespace Engines
