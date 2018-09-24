@@ -128,6 +128,20 @@ void Trigger::prepare() {
 bool Trigger::isRayIntersect(float  x, float  y,
                              float x1, float y1,
 			     float x2, float y2) const {
+	// Check if y is below max of y1 and y2
+	if ((y > y1) && (y > y2))
+		return false;
+
+	// Check if x is between x1 and x2
+	if (x < x1 ) {
+		if (x < x2)
+			return false;
+	} else {
+		if (x > x2)
+			return false;
+	}
+
+
 	return true; // TODO
 }
 
