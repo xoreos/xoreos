@@ -38,6 +38,7 @@ Trigger::Trigger(const Aurora::GFF3Struct &gff)
 		: ::Engines::Trigger(),
 		  Object(kObjectTypeTrigger) {
 	load(gff);
+	prepare();
 }
 
 void Trigger::show() {
