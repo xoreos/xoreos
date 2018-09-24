@@ -55,6 +55,10 @@ bool Trigger::contains(float x, float y) const {
 	// Check the container data
 	assert(_prepared);
 
+	// Check if point is in bounding box
+	if (!_boundingbox.isIn(x, y))
+		return false;
+
 	glm::vec3 orig(x, y, 1000);
 	glm::vec3 intersection;
 
@@ -100,9 +104,15 @@ void Trigger::render(Graphics::RenderPass pass) {
 
 /*
  * Prepare internal data for the contains(x, y) call.
- * Run this after the trigger geometry data is loaded.
+ * Run this after the _geometry data is loaded.
  */
 void Trigger::prepare() {
+	std::vector<glm::vec3>::iterator it;
+
+	// Add vertices to the bounding box
+	for (it = _geometry.begin(); it != _geometry.end(); ++it)
+		_boundingbox.add(it->x, it->y, it->z);
+
 	// Flag as processed
 	_prepared = true;
 }

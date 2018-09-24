@@ -29,6 +29,8 @@
 
 #include "glm/vec3.hpp"
 
+#include "src/common/boundingbox.h"
+
 #include "src/graphics/renderable.h"
 
 namespace Engines {
@@ -51,6 +53,7 @@ protected:
 	void prepare();
 private:
 	bool _prepared;
+	Common::BoundingBox _boundingbox;
 };
 
 } // End of namespace Engines
