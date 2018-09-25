@@ -51,13 +51,19 @@ protected:
 
 	void prepare();
 private:
-	const float epsilon = 1.0e-5;
+	typedef struct {
+		float m;
+		bool isVert;
+	} SlopeData;
+
 	bool _prepared;
 	Common::BoundingBox _boundingbox;
+	std::vector<SlopeData> _sides;
 
 	bool isRayIntersect(float  x, float  y,
 	                    float x1, float y1,
-			    float x2, float y2) const;
+			    float x2, float y2,
+			    float  m, bool isVert) const;
 };
 
 } // End of namespace Engines
