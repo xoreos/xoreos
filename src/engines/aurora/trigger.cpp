@@ -128,18 +128,23 @@ void Trigger::prepare() {
 bool Trigger::isRayIntersect(float  x, float  y,
                              float x1, float y1,
 			     float x2, float y2) const {
-	const float epsilon = 0.00000001;
 
 	// Check if y is below max of y1 and y2
 	if ((y > y1) && (y > y2))
 		return false;
 
-	// Check if x is in (x1, x2)
+	// On a vertex alignment, add an offset
+	float x0 = x;
+	if ((x0 == x1) || (x0 == x2)) {
+		x0 = x0 + epsilon;
+	}
+
+	// Check if x0 is in [x1, x2]
 	if (x1 < x2) {
-		if ((x < x1) || (x > x2))
+		if ((x0 < x1) || (x0 > x2))
 			return false;
 	} else {
-		if ((x < x2) || (x > x1))
+		if ((x0 < x2) || (x0 > x1))
 			return false;
 	}
 
@@ -150,10 +155,10 @@ bool Trigger::isRayIntersect(float  x, float  y,
 	if ((dx > epsilon) || (dx < -epsilon)) {
 		// Get the y intersection coordinate
 		float m = dy / dx;
-		float yint = m * (x - x1) + y1;
+		float yint = m * (x0 - x1) + y1;
 
-		// Is the point below the line?
-		if (y < yint)
+		// Is the point above the line?
+		if (!(y > yint))
 			return true;
 	} else {
 		// Aligned with vertical line segment
