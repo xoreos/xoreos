@@ -130,20 +130,39 @@ bool Trigger::isRayIntersect(float x,  float y,
                              float x1, float y1,
                              float x2, float y2) const {
 
+	const float epsilon = 0.00000001;
+
 	// Check if y is below max of y1 and y2
 	if ((y > y1) && (y > y2))
 		return false;
 
-	// Check if x is between x1 and x2
-	if (x < x1 ) {
-		if (x < x2)
+	// Check if x is in (x1, x2)
+	if (x1 < x2) {
+		if ((x < x1) || (x > x2))
 			return false;
 	} else {
-		if (x > x2)
+		if ((x < x2) || (x > x1))
 			return false;
 	}
 
-	return true; // TODO
+	float dx = x2 - x1;
+	float dy = y2 - y1;
+
+	// Check if line segment is vertical
+	if ((dx > epsilon) || (dx < -epsilon)) {
+		// Get the y intersection coordinate
+		float m = dy / dx;
+		float yint = m * (x - x1) + y1;
+
+		// Is the point below the line?
+		if (y < yint)
+			return true;
+	} else {
+		// Aligned with vertical line segment
+		return true;
+	}
+
+	return false;
 }
 
 } // End of namespace Engines
