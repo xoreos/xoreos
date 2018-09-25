@@ -52,6 +52,7 @@ protected:
 
 	void prepare();
 private:
+	const float epsilon = 1.0e-5;
 	bool _prepared;
 	Common::BoundingBox _boundingbox;
 
