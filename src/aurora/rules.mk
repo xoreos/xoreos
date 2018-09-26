@@ -71,6 +71,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/thewitchersavewriter.h \
     src/aurora/sacfile.h \
     src/aurora/fevfile.h \
+    src/aurora/gfxfile.h \
     $(EMPTY)
 
 src_aurora_libaurora_la_SOURCES += \
@@ -118,6 +119,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/thewitchersavewriter.cpp \
     src/aurora/sacfile.cpp \
     src/aurora/fevfile.cpp \
+    src/aurora/gfxfile.cpp \
     $(EMPTY)
 
 src_aurora_libaurora_la_LIBADD = \
