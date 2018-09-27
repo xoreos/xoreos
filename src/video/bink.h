@@ -102,6 +102,7 @@ public:
 
 protected:
 	void decodeNextTrackFrame(VideoTrack &track);
+	void checkAudioBuffer(AudioTrack &track, const Common::Timestamp &endTime);
 
 private:
 	static const int kAudioChannelsMax  = 2;
@@ -123,10 +124,6 @@ private:
 		uint8  outChannels;
 
 		AudioCodec codec;
-
-		uint32 sampleCount;
-
-		Common::BitStream *bits;
 
 		bool first;
 
@@ -357,33 +354,34 @@ private:
 
 	class BinkAudioTrack : public AudioTrack {
 	public:
-		BinkAudioTrack(AudioInfo &audio);
+		BinkAudioTrack(size_t index, AudioInfo &audio);
 		~BinkAudioTrack();
 
 		bool canBufferData() const;
 
-		/** Decode an audio packet. */
-		void decodePacket();
-
-		void setEndOfData();
+		/** Decode audio data up to endTime. */
+		void decodeAudio(Common::SeekableReadStream& bink, const std::vector<VideoFrame>& frames, const std::vector<AudioInfo>& audioTracks, const Common::Timestamp& endTime);
 
 	protected:
 		Sound::AudioStream *getAudioStream() const;
 
 	private:
-		AudioInfo *_audioInfo;
+		size_t _index;
+		AudioInfo &_info;
 		Sound::PacketizedAudioStream *_audioStream;
+		uint32 _curFrame;
+		Common::Timestamp _audioBuffered;
 
-		float getFloat();
+		float getFloat(Common::BitStream &bits);
 
 		/** Decode an audio block. */
-		void audioBlock(int16 *out);
+		void audioBlock(Common::BitStream &bits, int16 *out);
 		/** Decode a DCT'd audio block. */
-		void audioBlockDCT();
+		void audioBlockDCT(Common::BitStream &bits);
 		/** Decode a RDFT'd audio block. */
-		void audioBlockRDFT();
+		void audioBlockRDFT(Common::BitStream &bits);
 
-		void readAudioCoeffs(float *coeffs);
+		void readAudioCoeffs(Common::BitStream &bits, float *coeffs);
 
 		static void floatToInt16Interleave(int16 *dst, const float **src, uint32 length, uint8 channels);
 	};
