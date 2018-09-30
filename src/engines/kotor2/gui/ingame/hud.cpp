@@ -34,17 +34,12 @@ namespace Engines {
 namespace KotOR2 {
 
 HUD::HUD(Module &UNUSED(module), ::Engines::Console *console) : GUI(console) {
-	unsigned int wWidth = WindowMan.getWindowWidth();
-	unsigned int wHeight = WindowMan.getWindowHeight();
-	if (wWidth == 800 && wHeight == 600)
-		load("mipc28x6_p");
-	else {
-		warning("TODO: Add scaling for custom resolutions. The supported resolution is 800x600");
-		return;
-	}
+	load("mipc28x6_p");
 }
 
 void HUD::initWidget(Widget &widget) {
+	Engines::KotOR2::GUI::initWidget(widget);
+
 	// Don't know what these two are doing, but they spawn over the complete screen blocking the 3d picking.
 	if (widget.getTag() == "LBL_MAP")
 		widget.setInvisible(true);
