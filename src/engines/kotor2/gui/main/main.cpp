@@ -50,6 +50,8 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::initWidget(Widget &widget) {
+	Engines::KotOR2::GUI::initWidget(widget);
+
 	// ...BioWare...
 	if (widget.getTag() == "LBL_GAMELOGO") {
 		dynamic_cast< KotORJadeWidget & >(widget).setFill("kotor2logo");
