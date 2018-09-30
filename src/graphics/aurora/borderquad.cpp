@@ -94,8 +94,14 @@ void BorderQuad::getPosition(float &x, float &y, float &z) {
 }
 
 void BorderQuad::setSize(float w, float h) {
-	_w = w;
-	_h = h;
+	_w = std::floor(w);
+	_h = std::floor(h);
+
+	if (_h < 2 * _edgeHeight) {
+		_verticalCut = true;
+	} else {
+		_verticalCut = false;
+	}
 }
 
 void BorderQuad::getSize(float &w, float &h) const {
