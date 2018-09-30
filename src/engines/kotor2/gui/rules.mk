@@ -25,6 +25,7 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
+    src/engines/kotor2/gui/gui.cpp \
     src/engines/kotor2/gui/dialog.cpp \
     $(EMPTY)
 

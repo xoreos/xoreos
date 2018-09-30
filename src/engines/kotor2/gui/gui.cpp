@@ -22,25 +22,48 @@
  *  A KotOR2 GUI.
  */
 
-#ifndef ENGINES_KOTOR2_GUI_GUI_H
-#define ENGINES_KOTOR2_GUI_GUI_H
+#include "src/graphics/windowman.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/kotor2/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class GUI : public Engines::KotOR::GUI {
-public:
-	GUI(::Engines::Console *console);
+GUI::GUI(::Engines::Console *console) : Engines::KotOR::GUI(console) {
+}
 
-protected:
-	virtual void initWidget(Widget &widget);
-};
+void GUI::initWidget(Widget &widget) {
+	KotORJadeWidget &kotorWidget = static_cast<KotORJadeWidget &>(widget);
+
+	float wWidth = WindowMan.getWindowWidth();
+	float wHeight = WindowMan.getWindowHeight();
+
+	if (widget.getTag() == "TGuiPanel") {
+		kotorWidget.setWidth(wWidth);
+		kotorWidget.setHeight(wHeight);
+	} else {
+		float x, y, z;
+		kotorWidget.getPosition(x, y, z);
+
+		x *= ((wWidth / 2.0f) / 400.0f);
+		y *= ((wHeight / 2.0f) / 300.0f);
+
+		kotorWidget.setPosition(x, y, z);
+
+		float w, h;
+		w = kotorWidget.getWidth();
+		h = kotorWidget.getHeight();
+
+		w *= (wWidth / 800.0f);
+		h *= (wHeight / 600.0f);
+
+		kotorWidget.setWidth(w);
+		kotorWidget.setHeight(h);
+	}
+}
 
 } // End of namespace KotOR2
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR2_GUI_GUI_H
