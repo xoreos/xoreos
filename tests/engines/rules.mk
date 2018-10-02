@@ -17,28 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Unit tests.
+# Unit tests for the Engines namespace.
 
-# Our Unit test framework, Google Test
+engines_LIBS = \
+    $(test_LIBS) \
+    src/engines/libengines.la \
+    src/graphics/libgraphics.la \
+    src/aurora/libaurora.la \
+    src/common/libcommon.la \
+    src/events/libevents.la \
+    tests/version/libversion.la \
+    $(LDADD)
 
-include tests/googletest/rules.mk
-
-test_LIBS  = \
-    tests/googletest/libgtest.la \
-    tests/googletest/libgtest_main.la \
-    $(GTEST_LIBS)
-    $(EMPTY)
-
-test_CXXFLAGS = $(GTEST_FLAGS) $(AM_CXXFLAGS)
-
-noinst_HEADERS += \
-    tests/skip.h \
-    $(EMPTY)
-
-include tests/engines/rules.mk
-include tests/version/rules.mk
-include tests/common/rules.mk
-include tests/aurora/rules.mk
-include tests/images/rules.mk
-
-TESTS += $(check_PROGRAMS)
+check_PROGRAMS                     += tests/engines/test_trigger
+tests_engines_test_trigger_SOURCES  = tests/engines/trigger.cpp
+tests_engines_test_trigger_LDADD    = $(engines_LIBS)
+tests_engines_test_trigger_CXXFLAGS = $(test_CXXFLAGS)
