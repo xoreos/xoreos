@@ -30,6 +30,7 @@
 #include "src/events/types.h"
 
 #include "src/graphics/windowman.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/sound/sound.h"
 
@@ -75,6 +76,7 @@ bool DialogGUIBase::isConversationActive() const {
 }
 
 void DialogGUIBase::show() {
+	CursorMan.setGroup("default");
 	GUI::show();
 	_frame->show();
 }
