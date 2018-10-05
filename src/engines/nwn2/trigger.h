@@ -28,6 +28,7 @@
 #include "src/engines/aurora/trigger.h"
 
 #include "src/engines/nwn2/object.h"
+#include "src/engines/nwn2/trap.h"
 
 namespace Engines {
 
@@ -46,6 +47,9 @@ public:
 protected:
 	void load(const Aurora::GFF3Struct &gff);
 	void loadBlueprint(const Aurora::GFF3Struct &gff);
+
+private:
+	Common::ScopedPtr<Trap> _trap; ///< The trigger's trap.
 };
 
 } // End of namespace NWN2
