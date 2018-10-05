@@ -43,7 +43,7 @@ public:
 	Trap(const uint8 type, const Creature *creator);
 	~Trap();
 
-	bool isTriggeredBy(Creature *triggerBy) const;
+	bool isTriggeredBy(Object *triggerBy) const;
 
 	bool getTrapActive() const;
 	bool getTrapDetectable() const;

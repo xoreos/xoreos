@@ -25,9 +25,12 @@
 #ifndef ENGINES_NWN2_DOOR_H
 #define ENGINES_NWN2_DOOR_H
 
+#include "src/common/scopedptr.h"
+
 #include "src/aurora/types.h"
 
 #include "src/engines/nwn2/situated.h"
+#include "src/engines/nwn2/trap.h"
 
 namespace Engines {
 
@@ -94,6 +97,8 @@ private:
 	};
 
 	Module *_module; ///< The module the door is in.
+
+	Common::ScopedPtr<Trap> _trap; ///< The door's trap.
 
 	bool _invisible; ///< Is the door invisible?
 

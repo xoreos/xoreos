@@ -56,6 +56,12 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 		utp.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 
 	Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
+
+	try {
+		_trap.reset(new Trap(placeable));
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
+	}
 }
 
 void Placeable::setModelState() {
@@ -184,6 +190,9 @@ bool Placeable::open(Object *opener) {
 	if (isOpen())
 		return true;
 
+	if (_trap->isTriggeredBy(opener))
+		_trap->triggerTrap(opener);
+
 	if (isLocked()) {
 		playSound(_soundLocked);
 		return false;
@@ -222,6 +231,9 @@ bool Placeable::activate(Object *user) {
 
 	if (isActivated())
 		return true;
+
+	if (_trap->isTriggeredBy(user))
+		_trap->triggerTrap(user);
 
 	if (isLocked()) {
 		playSound(_soundLocked);
