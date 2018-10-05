@@ -181,6 +181,19 @@ enum CClass {
 	kCClassWarlock   = 39,
 };
 
+// feats.2da row
+enum Feat {
+	kFeatSkillFocusDisableTrap = 174,
+	kFeatSkillFocusSearch = 187,
+	kFeatNatureSense = 198,
+	kFeatSkillAffinitySearch = 238,
+	kFeatPSASearch = 245,
+	kFeatEpicSkillFocusDisableTrap = 591,
+	kFeatEpicSkillFocusSearch = 603,
+	kFeatNimbleFingers = 1110,
+	kFeatHistorySurvivor = 2245,
+};
+
 static const uint32 kRaceInvalid    =  28;
 static const uint32 kSubRaceInvalid = 255;
 static const uint32 kClassInvalid   = 255;
