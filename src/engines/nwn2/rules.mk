@@ -44,6 +44,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/creature.h \
     src/engines/nwn2/trap.h \
     src/engines/nwn2/feats.h \
+    src/engines/nwn2/trigger.h \
     $(EMPTY)
 
 src_engines_nwn2_libnwn2_la_SOURCES += \
@@ -68,6 +69,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/creature.cpp \
     src/engines/nwn2/trap.cpp \
     src/engines/nwn2/feats.cpp \
+    src/engines/nwn2/trigger.cpp \
     $(EMPTY)
 
 include src/engines/nwn2/script/rules.mk
