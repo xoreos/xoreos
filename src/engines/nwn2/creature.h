@@ -38,6 +38,7 @@
 
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/object.h"
+#include "src/engines/nwn2/feats.h"
 
 namespace Engines {
 
@@ -174,7 +175,7 @@ private:
 
 	std::vector<Class>  _classes; ///< The creature's classes.
 	std::vector<int8>   _skills;  ///< The creature's skills.
-	std::vector<uint32> _feats;   ///< The creature's feats.
+	Common::ScopedPtr<Feats> _feats; ///< The creature's feats.
 
 	uint8 _hitDice; ///< The creature's hit dice.
 
