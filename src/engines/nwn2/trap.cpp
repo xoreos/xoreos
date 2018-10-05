@@ -218,7 +218,7 @@ bool Trap::detectTrap(Creature *agent) {
 
 	// TODO: Check for a non-enemy faction so _isFlagged isn't set?
 
-	// Make the Search skil check vs. trap detect DC
+	// Make the Search skill check vs. trap detect DC
 	bool result = agent->getIsSkillSuccessful(kSkillSearch, _detectDC);
 
 	// On a success, set to detected
@@ -241,8 +241,20 @@ bool Trap::disarmTrap(Creature *agent, int adjustDC) {
 
 	assert(agent);
 
-	// TODO
-	return false;
+	// Must have at least one rank in disable device
+	uint8 ranks = agent->getSkillRank(kSkillDisableDevice);
+	if (ranks < 1)
+		return false;
+
+	// If DC is over 20, character must be a rogue
+	if (_disarmDC > 20)
+		if (agent->getClassLevel(kCClassRogue) < 1)
+			return false;
+
+	// Make the Disable Device skill check vs. trap disable DC
+	bool result = agent->getIsSkillSuccessful(kSkillDisableDevice, _disarmDC + adjustDC);
+
+	return result;
 }
 
 /**
