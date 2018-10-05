@@ -202,6 +202,7 @@ void Trap::setTrapKeyTag(Common::UString keyTag) {
  * the search skill and all applicable modifiers.
  * This is equivalent to a GetIsSkillSuccessful
  * call for the Search skill versus the _detectDC.
+ * If successful, setTrapDetectedBy is called.
  */
 bool Trap::detectTrap(Creature *agent) {
 	// Already detected?
@@ -210,7 +211,20 @@ bool Trap::detectTrap(Creature *agent) {
 
 	assert(agent);
 
-	// TODO
+	// If DC is over 20, character must be a rogue
+	if (_detectDC > 20)
+		if (agent->getClassLevel(kCClassRogue) < 1)
+			return false;
+
+	// TODO: Check for a non-enemy faction so _isFlagged isn't set?
+
+	// Make the Search skil check vs. trap detect DC
+	bool result = agent->getIsSkillSuccessful(kSkillSearch, _detectDC);
+
+	// On a success, set to detected
+	if (result)
+		setTrapDetectedBy(agent);
+
 	return false;
 }
 
@@ -231,8 +245,17 @@ bool Trap::disarmTrap(Creature *agent, int adjustDC) {
 	return false;
 }
 
-/** The object has triggered the trap */
+/**
+ * The object has triggered the trap. If the trap is
+ * active, this executes the _onTrapTriggered script,
+ * then checks _isTrapOneShot to see if the trap
+ * should be deactivated.
+ */
 bool Trap::triggerTrap(Object *object) {
+	// Disabled?
+	if (!_isTrapActive)
+		return false;
+
 	assert(object);
 
 	// TODO
