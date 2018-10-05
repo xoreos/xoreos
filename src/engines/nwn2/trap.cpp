@@ -31,12 +31,37 @@ namespace Engines {
 namespace NWN2 {
 
 Trap::Trap(const Aurora::GFF3Struct &trap) {
+	init();
+	load(trap);
 }
 
 Trap::Trap(const uint8 type, const Creature *creator) {
+	init();
+	load(type, creator);
 }
 
 Trap::~Trap() {
+}
+
+/**
+ * Initialize variables
+ */
+void Trap::init() {
+	_isTrap = false; // Default is not trapped
+	_isDetectable = true;
+	_isDisarmable = true;
+	_isRecoverable = true;
+	_isTrapOneShot = true;
+	_isTrapActive = false;
+	_isFlagged = false;
+	_isAutoRemoveKey = false;
+	_trapType = 0; // Spike Trap, Minor
+	_detectDC = 0;
+	_disarmDC = 15;
+	_keyTag = "";
+	_onTrapTriggered = "";
+	_detectedBy = 0;
+	_createdBy = 0;
 }
 
 /**
@@ -189,7 +214,7 @@ bool Trap::detectTrap(Creature *agent) {
  */
 bool Trap::disarmTrap(Creature *agent, int adjustDC) {
 	// Already disabled?
-	if (_isTrapActive)
+	if (!_isTrapActive)
 		return true;
 
 	// TODO
@@ -204,22 +229,22 @@ bool Trap::triggerTrap(Object *object) {
 
 /** Load the trap information from the struct */
 void Trap::load(const Aurora::GFF3Struct &gff) {
-	/*
-	 * Identifiers used by trigger (T), placeable (P), or door (D):
-	 *
-	 * "DisarmDC"         T, P, D
-	 * "TrapRecoverable"  T, P, D
-	 * "TrapDisarmable"   T, P, D
-	 * "OnTrapTriggered"  T, P, D
-	 * "TrapType"         T, P, D
-	 * "TrapDetectDC"     T, P, D
-	 * "TrapOneShot"      T, P, D
-	 * "Type"             T, P, D
-	 * "TrapFlag"         T, P, D
-	 * "TrapDetectable"   T, P, D
-	 * "TrapActive"          P, D
-	 */
-	// TODO
+	_isTrapActive = true; // Default for a trigger trap
+
+	_isTrap = gff.getBool("TrapFlag", _isTrap);
+	_isDetectable = gff.getBool("TrapDetectable", _isDetectable);
+	_isDisarmable = gff.getBool("TrapDisarmable", _isDisarmable);
+	_isRecoverable = gff.getBool("TrapRecoverable", _isRecoverable);
+	_isTrapOneShot = gff.getBool("TrapOneShot", _isTrapOneShot);
+	_isTrapActive = gff.getBool("TrapActive", _isTrapActive);
+	_isAutoRemoveKey = gff.getBool("AutoRemoveKey", _isAutoRemoveKey);
+
+	_trapType = gff.getUint("TrapType", _trapType);
+	_detectDC = gff.getUint("TrapDetectDC", _detectDC);
+	_disarmDC = gff.getUint("DisarmDC", _disarmDC);
+
+	_keyTag = gff.getString("KeyName", _keyTag);
+	_onTrapTriggered = gff.getString("OnTrapTriggered", _onTrapTriggered);
 }
 
 /** Load the trap information from a traps.2da row */

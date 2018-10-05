@@ -97,6 +97,8 @@ private:
 	uint32 _detectedBy;     ///< Creature that detected the trap.
 	uint32 _createdBy;      ///< Creature that created the trap.
 
+	void init();
+
 	void load(const Aurora::GFF3Struct &trap);
 	void load(const uint8 type, const Creature *creator);
 };
