@@ -66,6 +66,12 @@ void Trigger::load(const Aurora::GFF3Struct &gff) {
 	if (!utt)
 		warning("Trigger \"%s\" has no blueprint", temp.c_str());
 
+	try {
+		_trap.reset(new Trap(gff));
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
+	}
+
 	float x, y, z;
 	x = (float)gff.getDouble("XPosition");
 	y = (float)gff.getDouble("YPosition");
