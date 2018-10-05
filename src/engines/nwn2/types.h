@@ -130,6 +130,57 @@ enum Gender {
 	kGenderNone   = 4
 };
 
+// skills.2da row
+enum Skill {
+	kSkillAnimalEmpathy  =  0, // Deleted
+	kSkillConcentration  =  1,
+	kSkillDisableDevice  =  2,
+	kSkillDiscipline     =  3,
+	kSkillHeal           =  4,
+	kSkillHide           =  5,
+	kSkillListen         =  6,
+	kSkillLore           =  7,
+	kSkillMoveSilently   =  8,
+	kSkillOpenLock       =  9,
+	kSkillParry          = 10,
+	kSkillPerform        = 11,
+	kSkillDiplomacy      = 12,
+	kSkillSleightOfHand  = 13,
+	kSkillSearch         = 14,
+	kSkillSetTrap        = 15,
+	kSkillSpellcraft     = 16,
+	kSkillSpot           = 17,
+	kSkillTaunt          = 18,
+	kSkillUseMagicDevice = 19,
+	kSkillAppraise       = 20,
+	kSkillTumble         = 21,
+	kSkillCraftTrap      = 22,
+	kSkillBluff          = 23,
+	kSkillIntimidate     = 24,
+	kSkillCraftArmor     = 25,
+	kSkillCraftWeapon    = 26,
+	kSkillCraftAlchemy   = 27,
+	kSKillRide           = 28, // Deleted
+	kSkillSurvival       = 29,
+	kSkillMAX
+};
+
+// classes.2da row
+enum CClass {
+	kCClassBarbarian =  0,
+	kCClassBard      =  1,
+	kCClassCleric    =  2,
+	kCClassDruid     =  3,
+	kCClassFighter   =  4,
+	kCClassMonk      =  5,
+	kCClassPaladin   =  6,
+	kCClassRanger    =  7,
+	kCClassRogue     =  8,
+	kCClassSorcerer  =  9,
+	kCClassWizard    = 10,
+	kCClassWarlock   = 39,
+};
+
 static const uint32 kRaceInvalid    =  28;
 static const uint32 kSubRaceInvalid = 255;
 static const uint32 kClassInvalid   = 255;

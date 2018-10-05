@@ -41,6 +41,7 @@
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/nwn2/util.h"
+#include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/creature.h"
 
 static const uint32 kBICID = MKTAG('B', 'I', 'C', ' ');
@@ -220,6 +221,24 @@ int32 Creature::getCurrentHP() const {
 
 int32 Creature::getMaxHP() const {
 	return _baseHP + _bonusHP;
+}
+
+/**
+ * Perform a skill check against the DC.
+ *
+ * Modifier effects are applied via data lookup calls.
+ */
+bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
+	// Get the skill ranks
+	int ranks = getSkillRank(skill);
+
+	// Simulate a d20 roll
+	int32 roll = std::rand() % 20 + 1; // Seed randomized?
+
+	// Make a skill check vs the DC
+	bool result = !(roll + ranks < DC);
+
+	return result;
 }
 
 Common::UString Creature::getBaseModel(const Common::UString &base) {

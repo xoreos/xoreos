@@ -138,6 +138,11 @@ public:
 	/** The creature was clicked. */
 	bool click(Object *triggerer = 0);
 
+	// Tests
+
+	/** Make a skill check */
+	bool getIsSkillSuccessful(Skill skill, int DC);
+
 private:
 	typedef Common::PtrList<Graphics::Aurora::Model> ModelParts;
 
