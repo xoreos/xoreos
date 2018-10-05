@@ -304,11 +304,14 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 	// Compute the ability modifier
 	int modAbility = int((ability - 10) / 2);
 
+	// Get the cumulative feats skill modifier
+	int modFeats = _feats->getFeatsSkillBonus(skill);
+
 	// Simulate a d20 roll
 	int32 roll = std::rand() % 20 + 1; // Seed randomized?
 
 	// Make a skill check vs the DC
-	bool result = !(roll + ranks + modAbility < DC);
+	bool result = !(roll + ranks + modAbility + modFeats < DC);
 
 	return result;
 }
@@ -546,13 +549,17 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Feats
 	if (gff.hasField("FeatList")) {
-		_feats.clear();
+		try {
+			_feats.reset(new Feats());
+		} catch (...) {
+			Common::exceptionDispatcherWarning();
+		}
 
 		const Aurora::GFF3List &feats = gff.getList("FeatList");
 		for (Aurora::GFF3List::const_iterator f = feats.begin(); f != feats.end(); ++f) {
 			const Aurora::GFF3Struct &feat = **f;
 
-			_feats.push_back(feat.getUint("Feat"));
+			_feats->featAdd(feat.getUint("Feat"));
 		}
 	}
 
@@ -665,11 +672,7 @@ int8 Creature::getSkillRank(uint32 skill) const {
 }
 
 bool Creature::hasFeat(uint32 feat) const {
-	for (std::vector<uint32>::const_iterator f = _feats.begin(); f != _feats.end(); ++f)
-		if (*f == feat)
-			return true;
-
-	return false;
+	return _feats->getHasFeat(feat);
 }
 
 Aurora::GFF3File *Creature::openPC(const Common::UString &bic, bool local) {
