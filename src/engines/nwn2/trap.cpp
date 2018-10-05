@@ -70,7 +70,7 @@ void Trap::init() {
  * Return true if the trap can be triggered by
  * the creature 'triggerBy'.
  */
-bool Trap::isTriggeredBy(Creature * triggerBy) const {
+bool Trap::isTriggeredBy(Object * triggerBy) const {
 	// Check if a trap
 	if (!_isTrap)
 		return false;

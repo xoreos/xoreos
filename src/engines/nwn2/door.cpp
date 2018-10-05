@@ -62,6 +62,12 @@ void Door::load(const Aurora::GFF3Struct &door) {
 
 	Situated::load(door, utd ? &utd->getTopLevel() : 0);
 
+	try {
+		_trap.reset(new Trap(door));
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
+	}
+
 	setModelState();
 }
 
@@ -203,6 +209,9 @@ bool Door::open(Object *opener) {
 
 	if (isOpen() || (_state == kStateDestroyed))
 		return true;
+
+	if (_trap->isTriggeredBy(opener))
+		_trap->triggerTrap(opener);
 
 	if (isLocked()) {
 		playSound(_soundLocked);
