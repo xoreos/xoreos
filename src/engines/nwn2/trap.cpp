@@ -23,6 +23,8 @@
  */
 
 #include "src/aurora/gff3file.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
 
 #include "src/engines/nwn2/trap.h"
 
@@ -231,6 +233,10 @@ bool Trap::triggerTrap(Object *object) {
 void Trap::load(const Aurora::GFF3Struct &gff) {
 	_isTrapActive = true; // Default for a trigger trap
 
+	// Load the traps.2da information
+	_trapType = gff.getUint("TrapType", _trapType);
+	loadTrap2da(TwoDAReg.get2DA("traps"), _trapType);
+
 	_isTrap = gff.getBool("TrapFlag", _isTrap);
 	_isDetectable = gff.getBool("TrapDetectable", _isDetectable);
 	_isDisarmable = gff.getBool("TrapDisarmable", _isDisarmable);
@@ -249,7 +255,17 @@ void Trap::load(const Aurora::GFF3Struct &gff) {
 
 /** Load the trap information from a traps.2da row */
 void Trap::load(const uint8 type, const Creature * creator) {
-	// TODO
+// Load the traps.2da information
+	_trapType = type;
+	loadTrap2da(TwoDAReg.get2DA("traps"), _trapType);
+	_createdBy = creator->getID();
+}
+
+/** Load base trap information from the traps.2da file */
+void Trap::loadTrap2da(const Aurora::TwoDAFile &twoda, uint32 id) {
+	_onTrapTriggered = twoda.getRow(id).getString("TrapScript");
+	_detectDC = twoda.getRow(id).getInt("DetectDCMod");
+	_disarmDC = twoda.getRow(id).getInt("DisarmDCMod");
 }
 
 } // End of namespace NWN2

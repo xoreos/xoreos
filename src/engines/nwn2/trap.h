@@ -101,6 +101,7 @@ private:
 
 	void load(const Aurora::GFF3Struct &trap);
 	void load(const uint8 type, const Creature * creator);
+	void loadTrap2da(const Aurora::TwoDAFile &twoda, uint32 id);
 };
 
 } // End of namespace NWN2
