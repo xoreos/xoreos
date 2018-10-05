@@ -232,11 +232,83 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 	// Get the skill ranks
 	int ranks = getSkillRank(skill);
 
+	if (ranks == 0) {
+		// Trained skills require at least one rank
+		switch (skill) {
+			case kSkillDisableDevice:
+			case kSkillOpenLock:
+			case kSkillPerform:
+			case kSkillSetTrap:
+			case kSkillSleightOfHand:
+			case kSkillSpellcraft:
+			case kSkillTumble:
+			case kSkillUseMagicDevice:
+				// Requires 1+ ranks
+				return false;
+			default:
+				break;
+		}
+	}
+
+	// Get the ability modifier for the skill
+	int ability = 0;
+	switch (skill) {
+		case kSkillDisableDevice:
+		case kSkillHide:
+		case kSkillMoveSilently:
+		case kSkillOpenLock:
+		case kSkillParry:
+		case kSkillSetTrap:
+		case kSkillSleightOfHand:
+		case kSkillTumble:
+			// Dexterity skills
+			ability = getAbility(kAbilityDexterity);
+			break;
+		case kSkillConcentration:
+			// Constitution skills
+			ability = getAbility(kAbilityConstitution);
+			break;
+		case kSkillAppraise:
+		case kSkillCraftAlchemy:
+		case kSkillCraftArmor:
+		case kSkillCraftTrap:
+		case kSkillCraftWeapon:
+		case kSkillLore:
+		case kSkillSearch:
+		case kSkillSpellcraft:
+			// Intelligence skills
+			ability = getAbility(kAbilityIntelligence);
+			break;
+		case kSkillHeal:
+		case kSkillListen:
+		case kSkillSpot:
+		case kSkillSurvival:
+			// Wisdom skills
+			ability = getAbility(kAbilityWisdom);
+			break;
+		case kSkillBluff:
+		case kSkillDiplomacy:
+		case kSkillIntimidate:
+		case kSkillPerform:
+		case kSkillTaunt:
+		case kSkillUseMagicDevice:
+			// Charisma skills
+			ability = getAbility(kAbilityCharisma);
+			break;
+		default:
+			// No net modifier
+			ability = 10;
+			break;
+	}
+
+	// Compute the ability modifier
+	int modAbility = int((ability - 10) / 2);
+
 	// Simulate a d20 roll
 	int32 roll = std::rand() % 20 + 1; // Seed randomized?
 
 	// Make a skill check vs the DC
-	bool result = !(roll + ranks < DC);
+	bool result = !(roll + ranks + modAbility < DC);
 
 	return result;
 }
