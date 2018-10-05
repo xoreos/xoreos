@@ -190,8 +190,11 @@ bool Placeable::open(Object *opener) {
 	if (isOpen())
 		return true;
 
-	if (_trap->isTriggeredBy(opener))
-		_trap->triggerTrap(opener);
+	if (_trap->isTriggeredBy(opener)) {
+		// Set off the trap
+		runScript(kScriptTrapTriggered, this, opener);
+		_trap->triggeredTrap();
+	}
 
 	if (isLocked()) {
 		playSound(_soundLocked);
@@ -232,8 +235,11 @@ bool Placeable::activate(Object *user) {
 	if (isActivated())
 		return true;
 
-	if (_trap->isTriggeredBy(user))
-		_trap->triggerTrap(user);
+	if (_trap->isTriggeredBy(user)) {
+		// Set off the trap
+		runScript(kScriptTrapTriggered, this, user);
+		_trap->triggeredTrap();
+	}
 
 	if (isLocked()) {
 		playSound(_soundLocked);
