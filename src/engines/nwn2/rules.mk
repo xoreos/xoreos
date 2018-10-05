@@ -42,6 +42,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/door.h \
     src/engines/nwn2/placeable.h \
     src/engines/nwn2/creature.h \
+    src/engines/nwn2/trap.h \
     $(EMPTY)
 
 src_engines_nwn2_libnwn2_la_SOURCES += \
@@ -64,6 +65,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/door.cpp \
     src/engines/nwn2/placeable.cpp \
     src/engines/nwn2/creature.cpp \
+    src/engines/nwn2/trap.cpp \
     $(EMPTY)
 
 include src/engines/nwn2/script/rules.mk
