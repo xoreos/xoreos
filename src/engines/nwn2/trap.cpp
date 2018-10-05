@@ -75,6 +75,8 @@ bool Trap::isTriggeredBy(Creature *triggerBy) const {
 	if (!_isTrap)
 		return false;
 
+	assert(triggerBy);
+
 	// TODO: Check if faction is non-hostile
 
 	// Check if active
@@ -161,6 +163,8 @@ void Trap::setTrapDetectable(bool detectable) {
 /** Store the creature detecting the trap */
 void Trap::setTrapDetectedBy(Creature *detector) {
 	// TODO
+	assert(detector);
+	_detectedBy = detector->getID();
 }
 
 /** Set the disarmable state */
@@ -204,6 +208,8 @@ bool Trap::detectTrap(Creature *agent) {
 	if ((_detectedBy != 0) || _isFlagged)
 		return true;
 
+	assert(agent);
+
 	// TODO
 	return false;
 }
@@ -219,12 +225,16 @@ bool Trap::disarmTrap(Creature *agent, int adjustDC) {
 	if (!_isTrapActive)
 		return true;
 
+	assert(agent);
+
 	// TODO
 	return false;
 }
 
 /** The object has triggered the trap */
 bool Trap::triggerTrap(Object *object) {
+	assert(object);
+
 	// TODO
 	return true;
 }
