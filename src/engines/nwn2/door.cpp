@@ -210,8 +210,11 @@ bool Door::open(Object *opener) {
 	if (isOpen() || (_state == kStateDestroyed))
 		return true;
 
-	if (_trap->isTriggeredBy(opener))
-		_trap->triggerTrap(opener);
+	if (_trap->isTriggeredBy(opener)) {
+		// Set off the trap
+		runScript(kScriptTrapTriggered, this, opener);
+		_trap->triggeredTrap();
+	}
 
 	if (isLocked()) {
 		playSound(_soundLocked);

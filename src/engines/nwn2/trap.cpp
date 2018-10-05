@@ -61,7 +61,6 @@ void Trap::init() {
 	_detectDC = 0;
 	_disarmDC = 15;
 	_keyTag = "";
-	_onTrapTriggered = "";
 	_detectedBy = 0;
 	_createdBy = 0;
 }
@@ -162,7 +161,6 @@ void Trap::setTrapDetectable(bool detectable) {
 
 /** Store the creature detecting the trap */
 void Trap::setTrapDetectedBy(Creature *detector) {
-	// TODO
 	assert(detector);
 	_detectedBy = detector->getID();
 }
@@ -258,20 +256,15 @@ bool Trap::disarmTrap(Creature *agent, int adjustDC) {
 }
 
 /**
- * The object has triggered the trap. If the trap is
- * active, this executes the _onTrapTriggered script,
- * then checks _isTrapOneShot to see if the trap
- * should be deactivated.
+ * The object has triggered the trap. If
+ * _isTrapOneShot is true, deactivate the
+ * trap.
  */
-bool Trap::triggerTrap(Object *object) {
-	// Disabled?
-	if (!_isTrapActive)
-		return false;
-
-	assert(object);
-
-	// TODO
-	return true;
+void Trap::triggeredTrap() {
+	if (_isTrapOneShot) {
+		_isTrapActive = false;
+		_isFlagged = false;
+	}
 }
 
 /** Load the trap information from the struct */
@@ -295,7 +288,6 @@ void Trap::load(const Aurora::GFF3Struct &gff) {
 	_disarmDC = gff.getUint("DisarmDC", _disarmDC);
 
 	_keyTag = gff.getString("KeyName", _keyTag);
-	_onTrapTriggered = gff.getString("OnTrapTriggered", _onTrapTriggered);
 }
 
 /** Load the trap information from a traps.2da row */
@@ -308,7 +300,6 @@ void Trap::load(const uint8 type, const Creature * creator) {
 
 /** Load base trap information from the traps.2da file */
 void Trap::loadTrap2da(const Aurora::TwoDAFile &twoda, uint32 id) {
-	_onTrapTriggered = twoda.getRow(id).getString("TrapScript");
 	_detectDC = twoda.getRow(id).getInt("DetectDCMod");
 	_disarmDC = twoda.getRow(id).getInt("DisarmDCMod");
 }

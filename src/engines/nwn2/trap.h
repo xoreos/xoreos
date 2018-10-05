@@ -75,7 +75,7 @@ public:
 
 	bool detectTrap(Creature *agent);
 	bool disarmTrap(Creature *agent, int adjustDC);
-	bool triggerTrap(Object *object);
+	void triggeredTrap();
 
 private:
 	bool _isTrap;           ///< Is this a trap?
@@ -92,7 +92,6 @@ private:
 	uint8 _disarmDC;        ///< DC to disarm trap
 
 	Common::UString _keyTag;
-	Common::UString _onTrapTriggered;
 
 	uint32 _detectedBy;     ///< Creature that detected the trap
 	uint32 _createdBy;      ///< Creature that created the trap
