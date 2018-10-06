@@ -81,6 +81,21 @@ int Feats::getFeatsSkillBonus(Skill skill) const {
 	return _skillBonus[skill];
 }
 
+/** Return the cumulative Fortitude modifier */
+int Feats::getFeatsFortBonus() const {
+	return _fortBonus;
+}
+
+/** Return the cumulative Reflex modifier */
+int Feats::getFeatsRefBonus() const {
+	return _refBonus;
+}
+
+/** Return the cumulative Willpower modifier */
+int Feats::getFeatsWillBonus() const {
+	return _willBonus;
+}
+
 /** Initialize the data */
 void Feats::initParameters() {
 	uint i;
@@ -88,6 +103,11 @@ void Feats::initParameters() {
 	// Skill modifiers
 	for (i = 0; i < kSkillMAX; i++)
 		_skillBonus[i] = 0;
+
+	// Save modifiers
+	_fortBonus = 0;
+	_refBonus = 0;
+	_willBonus = 0;
 }
 
 /** Apply all feats */
@@ -115,12 +135,146 @@ void Feats::applyFeat(const uint32 id) {
 
 		/* ---- PC History feats ---- */
 
+		case kFeatHistoryAppraiser:
+			// +2 Appraise, +1 Lore, -1 Spot, -2 Bluff, -2 Sleight of hand
+			_skillBonus[kSkillAppraise]      += +2;
+			_skillBonus[kSkillLore]          += +1;
+			_skillBonus[kSkillSpot]          += -1;
+			_skillBonus[kSkillBluff]         += -2;
+			_skillBonus[kSkillSleightOfHand] += -2;
+			break;
+
+		case kFeatHistoryBully:
+			// +1 Intimidate, +1 Fortitude Save, -1 Bluff, -2 Diplomacy
+			_skillBonus[kSkillIntimidate] += +2;
+			_fortBonus                    += +1;
+			_skillBonus[kSkillBluff]      += -1;
+			_skillBonus[kSkillDiplomacy]  += -2;
+			break;
+
+		case kFeatHistoryComplex:
+			// Free focus skill (any)
+			// Note: this feat was not available in the original game
+			warning("Complex background feat is not implemented");
+			break;
+
+		case kFeatHistoryConfidant:
+			// +1 Bluff, -1 Intimidate, -1 Taunt
+			_skillBonus[kSkillBluff]      += +1;
+			_skillBonus[kSkillIntimidate] += -1;
+			_skillBonus[kSkillTaunt]      += -1;
+			break;
+
+		case kFeatHistoryDevout:
+			// +1 Will Save, +1 Concentration, -1 Diplomacy, -1 Bluff
+			_skillBonus[kSkillConcentration] += +1;
+			_skillBonus[kSkillDiplomacy]     += -1;
+			_skillBonus[kSkillBluff]         += -1;
+			_willBonus                       += +1;
+			break;
+
+		case kFeatHistoryFarmer:
+			// +1 Survival, +1 Spot, -2 Lore
+			_skillBonus[kSkillSurvival] += +1;
+			_skillBonus[kSkillSpot]     += +1;
+			_skillBonus[kSkillLore]     += -2;
+			break;
+
+		case kFeatHistoryForeigner:
+			// +1 Lore, -1 Diplomacy
+			_skillBonus[kSkillLore]      += +1;
+			_skillBonus[kSkillDiplomacy] += -1;
+			break;
+
+		case kFeatHistoryLadiesMan:
+			// +1 Listen, +1 Diplomacy, -2 Intimidate
+			_skillBonus[kSkillListen]     += +1;
+			_skillBonus[kSkillDiplomacy]  += +1;
+			_skillBonus[kSkillIntimidate] += -2;
+			break;
+
+		case kFeatHistoryMilitia:
+			// +2 Parry, +1 Craft armor, +1 Craft weapon, -2 Will Save
+			_skillBonus[kSkillParry]       += +2;
+			_skillBonus[kSkillCraftArmor]  += +1;
+			_skillBonus[kSkillCraftWeapon] += +1;
+			_willBonus                     += -2;
+			break;
+
+		case kFeatHistoryNaturalLeader:
+			// +1 to companions' attack rolls, -1 to your saving throws
+			// TODO
+			warning("Natural Leader feat is not fully implemented");
+			_fortBonus += -1;
+			_refBonus  += -1;
+			_willBonus += -1;
+			break;
+
+		case kFeatHistorySavvy:
+			// +1 Diplomacy, -1 Will Saving Throws
+			_skillBonus[kSkillDiplomacy] += +1;
+			_willBonus                   += -1;
+			break;
+
 		case kFeatHistorySurvivor:
 			// +1 Search, +1 Spot, +1 Survival, -2 Fortitude Saving Throws
 			_skillBonus[kSkillSearch]   += +1;
 			_skillBonus[kSkillSpot]     += +1;
 			_skillBonus[kSkillSurvival] += +1;
-			warning("Survivor feat is not fully implemented"); // -2 Fort
+			_fortBonus                  += -2;
+			break;
+
+		case kFeatHistoryTaleTeller:
+			// +1 Lore, +1 Bluff, -2 Concentration
+			_skillBonus[kSkillLore]          += +1;
+			_skillBonus[kSkillBluff]         += +1;
+			_skillBonus[kSkillConcentration] += -2;
+			break;
+
+		case kFeatHistoryTalent:
+			// +1 Perform, -1 Will Saving Throws
+			_skillBonus[kSkillPerform] += +1;
+			_willBonus                 += -1;
+			break;
+
+		case kFeatHistoryTheFlirt:
+			// +1 Listen, +1 Diplomacy, -2 Intimidate
+			_skillBonus[kSkillListen]     += +1;
+			_skillBonus[kSkillDiplomacy]  += +1;
+			_skillBonus[kSkillIntimidate] += -2;
+			break;
+
+		case kFeatHistoryTroublemaker:
+			// +1 Reflex Save, +1 Set trap, +1 Sleight of Hand, -2 Will Save
+			_refBonus                        += +1;
+			_skillBonus[kSkillSetTrap]       += +1;
+			_skillBonus[kSkillSleightOfHand] += -1;
+			_willBonus                       += -2;
+			break;
+
+		case kFeatHistoryVeteran:
+			// +1 Fortitude Save, -1 Diplomacy
+			_fortBonus                   += +1;
+			_skillBonus[kSkillDiplomacy] += -1;
+			break;
+
+		case kFeatHistoryWildChild:
+			// +1 Survival, +1 Tumble, +1 Hide, +1 Move Silently, -2 Lore, -2 Appraise
+			_skillBonus[kSkillSurvival]     += +1;
+			_skillBonus[kSkillTumble]       += +1;
+			_skillBonus[kSkillHide]         += +1;
+			_skillBonus[kSkillMoveSilently] += +1;
+			_skillBonus[kSkillLore]         += -2;
+			_skillBonus[kSkillAppraise]     += -2;
+			break;
+
+		case kFeatHistoryWizardsApprentice:
+			// +1 Spellcraft, +1 Lore, +1 Craft Alchemy, -1 Fortitude Save, -1 Spot
+			_skillBonus[kSkillSpellcraft]   += +1;
+			_skillBonus[kSkillLore]         += +1;
+			_skillBonus[kSkillCraftAlchemy] += +1;
+			_fortBonus                      += -1;
+			_skillBonus[kSkillSpot]         += -1;
 			break;
 
 		/* ---- Racial feats ---- */
@@ -163,7 +317,7 @@ void Feats::applyFeat(const uint32 id) {
 			break;
 
 		default:
-			warning("Feat %d is not implemented", id);
+			// Many feats are informational only
 			break;
 	}
 }

@@ -186,12 +186,33 @@ enum Feat {
 	kFeatSkillFocusDisableTrap = 174,
 	kFeatSkillFocusSearch = 187,
 	kFeatNatureSense = 198,
+	kFeatSkillMastery = 225,
 	kFeatSkillAffinitySearch = 238,
 	kFeatPSASearch = 245,
 	kFeatEpicSkillFocusDisableTrap = 591,
 	kFeatEpicSkillFocusSearch = 603,
 	kFeatNimbleFingers = 1110,
+
+	kFeatHistoryBully = 1717,
+	kFeatHistoryComplex = 1718,
+	kFeatHistoryDevout = 1719,
+	kFeatHistoryFarmer = 1720,
+	kFeatHistoryLadiesMan = 1721,
+	kFeatHistoryTheFlirt = 1722,
+	kFeatHistoryMilitia = 1723,
+	kFeatHistoryNaturalLeader = 1724,
+	kFeatHistoryTaleTeller = 1725,
+	kFeatHistoryTroublemaker = 1726,
+	kFeatHistoryWildChild = 1727,
+	kFeatHistoryWizardsApprentice = 1728,
+
+	kFeatHistoryAppraiser = 2241,
+	kFeatHistoryConfidant = 2242,
+	kFeatHistoryForeigner = 2243,
+	kFeatHistorySavvy = 2244,
 	kFeatHistorySurvivor = 2245,
+	kFeatHistoryTalent = 2246,
+	kFeatHistoryVeteran = 2247,
 };
 
 static const uint32 kRaceInvalid    =  28;

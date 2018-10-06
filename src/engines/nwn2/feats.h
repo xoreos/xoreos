@@ -42,13 +42,19 @@ public:
 	bool getHasFeat(uint32 id) const;
 
 	int  getFeatsSkillBonus(Skill skill) const;
+	int  getFeatsFortBonus() const;
+	int  getFeatsRefBonus() const;
+	int  getFeatsWillBonus() const;
 
 private:
 	// List of included feats
 	std::vector<uint32> _feats;
 
-	// Non-modal modifiers
+	// Passive stackable modifiers
 	int _skillBonus[kSkillMAX];
+	int _fortBonus;
+	int _refBonus;
+	int _willBonus;
 
 	// Modifier update functions
 	void initParameters();
