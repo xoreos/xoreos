@@ -113,6 +113,12 @@ public:
 
 	/** Return the localized name of an area. */
 	static Common::UString getName(const Common::UString &resRef);
+	/** Return true if the Natural flag is set. */
+	bool getIsAreaNatural() const;
+	/** Return true if the Underground flag is unset. */
+	bool getIsAreaAboveGround() const;
+	/** Return true if the Interior flag is set. */
+	bool getIsAreaInterior() const;
 
 
 protected:
@@ -176,6 +182,8 @@ private:
 	float _ambientNightVol; ///< Night ambient sound volume.
 
 	bool _visible; ///< Is the area currently visible?
+
+	uint32 _flags;   ///< Natural/Underground bit flags.
 
 	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
 	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.
