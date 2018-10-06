@@ -96,6 +96,8 @@ public:
 
 	/** Return a creature's ability score. */
 	uint8 getAbility(Ability ability) const;
+	/** Return a creature's ability score modifier */
+	int8 getAbilityModifier(Ability ability) const;
 	/** Return the creature's rank in this skill. */
 	 int8 getSkillRank(uint32 skill) const;
 	/** Does the creature have this feat? */
