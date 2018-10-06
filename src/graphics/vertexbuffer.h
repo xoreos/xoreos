@@ -121,6 +121,9 @@ public:
 	/** Update existing GL buffer object. Try not to call while rendering. */
 	void updateGL();
 
+	/** Update an existing GL buffer object, assuming it is already bound. */
+	void updateGLBound() const;
+
 	/** Clear (destroy) GL resources associated with the buffer. */
 	void destroyGL();
 
