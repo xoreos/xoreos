@@ -181,6 +181,8 @@ private:
 	std::vector<int8>   _skills;  ///< The creature's skills.
 	Common::ScopedPtr<Feats> _feats; ///< The creature's feats.
 
+	uint8 _ranks[kSkillMAX]; ///< Total skill ranks across levels.
+
 	uint8 _hitDice; ///< The creature's hit dice.
 
 	Common::UString _deity; ///< The creature's deity.
