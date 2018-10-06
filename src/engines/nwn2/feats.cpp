@@ -76,8 +76,8 @@ bool Feats::getHasFeat(uint32 id) const {
 }
 
 /** Return the cumulative modifier for this skill */
-int Feats::getFeatsSkillBonus(Skill skill) const {
-	assert((skill > -1) && (skill < kSkillMAX));
+int Feats::getFeatsSkillBonus(uint32 skill) const {
+	assert(skill < kSkillMAX);
 	return _skillBonus[skill];
 }
 

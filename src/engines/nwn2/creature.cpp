@@ -229,128 +229,15 @@ int32 Creature::getMaxHP() const {
  *
  * Modifier effects are applied via data lookup calls.
  */
-bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
-	// Get the skill ranks
-	int ranks = getSkillRank(skill);
-
-	if (ranks < 1) {
-		// Trained skills require at least one rank
-		switch (skill) {
-			case kSkillDisableDevice:
-			case kSkillOpenLock:
-			case kSkillPerform:
-			case kSkillSetTrap:
-			case kSkillSleightOfHand:
-			case kSkillSpellcraft:
-			case kSkillTumble:
-			case kSkillUseMagicDevice:
-				// Requires 1+ ranks
-				return false;
-			default:
-				break;
-		}
-	}
-
-	// Check for skill synergies
-	int modSynergy = 0;
-	switch (skill) {
-		case kSkillDisableDevice:
-			if (getSkillRank(kSkillSetTrap) > 4)
-				modSynergy = +2;
-			break;
-		case kSkillSetTrap:
-			if (getSkillRank(kSkillDisableDevice) > 4)
-				modSynergy = +2;
-			break;
-		case kSkillSurvival:
-			if (getSkillRank(kSkillSearch) > 4)
-				modSynergy = +2;
-			break;
-		default:
-			// Bluff synergies weren't implemented in original
-			break;
-	}
-
-	// Get the ability modifier for the skill
-	int modAbility = 0;
-	switch (skill) {
-		case kSkillDisableDevice:
-		case kSkillHide:
-		case kSkillMoveSilently:
-		case kSkillOpenLock:
-		case kSkillParry:
-		case kSkillSetTrap:
-		case kSkillSleightOfHand:
-		case kSkillTumble:
-			// Dexterity skills
-			modAbility = getAbilityModifier(kAbilityDexterity);
-			break;
-		case kSkillConcentration:
-			// Constitution skills
-			modAbility = getAbilityModifier(kAbilityConstitution);
-			break;
-		case kSkillAppraise:
-		case kSkillCraftAlchemy:
-		case kSkillCraftArmor:
-		case kSkillCraftTrap:
-		case kSkillCraftWeapon:
-		case kSkillLore:
-		case kSkillSearch:
-		case kSkillSpellcraft:
-			// Intelligence skills
-			modAbility = getAbilityModifier(kAbilityIntelligence);
-			break;
-		case kSkillHeal:
-		case kSkillListen:
-		case kSkillSpot:
-		case kSkillSurvival:
-			// Wisdom skills
-			modAbility = getAbilityModifier(kAbilityWisdom);
-			break;
-		case kSkillBluff:
-		case kSkillDiplomacy:
-		case kSkillIntimidate:
-		case kSkillPerform:
-		case kSkillTaunt:
-		case kSkillUseMagicDevice:
-			// Charisma skills
-			modAbility = getAbilityModifier(kAbilityCharisma);
-			break;
-		default:
-			break;
-	}
-
-	// Get the cumulative feats skill modifier
-	int modFeats = _feats->getFeatsSkillBonus(skill);
-
-	// Add custom feat modifiers
-	switch (skill) {
-		case kSkillSearch:
-			// Nature sense: +2 while in natural area
-			if (_feats->getHasCustomFeat(Feats::kCustomNatureSense))
-				if (getArea()->getIsAreaNatural())
-					modFeats += 2;
-
-			// Stonecunning: +2 while in interior area
-			if (_feats->getHasCustomFeat(Feats::kCustomStonecunning))
-				if (getArea()->getIsAreaInterior())
-					modFeats += 2;
-			break;
-		case kSkillSpot:
-			// Nature sense: +2 while in natural area
-			if (_feats->getHasCustomFeat(Feats::kCustomNatureSense))
-				if (getArea()->getIsAreaNatural())
-					modFeats += 2;
-			break;
-		default:
-			break;
-	}
+bool Creature::getIsSkillSuccessful(uint32 skill, int DC) {
+	if (!getHasSkill(skill))
+		return false;
 
 	// Simulate a d20 roll
-	int32 roll = std::rand() % 20 + 1; // Seed randomized?
+	int32 roll = std::rand() % 20 + 1; // TODO: Seed randomized?
 
 	// Make a skill check vs the DC
-	bool result = !(roll + ranks + modAbility + modFeats + modSynergy < DC);
+	bool result = !(roll + getSkillRank(skill) < DC);
 
 	return result;
 }
@@ -709,11 +596,139 @@ int8 Creature::getAbilityModifier(Ability ability) const {
 	return floor((_abilities[ability] - 10) / 2);
 }
 
-int8 Creature::getSkillRank(uint32 skill) const {
+/** Return true if skill is valid and useable */
+bool Creature::getHasSkill(uint32 skill) const {
+	if (skill >= _skills.size())
+		return false;
+
+	bool hasSkill = true;
+	if (getSkillRank(skill, true) < 1) {
+		// Trained skills require at least one rank
+		switch (skill) {
+			case kSkillAnimalEmpathy:
+			case kSkillDisableDevice:
+			case kSkillOpenLock:
+			case kSkillPerform:
+			case kSkillSetTrap:
+			case kSkillSleightOfHand:
+			case kSkillSpellcraft:
+			case kSkillTumble:
+			case kSkillUseMagicDevice:
+				// Requires 1+ trained ranks
+				hasSkill = false;
+			default:
+				break;
+		}
+	}
+	return hasSkill;
+
+}
+
+int8 Creature::getSkillRank(uint32 skill, bool baseOnly) const {
 	if (skill >= _skills.size())
 		return -1;
 
-	return _skills[skill];
+	// Check for the baseOnly option
+	if (baseOnly)
+		return _skills[skill];
+
+	// Check for skill synergies
+	int modSynergy = 0;
+	switch (skill) {
+		case kSkillDisableDevice:
+			if (getSkillRank(kSkillSetTrap) > 4)
+				modSynergy = +2;
+			break;
+		case kSkillSetTrap:
+			if (getSkillRank(kSkillDisableDevice) > 4)
+				modSynergy = +2;
+			break;
+		case kSkillSurvival:
+			if (getSkillRank(kSkillSearch) > 4)
+				modSynergy = +2;
+			break;
+		default:
+			// Bluff synergies weren't implemented in original
+			break;
+	}
+
+	// Get the ability modifier for the skill
+	int modAbility = 0;
+	switch (skill) {
+		case kSkillDisableDevice:
+		case kSkillHide:
+		case kSkillMoveSilently:
+		case kSkillOpenLock:
+		case kSkillParry:
+		case kSkillSetTrap:
+		case kSkillSleightOfHand:
+		case kSkillTumble:
+			// Dexterity skills
+			modAbility = getAbilityModifier(kAbilityDexterity);
+			break;
+		case kSkillConcentration:
+			// Constitution skills
+			modAbility = getAbilityModifier(kAbilityConstitution);
+			break;
+		case kSkillAppraise:
+		case kSkillCraftAlchemy:
+		case kSkillCraftArmor:
+		case kSkillCraftTrap:
+		case kSkillCraftWeapon:
+		case kSkillLore:
+		case kSkillSearch:
+		case kSkillSpellcraft:
+			// Intelligence skills
+			modAbility = getAbilityModifier(kAbilityIntelligence);
+			break;
+		case kSkillHeal:
+		case kSkillListen:
+		case kSkillSpot:
+		case kSkillSurvival:
+			// Wisdom skills
+			modAbility = getAbilityModifier(kAbilityWisdom);
+			break;
+		case kSkillBluff:
+		case kSkillDiplomacy:
+		case kSkillIntimidate:
+		case kSkillPerform:
+		case kSkillTaunt:
+		case kSkillUseMagicDevice:
+			// Charisma skills
+			modAbility = getAbilityModifier(kAbilityCharisma);
+			break;
+		default:
+			break;
+	}
+
+	// Get the cumulative feats skill modifier
+	int modFeats = _feats->getFeatsSkillBonus(skill);
+
+	// Add custom feat modifiers
+	switch (skill) {
+		case kSkillSearch:
+			// Nature sense: +2 while in natural area
+			if (_feats->getHasCustomFeat(Feats::kCustomNatureSense))
+				if (getArea()->getIsAreaNatural())
+					modFeats += 2;
+
+			// Stonecunning: +2 while in interior area
+			if (_feats->getHasCustomFeat(Feats::kCustomStonecunning))
+				if (getArea()->getIsAreaInterior())
+					modFeats += 2;
+			break;
+		case kSkillSpot:
+			// Nature sense: +2 while in natural area
+			if (_feats->getHasCustomFeat(Feats::kCustomNatureSense))
+				if (getArea()->getIsAreaNatural())
+					modFeats += 2;
+			break;
+		default:
+			break;
+	}
+
+	// Return the modified ranks
+	return _skills[skill] + modSynergy + modAbility + modFeats;
 }
 
 bool Creature::hasFeat(uint32 feat) const {
