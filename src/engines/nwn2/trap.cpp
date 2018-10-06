@@ -61,6 +61,7 @@ void Trap::init() {
 	_detectDC = 0;
 	_disarmDC = 15;
 	_keyTag = "";
+	_itemResRef = ""; // Recover trap item
 	_detectedBy = 0;
 	_createdBy = 0;
 }
@@ -152,6 +153,8 @@ Uint32 Trap::getTrapCreator() const {
 /** Set the trap active state */
 void Trap::setTrapActive(bool active) {
 	_isTrapActive = active;
+	if (!active)
+		_isFlagged = false;
 }
 
 /** Set the trap detectable state */
@@ -227,30 +230,75 @@ bool Trap::detectTrap(Creature *agent) {
 }
 
 /**
- * The agent is attempting to disarm the trap using the
- * disable device skill and all applicable modifiers. The
- * adjustDC parameter is for the difficulty modifiers for
- * the different disable device actions.
+ * The agent is making a Disable Device skill check
+ * on the trap. The 'option' parameter specifies the
+ * action being performed.
  */
-bool Trap::disarmTrap(Creature *agent, int adjustDC) {
+bool Trap::disarmTrap(Creature *agent, Disarm option) {
+	const int kTrapExamineDCMod =  -7;
+	const int kTrapFlagDCMod    =  -5;
+	const int kTrapDisarmDCMod  =   0;
+	const int kTrapRecoverDCMod = +10;
+
 	// Already disabled?
 	if (!_isTrapActive)
 		return true;
 
 	assert(agent);
 
+	// TODO: Check party inventory for _keyTag item
+
 	// Must have at least one rank in disable device
 	uint8 ranks = agent->getSkillRank(kSkillDisableDevice);
 	if (ranks < 1)
 		return false;
 
-	// If DC is over 20, character must be a rogue
-	if (_disarmDC > 20)
+	// Compute the DC modifier for the disarm option
+	int adjustDC = 0;
+	bool checkRogue = false;
+	switch (option) {
+		case kTrapExamine:
+			adjustDC = kTrapExamineDCMod;
+			break;
+		case kTrapFlag:
+			adjustDC = kTrapFlagDCMod;
+			break;
+		case kTrapDisarm:
+			adjustDC = kTrapDisarmDCMod;
+			checkRogue = true;
+			break;
+		case kTrapRecover:
+			adjustDC = kTrapRecoverDCMod;
+			checkRogue = true;
+			break;
+	}
+
+	// If DC is over 19, character must be a rogue to disarm
+	if (checkRogue && _disarmDC > 19)
 		if (agent->getClassLevel(kCClassRogue) < 1)
 			return false;
 
 	// Make the Disable Device skill check vs. trap disable DC
 	bool result = agent->getIsSkillSuccessful(kSkillDisableDevice, _disarmDC + adjustDC);
+
+	// Check for a disarm attempt
+	if (result) {
+		switch (option) {
+			case kTrapExamine:
+				// TODO: Report to player
+				break;
+			case kTrapFlag:
+				_isFlagged = false;
+				break;
+			case kTrapDisarm:
+				setTrapActive(false);
+				break;
+			case kTrapRecover:
+				setTrapActive(false);
+				// TODO: add trap item to agent's inventory
+				break;
+		}
+	}
 
 	return result;
 }
@@ -292,7 +340,6 @@ void Trap::load(const Aurora::GFF3Struct &gff) {
 
 /** Load the trap information from a traps.2da row */
 void Trap::load(const uint8 type, const Creature *creator) {
-// Load the traps.2da information
 	_trapType = type;
 	loadTrap2da(TwoDAReg.get2DA("traps"), _trapType);
 	_createdBy = creator->getID();
@@ -302,6 +349,7 @@ void Trap::load(const uint8 type, const Creature *creator) {
 void Trap::loadTrap2da(const Aurora::TwoDAFile &twoda, uint32 id) {
 	_detectDC = twoda.getRow(id).getInt("DetectDCMod");
 	_disarmDC = twoda.getRow(id).getInt("DisarmDCMod");
+	_itemResRef = twoda.getRow(id).getString("ResRef");
 }
 
 } // End of namespace NWN2
