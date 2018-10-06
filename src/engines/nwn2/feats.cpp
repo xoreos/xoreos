@@ -96,6 +96,12 @@ int Feats::getFeatsWillBonus() const {
 	return _willBonus;
 }
 
+/** Return true if the custom code feat is flagged */
+bool Feats::getHasCustomFeat(Custom feat) const {
+	assert((feat > -1) && (feat < kCustomMAX));
+	return _hasCustomFeat[feat];
+}
+
 /** Initialize the data */
 void Feats::initParameters() {
 	uint i;
@@ -108,6 +114,10 @@ void Feats::initParameters() {
 	_fortBonus = 0;
 	_refBonus = 0;
 	_willBonus = 0;
+
+	// Custom code flags
+	for (i = 0; i < kCustomMAX; i++)
+		_hasCustomFeat[i] = false;
 }
 
 /** Apply all feats */
@@ -155,7 +165,7 @@ void Feats::applyFeat(const uint32 id) {
 		case kFeatHistoryComplex:
 			// Free focus skill (any)
 			// Note: this feat was not available in the original game
-			warning("Complex background feat is not implemented");
+			_hasCustomFeat[kCustomComplex] = true;
 			break;
 
 		case kFeatHistoryConfidant:
@@ -203,8 +213,7 @@ void Feats::applyFeat(const uint32 id) {
 
 		case kFeatHistoryNaturalLeader:
 			// +1 to companions' attack rolls, -1 to your saving throws
-			// TODO
-			warning("Natural Leader feat is not fully implemented");
+			_hasCustomFeat[kCustomNaturalLeader] = true;
 			_fortBonus += -1;
 			_refBonus  += -1;
 			_willBonus += -1;
@@ -312,8 +321,8 @@ void Feats::applyFeat(const uint32 id) {
 		case kFeatNatureSense:
 			// +2 to Survival in all environments and a +2
 			// to Search and Spot while in wilderness areas
+			_hasCustomFeat[kCustomNatureSense] = true;
 			_skillBonus[kSkillSurvival] += +3;
-			warning("Nature Sense feat is not fully implemented");
 			break;
 
 		default:
