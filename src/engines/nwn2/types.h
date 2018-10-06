@@ -187,6 +187,7 @@ enum Feat {
 	kFeatSkillFocusSearch = 187,
 	kFeatNatureSense = 198,
 	kFeatSkillMastery = 225,
+	kFeatStonecunning = 227,
 	kFeatSkillAffinitySearch = 238,
 	kFeatPSASearch = 245,
 	kFeatEpicSkillFocusDisableTrap = 591,
