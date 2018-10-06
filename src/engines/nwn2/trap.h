@@ -39,6 +39,14 @@ namespace NWN2 {
 
 class Trap {
 public:
+	/** The disarm device option */
+	enum Disarm {
+		kTrapExamine = 1,
+		kTrapFlag       ,
+		kTrapDisarm     ,
+		kTrapRecover    ,
+	};
+
 	Trap(const Aurora::GFF3Struct &trap);
 	Trap(const uint8 type, const Creature * creator);
 	~Trap();
@@ -74,7 +82,7 @@ public:
 	void setTrapKeyTag(Common::UString keyTag);
 
 	bool detectTrap(Creature *agent);
-	bool disarmTrap(Creature *agent, int adjustDC);
+	bool disarmTrap(Creature *agent, Disarm option);
 	void triggeredTrap();
 
 private:
@@ -91,7 +99,8 @@ private:
 	uint8 _detectDC;        ///< DC to detect trap
 	uint8 _disarmDC;        ///< DC to disarm trap
 
-	Common::UString _keyTag;
+	Common::UString _keyTag;     ///< Tag of disabling key
+	Common::UString _itemResRef; ///< Recoverable item
 
 	uint32 _detectedBy;     ///< Creature that detected the trap
 	uint32 _createdBy;      ///< Creature that created the trap
