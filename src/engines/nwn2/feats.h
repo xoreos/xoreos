@@ -31,6 +31,14 @@ namespace NWN2 {
 
 class Feats {
 public:
+	// Feats that need custom code
+	enum Custom {
+		kCustomComplex        = 0,
+		kCustomNaturalLeader     ,
+		kCustomNatureSense       ,
+		kCustomMAX
+	};
+
 	Feats();
 	~Feats();
 
@@ -46,6 +54,8 @@ public:
 	int  getFeatsRefBonus() const;
 	int  getFeatsWillBonus() const;
 
+	bool getHasCustomFeat(Custom feat) const;
+
 private:
 	// List of included feats
 	std::vector<uint32> _feats;
@@ -55,6 +65,9 @@ private:
 	int _fortBonus;
 	int _refBonus;
 	int _willBonus;
+
+	// Feats requiring custom code
+	bool _hasCustomFeat[kCustomMAX];
 
 	// Modifier update functions
 	void initParameters();
