@@ -232,7 +232,7 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 	// Get the skill ranks
 	int ranks = getSkillRank(skill);
 
-	if (ranks == 0) {
+	if (ranks < 1) {
 		// Trained skills require at least one rank
 		switch (skill) {
 			case kSkillDisableDevice:
@@ -248,6 +248,26 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 			default:
 				break;
 		}
+	}
+
+	// Check for skill synergies
+	int modSynergy = 0;
+	switch (skill) {
+		case kSkillDisableDevice:
+			if (getSkillRank(kSkillSetTrap) > 4)
+				modSynergy = +2;
+			break;
+		case kSkillSetTrap:
+			if (getSkillRank(kSkillDisableDevice) > 4)
+				modSynergy = +2;
+			break;
+		case kSkillSurvival:
+			if (getSkillRank(kSkillSearch) > 4)
+				modSynergy = +2;
+			break;
+		default:
+			// Bluff synergies weren't implemented in original
+			break;
 	}
 
 	// Get the ability modifier for the skill
@@ -311,7 +331,7 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 	int32 roll = std::rand() % 20 + 1; // Seed randomized?
 
 	// Make a skill check vs the DC
-	bool result = !(roll + ranks + modAbility + modFeats < DC);
+	bool result = !(roll + ranks + modAbility + modFeats + modSynergy < DC);
 
 	return result;
 }
