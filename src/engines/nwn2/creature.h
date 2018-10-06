@@ -98,8 +98,10 @@ public:
 	uint8 getAbility(Ability ability) const;
 	/** Return a creature's ability score modifier */
 	int8 getAbilityModifier(Ability ability) const;
+	/** Return true if skill is valid and useable */
+	bool getHasSkill(uint32 skill) const;
 	/** Return the creature's rank in this skill. */
-	 int8 getSkillRank(uint32 skill) const;
+	int8 getSkillRank(uint32 skill, bool baseOnly = false) const;
 	/** Does the creature have this feat? */
 	bool  hasFeat(uint32 feat) const;
 
@@ -144,7 +146,7 @@ public:
 	// Tests
 
 	/** Make a skill check */
-	bool getIsSkillSuccessful(Skill skill, int DC);
+	bool getIsSkillSuccessful(uint32 skill, int DC);
 
 private:
 	typedef Common::PtrList<Graphics::Aurora::Model> ModelParts;

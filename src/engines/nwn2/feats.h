@@ -50,7 +50,7 @@ public:
 	void featRemove(const uint32 id);
 	bool getHasFeat(uint32 id) const;
 
-	int  getFeatsSkillBonus(Skill skill) const;
+	int  getFeatsSkillBonus(uint32 skill) const;
 	int  getFeatsFortBonus() const;
 	int  getFeatsRefBonus() const;
 	int  getFeatsWillBonus() const;
