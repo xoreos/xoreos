@@ -272,7 +272,7 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 	}
 
 	// Get the ability modifier for the skill
-	int ability = 0;
+	int modAbility = 0;
 	switch (skill) {
 		case kSkillDisableDevice:
 		case kSkillHide:
@@ -283,11 +283,11 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 		case kSkillSleightOfHand:
 		case kSkillTumble:
 			// Dexterity skills
-			ability = getAbility(kAbilityDexterity);
+			modAbility = getAbilityModifier(kAbilityDexterity);
 			break;
 		case kSkillConcentration:
 			// Constitution skills
-			ability = getAbility(kAbilityConstitution);
+			modAbility = getAbilityModifier(kAbilityConstitution);
 			break;
 		case kSkillAppraise:
 		case kSkillCraftAlchemy:
@@ -298,14 +298,14 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 		case kSkillSearch:
 		case kSkillSpellcraft:
 			// Intelligence skills
-			ability = getAbility(kAbilityIntelligence);
+			modAbility = getAbilityModifier(kAbilityIntelligence);
 			break;
 		case kSkillHeal:
 		case kSkillListen:
 		case kSkillSpot:
 		case kSkillSurvival:
 			// Wisdom skills
-			ability = getAbility(kAbilityWisdom);
+			modAbility = getAbilityModifier(kAbilityWisdom);
 			break;
 		case kSkillBluff:
 		case kSkillDiplomacy:
@@ -314,16 +314,11 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 		case kSkillTaunt:
 		case kSkillUseMagicDevice:
 			// Charisma skills
-			ability = getAbility(kAbilityCharisma);
+			modAbility = getAbilityModifier(kAbilityCharisma);
 			break;
 		default:
-			// No net modifier
-			ability = 10;
 			break;
 	}
-
-	// Compute the ability modifier
-	int modAbility = int((ability - 10) / 2);
 
 	// Get the cumulative feats skill modifier
 	int modFeats = _feats->getFeatsSkillBonus(skill);
@@ -706,6 +701,12 @@ uint8 Creature::getAbility(Ability ability) const {
 	assert((ability >= 0) && (ability < kAbilityMAX));
 
 	return _abilities[ability];
+}
+
+int8 Creature::getAbilityModifier(Ability ability) const {
+	assert((ability >= 0) && (ability < kAbilityMAX));
+
+	return floor((_abilities[ability] - 10) / 2);
 }
 
 int8 Creature::getSkillRank(uint32 skill) const {
