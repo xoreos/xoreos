@@ -119,6 +119,21 @@ Common::UString Area::getName(const Common::UString &resRef) {
 	return "";
 }
 
+bool Area::getIsAreaNatural() const {
+	// Bit flag for a natural area
+	return (_flags & (1 << 2));
+}
+
+bool Area::getIsAreaAboveGround() const {
+	// Bit flag for an underground area
+	return !(_flags & (1 << 1));
+}
+
+bool Area::getIsAreaInterior() const {
+	// Bit flag for an interior area
+	return (_flags & 1);
+}
+
 const Common::UString &Area::getResRef() {
 	return _resRef;
 }
@@ -292,6 +307,8 @@ void Area::loadARE(const Aurora::GFF3Struct &are) {
 
 	_width  = are.getUint("Width");
 	_height = are.getUint("Height");
+
+	_flags = are.getUint("Flags");
 
 	if (_hasTerrain)
 		loadTerrain();
