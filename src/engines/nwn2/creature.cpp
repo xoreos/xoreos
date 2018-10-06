@@ -108,6 +108,9 @@ void Creature::init() {
 
 	for (size_t i = 0; i < kAbilityMAX; i++)
 		_abilities[i] = 0;
+
+	for (size_t i = 0; i < kSkillMAX; i++)
+		_ranks[i] = 0;
 }
 
 void Creature::show() {
@@ -462,6 +465,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	loadClasses(gff, _classes, _hitDice);
 
 	// Skills
+	// TODO: Process multiple "SkillList" blocks
 	if (gff.hasField("SkillList")) {
 		_skills.clear();
 
@@ -473,7 +477,15 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 		}
 	}
 
+	// Get total skill ranks
+	uint32 skill = 0;
+	for (std::vector<int8>::iterator it = _skills.begin(); it != _skills.end(); ++it) {
+		_ranks[skill] += *it;
+		skill = (skill + 1) % kSkillMAX;
+	}
+
 	// Feats
+	// TODO: Process multiple "FeatList" blocks
 	if (gff.hasField("FeatList")) {
 		try {
 			_feats.reset(new Feats());
@@ -598,7 +610,7 @@ int8 Creature::getAbilityModifier(Ability ability) const {
 
 /** Return true if skill is valid and useable */
 bool Creature::getHasSkill(uint32 skill) const {
-	if (skill >= _skills.size())
+	if (skill >= kSkillMAX)
 		return false;
 
 	bool hasSkill = true;
@@ -621,30 +633,29 @@ bool Creature::getHasSkill(uint32 skill) const {
 		}
 	}
 	return hasSkill;
-
 }
 
 int8 Creature::getSkillRank(uint32 skill, bool baseOnly) const {
-	if (skill >= _skills.size())
+	if (skill >= kSkillMAX)
 		return -1;
 
 	// Check for the baseOnly option
 	if (baseOnly)
-		return _skills[skill];
+		return _ranks[skill];
 
 	// Check for skill synergies
 	int modSynergy = 0;
 	switch (skill) {
 		case kSkillDisableDevice:
-			if (getSkillRank(kSkillSetTrap) > 4)
+			if (getSkillRank(kSkillSetTrap, true) > 4)
 				modSynergy = +2;
 			break;
 		case kSkillSetTrap:
-			if (getSkillRank(kSkillDisableDevice) > 4)
+			if (getSkillRank(kSkillDisableDevice, true) > 4)
 				modSynergy = +2;
 			break;
 		case kSkillSurvival:
-			if (getSkillRank(kSkillSearch) > 4)
+			if (getSkillRank(kSkillSearch, true) > 4)
 				modSynergy = +2;
 			break;
 		default:
@@ -728,7 +739,7 @@ int8 Creature::getSkillRank(uint32 skill, bool baseOnly) const {
 	}
 
 	// Return the modified ranks
-	return _skills[skill] + modSynergy + modAbility + modFeats;
+	return _ranks[skill] + modSynergy + modAbility + modFeats;
 }
 
 bool Creature::hasFeat(uint32 feat) const {
