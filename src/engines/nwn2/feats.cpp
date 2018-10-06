@@ -298,6 +298,11 @@ void Feats::applyFeat(const uint32 id) {
 			_skillBonus[kSkillSearch] += +1;
 			break;
 
+		case kFeatStonecunning:
+			// +2 to Search while in interior area
+			_hasCustomFeat[kCustomStonecunning] = true;
+			break;
+
 		/* ---- Skill feats ---- */
 
 		case kFeatNimbleFingers:
@@ -322,7 +327,7 @@ void Feats::applyFeat(const uint32 id) {
 			// +2 to Survival in all environments and a +2
 			// to Search and Spot while in wilderness areas
 			_hasCustomFeat[kCustomNatureSense] = true;
-			_skillBonus[kSkillSurvival] += +3;
+			_skillBonus[kSkillSurvival] += +2;
 			break;
 
 		default:

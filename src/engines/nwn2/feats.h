@@ -36,6 +36,7 @@ public:
 		kCustomComplex        = 0,
 		kCustomNaturalLeader     ,
 		kCustomNatureSense       ,
+		kCustomStonecunning      ,
 		kCustomMAX
 	};
 

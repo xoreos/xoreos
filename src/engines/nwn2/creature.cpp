@@ -42,6 +42,7 @@
 
 #include "src/engines/nwn2/util.h"
 #include "src/engines/nwn2/types.h"
+#include "src/engines/nwn2/area.h"
 #include "src/engines/nwn2/creature.h"
 
 static const uint32 kBICID = MKTAG('B', 'I', 'C', ' ');
@@ -326,6 +327,29 @@ bool Creature::getIsSkillSuccessful(Skill skill, int DC) {
 
 	// Get the cumulative feats skill modifier
 	int modFeats = _feats->getFeatsSkillBonus(skill);
+
+	// Add custom feat modifiers
+	switch (skill) {
+		case kSkillSearch:
+			// Nature sense: +2 while in natural area
+			if (_feats->getHasCustomFeat(Feats::kCustomNatureSense))
+				if (getArea()->getIsAreaNatural())
+					modFeats += 2;
+
+			// Stonecunning: +2 while in interior area
+			if (_feats->getHasCustomFeat(Feats::kCustomStonecunning))
+				if (getArea()->getIsAreaInterior())
+					modFeats += 2;
+			break;
+		case kSkillSpot:
+			// Nature sense: +2 while in natural area
+			if (_feats->getHasCustomFeat(Feats::kCustomNatureSense))
+				if (getArea()->getIsAreaNatural())
+					modFeats += 2;
+			break;
+		default:
+			break;
+	}
 
 	// Simulate a d20 roll
 	int32 roll = std::rand() % 20 + 1; // Seed randomized?
