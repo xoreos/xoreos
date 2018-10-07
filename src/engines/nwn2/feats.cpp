@@ -81,6 +81,11 @@ int Feats::getFeatsSkillBonus(uint32 skill) const {
 	return _skillBonus[skill];
 }
 
+int Feats::getFeatsSaveVsBonus(uint32 type) const {
+	assert(type < kSaveMAX);
+	return _saveVsBonus[type];
+}
+
 /** Return the cumulative Fortitude modifier */
 int Feats::getFeatsFortBonus() const {
 	return _fortBonus;
@@ -94,6 +99,16 @@ int Feats::getFeatsRefBonus() const {
 /** Return the cumulative Willpower modifier */
 int Feats::getFeatsWillBonus() const {
 	return _willBonus;
+}
+
+/** Return the initiative modifier */
+int Feats::getFeatsInitBonus() const {
+	return _initBonus;
+}
+
+/** Return the luck AC modifier */
+int Feats::getFeatsLuckACBonus() const {
+	return _luckACBonus;
 }
 
 /** Return true if the custom code feat is flagged */
@@ -110,10 +125,18 @@ void Feats::initParameters() {
 	for (i = 0; i < kSkillMAX; i++)
 		_skillBonus[i] = 0;
 
+	// Save Vs. modifiers
+	for (i = 0; i < kSaveMAX; i++)
+		_saveVsBonus[i] = 0;
+
 	// Save modifiers
 	_fortBonus = 0;
 	_refBonus = 0;
 	_willBonus = 0;
+
+	// Other modifiers
+	_luckACBonus = 0;
+	_initBonus = 0;
 
 	// Custom code flags
 	for (i = 0; i < kCustomMAX; i++)
@@ -303,11 +326,87 @@ void Feats::applyFeat(const uint32 id) {
 			_hasCustomFeat[kCustomStonecunning] = true;
 			break;
 
+		/* ---- Background feats ---- */
+
+		case kFeatBkgdArtist:
+			// +2 bonus on Perform and Diplomacy checks
+			_skillBonus[kSkillPerform]   += +2;
+			_skillBonus[kSkillDiplomacy] += +2;
+			break;
+
+		case kFeatBkgdBlooded:
+			// +2 bonus on Initiative and Spot checks
+			_skillBonus[kSkillSpot] += +2;
+			_initBonus              += +2;
+			break;
+
+		case kFeatBkgdBullheaded:
+			// +2 bonus to resist Taunt, and +1 bonus to Will saving throws
+			_skillBonus[kSkillTaunt] += +2;
+			_willBonus               += +1;
+			break;
+
+		case kFeatBkgdCourteousMagocracy:
+			// +2 bonus on Lore and Spellcraft checks
+			_skillBonus[kSkillLore]       += +2;
+			_skillBonus[kSkillSpellcraft] += +2;
+			break;
+
+		case kFeatBkgdLuckOfHeroes:
+			// +1 bonus on all saving throws plus a +1 luck bonus to armor class
+			_fortBonus   += +1;
+			_refBonus    += +1;
+			_willBonus   += +1;
+			_luckACBonus += +1;
+			break;
+
+		case kFeatBkgdMindOverBody:
+			/* Uses Int modifier instead of Con for bonus hit points
+			 * at level 1, and any metamagic or spellcasting feat
+			 * grants +1 hit points.
+			 */
+			_hasCustomFeat[kCustomNatureSense] = true;
+			break;
+
+		case kFeatBkgdSilverPalm:
+			// +2 bonus on Appraise, Bluff, and Diplomacy checks
+			_skillBonus[kSkillAppraise]  += +2;
+			_skillBonus[kSkillBluff]     += +2;
+			_skillBonus[kSkillDiplomacy] += +2;
+			break;
+
+		case kFeatBkgdSnakeBlood:
+			// +1 bonus to Reflex saving throws, and +2 saving throw bonus against poisons
+			_saveVsBonus[kSavePoison] += +2;
+			_refBonus                 += +1;
+			break;
+
+		case kFeatBkgdSpellcastingProdigy:
+			/* treats primary spellcasting ability score as 2 points
+			 * higher than usual, effectively having +1 to modifier.
+			 */
+			_hasCustomFeat[kCustomSpellcastingProdigy] = true;
+			break;
+
+		case kFeatBkgdStrongSoul:
+			// +1 bonus to Fortitude & Will saving throws, and +1 saving throw bonus against Death magic
+			_saveVsBonus[kSaveDeath] += 1;
+			_fortBonus               += 1;
+			_willBonus               += 1;
+			break;
+
+		case kFeatBkgdThug:
+			// +2 bonus on Appraise, Initiative, and Intimidate checks 
+			_skillBonus[kSkillAppraise]   += 2;
+			_skillBonus[kSkillIntimidate] += 2;
+			_initBonus                    += 2;
+			break;
+
 		/* ---- Skill feats ---- */
 
 		case kFeatNimbleFingers:
 			// +2 to Open Locks and Disable Device
-			_skillBonus[kSkillOpenLock]     += +2;
+			_skillBonus[kSkillOpenLock]      += +2;
 			_skillBonus[kSkillDisableDevice] += +2;
 			break;
 
