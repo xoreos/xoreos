@@ -181,6 +181,46 @@ enum CClass {
 	kCClassWarlock   = 39,
 };
 
+// iprp_damagetypes.2da rows
+enum Damage {
+	kDamageBludgeon = 0,
+	kDamagePierce      ,
+	kDamageSlash       ,
+	kDamageSubdual     , // Deleted
+	kDamagePhysical    , // Deleted
+	kDamageMagical     ,
+	kDamageAcid        ,
+	kDamageCold        ,
+	kDamageDivine      ,
+	kDamageElectric    ,
+	kDamageFire        ,
+	kDamageNegative    ,
+	kDamagePositive    ,
+	kDamageSonic       ,
+	kDamageMAX
+};
+
+// iprp_saveelement.2da rows
+enum Save {
+	kSaveUniversal   = 0,
+	kSaveAcid           ,
+	kSaveBackstab       , // Deleted
+	kSaveCold           ,
+	kSaveDeath          ,
+	kSaveDisease        ,
+	kSaveDivine         ,
+	kSaveElectric       ,
+	kSaveFear           ,
+	kSaveFire           ,
+	kSaveIllusion       , // Deleted
+	kSaveMindAffecting  ,
+	kSaveNegativeEnergy ,
+	kSavePoison         ,
+	kSavePositiveEnergy ,
+	kSaveSonic          ,
+	kSaveMAX
+};
+
 // feats.2da row
 enum Feat {
 	kFeatSkillFocusDisableTrap = 174,
@@ -190,6 +230,19 @@ enum Feat {
 	kFeatStonecunning = 227,
 	kFeatSkillAffinitySearch = 238,
 	kFeatPSASearch = 245,
+
+	kFeatBkgdArtist = 378,
+	kFeatBkgdBlooded = 379,
+	kFeatBkgdBullheaded = 380,
+	kFeatBkgdCourteousMagocracy = 381,
+	kFeatBkgdLuckOfHeroes = 382,
+	kFeatBkgdMindOverBody = 1104,
+	kFeatBkgdSilverPalm = 384,
+	kFeatBkgdSnakeBlood = 386,
+	kFeatBkgdSpellcastingProdigy = 1114,
+	kFeatBkgdStrongSoul = 388,
+	kFeatBkgdThug = 402,
+
 	kFeatEpicSkillFocusDisableTrap = 591,
 	kFeatEpicSkillFocusSearch = 603,
 	kFeatNimbleFingers = 1110,

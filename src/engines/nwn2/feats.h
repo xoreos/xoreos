@@ -33,10 +33,12 @@ class Feats {
 public:
 	// Feats that need custom code
 	enum Custom {
-		kCustomComplex        = 0,
-		kCustomNaturalLeader     ,
-		kCustomNatureSense       ,
-		kCustomStonecunning      ,
+		kCustomComplex          = 0,
+		kCustomMindOverBody        ,
+		kCustomNaturalLeader       ,
+		kCustomNatureSense         ,
+		kCustomSpellcastingProdigy ,
+		kCustomStonecunning        ,
 		kCustomMAX
 	};
 
@@ -51,9 +53,12 @@ public:
 	bool getHasFeat(uint32 id) const;
 
 	int  getFeatsSkillBonus(uint32 skill) const;
+	int  getFeatsSaveVsBonus(uint32 type) const;
 	int  getFeatsFortBonus() const;
 	int  getFeatsRefBonus() const;
 	int  getFeatsWillBonus() const;
+	int  getFeatsInitBonus() const;
+	int  getFeatsLuckACBonus() const;
 
 	bool getHasCustomFeat(Custom feat) const;
 
@@ -63,9 +68,12 @@ private:
 
 	// Passive stackable modifiers
 	int _skillBonus[kSkillMAX];
+	int _saveVsBonus[kSaveMAX];
 	int _fortBonus;
 	int _refBonus;
 	int _willBonus;
+	int _initBonus;
+	int _luckACBonus;
 
 	// Feats requiring custom code
 	bool _hasCustomFeat[kCustomMAX];
