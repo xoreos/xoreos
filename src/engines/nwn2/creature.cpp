@@ -44,6 +44,7 @@
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/area.h"
 #include "src/engines/nwn2/creature.h"
+#include "src/engines/nwn2/faction.h"
 
 static const uint32 kBICID = MKTAG('B', 'I', 'C', ' ');
 
@@ -93,6 +94,8 @@ void Creature::init() {
 
 	_goodEvil = 0;
 	_lawChaos = 0;
+
+	_personalRep.reset(new PersonalReputation());
 
 	_appearanceID = Aurora::kFieldIDInvalid;
 
@@ -381,6 +384,7 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 
 	// All BICs should be PCs.
 	_isPC = true;
+	_faction = kStandardPC;
 
 	// Set the PC tag to something recognizable for now.
 	// Let's hope no script depends on it being "".
@@ -510,6 +514,10 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 		_bonusHP   = gff.getSint("MaxHitPoints", _baseHP) - _baseHP;
 		_currentHP = gff.getSint("CurrentHitPoints", _baseHP);
 	}
+
+	// Faction
+
+	_faction = gff.getUint("FactionID", _faction);
 
 	// Alignment
 
@@ -744,6 +752,25 @@ int8 Creature::getSkillRank(uint32 skill, bool baseOnly) const {
 
 bool Creature::hasFeat(uint32 feat) const {
 	return _feats->getHasFeat(feat);
+}
+
+/**
+ * This call is equivalent to the GetReputation() script
+ * function. It returns how the source feels about this
+ * creature. If this creature has a PersonalReputation
+ * struct for the source and that struct hasn't
+ * decayed, return that reputation. Otherwise, return
+ * this creature's reputation with the source's faction.
+ */
+uint8 Creature::getReputation(Object *source) const {
+	assert(source);
+
+	// Get this creature's reputation with the source
+	uint8 repute = 0;
+	if (!_personalRep->getPersonalRep(source, &repute))
+		repute = _area->getFactionReputation(source, _faction);
+
+	return repute;
 }
 
 Aurora::GFF3File *Creature::openPC(const Common::UString &bic, bool local) {

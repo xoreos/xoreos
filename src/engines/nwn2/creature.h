@@ -44,6 +44,8 @@ namespace Engines {
 
 namespace NWN2 {
 
+class PersonalReputation;
+
 class Creature : public Object {
 public:
 	/** Create a dummy creature instance. Not playable as it is.*/
@@ -125,6 +127,10 @@ public:
 	/** Return the max HP this creature can have. */
 	int32 getMaxHP() const;
 
+	// Reputation
+
+	uint8 getReputation(Object *source) const;
+
 	// Positioning
 
 	/** Set the creature's position. */
@@ -189,6 +195,8 @@ private:
 
 	uint8 _goodEvil; ///< The creature's good/evil value (0-100).
 	uint8 _lawChaos; ///< The creature's law/chaos value (0-100).
+
+	Common::ScopedPtr<PersonalReputation> _personalRep; ///< The creature's reputation tracker.
 
 	uint32 _appearanceID; ///< The creature's general appearance.
 

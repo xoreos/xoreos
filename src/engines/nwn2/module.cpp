@@ -45,6 +45,7 @@
 #include "src/engines/nwn2/module.h"
 #include "src/engines/nwn2/area.h"
 #include "src/engines/nwn2/creature.h"
+#include "src/engines/nwn2/faction.h"
 
 namespace Engines {
 
@@ -73,6 +74,12 @@ void Module::clear() {
 
 Area *Module::getCurrentArea() {
 	return _currentArea;
+}
+
+Factions &Module::getFactions() {
+	assert(_factions);
+
+	return *_factions;
 }
 
 Creature *Module::getPC() {
@@ -186,6 +193,7 @@ void Module::enter(Creature &pc, bool isNewCampaign) {
 		loadTLK();
 		loadHAKs();
 		loadAreas();
+		loadFactions();
 
 	} catch (Common::Exception &e) {
 		e.add("Can't initialize module \"%s\"", _name.c_str());
@@ -336,6 +344,7 @@ void Module::handleActions() {
 void Module::unload() {
 	unloadPC();
 	unloadAreas();
+	unloadFactions();
 	unloadHAKs();
 	unloadTLK();
 	unloadModule();
@@ -386,6 +395,11 @@ void Module::unloadHAKs() {
 	_resHAKs.clear();
 }
 
+void Module::loadFactions() {
+	// TODO: Load factions from module's 'repute.fac' file
+	_factions.reset(new Factions());
+}
+
 void Module::loadAreas() {
 	status("Loading areas...");
 
@@ -423,6 +437,10 @@ void Module::unloadPC() {
 
 	_pc->hide();
 	_pc = 0;
+}
+
+void Module::unloadFactions() {
+	_factions.reset();
 }
 
 void Module::movePC(const Common::UString &area) {

@@ -77,7 +77,7 @@ bool Trap::isTriggeredBy(Object *triggerBy) const {
 
 	assert(triggerBy);
 
-	// TODO: Check if faction is non-hostile
+	// TODO: Check if faction is friendly
 
 	// Check if active
 	return _isTrapActive;

@@ -28,6 +28,8 @@
 #include "src/engines/aurora/util.h"
 
 #include "src/engines/nwn2/trigger.h"
+#include "src/engines/nwn2/area.h"
+#include "src/engines/nwn2/trap.h"
 
 namespace Engines {
 
@@ -66,6 +68,10 @@ void Trigger::load(const Aurora::GFF3Struct &gff) {
 	if (!utt)
 		warning("Trigger \"%s\" has no blueprint", temp.c_str());
 
+	// Faction
+
+	_faction = gff.getUint("Faction", _faction);
+
 	try {
 		_trap.reset(new Trap(gff));
 	} catch (...) {
@@ -101,6 +107,10 @@ void Trigger::loadBlueprint(const Aurora::GFF3Struct &gff) {
 	_name = gff.getString("LocalizedName");
 
 	readScripts(gff);
+}
+
+uint8 Trigger::getReputation(Object *source) const {
+        return getArea()->getFactionReputation(source, _faction);
 }
 
 } // End of namespace NWN2

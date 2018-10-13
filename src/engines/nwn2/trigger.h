@@ -28,11 +28,12 @@
 #include "src/engines/aurora/trigger.h"
 
 #include "src/engines/nwn2/object.h"
-#include "src/engines/nwn2/trap.h"
 
 namespace Engines {
 
 namespace NWN2 {
+
+class Trap;
 
 class Trigger : public ::Engines::Trigger, public Object {
 public:
@@ -44,6 +45,10 @@ public:
 	void hideSoft();
 	bool isVisible() const;
 	// '---
+
+	/** Get the reputation of the trigger with the source. */
+	uint8 getReputation(Object *source) const;
+
 protected:
 	void load(const Aurora::GFF3Struct &gff);
 	void loadBlueprint(const Aurora::GFF3Struct &gff);

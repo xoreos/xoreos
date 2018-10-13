@@ -120,6 +120,10 @@ public:
 	/** Return true if the Interior flag is set. */
 	bool getIsAreaInterior() const;
 
+	// Factions
+
+	/** Get the source's reputation with the faction. */
+	uint8 getFactionReputation(Object *source, uint32 faction);
 
 protected:
 	/** Notify the area that the camera has been moved. */

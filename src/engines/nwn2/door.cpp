@@ -37,6 +37,8 @@
 #include "src/engines/nwn2/door.h"
 #include "src/engines/nwn2/waypoint.h"
 #include "src/engines/nwn2/module.h"
+#include "src/engines/nwn2/trap.h"
+#include "src/engines/nwn2/area.h"
 
 namespace Engines {
 
@@ -75,6 +77,10 @@ void Door::loadObject(const Aurora::GFF3Struct &gff) {
 	// Generic type
 
 	_genericType = gff.getUint("GenericType", _genericType);
+
+	// Faction
+
+	_faction = gff.getUint("Faction");
 
 	// State
 
@@ -210,7 +216,7 @@ bool Door::open(Object *opener) {
 	if (isOpen() || (_state == kStateDestroyed))
 		return true;
 
-	if (_trap->isTriggeredBy(opener)) {
+	if (!opener->getIsFriend(this) && _trap->isTriggeredBy(opener)) {
 		// Set off the trap
 		runScript(kScriptTrapTriggered, this, opener);
 		_trap->triggeredTrap();
@@ -277,6 +283,10 @@ void Door::evaluateLink() {
 	}
 
 	_evaluatedLink = true;
+}
+
+uint8 Door::getReputation(Object *source) const {
+	return getArea()->getFactionReputation(source, _faction);
 }
 
 } // End of namespace NWN2
