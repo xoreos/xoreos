@@ -141,6 +141,16 @@ public:
 	/** Play an object sound. */
 	void playSound(const Common::UString &sound, bool pitchVariance = false);
 
+	// Faction
+
+	/** Return this object's faction */
+	uint32 getFaction() const;
+	/** Get this object's reputation with source */
+	uint8 getReputation(Object *source) const;
+	bool getIsEnemy(Object *source) const;
+	bool getIsFriend(Object *source) const;
+	bool getIsNeutral(Object *source) const;
+
 protected:
 	ObjectType _type; ///< The object's type.
 
@@ -148,6 +158,8 @@ protected:
 	Common::UString _description; ///< The object's description.
 
 	Common::UString _conversation; ///< The object's default conversation.
+
+	uint32 _faction;  ///< The object's faction.
 
 	uint32 _soundSet; ///< The object's sound set, as an index into soundset.2da.
 	Common::ScopedPtr<Aurora::SSFFile> _ssf; ///< The object's sound set.

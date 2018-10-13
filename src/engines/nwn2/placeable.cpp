@@ -34,6 +34,8 @@
 #include "src/engines/aurora/util.h"
 
 #include "src/engines/nwn2/placeable.h"
+#include "src/engines/nwn2/trap.h"
+#include "src/engines/nwn2/area.h"
 
 namespace Engines {
 
@@ -118,6 +120,10 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
 
 	_hasInventory = gff.getBool("HasInventory", _hasInventory);
+
+	// Faction
+
+	_faction = gff.getUint("Faction", _faction);
 }
 
 void Placeable::loadAppearance() {
@@ -190,7 +196,7 @@ bool Placeable::open(Object *opener) {
 	if (isOpen())
 		return true;
 
-	if (_trap->isTriggeredBy(opener)) {
+	if (!opener->getIsFriend(this) && _trap->isTriggeredBy(opener)) {
 		// Set off the trap
 		runScript(kScriptTrapTriggered, this, opener);
 		_trap->triggeredTrap();
@@ -235,7 +241,7 @@ bool Placeable::activate(Object *user) {
 	if (isActivated())
 		return true;
 
-	if (_trap->isTriggeredBy(user)) {
+	if (!user->getIsFriend(this) && _trap->isTriggeredBy(user)) {
 		// Set off the trap
 		runScript(kScriptTrapTriggered, this, user);
 		_trap->triggeredTrap();
@@ -272,6 +278,10 @@ bool Placeable::deactivate(Object *user) {
 	_state = kStateDeactivated;
 
 	return true;
+}
+
+uint8 Placeable::getReputation(Object *source) const {
+        return getArea()->getFactionReputation(source, _faction);
 }
 
 } // End of namespace NWN2

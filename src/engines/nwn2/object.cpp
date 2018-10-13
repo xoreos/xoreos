@@ -46,11 +46,14 @@
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/object.h"
 
+static const uint8 kRepEnemyMax  = 10; // Maximum reputation for an enemy
+static const uint8 kRepFriendMin = 90; // Minimum reputation for a friend
+
 namespace Engines {
 
 namespace NWN2 {
 
-Object::Object(ObjectType type) : _type(type),
+Object::Object(ObjectType type) : _type(type), _faction(2),
 	_soundSet(Aurora::kFieldIDInvalid), _static(true), _usable(true),
 	_area(0) {
 	_id = Common::generateIDNumber();
@@ -287,6 +290,45 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 		return;
 
 	_sound = ::Engines::playSound(sound, Sound::kSoundTypeVoice, false, 1.0f, pitchVariance);
+}
+
+/** Return this object's faction. */
+uint32 Object::getFaction() const {
+	return _faction;
+}
+
+/** Return this object's reputation with the source. */
+uint8 Object::getReputation(Object *source) const {
+	assert(source);
+	return 0; // Default to 'enemy'
+}
+
+/**
+ * Return true if this object's reputation with
+ * the source is in the range [0, kRepEnemyMax].
+ */
+
+bool Object::getIsEnemy(Object *source) const {
+	uint8 repute = getReputation(source);
+	return (repute <= kRepEnemyMax);
+}
+
+/**
+ * Return true if this object's reputation with
+ * the source is in the range [kRepFriendMin, 100].
+ */
+bool Object::getIsFriend(Object *source) const {
+	uint8 repute = getReputation(source);
+	return (repute >= kRepFriendMin);
+}
+
+/**
+ * Return true if this object's reputation with
+ * the source is in the range (kRepEnemyMax, kRepFriendMin).
+ */
+bool Object::getIsNeutral(Object *source) const {
+	uint8 repute = getReputation(source);
+	return ((repute > kRepEnemyMax) && (repute < kRepFriendMin));
 }
 
 } // End of namespace NWN2

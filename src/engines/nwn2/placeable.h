@@ -30,11 +30,12 @@
 #include "src/aurora/types.h"
 
 #include "src/engines/nwn2/situated.h"
-#include "src/engines/nwn2/trap.h"
 
 namespace Engines {
 
 namespace NWN2 {
+
+class Trap;
 
 class Placeable : public Situated {
 public:
@@ -84,6 +85,9 @@ public:
 
 	/** The placeable was clicked. */
 	bool click(Object *triggerer = 0);
+
+	/** Get the reputation of the placeable with the source. */
+	uint8 getReputation(Object *source) const;
 
 protected:
 	/** Load placeable-specific properties. */

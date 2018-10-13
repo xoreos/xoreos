@@ -50,6 +50,7 @@
 #include "src/engines/nwn2/placeable.h"
 #include "src/engines/nwn2/door.h"
 #include "src/engines/nwn2/creature.h"
+#include "src/engines/nwn2/faction.h"
 
 namespace Engines {
 
@@ -132,6 +133,10 @@ bool Area::getIsAreaAboveGround() const {
 bool Area::getIsAreaInterior() const {
 	// Bit flag for an interior area
 	return (_flags & 1);
+}
+
+uint8 Area::getFactionReputation(Object *source, uint32 faction) {
+	return _module->getFactions().getReputation(source, faction);
 }
 
 const Common::UString &Area::getResRef() {

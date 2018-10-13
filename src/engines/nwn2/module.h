@@ -30,6 +30,7 @@
 #include <map>
 #include <set>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
@@ -51,6 +52,7 @@ namespace NWN2 {
 
 class Area;
 class Creature;
+class Factions;
 
 class Module : public NWN2::Object, public NWN2::ObjectContainer {
 public:
@@ -79,6 +81,8 @@ public:
 	Area *getCurrentArea();
 	/** Return the currently playing PC. */
 	Creature *getPC();
+	/** Return the module's factions. */
+	Factions &getFactions();
 	// '---
 
 	void delayScript(const Common::UString &script,
@@ -173,6 +177,8 @@ private:
 	Common::UString _newArea;     ///< The new area to enter.
 	Area           *_currentArea; ///< The current area.
 
+	Common::ScopedPtr<Factions> _factions; ///< The factions in the current module.
+
 	bool _ranPCSpawn; ///< Did we run the PC spawn script?
 
 	Common::UString _newModule; ///< The module we should change to.
@@ -189,6 +195,7 @@ private:
 	void unloadTLK();         ///< Unload the TLK used by the module.
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadAreas();       ///< Unload the areas.
+	void unloadFactions();    ///< Unload the factions.
 	// '---
 
 	// .--- Loading
@@ -198,6 +205,7 @@ private:
 	void loadTLK();         ///< Load the TLK used by the module.
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadAreas();       ///< Load the areas.
+	void loadFactions();    ///< Load the factions.
 	// '---
 
 	void enterArea(); ///< Enter a new area.

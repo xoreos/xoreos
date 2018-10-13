@@ -30,7 +30,6 @@
 #include "src/aurora/types.h"
 
 #include "src/engines/nwn2/situated.h"
-#include "src/engines/nwn2/trap.h"
 
 namespace Engines {
 
@@ -39,6 +38,8 @@ namespace NWN2 {
 class Module;
 
 class Waypoint;
+
+class Trap;
 
 class Door : public Situated {
 public:
@@ -82,6 +83,9 @@ public:
 
 	/** The door was clicked. */
 	bool click(Object *triggerer = 0);
+
+	/** Get the reputation of the door with the source */
+	uint8 getReputation(Object *source) const;
 
 protected:
 	/** Load door-specific properties. */

@@ -130,6 +130,15 @@ enum Gender {
 	kGenderNone   = 4
 };
 
+// repute.2da row
+enum StandardFaction {
+        kStandardPC    = 0,
+        kStandardHostile  ,
+        kStandardCommoner ,
+        kStandardMerchant ,
+        kStandardDefender ,
+};
+
 // skills.2da row
 enum Skill {
 	kSkillAnimalEmpathy  =  0, // Deleted
