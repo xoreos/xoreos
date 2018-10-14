@@ -77,8 +77,6 @@ bool Trap::isTriggeredBy(Object * triggerBy) const {
 
 	assert(triggerBy);
 
-	// TODO: Check if faction is friendly
-
 	// Check if active
 	return _isTrapActive;
 }
@@ -100,7 +98,8 @@ bool Trap::getTrapDetectedBy(Creature *detector) const {
 		return false;
 
 	// Get the identifiers
-	// TODO
+	if (_detectedBy == detector->getID())
+		return true;
 
 	return false;
 }
@@ -216,8 +215,6 @@ bool Trap::detectTrap(Creature *agent) {
 	if (_detectDC > 20)
 		if (agent->getClassLevel(kCClassRogue) < 1)
 			return false;
-
-	// TODO: Check for a non-enemy faction so _isFlagged isn't set?
 
 	// Make the Search skill check vs. trap detect DC
 	bool result = agent->getIsSkillSuccessful(kSkillSearch, _detectDC);
