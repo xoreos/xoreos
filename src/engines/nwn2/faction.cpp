@@ -120,7 +120,17 @@ void PersonalReputation::clearPersonalRep(Object *subject) {
 	// Clean out decayed reputations
 	decayPersonalRep();
 
-	// TODO
+	// Cycle through the stored reputations, looking for a matching ID
+	uint32 id = subject->getID();
+	for (std::vector<PersonalRep>::const_iterator it = _reputation.begin(); it != _reputation.end(); ++it) {
+		if (id == it->objectId) {
+			// Erase the matching rep
+			_reputation.erase(it);
+
+			// Reset the iterator
+			it = _reputation.begin();
+		}
+	}
 }
 
 /* ---- FactionList class ---- */
