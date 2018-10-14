@@ -42,7 +42,7 @@ public:
 	void clear();
 
 	bool getPersonalRep(Object *source, uint8 *reputation);
-	void setPersonalRep(Object *source, uint8 amount);
+	void setPersonalRep(Object *source, uint8 amount, bool decays = false, uint16 duration = 180);
 	void clearPersonalRep(Object *source);
 
 private:
@@ -56,6 +56,8 @@ private:
 	};
 
 	std::vector<PersonalRep> _reputation;
+
+	void decayPersonalRep();
 };
 
 // Factions in module
