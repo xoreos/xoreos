@@ -63,7 +63,7 @@ private:
 // Factions in module
 class Factions {
 public:
-	Factions();
+	Factions(bool use2da = false);
 	~Factions();
 
 	/** Get source's reputation with faction */
@@ -86,7 +86,8 @@ protected: // Allow testing access
 	std::vector<Faction>    _factionList; ///< List of factions
 	std::vector<Reputation> _repList;     ///< List of reputations
 
-	void load();
+	void loadFac();
+	void load2da();
 };
 
 } // End of namespace NWN2
