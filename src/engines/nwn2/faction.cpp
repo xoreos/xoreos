@@ -122,7 +122,7 @@ void PersonalReputation::clearPersonalRep(Object *subject) {
 
 	// Cycle through the stored reputations, looking for a matching ID
 	uint32 id = subject->getID();
-	for (std::vector<PersonalRep>::const_iterator it = _reputation.begin(); it != _reputation.end(); ++it) {
+	for (std::vector<PersonalRep>::iterator it = _reputation.begin(); it != _reputation.end(); ++it) {
 		if (id == it->objectId) {
 			// Erase the matching rep
 			_reputation.erase(it);
@@ -149,7 +149,21 @@ Factions::~Factions() {
 uint8 Factions::getReputation(Object *source, uint32 faction) {
 	assert(source);
 	assert(faction < _factionList.size());
-	return 0; // TODO
+
+	/*
+	 * The _repList data is listed by consecutive rows of
+	 * factionId2 with column factionId1. To find how the
+	 * 'faction' feels about 'source', look at the row
+	 * matching the 'source's faction and the 'faction'
+	 * column, then return the cell's factionRep value.
+	 */
+	uint32 sFaction = source->getFaction();
+	size_t index = (_count * sFaction) + faction;
+
+	assert(index < _repList.size());
+	assert(_repList[index].factionId1 == faction);
+	assert(_repList[index].factionId2 == sFaction);
+	return _repList[index].factionRep;
 }
 
 /** Get the faction name. */
