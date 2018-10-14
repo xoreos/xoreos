@@ -48,9 +48,9 @@ public:
 	void clear();
 
 	// Manipulate the feats list
-	void featAdd(const uint32 id);
-	void featRemove(const uint32 id);
-	bool getHasFeat(uint32 id) const;
+	void featAdd(const uint32 id, uint16 level = 1);
+	void featRemove(const uint32 id, uint16 maxLevel = 0);
+	bool getHasFeat(uint32 id, uint16 maxLevel = 0) const;
 
 	int  getFeatsSkillBonus(uint32 skill) const;
 	int  getFeatsSaveVsBonus(uint32 type) const;
@@ -63,8 +63,13 @@ public:
 	bool getHasCustomFeat(Custom feat) const;
 
 private:
+	struct Feat {
+		uint32 id;
+		uint16 level;
+	};
+
 	// List of included feats
-	std::vector<uint32> _feats;
+	std::vector<Feat> _feats;
 
 	// Passive stackable modifiers
 	int _skillBonus[kSkillMAX];
@@ -80,7 +85,7 @@ private:
 
 	// Modifier update functions
 	void initParameters();
-	void resetFeats();
+	void resetFeats(uint16 maxLevel = 0);
 	void applyFeat(const uint32 id);
 };
 
