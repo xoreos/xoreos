@@ -53,13 +53,59 @@ bool PersonalReputation::getPersonalRep(Object *source, uint8 *reputation) {
 	if (_reputation.size() == 0 || source == 0)
 		return false;
 
-	return false; // TODO
+	// Clean out decayed reputations
+	decayPersonalRep();
+
+	// Cycle through the stored reputations, looking for a matching ID
+	uint32 id = source->getID();
+	for (std::vector<PersonalRep>::const_iterator it = _reputation.begin(); it != _reputation.end(); ++it) {
+		if (id == it->objectId) {
+			// Found a matching rep
+			*reputation = it->amount;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**  Set a personal reputation of the creature with the subject. */
-void PersonalReputation::setPersonalRep(Object *source, uint8 reputation) {
+void PersonalReputation::setPersonalRep(Object *source, uint8 reputation, bool decays, uint16 duration) {
 	assert(source);
+
+	// Clean out decayed reputations
+	if (_reputation.size() > 0)
+		decayPersonalRep();
+
+	// Remove an existing reputation
+	clearPersonalRep(source);
+
+	// Initialize the new reputation
+	PersonalRep rep;
+	rep.amount = reputation;
+	rep.decays = decays;
+	rep.duration = duration;
 	// TODO
+	rep.day = 0;
+	rep.time = 0;
+
+	// Add to the list
+	_reputation.push_back(rep);
+}
+
+/** Clear out any decayed reputations */
+void PersonalReputation::decayPersonalRep() {
+	// Work through the list
+	for (std::vector<PersonalRep>::iterator it = _reputation.begin(); it != _reputation.end(); ++it) {
+		if (it->decays) {
+		/**
+		 * TODO:
+		 * Compute the decay time then compare to the
+		 * game clock. If the time has expired, remove
+		 * this reputation then reset the loop.
+		 */
+		}
+	}
 }
 
 /** Clear a personal reputation the target has for the creature. */
@@ -67,6 +113,9 @@ void PersonalReputation::clearPersonalRep(Object *subject) {
 	// Quick bypass for most objects
 	if (_reputation.size() == 0 || subject == 0)
 		return;
+
+	// Clean out decayed reputations
+	decayPersonalRep();
 
 	// TODO
 }
