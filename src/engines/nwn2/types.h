@@ -279,7 +279,12 @@ enum Feat {
 
 	kFeatEpicSkillFocusDisableTrap = 591,
 	kFeatEpicSkillFocusSearch = 603,
+
+	kFeatAlertness = 0,
+	kFeatNegotiator = 1109,
 	kFeatNimbleFingers = 1110,
+	kFeatSelfSufficient = 1385,
+	kFeatStealthy = 387,
 
 	kFeatHistoryBully = 1717,
 	kFeatHistoryComplex = 1718,

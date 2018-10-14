@@ -404,10 +404,34 @@ void Feats::applyFeat(const uint32 id) {
 
 		/* ---- Skill feats ---- */
 
+		case kFeatAlertness:
+			// +2 to Listen and Spot
+			_skillBonus[kSkillListen]        += +2;
+			_skillBonus[kSkillSpot]          += +2;
+			break;
+
+		case kFeatNegotiator:
+			// +2 to Bluff and Diplomacy
+			_skillBonus[kSkillBluff]         += +2;
+			_skillBonus[kSkillDiplomacy]     += +2;
+			break;
+
 		case kFeatNimbleFingers:
 			// +2 to Open Locks and Disable Device
 			_skillBonus[kSkillOpenLock]      += +2;
 			_skillBonus[kSkillDisableDevice] += +2;
+			break;
+
+		case kFeatSelfSufficient:
+			// +2 to Heal and Survival
+			_skillBonus[kSkillHeal]          += +2;
+			_skillBonus[kSkillSurvival]      += +2;
+			break;
+
+		case kFeatStealthy:
+			// +2 to Hide and Move Silently
+			_skillBonus[kSkillHide]          += +2;
+			_skillBonus[kSkillMoveSilently]  += +2;
 			break;
 
 		/* ---- Skill focus feats ---- */
