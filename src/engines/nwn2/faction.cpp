@@ -22,6 +22,9 @@
  *  A factions array in a Neverwinter Nights 2 module.
  */
 
+#include "src/aurora/types.h"
+#include "src/aurora/resman.h"
+#include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 
@@ -122,8 +125,11 @@ void PersonalReputation::clearPersonalRep(Object *subject) {
 
 /* ---- FactionList class ---- */
 
-Factions::Factions() {
-	load();
+Factions::Factions(bool use2da) {
+	if (use2da)
+		load2da();
+	else
+		loadFac();
 }
 
 Factions::~Factions() {
@@ -142,8 +148,42 @@ Common::UString Factions::getFactionName(uint32 faction) {
 	return _factionList[faction].name;
 }
 
+/** Load factions from the 'repute.FAC' file. */
+void Factions::loadFac() {
+	Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource("repute", Aurora::kFileTypeFAC));
+	if (!stream)
+		throw Common::Exception("No repute.FAC available");
+
+	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('F', 'A', 'C', ' ')));
+	const Aurora::GFF3Struct &top = gff->getTopLevel();
+
+	// Insert the factions
+	const Aurora::GFF3List &fList = top.getList("FactionList");
+	_count = fList.size();
+	for (Aurora::GFF3List::const_iterator it = fList.begin(); it != fList.end(); ++it) {
+		Faction fac;
+
+		// Add a faction entry to the array
+		fac.name = (*it)->getString("FactionName");
+		fac.global = (*it)->getUint("FactionGlobal");
+		_factionList.push_back(fac);
+	}
+
+	// Insert the reputation list
+	const Aurora::GFF3List &rList = top.getList("RepList");
+	for (Aurora::GFF3List::const_iterator it = rList.begin(); it != rList.end(); ++it) {
+		Reputation rep;
+
+		// Add a reputation entry to the array
+		rep.factionId1 = (*it)->getUint("FactionID1");
+		rep.factionId2 = (*it)->getUint("FactionID2");
+		rep.factionRep = (*it)->getUint("FactionRep");
+		_repList.push_back(rep);
+	}
+}
+
 /** Load standard factions from the 'repute.2da' file. */
-void Factions::load() {
+void Factions::load2da() {
 	const Aurora::TwoDAFile &repute = TwoDAReg.get2DA("repute");
 	size_t rows = repute.getRowCount();
 	Faction faction;
