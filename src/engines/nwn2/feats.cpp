@@ -410,14 +410,136 @@ void Feats::applyFeat(const uint32 id) {
 			_skillBonus[kSkillDisableDevice] += +2;
 			break;
 
-		case kFeatSkillFocusDisableTrap:
+		/* ---- Skill focus feats ---- */
+
+		case kFeatSkillFocusAppraise:
+			// +3 to Appraise
+			_skillBonus[kSkillAppraise]       += 3;
+			break;
+
+		case kFeatSkillFocusBluff:
+			// +3 to Bluff
+			_skillBonus[kSkillBluff]          += 3;
+			break;
+
+		case kFeatSkillFocusConcentrate:
+			// +3 to Concentrate
+			_skillBonus[kSkillConcentration]  += +3;
+			break;
+
+		case kFeatSkillFocusCraftAlchemy:
+			// +3 to Craft Alchemy
+			_skillBonus[kSkillCraftAlchemy]   += +3;
+			break;
+
+		case kFeatSkillFocusCraftArmor:
+			// +3 to Craft Armor
+			_skillBonus[kSkillCraftArmor]     += +3;
+			break;
+
+		case kFeatSkillFocusCraftTrap:
+			// +3 to Craft Trap
+			_skillBonus[kSkillCraftTrap]      += +3;
+			break;
+
+		case kFeatSkillFocusCraftWeapon:
+			// +3 to Craft Weapon
+			_skillBonus[kSkillCraftWeapon]    += +3;
+			break;
+
+		case kFeatSkillFocusDisableDevice:
 			// +3 to Disable Device
-			_skillBonus[kSkillDisableDevice] += +3;
+			_skillBonus[kSkillDisableDevice]  += +3;
+			break;
+
+		case kFeatSkillFocusHeal:
+			// +3 to Heal
+			_skillBonus[kSkillHeal]           += +3;
+			break;
+
+		case kFeatSkillFocusHide:
+			// +3 to Hide
+			_skillBonus[kSkillHide]           += +3;
+			break;
+
+		case kFeatSkillFocusIntimidate:
+			// +3 to Intimidate
+			_skillBonus[kSkillIntimidate]     += +3;
+			break;
+
+		case kFeatSkillFocusListen:
+			// +3 to Listen
+			_skillBonus[kSkillListen]         += +3;
+			break;
+
+		case kFeatSkillFocusLore:
+			// +3 to Lore
+			_skillBonus[kSkillLore]           += +3;
+			break;
+
+		case kFeatSkillFocusMoveSilently:
+			// +3 to Move Silently
+			_skillBonus[kSkillMoveSilently]   += +3;
+			break;
+
+		case kFeatSkillFocusOpenLock:
+			// +3 to Open Lock
+			_skillBonus[kSkillOpenLock]       += +3;
+			break;
+
+		case kFeatSkillFocusParry:
+			// +3 to Parry
+			_skillBonus[kSkillParry]          += +3;
+			break;
+
+		case kFeatSkillFocusPerform:
+			// +3 to Perform
+			_skillBonus[kSkillPerform]        += +3;
 			break;
 
 		case kFeatSkillFocusSearch:
 			// +3 to Search
-			_skillBonus[kSkillSearch] += +3;
+			_skillBonus[kSkillSearch]         += +3;
+			break;
+
+		case kFeatSkillFocusSetTrap:
+			// +3 to Set Trap
+			_skillBonus[kSkillSetTrap]        += +3;
+			break;
+
+		case kFeatSkillFocusSleightOfHand:
+			// +3 to Sleight of Hand
+			_skillBonus[kSkillSleightOfHand]  += +3;
+			break;
+
+		case kFeatSkillFocusSpellcraft:
+			// +3 to Spellcraft
+			_skillBonus[kSkillSpellcraft]     += +3;
+			break;
+
+		case kFeatSkillFocusSpot:
+			// +3 to Spot
+			_skillBonus[kSkillSpot]           += +3;
+			break;
+
+		case kFeatSkillFocusSurvival:
+			// +3 to Survival
+			_skillBonus[kSkillSurvival]       += +3;
+			break;
+
+		case kFeatSkillFocusTaunt:
+			// +3 to Taunt
+			_skillBonus[kSkillTaunt]          += +3;
+			break;
+
+		case kFeatSkillFocusTumble:
+			// +3 to Tumble
+			_skillBonus[kSkillTumble]         += +3;
+			break;
+
+		case kFeatSkillFocusUseMagicDevice:
+			// +3 to Use Magic Device
+			_skillBonus[kSkillUseMagicDevice] += +3;
 			break;
 
 		/* ---- Class feats ---- */
