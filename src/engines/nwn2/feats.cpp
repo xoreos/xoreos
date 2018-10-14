@@ -44,33 +44,48 @@ void Feats::clear() {
 	initParameters();
 }
 
-/** Add the feat to the list */
-void Feats::featAdd(const uint32 id) {
-	_feats.push_back(id);
+/** Add the feat to the list at the given level */
+void Feats::featAdd(const uint32 id, uint16 level) {
+	Feat feat;
+	feat.id = id;
+	feat.level = level;
+
+	_feats.push_back(feat);
 	applyFeat(id);
 }
 
-/** Remove the feat from the list */
-void Feats::featRemove(const uint32 id) {
+/**
+ * Remove the feat from the list, then reset the
+ * feat bonuses and modifiers. If 'maxLevel' is
+ * zero, ignore the level limit for the reset.
+ */
+void Feats::featRemove(const uint32 id, uint16 maxLevel) {
 	// Look for a matching feat
-	for (std::vector<uint32>::const_iterator it = _feats.begin(); it != _feats.end(); ++it) {
-		if (*it == id) {
+	for (std::vector<Feat>::iterator it = _feats.begin(); it != _feats.end(); ++it) {
+		if (it->id == id) {
 			// Found a match, so remove it
 			_feats.erase(it);
 
 			// Rebuild the data
-			resetFeats();
+			resetFeats(maxLevel);
 			break;
 		}
 	}
 }
 
-/** Return true if the feat is in the list */
-bool Feats::getHasFeat(uint32 id) const {
+/**
+ * Return true if the feat is in the list with a
+ * level at or below maxLevel. If 'maxLevel' is
+ * zero, ignore the level limit.
+ */
+bool Feats::getHasFeat(uint32 id, uint16 maxLevel) const {
+	bool ignoreLimit = (maxLevel == 0);
+
 	// Look for a matching feat
-	for (std::vector<uint32>::const_iterator it = _feats.begin(); it != _feats.end(); ++it)
-		if (*it == id)
-			return true;
+	for (std::vector<Feat>::const_iterator it = _feats.begin(); it != _feats.end(); ++it)
+		if (ignoreLimit || (it->level <= maxLevel))
+			if (it->id == id)
+				return true;
 
 	return false;
 }
@@ -143,14 +158,20 @@ void Feats::initParameters() {
 		_hasCustomFeat[i] = false;
 }
 
-/** Apply all feats */
-void Feats::resetFeats() {
+/**
+ * Apply all feats with level at or below 'maxLevel'.
+ * If 'maxLevel' is zero, ignore the level limit.
+ */
+void Feats::resetFeats(uint16 maxLevel) {
+	bool ignoreLimit = (maxLevel == 0);
+
 	// Reset the parameters
 	initParameters();
 
 	// Apply modifiers for each feat
-	for (std::vector<uint32>::const_iterator it = _feats.begin(); it != _feats.end(); ++it)
-		applyFeat(*it);
+	for (std::vector<Feat>::const_iterator it = _feats.begin(); it != _feats.end(); ++it)
+		if (ignoreLimit || (it->level <= maxLevel))
+			applyFeat(it->id);
 }
 
 /**
