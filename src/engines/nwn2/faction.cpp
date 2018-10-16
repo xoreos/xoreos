@@ -193,16 +193,32 @@ void Factions::loadFac() {
 		_factionList.push_back(fac);
 	}
 
-	// Insert the reputation list
+	// Pre-populate the list with a neutral '50' reputations
+	for (size_t row = 0; row < _count; row++)
+		for (size_t col = 0; col < _count; col++) {
+			Reputation rep;
+			rep.factionId1 = col;
+			rep.factionId2 = row;
+			rep.factionRep = 50;
+			_repList.push_back(rep);
+		}
+
+	// Insert the reputation list values
 	const Aurora::GFF3List &rList = top.getList("RepList");
 	for (Aurora::GFF3List::const_iterator it = rList.begin(); it != rList.end(); ++it) {
 		Reputation rep;
 
-		// Add a reputation entry to the array
+		// Initialize the reputation
 		rep.factionId1 = (*it)->getUint("FactionID1");
 		rep.factionId2 = (*it)->getUint("FactionID2");
 		rep.factionRep = (*it)->getUint("FactionRep");
-		_repList.push_back(rep);
+
+		// Bounds checking
+		if ((rep.factionId1 < _count) && (rep.factionId2 < _count)) {
+			// Insert this reputation entry into the array
+			size_t index = (rep.factionId2 * _count) + rep.factionId1;
+			_repList[index] = rep;
+		}
 	}
 }
 
