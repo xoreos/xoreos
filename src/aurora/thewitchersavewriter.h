@@ -27,6 +27,8 @@
 
 #include "src/common/writestream.h"
 
+#include "src/aurora/types.h"
+
 namespace Aurora {
 
 class TheWitcherSaveWriter {
@@ -41,10 +43,11 @@ public:
 
 	/** Add a file to this TheWitcherSave archive.
 	 *
-	 *  @param fileName The filename of the stream to write
+	 *  @param resRef The filename of the stream to write
+	 *  @param fileType The file type of the resource to add
 	 *  @param stream The stream of the
 	 */
-	void add(const Common::UString &fileName, Common::ReadStream &stream);
+	void add(const Common::UString &resRef, const Aurora::FileType fileType, Common::ReadStream &stream);
 
 	/** Finish the stream and write the file table at the
 	 *  end of the stream, and set the finished flag to prevent
