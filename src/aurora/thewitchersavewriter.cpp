@@ -24,6 +24,7 @@
 
 #include "src/common/encoding.h"
 
+#include "src/aurora/util.h"
 #include "src/aurora/thewitchersavewriter.h"
 
 namespace Aurora {
@@ -61,12 +62,12 @@ TheWitcherSaveWriter::TheWitcherSaveWriter(const Common::UString &areaName, Comm
 	stream.writeZeros(2048);
 }
 
-void TheWitcherSaveWriter::add(const Common::UString &fileName, Common::ReadStream &stream) {
+void TheWitcherSaveWriter::add(const Common::UString &resRef, const Aurora::FileType fileType, Common::ReadStream &stream) {
 	if (_finished)
 		throw Common::Exception("TheWitcherSave::add() Archive is already finished");
 
 	Resource resource;
-	resource.name = fileName;
+	resource.name = TypeMan.setFileType(resRef, fileType);
 	resource.offset = _stream.pos();
 	resource.size = _stream.writeStream(stream);
 
@@ -89,6 +90,8 @@ void TheWitcherSaveWriter::finish() {
 
 	_stream.writeUint32LE(resourceTableOffset);
 	_stream.writeUint32LE(_resources.size());
+
+	_finished = true;
 }
 
 } // End of namespace Aurora
