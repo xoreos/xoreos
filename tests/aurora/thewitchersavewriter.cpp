@@ -420,7 +420,7 @@ GTEST_TEST(TheWitcherSaveWriter, WriteFile) {
 
 	Common::MemoryWriteStreamDynamic writeStream;
 	Aurora::TheWitcherSaveWriter twsWriter("Test Area", writeStream);
-	twsWriter.add("ozymandias.txt", dataStream);
+	twsWriter.add("ozymandias", Aurora::kFileTypeTXT, dataStream);
 	twsWriter.finish();
 
 	const Aurora::TheWitcherSaveFile tws(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
@@ -428,8 +428,8 @@ GTEST_TEST(TheWitcherSaveWriter, WriteFile) {
 	EXPECT_STREQ(tws.getAreaName().c_str(), "Test Area");
 	EXPECT_EQ(tws.getResources().size(), 1);
 
-	EXPECT_EQ(tws.findResource("ozymandias.txt", Aurora::kFileTypeTXT), 0);
-	EXPECT_EQ(tws.findResource("ozymandias.txt", Aurora::kFileTypeBMP), 0xFFFFFFFF);
+	EXPECT_EQ(tws.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
+	EXPECT_EQ(tws.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
 
 	Common::SeekableReadStream *readStream = tws.getResource(0);
 	ASSERT_EQ(readStream->size(), kFileDataSize);
@@ -453,10 +453,10 @@ GTEST_TEST(TheWitcherSaveWriter, WriteMultipleFiles) {
 
 	Common::MemoryWriteStreamDynamic writeStream;
 	Aurora::TheWitcherSaveWriter twsWriter("Test Area", writeStream);
-	twsWriter.add("ozymandias_1.txt", dataStream1);
+	twsWriter.add("ozymandias_1", Aurora::kFileTypeTXT, dataStream1);
 	dataStream1.seek(0);
-	twsWriter.add("ozymandias_2.txt", dataStream1);
-	twsWriter.add("logo.bmp", dataStream2);
+	twsWriter.add("ozymandias_2.txt", Aurora::kFileTypeTXT, dataStream1);
+	twsWriter.add("logo", Aurora::kFileTypeBMP, dataStream2);
 	twsWriter.finish();
 
 	const Aurora::TheWitcherSaveFile tws(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
@@ -464,12 +464,12 @@ GTEST_TEST(TheWitcherSaveWriter, WriteMultipleFiles) {
 	EXPECT_STREQ(tws.getAreaName().c_str(), "Test Area");
 	EXPECT_EQ(tws.getResources().size(), 3);
 
-	EXPECT_EQ(tws.findResource("ozymandias_1.txt", Aurora::kFileTypeTXT), 0);
-	EXPECT_EQ(tws.findResource("ozymandias_1.txt", Aurora::kFileTypeBMP), 0xFFFFFFFF);
-	EXPECT_EQ(tws.findResource("ozymandias_2.txt", Aurora::kFileTypeTXT), 1);
-	EXPECT_EQ(tws.findResource("ozymandias_2.txt", Aurora::kFileTypeBMP), 0xFFFFFFFF);
-	EXPECT_EQ(tws.findResource("logo.bmp", Aurora::kFileTypeBMP), 2);
-	EXPECT_EQ(tws.findResource("logo.bmp", Aurora::kFileTypeTXT), 0xFFFFFFFF);
+	EXPECT_EQ(tws.findResource("ozymandias_1", Aurora::kFileTypeTXT), 0);
+	EXPECT_EQ(tws.findResource("ozymandias_1", Aurora::kFileTypeBMP), 0xFFFFFFFF);
+	EXPECT_EQ(tws.findResource("ozymandias_2", Aurora::kFileTypeTXT), 1);
+	EXPECT_EQ(tws.findResource("ozymandias_2", Aurora::kFileTypeBMP), 0xFFFFFFFF);
+	EXPECT_EQ(tws.findResource("logo", Aurora::kFileTypeBMP), 2);
+	EXPECT_EQ(tws.findResource("logo", Aurora::kFileTypeTXT), 0xFFFFFFFF);
 
 	Common::SeekableReadStream *readStream1 = tws.getResource(0);
 	ASSERT_EQ(readStream1->size(), kFileDataSize);
