@@ -104,6 +104,12 @@ void TheWitcherSaveFile::load() {
 		resource.type = TypeMan.getFileType(resource.name);
 		resource.index = i;
 
+		// Remove the file type from the name
+		resource.name = TypeMan.setFileType(resource.name, Aurora::kFileTypeNone);
+
+		// Replace potential windows slashes
+		resource.name.replaceAll('\\', '/');
+
 		IResource iResource;
 		iResource.length = _tws->readUint32LE();
 		iResource.offset = _tws->readUint32LE();
@@ -114,6 +120,10 @@ void TheWitcherSaveFile::load() {
 		_resourceList.push_back(resource);
 		_resources[i] = iResource;
 	}
+}
+
+uint32 TheWitcherSaveFile::getResourceSize(uint32 index) const {
+	return _resources[index].length;
 }
 
 } // End of namespace Aurora
