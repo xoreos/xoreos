@@ -745,9 +745,9 @@ GTEST_TEST(TheWitcherSaveFile, getResources) {
 
 	EXPECT_EQ(list.size(), 2);
 
-	EXPECT_STREQ(list.front().name.c_str(), "test1.txt");
+	EXPECT_STREQ(list.front().name.c_str(), "test1");
 	EXPECT_EQ(list.front().type, Aurora::kFileTypeTXT);
-	EXPECT_STREQ(list.back().name.c_str(), "test2.txt");
+	EXPECT_STREQ(list.back().name.c_str(), "test2");
 	EXPECT_EQ(list.back().type, Aurora::kFileTypeTXT);
 }
 
