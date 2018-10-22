@@ -46,7 +46,55 @@ protected:
 	void decodeNextTrackFrame(VideoTrack &track);
 
 private:
+	void goToKeyFrame(size_t n);
+
+	class ActimagineVideoTrack : public FixedRateVideoTrack {
+	public:
+		ActimagineVideoTrack(uint32 width, uint32 height, uint32 numFrames, Common::Rational fps);
+
+		uint32 getWidth() const override;
+		uint32 getHeight() const override;
+
+		int getCurFrame() const override;
+
+	protected:
+		Common::Rational getFrameRate() const override;
+
+	private:
+		uint32 _width;
+		uint32 _height;
+		uint32 _numFrames;
+
+		const Common::Rational _fps;
+	};
+
+	// TODO: Audio Track
+	// It might be one of FastAudio or GCADPCM
+	class ActimagineAudioTrack : public AudioTrack {
+	public:
+		ActimagineAudioTrack(uint32 sampleRate, uint32 channelCount, uint32 audioOffset);
+
+		bool canBufferData() const override;
+
+	protected:
+		Sound::AudioStream *getAudioStream() const override;
+
+	private:
+		uint32 _sampleRate;
+		uint32 _channelCount;
+		uint32 _audioOffset;
+	};
+
+	struct KeyFrame {
+		uint32 frameNumber;
+		uint32 dataOffset;
+	};
+
 	Common::ScopedPtr<Common::SeekableReadStream> _vx;
+
+	std::vector<KeyFrame> _keyFrames;
+
+	uint32 _biggestFrame;
 
 	/** Load an Actimagine file. */
 	void load();
