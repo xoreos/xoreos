@@ -82,6 +82,17 @@ void GUIBackground::render(Graphics::RenderPass pass) {
 
 	glPushMatrix();
 
+	glColor3f(0.0f, 0.0f, 0.0f);
+
+	glBegin(GL_QUADS);
+		glVertex2i(0, 0);
+		glVertex2i(_screenWidth, 0);
+		glVertex2i(_screenWidth, _screenHeight);
+		glVertex2i(0, _screenHeight);
+	glEnd();
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0, 0.0);
 		glVertex2i(_vertexX1, _vertexY1);
