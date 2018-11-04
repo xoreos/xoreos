@@ -268,6 +268,9 @@ static void writeFakeChar(std::vector<byte> &output, uint32 c, Encoding encoding
 }
 
 static UString createString(std::vector<byte> &output, Encoding encoding) {
+	if (output.empty())
+		return "";
+
 	switch (encoding) {
 		case kEncodingASCII:
 		case kEncodingUTF8:
