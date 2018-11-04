@@ -47,6 +47,9 @@
 #include "src/graphics/aurora/fontman.h"
 #include "src/graphics/aurora/textureman.h"
 
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+
 #include "src/events/events.h"
 #include "src/events/requests.h"
 
@@ -263,6 +266,10 @@ void EngineManager::cleanup() const {
 
 		FontMan.clear();
 		CursorMan.clear();
+
+		MaterialMan.deinit();
+		SurfaceMan.deinit();
+
 		TextureMan.clear();
 
 		TokenMan.clear();
