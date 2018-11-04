@@ -511,6 +511,10 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		ctx.mdl->seek(ctx.offModelData + *child);
 		childNode->load(ctx);
 	}
+
+	if (_mesh && _mesh->data) {
+		_mesh->data->rawMesh->init();
+	}
 }
 
 void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
@@ -705,6 +709,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_render = _mesh->render;
 	_mesh->data = new MeshData();
 	_mesh->data->envMapMode = kModeEnvironmentBlendedOver;
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
 
 	uint32 endPos = ctx.mdl->pos();
 
@@ -729,11 +734,11 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	for (uint t = 0; t < textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
 
-	_mesh->data->vertexBuffer.setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
+	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
 	_mesh->data->initialVertexCoords.resize(3 * ctx.vertexCount);
 
-	float *v = reinterpret_cast<float *>(_mesh->data->vertexBuffer.getData());
-	float *iv = &_mesh->data->initialVertexCoords[0];
+	float *v = reinterpret_cast<float *>(_mesh->data->rawMesh->getVertexBuffer()->getData());
+	float *iv = _mesh->data->initialVertexCoords.data();
 
 	for (uint32 i = 0; i < ctx.vertexCount; i++) {
 		// Position
@@ -773,9 +778,9 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	ctx.mdl->seek(ctx.offModelData + offVerts);
 
-	_mesh->data->indexBuffer.setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
+	_mesh->data->rawMesh->getIndexBuffer()->setSize(facesCount * 3, sizeof(uint16), GL_UNSIGNED_SHORT);
 
-	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->indexBuffer.getData());
+	uint16 *f = reinterpret_cast<uint16 *>(_mesh->data->rawMesh->getIndexBuffer()->getData());
 	for (uint32 i = 0; i < facesCount * 3; i++)
 		f[i] = ctx.mdl->readUint16LE();
 
