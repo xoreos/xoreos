@@ -166,8 +166,6 @@ void GraphicsManager::deinit() {
 	_animationThread.destroyThread();
 
 	MeshMan.deinit();
-	MaterialMan.deinit();
-	SurfaceMan.deinit();
 	ShaderMan.deinit();
 	WindowMan.deinit();
 
