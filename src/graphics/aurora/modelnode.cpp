@@ -397,19 +397,21 @@ void ModelNode::createBound() {
 
 	const VertexDecl &vertexDecl = vertexBuffer->getVertexDecl();
 	for (VertexDecl::const_iterator vA = vertexDecl.begin(); vA != vertexDecl.end(); ++vA) {
-		if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
-			continue;
+		if (vA->pointer) {
+			if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
+				continue;
 
-		const uint32 stride = MAX<uint32>(vA->size, vA->stride / sizeof(float));
+			const uint32 stride = MAX<uint32>(vA->size, vA->stride / sizeof(float));
 
-		const float *vertexData = reinterpret_cast<const float *>(vA->pointer);
+			const float *vertexData = reinterpret_cast<const float *>(vA->pointer);
 
-		const float *vX = vertexData + 0;
-		const float *vY = vertexData + 1;
-		const float *vZ = vertexData + 2;
+			const float *vX = vertexData + 0;
+			const float *vY = vertexData + 1;
+			const float *vZ = vertexData + 2;
 
-		for (uint32 v = 0; v < vertexBuffer->getCount(); v++)
-			_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
+			for (uint32 v = 0; v < vertexBuffer->getCount(); v++)
+				_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
+		}
 	}
 
 	createCenter();
