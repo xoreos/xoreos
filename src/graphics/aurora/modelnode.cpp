@@ -73,6 +73,7 @@ ModelNode::ModelNode(Model &model)
 		  _level(0),
 		  _alpha(1.0f),
 		  _render(false),
+		  _dirtyMesh(false),
 		  _mesh(0),
 		  _nodeNumber(0),
 		  _positionBuffered(false),
@@ -392,9 +393,9 @@ void ModelNode::createBound() {
 	if (!_mesh || !_mesh->data)
 		return;
 
-	VertexBuffer vertexBuffer = _mesh->data->vertexBuffer;
+	VertexBuffer *vertexBuffer = _mesh->data->rawMesh->getVertexBuffer();
 
-	const VertexDecl vertexDecl = vertexBuffer.getVertexDecl();
+	const VertexDecl &vertexDecl = vertexBuffer->getVertexDecl();
 	for (VertexDecl::const_iterator vA = vertexDecl.begin(); vA != vertexDecl.end(); ++vA) {
 		if ((vA->index != VPOSITION) || (vA->type != GL_FLOAT))
 			continue;
@@ -407,7 +408,7 @@ void ModelNode::createBound() {
 		const float *vY = vertexData + 1;
 		const float *vZ = vertexData + 2;
 
-		for (uint32 v = 0; v < vertexBuffer.getCount(); v++)
+		for (uint32 v = 0; v < vertexBuffer->getCount(); v++)
 			_boundBox.add(vX[v * stride], vY[v * stride], vZ[v * stride]);
 	}
 
@@ -545,7 +546,7 @@ void ModelNode::renderGeometryNormal(Mesh &mesh) {
 	if (mesh.data->textures.empty())
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->renderImmediate();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
@@ -563,20 +564,24 @@ void ModelNode::renderGeometryEnvMappedUnder(Mesh &mesh) {
 	 * Neverwinter Nights uses this method.
 	 */
 
+	mesh.data->rawMesh->renderBind();
+
 	TextureMan.set(mesh.data->envMap, TextureManager::kModeEnvironmentMapReflective);
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
 		TextureMan.set(mesh.data->textures[t], TextureManager::kModeDiffuse);
 	}
 
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
 		TextureMan.set();
 	}
+
+	mesh.data->rawMesh->renderUnbind();
 }
 
 void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
@@ -588,6 +593,8 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 	 * KotOR and KotOR2 use this method.
 	 */
 
+	mesh.data->rawMesh->renderBind();
+
 	if (!mesh.data->textures.empty()) {
 		for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 			TextureMan.activeTexture(t);
@@ -596,7 +603,7 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 
 		glBlendFunc(GL_ONE, GL_ZERO);
 
-		mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+		mesh.data->rawMesh->render();
 
 		for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 			TextureMan.activeTexture(t);
@@ -609,7 +616,7 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 		glDisable(GL_ALPHA_TEST);
 		glBlendFunc(GL_ZERO, GL_ONE);
 
-		mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+		mesh.data->rawMesh->render();
 	}
 
 	TextureMan.activeTexture(0);
@@ -617,16 +624,17 @@ void ModelNode::renderGeometryEnvMappedOver(Mesh &mesh) {
 
 	glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE);
 
-	mesh.data->vertexBuffer.draw(GL_TRIANGLES, mesh.data->indexBuffer);
+	mesh.data->rawMesh->render();
 
 	TextureMan.set();
 
 	glEnable(GL_ALPHA_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	mesh.data->rawMesh->renderUnbind();
 }
 
 bool ModelNode::renderableMesh(Mesh *mesh) {
-	return mesh && mesh->data && mesh->data->indexBuffer.getCount() > 0;
+	return mesh && mesh->data && mesh->data->rawMesh;
 }
 
 void ModelNode::render(RenderPass pass) {
@@ -649,6 +657,11 @@ void ModelNode::render(RenderPass pass) {
 			mesh = rootStateNode->_mesh;
 			doRender = rootStateNode->_render;
 		}
+	}
+
+	if (_dirtyMesh) {
+		_mesh->data->rawMesh->getVertexBuffer()->updateGL();
+		_dirtyMesh = false;
 	}
 
 	// Render the node's geometry
@@ -762,7 +775,7 @@ void ModelNode::flushBuffers() {
 
 	if (_vertexCoordsBuffered) {
 		const float *vcb = &_vertexCoordsBuffer[0];
-		VertexBuffer &vb = _mesh->data->vertexBuffer;
+		VertexBuffer &vb = *(_mesh->data->rawMesh->getVertexBuffer());
 		int vertexCount = vb.getCount();
 		int stride = vb.getSize() / sizeof(float);
 		float *v = reinterpret_cast<float *>(vb.getData());
@@ -774,6 +787,7 @@ void ModelNode::flushBuffers() {
 			vcb += 3;
 		}
 		_vertexCoordsBuffered = false;
+		_dirtyMesh = true;
 	}
 }
 

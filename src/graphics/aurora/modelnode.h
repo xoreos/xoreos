@@ -40,6 +40,8 @@
 #include "src/graphics/aurora/types.h"
 #include "src/graphics/aurora/texturehandle.h"
 
+#include "src/graphics/mesh/meshman.h"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -155,8 +157,7 @@ public:
 	};
 
 	struct MeshData {
-		VertexBuffer vertexBuffer; ///< Node geometry vertex buffer.
-		IndexBuffer indexBuffer;   ///< Node geometry index buffer.
+		Graphics::Mesh::Mesh *rawMesh; ///< Node raw mesh data.
 
 		std::vector<float> initialVertexCoords; ///< Initial node vertex coordinates.
 
@@ -227,6 +228,7 @@ protected:
 	glm::mat4 _absolutePosition;
 
 	bool _render; ///< Render the node?
+	bool _dirtyMesh;  ///< Mesh data needs updating.
 
 	Mesh *_mesh;
 
