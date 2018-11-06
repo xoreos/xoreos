@@ -51,6 +51,8 @@ private:
 	struct ParserContext {
 		Common::SeekableReadStream *mdl;
 
+		Common::UString mdlName;
+
 		State *state;
 
 		bool isASCII;

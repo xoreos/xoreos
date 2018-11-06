@@ -39,6 +39,9 @@
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/animnode.h"
 
+// This is included if a mesh wants a unique name.
+#include "src/common/uuid.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -177,6 +180,7 @@ void Model_KotOR::load(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	ctx.mdlName = _name;
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -513,7 +517,60 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	}
 
 	if (_mesh && _mesh->data) {
+		Common::UString meshName = ctx.mdlName;
+		meshName += ".";
+		if (ctx.state->name.size() != 0) {
+			meshName += ctx.state->name;
+		} else {
+			meshName += "xoreos.default";
+		}
+		meshName += ".";
+		meshName += _name;
+#ifdef MESH_KOTOR_USE_MESHMAN
+		/**
+		 * Dirty hack around an issue in KotOR2 where a tile can have multiple meshes
+		 * of exactly the same name. This dirty hack will double up on static objects
+		 * without state, but hopefully they're relatively few and it won't impact
+		 * performance too much.
+		 * A future improvement will be to see if an entire model has already been
+		 * loaded and to use that directly: that should prevent models with an empty
+		 * state from being affected by this dirty hack.
+		 */
+		Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
+		if (ctx.state->name.size() == 0) {
+			while (mystery_mesh) {
+				meshName += "_";
+				mystery_mesh = MeshMan.getMesh(meshName);
+			}
+		}
+
+		if (!mystery_mesh) {
+			Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+			if (checkMesh) {
+				delete _mesh->data->rawMesh;
+				_mesh->data->rawMesh = checkMesh;
+			} else {
+				_mesh->data->rawMesh->setName(meshName);
+				_mesh->data->rawMesh->init();
+				MeshMan.addMesh(_mesh->data->rawMesh);
+			}
+		} else {
+			delete _mesh->data->rawMesh;
+			_mesh->data->rawMesh = mystery_mesh;
+		}
+#else
+		/**
+		 * Because meshes need to be unique right now, at least until animation can use
+		 * vertex shaders instead of vertex data duplication, need to generate a unique
+		 * name for the mesh and add it to the mesh manager. This is important; the mesh
+		 * manager is responsible for later deleting it.
+		 */
+		meshName += "#" + Common::generateIDRandomString();
+		_mesh->data->rawMesh->setName(meshName);
 		_mesh->data->rawMesh->init();
+
+		MeshMan.addMesh(_mesh->data->rawMesh);
+#endif
 	}
 }
 

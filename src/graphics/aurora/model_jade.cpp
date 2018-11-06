@@ -38,6 +38,9 @@
 
 #include "src/graphics/aurora/model_jade.h"
 
+// This is included if a mesh wants a unique name.
+#include "src/common/uuid.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -172,6 +175,7 @@ void Model_Jade::load(ParserContext &ctx) {
 	ctx.mdl->skip(8); // Function pointers
 
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	ctx.mdlName = _name;
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -334,6 +338,16 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 		childNode->load(ctx);
 	}
 
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
 	if (!_mesh) {
 		return;
 	}
@@ -347,6 +361,14 @@ void ModelNode_Jade::load(Model_Jade::ParserContext &ctx) {
 	}
 
 	_mesh->data->rawMesh->init();
+	if (MeshMan.getMesh(meshName)) {
+		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+
+		// TODO: figure out the right thing to handle mesh duplication.
+		meshName += "#" + Common::generateIDRandomString();
+	}
+	_mesh->data->rawMesh->setName(meshName);
+	MeshMan.addMesh(_mesh->data->rawMesh);
 }
 
 void ModelNode_Jade::readMesh(Model_Jade::ParserContext &ctx) {

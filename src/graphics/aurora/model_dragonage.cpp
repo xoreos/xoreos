@@ -500,7 +500,23 @@ void ModelNode_DragonAge::load(Model_DragonAge::ParserContext &ctx, const GFF4St
 	// If this is a mesh node, read the mesh
 	if (isType(nodeGFF, kMSHHID)) {
 		readMesh(ctx, nodeGFF);
+
+		Common::UString meshName = ctx.mmhName + ctx.mshName;
+		meshName += ".";
+		if (ctx.state->name.size() != 0) {
+			meshName += ctx.state->name;
+		} else {
+			meshName += "xoreos.default";
+		}
+		meshName += ".";
+		meshName += _name;
+
+		_mesh->data->rawMesh->setName(meshName);
 		_mesh->data->rawMesh->init();
+		if (MeshMan.getMesh(meshName)) {
+			warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+		}
+		MeshMan.addMesh(_mesh->data->rawMesh);
 	}
 
 	// Read the children
