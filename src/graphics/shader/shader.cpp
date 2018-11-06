@@ -44,6 +44,38 @@ namespace Graphics {
 
 namespace Shader {
 
+/*--------------------------------------------------------------------*/
+ShaderObject::ShaderObject() : GLContainer() {
+}
+
+void ShaderObject::doRebuild() {
+}
+
+void ShaderObject::doDestroy() {
+	if (this->glid != 0) {
+		glDeleteShader(this->glid);
+		this->glid = 0;
+	}
+}
+/*--------------------------------------------------------------------*/
+
+/*--------------------------------------------------------------------*/
+ShaderProgram::ShaderProgram() : GLContainer() {
+}
+
+void ShaderProgram::doRebuild() {
+	ShaderMan.genGLProgram(this);
+}
+
+void ShaderProgram::doDestroy() {
+	if (this->glid != 0) {
+		glDeleteProgram(this->glid);
+		this->glid = 0;
+	}
+}
+/*--------------------------------------------------------------------*/
+
+
 ShaderManager::ShaderManager() : _counterVID(1), _counterFID(1) {
 }
 
@@ -55,14 +87,9 @@ void ShaderManager::init() {
 	//_isGL3 = isGL3;  // pull this from GfxMan
 	status("Initialising shaders...");
 
-	ShaderProgram *nullProgram = new ShaderProgram();
-	_shaderProgramArray.push_back(nullProgram);
-	nullProgram->glid = 0;
-	nullProgram->id = 0;
-	nullProgram->usageCount = 1; // Prevent this from being automatically unloaded.
-
 	ShaderObject *vObj;
 	ShaderObject *fObj;
+
 	if (GfxMan.isGL3()) {
 		vObj = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault3xText, SHADER_VERTEX);
 		fObj = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault3xText, SHADER_FRAGMENT);
@@ -113,39 +140,31 @@ ShaderObject *ShaderManager::getShaderObject(const Common::UString &name, Shader
 }
 
 ShaderObject *ShaderManager::getShaderObject(const Common::UString &name, const Common::UString &source, ShaderType type) {
+	_shaderMutex.lock();
 	ShaderObject *shaderObject = 0;
 	//ShaderObject *shaderObject = (ShaderObject *)(_shaderObjectMap[filename.c_str()]);
 	std::map<Common::UString, Shader::ShaderObject *>::iterator it = _shaderObjectMap.find(name);
 	if (it != _shaderObjectMap.end()) {
+		_shaderMutex.unlock();
 		return it->second;
 	}
 
 	shaderObject = new ShaderObject;
 	shaderObject->type = type;
-	shaderObject->glid = glCreateShader(shaderObject->type == SHADER_VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
-	const char *text = source.c_str();
-	glShaderSource(shaderObject->glid, 1, (const GLchar **)(&text), 0);
-	glCompileShader(shaderObject->glid);
+	shaderObject->glid = 0;
+	shaderObject->shaderString = source;
 
 	status("shader %s loaded", name.c_str());
 
-	GLint gl_status;
-	glGetShaderiv(shaderObject->glid, GL_COMPILE_STATUS, &gl_status);
-	if (gl_status == GL_FALSE) {
-		GLsizei logolength;
-		char logorama[4096];
-		glGetShaderInfoLog(shaderObject->glid, 4095, &logolength, logorama);
-		error("shader compile failure! shader %s, Driver output:\n", logorama);
-		delete shaderObject;
+	_shaderObjectMap.insert(std::pair<Common::UString, ShaderObject *>(name, shaderObject));
+	_shaderMutex.unlock();
+
+	parseShaderVariables(source, shaderObject->variablesSelf);
+	genShaderVariableList(shaderObject, shaderObject->variablesCombined);
+	if (shaderObject->type == SHADER_VERTEX) {
+		shaderObject->id = _counterVID++; // Post decrement intentional.
 	} else {
-		_shaderObjectMap.insert(std::pair<Common::UString, ShaderObject *>(name, shaderObject));
-		parseShaderVariables(source, shaderObject->variablesSelf);
-		genShaderVariableList(shaderObject, shaderObject->variablesCombined);
-		if (shaderObject->type == SHADER_VERTEX) {
-			shaderObject->id = _counterVID++; // Post decrement intentional.
-		} else {
-			shaderObject->id = _counterFID++; // Post decrement intentional.
-		}
+		shaderObject->id = _counterFID++; // Post decrement intentional.
 	}
 
 	return shaderObject;
@@ -259,6 +278,12 @@ void ShaderManager::bindShaderInstance(ShaderProgram *prog, const void **vertexV
 }
 
 ShaderProgram *ShaderManager::getShaderProgram(ShaderObject *vertexObject, ShaderObject *fragmentObject) {
+	_programMutex.lock();
+	if (_shaderProgramArray.size() == 0) {
+		_programMutex.unlock();
+		return NULL;
+	}
+
 	uint32 search_high = _shaderProgramArray.size() - 1;  // -1 is ok here, as a default shader will exist.
 	uint32 search_low = 0;
 	uint32 search_mid = _shaderProgramArray.size() >> 1;
@@ -279,7 +304,7 @@ ShaderProgram *ShaderManager::getShaderProgram(ShaderObject *vertexObject, Shade
 			search_mid = (search_high + search_low) >> 1;  // The will help search_mid to gravitate towards the lowest point.
 		}
 	}
-
+	_programMutex.unlock();
 	return rvalue;
 }
 
@@ -300,38 +325,7 @@ ShaderProgram *ShaderManager::registerShaderProgram(ShaderObject *vertexObject, 
 	vertexObject->usageCount++;
 	fragmentObject->usageCount++;
 
-	GLuint glid = glCreateProgram();
-	registerShaderAttachment(glid, vertexObject);
-	registerShaderAttachment(glid, fragmentObject);
-
-	// GL2.1 supports attribute binding, but apparently nvidia drivers can have a problem with aliasing to inbuilt functions.
-	// So only bind attribute locations for >= GL3.x, with 2.x using builtin.
-	if (GfxMan.isGL3()) {
-		// Attempt to bind some common attributes. Note that it doesn't hurt if the attributes don't exist in the shader program.
-		glBindAttribLocation(glid, (GLuint)(VERTEX_LOCATION), "inPosition");
-		glBindAttribLocation(glid, (GLuint)(VERTEX_TEXCOORD0), "inTexCoord0");
-		glBindAttribLocation(glid, (GLuint)(VERTEX_NORMAL), "inNormal");
-	}
-
-	glLinkProgram(glid);
-
-	GLint linkStatus;
-	glGetProgramiv(glid, GL_LINK_STATUS, &linkStatus);
-	if (linkStatus == GL_FALSE) {
-		//error("shader link failure! shaders: %s, %s\nDriver output:\n", getShaderObjectName(vertexObject).c_str(), getShaderObjectName(fragmentObject).c_str());
-		error("Shader link failure! Driver output:\n");
-		GLsizei logolength;
-		char logorama[4096];
-		glGetProgramInfoLog(glid, 4095, &logolength, logorama);
-		error("%s", logorama);
-
-		glDeleteProgram(glid);
-		vertexObject->usageCount--;
-		fragmentObject->usageCount--;
-
-		return 0;
-	}
-
+	_programMutex.lock();
 	uint64 key = (((uint64)(vertexObject->id)) << 32) | (uint64)(fragmentObject->id);
 	uint32 searchIndex = 0;
 	while ((searchIndex < _shaderProgramArray.size()) && (_shaderProgramArray[searchIndex]->id < key)) {
@@ -345,51 +339,14 @@ ShaderProgram *ShaderManager::registerShaderProgram(ShaderObject *vertexObject, 
 		_shaderProgramArray[i] = _shaderProgramArray[i - 1];
 	}
 	_shaderProgramArray[searchIndex] = program;
+	_programMutex.unlock();
 
 	program->id = key;
-	program->glid = glid;
+	program->glid = 0;
 	program->vertexObject = vertexObject;
 	program->fragmentObject = fragmentObject;
 
-	//status("processing vertex variables, count: %u", (uint) vertexObject->variablesCombined.size());
-	for (uint32 i = 0; i < vertexObject->variablesCombined.size(); ++i) {
-		//status("vertex variable found");
-		GLint location;
-		if (vertexObject->variablesCombined[i].type != SHADER_UNIFORM_BUFFER)
-			location = glGetUniformLocation(glid, vertexObject->variablesCombined[i].name.c_str());
-		else
-			location = glGetUniformBlockIndex(glid, vertexObject->variablesCombined[i].name.c_str());
-		program->vertexVariableLocations.push_back(location);
-	}
-
-	for (uint32 i = 0; i < fragmentObject->variablesCombined.size(); ++i) {
-		GLint location;
-		if (fragmentObject->variablesCombined[i].type != SHADER_UNIFORM_BUFFER)
-			location = glGetUniformLocation(glid, fragmentObject->variablesCombined[i].name.c_str());
-		else
-			location = glGetUniformBlockIndex(glid, fragmentObject->variablesCombined[i].name.c_str());
-		program->fragmentVariableLocations.push_back(location);
-	}
-
-	if (GfxMan.isGL3()) {
-		// Bind some common UBO points.
-		GLuint ubo_index;
-		ubo_index = glGetUniformBlockIndex(glid, "engine_ubo_view");
-		if (ubo_index != GL_INVALID_INDEX) {
-			glUniformBlockBinding(glid, ubo_index, UBO_VIEW_MATRICES);
-		}
-		ubo_index = glGetUniformBlockIndex(glid, "engine_ubo_screen");
-		if (ubo_index != GL_INVALID_INDEX) {
-			glUniformBlockBinding(glid, ubo_index, UBO_SCREEN_INFO);
-		}
-		ubo_index = glGetUniformBlockIndex(glid, "boneBlock");
-		if (ubo_index != GL_INVALID_INDEX) {
-			glUniformBlockBinding(glid, ubo_index, UBO_BONE_MATRICES);
-		}
-	}
-
-	glUseProgram(0);
-
+	program->queue();
 	return program;
 }
 
@@ -527,6 +484,108 @@ void ShaderManager::parseShaderVariables(const Common::UString &shaderString, st
 	}
 
 	varList.resize(varList.size());
+}
+
+void ShaderManager::genGLShader(ShaderObject *object) {
+	if (object->glid != 0) {
+		return;  // Shader object already initialised.
+	}
+
+	object->glid = glCreateShader(object->type == SHADER_VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
+	const char *text = object->shaderString.c_str();
+	glShaderSource(object->glid, 1, (const GLchar **)(&text), 0);
+	glCompileShader(object->glid);
+
+	GLint gl_status;
+	glGetShaderiv(object->glid, GL_COMPILE_STATUS, &gl_status);
+	if (gl_status == GL_FALSE) {
+		GLsizei logolength;
+		char logorama[4096];
+		glGetShaderInfoLog(object->glid, 4095, &logolength, logorama);
+		error("shader compile failure! Driver output: %s\n", logorama);
+	}
+}
+
+void ShaderManager::genGLProgram(ShaderProgram *program) {
+	if (program->glid != 0) {
+		return;
+	}
+
+	GLuint glid = glCreateProgram();
+	ShaderObject *vertexObject = program->vertexObject;
+	ShaderObject *fragmentObject = program->fragmentObject;
+
+	// These functions will do nothing if the object has already been initialised.
+	genGLShader(vertexObject);
+	genGLShader(fragmentObject);
+
+	registerShaderAttachment(glid, vertexObject);
+	registerShaderAttachment(glid, fragmentObject);
+
+	// GL2.1 supports attribute binding, but apparently nvidia drivers can have a problem with aliasing to inbuilt functions.
+	// So only bind attribute locations for >= GL3.x, with 2.x using builtin.
+	if (GfxMan.isGL3()) {
+		// Attempt to bind some common attributes. Note that it doesn't hurt if the attributes don't exist in the shader program.
+		glBindAttribLocation(glid, (GLuint)(VERTEX_LOCATION), "inputPosition0");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_TEXCOORD0), "inputUV0");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_NORMAL), "inputNormal0");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_TEXCOORD1), "inputUV1");
+		glBindAttribLocation(glid, (GLuint)(VERTEX_COLOR), "inputColour");
+	}
+
+	glLinkProgram(glid);
+
+	GLint linkStatus;
+	glGetProgramiv(glid, GL_LINK_STATUS, &linkStatus);
+	if (linkStatus == GL_FALSE) {
+		GLsizei logolength;
+		char logorama[4096];
+		glGetProgramInfoLog(glid, 4095, &logolength, logorama);
+		error("Shader link failure! Driver output: %s", logorama);
+
+		glDeleteProgram(glid);
+
+		return;
+	}
+
+	program->glid = glid;
+
+	for (uint32 i = 0; i < vertexObject->variablesCombined.size(); ++i) {
+		GLint location;
+		if (vertexObject->variablesCombined[i].type != SHADER_UNIFORM_BUFFER)
+			location = glGetUniformLocation(glid, vertexObject->variablesCombined[i].name.c_str());
+		else
+			location = glGetUniformBlockIndex(glid, vertexObject->variablesCombined[i].name.c_str());
+		program->vertexVariableLocations.push_back(location);
+	}
+
+	for (uint32 i = 0; i < fragmentObject->variablesCombined.size(); ++i) {
+		GLint location;
+		if (fragmentObject->variablesCombined[i].type != SHADER_UNIFORM_BUFFER)
+			location = glGetUniformLocation(glid, fragmentObject->variablesCombined[i].name.c_str());
+		else
+			location = glGetUniformBlockIndex(glid, fragmentObject->variablesCombined[i].name.c_str());
+		program->fragmentVariableLocations.push_back(location);
+	}
+
+	if (GfxMan.isGL3()) {
+		// Bind some common UBO points.
+		GLuint ubo_index;
+		ubo_index = glGetUniformBlockIndex(glid, "engine_ubo_view");
+		if (ubo_index != GL_INVALID_INDEX) {
+			glUniformBlockBinding(glid, ubo_index, UBO_VIEW_MATRICES);
+		}
+		ubo_index = glGetUniformBlockIndex(glid, "engine_ubo_screen");
+		if (ubo_index != GL_INVALID_INDEX) {
+			glUniformBlockBinding(glid, ubo_index, UBO_SCREEN_INFO);
+		}
+		ubo_index = glGetUniformBlockIndex(glid, "boneBlock");
+		if (ubo_index != GL_INVALID_INDEX) {
+			glUniformBlockBinding(glid, ubo_index, UBO_BONE_MATRICES);
+		}
+	}
+
+	glUseProgram(0);
 }
 
 static const char *shaderTypeChararray[] = {
