@@ -24,6 +24,7 @@ src_graphics_shader_libshader_la_SOURCES =
 
 src_graphics_shader_libshader_la_SOURCES += \
     src/graphics/shader/shader.h \
+    src/graphics/shader/shaderbuilder.h \
     src/graphics/shader/shadercode.h \
     src/graphics/shader/shaderinstance.h \
     src/graphics/shader/shadermaterial.h \
@@ -35,6 +36,7 @@ src_graphics_shader_libshader_la_SOURCES += \
 
 src_graphics_shader_libshader_la_SOURCES += \
     src/graphics/shader/shader.cpp \
+    src/graphics/shader/shaderbuilder.cpp \
     src/graphics/shader/shadercode.cpp \
     src/graphics/shader/shaderinstance.cpp \
     src/graphics/shader/shadermaterial.cpp \
