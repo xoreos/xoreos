@@ -41,11 +41,11 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 		_variableData[i].flags = 0;
 		genSurfaceVar(i);
 
-		if (vertShader->variablesCombined[i].name == "objectModelviewMatrix") {
+		if (vertShader->variablesCombined[i].name == "_objectModelviewMatrix") {
 			_objectModelviewIndex = i;
-		} else if (vertShader->variablesCombined[i].name == "projectionMatrix") {
+		} else if (vertShader->variablesCombined[i].name == "_projectionMatrix") {
 			setVariableExternal(i, &(GfxMan.getProjectionMatrix()));
-		} else if (vertShader->variablesCombined[i].name == "modelviewMatrix") {
+		} else if (vertShader->variablesCombined[i].name == "_modelviewMatrix") {
 			setVariableExternal(i, &(GfxMan.getModelviewMatrix()));
 		}
 	}
