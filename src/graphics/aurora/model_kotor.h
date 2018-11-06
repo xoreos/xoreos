@@ -50,6 +50,8 @@ private:
 		Common::SeekableReadStream *mdl;
 		Common::SeekableReadStream *mdx;
 
+		Common::UString mdlName;
+
 		State *state;
 
 		std::list<ModelNode_KotOR *> nodes;

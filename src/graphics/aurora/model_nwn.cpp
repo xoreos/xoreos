@@ -222,6 +222,7 @@ void Model_NWN::loadBinary(ParserContext &ctx) {
 	_name = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
 	debugC(kDebugGraphics, 4, "Loading NWN binary model \"%s\": \"%s\"", _fileName.c_str(),
 	       _name.c_str());
+	ctx.mdlName = _name;
 
 	uint32 nodeHeadPointer = ctx.mdl->readUint32LE();
 	uint32 nodeCount       = ctx.mdl->readUint32LE();
@@ -306,6 +307,7 @@ void Model_NWN::loadASCII(ParserContext &ctx) {
 			       _name.c_str());
 
 			_name = line[1];
+			ctx.mdlName = _name;
 		} else if (line[0] == "setsupermodel") {
 			if (line[1] != _name)
 				warning("Model_NWN_ASCII::load(): setsupermodel: \"%s\" != \"%s\"",
@@ -940,7 +942,25 @@ void ModelNode_NWN_Binary::readMesh(Model_NWN::ParserContext &ctx) {
 
 	ctx.mdl->seek(endPos);
 
-	_mesh->data->rawMesh->init();
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
+	Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+	if (checkMesh) {
+		delete _mesh->data->rawMesh;
+		_mesh->data->rawMesh = checkMesh;
+	} else {
+		_mesh->data->rawMesh->setName(meshName);
+		_mesh->data->rawMesh->init();
+		MeshMan.addMesh(_mesh->data->rawMesh);
+	}
 }
 
 void ModelNode_NWN_Binary::readAnim(Model_NWN::ParserContext &ctx) {
@@ -1163,6 +1183,16 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 
 	processMesh(mesh);
 
+	Common::UString meshName = ctx.mdlName;
+	meshName += ".";
+	if (ctx.state->name.size() != 0) {
+		meshName += ctx.state->name;
+	} else {
+		meshName += "xoreos.default";
+	}
+	meshName += ".";
+	meshName += _name;
+
 	if (!_mesh) {
 		return;
 	}
@@ -1175,7 +1205,12 @@ void ModelNode_NWN_ASCII::load(Model_NWN::ParserContext &ctx,
 		return;
 	}
 
+	_mesh->data->rawMesh->setName(meshName);
 	_mesh->data->rawMesh->init();
+	if (MeshMan.getMesh(meshName)) {
+		warning("Warning: probable mesh duplication of: %s", meshName.c_str());
+	}
+	MeshMan.addMesh(_mesh->data->rawMesh);
 }
 
 void ModelNode_NWN_ASCII::readConstraints(Model_NWN::ParserContext &ctx, uint32 n) {

@@ -61,6 +61,8 @@ private:
 	struct ParserContext {
 		Common::SeekableReadStream *mdb;
 
+		Common::UString mdlName;
+
 		State *state;
 
 		std::list<ModelNode_NWN2 *> nodes;
