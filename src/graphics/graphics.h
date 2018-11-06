@@ -280,6 +280,14 @@ private:
 	bool renderGUIConsole();
 	bool renderGUI(ScalingType scalingType, QueueType guiQueue, bool disableDepthMask);
 	bool renderCursor();
+
+	bool renderWorldShader();
+	bool renderGUIFrontShader();
+	bool renderGUIBackShader();
+	bool renderGUIConsoleShader();
+	bool renderGUIShader(ScalingType scalingType, QueueType guiQueue, bool disableDepthMask);
+	bool renderCursorShader();
+
 	void endScene();
 
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
