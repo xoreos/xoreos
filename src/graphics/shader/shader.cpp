@@ -32,7 +32,6 @@
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/shader/shader.h"
-#include "src/graphics/shader/shadercode.h"
 #include "src/graphics/shader/shaderbuilder.h"
 
 #include "src/graphics/aurora/texture.h"
@@ -91,22 +90,6 @@ void ShaderManager::init() {
 	ShaderObject *vObj;
 	ShaderObject *fObj;
 
-	if (GfxMan.isGL3()) {
-		vObj = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault3xText, SHADER_VERTEX);
-		fObj = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault3xText, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-
-		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor3xText, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-	} else {
-		vObj = getShaderObject("default/default.vert", Graphics::Shader::vertexDefault2xText, SHADER_VERTEX);
-		fObj = getShaderObject("default/default.frag", Graphics::Shader::fragmentDefault2xText, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-
-		fObj = getShaderObject("default/color.frag", Graphics::Shader::fragmentColor2xText, SHADER_FRAGMENT);
-		registerShaderProgram(vObj, fObj);
-	}
-
 	Graphics::Shader::ShaderDescriptor cripter;
 	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_POSITION0);
 	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV0);
@@ -162,6 +145,20 @@ void ShaderManager::init() {
 	cripter.build(GfxMan.isGL3(), vertexStringFinal, fragmentStringFinal);
 	vObj = ShaderMan.getShaderObject("default/textureMatrix.vert", vertexStringFinal, Shader::SHADER_VERTEX);
 	fObj = ShaderMan.getShaderObject("default/texture.frag", Shader::SHADER_FRAGMENT);
+	registerShaderProgram(vObj, fObj);
+
+	cripter.clear();
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_POSITION0);
+	cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV0);
+	cripter.declareUniform(Graphics::Shader::ShaderDescriptor::UNIFORM_F_COLOUR);
+	cripter.addPass(Graphics::Shader::ShaderDescriptor::COLOUR,
+	                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
+
+	vertexStringFinal.clear();
+	fragmentStringFinal.clear();
+	cripter.build(GfxMan.isGL3(), vertexStringFinal, fragmentStringFinal);
+	vObj = ShaderMan.getShaderObject("default/default.vert", vertexStringFinal, Shader::SHADER_VERTEX);
+	fObj = ShaderMan.getShaderObject("default/colour.frag", fragmentStringFinal, Shader::SHADER_FRAGMENT);
 	registerShaderProgram(vObj, fObj);
 }
 
