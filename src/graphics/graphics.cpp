@@ -126,6 +126,8 @@ void GraphicsManager::init() {
 
 	_debugGL = ConfigMan.getBool("debuggl", false);
 
+	_rendererExperimental = ConfigMan.getBool("rendernew", false);
+
 	if (!setupSDLGL())
 		throw Common::Exception("Failed initializing the OpenGL renderer");
 
