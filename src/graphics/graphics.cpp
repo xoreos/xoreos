@@ -233,14 +233,21 @@ bool GraphicsManager::setFSAA(int level) {
 	return _fsaa == level;
 }
 
+/**
+ * Setup SDL + OpenGL renderer. We want OpenGL 3.2 for shader-based
+ * rendering and OpenGL 2.1 for the legacy renderer.
+ */
 bool GraphicsManager::setupSDLGL() {
-	if (WindowMan.initRender(_renderType, _debugGL, _fsaa))
-		return true;
-
-	// OpenGL 3.2 context not created. Spit out an error message, and try a 2.1 core context.
-
-	warning("Your graphics card hardware or driver does not support OpenGL 3.2. "
-	        "Attempting to create OpenGL 2.1 context instead");
+	if (_rendererExperimental) {
+		_renderType = WindowManager::kOpenGL32Compat;
+		if (WindowMan.initRender(_renderType, _debugGL, _fsaa))
+			return true;
+		else {
+			warning("Your graphics card hardware or driver does not support OpenGL 3.2. "
+			        "Usage of experimental renderer is not possible");
+			return false;
+		}
+	}
 
 	_renderType = WindowManager::kOpenGL21Core;
 	if (WindowMan.initRender(_renderType, _debugGL, _fsaa))
