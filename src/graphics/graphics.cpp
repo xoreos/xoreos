@@ -73,6 +73,8 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 
 	_debugGL = false;
 
+	_rendererExperimental = false;
+
 	_needManualDeS3TC        = false;
 	_supportMultipleTextures = false;
 	_multipleTextureCount    = 0;
