@@ -84,6 +84,8 @@ public:
 	/** Are we currently running an OpenGL 3.x context? */
 	bool isGL3() const;
 
+	bool isRendererExperimental() const { return _rendererExperimental; }
+
 	/** Set the FSAA settings. */
 	bool setFSAA(int level);
 
@@ -190,6 +192,8 @@ private:
 	bool _ready; ///< Was the graphics subsystem successfully initialized?
 
 	bool _debugGL; ///< Should we create an OpenGL debug context?
+
+	bool _rendererExperimental; ///< Should we use the experimental shader based renderer?
 
 	// Extensions
 	bool   _needManualDeS3TC;        ///< Do we need to do manual S3TC DXTn decompression?
