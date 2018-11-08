@@ -102,7 +102,30 @@ public:
 
 	void load(Model_Jade::ParserContext &ctx);
 
+	void buildMaterial();
+
 private:
+
+	struct JadeMaterialData {
+		uint32 renderPathID;
+		uint32 opacity1;
+		uint32 opacity2;
+		float cubeMultiplier;
+		float bumpCoordMultiplier;
+		float terrainCoordMultiplier;
+		float falloff;
+		float waterAlpha;
+		uint8 bumpMapIsSpecular;
+		uint8 doubleSided;
+		// 2 bytes unknown (padding?)
+		float diffuseColor[3];
+		float ambientColor[3];
+		// 24 bytes unknown.
+		uint32 blending1;
+		uint32 blending2;
+		// 4 bytes unknown.
+	};
+
 	void readMesh(Model_Jade::ParserContext &ctx);
 
 	void readPlainIndices  (Common::SeekableReadStream &stream, std::vector<uint16> &indices,
@@ -116,7 +139,9 @@ private:
 
 	void createMesh(Model_Jade::ParserContext &ctx);
 
-	static void readMaterialTextures(uint32 materialID, std::vector<Common::UString> &textures);
+	void readMaterialTextures(uint32 materialID, std::vector<Common::UString> &textures);
+
+	JadeMaterialData _jadeMaterialData;
 };
 
 } // End of namespace Aurora

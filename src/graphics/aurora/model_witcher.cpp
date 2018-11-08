@@ -40,6 +40,16 @@
 
 #include "src/graphics/aurora/model_witcher.h"
 
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
+
+#include "src/graphics/images/decoder.h"
+
+#include "src/common/uuid.h"
+
 // Disable the "unused variable" warnings while most stuff is still stubbed
 IGNORE_UNUSED_VARIABLES
 
@@ -814,6 +824,9 @@ void ModelNode_Witcher::readTexturePaint(Model_Witcher::ParserContext &ctx) {
 	createBound();
 
 	ctx.mdb->seek(endPos);
+
+	if (GfxMan.isRendererExperimental())
+		buildMaterial();
 }
 
 void ModelNode_Witcher::readTextures(Model_Witcher::ParserContext &ctx,
@@ -962,6 +975,313 @@ void ModelNode_Witcher::readNodeControllers(Model_Witcher::ParserContext &ctx,
 	}
 
 	ctx.mdb->seek(pos);
+}
+
+void ModelNode_Witcher::buildMaterial() {
+	ModelNode::Mesh *pmesh  = 0;  // TODO: if anything is changed in here, ensure there's a local copy instead that shares the root data.
+	TextureHandle *phandles = 0;  // Take from self first, or root state, if there is one, otherwise.
+	TextureHandle *penvmap  = 0;  // Maybe it's only the environment map that's overriden.
+	EnvironmentMapMode envmapmode;
+
+	uint32 textureCount = 0;
+
+	_renderableArray.clear();
+
+	/**
+	 * If there's no override of mesh, textures, or environment mapping, then don't bother
+	 * to create any new renderables. Just make sure _rootStateNode has some, and have the
+	 * render queuing use the renderables from there instead. This isn't really a problem,
+	 * as the per-modelnode data (modelview matrix in this case) is still supplied from
+	 * _this_ object.
+	 */
+
+	pmesh = _mesh;
+
+	if (!_model->getState().empty() && !pmesh) {
+		_rootStateNode = _model->getNode("", _name);
+		if (_rootStateNode == this) {
+			_rootStateNode = 0;
+		}
+		if (_rootStateNode) {
+			pmesh = _rootStateNode->getMesh();
+		}
+	} else {
+		_rootStateNode = 0;
+	}
+
+	_dirtyRender = false;
+
+	if (!pmesh) {
+		return;
+	}
+
+	if (!pmesh->data) {
+		return;
+	}
+
+	if (pmesh->data->textures.size() == 0 && pmesh->data->envMap.empty() && !pmesh->data->rawMesh) {
+		return;
+	}
+	/**
+	 * To get here, _mesh must exist and have some data. This is required to consider making
+	 * a new renderable - otherwise, the renderable of the parent can be used directly. This
+	 * may change depending what information the renderable is dependent on during creation.
+	 * Important information in this case means texture or environment maps are overidden from
+	 * any potential parent.
+	 */
+	phandles = getTextures(textureCount);
+	penvmap = getEnvironmentMap(envmapmode);
+
+	if (textureCount == 0) {
+		return;
+	}
+
+	if (!_render) {
+		return;
+	}
+
+	if (!pmesh->data->rawMesh) {
+		return;
+	}
+
+	Common::UString vertexShaderName;
+	Common::UString fragmentShaderName;
+	Common::UString materialName = "xoreos.";
+	Graphics::Shader::ShaderDescriptor cripter;
+
+	Shader::ShaderMaterial *material;
+	Shader::ShaderSampler *sampler;
+	Shader::ShaderSurface *surface;
+
+	uint32 materialFlags = 0;
+
+	_renderableArray.clear();
+
+	const VertexDecl &decl = pmesh->data->rawMesh->getVertexBuffer()->getVertexDecl();
+	for (uint32 i = 0; i < decl.size(); ++i) {
+		switch (decl[i].index) {
+		case 0:
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_POSITION0);
+			break;
+		case 1:
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_NORMAL0);
+			break;
+		case 2:
+			break;
+		case 3:
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV0);
+			break;
+		case 4:
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV1);
+			break;
+		default: break;
+		}
+	}
+
+	if (penvmap) {
+		if (penvmap->getTexture().getImage().isCubeMap()) {
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV_CUBE);
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_7,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_CUBE);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_7,
+			                Graphics::Shader::ShaderDescriptor::INPUT_UV_CUBE,
+			                Graphics::Shader::ShaderDescriptor::ENV_CUBE);
+		} else {
+			cripter.declareInput(Graphics::Shader::ShaderDescriptor::INPUT_UV_SPHERE);
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_7,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_7,
+			                Graphics::Shader::ShaderDescriptor::INPUT_UV_SPHERE,
+			                Graphics::Shader::ShaderDescriptor::ENV_SPHERE);
+		}
+
+		if (envmapmode == kModeEnvironmentBlendedUnder) {
+			materialName += penvmap->getName();
+			// Figure out if a cube or sphere map is used.
+			if (penvmap->getTexture().getImage().isCubeMap()) {
+				if (!pmesh->isTransparent) {
+					materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				}
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::ENV_CUBE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
+			} else {
+				/**
+				 * Seems that, regardless of _isTransparent, anything with shperical env mapping is opaque. This mostly comes from
+				 * NWN, where it's seen that things marked as transparent actually shouldn't be. It's assumed this carries over to
+				 * other game titles as well.
+				 */
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_OPAQUE;
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::ENV_SPHERE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
+			}
+		}
+	}
+
+	if (pmesh->isTransparent && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+
+	/**
+	 * Sometimes the _textures handler array isn't matched up against what
+	 * is properly loaded (missing files from disk). So do some brief sanity
+	 * checks on this.
+	 */
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			materialName += phandles[0].getName();
+			/**
+			 * The Witcher will place diffuse texture as the second if there's more than one.
+			 * In these cases, the first texture will be a lightmap. Because that makes sense.
+			 */
+			Graphics::Shader::ShaderDescriptor::Sampler sid = Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0;
+			if (textureCount >= 2) {
+				sid = Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_1;
+			}
+			cripter.declareSampler(sid,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+			cripter.connect(sid,
+			                Graphics::Shader::ShaderDescriptor::INPUT_UV0,
+			                Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE);
+
+			if (phandles[0].getTexture().getTXI().getFeatures().blending) {
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_SPECIAL_BLEND;
+			}
+			// Check to see if it's actually a decal texture.
+			if (phandles[0].getTexture().getTXI().getFeatures().decal) {
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_DECAL;
+			}
+			if (penvmap && envmapmode == kModeEnvironmentBlendedUnder) {
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_SRC_ALPHA);
+			} else {
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
+			}
+		} else {
+			/**
+			 * Actually this looks like a case where someone has declared multiple textures,
+			 * but only filled in one. So the second, which should be a lightmap, is actually
+			 * the diffuse. Just to screw with everyone's head a bit.
+			 * Just set the colour, which will default to white - a diffuse texture treated
+			 * as a lightmap, multiplying white, will end up with the same RGB values.
+			 */
+			cripter.addPass(Graphics::Shader::ShaderDescriptor::COLOUR,
+			                Graphics::Shader::ShaderDescriptor::BLEND_ONE);
+		}
+	}
+
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
+			materialName += ".";
+			materialName += phandles[1].getName();
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+			cripter.connect(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_0,
+			                Graphics::Shader::ShaderDescriptor::INPUT_UV1,
+			                Graphics::Shader::ShaderDescriptor::TEXTURE_LIGHTMAP);
+			cripter.addPass(Graphics::Shader::ShaderDescriptor::TEXTURE_LIGHTMAP,
+			                Graphics::Shader::ShaderDescriptor::BLEND_MULTIPLY);
+		}
+	}
+
+	if (textureCount >= 3) {
+		if (!phandles[2].empty()) {
+			materialName += ".";
+			materialName += phandles[2].getName();
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_2,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+		}
+	}
+
+	if (textureCount >= 4) {
+		// Don't know yet what this extra texture is supposed to be.
+		if (!phandles[3].empty()) {
+			materialName += ".";
+			materialName += phandles[3].getName();
+			cripter.declareSampler(Graphics::Shader::ShaderDescriptor::SAMPLER_TEXTURE_3,
+			                       Graphics::Shader::ShaderDescriptor::SAMPLER_2D);
+		}
+	}
+
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedOver) {
+			materialName += penvmap->getName();
+			// Figure out if a cube or sphere map is used.
+			if (penvmap->getTexture().getImage().isCubeMap()) {
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::ENV_CUBE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_DST_ALPHA);
+			} else {
+				cripter.addPass(Graphics::Shader::ShaderDescriptor::ENV_SPHERE,
+				                Graphics::Shader::ShaderDescriptor::BLEND_DST_ALPHA);
+			}
+		}
+	}
+
+	material = MaterialMan.getMaterial(materialName);
+	if (material) {
+		surface = SurfaceMan.getSurface(materialName);
+		_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
+		return;
+	}
+
+	if (_mesh->alpha < 1.0f) {
+		materialFlags &= ~Shader::ShaderMaterial::MATERIAL_OPAQUE;  // Make sure it's not actually opaque.
+		materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
+	}
+
+	cripter.genName(vertexShaderName);
+	fragmentShaderName = vertexShaderName + ".frag";
+	vertexShaderName += ".vert";
+
+	// Ok, material doesn't exist. Check on the shaders.
+	Shader::ShaderObject *vertexObject = ShaderMan.getShaderObject(vertexShaderName, Shader::SHADER_VERTEX);
+	Shader::ShaderObject *fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, Shader::SHADER_FRAGMENT);
+
+	// Should be checking vert and frag shader separately, but they really should exist together anyway.
+	if (!vertexObject) {
+		// No object found. Generate a shader then.
+		bool isGL3 = GfxMan.isGL3();
+
+		Common::UString vertexStringFinal;
+		Common::UString fragmentStringFinal;
+
+		cripter.build(isGL3, vertexStringFinal, fragmentStringFinal);
+
+		vertexObject = ShaderMan.getShaderObject(vertexShaderName, vertexStringFinal, Shader::SHADER_VERTEX);
+		fragmentObject = ShaderMan.getShaderObject(fragmentShaderName, fragmentStringFinal, Shader::SHADER_FRAGMENT);
+	}
+
+	// Shader objects should now exist, so go ahead and make the material and surface.
+	surface = new Shader::ShaderSurface(vertexObject, materialName);
+	material = new Shader::ShaderMaterial(fragmentObject, materialName);
+	material->setFlags(materialFlags);
+	MaterialMan.addMaterial(material);
+	SurfaceMan.addSurface(surface);
+
+	if (penvmap) {
+		sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_7_id"));
+		sampler->handle = *penvmap;
+	}
+
+	if (textureCount >= 1) {
+		if (!phandles[0].empty()) {
+			if (textureCount >= 2) {
+				sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_1_id"));
+			} else {
+				sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_0_id"));
+			}
+			sampler->handle = phandles[0];
+		}
+	}
+
+	if (textureCount >= 2) {
+		if (!phandles[1].empty()) {
+			sampler = (Shader::ShaderSampler *)(material->getVariableData("sampler_0_id"));
+			sampler->handle = phandles[1];
+		}
+	}
+
+	_renderableArray.push_back(Shader::ShaderRenderable(surface, material, pmesh->data->rawMesh));
 }
 
 } // End of namespace Aurora

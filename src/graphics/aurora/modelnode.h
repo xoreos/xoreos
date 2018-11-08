@@ -28,8 +28,6 @@
 #include <list>
 #include <vector>
 
-#include "glm/mat4x4.hpp"
-
 #include "src/common/ustring.h"
 #include "src/common/boundingbox.h"
 
@@ -41,6 +39,7 @@
 #include "src/graphics/aurora/texturehandle.h"
 
 #include "src/graphics/mesh/meshman.h"
+#include "src/graphics/shader/shaderrenderable.h"
 
 namespace Graphics {
 
@@ -192,6 +191,9 @@ public:
 
 		bool hasTransparencyHint;
 		bool transparencyHint;
+		uint32 transparencyHintFull;
+
+		bool isBackgroundGeometry;
 
 		MeshData *data;
 		Dangly   *dangly;
@@ -213,6 +215,8 @@ protected:
 
 	Common::UString _name; ///< The node's name.
 
+	std::vector<Shader::ShaderRenderable> _renderableArray;  ///< Damn you bioware.
+
 	float _center     [3]; ///< The node's center.
 	float _position   [3]; ///< Position of the node.
 	float _rotation   [3]; ///< Node rotation.
@@ -226,11 +230,14 @@ protected:
 
 	/** Position of the node after translate/rotate. */
 	glm::mat4 _absolutePosition;
+	glm::mat4 _renderTransform;
 
 	bool _render; ///< Render the node?
+	bool _dirtyRender; ///< Rendering information needs updating.
 	bool _dirtyMesh;  ///< Mesh data needs updating.
 
 	Mesh *_mesh;
+	ModelNode *_rootStateNode;
 
 	Common::BoundingBox _boundBox;
 	Common::BoundingBox _absoluteBoundBox;
@@ -249,6 +256,8 @@ protected:
 	bool _vertexCoordsBuffered;
 	// '---
 
+	Shader::ShaderMaterial *_material;
+	Shader::ShaderRenderable *_shaderRenderable;
 
 	// Loading helpers
 	void loadTextures(const std::vector<Common::UString> &textures);
@@ -261,6 +270,11 @@ protected:
 	void render(RenderPass pass);
 	void drawSkeleton(const glm::mat4 &parent, bool showInvisible);
 
+	/** Calculate the transform used for rendering. */
+	void calcRenderTransform(const glm::mat4 &parentTransform);
+	void renderImmediate(const glm::mat4 &parentTransform);
+	void queueRender(const glm::mat4 &parentTransform);
+
 	void lockFrame();
 	void unlockFrame();
 
@@ -271,6 +285,11 @@ protected:
 	void setBufferedOrientation(float x, float y, float z, float angle);
 	void flushBuffers();
 
+	TextureHandle *getTextures(uint32 &count);
+	TextureHandle *getEnvironmentMap(EnvironmentMapMode &mode);
+
+	void setMaterial(Shader::ShaderMaterial *material);
+	virtual void buildMaterial();
 
 private:
 	const Common::BoundingBox &getAbsoluteBound() const;
