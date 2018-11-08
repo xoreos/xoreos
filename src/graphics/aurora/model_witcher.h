@@ -109,6 +109,9 @@ private:
 	void evaluateTextures(int n, std::vector<Common::UString> &textures,
 	                      const Common::UString *staticTextures, const uint32 *tVertsCount,
 	                      bool lightMapDayNight, const Common::UString &lightMapName);
+
+protected:
+	void buildMaterial();
 };
 
 } // End of namespace Aurora

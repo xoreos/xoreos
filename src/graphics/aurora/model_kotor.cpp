@@ -38,6 +38,13 @@
 #include "src/graphics/aurora/model_kotor.h"
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/animnode.h"
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/texture.h"
+
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/surfaceman.h"
+
+#include "src/graphics/images/decoder.h"
 
 // This is included if a mesh wants a unique name.
 #include "src/common/uuid.h"
@@ -571,6 +578,9 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 
 		MeshMan.addMesh(_mesh->data->rawMesh);
 #endif
+
+		if (GfxMan.isRendererExperimental())
+			buildMaterial();
 	}
 }
 
@@ -595,6 +605,10 @@ void ModelNode_KotOR::readNodeControllers(Model_KotOR::ParserContext &ctx,
 		}
 	}
 	ctx.mdl->seek(pos);
+}
+
+void ModelNode_KotOR::buildMaterial() {
+	ModelNode::buildMaterial();
 }
 
 void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,

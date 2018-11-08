@@ -524,6 +524,9 @@ void ModelNode_DragonAge::load(Model_DragonAge::ParserContext &ctx, const GFF4St
 
 	// Create the bounding box
 	createBound();
+
+	if (GfxMan.isRendererExperimental())
+		buildMaterial();
 }
 
 void ModelNode_DragonAge::readTransformation(const GFF4Struct &nodeGFF) {

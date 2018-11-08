@@ -102,6 +102,8 @@ public:
 
 	void load(Model_KotOR::ParserContext &ctx);
 
+	void buildMaterial();
+
 private:
 	void readNodeControllers(Model_KotOR::ParserContext &ctx, uint32 offset,
 	                         uint32 count, std::vector<float> &dataFloat, std::vector<uint32> &dataInt);
