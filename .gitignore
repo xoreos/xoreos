@@ -90,6 +90,7 @@ Makefile.in
 /tests/common/test_*
 /tests/aurora/test_*
 /tests/images/test_*
+/tests/engines/test_*
 
 # Unix binary
 /src/xoreos
