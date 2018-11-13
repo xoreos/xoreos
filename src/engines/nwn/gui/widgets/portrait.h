@@ -33,6 +33,8 @@
 
 #include "src/engines/nwn/gui/widgets/nwnwidget.h"
 
+#include "src/graphics/shader/shaderrenderable.h"
+
 namespace Common {
 	class UString;
 }
@@ -79,6 +81,7 @@ public:
 	// Renderable
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
+	void renderImmediate(const glm::mat4 &parentTransform);
 
 private:
 	struct Quad {
@@ -91,6 +94,10 @@ private:
 	Size _size;
 
 	float _border;
+	float _x;
+	float _y;
+	float _width;
+	float _height;
 
 	float _bR;
 	float _bG;
@@ -99,6 +106,12 @@ private:
 
 	Quad _qPortrait;
 	std::vector<Quad> _qBorder;
+
+	Common::ScopedPtr<Graphics::Shader::ShaderSurface> _surface;
+	Common::ScopedPtr<Graphics::Shader::ShaderMaterial> _material;
+	Common::ScopedPtr<Graphics::Shader::ShaderMaterial> _borderMaterial;
+	Common::ScopedPtr<Graphics::Shader::ShaderRenderable> _renderable;
+	Common::ScopedPtr<Graphics::Shader::ShaderRenderable> _borderRenderable;
 
 	void setSize();
 	void createBorder();

@@ -28,10 +28,15 @@
 #include "src/common/maths.h"
 #include "src/common/ustring.h"
 
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/mesh/meshman.h"
 
 #include "src/engines/nwn/gui/widgets/portrait.h"
 
@@ -50,6 +55,24 @@ Portrait::Portrait(const Common::UString &name, Size size,
 
 	assert((_size >= kSizeHuge) && (_size < kSizeMAX));
 
+	if (GfxMan.isRendererExperimental()) {
+		_surface.reset(new Graphics::Shader::ShaderSurface(
+				ShaderMan.getShaderObject("default/textureMatrix.vert", Graphics::Shader::SHADER_VERTEX), "portrait"));
+
+		_material.reset(new Graphics::Shader::ShaderMaterial(
+				ShaderMan.getShaderObject("default/texture.frag", Graphics::Shader::SHADER_FRAGMENT), "portrait"));
+
+		// Sampler should be changed when the portrait texture is changed.
+		_renderable.reset(new Graphics::Shader::ShaderRenderable(
+				_surface.get(), _material.get(), MeshMan.getMesh("defaultMeshQuad")));
+
+		_borderMaterial.reset(new Graphics::Shader::ShaderMaterial(
+				ShaderMan.getShaderObject("default/colour.frag", Graphics::Shader::SHADER_FRAGMENT), "portraitborder"));
+
+		_borderRenderable.reset(new Graphics::Shader::ShaderRenderable(
+				SurfaceMan.getSurface("defaultSurface"), _borderMaterial.get(), MeshMan.getMesh("defaultMeshQuad")));
+	}
+
 	setSize();
 	setPortrait(name);
 
@@ -64,57 +87,47 @@ void Portrait::createBorder() {
 		return;
 
 	_qBorder.clear();
-
-	const float x = _qPortrait.vX[0];
-	const float y = _qPortrait.vY[0];
-
-	const float width  = ABS(_qPortrait.vX[0] - _qPortrait.vX[1]);
-	const float height = ABS(_qPortrait.vY[0] - _qPortrait.vY[2]);
-
 	_qBorder.resize(4);
 
-	_qBorder[0].vX[0] = x         - _border; _qBorder[0].vY[0] = y - _border;
-	_qBorder[0].vX[1] = x + width + _border; _qBorder[0].vY[1] = y - _border;
-	_qBorder[0].vX[2] = x + width + _border; _qBorder[0].vY[2] = y          ;
-	_qBorder[0].vX[3] = x         - _border; _qBorder[0].vY[3] = y          ;
+	_qBorder[0].vX[0] = _x - _border;          _qBorder[0].vY[0] = _y - _border;
+	_qBorder[0].vX[1] = _x + _width + _border; _qBorder[0].vY[1] = _y - _border;
+	_qBorder[0].vX[2] = _x + _width + _border; _qBorder[0].vY[2] = _y;
+	_qBorder[0].vX[3] = _x - _border;          _qBorder[0].vY[3] = _y;
 
-	_qBorder[1].vX[0] = x         - _border; _qBorder[1].vY[0] = y + height;
-	_qBorder[1].vX[1] = x + width + _border; _qBorder[1].vY[1] = y + height;
-	_qBorder[1].vX[2] = x + width + _border; _qBorder[1].vY[2] = y + height + _border;
-	_qBorder[1].vX[3] = x         - _border; _qBorder[1].vY[3] = y + height + _border;
+	_qBorder[1].vX[0] = _x - _border;          _qBorder[1].vY[0] = _y + _height;
+	_qBorder[1].vX[1] = _x + _width + _border; _qBorder[1].vY[1] = _y + _height;
+	_qBorder[1].vX[2] = _x + _width + _border; _qBorder[1].vY[2] = _y + _height + _border;
+	_qBorder[1].vX[3] = _x - _border;          _qBorder[1].vY[3] = _y + _height + _border;
 
-	_qBorder[2].vX[0] = x - _border; _qBorder[2].vY[0] = y          - _border;
-	_qBorder[2].vX[1] = x          ; _qBorder[2].vY[1] = y          - _border;
-	_qBorder[2].vX[2] = x          ; _qBorder[2].vY[2] = y + height + _border;
-	_qBorder[2].vX[3] = x - _border; _qBorder[2].vY[3] = y + height + _border;
+	_qBorder[2].vX[0] = _x - _border; _qBorder[2].vY[0] = _y - _border;
+	_qBorder[2].vX[1] = _x;           _qBorder[2].vY[1] = _y - _border;
+	_qBorder[2].vX[2] = _x;           _qBorder[2].vY[2] = _y + _height + _border;
+	_qBorder[2].vX[3] = _x - _border; _qBorder[2].vY[3] = _y + _height + _border;
 
-	_qBorder[3].vX[0] = x + width          ; _qBorder[3].vY[0] = y          - _border;
-	_qBorder[3].vX[1] = x + width + _border; _qBorder[3].vY[1] = y          - _border;
-	_qBorder[3].vX[2] = x + width + _border; _qBorder[3].vY[2] = y + height + _border;
-	_qBorder[3].vX[3] = x + width          ; _qBorder[3].vY[3] = y + height + _border;
+	_qBorder[3].vX[0] = _x + _width;           _qBorder[3].vY[0] = _y - _border;
+	_qBorder[3].vX[1] = _x + _width + _border; _qBorder[3].vY[1] = _y - _border;
+	_qBorder[3].vX[2] = _x + _width + _border; _qBorder[3].vY[2] = _y + _height + _border;
+	_qBorder[3].vX[3] = _x + _width;           _qBorder[3].vY[3] = _y + _height + _border;
 }
 
 float Portrait::getWidth() const {
-	return ABS(_qPortrait.vX[0] - _qPortrait.vX[1]) + _border + _border;
+	return _width + _border + _border;
 }
 
 float Portrait::getHeight() const {
-	return ABS(_qPortrait.vY[0] - _qPortrait.vY[2]) + _border + _border;
+	return _height + _border + _border;
 }
 
 void Portrait::setPosition(float x, float y, float z) {
 	GfxMan.lockFrame();
 
-	float width  = ABS(_qPortrait.vX[0] - _qPortrait.vX[1]);
-	float height = ABS(_qPortrait.vY[0] - _qPortrait.vY[2]);
+	_x = x + _border;
+	_y = y + _border;
 
-	x += _border;
-	y += _border;
-
-	_qPortrait.vX[0] = x        ; _qPortrait.vY[0] = y         ;
-	_qPortrait.vX[1] = x + width; _qPortrait.vY[1] = y         ;
-	_qPortrait.vX[2] = x + width; _qPortrait.vY[2] = y + height;
-	_qPortrait.vX[3] = x        ; _qPortrait.vY[3] = y + height;
+	_qPortrait.vX[0] = _x;          _qPortrait.vY[0] = _y;
+	_qPortrait.vX[1] = _x + _width; _qPortrait.vY[1] = _y;
+	_qPortrait.vX[2] = _x + _width; _qPortrait.vY[2] = _y + _height;
+	_qPortrait.vX[3] = _x;          _qPortrait.vY[3] = _y + _height;
 
 	createBorder();
 
@@ -125,16 +138,16 @@ void Portrait::setPosition(float x, float y, float z) {
 }
 
 void Portrait::getPosition(float &x, float &y, float &z) const {
-	x = _qPortrait.vX[0];
-	y = _qPortrait.vY[0];
+	x = _x;
+	y = _y;
 	z = _distance;
 }
 
 bool Portrait::isIn(float x, float y) const {
-	float x1 = _qPortrait.vX[0];
-	float x2 = _qPortrait.vX[0] + getWidth();
-	float y1 = _qPortrait.vY[0];
-	float y2 = _qPortrait.vY[0] + getHeight();
+	float x1 = _x;
+	float x2 = _x + getWidth();
+	float y1 = _y;
+	float y2 = _y + getHeight();
 
 	if ((x < x1) || (x > x2))
 		return false;
@@ -180,6 +193,35 @@ void Portrait::render(Graphics::RenderPass pass) {
 	glEnd();
 }
 
+void Portrait::renderImmediate(const glm::mat4 &parentTransform) {
+	/**
+	 * The "border" in this case is rendered first. The portrait itself is overlaid on
+	 * top afterwards - because depth testing is disabled it would seem. This is unfortunate,
+	 * because there's a few pixels rendered there for absolutely no reason. Could try to sort
+	 * by depth - but then some widgets might actually have to rely on this. So for now, just
+	 * deal with the inefficiency.
+	 * It's not going to have that great of an impact probably, as borders don't seem to be
+	 * used in many places other than the menu system.
+	 */
+	if (_border > 0.0f) {
+		float *color = static_cast<float *>(_borderMaterial->getVariableData("_colour"));
+		color[0] = _bR;
+		color[1] = _bG;
+		color[2] = _bB;
+		color[3] = _bA;
+
+		glm::mat4 btform = glm::translate(glm::mat4(), glm::vec3(_x - _border, _y - _border, -10.0f));
+		btform = glm::scale(btform, glm::vec3(_width + 2.0f * _border,
+		                                      _height + 2.0f * _border,
+		                                      1.0f));
+		_borderRenderable->renderImmediate(parentTransform * btform);
+	}
+
+	glm::mat4 tform = glm::translate(glm::mat4(), glm::vec3(_x, _y, -10.0f));
+	tform = glm::scale(tform, glm::vec3(_width, _height, 1.0f));
+	_renderable->renderImmediate(parentTransform * tform);
+}
+
 void Portrait::setPortrait(const Common::UString &name) {
 	Size curSize = _size;
 
@@ -201,6 +243,12 @@ void Portrait::setPortrait(const Common::UString &name) {
 			_texture.clear();
 		}
 	}
+
+	if (GfxMan.isRendererExperimental()) {
+		Graphics::Shader::ShaderSampler *sampler;
+		sampler = (Graphics::Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
+		sampler->handle = _texture;
+	}
 }
 
 void Portrait::setBorderColor(float bR, float bG, float bB, float bA) {
@@ -213,10 +261,13 @@ void Portrait::setBorderColor(float bR, float bG, float bB, float bA) {
 }
 
 void Portrait::setSize() {
-	_qPortrait.vX[0] = 0.0f                ; _qPortrait.vY[0] = 0.0f                 ;
-	_qPortrait.vX[1] = 0.0f + kWidth[_size]; _qPortrait.vY[1] = 0.0f                 ;
-	_qPortrait.vX[2] = 0.0f + kWidth[_size]; _qPortrait.vY[2] = 0.0f + kHeight[_size];
-	_qPortrait.vX[3] = 0.0f                ; _qPortrait.vY[3] = 0.0f + kHeight[_size];
+	_width = kWidth[_size];
+	_height = kHeight[_size];
+
+	_qPortrait.vX[0] = 0.0f;          _qPortrait.vY[0] = 0.0f;
+	_qPortrait.vX[1] = 0.0f + _width; _qPortrait.vY[1] = 0.0f;
+	_qPortrait.vX[2] = 0.0f + _width; _qPortrait.vY[2] = 0.0f + _height;
+	_qPortrait.vX[3] = 0.0f;          _qPortrait.vY[3] = 0.0f + _height;
 
 	// Part of the texture(the bottom) is cut for portraits but not for icons.
 	float portraitCutRatio;
@@ -230,6 +281,12 @@ void Portrait::setSize() {
 	_qPortrait.tX[1] = 1.0f; _qPortrait.tY[1] = portraitCutRatio;
 	_qPortrait.tX[2] = 1.0f; _qPortrait.tY[2] = 1.0f;
 	_qPortrait.tX[3] = 0.0f; _qPortrait.tY[3] = 1.0f;
+
+	if (GfxMan.isRendererExperimental()) {
+		glm::mat4 tmatrix = glm::translate(glm::mat4(), glm::vec3(0.0f, portraitCutRatio, 0.0f));
+		tmatrix = glm::scale(tmatrix, glm::vec3(1.0f, 1.0f - portraitCutRatio, 1.0f));
+		memcpy(_surface->getVariableData("_uv0Matrix"), &tmatrix[0], 16 * sizeof(float));
+	}
 }
 
 
