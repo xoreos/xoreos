@@ -90,6 +90,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/random.h \
     src/common/mutex.h \
     src/common/semaphore.h \
+    src/common/serializationstream.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
@@ -142,6 +143,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/aabbnode.cpp \
     src/common/random.cpp \
     src/common/semaphore.cpp \
+    src/common/serializationstream.cpp \
     $(EMPTY)
 
 lzma_sources = \
