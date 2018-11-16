@@ -260,3 +260,8 @@ check_PROGRAMS                     += tests/common/test_aabbnode
 tests_common_test_aabbnode_SOURCES  = tests/common/aabbnode.cpp
 tests_common_test_aabbnode_LDADD    = $(common_LIBS)
 tests_common_test_aabbnode_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                                += tests/common/test_serializationstream
+tests_common_test_serializationstream_SOURCES  = tests/common/serializationstream.cpp
+tests_common_test_serializationstream_LDADD    = $(common_LIBS)
+tests_common_test_serializationstream_CXXFLAGS = $(test_CXXFLAGS)
