@@ -87,6 +87,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/changeid.h \
     src/common/xml.h \
     src/common/rect.h \
+    src/common/serializationstream.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
@@ -137,4 +138,5 @@ src_common_libcommon_la_SOURCES += \
     src/common/changeid.cpp \
     src/common/xml.cpp \
     src/common/rect.cpp \
+    src/common/serializationstream.cpp \
     $(EMPTY)
