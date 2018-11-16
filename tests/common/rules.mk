@@ -246,3 +246,8 @@ check_PROGRAMS                 += tests/common/test_rect
 tests_common_test_rect_SOURCES  = tests/common/rect.cpp
 tests_common_test_rect_LDADD    = $(common_LIBS)
 tests_common_test_rect_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                                += tests/common/test_serializationstream
+tests_common_test_serializationstream_SOURCES  = tests/common/serializationstream.cpp
+tests_common_test_serializationstream_LDADD    = $(common_LIBS)
+tests_common_test_serializationstream_CXXFLAGS = $(test_CXXFLAGS)
