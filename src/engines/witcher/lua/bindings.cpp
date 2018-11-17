@@ -31,6 +31,7 @@
 #include "src/aurora/lua/scriptman.h"
 #include "src/aurora/lua/stack.h"
 #include "src/aurora/lua/util.h"
+#include "src/aurora/talkman.h"
 
 #include "src/graphics/windowman.h"
 
@@ -619,6 +620,7 @@ void LuaBindings::CTlkTable::registerLuaBindings() {
 
 	LuaScriptMan.beginRegisterClass(getLuaType());
 	LuaScriptMan.registerFunction("GetTlkTable", &luaGetTlkTable);
+	LuaScriptMan.registerFunction("GetSimpleString", &luaGetSimpleString);
 	LuaScriptMan.endRegisterClass();
 
 	LuaScriptMan.endRegister();
@@ -633,6 +635,16 @@ int LuaBindings::CTlkTable::luaGetTlkTable(lua_State *state) {
 
 	unimplementedFunction("GetTlkTable", getLuaType());
 	return pushFakeObject(*state, getLuaType());
+}
+
+int LuaBindings::CTlkTable::luaGetSimpleString(lua_State *state) {
+	assert(state);
+
+	Aurora::Lua::Stack stack(*state);
+	unsigned int stringRef = stack.getIntAt(2);
+
+	stack.pushString(TalkMan.getString(stringRef));
+	return 1;
 }
 
 void LuaBindings::CAttackDefList::registerLuaBindings() {
