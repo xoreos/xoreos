@@ -40,9 +40,9 @@ vpx_source = \
     $(EMPTY)
 
 xvid_source = \
-	src/video/codecs/h263.cpp \
-	src/video/codecs/h263.h \
-	$(EMPTY)
+    src/video/codecs/h263.cpp \
+    src/video/codecs/h263.h \
+    $(EMPTY)
 
 if ENABLE_XVIDCORE
 src_video_codecs_libcodecs_la_SOURCES += $(xvid_source)

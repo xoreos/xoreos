@@ -45,9 +45,9 @@ src_sound_decoders_libdecoders_la_SOURCES += \
     $(EMPTY)
 
 aac_sources = \
-	src/sound/decoders/aac.cpp \
-	src/sound/decoders/aac.h \
-	$(EMPTY)
+    src/sound/decoders/aac.cpp \
+    src/sound/decoders/aac.h \
+    $(EMPTY)
 
 if ENABLE_FAAD
 src_sound_decoders_libdecoders_la_SOURCES += $(aac_sources)
@@ -56,9 +56,9 @@ EXTRA_DIST += $(aac_sources)
 endif
 
 mp3_sources = \
-	src/sound/decoders/mp3.cpp \
-	src/sound/decoders/mp3.h \
-	$(EMPTY)
+    src/sound/decoders/mp3.cpp \
+    src/sound/decoders/mp3.h \
+    $(EMPTY)
 
 if ENABLE_MAD
 src_sound_decoders_libdecoders_la_SOURCES += $(mp3_sources)
@@ -67,9 +67,9 @@ EXTRA_DIST += $(mp3_sources)
 endif
 
 vorbis_sources = \
-	src/sound/decoders/vorbis.cpp \
-	src/sound/decoders/vorbis.h \
-	$(EMPTY)
+    src/sound/decoders/vorbis.cpp \
+    src/sound/decoders/vorbis.h \
+    $(EMPTY)
 
 if ENABLE_VORBIS
 src_sound_decoders_libdecoders_la_SOURCES += $(vorbis_sources)
