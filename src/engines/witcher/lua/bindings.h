@@ -131,6 +131,13 @@ private:
 		static int luaSetHighliteOverrideObject(lua_State *state);
 	};
 
+	class CGUIViewport {
+	public:
+		static void registerLuaBindings();
+
+		static Common::UString getLuaType();
+	};
+
 	class CGUIInGame {
 	public:
 		static void registerLuaBindings();
