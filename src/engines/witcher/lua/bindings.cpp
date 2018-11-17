@@ -521,6 +521,7 @@ void LuaBindings::CGUINewControl::registerLuaBindings() {
 	LuaScriptMan.registerFunction("AddTextureLayerTransformable", &luaAddTextureLayerTransformable);
 	LuaScriptMan.registerFunction("PlayAnimation", &luaPlayAnimation);
 	LuaScriptMan.registerFunction("SetAlignmentVertical", &luaSetAlignmentVertical);
+	LuaScriptMan.registerFunction("SetHighliteOverrideObject", &luaSetHighliteOverrideObject);
 	LuaScriptMan.endRegisterClass();
 
 	LuaScriptMan.endRegister();
@@ -589,6 +590,11 @@ int LuaBindings::CGUINewControl::luaPlayAnimation(lua_State *UNUSED(state)) {
 
 int LuaBindings::CGUINewControl::luaSetAlignmentVertical(lua_State *UNUSED(state)) {
 	unimplementedFunction("SetAlignmentVertical", getLuaType());
+	return 0;
+}
+
+int LuaBindings::CGUINewControl::luaSetHighliteOverrideObject(lua_State *UNUSED(state)) {
+	unimplementedFunction("SetHighliteOverrideObject", getLuaType());
 	return 0;
 }
 

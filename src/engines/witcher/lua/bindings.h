@@ -128,6 +128,7 @@ private:
 		static int luaAddTextureLayerTransformable(lua_State *state);
 		static int luaPlayAnimation(lua_State *state);
 		static int luaSetAlignmentVertical(lua_State *state);
+		static int luaSetHighliteOverrideObject(lua_State *state);
 	};
 
 	class CGUIInGame {
