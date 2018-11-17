@@ -83,6 +83,7 @@ void LuaBindings::registerBindings() {
 	CGUIControlBinds::registerLuaBindings();
 	CGUIPanel::registerLuaBindings();
 	CGUIModalPanel::registerLuaBindings();
+	CGUIViewport::registerLuaBindings();
 	CGUINewControl::registerLuaBindings();
 	CPhysics::registerLuaBindings();
 	CTlkTable::registerLuaBindings();
@@ -374,6 +375,21 @@ int LuaBindings::CGUIMan::luaGetGuiHeight(lua_State *state) {
 	Aurora::Lua::Stack stack(*state);
 	stack.pushInt(WindowMan.getWindowHeight());
 	return 1;
+}
+
+void LuaBindings::CGUIViewport::registerLuaBindings() {
+	LuaScriptMan.declareClass(getLuaType());
+
+	LuaScriptMan.beginRegister();
+
+	LuaScriptMan.beginRegisterClass(getLuaType());
+	LuaScriptMan.endRegisterClass();
+
+	LuaScriptMan.endRegister();
+}
+
+Common::UString LuaBindings::CGUIViewport::getLuaType() {
+	return "CGuiViewport";
 }
 
 void LuaBindings::CGUIInGame::registerLuaBindings() {
