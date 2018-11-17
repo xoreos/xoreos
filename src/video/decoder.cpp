@@ -47,7 +47,7 @@ namespace Video {
 
 VideoDecoder::VideoDecoder() : Renderable(Graphics::kRenderableTypeVideo),
 	_needCopy(false),
-	_nextVideoTrack(0), _texture(0),
+	_texture(0),
 	_textureWidth(0.0f), _textureHeight(0.0f), _scale(kScaleNone),
 	_startTime(0), _pauseLevel(0), _pauseStartTime(0) {
 
@@ -180,14 +180,14 @@ void VideoDecoder::addTrack(Track *track, bool isExternal) {
 
 VideoDecoder::TrackPtr VideoDecoder::getTrack(uint track) {
 	if (track > _internalTracks.size())
-		return 0;
+		return VideoDecoder::TrackPtr();
 
 	return _internalTracks[track];
 }
 
 VideoDecoder::ConstTrackPtr VideoDecoder::getTrack(uint track) const {
 	if (track > _internalTracks.size())
-		return 0;
+		return VideoDecoder::ConstTrackPtr();
 
 	return _internalTracks[track];
 }
