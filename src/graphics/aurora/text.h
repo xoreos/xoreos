@@ -29,7 +29,7 @@
 #include "src/common/maths.h"
 
 #include "src/graphics/types.h"
-#include <src/graphics/guielement.h>
+#include "src/graphics/guielement.h"
 
 #include "src/graphics/aurora/fonthandle.h"
 #include "src/graphics/aurora/types.h"

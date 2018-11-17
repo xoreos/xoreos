@@ -27,7 +27,7 @@
 
 #include "src/common/maths.h"
 
-#include <src/graphics/guielement.h>
+#include "src/graphics/guielement.h"
 
 #include "src/graphics/aurora/texturehandle.h"
 
