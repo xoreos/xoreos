@@ -162,6 +162,7 @@ private:
 
 	private:
 		static int luaGetTlkTable(lua_State *state);
+		static int luaGetSimpleString(lua_State *state);
 	};
 
 	class CAttackDefList {
