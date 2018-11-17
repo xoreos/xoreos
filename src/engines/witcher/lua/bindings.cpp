@@ -32,6 +32,8 @@
 #include "src/aurora/lua/stack.h"
 #include "src/aurora/lua/util.h"
 
+#include "src/graphics/windowman.h"
+
 #include "src/engines/witcher/lua/bindings.h"
 
 namespace Engines {
@@ -336,6 +338,8 @@ void LuaBindings::CGUIMan::registerLuaBindings() {
 	LuaScriptMan.beginRegisterClass(getLuaType());
 	LuaScriptMan.registerFunction("CreateAurObject", &luaCreateAurObject);
 	LuaScriptMan.registerFunction("CreateAurObjectWithMesh", &luaCreateAurObjectWithMesh);
+	LuaScriptMan.registerFunction("GetGuiWidth", &luaGetGuiWidth);
+	LuaScriptMan.registerFunction("GetGuiHeight", &luaGetGuiHeight);
 	LuaScriptMan.endRegisterClass();
 
 	LuaScriptMan.endRegister();
@@ -357,6 +361,18 @@ int LuaBindings::CGUIMan::luaCreateAurObjectWithMesh(lua_State *state) {
 
 	unimplementedFunction("CreateAurObjectWithMesh", getLuaType());
 	return pushFakeObject(*state, CAurObject::getLuaType());
+}
+
+int LuaBindings::CGUIMan::luaGetGuiWidth(lua_State *state) {
+	Aurora::Lua::Stack stack(*state);
+	stack.pushInt(WindowMan.getWindowWidth());
+	return 1;
+}
+
+int LuaBindings::CGUIMan::luaGetGuiHeight(lua_State *state) {
+	Aurora::Lua::Stack stack(*state);
+	stack.pushInt(WindowMan.getWindowHeight());
+	return 1;
 }
 
 void LuaBindings::CGUIInGame::registerLuaBindings() {
