@@ -73,6 +73,8 @@ private:
 	private:
 		static int luaCreateAurObject(lua_State *state);
 		static int luaCreateAurObjectWithMesh(lua_State *state);
+		static int luaGetGuiWidth(lua_State *state);
+		static int luaGetGuiHeight(lua_State *state);
 	};
 
 	class CGUIControlBinds {
