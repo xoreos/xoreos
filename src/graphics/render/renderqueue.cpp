@@ -156,6 +156,9 @@ void RenderQueue::render() {
 
 		// There's at least one mesh to be rendering here.
 		assert(_nodeArray[i].transform);
+		assert(currentSurface);
+		assert(currentMaterial);
+
 		currentSurface->bindProgram(currentProgram, _nodeArray[i].transform);
 		//currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
 		currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
