@@ -96,6 +96,9 @@ Timestamp::Timestamp(uint64 s, uint64 frames, const Rational &newFramerate) {
 }
 
 Timestamp Timestamp::convertToFramerate(uint64 newFramerate) const {
+	assert(_framerate != 0);
+	assert(newFramerate != 0);
+
 	Timestamp ts(*this);
 
 	if (ts.framerate() != newFramerate) {
@@ -157,6 +160,9 @@ bool Timestamp::operator>=(const Timestamp &ts) const {
 }
 
 int64 Timestamp::cmp(const Timestamp &ts) const {
+	assert(_framerate != 0);
+	assert(ts._framerate != 0);
+
 	int64 delta = _secs - ts._secs;
 	if (!delta) {
 		const uint64 g = gcd(_framerate, ts._framerate);
@@ -223,6 +229,8 @@ Timestamp Timestamp::operator-(const Timestamp &ts) const {
 }
 
 int64 Timestamp::frameDiff(const Timestamp &ts) const {
+	assert(_framerate != 0);
+	assert(ts._framerate != 0);
 
 	int64 delta = 0;
 	if (_secs != ts._secs)
