@@ -141,6 +141,7 @@ private:
 		static int luaNew(lua_State *state);
 		static int luaEnableLighting(lua_State *state);
 		static int luaSetViewportAttached(lua_State *state);
+		static int luaGetCamera(lua_State *state);
 	};
 
 	class CGUIInGame {

@@ -386,6 +386,7 @@ void LuaBindings::CGUIViewport::registerLuaBindings() {
 	LuaScriptMan.registerFunction("new", &luaNew);
 	LuaScriptMan.registerFunction("EnableLighting", &luaEnableLighting);
 	LuaScriptMan.registerFunction("SetViewportAttached", &luaSetViewportAttached);
+	LuaScriptMan.registerFunction("GetCamera", &luaGetCamera);
 	LuaScriptMan.endRegisterClass();
 
 	LuaScriptMan.endRegister();
@@ -414,6 +415,13 @@ int LuaBindings::CGUIViewport::luaSetViewportAttached(lua_State *state) {
 
 	unimplementedFunction("SetViewportAttached", getLuaType());
 	return 0;
+}
+
+int LuaBindings::CGUIViewport::luaGetCamera(lua_State *state) {
+	assert(state);
+
+	unimplementedFunction("GetCamera", getLuaType());
+	return pushFakeObject(*state, CCamera::getLuaType());
 }
 
 void LuaBindings::CGUIInGame::registerLuaBindings() {
