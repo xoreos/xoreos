@@ -62,6 +62,7 @@ private:
 		static int luaDist(lua_State *state);
 		static int luaPitch(lua_State *state);
 		static int luaFollowOffset(lua_State *state);
+		static int luaSetPosition(lua_State *state);
 	};
 
 	class CGUIMan {
