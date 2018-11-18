@@ -308,6 +308,7 @@ void LuaBindings::CCamera::registerLuaBindings() {
 	LuaScriptMan.registerFunction("Dist", &luaDist);
 	LuaScriptMan.registerFunction("Pitch", &luaPitch);
 	LuaScriptMan.registerFunction("FollowOffset", &luaFollowOffset);
+	LuaScriptMan.registerFunction("SetPosition", &luaSetPosition);
 	LuaScriptMan.endRegisterClass();
 
 	LuaScriptMan.endRegister();
@@ -329,6 +330,11 @@ int LuaBindings::CCamera::luaPitch(lua_State *UNUSED(state)) {
 
 int LuaBindings::CCamera::luaFollowOffset(lua_State *UNUSED(state)) {
 	unimplementedFunction("FollowOffset", getLuaType());
+	return 0;
+}
+
+int LuaBindings::CCamera::luaSetPosition(lua_State *UNUSED(state)) {
+	unimplementedFunction("SetPosition", getLuaType());
 	return 0;
 }
 
