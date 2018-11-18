@@ -385,6 +385,7 @@ void LuaBindings::CGUIViewport::registerLuaBindings() {
 	LuaScriptMan.beginRegisterClass(getLuaType());
 	LuaScriptMan.registerFunction("new", &luaNew);
 	LuaScriptMan.registerFunction("EnableLighting", &luaEnableLighting);
+	LuaScriptMan.registerFunction("SetViewportAttached", &luaSetViewportAttached);
 	LuaScriptMan.endRegisterClass();
 
 	LuaScriptMan.endRegister();
@@ -405,6 +406,13 @@ int LuaBindings::CGUIViewport::luaEnableLighting(lua_State *state) {
 	assert(state);
 
 	unimplementedFunction("EnableLighting", getLuaType());
+	return 0;
+}
+
+int LuaBindings::CGUIViewport::luaSetViewportAttached(lua_State *state) {
+	assert(state);
+
+	unimplementedFunction("SetViewportAttached", getLuaType());
 	return 0;
 }
 
