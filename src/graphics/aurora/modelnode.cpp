@@ -63,7 +63,7 @@ ModelNode::Dangly::Dangly() : period(1.0f), tightness(1.0f), displacement(1.0f),
 	data(0) {
 }
 
-ModelNode::MeshData::MeshData() : envMapMode(kModeEnvironmentBlendedUnder) {
+ModelNode::MeshData::MeshData() : rawMesh(0), envMapMode(kModeEnvironmentBlendedUnder) {
 }
 
 ModelNode::Mesh::Mesh() : shininess(1.0f), alpha(1.0f), tilefade(0), render(false),
