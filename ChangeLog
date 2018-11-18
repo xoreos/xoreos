@@ -3,11 +3,25 @@ Someday, ????-??-?? (Version 0.0.6)
 		- Cleaned up threading
 	- GRAPHICS:
 		- Added support for swizzled SBM images
+		- Added a work-in-progress shader-based render 
+	- AURORA:
+		- Added support for ERF V2.1
+		- Added support for big-endian GFF4 files
+		- Added support for big-endian GFF4'd TLK files
+		- Added support for SAC files
+	- ACTIONSCRIPT:
+		- Added a partial ActionScript implementation
+		- Added a partial ScaleForm GFx implementation
 	- SOUND:
 		- Added preliminary support for XACT WaveBank
 		- Added preliminary support for FMOD SampleBanks
+		- Added a partial implementation of FMOD Events
 		- Added preliminary support for Wwise SoundBanks
+	- VIDEO:
+		- Reorganized video decoding
 	- ENGINES:
+		- All engines now store objects in containers as an ID instead
+		  of as direct pointers
 		- KOTOR:
 			- Changed key input to use scancodes
 			- Restructured config options
@@ -21,10 +35,13 @@ Someday, ????-??-?? (Version 0.0.6)
 			- Changed key input to use scancodes
 			- Restructured config options
 			- Implemented changing texture packs
+			- Partially implemented ingame GUI scaling
 		- JADE:
 			- Fixed TLK encodings for non-English version
 			- Added support for the (extracted) Android version
 			- Fixed font rendering in the Xbox version
+		- DRAGONAGE:
+			- Added a probe for the Xbox 360 version
 		- DRAGONAGE2:
 			- Partially implemented area transitions
 
