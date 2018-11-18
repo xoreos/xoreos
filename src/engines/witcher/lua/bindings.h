@@ -136,6 +136,9 @@ private:
 		static void registerLuaBindings();
 
 		static Common::UString getLuaType();
+
+	private:
+		static int luaNew(lua_State *state);
 	};
 
 	class CGUIInGame {

@@ -383,6 +383,7 @@ void LuaBindings::CGUIViewport::registerLuaBindings() {
 	LuaScriptMan.beginRegister();
 
 	LuaScriptMan.beginRegisterClass(getLuaType());
+	LuaScriptMan.registerFunction("new", &luaNew);
 	LuaScriptMan.endRegisterClass();
 
 	LuaScriptMan.endRegister();
@@ -390,6 +391,13 @@ void LuaBindings::CGUIViewport::registerLuaBindings() {
 
 Common::UString LuaBindings::CGUIViewport::getLuaType() {
 	return "CGuiViewport";
+}
+
+int LuaBindings::CGUIViewport::luaNew(lua_State *state) {
+	assert(state);
+
+	unimplementedFunction("new", getLuaType());
+	return pushFakeObject(*state, CGUIViewport::getLuaType());
 }
 
 void LuaBindings::CGUIInGame::registerLuaBindings() {
