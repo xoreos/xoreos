@@ -32,8 +32,6 @@
 
 #include "src/graphics/aurora/types.h"
 
-#include "src/graphics/shader/shadermaterial.h"
-
 namespace Engines {
 
 namespace NWN {
@@ -48,7 +46,6 @@ public:
 
 private:
 	Common::PtrVector<Graphics::Aurora::Model> _fogs;
-	Graphics::Shader::ShaderMaterial *_fogMaterial;
 };
 
 } // End of namespace NWN
