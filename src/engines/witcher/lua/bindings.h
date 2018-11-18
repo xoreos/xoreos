@@ -139,6 +139,7 @@ private:
 
 	private:
 		static int luaNew(lua_State *state);
+		static int luaEnableLighting(lua_State *state);
 	};
 
 	class CGUIInGame {

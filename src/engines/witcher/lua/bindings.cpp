@@ -384,6 +384,7 @@ void LuaBindings::CGUIViewport::registerLuaBindings() {
 
 	LuaScriptMan.beginRegisterClass(getLuaType());
 	LuaScriptMan.registerFunction("new", &luaNew);
+	LuaScriptMan.registerFunction("EnableLighting", &luaEnableLighting);
 	LuaScriptMan.endRegisterClass();
 
 	LuaScriptMan.endRegister();
@@ -398,6 +399,13 @@ int LuaBindings::CGUIViewport::luaNew(lua_State *state) {
 
 	unimplementedFunction("new", getLuaType());
 	return pushFakeObject(*state, CGUIViewport::getLuaType());
+}
+
+int LuaBindings::CGUIViewport::luaEnableLighting(lua_State *state) {
+	assert(state);
+
+	unimplementedFunction("EnableLighting", getLuaType());
+	return 0;
 }
 
 void LuaBindings::CGUIInGame::registerLuaBindings() {
