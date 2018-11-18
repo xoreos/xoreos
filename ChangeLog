@@ -3,7 +3,7 @@ Someday, ????-??-?? (Version 0.0.6)
 		- Cleaned up threading
 	- GRAPHICS:
 		- Added support for swizzled SBM images
-		- Added a work-in-progress shader-based render 
+		- Added a work-in-progress shader-based renderer
 	- AURORA:
 		- Added support for ERF V2.1
 		- Added support for big-endian GFF4 files
