@@ -30,6 +30,11 @@
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/mesh/meshman.h"
+
+#include "glm/gtc/matrix_transform.hpp"
+
 namespace Graphics {
 
 namespace Aurora {
@@ -42,7 +47,8 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
-	_xor(false), _scissor(false), _additiveBlending(false) {
+	_xor(false), _scissor(false), _additiveBlending(false),
+	_material(0), _shaderRenderable() {
 
 	try {
 
@@ -60,6 +66,7 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 	}
 
 	_distance = -FLT_MAX;
+	buildMaterial();
 }
 
 GUIQuad::GUIQuad(Graphics::GUIElement::GUIElementType type, const Common::UString &texture,
@@ -70,7 +77,8 @@ GUIQuad::GUIQuad(Graphics::GUIElement::GUIElementType type, const Common::UStrin
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
-	_xor(false), _scissor(false), _additiveBlending(false) {
+	_xor(false), _scissor(false), _additiveBlending(false),
+	_material(0), _shaderRenderable() {
 
 	try {
 
@@ -88,6 +96,7 @@ GUIQuad::GUIQuad(Graphics::GUIElement::GUIElementType type, const Common::UStrin
 	}
 
 	_distance = -FLT_MAX;
+	buildMaterial();
 }
 
 GUIQuad::GUIQuad(TextureHandle texture,
@@ -98,13 +107,21 @@ GUIQuad::GUIQuad(TextureHandle texture,
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
-	_xor(false), _scissor(false), _additiveBlending(false) {
+	_xor(false), _scissor(false), _additiveBlending(false),
+	_material(0), _shaderRenderable() {
 
 	_distance = -FLT_MAX;
+	buildMaterial();
 }
 
 GUIQuad::~GUIQuad() {
 	hide();
+
+	/* Remove the material, or else cleanup of _shaderRenderable will cause problems. */
+	_shaderRenderable.setMaterial(0, false);
+
+	/* Renderable no longer uses the material, safe to delete. */
+	delete _material;
 }
 
 void GUIQuad::getPosition(float &x, float &y, float &z) const {
@@ -166,6 +183,7 @@ void GUIQuad::setTexture(const Common::UString &texture) {
 
 		_r = _g = _b = _a = 0.0f;
 	}
+	buildMaterial();
 
 	unlockFrameIfVisible();
 }
@@ -174,6 +192,7 @@ void GUIQuad::setTexture(TextureHandle texture) {
 	lockFrameIfVisible();
 
 	_texture = texture;
+	buildMaterial();
 
 	unlockFrameIfVisible();
 }
@@ -295,6 +314,74 @@ void GUIQuad::render(RenderPass pass) {
 	}
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void GUIQuad::renderImmediate(const glm::mat4 &parentTransform) {
+	if (_xor) {
+		glEnable(GL_COLOR_LOGIC_OP);
+		glLogicOp(GL_XOR);
+	}
+
+	if (_scissor) {
+		glEnable(GL_SCISSOR_TEST);
+		GLint viewport[4];
+		glGetIntegerv(GL_VIEWPORT, viewport);
+		glScissor(viewport[2]/2 + _x1 + _scissorX,
+		          viewport[3]/2 + _y1 + _scissorY,
+		          _scissorWidth,
+		          _scissorHeight);
+	}
+
+	glm::mat4 renderTransform = parentTransform;
+	renderTransform = glm::translate(renderTransform, glm::vec3(_x1, _y1, 0.0f));
+	renderTransform = glm::scale(renderTransform, glm::vec3(_x2 - _x1, _y2 - _y1, 1.0f));
+	if (_angle != 0.0f) {
+		renderTransform = glm::translate(renderTransform, glm::vec3(0.5f, 0.5f, 0.0f));
+		renderTransform = glm::rotate(renderTransform, Common::deg2rad(_angle), glm::vec3(0.0f, 0.0f, 1.0f));
+		renderTransform = glm::translate(renderTransform, glm::vec3(-0.5f, -0.5f, 0.0f));
+	}
+	_shaderRenderable.renderImmediate(renderTransform);
+
+	if (_xor) {
+		glDisable(GL_COLOR_LOGIC_OP);
+	}
+
+	if (_scissor)
+		glDisable(GL_SCISSOR_TEST);
+}
+
+void GUIQuad::buildMaterial() {
+	if (_material) {
+		/* Old material might have been in use. Make sure it's cleaned out fully. */
+		_shaderRenderable.setMaterial(0, false);
+		delete _material;
+	}
+
+	Shader::ShaderSurface *surface = 0;
+	if (_texture.empty()) {
+		/* Texture is empty; default to simple colour shader. */
+		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/colour.frag", Shader::SHADER_FRAGMENT),
+		                                       "guiquad");
+		_material->setVariableExternal("_colour", &_r);
+		surface = SurfaceMan.getSurface("defaultSurface");
+	} else {
+		_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/texture.frag", Shader::SHADER_FRAGMENT),
+		                                       "guiquad");
+		((Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id")))->handle = _texture;
+		surface = SurfaceMan.getSurface("textureSurface");
+	}
+
+	_shaderRenderable.setMesh(MeshMan.getMesh("defaultMeshQuad"));
+	_shaderRenderable.setSurface(surface, false);
+	_shaderRenderable.setMaterial(_material, true);
+
+	if (_additiveBlending) {
+		_material->setFlags(Shader::ShaderMaterial::MATERIAL_TRANSPARENT | Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND);
+		_material->setBlendSrcRGB(GL_ONE);
+		_material->setBlendSrcAlpha(GL_ONE);
+		_material->setBlendDstRGB(GL_ONE);
+		_material->setBlendDstAlpha(GL_ONE);
+	}
 }
 
 } // End of namespace Aurora

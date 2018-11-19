@@ -31,6 +31,9 @@
 
 #include "src/graphics/aurora/texturehandle.h"
 
+#include "src/graphics/mesh/meshman.h"
+#include "src/graphics/shader/shaderrenderable.h"
+
 namespace Common {
 	class UString;
 }
@@ -89,6 +92,7 @@ public:
 	void calculateDistance();
 	void render(RenderPass pass);
 
+	void renderImmediate(const glm::mat4 &parentTransform);
 private:
 	TextureHandle _texture;
 
@@ -117,6 +121,11 @@ private:
 	bool _xor;
 	bool _scissor;
 	bool _additiveBlending;
+
+	Shader::ShaderMaterial *_material;
+	Shader::ShaderRenderable _shaderRenderable;
+
+	void buildMaterial();
 };
 
 } // End of namespace Aurora
