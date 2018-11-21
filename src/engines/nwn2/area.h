@@ -187,7 +187,7 @@ private:
 
 	bool _visible; ///< Is the area currently visible?
 
-	uint32 _flags;   ///< Natural/Underground bit flags
+	uint32 _flags;   ///< Natural/Underground bit flags.
 
 	Sound::ChannelHandle _ambientSound; ///< Sound handle of the currently playing sound.
 	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.

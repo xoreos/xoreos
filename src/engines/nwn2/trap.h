@@ -79,7 +79,7 @@ public:
 	void setTrapDetectDC(uint8 detectDC);
 	void setTrapDisarmDC(uint8 disarmDC);
 
-	void setTrapKeyTag(Common::UString keyTag);
+	void setTrapKeyTag(const Common::UString &keyTag);
 
 	bool detectTrap(Creature *agent);
 	bool disarmTrap(Creature *agent, Disarm option);
@@ -91,19 +91,19 @@ private:
 	bool _isDisarmable;     ///< Can the trap be disarmed?
 	bool _isRecoverable;    ///< Can the disarmed trap be recovered as an item?
 	bool _isTrapOneShot;    ///< Does the trap only fire once?
-	bool _isTrapActive;     ///< Is the trap active? (Placeable or door only)
+	bool _isTrapActive;     ///< Is the trap active? (Placeable or door only.)
 	bool _isFlagged;        ///< Is the trap visible to all creatures?
 	bool _isAutoRemoveKey;  ///< Automatically remove the key?
 
-	uint8 _trapType;        ///< Row number in traps.2da
-	uint8 _detectDC;        ///< DC to detect trap
-	uint8 _disarmDC;        ///< DC to disarm trap
+	uint8 _trapType;        ///< Row number in 'traps.2da'.
+	uint8 _detectDC;        ///< DC to detect trap.
+	uint8 _disarmDC;        ///< DC to disarm trap.
 
-	Common::UString _keyTag;     ///< Tag of disabling key
-	Common::UString _itemResRef; ///< Recoverable item
+	Common::UString _keyTag;     ///< Tag of disabling key.
+	Common::UString _itemResRef; ///< Recoverable item.
 
-	uint32 _detectedBy;     ///< Creature that detected the trap
-	uint32 _createdBy;      ///< Creature that created the trap
+	uint32 _detectedBy;     ///< Creature that detected the trap.
+	uint32 _createdBy;      ///< Creature that created the trap.
 
 	void init();
 

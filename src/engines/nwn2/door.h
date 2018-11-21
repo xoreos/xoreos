@@ -102,7 +102,7 @@ private:
 
 	Module *_module; ///< The module the door is in.
 
-	Common::ScopedPtr<Trap> _trap; ///< The door's trap
+	Common::ScopedPtr<Trap> _trap; ///< The door's trap.
 
 	bool _invisible; ///< Is the door invisible?
 

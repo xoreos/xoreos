@@ -37,7 +37,7 @@ Trap::Trap(const Aurora::GFF3Struct &trap) {
 	load(trap);
 }
 
-Trap::Trap(const uint8 type, const Creature * creator) {
+Trap::Trap(const uint8 type, const Creature *creator) {
 	init();
 	load(type, creator);
 }
@@ -70,7 +70,7 @@ void Trap::init() {
  * Return true if the trap can be triggered by
  * the creature 'triggerBy'.
  */
-bool Trap::isTriggeredBy(Object * triggerBy) const {
+bool Trap::isTriggeredBy(Object *triggerBy) const {
 	// Check if a trap
 	if (!_isTrap)
 		return false;
@@ -193,7 +193,7 @@ void Trap::setTrapDisarmDC(uint8 disarmDC) {
 }
 
 /** Set the tag of the key that can disarm the trap */
-void Trap::setTrapKeyTag(Common::UString keyTag) {
+void Trap::setTrapKeyTag(const Common::UString &keyTag) {
 	_keyTag = keyTag;
 }
 

@@ -96,7 +96,7 @@ protected:
 	void loadAppearance();
 
 private:
-	Common::ScopedPtr<Trap> _trap; ///< The placeable's trap
+	Common::ScopedPtr<Trap> _trap; ///< The placeable's trap.
 
 	State _state; ///< The current state of the placeable.
 

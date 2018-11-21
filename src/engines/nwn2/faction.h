@@ -47,12 +47,12 @@ public:
 
 private:
 	struct PersonalRep {
-		uint8 amount;    ///< Revised reputation
-		uint32 day;      ///< Game day when this reputation was created
-		uint32 time;     ///< Game time when this reputation was created
-		bool decays;     ///< True if reputation adjustment decays at a set time
-		uint16 duration; ///< Duration in seconds of the reputation adjustment
-		uint32 objectId; ///< Object ID of the other creature for which rep applies
+		uint8 amount;    ///< Revised reputation.
+		uint32 day;      ///< Game day when this reputation was created.
+		uint32 time;     ///< Game time when this reputation was created.
+		bool decays;     ///< True if reputation adjustment decays at a set time.
+		uint16 duration; ///< Duration in seconds of the reputation adjustment.
+		uint32 objectId; ///< Object ID of the other creature for which rep applies.
 	};
 
 	std::vector<PersonalRep> _reputation;
@@ -73,18 +73,18 @@ public:
 
 protected: // Allow testing access
 	struct Faction {
-		Common::UString name; ///< Name of the faction
-		bool global;          ///< Global effect flag
+		Common::UString name; ///< Name of the faction.
+		bool global;          ///< Global effect flag.
 	};
 	struct Reputation {
-		uint32 factionId1;    ///< Index into _factionList
-		uint32 factionId2;    ///< Index into _factionList
-		uint32 factionRep;    ///< How faction Id1 perceives faction Id2
+		uint32 factionId1;    ///< Index into _factionList.
+		uint32 factionId2;    ///< Index into _factionList.
+		uint32 factionRep;    ///< How faction Id1 perceives faction Id2.
 	};
 
-	size_t                  _count;       ///< Number of factions
-	std::vector<Faction>    _factionList; ///< List of factions
-	std::vector<Reputation> _repList;     ///< List of reputations
+	size_t                  _count;       ///< Number of factions.
+	std::vector<Faction>    _factionList; ///< List of factions.
+	std::vector<Reputation> _repList;     ///< List of reputations.
 
 	void loadFac();
 	void load2da();
