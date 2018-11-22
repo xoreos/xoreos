@@ -756,7 +756,11 @@ Sound::PacketizedAudioStream *QuickTimeDecoder::AudioSampleDesc::createAudioStre
 	case MKTAG('m', 'p', '4', 'a'):
 		switch (_objectTypeMP4) {
 		case 0x40:
+#ifdef ENABLE_FAAD
 			return Sound::makeAACStream(*_extraData);
+#else
+			return 0;
+#endif
 		}
 		break;
 	}
