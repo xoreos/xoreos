@@ -1151,7 +1151,7 @@ void ModelNode::buildMaterial() {
 			                Graphics::Shader::ShaderDescriptor::TEXTURE_DIFFUSE);
 
 			if (phandles[0].getTexture().getTXI().getFeatures().blending) {
-				materialFlags |= Shader::ShaderMaterial::MATERIAL_SPECIAL_BLEND;
+				materialFlags |= Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND;
 				// For KotOR2, this is required to get some windows showing up properly.
 				if (pmesh->hasTransparencyHint && !(materialFlags & Shader::ShaderMaterial::MATERIAL_OPAQUE)) {
 					materialFlags |= Shader::ShaderMaterial::MATERIAL_TRANSPARENT;
@@ -1268,6 +1268,12 @@ void ModelNode::buildMaterial() {
 	surface = new Shader::ShaderSurface(vertexObject, materialName);
 	material = new Shader::ShaderMaterial(fragmentObject, materialName);
 	material->setFlags(materialFlags);
+	if (materialFlags & Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND) {
+		material->setBlendSrcRGB(GL_ZERO);
+		material->setBlendSrcAlpha(GL_ZERO);
+		material->setBlendDstRGB(GL_ONE_MINUS_SRC_COLOR);
+		material->setBlendDstAlpha(GL_ONE_MINUS_SRC_ALPHA);
+	}
 	MaterialMan.addMaterial(material);
 	SurfaceMan.addSurface(surface);
 

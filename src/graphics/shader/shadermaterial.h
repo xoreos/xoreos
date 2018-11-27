@@ -38,7 +38,7 @@ public:
 		MATERIAL_TRANSPARENT   = 0x0002,  ///< Material definitely has transparency.
 		MATERIAL_TRANSPARENT_B = 0x0004,  ///< Material definitely has transparency.
 		MATERIAL_DECAL         = 0x0008,  ///< Material is a decal.
-		MATERIAL_SPECIAL_BLEND = 0x0010   ///< Different to default blending. Maybe this should be extended one day.
+		MATERIAL_CUSTOM_BLEND  = 0x0010,  ///< Different blending is being used, see _blend* variables.
 	};
 
 	ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name = "unnamed");
@@ -48,6 +48,13 @@ public:
 
 	uint32 getFlags() const;
 	void setFlags(uint32 flags);
+
+	void setBlendEquationRGB(GLenum equation);
+	void setBlendEquationAlpha(GLenum equation);
+	void setBlendSrcRGB(GLenum mode);
+	void setBlendSrcAlpha(GLenum mode);
+	void setBlendDstRGB(GLenum mode);
+	void setBlendDstAlpha(GLenum mode);
 
 	Shader::ShaderObject *getFragmentShader() const;
 
@@ -96,6 +103,12 @@ private:
 	std::vector<ShaderMaterialVariable> _variableData;
 	Shader::ShaderObject *_fragShader;
 	uint32 _flags;
+	GLenum _blendEquationRGB;
+	GLenum _blendEquationAlpha;
+	GLenum _blendSrcRGB;
+	GLenum _blendSrcAlpha;
+	GLenum _blendDstRGB;
+	GLenum _blendDstAlpha;
 
 	Common::UString _name;
 	uint32 _usageCount;

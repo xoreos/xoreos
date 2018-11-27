@@ -30,7 +30,10 @@ namespace Shader {
 
 #define SHADER_MATERIAL_VARIABLE_OWNED (0x00000001)
 
-ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) : _variableData(), _fragShader(fragShader), _flags(0), _name(name), _usageCount(0), _alphaIndex(0xFFFFFFFF) {
+ShaderMaterial::ShaderMaterial(Shader::ShaderObject *fragShader, const Common::UString &name) :
+		_variableData(), _fragShader(fragShader), _flags(0), _blendEquationRGB(GL_FUNC_ADD), _blendEquationAlpha(GL_FUNC_ADD),
+		_blendSrcRGB(GL_SRC_ALPHA), _blendSrcAlpha(GL_SRC_ALPHA), _blendDstRGB(GL_ONE_MINUS_SRC_ALPHA), _blendDstAlpha(GL_ONE_MINUS_SRC_ALPHA),
+		_name(name), _usageCount(0), _alphaIndex(0xFFFFFFFF) {
 	fragShader->usageCount++;
 
 	uint32 varCount = fragShader->variablesCombined.size();
@@ -62,6 +65,30 @@ uint32 ShaderMaterial::getFlags() const {
 
 void ShaderMaterial::setFlags(uint32 flags) {
 	_flags = flags;
+}
+
+void ShaderMaterial::setBlendEquationRGB(GLenum equation) {
+	_blendEquationRGB = equation;
+}
+
+void ShaderMaterial::setBlendEquationAlpha(GLenum equation) {
+	_blendEquationAlpha = equation;
+}
+
+void ShaderMaterial::setBlendSrcRGB(GLenum mode) {
+	_blendSrcRGB = mode;
+}
+
+void ShaderMaterial::setBlendSrcAlpha(GLenum mode) {
+	_blendSrcAlpha = mode;
+}
+
+void ShaderMaterial::setBlendDstRGB(GLenum mode) {
+	_blendDstRGB = mode;
+}
+
+void ShaderMaterial::setBlendDstAlpha(GLenum mode) {
+	_blendDstAlpha = mode;
 }
 
 Shader::ShaderObject *ShaderMaterial::getFragmentShader() const {
@@ -234,14 +261,16 @@ void ShaderMaterial::bindFade(Shader::ShaderProgram *program, float alpha) {
 }
 
 void ShaderMaterial::bindGLState() {
-	if (_flags & ShaderMaterial::MATERIAL_SPECIAL_BLEND) {
-		glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+	if (_flags & ShaderMaterial::MATERIAL_CUSTOM_BLEND) {
+		glBlendEquationSeparate(_blendEquationRGB, _blendEquationAlpha);
+		glBlendFuncSeparate(_blendSrcRGB, _blendDstRGB, _blendSrcAlpha, _blendDstAlpha);
 	}
 }
 
 void ShaderMaterial::unbindGLState() {
-	if (_flags & ShaderMaterial::MATERIAL_SPECIAL_BLEND) {
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	if (_flags & ShaderMaterial::MATERIAL_CUSTOM_BLEND) {
+		glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }
 
