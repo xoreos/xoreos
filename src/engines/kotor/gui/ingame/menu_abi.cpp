@@ -36,7 +36,8 @@ MenuAbilities::MenuAbilities(Console *console) : GUI(console) {
 
 void MenuAbilities::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_EXIT") {
-
+		_returnCode = 1;
+		return;
 	}
 }
 
