@@ -82,6 +82,36 @@ void Surface::fill(byte r, byte g, byte b, byte a) {
 	}
 }
 
+void Surface::resize(unsigned int newWidth, unsigned int newHeight) {
+	assert((newWidth > 0) && (newHeight > 0));
+
+	unsigned int oldWidth = _mipMaps[0]->width;
+	unsigned int oldHeight = _mipMaps[0]->height;
+
+	Common::ScopedArray<byte> oldData(_mipMaps[0]->data.release());
+
+	_mipMaps[0]->width = newWidth;
+	_mipMaps[0]->height = newHeight;
+	_mipMaps[0]->size   = _mipMaps[0]->width * _mipMaps[0]->height * 4;
+
+	_mipMaps[0]->data.reset(new byte[_mipMaps[0]->size]);
+
+	double xRatio = static_cast<double>(oldWidth) / static_cast<double>(newWidth);
+	double yRatio = static_cast<double>(oldHeight) / static_cast<double>(newHeight);
+
+	for (unsigned int y = 0; y < newHeight; ++y) {
+		for (unsigned int x = 0; x < newWidth; ++x) {
+			double px = std::floor(static_cast<double>(x) * xRatio);
+			double py = std::floor(static_cast<double>(y) * yRatio);
+
+			_mipMaps[0]->data[(y * newWidth + x) * 4] = oldData[(py * oldWidth + px) * 4];
+			_mipMaps[0]->data[(y * newWidth + x) * 4 + 1] = oldData[(py * oldWidth + px) * 4 + 1];
+			_mipMaps[0]->data[(y * newWidth + x) * 4 + 2] = oldData[(py * oldWidth + px) * 4 + 2];
+			_mipMaps[0]->data[(y * newWidth + x) * 4 + 3] = oldData[(py * oldWidth + px) * 4 + 3];
+		}
+	}
+}
+
 const ImageDecoder::MipMap &Surface::getMipMap(size_t mipMap) const {
 	return ImageDecoder::getMipMap(mipMap);
 }

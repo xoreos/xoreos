@@ -43,6 +43,9 @@ public:
 
 	void fill(byte r, byte g, byte b, byte a);
 
+	/** Resize this image using Nearest Neighbour algorithm. */
+	void resize(unsigned int newWidth, unsigned int newHeight);
+
 	/** Return a mip map. */
 	const MipMap &getMipMap(size_t mipMap) const;
 	/** Return a mip map. */
