@@ -26,6 +26,7 @@
 #define GRAPHICS_IMAGES_DUMPTGA_H
 
 #include "src/common/types.h"
+#include "src/common/writestream.h"
 
 #include "src/graphics/types.h"
 
@@ -39,6 +40,8 @@ class ImageDecoder;
 
 /** Dump image into a TGA file. */
 void dumpTGA(const Common::UString &fileName, const ImageDecoder *image);
+/** Dump image into a TGA stream. */
+void dumpTGA(Common::WriteStream &fileName, const ImageDecoder *image);
 
 } // End of namespace Graphics
 
