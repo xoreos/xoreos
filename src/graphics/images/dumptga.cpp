@@ -30,6 +30,7 @@
 #include "src/common/writefile.h"
 
 #include "src/graphics/images/decoder.h"
+#include "src/graphics/images/dumptga.h"
 
 namespace Graphics {
 
@@ -63,25 +64,21 @@ static void writePixel(Common::WriteStream &file, const byte *&data, PixelFormat
 
 }
 
-static Common::WriteStream *openTGA(const Common::UString &fileName, int width, int height) {
-	Common::WriteFile *file = new Common::WriteFile(fileName);
+static void writeHeader(Common::WriteStream &stream, int width, int height) {
+	stream.writeByte(0);     // ID Length
+	stream.writeByte(0);     // Palette size
+	stream.writeByte(2);     // Unmapped RGB
+	stream.writeUint32LE(0); // Color map
+	stream.writeByte(0);     // Color map
+	stream.writeUint16LE(0); // X
+	stream.writeUint16LE(0); // Y
 
-	file->writeByte(0);     // ID Length
-	file->writeByte(0);     // Palette size
-	file->writeByte(2);     // Unmapped RGB
-	file->writeUint32LE(0); // Color map
-	file->writeByte(0);     // Color map
-	file->writeUint16LE(0); // X
-	file->writeUint16LE(0); // Y
+	stream.writeUint16LE(width);
+	stream.writeUint16LE(height);
 
-	file->writeUint16LE(width);
-	file->writeUint16LE(height);
+	stream.writeByte(32); // Pixel depths
 
-	file->writeByte(32); // Pixel depths
-
-	file->writeByte(0);
-
-	return file;
+	stream.writeByte(0);
 }
 
 static void writeMipMap(Common::WriteStream &stream, const ImageDecoder::MipMap &mipMap, PixelFormat format) {
@@ -93,6 +90,12 @@ static void writeMipMap(Common::WriteStream &stream, const ImageDecoder::MipMap 
 }
 
 void dumpTGA(const Common::UString &fileName, const ImageDecoder *image) {
+	Common::ScopedPtr<Common::WriteStream> file(new Common::WriteFile(fileName));
+
+	dumpTGA(*file, image);
+}
+
+void dumpTGA(Common::WriteStream &stream, const ImageDecoder *image) {
 	if (!image || (image->getLayerCount() < 1) || (image->getMipMapCount() < 1))
 		throw Common::Exception("No image");
 
@@ -108,12 +111,12 @@ void dumpTGA(const Common::UString &fileName, const ImageDecoder *image) {
 		height += mipMap.height;
 	}
 
-	Common::ScopedPtr<Common::WriteStream> file(openTGA(fileName, width, height));
+	writeHeader(stream, width, height);
 
 	for (size_t i = 0; i < image->getLayerCount(); i++)
-		writeMipMap(*file, image->getMipMap(0, i), image->getFormat());
+		writeMipMap(stream, image->getMipMap(0, i), image->getFormat());
 
-	file->flush();
+	stream.flush();
 }
 
 } // End of namespace Graphics
