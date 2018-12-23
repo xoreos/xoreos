@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include <SDL_gamecontroller.h>
+
 #include "src/events/joystick.h"
 
 namespace Events {
@@ -46,6 +48,10 @@ const Common::UString &Joystick::getName() const {
 
 bool Joystick::isEnabled() const {
 	return _sdlJoy != 0;
+}
+
+bool Joystick::isController() const {
+	return SDL_IsGameController(_index);
 }
 
 bool Joystick::enable() {

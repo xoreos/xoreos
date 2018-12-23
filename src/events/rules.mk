@@ -31,6 +31,7 @@ src_events_libevents_la_SOURCES += \
     src/events/notifications.h \
     src/events/timerman.h \
     src/events/joystick.h \
+    src/events/gamecontroller.h \
     $(EMPTY)
 
 src_events_libevents_la_SOURCES += \
@@ -40,4 +41,5 @@ src_events_libevents_la_SOURCES += \
     src/events/notifications.cpp \
     src/events/timerman.cpp \
     src/events/joystick.cpp \
+    src/events/gamecontroller.cpp \
     $(EMPTY)
