@@ -39,6 +39,7 @@ STOP_IGNORE_IMPLICIT_FALLTHROUGH
 #include "src/events/notifications.h"
 #include "src/events/timerman.h"
 #include "src/events/joystick.h"
+#include "src/events/gamecontroller.h"
 
 #include "src/graphics/types.h"
 #include "src/graphics/graphics.h"
@@ -75,6 +76,13 @@ void EventsManager::init() {
 	_queueSize = 0;
 
 	_ready = true;
+
+	// Load game controller mapping database if available.
+	if (ConfigMan.hasKey("gamecontrollerdb")) {
+		Common::UString gameControllerDatabase = ConfigMan.getString("gamecontrollerdb");
+		if (SDL_GameControllerAddMappingsFromFile(gameControllerDatabase.c_str()) == -1)
+			warning("Could not load controller database: %s", SDL_GetError());
+	}
 
 	initJoysticks();
 
