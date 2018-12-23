@@ -42,6 +42,24 @@ public:
 
 private:
 	void load(Common::SeekableReadStream &xsb);
+
+	void readCueVarations(Common::SeekableReadStream &xsb, Cue &cue, uint32 offset);
+
+	void addWaveVariation(Track &track, uint32 indices, const std::vector<Common::UString> &banks);
+	void readWaveVariations(Common::SeekableReadStream &xsb, Track &track, uint32 offset,
+                          const std::vector<Common::UString> &banks);
+
+	std::vector<Common::UString> readWaveBanks(Common::SeekableReadStream &xsb, uint32 offset, uint32 count);
+
+	void readCues(Common::SeekableReadStream &xsb, uint32 xsbFlags, uint32 offset, uint32 count);
+
+	void readComplexTrack(Common::SeekableReadStream &xsb, Track &track,
+	                      const std::vector<Common::UString> &banks);
+	void readTracks(Common::SeekableReadStream &xsb, Sound &sound, uint32 indicesOrOffset, uint32 count,
+	                uint8 flags, const std::vector<Common::UString> &banks);
+
+	void readSounds(Common::SeekableReadStream &xsb, uint32 offset, uint32 count,
+	                const std::vector<Common::UString> &banks);
 };
 
 } // End of namespace Sound
