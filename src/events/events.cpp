@@ -365,9 +365,20 @@ void EventsManager::initJoysticks() {
 	if (joyCount <= 0)
 		return;
 
+	bool controllerFound = false;
+
 	_joysticks.reserve(joyCount);
-	for (int i = 0; i < joyCount; i++)
-		_joysticks.push_back(new Joystick(i));
+	for (int i = 0; i < joyCount; i++) {
+		if (SDL_IsGameController(i)) {
+			_joysticks.push_back(new GameController(i));
+			controllerFound = true;
+		} else {
+			_joysticks.push_back(new Joystick(i));
+		}
+	}
+
+	if (controllerFound)
+		SDL_GameControllerEventState(SDL_ENABLE);
 
 	SDL_JoystickEventState(SDL_ENABLE);
 }
