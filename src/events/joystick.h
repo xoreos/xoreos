@@ -39,6 +39,9 @@ namespace Events {
 
 class Joystick : boost::noncopyable {
 public:
+	Joystick(int index);
+	virtual ~Joystick();
+
 	/** Return the joystick's name. */
 	const Common::UString &getName() const;
 
@@ -46,12 +49,14 @@ public:
 	int getIndex() const;
 
 	/** Is the joystick currently enabled? */
-	bool isEnabled() const;
+	virtual bool isEnabled() const;
+	/** Can this joystick be a game controller? */
+	bool isController() const;
 
 	/** Enable the joystick. */
-	bool enable();
+	virtual bool enable();
 	/** Disable the joystick. */
-	void disable();
+	virtual void disable();
 
 	// Properties, only available when the joystick is enabled.
 
@@ -68,12 +73,6 @@ private:
 	int _index;
 	Common::UString _name;
 	SDL_Joystick *_sdlJoy;
-
-
-	Joystick(int index);
-	~Joystick();
-
-	friend class EventsManager;
 
 	template<typename T>
 	friend void Common::DeallocatorDefault::destroy(T *);
