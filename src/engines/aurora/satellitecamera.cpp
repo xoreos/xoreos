@@ -98,6 +98,16 @@ bool SatelliteCamera::handleCameraInput(const Events::Event &e) {
 			}
 			break;
 
+		case Events::kEventControllerAxisMotion:
+			switch (e.caxis.axis) {
+				case Events::kControllerAxisLeftX:
+				case Events::kControllerAxisRightX:
+					_rightBtnPressed = e.caxis.value >  10000;
+					_leftBtnPressed  = e.caxis.value < -10000;
+					return true;
+			}
+			break;
+
 		default:
 			break;
 	}
