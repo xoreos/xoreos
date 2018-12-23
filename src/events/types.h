@@ -297,6 +297,37 @@ enum Key {
 	kKeySleep = SDLK_SLEEP
 };
 
+/** The possible controller axis. */
+enum ControllerAxis {
+	kControllerAxisInvalid  = SDL_CONTROLLER_AXIS_INVALID,
+	kControllerAxisLeftX    = SDL_CONTROLLER_AXIS_LEFTX,
+	kControllerAxisLeftY    = SDL_CONTROLLER_AXIS_LEFTY,
+	kControllerAxisRightX   = SDL_CONTROLLER_AXIS_RIGHTX,
+	kControllerAxisRightY   = SDL_CONTROLLER_AXIS_RIGHTY,
+	kControllerAxisTriggerX = SDL_CONTROLLER_AXIS_TRIGGERLEFT,
+	kControllerAxisTriggerY = SDL_CONTROLLER_AXIS_TRIGGERRIGHT,
+};
+
+/** The possible controller buttons. */
+enum ControllerButton {
+	kControllerButtonInvalid       = SDL_CONTROLLER_BUTTON_INVALID,
+	kControllerButtonA             = SDL_CONTROLLER_BUTTON_A,
+	kControllerButtonB             = SDL_CONTROLLER_BUTTON_B,
+	kControllerButtonX             = SDL_CONTROLLER_BUTTON_X,
+	kControllerButtonY             = SDL_CONTROLLER_BUTTON_Y,
+	kControllerButtonBack          = SDL_CONTROLLER_BUTTON_BACK,
+	kControllerButtonGuide         = SDL_CONTROLLER_BUTTON_GUIDE,
+	kControllerButtonStart         = SDL_CONTROLLER_BUTTON_START,
+	kControllerButtonLeftStick     = SDL_CONTROLLER_BUTTON_LEFTSTICK,
+	kControllerButtonRightStick    = SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+	kControllerButtonLeftShoulder  = SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+	kControllerButtonRightShoulder = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+	kControllerButtonDpadUp        = SDL_CONTROLLER_BUTTON_DPAD_UP,
+	kControllerButtonDpadDown      = SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+	kControllerButtonDpadLeft      = SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+	kControllerButtonDpadRight     = SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+};
+
 /** A functor for a function that needs to be called in the main thread. */
 template<typename T> struct MainThreadFunctor {
 private:
