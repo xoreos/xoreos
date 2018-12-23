@@ -30,6 +30,9 @@ src_sound_libsound_la_SOURCES += \
     src/sound/xactwavebank.h \
     src/sound/xactwavebank_ascii.h \
     src/sound/xactwavebank_binary.h \
+    src/sound/xactsoundbank.h \
+    src/sound/xactsoundbank_ascii.h \
+    src/sound/xactsoundbank_binary.h \
     src/sound/fmodsamplebank.h \
     src/sound/wwisesoundbank.h \
     $(EMPTY)
@@ -41,6 +44,9 @@ src_sound_libsound_la_SOURCES += \
     src/sound/xactwavebank.cpp \
     src/sound/xactwavebank_ascii.cpp \
     src/sound/xactwavebank_binary.cpp \
+    src/sound/xactsoundbank.cpp \
+    src/sound/xactsoundbank_ascii.cpp \
+    src/sound/xactsoundbank_binary.cpp \
     src/sound/fmodsamplebank.cpp \
     src/sound/wwisesoundbank.cpp \
     $(EMPTY)
