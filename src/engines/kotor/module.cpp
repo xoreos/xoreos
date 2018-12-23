@@ -592,6 +592,13 @@ void Module::handleEvents() {
 					_backwardsBtnPressed = event->type == Events::kEventKeyDown;
 				}
 				break;
+
+			case Events::kEventControllerAxisMotion:
+				if (event->caxis.axis == Events::kControllerAxisLeftY) {
+					_backwardsBtnPressed = event->caxis.value >  10000;
+					_forwardBtnPressed   = event->caxis.value < -10000;
+				}
+				break;
 		}
 
 		// Camera
