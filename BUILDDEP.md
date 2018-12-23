@@ -35,3 +35,4 @@ Build-time library dependencies
 - libfaad (>= 2.7)
 
 - libxvidcore (>= 1.2.2)
+- libvpx (>= 1.6.0)
