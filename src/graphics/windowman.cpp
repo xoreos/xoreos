@@ -67,7 +67,7 @@ WindowManager::~WindowManager() {
 void WindowManager::init() {
 	Common::enforceMainThread();
 
-	const uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK;
+	const uint32 sdlInitFlags = SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER;
 	if (SDL_Init(sdlInitFlags) < 0)
 		throw Common::Exception("Failed to initialize SDL: %s", SDL_GetError());
 
