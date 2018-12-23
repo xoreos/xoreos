@@ -43,18 +43,21 @@ typedef SDL_Event Event;
 
 /** Custom event types. */
 enum EventType {
-	kEventKeyDown   = SDL_KEYDOWN        , ///< Keyboard key was pressed.
-	kEventKeyUp     = SDL_KEYUP          , ///< Keyboard key was released.
-	kEventMouseMove = SDL_MOUSEMOTION    , ///< Mouse was moved.
-	kEventMouseDown = SDL_MOUSEBUTTONDOWN, ///< Mouse button was pressed.
-	kEventMouseUp   = SDL_MOUSEBUTTONUP  , ///< Mouse button was released.
-	kEventMouseWheel= SDL_MOUSEWHEEL     , ///< Mouse wheel was used.
-	kEventTextInput = SDL_TEXTINPUT      , ///< Text was written.
-	kEventQuit      = SDL_QUIT           , ///< Application quit was requested.
-	kEventWindow    = SDL_WINDOWEVENT    , ///< Resize the window.
-	kEventUserMIN   = SDL_USEREVENT - 1  , ///< For range checks.
-	kEventITC       = SDL_USEREVENT      , ///< Inter-thread communication.
-	kEventUserMAX   = SDL_LASTEVENT        ///< For range checks.
+	kEventKeyDown              = SDL_KEYDOWN             , ///< Keyboard key was pressed.
+	kEventKeyUp                = SDL_KEYUP               , ///< Keyboard key was released.
+	kEventMouseMove            = SDL_MOUSEMOTION         , ///< Mouse was moved.
+	kEventMouseDown            = SDL_MOUSEBUTTONDOWN     , ///< Mouse button was pressed.
+	kEventMouseUp              = SDL_MOUSEBUTTONUP       , ///< Mouse button was released.
+	kEventMouseWheel           = SDL_MOUSEWHEEL          , ///< Mouse wheel was used.
+	kEventControllerAxisMotion = SDL_CONTROLLERAXISMOTION, ///< Controller axis was moved.
+	kEventControllerButtonDown = SDL_CONTROLLERBUTTONDOWN, ///< Controller button was pressed.
+	kEventControllerButtonUp   = SDL_CONTROLLERBUTTONUP  , ///< Controller button was released
+	kEventTextInput            = SDL_TEXTINPUT           , ///< Text was written.
+	kEventQuit                 = SDL_QUIT                , ///< Application quit was requested.
+	kEventWindow               = SDL_WINDOWEVENT         , ///< Resize the window.
+	kEventUserMIN              = SDL_USEREVENT - 1       , ///< For range checks.
+	kEventITC                  = SDL_USEREVENT           , ///< Inter-thread communication.
+	kEventUserMAX              = SDL_LASTEVENT             ///< For range checks.
 };
 
 /** Sub events for kEventWindow. */
