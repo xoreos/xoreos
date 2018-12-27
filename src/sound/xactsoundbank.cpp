@@ -23,7 +23,6 @@
  */
 
 #include "src/common/scopedptr.h"
-#include "src/common/ustring.h"
 
 #include "src/aurora/resman.h"
 

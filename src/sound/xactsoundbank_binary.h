@@ -40,12 +40,7 @@ class XACTSoundBank_Binary : public XACTSoundBank {
 public:
 	XACTSoundBank_Binary(Common::SeekableReadStream &xsb);
 
-	/** Return the internal name of the SoundBank. */
-	const Common::UString &getName() const { return _name; }
-
 private:
-	Common::UString _name;
-
 	void load(Common::SeekableReadStream &xsb);
 };
 

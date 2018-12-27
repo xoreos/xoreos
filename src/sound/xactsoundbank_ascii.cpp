@@ -30,13 +30,6 @@
 
 namespace Sound {
 
-XACTSoundBank_ASCII::Command::Command(const std::vector<Common::UString> &parameters) {
-	if (parameters.size() > 0) {
-		command = parameters[0];
-	}
-}
-
-
 XACTSoundBank_ASCII::XACTSoundBank_ASCII(Common::SeekableReadStream &xsb) {
 	load(xsb);
 }
@@ -119,7 +112,8 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				break;
 			}
 
-			sound->commands.push_back(Command(tokens));
+			sound->commands.push_back(Command());
+			sound->commands.back().command = tokens[0];
 		}
 
 		sound->waves.resize(waveCount);
