@@ -98,6 +98,9 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 		_soundMap[sound->name] = &*sound;
 
+		sound->tracks.resize(1);
+		Track &track = sound->tracks.back();
+
 		size_t waveCount = 0;
 
 		while (!xsb.eos()) {
@@ -112,12 +115,12 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				break;
 			}
 
-			sound->commands.push_back(Command());
-			sound->commands.back().command = tokens[0];
+			track.events.push_back(Event());
+			track.events.back().name = tokens[0];
 		}
 
-		sound->waves.resize(waveCount);
-		for (Waves::iterator wave = sound->waves.begin(); wave != sound->waves.end(); ++wave) {
+		track.waves.resize(waveCount);
+		for (WaveVariations::iterator wave = track.waves.begin(); wave != track.waves.end(); ++wave) {
 			tokenizer.getTokens(xsb, tokens, 3);
 			tokenizer.nextChunk(xsb);
 
@@ -138,22 +141,22 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 		tokenizer.nextChunk(xsb);
 
 		cue->name = tokens[0];
+		cue->variationSelectMethod = getNumber(tokens[1]);
 		const bool hasTransitions = tokens[2] == "1";
 
-		const size_t soundRefCount = getAmount(tokenizer, xsb);
+		const size_t variationCount = getAmount(tokenizer, xsb);
 		tokenizer.nextChunk(xsb);
 
-		cue->sounds.resize(soundRefCount);
-		for (SoundRefs::iterator soundRef = cue->sounds.begin(); soundRef != cue->sounds.end(); ++soundRef) {
+		cue->variations.resize(variationCount);
+		for (CueVariations::iterator variation = cue->variations.begin(); variation != cue->variations.end(); ++variation) {
 			tokenizer.getTokens(xsb, tokens, 4);
 			tokenizer.nextChunk(xsb);
 
-			soundRef->soundName = tokens[1];
-			soundRef->soundIndex = getNumber(tokens[1]);
+			variation->soundName = tokens[1];
+			variation->soundIndex = getNumber(tokens[1]);
 
-			soundRef->state = getNumber(tokens[3]);
-
-			cue->states[soundRef->state] = &*soundRef;
+			variation->weightMax = getNumber(tokens[2]);
+			variation->weightMin = getNumber(tokens[3]);
 		}
 
 		if (!hasTransitions)

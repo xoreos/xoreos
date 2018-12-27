@@ -57,38 +57,46 @@ protected:
 		Common::UString name;
 	};
 
-	struct Wave {
+	struct Event {
+		Common::UString name;
+	};
+
+	struct WaveVariation {
 		Common::UString name;
 		Common::UString bank;
 
 		size_t index;
 	};
 
-	typedef std::vector<Wave> Waves;
+	typedef std::vector<Event> Events;
+	typedef std::vector<WaveVariation> WaveVariations;
 
-	struct Command {
-		Common::UString command;
+	struct Track {
+		uint8 variationSelectMethod;
+
+		Events events;
+		WaveVariations waves;
 	};
 
-	typedef std::vector<Command> Commands;
+	typedef std::vector<Track> Tracks;
 
 	struct Sound {
 		Common::UString name;
 
 		Category *category;
 
-		Commands commands;
-		Waves waves;
+		Tracks tracks;
 	};
 
-	struct SoundRef {
+	struct CueVariation {
 		Common::UString soundName;
 		size_t soundIndex;
 
-		size_t state;
+		uint32 weightMin;
+		uint32 weightMax;
 	};
 
-	typedef std::vector<SoundRef> SoundRefs;
+	typedef std::vector<CueVariation> CueVariations;
 
 	struct Transition {
 		Common::UString from;
@@ -100,14 +108,13 @@ protected:
 	};
 
 	typedef std::vector<Transition> Transitions;
-	typedef std::map<size_t, SoundRef *> States;
 
 	struct Cue {
 		Common::UString name;
 
-		SoundRefs sounds;
-		States states;
+		uint8 variationSelectMethod;
 
+		CueVariations variations;
 		Transitions transitions;
 	};
 
