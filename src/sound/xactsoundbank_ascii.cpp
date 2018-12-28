@@ -133,6 +133,11 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 			} else if (tokens[0] == "LOOP") {
 				track.events.push_back(Event(kEventTypeLoop));
+				track.events.back().params.loop.count = kLoopCountInfinite;
+
+				if (tokens.size() > 1)
+					track.events.back().params.loop.count = getNumber(tokens[1]);
+
 			} else if (tokens[0] == "VOLUME") {
 				track.events.push_back(Event(kEventTypeVolume));
 			} else if (tokens[0] == "PITCH") {
