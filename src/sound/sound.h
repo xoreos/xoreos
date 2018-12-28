@@ -290,6 +290,6 @@ private:
 } // End of namespace Sound
 
 /** Shortcut for accessing the sound manager. */
-#define SoundMan Sound::SoundManager::instance()
+#define SoundMan ::Sound::SoundManager::instance()
 
 #endif // SOUND_SOUND_H
