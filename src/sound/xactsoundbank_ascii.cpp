@@ -115,8 +115,39 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				break;
 			}
 
-			track.events.push_back(Event());
-			track.events.back().name = tokens[0];
+			if        (tokens[0] == "3D") {
+				// TODO: 3D properties
+			} else if (tokens[0] == "PEQ") {
+				// TODO: Parametric EQ
+			} else if (tokens[0] == "PLAY") {
+				bool isComplex = false;
+
+				for (size_t i = 2; i < tokens.size(); i++)
+					if (tokens[i] != "0")
+						isComplex = true;
+
+				if (isComplex)
+					track.events.push_back(Event(kEventTypePlayComplex));
+				else
+					track.events.push_back(Event(kEventTypePlay));
+
+			} else if (tokens[0] == "LOOP") {
+				track.events.push_back(Event(kEventTypeLoop));
+			} else if (tokens[0] == "VOLUME") {
+				track.events.push_back(Event(kEventTypeVolume));
+			} else if (tokens[0] == "PITCH") {
+				track.events.push_back(Event(kEventTypePitch));
+			} else if (tokens[0] == "LPF") {
+				track.events.push_back(Event(kEventTypeLowPass));
+			} else if (tokens[0] == "MFLFO") {
+				track.events.push_back(Event(kEventTypeLFOMulti));
+			} else if (tokens[0] == "MARKER") {
+				track.events.push_back(Event(kEventTypeMarker));
+			} else if (tokens[0] == "AEG") {
+				track.events.push_back(Event(kEventTypeEnvelopeAmplitude));
+			} else {
+				warning("Unknown event \"%s\"", tokens[0].c_str());
+			}
 		}
 
 		track.waves.resize(waveCount);

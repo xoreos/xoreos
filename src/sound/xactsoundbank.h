@@ -77,8 +77,9 @@ protected:
 	};
 
 	struct Event {
-		Common::UString name;
 		EventType type;
+
+		Event(EventType t) : type(t) { }
 	};
 
 	struct WaveVariation {
