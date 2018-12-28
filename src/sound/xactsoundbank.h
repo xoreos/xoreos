@@ -53,6 +53,8 @@ public:
 
 
 protected:
+	static const uint16 kLoopCountInfinite = 0xFFFF;
+
 	enum EventType {
 		kEventTypePlay              = 0x00,
 		kEventTypePlayComplex       = 0x01,
@@ -78,6 +80,13 @@ protected:
 
 	struct Event {
 		EventType type;
+
+		union {
+			struct {
+				uint16 count;
+			} loop;
+
+		} params;
 
 		Event(EventType t) : type(t) { }
 	};
