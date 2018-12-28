@@ -192,18 +192,29 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 
 		const uint8 eventFlags = xsb.readByte();
 
-		xsb.skip(2); // Unknown
+		switch (event.type) {
+			case kEventTypePlay:
+			case kEventTypePlayComplex:
+				xsb.skip(2); // Unused
 
-		if (((event.type == kEventTypePlay) || (event.type == kEventTypePlayComplex)) &&
-				 (parameterSize >= 4)) {
+				if (parameterSize >= 4) {
+					const uint32 indicesOrOffset = xsb.readUint32LE();
+					parameterSize -= 4;
 
-			const uint32 indicesOrOffset = xsb.readUint32LE();
-			parameterSize -= 4;
+					if (eventFlags & kPlayEventMultipleVariations)
+						wavesOffset = indicesOrOffset;
+					else
+						addWaveVariation(track, indicesOrOffset, banks);
+				}
+				break;
 
-			if (eventFlags & kPlayEventMultipleVariations)
-				wavesOffset = indicesOrOffset;
-			else
-				addWaveVariation(track, indicesOrOffset, banks);
+			case kEventTypeLoop:
+				track.events.back().params.loop.count = xsb.readUint16LE();
+				break;
+
+			default:
+				xsb.skip(2); // Unknown
+				break;
 		}
 
 		xsb.skip(parameterSize);
