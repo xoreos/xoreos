@@ -154,6 +154,7 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 			xsb.seek(offsetName);
 
 			cue.name = Common::readString(xsb, Common::kEncodingASCII);
+			_cueMap[cue.name] = &cue;
 		}
 
 		if (offsetEntry != 0xFFFFFFFF) {

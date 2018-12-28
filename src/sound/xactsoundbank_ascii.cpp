@@ -177,6 +177,8 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 		tokenizer.nextChunk(xsb);
 
 		cue->name = tokens[0];
+		_cueMap[cue->name] = &*cue;
+
 		cue->variationSelectMethod = getNumber(tokens[1]);
 		const bool hasTransitions = tokens[2] == "1";
 
