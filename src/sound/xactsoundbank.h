@@ -32,6 +32,8 @@
 #include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
+#include "src/sound/types.h"
+
 namespace Sound {
 
 class XACTWaveBank;
@@ -48,11 +50,33 @@ class XACTSoundBank {
 public:
 	virtual ~XACTSoundBank() { }
 
+	/** Load an XACT SoundBank, of either ASCII or Binary format. */
+	static XACTSoundBank *load(const Common::UString &name);
+
 	/** Return the internal name of the SoundBank. */
 	const Common::UString &getName() { return _name; }
 
-	/** Load an XACT SoundBank, of either ASCII or Binary format. */
-	static XACTSoundBank *load(const Common::UString &name);
+	/** Play a sound cue by index, manually selecting the variation.
+	 *
+	 *  @param  index Index of the cue to play.
+	 *  @param  variation Index of the cue variation to play.
+	 *  @param  soundType What kind of sound is this?
+	 *  @return A handle to the sound channel, not yet started. If the cue
+	 *          variation is empty, an invalid handle is returned.
+	 *          On error, an exception is thrown.
+	 */
+	ChannelHandle playCue(size_t index, size_t variation, SoundType soundType);
+
+	/** Play a sound cue by name, manually selecting the variation.
+	 *
+	 *  @param  name Name of the cue to play.
+	 *  @param  variation Index of the cue variation to play.
+	 *  @param  soundType What kind of sound is this?
+	 *  @return A handle to the sound channel, not yet started. If the cue
+	 *          variation is empty, an invalid handle is returned.
+	 *          On error, an exception is thrown.
+	 */
+	ChannelHandle playCue(const Common::UString &name, size_t variation, SoundType soundType);
 
 
 protected:
@@ -180,6 +204,13 @@ protected:
 	WaveBankMap _waveBankMap;
 	SoundMap _soundMap;
 	CueMap _cueMap;
+
+
+	const XACTWaveBank *getWaveBank(const Common::UString &name);
+
+	ChannelHandle playCue(Cue &cue, size_t variation, SoundType soundType);
+	ChannelHandle playSound(Sound &sound, SoundType soundType);
+	ChannelHandle playTrack(Track &track, const Sound &sound, SoundType soundType);
 };
 
 } // End of namespace Sound
