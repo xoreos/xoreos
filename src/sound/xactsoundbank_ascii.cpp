@@ -22,6 +22,8 @@
  *  An ASCII XACT SoundBank, found in the non-Xbox versions of Jade Empire as _xsb.txt files.
  */
 
+#include <set>
+
 #include "src/common/strutil.h"
 #include "src/common/readstream.h"
 #include "src/common/streamtokenizer.h"
@@ -82,6 +84,8 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 	const size_t soundCount = getAmount(tokenizer, xsb);
 	tokenizer.nextChunk(xsb);
+
+	std::set<Common::UString> bankNames;
 
 	_sounds.resize(soundCount);
 	for (Sounds::iterator sound = _sounds.begin(); sound != _sounds.end(); ++sound) {
@@ -164,7 +168,17 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			wave->bank = tokens[0];
 
 			wave->index = getNumber(tokens[2]);
+
+			bankNames.insert(wave->bank);
 		}
+	}
+
+	_waveBanks.reserve(bankNames.size());
+	for (std::set<Common::UString>::const_iterator name = bankNames.begin(); name != bankNames.end(); ++name) {
+		_waveBanks.push_back(WaveBank(*name));
+		WaveBank &bank = _waveBanks.back();
+
+		_waveBankMap[bank.name] = &bank;
 	}
 
 	const size_t cueCount = getAmount(tokenizer, xsb);

@@ -85,9 +85,7 @@ void XACTSoundBank_Binary::readCueVarations(Common::SeekableReadStream &xsb, Cue
 	}
 }
 
-void XACTSoundBank_Binary::readWaveVariations(Common::SeekableReadStream &xsb, Track &track, uint32 offset,
-                                              const std::vector<Common::UString> &banks) {
-
+void XACTSoundBank_Binary::readWaveVariations(Common::SeekableReadStream &xsb, Track &track, uint32 offset) {
 	xsb.seek(offset);
 
 	uint16 variationCount, currentVariation;
@@ -102,13 +100,11 @@ void XACTSoundBank_Binary::readWaveVariations(Common::SeekableReadStream &xsb, T
 
 		xsb.skip(4); // Unknown
 
-		addWaveVariation(track, indices, banks);
+		addWaveVariation(track, indices);
 	}
 }
 
-void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices,
-                                            const std::vector<Common::UString> &banks) {
-
+void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices) {
 	const uint32 bankIndex  = indices >> 16;
 	const uint32 soundIndex = indices & 0xFFFF;
 
@@ -116,21 +112,19 @@ void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices,
 	WaveVariation &wave = track.waves.back();
 
 	wave.index = soundIndex;
-	if (bankIndex < banks.size())
-		wave.bank = banks[bankIndex];
+	if (bankIndex < _waveBanks.size())
+		wave.bank = _waveBanks[bankIndex].name;
 }
 
-std::vector<Common::UString> XACTSoundBank_Binary::readWaveBanks(Common::SeekableReadStream &xsb,
-                                                                 uint32 offset, uint32 count) {
-
-	std::vector<Common::UString> waveBanks;
-	waveBanks.reserve(count);
-
+void XACTSoundBank_Binary::readWaveBanks(Common::SeekableReadStream &xsb, uint32 offset, uint32 count) {
 	xsb.seek(offset);
-	for (size_t i = 0; i < count; i++)
-		waveBanks.push_back(Common::readStringFixed(xsb, Common::kEncodingASCII, 16));
 
-	return waveBanks;
+	_waveBanks.resize(count);
+	for (WaveBanks::iterator bank = _waveBanks.begin(); bank != _waveBanks.end(); ++bank) {
+		bank->name = Common::readStringFixed(xsb, Common::kEncodingASCII, 16);
+
+		_waveBankMap[bank->name] = &*bank;
+	}
 }
 
 void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbFlags,
@@ -172,9 +166,7 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 	}
 }
 
-void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Track &track,
-                                            const std::vector<Common::UString> &banks) {
-
+void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Track &track) {
 	const uint32 trackData = xsb.readUint32LE();
 
 	const uint8  eventCount   = trackData & 0xFF;
@@ -205,7 +197,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 					if (eventFlags & kPlayEventMultipleVariations)
 						wavesOffset = indicesOrOffset;
 					else
-						addWaveVariation(track, indicesOrOffset, banks);
+						addWaveVariation(track, indicesOrOffset);
 				}
 				break;
 
@@ -222,11 +214,11 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 	}
 
 	if (wavesOffset != 0xFFFFFFFF)
-		readWaveVariations(xsb, track, wavesOffset, banks);
+		readWaveVariations(xsb, track, wavesOffset);
 }
 
-void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &sound, uint32 indicesOrOffset,
-                                      uint32 count, uint8 flags, const std::vector<Common::UString> &banks) {
+void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &sound,
+                                      uint32 indicesOrOffset, uint32 count, uint8 flags) {
 
 	if ((flags & (kSoundTrivial | kSoundSimple)) && (count != 1))
 		throw Common::Exception("XACTSoundBank_Binary::readTracks(): Trivial/simple sound, but trackCount == %u",
@@ -237,7 +229,7 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 	if (flags & kSoundTrivial) {
 		// One track, one event, one wave variation
 
-		addWaveVariation(sound.tracks[0], indicesOrOffset, banks);
+		addWaveVariation(sound.tracks[0], indicesOrOffset);
 		sound.tracks[0].events.push_back(Event(kEventTypePlay));
 
 		return;
@@ -246,7 +238,7 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 	if (flags & kSoundSimple) {
 		// One track, one event, multiple wave variations
 
-		readWaveVariations(xsb, sound.tracks[0], indicesOrOffset, banks);
+		readWaveVariations(xsb, sound.tracks[0], indicesOrOffset);
 		sound.tracks[0].events.push_back(Event(kEventTypePlay));
 
 		return;
@@ -260,13 +252,11 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 		Track &track = sound.tracks[i];
 		xsb.seek(indicesOrOffset + i * kTrackDefinitionSize);
 
-		readComplexTrack(xsb, track, banks);
+		readComplexTrack(xsb, track);
 	}
 }
 
-void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 offset, uint32 count,
-                                      const std::vector<Common::UString> &banks) {
-
+void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 offset, uint32 count) {
 	_sounds.resize(count);
 	for (size_t i = 0; i < count; ++i) {
 		Sound &sound = _sounds[i];
@@ -295,7 +285,7 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 		const uint16 eq = xsb.readUint16LE();
 
 
-		readTracks(xsb, sound, indicesOrOffset, trackCount, soundFlags, banks);
+		readTracks(xsb, sound, indicesOrOffset, trackCount, soundFlags);
 	}
 }
 
@@ -333,10 +323,9 @@ void XACTSoundBank_Binary::load(Common::SeekableReadStream &xsb) {
 	const size_t offsetSounds = offsetCues + cueCount * kCueDefinitionSize;
 
 
-	const std::vector<Common::UString> waveBanks = readWaveBanks(xsb, offsetWaveBanks, bankCount);
-
+	readWaveBanks(xsb, offsetWaveBanks, bankCount);
 	readCues(xsb, xsbFlags, offsetCues, cueCount);
-	readSounds(xsb, offsetSounds, soundCount, waveBanks);
+	readSounds(xsb, offsetSounds, soundCount);
 }
 
 } // End of namespace Sound

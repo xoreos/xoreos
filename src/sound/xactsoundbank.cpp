@@ -29,8 +29,14 @@
 #include "src/sound/xactsoundbank.h"
 #include "src/sound/xactsoundbank_ascii.h"
 #include "src/sound/xactsoundbank_binary.h"
+#include "src/sound/xactwavebank.h"
 
 namespace Sound {
+
+XACTSoundBank::WaveBank::~WaveBank() {
+	delete bank;
+}
+
 
 XACTSoundBank *XACTSoundBank::load(const Common::UString &name) {
 	try {

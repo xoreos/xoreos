@@ -29,9 +29,12 @@
 #include <map>
 
 #include "src/common/types.h"
+#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 namespace Sound {
+
+class XACTWaveBank;
 
 /** An abstract XACT SoundBank interface.
  *
@@ -72,6 +75,15 @@ protected:
 		kEventTypeMixBins           = 0x10,
 		kEventTypeEnvironmentReverb = 0x11,
 		kEventTypeMixBinSpan        = 0x12
+	};
+
+	struct WaveBank {
+		Common::UString name;
+
+		XACTWaveBank *bank;
+
+		WaveBank(const Common::UString &n = "") : name(n), bank(0) { }
+		~WaveBank();
 	};
 
 	struct Category {
@@ -148,20 +160,24 @@ protected:
 		Transitions transitions;
 	};
 
+	typedef std::vector<WaveBank> WaveBanks;
 	typedef std::vector<Category> Categories;
 	typedef std::vector<Sound> Sounds;
 	typedef std::vector<Cue> Cues;
 
+	typedef std::map<Common::UString, WaveBank *> WaveBankMap;
 	typedef std::map<Common::UString, Sound *> SoundMap;
 	typedef std::map<Common::UString, Cue *> CueMap;
 
 
 	Common::UString _name;
 
+	WaveBanks _waveBanks;
 	Categories _categories;
 	Sounds _sounds;
 	Cues _cues;
 
+	WaveBankMap _waveBankMap;
 	SoundMap _soundMap;
 	CueMap _cueMap;
 };
