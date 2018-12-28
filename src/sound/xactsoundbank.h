@@ -53,12 +53,32 @@ public:
 
 
 protected:
+	enum EventType {
+		kEventTypePlay              = 0x00,
+		kEventTypePlayComplex       = 0x01,
+		kEventTypeStop              = 0x03,
+		kEventTypePitch             = 0x04,
+		kEventTypeVolume            = 0x05,
+		kEventTypeLowPass           = 0x07,
+		kEventTypeLFOPitch          = 0x08,
+		kEventTypeLFOMulti          = 0x09,
+		kEventTypeEnvelopeAmplitude = 0x0A,
+		kEventTypeEnvelopePitch     = 0x0B,
+		kEventTypeLoop              = 0x0C,
+		kEventTypeMarker            = 0x0E,
+		kEventTypeDisabled          = 0x0F,
+		kEventTypeMixBins           = 0x10,
+		kEventTypeEnvironmentReverb = 0x11,
+		kEventTypeMixBinSpan        = 0x12
+	};
+
 	struct Category {
 		Common::UString name;
 	};
 
 	struct Event {
 		Common::UString name;
+		EventType type;
 	};
 
 	struct WaveVariation {
