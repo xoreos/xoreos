@@ -360,10 +360,12 @@ uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf, bool hideSelf) {
 	if (hideSelf)
 		hide();
 
-	// Move the gui a bit behind the sub gui
-	float x, y, z;
-	getPosition(x, y, z);
-	setPosition(x, y, z + 100.0f);
+	// Move the gui a bit before the root gui
+	if (!hideSelf) {
+		float x, y, z;
+		getPosition(x, y, z);
+		gui.setPosition(x, y, z - 100.0f);
+	}
 
 	GfxMan.unlockFrame();
 
@@ -371,9 +373,6 @@ uint32 GUI::sub(GUI &gui, uint32 startCode, bool showSelf, bool hideSelf) {
 	uint32 code = gui.run(startCode);
 
 	GfxMan.lockFrame();
-
-	// Reset the position
-	setPosition(x, y, z);
 
 	// Hide the sub GUI
 	if (hideSelf && showSelf)
