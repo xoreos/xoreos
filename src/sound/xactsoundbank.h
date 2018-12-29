@@ -189,10 +189,16 @@ protected:
 		Common::UString categoryName; ///< Name of the category. Can be empty.
 		uint8 categoryIndex;          ///< Index of the category.
 
+		float volume; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f is maximum attenuation.
+
 		uint8 layer;
 		uint8 priority;
 
 		Tracks tracks; ///< All the tracks in the sound.
+
+		Sound() : categoryIndex(kCategoryNone), volume(0.0f),
+				layer(kLayerNone), priority(255) {
+		}
 	};
 
 	/** A cue variation within a cue. */

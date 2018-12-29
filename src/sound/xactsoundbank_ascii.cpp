@@ -95,16 +95,14 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 		sound->name = tokens[0];
 
-		sound->categoryIndex = kCategoryNone;
-
 		const int64 categoryIndex = getNumber(tokens[1]);
 		if ((categoryIndex >= 0) && (static_cast<size_t>(categoryIndex) < categories.size())) {
 			sound->categoryIndex = categoryIndex;
 			sound->categoryName  = categories[categoryIndex];
 		}
 
-		sound->layer    = kLayerNone;
-		sound->priority = 255;
+		if (tokens.size() > 5)
+			sound->volume = CLIP((getNumber(tokens[4]) + getNumber(tokens[5])) / 100.0f, -64.0f, 0.0f);
 
 		if (tokens.size() > 7) {
 			const int64 priority = getNumber(tokens[7]);
