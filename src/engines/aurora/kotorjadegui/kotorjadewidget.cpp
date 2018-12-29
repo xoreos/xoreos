@@ -420,8 +420,7 @@ void KotORJadeWidget::setPosition(float x, float y, float z) {
 	Widget::setPosition(x, y, z);
 
 	if (_quad) {
-		_quad->getPosition(x, y, z);
-		_quad->setPosition(x + dx, y + dy, z + dz);
+		_quad->setPosition(x + _borderDimension, y + _borderDimension, z);
 	}
 
 	if (_highlight) {
@@ -450,8 +449,7 @@ void KotORJadeWidget::setWidth(float width) {
 	_width = width;
 
 	if (_quad) {
-		width = _quad->getWidth();
-		_quad->setWidth(width + deltaWidth);
+		_quad->setWidth(MAX(0.0f, width - 2 * _borderDimension));
 	}
 
 	if (_highlight) {
@@ -478,8 +476,7 @@ void KotORJadeWidget::setHeight(float height) {
 	_height = height;
 
 	if (_quad) {
-		height = _quad->getHeight();
-		_quad->setHeight(height + deltaHeight);
+		_quad->setHeight(MAX(0.0f, height - 2 * _borderDimension));
 	}
 
 	if (_highlight) {
