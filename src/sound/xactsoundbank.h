@@ -96,6 +96,7 @@ public:
 
 protected:
 	static const uint8 kCategoryNone = 0xFF; ///< No category assigned.
+	static const uint8 kLayerNone    = 0xFF; ///< No layer assigned.
 
 	/** Special value to mean "loop forever". */
 	static const uint16 kLoopCountInfinite = 0xFFFF;
@@ -187,6 +188,9 @@ protected:
 
 		Common::UString categoryName; ///< Name of the category. Can be empty.
 		uint8 categoryIndex;          ///< Index of the category.
+
+		uint8 layer;
+		uint8 priority;
 
 		Tracks tracks; ///< All the tracks in the sound.
 	};

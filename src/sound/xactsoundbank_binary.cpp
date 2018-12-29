@@ -286,20 +286,19 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 
 		const uint8 trackCount = xsb.readByte();
 
-		const uint8 layer = xsb.readByte();
-
+		sound.layer         = xsb.readByte();
 		sound.categoryIndex = xsb.readByte();
 
 		const uint8 soundFlags = xsb.readByte();
 
 		const uint16 index3DParam = xsb.readUint16LE();
 
-		const uint8 priority = xsb.readByte();
+		sound.priority = xsb.readByte();
+
 		const uint8 volume3D = xsb.readByte();
 
 		const uint16 eqGain = xsb.readUint16LE();
 		const uint16 eq = xsb.readUint16LE();
-
 
 		readTracks(xsb, sound, indicesOrOffset, trackCount, soundFlags);
 	}
