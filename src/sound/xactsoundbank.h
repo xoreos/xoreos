@@ -98,6 +98,9 @@ protected:
 	/** Special value to mean "loop forever". */
 	static const uint16 kLoopCountInfinite = 0xFFFF;
 
+	static const size_t kWeightMinimum = 0;     ///< Absolute lower bound on variation weights.
+	static const size_t kWeightMaximum = 10000; ///< Absolute upper bound on variation weights
+
 	/** The type of an event. */
 	enum EventType {
 		kEventTypePlay              = 0x00, ///< Just play a wave, from start to finish.
@@ -162,6 +165,9 @@ protected:
 
 		Common::UString bank; ///< Name of the wavebank the wave is in.
 		size_t index;         ///< Index into the wavebank to the wave.
+
+		size_t weightMin; ///< Lower bound of this variation's weight.
+		size_t weightMax; ///< Upper bound of this variation's weight.
 	};
 
 	typedef std::vector<Event> Events;
@@ -191,8 +197,8 @@ protected:
 		Common::UString soundName; ///< Name of the referenced sound. Can be empty.
 		size_t soundIndex;         ///< Index of the referenced sound.
 
-		uint32 weightMin; ///< Lower bound of this variation's weight.
-		uint32 weightMax; ///< Upper bound of this variation's weight.
+		size_t weightMin; ///< Lower bound of this variation's weight.
+		size_t weightMax; ///< Upper bound of this variation's weight.
 	};
 
 	typedef std::vector<CueVariation> CueVariations;

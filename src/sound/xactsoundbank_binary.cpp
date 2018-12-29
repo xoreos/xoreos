@@ -80,8 +80,11 @@ void XACTSoundBank_Binary::readCueVarations(Common::SeekableReadStream &xsb, Cue
 		variation->soundIndex = xsb.readUint16LE();
 		xsb.skip(2); // Unknown
 
-		variation->weightMin = xsb.readUint16LE();
-		variation->weightMax = xsb.readUint16LE();
+		variation->weightMin = CLIP<size_t>(xsb.readUint16LE(), kWeightMinimum, kWeightMaximum);
+		variation->weightMax = CLIP<size_t>(xsb.readUint16LE(), kWeightMinimum, kWeightMaximum);
+
+		if (variation->weightMin > variation->weightMax)
+			SWAP(variation->weightMin, variation->weightMax);
 	}
 }
 
@@ -98,13 +101,16 @@ void XACTSoundBank_Binary::readWaveVariations(Common::SeekableReadStream &xsb, T
 	for (size_t i = 0; i < variationCount; i++) {
 		const uint32 indices = xsb.readUint32LE();
 
-		xsb.skip(4); // Unknown
+		const uint16 weightMin = xsb.readUint16LE();
+		const uint16 weightMax = xsb.readUint16LE();
 
-		addWaveVariation(track, indices);
+		addWaveVariation(track, indices, weightMin, weightMax);
 	}
 }
 
-void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices) {
+void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices,
+                                            uint32 weightMin, uint32 weightMax) {
+
 	const uint32 bankIndex  = indices >> 16;
 	const uint32 soundIndex = indices & 0xFFFF;
 
@@ -114,6 +120,12 @@ void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices) {
 	wave.index = soundIndex;
 	if (bankIndex < _waveBanks.size())
 		wave.bank = _waveBanks[bankIndex].name;
+
+	wave.weightMin = CLIP<size_t>(weightMin, kWeightMinimum, kWeightMaximum);
+	wave.weightMax = CLIP<size_t>(weightMax, kWeightMinimum, kWeightMaximum);
+
+	if (wave.weightMin > wave.weightMax)
+		SWAP(wave.weightMin, wave.weightMax);
 }
 
 void XACTSoundBank_Binary::readWaveBanks(Common::SeekableReadStream &xsb, uint32 offset, uint32 count) {
@@ -194,10 +206,13 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 					const uint32 indicesOrOffset = xsb.readUint32LE();
 					parameterSize -= 4;
 
-					if (eventFlags & kPlayEventMultipleVariations)
+					if (!(eventFlags & kPlayEventMultipleVariations)) {
+						track.variationSelectMethod = kSelectMethodOrdered;
+
+						addWaveVariation(track, indicesOrOffset, kWeightMinimum, kWeightMaximum);
+
+					} else
 						wavesOffset = indicesOrOffset;
-					else
-						addWaveVariation(track, indicesOrOffset);
 				}
 				break;
 
@@ -229,7 +244,9 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 	if (flags & kSoundTrivial) {
 		// One track, one event, one wave variation
 
-		addWaveVariation(sound.tracks[0], indicesOrOffset);
+		sound.tracks[0].variationSelectMethod = kSelectMethodOrdered;
+
+		addWaveVariation(sound.tracks[0], indicesOrOffset, kWeightMinimum, kWeightMaximum);
 		sound.tracks[0].events.push_back(Event(kEventTypePlay));
 
 		return;

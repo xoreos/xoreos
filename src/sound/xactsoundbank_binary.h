@@ -63,7 +63,7 @@ private:
 
 	void readCueVarations(Common::SeekableReadStream &xsb, Cue &cue, uint32 offset);
 
-	void addWaveVariation(Track &track, uint32 indices);
+	void addWaveVariation(Track &track, uint32 indices, uint32 weightMin, uint32 weightMax);
 	void readWaveVariations(Common::SeekableReadStream &xsb, Track &track, uint32 offset);
 
 	void readComplexTrack(Common::SeekableReadStream &xsb, Track &track);
