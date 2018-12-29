@@ -279,8 +279,6 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 		Sound &sound = _sounds[i];
 		xsb.seek(offset + i * kSoundDefinitionSize);
 
-		sound.category = 0;
-
 		const uint32 indicesOrOffset = xsb.readUint32LE();
 
 		const uint16 volume = xsb.readUint16LE();
@@ -288,8 +286,9 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 
 		const uint8 trackCount = xsb.readByte();
 
-		const uint8 layer    = xsb.readByte();
-		const uint8 category = xsb.readByte();
+		const uint8 layer = xsb.readByte();
+
+		sound.categoryIndex = xsb.readByte();
 
 		const uint8 soundFlags = xsb.readByte();
 

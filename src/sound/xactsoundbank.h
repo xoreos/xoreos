@@ -95,6 +95,8 @@ public:
 
 
 protected:
+	static const uint8 kCategoryNone = 0xFF; ///< No category assigned.
+
 	/** Special value to mean "loop forever". */
 	static const uint16 kLoopCountInfinite = 0xFFFF;
 
@@ -141,10 +143,6 @@ protected:
 		~WaveBank();
 	};
 
-	struct Category {
-		Common::UString name;
-	};
-
 	/** An event within a sound track. */
 	struct Event {
 		EventType type;
@@ -187,7 +185,8 @@ protected:
 	struct Sound {
 		Common::UString name; ///< Name of the sound. Can be empty.
 
-		Category *category;
+		Common::UString categoryName; ///< Name of the category. Can be empty.
+		uint8 categoryIndex;          ///< Index of the category.
 
 		Tracks tracks; ///< All the tracks in the sound.
 	};
@@ -225,7 +224,6 @@ protected:
 	};
 
 	typedef std::vector<WaveBank> WaveBanks;
-	typedef std::vector<Category> Categories;
 	typedef std::vector<Sound> Sounds;
 	typedef std::vector<Cue> Cues;
 
@@ -237,7 +235,6 @@ protected:
 	Common::UString _name;
 
 	WaveBanks _waveBanks;
-	Categories _categories;
 	Sounds _sounds;
 	Cues _cues;
 

@@ -76,9 +76,9 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 	const size_t categoryCount = getAmount(tokenizer, xsb);
 	tokenizer.nextChunk(xsb);
 
-	_categories.resize(categoryCount);
-	for (Categories::iterator it = _categories.begin(); it != _categories.end(); ++it) {
-		it->name = tokenizer.getToken(xsb);
+	std::vector<Common::UString> categories(categoryCount);
+	for (std::vector<Common::UString>::iterator it = categories.begin(); it != categories.end(); ++it) {
+		*it = tokenizer.getToken(xsb);
 		tokenizer.nextChunk(xsb);
 	}
 
@@ -94,11 +94,14 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 		tokenizer.nextChunk(xsb);
 
 		sound->name = tokens[0];
-		sound->category = 0;
+
+		sound->categoryIndex = kCategoryNone;
 
 		const int64 categoryIndex = getNumber(tokens[1]);
-		if ((categoryIndex > 0) && (static_cast<size_t>(categoryIndex) < _categories.size()))
-			sound->category = &_categories[categoryIndex];
+		if ((categoryIndex >= 0) && (static_cast<size_t>(categoryIndex) < categories.size())) {
+			sound->categoryIndex = categoryIndex;
+			sound->categoryName  = categories[categoryIndex];
+		}
 
 		_soundMap[sound->name] = &*sound;
 
