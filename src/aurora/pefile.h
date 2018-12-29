@@ -60,6 +60,8 @@ private:
 
 	/** External list of resource names and types. */
 	ResourceList _resources;
+	/** A map which maps a unique resource id to the corresponding pe id. */
+	std::vector<uint32> _peIDs;
 
 	void load(const std::vector<Common::UString> &remap);
 };
