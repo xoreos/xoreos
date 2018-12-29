@@ -142,6 +142,10 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				if (tokens.size() > 1)
 					track.events.back().params.loop.count = getNumber(tokens[1]);
 
+				track.variationSelectMethod = kSelectMethodOrdered;
+				if (tokens.size() > 3)
+					track.variationSelectMethod = static_cast<SelectMethod>(getNumber(tokens[3]));
+
 			} else if (tokens[0] == "VOLUME") {
 				track.events.push_back(Event(kEventTypeVolume));
 			} else if (tokens[0] == "PITCH") {
@@ -159,17 +163,24 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			}
 		}
 
+		const size_t weightPerWave = waveCount ? (kWeightMaximum / waveCount) : kWeightMaximum;
+
 		track.waves.resize(waveCount);
-		for (WaveVariations::iterator wave = track.waves.begin(); wave != track.waves.end(); ++wave) {
+		for (size_t i = 0; i < waveCount; i++) {
+			WaveVariation &wave = track.waves[i];
+
 			tokenizer.getTokens(xsb, tokens, 3);
 			tokenizer.nextChunk(xsb);
 
-			wave->name = tokens[1];
-			wave->bank = tokens[0];
+			wave.name = tokens[1];
+			wave.bank = tokens[0];
 
-			wave->index = getNumber(tokens[2]);
+			wave.index = getNumber(tokens[2]);
 
-			bankNames.insert(wave->bank);
+			wave.weightMin = i * weightPerWave;
+			wave.weightMax = (i != (waveCount - 1)) ? ((i + 1) * weightPerWave - 1) : kWeightMaximum;
+
+			bankNames.insert(wave.bank);
 		}
 	}
 
@@ -199,16 +210,36 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 		const size_t variationCount = getAmount(tokenizer, xsb);
 		tokenizer.nextChunk(xsb);
 
+		const size_t weightPerVar = variationCount ? (kWeightMaximum / variationCount) : kWeightMaximum;
+
 		cue->variations.resize(variationCount);
-		for (CueVariations::iterator variation = cue->variations.begin(); variation != cue->variations.end(); ++variation) {
+		for (size_t i = 0; i < variationCount; i++) {
+			CueVariation &variation = cue->variations[i];
+
 			tokenizer.getTokens(xsb, tokens, 4);
 			tokenizer.nextChunk(xsb);
 
-			variation->soundName = tokens[1];
-			variation->soundIndex = getNumber(tokens[1]);
+			variation.soundName = tokens[1];
+			variation.soundIndex = getNumber(tokens[1]);
 
-			variation->weightMax = getNumber(tokens[2]);
-			variation->weightMin = getNumber(tokens[3]);
+			if (cue->variationSelectMethod == kSelectMethodParameter) {
+				variation.weightMax = getNumber(tokens[2]);
+				variation.weightMin = getNumber(tokens[3]);
+
+				/* BUGFIX: This happens in Jade Empire's MusicBank_xsb.txt.
+				 *         Jade Empire's cue selection code probably only
+				 *         checks the lower bounds of parameter-controlled
+				 *         cue selections. */
+				if ((variation.weightMin > 0) && (variation.weightMax == 0))
+					variation.weightMax = variation.weightMin;
+
+				if (variation.weightMin > variation.weightMax)
+					SWAP(variation.weightMin, variation.weightMax);
+
+			} else {
+				variation.weightMin = i * weightPerVar;
+				variation.weightMax = (i != (variationCount - 1)) ? ((i + 1) * weightPerVar - 1) : kWeightMaximum;
+			}
 		}
 
 		if (!hasTransitions)
