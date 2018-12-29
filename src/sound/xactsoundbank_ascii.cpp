@@ -193,7 +193,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 		cue->name = tokens[0];
 		_cueMap[cue->name] = &*cue;
 
-		cue->variationSelectMethod = getNumber(tokens[1]);
+		cue->variationSelectMethod = static_cast<SelectMethod>(getNumber(tokens[1]));
 		const bool hasTransitions = tokens[2] == "1";
 
 		const size_t variationCount = getAmount(tokenizer, xsb);

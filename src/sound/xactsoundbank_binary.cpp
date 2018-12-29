@@ -73,7 +73,7 @@ void XACTSoundBank_Binary::readCueVarations(Common::SeekableReadStream &xsb, Cue
 
 	readVariationData(xsb, variationCount, currentVariation, selectMethod, flags);
 
-	cue.variationSelectMethod = selectMethod;
+	cue.variationSelectMethod = static_cast<SelectMethod>(selectMethod);
 
 	cue.variations.resize(variationCount);
 	for (CueVariations::iterator variation = cue.variations.begin(); variation != cue.variations.end(); ++variation) {
@@ -93,7 +93,7 @@ void XACTSoundBank_Binary::readWaveVariations(Common::SeekableReadStream &xsb, T
 
 	readVariationData(xsb, variationCount, currentVariation, selectMethod, flags);
 
-	track.variationSelectMethod = selectMethod;
+	track.variationSelectMethod = static_cast<SelectMethod>(selectMethod);
 
 	for (size_t i = 0; i < variationCount; i++) {
 		const uint32 indices = xsb.readUint32LE();
@@ -155,7 +155,7 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 			readCueVarations(xsb, cue, offsetEntry);
 
 		} else if (soundIndex != 0xFFFF) {
-			cue.variationSelectMethod = 0;
+			cue.variationSelectMethod = kSelectMethodOrdered;
 
 			cue.variations.resize(1);
 

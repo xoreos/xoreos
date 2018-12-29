@@ -118,6 +118,16 @@ protected:
 		kEventTypeMixBinSpan        = 0x12  ///< Set channel volumes according to a listener orientation.
 	};
 
+	/** How to select a cue or wave variation. */
+	enum SelectMethod {
+		kSelectMethodRandomNoRepeats   = 0x00, ///< Random, but no immediate repeats.
+		kSelectMethodOrdered           = 0x01, ///< One after the other, in order.
+		kSelectMethodShuffle           = 0x02, ///< Random, no repeats at all.
+		kSelectMethodParameter         = 0x03, ///< Game-controlled.
+		kSelectMethodRandom            = 0x04, ///< Completely random.
+		kSelectMethodOrderedFromRandom = 0x05, ///< Start with a random entry, then in order.
+	};
+
 	/** A reference to an XACT wavebank used by the soundbank. */
 	struct WaveBank {
 		Common::UString name; ///< File name, without extension.
@@ -160,7 +170,7 @@ protected:
 	/** A track within a sound. */
 	struct Track {
 		/** How a wave variation to be played is selected. */
-		uint8 variationSelectMethod;
+		SelectMethod variationSelectMethod;
 
 		Events events;        ///< All the events in the track.
 		WaveVariations waves; ///< All the waves in the track.
@@ -202,7 +212,7 @@ protected:
 		Common::UString name; ///< Name of the cue. Can be empty.
 
 		/** How a cue variation to be played is selected. */
-		uint8 variationSelectMethod;
+		SelectMethod variationSelectMethod;
 
 		CueVariations variations; ///< All the cue variations in the cue.
 		Transitions transitions;
