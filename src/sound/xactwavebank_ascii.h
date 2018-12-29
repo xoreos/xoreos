@@ -49,6 +49,8 @@ namespace Sound {
  *
  *  See also xactwavebank_binary.h for the binary variant and
  *  xactwavebank.h for the abstract XACT WaveBank interface.
+ *
+ *  For the abstract SoundBank interface, see xactsoundbank.h.
  */
 class XACTWaveBank_ASCII : public XACTWaveBank {
 public:

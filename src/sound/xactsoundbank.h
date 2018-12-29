@@ -43,8 +43,23 @@ class XACTWaveBank;
  *  This interface allows us to treat both binary and ASCII variants
  *  of the XSB file the same.
  *
+ *  An XACT SoundBank is part of Microsoft's Cross-platform Audio
+ *  Creation Tool (XACT), and commonly used together with WaveBanks,
+ *  which contain the actual audio data.
+ *
+ *  Conceptually, a soundbank consists of cues and sounds. A sound is a
+ *  collection of tracks, which each contain a list of events and a list
+ *  of wave variations, while a cue consists of a list of references to
+ *  sounds.
+ *
+ *  Both the cue variation and the wave variation can be selected using
+ *  different methods. For example, they could be played in order, or
+ *  randomly. Or they could be explicitly selected by game.
+ *
  *  See also xactsoundbank_binary.h for the original Xbox version of
  *  the XSB file and xactsoundbank_ascii.h for the textual representation.
+ *
+ *  For the abstract WaveBank interface, see xactwavebank.h.
  */
 class XACTSoundBank {
 public:
@@ -80,29 +95,32 @@ public:
 
 
 protected:
+	/** Special value to mean "loop forever". */
 	static const uint16 kLoopCountInfinite = 0xFFFF;
 
+	/** The type of an event. */
 	enum EventType {
-		kEventTypePlay              = 0x00,
-		kEventTypePlayComplex       = 0x01,
-		kEventTypeStop              = 0x03,
-		kEventTypePitch             = 0x04,
-		kEventTypeVolume            = 0x05,
-		kEventTypeLowPass           = 0x07,
-		kEventTypeLFOPitch          = 0x08,
-		kEventTypeLFOMulti          = 0x09,
-		kEventTypeEnvelopeAmplitude = 0x0A,
-		kEventTypeEnvelopePitch     = 0x0B,
-		kEventTypeLoop              = 0x0C,
+		kEventTypePlay              = 0x00, ///< Just play a wave, from start to finish.
+		kEventTypePlayComplex       = 0x01, ///< Play a wave, with parameters.
+		kEventTypeStop              = 0x03, ///< Stop playing.
+		kEventTypePitch             = 0x04, ///< Set the pitch.
+		kEventTypeVolume            = 0x05, ///< Set the volume.
+		kEventTypeLowPass           = 0x07, ///< Low-pass filter.
+		kEventTypeLFOPitch          = 0x08, ///< Low-frequency oscillator on the pitch.
+		kEventTypeLFOMulti          = 0x09, ///< Low-frequency oscillator on the pitch and amplitude.
+		kEventTypeEnvelopeAmplitude = 0x0A, ///< DAHDSR envelope on the amplitude.
+		kEventTypeEnvelopePitch     = 0x0B, ///< DAHDSR envelope on the pitch.
+		kEventTypeLoop              = 0x0C, ///< Set loop parameters.
 		kEventTypeMarker            = 0x0E,
-		kEventTypeDisabled          = 0x0F,
-		kEventTypeMixBins           = 0x10,
-		kEventTypeEnvironmentReverb = 0x11,
-		kEventTypeMixBinSpan        = 0x12
+		kEventTypeDisabled          = 0x0F, ///< A disabled event. Should be ignored.
+		kEventTypeMixBins           = 0x10, ///< Set a separate volume for each channel.
+		kEventTypeEnvironmentReverb = 0x11, ///< Environmental reverb.
+		kEventTypeMixBinSpan        = 0x12  ///< Set channel volumes according to a listener orientation.
 	};
 
+	/** A reference to an XACT wavebank used by the soundbank. */
 	struct WaveBank {
-		Common::UString name;
+		Common::UString name; ///< File name, without extension.
 
 		XACTWaveBank *bank;
 
@@ -114,6 +132,7 @@ protected:
 		Common::UString name;
 	};
 
+	/** An event within a sound track. */
 	struct Event {
 		EventType type;
 
@@ -127,39 +146,43 @@ protected:
 		Event(EventType t) : type(t) { }
 	};
 
+	/** A wave within a sound track. */
 	struct WaveVariation {
-		Common::UString name;
-		Common::UString bank;
+		Common::UString name; ///< Name of the wave. Can be empty.
 
-		size_t index;
+		Common::UString bank; ///< Name of the wavebank the wave is in.
+		size_t index;         ///< Index into the wavebank to the wave.
 	};
 
 	typedef std::vector<Event> Events;
 	typedef std::vector<WaveVariation> WaveVariations;
 
+	/** A track within a sound. */
 	struct Track {
+		/** How a wave variation to be played is selected. */
 		uint8 variationSelectMethod;
 
-		Events events;
-		WaveVariations waves;
+		Events events;        ///< All the events in the track.
+		WaveVariations waves; ///< All the waves in the track.
 	};
 
 	typedef std::vector<Track> Tracks;
 
 	struct Sound {
-		Common::UString name;
+		Common::UString name; ///< Name of the sound. Can be empty.
 
 		Category *category;
 
-		Tracks tracks;
+		Tracks tracks; ///< All the tracks in the sound.
 	};
 
+	/** A cue variation within a cue. */
 	struct CueVariation {
-		Common::UString soundName;
-		size_t soundIndex;
+		Common::UString soundName; ///< Name of the referenced sound. Can be empty.
+		size_t soundIndex;         ///< Index of the referenced sound.
 
-		uint32 weightMin;
-		uint32 weightMax;
+		uint32 weightMin; ///< Lower bound of this variation's weight.
+		uint32 weightMax; ///< Upper bound of this variation's weight.
 	};
 
 	typedef std::vector<CueVariation> CueVariations;
@@ -176,11 +199,12 @@ protected:
 	typedef std::vector<Transition> Transitions;
 
 	struct Cue {
-		Common::UString name;
+		Common::UString name; ///< Name of the cue. Can be empty.
 
+		/** How a cue variation to be played is selected. */
 		uint8 variationSelectMethod;
 
-		CueVariations variations;
+		CueVariations variations; ///< All the cue variations in the cue.
 		Transitions transitions;
 	};
 

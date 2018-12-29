@@ -39,6 +39,18 @@ namespace Common {
 
 namespace Sound {
 
+/** Class to hold audio playback information of an ASCII representation
+ *  of an XSB soundbank file.
+ *
+ *  The non-Xbox versions of Jade Empire come with ASCII text files
+ *  containing all the information of the XSB files found in the Xbox
+ *  version of the game.
+ *
+ *  See also xactwavebank_binary.h for the binary variant and
+ *  xactwavebank.h for the abstract XACT WaveBank interface.
+ *
+ *  For the abstract WaveBank interface, see xactwavebank.h.
+ */
 class XACTSoundBank_ASCII : public XACTSoundBank {
 public:
 	XACTSoundBank_ASCII(Common::SeekableReadStream &xsb);

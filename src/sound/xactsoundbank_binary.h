@@ -36,6 +36,24 @@ namespace Common {
 
 namespace Sound {
 
+/** Class to hold audio playback information of an XSB soundbank file.
+ *
+ *  An XSB file is a soundbank, a collection of sound definitions and
+ *  cues. They're commonly used together with XSB files, which contain
+ *  the actual audio data.
+ *
+ *  XSB files are found in the Xbox version of Jade Empire.
+ *
+ *  Only version 11 of the XSB format is supported, because that's the
+ *  version used by Jade Empire.
+ *
+ *  Interestingly enough, the non-Xbox versions of Jade Empire do not
+ *  use XSB files, instead opting for an ASCII representation of the
+ *  same information. See xactwavebank_ascii.h for this variant.
+ *
+ *  See also xactsoundbank.h for the abstract XACT SoundBank interface,
+ *  and xactwavebank.h for the abstract XACT WaveBank interface.
+ */
 class XACTSoundBank_Binary : public XACTSoundBank {
 public:
 	XACTSoundBank_Binary(Common::SeekableReadStream &xsb);

@@ -42,6 +42,8 @@ class RewindableAudioStream;
  *
  *  See also xactwavebank_binary.h for the original Xbox version of
  *  the XWB file and xactwavebank_ascii.h for the textual representation.
+ *
+ *  For the abstract SoundBank interface, see xactsoundbank.h.
  */
 class XACTWaveBank {
 public:

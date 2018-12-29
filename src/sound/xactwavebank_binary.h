@@ -53,7 +53,8 @@ namespace Sound {
  *  of the information in XWB (and XSB) files. See xactwavebank_ascii.h
  *  for this variant.
  *
- *  See also xactwavebank.h for the abstract XACT WaveBank interface.
+ *  See also xactwavebank.h for the abstract XACT WaveBank interface,
+ *  and xactsoundbank.h for the abstract XACT SoundBank interface.
  */
 class XACTWaveBank_Binary : public XACTWaveBank {
 public:
