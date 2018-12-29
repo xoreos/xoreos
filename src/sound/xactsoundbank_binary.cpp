@@ -172,8 +172,8 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 			cue.variations.resize(1);
 
 			cue.variations.back().soundIndex = soundIndex;
-			cue.variations.back().weightMin = 0;
-			cue.variations.back().weightMax = 0;
+			cue.variations.back().weightMin = kWeightMinimum;
+			cue.variations.back().weightMax = kWeightMaximum;
 		}
 	}
 }
