@@ -50,7 +50,7 @@ void GUI::initWidget(Widget &widget) {
 		x *= ((wWidth / 2.0f) / 400.0f);
 		y *= ((wHeight / 2.0f) / 300.0f);
 
-		kotorWidget.setPosition(x, y, z);
+		kotorWidget.setPosition(std::floor(x), std::floor(y), z);
 
 		float w, h;
 		w = kotorWidget.getWidth();
@@ -59,8 +59,8 @@ void GUI::initWidget(Widget &widget) {
 		w *= (wWidth / 800.0f);
 		h *= (wHeight / 600.0f);
 
-		kotorWidget.setWidth(w);
-		kotorWidget.setHeight(h);
+		kotorWidget.setWidth(std::floor(w));
+		kotorWidget.setHeight(std::floor(h));
 	}
 }
 
