@@ -34,6 +34,8 @@
 
 #include "src/engines/nwn2/waypoint.h"
 
+static const float kEpsilon = 1e-5f;
+
 Engines::NWN2::Waypoint *getWaypoint(const unsigned int index) {
 	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataWaypoint));
 	if (!stream)
@@ -59,9 +61,6 @@ Engines::NWN2::Waypoint *getWaypoint(const unsigned int index) {
  * Expected values:
  * -------------------------------------
  * Tag            = "mapnote1"
- * Classification = "{184337}"
- * LocalizedName  = "Map Note 1"
- * Template       = "nw_mapnote001"
  * MapNoteText    = "My note"
  * HasMapNote     = true
  * MapNoteEnabled = true
@@ -71,11 +70,20 @@ Engines::NWN2::Waypoint *getWaypoint(const unsigned int index) {
 
 GTEST_TEST(NWN2Waypoint, mapnote1) {
 	Common::ScopedPtr<Engines::NWN2::Waypoint> wp(getWaypoint(0));
+	float x, y, z, angle;
 
 	EXPECT_STREQ(wp->getTag().c_str(), "mapnote1");
 	EXPECT_TRUE(wp->hasMapNote());
 	EXPECT_TRUE(wp->enabledMapNote());
 	EXPECT_STREQ(wp->getMapNote().c_str(), "[???]"); // Should be "My note"
+
+	wp->getPosition(x, y, z);
+	EXPECT_TRUE(abs(x - 6.743333) < kEpsilon);
+	EXPECT_TRUE(abs(y - 4.81983) < kEpsilon);
+	EXPECT_TRUE(abs(z) < kEpsilon);
+
+	wp->getOrientation(x, y, z, angle);
+	EXPECT_TRUE(abs(angle - (-31.5129414)) < kEpsilon);
 }
 
 /**
@@ -84,9 +92,6 @@ GTEST_TEST(NWN2Waypoint, mapnote1) {
  * Expected values:
  * -------------------------------------
  * Tag            = "waypoint1"
- * Classification = "{184337}"
- * LocalizedName  = "Waypoint 1"
- * Template       = "nw_waypoint001"
  * HasMapNote     = false
  * MapNoteEnabled = false
  * X/Y/ZPosition  = 3.91353, 5.69942, 0
@@ -95,9 +100,18 @@ GTEST_TEST(NWN2Waypoint, mapnote1) {
 
 GTEST_TEST(NWN2Waypoint, waypoint1) {
 	Common::ScopedPtr<Engines::NWN2::Waypoint> wp(getWaypoint(1));
+	float x, y, z, angle;
 
 	EXPECT_STREQ(wp->getTag().c_str(), "waypoint1");
 	EXPECT_FALSE(wp->hasMapNote());
 	EXPECT_FALSE(wp->enabledMapNote());
 	EXPECT_STREQ(wp->getMapNote().c_str(), "");
+
+	wp->getPosition(x, y, z);
+	EXPECT_TRUE(abs(x - 3.91353) < kEpsilon);
+	EXPECT_TRUE(abs(y - 5.69942) < kEpsilon);
+	EXPECT_TRUE(abs(z) < kEpsilon);
+
+	wp->getOrientation(x, y, z, angle);
+	EXPECT_TRUE(abs(angle - 33.80449) < kEpsilon);
 }
