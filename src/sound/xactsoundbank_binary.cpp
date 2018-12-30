@@ -33,6 +33,7 @@ IGNORE_UNUSED_VARIABLES
 
 namespace Sound {
 
+static const size_t k3DDefinitionSize    = 40;
 static const size_t kCueDefinitionSize   = 20;
 static const size_t kSoundDefinitionSize = 20;
 
@@ -273,7 +274,9 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 	}
 }
 
-void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 offset, uint32 count) {
+void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 offset, uint32 count,
+                                      uint32 offset3DParams) {
+
 	_sounds.resize(count);
 	for (size_t i = 0; i < count; ++i) {
 		Sound &sound = _sounds[i];
@@ -301,6 +304,35 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 
 		const uint16 eqGain = xsb.readUint16LE();
 		const uint16 eq = xsb.readUint16LE();
+
+		sound.is3D = soundFlags & kSound3D;
+		if (sound.is3D) {
+			sound.params3D.volumeLFE   = -((int16) ((volume >> 9) & 0x7F)) * 0.50f;
+			sound.params3D.volumeI3DL2 = CLIP(-((int16) volume3D) * 2.56f, -64.0f, 0.0f);
+
+			xsb.seek(offset3DParams + index3DParam * k3DDefinitionSize);
+
+			sound.params3D.coneInsideAngle   = CLIP<uint16>(xsb.readUint16LE(), 0, 360);
+			sound.params3D.coneOutsideAngle  = CLIP<uint16>(xsb.readUint16LE(), 0, 360);
+			sound.params3D.coneOutsideVolume = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 0.0f);
+
+			xsb.skip(2); // Unknown;
+
+			sound.params3D.distanceMin = xsb.readIEEEFloatLE();
+			sound.params3D.distanceMax = xsb.readIEEEFloatLE();
+
+			sound.params3D.distanceFactor = xsb.readIEEEFloatLE();
+			sound.params3D.rollOffFactor  = xsb.readIEEEFloatLE();
+			sound.params3D.dopplerFactor  = xsb.readIEEEFloatLE();
+
+			sound.params3D.mode = static_cast<Mode3D>(xsb.readByte());
+
+			const size_t rollOffCurveSize = CLIP<size_t>(xsb.readByte(), 0, 10);
+
+			sound.params3D.rollOffCurve.reserve(rollOffCurveSize);
+			for (size_t j = 0; j < rollOffCurveSize; ++j)
+				sound.params3D.rollOffCurve.push_back(xsb.readByte() / 255.0f);
+		}
 
 		readTracks(xsb, sound, indicesOrOffset, trackCount, soundFlags);
 	}
@@ -342,7 +374,7 @@ void XACTSoundBank_Binary::load(Common::SeekableReadStream &xsb) {
 
 	readWaveBanks(xsb, offsetWaveBanks, bankCount);
 	readCues(xsb, xsbFlags, offsetCues, cueCount);
-	readSounds(xsb, offsetSounds, soundCount);
+	readSounds(xsb, offsetSounds, soundCount, offset3DParams);
 }
 
 } // End of namespace Sound

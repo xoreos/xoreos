@@ -51,6 +51,14 @@ static int64 getNumber(Common::UString str) {
 	return number;
 }
 
+static float getFloat(Common::UString str) {
+	float number = 0;
+
+	Common::parseString(str, number);
+
+	return number;
+}
+
 static size_t getAmount(Common::UString str) {
 	size_t amount = 0;
 
@@ -113,6 +121,11 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				sound->priority = priority;
 		}
 
+		if (tokens.size() > 9)
+			sound->params3D.volumeLFE   = CLIP(getNumber(tokens[ 9]) / 100.0f, -64.0f, 0.0f);
+		if (tokens.size() > 10)
+			sound->params3D.volumeI3DL2 = CLIP(getNumber(tokens[10]) / 100.0f, -64.0f, 0.0f);
+
 		_soundMap[sound->name] = &*sound;
 
 		sound->tracks.resize(1);
@@ -133,7 +146,34 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			}
 
 			if        (tokens[0] == "3D") {
-				// TODO: 3D properties
+				sound->is3D = true;
+
+				if (tokens.size() > 1)
+					sound->params3D.mode = static_cast<Mode3D>(getNumber(tokens[1]));
+
+				if (tokens.size() > 2)
+					sound->params3D.coneInsideAngle   = CLIP<uint16>(getNumber(tokens[2]), 0, 360);
+				if (tokens.size() > 3)
+					sound->params3D.coneOutsideAngle  = CLIP<uint16>(getNumber(tokens[3]), 0, 360);
+				if (tokens.size() > 4)
+					sound->params3D.coneOutsideVolume = CLIP(getNumber(tokens[4]) / 100.0f, -64.0f, 0.0f);
+
+				if (tokens.size() > 5)
+					sound->params3D.distanceMin = getFloat(tokens[5]);
+				if (tokens.size() > 6)
+					sound->params3D.distanceMax = getFloat(tokens[6]);
+
+				if (tokens.size() > 7)
+					sound->params3D.distanceFactor = getFloat(tokens[7]);
+				if (tokens.size() > 8)
+					sound->params3D.rollOffFactor  = getFloat(tokens[8]);
+				if (tokens.size() > 9)
+					sound->params3D.dopplerFactor  = getFloat(tokens[9]);
+
+				if ((tokens.size() > 10) && (tokens[10] != "0"))
+					for (size_t i = 10; i < tokens.size(); i++)
+						sound->params3D.rollOffCurve.push_back(getFloat(tokens[i]));
+
 			} else if (tokens[0] == "PEQ") {
 				// TODO: Parametric EQ
 			} else if (tokens[0] == "PLAY") {

@@ -134,6 +134,40 @@ protected:
 		kSelectMethodOrderedFromRandom = 0x05, ///< Start with a random entry, then in order.
 	};
 
+	enum Mode3D {
+		kMode3DNormal       = 0,
+		kMode3DHeadRelative = 1,
+		kMode3DDisabled     = 2
+	};
+
+	struct Parameters3D {
+		Mode3D mode;
+
+		uint16 coneInsideAngle;   ///< Angle of the inside cone.
+		uint16 coneOutsideAngle;  ///< Angle of the outside cone.
+		float  coneOutsideVolume; ///< Attenuation in dB (-64.0f to 0.0f) for sounds outside the ouside angle.
+
+		float distanceMin; ///< Minimum distance.
+		float distanceMax; ///< Maximum distance.
+
+		float distanceFactor; ///< Factor that scales the distance of the sound.
+		float rollOffFactor;  ///< Speed of the roll-off attenuation.
+		float dopplerFactor;  ///< Increase or decrease the doppler effect.
+
+		std::vector<float> rollOffCurve; ///< Custom roll-off curve.
+
+		float volumeLFE;   ///< Low-frequency effect volume in dB (-64.0f to 0.0f).
+		float volumeI3DL2; ///< I3DL2 reverb volume in dB (-64.0f to 0.0f).
+
+		Parameters3D() :
+				mode(kMode3DNormal),
+				coneInsideAngle(360), coneOutsideAngle(360), coneOutsideVolume(0.0f),
+				distanceMin(1.0f), distanceMax(100000.0f),
+				distanceFactor(1.0f), rollOffFactor(1.0f), dopplerFactor(1.0f),
+				volumeLFE(0.0f), volumeI3DL2(0.0f) {
+		}
+	};
+
 	/** A reference to an XACT wavebank used by the soundbank. */
 	struct WaveBank {
 		Common::UString name; ///< File name, without extension.
@@ -195,10 +229,13 @@ protected:
 		uint8 layer;
 		uint8 priority;
 
+		bool is3D;
+		Parameters3D params3D;
+
 		Tracks tracks; ///< All the tracks in the sound.
 
 		Sound() : categoryIndex(kCategoryNone), volume(0.0f), pitch(0.0f),
-				layer(kLayerNone), priority(255) {
+				layer(kLayerNone), priority(255), is3D(false) {
 		}
 	};
 
