@@ -190,13 +190,14 @@ protected:
 		uint8 categoryIndex;          ///< Index of the category.
 
 		float volume; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f is maximum attenuation.
+		float pitch;  ///< Pitch change in semitones.
 
 		uint8 layer;
 		uint8 priority;
 
 		Tracks tracks; ///< All the tracks in the sound.
 
-		Sound() : categoryIndex(kCategoryNone), volume(0.0f),
+		Sound() : categoryIndex(kCategoryNone), volume(0.0f), pitch(0.0f),
 				layer(kLayerNone), priority(255) {
 		}
 	};

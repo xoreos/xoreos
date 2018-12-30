@@ -282,11 +282,11 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 		const uint32 indicesOrOffset = xsb.readUint32LE();
 
 		const uint16 volume = xsb.readUint16LE();
-		const uint16 pitch  = xsb.readUint16LE();
+		sound.volume = -((int16) (volume & 0x1FF)) * 0.16f;
+
+		sound.pitch = CLIP((xsb.readSint16LE() * 12) / 4096.0f, -24.0f, 24.0f);
 
 		const uint8 trackCount = xsb.readByte();
-
-		sound.volume = (volume & 0x1FF) * -0.16f;
 
 		sound.layer         = xsb.readByte();
 		sound.categoryIndex = xsb.readByte();

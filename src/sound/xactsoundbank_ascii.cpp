@@ -104,6 +104,9 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 		if (tokens.size() > 5)
 			sound->volume = CLIP((getNumber(tokens[4]) + getNumber(tokens[5])) / 100.0f, -64.0f, 0.0f);
 
+		if (tokens.size() > 6)
+			sound->pitch = CLIP(getNumber(tokens[6]) / 100.0f, -24.0f, 24.0f);
+
 		if (tokens.size() > 7) {
 			const int64 priority = getNumber(tokens[7]);
 			if (priority > 0)
