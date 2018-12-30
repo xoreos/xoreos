@@ -179,9 +179,21 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			} else if (tokens[0] == "PLAY") {
 				bool isComplex = false;
 
-				for (size_t i = 2; i < tokens.size(); i++)
-					if (tokens[i] != "0")
+				if (tokens.size() > 5) {
+					sound->pitchVariationMin = CLIP(getNumber(tokens[4]) / 100.0f, -24.0f, 24.0f);
+					sound->pitchVariationMax = CLIP(getNumber(tokens[5]) / 100.0f, -24.0f, 24.0f);
+
+					if (sound->pitchVariationMin != sound->pitchVariationMax)
 						isComplex = true;
+				}
+
+				if (tokens.size() > 7) {
+					sound->volumeVariationMin = CLIP(getNumber(tokens[6]) / 100.0f, -64.0f, 64.0f);
+					sound->volumeVariationMax = CLIP(getNumber(tokens[7]) / 100.0f, -64.0f, 64.0f);
+
+					if (sound->volumeVariationMin != sound->volumeVariationMax)
+						isComplex = true;
+				}
 
 				if (isComplex)
 					track.events.push_back(Event(kEventTypePlayComplex));

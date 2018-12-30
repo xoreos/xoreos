@@ -179,7 +179,7 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 	}
 }
 
-void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Track &track) {
+void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Track &track, Sound &sound) {
 	const uint32 trackData = xsb.readUint32LE();
 
 	const uint8  eventCount   = trackData & 0xFF;
@@ -206,6 +206,18 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				if (parameterSize >= 4) {
 					const uint32 indicesOrOffset = xsb.readUint32LE();
 					parameterSize -= 4;
+
+					if (parameterSize >= 4) {
+						sound.pitchVariationMin = CLIP((xsb.readSint16LE() * 12) / 4096.0f, -24.0f, 24.0f);
+						sound.pitchVariationMax = CLIP((xsb.readSint16LE() * 12) / 4096.0f, -24.0f, 24.0f);
+						parameterSize -= 4;
+					}
+
+					if (parameterSize >= 4) {
+						sound.volumeVariationMin = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 64.0f);
+						sound.volumeVariationMax = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 64.0f);
+						parameterSize -= 4;
+					}
 
 					if (!(eventFlags & kPlayEventMultipleVariations)) {
 						track.variationSelectMethod = kSelectMethodOrdered;
@@ -270,7 +282,7 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 		Track &track = sound.tracks[i];
 		xsb.seek(indicesOrOffset + i * kTrackDefinitionSize);
 
-		readComplexTrack(xsb, track);
+		readComplexTrack(xsb, track, sound);
 	}
 }
 

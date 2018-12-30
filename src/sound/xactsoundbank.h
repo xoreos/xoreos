@@ -226,6 +226,12 @@ protected:
 		float volume; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f is maximum attenuation.
 		float pitch;  ///< Pitch change in semitones.
 
+		float volumeVariationMin; ///< Volume variation lower bound in dB (-64.0f to 64.0f);
+		float volumeVariationMax; ///< Volume variation upper bound in dB (-64.0f to 64.0f);
+
+		float pitchVariationMin; ///< Pitch variation lower bound in semitones.
+		float pitchVariationMax; ///< Pitch variation upper bound in semitones.
+
 		uint8 layer;
 		uint8 priority;
 
@@ -235,6 +241,8 @@ protected:
 		Tracks tracks; ///< All the tracks in the sound.
 
 		Sound() : categoryIndex(kCategoryNone), volume(0.0f), pitch(0.0f),
+				volumeVariationMin(0.0f), volumeVariationMax(0.0f),
+				pitchVariationMin(0.0f), pitchVariationMax(0.0f),
 				layer(kLayerNone), priority(255), is3D(false) {
 		}
 	};
