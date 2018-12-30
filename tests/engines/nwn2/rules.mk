@@ -17,29 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Unit tests.
+# Unit tests for the NWN2 namespace.
 
-# Our Unit test framework, Google Test
+nwn2_LIBS = \
+    $(test_LIBS) \
+    src/engines/nwn2/libnwn2.la \
+    src/engines/libengines.la \
+    src/events/libevents.la \
+    src/video/libvideo.la \
+    src/sound/libsound.la \
+    src/graphics/libgraphics.la \
+    src/aurora/libaurora.la \
+    src/common/libcommon.la \
+    tests/version/libversion.la \
+    $(LDADD)
 
-include tests/googletest/rules.mk
-
-test_LIBS  = \
-    tests/googletest/libgtest.la \
-    tests/googletest/libgtest_main.la \
-    $(GTEST_LIBS)
-    $(EMPTY)
-
-test_CXXFLAGS = $(GTEST_FLAGS) $(AM_CXXFLAGS)
-
-noinst_HEADERS += \
-    tests/skip.h \
-    $(EMPTY)
-
-include tests/engines/rules.mk
-include tests/version/rules.mk
-include tests/common/rules.mk
-include tests/aurora/rules.mk
-include tests/images/rules.mk
-include tests/engines/nwn2/rules.mk
-
-TESTS += $(check_PROGRAMS)
+check_PROGRAMS                           += tests/engines/nwn2/test_waypoint
+tests_engines_nwn2_test_waypoint_SOURCES  = tests/engines/nwn2/waypoint.cpp
+tests_engines_nwn2_test_waypoint_LDADD    = $(nwn2_LIBS)
+tests_engines_nwn2_test_waypoint_CXXFLAGS = $(test_CXXFLAGS)
