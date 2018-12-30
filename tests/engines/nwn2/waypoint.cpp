@@ -34,7 +34,7 @@
 
 #include "src/engines/nwn2/waypoint.h"
 
-GTEST_TEST(NWN2Waypoint, getList) {
+Engines::NWN2::Waypoint *getWaypoint(const unsigned int index) {
 	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataWaypoint));
 	if (!stream)
 		throw Common::Exception("No test data available");
@@ -43,50 +43,61 @@ GTEST_TEST(NWN2Waypoint, getList) {
 	// Get the waypoint list
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
 	const Aurora::GFF3List &wplist = top.getList("WaypointList");
-	ASSERT_EQ(wplist.size(), 2);
+	if (index >= wplist.size())
+		throw Common::Exception("Invalid data found");
 
-	// List out the waypoint tags
+	// Get the selected waypoint data
 	Aurora::GFF3List::const_iterator it = wplist.begin();
-	ASSERT_NE(it, wplist.end()) << "At mapnote1";
+	it += index;
 
-	/**
-	 * Tag            = "mapnote1"
-	 * Classification = "{184337}"
-	 * LocalizedName  = "Map Note 1"
-	 * Template       = "nw_mapnote001"
-	 * MapNoteText    = "My note"
-	 * HasMapNote     = true
-	 * MapNoteEnabled = true
-	 * X/Y/ZPosition  = 6.743333, 4.81983, 0
-	 * Heading        = 31.5129414
-	 */
+	return new Engines::NWN2::Waypoint(**it);
+}
 
-	// Check the map note
-	Common::ScopedPtr<Engines::NWN2::Waypoint> wp1(new Engines::NWN2::Waypoint(**it));
-	EXPECT_STREQ(wp1->getTag().c_str(), "mapnote1");
-	EXPECT_TRUE(wp1->hasMapNote());
-	EXPECT_TRUE(wp1->enabledMapNote());
-	EXPECT_STREQ(wp1->getMapNote().c_str(), "[???]"); // Should be "My note"
+/**
+ * Check the map note waypoint
+ *
+ * Expected values:
+ * -------------------------------------
+ * Tag            = "mapnote1"
+ * Classification = "{184337}"
+ * LocalizedName  = "Map Note 1"
+ * Template       = "nw_mapnote001"
+ * MapNoteText    = "My note"
+ * HasMapNote     = true
+ * MapNoteEnabled = true
+ * X/Y/ZPosition  = 6.743333, 4.81983, 0
+ * Heading        = 31.5129414
+ */
 
-	// Increment index
-	ASSERT_NE(++it, wplist.end()) << "At waypoint1";
+GTEST_TEST(NWN2Waypoint, mapnote1) {
+	Common::ScopedPtr<Engines::NWN2::Waypoint> wp(getWaypoint(0));
 
-	/**
-	 * Tag            = "waypoint1"
-	 * Classification = "{184337}"
-	 * LocalizedName  = "Waypoint 1"
-	 * Template       = "nw_waypoint001"
-	 * HasMapNote     = false
-	 * MapNoteEnabled = false
-	 * X/Y/ZPosition  = 3.91353, 5.69942, 0
-	 * Heading        = -33.80449
-	 */
+	EXPECT_STREQ(wp->getTag().c_str(), "mapnote1");
+	EXPECT_TRUE(wp->hasMapNote());
+	EXPECT_TRUE(wp->enabledMapNote());
+	EXPECT_STREQ(wp->getMapNote().c_str(), "[???]"); // Should be "My note"
+}
 
-	// Check the waypoint
-	Common::ScopedPtr<Engines::NWN2::Waypoint> wp2(new Engines::NWN2::Waypoint(**it));
-	EXPECT_STREQ(wp2->getTag().c_str(), "waypoint1");
-	EXPECT_FALSE(wp2->hasMapNote());
-	EXPECT_FALSE(wp2->enabledMapNote());
-	EXPECT_STREQ(wp2->getMapNote().c_str(), "");
+/**
+ * Check the generic waypoint
+ *
+ * Expected values:
+ * -------------------------------------
+ * Tag            = "waypoint1"
+ * Classification = "{184337}"
+ * LocalizedName  = "Waypoint 1"
+ * Template       = "nw_waypoint001"
+ * HasMapNote     = false
+ * MapNoteEnabled = false
+ * X/Y/ZPosition  = 3.91353, 5.69942, 0
+ * Heading        = -33.80449
+ */
 
+GTEST_TEST(NWN2Waypoint, waypoint1) {
+	Common::ScopedPtr<Engines::NWN2::Waypoint> wp(getWaypoint(1));
+
+	EXPECT_STREQ(wp->getTag().c_str(), "waypoint1");
+	EXPECT_FALSE(wp->hasMapNote());
+	EXPECT_FALSE(wp->enabledMapNote());
+	EXPECT_STREQ(wp->getMapNote().c_str(), "");
 }
