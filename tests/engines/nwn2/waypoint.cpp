@@ -1,0 +1,92 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file
+ *  Unit tests for NWN2 waypoint objects.
+ */
+
+#include "gtest/gtest.h"
+
+#include "tests/engines/nwn2/waypoint.h"
+
+#include "src/common/memreadstream.h"
+#include "src/common/scopedptr.h"
+#include "src/common/error.h"
+
+#include "src/aurora/gff3file.h"
+
+#include "src/engines/nwn2/waypoint.h"
+
+GTEST_TEST(NWN2Waypoint, getList) {
+	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataWaypoint));
+	if (!stream)
+		throw Common::Exception("No test data available");
+	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('G', 'I', 'T', ' ')));
+
+	// Get the waypoint list
+	const Aurora::GFF3Struct &top = gff->getTopLevel();
+	const Aurora::GFF3List &wplist = top.getList("WaypointList");
+	ASSERT_EQ(wplist.size(), 2);
+
+	// List out the waypoint tags
+	Aurora::GFF3List::const_iterator it = wplist.begin();
+	ASSERT_NE(it, wplist.end()) << "At mapnote1";
+
+	/**
+	 * Tag            = "mapnote1"
+	 * Classification = "{184337}"
+	 * LocalizedName  = "Map Note 1"
+	 * Template       = "nw_mapnote001"
+	 * MapNoteText    = "My note"
+	 * HasMapNote     = true
+	 * MapNoteEnabled = true
+	 * X/Y/ZPosition  = 6.743333, 4.81983, 0
+	 * Heading        = 31.5129414
+	 */
+
+	// Check the map note
+	Common::ScopedPtr<Engines::NWN2::Waypoint> wp1(new Engines::NWN2::Waypoint(**it));
+	EXPECT_STREQ(wp1->getTag().c_str(), "mapnote1");
+	EXPECT_TRUE(wp1->hasMapNote());
+	EXPECT_TRUE(wp1->enabledMapNote());
+	EXPECT_STREQ(wp1->getMapNote().c_str(), "[???]"); // Should be "My note"
+
+	// Increment index
+	ASSERT_NE(++it, wplist.end()) << "At waypoint1";
+
+	/**
+	 * Tag            = "waypoint1"
+	 * Classification = "{184337}"
+	 * LocalizedName  = "Waypoint 1"
+	 * Template       = "nw_waypoint001"
+	 * HasMapNote     = false
+	 * MapNoteEnabled = false
+	 * X/Y/ZPosition  = 3.91353, 5.69942, 0
+	 * Heading        = -33.80449
+	 */
+
+	// Check the waypoint
+	Common::ScopedPtr<Engines::NWN2::Waypoint> wp2(new Engines::NWN2::Waypoint(**it));
+	EXPECT_STREQ(wp2->getTag().c_str(), "waypoint1");
+	EXPECT_FALSE(wp2->hasMapNote());
+	EXPECT_FALSE(wp2->enabledMapNote());
+	EXPECT_STREQ(wp2->getMapNote().c_str(), "");
+
+}
