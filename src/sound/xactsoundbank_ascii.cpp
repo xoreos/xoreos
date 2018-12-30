@@ -121,6 +121,9 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				sound->priority = priority;
 		}
 
+		if (tokens.size() > 8)
+			sound->gainBoost = tokens[8] == "1";
+
 		if (tokens.size() > 9)
 			sound->params3D.volumeLFE   = CLIP(getNumber(tokens[ 9]) / 100.0f, -64.0f, 0.0f);
 		if (tokens.size() > 10)

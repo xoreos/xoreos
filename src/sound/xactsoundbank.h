@@ -223,6 +223,8 @@ protected:
 		Common::UString categoryName; ///< Name of the category. Can be empty.
 		uint8 categoryIndex;          ///< Index of the category.
 
+		bool gainBoost; ///< Gain boost of 6dB enabled?
+
 		float volume; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f is maximum attenuation.
 		float pitch;  ///< Pitch change in semitones.
 
@@ -240,7 +242,7 @@ protected:
 
 		Tracks tracks; ///< All the tracks in the sound.
 
-		Sound() : categoryIndex(kCategoryNone), volume(0.0f), pitch(0.0f),
+		Sound() : categoryIndex(kCategoryNone), gainBoost(false), volume(0.0f), pitch(0.0f),
 				volumeVariationMin(0.0f), volumeVariationMax(0.0f),
 				pitchVariationMin(0.0f), pitchVariationMax(0.0f),
 				layer(kLayerNone), priority(255), is3D(false) {
