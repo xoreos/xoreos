@@ -181,6 +181,7 @@ protected:
 	/** An event within a sound track. */
 	struct Event {
 		EventType type;
+		uint32 timestamp; ///< Timestamp of the event, in milliseconds.
 
 		union {
 			struct {
@@ -189,7 +190,7 @@ protected:
 
 		} params;
 
-		Event(EventType t) : type(t) { }
+		Event(EventType t) : type(t), timestamp(0) { }
 	};
 
 	/** A wave within a sound track. */

@@ -194,7 +194,9 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 		track.events.push_back(Event((EventType) xsb.readByte()));
 		Event &event = track.events.back();
 
-		xsb.skip(3); // Unknown
+		event.timestamp  = xsb.readByte();
+		event.timestamp += xsb.readByte() << 8;
+		event.timestamp += xsb.readByte() << 16;
 
 		uint8 parameterSize = xsb.readByte();
 
