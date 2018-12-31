@@ -228,8 +228,8 @@ protected:
 		float volume; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f is maximum attenuation.
 		float pitch;  ///< Pitch change in semitones.
 
-		float volumeVariationMin; ///< Volume variation lower bound in dB (-64.0f to 64.0f);
-		float volumeVariationMax; ///< Volume variation upper bound in dB (-64.0f to 64.0f);
+		float volumeVariationMin; ///< Volume variation lower bound in dB (-64.0f to 64.0f).
+		float volumeVariationMax; ///< Volume variation upper bound in dB (-64.0f to 64.0f).
 
 		float pitchVariationMin; ///< Pitch variation lower bound in semitones.
 		float pitchVariationMax; ///< Pitch variation upper bound in semitones.
