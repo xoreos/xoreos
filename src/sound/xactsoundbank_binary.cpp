@@ -208,16 +208,18 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 					const uint32 indicesOrOffset = xsb.readUint32LE();
 					parameterSize -= 4;
 
-					if (parameterSize >= 4) {
+					if (parameterSize >= 12) {
 						sound.pitchVariationMin = CLIP((xsb.readSint16LE() * 12) / 4096.0f, -24.0f, 24.0f);
 						sound.pitchVariationMax = CLIP((xsb.readSint16LE() * 12) / 4096.0f, -24.0f, 24.0f);
-						parameterSize -= 4;
-					}
 
-					if (parameterSize >= 4) {
 						sound.volumeVariationMin = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 64.0f);
 						sound.volumeVariationMax = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 64.0f);
-						parameterSize -= 4;
+
+						sound.delay = xsb.readUint16LE();
+
+						xsb.skip(2); // Unknown
+
+						parameterSize -= 12;
 					}
 
 					if (!(eventFlags & kPlayEventMultipleVariations)) {

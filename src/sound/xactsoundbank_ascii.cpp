@@ -198,6 +198,13 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 						isComplex = true;
 				}
 
+				if (tokens.size() > 8) {
+					sound->delay = getNumber(tokens[8]);
+
+					if (sound->delay != 0)
+						isComplex = true;
+				}
+
 				if (isComplex)
 					track.events.push_back(Event(kEventTypePlayComplex));
 				else
