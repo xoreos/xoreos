@@ -178,7 +178,15 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 						sound->params3D.rollOffCurve.push_back(getFloat(tokens[i]));
 
 			} else if (tokens[0] == "PEQ") {
-				// TODO: Parametric EQ
+				sound->parametricEQ = true;
+
+				if (tokens.size() > 1)
+					sound->parametricEQGain = CLIP(getNumber(tokens[1]) / 1000.0f, -1.0f, 4.0f);
+				if (tokens.size() > 2)
+					sound->parametricEQQ = 1.0f / (1 << CLIP<int64>(getNumber(tokens[2]), 0, 7));
+				if (tokens.size() > 3)
+					sound->parametricEQFreq = CLIP<uint16>(getNumber(tokens[3]), 30, 8000);
+
 			} else if (tokens[0] == "PLAY") {
 				bool isComplex = false;
 

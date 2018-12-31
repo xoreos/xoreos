@@ -44,6 +44,7 @@ enum XSBFlags {
 enum SoundFlags {
 	kSound3D        = 0x01,
 	kSoundGainBoost = 0x02,
+	kSoundEQ        = 0x04,
 	kSoundTrivial   = 0x08,
 	kSoundSimple    = 0x10
 };
@@ -317,8 +318,14 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 
 		const uint8 volume3D = xsb.readByte();
 
-		const uint16 eqGain = xsb.readUint16LE();
+		sound.parametricEQ = soundFlags & kSoundEQ;
+
+		sound.parametricEQGain = CLIP(xsb.readSint16LE() / 8192.0f, -1.0f, 4.0f);
+
 		const uint16 eq = xsb.readUint16LE();
+
+		sound.parametricEQQ    = 1.0f / (1 << (eq & 7));
+		sound.parametricEQFreq = CLIP<uint16>((eq >> 3) & 0x1FFF, 30, 8000);
 
 		sound.gainBoost = soundFlags & kSoundGainBoost;
 

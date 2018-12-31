@@ -242,12 +242,18 @@ protected:
 		bool is3D;
 		Parameters3D params3D;
 
+		bool parametricEQ;       ///< Is the parametric EQ enabled?
+		float parametricEQGain;  ///< Parametric EQ gain (-1.0f to 4.0f).
+		float parametricEQQ;     ///< Parametric EQ Q coefficient (1.0f/2^0 to 1.0f/2^7 in 8 exponential steps).
+		uint16 parametricEQFreq; ///< Parametric EQ frequency (30 to 8000).
+
 		Tracks tracks; ///< All the tracks in the sound.
 
 		Sound() : categoryIndex(kCategoryNone), gainBoost(false), volume(0.0f), pitch(0.0f),
 				volumeVariationMin(0.0f), volumeVariationMax(0.0f),
 				pitchVariationMin(0.0f), pitchVariationMax(0.0f),
-				delay(0), layer(kLayerNone), priority(255), is3D(false) {
+				delay(0), layer(kLayerNone), priority(255), is3D(false),
+				parametricEQ(false), parametricEQGain(0.0f), parametricEQQ(1.0f), parametricEQFreq(30) {
 		}
 	};
 
