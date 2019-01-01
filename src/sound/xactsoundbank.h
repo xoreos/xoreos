@@ -226,6 +226,11 @@ protected:
 			struct {
 				float delta;     ///< Frequency delta in Hz (0.0f to 23.4f).
 				float pitch;     ///< Pitch modulation in semitones (-12.0f to 12.0f).
+			} lfopitch;
+
+			struct {
+				float delta;     ///< Frequency delta in Hz (0.0f to 23.4f).
+				float pitch;     ///< Pitch modulation in semitones (-12.0f to 12.0f).
 				float filter;    ///< Filter modulation in semitones (-96.0f to 96.0f).
 				float amplitude; ///< Amplitude modulation in dB (-16.0f to 16.0f).
 			} lfomulti;

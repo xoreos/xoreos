@@ -82,6 +82,11 @@ XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
 			params.lowpass.cutOffEnd = 0;
 			break;
 
+		case kEventTypeLFOPitch:
+			params.lfopitch.delta = 0.0f;
+			params.lfopitch.pitch = 0.0f;
+			break;
+
 		case kEventTypeLFOMulti:
 			params.lfomulti.delta     = 0.0f;
 			params.lfomulti.pitch     = 0.0f;

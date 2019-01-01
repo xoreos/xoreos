@@ -323,6 +323,19 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
+			case kEventTypeLFOPitch:
+				xsb.skip(2); // Unused
+
+				if (parameterSize >= 4) {
+					xsb.skip(2); // Unknown
+
+					event.params.lfopitch.delta = xsb.readByte()  * 23.4f / 255.0f;
+					event.params.lfopitch.pitch = xsb.readSByte() * 12.0f / 128.0f;
+
+					parameterSize -= 4;
+				}
+				break;
+
 			case kEventTypeLFOMulti:
 				xsb.skip(2); // Unused
 
