@@ -412,6 +412,18 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
+			case kEventTypeMixBins:
+				xsb.skip(2); // Unused
+
+				for (size_t j = 0; j < ARRAYSIZE(event.params.mixbins.bins) && parameterSize >= 4; j++, parameterSize -= 4) {
+					event.params.mixbins.bins[j].channel = xsb.readByte();
+
+					xsb.skip(1); // Unknown
+
+					event.params.mixbins.bins[j].volume = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 0.0f);
+				}
+				break;
+
 			default:
 				xsb.skip(2); // Unknown
 				break;

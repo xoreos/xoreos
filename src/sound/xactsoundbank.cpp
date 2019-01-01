@@ -129,6 +129,13 @@ XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
 			params.marker.value = 0;
 			break;
 
+		case kEventTypeMixBins:
+			for (size_t i = 0; i < ARRAYSIZE(params.mixbins.bins); i++) {
+				params.mixbins.bins[i].channel = 0;
+				params.mixbins.bins[i].volume  = -64.0f;
+			}
+			break;
+
 		default:
 			break;
 	}

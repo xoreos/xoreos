@@ -270,6 +270,13 @@ protected:
 				uint32 value; ///< Custom, user-set value of the marker.
 			} marker;
 
+			struct {
+				struct {
+					uint8 channel; ///< Index of the channel to set the volume of.
+					float volume;  ///< Attenuation in dB (-64.0f to 0.0f).
+				} bins[8];
+			} mixbins;
+
 		} params;
 
 		Event(EventType t);
