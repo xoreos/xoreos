@@ -94,6 +94,16 @@ XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
 			params.lfomulti.amplitude = 0.0f;
 			break;
 
+		case kEventTypeEnvelopeAmplitude:
+			params.aeg.delay   = 0;
+			params.aeg.attack  = 0;
+			params.aeg.hold    = 0;
+			params.aeg.decay   = 0;
+			params.aeg.release = 0;
+
+			params.aeg.sustain = 0.0f;
+			break;
+
 		case kEventTypeLoop:
 			params.loop.count = 0;
 			break;

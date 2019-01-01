@@ -327,6 +327,21 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 			} else if (tokens[0] == "AEG") {
 				track.events.push_back(Event(kEventTypeEnvelopeAmplitude));
+				Event &event = track.events.back();
+
+				if (tokens.size() > 1)
+					event.params.aeg.delay   = getNumber(tokens[1]);
+				if (tokens.size() > 2)
+					event.params.aeg.attack  = getNumber(tokens[2]);
+				if (tokens.size() > 3)
+					event.params.aeg.hold    = getNumber(tokens[3]);
+				if (tokens.size() > 4)
+					event.params.aeg.decay   = getNumber(tokens[4]);
+				if (tokens.size() > 5)
+					event.params.aeg.release = getNumber(tokens[5]);
+				if (tokens.size() > 6)
+					event.params.aeg.sustain = CLIP(getNumber(tokens[6]) / 100.0f, 0.0f, 1.0f);
+
 			} else {
 				warning("Unknown event \"%s\"", tokens[0].c_str());
 			}
