@@ -65,6 +65,10 @@ enum VolumeEventFlags {
 	kVolumeEventFade      = 0x20
 };
 
+enum MarkerEventFlags {
+	kMarkerEventRepeat = 0x20
+};
+
 XACTSoundBank_Binary::XACTSoundBank_Binary(Common::SeekableReadStream &xsb) {
 	load(xsb);
 }
@@ -291,6 +295,24 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 
 			case kEventTypeLoop:
 				event.params.loop.count = xsb.readUint16LE();
+				break;
+
+			case kEventTypeMarker:
+				event.params.marker.repeat = eventFlags & kMarkerEventRepeat;
+
+				event.params.marker.repeatCount = xsb.readUint16LE();
+
+				if (parameterSize >= 8) {
+					event.params.marker.value = xsb.readUint32LE();
+
+					xsb.skip(1); // Unknown
+
+					event.params.marker.repeatDuration  = xsb.readByte();
+					event.params.marker.repeatDuration += xsb.readByte() <<  8;
+					event.params.marker.repeatDuration += xsb.readByte() << 16;
+
+					parameterSize -= 8;
+				}
 				break;
 
 			default:

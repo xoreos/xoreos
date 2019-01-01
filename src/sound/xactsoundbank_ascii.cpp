@@ -276,6 +276,16 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				track.events.push_back(Event(kEventTypeLFOMulti));
 			} else if (tokens[0] == "MARKER") {
 				track.events.push_back(Event(kEventTypeMarker));
+
+				/* The first parameter is the name of the marker. This information
+				 * is stripped in the binary version, so we don't need it.
+				 *
+				 * The second or third parameter is the value of the marker. Both
+				 * are always 0 in all the files we have, so we can't know which is
+				 * which. And it doesn't matter, then, since Jade Empire apparently
+				 * only cares that there is a marker happening, not what the value
+				 * is, or even when it occurs. */
+
 			} else if (tokens[0] == "AEG") {
 				track.events.push_back(Event(kEventTypeEnvelopeAmplitude));
 			} else {

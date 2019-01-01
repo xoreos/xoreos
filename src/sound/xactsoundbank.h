@@ -212,6 +212,14 @@ protected:
 				uint16 count;
 			} loop;
 
+			struct {
+				bool   repeat;         ///< Repeat the marker?
+				uint16 repeatCount;    ///< Number of times the marker should occur.
+				uint32 repeatDuration; ///< Total duration of the marker.
+
+				uint32 value; ///< Custom, user-set value of the marker.
+			} marker;
+
 		} params;
 
 		Event(EventType t);

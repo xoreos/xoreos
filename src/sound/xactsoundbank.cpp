@@ -71,6 +71,14 @@ XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
 			params.loop.count = 0;
 			break;
 
+		case kEventTypeMarker:
+			params.marker.repeat         = false;
+			params.marker.repeatCount    = 0;
+			params.marker.repeatDuration = 0;
+
+			params.marker.value = 0;
+			break;
+
 		default:
 			break;
 	}
