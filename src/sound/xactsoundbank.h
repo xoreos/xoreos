@@ -209,6 +209,21 @@ protected:
 			} volume;
 
 			struct {
+				bool isRelative;  ///< Relative to the current volume or absolute?
+				bool random;      ///< Randomize values.
+				bool sweepCutOff; ///< Sweep cut-off frequency.
+
+				uint16 sweepStepCount; ///< Number of steps during a sweep.
+				uint32 sweepDuration;  ///< Number of milliseconds a sweep should last.
+
+				float resonanceStart; ///< Lower bound of the resonance in dB (0.0f to 32.0f).
+				float resonanceEnd;   ///< Upper bound of the resonance in dB (0.0f to 32.0f).
+
+				uint16 cutOffStart; ///< Lower bound or starting value of cut-off frequency in Hz (0 to 8192).
+				uint16 cutOffEnd;   ///< Upper bound or ending value of cut-off frequency in Hz (0 to 8192).
+			} lowpass;
+
+			struct {
 				uint16 count;
 			} loop;
 

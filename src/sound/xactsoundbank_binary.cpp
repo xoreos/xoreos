@@ -65,6 +65,12 @@ enum VolumeEventFlags {
 	kVolumeEventFade      = 0x20
 };
 
+enum LowPassEventFlags {
+	kLowPassEventRandom   = 0x04,
+	kLowPassEventRelative = 0x10,
+	kLowPassEventSweep    = 0x20
+};
+
 enum MarkerEventFlags {
 	kMarkerEventRepeat = 0x20
 };
@@ -290,6 +296,30 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 					event.params.volume.fadeDuration += xsb.readByte() << 16;
 
 					parameterSize -= 8;
+				}
+				break;
+
+			case kEventTypeLowPass:
+				event.params.lowpass.isRelative  = eventFlags & kLowPassEventRelative;
+				event.params.lowpass.random      = eventFlags & kLowPassEventRandom;
+				event.params.lowpass.sweepCutOff = eventFlags & kLowPassEventSweep;
+
+				event.params.lowpass.sweepStepCount = xsb.readUint16LE();
+
+				if (parameterSize >= 12) {
+					event.params.lowpass.cutOffStart = CLIP<uint16>(xsb.readUint16LE(), 0, 8192);
+					event.params.lowpass.cutOffEnd   = CLIP<uint16>(xsb.readUint16LE(), 0, 8192);
+
+					xsb.skip(1); // Unknown
+
+					event.params.lowpass.sweepDuration  = xsb.readByte();
+					event.params.lowpass.sweepDuration += xsb.readByte() <<  8;
+					event.params.lowpass.sweepDuration += xsb.readByte() << 16;
+
+					event.params.lowpass.resonanceStart = CLIP(xsb.readSint16LE() / 100.0f, 0.0f, 32.0f);
+					event.params.lowpass.resonanceEnd   = CLIP(xsb.readSint16LE() / 100.0f, 0.0f, 32.0f);
+
+					parameterSize -= 12;
 				}
 				break;
 

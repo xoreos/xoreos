@@ -67,6 +67,21 @@ XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
 			params.volume.volumeEnd = 0.0f;
 			break;
 
+		case kEventTypeLowPass:
+			params.lowpass.isRelative  = false;
+			params.lowpass.random      = false;
+			params.lowpass.sweepCutOff = false;
+
+			params.lowpass.sweepStepCount = 0;
+			params.lowpass.sweepDuration  = 0;
+
+			params.lowpass.resonanceStart = 0.0f;
+			params.lowpass.resonanceEnd   = 0.0f;
+
+			params.lowpass.cutOffStart = 0;
+			params.lowpass.cutOffEnd = 0;
+			break;
+
 		case kEventTypeLoop:
 			params.loop.count = 0;
 			break;

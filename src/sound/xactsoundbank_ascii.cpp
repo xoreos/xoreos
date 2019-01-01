@@ -272,6 +272,31 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 			} else if (tokens[0] == "LPF") {
 				track.events.push_back(Event(kEventTypeLowPass));
+				Event &event = track.events.back();
+
+				if (tokens.size() > 1)
+					event.params.lowpass.isRelative  = tokens[1] == "1";
+				if (tokens.size() > 2)
+					event.params.lowpass.sweepCutOff = tokens[2] == "1";
+
+				if (tokens.size() > 3)
+					event.params.lowpass.sweepStepCount = getNumber(tokens[3]);
+				if (tokens.size() > 5)
+					event.params.lowpass.sweepDuration  = getNumber(tokens[5]);
+
+				if (tokens.size() > 6)
+					event.params.lowpass.resonanceEnd   = CLIP(getNumber(tokens[6]) / 100.0f, 0.0f, 32.0f);
+				if (tokens.size() > 7)
+					event.params.lowpass.resonanceStart = CLIP(getNumber(tokens[7]) / 100.0f, 0.0f, 32.0f);
+
+				if (tokens.size() > 8)
+					event.params.lowpass.cutOffEnd   = getNumber(tokens[8]);
+				if (tokens.size() > 9)
+					event.params.lowpass.cutOffStart = getNumber(tokens[9]);
+
+				if (tokens.size() > 4)
+					event.timestamp = getNumber(tokens[4]);
+
 			} else if (tokens[0] == "MFLFO") {
 				track.events.push_back(Event(kEventTypeLFOMulti));
 			} else if (tokens[0] == "MARKER") {
