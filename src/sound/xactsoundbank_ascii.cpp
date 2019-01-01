@@ -218,6 +218,9 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				else
 					track.events.push_back(Event(kEventTypePlay));
 
+				if (tokens.size() > 9)
+					track.events.back().timestamp = getNumber(tokens[9]);
+
 			} else if (tokens[0] == "LOOP") {
 				track.events.push_back(Event(kEventTypeLoop));
 				track.events.back().params.loop.count = kLoopCountInfinite;
