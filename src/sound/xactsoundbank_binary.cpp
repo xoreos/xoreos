@@ -53,6 +53,12 @@ enum PlayEventFlags {
 	kPlayEventMultipleVariations = 0x04
 };
 
+enum PitchEventFlags {
+	kPitchEventVariation = 0x04,
+	kPitchEventRelative  = 0x10,
+	kPitchEventFade      = 0x20
+};
+
 XACTSoundBank_Binary::XACTSoundBank_Binary(Common::SeekableReadStream &xsb) {
 	load(xsb);
 }
@@ -235,8 +241,29 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
+			case kEventTypePitch:
+				event.params.pitch.fadeStepCount = xsb.readUint16LE();
+
+				event.params.pitch.isRelative      = eventFlags & kPitchEventRelative;
+				event.params.pitch.enableFade      = eventFlags & kPitchEventFade;
+				event.params.pitch.enableVariation = eventFlags & kPitchEventVariation;
+
+				if (parameterSize >= 8) {
+					event.params.pitch.pitchStart = CLIP((xsb.readSint16LE() * 12) / 4096.0f, -24.0f, 24.0f);
+					event.params.pitch.pitchEnd   = CLIP((xsb.readSint16LE() * 12) / 4096.0f, -24.0f, 24.0f);
+
+					xsb.skip(1); // Unknown
+
+					event.params.pitch.fadeDuration  = xsb.readByte();
+					event.params.pitch.fadeDuration += xsb.readByte() <<  8;
+					event.params.pitch.fadeDuration += xsb.readByte() << 16;
+
+					parameterSize -= 8;
+				}
+				break;
+
 			case kEventTypeLoop:
-				track.events.back().params.loop.count = xsb.readUint16LE();
+				event.params.loop.count = xsb.readUint16LE();
 				break;
 
 			default:

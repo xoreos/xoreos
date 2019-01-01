@@ -41,6 +41,30 @@ XACTSoundBank::WaveBank::~WaveBank() {
 }
 
 
+XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
+	switch (type) {
+		case kEventTypePitch:
+			params.pitch.isRelative = false;
+			params.pitch.enableFade = false;
+			params.pitch.enableVariation = false;
+
+			params.pitch.fadeStepCount = 0;
+			params.pitch.fadeDuration = 0;
+
+			params.pitch.pitchStart = 0.0f;
+			params.pitch.pitchEnd = 0.0f;
+			break;
+
+		case kEventTypeLoop:
+			params.loop.count = 0;
+			break;
+
+		default:
+			break;
+	}
+}
+
+
 XACTSoundBank *XACTSoundBank::load(const Common::UString &name) {
 	try {
 		Common::ScopedPtr<Common::SeekableReadStream> stream;

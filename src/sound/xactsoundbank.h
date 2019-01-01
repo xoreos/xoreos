@@ -185,12 +185,24 @@ protected:
 
 		union {
 			struct {
+				bool isRelative;      ///< Relative to the current pitch or absolute?
+				bool enableFade;      ///< Fade from pitchStart to pitchEnd.
+				bool enableVariation; ///< Randomly vary between pitchStart and pitchEnd.
+
+				uint16 fadeStepCount; ///< Number of steps during a fade.
+				uint32 fadeDuration;  ///< Number of milliseconds a fade should last.
+
+				float pitchStart; ///< Lower bound or starting value in semitones (-24.0f to 24.0f).
+				float pitchEnd;   ///< Upper bound or ending value in semitones (-24.0f to 24.0f).
+			} pitch;
+
+			struct {
 				uint16 count;
 			} loop;
 
 		} params;
 
-		Event(EventType t) : type(t), timestamp(0) { }
+		Event(EventType t);
 	};
 
 	/** A wave within a sound track. */

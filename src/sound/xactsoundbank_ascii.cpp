@@ -236,6 +236,23 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				track.events.push_back(Event(kEventTypeVolume));
 			} else if (tokens[0] == "PITCH") {
 				track.events.push_back(Event(kEventTypePitch));
+				Event &event = track.events.back();
+
+				if (tokens.size() > 1)
+					event.params.pitch.enableVariation = tokens[1] == "1";
+				if (tokens.size() > 2)
+					event.params.pitch.isRelative      = tokens[2] == "1";
+
+				if (tokens.size() > 3)
+					event.params.pitch.fadeStepCount = getNumber(tokens[3]);
+				if (tokens.size() > 5)
+					event.params.pitch.fadeDuration  = getNumber(tokens[5]);
+
+				if (tokens.size() > 6)
+					event.params.pitch.pitchStart = CLIP(getNumber(tokens[6]) / 100.0f, -24.0f, 24.0f);
+				if (tokens.size() > 7)
+					event.params.pitch.pitchEnd   = CLIP(getNumber(tokens[7]) / 100.0f, -24.0f, 24.0f);
+
 			} else if (tokens[0] == "LPF") {
 				track.events.push_back(Event(kEventTypeLowPass));
 			} else if (tokens[0] == "MFLFO") {
