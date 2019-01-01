@@ -104,6 +104,19 @@ XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
 			params.aeg.sustain = 0.0f;
 			break;
 
+		case kEventTypeEnvelopePitch:
+			params.pfeg.delay   = 0;
+			params.pfeg.attack  = 0;
+			params.pfeg.hold    = 0;
+			params.pfeg.decay   = 0;
+			params.pfeg.release = 0;
+
+			params.pfeg.sustain = 0.0f;
+
+			params.pfeg.pitch  = 0.0f;
+			params.pfeg.filter = 0.0f;
+			break;
+
 		case kEventTypeLoop:
 			params.loop.count = 0;
 			break;

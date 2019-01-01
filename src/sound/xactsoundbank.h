@@ -246,6 +246,19 @@ protected:
 			} aeg;
 
 			struct {
+				uint32 delay;   ///< Delay length in milliseconds.
+				uint32 attack;  ///< Attack length in milliseconds.
+				uint32 hold;    ///< Hold length in milliseconds.
+				uint32 decay;   ///< Deay length in milliseconds.
+				uint32 release; ///< Release length in milliseconds.
+
+				float sustain; ///< Sustain power in fractions (0.0f to 1.0f).
+
+				float pitch;  ///< Pitch scale in semitones (-12.0 to 12.0f).
+				float filter; ///< Filter cut-off in semitones (-96.0 to 96.0f).
+			} pfeg;
+
+			struct {
 				uint16 count;
 			} loop;
 

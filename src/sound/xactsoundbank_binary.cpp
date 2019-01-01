@@ -369,6 +369,27 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
+			case kEventTypeEnvelopePitch:
+				xsb.skip(2); // Unused
+
+				if (parameterSize >= 16) {
+					event.params.pfeg.delay   = (xsb.readUint16LE() * 43680) / 4095;
+					event.params.pfeg.attack  = (xsb.readUint16LE() * 43680) / 4095;
+					event.params.pfeg.hold    = (xsb.readUint16LE() * 43680) / 4095;
+					event.params.pfeg.decay   = (xsb.readUint16LE() * 43680) / 4095;
+					event.params.pfeg.release = (xsb.readUint16LE() * 43680) / 4095;
+
+					event.params.pfeg.sustain = xsb.readByte() / 255.0f;
+
+					xsb.skip(3); // Unknown
+
+					event.params.pfeg.pitch  = xsb.readSByte() * 12.0f / 128.0f;
+					event.params.pfeg.filter = xsb.readSByte() * 96.0f / 128.0f;
+
+					parameterSize -= 16;
+				}
+				break;
+
 			case kEventTypeLoop:
 				event.params.loop.count = xsb.readUint16LE();
 				break;
