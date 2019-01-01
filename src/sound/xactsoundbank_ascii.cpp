@@ -299,6 +299,20 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 			} else if (tokens[0] == "MFLFO") {
 				track.events.push_back(Event(kEventTypeLFOMulti));
+				Event &event = track.events.back();
+
+				if (tokens.size() > 3)
+					event.params.lfomulti.delta     = CLIP(getNumber(tokens[3]) /  10.0f,   0.0f, 23.4f);
+				if (tokens.size() > 4)
+					event.params.lfomulti.pitch     = CLIP(getNumber(tokens[4]) / 100.0f, -12.0f, 12.0f);
+				if (tokens.size() > 5)
+					event.params.lfomulti.filter    = CLIP(getNumber(tokens[5]) / 100.0f, -96.0f, 96.0f);
+				if (tokens.size() > 6)
+					event.params.lfomulti.amplitude = CLIP(getNumber(tokens[6]) / 100.0f, -16.0f, 16.0f);
+
+				if (tokens.size() > 1)
+					event.timestamp = getNumber(tokens[1]);
+
 			} else if (tokens[0] == "MARKER") {
 				track.events.push_back(Event(kEventTypeMarker));
 
