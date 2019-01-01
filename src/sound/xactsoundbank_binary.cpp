@@ -59,6 +59,12 @@ enum PitchEventFlags {
 	kPitchEventFade      = 0x20
 };
 
+enum VolumeEventFlags {
+	kVolumeEventVariation = 0x04,
+	kVolumeEventRelative  = 0x10,
+	kVolumeEventFade      = 0x20
+};
+
 XACTSoundBank_Binary::XACTSoundBank_Binary(Common::SeekableReadStream &xsb) {
 	load(xsb);
 }
@@ -257,6 +263,27 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 					event.params.pitch.fadeDuration  = xsb.readByte();
 					event.params.pitch.fadeDuration += xsb.readByte() <<  8;
 					event.params.pitch.fadeDuration += xsb.readByte() << 16;
+
+					parameterSize -= 8;
+				}
+				break;
+
+			case kEventTypeVolume:
+				event.params.volume.fadeStepCount = xsb.readUint16LE();
+
+				event.params.volume.isRelative      = eventFlags & kPitchEventRelative;
+				event.params.volume.enableFade      = eventFlags & kPitchEventFade;
+				event.params.volume.enableVariation = eventFlags & kPitchEventVariation;
+
+				if (parameterSize >= 8) {
+					event.params.volume.volumeStart = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 64.0f);
+					event.params.volume.volumeEnd   = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 64.0f);
+
+					xsb.skip(1); // Unknown
+
+					event.params.volume.fadeDuration  = xsb.readByte();
+					event.params.volume.fadeDuration += xsb.readByte() <<  8;
+					event.params.volume.fadeDuration += xsb.readByte() << 16;
 
 					parameterSize -= 8;
 				}

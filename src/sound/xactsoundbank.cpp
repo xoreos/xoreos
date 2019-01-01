@@ -55,6 +55,18 @@ XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
 			params.pitch.pitchEnd = 0.0f;
 			break;
 
+		case kEventTypeVolume:
+			params.volume.isRelative = false;
+			params.volume.enableFade = false;
+			params.volume.enableVariation = false;
+
+			params.volume.fadeStepCount = 0;
+			params.volume.fadeDuration = 0;
+
+			params.volume.volumeStart = 0.0f;
+			params.volume.volumeEnd = 0.0f;
+			break;
+
 		case kEventTypeLoop:
 			params.loop.count = 0;
 			break;

@@ -234,6 +234,23 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 			} else if (tokens[0] == "VOLUME") {
 				track.events.push_back(Event(kEventTypeVolume));
+				Event &event = track.events.back();
+
+				if (tokens.size() > 1)
+					event.params.volume.enableVariation = tokens[1] == "1";
+				if (tokens.size() > 2)
+					event.params.volume.isRelative      = tokens[2] == "1";
+
+				if (tokens.size() > 3)
+					event.params.volume.fadeStepCount = getNumber(tokens[3]);
+				if (tokens.size() > 5)
+					event.params.volume.fadeDuration  = getNumber(tokens[5]);
+
+				if (tokens.size() > 6)
+					event.params.volume.volumeStart = CLIP(getNumber(tokens[6]) / 100.0f, -64.0f, 64.0f);
+				if (tokens.size() > 7)
+					event.params.volume.volumeEnd   = CLIP(getNumber(tokens[7]) / 100.0f, -64.0f, 64.0f);
+
 			} else if (tokens[0] == "PITCH") {
 				track.events.push_back(Event(kEventTypePitch));
 				Event &event = track.events.back();

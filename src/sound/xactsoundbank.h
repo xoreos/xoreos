@@ -197,6 +197,18 @@ protected:
 			} pitch;
 
 			struct {
+				bool isRelative;      ///< Relative to the current volume or absolute?
+				bool enableFade;      ///< Fade from volumeStart to volumeEnd.
+				bool enableVariation; ///< Randomly vary between volumeStart and volumeEnd.
+
+				uint16 fadeStepCount; ///< Number of steps during a fade.
+				uint32 fadeDuration;  ///< Number of milliseconds a fade should last.
+
+				float volumeStart; ///< Lower bound or starting value in dB (-64.0f to 64.0f).
+				float volumeEnd;   ///< Upper bound or ending value in dB (-64.0f to 64.0f).
+			} volume;
+
+			struct {
 				uint16 count;
 			} loop;
 
