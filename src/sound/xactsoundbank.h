@@ -227,13 +227,13 @@ protected:
 		bool gainBoost; ///< Gain boost of 6dB enabled?
 
 		float volume; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f is maximum attenuation.
-		float pitch;  ///< Pitch change in semitones.
+		float pitch;  ///< Pitch change in semitones (-24.0f to 24.0f).
 
 		float volumeVariationMin; ///< Volume variation lower bound in dB (-64.0f to 64.0f).
 		float volumeVariationMax; ///< Volume variation upper bound in dB (-64.0f to 64.0f).
 
-		float pitchVariationMin; ///< Pitch variation lower bound in semitones.
-		float pitchVariationMax; ///< Pitch variation upper bound in semitones.
+		float pitchVariationMin; ///< Pitch variation lower bound in semitones (-24.0f to 24.0f).
+		float pitchVariationMax; ///< Pitch variation upper bound in semitones (-24.0f to 24.0f).
 
 		uint16 delay; ///< Maximum variable delay, in milliseconds.
 
