@@ -76,6 +76,7 @@ install:
   - vcpkg install liblzma:x86-windows
   - vcpkg install libxml2:x86-windows
   - vcpkg install openal-soft:x86-windows
+  - vcpkg install libvpx:x86-windows
 
 build_script:
   - set PATH=%VCPKG_BIN_DIR%;%PATH%
