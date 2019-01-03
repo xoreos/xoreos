@@ -121,7 +121,7 @@ protected:
 		kEventTypeDisabled          = 0x0F, ///< A disabled event. Should be ignored.
 		kEventTypeMixBins           = 0x10, ///< Set a separate volume for each channel.
 		kEventTypeEnvironmentReverb = 0x11, ///< Environmental reverb.
-		kEventTypeMixBinSpan        = 0x12  ///< Set channel volumes according to a listener orientation.
+		kEventTypeMixBinsPan        = 0x12  ///< Set channel volumes according to a listener orientation.
 	};
 
 	/** How to select a cue or wave variation. */
