@@ -424,6 +424,32 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
+			case kEventTypeEnvironmentReverb:
+				xsb.skip(2); // Unused
+
+				if (parameterSize >= 48) {
+					event.params.envreverb.room              = CLIP(xsb.readSint32LE() / 10000.0f, -1.0f, 0.0f);
+					event.params.envreverb.roomHF            = CLIP(xsb.readSint32LE() / 10000.0f, -1.0f, 0.0f);
+					event.params.envreverb.roomRollOffFactor = CLIP(xsb.readIEEEFloatLE(), 0.0f, 10.0f);
+
+					event.params.envreverb.decay        = CLIP(xsb.readIEEEFloatLE(), 0.1f, 20.0f) * 1000;
+					event.params.envreverb.decayHFRatio = CLIP(xsb.readIEEEFloatLE(), 0.1f, 2.0f);
+
+					event.params.envreverb.reflection      = CLIP(xsb.readSint32LE() / 10000.0f, -1.0f, 0.0f);
+					event.params.envreverb.reflectionDelay = CLIP(xsb.readIEEEFloatLE(), 0.0f, 0.3f) * 1000;
+
+					event.params.envreverb.reverb      = CLIP(xsb.readSint32LE() / 10000.0f, -1.0f, 0.0f);
+					event.params.envreverb.reverbDelay = CLIP(xsb.readIEEEFloatLE(), 0.0f, 0.1f) * 1000;
+
+					event.params.envreverb.diffusion = CLIP(xsb.readIEEEFloatLE(), 0.0f, 100.0f) / 100.0f;
+					event.params.envreverb.density   = CLIP(xsb.readIEEEFloatLE(), 0.0f, 100.0f) / 100.0f;
+
+					event.params.envreverb.referenceHF = CLIP(xsb.readIEEEFloatLE(), 0.0f, 20000.0f);
+
+					parameterSize -= 48;
+				}
+				break;
+
 			default:
 				xsb.skip(2); // Unknown
 				break;

@@ -277,6 +277,26 @@ protected:
 				} bins[8];
 			} mixbins;
 
+			struct {
+				float room;              ///< Room effect attenuation in dB (-1.0f to 0.0).
+				float roomHF;            ///< High-frequency room effect attenuation in dB (-1.0f to 0.0).
+				float roomRollOffFactor; ///< Roll-off factor for the room effect.
+
+				uint32 decay;        ///< Decay time in milliseconds.
+				float  decayHFRatio; ///< High-frequency to low-frequency decay time ratio.
+
+				float reflection;       ///< (Early) Reflection attenuation in dB (-1.0f to 0.0).
+				uint32 reflectionDelay; ///< (Early) Reflection delay in milliseconds.
+
+				float reverb;       ///< (Late) Reverb attenuation in dB (-1.0f to 0.0).
+				uint32 reverbDelay; ///< (Late) Reverb delay in milliseconds.
+
+				float diffusion; ///< Echo density in (late) reverb decay in fractions (0.0f to 1.0f).
+				float density;   ///< Modal density in (late) reverb decay in fractions (0.0f to 1.0f).
+
+				uint16 referenceHF; ///< Reference high frequency in Hz (20 to 20000).
+			} envreverb;
+
 		} params;
 
 		Event(EventType t);

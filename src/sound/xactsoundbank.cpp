@@ -136,6 +136,26 @@ XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
 			}
 			break;
 
+		case kEventTypeEnvironmentReverb:
+			params.envreverb.room              = -100.0f;
+			params.envreverb.roomHF            = 0.0f;
+			params.envreverb.roomRollOffFactor = 0.0f;
+
+			params.envreverb.decay        = 1000;
+			params.envreverb.decayHFRatio = 0.5f;
+
+			params.envreverb.reflection      = -100.0f;
+			params.envreverb.reflectionDelay = 20;
+
+			params.envreverb.reverb      = -100.0f;
+			params.envreverb.reverbDelay = 40;
+
+			params.envreverb.diffusion = 1.0f;
+			params.envreverb.density   = 1.0f;
+
+			params.envreverb.referenceHF = 5000;
+			break;
+
 		default:
 			break;
 	}
