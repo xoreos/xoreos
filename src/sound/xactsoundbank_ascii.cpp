@@ -395,7 +395,8 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 		_cueMap[cue->name] = &*cue;
 
 		cue->variationSelectMethod = static_cast<SelectMethod>(getNumber(tokens[1]));
-		const bool hasTransitions = tokens[2] == "1";
+
+		cue->interactive = tokens[2] == "1";
 
 		const size_t variationCount = getAmount(tokenizer, xsb);
 		tokenizer.nextChunk(xsb);
@@ -432,7 +433,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			}
 		}
 
-		if (!hasTransitions)
+		if (!cue->interactive)
 			continue;
 
 		const size_t transitionCount = getAmount(tokenizer, xsb);

@@ -412,11 +412,18 @@ protected:
 	struct Cue {
 		Common::UString name; ///< Name of the cue. Can be empty.
 
+		bool sequential;   ///< Cue for sequential playback?
+		bool crossfade;    ///< Crossfade this cue in/out?
+		bool stopOnStarve; ///< Stop playback on starvation?
+		bool interactive;  ///< Is this an interactive cue?
+
 		/** How a cue variation to be played is selected. */
 		SelectMethod variationSelectMethod;
 
 		CueVariations variations; ///< All the cue variations in the cue.
 		Transitions transitions;
+
+		Cue() : sequential(false), crossfade(false), stopOnStarve(false), interactive(false) { }
 	};
 
 	typedef std::vector<WaveBank> WaveBanks;

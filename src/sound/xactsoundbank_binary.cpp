@@ -38,6 +38,13 @@ enum XSBFlags {
 	kXSBNoCueNames = 1
 };
 
+enum CueFlags {
+	kCueSequential   = 0x0001,
+	kCueCrossfade    = 0x0002,
+	kCueStopOnStarve = 0x0004,
+	kCueInteractive  = 0x0008
+};
+
 enum SoundFlags {
 	kSound3D        = 0x01,
 	kSoundGainBoost = 0x02,
@@ -171,7 +178,12 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 		Cue &cue = _cues[i];
 		xsb.seek(offset + i * kCueDefinitionSize);
 
-		xsb.skip(2); // Unknown
+		const uint16 cueFlags = xsb.readUint16LE();
+
+		cue.sequential   = cueFlags & kCueSequential;
+		cue.crossfade    = cueFlags & kCueCrossfade;
+		cue.stopOnStarve = cueFlags & kCueStopOnStarve;
+		cue.interactive  = cueFlags & kCueInteractive;
 
 		const uint16 soundIndex = xsb.readUint16LE();
 		const uint32 offsetName = xsb.readUint32LE();
