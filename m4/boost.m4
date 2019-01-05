@@ -1518,6 +1518,7 @@ if test x$boost_cv_inc_path != xno; then
     _BOOST_gcc_test(8, 2) \
     _BOOST_gcc_test(8, 1) \
     _BOOST_gcc_test(8, 0) \
+    _BOOST_gcc_test(7, 4) \
     _BOOST_gcc_test(7, 3) \
     _BOOST_gcc_test(7, 2) \
     _BOOST_gcc_test(7, 1) \
