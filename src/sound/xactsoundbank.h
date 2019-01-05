@@ -362,6 +362,8 @@ protected:
 		float pitchVariationMin; ///< Pitch variation lower bound in semitones (-24.0f to 24.0f).
 		float pitchVariationMax; ///< Pitch variation upper bound in semitones (-24.0f to 24.0f).
 
+		bool linger; ///< Should the sound linger, if it's in an interactive cue?
+
 		uint16 delay; ///< Maximum variable delay, in milliseconds.
 
 		uint8 layer;
@@ -379,7 +381,7 @@ protected:
 
 		Sound() : categoryIndex(kCategoryNone), gainBoost(false), loopNewVariation(false), loopCount(0),
 				volume(0.0f), pitch(0.0f), volumeVariationMin(0.0f), volumeVariationMax(0.0f),
-				pitchVariationMin(0.0f), pitchVariationMax(0.0f),
+				pitchVariationMin(0.0f), pitchVariationMax(0.0f), linger(false),
 				delay(0), layer(kLayerNone), priority(255), is3D(false),
 				parametricEQ(false), parametricEQGain(0.0f), parametricEQQ(1.0f), parametricEQFreq(30) {
 		}

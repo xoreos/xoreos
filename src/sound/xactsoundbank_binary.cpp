@@ -46,7 +46,8 @@ enum SoundFlags {
 	kSoundGainBoost = 0x02,
 	kSoundEQ        = 0x04,
 	kSoundTrivial   = 0x08,
-	kSoundSimple    = 0x10
+	kSoundSimple    = 0x10,
+	kSoundLinger    = 0x20
 };
 
 enum PlayEventFlags {
@@ -572,6 +573,7 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 		sound.parametricEQFreq = CLIP<uint16>((eq >> 3) & 0x1FFF, 30, 8000);
 
 		sound.gainBoost = soundFlags & kSoundGainBoost;
+		sound.linger    = soundFlags & kSoundLinger;
 
 		sound.is3D = soundFlags & kSound3D;
 		if (sound.is3D) {
