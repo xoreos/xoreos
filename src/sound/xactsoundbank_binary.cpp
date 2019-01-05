@@ -28,9 +28,6 @@
 
 #include "src/sound/xactsoundbank_binary.h"
 
-// Disable the "unused variable" warnings while most stuff is still stubbed
-IGNORE_UNUSED_VARIABLES
-
 namespace Sound {
 
 static const size_t k3DDefinitionSize    = 40;
@@ -622,16 +619,16 @@ void XACTSoundBank_Binary::load(Common::SeekableReadStream &xsb) {
 	xsb.skip(2); // CRC. We're ignoring it (for now?)
 
 	const uint32 offsetWaveBanks = xsb.readUint32LE();
-	const uint32 offset2         = xsb.readUint32LE();
+	xsb.skip(4); // Some offset
 	const uint32 offset3DParams  = xsb.readUint32LE();
-	const uint32 offset4         = xsb.readUint32LE();
+	xsb.skip(4); // Some offset
 
 	const uint16 xsbFlags = xsb.readUint16LE();
 
-	const uint16 count1     = xsb.readUint16LE();
+	xsb.skip(2); // Some count
 	const uint16 soundCount = xsb.readUint16LE();
 	const uint16 cueCount   = xsb.readUint16LE();
-	const uint16 count4     = xsb.readUint16LE();
+	xsb.skip(2); // Some count
 	const uint16 bankCount  = xsb.readUint16LE();
 
 	xsb.skip(4); // Unknown
