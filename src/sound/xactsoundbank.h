@@ -297,6 +297,21 @@ protected:
 				uint16 referenceHF; ///< Reference high frequency in Hz (20 to 20000).
 			} envreverb;
 
+			struct {
+				bool use3D; // Use 3D mixbins?
+
+				uint16 angleStart;
+				uint16 angleEnd;
+
+				uint8 speakerChannelCount; // Number of channels in the speaker configuration.
+
+				struct {
+					uint8 channel; ///< Index of the channel to set the volume of.
+					float volume;  ///< Attenuation in dB (-64.0f to 0.0f).
+				} bins[4];
+
+			} mixbinspan;
+
 		} params;
 
 		Event(EventType t);

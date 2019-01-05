@@ -450,6 +450,34 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
+			case kEventTypeMixBinsPan:
+				xsb.skip(2); // Unused
+
+				if (parameterSize >= 4) {
+					event.params.mixbinspan.speakerChannelCount = xsb.readByte() ? 4 : 5;
+
+					uint32 angles = 0;
+					angles += xsb.readByte();
+					angles += xsb.readByte() << 8;
+					angles += xsb.readByte() << 16;
+
+					event.params.mixbinspan.angleStart =  angles       & 0x1FF;
+					event.params.mixbinspan.angleEnd   = (angles >> 9) & 0x1FF;
+
+					event.params.mixbinspan.use3D = (angles >> 18) & 1;
+
+					parameterSize -= 4;
+
+					for (size_t j = 0; j < ARRAYSIZE(event.params.mixbinspan.bins) && parameterSize >= 4; j++, parameterSize -= 4) {
+						event.params.mixbinspan.bins[j].channel = xsb.readByte();
+
+						xsb.skip(1); // Unknown
+
+						event.params.mixbinspan.bins[j].volume = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 0.0f);
+					}
+				}
+				break;
+
 			default:
 				xsb.skip(2); // Unknown
 				break;

@@ -156,6 +156,20 @@ XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
 			params.envreverb.referenceHF = 5000;
 			break;
 
+		case kEventTypeMixBinsPan:
+			params.mixbinspan.use3D = false;
+
+			params.mixbinspan.angleStart = 0;
+			params.mixbinspan.angleEnd   = 0;
+
+			params.mixbinspan.speakerChannelCount = 5;
+
+			for (size_t i = 0; i < ARRAYSIZE(params.mixbinspan.bins); i++) {
+				params.mixbinspan.bins[i].channel = 0;
+				params.mixbinspan.bins[i].volume  = -64.0f;
+			}
+			break;
+
 		default:
 			break;
 	}
