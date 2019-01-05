@@ -71,7 +71,8 @@ private:
 	                uint32 count, uint8 flags);
 
 	void readWaveBanks(Common::SeekableReadStream &xsb, uint32 offset, uint32 count);
-	void readCues(Common::SeekableReadStream &xsb, uint32 xsbFlags, uint32 offset, uint32 count);
+	void readCues(Common::SeekableReadStream &xsb, uint32 xsbFlags, uint32 offset, uint32 count,
+	              uint32 offsetFadeParams);
 	void readSounds(Common::SeekableReadStream &xsb, uint32 offset, uint32 count, uint32 offset3DParams);
 };
 

@@ -140,6 +140,12 @@ protected:
 		kMode3DDisabled     = 2
 	};
 
+	enum CrossfadeType {
+		kCrossfadeDisabled    = 0,
+		kCrossfadeLinear      = 1,
+		kCrossfadeLogarithmic = 2
+	};
+
 	struct Parameters3D {
 		Mode3D mode;
 
@@ -409,6 +415,17 @@ protected:
 
 	typedef std::vector<Transition> Transitions;
 
+	struct ParametersCrossfade {
+		CrossfadeType type;
+
+		uint32 duration;  ///< Fade duration in milliseconds.
+		uint8  stepCount; ///< Number of steps during the fade.
+
+		float volume; ///< Initial (fade-in) or final (fade-out) attenuation in dB (-64.0f to 0.0f).
+
+		ParametersCrossfade() : type(kCrossfadeDisabled), duration(0), stepCount(0), volume(0.0f) { }
+	};
+
 	struct Cue {
 		Common::UString name; ///< Name of the cue. Can be empty.
 
@@ -416,6 +433,9 @@ protected:
 		bool crossfade;    ///< Crossfade this cue in/out?
 		bool stopOnStarve; ///< Stop playback on starvation?
 		bool interactive;  ///< Is this an interactive cue?
+
+		ParametersCrossfade fadeIn;  ///< Parameters for a crossfade-in.
+		ParametersCrossfade fadeOut; ///< Parameters for a crossfade-out.
 
 		/** How a cue variation to be played is selected. */
 		SelectMethod variationSelectMethod;

@@ -33,6 +33,7 @@ namespace Sound {
 static const size_t k3DDefinitionSize    = 40;
 static const size_t kCueDefinitionSize   = 20;
 static const size_t kSoundDefinitionSize = 20;
+static const size_t kFadeDefinitionSize  = 16;
 
 enum XSBFlags {
 	kXSBNoCueNames = 1
@@ -171,7 +172,7 @@ void XACTSoundBank_Binary::readWaveBanks(Common::SeekableReadStream &xsb, uint32
 }
 
 void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbFlags,
-                                    uint32 offset, uint32 count) {
+                                    uint32 offset, uint32 count, uint32 offsetFadeParams) {
 
 	_cues.resize(count);
 	for (size_t i = 0; i < count; ++i) {
@@ -189,7 +190,9 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 		const uint32 offsetName = xsb.readUint32LE();
 		const uint32 offsetEntry = xsb.readUint32LE();
 
-		xsb.skip(4); // Unknown
+		const uint16 fadeParamIndex = xsb.readUint16LE();
+
+		xsb.skip(2); // Unknown
 		xsb.skip(4); // Unknown. Some kind of offset? Can be 0x07FFFFFF.
 
 		if (!(xsbFlags & kXSBNoCueNames) && (offsetName != 0xFFFFFFFF)) {
@@ -197,6 +200,20 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 
 			cue.name = Common::readString(xsb, Common::kEncodingASCII);
 			_cueMap[cue.name] = &cue;
+		}
+
+		if (cue.crossfade) {
+			xsb.seek(offsetFadeParams + fadeParamIndex * kFadeDefinitionSize);
+
+			cue.fadeIn.duration  = xsb.readUint32LE() / 10000;
+			cue.fadeIn.volume    = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 0.0f);
+			cue.fadeIn.type      = static_cast<CrossfadeType>(xsb.readByte() >> 4);
+			cue.fadeIn.stepCount = xsb.readByte();
+
+			cue.fadeOut.duration  = xsb.readUint32LE() / 10000;
+			cue.fadeOut.volume    = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 0.0f);
+			cue.fadeOut.type      = static_cast<CrossfadeType>(xsb.readByte() >> 4);
+			cue.fadeOut.stepCount = xsb.readByte();
 		}
 
 		if (offsetEntry != 0xFFFFFFFF) {
@@ -630,9 +647,9 @@ void XACTSoundBank_Binary::load(Common::SeekableReadStream &xsb) {
 
 	xsb.skip(2); // CRC. We're ignoring it (for now?)
 
-	const uint32 offsetWaveBanks = xsb.readUint32LE();
-	xsb.skip(4); // Some offset
-	const uint32 offset3DParams  = xsb.readUint32LE();
+	const uint32 offsetWaveBanks  = xsb.readUint32LE();
+	const uint32 offsetFadeParams = xsb.readUint32LE();
+	const uint32 offset3DParams   = xsb.readUint32LE();
 	xsb.skip(4); // Some offset
 
 	const uint16 xsbFlags = xsb.readUint16LE();
@@ -652,7 +669,7 @@ void XACTSoundBank_Binary::load(Common::SeekableReadStream &xsb) {
 
 
 	readWaveBanks(xsb, offsetWaveBanks, bankCount);
-	readCues(xsb, xsbFlags, offsetCues, cueCount);
+	readCues(xsb, xsbFlags, offsetCues, cueCount, offsetFadeParams);
 	readSounds(xsb, offsetSounds, soundCount, offset3DParams);
 }
 
