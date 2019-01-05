@@ -238,7 +238,7 @@ ChannelHandle XACTSoundBank::playSound(Sound &sound, SoundType soundType) {
 	return playTrack(sound.tracks[0], sound, soundType);
 }
 
-ChannelHandle XACTSoundBank::playTrack(Track &track, const Sound &UNUSED(sound), SoundType soundType) {
+ChannelHandle XACTSoundBank::playTrack(Track &track, const Sound &sound, SoundType soundType) {
 	if (track.waves.empty())
 		return ChannelHandle();
 
@@ -254,7 +254,7 @@ ChannelHandle XACTSoundBank::playTrack(Track &track, const Sound &UNUSED(sound),
 
 	Common::ScopedPtr<RewindableAudioStream> stream(bank->getWave(wave.index));
 
-	size_t loops = 1;
+	size_t loops = (sound.loopCount == kLoopCountInfinite) ? 0 : (sound.loopCount + 1);
 	for (Events::const_iterator event = track.events.begin(); event != track.events.end(); ++event)
 		if (event->type == kEventTypeLoop)
 			loops = (event->params.loop.count == kLoopCountInfinite) ? 0 : (event->params.loop.count + 1);

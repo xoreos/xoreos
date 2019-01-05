@@ -50,7 +50,8 @@ enum SoundFlags {
 };
 
 enum PlayEventFlags {
-	kPlayEventMultipleVariations = 0x04
+	kPlayEventMultipleVariations = 0x04,
+	kPlayEventLoopNewVariation   = 0x40
 };
 
 enum PitchEventFlags {
@@ -227,7 +228,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 		switch (event.type) {
 			case kEventTypePlay:
 			case kEventTypePlayComplex:
-				xsb.skip(2); // Unused
+				sound.loopCount = xsb.readUint16LE();
 
 				if (parameterSize >= 4) {
 					const uint32 indicesOrOffset = xsb.readUint32LE();
@@ -246,6 +247,8 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 
 						parameterSize -= 12;
 					}
+
+					sound.loopNewVariation = eventFlags & kPlayEventLoopNewVariation;
 
 					if (!(eventFlags & kPlayEventMultipleVariations)) {
 						track.variationSelectMethod = kSelectMethodOrdered;

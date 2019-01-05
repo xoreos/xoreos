@@ -190,6 +190,12 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			} else if (tokens[0] == "PLAY") {
 				bool isComplex = false;
 
+				if (tokens.size() > 1)
+					sound->loopCount = getNumber(tokens[1]);
+
+				if (tokens.size() > 2)
+					sound->loopNewVariation = tokens[2] == "1";
+
 				if (tokens.size() > 5) {
 					sound->pitchVariationMin = CLIP(getNumber(tokens[4]) / 100.0f, -24.0f, 24.0f);
 					sound->pitchVariationMax = CLIP(getNumber(tokens[5]) / 100.0f, -24.0f, 24.0f);

@@ -350,6 +350,9 @@ protected:
 
 		bool gainBoost; ///< Gain boost of 6dB enabled?
 
+		bool loopNewVariation; ///< Select a new wave variation on each loop?
+		uint16 loopCount;      ///< Number of times to loop the sound.
+
 		float volume; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f is maximum attenuation.
 		float pitch;  ///< Pitch change in semitones (-24.0f to 24.0f).
 
@@ -374,8 +377,8 @@ protected:
 
 		Tracks tracks; ///< All the tracks in the sound.
 
-		Sound() : categoryIndex(kCategoryNone), gainBoost(false), volume(0.0f), pitch(0.0f),
-				volumeVariationMin(0.0f), volumeVariationMax(0.0f),
+		Sound() : categoryIndex(kCategoryNone), gainBoost(false), loopNewVariation(false), loopCount(0),
+				volume(0.0f), pitch(0.0f), volumeVariationMin(0.0f), volumeVariationMax(0.0f),
 				pitchVariationMin(0.0f), pitchVariationMax(0.0f),
 				delay(0), layer(kLayerNone), priority(255), is3D(false),
 				parametricEQ(false), parametricEQGain(0.0f), parametricEQQ(1.0f), parametricEQFreq(30) {
