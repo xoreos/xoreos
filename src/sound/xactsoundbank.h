@@ -104,6 +104,9 @@ protected:
 	static const size_t kWeightMinimum = 0;     ///< Absolute lower bound on variation weights.
 	static const size_t kWeightMaximum = 10000; ///< Absolute upper bound on variation weights
 
+	/** Sound inded to denote silence or stopped. */
+	static const size_t kSoundSilence = SIZE_MAX;
+
 	/** The type of an event. */
 	enum EventType {
 		kEventTypePlay              = 0x00, ///< Just play a wave, from start to finish.

@@ -112,6 +112,9 @@ void XACTSoundBank_Binary::readCueVarations(Common::SeekableReadStream &xsb, Cue
 		variation->soundIndex = xsb.readUint16LE();
 		xsb.skip(2); // Unknown
 
+		if (variation->soundIndex == 0xFFFF)
+			variation->soundIndex = kSoundSilence;
+
 		variation->weightMin = CLIP<size_t>(xsb.readUint16LE(), kWeightMinimum, kWeightMaximum);
 		variation->weightMax = CLIP<size_t>(xsb.readUint16LE(), kWeightMinimum, kWeightMaximum);
 
@@ -152,6 +155,9 @@ void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices,
 	wave.index = soundIndex;
 	if (bankIndex < _waveBanks.size())
 		wave.bank = _waveBanks[bankIndex].name;
+
+	if (wave.index == 0xFFFF)
+		wave.index = kSoundSilence;
 
 	wave.weightMin = CLIP<size_t>(weightMin, kWeightMinimum, kWeightMaximum);
 	wave.weightMax = CLIP<size_t>(weightMax, kWeightMinimum, kWeightMaximum);
