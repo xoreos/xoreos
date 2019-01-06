@@ -57,6 +57,9 @@ public:
 
 private:
 	void load(Common::SeekableReadStream &xsb);
+
+	size_t findSound(const Common::UString &name, Cue &cue) const;
+	size_t findSound(const Common::UString &name) const;
 };
 
 } // End of namespace Sound

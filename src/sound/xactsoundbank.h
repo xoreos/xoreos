@@ -149,6 +149,31 @@ protected:
 		kCrossfadeLogarithmic = 2
 	};
 
+	enum TransitionSource {
+		kTransitionSourceImmediate    = 0x00, ///< Transition immediately.
+		kTransitionSourceMarker       = 0x01, ///< Transition on a marker within a range.
+		kTransitionSourceRandomMarker = 0x02, ///< Transition on a random marker within a range.
+		kTransitionSourceEndOfLoop    = 0x04, ///< Transition on a loop end.
+		kTransitionSourceEndOfSound   = 0x08  ///< Transition at the end of the sound.
+	};
+
+	enum TransitionDestination {
+		kTransitionDestinationBeginning     = 0x00, ///< Transition to the beginning.
+		kTransitionDestinationAlignedTime   = 0x01, ///< Transition to the same time.
+		kTransitionDestinationAlignedMarker = 0x02, ///< Transition to the same marker.
+		kTransitionDestinationMarker        = 0x04, ///< Transition to a marker within a range.
+		kTransitionDestinationRandomMarker  = 0x08  ///< Transition to a random marker within a range.
+	};
+
+	enum TransitionEffect {
+		kTransitionEffectNone                       = 0x00, ///< No effect.
+		kTransitionEffectCrossfade                  = 0x01, ///< Crossfade.
+		kTransitionEffectSound                      = 0x02, ///< Use a transitional sound.
+		kTransitionEffectSoundFadeTo                = 0x03, ///< Fade into a transitional sound.
+		kTransitionEffectSoundFadeFrom              = 0x06, ///< Fade from a transitional sound.
+		kTransitionEffectSoundFadeToFrom            = 0x07  ///< Fade into and from a transitional sound.
+	};
+
 	struct Parameters3D {
 		Mode3D mode;
 
@@ -408,12 +433,32 @@ protected:
 	typedef std::vector<CueVariation> CueVariations;
 
 	struct Transition {
-		Common::UString from;
-		Common::UString to;
+		size_t from; ///< Sound index to transition from.
+		size_t to;   ///< Sound index to transition to.
 
-		Common::UString style;
+		TransitionSource sourceWhen;           ///< When to begin transitioning.
+		TransitionDestination destinationWhen; ///< When to transition to.
 
-		Common::UString parameters[5];
+		TransitionEffect effect; ///< The effect to use during transitioning.
+
+		size_t transitionSound; ///< Sound index to use as a transition.
+
+		uint16 sourceFadeDuration;      ///< Source fade-out duration in milliseconds.
+		uint16 destinationFadeDuration; ///< Destination fade-in duration in milliseconds.
+
+		uint32 sourceMarkerLow;  ///< Lower bound of a marker in the source.
+		uint32 sourceMarkerHigh; ///< Upper bound of a marker in the source.
+
+		uint32 destinationMarkerLow;  ///< Lower bound of a marker in the destination.
+		uint32 destinationMarkerHigh; ///< Upper bound of a marker in the destination.
+
+		Transition() :
+				from(kSoundSilence), to(kSoundSilence),
+				sourceWhen(kTransitionSourceImmediate), destinationWhen(kTransitionDestinationBeginning),
+				effect(kTransitionEffectNone), transitionSound(kSoundSilence),
+				sourceFadeDuration(0), destinationFadeDuration(0),
+				sourceMarkerLow(0), sourceMarkerHigh(0), destinationMarkerLow(0), destinationMarkerHigh(0) {
+		}
 	};
 
 	typedef std::vector<Transition> Transitions;
@@ -444,9 +489,14 @@ protected:
 		SelectMethod variationSelectMethod;
 
 		CueVariations variations; ///< All the cue variations in the cue.
+
+		uint8 transitionTrigger;
 		Transitions transitions;
 
-		Cue() : sequential(false), crossfade(false), stopOnStarve(false), interactive(false) { }
+		Cue() :
+				sequential(false), crossfade(false), stopOnStarve(false), interactive(false),
+				transitionTrigger(0) {
+		}
 	};
 
 	typedef std::vector<WaveBank> WaveBanks;

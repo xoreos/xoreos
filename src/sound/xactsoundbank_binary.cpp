@@ -199,7 +199,13 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 		const uint16 fadeParamIndex = xsb.readUint16LE();
 
 		xsb.skip(2); // Unknown
-		xsb.skip(4); // Unknown. Some kind of offset? Can be 0x07FFFFFF.
+
+		uint32 offsetTransitions = 0;
+		offsetTransitions += xsb.readByte();
+		offsetTransitions += xsb.readByte() <<  8;
+		offsetTransitions += xsb.readByte() << 16;
+
+		cue.transitionTrigger = xsb.readByte() >> 3;
 
 		if (!(xsbFlags & kXSBNoCueNames) && (offsetName != 0xFFFFFFFF)) {
 			xsb.seek(offsetName);
@@ -233,6 +239,48 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 			cue.variations.back().soundIndex = soundIndex;
 			cue.variations.back().weightMin = kWeightMinimum;
 			cue.variations.back().weightMax = kWeightMaximum;
+		}
+
+		if (cue.interactive && (offsetTransitions != 0x00FFFFFF)) {
+			xsb.seek(offsetTransitions);
+
+			const uint32 transitionCount = xsb.readUint32LE();
+			cue.transitions.resize(transitionCount);
+
+			size_t transFrom = kSoundSilence;
+			size_t transTo   = 0;
+
+			for (Transitions::iterator t = cue.transitions.begin(); t != cue.transitions.end(); ++t) {
+				t->from = transFrom;
+				t->to   = transTo;
+
+				const uint16 transFlags = xsb.readUint16LE();
+
+				t->sourceWhen      = static_cast<TransitionSource>     ((transFlags     ) & 0xF);
+				t->destinationWhen = static_cast<TransitionDestination>( transFlags >> 7  & 0xF);
+				t->effect          = static_cast<TransitionEffect>     ((transFlags >> 4) & 0x7);
+
+				t->transitionSound = xsb.readUint16LE();
+				if (t->transitionSound == 0xFFFF)
+					t->transitionSound = kSoundSilence;
+
+				t->sourceFadeDuration      = xsb.readUint16LE();
+				t->destinationFadeDuration = xsb.readUint16LE();
+
+				t->sourceMarkerLow  = xsb.readUint32LE();
+				t->sourceMarkerHigh = xsb.readUint32LE();
+
+				t->destinationMarkerLow  = xsb.readUint32LE();
+				t->destinationMarkerHigh = xsb.readUint32LE();
+
+				if (transFrom == ++transTo)
+					transTo++;
+
+				if (transTo >= cue.variations.size()) {
+					transFrom++;
+					transTo = kSoundSilence;
+				}
+			}
 		}
 	}
 }

@@ -71,6 +71,28 @@ static size_t getAmount(Common::StreamTokenizer &tokenizer, Common::SeekableRead
 	return getAmount(tokenizer.getToken(stream));
 }
 
+size_t XACTSoundBank_ASCII::findSound(const Common::UString &name, Cue &cue) const {
+	if (name == "0")
+		return kSoundSilence;
+
+	for (size_t i = 0; i < cue.variations.size(); i++)
+		if (cue.variations[i].soundName == name)
+			return i;
+
+	return kSoundSilence;
+}
+
+size_t XACTSoundBank_ASCII::findSound(const Common::UString &name) const {
+	if (name == "0")
+		return kSoundSilence;
+
+	SoundMap::const_iterator it = _soundMap.find(name);
+	if (it == _soundMap.end())
+		return kSoundSilence;
+
+	return it->second - _sounds.data();
+}
+
 void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 	Common::StreamTokenizer tokenizer(Common::StreamTokenizer::kRuleIgnoreAll);
 	tokenizer.addSeparator(' ');
@@ -441,19 +463,33 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 		cue->transitions.resize(transitionCount);
 		for (Transitions::iterator transition = cue->transitions.begin(); transition != cue->transitions.end(); ++transition) {
-			tokenizer.getTokens(xsb, tokens, 8);
+			tokenizer.getTokens(xsb, tokens, 2);
 			tokenizer.nextChunk(xsb);
 
-			transition->from = tokens[0];
-			transition->to = tokens[1];
+			transition->from = findSound(tokens[0], *cue);
+			transition->to   = findSound(tokens[1], *cue);
 
-			transition->style = tokens[3];
+			if (tokens.size() > 2)
+				transition->transitionSound = findSound(tokens[2]);
 
-			transition->parameters[0] = tokens[2];
-			transition->parameters[1] = tokens[4];
-			transition->parameters[2] = tokens[5];
-			transition->parameters[3] = tokens[6];
-			transition->parameters[4] = tokens[7];
+			if (tokens.size() > 3) {
+				if      (tokens[3] == "Crossfade")
+					transition->effect = kTransitionEffectCrossfade;
+				else if (tokens[3] == "Sound")
+					transition->effect = kTransitionEffectSoundFadeTo;
+			}
+
+			// The 4th token might be destinationWhen, but it's always 0 in Jade Empire
+
+			if (tokens.size() > 5) {
+				if (tokens[5] == "End")
+					transition->sourceWhen = kTransitionSourceEndOfSound;
+			}
+
+			if (tokens.size() > 7) {
+				transition->sourceFadeDuration      = getNumber(tokens[6]);
+				transition->destinationFadeDuration = getNumber(tokens[7]);
+			}
 		}
 	}
 }
