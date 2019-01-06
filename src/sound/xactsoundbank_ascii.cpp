@@ -410,7 +410,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			tokenizer.getTokens(xsb, tokens, 4);
 			tokenizer.nextChunk(xsb);
 
-			variation.soundName = tokens[1];
+			variation.soundName = tokens[0];
 			variation.soundIndex = getNumber(tokens[1]);
 
 			if (cue->variationSelectMethod == kSelectMethodParameter) {
