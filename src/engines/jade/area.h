@@ -28,8 +28,11 @@
 #include <list>
 #include <map>
 
+#include "src/common/scopedptr.h"
 #include "src/common/ptrlist.h"
 #include "src/common/mutex.h"
+
+#include "src/sound/types.h"
 
 #include "src/aurora/types.h"
 
@@ -39,6 +42,10 @@
 #include "src/engines/jade/arealayout.h"
 #include "src/engines/jade/module.h"
 #include "src/engines/jade/object.h"
+
+namespace Sound {
+	class XACTSoundBank;
+}
 
 namespace Engines {
 
@@ -64,6 +71,11 @@ public:
 	void show();
 	void hide();
 
+	// Music/Sound
+
+	void playMusic();
+	void stopMusic();
+
 	// Events
 
 	/** Add a single event for consideration into the area event queue. */
@@ -86,6 +98,11 @@ private:
 
 	Module *_module; ///< The module this area is in.
 
+	Common::ScopedPtr<Sound::XACTSoundBank> _musicBank;
+	Sound::ChannelHandle _music;
+
+	int32 _ambientMusicState;
+	int32 _combatMusicState;
 
 	ObjectList _objects;   ///< List of all objects in the area.
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.

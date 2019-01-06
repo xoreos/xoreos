@@ -27,6 +27,9 @@
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
+#include "src/sound/sound.h"
+#include "src/sound/xactsoundbank.h"
+
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
@@ -81,6 +84,11 @@ void Area::load() {
 
 	Aurora::GFF3File sav(_resRef, Aurora::kFileTypeSAV, MKTAG('S', 'A', 'V', ' '));
 	loadSAV(sav.getTopLevel());
+
+	try {
+		_musicBank.reset(Sound::XACTSoundBank::load("musicbank"));
+	} catch (...) {
+	}
 }
 
 void Area::clear() {
@@ -110,6 +118,8 @@ void Area::show() {
 	GfxMan.unlockFrame();
 
 	AreaLayout::show();
+
+	playMusic();
 }
 
 void Area::hide() {
@@ -117,6 +127,8 @@ void Area::hide() {
 		return;
 
 	removeFocus();
+
+	stopMusic();
 
 	GfxMan.lockFrame();
 
@@ -129,8 +141,35 @@ void Area::hide() {
 	AreaLayout::hide();
 }
 
+void Area::playMusic() {
+	if (!_musicBank || (_ambientMusicState <= 0))
+		return;
+
+	try {
+		_music = _musicBank->playCue(0, _ambientMusicState, Sound::kSoundTypeMusic);
+		SoundMan.startChannel(_music);
+
+	} catch (...) {
+			Common::exceptionDispatcherWarning();
+	}
+}
+
+void Area::stopMusic() {
+	SoundMan.stopChannel(_music);
+}
+
 void Area::loadARE(const Aurora::GFF3Struct &are) {
 	_layout = are.getString("Layout");
+
+	if (are.hasField("SoundEnvironment")) {
+		const Aurora::GFF3List &soundEnvs = are.getList("SoundEnvironment");
+		if (!soundEnvs.empty() && soundEnvs.front()) {
+			const Aurora::GFF3Struct &soundEnv = *soundEnvs.front();
+
+			_ambientMusicState = soundEnv.getSint("MusicState");
+			_combatMusicState  = soundEnv.getSint("CombatMusicState");
+		}
+	}
 
 	// Scripts
 	readScripts(are);
