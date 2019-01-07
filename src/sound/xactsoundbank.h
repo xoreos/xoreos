@@ -477,7 +477,7 @@ protected:
 	struct Cue {
 		Common::UString name; ///< Name of the cue. Can be empty.
 
-		bool sequential;   ///< Cue for sequential playback?
+		bool sequential;   ///< Queue for sequential playback?
 		bool crossfade;    ///< Crossfade this cue in/out?
 		bool stopOnStarve; ///< Stop playback on starvation?
 		bool interactive;  ///< Is this an interactive cue?
