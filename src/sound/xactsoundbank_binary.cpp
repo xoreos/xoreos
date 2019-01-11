@@ -30,10 +30,10 @@
 
 namespace Sound {
 
-static const size_t k3DDefinitionSize    = 40;
-static const size_t kCueDefinitionSize   = 20;
-static const size_t kSoundDefinitionSize = 20;
-static const size_t kFadeDefinitionSize  = 16;
+static constexpr size_t k3DDefinitionSize    = 40;
+static constexpr size_t kCueDefinitionSize   = 20;
+static constexpr size_t kSoundDefinitionSize = 20;
+static constexpr size_t kFadeDefinitionSize  = 16;
 
 enum XSBFlags {
 	kXSBNoCueNames = 1
@@ -605,7 +605,7 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 
 	// Complex
 
-	static const size_t kTrackDefinitionSize = 4;
+	static constexpr size_t kTrackDefinitionSize = 4;
 
 	for (size_t i = 0; i < count; ++i) {
 		Track &track = sound.tracks[i];
@@ -689,7 +689,7 @@ void XACTSoundBank_Binary::readSounds(Common::SeekableReadStream &xsb, uint32 of
 }
 
 void XACTSoundBank_Binary::load(Common::SeekableReadStream &xsb) {
-	static const uint32 kXSBID = MKTAG('S', 'D', 'B', 'K');
+	static constexpr uint32 kXSBID = MKTAG('S', 'D', 'B', 'K');
 
 	const uint32 id = xsb.readUint32BE();
 	if (id != kXSBID)

@@ -95,17 +95,17 @@ public:
 
 
 protected:
-	static const uint8 kCategoryNone = 0xFF; ///< No category assigned.
-	static const uint8 kLayerNone    = 0xFF; ///< No layer assigned.
+	static constexpr uint8 kCategoryNone = 0xFF; ///< No category assigned.
+	static constexpr uint8 kLayerNone    = 0xFF; ///< No layer assigned.
 
 	/** Special value to mean "loop forever". */
-	static const uint16 kLoopCountInfinite = 0xFFFF;
+	static constexpr uint16 kLoopCountInfinite = 0xFFFF;
 
-	static const size_t kWeightMinimum = 0;     ///< Absolute lower bound on variation weights.
-	static const size_t kWeightMaximum = 10000; ///< Absolute upper bound on variation weights
+	static constexpr size_t kWeightMinimum = 0;     ///< Absolute lower bound on variation weights.
+	static constexpr size_t kWeightMaximum = 10000; ///< Absolute upper bound on variation weights
 
 	/** Sound inded to denote silence or stopped. */
-	static const size_t kSoundSilence = SIZE_MAX;
+	static constexpr size_t kSoundSilence = SIZE_MAX;
 
 	/** The type of an event. */
 	enum EventType {

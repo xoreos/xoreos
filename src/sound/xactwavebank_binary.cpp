@@ -140,7 +140,7 @@ struct Segment {
 };
 
 void XACTWaveBank_Binary::load(Common::SeekableReadStream &xwb) {
-	static const uint32 kXWBID = MKTAG('W', 'B', 'N', 'D');
+	static constexpr uint32 kXWBID = MKTAG('W', 'B', 'N', 'D');
 
 	const uint32 id = xwb.readUint32BE();
 	if (id != kXWBID)
