@@ -143,11 +143,11 @@ AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wunused-local-typedefs], [-Wno-unus
 AC_SUBST(WARN)
 
 dnl C++ dialect
-AC_ARG_WITH([std], [AS_HELP_STRING([--with-std], [Compile with specifying the C++ standard to follow @<:@default=no@:>@])], [], [with_std=no])
+AC_ARG_WITH([std], [AS_HELP_STRING([--without-std], [Compile without specifying the C++ standard to follow @<:@default=no@:>@])], [], [with_std=yes])
 
 STD=""
 if test "x$with_std" = "xyes"; then
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [STD], [-std=c++03])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [STD], [-std=c++11])
 fi
 
 AC_SUBST(STD)
