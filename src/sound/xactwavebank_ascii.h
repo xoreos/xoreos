@@ -58,15 +58,15 @@ public:
 	~XACTWaveBank_ASCII() { }
 
 	/** Return the internal name of the WaveBank. */
-	const Common::UString &getName() const { return _name; }
+	const Common::UString &getName() const override { return _name; }
 	/** Is this WaveBank rating for streaming, or in-memory play? */
-	bool isStreaming() const { return _streaming; }
+	bool isStreaming() const override { return _streaming; }
 
 	/** Return the number of wave files. */
-	size_t getWaveCount() const;
+	size_t getWaveCount() const override;
 
 	/** Return the audio stream of a wave. */
-	RewindableAudioStream *getWave(size_t index) const;
+	RewindableAudioStream *getWave(size_t index) const override;
 
 private:
 	struct Wave {

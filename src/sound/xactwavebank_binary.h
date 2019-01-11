@@ -62,15 +62,15 @@ public:
 	~XACTWaveBank_Binary() { }
 
 	/** Return the internal name of the WaveBank. */
-	const Common::UString &getName() const { return _name; }
+	const Common::UString &getName() const override { return _name; }
 	/** Is this WaveBank rating for streaming, or in-memory play? */
-	bool isStreaming() const;
+	bool isStreaming() const override;
 
 	/** Return the number of wave files. */
-	size_t getWaveCount() const;
+	size_t getWaveCount() const override;
 
 	/** Return the audio stream of a wave. */
-	RewindableAudioStream *getWave(size_t index) const;
+	RewindableAudioStream *getWave(size_t index) const override;
 
 private:
 	/** The codec of a wave within the wavebank. */
