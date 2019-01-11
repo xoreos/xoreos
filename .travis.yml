@@ -48,7 +48,7 @@ matrix:
 before_install:
   # Installing macOS dependencies, using brew
   - if eval [ $is_valid_osx ]; then brew update; fi
-  - if eval [ $is_valid_osx ]; then brew install sdl2 openal-soft freetype mad faad2 libvorbis xvid zlib xz libxml2; fi
+  - if eval [ $is_valid_osx ]; then brew install sdl2 openal-soft freetype mad faad2 libvorbis xvid libvpx zlib xz libxml2; fi
   # Installing Linux dependencies, using apt-get
   #
   # Here, we're also installing a new gcc, for C++11 support.
@@ -64,7 +64,7 @@ before_install:
   - if eval [ $is_valid_linux ]; then sudo apt-get update -qq; fi
   - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 install build-essential libcurl4 make autoconf automake libtool dpkg dpkg-dev gcc g++ libc6-dev libc6 binutils binutils-dev; fi
   - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 remove libgl1-mesa-glx libgl1-mesa-dev; fi
-  - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 install libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libgl1 libgl-dev zlib1g-dev liblzma-dev libxml2-dev; fi
+  - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 install libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libvpx-dev libgl1 libgl-dev zlib1g-dev liblzma-dev libxml2-dev; fi
 
 script:
   # autotools build system: ./autogen.sh && ./configure && make && make check
