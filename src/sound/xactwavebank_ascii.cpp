@@ -24,9 +24,10 @@
 
 #include <cassert>
 
+#include <memory>
+
 #include "src/common/error.h"
 #include "src/common/strutil.h"
-#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 #include "src/common/filepath.h"
 #include "src/common/streamtokenizer.h"
@@ -42,7 +43,7 @@ namespace Sound {
 XACTWaveBank_ASCII::XACTWaveBank_ASCII(Common::SeekableReadStream *xwb) {
 	assert(xwb);
 
-	Common::ScopedPtr<Common::SeekableReadStream> stream(xwb);
+	std::unique_ptr<Common::SeekableReadStream> stream(xwb);
 
 	load(*xwb);
 }
@@ -59,7 +60,7 @@ RewindableAudioStream *XACTWaveBank_ASCII::getWave(size_t index) const {
 
 	const Wave &wave = _waves[index];
 
-	Common::ScopedPtr<Common::SeekableReadStream> dataStream(ResMan.getResource(wave.name, Aurora::kFileTypeOGG));
+	std::unique_ptr<Common::SeekableReadStream> dataStream(ResMan.getResource(wave.name, Aurora::kFileTypeOGG));
 	if (!dataStream)
 		throw Common::Exception("XACTWaveBank_ASCII::getWave(): No such resource \"%s\"", wave.name.c_str());
 

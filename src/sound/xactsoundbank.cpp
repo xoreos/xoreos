@@ -22,7 +22,6 @@
  *  An abstract XACT SoundBank, containing sound files.
  */
 
-#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 
 #include "src/aurora/resman.h"
@@ -30,16 +29,10 @@
 #include "src/sound/xactsoundbank.h"
 #include "src/sound/xactsoundbank_ascii.h"
 #include "src/sound/xactsoundbank_binary.h"
-#include "src/sound/xactwavebank.h"
 #include "src/sound/audiostream.h"
 #include "src/sound/sound.h"
 
 namespace Sound {
-
-XACTSoundBank::WaveBank::~WaveBank() {
-	delete bank;
-}
-
 
 XACTSoundBank::Event::Event(EventType t) : type(t) {
 	switch (type) {
@@ -178,9 +171,7 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 
 XACTSoundBank *XACTSoundBank::load(const Common::UString &name) {
 	try {
-		Common::ScopedPtr<Common::SeekableReadStream> stream;
-
-		stream.reset(ResMan.getResource(name, Aurora::kFileTypeXSB));
+		std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(name, Aurora::kFileTypeXSB));
 		if (stream)
 			return new XACTSoundBank_Binary(*stream);
 
@@ -250,9 +241,9 @@ ChannelHandle XACTSoundBank::playTrack(Track &track, const Sound &sound, SoundTy
 	if (wave.bank.empty())
 		return ChannelHandle();
 
-	const XACTWaveBank *bank = getWaveBank(wave.bank);
+	const XACTWaveBank &bank = getWaveBank(wave.bank);
 
-	Common::ScopedPtr<RewindableAudioStream> stream(bank->getWave(wave.index));
+	std::unique_ptr<RewindableAudioStream> stream(bank.getWave(wave.index));
 
 	size_t loops = (sound.loopCount == kLoopCountInfinite) ? 0 : (sound.loopCount + 1);
 	for (auto &event : track.events)
@@ -265,15 +256,15 @@ ChannelHandle XACTSoundBank::playTrack(Track &track, const Sound &sound, SoundTy
 	return SoundMan.playAudioStream(new LoopingAudioStream(stream.release(), loops), soundType);
 }
 
-const XACTWaveBank *XACTSoundBank::getWaveBank(const Common::UString &name) {
+const XACTWaveBank &XACTSoundBank::getWaveBank(const Common::UString &name) {
 	WaveBankMap::iterator bank = _waveBankMap.find(name);
 	if (bank == _waveBankMap.end())
 		throw Common::Exception("XACTSoundBank::getWaveBank(): Don't know wave bank \"%s\"", name.c_str());
 
 	if (!bank->second->bank)
-		bank->second->bank = XACTWaveBank::load(name);
+		bank->second->bank.reset(XACTWaveBank::load(name));
 
-	return bank->second->bank;
+	return *bank->second->bank.get();
 }
 
 } // End of namespace Sound

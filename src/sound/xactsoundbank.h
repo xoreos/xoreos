@@ -25,18 +25,17 @@
 #ifndef SOUND_XACTSOUNDBANK_H
 #define SOUND_XACTSOUNDBANK_H
 
+#include <memory>
 #include <vector>
 #include <map>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/sound/types.h"
+#include "src/sound/xactwavebank.h"
 
 namespace Sound {
-
-class XACTWaveBank;
 
 /** An abstract XACT SoundBank interface.
  *
@@ -200,10 +199,9 @@ protected:
 	struct WaveBank {
 		Common::UString name; ///< File name, without extension.
 
-		XACTWaveBank *bank { nullptr };
+		std::unique_ptr<XACTWaveBank> bank;
 
 		WaveBank(const Common::UString &n = "") : name(n) { }
-		~WaveBank();
 	};
 
 	/** An event within a sound track. */
@@ -491,7 +489,7 @@ protected:
 	CueMap _cueMap;
 
 
-	const XACTWaveBank *getWaveBank(const Common::UString &name);
+	const XACTWaveBank &getWaveBank(const Common::UString &name);
 
 	ChannelHandle playCue(Cue &cue, size_t variation, SoundType soundType);
 	ChannelHandle playSound(Sound &sound, SoundType soundType);

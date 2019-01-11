@@ -103,7 +103,7 @@ RewindableAudioStream *XACTWaveBank_Binary::getWave(size_t index) const {
 	const Wave &wave = _waves[index];
 
 	_xwb->seek(wave.offset);
-	Common::ScopedPtr<Common::SeekableReadStream> dataStream(_xwb->readStream(wave.size));
+	std::unique_ptr<Common::SeekableReadStream> dataStream(_xwb->readStream(wave.size));
 
 	switch (wave.codec) {
 		case Codec::PCM:

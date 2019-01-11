@@ -26,8 +26,8 @@
 #define SOUND_XACTWAVEBANK_BINARY_H
 
 #include <vector>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
 
@@ -101,7 +101,7 @@ private:
 	using Waves = std::vector<Wave>;
 
 
-	Common::ScopedPtr<Common::SeekableReadStream> _xwb;
+	std::unique_ptr<Common::SeekableReadStream> _xwb;
 
 	Common::UString _name; ///< The internal name of this wavebank. */
 	uint32 _flags;
