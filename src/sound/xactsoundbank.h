@@ -175,47 +175,41 @@ protected:
 	};
 
 	struct Parameters3D {
-		Mode3D mode;
+		Mode3D mode { kMode3DNormal };
 
-		uint16 coneInsideAngle;   ///< Angle of the inside cone.
-		uint16 coneOutsideAngle;  ///< Angle of the outside cone.
-		float  coneOutsideVolume; ///< Attenuation in dB (-64.0f to 0.0f) for sounds outside the ouside angle.
+		uint16 coneInsideAngle  { 360 }; ///< Angle of the inside cone.
+		uint16 coneOutsideAngle { 360 }; ///< Angle of the outside cone.
 
-		float distanceMin; ///< Minimum distance.
-		float distanceMax; ///< Maximum distance.
+		/** Attenuation in dB (-64.0f to 0.0f) for sounds outside the ouside angle. */
+		float coneOutsideVolume { 0.0f };
 
-		float distanceFactor; ///< Factor that scales the distance of the sound.
-		float rollOffFactor;  ///< Speed of the roll-off attenuation.
-		float dopplerFactor;  ///< Increase or decrease the doppler effect.
+		float distanceMin {      1.0f }; ///< Minimum distance.
+		float distanceMax { 100000.0f }; ///< Maximum distance.
+
+		float distanceFactor { 1.0f }; ///< Factor that scales the distance of the sound.
+		float rollOffFactor  { 1.0f }; ///< Speed of the roll-off attenuation.
+		float dopplerFactor  { 1.0f }; ///< Increase or decrease the doppler effect.
 
 		std::vector<float> rollOffCurve; ///< Custom roll-off curve.
 
-		float volumeLFE;   ///< Low-frequency effect volume in dB (-64.0f to 0.0f).
-		float volumeI3DL2; ///< I3DL2 reverb volume in dB (-64.0f to 0.0f).
-
-		Parameters3D() :
-				mode(kMode3DNormal),
-				coneInsideAngle(360), coneOutsideAngle(360), coneOutsideVolume(0.0f),
-				distanceMin(1.0f), distanceMax(100000.0f),
-				distanceFactor(1.0f), rollOffFactor(1.0f), dopplerFactor(1.0f),
-				volumeLFE(0.0f), volumeI3DL2(0.0f) {
-		}
+		float volumeLFE   { 0.0f }; ///< Low-frequency effect volume in dB (-64.0f to 0.0f).
+		float volumeI3DL2 { 0.0f }; ///< I3DL2 reverb volume in dB (-64.0f to 0.0f).
 	};
 
 	/** A reference to an XACT wavebank used by the soundbank. */
 	struct WaveBank {
 		Common::UString name; ///< File name, without extension.
 
-		XACTWaveBank *bank;
+		XACTWaveBank *bank { nullptr };
 
-		WaveBank(const Common::UString &n = "") : name(n), bank(0) { }
+		WaveBank(const Common::UString &n = "") : name(n) { }
 		~WaveBank();
 	};
 
 	/** An event within a sound track. */
 	struct Event {
 		EventType type;
-		uint32 timestamp; ///< Timestamp of the event, in milliseconds.
+		uint32 timestamp { 0 }; ///< Timestamp of the event, in milliseconds.
 
 		union {
 			struct {
@@ -355,11 +349,11 @@ protected:
 	struct WaveVariation {
 		Common::UString name; ///< Name of the wave. Can be empty.
 
-		Common::UString bank; ///< Name of the wavebank the wave is in.
-		size_t index;         ///< Index into the wavebank to the wave.
+		Common::UString bank;           ///< Name of the wavebank the wave is in.
+		size_t index { kSoundSilence }; ///< Index into the wavebank to the wave.
 
-		size_t weightMin; ///< Lower bound of this variation's weight.
-		size_t weightMax; ///< Upper bound of this variation's weight.
+		size_t weightMin { kWeightMinimum }; ///< Lower bound of this variation's weight.
+		size_t weightMax { kWeightMaximum }; ///< Upper bound of this variation's weight.
 	};
 
 	typedef std::vector<Event> Events;
@@ -368,7 +362,7 @@ protected:
 	/** A track within a sound. */
 	struct Track {
 		/** How a wave variation to be played is selected. */
-		SelectMethod variationSelectMethod;
+		SelectMethod variationSelectMethod { kSelectMethodOrdered };
 
 		Events events;        ///< All the events in the track.
 		WaveVariations waves; ///< All the waves in the track.
@@ -379,124 +373,102 @@ protected:
 	struct Sound {
 		Common::UString name; ///< Name of the sound. Can be empty.
 
-		Common::UString categoryName; ///< Name of the category. Can be empty.
-		uint8 categoryIndex;          ///< Index of the category.
+		Common::UString categoryName;          ///< Name of the category. Can be empty.
+		uint8 categoryIndex { kCategoryNone }; ///< Index of the category.
 
-		bool gainBoost; ///< Gain boost of 6dB enabled?
+		bool gainBoost { false }; ///< Gain boost of 6dB enabled?
 
-		bool loopNewVariation; ///< Select a new wave variation on each loop?
-		uint16 loopCount;      ///< Number of times to loop the sound.
+		bool loopNewVariation { false }; ///< Select a new wave variation on each loop?
+		uint16 loopCount { 0 };          ///< Number of times to loop the sound.
 
-		float volume; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f is maximum attenuation.
-		float pitch;  ///< Pitch change in semitones (-24.0f to 24.0f).
+		float volume { 0.0f }; ///< Volume attenuation in dB. 0.0f means full volume, -64.0f maximum attenuation.
+		float pitch  { 0.0f }; ///< Pitch change in semitones (-24.0f to 24.0f).
 
-		float volumeVariationMin; ///< Volume variation lower bound in dB (-64.0f to 64.0f).
-		float volumeVariationMax; ///< Volume variation upper bound in dB (-64.0f to 64.0f).
+		float volumeVariationMin { 0.0f }; ///< Volume variation lower bound in dB (-64.0f to 64.0f).
+		float volumeVariationMax { 0.0f }; ///< Volume variation upper bound in dB (-64.0f to 64.0f).
 
-		float pitchVariationMin; ///< Pitch variation lower bound in semitones (-24.0f to 24.0f).
-		float pitchVariationMax; ///< Pitch variation upper bound in semitones (-24.0f to 24.0f).
+		float pitchVariationMin { 0.0f }; ///< Pitch variation lower bound in semitones (-24.0f to 24.0f).
+		float pitchVariationMax { 0.0f }; ///< Pitch variation upper bound in semitones (-24.0f to 24.0f).
 
-		bool linger; ///< Should the sound linger, if it's in an interactive cue?
+		bool linger { false }; ///< Should the sound linger, if it's in an interactive cue?
 
-		uint16 delay; ///< Maximum variable delay, in milliseconds.
+		uint16 delay { 0 }; ///< Maximum variable delay, in milliseconds.
 
-		uint8 layer;
-		uint8 priority;
+		uint8 layer { kLayerNone };
+		uint8 priority { 255 };
 
-		bool is3D;
+		bool is3D { false };
 		Parameters3D params3D;
 
-		bool parametricEQ;       ///< Is the parametric EQ enabled?
-		float parametricEQGain;  ///< Parametric EQ gain (-1.0f to 4.0f).
-		float parametricEQQ;     ///< Parametric EQ Q coefficient (1.0f/2^0 to 1.0f/2^7 in 8 exponential steps).
-		uint16 parametricEQFreq; ///< Parametric EQ frequency (30 to 8000).
+		bool parametricEQ { false};      ///< Is the parametric EQ enabled?
+		float parametricEQGain { 0.0f }; ///< Parametric EQ gain (-1.0f to 4.0f).
+		float parametricEQQ { 1.0f };    ///< Parametric EQ Q coefficient (1.0f/2^0 to 1.0f/2^7 in 8 exponential steps).
+		uint16 parametricEQFreq { 30 };  ///< Parametric EQ frequency (30 to 8000).
 
 		Tracks tracks; ///< All the tracks in the sound.
-
-		Sound() : categoryIndex(kCategoryNone), gainBoost(false), loopNewVariation(false), loopCount(0),
-				volume(0.0f), pitch(0.0f), volumeVariationMin(0.0f), volumeVariationMax(0.0f),
-				pitchVariationMin(0.0f), pitchVariationMax(0.0f), linger(false),
-				delay(0), layer(kLayerNone), priority(255), is3D(false),
-				parametricEQ(false), parametricEQGain(0.0f), parametricEQQ(1.0f), parametricEQFreq(30) {
-		}
 	};
 
 	/** A cue variation within a cue. */
 	struct CueVariation {
-		Common::UString soundName; ///< Name of the referenced sound. Can be empty.
-		size_t soundIndex;         ///< Index of the referenced sound.
+		Common::UString soundName;           ///< Name of the referenced sound. Can be empty.
+		size_t soundIndex { kSoundSilence }; ///< Index of the referenced sound.
 
-		size_t weightMin; ///< Lower bound of this variation's weight.
-		size_t weightMax; ///< Upper bound of this variation's weight.
+		size_t weightMin { kWeightMinimum }; ///< Lower bound of this variation's weight.
+		size_t weightMax { kWeightMaximum }; ///< Upper bound of this variation's weight.
 	};
 
 	typedef std::vector<CueVariation> CueVariations;
 
 	struct Transition {
-		size_t from; ///< Sound index to transition from.
-		size_t to;   ///< Sound index to transition to.
+		size_t from { kSoundSilence }; ///< Sound index to transition from.
+		size_t to   { kSoundSilence }; ///< Sound index to transition to.
 
-		TransitionSource sourceWhen;           ///< When to begin transitioning.
-		TransitionDestination destinationWhen; ///< When to transition to.
+		TransitionSource sourceWhen { kTransitionSourceImmediate }; ///< When to begin transitioning.
+		TransitionDestination destinationWhen { kTransitionDestinationBeginning }; ///< When to transition to.
 
-		TransitionEffect effect; ///< The effect to use during transitioning.
+		TransitionEffect effect { kTransitionEffectNone }; ///< The effect to use during transitioning.
 
-		size_t transitionSound; ///< Sound index to use as a transition.
+		size_t transitionSound { kSoundSilence }; ///< Sound index to use as a transition.
 
-		uint16 sourceFadeDuration;      ///< Source fade-out duration in milliseconds.
-		uint16 destinationFadeDuration; ///< Destination fade-in duration in milliseconds.
+		uint16 sourceFadeDuration      { 0 }; ///< Source fade-out duration in milliseconds.
+		uint16 destinationFadeDuration { 0 }; ///< Destination fade-in duration in milliseconds.
 
-		uint32 sourceMarkerLow;  ///< Lower bound of a marker in the source.
-		uint32 sourceMarkerHigh; ///< Upper bound of a marker in the source.
+		uint32 sourceMarkerLow  { 0 }; ///< Lower bound of a marker in the source.
+		uint32 sourceMarkerHigh { 0 }; ///< Upper bound of a marker in the source.
 
-		uint32 destinationMarkerLow;  ///< Lower bound of a marker in the destination.
-		uint32 destinationMarkerHigh; ///< Upper bound of a marker in the destination.
-
-		Transition() :
-				from(kSoundSilence), to(kSoundSilence),
-				sourceWhen(kTransitionSourceImmediate), destinationWhen(kTransitionDestinationBeginning),
-				effect(kTransitionEffectNone), transitionSound(kSoundSilence),
-				sourceFadeDuration(0), destinationFadeDuration(0),
-				sourceMarkerLow(0), sourceMarkerHigh(0), destinationMarkerLow(0), destinationMarkerHigh(0) {
-		}
+		uint32 destinationMarkerLow  { 0 }; ///< Lower bound of a marker in the destination.
+		uint32 destinationMarkerHigh { 0 }; ///< Upper bound of a marker in the destination.
 	};
 
 	typedef std::vector<Transition> Transitions;
 
 	struct ParametersCrossfade {
-		CrossfadeType type;
+		CrossfadeType type { kCrossfadeDisabled };
 
-		uint32 duration;  ///< Fade duration in milliseconds.
-		uint8  stepCount; ///< Number of steps during the fade.
+		uint32 duration  { 0 }; ///< Fade duration in milliseconds.
+		uint8  stepCount { 0 }; ///< Number of steps during the fade.
 
-		float volume; ///< Initial (fade-in) or final (fade-out) attenuation in dB (-64.0f to 0.0f).
-
-		ParametersCrossfade() : type(kCrossfadeDisabled), duration(0), stepCount(0), volume(0.0f) { }
+		float volume { 0.0f }; ///< Initial (fade-in) or final (fade-out) attenuation in dB (-64.0f to 0.0f).
 	};
 
 	struct Cue {
 		Common::UString name; ///< Name of the cue. Can be empty.
 
-		bool sequential;   ///< Queue for sequential playback?
-		bool crossfade;    ///< Crossfade this cue in/out?
-		bool stopOnStarve; ///< Stop playback on starvation?
-		bool interactive;  ///< Is this an interactive cue?
+		bool sequential   { false }; ///< Queue for sequential playback?
+		bool crossfade    { false }; ///< Crossfade this cue in/out?
+		bool stopOnStarve { false }; ///< Stop playback on starvation?
+		bool interactive  { false }; ///< Is this an interactive cue?
 
 		ParametersCrossfade fadeIn;  ///< Parameters for a crossfade-in.
 		ParametersCrossfade fadeOut; ///< Parameters for a crossfade-out.
 
 		/** How a cue variation to be played is selected. */
-		SelectMethod variationSelectMethod;
+		SelectMethod variationSelectMethod { kSelectMethodOrdered };
 
 		CueVariations variations; ///< All the cue variations in the cue.
 
-		uint8 transitionTrigger;
+		uint8 transitionTrigger { 0 };
 		Transitions transitions;
-
-		Cue() :
-				sequential(false), crossfade(false), stopOnStarve(false), interactive(false),
-				transitionTrigger(0) {
-		}
 	};
 
 	typedef std::vector<WaveBank> WaveBanks;

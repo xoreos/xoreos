@@ -41,7 +41,7 @@ XACTSoundBank::WaveBank::~WaveBank() {
 }
 
 
-XACTSoundBank::Event::Event(EventType t) : type(t), timestamp(0) {
+XACTSoundBank::Event::Event(EventType t) : type(t) {
 	switch (type) {
 		case kEventTypePitch:
 			params.pitch.isRelative = false;
