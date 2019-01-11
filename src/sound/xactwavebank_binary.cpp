@@ -106,16 +106,16 @@ RewindableAudioStream *XACTWaveBank_Binary::getWave(size_t index) const {
 	Common::ScopedPtr<Common::SeekableReadStream> dataStream(_xwb->readStream(wave.size));
 
 	switch (wave.codec) {
-		case kCodecPCM:
+		case Codec::PCM:
 			return makePCMStream(dataStream.release(), wave.samplingRate,
 			                     (wave.bitRate == 16) ? (FLAG_16BITS | FLAG_LITTLE_ENDIAN) : FLAG_UNSIGNED,
 			                     wave.channels);
 
-		case kCodecADPCM:
+		case Codec::ADPCM:
 			return makeADPCMStream(dataStream.release(), true, dataStream->size(),
 			                       kADPCMXbox, wave.samplingRate,  wave.channels);
 
-		case kCodecWMA:
+		case Codec::WMA:
 			return makeASFStream(dataStream.release());
 
 		default:
@@ -202,9 +202,9 @@ void XACTWaveBank_Binary::load(Common::SeekableReadStream &xwb) {
 		w->bitRate      =                    ((formatCode >> 31) & ((1 <<  1) - 1)) ? 16 : 8;
 
 		switch (w->codec) {
-			case kCodecPCM:
-			case kCodecADPCM:
-			case kCodecWMA:
+			case Codec::PCM:
+			case Codec::ADPCM:
+			case Codec::WMA:
 				break;
 
 			default:

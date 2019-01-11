@@ -108,74 +108,74 @@ protected:
 	static constexpr size_t kSoundSilence = SIZE_MAX;
 
 	/** The type of an event. */
-	enum EventType {
-		kEventTypePlay              = 0x00, ///< Just play a wave, from start to finish.
-		kEventTypePlayComplex       = 0x01, ///< Play a wave, with parameters.
-		kEventTypeStop              = 0x03, ///< Stop playing.
-		kEventTypePitch             = 0x04, ///< Set the pitch.
-		kEventTypeVolume            = 0x05, ///< Set the volume.
-		kEventTypeLowPass           = 0x07, ///< Low-pass filter.
-		kEventTypeLFOPitch          = 0x08, ///< Low-frequency oscillator on the pitch.
-		kEventTypeLFOMulti          = 0x09, ///< Low-frequency oscillator on the pitch and amplitude.
-		kEventTypeEnvelopeAmplitude = 0x0A, ///< DAHDSR envelope on the amplitude.
-		kEventTypeEnvelopePitch     = 0x0B, ///< DAHDSR envelope on the pitch.
-		kEventTypeLoop              = 0x0C, ///< Set loop parameters.
-		kEventTypeMarker            = 0x0E,
-		kEventTypeDisabled          = 0x0F, ///< A disabled event. Should be ignored.
-		kEventTypeMixBins           = 0x10, ///< Set a separate volume for each channel.
-		kEventTypeEnvironmentReverb = 0x11, ///< Environmental reverb.
-		kEventTypeMixBinsPan        = 0x12  ///< Set channel volumes according to a listener orientation.
+	enum class EventType {
+		Play              = 0x00, ///< Just play a wave, from start to finish.
+		PlayComplex       = 0x01, ///< Play a wave, with parameters.
+		Stop              = 0x03, ///< Stop playing.
+		Pitch             = 0x04, ///< Set the pitch.
+		Volume            = 0x05, ///< Set the volume.
+		LowPass           = 0x07, ///< Low-pass filter.
+		LFOPitch          = 0x08, ///< Low-frequency oscillator on the pitch.
+		LFOMulti          = 0x09, ///< Low-frequency oscillator on the pitch and amplitude.
+		EnvelopeAmplitude = 0x0A, ///< DAHDSR envelope on the amplitude.
+		EnvelopePitch     = 0x0B, ///< DAHDSR envelope on the pitch.
+		Loop              = 0x0C, ///< Set loop parameters.
+		Marker            = 0x0E,
+		Disabled          = 0x0F, ///< A disabled event. Should be ignored.
+		MixBins           = 0x10, ///< Set a separate volume for each channel.
+		EnvironmentReverb = 0x11, ///< Environmental reverb.
+		MixBinsPan        = 0x12  ///< Set channel volumes according to a listener orientation.
 	};
 
 	/** How to select a cue or wave variation. */
-	enum SelectMethod {
-		kSelectMethodRandomNoRepeats   = 0x00, ///< Random, but no immediate repeats.
-		kSelectMethodOrdered           = 0x01, ///< One after the other, in order.
-		kSelectMethodShuffle           = 0x02, ///< Random, no repeats at all.
-		kSelectMethodParameter         = 0x03, ///< Game-controlled.
-		kSelectMethodRandom            = 0x04, ///< Completely random.
-		kSelectMethodOrderedFromRandom = 0x05, ///< Start with a random entry, then in order.
+	enum class SelectMethod {
+		RandomNoRepeats   = 0x00, ///< Random, but no immediate repeats.
+		Ordered           = 0x01, ///< One after the other, in order.
+		Shuffle           = 0x02, ///< Random, no repeats at all.
+		Parameter         = 0x03, ///< Game-controlled.
+		Random            = 0x04, ///< Completely random.
+		OrderedFromRandom = 0x05, ///< Start with a random entry, then in order.
 	};
 
-	enum Mode3D {
-		kMode3DNormal       = 0,
-		kMode3DHeadRelative = 1,
-		kMode3DDisabled     = 2
+	enum class Mode3D {
+		Normal       = 0,
+		HeadRelative = 1,
+		Disabled     = 2
 	};
 
-	enum CrossfadeType {
-		kCrossfadeDisabled    = 0,
-		kCrossfadeLinear      = 1,
-		kCrossfadeLogarithmic = 2
+	enum class CrossfadeType {
+		Disabled    = 0,
+		Linear      = 1,
+		Logarithmic = 2
 	};
 
-	enum TransitionSource {
-		kTransitionSourceImmediate    = 0x00, ///< Transition immediately.
-		kTransitionSourceMarker       = 0x01, ///< Transition on a marker within a range.
-		kTransitionSourceRandomMarker = 0x02, ///< Transition on a random marker within a range.
-		kTransitionSourceEndOfLoop    = 0x04, ///< Transition on a loop end.
-		kTransitionSourceEndOfSound   = 0x08  ///< Transition at the end of the sound.
+	enum class TransitionSource {
+		Immediate    = 0x00, ///< Transition immediately.
+		Marker       = 0x01, ///< Transition on a marker within a range.
+		RandomMarker = 0x02, ///< Transition on a random marker within a range.
+		EndOfLoop    = 0x04, ///< Transition on a loop end.
+		EndOfSound   = 0x08  ///< Transition at the end of the sound.
 	};
 
-	enum TransitionDestination {
-		kTransitionDestinationBeginning     = 0x00, ///< Transition to the beginning.
-		kTransitionDestinationAlignedTime   = 0x01, ///< Transition to the same time.
-		kTransitionDestinationAlignedMarker = 0x02, ///< Transition to the same marker.
-		kTransitionDestinationMarker        = 0x04, ///< Transition to a marker within a range.
-		kTransitionDestinationRandomMarker  = 0x08  ///< Transition to a random marker within a range.
+	enum class TransitionDestination {
+		Beginning     = 0x00, ///< Transition to the beginning.
+		AlignedTime   = 0x01, ///< Transition to the same time.
+		AlignedMarker = 0x02, ///< Transition to the same marker.
+		Marker        = 0x04, ///< Transition to a marker within a range.
+		RandomMarker  = 0x08  ///< Transition to a random marker within a range.
 	};
 
-	enum TransitionEffect {
-		kTransitionEffectNone                       = 0x00, ///< No effect.
-		kTransitionEffectCrossfade                  = 0x01, ///< Crossfade.
-		kTransitionEffectSound                      = 0x02, ///< Use a transitional sound.
-		kTransitionEffectSoundFadeTo                = 0x03, ///< Fade into a transitional sound.
-		kTransitionEffectSoundFadeFrom              = 0x06, ///< Fade from a transitional sound.
-		kTransitionEffectSoundFadeToFrom            = 0x07  ///< Fade into and from a transitional sound.
+	enum class TransitionEffect {
+		None                       = 0x00, ///< No effect.
+		Crossfade                  = 0x01, ///< Crossfade.
+		Sound                      = 0x02, ///< Use a transitional sound.
+		SoundFadeTo                = 0x03, ///< Fade into a transitional sound.
+		SoundFadeFrom              = 0x06, ///< Fade from a transitional sound.
+		SoundFadeToFrom            = 0x07  ///< Fade into and from a transitional sound.
 	};
 
 	struct Parameters3D {
-		Mode3D mode { kMode3DNormal };
+		Mode3D mode { Mode3D::Normal };
 
 		uint16 coneInsideAngle  { 360 }; ///< Angle of the inside cone.
 		uint16 coneOutsideAngle { 360 }; ///< Angle of the outside cone.
@@ -362,7 +362,7 @@ protected:
 	/** A track within a sound. */
 	struct Track {
 		/** How a wave variation to be played is selected. */
-		SelectMethod variationSelectMethod { kSelectMethodOrdered };
+		SelectMethod variationSelectMethod { SelectMethod::Ordered };
 
 		Events events;        ///< All the events in the track.
 		WaveVariations waves; ///< All the waves in the track.
@@ -423,10 +423,10 @@ protected:
 		size_t from { kSoundSilence }; ///< Sound index to transition from.
 		size_t to   { kSoundSilence }; ///< Sound index to transition to.
 
-		TransitionSource sourceWhen { kTransitionSourceImmediate }; ///< When to begin transitioning.
-		TransitionDestination destinationWhen { kTransitionDestinationBeginning }; ///< When to transition to.
+		TransitionSource sourceWhen { TransitionSource::Immediate }; ///< When to begin transitioning.
+		TransitionDestination destinationWhen { TransitionDestination::Beginning }; ///< When to transition to.
 
-		TransitionEffect effect { kTransitionEffectNone }; ///< The effect to use during transitioning.
+		TransitionEffect effect { TransitionEffect::None }; ///< The effect to use during transitioning.
 
 		size_t transitionSound { kSoundSilence }; ///< Sound index to use as a transition.
 
@@ -443,7 +443,7 @@ protected:
 	typedef std::vector<Transition> Transitions;
 
 	struct ParametersCrossfade {
-		CrossfadeType type { kCrossfadeDisabled };
+		CrossfadeType type { CrossfadeType::Disabled };
 
 		uint32 duration  { 0 }; ///< Fade duration in milliseconds.
 		uint8  stepCount { 0 }; ///< Number of steps during the fade.
@@ -463,7 +463,7 @@ protected:
 		ParametersCrossfade fadeOut; ///< Parameters for a crossfade-out.
 
 		/** How a cue variation to be played is selected. */
-		SelectMethod variationSelectMethod { kSelectMethodOrdered };
+		SelectMethod variationSelectMethod { SelectMethod::Ordered };
 
 		CueVariations variations; ///< All the cue variations in the cue.
 

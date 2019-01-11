@@ -74,10 +74,10 @@ public:
 
 private:
 	/** The codec of a wave within the wavebank. */
-	enum Codec {
-		kCodecPCM   = 0, ///< Containerless PCM stream.
-		kCodecADPCM = 1, ///< Containerless Xbox ADPCM stream.
-		kCodecWMA   = 2  ///< ASF container with a WMA stream.
+	enum class Codec {
+		PCM   = 0, ///< Containerless PCM stream.
+		ADPCM = 1, ///< Containerless Xbox ADPCM stream.
+		WMA   = 2  ///< ASF container with a WMA stream.
 	};
 
 	/** A wave within the wavebank. */

@@ -43,7 +43,7 @@ XACTSoundBank::WaveBank::~WaveBank() {
 
 XACTSoundBank::Event::Event(EventType t) : type(t) {
 	switch (type) {
-		case kEventTypePitch:
+		case EventType::Pitch:
 			params.pitch.isRelative = false;
 			params.pitch.enableFade = false;
 			params.pitch.enableVariation = false;
@@ -55,7 +55,7 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 			params.pitch.pitchEnd = 0.0f;
 			break;
 
-		case kEventTypeVolume:
+		case EventType::Volume:
 			params.volume.isRelative = false;
 			params.volume.enableFade = false;
 			params.volume.enableVariation = false;
@@ -67,7 +67,7 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 			params.volume.volumeEnd = 0.0f;
 			break;
 
-		case kEventTypeLowPass:
+		case EventType::LowPass:
 			params.lowpass.isRelative  = false;
 			params.lowpass.random      = false;
 			params.lowpass.sweepCutOff = false;
@@ -82,19 +82,19 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 			params.lowpass.cutOffEnd = 0;
 			break;
 
-		case kEventTypeLFOPitch:
+		case EventType::LFOPitch:
 			params.lfopitch.delta = 0.0f;
 			params.lfopitch.pitch = 0.0f;
 			break;
 
-		case kEventTypeLFOMulti:
+		case EventType::LFOMulti:
 			params.lfomulti.delta     = 0.0f;
 			params.lfomulti.pitch     = 0.0f;
 			params.lfomulti.filter    = 0.0f;
 			params.lfomulti.amplitude = 0.0f;
 			break;
 
-		case kEventTypeEnvelopeAmplitude:
+		case EventType::EnvelopeAmplitude:
 			params.aeg.delay   = 0;
 			params.aeg.attack  = 0;
 			params.aeg.hold    = 0;
@@ -104,7 +104,7 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 			params.aeg.sustain = 0.0f;
 			break;
 
-		case kEventTypeEnvelopePitch:
+		case EventType::EnvelopePitch:
 			params.pfeg.delay   = 0;
 			params.pfeg.attack  = 0;
 			params.pfeg.hold    = 0;
@@ -117,11 +117,11 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 			params.pfeg.filter = 0.0f;
 			break;
 
-		case kEventTypeLoop:
+		case EventType::Loop:
 			params.loop.count = 0;
 			break;
 
-		case kEventTypeMarker:
+		case EventType::Marker:
 			params.marker.repeat         = false;
 			params.marker.repeatCount    = 0;
 			params.marker.repeatDuration = 0;
@@ -129,14 +129,14 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 			params.marker.value = 0;
 			break;
 
-		case kEventTypeMixBins:
+		case EventType::MixBins:
 			for (size_t i = 0; i < ARRAYSIZE(params.mixbins.bins); i++) {
 				params.mixbins.bins[i].channel = 0;
 				params.mixbins.bins[i].volume  = -64.0f;
 			}
 			break;
 
-		case kEventTypeEnvironmentReverb:
+		case EventType::EnvironmentReverb:
 			params.envreverb.room              = -100.0f;
 			params.envreverb.roomHF            = 0.0f;
 			params.envreverb.roomRollOffFactor = 0.0f;
@@ -156,7 +156,7 @@ XACTSoundBank::Event::Event(EventType t) : type(t) {
 			params.envreverb.referenceHF = 5000;
 			break;
 
-		case kEventTypeMixBinsPan:
+		case EventType::MixBinsPan:
 			params.mixbinspan.use3D = false;
 
 			params.mixbinspan.angleStart = 0;
@@ -256,7 +256,7 @@ ChannelHandle XACTSoundBank::playTrack(Track &track, const Sound &sound, SoundTy
 
 	size_t loops = (sound.loopCount == kLoopCountInfinite) ? 0 : (sound.loopCount + 1);
 	for (Events::const_iterator event = track.events.begin(); event != track.events.end(); ++event)
-		if (event->type == kEventTypeLoop)
+		if (event->type == EventType::Loop)
 			loops = (event->params.loop.count == kLoopCountInfinite) ? 0 : (event->params.loop.count + 1);
 
 	if (loops == 1)

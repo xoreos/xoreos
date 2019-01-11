@@ -232,7 +232,7 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 			readCueVarations(xsb, cue, offsetEntry);
 
 		} else if (soundIndex != 0xFFFF) {
-			cue.variationSelectMethod = kSelectMethodOrdered;
+			cue.variationSelectMethod = SelectMethod::Ordered;
 
 			cue.variations.resize(1);
 
@@ -307,8 +307,8 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 		const uint8 eventFlags = xsb.readByte();
 
 		switch (event.type) {
-			case kEventTypePlay:
-			case kEventTypePlayComplex:
+			case EventType::Play:
+			case EventType::PlayComplex:
 				sound.loopCount = xsb.readUint16LE();
 
 				if (parameterSize >= 4) {
@@ -332,7 +332,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 					sound.loopNewVariation = eventFlags & kPlayEventLoopNewVariation;
 
 					if (!(eventFlags & kPlayEventMultipleVariations)) {
-						track.variationSelectMethod = kSelectMethodOrdered;
+						track.variationSelectMethod = SelectMethod::Ordered;
 
 						addWaveVariation(track, indicesOrOffset, kWeightMinimum, kWeightMaximum);
 
@@ -341,7 +341,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypePitch:
+			case EventType::Pitch:
 				event.params.pitch.fadeStepCount = xsb.readUint16LE();
 
 				event.params.pitch.isRelative      = eventFlags & kPitchEventRelative;
@@ -362,7 +362,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeVolume:
+			case EventType::Volume:
 				event.params.volume.fadeStepCount = xsb.readUint16LE();
 
 				event.params.volume.isRelative      = eventFlags & kPitchEventRelative;
@@ -383,7 +383,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeLowPass:
+			case EventType::LowPass:
 				event.params.lowpass.isRelative  = eventFlags & kLowPassEventRelative;
 				event.params.lowpass.random      = eventFlags & kLowPassEventRandom;
 				event.params.lowpass.sweepCutOff = eventFlags & kLowPassEventSweep;
@@ -407,7 +407,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeLFOPitch:
+			case EventType::LFOPitch:
 				xsb.skip(2); // Unused
 
 				if (parameterSize >= 4) {
@@ -420,7 +420,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeLFOMulti:
+			case EventType::LFOMulti:
 				xsb.skip(2); // Unused
 
 				if (parameterSize >= 6) {
@@ -435,7 +435,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeEnvelopeAmplitude:
+			case EventType::EnvelopeAmplitude:
 				xsb.skip(2); // Unused
 
 				if (parameterSize >= 12) {
@@ -453,7 +453,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeEnvelopePitch:
+			case EventType::EnvelopePitch:
 				xsb.skip(2); // Unused
 
 				if (parameterSize >= 16) {
@@ -474,11 +474,11 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeLoop:
+			case EventType::Loop:
 				event.params.loop.count = xsb.readUint16LE();
 				break;
 
-			case kEventTypeMarker:
+			case EventType::Marker:
 				event.params.marker.repeat = eventFlags & kMarkerEventRepeat;
 
 				event.params.marker.repeatCount = xsb.readUint16LE();
@@ -496,7 +496,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeMixBins:
+			case EventType::MixBins:
 				xsb.skip(2); // Unused
 
 				for (size_t j = 0; j < ARRAYSIZE(event.params.mixbins.bins) && parameterSize >= 4; j++, parameterSize -= 4) {
@@ -508,7 +508,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeEnvironmentReverb:
+			case EventType::EnvironmentReverb:
 				xsb.skip(2); // Unused
 
 				if (parameterSize >= 48) {
@@ -534,7 +534,7 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 				}
 				break;
 
-			case kEventTypeMixBinsPan:
+			case EventType::MixBinsPan:
 				xsb.skip(2); // Unused
 
 				if (parameterSize >= 4) {
@@ -586,10 +586,10 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 	if (flags & kSoundTrivial) {
 		// One track, one event, one wave variation
 
-		sound.tracks[0].variationSelectMethod = kSelectMethodOrdered;
+		sound.tracks[0].variationSelectMethod = SelectMethod::Ordered;
 
 		addWaveVariation(sound.tracks[0], indicesOrOffset, kWeightMinimum, kWeightMaximum);
-		sound.tracks[0].events.push_back(Event(kEventTypePlay));
+		sound.tracks[0].events.push_back(Event(EventType::Play));
 
 		return;
 	}
@@ -598,7 +598,7 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 		// One track, one event, multiple wave variations
 
 		readWaveVariations(xsb, sound.tracks[0], indicesOrOffset);
-		sound.tracks[0].events.push_back(Event(kEventTypePlay));
+		sound.tracks[0].events.push_back(Event(EventType::Play));
 
 		return;
 	}

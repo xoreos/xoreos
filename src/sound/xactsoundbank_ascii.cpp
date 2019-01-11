@@ -242,26 +242,26 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				}
 
 				if (isComplex)
-					track.events.push_back(Event(kEventTypePlayComplex));
+					track.events.push_back(Event(EventType::PlayComplex));
 				else
-					track.events.push_back(Event(kEventTypePlay));
+					track.events.push_back(Event(EventType::Play));
 
 				if (tokens.size() > 9)
 					track.events.back().timestamp = getNumber(tokens[9]);
 
 			} else if (tokens[0] == "LOOP") {
-				track.events.push_back(Event(kEventTypeLoop));
+				track.events.push_back(Event(EventType::Loop));
 				track.events.back().params.loop.count = kLoopCountInfinite;
 
 				if (tokens.size() > 1)
 					track.events.back().params.loop.count = getNumber(tokens[1]);
 
-				track.variationSelectMethod = kSelectMethodOrdered;
+				track.variationSelectMethod = SelectMethod::Ordered;
 				if (tokens.size() > 3)
 					track.variationSelectMethod = static_cast<SelectMethod>(getNumber(tokens[3]));
 
 			} else if (tokens[0] == "VOLUME") {
-				track.events.push_back(Event(kEventTypeVolume));
+				track.events.push_back(Event(EventType::Volume));
 				Event &event = track.events.back();
 
 				if (tokens.size() > 1)
@@ -280,7 +280,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 					event.params.volume.volumeEnd   = CLIP(getNumber(tokens[7]) / 100.0f, -64.0f, 64.0f);
 
 			} else if (tokens[0] == "PITCH") {
-				track.events.push_back(Event(kEventTypePitch));
+				track.events.push_back(Event(EventType::Pitch));
 				Event &event = track.events.back();
 
 				if (tokens.size() > 1)
@@ -299,7 +299,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 					event.params.pitch.pitchEnd   = CLIP(getNumber(tokens[7]) / 100.0f, -24.0f, 24.0f);
 
 			} else if (tokens[0] == "LPF") {
-				track.events.push_back(Event(kEventTypeLowPass));
+				track.events.push_back(Event(EventType::LowPass));
 				Event &event = track.events.back();
 
 				if (tokens.size() > 1)
@@ -326,7 +326,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 					event.timestamp = getNumber(tokens[4]);
 
 			} else if (tokens[0] == "MFLFO") {
-				track.events.push_back(Event(kEventTypeLFOMulti));
+				track.events.push_back(Event(EventType::LFOMulti));
 				Event &event = track.events.back();
 
 				if (tokens.size() > 3)
@@ -342,7 +342,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 					event.timestamp = getNumber(tokens[1]);
 
 			} else if (tokens[0] == "MARKER") {
-				track.events.push_back(Event(kEventTypeMarker));
+				track.events.push_back(Event(EventType::Marker));
 
 				/* The first parameter is the name of the marker. This information
 				 * is stripped in the binary version, so we don't need it.
@@ -354,7 +354,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 				 * is, or even when it occurs. */
 
 			} else if (tokens[0] == "AEG") {
-				track.events.push_back(Event(kEventTypeEnvelopeAmplitude));
+				track.events.push_back(Event(EventType::EnvelopeAmplitude));
 				Event &event = track.events.back();
 
 				if (tokens.size() > 1)
@@ -435,7 +435,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			variation.soundName = tokens[0];
 			variation.soundIndex = getNumber(tokens[1]);
 
-			if (cue->variationSelectMethod == kSelectMethodParameter) {
+			if (cue->variationSelectMethod == SelectMethod::Parameter) {
 				variation.weightMax = getNumber(tokens[2]);
 				variation.weightMin = getNumber(tokens[3]);
 
@@ -474,16 +474,16 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 
 			if (tokens.size() > 3) {
 				if      (tokens[3] == "Crossfade")
-					transition->effect = kTransitionEffectCrossfade;
+					transition->effect = TransitionEffect::Crossfade;
 				else if (tokens[3] == "Sound")
-					transition->effect = kTransitionEffectSoundFadeTo;
+					transition->effect = TransitionEffect::SoundFadeTo;
 			}
 
 			// The 4th token might be destinationWhen, but it's always 0 in Jade Empire
 
 			if (tokens.size() > 5) {
 				if (tokens[5] == "End")
-					transition->sourceWhen = kTransitionSourceEndOfSound;
+					transition->sourceWhen = TransitionSource::EndOfSound;
 			}
 
 			if (tokens.size() > 7) {
