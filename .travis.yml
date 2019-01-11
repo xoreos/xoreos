@@ -1,5 +1,5 @@
 sudo: required
-dist: trusty
+dist: xenial
 
 language: cpp
 compiler:
@@ -50,8 +50,21 @@ before_install:
   - if eval [ $is_valid_osx ]; then brew update; fi
   - if eval [ $is_valid_osx ]; then brew install sdl2 openal-soft freetype mad faad2 libvorbis xvid zlib xz libxml2; fi
   # Installing Linux dependencies, using apt-get
+  #
+  # Here, we're also installing a new gcc, for C++11 support.
+  # This is a bit of a complicated setup, because the C++ ABI change
+  # means we can't mix-n-match C++ stuff from different sources
+  #
+  # So we do this in 3 steps:
+  # 1) We add the Bionic repos, and upgrade the libc, gcc and binutils
+  # 2) We remove libgl1-mesa-glx and libgl1-mesa-dev, because Ubuntu moved the packages around
+  # 3) We install our library dependencies
+  - if eval [ $is_valid_linux ]; then echo "yes" | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu bionic main universe restricted multiverse"; fi
+  - if eval [ $is_valid_linux ]; then echo "yes" | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu bionic-updates main universe restricted multiverse"; fi
   - if eval [ $is_valid_linux ]; then sudo apt-get update -qq; fi
-  - if eval [ $is_valid_linux ]; then sudo apt-get install -qq libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libegl1-mesa-dev libgles2-mesa-dev libgl1-mesa-dev zlib1g-dev liblzma-dev libxml2-dev; fi
+  - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 install build-essential libcurl4 make autoconf automake libtool dpkg dpkg-dev gcc g++ libc6-dev libc6 binutils binutils-dev; fi
+  - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 remove libgl1-mesa-glx libgl1-mesa-dev; fi
+  - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 install libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libgl1 libgl-dev zlib1g-dev liblzma-dev libxml2-dev; fi
 
 script:
   # autotools build system: ./autogen.sh && ./configure && make && make check
