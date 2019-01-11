@@ -182,26 +182,26 @@ void XACTWaveBank_Binary::load(Common::SeekableReadStream &xwb) {
 		dataOffset = indexOffset + waveCount * waveMetaSize;
 
 	_waves.resize(waveCount);
-	for (std::vector<Wave>::iterator w = _waves.begin(); w != _waves.end(); ++w) {
+	for (auto &wave : _waves) {
 		xwb.seek(indexOffset);
 
-		w->flags = xwb.readUint32LE();
+		wave.flags = xwb.readUint32LE();
 
 		const uint32 formatCode = xwb.readUint32LE();
 
-		w->offset = xwb.readUint32LE() + dataOffset;
-		w->size   = xwb.readUint32LE();
+		wave.offset = xwb.readUint32LE() + dataOffset;
+		wave.size   = xwb.readUint32LE();
 
-		w->loopOffset = xwb.readUint32LE();
-		w->loopLength = xwb.readUint32LE();
+		wave.loopOffset = xwb.readUint32LE();
+		wave.loopLength = xwb.readUint32LE();
 
-		w->codec        = static_cast<Codec>(((formatCode      ) & ((1 <<  2) - 1)));
-		w->channels     =                     (formatCode >>  2) & ((1 <<  3) - 1);
-		w->samplingRate =                     (formatCode >>  5) & ((1 << 18) - 1);
-		w->blockAlign   =                     (formatCode >> 23) & ((1 <<  8) - 1);
-		w->bitRate      =                    ((formatCode >> 31) & ((1 <<  1) - 1)) ? 16 : 8;
+		wave.codec        = static_cast<Codec>(((formatCode      ) & ((1 <<  2) - 1)));
+		wave.channels     =                     (formatCode >>  2) & ((1 <<  3) - 1);
+		wave.samplingRate =                     (formatCode >>  5) & ((1 << 18) - 1);
+		wave.blockAlign   =                     (formatCode >> 23) & ((1 <<  8) - 1);
+		wave.bitRate      =                    ((formatCode >> 31) & ((1 <<  1) - 1)) ? 16 : 8;
 
-		switch (w->codec) {
+		switch (wave.codec) {
 			case Codec::PCM:
 			case Codec::ADPCM:
 			case Codec::WMA:
@@ -209,7 +209,7 @@ void XACTWaveBank_Binary::load(Common::SeekableReadStream &xwb) {
 
 			default:
 				throw Common::Exception("XACTWaveBank_Binary::load(): Unknown encoding %u",
-				                        static_cast<uint>(w->codec));
+				                        static_cast<uint>(wave.codec));
 		}
 
 		indexOffset += waveMetaSize;

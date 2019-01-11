@@ -215,13 +215,13 @@ ChannelHandle XACTSoundBank::playCue(const Common::UString &name, size_t variati
 }
 
 ChannelHandle XACTSoundBank::playCue(Cue &cue, size_t variation, SoundType soundType) {
-	for (CueVariations::iterator var = cue.variations.begin(); var != cue.variations.end(); ++var) {
-		if ((variation >= var->weightMin) && (variation <= var->weightMax)) {
-			if (var->soundIndex >= _sounds.size())
+	for (auto &var : cue.variations) {
+		if ((variation >= var.weightMin) && (variation <= var.weightMax)) {
+			if (var.soundIndex >= _sounds.size())
 				throw Common::Exception("XACTSoundBank::playCue(): Sound for variation %u out of range (%u > %u)",
-				                        (uint)variation, (uint)var->soundIndex, (uint)_sounds.size());
+				                        (uint)variation, (uint)var.soundIndex, (uint)_sounds.size());
 
-			return playSound(_sounds[var->soundIndex], soundType);
+			return playSound(_sounds[var.soundIndex], soundType);
 		}
 	}
 
@@ -255,9 +255,9 @@ ChannelHandle XACTSoundBank::playTrack(Track &track, const Sound &sound, SoundTy
 	Common::ScopedPtr<RewindableAudioStream> stream(bank->getWave(wave.index));
 
 	size_t loops = (sound.loopCount == kLoopCountInfinite) ? 0 : (sound.loopCount + 1);
-	for (Events::const_iterator event = track.events.begin(); event != track.events.end(); ++event)
-		if (event->type == EventType::Loop)
-			loops = (event->params.loop.count == kLoopCountInfinite) ? 0 : (event->params.loop.count + 1);
+	for (auto &event : track.events)
+		if (event.type == EventType::Loop)
+			loops = (event.params.loop.count == kLoopCountInfinite) ? 0 : (event.params.loop.count + 1);
 
 	if (loops == 1)
 		return SoundMan.playAudioStream(stream.release(), soundType);

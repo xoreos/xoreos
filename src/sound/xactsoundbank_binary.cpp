@@ -108,18 +108,18 @@ void XACTSoundBank_Binary::readCueVarations(Common::SeekableReadStream &xsb, Cue
 	cue.variationSelectMethod = static_cast<SelectMethod>(selectMethod);
 
 	cue.variations.resize(variationCount);
-	for (CueVariations::iterator variation = cue.variations.begin(); variation != cue.variations.end(); ++variation) {
-		variation->soundIndex = xsb.readUint16LE();
+	for (auto &variation : cue.variations) {
+		variation.soundIndex = xsb.readUint16LE();
 		xsb.skip(2); // Unknown
 
-		if (variation->soundIndex == 0xFFFF)
-			variation->soundIndex = kSoundSilence;
+		if (variation.soundIndex == 0xFFFF)
+			variation.soundIndex = kSoundSilence;
 
-		variation->weightMin = CLIP<size_t>(xsb.readUint16LE(), kWeightMinimum, kWeightMaximum);
-		variation->weightMax = CLIP<size_t>(xsb.readUint16LE(), kWeightMinimum, kWeightMaximum);
+		variation.weightMin = CLIP<size_t>(xsb.readUint16LE(), kWeightMinimum, kWeightMaximum);
+		variation.weightMax = CLIP<size_t>(xsb.readUint16LE(), kWeightMinimum, kWeightMaximum);
 
-		if (variation->weightMin > variation->weightMax)
-			SWAP(variation->weightMin, variation->weightMax);
+		if (variation.weightMin > variation.weightMax)
+			SWAP(variation.weightMin, variation.weightMax);
 	}
 }
 
@@ -170,10 +170,10 @@ void XACTSoundBank_Binary::readWaveBanks(Common::SeekableReadStream &xsb, uint32
 	xsb.seek(offset);
 
 	_waveBanks.resize(count);
-	for (WaveBanks::iterator bank = _waveBanks.begin(); bank != _waveBanks.end(); ++bank) {
-		bank->name = Common::readStringFixed(xsb, Common::kEncodingASCII, 16);
+	for (auto &bank : _waveBanks) {
+		bank.name = Common::readStringFixed(xsb, Common::kEncodingASCII, 16);
 
-		_waveBankMap[bank->name] = &*bank;
+		_waveBankMap[bank.name] = &bank;
 	}
 }
 
@@ -250,28 +250,28 @@ void XACTSoundBank_Binary::readCues(Common::SeekableReadStream &xsb, uint32 xsbF
 			size_t transFrom = kSoundSilence;
 			size_t transTo   = 0;
 
-			for (Transitions::iterator t = cue.transitions.begin(); t != cue.transitions.end(); ++t) {
-				t->from = transFrom;
-				t->to   = transTo;
+			for (auto &transition : cue.transitions) {
+				transition.from = transFrom;
+				transition.to   = transTo;
 
 				const uint16 transFlags = xsb.readUint16LE();
 
-				t->sourceWhen      = static_cast<TransitionSource>     ((transFlags     ) & 0xF);
-				t->destinationWhen = static_cast<TransitionDestination>( transFlags >> 7  & 0xF);
-				t->effect          = static_cast<TransitionEffect>     ((transFlags >> 4) & 0x7);
+				transition.sourceWhen      = static_cast<TransitionSource>     ((transFlags     ) & 0xF);
+				transition.destinationWhen = static_cast<TransitionDestination>( transFlags >> 7  & 0xF);
+				transition.effect          = static_cast<TransitionEffect>     ((transFlags >> 4) & 0x7);
 
-				t->transitionSound = xsb.readUint16LE();
-				if (t->transitionSound == 0xFFFF)
-					t->transitionSound = kSoundSilence;
+				transition.transitionSound = xsb.readUint16LE();
+				if (transition.transitionSound == 0xFFFF)
+					transition.transitionSound = kSoundSilence;
 
-				t->sourceFadeDuration      = xsb.readUint16LE();
-				t->destinationFadeDuration = xsb.readUint16LE();
+				transition.sourceFadeDuration      = xsb.readUint16LE();
+				transition.destinationFadeDuration = xsb.readUint16LE();
 
-				t->sourceMarkerLow  = xsb.readUint32LE();
-				t->sourceMarkerHigh = xsb.readUint32LE();
+				transition.sourceMarkerLow  = xsb.readUint32LE();
+				transition.sourceMarkerHigh = xsb.readUint32LE();
 
-				t->destinationMarkerLow  = xsb.readUint32LE();
-				t->destinationMarkerHigh = xsb.readUint32LE();
+				transition.destinationMarkerLow  = xsb.readUint32LE();
+				transition.destinationMarkerHigh = xsb.readUint32LE();
 
 				if (transFrom == ++transTo)
 					transTo++;

@@ -107,8 +107,8 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 	tokenizer.nextChunk(xsb);
 
 	std::vector<Common::UString> categories(categoryCount);
-	for (std::vector<Common::UString>::iterator it = categories.begin(); it != categories.end(); ++it) {
-		*it = tokenizer.getToken(xsb);
+	for (auto &category : categories) {
+		category = tokenizer.getToken(xsb);
 		tokenizer.nextChunk(xsb);
 	}
 
@@ -118,43 +118,43 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 	std::set<Common::UString> bankNames;
 
 	_sounds.resize(soundCount);
-	for (Sounds::iterator sound = _sounds.begin(); sound != _sounds.end(); ++sound) {
+	for (auto &sound : _sounds) {
 		std::vector<Common::UString> tokens;
 		tokenizer.getTokens(xsb, tokens, 2);
 		tokenizer.nextChunk(xsb);
 
-		sound->name = tokens[0];
+		sound.name = tokens[0];
 
 		const int64 categoryIndex = getNumber(tokens[1]);
 		if ((categoryIndex >= 0) && (static_cast<size_t>(categoryIndex) < categories.size())) {
-			sound->categoryIndex = categoryIndex;
-			sound->categoryName  = categories[categoryIndex];
+			sound.categoryIndex = categoryIndex;
+			sound.categoryName  = categories[categoryIndex];
 		}
 
 		if (tokens.size() > 5)
-			sound->volume = CLIP((getNumber(tokens[4]) + getNumber(tokens[5])) / 100.0f, -64.0f, 0.0f);
+			sound.volume = CLIP((getNumber(tokens[4]) + getNumber(tokens[5])) / 100.0f, -64.0f, 0.0f);
 
 		if (tokens.size() > 6)
-			sound->pitch = CLIP(getNumber(tokens[6]) / 100.0f, -24.0f, 24.0f);
+			sound.pitch = CLIP(getNumber(tokens[6]) / 100.0f, -24.0f, 24.0f);
 
 		if (tokens.size() > 7) {
 			const int64 priority = getNumber(tokens[7]);
 			if (priority > 0)
-				sound->priority = priority;
+				sound.priority = priority;
 		}
 
 		if (tokens.size() > 8)
-			sound->gainBoost = tokens[8] == "1";
+			sound.gainBoost = tokens[8] == "1";
 
 		if (tokens.size() > 9)
-			sound->params3D.volumeLFE   = CLIP(getNumber(tokens[ 9]) / 100.0f, -64.0f, 0.0f);
+			sound.params3D.volumeLFE   = CLIP(getNumber(tokens[ 9]) / 100.0f, -64.0f, 0.0f);
 		if (tokens.size() > 10)
-			sound->params3D.volumeI3DL2 = CLIP(getNumber(tokens[10]) / 100.0f, -64.0f, 0.0f);
+			sound.params3D.volumeI3DL2 = CLIP(getNumber(tokens[10]) / 100.0f, -64.0f, 0.0f);
 
-		_soundMap[sound->name] = &*sound;
+		_soundMap[sound.name] = &sound;
 
-		sound->tracks.resize(1);
-		Track &track = sound->tracks.back();
+		sound.tracks.resize(1);
+		Track &track = sound.tracks.back();
 
 		size_t waveCount = 0;
 
@@ -171,73 +171,73 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			}
 
 			if        (tokens[0] == "3D") {
-				sound->is3D = true;
+				sound.is3D = true;
 
 				if (tokens.size() > 1)
-					sound->params3D.mode = static_cast<Mode3D>(getNumber(tokens[1]));
+					sound.params3D.mode = static_cast<Mode3D>(getNumber(tokens[1]));
 
 				if (tokens.size() > 2)
-					sound->params3D.coneInsideAngle   = CLIP<uint16>(getNumber(tokens[2]), 0, 360);
+					sound.params3D.coneInsideAngle   = CLIP<uint16>(getNumber(tokens[2]), 0, 360);
 				if (tokens.size() > 3)
-					sound->params3D.coneOutsideAngle  = CLIP<uint16>(getNumber(tokens[3]), 0, 360);
+					sound.params3D.coneOutsideAngle  = CLIP<uint16>(getNumber(tokens[3]), 0, 360);
 				if (tokens.size() > 4)
-					sound->params3D.coneOutsideVolume = CLIP(getNumber(tokens[4]) / 100.0f, -64.0f, 0.0f);
+					sound.params3D.coneOutsideVolume = CLIP(getNumber(tokens[4]) / 100.0f, -64.0f, 0.0f);
 
 				if (tokens.size() > 5)
-					sound->params3D.distanceMin = getFloat(tokens[5]);
+					sound.params3D.distanceMin = getFloat(tokens[5]);
 				if (tokens.size() > 6)
-					sound->params3D.distanceMax = getFloat(tokens[6]);
+					sound.params3D.distanceMax = getFloat(tokens[6]);
 
 				if (tokens.size() > 7)
-					sound->params3D.distanceFactor = getFloat(tokens[7]);
+					sound.params3D.distanceFactor = getFloat(tokens[7]);
 				if (tokens.size() > 8)
-					sound->params3D.rollOffFactor  = getFloat(tokens[8]);
+					sound.params3D.rollOffFactor  = getFloat(tokens[8]);
 				if (tokens.size() > 9)
-					sound->params3D.dopplerFactor  = getFloat(tokens[9]);
+					sound.params3D.dopplerFactor  = getFloat(tokens[9]);
 
 				if ((tokens.size() > 10) && (tokens[10] != "0"))
 					for (size_t i = 10; i < tokens.size(); i++)
-						sound->params3D.rollOffCurve.push_back(getFloat(tokens[i]));
+						sound.params3D.rollOffCurve.push_back(getFloat(tokens[i]));
 
 			} else if (tokens[0] == "PEQ") {
-				sound->parametricEQ = true;
+				sound.parametricEQ = true;
 
 				if (tokens.size() > 1)
-					sound->parametricEQGain = CLIP(getNumber(tokens[1]) / 1000.0f, -1.0f, 4.0f);
+					sound.parametricEQGain = CLIP(getNumber(tokens[1]) / 1000.0f, -1.0f, 4.0f);
 				if (tokens.size() > 2)
-					sound->parametricEQQ = 1.0f / (1 << CLIP<int64>(getNumber(tokens[2]), 0, 7));
+					sound.parametricEQQ = 1.0f / (1 << CLIP<int64>(getNumber(tokens[2]), 0, 7));
 				if (tokens.size() > 3)
-					sound->parametricEQFreq = CLIP<uint16>(getNumber(tokens[3]), 30, 8000);
+					sound.parametricEQFreq = CLIP<uint16>(getNumber(tokens[3]), 30, 8000);
 
 			} else if (tokens[0] == "PLAY") {
 				bool isComplex = false;
 
 				if (tokens.size() > 1)
-					sound->loopCount = getNumber(tokens[1]);
+					sound.loopCount = getNumber(tokens[1]);
 
 				if (tokens.size() > 2)
-					sound->loopNewVariation = tokens[2] == "1";
+					sound.loopNewVariation = tokens[2] == "1";
 
 				if (tokens.size() > 5) {
-					sound->pitchVariationMin = CLIP(getNumber(tokens[4]) / 100.0f, -24.0f, 24.0f);
-					sound->pitchVariationMax = CLIP(getNumber(tokens[5]) / 100.0f, -24.0f, 24.0f);
+					sound.pitchVariationMin = CLIP(getNumber(tokens[4]) / 100.0f, -24.0f, 24.0f);
+					sound.pitchVariationMax = CLIP(getNumber(tokens[5]) / 100.0f, -24.0f, 24.0f);
 
-					if (sound->pitchVariationMin != sound->pitchVariationMax)
+					if (sound.pitchVariationMin != sound.pitchVariationMax)
 						isComplex = true;
 				}
 
 				if (tokens.size() > 7) {
-					sound->volumeVariationMin = CLIP(getNumber(tokens[6]) / 100.0f, -64.0f, 64.0f);
-					sound->volumeVariationMax = CLIP(getNumber(tokens[7]) / 100.0f, -64.0f, 64.0f);
+					sound.volumeVariationMin = CLIP(getNumber(tokens[6]) / 100.0f, -64.0f, 64.0f);
+					sound.volumeVariationMax = CLIP(getNumber(tokens[7]) / 100.0f, -64.0f, 64.0f);
 
-					if (sound->volumeVariationMin != sound->volumeVariationMax)
+					if (sound.volumeVariationMin != sound.volumeVariationMax)
 						isComplex = true;
 				}
 
 				if (tokens.size() > 8) {
-					sound->delay = getNumber(tokens[8]);
+					sound.delay = getNumber(tokens[8]);
 
-					if (sound->delay != 0)
+					if (sound.delay != 0)
 						isComplex = true;
 				}
 
@@ -397,8 +397,8 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 	}
 
 	_waveBanks.reserve(bankNames.size());
-	for (std::set<Common::UString>::const_iterator name = bankNames.begin(); name != bankNames.end(); ++name) {
-		_waveBanks.push_back(WaveBank(*name));
+	for (auto &name : bankNames) {
+		_waveBanks.push_back(WaveBank(name));
 		WaveBank &bank = _waveBanks.back();
 
 		_waveBankMap[bank.name] = &bank;
@@ -408,26 +408,26 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 	tokenizer.nextChunk(xsb);
 
 	_cues.resize(cueCount);
-	for (Cues::iterator cue = _cues.begin(); cue != _cues.end(); ++cue) {
+	for (auto &cue : _cues) {
 		std::vector<Common::UString> tokens;
 		tokenizer.getTokens(xsb, tokens, 3);
 		tokenizer.nextChunk(xsb);
 
-		cue->name = tokens[0];
-		_cueMap[cue->name] = &*cue;
+		cue.name = tokens[0];
+		_cueMap[cue.name] = &cue;
 
-		cue->variationSelectMethod = static_cast<SelectMethod>(getNumber(tokens[1]));
+		cue.variationSelectMethod = static_cast<SelectMethod>(getNumber(tokens[1]));
 
-		cue->interactive = tokens[2] == "1";
+		cue.interactive = tokens[2] == "1";
 
 		const size_t variationCount = getAmount(tokenizer, xsb);
 		tokenizer.nextChunk(xsb);
 
 		const size_t weightPerVar = variationCount ? (kWeightMaximum / variationCount) : kWeightMaximum;
 
-		cue->variations.resize(variationCount);
+		cue.variations.resize(variationCount);
 		for (size_t i = 0; i < variationCount; i++) {
-			CueVariation &variation = cue->variations[i];
+			CueVariation &variation = cue.variations[i];
 
 			tokenizer.getTokens(xsb, tokens, 4);
 			tokenizer.nextChunk(xsb);
@@ -435,7 +435,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			variation.soundName = tokens[0];
 			variation.soundIndex = getNumber(tokens[1]);
 
-			if (cue->variationSelectMethod == SelectMethod::Parameter) {
+			if (cue.variationSelectMethod == SelectMethod::Parameter) {
 				variation.weightMax = getNumber(tokens[2]);
 				variation.weightMin = getNumber(tokens[3]);
 
@@ -455,40 +455,40 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 			}
 		}
 
-		if (!cue->interactive)
+		if (!cue.interactive)
 			continue;
 
 		const size_t transitionCount = getAmount(tokenizer, xsb);
 		tokenizer.nextChunk(xsb);
 
-		cue->transitions.resize(transitionCount);
-		for (Transitions::iterator transition = cue->transitions.begin(); transition != cue->transitions.end(); ++transition) {
+		cue.transitions.resize(transitionCount);
+		for (auto &transition : cue.transitions) {
 			tokenizer.getTokens(xsb, tokens, 2);
 			tokenizer.nextChunk(xsb);
 
-			transition->from = findSound(tokens[0], *cue);
-			transition->to   = findSound(tokens[1], *cue);
+			transition.from = findSound(tokens[0], cue);
+			transition.to   = findSound(tokens[1], cue);
 
 			if (tokens.size() > 2)
-				transition->transitionSound = findSound(tokens[2]);
+				transition.transitionSound = findSound(tokens[2]);
 
 			if (tokens.size() > 3) {
 				if      (tokens[3] == "Crossfade")
-					transition->effect = TransitionEffect::Crossfade;
+					transition.effect = TransitionEffect::Crossfade;
 				else if (tokens[3] == "Sound")
-					transition->effect = TransitionEffect::SoundFadeTo;
+					transition.effect = TransitionEffect::SoundFadeTo;
 			}
 
 			// The 4th token might be destinationWhen, but it's always 0 in Jade Empire
 
 			if (tokens.size() > 5) {
 				if (tokens[5] == "End")
-					transition->sourceWhen = TransitionSource::EndOfSound;
+					transition.sourceWhen = TransitionSource::EndOfSound;
 			}
 
 			if (tokens.size() > 7) {
-				transition->sourceFadeDuration      = getNumber(tokens[6]);
-				transition->destinationFadeDuration = getNumber(tokens[7]);
+				transition.sourceFadeDuration      = getNumber(tokens[6]);
+				transition.destinationFadeDuration = getNumber(tokens[7]);
 			}
 		}
 	}

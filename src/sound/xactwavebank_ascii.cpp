@@ -95,26 +95,26 @@ void XACTWaveBank_ASCII::load(Common::SeekableReadStream &xwb) {
 	Common::parseString(getFirst(tokenizer, xwb), waveCount);
 
 	_waves.resize(waveCount);
-	for (std::vector<Wave>::iterator w = _waves.begin(); w != _waves.end(); ++w) {
+	for (auto &wave : _waves) {
 		std::vector<Common::UString> strings;
 		tokenizer.getTokens(xwb, strings);
 
 		if (strings.size() != 8)
 			throw Common::Exception("ACTWaveBank_ASCII::load(): Invalid wave declaration");
 
-		w->name = Common::FilePath::getStem(strings[1]);
-		w->type = strings[0];
+		wave.name = Common::FilePath::getStem(strings[1]);
+		wave.type = strings[0];
 
-		Common::parseString(strings[2], w->samplingRate);
-		Common::parseString(strings[3], w->channels);
-		Common::parseString(strings[4], w->bitRate);
+		Common::parseString(strings[2], wave.samplingRate);
+		Common::parseString(strings[3], wave.channels);
+		Common::parseString(strings[4], wave.bitRate);
 
-		Common::parseString(strings[5], w->size);
+		Common::parseString(strings[5], wave.size);
 
-		Common::parseString(strings[6], w->loopOffset);
-		Common::parseString(strings[7], w->loopLength);
+		Common::parseString(strings[6], wave.loopOffset);
+		Common::parseString(strings[7], wave.loopLength);
 
-		w->bitRate = (w->bitRate / w->channels) * 8;
+		wave.bitRate = (wave.bitRate / wave.channels) * 8;
 
 		tokenizer.nextChunk(xwb);
 	}
