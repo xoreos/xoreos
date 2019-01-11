@@ -356,8 +356,8 @@ protected:
 		size_t weightMax { kWeightMaximum }; ///< Upper bound of this variation's weight.
 	};
 
-	typedef std::vector<Event> Events;
-	typedef std::vector<WaveVariation> WaveVariations;
+	using Events = std::vector<Event>;
+	using WaveVariations = std::vector<WaveVariation>;
 
 	/** A track within a sound. */
 	struct Track {
@@ -368,7 +368,7 @@ protected:
 		WaveVariations waves; ///< All the waves in the track.
 	};
 
-	typedef std::vector<Track> Tracks;
+	using Tracks = std::vector<Track>;
 
 	struct Sound {
 		Common::UString name; ///< Name of the sound. Can be empty.
@@ -417,7 +417,7 @@ protected:
 		size_t weightMax { kWeightMaximum }; ///< Upper bound of this variation's weight.
 	};
 
-	typedef std::vector<CueVariation> CueVariations;
+	using CueVariations = std::vector<CueVariation>;
 
 	struct Transition {
 		size_t from { kSoundSilence }; ///< Sound index to transition from.
@@ -440,7 +440,7 @@ protected:
 		uint32 destinationMarkerHigh { 0 }; ///< Upper bound of a marker in the destination.
 	};
 
-	typedef std::vector<Transition> Transitions;
+	using Transitions = std::vector<Transition>;
 
 	struct ParametersCrossfade {
 		CrossfadeType type { CrossfadeType::Disabled };
@@ -471,13 +471,13 @@ protected:
 		Transitions transitions;
 	};
 
-	typedef std::vector<WaveBank> WaveBanks;
-	typedef std::vector<Sound> Sounds;
-	typedef std::vector<Cue> Cues;
+	using WaveBanks = std::vector<WaveBank>;
+	using Sounds = std::vector<Sound>;
+	using Cues = std::vector<Cue>;
 
-	typedef std::map<Common::UString, WaveBank *> WaveBankMap;
-	typedef std::map<Common::UString, Sound *> SoundMap;
-	typedef std::map<Common::UString, Cue *> CueMap;
+	using WaveBankMap = std::map<Common::UString, WaveBank *>;
+	using SoundMap = std::map<Common::UString, Sound *>;
+	using CueMap = std::map<Common::UString, Cue *>;
 
 
 	Common::UString _name;

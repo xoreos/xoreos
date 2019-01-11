@@ -98,12 +98,15 @@ private:
 		size_t loopLength; ///< Length of the looping section.
 	};
 
+	using Waves = std::vector<Wave>;
+
+
 	Common::ScopedPtr<Common::SeekableReadStream> _xwb;
 
 	Common::UString _name; ///< The internal name of this wavebank. */
 	uint32 _flags;
 
-	std::vector<Wave> _waves;
+	Waves _waves;
 
 
 	void load(Common::SeekableReadStream &xwb);

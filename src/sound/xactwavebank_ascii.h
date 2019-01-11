@@ -83,10 +83,13 @@ private:
 		size_t loopLength; ///< Length of the looping section.
 	};
 
+	using Waves = std::vector<Wave>;
+
+
 	Common::UString _name;
 	bool _streaming;
 
-	std::vector<Wave> _waves;
+	Waves _waves;
 
 
 	void load(Common::SeekableReadStream &xwb);
