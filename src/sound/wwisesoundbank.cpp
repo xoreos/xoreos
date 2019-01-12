@@ -267,16 +267,16 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 				debugC(Common::kDebugSound, 3, "  - %s entries", Common::composeString(sectionSize / 12).c_str());
 
 				_files.resize(sectionSize / 12);
-				for (std::vector<File>::iterator f = _files.begin(); f != _files.end(); ++f) {
-					f->id     = bnk.readUint32LE();
-					f->offset = bnk.readUint32LE();
-					f->size   = bnk.readUint32LE();
+				for (auto &file : _files) {
+					file.id     = bnk.readUint32LE();
+					file.offset = bnk.readUint32LE();
+					file.size   = bnk.readUint32LE();
 
-					_fileIDs.insert(std::make_pair(f->id, std::distance(_files.begin(), f)));
+					_fileIDs.insert(std::make_pair(file.id, &file - _files.data()));
 
-					debugC(Common::kDebugSound, 3, "    - %u | %s, %s", f->id,
-					                               Common::composeString(f->offset).c_str(),
-					                               Common::composeString(f->size).c_str());
+					debugC(Common::kDebugSound, 3, "    - %u | %s, %s", file.id,
+					                               Common::composeString(file.offset).c_str(),
+					                               Common::composeString(file.size).c_str());
 				}
 				break;
 			}
@@ -298,7 +298,8 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 					const uint32 objectID = bnk.readUint32LE();
 
 					debugC(Common::kDebugSound, 3, "    - %s/%s: %u, %u (%s)", Common::composeString(i).c_str(),
-					                               Common::composeString(count).c_str(), type, objectID,
+					                               Common::composeString(count).c_str(),
+					                               static_cast<uint>(type), objectID,
 					                               Common::composeString(size).c_str());
 
 					if (type == ObjectType::Sound) {
@@ -327,7 +328,8 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 						_soundIDs.insert(std::make_pair(sound.id, _sounds.size() - 1));
 
 						debugC(Common::kDebugSound, 3, "=> SOUND: %u | %u, %u | %u (%s, %s)",
-						                               embedded, sound.fileID, sound.fileSource, sound.type,
+						                               embedded, sound.fileID, sound.fileSource,
+						                               static_cast<uint>(sound.type),
 						                               Common::composeString(sound.fileOffset).c_str(),
 						                               Common::composeString(sound.fileSize).c_str());
 
@@ -358,7 +360,8 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 						_soundIDs.insert(std::make_pair(music.id, _sounds.size() - 1));
 
 						debugC(Common::kDebugSound, 3, "=> MUSIC: %u | %u, %u | %u (%s, %s)",
-						                               embedded, music.fileID, music.fileSource, music.type,
+						                               embedded, music.fileID, music.fileSource,
+						                               static_cast<uint>(music.type),
 						                               Common::composeString(music.fileOffset).c_str(),
 						                               Common::composeString(music.fileSize).c_str());
 					}
