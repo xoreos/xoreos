@@ -87,6 +87,7 @@ build_script:
   - cmake --build build
   - copy /y %BOOST_ROOT%\lib32-msvc-14.0\*.dll build\bin\Debug
   - copy /y %VCPKG_BIN_DIR%\*.dll build\bin\Debug
+  - copy /y %LIBXVID_DESTDIR%\lib\*.dll build\bin\Debug
   - cmake --build build --target check
 
 cache:
