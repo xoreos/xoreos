@@ -34,53 +34,38 @@ static constexpr size_t k3DDefinitionSize    = 40;
 static constexpr size_t kCueDefinitionSize   = 20;
 static constexpr size_t kSoundDefinitionSize = 20;
 static constexpr size_t kFadeDefinitionSize  = 16;
+static constexpr size_t kTrackDefinitionSize =  4;
 
-enum XSBFlags {
-	kXSBNoCueNames = 1
-};
+static constexpr uint16 kXSBNoCueNames = 0x0001;
 
-enum CueFlags {
-	kCueSequential   = 0x0001,
-	kCueCrossfade    = 0x0002,
-	kCueStopOnStarve = 0x0004,
-	kCueInteractive  = 0x0008
-};
+static constexpr uint16 kCueSequential   = 0x0001;
+static constexpr uint16 kCueCrossfade    = 0x0002;
+static constexpr uint16 kCueStopOnStarve = 0x0004;
+static constexpr uint16 kCueInteractive  = 0x0008;
 
-enum SoundFlags {
-	kSound3D        = 0x01,
-	kSoundGainBoost = 0x02,
-	kSoundEQ        = 0x04,
-	kSoundTrivial   = 0x08,
-	kSoundSimple    = 0x10,
-	kSoundLinger    = 0x20
-};
+static constexpr uint8 kSound3D        = 0x01;
+static constexpr uint8 kSoundGainBoost = 0x02;
+static constexpr uint8 kSoundEQ        = 0x04;
+static constexpr uint8 kSoundTrivial   = 0x08;
+static constexpr uint8 kSoundSimple    = 0x10;
+static constexpr uint8 kSoundLinger    = 0x20;
 
-enum PlayEventFlags {
-	kPlayEventMultipleVariations = 0x04,
-	kPlayEventLoopNewVariation   = 0x40
-};
+static constexpr uint8 kPlayEventMultipleVariations = 0x04;
+static constexpr uint8 kPlayEventLoopNewVariation   = 0x40;
 
-enum PitchEventFlags {
-	kPitchEventVariation = 0x04,
-	kPitchEventRelative  = 0x10,
-	kPitchEventFade      = 0x20
-};
+static constexpr uint8 kPitchEventVariation = 0x0;
+static constexpr uint8 kPitchEventRelative  = 0x1;
+static constexpr uint8 kPitchEventFade      = 0x2;
 
-enum VolumeEventFlags {
-	kVolumeEventVariation = 0x04,
-	kVolumeEventRelative  = 0x10,
-	kVolumeEventFade      = 0x20
-};
+static constexpr uint8 kVolumeEventVariation = 0x0;
+static constexpr uint8 kVolumeEventRelative  = 0x1;
+static constexpr uint8 kVolumeEventFade      = 0x2;
 
-enum LowPassEventFlags {
-	kLowPassEventRandom   = 0x04,
-	kLowPassEventRelative = 0x10,
-	kLowPassEventSweep    = 0x20
-};
+static constexpr uint8 kLowPassEventRandom   = 0x0;
+static constexpr uint8 kLowPassEventRelative = 0x1;
+static constexpr uint8 kLowPassEventSweep    = 0x2;
 
-enum MarkerEventFlags {
-	kMarkerEventRepeat = 0x20
-};
+static constexpr uint8 kMarkerEventRepeat = 0x2;
 
 XACTSoundBank_Binary::XACTSoundBank_Binary(Common::SeekableReadStream &xsb) {
 	load(xsb);
@@ -604,8 +589,6 @@ void XACTSoundBank_Binary::readTracks(Common::SeekableReadStream &xsb, Sound &so
 	}
 
 	// Complex
-
-	static constexpr size_t kTrackDefinitionSize = 4;
 
 	for (size_t i = 0; i < count; ++i) {
 		Track &track = sound.tracks[i];

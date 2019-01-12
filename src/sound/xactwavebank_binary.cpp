@@ -65,20 +65,16 @@
 
 namespace Sound {
 
-enum XWBFlags {
-	kXWBFlagsStreaming    = 0x00000001,
-	kXWBFlagsEntryNames   = 0x00010000,
-	kXWBFlagsCompact      = 0x00020000,
-	kXWBFlagsSyncDisabled = 0x00040000,
-	kXWBFlagsSeekTables   = 0x00080000
-};
+static constexpr uint32 kXWBFlagsStreaming    = 0x00000001;
+static constexpr uint32 kXWBFlagsEntryNames   = 0x00010000;
+static constexpr uint32 kXWBFlagsCompact      = 0x00020000;
+static constexpr uint32 kXWBFlagsSyncDisabled = 0x00040000;
+static constexpr uint32 kXWBFlagsSeekTables   = 0x00080000;
 
-enum WaveFlags {
-	kWaveFlagsReadAhead      = 0x00000001, ///< Performance hint: read ahead while streaming.
-	kWaveFlagsLoopCache      = 0x00000002, ///< Audio file is used by at least one looping sound.
-	kWaveFlagsRemoveLoopTail = 0x00000004, ///< Ignore the data after the looping section.
-	kWaveFlagsIgnoreLoop     = 0x00000008  ///< Don't loop this sound.
-};
+static constexpr uint32 kWaveFlagsReadAhead      = 0x00000001; ///< Performance hint: read ahead while streaming.
+static constexpr uint32 kWaveFlagsLoopCache      = 0x00000002; ///< Audio file is used by at least one looping sound.
+static constexpr uint32 kWaveFlagsRemoveLoopTail = 0x00000004; ///< Ignore the data after the looping section.
+static constexpr uint32 kWaveFlagsIgnoreLoop     = 0x00000008; ///< Don't loop this sound.
 
 XACTWaveBank_Binary::XACTWaveBank_Binary(Common::SeekableReadStream *xwb) : _xwb(xwb) {
 	assert(_xwb);
