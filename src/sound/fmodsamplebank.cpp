@@ -101,7 +101,7 @@ enum SampleFlags {
 
 RewindableAudioStream *FMODSampleBank::getSample(const Sample &sample) const {
 	_fsb->seek(sample.offset);
-	Common::ScopedPtr<Common::SeekableReadStream> dataStream(_fsb->readStream(sample.size));
+	std::unique_ptr<Common::SeekableReadStream> dataStream(_fsb->readStream(sample.size));
 
 	if (sample.flags & kSampleFlagMP3) {
 		warning("MP3");

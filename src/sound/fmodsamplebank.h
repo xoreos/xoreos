@@ -25,8 +25,11 @@
 #ifndef SOUND_FMODSAMPLEBANK_H
 #define SOUND_FMODSAMPLEBANK_H
 
+#include <memory>
+#include <vector>
+#include <map>
+
 #include "src/common/ustring.h"
-#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 namespace Sound {
@@ -93,7 +96,7 @@ private:
 	};
 
 
-	Common::ScopedPtr<Common::SeekableReadStream> _fsb;
+	std::unique_ptr<Common::SeekableReadStream> _fsb;
 
 	std::vector<Sample> _samples;
 
