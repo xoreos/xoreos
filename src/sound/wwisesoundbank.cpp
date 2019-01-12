@@ -209,26 +209,26 @@ enum SectionType {
 	kSectionSoundTypeID = MKTAG('S', 'T', 'I', 'D')
 };
 
-enum ObjectType {
-	kObjectSettings               =  1,
-	kObjectSound                  =  2,
-	kObjectEventAction            =  3,
-	kObjectEvent                  =  4,
-	kObjectSequenceContainer      =  5,
-	kObjectSwitchContainer        =  6,
-	kObjectActorMixer             =  7,
-	kObjectAudioBus               =  8,
-	kObjectBlendContainer         =  9,
-	kObjectMusicSegment           = 10,
-	kObjectMusicTrack             = 11,
-	kObjectMusicSwitchContainer   = 12,
-	kObjectMusicPlaylistContainer = 13,
-	kObjectAttenuation            = 14,
-	kObjectDialogueEvent          = 15,
-	kObjectMotionBus              = 16,
-	kObjectMotionFX               = 17,
-	kObjectEffect                 = 18,
-	kObjectAuxiliaryBus           = 20,
+enum class ObjectType {
+	Settings               =  1,
+	Sound                  =  2,
+	EventAction            =  3,
+	Event                  =  4,
+	SequenceContainer      =  5,
+	SwitchContainer        =  6,
+	ActorMixer             =  7,
+	AudioBus               =  8,
+	BlendContainer         =  9,
+	MusicSegment           = 10,
+	MusicTrack             = 11,
+	MusicSwitchContainer   = 12,
+	MusicPlaylistContainer = 13,
+	Attenuation            = 14,
+	DialogueEvent          = 15,
+	MotionBus              = 16,
+	MotionFX               = 17,
+	Effect                 = 18,
+	AuxiliaryBus           = 20,
 };
 
 void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
@@ -291,7 +291,8 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 			case kSectionObjects: {
 				const size_t count = bnk.readUint32LE();
 				for (size_t i = 0; i < count; i++) {
-					const uint32 type  = bnk.readUint32LE();
+					const ObjectType type = static_cast<ObjectType>(bnk.readUint32LE());
+
 					const size_t size  = bnk.readUint32LE();
 					const size_t start = bnk.pos();
 					const size_t end   = start + size;
@@ -302,7 +303,7 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 					                               Common::composeString(count).c_str(), type, objectID,
 					                               Common::composeString(size).c_str());
 
-					if (type == kObjectSound) {
+					if (type == ObjectType::Sound) {
 						_sounds.push_back(Sound());
 						Sound &sound = _sounds.back();
 
@@ -332,7 +333,7 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 						                               Common::composeString(sound.fileOffset).c_str(),
 						                               Common::composeString(sound.fileSize).c_str());
 
-					} else if (type == kObjectMusicTrack) {
+					} else if (type == ObjectType::MusicTrack) {
 						_sounds.push_back(Sound());
 						Sound &music = _sounds.back();
 
@@ -354,7 +355,7 @@ void WwiseSoundBank::load(Common::SeekableReadStream &bnk) {
 							music.fileSize   = bnk.readUint32LE();
 						}
 
-						music.type = kSoundTypeMusic;
+						music.type = SoundType::Music;
 
 						_soundIDs.insert(std::make_pair(music.id, _sounds.size() - 1));
 

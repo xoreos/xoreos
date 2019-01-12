@@ -80,10 +80,10 @@ private:
 		size_t size;   ///< Size of the file in bytes.
 	};
 
-	enum SoundType {
-		kSoundTypeSFX,
-		kSoundTypeVoice,
-		kSoundTypeMusic
+	enum class SoundType {
+		SFX,
+		Voice,
+		Music
 	};
 
 	struct Sound {
