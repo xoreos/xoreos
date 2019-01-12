@@ -201,13 +201,11 @@ Common::SeekableReadStream *WwiseSoundBank::getSoundData(size_t index) const {
 	return bank->readStream(sound.fileSize);
 }
 
-enum SectionType {
-	kSectionBankHeader  = MKTAG('B', 'K', 'H', 'D'),
-	kSectionDataIndex   = MKTAG('D', 'I', 'D', 'X'),
-	kSectionData        = MKTAG('D', 'A', 'T', 'A'),
-	kSectionObjects     = MKTAG('H', 'I', 'R', 'C'),
-	kSectionSoundTypeID = MKTAG('S', 'T', 'I', 'D')
-};
+static constexpr uint32 kSectionBankHeader  = MKTAG('B', 'K', 'H', 'D');
+static constexpr uint32 kSectionDataIndex   = MKTAG('D', 'I', 'D', 'X');
+static constexpr uint32 kSectionData        = MKTAG('D', 'A', 'T', 'A');
+static constexpr uint32 kSectionObjects     = MKTAG('H', 'I', 'R', 'C');
+static constexpr uint32 kSectionSoundTypeID = MKTAG('S', 'T', 'I', 'D');
 
 enum class ObjectType {
 	Settings               =  1,
