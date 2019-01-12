@@ -147,7 +147,15 @@ AC_ARG_WITH([std], [AS_HELP_STRING([--without-std], [Compile without specifying 
 
 STD=""
 if test "x$with_std" = "xyes"; then
-	AX_CHECK_COMPILER_FLAGS_VAR([C++], [STD], [-std=c++11])
+	case "$target" in
+		*mingw*)
+			dnl Needed by _wfopen in src/common/platform.cpp
+			AX_CHECK_COMPILER_FLAGS_VAR([C++], [STD], [-std=gnu++11])
+			;;
+		*)
+			AX_CHECK_COMPILER_FLAGS_VAR([C++], [STD], [-std=c++11])
+			;;
+	esac;
 fi
 
 AC_SUBST(STD)
