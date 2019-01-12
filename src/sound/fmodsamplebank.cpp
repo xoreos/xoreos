@@ -157,16 +157,16 @@ void FMODSampleBank::load(Common::SeekableReadStream &fsb) {
 	fsb.seek(offsetInfo);
 
 	_samples.resize(sampleCount);
-	for (std::vector<Sample>::iterator s = _samples.begin(); s != _samples.end(); ++s) {
-		const bool isSimple = (flags & kHeaderFlagSimpleInfo) && (s != _samples.begin());
+	for (auto &sample : _samples) {
+		const bool isSimple = (flags & kHeaderFlagSimpleInfo) && (&sample != &_samples.front());
 
 		if (isSimple) {
-			*s = _samples[0];
+			sample = _samples[0];
 
-			s->name.clear();
+			sample.name.clear();
 
-			s->length = fsb.readUint32LE();
-			s->size   = fsb.readUint32LE();
+			sample.length = fsb.readUint32LE();
+			sample.size   = fsb.readUint32LE();
 
 		} else {
 			const size_t infoSize = fsb.readUint16LE();
@@ -175,38 +175,38 @@ void FMODSampleBank::load(Common::SeekableReadStream &fsb) {
 				throw Common::Exception("FMODSampleBank::load(): Invalid sample info size %s",
 				                        Common::composeString(infoSize).c_str());
 
-			s->name = Common::readStringFixed(fsb, Common::kEncodingASCII, 30);
+			sample.name = Common::readStringFixed(fsb, Common::kEncodingASCII, 30);
 
-			s->length = fsb.readUint32LE();
-			s->size   = fsb.readUint32LE();
+			sample.length = fsb.readUint32LE();
+			sample.size   = fsb.readUint32LE();
 
-			s->loopStart = fsb.readUint32LE();
-			s->loopEnd   = fsb.readUint32LE();
+			sample.loopStart = fsb.readUint32LE();
+			sample.loopEnd   = fsb.readUint32LE();
 
-			s->flags = fsb.readUint32LE();
+			sample.flags = fsb.readUint32LE();
 
-			s->defFreq = fsb.readSint32LE();
-			s->defVol  = fsb.readUint16LE();
-			s->defPan  = fsb.readSint16LE();
-			s->defPri  = fsb.readUint16LE();
+			sample.defFreq = fsb.readSint32LE();
+			sample.defVol  = fsb.readUint16LE();
+			sample.defPan  = fsb.readSint16LE();
+			sample.defPri  = fsb.readUint16LE();
 
-			s->channels = fsb.readUint16LE();
+			sample.channels = fsb.readUint16LE();
 
-			s->minDistance = fsb.readIEEEFloatLE();
-			s->maxDistance = fsb.readIEEEFloatLE();
+			sample.minDistance = fsb.readIEEEFloatLE();
+			sample.maxDistance = fsb.readIEEEFloatLE();
 
-			s->varFreq = fsb.readSint32LE();
-			s->varVol  = fsb.readUint16LE();
-			s->varPan  = fsb.readSint16LE();
+			sample.varFreq = fsb.readSint32LE();
+			sample.varVol  = fsb.readUint16LE();
+			sample.varPan  = fsb.readSint16LE();
 
 			fsb.skip(infoSize - 80);
 		}
 
-		s->offset   = offsetData;
-		offsetData += s->size;
+		sample.offset   = offsetData;
+		offsetData += sample.size;
 
-		if (!s->name.empty())
-			_sampleMap.insert(std::make_pair(s->name, &*s));
+		if (!sample.name.empty())
+			_sampleMap.insert(std::make_pair(sample.name, &sample));
 	}
 }
 
