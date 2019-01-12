@@ -48,7 +48,7 @@ public:
 	WwiseSoundBank(Common::SeekableReadStream *bnk);
 	WwiseSoundBank(const Common::UString &name);
 	WwiseSoundBank(uint64 hash);
-	~WwiseSoundBank() { }
+	~WwiseSoundBank() = default;
 
 	/** Return the number of embedded files. */
 	size_t getFileCount() const;
