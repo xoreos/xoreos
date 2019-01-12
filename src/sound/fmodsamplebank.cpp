@@ -94,10 +94,8 @@ bool FMODSampleBank::hasSample(const Common::UString &name) const {
 	return _sampleMap.find(name) != _sampleMap.end();
 }
 
-enum SampleFlags {
-	kSampleFlagMP3      = 0x00000200,
-	kSampleFlagIMAADPCM = 0x00400000
-};
+static constexpr uint32 kSampleFlagMP3      = 0x00000200;
+static constexpr uint32 kSampleFlagIMAADPCM = 0x00400000;
 
 RewindableAudioStream *FMODSampleBank::getSample(const Sample &sample) const {
 	_fsb->seek(sample.offset);
@@ -134,12 +132,10 @@ RewindableAudioStream *FMODSampleBank::getSample(const Common::UString &name) co
 	return getSample(*s->second);
 }
 
-enum HeaderFlags {
-	kHeaderFlagSimpleInfo = 0x00000002
-};
+static constexpr uint32 kHeaderFlagSimpleInfo = 0x00000002;
 
 void FMODSampleBank::load(Common::SeekableReadStream &fsb) {
-	static const uint32 kFSBID = MKTAG('F', 'S', 'B', '4');
+	static constexpr uint32 kFSBID = MKTAG('F', 'S', 'B', '4');
 
 	const uint32 id = fsb.readUint32BE();
 	if (id != kFSBID)
