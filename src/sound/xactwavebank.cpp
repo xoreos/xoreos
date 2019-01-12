@@ -34,7 +34,7 @@ namespace Sound {
 
 XACTWaveBank *XACTWaveBank::load(const Common::UString &name) {
 	try {
-		Common::SeekableReadStream *stream = 0;
+		Common::SeekableReadStream *stream = nullptr;
 
 		stream = ResMan.getResource(name, Aurora::kFileTypeXWB);
 		if (stream)
@@ -51,7 +51,7 @@ XACTWaveBank *XACTWaveBank::load(const Common::UString &name) {
 		throw;
 	}
 
-	return 0;
+	return nullptr;
 }
 
 } // End of namespace Sound

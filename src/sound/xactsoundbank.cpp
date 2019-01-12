@@ -186,7 +186,7 @@ XACTSoundBank *XACTSoundBank::load(const Common::UString &name) {
 		throw;
 	}
 
-	return 0;
+	return nullptr;
 }
 
 ChannelHandle XACTSoundBank::playCue(size_t index, size_t variation, SoundType soundType) {
