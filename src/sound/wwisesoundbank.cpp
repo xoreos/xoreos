@@ -125,7 +125,7 @@ RewindableAudioStream *WwiseSoundBank::getFile(size_t index) const {
 	if (isEmptyFile(index))
 		return new EmptyAudioStream;
 
-	Common::ScopedPtr<Common::SeekableReadStream> wwData(getFileData(index));
+	std::unique_ptr<Common::SeekableReadStream> wwData(getFileData(index));
 	return makeWwRIFFVorbisStream(wwData.release(), true);
 }
 
@@ -133,7 +133,7 @@ RewindableAudioStream *WwiseSoundBank::getSound(size_t index) const {
 	if (isEmptySound(index))
 		return new EmptyAudioStream;
 
-	Common::ScopedPtr<Common::SeekableReadStream> wwData(getSoundData(index));
+	std::unique_ptr<Common::SeekableReadStream> wwData(getSoundData(index));
 	return makeWwRIFFVorbisStream(wwData.release(), true);
 }
 
@@ -190,7 +190,7 @@ Common::SeekableReadStream *WwiseSoundBank::getSoundData(size_t index) const {
 		                        "without a bank name", Common::composeString(index).c_str(),
 		                        sound.id, sound.fileID, sound.fileSource);
 
-	Common::ScopedPtr<Common::SeekableReadStream> bank(ResMan.getResource(bankName->second, Aurora::kFileTypeBNK));
+	std::unique_ptr<Common::SeekableReadStream> bank(ResMan.getResource(bankName->second, Aurora::kFileTypeBNK));
 	if (!bank)
 		throw Common::Exception("WwiseSoundBank::getSoundData(): Bank \"%s\" for externally embedded file "
 		                        "(%s, %u, %u) does not exist", bankName->second.c_str(),

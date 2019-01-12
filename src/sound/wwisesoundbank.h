@@ -25,11 +25,11 @@
 #ifndef SOUND_WWISESOUNDBANK_H
 #define SOUND_WWISESOUNDBANK_H
 
+#include <memory>
 #include <vector>
 #include <map>
 
 #include "src/common/ustring.h"
-#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 namespace Sound {
@@ -101,7 +101,7 @@ private:
 		size_t fileSize;
 	};
 
-	Common::ScopedPtr<Common::SeekableReadStream> _bnk;
+	std::unique_ptr<Common::SeekableReadStream> _bnk;
 
 	uint32 _bankID;
 	size_t _dataOffset;
