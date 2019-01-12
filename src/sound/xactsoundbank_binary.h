@@ -57,6 +57,7 @@ namespace Sound {
 class XACTSoundBank_Binary : public XACTSoundBank {
 public:
 	XACTSoundBank_Binary(Common::SeekableReadStream &xsb);
+	virtual ~XACTSoundBank_Binary() = default;
 
 private:
 	void load(Common::SeekableReadStream &xsb);

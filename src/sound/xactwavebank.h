@@ -47,7 +47,8 @@ class RewindableAudioStream;
  */
 class XACTWaveBank {
 public:
-	virtual ~XACTWaveBank() { }
+	XACTWaveBank() = default;
+	virtual ~XACTWaveBank() = default;
 
 	/** Return the internal name of the WaveBank. */
 	virtual const Common::UString &getName() const = 0;

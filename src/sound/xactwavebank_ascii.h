@@ -55,7 +55,7 @@ namespace Sound {
 class XACTWaveBank_ASCII : public XACTWaveBank {
 public:
 	XACTWaveBank_ASCII(Common::SeekableReadStream *xwb);
-	~XACTWaveBank_ASCII() { }
+	virtual ~XACTWaveBank_ASCII() = default;
 
 	/** Return the internal name of the WaveBank. */
 	const Common::UString &getName() const override { return _name; }

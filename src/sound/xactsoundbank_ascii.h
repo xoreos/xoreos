@@ -54,6 +54,7 @@ namespace Sound {
 class XACTSoundBank_ASCII : public XACTSoundBank {
 public:
 	XACTSoundBank_ASCII(Common::SeekableReadStream &xsb);
+	virtual ~XACTSoundBank_ASCII() = default;
 
 private:
 	void load(Common::SeekableReadStream &xsb);

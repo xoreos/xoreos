@@ -62,7 +62,8 @@ namespace Sound {
  */
 class XACTSoundBank {
 public:
-	virtual ~XACTSoundBank() { }
+	XACTSoundBank() = default;
+	virtual ~XACTSoundBank() = default;
 
 	/** Load an XACT SoundBank, of either ASCII or Binary format. */
 	static XACTSoundBank *load(const Common::UString &name);
