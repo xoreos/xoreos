@@ -51,7 +51,7 @@ class FMODSampleBank {
 public:
 	FMODSampleBank(Common::SeekableReadStream *fsb);
 	FMODSampleBank(const Common::UString &name);
-	~FMODSampleBank() { }
+	~FMODSampleBank() = default;
 
 	/** Return the number of sample files. */
 	size_t getSampleCount() const;
