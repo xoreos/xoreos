@@ -1,4 +1,8 @@
 Someday, ????-??-?? (Version 0.0.6)
+	- BUILD:
+		- Opened xoreos up for C++11
+		- Made some library dependencies optional,
+		  disabling xoreos features
 	- COMMON:
 		- Cleaned up threading
 	- GRAPHICS:
@@ -13,12 +17,15 @@ Someday, ????-??-?? (Version 0.0.6)
 		- Added a partial ActionScript implementation
 		- Added a partial ScaleForm GFx implementation
 	- SOUND:
-		- Added preliminary support for XACT WaveBank
+		- Added preliminary support for XACT WaveBanks
+		- Added preliminary support for XACT SoundBanks
 		- Added preliminary support for FMOD SampleBanks
 		- Added a partial implementation of FMOD Events
 		- Added preliminary support for Wwise SoundBanks
 	- VIDEO:
 		- Reorganized video decoding
+	- EVENTS:
+		- Added partial game controller support
 	- ENGINES:
 		- All engines now store objects in containers as an ID instead
 		  of as direct pointers
@@ -40,10 +47,17 @@ Someday, ????-??-?? (Version 0.0.6)
 			- Fixed TLK encodings for non-English version
 			- Added support for the (extracted) Android version
 			- Fixed font rendering in the Xbox version
+			- Added area background music
+		- NWN2:
+			- Filled in the object classes some more
 		- DRAGONAGE:
 			- Added a probe for the Xbox 360 version
 		- DRAGONAGE2:
 			- Partially implemented area transitions
+		- WITCHER:
+			- Stubbed more Lua methods
+	- TESTS
+		- Started adding engine-level unit tests
 
 Tuesday, 2018-07-03 (Version 0.0.5)
 	- DOCS:
