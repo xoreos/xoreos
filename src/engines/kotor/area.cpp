@@ -631,10 +631,10 @@ void Area::evaluateTriggers(float x, float y) {
 
 	if (_activeTrigger != trigger) {
 		if (_activeTrigger)
-			_activeTrigger->runScript(kScriptExit, this, _module->getPC());
+			_activeTrigger->runScript(kScriptExit, _activeTrigger, _module->getPC());
 		_activeTrigger = trigger;
 		if (_activeTrigger)
-			_activeTrigger->runScript(kScriptEnter, this, _module->getPC());
+			_activeTrigger->runScript(kScriptEnter, _activeTrigger, _module->getPC());
 	}
 }
 
