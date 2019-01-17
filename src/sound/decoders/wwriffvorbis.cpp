@@ -450,7 +450,11 @@ bool WwRIFFVorbisStream::rewind() {
 	Common::ScopedPtr<Common::SeekableReadStream> headerComment(generateHeaderComment());
 	Common::ScopedPtr<Common::SeekableReadStream> headerSetup(generateHeaderSetup());
 
+#ifdef ENABLE_VORBIS
 	_vorbis.reset(Sound::makePacketizedVorbisStream(*headerIdentification, *headerComment, *headerSetup));
+#else
+	throw Common::Exception("Vorbis decoding disabled when building without libvorbis");
+#endif
 
 	_currentOffset = _dataOffset + _firstAudioPacketOffset;
 
