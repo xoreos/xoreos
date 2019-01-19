@@ -87,6 +87,9 @@ public:
 
 	int getSkillRank(Skill skill);
 
+	/** Get the current score of the specified ability. */
+	int getAbilityScore(Ability ability);
+
 	// Positioning
 
 	/** Set the creature's position. */
@@ -182,6 +185,14 @@ private:
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 	Graphics::Aurora::Model *_headModel; ///< The creature's head model.
 	bool _visible;
+
+	// Abilities
+	unsigned int _strength;
+	unsigned int _dexterity;
+	unsigned int _constitution;
+	unsigned int _intelligence;
+	unsigned int _wisdom;
+	unsigned int _charisma;
 
 	std::vector<uint32> _skills; ///< The skill levels of the creature
 
