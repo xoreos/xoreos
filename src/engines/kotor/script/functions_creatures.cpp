@@ -108,6 +108,30 @@ void Functions::getSubRace(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = creature->getSubRace();
 }
 
+void Functions::getHasSkill(Aurora::NWScript::FunctionContext &ctx) {
+	int nSkill = ctx.getParams()[0].getInt();
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+
+	Creature *creature = ObjectContainer::toCreature(object);
+
+	if (!creature)
+		throw Common::Exception("Functions::getHasSkill(): Object is not a creature");
+
+	ctx.getReturn() = creature->getSkillRank(Skill(nSkill)) > 0;
+}
+
+void Functions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
+	int nSkill = ctx.getParams()[0].getInt();
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+
+	Creature *creature = ObjectContainer::toCreature(object);
+
+	if (!creature)
+		throw Common::Exception("Functions::getHasSkill(): Object is not a creature");
+
+	ctx.getReturn() = creature->getSkillRank(Skill(nSkill));
+}
+
 } // End of namespace KotOR
 
 } // End of namespace Engines
