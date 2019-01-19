@@ -83,6 +83,10 @@ public:
 	float getWalkRate() const;
 	float getRunRate() const;
 
+	// Attributes
+
+	int getSkillRank(Skill skill);
+
 	// Positioning
 
 	/** Set the creature's position. */
@@ -178,6 +182,8 @@ private:
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 	Graphics::Aurora::Model *_headModel; ///< The creature's head model.
 	bool _visible;
+
+	std::vector<uint32> _skills; ///< The skill levels of the creature
 
 	Common::UString _conversation;
 

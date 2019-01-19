@@ -173,6 +173,13 @@ float Creature::getRunRate() const {
 	return _runRate;
 }
 
+int Creature::getSkillRank(Skill skill) {
+	if (skill > _skills.size())
+		return -1;
+
+	return _skills[skill];
+}
+
 void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
@@ -280,6 +287,15 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 			classLevel.level = charClass.getSint("ClassLevel");
 
 			_levels.push_back(classLevel);
+		}
+	}
+
+	// Skills
+	if (gff.hasField("SkillList")) {
+		Aurora::GFF3List skillList = gff.getList("SkillList");
+		for (Aurora::GFF3List::const_iterator iter = skillList.begin(); iter != skillList.end(); iter++) {
+			const Aurora::GFF3Struct &skill = **iter;
+			_skills.push_back(skill.getUint("Rank"));
 		}
 	}
 
@@ -553,6 +569,8 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 	_levels.resize(1);
 	_levels[0].level = 1;
 	_levels[0].characterClass = info.getClass();
+
+	// TODO generate skills for pc
 
 	_skin = info.getSkin();
 	_face = info.getFace();
