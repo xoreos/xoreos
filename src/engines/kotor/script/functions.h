@@ -249,6 +249,9 @@ private:
 
 	void getRacialType(Aurora::NWScript::FunctionContext &ctx);
 	void getSubRace(Aurora::NWScript::FunctionContext &ctx);
+
+	void getHasSkill(Aurora::NWScript::FunctionContext &ctx);
+	void getSkillRank(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Global values, functions_global.cpp
