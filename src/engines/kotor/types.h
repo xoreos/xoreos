@@ -152,6 +152,19 @@ enum SubRace {
 	kSubRaceWookie
 };
 
+enum Skill {
+	kSkillComputerUse = 0,
+	kSkillDemolitions,
+	kSkillStealth,
+	kSkillAwareness,
+	kSkillPersuade,
+	kSkillRepair,
+	kSkillSecurity,
+	kSkillTreatInjury,
+
+	kSkillMAX
+};
+
 enum EquipmentSlot {
 	kEquipmentSlotNone    = 0,
 	kEquipmentSlotHead    = 1U << 0,
