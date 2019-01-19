@@ -165,6 +165,15 @@ enum Skill {
 	kSkillMAX
 };
 
+enum Ability {
+	kAbilityStrength = 0,
+	kAbilityDexterity,
+	kAbilityConstitution,
+	kAbilityIntelligence,
+	kAbilityWisdom,
+	kAbilityCharisma
+};
+
 enum EquipmentSlot {
 	kEquipmentSlotNone    = 0,
 	kEquipmentSlotHead    = 1U << 0,
