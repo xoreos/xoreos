@@ -22,8 +22,8 @@
  *  A loader for FEV (FMOD Event) files.
  */
 
-#ifndef AURORA_FEVFILE_H
-#define AURORA_FEVFILE_H
+#ifndef SOUND_FEVFILE_H
+#define SOUND_FEVFILE_H
 
 #include <map>
 
@@ -32,7 +32,7 @@
 #include "src/common/readstream.h"
 #include "src/common/ustring.h"
 
-namespace Aurora {
+namespace Sound {
 
 /** An FEV file is used to define events for the FMOD system
  *  and categorize them.
@@ -180,6 +180,6 @@ private:
 	std::vector<SoundDefinition> _definitions;
 };
 
-} // End of namespace Aurora
+} // End of namespace Sound
 
-#endif // AURORA_FEVFILE_H
+#endif // SOUND_FEVFILE_H

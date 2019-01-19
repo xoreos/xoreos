@@ -24,10 +24,11 @@
 
 #include "src/common/endianness.h"
 
-#include "src/aurora/fevfile.h"
 #include "src/aurora/resman.h"
 
-namespace Aurora {
+#include "src/sound/fevfile.h"
+
+namespace Sound {
 
 static const uint32 kFEVID = MKTAG('F', 'E', 'V', '1');
 
@@ -252,4 +253,4 @@ Common::UString FEVFile::readLengthPrefixedString(Common::SeekableReadStream &fe
 	return Common::readStringFixed(fev, Common::kEncodingASCII, length);
 }
 
-} // End of namespace Aurora
+} // End of namespace Sound
