@@ -180,6 +180,25 @@ int Creature::getSkillRank(Skill skill) {
 	return _skills[skill];
 }
 
+int Creature::getAbilityScore(Ability ability) {
+	switch (ability) {
+		case kAbilityStrength:
+			return _strength;
+		case kAbilityDexterity:
+			return _dexterity;
+		case kAbilityConstitution:
+			return _constitution;
+		case kAbilityIntelligence:
+			return _intelligence;
+		case kAbilityWisdom:
+			return _wisdom;
+		case kAbilityCharisma:
+			return _charisma;
+		default:
+			return 0;
+	}
+}
+
 void Creature::setPosition(float x, float y, float z) {
 	Object::setPosition(x, y, z);
 	Object::getPosition(x, y, z);
@@ -298,6 +317,14 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 			_skills.push_back(skill.getUint("Rank"));
 		}
 	}
+
+	// Abilities
+	_strength     = gff.getUint("Str");
+	_dexterity    = gff.getUint("Dex");
+	_constitution = gff.getUint("Con");
+	_intelligence = gff.getUint("Int");
+	_wisdom       = gff.getUint("Wis");
+	_charisma     = gff.getUint("Cha");
 
 	// Scripts
 	readScripts(gff);
