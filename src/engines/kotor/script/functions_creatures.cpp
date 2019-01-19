@@ -84,7 +84,7 @@ void Functions::getClassByPosition(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
-	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
 	Creature *creature = ObjectContainer::toCreature(object);
 
@@ -98,7 +98,7 @@ void Functions::getRacialType(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getSubRace(Aurora::NWScript::FunctionContext &ctx) {
-	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
 	Creature *creature = ObjectContainer::toCreature(object);
 
