@@ -257,7 +257,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 136, "ActionTakeItem"                      , 0                                                },
 	{ 137, "VectorNormalize"                     , &Functions::vectorNormalize                      },
 	{ 138, "GetItemStackSize"                    , 0                                                },
-	{ 139, "GetAbilityScore"                     , 0                                                },
+	{ 139, "GetAbilityScore"                     , &Functions::getAbilityScore                      },
 	{ 140, "GetIsDead"                           , 0                                                },
 	{ 141, "PrintVector"                         , &Functions::printVector                          },
 	{ 142, "Vector"                              , &Functions::vector                               },

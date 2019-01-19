@@ -31,6 +31,8 @@
 #include "src/engines/kotor/objectcontainer.h"
 
 #include "src/engines/kotor/script/functions.h"
+#include "functions.h"
+
 
 namespace Engines {
 
@@ -130,6 +132,18 @@ void Functions::getSkillRank(Aurora::NWScript::FunctionContext &ctx) {
 		throw Common::Exception("Functions::getHasSkill(): Object is not a creature");
 
 	ctx.getReturn() = creature->getSkillRank(Skill(nSkill));
+}
+
+void Functions::getAbilityScore(Aurora::NWScript::FunctionContext &ctx) {
+	int nAbilityType = ctx.getParams()[0].getInt();
+	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
+
+	Creature *creature = ObjectContainer::toCreature(object);
+
+	if (!creature)
+		throw Common::Exception("Functions::getHasSkill(): Object is not a creature");
+
+	ctx.getReturn() = creature->getAbilityScore(Ability(nAbilityType));
 }
 
 } // End of namespace KotOR

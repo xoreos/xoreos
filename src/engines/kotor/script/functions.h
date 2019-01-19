@@ -252,6 +252,8 @@ private:
 
 	void getHasSkill(Aurora::NWScript::FunctionContext &ctx);
 	void getSkillRank(Aurora::NWScript::FunctionContext &ctx);
+
+	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Global values, functions_global.cpp
