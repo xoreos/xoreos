@@ -182,9 +182,32 @@ void FEVFile::readEvent(Common::SeekableReadStream &fev) {
 	event.volumeRandomization = fev.readIEEEFloatLE();
 	event.priority = fev.readUint32LE();
 	event.maxPlaybacks = fev.readUint32LE();
-	event.mode = fev.readUint32LE();
 
-	fev.skip(12);
+	uint32 mode = fev.readUint32BE();
+
+	if (mode & 0x10000000)
+		event.mode = k3D;
+	else if (mode & 0x08000000)
+		event.mode = k2D;
+	else
+		throw Common::Exception("Invalid event mode");
+
+	if (mode & 0x00001000)
+		event.rollof3D = kLogarithmic;
+	else if (mode & 0x00002000)
+		event.rollof3D = kLinear;
+	else if (mode & 0x00000004)
+		event.rollof3D = kCustom;
+	else
+		event.rollof3D = kUnspecified;
+
+	if (mode & 0x00000400)
+		event.position3D = kHeadRelative;
+	else
+		event.position3D = kWorldRelative;
+
+	event.minDistance3D = fev.readIEEEFloatLE();
+	event.maxDistance3D = fev.readIEEEFloatLE();
 
 	event.Speaker2DL = fev.readIEEEFloatLE();
 	event.Speaker2DR = fev.readIEEEFloatLE();
@@ -197,12 +220,20 @@ void FEVFile::readEvent(Common::SeekableReadStream &fev) {
 	event.Speaker2DLS = fev.readIEEEFloatLE();
 	event.Speaker2DRS = fev.readIEEEFloatLE();
 
-	fev.skip(20);
+	fev.skip(4);
+
+	event.coneInsideAngle3D = fev.readIEEEFloatLE();
+	event.coneOutsideAngle3D = fev.readIEEEFloatLE();
+	event.coneOutsideVolume3D = fev.readIEEEFloatLE();
+
+	event.maxPlaybacksBehavior = fev.readUint32LE();
+
+	event.dopplerFactor3D = fev.readIEEEFloatLE();
 
 	event.ReverbDryLevel = fev.readIEEEFloatLE();
 	event.ReverbWetLevel = fev.readIEEEFloatLE();
 
-	fev.skip(4);
+	event.speakerSpread3D = fev.readIEEEFloatLE();
 
 	event.fadeInTime = fev.readUint32LE();
 	event.fadeOutTime = fev.readUint32LE();
@@ -210,7 +241,11 @@ void FEVFile::readEvent(Common::SeekableReadStream &fev) {
 	event.spawnIntensity = fev.readIEEEFloatLE();
 	event.spawnIntensityRandomization = fev.readIEEEFloatLE();
 
-	fev.skip(26);
+	event.panLevel3D = fev.readIEEEFloatLE();
+
+	event.positionRandomization3D = fev.readUint32LE();
+
+	fev.skip(8);
 
 	event.userProperties = readProperties(fev);
 

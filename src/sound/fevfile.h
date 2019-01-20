@@ -42,6 +42,26 @@ namespace Sound {
  */
 class FEVFile {
 public:
+	/** If an event is 2D or 3D. */
+	enum EventMode {
+		k2D,
+		k3D
+	};
+
+	/** The Rollof 3D type. */
+	enum Rollof3DType {
+		kLogarithmic,
+		kLinear,
+		kCustom,
+		kUnspecified
+	};
+
+	/** The type of the 3D position. */
+	enum Position3DType {
+		kWorldRelative,
+		kHeadRelative
+	};
+
 	/** Possible types of streaming for FMOD. */
 	enum StreamingType {
 		kDecompressIntoMemory,
@@ -106,8 +126,26 @@ public:
 		float pitchRandomization;
 		float volumeRandomization;
 		uint32 priority;
-		uint32 mode;
+		EventMode mode;
 		uint32 maxPlaybacks;
+		uint32 maxPlaybacksBehavior;
+
+		Rollof3DType rollof3D;
+		Position3DType position3D;
+
+		uint32 positionRandomization3D;
+
+		float coneInsideAngle3D;
+		float coneOutsideAngle3D;
+		float coneOutsideVolume3D; // [0, 1] -> [0, -1024]
+
+		float dopplerFactor3D;
+		float speakerSpread3D;
+
+		float panLevel3D;
+
+		float minDistance3D;
+		float maxDistance3D;
 
 		float Speaker2DL;
 		float Speaker2DR;
