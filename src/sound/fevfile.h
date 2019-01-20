@@ -111,6 +111,10 @@ public:
 		Common::UString name;
 	};
 
+	struct EventLayer {
+		int16 priority;
+	};
+
 	/** An FMOD event.
 	 *
 	 *  @note
@@ -169,6 +173,8 @@ public:
 
 		std::map<Common::UString, Property> userProperties;
 		Common::UString category;
+
+		std::vector<EventLayer> layers;
 	};
 
 	/** A sound definition. */

@@ -245,7 +245,21 @@ void FEVFile::readEvent(Common::SeekableReadStream &fev) {
 
 	event.positionRandomization3D = fev.readUint32LE();
 
-	fev.skip(8);
+	uint32 numLayers = fev.readUint32LE();
+	event.layers.resize(numLayers);
+	for (uint32 i = 0; i < numLayers; ++i) {
+		EventLayer layer;
+
+		fev.skip(2);
+
+		layer.priority = fev.readSint16LE();
+
+		fev.skip(6);
+
+		event.layers[i] = layer;
+	}
+
+	fev.skip(4);
 
 	event.userProperties = readProperties(fev);
 
