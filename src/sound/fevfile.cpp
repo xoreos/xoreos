@@ -181,8 +181,8 @@ void FEVFile::readEvent(Common::SeekableReadStream &fev) {
 	event.pitchRandomization = fev.readIEEEFloatLE();
 	event.volumeRandomization = fev.readIEEEFloatLE();
 	event.priority = fev.readUint32LE();
-	event.mode = fev.readUint32LE();
 	event.maxPlaybacks = fev.readUint32LE();
+	event.mode = fev.readUint32LE();
 
 	fev.skip(12);
 
