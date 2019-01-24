@@ -193,6 +193,31 @@ public:
 		float position3DRandomization;
 	};
 
+	/** A reverb definition. */
+	struct ReverbDefinition {
+		Common::UString name;
+
+		int32 room;
+		int32 roomHF;
+		float roomRollof;
+
+		float decayTime;
+		float decayHFRatio;
+
+		int32 reflections;
+		float reflectDelay;
+
+		int32 reverb;
+		float reverbDelay;
+
+		float diffusion;
+		float density;
+
+		float hfReference;
+		int32 roomLF;
+		float lfReference;
+	};
+
 	FEVFile(const Common::UString &resRef);
 	FEVFile(Common::SeekableReadStream &fev);
 

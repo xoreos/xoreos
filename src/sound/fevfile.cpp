@@ -132,6 +132,36 @@ void FEVFile::load(Common::SeekableReadStream &fev) {
 
 		_definitions.push_back(definition);
 	}
+
+	const uint32 numReverbDefinitions = fev.readUint32LE();
+	for (uint32 i = 0; i < numReverbDefinitions; ++i) {
+		ReverbDefinition reverb;
+
+		reverb.name = readLengthPrefixedString(fev);
+
+		reverb.room = fev.readSint32LE();
+		reverb.roomHF = fev.readSint32LE();
+
+		reverb.roomRollof = fev.readIEEEFloatLE();
+
+		reverb.decayTime = fev.readIEEEFloatLE();
+		reverb.decayHFRatio = fev.readIEEEFloatLE();
+
+		reverb.reflections = fev.readSint32LE();
+		reverb.reflectDelay = fev.readIEEEFloatLE();
+
+		reverb.reverb = fev.readSint32LE();
+		reverb.reverbDelay = fev.readIEEEFloatLE();
+
+		reverb.diffusion = fev.readIEEEFloatLE();
+		reverb.density = fev.readIEEEFloatLE();
+
+		reverb.hfReference = fev.readIEEEFloatLE();
+		reverb.roomLF = fev.readSint32LE();
+		reverb.lfReference = fev.readIEEEFloatLE();
+
+		fev.skip(76);
+	}
 }
 
 void FEVFile::readCategory(Common::SeekableReadStream &fev) {
