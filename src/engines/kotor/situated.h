@@ -85,6 +85,10 @@ public:
 	                   float length = 0.0f,
 	                   float speed = 1.0f);
 
+	// Tooltip Anchor point
+
+	virtual void getTooltipAnchor(float &x, float &y, float &z) const;
+
 protected:
 	Common::UString _modelName; ///< The model's resource name.
 

@@ -94,6 +94,10 @@ void Situated::playAnimation(const Common::UString &anim, bool restart, float le
 		_model->playAnimation(anim, restart, length, speed);
 }
 
+void Situated::getTooltipAnchor(float &x, float &y, float &z) const {
+	_model->getTooltipAnchor(x, y, z);
+}
+
 bool Situated::isLocked() const {
 	return _locked;
 }
