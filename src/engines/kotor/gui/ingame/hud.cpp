@@ -198,6 +198,11 @@ HUD::HUD(Module &module, Engines::Console *console)
 	update(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 
 	_minimapPointer = getLabel("LBL_ARROW");
+
+	_objectName = getLabel("LBL_NAME");
+	_objectNameBackground = getLabel("LBL_NAMEBG");
+	_objectHealth = getProgressbar("PB_HEALTH");
+	_objectHealthBackground = getLabel("LBL_HEALTHBG");
 }
 
 void HUD::setReturnStrref(uint32 id) {
@@ -307,6 +312,63 @@ void HUD::setPartyMember1(Creature *creature) {
 
 void HUD::setPartyMember2(Creature *creature) {
 	setPortrait(2, creature != 0, creature ? creature->getPortrait() : "");
+}
+
+void HUD::showObjectInformation(Object *object) {
+    if (_objectNameBackground) {
+        _objectNameBackground->setInvisible(false);
+        _objectNameBackground->show();
+    }
+    if (_objectName) {
+        _objectName->setInvisible(false);
+        _objectName->show();
+        _objectName->setText(object->getName());
+    }
+
+    if (_objectHealthBackground) {
+        _objectHealthBackground->setInvisible(false);
+        _objectHealthBackground->show();
+    }
+    if (_objectHealth) {
+        _objectHealth->setInvisible(false);
+        _objectHealth->show();
+    }
+}
+
+void HUD::hideObjectInformation() {
+    if (_objectNameBackground) {
+        _objectNameBackground->setInvisible(true);
+        _objectNameBackground->hide();
+    }
+    if (_objectName) {
+        _objectName->setInvisible(true);
+        _objectName->hide();
+    }
+
+    if (_objectHealthBackground) {
+        _objectHealthBackground->setInvisible(true);
+        _objectHealthBackground->hide();
+    }
+    if (_objectHealth) {
+        _objectHealth->setInvisible(true);
+        _objectHealth->hide();
+    }
+}
+
+void HUD::updateObjectInformation(Object *object, float x, float y) {
+    if (_objectNameBackground)
+	    _objectNameBackground->setPosition(x - 100, y + 36, -100);
+    if (_objectName)
+	    _objectName->setPosition(x - 100, y + 36, -FLT_MAX);
+
+    if (_objectHealthBackground)
+	    _objectHealthBackground->setPosition(x - 100, y + 29, -FLT_MAX);
+    if (_objectHealth) {
+        _objectHealth->setPosition(x - 100, y + 29, -FLT_MAX);
+
+        _objectHealth->setMaxValue(object->getMaxHitPoints());
+        _objectHealth->setCurrentValue(object->getCurrentHitPoints());
+    }
 }
 
 void HUD::update(int width, int height) {

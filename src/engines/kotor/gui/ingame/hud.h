@@ -63,6 +63,10 @@ public:
 	void setPartyMember1(Creature *creature);
 	void setPartyMember2(Creature *creature);
 
+	void showObjectInformation(Object *object);
+	void updateObjectInformation(Object *object, float x, float y);
+	void hideObjectInformation();
+
 private:
 	Module *_module;
 	Menu _menu;
@@ -70,6 +74,13 @@ private:
 
 	Common::ScopedPtr<Minimap> _minimap;
 	WidgetLabel *_minimapPointer;
+
+	// ,--- Widgets for showing object information
+	WidgetLabel       *_objectName;
+	WidgetLabel       *_objectNameBackground;
+	WidgetProgressbar *_objectHealth;
+	WidgetLabel       *_objectHealthBackground;
+	// '---
 
 	void update(int width, int height);
 
