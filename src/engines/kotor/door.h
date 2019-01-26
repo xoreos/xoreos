@@ -77,6 +77,8 @@ public:
 
 	bool testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const;
 
+	virtual void getTooltipAnchor(float &x, float &y, float &z) const;
+
 protected:
 	/** Load door-specific properties. */
 	void loadObject(const Aurora::GFF3Struct &gff);

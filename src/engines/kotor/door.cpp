@@ -171,6 +171,11 @@ bool Door::testCollision(const glm::vec3 &orig, const glm::vec3 &dest) const {
 	return !isOpen() && _walkmesh.testCollision(orig, dest);
 }
 
+void Door::getTooltipAnchor(float &x, float &y, float &z) const {
+	_model->getAbsolutePosition(x, y, z);
+	z += _model->getDepth() / 2;
+}
+
 bool Door::open(Object *opener) {
 	// TODO: Door::open(): Open in direction of the opener
 
