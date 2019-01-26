@@ -172,8 +172,8 @@ void Text::getPosition(float &x, float &y, float &z) const {
 void Text::setPosition(float x, float y, float z) {
 	lockFrameIfVisible();
 
-	_x = roundf(x);
-	_y = roundf(y);
+	_x = x;
+	_y = y;
 
 	_distance = z;
 	resort();
@@ -223,7 +223,7 @@ void Text::render(RenderPass pass) {
 	Font &font = _font.getFont();
 	float lineHeight = font.getHeight() + font.getLineSpacing();
 
-	glTranslatef(_x, _y, 0.0f);
+	glTranslatef(roundf(_x), roundf(_y), 0.0f);
 
 	glColor4f(_r, _g, _b, _a);
 
@@ -285,8 +285,8 @@ void Text::renderImmediate(const glm::mat4 &parentTransform)
 	ColorPositions::const_iterator color = _colors.begin();
 
 	_font.getFont().renderBind(parentTransform);
-	float x = _x;
-	float y = _y + roundf(((_height - blockSize) * _valign) + blockSize - lineHeight);
+	float x = roundf(_x);
+	float y = roundf(_y) + roundf(((_height - blockSize) * _valign) + blockSize - lineHeight);
 	// Draw lines
 	for (std::vector<Common::UString>::iterator l = lines.begin(); l != lines.end(); ++l) {
 		float saved_x = x;
