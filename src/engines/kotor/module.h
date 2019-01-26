@@ -170,6 +170,11 @@ public:
 	/** Open the inventory of a container. */
 	void clickObject(Object *object);
 
+	/** Enter an object with the mouse. */
+	void enterObject(Object *object);
+	/** Leave an object with the mouse. */
+	void leaveObject(Object *object);
+
 	/** Add a single event for consideration into the event queue. */
 	void addEvent(const Events::Event &event);
 	/** Process the current event queue. */

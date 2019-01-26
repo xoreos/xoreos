@@ -511,10 +511,14 @@ void Area::setActive(KotOR::Object *object) {
 	if (_activeObject)
 		_activeObject->leave();
 
+	_module->leaveObject(_activeObject);
+
 	_activeObject = object;
 
 	if (_activeObject)
 		_activeObject->enter();
+
+	_module->enterObject(_activeObject);
 }
 
 void Area::checkActive(int x, int y) {
