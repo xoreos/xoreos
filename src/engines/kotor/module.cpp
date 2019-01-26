@@ -522,6 +522,14 @@ void Module::clickObject(Object *object) {
 	}
 }
 
+void Module::enterObject(Object *object) {
+	_ingame->showSelection(object);
+}
+
+void Module::leaveObject(Object *UNUSED(object)) {
+	_ingame->hideSelection();
+}
+
 void Module::addEvent(const Events::Event &event) {
 	_eventQueue.push_back(event);
 }
@@ -672,6 +680,7 @@ void Module::handlePCMovement() {
 	SoundMan.setListenerOrientation(orientation[0], orientation[1], orientation[2], 0.0f, 1.0f, 0.0f);
 
 	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
+	_ingame->updateSelection();
 
 	if (haveMovement && !_pcRunning) {
 		_pc->playAnimation(Common::UString("run"), false, -1.0f);
