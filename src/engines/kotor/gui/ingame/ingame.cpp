@@ -22,6 +22,7 @@
  *  The ingame GUI.
  */
 
+#include "src/engines/kotor/situated.h"
 #include "src/engines/kotor/gui/ingame/ingame.h"
 
 namespace Engines {
@@ -30,6 +31,9 @@ namespace KotOR {
 
 IngameGUI::IngameGUI(Module &module, Console *console) {
 	_hud.reset(new HUD(module, console));
+	_selectionCircle.reset(new SelectionCircle());
+
+	_selected = 0;
 }
 
 void IngameGUI::show() {
@@ -81,6 +85,59 @@ void IngameGUI::setPartyMember1(Creature *creature) {
 
 void IngameGUI::setPartyMember2(Creature *creature) {
 	_hud->setPartyMember2(creature);
+}
+
+void IngameGUI::showSelection(Object *object) {
+	if (!object)
+		return;
+
+	if (object == _selected)
+		return;
+
+	Situated *situated = ObjectContainer::toSituated(object);
+	if (!situated) // TODO: Creature selection
+		return;
+
+	float x, y, z;
+	situated->getTooltipAnchor(x, y, z);
+
+	float sX, sY, sZ;
+	GfxMan.project(x, y, z, sX, sY, sZ);
+
+	_selectionCircle->setPosition(sX, sY);
+	_selectionCircle->show();
+
+	_hud->updateObjectInformation(object, sX, sY);
+	_hud->showObjectInformation(object);
+
+	_selected = object;
+}
+
+void IngameGUI::hideSelection() {
+	_selectionCircle->hide();
+	_hud->hideObjectInformation();
+
+	_selected = 0;
+}
+
+void IngameGUI::updateSelection() {
+	if (!_selected)
+		return;
+
+	Situated *situated = ObjectContainer::toSituated(_selected);
+	if (!situated) // TODO: Creature selection
+		return;
+
+	float x, y, z;
+	situated->getTooltipAnchor(x, y, z);
+
+	float sX, sY, sZ;
+	GfxMan.project(x, y, z, sX, sY, sZ);
+
+	_selectionCircle->show();
+	_selectionCircle->setPosition(sX, sY);
+
+	_hud->updateObjectInformation(situated, sX, sY);
 }
 
 void IngameGUI::addEvent(const Events::Event &event) {
