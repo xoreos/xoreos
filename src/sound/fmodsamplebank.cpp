@@ -58,7 +58,9 @@
 
 #include "src/sound/fmodsamplebank.h"
 
+#ifdef ENABLE_MAD
 #include "src/sound/decoders/mp3.h"
+#endif
 #include "src/sound/decoders/adpcm.h"
 
 namespace Sound {
@@ -103,7 +105,11 @@ RewindableAudioStream *FMODSampleBank::getSample(const Sample &sample) const {
 
 	if (sample.flags & kSampleFlagMP3) {
 		warning("MP3");
+#ifdef ENABLE_MAD
 		return makeMP3Stream(dataStream.release(), true);
+#else
+		throw Common::Exception("MP3 decoding disabled when building without libmad");
+#endif
 	}
 
 	if (sample.flags & kSampleFlagIMAADPCM) {
