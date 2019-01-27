@@ -26,41 +26,41 @@
 
 #include "src/aurora/resman.h"
 
-#include "src/sound/fevfile.h"
+#include "src/sound/fmodeventfile.h"
 
 namespace Sound {
 
 static const uint32 kFEVID = MKTAG('F', 'E', 'V', '1');
 
-FEVFile::FEVFile(const Common::UString &resRef) {
+FMODEventFile::FMODEventFile(const Common::UString &resRef) {
 	Common::ScopedPtr<Common::SeekableReadStream> fev(ResMan.getResource(resRef, Aurora::kFileTypeFEV));
 
 	if (!fev)
-		throw Common::Exception("FEVFile::FEVFile(): Resource %s not found", resRef.c_str());
+		throw Common::Exception("FMODEventFile::FMODEventFile(): Resource %s not found", resRef.c_str());
 
 	load(*fev);
 }
 
-FEVFile::FEVFile(Common::SeekableReadStream &fev) {
+FMODEventFile::FMODEventFile(Common::SeekableReadStream &fev) {
 	load(fev);
 }
 
-const Common::UString &FEVFile::getBankName() {
+const Common::UString &FMODEventFile::getBankName() {
 	return _bankName;
 }
 
-const std::vector<FEVFile::WaveBank> &FEVFile::getWaveBanks() {
+const std::vector<FMODEventFile::WaveBank> &FMODEventFile::getWaveBanks() {
 	return _waveBanks;
 }
 
-const std::vector<FEVFile::Category> &FEVFile::getCategories() {
+const std::vector<FMODEventFile::Category> &FMODEventFile::getCategories() {
 	return _categories;
 }
 
-void FEVFile::load(Common::SeekableReadStream &fev) {
+void FMODEventFile::load(Common::SeekableReadStream &fev) {
 	const uint32 magic = fev.readUint32BE();
 	if (magic != kFEVID)
-		throw Common::Exception("FEVFile::load(): Invalid magic number");
+		throw Common::Exception("FMODEventFile::load(): Invalid magic number");
 
 	fev.skip(12); // Unknown values
 
@@ -164,7 +164,7 @@ void FEVFile::load(Common::SeekableReadStream &fev) {
 	}
 }
 
-void FEVFile::readCategory(Common::SeekableReadStream &fev) {
+void FMODEventFile::readCategory(Common::SeekableReadStream &fev) {
 	const Common::UString name = readLengthPrefixedString(fev);
 
 	Category category;
@@ -181,7 +181,7 @@ void FEVFile::readCategory(Common::SeekableReadStream &fev) {
 	_categories.push_back(category);
 }
 
-void FEVFile::readEventCategory(Common::SeekableReadStream &fev) {
+void FMODEventFile::readEventCategory(Common::SeekableReadStream &fev) {
 	Common::UString name = readLengthPrefixedString(fev);
 
 	// Read user properties
@@ -199,7 +199,7 @@ void FEVFile::readEventCategory(Common::SeekableReadStream &fev) {
 	}
 }
 
-void FEVFile::readEvent(Common::SeekableReadStream &fev) {
+void FMODEventFile::readEvent(Common::SeekableReadStream &fev) {
 	Event event;
 
 	fev.skip(4);
@@ -300,9 +300,9 @@ void FEVFile::readEvent(Common::SeekableReadStream &fev) {
 	_events.push_back(event);
 }
 
-std::map<Common::UString, FEVFile::Property> FEVFile::readProperties(Common::SeekableReadStream &fev) {
+std::map<Common::UString, FMODEventFile::Property> FMODEventFile::readProperties(Common::SeekableReadStream &fev) {
 	const uint32 numUserProperties = fev.readUint32LE();
-	std::map<Common::UString, FEVFile::Property> properties;
+	std::map<Common::UString, FMODEventFile::Property> properties;
 	for (uint32 i = 0; i < numUserProperties; ++i) {
 		Common::UString propertyName = readLengthPrefixedString(fev);
 		Property property;
@@ -318,7 +318,7 @@ std::map<Common::UString, FEVFile::Property> FEVFile::readProperties(Common::See
 				property.value = readLengthPrefixedString(fev);
 				break;
 			default:
-				throw Common::Exception("FEVFile::readEventCategory() Invalid property type %i", property.type);
+				throw Common::Exception("FMODEventFile::readEventCategory() Invalid property type %i", property.type);
 		}
 
 		properties.insert(std::make_pair(propertyName, property));
@@ -327,7 +327,7 @@ std::map<Common::UString, FEVFile::Property> FEVFile::readProperties(Common::See
 	return properties;
 }
 
-Common::UString FEVFile::readLengthPrefixedString(Common::SeekableReadStream &fev) {
+Common::UString FMODEventFile::readLengthPrefixedString(Common::SeekableReadStream &fev) {
 	const uint32 length = fev.readUint32LE();
 	return Common::readStringFixed(fev, Common::kEncodingASCII, length);
 }

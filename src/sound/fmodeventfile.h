@@ -40,7 +40,7 @@ namespace Sound {
  *  There is currently only one relevant version of fev files
  *  with the FourCC "FEV1".
  */
-class FEVFile {
+class FMODEventFile {
 public:
 	/** If an event is 2D or 3D. */
 	enum EventMode {
@@ -218,8 +218,8 @@ public:
 		float lfReference;
 	};
 
-	FEVFile(const Common::UString &resRef);
-	FEVFile(Common::SeekableReadStream &fev);
+	FMODEventFile(const Common::UString &resRef);
+	FMODEventFile(Common::SeekableReadStream &fev);
 
 	const Common::UString &getBankName();
 
