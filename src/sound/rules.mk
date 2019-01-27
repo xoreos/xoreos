@@ -35,7 +35,7 @@ src_sound_libsound_la_SOURCES += \
     src/sound/xactsoundbank_binary.h \
     src/sound/fmodsamplebank.h \
     src/sound/wwisesoundbank.h \
-    src/sound/fevfile.h \
+    src/sound/fmodeventfile.h \
     $(EMPTY)
 
 src_sound_libsound_la_SOURCES += \
@@ -50,7 +50,7 @@ src_sound_libsound_la_SOURCES += \
     src/sound/xactsoundbank_binary.cpp \
     src/sound/fmodsamplebank.cpp \
     src/sound/wwisesoundbank.cpp \
-    src/sound/fevfile.cpp \
+    src/sound/fmodeventfile.cpp \
     $(EMPTY)
 
 src_sound_libsound_la_LIBADD = \
