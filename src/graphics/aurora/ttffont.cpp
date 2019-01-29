@@ -39,6 +39,9 @@
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
 
+#include "src/graphics/mesh/meshman.h"
+#include "src/graphics/shader/surfaceman.h"
+
 static const uint32 kPageWidth  = 256;
 static const uint32 kPageHeight = 256;
 
@@ -77,6 +80,8 @@ TTFFont::TTFFont(const Common::UString &name, int height) {
 }
 
 TTFFont::~TTFFont() {
+	delete _renderable;
+	delete _material;
 }
 
 void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
@@ -111,6 +116,16 @@ void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
 		_missingWidth = _missingChar->second.width;
 
 	rebuildPages();
+
+	_mesh = static_cast<Mesh::MeshFont *>(MeshMan.getMesh("defaultMeshFont"));
+	_material = new Shader::ShaderMaterial(ShaderMan.getShaderObject("default/text.frag", Shader::SHADER_FRAGMENT), "text");
+	Shader::ShaderSampler *sampler;
+	sampler = (Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
+	if (_pages.size() > 0) {
+		// At the moment this doesn't matter too much - just need a valid texture of some kind.
+		sampler->handle = _pages[0]->texture;
+	}
+	_renderable = new Shader::ShaderRenderable(SurfaceMan.getSurface("textSurface"), _material, _mesh);
 }
 
 float TTFFont::getWidth(uint32 c) const {
@@ -171,6 +186,73 @@ void TTFFont::buildChars(const Common::UString &str) {
 		addChar(*c);
 
 	rebuildPages();
+}
+
+void TTFFont::renderBind(const glm::mat4 &transform) const {
+	glUseProgram(_renderable->getProgram()->glid);
+	_material->bindProgram(_renderable->getProgram(), 1.0f);
+	_material->bindGLState();
+	_renderable->getSurface()->bindProgram(_renderable->getProgram(), &transform);
+	_renderable->getSurface()->bindGLState();
+	_mesh->renderBind();
+
+	/* Mesh data will be dynamically updated for each character drawn to the screen
+	 * (at least for now), so make sure the mesh VBO is bound. This isn't required
+	 * for GL2.1, but is for GL3.2 because using the VAO doesn't automatically bind
+	 * the VBO for data updates.
+	 */
+	glBindBuffer(GL_ARRAY_BUFFER, _mesh->getVertexBuffer()->getVBO());
+}
+
+void TTFFont::render(uint32 c, float &x, float &y, float *rgba) const {
+	std::map<uint32, Char>::const_iterator cC = _chars.find(c);
+
+	if (cC == _chars.end()) {
+		// Nothing is rendered for missing characters. Maybe one day use a placeholder instead.
+		x += _missingWidth - 1.0f;
+		return;
+	}
+
+
+	float v_pos[12];
+	float v_uv[8];
+	float v_rgba[4*4];
+
+	size_t page = cC->second.page;
+	assert(page < _pages.size());
+
+	/* The assumption here is that the material will have been bound, and either only
+	 * constains the single sampler, or the sampler was bound last. In either case, the
+	 * active texture unit is properly set and the appropriate texture can be easily
+	 * bound on the fly.
+	 * todo: It would be better if the textures were place entirely into one large texture
+	 * and the UV coordinates offset as appropriate. It's also likely better if instead of
+	 * multiple render calls here, if instead everything can be batched together into a
+	 * single render call.
+	 */
+	TextureMan.set(_pages[page]->texture);
+
+	for (int i = 0; i < 4; ++i) {
+		v_uv[i*2] = cC->second.tX[i];
+		v_uv[i*2 +1] = cC->second.tY[i];
+		v_pos[i*3] = x + cC->second.vX[i];
+		v_pos[i*3 +1] = y + cC->second.vY[i];
+		v_pos[i*3 +2] = 0.0f;
+		v_rgba[i*4] = rgba[0];
+		v_rgba[i*4 +1] = rgba[1];
+		v_rgba[i*4 +2] = rgba[2];
+		v_rgba[i*4 +3] = rgba[3];
+	}
+	_mesh->render(v_pos, v_uv, v_rgba);
+	x += cC->second.width;
+}
+
+void TTFFont::renderUnbind() const {
+	_mesh->renderUnbind();
+
+	_renderable->getSurface()->unbindGLState();
+	_material->unbindGLState();
+	glUseProgram(0);
 }
 
 void TTFFont::rebuildPages() {
