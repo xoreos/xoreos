@@ -534,7 +534,23 @@ void ModelNode::orderChildren() {
 }
 
 void ModelNode::renderGeometry(ModelNode::Mesh &mesh) {
+	TextureHandle *penvmap = 0;
+	EnvironmentMapMode envmapmode;
+	penvmap = getEnvironmentMap(envmapmode);
+
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedUnder) {
+			renderGeometryEnvMappedUnder(mesh);
+		}
+	}
+
 	renderGeometryNormal(mesh);
+
+	if (penvmap) {
+		if (envmapmode == kModeEnvironmentBlendedOver) {
+			renderGeometryEnvMappedOver(mesh);
+		}
+	}
 }
 
 void ModelNode::renderGeometryNormal(Mesh &mesh) {

@@ -296,10 +296,10 @@ private:
 
 	void orderChildren();
 
-	static void renderGeometry(Mesh &mesh);
-	static void renderGeometryNormal(Mesh &mesh);
-	static void renderGeometryEnvMappedUnder(Mesh &mesh);
-	static void renderGeometryEnvMappedOver(Mesh &mesh);
+	void renderGeometry(Mesh &mesh);
+	void renderGeometryNormal(Mesh &mesh);
+	void renderGeometryEnvMappedUnder(Mesh &mesh);
+	void renderGeometryEnvMappedOver(Mesh &mesh);
 
 	static bool renderableMesh(Mesh *mesh);
 
