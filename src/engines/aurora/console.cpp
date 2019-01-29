@@ -28,6 +28,8 @@
 
 #include <boost/bind.hpp>
 
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/filepath.h"
@@ -56,6 +58,10 @@
 
 #include "src/engines/aurora/console.h"
 #include "src/engines/aurora/util.h"
+
+#include "src/graphics/mesh/meshman.h"
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/shader/materialman.h"
 
 
 static const uint32 kDoubleClickTime = 500;
@@ -112,6 +118,22 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 	clearHighlight();
 
 	calculateDistance();
+
+	_shaderRenderableBackdrop.setMesh(MeshMan.getMesh("defaultMeshQuad"));
+	_shaderRenderableBackdrop.setSurface(SurfaceMan.getSurface("defaultSurface"), false);
+	_shaderRenderableBackdrop.setMaterial(MaterialMan.getMaterial("defaultBlack75"));
+
+	_shaderRenderableBottomEdge.setMesh(MeshMan.getMesh("defaultMeshQuad"));
+	_shaderRenderableBottomEdge.setSurface(SurfaceMan.getSurface("defaultSurface"), false);
+	_shaderRenderableBottomEdge.setMaterial(MaterialMan.getMaterial("defaultBlack"));
+
+	_shaderRenderableScrollBackground.setMesh(MeshMan.getMesh("defaultMeshQuad"));
+	_shaderRenderableScrollBackground.setSurface(SurfaceMan.getSurface("defaultSurface"), false);
+	_shaderRenderableScrollBackground.setMaterial(MaterialMan.getMaterial("defaultBlack"));
+
+	_shaderRenderableScrollbar.setMesh(MeshMan.getMesh("defaultMeshQuad"));
+	_shaderRenderableScrollbar.setSurface(SurfaceMan.getSurface("defaultSurface"), false);
+	_shaderRenderableScrollbar.setMaterial(MaterialMan.getMaterial("defaultGrey50"));
 
 	openLogFile();
 }
@@ -610,6 +632,37 @@ void ConsoleWindow::render(Graphics::RenderPass pass) {
 	glEnd();
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void ConsoleWindow::renderImmediate(const glm::mat4 &parentTransform) {
+	uint32 now = EventMan.getTimestamp();
+	if ((now - _lastCursorBlink) > 500) {
+		_cursorBlinkState = !_cursorBlinkState;
+		_lastCursorBlink = now;
+
+		_cursor->setColor(1.0f, 1.0f, 1.0f, _cursorBlinkState ? 1.0f : 0.0f);
+	}
+
+	glm::mat4 backdropTransform = parentTransform;
+	backdropTransform = glm::translate(backdropTransform, glm::vec3(_x, _y, 0.0f));
+	backdropTransform = glm::scale(backdropTransform, glm::vec3(_width, _height, 1.0f));
+
+	glm::mat4 bottomEdgeTransform = parentTransform;
+	bottomEdgeTransform = glm::translate(bottomEdgeTransform, glm::vec3(_x, _y - 3.0f, 0.0f));
+	bottomEdgeTransform = glm::scale(bottomEdgeTransform, glm::vec3(_width, 3.0f, 1.0f));
+
+	glm::mat4 scrollBackgroundTransform = parentTransform;
+	scrollBackgroundTransform = glm::translate(scrollBackgroundTransform, glm::vec3(_x + _width - 12.0f, _y, 0.0f));
+	scrollBackgroundTransform = glm::scale(scrollBackgroundTransform, glm::vec3(12.0f, _height, 1.0f));
+
+	glm::mat4 scrollbarTransform = parentTransform;
+	scrollbarTransform = glm::translate(scrollbarTransform, glm::vec3(_x + _width - 10.0f, _y + 2.0f + _scrollbarPosition, 0.0f));
+	scrollbarTransform = glm::scale(scrollbarTransform, glm::vec3(8.0f, _scrollbarLength, 1.0f));
+
+	_shaderRenderableBackdrop.renderImmediate(backdropTransform);
+	_shaderRenderableBottomEdge.renderImmediate(bottomEdgeTransform);
+	_shaderRenderableScrollBackground.renderImmediate(scrollBackgroundTransform);
+	_shaderRenderableScrollbar.renderImmediate(scrollbarTransform);
 }
 
 void ConsoleWindow::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight),

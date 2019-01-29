@@ -47,6 +47,8 @@
 #include "src/graphics/aurora/types.h"
 #include "src/graphics/aurora/fonthandle.h"
 
+#include "src/graphics/shader/shaderrenderable.h"
+
 namespace Common {
 	class ReadLine;
 }
@@ -121,6 +123,7 @@ public:
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
 
+	void renderImmediate(const glm::mat4 &parentTransform);
 
 private:
 	Graphics::Aurora::FontHandle _font;
@@ -164,6 +167,10 @@ private:
 	Common::WriteFile _logFile;
 	Common::WriteFile _redirect;
 
+	Graphics::Shader::ShaderRenderable _shaderRenderableBackdrop;
+	Graphics::Shader::ShaderRenderable _shaderRenderableBottomEdge;
+	Graphics::Shader::ShaderRenderable _shaderRenderableScrollBackground;
+	Graphics::Shader::ShaderRenderable _shaderRenderableScrollbar;
 
 	void recalcCursor();
 	void redrawLines();

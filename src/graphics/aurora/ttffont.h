@@ -36,6 +36,10 @@
 
 #include "src/graphics/aurora/texturehandle.h"
 
+#include "src/graphics/mesh/meshfont.h"
+
+#include "src/graphics/shader/shaderrenderable.h"
+
 namespace Common {
 	class UString;
 }
@@ -59,6 +63,15 @@ public:
 	void draw(uint32 c) const;
 
 	void buildChars(const Common::UString &str);
+
+	/** Bind the font for rendering. Must be performed before render is called.
+	 *
+	 *  @param transform  Base modelview transform. Under most circumstances
+	 *                    this is expected to be the identity matrix.
+	 */
+	virtual void renderBind(const glm::mat4 &transform) const;
+	virtual void render(uint32 c, float &x, float &y, float *rgba) const;
+	virtual void renderUnbind() const;
 
 private:
 	/** A texture page filled with characters. */
@@ -99,6 +112,11 @@ private:
 	float _missingWidth;
 
 	uint32 _height;
+
+	Mesh::MeshFont *_mesh;
+	Shader::ShaderMaterial *_material;
+	Shader::ShaderRenderable *_renderable;
+
 
 	void load(Common::SeekableReadStream *ttf, int height);
 
