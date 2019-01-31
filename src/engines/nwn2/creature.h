@@ -241,11 +241,17 @@ private:
 
 	/** Load the level stats for the creature. */
 	static void loadLevelStats(const Aurora::GFF3Struct &gff,
-	                           std::vector<LevelStats> &levelStats);
+	                           std::vector<LevelStats> &levelStats,
+	                           Common::ScopedPtr<Feats> &feats);
 
 	/** Load the creature's skill ranks. */
 	static void loadSkills(const Aurora::GFF3Struct &gff,
 	                       uint8 ranks[]);
+
+	/** Load the creature's feats. */
+	static void loadFeats(const Aurora::GFF3Struct &gff,
+	                      Common::ScopedPtr<Feats> &feats,
+	                      uint32 level = 0);
 
 	// Model loaders
 
