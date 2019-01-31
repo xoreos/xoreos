@@ -163,6 +163,15 @@ private:
 		uint16 level;   ///< Levels of that class.
 	};
 
+	/** A level. */
+	struct LevelStats {
+		uint32 classID;
+		uint16 skillPoints;
+		uint8  ability;          ///< Ability to increase
+		uint8  hitDice;          ///< Hit Dice for the class
+		uint8  ranks[kSkillMAX]; ///< Rank increases
+	};
+
 	Common::UString _firstName; ///< The creature's first name.
 	Common::UString _lastName;  ///< The creature's last name.
 
@@ -183,8 +192,9 @@ private:
 
 	uint8 _abilities[kAbilityMAX]; ///< The creature's abilities.
 
-	std::vector<Class>  _classes; ///< The creature's classes.
-	std::vector<int8>   _skills;  ///< The creature's skills.
+	std::vector<Class>  _classes;    ///< The creature's classes.
+	std::vector<LevelStats> _levels; ///< Level data for the creature.
+	std::vector<int8>   _skills;     ///< The creature's skills.
 	Common::ScopedPtr<Feats> _feats; ///< The creature's feats.
 
 	uint8 _ranks[kSkillMAX]; ///< Total skill ranks across levels.
@@ -229,6 +239,10 @@ private:
 	/** Load the creature's classes. */
 	static void loadClasses (const Aurora::GFF3Struct &gff,
 	                         std::vector<Class> &classes, uint8 &hitDice);
+
+	/** Load the level stats for the creature. */
+	static void loadLevelStats(const Aurora::GFF3Struct &gff,
+	                           std::vector<LevelStats> &levelStats);
 
 	// Model loaders
 

@@ -468,6 +468,12 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Classes
 	loadClasses(gff, _classes, _hitDice);
 
+	// Load level stats
+	if (gff.hasField("LvlStatList")) {
+		// Player characters have individual level stats
+		loadLevelStats(gff, _levels);
+	}
+
 	// Skills
 	// TODO: Process multiple "SkillList" blocks
 	if (gff.hasField("SkillList")) {
@@ -566,6 +572,26 @@ void Creature::loadClasses(const Aurora::GFF3Struct &gff,
 		classes.back().level   = cClass.getUint("ClassLevel");
 
 		hitDice += classes.back().level;
+	}
+}
+
+void Creature::loadLevelStats(const Aurora::GFF3Struct &gff,
+                              std::vector<LevelStats> &levelStats) {
+
+	if (!gff.hasField("LvlStatList"))
+		return;
+
+	levelStats.clear();
+
+	const Aurora::GFF3List &cLvlStatList = gff.getList("LvlStatList");
+	for (Aurora::GFF3List::const_iterator c = cLvlStatList.begin(); c != cLvlStatList.end(); ++c) {
+		levelStats.push_back(LevelStats());
+
+		const Aurora::GFF3Struct &cLevelStats = **c;
+
+		levelStats.back().hitDice = cLevelStats.getUint("LvlStatHitDie");
+		levelStats.back().classID = cLevelStats.getUint("LvlStatClass");
+		levelStats.back().skillPoints = cLevelStats.getUint("SkillPoints");
 	}
 }
 
