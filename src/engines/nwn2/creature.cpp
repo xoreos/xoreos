@@ -474,25 +474,12 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 		loadLevelStats(gff, _levels);
 	}
 
-	// Skills
-	// TODO: Process multiple "SkillList" blocks
-	if (gff.hasField("SkillList")) {
-		_skills.clear();
-
-		const Aurora::GFF3List &skills = gff.getList("SkillList");
-		for (Aurora::GFF3List::const_iterator s = skills.begin(); s != skills.end(); ++s) {
-			const Aurora::GFF3Struct &skill = **s;
-
-			_skills.push_back(skill.getSint("Rank"));
-		}
-	}
-
-	// Get total skill ranks
-	uint32 skill = 0;
-	for (std::vector<int8>::iterator it = _skills.begin(); it != _skills.end(); ++it) {
-		_ranks[skill] += *it;
-		skill = (skill + 1) % kSkillMAX;
-	}
+	/**
+	 * The 'SkillsList' under the top level is a cumulative list of
+	 * skill ranks for the creature. The 'LvlStatList' has 'SkillsList'
+	 * arrays for the individual levels and those are stored separately.
+	 */
+	loadSkills(gff, _ranks);
 
 	// Feats
 	// TODO: Process multiple "FeatList" blocks
@@ -599,6 +586,24 @@ void Creature::loadLevelStats(const Aurora::GFF3Struct &gff,
 		} else {
 			levelStats.back().ability = kAbilityMAX; // Set to an invalid ability
 		}
+
+		// Skill ranks
+		loadSkills(cLevelStats, levelStats.back().ranks);
+	}
+}
+
+void Creature::loadSkills(const Aurora::GFF3Struct &gff,
+                          uint8 ranks[]) {
+
+	if (!gff.hasField("SkillList"))
+		return;
+
+	uint32 i = 0;
+	const Aurora::GFF3List &skills = gff.getList("SkillList");
+	for (Aurora::GFF3List::const_iterator s = skills.begin(); s != skills.end(); ++s) {
+		const Aurora::GFF3Struct &skill = **s;
+
+		ranks[i++] = skill.getSint("Rank");
 	}
 }
 
