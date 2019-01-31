@@ -468,10 +468,14 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Classes
 	loadClasses(gff, _classes, _hitDice);
 
-	// Load level stats
+	// Levels and/or feats
+	_feats.reset(new Feats());
 	if (gff.hasField("LvlStatList")) {
 		// Player characters have individual level stats
-		loadLevelStats(gff, _levels);
+		loadLevelStats(gff, _levels, _feats);
+	} else {
+		// Creatures have a combined list of feats
+		loadFeats(gff, _feats);
 	}
 
 	/**
@@ -480,23 +484,6 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	 * arrays for the individual levels and those are stored separately.
 	 */
 	loadSkills(gff, _ranks);
-
-	// Feats
-	// TODO: Process multiple "FeatList" blocks
-	if (gff.hasField("FeatList")) {
-		try {
-			_feats.reset(new Feats());
-		} catch (...) {
-			Common::exceptionDispatcherWarning();
-		}
-
-		const Aurora::GFF3List &feats = gff.getList("FeatList");
-		for (Aurora::GFF3List::const_iterator f = feats.begin(); f != feats.end(); ++f) {
-			const Aurora::GFF3Struct &feat = **f;
-
-			_feats->featAdd(feat.getUint("Feat"));
-		}
-	}
 
 	// Deity
 	_deity = gff.getString("Deity", _deity);
@@ -509,7 +496,6 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	}
 
 	// Faction
-
 	_faction = gff.getUint("FactionID", _faction);
 
 	// Alignment
@@ -563,16 +549,23 @@ void Creature::loadClasses(const Aurora::GFF3Struct &gff,
 }
 
 void Creature::loadLevelStats(const Aurora::GFF3Struct &gff,
-                              std::vector<LevelStats> &levelStats) {
+                              std::vector<LevelStats> &levelStats,
+                              Common::ScopedPtr<Feats> &feats) {
 
 	if (!gff.hasField("LvlStatList"))
 		return;
 
 	levelStats.clear();
 
+	uint32 level = 0;
 	const Aurora::GFF3List &cLvlStatList = gff.getList("LvlStatList");
 	for (Aurora::GFF3List::const_iterator c = cLvlStatList.begin(); c != cLvlStatList.end(); ++c) {
 		levelStats.push_back(LevelStats());
+		level++;
+
+		// Initialization
+		for (int i = 0; i < kSkillMAX; i++)
+			levelStats.back().ranks[i] = 0;
 
 		const Aurora::GFF3Struct &cLevelStats = **c;
 
@@ -589,6 +582,9 @@ void Creature::loadLevelStats(const Aurora::GFF3Struct &gff,
 
 		// Skill ranks
 		loadSkills(cLevelStats, levelStats.back().ranks);
+
+		// Feats
+		loadFeats(cLevelStats, feats, level);
 	}
 }
 
@@ -604,6 +600,21 @@ void Creature::loadSkills(const Aurora::GFF3Struct &gff,
 		const Aurora::GFF3Struct &skill = **s;
 
 		ranks[i++] = skill.getSint("Rank");
+	}
+}
+
+void Creature::loadFeats(const Aurora::GFF3Struct &gff,
+                         Common::ScopedPtr<Feats> &feats,
+                         uint32 level) {
+
+	if (!gff.hasField("FeatList"))
+		return;
+
+	const Aurora::GFF3List &featList = gff.getList("FeatList");
+	for (Aurora::GFF3List::const_iterator f = featList.begin(); f != featList.end(); ++f) {
+		const Aurora::GFF3Struct &feat = **f;
+
+		feats->featAdd(feat.getUint("Feat"), level);
 	}
 }
 
