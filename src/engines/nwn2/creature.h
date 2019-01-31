@@ -194,7 +194,6 @@ private:
 
 	std::vector<Class>  _classes;    ///< The creature's classes.
 	std::vector<LevelStats> _levels; ///< Level data for the creature.
-	std::vector<int8>   _skills;     ///< The creature's skills.
 	Common::ScopedPtr<Feats> _feats; ///< The creature's feats.
 
 	uint8 _ranks[kSkillMAX]; ///< Total skill ranks across levels.
@@ -243,6 +242,10 @@ private:
 	/** Load the level stats for the creature. */
 	static void loadLevelStats(const Aurora::GFF3Struct &gff,
 	                           std::vector<LevelStats> &levelStats);
+
+	/** Load the creature's skill ranks. */
+	static void loadSkills(const Aurora::GFF3Struct &gff,
+	                       uint8 ranks[]);
 
 	// Model loaders
 
