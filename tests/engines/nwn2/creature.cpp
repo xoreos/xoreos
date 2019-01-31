@@ -117,4 +117,45 @@ GTEST_TEST(NWN2Creature, creature2) {
 	EXPECT_EQ(cr->getRace(), 21);
 	EXPECT_EQ(cr->getSubRace(), 20);
 	EXPECT_EQ(cr->getGender(), 1);
+	EXPECT_EQ(cr->getClassLevel(8), 4);
+	EXPECT_EQ(cr->getHitDice(), 4);
+	EXPECT_EQ(cr->getAbility(Engines::NWN2::kAbilityStrength), 13);
+	EXPECT_EQ(cr->getAbility(Engines::NWN2::kAbilityDexterity), 17);
+	EXPECT_EQ(cr->getAbility(Engines::NWN2::kAbilityConstitution), 10);
+	EXPECT_EQ(cr->getAbility(Engines::NWN2::kAbilityIntelligence), 10);
+	EXPECT_EQ(cr->getAbility(Engines::NWN2::kAbilityWisdom), 11);
+	EXPECT_EQ(cr->getAbility(Engines::NWN2::kAbilityCharisma), 16);
+	EXPECT_EQ(cr->getGoodEvil(), 85);
+	EXPECT_EQ(cr->getLawChaos(), 15);
+	EXPECT_EQ(cr->getAge(), 20);
+
+	// Skills and feats
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillDisableDevice, true), 4);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillHide, true), 4);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillMoveSilently, true), 4);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillOpenLock, true), 4);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillDiplomacy, true), 6);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillSleightOfHand, true), 6);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillSearch, true), 4);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillSetTrap, true), 7);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillSpot, true), 4);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillUseMagicDevice, true), 4);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillAppraise, true), 5);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillTumble, true), 4);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillBluff, true), 4);
+	EXPECT_EQ(cr->getSkillRank(Engines::NWN2::kSkillIntimidate, true), 3);
+	EXPECT_TRUE(cr->hasFeat(3))    << "Feat: Armor Proficiency (Light)";
+	EXPECT_TRUE(cr->hasFeat(10))   << "Feat: Dodge";
+	EXPECT_TRUE(cr->hasFeat(46))   << "Feat: Weapon Proficiency (Simple)";
+	EXPECT_TRUE(cr->hasFeat(50))   << "Feat: Weapon Proficiency (Rogue)";
+	EXPECT_TRUE(cr->hasFeat(195))  << "Feat: Uncanny Dodge 1";
+	EXPECT_TRUE(cr->hasFeat(206))  << "Feat: Evasion";
+	EXPECT_TRUE(cr->hasFeat(221))  << "Feat: Sneak Attack 1";
+	EXPECT_TRUE(cr->hasFeat(228))  << "Feat: Darkvision";
+	EXPECT_TRUE(cr->hasFeat(345))  << "Feat: Seank Attack 2";
+	EXPECT_TRUE(cr->hasFeat(408))  << "Feat: Blind Fight";
+	EXPECT_TRUE(cr->hasFeat(1387)) << "Feat: Trap Sense 1";
+	EXPECT_TRUE(cr->hasFeat(1857)) << "Feat: Trapfinding";
+	EXPECT_TRUE(cr->hasFeat(1870)) << "Feat: Fire Genasi Resistance";
+	EXPECT_TRUE(cr->hasFeat(1874)) << "Feat: Fire Genasi Reach to the Blaze";
 }
