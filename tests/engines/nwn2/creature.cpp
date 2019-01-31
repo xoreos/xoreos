@@ -25,6 +25,7 @@
 #include "gtest/gtest.h"
 
 #include "tests/engines/nwn2/creature.h"
+#include "tests/engines/nwn2/creature2.h"
 
 #include "src/common/memreadstream.h"
 #include "src/common/scopedptr.h"
@@ -101,4 +102,19 @@ GTEST_TEST(NWN2Creature, creature1) {
 
 	cr->getOrientation(x, y, z, angle);
 	EXPECT_TRUE(abs(angle) < kEpsilon);
+}
+
+GTEST_TEST(NWN2Creature, creature2) {
+	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataCreature2));
+	if (!stream)
+		throw Common::Exception("No test data available");
+	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('B', 'I', 'C', ' ')));
+
+	// Load the PC
+	const Aurora::GFF3Struct &top = gff->getTopLevel();
+	Common::ScopedPtr<Engines::NWN2::Creature> cr(new Engines::NWN2::Creature(top));
+
+	EXPECT_EQ(cr->getRace(), 21);
+	EXPECT_EQ(cr->getSubRace(), 20);
+	EXPECT_EQ(cr->getGender(), 1);
 }
