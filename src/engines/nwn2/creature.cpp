@@ -592,6 +592,13 @@ void Creature::loadLevelStats(const Aurora::GFF3Struct &gff,
 		levelStats.back().hitDice = cLevelStats.getUint("LvlStatHitDie");
 		levelStats.back().classID = cLevelStats.getUint("LvlStatClass");
 		levelStats.back().skillPoints = cLevelStats.getUint("SkillPoints");
+
+		// Ability to increase
+		if (cLevelStats.hasField("LvlStatAbility")) {
+			levelStats.back().ability = cLevelStats.getUint("LvlStatAbility");
+		} else {
+			levelStats.back().ability = kAbilityMAX; // Set to an invalid ability
+		}
 	}
 }
 
