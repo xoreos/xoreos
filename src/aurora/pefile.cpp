@@ -140,10 +140,10 @@ void PEFile::load(const std::vector<Common::UString> &remap) {
 			throw Common::Exception("Found non-integer cursor group");
 
 		uint32 id = it->getID();
-		if (id >= remap.size())
+		if (id >= remap.size() || id <= 0)
 			res.name = Common::UString::format("cursor%d", id);
 		else
-			res.name = remap[id];
+			res.name = remap[id - 1];
 
 		res.type  = kFileTypeCUR;
 		res.index = _peIDs.size();
