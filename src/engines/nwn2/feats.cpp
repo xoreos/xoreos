@@ -141,6 +141,10 @@ bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 	static const Common::UString kFeatMinCols[] = {"MINSTR", "MINDEX", "MINCON", "MININT", "MINWIS", "MINCHA"};
 	static const Common::UString kFeatMaxCols[] = {"MAXSTR", "MAXDEX", "MAXCON", "MAXINT", "MAXWIS", "MAXCHA"};
 	static const Common::UString kFeatPrereq1 = "PREREQFEAT1", kFeatPrereq2 = "PREREQFEAT2";
+	static const Common::UString kFeatReqSkill1 = "ReqSkill",  kFeatReqSkillMinRanks1 = "ReqSkillMinRanks";
+	static const Common::UString kFeatReqSkill2 = "ReqSkill2", kFeatReqSkillMinRanks2 = "ReqSkillMinRanks2";
+	static const Common::UString kFeatMinLevelClass = "MinLevelClass", kFeatMinLevel = "MinLevel";
+	static const Common::UString kFeatRemoved = "REMOVED";
 
 	// Ready the feat.2da file
 	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("feat");
@@ -150,6 +154,11 @@ bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 
 	// Load the feats row
 	const Aurora::TwoDARow &row = twoDA.getRow(id);
+
+	// Check if feat was removed by the developers
+	const uint16 removed = row.getInt(kFeatRemoved);
+	if (removed == 1)
+		return false;
 
 	// Check the ability range
 	for (uint i = (uint)kAbilityStrength; i < (uint)kAbilityMAX; i++) {
@@ -178,6 +187,38 @@ bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 	const uint32 prereq2 = row.getInt(kFeatPrereq2);
 	if (prereq2 != 0 && !getHasFeat(prereq2))
 		return false;
+
+	// Check for required skill ranks
+	uint32 skill = row.getInt(kFeatReqSkill1);
+	if (skill != 0) {
+		uint32 rankMin = row.getInt(kFeatReqSkillMinRanks1);
+		if (rankMin != 0) {
+			uint32 ranks = creature.getSkillRank(skill, true);
+			if (ranks < rankMin)
+				return false;
+
+			skill = row.getInt(kFeatReqSkill2);
+			if (skill != 0) {
+				rankMin = row.getInt(kFeatReqSkillMinRanks2);
+				if (rankMin != 0) {
+					ranks = creature.getSkillRank(skill, true);
+					if (ranks < rankMin)
+						return false;
+				}
+			}
+		}
+	}
+
+	// Check for required minimum class level
+	const uint32 reqClass = row.getInt(kFeatMinLevelClass);
+	if (reqClass != 0) {
+		const uint minLevel = row.getInt(kFeatMinLevel);
+		if (minLevel != 0) {
+			const uint32 classLevel = creature.getClassLevel(reqClass);
+			if (classLevel < minLevel)
+				return false;
+		}
+	}
 
 	// TODO: Check other feat requirements
 	return true;
