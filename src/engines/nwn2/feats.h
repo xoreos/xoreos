@@ -29,6 +29,8 @@ namespace Engines {
 
 namespace NWN2 {
 
+class Creature;
+
 class Feats {
 public:
 	// Feats that need custom code
@@ -61,6 +63,8 @@ public:
 	int  getFeatsLuckACBonus() const;
 
 	bool getHasCustomFeat(Custom feat) const;
+
+	bool meetsRequirements(const Creature &creature, uint32 id) const;
 
 private:
 	struct Feat {
