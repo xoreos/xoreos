@@ -246,6 +246,8 @@ private:
 	void getSkillRank   (Aurora::NWScript::FunctionContext &ctx);
 	void getHasFeat     (Aurora::NWScript::FunctionContext &ctx);
 
+	void featAdd(Aurora::NWScript::FunctionContext &ctx);
+
 	void getClassByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByPosition(Aurora::NWScript::FunctionContext &ctx);
 	void getLevelByClass   (Aurora::NWScript::FunctionContext &ctx);

@@ -107,6 +107,8 @@ public:
 	/** Does the creature have this feat? */
 	bool  hasFeat(uint32 feat) const;
 
+	bool featAdd(uint32 feat, bool checkRequirements);
+
 	/** Get the creature's deity. */
 	const Common::UString &getDeity() const;
 

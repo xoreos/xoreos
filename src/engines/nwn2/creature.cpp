@@ -803,6 +803,16 @@ bool Creature::hasFeat(uint32 feat) const {
 	return _feats->getHasFeat(feat);
 }
 
+bool Creature::featAdd(uint32 feat, bool checkRequirements) {
+	if (checkRequirements) {
+		// TODO: Check feat requirements
+	}
+
+	// Add feat at the current hit dice
+	_feats->featAdd(feat, getHitDice());
+	return true;
+}
+
 /**
  * This call is equivalent to the GetReputation() script
  * function. It returns how the source feels about this

@@ -1003,7 +1003,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  862, "CharToASCII"                         , 0                                                },
 	{  863, "GetOwnedCharacter"                   , 0                                                },
 	{  864, "GetControlledCharacter"              , 0                                                },
-	{  865, "FeatAdd"                             , 0                                                },
+	{  865, "FeatAdd"                             , &Functions::featAdd                              },
 	{  866, "FeatRemove"                          , 0                                                },
 	{  867, "SetCanTalkToNonPlayerOwnedCreatures" , 0                                                },
 	{  868, "GetCanTalkToNonPlayerOwnedCreatures" , 0                                                },
