@@ -22,10 +22,14 @@
  *  Feats for a Neverwinter Nights 2 creature.
  */
 
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
+
 #include "src/common/debug.h"
 
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/feats.h"
+#include "src/engines/nwn2/creature.h"
 
 namespace Engines {
 
@@ -130,6 +134,53 @@ int Feats::getFeatsLuckACBonus() const {
 bool Feats::getHasCustomFeat(Custom feat) const {
 	assert((feat > -1) && (feat < kCustomMAX));
 	return _hasCustomFeat[feat];
+}
+
+/** Return true only if the creature satisfies the feat requirements */
+bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
+	static const Common::UString kFeatMinCols[] = {"MINSTR", "MINDEX", "MINCON", "MININT", "MINWIS", "MINCHA"};
+	static const Common::UString kFeatMaxCols[] = {"MAXSTR", "MAXDEX", "MAXCON", "MAXINT", "MAXWIS", "MAXCHA"};
+	static const Common::UString kFeatPrereq1 = "PREREQFEAT1", kFeatPrereq2 = "PREREQFEAT2";
+
+	// Ready the feat.2da file
+	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("feat");
+	const size_t count = twoDA.getRowCount();
+	if (id >= count)
+		return false;
+
+	// Load the feats row
+	const Aurora::TwoDARow &row = twoDA.getRow(id);
+
+	// Check the ability range
+	for (uint i = (uint)kAbilityStrength; i < (uint)kAbilityMAX; i++) {
+		// Check minimum ability
+		const uint16 min = row.getInt(kFeatMinCols[i]);
+		if (min != 0) {
+			const uint16 ability = creature.getAbility((Ability)i);
+			if (ability < min)
+				return false;
+		}
+
+		// Check maximum ability
+		const uint16 max = row.getInt(kFeatMaxCols[i]);
+		if (max != 0) {
+			const uint16 ability = creature.getAbility((Ability)i);
+			if (ability > min)
+				return false;
+		}
+	}
+
+	// Check feat prerequisites
+	const uint32 prereq1 = row.getInt(kFeatPrereq1);
+	if (prereq1 != 0 && !getHasFeat(prereq1))
+		return false;
+
+	const uint32 prereq2 = row.getInt(kFeatPrereq2);
+	if (prereq2 != 0 && !getHasFeat(prereq2))
+		return false;
+
+	// TODO: Check other feat requirements
+	return true;
 }
 
 /** Initialize the data */
@@ -417,7 +468,7 @@ void Feats::applyFeat(const uint32 id) {
 			break;
 
 		case kFeatBkgdThug:
-			// +2 bonus on Appraise, Initiative, and Intimidate checks 
+			// +2 bonus on Appraise, Initiative, and Intimidate checks
 			_skillBonus[kSkillAppraise]   += 2;
 			_skillBonus[kSkillIntimidate] += 2;
 			_initBonus                    += 2;

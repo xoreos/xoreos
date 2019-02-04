@@ -805,7 +805,8 @@ bool Creature::hasFeat(uint32 feat) const {
 
 bool Creature::featAdd(uint32 feat, bool checkRequirements) {
 	if (checkRequirements) {
-		// TODO: Check feat requirements
+		if (!_feats->meetsRequirements(*this, feat))
+			return false;
 	}
 
 	// Add feat at the current hit dice
