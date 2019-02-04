@@ -170,6 +170,17 @@ void Functions::getFactionLeader(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) ((creature == pc) ? creature : (Creature *) 0);
 }
 
+void Functions::featAdd(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	if (!creature)
+		return;
+
+	// Pass 'FeatID' and 'bCheckRequirements' parameters to creature's featAdd() call
+	bool result = creature->featAdd(ctx.getParams()[1].getInt(), ctx.getParams()[2].getInt());
+	// TODO: process remaining params: 'bFeedback' and 'bNotice'
+	ctx.getReturn() = (int32) result;
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines
