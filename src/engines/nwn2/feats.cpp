@@ -140,11 +140,12 @@ bool Feats::getHasCustomFeat(Custom feat) const {
 bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 	static const Common::UString kFeatMinCols[] = {"MINSTR", "MINDEX", "MINCON", "MININT", "MINWIS", "MINCHA"};
 	static const Common::UString kFeatMaxCols[] = {"MAXSTR", "MAXDEX", "MAXCON", "MAXINT", "MAXWIS", "MAXCHA"};
+	static const Common::UString kFeatOrReq[] = {"OrReqFeat0", "OrReqFeat1", "OrReqFeat2", "OrReqFeat3", "OrReqFeat4", "OrReqFeat5"};
 	static const Common::UString kFeatPrereq1 = "PREREQFEAT1", kFeatPrereq2 = "PREREQFEAT2";
 	static const Common::UString kFeatReqSkill1 = "ReqSkill",  kFeatReqSkillMinRanks1 = "ReqSkillMinRanks";
 	static const Common::UString kFeatReqSkill2 = "ReqSkill2", kFeatReqSkillMinRanks2 = "ReqSkillMinRanks2";
 	static const Common::UString kFeatMinLevelClass = "MinLevelClass", kFeatMinLevel = "MinLevel";
-	static const Common::UString kFeatRemoved = "REMOVED";
+	static const Common::UString kFeatRemoved = "REMOVED", kFeatMaxLevel = "MaxLevel";
 
 	// Ready the feat.2da file
 	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("feat");
@@ -188,6 +189,27 @@ bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 	if (prereq2 != 0 && !getHasFeat(prereq2))
 		return false;
 
+	// Check the "or" feat requirements
+	bool hasOrReq = false;
+	bool isOrReqSatisfied = false;
+	for (uint j = 0; j < 6; j++) {
+		uint32 orReq = row.getInt(kFeatOrReq[j]);
+		if (orReq != 0) {
+			// Found an "or" required feat
+			hasOrReq = true;
+			if (getHasFeat(orReq)) {
+				// One of the "or" required feats is satisfied
+				isOrReqSatisfied = true;
+				break;
+			}
+		}
+	}
+	if (hasOrReq) {
+		// Check if one of the "or" required feats is satisfied
+		if (!isOrReqSatisfied)
+			return false;
+	}
+
 	// Check for required skill ranks
 	uint32 skill = row.getInt(kFeatReqSkill1);
 	if (skill != 0) {
@@ -218,6 +240,14 @@ bool Feats::meetsRequirements(const Creature &creature, uint32 id) const {
 			if (classLevel < minLevel)
 				return false;
 		}
+	}
+
+	// Check the maximum allowed level
+	const uint8 maxLevel = row.getInt(kFeatMaxLevel);
+	if (maxLevel != 0) {
+		const uint8 hitDice = creature.getHitDice();
+		if (hitDice > maxLevel)
+			return false;
 	}
 
 	// TODO: Check other feat requirements
