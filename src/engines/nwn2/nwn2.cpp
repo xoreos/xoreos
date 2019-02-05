@@ -147,6 +147,7 @@ void NWN2Engine::init() {
 
 	progress.step("Loading user game config");
 	initConfig();
+	checkConfig();
 
 	initResources(progress);
 	if (EventMan.quitRequested())
@@ -358,6 +359,7 @@ void NWN2Engine::initCursors() {
 void NWN2Engine::initConfig() {
 	// Enable/Disable the Proof-of-Concept software tinting
 	ConfigMan.setBool(Common::kConfigRealmDefault, "tint", true);
+	ConfigMan.setInt(Common::kConfigRealmDefault, "difficulty", 2);
 }
 
 void NWN2Engine::initGameConfig() {
@@ -373,6 +375,10 @@ void NWN2Engine::initGameConfig() {
 		Common::FilePath::findSubDirectory(_target, "localvault", true));
 	ConfigMan.setString(Common::kConfigRealmGameTemp, "NWN2_serverPCDir",
 		Common::FilePath::findSubDirectory(_target, "servervault", true));
+}
+
+void NWN2Engine::checkConfig() {
+	checkConfigInt("difficulty", 0, 4);
 }
 
 void NWN2Engine::deinit() {

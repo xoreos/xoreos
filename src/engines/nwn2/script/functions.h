@@ -79,6 +79,8 @@ private:
 	// .--- Utility methods
 	void jumpTo(NWN2::Object *object, Area *area, float x, float y, float z);
 
+	void getGameDifficulty(Aurora::NWScript::FunctionContext &ctx);
+
 	static int32 getRandom(int min, int max, int32 n = 1);
 
 	static Common::UString formatFloat(float f, int width = 18, int decimals = 9);

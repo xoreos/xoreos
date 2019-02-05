@@ -126,6 +126,10 @@ Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::Func
 	return object;
 }
 
+void Functions::getGameDifficulty(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) _game->getGameDifficulty();
+}
+
 void Functions::jumpTo(NWN2::Object *object, Area *area, float x, float y, float z) {
 	// Sanity check
 	if (!object->getArea() || !area) {

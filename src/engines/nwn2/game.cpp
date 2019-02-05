@@ -67,6 +67,10 @@ Module &Game::getModule() {
 	return _campaign->getModule();
 }
 
+int32 Game::getGameDifficulty() {
+	return ConfigMan.getInt("difficulty");
+}
+
 void Game::run() {
 	_campaign.reset(new Campaign(*_console));
 

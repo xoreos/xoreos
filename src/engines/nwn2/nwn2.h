@@ -79,6 +79,8 @@ private:
 
 	void deinit();
 
+	void checkConfig();
+
 	void playIntroVideos();
 };
 

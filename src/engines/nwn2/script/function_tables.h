@@ -651,7 +651,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  510, "EffectSwarm"                         , 0                                                },
 	{  511, "GetWeaponRanged"                     , 0                                                },
 	{  512, "DoSinglePlayerAutoSave"              , 0                                                },
-	{  513, "GetGameDifficulty"                   , 0                                                },
+	{  513, "GetGameDifficulty"                   , &Functions::getGameDifficulty                    },
 	{  514, "SetTileMainLightColor"               , 0                                                },
 	{  515, "SetTileSourceLightColor"             , 0                                                },
 	{  516, "RecomputeStaticLighting"             , 0                                                },
