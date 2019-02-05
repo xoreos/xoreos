@@ -26,6 +26,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/maths.h"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
