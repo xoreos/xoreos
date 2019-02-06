@@ -52,7 +52,7 @@ public:
 	void cleanup();
 
 	/** Adds a mesh to be managed. Cleanup will delete the mesh if usage count is zero. */
-	void addMesh(Mesh *mesh);
+	void addMesh(Mesh *mesh, bool forceAddMesh = true);
 
 	/** Forcibly remove the mesh from the map. Consider using cleanup instead. */
 	void delMesh(Mesh *mesh);

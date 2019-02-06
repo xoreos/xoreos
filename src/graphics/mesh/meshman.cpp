@@ -24,11 +24,13 @@
 
 
 #include "src/common/util.h"
+#include "src/common/uuid.h"
 
 #include "src/graphics/mesh/meshman.h"
 #include "src/graphics/mesh/meshwirebox.h"
 #include "src/graphics/mesh/meshfont.h"
 #include "src/graphics/mesh/meshquad.h"
+
 
 DECLARE_SINGLETON(Graphics::Mesh::MeshManager)
 
@@ -81,7 +83,7 @@ void MeshManager::cleanup() {
 	}
 }
 
-void MeshManager::addMesh(Mesh *mesh) {
+void MeshManager::addMesh(Mesh *mesh, bool forceAddMesh) {
 	if (!mesh) {
 		return;
 	}
@@ -89,6 +91,10 @@ void MeshManager::addMesh(Mesh *mesh) {
 	std::map<Common::UString, Mesh *>::iterator iter = _resourceMap.find(mesh->getName());
 	if (iter == _resourceMap.end()) {
 		_resourceMap[mesh->getName()] = mesh;
+	} else if (forceAddMesh) {
+		Common::UString name = mesh->getName() + "#" + Common::generateIDRandomString();
+		mesh->setName(name);
+		this->addMesh(mesh);  // Recursive call, but it'll add the mesh eventually with a unique name.
 	}
 }
 
