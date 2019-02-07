@@ -217,28 +217,28 @@ void DragonAgeEngine::initResources(LoadProgress &progress) {
 	progress.step("Adding core archive directories");
 
 	progress.step("Indexing core resources files");
-	Game::loadResources ("/packages/core", 0, _resources);
-	Game::loadTalkTables("/packages/core", 0, _languageTLK, _language);
+	Game::loadResources ("packages/core", 0, _resources);
+	Game::loadTalkTables("packages/core", 0, _languageTLK, _language);
 
 	progress.step("Indexing extra core resources files");
-	indexMandatoryArchive("/packages/core/data/designerscripts.rim",        450, _resources);
-	indexMandatoryArchive("/packages/core/data/globalvfx.rim",              451, _resources);
-	indexMandatoryArchive("/packages/core/data/chargen.rim",                452, _resources);
-	indexMandatoryArchive("/packages/core/data/chargen.gpu.rim",            453, _resources);
-	indexMandatoryArchive("/packages/core/data/global.rim",                 454, _resources);
-	indexMandatoryArchive("/packages/core/data/abilities/spiritform.rim",   455, _resources);
-	indexMandatoryArchive("/packages/core/data/abilities/summonwolf.rim",   456, _resources);
-	indexMandatoryArchive("/packages/core/data/abilities/mouseform.rim",    457, _resources);
-	indexMandatoryArchive("/packages/core/data/abilities/summonspider.rim", 458, _resources);
-	indexMandatoryArchive("/packages/core/data/abilities/summonbear.rim",   459, _resources);
-	indexMandatoryArchive("/packages/core/data/abilities/spiderform.rim",   460, _resources);
-	indexMandatoryArchive("/packages/core/data/abilities/golemform.rim",    461, _resources);
-	indexMandatoryArchive("/packages/core/data/abilities/bearform.rim",     462, _resources);
-	indexMandatoryArchive("/packages/core/data/abilities/burningform.rim",  463, _resources);
+	indexMandatoryArchive("packages/core/data/designerscripts.rim",        450, _resources);
+	indexMandatoryArchive("packages/core/data/globalvfx.rim",              451, _resources);
+	indexMandatoryArchive("packages/core/data/chargen.rim",                452, _resources);
+	indexMandatoryArchive("packages/core/data/chargen.gpu.rim",            453, _resources);
+	indexMandatoryArchive("packages/core/data/global.rim",                 454, _resources);
+	indexMandatoryArchive("packages/core/data/abilities/spiritform.rim",   455, _resources);
+	indexMandatoryArchive("packages/core/data/abilities/summonwolf.rim",   456, _resources);
+	indexMandatoryArchive("packages/core/data/abilities/mouseform.rim",    457, _resources);
+	indexMandatoryArchive("packages/core/data/abilities/summonspider.rim", 458, _resources);
+	indexMandatoryArchive("packages/core/data/abilities/summonbear.rim",   459, _resources);
+	indexMandatoryArchive("packages/core/data/abilities/spiderform.rim",   460, _resources);
+	indexMandatoryArchive("packages/core/data/abilities/golemform.rim",    461, _resources);
+	indexMandatoryArchive("packages/core/data/abilities/bearform.rim",     462, _resources);
+	indexMandatoryArchive("packages/core/data/abilities/burningform.rim",  463, _resources);
 
 	progress.step("Indexing single-player campaign resources files");
-	Game::loadResources ("/modules/single player", 500, _resources);
-	Game::loadTalkTables("/modules/single player", 500, _languageTLK, _language);
+	Game::loadResources ("modules/single player", 500, _resources);
+	Game::loadTalkTables("modules/single player", 500, _languageTLK, _language);
 
 	progress.step("Registering file formats");
 	registerModelLoader(new DragonAgeModelLoader);

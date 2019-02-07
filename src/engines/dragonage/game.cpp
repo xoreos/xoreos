@@ -186,7 +186,7 @@ void Game::loadResourceDir(const Common::UString &dir, uint32 priority, ChangeLi
 
 	for (Common::FileList::const_iterator f = files.begin(); f != files.end(); ++f)
 		if (Common::FilePath::getExtension(*f).equalsIgnoreCase(".erf"))
-			indexMandatoryArchive("/" + *f, priority++, changes);
+			indexMandatoryArchive(*f, priority++, changes);
 }
 
 void Game::unloadTalkTables(ChangeList &changes) {
