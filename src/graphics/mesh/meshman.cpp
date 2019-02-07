@@ -31,6 +31,7 @@
 #include "src/graphics/mesh/meshfont.h"
 #include "src/graphics/mesh/meshquad.h"
 
+
 DECLARE_SINGLETON(Graphics::Mesh::MeshManager)
 
 namespace Graphics {
