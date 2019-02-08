@@ -271,8 +271,10 @@ private:
 	void getAlignmentLawChaos(Aurora::NWScript::FunctionContext &ctx);
 	void getAlignmentGoodEvil(Aurora::NWScript::FunctionContext &ctx);
 
-	void getIsRosterMember(Aurora::NWScript::FunctionContext &ctx);
-	void getFactionLeader(Aurora::NWScript::FunctionContext &ctx);
+	void getIsRosterMember   (Aurora::NWScript::FunctionContext &ctx);
+	void getFirstRosterMember(Aurora::NWScript::FunctionContext &ctx);
+	void getNextRosterMember (Aurora::NWScript::FunctionContext &ctx);
+	void getFactionLeader    (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp
