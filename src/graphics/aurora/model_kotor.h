@@ -104,6 +104,9 @@ public:
 
 	void buildMaterial();
 
+	void declareShaderInputs(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
+	void setupShaderTexture(MaterialConfiguration &config, int textureIndex, Shader::ShaderDescriptor &cripter);
+
 private:
 	void readNodeControllers(Model_KotOR::ParserContext &ctx, uint32 offset,
 	                         uint32 count, std::vector<float> &dataFloat, std::vector<uint32> &dataInt);
