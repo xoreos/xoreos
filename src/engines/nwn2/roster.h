@@ -40,12 +40,19 @@ public:
 	Roster();
 	~Roster();
 
+	/** Set to the first member in the list. */
+	Common::UString getFirstRosterMember();
+	/** Increment to the next member in the list. */
+	Common::UString getNextRosterMember();
+
 private:
 	struct Member {
 		Common::UString rosterName; ///< Unique roster name.
 	};
 
 	std::list<Member> _members; ///< List of roster member instances.
+
+	uint32 _lastRetrieved; ///< Index of last retrieved member.
 
 	/** Load members from 'ROSTER.rst' file. */
 	void load();
