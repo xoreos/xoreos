@@ -611,6 +611,33 @@ void ModelNode_KotOR::buildMaterial() {
 	ModelNode::buildMaterial();
 }
 
+void ModelNode_KotOR::declareShaderInputs(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter) {
+	ModelNode::declareShaderInputs(config, cripter);
+	cripter.declareInput(Shader::ShaderDescriptor::INPUT_UV1);
+}
+
+void ModelNode_KotOR::setupShaderTexture(MaterialConfiguration &config, int textureIndex, Shader::ShaderDescriptor &cripter) {
+	if (textureIndex == 1) {
+		if (config.phandles[1].empty())
+			return;
+
+		config.materialName += "." + config.phandles[1].getName();
+
+		cripter.declareSampler(Shader::ShaderDescriptor::SAMPLER_TEXTURE_1,
+		                       Shader::ShaderDescriptor::SAMPLER_2D);
+
+		cripter.connect(Shader::ShaderDescriptor::SAMPLER_TEXTURE_1,
+		                Shader::ShaderDescriptor::INPUT_UV1,
+		                Shader::ShaderDescriptor::TEXTURE_LIGHTMAP);
+
+		cripter.addPass(Shader::ShaderDescriptor::TEXTURE_LIGHTMAP,
+		                Shader::ShaderDescriptor::BLEND_MULTIPLY);
+
+	} else {
+		ModelNode::setupShaderTexture(config, textureIndex, cripter);
+	}
+}
+
 void ModelNode_KotOR::readPositionController(uint8 columnCount, uint16 rowCount, uint16 timeIndex,
 		uint16 dataIndex, std::vector<float> &data) {
 	bool bezier = columnCount & 16;

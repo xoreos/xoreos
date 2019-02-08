@@ -203,6 +203,19 @@ public:
 		Mesh();
 	};
 
+	struct MaterialConfiguration {
+		Aurora::ModelNode::Mesh *pmesh;
+		Aurora::TextureHandle *phandles;
+		Aurora::TextureHandle *penvmap;
+		EnvironmentMapMode envmapmode;
+		uint32 textureCount;
+		Shader::ShaderMaterial *material;
+		Common::UString materialName;
+		uint32 materialFlags;
+
+		MaterialConfiguration();
+	};
+
 protected:
 	Model *_model; ///< The model this node belongs to.
 
@@ -290,6 +303,13 @@ protected:
 
 	void setMaterial(Shader::ShaderMaterial *material);
 	virtual void buildMaterial();
+
+	virtual void declareShaderInputs(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
+	virtual void setupEnvMapSampler(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
+	virtual void addBlendedUnderEnvMapPass(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
+	virtual void setupShaderTexture(MaterialConfiguration &config, int textureIndex, Shader::ShaderDescriptor &cripter);
+	virtual void addBlendedOverEnvMapPass(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
+	virtual void bindTexturesToSamplers(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter);
 
 private:
 	const Common::BoundingBox &getAbsoluteBound() const;
