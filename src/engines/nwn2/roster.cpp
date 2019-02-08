@@ -34,11 +34,35 @@ namespace Engines {
 
 namespace NWN2 {
 
-Roster::Roster() {
+Roster::Roster() : _lastRetrieved(UINT32_MAX) {
 	load();
 }
 
 Roster::~Roster() {
+}
+
+/** Return the roster name of the first member. */
+Common::UString Roster::getFirstRosterMember() {
+	_lastRetrieved = 0;
+
+	if (_members.empty())
+		return "";
+
+	// Return the first member's name
+	return _members.front().rosterName;
+}
+
+/** Return the roster name of the next member. */
+Common::UString Roster::getNextRosterMember() {
+	if (_members.empty() || _lastRetrieved >= _members.size() - 1) {
+		_lastRetrieved = UINT32_MAX;
+		return "";
+	}
+
+	// Find the matching member
+	std::list<Member>::const_iterator it = _members.begin();
+	std::advance(it, ++_lastRetrieved);
+	return (it != _members.end()) ? it->rosterName : "";
 }
 
 /** Load roster from the saved 'ROSTER.rst' file, if any. */
