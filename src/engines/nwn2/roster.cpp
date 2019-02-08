@@ -75,13 +75,16 @@ void Roster::load() {
 
 	// Insert the roster members
 	const Aurora::GFF3List &rList = top.getList("RosMembers");
-	for (Aurora::GFF3List::const_iterator it = rList.begin(); it != rList.end(); ++it) {
-		Member member;
+	for (Aurora::GFF3List::const_iterator it = rList.begin(); it != rList.end(); ++it)
+		loadMember(**it);
+}
 
-		// Add a roster member to the list
-		member.rosterName = (*it)->getString("RosName");
-		_members.push_back(member);
-	}
+void Roster::loadMember(const Aurora::GFF3Struct &gff) {
+	Member member;
+
+	// Add a roster member to the list
+	member.rosterName = gff.getString("RosName");
+	_members.push_back(member);
 }
 
 } // End of namespace NWN2

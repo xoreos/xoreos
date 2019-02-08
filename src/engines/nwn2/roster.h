@@ -29,6 +29,8 @@
 
 #include "src/common/ustring.h"
 
+#include "src/aurora/types.h"
+
 namespace Engines {
 
 namespace NWN2 {
@@ -44,6 +46,9 @@ public:
 	Common::UString getFirstRosterMember();
 	/** Increment to the next member in the list. */
 	Common::UString getNextRosterMember();
+
+protected:
+	void loadMember(const Aurora::GFF3Struct &gff);
 
 private:
 	struct Member {
