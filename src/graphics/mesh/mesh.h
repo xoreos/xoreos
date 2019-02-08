@@ -25,6 +25,8 @@
 #ifndef GRAPHICS_MESH_MESH_H
 #define GRAPHICS_MESH_MESH_H
 
+#include <vector>
+
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
 
@@ -76,6 +78,12 @@ public:
 
 	float getRadius() const;
 
+	const glm::mat4 *getBindPosePtr() const { return _bindPosePtr; }
+	void setBindPosePtr(const glm::mat4 *value) { _bindPosePtr = value; }
+
+	/** Get a list of bone transformation matrices represented as an array of values. */
+	std::vector<float> &getBoneTransforms() { return _boneTransforms; }
+
 protected:
 	// For each attrib, when calculating VBOs, do (attrib address) - (base data address) to find initial data offset.
 	VertexBuffer _vertexBuffer;
@@ -100,6 +108,9 @@ private:
 	glm::vec3 _max;
 	glm::vec3 _min;
 	float _radius;
+
+	const glm::mat4 *_bindPosePtr;
+	std::vector<float> _boneTransforms;
 };
 
 } // End of namespace Mesh

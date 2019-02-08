@@ -255,69 +255,35 @@ void Animation::updateSkinnedModel(Model *model) {
 		if (!node->_mesh || !node->_mesh->skin)
 			continue;
 
-		// TODO:
-		// Handmaiden model in KotOR 2 has a node that is different
-		// from all the others in that it's parent is a bone. Because
-		// of this it has transformations applied twice to it: by the
-		// renderer and by the skeletal animation routine. This should
-		// probably be handled the other way.
+		/**
+		 * TODO: Handmaiden model in KotOR 2 has a node that is different from
+		 * all the others in that it's parent is a bone. Because of this it has
+		 * transformations applied twice to it: by the renderer and by the skeletal
+		 * animation routine. This should probably be handled the other way.
+		 */
 		if (node->_parent && node->_parent->_name.stricmp("f_jaw_g") == 0)
 			continue;
 
-		glm::mat4 invTransform = node->_invBindPose;
-		glm::mat4 transform = glm::inverse(invTransform);
+		fillBoneTransformsOfModelNode(node);
 
-		ModelNode::Skin *skin = node->_mesh->skin;
+		if (!GfxMan.isRendererExperimental()) {
+			ModelNode::MeshData *meshData = node->_mesh->data;
+			VertexBuffer &vertexBuffer = *(meshData->rawMesh->getVertexBuffer());
+			uint32 vertexCount = vertexBuffer.getCount();
+			float *initialVertexData = meshData->initialVertexCoords.data();
 
-		for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
-			int index = static_cast<int>(skin->boneMapping[i]);
-			if (index != -1)
-				skin->boneNodeMap[index]->computeAbsoluteTransform();
-		}
+			std::vector<float> &vertexCoordsBuffer = node->_vertexCoordsBuffer;
+			vertexCoordsBuffer.resize(3 * vertexCount);
+			float *vertexData = vertexCoordsBuffer.data();
 
-		// TODO: Use vertex shader
-
-		ModelNode::MeshData *meshData = node->_mesh->data;
-		VertexBuffer &vertexBuffer = *(meshData->rawMesh->getVertexBuffer());
-		uint32 vertexCount = vertexBuffer.getCount();
-
-		std::vector<float> &vcb = node->_vertexCoordsBuffer;
-		vcb.resize(3 * vertexCount);
-		float *v = &vcb[0];
-
-		float *iv = &meshData->initialVertexCoords[0];
-		float *boneWeights = &skin->boneWeights[0];
-		float *boneMappingId = &skin->boneMappingId[0];
-
-		for (uint32 i = 0; i < vertexCount; ++i) {
-			v[0] = 0;
-			v[1] = 0;
-			v[2] = 0;
-			for (uint8 j = 0; j < 4; ++j) {
-				int index = static_cast<int>(boneMappingId[j]);
-				if (index != -1) {
-					float rv[3];
-					float tv[3];
-					const glm::mat4 &invBindPose = skin->boneNodeMap[index]->_invBindPose;
-					const glm::mat4 &boneTransform = skin->boneNodeMap[index]->_absoluteTransform;
-
-					multiply(iv, transform, rv);
-					multiply(rv, invBindPose, tv);
-					multiply(tv, boneTransform, rv);
-					multiply(rv, invTransform, tv);
-
-					v[0] += tv[0] * boneWeights[j];
-					v[1] += tv[1] * boneWeights[j];
-					v[2] += tv[2] * boneWeights[j];
-				}
+			for (uint32 i = 0; i < vertexCount; ++i) {
+				applyBoneTransformsToVertex(node, initialVertexData, i, vertexData);
+				vertexData += 3;
+				initialVertexData += 3;
 			}
-			v += 3;
-			iv += 3;
-			boneWeights += 4;
-			boneMappingId += 4;
-		}
 
-		node->_vertexCoordsBuffered = true;
+			node->_vertexCoordsBuffered = true;
+		}
 	}
 
 	for (std::map<Common::UString, Model *>::iterator m = model->_attachedModels.begin();
@@ -325,6 +291,58 @@ void Animation::updateSkinnedModel(Model *model) {
 		Model *attachedModel = m->second;
 		if (attachedModel->_skinned)
 			updateSkinnedModel(attachedModel);
+	}
+}
+
+void Animation::fillBoneTransformsOfModelNode(const ModelNode *node) {
+	const Graphics::Aurora::ModelNode::Skin *skin = node->_mesh->skin;
+	std::vector<float> &boneTransforms = node->_mesh->data->rawMesh->getBoneTransforms();
+	float *boneTransformsData = boneTransforms.data();
+
+	for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
+		int index = static_cast<int>(skin->boneMapping[i]);
+		if (index != -1) {
+			ModelNode *boneNode = skin->boneNodeMap[index];
+			boneNode->computeAbsoluteTransform();
+			boneNode->computeBoneTransform();
+
+			memcpy(boneTransformsData + 16 * index,
+			       glm::value_ptr(boneNode->getBoneTransform()),
+			       16 * sizeof(float));
+		}
+	}
+}
+
+inline void Animation::applyBoneTransformsToVertex(
+		const ModelNode *node,
+		const float *initialVertexData,
+		int vertexIndex,
+		float *vertexData) {
+
+	vertexData[0] = 0;
+	vertexData[1] = 0;
+	vertexData[2] = 0;
+
+	const ModelNode::Skin *skin = node->_mesh->skin;
+	int offset = 4 * vertexIndex;
+	const float *boneWeights = skin->boneWeights.data() + offset;
+	const float *boneMappingId = skin->boneMappingId.data() + offset;
+
+	for (uint8 j = 0; j < 4; ++j) {
+		int index = static_cast<int>(boneMappingId[j]);
+		if (index != -1) {
+			float r[3];
+			float t[3];
+			const glm::mat4 &boneTransform = skin->boneNodeMap[index]->_boneTransform;
+
+			multiply(initialVertexData, node->_bindPose, r);
+			multiply(r, boneTransform, t);
+			multiply(t, node->_invBindPose, r);
+
+			vertexData[0] += r[0] * boneWeights[j];
+			vertexData[1] += r[1] * boneWeights[j];
+			vertexData[2] += r[2] * boneWeights[j];
+		}
 	}
 }
 

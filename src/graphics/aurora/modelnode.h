@@ -112,8 +112,12 @@ public:
 	/** Set textures to the node. */
 	void setTextures(const std::vector<Common::UString> &textures);
 
-	void computeInverseBindPose();
+	const glm::mat4 &getBindPose() const { return _bindPose; }
+	const glm::mat4 &getBoneTransform() const { return _boneTransform; }
+
+	void computeBindPose();
 	void computeAbsoluteTransform();
+	void computeBoneTransform();
 
 	/** Get the alpha (transparency) of the node. */
 	float getAlpha();
@@ -257,8 +261,12 @@ protected:
 
 	uint16 _nodeNumber;
 
-	glm::mat4 _invBindPose;       ///< Inverse bind pose matrix used for animations.
-	glm::mat4 _absoluteTransform; ///< Absolute transformation matrix used for animations.
+	// .--- Skeletal animation
+	glm::mat4 _bindPose;          ///< Node's bind pose matrix.
+	glm::mat4 _invBindPose;       ///< Inverse of a node's bind pose matrix.
+	glm::mat4 _absoluteTransform; ///< Node's absolute transformation matrix.
+	glm::mat4 _boneTransform;     ///< Node's bone transformation matrix.
+	// '---
 
 	// .--- Node position and geometry buffers
 	float _positionBuffer[3];

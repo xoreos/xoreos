@@ -22,6 +22,8 @@
  *  Shader surface, responsible for tracking data relating to a vertex shader.
  */
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/shader/shadersurface.h"
@@ -32,7 +34,17 @@ namespace Shader {
 
 #define SHADER_SURFACE_VARIABLE_OWNED (0x00000001)
 
-ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name) : _variableData(), _vertShader(vertShader), _flags(0), _name(name), _usageCount(0), _objectModelviewIndex(0xFFFFFFFF), _textureViewIndex(0xFFFFFFFF) {
+ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::UString &name) :
+		_variableData(),
+		_vertShader(vertShader),
+		_flags(0),
+		_name(name),
+		_usageCount(0),
+		_objectModelviewIndex(0xFFFFFFFF),
+		_textureViewIndex(0xFFFFFFFF),
+		_bindPoseIndex(0xFFFFFFFF),
+		_boneTransformsIndex(0xFFFFFFFF) {
+
 	vertShader->usageCount++;
 
 	uint32 varCount = vertShader->variablesCombined.size();
@@ -49,6 +61,10 @@ ShaderSurface::ShaderSurface(Shader::ShaderObject *vertShader, const Common::USt
 			setVariableExternal(i, &(GfxMan.getProjectionMatrix()));
 		} else if (vertShader->variablesCombined[i].name == "_modelviewMatrix") {
 			setVariableExternal(i, &(GfxMan.getModelviewMatrix()));
+		} else if (vertShader->variablesCombined[i].name == "_bindPose") {
+			_bindPoseIndex = i;
+		} else if (vertShader->variablesCombined[i].name == "_boneTransforms") {
+			_boneTransformsIndex = i;
 		}
 	}
 }
@@ -183,6 +199,18 @@ void ShaderSurface::bindObjectModelview(Shader::ShaderProgram *program, const gl
 void ShaderSurface::bindTextureView(Shader::ShaderProgram *program, const glm::mat4 *t) {
 	if (_textureViewIndex != 0xFFFFFFFF) {
 		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_textureViewIndex], program->vertexVariableLocations[_objectModelviewIndex], t);
+	}
+}
+
+void ShaderSurface::bindBindPose(Shader::ShaderProgram *program, const glm::mat4 *t) {
+	if (_bindPoseIndex != 0xFFFFFFFF) {
+		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_bindPoseIndex], program->vertexVariableLocations[_bindPoseIndex], glm::value_ptr(*t));
+	}
+}
+
+void ShaderSurface::bindBoneTransforms(Shader::ShaderProgram *program, const float *t) {
+	if (_boneTransformsIndex != 0xFFFFFFFF) {
+		ShaderMan.bindShaderVariable(program->vertexObject->variablesCombined[_boneTransformsIndex], program->vertexVariableLocations[_boneTransformsIndex], t);
 	}
 }
 

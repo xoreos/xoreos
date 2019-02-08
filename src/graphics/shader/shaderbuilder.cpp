@@ -27,6 +27,8 @@
  *  parameter configuration.
  */
 
+#include "src/common/strutil.h"
+
 #include "src/graphics/shader/shaderbuilder.h"
 
 namespace Graphics {
@@ -50,9 +52,10 @@ void ShaderDescriptor::declareSampler(ShaderDescriptor::Sampler sampler, ShaderD
 	_samplerDescriptors.push_back(descriptor);
 }
 
-void ShaderDescriptor::declareUniform(ShaderDescriptor::Uniform uniform) {
+void ShaderDescriptor::declareUniform(ShaderDescriptor::Uniform uniform, int count) {
 	UniformDescriptor descriptor = {};
 	descriptor.uniform = uniform;
+	descriptor.count = count;
 	_uniformDescriptors.push_back(descriptor);
 }
 
@@ -117,6 +120,8 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		           "	vec4 froggle = vec4(1.0, 0.0, 0.0, 1.0);\n";
 	}
 
+	int boneCount = 0;
+
 	/**
 	 * Extra uniform declarations. These will go into either vertex or fragment
 	 * headers as appropriate.
@@ -126,6 +131,13 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case UNIFORM_V_OBJECT_MODELVIEW_MATRIX: break;
 		case UNIFORM_V_PROJECTION_MATRIX: break;
 		case UNIFOM_V_MODELVIEW_MATRIX: break;
+		case UNIFORM_V_BIND_POSE:
+			v_header += "uniform mat4 _bindPose;\n";
+			break;
+		case UNIFORM_V_BONE_TRANSFORMS:
+			v_header += "uniform mat4 _boneTransforms[" + Common::composeString(_uniformDescriptors[i].count) + "];\n";
+			boneCount = _uniformDescriptors[i].count;
+			break;
 		case UNIFORM_F_ALPHA: break;
 		case UNIFORM_F_COLOUR:
 			f_header += "uniform vec4 _colour;\n";
@@ -172,10 +184,33 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 				output_desc_string = "varying vec3 position0;\n";
 				f_desc_string = "varying vec3 position0;\n";
 			}
-			///< @note This is always going to be transform matrix modified.
-			body_desc_string = "vec4 _vertex = mo * vec4(inputPosition0.xyz, 1.0f);\n"
-			                   "gl_Position = _projectionMatrix * _vertex;\n"
-			                   "position0 = vec3(_vertex);\n";
+			if (boneCount > 0) {
+				body_desc_string = "vec4 iv = vec4(inputPosition0.xyz, 1.0f);\n"
+				                   "vec4 _vertex = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
+				                   "mat4 invBindPose = inverse(_bindPose);\n"
+				                   "for (int i = 0; i < 4; ++i) {\n"
+				                   "	int boneIndex = -1;\n"
+				                   "	float boneWeight = 0.0f;\n"
+				                   "	if      (i == 0) { boneIndex = int(inputBoneIndices.x); boneWeight = inputBoneWeights.x; }\n"
+				                   "	else if (i == 1) { boneIndex = int(inputBoneIndices.y); boneWeight = inputBoneWeights.y; }\n"
+				                   "	else if (i == 2) { boneIndex = int(inputBoneIndices.z); boneWeight = inputBoneWeights.z; }\n"
+				                   "	else if (i == 3) { boneIndex = int(inputBoneIndices.w); boneWeight = inputBoneWeights.w; }\n"
+				                   "	if (boneIndex != -1) {\n"
+				                   "		vec4 tmp = (invBindPose * _boneTransforms[boneIndex] * _bindPose) * iv;\n"
+				                   "		_vertex.x += boneWeight * tmp.x;\n"
+				                   "		_vertex.y += boneWeight * tmp.y;\n"
+				                   "		_vertex.z += boneWeight * tmp.z;\n"
+				                   "	}\n"
+				                   "}\n"
+				                   "_vertex = mo * _vertex;"
+				                   "gl_Position = _projectionMatrix * _vertex;\n"
+				                   "position0 = vec3(_vertex);\n";
+			} else {
+				///< @note This is always going to be transform matrix modified.
+				body_desc_string = "vec4 _vertex = mo * vec4(inputPosition0.xyz, 1.0f);\n"
+				                   "gl_Position = _projectionMatrix * _vertex;\n"
+				                   "position0 = vec3(_vertex);\n";
+			}
 			break;
 		case INPUT_POSITION1:
 			if (isGL3) {
@@ -352,6 +387,31 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 				f_desc_string = "varying vec4 xColour;\n";
 			}
 			body_desc_string = "xColour = inputColour;\n";
+			break;
+		case INPUT_BONE_INDICES:
+			if (isGL3) {
+				input_desc_string = "in vec4 inputBoneIndices;\n";
+				output_desc_string = "out vec4 boneIndices;\n";
+				f_desc_string = "in vec4 boneIndices;\n";
+			} else {
+				input_desc_string = "attribute vec4 inputBoneIndices;\n";
+				output_desc_string = "varying vec4 boneIndices;\n";
+				f_desc_string = "varying vec4 boneIndices;\n";
+			}
+			body_desc_string = "boneIndices = inputBoneIndices;\n";
+			break;
+		case INPUT_BONE_WEIGHTS:
+			if (isGL3) {
+				input_desc_string = "in vec4 inputBoneWeights;\n";
+				output_desc_string = "out vec4 boneWeights;\n";
+				f_desc_string = "in vec4 boneWeights;\n";
+			} else {
+				input_desc_string = "attribute vec4 inputBoneWeights;\n";
+				output_desc_string = "varying vec4 boneWeights;\n";
+				f_desc_string = "varying vec4 boneWeights;\n";
+			}
+			body_desc_string = "boneWeights = inputBoneWeights;\n";
+			break;
 		}
 		v_header += input_desc_string;
 		v_header += output_desc_string;
@@ -442,6 +502,7 @@ void ShaderDescriptor::build(bool isGL3, Common::UString &v_string, Common::UStr
 		case INPUT_UV_CUBE: f_input_string = "uvCube"; break;
 		case INPUT_UV_SPHERE: f_input_string = "uvSphere"; break;
 		case INPUT_COLOUR: f_input_string = "xColour"; break;
+		default: break;
 		}
 
 		Common::UString f_action_string;
@@ -602,6 +663,15 @@ void ShaderDescriptor::clear() {
 }
 
 void ShaderDescriptor::genName(Common::UString &n_string) {
+	for (size_t i = 0; i < _uniformDescriptors.size(); ++i) {
+		n_string += "__";
+		switch (_uniformDescriptors[i].uniform) {
+		case UNIFORM_V_BIND_POSE: n_string += "uniform_bindpose"; break;
+		case UNIFORM_V_BONE_TRANSFORMS: n_string += "uniform_bonetransforms" + Common::composeString(_uniformDescriptors[i].count); break;
+		default: break;
+		}
+	}
+
 	for (size_t i = 0; i < _inputDescriptors.size(); ++i) {
 		n_string += "__";
 		switch (_inputDescriptors[i]) {
@@ -620,6 +690,8 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case INPUT_UV_CUBE: n_string += "input_uv_cube"; break;
 		case INPUT_UV_SPHERE: n_string += "input_uv_sphere"; break;
 		case INPUT_COLOUR: n_string += "input_colour"; break;
+		case INPUT_BONE_INDICES: n_string += "input_boneindices"; break;
+		case INPUT_BONE_WEIGHTS: n_string += "input_boneweights"; break;
 		}
 	}
 
@@ -678,6 +750,8 @@ void ShaderDescriptor::genName(Common::UString &n_string) {
 		case INPUT_UV_CUBE: n_string += "input_uv_cube"; break;
 		case INPUT_UV_SPHERE: n_string += "input_uv_sphere"; break;
 		case INPUT_COLOUR: n_string += "input_colour"; break;
+		case INPUT_BONE_INDICES: n_string += "input_boneindices"; break;
+		case INPUT_BONE_WEIGHTS: n_string += "input_boneweights"; break;
 		}
 
 		n_string += "-";

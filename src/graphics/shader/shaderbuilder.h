@@ -62,7 +62,9 @@ public:
 		INPUT_UV1_MATRIX, ///< Same as INPUT_UV1, but specifies input matrix too.
 		INPUT_UV_CUBE,    ///< Not strictly speaking an input, but generated for an output.
 		INPUT_UV_SPHERE,  ///< Not strictly speaking an input, but generated for an output.
-		INPUT_COLOUR
+		INPUT_COLOUR,
+		INPUT_BONE_INDICES,
+		INPUT_BONE_WEIGHTS
 	};
 
 	///< Sampler definitions. Limit to the OpenGL minimum requirement.
@@ -91,6 +93,8 @@ public:
 		UNIFORM_V_OBJECT_MODELVIEW_MATRIX,
 		UNIFORM_V_PROJECTION_MATRIX,
 		UNIFOM_V_MODELVIEW_MATRIX,
+		UNIFORM_V_BIND_POSE,
+		UNIFORM_V_BONE_TRANSFORMS,
 		UNIFORM_F_ALPHA,
 		UNIFORM_F_COLOUR
 	};
@@ -126,7 +130,7 @@ public:
 
 	void declareSampler(ShaderDescriptor::Sampler sampler, ShaderDescriptor::SamplerType type);
 
-	void declareUniform(ShaderDescriptor::Uniform uniform);
+	void declareUniform(ShaderDescriptor::Uniform uniform, int count = 1);
 
 	/**
 	 * @brief Connect an input to a sampler and an action.
@@ -169,6 +173,7 @@ private:
 
 	struct UniformDescriptor {
 		Uniform uniform;
+		int count;
 	};
 
 	struct Connector {

@@ -97,8 +97,14 @@ private:
 	                         bool relative) const;
 	void interpolateOrientation(ModelNode *animNode, ModelNode *target, float time) const;
 
-	/** Transform vertices for each node of the specified model based on current animation. */
 	void updateSkinnedModel(Model *model);
+	void fillBoneTransformsOfModelNode(const ModelNode *node);
+
+	inline void applyBoneTransformsToVertex(
+			const ModelNode *node,
+			const float *initialVertexData,
+			int vertexIndex,
+			float *vertexData);
 };
 
 } // End of namespace Aurora

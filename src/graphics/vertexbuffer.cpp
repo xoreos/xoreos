@@ -57,6 +57,11 @@ void VertexAttrib::enable() const {
 			glColorPointer(size, type, stride, pointer);
 			break;
 
+		// Unused (experimental renderer only)
+		case VBONEINDICES:
+		case VBONEWEIGHTS:
+			break;
+
 		default:
 			assert(index >= VTCOORD);
 			glClientActiveTextureARB(GL_TEXTURE0 + index - VTCOORD);
@@ -78,6 +83,11 @@ void VertexAttrib::disable() const {
 
 		case VCOLOR:
 			glDisableClientState(GL_COLOR_ARRAY);
+			break;
+
+		// Unused (experimental renderer only)
+		case VBONEINDICES:
+		case VBONEWEIGHTS:
 			break;
 
 		default:
