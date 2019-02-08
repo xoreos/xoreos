@@ -36,6 +36,8 @@ enum VertexAttribIdEnum {
 	VPOSITION = 0, ///< Vertex position.
 	VNORMAL,       ///< Vertex normal.
 	VCOLOR,        ///< Vertex color.
+	VBONEINDICES,  ///< Indices of bones affecting the vertex.
+	VBONEWEIGHTS,  ///< Weights of bones affecting the vertex.
 	VTCOORD        ///< Vertex texture coordinates, VTCOORDi = VTCOORD + i.
 };
 

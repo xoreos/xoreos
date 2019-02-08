@@ -588,6 +588,9 @@ void ShaderManager::genGLProgram(ShaderProgram *program) {
 		glBindAttribLocation(glid, (GLuint)(VERTEX_COLOR), "inputColour");
 	}
 
+	glBindAttribLocation(glid, (GLuint)(VERTEX_BONEINDICES), "inputBoneIndices");
+	glBindAttribLocation(glid, (GLuint)(VERTEX_BONEWEIGHTS), "inputBoneWeights");
+
 	glLinkProgram(glid);
 
 	GLint linkStatus;

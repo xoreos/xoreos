@@ -78,6 +78,8 @@ public:
 	void bindProgram(Shader::ShaderProgram *program, const glm::mat4 *t);
 	void bindObjectModelview(Shader::ShaderProgram *program, const glm::mat4 *t);
 	void bindTextureView(Shader::ShaderProgram *program, const glm::mat4 *t);
+	void bindBindPose(Shader::ShaderProgram *program, const glm::mat4 *t);
+	void bindBoneTransforms(Shader::ShaderProgram *program, const float *t);
 
 	void bindGLState();
 	void unbindGLState();
@@ -103,6 +105,8 @@ private:
 
 	uint32 _objectModelviewIndex;
 	uint32 _textureViewIndex;
+	uint32 _bindPoseIndex;
+	uint32 _boneTransformsIndex;
 
 	void *genSurfaceVar(uint32 index);
 	void delSurfaceVar(uint32 index);

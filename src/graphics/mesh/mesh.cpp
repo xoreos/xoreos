@@ -28,7 +28,7 @@ namespace Graphics {
 
 namespace Mesh {
 
-Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), _usageCount(0), _vao(0), _radius(0.0f) {
+Mesh::Mesh(GLuint type, GLuint hint) : GLContainer(), _type(type), _hint(hint), _usageCount(0), _vao(0), _radius(0.0f), _bindPosePtr(0) {
 }
 
 Mesh::~Mesh() {
@@ -196,6 +196,10 @@ void Mesh::renderBind() {
 					glEnableClientState(GL_COLOR_ARRAY);
 					glColorPointer(decl[i].size, decl[i].type, decl[i].stride, (GLvoid *)(offset));
 					break;
+				// Unused (experimental renderer only)
+				case VBONEINDICES:
+				case VBONEWEIGHTS:
+					break;
 				default: // VTCOORD
 					glClientActiveTextureARB(GL_TEXTURE0 + decl[i].index - VTCOORD);
 					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -240,6 +244,10 @@ void Mesh::renderUnbind() {
 					break;
 				case VCOLOR:
 					glDisableClientState(GL_COLOR_ARRAY);
+					break;
+				// Unused (experimental renderer only)
+				case VBONEINDICES:
+				case VBONEWEIGHTS:
 					break;
 				default: // VTCOORD
 					glClientActiveTextureARB(GL_TEXTURE0 + decl[i].index - VTCOORD);

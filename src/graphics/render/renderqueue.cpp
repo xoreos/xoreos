@@ -161,6 +161,7 @@ void RenderQueue::render() {
 
 		currentSurface->bindProgram(currentProgram, _nodeArray[i].transform);
 		//currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
+		bindBoneUniforms(currentProgram, currentSurface, currentMesh);
 		currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
 		currentMesh->render();
 
@@ -169,6 +170,7 @@ void RenderQueue::render() {
 			// Next object is basically the same, but will have a different object modelview transform. So rebind that, and render again.
 			assert(_nodeArray[i].transform);
 			currentSurface->bindObjectModelview(currentProgram, _nodeArray[i].transform);
+			bindBoneUniforms(currentProgram, currentSurface, currentMesh);
 			currentMaterial->bindFade(currentProgram, _nodeArray[i].alpha);
 			currentMesh->render();
 			++i;
@@ -189,6 +191,14 @@ void RenderQueue::render() {
 
 void RenderQueue::clear() {
 	_nodeArray.clear();
+}
+
+void RenderQueue::bindBoneUniforms(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Mesh::Mesh *mesh) {
+	surface->bindBindPose(program, mesh->getBindPosePtr());
+
+	const std::vector<float> &boneTransforms = mesh->getBoneTransforms();
+	if (!boneTransforms.empty())
+		surface->bindBoneTransforms(program, boneTransforms.data());
 }
 
 } // namespace Render

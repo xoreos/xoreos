@@ -895,7 +895,7 @@ void ModelNode::flushBuffers() {
 		_orientationBuffered = false;
 	}
 
-	if (_vertexCoordsBuffered) {
+	if (_vertexCoordsBuffered && !GfxMan.isRendererExperimental()) {
 		const float *vcb = &_vertexCoordsBuffer[0];
 		VertexBuffer &vb = *(_mesh->data->rawMesh->getVertexBuffer());
 		int vertexCount = vb.getCount();
@@ -913,13 +913,13 @@ void ModelNode::flushBuffers() {
 	}
 }
 
-void ModelNode::computeInverseBindPose() {
+void ModelNode::computeBindPose() {
 	std::vector<ModelNode *> nodeChain;
 	for (ModelNode *node = this; node; node = node->_parent) {
 		nodeChain.push_back(node);
 	}
 
-	_invBindPose = glm::mat4();
+	_bindPose = glm::mat4();
 
 	for (std::vector<ModelNode *>::reverse_iterator n = nodeChain.rbegin();
 			n != nodeChain.rend();
@@ -928,19 +928,19 @@ void ModelNode::computeInverseBindPose() {
 
 		if (node->_positionFrames.size() > 0) {
 			const PositionKeyFrame &pos = node->_positionFrames[0];
-			_invBindPose = glm::translate(_invBindPose, glm::vec3(pos.x, pos.y, pos.z));
+			_bindPose = glm::translate(_bindPose, glm::vec3(pos.x, pos.y, pos.z));
 		}
 
 		if (node->_orientationFrames.size() > 0) {
 			const QuaternionKeyFrame &ori = node->_orientationFrames[0];
 			if (ori.x != 0 || ori.y != 0 || ori.z != 0)
-				_invBindPose = glm::rotate(_invBindPose,
+				_bindPose = glm::rotate(_bindPose,
 						acosf(ori.q) * 2.0f,
 						glm::vec3(ori.x, ori.y, ori.z));
 		}
 	}
 
-	_invBindPose = glm::inverse(_invBindPose);
+	_invBindPose = glm::inverse(_bindPose);
 }
 
 void ModelNode::computeAbsoluteTransform() {
@@ -970,6 +970,10 @@ void ModelNode::computeAbsoluteTransform() {
 					          node->_orientationBuffer[1],
 					          node->_orientationBuffer[2]));
 	}
+}
+
+void ModelNode::computeBoneTransform() {
+	_boneTransform = _absoluteTransform * _invBindPose;
 }
 
 ModelNode::Mesh *ModelNode::getMesh() const {

@@ -69,6 +69,7 @@ private:
 		uint32 mdxStructSize;
 		uint16 vertexCount;
 		uint32 offNodeData;
+		uint16 flags;
 
 		ParserContext(const Common::UString &name, const Common::UString &t, bool k2, bool x);
 		~ParserContext();

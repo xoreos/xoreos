@@ -74,6 +74,8 @@ private:
 
 	std::vector<RenderQueueNode>_nodeArray;
 	glm::vec3 _cameraReference;
+
+	void bindBoneUniforms(Shader::ShaderProgram *program, Shader::ShaderSurface *surface, Mesh::Mesh *mesh);
 };
 
 } // namespace Render

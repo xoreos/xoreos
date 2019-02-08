@@ -26,6 +26,8 @@
  * (<https://home.comcast.net/~cchargin/kotor/mdl_info.html>).
  */
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/readstream.h"
@@ -397,16 +399,32 @@ void Model_KotOR::makeBoneNodeMap() {
 	for (NodeList::const_iterator n = nodes.begin();
 			n != nodes.end(); ++n) {
 		ModelNode *node = *n;
-		node->computeInverseBindPose();
+		node->computeBindPose();
 
 		ModelNode::Mesh *mesh = node->getMesh();
 		if (mesh && mesh->skin) {
 			ModelNode::Skin *skin = mesh->skin;
 			skin->boneNodeMap.resize(skin->boneMappingCount);
+
+			std::vector<float> &boneTransforms = mesh->data->rawMesh->getBoneTransforms();
+			boneTransforms.resize(16 * skin->boneMappingCount);
+			float *boneData = boneTransforms.data();
+
 			for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
 				int index = static_cast<int>(skin->boneMapping[i]);
-				if (index != -1)
-					skin->boneNodeMap[index] = getNode(i);
+				if (index != -1) {
+					ModelNode *boneNode = getNode(i);
+
+					boneNode->computeBindPose();
+					boneNode->computeAbsoluteTransform();
+					boneNode->computeBoneTransform();
+
+					memcpy(boneData + 16 * index,
+					       glm::value_ptr(boneNode->getBoneTransform()),
+					       16 * sizeof(float));
+
+					skin->boneNodeMap[index] = boneNode;
+				}
 			}
 		}
 	}
@@ -421,8 +439,8 @@ ModelNode_KotOR::~ModelNode_KotOR() {
 }
 
 void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
-	uint16 flags      = ctx.mdl->readUint16LE();
-	uint16 superNode  = ctx.mdl->readUint16LE();
+	ctx.flags = ctx.mdl->readUint16LE();
+	uint16 superNode = ctx.mdl->readUint16LE();
 
 	_nodeNumber = ctx.mdl->readUint16LE();
 
@@ -471,44 +489,44 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
 	                    controllerKeyCount, controllerDataFloat, controllerDataInt);
 
-	if ((flags & 0xFC00) != 0)
-		throw Common::Exception("Unknown node flags %04X", flags);
+	if ((ctx.flags & 0xFC00) != 0)
+		throw Common::Exception("Unknown node flags %04X", ctx.flags);
 
-	if (flags & kNodeFlagHasLight) {
+	if (ctx.flags & kNodeFlagHasLight) {
 		// TODO: Light
 		ctx.mdl->skip(0x5C);
 	}
 
-	if (flags & kNodeFlagHasEmitter) {
+	if (ctx.flags & kNodeFlagHasEmitter) {
 		// TODO: Emitter
 		ctx.mdl->skip(0xD8);
 	}
 
-	if (flags & kNodeFlagHasReference) {
+	if (ctx.flags & kNodeFlagHasReference) {
 		// TODO: Reference
 		ctx.mdl->skip(0x44);
 	}
 
-	if (flags & kNodeFlagHasMesh) {
+	if (ctx.flags & kNodeFlagHasMesh) {
 		readMesh(ctx);
 	}
 
-	if (flags & kNodeFlagHasSkin) {
+	if (ctx.flags & kNodeFlagHasSkin) {
 		readSkin(ctx);
 		_model->setSkinned(true);
 	}
 
-	if (flags & kNodeFlagHasAnim) {
+	if (ctx.flags & kNodeFlagHasAnim) {
 		// TODO: Anim
 		ctx.mdl->skip(0x38);
 	}
 
-	if (flags & kNodeFlagHasDangly) {
+	if (ctx.flags & kNodeFlagHasDangly) {
 		// TODO: Dangly
 		ctx.mdl->skip(0x18);
 	}
 
-	if (flags & kNodeFlagHasAABB) {
+	if (ctx.flags & kNodeFlagHasAABB) {
 		// TODO: AABB
 		ctx.mdl->skip(0x4);
 	}
@@ -533,54 +551,55 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 		}
 		meshName += ".";
 		meshName += _name;
-#ifdef MESH_KOTOR_USE_MESHMAN
-		/**
-		 * Dirty hack around an issue in KotOR2 where a tile can have multiple meshes
-		 * of exactly the same name. This dirty hack will double up on static objects
-		 * without state, but hopefully they're relatively few and it won't impact
-		 * performance too much.
-		 * A future improvement will be to see if an entire model has already been
-		 * loaded and to use that directly: that should prevent models with an empty
-		 * state from being affected by this dirty hack.
-		 */
-		Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
-		if (ctx.state->name.size() == 0) {
-			while (mystery_mesh) {
-				meshName += "_";
-				mystery_mesh = MeshMan.getMesh(meshName);
-			}
-		}
 
-		if (!mystery_mesh) {
-			Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
-			if (checkMesh) {
-				delete _mesh->data->rawMesh;
-				_mesh->data->rawMesh = checkMesh;
+		if (GfxMan.isRendererExperimental()) {
+			/**
+			 * Dirty hack around an issue in KotOR2 where a tile can have multiple meshes
+			 * of exactly the same name. This dirty hack will double up on static objects
+			 * without state, but hopefully they're relatively few and it won't impact
+			 * performance too much.
+			 * A future improvement will be to see if an entire model has already been
+			 * loaded and to use that directly: that should prevent models with an empty
+			 * state from being affected by this dirty hack.
+			 */
+			Graphics::Mesh::Mesh *mystery_mesh = MeshMan.getMesh(meshName);
+			if (ctx.state->name.size() == 0) {
+				while (mystery_mesh) {
+					meshName += "_";
+					mystery_mesh = MeshMan.getMesh(meshName);
+				}
+			}
+
+			if (!mystery_mesh) {
+				Graphics::Mesh::Mesh *checkMesh = MeshMan.getMesh(meshName);
+				if (checkMesh) {
+					delete _mesh->data->rawMesh;
+					_mesh->data->rawMesh = checkMesh;
+				} else {
+					_mesh->data->rawMesh->setName(meshName);
+					_mesh->data->rawMesh->init();
+					MeshMan.addMesh(_mesh->data->rawMesh);
+				}
 			} else {
-				_mesh->data->rawMesh->setName(meshName);
-				_mesh->data->rawMesh->init();
-				MeshMan.addMesh(_mesh->data->rawMesh);
+				delete _mesh->data->rawMesh;
+				_mesh->data->rawMesh = mystery_mesh;
 			}
-		} else {
-			delete _mesh->data->rawMesh;
-			_mesh->data->rawMesh = mystery_mesh;
-		}
-#else
-		/**
-		 * Because meshes need to be unique right now, at least until animation can use
-		 * vertex shaders instead of vertex data duplication, need to generate a unique
-		 * name for the mesh and add it to the mesh manager. This is important; the mesh
-		 * manager is responsible for later deleting it.
-		 */
-		meshName += "#" + Common::generateIDRandomString();
-		_mesh->data->rawMesh->setName(meshName);
-		_mesh->data->rawMesh->init();
 
-		MeshMan.addMesh(_mesh->data->rawMesh);
-#endif
-
-		if (GfxMan.isRendererExperimental())
 			buildMaterial();
+
+		} else {
+			/**
+			 * Because meshes need to be unique right now, at least until animation can use
+			 * vertex shaders instead of vertex data duplication, need to generate a unique
+			 * name for the mesh and add it to the mesh manager. This is important; the mesh
+			 * manager is responsible for later deleting it.
+			 */
+			meshName += "#" + Common::generateIDRandomString();
+			_mesh->data->rawMesh->setName(meshName);
+			_mesh->data->rawMesh->init();
+
+			MeshMan.addMesh(_mesh->data->rawMesh);
+		}
 	}
 }
 
@@ -614,6 +633,14 @@ void ModelNode_KotOR::buildMaterial() {
 void ModelNode_KotOR::declareShaderInputs(MaterialConfiguration &config, Shader::ShaderDescriptor &cripter) {
 	ModelNode::declareShaderInputs(config, cripter);
 	cripter.declareInput(Shader::ShaderDescriptor::INPUT_UV1);
+
+	if (_mesh->skin && _mesh->skin->boneMappingCount) {
+		config.materialName += ".skinned";
+		cripter.declareUniform(Shader::ShaderDescriptor::UNIFORM_V_BIND_POSE);
+		cripter.declareUniform(Shader::ShaderDescriptor::UNIFORM_V_BONE_TRANSFORMS, _mesh->skin->boneMappingCount);
+		cripter.declareInput(Shader::ShaderDescriptor::INPUT_BONE_INDICES);
+		cripter.declareInput(Shader::ShaderDescriptor::INPUT_BONE_WEIGHTS);
+	}
 }
 
 void ModelNode_KotOR::setupShaderTexture(MaterialConfiguration &config, int textureIndex, Shader::ShaderDescriptor &cripter) {
@@ -808,6 +835,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_mesh->data = new MeshData();
 	_mesh->data->envMapMode = kModeEnvironmentBlendedOver;
 	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
+	_mesh->data->rawMesh->setBindPosePtr(&_bindPose);
 
 	uint32 endPos = ctx.mdl->pos();
 
@@ -829,8 +857,14 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
 	vertexDecl.push_back(VertexAttrib(VNORMAL  , 3, GL_FLOAT));
+
+	if (ctx.flags & kNodeFlagHasSkin) {
+		vertexDecl.push_back(VertexAttrib(VBONEWEIGHTS, 4, GL_FLOAT));
+		vertexDecl.push_back(VertexAttrib(VBONEINDICES, 4, GL_FLOAT));
+	}
+
 	for (uint t = 0; t < textureCount; t++)
-		vertexDecl.push_back(VertexAttrib(VTCOORD + t , 2, GL_FLOAT));
+		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
 	_mesh->data->initialVertexCoords.resize(3 * ctx.vertexCount);
@@ -854,6 +888,10 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 		*v++ = ctx.mdx->readIEEEFloatLE();
 		*v++ = ctx.mdx->readIEEEFloatLE();
 		*v++ = ctx.mdx->readIEEEFloatLE();
+
+		// Bone indices and bone weights are loaded later on
+		if (ctx.flags & kNodeFlagHasSkin)
+			v += 8;
 
 		// TexCoords
 		for (uint16 t = 0; t < textureCount; t++) {
@@ -914,20 +952,43 @@ void ModelNode_KotOR::readSkin(Model_KotOR::ParserContext &ctx) {
 	std::vector<float> &boneWeights = _mesh->skin->boneWeights;
 	std::vector<float> &boneMappingId = _mesh->skin->boneMappingId;
 
+	VertexBuffer *vertexBuffer = _mesh->data->rawMesh->getVertexBuffer();
+	float *vertexData = static_cast<float *>(vertexBuffer->getData());
+
 	for (int i = 0; i < ctx.vertexCount; i++) {
+		// Skip position and normal attributes
+		vertexData += 6;
+
 		// Bone weights
 		ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize + mdxOffsetBoneWeights);
-		boneWeights.push_back(ctx.mdx->readIEEEFloatLE());
-		boneWeights.push_back(ctx.mdx->readIEEEFloatLE());
-		boneWeights.push_back(ctx.mdx->readIEEEFloatLE());
-		boneWeights.push_back(ctx.mdx->readIEEEFloatLE());
+		vertexData[0] = ctx.mdx->readIEEEFloatLE();
+		vertexData[1] = ctx.mdx->readIEEEFloatLE();
+		vertexData[2] = ctx.mdx->readIEEEFloatLE();
+		vertexData[3] = ctx.mdx->readIEEEFloatLE();
+
+		boneWeights.push_back(vertexData[0]);
+		boneWeights.push_back(vertexData[1]);
+		boneWeights.push_back(vertexData[2]);
+		boneWeights.push_back(vertexData[3]);
+
+		vertexData += 4;
 
 		// Bone mapping identifiers
 		ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize + mdxOffsetBoneMappingId);
-		boneMappingId.push_back(ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE());
-		boneMappingId.push_back(ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE());
-		boneMappingId.push_back(ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE());
-		boneMappingId.push_back(ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE());
+		vertexData[0] = ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE();
+		vertexData[1] = ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE();
+		vertexData[2] = ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE();
+		vertexData[3] = ctx.xbox ? static_cast<float>(ctx.mdx->readSint16LE()) : ctx.mdx->readIEEEFloatLE();
+
+		boneMappingId.push_back(vertexData[0]);
+		boneMappingId.push_back(vertexData[1]);
+		boneMappingId.push_back(vertexData[2]);
+		boneMappingId.push_back(vertexData[3]);
+
+		vertexData += 4;
+
+		// Skip textures coordinates
+		vertexData += 2 * _mesh->data->textures.size();
 	}
 }
 
