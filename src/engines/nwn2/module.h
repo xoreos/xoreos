@@ -53,6 +53,7 @@ namespace NWN2 {
 class Area;
 class Creature;
 class Factions;
+class Roster;
 
 class Module : public NWN2::Object, public NWN2::ObjectContainer {
 public:
@@ -83,6 +84,8 @@ public:
 	Creature *getPC();
 	/** Return the module's factions. */
 	Factions &getFactions();
+	/** Return the module's roster. */
+	Roster &getRoster();
 	// '---
 
 	void delayScript(const Common::UString &script,
@@ -178,6 +181,7 @@ private:
 	Area           *_currentArea; ///< The current area.
 
 	Common::ScopedPtr<Factions> _factions; ///< The factions in the current module.
+	Common::ScopedPtr<Roster>   _roster;   ///< The roster for the current module.
 
 	bool _ranPCSpawn; ///< Did we run the PC spawn script?
 
@@ -196,6 +200,7 @@ private:
 	void unloadHAKs();        ///< Unload the HAKs required by the module.
 	void unloadAreas();       ///< Unload the areas.
 	void unloadFactions();    ///< Unload the factions.
+	void unloadRoster();      ///< Unload the roster.
 	// '---
 
 	// .--- Loading
@@ -206,6 +211,7 @@ private:
 	void loadHAKs();        ///< Load the HAKs required by the module.
 	void loadAreas();       ///< Load the areas.
 	void loadFactions();    ///< Load the factions.
+	void loadRoster();      ///< Load the roster.
 	// '---
 
 	void enterArea(); ///< Enter a new area.

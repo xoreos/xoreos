@@ -37,5 +37,6 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/script/functions_creature.cpp \
     src/engines/nwn2/script/functions_action.cpp \
     src/engines/nwn2/script/functions_conversation.cpp \
+    src/engines/nwn2/script/functions_roster.cpp \
     src/engines/nwn2/script/functions_sound.cpp \
     $(EMPTY)

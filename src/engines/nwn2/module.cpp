@@ -46,6 +46,7 @@
 #include "src/engines/nwn2/area.h"
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/faction.h"
+#include "src/engines/nwn2/roster.h"
 
 namespace Engines {
 
@@ -80,6 +81,10 @@ Factions &Module::getFactions() {
 	assert(_factions);
 
 	return *_factions;
+}
+
+Roster &Module::getRoster() {
+	return *_roster;
 }
 
 Creature *Module::getPC() {
@@ -194,6 +199,7 @@ void Module::enter(Creature &pc, bool isNewCampaign) {
 		loadHAKs();
 		loadAreas();
 		loadFactions();
+		loadRoster();
 
 	} catch (Common::Exception &e) {
 		e.add("Can't initialize module \"%s\"", _name.c_str());
@@ -345,6 +351,7 @@ void Module::unload() {
 	unloadPC();
 	unloadAreas();
 	unloadFactions();
+	unloadRoster();
 	unloadHAKs();
 	unloadTLK();
 	unloadModule();
@@ -400,6 +407,10 @@ void Module::loadFactions() {
 	_factions.reset(new Factions());
 }
 
+void Module::loadRoster() {
+	_roster.reset(new Roster());
+}
+
 void Module::loadAreas() {
 	status("Loading areas...");
 
@@ -441,6 +452,10 @@ void Module::unloadPC() {
 
 void Module::unloadFactions() {
 	_factions.reset();
+}
+
+void Module::unloadRoster() {
+	_roster.reset();
 }
 
 void Module::movePC(const Common::UString &area) {
