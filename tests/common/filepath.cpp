@@ -148,6 +148,38 @@ GTEST_TEST_F(FilePath, getDirectory) {
 	EXPECT_STREQ(Common::FilePath::getDirectory("/path/to/"        ).c_str(), "/path/to");
 }
 
+GTEST_TEST_F(FilePath, isPOSIXAbsolute) {
+	EXPECT_TRUE(Common::FilePath::isPOSIXAbsolute("/path/to/file.ext"));
+	EXPECT_TRUE(Common::FilePath::isPOSIXAbsolute("/path/to/file"));
+	EXPECT_TRUE(Common::FilePath::isPOSIXAbsolute("/path/to"));
+	EXPECT_TRUE(Common::FilePath::isPOSIXAbsolute("/path/to/"));
+	EXPECT_TRUE(Common::FilePath::isPOSIXAbsolute("/file.ext"));
+
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("path/to/file.ext"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("path/to/file"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("path/to"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("path/to/"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("file.ext"));
+
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("./path/to/file.ext"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("./path/to/file"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("./path/to"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("./path/to/"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("./file.ext"));
+
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("../path/to/file.ext"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("../path/to/file"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("../path/to"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("../path/to/"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("../file.ext"));
+
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("c:/path/to/file.ext"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("c:\\path\\to\\file.ext"));
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute("\\path\\to\\file.ext"));
+
+	EXPECT_FALSE(Common::FilePath::isPOSIXAbsolute(""));
+}
+
 GTEST_TEST_F(FilePath, changeExtension) {
 	EXPECT_STREQ(Common::FilePath::changeExtension("/path/file.ext", ".new"  ).c_str(), "/path/file.new");
 	EXPECT_STREQ(Common::FilePath::changeExtension("/path/file.ext", ".new.m").c_str(), "/path/file.new.m");
