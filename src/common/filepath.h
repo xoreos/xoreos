@@ -111,6 +111,16 @@ public:
 	 */
 	static bool isAbsolute(const UString &p);
 
+	/** Is the given string an absolute path according to POSIX rules?
+	 *
+	 *  This follows the POSIX rules no matter the native filesystem structure:
+	 *  an absolute path is a path that starts with a "/".
+	 *
+	 *  @param  p The path to check.
+	 *  @return true if the string describes an absolute POSIX path, false otherwise.
+	 */
+	static bool isPOSIXAbsolute(const UString &p);
+
 	/** Return the absolute path.
 	 *
 	 *  If the path is already absolute, just return that path. If not, interpret it

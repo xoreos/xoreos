@@ -114,6 +114,10 @@ bool FilePath::isAbsolute(const UString &p) {
 	return boost::filesystem::path(p.c_str()).is_absolute();
 }
 
+bool FilePath::isPOSIXAbsolute(const UString &p) {
+	return !p.empty() && *p.begin() == '/';
+}
+
 static path convertToSlash(const path &p) {
 	const boost::regex bSlash("\\\\");
 	const std::string fSlash("/");
