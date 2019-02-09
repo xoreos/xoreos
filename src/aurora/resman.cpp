@@ -273,7 +273,7 @@ ResourceManager::KnownArchive *ResourceManager::findArchive(const Common::UStrin
 }
 
 ResourceManager::KnownArchive *ResourceManager::findArchive(Common::UString file, KnownArchives &archives) {
-	file = (Common::FilePath::isAbsolute(file) ? "" : "/") + file;
+	file = (Common::FilePath::isPOSIXAbsolute(file) ? "" : "/") + file;
 	file = Common::FilePath::normalize(file, false).toLower();
 
 	for (KnownArchives::iterator a = archives.begin(); a != archives.end(); ++a) {

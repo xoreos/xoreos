@@ -117,7 +117,9 @@ public:
 
 	/** Add all the resources of an archive to the resource manager.
 	 *
-	 *  @param file The name of the archive file to index.
+	 *  @param file The name of the archive file to index. If the name starts with a "/",
+	 *              the file path must be in the root of the game data directory. Otherwise,
+	 *              subfolders are considered as well.
 	 *  @param priority The priority these files have over others of the same name
 	 *                  and type. Higher number = higher priority. 0 means blacklisted.
 	 *  @param changeID If given, record the collective changes done here.
@@ -127,7 +129,9 @@ public:
 
 	/** Add all the resources of an archive to the resource manager.
 	 *
-	 *  @param file The name of the archive file to index.
+	 *  @param file The name of the archive file to index. If the name starts with a "/",
+	 *              the file path must be in the root of the game data directory. Otherwise,
+	 *              subfolders are considered as well.
 	 *  @param priority The priority these files have over others of the same name
 	 *                  and type. Higher number = higher priority. 0 means blacklisted.
 	 *  @param password Use this password to decrypt the archive file, if necessary.
