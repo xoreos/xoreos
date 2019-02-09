@@ -1620,7 +1620,7 @@ Bink::BinkVideoTrack::BinkVideoTrack(uint32 width, uint32 height, uint32 frameCo
 	_oldPlanes[2].reset(new byte[(width >> 1) * (height >> 1)]); // V, 1/4 resolution
 	_oldPlanes[3].reset(new byte[ width       *  height      ]); // A
 
-	// Initialize the video with solid black
+	// Initialize the video with solid green
 	std::memset(_curPlanes[0].get(),   0,  width       *  height      );
 	std::memset(_curPlanes[1].get(),   0, (width >> 1) * (height >> 1));
 	std::memset(_curPlanes[2].get(),   0, (width >> 1) * (height >> 1));
