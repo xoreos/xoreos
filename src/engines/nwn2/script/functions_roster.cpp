@@ -45,6 +45,21 @@ void Functions::getNextRosterMember(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = _game->getModule().getRoster().getNextRosterMember();
 }
 
+void Functions::getIsRosterMemberAvailable(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &name = ctx.getParams()[0].getString();
+	ctx.getReturn() = _game->getModule().getRoster().getIsRosterMemberAvailable(name);
+}
+
+void Functions::getIsRosterMemberCampaignNPC(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &name = ctx.getParams()[0].getString();
+	ctx.getReturn() = _game->getModule().getRoster().getIsRosterMemberCampaignNPC(name);
+}
+
+void Functions::getIsRosterMemberSelectable(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &name = ctx.getParams()[0].getString();
+	ctx.getReturn() = _game->getModule().getRoster().getIsRosterMemberSelectable(name);
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines

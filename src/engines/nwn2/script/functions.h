@@ -275,6 +275,10 @@ private:
 	void getFirstRosterMember(Aurora::NWScript::FunctionContext &ctx);
 	void getNextRosterMember (Aurora::NWScript::FunctionContext &ctx);
 	void getFactionLeader    (Aurora::NWScript::FunctionContext &ctx);
+
+	void getIsRosterMemberAvailable  (Aurora::NWScript::FunctionContext &ctx);
+	void getIsRosterMemberCampaignNPC(Aurora::NWScript::FunctionContext &ctx);
+	void getIsRosterMemberSelectable (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp
