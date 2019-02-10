@@ -37,6 +37,12 @@ namespace Engines {
 
 namespace NWN2 {
 
+void Functions::addRosterMemberByTemplate(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &name = ctx.getParams()[0].getString();
+	const Common::UString &cTemplate = ctx.getParams()[1].getString();
+	ctx.getReturn() = _game->getModule().getRoster().addRosterMemberByTemplate(name, cTemplate);
+}
+
 void Functions::getFirstRosterMember(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = _game->getModule().getRoster().getFirstRosterMember();
 }

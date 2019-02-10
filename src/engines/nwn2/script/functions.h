@@ -279,6 +279,8 @@ private:
 	void getIsRosterMemberAvailable  (Aurora::NWScript::FunctionContext &ctx);
 	void getIsRosterMemberCampaignNPC(Aurora::NWScript::FunctionContext &ctx);
 	void getIsRosterMemberSelectable (Aurora::NWScript::FunctionContext &ctx);
+
+	void addRosterMemberByTemplate(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp
