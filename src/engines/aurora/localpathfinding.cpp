@@ -495,10 +495,10 @@ void LocalPathfinding::rasterizeTriangle(std::vector<glm::vec3> &vertices, float
 	const float minY = MIN(y1, MIN(y2, y0)) - halfWidth;
 	const float maxY = MAX(MAX(y1, MAX(y2, y0)) + halfWidth, 0.f);
 
-	const uint32 startY = static_cast<uint32>(MAX(floor(minY / _cellSize), 0.f));
-	const uint32 startX = static_cast<uint32>(MAX(floor(minX / _cellSize), 0.f));
-	const uint32 endY = static_cast<uint32>(MIN(ceil(maxY / _cellSize), static_cast<float>(_gridHeight)));
-	const uint32 endX = static_cast<uint32>(MIN(ceil(maxX / _cellSize), static_cast<float>(_gridWidth)));
+	const uint32 startY = static_cast<uint32>(MAX(floorf(minY / _cellSize), 0.f));
+	const uint32 startX = static_cast<uint32>(MAX(floorf(minX / _cellSize), 0.f));
+	const uint32 endY = static_cast<uint32>(MIN(ceilf(maxY / _cellSize), static_cast<float>(_gridHeight)));
+	const uint32 endX = static_cast<uint32>(MIN(ceilf(maxX / _cellSize), static_cast<float>(_gridWidth)));
 
 	const float dy10 = y1 - y0;
 	const float dy21 = y2 - y1;
