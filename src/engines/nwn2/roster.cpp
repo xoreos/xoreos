@@ -41,6 +41,28 @@ Roster::Roster() : _lastRetrieved(UINT32_MAX) {
 Roster::~Roster() {
 }
 
+/** Add a creature by template name to the roster list. */
+bool Roster::addRosterMemberByTemplate(Common::UString name, Common::UString cTemplate) {
+	// Disallow null strings
+	if (name.size() == 0 || cTemplate.size() == 0)
+		return false;
+
+	// Don't permit duplicate roster names
+	if (getRosterMember(name) != _members.end())
+		return false;
+
+	// A matching template file must exist
+	if (!ResMan.hasResource(cTemplate, Aurora::kFileTypeUTC))
+		return false;
+
+	// Add roster member to the list
+	Member member;
+	member.cTemplate = cTemplate;
+	_members.push_back(member);
+	// TODO: Template is not stored in ROSTER.rst, so load creature into game for saving, but don't spawn
+	return true;
+}
+
 /** Return the roster name of the first member. */
 Common::UString Roster::getFirstRosterMember() {
 	_lastRetrieved = 0;

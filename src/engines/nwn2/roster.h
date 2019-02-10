@@ -42,6 +42,9 @@ public:
 	Roster();
 	~Roster();
 
+	/** Add a creature to the roster. */
+	bool addRosterMemberByTemplate(Common::UString name, Common::UString cTemplate);
+
 	/** Set to the first member in the list. */
 	Common::UString getFirstRosterMember();
 	/** Increment to the next member in the list. */
@@ -57,11 +60,12 @@ protected:
 
 private:
 	struct Member {
-		Member() : rosterName(""),
+		Member() : rosterName(""),      cTemplate(""),
 		           isAvailable(false),  isCampaignNPC(false),
 		           isSelectable(false), isLoadBefore(false) {}
 
 		Common::UString rosterName; ///< Unique roster name.
+		Common::UString cTemplate;  ///< Creature template name.
 		bool isAvailable;           ///< Not currently in a party?
 		bool isCampaignNPC;         ///< Is it set as a Campaign NPC?
 		bool isSelectable;          ///< Can it be added to a party?
