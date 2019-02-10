@@ -82,6 +82,11 @@ public:
 	/** Set the multiply blending enabled. */
 	void setBlendMode(BlendMode mode);
 
+	/** Set the x scale for the quad. */
+	void setScaleX(float xscale);
+	/** Set the y scale for the quad. */
+	void setScaleY(float yscale);
+
 	/** Set the scissor test parameters. */
 	void setScissor(int x, int y, int width, int height);
 
@@ -122,6 +127,8 @@ private:
 	float _tY1;
 	float _tX2;
 	float _tY2;
+
+	float _xscale, _yscale;
 
 	int _scissorX;
 	int _scissorY;
