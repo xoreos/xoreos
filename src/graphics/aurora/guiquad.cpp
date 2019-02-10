@@ -46,6 +46,7 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _angle(0.0f),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
+	_xscale(1.0f), _yscale(1.0f),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
 	_xor(false), _scissor(false), _blendMode(kBlendDefault),
 	_material(0), _shaderRenderable() {
@@ -76,6 +77,7 @@ GUIQuad::GUIQuad(Graphics::GUIElement::GUIElementType type, const Common::UStrin
 	_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _angle(0.0f),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
+	_xscale(1.0f), _yscale(1.0f),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
 	_xor(false), _scissor(false), _blendMode(kBlendDefault),
 	_material(0), _shaderRenderable() {
@@ -106,6 +108,7 @@ GUIQuad::GUIQuad(TextureHandle texture,
 	_texture(texture), _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f), _angle(0.0f),
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
+	_xscale(1.0f), _yscale(1.0f),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
 	_xor(false), _scissor(false), _blendMode(kBlendDefault),
 	_material(0), _shaderRenderable() {
@@ -199,6 +202,14 @@ void GUIQuad::setTexture(TextureHandle texture) {
 
 void GUIQuad::setBlendMode(GUIQuad::BlendMode mode) {
 	_blendMode = mode;
+}
+
+void GUIQuad::setScaleX(float xscale) {
+	_xscale = xscale;
+}
+
+void GUIQuad::setScaleY(float yscale) {
+	_yscale = yscale;
 }
 
 void GUIQuad::setScissor(int x, int y, int width, int height) {
@@ -305,6 +316,8 @@ void GUIQuad::render(RenderPass pass) {
 		glRotatef(_angle, 0.0f, 0.0f, 1.0f);
 		glTranslatef(-_x1 - (_x2 - _x1) / 2.0f, -_y1 - (_y2 - _y1) / 2.0f, 0);
 	}
+
+	glScalef(_xscale, _yscale, 1.0f);
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(_tX1, _tY1);
