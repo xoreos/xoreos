@@ -960,7 +960,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  819, "EffectBreakEnchantment"              , 0                                                },
 	{  820, "GetFirstEnteringPC"                  , 0                                                },
 	{  821, "GetNextEnteringPC"                   , 0                                                },
-	{  822, "AddRosterMemberByTemplate"           , 0                                                },
+	{  822, "AddRosterMemberByTemplate"           , &Functions::addRosterMemberByTemplate            },
 	{  823, "AddRosterMemberByCharacter"          , 0                                                },
 	{  824, "RemoveRosterMember"                  , 0                                                },
 	{  825, "GetIsRosterMemberAvailable"          , &Functions::getIsRosterMemberAvailable           },
