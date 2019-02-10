@@ -106,12 +106,21 @@ void Roster::loadMember(const Aurora::GFF3Struct &gff) {
 	Member member;
 
 	// Add a roster member to the list
-	member.rosterName = gff.getString("RosName", member.rosterName);
-	member.isAvailable = gff.getBool("RosAvailable", member.isAvailable);
-	member.isCampaignNPC = gff.getBool("RosCampaignNPC", member.isCampaignNPC);
-	member.isSelectable = gff.getBool("RosSelectable", member.isSelectable);
-	member.isLoadBefore = gff.getBool("RosLoadBefore", member.isLoadBefore);
-	_members.push_back(member);
+	if (gff.hasField("RosName")) {
+		member.rosterName = gff.getString("RosName", member.rosterName);
+		member.isAvailable = gff.getBool("RosAvailable", member.isAvailable);
+		member.isCampaignNPC = gff.getBool("RosCampaignNPC", member.isCampaignNPC);
+		member.isSelectable = gff.getBool("RosSelectable", member.isSelectable);
+		member.isLoadBefore = gff.getBool("RosLoadBefore", member.isLoadBefore);
+
+		if (getRosterMember(member.rosterName) == _members.end()) {
+			_members.push_back(member);
+		} else {
+			throw Common::Exception("Attempt to load duplicate roster member name: \"%s\"", member.rosterName.c_str());
+		}
+	} else {
+		throw Common::Exception("Missing RosName field.");
+	}
 }
 
 } // End of namespace NWN2
