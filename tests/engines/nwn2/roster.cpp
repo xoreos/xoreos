@@ -22,12 +22,13 @@
  *  Unit tests for NWN2 roster objects.
  */
 
+#include <memory>
+
 #include "gtest/gtest.h"
 
 #include "tests/engines/nwn2/roster.h"
 
 #include "src/common/memreadstream.h"
-#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 
 #include "src/aurora/gff3file.h"
@@ -57,7 +58,7 @@ public:
  */
 
 GTEST_TEST(NWN2Roster, rosterNames) {
-	Common::ScopedPtr<TestRoster> roster(new TestRoster);
+	std::unique_ptr<TestRoster> roster(new TestRoster);
 
 	EXPECT_STREQ(roster->getFirstRosterMember().c_str(), "ammon_jerro");
 	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "bishop");
@@ -75,4 +76,18 @@ GTEST_TEST(NWN2Roster, rosterNames) {
 	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "");
 	EXPECT_STREQ(roster->getFirstRosterMember().c_str(), "ammon_jerro");
 	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "bishop");
+}
+
+/**
+ * Test the roster member settings in the ROSTER.rst file data.
+ */
+GTEST_TEST(NWN2Roster, rosterSettings) {
+	std::unique_ptr<TestRoster> roster(new TestRoster);
+
+	EXPECT_TRUE(roster->getIsRosterMemberAvailable("ammon_jerro"));
+	EXPECT_FALSE(roster->getIsRosterMemberAvailable("khelgar"));
+	EXPECT_TRUE(roster->getIsRosterMemberCampaignNPC("qara"));
+	EXPECT_FALSE(roster->getIsRosterMemberCampaignNPC("neeshka"));
+	EXPECT_TRUE(roster->getIsRosterMemberSelectable("shandra"));
+	EXPECT_FALSE(roster->getIsRosterMemberSelectable("npc_bevil"));
 }

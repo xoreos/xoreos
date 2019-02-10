@@ -65,6 +65,29 @@ Common::UString Roster::getNextRosterMember() {
 	return (it != _members.end()) ? it->rosterName : "";
 }
 
+bool Roster::getIsRosterMemberAvailable(const Common::UString &name) const {
+	std::list<Member>::const_iterator it = getRosterMember(name);
+	return (it != _members.end()) ? it->isAvailable : false;
+}
+
+bool Roster::getIsRosterMemberCampaignNPC(const Common::UString &name) const {
+	std::list<Member>::const_iterator it = getRosterMember(name);
+	return (it != _members.end()) ? it->isCampaignNPC : false;
+}
+
+bool Roster::getIsRosterMemberSelectable(const Common::UString &name) const {
+	std::list<Member>::const_iterator it = getRosterMember(name);
+	return (it != _members.end()) ? it->isSelectable : false;
+}
+
+std::list<Roster::Member>::const_iterator Roster::getRosterMember(const Common::UString &name) const {
+	for (std::list<Member>::const_iterator it = _members.begin(); it != _members.end(); ++it)
+		if (it->rosterName == name)
+			return it;
+
+	return _members.end();
+}
+
 /** Load roster from the saved 'ROSTER.rst' file, if any. */
 void Roster::load() {
 	Common::ScopedPtr<Aurora::GFF3File> gff(loadOptionalGFF3("ROSTER", Aurora::kFileTypeRST, MKTAG('R', 'S', 'T', ' ')));
@@ -83,7 +106,11 @@ void Roster::loadMember(const Aurora::GFF3Struct &gff) {
 	Member member;
 
 	// Add a roster member to the list
-	member.rosterName = gff.getString("RosName");
+	member.rosterName = gff.getString("RosName", member.rosterName);
+	member.isAvailable = gff.getBool("RosAvailable", member.isAvailable);
+	member.isCampaignNPC = gff.getBool("RosCampaignNPC", member.isCampaignNPC);
+	member.isSelectable = gff.getBool("RosSelectable", member.isSelectable);
+	member.isLoadBefore = gff.getBool("RosLoadBefore", member.isLoadBefore);
 	_members.push_back(member);
 }
 

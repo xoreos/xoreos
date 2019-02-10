@@ -47,12 +47,25 @@ public:
 	/** Increment to the next member in the list. */
 	Common::UString getNextRosterMember();
 
+	/** Fetch roster member information. */
+	bool getIsRosterMemberAvailable(const Common::UString &name) const;
+	bool getIsRosterMemberCampaignNPC(const Common::UString &name) const;
+	bool getIsRosterMemberSelectable(const Common::UString &name) const;
+
 protected:
 	void loadMember(const Aurora::GFF3Struct &gff);
 
 private:
 	struct Member {
+		Member() : rosterName(""),
+		           isAvailable(false),  isCampaignNPC(false),
+		           isSelectable(false), isLoadBefore(false) {}
+
 		Common::UString rosterName; ///< Unique roster name.
+		bool isAvailable;           ///< Not currently in a party?
+		bool isCampaignNPC;         ///< Is it set as a Campaign NPC?
+		bool isSelectable;          ///< Can it be added to a party?
+		bool isLoadBefore;          ///< Has it been loaded before?
 	};
 
 	std::list<Member> _members; ///< List of roster member instances.
@@ -61,6 +74,9 @@ private:
 
 	/** Load members from 'ROSTER.rst' file. */
 	void load();
+
+	/** Return the members' list iterator matching the roster name. */
+	std::list<Member>::const_iterator getRosterMember(const Common::UString &name) const;
 };
 
 } // End of namespace NWN2
