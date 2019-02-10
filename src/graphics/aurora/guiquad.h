@@ -44,6 +44,13 @@ namespace Aurora {
 
 class GUIQuad : public GUIElement {
 public:
+	/** The possible blending modes for GUIQuads. */
+	enum BlendMode {
+		kBlendDefault,
+		kBlendAdditive,
+		kBlendMultiply
+	};
+
 	GUIQuad(const Common::UString &texture,
 	        float  x1       , float  y1       , float  x2       , float  y2,
 	        float tX1 = 0.0f, float tY1 = 0.0f, float tX2 = 1.0f, float tY2 = 1.0f);
@@ -71,6 +78,9 @@ public:
 	void setTexture(const Common::UString &texture);
 	/** Set the current texture of the quad. */
 	void setTexture(TextureHandle texture);
+
+	/** Set the multiply blending enabled. */
+	void setBlendMode(BlendMode mode);
 
 	/** Set the scissor test parameters. */
 	void setScissor(int x, int y, int width, int height);
@@ -120,7 +130,7 @@ private:
 
 	bool _xor;
 	bool _scissor;
-	bool _additiveBlending;
+	BlendMode _blendMode;
 
 	Shader::ShaderMaterial *_material;
 	Shader::ShaderRenderable _shaderRenderable;

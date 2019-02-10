@@ -47,7 +47,7 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
-	_xor(false), _scissor(false), _additiveBlending(false),
+	_xor(false), _scissor(false), _blendMode(kBlendDefault),
 	_material(0), _shaderRenderable() {
 
 	try {
@@ -61,8 +61,8 @@ GUIQuad::GUIQuad(const Common::UString &texture,
 		_r = _g = _b = _a = 0.0f;
 	}
 
-	if (!_texture.empty()) {
-		_additiveBlending = (_texture.getTexture().getTXI().getFeatures().blending == TXI::kBlendingAdditive);
+	if (!_texture.empty() && (_texture.getTexture().getTXI().getFeatures().blending == TXI::kBlendingAdditive)) {
+		_blendMode = kBlendAdditive;
 	}
 
 	_distance = -FLT_MAX;
@@ -77,7 +77,7 @@ GUIQuad::GUIQuad(Graphics::GUIElement::GUIElementType type, const Common::UStrin
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
-	_xor(false), _scissor(false), _additiveBlending(false),
+	_xor(false), _scissor(false), _blendMode(kBlendDefault),
 	_material(0), _shaderRenderable() {
 
 	try {
@@ -91,8 +91,8 @@ GUIQuad::GUIQuad(Graphics::GUIElement::GUIElementType type, const Common::UStrin
 		_r = _g = _b = _a = 0.0f;
 	}
 
-	if (!_texture.empty()) {
-		_additiveBlending = (_texture.getTexture().getTXI().getFeatures().blending == TXI::kBlendingAdditive);
+	if (!_texture.empty() && (_texture.getTexture().getTXI().getFeatures().blending == TXI::kBlendingAdditive)) {
+		_blendMode = kBlendAdditive;
 	}
 
 	_distance = -FLT_MAX;
@@ -107,7 +107,7 @@ GUIQuad::GUIQuad(TextureHandle texture,
 	_x1 (x1) , _y1 (y1) , _x2 (x2) , _y2 (y2) ,
 	_tX1(tX1), _tY1(tY1), _tX2(tX2), _tY2(tY2),
 	_scissorX(0), _scissorY(0), _scissorWidth(0), _scissorHeight(0),
-	_xor(false), _scissor(false), _additiveBlending(false),
+	_xor(false), _scissor(false), _blendMode(kBlendDefault),
 	_material(0), _shaderRenderable() {
 
 	_distance = -FLT_MAX;
@@ -197,6 +197,10 @@ void GUIQuad::setTexture(TextureHandle texture) {
 	unlockFrameIfVisible();
 }
 
+void GUIQuad::setBlendMode(GUIQuad::BlendMode mode) {
+	_blendMode = mode;
+}
+
 void GUIQuad::setScissor(int x, int y, int width, int height) {
 	_scissorX = x;
 	_scissorY = y;
@@ -266,9 +270,19 @@ void GUIQuad::render(RenderPass pass) {
 
 	glColor4f(_r, _g, _b, _a);
 
-	if (_additiveBlending) {
-		glPushAttrib(GL_COLOR_BUFFER_BIT);
-		glBlendFunc(GL_ONE, GL_ONE);
+	switch (_blendMode) {
+		case kBlendAdditive:
+			glPushAttrib(GL_COLOR_BUFFER_BIT);
+			glBlendFunc(GL_ONE, GL_ONE);
+			break;
+
+		case kBlendMultiply:
+			glPushAttrib(GL_COLOR_BUFFER_BIT);
+			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+			break;
+
+		default:
+			break;
 	}
 
 	if (_xor) {
@@ -309,7 +323,7 @@ void GUIQuad::render(RenderPass pass) {
 	if (_xor)
 		glDisable(GL_COLOR_LOGIC_OP);
 
-	if (_additiveBlending) {
+	if (_blendMode != kBlendDefault) {
 		glPopAttrib();
 	}
 
@@ -375,12 +389,25 @@ void GUIQuad::buildMaterial() {
 	_shaderRenderable.setSurface(surface, false);
 	_shaderRenderable.setMaterial(_material, true);
 
-	if (_additiveBlending) {
-		_material->setFlags(Shader::ShaderMaterial::MATERIAL_TRANSPARENT | Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND);
-		_material->setBlendSrcRGB(GL_ONE);
-		_material->setBlendSrcAlpha(GL_ONE);
-		_material->setBlendDstRGB(GL_ONE);
-		_material->setBlendDstAlpha(GL_ONE);
+	switch (_blendMode) {
+		case kBlendAdditive:
+			_material->setFlags(Shader::ShaderMaterial::MATERIAL_TRANSPARENT | Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND);
+			_material->setBlendSrcRGB(GL_ONE);
+			_material->setBlendSrcAlpha(GL_ONE);
+			_material->setBlendDstRGB(GL_ONE);
+			_material->setBlendDstAlpha(GL_ONE);
+			break;
+
+		case kBlendMultiply:
+			_material->setFlags(Shader::ShaderMaterial::MATERIAL_TRANSPARENT | Shader::ShaderMaterial::MATERIAL_CUSTOM_BLEND);
+			_material->setBlendSrcRGB(GL_DST_COLOR);
+			_material->setBlendSrcAlpha(GL_DST_COLOR);
+			_material->setBlendDstRGB(GL_ZERO);
+			_material->setBlendDstAlpha(GL_ZERO);
+			break;
+
+		default:
+			break;
 	}
 }
 
