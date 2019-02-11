@@ -74,10 +74,10 @@ protected:
 private:
 	bool getSharedVertices(uint32 face1, uint32 face2, std::vector<glm::vec3> &verts,
 	                       std::vector<bool> &leftRight) const;
-	glm::vec3 toVirtualPlan(glm::vec3 &vector) const;
-	glm::vec2 toVirtualPlan(glm::vec2 &vector) const;
-	glm::vec3 fromVirtualPlan(glm::vec3 &vector) const;
-	glm::vec2 fromVirtualPlan(glm::vec2 &vector) const;
+	glm::vec3 toVirtualPlan(const glm::vec3 &vector) const;
+	glm::vec2 toVirtualPlan(const glm::vec2 &vector) const;
+	glm::vec3 fromVirtualPlan(const glm::vec3 &vector) const;
+	glm::vec2 fromVirtualPlan(const glm::vec2 &vector) const;
 	Pathfinding *_globalPathfinding;
 
 	Common::PtrList<ObjectWalkmesh> _staticObjects;

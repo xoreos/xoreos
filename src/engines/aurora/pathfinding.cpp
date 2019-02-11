@@ -52,7 +52,7 @@ Pathfinding::Pathfinding(std::vector<bool> walkableProperties, uint32 polygonEdg
 Pathfinding::~Pathfinding() {
 	delete _pathDrawing;
 	delete _walkmeshDrawing;
-	for (std::vector<Common::AABBNode *>::iterator it = _AABBTrees.begin(); it != _AABBTrees.end(); ++it)
+	for (auto it = _AABBTrees.begin(); it != _AABBTrees.end(); ++it)
 		delete *it;
 
 	delete _aStarAlgorithm;
@@ -375,11 +375,10 @@ void Pathfinding::findCenter(std::vector<glm::vec3> &vertices, float &centerX, f
 
 float Pathfinding::getHeight(float x, float y, bool onlyWalkable) const {
 	glm::vec3 intersection;
-	if (findIntersection(x, y, 100, x, y, -100, intersection, onlyWalkable)) {
+	if (findIntersection(x, y, 100, x, y, -100, intersection, onlyWalkable))
 		return intersection[2];
-	} else {
-		return FLT_MIN;
-	}
+
+	return FLT_MIN;
 }
 
 uint32 Pathfinding::findFace(float x, float y, bool onlyWalkable) {
@@ -470,11 +469,7 @@ bool Pathfinding::goThrough(uint32 fromFace, uint32 toFace, float width) {
 
 	side1 = vec2;
 	side2 = vec2 + (glm::normalize(vec1 - vec2) * width);
-	bool test3 = walkableSegment(side1, side2);
-	if (test3)
-		return true;
-
-	return false;
+	return walkableSegment(side1, side2);
 }
 
 void Pathfinding::getAdjacentFaces(uint32 face, std::vector<uint32> &adjFaces, bool onlyWalkable) const {

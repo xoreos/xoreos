@@ -37,11 +37,11 @@ AStar::AStar(Engines::Pathfinding* pathfinding) : _pathfinding(pathfinding) {
 AStar::~AStar() {
 }
 
-AStar::Node::Node(): x(0.f), y(0.f) {
+AStar::Node::Node(): face(UINT32_MAX), x(0.f), y(0.f), parent(UINT32_MAX), G(0.f), H(0.f) {
 }
 
 AStar::Node::Node(uint32 faceID, float pX, float pY, uint32 parentNode):
-face(faceID), x(pX), y(pY), parent(parentNode) {
+face(faceID), x(pX), y(pY), parent(parentNode), G(0.f), H(0.f) {
 }
 
 bool AStar::Node::operator<(const Node &node) const {

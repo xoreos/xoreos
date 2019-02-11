@@ -47,7 +47,7 @@ LocalAStar::~LocalAStar() {
 }
 
 float LocalAStar::getGValue(Node &previousNode, uint32 face, float &x, float &y) const {
-	static_cast<LocalPathfinding *>(_pathfinding)->getFacePosition(face, x, y);
+	dynamic_cast<LocalPathfinding *>(_pathfinding)->getFacePosition(face, x, y);
 	return getEuclideanDistance(previousNode.x, previousNode.y, x, y);
 }
 
@@ -67,6 +67,11 @@ LocalPathfinding::LocalPathfinding(Pathfinding *globalPathfinding) : Pathfinding
 
 	_xMin = 0.f;
 	_yMin = 0.f;
+
+	_xEnd = 0.f;
+	_yEnd = 0.f;
+
+	_angle = 0.f;
 
 	float unwalkableColor[4] = {0.6, 0.4, 0.6, 0.4};
 	float walkableColor[4]   = {0.3, 0.7, 0.5, 0.4};
@@ -107,8 +112,8 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	} else {
 		// Find intersection between the path and a circle around the center.
 		for (size_t p = 1; p < path.size(); ++p) {
-			glm::vec3 start(path[p - 1][0], path[p - 1][1], path[p - 1][2]);
-			glm::vec3 end(path[p][0], path[p][1], path[p][2]);
+			const glm::vec3 start(path[p - 1][0], path[p - 1][1], path[p - 1][2]);
+			const glm::vec3 end(path[p][0], path[p][1], path[p][2]);
 			glm::vec3 intersectA, normalA, intersectB, normalB;
 			if (glm::intersectLineSphere(start, end, start, 4.f,
 			                             intersectA, normalA,
@@ -211,14 +216,11 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 
 	// Rasterize unwalkable faces from the walkmesh into the grid.
 	std::vector<Common::AABBNode *> nodes;
-	glm::vec2 min(_xMin, _yMin);
-	glm::vec2 max(_xMin + _cellSize * _gridWidth, _yMin + _cellSize * _gridHeight);
-	glm::vec2 leftTop(_xMin, _yMin + _cellSize * _gridHeight);
-	glm::vec2 rightBottom(_xMin + _cellSize * _gridWidth, _yMin);
-	glm::vec2 minInReal = fromVirtualPlan(min);
-	glm::vec2 maxInReal = fromVirtualPlan(max);
-	glm::vec2 lTInReal = fromVirtualPlan(leftTop);
-	glm::vec2 rBInReal = fromVirtualPlan(rightBottom);
+	glm::vec2 minInReal = fromVirtualPlan(glm::vec2(_xMin, _yMin));
+	glm::vec2 maxInReal = fromVirtualPlan(glm::vec2(_xMin + _cellSize * _gridWidth,
+	                                                _yMin + _cellSize * _gridHeight));
+	glm::vec2 lTInReal = fromVirtualPlan(glm::vec2(_xMin, _yMin + _cellSize * _gridHeight));
+	glm::vec2 rBInReal = fromVirtualPlan(glm::vec2(_xMin + _cellSize * _gridWidth, _yMin));
 	_trueMin = glm::vec2(MIN(MIN(MIN(minInReal[0], maxInReal[0]), lTInReal[0]), rBInReal[0]),
 	        MIN(MIN(MIN(minInReal[1], maxInReal[1]), lTInReal[1]), rBInReal[1]));
 	_trueMax = glm::vec2(MAX(MAX(MAX(minInReal[0], maxInReal[0]), lTInReal[0]), rBInReal[0]),
@@ -234,7 +236,7 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	}
 
 	std::vector<glm::vec3> vertices;
-	for (std::vector<Common::AABBNode *>::iterator n = nodes.begin(); n != nodes.end(); ++n) {
+	for (auto n = nodes.begin(); n != nodes.end(); ++n) {
 		const uint32 face = static_cast<uint32>((*n)->getProperty());
 		if (_globalPathfinding->faceWalkable(face))
 			continue;
@@ -252,8 +254,9 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	for (uint32 yVert = 0; yVert < _gridHeight + 1; ++yVert) {
 		for (uint32 xVert = 0; xVert < _gridWidth + 1; ++xVert) {
 			const uint32 vertexID = xVert + yVert * (_gridWidth + 1);
-			glm::vec3 virtVert(_xMin + _cellSize * xVert, _yMin + _cellSize * yVert, height);
-			glm::vec3 vertex = fromVirtualPlan(virtVert);
+			const glm::vec3 vertex = fromVirtualPlan(glm::vec3(_xMin + _cellSize * xVert,
+			                                                   _yMin + _cellSize * yVert,
+			                                                   height));
 			// x position of the vertex.
 			_vertices[3 * vertexID] = vertex[0];
 			// y position of the vertex.
@@ -445,15 +448,14 @@ void LocalPathfinding::getFacePosition(uint32 face, float &x, float &y) const {
 bool LocalPathfinding::findPathTo(std::vector<glm::vec3> &path) {
 	std::vector<uint32> facePath;
 
-	glm::vec3 virtStart = toVirtualPlan(path[0]);
+	const glm::vec3 virtStart = toVirtualPlan(path[0]);
 
-	bool pathFound = findPath(virtStart[0], virtStart[1], _xEnd, _yEnd, facePath, 0.f, 1000);
+	const bool pathFound = findPath(virtStart[0], virtStart[1], _xEnd, _yEnd, facePath, 0.f, 1000);
 	if (facePath.empty())
 		return pathFound;
 
-	glm::vec3 start = path[0];
-	glm::vec3 end(_xEnd, _yEnd, 0.f);
-	end = fromVirtualPlan(end);
+	const glm::vec3 start = path[0];
+	const glm::vec3 end = fromVirtualPlan(glm::vec3(_xEnd, _yEnd, 0.f));
 	path.clear();
 	smoothPath(start[0], start[1], end[0], end[1], facePath, path);
 	for (auto &v : path)
@@ -560,7 +562,7 @@ void LocalPathfinding::addStaticObjects(ObjectWalkmesh *objectWalkmesh) {
 	_staticObjects.push_back(objectWalkmesh);
 }
 
-glm::vec3 LocalPathfinding::toVirtualPlan(glm::vec3 &vector) const {
+glm::vec3 LocalPathfinding::toVirtualPlan(const glm::vec3 &vector) const {
 	glm::vec3 virt;
 	glm::vec3 transla = vector - glm::vec3(_xCenter, _yCenter, 0.f);
 	virt[0] = cos(-_angle) * transla[0] - sin(-_angle) * transla[1];
@@ -568,7 +570,7 @@ glm::vec3 LocalPathfinding::toVirtualPlan(glm::vec3 &vector) const {
 	return virt;
 }
 
-glm::vec2 LocalPathfinding::toVirtualPlan(glm::vec2 &vector) const {
+glm::vec2 LocalPathfinding::toVirtualPlan(const glm::vec2 &vector) const {
 	glm::vec2 transla =  vector - glm::vec2(_xCenter, _yCenter);
 	glm::vec2 virt;
 	virt[0] = cos(-_angle) * transla[0] - sin(-_angle) * transla[1];
@@ -576,14 +578,14 @@ glm::vec2 LocalPathfinding::toVirtualPlan(glm::vec2 &vector) const {
 	return virt;
 }
 
-glm::vec3 LocalPathfinding::fromVirtualPlan(glm::vec3 &vector) const {
+glm::vec3 LocalPathfinding::fromVirtualPlan(const glm::vec3 &vector) const {
 	glm::vec3 virt;
 	virt[0] = cos(_angle) * vector[0] - sin(_angle) * vector[1];
 	virt[1] = sin(_angle) * vector[0] + cos(_angle) * vector[1];
 	return virt + glm::vec3(_xCenter, _yCenter, 0.f);
 }
 
-glm::vec2 LocalPathfinding::fromVirtualPlan(glm::vec2 &vector) const {
+glm::vec2 LocalPathfinding::fromVirtualPlan(const glm::vec2 &vector) const {
 	glm::vec2 virt;
 	virt[0] = cos(_angle) * vector[0] - sin(_angle) * vector[1];
 	virt[1] = sin(_angle) * vector[0] + cos(_angle) * vector[1];
