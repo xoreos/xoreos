@@ -32,7 +32,7 @@
 
 #include "src/aurora/nwscript/objectcontainer.h"
 
-#include "src/engines/kotor/types.h"
+#include "src/engines/kotorbase/types.h"
 
 namespace Engines {
 

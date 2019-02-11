@@ -19,33 +19,33 @@
  */
 
 /** @file
- *  An object in a Star Wars: Knights of the Old Republic area.
+ *  Object within an area in KotOR games.
  */
 
+#include "src/common/uuid.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
-#include "src/common/uuid.h"
 
 #include "src/aurora/nwscript/objectman.h"
-
-#include "src/engines/kotor/object.h"
 
 #include "src/sound/sound.h"
 
 #include "src/engines/aurora/util.h"
 
+#include "src/engines/kotorbase/object.h"
+
 namespace Engines {
 
 namespace KotOR {
 
-Object::Object(ObjectType type)
-		: _type(type),
-		  _static(false),
-		  _usable(true),
-		  _currentHitPoints(0),
-		  _maxHitPoints(0),
-		  _minOneHitPoint(false),
-		  _room(0) {
+Object::Object(ObjectType type) :
+		_type(type),
+		_room(0),
+		_static(false),
+		_usable(true),
+		_currentHitPoints(0),
+		_maxHitPoints(0),
+		_minOneHitPoint(false) {
 	_id = Common::generateIDNumber();
 	ObjectMan.registerObject(this);
 
@@ -66,6 +66,14 @@ ObjectType Object::getType() const {
 	return _type;
 }
 
+const std::list<uint32> &Object::getIDs() const {
+	return _ids;
+}
+
+bool Object::isVisible() const {
+	return false;
+}
+
 void Object::show() {
 }
 
@@ -74,10 +82,6 @@ void Object::hide() {
 
 void Object::hideSoft() {
 	hide();
-}
-
-bool Object::isVisible() const {
-	return false;
 }
 
 const Common::UString &Object::getName() const {
@@ -92,31 +96,12 @@ const Common::UString &Object::getPortrait() const {
 	return _portrait;
 }
 
-void Object::setMaxHitPoints(int maxHP) {
-	_maxHitPoints = maxHP;
+const Room *Object::getRoom() {
+	return _room;
 }
 
-int Object::getMaxHitPoints() {
-	return _maxHitPoints;
-}
-
-void Object::setCurrentHitPoints(int hitpoints) {
-	if (_minOneHitPoint)
-		_currentHitPoints = MIN(1, MIN(hitpoints, _maxHitPoints));
-	else
-		_currentHitPoints = MIN(hitpoints, _maxHitPoints);
-}
-
-int Object::getCurrentHitPoints() {
-	return _currentHitPoints;
-}
-
-void Object::setMinOneHitPoints(bool enabled) {
-	_minOneHitPoint = enabled;
-}
-
-bool Object::getMinOneHitPoints() const {
-	return _minOneHitPoint;
+void Object::setRoom(const Room *room) {
+	_room = room;
 }
 
 bool Object::isStatic() const {
@@ -129,10 +114,6 @@ bool Object::isUsable() const {
 
 bool Object::isClickable() const {
 	return !_static && _usable;
-}
-
-const std::list<uint32> &Object::getIDs() const {
-	return _ids;
 }
 
 void Object::getPosition(float &x, float &y, float &z) const {
@@ -172,12 +153,31 @@ void Object::makeLookAt(Object *target) {
 	makeLookAt(target->_position[0], target->_position[1]);
 }
 
-Room *Object::getRoom() {
-	return _room;
+int Object::getMaxHitPoints() {
+	return _maxHitPoints;
 }
 
-void Object::setRoom(Room *room) {
-	_room = room;
+int Object::getCurrentHitPoints() {
+	return _currentHitPoints;
+}
+
+bool Object::getMinOneHitPoints() const {
+	return _minOneHitPoint;
+}
+
+void Object::setMaxHitPoints(int maxHP) {
+	_maxHitPoints = maxHP;
+}
+
+void Object::setCurrentHitPoints(int hitpoints) {
+	if (_minOneHitPoint)
+		_currentHitPoints = MIN(1, MIN(hitpoints, _maxHitPoints));
+	else
+		_currentHitPoints = MIN(hitpoints, _maxHitPoints);
+}
+
+void Object::setMinOneHitPoints(bool enabled) {
+	_minOneHitPoint = enabled;
 }
 
 void Object::enter() {

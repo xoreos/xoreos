@@ -28,13 +28,13 @@
 
 #include "src/engines/aurora/trigger.h"
 
-#include "src/engines/kotor2/object.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class Trigger : public ::Engines::Trigger, public Object {
+class Trigger : public ::Engines::Trigger, public KotOR::Object {
 public:
 	Trigger(const Aurora::GFF3Struct &gff);
 

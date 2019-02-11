@@ -46,12 +46,12 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature) {
+Creature::Creature(const Aurora::GFF3Struct &creature) : Object(KotOR::kObjectTypeCreature) {
 	init();
 	load(creature);
 }
 
-Creature::Creature() : Object(kObjectTypeCreature) {
+Creature::Creature() : Object(KotOR::kObjectTypeCreature) {
 	init();
 }
 
@@ -297,12 +297,12 @@ void Creature::highlight(bool enabled) {
 
 bool Creature::click(Object *triggerer) {
 	// Try the onDialog script first
-	if (hasScript(kScriptDialogue))
-		return runScript(kScriptDialogue, this, triggerer);
+	if (hasScript(KotOR::kScriptDialogue))
+		return runScript(KotOR::kScriptDialogue, this, triggerer);
 
 	// Next, look we have a generic onClick script
-	if (hasScript(kScriptClick))
-		return runScript(kScriptClick, this, triggerer);
+	if (hasScript(KotOR::kScriptClick))
+		return runScript(KotOR::kScriptClick, this, triggerer);
 
 	return false;
 }

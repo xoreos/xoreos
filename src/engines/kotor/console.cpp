@@ -37,11 +37,12 @@
 
 #include "src/graphics/aurora/types.h"
 
+#include "src/engines/kotorbase/room.h"
+
 #include "src/engines/kotor/console.h"
 #include "src/engines/kotor/kotor.h"
 #include "src/engines/kotor/game.h"
 #include "src/engines/kotor/module.h"
-#include "src/engines/kotor/room.h"
 #include "src/engines/kotor/area.h"
 
 namespace Engines {

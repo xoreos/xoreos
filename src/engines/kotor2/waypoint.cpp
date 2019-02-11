@@ -36,7 +36,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Waypoint::Waypoint(const Aurora::GFF3Struct &waypoint) : Object(kObjectTypeWaypoint),
+Waypoint::Waypoint(const Aurora::GFF3Struct &waypoint) : KotOR::Object(KotOR::kObjectTypeWaypoint),
 	_hasMapNote(false), _enabledMapNote(false) {
 
 	load(waypoint);

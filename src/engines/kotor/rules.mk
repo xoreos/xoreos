@@ -25,12 +25,10 @@ src_engines_kotor_libkotor_la_SOURCES =
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/kotor.h \
     src/engines/kotor/probes.h \
-    src/engines/kotor/types.h \
     src/engines/kotor/console.h \
     src/engines/kotor/modelloader.h \
     src/engines/kotor/version.h \
     src/engines/kotor/game.h \
-    src/engines/kotor/object.h \
     src/engines/kotor/situated.h \
     src/engines/kotor/waypoint.h \
     src/engines/kotor/placeable.h \
@@ -38,7 +36,6 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/creature.h \
     src/engines/kotor/sound.h \
     src/engines/kotor/area.h \
-    src/engines/kotor/room.h \
     src/engines/kotor/objectcontainer.h \
     src/engines/kotor/module.h \
     src/engines/kotor/item.h \
@@ -61,7 +58,6 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/modelloader.cpp \
     src/engines/kotor/version.cpp \
     src/engines/kotor/game.cpp \
-    src/engines/kotor/object.cpp \
     src/engines/kotor/waypoint.cpp \
     src/engines/kotor/situated.cpp \
     src/engines/kotor/placeable.cpp \
@@ -69,7 +65,6 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/creature.cpp \
     src/engines/kotor/sound.cpp \
     src/engines/kotor/area.cpp \
-    src/engines/kotor/room.cpp \
     src/engines/kotor/objectcontainer.cpp \
     src/engines/kotor/module.cpp \
     src/engines/kotor/item.cpp \

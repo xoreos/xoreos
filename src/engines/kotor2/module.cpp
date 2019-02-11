@@ -70,13 +70,13 @@ bool Module::Action::operator<(const Action &s) const {
 
 
 Module::Module(::Engines::Console &console)
-		: Object(kObjectTypeModule),
+		: Object(KotOR::kObjectTypeModule),
 		  _console(&console),
 		  _hasModule(false),
 		  _running(false),
 		  _currentTexturePack(-1),
 		  _exit(false),
-		  _entryLocationType(kObjectTypeAll),
+		  _entryLocationType(KotOR::kObjectTypeAll),
 		  _dialog(new DialogGUI(*this)),
 		  _freeCamEnabled(false),
 		  _prevTimestamp(0),
@@ -104,7 +104,7 @@ void Module::clear() {
 }
 
 void Module::load(const Common::UString &module, const Common::UString &entryLocation,
-                  ObjectType entryLocationType) {
+                  KotOR::ObjectType entryLocationType) {
 
 	if (isRunning()) {
 		// We are currently running a module. Schedule a safe change instead
@@ -118,7 +118,7 @@ void Module::load(const Common::UString &module, const Common::UString &entryLoc
 }
 
 void Module::loadModule(const Common::UString &module, const Common::UString &entryLocation,
-                        ObjectType entryLocationType) {
+                        KotOR::ObjectType entryLocationType) {
 
 	unload(false);
 
@@ -277,7 +277,7 @@ void Module::unload(bool completeUnload) {
 	_module.clear();
 
 	_entryLocation.clear();
-	_entryLocationType = kObjectTypeAll;
+	_entryLocationType = KotOR::kObjectTypeAll;
 }
 
 void Module::unloadResources() {
@@ -306,7 +306,7 @@ void Module::unloadTexturePack() {
 }
 
 void Module::changeModule(const Common::UString &module, const Common::UString &entryLocation,
-                          ObjectType entryLocationType) {
+                          KotOR::ObjectType entryLocationType) {
 
 	_newModule = module;
 
@@ -320,9 +320,9 @@ void Module::replaceModule() {
 
 	_console->hide();
 
-	const Common::UString newModule         = _newModule;
-	const Common::UString entryLocation     = _entryLocation;
-	const ObjectType      entryLocationType = _entryLocationType;
+	const Common::UString   newModule         = _newModule;
+	const Common::UString   entryLocation     = _entryLocation;
+	const KotOR::ObjectType entryLocationType = _entryLocationType;
 
 	unload(false);
 
@@ -377,7 +377,7 @@ void Module::enter() {
 	_exit    = false;
 }
 
-bool Module::getObjectLocation(const Common::UString &object, ObjectType location,
+bool Module::getObjectLocation(const Common::UString &object, KotOR::ObjectType location,
                                float &entryX, float &entryY, float &entryZ, float &entryAngle) {
 
 	if (object.empty())
@@ -386,7 +386,7 @@ bool Module::getObjectLocation(const Common::UString &object, ObjectType locatio
 	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(findObjectsByTag(object));
 
 
-	KotOR2::Object *kotorObject = 0;
+	KotOR::Object *kotorObject = 0;
 	while (!kotorObject && search->get()) {
 		kotorObject = KotOR2::ObjectContainer::toObject(search->next());
 		if (!kotorObject || !(kotorObject->getType() & location))
@@ -435,21 +435,21 @@ void Module::clickObject(Object *object) {
 void Module::enterArea() {
 	_area->show();
 
-	runScript(kScriptModuleLoad , this, _pc.get());
-	runScript(kScriptModuleStart, this, _pc.get());
-	runScript(kScriptEnter      , this, _pc.get());
+	runScript(KotOR::kScriptModuleLoad , this, _pc.get());
+	runScript(KotOR::kScriptModuleStart, this, _pc.get());
+	runScript(KotOR::kScriptEnter      , this, _pc.get());
 
-	_area->runScript(kScriptEnter, _area.get(), _pc.get());
+	_area->runScript(KotOR::kScriptEnter, _area.get(), _pc.get());
 }
 
 void Module::leaveArea() {
 	if (_area) {
-		_area->runScript(kScriptExit, _area.get(), _pc.get());
+		_area->runScript(KotOR::kScriptExit, _area.get(), _pc.get());
 
 		_area->hide();
 	}
 
-	runScript(kScriptExit, this, _pc.get());
+	runScript(KotOR::kScriptExit, this, _pc.get());
 }
 
 void Module::addEvent(const Events::Event &event) {
@@ -617,7 +617,7 @@ void Module::movePC(float x, float y, float z) {
 	movedPC();
 }
 
-void Module::movePC(const Common::UString &module, const Common::UString &object, ObjectType type) {
+void Module::movePC(const Common::UString &module, const Common::UString &object, KotOR::ObjectType type) {
 	if (module.empty() || (module == _module)) {
 		float x, y, z, angle;
 		if (getObjectLocation(object, type, x, y, z, angle))
@@ -654,7 +654,7 @@ const Aurora::IFOFile &Module::getIFO() const {
 }
 
 const Common::UString &Module::getName() const {
-	return KotOR2::Object::getName();
+	return KotOR::Object::getName();
 }
 
 Area *Module::getCurrentArea() {
@@ -756,7 +756,7 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 
 void Module::playAnimationOnActiveObject(const Common::UString &baseAnim,
                                          const Common::UString &headAnim) {
-	KotOR2::Object *o = _area->getActiveObject();
+	KotOR::Object *o = _area->getActiveObject();
 	if (!o)
 		return;
 

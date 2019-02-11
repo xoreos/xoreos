@@ -33,13 +33,13 @@
 
 #include "src/graphics/aurora/types.h"
 
-#include "src/engines/kotor2/object.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class Situated : public Object {
+class Situated : public KotOR::Object {
 public:
 	~Situated();
 
@@ -58,11 +58,11 @@ public:
 	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
 
 	/** Return the object that last opened this situated object. */
-	Object *getLastOpenedBy() const;
+	KotOR::Object *getLastOpenedBy() const;
 	/** Return the object that last closed this situated object. */
-	Object *getLastClosedBy() const;
+	KotOR::Object *getLastClosedBy() const;
 	/** Return the object that last used this situated object. */
-	Object *getLastUsedBy  () const;
+	KotOR::Object *getLastUsedBy  () const;
 
 	/** Get the model name. */
 	const Common::UString &getModelName() const;
@@ -94,13 +94,13 @@ protected:
 	Common::UString _soundUsed;      ///< The sound the object makes when used.
 	Common::UString _soundLocked;    ///< The sound the object makes when locked.
 
-	Object *_lastOpenedBy; ///< The object that last opened this situated object.
-	Object *_lastClosedBy; ///< The object that last closed this situated object.
-	Object *_lastUsedBy;   ///< The object that last used this situated object.
+	KotOR::Object *_lastOpenedBy; ///< The object that last opened this situated object.
+	KotOR::Object *_lastClosedBy; ///< The object that last closed this situated object.
+	KotOR::Object *_lastUsedBy;   ///< The object that last used this situated object.
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The situated object's model.
 
-	Situated(ObjectType type);
+	Situated(KotOR::ObjectType type);
 
 	/** Load the situated object from an instance and its blueprint. */
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0);

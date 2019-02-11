@@ -43,7 +43,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
+Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(KotOR::kObjectTypePlaceable),
 	_state(kStateDefault), _hasInventory(false) {
 
 	load(placeable);
@@ -153,7 +153,7 @@ bool Placeable::open(Object *opener) {
 	_lastOpenedBy = opener;
 
 	playSound(_soundOpened);
-	runScript(kScriptOpen, this, opener);
+	runScript(KotOR::kScriptOpen, this, opener);
 
 	_state = kStateOpen;
 
@@ -170,7 +170,7 @@ bool Placeable::close(Object *closer) {
 	_lastClosedBy = closer;
 
 	playSound(_soundClosed);
-	runScript(kScriptClosed, this, closer);
+	runScript(KotOR::kScriptClosed, this, closer);
 
 	_state = kStateClosed;
 
@@ -190,7 +190,7 @@ bool Placeable::activate(Object *user) {
 	}
 
 	playSound(_soundUsed);
-	runScript(kScriptUsed, this, user);
+	runScript(KotOR::kScriptUsed, this, user);
 
 	_state = kStateActivated;
 
@@ -210,7 +210,7 @@ bool Placeable::deactivate(Object *user) {
 	}
 
 	playSound(_soundUsed);
-	runScript(kScriptUsed, this, user);
+	runScript(KotOR::kScriptUsed, this, user);
 
 	_state = kStateDeactivated;
 

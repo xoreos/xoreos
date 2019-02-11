@@ -43,8 +43,9 @@
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/localpathfinding.h"
 
+#include "src/engines/kotorbase/room.h"
+
 #include "src/engines/kotor/area.h"
-#include "src/engines/kotor/room.h"
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/waypoint.h"
 #include "src/engines/kotor/placeable.h"

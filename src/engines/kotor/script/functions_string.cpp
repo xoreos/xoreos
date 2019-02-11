@@ -39,8 +39,9 @@
 
 #include "src/engines/aurora/tokenman.h"
 
+#include "src/engines/kotorbase/object.h"
+
 #include "src/engines/kotor/objectcontainer.h"
-#include "src/engines/kotor/object.h"
 #include "src/engines/kotor/creature.h"
 
 #include "src/engines/kotor/script/functions.h"

@@ -50,8 +50,8 @@
 #ifndef ENGINES_KOTOR_SCRIPT_FUNCTION_TABLES_H
 #define ENGINES_KOTOR_SCRIPT_FUNCTION_TABLES_H
 
-#include "src/engines/kotor/types.h"
-#include "src/engines/kotor/object.h"
+#include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 

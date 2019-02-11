@@ -29,18 +29,21 @@
 
 namespace Engines {
 
+namespace KotOR {
+	class Room;
+}
+
 namespace KotOR2 {
-class Room;
 
 class Pathfinding : public KotOR::Pathfinding {
 public:
 	Pathfinding(const std::vector<bool> &walkableProp);
 
-	void addRoom(Room *room);
-	Room *getRoomAt(float x, float y) const;
+	void addRoom(KotOR::Room *room);
+	KotOR::Room *getRoomAt(float x, float y) const;
 
 private:
-	std::vector<Room *> _roomsKotOR2;
+	std::vector<KotOR::Room *> _roomsKotOR2;
 };
 
 } // End of namespace KotOR2

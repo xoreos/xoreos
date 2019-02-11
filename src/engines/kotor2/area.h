@@ -42,18 +42,22 @@
 #include "src/events/types.h"
 #include "src/events/notifyable.h"
 
-#include "src/engines/kotor2/object.h"
+#include "src/engines/kotorbase/object.h"
+
 #include "src/engines/kotor2/trigger.h"
 
 namespace Engines {
 
 class LocalPathfinding;
 
+namespace KotOR {
+	class Room;
+}
+
 namespace KotOR2 {
 
 class Module;
 class Pathfinding;
-class Room;
 class Situated;
 
 /** An area in Star Wars: Knights of the Old Republic II - The Sith Lords,
@@ -64,7 +68,7 @@ class Situated;
  *  from the top down. The negative Z axis goes down into the ground, while the
  *  positive Y axis points due north and the positive X axis points due east.
  */
-class Area : public KotOR2::Object, public Events::Notifyable {
+class Area : public KotOR::Object, public Events::Notifyable {
 public:
 	Area(Module &module, const Common::UString &resRef);
 	~Area();
@@ -125,8 +129,8 @@ public:
 
 	void getCameraStyle(float &distance, float &pitch, float &height) const;
 	const std::vector<Common::UString> &getRoomsVisibleFrom(const Common::UString &room) const;
-	KotOR2::Object *getActiveObject();
-	KotOR2::Object *getObjectByTag(const Common::UString &tag);
+	KotOR::Object *getActiveObject();
+	KotOR::Object *getObjectByTag(const Common::UString &tag);
 
 
 protected:
@@ -142,10 +146,10 @@ private:
 		CameraStyle();
 	};
 
-	typedef Common::PtrList<Room> RoomList;
+	typedef Common::PtrList<KotOR::Room> RoomList;
 
-	typedef Common::PtrList<KotOR2::Object> ObjectList;
-	typedef std::map<uint32, KotOR2::Object *> ObjectMap;
+	typedef Common::PtrList<KotOR::Object> ObjectList;
+	typedef std::map<uint32, KotOR::Object *> ObjectMap;
 
 
 	Module *_module; ///< The module this area is in.
@@ -184,7 +188,7 @@ private:
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
 
 	/** The currently active (highlighted) object. */
-	KotOR2::Object *_activeObject;
+	KotOR::Object *_activeObject;
 
 	bool _highlightAll; ///< Are we currently highlighting all objects?
 
@@ -222,7 +226,7 @@ private:
 
 	void loadProperties(const Aurora::GFF3Struct &props);
 
-	void loadObject(KotOR2::Object &object);
+	void loadObject(KotOR::Object &object);
 
 	void loadWaypoints (const Aurora::GFF3List &list);
 	void loadPlaceables(const Aurora::GFF3List &list);
@@ -235,8 +239,8 @@ private:
 	// Highlight / active helpers
 
 	void checkActive(int x = -1, int y = -1);
-	void setActive(KotOR2::Object *object);
-	KotOR2::Object *getObjectAt(int x, int y);
+	void setActive(KotOR::Object *object);
+	KotOR::Object *getObjectAt(int x, int y);
 
 	void highlightAll(bool enabled);
 

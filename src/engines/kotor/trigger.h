@@ -27,7 +27,7 @@
 
 #include "src/engines/aurora/trigger.h"
 
-#include "src/engines/kotor/object.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 

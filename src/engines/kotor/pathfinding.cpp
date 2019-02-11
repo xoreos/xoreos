@@ -27,8 +27,9 @@
 
 #include "src/engines/aurora/astar.h"
 
+#include "src/engines/kotorbase/room.h"
+
 #include "src/engines/kotor/walkmeshloader.h"
-#include "src/engines/kotor/room.h"
 #include "src/engines/kotor/pathfinding.h"
 
 namespace Engines {

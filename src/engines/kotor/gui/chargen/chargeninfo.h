@@ -30,7 +30,8 @@
 
 #include "src/graphics/aurora/model.h"
 
-#include "src/engines/kotor/types.h"
+#include "src/engines/kotorbase/types.h"
+
 #include "src/engines/kotor/creature.h"
 
 namespace Engines {

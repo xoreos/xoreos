@@ -26,7 +26,8 @@
 
 #include "src/aurora/nwscript/functioncontext.h"
 
-#include "src/engines/kotor2/types.h"
+#include "src/engines/kotorbase/types.h"
+
 #include "src/engines/kotor2/game.h"
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/objectcontainer.h"

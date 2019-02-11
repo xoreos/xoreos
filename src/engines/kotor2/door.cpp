@@ -45,9 +45,9 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
+Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(KotOR::kObjectTypeDoor),
 	_module(&module), _genericType(Aurora::kFieldIDInvalid), _state(kStateClosed),
-	_linkedToFlag(kLinkedToNothing), _linkedToType(kObjectTypeAll) {
+	_linkedToFlag(kLinkedToNothing), _linkedToType(KotOR::kObjectTypeAll) {
 
 	load(door);
 }
@@ -83,7 +83,7 @@ void Door::loadObject(const Aurora::GFF3Struct &gff) {
 
 	_transitionDestination = gff.getString("TransitionDestin", _transitionDestination);
 
-	_linkedToType = (ObjectType) (kObjectTypeDoor | kObjectTypeWaypoint);
+	_linkedToType = (KotOR::ObjectType) (KotOR::kObjectTypeDoor | KotOR::kObjectTypeWaypoint);
 }
 
 void Door::loadAppearance() {
@@ -143,8 +143,8 @@ bool Door::click(Object *triggerer) {
 		return open(triggerer);
 
 	// If the door is open and has a click script, call that
-	if (hasScript(kScriptClick))
-		return runScript(kScriptClick, this, triggerer);
+	if (hasScript(KotOR::kScriptClick))
+		return runScript(KotOR::kScriptClick, this, triggerer);
 
 	if (!_linkedTo.empty()) {
 		_module->movePC(_linkedToModule, _linkedTo, _linkedToType);
@@ -164,7 +164,7 @@ bool Door::open(Object *opener) {
 
 	if (isLocked()) {
 		playSound(_soundLocked);
-		runScript(kScriptFailToOpen, this, opener);
+		runScript(KotOR::kScriptFailToOpen, this, opener);
 		return false;
 	}
 
@@ -174,7 +174,7 @@ bool Door::open(Object *opener) {
 		_model->playAnimation("opening1");
 
 	playSound(_soundOpened);
-	runScript(kScriptOpen, this, opener);
+	runScript(KotOR::kScriptOpen, this, opener);
 
 	_state = kStateOpened1;
 
@@ -188,7 +188,7 @@ bool Door::close(Object *closer) {
 	_lastClosedBy = closer;
 
 	playSound(_soundClosed);
-	runScript(kScriptClosed, this, closer);
+	runScript(KotOR::kScriptClosed, this, closer);
 
 	_state = kStateClosed;
 

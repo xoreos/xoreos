@@ -24,8 +24,9 @@
 
 #include "src/aurora/nwscript/functioncontext.h"
 
+#include "src/engines/kotorbase/object.h"
+
 #include "src/engines/kotor/objectcontainer.h"
-#include "src/engines/kotor/object.h"
 #include "src/engines/kotor/situated.h"
 
 #include "src/engines/kotor/script/functions.h"

@@ -36,11 +36,14 @@ namespace Aurora {
 
 namespace Engines {
 
+namespace KotOR {
+	class Object;
+}
+
 namespace KotOR2 {
 
 class Game;
 class Area;
-class Object;
 
 class Functions {
 public:
@@ -77,7 +80,7 @@ private:
 	void registerFunctions();
 
 	// .--- Utility methods
-	void jumpTo(KotOR2::Object *object, float x, float y, float z);
+	void jumpTo(KotOR::Object *object, float x, float y, float z);
 
 	static int32 getRandom(int min, int max, int32 n = 1);
 

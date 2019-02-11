@@ -25,8 +25,9 @@
 #ifndef ENGINES_KOTOR2_GUI_CHARGEN_CHARACTERGENERATIONINFO_H
 #define ENGINES_KOTOR2_GUI_CHARGEN_CHARACTERGENERATIONINFO_H
 
+#include "src/engines/kotorbase/types.h"
+
 #include "src/engines/kotor2/creature.h"
-#include "src/engines/kotor2/types.h"
 
 namespace Engines {
 
@@ -44,18 +45,18 @@ public:
 	/** Get the name of the character. */
 	const Common::UString &getName() const;
 	/** Get the skin type of the character. */
-	Skin getSkin() const;
+	KotOR::Skin getSkin() const;
 	/** Get the current face index of the character. */
 	unsigned int getFace() const;
 
-	Gender getGender() const;
+	KotOR::Gender getGender() const;
 
-	Class getClass() const;
+	KotOR::Class getClass() const;
 
 	/** Set the name of the Character. */
 	void setName(const Common::UString &name);
 	/** Set the skin type of the Character. */
-	void setSkin(Skin skin);
+	void setSkin(KotOR::Skin skin);
 	/** Set the face index of the character. */
 	void setFace(unsigned int face);
 
@@ -74,9 +75,9 @@ private:
 	/** Get the face id regarding the skin and gender. */
 	unsigned int getFaceId() const;
 
-	Gender _gender;
-	Class _class;
-	Skin _skin;
+	KotOR::Gender _gender;
+	KotOR::Class _class;
+	KotOR::Skin _skin;
 	unsigned int _face;
 	Common::UString _name;
 

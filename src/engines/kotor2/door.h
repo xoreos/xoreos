@@ -94,10 +94,10 @@ private:
 
 	State _state; ///< The current state of the door.
 
-	LinkedToFlag    _linkedToFlag;   ///< Does this door link to anything?
-	ObjectType      _linkedToType;   ///< The type of the object this door links to.
-	Common::UString _linkedTo;       ///< The object tag this door links to.
-	Common::UString _linkedToModule; ///< The module the object this door links to is in.
+	LinkedToFlag      _linkedToFlag;   ///< Does this door link to anything?
+	KotOR::ObjectType _linkedToType;   ///< The type of the object this door links to.
+	Common::UString   _linkedTo;       ///< The object tag this door links to.
+	Common::UString   _linkedToModule; ///< The module the object this door links to is in.
 
 	/** A localized string describing where this door leads to. */
 	Common::UString _transitionDestination;

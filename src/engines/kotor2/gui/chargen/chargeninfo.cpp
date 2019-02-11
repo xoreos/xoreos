@@ -36,11 +36,11 @@ namespace KotOR2 {
 
 CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleConsular() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
-	info->_gender = kGenderMale;
-	info->_class = kClassJediConsular;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_gender = KotOR::kGenderMale;
+	info->_class = KotOR::kClassJediConsular;
+	info->_skin = KotOR::Skin(std::rand() % KotOR::kSkinMAX);
 	switch (info->_skin) {
-		case kSkinH:
+		case KotOR::kSkinH:
 			info->_face = std::rand() % 2;
 			break;
 		default:
@@ -58,11 +58,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleConsular() {
 
 CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleConsular() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
-	info->_gender = kGenderFemale;
-	info->_class = kClassJediConsular;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_gender = KotOR::kGenderFemale;
+	info->_class = KotOR::kClassJediConsular;
+	info->_skin = KotOR::Skin(std::rand() % KotOR::kSkinMAX);
 	switch (info->_skin) {
-		case kSkinH:
+		case KotOR::kSkinH:
 			info->_face = std::rand() % 2;
 			break;
 		default:
@@ -80,11 +80,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleConsular() {
 
 CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleGuardian() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
-	info->_gender = kGenderMale;
-	info->_class = kClassJediGuardian;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_gender = KotOR::kGenderMale;
+	info->_class = KotOR::kClassJediGuardian;
+	info->_skin = KotOR::Skin(std::rand() % KotOR::kSkinMAX);
 	switch (info->_skin) {
-		case kSkinH:
+		case KotOR::kSkinH:
 			info->_face = std::rand() % 2;
 			break;
 		default:
@@ -102,11 +102,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleGuardian() {
 
 CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleGuardian() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
-	info->_gender = kGenderFemale;
-	info->_class = kClassJediGuardian;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_gender = KotOR::kGenderFemale;
+	info->_class = KotOR::kClassJediGuardian;
+	info->_skin = KotOR::Skin(std::rand() % KotOR::kSkinMAX);
 	switch (info->_skin) {
-		case kSkinH:
+		case KotOR::kSkinH:
 			info->_face = std::rand() % 2;
 			break;
 		default:
@@ -124,11 +124,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleGuardian() {
 
 CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleSentinel() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
-	info->_gender = kGenderMale;
-	info->_class = kClassJediSentinel;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_gender = KotOR::kGenderMale;
+	info->_class = KotOR::kClassJediSentinel;
+	info->_skin = KotOR::Skin(std::rand() % KotOR::kSkinMAX);
 	switch (info->_skin) {
-		case kSkinH:
+		case KotOR::kSkinH:
 			info->_face = std::rand() % 2;
 			break;
 		default:
@@ -146,11 +146,11 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleSentinel() {
 
 CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleSentinel() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
-	info->_gender = kGenderFemale;
-	info->_class = kClassJediSentinel;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_gender = KotOR::kGenderFemale;
+	info->_class = KotOR::kClassJediSentinel;
+	info->_skin = KotOR::Skin(std::rand() % KotOR::kSkinMAX);
 	switch (info->_skin) {
-		case kSkinH:
+		case KotOR::kSkinH:
 			info->_face = std::rand() % 2;
 			break;
 		default:
@@ -173,7 +173,7 @@ const Common::UString &CharacterGenerationInfo::getName() const {
 	return _name;
 }
 
-Skin CharacterGenerationInfo::getSkin() const {
+KotOR::Skin CharacterGenerationInfo::getSkin() const {
 	return _skin;
 }
 
@@ -181,11 +181,11 @@ unsigned int CharacterGenerationInfo::getFace() const {
 	return _face;
 }
 
-Gender CharacterGenerationInfo::getGender() const {
+KotOR::Gender CharacterGenerationInfo::getGender() const {
 	return _gender;
 }
 
-Class CharacterGenerationInfo::getClass() const {
+KotOR::Class CharacterGenerationInfo::getClass() const {
 	return _class;
 }
 
@@ -193,7 +193,7 @@ void CharacterGenerationInfo::setName(const Common::UString &name) {
 	_name = name;
 }
 
-void CharacterGenerationInfo::setSkin(Skin skin) {
+void CharacterGenerationInfo::setSkin(KotOR::Skin skin) {
 	_skin = skin;
 }
 
@@ -207,10 +207,10 @@ Common::UString CharacterGenerationInfo::getBodyId() const {
 	body += "p";
 
 	switch (_gender) {
-		case kGenderMale:
+		case KotOR::kGenderMale:
 			body += "m";
 			break;
-		case kGenderFemale:
+		case KotOR::kGenderFemale:
 			body += "f";
 			break;
 		default:
@@ -228,10 +228,10 @@ Common::UString CharacterGenerationInfo::getBodyTextureId() const {
 	body += "p";
 
 	switch (_gender) {
-		case kGenderMale:
+		case KotOR::kGenderMale:
 			body += "m";
 			break;
-		case kGenderFemale:
+		case KotOR::kGenderFemale:
 			body += "f";
 			break;
 		default:
@@ -241,14 +241,14 @@ Common::UString CharacterGenerationInfo::getBodyTextureId() const {
 	body += "bam";
 
 	switch (_skin) {
-		case kSkinA:
-		case kSkinH:
+		case KotOR::kSkinA:
+		case KotOR::kSkinH:
 			body += "a";
 			break;
-		case kSkinB:
+		case KotOR::kSkinB:
 			body += "b";
 			break;
-		case kSkinC:
+		case KotOR::kSkinC:
 			body += "c";
 			break;
 		default:
@@ -266,10 +266,10 @@ Common::UString CharacterGenerationInfo::getHeadId() const {
 	head += "p";
 
 	switch (_gender) {
-		case kGenderMale:
+		case KotOR::kGenderMale:
 			head += "m";
 			break;
-		case kGenderFemale:
+		case KotOR::kGenderFemale:
 			head += "f";
 			break;
 		default:
@@ -279,16 +279,16 @@ Common::UString CharacterGenerationInfo::getHeadId() const {
 	head += "h";
 
 	switch (_skin) {
-		case kSkinA:
+		case KotOR::kSkinA:
 			head += "a";
 			break;
-		case kSkinB:
+		case KotOR::kSkinB:
 			head += "b";
 			break;
-		case kSkinC:
+		case KotOR::kSkinC:
 			head += "c";
 			break;
-		case kSkinH:
+		case KotOR::kSkinH:
 			head += "h";
 			break;
 		default:
@@ -308,10 +308,10 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 	portrait += "po_p";
 
 	switch (_gender) {
-		case kGenderMale:
+		case KotOR::kGenderMale:
 			portrait += "m";
 			break;
-		case kGenderFemale:
+		case KotOR::kGenderFemale:
 			portrait += "f";
 			break;
 		default:
@@ -321,7 +321,7 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 	portrait += "h";
 
 	switch (_skin) {
-		case kSkinA:
+		case KotOR::kSkinA:
 			switch (_face) {
 				case 0:
 					portrait += "a01";
@@ -330,30 +330,30 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 					portrait += "a03";
 					break;
 				case 2:
-					if (_gender == kGenderFemale)
+					if (_gender == KotOR::kGenderFemale)
 						portrait += "a04";
-					else if (_gender == kGenderMale)
+					else if (_gender == KotOR::kGenderMale)
 						portrait += "a05";
 					break;
 				case 3:
-					if (_gender == kGenderFemale)
+					if (_gender == KotOR::kGenderFemale)
 						portrait += "a05";
-					else if (_gender == kGenderMale)
+					else if (_gender == KotOR::kGenderMale)
 						portrait += "a06";
 					break;
 				case 4:
-					if (_gender == kGenderFemale)
+					if (_gender == KotOR::kGenderFemale)
 						portrait += "a06";
-					else if (_gender == kGenderMale)
+					else if (_gender == KotOR::kGenderMale)
 						portrait += "a07";
 					break;
 				default:
 					throw Common::Exception("invalid face id");
 			}
 			break;
-		case kSkinB:
+		case KotOR::kSkinB:
 			portrait += "b";
-			if (_gender == kGenderFemale)
+			if (_gender == KotOR::kGenderFemale)
 				portrait += ("0" + Common::composeString(_face + 1));
 			else
 				if (_face + 6 >= 10)
@@ -361,21 +361,21 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 				else
 					portrait += ("0" + Common::composeString(_face + 6));
 			break;
-		case kSkinC:
+		case KotOR::kSkinC:
 			switch (_face) {
 				case 0:
 					portrait += "c01";
 					break;
 				case 1:
-					if (_gender == kGenderFemale)
+					if (_gender == KotOR::kGenderFemale)
 						portrait += "c02";
-					else if (_gender == kGenderMale)
+					else if (_gender == KotOR::kGenderMale)
 						portrait += "c03";
 					break;
 				case 2:
-					if (_gender == kGenderFemale)
+					if (_gender == KotOR::kGenderFemale)
 						portrait += "c05";
-					else if (_gender == kGenderMale)
+					else if (_gender == KotOR::kGenderMale)
 						portrait += "c04";
 					break;
 				case 3:
@@ -388,7 +388,7 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 					throw Common::Exception("invalid face id");
 			}
 			break;
-		case kSkinH:
+		case KotOR::kSkinH:
 			portrait += ("h0" + Common::composeString(_face + 1));
 			break;
 		default:
@@ -407,45 +407,45 @@ Creature *CharacterGenerationInfo::getCharacter() const {
 
 unsigned int CharacterGenerationInfo::getFaceId() const {
 	switch (_skin) {
-		case kSkinA:
+		case KotOR::kSkinA:
 			switch (_face) {
 				case 0: return 1;
 				case 1: return 3;
 				case 2:
-					if (_gender == kGenderFemale) return 4;
-					else if (_gender == kGenderMale) return 5;
+					if (_gender == KotOR::kGenderFemale) return 4;
+					else if (_gender == KotOR::kGenderMale) return 5;
 					else throw Common::Exception("invalid gender");
 				case 3:
-					if (_gender == kGenderFemale) return 5;
-					else if (_gender == kGenderMale) return 6;
+					if (_gender == KotOR::kGenderFemale) return 5;
+					else if (_gender == KotOR::kGenderMale) return 6;
 					else throw Common::Exception("invalid gender");
 				case 4:
-					if (_gender == kGenderFemale) return 6;
-					else if (_gender == kGenderMale) return 7;
+					if (_gender == KotOR::kGenderFemale) return 6;
+					else if (_gender == KotOR::kGenderMale) return 7;
 					else throw Common::Exception("invalid gender");
 				default:
 					throw Common::Exception("invalid face id");
 			}
-		case kSkinB:
-			if (_gender == kGenderFemale) return _face + 1;
+		case KotOR::kSkinB:
+			if (_gender == KotOR::kGenderFemale) return _face + 1;
 			else return _face + 6;
-		case kSkinC:
+		case KotOR::kSkinC:
 			switch (_face) {
 				case 0: return 1;
 				case 1:
-					if (_gender == kGenderFemale) return 2;
-					else if (_gender == kGenderMale) return 3;
+					if (_gender == KotOR::kGenderFemale) return 2;
+					else if (_gender == KotOR::kGenderMale) return 3;
 					else throw Common::Exception("invalid gender");
 				case 2:
-					if (_gender == kGenderFemale) return 5;
-					else if (_gender == kGenderMale) return 4;
+					if (_gender == KotOR::kGenderFemale) return 5;
+					else if (_gender == KotOR::kGenderMale) return 4;
 					else throw Common::Exception("invalid gender");
 				case 3: return 6;
 				case 4: return 7;
 				default:
 					throw Common::Exception("invalid face id");
 			}
-		case kSkinH: return _face + 1;
+		case KotOR::kSkinH: return _face + 1;
 		default:
 			throw Common::Exception("invalid skin id");
 	}

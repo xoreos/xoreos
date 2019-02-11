@@ -24,7 +24,8 @@
 
 #include "src/common/aabbnode.h"
 
-#include "src/engines/kotor2/room.h"
+#include "src/engines/kotorbase/room.h"
+
 #include "src/engines/kotor2/pathfinding.h"
 
 namespace Engines {
@@ -35,7 +36,7 @@ Pathfinding::Pathfinding(const std::vector<bool> &walkableProp)
     : KotOR::Pathfinding(walkableProp) {
 }
 
-void Pathfinding::addRoom(Room *room) {
+void Pathfinding::addRoom(KotOR::Room *room) {
 	_startFace.push_back(_faces.size() / 3);
 
 	std::map<uint32, uint32> adjRooms;
@@ -49,7 +50,7 @@ void Pathfinding::addRoom(Room *room) {
 	_roomsKotOR2.push_back(room);
 }
 
-Room *Pathfinding::getRoomAt(float x, float y) const {
+KotOR::Room *Pathfinding::getRoomAt(float x, float y) const {
 	for (size_t n = 0; n < _AABBTrees.size(); ++n) {
 		if (!_AABBTrees[n])
 			continue;

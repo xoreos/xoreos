@@ -32,12 +32,13 @@
 #include "src/aurora/nwscript/functionman.h"
 #include "src/aurora/nwscript/util.h"
 
-#include "src/engines/kotor2/types.h"
+#include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/object.h"
+
 #include "src/engines/kotor2/game.h"
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/area.h"
 #include "src/engines/kotor2/objectcontainer.h"
-#include "src/engines/kotor2/object.h"
 
 #include "src/engines/kotor2/script/functions.h"
 
@@ -113,17 +114,17 @@ Common::UString Functions::formatFloat(float f, int width, int decimals) {
 }
 
 Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n) {
-	KotOR2::Object *object = KotOR2::ObjectContainer::toObject(ctx.getParams()[n].getObject());
-	if (!object || (object->getType() == kObjectTypeInvalid))
+	KotOR::Object *object = KotOR2::ObjectContainer::toObject(ctx.getParams()[n].getObject());
+	if (!object || (object->getType() == KotOR::kObjectTypeInvalid))
 		return 0;
 
-	if (object->getType() == kObjectTypeSelf)
+	if (object->getType() == KotOR::kObjectTypeSelf)
 		return ctx.getCaller();
 
 	return object;
 }
 
-void Functions::jumpTo(KotOR2::Object *object, float x, float y, float z) {
+void Functions::jumpTo(KotOR::Object *object, float x, float y, float z) {
 	object->setPosition(x, y, z);
 }
 
