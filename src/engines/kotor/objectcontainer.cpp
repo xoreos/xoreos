@@ -25,8 +25,9 @@
 #include "src/common/types.h"
 #include "src/common/util.h"
 
+#include "src/engines/kotorbase/object.h"
+
 #include "src/engines/kotor/objectcontainer.h"
-#include "src/engines/kotor/object.h"
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/waypoint.h"

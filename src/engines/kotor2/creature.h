@@ -33,7 +33,7 @@
 
 #include "src/graphics/aurora/types.h"
 
-#include "src/engines/kotor2/object.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 
@@ -41,7 +41,7 @@ namespace KotOR2 {
 
 class CharacterGenerationInfo;
 
-class Creature : public Object {
+class Creature : public KotOR::Object {
 public:
 	/** Create a dummy creature instance. Not playable as it is.*/
 	Creature();

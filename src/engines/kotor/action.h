@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_ACTION_H
 #define ENGINES_KOTOR_ACTION_H
 
-#include "src/engines/kotor/types.h"
+#include "src/engines/kotorbase/types.h"
 
 namespace Engines {
 

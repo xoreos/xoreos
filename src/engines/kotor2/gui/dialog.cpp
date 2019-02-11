@@ -51,7 +51,7 @@ void DialogGUI::makeLookAtPC(const Common::UString &tag) {
 	if (!pc)
 		return;
 
-	KotOR2::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	KotOR::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
 	if (!o)
 		return;
 
@@ -64,7 +64,7 @@ void DialogGUI::makeLookAtPC(const Common::UString &tag) {
 }
 
 void DialogGUI::playDefaultAnimations(const Common::UString &tag) {
-	KotOR2::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	KotOR::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
 	if (!o)
 		return;
 
@@ -77,7 +77,7 @@ void DialogGUI::playDefaultAnimations(const Common::UString &tag) {
 }
 
 void DialogGUI::playTalkAnimations(const Common::UString &tag) {
-	KotOR2::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	KotOR::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
 	if (!o)
 		return;
 

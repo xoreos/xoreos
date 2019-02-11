@@ -39,8 +39,9 @@
 
 #include "src/events/types.h"
 
+#include "src/engines/kotorbase/object.h"
+
 #include "src/engines/kotor2/objectcontainer.h"
-#include "src/engines/kotor2/object.h"
 
 #include "src/engines/kotor2/gui/dialog.h"
 
@@ -54,7 +55,7 @@ class Area;
 class Creature;
 class IngameGUI;
 
-class Module : public KotOR2::Object, public KotOR2::ObjectContainer {
+class Module : public KotOR::Object, public KotOR2::ObjectContainer {
 public:
 	Module(::Engines::Console &console);
 	~Module();
@@ -70,7 +71,7 @@ public:
 
 	/** Load a module. */
 	void load(const Common::UString &module, const Common::UString &entryLocation = "",
-	          ObjectType entryLocationType = kObjectTypeAll);
+	          KotOR::ObjectType entryLocationType = KotOR::kObjectTypeAll);
 	/** Use this character as the player character. */
 	void usePC(Creature *pc);
 	/** Exit the currently running module. */
@@ -108,7 +109,7 @@ public:
 	/** Move the player character to this position within the current area. */
 	void movePC(float x, float y, float z);
 	/** Move the player character to this object within this area. */
-	void movePC(const Common::UString &module, const Common::UString &object, ObjectType type = kObjectTypeAll);
+	void movePC(const Common::UString &module, const Common::UString &object, KotOR::ObjectType type = KotOR::kObjectTypeAll);
 	/** Notify the module that the PC was moved. */
 	void movedPC();
 	// '---
@@ -187,9 +188,9 @@ private:
 	Common::UString _newModule; ///< The module we should change to.
 
 	/** The tag of the object in the start location for this module. */
-	Common::UString _entryLocation;
+	Common::UString   _entryLocation;
 	/** The type(s) of the object in the start location for this module. */
-	ObjectType      _entryLocationType;
+	KotOR::ObjectType _entryLocationType;
 
 	Common::ScopedPtr<Area> _area; ///< The current module's area.
 	Common::ScopedPtr<DialogGUI> _dialog; ///< Conversation/cutscene GUI.
@@ -241,14 +242,14 @@ private:
 
 	/** Load the actual module. */
 	void loadModule(const Common::UString &module, const Common::UString &entryLocation,
-	                ObjectType entryLocationType);
+	                KotOR::ObjectType entryLocationType);
 	/** Schedule a change to a new module. */
 	void changeModule(const Common::UString &module, const Common::UString &entryLocation,
-	                  ObjectType entryLocationType);
+	                  KotOR::ObjectType entryLocationType);
 	/** Actually replace the currently running module. */
 	void replaceModule();
 
-	bool getObjectLocation(const Common::UString &object, ObjectType location,
+	bool getObjectLocation(const Common::UString &object, KotOR::ObjectType location,
 	                       float &entryX, float &entryY, float &entryZ, float &entryAngle);
 	bool getEntryObjectLocation(float &entryX, float &entryY, float &entryZ, float &entryAngle);
 	void getEntryIFOLocation(float &entryX, float &entryY, float &entryZ, float &entryAngle);

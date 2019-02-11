@@ -40,7 +40,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
+Situated::Situated(KotOR::ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
 	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
 	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0) {
 
@@ -92,15 +92,15 @@ void Situated::setLocked(bool locked) {
 	_locked = locked;
 }
 
-Object *Situated::getLastOpenedBy() const {
+KotOR::Object *Situated::getLastOpenedBy() const {
 	return _lastOpenedBy;
 }
 
-Object *Situated::getLastClosedBy() const {
+KotOR::Object *Situated::getLastClosedBy() const {
 	return _lastClosedBy;
 }
 
-Object *Situated::getLastUsedBy() const {
+KotOR::Object *Situated::getLastUsedBy() const {
 	return _lastUsedBy;
 }
 

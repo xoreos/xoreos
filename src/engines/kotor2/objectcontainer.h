@@ -32,13 +32,12 @@
 
 #include "src/aurora/nwscript/objectcontainer.h"
 
-#include "src/engines/kotor2/types.h"
+#include "src/engines/kotorbase/types.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class Object;
 class Module;
 class Area;
 class Waypoint;
@@ -50,14 +49,14 @@ class Creature;
 /** A class able to sort objects by distance to a target object. */
 class ObjectDistanceSort {
 public:
-	ObjectDistanceSort(const KotOR2::Object &target);
+	ObjectDistanceSort(const KotOR::Object &target);
 
-	bool operator()(KotOR2::Object *a, KotOR2::Object *b);
+	bool operator()(KotOR::Object *a, KotOR::Object *b);
 
 private:
 	float xt, yt, zt;
 
-	float getDistance(KotOR2::Object &a);
+	float getDistance(KotOR::Object &a);
 };
 
 class ObjectContainer : public ::Aurora::NWScript::ObjectContainer {
@@ -68,17 +67,17 @@ public:
 	void clearObjects();
 
 	/** Add an object to this container. */
-	void addObject(KotOR2::Object &object);
+	void addObject(KotOR::Object &object);
 	/** Remove an object from this container. */
-	void removeObject(KotOR2::Object &object);
+	void removeObject(KotOR::Object &object);
 
 	/** Return the first object of this type. */
-	::Aurora::NWScript::Object *getFirstObjectByType(ObjectType type) const;
+	::Aurora::NWScript::Object *getFirstObjectByType(KotOR::ObjectType type) const;
 
 	/** Return a search context to iterate over all objects of this type. */
-	::Aurora::NWScript::ObjectSearch *findObjectsByType(ObjectType type) const;
+	::Aurora::NWScript::ObjectSearch *findObjectsByType(KotOR::ObjectType type) const;
 
-	static KotOR2::Object *toObject(::Aurora::NWScript::Object *object);
+	static KotOR::Object *toObject(::Aurora::NWScript::Object *object);
 
 	static Module    *toModule     (Aurora::NWScript::Object *object);
 	static Area      *toArea       (Aurora::NWScript::Object *object);
@@ -91,8 +90,8 @@ public:
 	static Creature  *toPartyMember(Aurora::NWScript::Object *object);
 
 private:
-	typedef std::list<KotOR2::Object *> ObjectList;
-	typedef std::map<ObjectType, ObjectList> ObjectMap;
+	typedef std::list<KotOR::Object *> ObjectList;
+	typedef std::map<KotOR::ObjectType, ObjectList> ObjectMap;
 
 	ObjectMap _objects;
 };

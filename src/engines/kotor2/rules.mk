@@ -25,18 +25,15 @@ src_engines_kotor2_libkotor2_la_SOURCES =
 src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/kotor2.h \
     src/engines/kotor2/probes.h \
-    src/engines/kotor2/types.h \
     src/engines/kotor2/console.h \
     src/engines/kotor2/modelloader.h \
     src/engines/kotor2/game.h \
-    src/engines/kotor2/object.h \
     src/engines/kotor2/waypoint.h \
     src/engines/kotor2/situated.h \
     src/engines/kotor2/placeable.h \
     src/engines/kotor2/door.h \
     src/engines/kotor2/creature.h \
     src/engines/kotor2/area.h \
-    src/engines/kotor2/room.h \
     src/engines/kotor2/objectcontainer.h \
     src/engines/kotor2/module.h \
     src/engines/kotor2/trigger.h \
@@ -51,14 +48,12 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/console.cpp \
     src/engines/kotor2/modelloader.cpp \
     src/engines/kotor2/game.cpp \
-    src/engines/kotor2/object.cpp \
     src/engines/kotor2/waypoint.cpp \
     src/engines/kotor2/situated.cpp \
     src/engines/kotor2/placeable.cpp \
     src/engines/kotor2/door.cpp \
     src/engines/kotor2/creature.cpp \
     src/engines/kotor2/area.cpp \
-    src/engines/kotor2/room.cpp \
     src/engines/kotor2/objectcontainer.cpp \
     src/engines/kotor2/module.cpp \
     src/engines/kotor2/trigger.cpp \

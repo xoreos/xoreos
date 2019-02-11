@@ -41,13 +41,13 @@ CharacterGeneration::CharacterGeneration(Module *module, CharacterGenerationInfo
 	load("maincg_p");
 
 	switch (_chargenInfo->getClass()) {
-		case kClassJediConsular:
+		case KotOR::kClassJediConsular:
 			getLabel("LBL_CLASS")->setText(TalkMan.getString(354));
 			break;
-		case kClassJediGuardian:
+		case KotOR::kClassJediGuardian:
 			getLabel("LBL_CLASS")->setText(TalkMan.getString(355));
 			break;
-		case kClassJediSentinel:
+		case KotOR::kClassJediSentinel:
 			getLabel("LBL_CLASS")->setText(TalkMan.getString(353));
 			break;
 		default:

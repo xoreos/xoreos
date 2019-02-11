@@ -41,8 +41,9 @@
 
 #include "src/events/types.h"
 
+#include "src/engines/kotorbase/object.h"
+
 #include "src/engines/kotor/objectcontainer.h"
-#include "src/engines/kotor/object.h"
 #include "src/engines/kotor/savedgame.h"
 
 namespace Engines {

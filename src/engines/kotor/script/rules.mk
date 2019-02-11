@@ -20,14 +20,12 @@
 # Scripting system in Star Wars: Knights of the Old Republic.
 
 src_engines_kotor_libkotor_la_SOURCES += \
-    src/engines/kotor/script/container.h \
     src/engines/kotor/script/functions.h \
     src/engines/kotor/script/function_tables.h \
     src/engines/kotor/script/event.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
-    src/engines/kotor/script/container.cpp \
     src/engines/kotor/script/functions.cpp \
     src/engines/kotor/script/functions_math.cpp \
     src/engines/kotor/script/functions_string.cpp \

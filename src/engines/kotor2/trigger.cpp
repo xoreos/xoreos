@@ -36,7 +36,7 @@ namespace KotOR2 {
 
 Trigger::Trigger(const Aurora::GFF3Struct &gff)
 		: ::Engines::Trigger(),
-		  Object(kObjectTypeTrigger) {
+		  Object(KotOR::kObjectTypeTrigger) {
 	load(gff);
 	prepare();
 }

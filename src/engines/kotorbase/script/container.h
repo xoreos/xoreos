@@ -22,8 +22,8 @@
  *  An object containing scripts.
  */
 
-#ifndef ENGINES_KOTOR_SCRIPT_CONTAINER_H
-#define ENGINES_KOTOR_SCRIPT_CONTAINER_H
+#ifndef ENGINES_KOTORBASE_SCRIPT_CONTAINER_H
+#define ENGINES_KOTORBASE_SCRIPT_CONTAINER_H
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
@@ -32,7 +32,7 @@
 
 #include "src/aurora/nwscript/objectref.h"
 
-#include "src/engines/kotor/types.h"
+#include "src/engines/kotorbase/types.h"
 
 namespace Aurora {
 	namespace NWScript {
@@ -46,9 +46,6 @@ namespace KotOR {
 
 class ScriptContainer {
 public:
-	ScriptContainer();
-	~ScriptContainer();
-
 	const Common::UString &getScript(Script script) const;
 
 	bool hasScript(Script script) const;
@@ -60,6 +57,7 @@ public:
 	static bool runScript(const Common::UString &script,
 	                      const Aurora::NWScript::ObjectReference owner = Aurora::NWScript::ObjectReference(),
 	                      const Aurora::NWScript::ObjectReference triggerer = Aurora::NWScript::ObjectReference());
+
 	static bool runScript(const Common::UString &script,
 	                      const Aurora::NWScript::ScriptState &state,
 	                      const Aurora::NWScript::ObjectReference owner = Aurora::NWScript::ObjectReference(),
@@ -79,4 +77,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_SCRIPT_CONTAINER_H
+#endif // ENGINES_KOTORBASE_SCRIPT_CONTAINER_H

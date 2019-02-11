@@ -19,60 +19,41 @@
  */
 
 /** @file
- *  A room within a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Room within an area in KotOR games.
  */
 
-#include "src/common/error.h"
+#ifndef ENGINES_KOTORBASE_ROOM_H
+#define ENGINES_KOTORBASE_ROOM_H
+
 #include "src/common/ustring.h"
-#include "src/common/maths.h"
+#include "src/common/scopedptr.h"
 
 #include "src/graphics/aurora/model.h"
 
-#include "src/engines/aurora/model.h"
-
-#include "src/engines/kotor2/room.h"
-
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
-Room::Room(const Common::UString &resRef, float x, float y, float z)
-	    : _resRef(resRef.toLower()) {
-	load(resRef, x, y, z);
-}
+class Room {
+public:
+	Room(const Common::UString &resRef, float x, float y, float z);
 
-Room::~Room() {
-}
+	Common::UString getResRef() const;
 
-void Room::load(const Common::UString &resRef, float x, float y, float z) {
-	if (resRef == "****")
-		return;
+	bool isVisible() const;
 
-	_model.reset(loadModelObject(resRef));
-	if (!_model)
-		throw Common::Exception("Can't load room model \"%s\"", resRef.c_str());
+	void show();
+	void hide();
 
-	_model->setPosition(x, y, z);
-}
+private:
+	Common::UString _resRef;
+	Common::ScopedPtr<Graphics::Aurora::Model> _model;
 
-Common::UString Room::getResRef() const {
-	return _resRef;
-}
+	void load(const Common::UString &resRef, float x, float y, float z);
+};
 
-void Room::show() {
-	if (_model)
-		_model->show();
-}
-
-void Room::hide() {
-	if (_model)
-		_model->hide();
-}
-
-bool Room::isVisible() const {
-	return _model && _model->isVisible();
-}
-
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTORBASE_ROOM_H

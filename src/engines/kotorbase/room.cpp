@@ -19,29 +19,19 @@
  */
 
 /** @file
- *  A room within a Star Wars: Knights of the Old Republic area.
+ *  Room within an area in KotOR games.
  */
-
-#include "src/common/error.h"
-#include "src/common/ustring.h"
-#include "src/common/maths.h"
-
-#include "src/graphics/aurora/model.h"
 
 #include "src/engines/aurora/model.h"
 
-#include "src/engines/kotor/room.h"
+#include "src/engines/kotorbase/room.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Room::Room(const Common::UString &resRef, float x, float y, float z)
-    : _resRef(resRef.toLower()) {
+Room::Room(const Common::UString &resRef, float x, float y, float z) : _resRef(resRef.toLower()) {
 	load(resRef, x, y, z);
-}
-
-Room::~Room() {
 }
 
 void Room::load(const Common::UString &resRef, float x, float y, float z) {
@@ -59,6 +49,10 @@ Common::UString Room::getResRef() const {
 	return _resRef;
 }
 
+bool Room::isVisible() const {
+	return _model && _model->isVisible();
+}
+
 void Room::show() {
 	if (_model)
 		_model->show();
@@ -67,10 +61,6 @@ void Room::show() {
 void Room::hide() {
 	if (_model)
 		_model->hide();
-}
-
-bool Room::isVisible() const {
-	return _model && _model->isVisible();
 }
 
 } // End of namespace KotOR

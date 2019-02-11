@@ -32,12 +32,13 @@
 #include "src/aurora/nwscript/functionman.h"
 #include "src/aurora/nwscript/util.h"
 
-#include "src/engines/kotor/types.h"
+#include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/object.h"
+
 #include "src/engines/kotor/game.h"
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/objectcontainer.h"
-#include "src/engines/kotor/object.h"
 
 #include "src/engines/kotor/script/functions.h"
 

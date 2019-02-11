@@ -19,32 +19,29 @@
  */
 
 /** @file
- *  An object in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Object within an area in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR2_OBJECT_H
-#define ENGINES_KOTOR2_OBJECT_H
+#ifndef ENGINES_KOTORBASE_OBJECT_H
+#define ENGINES_KOTORBASE_OBJECT_H
 
 #include <list>
-
-#include "src/common/types.h"
-#include "src/common/ustring.h"
 
 #include "src/aurora/nwscript/object.h"
 
 #include "src/sound/types.h"
 
-#include "src/engines/kotor2/types.h"
+#include "src/engines/kotorbase/types.h"
 
-#include "src/engines/kotor2/script/container.h"
+#include "src/engines/kotorbase/script/container.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
 class Room;
 
-class Object : public Aurora::NWScript::Object, public KotOR2::ScriptContainer {
+class Object : public Aurora::NWScript::Object, public ScriptContainer {
 public:
 	Object(ObjectType type = kObjectTypeInvalid);
 	virtual ~Object();
@@ -54,13 +51,18 @@ public:
 
 	// Basic visuals
 
-	virtual void show(); ///< Show the object's model(s).
-	virtual void hide(); ///< Hide the object's model(s).
-	virtual void hideSoft(); ///< Hide the object's model(s) if applicable.
-	virtual bool isVisible() const; ///< Is the object's model(s) visible?
-
 	/** Return the object's model IDs. */
 	const std::list<uint32> &getIDs() const;
+
+	/** Is the object's model(s) visible? */
+	virtual bool isVisible() const;
+
+	/** Show the object's model(s). */
+	virtual void show();
+	/** Hide the object's model(s). */
+	virtual void hide();
+	/** Hide the object's model(s) if applicable. */
+	virtual void hideSoft();
 
 	// Basic properties
 
@@ -70,13 +72,20 @@ public:
 	const Common::UString &getDescription() const;
 	/** Return the object's portrait. */
 	const Common::UString &getPortrait() const;
+	/** Get a room the object is in. */
+	const Room *getRoom();
+
+	/** Set a room the object is in. */
+	void setRoom(const Room *room);
 
 	// Interactive properties
 
-	bool isStatic() const; ///< Is the object static (not manipulable at all)?
-	bool isUsable() const; ///< Can the object be used by the PC?
-
-	bool isClickable() const; ///< Can the player click the object?
+	/** Is the object static (not manipulable at all)? */
+	bool isStatic() const;
+	/** Can the object be used by the PC? */
+	bool isUsable() const;
+	/** Can the player click the object? */
+	bool isClickable() const;
 
 	// Positioning
 
@@ -90,23 +99,36 @@ public:
 	/** Set the object's orientation. */
 	virtual void setOrientation(float x, float y, float z, float angle);
 
+	/** Make the object look at the specified location. */
 	void makeLookAt(float x, float y);
+	/** Make the object look at the specified object. */
 	void makeLookAt(Object *target);
 
-	/** Get a room the object is in. */
-	Room *getRoom();
-	/** Set a room the object is in. */
-	void setRoom(Room *room);
+	// Hit points
+
+	/** Get the maximum hit points for the objects. */
+	int getMaxHitPoints();
+	/** Return the objects current hitpoints. */
+	int getCurrentHitPoints();
+	/** Get if the object has a minimum of one hp. */
+	bool getMinOneHitPoints() const;
+
+	/** Set the maximum hit points for the objects. */
+	void setMaxHitPoints(int maxHP);
+	/** Set the current hitpoints. */
+	void setCurrentHitPoints(int hitpoints);
+	/** Set if the object has a minimum of one hp. */
+	void setMinOneHitPoints(bool enabled);
 
 	// Object/Cursor interactions
 
-	virtual void enter(); ///< The cursor entered the object.
-	virtual void leave(); ///< The cursor left the object.
-
-	/** (Un)Highlight the object. */
+	/** The cursor entered the object. */
+	virtual void enter();
+	/** The cursor left the object. */
+	virtual void leave();
+	/** (Un)highlight the object. */
 	virtual void highlight(bool enabled);
-
-	/** The object was clicked. */
+	/** The object is clicked on. */
 	virtual bool click(Object *triggerer = 0);
 
 	// Sound
@@ -118,6 +140,7 @@ public:
 
 	// Animation
 
+	/** Play the object's model animation. */
 	virtual void playAnimation(const Common::UString &anim,
 	                           bool restart = true,
 	                           float length = 0.0f,
@@ -126,26 +149,28 @@ public:
 protected:
 	ObjectType _type; ///< The object's type.
 
+	std::list<uint32> _ids; ///< The object's model IDs.
+
 	Common::UString _name;        ///< The object's display name.
 	Common::UString _description; ///< The object's description.
-
-	Common::UString _portrait; ///< The object's portrait.
+	Common::UString _portrait;    ///< The object's portrait.
+	const Room *_room;            ///< Room the object is in.
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
 
-	std::list<uint32> _ids; ///< The object's model IDs.
+	int _currentHitPoints; ///< The current hitpoints of the object.
+	int _maxHitPoints;     ///< The maximum hitpoints of the object.
+	bool _minOneHitPoint;  ///< If the object should have at least one hitpoint.
 
 	float _position[3];    ///< The object's position.
 	float _orientation[4]; ///< The object's orientation.
 
 	Sound::ChannelHandle _sound; ///< The currently playing object sound.
-
-	Room *_room; ///< Room the object is in.
 };
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_OBJECT_H
+#endif // ENGINES_KOTORBASE_OBJECT_H

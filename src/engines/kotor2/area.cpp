@@ -43,10 +43,11 @@
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/localpathfinding.h"
 
+#include "src/engines/kotorbase/room.h"
+
 #include "src/engines/kotor2/objectwalkmesh.h"
 #include "src/engines/kotor2/doorwalkmesh.h"
 #include "src/engines/kotor2/area.h"
-#include "src/engines/kotor2/room.h"
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/waypoint.h"
 #include "src/engines/kotor2/pathfinding.h"
@@ -65,7 +66,7 @@ Area::CameraStyle::CameraStyle()
 }
 
 Area::Area(Module &module, const Common::UString &resRef)
-		: Object(kObjectTypeArea),
+		: Object(KotOR::kObjectTypeArea),
 		  _module(&module),
 		  _resRef(resRef),
 		  _visible(false),
@@ -368,14 +369,14 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 void Area::loadRooms() {
 	const Aurora::LYTFile::RoomArray &rooms = _lyt.getRooms();
 	for (Aurora::LYTFile::RoomArray::const_iterator r = rooms.begin(); r != rooms.end(); ++r) {
-		Room *room = new Room(r->model, r->x, r->y, r->z);
+		KotOR::Room *room = new KotOR::Room(r->model, r->x, r->y, r->z);
 		_rooms.push_back(room);
 		_pathfinding->addRoom(room);
 	}
 	_pathfinding->connectRooms();
 }
 
-void Area::loadObject(KotOR2::Object &object) {
+void Area::loadObject(KotOR::Object &object) {
 	_objects.push_back(&object);
 	_module->addObject(object);
 
@@ -465,7 +466,7 @@ void Area::processEventQueue() {
 		checkActive();
 }
 
-KotOR2::Object *Area::getObjectAt(int x, int y) {
+KotOR::Object *Area::getObjectAt(int x, int y) {
 	const Graphics::Renderable *obj = GfxMan.getObjectAt(x, y);
 	if (!obj)
 		return 0;
@@ -477,7 +478,7 @@ KotOR2::Object *Area::getObjectAt(int x, int y) {
 	return o->second;
 }
 
-void Area::setActive(KotOR2::Object *object) {
+void Area::setActive(KotOR::Object *object) {
 	if (object == _activeObject)
 		return;
 
@@ -505,7 +506,7 @@ void Area::checkActive(int x, int y) {
 void Area::click(int x, int y) {
 	Common::StackLock lock(_mutex);
 
-	KotOR2::Object *o = getObjectAt(x, y);
+	KotOR::Object *o = getObjectAt(x, y);
 	if (!o)
 		return;
 
@@ -578,10 +579,10 @@ void Area::evaluateTriggers(float x, float y) {
 
 	if (_activeTrigger != trigger) {
 		if (_activeTrigger)
-			_activeTrigger->runScript(kScriptExit, this, _module->getPC());
+			_activeTrigger->runScript(KotOR::kScriptExit, this, _module->getPC());
 		_activeTrigger = trigger;
 		if (_activeTrigger)
-			_activeTrigger->runScript(kScriptEnter, this, _module->getPC());
+			_activeTrigger->runScript(KotOR::kScriptEnter, this, _module->getPC());
 	}
 }
 
@@ -612,9 +613,9 @@ void Area::notifyObjectMoved(Object &o) {
 void Area::notifyPCMoved() {
 	Creature *pc = _module->getPC();
 
-	const Room *prevPCRoom = pc->getRoom();
+	const KotOR::Room *prevPCRoom = pc->getRoom();
 	notifyObjectMoved(*pc);
-	const Room *pcRoom = pc->getRoom();
+	const KotOR::Room *pcRoom = pc->getRoom();
 
 	if (pcRoom == prevPCRoom)
 		return;
@@ -646,7 +647,7 @@ void Area::notifyPCMoved() {
 
 	for (ObjectList::iterator o = _objects.begin();
 			o != _objects.end(); ++o) {
-		const Room *objRoom = (*o)->getRoom();
+		const KotOR::Room *objRoom = (*o)->getRoom();
 		bool visible = objRoom && objRoom->isVisible();
 		if (visible) {
 			if (!(*o)->isVisible())
@@ -668,11 +669,11 @@ const std::vector<Common::UString> &Area::getRoomsVisibleFrom(const Common::UStr
 	return _vis.getVisibilityArray(room);
 }
 
-KotOR2::Object *Area::getActiveObject() {
+KotOR::Object *Area::getActiveObject() {
 	return _activeObject;
 }
 
-KotOR2::Object *Area::getObjectByTag(const Common::UString &tag) {
+KotOR::Object *Area::getObjectByTag(const Common::UString &tag) {
 	for (ObjectList::iterator o = _objects.begin();
 			o != _objects.end(); ++o) {
 		if ((*o)->getTag().stricmp(tag) == 0)

@@ -51,17 +51,17 @@ void CharacterGenerationPortraitMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_ARRL") {
 		// Get the current skin and face
-		Skin skin = _info.getSkin();
+		KotOR::Skin skin = _info.getSkin();
 		unsigned int face = _info.getFace();
 
 		// Move them to left and go in another skin type if needed
 		if (face == 0) {
-			if (skin == kSkinA)
-				skin = kSkinH;
+			if (skin == KotOR::kSkinA)
+				skin = KotOR::kSkinH;
 			else
-				skin = Skin(skin - 1);
+				skin = KotOR::Skin(skin - 1);
 
-			if (skin == kSkinH)
+			if (skin == KotOR::kSkinH)
 				face = 1;
 			else
 				face = 4;
@@ -81,15 +81,15 @@ void CharacterGenerationPortraitMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_ARRR") {
 		// Get the current skin and face
-		Skin skin = _info.getSkin();
+		KotOR::Skin skin = _info.getSkin();
 		unsigned int face = _info.getFace();
 
 		// Move them to right and go in another skin type if needed
-		if (face == ((skin == kSkinH) ? 1 : 4)) {
-			if (skin == kSkinH)
-				skin = kSkinA;
+		if (face == ((skin == KotOR::kSkinH) ? 1 : 4)) {
+			if (skin == KotOR::kSkinH)
+				skin = KotOR::kSkinA;
 			else
-				skin = Skin(skin + 1);
+				skin = KotOR::Skin(skin + 1);
 			face = 0;
 		} else {
 			face += 1;

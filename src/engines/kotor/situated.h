@@ -33,7 +33,7 @@
 
 #include "src/graphics/aurora/types.h"
 
-#include "src/engines/kotor/object.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 

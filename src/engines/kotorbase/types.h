@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  Basic Star Wars: Knights of the Old Republic type definitions.
+ *  Basic type definitions for KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_TYPES_H
-#define ENGINES_KOTOR_TYPES_H
+#ifndef ENGINES_KOTORBASE_TYPES_H
+#define ENGINES_KOTORBASE_TYPES_H
 
 namespace Engines {
 
@@ -118,6 +118,7 @@ enum Skin {
 	kSkinA = 0,
 	kSkinB,
 	kSkinC,
+	kSkinH, // KotOR 2
 
 	kSkinMAX
 };
@@ -132,6 +133,17 @@ enum Class {
 	kClassExpertDroid,
 	kClassCombatDroid,
 	kClassMinion,
+
+	// KotOR 2 classes
+	kClassTechSpecialist,
+	kClassBountyHunter,
+	kClassJediWeaponMaster,
+	kClassJediMaster,
+	kClassJediWatchMan,
+	kClassSithMarauder,
+	kClassSithLord,
+	kClassSithAssassin,
+
 	kClassInvalid = 255
 };
 
@@ -223,4 +235,4 @@ enum ActionType {
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_TYPES_H
+#endif // ENGINES_KOTORBASE_TYPES_H

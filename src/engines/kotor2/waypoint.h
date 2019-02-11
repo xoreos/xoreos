@@ -30,14 +30,14 @@
 
 #include "src/aurora/types.h"
 
-#include "src/engines/kotor2/types.h"
-#include "src/engines/kotor2/object.h"
+#include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class Waypoint : public Object {
+class Waypoint : public KotOR::Object {
 public:
 	/** Load from a waypoint instance. */
 	Waypoint(const Aurora::GFF3Struct &waypoint);

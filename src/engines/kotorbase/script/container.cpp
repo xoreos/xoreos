@@ -33,7 +33,7 @@
 #include "src/aurora/nwscript/variable.h"
 #include "src/aurora/nwscript/ncsfile.h"
 
-#include "src/engines/kotor/script/container.h"
+#include "src/engines/kotorbase/script/container.h"
 
 namespace Engines {
 
@@ -109,12 +109,6 @@ static const ScriptName kScriptNames[] = {
 	{kScriptUserdefined,   "OnUserDefined"   },
 	{kScriptUserdefined,   "ScriptUserDefine"}
 };
-
-ScriptContainer::ScriptContainer() {
-}
-
-ScriptContainer::~ScriptContainer() {
-}
 
 const Common::UString &ScriptContainer::getScript(Script script) const {
 	assert((script >= 0) && (script < kScriptMAX));

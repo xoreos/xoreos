@@ -50,8 +50,8 @@
 #ifndef ENGINES_KOTOR2_SCRIPT_FUNCTION_TABLES_H
 #define ENGINES_KOTOR2_SCRIPT_FUNCTION_TABLES_H
 
-#include "src/engines/kotor2/types.h"
-#include "src/engines/kotor2/object.h"
+#include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 
@@ -71,8 +71,8 @@ using Aurora::NWScript::kTypeAny;
  * is given at the time of the calling.
  */
 
-static KotOR2::Object kDefaultValueObjectInvalid(kObjectTypeInvalid);
-static KotOR2::Object kDefaultValueObjectSelf   (kObjectTypeSelf);
+static KotOR::Object kDefaultValueObjectInvalid(KotOR::kObjectTypeInvalid);
+static KotOR::Object kDefaultValueObjectSelf   (KotOR::kObjectTypeSelf);
 
 static const Aurora::NWScript::Variable kDefaultIntMinus1((int32) - 1);
 static const Aurora::NWScript::Variable kDefaultInt0     ((int32)   0);

@@ -36,12 +36,14 @@
 
 #include "src/graphics/aurora/types.h"
 
+#include "src/engines/kotorbase/room.h"
+
 #include "src/engines/kotor2/console.h"
 #include "src/engines/kotor2/kotor2.h"
 #include "src/engines/kotor2/game.h"
 #include "src/engines/kotor2/module.h"
-#include "src/engines/kotor2/room.h"
 #include "src/engines/kotor2/area.h"
+#include "src/engines/kotor2/creature.h"
 
 namespace Engines {
 
@@ -168,7 +170,7 @@ void Console::cmdShowTriggers(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdGetPCRoom(const CommandLine &UNUSED(cl)) {
-	const Room *room = _engine->getGame().getModule().getPC()->getRoom();
+	const KotOR::Room *room = _engine->getGame().getModule().getPC()->getRoom();
 	printf("%s", room->getResRef().c_str());
 }
 

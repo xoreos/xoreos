@@ -17,22 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Scripting system in Star Wars: Knights of the Old Republic II - The Sith Lords.
+# Base engine for KotOR games.
 
-src_engines_kotor2_libkotor2_la_SOURCES += \
-    src/engines/kotor2/script/functions.h \
-    src/engines/kotor2/script/function_tables.h \
+noinst_LTLIBRARIES += src/engines/kotorbase/libkotorbase.la
+src_engines_kotorbase_libkotorbase_la_SOURCES =
+
+src_engines_kotorbase_libkotorbase_la_SOURCES += \
+    src/engines/kotorbase/types.h \
+    src/engines/kotorbase/room.h \
+    src/engines/kotorbase/object.h \
     $(EMPTY)
 
-src_engines_kotor2_libkotor2_la_SOURCES += \
-    src/engines/kotor2/script/functions.cpp \
-    src/engines/kotor2/script/functions_math.cpp \
-    src/engines/kotor2/script/functions_string.cpp \
-    src/engines/kotor2/script/functions_module.cpp \
-    src/engines/kotor2/script/functions_object.cpp \
-    src/engines/kotor2/script/functions_situated.cpp \
-    src/engines/kotor2/script/functions_action.cpp \
-    src/engines/kotor2/script/functions_sound.cpp \
-    src/engines/kotor2/script/functions_movie.cpp \
-    src/engines/kotor2/script/functions_local.cpp \
+src_engines_kotorbase_libkotorbase_la_SOURCES += \
+    src/engines/kotorbase/room.cpp \
+    src/engines/kotorbase/object.cpp \
     $(EMPTY)
+
+include src/engines/kotorbase/script/rules.mk

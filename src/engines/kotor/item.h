@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_ITEM_H
 #define ENGINES_KOTOR_ITEM_H
 
-#include "src/engines/kotor/object.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 

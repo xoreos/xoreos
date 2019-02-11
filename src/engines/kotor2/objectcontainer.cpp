@@ -25,8 +25,9 @@
 #include "src/common/types.h"
 #include "src/common/util.h"
 
+#include "src/engines/kotorbase/object.h"
+
 #include "src/engines/kotor2/objectcontainer.h"
-#include "src/engines/kotor2/object.h"
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/area.h"
 #include "src/engines/kotor2/waypoint.h"
@@ -39,15 +40,15 @@ namespace Engines {
 
 namespace KotOR2 {
 
-ObjectDistanceSort::ObjectDistanceSort(const KotOR2::Object &target) {
+ObjectDistanceSort::ObjectDistanceSort(const KotOR::Object &target) {
 	target.getPosition(xt, yt, zt);
 }
 
-bool ObjectDistanceSort::operator()(KotOR2::Object *a, KotOR2::Object *b) {
+bool ObjectDistanceSort::operator()(KotOR::Object *a, KotOR::Object *b) {
 	return getDistance(*a) < getDistance(*b);
 }
 
-float ObjectDistanceSort::getDistance(KotOR2::Object &a) {
+float ObjectDistanceSort::getDistance(KotOR::Object &a) {
 	float x, y, z;
 	a.getPosition(x, y, z);
 
@@ -55,7 +56,7 @@ float ObjectDistanceSort::getDistance(KotOR2::Object &a) {
 }
 
 
-class SearchType : public ::Aurora::NWScript::SearchRange< std::list<KotOR2::Object *> > {
+class SearchType : public ::Aurora::NWScript::SearchRange< std::list<KotOR::Object *> > {
 public:
 	SearchType(const iterator &a, const iterator &b) : ::Aurora::NWScript::SearchRange<type>(std::make_pair(a, b)) { }
 	SearchType(const type &l) : ::Aurora::NWScript::SearchRange<type>(std::make_pair(l.begin(), l.end())) { }
@@ -81,7 +82,7 @@ void ObjectContainer::clearObjects() {
 	unlock();
 }
 
-void ObjectContainer::addObject(KotOR2::Object &object) {
+void ObjectContainer::addObject(KotOR::Object &object) {
 	lock();
 
 	::Aurora::NWScript::ObjectContainer::addObject(object);
@@ -91,7 +92,7 @@ void ObjectContainer::addObject(KotOR2::Object &object) {
 	unlock();
 }
 
-void ObjectContainer::removeObject(KotOR2::Object &object) {
+void ObjectContainer::removeObject(KotOR::Object &object) {
 	lock();
 
 	_objects[object.getType()].remove(&object);
@@ -101,7 +102,7 @@ void ObjectContainer::removeObject(KotOR2::Object &object) {
 	unlock();
 }
 
-::Aurora::NWScript::Object *ObjectContainer::getFirstObjectByType(ObjectType type) const {
+::Aurora::NWScript::Object *ObjectContainer::getFirstObjectByType(KotOR::ObjectType type) const {
 	ObjectMap::const_iterator l = _objects.find(type);
 	if (l == _objects.end())
 		return 0;
@@ -111,7 +112,7 @@ void ObjectContainer::removeObject(KotOR2::Object &object) {
 	return ctx.get();
 }
 
-::Aurora::NWScript::ObjectSearch *ObjectContainer::findObjectsByType(ObjectType type) const {
+::Aurora::NWScript::ObjectSearch *ObjectContainer::findObjectsByType(KotOR::ObjectType type) const {
 	static const ObjectList kEmptyObjectList;
 
 	ObjectMap::const_iterator l = _objects.find(type);
@@ -121,8 +122,8 @@ void ObjectContainer::removeObject(KotOR2::Object &object) {
 	return new SearchType(l->second);
 }
 
-KotOR2::Object *ObjectContainer::toObject(::Aurora::NWScript::Object *object) {
-	return dynamic_cast<KotOR2::Object *>(object);
+KotOR::Object *ObjectContainer::toObject(::Aurora::NWScript::Object *object) {
+	return dynamic_cast<KotOR::Object *>(object);
 }
 
 Module *ObjectContainer::toModule(Aurora::NWScript::Object *object) {

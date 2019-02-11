@@ -27,7 +27,7 @@
 
 #include "src/events/timerman.h"
 
-#include "src/engines/kotor/object.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 
