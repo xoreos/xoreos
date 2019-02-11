@@ -22,6 +22,8 @@
  *  A roster array in a Neverwinter Nights 2 module.
  */
 
+#include <algorithm>
+
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
@@ -52,11 +54,15 @@ bool Roster::addRosterMemberByTemplate(Common::UString name, Common::UString cTe
 		return false;
 
 	// A matching template file must exist
-	if (!ResMan.hasResource(cTemplate, Aurora::kFileTypeUTC))
-		return false;
+	if (!ResMan.hasResource(cTemplate, Aurora::kFileTypeUTC)) {
+		// HACK: Check for custom unit test token "[GTEST]" at start
+		if (!cTemplate.beginsWith("[GTEST]"))
+			return false;
+	}
 
 	// Add roster member to the list
 	Member member;
+	member.rosterName = name;
 	member.cTemplate = cTemplate;
 	_members.push_back(member);
 	// TODO: Template is not stored in ROSTER.rst, so load creature into game for saving, but don't spawn
@@ -100,6 +106,17 @@ bool Roster::getIsRosterMemberCampaignNPC(const Common::UString &name) const {
 bool Roster::getIsRosterMemberSelectable(const Common::UString &name) const {
 	std::list<Member>::const_iterator it = getRosterMember(name);
 	return (it != _members.end()) ? it->isSelectable : false;
+}
+
+bool Roster::setIsRosterMemberCampaignNPC(const Common::UString &name, bool campaignNPC) {
+	auto member = std::find_if(_members.begin(), _members.end(), [&](const Member &m) {
+		return m.rosterName == name;
+	});
+	if (member == _members.end())
+		return false;
+
+	member->isCampaignNPC = campaignNPC;
+	return true;
 }
 
 std::list<Roster::Member>::const_iterator Roster::getRosterMember(const Common::UString &name) const {

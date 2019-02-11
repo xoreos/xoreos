@@ -91,3 +91,24 @@ GTEST_TEST(NWN2Roster, rosterSettings) {
 	EXPECT_TRUE(roster->getIsRosterMemberSelectable("shandra"));
 	EXPECT_FALSE(roster->getIsRosterMemberSelectable("npc_bevil"));
 }
+
+/**
+ * Test the Roster class 'set' calls.
+ */
+GTEST_TEST(NWN2Roster, rosterSetCalls) {
+	std::unique_ptr<Engines::NWN2::Roster> roster(new Engines::NWN2::Roster);
+
+	// Bypass the ResMan resource check by inserting "[GTEST]" at the template start
+	EXPECT_TRUE(roster->addRosterMemberByTemplate("adam_ant", "[GTEST]n_aldanon"));
+	EXPECT_TRUE(roster->addRosterMemberByTemplate("bettie_boop", "[GTEST]n_brelaina"));
+	EXPECT_TRUE(roster->addRosterMemberByTemplate("cookie_cutter", "[GTEST]n_calindra"));
+
+	EXPECT_STREQ(roster->getFirstRosterMember().c_str(), "adam_ant");
+	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "bettie_boop");
+	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "cookie_cutter");
+
+	EXPECT_TRUE(roster->setIsRosterMemberCampaignNPC("bettie_boop", true));
+	EXPECT_FALSE(roster->getIsRosterMemberCampaignNPC("adam_ant"));
+	EXPECT_TRUE(roster->getIsRosterMemberCampaignNPC("bettie_boop"));
+	EXPECT_FALSE(roster->getIsRosterMemberCampaignNPC("cookie_cutter"));
+}
