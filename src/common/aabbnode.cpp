@@ -22,13 +22,14 @@
  *  An axis-aligned bounding box node.
  */
 
+
 #include "src/common/geometry.h"
 #include "src/common/util.h"
 #include "src/common/aabbnode.h"
 
 namespace Common {
 
-AABBNode::AABBNode(float min[3], float max[3], int32 property) : BoundingBox(), _property(property) {
+AABBNode::AABBNode(float min[3], float max[3], int32 property) : _property(property) {
 	_min[0] = min[0];
 	_min[1] = min[1];
 	_min[2] = min[2];
@@ -221,8 +222,6 @@ void AABBNode::getNodesInAABox2D(glm::vec2 min, glm::vec2 max, std::vector<AABBN
 
 	_leftChild->getNodesInAABox2D(min, max, nodes);
 	_rightChild->getNodesInAABox2D(min, max, nodes);
-
-	return;
 }
 
 void AABBNode::getNodesInSegment(glm::vec3 start, glm::vec3 end, std::vector<AABBNode *> &nodes) {
@@ -238,8 +237,6 @@ void AABBNode::getNodesInSegment(glm::vec3 start, glm::vec3 end, std::vector<AAB
 
 	_leftChild->getNodesInSegment(start, end, nodes);
 	_rightChild->getNodesInSegment(start, end, nodes);
-
-	return;
 }
 
 } // End of namespace Common
