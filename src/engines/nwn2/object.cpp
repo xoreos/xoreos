@@ -55,7 +55,7 @@ namespace NWN2 {
 
 Object::Object(ObjectType type) : _type(type), _faction(2),
 	_soundSet(Aurora::kFieldIDInvalid), _static(true), _usable(true),
-	_area(0) {
+	_listen(false), _area(0) {
 	_id = Common::generateIDNumber();
 	ObjectMan.registerObject(this);
 
@@ -329,6 +329,14 @@ bool Object::getIsFriend(Object *source) const {
 bool Object::getIsNeutral(Object *source) const {
 	uint8 repute = getReputation(source);
 	return ((repute > kRepEnemyMax) && (repute < kRepFriendMin));
+}
+
+bool Object::getIsListening() {
+	return _listen;
+}
+
+void Object::setListening(bool listen) {
+	_listen = listen;
 }
 
 } // End of namespace NWN2
