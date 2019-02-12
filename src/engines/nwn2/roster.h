@@ -81,9 +81,6 @@ private:
 
 	/** Load members from 'ROSTER.rst' file. */
 	void load();
-
-	/** Return the members' list iterator matching the roster name. */
-	std::list<Member>::const_iterator getRosterMember(const Common::UString &name) const;
 };
 
 } // End of namespace NWN2

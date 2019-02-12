@@ -50,7 +50,10 @@ bool Roster::addRosterMemberByTemplate(Common::UString name, Common::UString cTe
 		return false;
 
 	// Don't permit duplicate roster names
-	if (getRosterMember(name) != _members.end())
+	auto match = std::find_if(_members.begin(), _members.end(), [&](const Member &m) {
+		return m.rosterName == name;
+	});
+	if (match != _members.end())
 		return false;
 
 	// A matching template file must exist
@@ -94,18 +97,24 @@ Common::UString Roster::getNextRosterMember() {
 }
 
 bool Roster::getIsRosterMemberAvailable(const Common::UString &name) const {
-	std::list<Member>::const_iterator it = getRosterMember(name);
-	return (it != _members.end()) ? it->isAvailable : false;
+	auto member = std::find_if(_members.begin(), _members.end(), [&](const Member &m) {
+		return m.rosterName == name;
+	});
+	return (member != _members.end()) ? member->isAvailable : false;
 }
 
 bool Roster::getIsRosterMemberCampaignNPC(const Common::UString &name) const {
-	std::list<Member>::const_iterator it = getRosterMember(name);
-	return (it != _members.end()) ? it->isCampaignNPC : false;
+	auto member = std::find_if(_members.begin(), _members.end(), [&](const Member &m) {
+		return m.rosterName == name;
+	});
+	return (member != _members.end()) ? member->isCampaignNPC : false;
 }
 
 bool Roster::getIsRosterMemberSelectable(const Common::UString &name) const {
-	std::list<Member>::const_iterator it = getRosterMember(name);
-	return (it != _members.end()) ? it->isSelectable : false;
+	auto member = std::find_if(_members.begin(), _members.end(), [&](const Member &m) {
+		return m.rosterName == name;
+	});
+	return (member != _members.end()) ? member->isSelectable : false;
 }
 
 bool Roster::setIsRosterMemberCampaignNPC(const Common::UString &name, bool campaignNPC) {
@@ -117,14 +126,6 @@ bool Roster::setIsRosterMemberCampaignNPC(const Common::UString &name, bool camp
 
 	member->isCampaignNPC = campaignNPC;
 	return true;
-}
-
-std::list<Roster::Member>::const_iterator Roster::getRosterMember(const Common::UString &name) const {
-	for (std::list<Member>::const_iterator it = _members.begin(); it != _members.end(); ++it)
-		if (it->rosterName == name)
-			return it;
-
-	return _members.end();
 }
 
 /** Load roster from the saved 'ROSTER.rst' file, if any. */
@@ -152,7 +153,10 @@ void Roster::loadMember(const Aurora::GFF3Struct &gff) {
 		member.isSelectable = gff.getBool("RosSelectable", member.isSelectable);
 		member.isLoadBefore = gff.getBool("RosLoadBefore", member.isLoadBefore);
 
-		if (getRosterMember(member.rosterName) == _members.end()) {
+		auto match = std::find_if(_members.begin(), _members.end(), [&](const Member &m) {
+			return m.rosterName == member.rosterName;
+		});
+		if (match == _members.end()) {
 			_members.push_back(member);
 		} else {
 			throw Common::Exception("Attempt to load duplicate roster member name: \"%s\"", member.rosterName.c_str());
