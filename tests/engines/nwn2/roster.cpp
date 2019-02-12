@@ -102,13 +102,21 @@ GTEST_TEST(NWN2Roster, rosterSetCalls) {
 	EXPECT_TRUE(roster->addRosterMemberByTemplate("adam_ant", "[GTEST]n_aldanon"));
 	EXPECT_TRUE(roster->addRosterMemberByTemplate("bettie_boop", "[GTEST]n_brelaina"));
 	EXPECT_TRUE(roster->addRosterMemberByTemplate("cookie_cutter", "[GTEST]n_calindra"));
+	EXPECT_TRUE(roster->addRosterMemberByTemplate("dan_dare", "[GTEST]n_duncan"));
 
 	EXPECT_STREQ(roster->getFirstRosterMember().c_str(), "adam_ant");
 	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "bettie_boop");
 	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "cookie_cutter");
+	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "dan_dare");
+	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "");
 
 	EXPECT_TRUE(roster->setIsRosterMemberCampaignNPC("bettie_boop", true));
+	EXPECT_TRUE(roster->setIsRosterMemberAvailable("cookie_cutter", true));
+	EXPECT_TRUE(roster->setIsRosterMemberSelectable("dan_dare", true));
+
 	EXPECT_FALSE(roster->getIsRosterMemberCampaignNPC("adam_ant"));
 	EXPECT_TRUE(roster->getIsRosterMemberCampaignNPC("bettie_boop"));
 	EXPECT_FALSE(roster->getIsRosterMemberCampaignNPC("cookie_cutter"));
+	EXPECT_TRUE(roster->getIsRosterMemberAvailable("cookie_cutter"));
+	EXPECT_TRUE(roster->getIsRosterMemberSelectable("dan_dare"));
 }

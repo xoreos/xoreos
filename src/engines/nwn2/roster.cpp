@@ -117,6 +117,17 @@ bool Roster::getIsRosterMemberSelectable(const Common::UString &name) const {
 	return (member != _members.end()) ? member->isSelectable : false;
 }
 
+bool Roster::setIsRosterMemberAvailable(const Common::UString &name, bool available) {
+	auto member = std::find_if(_members.begin(), _members.end(), [&](const Member &m) {
+		return m.rosterName == name;
+	});
+	if (member == _members.end())
+		return false;
+
+	member->isAvailable = available;
+	return true;
+}
+
 bool Roster::setIsRosterMemberCampaignNPC(const Common::UString &name, bool campaignNPC) {
 	auto member = std::find_if(_members.begin(), _members.end(), [&](const Member &m) {
 		return m.rosterName == name;
@@ -125,6 +136,17 @@ bool Roster::setIsRosterMemberCampaignNPC(const Common::UString &name, bool camp
 		return false;
 
 	member->isCampaignNPC = campaignNPC;
+	return true;
+}
+
+bool Roster::setIsRosterMemberSelectable(const Common::UString &name, bool selectable) {
+	auto member = std::find_if(_members.begin(), _members.end(), [&](const Member &m) {
+		return m.rosterName == name;
+	});
+	if (member == _members.end())
+		return false;
+
+	member->isSelectable = selectable;
 	return true;
 }
 

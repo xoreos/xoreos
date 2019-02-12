@@ -56,7 +56,9 @@ public:
 	bool getIsRosterMemberSelectable(const Common::UString &name) const;
 
 	/** Set roster member information. */
+	bool setIsRosterMemberAvailable(const Common::UString &name, bool available);
 	bool setIsRosterMemberCampaignNPC(const Common::UString &name, bool campaignNPC);
+	bool setIsRosterMemberSelectable(const Common::UString &name, bool selectable);
 
 protected:
 	void loadMember(const Aurora::GFF3Struct &gff);
