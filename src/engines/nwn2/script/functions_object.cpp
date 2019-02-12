@@ -397,6 +397,17 @@ void Functions::setAssociateListenPatterns(Aurora::NWScript::FunctionContext &ct
 	}
 }
 
+void Functions::getIsListening(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	ctx.getReturn() = (object) ? object->getIsListening() : false;
+}
+
+void Functions::setListening(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (object)
+		object->setListening(ctx.getParams()[1].getInt() != 0);
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines

@@ -151,6 +151,11 @@ public:
 	bool getIsFriend(Object *source) const;
 	bool getIsNeutral(Object *source) const;
 
+	// Listening for patterns
+
+	bool getIsListening();
+	void setListening(bool listen);
+
 protected:
 	ObjectType _type; ///< The object's type.
 
@@ -166,6 +171,7 @@ protected:
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
+	bool _listen; ///< Is the object listening?
 
 	std::list<uint32> _ids; ///< The object's model IDs.
 
