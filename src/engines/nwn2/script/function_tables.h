@@ -965,7 +965,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  824, "RemoveRosterMember"                  , 0                                                },
 	{  825, "GetIsRosterMemberAvailable"          , &Functions::getIsRosterMemberAvailable           },
 	{  826, "GetIsRosterMemberSelectable"         , &Functions::getIsRosterMemberSelectable          },
-	{  827, "SetIsRosterMemberSelectable"         , 0                                                },
+	{  827, "SetIsRosterMemberSelectable"         , &Functions::setIsRosterMemberSelectable          },
 	{  828, "GetObjectFromRosterName"             , 0                                                },
 	{  829, "GetRosterNameFromObject"             , 0                                                },
 	{  830, "SpawnRosterMember"                   , 0                                                },
@@ -982,7 +982,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  841, "GetProjectileTravelTime"             , 0                                                },
 	{  842, "SetRosterNPCPartyLimit"              , 0                                                },
 	{  843, "GetRosterNPCPartyLimit"              , 0                                                },
-	{  844, "SetIsRosterMemberCampaignNPC"        , 0                                                },
+	{  844, "SetIsRosterMemberCampaignNPC"        , &Functions::setIsRosterMemberCampaignNPC         },
 	{  845, "GetIsRosterMemberCampaignNPC"        , &Functions::getIsRosterMemberCampaignNPC         },
 	{  846, "GetIsRosterMember"                   , &Functions::getIsRosterMember                    },
 	{  847, "ShowWorldMap"                        , 0                                                },
@@ -1195,7 +1195,8 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 1054, "SetArmorRulesType"                   , 0                                                },
 	{ 1055, "SetItemIcon"                         , 0                                                },
 	{ 1056, "GetObjectByTagAndType"               , 0                                                },
-	{ 1057, "RecallCreatureFromLimboToLocation"   , 0                                                }
+	{ 1057, "RecallCreatureFromLimboToLocation"   , 0                                                },
+	{ 1058, "SetIsRosterMemberAvailable"          , &Functions::setIsRosterMemberAvailable           }
 };
 
 /** The table defining the signature (return type and type of parameters) of each engine function. */
@@ -2257,7 +2258,8 @@ const Functions::FunctionSignature Functions::kFunctionSignatures[] = {
 	{ 1054, kTypeVoid      , { kTypeObject,kTypeInt } },
 	{ 1055, kTypeVoid      , { kTypeObject,kTypeInt } },
 	{ 1056, kTypeObject    , { kTypeString,kTypeInt,kTypeInt } },
-	{ 1057, kTypeVoid      , { kTypeObject,kTypeEngineType } }
+	{ 1057, kTypeVoid      , { kTypeObject,kTypeEngineType } },
+	{ 1058, kTypeInt       , { kTypeString,kTypeInt } }
 };
 
 /** The table defining the default values for the parameters of each engine function. */
@@ -3319,7 +3321,8 @@ const Functions::FunctionDefaults Functions::kFunctionDefaults[] = {
 	{ 1054, { } },
 	{ 1055, { } },
 	{ 1056, { } },
-	{ 1057, { } }
+	{ 1057, { } },
+	{ 1058, { } }
 };
 
 } // End of namespace NWN2
