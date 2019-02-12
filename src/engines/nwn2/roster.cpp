@@ -36,11 +36,19 @@ namespace Engines {
 
 namespace NWN2 {
 
-Roster::Roster() : _lastRetrieved(UINT32_MAX) {
+Roster::Roster() : _partyLimit(3), _lastRetrieved(UINT32_MAX) {
 	load();
 }
 
 Roster::~Roster() {
+}
+
+uint32 Roster::getRosterNPCPartyLimit() {
+	return _partyLimit;
+}
+
+void Roster::setRosterNPCPartyLimit(uint32 limit) {
+	_partyLimit = limit;
 }
 
 /** Add a creature by template name to the roster list. */
@@ -157,6 +165,8 @@ void Roster::load() {
 		return;
 
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
+
+	_partyLimit = top.getUint("RosPartyLimit", 3);
 
 	// Insert the roster members
 	const Aurora::GFF3List &rList = top.getList("RosMembers");

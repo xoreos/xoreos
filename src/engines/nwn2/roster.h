@@ -50,6 +50,10 @@ public:
 	/** Increment to the next member in the list. */
 	Common::UString getNextRosterMember();
 
+	/** Limit on number of Roster NPCs added via Party Selection GUI. */
+	uint32 getRosterNPCPartyLimit();
+	void setRosterNPCPartyLimit(uint32 limit);
+
 	/** Fetch roster member information. */
 	bool getIsRosterMemberAvailable(const Common::UString &name) const;
 	bool getIsRosterMemberCampaignNPC(const Common::UString &name) const;
@@ -78,6 +82,8 @@ private:
 	};
 
 	std::list<Member> _members; ///< List of roster member instances.
+
+	uint32 _partyLimit; ///< Maximum selectable roster companions.
 
 	uint32 _lastRetrieved; ///< Index of last retrieved member.
 

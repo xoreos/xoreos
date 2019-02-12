@@ -37,6 +37,15 @@ namespace Engines {
 
 namespace NWN2 {
 
+void Functions::getRosterNPCPartyLimit(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = (int32) _game->getModule().getRoster().getRosterNPCPartyLimit();
+}
+
+void Functions::setRosterNPCPartyLimit(Aurora::NWScript::FunctionContext &ctx) {
+	const uint32 limit = (uint32) ctx.getParams()[0].getInt();
+	_game->getModule().getRoster().setRosterNPCPartyLimit(limit);
+}
+
 void Functions::addRosterMemberByTemplate(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &name = ctx.getParams()[0].getString();
 	const Common::UString &cTemplate = ctx.getParams()[1].getString();
