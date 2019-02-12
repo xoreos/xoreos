@@ -69,9 +69,6 @@ void Functions::delayCommand(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
 	Common::UString script = ctx.getParams()[0].getString();
 
-	// Max resource name length is 16, and ExecuteScript should truncate accordingly
-	script.truncate(16);
-
 	if (!ResMan.hasResource(script, Aurora::kFileTypeNCS))
 		return;
 
