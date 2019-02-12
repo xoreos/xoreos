@@ -64,6 +64,11 @@ public:
 	bool setIsRosterMemberCampaignNPC(const Common::UString &name, bool campaignNPC);
 	bool setIsRosterMemberSelectable(const Common::UString &name, bool selectable);
 
+	/** Retrieve the party information. */
+	Common::UString getPartyName();
+	Common::UString getPartyMotto();
+	Common::UString getPartyBio();
+
 protected:
 	void loadMember(const Aurora::GFF3Struct &gff);
 
@@ -84,6 +89,10 @@ private:
 	std::list<Member> _members; ///< List of roster member instances.
 
 	uint32 _partyLimit; ///< Maximum selectable roster companions.
+
+	Common::UString _partyName;  ///< Name of the player's party.
+	Common::UString _partyMotto; ///< Motto for the player's party.
+	Common::UString _partyBio;   ///< Player's party biography.
 
 	uint32 _lastRetrieved; ///< Index of last retrieved member.
 
