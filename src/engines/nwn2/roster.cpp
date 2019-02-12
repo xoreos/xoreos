@@ -158,6 +158,18 @@ bool Roster::setIsRosterMemberSelectable(const Common::UString &name, bool selec
 	return true;
 }
 
+Common::UString Roster::getPartyName() {
+	return _partyName;
+}
+
+Common::UString Roster::getPartyMotto() {
+	return _partyMotto;
+}
+
+Common::UString Roster::getPartyBio() {
+	return _partyBio;
+}
+
 /** Load roster from the saved 'ROSTER.rst' file, if any. */
 void Roster::load() {
 	Common::ScopedPtr<Aurora::GFF3File> gff(loadOptionalGFF3("ROSTER", Aurora::kFileTypeRST, MKTAG('R', 'S', 'T', ' ')));
@@ -167,6 +179,9 @@ void Roster::load() {
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
 
 	_partyLimit = top.getUint("RosPartyLimit", 3);
+	_partyName = top.getString("PartyName");
+	_partyMotto = top.getString("PartyMotto");
+	_partyBio = top.getString("PartyBio");
 
 	// Insert the roster members
 	const Aurora::GFF3List &rList = top.getList("RosMembers");

@@ -275,7 +275,9 @@ private:
 	void getFirstRosterMember(Aurora::NWScript::FunctionContext &ctx);
 	void getNextRosterMember (Aurora::NWScript::FunctionContext &ctx);
 	void getFactionLeader    (Aurora::NWScript::FunctionContext &ctx);
+	// '---
 
+	// .--- Roster and party, functions_roster.cpp
 	void getRosterNPCPartyLimit(Aurora::NWScript::FunctionContext &ctx);
 	void setRosterNPCPartyLimit(Aurora::NWScript::FunctionContext &ctx);
 
@@ -288,6 +290,9 @@ private:
 	void setIsRosterMemberSelectable (Aurora::NWScript::FunctionContext &ctx);
 
 	void addRosterMemberByTemplate(Aurora::NWScript::FunctionContext &ctx);
+
+	void getPartyName (Aurora::NWScript::FunctionContext &ctx);
+	void getPartyMotto(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Actions, functions_action.cpp

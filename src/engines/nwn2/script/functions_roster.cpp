@@ -75,6 +75,14 @@ void Functions::getIsRosterMemberSelectable(Aurora::NWScript::FunctionContext &c
 	ctx.getReturn() = _game->getModule().getRoster().getIsRosterMemberSelectable(name);
 }
 
+void Functions::getPartyName(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = _game->getModule().getRoster().getPartyName();
+}
+
+void Functions::getPartyMotto(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = _game->getModule().getRoster().getPartyMotto();
+}
+
 void Functions::setIsRosterMemberAvailable(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &name = ctx.getParams()[0].getString();
 	const bool available = ctx.getParams()[1].getInt() != 0;
