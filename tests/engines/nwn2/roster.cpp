@@ -120,3 +120,15 @@ GTEST_TEST(NWN2Roster, rosterSetCalls) {
 	EXPECT_TRUE(roster->getIsRosterMemberAvailable("cookie_cutter"));
 	EXPECT_TRUE(roster->getIsRosterMemberSelectable("dan_dare"));
 }
+
+/**
+ * Test the roster NPC party limit.
+ */
+
+GTEST_TEST(NWN2Roster, rosterLimit) {
+	std::unique_ptr<TestRoster> roster(new TestRoster);
+
+	EXPECT_EQ(roster->getRosterNPCPartyLimit(), 3);
+	roster->setRosterNPCPartyLimit(6);
+	EXPECT_EQ(roster->getRosterNPCPartyLimit(), 6);
+}

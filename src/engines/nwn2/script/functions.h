@@ -276,6 +276,9 @@ private:
 	void getNextRosterMember (Aurora::NWScript::FunctionContext &ctx);
 	void getFactionLeader    (Aurora::NWScript::FunctionContext &ctx);
 
+	void getRosterNPCPartyLimit(Aurora::NWScript::FunctionContext &ctx);
+	void setRosterNPCPartyLimit(Aurora::NWScript::FunctionContext &ctx);
+
 	void getIsRosterMemberAvailable  (Aurora::NWScript::FunctionContext &ctx);
 	void getIsRosterMemberCampaignNPC(Aurora::NWScript::FunctionContext &ctx);
 	void getIsRosterMemberSelectable (Aurora::NWScript::FunctionContext &ctx);
