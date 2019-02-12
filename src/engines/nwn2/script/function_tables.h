@@ -465,7 +465,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  324, "SetLocked"                           , &Functions::setLocked                            },
 	{  325, "GetLocked"                           , &Functions::getLocked                            },
 	{  326, "GetClickingObject"                   , &Functions::getClickingObject                    },
-	{  327, "SetAssociateListenPatterns"          , 0                                                },
+	{  327, "SetAssociateListenPatterns"          , &Functions::setAssociateListenPatterns           },
 	{  328, "GetLastWeaponUsed"                   , 0                                                },
 	{  329, "ActionInteractObject"                , 0                                                },
 	{  330, "GetLastUsedBy"                       , &Functions::getLastUsedBy                        },

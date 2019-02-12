@@ -25,7 +25,10 @@
 #include "src/common/scopedptr.h"
 #include "src/common/util.h"
 
+#include "src/aurora/resman.h"
+
 #include "src/aurora/nwscript/functioncontext.h"
+#include "src/aurora/nwscript/ncsfile.h"
 
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/game.h"
@@ -370,6 +373,28 @@ void Functions::jumpToObject(Aurora::NWScript::FunctionContext &ctx) {
 	moveTo->getPosition(x, y, z);
 
 	jumpTo(object, moveTo->getArea(), x, y, z);
+}
+
+void Functions::setAssociateListenPatterns(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *target = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!target) {
+		// Defaults to calling object
+		target = NWN2::ObjectContainer::toObject(ctx.getCaller());
+		if (!target)
+			return;
+	}
+
+	static Common::UString kSetALPScript = "gb_setassociatelistenpatterns";
+	if (!ResMan.hasResource(kSetALPScript, Aurora::kFileTypeNCS))
+		return;
+
+	try {
+		Aurora::NWScript::NCSFile ncs(kSetALPScript);
+
+		ncs.run(target);
+	} catch (...) {
+		Common::exceptionDispatcherWarning("Failed setAssociateListenPatterns");
+	}
 }
 
 } // End of namespace NWN2
