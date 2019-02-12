@@ -280,6 +280,10 @@ private:
 	void getIsRosterMemberCampaignNPC(Aurora::NWScript::FunctionContext &ctx);
 	void getIsRosterMemberSelectable (Aurora::NWScript::FunctionContext &ctx);
 
+	void setIsRosterMemberAvailable  (Aurora::NWScript::FunctionContext &ctx);
+	void setIsRosterMemberCampaignNPC(Aurora::NWScript::FunctionContext &ctx);
+	void setIsRosterMemberSelectable (Aurora::NWScript::FunctionContext &ctx);
+
 	void addRosterMemberByTemplate(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
