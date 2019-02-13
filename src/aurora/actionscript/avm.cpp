@@ -41,6 +41,9 @@ namespace ActionScript {
 
 AVM::AVM() {
 	_registers.resize(256);
+	for (size_t i = 0; i < _registers.size(); ++i)
+		_registers[i].push(Variable());
+
 	_stopFlag = false;
 
 	_variables["_global"] = ObjectPtr(new Object());
@@ -66,12 +69,24 @@ void AVM::setFSCommandCallback(FSCommandFunction fscommand) {
 	_fscommand = fscommand;
 }
 
+void AVM::pushRegisters(uint8 n) {
+	for (unsigned int i = 1; i < n; ++i) {
+		_registers[i].push(Variable());
+	}
+}
+
+void AVM::popRegisters(uint8 n) {
+	for (unsigned int i = 1; i < n; ++i) {
+		_registers[i].pop();
+	}
+}
+
 void AVM::storeRegister(Variable value, byte index) {
-	_registers[index] = value;
+	_registers[index].top() = value;
 }
 
 Variable AVM::getRegister(byte index) {
-	return _registers[index];
+	return _registers[index].top();
 }
 
 void AVM::fsCommand(const Common::UString &name, const Common::UString &value) {

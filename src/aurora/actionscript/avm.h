@@ -25,6 +25,8 @@
 #ifndef AURORA_ACTIONSCRIPT_AVM_H
 #define AURORA_ACTIONSCRIPT_AVM_H
 
+#include <stack>
+
 #include <boost/function.hpp>
 
 #include "src/common/ustring.h"
@@ -61,6 +63,9 @@ public:
 	 */
 	void fsCommand(const Common::UString &name, const Common::UString &value);
 
+	void pushRegisters(uint8 n);
+	void popRegisters(uint8 n);
+
 	void storeRegister(Variable value, byte index);
 	Variable getRegister(byte index);
 
@@ -85,7 +90,7 @@ private:
 	RegisterClassFunction _registerClass;
 	FSCommandFunction _fscommand;
 
-	std::vector<Variable> _registers;
+	std::vector<std::stack<Variable>> _registers;
 	std::map<Common::UString, Variable> _variables;
 
 	bool _stopFlag;
