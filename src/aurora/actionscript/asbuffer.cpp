@@ -529,6 +529,7 @@ void ASBuffer::actionExtends() {
 
 	ObjectPtr scriptObject(new Object(superClass->getMember("prototype").asObject().get()));
 	scriptObject->setMember("constructor", superClass);
+	scriptObject->setMember("proto", superClass->getMember("prototype").asObject());
 
 	subClass->setMember("prototype", scriptObject);
 
