@@ -464,6 +464,8 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 	byte counter = 1;
 	Variable prevThis;
 
+	avm.pushRegisters(function->getNumRegisters());
+
 	if (function->getPreloadRootFlag()) {
 		avm.storeRegister(avm.getVariable("_root"), counter);
 		counter += 1;
@@ -496,6 +498,8 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 
 	if (!prevThis.isUndefined())
 		avm.storeRegister(prevThis, 1);
+
+	avm.popRegisters(function->getNumRegisters());
 
 	debugC(kDebugActionScript, 1, "actionCallMethod");
 }
