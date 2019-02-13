@@ -29,11 +29,13 @@
 #include "src/aurora/talkman.h"
 
 #include "src/engines/aurora/widget.h"
+
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/checkbox.h"
+
 #include "src/engines/kotor/gui/options/gameplay.h"
 #include "src/engines/kotor/gui/options/mousesettings.h"
 #include "src/engines/kotor/gui/options/keyboardconfig.h"
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/checkbox.h"
 
 namespace Engines {
 
@@ -171,9 +173,9 @@ void OptionsGameplayMenu::displayConfig() {
 }
 
 void OptionsGameplayMenu::updateDifficulty(int difficulty) {
-	WidgetButton &diffButton = *getButton("BTN_DIFFICULTY", true);
-	WidgetButton &leftButton = *getButton("BTN_DIFFLEFT", true);
-	WidgetButton &rightButton = *getButton("BTN_DIFFRIGHT", true);
+	Odyssey::WidgetButton &diffButton = *getButton("BTN_DIFFICULTY", true);
+	Odyssey::WidgetButton &leftButton = *getButton("BTN_DIFFLEFT", true);
+	Odyssey::WidgetButton &rightButton = *getButton("BTN_DIFFRIGHT", true);
 
 	diffButton.setText(TalkMan.getString(42335 + difficulty));
 

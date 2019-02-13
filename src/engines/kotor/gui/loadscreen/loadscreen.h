@@ -46,7 +46,7 @@ public:
 	LoadingProgressFunc getLoadingProgressFunc();
 
 private:
-	WidgetProgressbar *_progressBar;
+	Odyssey::WidgetProgressbar *_progressBar;
 };
 
 } // End of namespace KotOR

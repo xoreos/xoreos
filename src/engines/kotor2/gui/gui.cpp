@@ -24,7 +24,8 @@
 
 #include "src/graphics/windowman.h"
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/odyssey/widget.h"
+
 #include "src/engines/kotor2/gui/gui.h"
 
 namespace Engines {
@@ -35,7 +36,7 @@ GUI::GUI(::Engines::Console *console) : Engines::KotOR::GUI(console) {
 }
 
 void GUI::initWidget(Widget &widget) {
-	KotORJadeWidget &kotorWidget = static_cast<KotORJadeWidget &>(widget);
+	Odyssey::Widget &kotorWidget = static_cast<Odyssey::Widget &>(widget);
 
 	float wWidth = WindowMan.getWindowWidth();
 	float wHeight = WindowMan.getWindowHeight();

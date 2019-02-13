@@ -19,43 +19,34 @@
  */
 
 /** @file
- *  A label widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Panel widget for the Odyssey engine.
  */
 
-#include "src/common/system.h"
+#ifndef ENGINES_ODYSSEY_PANEL_H
+#define ENGINES_ODYSSEY_PANEL_H
 
-#include "src/aurora/gff3file.h"
+#include "src/common/ustring.h"
 
-#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/aurora/gui.h"
+
+#include "src/engines/odyssey/widget.h"
 
 namespace Engines {
 
-WidgetLabel::WidgetLabel(GUI &gui, const Common::UString &tag)
-		: KotORJadeWidget(gui, tag),
-		  _hovered(false) {
-}
+namespace Odyssey {
 
-WidgetLabel::~WidgetLabel() {
-}
+class WidgetPanel : public Widget {
+public:
+	WidgetPanel(GUI &gui, const Common::UString &tag);
 
-void WidgetLabel::load(const Aurora::GFF3Struct &gff) {
-	KotORJadeWidget::load(gff);
-}
+	WidgetPanel(GUI &gui,
+	            const Common::UString &tag,
+	            const Common::UString &texture,
+	            float x, float y, float w, float h);
+};
 
-bool WidgetLabel::isHovered() const {
-	return _hovered;
-}
-
-void WidgetLabel::enter() {
-	_hovered = true;
-}
-
-void WidgetLabel::leave() {
-	_hovered = false;
-}
-
-void WidgetLabel::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
-	setActive(true);
-}
+} // End of namespace Odyssey
 
 } // End of namespace Engines
+
+#endif // ENGINES_ODYSSEY_PANEL_H

@@ -19,38 +19,29 @@
  */
 
 /** @file
- *  A button widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Button widget for the Odyssey engine.
  */
-
-#include "src/common/system.h"
-
-#include "src/aurora/gff3file.h"
 
 #include "src/sound/sound.h"
 
-#include "src/graphics/aurora/guiquad.h"
-#include "src/graphics/aurora/text.h"
-#include "src/graphics/aurora/highlightabletext.h"
-
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/odyssey/button.h"
 
 namespace Engines {
 
-WidgetButton::WidgetButton(GUI &gui, const Common::UString &tag)
-		: KotORJadeWidget(gui, tag),
-		  _permanentHighlight(false),
-		  _disableHighlight(false),
-		  _disableHoverSound(false),
-		  _hovered(false) {
-}
+namespace Odyssey {
 
-WidgetButton::~WidgetButton() {
+WidgetButton::WidgetButton(GUI &gui, const Common::UString &tag) :
+		Widget(gui, tag),
+		_permanentHighlight(false),
+		_disableHighlight(false),
+		_disableHoverSound(false),
+		_hovered(false) {
 }
 
 void WidgetButton::load(const Aurora::GFF3Struct &gff) {
-	KotORJadeWidget::load(gff);
+	Widget::load(gff);
 
 	Graphics::Aurora::Highlightable *highlightable = getTextHighlightableComponent();
 	if (highlightable)
@@ -77,9 +68,8 @@ void WidgetButton::setDisableHighlight(bool disableHighlight) {
 
 	if (_disableHighlight) {
 		setHighlight(false);
-	} else {
-		if (_hovered)
-			setHighlight(true);
+	} else if (_hovered) {
+		setHighlight(true);
 	}
 }
 
@@ -98,7 +88,7 @@ void WidgetButton::enter() {
 	if (!_permanentHighlight && !_disableHighlight)
 		setHighlight(true);
 
-	// The button is hovered at the moment
+	// The button is being hovered over
 	_hovered = true;
 }
 
@@ -109,7 +99,7 @@ void WidgetButton::leave() {
 	if (!_permanentHighlight && !_disableHighlight)
 		setHighlight(false);
 
-	// The button is not hovered anymore
+	// The button is not being hovered over anymore
 	_hovered = false;
 }
 
@@ -127,5 +117,7 @@ void WidgetButton::setDefaultHighlighting(Graphics::Aurora::Highlightable *highl
 	highlightable->setHighlightLowerBound(1.0f, 1.0f, 0.0f, 0.2f);
 	highlightable->setHighlightUpperBound(1.0f, 1.0f, 0.0f, 1.0f);
 }
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines

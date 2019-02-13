@@ -29,7 +29,8 @@
 #include "src/events/events.h"
 
 #include "src/engines/aurora/util.h"
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+
+#include "src/engines/odyssey/widget.h"
 
 #include "src/engines/kotor2/module.h"
 
@@ -54,7 +55,7 @@ void MainMenu::initWidget(Widget &widget) {
 
 	// ...BioWare...
 	if (widget.getTag() == "LBL_GAMELOGO") {
-		dynamic_cast< KotORJadeWidget & >(widget).setFill("kotor2logo");
+		dynamic_cast< Odyssey::Widget & >(widget).setFill("kotor2logo");
 		return;
 	}
 

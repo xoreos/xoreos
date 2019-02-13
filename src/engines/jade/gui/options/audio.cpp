@@ -22,7 +22,7 @@
  *  The Jade Empire audio options menu.
  */
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/odyssey/widget.h"
 
 #include "src/engines/jade/gui/options/audio.h"
 

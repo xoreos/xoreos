@@ -27,9 +27,10 @@
 
 #include "src/engines/aurora/console.h"
 
+#include "src/engines/odyssey/protoitem.h"
+
 #include "src/engines/kotor/gui/gui.h"
 #include "src/engines/kotor/gui/saveload.h"
-#include "src/engines/aurora/kotorjadegui/protoitem.h"
 
 #include "src/engines/kotor/gui/ingame/menu_equ.h"
 #include "src/engines/kotor/gui/ingame/menu_inv.h"
@@ -72,8 +73,8 @@ private:
 	};
 
 	struct SubMenu {
-		WidgetProtoItem *protoItem;
-		WidgetButton *button;
+		Odyssey::WidgetProtoItem *protoItem;
+		Odyssey::WidgetButton *button;
 
 		Common::ScopedPtr<GUI> menu;
 

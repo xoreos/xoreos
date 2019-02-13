@@ -19,38 +19,18 @@
  */
 
 /** @file
- *  An inventory item widget for Star Wars: Knights of the Old Republic.
+ *  Slider widget for the Odyssey engine.
  */
 
-#ifndef ENGINES_AURORA_KOTORJADEGUI_KOTORINVENTORYITEM_H
-#define ENGINES_AURORA_KOTORJADEGUI_KOTORINVENTORYITEM_H
-
-#include "src/engines/aurora/gui.h"
-
-#include "src/engines/aurora/kotorjadegui/protoitem.h"
+#include "src/engines/odyssey/slider.h"
 
 namespace Engines {
 
-class KotORInventoryItem : public WidgetProtoItem {
-public:
-	KotORInventoryItem(GUI &gui, const Common::UString &tag);
+namespace Odyssey {
 
-	void setContents(const Common::UString &contents);
+WidgetSlider::WidgetSlider(GUI &gui, const Common::UString &tag) : Widget(gui, tag) {
+}
 
-	void load(const Aurora::GFF3Struct &gff);
-
-	void show();
-	void hide();
-
-	void setPosition(float x, float y, float z);
-	void setWidth(float width);
-
-private:
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _icon;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _iconFrame;
-	Common::ScopedPtr<Graphics::Aurora::Text>    _countText;
-};
+} // End of namespace Odyssey
 
 } // End of namespace Engines
-
-#endif // ENGINES_AURORA_KOTORJADEGUI_KOTORINVENTORYITEM_H

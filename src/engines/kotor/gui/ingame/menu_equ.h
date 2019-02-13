@@ -29,8 +29,10 @@
 
 namespace Engines {
 
-class WidgetButton;
-class WidgetLabel;
+namespace Odyssey {
+	class WidgetButton;
+	class WidgetLabel;
+}
 
 namespace KotOR {
 
@@ -60,7 +62,7 @@ private:
 	Common::UString getEquipedItemIcon(EquipmentSlot slot) const;
 	void fillEquipableItemsList();
 	EquipmentSlot getSlotByWidgetTag(const Common::UString &tag) const;
-	WidgetButton *getSlotButton(EquipmentSlot slot);
+	Odyssey::WidgetButton *getSlotButton(EquipmentSlot slot);
 	Common::UString getSlotName(EquipmentSlot slot) const;
 	void fixateOnSlot(bool fixate);
 };

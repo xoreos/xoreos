@@ -22,9 +22,9 @@
  *  The Jade Empire game info options menu.
  */
 
-#include "src/engines/jade/gui/options/feed.h"
+#include "src/engines/odyssey/widget.h"
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/jade/gui/options/feed.h"
 
 namespace Engines {
 

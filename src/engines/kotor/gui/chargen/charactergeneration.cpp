@@ -30,7 +30,9 @@
 
 #include "src/aurora/talkman.h"
 
-#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/graphics/aurora/subscenequad.h"
+
+#include "src/engines/odyssey/label.h"
 
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
 #include "src/engines/kotor/gui/chargen/quickorcustom.h"
@@ -57,7 +59,7 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 	};
 
 	for (size_t i = 0; i < ARRAYSIZE(kEmptyLabels); i++) {
-		WidgetLabel *label = getLabel(kEmptyLabels[i]);
+		Odyssey::WidgetLabel *label = getLabel(kEmptyLabels[i]);
 		if (label)
 			label->setText("");
 	}
@@ -72,7 +74,7 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 			widget->setInvisible(true);
 	}
 
-	WidgetLabel *lblClass = getLabel("LBL_CLASS");
+	Odyssey::WidgetLabel *lblClass = getLabel("LBL_CLASS");
 	if (lblClass) {
 		// Set the class title according to the class of the character
 		switch (pc->getClass()) {
@@ -90,11 +92,11 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 		}
 	}
 
-	WidgetLabel *lblPortrait = getLabel("PORTRAIT_LBL");
+	Odyssey::WidgetLabel *lblPortrait = getLabel("PORTRAIT_LBL");
 	if (lblPortrait)
 		lblPortrait->setFill(_pc->getPortrait());
 
-	WidgetLabel *lblModel = getLabel("MODEL_LBL");
+	Odyssey::WidgetLabel *lblModel = getLabel("MODEL_LBL");
 
 	float subSceneWidth  = lblModel ? lblModel->getWidth()  : 1.0f;
 	float subSceneHeight = lblModel ? lblModel->getHeight() : 1.0f;
@@ -178,7 +180,7 @@ void CharacterGenerationMenu::showPortrait() {
 	if (_charGenMenu->isAccepted()) {
 		*_pc = info;
 
-		WidgetLabel *lblPortrait = getLabel("PORTRAIT_LBL");
+		Odyssey::WidgetLabel *lblPortrait = getLabel("PORTRAIT_LBL");
 		if (lblPortrait)
 			lblPortrait->setFill(_pc->getPortrait());
 
@@ -198,7 +200,7 @@ void CharacterGenerationMenu::showName() {
 	if (_charGenMenu->isAccepted()) {
 		*_pc = info;
 
-		WidgetLabel *lblName = getLabel("LBL_NAME");
+		Odyssey::WidgetLabel *lblName = getLabel("LBL_NAME");
 		if (lblName)
 			lblName->setText(info.getName());
 

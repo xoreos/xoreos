@@ -19,26 +19,25 @@
  */
 
 /** @file
- *  A protoitem widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Proto item widget for the Odyssey engine.
  */
 
-#include "src/common/system.h"
+#include "src/sound/types.h"
 
-#include "src/engines/aurora/gui.h"
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/aurora/kotorjadegui/protoitem.h"
+#include "src/engines/odyssey/listbox.h"
+#include "src/engines/odyssey/protoitem.h"
 
 namespace Engines {
 
-WidgetProtoItem::WidgetProtoItem(GUI &gui, const Common::UString &tag, WidgetListBox *parentList)
-		: KotORJadeWidget(gui, tag),
-		  _disableHighlight(false),
-		  _hovered(false),
-		  _parentList(parentList) {
-}
+namespace Odyssey {
 
-WidgetProtoItem::~WidgetProtoItem() {
+WidgetProtoItem::WidgetProtoItem(GUI &gui, const Common::UString &tag, WidgetListBox *parentList) :
+		Widget(gui, tag),
+		_disableHighlight(false),
+		_hovered(false),
+		_parentList(parentList) {
 }
 
 void WidgetProtoItem::setContents(const Common::UString &contents) {
@@ -51,7 +50,7 @@ bool WidgetProtoItem::isHovered() const {
 }
 
 void WidgetProtoItem::load(const Aurora::GFF3Struct &gff) {
-	KotORJadeWidget::load(gff);
+	Widget::load(gff);
 
 	Graphics::Aurora::Highlightable *highlightable = getTextHighlightableComponent();
 	if (highlightable)
@@ -109,5 +108,7 @@ void WidgetProtoItem::mouseWheel(uint8 state, int x, int y) {
 	if (_parentList)
 		_parentList->mouseWheel(state, x, y);
 }
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines

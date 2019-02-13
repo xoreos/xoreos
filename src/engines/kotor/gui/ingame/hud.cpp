@@ -31,9 +31,10 @@
 #include "src/graphics/windowman.h"
 #include "src/graphics/graphics.h"
 
+#include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/progressbar.h"
+
 #include "src/engines/kotor/gui/ingame/hud.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/progressbar.h"
 
 namespace Engines {
 
@@ -221,7 +222,7 @@ void HUD::setMinimap(const Common::UString &map, int northAxis,
                      float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
                      float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y) {
 
-	WidgetLabel *mapView = getLabel("LBL_MAPVIEW");
+	Odyssey::WidgetLabel *mapView = getLabel("LBL_MAPVIEW");
 	if (!mapView) {
 		warning("No such GUI element \"LBL_MAPVIEW\"");
 		return;
@@ -271,17 +272,17 @@ void HUD::showContainer(Inventory &inv) {
 }
 
 void HUD::setPortrait(uint8 n, bool visible, const Common::UString &portrait) {
-	WidgetLabel *labelBack = getLabel(Common::UString("LBL_BACK") + Common::composeString(n));
+	Odyssey::WidgetLabel *labelBack = getLabel(Common::UString("LBL_BACK") + Common::composeString(n));
 	if (labelBack)
 		labelBack->setInvisible(!visible);
 
-	WidgetLabel *labelChar = getLabel(Common::UString("LBL_CHAR") + Common::composeString(n));
+	Odyssey::WidgetLabel *labelChar = getLabel(Common::UString("LBL_CHAR") + Common::composeString(n));
 	if (labelChar) {
 		labelChar->setInvisible(!visible);
 		labelChar->setFill(portrait);
 	}
 
-	WidgetProgressbar *vitals = getProgressbar(Common::UString("PB_VIT") + Common::composeString(n));
+	Odyssey::WidgetProgressbar *vitals = getProgressbar(Common::UString("PB_VIT") + Common::composeString(n));
 	if (vitals)
 		vitals->setInvisible(!visible);
 

@@ -34,15 +34,15 @@
 
 #include "src/engines/aurora/util.h"
 
+#include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/listbox.h"
+#include "src/engines/odyssey/button.h"
+
 #include "src/engines/jade/arealayout.h"
 #include "src/engines/jade/module.h"
 
 #include "src/engines/jade/gui/main/main.h"
 #include "src/engines/jade/gui/main/options.h"
-
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
-#include "src/engines/aurora/kotorjadegui/button.h"
 
 namespace Engines {
 
@@ -57,7 +57,7 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : ::Engines::Jad
 	 * The list box is initially empty, so we need to create the buttons
 	 * for the main menu
 	 */
-	WidgetListBox *listBoxButtons = getListBox("ListBoxButtons");
+	Odyssey::WidgetListBox *listBoxButtons = getListBox("ListBoxButtons");
 	listBoxButtons->setFill("");
 	listBoxButtons->createItemWidgets(6);
 

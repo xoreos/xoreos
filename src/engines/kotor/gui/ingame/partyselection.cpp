@@ -30,9 +30,9 @@
 #include "src/engines/aurora/widget.h"
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/checkbox.h"
-#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/checkbox.h"
+#include "src/engines/odyssey/button.h"
 
 #include "src/engines/kotor/gui/ingame/partyselection.h"
 
@@ -77,7 +77,7 @@ void PartySelectionGUI::loadConfiguration(const PartyConfiguration &config) {
 			toggleSlot(i, true);
 		}
 
-		WidgetCheckBox *checkBox = getCheckBox("BTN_NPC" + Common::composeString(i));
+		Odyssey::WidgetCheckBox *checkBox = getCheckBox("BTN_NPC" + Common::composeString(i));
 		const bool selected = _config.slotSelected[i];
 		checkBox->setState(selected);
 		checkBox->setHighlight(selected);
@@ -141,7 +141,7 @@ const Common::UString PartySelectionGUI::getPortrait(const Common::UString &temp
 }
 
 void PartySelectionGUI::setSlotTexture(int index, const Common::UString &texture) {
-	WidgetCheckBox *checkBox = getCheckBox("BTN_NPC" + Common::composeString(index));
+	Odyssey::WidgetCheckBox *checkBox = getCheckBox("BTN_NPC" + Common::composeString(index));
 	checkBox->setFill(texture);
 	checkBox->setSelected(texture);
 	checkBox->setUnselected(texture);
@@ -160,7 +160,7 @@ void PartySelectionGUI::onSelectionChanged() {
 	const int slotCount = (_kotor2 ? kSlotCountK2 : kSlotCountK1);
 
 	for (int i = 0; i < slotCount; ++i) {
-		WidgetCheckBox *checkBox = getCheckBox("BTN_NPC" + Common::composeString(i));
+		Odyssey::WidgetCheckBox *checkBox = getCheckBox("BTN_NPC" + Common::composeString(i));
 
 		if (_config.slotSelected[i])
 			checkBox->setBorderColor(0.0f, 1.0f, 0.0f, 1.0f);

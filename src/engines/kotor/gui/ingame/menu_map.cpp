@@ -26,7 +26,7 @@
 
 #include "src/engines/aurora/widget.h"
 
-#include "src/engines/aurora/kotorjadegui/button.h"
+#include "src/engines/odyssey/button.h"
 
 #include "src/engines/kotor/gui/ingame/menu_map.h"
 
@@ -41,7 +41,7 @@ MenuMap::MenuMap(Console *console) : GUI(console) {
 }
 
 void MenuMap::setReturnStrref(uint32 id) {
-	WidgetButton *btnReturn = getButton("BTN_RETURN");
+	Odyssey::WidgetButton *btnReturn = getButton("BTN_RETURN");
 	if (btnReturn)
 		btnReturn->setText(TalkMan.getString(id));
 }
@@ -51,7 +51,7 @@ void MenuMap::setReturnQueryStrref(uint32 id) {
 }
 
 void MenuMap::setReturnEnabled(bool enabled) {
-	WidgetButton *btnReturn = getButton("BTN_RETURN");
+	Odyssey::WidgetButton *btnReturn = getButton("BTN_RETURN");
 	if (btnReturn)
 		btnReturn->setDisabled(!enabled);
 }

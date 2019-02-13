@@ -19,50 +19,75 @@
  */
 
 /** @file
- *  A checkbox widget for Star Wars: Knights of the Old Repulic and Jade Empire.
+ *  Checkbox widget for the Odyssey engine.
  */
 
-#ifndef ENGINES_AURORA_KOTORJADEGUI_CHECKBOX_H
-#define ENGINES_AURORA_KOTORJADEGUI_CHECKBOX_H
+#ifndef ENGINES_ODYSSEY_CHECKBOX_H
+#define ENGINES_ODYSSEY_CHECKBOX_H
 
 #include "src/sound/types.h"
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/odyssey/widget.h"
+
+namespace Graphics {
+	namespace Aurora {
+		class Highlightable;
+	}
+}
 
 namespace Engines {
 
-class WidgetCheckBox : public KotORJadeWidget {
+namespace Odyssey {
+
+class WidgetCheckBox : public Widget {
 public:
 	WidgetCheckBox(GUI &gui, const Common::UString &tag);
-	~WidgetCheckBox();
 
 	void load(const Aurora::GFF3Struct &gff);
 
-	void setState(bool state);
+	// State
+
+	/** Is the check box checked? */
 	bool getState() const;
+
+	/** Set if the check box is checked. */
+	void setState(bool state);
+
+	// Textures
+
+	/** Set the check box texture for selected state. */
+	void setSelected(const Common::UString &texture);
+	/** Set the check box texture for unselected state. */
+	void setUnselected(const Common::UString &texture);
+	/** Set the check box texture for selected and highlighted state. */
+	void setSelectedHighlighted(const Common::UString &texture);
+	/** Set the check box texture for unselected and highlighted state. */
+	void setUnselectedHighlighted(const Common::UString &texture);
+
+	// Widget/cursor interaction
 
 	void enter();
 	void leave();
-
 	void mouseUp(uint8 state, float x, float y);
 
-	void setSelected(const Common::UString &selected);
-	void setUnselected(const Common::UString &unselected);
-	void setSelectedHighlighted(const Common::UString &selectedHighlighted);
-	void setUnselectedHighlighted(const Common::UString &unselectedHighlighted);
-
 private:
-	Common::UString _selected, _unselected;
-	Common::UString _selectedHighlighted, _unselectedHighlighted;
+	Common::UString _selected;
+	Common::UString _unselected;
+	Common::UString _selectedHighlighted;
+	Common::UString _unselectedHighlighted;
+
 	bool _state;
 
 	Sound::ChannelHandle _sound;
+
 	float _unselectedR, _unselectedG, _unselectedB, _unselectedA;
 
 	void setTextHighlighting(Graphics::Aurora::Highlightable *highlightable);
 	void setQuadHighlighting(Graphics::Aurora::Highlightable *highlightable);
 };
 
+} // End of namespace Odyssey
+
 } // End of namespace Engines
 
-#endif // ENGINES_AURORA_KOTORJADEGUI_CHECKBOX_H
+#endif // ENGINES_ODYSSEY_CHECKBOX_H

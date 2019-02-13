@@ -29,10 +29,10 @@
 #include "src/graphics/windowman.h"
 #include "src/graphics/resolution.h"
 
-#include "src/engines/kotor/gui/options/resolution.h"
+#include "src/engines/odyssey/panel.h"
+#include "src/engines/odyssey/listbox.h"
 
-#include "src/engines/aurora/kotorjadegui/panel.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/kotor/gui/options/resolution.h"
 
 static bool operator<(const Graphics::DisplayMode &d1, const Graphics::DisplayMode &d2) {
 	if (d1.w == d2.w)
@@ -48,7 +48,7 @@ namespace KotOR {
 OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : GUI(console), _newWidth(0), _newHeight(0) {
 	load("optresolution");
 
-	WidgetPanel *guiPanel = getPanel("TGuiPanel");
+	Odyssey::WidgetPanel *guiPanel = getPanel("TGuiPanel");
 	guiPanel->setPosition(-guiPanel->getWidth()/2, -guiPanel->getHeight()/2, 0);
 
 	int currentIndex = -1;
@@ -87,7 +87,7 @@ OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : GUI(console), _
 		}
 	}
 
-	WidgetListBox *listBox = getListBox("LB_RESOLUTIONS");
+	Odyssey::WidgetListBox *listBox = getListBox("LB_RESOLUTIONS");
 	listBox->createItemWidgets(_modes.size());
 	for (size_t i = 0; i < _modes.size(); ++i) {
 		Graphics::DisplayMode mode = _modes[i];

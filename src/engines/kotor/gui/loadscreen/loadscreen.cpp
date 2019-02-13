@@ -27,11 +27,11 @@
 #include "src/aurora/2dareg.h"
 #include "src/aurora/talkman.h"
 
-#include "src/engines/kotor/gui/loadscreen/loadscreen.h"
+#include "src/engines/odyssey/panel.h"
+#include "src/engines/odyssey/progressbar.h"
+#include "src/engines/odyssey/label.h"
 
-#include "src/engines/aurora/kotorjadegui/panel.h"
-#include "src/engines/aurora/kotorjadegui/progressbar.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
 namespace Engines {
 

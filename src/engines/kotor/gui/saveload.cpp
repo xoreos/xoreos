@@ -33,11 +33,12 @@
 
 #include "src/engines/aurora/widget.h"
 
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/listbox.h"
+#include "src/engines/odyssey/scrollbar.h"
+
 #include "src/engines/kotor/gui/saveload.h"
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
-#include "src/engines/aurora/kotorjadegui/scrollbar.h"
 
 namespace Engines {
 
@@ -53,7 +54,7 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 	load("saveload");
 	addBackground(kBackgroundTypeMenu, frontBackground);
 
-	WidgetListBox *lbGames = getListBox("LB_GAMES");
+	Odyssey::WidgetListBox *lbGames = getListBox("LB_GAMES");
 	if (!lbGames)
 		throw Common::Exception("SaveLoadMenu: No games listbox");
 
@@ -65,19 +66,19 @@ SaveLoadMenu::SaveLoadMenu(Module &module,
 	lbGames->createItemWidgets(6);
 
 	if (_type == kSaveLoadMenuTypeLoad) {
-		WidgetLabel *panelName = getLabel("LBL_PANELNAME");
+		Odyssey::WidgetLabel *panelName = getLabel("LBL_PANELNAME");
 		if (panelName)
 			panelName->setText(TalkMan.getString(1585)); // Load Game
 
-		WidgetLabel *planetName = getLabel("LBL_PLANETNAME");
+		Odyssey::WidgetLabel *planetName = getLabel("LBL_PLANETNAME");
 		if (planetName)
 			planetName->setText("");
 
-		WidgetLabel *areaName = getLabel("LBL_AREANAME");
+		Odyssey::WidgetLabel *areaName = getLabel("LBL_AREANAME");
 		if (areaName)
 			areaName->setText("");
 
-		WidgetButton *saveLoad = getButton("BTN_SAVELOAD");
+		Odyssey::WidgetButton *saveLoad = getButton("BTN_SAVELOAD");
 		if (saveLoad)
 			saveLoad->setText(TalkMan.getString(1589)); // Load
 
@@ -123,7 +124,7 @@ void SaveLoadMenu::callbackKeyInput(const Events::Key &key, const Events::EventT
 	}
 }
 
-void SaveLoadMenu::addSavedGameItems(WidgetListBox *listBox) {
+void SaveLoadMenu::addSavedGameItems(Odyssey::WidgetListBox *listBox) {
 	Common::FileList dirs;
 	Common::UString savesDir = Common::FilePath::normalize(ConfigMan.getString("path") + "/saves");
 	dirs.addSubDirectories(savesDir);

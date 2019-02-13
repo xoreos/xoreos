@@ -19,26 +19,25 @@
  */
 
 /** @file
- *  An inventory item widget for Star Wars: Knights of the Old Republic.
+ *  Inventory item widget for KotOR games.
  */
 
-#include "src/common/system.h"
 #include "src/common/strutil.h"
 
-#include "src/graphics/aurora/guiquad.h"
-#include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/fontman.h"
+#include "src/graphics/aurora/textureman.h"
 
-#include "src/engines/aurora/kotorjadegui/kotorinventoryitem.h"
+#include "src/engines/kotorbase/gui/inventoryitem.h"
 
 namespace Engines {
 
-KotORInventoryItem::KotORInventoryItem(GUI &gui, const Common::UString &tag)
-		: WidgetProtoItem(gui, tag) {
+namespace KotOR {
+
+WidgetInventoryItem::WidgetInventoryItem(GUI &gui, const Common::UString &tag) : WidgetProtoItem(gui, tag) {
 	setDisableHighlight(true);
 }
 
-void KotORInventoryItem::setContents(const Common::UString &contents) {
+void WidgetInventoryItem::setContents(const Common::UString &contents) {
 	std::vector<Common::UString> tokens;
 	Common::UString::split(contents, '|', tokens);
 	if (tokens.size() < 3)
@@ -61,8 +60,8 @@ void KotORInventoryItem::setContents(const Common::UString &contents) {
 	}
 }
 
-void KotORInventoryItem::load(const Aurora::GFF3Struct &gff) {
-	WidgetProtoItem::load(gff);
+void WidgetInventoryItem::load(const Aurora::GFF3Struct &gff) {
+	Odyssey::WidgetProtoItem::load(gff);
 
 	float x, y, z;
 	getPosition(x, y, z);
@@ -109,11 +108,11 @@ void KotORInventoryItem::load(const Aurora::GFF3Struct &gff) {
 	}
 }
 
-void KotORInventoryItem::show() {
+void WidgetInventoryItem::show() {
 	if (isVisible() || isInvisible())
 		return;
 
-	KotORJadeWidget::show();
+	Odyssey::Widget::show();
 
 	if (_iconFrame)
 		_iconFrame->show();
@@ -123,7 +122,7 @@ void KotORInventoryItem::show() {
 		_countText->show();
 }
 
-void KotORInventoryItem::hide() {
+void WidgetInventoryItem::hide() {
 	if (!isVisible())
 		return;
 
@@ -134,10 +133,10 @@ void KotORInventoryItem::hide() {
 	if (_iconFrame)
 		_iconFrame->hide();
 
-	KotORJadeWidget::hide();
+	Odyssey::Widget::hide();
 }
 
-void KotORInventoryItem::setPosition(float x, float y, float z) {
+void WidgetInventoryItem::setPosition(float x, float y, float z) {
 	float oX, oY, oZ;
 	getPosition(oX, oY, oZ);
 
@@ -145,7 +144,7 @@ void KotORInventoryItem::setPosition(float x, float y, float z) {
 	float dy = y - oY;
 	float dz = z - oZ;
 
-	KotORJadeWidget::setPosition(x, y, z);
+	Odyssey::Widget::setPosition(x, y, z);
 
 	if (_iconFrame) {
 		_iconFrame->getPosition(x, y, z);
@@ -163,15 +162,17 @@ void KotORInventoryItem::setPosition(float x, float y, float z) {
 	}
 }
 
-void KotORInventoryItem::setWidth(float width) {
+void WidgetInventoryItem::setWidth(float width) {
 	float deltaWidth = _width - width;
 
-	KotORJadeWidget::setWidth(width);
+	Odyssey::Widget::setWidth(width);
 
 	if (_countText) {
 		width = _countText->getWidth();
 		_countText->setSize(width + deltaWidth, _countText->getHeight());
 	}
 }
+
+} // End of namespace KotOR
 
 } // End of namespace Engines

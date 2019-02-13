@@ -19,29 +19,26 @@
  */
 
 /** @file
- *  A progressbar widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Progress bar widget for the Odyssey engine.
  */
-
-#include "src/common/system.h"
 
 #include "src/aurora/gff3file.h"
 
-#include "src/engines/aurora/kotorjadegui/progressbar.h"
+#include "src/engines/odyssey/progressbar.h"
 
 namespace Engines {
 
-WidgetProgressbar::WidgetProgressbar(GUI &gui, const Common::UString &tag)
-		: KotORJadeWidget(gui, tag),
-		  _maxValue(0),
-		  _curValue(0),
-		  _horizontal(true) {
-}
+namespace Odyssey {
 
-WidgetProgressbar::~WidgetProgressbar() {
+WidgetProgressbar::WidgetProgressbar(GUI &gui, const Common::UString &tag) :
+		Widget(gui, tag),
+		_maxValue(0),
+		_curValue(0),
+		_horizontal(true) {
 }
 
 void WidgetProgressbar::load(const Aurora::GFF3Struct &gff) {
-	KotORJadeWidget::load(gff);
+	Widget::load(gff);
 
 	_maxValue = gff.getSint("MAXVALUE");
 	_curValue = gff.getSint("CURVALUE");
@@ -65,7 +62,7 @@ void WidgetProgressbar::setPosition(float x, float y, float z) {
 	float oX, oY, oZ;
 	getPosition(oX, oY, oZ);
 
-	KotORJadeWidget::setPosition(x, y, z);
+	Widget::setPosition(x, y, z);
 
 	float dx = x - oX;
 	float dy = y - oY;
@@ -81,7 +78,7 @@ void WidgetProgressbar::show() {
 	if (isVisible() || isInvisible())
 		return;
 
-	KotORJadeWidget::show();
+	Widget::show();
 
 	if (_progress)
 		_progress->show();
@@ -91,7 +88,7 @@ void WidgetProgressbar::hide() {
 	if (!isVisible())
 		return;
 
-	KotORJadeWidget::hide();
+	Widget::hide();
 
 	if (_progress)
 		_progress->hide();
@@ -107,11 +104,11 @@ void WidgetProgressbar::setMaxValue(int maxValue) {
 	update();
 }
 
-int WidgetProgressbar::getCurrentValue() {
+int WidgetProgressbar::getCurrentValue() const {
 	return _curValue;
 }
 
-int WidgetProgressbar::getMaxValue() {
+int WidgetProgressbar::getMaxValue() const {
 	return _maxValue;
 }
 
@@ -132,5 +129,7 @@ void WidgetProgressbar::update() {
 			_progress->setHeight(_height * (static_cast<float>(_curValue) / static_cast<float>(_maxValue)));
 	}
 }
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines

@@ -19,41 +19,56 @@
  */
 
 /** @file
- *  A protoitem widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Proto item widget for the Odyssey engine.
  */
 
-#ifndef ENGINES_AURORA_KOTORJADEGUI_PROTOITEM_H
-#define ENGINES_AURORA_KOTORJADEGUI_PROTOITEM_H
+#ifndef ENGINES_ODYSSEY_PROTOITEM_H
+#define ENGINES_ODYSSEY_PROTOITEM_H
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/odyssey/widget.h"
+
+namespace Graphics {
+	namespace Aurora {
+		class Highlightable;
+	}
+}
 
 namespace Engines {
 
-class WidgetProtoItem : public KotORJadeWidget {
+namespace Odyssey {
+
+class WidgetListBox;
+
+class WidgetProtoItem : public Widget {
 public:
 	WidgetProtoItem(GUI &gui, const Common::UString &tag, WidgetListBox *parentList = 0);
-	~WidgetProtoItem();
-
-	/** Set item contents. If not overriden this method will only
-	 *  change text.
-	 */
-	virtual void setContents(const Common::UString &contents);
-
-	bool isHovered() const;
 
 	virtual void load(const Aurora::GFF3Struct &gff);
 
-	void enter();
-	void leave();
+	// Contents
 
-	void mouseUp(uint8 state, float x, float y);
+	/** Set the proto item contents. Will only change text by default. */
+	virtual void setContents(const Common::UString &contents);
 
-	virtual void mouseWheel(uint8 state, int x, int y);
+	// Highlighting
 
+	/** Set if the proto item should not be pulsing on hover. */
 	void setDisableHighlight(bool disableHighlight);
 
+	// Widget/cursor interactions
+
+	bool isHovered() const;
+
+	void enter();
+	void leave();
+	void mouseUp(uint8 state, float x, float y);
+	virtual void mouseWheel(uint8 state, int x, int y);
+
+	// Sound
+
+	/** Set the sound to play when the proto item is hovered over. */
 	void setSoundHover(const Common::UString &resRef);
+	/** Set the sound to play when the proto item is clicked. */
 	void setSoundClick(const Common::UString &resRef);
 
 private:
@@ -68,6 +83,8 @@ private:
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 };
 
+} // End of namespace Odyssey
+
 } // End of namespace Engines
 
-#endif // ENGINES_AURORA_KOTORJADEGUI_PROTOITEM_H
+#endif // ENGINES_ODYSSEY_PROTOITEM_H

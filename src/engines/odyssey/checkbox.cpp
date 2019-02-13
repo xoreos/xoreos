@@ -19,43 +19,34 @@
  */
 
 /** @file
- *  A checkbox widget for Star Wars: Knights of the Old Repulic and Jade Empire.
+ *  Checkbox widget for the Odyssey engine.
  */
-
-#include "src/common/system.h"
 
 #include "src/aurora/gff3file.h"
 
-#include "src/sound/sound.h"
-
-#include "src/graphics/aurora/fontman.h"
-#include "src/graphics/aurora/guiquad.h"
-#include "src/graphics/aurora/text.h"
-#include "src/graphics/aurora/highlightabletext.h"
-#include "src/graphics/aurora/highlightableguiquad.h"
 #include "src/graphics/aurora/textureman.h"
-#include "src/graphics/aurora/texture.h"
+
+#include "src/sound/sound.h"
 
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/aurora/kotorjadegui/checkbox.h"
+#include "src/engines/odyssey/checkbox.h"
 
 namespace Engines {
 
-WidgetCheckBox::WidgetCheckBox(GUI &gui, const Common::UString &tag)
-		: KotORJadeWidget(gui, tag),
-		  _state(false),
-		  _unselectedR(1.0f),
-		  _unselectedG(1.0f),
-		  _unselectedB(1.0f),
-		  _unselectedA(1.0f) {
-}
+namespace Odyssey {
 
-WidgetCheckBox::~WidgetCheckBox() {
+WidgetCheckBox::WidgetCheckBox(GUI &gui, const Common::UString &tag) :
+		Widget(gui, tag),
+		_state(false),
+		_unselectedR(1.0f),
+		_unselectedG(1.0f),
+		_unselectedB(1.0f),
+		_unselectedA(1.0f) {
 }
 
 void WidgetCheckBox::load(const Aurora::GFF3Struct &gff) {
-	KotORJadeWidget::load(gff);
+	Widget::load(gff);
 
 	Border border = createBorder(gff);
 	Graphics::Aurora::TextureHandle texture;
@@ -108,7 +99,6 @@ void WidgetCheckBox::setState(bool state) {
 	if (_quad)
 		_quad->getColor(quadR, quadG, quadB, quadA);
 
-	//-
 
 	setFill(_state ? _selected : _unselected);
 	setHighlight(_state ? _selectedHighlighted : _unselectedHighlighted);
@@ -199,5 +189,7 @@ void WidgetCheckBox::setQuadHighlighting(Graphics::Aurora::Highlightable *highli
 	highlightable->setHighlightable(true);
 	highlightable->setHighlightLowerBound(1.0f, 1.0f, 0.0f, 1.0f);
 }
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines

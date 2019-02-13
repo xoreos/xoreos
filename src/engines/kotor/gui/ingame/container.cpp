@@ -26,10 +26,12 @@
 
 #include "src/engines/kotor/item.h"
 
-#include "src/engines/aurora/kotorjadegui/panel.h"
-#include "src/engines/aurora/kotorjadegui/scrollbar.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/odyssey/panel.h"
+#include "src/engines/odyssey/scrollbar.h"
+#include "src/engines/odyssey/listbox.h"
+#include "src/engines/odyssey/label.h"
+
+#include "src/engines/kotorbase/gui/inventoryitem.h"
 
 #include "src/engines/kotor/gui/ingame/container.h"
 
@@ -40,11 +42,11 @@ namespace KotOR {
 ContainerMenu::ContainerMenu(Console *console) : GUI(console) {
 	load("container");
 
-	WidgetPanel *guiPanel = getPanel("TGuiPanel");
+	Odyssey::WidgetPanel *guiPanel = getPanel("TGuiPanel");
 	guiPanel->setPosition(-guiPanel->getWidth()/2, -guiPanel->getHeight()/2, 0);
 
-	WidgetListBox *lbItems = getListBox("LB_ITEMS");
-	lbItems->setItemType(kLBItemTypeKotORInventory);
+	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
+	lbItems->setItemWidgetFactoryFunction([](Engines::GUI &gui, const Common::UString &tag) { return new WidgetInventoryItem(gui, tag); });
 	lbItems->setPadding(18);
 	lbItems->createItemWidgets(3);
 }
@@ -53,7 +55,7 @@ void ContainerMenu::fillFromInventory(const Inventory &inv) {
 	if (inv.getItems().empty())
 		getLabel("LBL_MESSAGE")->setText(TalkMan.getString(394));
 
-	WidgetListBox *lbItems = getListBox("LB_ITEMS");
+	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
 	lbItems->removeAllItems();
 
 	const std::map<Common::UString, InventoryItem> &invItems = inv.getItems();

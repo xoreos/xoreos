@@ -44,8 +44,9 @@
 #include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
 #include "src/engines/aurora/model.h"
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
+
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/listbox.h"
 
 #include "src/engines/kotor/gui/main/main.h"
 #include "src/engines/kotor/gui/main/movies.h"

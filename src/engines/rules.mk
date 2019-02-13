@@ -37,12 +37,14 @@ src_engines_libengines_la_SOURCES += \
 
 src_engines_libengines_la_LIBADD = \
     src/engines/aurora/libaurora.la \
+    src/engines/odyssey/libodyssey.la \
     src/engines/kotorbase/libkotorbase.la \
     $(EMPTY)
 
 # Subdirectories
 
 include src/engines/aurora/rules.mk
+include src/engines/odyssey/rules.mk
 include src/engines/kotorbase/rules.mk
 if ENABLE_NWN
 include src/engines/nwn/rules.mk

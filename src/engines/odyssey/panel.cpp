@@ -19,42 +19,31 @@
  */
 
 /** @file
- *  A panel widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Panel widget for the Odyssey engine.
  */
 
-#include "src/common/system.h"
-
-#include "src/aurora/gff3file.h"
-
-#include "src/graphics/aurora/guiquad.h"
-
-#include "src/engines/aurora/kotorjadegui/panel.h"
+#include "src/engines/odyssey/panel.h"
 
 namespace Engines {
 
-WidgetPanel::WidgetPanel(GUI &gui, const Common::UString &tag)
-		: KotORJadeWidget(gui, tag) {
+namespace Odyssey {
+
+WidgetPanel::WidgetPanel(GUI &gui, const Common::UString &tag) : Widget(gui, tag) {
 }
 
 WidgetPanel::WidgetPanel(GUI &gui,
                          const Common::UString &tag,
                          const Common::UString &texture,
-                         float x, float y, float w, float h)
-		: KotORJadeWidget(gui, tag) {
+                         float x, float y, float w, float h) : Widget(gui, tag) {
 	_width  = w;
 	_height = h;
 
-	Widget::setPosition(x, y, 0.0f);
+	Engines::Widget::setPosition(x, y, 0.0f);
 
 	_quad.reset(new Graphics::Aurora::GUIQuad(texture, 0.0f, 0.0f, w, h));
 	_quad->setPosition(x, y, 0.0f);
 }
 
-WidgetPanel::~WidgetPanel() {
-}
-
-void WidgetPanel::load(const Aurora::GFF3Struct &gff) {
-	KotORJadeWidget::load(gff);
-}
+} // End of namespace Odyssey
 
 } // End of namespace Engines

@@ -37,15 +37,15 @@
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/satellitecamera.h"
 
+#include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/listbox.h"
+#include "src/engines/odyssey/scrollbar.h"
+
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/creature.h"
 
 #include "src/engines/kotor/gui/dialog.h"
-
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
-#include "src/engines/aurora/kotorjadegui/scrollbar.h"
 
 namespace Engines {
 
@@ -91,7 +91,7 @@ void DialogGUIBase::callbackActive(Widget &widget) {
 	if (!tag.beginsWith("LB_REPLIES_ITEM"))
 		return;
 
-	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
+	Odyssey::WidgetListBox *lbReplies = getListBox("LB_REPLIES");
 	lbReplies->selectItemByWidgetTag(tag);
 
 	int selectedIndex = lbReplies->getSelectedIndex();
@@ -144,14 +144,14 @@ void DialogGUIBase::update(int width, int height) {
 
 	_frame->setRectangleHeight(rh);
 
-	WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
+	Odyssey::WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
 	lblMessage->setHorizontalTextAlign(Graphics::Aurora::kHAlignCenter);
 	lblMessage->setVerticalTextAlign(Graphics::Aurora::kVAlignBottom);
 	lblMessage->setPosition(-w / 2.0f, hh - rh, -1.0f);
 	lblMessage->setWidth(w);
 	lblMessage->setHeight(rh);
 
-	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
+	Odyssey::WidgetListBox *lbReplies = getListBox("LB_REPLIES");
 	lbReplies->setAdjustHeight(true);
 	lbReplies->setPosition(-w / 2.0f, -hh, -1.0f);
 	lbReplies->setWidth(w);
@@ -185,7 +185,7 @@ void DialogGUIBase::refresh() {
 		return;
 
 	Common::UString text;
-	WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
+	Odyssey::WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
 
 	text = curEntry->text.getString();
 	if (_kotor2 && !ConfigMan.getBool("showdevnotes", false))
@@ -203,7 +203,7 @@ void DialogGUIBase::refresh() {
 
 	lblMessage->setText(text);
 	_replyIds.clear();
-	WidgetListBox *lbReplies = getListBox("LB_REPLIES");
+	Odyssey::WidgetListBox *lbReplies = getListBox("LB_REPLIES");
 	lbReplies->removeAllItems();
 
 	int index = 1;

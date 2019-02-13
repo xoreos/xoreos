@@ -26,10 +26,10 @@
 
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
-#include "src/engines/aurora/kotorjadegui/protoitem.h"
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/listbox.h"
+#include "src/engines/odyssey/protoitem.h"
 
 #include "src/engines/jade/gui/main/options.h"
 
@@ -51,7 +51,7 @@ OptionsMenu::OptionsMenu(Console *console) : GUI(console) {
 	getWidget("Lopt")->getPosition(x, y, z);
 	getWidget("Lopt")->setPosition(x, y, z + 10);
 
-	Engines::WidgetListBox *optionsListBox = getListBox("OptionsListBox");
+	Odyssey::WidgetListBox *optionsListBox = getListBox("OptionsListBox");
 	optionsListBox->createItemWidgets(6);
 
 	optionsListBox->addItem(TalkMan.getString(132));   // Audio Settings
