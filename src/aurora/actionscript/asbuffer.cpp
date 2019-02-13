@@ -471,10 +471,8 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 		counter += 1;
 	}
 	if (function->getPreloadThisFlag()) {
-		if (!name.empty()) {
-			prevThis = avm.getRegister(counter);
-			avm.storeRegister(object, counter);
-		}
+		prevThis = avm.getRegister(counter);
+		avm.storeRegister(object, counter);
 		counter += 1;
 	}
 	if (function->getPreloadSuperFlag()) {
