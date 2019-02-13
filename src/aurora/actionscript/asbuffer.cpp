@@ -480,9 +480,15 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 		counter += 1;
 	}
 
-	for (size_t i = 0; i < arguments.size(); ++i) {
-		avm.storeRegister(arguments[i], counter);
-		counter += 1;
+	if (function->hasRegisterIds()) {
+		for (size_t i = 0; i < arguments.size(); ++i) {
+			avm.storeRegister(arguments[i], function->getRegisterId(i));
+		}
+	} else {
+		for (size_t i = 0; i < arguments.size(); ++i) {
+			avm.storeRegister(arguments[i], counter);
+			counter += 1;
+		}
 	}
 
 	avm.setReturnValue(Variable());
@@ -584,8 +590,9 @@ void ASBuffer::actionDefineFunction2() {
 
 	bool preloadGlobalFlag = bitstream.getBit() != 0;
 
+	std::vector<uint8> parameterIds(numParams);
 	for (int i = 0; i < numParams; ++i) {
-		_script->readByte();
+		parameterIds[i] = _script->readByte();
 		readString();
 	}
 
@@ -597,6 +604,8 @@ void ASBuffer::actionDefineFunction2() {
 					new ScriptedFunction(
 							new Common::SeekableSubReadStream(_script, _script->pos(), _script->pos() + codeSize),
 							_constants,
+							parameterIds,
+							registerCount,
 							preloadThisFlag,
 							preloadSuperFlag,
 							preloadRootFlag
@@ -768,7 +777,7 @@ void ASBuffer::actionDefineFunction() {
 	}
 
 	uint16 codeSize = _script->readUint16LE();
-	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize), _constants, false, false, false)));
+	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize), _constants, std::vector<uint8>(), 0, false, false, false)));
 
 	_seeked = codeSize;
 

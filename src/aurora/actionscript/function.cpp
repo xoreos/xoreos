@@ -28,8 +28,20 @@ namespace Aurora {
 
 namespace ActionScript {
 
-Function::Function(bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag) :
-	_preloadThisFlag(preloadThisFlag), _preloadSuperFlag(preloadSuperFlag), _preloadRootFlag(preloadRootFlag) {
+Function::Function(std::vector<uint8> parameterIds, uint8 numRegisters, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag) :
+	_parameterIds(parameterIds), _numRegisters(numRegisters), _preloadThisFlag(preloadThisFlag), _preloadSuperFlag(preloadSuperFlag), _preloadRootFlag(preloadRootFlag) {
+}
+
+bool Function::hasRegisterIds() {
+	return !_parameterIds.empty();
+}
+
+uint8 Function::getRegisterId(size_t n) {
+	return _parameterIds[n];
+}
+
+uint8 Function::getNumRegisters() {
+	return _numRegisters;
 }
 
 bool Function::getPreloadThisFlag() {
@@ -45,8 +57,9 @@ bool Function::getPreloadRootFlag() {
 }
 
 ScriptedFunction::ScriptedFunction(Common::SeekableReadStream *as, std::vector<Common::UString> constants,
+                                   std::vector<uint8> parameterIds, uint8 numRegisters,
                                    bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag) :
-	Function(preloadThisFlag, preloadSuperFlag, preloadRootFlag), _stream(as), _buffer(as) {
+	Function(parameterIds, numRegisters, preloadThisFlag, preloadSuperFlag, preloadRootFlag), _stream(as), _buffer(as) {
 	_buffer.setConstantPool(constants);
 }
 
@@ -60,14 +73,14 @@ Variable ScriptedFunction::operator()(AVM &avm) {
 }
 
 NativeFunction::NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag)
-	: Function(preloadThisFlag, preloadSuperFlag, preloadRootFlag), _function(function) {
+	: Function(std::vector<uint8>(), 0, preloadThisFlag, preloadSuperFlag, preloadRootFlag), _function(function) {
 }
 
 Variable NativeFunction::operator()(AVM &avm) {
 	return _function(avm);
 }
 
-DummyFunction::DummyFunction() : Function(false, false, false) {
+DummyFunction::DummyFunction() : Function(std::vector<uint8>(), 0, false, false, false) {
 
 }
 
