@@ -42,7 +42,12 @@ typedef boost::shared_ptr<Function> FunctionPtr;
 
 class Function : public Object {
 public:
-	Function(bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag);
+	Function(std::vector<uint8> parameterIds, uint8 numRegisters, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag);
+
+	bool hasRegisterIds();
+	uint8 getRegisterId(size_t n);
+
+	uint8 getNumRegisters();
 
 	bool getPreloadThisFlag();
 	bool getPreloadSuperFlag();
@@ -51,6 +56,10 @@ public:
 	virtual Variable operator()(AVM &avm) = 0;
 
 private:
+	std::vector<uint8> _parameterIds;
+
+	uint8 _numRegisters;
+
 	bool _preloadThisFlag;
 	bool _preloadSuperFlag;
 	bool _preloadRootFlag;
@@ -61,6 +70,8 @@ public:
 	ScriptedFunction(
 			Common::SeekableReadStream *as,
 			std::vector<Common::UString> constantPool,
+			std::vector<uint8> parameterIds,
+			uint8 numRegisters,
 			bool preloadThisFlag,
 			bool preloadSuperFlag,
 			bool preloadRootFlag
