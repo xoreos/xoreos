@@ -26,9 +26,9 @@
 
 #include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor/gui/options/autopause.h"
+#include "src/engines/odyssey/checkbox.h"
 
-#include "src/engines/aurora/kotorjadegui/checkbox.h"
+#include "src/engines/kotor/gui/options/autopause.h"
 
 namespace Engines {
 

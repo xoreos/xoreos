@@ -19,51 +19,48 @@
  */
 
 /** @file
- *  A list box widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  List box widget for the Odyssey engine.
  */
 
-#include "src/common/system.h"
 #include "src/common/strutil.h"
 
 #include "src/aurora/gff3file.h"
 
 #include "src/graphics/graphics.h"
 
+#include "src/sound/sound.h"
+
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/aurora/kotorjadegui/listbox.h"
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/scrollbar.h"
-#include "src/engines/aurora/kotorjadegui/protoitem.h"
-#include "src/engines/aurora/kotorjadegui/kotorinventoryitem.h"
+#include "src/engines/odyssey/listbox.h"
+#include "src/engines/odyssey/protoitem.h"
+#include "src/engines/odyssey/scrollbar.h"
 
 namespace Engines {
 
-WidgetListBox::WidgetListBox(GUI &gui, const Common::UString &tag)
-		: KotORJadeWidget(gui, tag),
-		  _protoItem(0),
-		  _scrollbar(0),
-		  _itemType(kLBItemTypeDefault),
-		  _padding(0),
-		  _leftScrollbar(false),
-		  _itemSelectionEnabled(false),
-		  _adjustHeight(false),
-		  _hideScrollbar(true),
-		  _selectedIndex(-1),
-		  _startIndex(0),
-		  _numVisibleItems(0),
-		  _textColorChanged(false),
-		  _textR(0.0f), _textG(0.0f), _textB(0.0f), _textA(0.0f),
-		  _borderColorChanged(false),
-		  _borderR(0.0f), _borderG(0.0f), _borderB(0.0f), _borderA(0.0f) {
-}
+namespace Odyssey {
 
-WidgetListBox::~WidgetListBox() {
+WidgetListBox::WidgetListBox(GUI &gui, const Common::UString &tag) :
+		Widget(gui, tag),
+		_protoItem(0),
+		_scrollbar(0),
+		_itemWidgetFactoryFunc(0),
+		_padding(0),
+		_leftScrollbar(false),
+		_itemSelectionEnabled(false),
+		_adjustHeight(false),
+		_hideScrollbar(true),
+		_selectedIndex(-1),
+		_startIndex(0),
+		_numVisibleItems(0),
+		_textColorChanged(false),
+		_textR(0.0f), _textG(0.0f), _textB(0.0f), _textA(0.0f),
+		_borderColorChanged(false),
+		_borderR(0.0f), _borderG(0.0f), _borderB(0.0f), _borderA(0.0f) {
 }
 
 void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
-	KotORJadeWidget::load(gff);
+	Widget::load(gff);
 
 	_padding = gff.getSint("PADDING");
 	_leftScrollbar = gff.getBool("LEFTSCROLLBAR");
@@ -73,10 +70,6 @@ void WidgetListBox::load(const Aurora::GFF3Struct &gff) {
 
 	if (gff.hasField("PROTOITEM"))
 		_protoItem = &gff.getStruct("PROTOITEM");
-}
-
-void WidgetListBox::setItemType(ListBoxItemType itemType) {
-	_itemType = itemType;
 }
 
 void WidgetListBox::setItemSelectionEnabled(bool itemSelectionEnabled) {
@@ -134,18 +127,7 @@ void WidgetListBox::createItemWidgets(uint32 count) {
 
 	for (uint32 i = 0; i < count; ++i) {
 		Common::UString tag = Common::UString::format("%s_ITEM_%u", _tag.c_str(), i);
-		WidgetProtoItem *item;
-
-		switch (_itemType) {
-			case kLBItemTypeKotORInventory:
-				item = new KotORInventoryItem(*_gui, tag);
-				break;
-			case kLBItemTypeDefault:
-			default:
-				item = new WidgetProtoItem(*_gui, tag, this);
-				break;
-		}
-
+		WidgetProtoItem *item = createItemWidget(tag);
 		item->load(*_protoItem);
 
 		addChild(*item);
@@ -209,6 +191,7 @@ void WidgetListBox::refreshItemWidgets() {
 			if (isVisible())
 				itemWidget->show();
 			++_numVisibleItems;
+
 		} else {
 			if (isVisible())
 				itemWidget->hide();
@@ -249,7 +232,7 @@ void WidgetListBox::selectItemByWidgetTag(const Common::UString &tag) {
 }
 
 void WidgetListBox::selectItemByIndex(int index) {
-	if (index < 0 || static_cast<size_t>(index) >= _items.size())
+	if ((index < 0) || (static_cast<size_t>(index) >= _items.size()))
 		return;
 
 	_selectedIndex = index;
@@ -273,6 +256,7 @@ void WidgetListBox::selectNextItem() {
 
 		if (selectionChanged)
 			playSound(_soundSelectItem, Sound::kSoundTypeSFX);
+
 	} else if (_startIndex + _numVisibleItems < (int)_items.size()) {
 		++_startIndex;
 		refreshItemWidgets();
@@ -297,6 +281,7 @@ void WidgetListBox::selectPreviousItem() {
 
 		if (selectionChanged)
 			playSound(_soundSelectItem, Sound::kSoundTypeSFX);
+
 	} else if (_startIndex > 0) {
 		--_startIndex;
 		refreshItemWidgets();
@@ -307,10 +292,14 @@ int WidgetListBox::getSelectedIndex() const {
 	return _selectedIndex;
 }
 
+void WidgetListBox::setItemWidgetFactoryFunction(const ItemWidgetFactoryFunc &f) {
+	_itemWidgetFactoryFunc = f;
+}
+
 void WidgetListBox::setHeight(float height) {
 	float deltaHeight = height - _height;
 
-	KotORJadeWidget::setHeight(height);
+	Widget::setHeight(height);
 
 	if (_scrollbar) {
 		height = _scrollbar->getHeight();
@@ -318,7 +307,7 @@ void WidgetListBox::setHeight(float height) {
 	}
 }
 
-void WidgetListBox::subActive(Widget &widget) {
+void WidgetListBox::subActive(Engines::Widget &widget) {
 	if (_itemSelectionEnabled)
 		selectItemByWidgetTag(widget.getTag());
 	else
@@ -338,6 +327,13 @@ void WidgetListBox::setSoundHoverItem(const Common::UString &resRef) {
 void WidgetListBox::setSoundClickItem(const Common::UString &resRef) {
 	_soundClickItem = resRef;
 	applyChangesToItemWidgets();
+}
+
+WidgetProtoItem *WidgetListBox::createItemWidget(const Common::UString &tag) {
+	if (!_itemWidgetFactoryFunc)
+		return new WidgetProtoItem(*_gui, tag, this);
+
+	return _itemWidgetFactoryFunc(*_gui, tag);
 }
 
 void WidgetListBox::createScrollbar(const Aurora::GFF3Struct &gff) {
@@ -390,7 +386,7 @@ void WidgetListBox::applyChangesToItemWidgets() {
 }
 
 void WidgetListBox::mouseWheel(uint8 UNUSED(state), int UNUSED(x), int y) {
-	if (y == 0 || !_adjustHeight)
+	if ((y == 0) || !_adjustHeight)
 		return;
 
 	_startIndex = MIN(
@@ -399,5 +395,7 @@ void WidgetListBox::mouseWheel(uint8 UNUSED(state), int UNUSED(x), int y) {
 	);
 	refreshItemWidgets();
 }
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines

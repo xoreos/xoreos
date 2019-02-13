@@ -19,71 +19,60 @@
  */
 
 /** @file
- *  Common base for Star Wars: Knights of the Old Republic and Jade Empire widgets.
+ *  Common base for the Odyssey engine widgets.
  */
 
-#include "src/common/system.h"
-#include "src/common/util.h"
-
-#include "src/aurora/types.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/talkman.h"
 
 #include "src/graphics/font.h"
-#include "src/graphics/windowman.h"
 
 #include "src/graphics/aurora/fontman.h"
-#include "src/graphics/aurora/guiquad.h"
-#include "src/graphics/aurora/text.h"
-#include "src/graphics/aurora/highlightabletext.h"
 #include "src/graphics/aurora/highlightableguiquad.h"
-#include "src/graphics/aurora/types.h"
-#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/subscenequad.h"
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/odyssey/widget.h"
 
 namespace Engines {
 
-KotORJadeWidget::Extend::Extend() : x(0.0f), y(0.0f), w(0.0f), h(0.0f) {
+namespace Odyssey {
+
+Widget::Extend::Extend() : x(0.0f), y(0.0f), w(0.0f), h(0.0f) {
 }
 
-KotORJadeWidget::Border::Border()
-		: fillStyle(0),
-		  dimension(0),
-		  innerOffset(0),
-		  hasColor(false),
-		  r(0.0f), g(0.0f), b(0.0f),
-		  pulsing(false) {
+Widget::Border::Border() :
+		fillStyle(0),
+		dimension(0),
+		innerOffset(0),
+		hasColor(false),
+		r(0.0f), g(0.0f), b(0.0f),
+		pulsing(false) {
 }
 
-KotORJadeWidget::Text::Text()
-		: strRef(Aurora::kStrRefInvalid),
-		  halign(0.0f),
-		  valign(0.0f),
-		  r(1.0f), g(1.0f), b(1.0f),
-		  pulsing(false) {
+Widget::Text::Text() :
+		strRef(Aurora::kStrRefInvalid),
+		halign(0.0f),
+		valign(0.0f),
+		r(1.0f), g(1.0f), b(1.0f),
+		pulsing(false) {
 }
 
-KotORJadeWidget::Hilight::Hilight() : fill("") {
+Widget::Hilight::Hilight() : fill("") {
 }
 
-KotORJadeWidget::KotORJadeWidget(GUI &gui, const Common::UString &tag)
-		: Widget(gui, tag),
-		  _width(0.0f),
-		  _height(0.0f),
-		  _borderDimension(0),
-		  _r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
-		  _unselectedR(1.0f), _unselectedG(1.0f), _unselectedB(1.0f), _unselectedA(1.0f),
-		  _wrapped(false),
-		  _subScene(NULL),
-		  _highlighted(false) {
-
+Widget::Widget(GUI &gui, const Common::UString &tag) :
+		Engines::Widget(gui, tag),
+		_width(0.0f),
+		_height(0.0f),
+		_borderDimension(0),
+		_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f),
+		_unselectedR(1.0f), _unselectedG(1.0f), _unselectedB(1.0f), _unselectedA(1.0f),
+		_wrapped(false),
+		_subScene(0),
+		_highlighted(false) {
 }
 
-KotORJadeWidget::~KotORJadeWidget() {
-}
-
-void KotORJadeWidget::load(const Aurora::GFF3Struct &gff) {
+void Widget::load(const Aurora::GFF3Struct &gff) {
 	gff.getVector("COLOR", _r, _g, _b);
 	_a = gff.getDouble("ALPHA", 1.0);
 
@@ -159,7 +148,7 @@ void KotORJadeWidget::load(const Aurora::GFF3Struct &gff) {
 	_borderDimension = border.dimension;
 }
 
-void KotORJadeWidget::setClickable(bool clickable) {
+void Widget::setClickable(bool clickable) {
 	if (_quad)
 		_quad->setClickable(clickable);
 	if (_text)
@@ -168,14 +157,14 @@ void KotORJadeWidget::setClickable(bool clickable) {
 		_highlight->setClickable(clickable);
 }
 
-void KotORJadeWidget::setScissor(int x, int y, int width, int height) {
+void Widget::setScissor(int x, int y, int width, int height) {
 	if (_quad) {
 		_quad->setScissor(true);
 		_quad->setScissor(x, y, width, height);
 	}
 }
 
-void KotORJadeWidget::setFill(const Common::UString &fill) {
+void Widget::setFill(const Common::UString &fill) {
 	if (fill.empty() && _quad) {
 		_quad->hide();
 		_quad.reset();
@@ -199,21 +188,21 @@ void KotORJadeWidget::setFill(const Common::UString &fill) {
 	_quad->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void KotORJadeWidget::setColor(float r, float g, float b, float a) {
+void Widget::setColor(float r, float g, float b, float a) {
 	if (_quad)
 		_quad->setColor(r, g, b, a);
 }
 
-void KotORJadeWidget::setBorderColor(float r, float g, float b, float a) {
+void Widget::setBorderColor(float r, float g, float b, float a) {
 	if (_border)
 		_border->setColor(r, g, b, a);
 }
 
-void KotORJadeWidget::setWrapped(bool wrapped) {
+void Widget::setWrapped(bool wrapped) {
 	_wrapped = wrapped;
 }
 
-void KotORJadeWidget::setSubScene(Graphics::Aurora::SubSceneQuad *subscene) {
+void Widget::setSubScene(Graphics::Aurora::SubSceneQuad *subscene) {
 	if (!subscene) {
 		_subScene = NULL;
 		return;
@@ -228,7 +217,7 @@ void KotORJadeWidget::setSubScene(Graphics::Aurora::SubSceneQuad *subscene) {
 
 	float x, y, z;
 	getPosition(x, y, z);
-	_subScene->setPosition(x + wWidth/2, y + wHeight/2);
+	_subScene->setPosition(x + wWidth / 2, y + wHeight / 2);
 
 	// If a fill quad already exists, move the subscene a bit before it.
 	if (_quad) {
@@ -237,11 +226,11 @@ void KotORJadeWidget::setSubScene(Graphics::Aurora::SubSceneQuad *subscene) {
 	}
 }
 
-float KotORJadeWidget::getBorderDimension() const {
+float Widget::getBorderDimension() const {
 	return _borderDimension;
 }
 
-void KotORJadeWidget::setHighlight(const Common::UString &hilight) {
+void Widget::setHighlight(const Common::UString &hilight) {
 	if (hilight.empty() && _highlight) {
 		_highlight->hide();
 		_highlight.reset();
@@ -265,7 +254,7 @@ void KotORJadeWidget::setHighlight(const Common::UString &hilight) {
 	_highlight->setColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void KotORJadeWidget::setHighlight(bool highlight) {
+void Widget::setHighlight(bool highlight) {
 	float r, g, b, a;
 
 	if (_highlighted == highlight)
@@ -314,11 +303,11 @@ void KotORJadeWidget::setHighlight(bool highlight) {
 	_highlighted = highlight;
 }
 
-bool KotORJadeWidget::isHighlight() {
+bool Widget::isHighlight() const {
 	return _highlighted;
 }
 
-void KotORJadeWidget::createText(const Common::UString &font, const Common::UString &str) {
+void Widget::createText(const Common::UString &font, const Common::UString &str) {
 	const Graphics::Aurora::FontHandle f = FontMan.get(font);
 	const float width  = f.getFont().getWidth(str);
 	const float height = f.getFont().getHeight();
@@ -337,37 +326,37 @@ void KotORJadeWidget::createText(const Common::UString &font, const Common::UStr
 	_height = MAX(_height, height);
 }
 
-void KotORJadeWidget::setFont(const Common::UString &fnt) {
+void Widget::setFont(const Common::UString &fnt) {
 	if (_text)
 		_text->setFont(fnt);
 }
 
-void KotORJadeWidget::setText(const Common::UString &text) {
+void Widget::setText(const Common::UString &text) {
 	if (_text)
 		_text->setText(text);
 }
 
-void KotORJadeWidget::setTextColor(float r, float g, float b, float a) {
+void Widget::setTextColor(float r, float g, float b, float a) {
 	if (_text)
 		_text->setColor(r, g, b, a);
 }
 
-void KotORJadeWidget::setHorizontalTextAlign(float halign) {
+void Widget::setHorizontalTextAlign(float halign) {
 	if (_text)
 		_text->setHorizontalAlign(halign);
 }
 
-void KotORJadeWidget::setVerticalTextAlign(float valign) {
+void Widget::setVerticalTextAlign(float valign) {
 	if (_text)
 		_text->setVerticalAlign(valign);
 }
 
-float KotORJadeWidget::getTextHeight(const Common::UString &text) const {
+float Widget::getTextHeight(const Common::UString &text) const {
 	return _text ? _text->getHeight(text) : 0.0f;
 }
 
-void KotORJadeWidget::setTag(const Common::UString &tag) {
-	Widget::setTag(tag);
+void Widget::setTag(const Common::UString &tag) {
+	Engines::Widget::setTag(tag);
 
 	if (_quad)
 		_quad->setTag(getTag());
@@ -375,11 +364,11 @@ void KotORJadeWidget::setTag(const Common::UString &tag) {
 		_text->setTag(getTag());
 }
 
-void KotORJadeWidget::show() {
+void Widget::show() {
 	if (isInvisible())
 		return;
 
-	Widget::show();
+	Engines::Widget::show();
 
 	if (_quad)
 		_quad->show();
@@ -391,7 +380,7 @@ void KotORJadeWidget::show() {
 		_subScene->show();
 }
 
-void KotORJadeWidget::hide() {
+void Widget::hide() {
 	if (!isVisible())
 		return;
 
@@ -406,10 +395,10 @@ void KotORJadeWidget::hide() {
 	if (_text)
 		_text->hide();
 
-	Widget::hide();
+	Engines::Widget::hide();
 }
 
-void KotORJadeWidget::setPosition(float x, float y, float z) {
+void Widget::setPosition(float x, float y, float z) {
 	float oX, oY, oZ;
 	getPosition(oX, oY, oZ);
 
@@ -417,7 +406,7 @@ void KotORJadeWidget::setPosition(float x, float y, float z) {
 	float dy = y - oY;
 	float dz = z - oZ;
 
-	Widget::setPosition(x, y, z);
+	Engines::Widget::setPosition(x, y, z);
 
 	if (_quad) {
 		_quad->setPosition(x + _borderDimension, y + _borderDimension, z);
@@ -439,12 +428,12 @@ void KotORJadeWidget::setPosition(float x, float y, float z) {
 	}
 }
 
-void KotORJadeWidget::setRotation(float angle) {
+void Widget::setRotation(float angle) {
 	if (_quad)
 		_quad->setRotation(angle);
 }
 
-void KotORJadeWidget::setWidth(float width) {
+void Widget::setWidth(float width) {
 	float deltaWidth = width - _width;
 	_width = width;
 
@@ -471,7 +460,7 @@ void KotORJadeWidget::setWidth(float width) {
 	}
 }
 
-void KotORJadeWidget::setHeight(float height) {
+void Widget::setHeight(float height) {
 	float deltaHeight = height - _height;
 	_height = height;
 
@@ -498,28 +487,28 @@ void KotORJadeWidget::setHeight(float height) {
 	}
 }
 
-float KotORJadeWidget::getWidth() const {
+float Widget::getWidth() const {
 	return _width;
 }
 
-float KotORJadeWidget::getHeight() const {
+float Widget::getHeight() const {
 	return _height;
 }
 
-void KotORJadeWidget::setInvisible(bool invisible) {
-	Widget::setInvisible(invisible);
+void Widget::setInvisible(bool invisible) {
+	Engines::Widget::setInvisible(invisible);
 	setClickable(!invisible);
 }
 
-Graphics::Aurora::Highlightable *KotORJadeWidget::getTextHighlightableComponent() const {
+Graphics::Aurora::Highlightable *Widget::getTextHighlightableComponent() const {
 	return static_cast<Graphics::Aurora::Highlightable *>(_text.get());
 }
 
-Graphics::Aurora::Highlightable *KotORJadeWidget::getQuadHighlightableComponent() const {
+Graphics::Aurora::Highlightable *Widget::getQuadHighlightableComponent() const {
 	return dynamic_cast<Graphics::Aurora::Highlightable *>(_quad.get());
 }
 
-KotORJadeWidget::Extend KotORJadeWidget::createExtend(const Aurora::GFF3Struct &gff) {
+Widget::Extend Widget::createExtend(const Aurora::GFF3Struct &gff) {
 	Extend extend;
 	if (gff.hasField("EXTENT")) {
 		const Aurora::GFF3Struct &e = gff.getStruct("EXTENT");
@@ -531,7 +520,7 @@ KotORJadeWidget::Extend KotORJadeWidget::createExtend(const Aurora::GFF3Struct &
 	return extend;
 }
 
-KotORJadeWidget::Border KotORJadeWidget::createBorder(const Aurora::GFF3Struct &gff) {
+Widget::Border Widget::createBorder(const Aurora::GFF3Struct &gff) {
 	Border border;
 
 	if (gff.hasField("BORDER")) {
@@ -553,7 +542,7 @@ KotORJadeWidget::Border KotORJadeWidget::createBorder(const Aurora::GFF3Struct &
 	return border;
 }
 
-KotORJadeWidget::Text KotORJadeWidget::createText(const Aurora::GFF3Struct &gff) {
+Widget::Text Widget::createText(const Aurora::GFF3Struct &gff) {
 	Text text;
 
 	if (gff.hasField("TEXT")) {
@@ -589,7 +578,7 @@ KotORJadeWidget::Text KotORJadeWidget::createText(const Aurora::GFF3Struct &gff)
 	return text;
 }
 
-KotORJadeWidget::Hilight KotORJadeWidget::createHilight(const Aurora::GFF3Struct &gff) {
+Widget::Hilight Widget::createHilight(const Aurora::GFF3Struct &gff) {
 	Hilight hilight;
 	if (gff.hasField("HILIGHT")) {
 		const Aurora::GFF3Struct &h = gff.getStruct("HILIGHT");
@@ -597,5 +586,7 @@ KotORJadeWidget::Hilight KotORJadeWidget::createHilight(const Aurora::GFF3Struct
 	}
 	return hilight;
 }
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines

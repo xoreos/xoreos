@@ -39,17 +39,18 @@
 
 namespace Engines {
 
-class KotORJadeWidget;
-
-class WidgetPanel;
-class WidgetLabel;
-class WidgetProtoItem;
-class WidgetButton;
-class WidgetCheckBox;
-class WidgetSlider;
-class WidgetScrollbar;
-class WidgetProgressbar;
-class WidgetListBox;
+namespace Odyssey {
+	class Widget;
+	class WidgetPanel;
+	class WidgetLabel;
+	class WidgetProtoItem;
+	class WidgetButton;
+	class WidgetCheckBox;
+	class WidgetSlider;
+	class WidgetScrollbar;
+	class WidgetProgressbar;
+	class WidgetListBox;
+}
 
 namespace KotOR {
 
@@ -98,15 +99,15 @@ protected:
 
 	virtual void initWidget(Widget &widget);
 
-	WidgetPanel       *getPanel      (const Common::UString &tag, bool vital = false);
-	WidgetLabel       *getLabel      (const Common::UString &tag, bool vital = false);
-	WidgetProtoItem   *getProtoItem  (const Common::UString &tag, bool vital = false);
-	WidgetButton      *getButton     (const Common::UString &tag, bool vital = false);
-	WidgetCheckBox    *getCheckBox   (const Common::UString &tag, bool vital = false);
-	WidgetSlider      *getSlider     (const Common::UString &tag, bool vital = false);
-	WidgetScrollbar   *getScrollbar  (const Common::UString &tag, bool vital = false);
-	WidgetProgressbar *getProgressbar(const Common::UString &tag, bool vital = false);
-	WidgetListBox     *getListBox    (const Common::UString &tag, bool vital = false);
+	Odyssey::WidgetPanel       *getPanel      (const Common::UString &tag, bool vital = false);
+	Odyssey::WidgetLabel       *getLabel      (const Common::UString &tag, bool vital = false);
+	Odyssey::WidgetProtoItem   *getProtoItem  (const Common::UString &tag, bool vital = false);
+	Odyssey::WidgetButton      *getButton     (const Common::UString &tag, bool vital = false);
+	Odyssey::WidgetCheckBox    *getCheckBox   (const Common::UString &tag, bool vital = false);
+	Odyssey::WidgetSlider      *getSlider     (const Common::UString &tag, bool vital = false);
+	Odyssey::WidgetScrollbar   *getScrollbar  (const Common::UString &tag, bool vital = false);
+	Odyssey::WidgetProgressbar *getProgressbar(const Common::UString &tag, bool vital = false);
+	Odyssey::WidgetListBox     *getListBox    (const Common::UString &tag, bool vital = false);
 
 	void addBackground(const Common::UString &background, bool front = false);
 
@@ -120,7 +121,7 @@ private:
 		WidgetType type;
 
 		Common::UString tag;
-		KotORJadeWidget *widget;
+		Odyssey::Widget *widget;
 
 		Widget *parent;
 

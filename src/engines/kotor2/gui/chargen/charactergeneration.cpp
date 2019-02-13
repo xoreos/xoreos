@@ -24,7 +24,8 @@
 
 #include "src/aurora/talkman.h"
 
-#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/odyssey/label.h"
+
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 #include "src/engines/kotor2/gui/chargen/quickorcustom.h"
 #include "src/engines/kotor2/gui/chargen/quickchar.h"

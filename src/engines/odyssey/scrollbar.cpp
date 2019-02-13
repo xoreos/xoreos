@@ -19,30 +19,26 @@
  */
 
 /** @file
- *  A scrollbar widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Scrollbar widget for the Odyssey engine.
  */
-
-#include "src/common/system.h"
 
 #include "src/aurora/gff3file.h"
 
-#include "src/graphics/aurora/guiquad.h"
 #include "src/graphics/aurora/textureman.h"
 
-#include "src/engines/aurora/kotorjadegui/scrollbar.h"
+#include "src/engines/odyssey/scrollbar.h"
 
 namespace Engines {
 
-WidgetScrollbar::WidgetScrollbar(GUI &gui, const Common::UString &tag)
-	: KotORJadeWidget(gui, tag),
-	  _arrowHeight(0.0f) {
-}
+namespace Odyssey {
 
-WidgetScrollbar::~WidgetScrollbar() {
+WidgetScrollbar::WidgetScrollbar(GUI &gui, const Common::UString &tag) :
+		Widget(gui, tag),
+		_arrowHeight(0.0f) {
 }
 
 void WidgetScrollbar::load(const Aurora::GFF3Struct &gff) {
-	KotORJadeWidget::load(gff);
+	Widget::load(gff);
 
 	float x, y, z;
 	getPosition(x, y, z);
@@ -92,7 +88,7 @@ void WidgetScrollbar::show() {
 	if (isVisible() || isInvisible())
 		return;
 
-	KotORJadeWidget::show();
+	Widget::show();
 
 	if (_upArrow)
 		_upArrow->show();
@@ -113,7 +109,7 @@ void WidgetScrollbar::hide() {
 	if (_upArrow)
 		_upArrow->hide();
 
-	KotORJadeWidget::hide();
+	Widget::hide();
 }
 
 void WidgetScrollbar::setPosition(float x, float y, float z) {
@@ -124,7 +120,7 @@ void WidgetScrollbar::setPosition(float x, float y, float z) {
 	float dy = y - oY;
 	float dz = z - oZ;
 
-	KotORJadeWidget::setPosition(x, y, z);
+	Widget::setPosition(x, y, z);
 
 	if (_upArrow) {
 		_upArrow->getPosition(x, y, z);
@@ -145,7 +141,7 @@ void WidgetScrollbar::setPosition(float x, float y, float z) {
 void WidgetScrollbar::setWidth(float width) {
 	float deltaWidth = width - _width;
 
-	KotORJadeWidget::setWidth(width);
+	Widget::setWidth(width);
 
 	float x, y, z;
 	getPosition(x, y, z);
@@ -169,7 +165,7 @@ void WidgetScrollbar::setWidth(float width) {
 void WidgetScrollbar::setHeight(float height) {
 	float deltaHeight = height - _height;
 
-	KotORJadeWidget::setHeight(height);
+	Widget::setHeight(height);
 
 	float x, y, z;
 	getPosition(x, y, z);
@@ -185,5 +181,7 @@ void WidgetScrollbar::setHeight(float height) {
 		_thumb->setHeight(height + deltaHeight);
 	}
 }
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines

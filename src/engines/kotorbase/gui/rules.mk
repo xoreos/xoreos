@@ -17,21 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# Base engine for KotOR games.
-
-noinst_LTLIBRARIES += src/engines/kotorbase/libkotorbase.la
-src_engines_kotorbase_libkotorbase_la_SOURCES =
+# Common base for the GUI system of KotOR games.
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
-    src/engines/kotorbase/types.h \
-    src/engines/kotorbase/room.h \
-    src/engines/kotorbase/object.h \
+    src/engines/kotorbase/gui/inventoryitem.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
-    src/engines/kotorbase/room.cpp \
-    src/engines/kotorbase/object.cpp \
+    src/engines/kotorbase/gui/inventoryitem.cpp \
     $(EMPTY)
-
-include src/engines/kotorbase/script/rules.mk
-include src/engines/kotorbase/gui/rules.mk

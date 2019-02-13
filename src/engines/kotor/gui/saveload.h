@@ -37,7 +37,9 @@
 
 namespace Engines {
 
-class WidgetListBox;
+namespace Odyssey {
+	class WidgetListBox;
+}
 
 namespace KotOR {
 
@@ -59,7 +61,7 @@ private:
 
 	void callbackActive(Widget &widget);
 	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
-	void addSavedGameItems(WidgetListBox *listBox);
+	void addSavedGameItems(Odyssey::WidgetListBox *listBox);
 	void tryLoadGame(const Common::UString &dir);
 	void trySaveGame(const Common::UString &dir);
 	Common::UString getNewSaveDirectory() const;

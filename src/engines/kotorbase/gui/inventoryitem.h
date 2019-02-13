@@ -19,49 +19,42 @@
  */
 
 /** @file
- *  A button widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Inventory item widget for KotOR games.
  */
 
-#ifndef ENGINES_AURORA_KOTORJADEGUI_BUTTON_H
-#define ENGINES_AURORA_KOTORJADEGUI_BUTTON_H
+#ifndef ENGINES_KOTORBASE_INVENTORYITEM_H
+#define ENGINES_KOTORBASE_INVENTORYITEM_H
 
-#include "src/sound/types.h"
-
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/odyssey/protoitem.h"
 
 namespace Engines {
 
-class WidgetButton : public KotORJadeWidget {
+namespace KotOR {
+
+class WidgetInventoryItem : public Odyssey::WidgetProtoItem {
 public:
-	WidgetButton(GUI &gui, const Common::UString &tag);
-	~WidgetButton();
+	WidgetInventoryItem(GUI &gui, const Common::UString &tag);
 
-	virtual void load(const Aurora::GFF3Struct &gff);
+	void load(const Aurora::GFF3Struct &gff);
 
-	void setPermanentHighlight(bool);
-	void setStaticHighlight();
-	void setDisableHighlight(bool);
-	void setDisableHoverSound(bool);
+	// Basic visuals
 
-	bool isHovered() const;
+	void show();
+	void hide();
 
-	void enter();
-	void leave();
 
-	void mouseUp(uint8 state, float x, float y);
+	void setContents(const Common::UString &contents);
+	void setPosition(float x, float y, float z);
+	void setWidth(float width);
 
 private:
-	bool _permanentHighlight;
-	bool _disableHighlight;
-	bool _disableHoverSound;
-
-	Sound::ChannelHandle _sound;
-
-	bool _hovered;
-
-	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _icon;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _iconFrame;
+	Common::ScopedPtr<Graphics::Aurora::Text>    _countText;
 };
+
+} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_AURORA_KOTORJADEGUI_BUTTON_H
+#endif // ENGINES_KOTORBASE_INVENTORYITEM_H

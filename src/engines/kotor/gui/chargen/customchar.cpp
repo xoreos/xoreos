@@ -22,7 +22,7 @@
  *  The panel to customize a quick character.
  */
 
-#include "src/engines/aurora/kotorjadegui/label.h"
+#include "src/engines/odyssey/label.h"
 
 #include "src/engines/kotor/gui/chargen/customchar.h"
 

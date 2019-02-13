@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_DIALOGS_CONFIRM_H
 #define ENGINES_KOTOR_GUI_DIALOGS_CONFIRM_H
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/odyssey/widget.h"
 
 #include "src/engines/kotor/gui/gui.h"
 

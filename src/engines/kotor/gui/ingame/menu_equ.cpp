@@ -26,9 +26,11 @@
 
 #include "src/graphics/graphics.h"
 
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/listbox.h"
+
+#include "src/engines/kotorbase/gui/inventoryitem.h"
 
 #include "src/engines/kotor/item.h"
 #include "src/engines/kotor/creature.h"
@@ -46,23 +48,23 @@ MenuEquipment::MenuEquipment(Console *console)
 		  _slotFixated(false) {
 	load("equip");
 
-	WidgetListBox *desc = getListBox("LB_DESC");
+	Odyssey::WidgetListBox *desc = getListBox("LB_DESC");
 	if (!desc)
 		throw Common::Exception("MenuEquipment: No desription listbox");
 
 	desc->setInvisible(true);
 
-	WidgetLabel *cantEquip = getLabel("LBL_CANTEQUIP");
+	Odyssey::WidgetLabel *cantEquip = getLabel("LBL_CANTEQUIP");
 	if (cantEquip)
 		cantEquip->setInvisible(true);
 
-	WidgetLabel *slotName = getLabel("LBL_SLOTNAME");
+	Odyssey::WidgetLabel *slotName = getLabel("LBL_SLOTNAME");
 	if (slotName)
 		slotName->setText(getSlotName(kEquipmentSlotBody));
 
-	WidgetListBox *lbItems = getListBox("LB_ITEMS");
+	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
 	if (lbItems) {
-		lbItems->setItemType(kLBItemTypeKotORInventory);
+		lbItems->setItemWidgetFactoryFunction([](Engines::GUI &gui, const Common::UString &tag) { return new WidgetInventoryItem(gui, tag); });
 		lbItems->setHideScrollbar(false);
 		lbItems->setPadding(6);
 		lbItems->setItemBorderColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -202,7 +204,7 @@ Common::UString MenuEquipment::getEquipedItemIcon(EquipmentSlot slot) const {
 void MenuEquipment::fillEquipableItemsList() {
 	Inventory &inv = _pc->getInventory();
 
-	WidgetListBox *lbItems = getListBox("LB_ITEMS");
+	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
 	lbItems->removeAllItems();
 	lbItems->addItem("None|inone|1");
 
@@ -256,7 +258,7 @@ EquipmentSlot MenuEquipment::getSlotByWidgetTag(const Common::UString &tag) cons
 	return kEquipmentSlotNone;
 }
 
-WidgetButton *MenuEquipment::getSlotButton(EquipmentSlot slot) {
+Odyssey::WidgetButton *MenuEquipment::getSlotButton(EquipmentSlot slot) {
 	switch (slot) {
 		case kEquipmentSlotImplant:
 			return getButton("BTN_INV_IMPLANT");
@@ -309,35 +311,35 @@ Common::UString MenuEquipment::getSlotName(EquipmentSlot slot) const {
 void MenuEquipment::fixateOnSlot(bool fixate) {
 	_slotFixated = fixate;
 
-	WidgetListBox *lbDesc = getListBox("LB_DESC");
+	Odyssey::WidgetListBox *lbDesc = getListBox("LB_DESC");
 
-	WidgetButton *btnInvImplant = getButton("BTN_INV_IMPLANT");
-	WidgetButton *btnInvHead = getButton("BTN_INV_HEAD");
-	WidgetButton *btnInvHands = getButton("BTN_INV_HANDS");
-	WidgetButton *btnInvArmL = getButton("BTN_INV_ARM_L");
-	WidgetButton *btnInvBody = getButton("BTN_INV_BODY");
-	WidgetButton *btnInvArmR = getButton("BTN_INV_ARM_R");
-	WidgetButton *btnInvWeapL = getButton("BTN_INV_WEAP_L");
-	WidgetButton *btnInvBelt = getButton("BTN_INV_BELT");
-	WidgetButton *btnInvWeapR = getButton("BTN_INV_WEAP_R");
+	Odyssey::WidgetButton *btnInvImplant = getButton("BTN_INV_IMPLANT");
+	Odyssey::WidgetButton *btnInvHead = getButton("BTN_INV_HEAD");
+	Odyssey::WidgetButton *btnInvHands = getButton("BTN_INV_HANDS");
+	Odyssey::WidgetButton *btnInvArmL = getButton("BTN_INV_ARM_L");
+	Odyssey::WidgetButton *btnInvBody = getButton("BTN_INV_BODY");
+	Odyssey::WidgetButton *btnInvArmR = getButton("BTN_INV_ARM_R");
+	Odyssey::WidgetButton *btnInvWeapL = getButton("BTN_INV_WEAP_L");
+	Odyssey::WidgetButton *btnInvBelt = getButton("BTN_INV_BELT");
+	Odyssey::WidgetButton *btnInvWeapR = getButton("BTN_INV_WEAP_R");
 
-	WidgetLabel *lblInvImplant = getLabel("LBL_INV_IMPLANT");
-	WidgetLabel *lblInvHead = getLabel("LBL_INV_HEAD");
-	WidgetLabel *lblInvHands = getLabel("LBL_INV_HANDS");
-	WidgetLabel *lblInvArmL = getLabel("LBL_INV_ARM_L");
-	WidgetLabel *lblInvBody = getLabel("LBL_INV_BODY");
-	WidgetLabel *lblInvArmR = getLabel("LBL_INV_ARM_R");
-	WidgetLabel *lblInvWeapL = getLabel("LBL_INV_WEAP_L");
-	WidgetLabel *lblInvBelt = getLabel("LBL_INV_BELT");
-	WidgetLabel *lblInvWeapR = getLabel("LBL_INV_WEAP_R");
+	Odyssey::WidgetLabel *lblInvImplant = getLabel("LBL_INV_IMPLANT");
+	Odyssey::WidgetLabel *lblInvHead = getLabel("LBL_INV_HEAD");
+	Odyssey::WidgetLabel *lblInvHands = getLabel("LBL_INV_HANDS");
+	Odyssey::WidgetLabel *lblInvArmL = getLabel("LBL_INV_ARM_L");
+	Odyssey::WidgetLabel *lblInvBody = getLabel("LBL_INV_BODY");
+	Odyssey::WidgetLabel *lblInvArmR = getLabel("LBL_INV_ARM_R");
+	Odyssey::WidgetLabel *lblInvWeapL = getLabel("LBL_INV_WEAP_L");
+	Odyssey::WidgetLabel *lblInvBelt = getLabel("LBL_INV_BELT");
+	Odyssey::WidgetLabel *lblInvWeapR = getLabel("LBL_INV_WEAP_R");
 
-	WidgetLabel *lblTxtBar = getLabel("LBL_TXTBAR");
-	WidgetLabel *lblSlotName = getLabel("LBL_SLOTNAME");
-	WidgetLabel *lblPortBord = getLabel("LBL_PORT_BORD");
-	WidgetLabel *lblPortrait = getLabel("LBL_PORTRAIT");
+	Odyssey::WidgetLabel *lblTxtBar = getLabel("LBL_TXTBAR");
+	Odyssey::WidgetLabel *lblSlotName = getLabel("LBL_SLOTNAME");
+	Odyssey::WidgetLabel *lblPortBord = getLabel("LBL_PORT_BORD");
+	Odyssey::WidgetLabel *lblPortrait = getLabel("LBL_PORTRAIT");
 
-	WidgetListBox *lbItems = getListBox("LB_ITEMS");
-	WidgetButton *btnBack = getButton("BTN_BACK");
+	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
+	Odyssey::WidgetButton *btnBack = getButton("BTN_BACK");
 
 	lbDesc->setInvisible(!_slotFixated);
 

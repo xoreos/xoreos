@@ -19,97 +19,124 @@
  */
 
 /** @file
- *  Common base for Star Wars: Knights of the Old Republic and Jade Empire widgets.
+ *  Common base for the Odyssey engine widgets.
  */
 
-#ifndef ENGINES_AURORA_KOTORJADEGUI_KOTORJADEWIDGET_H
-#define ENGINES_AURORA_KOTORJADEGUI_KOTORJADEWIDGET_H
+#ifndef ENGINES_ODYSSEY_WIDGET_H
+#define ENGINES_ODYSSEY_WIDGET_H
 
-#include "src/common/scopedptr.h"
-#include "src/common/ustring.h"
-
-#include "src/aurora/types.h"
-
-#include "src/graphics/aurora/types.h"
-#include "src/graphics/aurora/highlightable.h"
-#include "src/graphics/aurora/highlightabletext.h"
 #include "src/graphics/aurora/borderquad.h"
-#include "src/graphics/aurora/subscenequad.h"
+#include "src/graphics/aurora/guiquad.h"
+#include "src/graphics/aurora/highlightabletext.h"
 
 #include "src/engines/aurora/widget.h"
 
+namespace Aurora {
+	class GFF3Struct;
+}
+
+namespace Graphics {
+	namespace Aurora {
+		class Highlightable;
+		class SubSceneQuad;
+	}
+}
+
 namespace Engines {
 
-class KotORJadeWidget : public Widget {
+namespace Odyssey {
+
+class Widget : public Engines::Widget {
 public:
-	KotORJadeWidget(GUI &gui, const Common::UString &tag);
-	~KotORJadeWidget();
+	Widget(GUI &gui, const Common::UString &tag);
 
 	virtual void load(const Aurora::GFF3Struct &gff);
 
-	/** Set the widget clickable, or not clickable. */
+	// Basic properties
+
+	/** Set the widget tag. */
+	void setTag(const Common::UString &tag);
+	/** Set if the widget is clickable. */
 	void setClickable(bool clickable);
 	/** Create a scissor test over this widget. */
 	void setScissor(int x, int y, int width, int height);
-
+	/** Set fill texture of the widget. */
 	void setFill(const Common::UString &fill);
+	/** Set the widget color. */
 	void setColor(float r, float g, float b, float a);
-	void setBorderColor(float r, float g, float b, float a);
+	/** Set if the widget should be wrapped. */
 	void setWrapped(bool wrapped);
-	void setSubScene(Graphics::Aurora::SubSceneQuad *subscene);
 
+	// Basic visuals
+
+	/** Set if the widget should be invisible. */
+	virtual void setInvisible(bool invisible);
+
+	/** Show the widget. */
+	virtual void show();
+	/** Hide the widget. */
+	virtual void hide();
+
+	// Positioning
+
+	/** Set the widget position. */
+	virtual void setPosition(float x, float y, float z);
+	/** Set the widget rotation in degrees. */
+	virtual void setRotation(float angle);
+
+	// Size
+
+	/** Get the widget width. */
+	float getWidth() const;
+	/** Get the widget height. */
+	float getHeight() const;
+
+	/** Set the widget width. */
+	virtual void setWidth(float width);
+	/** Set the widget height. */
+	virtual void setHeight(float height);
+
+	// Border
+
+	/** Get size of the widget border. */
 	float getBorderDimension() const;
 
-	// .--- Highlighting
+	/** Set color of the widget border. */
+	void setBorderColor(float r, float g, float b, float a);
 
-	void setHighlight(const Common::UString &hilight);
+	// Text
+
+	/** Get height of the specified text within the widget. */
+	float getTextHeight(const Common::UString &text) const;
+
+	/** Set the widget font. */
+	void setFont(const Common::UString &fnt);
+	/** Set the widget text. */
+	void setText(const Common::UString &text);
+	/** Set color of the widget text. */
+	void setTextColor(float r, float g, float b, float a);
+	/** Set horizontal alignment of the widget text. */
+	void setHorizontalTextAlign(float halign);
+	/** Set vertical alignment of the widget text. */
+	void setVerticalTextAlign(float valign);
+
+	/** Initialize the widget text. */
+	void createText(const Common::UString &font, const Common::UString &str);
+
+	// Highlighting
+
+	/** Is the widget highlighted? */
+	bool isHighlight() const;
 
 	/** Set if the widget should be highlighted. */
 	void setHighlight(bool highlight);
-	/** If the widget is highlighted. */
-	bool isHighlight();
+	/** Set highlight texture of the widget. */
+	void setHighlight(const Common::UString &hilight);
 
-	// '---
+	// Sub scene
 
-	// .--- Text
-	/** Initialize the text within this widget. */
-	void createText(const Common::UString &font, const Common::UString &str);
-
-	/** Change the font for this widget. */
-	void setFont(const Common::UString &fnt);
-
-	void setText(const Common::UString &text);
-	void setTextColor(float r, float g, float b, float a);
-	void setHorizontalTextAlign(float halign);
-	void setVerticalTextAlign(float valign);
-
-	float getTextHeight(const Common::UString &text) const;
-
-	// '---
-
-	void setTag(const Common::UString &tag);
-
-	virtual void show();
-	virtual void hide();
-
-	virtual void setPosition(float x, float y, float z);
-
-	/** Set the rotation of the widget in degrees. */
-	virtual void setRotation(float angle);
-
-	// .--- Size
-
-	/** Set the width of the widget. */
-	virtual void setWidth(float width);
-	/** Set the height of the widget. */
-	virtual void setHeight(float height);
-
-	float getWidth () const;
-	float getHeight() const;
-
-	// '---
-
-	virtual void setInvisible(bool invisible);
+	/** Set sub scene of the widget. */
+	void setSubScene(Graphics::Aurora::SubSceneQuad *subscene);
 
 protected:
 	struct Extend {
@@ -183,6 +210,8 @@ protected:
 	Hilight createHilight(const Aurora::GFF3Struct &gff);
 };
 
+} // End of namespace Odyssey
+
 } // End of namespace Engines
 
-#endif // ENGINES_AURORA_KOTORJADEGUI_KOTORJADEWIDGET_H
+#endif // ENGINES_ODYSSEY_WIDGET_H

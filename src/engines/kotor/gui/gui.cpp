@@ -30,15 +30,15 @@
 
 #include "src/graphics/aurora/cursorman.h"
 
-#include "src/engines/aurora/kotorjadegui/panel.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/protoitem.h"
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/checkbox.h"
-#include "src/engines/aurora/kotorjadegui/slider.h"
-#include "src/engines/aurora/kotorjadegui/scrollbar.h"
-#include "src/engines/aurora/kotorjadegui/progressbar.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/odyssey/panel.h"
+#include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/protoitem.h"
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/checkbox.h"
+#include "src/engines/odyssey/slider.h"
+#include "src/engines/odyssey/scrollbar.h"
+#include "src/engines/odyssey/progressbar.h"
+#include "src/engines/odyssey/listbox.h"
 
 #include "src/engines/kotor/gui/gui.h"
 
@@ -157,23 +157,23 @@ void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent) {
 
 void GUI::createWidget(WidgetContext &ctx) {
 	if      (ctx.type == kWidgetTypePanel)
-		ctx.widget = new WidgetPanel(*this, ctx.tag);
+		ctx.widget = new Odyssey::WidgetPanel(*this, ctx.tag);
 	else if (ctx.type == kWidgetTypeLabel)
-		ctx.widget = new WidgetLabel(*this, ctx.tag);
+		ctx.widget = new Odyssey::WidgetLabel(*this, ctx.tag);
 	else if (ctx.type == kWidgetTypeProtoItem)
-		ctx.widget = new WidgetProtoItem(*this, ctx.tag);
+		ctx.widget = new Odyssey::WidgetProtoItem(*this, ctx.tag);
 	else if (ctx.type == kWidgetTypeButton)
-		ctx.widget = new WidgetButton(*this, ctx.tag);
+		ctx.widget = new Odyssey::WidgetButton(*this, ctx.tag);
 	else if (ctx.type == kWidgetTypeCheckBox)
-		ctx.widget = new WidgetCheckBox(*this, ctx.tag);
+		ctx.widget = new Odyssey::WidgetCheckBox(*this, ctx.tag);
 	else if (ctx.type == kWidgetTypeSlider)
-		ctx.widget = new WidgetSlider(*this, ctx.tag);
+		ctx.widget = new Odyssey::WidgetSlider(*this, ctx.tag);
 	else if (ctx.type == kWidgetTypeScrollbar)
-		ctx.widget = new WidgetScrollbar(*this, ctx.tag);
+		ctx.widget = new Odyssey::WidgetScrollbar(*this, ctx.tag);
 	else if (ctx.type == kWidgetTypeProgressbar)
-		ctx.widget = new WidgetProgressbar(*this, ctx.tag);
+		ctx.widget = new Odyssey::WidgetProgressbar(*this, ctx.tag);
 	else if (ctx.type == kWidgetTypeListBox)
-		ctx.widget = new WidgetListBox(*this, ctx.tag);
+		ctx.widget = new Odyssey::WidgetListBox(*this, ctx.tag);
 	else
 		throw Common::Exception("No such widget type %d", ctx.type);
 
@@ -189,108 +189,108 @@ void GUI::createWidget(WidgetContext &ctx) {
 void GUI::initWidget(Widget &UNUSED(widget)) {
 }
 
-WidgetPanel *GUI::getPanel(const Common::UString &tag, bool vital) {
+Odyssey::WidgetPanel *GUI::getPanel(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);
 	if (!widget)
 		return 0;
 
-	WidgetPanel *panel = dynamic_cast<WidgetPanel *>(widget);
+	Odyssey::WidgetPanel *panel = dynamic_cast<Odyssey::WidgetPanel *>(widget);
 	if (!panel && vital)
 		throw Common::Exception("Vital panel widget \"%s\" doesn't exist", tag.c_str());
 
 	return panel;
 }
 
-WidgetLabel *GUI::getLabel(const Common::UString &tag, bool vital) {
+Odyssey::WidgetLabel *GUI::getLabel(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);
 	if (!widget)
 		return 0;
 
-	WidgetLabel *label = dynamic_cast<WidgetLabel *>(widget);
+	Odyssey::WidgetLabel *label = dynamic_cast<Odyssey::WidgetLabel *>(widget);
 	if (!label && vital)
 		throw Common::Exception("Vital label widget \"%s\" doesn't exist", tag.c_str());
 
 	return label;
 }
 
-WidgetProtoItem *GUI::getProtoItem(const Common::UString &tag, bool vital) {
+Odyssey::WidgetProtoItem *GUI::getProtoItem(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);
 	if (!widget)
 		return 0;
 
-	WidgetProtoItem *protoItem = dynamic_cast<WidgetProtoItem *>(widget);
+	Odyssey::WidgetProtoItem *protoItem = dynamic_cast<Odyssey::WidgetProtoItem *>(widget);
 	if (!protoItem && vital)
 		throw Common::Exception("Vital protoItem widget \"%s\" doesn't exist", tag.c_str());
 
 	return protoItem;
 }
 
-WidgetButton *GUI::getButton(const Common::UString &tag, bool vital) {
+Odyssey::WidgetButton *GUI::getButton(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);
 	if (!widget)
 		return 0;
 
-	WidgetButton *button = dynamic_cast<WidgetButton *>(widget);
+	Odyssey::WidgetButton *button = dynamic_cast<Odyssey::WidgetButton *>(widget);
 	if (!button && vital)
 		throw Common::Exception("Vital button widget \"%s\" doesn't exist", tag.c_str());
 
 	return button;
 }
 
-WidgetCheckBox *GUI::getCheckBox(const Common::UString &tag, bool vital) {
+Odyssey::WidgetCheckBox *GUI::getCheckBox(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);
 	if (!widget)
 		return 0;
 
-	WidgetCheckBox *checkBox = dynamic_cast<WidgetCheckBox *>(widget);
+	Odyssey::WidgetCheckBox *checkBox = dynamic_cast<Odyssey::WidgetCheckBox *>(widget);
 	if (!checkBox && vital)
 		throw Common::Exception("Vital checkBox widget \"%s\" doesn't exist", tag.c_str());
 
 	return checkBox;
 }
 
-WidgetSlider *GUI::getSlider(const Common::UString &tag, bool vital) {
+Odyssey::WidgetSlider *GUI::getSlider(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);
 	if (!widget)
 		return 0;
 
-	WidgetSlider *slider = dynamic_cast<WidgetSlider *>(widget);
+	Odyssey::WidgetSlider *slider = dynamic_cast<Odyssey::WidgetSlider *>(widget);
 	if (!slider && vital)
 		throw Common::Exception("Vital slider widget \"%s\" doesn't exist", tag.c_str());
 
 	return slider;
 }
 
-WidgetScrollbar *GUI::getScrollbar(const Common::UString &tag, bool vital) {
+Odyssey::WidgetScrollbar *GUI::getScrollbar(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);
 	if (!widget)
 		return 0;
 
-	WidgetScrollbar *scrollbar = dynamic_cast<WidgetScrollbar *>(widget);
+	Odyssey::WidgetScrollbar *scrollbar = dynamic_cast<Odyssey::WidgetScrollbar *>(widget);
 	if (!scrollbar && vital)
 		throw Common::Exception("Vital scrollbar widget \"%s\" doesn't exist", tag.c_str());
 
 	return scrollbar;
 }
 
-WidgetProgressbar *GUI::getProgressbar(const Common::UString &tag, bool vital) {
+Odyssey::WidgetProgressbar *GUI::getProgressbar(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);
 	if (!widget)
 		return 0;
 
-	WidgetProgressbar *progressbar = dynamic_cast<WidgetProgressbar *>(widget);
+	Odyssey::WidgetProgressbar *progressbar = dynamic_cast<Odyssey::WidgetProgressbar *>(widget);
 	if (!progressbar && vital)
 		throw Common::Exception("Vital progressbar widget \"%s\" doesn't exist", tag.c_str());
 
 	return progressbar;
 }
 
-WidgetListBox *GUI::getListBox(const Common::UString &tag, bool vital) {
+Odyssey::WidgetListBox *GUI::getListBox(const Common::UString &tag, bool vital) {
 	Widget *widget = getWidget(tag, vital);
 	if (!widget)
 		return 0;
 
-	WidgetListBox *listBox = dynamic_cast<WidgetListBox *>(widget);
+	Odyssey::WidgetListBox *listBox = dynamic_cast<Odyssey::WidgetListBox *>(widget);
 	if (!listBox && vital)
 		throw Common::Exception("Vital listBox widget \"%s\" doesn't exist", tag.c_str());
 
@@ -305,12 +305,12 @@ void GUI::addBackground(const Common::UString &background, bool front) {
 }
 
 void GUI::setCheckBoxState(const Common::UString &tag, bool state) {
-	WidgetCheckBox &checkbox = *getCheckBox(tag, true);
+	Odyssey::WidgetCheckBox &checkbox = *getCheckBox(tag, true);
 	checkbox.setState(state);
 }
 
 bool GUI::getCheckBoxState(const Common::UString &tag) {
-	WidgetCheckBox &checkbox = *getCheckBox(tag, true);
+	Odyssey::WidgetCheckBox &checkbox = *getCheckBox(tag, true);
 	return checkbox.getState();
 }
 

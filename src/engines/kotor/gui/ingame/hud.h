@@ -73,13 +73,13 @@ private:
 	Common::ScopedPtr<ContainerMenu> _container;
 
 	Common::ScopedPtr<Minimap> _minimap;
-	WidgetLabel *_minimapPointer;
+	Odyssey::WidgetLabel *_minimapPointer;
 
 	// ,--- Widgets for showing object information
-	WidgetLabel       *_objectName;
-	WidgetLabel       *_objectNameBackground;
-	WidgetProgressbar *_objectHealth;
-	WidgetLabel       *_objectHealthBackground;
+	Odyssey::WidgetLabel       *_objectName;
+	Odyssey::WidgetLabel       *_objectNameBackground;
+	Odyssey::WidgetProgressbar *_objectHealth;
+	Odyssey::WidgetLabel       *_objectHealthBackground;
 	// '---
 
 	void update(int width, int height);

@@ -29,12 +29,13 @@
 
 #include "src/graphics/aurora/subscenequad.h"
 
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/label.h"
+
 #include "src/engines/kotor/module.h"
 
 #include "src/engines/kotor/gui/gui.h"
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
 
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
@@ -67,17 +68,17 @@ private:
 	Graphics::Aurora::SubSceneQuad _femaleScoutSubScene;
 	Graphics::Aurora::SubSceneQuad _femaleScoundrelSubScene;
 
-	WidgetLabel *_labelDesc;
-	WidgetLabel *_labelTitle;
+	Odyssey::WidgetLabel *_labelDesc;
+	Odyssey::WidgetLabel *_labelTitle;
 
-	WidgetButton *_maleSoldierButton;
-	WidgetButton *_maleScoutButton;
-	WidgetButton *_maleScoundrelButton;
-	WidgetButton *_femaleSoldierButton;
-	WidgetButton *_femaleScoutButton;
-	WidgetButton *_femaleScoundrelButton;
+	Odyssey::WidgetButton *_maleSoldierButton;
+	Odyssey::WidgetButton *_maleScoutButton;
+	Odyssey::WidgetButton *_maleScoundrelButton;
+	Odyssey::WidgetButton *_femaleSoldierButton;
+	Odyssey::WidgetButton *_femaleScoutButton;
+	Odyssey::WidgetButton *_femaleScoundrelButton;
 
-	WidgetButton *_hoveredButton;
+	Odyssey::WidgetButton *_hoveredButton;
 
 	Module *_module;
 

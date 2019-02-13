@@ -22,10 +22,10 @@
  *  Confirmation dialog.
  */
 
-#include "src/engines/kotor/gui/dialogs/confirm.h"
+#include "src/engines/odyssey/panel.h"
+#include "src/engines/odyssey/listbox.h"
 
-#include "src/engines/aurora/kotorjadegui/panel.h"
-#include "src/engines/aurora/kotorjadegui/listbox.h"
+#include "src/engines/kotor/gui/dialogs/confirm.h"
 
 namespace Engines {
 
@@ -34,15 +34,15 @@ namespace KotOR {
 ConfirmDialog::ConfirmDialog(Console *console) : GUI(console), _accepted(false) {
 	load("confirm");
 
-	WidgetPanel *guiPanel = getPanel("TGuiPanel");
+	Odyssey::WidgetPanel *guiPanel = getPanel("TGuiPanel");
 	guiPanel->setPosition(-guiPanel->getWidth()/2, -guiPanel->getHeight()/2, 0);
 
-	WidgetListBox *lbMessage = getListBox("LB_MESSAGE");
+	Odyssey::WidgetListBox *lbMessage = getListBox("LB_MESSAGE");
 	lbMessage->createItemWidgets(1);
 }
 
 void ConfirmDialog::setText(const Common::UString &text) {
-	WidgetListBox *lbMessage = getListBox("LB_MESSAGE");
+	Odyssey::WidgetListBox *lbMessage = getListBox("LB_MESSAGE");
 	lbMessage->removeAllItems();
 	lbMessage->addItem(text);
 	lbMessage->refreshItemWidgets();

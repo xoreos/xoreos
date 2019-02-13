@@ -19,33 +19,56 @@
  */
 
 /** @file
- *  A label widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Progress bar widget for the Odyssey engine.
  */
 
-#ifndef ENGINES_AURORA_KOTORJADEGUI_LABEL_H
-#define ENGINES_AURORA_KOTORJADEGUI_LABEL_H
+#ifndef ENGINES_ODYSSEY_PROGRESSBAR_H
+#define ENGINES_ODYSSEY_PROGRESSBAR_H
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/common/scopedptr.h"
+
+#include "src/engines/odyssey/widget.h"
 
 namespace Engines {
 
-class WidgetLabel : public KotORJadeWidget {
+namespace Odyssey {
+
+class WidgetProgressbar : public Widget {
 public:
-	WidgetLabel(GUI &gui, const Common::UString &tag);
-	~WidgetLabel();
+	WidgetProgressbar(GUI &gui, const Common::UString &tag);
 
 	void load(const Aurora::GFF3Struct &gff);
 
-	bool isHovered() const;
+	// State and constraints
 
-	void enter();
-	void leave();
+	int getCurrentValue() const;
+	int getMaxValue() const;
 
-	void mouseUp(uint8 state, float x, float y);
+	void setCurrentValue(int curValue);
+	void setMaxValue(int maxValue);
+
+	// Basic visuals
+
+	void show();
+	void hide();
+
+	// Positioning
+
+	void setPosition(float x, float y, float z);
+
 private:
-	bool _hovered;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _progress;
+
+	int _maxValue;
+	int _curValue;
+
+	bool _horizontal;
+
+	void update();
 };
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines
 
-#endif // ENGINES_AURORA_KOTORJADEGUI_LABEL_H
+#endif // ENGINES_ODYSSEY_PROGRESSBAR_H

@@ -58,5 +58,3 @@ src_engines_aurora_libaurora_la_SOURCES += \
     src/engines/aurora/astar.cpp \
     src/engines/aurora/localpathfinding.cpp \
     $(EMPTY)
-
-include src/engines/aurora/kotorjadegui/rules.mk

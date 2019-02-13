@@ -19,30 +19,52 @@
  */
 
 /** @file
- *  A panel widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Scrollbar widget for the Odyssey engine.
  */
 
-#ifndef ENGINES_AURORA_KOTORJADEGUI_PANEL_H
-#define ENGINES_AURORA_KOTORJADEGUI_PANEL_H
+#ifndef ENGINES_ODYSSEY_SCROLLBAR_H
+#define ENGINES_ODYSSEY_SCROLLBAR_H
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/common/scopedptr.h"
+
+#include "src/graphics/aurora/guiquad.h"
+
+#include "src/engines/odyssey/widget.h"
 
 namespace Engines {
 
-class WidgetPanel : public KotORJadeWidget {
+namespace Odyssey {
+
+class WidgetScrollbar : public Widget {
 public:
-	WidgetPanel(GUI &gui, const Common::UString &tag);
-
-	WidgetPanel(GUI &gui,
-	            const Common::UString &tag,
-	            const Common::UString &texture,
-	            float x, float y, float w, float h);
-
-	~WidgetPanel();
+	WidgetScrollbar(GUI &gui, const Common::UString &tag);
 
 	void load(const Aurora::GFF3Struct &gff);
+
+	// Basic visuals
+
+	void show();
+	void hide();
+
+	// Positioning
+
+	void setPosition(float x, float y, float z);
+
+	// Size
+
+	void setWidth(float width);
+	void setHeight(float height);
+
+private:
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _upArrow;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _downArrow;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _thumb;
+
+	float _arrowHeight;
 };
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines
 
-#endif // ENGINES_AURORA_KOTORJADEGUI_PANEL_H
+#endif // ENGINES_ODYSSEY_SCROLLBAR_H

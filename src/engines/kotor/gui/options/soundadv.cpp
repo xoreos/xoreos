@@ -28,10 +28,10 @@
 
 #include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor/gui/options/soundadv.h"
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/checkbox.h"
 
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/checkbox.h"
+#include "src/engines/kotor/gui/options/soundadv.h"
 
 namespace Engines {
 
@@ -123,9 +123,9 @@ void OptionsSoundAdvancedMenu::displayConfig() {
 }
 
 void OptionsSoundAdvancedMenu::updateEAX(int eax) {
-	WidgetButton &eaxButton = *getButton("BTN_EAX", true);
-	WidgetButton &leftButton = *getButton("BTN_EAXLEFT", true);
-	WidgetButton &rightButton = *getButton("BTN_EAXRIGHT", true);
+	Odyssey::WidgetButton &eaxButton = *getButton("BTN_EAX", true);
+	Odyssey::WidgetButton &leftButton = *getButton("BTN_EAXLEFT", true);
+	Odyssey::WidgetButton &rightButton = *getButton("BTN_EAXRIGHT", true);
 
 	eaxButton.setText(TalkMan.getString(48573 + eax));
 

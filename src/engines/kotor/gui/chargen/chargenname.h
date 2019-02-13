@@ -47,7 +47,7 @@ private:
 	Aurora::LTRFile _humanFirst;
 	Aurora::LTRFile _humanLast;
 
-	WidgetLabel *_nameLabel;
+	Odyssey::WidgetLabel *_nameLabel;
 	Common::UString _name;
 };
 

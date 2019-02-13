@@ -19,38 +19,25 @@
  */
 
 /** @file
- *  A scrollbar widget for Star Wars: Knights of the Old Republic and Jade Empire.
+ *  Slider widget for the Odyssey engine.
  */
 
-#ifndef ENGINES_AURORA_KOTORJADEGUI_SCROLLBAR_H
-#define ENGINES_AURORA_KOTORJADEGUI_SCROLLBAR_H
+#ifndef ENGINES_ODYSSEY_SLIDER_H
+#define ENGINES_ODYSSEY_SLIDER_H
 
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/odyssey/widget.h"
 
 namespace Engines {
 
-class WidgetScrollbar : public KotORJadeWidget {
+namespace Odyssey {
+
+class WidgetSlider : public Widget {
 public:
-	WidgetScrollbar(GUI &gui, const Common::UString &tag);
-	~WidgetScrollbar();
-
-	void load(const Aurora::GFF3Struct &gff);
-
-	void show();
-	void hide();
-
-	void setPosition(float x, float y, float z);
-	void setWidth(float width);
-	void setHeight(float height);
-
-private:
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _upArrow;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _downArrow;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _thumb;
-
-	float _arrowHeight;
+	WidgetSlider(GUI &gui, const Common::UString &tag);
 };
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines
 
-#endif // ENGINES_AURORA_KOTORJADEGUI_SCROLLBAR_H
+#endif // ENGINES_ODYSSEY_SLIDER_H

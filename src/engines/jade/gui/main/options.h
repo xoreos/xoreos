@@ -31,8 +31,11 @@
 
 namespace Engines {
 
-class WidgetButton;
-class WidgetProtoItem;
+namespace Odyssey {
+	class Widget;
+	class WidgetButton;
+	class WidgetProtoItem;
+}
 
 namespace Jade {
 
@@ -55,17 +58,17 @@ private:
 	Common::ScopedPtr<GUI> _gameInfoOptions;
 	Common::ScopedPtr<GUI> _controlOptions;
 
-	Engines::WidgetProtoItem *_audioOptionsButton;
-	Engines::WidgetProtoItem *_videoOptionsButton;
-	Engines::WidgetProtoItem *_difficultyOptionsButton;
-	Engines::WidgetProtoItem *_gameInfoOptionsButton;
-	Engines::WidgetProtoItem *_controlOptionsButton;
-	Engines::WidgetProtoItem *_creditsButton;
+	Odyssey::WidgetProtoItem *_audioOptionsButton;
+	Odyssey::WidgetProtoItem *_videoOptionsButton;
+	Odyssey::WidgetProtoItem *_difficultyOptionsButton;
+	Odyssey::WidgetProtoItem *_gameInfoOptionsButton;
+	Odyssey::WidgetProtoItem *_controlOptionsButton;
+	Odyssey::WidgetProtoItem *_creditsButton;
 
-	Engines::WidgetButton *_backButton;
-	Engines::KotORJadeWidget *_currentButton;
+	Odyssey::WidgetButton *_backButton;
+	Odyssey::Widget *_currentButton;
 
-	Engines::WidgetLabel *_optionsDescription;
+	Odyssey::WidgetLabel *_optionsDescription;
 
 	Common::UString _audioOptionsDescription;
 	Common::UString _videoOptionsDescription;

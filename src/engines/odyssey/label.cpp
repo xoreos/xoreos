@@ -19,24 +19,40 @@
  */
 
 /** @file
- *  A slider widget for Star Wars: Knights of the Old Republic and Jade Empire..
+ *  Label widget for the Odyssey engine.
  */
 
-#ifndef ENGINES_AURORA_KOTORJADEGUI_SLIDER_H
-#define ENGINES_AURORA_KOTORJADEGUI_SLIDER_H
-
-#include "src/engines/aurora/kotorjadegui/kotorjadewidget.h"
+#include "src/engines/odyssey/label.h"
 
 namespace Engines {
 
-class WidgetSlider : public KotORJadeWidget {
-public:
-	WidgetSlider(GUI &gui, const Common::UString &tag);
-	~WidgetSlider();
+namespace Odyssey {
 
-	void load(const Aurora::GFF3Struct &gff);
-};
+WidgetLabel::WidgetLabel(GUI &gui, const Common::UString &tag) :
+		Widget(gui, tag),
+		_hovered(false) {
+}
+
+void WidgetLabel::load(const Aurora::GFF3Struct &gff) {
+	Widget::load(gff);
+}
+
+bool WidgetLabel::isHovered() const {
+	return _hovered;
+}
+
+void WidgetLabel::enter() {
+	_hovered = true;
+}
+
+void WidgetLabel::leave() {
+	_hovered = false;
+}
+
+void WidgetLabel::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)) {
+	setActive(true);
+}
+
+} // End of namespace Odyssey
 
 } // End of namespace Engines
-
-#endif // ENGINES_AURORA_KOTORJADEGUI_SLIDER_H

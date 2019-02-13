@@ -25,10 +25,12 @@
 #ifndef ENGINES_KOTOR2_GUI_CHARGEN_CLASSSELECTION_H
 #define ENGINES_KOTOR2_GUI_CHARGEN_CLASSSELECTION_H
 
+#include "src/engines/odyssey/label.h"
+#include "src/engines/odyssey/button.h"
+
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/gui/gui.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
-#include "src/engines/aurora/kotorjadegui/button.h"
+
 #include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 
@@ -57,16 +59,16 @@ private:
 	CharacterGenerationInfo *_sentinelFemaleInfo;
 	CharacterGenerationInfo *_guardianFemaleInfo;
 
-	WidgetButton *_consularMaleButton;
-	WidgetButton *_sentinelMaleButton;
-	WidgetButton *_guardianMaleButton;
-	WidgetButton *_guardianFemaleButton;
-	WidgetButton *_sentinelFemaleButton;
-	WidgetButton *_consularFemaleButton;
-	WidgetButton *_hoveredButton;
+	Odyssey::WidgetButton *_consularMaleButton;
+	Odyssey::WidgetButton *_sentinelMaleButton;
+	Odyssey::WidgetButton *_guardianMaleButton;
+	Odyssey::WidgetButton *_guardianFemaleButton;
+	Odyssey::WidgetButton *_sentinelFemaleButton;
+	Odyssey::WidgetButton *_consularFemaleButton;
+	Odyssey::WidgetButton *_hoveredButton;
 
-	WidgetLabel *_labelDesc;
-	WidgetLabel *_labelTitle;
+	Odyssey::WidgetLabel *_labelDesc;
+	Odyssey::WidgetLabel *_labelTitle;
 
 	Common::UString _guardianMaleTitle;
 	Common::UString _guardianFemaleTitle;

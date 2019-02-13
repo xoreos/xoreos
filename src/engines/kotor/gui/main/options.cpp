@@ -26,6 +26,9 @@
 
 #include "src/engines/aurora/widget.h"
 
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/label.h"
+
 #include "src/engines/kotor/version.h"
 
 #include "src/engines/kotor/gui/main/options.h"
@@ -34,9 +37,6 @@
 #include "src/engines/kotor/gui/options/autopause.h"
 #include "src/engines/kotor/gui/options/graphics.h"
 #include "src/engines/kotor/gui/options/sound.h"
-
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/label.h"
 
 namespace Engines {
 
@@ -58,7 +58,7 @@ OptionsMenu::OptionsMenu(const Version &gameVersion, ::Engines::Console *console
 	if (gameVersion.hasVersion())
 		versionString += " v" + gameVersion.getVersionString();
 
-	WidgetLabel *lblVersion = new WidgetLabel(*this, "Version");
+	Odyssey::WidgetLabel *lblVersion = new Odyssey::WidgetLabel(*this, "Version");
 	addWidget(lblVersion);
 
 	lblVersion->createText("fnt_console", versionString);

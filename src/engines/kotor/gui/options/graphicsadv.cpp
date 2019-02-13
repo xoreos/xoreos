@@ -28,10 +28,10 @@
 
 #include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor/gui/options/graphicsadv.h"
+#include "src/engines/odyssey/button.h"
+#include "src/engines/odyssey/checkbox.h"
 
-#include "src/engines/aurora/kotorjadegui/button.h"
-#include "src/engines/aurora/kotorjadegui/checkbox.h"
+#include "src/engines/kotor/gui/options/graphicsadv.h"
 
 namespace Engines {
 
@@ -189,9 +189,9 @@ void OptionsGraphicsAdvancedMenu::displayConfig() {
 }
 
 void OptionsGraphicsAdvancedMenu::updateTextureQuality(int textureQuality) {
-	WidgetButton &texQualButton = *getButton("BTN_TEXQUAL", true);
-	WidgetButton &leftButton = *getButton("BTN_TEXQUALLEFT", true);
-	WidgetButton &rightButton = *getButton("BTN_TEXQUALRIGHT", true);
+	Odyssey::WidgetButton &texQualButton = *getButton("BTN_TEXQUAL", true);
+	Odyssey::WidgetButton &leftButton = *getButton("BTN_TEXQUALLEFT", true);
+	Odyssey::WidgetButton &rightButton = *getButton("BTN_TEXQUALRIGHT", true);
 
 	texQualButton.setText(TalkMan.getString(48003 + textureQuality));
 
@@ -209,9 +209,9 @@ void OptionsGraphicsAdvancedMenu::updateTextureQuality(int textureQuality) {
 }
 
 void OptionsGraphicsAdvancedMenu::updateAntiAliasing(int antiAliasing) {
-	WidgetButton &antiAliasButton = *getButton("BTN_ANTIALIAS", true);
-	WidgetButton &leftButton = *getButton("BTN_ANTIALIASLEFT", true);
-	WidgetButton &rightButton = *getButton("BTN_ANTIALIASRIGHT", true);
+	Odyssey::WidgetButton &antiAliasButton = *getButton("BTN_ANTIALIAS", true);
+	Odyssey::WidgetButton &leftButton = *getButton("BTN_ANTIALIASLEFT", true);
+	Odyssey::WidgetButton &rightButton = *getButton("BTN_ANTIALIASRIGHT", true);
 
 	Common::UString text;
 
@@ -240,9 +240,9 @@ void OptionsGraphicsAdvancedMenu::updateAntiAliasing(int antiAliasing) {
 }
 
 void OptionsGraphicsAdvancedMenu::updateAnisotropy(int anisotropy) {
-	WidgetButton &anisotropyButton = *getButton("BTN_ANISOTROPY", true);
-	WidgetButton &leftButton = *getButton("BTN_ANISOTROPYLEFT", true);
-	WidgetButton &rightButton = *getButton("BTN_ANISOTROPYRIGHT", true);
+	Odyssey::WidgetButton &anisotropyButton = *getButton("BTN_ANISOTROPY", true);
+	Odyssey::WidgetButton &leftButton = *getButton("BTN_ANISOTROPYLEFT", true);
+	Odyssey::WidgetButton &rightButton = *getButton("BTN_ANISOTROPYRIGHT", true);
 
 	anisotropyButton.setText(TalkMan.getString(49079 + anisotropy));
 
