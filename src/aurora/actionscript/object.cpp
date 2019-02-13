@@ -65,7 +65,11 @@ Variable Object::getMember(const Variable &id) {
 		throw Common::Exception("Object::getMember id is not a string");
 
 	const Common::UString idString = id.asString();
-	if (_members.find(idString) != _members.end())
+
+	std::map<Common::UString, Variable>::iterator iter = _members.find("constructor");
+	if (hasMember(idString) && iter != _members.end() && iter->second.asObject()->hasMember(idString))
+		return iter->second.asObject()->getMember(id);
+	else if (_members.find(idString) != _members.end())
 		return _members[idString];
 	else {
 		_members.insert(std::make_pair(idString, ObjectPtr(new Object)));
