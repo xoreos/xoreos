@@ -339,6 +339,15 @@ void Object::setListening(bool listen) {
 	_listen = listen;
 }
 
+int32 Object::getListenPatternNumber(const Common::UString &pattern) {
+	auto search = _patterns.find(pattern);
+	return (search != _patterns.end()) ? search->second : 0;
+}
+
+void Object::setListenPattern(const Common::UString &pattern, int32 number) {
+	_patterns[pattern] = number;
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines
