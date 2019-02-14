@@ -485,6 +485,9 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	 */
 	loadSkills(gff, _ranks);
 
+	// Listening patterns
+	loadListenPatterns(gff);
+
 	// Deity
 	_deity = gff.getString("Deity", _deity);
 
@@ -615,6 +618,21 @@ void Creature::loadFeats(const Aurora::GFF3Struct &gff,
 		const Aurora::GFF3Struct &feat = **f;
 
 		feats->featAdd(feat.getUint("Feat"), level);
+	}
+}
+
+void Creature::loadListenPatterns(const Aurora::GFF3Struct &gff) {
+
+	setListening(gff.getBool("Listening", getIsListening()));
+
+	if (!gff.hasField("ExpressionList"))
+		return;
+
+	const Aurora::GFF3List &patternList = gff.getList("ExpressionList");
+	for (Aurora::GFF3List::const_iterator p = patternList.begin(); p != patternList.end(); ++p) {
+		const Aurora::GFF3Struct &pattern = **p;
+
+		setListenPattern(pattern.getString("ExpressionString"), pattern.getSint("ExpressionId"));
 	}
 }
 
