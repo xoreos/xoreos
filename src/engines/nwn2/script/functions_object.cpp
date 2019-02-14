@@ -408,6 +408,22 @@ void Functions::setListening(Aurora::NWScript::FunctionContext &ctx) {
 		object->setListening(ctx.getParams()[1].getInt() != 0);
 }
 
+void Functions::setListenPattern(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	const Common::UString &pattern = ctx.getParams()[1].getString();
+	if (pattern.empty())
+		return;
+
+	const int32 number = (int32)(ctx.getParams()[2].getInt());
+	if (number == 0)
+		return;
+
+	object->setListenPattern(pattern, number);
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines

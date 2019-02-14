@@ -234,6 +234,7 @@ private:
 	void setAssociateListenPatterns(Aurora::NWScript::FunctionContext &ctx);
 	void getIsListening            (Aurora::NWScript::FunctionContext &ctx);
 	void setListening              (Aurora::NWScript::FunctionContext &ctx);
+	void setListenPattern          (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp
