@@ -314,7 +314,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  173, "ChangeFaction"                       , 0                                                },
 	{  174, "GetIsListening"                      , &Functions::getIsListening                       },
 	{  175, "SetListening"                        , &Functions::setListening                         },
-	{  176, "SetListenPattern"                    , 0                                                },
+	{  176, "SetListenPattern"                    , &Functions::setListenPattern                     },
 	{  177, "TestStringAgainstPattern"            , 0                                                },
 	{  178, "GetMatchedSubstring"                 , 0                                                },
 	{  179, "GetMatchedSubstringsCount"           , 0                                                },
