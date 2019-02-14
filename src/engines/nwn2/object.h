@@ -26,6 +26,7 @@
 #define ENGINES_NWN2_OBJECT_H
 
 #include <list>
+#include <map>
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
@@ -155,8 +156,12 @@ public:
 
 	bool getIsListening();
 	void setListening(bool listen);
+	int32 getListenPatternNumber(const Common::UString pattern);
+	void setListenPattern(const Common::UString pattern, const int32 number=0);
 
 protected:
+	typedef std::map<Common::UString, int32> ListenMap;
+
 	ObjectType _type; ///< The object's type.
 
 	Common::UString _name;        ///< The object's display name.
@@ -174,6 +179,8 @@ protected:
 	bool _listen; ///< Is the object listening?
 
 	std::list<uint32> _ids; ///< The object's model IDs.
+
+	ListenMap _patterns; ///< The object's listening patterns
 
 	Area *_area; ///< The area the object is currently in.
 
