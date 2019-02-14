@@ -255,6 +255,9 @@ private:
 	                      Common::ScopedPtr<Feats> &feats,
 	                      uint32 level = 0);
 
+	/** Load the listening patterns. */
+	void loadListenPatterns(const Aurora::GFF3Struct &gff);
+
 	// Model loaders
 
 	Common::UString getBaseModel(const Common::UString &base);
