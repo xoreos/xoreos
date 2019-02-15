@@ -132,7 +132,8 @@ int Feats::getFeatsLuckACBonus() const {
 
 /** Return true if the custom code feat is flagged */
 bool Feats::getHasCustomFeat(Custom feat) const {
-	assert((feat > -1) && (feat < kCustomMAX));
+	assert(static_cast<uint>(feat) < kCustomMAX);
+
 	return _hasCustomFeat[feat];
 }
 
