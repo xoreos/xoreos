@@ -703,6 +703,8 @@ bool Creature::getHasSkill(uint32 skill) const {
 			case kSkillUseMagicDevice:
 				// Requires 1+ trained ranks
 				hasSkill = false;
+				break;
+
 			default:
 				break;
 		}
