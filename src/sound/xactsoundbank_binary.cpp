@@ -350,9 +350,9 @@ void XACTSoundBank_Binary::readComplexTrack(Common::SeekableReadStream &xsb, Tra
 			case EventType::Volume:
 				event.params.volume.fadeStepCount = xsb.readUint16LE();
 
-				event.params.volume.isRelative      = eventFlags & kPitchEventRelative;
-				event.params.volume.enableFade      = eventFlags & kPitchEventFade;
-				event.params.volume.enableVariation = eventFlags & kPitchEventVariation;
+				event.params.volume.isRelative      = eventFlags & kVolumeEventRelative;
+				event.params.volume.enableFade      = eventFlags & kVolumeEventFade;
+				event.params.volume.enableVariation = eventFlags & kVolumeEventVariation;
 
 				if (parameterSize >= 8) {
 					event.params.volume.volumeStart = CLIP(xsb.readSint16LE() / 100.0f, -64.0f, 64.0f);
