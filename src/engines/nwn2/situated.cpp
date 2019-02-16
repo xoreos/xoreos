@@ -46,6 +46,8 @@ namespace NWN2 {
 
 Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
 	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
+	_lockable(false), _keyRequired(false), _autoRemove(false),
+	_openLockDC(18), _closeLockDC(0),
 	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0) {
 
 	for (int i = 0; i < 3; i++)
@@ -227,8 +229,17 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Usable
 	_usable = gff.getBool("Useable", _usable);
 
-	// Locked
+	// Lock and key
 	_locked = gff.getBool("Locked", _locked);
+	_lockable = gff.getBool("Lockable", _lockable);
+	_keyRequired = gff.getBool("KeyRequired", _keyRequired);
+	_autoRemove = gff.getBool("AutoRemoveKey", _autoRemove);
+
+	_openLockDC = gff.getUint("OpenLockDC", _openLockDC);
+	_closeLockDC = gff.getUint("CloseLockDC", _closeLockDC);
+
+	_keyTag = gff.getString("KeyName", _keyTag);
+	_keyFeedback = gff.getString("KeyReqFeedback", _keyFeedback);
 
 	// Tint
 	readTint(gff, _tint);

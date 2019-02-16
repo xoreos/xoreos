@@ -77,7 +77,16 @@ protected:
 	uint32 _appearanceID; ///< The index within the situated appearance 2DA.
 	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
 
-	bool _locked; ///< Is the situated object locked?
+	bool _locked;      ///< Is the situated object locked?
+	bool _lockable;    ///< Can the situated object be locked?
+	bool _keyRequired; ///< Is a key required to unlock the situated object?
+	bool _autoRemove;  ///< Automatically remove key on use?
+
+	uint8 _openLockDC;  ///< DC to open the lock.
+	uint8 _closeLockDC; ///< DC to close the lock.
+
+	Common::UString _keyTag;      ///< Tag of the key that unlocks the situated object.
+	Common::UString _keyFeedback; ///< Feedback message on attempt to open without key.
 
 	Common::UString _soundOpened;    ///< The sound the object makes when opened.
 	Common::UString _soundClosed;    ///< The sound the object makes when closed.
