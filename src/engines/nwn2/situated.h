@@ -54,8 +54,22 @@ public:
 	/** Is the situated object open? */
 	virtual bool isOpen() const = 0;
 
-	bool isLocked() const;               ///< Is the situated object locked?
-	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
+	bool isLocked() const;                         ///< Is the situated object locked?
+	bool isLockable() const;                       ///< Is the situated object lockable?
+	bool isKeyRequired() const;                    ///< Is a key required to unlock the situated object?
+	virtual void setLocked(bool locked);           ///< Lock/Unlock the situated object.
+	virtual void setLockable(bool lockable);       ///< Set whether the situated object can be locked.
+	virtual void setKeyRequired(bool keyRequired); ///< Set whether a key is required to unlock.
+
+	uint8 getLockLockDC() const;                  ///< Get the DC to lock the situated object.
+	uint8 getLockUnlockDC() const;                ///< Get the DC to unlock the situated object.
+	virtual void setLockLockDC(uint8 lockDC);     ///< Set the DC to lock the situated object.
+	virtual void setLockUnlockDC(uint8 unlockDC); ///< Set the DC to unlock the situated object.
+
+	/** Get the tag of the key to unlock the situated object. */
+	const Common::UString &getLockKeyTag() const;
+	/** Set the tag of the key to unlock the situated object. */
+	virtual void setLockKeyTag(const Common::UString &keyTag);
 
 	/** Return the object that last opened this situated object. */
 	Object *getLastOpenedBy() const;
