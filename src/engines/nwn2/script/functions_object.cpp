@@ -36,6 +36,8 @@
 #include "src/engines/nwn2/objectcontainer.h"
 #include "src/engines/nwn2/object.h"
 #include "src/engines/nwn2/creature.h"
+#include "src/engines/nwn2/door.h"
+#include "src/engines/nwn2/placeable.h"
 
 #include "src/engines/nwn2/script/functions.h"
 
@@ -344,6 +346,42 @@ void Functions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
 
 	if (it != creatures.end())
 		ctx.getReturn() = *it;
+}
+
+void Functions::getCurrentHitPoints(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	ObjectType type = object->getType();
+	if (type == kObjectTypeCreature) {
+		Creature *creature = NWN2::ObjectContainer::toCreature(object);
+		ctx.getReturn() = (creature) ? creature->getCurrentHP() : 0;
+	} else if (type == kObjectTypePlaceable) {
+		Placeable *placeable = NWN2::ObjectContainer::toPlaceable(object);
+		ctx.getReturn() = (placeable) ? placeable->getCurrentHP() : 0;
+	} else if (type == kObjectTypeDoor) {
+		Door *door = NWN2::ObjectContainer::toDoor(object);
+		ctx.getReturn() = (door) ? door->getCurrentHP() : 0;
+	}
+}
+
+void Functions::getMaxHitPoints(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(ctx.getCaller());
+	if (!object)
+		return;
+
+	ObjectType type = object->getType();
+	if (type == kObjectTypeCreature) {
+		Creature *creature = NWN2::ObjectContainer::toCreature(object);
+		ctx.getReturn() = (creature) ? creature->getMaxHP() : 0;
+	} else if (type == kObjectTypePlaceable) {
+		Placeable *placeable = NWN2::ObjectContainer::toPlaceable(object);
+		ctx.getReturn() = (placeable) ? placeable->getMaxHP() : 0;
+	} else if (type == kObjectTypeDoor) {
+		Door *door = NWN2::ObjectContainer::toDoor(object);
+		ctx.getReturn() = (door) ? door->getMaxHP() : 0;
+	}
 }
 
 void Functions::jumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
