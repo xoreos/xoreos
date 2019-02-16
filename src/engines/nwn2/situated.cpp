@@ -47,7 +47,8 @@ namespace NWN2 {
 Situated::Situated(ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
 	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
 	_lockable(false), _keyRequired(false), _autoRemove(false),
-	_openLockDC(18), _closeLockDC(0),
+	_openLockDC(18), _closeLockDC(0), _currentHP(15), _baseHP(16),
+	_hardness(5), _fortSave(16), _refSave(0), _willSave(0),
 	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0) {
 
 	for (int i = 0; i < 3; i++)
@@ -178,6 +179,14 @@ void Situated::setLockKeyTag(const Common::UString &keyTag) {
 	_keyTag = keyTag;
 }
 
+int32 Situated::getCurrentHP() const {
+	return _currentHP;
+}
+
+int32 Situated::getMaxHP() const {
+	return _baseHP;
+}
+
 Object *Situated::getLastOpenedBy() const {
 	return _lastOpenedBy;
 }
@@ -284,6 +293,14 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	_keyTag = gff.getString("KeyName", _keyTag);
 	_keyFeedback = gff.getString("KeyReqFeedback", _keyFeedback);
+
+	// Defenses
+	_currentHP = gff.getUint("CurrentHP", _currentHP);
+	_baseHP = gff.getUint("HP", _baseHP);
+	_hardness = gff.getUint("Hardness", _hardness);
+	_fortSave = gff.getSint("Fort", _fortSave);
+	_refSave = gff.getSint("Ref", _refSave);
+	_willSave = gff.getSint("Will", _willSave);
 
 	// Tint
 	readTint(gff, _tint);
