@@ -27,8 +27,8 @@
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/creature.h"
 
-#include "src/engines/kotor/creature.h"
 #include "src/engines/kotor/objectcontainer.h"
 
 #include "src/engines/kotor/script/functions.h"

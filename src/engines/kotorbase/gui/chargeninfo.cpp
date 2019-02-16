@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  The class for storing character information for generation.
+ *  Character generation information for KotOR games.
  */
 
 #include "src/common/strutil.h"
@@ -29,7 +29,9 @@
 
 #include "src/engines/aurora/model.h"
 
-#include "src/engines/kotor/gui/chargen/chargeninfo.h"
+#include "src/engines/kotorbase/creature.h"
+
+#include "src/engines/kotorbase/gui/chargeninfo.h"
 
 namespace Engines {
 
@@ -190,7 +192,7 @@ void CharacterGenerationInfo::setFace(uint8 face) {
 	_face = face;
 }
 
-Creature *CharacterGenerationInfo::getCharacter() const {
+Creature *CharacterGenerationInfo::createCharacter() const {
 	Common::ScopedPtr<Creature> creature(new Creature());
 
 	creature->createPC(*this);
@@ -233,6 +235,9 @@ CharacterGenerationInfo::CharacterGenerationInfo(const CharacterGenerationInfo &
 	_skin = info._skin;
 	_face = info._face;
 	_name = info._name;
+}
+
+CharacterGenerationInfo::~CharacterGenerationInfo() {
 }
 
 void CharacterGenerationInfo::operator=(const CharacterGenerationInfo &info) {

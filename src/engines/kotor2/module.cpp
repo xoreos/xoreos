@@ -53,9 +53,10 @@
 #include "src/engines/aurora/freeroamcamera.h"
 #include "src/engines/aurora/satellitecamera.h"
 
+#include "src/engines/kotorbase/creature.h"
+
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/area.h"
-#include "src/engines/kotor2/creature.h"
 #include "src/engines/kotor2/gui/ingame/ingame.h"
 
 namespace Engines {
@@ -143,11 +144,11 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 	_hasModule = true;
 }
 
-void Module::usePC(Creature *pc) {
+void Module::usePC(KotOR::Creature *pc) {
 	_pc.reset(pc);
 }
 
-Creature *Module::getPC() {
+KotOR::Creature *Module::getPC() {
 	return _pc.get();
 }
 
@@ -427,7 +428,7 @@ void Module::leave() {
 }
 
 void Module::clickObject(Object *object) {
-	Creature *creature = ObjectContainer::toCreature(object);
+	KotOR::Creature *creature = ObjectContainer::toCreature(object);
 	if (creature && !creature->getConversation().empty())
 		startConversation(creature->getConversation(), creature);
 }
@@ -734,7 +735,7 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 	Common::UString finalName(name);
 
 	if (finalName.empty() && owner) {
-		Creature *creature = ObjectContainer::toCreature(owner);
+		KotOR::Creature *creature = ObjectContainer::toCreature(owner);
 		if (creature)
 			finalName = creature->getConversation();
 	}
@@ -762,7 +763,7 @@ void Module::playAnimationOnActiveObject(const Common::UString &baseAnim,
 
 	o->playAnimation(baseAnim, true, -1.0f);
 
-	Creature *creature = ObjectContainer::toCreature(o);
+	KotOR::Creature *creature = ObjectContainer::toCreature(o);
 	if (creature) {
 		if (headAnim.empty())
 			creature->playDefaultHeadAnimation();

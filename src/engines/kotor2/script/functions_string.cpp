@@ -40,9 +40,9 @@
 #include "src/engines/aurora/tokenman.h"
 
 #include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/creature.h"
 
 #include "src/engines/kotor2/objectcontainer.h"
-#include "src/engines/kotor2/creature.h"
 
 #include "src/engines/kotor2/script/functions.h"
 
@@ -57,7 +57,7 @@ void Functions::writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx)
 }
 
 void Functions::sendMessageToPC(Aurora::NWScript::FunctionContext &ctx) {
-	Creature *pc = KotOR2::ObjectContainer::toPC(getParamObject(ctx, 0));
+	KotOR::Creature *pc = KotOR2::ObjectContainer::toPC(getParamObject(ctx, 0));
 	if (!pc) {
 		debugC(Common::kDebugEngineScripts, 1, "Functions::%s: No PC", ctx.getName().c_str());
 		return;

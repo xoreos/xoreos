@@ -26,6 +26,7 @@
 
 #include "src/engines/kotor2/gui/chargen/classselection.h"
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
+#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 

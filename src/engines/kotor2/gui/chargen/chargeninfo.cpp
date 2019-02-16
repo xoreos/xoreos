@@ -19,16 +19,16 @@
  */
 
 /** @file
- *  The KotOR 2 character generation info.
+ *  Character generation information for KotOR II.
  */
 
 #include "src/common/strutil.h"
-#include "src/common/error.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/ltrfile.h"
 
-#include "chargeninfo.h"
+#include "src/engines/kotor2/creature.h"
+
+#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 
@@ -166,143 +166,6 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleSentinel() {
 	return info;
 }
 
-CharacterGenerationInfo::CharacterGenerationInfo() {
-}
-
-const Common::UString &CharacterGenerationInfo::getName() const {
-	return _name;
-}
-
-KotOR::Skin CharacterGenerationInfo::getSkin() const {
-	return _skin;
-}
-
-unsigned int CharacterGenerationInfo::getFace() const {
-	return _face;
-}
-
-KotOR::Gender CharacterGenerationInfo::getGender() const {
-	return _gender;
-}
-
-KotOR::Class CharacterGenerationInfo::getClass() const {
-	return _class;
-}
-
-void CharacterGenerationInfo::setName(const Common::UString &name) {
-	_name = name;
-}
-
-void CharacterGenerationInfo::setSkin(KotOR::Skin skin) {
-	_skin = skin;
-}
-
-void CharacterGenerationInfo::setFace(unsigned int face) {
-	_face = face;
-}
-
-Common::UString CharacterGenerationInfo::getBodyId() const {
-	Common::UString body;
-
-	body += "p";
-
-	switch (_gender) {
-		case KotOR::kGenderMale:
-			body += "m";
-			break;
-		case KotOR::kGenderFemale:
-			body += "f";
-			break;
-		default:
-			throw Common::Exception("Invalid gender");
-	}
-
-	body += "bam";
-
-	return body;
-}
-
-Common::UString CharacterGenerationInfo::getBodyTextureId() const {
-	Common::UString body;
-
-	body += "p";
-
-	switch (_gender) {
-		case KotOR::kGenderMale:
-			body += "m";
-			break;
-		case KotOR::kGenderFemale:
-			body += "f";
-			break;
-		default:
-			throw Common::Exception("Invalid gender");
-	}
-
-	body += "bam";
-
-	switch (_skin) {
-		case KotOR::kSkinA:
-		case KotOR::kSkinH:
-			body += "a";
-			break;
-		case KotOR::kSkinB:
-			body += "b";
-			break;
-		case KotOR::kSkinC:
-			body += "c";
-			break;
-		default:
-			throw Common::Exception("Invalid skin");
-	}
-
-	body += "01";
-
-	return body;
-}
-
-Common::UString CharacterGenerationInfo::getHeadId() const {
-	Common::UString head;
-
-	head += "p";
-
-	switch (_gender) {
-		case KotOR::kGenderMale:
-			head += "m";
-			break;
-		case KotOR::kGenderFemale:
-			head += "f";
-			break;
-		default:
-			throw Common::Exception("Invalid gender");
-	}
-
-	head += "h";
-
-	switch (_skin) {
-		case KotOR::kSkinA:
-			head += "a";
-			break;
-		case KotOR::kSkinB:
-			head += "b";
-			break;
-		case KotOR::kSkinC:
-			head += "c";
-			break;
-		case KotOR::kSkinH:
-			head += "h";
-			break;
-		default:
-			throw Common::Exception("Invalid skin");
-	}
-
-	if (_face >= 10)
-		head += Common::composeString(getFaceId());
-	else
-		head += "0" + Common::composeString(getFaceId());
-
-	return head;
-}
-
 Common::UString CharacterGenerationInfo::getPortrait() const {
 	Common::UString portrait;
 	portrait += "po_p";
@@ -398,57 +261,10 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 	return portrait;
 }
 
-Creature *CharacterGenerationInfo::getCharacter() const {
-	Common::ScopedPtr<Creature> creature(new Creature());
-
+KotOR::Creature *CharacterGenerationInfo::createCharacter() const {
+	Common::ScopedPtr<KotOR::Creature> creature(new Creature());
 	creature->createPC(*this);
 	return creature.release();
-}
-
-unsigned int CharacterGenerationInfo::getFaceId() const {
-	switch (_skin) {
-		case KotOR::kSkinA:
-			switch (_face) {
-				case 0: return 1;
-				case 1: return 3;
-				case 2:
-					if (_gender == KotOR::kGenderFemale) return 4;
-					else if (_gender == KotOR::kGenderMale) return 5;
-					else throw Common::Exception("invalid gender");
-				case 3:
-					if (_gender == KotOR::kGenderFemale) return 5;
-					else if (_gender == KotOR::kGenderMale) return 6;
-					else throw Common::Exception("invalid gender");
-				case 4:
-					if (_gender == KotOR::kGenderFemale) return 6;
-					else if (_gender == KotOR::kGenderMale) return 7;
-					else throw Common::Exception("invalid gender");
-				default:
-					throw Common::Exception("invalid face id");
-			}
-		case KotOR::kSkinB:
-			if (_gender == KotOR::kGenderFemale) return _face + 1;
-			else return _face + 6;
-		case KotOR::kSkinC:
-			switch (_face) {
-				case 0: return 1;
-				case 1:
-					if (_gender == KotOR::kGenderFemale) return 2;
-					else if (_gender == KotOR::kGenderMale) return 3;
-					else throw Common::Exception("invalid gender");
-				case 2:
-					if (_gender == KotOR::kGenderFemale) return 5;
-					else if (_gender == KotOR::kGenderMale) return 4;
-					else throw Common::Exception("invalid gender");
-				case 3: return 6;
-				case 4: return 7;
-				default:
-					throw Common::Exception("invalid face id");
-			}
-		case KotOR::kSkinH: return _face + 1;
-		default:
-			throw Common::Exception("invalid skin id");
-	}
 }
 
 } // End of namespace KotOR2

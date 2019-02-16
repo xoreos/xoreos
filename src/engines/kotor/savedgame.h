@@ -31,7 +31,7 @@
 #include "src/aurora/erffile.h"
 #include "src/aurora/gff3file.h"
 
-#include "src/engines/kotor/creature.h"
+#include "src/engines/kotorbase/creature.h"
 
 namespace Engines {
 

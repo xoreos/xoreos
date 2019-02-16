@@ -26,6 +26,7 @@
 #include "src/common/util.h"
 
 #include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/creature.h"
 
 #include "src/engines/kotor2/objectcontainer.h"
 #include "src/engines/kotor2/module.h"
@@ -34,7 +35,6 @@
 #include "src/engines/kotor2/situated.h"
 #include "src/engines/kotor2/placeable.h"
 #include "src/engines/kotor2/door.h"
-#include "src/engines/kotor2/creature.h"
 
 namespace Engines {
 
@@ -150,20 +150,20 @@ Door *ObjectContainer::toDoor(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Door *>(object);
 }
 
-Creature *ObjectContainer::toCreature(Aurora::NWScript::Object *object) {
-	return dynamic_cast<Creature *>(object);
+KotOR::Creature *ObjectContainer::toCreature(Aurora::NWScript::Object *object) {
+	return dynamic_cast<KotOR::Creature *>(object);
 }
 
-Creature *ObjectContainer::toPC(Aurora::NWScript::Object *object) {
-	Creature *pc = dynamic_cast<Creature *>(object);
+KotOR::Creature *ObjectContainer::toPC(Aurora::NWScript::Object *object) {
+	KotOR::Creature *pc = dynamic_cast<KotOR::Creature *>(object);
 	if (!pc || !pc->isPC())
 		return 0;
 
 	return pc;
 }
 
-Creature *ObjectContainer::toPartyMember(Aurora::NWScript::Object *object) {
-	Creature *partyMember = dynamic_cast<Creature *>(object);
+KotOR::Creature *ObjectContainer::toPartyMember(Aurora::NWScript::Object *object) {
+	KotOR::Creature *partyMember = dynamic_cast<KotOR::Creature *>(object);
 	if (!partyMember || !partyMember->isPartyMember())
 		return 0;
 

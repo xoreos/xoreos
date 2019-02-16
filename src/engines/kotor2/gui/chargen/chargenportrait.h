@@ -33,7 +33,7 @@ namespace KotOR2 {
 
 class CharacterGenerationPortraitMenu : public CharacterGenerationBaseMenu {
 public:
-	CharacterGenerationPortraitMenu(CharacterGenerationInfo &info, Console *console = 0);
+	CharacterGenerationPortraitMenu(KotOR::CharacterGenerationInfo &info, Console *console = 0);
 
 protected:
 	virtual void callbackActive(Widget &widget);

@@ -27,9 +27,10 @@
 
 #include "src/aurora/types.h"
 
+#include "src/engines/kotorbase/item.h"
+#include "src/engines/kotorbase/inventory.h"
+
 #include "src/engines/kotor/situated.h"
-#include "src/engines/kotor/item.h"
-#include "src/engines/kotor/inventory.h"
 
 namespace Engines {
 

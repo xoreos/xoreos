@@ -220,7 +220,7 @@ void CharacterGenerationMenu::start() {
 	hide();
 
 	try {
-		_module->usePC(_pc->getCharacter());
+		_module->usePC(_pc->createCharacter());
 		_module->load("end_m01aa");
 	} catch (...) {
 		Common::exceptionDispatcherWarning();

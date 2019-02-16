@@ -32,7 +32,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-CharacterGenerationNameMenu::CharacterGenerationNameMenu(CharacterGenerationInfo &info, Engines::Console *console) :
+CharacterGenerationNameMenu::CharacterGenerationNameMenu(KotOR::CharacterGenerationInfo &info, Engines::Console *console) :
 		CharacterGenerationBaseMenu(info, console),
 		_humanFirst(info.getGender() == KotOR::kGenderMale ? "humanm" : "humanf"), _humanLast("humanl"),
 		_name(_info.getName()) {

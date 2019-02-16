@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-CharacterGenerationPortraitMenu::CharacterGenerationPortraitMenu(CharacterGenerationInfo &info,
+CharacterGenerationPortraitMenu::CharacterGenerationPortraitMenu(KotOR::CharacterGenerationInfo &info,
                                                                  Engines::Console *console) :
 		CharacterGenerationBaseMenu(info, console) {
 	load("portcust_p");

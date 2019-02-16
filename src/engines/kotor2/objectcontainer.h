@@ -36,6 +36,10 @@
 
 namespace Engines {
 
+namespace KotOR {
+	class Creature;
+}
+
 namespace KotOR2 {
 
 class Module;
@@ -44,7 +48,6 @@ class Waypoint;
 class Situated;
 class Placeable;
 class Door;
-class Creature;
 
 /** A class able to sort objects by distance to a target object. */
 class ObjectDistanceSort {
@@ -79,15 +82,15 @@ public:
 
 	static KotOR::Object *toObject(::Aurora::NWScript::Object *object);
 
-	static Module    *toModule     (Aurora::NWScript::Object *object);
-	static Area      *toArea       (Aurora::NWScript::Object *object);
-	static Waypoint  *toWaypoint   (Aurora::NWScript::Object *object);
-	static Situated  *toSituated   (Aurora::NWScript::Object *object);
-	static Placeable *toPlaceable  (Aurora::NWScript::Object *object);
-	static Door      *toDoor       (Aurora::NWScript::Object *object);
-	static Creature  *toCreature   (Aurora::NWScript::Object *object);
-	static Creature  *toPC         (Aurora::NWScript::Object *object);
-	static Creature  *toPartyMember(Aurora::NWScript::Object *object);
+	static Module          *toModule     (Aurora::NWScript::Object *object);
+	static Area            *toArea       (Aurora::NWScript::Object *object);
+	static Waypoint        *toWaypoint   (Aurora::NWScript::Object *object);
+	static Situated        *toSituated   (Aurora::NWScript::Object *object);
+	static Placeable       *toPlaceable  (Aurora::NWScript::Object *object);
+	static Door            *toDoor       (Aurora::NWScript::Object *object);
+	static KotOR::Creature *toCreature   (Aurora::NWScript::Object *object);
+	static KotOR::Creature *toPC         (Aurora::NWScript::Object *object);
+	static KotOR::Creature *toPartyMember(Aurora::NWScript::Object *object);
 
 private:
 	typedef std::list<KotOR::Object *> ObjectList;

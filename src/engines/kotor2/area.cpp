@@ -44,6 +44,7 @@
 #include "src/engines/aurora/localpathfinding.h"
 
 #include "src/engines/kotorbase/room.h"
+#include "src/engines/kotorbase/creature.h"
 
 #include "src/engines/kotor2/objectwalkmesh.h"
 #include "src/engines/kotor2/doorwalkmesh.h"
@@ -53,7 +54,6 @@
 #include "src/engines/kotor2/pathfinding.h"
 #include "src/engines/kotor2/placeable.h"
 #include "src/engines/kotor2/door.h"
-#include "src/engines/kotor2/creature.h"
 
 namespace Engines {
 
@@ -420,7 +420,7 @@ void Area::loadDoors(const Aurora::GFF3List &list) {
 
 void Area::loadCreatures(const Aurora::GFF3List &list) {
 	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
-		Creature *creature = new Creature(**c);
+		KotOR::Creature *creature = new KotOR::Creature(**c);
 
 		loadObject(*creature);
 	}
@@ -611,7 +611,7 @@ void Area::notifyObjectMoved(Object &o) {
 }
 
 void Area::notifyPCMoved() {
-	Creature *pc = _module->getPC();
+	KotOR::Creature *pc = _module->getPC();
 
 	const KotOR::Room *prevPCRoom = pc->getRoom();
 	notifyObjectMoved(*pc);

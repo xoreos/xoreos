@@ -100,9 +100,10 @@ void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
 	float x, y, z;
 	object->getPosition(x, y, z);
 
-	Action action(kActionMoveToPoint);
-	action.setRange(range);
-	action.setPoint(x, y, z);
+	Action action;
+	action.type = kActionMoveToPoint;
+	action.range = range;
+	action.location = glm::vec3(x, y, z);
 
 	caller->clearActionQueue();
 	caller->enqueueAction(action);

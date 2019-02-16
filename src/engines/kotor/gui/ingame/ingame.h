@@ -27,8 +27,9 @@
 
 #include "src/engines/aurora/console.h"
 
+#include "src/engines/kotorbase/inventory.h"
+
 #include "src/engines/kotor/module.h"
-#include "src/engines/kotor/inventory.h"
 
 #include "src/engines/kotor/gui/ingame/hud.h"
 #include "src/engines/kotor/gui/ingame/selectioncircle.h"

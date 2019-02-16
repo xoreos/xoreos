@@ -19,59 +19,43 @@
  */
 
 /** @file
- *  Collection of items.
+ *  Collection of inventory items in KotOR games.
  */
 
-#include "src/engines/kotor/inventory.h"
+#ifndef ENGINES_KOTORBASE_INVENTORY_H
+#define ENGINES_KOTORBASE_INVENTORY_H
+
+#include <map>
+
+#include "src/common/ustring.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-void Inventory::addItem(const Common::UString &tag, int count) {
-	if (tag.empty())
-		return;
+class Inventory {
+public:
+	struct ItemGroup {
+		Common::UString tag;
+		int count;
+	};
 
-	assert(count > 0);
+	const std::map<Common::UString, ItemGroup> &getItems() const;
 
-	ItemMap::iterator i = _items.find(tag);
-	if (i == _items.end()) {
-		InventoryItem item;
-		item.tag = tag;
-		item.count = count;
-		_items.insert(std::pair<Common::UString, InventoryItem>(tag, item));
-	} else
-		i->second.count += count;
-}
+	bool hasItem(const Common::UString &tag) const;
 
-void Inventory::removeItem(const Common::UString &tag, int count) {
-	if (tag.empty())
-		return;
+	void addItem(const Common::UString &tag, int count = 1);
+	void removeItem(const Common::UString &tag, int count = 1);
+	void removeAllItems();
 
-	assert(count > 0);
+private:
+	typedef std::map<Common::UString, ItemGroup> ItemMap;
 
-	ItemMap::iterator i = _items.find(tag);
-	if (i == _items.end())
-		return;
-
-	if (i->second.count > count)
-		i->second.count -= count;
-	else
-		_items.erase(i);
-}
-
-void Inventory::removeAllItems() {
-	_items.clear();
-}
-
-const std::map<Common::UString, InventoryItem> &Inventory::getItems() const {
-	return _items;
-}
-
-bool Inventory::hasItem(const Common::UString &tag) const {
-	return _items.find(tag) != _items.end();
-}
+	ItemMap _items;
+};
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTORBASE_INVENTORY_H

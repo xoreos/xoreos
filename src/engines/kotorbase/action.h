@@ -19,41 +19,33 @@
  */
 
 /** @file
- *  Collection of items.
+ *  Creature action in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_INVENTORY_H
-#define ENGINES_KOTOR_INVENTORY_H
+#ifndef ENGINES_KOTORBASE_ACTION_H
+#define ENGINES_KOTORBASE_ACTION_H
 
-#include <map>
+#include "glm/vec3.hpp"
 
-#include "src/common/ustring.h"
+#include "src/engines/kotorbase/types.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-struct InventoryItem {
-	Common::UString tag;
-	int count;
-};
+class Object;
 
-class Inventory {
-public:
-	void addItem(const Common::UString &tag, int count = 1);
-	void removeItem(const Common::UString &tag, int count = 1);
-	void removeAllItems();
+struct Action {
+	ActionType type;
+	glm::vec3 location;
+	Object *object;
+	float range;
 
-	const std::map<Common::UString, InventoryItem> &getItems() const;
-	bool hasItem(const Common::UString &tag) const;
-private:
-	typedef std::map<Common::UString, InventoryItem> ItemMap;
-
-	ItemMap _items;
+	Action();
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_INVENTORY_H
+#endif // ENGINES_KOTORBASE_ACTION_H

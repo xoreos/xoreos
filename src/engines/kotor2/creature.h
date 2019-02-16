@@ -19,123 +19,32 @@
  */
 
 /** @file
- *  A creature in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Creature within an area in KotOR II.
  */
 
 #ifndef ENGINES_KOTOR2_CREATURE_H
 #define ENGINES_KOTOR2_CREATURE_H
 
-#include "src/common/types.h"
-#include "src/common/scopedptr.h"
-#include "src/common/ustring.h"
-
-#include "src/aurora/types.h"
-
-#include "src/graphics/aurora/types.h"
-
-#include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/creature.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class CharacterGenerationInfo;
-
-class Creature : public KotOR::Object {
+class Creature : public KotOR::Creature {
 public:
-	/** Create a dummy creature instance. Not playable as it is.*/
-	Creature();
-	/** Load from a creature instance. */
-	Creature(const Aurora::GFF3Struct &creature);
-	~Creature();
+	/** Generate a string for the body mesh. */
+	static Common::UString getBodyMeshString(KotOR::Gender gender, KotOR::Class charClass, char state = 'b');
+	/** Generate a string for the body texture. */
+	static Common::UString getBodyTextureString(KotOR::Gender gender, KotOR::Skin skin, KotOR::Class charClass, char state = 'b');
+	/** Generate a string for the head mesh. */
+	static Common::UString getHeadMeshString(KotOR::Gender gender, KotOR::Skin skin, uint32 faceId);
 
-	/** Create a fake player character creature for testing purposes. */
-	void createFakePC();
-	/** Create a player character creature. */
-	void createPC(const CharacterGenerationInfo &info);
-
-	// Basic visuals
-
-	void show(); ///< Show the creature's model.
-	void hide(); ///< Hide the creature's model.
-	bool isVisible() const; ///< Is the creature's model visible?
-
-	// Basic properties
-
-	bool isPC() const; ///< Is the creature a player character?
-	bool isPartyMember() const;
-
-	// Positioning
-
-	/** Set the creature's position. */
-	void setPosition(float x, float y, float z);
-	/** Set the creature's orientation. */
-	void setOrientation(float x, float y, float z, float angle);
-
-	// Object/Cursor interactions
-
-	void enter(); ///< The cursor entered the creature.
-	void leave(); ///< The cursor left the creature.
-
-	/** (Un)Highlight the creature. */
-	void highlight(bool enabled);
-
-	/** The creature was clicked. */
-	bool click(Object *triggerer = 0);
-
-	const Common::UString &getConversation() const;
-
-	float getCameraHeight() const;
-
-	// Animation
-
-	void playDefaultAnimation();
-	void playDefaultHeadAnimation();
-
-	void playAnimation(const Common::UString &anim,
-	                   bool restart = true,
-	                   float length = 0.0f,
-	                   float speed = 1.0f);
-
-	void playHeadAnimation(const Common::UString &anim,
-	                       bool restart = true,
-	                       float length = 0.0f,
-	                       float speed = 1.0f);
+protected:
+	void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation);
 
 private:
-	/** Parts of a creature's body. */
-	struct PartModels {
-		Common::UString type;
-
-		Common::UString body;
-		Common::UString head;
-
-		Common::UString bodyTexture;
-	};
-
-	bool _isPC; ///< Is the creature a PC?
-
-	uint32 _appearance; ///< The creature's general appearance.
-
-	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
-	Common::UString _conversation;
-	Common::UString _modelType;
-
-
-	void init();
-
-	void load(const Aurora::GFF3Struct &creature);
-	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
-
-	void loadProperties(const Aurora::GFF3Struct &gff);
-	void loadPortrait(const Aurora::GFF3Struct &gff);
-	void loadAppearance();
-
-	void getPartModels(PartModels &parts, uint32 state = 'a');
-	void loadBody(PartModels &parts);
-	void loadHead(PartModels &parts);
-
-	void setDefaultAnimations();
+	static uint32 transformFaceId(KotOR::Gender gender, KotOR::Skin skin, uint32 faceId);
 };
 
 } // End of namespace KotOR2

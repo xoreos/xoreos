@@ -26,8 +26,9 @@
 
 #include "src/engines/odyssey/label.h"
 
+#include "src/engines/kotorbase/gui/chargeninfo.h"
+
 #include "src/engines/kotor/gui/chargen/chargenname.h"
-#include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 

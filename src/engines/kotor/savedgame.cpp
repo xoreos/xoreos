@@ -27,9 +27,9 @@
 #include "src/common/filepath.h"
 #include "src/common/readfile.h"
 
-#include "src/engines/kotor/savedgame.h"
+#include "src/engines/kotorbase/gui/chargeninfo.h"
 
-#include "src/engines/kotor/gui/chargen/chargeninfo.h"
+#include "src/engines/kotor/savedgame.h"
 
 namespace Engines {
 
@@ -147,7 +147,7 @@ Creature *SavedGame::getPC() {
 			break;
 	}
 
-	_pc = info->getCharacter();
+	_pc = info->createCharacter();
 
 	if (_pcLoaded)
 		_pc->setPosition(_pcPosition[0], _pcPosition[1], _pcPosition[2]);

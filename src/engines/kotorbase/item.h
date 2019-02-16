@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  An item in a Star Wars: Knights of the Old Republic area.
+ *  Inventory item in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_ITEM_H
-#define ENGINES_KOTOR_ITEM_H
+#ifndef ENGINES_KOTORBASE_ITEM_H
+#define ENGINES_KOTORBASE_ITEM_H
 
 #include "src/engines/kotorbase/object.h"
 
@@ -35,8 +35,12 @@ class Item : public Object {
 public:
 	Item(const Common::UString &item);
 
+	// Basic properties
+
 	const Common::UString &getName() const;
 	EquipmentSlot getEquipableSlots() const;
+
+	// Visual properties
 
 	int getBodyVariation() const;
 	int getTextureVariation() const;
@@ -59,4 +63,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_ITEM_H
+#endif // ENGINES_KOTORBASE_ITEM_H

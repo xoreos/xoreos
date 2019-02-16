@@ -25,11 +25,12 @@
 #ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
 #define ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
 
+#include "src/engines/kotorbase/gui/chargeninfo.h"
+
 #include "src/engines/kotor/module.h"
 
 #include "src/engines/kotor/gui/gui.h"
 
-#include "src/engines/kotor/gui/chargen/chargeninfo.h"
 #include "src/engines/kotor/gui/chargen/chargenbase.h"
 
 namespace Engines {

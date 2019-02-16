@@ -19,58 +19,58 @@
  */
 
 /** @file
- *  Creature action in Star Wars: Knights of the Old Republic.
+ *  Collection of inventory items in KotOR games.
  */
 
-#include "src/engines/kotor/action.h"
+#include "src/engines/kotorbase/inventory.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Action::Action(ActionType type) : _type(type), _object(0), _range(0.0f) {
-	_point[0] = _point[1] = _point[2] = 0.0f;
+void Inventory::addItem(const Common::UString &tag, int count) {
+	if (tag.empty())
+		return;
+
+	assert(count > 0);
+
+	ItemMap::iterator i = _items.find(tag);
+	if (i == _items.end()) {
+		ItemGroup item;
+		item.tag = tag;
+		item.count = count;
+		_items.insert(std::pair<Common::UString, ItemGroup>(tag, item));
+	} else {
+		i->second.count += count;
+	}
 }
 
-Action::Action(const Action &action) : _type(action._type) {
-	_point[0] = action._point[0];
-	_point[1] = action._point[1];
-	_point[2] = action._point[2];
+void Inventory::removeItem(const Common::UString &tag, int count) {
+	if (tag.empty())
+		return;
 
-	_object = action._object;
-	_range = action._range;
+	assert(count > 0);
+
+	ItemMap::iterator i = _items.find(tag);
+	if (i == _items.end())
+		return;
+
+	if (i->second.count > count)
+		i->second.count -= count;
+	else
+		_items.erase(i);
 }
 
-void Action::setPoint(float x, float y, float z) {
-	_point[0] = x;
-	_point[1] = y;
-	_point[2] = z;
+void Inventory::removeAllItems() {
+	_items.clear();
 }
 
-void Action::setObject(Object *o) {
-	_object = o;
+const std::map<Common::UString, Inventory::ItemGroup> &Inventory::getItems() const {
+	return _items;
 }
 
-void Action::setRange(float range) {
-	_range = range;
-}
-
-ActionType Action::getType() const {
-	return _type;
-}
-
-void Action::getPoint(float &x, float &y, float &z) const {
-	x = _point[0];
-	y = _point[1];
-	z = _point[2];
-}
-
-Object *Action::getObject() const {
-	return _object;
-}
-
-float Action::getRange() const {
-	return _range;
+bool Inventory::hasItem(const Common::UString &tag) const {
+	return _items.find(tag) != _items.end();
 }
 
 } // End of namespace KotOR

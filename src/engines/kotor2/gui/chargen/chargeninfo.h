@@ -19,21 +19,19 @@
  */
 
 /** @file
- *  The KotOR 2 character generation info.
+ *  Character generation information for KotOR II.
  */
 
 #ifndef ENGINES_KOTOR2_GUI_CHARGEN_CHARACTERGENERATIONINFO_H
 #define ENGINES_KOTOR2_GUI_CHARGEN_CHARACTERGENERATIONINFO_H
 
-#include "src/engines/kotorbase/types.h"
-
-#include "src/engines/kotor2/creature.h"
+#include "src/engines/kotorbase/gui/chargeninfo.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class CharacterGenerationInfo {
+class CharacterGenerationInfo : public KotOR::CharacterGenerationInfo {
 public:
 	static CharacterGenerationInfo *createRandomMaleConsular();
 	static CharacterGenerationInfo *createRandomFemaleConsular();
@@ -42,46 +40,9 @@ public:
 	static CharacterGenerationInfo *createRandomMaleSentinel();
 	static CharacterGenerationInfo *createRandomFemaleSentinel();
 
-	/** Get the name of the character. */
-	const Common::UString &getName() const;
-	/** Get the skin type of the character. */
-	KotOR::Skin getSkin() const;
-	/** Get the current face index of the character. */
-	unsigned int getFace() const;
-
-	KotOR::Gender getGender() const;
-
-	KotOR::Class getClass() const;
-
-	/** Set the name of the Character. */
-	void setName(const Common::UString &name);
-	/** Set the skin type of the Character. */
-	void setSkin(KotOR::Skin skin);
-	/** Set the face index of the character. */
-	void setFace(unsigned int face);
-
-	/** Get the Id for the body mesh. */
-	Common::UString getBodyId() const;
-	/** Get the Id for the body mesh texture. */
-	Common::UString getBodyTextureId() const;
-	/** Get the Id for the head mesh. */
-	Common::UString getHeadId() const;
-
 	Common::UString getPortrait() const;
-	/** Create a creature object from the info. */
-	Creature *getCharacter() const;
 
-private:
-	/** Get the face id regarding the skin and gender. */
-	unsigned int getFaceId() const;
-
-	KotOR::Gender _gender;
-	KotOR::Class _class;
-	KotOR::Skin _skin;
-	unsigned int _face;
-	Common::UString _name;
-
-	CharacterGenerationInfo();
+	KotOR::Creature *createCharacter() const;
 };
 
 } // End of namespace KotOR2

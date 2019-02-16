@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A creature in a Star Wars: Knights of the Old Republic area.
+ *  Creature within an area in KotOR games.
  */
 
 #include "src/common/util.h"
@@ -40,19 +40,19 @@
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
 
-#include "src/engines/kotor/creature.h"
-#include "src/engines/kotor/item.h"
+#include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/item.h"
 
-#include "src/engines/kotor/gui/chargen/chargeninfo.h"
+#include "src/engines/kotorbase/gui/chargeninfo.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Creature::Creature(const Common::UString &resRef)
-		: Object(kObjectTypeCreature),
-		  _walkRate(0.0f),
-		  _runRate(0.0f) {
+Creature::Creature(const Common::UString &resRef) :
+		Object(kObjectTypeCreature),
+		_walkRate(0.0f),
+		_runRate(0.0f) {
 
 	init();
 
@@ -63,19 +63,19 @@ Creature::Creature(const Common::UString &resRef)
 	load(utc->getTopLevel());
 }
 
-Creature::Creature(const Aurora::GFF3Struct &creature)
-		: Object(kObjectTypeCreature),
-		  _walkRate(0.0f),
-		  _runRate(0.0f) {
+Creature::Creature(const Aurora::GFF3Struct &creature) :
+		Object(kObjectTypeCreature),
+		_walkRate(0.0f),
+		_runRate(0.0f) {
 
 	init();
 	load(creature);
 }
 
-Creature::Creature()
-		: Object(kObjectTypeCreature),
-		  _walkRate(0.0f),
-		  _runRate(0.0f) {
+Creature::Creature() :
+		Object(kObjectTypeCreature),
+		_walkRate(0.0f),
+		_runRate(0.0f) {
 
 	init();
 }
@@ -399,50 +399,14 @@ void Creature::getPartModels(PartModels &parts, uint32 state) {
 }
 
 void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) {
-	parts.body = getBodyMeshString(_gender, getClassByPosition(0), state);
+	Class charClass = getClassByPosition(0);
+	parts.body = getBodyMeshString(_gender, charClass, state);
+	parts.bodyTexture = getBodyTextureString(_gender, _skin, charClass, state);
 	parts.head = getHeadMeshString(_gender, _skin, _face);
-	parts.bodyTexture = "p";
-
-	switch (_gender) {
-		case kGenderMale:
-			parts.bodyTexture += "m";
-			break;
-		case kGenderFemale:
-			parts.bodyTexture += "f";
-			break;
-		default:
-			throw Common::Exception("Unknown gender");
-	}
-
-	parts.bodyTexture  += Common::UString("b") + state;
 
 	switch (state) {
 		case 'a':
 		case 'b':
-			switch (_levels.back().characterClass) {
-				case kClassSoldier:
-					parts.bodyTexture += "l";
-					break;
-				case kClassScout:
-					parts.bodyTexture += "m";
-					break;
-				default:
-				case kClassScoundrel:
-					parts.bodyTexture += "s";
-					break;
-			}
-			if (state == 'a') {
-				switch (_skin) {
-					case kSkinA:
-						parts.bodyTexture += "A";
-						break;
-					case kSkinB:
-						parts.bodyTexture += "B";
-						break;
-					default:
-						break;
-				}
-			}
 			break;
 		default:
 			switch (_gender) {
@@ -771,6 +735,57 @@ Common::UString Creature::getBodyMeshString(Gender gender, Class charClass, char
 	}
 
 	return body;
+}
+
+Common::UString Creature::getBodyTextureString(Gender gender, Skin skin, Class charClass, char state) {
+	Common::UString bodyTexture("p");
+
+	switch (gender) {
+		case kGenderMale:
+			bodyTexture += "m";
+			break;
+		case kGenderFemale:
+			bodyTexture += "f";
+			break;
+		default:
+			throw Common::Exception("Unknown gender");
+	}
+
+	bodyTexture  += Common::UString("b") + state;
+
+	switch (state) {
+		case 'a':
+		case 'b':
+			switch (charClass) {
+				case kClassSoldier:
+					bodyTexture += "l";
+					break;
+				case kClassScout:
+					bodyTexture += "m";
+					break;
+				default:
+				case kClassScoundrel:
+					bodyTexture += "s";
+					break;
+			}
+			if (state == 'a') {
+				switch (skin) {
+					case kSkinA:
+						bodyTexture += "A";
+						break;
+					case kSkinB:
+						bodyTexture += "B";
+						break;
+					default:
+						break;
+				}
+			}
+			break;
+		default:
+			break;
+	}
+
+	return bodyTexture;
 }
 
 Common::UString Creature::getHeadMeshString(Gender gender, Skin skin, uint32 faceId) {
