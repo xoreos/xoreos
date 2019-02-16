@@ -71,6 +71,11 @@ public:
 	/** Set the tag of the key to unlock the situated object. */
 	virtual void setLockKeyTag(const Common::UString keyTag);
 
+	/** Return the current HP this situated object has. */
+	int32 getCurrentHP() const;
+	/** Return the max HP this situated object can have. */
+	int32 getMaxHP() const;
+
 	/** Return the object that last opened this situated object. */
 	Object *getLastOpenedBy() const;
 	/** Return the object that last closed this situated object. */
@@ -98,6 +103,13 @@ protected:
 
 	uint8 _openLockDC;  ///< DC to open the lock.
 	uint8 _closeLockDC; ///< DC to close the lock.
+
+	uint32 _currentHP; ///< Remaining hit points.
+	uint32 _baseHP;    ///< Maximum hit points.
+	uint32 _hardness;  ///< Resistance to damage.
+	int32 _fortSave;   ///< Fortitude saving throw modifier.
+	int32 _refSave;    ///< Reflex saving throw modifier.
+	int32 _willSave;   ///< Willpower saving throw modifier.
 
 	Common::UString _keyTag;      ///< Tag of the key that unlocks the situated object.
 	Common::UString _keyFeedback; ///< Feedback message on attempt to open without key.
