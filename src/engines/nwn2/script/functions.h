@@ -238,8 +238,19 @@ private:
 	// '---
 
 	// .--- Situated objects, functions_situated.cpp
-	void getLocked(Aurora::NWScript::FunctionContext &ctx);
-	void setLocked(Aurora::NWScript::FunctionContext &ctx);
+	void getLocked         (Aurora::NWScript::FunctionContext &ctx);
+	void getLockLockable   (Aurora::NWScript::FunctionContext &ctx);
+	void getLockKeyRequired(Aurora::NWScript::FunctionContext &ctx);
+	void getLockKeyTag     (Aurora::NWScript::FunctionContext &ctx);
+	void getLockLockDC     (Aurora::NWScript::FunctionContext &ctx);
+	void getLockUnlockDC   (Aurora::NWScript::FunctionContext &ctx);
+
+	void setLocked         (Aurora::NWScript::FunctionContext &ctx);
+	void setLockLockable   (Aurora::NWScript::FunctionContext &ctx);
+	void setLockKeyRequired(Aurora::NWScript::FunctionContext &ctx);
+	void setLockKeyTag     (Aurora::NWScript::FunctionContext &ctx);
+	void setLockLockDC     (Aurora::NWScript::FunctionContext &ctx);
+	void setLockUnlockDC   (Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsOpen(Aurora::NWScript::FunctionContext &ctx);
 

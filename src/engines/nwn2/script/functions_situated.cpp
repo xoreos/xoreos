@@ -40,10 +40,70 @@ void Functions::getLocked(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = situated ? situated->isLocked() : 0;
 }
 
+void Functions::getLockLockable(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+
+	ctx.getReturn() = situated ? situated->isLockable() : 0;
+}
+
+void Functions::getLockKeyRequired(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+
+	ctx.getReturn() = situated ? situated->isKeyRequired() : 0;
+}
+
+void Functions::getLockKeyTag(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+
+	ctx.getReturn() = situated ? situated->getLockKeyTag() : Common::UString("");
+}
+
+void Functions::getLockLockDC(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+
+	ctx.getReturn() = situated ? situated->getLockLockDC() : 0;
+}
+
+void Functions::getLockUnlockDC(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+
+	ctx.getReturn() = situated ? situated->getLockUnlockDC() : 0;
+}
+
 void Functions::setLocked(Aurora::NWScript::FunctionContext &ctx) {
 	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
 	if (situated)
 		situated->setLocked(ctx.getParams()[1].getInt() != 0);
+}
+
+void Functions::setLockLockable(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+	if (situated)
+		situated->setLockable(ctx.getParams()[1].getInt() != 0);
+}
+
+void Functions::setLockKeyRequired(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+	if (situated)
+		situated->setKeyRequired(ctx.getParams()[1].getInt() != 0);
+}
+
+void Functions::setLockKeyTag(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+	if (situated)
+		situated->setLockKeyTag(ctx.getParams()[1].getString());
+}
+
+void Functions::setLockLockDC(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+	if (situated)
+		situated->setLockLockDC(ctx.getParams()[1].getInt());
+}
+
+void Functions::setLockUnlockDC(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+	if (situated)
+		situated->setLockUnlockDC(ctx.getParams()[1].getInt());
 }
 
 void Functions::getIsOpen(Aurora::NWScript::FunctionContext &ctx) {
