@@ -130,8 +130,52 @@ bool Situated::isLocked() const {
 	return _locked;
 }
 
+bool Situated::isLockable() const {
+	return _lockable;
+}
+
+bool Situated::isKeyRequired() const {
+	return _keyRequired;
+}
+
+uint8 Situated::getLockLockDC() const {
+	return _openLockDC;
+}
+
+uint8 Situated::getLockUnlockDC() const {
+	return _closeLockDC;
+}
+
+Common::UString Situated::getLockKeyTag() const {
+	return _keyTag;
+}
+
 void Situated::setLocked(bool locked) {
 	_locked = locked;
+}
+
+void Situated::setLockable(bool lockable) {
+	_lockable = lockable;
+}
+
+void Situated::setKeyRequired(bool keyRequired) {
+	_keyRequired = keyRequired;
+}
+
+void Situated::setLockLockDC(uint8 lockDC) {
+	// lockDC must be between 0 and 250
+	if (lockDC <= 250)
+		_openLockDC = lockDC;
+}
+
+void Situated::setLockUnlockDC(uint8 unlockDC) {
+	// unlockDC must be between 0 and 250
+	if (unlockDC <= 250)
+		_closeLockDC = unlockDC;
+}
+
+void Situated::setLockKeyTag(const Common::UString keyTag) {
+	_keyTag = keyTag;
 }
 
 Object *Situated::getLastOpenedBy() const {
