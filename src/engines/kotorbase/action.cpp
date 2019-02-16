@@ -19,43 +19,18 @@
  */
 
 /** @file
- *  Creature action in Star Wars: Knights of the Old Republic.
+ *  Creature action in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_ACTION_H
-#define ENGINES_KOTOR_ACTION_H
-
-#include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/action.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Object;
-
-class Action {
-public:
-	Action(ActionType type);
-	Action(const Action &action);
-
-	void setPoint(float x, float y, float z);
-	void setObject(Object *o);
-	void setRange(float range);
-
-	ActionType getType() const;
-	void getPoint(float &x, float &y, float &z) const;
-	Object *getObject() const;
-	float getRange() const;
-
-private:
-	ActionType _type;
-	float _point[3];
-	Object *_object;
-	float _range;
-};
+Action::Action() : type(kActionInvalid), object(0), range(0.0f) {
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_ACTION_H

@@ -19,20 +19,18 @@
  */
 
 /** @file
- *  The class for storing character information for generation.
+ *  Character generation information for KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARGENCHAR_H
-#define ENGINES_KOTOR_GUI_CHARGEN_CHARGENCHAR_H
+#ifndef ENGINES_KOTORBASE_GUI_CHARGENINFO_H
+#define ENGINES_KOTORBASE_GUI_CHARGENINFO_H
 
-#include "src/common/ustring.h"
 #include "src/common/scopedptr.h"
+#include "src/common/ustring.h"
 
 #include "src/graphics/aurora/model.h"
 
 #include "src/engines/kotorbase/types.h"
-
-#include "src/engines/kotor/creature.h"
 
 namespace Engines {
 
@@ -43,6 +41,8 @@ class Creature;
 class CharacterGenerationInfo {
 public:
 	CharacterGenerationInfo(const CharacterGenerationInfo &info);
+	virtual ~CharacterGenerationInfo();
+
 	void operator=(const CharacterGenerationInfo &info);
 
 	// Create a random character for each of the six archetypes
@@ -56,15 +56,17 @@ public:
 	/** Get the name of the character. */
 	const Common::UString &getName() const;
 	/** Get the name of the portrait of this character. */
-	Common::UString getPortrait() const;
+	virtual Common::UString getPortrait() const;
 	/** Get the skin type of the character. */
 	Skin getSkin() const;
 	/** Get the current face index of the character. */
 	uint8_t getFace() const;
 	/** Get the class of the character, defined in types.h. */
 	Class getClass() const;
-	/** Get the gender of the Character. */
+	/** Get the gender of the character. */
 	Gender getGender() const;
+	/** Get or create the character model. */
+	Graphics::Aurora::Model *getModel();
 
 	/** Set the name of the Character. */
 	void setName(const Common::UString &name);
@@ -73,14 +75,10 @@ public:
 	/** Set the face index of the character. */
 	void setFace(uint8 face);
 
-	Creature *getCharacter() const;
-
+	virtual Creature *createCharacter() const;
 	void recreateHead();
-	Graphics::Aurora::Model *getModel();
 
-private:
-	CharacterGenerationInfo();
-
+protected:
 	Class _class;
 	Gender _gender;
 	Skin _skin;
@@ -88,6 +86,9 @@ private:
 
 	Common::UString _name;
 
+	CharacterGenerationInfo();
+
+private:
 	Graphics::Aurora::Model *_head;
 	Common::ScopedPtr<Graphics::Aurora::Model> _body;
 };
@@ -96,4 +97,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_CHARGEN_CHARGENCHAR_H
+#endif // ENGINES_KOTORBASE_GUI_CHARGENINFO_H

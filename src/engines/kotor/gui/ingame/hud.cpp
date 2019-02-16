@@ -261,8 +261,8 @@ void HUD::showContainer(Inventory &inv) {
 	if (sub(*_container, kStartCodeNone, true, false) == 1) {
 		Inventory &partyInventory = _module->getPC()->getInventory();
 
-		const std::map<Common::UString, InventoryItem> &items = inv.getItems();
-		for (std::map<Common::UString, InventoryItem>::const_iterator i = items.begin();
+		const std::map<Common::UString, Inventory::ItemGroup> &items = inv.getItems();
+		for (std::map<Common::UString, Inventory::ItemGroup>::const_iterator i = items.begin();
 				i != items.end(); ++i) {
 			partyInventory.addItem(i->first, i->second.count);
 		}

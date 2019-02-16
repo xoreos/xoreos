@@ -29,7 +29,7 @@ namespace Engines {
 
 namespace KotOR {
 
-class Action;
+struct Action;
 class Area;
 class Creature;
 

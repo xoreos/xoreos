@@ -44,6 +44,7 @@
 #include "src/engines/aurora/localpathfinding.h"
 
 #include "src/engines/kotorbase/room.h"
+#include "src/engines/kotorbase/creature.h"
 
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/module.h"
@@ -53,7 +54,6 @@
 #include "src/engines/kotor/objectwalkmesh.h"
 #include "src/engines/kotor/door.h"
 #include "src/engines/kotor/doorwalkmesh.h"
-#include "src/engines/kotor/creature.h"
 #include "src/engines/kotor/trigger.h"
 #include "src/engines/kotor/actionexecutor.h"
 #include "src/engines/kotor/sound.h"

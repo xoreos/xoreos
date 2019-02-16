@@ -28,10 +28,11 @@
 #include "src/engines/odyssey/label.h"
 #include "src/engines/odyssey/button.h"
 
+#include "src/engines/kotorbase/gui/chargeninfo.h"
+
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/gui/gui.h"
 
-#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 
 namespace Engines {
@@ -52,12 +53,12 @@ private:
 
 	Common::ScopedPtr<CharacterGeneration> _chargen;
 
-	CharacterGenerationInfo *_consularMaleInfo;
-	CharacterGenerationInfo *_sentinelMaleInfo;
-	CharacterGenerationInfo *_guardianMaleInfo;
-	CharacterGenerationInfo *_consularFemaleInfo;
-	CharacterGenerationInfo *_sentinelFemaleInfo;
-	CharacterGenerationInfo *_guardianFemaleInfo;
+	KotOR::CharacterGenerationInfo *_consularMaleInfo;
+	KotOR::CharacterGenerationInfo *_sentinelMaleInfo;
+	KotOR::CharacterGenerationInfo *_guardianMaleInfo;
+	KotOR::CharacterGenerationInfo *_consularFemaleInfo;
+	KotOR::CharacterGenerationInfo *_sentinelFemaleInfo;
+	KotOR::CharacterGenerationInfo *_guardianFemaleInfo;
 
 	Odyssey::WidgetButton *_consularMaleButton;
 	Odyssey::WidgetButton *_sentinelMaleButton;

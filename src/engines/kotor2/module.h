@@ -49,10 +49,13 @@ namespace Engines {
 
 class Console;
 
+namespace KotOR {
+	class Creature;
+}
+
 namespace KotOR2 {
 
 class Area;
-class Creature;
 class IngameGUI;
 
 class Module : public KotOR::Object, public KotOR2::ObjectContainer {
@@ -73,7 +76,7 @@ public:
 	void load(const Common::UString &module, const Common::UString &entryLocation = "",
 	          KotOR::ObjectType entryLocationType = KotOR::kObjectTypeAll);
 	/** Use this character as the player character. */
-	void usePC(Creature *pc);
+	void usePC(KotOR::Creature *pc);
 	/** Exit the currently running module. */
 	void exit();
 	// '---
@@ -90,7 +93,7 @@ public:
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
 	/** Return the currently playing PC. */
-	Creature *getPC();
+	KotOR::Creature *getPC();
 	/** Return a map between surface type and whether it is walkable. */
 	const std::vector<bool> &getWalkableSurfaces() const;
 	// '---
@@ -175,7 +178,7 @@ private:
 	/** The current module's IFO. */
 	Aurora::IFOFile _ifo;
 
-	Common::ScopedPtr<Creature> _pc; ///< The player character we use.
+	Common::ScopedPtr<KotOR::Creature> _pc; ///< The player character we use.
 
 	/** The current texture pack. */
 	int _currentTexturePack;

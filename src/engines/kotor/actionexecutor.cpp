@@ -27,8 +27,9 @@
 
 #include "src/common/maths.h"
 
+#include "src/engines/kotorbase/creature.h"
+
 #include "src/engines/kotor/actionexecutor.h"
-#include "src/engines/kotor/creature.h"
 #include "src/engines/kotor/area.h"
 #include "src/engines/kotor/module.h"
 
@@ -43,7 +44,7 @@ void ActionExecutor::executeActions(Creature &creature, Area &area, float dt) {
 	if (!action)
 		return;
 
-	switch (action->getType()) {
+	switch (action->type) {
 		case kActionMoveToPoint:
 			executeMoveToPoint(creature, area, *action, dt);
 			break;
@@ -51,16 +52,16 @@ void ActionExecutor::executeActions(Creature &creature, Area &area, float dt) {
 			executeFollowLeader(creature, area, *action, dt);
 			break;
 		default:
-			warning("TODO: Handle action %u", (uint)action->getType());
+			warning("TODO: Handle action %u", (uint)action->type);
 			break;
 	}
 }
 
 void ActionExecutor::executeMoveToPoint(Creature &creature, Area &area, const Action &action, float dt) {
-	float x, y, z;
-	action.getPoint(x, y, z);
+	float x = action.location.x;
+	float y = action.location.y;
 
-	if (moveTo(creature, area, x, y, action.getRange(), dt))
+	if (moveTo(creature, area, x, y, action.range, dt))
 		creature.dequeueAction();
 }
 

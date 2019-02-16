@@ -25,8 +25,9 @@
 #ifndef ENGINES_KOTOR2_GUI_CHARGEN_CHARGENBASE_H
 #define ENGINES_KOTOR2_GUI_CHARGEN_CHARGENBASE_H
 
+#include "src/engines/kotorbase/gui/chargeninfo.h"
+
 #include "src/engines/kotor2/gui/gui.h"
-#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 
@@ -34,14 +35,14 @@ namespace KotOR2 {
 
 class CharacterGenerationBaseMenu : public GUI {
 public:
-	CharacterGenerationBaseMenu(CharacterGenerationInfo &info, ::Engines::Console *console = 0);
+	CharacterGenerationBaseMenu(KotOR::CharacterGenerationInfo &info, ::Engines::Console *console = 0);
 
 	bool isAccepted();
 
 protected:
 	void accept();
 
-	CharacterGenerationInfo &_info;
+	KotOR::CharacterGenerationInfo &_info;
 
 private:
 	bool _accepted;

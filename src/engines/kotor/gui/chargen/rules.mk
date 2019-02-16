@@ -25,7 +25,6 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/chargen/quickorcustom.h \
     src/engines/kotor/gui/chargen/quickchar.h \
     src/engines/kotor/gui/chargen/customchar.h \
-    src/engines/kotor/gui/chargen/chargeninfo.h \
     src/engines/kotor/gui/chargen/chargenbase.h \
     src/engines/kotor/gui/chargen/chargenportrait.h \
     src/engines/kotor/gui/chargen/chargenname.h \
@@ -37,7 +36,6 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/gui/chargen/quickorcustom.cpp \
     src/engines/kotor/gui/chargen/quickchar.cpp \
     src/engines/kotor/gui/chargen/customchar.cpp \
-    src/engines/kotor/gui/chargen/chargeninfo.cpp \
     src/engines/kotor/gui/chargen/chargenbase.cpp \
     src/engines/kotor/gui/chargen/chargenportrait.cpp \
     src/engines/kotor/gui/chargen/chargenname.cpp \

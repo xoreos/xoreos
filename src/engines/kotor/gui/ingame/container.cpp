@@ -24,12 +24,12 @@
 
 #include "src/aurora/talkman.h"
 
-#include "src/engines/kotor/item.h"
-
 #include "src/engines/odyssey/panel.h"
 #include "src/engines/odyssey/scrollbar.h"
 #include "src/engines/odyssey/listbox.h"
 #include "src/engines/odyssey/label.h"
+
+#include "src/engines/kotorbase/item.h"
 
 #include "src/engines/kotorbase/gui/inventoryitem.h"
 
@@ -58,8 +58,8 @@ void ContainerMenu::fillFromInventory(const Inventory &inv) {
 	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
 	lbItems->removeAllItems();
 
-	const std::map<Common::UString, InventoryItem> &invItems = inv.getItems();
-	for (std::map<Common::UString, InventoryItem>::const_iterator i = invItems.begin();
+	const std::map<Common::UString, Inventory::ItemGroup> &invItems = inv.getItems();
+	for (std::map<Common::UString, Inventory::ItemGroup>::const_iterator i = invItems.begin();
 			i != invItems.end(); ++i) {
 		try {
 			Item item(i->second.tag);

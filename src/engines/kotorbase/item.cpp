@@ -19,25 +19,20 @@
  */
 
 /** @file
- *  An item in a Star Wars: Knights of the Old Republic area.
+ *  Inventory item in KotOR games.
  */
 
-#include "src/aurora/2dareg.h"
-#include "src/aurora/2dafile.h"
-#include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
-#include "src/aurora/talkman.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
 
-#include "src/engines/aurora/util.h"
-
-#include "src/engines/kotor/item.h"
+#include "src/engines/kotorbase/item.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Item::Item(const Common::UString &item)
-		: Object(kObjectTypeItem) {
+Item::Item(const Common::UString &item) : Object(kObjectTypeItem) {
 	Common::ScopedPtr<Aurora::GFF3File> uti(new Aurora::GFF3File(item, Aurora::kFileTypeUTI));
 
 	load(uti->getTopLevel());
@@ -78,7 +73,7 @@ int Item::getTextureVariation() const {
 }
 
 const Common::UString Item::getIcon() const {
-	int variation = _modelVariation == 0 ? _textureVariation : _modelVariation;
+	int variation = (_modelVariation == 0) ? _textureVariation : _modelVariation;
 	if (variation == 0)
 		variation = 1;
 	return Common::UString::format("i%s_%03d", _itemClass.c_str(), variation);

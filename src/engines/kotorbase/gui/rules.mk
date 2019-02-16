@@ -21,8 +21,10 @@
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/gui/inventoryitem.h \
+    src/engines/kotorbase/gui/chargeninfo.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/gui/inventoryitem.cpp \
+    src/engines/kotorbase/gui/chargeninfo.cpp \
     $(EMPTY)

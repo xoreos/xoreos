@@ -41,9 +41,10 @@
 #include "src/engines/odyssey/listbox.h"
 #include "src/engines/odyssey/scrollbar.h"
 
+#include "src/engines/kotorbase/creature.h"
+
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
-#include "src/engines/kotor/creature.h"
 
 #include "src/engines/kotor/gui/dialog.h"
 

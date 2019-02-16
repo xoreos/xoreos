@@ -38,12 +38,13 @@
 
 #include "src/engines/aurora/util.h"
 
+#include "src/engines/kotorbase/creature.h"
+
 #include "src/engines/kotor/game.h"
 #include "src/engines/kotor/kotor.h"
 #include "src/engines/kotor/console.h"
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
-#include "src/engines/kotor/creature.h"
 
 #include "src/engines/kotor/gui/main/main.h"
 

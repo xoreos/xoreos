@@ -28,7 +28,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-CharacterGenerationBaseMenu::CharacterGenerationBaseMenu(CharacterGenerationInfo &info, Engines::Console *console) :
+CharacterGenerationBaseMenu::CharacterGenerationBaseMenu(KotOR::CharacterGenerationInfo &info, Engines::Console *console) :
 		GUI(console), _info(info), _accepted(false) {
 }
 

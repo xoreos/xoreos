@@ -26,11 +26,19 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/types.h \
     src/engines/kotorbase/room.h \
     src/engines/kotorbase/object.h \
+    src/engines/kotorbase/action.h \
+    src/engines/kotorbase/item.h \
+    src/engines/kotorbase/inventory.h \
+    src/engines/kotorbase/creature.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/room.cpp \
     src/engines/kotorbase/object.cpp \
+    src/engines/kotorbase/action.cpp \
+    src/engines/kotorbase/item.cpp \
+    src/engines/kotorbase/inventory.cpp \
+    src/engines/kotorbase/creature.cpp \
     $(EMPTY)
 
 include src/engines/kotorbase/script/rules.mk

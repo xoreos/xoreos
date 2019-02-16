@@ -27,7 +27,7 @@
 
 #include "src/aurora/talkman.h"
 
-#include "src/engines/kotor/creature.h"
+#include "src/engines/kotorbase/creature.h"
 
 #include "src/engines/kotor/gui/chargen/classselection.h"
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"

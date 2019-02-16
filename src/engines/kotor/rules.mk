@@ -33,16 +33,12 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/waypoint.h \
     src/engines/kotor/placeable.h \
     src/engines/kotor/door.h \
-    src/engines/kotor/creature.h \
     src/engines/kotor/sound.h \
     src/engines/kotor/area.h \
     src/engines/kotor/objectcontainer.h \
     src/engines/kotor/module.h \
-    src/engines/kotor/item.h \
     src/engines/kotor/savedgame.h \
     src/engines/kotor/trigger.h \
-    src/engines/kotor/inventory.h \
-    src/engines/kotor/action.h \
     src/engines/kotor/actionexecutor.h \
     src/engines/kotor/partyconfig.h \
     src/engines/kotor/pathfinding.h \
@@ -62,16 +58,12 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/situated.cpp \
     src/engines/kotor/placeable.cpp \
     src/engines/kotor/door.cpp \
-    src/engines/kotor/creature.cpp \
     src/engines/kotor/sound.cpp \
     src/engines/kotor/area.cpp \
     src/engines/kotor/objectcontainer.cpp \
     src/engines/kotor/module.cpp \
-    src/engines/kotor/item.cpp \
     src/engines/kotor/savedgame.cpp \
     src/engines/kotor/trigger.cpp \
-    src/engines/kotor/inventory.cpp \
-    src/engines/kotor/action.cpp \
     src/engines/kotor/actionexecutor.cpp \
     src/engines/kotor/partyconfig.cpp \
     src/engines/kotor/pathfinding.cpp \

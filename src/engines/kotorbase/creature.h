@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  A creature in a Star Wars: Knights of the Old Republic area.
+ *  Creature within an area in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_CREATURE_H
-#define ENGINES_KOTOR_CREATURE_H
+#ifndef ENGINES_KOTORBASE_CREATURE_H
+#define ENGINES_KOTORBASE_CREATURE_H
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
@@ -35,9 +35,8 @@
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/kotorbase/object.h"
-
-#include "src/engines/kotor/inventory.h"
-#include "src/engines/kotor/action.h"
+#include "src/engines/kotorbase/inventory.h"
+#include "src/engines/kotorbase/action.h"
 
 namespace Engines {
 
@@ -56,6 +55,17 @@ public:
 	Creature(const Common::UString &resRef);
 	~Creature();
 
+	// PC Mesh string generation
+
+	/** Generate a string for the body mesh. */
+	static Common::UString getBodyMeshString(Gender gender, Class charClass, char state = 'b');
+	/** Generate a string for the body texture. */
+	static Common::UString getBodyTextureString(Gender gender, Skin skin, Class charClass, char state = 'b');
+	/** Generate a string for the head mesh. */
+	static Common::UString getHeadMeshString(Gender gender, Skin skin, uint32 faceId);
+
+	// Character generation
+
 	/** Create a fake player character creature for testing purposes. */
 	void createFakePC();
 	/** Create a player character creature from a character info class. */
@@ -63,35 +73,51 @@ public:
 
 	// Basic visuals
 
-	void show(); ///< Show the creature's model.
-	void hide(); ///< Hide the creature's model.
-	bool isVisible() const; ///< Is the creature's model visible?
+	/** Is the creature's model visible? */
+	bool isVisible() const;
+
+	/** Show the creature's model. */
+	void show();
+	/** Hide the creature's model. */
+	void hide();
 
 	// Basic properties
 
-	bool isPC() const; ///< Is the creature a player character?
-	bool isPartyMember() const;
-
-	Gender getGender() const; ///< Get the gender of the creature.
-	int getLevel(const Class &c) const; ///< Get the level of the creature regarding a specific class.
-
-	Race getRace() const; ///< Get the race of the creature.
-	SubRace getSubRace() const; ///< Get the subrace of the creature.
-
-	int getLevelByPosition(int position) const; ///< Get the level by its position in the level vector.
-	Class getClassByPosition(int position) const; ///< Get the class by its position in the level vector.
-
+	/** Get the gender of the creature. */
+	Gender getGender() const;
+	/** Get the level of the creature regarding a specific class. */
+	int getLevel(const Class &c) const;
+	/** Get the race of the creature. */
+	Race getRace() const;
+	/** Get the subrace of the creature. */
+	SubRace getSubRace() const;
+	/** Get the level by its position in the level vector. */
+	int getLevelByPosition(int position) const;
+	/** Get the class by its position in the level vector. */
+	Class getClassByPosition(int position) const;
+	/** Get the movement rate of this creature when walking. */
 	float getWalkRate() const;
+	/** Get the movement rate of this creature when running. */
 	float getRunRate() const;
+	/** Get id of the conversation with this creature. */
+	const Common::UString &getConversation() const;
+
+	/** Is the creature a player character? */
+	bool isPC() const;
+	/** Is the creature a party member? */
+	bool isPartyMember() const;
 
 	// Attributes
 
+	/** Get the current rank of the specified skill. */
 	int getSkillRank(Skill skill);
-
 	/** Get the current score of the specified ability. */
 	int getAbilityScore(Ability ability);
 
 	// Positioning
+
+	/** Get the camera height for this creature. */
+	float getCameraHeight() const;
 
 	/** Set the creature's position. */
 	void setPosition(float x, float y, float z);
@@ -100,25 +126,21 @@ public:
 
 	// Object/Cursor interactions
 
-	void enter(); ///< The cursor entered the creature.
-	void leave(); ///< The cursor left the creature.
-
+	/** The cursor entered the creature. */
+	void enter();
+	/** The cursor left the creature. */
+	void leave();
 	/** (Un)Highlight the creature. */
 	void highlight(bool enabled);
-
 	/** The creature was clicked. */
 	bool click(Object *triggerer = 0);
 
-	const Common::UString &getConversation() const;
-
-	float getCameraHeight() const;
-
 	// Inventory and equipment
-
-	void equipItem(Common::UString tag, EquipmentSlot slot);
 
 	Inventory &getInventory();
 	Item *getEquipedItem(EquipmentSlot slot) const;
+
+	void equipItem(Common::UString tag, EquipmentSlot slot);
 
 	// Animation
 
@@ -135,25 +157,19 @@ public:
 	                       float length = 0.0f,
 	                       float speed = 1.0f);
 
-	// PC Mesh string generation
-
-	/** Generate a string for the body mesh. */
-	static Common::UString getBodyMeshString(Gender gender, Class charClass, char state = 'b');
-	/** Generate a string for the head mesh. */
-	static Common::UString getHeadMeshString(Gender gender, Skin skin, uint32 faceId);
-
 	// Action queue
 
+	/** Clear the action queue of this creature. */
 	void clearActionQueue();
-
-	/** Append action to the character's action queue. */
+	/** Append action to the action queue of this creature. */
 	void enqueueAction(const Action &action);
-
+	/** Get the next action of this creature if exists.  */
 	const Action *peekAction() const;
+	/** Get the next action of this creature and remove it from the action queue. */
 	const Action *dequeueAction();
 
-private:
-	/** Parts of a creature's body. */
+protected:
+	// Parts of a creature's body.
 	struct PartModels {
 		Common::UString type;
 
@@ -164,7 +180,14 @@ private:
 		Common::UString portrait;
 	};
 
-	/** A class level. */
+	Gender _gender;
+	Skin _skin; ///< The skin type of the creature.
+	uint8 _face; ///< The face of the creature.
+
+	virtual void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation);
+	void loadMovementRate(const Common::UString &name);
+
+private:
 	struct ClassLevel {
 		Class characterClass;
 		int level;
@@ -177,10 +200,7 @@ private:
 	Race _race; ///< The race of the creature.
 	SubRace _subRace; ///< The subrace of the creature.
 
-	Gender _gender;
 	std::vector<ClassLevel> _levels; ///< The levels of the creature.
-	Skin _skin; ///< The skin type of the creature.
-	uint8 _face; ///< The face of the creature.
 
 	Common::UString _modelType;
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
@@ -218,10 +238,8 @@ private:
 	void loadAppearance();
 
 	void getPartModels(PartModels &parts, uint32 state = 'a');
-	void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation);
 	void loadBody(PartModels &parts);
 	void loadHead(PartModels &parts);
-	void loadMovementRate(const Common::UString &name);
 
 	void changeBody();
 	void changeWeapon(EquipmentSlot slot);
@@ -233,4 +251,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_CREATURE_H
+#endif // ENGINES_KOTORBASE_CREATURE_H

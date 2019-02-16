@@ -31,8 +31,9 @@
 
 #include "src/engines/odyssey/label.h"
 
+#include "src/engines/kotorbase/gui/chargeninfo.h"
+
 #include "src/engines/kotor2/gui/chargen/chargenbase.h"
-#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 
@@ -40,7 +41,7 @@ namespace KotOR2 {
 
 class CharacterGenerationNameMenu : public CharacterGenerationBaseMenu {
 public:
-	CharacterGenerationNameMenu(CharacterGenerationInfo &info, ::Engines::Console *console = 0);
+	CharacterGenerationNameMenu(KotOR::CharacterGenerationInfo &info, ::Engines::Console *console = 0);
 
 private:
 	virtual void callbackActive(Widget &widget);

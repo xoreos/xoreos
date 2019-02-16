@@ -37,7 +37,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-CharacterGeneration::CharacterGeneration(Module *module, CharacterGenerationInfo *info, Engines::Console *console) :
+CharacterGeneration::CharacterGeneration(Module *module, KotOR::CharacterGenerationInfo *info, Engines::Console *console) :
 		GUI(console), _module(module), _chargenInfo(info), _step(0) {
 	load("maincg_p");
 
@@ -88,7 +88,7 @@ void CharacterGeneration::showCustomChar() {
 }
 
 void CharacterGeneration::showName() {
-	CharacterGenerationInfo info = *_chargenInfo;
+	KotOR::CharacterGenerationInfo info = *_chargenInfo;
 
 	_charGenMenu.reset(new CharacterGenerationNameMenu(info));
 	sub(*_charGenMenu, kStartCodeNone, true, false);
@@ -101,7 +101,7 @@ void CharacterGeneration::showName() {
 }
 
 void CharacterGeneration::showPortrait() {
-	CharacterGenerationInfo info = *_chargenInfo;
+	KotOR::CharacterGenerationInfo info = *_chargenInfo;
 
 	_charGenMenu.reset(new CharacterGenerationPortraitMenu(info));
 	sub(*_charGenMenu);
@@ -128,7 +128,7 @@ void CharacterGeneration::resetStep() {
 
 void CharacterGeneration::start() {
 	try {
-		_module->usePC(_chargenInfo->getCharacter());
+		_module->usePC(_chargenInfo->createCharacter());
 		_module->load("001EBO");
 	} catch (...) {
 		Common::exceptionDispatcherWarning();

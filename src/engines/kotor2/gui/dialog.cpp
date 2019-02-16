@@ -31,9 +31,10 @@
 
 #include "src/engines/aurora/satellitecamera.h"
 
+#include "src/engines/kotorbase/creature.h"
+
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/area.h"
-#include "src/engines/kotor2/creature.h"
 
 #include "src/engines/kotor2/gui/dialog.h"
 
@@ -47,7 +48,7 @@ DialogGUI::DialogGUI(KotOR2::Module &module)
 }
 
 void DialogGUI::makeLookAtPC(const Common::UString &tag) {
-	Creature *pc = _module.getPC();
+	KotOR::Creature *pc = _module.getPC();
 	if (!pc)
 		return;
 
@@ -68,7 +69,7 @@ void DialogGUI::playDefaultAnimations(const Common::UString &tag) {
 	if (!o)
 		return;
 
-	Creature *creature = ObjectContainer::toCreature(o);
+	KotOR::Creature *creature = ObjectContainer::toCreature(o);
 	if (!creature)
 		return;
 
@@ -81,7 +82,7 @@ void DialogGUI::playTalkAnimations(const Common::UString &tag) {
 	if (!o)
 		return;
 
-	Creature *creature = ObjectContainer::toCreature(o);
+	KotOR::Creature *creature = ObjectContainer::toCreature(o);
 	if (!creature)
 		return;
 

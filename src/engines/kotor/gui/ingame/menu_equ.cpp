@@ -30,10 +30,10 @@
 #include "src/engines/odyssey/label.h"
 #include "src/engines/odyssey/listbox.h"
 
-#include "src/engines/kotorbase/gui/inventoryitem.h"
+#include "src/engines/kotorbase/item.h"
+#include "src/engines/kotorbase/creature.h"
 
-#include "src/engines/kotor/item.h"
-#include "src/engines/kotor/creature.h"
+#include "src/engines/kotorbase/gui/inventoryitem.h"
 
 #include "src/engines/kotor/gui/ingame/menu_equ.h"
 
@@ -210,8 +210,8 @@ void MenuEquipment::fillEquipableItemsList() {
 
 	_visibleItems.clear();
 
-	const std::map<Common::UString, InventoryItem> &invItems = inv.getItems();
-	for (std::map<Common::UString, InventoryItem>::const_iterator i = invItems.begin();
+	const std::map<Common::UString, Inventory::ItemGroup> &invItems = inv.getItems();
+	for (std::map<Common::UString, Inventory::ItemGroup>::const_iterator i = invItems.begin();
 			i != invItems.end(); ++i) {
 		try {
 			Item item(i->second.tag);
