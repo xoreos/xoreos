@@ -228,6 +228,9 @@ private:
 	void getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx);
 	void getNearestCreature   (Aurora::NWScript::FunctionContext &ctx);
 
+	void getCurrentHitPoints(Aurora::NWScript::FunctionContext &ctx);
+	void getMaxHitPoints    (Aurora::NWScript::FunctionContext &ctx);
+
 	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
 	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
 
