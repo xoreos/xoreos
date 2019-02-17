@@ -350,8 +350,80 @@ void NWN2Engine::initResources(LoadProgress &progress) {
 }
 
 void NWN2Engine::initCursors() {
-	CursorMan.add("cursor0" , "default"  , "up"  );
+	CursorMan.add("cursor0" , "default"  , "up"  ); // Walk cursor
 	CursorMan.add("cursor1" , "default"  , "down");
+
+	// Cursor types in 'cursors.2da'
+	CursorMan.add("cursor21" , "transition", "up"  );
+	CursorMan.add("cursor22" , "transition", "down");
+	CursorMan.add("cursor37" , "use"       , "up"  ); // Note: changed from cursor25
+	CursorMan.add("cursor38" , "use"       , "down");
+	CursorMan.add("cursor17" , "examine"   , "up"  );
+	CursorMan.add("cursor18" , "examine"   , "down");
+	CursorMan.add("cursor11" , "talk"      , "up"  );
+	CursorMan.add("cursor12" , "talk"      , "down");
+//	CursorMan.add("cursor0"  , "walk"      , "up"  ); // Error
+	CursorMan.add("cursor2"  , "walk"      , "down");
+	CursorMan.add("cursor125", "xwalk"     , "up"  ); // Note: changed from cursor5
+	CursorMan.add("cursor126", "xwalk"     , "down");
+	CursorMan.add("cursor7"  , "attack"    , "up"  );
+	CursorMan.add("cursor8"  , "attack"    , "down");
+	CursorMan.add("cursor29" , "magic"     , "up"  );
+	CursorMan.add("cursor30" , "magic"     , "down");
+	CursorMan.add("cursor39" , "nouse"     , "up"  ); // Note: changed from cursor27
+	CursorMan.add("cursor40" , "nouse"     , "down");
+	CursorMan.add("cursor33" , "trap"      , "up"  );
+	CursorMan.add("cursor34" , "trap"      , "down");
+
+	// Exploration mode run cursors
+	CursorMan.add("cursor59" , "run0"      , "down"); // Arrow up
+	CursorMan.add("cursor60" , "run1"      , "down");
+	CursorMan.add("cursor61" , "run2"      , "down");
+	CursorMan.add("cursor62" , "run3"      , "down");
+	CursorMan.add("cursor63" , "run4"      , "down"); // Arrow right
+	CursorMan.add("cursor64" , "run5"      , "down");
+	CursorMan.add("cursor65" , "run6"      , "down");
+	CursorMan.add("cursor66" , "run7"      , "down");
+	CursorMan.add("cursor67" , "run8"      , "down"); // Arrow down
+	CursorMan.add("cursor68" , "run9"      , "down");
+	CursorMan.add("cursor69" , "run10"     , "down");
+	CursorMan.add("cursor70" , "run11"     , "down");
+	CursorMan.add("cursor71" , "run12"     , "down"); // Arrow left
+	CursorMan.add("cursor72" , "run13"     , "down");
+	CursorMan.add("cursor73" , "run14"     , "down");
+	CursorMan.add("cursor74" , "run15"     , "down");
+
+	// Exploration mode walk cursors
+	CursorMan.add("cursor75" , "walk0"     , "down"); // Arrow up
+	CursorMan.add("cursor76" , "walk1"     , "down");
+	CursorMan.add("cursor77" , "walk2"     , "down");
+	CursorMan.add("cursor78" , "walk3"     , "down");
+	CursorMan.add("cursor79" , "walk4"     , "down"); // Arrow right
+	CursorMan.add("cursor80" , "walk5"     , "down");
+	CursorMan.add("cursor81" , "walk6"     , "down");
+	CursorMan.add("cursor82" , "walk7"     , "down");
+	CursorMan.add("cursor83" , "walk8"     , "down"); // Arrow down
+	CursorMan.add("cursor84" , "walk9"     , "down");
+	CursorMan.add("cursor85" , "walk10"    , "down");
+	CursorMan.add("cursor86" , "walk11"    , "down");
+	CursorMan.add("cursor87" , "walk12"    , "down"); // Arrow left
+	CursorMan.add("cursor88" , "walk13"    , "down");
+	CursorMan.add("cursor89" , "walk14"    , "down");
+	CursorMan.add("cursor90" , "walk15"    , "down");
+
+	// Other cursors
+	CursorMan.add("cursor23" , "door"      , "up"  );
+	CursorMan.add("cursor24" , "door"      , "down");
+	CursorMan.add("cursor41" , "lock"      , "up"  );
+	CursorMan.add("cursor42" , "lock"      , "down");
+	CursorMan.add("cursor55" , "healing"   , "up"  );
+	CursorMan.add("cursor56" , "healing"   , "down");
+	CursorMan.add("cursor91" , "loot"      , "up"  );
+	CursorMan.add("cursor92" , "loot"      , "down");
+	CursorMan.add("cursor127", "compass"   , "up"  );
+	CursorMan.add("cursor128", "compass"   , "down");
+	CursorMan.add("cursor131", "clock"     , "up"  );
+	CursorMan.add("cursor132", "clock"     , "down");
 
 	CursorMan.setDefault("default", "up");
 }
