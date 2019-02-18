@@ -332,7 +332,7 @@ void ASBuffer::actionAdd2() {
 	Variable b = _stack.top();
 	_stack.pop();
 
-	_stack.push(a + b);
+	_stack.push(b + a);
 
 	debugC(kDebugActionScript, 1, "actionAdd2");
 }
