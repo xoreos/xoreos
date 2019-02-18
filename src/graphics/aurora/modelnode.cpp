@@ -1320,6 +1320,11 @@ void ModelNode::bindTexturesToSamplers(MaterialConfiguration &config, Shader::Sh
 		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_1_id"));
 		sampler->handle = config.phandles[1];
 	}
+
+	if ((config.textureCount > 2) && !config.phandles[2].empty()) {
+		sampler = (Shader::ShaderSampler *)(config.material->getVariableData("sampler_2_id"));
+		sampler->handle = config.phandles[2];
+	}
 }
 
 } // End of namespace Aurora
