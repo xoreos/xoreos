@@ -170,7 +170,7 @@ void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {
 		throw Common::Exception("Functions::getItemInSlot(): Invalid creature");
 
 	int slot = ctx.getParams()[0].getInt();
-	Item *item = creature->getEquipedItem(static_cast<EquipmentSlot>(1U << slot));
+	Item *item = creature->getEquipedItem(static_cast<InventorySlot>(slot));
 	if (item)
 		ctx.getReturn() = item;
 }

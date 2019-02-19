@@ -54,16 +54,16 @@ protected:
 
 private:
 	Creature *_pc;
-	EquipmentSlot _selectedSlot;
+	InventorySlot _selectedSlot;
 	bool _slotFixated;
 	std::vector<Common::UString> _visibleItems;
 
 	void fillEquipedItems();
-	Common::UString getEquipedItemIcon(EquipmentSlot slot) const;
+	Common::UString getEquipedItemIcon(InventorySlot slot) const;
 	void fillEquipableItemsList();
-	EquipmentSlot getSlotByWidgetTag(const Common::UString &tag) const;
-	Odyssey::WidgetButton *getSlotButton(EquipmentSlot slot);
-	Common::UString getSlotName(EquipmentSlot slot) const;
+	InventorySlot getSlotByWidgetTag(const Common::UString &tag) const;
+	Odyssey::WidgetButton *getSlotButton(InventorySlot slot);
+	Common::UString getSlotName(InventorySlot slot) const;
 	void fixateOnSlot(bool fixate);
 };
 

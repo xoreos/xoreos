@@ -38,7 +38,7 @@ public:
 	// Basic properties
 
 	const Common::UString &getName() const;
-	EquipmentSlot getEquipableSlots() const;
+	bool isSlotEquipable(InventorySlot slot) const;
 
 	// Visual properties
 
@@ -50,7 +50,7 @@ public:
 private:
 	int _baseItem;
 	Common::UString _itemClass;
-	EquipmentSlot _equipableSlots;
+	int32 _equipableSlotsMask;
 
 	int _modelVariation;
 	int _bodyVariation;

@@ -138,9 +138,9 @@ public:
 	// Inventory and equipment
 
 	Inventory &getInventory();
-	Item *getEquipedItem(EquipmentSlot slot) const;
+	Item *getEquipedItem(InventorySlot slot) const;
 
-	void equipItem(Common::UString tag, EquipmentSlot slot);
+	void equipItem(Common::UString tag, InventorySlot slot);
 
 	// Animation
 
@@ -220,7 +220,7 @@ private:
 	Common::UString _conversation;
 
 	Inventory _inventory;
-	Common::PtrMap<EquipmentSlot, Item> _equipment;
+	Common::PtrMap<InventorySlot, Item> _equipment;
 
 	std::vector<Action> _actionQueue;
 
@@ -242,7 +242,7 @@ private:
 	void loadHead(PartModels &parts);
 
 	void changeBody();
-	void changeWeapon(EquipmentSlot slot);
+	void changeWeapon(InventorySlot slot);
 
 	void setDefaultAnimations();
 };

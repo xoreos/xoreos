@@ -186,17 +186,24 @@ enum Ability {
 	kAbilityCharisma
 };
 
-enum EquipmentSlot {
-	kEquipmentSlotNone    = 0,
-	kEquipmentSlotHead    = 1U << 0,
-	kEquipmentSlotBody    = 1U << 1,
-	kEquipmentSlotHands   = 1U << 3,
-	kEquipmentSlotWeaponR = 1U << 4,
-	kEquipmentSlotWeaponL = 1U << 5,
-	kEquipmentSlotArmR    = 1U << 7,
-	kEquipmentSlotArmL    = 1U << 8,
-	kEquipmentSlotImplant = 1U << 9,
-	kEquipmentSlotBelt    = 1U << 10
+enum InventorySlot {
+	kInventorySlotHead         = 0,
+	kInventorySlotBody         = 1,
+	kInventorySlotHands        = 3,
+	kInventorySlotRightWeapon  = 4,
+	kInventorySlotLeftWeapon   = 5,
+	kInventorySlotLeftArm      = 7,
+	kInventorySlotRightArm     = 8,
+	kInventorySlotImplant      = 9,
+	kInventorySlotBelt         = 10,
+	kInventorySlotCWeaponL     = 14,
+	kInventorySlotCWeaponR     = 15,
+	kInventorySlotCWeaponB     = 16,
+	kInventorySlotCArmour      = 17,
+	kInventorySlotRightWeapon2 = 18,
+	kInventorySlotLeftWeapon2  = 19,
+
+	kInventorySlotInvalid      = 255
 };
 
 enum ActionType {

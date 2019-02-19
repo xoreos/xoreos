@@ -44,7 +44,7 @@ namespace KotOR {
 MenuEquipment::MenuEquipment(Console *console)
 		: GUI(console),
 		  _pc(0),
-		  _selectedSlot(kEquipmentSlotBody),
+		  _selectedSlot(kInventorySlotBody),
 		  _slotFixated(false) {
 	load("equip");
 
@@ -60,7 +60,7 @@ MenuEquipment::MenuEquipment(Console *console)
 
 	Odyssey::WidgetLabel *slotName = getLabel("LBL_SLOTNAME");
 	if (slotName)
-		slotName->setText(getSlotName(kEquipmentSlotBody));
+		slotName->setText(getSlotName(kInventorySlotBody));
 
 	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
 	if (lbItems) {
@@ -83,43 +83,43 @@ void MenuEquipment::setPC(Creature *pc) {
 void MenuEquipment::show() {
 	GUI::show();
 
-	if (_selectedSlot != kEquipmentSlotNone)
+	if (_selectedSlot != kInventorySlotInvalid)
 		getSlotButton(_selectedSlot)->setHighlight(true);
 }
 
 void MenuEquipment::hide() {
-	if (_selectedSlot != kEquipmentSlotNone)
+	if (_selectedSlot != kInventorySlotInvalid)
 		getSlotButton(_selectedSlot)->setHighlight(false);
 
 	GUI::hide();
 }
 
 void MenuEquipment::callbackRun() {
-	EquipmentSlot newSlot;
+	InventorySlot newSlot;
 
 	if (getLabel("LBL_INV_IMPLANT")->isHovered())
-		newSlot = kEquipmentSlotImplant;
+		newSlot = kInventorySlotImplant;
 	else if (getLabel("LBL_INV_HEAD")->isHovered())
-		newSlot = kEquipmentSlotHead;
+		newSlot = kInventorySlotHead;
 	else if (getLabel("LBL_INV_HANDS")->isHovered())
-		newSlot = kEquipmentSlotHands;
+		newSlot = kInventorySlotHands;
 	else if (getLabel("LBL_INV_ARM_L")->isHovered())
-		newSlot = kEquipmentSlotArmL;
+		newSlot = kInventorySlotLeftArm;
 	else if (getLabel("LBL_INV_BODY")->isHovered())
-		newSlot = kEquipmentSlotBody;
+		newSlot = kInventorySlotBody;
 	else if (getLabel("LBL_INV_ARM_R")->isHovered())
-		newSlot = kEquipmentSlotArmR;
+		newSlot = kInventorySlotRightArm;
 	else if (getLabel("LBL_INV_WEAP_L")->isHovered())
-		newSlot = kEquipmentSlotWeaponL;
+		newSlot = kInventorySlotLeftWeapon;
 	else if (getLabel("LBL_INV_BELT")->isHovered())
-		newSlot = kEquipmentSlotBelt;
+		newSlot = kInventorySlotBelt;
 	else if (getLabel("LBL_INV_WEAP_R")->isHovered())
-		newSlot = kEquipmentSlotWeaponR;
+		newSlot = kInventorySlotRightWeapon;
 	else
 		return;
 
 	if (newSlot != _selectedSlot) {
-		if (_selectedSlot != kEquipmentSlotNone)
+		if (_selectedSlot != kInventorySlotInvalid)
 			getSlotButton(_selectedSlot)->setHighlight(false);
 
 		_selectedSlot = newSlot;
@@ -175,15 +175,15 @@ void MenuEquipment::callbackKeyInput(const Events::Key &key, const Events::Event
 }
 
 void MenuEquipment::fillEquipedItems() {
-	Common::UString implant = getEquipedItemIcon(kEquipmentSlotImplant);
-	Common::UString head = getEquipedItemIcon(kEquipmentSlotHead);
-	Common::UString hands = getEquipedItemIcon(kEquipmentSlotHands);
-	Common::UString armL = getEquipedItemIcon(kEquipmentSlotArmL);
-	Common::UString body = getEquipedItemIcon(kEquipmentSlotBody);
-	Common::UString armR = getEquipedItemIcon(kEquipmentSlotArmR);
-	Common::UString weapL = getEquipedItemIcon(kEquipmentSlotWeaponL);
-	Common::UString belt = getEquipedItemIcon(kEquipmentSlotBelt);
-	Common::UString weapR = getEquipedItemIcon(kEquipmentSlotWeaponR);
+	Common::UString implant = getEquipedItemIcon(kInventorySlotImplant);
+	Common::UString head = getEquipedItemIcon(kInventorySlotHead);
+	Common::UString hands = getEquipedItemIcon(kInventorySlotHands);
+	Common::UString armL = getEquipedItemIcon(kInventorySlotLeftArm);
+	Common::UString body = getEquipedItemIcon(kInventorySlotBody);
+	Common::UString armR = getEquipedItemIcon(kInventorySlotRightArm);
+	Common::UString weapL = getEquipedItemIcon(kInventorySlotLeftWeapon);
+	Common::UString belt = getEquipedItemIcon(kInventorySlotBelt);
+	Common::UString weapR = getEquipedItemIcon(kInventorySlotRightWeapon);
 
 	getLabel("LBL_INV_IMPLANT")->setFill(implant.empty() ? "iimplant" : implant);
 	getLabel("LBL_INV_HEAD")->setFill(head.empty() ? "ihead" : head);
@@ -196,7 +196,7 @@ void MenuEquipment::fillEquipedItems() {
 	getLabel("LBL_INV_WEAP_R")->setFill(weapR.empty() ? "iweap_r" : weapR);
 }
 
-Common::UString MenuEquipment::getEquipedItemIcon(EquipmentSlot slot) const {
+Common::UString MenuEquipment::getEquipedItemIcon(InventorySlot slot) const {
 	Item *item = _pc->getEquipedItem(slot);
 	return item ? item->getIcon() : "";
 }
@@ -215,7 +215,7 @@ void MenuEquipment::fillEquipableItemsList() {
 			i != invItems.end(); ++i) {
 		try {
 			Item item(i->second.tag);
-			if ((item.getEquipableSlots() & _selectedSlot) == 0)
+			if (!item.isSlotEquipable(_selectedSlot))
 				continue;
 
 			lbItems->addItem(Common::UString::format("%s|%s|%u",
@@ -235,73 +235,73 @@ void MenuEquipment::fillEquipableItemsList() {
 	GfxMan.unlockFrame();
 }
 
-EquipmentSlot MenuEquipment::getSlotByWidgetTag(const Common::UString &tag) const {
+InventorySlot MenuEquipment::getSlotByWidgetTag(const Common::UString &tag) const {
 	if (tag == "LBL_INV_IMPLANT")
-		return kEquipmentSlotImplant;
+		return kInventorySlotImplant;
 	if (tag == "LBL_INV_BODY")
-		return kEquipmentSlotBody;
+		return kInventorySlotBody;
 	if (tag == "LBL_INV_HANDS")
-		return kEquipmentSlotHands;
+		return kInventorySlotHands;
 	if (tag == "LBL_INV_ARM_R")
-		return kEquipmentSlotArmR;
+		return kInventorySlotRightArm;
 	if (tag == "LBL_INV_BODY")
-		return kEquipmentSlotBody;
+		return kInventorySlotBody;
 	if (tag == "LBL_INV_ARM_L")
-		return kEquipmentSlotArmL;
+		return kInventorySlotLeftArm;
 	if (tag == "LBL_INV_WEAP_R")
-		return kEquipmentSlotWeaponR;
+		return kInventorySlotRightWeapon;
 	if (tag == "LBL_INV_BELT")
-		return kEquipmentSlotBelt;
+		return kInventorySlotBelt;
 	if (tag == "LBL_INV_WEAP_L")
-		return kEquipmentSlotWeaponL;
+		return kInventorySlotLeftWeapon;
 
-	return kEquipmentSlotNone;
+	return kInventorySlotInvalid;
 }
 
-Odyssey::WidgetButton *MenuEquipment::getSlotButton(EquipmentSlot slot) {
+Odyssey::WidgetButton *MenuEquipment::getSlotButton(InventorySlot slot) {
 	switch (slot) {
-		case kEquipmentSlotImplant:
+		case kInventorySlotImplant:
 			return getButton("BTN_INV_IMPLANT");
-		case kEquipmentSlotHead:
+		case kInventorySlotHead:
 			return getButton("BTN_INV_HEAD");
-		case kEquipmentSlotHands:
+		case kInventorySlotHands:
 			return getButton("BTN_INV_HANDS");
-		case kEquipmentSlotArmR:
+		case kInventorySlotRightArm:
 			return getButton("BTN_INV_ARM_R");
-		case kEquipmentSlotBody:
+		case kInventorySlotBody:
 			return getButton("BTN_INV_BODY");
-		case kEquipmentSlotArmL:
+		case kInventorySlotLeftArm:
 			return getButton("BTN_INV_ARM_L");
-		case kEquipmentSlotWeaponR:
+		case kInventorySlotRightWeapon:
 			return getButton("BTN_INV_WEAP_R");
-		case kEquipmentSlotBelt:
+		case kInventorySlotBelt:
 			return getButton("BTN_INV_BELT");
-		case kEquipmentSlotWeaponL:
+		case kInventorySlotLeftWeapon:
 			return getButton("BTN_INV_WEAP_L");
 		default:
 			return 0;
 	}
 }
 
-Common::UString MenuEquipment::getSlotName(EquipmentSlot slot) const {
+Common::UString MenuEquipment::getSlotName(InventorySlot slot) const {
 	switch (slot) {
-		case kEquipmentSlotImplant:
+		case kInventorySlotImplant:
 			return TalkMan.getString(31388); // Implant
-		case kEquipmentSlotHead:
+		case kInventorySlotHead:
 			return TalkMan.getString(31375); // Head
-		case kEquipmentSlotHands:
+		case kInventorySlotHands:
 			return TalkMan.getString(31383); // Hands
-		case kEquipmentSlotArmR:
+		case kInventorySlotRightArm:
 			return TalkMan.getString(31377); // Right Arm
-		case kEquipmentSlotBody:
+		case kInventorySlotBody:
 			return TalkMan.getString(31380); // Body
-		case kEquipmentSlotArmL:
+		case kInventorySlotLeftArm:
 			return TalkMan.getString(31376); // Left Arm
-		case kEquipmentSlotWeaponR:
+		case kInventorySlotRightWeapon:
 			return TalkMan.getString(31379); // Right Weapon
-		case kEquipmentSlotBelt:
+		case kInventorySlotBelt:
 			return TalkMan.getString(31382); // Belt
-		case kEquipmentSlotWeaponL:
+		case kInventorySlotLeftWeapon:
 			return TalkMan.getString(31378); // Left Weapon
 		default:
 			return "";
