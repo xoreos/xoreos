@@ -38,6 +38,8 @@
 
 #include "src/graphics/aurora/fonthandle.h"
 
+#include "src/graphics/shader/shaderrenderable.h"
+
 #include "src/engines/nwn/gui/gui.h"
 
 namespace Common {
@@ -125,6 +127,8 @@ public:
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
 
+	void renderImmediate(const glm::mat4 &parentTransform);
+
 private:
 	/** A PC reply. */
 	struct Reply {
@@ -172,6 +176,8 @@ private:
 	std::list<ReplyLine>::iterator _highlightedReply; ///< The currently highlighted reply.
 	std::list<Reply>::const_iterator _pickedReply;    ///< The picked (clicked) reply.
 
+	Graphics::Shader::ShaderRenderable _shaderRenderableBackdrop;
+	Graphics::Shader::ShaderRenderable _shaderRenderableEdge;
 
 	void showEntry(); ///< Show the entry.
 	void hideEntry(); ///< Hide the entry.
@@ -221,7 +227,6 @@ private:
 	Common::ScopedPtr<Aurora::DLGFile> _dlg; ///< The conversation file.
 
 	std::list<Events::Event> _eventQueue; ///< The event queue.
-
 
 	void updateBox(); ///< Update the box's contents.
 
