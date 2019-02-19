@@ -51,6 +51,7 @@
 #include "src/engines/nwn2/modelloader.h"
 #include "src/engines/nwn2/console.h"
 #include "src/engines/nwn2/game.h"
+#include "src/engines/nwn2/cursor.h"
 
 namespace Engines {
 
@@ -350,82 +351,82 @@ void NWN2Engine::initResources(LoadProgress &progress) {
 }
 
 void NWN2Engine::initCursors() {
-	CursorMan.add("cursor0" , "default"  , "up"  ); // Walk cursor
-	CursorMan.add("cursor1" , "default"  , "down");
+	CursorMan.add("cursor0"  , kCursorDefault    , "up"  );
+	CursorMan.add("cursor1"  , kCursorDefault    , "down");
 
 	// Cursor types in 'cursors.2da'
-	CursorMan.add("cursor21" , "transition", "up"  );
-	CursorMan.add("cursor22" , "transition", "down");
-	CursorMan.add("cursor37" , "use"       , "up"  ); // Note: changed from cursor25
-	CursorMan.add("cursor38" , "use"       , "down");
-	CursorMan.add("cursor17" , "examine"   , "up"  );
-	CursorMan.add("cursor18" , "examine"   , "down");
-	CursorMan.add("cursor11" , "talk"      , "up"  );
-	CursorMan.add("cursor12" , "talk"      , "down");
-//	CursorMan.add("cursor0"  , "walk"      , "up"  ); // Error
-	CursorMan.add("cursor2"  , "walk"      , "down");
-	CursorMan.add("cursor125", "xwalk"     , "up"  ); // Note: changed from cursor5
-	CursorMan.add("cursor126", "xwalk"     , "down");
-	CursorMan.add("cursor7"  , "attack"    , "up"  );
-	CursorMan.add("cursor8"  , "attack"    , "down");
-	CursorMan.add("cursor29" , "magic"     , "up"  );
-	CursorMan.add("cursor30" , "magic"     , "down");
-	CursorMan.add("cursor39" , "nouse"     , "up"  ); // Note: changed from cursor27
-	CursorMan.add("cursor40" , "nouse"     , "down");
-	CursorMan.add("cursor33" , "trap"      , "up"  );
-	CursorMan.add("cursor34" , "trap"      , "down");
+	CursorMan.add("cursor21" , kCursorTransition , "up"  );
+	CursorMan.add("cursor22" , kCursorTransition , "down");
+	CursorMan.add("cursor37" , kCursorAction     , "up"  );
+	CursorMan.add("cursor38" , kCursorAction     , "down");
+	CursorMan.add("cursor17" , kCursorExamine    , "up"  );
+	CursorMan.add("cursor18" , kCursorExamine    , "down");
+	CursorMan.add("cursor11" , kCursorTalk       , "up"  );
+	CursorMan.add("cursor12" , kCursorTalk       , "down");
+	CursorMan.add("cursor3"  , kCursorWalk       , "up"  );
+	CursorMan.add("cursor4"  , kCursorWalk       , "down");
+	CursorMan.add("cursor125", kCursorNoDefault  , "up"  );
+	CursorMan.add("cursor126", kCursorNoDefault  , "down");
+	CursorMan.add("cursor7"  , kCursorAttack     , "up"  );
+	CursorMan.add("cursor8"  , kCursorAttack     , "down");
+	CursorMan.add("cursor29" , kCursorMagic      , "up"  );
+	CursorMan.add("cursor30" , kCursorMagic      , "down");
+	CursorMan.add("cursor39" , kCursorNoAction   , "up"  );
+	CursorMan.add("cursor40" , kCursorNoAction   , "down");
+	CursorMan.add("cursor33" , kCursorDisarm     , "up"  );
+	CursorMan.add("cursor34" , kCursorDisarm     , "down");
 
 	// Exploration mode run cursors
-	CursorMan.add("cursor59" , "run0"      , "down"); // Arrow up
-	CursorMan.add("cursor60" , "run1"      , "down");
-	CursorMan.add("cursor61" , "run2"      , "down");
-	CursorMan.add("cursor62" , "run3"      , "down");
-	CursorMan.add("cursor63" , "run4"      , "down"); // Arrow right
-	CursorMan.add("cursor64" , "run5"      , "down");
-	CursorMan.add("cursor65" , "run6"      , "down");
-	CursorMan.add("cursor66" , "run7"      , "down");
-	CursorMan.add("cursor67" , "run8"      , "down"); // Arrow down
-	CursorMan.add("cursor68" , "run9"      , "down");
-	CursorMan.add("cursor69" , "run10"     , "down");
-	CursorMan.add("cursor70" , "run11"     , "down");
-	CursorMan.add("cursor71" , "run12"     , "down"); // Arrow left
-	CursorMan.add("cursor72" , "run13"     , "down");
-	CursorMan.add("cursor73" , "run14"     , "down");
-	CursorMan.add("cursor74" , "run15"     , "down");
+	CursorMan.add("cursor59" , kCursorRunArrow00 , "down"); // Arrow up
+	CursorMan.add("cursor60" , kCursorRunArrow01 , "down");
+	CursorMan.add("cursor61" , kCursorRunArrow02 , "down");
+	CursorMan.add("cursor62" , kCursorRunArrow03 , "down");
+	CursorMan.add("cursor63" , kCursorRunArrow04 , "down"); // Arrow right
+	CursorMan.add("cursor64" , kCursorRunArrow05 , "down");
+	CursorMan.add("cursor65" , kCursorRunArrow06 , "down");
+	CursorMan.add("cursor66" , kCursorRunArrow07 , "down");
+	CursorMan.add("cursor67" , kCursorRunArrow08 , "down"); // Arrow down
+	CursorMan.add("cursor68" , kCursorRunArrow09 , "down");
+	CursorMan.add("cursor69" , kCursorRunArrow10 , "down");
+	CursorMan.add("cursor70" , kCursorRunArrow11 , "down");
+	CursorMan.add("cursor71" , kCursorRunArrow12 , "down"); // Arrow left
+	CursorMan.add("cursor72" , kCursorRunArrow13 , "down");
+	CursorMan.add("cursor73" , kCursorRunArrow14 , "down");
+	CursorMan.add("cursor74" , kCursorRunArrow15 , "down");
 
 	// Exploration mode walk cursors
-	CursorMan.add("cursor75" , "walk0"     , "down"); // Arrow up
-	CursorMan.add("cursor76" , "walk1"     , "down");
-	CursorMan.add("cursor77" , "walk2"     , "down");
-	CursorMan.add("cursor78" , "walk3"     , "down");
-	CursorMan.add("cursor79" , "walk4"     , "down"); // Arrow right
-	CursorMan.add("cursor80" , "walk5"     , "down");
-	CursorMan.add("cursor81" , "walk6"     , "down");
-	CursorMan.add("cursor82" , "walk7"     , "down");
-	CursorMan.add("cursor83" , "walk8"     , "down"); // Arrow down
-	CursorMan.add("cursor84" , "walk9"     , "down");
-	CursorMan.add("cursor85" , "walk10"    , "down");
-	CursorMan.add("cursor86" , "walk11"    , "down");
-	CursorMan.add("cursor87" , "walk12"    , "down"); // Arrow left
-	CursorMan.add("cursor88" , "walk13"    , "down");
-	CursorMan.add("cursor89" , "walk14"    , "down");
-	CursorMan.add("cursor90" , "walk15"    , "down");
+	CursorMan.add("cursor75" , kCursorWalkArrow00, "down"); // Arrow up
+	CursorMan.add("cursor76" , kCursorWalkArrow01, "down");
+	CursorMan.add("cursor77" , kCursorWalkArrow02, "down");
+	CursorMan.add("cursor78" , kCursorWalkArrow03, "down");
+	CursorMan.add("cursor79" , kCursorWalkArrow04, "down"); // Arrow right
+	CursorMan.add("cursor80" , kCursorWalkArrow05, "down");
+	CursorMan.add("cursor81" , kCursorWalkArrow06, "down");
+	CursorMan.add("cursor82" , kCursorWalkArrow07, "down");
+	CursorMan.add("cursor83" , kCursorWalkArrow08, "down"); // Arrow down
+	CursorMan.add("cursor84" , kCursorWalkArrow09, "down");
+	CursorMan.add("cursor85" , kCursorWalkArrow10, "down");
+	CursorMan.add("cursor86" , kCursorWalkArrow11, "down");
+	CursorMan.add("cursor87" , kCursorWalkArrow12, "down"); // Arrow left
+	CursorMan.add("cursor88" , kCursorWalkArrow13, "down");
+	CursorMan.add("cursor89" , kCursorWalkArrow14, "down");
+	CursorMan.add("cursor90" , kCursorWalkArrow15, "down");
 
 	// Other cursors
-	CursorMan.add("cursor23" , "door"      , "up"  );
-	CursorMan.add("cursor24" , "door"      , "down");
-	CursorMan.add("cursor41" , "lock"      , "up"  );
-	CursorMan.add("cursor42" , "lock"      , "down");
-	CursorMan.add("cursor55" , "healing"   , "up"  );
-	CursorMan.add("cursor56" , "healing"   , "down");
-	CursorMan.add("cursor91" , "loot"      , "up"  );
-	CursorMan.add("cursor92" , "loot"      , "down");
-	CursorMan.add("cursor127", "compass"   , "up"  );
-	CursorMan.add("cursor128", "compass"   , "down");
-	CursorMan.add("cursor131", "clock"     , "up"  );
-	CursorMan.add("cursor132", "clock"     , "down");
+	CursorMan.add("cursor23" , kCursorDoor       , "up"  );
+	CursorMan.add("cursor24" , kCursorDoor       , "down");
+	CursorMan.add("cursor41" , kCursorLock       , "up"  );
+	CursorMan.add("cursor42" , kCursorLock       , "down");
+	CursorMan.add("cursor55" , kCursorHeal       , "up"  );
+	CursorMan.add("cursor56" , kCursorHeal       , "down");
+	CursorMan.add("cursor91" , kCursorPickup     , "up"  );
+	CursorMan.add("cursor92" , kCursorPickup     , "down");
+	CursorMan.add("cursor127", kCursorMap        , "up"  );
+	CursorMan.add("cursor128", kCursorMap        , "down");
+	CursorMan.add("cursor131", kCursorWait       , "up"  );
+	CursorMan.add("cursor132", kCursorWait       , "down");
 
-	CursorMan.setDefault("default", "up");
+	CursorMan.setDefault(kCursorDefault, "up");
 }
 
 void NWN2Engine::initConfig() {
