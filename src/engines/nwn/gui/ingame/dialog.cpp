@@ -25,6 +25,8 @@
 // TODO: Make dialog boxes resizeable and/or repositionable?
 // TODO: Actually, in the original, the dialog boxes do resize themselves up to a point...
 
+#include "glm/gtc/matrix_transform.hpp"
+
 #include "src/common/util.h"
 #include "src/common/configman.h"
 
@@ -52,6 +54,10 @@
 #include "src/engines/nwn/gui/widgets/portrait.h"
 
 #include "src/engines/nwn/gui/ingame/dialog.h"
+
+#include "src/graphics/mesh/meshman.h"
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/shader/materialman.h"
 
 static const float kDialogWidth  = 350.0f;
 static const float kDialogHeight = 254.0f;
@@ -96,6 +102,14 @@ DialogBox::DialogBox(float width, float height) :
 
 	_highlightedReply = _replyLines.end();
 	_pickedReply      = _replies.end();
+
+	_shaderRenderableBackdrop.setMesh(MeshMan.getMesh("defaultMeshQuad"));
+	_shaderRenderableBackdrop.setSurface(SurfaceMan.getSurface("defaultSurface"), false);
+	_shaderRenderableBackdrop.setMaterial(MaterialMan.getMaterial("defaultBlack"));
+
+	_shaderRenderableEdge.setMesh(MeshMan.getMesh("defaultMeshQuad"));
+	_shaderRenderableEdge.setSurface(SurfaceMan.getSurface("defaultSurface"), false);
+	_shaderRenderableEdge.setMaterial(MaterialMan.getMaterial("defaultWhite"));
 }
 
 DialogBox::~DialogBox() {
@@ -537,6 +551,34 @@ void DialogBox::render(Graphics::RenderPass pass) {
 	glEnd();
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void DialogBox::renderImmediate(const glm::mat4 &parentTransform) {
+	glm::mat4 backdropTransform = parentTransform;
+	backdropTransform = glm::translate(backdropTransform, glm::vec3(_x, _y, 0.0f));
+	backdropTransform = glm::scale(backdropTransform, glm::vec3(_width, _height, 1.0f));
+
+	glm::mat4 topEdgeTransform = parentTransform;
+	topEdgeTransform = glm::translate(topEdgeTransform, glm::vec3(_x, _y + _height - 1.0f, 0.0f));
+	topEdgeTransform = glm::scale(topEdgeTransform, glm::vec3(_width, 1.0f, 1.0f));
+
+	glm::mat4 bottomEdgeTransform = parentTransform;
+	bottomEdgeTransform = glm::translate(bottomEdgeTransform, glm::vec3(_x, _y, 0.0f));
+	bottomEdgeTransform = glm::scale(bottomEdgeTransform, glm::vec3(_width, 1.0f, 1.0f));
+
+	glm::mat4 leftEdgeTransform = parentTransform;
+	leftEdgeTransform = glm::translate(leftEdgeTransform, glm::vec3(_x, _y, 0.0f));
+	leftEdgeTransform = glm::scale(leftEdgeTransform, glm::vec3(1.0f, _height, 1.0f));
+
+	glm::mat4 rightEdgeTransform = parentTransform;
+	rightEdgeTransform = glm::translate(rightEdgeTransform, glm::vec3(_x + _width - 1.0f, _y, 0.0f));
+	rightEdgeTransform = glm::scale(rightEdgeTransform, glm::vec3(1.0f, _height, 1.0f));
+
+	_shaderRenderableBackdrop.renderImmediate(backdropTransform);
+	_shaderRenderableEdge.renderImmediate(topEdgeTransform);
+	_shaderRenderableEdge.renderImmediate(bottomEdgeTransform);
+	_shaderRenderableEdge.renderImmediate(leftEdgeTransform);
+	_shaderRenderableEdge.renderImmediate(rightEdgeTransform);
 }
 
 
