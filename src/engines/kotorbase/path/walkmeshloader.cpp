@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Walkmesh loader class for KotOR.
+ *  Walkmesh loader class for KotOR games.
  */
 
 #include "src/common/scopedptr.h"
@@ -27,8 +27,8 @@
 
 #include "src/aurora/resman.h"
 
-#include "src/engines/kotor/pathfinding.h"
-#include "src/engines/kotor/walkmeshloader.h"
+#include "src/engines/kotorbase/path/pathfinding.h"
+#include "src/engines/kotorbase/path/walkmeshloader.h"
 
 namespace Engines {
 
@@ -37,11 +37,16 @@ namespace KotOR {
 WalkmeshLoader::WalkmeshLoader() : _node(0), _pathfinding(0) {
 }
 
-void WalkmeshLoader::load(Aurora::FileType fileType, const Common::UString &resRef,
-                          const glm::mat4 &transform, std::vector<float> &vertices,
-                          std::vector<uint32> &faces, std::vector<uint32> &faceTypes,
-                          std::vector<uint32> &adjFaces, std::map<uint32, uint32> &adjRooms,
+void WalkmeshLoader::load(Aurora::FileType fileType,
+                          const Common::UString &resRef,
+                          const glm::mat4 &transform,
+                          std::vector<float> &vertices,
+                          std::vector<uint32> &faces,
+                          std::vector<uint32> &faceTypes,
+                          std::vector<uint32> &adjFaces,
+                          std::map<uint32, uint32> &adjRooms,
                           Pathfinding *pathfinding) {
+
 	_pathfinding = pathfinding;
 	_node = 0;
 	_walkableFaces.clear();

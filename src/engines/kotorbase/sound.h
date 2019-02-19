@@ -19,52 +19,43 @@
  */
 
 /** @file
- *  WalkmeshObject implementation for KotOR2.
+ *  In-game sound within an area in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR2_OBJECTWALKMESH_H
-#define ENGINES_KOTOR2_OBJECTWALKMESH_H
+#ifndef ENGINES_KOTORBASE_SOUND_H
+#define ENGINES_KOTORBASE_SOUND_H
 
-#include "glm/vec2.hpp"
+#include "src/events/timerman.h"
 
-#include "src/aurora/types.h"
-
-#include "src/engines/aurora/objectwalkmesh.h"
+#include "src/engines/kotorbase/object.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
-class Situated;
-
-class ObjectWalkmesh : public Engines::ObjectWalkmesh {
+class SoundObject : public Object {
 public:
-	ObjectWalkmesh(Situated *situated, Aurora::FileType fileType = Aurora::kFileTypePWK);
-	~ObjectWalkmesh();
+	SoundObject(const Aurora::GFF3Struct &sound);
 
-	void load(const Common::UString &resRef,
-	          float orientation[4], float position[3]);
-	bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const;
-	bool in(glm::vec2 &point) const;
+	void setPosition(float x, float y, float z);
 
-	const std::vector<float> &getVertices() const;
-	const std::vector<uint32> &getFaces() const;
-
-protected:
-	Aurora::FileType _fileType;
+	void play();
+	void stop();
 
 private:
-	void computeMinMax();
+	bool _positional;
+	bool _looping;
+	bool _random;
 
-	glm::vec2 _min;
-	glm::vec2 _max;
+	unsigned int _interval;
 
-	std::vector<float>  _vertices;
-	std::vector<uint32> _faces;
+	std::vector<Common::UString> _soundFiles;
+
+	Sound::ChannelHandle _sound;
 };
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_OBJECTWALKMESH_H
+#endif // ENGINES_KOTORBASE_SOUND_H

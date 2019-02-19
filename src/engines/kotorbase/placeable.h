@@ -19,19 +19,19 @@
  */
 
 /** @file
- *  A placeable in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Placeable within an area in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR2_PLACEABLE_H
-#define ENGINES_KOTOR2_PLACEABLE_H
+#ifndef ENGINES_KOTORBASE_PLACEABLE_H
+#define ENGINES_KOTORBASE_PLACEABLE_H
 
-#include "src/aurora/types.h"
-
-#include "src/engines/kotor2/situated.h"
+#include "src/engines/kotorbase/item.h"
+#include "src/engines/kotorbase/inventory.h"
+#include "src/engines/kotorbase/situated.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
 class Placeable : public Situated {
 public:
@@ -47,11 +47,11 @@ public:
 
 	/** Load from a placeable instance. */
 	Placeable(const Aurora::GFF3Struct &placeable);
-	~Placeable();
 
 	// Basic visuals
 
-	void hide(); ///< Hide the placeable's model.
+	/** Hide the placeable's model. */
+	void hide();
 
 	// Basic properties
 
@@ -64,20 +64,24 @@ public:
 	bool open(Object *opener);
 	/** The closer object closes this placeable. */
 	bool close(Object *closer);
-
 	/** The user object activates this placeable. */
 	bool activate(Object *opener);
 	/** The user object deactivates this placeable. */
 	bool deactivate(Object *closer);
 
-	// Object/Cursor interactions
+	// Inventory
 
-	void enter(); ///< The cursor entered the placeable.
-	void leave(); ///< The cursor left the placeable.
+	bool hasInventory();
+	Inventory &getInventory();
 
+	// Object/cursor interactions
+
+	/** The cursor entered the placeable. */
+	void enter();
+	/** The cursor left the placeable. */
+	void leave();
 	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
-
 	/** The placeable was clicked. */
 	bool click(Object *triggerer = 0);
 
@@ -91,13 +95,14 @@ private:
 	State _state; ///< The current state of the placeable.
 
 	bool _hasInventory; ///< Does this placeable have an inventory?
+	Inventory _inventory; ///< The current items of this placeable if it has an inventory.
 
 	/** Load from a placeable instance. */
 	void load(const Aurora::GFF3Struct &placeable);
 };
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_PLACEABLE_H
+#endif // ENGINES_KOTORBASE_PLACEABLE_H

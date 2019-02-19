@@ -45,15 +45,16 @@
 
 #include "src/engines/kotorbase/room.h"
 #include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/placeable.h"
+#include "src/engines/kotorbase/door.h"
+#include "src/engines/kotorbase/waypoint.h"
 
-#include "src/engines/kotor2/objectwalkmesh.h"
-#include "src/engines/kotor2/doorwalkmesh.h"
+#include "src/engines/kotorbase/path/objectwalkmesh.h"
+#include "src/engines/kotorbase/path/doorwalkmesh.h"
+#include "src/engines/kotorbase/path/pathfinding.h"
+
 #include "src/engines/kotor2/area.h"
 #include "src/engines/kotor2/module.h"
-#include "src/engines/kotor2/waypoint.h"
-#include "src/engines/kotor2/pathfinding.h"
-#include "src/engines/kotor2/placeable.h"
-#include "src/engines/kotor2/door.h"
 
 namespace Engines {
 
@@ -76,7 +77,7 @@ Area::Area(Module &module, const Common::UString &resRef)
 		  _activeTrigger(0),
 		  _walkmeshInvisible(true) {
 
-	_pathfinding = new Pathfinding(_module->getWalkableSurfaces());
+	_pathfinding = new KotOR::Pathfinding(_module->getWalkableSurfaces());
 	_pathfinding->showWalkmesh(!_walkmeshInvisible);
 	_localPathfinding = new Engines::LocalPathfinding(_pathfinding);
 	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
@@ -392,7 +393,7 @@ void Area::loadObject(KotOR::Object &object) {
 
 void Area::loadWaypoints(const Aurora::GFF3List &list) {
 	for (Aurora::GFF3List::const_iterator w = list.begin(); w != list.end(); ++w) {
-		Waypoint *waypoint = new Waypoint(**w);
+		KotOR::Waypoint *waypoint = new KotOR::Waypoint(**w);
 
 		loadObject(*waypoint);
 	}
@@ -400,21 +401,21 @@ void Area::loadWaypoints(const Aurora::GFF3List &list) {
 
 void Area::loadPlaceables(const Aurora::GFF3List &list) {
 	for (Aurora::GFF3List::const_iterator p = list.begin(); p != list.end(); ++p) {
-		Placeable *placeable = new Placeable(**p);
+		KotOR::Placeable *placeable = new KotOR::Placeable(**p);
 
 		loadObject(*placeable);
 		_situatedObjects.push_back(placeable);
-		_localPathfinding->addStaticObjects(new ObjectWalkmesh(placeable));
+		_localPathfinding->addStaticObjects(new KotOR::ObjectWalkmesh(placeable));
 	}
 }
 
 void Area::loadDoors(const Aurora::GFF3List &list) {
 	for (Aurora::GFF3List::const_iterator d = list.begin(); d != list.end(); ++d) {
-		Door *door = new Door(*_module, **d);
+		KotOR::Door *door = new KotOR::Door(*_module, **d);
 
 		loadObject(*door);
 		_situatedObjects.push_back(door);
-		_localPathfinding->addStaticObjects(new DoorWalkmesh(door));
+		_localPathfinding->addStaticObjects(new KotOR::DoorWalkmesh(door));
 	}
 }
 
@@ -428,7 +429,7 @@ void Area::loadCreatures(const Aurora::GFF3List &list) {
 
 void Area::loadTriggers(const Aurora::GFF3List &list) {
 	for (Aurora::GFF3List::const_iterator t = list.begin(); t != list.end(); ++t) {
-		Trigger *trigger = new Trigger(**t);
+		KotOR::Trigger *trigger = new KotOR::Trigger(**t);
 
 		loadObject(*trigger);
 		_triggers.push_back(trigger);
@@ -557,7 +558,7 @@ void Area::toggleWalkmesh() {
 
 void Area::toggleTriggers() {
 	_triggersVisible = !_triggersVisible;
-	for (std::vector<Trigger *>::const_iterator it = _triggers.begin();
+	for (std::vector<KotOR::Trigger *>::const_iterator it = _triggers.begin();
 			it != _triggers.end();
 			++it) {
 		(*it)->setVisible(_triggersVisible);
@@ -565,12 +566,12 @@ void Area::toggleTriggers() {
 }
 
 void Area::evaluateTriggers(float x, float y) {
-	Trigger *trigger = 0;
+	KotOR::Trigger *trigger = 0;
 
-	for (std::vector<Trigger *>::iterator it = _triggers.begin();
+	for (std::vector<KotOR::Trigger *>::iterator it = _triggers.begin();
 			it != _triggers.end();
 			++it) {
-		Trigger *t = *it;
+		KotOR::Trigger *t = *it;
 		if (t->contains(x, y)) {
 			trigger = t;
 			break;

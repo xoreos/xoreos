@@ -19,40 +19,32 @@
  */
 
 /** @file
- *  WalkmeshObject implementation for KotOR doors.
+ *  Module abstraction for KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_DOORWALKMESH_H
-#define ENGINES_KOTOR_DOORWALKMESH_H
+#ifndef ENGINES_KOTORBASE_MODULE_H
+#define ENGINES_KOTORBASE_MODULE_H
 
-#include "src/engines/kotor/objectwalkmesh.h"
+#include "src/common/ustring.h"
+
+#include "src/engines/kotorbase/types.h"
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
-class Door;
-
-class DoorWalkmesh : public Engines::KotOR::ObjectWalkmesh {
+class Module {
 public:
-	DoorWalkmesh(Door *door);
-	~DoorWalkmesh();
+	virtual ~Module();
 
-	bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const;
-	bool in(glm::vec2 &point) const;
-
-	const std::vector<float> &getVertices() const;
-	const std::vector<uint32> &getFaces() const;
-
-private:
-	Door *_door;
-
-	std::vector<float> _noVertices;
-	std::vector<uint32> _noFaces;
+	/** Move the player character to this object within this area. */
+	virtual void movePC(const Common::UString &module,
+	                    const Common::UString &object,
+	                    KotOR::ObjectType type = KotOR::kObjectTypeAll) = 0;
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_DOORWALKMESH_H
+#endif // ENGINES_KOTORBASE_MODULE_H

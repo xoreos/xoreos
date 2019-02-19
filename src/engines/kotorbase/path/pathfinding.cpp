@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Pathfinding class for KotOR.
+ *  Pathfinding class for KotOR games.
  */
 
 #include "src/common/util.h"
@@ -29,21 +29,18 @@
 
 #include "src/engines/kotorbase/room.h"
 
-#include "src/engines/kotor/walkmeshloader.h"
-#include "src/engines/kotor/pathfinding.h"
+#include "src/engines/kotorbase/path/walkmeshloader.h"
+#include "src/engines/kotorbase/path/pathfinding.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Pathfinding::Pathfinding(const std::vector<bool> &walkableProp)
-    : Engines::Pathfinding(walkableProp) {
+Pathfinding::Pathfinding(const std::vector<bool> &walkableProp) :
+		Engines::Pathfinding(walkableProp) {
 
 	AStar * aStarAlgorithm = new AStar(this);
 	setAStarAlgorithm(aStarAlgorithm);
-}
-
-Pathfinding::~Pathfinding() {
 }
 
 void Pathfinding::addRoom(Room *room) {

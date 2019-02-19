@@ -19,35 +19,50 @@
  */
 
 /** @file
- *  Pathfinding class for KotOR2.
+ *  WalkmeshObject implementation for doors in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR2_PATHFINDING_H
-#define ENGINES_KOTOR2_PATHFINDING_H
+#include "src/engines/kotorbase/door.h"
 
-#include "src/engines/kotor/pathfinding.h"
+#include "src/engines/kotorbase/path/doorwalkmesh.h"
 
 namespace Engines {
 
 namespace KotOR {
-	class Room;
+
+DoorWalkmesh::DoorWalkmesh(Door *door) :
+		ObjectWalkmesh(door, Aurora::kFileTypeDWK),
+		_door(door) {
 }
 
-namespace KotOR2 {
+bool DoorWalkmesh::in(glm::vec2 &minBox, glm::vec2 &maxBox) const {
+	if (_door->isOpen())
+		return false;
 
-class Pathfinding : public KotOR::Pathfinding {
-public:
-	Pathfinding(const std::vector<bool> &walkableProp);
+	return ObjectWalkmesh::in(minBox, maxBox);
+}
 
-	void addRoom(KotOR::Room *room);
-	KotOR::Room *getRoomAt(float x, float y) const;
+bool DoorWalkmesh::in(glm::vec2 &point) const {
+	if (_door->isOpen())
+		return false;
 
-private:
-	std::vector<KotOR::Room *> _roomsKotOR2;
-};
+	return ObjectWalkmesh::in(point);
+}
 
-} // End of namespace KotOR2
+const std::vector<float> &DoorWalkmesh::getVertices() const {
+	if (_door->isOpen())
+		return _noVertices;
+
+	return ObjectWalkmesh::getVertices();
+}
+
+const std::vector<uint32> &DoorWalkmesh::getFaces() const {
+	if (_door->isOpen())
+		return _noFaces;
+
+	return ObjectWalkmesh::getFaces();
+}
+
+} // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR2_PATHFINDING_H

@@ -30,6 +30,13 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/item.h \
     src/engines/kotorbase/inventory.h \
     src/engines/kotorbase/creature.h \
+    src/engines/kotorbase/situated.h \
+    src/engines/kotorbase/placeable.h \
+    src/engines/kotorbase/door.h \
+    src/engines/kotorbase/module.h \
+    src/engines/kotorbase/trigger.h \
+    src/engines/kotorbase/waypoint.h \
+    src/engines/kotorbase/sound.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
@@ -39,7 +46,15 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/item.cpp \
     src/engines/kotorbase/inventory.cpp \
     src/engines/kotorbase/creature.cpp \
+    src/engines/kotorbase/situated.cpp \
+    src/engines/kotorbase/placeable.cpp \
+    src/engines/kotorbase/door.cpp \
+    src/engines/kotorbase/module.cpp \
+    src/engines/kotorbase/trigger.cpp \
+    src/engines/kotorbase/waypoint.cpp \
+    src/engines/kotorbase/sound.cpp \
     $(EMPTY)
 
 include src/engines/kotorbase/script/rules.mk
 include src/engines/kotorbase/gui/rules.mk
+include src/engines/kotorbase/path/rules.mk

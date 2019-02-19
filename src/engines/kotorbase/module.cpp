@@ -19,51 +19,18 @@
  */
 
 /** @file
- *  WalkmeshObject implementation for KotOR2 doors.
+ *  Module abstraction for KotOR games.
  */
 
-#include "src/engines/kotor2/door.h"
-#include "src/engines/kotor2/doorwalkmesh.h"
+#include "src/engines/kotorbase/module.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotORBase {
 
-DoorWalkmesh::DoorWalkmesh(Door *door) : ObjectWalkmesh(door, Aurora::kFileTypeDWK),
-    _door(door) {
+Module::~Module() {
 }
 
-DoorWalkmesh::~DoorWalkmesh() {
-}
-
-bool DoorWalkmesh::in(glm::vec2 &minBox, glm::vec2 &maxBox) const {
-	if (_door->isOpen())
-		return false;
-
-	return ObjectWalkmesh::in(minBox, maxBox);
-}
-
-bool DoorWalkmesh::in(glm::vec2 &point) const {
-	if (_door->isOpen())
-		return false;
-
-	return ObjectWalkmesh::in(point);
-}
-
-const std::vector<float> &DoorWalkmesh::getVertices() const {
-	if (_door->isOpen())
-		return _noVertices;
-
-	return ObjectWalkmesh::getVertices();
-}
-
-const std::vector<uint32> &DoorWalkmesh::getFaces() const {
-	if (_door->isOpen())
-		return _noFaces;
-
-	return ObjectWalkmesh::getFaces();
-}
-
-} // End of namespace KotOR2
+} // End of namespace KotORBase
 
 } // End of namespace Engines

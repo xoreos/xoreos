@@ -19,21 +19,23 @@
  */
 
 /** @file
- *  A door in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Door within an area in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR2_DOOR_H
-#define ENGINES_KOTOR2_DOOR_H
+#ifndef ENGINES_KOTORBASE_DOOR_H
+#define ENGINES_KOTORBASE_DOOR_H
 
 #include "src/aurora/types.h"
 
-#include "src/engines/kotor2/situated.h"
+#include "src/engines/kotorbase/situated.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotORBase {
+	class Module;
+}
 
-class Module;
+namespace KotOR {
 
 class Door : public Situated {
 public:
@@ -46,13 +48,14 @@ public:
 	};
 
 	/** Load from a door instance. */
-	Door(Module &module, const Aurora::GFF3Struct &door);
-	~Door();
+	Door(KotORBase::Module &module, const Aurora::GFF3Struct &door);
 
 	// Basic visuals
 
-	void hide(); ///< Hide the door's model.
-	void hideSoft(); ///< Hide the door's model if applicable.
+	/** Hide the door's model. */
+	void hide();
+	/** Hide the door's model if applicable. */
+	void hideSoft();
 
 	// Basic properties
 
@@ -64,16 +67,20 @@ public:
 	/** The closer object closes this door. */
 	bool close(Object *closer);
 
-	// Object/Cursor interactions
+	// Object/cursor interactions
 
-	void enter(); ///< The cursor entered the door.
-	void leave(); ///< The cursor left the door.
-
+	/** The cursor entered the door. */
+	void enter();
+	/** The cursor left the door. */
+	void leave();
 	/** (Un)Highlight the door. */
 	void highlight(bool enabled);
-
 	/** The door was clicked. */
 	bool click(Object *triggerer = 0);
+
+	// Tooltip
+
+	virtual void getTooltipAnchor(float &x, float &y, float &z) const;
 
 protected:
 	/** Load door-specific properties. */
@@ -88,16 +95,16 @@ private:
 		kLinkedToWaypoint = 2  ///< This door links to a waypoint.
 	};
 
-	Module *_module; ///< The module the door is in.
+	KotORBase::Module *_module; ///< The module the door is in.
 
 	uint32 _genericType; ///< Index into the generic door types.
 
 	State _state; ///< The current state of the door.
 
-	LinkedToFlag      _linkedToFlag;   ///< Does this door link to anything?
-	KotOR::ObjectType _linkedToType;   ///< The type of the object this door links to.
-	Common::UString   _linkedTo;       ///< The object tag this door links to.
-	Common::UString   _linkedToModule; ///< The module the object this door links to is in.
+	LinkedToFlag    _linkedToFlag;   ///< Does this door link to anything?
+	ObjectType      _linkedToType;   ///< The type of the object this door links to.
+	Common::UString _linkedTo;       ///< The object tag this door links to.
+	Common::UString _linkedToModule; ///< The module the object this door links to is in.
 
 	/** A localized string describing where this door leads to. */
 	Common::UString _transitionDestination;
@@ -109,8 +116,8 @@ private:
 	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);
 };
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_DOOR_H
+#endif // ENGINES_KOTORBASE_DOOR_H

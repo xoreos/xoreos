@@ -19,13 +19,13 @@
  */
 
 /** @file
- *  An ingame sound in kotor.
+ *  Trigger within an area in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_SOUND_H
-#define ENGINES_KOTOR_SOUND_H
+#ifndef ENGINES_KOTORBASE_TRIGGER_H
+#define ENGINES_KOTORBASE_TRIGGER_H
 
-#include "src/events/timerman.h"
+#include "src/engines/aurora/trigger.h"
 
 #include "src/engines/kotorbase/object.h"
 
@@ -33,29 +33,25 @@ namespace Engines {
 
 namespace KotOR {
 
-class SoundObject : public Object {
+class Trigger : public ::Engines::Trigger, public Object {
 public:
-	SoundObject(const Aurora::GFF3Struct &sound);
+	Trigger(const Aurora::GFF3Struct &gff);
 
-	void setPosition(float x, float y, float z);
+	// Basic visuals
 
-	void play();
-	void stop();
+	bool isVisible() const;
 
-private:
-	bool _positional;
-	bool _looping;
-	bool _random;
+	void show();
+	void hide();
+	void hideSoft();
 
-	unsigned int _interval;
-
-	std::vector<Common::UString> _soundFiles;
-
-	Sound::ChannelHandle _sound;
+protected:
+	void load(const Aurora::GFF3Struct &gff);
+	void loadBlueprint(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_SOUND_H
+#endif // ENGINES_KOTORBASE_TRIGGER_H

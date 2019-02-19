@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  A situated object in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Situated object within an area in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR2_SITUATED_H
-#define ENGINES_KOTOR2_SITUATED_H
+#ifndef ENGINES_KOTORBASE_SITUATED_H
+#define ENGINES_KOTORBASE_SITUATED_H
 
 #include "glm/vec3.hpp"
 
@@ -37,35 +37,42 @@
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
-class Situated : public KotOR::Object {
+class Situated : public Object {
 public:
-	~Situated();
-
 	// Basic visuals
 
-	void show(); ///< Show the situated object's model.
-	void hide(); ///< Hide the situated object's model.
-	bool isVisible() const; ///< Is the situated object's model visible?
+	/** Is the situated object's model visible? */
+	bool isVisible() const;
+
+	/** Show the situated object's model. */
+	void show();
+	/** Hide the situated object's model. */
+	void hide();
 
 	// Basic properties
 
-	/** Is the situated object open? */
-	virtual bool isOpen() const = 0;
-
-	bool isLocked() const;               ///< Is the situated object locked?
-	virtual void setLocked(bool locked); ///< Lock/Unlock the situated object.
-
 	/** Return the object that last opened this situated object. */
-	KotOR::Object *getLastOpenedBy() const;
+	Object *getLastOpenedBy() const;
 	/** Return the object that last closed this situated object. */
-	KotOR::Object *getLastClosedBy() const;
+	Object *getLastClosedBy() const;
 	/** Return the object that last used this situated object. */
-	KotOR::Object *getLastUsedBy  () const;
-
+	Object *getLastUsedBy() const;
+	/** Get the conversation for this object. */
+	const Common::UString &getConversation() const;
 	/** Get the model name. */
 	const Common::UString &getModelName() const;
+
+	// State
+
+	/** Is the situated object open? */
+	virtual bool isOpen() const = 0;
+	/** Is the situated object locked? */
+	bool isLocked() const;
+
+	/** Lock/Unlock the situated object. */
+	virtual void setLocked(bool locked);
 
 	// Positioning
 
@@ -74,11 +81,16 @@ public:
 	/** Set the situated object's orientation. */
 	void setOrientation(float x, float y, float z, float angle);
 
+	// Animation
 
 	void playAnimation(const Common::UString &anim,
 	                   bool restart = true,
 	                   float length = 0.0f,
 	                   float speed = 1.0f);
+
+	// Tooltip
+
+	virtual void getTooltipAnchor(float &x, float &y, float &z) const;
 
 protected:
 	Common::UString _modelName; ///< The model's resource name.
@@ -94,13 +106,15 @@ protected:
 	Common::UString _soundUsed;      ///< The sound the object makes when used.
 	Common::UString _soundLocked;    ///< The sound the object makes when locked.
 
-	KotOR::Object *_lastOpenedBy; ///< The object that last opened this situated object.
-	KotOR::Object *_lastClosedBy; ///< The object that last closed this situated object.
-	KotOR::Object *_lastUsedBy;   ///< The object that last used this situated object.
+	Common::UString _conversation; ///< The optional conversation with this situated object.
+
+	Object *_lastOpenedBy; ///< The object that last opened this situated object.
+	Object *_lastClosedBy; ///< The object that last closed this situated object.
+	Object *_lastUsedBy;   ///< The object that last used this situated object.
 
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The situated object's model.
 
-	Situated(KotOR::ObjectType type);
+	Situated(ObjectType type);
 
 	/** Load the situated object from an instance and its blueprint. */
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint = 0);
@@ -110,15 +124,14 @@ protected:
 	/** Load appearance-specific properties. */
 	virtual void loadAppearance() = 0;
 
-
 private:
 	void loadProperties(const Aurora::GFF3Struct &gff);
 	void loadPortrait(const Aurora::GFF3Struct &gff);
 	void loadSounds();
 };
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_SITUATED_H
+#endif // ENGINES_KOTORBASE_SITUATED_H

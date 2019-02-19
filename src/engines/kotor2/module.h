@@ -40,6 +40,7 @@
 #include "src/events/types.h"
 
 #include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/module.h"
 
 #include "src/engines/kotor2/objectcontainer.h"
 
@@ -58,7 +59,7 @@ namespace KotOR2 {
 class Area;
 class IngameGUI;
 
-class Module : public KotOR::Object, public KotOR2::ObjectContainer {
+class Module : public KotOR::Object, public KotOR2::ObjectContainer, public KotORBase::Module {
 public:
 	Module(::Engines::Console &console);
 	~Module();

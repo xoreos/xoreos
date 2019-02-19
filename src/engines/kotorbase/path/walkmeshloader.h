@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  Walkmesh loader class for KotOR.
+ *  Walkmesh loader class for KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_WALKMESHLOADER_H
-#define ENGINES_KOTOR_WALKMESHLOADER_H
+#ifndef ENGINES_KOTORBASE_PATH_WALKMESHLOADER_H
+#define ENGINES_KOTORBASE_PATH_WALKMESHLOADER_H
 
 #include <map>
 
@@ -32,12 +32,11 @@
 #include "src/aurora/types.h"
 
 namespace Common {
-class UString;
-class AABBNode;
-class SeekableReadStream;
-class StreamTokenizer;
+	class UString;
+	class AABBNode;
+	class SeekableReadStream;
+	class StreamTokenizer;
 }
-
 
 namespace Engines {
 
@@ -49,16 +48,21 @@ class WalkmeshLoader {
 public:
 	WalkmeshLoader();
 
-	void load(Aurora::FileType fileType, const Common::UString &resRef,
-	          const glm::mat4 &transform,  std::vector<float> &vertices,
-	          std::vector<uint32> &faces, std::vector<uint32> &faceTypes,
-	          std::vector<uint32> &adjFaces, std::map<uint32, uint32> &adjRooms,
-	          Pathfinding *pathfinding = 0);
-
 	Common::AABBNode *getAABB();
+
+	void load(Aurora::FileType fileType,
+	          const Common::UString &resRef,
+	          const glm::mat4 &transform,
+	          std::vector<float> &vertices,
+	          std::vector<uint32> &faces,
+	          std::vector<uint32> &faceTypes,
+	          std::vector<uint32> &adjFaces,
+	          std::map<uint32, uint32> &adjRooms,
+	          Pathfinding *pathfinding = 0);
 
 private:
 	void multiply(const float *v, const glm::mat4 &m, float *rv) const;
+
 	void appendFaceTypes(Common::SeekableReadStream &stream,
 	                     std::vector<uint32> &faceTypes,
 	                     uint32 faceCount,
@@ -98,4 +102,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_WALKMESHLOADER_H
+#endif // ENGINES_KOTORBASE_PATH_WALKMESHLOADER_H

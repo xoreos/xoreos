@@ -27,15 +27,15 @@
 
 #include "src/engines/kotorbase/object.h"
 #include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/situated.h"
+#include "src/engines/kotorbase/placeable.h"
+#include "src/engines/kotorbase/door.h"
+#include "src/engines/kotorbase/waypoint.h"
+#include "src/engines/kotorbase/sound.h"
 
 #include "src/engines/kotor/objectcontainer.h"
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
-#include "src/engines/kotor/waypoint.h"
-#include "src/engines/kotor/situated.h"
-#include "src/engines/kotor/placeable.h"
-#include "src/engines/kotor/door.h"
-#include "src/engines/kotor/sound.h"
 
 namespace Engines {
 

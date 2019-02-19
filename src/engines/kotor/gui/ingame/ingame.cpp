@@ -22,7 +22,8 @@
  *  The ingame GUI.
  */
 
-#include "src/engines/kotor/situated.h"
+#include "src/engines/kotorbase/situated.h"
+
 #include "src/engines/kotor/gui/ingame/ingame.h"
 
 namespace Engines {

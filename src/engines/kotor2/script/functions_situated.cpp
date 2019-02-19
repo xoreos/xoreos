@@ -25,9 +25,9 @@
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/situated.h"
 
 #include "src/engines/kotor2/objectcontainer.h"
-#include "src/engines/kotor2/situated.h"
 
 #include "src/engines/kotor2/script/functions.h"
 
@@ -36,19 +36,19 @@ namespace Engines {
 namespace KotOR2 {
 
 void Functions::getLocked(Aurora::NWScript::FunctionContext &ctx) {
-	Situated *situated = KotOR2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+	KotOR::Situated *situated = KotOR2::ObjectContainer::toSituated(getParamObject(ctx, 0));
 
 	ctx.getReturn() = situated ? situated->isLocked() : 0;
 }
 
 void Functions::setLocked(Aurora::NWScript::FunctionContext &ctx) {
-	Situated *situated = KotOR2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+	KotOR::Situated *situated = KotOR2::ObjectContainer::toSituated(getParamObject(ctx, 0));
 	if (situated)
 		situated->setLocked(ctx.getParams()[1].getInt() != 0);
 }
 
 void Functions::getIsOpen(Aurora::NWScript::FunctionContext &ctx) {
-	Situated *situated = KotOR2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+	KotOR::Situated *situated = KotOR2::ObjectContainer::toSituated(getParamObject(ctx, 0));
 
 	ctx.getReturn() = situated ? situated->isOpen() : 0;
 }
@@ -56,7 +56,7 @@ void Functions::getIsOpen(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getLastOpenedBy(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
-	Situated *situated = KotOR2::ObjectContainer::toSituated(ctx.getCaller());
+	KotOR::Situated *situated = KotOR2::ObjectContainer::toSituated(ctx.getCaller());
 	if (!situated)
 		return;
 
@@ -66,7 +66,7 @@ void Functions::getLastOpenedBy(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getLastClosedBy(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
-	Situated *situated = KotOR2::ObjectContainer::toSituated(ctx.getCaller());
+	KotOR::Situated *situated = KotOR2::ObjectContainer::toSituated(ctx.getCaller());
 	if (!situated)
 		return;
 
@@ -76,7 +76,7 @@ void Functions::getLastClosedBy(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getLastUsedBy(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
 
-	Situated *situated = KotOR2::ObjectContainer::toSituated(ctx.getCaller());
+	KotOR::Situated *situated = KotOR2::ObjectContainer::toSituated(ctx.getCaller());
 	if (!situated)
 		return;
 

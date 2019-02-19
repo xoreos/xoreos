@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A situated object in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Situated object within an area in KotOR games.
  */
 
 #include "src/common/error.h"
@@ -34,19 +34,21 @@
 
 #include "src/engines/aurora/model.h"
 
-#include "src/engines/kotor2/situated.h"
+#include "src/engines/kotorbase/situated.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
-Situated::Situated(KotOR::ObjectType type) : Object(type), _appearanceID(Aurora::kFieldIDInvalid),
-	_soundAppType(Aurora::kFieldIDInvalid), _locked(false),
-	_lastOpenedBy(0), _lastClosedBy(0), _lastUsedBy(0) {
+Situated::Situated(ObjectType type) :
+		Object(type),
+		_appearanceID(Aurora::kFieldIDInvalid),
+		_soundAppType(Aurora::kFieldIDInvalid),
+		_locked(false),
+		_lastOpenedBy(0),
+		_lastClosedBy(0),
+		_lastUsedBy(0) {
 
-}
-
-Situated::~Situated() {
 }
 
 void Situated::show() {
@@ -84,6 +86,10 @@ void Situated::playAnimation(const Common::UString &anim, bool restart, float le
 		_model->playAnimation(anim, restart, length, speed);
 }
 
+void Situated::getTooltipAnchor(float &x, float &y, float &z) const {
+	_model->getTooltipAnchor(x, y, z);
+}
+
 bool Situated::isLocked() const {
 	return _locked;
 }
@@ -92,16 +98,20 @@ void Situated::setLocked(bool locked) {
 	_locked = locked;
 }
 
-KotOR::Object *Situated::getLastOpenedBy() const {
+Object *Situated::getLastOpenedBy() const {
 	return _lastOpenedBy;
 }
 
-KotOR::Object *Situated::getLastClosedBy() const {
+Object *Situated::getLastClosedBy() const {
 	return _lastClosedBy;
 }
 
-KotOR::Object *Situated::getLastUsedBy() const {
+Object *Situated::getLastUsedBy() const {
 	return _lastUsedBy;
+}
+
+const Common::UString &Situated::getConversation() const {
+	return _conversation;
 }
 
 const Common::UString &Situated::getModelName() const {
@@ -169,7 +179,7 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	_tag = gff.getString("Tag", _tag);
 
 	// Name
-	_name = gff.getString("Name", _name);
+	_name = gff.getString("LocName", _name);
 
 	// Description
 	_description = gff.getString("Description", _description);
@@ -189,8 +199,11 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Locked
 	_locked = gff.getBool("Locked", _locked);
 
+	// Conversation
+	_conversation = gff.getString("Conversation", _conversation);
+
 	// Scripts
-	readScripts(gff);
+	readScripts(gff, false);
 }
 
 void Situated::loadPortrait(const Aurora::GFF3Struct &gff) {
@@ -219,6 +232,6 @@ void Situated::loadSounds() {
 	_soundLocked    = twoda.getRow(_soundAppType).getString("Locked");
 }
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines

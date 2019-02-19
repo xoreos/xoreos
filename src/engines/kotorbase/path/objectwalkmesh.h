@@ -19,51 +19,53 @@
  */
 
 /** @file
- *  WalkmeshObject implementation for KotOR doors.
+ *  WalkmeshObject implementation for KotOR games.
  */
 
-#include "src/engines/kotor/door.h"
-#include "src/engines/kotor/doorwalkmesh.h"
+#ifndef ENGINES_KOTORBASE_PATH_OBJECTWALKMESH_H
+#define ENGINES_KOTORBASE_PATH_OBJECTWALKMESH_H
+
+#include "glm/vec2.hpp"
+
+#include "src/aurora/types.h"
+
+#include "src/engines/aurora/objectwalkmesh.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-DoorWalkmesh::DoorWalkmesh(Door *door) : ObjectWalkmesh(door, Aurora::kFileTypeDWK),
-    _door(door) {
-}
+class Situated;
 
-DoorWalkmesh::~DoorWalkmesh() {
-}
+class ObjectWalkmesh : public Engines::ObjectWalkmesh {
+public:
+	ObjectWalkmesh(Situated *situated, Aurora::FileType fileType = Aurora::kFileTypePWK);
 
-bool DoorWalkmesh::in(glm::vec2 &minBox, glm::vec2 &maxBox) const {
-	if (_door->isOpen())
-		return false;
+	const std::vector<float> &getVertices() const;
+	const std::vector<uint32> &getFaces() const;
 
-	return ObjectWalkmesh::in(minBox, maxBox);
-}
+	bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const;
+	bool in(glm::vec2 &point) const;
 
-bool DoorWalkmesh::in(glm::vec2 &point) const {
-	if (_door->isOpen())
-		return false;
+	void load(const Common::UString &resRef,
+	          float orientation[4],
+	          float position[3]);
 
-	return ObjectWalkmesh::in(point);
-}
+protected:
+	Aurora::FileType _fileType;
 
-const std::vector<float> &DoorWalkmesh::getVertices() const {
-	if (_door->isOpen())
-		return _noVertices;
+private:
+	void computeMinMax();
 
-	return ObjectWalkmesh::getVertices();
-}
+	glm::vec2 _min;
+	glm::vec2 _max;
 
-const std::vector<uint32> &DoorWalkmesh::getFaces() const {
-	if (_door->isOpen())
-		return _noFaces;
-
-	return ObjectWalkmesh::getFaces();
-}
+	std::vector<float>  _vertices;
+	std::vector<uint32> _faces;
+};
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTORBASE_PATH_OBJECTWALKMESH_H

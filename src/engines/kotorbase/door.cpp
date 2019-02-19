@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A door in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Door within an area in KotOR games.
  */
 
 #include "glm/gtc/type_ptr.hpp"
@@ -35,24 +35,27 @@
 #include "src/aurora/2dareg.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/kotor2/door.h"
-#include "src/engines/kotor2/module.h"
+#include "src/engines/kotorbase/door.h"
+
+#include "src/engines/kotor/module.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
-Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(KotOR::kObjectTypeDoor),
-	_module(&module), _genericType(Aurora::kFieldIDInvalid), _state(kStateClosed),
-	_linkedToFlag(kLinkedToNothing), _linkedToType(KotOR::kObjectTypeAll) {
+Door::Door(KotORBase::Module &module, const Aurora::GFF3Struct &door) :
+		Situated(kObjectTypeDoor),
+		_module(&module),
+		_genericType(Aurora::kFieldIDInvalid),
+		_state(kStateClosed),
+		_linkedToFlag(kLinkedToNothing),
+		_linkedToType(kObjectTypeAll) {
 
 	load(door);
-}
-
-Door::~Door() {
 }
 
 void Door::load(const Aurora::GFF3Struct &door) {
@@ -83,7 +86,7 @@ void Door::loadObject(const Aurora::GFF3Struct &gff) {
 
 	_transitionDestination = gff.getString("TransitionDestin", _transitionDestination);
 
-	_linkedToType = (KotOR::ObjectType) (KotOR::kObjectTypeDoor | KotOR::kObjectTypeWaypoint);
+	_linkedToType = (ObjectType) (kObjectTypeDoor | kObjectTypeWaypoint);
 }
 
 void Door::loadAppearance() {
@@ -119,10 +122,12 @@ void Door::hideSoft() {
 }
 
 void Door::enter() {
+	CursorMan.setGroup("door");
 	highlight(true);
 }
 
 void Door::leave() {
+	CursorMan.set();
 	highlight(false);
 }
 
@@ -143,8 +148,8 @@ bool Door::click(Object *triggerer) {
 		return open(triggerer);
 
 	// If the door is open and has a click script, call that
-	if (hasScript(KotOR::kScriptClick))
-		return runScript(KotOR::kScriptClick, this, triggerer);
+	if (hasScript(kScriptClick))
+		return runScript(kScriptClick, this, triggerer);
 
 	if (!_linkedTo.empty()) {
 		_module->movePC(_linkedToModule, _linkedTo, _linkedToType);
@@ -156,6 +161,11 @@ bool Door::click(Object *triggerer) {
 	return close(triggerer);
 }
 
+void Door::getTooltipAnchor(float &x, float &y, float &z) const {
+	_model->getAbsolutePosition(x, y, z);
+	z += _model->getDepth() / 2;
+}
+
 bool Door::open(Object *opener) {
 	// TODO: Door::open(): Open in direction of the opener
 
@@ -164,7 +174,7 @@ bool Door::open(Object *opener) {
 
 	if (isLocked()) {
 		playSound(_soundLocked);
-		runScript(KotOR::kScriptFailToOpen, this, opener);
+		runScript(kScriptFailToOpen, this, opener);
 		return false;
 	}
 
@@ -174,7 +184,7 @@ bool Door::open(Object *opener) {
 		_model->playAnimation("opening1");
 
 	playSound(_soundOpened);
-	runScript(KotOR::kScriptOpen, this, opener);
+	runScript(kScriptOpen, this, opener);
 
 	_state = kStateOpened1;
 
@@ -187,14 +197,17 @@ bool Door::close(Object *closer) {
 
 	_lastClosedBy = closer;
 
+	if (_model)
+		_model->playAnimation("closing1");
+
 	playSound(_soundClosed);
-	runScript(KotOR::kScriptClosed, this, closer);
+	runScript(kScriptClosed, this, closer);
 
 	_state = kStateClosed;
 
 	return true;
 }
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines

@@ -42,6 +42,7 @@
 #include "src/events/types.h"
 
 #include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/module.h"
 
 #include "src/engines/kotor/objectcontainer.h"
 #include "src/engines/kotor/savedgame.h"
@@ -58,7 +59,7 @@ class IngameGUI;
 class DialogGUI;
 class PartySelectionGUI;
 
-class Module : public KotOR::Object, public KotOR::ObjectContainer {
+class Module : public KotOR::Object, public KotOR::ObjectContainer, public KotORBase::Module {
 public:
 	Module(::Engines::Console &console);
 	~Module();

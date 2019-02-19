@@ -54,10 +54,10 @@
 #include "src/engines/aurora/satellitecamera.h"
 
 #include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/placeable.h"
 
 #include "src/engines/kotor/module.h"
 #include "src/engines/kotor/area.h"
-#include "src/engines/kotor/placeable.h"
 
 #include "src/engines/kotor/gui/dialog.h"
 

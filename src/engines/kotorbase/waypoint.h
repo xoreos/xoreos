@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  A waypoint in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Waypoint within an area in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR2_WAYPOINT_H
-#define ENGINES_KOTOR2_WAYPOINT_H
+#ifndef ENGINES_KOTORBASE_WAYPOINT_H
+#define ENGINES_KOTORBASE_WAYPOINT_H
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
@@ -35,9 +35,9 @@
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
-class Waypoint : public KotOR::Object {
+class Waypoint : public Object {
 public:
 	/** Load from a waypoint instance. */
 	Waypoint(const Aurora::GFF3Struct &waypoint);
@@ -72,8 +72,8 @@ private:
 	void loadProperties(const Aurora::GFF3Struct &gff);
 };
 
-} // End of namespace KotOR2
+} // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR2_WAYPOINT_H
+#endif // ENGINES_KOTORBASE_WAYPOINT_H

@@ -19,52 +19,48 @@
  */
 
 /** @file
- *  WalkmeshObject implementation for KotOR.
+ *  Pathfinding class for KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_OBJECTWALKMESH_H
-#define ENGINES_KOTOR_OBJECTWALKMESH_H
+#ifndef ENGINES_KOTORBASE_PATH_PATHFINDING_H
+#define ENGINES_KOTORBASE_PATH_PATHFINDING_H
 
-#include "glm/vec2.hpp"
+#include "glm/mat4x4.hpp"
 
 #include "src/aurora/types.h"
 
-#include "src/engines/aurora/objectwalkmesh.h"
+#include "src/engines/aurora/pathfinding.h"
+
+#include "src/engines/kotorbase/path/walkmeshloader.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Situated;
+class WalkmeshLoader;
+class Room;
 
-class ObjectWalkmesh : public Engines::ObjectWalkmesh {
+class Pathfinding : public Engines::Pathfinding {
 public:
-	ObjectWalkmesh(Situated *situated, Aurora::FileType fileType = Aurora::kFileTypePWK);
-	~ObjectWalkmesh();
+	Pathfinding(const std::vector<bool> &walkableProp);
 
-	void load(const Common::UString &resRef,
-	          float orientation[4], float position[3]);
-	bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const;
-	bool in(glm::vec2 &point) const;
+	void addRoom(Room *room);
+	void connectRooms();
 
-	const std::vector<float> &getVertices() const;
-	const std::vector<uint32> &getFaces() const;
+	Room *getRoomAt(float x, float y) const;
 
 protected:
-	Aurora::FileType _fileType;
+	WalkmeshLoader _walkmeshLoader;
+	std::vector<std::map<uint32, uint32> > _adjRooms;
+	std::vector<uint32> _startFace;
 
 private:
-	void computeMinMax();
-
-	glm::vec2 _min;
-	glm::vec2 _max;
-
-	std::vector<float>  _vertices;
-	std::vector<uint32> _faces;
+	uint32 getFaceFromEdge(uint32 edge, uint32 room) const;
+	std::vector<Room *> _rooms;
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_OBJECTWALKMESH_H
+#endif // ENGINES_KOTOR_PATHFINDING_H

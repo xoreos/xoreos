@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  WalkmeshObject implementation for KotOR.
+ *  WalkmeshObject implementation for KotOR games.
  */
 
 #include "glm/gtc/matrix_transform.hpp"
@@ -29,16 +29,17 @@
 #include "src/common/maths.h"
 #include "src/common/geometry.h"
 
-#include "src/engines/kotor/situated.h"
-#include "src/engines/kotor/walkmeshloader.h"
-#include "src/engines/kotor/objectwalkmesh.h"
+#include "src/engines/kotorbase/situated.h"
+
+#include "src/engines/kotorbase/path/walkmeshloader.h"
+#include "src/engines/kotorbase/path/objectwalkmesh.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-ObjectWalkmesh::ObjectWalkmesh(Situated *situated, Aurora::FileType fileType)
-    : _fileType(fileType){
+ObjectWalkmesh::ObjectWalkmesh(Situated *situated, Aurora::FileType fileType) :
+		_fileType(fileType){
 
 	float ori[4];
 	float pos[3];
@@ -50,9 +51,6 @@ ObjectWalkmesh::ObjectWalkmesh(Situated *situated, Aurora::FileType fileType)
 		fileName += "0";
 
 	load(fileName, ori, pos);
-}
-
-ObjectWalkmesh::~ObjectWalkmesh() {
 }
 
 void ObjectWalkmesh::load(const Common::UString &resRef, float orientation[4], float position[3]) {

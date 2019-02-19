@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A placeable in a Star Wars: Knights of the Old Republic II - The Sith Lords area.
+ *  Placeable within an area in KotOR games.
  */
 
 #include "glm/gtc/type_ptr.hpp"
@@ -34,22 +34,22 @@
 #include "src/aurora/2dareg.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/kotor2/placeable.h"
+#include "src/engines/kotorbase/placeable.h"
 
 namespace Engines {
 
-namespace KotOR2 {
+namespace KotOR {
 
-Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(KotOR::kObjectTypePlaceable),
-	_state(kStateDefault), _hasInventory(false) {
+Placeable::Placeable(const Aurora::GFF3Struct &placeable) :
+		Situated(kObjectTypePlaceable),
+		_state(kStateDefault),
+		_hasInventory(false) {
 
 	load(placeable);
-}
-
-Placeable::~Placeable() {
 }
 
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
@@ -63,6 +63,8 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 
 	if (!utp)
 		warning("Placeable \"%s\" has no blueprint", _tag.c_str());
+
+	readScripts(utp->getTopLevel());
 }
 
 void Placeable::hide() {
@@ -76,7 +78,24 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
 
+	// Inventory
+
 	_hasInventory = gff.getBool("HasInventory", _hasInventory);
+
+	if (_hasInventory && gff.hasField("ItemList")) {
+		Aurora::GFF3List classList = gff.getList("ItemList");
+		for (Aurora::GFF3List::const_iterator iter = classList.begin(); iter != classList.end(); ++iter) {
+			const Aurora::GFF3Struct &item = **iter;
+			_inventory.addItem(item.getString("InventoryRes"));
+		}
+	}
+
+	// Hit Points
+
+	_currentHitPoints = gff.getSint("CurrentHP");
+	_maxHitPoints = gff.getSint("HP");
+
+	_minOneHitPoint = gff.getBool("Min1HP");
 }
 
 void Placeable::loadAppearance() {
@@ -90,10 +109,12 @@ void Placeable::loadAppearance() {
 }
 
 void Placeable::enter() {
+	CursorMan.setGroup("use");
 	highlight(true);
 }
 
 void Placeable::leave() {
+	CursorMan.set();
 	highlight(false);
 }
 
@@ -111,6 +132,8 @@ bool Placeable::isActivated() const {
 }
 
 bool Placeable::click(Object *triggerer) {
+	CursorMan.set();
+
 	// If the placeable is locked, just play the appropriate sound and bail
 	if (isLocked()) {
 		playSound(_soundLocked);
@@ -153,7 +176,7 @@ bool Placeable::open(Object *opener) {
 	_lastOpenedBy = opener;
 
 	playSound(_soundOpened);
-	runScript(KotOR::kScriptOpen, this, opener);
+	runScript(kScriptOpen, this, opener);
 
 	_state = kStateOpen;
 
@@ -170,7 +193,7 @@ bool Placeable::close(Object *closer) {
 	_lastClosedBy = closer;
 
 	playSound(_soundClosed);
-	runScript(KotOR::kScriptClosed, this, closer);
+	runScript(kScriptClosed, this, closer);
 
 	_state = kStateClosed;
 
@@ -190,7 +213,7 @@ bool Placeable::activate(Object *user) {
 	}
 
 	playSound(_soundUsed);
-	runScript(KotOR::kScriptUsed, this, user);
+	runScript(kScriptUsed, this, user);
 
 	_state = kStateActivated;
 
@@ -210,13 +233,21 @@ bool Placeable::deactivate(Object *user) {
 	}
 
 	playSound(_soundUsed);
-	runScript(KotOR::kScriptUsed, this, user);
+	runScript(kScriptUsed, this, user);
 
 	_state = kStateDeactivated;
 
 	return true;
 }
 
-} // End of namespace KotOR2
+bool Placeable::hasInventory() {
+	return _hasInventory;
+}
+
+Inventory &Placeable::getInventory() {
+	return _inventory;
+}
+
+} // End of namespace KotOR
 
 } // End of namespace Engines

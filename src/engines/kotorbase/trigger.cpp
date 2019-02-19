@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Trigger in a Star Wars: Knights of the Old Republic area.
+ *  Trigger within an area in KotOR games.
  */
 
 #include "src/aurora/resman.h"
@@ -27,15 +27,15 @@
 
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/kotor/trigger.h"
+#include "src/engines/kotorbase/trigger.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-Trigger::Trigger(const Aurora::GFF3Struct &gff)
-		: ::Engines::Trigger(),
-		  Object(kObjectTypeTrigger) {
+Trigger::Trigger(const Aurora::GFF3Struct &gff) :
+		Engines::Trigger(),
+		Object(kObjectTypeTrigger) {
 	load(gff);
 	prepare();
 }

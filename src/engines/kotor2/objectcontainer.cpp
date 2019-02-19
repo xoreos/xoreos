@@ -27,14 +27,14 @@
 
 #include "src/engines/kotorbase/object.h"
 #include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/situated.h"
+#include "src/engines/kotorbase/placeable.h"
+#include "src/engines/kotorbase/door.h"
+#include "src/engines/kotorbase/waypoint.h"
 
 #include "src/engines/kotor2/objectcontainer.h"
 #include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/area.h"
-#include "src/engines/kotor2/waypoint.h"
-#include "src/engines/kotor2/situated.h"
-#include "src/engines/kotor2/placeable.h"
-#include "src/engines/kotor2/door.h"
 
 namespace Engines {
 
@@ -134,20 +134,20 @@ Area *ObjectContainer::toArea(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Area *>(object);
 }
 
-Waypoint *ObjectContainer::toWaypoint(Aurora::NWScript::Object *object) {
-	return dynamic_cast<Waypoint *>(object);
+KotOR::Waypoint *ObjectContainer::toWaypoint(Aurora::NWScript::Object *object) {
+	return dynamic_cast<KotOR::Waypoint *>(object);
 }
 
-Situated *ObjectContainer::toSituated(Aurora::NWScript::Object *object) {
-	return dynamic_cast<Situated *>(object);
+KotOR::Situated *ObjectContainer::toSituated(Aurora::NWScript::Object *object) {
+	return dynamic_cast<KotOR::Situated *>(object);
 }
 
-Placeable *ObjectContainer::toPlaceable(Aurora::NWScript::Object *object) {
-	return dynamic_cast<Placeable *>(object);
+KotOR::Placeable *ObjectContainer::toPlaceable(Aurora::NWScript::Object *object) {
+	return dynamic_cast<KotOR::Placeable *>(object);
 }
 
-Door *ObjectContainer::toDoor(Aurora::NWScript::Object *object) {
-	return dynamic_cast<Door *>(object);
+KotOR::Door *ObjectContainer::toDoor(Aurora::NWScript::Object *object) {
+	return dynamic_cast<KotOR::Door *>(object);
 }
 
 KotOR::Creature *ObjectContainer::toCreature(Aurora::NWScript::Object *object) {

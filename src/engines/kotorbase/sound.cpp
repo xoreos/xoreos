@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  An ingame sound in kotor.
+ *  In-game sound within an area in KotOR games.
  */
 
 #include "src/aurora/resman.h"
@@ -29,7 +29,7 @@
 
 #include "src/engines/aurora/util.h"
 
-#include "src/engines/kotor/sound.h"
+#include "src/engines/kotorbase/sound.h"
 
 namespace Engines {
 

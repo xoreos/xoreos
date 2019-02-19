@@ -19,37 +19,39 @@
  */
 
 /** @file
- *  Trigger in a Star Wars: Knights of the Old Republic area.
+ *  WalkmeshObject implementation for doors in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_TRIGGER_H
-#define ENGINES_KOTOR_TRIGGER_H
+#ifndef ENGINES_KOTORBASE_PATH_DOORWALKMESH_H
+#define ENGINES_KOTORBASE_PATH_DOORWALKMESH_H
 
-#include "src/engines/aurora/trigger.h"
-
-#include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/path/objectwalkmesh.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Trigger : public ::Engines::Trigger, public Object {
-public:
-	Trigger(const Aurora::GFF3Struct &gff);
+class Door;
 
-	// .--- Object
-	void show();
-	void hide();
-	void hideSoft();
-	bool isVisible() const;
-	// '---
-protected:
-	void load(const Aurora::GFF3Struct &gff);
-	void loadBlueprint(const Aurora::GFF3Struct &gff);
+class DoorWalkmesh : public Engines::KotOR::ObjectWalkmesh {
+public:
+	DoorWalkmesh(Door *door);
+
+	const std::vector<float> &getVertices() const;
+	const std::vector<uint32> &getFaces() const;
+
+	bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const;
+	bool in(glm::vec2 &point) const;
+
+private:
+	Door *_door;
+
+	std::vector<float> _noVertices;
+	std::vector<uint32> _noFaces;
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_TRIGGER_H
+#endif // ENGINES_KOTORBASE_PATH_DOORWALKMESH_H

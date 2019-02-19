@@ -25,10 +25,10 @@
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/sound.h"
 
 #include "src/engines/kotor/objectcontainer.h"
 #include "src/engines/kotor/area.h"
-#include "src/engines/kotor/sound.h"
 
 #include "src/engines/kotor/script/functions.h"
 

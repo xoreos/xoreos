@@ -43,8 +43,7 @@
 #include "src/events/notifyable.h"
 
 #include "src/engines/kotorbase/object.h"
-
-#include "src/engines/kotor2/trigger.h"
+#include "src/engines/kotorbase/trigger.h"
 
 namespace Engines {
 
@@ -52,13 +51,13 @@ class LocalPathfinding;
 
 namespace KotOR {
 	class Room;
+	class Situated;
+	class Pathfinding;
 }
 
 namespace KotOR2 {
 
 class Module;
-class Pathfinding;
-class Situated;
 
 /** An area in Star Wars: Knights of the Old Republic II - The Sith Lords,
  *  holding all objects and rooms within, as well as general area properties
@@ -197,16 +196,16 @@ private:
 	Common::Mutex _mutex; ///< Mutex securing access to the area.
 
 	/// .--- Triggers
-	std::vector<Trigger *> _triggers;
+	std::vector<KotOR::Trigger *> _triggers;
 	bool _triggersVisible;
-	Trigger *_activeTrigger;
+	KotOR::Trigger *_activeTrigger;
 	/// '---
 
 	CameraStyle _cameraStyle;
 	bool _walkmeshInvisible;
-	std::list<Situated *> _situatedObjects;
+	std::list<KotOR::Situated *> _situatedObjects;
 
-	KotOR2::Pathfinding *_pathfinding;
+	KotOR::Pathfinding *_pathfinding;
 	Engines::LocalPathfinding *_localPathfinding;
 
 	// Loading helpers

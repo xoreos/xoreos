@@ -43,8 +43,7 @@
 #include "src/events/notifyable.h"
 
 #include "src/engines/kotorbase/object.h"
-
-#include "src/engines/kotor/trigger.h"
+#include "src/engines/kotorbase/trigger.h"
 
 namespace Engines {
 
