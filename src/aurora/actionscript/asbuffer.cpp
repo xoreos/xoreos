@@ -493,6 +493,7 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 
 	avm.setReturnValue(Variable());
 	_stack.push((*function)(avm));
+	avm.setReturnValue(Variable());
 
 	if (!prevThis.isUndefined())
 		avm.storeRegister(prevThis, 1);
