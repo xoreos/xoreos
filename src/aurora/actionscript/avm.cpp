@@ -59,6 +59,8 @@ AVM::AVM() {
 	_variables["MovieClip"].asObject()->setMember("prototype", ObjectPtr(new MovieClip()));
 	_variables["TextField"] = ObjectPtr(new DummyFunction());
 	_variables["TextField"].asObject()->setMember("prototype", ObjectPtr(new TextField()));
+
+	_variables["_root"].asObject()->setMember("gotoAndPlay", new NativeFunction(boost::bind(&AVM::gotoAndPlay, this, _1), false, false, false));
 }
 
 void AVM::setRegisterClassFunction(RegisterClassFunction registerClass) {
@@ -187,6 +189,17 @@ Variable AVM::registerClass(AVM &avm) {
 
 	if (_registerClass)
 		_registerClass(name.asString(), object.asObject());
+
+	return Variable();
+}
+
+Variable AVM::gotoAndPlay(AVM &avm) {
+	Variable frame = avm.getRegister(1);
+
+	if (!frame.isNumber() && !frame.isString())
+		throw Common::Exception("AVM::gotoAndPlay(): parameter is neither a string nor a number");
+
+	info("TODO: gotoAndPlay(%s)", frame.asString().c_str());
 
 	return Variable();
 }

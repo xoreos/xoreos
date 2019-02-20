@@ -86,6 +86,7 @@ public:
 
 private:
 	Variable registerClass(AVM &avm);
+	Variable gotoAndPlay(AVM &avm);
 
 	RegisterClassFunction _registerClass;
 	FSCommandFunction _fscommand;
