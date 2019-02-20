@@ -234,7 +234,7 @@ Variable Variable::operator-(Variable v) {
 Variable Variable::operator+(Variable v) {
 	if (v._type == kTypeNumber && _type == kTypeNumber)
 		return asNumber() + v.asNumber();
-	else if (v._type == kTypeString && _type == kTypeString)
+	else if (v._type == kTypeString || _type == kTypeString)
 		return asString() + v.asString();
 	else
 		return 0.0;
