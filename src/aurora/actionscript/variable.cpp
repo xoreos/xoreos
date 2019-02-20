@@ -22,6 +22,8 @@
  *  A variable used in the execution context.
  */
 
+#include "src/common/strutil.h"
+
 #include "src/aurora/actionscript/variable.h"
 #include "src/aurora/actionscript/object.h"
 #include "src/aurora/actionscript/function.h"
@@ -134,8 +136,15 @@ ObjectPtr Variable::asObject() {
 	return _value.object;
 }
 
-const Common::UString &Variable::asString() const {
-	return _value.string;
+const Common::UString Variable::asString() const {
+	switch (_type) {
+		case kTypeNumber:
+			return Common::composeString(_value.number);
+		case kTypeString:
+			return _value.string;
+		default:
+			return "";
+	}
 }
 
 bool Variable::asBoolean() const {
