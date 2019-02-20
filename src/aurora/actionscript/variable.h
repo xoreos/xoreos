@@ -68,7 +68,7 @@ public:
 
 	double asNumber() const;
 	ObjectPtr asObject();
-	const Common::UString &asString() const;
+	const Common::UString asString() const;
 	bool asBoolean() const;
 
 	template<typename T> boost::shared_ptr<T> as() const;
