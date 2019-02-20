@@ -605,7 +605,7 @@ void ASBuffer::actionDefineFunction2() {
 	_stack.push(
 			ObjectPtr(
 					new ScriptedFunction(
-							new Common::SeekableSubReadStream(_script, _script->pos(), _script->pos() + codeSize),
+							_script->readStream(codeSize),
 							_constants,
 							parameterIds,
 							registerCount,
@@ -615,9 +615,6 @@ void ASBuffer::actionDefineFunction2() {
 					)
 			)
 	);
-
-	_script->seek(codeSize, Common::SeekableReadStream::kOriginCurrent);
-
 
 	debugC(
 			kDebugActionScript,
