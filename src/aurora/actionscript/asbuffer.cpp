@@ -159,7 +159,7 @@ void ASBuffer::execute(AVM &avm) {
 
 		if (_script->pos() - startPos != static_cast<size_t>(length + _seeked))
 			throw Common::Exception("Invalid tag");
-	} while (opcode != 0 && _script->pos() != _script->size());
+	} while (opcode != 0 && _script->pos() != _script->size() && avm.getReturnValue().isUndefined());
 
 	debugC(kDebugActionScript, 1, "--- End Actionscript ---");
 }
