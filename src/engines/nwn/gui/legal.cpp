@@ -73,6 +73,10 @@ private:
 			hide();
 		}
 
+		for (NodeList::iterator n = _currentState->rootNodes.begin();
+		     n != _currentState->rootNodes.end(); ++n) {
+			(*n)->setAlpha(_fadeValue);
+		}
 	}
 
 public:
@@ -120,6 +124,11 @@ public:
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 		updateFade();
+	}
+
+	void renderImmediate(const glm::mat4 &parentTransform) {
+		updateFade();
+		Graphics::Aurora::Model_NWN::renderImmediate(parentTransform);
 	}
 };
 
