@@ -105,7 +105,7 @@ DialogBox::DialogBox(float width, float height) :
 
 	_shaderRenderableBackdrop.setMesh(MeshMan.getMesh("defaultMeshQuad"));
 	_shaderRenderableBackdrop.setSurface(SurfaceMan.getSurface("defaultSurface"), false);
-	_shaderRenderableBackdrop.setMaterial(MaterialMan.getMaterial("defaultBlack"));
+	_shaderRenderableBackdrop.setMaterial(MaterialMan.getMaterial("defaultBlack50"));
 
 	_shaderRenderableEdge.setMesh(MeshMan.getMesh("defaultMeshQuad"));
 	_shaderRenderableEdge.setSurface(SurfaceMan.getSurface("defaultSurface"), false);
