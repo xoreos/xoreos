@@ -37,7 +37,8 @@ namespace NWN2 {
 
 Trigger::Trigger(const Aurora::GFF3Struct &gff)
 		: ::Engines::Trigger(),
-		  Object(kObjectTypeTrigger) {
+		  Object(kObjectTypeTrigger),
+		  Trap(gff) {
 	load(gff);
 }
 
@@ -72,12 +73,6 @@ void Trigger::load(const Aurora::GFF3Struct &gff) {
 
 	_faction = gff.getUint("Faction", _faction);
 
-	try {
-		_trap.reset(new Trap(gff));
-	} catch (...) {
-		Common::exceptionDispatcherWarning();
-	}
-
 	float x, y, z;
 	x = (float)gff.getDouble("XPosition");
 	y = (float)gff.getDouble("YPosition");
@@ -110,7 +105,7 @@ void Trigger::loadBlueprint(const Aurora::GFF3Struct &gff) {
 }
 
 uint8 Trigger::getReputation(Object *source) const {
-        return getArea()->getFactionReputation(source, _faction);
+	return getArea()->getFactionReputation(source, _faction);
 }
 
 } // End of namespace NWN2
