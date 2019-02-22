@@ -35,14 +35,14 @@ namespace KotOR2 {
 
 class CharacterGenerationBaseMenu : public GUI {
 public:
-	CharacterGenerationBaseMenu(KotOR::CharacterGenerationInfo &info, ::Engines::Console *console = 0);
+	CharacterGenerationBaseMenu(KotORBase::CharacterGenerationInfo &info, ::Engines::Console *console = 0);
 
 	bool isAccepted();
 
 protected:
-	void accept();
+	KotORBase::CharacterGenerationInfo &_info;
 
-	KotOR::CharacterGenerationInfo &_info;
+	void accept();
 
 private:
 	bool _accepted;

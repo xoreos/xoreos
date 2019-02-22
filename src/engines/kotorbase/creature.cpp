@@ -47,7 +47,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Creature::Creature(const Common::UString &resRef) :
 		Object(kObjectTypeCreature),
@@ -857,6 +857,6 @@ void Creature::setDefaultAnimations() {
 		_model->addDefaultAnimation("pause1", 100);
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

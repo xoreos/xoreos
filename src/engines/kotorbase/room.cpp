@@ -28,7 +28,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Room::Room(const Common::UString &resRef, float x, float y, float z) : _resRef(resRef.toLower()) {
 	load(resRef, x, y, z);
@@ -63,6 +63,6 @@ void Room::hide() {
 		_model->hide();
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

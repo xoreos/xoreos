@@ -25,19 +25,22 @@
 #ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARGENPOTRAIT_H
 #define ENGINES_KOTOR_GUI_CHARGEN_CHARGENPOTRAIT_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor/gui/chargen/chargenbase.h"
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
+	class CharacterGenerationInfo;
+}
 
-class CharacterGenerationInfo;
+namespace KotOR {
 
 class CharacterGenerationPortraitMenu : public CharacterGenerationBaseMenu {
 public:
-	CharacterGenerationPortraitMenu(CharacterGenerationInfo &chargen, ::Engines::Console *console = 0);
+	CharacterGenerationPortraitMenu(KotORBase::CharacterGenerationInfo &chargen,
+	                                ::Engines::Console *console = 0);
 
 private:
 	void callbackActive(Widget &widget);

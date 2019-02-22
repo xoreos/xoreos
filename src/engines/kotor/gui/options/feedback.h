@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_FEEDBACK_H
 #define ENGINES_KOTOR_GUI_OPTIONS_FEEDBACK_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsFeedbackMenu : public GUI {
+class OptionsFeedbackMenu : public KotORBase::GUI {
 public:
 	OptionsFeedbackMenu(::Engines::Console *console = 0);
 	~OptionsFeedbackMenu();

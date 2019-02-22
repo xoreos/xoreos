@@ -31,10 +31,10 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsSoundMenu::OptionsSoundMenu(::Engines::Console *console) : GUI(console) {
+OptionsSoundMenu::OptionsSoundMenu(::Engines::Console *console) : KotORBase::GUI(console) {
 	load("optsound");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	_advanced.reset(new OptionsSoundAdvancedMenu(_console));
 }

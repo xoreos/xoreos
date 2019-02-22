@@ -27,10 +27,11 @@
 
 #include <vector>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/sound/types.h"
+
+#include "src/engines/kotorbase/game.h"
 
 namespace Engines {
 
@@ -42,15 +43,10 @@ class KotOR2Engine;
 
 class Functions;
 
-class Module;
-
-class Game {
+class Game : public KotORBase::Game {
 public:
 	Game(KotOR2Engine &engine, ::Engines::Console &console, Aurora::Platform platform);
 	~Game();
-
-	/** Return the module context. */
-	Module &getModule();
 
 	/** Overwrite all currently playing music. */
 	void playMusic(const Common::UString &music = "");
@@ -66,7 +62,6 @@ public:
 private:
 	KotOR2Engine *_engine;
 
-	Common::ScopedPtr<Module>    _module;
 	Common::ScopedPtr<Functions> _functions;
 
 	Aurora::Platform _platform;

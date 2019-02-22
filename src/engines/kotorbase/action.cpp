@@ -26,11 +26,11 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Action::Action() : type(kActionInvalid), object(0), range(0.0f) {
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

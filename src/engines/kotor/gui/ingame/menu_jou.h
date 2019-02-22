@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_MENU_JOU_H
 #define ENGINES_KOTOR_GUI_INGAME_MENU_JOU_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class MenuJournal : public GUI {
+class MenuJournal : public KotORBase::GUI {
 public:
 	MenuJournal(::Engines::Console *console = 0);
 

@@ -38,12 +38,12 @@
 
 #include "src/engines/kotorbase/room.h"
 #include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/area.h"
 
 #include "src/engines/kotor2/console.h"
 #include "src/engines/kotor2/kotor2.h"
 #include "src/engines/kotor2/game.h"
-#include "src/engines/kotor2/module.h"
-#include "src/engines/kotor2/area.h"
 
 namespace Engines {
 
@@ -124,7 +124,7 @@ void Console::cmdListModules(const CommandLine &UNUSED(cl)) {
 	updateModules();
 
 	for (std::vector<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m)
-		printf("%s (\"%s\")", m->c_str(), Module::getName(*m).c_str());
+		printf("%s (\"%s\")", m->c_str(), KotORBase::Module::getName(*m, "KOTOR2_moduleDir").c_str());
 }
 
 void Console::cmdLoadModule(const CommandLine &cl) {
@@ -170,7 +170,7 @@ void Console::cmdShowTriggers(const CommandLine &UNUSED(cl)) {
 }
 
 void Console::cmdGetPCRoom(const CommandLine &UNUSED(cl)) {
-	const KotOR::Room *room = _engine->getGame().getModule().getPC()->getRoom();
+	const KotORBase::Room *room = _engine->getGame().getModule().getPC()->getRoom();
 	printf("%s", room->getResRef().c_str());
 }
 

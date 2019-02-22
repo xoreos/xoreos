@@ -29,18 +29,21 @@
 
 #include "src/graphics/aurora/subscenequad.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
+
+namespace KotORBase {
+	class Module;
+}
 
 namespace KotOR {
 
 class Version;
-class Module;
 
-class MainMenu : public GUI {
+class MainMenu : public KotORBase::GUI {
 public:
-	MainMenu(const Version &gameVersion, Module &module, ::Engines::Console *console = 0);
+	MainMenu(const Version &gameVersion, KotORBase::Module &module, ::Engines::Console *console = 0);
 	~MainMenu();
 
 protected:
@@ -49,7 +52,7 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	Module *_module;
+	KotORBase::Module *_module;
 	const Version *_gameVersion;
 
 	Common::ScopedPtr<Graphics::Aurora::SubSceneQuad> _malakScene;

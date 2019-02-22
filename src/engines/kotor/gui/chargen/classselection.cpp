@@ -36,12 +36,12 @@ namespace Engines {
 
 namespace KotOR {
 
-ClassSelectionMenu::ClassSelectionMenu(Module *module, ::Engines::Console *console) : GUI(console),
+ClassSelectionMenu::ClassSelectionMenu(KotORBase::Module *module, ::Engines::Console *console) : KotORBase::GUI(console),
 	_hoveredButton(0), _module(module) {
 
 	load("classsel");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	// Get the six class buttons
 	_maleScoundrelButton = getButton("BTN_SEL1");
@@ -76,12 +76,12 @@ ClassSelectionMenu::ClassSelectionMenu(Module *module, ::Engines::Console *conso
 	_scoundrelFemaleTitle = femalePrefix + " " + TalkMan.getString(135);
 
 	// Create the random characters
-	_maleSoldier = CharacterGenerationInfo::createRandomMaleSoldier();
-	_maleScout = CharacterGenerationInfo::createRandomMaleScout();
-	_maleScoundrel = CharacterGenerationInfo::createRandomMaleScoundrel();
-	_femaleSoldier = CharacterGenerationInfo::createRandomFemaleSoldier();
-	_femaleScout = CharacterGenerationInfo::createRandomFemaleScout();
-	_femaleScoundrel = CharacterGenerationInfo::createRandomFemaleScoundrel();
+	_maleSoldier = KotORBase::CharacterGenerationInfo::createRandomMaleSoldier();
+	_maleScout = KotORBase::CharacterGenerationInfo::createRandomMaleScout();
+	_maleScoundrel = KotORBase::CharacterGenerationInfo::createRandomMaleScoundrel();
+	_femaleSoldier = KotORBase::CharacterGenerationInfo::createRandomFemaleSoldier();
+	_femaleScout = KotORBase::CharacterGenerationInfo::createRandomFemaleScout();
+	_femaleScoundrel = KotORBase::CharacterGenerationInfo::createRandomFemaleScoundrel();
 
 	float subSceneWidth = getLabel("3D_MODEL2")->getWidth();
 	float subSceneHeight = getLabel("3D_MODEL2")->getHeight();
@@ -131,7 +131,7 @@ ClassSelectionMenu::~ClassSelectionMenu() {
 	delete _femaleScoundrel;
 }
 
-void ClassSelectionMenu::createCharacterGeneration(CharacterGenerationInfo* info) {
+void ClassSelectionMenu::createCharacterGeneration(KotORBase::CharacterGenerationInfo* info) {
 	_charGen.reset(new CharacterGenerationMenu(_module, info));
 }
 
@@ -267,8 +267,10 @@ void ClassSelectionMenu::callbackKeyInput(const Events::Key &key, const Events::
 }
 
 void ClassSelectionMenu::setupClassSubScene(const Common::UString &widgetName,
-		Graphics::Aurora::SubSceneQuad &subScene, Graphics::Aurora::Model *model,
-		glm::mat4 &projection, glm::mat4 &transformation) {
+                                            Graphics::Aurora::SubSceneQuad &subScene,
+                                            Graphics::Aurora::Model *model,
+                                            glm::mat4 &projection,
+                                            glm::mat4 &transformation) {
 
 	getLabel(widgetName)->setSubScene(&subScene);
 

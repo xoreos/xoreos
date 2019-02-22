@@ -28,9 +28,10 @@
 #include "src/engines/odyssey/label.h"
 #include "src/engines/odyssey/button.h"
 
+#include "src/engines/kotorbase/module.h"
+
 #include "src/engines/kotorbase/gui/chargeninfo.h"
 
-#include "src/engines/kotor2/module.h"
 #include "src/engines/kotor2/gui/gui.h"
 
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
@@ -41,7 +42,7 @@ namespace KotOR2 {
 
 class ClassSelection : public GUI {
 public:
-	ClassSelection(Module *module, Engines::Console *console = 0);
+	ClassSelection(KotORBase::Module *module, Engines::Console *console = 0);
 	~ClassSelection();
 
 protected:
@@ -49,16 +50,16 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	Module *_module;
+	KotORBase::Module *_module;
 
 	Common::ScopedPtr<CharacterGeneration> _chargen;
 
-	KotOR::CharacterGenerationInfo *_consularMaleInfo;
-	KotOR::CharacterGenerationInfo *_sentinelMaleInfo;
-	KotOR::CharacterGenerationInfo *_guardianMaleInfo;
-	KotOR::CharacterGenerationInfo *_consularFemaleInfo;
-	KotOR::CharacterGenerationInfo *_sentinelFemaleInfo;
-	KotOR::CharacterGenerationInfo *_guardianFemaleInfo;
+	KotORBase::CharacterGenerationInfo *_consularMaleInfo;
+	KotORBase::CharacterGenerationInfo *_sentinelMaleInfo;
+	KotORBase::CharacterGenerationInfo *_guardianMaleInfo;
+	KotORBase::CharacterGenerationInfo *_consularFemaleInfo;
+	KotORBase::CharacterGenerationInfo *_sentinelFemaleInfo;
+	KotORBase::CharacterGenerationInfo *_guardianFemaleInfo;
 
 	Odyssey::WidgetButton *_consularMaleButton;
 	Odyssey::WidgetButton *_sentinelMaleButton;

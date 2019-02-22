@@ -29,7 +29,8 @@
 
 #include "src/engines/odyssey/protoitem.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
+
 #include "src/engines/kotor/gui/saveload.h"
 
 #include "src/engines/kotor/gui/ingame/menu_equ.h"
@@ -45,9 +46,9 @@ namespace Engines {
 
 namespace KotOR {
 
-class Menu : public GUI {
+class Menu : public KotORBase::GUI {
 public:
-	Menu(Module &module, ::Engines::Console *console = 0);
+	Menu(KotORBase::Module &module, ::Engines::Console *console = 0);
 
 	/** Set the return string ref. */
 	void setReturnStrref(uint32);
@@ -76,7 +77,7 @@ private:
 		Odyssey::WidgetProtoItem *protoItem;
 		Odyssey::WidgetButton *button;
 
-		Common::ScopedPtr<GUI> menu;
+		Common::ScopedPtr<KotORBase::GUI> menu;
 
 		SubMenu() : protoItem(0), button(0) { }
 	};
@@ -84,7 +85,7 @@ private:
 	void callbackRun();
 	void callbackActive(Widget &widget);
 
-	Module &_module;
+	KotORBase::Module &_module;
 
 	SubMenu _menu[kMenuTypeMAX];
 	SubMenu *_currentMenu;

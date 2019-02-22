@@ -38,7 +38,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Situated::Situated(ObjectType type) :
 		Object(type),
@@ -232,6 +232,6 @@ void Situated::loadSounds() {
 	_soundLocked    = twoda.getRow(_soundAppType).getString("Locked");
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

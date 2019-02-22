@@ -1,0 +1,96 @@
+/* xoreos - A reimplementation of BioWare's Aurora engine
+ *
+ * xoreos is the legal property of its developers, whose names
+ * can be found in the AUTHORS file distributed with this source
+ * distribution.
+ *
+ * xoreos is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * xoreos is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/** @file
+ *  Engine functions for KotOR games.
+ */
+
+#include <cassert>
+#include <cstdlib>
+
+#include <boost/bind.hpp>
+
+#include "src/common/util.h"
+
+#include "src/aurora/nwscript/functionman.h"
+#include "src/aurora/nwscript/util.h"
+
+#include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/area.h"
+#include "src/engines/kotorbase/objectcontainer.h"
+
+#include "src/engines/kotorbase/script/functions.h"
+
+#include "src/engines/kotor/game.h"
+
+namespace Engines {
+
+namespace KotORBase {
+
+Functions::Functions(Game &game) :
+		_game(&game),
+		_lastEvent(0) {
+}
+
+Functions::~Functions() {
+	FunctionMan.clear();
+}
+
+void Functions::unimplementedFunction(Aurora::NWScript::FunctionContext &ctx) {
+	warning("TODO: %s %s(%s)", Aurora::NWScript::formatType(ctx.getReturn().getType()).c_str(),
+	                           ctx.getName().c_str(), Aurora::NWScript::formatParams(ctx).c_str());
+}
+
+int32 Functions::getRandom(int min, int max, int32 n) {
+	if (n < 1)
+		n = 1;
+
+	int32 r = 0;
+
+	while (n-- > 0)
+		r += std::rand() % (max - min + 1) + min;
+
+	return r;
+}
+
+Common::UString Functions::formatFloat(float f, int width, int decimals) {
+	return Common::UString::format("%*.*f", width, decimals, f);
+}
+
+Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n) {
+	KotORBase::Object *object = KotORBase::ObjectContainer::toObject(ctx.getParams()[n].getObject());
+	if (!object || (object->getType() == KotORBase::kObjectTypeInvalid))
+		return 0;
+
+	if (object->getType() == KotORBase::kObjectTypeSelf)
+		return ctx.getCaller();
+
+	return object;
+}
+
+void Functions::jumpTo(KotORBase::Object *object, float x, float y, float z) {
+	object->setPosition(x, y, z);
+}
+
+} // End of namespace KotORBase
+
+} // End of namespace Engines

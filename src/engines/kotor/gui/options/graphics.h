@@ -27,13 +27,13 @@
 
 #include "src/common/scopedptr.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsGraphicsMenu : public GUI {
+class OptionsGraphicsMenu : public KotORBase::GUI {
 public:
 	OptionsGraphicsMenu(::Engines::Console *console = 0);
 	~OptionsGraphicsMenu();
@@ -47,8 +47,8 @@ private:
 	bool _shadows;
 	bool _grass;
 
-	Common::ScopedPtr<GUI> _resolution;
-	Common::ScopedPtr<GUI> _advanced;
+	Common::ScopedPtr<KotORBase::GUI> _resolution;
+	Common::ScopedPtr<KotORBase::GUI> _advanced;
 
 	void setDefault();
 	void readConfig();

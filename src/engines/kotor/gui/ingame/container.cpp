@@ -39,30 +39,30 @@ namespace Engines {
 
 namespace KotOR {
 
-ContainerMenu::ContainerMenu(Console *console) : GUI(console) {
+ContainerMenu::ContainerMenu(Console *console) : KotORBase::GUI(console) {
 	load("container");
 
 	Odyssey::WidgetPanel *guiPanel = getPanel("TGuiPanel");
 	guiPanel->setPosition(-guiPanel->getWidth()/2, -guiPanel->getHeight()/2, 0);
 
 	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
-	lbItems->setItemWidgetFactoryFunction([](Engines::GUI &gui, const Common::UString &tag) { return new WidgetInventoryItem(gui, tag); });
+	lbItems->setItemWidgetFactoryFunction([](Engines::GUI &gui, const Common::UString &tag) { return new KotORBase::WidgetInventoryItem(gui, tag); });
 	lbItems->setPadding(18);
 	lbItems->createItemWidgets(3);
 }
 
-void ContainerMenu::fillFromInventory(const Inventory &inv) {
+void ContainerMenu::fillFromInventory(const KotORBase::Inventory &inv) {
 	if (inv.getItems().empty())
 		getLabel("LBL_MESSAGE")->setText(TalkMan.getString(394));
 
 	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
 	lbItems->removeAllItems();
 
-	const std::map<Common::UString, Inventory::ItemGroup> &invItems = inv.getItems();
-	for (std::map<Common::UString, Inventory::ItemGroup>::const_iterator i = invItems.begin();
+	const std::map<Common::UString, KotORBase::Inventory::ItemGroup> &invItems = inv.getItems();
+	for (std::map<Common::UString, KotORBase::Inventory::ItemGroup>::const_iterator i = invItems.begin();
 			i != invItems.end(); ++i) {
 		try {
-			Item item(i->second.tag);
+			KotORBase::Item item(i->second.tag);
 			lbItems->addItem(Common::UString::format("%s|%s|%u",
 			                                         item.getName().c_str(),
 			                                         item.getIcon().c_str(),

@@ -32,7 +32,10 @@ namespace Engines {
 
 namespace KotOR {
 
-MenuOptions::MenuOptions(Console *console) : GUI(console), _selectedItem(0) {
+MenuOptions::MenuOptions(Console *console) :
+		KotORBase::GUI(console),
+		_selectedItem(0) {
+
 	load("optionsingame");
 }
 

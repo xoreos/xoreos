@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace KotOR {
 
-MenuJournal::MenuJournal(Console *console) : GUI(console) {
+MenuJournal::MenuJournal(Console *console) : KotORBase::GUI(console) {
 	load("journal");
 }
 

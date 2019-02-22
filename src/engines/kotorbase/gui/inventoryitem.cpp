@@ -31,7 +31,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 WidgetInventoryItem::WidgetInventoryItem(GUI &gui, const Common::UString &tag) : WidgetProtoItem(gui, tag) {
 	setDisableHighlight(true);
@@ -173,6 +173,6 @@ void WidgetInventoryItem::setWidth(float width) {
 	}
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

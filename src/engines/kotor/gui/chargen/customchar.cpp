@@ -31,7 +31,8 @@ namespace Engines {
 namespace KotOR {
 
 CustomCharPanel::CustomCharPanel(CharacterGenerationMenu *charGenMenu, Console *console) :
-		GUI(console), _charGen(charGenMenu) {
+		KotORBase::GUI(console),
+		_charGen(charGenMenu) {
 
 	load("custpnl");
 

@@ -20,15 +20,11 @@
 # GUI system in Star Wars: Knights of the Old Republic.
 
 src_engines_kotor_libkotor_la_SOURCES += \
-    src/engines/kotor/gui/gui.h \
-    src/engines/kotor/gui/guibackground.h \
     src/engines/kotor/gui/saveload.h \
     src/engines/kotor/gui/dialog.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
-    src/engines/kotor/gui/gui.cpp \
-    src/engines/kotor/gui/guibackground.cpp \
     src/engines/kotor/gui/saveload.cpp \
     src/engines/kotor/gui/dialog.cpp \
     $(EMPTY)

@@ -25,23 +25,27 @@
 #ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
 #define ENGINES_KOTOR_GUI_CHARGEN_CHARACTERGENERATION_H
 
+#include "src/engines/kotorbase/module.h"
+
 #include "src/engines/kotorbase/gui/chargeninfo.h"
-
-#include "src/engines/kotor/module.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor/gui/chargen/chargenbase.h"
 
 namespace Engines {
 
+namespace KotORBase {
+	class CharacterGenerationInfo;
+}
+
 namespace KotOR {
 
-class CharacterGenerationInfo;
-
-class CharacterGenerationMenu : public GUI {
+class CharacterGenerationMenu : public KotORBase::GUI {
 public:
-	CharacterGenerationMenu(Module *module, CharacterGenerationInfo *pc, ::Engines::Console *console = 0);
+	CharacterGenerationMenu(KotORBase::Module *module,
+	                        KotORBase::CharacterGenerationInfo *pc,
+	                        ::Engines::Console *console = 0);
+
 	~CharacterGenerationMenu();
 
 	void showQuickOrCustom();
@@ -57,10 +61,8 @@ public:
 	void start();
 
 private:
-	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
-
-	Module *_module;
-	CharacterGenerationInfo *_pc;
+	KotORBase::Module *_module;
+	KotORBase::CharacterGenerationInfo *_pc;
 
 	int _step;
 
@@ -71,6 +73,8 @@ private:
 	Common::ScopedPtr<CharacterGenerationBaseMenu> _charGenMenu;
 
 	Common::ScopedPtr<Graphics::Aurora::SubSceneQuad> _charSubScene;
+
+	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
 };
 
 } // End of namespace KotOR

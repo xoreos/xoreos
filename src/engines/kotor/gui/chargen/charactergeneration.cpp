@@ -45,12 +45,18 @@ namespace Engines {
 
 namespace KotOR {
 
-CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenerationInfo *pc, Console *console) :
-		GUI(console), _module(module), _pc(pc), _step(0), _charSubScene(new Graphics::Aurora::SubSceneQuad) {
+CharacterGenerationMenu::CharacterGenerationMenu(KotORBase::Module *module,
+                                                 KotORBase::CharacterGenerationInfo *pc,
+                                                 Console *console) :
+		KotORBase::GUI(console),
+		_module(module),
+		_pc(pc),
+		_step(0),
+		_charSubScene(new Graphics::Aurora::SubSceneQuad) {
 
 	load("maincg");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	static const char * const kEmptyLabels[] = {
 		"VIT_ARROW_LBL", "DEF_ARROW_LBL", "LBL_NAME",
@@ -78,13 +84,13 @@ CharacterGenerationMenu::CharacterGenerationMenu(Module *module, CharacterGenera
 	if (lblClass) {
 		// Set the class title according to the class of the character
 		switch (pc->getClass()) {
-			case kClassSoldier:
+			case KotORBase::kClassSoldier:
 				lblClass->setText(TalkMan.getString(134));
 				break;
-			case kClassScout:
+			case KotORBase::kClassScout:
 				lblClass->setText(TalkMan.getString(133));
 				break;
-			case kClassScoundrel:
+			case KotORBase::kClassScoundrel:
 				lblClass->setText(TalkMan.getString(135));
 				break;
 			default:
@@ -172,7 +178,7 @@ void CharacterGenerationMenu::showCustom() {
 
 void CharacterGenerationMenu::showPortrait() {
 	// Operate on a copy of the character object
-	CharacterGenerationInfo info = *_pc;
+	KotORBase::CharacterGenerationInfo info = *_pc;
 
 	_charGenMenu.reset(new CharacterGenerationPortraitMenu(info));
 
@@ -192,7 +198,7 @@ void CharacterGenerationMenu::showPortrait() {
 
 void CharacterGenerationMenu::showName() {
 	// Operate on a copy of the character object
-	CharacterGenerationInfo info = *_pc;
+	KotORBase::CharacterGenerationInfo info = *_pc;
 
 	_charGenMenu.reset(new CharacterGenerationNameMenu(info));
 

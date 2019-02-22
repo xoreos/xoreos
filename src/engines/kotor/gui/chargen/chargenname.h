@@ -27,7 +27,7 @@
 
 #include "src/aurora/ltrfile.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor/gui/chargen/chargenbase.h"
 
@@ -37,18 +37,19 @@ namespace KotOR {
 
 class CharacterGenerationNameMenu : public CharacterGenerationBaseMenu {
 public:
-	CharacterGenerationNameMenu(CharacterGenerationInfo &info, ::Engines::Console *console = 0);
+	CharacterGenerationNameMenu(KotORBase::CharacterGenerationInfo &info,
+	                            ::Engines::Console *console = 0);
 
 private:
-	void callbackActive(Widget &widget);
-	void callbackTextInput(const Common::UString &text);
-	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
-
 	Aurora::LTRFile _humanFirst;
 	Aurora::LTRFile _humanLast;
 
 	Odyssey::WidgetLabel *_nameLabel;
 	Common::UString _name;
+
+	void callbackActive(Widget &widget);
+	void callbackTextInput(const Common::UString &text);
+	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
 };
 
 } // End of namespace KotOR

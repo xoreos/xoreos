@@ -191,10 +191,10 @@ static const Resolution kResolution[] = {
 	{ 1600, 1200, "mipc216x12" },
 };
 
-HUD::HUD(Module &module, Engines::Console *console)
-		: GUI(console),
-		  _module(&module),
-		  _menu(module, console) {
+HUD::HUD(KotORBase::Module &module, Engines::Console *console) :
+		KotORBase::GUI(console),
+		_module(&module),
+		_menu(module, console) {
 
 	update(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 
@@ -254,15 +254,15 @@ void HUD::setRotation(float angle) {
 	}
 }
 
-void HUD::showContainer(Inventory &inv) {
+void HUD::showContainer(KotORBase::Inventory &inv) {
 	_container.reset(new ContainerMenu());
 	_container->fillFromInventory(inv);
 
 	if (sub(*_container, kStartCodeNone, true, false) == 1) {
-		Inventory &partyInventory = _module->getPC()->getInventory();
+		KotORBase::Inventory &partyInventory = _module->getPC()->getInventory();
 
-		const std::map<Common::UString, Inventory::ItemGroup> &items = inv.getItems();
-		for (std::map<Common::UString, Inventory::ItemGroup>::const_iterator i = items.begin();
+		const std::map<Common::UString, KotORBase::Inventory::ItemGroup> &items = inv.getItems();
+		for (std::map<Common::UString, KotORBase::Inventory::ItemGroup>::const_iterator i = items.begin();
 				i != items.end(); ++i) {
 			partyInventory.addItem(i->first, i->second.count);
 		}
@@ -303,19 +303,19 @@ void HUD::setPortrait(uint8 n, bool visible, const Common::UString &portrait) {
 	}
 }
 
-void HUD::setPartyLeader(Creature *creature) {
+void HUD::setPartyLeader(KotORBase::Creature *creature) {
 	setPortrait(1, creature != 0, creature ? creature->getPortrait() : "");
 }
 
-void HUD::setPartyMember1(Creature *creature) {
+void HUD::setPartyMember1(KotORBase::Creature *creature) {
 	setPortrait(3, creature != 0, creature ? creature->getPortrait() : "");
 }
 
-void HUD::setPartyMember2(Creature *creature) {
+void HUD::setPartyMember2(KotORBase::Creature *creature) {
 	setPortrait(2, creature != 0, creature ? creature->getPortrait() : "");
 }
 
-void HUD::showObjectInformation(Object *object) {
+void HUD::showObjectInformation(KotORBase::Object *object) {
 	if (_objectNameBackground) {
 		_objectNameBackground->setInvisible(false);
 		_objectNameBackground->show();
@@ -356,7 +356,7 @@ void HUD::hideObjectInformation() {
 	}
 }
 
-void HUD::updateObjectInformation(Object *object, float x, float y) {
+void HUD::updateObjectInformation(KotORBase::Object *object, float x, float y) {
 	if (_objectNameBackground)
 		_objectNameBackground->setPosition(x - 100, y + 36, -100);
 	if (_objectName)

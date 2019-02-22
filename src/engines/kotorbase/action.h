@@ -31,7 +31,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Object;
 
@@ -44,7 +44,7 @@ struct Action {
 	Action();
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

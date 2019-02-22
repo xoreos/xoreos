@@ -30,10 +30,10 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsFeedbackMenu::OptionsFeedbackMenu(::Engines::Console *console) : GUI(console) {
+OptionsFeedbackMenu::OptionsFeedbackMenu(::Engines::Console *console) : KotORBase::GUI(console) {
 	load("optfeedback");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 }
 
 OptionsFeedbackMenu::~OptionsFeedbackMenu() {

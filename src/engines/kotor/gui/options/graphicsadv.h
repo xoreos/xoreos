@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_GRAPHICSADV_H
 #define ENGINES_KOTOR_GUI_OPTIONS_GRAPHICSADV_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsGraphicsAdvancedMenu : public GUI {
+class OptionsGraphicsAdvancedMenu : public KotORBase::GUI {
 public:
 	OptionsGraphicsAdvancedMenu(::Engines::Console *console = 0);
 	~OptionsGraphicsAdvancedMenu();

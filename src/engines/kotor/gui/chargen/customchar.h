@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_CHARGEN_CUSTOMCHAR_H
 #define ENGINES_KOTOR_GUI_CHARGEN_CUSTOMCHAR_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
 
@@ -33,14 +33,14 @@ namespace Engines {
 
 namespace KotOR {
 
-class CustomCharPanel : public GUI {
+class CustomCharPanel : public KotORBase::GUI {
 public:
 	CustomCharPanel(CharacterGenerationMenu *charGenMenu, Console *console = 0);
 
 private:
-	virtual void callbackActive(Widget &widget);
-
 	CharacterGenerationMenu *_charGen;
+
+	virtual void callbackActive(Widget &widget);
 };
 
 } // End of namespace KotOR

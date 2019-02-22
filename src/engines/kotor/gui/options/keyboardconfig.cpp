@@ -31,11 +31,11 @@ namespace Engines {
 namespace KotOR {
 
 OptionsKeyboardConfigurationMenu::OptionsKeyboardConfigurationMenu(::Engines::Console *console) :
-	GUI(console) {
+		KotORBase::GUI(console) {
 
 	load("optkeymapping");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 }
 
 OptionsKeyboardConfigurationMenu::~OptionsKeyboardConfigurationMenu() {

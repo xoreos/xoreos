@@ -33,7 +33,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 SoundObject::SoundObject(const Aurora::GFF3Struct &sound) {
 	Common::UString temp = sound.getString("TemplateResRef");
@@ -104,6 +104,6 @@ void SoundObject::stop() {
 	SoundMan.stopChannel(_sound);
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

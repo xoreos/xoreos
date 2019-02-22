@@ -25,14 +25,14 @@
 #ifndef ENGINES_KOTOR_GUI_MAIN_MOVIES_H
 #define ENGINES_KOTOR_GUI_MAIN_MOVIES_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
 /** The KotOR movies menu. */
-class MoviesMenu : public GUI {
+class MoviesMenu : public KotORBase::GUI {
 public:
 	MoviesMenu(::Engines::Console *console = 0);
 	~MoviesMenu();

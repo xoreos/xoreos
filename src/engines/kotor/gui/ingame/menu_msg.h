@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_MENU_MSG_H
 #define ENGINES_KOTOR_GUI_INGAME_MENU_MSG_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class MenuMessages : public GUI {
+class MenuMessages : public KotORBase::GUI {
 public:
 	MenuMessages(::Engines::Console *console = 0);
 

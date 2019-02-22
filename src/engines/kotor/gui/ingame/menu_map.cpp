@@ -36,7 +36,7 @@ namespace Engines {
 
 namespace KotOR {
 
-MenuMap::MenuMap(Console *console) : GUI(console) {
+MenuMap::MenuMap(Console *console) : KotORBase::GUI(console) {
 	load("map");
 }
 

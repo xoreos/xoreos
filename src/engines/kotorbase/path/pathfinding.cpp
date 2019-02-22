@@ -34,7 +34,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Pathfinding::Pathfinding(const std::vector<bool> &walkableProp) :
 		Engines::Pathfinding(walkableProp) {
@@ -126,6 +126,6 @@ Room *Pathfinding::getRoomAt(float x, float y) const {
 	return 0;
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

@@ -27,13 +27,13 @@
 
 #include "src/common/scopedptr.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsGameplayMenu : public GUI {
+class OptionsGameplayMenu : public KotORBase::GUI {
 public:
 	OptionsGameplayMenu(::Engines::Console *console = 0);
 	~OptionsGameplayMenu();
@@ -51,8 +51,8 @@ private:
 	bool _reverseMinigameY;
 	bool _combatMovement;
 
-	Common::ScopedPtr<GUI> _mousesettings;
-	Common::ScopedPtr<GUI> _keyboardconfiguration;
+	Common::ScopedPtr<KotORBase::GUI> _mousesettings;
+	Common::ScopedPtr<KotORBase::GUI> _keyboardconfiguration;
 
 	void setDefault();
 	void readConfig();

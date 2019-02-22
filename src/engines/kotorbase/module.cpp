@@ -19,16 +19,1095 @@
  */
 
 /** @file
- *  Module abstraction for KotOR games.
+ *  The context needed to run a module in KotOR games.
  */
 
+#include "src/common/util.h"
+#include "src/common/maths.h"
+#include "src/common/error.h"
+#include "src/common/ustring.h"
+#include "src/common/readfile.h"
+#include "src/common/filepath.h"
+#include "src/common/filelist.h"
+#include "src/common/configman.h"
+
+#include "src/aurora/types.h"
+#include "src/aurora/rimfile.h"
+#include "src/aurora/gff3file.h"
+#include "src/aurora/dlgfile.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
+
+#include "src/graphics/camera.h"
+
+#include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/textureman.h"
+
+#include "src/sound/sound.h"
+
+#include "src/events/events.h"
+
+#include "src/engines/aurora/util.h"
+#include "src/engines/aurora/resources.h"
+#include "src/engines/aurora/console.h"
+#include "src/engines/aurora/freeroamcamera.h"
+#include "src/engines/aurora/satellitecamera.h"
+
+#include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/placeable.h"
 #include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/area.h"
+
+#include "src/engines/kotorbase/gui/partyselection.h"
+
+#include "src/engines/kotor/gui/dialog.h"
+
+#include "src/engines/kotor/gui/ingame/ingame.h"
+
+#include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
 namespace Engines {
 
 namespace KotORBase {
 
+bool Module::Action::operator<(const Action &s) const {
+	return timestamp < s.timestamp;
+}
+
+
+Module::Module(::Engines::Console &console) :
+		Object(kObjectTypeModule),
+		_console(&console),
+		_hasModule(false),
+		_running(false),
+		_currentTexturePack(-1),
+		_exit(false),
+		_entryLocationType(kObjectTypeAll),
+		_fade(new Graphics::Aurora::FadeQuad()),
+		_freeCamEnabled(false),
+		_prevTimestamp(0),
+		_frameTime(0),
+		_forwardBtnPressed(false),
+		_backwardsBtnPressed(false),
+		_pcRunning(false),
+		_pcPositionLoaded(false),
+		_inDialog(false),
+		_cameraHeight(0.0f) {
+
+	loadSurfaceTypes();
+}
+
 Module::~Module() {
+	try {
+		clear();
+	} catch (...) {
+	}
+}
+
+void Module::clear() {
+	unload(true);
+}
+
+void Module::load(const Common::UString &module, const Common::UString &entryLocation,
+                  ObjectType entryLocationType) {
+
+	if (isRunning()) {
+		// We are currently running a module. Schedule a safe change instead
+
+		changeModule(module, entryLocation, entryLocationType);
+		return;
+	}
+
+	// We are not currently running a module. Directly load the new module
+	loadModule(module, entryLocation, entryLocationType);
+}
+
+void Module::loadModule(const Common::UString &module, const Common::UString &entryLocation,
+                        ObjectType entryLocationType) {
+	_ingame->hide();
+
+	Common::ScopedPtr<KotORBase::LoadScreen> loadScreen(createLoadScreen(module));
+	loadScreen->show();
+
+	unload(false);
+
+	_module = module;
+
+	_entryLocation     = entryLocation;
+	_entryLocationType = entryLocationType;
+
+	try {
+
+		load();
+
+	} catch (Common::Exception &e) {
+		_module.clear();
+
+		e.add("Failed loading module \"%s\"", module.c_str());
+		throw e;
+	}
+
+	int northAxis;
+	float mapPt1X, mapPt1Y, mapPt2X, mapPt2Y;
+	float worldPt1X, worldPt1Y, worldPt2X, worldPt2Y;
+
+	northAxis = _area->getNorthAxis();
+	_area->getMapPoint1(mapPt1X, mapPt1Y);
+	_area->getMapPoint2(mapPt2X, mapPt2Y);
+	_area->getWorldPoint1(worldPt1X, worldPt1Y);
+	_area->getWorldPoint2(worldPt2X, worldPt2Y);
+
+	Common::UString mapId;
+	if (_module.contains('_'))
+		mapId = _module.substr(++_module.findFirst("_"), _module.end());
+	else
+		mapId = _module.substr(_module.getPosition(3), _module.end());
+	_ingame->setMinimap(mapId, northAxis,
+	                    worldPt1X, worldPt1Y, worldPt2X, worldPt2Y,
+	                    mapPt1X, mapPt1Y, mapPt2X, mapPt2Y);
+
+	_newModule.clear();
+
+	_hasModule = true;
+
+	loadScreen->hide();
+
+	_ingame->show();
+}
+
+void Module::usePC(Creature *pc) {
+	_pc.reset(pc);
+}
+
+Creature *Module::getPC() {
+	return _pc.get();
+}
+
+const std::vector<bool> &Module::getWalkableSurfaces() const {
+	return _walkableSurfaces;
+}
+
+Graphics::Aurora::FadeQuad &Module::getFadeQuad() {
+	return *_fade;
+}
+
+bool Module::isLoaded() const {
+	return _hasModule && _area && _pc;
+}
+
+bool Module::isRunning() const {
+	return !EventMan.quitRequested() && _running && !_exit;
+}
+
+void Module::exit() {
+	_exit = true;
+}
+
+void Module::showMenu() {
+	// TODO: Module::showMenu()
+}
+
+void Module::load() {
+	loadTexturePack();
+	loadResources();
+	loadIFO();
+	loadArea();
+}
+
+void Module::loadResources() {
+	// Add all available resource files for the module.
+	// Apparently, the original game prefers ERFs over RIMs. This is
+	// exploited by the KotOR2 TSL Restored Content Mod.
+
+	// General module resources
+	_resources.push_back(Common::ChangeID());
+	if (!indexOptionalArchive (_module + ".erf", 1000, &_resources.back()))
+		   indexMandatoryArchive(_module + ".rim", 1000, &_resources.back());
+
+	// Scripts
+	_resources.push_back(Common::ChangeID());
+	if (!indexOptionalArchive (_module + "_s.erf", 1001, &_resources.back()))
+		   indexMandatoryArchive(_module + "_s.rim", 1001, &_resources.back());
+
+	// Dialogs, KotOR2 only
+	_resources.push_back(Common::ChangeID());
+	if (!indexOptionalArchive(_module + "_dlg.erf", 1002, &_resources.back()))
+		   indexOptionalArchive(_module + "_dlg.rim", 1002, &_resources.back());
+
+	// Layouts, Xbox only
+	_resources.push_back(Common::ChangeID());
+	indexOptionalArchive(_module + "_a.rim"  , 1003, &_resources.back());
+
+	// Textures, Xbox only
+	_resources.push_back(Common::ChangeID());
+	indexOptionalArchive(_module + "_adx.rim", 1004, &_resources.back());
+}
+
+void Module::loadIFO() {
+	_ifo.load();
+
+	_tag  = _ifo.getTag();
+	_name = _ifo.getName().getString();
+
+	readScripts(*_ifo.getGFF());
+}
+
+void Module::loadArea() {
+	_area.reset(new Area(*this, _ifo.getEntryArea()));
+}
+
+void Module::loadSurfaceTypes() {
+	_walkableSurfaces.clear();
+
+	const Aurora::TwoDAFile &surfacematTwoDA = TwoDAReg.get2DA("surfacemat");
+	for (size_t s = 0; s < surfacematTwoDA.getRowCount(); ++s) {
+		const Aurora::TwoDARow &row = surfacematTwoDA.getRow(s);
+		_walkableSurfaces.push_back(static_cast<bool>(row.getInt("Walk")));
+	}
+}
+
+static const char * const texturePacks[3] = {
+	"swpc_tex_tpc.erf", // Worst
+	"swpc_tex_tpb.erf", // Medium
+	"swpc_tex_tpa.erf"  // Best
+};
+
+void Module::loadTexturePack() {
+	const int level = ConfigMan.getInt("texturepack");
+	if (_currentTexturePack == level)
+		// Nothing to do
+		return;
+
+	const int oldTexturePack = _currentTexturePack;
+
+	unloadTexturePack();
+
+	status("Loading texture pack %d", level);
+	indexOptionalArchive(texturePacks[level], 400, &_textures);
+
+	// If we already had a texture pack loaded, reload all textures
+	if (oldTexturePack != -1)
+		TextureMan.reloadAll();
+
+	_currentTexturePack = level;
+}
+
+void Module::unload(bool completeUnload) {
+	GfxMan.pauseAnimations();
+
+	_party.clear();
+
+	leaveArea();
+	unloadArea();
+
+	if (completeUnload) {
+		unloadPC();
+		unloadTexturePack();
+
+		_globalNumbers.clear();
+		_globalBooleans.clear();
+
+		_availableParty.clear();
+	}
+
+	unloadIFO();
+	unloadResources();
+
+	_eventQueue.clear();
+	_delayedActions.clear();
+
+	_newModule.clear();
+	_hasModule = false;
+
+	_module.clear();
+
+	_entryLocation.clear();
+	_entryLocationType = kObjectTypeAll;
+}
+
+void Module::unloadResources() {
+	std::list<Common::ChangeID>::reverse_iterator r;
+	for (r = _resources.rbegin(); r != _resources.rend(); ++r)
+		deindexResources(*r);
+
+	_resources.clear();
+}
+
+void Module::unloadIFO() {
+	_ifo.unload();
+}
+
+void Module::unloadArea() {
+	_area.reset();
+}
+
+void Module::unloadPC() {
+	_pc.reset();
+}
+
+void Module::unloadTexturePack() {
+	deindexResources(_textures);
+	_currentTexturePack = -1;
+}
+
+void Module::changeModule(const Common::UString &module, const Common::UString &entryLocation,
+                          ObjectType entryLocationType) {
+
+	_newModule = module;
+
+	_entryLocation     = entryLocation;
+	_entryLocationType = entryLocationType;
+}
+
+void Module::replaceModule() {
+	if (_newModule.empty())
+		return;
+
+	_console->hide();
+
+	const Common::UString newModule         = _newModule;
+	const Common::UString entryLocation     = _entryLocation;
+	const ObjectType      entryLocationType = _entryLocationType;
+
+	unload(false);
+
+	_exit = true;
+
+	loadModule(newModule, entryLocation, entryLocationType);
+	enter();
+}
+
+void Module::enter() {
+	if (!_hasModule)
+		throw Common::Exception("Module::enter(): Lacking a module?!?");
+
+	_console->printf("Entering module \"%s\"", _name.c_str());
+
+	Common::UString startMovie = _ifo.getStartMovie();
+	if (!startMovie.empty())
+		playVideo(startMovie);
+
+	float entryX, entryY, entryZ, entryAngle;
+	if (!getEntryObjectLocation(entryX, entryY, entryZ, entryAngle))
+		getEntryIFOLocation(entryX, entryY, entryZ, entryAngle);
+
+	if (_pc) {
+		if (_pcPositionLoaded) {
+			_pc->getPosition(entryX, entryY, entryZ);
+			_pcPositionLoaded = false;
+		} else
+			_pc->setPosition(entryX, entryY, entryZ);
+
+		_ingame->setPosition(entryX, entryY);
+		_pc->show();
+	} else {
+		usePC(createCreature());
+		_pc->createFakePC();
+	}
+
+	if (_party.empty()) {
+		addToParty(_pc.get());
+	}
+
+	if (!_pc)
+		throw Common::Exception("Module::enter(): Lacking a PC?!?");
+
+	_cameraHeight = _pc->getCameraHeight();
+
+	float cameraDistance, cameraPitch, cameraHeight;
+	_area->getCameraStyle(cameraDistance, cameraPitch, cameraHeight);
+
+	SatelliteCam.setTarget(entryX, entryY, entryZ + _cameraHeight);
+	SatelliteCam.setDistance(cameraDistance);
+	SatelliteCam.setPitch(cameraPitch);
+	SatelliteCam.setHeight(cameraHeight);
+	SatelliteCam.update(0);
+
+	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
+
+	enterArea();
+
+	_area->notifyPCMoved();
+
+	GfxMan.resumeAnimations();
+
+	_running = true;
+	_exit    = false;
+
+	_ingame->show();
+}
+
+bool Module::getObjectLocation(const Common::UString &object, ObjectType location,
+                               float &entryX, float &entryY, float &entryZ, float &entryAngle) {
+
+	if (object.empty())
+		return false;
+
+	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(findObjectsByTag(object));
+
+
+	Object *kotorObject = 0;
+	while (!kotorObject && search->get()) {
+		kotorObject = ObjectContainer::toObject(search->next());
+		if (!kotorObject || !(kotorObject->getType() & location))
+			kotorObject = 0;
+	}
+
+	if (!kotorObject)
+		return false;
+
+	// TODO: Entry orientation
+
+	kotorObject->getPosition(entryX, entryY, entryZ);
+	entryAngle = 0.0f;
+
+	return true;
+}
+
+bool Module::getEntryObjectLocation(float &entryX, float &entryY, float &entryZ, float &entryAngle) {
+	return getObjectLocation(_entryLocation, _entryLocationType, entryX, entryY, entryZ, entryAngle);
+}
+
+void Module::getEntryIFOLocation(float &entryX, float &entryY, float &entryZ, float &entryAngle) {
+	_ifo.getEntryPosition(entryX, entryY, entryZ);
+
+	float entryDirX, entryDirY;
+	_ifo.getEntryDirection(entryDirX, entryDirY);
+
+	entryAngle = -Common::rad2deg(atan2(entryDirX, entryDirY));
+}
+
+void Module::leave() {
+	_ingame->hide();
+
+	leaveArea();
+
+	_running = false;
+	_exit    = true;
+}
+
+void Module::enterArea() {
+	GfxMan.lockFrame();
+
+	_area->show();
+
+	runScript(kScriptModuleLoad , this, _pc.get());
+	runScript(kScriptModuleStart, this, _pc.get());
+	runScript(kScriptEnter      , this, _pc.get());
+
+	GfxMan.unlockFrame();
+
+	_area->runScript(kScriptEnter, _area.get(), _pc.get());
+}
+
+void Module::leaveArea() {
+	if (_area) {
+		_area->runScript(kScriptExit, _area.get(), _pc.get());
+
+		_area->hide();
+	}
+
+	runScript(kScriptExit, this, _pc.get());
+}
+
+void Module::clickObject(Object *object) {
+	Creature *creature = ObjectContainer::toCreature(object);
+	if (creature && !creature->getConversation().empty()) {
+		startConversation(creature->getConversation(), creature);
+		return;
+	}
+
+	Situated *situated = ObjectContainer::toSituated(object);
+	if (situated && !situated->getConversation().empty()) {
+		startConversation(situated->getConversation(), situated);
+		return;
+	}
+
+	Placeable *placeable = ObjectContainer::toPlaceable(object);
+	if (placeable) {
+		if (placeable->hasInventory()) {
+			stopCameraMovement();
+			stopPCMovement();
+
+			_ingame->showContainer(placeable->getInventory());
+			placeable->close(_pc.get());
+			placeable->runScript(kScriptDisturbed, placeable, _pc.get());
+			_prevTimestamp = EventMan.getTimestamp();
+		}
+	}
+}
+
+void Module::enterObject(Object *object) {
+	_ingame->showSelection(object);
+}
+
+void Module::leaveObject(Object *UNUSED(object)) {
+	_ingame->hideSelection();
+}
+
+void Module::addEvent(const Events::Event &event) {
+	_eventQueue.push_back(event);
+}
+
+void Module::processEventQueue() {
+	if (!isRunning())
+		return;
+
+	replaceModule();
+
+	if (!isRunning())
+		return;
+
+	uint32 now = SDL_GetTicks();
+	_frameTime = (now - _prevTimestamp) / 1000.f;
+	_prevTimestamp = now;
+
+	handleEvents();
+	handleActions();
+
+	GfxMan.lockFrame();
+
+	_area->processCreaturesActions(_frameTime);
+
+	if (!_freeCamEnabled) {
+		handlePCMovement();
+		SatelliteCam.update(_frameTime);
+	}
+
+	GfxMan.unlockFrame();
+}
+
+void Module::handleEvents() {
+	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event) {
+		// Handle console
+		if (_console->isVisible()) {
+			_console->processEvent(*event);
+			continue;
+		}
+
+		// Conversation/cutscene
+		if (_inDialog) {
+			_dialog->addEvent(*event);
+			continue;
+		}
+
+		if (event->type == Events::kEventKeyDown) {
+			// Menu
+			if (event->key.keysym.sym == SDLK_ESCAPE) {
+				showMenu();
+				continue;
+			}
+
+			// Console
+			if ((event->key.keysym.sym == SDLK_d) && (event->key.keysym.mod & KMOD_CTRL)) {
+				_console->show();
+				continue;
+			}
+		}
+
+		// PC movement
+		switch (event->type) {
+			case Events::kEventKeyDown:
+			case Events::kEventKeyUp:
+				if (event->key.keysym.scancode == SDL_SCANCODE_W) {
+					_forwardBtnPressed = event->type == Events::kEventKeyDown;
+				} else if (event->key.keysym.scancode == SDL_SCANCODE_S) {
+					_backwardsBtnPressed = event->type == Events::kEventKeyDown;
+				}
+				break;
+
+			case Events::kEventControllerAxisMotion:
+				if (event->caxis.axis == Events::kControllerAxisLeftY) {
+					_backwardsBtnPressed = event->caxis.value >  10000;
+					_forwardBtnPressed   = event->caxis.value < -10000;
+				}
+				break;
+		}
+
+		// Camera
+		if (!_console->isVisible()) {
+			if (_freeCamEnabled) {
+				if (FreeRoamCam.handleCameraInput(*event))
+					continue;
+			}
+			else if (SatelliteCam.handleCameraInput(*event))
+				continue;
+		}
+
+		_area->addEvent(*event);
+		_ingame->addEvent(*event);
+	}
+
+	_eventQueue.clear();
+
+	if (_freeCamEnabled)
+		CameraMan.update();
+
+	_area->processEventQueue();
+	_ingame->processEventQueue();
+	_dialog->processEventQueue();
+
+	if (_inDialog && !_dialog->isConversationActive()) {
+		_dialog->hide();
+		_ingame->show();
+		_inDialog = false;
+	}
+}
+
+void Module::handlePCMovement() {
+	if (!_pc)
+		return;
+
+	bool haveMovement = false;
+
+	if (_forwardBtnPressed || _backwardsBtnPressed) {
+		float x, y, z;
+		_pc->getPosition(x, y, z);
+		float yaw = SatelliteCam.getYaw();
+		float moveRate = _pc->getRunRate();
+		float newX, newY;
+
+		if (_forwardBtnPressed && !_backwardsBtnPressed) {
+			_pc->setOrientation(0, 0, 1, Common::rad2deg(yaw));
+			newX = x - moveRate * sin(yaw) * _frameTime;
+			newY = y + moveRate * cos(yaw) * _frameTime;
+			haveMovement = true;
+		} else if (_backwardsBtnPressed && !_forwardBtnPressed) {
+			_pc->setOrientation(0, 0, 1, 180 + Common::rad2deg(yaw));
+			newX = x + moveRate * sin(yaw) * _frameTime;
+			newY = y - moveRate * cos(yaw) * _frameTime;
+			haveMovement = true;
+		}
+
+		if (haveMovement) {
+			z = _area->evaluateElevation(newX, newY);
+			if (z != FLT_MIN) {
+				if (_area->walkable(glm::vec3(x, y, z + 0.1f),
+				                    glm::vec3(newX, newY, z + 0.1f)))
+					movePC(newX, newY, z);
+			}
+		}
+	}
+
+	const float *position = CameraMan.getPosition();
+	SoundMan.setListenerPosition(position[0], position[1], position[2]);
+	const float *orientation = CameraMan.getOrientation();
+	SoundMan.setListenerOrientation(orientation[0], orientation[1], orientation[2], 0.0f, 1.0f, 0.0f);
+
+	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
+	_ingame->updateSelection();
+
+	if (haveMovement && !_pcRunning) {
+		_pc->playAnimation(Common::UString("run"), false, -1.0f);
+		_pcRunning = true;
+	} else if (!haveMovement && _pcRunning) {
+		_pc->playDefaultAnimation();
+		_pcRunning = false;
+	}
+}
+
+void Module::handleActions() {
+	uint32 now = EventMan.getTimestamp();
+
+	while (!_delayedActions.empty()) {
+		ActionQueue::iterator action = _delayedActions.begin();
+
+		if (now < action->timestamp)
+			break;
+
+		if (action->type == kActionScript)
+			ScriptContainer::runScript(action->script, action->state,
+			                           action->owner, action->triggerer);
+
+		_delayedActions.erase(action);
+	}
+}
+
+void Module::movePC(float x, float y, float z) {
+	if (!_pc)
+		return;
+
+	_pc->setPosition(x, y, z);
+	_ingame->setPosition(x, y);
+	movedPC();
+}
+
+void Module::movePC(const Common::UString &module, const Common::UString &object, ObjectType type) {
+	if (module.empty() || (module == _module)) {
+		float x, y, z, angle;
+		if (getObjectLocation(object, type, x, y, z, angle))
+			movePC(x, y, z);
+
+		return;
+	}
+
+	load(module, object, type);
+}
+
+void Module::movedPC() {
+	if (!_pc)
+		return;
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	SatelliteCam.setTarget(x, y, z + _cameraHeight);
+
+	if (_freeCamEnabled) {
+		CameraMan.setPosition(x, y, z + _cameraHeight);
+		CameraMan.update();
+	}
+
+	_area->evaluateTriggers(x, y);
+
+	if (!_freeCamEnabled)
+		_area->notifyPCMoved();
+}
+
+size_t Module::getPartyMemberCount() {
+	return _party.size();
+}
+
+void Module::addToParty(Creature *creature) {
+	_party.push_back(creature);
+
+	if (_party.size() == 1)
+		_ingame->setPartyLeader(creature);
+	else if (_party.size() == 2)
+		_ingame->setPartyMember1(creature);
+	else if (_party.size() == 3)
+		_ingame->setPartyMember2(creature);
+
+	// TODO: The character is in the original game placed on a position somewhere near theplayer character.
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+	creature->show();
+	creature->setPosition(x, y, z);
+	addObject(*creature);
+
+	// TODO: If the party size increases over 3 show the character selection screen.
+}
+
+bool Module::isObjectPartyMember(Creature *creature) {
+	return std::find(_party.begin(), _party.end(), creature) != _party.end();
+}
+
+Creature *Module::getPartyMember(int index) {
+	if (index >= static_cast<int>(_party.size()) || index < 0)
+		throw Common::Exception("Module::getPartyMember() Invalid index");
+
+	std::list<Creature *>::iterator iter = _party.begin();
+	std::advance(iter, index);
+	return *iter;
+}
+
+void Module::switchPlayerCharacter(int npc) {
+	std::list<Creature *>::iterator iter = _party.begin();
+	if (npc != -1)
+		std::advance(iter, npc);
+	_pc.release();
+	_pc.reset(*iter);
+
+	Creature *pc = *iter;
+	_party.erase(iter);
+	_party.push_front(pc);
+
+	_ingame->setPartyLeader(pc);
+
+	if (_party.size() > 1)
+		_ingame->setPartyMember1(*++_party.begin());
+	if (_party.size() > 2)
+		_ingame->setPartyMember2(_party.back());
+
+	float x, y, z;
+	_pc->getPosition(x, y, z);
+
+	SatelliteCam.setTarget(x, y, z + _cameraHeight);
+
+	if (_freeCamEnabled) {
+		CameraMan.setPosition(x, y, z + _cameraHeight);
+		CameraMan.update();
+	}
+}
+
+void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
+	if (_inDialog)
+		_dialog->hide();
+	else
+		_ingame->hide();
+
+	PartyConfiguration config;
+
+	for (std::map<int, Common::UString>::iterator i = _availableParty.begin();
+			i != _availableParty.end(); ++i) {
+		config.slotTemplate[i->first] = i->second;
+	}
+
+	config.forceNPC1 = forceNPC1;
+	config.forceNPC2 = forceNPC2;
+	config.canCancel = false;
+
+	_partySelection->loadConfiguration(config);
+
+	_partySelection->show();
+	_partySelection->run();
+	_partySelection->hide();
+
+	if (_inDialog)
+		_dialog->show();
+	else
+		_ingame->show();
+
+	int npc1 = config.forceNPC1;
+	int npc2 = config.forceNPC2;
+
+	if (npc1 == -1)
+		for (int i = 0; i < 10; ++i)
+			if (config.slotSelected[i]) {
+				config.slotSelected[i] = false;
+				npc1 = i;
+			}
+
+	if (npc2 == -1)
+		for (int i = 0; i < 10; ++i)
+			if (config.slotSelected[i]) {
+				config.slotSelected[i] = false;
+				npc2 = i;
+			}
+
+	if (npc1 != -1)
+		addToParty(createCreature(_availableParty[npc1]));
+}
+
+void Module::addAvailablePartyMember(int slot, const Common::UString &templ) {
+	std::map<int, Common::UString>::iterator i = _availableParty.find(slot);
+	if (i != _availableParty.end())
+		_availableParty.erase(i);
+
+	_availableParty.insert(std::pair<int, Common::UString>(slot, templ));
+}
+
+bool Module::isAvailableCreature(int slot) {
+	return _availableParty.find(slot) != _availableParty.end();
+}
+
+void Module::setReturnStrref(uint32 id) {
+	_ingame->setReturnStrref(id);
+}
+
+void Module::setReturnQueryStrref(uint32 id) {
+	_ingame->setReturnQueryStrref(id);
+}
+
+void Module::setReturnEnabled(bool enabled) {
+	_ingame->setReturnEnabled(enabled);
+}
+
+void Module::setGlobalBoolean(const Common::UString &id, bool value) {
+	_globalBooleans[id] = value;
+}
+
+bool Module::getGlobalBoolean(const Common::UString &id) const {
+	std::map<Common::UString, bool>::const_iterator iter = _globalBooleans.find(id);
+	if (iter != _globalBooleans.end())
+		return iter->second;
+	else
+		return false;
+}
+
+void Module::setGlobalNumber(const Common::UString &id, int value) {
+	_globalNumbers[id] = value;
+}
+
+int Module::getGlobalNumber(const Common::UString &id) const {
+	std::map<Common::UString, int>::const_iterator iter = _globalNumbers.find(id);
+	if (iter != _globalNumbers.end())
+		return iter->second;
+	else
+		return 0;
+}
+
+const Aurora::IFOFile &Module::getIFO() const {
+	return _ifo;
+}
+
+const Common::UString &Module::getName() const {
+	return Object::getName();
+}
+
+Area *Module::getCurrentArea() {
+	return _area.get();
+}
+
+void Module::delayScript(const Common::UString &script,
+                         const Aurora::NWScript::ScriptState &state,
+                         Aurora::NWScript::Object *owner,
+                         Aurora::NWScript::Object *triggerer, uint32 delay) {
+	Action action;
+
+	action.type      = kActionScript;
+	action.script    = script;
+	action.state     = state;
+	action.owner     = owner;
+	action.triggerer = triggerer;
+	action.timestamp = EventMan.getTimestamp() + delay;
+
+	_delayedActions.insert(action);
+}
+
+Common::UString Module::getName(const Common::UString &module, const Common::UString &moduleDirOptionName) {
+	/* Return the localized name of the first (and only) area of the module,
+	 * which is the closest thing to the name of the module.
+	 *
+	 * To do that, if looks through the module directory for a matching RIM file
+	 * (case-insensitively) and opens it without indexing into the ResourceManager.
+	 * It then opens the module.ifo, grabs the name of the area, opens its ARE file
+	 * and returns the localized "Name" field.
+	 *
+	 * If there's any error while doing all this, an empty string is returned.
+	 */
+
+	try {
+		const Common::FileList modules(ConfigMan.getString(moduleDirOptionName));
+
+		const Aurora::RIMFile rim(new Common::ReadFile(modules.findFirst(module + ".rim", true)));
+		const uint32 ifoIndex = rim.findResource("module", Aurora::kFileTypeIFO);
+
+		const Aurora::GFF3File ifo(rim.getResource(ifoIndex), MKTAG('I', 'F', 'O', ' '));
+
+		const Aurora::GFF3List &areas = ifo.getTopLevel().getList("Mod_Area_list");
+		if (areas.empty())
+			return "";
+
+		const uint32 areIndex = rim.findResource((*areas.begin())->getString("Area_Name"), Aurora::kFileTypeARE);
+
+		const Aurora::GFF3File are(rim.getResource(areIndex), MKTAG('A', 'R', 'E', ' '));
+
+		return are.getTopLevel().getString("Name");
+
+	} catch (...) {
+	}
+
+	return "";
+}
+
+void Module::toggleFreeRoamCamera() {
+	_freeCamEnabled = !_freeCamEnabled;
+	if (_freeCamEnabled && ConfigMan.getBool("flycamallrooms"))
+		_area->showAllRooms();
+}
+
+void Module::toggleWalkmesh() {
+	_area->toggleWalkmesh();
+}
+
+void Module::toggleTriggers() {
+	_area->toggleTriggers();
+}
+
+void Module::loadSavedGame(SavedGame *save) {
+	try {
+		usePC(save->getPC());
+		load(save->getModuleName());
+		_pcPositionLoaded = save->isPCLoaded();
+	} catch (...) {
+		Common::exceptionDispatcherWarning();
+	}
+}
+
+void Module::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
+	if (_inDialog)
+		return;
+
+	Common::UString finalName(name);
+
+	if (finalName.empty() && owner) {
+		Creature *creature = ObjectContainer::toCreature(owner);
+		if (creature)
+			finalName = creature->getConversation();
+	}
+
+	if (finalName.empty())
+		return;
+
+	_dialog->startConversation(finalName, owner);
+
+	if (_dialog->isConversationActive()) {
+		stopCameraMovement();
+		stopPCMovement();
+
+		_ingame->hide();
+		_dialog->show();
+		_inDialog = true;
+	}
+}
+
+void Module::playAnimationOnActiveObject(const Common::UString &baseAnim,
+                                         const Common::UString &headAnim) {
+	Object *o = _area->getActiveObject();
+	if (!o)
+		return;
+
+	o->playAnimation(baseAnim, true, -1.0f);
+
+	Creature *creature = ObjectContainer::toCreature(o);
+	if (creature) {
+		if (headAnim.empty())
+			creature->playDefaultHeadAnimation();
+		else
+			creature->playHeadAnimation(headAnim, true, -1.0f, 0.25f);
+	}
+}
+
+void Module::addItemToActiveObject(const Common::UString &item, int count) {
+	Inventory *inv = 0;
+
+	Object *o = _area->getActiveObject();
+	if (!o) {
+		if (_pc)
+			inv = &_pc->getInventory();
+	} else {
+		Placeable *placeable = ObjectContainer::toPlaceable(o);
+		if (placeable && placeable->hasInventory())
+			inv = &placeable->getInventory();
+
+		if (!inv) {
+			Creature *creature = ObjectContainer::toCreature(o);
+			if (creature)
+				inv = &creature->getInventory();
+		}
+	}
+
+	if (!inv)
+		return;
+
+	if (count > 0)
+		inv->addItem(item, count);
+	else if (count < 0)
+		inv->removeItem(item, -count);
+}
+
+KotORBase::Creature *Module::createCreature() const {
+	return new Creature();
+}
+
+KotORBase::Creature *Module::createCreature(const Common::UString &resRef) const {
+	return new Creature(resRef);
+}
+
+KotORBase::Creature *Module::createCreature(const Aurora::GFF3Struct &creature) const {
+	return new Creature(creature);
+}
+
+void Module::stopCameraMovement() {
+	SatelliteCam.clearInput();
+}
+
+void Module::stopPCMovement() {
+	_forwardBtnPressed = false;
+	_backwardsBtnPressed = false;
+	_pc->playDefaultAnimation();
+	_pcRunning = false;
 }
 
 } // End of namespace KotORBase

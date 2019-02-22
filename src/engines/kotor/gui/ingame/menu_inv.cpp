@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace KotOR {
 
-MenuInventory::MenuInventory(Console *console) : GUI(console) {
+MenuInventory::MenuInventory(Console *console) : KotORBase::GUI(console) {
 	load("inventory");
 }
 

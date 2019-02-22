@@ -37,6 +37,13 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/trigger.h \
     src/engines/kotorbase/waypoint.h \
     src/engines/kotorbase/sound.h \
+    src/engines/kotorbase/area.h \
+    src/engines/kotorbase/objectcontainer.h \
+    src/engines/kotorbase/module.h \
+    src/engines/kotorbase/partyconfig.h \
+    src/engines/kotorbase/actionexecutor.h \
+    src/engines/kotorbase/savedgame.h \
+    src/engines/kotorbase/game.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
@@ -53,6 +60,13 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/trigger.cpp \
     src/engines/kotorbase/waypoint.cpp \
     src/engines/kotorbase/sound.cpp \
+    src/engines/kotorbase/area.cpp \
+    src/engines/kotorbase/objectcontainer.cpp \
+    src/engines/kotorbase/module.cpp \
+    src/engines/kotorbase/partyconfig.cpp \
+    src/engines/kotorbase/actionexecutor.cpp \
+    src/engines/kotorbase/savedgame.cpp \
+    src/engines/kotorbase/game.cpp \
     $(EMPTY)
 
 include src/engines/kotorbase/script/rules.mk

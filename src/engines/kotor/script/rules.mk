@@ -22,23 +22,8 @@
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/script/functions.h \
     src/engines/kotor/script/function_tables.h \
-    src/engines/kotor/script/event.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/script/functions.cpp \
-    src/engines/kotor/script/functions_math.cpp \
-    src/engines/kotor/script/functions_string.cpp \
-    src/engines/kotor/script/functions_module.cpp \
-    src/engines/kotor/script/functions_object.cpp \
-    src/engines/kotor/script/functions_situated.cpp \
-    src/engines/kotor/script/functions_action.cpp \
-    src/engines/kotor/script/functions_sound.cpp \
-    src/engines/kotor/script/functions_movie.cpp \
-    src/engines/kotor/script/functions_creatures.cpp \
-    src/engines/kotor/script/functions_global.cpp \
-    src/engines/kotor/script/functions_local.cpp \
-    src/engines/kotor/script/functions_party.cpp \
-    src/engines/kotor/script/functions_events.cpp \
-    src/engines/kotor/script/event.cpp \
     $(EMPTY)

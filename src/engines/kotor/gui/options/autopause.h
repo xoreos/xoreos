@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_AUTOPAUSE_H
 #define ENGINES_KOTOR_GUI_OPTIONS_AUTOPAUSE_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsAutoPauseMenu : public GUI {
+class OptionsAutoPauseMenu : public KotORBase::GUI {
 public:
 	OptionsAutoPauseMenu(::Engines::Console *console = 0);
 	~OptionsAutoPauseMenu();

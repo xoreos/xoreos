@@ -26,14 +26,15 @@
 
 #include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotor2/module.h"
+#include "src/engines/kotorbase/module.h"
+
 #include "src/engines/kotor2/gui/ingame/hud.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-HUD::HUD(Module &UNUSED(module), ::Engines::Console *console) : GUI(console) {
+HUD::HUD(KotORBase::Module &UNUSED(module), ::Engines::Console *console) : GUI(console) {
 	load("mipc28x6_p");
 }
 

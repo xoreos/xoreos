@@ -32,7 +32,7 @@
 
 #include "src/engines/odyssey/widget.h"
 
-#include "src/engines/kotor2/module.h"
+#include "src/engines/kotorbase/module.h"
 
 #include "src/engines/kotor2/gui/main/main.h"
 #include "src/engines/kotor2/gui/chargen/classselection.h"
@@ -41,7 +41,10 @@ namespace Engines {
 
 namespace KotOR2 {
 
-MainMenu::MainMenu(Module &module, ::Engines::Console *console) : GUI(console), _module(&module) {
+MainMenu::MainMenu(KotORBase::Module &module, ::Engines::Console *console) :
+		GUI(console),
+		_module(&module) {
+
 	load("mainmenu8x6_p");
 
 	startMainMusic();
@@ -51,7 +54,7 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::initWidget(Widget &widget) {
-	Engines::KotOR2::GUI::initWidget(widget);
+	GUI::initWidget(widget);
 
 	// ...BioWare...
 	if (widget.getTag() == "LBL_GAMELOGO") {

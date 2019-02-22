@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_CHARGEN_QUICKCHAR_H
 #define ENGINES_KOTOR_GUI_CHARGEN_QUICKCHAR_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
 
@@ -33,15 +33,15 @@ namespace Engines {
 
 namespace KotOR {
 
-class QuickCharPanel : public GUI {
+class QuickCharPanel : public KotORBase::GUI {
 public:
 	QuickCharPanel(CharacterGenerationMenu *charGenMenu, Console *console = 0);
 
 private:
+	CharacterGenerationMenu *_charGen;
+
 	void callbackActive(Widget &widget);
 	void updateButtons();
-
-	CharacterGenerationMenu *_charGen;
 };
 
 } // End of namespace KotOR

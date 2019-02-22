@@ -37,7 +37,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Situated : public Object {
 public:
@@ -130,7 +130,7 @@ private:
 	void loadSounds();
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

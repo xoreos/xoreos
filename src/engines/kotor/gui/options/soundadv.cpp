@@ -37,10 +37,10 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(::Engines::Console *console) : GUI(console) {
+OptionsSoundAdvancedMenu::OptionsSoundAdvancedMenu(::Engines::Console *console) : KotORBase::GUI(console) {
 	load("optsoundadv");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	// Hardcoded, the gui file returns incorrect values
 	getButton("BTN_EAXLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);

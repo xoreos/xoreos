@@ -31,7 +31,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class SoundObject : public Object {
 public:
@@ -54,7 +54,7 @@ private:
 	Sound::ChannelHandle _sound;
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

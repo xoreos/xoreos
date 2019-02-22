@@ -30,10 +30,10 @@ namespace Engines {
 
 namespace KotOR {
 
-MoviesMenu::MoviesMenu(::Engines::Console *console) : GUI(console) {
+MoviesMenu::MoviesMenu(::Engines::Console *console) : KotORBase::GUI(console) {
 	load("titlemovie");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 }
 
 MoviesMenu::~MoviesMenu() {

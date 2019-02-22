@@ -34,19 +34,20 @@
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/widget.h"
-
-#include "src/engines/kotor/module.h"
-#include "src/engines/kotor/version.h"
-
-#include "src/engines/kotor/gui/guibackground.h"
-#include "src/engines/kotor/gui/saveload.h"
-
-#include "src/engines/kotor/gui/loadscreen/loadscreen.h"
-
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/odyssey/button.h"
 #include "src/engines/odyssey/listbox.h"
+
+#include "src/engines/kotorbase/module.h"
+
+#include "src/engines/kotorbase/gui/guibackground.h"
+
+#include "src/engines/kotor/version.h"
+
+#include "src/engines/kotor/gui/saveload.h"
+
+#include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
 #include "src/engines/kotor/gui/main/main.h"
 #include "src/engines/kotor/gui/main/movies.h"
@@ -58,8 +59,10 @@ namespace Engines {
 
 namespace KotOR {
 
-MainMenu::MainMenu(const Version &gameVersion, Module &module, ::Engines::Console *console) : GUI(console),
-	_module(&module), _gameVersion(&gameVersion) {
+MainMenu::MainMenu(const Version &gameVersion, KotORBase::Module &module, ::Engines::Console *console) :
+		KotORBase::GUI(console),
+		_module(&module),
+		_gameVersion(&gameVersion) {
 
 	_module->loadTexturePack();
 
@@ -67,7 +70,7 @@ MainMenu::MainMenu(const Version &gameVersion, Module &module, ::Engines::Consol
 
 	getListBox("LB_MODULES")->setInvisible(true);
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	startMainMusic();
 

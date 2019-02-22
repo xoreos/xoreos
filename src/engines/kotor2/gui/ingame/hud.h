@@ -33,7 +33,7 @@ namespace KotOR2 {
 
 class HUD : public GUI {
 public:
-	HUD(Module &module, ::Engines::Console *console = 0);
+	HUD(KotORBase::Module &module, ::Engines::Console *console = 0);
 
 protected:
 	void initWidget(Widget &widget);

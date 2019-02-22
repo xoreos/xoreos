@@ -29,8 +29,6 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/modelloader.h \
     src/engines/kotor2/game.h \
     src/engines/kotor2/creature.h \
-    src/engines/kotor2/area.h \
-    src/engines/kotor2/objectcontainer.h \
     src/engines/kotor2/module.h \
     $(EMPTY)
 
@@ -41,8 +39,6 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/modelloader.cpp \
     src/engines/kotor2/game.cpp \
     src/engines/kotor2/creature.cpp \
-    src/engines/kotor2/area.cpp \
-    src/engines/kotor2/objectcontainer.cpp \
     src/engines/kotor2/module.cpp \
     $(EMPTY)
 

@@ -40,14 +40,13 @@
 #include "src/engines/aurora/util.h"
 
 #include "src/engines/kotorbase/door.h"
-
-#include "src/engines/kotor/module.h"
+#include "src/engines/kotorbase/module.h"
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
-Door::Door(KotORBase::Module &module, const Aurora::GFF3Struct &door) :
+Door::Door(Module &module, const Aurora::GFF3Struct &door) :
 		Situated(kObjectTypeDoor),
 		_module(&module),
 		_genericType(Aurora::kFieldIDInvalid),
@@ -208,6 +207,6 @@ bool Door::close(Object *closer) {
 	return true;
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

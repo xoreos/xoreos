@@ -36,10 +36,10 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : GUI(console) {
+OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : KotORBase::GUI(console) {
 	load("optgraphics");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	_advanced.reset(new OptionsGraphicsAdvancedMenu(_console));
 	_resolution.reset(new OptionsResolutionMenu(_console));

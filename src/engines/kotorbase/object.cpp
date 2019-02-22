@@ -36,7 +36,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Object::Object(ObjectType type) :
 		_type(type),
@@ -208,6 +208,6 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 void Object::playAnimation(const Common::UString &UNUSED(anim), bool UNUSED(restart), float UNUSED(length), float UNUSED(speed)) {
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
