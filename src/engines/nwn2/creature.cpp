@@ -281,6 +281,18 @@ bool Creature::getIsCreatureDisarmable() const {
 	return _isDisarmable;
 }
 
+void Creature::setImmortal(bool immortal) {
+	_isImmortal = immortal;
+}
+
+void Creature::setPlotFlag(bool plotFlag) {
+	_isPlot = plotFlag;
+}
+
+void Creature::setLootable(bool lootable) {
+	_isLootable = lootable;
+}
+
 /**
  * Perform a skill check against the DC.
  *

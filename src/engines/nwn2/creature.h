@@ -135,6 +135,10 @@ public:
 	bool getLootable() const;
 	bool getIsCreatureDisarmable() const;
 
+	void setImmortal(bool immortal);
+	void setPlotFlag(bool plotFlag);
+	void setLootable(bool lootable);
+
 	// Reputation
 
 	uint8 getReputation(Object *source) const;
