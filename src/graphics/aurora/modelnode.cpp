@@ -725,9 +725,9 @@ void ModelNode::calcRenderTransform(const glm::mat4 &parentTransform) {
 		                               Common::deg2rad(_orientation[3]),
 		                               glm::vec3(_orientation[0], _orientation[1], _orientation[2]));
 	}
-	_renderTransform = glm::rotate(_renderTransform, _rotation[0], glm::vec3(1.0f, 0.0f, 0.0f));
-	_renderTransform = glm::rotate(_renderTransform, _rotation[1], glm::vec3(0.0f, 1.0f, 0.0f));
-	_renderTransform = glm::rotate(_renderTransform, _rotation[2], glm::vec3(0.0f, 0.0f, 1.0f));
+	_renderTransform = glm::rotate(_renderTransform, Common::deg2rad(_rotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+	_renderTransform = glm::rotate(_renderTransform, Common::deg2rad(_rotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+	_renderTransform = glm::rotate(_renderTransform, Common::deg2rad(_rotation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
 	_renderTransform = glm::scale(_renderTransform, glm::vec3(_scale[0], _scale[1], _scale[2]));
 }
 
