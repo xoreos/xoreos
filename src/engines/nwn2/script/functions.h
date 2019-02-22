@@ -276,6 +276,14 @@ private:
 	void getXP(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsDead(Aurora::NWScript::FunctionContext &ctx);
+	void getImmortal(Aurora::NWScript::FunctionContext &ctx);
+	void getPlotFlag(Aurora::NWScript::FunctionContext &ctx);
+	void getLootable(Aurora::NWScript::FunctionContext &ctx);
+	void getIsCreatureDisarmable(Aurora::NWScript::FunctionContext &ctx);
+
+	void setImmortal(Aurora::NWScript::FunctionContext &ctx);
+	void setPlotFlag(Aurora::NWScript::FunctionContext &ctx);
+	void setLootable(Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 	void getIsDM(Aurora::NWScript::FunctionContext &ctx);

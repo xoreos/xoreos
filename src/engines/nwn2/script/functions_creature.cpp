@@ -101,7 +101,49 @@ void Functions::getXP(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getIsDead(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 
-	ctx.getReturn() = creature ? (creature->getCurrentHP() <= 0) : false;
+	ctx.getReturn() = creature && creature->getIsDead();
+}
+
+void Functions::getImmortal(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature && creature->getImmortal();
+}
+
+void Functions::setImmortal(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	if (creature)
+		creature->setImmortal(ctx.getParams()[1].getInt() != 0);
+}
+
+void Functions::getPlotFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature && creature->getPlotFlag();
+}
+
+void Functions::setPlotFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	if (creature)
+		creature->setPlotFlag(ctx.getParams()[1].getInt() != 0);
+}
+
+void Functions::getLootable(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature && creature->getLootable();
+}
+
+void Functions::setLootable(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	if (creature)
+		creature->setLootable(ctx.getParams()[1].getInt() != 0);
+}
+
+void Functions::getIsCreatureDisarmable(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+
+	ctx.getReturn() = creature && creature->getIsCreatureDisarmable();
 }
 
 void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
