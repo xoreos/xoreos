@@ -27,7 +27,7 @@
 
 #include "src/common/scopedptr.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
@@ -40,10 +40,11 @@ enum {
 	kOptionsItemExitGame = 3
 };
 
-class MenuOptions : public GUI {
+class MenuOptions : public KotORBase::GUI {
 public:
 	MenuOptions(::Engines::Console *console = 0);
 	uint8 pollSelectedItem();
+
 protected:
 	uint8 _selectedItem;
 

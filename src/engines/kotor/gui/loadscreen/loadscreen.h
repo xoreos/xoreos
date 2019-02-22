@@ -25,28 +25,15 @@
 #ifndef ENGINES_KOTOR_GUI_LOADSCREEN_LOADSCREEN_H
 #define ENGINES_KOTOR_GUI_LOADSCREEN_LOADSCREEN_H
 
-#include <boost/function.hpp>
-
-#include "src/common/thread.h"
-
-#include "src/engines/kotor/module.h"
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/loadscreen.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-typedef boost::function<void(unsigned int)> LoadingProgressFunc;
-
-class LoadScreen : public GUI {
+class LoadScreen : public KotORBase::LoadScreen {
 public:
 	LoadScreen(const Common::UString &loadScreenName, Console *console = 0);
-
-	void setLoadingProgress(unsigned int progress);
-	LoadingProgressFunc getLoadingProgressFunc();
-
-private:
-	Odyssey::WidgetProgressbar *_progressBar;
 };
 
 } // End of namespace KotOR

@@ -33,7 +33,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Situated;
 
@@ -64,7 +64,7 @@ private:
 	std::vector<uint32> _faces;
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

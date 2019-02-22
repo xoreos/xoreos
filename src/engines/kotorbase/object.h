@@ -37,7 +37,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Room;
 
@@ -169,7 +169,7 @@ protected:
 	Sound::ChannelHandle _sound; ///< The currently playing object sound.
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

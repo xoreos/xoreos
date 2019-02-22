@@ -21,8 +21,25 @@
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/script/container.h \
+    src/engines/kotorbase/script/event.h \
+    src/engines/kotorbase/script/functions.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/script/container.cpp \
+    src/engines/kotorbase/script/event.cpp \
+    src/engines/kotorbase/script/functions.cpp \
+    src/engines/kotorbase/script/functions_action.cpp \
+    src/engines/kotorbase/script/functions_creatures.cpp \
+    src/engines/kotorbase/script/functions_events.cpp \
+    src/engines/kotorbase/script/functions_global.cpp \
+    src/engines/kotorbase/script/functions_local.cpp \
+    src/engines/kotorbase/script/functions_math.cpp \
+    src/engines/kotorbase/script/functions_module.cpp \
+    src/engines/kotorbase/script/functions_movie.cpp \
+    src/engines/kotorbase/script/functions_object.cpp \
+    src/engines/kotorbase/script/functions_party.cpp \
+    src/engines/kotorbase/script/functions_situated.cpp \
+    src/engines/kotorbase/script/functions_sound.cpp \
+    src/engines/kotorbase/script/functions_string.cpp \
     $(EMPTY)

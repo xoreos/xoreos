@@ -35,7 +35,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleSoldier() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
@@ -252,6 +252,6 @@ CharacterGenerationInfo::CharacterGenerationInfo() : _head(0) {
 
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

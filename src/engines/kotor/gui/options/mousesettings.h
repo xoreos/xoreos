@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_MOUSESETTINGS_H
 #define ENGINES_KOTOR_GUI_OPTIONS_MOUSESETTINGS_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsMouseSettingsMenu : public GUI {
+class OptionsMouseSettingsMenu : public KotORBase::GUI {
 public:
 	OptionsMouseSettingsMenu(::Engines::Console *console = 0);
 	~OptionsMouseSettingsMenu();

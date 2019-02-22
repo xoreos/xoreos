@@ -28,7 +28,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 DoorWalkmesh::DoorWalkmesh(Door *door) :
 		ObjectWalkmesh(door, Aurora::kFileTypeDWK),
@@ -63,6 +63,6 @@ const std::vector<uint32> &DoorWalkmesh::getFaces() const {
 	return ObjectWalkmesh::getFaces();
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

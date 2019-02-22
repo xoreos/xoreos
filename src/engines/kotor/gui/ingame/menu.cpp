@@ -32,10 +32,14 @@ namespace Engines {
 
 namespace KotOR {
 
-Menu::Menu(Module &module, Console *console) : GUI(console), _module(module), _currentMenu(0) {
+Menu::Menu(KotORBase::Module &module, Console *console) :
+		KotORBase::GUI(console),
+		_module(module),
+		_currentMenu(0) {
+
 	load("top");
 
-	addBackground(kBackgroundTypeMenu, true);
+	addBackground(KotORBase::kBackgroundTypeMenu, true);
 
 	static const char * const kButtonTags[kMenuTypeMAX] = {
 		"BTN_EQU" , "BTN_INV" , "BTN_CHAR", "BTN_ABI" , "BTN_MSG" , "BTN_JOU" , "BTN_MAP" , "BTN_OPT"

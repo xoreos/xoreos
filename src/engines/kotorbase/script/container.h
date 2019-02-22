@@ -42,7 +42,7 @@ namespace Aurora {
 }
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class ScriptContainer {
 public:
@@ -73,7 +73,7 @@ private:
 	Common::UString _scripts[kScriptMAX];
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

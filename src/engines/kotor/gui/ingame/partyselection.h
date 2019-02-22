@@ -25,33 +25,15 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_PARTYSELECTION_H
 #define ENGINES_KOTOR_GUI_INGAME_PARTYSELECTION_H
 
-#include "src/engines/kotor/partyconfig.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/partyselection.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class PartySelectionGUI : public GUI {
+class PartySelectionGUI : public KotORBase::PartySelectionGUI {
 public:
-	PartySelectionGUI(bool k2 = false);
-
-	void loadConfiguration(const PartyConfiguration &config);
-
-protected:
-	void callbackActive(Widget &widget);
-
-private:
-	bool _kotor2;
-	PartyConfiguration _config;
-	int _numSelectedSlots;
-	int _activeSlot;
-
-	const Common::UString getPortrait(const Common::UString &templ);
-	void setSlotTexture(int index, const Common::UString &portrait);
-	void toggleSlot(int index, bool enabled);
-	void onSelectionChanged();
+	PartySelectionGUI();
 };
 
 } // End of namespace KotOR

@@ -30,8 +30,11 @@ namespace Engines {
 
 namespace KotOR {
 
-CharacterGenerationBaseMenu::CharacterGenerationBaseMenu(CharacterGenerationInfo &info,
-		Engines::Console *console) : GUI(console), _info(info), _accepted(false) {
+CharacterGenerationBaseMenu::CharacterGenerationBaseMenu(KotORBase::CharacterGenerationInfo &info,
+                                                         Engines::Console *console) :
+		KotORBase::GUI(console),
+		_info(info),
+		_accepted(false) {
 
 }
 

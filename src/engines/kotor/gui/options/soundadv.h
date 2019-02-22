@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_SOUNDADV_H
 #define ENGINES_KOTOR_GUI_OPTIONS_SOUNDADV_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsSoundAdvancedMenu : public GUI {
+class OptionsSoundAdvancedMenu : public KotORBase::GUI {
 public:
 	OptionsSoundAdvancedMenu(::Engines::Console *console = 0);
 	~OptionsSoundAdvancedMenu();

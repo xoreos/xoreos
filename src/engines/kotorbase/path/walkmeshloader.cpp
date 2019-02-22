@@ -32,7 +32,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 WalkmeshLoader::WalkmeshLoader() : _node(0), _pathfinding(0) {
 }
@@ -246,6 +246,6 @@ Common::AABBNode *WalkmeshLoader::getAABB(Common::SeekableReadStream &stream,
 	return aabb;
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

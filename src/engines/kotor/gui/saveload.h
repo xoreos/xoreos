@@ -31,9 +31,9 @@
 
 #include "src/engines/aurora/console.h"
 
-#include "src/engines/kotor/module.h"
+#include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
@@ -48,14 +48,14 @@ enum {
 	kSaveLoadMenuTypeLoad = 1
 };
 
-class SaveLoadMenu : public GUI {
+class SaveLoadMenu : public KotORBase::GUI {
 public:
-	SaveLoadMenu(Module &module,
+	SaveLoadMenu(KotORBase::Module &module,
 	             ::Engines::Console *console,
 	             uint8 type = kSaveLoadMenuTypeLoad,
 	             bool frontBackground = false);
 private:
-	Module *_module;
+	KotORBase::Module *_module;
 	uint8 _type;
 	std::vector<Common::UString> _saveDirs;
 

@@ -32,7 +32,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Room {
 public:
@@ -52,7 +52,7 @@ private:
 	void load(const Common::UString &resRef, float x, float y, float z);
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

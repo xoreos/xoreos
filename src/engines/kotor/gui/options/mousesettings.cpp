@@ -34,10 +34,10 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsMouseSettingsMenu::OptionsMouseSettingsMenu(::Engines::Console *console) : GUI(console) {
+OptionsMouseSettingsMenu::OptionsMouseSettingsMenu(::Engines::Console *console) : KotORBase::GUI(console) {
 	load("optmouse");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	getCheckBox("CB_REVBUTTONS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);
 

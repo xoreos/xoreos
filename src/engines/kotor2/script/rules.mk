@@ -26,13 +26,4 @@ src_engines_kotor2_libkotor2_la_SOURCES += \
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/script/functions.cpp \
-    src/engines/kotor2/script/functions_math.cpp \
-    src/engines/kotor2/script/functions_string.cpp \
-    src/engines/kotor2/script/functions_module.cpp \
-    src/engines/kotor2/script/functions_object.cpp \
-    src/engines/kotor2/script/functions_situated.cpp \
-    src/engines/kotor2/script/functions_action.cpp \
-    src/engines/kotor2/script/functions_sound.cpp \
-    src/engines/kotor2/script/functions_movie.cpp \
-    src/engines/kotor2/script/functions_local.cpp \
     $(EMPTY)

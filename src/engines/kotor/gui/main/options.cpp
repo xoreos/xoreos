@@ -42,10 +42,10 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsMenu::OptionsMenu(const Version &gameVersion, ::Engines::Console *console) : GUI(console) {
+OptionsMenu::OptionsMenu(const Version &gameVersion, ::Engines::Console *console) : KotORBase::GUI(console) {
 	load("optionsmain");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	_gameplay.reset(new OptionsGameplayMenu(_console));
 	_feedback.reset(new OptionsFeedbackMenu(_console));

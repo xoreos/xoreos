@@ -23,8 +23,6 @@
  *  Republic II: The Sith Lords.
  */
 
-#include "src/aurora/dlgfile.cpp"
-
 #include "src/common/maths.h"
 
 #include "src/sound/sound.h"
@@ -32,9 +30,8 @@
 #include "src/engines/aurora/satellitecamera.h"
 
 #include "src/engines/kotorbase/creature.h"
-
-#include "src/engines/kotor2/module.h"
-#include "src/engines/kotor2/area.h"
+#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/area.h"
 
 #include "src/engines/kotor2/gui/dialog.h"
 
@@ -42,17 +39,17 @@ namespace Engines {
 
 namespace KotOR2 {
 
-DialogGUI::DialogGUI(KotOR2::Module &module)
-		: KotOR::DialogGUIBase(true),
-		  _module(module) {
+DialogGUI::DialogGUI(KotORBase::Module &module) :
+		KotORBase::DialogGUI(true),
+		_module(module) {
 }
 
 void DialogGUI::makeLookAtPC(const Common::UString &tag) {
-	KotOR::Creature *pc = _module.getPC();
+	KotORBase::Creature *pc = _module.getPC();
 	if (!pc)
 		return;
 
-	KotOR::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	KotORBase::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
 	if (!o)
 		return;
 
@@ -65,11 +62,11 @@ void DialogGUI::makeLookAtPC(const Common::UString &tag) {
 }
 
 void DialogGUI::playDefaultAnimations(const Common::UString &tag) {
-	KotOR::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	KotORBase::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
 	if (!o)
 		return;
 
-	KotOR::Creature *creature = ObjectContainer::toCreature(o);
+	KotORBase::Creature *creature = KotORBase::ObjectContainer::toCreature(o);
 	if (!creature)
 		return;
 
@@ -78,11 +75,11 @@ void DialogGUI::playDefaultAnimations(const Common::UString &tag) {
 }
 
 void DialogGUI::playTalkAnimations(const Common::UString &tag) {
-	KotOR::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	KotORBase::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
 	if (!o)
 		return;
 
-	KotOR::Creature *creature = ObjectContainer::toCreature(o);
+	KotORBase::Creature *creature = KotORBase::ObjectContainer::toCreature(o);
 	if (!creature)
 		return;
 

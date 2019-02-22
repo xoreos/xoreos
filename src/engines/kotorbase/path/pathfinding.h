@@ -35,7 +35,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class WalkmeshLoader;
 class Room;
@@ -59,7 +59,7 @@ private:
 	std::vector<Room *> _rooms;
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

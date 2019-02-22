@@ -31,7 +31,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Trigger : public ::Engines::Trigger, public Object {
 public:
@@ -50,7 +50,7 @@ protected:
 	void loadBlueprint(const Aurora::GFF3Struct &gff);
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

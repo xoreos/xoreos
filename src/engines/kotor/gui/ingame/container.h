@@ -28,19 +28,18 @@
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotorbase/inventory.h"
+#include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotor/module.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class ContainerMenu : public GUI {
+class ContainerMenu : public KotORBase::GUI {
 public:
 	ContainerMenu(Engines::Console *console = 0);
-	void fillFromInventory(const Inventory &inv);
+	void fillFromInventory(const KotORBase::Inventory &inv);
 
 protected:
 	void callbackActive(Widget &widget);

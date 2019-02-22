@@ -32,7 +32,8 @@ namespace Engines {
 namespace KotOR {
 
 QuickOrCustomPanel::QuickOrCustomPanel(CharacterGenerationMenu *charGenMenu, Console *console) :
-		GUI(console), _charGenMenu(charGenMenu) {
+		KotORBase::GUI(console),
+		_charGenMenu(charGenMenu) {
 
 	load("qorcpnl");
 

@@ -27,13 +27,13 @@
 
 #include "src/graphics/windowman.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsResolutionMenu : public GUI {
+class OptionsResolutionMenu : public KotORBase::GUI {
 public:
 	OptionsResolutionMenu(::Engines::Console *console = 0);
 

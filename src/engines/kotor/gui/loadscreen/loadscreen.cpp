@@ -37,8 +37,9 @@ namespace Engines {
 
 namespace KotOR {
 
-LoadScreen::LoadScreen(const Common::UString &loadScreenName, Console *console)
-		: GUI(console) {
+LoadScreen::LoadScreen(const Common::UString &loadScreenName, Console *console) :
+		KotORBase::LoadScreen(loadScreenName, console) {
+
 	load("loadscreen");
 
 	getPanel("TGuiPanel")->setFill("load_" + loadScreenName);
@@ -46,18 +47,10 @@ LoadScreen::LoadScreen(const Common::UString &loadScreenName, Console *console)
 	// TODO: Add loading hints according to loadscreenhints.2da
 	getLabel("LBL_HINT")->setText("");
 
-	addBackground(kBackgroundTypeLoad);
+	addBackground(KotORBase::kBackgroundTypeLoad);
 
 	_progressBar = getProgressbar("PB_PROGRESS");
 	_progressBar->setCurrentValue(0);
-}
-
-void LoadScreen::setLoadingProgress(unsigned int progress) {
-	_progressBar->setCurrentValue(progress);
-}
-
-LoadingProgressFunc LoadScreen::getLoadingProgressFunc() {
-	return boost::bind(&LoadScreen::setLoadingProgress, this, _1);
 }
 
 } // End of namespace KotOR

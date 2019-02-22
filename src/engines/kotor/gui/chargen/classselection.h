@@ -32,33 +32,22 @@
 #include "src/engines/odyssey/button.h"
 #include "src/engines/odyssey/label.h"
 
+#include "src/engines/kotorbase/module.h"
+
 #include "src/engines/kotorbase/gui/chargeninfo.h"
-
-#include "src/engines/kotor/module.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class ClassSelectionMenu : public GUI {
+class ClassSelectionMenu : public KotORBase::GUI {
 public:
-	ClassSelectionMenu(Module *module, ::Engines::Console *console = 0);
+	ClassSelectionMenu(KotORBase::Module *module, ::Engines::Console *console = 0);
 	virtual ~ClassSelectionMenu();
 
 private:
-	void createCharacterGeneration(CharacterGenerationInfo*);
-
-	void callbackRun();
-	void callbackActive(Widget &widget);
-	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
-
-	void setupClassSubScene(const Common::UString &widgetName,
-			Graphics::Aurora::SubSceneQuad &subScene, Graphics::Aurora::Model *model,
-			glm::mat4 &projection, glm::mat4 &transformation);
-
-	Common::ScopedPtr<GUI> _charGen;
+	Common::ScopedPtr<KotORBase::GUI> _charGen;
 
 	Graphics::Aurora::SubSceneQuad _maleSoldierSubScene;
 	Graphics::Aurora::SubSceneQuad _maleScoutSubScene;
@@ -79,7 +68,7 @@ private:
 
 	Odyssey::WidgetButton *_hoveredButton;
 
-	Module *_module;
+	KotORBase::Module *_module;
 
 	Common::UString _soldierDesc;
 	Common::UString _scoundrelDesc;
@@ -92,12 +81,24 @@ private:
 	Common::UString _scoutMaleTitle;
 	Common::UString _scoutFemaleTitle;
 
-	CharacterGenerationInfo *_maleSoldier;
-	CharacterGenerationInfo *_maleScout;
-	CharacterGenerationInfo *_maleScoundrel;
-	CharacterGenerationInfo *_femaleSoldier;
-	CharacterGenerationInfo *_femaleScout;
-	CharacterGenerationInfo *_femaleScoundrel;
+	KotORBase::CharacterGenerationInfo *_maleSoldier;
+	KotORBase::CharacterGenerationInfo *_maleScout;
+	KotORBase::CharacterGenerationInfo *_maleScoundrel;
+	KotORBase::CharacterGenerationInfo *_femaleSoldier;
+	KotORBase::CharacterGenerationInfo *_femaleScout;
+	KotORBase::CharacterGenerationInfo *_femaleScoundrel;
+
+	void createCharacterGeneration(KotORBase::CharacterGenerationInfo*);
+
+	void callbackRun();
+	void callbackActive(Widget &widget);
+	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
+
+	void setupClassSubScene(const Common::UString &widgetName,
+	                        Graphics::Aurora::SubSceneQuad &subScene,
+	                        Graphics::Aurora::Model *model,
+	                        glm::mat4 &projection,
+	                        glm::mat4 &transformation);
 };
 
 } // End of namespace KotOR

@@ -36,12 +36,13 @@
 
 #include "src/engines/aurora/util.h"
 
+#include "src/engines/kotorbase/area.h"
+
 #include "src/engines/kotor2/game.h"
 #include "src/engines/kotor2/kotor2.h"
 #include "src/engines/kotor2/console.h"
-#include "src/engines/kotor2/module.h"
-#include "src/engines/kotor2/area.h"
 #include "src/engines/kotor2/creature.h"
+#include "src/engines/kotor2/module.h"
 
 #include "src/engines/kotor2/gui/main/main.h"
 
@@ -58,12 +59,6 @@ Game::Game(KotOR2Engine &engine, ::Engines::Console &console, Aurora::Platform p
 }
 
 Game::~Game() {
-}
-
-Module &Game::getModule() {
-	assert(_module);
-
-	return *_module;
 }
 
 void Game::run() {
@@ -116,7 +111,7 @@ void Game::stopMenuMusic() {
 
 void Game::playMusic(const Common::UString &music) {
 	if (_module && _module->isRunning()) {
-		Area *area = _module->getCurrentArea();
+		KotORBase::Area *area = _module->getCurrentArea();
 		if (area)
 			area->playAmbientMusic(music);
 
@@ -130,7 +125,7 @@ void Game::stopMusic() {
 	stopMenuMusic();
 
 	if (_module && _module->isRunning()) {
-		Area *area = _module->getCurrentArea();
+		KotORBase::Area *area = _module->getCurrentArea();
 		if (area)
 			area->stopAmbientMusic();
 	}

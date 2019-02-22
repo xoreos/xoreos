@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace KotOR {
 
-MenuMessages::MenuMessages(Console *console) : GUI(console) {
+MenuMessages::MenuMessages(Console *console) : KotORBase::GUI(console) {
 	load("messages");
 }
 

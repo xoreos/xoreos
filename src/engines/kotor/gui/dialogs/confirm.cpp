@@ -31,7 +31,10 @@ namespace Engines {
 
 namespace KotOR {
 
-ConfirmDialog::ConfirmDialog(Console *console) : GUI(console), _accepted(false) {
+ConfirmDialog::ConfirmDialog(Console *console) :
+		KotORBase::GUI(console),
+		_accepted(false) {
+
 	load("confirm");
 
 	Odyssey::WidgetPanel *guiPanel = getPanel("TGuiPanel");

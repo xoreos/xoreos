@@ -29,7 +29,7 @@
 
 #include "src/graphics/aurora/highlightable.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor/gui/options/gameplay.h"
 
@@ -39,7 +39,7 @@ namespace KotOR {
 
 class Version;
 
-class OptionsMenu : public GUI {
+class OptionsMenu : public KotORBase::GUI {
 public:
 	OptionsMenu(const Version &gameVersion, ::Engines::Console *console = 0);
 	~OptionsMenu();
@@ -48,11 +48,11 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	Common::ScopedPtr<GUI> _gameplay;
-	Common::ScopedPtr<GUI> _feedback;
-	Common::ScopedPtr<GUI> _autopause;
-	Common::ScopedPtr<GUI> _graphics;
-	Common::ScopedPtr<GUI> _sound;
+	Common::ScopedPtr<KotORBase::GUI> _gameplay;
+	Common::ScopedPtr<KotORBase::GUI> _feedback;
+	Common::ScopedPtr<KotORBase::GUI> _autopause;
+	Common::ScopedPtr<KotORBase::GUI> _graphics;
+	Common::ScopedPtr<KotORBase::GUI> _sound;
 };
 
 } // End of namespace KotOR

@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace KotOR {
 
-IngameGUI::IngameGUI(Module &module, Console *console) {
+IngameGUI::IngameGUI(KotORBase::Module &module, Console *console) {
 	_hud.reset(new HUD(module, console));
 	_selectionCircle.reset(new SelectionCircle());
 
@@ -72,30 +72,30 @@ void IngameGUI::setReturnEnabled(bool enabled) {
 	_hud->setReturnEnabled(enabled);
 }
 
-void IngameGUI::showContainer(Inventory &inv) {
+void IngameGUI::showContainer(KotORBase::Inventory &inv) {
 	_hud->showContainer(inv);
 }
 
-void IngameGUI::setPartyLeader(Creature *creature) {
+void IngameGUI::setPartyLeader(KotORBase::Creature *creature) {
 	_hud->setPartyLeader(creature);
 }
 
-void IngameGUI::setPartyMember1(Creature *creature) {
+void IngameGUI::setPartyMember1(KotORBase::Creature *creature) {
 	_hud->setPartyMember1(creature);
 }
 
-void IngameGUI::setPartyMember2(Creature *creature) {
+void IngameGUI::setPartyMember2(KotORBase::Creature *creature) {
 	_hud->setPartyMember2(creature);
 }
 
-void IngameGUI::showSelection(Object *object) {
+void IngameGUI::showSelection(KotORBase::Object *object) {
 	if (!object)
 		return;
 
 	if (object == _selected)
 		return;
 
-	Situated *situated = ObjectContainer::toSituated(object);
+	KotORBase::Situated *situated = KotORBase::ObjectContainer::toSituated(object);
 	if (!situated) // TODO: Creature selection
 		return;
 
@@ -125,7 +125,7 @@ void IngameGUI::updateSelection() {
 	if (!_selected)
 		return;
 
-	Situated *situated = ObjectContainer::toSituated(_selected);
+	KotORBase::Situated *situated = KotORBase::ObjectContainer::toSituated(_selected);
 	if (!situated) // TODO: Creature selection
 		return;
 

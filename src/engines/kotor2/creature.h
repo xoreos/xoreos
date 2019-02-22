@@ -31,20 +31,27 @@ namespace Engines {
 
 namespace KotOR2 {
 
-class Creature : public KotOR::Creature {
+class Creature : public KotORBase::Creature {
 public:
+	/** Create a dummy creature instance. Not playable as it is.*/
+	Creature();
+	/** Load from a creature instance. */
+	Creature(const Aurora::GFF3Struct &creature);
+	/** Load from a creature template. */
+	Creature(const Common::UString &resRef);
+
 	/** Generate a string for the body mesh. */
-	static Common::UString getBodyMeshString(KotOR::Gender gender, KotOR::Class charClass, char state = 'b');
+	static Common::UString getBodyMeshString(KotORBase::Gender gender, KotORBase::Class charClass, char state = 'b');
 	/** Generate a string for the body texture. */
-	static Common::UString getBodyTextureString(KotOR::Gender gender, KotOR::Skin skin, KotOR::Class charClass, char state = 'b');
+	static Common::UString getBodyTextureString(KotORBase::Gender gender, KotORBase::Skin skin, KotORBase::Class charClass, char state = 'b');
 	/** Generate a string for the head mesh. */
-	static Common::UString getHeadMeshString(KotOR::Gender gender, KotOR::Skin skin, uint32 faceId);
+	static Common::UString getHeadMeshString(KotORBase::Gender gender, KotORBase::Skin skin, uint32 faceId);
 
 protected:
 	void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation);
 
 private:
-	static uint32 transformFaceId(KotOR::Gender gender, KotOR::Skin skin, uint32 faceId);
+	static uint32 transformFaceId(KotORBase::Gender gender, KotORBase::Skin skin, uint32 faceId);
 };
 
 } // End of namespace KotOR2

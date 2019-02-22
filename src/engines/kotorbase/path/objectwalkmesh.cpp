@@ -36,7 +36,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 ObjectWalkmesh::ObjectWalkmesh(Situated *situated, Aurora::FileType fileType) :
 		_fileType(fileType){
@@ -115,6 +115,6 @@ void ObjectWalkmesh::computeMinMax() {
 	}
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

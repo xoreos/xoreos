@@ -27,7 +27,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 /** Object type, matches the bitfield in nwscript.nss */
 enum ObjectType {
@@ -238,7 +238,7 @@ enum ActionType {
 	kActionInvalid       = 65535
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

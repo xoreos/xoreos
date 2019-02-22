@@ -22,9 +22,21 @@
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/gui/inventoryitem.h \
     src/engines/kotorbase/gui/chargeninfo.h \
+    src/engines/kotorbase/gui/ingame.h \
+    src/engines/kotorbase/gui/dialog.h \
+    src/engines/kotorbase/gui/partyselection.h \
+    src/engines/kotorbase/gui/gui.h \
+    src/engines/kotorbase/gui/guibackground.h \
+    src/engines/kotorbase/gui/loadscreen.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/gui/inventoryitem.cpp \
     src/engines/kotorbase/gui/chargeninfo.cpp \
+    src/engines/kotorbase/gui/ingame.cpp \
+    src/engines/kotorbase/gui/dialog.cpp \
+    src/engines/kotorbase/gui/partyselection.cpp \
+    src/engines/kotorbase/gui/gui.cpp \
+    src/engines/kotorbase/gui/guibackground.cpp \
+    src/engines/kotorbase/gui/loadscreen.cpp \
     $(EMPTY)

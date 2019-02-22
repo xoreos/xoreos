@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_MENU_EQU_H
 #define ENGINES_KOTOR_GUI_INGAME_MENU_EQU_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
@@ -34,15 +34,17 @@ namespace Odyssey {
 	class WidgetLabel;
 }
 
+namespace KotORBase {
+	class Creature;
+}
+
 namespace KotOR {
 
-class Creature;
-
-class MenuEquipment : public GUI {
+class MenuEquipment : public KotORBase::GUI {
 public:
 	MenuEquipment(::Engines::Console *console = 0);
 
-	void setPC(Creature *pc);
+	void setPC(KotORBase::Creature *pc);
 
 	void show();
 	void hide();
@@ -53,17 +55,17 @@ protected:
 	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
 
 private:
-	Creature *_pc;
-	InventorySlot _selectedSlot;
+	KotORBase::Creature *_pc;
+	KotORBase::InventorySlot _selectedSlot;
 	bool _slotFixated;
 	std::vector<Common::UString> _visibleItems;
 
 	void fillEquipedItems();
-	Common::UString getEquipedItemIcon(InventorySlot slot) const;
+	Common::UString getEquipedItemIcon(KotORBase::InventorySlot slot) const;
 	void fillEquipableItemsList();
-	InventorySlot getSlotByWidgetTag(const Common::UString &tag) const;
-	Odyssey::WidgetButton *getSlotButton(InventorySlot slot);
-	Common::UString getSlotName(InventorySlot slot) const;
+	KotORBase::InventorySlot getSlotByWidgetTag(const Common::UString &tag) const;
+	Odyssey::WidgetButton *getSlotButton(KotORBase::InventorySlot slot);
+	Common::UString getSlotName(KotORBase::InventorySlot slot) const;
 	void fixateOnSlot(bool fixate);
 };
 

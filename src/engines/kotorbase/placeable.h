@@ -31,7 +31,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Placeable : public Situated {
 public:
@@ -101,7 +101,7 @@ private:
 	void load(const Aurora::GFF3Struct &placeable);
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

@@ -40,7 +40,7 @@ namespace Common {
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Pathfinding;
 
@@ -98,7 +98,7 @@ private:
 	Pathfinding *_pathfinding;
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

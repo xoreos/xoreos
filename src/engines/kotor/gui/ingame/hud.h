@@ -30,10 +30,9 @@
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotorbase/inventory.h"
+#include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotor/module.h"
-
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor/gui/ingame/container.h"
 #include "src/engines/kotor/gui/ingame/menu.h"
@@ -43,9 +42,9 @@ namespace Engines {
 
 namespace KotOR {
 
-class HUD : public GUI, Events::Notifyable {
+class HUD : public KotORBase::GUI, Events::Notifyable {
 public:
-	HUD(Module &module, ::Engines::Console *console = 0);
+	HUD(KotORBase::Module &module, ::Engines::Console *console = 0);
 
 	void setReturnStrref(uint32 id);
 	void setReturnQueryStrref(uint32 id);
@@ -58,18 +57,18 @@ public:
 	void setPosition(float x, float y);
 	void setRotation(float angle);
 
-	void showContainer(Inventory &inv);
+	void showContainer(KotORBase::Inventory &inv);
 
-	void setPartyLeader(Creature *creature);
-	void setPartyMember1(Creature *creature);
-	void setPartyMember2(Creature *creature);
+	void setPartyLeader(KotORBase::Creature *creature);
+	void setPartyMember1(KotORBase::Creature *creature);
+	void setPartyMember2(KotORBase::Creature *creature);
 
-	void showObjectInformation(Object *object);
-	void updateObjectInformation(Object *object, float x, float y);
+	void showObjectInformation(KotORBase::Object *object);
+	void updateObjectInformation(KotORBase::Object *object, float x, float y);
 	void hideObjectInformation();
 
 private:
-	Module *_module;
+	KotORBase::Module *_module;
 	Menu _menu;
 	Common::ScopedPtr<ContainerMenu> _container;
 

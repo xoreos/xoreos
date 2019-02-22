@@ -28,7 +28,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-IngameGUI::IngameGUI(Module &module, Console *console) {
+IngameGUI::IngameGUI(KotORBase::Module &module, Console *console) {
 	_hud.reset(new HUD(module, console));
 }
 
@@ -38,6 +38,47 @@ void IngameGUI::show() {
 
 void IngameGUI::hide() {
 	_hud->hide();
+}
+
+void IngameGUI::setMinimap(const Common::UString &UNUSED(map), int UNUSED(northAxis),
+	                       float UNUSED(worldPt1X), float UNUSED(worldPt1Y), float UNUSED(worldPt2X), float UNUSED(worldPt2Y),
+	                       float UNUSED(mapPt1X), float UNUSED(mapPt1Y), float UNUSED(mapPt2X), float UNUSED(mapPt2Y)) {
+}
+
+void IngameGUI::setPosition(float UNUSED(x), float UNUSED(y)) {
+}
+
+void IngameGUI::setRotation(float UNUSED(angle)) {
+}
+
+void IngameGUI::setReturnStrref(uint32 UNUSED(id)) {
+}
+
+void IngameGUI::setReturnQueryStrref(uint32 UNUSED(id)) {
+}
+
+void IngameGUI::setReturnEnabled(bool UNUSED(enabled)) {
+}
+
+void IngameGUI::showContainer(KotORBase::Inventory &UNUSED(inv)) {
+}
+
+void IngameGUI::setPartyLeader(KotORBase::Creature *UNUSED(creature)) {
+}
+
+void IngameGUI::setPartyMember1(KotORBase::Creature *UNUSED(creature)) {
+}
+
+void IngameGUI::setPartyMember2(KotORBase::Creature *UNUSED(creature)) {
+}
+
+void IngameGUI::showSelection(KotORBase::Object *UNUSED(object)) {
+}
+
+void IngameGUI::hideSelection() {
+}
+
+void IngameGUI::updateSelection() {
 }
 
 void IngameGUI::addEvent(const Events::Event &event) {

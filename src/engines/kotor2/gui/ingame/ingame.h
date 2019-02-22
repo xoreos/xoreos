@@ -27,19 +27,49 @@
 
 #include "src/engines/aurora/console.h"
 
-#include "src/engines/kotor2/module.h"
+#include "src/engines/kotorbase/module.h"
+
+#include "src/engines/kotorbase/gui/ingame.h"
+
 #include "src/engines/kotor2/gui/ingame/hud.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class IngameGUI {
+class IngameGUI : public KotORBase::IngameGUI {
 public:
-	IngameGUI(Module &module, ::Engines::Console *console = 0);
+	IngameGUI(KotORBase::Module &module, ::Engines::Console *console = 0);
 
 	void show(); ///< Show all ingame elements.
 	void hide(); ///< Hide all ingame elements.
+
+	/** Set the minimap with the specified id and both scaling points. */
+	void setMinimap(const Common::UString &map, int northAxis,
+	                float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
+	                float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y);
+
+	/** Set the position for the minimap. */
+	void setPosition(float x, float y);
+	/** Set the rotation for the minimap arrow. */
+	void setRotation(float angle);
+
+	void setReturnStrref(uint32 id);
+	void setReturnQueryStrref(uint32 id);
+	void setReturnEnabled(bool enabled);
+
+	// Container inventory handling
+	void showContainer(KotORBase::Inventory &inv);
+
+	// Party handling.
+	void setPartyLeader(KotORBase::Creature *creature);
+	void setPartyMember1(KotORBase::Creature *creature);
+	void setPartyMember2(KotORBase::Creature *creature);
+
+	// Selection handling
+	void showSelection(KotORBase::Object *object);
+	void hideSelection();
+	void updateSelection();
 
 	void addEvent(const Events::Event &event);
 	void processEventQueue();

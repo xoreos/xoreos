@@ -29,11 +29,11 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Door;
 
-class DoorWalkmesh : public Engines::KotOR::ObjectWalkmesh {
+class DoorWalkmesh : public ObjectWalkmesh {
 public:
 	DoorWalkmesh(Door *door);
 
@@ -50,7 +50,7 @@ private:
 	std::vector<uint32> _noFaces;
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

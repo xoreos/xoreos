@@ -42,7 +42,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) :
 		Situated(kObjectTypePlaceable),
@@ -248,6 +248,6 @@ Inventory &Placeable::getInventory() {
 	return _inventory;
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

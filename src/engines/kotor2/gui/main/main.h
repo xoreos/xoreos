@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR2_GUI_MAIN_MAIN_H
 #define ENGINES_KOTOR2_GUI_MAIN_MAIN_H
 
-#include "src/engines/kotor2/module.h"
+#include "src/engines/kotorbase/module.h"
 
 #include "src/engines/kotor2/gui/gui.h"
 
@@ -35,7 +35,7 @@ namespace KotOR2 {
 
 class MainMenu : public GUI {
 public:
-	MainMenu(Module &module, ::Engines::Console *console = 0);
+	MainMenu(KotORBase::Module &module, ::Engines::Console *console = 0);
 	~MainMenu();
 
 protected:
@@ -54,7 +54,7 @@ private:
 
 	Sound::ChannelHandle _menuMusic;
 
-	Module *_module;
+	KotORBase::Module *_module;
 };
 
 } // End of namespace KotOR2

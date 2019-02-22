@@ -29,7 +29,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class WidgetInventoryItem : public Odyssey::WidgetProtoItem {
 public:
@@ -53,7 +53,7 @@ private:
 	Common::ScopedPtr<Graphics::Aurora::Text>    _countText;
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

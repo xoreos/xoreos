@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR2_GUI_GUI_H
 #define ENGINES_KOTOR2_GUI_GUI_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class GUI : public Engines::KotOR::GUI {
+class GUI : public KotORBase::GUI {
 public:
 	GUI(::Engines::Console *console);
 

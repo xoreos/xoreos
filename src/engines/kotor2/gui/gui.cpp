@@ -32,7 +32,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-GUI::GUI(::Engines::Console *console) : Engines::KotOR::GUI(console) {
+GUI::GUI(::Engines::Console *console) : KotORBase::GUI(console) {
 }
 
 void GUI::initWidget(Widget &widget) {

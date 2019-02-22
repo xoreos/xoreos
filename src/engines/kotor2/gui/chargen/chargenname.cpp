@@ -32,10 +32,12 @@ namespace Engines {
 
 namespace KotOR2 {
 
-CharacterGenerationNameMenu::CharacterGenerationNameMenu(KotOR::CharacterGenerationInfo &info, Engines::Console *console) :
+CharacterGenerationNameMenu::CharacterGenerationNameMenu(KotORBase::CharacterGenerationInfo &info, Engines::Console *console) :
 		CharacterGenerationBaseMenu(info, console),
-		_humanFirst(info.getGender() == KotOR::kGenderMale ? "humanm" : "humanf"), _humanLast("humanl"),
+		_humanFirst((info.getGender() == KotORBase::kGenderMale) ? "humanm" : "humanf"),
+		_humanLast("humanl"),
 		_name(_info.getName()) {
+
 	load("name_p");
 
 	_nameLabel = getLabel("NAME_BOX_EDIT");

@@ -31,7 +31,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Trigger::Trigger(const Aurora::GFF3Struct &gff) :
 		Engines::Trigger(),
@@ -98,6 +98,6 @@ void Trigger::loadBlueprint(const Aurora::GFF3Struct &gff) {
 	readScripts(gff);
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

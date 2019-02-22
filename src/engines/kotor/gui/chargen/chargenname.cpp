@@ -34,14 +34,16 @@ namespace Engines {
 
 namespace KotOR {
 
-CharacterGenerationNameMenu::CharacterGenerationNameMenu(CharacterGenerationInfo &info, Console *console) :
+CharacterGenerationNameMenu::CharacterGenerationNameMenu(KotORBase::CharacterGenerationInfo &info,
+                                                         Console *console) :
 		CharacterGenerationBaseMenu(info, console),
-		_humanFirst(info.getGender() == kGenderMale ? "humanm" : "humanf"), _humanLast("humanl"),
+		_humanFirst((info.getGender() == KotORBase::kGenderMale) ? "humanm" : "humanf"),
+		_humanLast("humanl"),
 		_name(_info.getName()) {
 
 	load("name");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	_nameLabel = getLabel("NAME_BOX_EDIT");
 	_nameLabel->setText(_info.getName() + "_");

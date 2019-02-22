@@ -37,18 +37,24 @@ namespace Engines {
 
 namespace KotOR2 {
 
-CharacterGeneration::CharacterGeneration(Module *module, KotOR::CharacterGenerationInfo *info, Engines::Console *console) :
-		GUI(console), _module(module), _chargenInfo(info), _step(0) {
+CharacterGeneration::CharacterGeneration(KotORBase::Module *module,
+                                         KotORBase::CharacterGenerationInfo *info,
+                                         Engines::Console *console) :
+		GUI(console),
+		_module(module),
+		_chargenInfo(info),
+		_step(0) {
+
 	load("maincg_p");
 
 	switch (_chargenInfo->getClass()) {
-		case KotOR::kClassJediConsular:
+		case KotORBase::kClassJediConsular:
 			getLabel("LBL_CLASS")->setText(TalkMan.getString(354));
 			break;
-		case KotOR::kClassJediGuardian:
+		case KotORBase::kClassJediGuardian:
 			getLabel("LBL_CLASS")->setText(TalkMan.getString(355));
 			break;
-		case KotOR::kClassJediSentinel:
+		case KotORBase::kClassJediSentinel:
 			getLabel("LBL_CLASS")->setText(TalkMan.getString(353));
 			break;
 		default:
@@ -88,7 +94,7 @@ void CharacterGeneration::showCustomChar() {
 }
 
 void CharacterGeneration::showName() {
-	KotOR::CharacterGenerationInfo info = *_chargenInfo;
+	KotORBase::CharacterGenerationInfo info = *_chargenInfo;
 
 	_charGenMenu.reset(new CharacterGenerationNameMenu(info));
 	sub(*_charGenMenu, kStartCodeNone, true, false);
@@ -101,7 +107,7 @@ void CharacterGeneration::showName() {
 }
 
 void CharacterGeneration::showPortrait() {
-	KotOR::CharacterGenerationInfo info = *_chargenInfo;
+	KotORBase::CharacterGenerationInfo info = *_chargenInfo;
 
 	_charGenMenu.reset(new CharacterGenerationPortraitMenu(info));
 	sub(*_charGenMenu);

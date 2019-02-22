@@ -26,7 +26,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 void Inventory::addItem(const Common::UString &tag, int count) {
 	if (tag.empty())
@@ -73,6 +73,6 @@ bool Inventory::hasItem(const Common::UString &tag) const {
 	return _items.find(tag) != _items.end();
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

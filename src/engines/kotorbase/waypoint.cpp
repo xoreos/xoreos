@@ -34,7 +34,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Waypoint::Waypoint(const Aurora::GFF3Struct &waypoint) :
 		Object(kObjectTypeWaypoint),
@@ -110,6 +110,6 @@ void Waypoint::loadProperties(const Aurora::GFF3Struct &gff) {
 	readScripts(gff);
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

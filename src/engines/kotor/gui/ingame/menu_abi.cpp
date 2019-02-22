@@ -30,7 +30,7 @@ namespace Engines {
 
 namespace KotOR {
 
-MenuAbilities::MenuAbilities(Console *console) : GUI(console) {
+MenuAbilities::MenuAbilities(Console *console) : KotORBase::GUI(console) {
 	load("abilities");
 }
 

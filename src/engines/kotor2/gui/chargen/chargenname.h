@@ -41,18 +41,18 @@ namespace KotOR2 {
 
 class CharacterGenerationNameMenu : public CharacterGenerationBaseMenu {
 public:
-	CharacterGenerationNameMenu(KotOR::CharacterGenerationInfo &info, ::Engines::Console *console = 0);
+	CharacterGenerationNameMenu(KotORBase::CharacterGenerationInfo &info, ::Engines::Console *console = 0);
 
 private:
-	virtual void callbackActive(Widget &widget);
-	virtual void callbackTextInput(const Common::UString &text);
-	virtual void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
-
 	Aurora::LTRFile _humanFirst;
 	Aurora::LTRFile _humanLast;
 
 	Common::UString _name;
 	Odyssey::WidgetLabel *_nameLabel;
+
+	virtual void callbackActive(Widget &widget);
+	virtual void callbackTextInput(const Common::UString &text);
+	virtual void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
 };
 
 } // End of namespace KotOR2

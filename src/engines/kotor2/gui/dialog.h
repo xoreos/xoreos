@@ -30,19 +30,23 @@
 
 namespace Engines {
 
+namespace KotORBase {
+	class Module;
+}
+
 namespace KotOR2 {
 
-class Module;
-
-class DialogGUI : public KotOR::DialogGUIBase {
+class DialogGUI : public KotORBase::DialogGUI {
 public:
-	DialogGUI(Module &module);
+	DialogGUI(KotORBase::Module &module);
+
 protected:
 	void makeLookAtPC(const Common::UString &tag);
 	void playDefaultAnimations(const Common::UString &tag);
 	void playTalkAnimations(const Common::UString &tag);
+
 private:
-	Module &_module;
+	KotORBase::Module &_module;
 };
 
 } // End of namespace KotOR2

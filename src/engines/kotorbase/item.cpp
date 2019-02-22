@@ -30,7 +30,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 Item::Item(const Common::UString &item) : Object(kObjectTypeItem) {
 	Common::ScopedPtr<Aurora::GFF3File> uti(new Aurora::GFF3File(item, Aurora::kFileTypeUTI));
@@ -86,6 +86,6 @@ const Common::UString Item::getModelName() const {
 	return Common::UString::format("%s_%03d", _itemClass.c_str(), _modelVariation);
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

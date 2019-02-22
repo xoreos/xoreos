@@ -28,8 +28,9 @@
 #include "src/engines/aurora/console.h"
 
 #include "src/engines/kotorbase/inventory.h"
+#include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotor/module.h"
+#include "src/engines/kotorbase/gui/ingame.h"
 
 #include "src/engines/kotor/gui/ingame/hud.h"
 #include "src/engines/kotor/gui/ingame/selectioncircle.h"
@@ -38,9 +39,9 @@ namespace Engines {
 
 namespace KotOR {
 
-class IngameGUI {
+class IngameGUI : public KotORBase::IngameGUI {
 public:
-	IngameGUI(Module &module, ::Engines::Console *console = 0);
+	IngameGUI(KotORBase::Module &module, ::Engines::Console *console = 0);
 
 	void show(); ///< Show the ingame GUI elements.
 	void hide(); ///< Hide the ingame GUI elements.
@@ -59,15 +60,15 @@ public:
 	void setReturnEnabled(bool enabled);
 
 	// Container inventory handling
-	void showContainer(Inventory &inv);
+	void showContainer(KotORBase::Inventory &inv);
 
 	// Party handling.
-	void setPartyLeader(Creature *creature);
-	void setPartyMember1(Creature *creature);
-	void setPartyMember2(Creature *creature);
+	void setPartyLeader(KotORBase::Creature *creature);
+	void setPartyMember1(KotORBase::Creature *creature);
+	void setPartyMember2(KotORBase::Creature *creature);
 
 	// Selection handling
-	void showSelection(Object *object);
+	void showSelection(KotORBase::Object *object);
 	void hideSelection();
 	void updateSelection();
 
@@ -78,7 +79,7 @@ private:
 	Common::ScopedPtr<HUD> _hud;
 	Common::ScopedPtr<SelectionCircle> _selectionCircle;
 
-	Object *_selected;
+	KotORBase::Object *_selected;
 };
 
 } // End of namespace KotOR

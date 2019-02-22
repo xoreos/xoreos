@@ -25,24 +25,27 @@
 #ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARGENBASE_H
 #define ENGINES_KOTOR_GUI_CHARGEN_CHARGENBASE_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
+namespace KotORBase {
+	class CharacterGenerationInfo;
+}
+
 namespace KotOR {
 
-class CharacterGenerationInfo;
-
-class CharacterGenerationBaseMenu : public GUI {
+class CharacterGenerationBaseMenu : public KotORBase::GUI {
 public:
-	CharacterGenerationBaseMenu(CharacterGenerationInfo &info, ::Engines::Console *console = 0);
+	CharacterGenerationBaseMenu(KotORBase::CharacterGenerationInfo &info,
+	                            ::Engines::Console *console = 0);
 
 	bool isAccepted();
 
 protected:
 	void accept();
 
-	CharacterGenerationInfo &_info;
+	KotORBase::CharacterGenerationInfo &_info;
 
 private:
 	bool _accepted;

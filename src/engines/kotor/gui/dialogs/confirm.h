@@ -27,13 +27,13 @@
 
 #include "src/engines/odyssey/widget.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class ConfirmDialog : public GUI {
+class ConfirmDialog : public KotORBase::GUI {
 public:
 	ConfirmDialog(::Engines::Console *console = 0);
 

@@ -31,7 +31,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-class CharacterGenerationInfo : public KotOR::CharacterGenerationInfo {
+class CharacterGenerationInfo : public KotORBase::CharacterGenerationInfo {
 public:
 	static CharacterGenerationInfo *createRandomMaleConsular();
 	static CharacterGenerationInfo *createRandomFemaleConsular();
@@ -42,7 +42,7 @@ public:
 
 	Common::UString getPortrait() const;
 
-	KotOR::Creature *createCharacter() const;
+	KotORBase::Creature *createCharacter() const;
 };
 
 } // End of namespace KotOR2

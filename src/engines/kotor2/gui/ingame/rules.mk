@@ -22,9 +22,11 @@
 src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/gui/ingame/ingame.h \
     src/engines/kotor2/gui/ingame/hud.h \
+    src/engines/kotor2/gui/ingame/partyselection.h \
     $(EMPTY)
 
 src_engines_kotor2_libkotor2_la_SOURCES += \
     src/engines/kotor2/gui/ingame/ingame.cpp \
     src/engines/kotor2/gui/ingame/hud.cpp \
+    src/engines/kotor2/gui/ingame/partyselection.cpp \
     $(EMPTY)

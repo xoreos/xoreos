@@ -71,8 +71,8 @@ using Aurora::NWScript::kTypeAny;
  * is given at the time of the calling.
  */
 
-static KotOR::Object kDefaultValueObjectInvalid(kObjectTypeInvalid);
-static KotOR::Object kDefaultValueObjectSelf   (kObjectTypeSelf);
+static KotORBase::Object kDefaultValueObjectInvalid(KotORBase::kObjectTypeInvalid);
+static KotORBase::Object kDefaultValueObjectSelf   (KotORBase::kObjectTypeSelf);
 
 static const Aurora::NWScript::Variable kDefaultIntMinus1((int32) - 1);
 static const Aurora::NWScript::Variable kDefaultInt0     ((int32)   0);

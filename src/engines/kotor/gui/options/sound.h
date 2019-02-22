@@ -27,13 +27,13 @@
 
 #include "src/common/scopedptr.h"
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class OptionsSoundMenu : public GUI {
+class OptionsSoundMenu : public KotORBase::GUI {
 public:
 	OptionsSoundMenu(::Engines::Console *console = 0);
 	~OptionsSoundMenu();
@@ -42,7 +42,7 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	Common::ScopedPtr<GUI> _advanced;
+	Common::ScopedPtr<KotORBase::GUI> _advanced;
 };
 
 } // End of namespace KotOR

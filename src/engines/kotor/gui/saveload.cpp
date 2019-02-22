@@ -44,15 +44,16 @@ namespace Engines {
 
 namespace KotOR {
 
-SaveLoadMenu::SaveLoadMenu(Module &module,
+SaveLoadMenu::SaveLoadMenu(KotORBase::Module &module,
                            ::Engines::Console *console,
                            uint8 type,
-                           bool frontBackground)
-		: GUI(console),
-		  _module(&module),
-		  _type(type) {
+                           bool frontBackground) :
+		KotORBase::GUI(console),
+		_module(&module),
+		_type(type) {
+
 	load("saveload");
-	addBackground(kBackgroundTypeMenu, frontBackground);
+	addBackground(KotORBase::kBackgroundTypeMenu, frontBackground);
 
 	Odyssey::WidgetListBox *lbGames = getListBox("LB_GAMES");
 	if (!lbGames)
@@ -148,7 +149,7 @@ void SaveLoadMenu::addSavedGameItems(Odyssey::WidgetListBox *listBox) {
 			continue;
 
 		_saveDirs.push_back(saveDir);
-		SavedGame *save = SavedGame::load(saveDir);
+		KotORBase::SavedGame *save = KotORBase::SavedGame::load(saveDir);
 		uint32 timePlayed = save->getTimePlayed();
 		Common::UString slotText(slotTextFormat);
 
@@ -167,7 +168,7 @@ void SaveLoadMenu::addSavedGameItems(Odyssey::WidgetListBox *listBox) {
 void SaveLoadMenu::tryLoadGame(const Common::UString &dir) {
 	try {
 		hide();
-		Common::ScopedPtr<SavedGame> save(SavedGame::load(dir, true));
+		Common::ScopedPtr<KotORBase::SavedGame> save(KotORBase::SavedGame::load(dir, true));
 		_module->loadSavedGame(save.get());
 		GfxMan.lockFrame();
 		_returnCode = 2;

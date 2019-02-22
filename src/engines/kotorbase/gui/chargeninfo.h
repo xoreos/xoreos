@@ -34,7 +34,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Creature;
 
@@ -93,7 +93,7 @@ private:
 	Common::ScopedPtr<Graphics::Aurora::Model> _body;
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

@@ -25,13 +25,13 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_MENU_MAP_H
 #define ENGINES_KOTOR_GUI_INGAME_MENU_MAP_H
 
-#include "src/engines/kotor/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class MenuMap : public GUI {
+class MenuMap : public KotORBase::GUI {
 public:
 	MenuMap(::Engines::Console *console = 0);
 

@@ -33,12 +33,13 @@ namespace Engines {
 
 namespace KotOR {
 
-CharacterGenerationPortraitMenu::CharacterGenerationPortraitMenu(CharacterGenerationInfo &info,
-		Console *console) : CharacterGenerationBaseMenu(info, console) {
+CharacterGenerationPortraitMenu::CharacterGenerationPortraitMenu(KotORBase::CharacterGenerationInfo &info,
+                                                                 Console *console) :
+		CharacterGenerationBaseMenu(info, console) {
 
 	load("portcust");
 
-	addBackground(kBackgroundTypeMenu);
+	addBackground(KotORBase::kBackgroundTypeMenu);
 
 	getLabel("LBL_PORTRAIT")->setFill(_info.getPortrait());
 }
@@ -56,15 +57,15 @@ void CharacterGenerationPortraitMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_ARRL") {
 		// Get the current skin and face
-		Skin skin = _info.getSkin();
+		KotORBase::Skin skin = _info.getSkin();
 		uint8_t face = _info.getFace();
 
 		// Move them to left and go in another skin type if needed
 		if (face == 0) {
-			if (skin == kSkinA)
-				skin = kSkinC;
+			if (skin == KotORBase::kSkinA)
+				skin = KotORBase::kSkinC;
 			else
-				skin = Skin(skin - 1);
+				skin = KotORBase::Skin(skin - 1);
 			face = 4;
 		} else {
 			face -= 1;
@@ -82,15 +83,15 @@ void CharacterGenerationPortraitMenu::callbackActive(Widget &widget) {
 
 	if (widget.getTag() == "BTN_ARRR") {
 		// Get the current skin and face
-		Skin skin = _info.getSkin();
+		KotORBase::Skin skin = _info.getSkin();
 		uint8_t face = _info.getFace();
 
 		// Move them to right and go in another skin type if needed
 		if (face == 4) {
-			if (skin == kSkinC)
-				skin = kSkinA;
+			if (skin == KotORBase::kSkinC)
+				skin = KotORBase::kSkinA;
 			else
-				skin = Skin(skin + 1);
+				skin = KotORBase::Skin(skin + 1);
 			face = 0;
 		} else {
 			face += 1;

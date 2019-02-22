@@ -32,10 +32,8 @@
 namespace Engines {
 
 namespace KotORBase {
-	class Module;
-}
 
-namespace KotOR {
+class Module;
 
 class Door : public Situated {
 public:
@@ -48,7 +46,7 @@ public:
 	};
 
 	/** Load from a door instance. */
-	Door(KotORBase::Module &module, const Aurora::GFF3Struct &door);
+	Door(Module &module, const Aurora::GFF3Struct &door);
 
 	// Basic visuals
 
@@ -95,7 +93,7 @@ private:
 		kLinkedToWaypoint = 2  ///< This door links to a waypoint.
 	};
 
-	KotORBase::Module *_module; ///< The module the door is in.
+	Module *_module; ///< The module the door is in.
 
 	uint32 _genericType; ///< Index into the generic door types.
 
@@ -116,7 +114,7 @@ private:
 	void loadAppearance(const Aurora::TwoDAFile &twoda, uint32 id);
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

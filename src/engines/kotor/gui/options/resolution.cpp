@@ -45,7 +45,7 @@ namespace Engines {
 
 namespace KotOR {
 
-OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : GUI(console), _newWidth(0), _newHeight(0) {
+OptionsResolutionMenu::OptionsResolutionMenu(Console *console) : KotORBase::GUI(console), _newWidth(0), _newHeight(0) {
 	load("optresolution");
 
 	Odyssey::WidgetPanel *guiPanel = getPanel("TGuiPanel");

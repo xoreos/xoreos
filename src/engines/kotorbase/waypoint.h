@@ -35,7 +35,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Waypoint : public Object {
 public:
@@ -72,7 +72,7 @@ private:
 	void loadProperties(const Aurora::GFF3Struct &gff);
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

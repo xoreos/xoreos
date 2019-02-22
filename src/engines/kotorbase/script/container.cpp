@@ -37,7 +37,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 struct ScriptName {
 	Script script;
@@ -188,6 +188,6 @@ bool ScriptContainer::runScript(const Common::UString &script,
 	return true;
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

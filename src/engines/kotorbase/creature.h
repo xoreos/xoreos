@@ -40,7 +40,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class CharacterGenerationInfo;
 class Item;
@@ -247,7 +247,7 @@ private:
 	void setDefaultAnimations();
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 

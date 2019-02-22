@@ -31,14 +31,23 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Common::UString Creature::getBodyMeshString(KotOR::Gender gender, KotOR::Class UNUSED(charClass), char UNUSED(state)) {
+Creature::Creature() : KotORBase::Creature() {
+}
+
+Creature::Creature(const Aurora::GFF3Struct &creature) : KotORBase::Creature(creature) {
+}
+
+Creature::Creature(const Common::UString &resRef) : KotORBase::Creature(resRef) {
+}
+
+Common::UString Creature::getBodyMeshString(KotORBase::Gender gender, KotORBase::Class UNUSED(charClass), char UNUSED(state)) {
 	Common::UString body("p");
 
 	switch (gender) {
-		case KotOR::kGenderMale:
+		case KotORBase::kGenderMale:
 			body += "m";
 			break;
-		case KotOR::kGenderFemale:
+		case KotORBase::kGenderFemale:
 			body += "f";
 			break;
 		default:
@@ -50,14 +59,14 @@ Common::UString Creature::getBodyMeshString(KotOR::Gender gender, KotOR::Class U
 	return body;
 }
 
-Common::UString Creature::getBodyTextureString(KotOR::Gender gender, KotOR::Skin skin, KotOR::Class UNUSED(charClass), char UNUSED(state)) {
+Common::UString Creature::getBodyTextureString(KotORBase::Gender gender, KotORBase::Skin skin, KotORBase::Class UNUSED(charClass), char UNUSED(state)) {
 	Common::UString body("p");
 
 	switch (gender) {
-		case KotOR::kGenderMale:
+		case KotORBase::kGenderMale:
 			body += "m";
 			break;
-		case KotOR::kGenderFemale:
+		case KotORBase::kGenderFemale:
 			body += "f";
 			break;
 		default:
@@ -67,14 +76,14 @@ Common::UString Creature::getBodyTextureString(KotOR::Gender gender, KotOR::Skin
 	body += "bam";
 
 	switch (skin) {
-		case KotOR::kSkinA:
-		case KotOR::kSkinH:
+		case KotORBase::kSkinA:
+		case KotORBase::kSkinH:
 			body += "a";
 			break;
-		case KotOR::kSkinB:
+		case KotORBase::kSkinB:
 			body += "b";
 			break;
-		case KotOR::kSkinC:
+		case KotORBase::kSkinC:
 			body += "c";
 			break;
 		default:
@@ -84,14 +93,14 @@ Common::UString Creature::getBodyTextureString(KotOR::Gender gender, KotOR::Skin
 	return body;
 }
 
-Common::UString Creature::getHeadMeshString(KotOR::Gender gender, KotOR::Skin skin, uint32 faceId) {
+Common::UString Creature::getHeadMeshString(KotORBase::Gender gender, KotORBase::Skin skin, uint32 faceId) {
 	Common::UString head("p");
 
 	switch (gender) {
-		case KotOR::kGenderMale:
+		case KotORBase::kGenderMale:
 			head += "m";
 			break;
-		case KotOR::kGenderFemale:
+		case KotORBase::kGenderFemale:
 			head += "f";
 			break;
 		default:
@@ -101,16 +110,16 @@ Common::UString Creature::getHeadMeshString(KotOR::Gender gender, KotOR::Skin sk
 	head += "h";
 
 	switch (skin) {
-		case KotOR::kSkinA:
+		case KotORBase::kSkinA:
 			head += "a";
 			break;
-		case KotOR::kSkinB:
+		case KotORBase::kSkinB:
 			head += "b";
 			break;
-		case KotOR::kSkinC:
+		case KotORBase::kSkinC:
 			head += "c";
 			break;
-		case KotOR::kSkinH:
+		case KotORBase::kSkinH:
 			head += "h";
 			break;
 		default:
@@ -126,7 +135,7 @@ Common::UString Creature::getHeadMeshString(KotOR::Gender gender, KotOR::Skin sk
 }
 
 void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) {
-	KotOR::Class charClass = getClassByPosition(0);
+	KotORBase::Class charClass = getClassByPosition(0);
 	parts.body = getBodyMeshString(_gender, charClass, state);
 	parts.bodyTexture = getBodyTextureString(_gender, _skin, charClass, state);
 	parts.head = getHeadMeshString(_gender, _skin, _face);
@@ -138,47 +147,47 @@ void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVar
 	loadMovementRate("PLAYER");
 }
 
-uint32 Creature::transformFaceId(KotOR::Gender gender, KotOR::Skin skin, uint32 faceId) {
+uint32 Creature::transformFaceId(KotORBase::Gender gender, KotORBase::Skin skin, uint32 faceId) {
 	switch (skin) {
-		case KotOR::kSkinA:
+		case KotORBase::kSkinA:
 			switch (faceId) {
 				case 0: return 1;
 				case 1: return 3;
 				case 2:
-					if (gender == KotOR::kGenderFemale) return 4;
-					else if (gender == KotOR::kGenderMale) return 5;
+					if (gender == KotORBase::kGenderFemale) return 4;
+					else if (gender == KotORBase::kGenderMale) return 5;
 					else throw Common::Exception("invalid gender");
 				case 3:
-					if (gender == KotOR::kGenderFemale) return 5;
-					else if (gender == KotOR::kGenderMale) return 6;
+					if (gender == KotORBase::kGenderFemale) return 5;
+					else if (gender == KotORBase::kGenderMale) return 6;
 					else throw Common::Exception("invalid gender");
 				case 4:
-					if (gender == KotOR::kGenderFemale) return 6;
-					else if (gender == KotOR::kGenderMale) return 7;
+					if (gender == KotORBase::kGenderFemale) return 6;
+					else if (gender == KotORBase::kGenderMale) return 7;
 					else throw Common::Exception("invalid gender");
 				default:
 					throw Common::Exception("invalid face id");
 			}
-		case KotOR::kSkinB:
-			if (gender == KotOR::kGenderFemale) return faceId + 1;
+		case KotORBase::kSkinB:
+			if (gender == KotORBase::kGenderFemale) return faceId + 1;
 			else return faceId + 6;
-		case KotOR::kSkinC:
+		case KotORBase::kSkinC:
 			switch (faceId) {
 				case 0: return 1;
 				case 1:
-					if (gender == KotOR::kGenderFemale) return 2;
-					else if (gender == KotOR::kGenderMale) return 3;
+					if (gender == KotORBase::kGenderFemale) return 2;
+					else if (gender == KotORBase::kGenderMale) return 3;
 					else throw Common::Exception("invalid gender");
 				case 2:
-					if (gender == KotOR::kGenderFemale) return 5;
-					else if (gender == KotOR::kGenderMale) return 4;
+					if (gender == KotORBase::kGenderFemale) return 5;
+					else if (gender == KotORBase::kGenderMale) return 4;
 					else throw Common::Exception("invalid gender");
 				case 3: return 6;
 				case 4: return 7;
 				default:
 					throw Common::Exception("invalid face id");
 			}
-		case KotOR::kSkinH: return faceId + 1;
+		case KotORBase::kSkinH: return faceId + 1;
 		default:
 			throw Common::Exception("invalid skin id");
 	}

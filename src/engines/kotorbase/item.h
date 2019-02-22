@@ -29,7 +29,7 @@
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 class Item : public Object {
 public:
@@ -59,7 +59,7 @@ private:
 	void load(const Aurora::GFF3Struct &gff);
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 
