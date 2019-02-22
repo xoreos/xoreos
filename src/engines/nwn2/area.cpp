@@ -151,6 +151,10 @@ const Common::UString &Area::getDisplayName() {
 	return _displayName;
 }
 
+Module &Area::getModule() {
+	return *_module;
+}
+
 uint32 Area::getMusicDayTrack() const {
 	return _musicDayTrack;
 }

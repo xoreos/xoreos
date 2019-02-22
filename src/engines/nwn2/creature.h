@@ -129,6 +129,12 @@ public:
 	/** Return the max HP this creature can have. */
 	int32 getMaxHP() const;
 
+	bool getIsDead() const;
+	bool getImmortal() const;
+	bool getPlotFlag() const;
+	bool getLootable() const;
+	bool getIsCreatureDisarmable() const;
+
 	// Reputation
 
 	uint8 getReputation(Object *source) const;
@@ -191,6 +197,14 @@ private:
 	int32 _baseHP;    ///< The creature's base maximum health points.
 	int32 _bonusHP;   ///< The creature's bonus health points.
 	int32 _currentHP; ///< The creature's current health points.
+
+	bool _isImmortal;           ///< Can the creature never drop below 1 hp?
+	bool _isPlot;               ///< Is this a plot creature that takes no damage?
+	bool _isLootable;           ///< Does the creature leave behind a lootable corpse?
+	bool _isDisarmable;         ///< Can the creature be disarmed?
+	bool _isInterruptable;      ///< Can conversation with this creature be interrupted?
+	bool _isNoPermanentDeath;   ///< Can the creature not permanently die?
+	bool _isSelectableWhenDead; ///< Can the body can be selected when dead.
 
 	uint8 _abilities[kAbilityMAX]; ///< The creature's abilities.
 
