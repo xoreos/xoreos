@@ -45,6 +45,9 @@
 
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/object.h"
+#include "src/engines/nwn2/area.h"
+#include "src/engines/nwn2/module.h"
+#include "src/engines/nwn2/faction.h"
 
 static const uint8 kRepEnemyMax  = 10; // Maximum reputation for an enemy
 static const uint8 kRepFriendMin = 90; // Minimum reputation for a friend
@@ -300,7 +303,10 @@ uint32 Object::getFaction() const {
 /** Return this object's reputation with the source. */
 uint8 Object::getReputation(Object *source) const {
 	assert(source);
-	return 0; // Default to 'enemy'
+	if (getArea())
+		return getArea()->getModule().getFactions().getReputation(source, getFaction());
+	else
+		return 0; // Default to enemy
 }
 
 /**
