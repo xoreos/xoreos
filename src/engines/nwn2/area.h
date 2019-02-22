@@ -75,6 +75,8 @@ public:
 	const Common::UString &getName();
 	/** Return the area's localized display name. */
 	const Common::UString &getDisplayName();
+	/** Back link to the area's module. */
+	Module &getModule();
 
 	// Visibility
 

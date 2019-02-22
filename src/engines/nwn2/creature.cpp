@@ -36,15 +36,18 @@
 #include "src/aurora/2dareg.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/model.h"
 
 #include "src/engines/nwn2/util.h"
 #include "src/engines/nwn2/types.h"
+#include "src/engines/nwn2/module.h"
 #include "src/engines/nwn2/area.h"
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/faction.h"
+#include "src/engines/nwn2/cursor.h"
 
 static const uint32 kBICID = MKTAG('B', 'I', 'C', ' ');
 
@@ -89,6 +92,14 @@ void Creature::init() {
 	_baseHP    = 0;
 	_bonusHP   = 0;
 	_currentHP = 0;
+
+	_isImmortal = false;
+	_isPlot = false;
+	_isLootable = false;
+	_isDisarmable = false;
+	_isInterruptable = false;
+	_isNoPermanentDeath = false;
+	_isSelectableWhenDead = false;
 
 	_hitDice = 0;
 
@@ -143,10 +154,30 @@ void Creature::setOrientation(float x, float y, float z, float angle) {
 }
 
 void Creature::enter() {
+	// Set the appropriate cursor for the creature
+	if (!getIsDead()) {
+		// Creature is alive
+		if (!getIsEnemy(getArea()->getModule().getPC())) {
+			// Creature is not hostile to the PC
+			CursorMan.setGroup(kCursorTalk);
+		} else {
+			CursorMan.setGroup(kCursorAttack);
+		}
+	} else {
+		if (_isSelectableWhenDead) {
+			CursorMan.setGroup(kCursorPickup);
+		} else if (getLootable()) {
+			// Allow pickup until looted
+			CursorMan.setGroup(kCursorPickup);
+		} else {
+			CursorMan.setGroup(kCursorDefault);
+		}
+	}
 	highlight(true);
 }
 
 void Creature::leave() {
+	CursorMan.setGroup(kCursorDefault);
 	highlight(false);
 }
 
@@ -228,6 +259,26 @@ int32 Creature::getCurrentHP() const {
 
 int32 Creature::getMaxHP() const {
 	return _baseHP + _bonusHP;
+}
+
+bool Creature::getIsDead() const {
+	return (getCurrentHP() <= 0);
+}
+
+bool Creature::getImmortal() const {
+	return _isImmortal;
+}
+
+bool Creature::getPlotFlag() const {
+	return _isPlot;
+}
+
+bool Creature::getLootable() const {
+	return _isLootable;
+}
+
+bool Creature::getIsCreatureDisarmable() const {
+	return _isDisarmable;
 }
 
 /**
@@ -450,6 +501,15 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// PC and DM
 	_isPC = gff.getBool("IsPC", _isPC);
 	_isDM = gff.getBool("IsDM", _isDM);
+
+	// Bit flags
+	_isImmortal = gff.getBool("IsImmortal", _isImmortal);
+	_isPlot = gff.getBool("Plot", _isPlot);
+	_isLootable = gff.getBool("Lootable", _isLootable);
+	_isDisarmable = gff.getBool("Disarmable", _isDisarmable);
+	_isInterruptable = gff.getBool("Interruptable", _isInterruptable);
+	_isNoPermanentDeath = gff.getBool("NoPermDeath", _isNoPermanentDeath);
+	_isSelectableWhenDead = gff.getBool("DeadSelectable", _isSelectableWhenDead);
 
 	// Age
 	_age = gff.getUint("Age", _age);
