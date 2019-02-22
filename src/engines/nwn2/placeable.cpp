@@ -41,7 +41,8 @@ namespace Engines {
 
 namespace NWN2 {
 
-Placeable::Placeable(const Aurora::GFF3Struct &placeable) : Situated(kObjectTypePlaceable),
+Placeable::Placeable(const Aurora::GFF3Struct &placeable) :
+	Situated(kObjectTypePlaceable), Trap(placeable),
 	_state(kStateDefault), _hasInventory(false) {
 
 	load(placeable);
@@ -58,12 +59,6 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 		utp.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 
 	Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
-
-	try {
-		_trap.reset(new Trap(placeable));
-	} catch (...) {
-		Common::exceptionDispatcherWarning();
-	}
 }
 
 void Placeable::setModelState() {
@@ -196,10 +191,10 @@ bool Placeable::open(Object *opener) {
 	if (isOpen())
 		return true;
 
-	if (!opener->getIsFriend(this) && _trap->isTriggeredBy(opener)) {
+	if (!opener->getIsFriend(this) && isTriggeredBy(opener)) {
 		// Set off the trap
 		runScript(kScriptTrapTriggered, this, opener);
-		_trap->triggeredTrap();
+		triggeredTrap();
 	}
 
 	if (isLocked()) {
@@ -241,10 +236,10 @@ bool Placeable::activate(Object *user) {
 	if (isActivated())
 		return true;
 
-	if (!user->getIsFriend(this) && _trap->isTriggeredBy(user)) {
+	if (!user->getIsFriend(this) && isTriggeredBy(user)) {
 		// Set off the trap
 		runScript(kScriptTrapTriggered, this, user);
-		_trap->triggeredTrap();
+		triggeredTrap();
 	}
 
 	if (isLocked()) {
@@ -281,7 +276,7 @@ bool Placeable::deactivate(Object *user) {
 }
 
 uint8 Placeable::getReputation(Object *source) const {
-        return getArea()->getFactionReputation(source, _faction);
+	return getArea()->getFactionReputation(source, _faction);
 }
 
 } // End of namespace NWN2

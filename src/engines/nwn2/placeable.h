@@ -30,14 +30,13 @@
 #include "src/aurora/types.h"
 
 #include "src/engines/nwn2/situated.h"
+#include "src/engines/nwn2/trap.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
-class Trap;
-
-class Placeable : public Situated {
+class Placeable : public Situated, public Trap {
 public:
 	/** The state of a placeable. */
 	enum State {
@@ -96,8 +95,6 @@ protected:
 	void loadAppearance();
 
 private:
-	Common::ScopedPtr<Trap> _trap; ///< The placeable's trap.
-
 	State _state; ///< The current state of the placeable.
 
 	bool _hasInventory; ///< Does this placeable have an inventory?

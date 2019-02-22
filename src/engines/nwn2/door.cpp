@@ -44,7 +44,8 @@ namespace Engines {
 
 namespace NWN2 {
 
-Door::Door(Module &module, const Aurora::GFF3Struct &door) : Situated(kObjectTypeDoor),
+Door::Door(Module &module, const Aurora::GFF3Struct &door) :
+	Situated(kObjectTypeDoor), Trap(door),
 	_module(&module), _invisible(false), _genericType(Aurora::kFieldIDInvalid),
 	_state(kStateClosed), _linkedToFlag(kLinkedToNothing), _evaluatedLink(false),
 	_link(0), _linkedDoor(0), _linkedWaypoint(0) {
@@ -63,12 +64,6 @@ void Door::load(const Aurora::GFF3Struct &door) {
 		utd.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' ')));
 
 	Situated::load(door, utd ? &utd->getTopLevel() : 0);
-
-	try {
-		_trap.reset(new Trap(door));
-	} catch (...) {
-		Common::exceptionDispatcherWarning();
-	}
 
 	setModelState();
 }
@@ -216,10 +211,10 @@ bool Door::open(Object *opener) {
 	if (isOpen() || (_state == kStateDestroyed))
 		return true;
 
-	if (!opener->getIsFriend(this) && _trap->isTriggeredBy(opener)) {
+	if (!opener->getIsFriend(this) && isTriggeredBy(opener)) {
 		// Set off the trap
 		runScript(kScriptTrapTriggered, this, opener);
-		_trap->triggeredTrap();
+		triggeredTrap();
 	}
 
 	if (isLocked()) {

@@ -30,6 +30,7 @@
 #include "src/aurora/types.h"
 
 #include "src/engines/nwn2/situated.h"
+#include "src/engines/nwn2/trap.h"
 
 namespace Engines {
 
@@ -39,9 +40,7 @@ class Module;
 
 class Waypoint;
 
-class Trap;
-
-class Door : public Situated {
+class Door : public Situated, public Trap {
 public:
 	/** The state of a door. */
 	enum State {
@@ -101,8 +100,6 @@ private:
 	};
 
 	Module *_module; ///< The module the door is in.
-
-	Common::ScopedPtr<Trap> _trap; ///< The door's trap.
 
 	bool _invisible; ///< Is the door invisible?
 
