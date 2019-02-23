@@ -42,7 +42,7 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleSoldier() {
 	info->_gender = kGenderMale;
 	info->_class = kClassSoldier;
 	info->_face = std::rand() % 5;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_skin = Skin(std::rand() % 3);
 
 	Aurora::LTRFile humanMale("humanm");
 	Aurora::LTRFile humanLast("humanl");
@@ -57,7 +57,7 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleScout() {
 	info->_gender = kGenderMale;
 	info->_class = kClassScout;
 	info->_face = std::rand() % 5;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_skin = Skin(std::rand() % 3);
 
 	Aurora::LTRFile humanMale("humanm");
 	Aurora::LTRFile humanLast("humanl");
@@ -72,7 +72,7 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleScoundrel() {
 	info->_gender = kGenderMale;
 	info->_class = kClassScoundrel;
 	info->_face = std::rand() % 5;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_skin = Skin(std::rand() % 3);
 
 	Aurora::LTRFile humanMale("humanm");
 	Aurora::LTRFile humanLast("humanl");
@@ -87,7 +87,7 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleSoldier() {
 	info->_gender = kGenderFemale;
 	info->_class = kClassSoldier;
 	info->_face = std::rand() % 5;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_skin = Skin(std::rand() % 3);
 
 	Aurora::LTRFile humanFemale("humanf");
 	Aurora::LTRFile humanLast("humanl");
@@ -102,7 +102,7 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleScout() {
 	info->_gender = kGenderFemale;
 	info->_class = kClassScout;
 	info->_face = std::rand() % 5;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_skin = Skin(std::rand() % 3);
 
 	Aurora::LTRFile humanFemale("humanf");
 	Aurora::LTRFile humanLast("humanl");
@@ -117,7 +117,7 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleScoundrel() 
 	info->_gender = kGenderFemale;
 	info->_class = kClassScoundrel;
 	info->_face = std::rand() % 5;
-	info->_skin = Skin(std::rand() % kSkinMAX);
+	info->_skin = Skin(std::rand() % 3);
 
 	Aurora::LTRFile humanFemale("humanf");
 	Aurora::LTRFile humanLast("humanl");
