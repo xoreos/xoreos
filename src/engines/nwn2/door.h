@@ -71,6 +71,10 @@ public:
 
 	/** Lock/Unlock the door. */
 	void setLocked(bool locked);
+	/** Create a trap on the door. */
+	void createTrap(uint8 trapType, uint32 faction,
+	                const Common::UString &disarm,
+	                const Common::UString &triggered);
 
 	// Object/Cursor interactions
 

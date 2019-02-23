@@ -53,6 +53,17 @@ void Trigger::hide() {
 void Trigger::hideSoft() {
 }
 
+void Trigger::createTrap(uint8 trapType, uint32 faction,
+                         const Common::UString &disarm,
+                         const Common::UString &triggered) {
+	Trap::createTrap(trapType, faction, disarm, triggered);
+	_faction = faction; // Overriding trigger faction
+
+	setScript(kScriptDisarm, disarm);
+	if (triggered != "")
+		setScript(kScriptTrapTriggered, triggered);
+}
+
 bool Trigger::isVisible() const {
 	return Renderable::isVisible();
 }

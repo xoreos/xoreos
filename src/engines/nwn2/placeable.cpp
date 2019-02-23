@@ -194,6 +194,18 @@ bool Placeable::isActivated() const {
 	return isOpen();
 }
 
+void Placeable::createTrap(uint8 trapType, uint32 faction,
+                           const Common::UString &disarm,
+                           const Common::UString &triggered) {
+	Trap::createTrap(trapType, faction, disarm, triggered);
+	_faction = faction; // Overriding placeable faction
+
+	setScript(kScriptDisarm, disarm);
+	if (triggered != "")
+		setScript(kScriptTrapTriggered, triggered);
+}
+
+
 bool Placeable::click(Object *triggerer) {
 	// If the placeable is locked, just play the appropriate sound and bail
 	if (isLocked()) {

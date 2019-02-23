@@ -237,6 +237,8 @@ private:
 
 	void setTrapActive(Aurora::NWScript::FunctionContext &ctx);
 
+	void createTrapOnObject(Aurora::NWScript::FunctionContext &ctx);
+
 	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
 	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
 

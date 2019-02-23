@@ -202,6 +202,33 @@ void Trap::setTrapKeyTag(const Common::UString &keyTag) {
 	_keyTag = keyTag;
 }
 
+/** Create a new trap type using the 'trapType' row data in 'traps.2da' */
+void Trap::createTrapBaseType(uint8 trapType) {
+	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("traps");
+	const size_t count = twoDA.getRowCount();
+	if (trapType >= count)
+		return;
+
+	// Load the trap row
+	const Aurora::TwoDARow &row = twoDA.getRow(trapType);
+
+	// Set this up as a new trap
+	_detectDC = row.getInt("DetectDCMod");
+	_disarmDC = row.getInt("DisarmDCMod");
+	_itemResRef = row.getString("ResRef");
+	_trapType = trapType;
+	_isTrap = true;
+	_isFlagged = false;
+	_detectedBy = 0;
+	_createdBy = 0;
+}
+
+void Trap::createTrap(uint8 trapType, uint32 UNUSED(faction),
+                      const Common::UString &UNUSED(disarm),
+                      const Common::UString &UNUSED(triggered)) {
+	createTrapBaseType(trapType);
+}
+
 /*
  * The agent is attempting to detect the trap using
  * the search skill and all applicable modifiers.
@@ -319,12 +346,10 @@ void Trap::triggeredTrap() {
 
 /** Load the trap information from the struct */
 void Trap::load(const Aurora::GFF3Struct &gff) {
+	// Initialize using the 'traps.2da' information
+	createTrapBaseType(gff.getUint("TrapType", _trapType));
+
 	_isTrapActive = true; // Default for a trigger trap
-
-	// Load the traps.2da information
-	_trapType = gff.getUint("TrapType", _trapType);
-	loadTrap2da(TwoDAReg.get2DA("traps"), _trapType);
-
 	_isTrap = gff.getBool("TrapFlag", _isTrap);
 	_isDetectable = gff.getBool("TrapDetectable", _isDetectable);
 	_isDisarmable = gff.getBool("TrapDisarmable", _isDisarmable);
@@ -340,18 +365,10 @@ void Trap::load(const Aurora::GFF3Struct &gff) {
 	_keyTag = gff.getString("KeyName", _keyTag);
 }
 
-/** Load the trap information from a traps.2da row */
+/** Load the trap information from a 'traps.2da' row */
 void Trap::load(const uint8 type, const Creature *creator) {
-	_trapType = type;
-	loadTrap2da(TwoDAReg.get2DA("traps"), _trapType);
+	createTrapBaseType(type);
 	_createdBy = creator->getID();
-}
-
-/** Load base trap information from the traps.2da file */
-void Trap::loadTrap2da(const Aurora::TwoDAFile &twoda, uint32 id) {
-	_detectDC = twoda.getRow(id).getInt("DetectDCMod");
-	_disarmDC = twoda.getRow(id).getInt("DisarmDCMod");
-	_itemResRef = twoda.getRow(id).getString("ResRef");
 }
 
 } // End of namespace NWN2

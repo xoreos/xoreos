@@ -73,6 +73,11 @@ public:
 	/** Is the placeable activated? */
 	bool isActivated() const;
 
+	/** Create a trap on the placeable. */
+	void createTrap(uint8 trapType, uint32 faction,
+	                const Common::UString &disarm,
+	                const Common::UString &triggered);
+
 	/** The opener object opens this placeable. */
 	bool open(Object *opener);
 	/** The closer object closes this placeable. */
