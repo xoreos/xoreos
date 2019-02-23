@@ -403,6 +403,15 @@ void Functions::getTrapActive(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (trigger) ? trigger->getTrapActive() : 0;
 }
 
+void Functions::getTrapBaseType(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(object);
+	ctx.getReturn() = trigger->getTrapBaseType();
+}
+
 void Functions::setTrapActive(Aurora::NWScript::FunctionContext &ctx) {
 	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
 	if (!object)
