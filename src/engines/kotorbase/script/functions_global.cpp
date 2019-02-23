@@ -27,8 +27,7 @@
 #include "src/aurora/nwscript/functioncontext.h"
 
 #include "src/engines/kotorbase/module.h"
-
-#include "src/engines/kotor/game.h"
+#include "src/engines/kotorbase/game.h"
 
 #include "src/engines/kotorbase/script/functions.h"
 

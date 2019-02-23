@@ -26,8 +26,8 @@
 
 #include "src/engines/kotorbase/objectcontainer.h"
 #include "src/engines/kotorbase/module.h"
-
-#include "src/engines/kotor/game.h"
+#include "src/engines/kotorbase/game.h"
+#include "src/engines/kotorbase/creature.h"
 
 #include "src/engines/kotorbase/script/functions.h"
 #include "src/engines/kotorbase/script/event.h"
