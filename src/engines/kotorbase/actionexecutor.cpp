@@ -94,14 +94,14 @@ bool ActionExecutor::moveTo(Creature &creature, Area &area, float x, float y, fl
 
 	bool haveMovement = (z != FLT_MIN) &&
 	                     area.walkable(glm::vec3(oX, oY, oZ + 0.1f),
-	                                         glm::vec3(newX, newY, z + 0.1f));
+	                                   glm::vec3(newX, newY, z + 0.1f));
 
 	if (haveMovement) {
 		creature.playAnimation(run ? "run" : "walk", false, -1.0f);
 		creature.setPosition(newX, newY, z);
-	}
-	else
+	} else {
 		creature.playDefaultAnimation();
+	}
 
 	return false;
 }
