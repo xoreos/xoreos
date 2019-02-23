@@ -46,7 +46,8 @@ namespace NWN2 {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) :
 	Situated(kObjectTypePlaceable), Trap(placeable),
-	_state(kStateDefault), _hasInventory(false) {
+	_state(kStateDefault), _defAction(kDefActionAutomatic),
+	_hasInventory(false) {
 
 	load(placeable);
 }
@@ -117,6 +118,8 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 
 	_state = (State) gff.getUint("AnimationState", (uint) _state);
 
+	_defAction = (DefAction) gff.getUint("DefAction", (uint) _defAction);
+
 	_hasInventory = gff.getBool("HasInventory", _hasInventory);
 
 	// Faction
@@ -147,8 +150,28 @@ void Placeable::enter() {
 		// Lock needs to be opened
 		CursorMan.setGroup(kCursorLock);
 	} else {
-		// Set to default action
-		CursorMan.setGroup(kCursorAction);
+		// Set cursor to match default action preference
+		switch(_defAction) {
+			case kDefActionAutomatic:
+				CursorMan.setGroup(kCursorAction);
+				break;
+                	case kDefActionUse:
+				CursorMan.setGroup(kCursorAction);
+				break;
+                	case kDefActionBash:
+				CursorMan.setGroup(kCursorAttack);
+				break;
+                	case kDefActionDisableTrap:
+				CursorMan.setGroup(kCursorDisarm);
+				break;
+                	case kDefActionExamine:
+				CursorMan.setGroup(kCursorExamine);
+				break;
+			default:
+				CursorMan.setGroup(kCursorDefault);
+				break;
+		}
+
 	}
 	highlight(true);
 }
