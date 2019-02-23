@@ -38,7 +38,7 @@ namespace NWN2 {
 
 static const Common::UString kCursorDefault       = "default";       //   0,   1
 static const Common::UString kCursorWalk          = "walk";          //   3,   4 (testing: 0, 2)
-static const Common::UString kCUrsorNoWalk        = "nowalk";        //   5,   6
+static const Common::UString kCursorNoWalk        = "nowalk";        //   5,   6
 static const Common::UString kCursorAttack        = "attack";        //   7,   8
 static const Common::UString kCursorNoAttack      = "noattack";      //   9,  10
 static const Common::UString kCursorTalk          = "talk";          //  11,  12

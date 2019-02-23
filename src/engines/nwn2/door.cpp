@@ -31,6 +31,7 @@
 #include "src/aurora/2dareg.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -39,6 +40,7 @@
 #include "src/engines/nwn2/module.h"
 #include "src/engines/nwn2/trap.h"
 #include "src/engines/nwn2/area.h"
+#include "src/engines/nwn2/cursor.h"
 
 namespace Engines {
 
@@ -156,10 +158,21 @@ void Door::hide() {
 }
 
 void Door::enter() {
+	if (getIsTrapped() && getTrapFlagged() &&
+	    getIsEnemy(getArea()->getModule().getPC())) {
+		// Hostile trap spotted
+		CursorMan.setGroup(kCursorDisarm);
+	} else if (isLocked()) {
+		// Lock needs to be opened
+		CursorMan.setGroup(kCursorLock);
+	} else {
+		CursorMan.setGroup(kCursorDoor);
+	}
 	highlight(true);
 }
 
 void Door::leave() {
+	CursorMan.setGroup(kCursorDefault);
 	highlight(false);
 }
 
