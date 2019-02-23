@@ -136,6 +136,10 @@ ObjectPtr Variable::asObject() {
 	return _value.object;
 }
 
+ObjectPtr Variable::asObject() const {
+	return _value.object;
+}
+
 const Common::UString Variable::asString() const {
 	switch (_type) {
 		case kTypeNumber:
