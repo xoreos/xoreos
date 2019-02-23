@@ -44,6 +44,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/actionexecutor.h \
     src/engines/kotorbase/savedgame.h \
     src/engines/kotorbase/game.h \
+    src/engines/kotorbase/playercontroller.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
@@ -67,6 +68,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/actionexecutor.cpp \
     src/engines/kotorbase/savedgame.cpp \
     src/engines/kotorbase/game.cpp \
+    src/engines/kotorbase/playercontroller.cpp \
     $(EMPTY)
 
 include src/engines/kotorbase/script/rules.mk

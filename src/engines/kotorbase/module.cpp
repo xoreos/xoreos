@@ -87,12 +87,10 @@ Module::Module(::Engines::Console &console) :
 		_freeCamEnabled(false),
 		_prevTimestamp(0),
 		_frameTime(0),
-		_forwardBtnPressed(false),
-		_backwardsBtnPressed(false),
-		_pcRunning(false),
 		_pcPositionLoaded(false),
 		_inDialog(false),
-		_cameraHeight(0.0f) {
+		_cameraHeight(0.0f),
+		_playerController(this) {
 
 	loadSurfaceTypes();
 }
@@ -177,6 +175,7 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 
 void Module::usePC(Creature *pc) {
 	_pc.reset(pc);
+	_playerController.setPC(_pc.get());
 }
 
 Creature *Module::getPC() {
@@ -527,7 +526,7 @@ void Module::clickObject(Object *object) {
 	if (placeable) {
 		if (placeable->hasInventory()) {
 			stopCameraMovement();
-			stopPCMovement();
+			_playerController.stopMovement();
 
 			_ingame->showContainer(placeable->getInventory());
 			placeable->close(_pc.get());
@@ -605,24 +604,7 @@ void Module::handleEvents() {
 			}
 		}
 
-		// PC movement
-		switch (event->type) {
-			case Events::kEventKeyDown:
-			case Events::kEventKeyUp:
-				if (event->key.keysym.scancode == SDL_SCANCODE_W) {
-					_forwardBtnPressed = event->type == Events::kEventKeyDown;
-				} else if (event->key.keysym.scancode == SDL_SCANCODE_S) {
-					_backwardsBtnPressed = event->type == Events::kEventKeyDown;
-				}
-				break;
-
-			case Events::kEventControllerAxisMotion:
-				if (event->caxis.axis == Events::kControllerAxisLeftY) {
-					_backwardsBtnPressed = event->caxis.value >  10000;
-					_forwardBtnPressed   = event->caxis.value < -10000;
-				}
-				break;
-		}
+		_playerController.handleEvent(*event);
 
 		// Camera
 		if (!_console->isVisible()) {
@@ -658,36 +640,7 @@ void Module::handlePCMovement() {
 	if (!_pc)
 		return;
 
-	bool haveMovement = false;
-
-	if (_forwardBtnPressed || _backwardsBtnPressed) {
-		float x, y, z;
-		_pc->getPosition(x, y, z);
-		float yaw = SatelliteCam.getYaw();
-		float moveRate = _pc->getRunRate();
-		float newX, newY;
-
-		if (_forwardBtnPressed && !_backwardsBtnPressed) {
-			_pc->setOrientation(0, 0, 1, Common::rad2deg(yaw));
-			newX = x - moveRate * sin(yaw) * _frameTime;
-			newY = y + moveRate * cos(yaw) * _frameTime;
-			haveMovement = true;
-		} else if (_backwardsBtnPressed && !_forwardBtnPressed) {
-			_pc->setOrientation(0, 0, 1, 180 + Common::rad2deg(yaw));
-			newX = x + moveRate * sin(yaw) * _frameTime;
-			newY = y - moveRate * cos(yaw) * _frameTime;
-			haveMovement = true;
-		}
-
-		if (haveMovement) {
-			z = _area->evaluateElevation(newX, newY);
-			if (z != FLT_MIN) {
-				if (_area->walkable(glm::vec3(x, y, z + 0.1f),
-				                    glm::vec3(newX, newY, z + 0.1f)))
-					movePC(newX, newY, z);
-			}
-		}
-	}
+	_playerController.processMovement(_frameTime);
 
 	const float *position = CameraMan.getPosition();
 	SoundMan.setListenerPosition(position[0], position[1], position[2]);
@@ -696,14 +649,6 @@ void Module::handlePCMovement() {
 
 	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
 	_ingame->updateSelection();
-
-	if (haveMovement && !_pcRunning) {
-		_pc->playAnimation(Common::UString("run"), false, -1.0f);
-		_pcRunning = true;
-	} else if (!haveMovement && _pcRunning) {
-		_pc->playDefaultAnimation();
-		_pcRunning = false;
-	}
 }
 
 void Module::handleActions() {
@@ -807,6 +752,7 @@ void Module::switchPlayerCharacter(int npc) {
 		std::advance(iter, npc);
 	_pc.release();
 	_pc.reset(*iter);
+	_playerController.setPC(_pc.get());
 
 	Creature *pc = *iter;
 	_party.erase(iter);
@@ -1034,7 +980,7 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 
 	if (_dialog->isConversationActive()) {
 		stopCameraMovement();
-		stopPCMovement();
+		_playerController.stopMovement();
 
 		_ingame->hide();
 		_dialog->show();
@@ -1101,13 +1047,6 @@ KotORBase::Creature *Module::createCreature(const Aurora::GFF3Struct &creature) 
 
 void Module::stopCameraMovement() {
 	SatelliteCam.clearInput();
-}
-
-void Module::stopPCMovement() {
-	_forwardBtnPressed = false;
-	_backwardsBtnPressed = false;
-	_pc->playDefaultAnimation();
-	_pcRunning = false;
 }
 
 } // End of namespace KotORBase

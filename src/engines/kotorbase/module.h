@@ -44,6 +44,7 @@
 #include "src/engines/kotorbase/object.h"
 #include "src/engines/kotorbase/objectcontainer.h"
 #include "src/engines/kotorbase/savedgame.h"
+#include "src/engines/kotorbase/playercontroller.h"
 
 #include "src/engines/kotorbase/gui/ingame.h"
 #include "src/engines/kotorbase/gui/dialog.h"
@@ -291,12 +292,10 @@ private:
 	bool _freeCamEnabled;
 	uint32 _prevTimestamp;
 	float _frameTime;
-	float _forwardBtnPressed;
-	float _backwardsBtnPressed;
-	bool _pcRunning;
 	bool _pcPositionLoaded;
 	bool _inDialog;
 	float _cameraHeight;
+	PlayerController _playerController;
 
 
 	// Surface types
