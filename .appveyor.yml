@@ -92,6 +92,9 @@ build_script:
 
 cache:
   - libs
+  - C:\ProgramData\chocolatey\bin
+  - C:\ProgramData\chocolatey\lib
+  - C:\Program Files\NASM
   - C:\Program Files\FAAD
   - C:\Program Files\XviD
   - C:\Program Files (x86)\FAAD
