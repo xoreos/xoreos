@@ -48,6 +48,15 @@ public:
 		kStateDeactivated = 5  ///< Deactivated.
 	};
 
+	/** The default action for a placeable. */
+	enum DefAction {
+		kDefActionAutomatic   = 0, ///< Select by type.
+		kDefActionUse         = 1, ///< Use.
+		kDefActionBash        = 2, ///< Bash.
+		kDefActionDisableTrap = 3, ///< Disable trap.
+		kDefActionExamine     = 4, ///< Examine.
+	};
+
 	/** Load from a placeable instance. */
 	Placeable(const Aurora::GFF3Struct &placeable);
 	~Placeable();
@@ -96,6 +105,8 @@ protected:
 
 private:
 	State _state; ///< The current state of the placeable.
+
+	DefAction _defAction; ///< The default action on a click.
 
 	bool _hasInventory; ///< Does this placeable have an inventory?
 
