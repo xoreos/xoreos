@@ -73,6 +73,8 @@ LocalPathfinding::LocalPathfinding(Pathfinding *globalPathfinding) : Pathfinding
 
 	_angle = 0.f;
 
+	_endFace = UINT32_MAX;
+
 	float unwalkableColor[4] = {0.6, 0.4, 0.6, 0.4};
 	float walkableColor[4]   = {0.3, 0.7, 0.5, 0.4};
 	_walkmeshDrawing->setUnwalkableColor(unwalkableColor);
@@ -105,26 +107,7 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	const uint32 yCenterCell = _gridHeight / 2;
 
 	glm::vec2 lastPoint(path.back()[0], path.back()[1]);
-	glm::vec2 anglePoint;
-	if (glm::distance(glm::vec2(_xCenter, _yCenter), lastPoint) < _cellSize * MAX(xCenterCell, yCenterCell)) {
-		// Last point is close, take it to compute the angle.
-		anglePoint = lastPoint;
-	} else {
-		// Find intersection between the path and a circle around the center.
-		for (size_t p = 1; p < path.size(); ++p) {
-			const glm::vec3 start(path[p - 1][0], path[p - 1][1], path[p - 1][2]);
-			const glm::vec3 end(path[p][0], path[p][1], path[p][2]);
-			glm::vec3 intersectA, normalA, intersectB, normalB;
-			if (glm::intersectLineSphere(start, end, start, 4.f,
-			                             intersectA, normalA,
-			                             intersectB, normalB)) {
-				anglePoint = glm::vec2(intersectA);
-			} else {
-				warning("Path has no intersection inside local circle");
-				anglePoint = lastPoint;
-			}
-		}
-	}
+	glm::vec2 anglePoint = path[2];
 
 	// Compute the angle with the vertical .
 	glm::vec2 relatAnglePoint = anglePoint - glm::vec2(path[0]);
@@ -137,7 +120,7 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	_yMin = - (yCenterCell * _cellSize) - _cellSize / 2;
 
 	bool hasToShift = true;
-	const float shift = 1.5;
+	const float shift = 1.f;
 	const glm::vec2 bottomLeft(_xMin - shift, _yMin - shift);
 	const glm::vec2 topRight(_xMin + _cellSize * _gridWidth + shift,
 	                         _yMin + _cellSize * _gridHeight + shift);
@@ -321,39 +304,314 @@ uint32 LocalPathfinding::findFace(float x, float y, bool onlyWalkable) {
 	return face;
 }
 
-void LocalPathfinding::getAdjacentFaces(uint32 face, std::vector<uint32> &adjFaces, bool onlyWalkable) const {
+uint32 LocalPathfinding::closestWalkableFace(uint32 face, uint32 &second) const {
+	// Look around the face if there is something interesting.
+	std::vector<uint32> adjFaces;
+	getAdjacentFaces(face, UINT32_MAX, adjFaces);
+	if (!adjFaces.empty())
+		return adjFaces.front();
+
+	// Check if the face is on the border (a path bypassing an object/wall).
+	std::list<uint32> candidates;
+	// On the bottom.
+	if (face < _gridWidth) {
+		for (auto f = face + 1; f < _gridWidth; ++f) {
+			if (!faceWalkable(f))
+				continue;
+
+			candidates.push_back(f);
+			break;
+		}
+		for (auto f = face - 1; f != UINT32_MAX; --f) {
+			if (!faceWalkable(f))
+				continue;
+
+			candidates.push_back(f);
+			break;
+		}
+	}
+
+	// On the top.
+	const uint32 topLeftFace = (_gridWidth - 1) * _gridHeight;
+	if (face >= topLeftFace) {
+		for (auto f = face + 1; f < topLeftFace + _gridWidth; ++f) {
+			if (!faceWalkable(f))
+				continue;
+
+			candidates.push_back(f);
+			break;
+		}
+		for (auto f = face - 1; f < topLeftFace; --f) {
+			if (!faceWalkable(f))
+				continue;
+
+			candidates.push_back(f);
+			break;
+		}
+	}
+
+	// One the left.
+	if (face % _gridWidth == 0) {
+		for (auto f = face + _gridWidth; f <= topLeftFace; f += _gridWidth) {
+			if (!faceWalkable(f))
+				continue;
+
+			candidates.push_back(f);
+			break;
+		}
+		if (face != 0) {
+			for (auto f = face - _gridWidth; f != UINT32_MAX; f -= _gridWidth) {
+				if (!faceWalkable(f))
+					continue;
+
+				candidates.push_back(f);
+				break;
+			}
+		}
+	}
+
+	// One the right.
+	if (face % _gridWidth == _gridWidth - 1) {
+		for (auto f = face +_gridWidth; f < _gridWidth * _gridHeight; f += _gridWidth) {
+			if (!faceWalkable(f))
+				continue;
+
+			candidates.push_back(f);
+			break;
+		}
+		if (face > _gridWidth) {
+			for (auto f = face -_gridWidth; f >= _gridWidth - 1; f -= _gridWidth) {
+				if (!faceWalkable(f))
+					continue;
+
+				candidates.push_back(f);
+				break;
+			}
+		}
+	}
+
+	uint32 closest = UINT32_MAX;
+	second = UINT32_MAX;
+	float x, y, cX, cY;
+	getFacePosition(face, x, y);
+	float distance = FLT_MAX;
+	float distanceSecond = FLT_MAX;
+	for (auto c = candidates.begin(); c != candidates.end(); ++c) {
+		getFacePosition(*c, cX, cY);
+		const float length = glm::length(glm::vec2(x - cX, y- cY));
+		if (distance < length) {
+			if (distanceSecond >= length)
+				second = *c;
+			continue;
+		}
+
+		closest = *c;
+	}
+
+	return closest;
+}
+
+void LocalPathfinding::getAdjacentFaces(uint32 face, uint32 parent, std::vector<uint32> &adjFaces,
+                                        bool onlyWalkable) const {
+	// Use Jump Point Search algorithm to ignore symmetric paths unless there is no end face.
 	adjFaces.clear();
 
+	if (parent == UINT32_MAX || _endFace == UINT32_MAX) {
+		// Make forward and backward directions as priorities.
+		std::list<uint32> directions = {2, 0, 1, 3};
+		for (auto d = directions.begin(); d != directions.end(); ++d) {
+			const uint32 orthoFace = _adjFaces[face * 4 + *d];
+			const uint32 diagFace = getDiagonalFace(face, *d);
+			if (onlyWalkable) {
+				if (faceWalkable(orthoFace))
+					adjFaces.push_back(orthoFace);
+				if (faceWalkable(diagFace))
+					adjFaces.push_back(diagFace);
+			} else {
+				adjFaces.push_back(orthoFace);
+				adjFaces.push_back(diagFace);
+			}
+		}
+		return;
+	}
+
+	// Get direction.
+	uint32 dir;
+	bool orthoMove = true;
+	bool diagMove = true;
+	const uint32 row1 = parent / _gridWidth;
+	const uint32 row2 = face / _gridWidth;
+	const uint32 column1 = parent % _gridWidth;
+	const uint32 column2 = face % _gridWidth;
+	const int32 vertiDiff = row2 - row1;
+	const int32 horiDiff = column2 - column1;
+
+	if (vertiDiff == 0 || horiDiff == 0) {
+		diagMove = false;
+		// Orthogonal move.
+		if (horiDiff > 0) {
+			dir = 1;
+		} else if (horiDiff < 0) {
+			dir = 3;
+		} else if (vertiDiff > 0) {
+			dir = 2;
+		} else {
+			dir = 0;
+		}
+	} else {
+		orthoMove = false;
+		if (horiDiff == vertiDiff) {
+			if (vertiDiff > 0) {
+				dir = 1;
+			} else {
+				dir = 3;
+			}
+		} else {
+			if (vertiDiff > 0) {
+				dir = 2;
+			} else {
+				dir = 0;
+			}
+		}
+	}
+
 	// Follow the initial adjacency order (bottom, right, top, left).
-	int32 shift = 1;
-	for (uint8 f = 0; f < 4; ++f) {
-		const uint32 sideA = _adjFaces[face * 4 + f];
-		if (sideA == UINT32_MAX)
-			continue;
+	if (orthoMove) {
+		if (face == _endFace) {
+			adjFaces.push_back(_endFace);
+			return;
+		}
 
 		// Add axis face.
 		if (onlyWalkable) {
-			if (faceWalkable(sideA))
-				adjFaces.push_back(sideA);
+			if (!faceWalkable(face))
+				return;
+
+			// Before jumping, look at forced neighbors.
+			const uint32 neighborA = _adjFaces[face * 4 + (dir + 1) % 4];
+			if (!faceWalkable(neighborA) && neighborA != UINT32_MAX) {
+				const uint32 forcedNeighbor = _adjFaces[neighborA * 4 + dir];
+				if (faceWalkable(forcedNeighbor)) {
+					adjFaces.push_back(forcedNeighbor);
+				}
+			}
+			const uint32 neighborB = _adjFaces[face * 4 + (dir + 3) % 4];
+			if (!faceWalkable(neighborB) && neighborB != UINT32_MAX) {
+				const uint32 forcedNeighbor = _adjFaces[neighborB * 4 + dir];
+				if (faceWalkable(forcedNeighbor)) {
+					adjFaces.push_back(forcedNeighbor);
+				}
+			}
+			// Jump until an unwalkable face or the end of the grid or a forced neighbor.
+			const uint32 jumpFace = orthogonalJump(face, dir);
+			if (jumpFace != UINT32_MAX) {
+				adjFaces.push_back(jumpFace);
+			}
 		} else {
-			adjFaces.push_back(sideA);
+			adjFaces.push_back(face);
 		}
-
-		// Add diagonal face.
-		const uint32 sideB = _adjFaces[face * 4 + (f + 1) % 4];
-		if (sideB == UINT32_MAX)
-			continue;
-		const uint32 &sideHeight = f % 2 == 0 ? sideA : sideB;
-
-		if (f == 2)
-			shift = -1;
-		const uint32 diagFace = sideHeight + shift;
-
-		if (onlyWalkable && !faceWalkable(diagFace))
-			continue;
-
-		adjFaces.push_back(diagFace);
 	}
+
+	// Add diagonal face.
+	if (diagMove) {
+		if (onlyWalkable) {
+			if (!faceWalkable(face))
+				return;
+
+			// Before jumping, look at forced neighbors.
+			const uint32 neighborA = _adjFaces[face * 4 + (dir + 2) % 4];
+			if (!faceWalkable(neighborA) && neighborA != UINT32_MAX) {
+				const uint32 forcedNeighbor = _adjFaces[neighborA * 4 + (dir + 1) % 4];
+				if (faceWalkable(forcedNeighbor)) {
+					adjFaces.push_back(forcedNeighbor);
+				}
+			}
+			const uint32 neighborB = _adjFaces[face * 4 + (dir + 3) % 4];
+			if (!faceWalkable(neighborB) && neighborB != UINT32_MAX) {
+				const uint32 forcedNeighbor = _adjFaces[neighborA * 4 + dir];
+				if (faceWalkable(forcedNeighbor)) {
+					adjFaces.push_back(forcedNeighbor);
+				}
+			}
+
+			// There are three kind of jumps, horizontally, vertically and diagonaly.
+			// First try horizontal and vertical jumps.
+			const uint32 jumpFaceA = orthogonalJump(face, dir);
+			if (jumpFaceA != UINT32_MAX)
+				adjFaces.push_back(jumpFaceA);
+			const uint32 jumpFaceB = orthogonalJump(face, (dir + 1) % 4);
+			if (jumpFaceB != UINT32_MAX)
+				adjFaces.push_back(jumpFaceB);
+
+			const uint32 jumpFace = diagonalJump(face, dir);
+			if (jumpFace != UINT32_MAX) {
+				adjFaces.push_back(jumpFace);
+			}
+		} else {
+			adjFaces.push_back(face);
+		}
+	}
+}
+
+uint32 LocalPathfinding::diagonalJump(uint32 startFace, uint32 jumpDir) const {
+	const uint32 diagFace = getDiagonalFace(startFace, jumpDir);
+	if (!faceWalkable(diagFace))
+		return UINT32_MAX;
+
+	if (diagFace == _endFace)
+		return diagFace;
+
+	// Before jumping, look at forced neighbors.
+	const uint32 neighborA = _adjFaces[diagFace * 4 + (jumpDir + 2) % 4];
+	const uint32 neighborB = _adjFaces[diagFace * 4 + (jumpDir + 3) % 4];
+	if ((!faceWalkable(neighborA) && neighborA != UINT32_MAX)
+	    || (!faceWalkable(neighborB) && neighborB != UINT32_MAX))
+		return diagFace;
+
+	// There are three kind of jumps, horizontally, vertically and diagonaly.
+	// First try horizontal and vertical jumps.
+	const uint32 jumpFaceA = orthogonalJump(diagFace, jumpDir);
+	const uint32 jumpFaceB = orthogonalJump(diagFace, (jumpDir + 1) % 4);
+	if (jumpFaceA != UINT32_MAX || jumpFaceB != UINT32_MAX)
+		return diagFace;
+
+	return diagonalJump(diagFace, jumpDir);
+}
+
+uint32 LocalPathfinding::orthogonalJump(uint32 startFace, uint32 jumpDir) const {
+	const uint32 nextFace = _adjFaces[startFace * 4 + jumpDir];
+	if (nextFace == _endFace)
+		return nextFace;
+
+	if (!faceWalkable(nextFace))
+		return UINT32_MAX;
+
+	// Check about forced neighbor(s) (orthogonal unwalkable faces).
+	const uint32 orthognalFaceA = _adjFaces[nextFace * 4 + (jumpDir + 1) % 4];
+	const uint32 orthognalFaceB = _adjFaces[nextFace * 4 + (jumpDir + 3) % 4];
+	if (!faceWalkable(orthognalFaceA) && orthognalFaceA != UINT32_MAX) {
+		const uint32 forcedNeigbor = _adjFaces[orthognalFaceA * 4 + jumpDir];
+		if (faceWalkable(forcedNeigbor))
+			return nextFace;
+	}
+
+	if (!faceWalkable(orthognalFaceB) && orthognalFaceB != UINT32_MAX) {
+		const uint32 forcedNeigbor = _adjFaces[orthognalFaceB * 4 + jumpDir];
+		if (faceWalkable(forcedNeigbor))
+			return nextFace;
+	}
+
+	return orthogonalJump(nextFace, jumpDir);
+}
+
+uint32 LocalPathfinding::getDiagonalFace(uint32 face, uint32 direction) const {
+	const uint32 sideA = _adjFaces[face * 4 + direction];
+	const uint32 sideB = _adjFaces[face * 4 + (direction + 1) % 4];
+	// Check if we are on a border of the grid.
+	if (sideA == UINT32_MAX || sideB == UINT32_MAX)
+		return UINT32_MAX;
+
+	return (direction % 2 == 0 ? sideA : sideB) + (direction > 1 ? -1 : 1);
 }
 
 void LocalPathfinding::getVerticesTunnel(std::vector<uint32> &facePath, std::vector<glm::vec3> &tunnel,
@@ -378,13 +636,8 @@ bool LocalPathfinding::getSharedVertices(uint32 face1, uint32 face2,
 	const uint32 row2 = face2 / _gridWidth;
 	const uint32 column1 = face1 % _gridWidth;
 	const uint32 column2 = face2 % _gridWidth;
-	const int32 vertiDiff = row2 - row1;
-	const int32 horiDiff = column2 - column1;
-
-	if (fabs(vertiDiff) > 1 || fabs(horiDiff) > 1) {
-		error("Faces are not side by side, diff: %i, %i", vertiDiff, horiDiff);
-		return false;
-	}
+	const int32 vertiDiff = row2 < row1 ? -1 : (row2 > row1 ? 1 : 0);
+	const int32 horiDiff = column2 < column1 ? -1 : (column2 > column1 ? 1 : 0);
 
 	if (vertiDiff > 0) {
 		 // Left.
@@ -393,9 +646,9 @@ bool LocalPathfinding::getSharedVertices(uint32 face1, uint32 face2,
 		vert2 = face2 + row2 - horiDiff + 1;
 	} else {
 		 // Left.
-		vert1 = face1 + row1 + 1;
+		vert1 = face2 + _gridWidth + row2 + 2;
 		 // Right.
-		vert2 = face1 + row1;
+		vert2 = face2 + _gridWidth + row2 + 1;
 	}
 
 	// Check if it is a diagonal move.
@@ -422,8 +675,8 @@ bool LocalPathfinding::getSharedVertices(uint32 face1, uint32 face2,
 		vert1 = face2 + _gridWidth + row2; // Left;
 		vert2 = face2 + row2; // Right.
 	} else if (horiDiff < 0){
-		vert1 = face1 + row2; // Left.
-		vert2 = face1 + _gridWidth + row2; // Right;
+		vert1 = face2 + row2 + 1; // Left.
+		vert2 = face2 + _gridWidth + row2 + 1; // Right;
 	}
 
 	glm::vec3 vertex1, vertex2;
@@ -450,7 +703,20 @@ bool LocalPathfinding::findPathTo(std::vector<glm::vec3> &path) {
 
 	const glm::vec3 virtStart = toVirtualPlan(path[0]);
 
-	const bool pathFound = findPath(virtStart[0], virtStart[1], _xEnd, _yEnd, facePath, 0.f, 1000);
+	_endFace = findFace(_xEnd, _yEnd, false);
+	// Check if path is walkable.
+	uint32 secondEndFace = UINT32_MAX;
+	if (!faceWalkable(_endFace)) {
+		_endFace = closestWalkableFace(_endFace, secondEndFace);
+		getFacePosition(_endFace, _xEnd, _yEnd);
+	}
+	bool pathFound = findPath(virtStart[0], virtStart[1], _xEnd, _yEnd, facePath, 0.f, 1000);
+	if (!pathFound && secondEndFace != UINT32_MAX) {
+		// Try with the other end face.
+		facePath.clear();
+		getFacePosition(secondEndFace, _xEnd, _yEnd);
+		pathFound = findPath(virtStart[0], virtStart[1], _xEnd, _yEnd, facePath, 0.f, 1000);
+	}
 	if (facePath.empty())
 		return pathFound;
 

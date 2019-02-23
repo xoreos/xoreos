@@ -180,8 +180,8 @@ void Pathfinding::smoothPath(float startX, float startY, float endX, float endY,
 	for (size_t point = 0; point < funnelIdx.size(); ++point)
 		path.push_back(tunnel[funnelIdx[point]]);
 
-	if (walkable(end))
-		path.push_back(end);
+	// Assume end path is walkable.
+	path.push_back(end);
 
 	// Drawing part.
 	std::vector<glm::vec3> pathToDraw;
@@ -472,7 +472,8 @@ bool Pathfinding::goThrough(uint32 fromFace, uint32 toFace, float width) {
 	return walkableSegment(side1, side2);
 }
 
-void Pathfinding::getAdjacentFaces(uint32 face, std::vector<uint32> &adjFaces, bool onlyWalkable) const {
+void Pathfinding::getAdjacentFaces(uint32 face, uint32 parent, std::vector<uint32> &adjFaces,
+                                   bool onlyWalkable) const {
 	adjFaces.clear();
 
 	// Get adjacent faces
@@ -480,8 +481,8 @@ void Pathfinding::getAdjacentFaces(uint32 face, std::vector<uint32> &adjFaces, b
 		// Get adjacent face.
 		uint32 adjFace = _adjFaces[face * _polygonEdges + f];
 
-		// Check if it is a border.
-		if (adjFace == UINT32_MAX)
+		// Check if it is a border or the parent face.
+		if (adjFace == UINT32_MAX || adjFace == parent)
 			continue;
 
 		// Check walkability.

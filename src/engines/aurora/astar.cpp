@@ -97,12 +97,8 @@ bool AStar::findPath(float startX, float startY, float endX, float endY,
 		closedList.push_back(current);
 
 		std::vector<uint32> adjFaces;
-		_pathfinding->getAdjacentFaces(current.face, adjFaces);
+		_pathfinding->getAdjacentFaces(current.face, current.parent, adjFaces);
 		for (std::vector<uint32>::iterator a = adjFaces.begin(); a != adjFaces.end(); ++a) {
-			// Check if it is the parent node.
-			if (*a == current.parent)
-				continue;
-
 			// Check if it has been already evaluated.
 			if (hasNode(*a, closedList))
 				continue;

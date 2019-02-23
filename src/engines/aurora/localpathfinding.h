@@ -62,7 +62,8 @@ public:
 protected:
 	uint32 findFace(float x, float y, bool onlyWalkable);
 	/** Get the 6 walkable adjacent faces. */
-	void getAdjacentFaces(uint32 face, std::vector<uint32> &adjFaces, bool onlyWalkable = true) const;
+	void getAdjacentFaces(uint32 face, uint32 parent, std::vector<uint32> &adjFaces,
+	                      bool onlyWalkable = true) const;
 	void getFacePosition(uint32 face, float &x, float &y) const;
 	void rasterizeTriangle(std::vector<glm::vec3> &vertices, float halfWidth = 0.f);
 	void addObjects(const std::vector<float> &vertices, const std::vector<uint32> &faces,
@@ -78,6 +79,11 @@ private:
 	glm::vec2 toVirtualPlan(const glm::vec2 &vector) const;
 	glm::vec3 fromVirtualPlan(const glm::vec3 &vector) const;
 	glm::vec2 fromVirtualPlan(const glm::vec2 &vector) const;
+
+	uint32 closestWalkableFace(uint32 face, uint32 &second) const;
+	uint32 getDiagonalFace(uint32 face, uint32 direction) const;
+	uint32 orthogonalJump(uint32 startFace, uint32 jumpDir) const;
+	uint32 diagonalJump(uint32 startFace, uint32 jumpDir) const;
 	Pathfinding *_globalPathfinding;
 
 	Common::PtrList<ObjectWalkmesh> _staticObjects;
@@ -86,6 +92,7 @@ private:
 	glm::vec2 _trueMax;
 	uint32 _gridWidth;
 	uint32 _gridHeight;
+	uint32 _endFace;
 	float  _cellSize;
 	float  _xCenter;
 	float  _yCenter;

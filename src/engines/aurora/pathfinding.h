@@ -107,7 +107,8 @@ protected:
 	/** Is the surface walkable? */
 	virtual bool surfaceWalkable(uint32 surfaceID) const;
 	/** Get the adjacent faces of a specific face. */
-	virtual void getAdjacentFaces(uint32 face, std::vector<uint32> &adjFaces, bool onlyWalkable = true) const;
+	virtual void getAdjacentFaces(uint32 face, uint32 parent, std::vector<uint32> &adjFaces,
+	                              bool onlyWalkable = true) const;
 	/** Get the vertices of a face. */
 	virtual void getVertices(uint32 faceID, std::vector<glm::vec3> &vertices, bool xyPlane = true) const;
 	/** The vertex position from the vertex id. */
