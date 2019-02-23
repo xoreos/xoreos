@@ -231,7 +231,10 @@ private:
 	void getCurrentHitPoints(Aurora::NWScript::FunctionContext &ctx);
 	void getMaxHitPoints    (Aurora::NWScript::FunctionContext &ctx);
 
-	void getIsTrapped(Aurora::NWScript::FunctionContext &ctx);
+	void getIsTrapped (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapActive(Aurora::NWScript::FunctionContext &ctx);
+
+	void setTrapActive(Aurora::NWScript::FunctionContext &ctx);
 
 	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
 	void jumpToObject  (Aurora::NWScript::FunctionContext &ctx);
