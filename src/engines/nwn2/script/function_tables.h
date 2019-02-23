@@ -669,7 +669,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  528, "GetTrapDetectable"                   , 0                                                },
 	{  529, "GetTrapDetectedBy"                   , 0                                                },
 	{  530, "GetTrapFlagged"                      , 0                                                },
-	{  531, "GetTrapBaseType"                     , 0                                                },
+	{  531, "GetTrapBaseType"                     , &Functions::getTrapBaseType                      },
 	{  532, "GetTrapOneShot"                      , 0                                                },
 	{  533, "GetTrapCreator"                      , 0                                                },
 	{  534, "GetTrapKeyTag"                       , 0                                                },
