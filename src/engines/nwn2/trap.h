@@ -53,6 +53,7 @@ public:
 
 	bool isTriggeredBy(Object *triggerBy) const;
 
+	bool getIsTrapped() const;
 	bool getTrapActive() const;
 	bool getTrapDetectable() const;
 	bool getTrapDetectedBy(Creature *detector) const;
