@@ -689,7 +689,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  548, "GetFirstPC"                          , &Functions::getFirstPC                           },
 	{  549, "GetNextPC"                           , &Functions::getNextPC                            },
 	{  550, "SetTrapDetectedBy"                   , 0                                                },
-	{  551, "GetIsTrapped"                        , 0                                                },
+	{  551, "GetIsTrapped"                        , &Functions::getIsTrapped                         },
 	{  552, "EffectTurnResistanceDecrease"        , 0                                                },
 	{  553, "EffectTurnResistanceIncrease"        , 0                                                },
 	{  554, "PopUpDeathGUIPanel"                  , 0                                                },

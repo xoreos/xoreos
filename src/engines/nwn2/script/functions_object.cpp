@@ -37,6 +37,7 @@
 #include "src/engines/nwn2/object.h"
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/door.h"
+#include "src/engines/nwn2/trigger.h"
 #include "src/engines/nwn2/placeable.h"
 
 #include "src/engines/nwn2/script/functions.h"
@@ -382,6 +383,15 @@ void Functions::getMaxHitPoints(Aurora::NWScript::FunctionContext &ctx) {
 		Door *door = NWN2::ObjectContainer::toDoor(object);
 		ctx.getReturn() = (door) ? door->getMaxHP() : 0;
 	}
+}
+
+void Functions::getIsTrapped(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(object);
+	ctx.getReturn() = (trigger) ? trigger->getIsTrapped() : 0;
 }
 
 void Functions::jumpToLocation(Aurora::NWScript::FunctionContext &ctx) {

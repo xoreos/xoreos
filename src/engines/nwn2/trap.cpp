@@ -81,6 +81,11 @@ bool Trap::isTriggeredBy(Object *triggerBy) const {
 	return _isTrapActive;
 }
 
+/** Return true if this object is trapped */
+bool Trap::getIsTrapped() const {
+	return _isTrap;
+}
+
 /** Return true if trap is active */
 bool Trap::getTrapActive() const {
 	return _isTrap && _isTrapActive;
