@@ -98,3 +98,4 @@ Makefile.in
 # Windows binary
 /src/xoreos.exe
 *.dll
+
