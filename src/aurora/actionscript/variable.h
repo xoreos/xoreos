@@ -68,6 +68,7 @@ public:
 
 	double asNumber() const;
 	ObjectPtr asObject();
+	ObjectPtr asObject() const;
 	const Common::UString asString() const;
 	bool asBoolean() const;
 
