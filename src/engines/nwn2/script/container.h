@@ -51,6 +51,8 @@ public:
 
 	const Common::UString &getScript(Script script) const;
 
+	void setScript(Script script, const Common::UString &name);
+
 	bool hasScript(Script script) const;
 
 	bool runScript(Script script,

@@ -424,6 +424,21 @@ void Functions::setTrapActive(Aurora::NWScript::FunctionContext &ctx) {
 		trigger->setTrapActive(active);
 }
 
+void Functions::createTrapOnObject(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 1));
+	if (!object)
+		return;
+
+	const uint8 trapType = (uint8)(ctx.getParams()[0].getInt());
+	const uint32 faction = (uint32)(ctx.getParams()[2].getInt());
+	const Common::UString &disarm = ctx.getParams()[3].getString();
+	const Common::UString &triggered = ctx.getParams()[4].getString();
+
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(object);
+	if (trigger)
+		trigger->createTrap(trapType, faction, disarm, triggered);
+}
+
 void Functions::jumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
 	NWN2::Object *object = NWN2::ObjectContainer::toObject(ctx.getCaller());
 	NWN2::Location *moveTo = NWN2::ObjectContainer::toLocation(ctx.getParams()[0].getEngineType());

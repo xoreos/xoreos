@@ -47,6 +47,10 @@ public:
 
 	/** Get the reputation of the trigger with the source. */
 	uint8 getReputation(Object *source) const;
+	/** Create a trap on the trigger. */
+	void createTrap(uint8 trapType, uint32 faction,
+	                const Common::UString &disarm,
+	                const Common::UString &triggered);
 
 protected:
 	void load(const Aurora::GFF3Struct &gff);

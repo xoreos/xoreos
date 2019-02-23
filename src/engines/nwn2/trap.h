@@ -49,7 +49,12 @@ public:
 
 	Trap(const Aurora::GFF3Struct &trap);
 	Trap(const uint8 type, const Creature *creator);
-	~Trap();
+	virtual ~Trap();
+
+	void createTrapBaseType(uint8 trapType);
+	virtual void createTrap(uint8 trapType, uint32 faction,
+	                        const Common::UString &disarm,
+	                        const Common::UString &triggered);
 
 	bool isTriggeredBy(Object *triggerBy) const;
 
@@ -110,7 +115,6 @@ private:
 
 	void load(const Aurora::GFF3Struct &trap);
 	void load(const uint8 type, const Creature *creator);
-	void loadTrap2da(const Aurora::TwoDAFile &twoda, uint32 id);
 };
 
 } // End of namespace NWN2

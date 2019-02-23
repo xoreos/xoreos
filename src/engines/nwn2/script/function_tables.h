@@ -1107,7 +1107,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  966, "SetTrapKeyTag"                       , 0                                                },
 	{  967, "SetTrapOneShot"                      , 0                                                },
 	{  968, "CreateTrapAtLocation"                , 0                                                },
-	{  969, "CreateTrapOnObject"                  , 0                                                },
+	{  969, "CreateTrapOnObject"                  , &Functions::createTrapOnObject                   },
 	{  970, "GetAreaSize"                         , 0                                                },
 	{  971, "GetTrapRecoverable"                  , 0                                                },
 	{  972, "SetTrapRecoverable"                  , 0                                                },

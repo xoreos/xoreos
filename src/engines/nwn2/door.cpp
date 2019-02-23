@@ -192,6 +192,17 @@ void Door::setLocked(bool locked) {
 		_linkedDoor->setLocked(locked);
 }
 
+void Door::createTrap(uint8 trapType, uint32 faction,
+                      const Common::UString &disarm,
+                      const Common::UString &triggered) {
+	Trap::createTrap(trapType, faction, disarm, triggered);
+	_faction = faction; // Overriding door faction
+
+	setScript(kScriptDisarm, disarm);
+	if (triggered != "")
+		setScript(kScriptTrapTriggered, triggered);
+}
+
 bool Door::click(Object *triggerer) {
 	_lastUsedBy = triggerer;
 

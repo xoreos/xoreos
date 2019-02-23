@@ -119,6 +119,12 @@ const Common::UString &ScriptContainer::getScript(Script script) const {
 	return _scripts[script];
 }
 
+void ScriptContainer::setScript(Script script, const Common::UString &name) {
+	assert((script >= 0) && (script < kScriptMAX));
+
+	_scripts[script] = name;
+}
+
 bool ScriptContainer::hasScript(Script script) const {
 	return !getScript(script).empty();
 }
