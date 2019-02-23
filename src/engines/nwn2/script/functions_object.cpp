@@ -394,6 +394,27 @@ void Functions::getIsTrapped(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (trigger) ? trigger->getIsTrapped() : 0;
 }
 
+void Functions::getTrapActive(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(object);
+	ctx.getReturn() = (trigger) ? trigger->getTrapActive() : 0;
+}
+
+void Functions::setTrapActive(Aurora::NWScript::FunctionContext &ctx) {
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	bool active = ctx.getParams()[1].getInt() != 0;
+
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(object);
+	if (trigger)
+		trigger->setTrapActive(active);
+}
+
 void Functions::jumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
 	NWN2::Object *object = NWN2::ObjectContainer::toObject(ctx.getCaller());
 	NWN2::Location *moveTo = NWN2::ObjectContainer::toLocation(ctx.getParams()[0].getEngineType());
