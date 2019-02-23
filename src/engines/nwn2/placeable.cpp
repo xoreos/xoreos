@@ -30,12 +30,15 @@
 #include "src/aurora/2dareg.h"
 
 #include "src/graphics/aurora/model.h"
+#include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/aurora/util.h"
 
 #include "src/engines/nwn2/placeable.h"
 #include "src/engines/nwn2/trap.h"
+#include "src/engines/nwn2/module.h"
 #include "src/engines/nwn2/area.h"
+#include "src/engines/nwn2/cursor.h"
 
 namespace Engines {
 
@@ -136,10 +139,22 @@ void Placeable::loadAppearance() {
 }
 
 void Placeable::enter() {
+	if (_hasInventory && getIsTrapped() && getTrapFlagged() &&
+	    getIsEnemy(getArea()->getModule().getPC())) {
+		// Hostile trap spotted on container
+		CursorMan.setGroup(kCursorDisarm);
+	} else if (isLocked()) {
+		// Lock needs to be opened
+		CursorMan.setGroup(kCursorLock);
+	} else {
+		// Set to default action
+		CursorMan.setGroup(kCursorAction);
+	}
 	highlight(true);
 }
 
 void Placeable::leave() {
+	CursorMan.setGroup(kCursorDefault);
 	highlight(false);
 }
 
