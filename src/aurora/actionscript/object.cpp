@@ -52,8 +52,8 @@ std::vector<Common::UString> Object::getSlots() const {
 	return slots;
 }
 
-bool Object::hasMember(const Common::UString &id) {
-	std::map<Common::UString, Variable>::iterator iter = _members.find("constructor");
+bool Object::hasMember(const Common::UString &id) const {
+	std::map<Common::UString, Variable>::const_iterator iter = _members.find("constructor");
 	if (iter != _members.end())
 		if (iter->second.asObject()->hasMember(id))
 			return true;
