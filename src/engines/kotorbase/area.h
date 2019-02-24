@@ -133,6 +133,13 @@ public:
 	void toggleTriggers();
 	void evaluateTriggers(float x, float y);
 
+	// Object management
+
+	Object *getObjectByTag(const Common::UString &tag);
+
+	void addCreature(Creature *creature);
+	void removeObject(Object *object);
+
 
 	void showAllRooms();
 
@@ -142,11 +149,8 @@ public:
 	void getCameraStyle(float &distance, float &pitch, float &height) const;
 	const std::vector<Common::UString> &getRoomsVisibleFrom(const Common::UString &room) const;
 	Object *getActiveObject();
-	Object *getObjectByTag(const Common::UString &tag);
 
 	void processCreaturesActions(float dt);
-
-	void removeObject(Object *object);
 
 protected:
 	void notifyCameraMoved();
