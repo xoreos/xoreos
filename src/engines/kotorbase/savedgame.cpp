@@ -29,39 +29,46 @@
 
 #include "src/engines/kotorbase/savedgame.h"
 #include "src/engines/kotorbase/gui/chargeninfo.h"
-#include "src/engines/kotorbase/gui/chargeninfo.h"
 
 namespace Engines {
 
 namespace KotORBase {
 
-SavedGame *SavedGame::load(const Common::UString &dir, bool loadSav) {
+SavedGame::SavedGame(const Common::UString &dir, bool loadSav) :
+		_timePlayed(0),
+		_pcGender(kGenderMale),
+		_pcLoaded(false),
+		_pc(0) {
+
+	load(dir, loadSav);
+}
+
+SavedGame::~SavedGame() {
+}
+
+void SavedGame::load(const Common::UString &dir, bool loadSav) {
 	Common::UString nfoPath(Common::FilePath::normalize(dir + "/savenfo.res"));
 	Common::ReadFile *nfoFile = new Common::ReadFile(nfoPath);
 	Aurora::GFF3File nfoGff(nfoFile);
 
-	SavedGame *save = new SavedGame();
-	SavedGame::fillFromNFO(nfoGff, save);
+	fillFromNFO(nfoGff);
 
 	if (loadSav) {
 		Common::UString savPath(Common::FilePath::normalize(dir + "/SAVEGAME.sav"));
 		Common::ReadFile *savFile = new Common::ReadFile(savPath);
 		Aurora::ERFFile savErf(savFile);
-		SavedGame::fillFromSAV(savErf, save->_moduleName, save);
+		fillFromSAV(savErf, _moduleName);
 	}
-
-	return save;
 }
 
-void SavedGame::fillFromNFO(const Aurora::GFF3File &gff, SavedGame *save) {
+void SavedGame::fillFromNFO(const Aurora::GFF3File &gff) {
 	const Aurora::GFF3Struct &root = gff.getTopLevel();
-	save->_name = root.getString("SAVEGAMENAME");
-	save->_moduleName = root.getString("LASTMODULE");
-	save->_timePlayed = root.getUint("TIMEPLAYED");
+	_name = root.getString("SAVEGAMENAME");
+	_moduleName = root.getString("LASTMODULE");
+	_timePlayed = root.getUint("TIMEPLAYED");
 }
 
-void SavedGame::fillFromSAV(const Aurora::ERFFile &erf,
-		const Common::UString &moduleName, SavedGame *save) {
+void SavedGame::fillFromSAV(const Aurora::ERFFile &erf, const Common::UString &moduleName) {
 	int moduleSavIndex = -1;
 
 	const Aurora::Archive::ResourceList &resources = erf.getResources();
@@ -76,19 +83,20 @@ void SavedGame::fillFromSAV(const Aurora::ERFFile &erf,
 
 	if (moduleSavIndex >= 0) {
 		Aurora::ERFFile moduleSav(erf.getResource(moduleSavIndex));
-		SavedGame::fillFromModuleSAV(moduleSav, save);
-	} else
+		fillFromModuleSAV(moduleSav);
+	} else {
 		warning("SAV file not found: %s", moduleName.c_str());
+	}
 }
 
-void SavedGame::fillFromModuleSAV(const Aurora::ERFFile &erf, SavedGame *save) {
+void SavedGame::fillFromModuleSAV(const Aurora::ERFFile &erf) {
 	int ifoIndex = -1;
 
 	const Aurora::Archive::ResourceList &resources = erf.getResources();
 	for (Aurora::Archive::ResourceList::const_iterator it = resources.begin();
 			it != resources.end(); ++it) {
 		const Aurora::Archive::Resource &res = *it;
-		if (res.name == "Module" && res.type == Aurora::kFileTypeIFO) {
+		if ((res.name == "Module") && (res.type == Aurora::kFileTypeIFO)) {
 			ifoIndex = res.index;
 			break;
 		}
@@ -96,28 +104,24 @@ void SavedGame::fillFromModuleSAV(const Aurora::ERFFile &erf, SavedGame *save) {
 
 	if (ifoIndex >= 0) {
 		Aurora::GFF3File moduleIfo(erf.getResource(ifoIndex));
-		SavedGame::fillFromModuleIFO(moduleIfo, save);
-	} else
+		fillFromModuleIFO(moduleIfo);
+	} else {
 		warning("Module IFO file not found");
+	}
 }
 
-void SavedGame::fillFromModuleIFO(const Aurora::GFF3File &gff, SavedGame *save) {
+void SavedGame::fillFromModuleIFO(const Aurora::GFF3File &gff) {
 	const Aurora::GFF3List &playerList = gff.getTopLevel().getList("Mod_PlayerList");
 	if (!playerList.empty()) {
 		const Aurora::GFF3Struct *playerGff = playerList[0];
-		save->_pcGender = playerGff->getUint("Gender");
-		save->_pcPosition[0] = playerGff->getDouble("XPosition");
-		save->_pcPosition[1] = playerGff->getDouble("YPosition");
-		save->_pcPosition[2] = playerGff->getDouble("ZPosition");
-		save->_pcLoaded = true;
-	} else
+		_pcGender = playerGff->getUint("Gender");
+		_pcPosition[0] = playerGff->getDouble("XPosition");
+		_pcPosition[1] = playerGff->getDouble("YPosition");
+		_pcPosition[2] = playerGff->getDouble("ZPosition");
+		_pcLoaded = true;
+	} else {
 		warning("Player list not found in module IFO");
-}
-
-SavedGame::SavedGame() : _timePlayed(0),
-                         _pcGender(kGenderMale),
-                         _pcLoaded(false),
-                         _pc(0) {
+	}
 }
 
 const Common::UString &SavedGame::getName() const {
@@ -130,29 +134,6 @@ const Common::UString &SavedGame::getModuleName() const {
 
 uint32 SavedGame::getTimePlayed() const {
 	return _timePlayed;
-}
-
-Creature *SavedGame::getPC() {
-	if (_pc)
-		return _pc;
-
-	Common::ScopedPtr<CharacterGenerationInfo> info;
-
-	switch (_pcGender) {
-		case kGenderFemale:
-			info.reset(CharacterGenerationInfo::createRandomFemaleSoldier());
-			break;
-		default:
-			info.reset(CharacterGenerationInfo::createRandomMaleSoldier());
-			break;
-	}
-
-	_pc = info->createCharacter();
-
-	if (_pcLoaded)
-		_pc->setPosition(_pcPosition[0], _pcPosition[1], _pcPosition[2]);
-
-	return _pc;
 }
 
 bool SavedGame::isPCLoaded() const {

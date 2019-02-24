@@ -34,6 +34,8 @@
 #include "src/engines/odyssey/label.h"
 #include "src/engines/odyssey/progressbar.h"
 
+#include "src/engines/kotor/creature.h"
+
 #include "src/engines/kotor/gui/ingame/hud.h"
 
 namespace Engines {

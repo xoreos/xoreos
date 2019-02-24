@@ -38,6 +38,8 @@
 #include "src/engines/odyssey/listbox.h"
 #include "src/engines/odyssey/scrollbar.h"
 
+#include "src/engines/kotor/savedgame.h"
+
 #include "src/engines/kotor/gui/saveload.h"
 
 namespace Engines {
@@ -149,7 +151,7 @@ void SaveLoadMenu::addSavedGameItems(Odyssey::WidgetListBox *listBox) {
 			continue;
 
 		_saveDirs.push_back(saveDir);
-		KotORBase::SavedGame *save = KotORBase::SavedGame::load(saveDir);
+		KotORBase::SavedGame *save = new SavedGame(saveDir);
 		uint32 timePlayed = save->getTimePlayed();
 		Common::UString slotText(slotTextFormat);
 
@@ -168,7 +170,7 @@ void SaveLoadMenu::addSavedGameItems(Odyssey::WidgetListBox *listBox) {
 void SaveLoadMenu::tryLoadGame(const Common::UString &dir) {
 	try {
 		hide();
-		Common::ScopedPtr<KotORBase::SavedGame> save(KotORBase::SavedGame::load(dir, true));
+		Common::ScopedPtr<KotORBase::SavedGame> save(new SavedGame(dir, true));
 		_module->loadSavedGame(save.get());
 		GfxMan.lockFrame();
 		_returnCode = 2;

@@ -31,36 +31,30 @@
 #include "src/aurora/erffile.h"
 #include "src/aurora/gff3file.h"
 
-#include "src/engines/kotorbase/creature.h"
-
 namespace Engines {
 
 namespace KotORBase {
+
+class Creature;
 
 class SavedGame {
 public:
 	/** Load saved game from a specified directory.
 	 *
-	 * @param loadSav if true load all saved state, otherwise load
-	 *        menu info only
+	 * @param loadSav if true load all saved state, otherwise load menu info only
 	 */
-	static SavedGame *load(const Common::UString &dir, bool loadSav = false);
+	SavedGame(const Common::UString &dir, bool loadSav);
+	virtual ~SavedGame();
 
-	SavedGame();
 	const Common::UString &getName() const;
 	const Common::UString &getModuleName() const;
 	uint32 getTimePlayed() const;
-	Creature *getPC();
+
 	bool isPCLoaded() const;
-private:
-	static void fillFromNFO(const Aurora::GFF3File &gff, SavedGame *save);
 
-	static void fillFromSAV(const Aurora::ERFFile &erf,
-			const Common::UString &moduleName, SavedGame *save);
+	virtual Creature *createPC() = 0;
 
-	static void fillFromModuleSAV(const Aurora::ERFFile &erf, SavedGame *save);
-	static void fillFromModuleIFO(const Aurora::GFF3File &gff, SavedGame *save);
-
+protected:
 	Common::UString _name;
 	Common::UString _moduleName;
 	uint32 _timePlayed;
@@ -68,6 +62,14 @@ private:
 	float _pcPosition[3];
 	bool _pcLoaded;
 	Creature *_pc;
+
+private:
+	void load(const Common::UString &dir, bool loadSav);
+
+	void fillFromNFO(const Aurora::GFF3File &gff);
+	void fillFromSAV(const Aurora::ERFFile &erf, const Common::UString &moduleName);
+	void fillFromModuleSAV(const Aurora::ERFFile &erf);
+	void fillFromModuleIFO(const Aurora::GFF3File &gff);
 };
 
 } // End of namespace KotORBase

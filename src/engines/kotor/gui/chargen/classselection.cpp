@@ -27,7 +27,9 @@
 
 #include "src/aurora/talkman.h"
 
-#include "src/engines/kotorbase/creature.h"
+#include "src/graphics/aurora/model.h"
+
+#include "src/engines/kotor/creature.h"
 
 #include "src/engines/kotor/gui/chargen/classselection.h"
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
@@ -76,12 +78,21 @@ ClassSelectionMenu::ClassSelectionMenu(KotORBase::Module *module, ::Engines::Con
 	_scoundrelFemaleTitle = femalePrefix + " " + TalkMan.getString(135);
 
 	// Create the random characters
-	_maleSoldier = KotORBase::CharacterGenerationInfo::createRandomMaleSoldier();
-	_maleScout = KotORBase::CharacterGenerationInfo::createRandomMaleScout();
-	_maleScoundrel = KotORBase::CharacterGenerationInfo::createRandomMaleScoundrel();
-	_femaleSoldier = KotORBase::CharacterGenerationInfo::createRandomFemaleSoldier();
-	_femaleScout = KotORBase::CharacterGenerationInfo::createRandomFemaleScout();
-	_femaleScoundrel = KotORBase::CharacterGenerationInfo::createRandomFemaleScoundrel();
+
+	_maleSoldier.reset(CharacterGenerationInfo::createRandomMaleSoldier());
+	_maleScout.reset(CharacterGenerationInfo::createRandomMaleScout());
+	_maleScoundrel.reset(CharacterGenerationInfo::createRandomMaleScoundrel());
+	_femaleSoldier.reset(CharacterGenerationInfo::createRandomFemaleSoldier());
+	_femaleScout.reset(CharacterGenerationInfo::createRandomFemaleScout());
+	_femaleScoundrel.reset(CharacterGenerationInfo::createRandomFemaleScoundrel());
+
+	_maleSoldierModel.reset(Creature::createModel(_maleSoldier.get()));
+	_maleScoutModel.reset(Creature::createModel(_maleScout.get()));
+	_maleScoundrelModel.reset(Creature::createModel(_maleScoundrel.get()));
+	_femaleSoldierModel.reset(Creature::createModel(_femaleSoldier.get()));
+	_femaleScoutModel.reset(Creature::createModel(_femaleScout.get()));
+	_femaleScoundrelModel.reset(Creature::createModel(_femaleScoundrel.get()));
+
 
 	float subSceneWidth = getLabel("3D_MODEL2")->getWidth();
 	float subSceneHeight = getLabel("3D_MODEL2")->getHeight();
@@ -108,30 +119,29 @@ ClassSelectionMenu::ClassSelectionMenu(KotORBase::Module *module, ::Engines::Con
 			Common::deg2rad(-90.0f),
 			glm::vec3(0.0f, 0.0f, 1.0f));
 
-	setupClassSubScene("3D_MODEL1", _maleScoundrelSubScene, _maleScoundrel->getModel(),
+	setupClassSubScene("3D_MODEL1", _maleScoundrelSubScene, _maleScoundrelModel.get(),
 	                   projection, transformation);
-	setupClassSubScene("3D_MODEL2", _maleScoutSubScene, _maleScout->getModel(),
+
+	setupClassSubScene("3D_MODEL2", _maleScoutSubScene, _maleScoutModel.get(),
 	                   projection, transformation);
-	setupClassSubScene("3D_MODEL3", _maleSoldierSubScene, _maleSoldier->getModel(),
+
+	setupClassSubScene("3D_MODEL3", _maleSoldierSubScene, _maleSoldierModel.get(),
 	                   projection, transformation);
-	setupClassSubScene("3D_MODEL4", _femaleSoldierSubScene, _femaleSoldier->getModel(),
+
+	setupClassSubScene("3D_MODEL4", _femaleSoldierSubScene, _femaleSoldierModel.get(),
 	                   projection, transformation);
-	setupClassSubScene("3D_MODEL5", _femaleScoutSubScene, _femaleScout->getModel(),
+
+	setupClassSubScene("3D_MODEL5", _femaleScoutSubScene, _femaleScoutModel.get(),
 	                   projection, transformation);
-	setupClassSubScene("3D_MODEL6", _femaleScoundrelSubScene, _femaleScoundrel->getModel(),
+
+	setupClassSubScene("3D_MODEL6", _femaleScoundrelSubScene, _femaleScoundrelModel.get(),
 	                   projection, transformation);
 }
 
 ClassSelectionMenu::~ClassSelectionMenu() {
-	delete _maleSoldier;
-	delete _maleScout;
-	delete _maleScoundrel;
-	delete _femaleSoldier;
-	delete _femaleScout;
-	delete _femaleScoundrel;
 }
 
-void ClassSelectionMenu::createCharacterGeneration(KotORBase::CharacterGenerationInfo* info) {
+void ClassSelectionMenu::createCharacterGeneration(CharacterGenerationInfo *info) {
 	_charGen.reset(new CharacterGenerationMenu(_module, info));
 }
 
@@ -184,37 +194,37 @@ void ClassSelectionMenu::callbackActive(Widget &widget) {
 
 	// Start the character generation with
 	if (widget.getTag() == "BTN_SEL1") {
-		createCharacterGeneration(_maleScoundrel);
+		createCharacterGeneration(_maleScoundrel.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (widget.getTag() == "BTN_SEL2") {
-		createCharacterGeneration(_maleScout);
+		createCharacterGeneration(_maleScout.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (widget.getTag() == "BTN_SEL3") {
-		createCharacterGeneration(_maleSoldier);
+		createCharacterGeneration(_maleSoldier.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (widget.getTag() == "BTN_SEL4") {
-		createCharacterGeneration(_femaleSoldier);
+		createCharacterGeneration(_femaleSoldier.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (widget.getTag() == "BTN_SEL5") {
-		createCharacterGeneration(_femaleScout);
+		createCharacterGeneration(_femaleScout.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (widget.getTag() == "BTN_SEL6") {
-		createCharacterGeneration(_femaleScoundrel);
+		createCharacterGeneration(_femaleScoundrel.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
@@ -229,37 +239,37 @@ void ClassSelectionMenu::callbackKeyInput(const Events::Key &key, const Events::
 		return;
 
 	if (_hoveredButton == _maleSoldierButton) {
-		createCharacterGeneration(_maleSoldier);
+		createCharacterGeneration(_maleSoldier.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (_hoveredButton == _maleScoutButton) {
-		createCharacterGeneration(_maleScout);
+		createCharacterGeneration(_maleScout.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (_hoveredButton == _maleScoundrelButton) {
-		createCharacterGeneration(_maleScoundrel);
+		createCharacterGeneration(_maleScoundrel.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (_hoveredButton == _femaleSoldierButton) {
-		createCharacterGeneration(_femaleSoldier);
+		createCharacterGeneration(_femaleSoldier.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (_hoveredButton == _femaleScoutButton) {
-		createCharacterGeneration(_femaleScout);
+		createCharacterGeneration(_femaleScout.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}
 	}
 	if (_hoveredButton == _femaleScoundrelButton) {
-		createCharacterGeneration(_femaleScoundrel);
+		createCharacterGeneration(_femaleScoundrel.get());
 		if (sub(*_charGen) == 2) {
 			_returnCode = 2;
 		}

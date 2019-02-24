@@ -29,9 +29,6 @@
 
 #include "src/engines/aurora/console.h"
 
-#include "src/engines/kotorbase/inventory.h"
-#include "src/engines/kotorbase/module.h"
-
 #include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor/gui/ingame/container.h"
@@ -39,6 +36,11 @@
 #include "src/engines/kotor/gui/ingame/minimap.h"
 
 namespace Engines {
+
+namespace KotORBase {
+	class Inventory;
+	class Module;
+}
 
 namespace KotOR {
 
@@ -75,12 +77,13 @@ private:
 	Common::ScopedPtr<Minimap> _minimap;
 	Odyssey::WidgetLabel *_minimapPointer;
 
-	// ,--- Widgets for showing object information
+	// Widgets for showing object information
+
 	Odyssey::WidgetLabel       *_objectName;
 	Odyssey::WidgetLabel       *_objectNameBackground;
 	Odyssey::WidgetProgressbar *_objectHealth;
 	Odyssey::WidgetLabel       *_objectHealthBackground;
-	// '---
+
 
 	void update(int width, int height);
 

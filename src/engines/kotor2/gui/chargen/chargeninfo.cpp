@@ -26,8 +26,6 @@
 
 #include "src/aurora/ltrfile.h"
 
-#include "src/engines/kotor2/creature.h"
-
 #include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 
 namespace Engines {
@@ -259,12 +257,6 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 	}
 
 	return portrait;
-}
-
-KotORBase::Creature *CharacterGenerationInfo::createCharacter() const {
-	Common::ScopedPtr<KotORBase::Creature> creature(new Creature());
-	creature->createPC(*this);
-	return creature.release();
 }
 
 } // End of namespace KotOR2

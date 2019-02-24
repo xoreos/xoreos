@@ -25,18 +25,13 @@
 #ifndef ENGINES_KOTORBASE_GUI_CHARGENINFO_H
 #define ENGINES_KOTORBASE_GUI_CHARGENINFO_H
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
-
-#include "src/graphics/aurora/model.h"
 
 #include "src/engines/kotorbase/types.h"
 
 namespace Engines {
 
 namespace KotORBase {
-
-class Creature;
 
 class CharacterGenerationInfo {
 public:
@@ -45,18 +40,10 @@ public:
 
 	void operator=(const CharacterGenerationInfo &info);
 
-	// Create a random character for each of the six archetypes
-	static CharacterGenerationInfo *createRandomMaleSoldier();
-	static CharacterGenerationInfo *createRandomMaleScout();
-	static CharacterGenerationInfo *createRandomMaleScoundrel();
-	static CharacterGenerationInfo *createRandomFemaleSoldier();
-	static CharacterGenerationInfo *createRandomFemaleScout();
-	static CharacterGenerationInfo *createRandomFemaleScoundrel();
-
 	/** Get the name of the character. */
 	const Common::UString &getName() const;
 	/** Get the name of the portrait of this character. */
-	virtual Common::UString getPortrait() const;
+	virtual Common::UString getPortrait() const = 0;
 	/** Get the skin type of the character. */
 	Skin getSkin() const;
 	/** Get the current face index of the character. */
@@ -65,8 +52,6 @@ public:
 	Class getClass() const;
 	/** Get the gender of the character. */
 	Gender getGender() const;
-	/** Get or create the character model. */
-	Graphics::Aurora::Model *getModel();
 
 	/** Set the name of the Character. */
 	void setName(const Common::UString &name);
@@ -74,9 +59,6 @@ public:
 	void setSkin(Skin);
 	/** Set the face index of the character. */
 	void setFace(uint8 face);
-
-	virtual Creature *createCharacter() const;
-	void recreateHead();
 
 protected:
 	Class _class;
@@ -87,10 +69,6 @@ protected:
 	Common::UString _name;
 
 	CharacterGenerationInfo();
-
-private:
-	Graphics::Aurora::Model *_head;
-	Common::ScopedPtr<Graphics::Aurora::Model> _body;
 };
 
 } // End of namespace KotORBase

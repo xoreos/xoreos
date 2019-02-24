@@ -19,38 +19,27 @@
  */
 
 /** @file
- *  The context needed to run a Star Wars: Knights of the Old Republic module.
+ *  Creation and loading of saved games for Star Wars: Knights of the Old Republic.
  */
 
-#ifndef ENGINES_KOTOR_MODULE_H
-#define ENGINES_KOTOR_MODULE_H
+#ifndef ENGINES_KOTOR_SAVEDGAME_H
+#define ENGINES_KOTOR_SAVEDGAME_H
 
-#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/savedgame.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module : public KotORBase::Module {
+class SavedGame : public KotORBase::SavedGame {
 public:
-	Module(::Engines::Console &console);
+	SavedGame(const Common::UString &dir, bool loadSav = false);
 
-	// GUI creation
-
-	KotORBase::IngameGUI *createIngameGUI();
-	KotORBase::DialogGUI *createDialogGUI();
-	KotORBase::PartySelectionGUI *createPartySelectionGUI();
-	KotORBase::LoadScreen *createLoadScreen(const Common::UString &name);
-
-	// Object creation
-
-	KotORBase::Creature *createCreature() const;
-	KotORBase::Creature *createCreature(const Common::UString &resRef) const;
-	KotORBase::Creature *createCreature(const Aurora::GFF3Struct &creature) const;
+	KotORBase::Creature *createPC();
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_MODULE_H
+#endif // ENGINES_KOTOR_SAVEDGAME_H

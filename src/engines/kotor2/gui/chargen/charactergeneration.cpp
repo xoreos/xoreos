@@ -26,6 +26,8 @@
 
 #include "src/engines/odyssey/label.h"
 
+#include "src/engines/kotor2/creature.h"
+
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 #include "src/engines/kotor2/gui/chargen/quickorcustom.h"
 #include "src/engines/kotor2/gui/chargen/quickchar.h"
@@ -38,7 +40,7 @@ namespace Engines {
 namespace KotOR2 {
 
 CharacterGeneration::CharacterGeneration(KotORBase::Module *module,
-                                         KotORBase::CharacterGenerationInfo *info,
+                                         CharacterGenerationInfo *info,
                                          Engines::Console *console) :
 		GUI(console),
 		_module(module),
@@ -94,7 +96,7 @@ void CharacterGeneration::showCustomChar() {
 }
 
 void CharacterGeneration::showName() {
-	KotORBase::CharacterGenerationInfo info = *_chargenInfo;
+	CharacterGenerationInfo info = *_chargenInfo;
 
 	_charGenMenu.reset(new CharacterGenerationNameMenu(info));
 	sub(*_charGenMenu, kStartCodeNone, true, false);
@@ -107,7 +109,7 @@ void CharacterGeneration::showName() {
 }
 
 void CharacterGeneration::showPortrait() {
-	KotORBase::CharacterGenerationInfo info = *_chargenInfo;
+	CharacterGenerationInfo info = *_chargenInfo;
 
 	_charGenMenu.reset(new CharacterGenerationPortraitMenu(info));
 	sub(*_charGenMenu);
@@ -134,7 +136,9 @@ void CharacterGeneration::resetStep() {
 
 void CharacterGeneration::start() {
 	try {
-		_module->usePC(_chargenInfo->createCharacter());
+		Common::ScopedPtr<Creature> pc(new Creature());
+		pc->createPC(*_chargenInfo);
+		_module->usePC(pc.release());
 		_module->load("001EBO");
 	} catch (...) {
 		Common::exceptionDispatcherWarning();

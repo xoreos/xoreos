@@ -19,38 +19,47 @@
  */
 
 /** @file
- *  The context needed to run a Star Wars: Knights of the Old Republic module.
+ *  Creation and loading of saved games for Star Wars: Knights of the Old Republic.
  */
 
-#ifndef ENGINES_KOTOR_MODULE_H
-#define ENGINES_KOTOR_MODULE_H
+#include "src/engines/kotor/savedgame.h"
+#include "src/engines/kotor/creature.h"
 
-#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module : public KotORBase::Module {
-public:
-	Module(::Engines::Console &console);
+SavedGame::SavedGame(const Common::UString &dir, bool loadSav) :
+		KotORBase::SavedGame(dir, loadSav) {
+}
 
-	// GUI creation
+KotORBase::Creature *SavedGame::createPC() {
+	if (_pc)
+		return _pc;
 
-	KotORBase::IngameGUI *createIngameGUI();
-	KotORBase::DialogGUI *createDialogGUI();
-	KotORBase::PartySelectionGUI *createPartySelectionGUI();
-	KotORBase::LoadScreen *createLoadScreen(const Common::UString &name);
+	Common::ScopedPtr<CharacterGenerationInfo> info;
 
-	// Object creation
+	switch (_pcGender) {
+		case KotORBase::kGenderFemale:
+			info.reset(CharacterGenerationInfo::createRandomFemaleSoldier());
+			break;
+		default:
+			info.reset(CharacterGenerationInfo::createRandomMaleSoldier());
+			break;
+	}
 
-	KotORBase::Creature *createCreature() const;
-	KotORBase::Creature *createCreature(const Common::UString &resRef) const;
-	KotORBase::Creature *createCreature(const Aurora::GFF3Struct &creature) const;
-};
+	Common::ScopedPtr<Creature> pc(new Creature());
+	pc->createPC(*info);
+	_pc = pc.release();
+
+	if (_pcLoaded)
+		_pc->setPosition(_pcPosition[0], _pcPosition[1], _pcPosition[2]);
+
+	return _pc;
+}
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR_MODULE_H
