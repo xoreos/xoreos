@@ -47,6 +47,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/trigger.h \
     src/engines/nwn2/faction.h \
     src/engines/nwn2/roster.h \
+    src/engines/nwn2/item.h \
     $(EMPTY)
 
 src_engines_nwn2_libnwn2_la_SOURCES += \
@@ -74,6 +75,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/trigger.cpp \
     src/engines/nwn2/faction.cpp \
     src/engines/nwn2/roster.cpp \
+    src/engines/nwn2/item.cpp \
     $(EMPTY)
 
 include src/engines/nwn2/script/rules.mk
