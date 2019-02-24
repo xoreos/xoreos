@@ -748,6 +748,12 @@ void Area::processCreaturesActions(float dt) {
 }
 
 void Area::removeObject(Object *object) {
+	if (object == _activeObject) {
+		_activeObject->leave();
+		_module->leaveObject(_activeObject);
+		_activeObject = 0;
+	}
+
 	std::vector<Creature *>::iterator crit = std::find(_creatures.begin(), _creatures.end(), object);
 	if (crit != _creatures.end())
 		_creatures.erase(crit);
