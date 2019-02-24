@@ -498,7 +498,9 @@ void Creature::changeWeapon(InventorySlot slot) {
 			throw Common::Exception("Unsupported equip slot");
 	}
 
+	GfxMan.lockFrame();
 	_model->attachModel(hookNode, weaponModel);
+	GfxMan.unlockFrame();
 }
 
 void Creature::createFakePC() {
