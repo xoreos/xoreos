@@ -407,6 +407,10 @@ void GraphicsManager::setupScene() {
 
 	setCullFace(_cullFaceEnabled, _cullFaceMode);
 
+	setupViewMatrices();
+}
+
+void GraphicsManager::setupViewMatrices() {
 	switch (_projectType) {
 		case kProjectTypePerspective:
 			perspective(_viewAngle, ((float) WindowMan.getWindowWidth()) / ((float) WindowMan.getWindowHeight()), _clipNear, _clipFar);
@@ -443,11 +447,21 @@ void GraphicsManager::setCullFace(bool enabled, GLenum mode) {
 
 void GraphicsManager::setGUIScale(ScalingType scaling) {
 	_scalingType = scaling;
+
+	/* GUI scaling has changed, which affects the gui ortho view. Setup the view parameters
+	 * again to compensate.
+	 */
+	setupViewMatrices();
 }
 
 void GraphicsManager::setGUISize(int guiWidth, int guiHeight) {
 	_guiWidth = guiWidth;
 	_guiHeight = guiHeight;
+
+	/* GUI size has changed, which affects the gui ortho view. Setup the view parameters
+	 * again to compensate.
+	 */
+	setupViewMatrices();
 }
 
 void GraphicsManager::setPerspective(float viewAngle, float clipNear, float clipFar) {
@@ -479,30 +493,34 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 	const float t1 = (zFar + zNear) / (zNear - zFar);
 	const float t2 = (2 * zFar * zNear) / (zNear - zFar);
 
-	_projection[0][0] =  f / aspect;
-	_projection[1][0] =  0.0f;
-	_projection[2][0] =  0.0f;
-	_projection[3][0] =  0.0f;
+	_perspective[0][0] =  f / aspect;
+	_perspective[1][0] =  0.0f;
+	_perspective[2][0] =  0.0f;
+	_perspective[3][0] =  0.0f;
 
-	_projection[0][1] =  0.0f;
-	_projection[1][1] =  f;
-	_projection[2][1] =  0.0f;
-	_projection[3][1] =  0.0f;
+	_perspective[0][1] =  0.0f;
+	_perspective[1][1] =  f;
+	_perspective[2][1] =  0.0f;
+	_perspective[3][1] =  0.0f;
 
-	_projection[0][2] =  0.0f;
-	_projection[1][2] =  0.0f;
-	_projection[2][2] =  t1;
-	_projection[3][2] =  t2;
+	_perspective[0][2] =  0.0f;
+	_perspective[1][2] =  0.0f;
+	_perspective[2][2] =  t1;
+	_perspective[3][2] =  t2;
 
-	_projection[0][3] =  0.0f;
-	_projection[1][3] =  0.0f;
-	_projection[2][3] = -1.0f;
-	_projection[3][3] =  0.0f;
+	_perspective[0][3] =  0.0f;
+	_perspective[1][3] =  0.0f;
+	_perspective[2][3] = -1.0f;
+	_perspective[3][3] =  0.0f;
 
-	_projectionInv = glm::inverse(_projection);
+	_perspectiveInv = glm::inverse(_perspective);
 
-	_perspective = _projection;
-	_perspectiveInv = _projectionInv;
+	int windowWidth = WindowMan.getWindowWidth();
+	int windowHeight = WindowMan.getWindowHeight();
+	int rasterWidth  = (_scalingType == kScalingWindowSize || _guiWidth  > windowWidth)  ? _guiWidth  : windowWidth;
+	int rasterHeight = (_scalingType == kScalingWindowSize || _guiHeight > windowHeight) ? _guiHeight : windowHeight;
+	_ortho = glm::scale(glm::mat4(), glm::vec3(2.0f / rasterWidth, 2.0f / rasterHeight, 0.0f));
+	_orthoInv = inverse(_ortho);
 }
 
 void GraphicsManager::setOrthogonal(float clipNear, float clipFar) {
@@ -525,35 +543,46 @@ void GraphicsManager::ortho(float left, float right, float bottom, float top, fl
 	assert(zFar > zNear);
 	assert((zFar - zNear) > 0.001f);
 
-	_projection[0][0] = 2.0f / (right - left);
-	_projection[1][0] = 0.0f;
-	_projection[2][0] = 0.0f;
-	_projection[3][0] = - ((right + left) / (right - left));
+	_perspective[0][0] = 2.0f / (right - left);
+	_perspective[1][0] = 0.0f;
+	_perspective[2][0] = 0.0f;
+	_perspective[3][0] = - ((right + left) / (right - left));
 
-	_projection[0][1] = 0.0f;
-	_projection[1][1] = 2.0f / (top - bottom);
-	_projection[2][1] = 0.0f;
-	_projection[3][1] = - ((top + bottom) / (top - bottom));
+	_perspective[0][1] = 0.0f;
+	_perspective[1][1] = 2.0f / (top - bottom);
+	_perspective[2][1] = 0.0f;
+	_perspective[3][1] = - ((top + bottom) / (top - bottom));
 
-	_projection[0][2] = 0.0f;
-	_projection[1][2] = 0.0f;
-	_projection[2][2] = - (2.0f / (zFar - zNear));
-	_projection[3][2] = - ((zFar + zNear) / (zFar - zNear));
+	_perspective[0][2] = 0.0f;
+	_perspective[1][2] = 0.0f;
+	_perspective[2][2] = - (2.0f / (zFar - zNear));
+	_perspective[3][2] = - ((zFar + zNear) / (zFar - zNear));
 
-	_projection[0][3] = 0.0f;
-	_projection[1][3] = 0.0f;
-	_projection[2][3] = 0.0f;
-	_projection[3][3] = 1.0f;
+	_perspective[0][3] = 0.0f;
+	_perspective[1][3] = 0.0f;
+	_perspective[2][3] = 0.0f;
+	_perspective[3][3] = 1.0f;
 
-	_projectionInv = inverse(_projection);
+	_perspectiveInv = inverse(_perspective);
 
-	_ortho = _projection;
-	_orthoInv = _projectionInv;
+	int windowWidth = WindowMan.getWindowWidth();
+	int windowHeight = WindowMan.getWindowHeight();
+	int rasterWidth  = (_scalingType == kScalingWindowSize || _guiWidth  > windowWidth)  ? _guiWidth  : windowWidth;
+	int rasterHeight = (_scalingType == kScalingWindowSize || _guiHeight > windowHeight) ? _guiHeight : windowHeight;
+	_ortho = glm::scale(glm::mat4(), glm::vec3(2.0f / rasterWidth, 2.0f / rasterHeight, 0.0f));
+	_orthoInv = inverse(_ortho);
 }
 
 bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, float &sZ) {
-	// This is our projection matrix
-	glm::mat4 proj(_projection);
+	/* Project takes a set of world [x,y,z] co-ordinates (3D space) and projects them onto
+	 * the screen co-ordinate system (2D plane). To do that, the _perspective matrix must
+	 * be used rather than _projection. The latter can change between the 3D perspective
+	 * transformation, and the 2D orthographic transformation (typically used for gui
+	 * widgets), so using it might result in the wrong projection.
+	 */
+
+	// This is our 3D perspective matrix
+	glm::mat4 proj(_perspective);
 
 
 	// Generate the model matrix
@@ -610,6 +639,22 @@ bool GraphicsManager::project(float x, float y, float z, float &sX, float &sY, f
 bool GraphicsManager::unproject(float x, float y,
                                 float &x1, float &y1, float &z1,
                                 float &x2, float &y2, float &z2) const {
+	/* Unproject takes a set of screen (2D plane) co-ordinates and maps them into a set of
+	 * world [x,y,z] co-ordinates (3D space). In the reverse, the following is done;
+	 *    screen = perspective * modelview * vector
+	 *    == P * M * vector
+	 * So to reverse that, perform the following:
+	 *    inverse * screen == inverse * perspective * modelview * vector
+	 *    == M` * P` * P * M * vector
+	 *    == M` * I * M * vector
+	 *    == M` * M * vector
+	 *    == vector
+	 * i.e M` * P` * screen = vector
+	 * Bear in mind that unproject is assuming the destination is the 3D world co-ordinate
+	 * system, so _perspectiveInv should be used, because _projectionInv can switch between
+	 * perspective and orthographic transforms.
+	 */
+
 
 	// Map the screen coordinates to OpenGL world screen coordinates
 	y = WindowMan.getWindowHeight() - y;
@@ -634,8 +679,8 @@ bool GraphicsManager::unproject(float x, float y,
 		model = glm::rotate(model, Common::deg2rad(cOrient[0]), glm::vec3(1.0f, 0.0f, 0.0f));
 
 
-		// Multiply with the inverse of our projection matrix
-		model *= _projectionInv;
+		// Multiply with the inverse of our perspective matrix
+		model *= _perspectiveInv;
 
 
 		// Coordinates at the near and far clipping planes
@@ -967,7 +1012,9 @@ bool GraphicsManager::renderWorld() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glMultMatrixf(glm::value_ptr(_projection));
+	_projection = _perspective;
+	_projectionInv = _perspectiveInv;
+	glMultMatrixf(glm::value_ptr(_perspective));
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1043,6 +1090,9 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 	int rasterWidth  = (scalingType == kScalingWindowSize || _guiWidth  > windowWidth)  ? _guiWidth  : windowWidth;
 	int rasterHeight = (scalingType == kScalingWindowSize || _guiHeight > windowHeight) ? _guiHeight : windowHeight;
 	glScalef(2.0f / rasterWidth, 2.0f / rasterHeight, 0.0f);
+
+	_projection = _ortho;
+	_projectionInv = _orthoInv;
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1142,7 +1192,7 @@ bool GraphicsManager::renderGUIConsoleShader() {
 	return renderGUIShader(kScalingNone, kQueueVisibleGUIConsoleObject, true);
 }
 
-bool GraphicsManager::renderGUIShader(ScalingType scalingType, QueueType guiQueue, bool disableDepthMask) {
+bool GraphicsManager::renderGUIShader(ScalingType UNUSED(scalingType), QueueType guiQueue, bool disableDepthMask) {
 	if (QueueMan.isQueueEmpty(guiQueue))
 		return false;
 
@@ -1150,11 +1200,8 @@ bool GraphicsManager::renderGUIShader(ScalingType scalingType, QueueType guiQueu
 	if (disableDepthMask)
 		glDepthMask(GL_FALSE);
 
-	int windowWidth = WindowMan.getWindowWidth();
-	int windowHeight = WindowMan.getWindowHeight();
-	int rasterWidth  = (scalingType == kScalingWindowSize || _guiWidth  > windowWidth)  ? _guiWidth  : windowWidth;
-	int rasterHeight = (scalingType == kScalingWindowSize || _guiHeight > windowHeight) ? _guiHeight : windowHeight;
-	_projection = glm::scale(glm::mat4(), glm::vec3(2.0f / rasterWidth, 2.0f / rasterHeight, 0.0f));
+	_projection = _ortho;
+	_projectionInv = _orthoInv;
 
 	QueueMan.lockQueue(guiQueue);
 	const std::list<Queueable *> &gui = QueueMan.getQueue(guiQueue);

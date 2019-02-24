@@ -253,6 +253,8 @@ private:
 	bool setupSDLGL();
 	void checkGLExtensions();
 
+	void setupViewMatrices();
+
 	/** Set up a projection matrix. Analog to gluPerspective. */
 	void perspective(float fovy, float aspect, float zNear, float zFar);
 	/** Set up an orthogonal projection matrix. Analog to glOrtho. */
