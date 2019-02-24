@@ -37,6 +37,17 @@ public:
 	Item(const Aurora::GFF3Struct &item);
 	~Item();
 
+	bool getDroppableFlag() const;
+	bool getIdentified() const;
+	bool getItemCursedFlag() const;
+	bool getPickpocketableFlag() const;
+	bool getPlotFlag() const;
+	bool getStolenFlag() const;
+
+	ItemType getBaseItemType() const;
+	uint32 getItemIcon() const;
+	uint16 getItemStackSize() const;
+
 private:
 	uint32 _icon;       ///< Icon number for inventory UI.
 	uint32 _cost;       ///< Base price in gp.

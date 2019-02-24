@@ -43,6 +43,42 @@ Item::Item(const Aurora::GFF3Struct &item) : Object(kObjectTypeItem),
 Item::~Item() {
 }
 
+bool Item::getDroppableFlag() const {
+	return _droppable;
+}
+
+bool Item::getIdentified() const {
+	return _identified;
+}
+
+bool Item::getItemCursedFlag() const {
+	return _cursed;
+}
+
+bool Item::getPickpocketableFlag() const {
+	return _pickpocketable;
+}
+
+bool Item::getPlotFlag() const {
+	return _plot;
+}
+
+bool Item::getStolenFlag() const {
+	return _stolen;
+}
+
+ItemType Item::getBaseItemType() const {
+	return _baseItem;
+}
+
+uint32 Item::getItemIcon() const {
+	return _icon;
+}
+
+uint16 Item::getItemStackSize() const {
+	return _stackSize;
+}
+
 void Item::load(const Aurora::GFF3Struct &item) {
 	Common::UString temp = item.getString("TemplateResRef");
 
