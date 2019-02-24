@@ -95,6 +95,9 @@ bool LocalPathfinding::walkable(glm::vec3 point) {
 }
 
 bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float halfWidth) {
+	if (path.size() < 2)
+		return false;
+
 	// Prevent rendering.
 	bool walkmeshVisible = _walkmeshVisible;
 	if (walkmeshVisible) showWalkmesh(false);
@@ -106,8 +109,8 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	const uint32 xCenterCell = _gridWidth / 2;
 	const uint32 yCenterCell = _gridHeight / 2;
 
-	glm::vec2 lastPoint(path.back()[0], path.back()[1]);
-	glm::vec2 anglePoint = path[2];
+	glm::vec2 lastPoint = path.back();
+	glm::vec2 anglePoint = path[1];
 
 	// Compute the angle with the vertical .
 	glm::vec2 relatAnglePoint = anglePoint - glm::vec2(path[0]);
