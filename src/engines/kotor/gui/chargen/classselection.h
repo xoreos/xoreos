@@ -34,8 +34,9 @@
 
 #include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotorbase/gui/chargeninfo.h"
 #include "src/engines/kotorbase/gui/gui.h"
+
+#include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 
@@ -81,14 +82,21 @@ private:
 	Common::UString _scoutMaleTitle;
 	Common::UString _scoutFemaleTitle;
 
-	KotORBase::CharacterGenerationInfo *_maleSoldier;
-	KotORBase::CharacterGenerationInfo *_maleScout;
-	KotORBase::CharacterGenerationInfo *_maleScoundrel;
-	KotORBase::CharacterGenerationInfo *_femaleSoldier;
-	KotORBase::CharacterGenerationInfo *_femaleScout;
-	KotORBase::CharacterGenerationInfo *_femaleScoundrel;
+	Common::ScopedPtr<CharacterGenerationInfo> _maleSoldier;
+	Common::ScopedPtr<CharacterGenerationInfo> _maleScout;
+	Common::ScopedPtr<CharacterGenerationInfo> _maleScoundrel;
+	Common::ScopedPtr<CharacterGenerationInfo> _femaleSoldier;
+	Common::ScopedPtr<CharacterGenerationInfo> _femaleScout;
+	Common::ScopedPtr<CharacterGenerationInfo> _femaleScoundrel;
 
-	void createCharacterGeneration(KotORBase::CharacterGenerationInfo*);
+	Common::ScopedPtr<Graphics::Aurora::Model> _maleSoldierModel;
+	Common::ScopedPtr<Graphics::Aurora::Model> _maleScoutModel;
+	Common::ScopedPtr<Graphics::Aurora::Model> _maleScoundrelModel;
+	Common::ScopedPtr<Graphics::Aurora::Model> _femaleSoldierModel;
+	Common::ScopedPtr<Graphics::Aurora::Model> _femaleScoutModel;
+	Common::ScopedPtr<Graphics::Aurora::Model> _femaleScoundrelModel;
+
+	void createCharacterGeneration(CharacterGenerationInfo *);
 
 	void callbackRun();
 	void callbackActive(Widget &widget);

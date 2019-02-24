@@ -481,7 +481,9 @@ void Model::attachModel(const Common::UString &nodeName, Model *model) {
 	if (node) {
 		std::map<Common::UString, Model *>::iterator m = _attachedModels.find(nodeName);
 		if (m != _attachedModels.end()) {
+			const Model *prevModel = m->second;
 			_attachedModels.erase(m);
+			delete prevModel;
 		}
 
 		node->_attachedModel = model;

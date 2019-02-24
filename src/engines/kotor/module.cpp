@@ -23,6 +23,7 @@
  */
 
 #include "src/engines/kotor/module.h"
+#include "src/engines/kotor/creature.h"
 
 #include "src/engines/kotor/gui/dialog.h"
 
@@ -43,6 +44,18 @@ Module::Module(::Engines::Console &console) : KotORBase::Module(console) {
 
 KotORBase::LoadScreen *Module::createLoadScreen(const Common::UString &name) {
 	return new LoadScreen(name);
+}
+
+KotORBase::Creature *Module::createCreature(const Aurora::GFF3Struct &creature) const {
+	return new Creature(creature);
+}
+
+KotORBase::Creature *Module::createCreature() const {
+	return new Creature();
+}
+
+KotORBase::Creature *Module::createCreature(const Common::UString &resRef) const {
+	return new Creature(resRef);
 }
 
 } // End of namespace KotOR

@@ -44,6 +44,7 @@
 #include "src/engines/kotor/console.h"
 #include "src/engines/kotor/kotor.h"
 #include "src/engines/kotor/game.h"
+#include "src/engines/kotor/creature.h"
 
 namespace Engines {
 

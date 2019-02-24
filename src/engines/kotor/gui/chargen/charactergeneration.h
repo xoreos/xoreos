@@ -27,10 +27,10 @@
 
 #include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotorbase/gui/chargeninfo.h"
 #include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor/gui/chargen/chargenbase.h"
+#include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 
@@ -43,7 +43,7 @@ namespace KotOR {
 class CharacterGenerationMenu : public KotORBase::GUI {
 public:
 	CharacterGenerationMenu(KotORBase::Module *module,
-	                        KotORBase::CharacterGenerationInfo *pc,
+	                        CharacterGenerationInfo *pc,
 	                        ::Engines::Console *console = 0);
 
 	~CharacterGenerationMenu();
@@ -62,7 +62,8 @@ public:
 
 private:
 	KotORBase::Module *_module;
-	KotORBase::CharacterGenerationInfo *_pc;
+	CharacterGenerationInfo *_pc;
+	Common::ScopedPtr<Graphics::Aurora::Model> _pcModel;
 
 	int _step;
 

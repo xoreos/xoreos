@@ -27,12 +27,16 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "src/common/util.h"
+#include "src/common/scopedptr.h"
 
 #include "src/aurora/talkman.h"
 
 #include "src/graphics/aurora/subscenequad.h"
+#include "src/graphics/aurora/model.h"
 
 #include "src/engines/odyssey/label.h"
+
+#include "src/engines/kotor/creature.h"
 
 #include "src/engines/kotor/gui/chargen/charactergeneration.h"
 #include "src/engines/kotor/gui/chargen/quickorcustom.h"
@@ -46,7 +50,7 @@ namespace Engines {
 namespace KotOR {
 
 CharacterGenerationMenu::CharacterGenerationMenu(KotORBase::Module *module,
-                                                 KotORBase::CharacterGenerationInfo *pc,
+                                                 CharacterGenerationInfo *pc,
                                                  Console *console) :
 		KotORBase::GUI(console),
 		_module(module),
@@ -131,8 +135,11 @@ CharacterGenerationMenu::CharacterGenerationMenu(KotORBase::Module *module,
 	if (lblModel) {
 		lblModel->setSubScene(_charSubScene.get());
 
-		if (_pc->getModel())
-			_charSubScene->add(_pc->getModel());
+		_pcModel.reset(Creature::createModel(_pc));
+		if (_pcModel) {
+			_pcModel->playAnimation("pause1", true, -1);
+			_charSubScene->add(_pcModel.get());
+		}
 
 		_charSubScene->setProjectionMatrix(projection);
 		_charSubScene->setGlobalTransformationMatrix(transformation);
@@ -178,7 +185,7 @@ void CharacterGenerationMenu::showCustom() {
 
 void CharacterGenerationMenu::showPortrait() {
 	// Operate on a copy of the character object
-	KotORBase::CharacterGenerationInfo info = *_pc;
+	CharacterGenerationInfo info = *_pc;
 
 	_charGenMenu.reset(new CharacterGenerationPortraitMenu(info));
 
@@ -190,7 +197,13 @@ void CharacterGenerationMenu::showPortrait() {
 		if (lblPortrait)
 			lblPortrait->setFill(_pc->getPortrait());
 
-		_pc->recreateHead();
+		Common::ScopedPtr<Graphics::Aurora::Model> head(Creature::createHeadModel(_pc));
+		if (head) {
+			GfxMan.lockFrame();
+			_pcModel->attachModel("headhook", head.release());
+			_pcModel->playAnimation("pause1", true, -1);
+			GfxMan.unlockFrame();
+		}
 
 		_step += 1;
 	}
@@ -198,7 +211,7 @@ void CharacterGenerationMenu::showPortrait() {
 
 void CharacterGenerationMenu::showName() {
 	// Operate on a copy of the character object
-	KotORBase::CharacterGenerationInfo info = *_pc;
+	CharacterGenerationInfo info = *_pc;
 
 	_charGenMenu.reset(new CharacterGenerationNameMenu(info));
 
@@ -226,7 +239,9 @@ void CharacterGenerationMenu::start() {
 	hide();
 
 	try {
-		_module->usePC(_pc->createCharacter());
+		Common::ScopedPtr<Creature> pc(new Creature());
+		pc->createPC(*_pc);
+		_module->usePC(pc.release());
 		_module->load("end_m01aa");
 	} catch (...) {
 		Common::exceptionDispatcherWarning();

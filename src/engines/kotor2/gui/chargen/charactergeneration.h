@@ -29,10 +29,10 @@
 
 #include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotorbase/gui/chargeninfo.h"
-
 #include "src/engines/kotor2/gui/gui.h"
+
 #include "src/engines/kotor2/gui/chargen/chargenbase.h"
+#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 
 namespace Engines {
 
@@ -41,7 +41,7 @@ namespace KotOR2 {
 class CharacterGeneration : public GUI {
 public:
 	CharacterGeneration(KotORBase::Module *module,
-	                    KotORBase::CharacterGenerationInfo *info,
+	                    CharacterGenerationInfo *info,
 	                    Engines::Console *console = 0);
 
 	void showQuickOrCustom();
@@ -60,7 +60,7 @@ public:
 private:
 	KotORBase::Module *_module;
 
-	KotORBase::CharacterGenerationInfo *_chargenInfo;
+	CharacterGenerationInfo *_chargenInfo;
 
 	int _step;
 

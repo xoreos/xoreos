@@ -66,6 +66,8 @@
 
 #include "src/engines/kotor/gui/loadscreen/loadscreen.h"
 
+#include "src/engines/kotor/gui/chargen/chargeninfo.h"
+
 namespace Engines {
 
 namespace KotORBase {
@@ -953,7 +955,7 @@ void Module::toggleTriggers() {
 
 void Module::loadSavedGame(SavedGame *save) {
 	try {
-		usePC(save->getPC());
+		usePC(save->createPC());
 		load(save->getModuleName());
 		_pcPositionLoaded = save->isPCLoaded();
 	} catch (...) {
@@ -1031,18 +1033,6 @@ void Module::addItemToActiveObject(const Common::UString &item, int count) {
 		inv->addItem(item, count);
 	else if (count < 0)
 		inv->removeItem(item, -count);
-}
-
-KotORBase::Creature *Module::createCreature() const {
-	return new Creature();
-}
-
-KotORBase::Creature *Module::createCreature(const Common::UString &resRef) const {
-	return new Creature(resRef);
-}
-
-KotORBase::Creature *Module::createCreature(const Aurora::GFF3Struct &creature) const {
-	return new Creature(creature);
 }
 
 void Module::stopCameraMovement() {

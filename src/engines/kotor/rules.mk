@@ -30,6 +30,8 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/version.h \
     src/engines/kotor/game.h \
     src/engines/kotor/module.h \
+    src/engines/kotor/creature.h \
+    src/engines/kotor/savedgame.h \
     $(EMPTY)
 
 src_engines_kotor_libkotor_la_SOURCES += \
@@ -40,6 +42,8 @@ src_engines_kotor_libkotor_la_SOURCES += \
     src/engines/kotor/version.cpp \
     src/engines/kotor/game.cpp \
     src/engines/kotor/module.cpp \
+    src/engines/kotor/creature.cpp \
+    src/engines/kotor/savedgame.cpp \
     $(EMPTY)
 
 include src/engines/kotor/script/rules.mk

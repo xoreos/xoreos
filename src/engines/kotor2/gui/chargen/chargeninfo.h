@@ -41,8 +41,6 @@ public:
 	static CharacterGenerationInfo *createRandomFemaleSentinel();
 
 	Common::UString getPortrait() const;
-
-	KotORBase::Creature *createCharacter() const;
 };
 
 } // End of namespace KotOR2

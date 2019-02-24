@@ -19,38 +19,33 @@
  */
 
 /** @file
- *  The context needed to run a Star Wars: Knights of the Old Republic module.
+ *  Character generation information for Star Wars: Knights of the Old Republic.
  */
 
-#ifndef ENGINES_KOTOR_MODULE_H
-#define ENGINES_KOTOR_MODULE_H
+#ifndef ENGINES_KOTOR_GUI_CHARGEN_CHARGENINFO_H
+#define ENGINES_KOTOR_GUI_CHARGEN_CHARGENINFO_H
 
-#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/gui/chargeninfo.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-class Module : public KotORBase::Module {
+class CharacterGenerationInfo : public KotORBase::CharacterGenerationInfo {
 public:
-	Module(::Engines::Console &console);
+	// Create a random character for each of the six archetypes
+	static CharacterGenerationInfo *createRandomMaleSoldier();
+	static CharacterGenerationInfo *createRandomMaleScout();
+	static CharacterGenerationInfo *createRandomMaleScoundrel();
+	static CharacterGenerationInfo *createRandomFemaleSoldier();
+	static CharacterGenerationInfo *createRandomFemaleScout();
+	static CharacterGenerationInfo *createRandomFemaleScoundrel();
 
-	// GUI creation
-
-	KotORBase::IngameGUI *createIngameGUI();
-	KotORBase::DialogGUI *createDialogGUI();
-	KotORBase::PartySelectionGUI *createPartySelectionGUI();
-	KotORBase::LoadScreen *createLoadScreen(const Common::UString &name);
-
-	// Object creation
-
-	KotORBase::Creature *createCreature() const;
-	KotORBase::Creature *createCreature(const Common::UString &resRef) const;
-	KotORBase::Creature *createCreature(const Aurora::GFF3Struct &creature) const;
+	Common::UString getPortrait() const;
 };
 
 } // End of namespace KotOR
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_MODULE_H
+#endif // ENGINES_KOTOR_GUI_CHARGEN_CHARGENINFO_H

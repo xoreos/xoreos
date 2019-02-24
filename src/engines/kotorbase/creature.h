@@ -55,15 +55,6 @@ public:
 	Creature(const Common::UString &resRef);
 	~Creature();
 
-	// PC Mesh string generation
-
-	/** Generate a string for the body mesh. */
-	static Common::UString getBodyMeshString(Gender gender, Class charClass, char state = 'b');
-	/** Generate a string for the body texture. */
-	static Common::UString getBodyTextureString(Gender gender, Skin skin, Class charClass, char state = 'b');
-	/** Generate a string for the head mesh. */
-	static Common::UString getHeadMeshString(Gender gender, Skin skin, uint32 faceId);
-
 	// Character generation
 
 	/** Create a fake player character creature for testing purposes. */
@@ -184,7 +175,7 @@ protected:
 	Skin _skin; ///< The skin type of the creature.
 	uint8 _face; ///< The face of the creature.
 
-	virtual void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation);
+	virtual void getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVariation) = 0;
 	void loadMovementRate(const Common::UString &name);
 
 private:

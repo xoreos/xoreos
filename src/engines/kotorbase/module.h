@@ -208,7 +208,7 @@ public:
 
 	// Object creation
 
-	KotORBase::Creature *createCreature(const Aurora::GFF3Struct &creature) const;
+	virtual KotORBase::Creature *createCreature(const Aurora::GFF3Struct &creature) const = 0;
 
 
 	void addItemToActiveObject(const Common::UString &item, int count);
@@ -223,8 +223,8 @@ protected:
 
 	// Object creation
 
-	KotORBase::Creature *createCreature() const;
-	KotORBase::Creature *createCreature(const Common::UString &resRef) const;
+	virtual KotORBase::Creature *createCreature() const = 0;
+	virtual KotORBase::Creature *createCreature(const Common::UString &resRef) const = 0;
 
 private:
 	enum ActionType {

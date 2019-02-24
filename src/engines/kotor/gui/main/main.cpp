@@ -28,6 +28,8 @@
 
 #include "src/common/util.h"
 
+#include "src/graphics/aurora/model.h"
+
 #include "src/sound/sound.h"
 
 #include "src/events/events.h"
