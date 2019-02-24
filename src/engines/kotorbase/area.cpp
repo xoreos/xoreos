@@ -465,9 +465,7 @@ void Area::loadDoors(const Aurora::GFF3List &list) {
 void Area::loadCreatures(const Aurora::GFF3List &list) {
 	for (Aurora::GFF3List::const_iterator c = list.begin(); c != list.end(); ++c) {
 		Creature *creature = _module->createCreature(**c);
-
-		loadObject(*creature);
-		_creatures.push_back(creature);
+		addCreature(creature);
 	}
 }
 
@@ -745,6 +743,11 @@ void Area::processCreaturesActions(float dt) {
 			c != _creatures.end(); ++c) {
 		ActionExecutor::executeActions(**c, *this, dt);
 	}
+}
+
+void Area::addCreature(Creature *creature) {
+	loadObject(*creature);
+	_creatures.push_back(creature);
 }
 
 void Area::removeObject(Object *object) {
