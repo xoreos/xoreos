@@ -177,6 +177,14 @@ void Trap::setTrapDisarmable(bool disarmable) {
 	_isDisarmable = disarmable;
 }
 
+/** Disarm the trap */
+void Trap::setTrapDisabled() {
+	// TODO: Trigger the trap's OnDisarm event
+	_isTrap = false;
+	_isFlagged = false;
+	_detectedBy = 0;
+}
+
 /** Set the one-shot state */
 void Trap::setTrapOneShot(bool oneShot) {
 	_isTrapOneShot = oneShot;

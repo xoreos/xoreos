@@ -455,9 +455,81 @@ void Functions::getTrapRecoverable(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::setTrapActive(Aurora::NWScript::FunctionContext &ctx) {
 	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
-	bool active = ctx.getParams()[1].getInt() != 0;
-	if (trigger)
+	if (trigger) {
+		const bool active = ctx.getParams()[1].getInt() != 0;
 		trigger->setTrapActive(active);
+	}
+}
+
+void Functions::setTrapDetectable(Aurora::NWScript::FunctionContext &ctx) {
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
+	if (trigger) {
+		const bool detectable = ctx.getParams()[1].getInt() != 0;
+		trigger->setTrapDetectable(detectable);
+	}
+}
+
+void Functions::setTrapDetectDC(Aurora::NWScript::FunctionContext &ctx) {
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
+	if (trigger) {
+		const uint8 detectDC = (uint8) ctx.getParams()[1].getInt();
+		trigger->setTrapDetectDC(detectDC);
+	}
+}
+
+void Functions::setTrapDetectedBy(Aurora::NWScript::FunctionContext &ctx) {
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
+	if (trigger) {
+		Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 1));
+		trigger->setTrapDetectedBy(creature);
+		ctx.getReturn() = true;
+	}
+}
+
+void Functions::setTrapDisabled(Aurora::NWScript::FunctionContext &ctx) {
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
+	if (trigger)
+		trigger->setTrapDisabled();
+}
+
+void Functions::setTrapDisarmable(Aurora::NWScript::FunctionContext &ctx) {
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
+	if (trigger) {
+		const bool disarmable = ctx.getParams()[1].getInt() != 0;
+		trigger->setTrapDisarmable(disarmable);
+	}
+}
+
+void Functions::setTrapDisarmDC(Aurora::NWScript::FunctionContext &ctx) {
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
+	if (trigger) {
+		const uint8 disarmDC = (uint8) ctx.getParams()[1].getInt();
+		trigger->setTrapDisarmDC(disarmDC);
+	}
+}
+
+void Functions::setTrapKeyTag(Aurora::NWScript::FunctionContext &ctx) {
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
+	if (trigger) {
+		const Common::UString keyTag = ctx.getParams()[1].getString();
+		trigger->setTrapKeyTag(keyTag);
+	}
+}
+
+void Functions::setTrapOneShot(Aurora::NWScript::FunctionContext &ctx) {
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
+	if (trigger) {
+		const bool oneShot = ctx.getParams()[1].getInt() != 0;
+		trigger->setTrapOneShot(oneShot);
+	}
+}
+
+void Functions::setTrapRecoverable(Aurora::NWScript::FunctionContext &ctx) {
+	Trigger *trigger = NWN2::ObjectContainer::toTrigger(getParamObject(ctx, 0));
+	if (trigger) {
+		const bool recoverable = ctx.getParams()[1].getInt() != 0;
+		trigger->setTrapRecoverable(recoverable);
+	}
 }
 
 void Functions::createTrapOnObject(Aurora::NWScript::FunctionContext &ctx) {
