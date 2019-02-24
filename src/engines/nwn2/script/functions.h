@@ -231,9 +231,19 @@ private:
 	void getCurrentHitPoints(Aurora::NWScript::FunctionContext &ctx);
 	void getMaxHitPoints    (Aurora::NWScript::FunctionContext &ctx);
 
-	void getIsTrapped   (Aurora::NWScript::FunctionContext &ctx);
-	void getTrapActive  (Aurora::NWScript::FunctionContext &ctx);
-	void getTrapBaseType(Aurora::NWScript::FunctionContext &ctx);
+	void getIsTrapped      (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapActive     (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapBaseType   (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapCreator    (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapDetectable (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapDetectDC   (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapDetectedBy (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapDisarmable (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapDisarmDC   (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapFlagged    (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapKeyTag     (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapOneShot    (Aurora::NWScript::FunctionContext &ctx);
+	void getTrapRecoverable(Aurora::NWScript::FunctionContext &ctx);
 
 	void setTrapActive(Aurora::NWScript::FunctionContext &ctx);
 
