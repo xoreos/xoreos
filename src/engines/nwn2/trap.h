@@ -81,6 +81,7 @@ public:
 	void setTrapDisarmable(bool disarmable = true);
 	void setTrapOneShot(bool oneShot);
 	void setTrapRecoverable(bool recoverable);
+	void setTrapDisabled();
 
 	void setTrapDetectDC(uint8 detectDC);
 	void setTrapDisarmDC(uint8 disarmDC);

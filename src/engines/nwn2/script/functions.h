@@ -245,7 +245,16 @@ private:
 	void getTrapOneShot    (Aurora::NWScript::FunctionContext &ctx);
 	void getTrapRecoverable(Aurora::NWScript::FunctionContext &ctx);
 
-	void setTrapActive(Aurora::NWScript::FunctionContext &ctx);
+	void setTrapActive     (Aurora::NWScript::FunctionContext &ctx);
+	void setTrapDetectable (Aurora::NWScript::FunctionContext &ctx);
+	void setTrapDetectDC   (Aurora::NWScript::FunctionContext &ctx);
+	void setTrapDetectedBy (Aurora::NWScript::FunctionContext &ctx);
+	void setTrapDisabled   (Aurora::NWScript::FunctionContext &ctx);
+	void setTrapDisarmable (Aurora::NWScript::FunctionContext &ctx);
+	void setTrapDisarmDC   (Aurora::NWScript::FunctionContext &ctx);
+	void setTrapKeyTag     (Aurora::NWScript::FunctionContext &ctx);
+	void setTrapOneShot    (Aurora::NWScript::FunctionContext &ctx);
+	void setTrapRecoverable(Aurora::NWScript::FunctionContext &ctx);
 
 	void createTrapOnObject(Aurora::NWScript::FunctionContext &ctx);
 
