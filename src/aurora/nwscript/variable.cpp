@@ -92,7 +92,10 @@ Variable::Variable(const Variable &var) : _type(kTypeVoid) {
 }
 
 Variable::~Variable() {
-	setType(kTypeVoid);
+	try {
+		setType(kTypeVoid);
+	} catch (...) {
+	}
 }
 
 void Variable::setType(Type type) {
