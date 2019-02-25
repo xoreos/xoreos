@@ -83,7 +83,10 @@ Variable::Variable(const Variable &var) : _type(kTypeNone) {
 }
 
 Variable::~Variable() {
-	setType(kTypeNone);
+	try {
+		setType(kTypeNone);
+	} catch (...) {
+	}
 }
 
 void Variable::setType(Type type, const Common::UString &exactType) {
