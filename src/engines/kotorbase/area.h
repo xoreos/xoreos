@@ -138,6 +138,7 @@ public:
 	Object *getObjectByTag(const Common::UString &tag);
 
 	void addCreature(Creature *creature);
+	void addToObjectMap(Object *object);
 	void removeObject(Object *object);
 
 

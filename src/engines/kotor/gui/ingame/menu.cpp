@@ -70,7 +70,7 @@ Menu::Menu(KotORBase::Module &module, Console *console) :
 		}
 	}
 
-	_menu[kMenuTypeEquipment].menu.reset(new MenuEquipment(console));
+	_menu[kMenuTypeEquipment].menu.reset(new MenuEquipment(_module, console));
 	_menu[kMenuTypeInventory].menu.reset(new MenuInventory(console));
 	_menu[kMenuTypeCharacter].menu.reset(new MenuCharacter(console));
 	_menu[kMenuTypeAbilities].menu.reset(new MenuAbilities(console));
@@ -99,7 +99,7 @@ void Menu::showMenu(MenuType type) {
 	assert((type >= 0) && (type < kMenuTypeMAX));
 
 	if (type == kMenuTypeEquipment)
-		dynamic_cast<MenuEquipment *>(_menu[type].menu.get())->setPC(_module.getPC());
+		dynamic_cast<MenuEquipment *>(_menu[type].menu.get())->refresh();
 
 	if (_currentMenu == &_menu[type])
 		return;
