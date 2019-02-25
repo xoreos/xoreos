@@ -33,7 +33,7 @@ namespace KotORBase {
 
 class WidgetInventoryItem : public Odyssey::WidgetProtoItem {
 public:
-	WidgetInventoryItem(GUI &gui, const Common::UString &tag);
+	WidgetInventoryItem(Engines::GUI &gui, const Common::UString &tag);
 
 	void load(const Aurora::GFF3Struct &gff);
 
