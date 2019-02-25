@@ -15,7 +15,7 @@ env:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "oYIV1EmOvP2ruIxyCTPuGuqUsUzTxxu3P+IdlQZgV6aXaBxtFCuoQaLVMOlnx8xSI2V4mb5I/wK5fAtgUAomzDHQmaBNSbJc3xBTy2xgckup60ehKtFqf+ifm+AYcLQQgLtMUDmLNNcJIKUGPZ8GYwjNfWKt3VGuLHV+UFiRuQI="
-    - coverity_scan_run_condition='\( "$CC" = "gcc" \) -a \( $USECMAKE -eq 0 \) -a \( "$TRAVIS_OS_NAME" = "linux" \)'
+    - coverity_scan_run_condition='\( "$CC" = "gcc" \) -a \( $USECMAKE -eq 1 \) -a \( "$TRAVIS_OS_NAME" = "linux" \)'
     - coverity_scan_script_test_mode=false
     # Various conditions where the Travis CI scripts should behave differently
     - is_coverity_branch='\( "$TRAVIS_BRANCH" = "coverity_scan" \)'
@@ -79,7 +79,7 @@ addons:
     project:
       name: $TRAVIS_REPO_SLUG
     notification_email: drmccoy@drmccoy.de
-    build_command_prepend: "./autogen.sh && ./configure"
+    build_command_prepend: "cmake ."
     build_command: "make -j4 check"
     branch_pattern: coverity_scan
 
