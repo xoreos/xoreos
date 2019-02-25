@@ -332,6 +332,9 @@ Common::AABBNode *WalkmeshLoader::buildAABBTree(std::vector<float> &vertices,
 			compatibility = compatTest;
 		}
 
+		if (!bestNode)
+			continue;
+
 		// Try to flatten the tree by pushing to the back the best node so at a following
 		// iteration it will not be choosen if another node has the same compatibility.
 		nodes.remove(bestNode);
