@@ -32,12 +32,8 @@ env:
 matrix:
   exclude:
     # On Linux, we only need to test one compiler with both autools and CMake.
-    # This gives us three builds on Linux: autotools+gcc, autotools+clang, CMake+clang
-    # Note: In the other xoreos repositories, we use gcc for the CMake test.
-    #       However, for the main xoreos repository, it fails to link in
-    #       the Travis CI Trusty worker, for some reason. It does work on
-    #       other systems, so it might be an intermittent gcc bug?
-    - compiler: gcc
+    # This gives us three builds on Linux: autotools+gcc, autotools+clang, CMake+gcc
+    - compiler: clang
       os: linux
       env: USECMAKE=1
     # On macOS, gcc is deprecated, so we only build with clang there.
