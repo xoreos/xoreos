@@ -401,6 +401,9 @@ void KotOR2Engine::initCursors() {
 
 void KotOR2Engine::initConfig() {
 	ConfigMan.setInt(Common::kConfigRealmDefault, "texturepack", 2);
+
+	// Should we disable hiding of far rooms when the fly cam is enabled?
+	ConfigMan.setBool(Common::kConfigRealmDefault, "flycamallrooms", true);
 }
 
 void KotOR2Engine::initGameConfig() {
