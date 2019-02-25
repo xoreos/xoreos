@@ -139,12 +139,15 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 }
 
 ConsoleWindow::~ConsoleWindow() {
-	_redirect.flush();
-	_redirect.close();
+	try {
+		_redirect.flush();
+		_redirect.close();
 
-	for (std::vector<Graphics::Aurora::Text *>::iterator l = _lines.begin();
-	     l != _lines.end(); ++l)
-		delete *l;
+		for (std::vector<Graphics::Aurora::Text *>::iterator l = _lines.begin();
+		     l != _lines.end(); ++l)
+			delete *l;
+	} catch (...) {
+	}
 }
 
 void ConsoleWindow::show() {
