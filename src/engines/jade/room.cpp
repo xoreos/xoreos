@@ -42,7 +42,10 @@ Room::Room(const Common::UString &resRef, uint32 id, float x, float y, float z, 
 }
 
 Room::~Room() {
-	unload();
+	try {
+		unload();
+	} catch (...) {
+	}
 }
 
 const Common::UString &Room::getResRef() const {
