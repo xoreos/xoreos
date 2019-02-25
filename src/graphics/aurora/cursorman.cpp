@@ -42,8 +42,11 @@ CursorManager::CursorManager() : _hidden(false), _currentCursor(0) {
 }
 
 CursorManager::~CursorManager() {
-	clear();
-	showCursor();
+	try {
+		clear();
+		showCursor();
+	} catch (...) {
+	}
 }
 
 bool CursorManager::isVisible() const {
