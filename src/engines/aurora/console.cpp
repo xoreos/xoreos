@@ -820,7 +820,10 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 }
 
 Console::~Console() {
-	hide();
+	try {
+		hide();
+	} catch (...) {
+	}
 }
 
 void Console::show() {
