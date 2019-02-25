@@ -32,6 +32,13 @@ namespace Engines {
 
 namespace KotOR2 {
 
+CharacterGenerationInfo::CharacterGenerationInfo() : KotORBase::CharacterGenerationInfo() {
+}
+
+CharacterGenerationInfo::CharacterGenerationInfo(const KotORBase::CharacterGenerationInfo &info) :
+		KotORBase::CharacterGenerationInfo(info) {
+}
+
 CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleConsular() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderMale;

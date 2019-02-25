@@ -33,6 +33,9 @@ namespace KotOR {
 
 class CharacterGenerationInfo : public KotORBase::CharacterGenerationInfo {
 public:
+	CharacterGenerationInfo();
+	CharacterGenerationInfo(const KotORBase::CharacterGenerationInfo &info);
+
 	// Create a random character for each of the six archetypes
 	static CharacterGenerationInfo *createRandomMaleSoldier();
 	static CharacterGenerationInfo *createRandomMaleScout();

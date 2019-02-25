@@ -32,6 +32,8 @@
 #include "src/engines/kotor2/gui/ingame/ingame.h"
 #include "src/engines/kotor2/gui/ingame/partyselection.h"
 
+#include "src/engines/kotor2/gui/chargen/chargeninfo.h"
+
 namespace Engines {
 
 namespace KotOR2 {
@@ -58,6 +60,10 @@ KotORBase::Creature *Module::createCreature() const {
 
 KotORBase::Creature *Module::createCreature(const Common::UString &resRef) const {
 	return new Creature(resRef);
+}
+
+KotORBase::CharacterGenerationInfo *Module::createCharGenInfo(const KotORBase::CharacterGenerationInfo &info) const {
+	return new CharacterGenerationInfo(info);
 }
 
 } // End of namespace KotOR2
