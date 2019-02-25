@@ -25,6 +25,8 @@
 #include "src/common/scopedptr.h"
 
 #include "src/aurora/gff3file.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -67,6 +69,30 @@ bool Item::getStolenFlag() const {
 	return _stolen;
 }
 
+void Item::setDroppableFlag(bool droppable) {
+	_droppable = droppable;
+}
+
+void Item::setIdentified(bool identified) {
+	_identified = identified;
+}
+
+void Item::setItemCursedFlag(bool cursed) {
+	_cursed = cursed;
+}
+
+void Item::setPickpocketableFlag(bool pickpocketable) {
+	_pickpocketable = pickpocketable;
+}
+
+void Item::setPlotFlag(bool plotFlag) {
+	_plot = plotFlag;
+}
+
+void Item::setStolenFlag(bool stolen) {
+	_stolen = stolen;
+}
+
 ItemType Item::getBaseItemType() const {
 	return _baseItem;
 }
@@ -77,6 +103,31 @@ uint32 Item::getItemIcon() const {
 
 uint16 Item::getItemStackSize() const {
 	return _stackSize;
+}
+
+void Item::setItemIcon(uint32 icon) {
+	// Check if the icon is in range
+	const Aurora::TwoDAFile &icons = TwoDAReg.get2DA("nwn2_icons");
+	size_t rows = icons.getRowCount();
+	if (icon >= rows)
+		return;
+
+	// Check for a non-null icon name
+	const Aurora::TwoDARow &row = TwoDAReg.get2DA("nwn2_icons").getRow((size_t) icon);
+	if (row.getString("ICON") == "")
+		return;
+
+	_icon = icon;
+}
+
+void Item::setItemStackSize(uint16 stackSize) {
+	// Check if the value is in the allowed range
+	const Aurora::TwoDARow &row = TwoDAReg.get2DA("baseitems").getRow((size_t) _baseItem);
+	uint32 maxStack = (uint32) row.getInt("Stacking");
+	if (stackSize == 0 || stackSize > maxStack)
+		return;
+
+	_stackSize = stackSize;
 }
 
 void Item::load(const Aurora::GFF3Struct &item) {

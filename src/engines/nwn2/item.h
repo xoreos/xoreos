@@ -44,9 +44,19 @@ public:
 	bool getPlotFlag() const;
 	bool getStolenFlag() const;
 
+	void setDroppableFlag(bool droppable);
+	void setIdentified(bool identified);
+	void setItemCursedFlag(bool cursed);
+	void setPickpocketableFlag(bool pickpocketable);
+	void setPlotFlag(bool plotFlag);
+	void setStolenFlag(bool stolen);
+
 	ItemType getBaseItemType() const;
 	uint32 getItemIcon() const;
 	uint16 getItemStackSize() const;
+
+	void setItemIcon(uint32 icon);
+	void setItemStackSize(uint16 stackSize);
 
 private:
 	uint32 _icon;       ///< Icon number for inventory UI.
