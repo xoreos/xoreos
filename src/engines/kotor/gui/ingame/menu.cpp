@@ -97,6 +97,10 @@ void Menu::setReturnEnabled(bool enabled) {
 
 void Menu::showMenu(MenuType type) {
 	assert((type >= 0) && (type < kMenuTypeMAX));
+
+	if (type == kMenuTypeEquipment)
+		dynamic_cast<MenuEquipment *>(_menu[type].menu.get())->setPC(_module.getPC());
+
 	if (_currentMenu == &_menu[type])
 		return;
 
@@ -108,9 +112,6 @@ void Menu::showMenu(MenuType type) {
 	_currentMenu = &_menu[type];
 	addChild(_currentMenu->menu.get());
 	_currentMenu->protoItem->setHighlight(true);
-
-	if (type == kMenuTypeEquipment)
-		dynamic_cast<MenuEquipment &>(*_currentMenu->menu.get()).setPC(_module.getPC());
 }
 
 void Menu::callbackRun() {
