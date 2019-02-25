@@ -33,6 +33,9 @@ namespace KotOR2 {
 
 class CharacterGenerationInfo : public KotORBase::CharacterGenerationInfo {
 public:
+	CharacterGenerationInfo();
+	CharacterGenerationInfo(const KotORBase::CharacterGenerationInfo &info);
+
 	static CharacterGenerationInfo *createRandomMaleConsular();
 	static CharacterGenerationInfo *createRandomFemaleConsular();
 	static CharacterGenerationInfo *createRandomMaleGuardian();

@@ -210,6 +210,10 @@ public:
 
 	virtual KotORBase::Creature *createCreature(const Aurora::GFF3Struct &creature) const = 0;
 
+	// Miscellaneous creation
+
+	virtual KotORBase::CharacterGenerationInfo *createCharGenInfo(const CharacterGenerationInfo &info) const = 0;
+
 
 	void addItemToActiveObject(const Common::UString &item, int count);
 	void toggleFreeRoamCamera();

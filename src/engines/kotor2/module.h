@@ -51,6 +51,10 @@ public:
 	KotORBase::Creature *createCreature() const;
 	KotORBase::Creature *createCreature(const Common::UString &resRef) const;
 	KotORBase::Creature *createCreature(const Aurora::GFF3Struct &creature) const;
+
+	// Miscellaneous creation
+
+	KotORBase::CharacterGenerationInfo *createCharGenInfo(const KotORBase::CharacterGenerationInfo &info) const;
 };
 
 } // End of namespace KotOR2
