@@ -92,7 +92,7 @@ Module::Module(::Engines::Console &console) :
 		_pcPositionLoaded(false),
 		_inDialog(false),
 		_cameraHeight(0.0f),
-		_playerController(this) {
+		_partyLeaderController(this) {
 
 	loadSurfaceTypes();
 }
@@ -177,7 +177,6 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 
 void Module::usePC(Creature *pc) {
 	_pc.reset(pc);
-	_playerController.setPC(_pc.get());
 }
 
 Creature *Module::getPC() {
@@ -528,7 +527,7 @@ void Module::clickObject(Object *object) {
 	if (placeable) {
 		if (placeable->hasInventory()) {
 			stopCameraMovement();
-			_playerController.stopMovement();
+			_partyLeaderController.stopMovement();
 
 			_ingame->showContainer(placeable->getInventory());
 			placeable->close(_pc.get());
@@ -606,7 +605,7 @@ void Module::handleEvents() {
 			}
 		}
 
-		_playerController.handleEvent(*event);
+		_partyLeaderController.handleEvent(*event);
 
 		// Camera
 		if (!_console->isVisible()) {
@@ -642,7 +641,7 @@ void Module::handlePCMovement() {
 	if (!_pc)
 		return;
 
-	_playerController.processMovement(_frameTime);
+	_partyLeaderController.processMovement(_frameTime);
 
 	const float *position = CameraMan.getPosition();
 	SoundMan.setListenerPosition(position[0], position[1], position[2]);
@@ -754,7 +753,6 @@ void Module::switchPlayerCharacter(int npc) {
 		std::advance(iter, npc);
 	_pc.release();
 	_pc.reset(*iter);
-	_playerController.setPC(_pc.get());
 
 	Creature *pc = *iter;
 	_party.erase(iter);
@@ -982,7 +980,7 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 
 	if (_dialog->isConversationActive()) {
 		stopCameraMovement();
-		_playerController.stopMovement();
+		_partyLeaderController.stopMovement();
 
 		_ingame->hide();
 		_dialog->show();

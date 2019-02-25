@@ -44,7 +44,7 @@
 #include "src/engines/kotorbase/object.h"
 #include "src/engines/kotorbase/objectcontainer.h"
 #include "src/engines/kotorbase/savedgame.h"
-#include "src/engines/kotorbase/playercontroller.h"
+#include "src/engines/kotorbase/partyleader.h"
 
 #include "src/engines/kotorbase/gui/ingame.h"
 #include "src/engines/kotorbase/gui/dialog.h"
@@ -295,7 +295,7 @@ private:
 	bool _pcPositionLoaded;
 	bool _inDialog;
 	float _cameraHeight;
-	PlayerController _playerController;
+	PartyLeaderController _partyLeaderController;
 
 
 	// Surface types

@@ -19,14 +19,14 @@
  */
 
 /** @file
- *  Handles player character movement in KotOR games.
+ *  Handles the party leader movement in KotOR games.
  */
 
 #include "src/common/maths.h"
 
 #include "src/engines/aurora/satellitecamera.h"
 
-#include "src/engines/kotorbase/playercontroller.h"
+#include "src/engines/kotorbase/partyleader.h"
 #include "src/engines/kotorbase/module.h"
 #include "src/engines/kotorbase/creature.h"
 #include "src/engines/kotorbase/area.h"
@@ -35,26 +35,21 @@ namespace Engines {
 
 namespace KotORBase {
 
-PlayerController::PlayerController(Module *module) :
+PartyLeaderController::PartyLeaderController(Module *module) :
 		_module(module),
-		_pc(0),
 		_forwardMovementWanted(false),
 		_backwardMovementWanted(false),
 		_moving(false) {
 }
 
-void PlayerController::setPC(Creature *pc) {
-	_pc = pc;
-}
-
-void PlayerController::stopMovement() {
+void PartyLeaderController::stopMovement() {
 	_forwardMovementWanted = false;
 	_backwardMovementWanted = false;
-	_pc->playDefaultAnimation();
+	_module->getPC()->playDefaultAnimation();
 	_moving = false;
 }
 
-bool PlayerController::handleEvent(const Events::Event &e) {
+bool PartyLeaderController::handleEvent(const Events::Event &e) {
 	switch (e.type) {
 		case Events::kEventKeyDown:
 		case Events::kEventKeyUp:
@@ -80,30 +75,32 @@ bool PlayerController::handleEvent(const Events::Event &e) {
 	}
 }
 
-bool PlayerController::processMovement(float frameTime) {
+bool PartyLeaderController::processMovement(float frameTime) {
+	Creature *partyLeader = _module->getPC();
+
 	bool moveForwards = _forwardMovementWanted && !_backwardMovementWanted;
 	bool moveBackwards = !_forwardMovementWanted && _backwardMovementWanted;
 
 	if (!moveForwards && !moveBackwards) {
 		if (_moving) {
-			_pc->playDefaultAnimation();
+			partyLeader->playDefaultAnimation();
 			_moving = false;
 		}
 		return false;
 	}
 
 	float x, y, _;
-	_pc->getPosition(x, y, _);
+	partyLeader->getPosition(x, y, _);
 	float yaw = SatelliteCam.getYaw();
 	float newX, newY;
-	float moveRate = _pc->getRunRate();
+	float moveRate = partyLeader->getRunRate();
 
 	if (moveForwards) {
-		_pc->setOrientation(0.0f, 0.0f, 1.0f, Common::rad2deg(yaw));
+		partyLeader->setOrientation(0.0f, 0.0f, 1.0f, Common::rad2deg(yaw));
 		newX = x - moveRate * sin(yaw) * frameTime;
 		newY = y + moveRate * cos(yaw) * frameTime;
 	} else {
-		_pc->setOrientation(0.0f, 0.0f, 1.0f, 180 + Common::rad2deg(yaw));
+		partyLeader->setOrientation(0.0f, 0.0f, 1.0f, 180 + Common::rad2deg(yaw));
 		newX = x + moveRate * sin(yaw) * frameTime;
 		newY = y - moveRate * cos(yaw) * frameTime;
 	}
@@ -116,7 +113,7 @@ bool PlayerController::processMovement(float frameTime) {
 	}
 
 	if (!_moving) {
-		_pc->playAnimation(Common::UString("run"), false, -1.0f);
+		partyLeader->playAnimation(Common::UString("run"), false, -1.0f);
 		_moving = true;
 	}
 
