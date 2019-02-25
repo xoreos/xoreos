@@ -79,8 +79,8 @@ addons:
     project:
       name: $TRAVIS_REPO_SLUG
     notification_email: drmccoy@drmccoy.de
-    build_command_prepend: "cmake ."
-    build_command: "make -j4 check"
+    build_command_prepend: "cmake -G Ninja ."
+    build_command: "cmake --build . --target check"
     branch_pattern: coverity_scan
 
 notifications:
