@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  Handles player character movement in KotOR games.
+ *  Handles the party leader movement in KotOR games.
  */
 
-#ifndef ENGINES_KOTORBASE_PLAYERCONTROLLER_H
-#define ENGINES_KOTORBASE_PLAYERCONTROLLER_H
+#ifndef ENGINES_KOTORBASE_PARTYLEADER_H
+#define ENGINES_KOTORBASE_PARTYLEADER_H
 
 #include "src/events/events.h"
 
@@ -32,13 +32,10 @@ namespace Engines {
 namespace KotORBase {
 
 class Module;
-class Creature;
 
-class PlayerController {
+class PartyLeaderController {
 public:
-	PlayerController(Module *module);
-
-	void setPC(Creature *pc);
+	PartyLeaderController(Module *module);
 
 	void stopMovement();
 	bool handleEvent(const Events::Event &e);
@@ -46,7 +43,6 @@ public:
 
 private:
 	Module *_module;
-	Creature *_pc;
 	bool _forwardMovementWanted;
 	bool _backwardMovementWanted;
 	bool _moving;
@@ -56,4 +52,4 @@ private:
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTORBASE_PLAYERCONTROLLER_H
+#endif // ENGINES_KOTORBASE_PARTYLEADER_H
