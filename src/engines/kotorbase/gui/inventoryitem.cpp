@@ -33,7 +33,7 @@ namespace Engines {
 
 namespace KotORBase {
 
-WidgetInventoryItem::WidgetInventoryItem(GUI &gui, const Common::UString &tag) : WidgetProtoItem(gui, tag) {
+WidgetInventoryItem::WidgetInventoryItem(Engines::GUI &gui, const Common::UString &tag) : WidgetProtoItem(gui, tag) {
 	setDisableHighlight(true);
 }
 
