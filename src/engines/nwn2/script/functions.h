@@ -296,10 +296,19 @@ private:
 	void getPickpocketableFlag(Aurora::NWScript::FunctionContext &ctx);
 	void getStolenFlag        (Aurora::NWScript::FunctionContext &ctx);
 
+	void setDroppableFlag     (Aurora::NWScript::FunctionContext &ctx);
+	void setIdentified        (Aurora::NWScript::FunctionContext &ctx);
+	void setItemCursedFlag    (Aurora::NWScript::FunctionContext &ctx);
+	void setPickpocketableFlag(Aurora::NWScript::FunctionContext &ctx);
+	void setStolenFlag        (Aurora::NWScript::FunctionContext &ctx);
+
 	void getBaseItemType   (Aurora::NWScript::FunctionContext &ctx);
 	void getItemIcon       (Aurora::NWScript::FunctionContext &ctx);
 	void getItemStackSize  (Aurora::NWScript::FunctionContext &ctx);
 	void getNumStackedItems(Aurora::NWScript::FunctionContext &ctx);
+
+	void setItemIcon     (Aurora::NWScript::FunctionContext &ctx);
+	void setItemStackSize(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Creatures, functions_creature.cpp

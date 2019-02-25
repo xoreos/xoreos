@@ -61,6 +61,46 @@ void Functions::getStolenFlag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = item && item->getStolenFlag();
 }
 
+void Functions::setDroppableFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item) {
+		const bool droppable = ctx.getParams()[1].getInt() != 0;
+		item->setDroppableFlag(droppable);
+	}
+}
+
+void Functions::setIdentified(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item) {
+		const bool identified = ctx.getParams()[1].getInt() != 0;
+		item->setIdentified(identified);
+	}
+}
+
+void Functions::setItemCursedFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item) {
+		const bool cursed = ctx.getParams()[1].getInt() != 0;
+		item->setItemCursedFlag(cursed);
+	}
+}
+
+void Functions::setPickpocketableFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item) {
+		const bool pickpocketable = ctx.getParams()[1].getInt() != 0;
+		item->setPickpocketableFlag(pickpocketable);
+	}
+}
+
+void Functions::setStolenFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item) {
+		const bool stolen = ctx.getParams()[1].getInt() != 0;
+		item->setStolenFlag(stolen);
+	}
+}
+
 void Functions::getBaseItemType(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	if (item)
@@ -84,6 +124,22 @@ void Functions::getNumStackedItems(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	if (item)
 		ctx.getReturn() = (int) item->getItemStackSize();
+}
+
+void Functions::setItemIcon(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item) {
+		const uint32 icon = (uint32)(ctx.getParams()[1].getInt());
+		item->setItemIcon(icon);
+	}
+}
+
+void Functions::setItemStackSize(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item) {
+		const uint16 stackSize = (uint16)(ctx.getParams()[1].getInt());
+		item->setItemStackSize(stackSize);
+	}
 }
 
 } // End of namespace NWN2
