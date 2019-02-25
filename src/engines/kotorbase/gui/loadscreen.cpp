@@ -36,7 +36,8 @@ LoadScreen::LoadScreen(const Common::UString &UNUSED(name), Console *console) : 
 }
 
 void LoadScreen::setLoadingProgress(unsigned int progress) {
-	_progressBar->setCurrentValue(progress);
+	if (_progressBar)
+		_progressBar->setCurrentValue(progress);
 }
 
 LoadingProgressFunc LoadScreen::getLoadingProgressFunc() {
