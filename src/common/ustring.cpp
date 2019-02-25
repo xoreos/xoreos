@@ -171,8 +171,13 @@ int UString::strcmp(const UString &str) const {
 	UString::iterator it1 = begin();
 	UString::iterator it2 = str.begin();
 	for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
-		uint32 c1 = *it1;
-		uint32 c2 = *it2;
+		uint32 c1, c2;
+		try {
+			c1 = *it1;
+			c2 = *it2;
+		} catch (...) {
+			break;
+		}
 
 		if (c1 < c2)
 			return -1;
