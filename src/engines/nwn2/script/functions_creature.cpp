@@ -133,9 +133,20 @@ void Functions::getPlotFlag(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::setPlotFlag(Aurora::NWScript::FunctionContext &ctx) {
-	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
-	if (creature)
-		creature->setPlotFlag(ctx.getParams()[1].getInt() != 0);
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
+
+	ObjectType type = object->getType();
+	if (type == kObjectTypeCreature) {
+		Creature *creature = NWN2::ObjectContainer::toCreature(object);
+		if (creature)
+			creature->setPlotFlag(ctx.getParams()[1].getInt() != 0);
+	} else if (type == kObjectTypeItem) {
+		Item *item = NWN2::ObjectContainer::toItem(object);
+		if (item)
+			item->setPlotFlag(ctx.getParams()[1].getInt() != 0);
+	}
 }
 
 void Functions::getLootable(Aurora::NWScript::FunctionContext &ctx) {
