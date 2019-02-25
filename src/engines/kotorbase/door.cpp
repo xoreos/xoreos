@@ -151,7 +151,7 @@ bool Door::click(Object *triggerer) {
 		return runScript(kScriptClick, this, triggerer);
 
 	if (!_linkedTo.empty()) {
-		_module->movePC(_linkedToModule, _linkedTo, _linkedToType);
+		_module->moveParty(_linkedToModule, _linkedTo, _linkedToType);
 
 		return true;
 	}

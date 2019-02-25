@@ -45,7 +45,7 @@ PartyLeaderController::PartyLeaderController(Module *module) :
 void PartyLeaderController::stopMovement() {
 	_forwardMovementWanted = false;
 	_backwardMovementWanted = false;
-	_module->getPC()->playDefaultAnimation();
+	_module->getPartyLeader()->playDefaultAnimation();
 	_moving = false;
 }
 
@@ -76,7 +76,7 @@ bool PartyLeaderController::handleEvent(const Events::Event &e) {
 }
 
 bool PartyLeaderController::processMovement(float frameTime) {
-	Creature *partyLeader = _module->getPC();
+	Creature *partyLeader = _module->getPartyLeader();
 
 	bool moveForwards = _forwardMovementWanted && !_backwardMovementWanted;
 	bool moveBackwards = !_forwardMovementWanted && _backwardMovementWanted;
@@ -108,8 +108,10 @@ bool PartyLeaderController::processMovement(float frameTime) {
 	float z = _module->getCurrentArea()->evaluateElevation(newX, newY);
 	if (z != FLT_MIN) {
 		if (_module->getCurrentArea()->walkable(glm::vec3(x, y, z + 0.1f),
-		                                        glm::vec3(newX, newY, z + 0.1f)))
-			_module->movePC(newX, newY, z);
+		                                        glm::vec3(newX, newY, z + 0.1f))) {
+			partyLeader->setPosition(newX, newY, z);
+			_module->movedPartyLeader();
+		}
 	}
 
 	if (!_moving) {

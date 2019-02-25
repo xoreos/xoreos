@@ -23,7 +23,6 @@
  */
 
 #include "src/engines/kotor/savedgame.h"
-#include "src/engines/kotor/creature.h"
 
 #include "src/engines/kotor/gui/chargen/chargeninfo.h"
 
@@ -35,29 +34,13 @@ SavedGame::SavedGame(const Common::UString &dir, bool loadSav) :
 		KotORBase::SavedGame(dir, loadSav) {
 }
 
-KotORBase::Creature *SavedGame::createPC() {
-	if (_pc)
-		return _pc;
-
-	Common::ScopedPtr<CharacterGenerationInfo> info;
-
+KotORBase::CharacterGenerationInfo *SavedGame::createCharGenInfo() {
 	switch (_pcGender) {
 		case KotORBase::kGenderFemale:
-			info.reset(CharacterGenerationInfo::createRandomFemaleSoldier());
-			break;
+			return CharacterGenerationInfo::createRandomFemaleSoldier();
 		default:
-			info.reset(CharacterGenerationInfo::createRandomMaleSoldier());
-			break;
+			return CharacterGenerationInfo::createRandomMaleSoldier();
 	}
-
-	Common::ScopedPtr<Creature> pc(new Creature());
-	pc->createPC(*info);
-	_pc = pc.release();
-
-	if (_pcLoaded)
-		_pc->setPosition(_pcPosition[0], _pcPosition[1], _pcPosition[2]);
-
-	return _pc;
 }
 
 } // End of namespace KotOR

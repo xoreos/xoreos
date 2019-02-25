@@ -35,7 +35,7 @@ class SavedGame : public KotORBase::SavedGame {
 public:
 	SavedGame(const Common::UString &dir, bool loadSav = false);
 
-	KotORBase::Creature *createPC();
+	KotORBase::CharacterGenerationInfo *createCharGenInfo();
 };
 
 } // End of namespace KotOR

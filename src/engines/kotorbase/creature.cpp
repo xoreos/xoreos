@@ -130,6 +130,12 @@ bool Creature::isPartyMember() const {
 	return _isPC;
 }
 
+void Creature::setUsable(bool usable) {
+	Object::setUsable(usable);
+	if (_model)
+		_model->setClickable(isClickable());
+}
+
 Gender Creature::getGender() const {
 	return _gender;
 }
@@ -512,6 +518,7 @@ void Creature::createFakePC() {
 
 void Creature::createPC(const CharacterGenerationInfo &info) {
 	_name = info.getName();
+	_usable = false;
 	_isPC = true;
 
 	_race = kRaceHuman;

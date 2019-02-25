@@ -66,7 +66,7 @@ void ActionExecutor::executeMoveToPoint(Creature &creature, Area &area, const Ac
 
 void ActionExecutor::executeFollowLeader(Creature &creature, Area &area, const Action &UNUSED(action), float dt) {
 	float x, y, z;
-	area._module->getPC()->getPosition(x, y, z);
+	area._module->getPartyLeader()->getPosition(x, y, z);
 	moveTo(creature, area, x, y, 1.0f, dt);
 }
 

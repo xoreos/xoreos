@@ -239,9 +239,7 @@ void CharacterGenerationMenu::start() {
 	hide();
 
 	try {
-		Common::ScopedPtr<Creature> pc(new Creature());
-		pc->createPC(*_pc);
-		_module->usePC(pc.release());
+		_module->usePC(*_pc);
 		_module->load("end_m01aa");
 	} catch (...) {
 		Common::exceptionDispatcherWarning();

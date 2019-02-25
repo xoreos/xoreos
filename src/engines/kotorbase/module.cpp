@@ -82,6 +82,7 @@ Module::Module(::Engines::Console &console) :
 		_console(&console),
 		_hasModule(false),
 		_running(false),
+		_pc(0),
 		_currentTexturePack(-1),
 		_exit(false),
 		_entryLocationType(kObjectTypeAll),
@@ -89,10 +90,9 @@ Module::Module(::Engines::Console &console) :
 		_freeCamEnabled(false),
 		_prevTimestamp(0),
 		_frameTime(0),
-		_pcPositionLoaded(false),
 		_inDialog(false),
-		_cameraHeight(0.0f),
-		_partyLeaderController(this) {
+		_partyLeaderController(this),
+		_partyController(this) {
 
 	loadSurfaceTypes();
 }
@@ -175,12 +175,12 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 	_ingame->show();
 }
 
-void Module::usePC(Creature *pc) {
-	_pc.reset(pc);
+void Module::usePC(const CharacterGenerationInfo &info) {
+	_chargenInfo.reset(createCharGenInfo(info));
 }
 
 Creature *Module::getPC() {
-	return _pc.get();
+	return _pc;
 }
 
 const std::vector<bool> &Module::getWalkableSurfaces() const {
@@ -212,6 +212,8 @@ void Module::load() {
 	loadResources();
 	loadIFO();
 	loadArea();
+	loadPC();
+	loadParty();
 }
 
 void Module::loadResources() {
@@ -256,6 +258,45 @@ void Module::loadArea() {
 	_area.reset(new Area(*this, _ifo.getEntryArea()));
 }
 
+void Module::loadPC() {
+	_pc = createCreature();
+
+	if (_chargenInfo)
+		_pc->createPC(*_chargenInfo.get());
+	else
+		_pc->createFakePC();
+
+	_area->addCreature(_pc);
+}
+
+void Module::loadParty() {
+	std::vector<int> partyMembers = _partyController.getPartyMembers();
+
+	if (partyMembers.empty()) {
+		_partyController.addPartyMember(-1, _pc);
+	} else {
+		_partyController.clearCurrentParty();
+
+		for (auto npc : partyMembers) {
+			if (npc == -1) {
+				_partyController.addPartyMember(-1, _pc);
+				continue;
+			}
+
+			Common::UString templ = _partyController.getAvailableNPCTemplate(npc);
+
+			// Special case: Trask exists only on the Endar Spire
+			if (templ == "end_trask")
+				continue;
+
+			Creature *creature = createCreature(templ);
+			addPartyMember(npc, creature);
+		}
+	}
+
+	updateCurrentPartyGUI();
+}
+
 void Module::loadSurfaceTypes() {
 	_walkableSurfaces.clear();
 
@@ -295,19 +336,17 @@ void Module::loadTexturePack() {
 void Module::unload(bool completeUnload) {
 	GfxMan.pauseAnimations();
 
-	_party.clear();
-
 	leaveArea();
 	unloadArea();
 
 	if (completeUnload) {
-		unloadPC();
 		unloadTexturePack();
 
 		_globalNumbers.clear();
 		_globalBooleans.clear();
 
-		_availableParty.clear();
+		_partyController.clearCurrentParty();
+		_partyController.clearAvailableParty();
 	}
 
 	unloadIFO();
@@ -339,10 +378,6 @@ void Module::unloadIFO() {
 
 void Module::unloadArea() {
 	_area.reset();
-}
-
-void Module::unloadPC() {
-	_pc.reset();
 }
 
 void Module::unloadTexturePack() {
@@ -387,47 +422,12 @@ void Module::enter() {
 	if (!startMovie.empty())
 		playVideo(startMovie);
 
-	float entryX, entryY, entryZ, entryAngle;
-	if (!getEntryObjectLocation(entryX, entryY, entryZ, entryAngle))
-		getEntryIFOLocation(entryX, entryY, entryZ, entryAngle);
+	float entryX, entryY, entryZ, _;
+	if (!getEntryObjectLocation(entryX, entryY, entryZ, _))
+		getEntryIFOLocation(entryX, entryY, entryZ, _);
 
-	if (_pc) {
-		if (_pcPositionLoaded) {
-			_pc->getPosition(entryX, entryY, entryZ);
-			_pcPositionLoaded = false;
-		} else
-			_pc->setPosition(entryX, entryY, entryZ);
-
-		_ingame->setPosition(entryX, entryY);
-		_pc->show();
-	} else {
-		usePC(createCreature());
-		_pc->createFakePC();
-	}
-
-	if (_party.empty()) {
-		addToParty(_pc.get());
-	}
-
-	if (!_pc)
-		throw Common::Exception("Module::enter(): Lacking a PC?!?");
-
-	_cameraHeight = _pc->getCameraHeight();
-
-	float cameraDistance, cameraPitch, cameraHeight;
-	_area->getCameraStyle(cameraDistance, cameraPitch, cameraHeight);
-
-	SatelliteCam.setTarget(entryX, entryY, entryZ + _cameraHeight);
-	SatelliteCam.setDistance(cameraDistance);
-	SatelliteCam.setPitch(cameraPitch);
-	SatelliteCam.setHeight(cameraHeight);
-	SatelliteCam.update(0);
-
-	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
-
+	moveParty(entryX, entryY, entryZ);
 	enterArea();
-
-	_area->notifyPCMoved();
 
 	GfxMan.resumeAnimations();
 
@@ -491,23 +491,23 @@ void Module::enterArea() {
 
 	_area->show();
 
-	runScript(kScriptModuleLoad , this, _pc.get());
-	runScript(kScriptModuleStart, this, _pc.get());
-	runScript(kScriptEnter      , this, _pc.get());
+	runScript(kScriptModuleLoad , this, _pc);
+	runScript(kScriptModuleStart, this, _pc);
+	runScript(kScriptEnter      , this, _pc);
 
 	GfxMan.unlockFrame();
 
-	_area->runScript(kScriptEnter, _area.get(), _pc.get());
+	_area->runScript(kScriptEnter, _area.get(), _pc);
 }
 
 void Module::leaveArea() {
 	if (_area) {
-		_area->runScript(kScriptExit, _area.get(), _pc.get());
+		_area->runScript(kScriptExit, _area.get(), _pc);
 
 		_area->hide();
-	}
 
-	runScript(kScriptExit, this, _pc.get());
+		runScript(kScriptExit, this, _pc);
+	}
 }
 
 void Module::clickObject(Object *object) {
@@ -530,8 +530,8 @@ void Module::clickObject(Object *object) {
 			_partyLeaderController.stopMovement();
 
 			_ingame->showContainer(placeable->getInventory());
-			placeable->close(_pc.get());
-			placeable->runScript(kScriptDisturbed, placeable, _pc.get());
+			placeable->close(_pc);
+			placeable->runScript(kScriptDisturbed, placeable, _pc);
 			_prevTimestamp = EventMan.getTimestamp();
 		}
 	}
@@ -570,9 +570,13 @@ void Module::processEventQueue() {
 	_area->processCreaturesActions(_frameTime);
 
 	if (!_freeCamEnabled) {
-		handlePCMovement();
 		SatelliteCam.update(_frameTime);
+		_partyLeaderController.processMovement(_frameTime);
+		updateMinimap();
 	}
+
+	updateSoundListener();
+	_ingame->updateSelection();
 
 	GfxMan.unlockFrame();
 }
@@ -637,19 +641,19 @@ void Module::handleEvents() {
 	}
 }
 
-void Module::handlePCMovement() {
-	if (!_pc)
-		return;
+void Module::updateMinimap() {
+	float x, y, _;
+	_partyController.getPartyLeader()->getPosition(x, y, _);
 
-	_partyLeaderController.processMovement(_frameTime);
+	_ingame->setPosition(x, y);
+	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
+}
 
+void Module::updateSoundListener() {
 	const float *position = CameraMan.getPosition();
 	SoundMan.setListenerPosition(position[0], position[1], position[2]);
 	const float *orientation = CameraMan.getOrientation();
 	SoundMan.setListenerOrientation(orientation[0], orientation[1], orientation[2], 0.0f, 1.0f, 0.0f);
-
-	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
-	_ingame->updateSelection();
 }
 
 void Module::handleActions() {
@@ -669,20 +673,24 @@ void Module::handleActions() {
 	}
 }
 
-void Module::movePC(float x, float y, float z) {
-	if (!_pc)
-		return;
+void Module::moveParty(float x, float y, float z) {
+	int partySize = static_cast<int>(_partyController.getPartyMemberCount());
+	for (int i = 0; i < partySize; ++i) {
+		Creature *creature = _partyController.getPartyMemberByIndex(i).second;
+		creature->setPosition(x, y, z);
 
-	_pc->setPosition(x, y, z);
-	_ingame->setPosition(x, y);
-	movedPC();
+		if (i == 0)
+			movedPartyLeader();
+		else
+			_area->notifyObjectMoved(*creature);
+	}
 }
 
-void Module::movePC(const Common::UString &module, const Common::UString &object, ObjectType type) {
+void Module::moveParty(const Common::UString &module, const Common::UString &object, ObjectType type) {
 	if (module.empty() || (module == _module)) {
 		float x, y, z, angle;
 		if (getObjectLocation(object, type, x, y, z, angle))
-			movePC(x, y, z);
+			moveParty(x, y, z);
 
 		return;
 	}
@@ -690,90 +698,43 @@ void Module::movePC(const Common::UString &module, const Common::UString &object
 	load(module, object, type);
 }
 
-void Module::movedPC() {
-	if (!_pc)
-		return;
-
-	float x, y, z;
-	_pc->getPosition(x, y, z);
-
-	SatelliteCam.setTarget(x, y, z + _cameraHeight);
-
-	if (_freeCamEnabled) {
-		CameraMan.setPosition(x, y, z + _cameraHeight);
-		CameraMan.update();
-	}
+void Module::movedPartyLeader() {
+	float x, y, _;
+	_partyController.getPartyLeader()->getPosition(x, y, _);
 
 	_area->evaluateTriggers(x, y);
+	_area->notifyPartyLeaderMoved();
 
-	if (!_freeCamEnabled)
-		_area->notifyPCMoved();
+	setupSatelliteCamera();
 }
 
-size_t Module::getPartyMemberCount() {
-	return _party.size();
+Creature *Module::getPartyLeader() const {
+	return _partyController.getPartyLeader();
 }
 
-void Module::addToParty(Creature *creature) {
-	_party.push_back(creature);
-
-	if (_party.size() == 1)
-		_ingame->setPartyLeader(creature);
-	else if (_party.size() == 2)
-		_ingame->setPartyMember1(creature);
-	else if (_party.size() == 3)
-		_ingame->setPartyMember2(creature);
-
-	// TODO: The character is in the original game placed on a position somewhere near theplayer character.
-	float x, y, z;
-	_pc->getPosition(x, y, z);
-	creature->show();
-	creature->setPosition(x, y, z);
-	addObject(*creature);
-
-	// TODO: If the party size increases over 3 show the character selection screen.
+Creature *Module::getPartyMemberByIndex(int index) const {
+	return _partyController.getPartyMemberByIndex(index).second;
 }
 
-bool Module::isObjectPartyMember(Creature *creature) {
-	return std::find(_party.begin(), _party.end(), creature) != _party.end();
+bool Module::isObjectPartyMember(Creature *object) const {
+	return _partyController.isObjectPartyMember(object);
 }
 
-Creature *Module::getPartyMember(int index) {
-	if (index >= static_cast<int>(_party.size()) || index < 0)
-		throw Common::Exception("Module::getPartyMember() Invalid index");
-
-	std::list<Creature *>::iterator iter = _party.begin();
-	std::advance(iter, index);
-	return *iter;
+bool Module::isAvailableCreature(int npc) const {
+	return _partyController.isAvailableCreature(npc);
 }
 
-void Module::switchPlayerCharacter(int npc) {
-	std::list<Creature *>::iterator iter = _party.begin();
-	if (npc != -1)
-		std::advance(iter, npc);
-	_pc.release();
-	_pc.reset(*iter);
+void Module::setPartyLeader(int npc) {
+	_partyController.setPartyLeader(npc);
+	onPartyLeaderChanged();
+}
 
-	Creature *pc = *iter;
-	_party.erase(iter);
-	_party.push_front(pc);
+void Module::setPartyLeaderByIndex(int index) {
+	if (index == 0)
+		return;
 
-	_ingame->setPartyLeader(pc);
-
-	if (_party.size() > 1)
-		_ingame->setPartyMember1(*++_party.begin());
-	if (_party.size() > 2)
-		_ingame->setPartyMember2(_party.back());
-
-	float x, y, z;
-	_pc->getPosition(x, y, z);
-
-	SatelliteCam.setTarget(x, y, z + _cameraHeight);
-
-	if (_freeCamEnabled) {
-		CameraMan.setPosition(x, y, z + _cameraHeight);
-		CameraMan.update();
-	}
+	_partyController.setPartyLeaderByIndex(index);
+	onPartyLeaderChanged();
 }
 
 void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
@@ -784,9 +745,9 @@ void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
 
 	PartyConfiguration config;
 
-	for (std::map<int, Common::UString>::iterator i = _availableParty.begin();
-			i != _availableParty.end(); ++i) {
-		config.slotTemplate[i->first] = i->second;
+	for (int i = 0; i < 10; ++i) {
+		if (_partyController.isAvailableCreature(i))
+			config.slotTemplate[i] = _partyController.getAvailableNPCTemplate(i);
 	}
 
 	config.forceNPC1 = forceNPC1;
@@ -807,34 +768,44 @@ void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
 	int npc1 = config.forceNPC1;
 	int npc2 = config.forceNPC2;
 
-	if (npc1 == -1)
-		for (int i = 0; i < 10; ++i)
+	if ((npc1 == -1) || (npc2 == -1)) {
+		for (int i = 0; i < 10; ++i) {
 			if (config.slotSelected[i]) {
-				config.slotSelected[i] = false;
-				npc1 = i;
+				if (npc1 == -1) {
+					npc1 = i;
+				} else {
+					npc2 = i;
+					break;
+				}
 			}
+		}
+	}
 
-	if (npc2 == -1)
-		for (int i = 0; i < 10; ++i)
-			if (config.slotSelected[i]) {
-				config.slotSelected[i] = false;
-				npc2 = i;
-			}
+	int partySize = static_cast<int>(_partyController.getPartyMemberCount());
+	for (int i = 0; i < partySize; ++i) {
+		auto partyMember = _partyController.getPartyMemberByIndex(i);
+		if (partyMember.first != -1)
+			_area->removeObject(partyMember.second);
+	}
 
-	if (npc1 != -1)
-		addToParty(createCreature(_availableParty[npc1]));
+	_partyController.clearCurrentParty();
+	_partyController.addPartyMember(-1, _pc);
+
+	if (npc1 != -1) {
+		Creature *creature = createCreature(config.slotTemplate[npc1]);
+		addPartyMember(npc1, creature);
+	}
+
+	if (npc2 != -1) {
+		Creature *creature = createCreature(config.slotTemplate[npc2]);
+		addPartyMember(npc2, creature);
+	}
+
+	updateCurrentPartyGUI();
 }
 
-void Module::addAvailablePartyMember(int slot, const Common::UString &templ) {
-	std::map<int, Common::UString>::iterator i = _availableParty.find(slot);
-	if (i != _availableParty.end())
-		_availableParty.erase(i);
-
-	_availableParty.insert(std::pair<int, Common::UString>(slot, templ));
-}
-
-bool Module::isAvailableCreature(int slot) {
-	return _availableParty.find(slot) != _availableParty.end();
+void Module::addAvailableNPCByTemplate(int npc, const Common::UString &templ) {
+	_partyController.addAvailableNPCByTemplate(npc, templ);
 }
 
 void Module::setReturnStrref(uint32 id) {
@@ -953,9 +924,9 @@ void Module::toggleTriggers() {
 
 void Module::loadSavedGame(SavedGame *save) {
 	try {
-		usePC(save->createPC());
+		Common::ScopedPtr<CharacterGenerationInfo> info(save->createCharGenInfo());
+		usePC(*info.get());
 		load(save->getModuleName());
-		_pcPositionLoaded = save->isPCLoaded();
 	} catch (...) {
 		Common::exceptionDispatcherWarning();
 	}
@@ -1033,8 +1004,68 @@ void Module::addItemToActiveObject(const Common::UString &item, int count) {
 		inv->removeItem(item, -count);
 }
 
+void Module::setupSatelliteCamera() {
+	float x, y, z, hookHeight, distance, pitch, height;
+	Creature *partyLeader = _partyController.getPartyLeader();
+	partyLeader->getPosition(x, y, z);
+	hookHeight = partyLeader->getCameraHeight();
+	_area->getCameraStyle(distance, pitch, height);
+
+	SatelliteCam.setTarget(x, y, z + hookHeight);
+	SatelliteCam.setDistance(distance);
+	SatelliteCam.setPitch(pitch);
+	SatelliteCam.setHeight(height);
+	SatelliteCam.update(0.0f);
+}
+
 void Module::stopCameraMovement() {
 	SatelliteCam.clearInput();
+}
+
+void Module::addPartyMember(int npc, Creature *creature) {
+	Creature *partyLeader = _partyController.getPartyLeader();
+
+	float x, y, z;
+	partyLeader->getPosition(x, y, z);
+	creature->setPosition(x, y, z);
+
+	_area->addCreature(creature);
+	_partyController.addPartyMember(npc, creature);
+	
+	creature->show();
+	creature->clearActionQueue();
+	creature->enqueueAction(KotORBase::Action(kActionFollowLeader, partyLeader));
+}
+
+void Module::onPartyLeaderChanged() {
+	setupSatelliteCamera();
+	updateCurrentPartyGUI();
+	resetPartyActions();
+}
+
+void Module::resetPartyActions() {
+	Creature *partyLeader = _partyController.getPartyLeader();
+	partyLeader->clearActionQueue();
+
+	int partySize = static_cast<int>(_partyController.getPartyMemberCount());
+	for (int i = 1; i < partySize; ++i) {
+		Creature *creature = _partyController.getPartyMemberByIndex(i).second;
+		creature->clearActionQueue();
+		creature->enqueueAction(KotORBase::Action(kActionFollowLeader, partyLeader));
+	}
+}
+
+void Module::updateCurrentPartyGUI() {
+	size_t partySize = _partyController.getPartyMemberCount();
+
+	if (partySize > 0)
+		_ingame->setPartyLeader(_partyController.getPartyLeader());
+
+	if (partySize > 1)
+		_ingame->setPartyMember1(_partyController.getPartyMemberByIndex(1).second);
+
+	if (partySize > 2)
+		_ingame->setPartyMember2(_partyController.getPartyMemberByIndex(2).second);
 }
 
 } // End of namespace KotORBase

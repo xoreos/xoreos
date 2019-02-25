@@ -132,7 +132,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  10, "SetFacing"                           , 0                                                },
 	{  11, "SwitchPlayerCharacter"               , 0                                                },
 	{  12, "SetTime"                             , 0                                                },
-	{  13, "SetPartyLeader"                      , 0                                                },
+	{  13, "SetPartyLeader"                      , &Functions::setPartyLeader                       },
 	{  14, "SetAreaUnescapable"                  , 0                                                },
 	{  15, "GetAreaUnescapable"                  , 0                                                },
 	{  16, "GetTimeHour"                         , 0                                                },

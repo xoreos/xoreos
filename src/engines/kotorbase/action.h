@@ -42,6 +42,7 @@ struct Action {
 	float range;
 
 	Action();
+	Action(ActionType type, Object *object);
 };
 
 } // End of namespace KotORBase

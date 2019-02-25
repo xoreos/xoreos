@@ -472,15 +472,15 @@ void HUD::initWidget(Engines::Widget &widget) {
 
 void HUD::callbackActive(Widget &widget) {
 	if (widget.getTag() == "LBL_CHAR1") {
-		_module->switchPlayerCharacter(0);
+		_module->setPartyLeaderByIndex(0);
 		return;
 	}
 	if (widget.getTag() == "LBL_CHAR2") {
-		_module->switchPlayerCharacter(2);
+		_module->setPartyLeaderByIndex(2);
 		return;
 	}
 	if (widget.getTag() == "LBL_CHAR3") {
-		_module->switchPlayerCharacter(1);
+		_module->setPartyLeaderByIndex(1);
 		return;
 	}
 

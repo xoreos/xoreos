@@ -45,6 +45,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/savedgame.h \
     src/engines/kotorbase/game.h \
     src/engines/kotorbase/partyleader.h \
+    src/engines/kotorbase/partycontroller.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
@@ -69,6 +70,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/savedgame.cpp \
     src/engines/kotorbase/game.cpp \
     src/engines/kotorbase/partyleader.cpp \
+    src/engines/kotorbase/partycontroller.cpp \
     $(EMPTY)
 
 include src/engines/kotorbase/script/rules.mk

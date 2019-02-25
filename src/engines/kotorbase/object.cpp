@@ -116,6 +116,10 @@ bool Object::isClickable() const {
 	return !_static && _usable;
 }
 
+void Object::setUsable(bool usable) {
+	_usable = usable;
+}
+
 void Object::getPosition(float &x, float &y, float &z) const {
 	x = _position[0];
 	y = _position[1];

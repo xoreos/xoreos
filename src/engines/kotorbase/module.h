@@ -45,6 +45,7 @@
 #include "src/engines/kotorbase/objectcontainer.h"
 #include "src/engines/kotorbase/savedgame.h"
 #include "src/engines/kotorbase/partyleader.h"
+#include "src/engines/kotorbase/partycontroller.h"
 
 #include "src/engines/kotorbase/gui/ingame.h"
 #include "src/engines/kotorbase/gui/dialog.h"
@@ -82,8 +83,8 @@ public:
 
 	/** Load texture pack used by the module. */
 	void loadTexturePack();
-	/** Use this character as the player character. */
-	void usePC(Creature *pc);
+	/** Use this character generation information to create the player character. */
+	void usePC(const CharacterGenerationInfo &info);
 	/** Exit the currently running module. */
 	void exit();
 
@@ -98,7 +99,7 @@ public:
 
 	/** Return the area the PC is currently in. */
 	Area *getCurrentArea();
-	/** Return the currently playing PC. */
+	/** Return the player character. */
 	Creature *getPC();
 	/** Return a map between surface type and whether it is walkable. */
 	const std::vector<bool> &getWalkableSurfaces() const;
@@ -117,35 +118,36 @@ public:
 	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
 	                 uint32 delay);
 
-	// Player Character management
+	// Party transitions
 
-	/** Move the player character to this position within the current area. */
-	void movePC(float x, float y, float z);
-	/** Move the player character to this object within this area. */
-	void movePC(const Common::UString &module, const Common::UString &object, ObjectType type = kObjectTypeAll);
-	/** Notify the module that the PC was moved. */
-	void movedPC();
+	/** Move the current party to a specified location within the current area. */
+	void moveParty(float x, float y, float z);
+	/** Move the current party to a specified object within a specified module. */
+	void moveParty(const Common::UString &module, const Common::UString &object, ObjectType type = kObjectTypeAll);
+	/** Notify the module that the party leader was moved. */
+	void movedPartyLeader();
 
 	// Party management
 
-	/** Get the count of party members. */
-	size_t getPartyMemberCount();
-	/** Get a party member by index. */
-	Creature *getPartyMember(int index);
+	/** Get the party leader. */
+	Creature *getPartyLeader() const;
+	/** Get the party member at a given index (0 is always the party leader). */
+	Creature *getPartyMemberByIndex(int index) const;
 
-	/** Check if the specified creature is a party member. */
-	bool isObjectPartyMember(Creature *creature);
-	/** Check if there is a party member available for this id. */
-	bool isAvailableCreature(int slot);
+	/** Is a specified creature a party member? */
+	bool isObjectPartyMember(Creature *creature) const;
+	/** Is a NPC in the list of available party members? */
+	bool isAvailableCreature(int npc) const;
 
-	/** Add a creature to the party. */
-	void addToParty(Creature *creature);
-	/** Switch the player character. */
-	void switchPlayerCharacter(int npc);
+	/** Set which party member should be the controlled character. */
+	void setPartyLeader(int npc);
+	/** Set which party member should be the controlled character. */
+	void setPartyLeaderByIndex(int index);
+
 	/** Show the party selection GUI. */
 	void showPartySelectionGUI(int forceNPC1, int forceNPC2);
-	/** Add available party member by template. */
-	void addAvailablePartyMember(int slot, const Common::UString &templ);
+	/** Add a NPC to the list of available party members using a template. */
+	void addAvailableNPCByTemplate(int npc, const Common::UString &templ);
 
 	// GUI management
 
@@ -263,7 +265,8 @@ private:
 
 	Aurora::IFOFile _ifo; ///< The current module's IFO.
 
-	Common::ScopedPtr<Creature> _pc; ///< The player character we use.
+	Common::ScopedPtr<CharacterGenerationInfo> _chargenInfo; ///< Character generation information.
+	Creature *_pc; ///< The player character.
 
 	int _currentTexturePack; ///< The current texture pack.
 	Common::ChangeID _textures; ///< Resources added by the current texture pack.
@@ -285,10 +288,6 @@ private:
 	std::map<Common::UString, bool> _globalBooleans;
 	std::map<Common::UString, int> _globalNumbers;
 
-	// Party
-
-	std::list<Creature *> _party;
-	std::map<int, Common::UString> _availableParty;
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
@@ -296,10 +295,9 @@ private:
 	bool _freeCamEnabled;
 	uint32 _prevTimestamp;
 	float _frameTime;
-	bool _pcPositionLoaded;
 	bool _inDialog;
-	float _cameraHeight;
 	PartyLeaderController _partyLeaderController;
+	PartyController _partyController;
 
 
 	// Surface types
@@ -318,7 +316,6 @@ private:
 	void unload(bool completeUnload = true);
 
 	void unloadResources();
-	void unloadPC();
 	void unloadIFO();
 	void unloadArea();
 	void unloadTexturePack();
@@ -329,6 +326,8 @@ private:
 	void loadResources();
 	void loadIFO();
 	void loadArea();
+	void loadPC();
+	void loadParty();
 	/** Load the surface types. */
 	void loadSurfaceTypes();
 
@@ -343,6 +342,18 @@ private:
 	/** Actually replace the currently running module. */
 	void replaceModule();
 
+	// Camera handling
+
+	void setupSatelliteCamera();
+	void stopCameraMovement();
+
+	// Party
+
+	void addPartyMember(int npc, Creature *creature);
+	void onPartyLeaderChanged();
+	void resetPartyActions();
+	void updateCurrentPartyGUI();
+
 
 	bool getObjectLocation(const Common::UString &object, ObjectType location,
 	                       float &entryX, float &entryY, float &entryZ, float &entryAngle);
@@ -356,9 +367,9 @@ private:
 	void handleEvents();
 
 	void handleActions();
-	void handlePCMovement();
 
-	void stopCameraMovement();
+	void updateMinimap();
+	void updateSoundListener();
 };
 
 } // End of namespace KotORBase

@@ -31,6 +31,11 @@ namespace KotORBase {
 Action::Action() : type(kActionInvalid), object(0), range(0.0f) {
 }
 
+Action::Action(ActionType _type, Object *_object) :
+		type(_type),
+		object(_object) {
+}
+
 } // End of namespace KotORBase
 
 } // End of namespace Engines

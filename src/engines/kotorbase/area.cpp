@@ -662,21 +662,21 @@ void Area::notifyObjectMoved(Object &o) {
 	o.setRoom(_pathfinding->getRoomAt(x, y));
 }
 
-void Area::notifyPCMoved() {
-	Creature *pc = _module->getPC();
+void Area::notifyPartyLeaderMoved() {
+	Creature *partyLeader = _module->getPartyLeader();
 
-	const Room *prevPCRoom = pc->getRoom();
-	notifyObjectMoved(*pc);
-	const Room *pcRoom = pc->getRoom();
+	const Room *prevLeaderRoom = partyLeader->getRoom();
+	notifyObjectMoved(*partyLeader);
+	const Room *leaderRoom = partyLeader->getRoom();
 
-	if (pcRoom == prevPCRoom)
+	if (prevLeaderRoom == leaderRoom)
 		return;
 
 	std::vector<Common::UString> visRooms;
-	if (pcRoom) {
-		visRooms.push_back(pcRoom->getResRef());
+	if (leaderRoom) {
+		visRooms.push_back(leaderRoom->getResRef());
 
-		const std::vector<Common::UString> va = _vis.getVisibilityArray(pcRoom->getResRef());
+		const std::vector<Common::UString> va = _vis.getVisibilityArray(leaderRoom->getResRef());
 		for (std::vector<Common::UString>::const_iterator v = va.begin();
 				v != va.end(); ++v) {
 			Common::UString lcResRef(v->toLower());
