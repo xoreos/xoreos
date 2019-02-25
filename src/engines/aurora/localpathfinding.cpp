@@ -26,6 +26,7 @@
 #include "glm/gtx/transform.hpp"
 
 #include "src/common/util.h"
+#include "src/common/error.h"
 #include "src/common/boundingbox.h"
 #include "src/common/aabbnode.h"
 #include "src/common/geometry.h"
@@ -47,7 +48,11 @@ LocalAStar::~LocalAStar() {
 }
 
 float LocalAStar::getGValue(Node &previousNode, uint32 face, float &x, float &y) const {
-	dynamic_cast<LocalPathfinding *>(_pathfinding)->getFacePosition(face, x, y);
+	const LocalPathfinding *localPathfinding = dynamic_cast<const LocalPathfinding *>(_pathfinding);
+	if (!localPathfinding)
+		throw Common::Exception("LocalAStar::getGValue(): No local pathfinding object");
+
+	localPathfinding->getFacePosition(face, x, y);
 	return getEuclideanDistance(previousNode.x, previousNode.y, x, y);
 }
 
