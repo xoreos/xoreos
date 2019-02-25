@@ -116,7 +116,10 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 }
 
 GraphicsManager::~GraphicsManager() {
-	deinit();
+	try {
+		deinit();
+	} catch (...) {
+	}
 }
 
 void GraphicsManager::init() {
