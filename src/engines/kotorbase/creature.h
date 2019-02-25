@@ -199,12 +199,12 @@ private:
 	bool _visible;
 
 	// Abilities
-	unsigned int _strength;
-	unsigned int _dexterity;
-	unsigned int _constitution;
-	unsigned int _intelligence;
-	unsigned int _wisdom;
-	unsigned int _charisma;
+	unsigned int _strength { 0 };
+	unsigned int _dexterity { 0 };
+	unsigned int _constitution { 0 };
+	unsigned int _intelligence { 0 };
+	unsigned int _wisdom { 0 };
+	unsigned int _charisma { 0 };
 
 	std::vector<uint32> _skills; ///< The skill levels of the creature
 
