@@ -204,7 +204,7 @@ public:
 
 	// GUI creation
 
-	virtual KotORBase::LoadScreen *createLoadScreen(const Common::UString &name) = 0;
+	virtual KotORBase::LoadScreen *createLoadScreen(const Common::UString &name) const = 0;
 
 	// Object creation
 
@@ -355,7 +355,6 @@ private:
 	void handlePCMovement();
 
 	void stopCameraMovement();
-	void stopPCMovement();
 };
 
 } // End of namespace KotORBase

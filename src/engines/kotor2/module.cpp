@@ -44,7 +44,7 @@ Module::Module(::Engines::Console &console) : KotORBase::Module(console) {
 	loadTexturePack();
 }
 
-KotORBase::LoadScreen *Module::createLoadScreen(const Common::UString &name) {
+KotORBase::LoadScreen *Module::createLoadScreen(const Common::UString &name) const {
 	return new KotORBase::LoadScreen(name);
 }
 

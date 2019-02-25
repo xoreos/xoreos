@@ -42,7 +42,7 @@ Module::Module(::Engines::Console &console) : KotORBase::Module(console) {
 	_partySelection.reset(new PartySelectionGUI());
 }
 
-KotORBase::LoadScreen *Module::createLoadScreen(const Common::UString &name) {
+KotORBase::LoadScreen *Module::createLoadScreen(const Common::UString &name) const {
 	return new LoadScreen(name);
 }
 

@@ -44,10 +44,7 @@ public:
 
 	// GUI creation
 
-	KotORBase::IngameGUI *createIngameGUI();
-	KotORBase::DialogGUI *createDialogGUI();
-	KotORBase::PartySelectionGUI *createPartySelectionGUI();
-	KotORBase::LoadScreen *createLoadScreen(const Common::UString &name);
+	KotORBase::LoadScreen *createLoadScreen(const Common::UString &name) const;
 
 	// Object creation
 
