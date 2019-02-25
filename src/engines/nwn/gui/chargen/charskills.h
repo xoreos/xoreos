@@ -38,7 +38,7 @@ class WidgetEditBox;
 
 class WidgetListItemSkill : public WidgetListItemButton {
 public:
-	WidgetListItemSkill(::Engines::GUI &gui, SkillItem skill);
+	WidgetListItemSkill(::Engines::GUI &gui, const SkillItem &skill);
 	~WidgetListItemSkill();
 
 	void setPosition(float x, float y, float z);

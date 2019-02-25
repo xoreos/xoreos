@@ -128,7 +128,7 @@ void CharFeats::showFeatHelp(FeatItem &feat) {
 	_featHelp->hide();
 }
 
-void CharFeats::moveFeat(FeatItem feat, bool toKnownFeats, bool rebuild) {
+void CharFeats::moveFeat(const FeatItem &feat, bool toKnownFeats, bool rebuild) {
 	// Check if there is enough remaining feats available.
 	if (toKnownFeats) {
 		if (_bonusFeats + _normalFeats == 0)

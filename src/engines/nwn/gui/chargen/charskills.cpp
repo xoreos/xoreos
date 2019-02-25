@@ -47,7 +47,7 @@ namespace Engines {
 
 namespace NWN {
 
-WidgetListItemSkill::WidgetListItemSkill(::Engines::GUI &gui, SkillItem skill) :
+WidgetListItemSkill::WidgetListItemSkill(::Engines::GUI &gui, const SkillItem &skill) :
 	WidgetListItemButton(gui, "ctl_cg_btn_skill", skill.name, skill.icon),
 	_upButton(0), _downButton(0), _skillPointPanel(0), _skill(skill) {
 

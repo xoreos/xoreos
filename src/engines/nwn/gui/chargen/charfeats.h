@@ -68,7 +68,7 @@ public:
 	void fixWidgetType(const Common::UString &tag, NWN::GUI::WidgetType &type);
 
 	void showFeatHelp(FeatItem &feat);
-	void moveFeat(FeatItem feat, bool toKnownFeats, bool rebuild = true);
+	void moveFeat(const FeatItem &feat, bool toKnownFeats, bool rebuild = true);
 	void moveFeat(WidgetListItemFeat *item);
 
 private:
