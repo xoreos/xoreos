@@ -98,6 +98,11 @@ public:
 	/** Is the creature a party member? */
 	bool isPartyMember() const;
 
+	// Interactive properties
+
+	/** Toggle usability of this object. */
+	void setUsable(bool usable);
+
 	// Attributes
 
 	/** Get the current rank of the specified skill. */

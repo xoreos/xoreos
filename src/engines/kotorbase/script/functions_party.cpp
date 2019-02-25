@@ -54,7 +54,7 @@ void Functions::isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getPartyMemberByIndex(Aurora::NWScript::FunctionContext &ctx) {
 	int index = ctx.getParams()[0].getInt();
 
-	ctx.getReturn() = _game->getModule().getPartyMember(index);
+	ctx.getReturn() = _game->getModule().getPartyMemberByIndex(index);
 }
 
 void Functions::showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx) {
@@ -76,7 +76,12 @@ void Functions::addAvailableNPCByTemplate(Aurora::NWScript::FunctionContext &ctx
 	const int slot = ctx.getParams()[0].getInt();
 	const Common::UString &templ = ctx.getParams()[1].getString();
 
-	_game->getModule().addAvailablePartyMember(slot, templ);
+	_game->getModule().addAvailableNPCByTemplate(slot, templ);
+}
+
+void Functions::setPartyLeader(Aurora::NWScript::FunctionContext &ctx) {
+	int npc = ctx.getParams()[0].getInt();
+	_game->getModule().setPartyLeader(npc);
 }
 
 } // End of namespace KotORBase

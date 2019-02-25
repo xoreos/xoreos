@@ -136,9 +136,7 @@ void CharacterGeneration::resetStep() {
 
 void CharacterGeneration::start() {
 	try {
-		Common::ScopedPtr<Creature> pc(new Creature());
-		pc->createPC(*_chargenInfo);
-		_module->usePC(pc.release());
+		_module->usePC(*_chargenInfo);
 		_module->load("001EBO");
 	} catch (...) {
 		Common::exceptionDispatcherWarning();

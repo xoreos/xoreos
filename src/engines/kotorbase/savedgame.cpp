@@ -37,8 +37,7 @@ namespace KotORBase {
 SavedGame::SavedGame(const Common::UString &dir, bool loadSav) :
 		_timePlayed(0),
 		_pcGender(kGenderMale),
-		_pcLoaded(false),
-		_pc(0) {
+		_pcLoaded(false) {
 
 	load(dir, loadSav);
 }

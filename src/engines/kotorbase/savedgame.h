@@ -35,7 +35,7 @@ namespace Engines {
 
 namespace KotORBase {
 
-class Creature;
+class CharacterGenerationInfo;
 
 class SavedGame {
 public:
@@ -52,7 +52,7 @@ public:
 
 	bool isPCLoaded() const;
 
-	virtual Creature *createPC() = 0;
+	virtual CharacterGenerationInfo *createCharGenInfo() = 0;
 
 protected:
 	Common::UString _name;
@@ -61,7 +61,6 @@ protected:
 	uint8 _pcGender;
 	float _pcPosition[3];
 	bool _pcLoaded;
-	Creature *_pc;
 
 private:
 	void load(const Common::UString &dir, bool loadSav);

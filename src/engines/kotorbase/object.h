@@ -87,6 +87,9 @@ public:
 	/** Can the player click the object? */
 	bool isClickable() const;
 
+	/** Toggle usability of this object. */
+	virtual void setUsable(bool usable);
+
 	// Positioning
 
 	/** Return the object's position within its area. */

@@ -282,6 +282,7 @@ protected:
 	void showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx);
 	void isAvailableCreature(Aurora::NWScript::FunctionContext &ctx);
 	void addAvailableNPCByTemplate(Aurora::NWScript::FunctionContext &ctx);
+	void setPartyLeader(Aurora::NWScript::FunctionContext &ctx);
 
 
 	// Events, functions_events.cpp
