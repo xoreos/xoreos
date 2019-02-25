@@ -42,7 +42,7 @@ namespace Engines {
 
 Pathfinding::Pathfinding(std::vector<bool> walkableProperties, uint32 polygonEdges) :
                          _polygonEdges(polygonEdges), _verticesCount(0), _facesCount(0),
-                         _epsilon(0.f), _pathVisible(false),
+                         _epsilon(0.f), _pathVisible(false), _walkmeshVisible(false),
                          _walkableProperties(walkableProperties), _aStarAlgorithm(0) {
 
 	_pathDrawing = new Graphics::Aurora::Line();
