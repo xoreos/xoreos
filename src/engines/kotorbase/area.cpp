@@ -424,12 +424,8 @@ void Area::loadObject(Object &object) {
 	_objects.push_back(&object);
 	_module->addObject(object);
 
-	if (!object.isStatic()) {
-		const std::list<uint32> &ids = object.getIDs();
-
-		for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
-			_objectMap.insert(std::make_pair(*id, &object));
-	}
+	if (!object.isStatic())
+		addToObjectMap(&object);
 
 	notifyObjectMoved(object);
 }
@@ -748,6 +744,12 @@ void Area::processCreaturesActions(float dt) {
 void Area::addCreature(Creature *creature) {
 	loadObject(*creature);
 	_creatures.push_back(creature);
+}
+
+void Area::addToObjectMap(Object *object) {
+	const std::list<uint32> &ids = object->getIDs();
+	for (std::list<uint32>::const_iterator id = ids.begin(); id != ids.end(); ++id)
+		_objectMap.insert(std::make_pair(*id, object));
 }
 
 void Area::removeObject(Object *object) {

@@ -36,15 +36,16 @@ namespace Odyssey {
 
 namespace KotORBase {
 	class Creature;
+	class Module;
 }
 
 namespace KotOR {
 
 class MenuEquipment : public KotORBase::GUI {
 public:
-	MenuEquipment(::Engines::Console *console = 0);
+	MenuEquipment(KotORBase::Module &module, ::Engines::Console *console = 0);
 
-	void setPC(KotORBase::Creature *pc);
+	void refresh();
 
 	void show();
 	void hide();
@@ -55,7 +56,7 @@ protected:
 	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
 
 private:
-	KotORBase::Creature *_pc;
+	KotORBase::Module *_module;
 	KotORBase::InventorySlot _selectedSlot;
 	bool _slotFixated;
 	std::vector<Common::UString> _visibleItems;

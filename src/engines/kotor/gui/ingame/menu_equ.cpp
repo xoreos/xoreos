@@ -32,6 +32,8 @@
 
 #include "src/engines/kotorbase/item.h"
 #include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/area.h"
 
 #include "src/engines/kotorbase/gui/inventoryitem.h"
 
@@ -41,9 +43,9 @@ namespace Engines {
 
 namespace KotOR {
 
-MenuEquipment::MenuEquipment(Console *console) :
+MenuEquipment::MenuEquipment(KotORBase::Module &module, Console *console) :
 		KotORBase::GUI(console),
-		_pc(0),
+		_module(&module),
 		_selectedSlot(KotORBase::kInventorySlotBody),
 		_slotFixated(false) {
 
@@ -74,9 +76,7 @@ MenuEquipment::MenuEquipment(Console *console) :
 	}
 }
 
-void MenuEquipment::setPC(KotORBase::Creature *pc) {
-	_pc = pc;
-
+void MenuEquipment::refresh() {
 	fillEquipedItems();
 	fillEquipableItemsList();
 }
@@ -136,7 +136,10 @@ void MenuEquipment::callbackActive(Widget &widget) {
 		if (tag == "BTN_EQUIP") {
 			int selectedIndex = getListBox("LB_ITEMS")->getSelectedIndex();
 			Common::UString itemTag = selectedIndex > 0 ? _visibleItems[selectedIndex - 1] : "";
-			_pc->equipItem(itemTag, _selectedSlot);
+
+			KotORBase::Creature *pc = _module->getPC();
+			pc->equipItem(itemTag, _selectedSlot);
+			_module->getCurrentArea()->addToObjectMap(pc);
 
 			fillEquipedItems();
 			fillEquipableItemsList();
@@ -198,12 +201,12 @@ void MenuEquipment::fillEquipedItems() {
 }
 
 Common::UString MenuEquipment::getEquipedItemIcon(KotORBase::InventorySlot slot) const {
-	KotORBase::Item *item = _pc->getEquipedItem(slot);
+	KotORBase::Item *item = _module->getPC()->getEquipedItem(slot);
 	return item ? item->getIcon() : "";
 }
 
 void MenuEquipment::fillEquipableItemsList() {
-	KotORBase::Inventory &inv = _pc->getInventory();
+	KotORBase::Inventory &inv = _module->getPC()->getInventory();
 
 	Odyssey::WidgetListBox *lbItems = getListBox("LB_ITEMS");
 	lbItems->removeAllItems();
