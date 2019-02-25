@@ -289,6 +289,19 @@ private:
 	void getLastUsedBy  (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
+	// .--- Items and inventory, functions_inventory.cpp
+	void getDroppableFlag     (Aurora::NWScript::FunctionContext &ctx);
+	void getIdentified        (Aurora::NWScript::FunctionContext &ctx);
+	void getItemCursedFlag    (Aurora::NWScript::FunctionContext &ctx);
+	void getPickpocketableFlag(Aurora::NWScript::FunctionContext &ctx);
+	void getStolenFlag        (Aurora::NWScript::FunctionContext &ctx);
+
+	void getBaseItemType   (Aurora::NWScript::FunctionContext &ctx);
+	void getItemIcon       (Aurora::NWScript::FunctionContext &ctx);
+	void getItemStackSize  (Aurora::NWScript::FunctionContext &ctx);
+	void getNumStackedItems(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
 	// .--- Creatures, functions_creature.cpp
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 	void getSkillRank   (Aurora::NWScript::FunctionContext &ctx);

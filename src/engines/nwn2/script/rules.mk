@@ -34,6 +34,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/script/functions_module.cpp \
     src/engines/nwn2/script/functions_object.cpp \
     src/engines/nwn2/script/functions_situated.cpp \
+    src/engines/nwn2/script/functions_inventory.cpp \
     src/engines/nwn2/script/functions_creature.cpp \
     src/engines/nwn2/script/functions_action.cpp \
     src/engines/nwn2/script/functions_conversation.cpp \

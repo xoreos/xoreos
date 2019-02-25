@@ -32,6 +32,7 @@
 #include "src/engines/nwn2/objectcontainer.h"
 #include "src/engines/nwn2/object.h"
 #include "src/engines/nwn2/creature.h"
+#include "src/engines/nwn2/item.h"
 
 #include "src/engines/nwn2/script/functions.h"
 
@@ -117,9 +118,18 @@ void Functions::setImmortal(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getPlotFlag(Aurora::NWScript::FunctionContext &ctx) {
-	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	NWN2::Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	if (!object)
+		return;
 
-	ctx.getReturn() = creature && creature->getPlotFlag();
+	ObjectType type = object->getType();
+	if (type == kObjectTypeCreature) {
+		Creature *creature = NWN2::ObjectContainer::toCreature(object);
+		ctx.getReturn() = creature && creature->getPlotFlag();
+	} else if (type == kObjectTypeItem) {
+		Item *item = NWN2::ObjectContainer::toItem(object);
+		ctx.getReturn() = item && item->getPlotFlag();
+	}
 }
 
 void Functions::setPlotFlag(Aurora::NWScript::FunctionContext &ctx) {

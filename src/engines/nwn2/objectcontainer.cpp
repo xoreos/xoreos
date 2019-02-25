@@ -34,6 +34,7 @@
 #include "src/engines/nwn2/placeable.h"
 #include "src/engines/nwn2/door.h"
 #include "src/engines/nwn2/trigger.h"
+#include "src/engines/nwn2/item.h"
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/location.h"
 
@@ -153,6 +154,10 @@ Door *ObjectContainer::toDoor(Aurora::NWScript::Object *object) {
 
 Trigger *ObjectContainer::toTrigger(Aurora::NWScript::Object *object) {
 	return dynamic_cast<Trigger *>(object);
+}
+
+Item *ObjectContainer::toItem(Aurora::NWScript::Object *object) {
+	return dynamic_cast<Item *>(object);
 }
 
 Creature *ObjectContainer::toCreature(Aurora::NWScript::Object *object) {
