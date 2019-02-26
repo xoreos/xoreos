@@ -585,7 +585,8 @@ void Area::removeFocus() {
 }
 
 void Area::notifyCameraMoved() {
-	checkActive();
+	if (!_module->isConversationActive())
+		checkActive();
 }
 
 float Area::evaluateElevation(float x, float y) {
