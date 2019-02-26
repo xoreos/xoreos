@@ -231,6 +231,28 @@ enum ItemType {
 	kItemTypeIncantation           ,
 };
 
+enum InventorySlot {
+	kInventorySlotHead      = 0,
+	kInventorySlotChest        ,
+	kInventorySlotBoots        , 
+	kInventorySlotArms         ,
+	kInventorySlotRightHand    ,
+	kInventorySlotLeftHand     ,
+	kInventorySlotCloak        ,
+	kInventorySlotLeftRing     ,
+	kInventorySlotRightRing    ,
+	kInventorySlotNeck         ,
+	kInventorySlotBelt         ,
+	kInventorySlotArrows       ,
+	kInventorySlotBullets      ,
+	kInventorySlotBolts        ,
+	kInventorySlotCWeaponL     ,
+	kInventorySlotCWeaponR     ,
+	kInventorySlotCWeaponB     ,
+	kInventorySlotCArmour      ,
+	kInventorySlotMax
+};
+
 enum Ability {
 	kAbilityStrength     = 0,
 	kAbilityDexterity    = 1,
