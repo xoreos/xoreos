@@ -56,6 +56,7 @@ class Room;
 class Situated;
 class Creature;
 class Pathfinding;
+struct CreatureSearchCriteria;
 
 /** An area in Star Wars: Knights of the Old Republic, holding all objects and
  *  rooms within, as well as general area properties like the current background
@@ -136,6 +137,7 @@ public:
 	// Object management
 
 	Object *getObjectByTag(const Common::UString &tag);
+	Creature *getNearestCreature(const Object *target, int nth, const CreatureSearchCriteria &criteria) const;
 
 	void addCreature(Creature *creature);
 	void addToObjectMap(Object *object);

@@ -80,11 +80,12 @@ protected:
 
 	static Aurora::NWScript::Object *getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n);
 
-
 	// Engine functions
 
-	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
+	void getRunScriptVar(Aurora::NWScript::FunctionContext &ctx);
 
+	void unimplementedFunction(Aurora::NWScript::FunctionContext &ctx);
+	void executeScript(Aurora::NWScript::FunctionContext &ctx);
 
 	// Math, functions_math.cpp
 
@@ -122,7 +123,6 @@ protected:
 	void vectorMagnitude(Aurora::NWScript::FunctionContext &ctx);
 	void vectorNormalize(Aurora::NWScript::FunctionContext &ctx);
 
-
 	// Strings, functions_string.cpp
 
 	void writeTimestampedLogEntry(Aurora::NWScript::FunctionContext &ctx);
@@ -158,47 +158,38 @@ protected:
 
 	void getStringByStrRef(Aurora::NWScript::FunctionContext &ctx);
 
-
 	// Module functions, functions_module.cpp
 
 	void getModule(Aurora::NWScript::FunctionContext &ctx);
-
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
-
 	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
+	void getIsConversationActive(Aurora::NWScript::FunctionContext &ctx);
 
 	void setGlobalFadeOut(Aurora::NWScript::FunctionContext &ctx);
 	void setGlobalFadeIn(Aurora::NWScript::FunctionContext &ctx);
-
 	void setReturnStrref(Aurora::NWScript::FunctionContext &ctx);
-
 
 	// General object functions, functions_object.cpp
 
 	void getClickingObject(Aurora::NWScript::FunctionContext &ctx);
 	void getEnteringObject(Aurora::NWScript::FunctionContext &ctx);
-	void getExitingObject (Aurora::NWScript::FunctionContext &ctx);
-
+	void getExitingObject(Aurora::NWScript::FunctionContext &ctx);
 	void getIsObjectValid(Aurora::NWScript::FunctionContext &ctx);
-
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
-
 	void getObjectByTag(Aurora::NWScript::FunctionContext &ctx);
-
 	void getMinOneHP(Aurora::NWScript::FunctionContext &ctx);
-	void setMinOneHP(Aurora::NWScript::FunctionContext &ctx);
-
 	void getCurrentHitPoints(Aurora::NWScript::FunctionContext &ctx);
 	void getMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
+	void getArea(Aurora::NWScript::FunctionContext &ctx);
+	void getItemInSlot(Aurora::NWScript::FunctionContext &ctx);
+	void getNearestCreature(Aurora::NWScript::FunctionContext &ctx);
+
+	void setMinOneHP(Aurora::NWScript::FunctionContext &ctx);
 	void setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
 
 	void createItemOnObject(Aurora::NWScript::FunctionContext &ctx);
-	void getArea(Aurora::NWScript::FunctionContext &ctx);
-	void getItemInSlot(Aurora::NWScript::FunctionContext &ctx);
-
 	void destroyObject(Aurora::NWScript::FunctionContext &ctx);
-
 
 	// Situated objects, functions_situated.cpp
 
@@ -211,8 +202,9 @@ protected:
 	void getLastClosedBy(Aurora::NWScript::FunctionContext &ctx);
 	void getLastUsedBy  (Aurora::NWScript::FunctionContext &ctx);
 
-
 	// Actions, functions_action.cpp
+
+	void getCurrentAction(Aurora::NWScript::FunctionContext &ctx);
 
 	void assignCommand(Aurora::NWScript::FunctionContext &ctx);
 	void delayCommand (Aurora::NWScript::FunctionContext &ctx);
@@ -220,8 +212,8 @@ protected:
 	void actionOpenDoor(Aurora::NWScript::FunctionContext &ctx);
 	void actionCloseDoor(Aurora::NWScript::FunctionContext &ctx);
 	void actionMoveToObject(Aurora::NWScript::FunctionContext &ctx);
+	void actionFollowLeader(Aurora::NWScript::FunctionContext &ctx);
 	void clearAllActions(Aurora::NWScript::FunctionContext &ctx);
-
 
 	// Sound, functions_sound.cpp
 
@@ -236,11 +228,9 @@ protected:
 	void soundObjectPlay(Aurora::NWScript::FunctionContext &ctx);
 	void soundObjectStop(Aurora::NWScript::FunctionContext &ctx);
 
-
 	// Movies, functions_movie.cpp
 
 	void playMovie(Aurora::NWScript::FunctionContext &ctx);
-
 
 	// Creatures, functions_creatures.cpp
 
@@ -258,14 +248,12 @@ protected:
 
 	void getAbilityScore(Aurora::NWScript::FunctionContext &ctx);
 
-
 	// Global values, functions_global.cpp
 
 	void getGlobalBoolean(Aurora::NWScript::FunctionContext &ctx);
 	void setGlobalBoolean(Aurora::NWScript::FunctionContext &ctx);
 	void getGlobalNumber(Aurora::NWScript::FunctionContext &ctx);
 	void setGlobalNumber(Aurora::NWScript::FunctionContext &ctx);
-
 
 	// Local variables, functions_local.cpp
 
@@ -274,16 +262,20 @@ protected:
 	void getLocalNumber(Aurora::NWScript::FunctionContext &ctx);
 	void setLocalNumber(Aurora::NWScript::FunctionContext &ctx);
 
-
 	// Party, functions_party.cpp
+	
+	void getPartyMemberByIndex(Aurora::NWScript::FunctionContext &ctx);
+	void getSoloMode(Aurora::NWScript::FunctionContext &ctx);
+	void getCommandable(Aurora::NWScript::FunctionContext &ctx);
 
 	void isObjectPartyMember(Aurora::NWScript::FunctionContext &ctx);
-	void getPartyMemberByIndex(Aurora::NWScript::FunctionContext &ctx);
-	void showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx);
 	void isAvailableCreature(Aurora::NWScript::FunctionContext &ctx);
-	void addAvailableNPCByTemplate(Aurora::NWScript::FunctionContext &ctx);
-	void setPartyLeader(Aurora::NWScript::FunctionContext &ctx);
 
+	void setPartyLeader(Aurora::NWScript::FunctionContext &ctx);
+	void setCommandable(Aurora::NWScript::FunctionContext &ctx);
+
+	void showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx);
+	void addAvailableNPCByTemplate(Aurora::NWScript::FunctionContext &ctx);
 
 	// Events, functions_events.cpp
 

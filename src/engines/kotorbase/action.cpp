@@ -31,9 +31,7 @@ namespace KotORBase {
 Action::Action() : type(kActionInvalid), object(0), range(0.0f) {
 }
 
-Action::Action(ActionType _type, Object *_object) :
-		type(_type),
-		object(_object) {
+Action::Action(ActionType _type) : type(_type), object(0), range(0.0f) {
 }
 
 } // End of namespace KotORBase

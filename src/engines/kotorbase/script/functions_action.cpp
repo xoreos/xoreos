@@ -42,6 +42,18 @@ namespace Engines {
 
 namespace KotORBase {
 
+void Functions::getCurrentAction(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *object = ObjectContainer::toCreature(ctx.getParams()[0].getObject());
+	if (!object)
+		throw Common::Exception("Functions::getCurrentAction(): Invalid object");
+
+	const Action *action = object->getCurrentAction();
+	if (!action)
+		ctx.getReturn() = kActionQueueEmpty;
+	else
+		ctx.getReturn() = action->type;
+}
+
 void Functions::assignCommand(Aurora::NWScript::FunctionContext &ctx) {
 	Common::UString script = ctx.getScriptName();
 	if (script.empty())
@@ -94,28 +106,34 @@ void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
 
 	Object *object = ObjectContainer::toObject(ctx.getParams()[0].getObject());
 	if (!object)
-		object = _game->getModule().getPC();
+		object = _game->getModule().getPartyLeader();
 
 	float range = ctx.getParams()[2].getFloat();
 
 	float x, y, z;
 	object->getPosition(x, y, z);
 
-	Action action;
-	action.type = KotORBase::kActionMoveToPoint;
+	Action action(kActionMoveToPoint);
 	action.range = range;
 	action.location = glm::vec3(x, y, z);
+	caller->enqueueAction(action);
+}
 
-	caller->clearActionQueue();
+void Functions::actionFollowLeader(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *caller = ObjectContainer::toCreature(ctx.getCaller());
+	if (!caller)
+		throw Common::Exception("Functions::actionFollowLeader(): Invalid caller");
+
+	Action action(kActionFollowLeader);
 	caller->enqueueAction(action);
 }
 
 void Functions::clearAllActions(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *caller = ObjectContainer::toCreature(ctx.getCaller());
 	if (!caller)
-		caller = _game->getModule().getPC();
+		caller = _game->getModule().getPartyLeader();
 
-	caller->clearActionQueue();
+	caller->clearAllActions();
 }
 
 } // End of namespace KotORBase

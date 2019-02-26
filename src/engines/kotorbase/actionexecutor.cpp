@@ -39,7 +39,7 @@ namespace Engines {
 namespace KotORBase {
 
 void ActionExecutor::executeActions(Creature &creature, Area &area, float dt) {
-	const Action *action = creature.peekAction();
+	const Action *action = creature.getCurrentAction();
 	if (!action)
 		return;
 
