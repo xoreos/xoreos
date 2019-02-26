@@ -168,28 +168,27 @@ UString &UString::operator+=(uint32 c) {
 }
 
 int UString::strcmp(const UString &str) const {
-	UString::iterator it1 = begin();
-	UString::iterator it2 = str.begin();
-	for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
-		uint32 c1, c2;
-		try {
-			c1 = *it1;
-			c2 = *it2;
-		} catch (...) {
-			break;
+	try {
+		UString::iterator it1 = begin();
+		UString::iterator it2 = str.begin();
+		for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
+			const uint32 c1 = *it1;
+			const uint32 c2 = *it2;
+
+			if (c1 < c2)
+				return -1;
+			if (c1 > c2)
+				return  1;
 		}
 
-		if (c1 < c2)
+		if ((it1 == end()) && (it2 == str.end()))
+			return 0;
+
+		if (it1 == end())
 			return -1;
-		if (c1 > c2)
-			return  1;
+
+	} catch (...) {
 	}
-
-	if ((it1 == end()) && (it2 == str.end()))
-		return 0;
-
-	if (it1 == end())
-		return -1;
 
 	return 1;
 }
