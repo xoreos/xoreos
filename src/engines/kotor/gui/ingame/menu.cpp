@@ -98,8 +98,11 @@ void Menu::setReturnEnabled(bool enabled) {
 void Menu::showMenu(MenuType type) {
 	assert((type >= 0) && (type < kMenuTypeMAX));
 
-	if (type == kMenuTypeEquipment)
-		dynamic_cast<MenuEquipment *>(_menu[type].menu.get())->refresh();
+	if (type == kMenuTypeEquipment) {
+		MenuEquipment *equipment = dynamic_cast<MenuEquipment *>(_menu[type].menu.get());
+		if (equipment)
+			equipment->refresh();
+	}
 
 	if (_currentMenu == &_menu[type])
 		return;
