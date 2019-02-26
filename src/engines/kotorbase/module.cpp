@@ -529,9 +529,13 @@ void Module::clickObject(Object *object) {
 			stopCameraMovement();
 			_partyLeaderController.stopMovement();
 
+			_ingame->hideSelection();
 			_ingame->showContainer(placeable->getInventory());
+			resetSelection();
+
 			placeable->close(_pc);
 			placeable->runScript(kScriptDisturbed, placeable, _pc);
+
 			_prevTimestamp = EventMan.getTimestamp();
 		}
 	}
@@ -576,7 +580,9 @@ void Module::processEventQueue() {
 	}
 
 	updateSoundListener();
-	_ingame->updateSelection();
+
+	if (!_inDialog)
+		_ingame->updateSelection();
 
 	GfxMan.unlockFrame();
 }
@@ -630,14 +636,17 @@ void Module::handleEvents() {
 	if (_freeCamEnabled)
 		CameraMan.update();
 
-	_area->processEventQueue();
-	_ingame->processEventQueue();
-	_dialog->processEventQueue();
-
-	if (_inDialog && !_dialog->isConversationActive()) {
-		_dialog->hide();
-		_ingame->show();
-		_inDialog = false;
+	if (_inDialog) {
+		_dialog->processEventQueue();
+		if (!_dialog->isConversationActive()) {
+			_dialog->hide();
+			_ingame->show();
+			_inDialog = false;
+			resetSelection();
+		}
+	} else {
+		_area->processEventQueue();
+		_ingame->processEventQueue();
 	}
 }
 
@@ -654,6 +663,15 @@ void Module::updateSoundListener() {
 	SoundMan.setListenerPosition(position[0], position[1], position[2]);
 	const float *orientation = CameraMan.getOrientation();
 	SoundMan.setListenerOrientation(orientation[0], orientation[1], orientation[2], 0.0f, 1.0f, 0.0f);
+}
+
+void Module::resetSelection() {
+	GfxMan.lockFrame();
+
+	_ingame->showSelection(_area->getActiveObject());
+	NotificationMan.cameraMoved();
+
+	GfxMan.unlockFrame();
 }
 
 void Module::handleActions() {
@@ -738,10 +756,12 @@ void Module::setPartyLeaderByIndex(int index) {
 }
 
 void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
-	if (_inDialog)
+	if (_inDialog) {
 		_dialog->hide();
-	else
+	} else {
 		_ingame->hide();
+		_ingame->hideSelection();
+	}
 
 	PartyConfiguration config;
 
@@ -760,10 +780,12 @@ void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
 	_partySelection->run();
 	_partySelection->hide();
 
-	if (_inDialog)
+	if (_inDialog) {
 		_dialog->show();
-	else
+	} else {
 		_ingame->show();
+		resetSelection();
+	}
 
 	int npc1 = config.forceNPC1;
 	int npc2 = config.forceNPC2;
@@ -954,6 +976,7 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 		_partyLeaderController.stopMovement();
 
 		_ingame->hide();
+		_ingame->hideSelection();
 		_dialog->show();
 		_inDialog = true;
 	}

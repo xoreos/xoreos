@@ -370,6 +370,8 @@ private:
 
 	void updateMinimap();
 	void updateSoundListener();
+
+	void resetSelection();
 };
 
 } // End of namespace KotORBase
