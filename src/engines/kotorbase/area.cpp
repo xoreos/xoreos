@@ -53,6 +53,7 @@
 #include "src/engines/kotorbase/area.h"
 #include "src/engines/kotorbase/module.h"
 #include "src/engines/kotorbase/actionexecutor.h"
+#include "src/engines/kotorbase/creaturesearch.h"
 
 #include "src/engines/kotorbase/path/pathfinding.h"
 #include "src/engines/kotorbase/path/objectwalkmesh.h"
@@ -732,6 +733,35 @@ Object *Area::getObjectByTag(const Common::UString &tag) {
 			return *o;
 	}
 	return 0;
+}
+
+Creature *Area::getNearestCreature(const Object *target, int UNUSED(nth), const CreatureSearchCriteria &criteria) const {
+	// TODO: Find Nth nearest using all criterias
+
+	Creature *result = 0;
+	float lowestDistance = 0.0f;
+
+	float x, y, z;
+	target->getPosition(x, y, z);
+	glm::vec3 targetPosition(x, y, z);
+
+	for (auto c = _creatures.begin(); c != _creatures.end(); ++c) {
+		if (*c == target)
+			continue;
+
+		if (!(*c)->matchSearchCriteria(target, criteria))
+			continue;
+
+		(*c)->getPosition(x, y, z);
+		float dist = glm::distance(targetPosition, glm::vec3(x, y, z));
+
+		if ((result == 0) || (dist < lowestDistance)) {
+			result = *c;
+			lowestDistance = dist;
+		}
+	}
+
+	return result;
 }
 
 void Area::processCreaturesActions(float dt) {

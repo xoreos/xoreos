@@ -37,6 +37,7 @@
 #include "src/engines/kotorbase/area.h"
 #include "src/engines/kotorbase/game.h"
 #include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/creaturesearch.h"
 
 #include "src/engines/kotorbase/script/functions.h"
 
@@ -173,6 +174,22 @@ void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = creature->getEquipedItem(static_cast<InventorySlot>(slot));
 	if (item)
 		ctx.getReturn() = item;
+}
+
+void Functions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
+	CreatureSearchCriteria criteria;
+	criteria.firstCriteriaType = static_cast<CreatureType>(ctx.getParams()[0].getInt());
+	criteria.firstCriteriaValue = ctx.getParams()[1].getInt();
+
+	Object *target = ObjectContainer::toCreature(ctx.getParams()[2].getObject());
+	int nth = ctx.getParams()[3].getInt();
+
+	criteria.secondCriteriaType = static_cast<CreatureType>(ctx.getParams()[4].getInt());
+	criteria.secondCriteriaValue = ctx.getParams()[5].getInt();
+	criteria.thirdCriteriaType = static_cast<CreatureType>(ctx.getParams()[6].getInt());
+	criteria.thirdCriteriaValue = ctx.getParams()[7].getInt();
+
+	ctx.getReturn() = _game->getModule().getCurrentArea()->getNearestCreature(target, nth, criteria);
 }
 
 void Functions::destroyObject(Aurora::NWScript::FunctionContext &ctx) {

@@ -42,6 +42,7 @@
 
 #include "src/engines/kotorbase/creature.h"
 #include "src/engines/kotorbase/item.h"
+#include "src/engines/kotorbase/creaturesearch.h"
 
 #include "src/engines/kotorbase/gui/chargeninfo.h"
 
@@ -51,6 +52,7 @@ namespace KotORBase {
 
 Creature::Creature(const Common::UString &resRef) :
 		Object(kObjectTypeCreature),
+		_commandable(true),
 		_walkRate(0.0f),
 		_runRate(0.0f) {
 
@@ -65,6 +67,7 @@ Creature::Creature(const Common::UString &resRef) :
 
 Creature::Creature(const Aurora::GFF3Struct &creature) :
 		Object(kObjectTypeCreature),
+		_commandable(true),
 		_walkRate(0.0f),
 		_runRate(0.0f) {
 
@@ -74,6 +77,7 @@ Creature::Creature(const Aurora::GFF3Struct &creature) :
 
 Creature::Creature() :
 		Object(kObjectTypeCreature),
+		_commandable(true),
 		_walkRate(0.0f),
 		_runRate(0.0f) {
 
@@ -130,10 +134,23 @@ bool Creature::isPartyMember() const {
 	return _isPC;
 }
 
+bool Creature::matchSearchCriteria(const Object *UNUSED(target), const CreatureSearchCriteria &UNUSED(criteria)) const {
+	// TODO: Implement pattern matching
+	return false;
+}
+
+bool Creature::isCommandable() const {
+	return _commandable;
+}
+
 void Creature::setUsable(bool usable) {
 	Object::setUsable(usable);
 	if (_model)
 		_model->setClickable(isClickable());
+}
+
+void Creature::setCommandable(bool commandable) {
+	_commandable = commandable;
 }
 
 Gender Creature::getGender() const {
@@ -680,26 +697,23 @@ void Creature::playHeadAnimation(const Common::UString &anim, bool restart, floa
 		headChannel->playAnimation(anim, restart, length, speed);
 }
 
-void Creature::clearActionQueue() {
-	_actionQueue.clear();
+const Action *Creature::getCurrentAction() const {
+	if (_actions.empty())
+		return 0;
+
+	return &_actions.front();
+}
+
+void Creature::clearAllActions() {
+	_actions = std::queue<Action>();
 }
 
 void Creature::enqueueAction(const Action &action) {
-	_actionQueue.push_back(action);
+	_actions.push(action);
 }
 
-const Action *Creature::peekAction() const {
-	if (_actionQueue.empty())
-		return 0;
-
-	return &_actionQueue.front();
-}
-
-const Action *Creature::dequeueAction() {
-	Action *action = _actionQueue.empty() ? 0 : &_actionQueue.front();
-	if (action)
-		_actionQueue.erase(_actionQueue.begin());
-	return action;
+void Creature::dequeueAction() {
+	_actions.pop();
 }
 
 void Creature::setDefaultAnimations() {

@@ -19,34 +19,33 @@
  */
 
 /** @file
- *  Creature action in KotOR games.
+ *  Creature search criteria for KotOR games.
  */
 
-#ifndef ENGINES_KOTORBASE_ACTION_H
-#define ENGINES_KOTORBASE_ACTION_H
-
-#include "glm/vec3.hpp"
-
-#include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/creaturesearch.h"
 
 namespace Engines {
 
 namespace KotORBase {
 
-class Object;
+CreatureSearchCriteria::CreatureSearchCriteria() :
+		firstCriteriaType(kCreatureTypeInvalid),
+		firstCriteriaValue(0),
+		secondCriteriaType(kCreatureTypeInvalid),
+		secondCriteriaValue(0),
+		thirdCriteriaType(kCreatureTypeInvalid),
+		thirdCriteriaValue(0) {
+}
 
-struct Action {
-	ActionType type;
-	glm::vec3 location;
-	Object *object;
-	float range;
-
-	Action();
-	Action(ActionType type);
-};
+CreatureSearchCriteria::CreatureSearchCriteria(CreatureType _firstCriteriaType, int _firstCriteriaValue) :
+		firstCriteriaType(_firstCriteriaType),
+		firstCriteriaValue(_firstCriteriaValue),
+		secondCriteriaType(kCreatureTypeInvalid),
+		secondCriteriaValue(0),
+		thirdCriteriaType(kCreatureTypeInvalid),
+		thirdCriteriaValue(0) {
+}
 
 } // End of namespace KotORBase
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTORBASE_ACTION_H

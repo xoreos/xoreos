@@ -92,7 +92,10 @@ Module::Module(::Engines::Console &console) :
 		_frameTime(0),
 		_inDialog(false),
 		_partyLeaderController(this),
-		_partyController(this) {
+		_partyController(this),
+		_runScriptVar(-1),
+		_soloMode(false),
+		_lastHeartbeatTimestamp(0) {
 
 	loadSurfaceTypes();
 }
@@ -564,6 +567,7 @@ void Module::processEventQueue() {
 
 	handleEvents();
 	handleActions();
+	handleHeartbeat();
 
 	GfxMan.lockFrame();
 
@@ -673,6 +677,17 @@ void Module::handleActions() {
 	}
 }
 
+void Module::handleHeartbeat() {
+	const int kHeartbeatInterval = 6000; // ms
+
+	uint32 now = EventMan.getTimestamp();
+	if (now >= _lastHeartbeatTimestamp + kHeartbeatInterval) {
+		_runScriptVar = 2001;
+		_partyController.raiseHeartbeatEvent();
+		_lastHeartbeatTimestamp = now;
+	}
+}
+
 void Module::moveParty(float x, float y, float z) {
 	int partySize = static_cast<int>(_partyController.getPartyMemberCount());
 	for (int i = 0; i < partySize; ++i) {
@@ -722,6 +737,10 @@ bool Module::isObjectPartyMember(Creature *object) const {
 
 bool Module::isAvailableCreature(int npc) const {
 	return _partyController.isAvailableCreature(npc);
+}
+
+bool Module::isSoloMode() const {
+	return _soloMode;
 }
 
 void Module::setPartyLeader(int npc) {
@@ -856,6 +875,14 @@ Area *Module::getCurrentArea() {
 	return _area.get();
 }
 
+int Module::getRunScriptVar() const {
+	return _runScriptVar;
+}
+
+void Module::setRunScriptVar(int runScriptVar) {
+	_runScriptVar = runScriptVar;
+}
+
 void Module::delayScript(const Common::UString &script,
                          const Aurora::NWScript::ScriptState &state,
                          Aurora::NWScript::Object *owner,
@@ -930,6 +957,10 @@ void Module::loadSavedGame(SavedGame *save) {
 	} catch (...) {
 		Common::exceptionDispatcherWarning();
 	}
+}
+
+bool Module::isConversationActive() const {
+	return _inDialog;
 }
 
 void Module::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
@@ -1033,26 +1064,11 @@ void Module::addPartyMember(int npc, Creature *creature) {
 	_partyController.addPartyMember(npc, creature);
 
 	creature->show();
-	creature->clearActionQueue();
-	creature->enqueueAction(KotORBase::Action(kActionFollowLeader, partyLeader));
 }
 
 void Module::onPartyLeaderChanged() {
 	setupSatelliteCamera();
 	updateCurrentPartyGUI();
-	resetPartyActions();
-}
-
-void Module::resetPartyActions() {
-	Creature *partyLeader = _partyController.getPartyLeader();
-	partyLeader->clearActionQueue();
-
-	int partySize = static_cast<int>(_partyController.getPartyMemberCount());
-	for (int i = 1; i < partySize; ++i) {
-		Creature *creature = _partyController.getPartyMemberByIndex(i).second;
-		creature->clearActionQueue();
-		creature->enqueueAction(KotORBase::Action(kActionFollowLeader, partyLeader));
-	}
 }
 
 void Module::updateCurrentPartyGUI() {

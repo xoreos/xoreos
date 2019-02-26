@@ -26,6 +26,8 @@
 
 #include "src/engines/kotorbase/partycontroller.h"
 #include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/area.h"
 
 namespace Engines {
 
@@ -97,6 +99,8 @@ void PartyController::setPartyLeaderByIndex(int index) {
 	_party[index] = tmp;
 
 	_party[0].second->setUsable(false);
+	_party[0].second->clearAllActions();
+
 	_party[index].second->setUsable(true);
 }
 
@@ -122,6 +126,12 @@ void PartyController::addAvailableNPCByTemplate(int npc, const Common::UString &
 		_availableParty.erase(i);
 
 	_availableParty.insert(std::make_pair(npc, templ));
+}
+
+void PartyController::raiseHeartbeatEvent() {
+	for (auto partyMember : _party) {
+		partyMember.second->runScript("k_ai_master", partyMember.second, _module->getCurrentArea());
+	}
 }
 
 } // End of namespace KotORBase

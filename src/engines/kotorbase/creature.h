@@ -25,6 +25,8 @@
 #ifndef ENGINES_KOTORBASE_CREATURE_H
 #define ENGINES_KOTORBASE_CREATURE_H
 
+#include <queue>
+
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
@@ -44,6 +46,7 @@ namespace KotORBase {
 
 class CharacterGenerationInfo;
 class Item;
+struct CreatureSearchCriteria;
 
 class Creature : public Object {
 public:
@@ -98,10 +101,17 @@ public:
 	/** Is the creature a party member? */
 	bool isPartyMember() const;
 
+	/** Does this creature match a specified search criteria? */
+	bool matchSearchCriteria(const Object *target, const CreatureSearchCriteria &criteria) const;
+
 	// Interactive properties
+
+	bool isCommandable() const;
 
 	/** Toggle usability of this object. */
 	void setUsable(bool usable);
+	/** Set whether this creature's action queue can be modified. */
+	void setCommandable(bool commandable);
 
 	// Attributes
 
@@ -153,16 +163,17 @@ public:
 	                       float length = 0.0f,
 	                       float speed = 1.0f);
 
-	// Action queue
+	// Actions
 
-	/** Clear the action queue of this creature. */
-	void clearActionQueue();
-	/** Append action to the action queue of this creature. */
+	/** Get the current action that this creature is executing. */
+	const Action *getCurrentAction() const;
+
+	/** Clear all actions of this creature. */
+	void clearAllActions();
+	/** Add action to the action queue of this creature. */
 	void enqueueAction(const Action &action);
-	/** Get the next action of this creature if exists.  */
-	const Action *peekAction() const;
-	/** Get the next action of this creature and remove it from the action queue. */
-	const Action *dequeueAction();
+	/** Remove the current action from the action queue of this creature. */
+	void dequeueAction();
 
 protected:
 	// Parts of a creature's body.
@@ -202,6 +213,7 @@ private:
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 	Graphics::Aurora::Model *_headModel; ///< The creature's head model.
 	bool _visible;
+	bool _commandable;
 
 	// Abilities
 	unsigned int _strength { 0 };
@@ -218,7 +230,7 @@ private:
 	Inventory _inventory;
 	Common::PtrMap<InventorySlot, Item> _equipment;
 
-	std::vector<Action> _actionQueue;
+	std::queue<Action> _actions;
 
 	float _walkRate;
 	float _runRate;

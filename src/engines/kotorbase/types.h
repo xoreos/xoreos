@@ -238,6 +238,36 @@ enum ActionType {
 	kActionInvalid       = 65535
 };
 
+enum CreatureType {
+	kCreatureTypeRacialType             = 0,
+	kCreatureTypePlayerChar             = 1,
+	kCreatureTypeClass                  = 2,
+	kCreatureTypeReputation             = 3,
+	kCreatureTypeIsAlive                = 4,
+	kCreatureTypeHasSpellEffect         = 5,
+	kCreatureTypeDoesNotHaveSpellEffect = 6,
+	kCreatureTypePerception             = 7,
+
+	kCreatureTypeInvalid                = 255
+};
+
+enum ReputationType {
+	kReputationTypeFriend  = 0,
+	kReputationTypeEnemy   = 1,
+	kReputationTypeNeutral = 2
+};
+
+enum Perception {
+	kPerceptionSeenAndHeard       = 0,
+	kPerceptionNotSeenAndNotHeard = 1,
+	kPerceptionHeardAndNotSeen    = 2,
+	kPerceptionSeenAndNotHeard    = 3,
+	kPerceptionNotHeard           = 4,
+	kPerceptionHeard              = 5,
+	kPerceptionNotSeen            = 6,
+	kPerceptionSeen               = 7
+};
+
 } // End of namespace KotORBase
 
 } // End of namespace Engines

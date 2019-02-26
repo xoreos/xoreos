@@ -77,6 +77,9 @@ public:
 	/** Add a NPC to the list of available party members using a template. */
 	void addAvailableNPCByTemplate(int npc, const Common::UString &templ);
 
+
+	void raiseHeartbeatEvent();
+
 private:
 	Module *_module;
 	std::vector<std::pair<int, Creature *>> _party;

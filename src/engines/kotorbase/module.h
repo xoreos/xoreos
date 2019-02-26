@@ -113,6 +113,10 @@ public:
 
 	// Scripting
 
+	int getRunScriptVar() const;
+
+	void setRunScriptVar(int runScriptVar);
+
 	void delayScript(const Common::UString &script,
 	                 const Aurora::NWScript::ScriptState &state,
 	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
@@ -138,6 +142,8 @@ public:
 	bool isObjectPartyMember(Creature *creature) const;
 	/** Is a NPC in the list of available party members? */
 	bool isAvailableCreature(int npc) const;
+	/** Is the player in solo mode? */
+	bool isSoloMode() const;
 
 	/** Set which party member should be the controlled character. */
 	void setPartyLeader(int npc);
@@ -196,6 +202,8 @@ public:
 	void loadSavedGame(SavedGame *save);
 
 	// Conversation
+
+	bool isConversationActive() const;
 
 	void startConversation(const Common::UString &name, Aurora::NWScript::Object *owner = 0);
 
@@ -298,6 +306,9 @@ private:
 	bool _inDialog;
 	PartyLeaderController _partyLeaderController;
 	PartyController _partyController;
+	int _runScriptVar;
+	bool _soloMode;
+	uint32 _lastHeartbeatTimestamp;
 
 
 	// Surface types
@@ -351,7 +362,6 @@ private:
 
 	void addPartyMember(int npc, Creature *creature);
 	void onPartyLeaderChanged();
-	void resetPartyActions();
 	void updateCurrentPartyGUI();
 
 
@@ -367,6 +377,7 @@ private:
 	void handleEvents();
 
 	void handleActions();
+	void handleHeartbeat();
 
 	void updateMinimap();
 	void updateSoundListener();

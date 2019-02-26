@@ -54,9 +54,25 @@ Functions::~Functions() {
 	FunctionMan.clear();
 }
 
+void Functions::getRunScriptVar(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = _game->getModule().getRunScriptVar();
+}
+
 void Functions::unimplementedFunction(Aurora::NWScript::FunctionContext &ctx) {
 	warning("TODO: %s %s(%s)", Aurora::NWScript::formatType(ctx.getReturn().getType()).c_str(),
 	                           ctx.getName().c_str(), Aurora::NWScript::formatParams(ctx).c_str());
+}
+
+void Functions::executeScript(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &script = ctx.getParams()[0].getString();
+
+	Object *target = ObjectContainer::toObject(ctx.getParams()[1].getObject());
+	if (!target)
+		throw Common::Exception("Functions::executeScript(): Invalid target");
+
+	_game->getModule().setRunScriptVar(ctx.getParams()[2].getInt());
+
+	target->runScript(script, target, ctx.getCaller());
 }
 
 int32 Functions::getRandom(int min, int max, int32 n) {
@@ -76,11 +92,11 @@ Common::UString Functions::formatFloat(float f, int width, int decimals) {
 }
 
 Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n) {
-	KotORBase::Object *object = KotORBase::ObjectContainer::toObject(ctx.getParams()[n].getObject());
-	if (!object || (object->getType() == KotORBase::kObjectTypeInvalid))
+	Object *object = ObjectContainer::toObject(ctx.getParams()[n].getObject());
+	if (!object || (object->getType() == kObjectTypeInvalid))
 		return 0;
 
-	if (object->getType() == KotORBase::kObjectTypeSelf)
+	if (object->getType() == kObjectTypeSelf)
 		return ctx.getCaller();
 
 	return object;

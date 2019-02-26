@@ -57,6 +57,18 @@ void Functions::getPartyMemberByIndex(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = _game->getModule().getPartyMemberByIndex(index);
 }
 
+void Functions::getSoloMode(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = _game->getModule().isSoloMode();
+}
+
+void Functions::getCommandable(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *target = ObjectContainer::toCreature(ctx.getParams()[0].getObject());
+	if (!target)
+		throw Common::Exception("Functions::getCommandable(): Invalid target");
+
+	ctx.getReturn() = target->isCommandable();
+}
+
 void Functions::showPartySelectionGUI(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &exitScript = ctx.getParams()[0].getString();
 	int forceNPC1 = ctx.getParams()[1].getInt();
@@ -82,6 +94,15 @@ void Functions::addAvailableNPCByTemplate(Aurora::NWScript::FunctionContext &ctx
 void Functions::setPartyLeader(Aurora::NWScript::FunctionContext &ctx) {
 	int npc = ctx.getParams()[0].getInt();
 	_game->getModule().setPartyLeader(npc);
+}
+
+void Functions::setCommandable(Aurora::NWScript::FunctionContext &ctx) {
+	int commandable = ctx.getParams()[0].getInt();
+	Creature *target = ObjectContainer::toCreature(ctx.getParams()[1].getObject());
+	if (!target)
+		throw Common::Exception("Functions::setCommandable(): Invalid target");
+
+	target->setCommandable(commandable != 0);
 }
 
 } // End of namespace KotORBase
