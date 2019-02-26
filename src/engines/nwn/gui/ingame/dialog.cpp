@@ -601,7 +601,10 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj,
 }
 
 Dialog::~Dialog() {
-	abort();
+	try {
+		abort();
+	} catch (...) {
+	}
 }
 
 bool Dialog::hasEnded() const {
