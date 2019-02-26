@@ -173,8 +173,11 @@ void Campaign::loadCampaignResource(const Common::UString &campaign) {
 
 	bool success = false;
 	BOOST_SCOPE_EXIT( (&success) (this_) ) {
-		if (!success)
-			this_->clear();
+		try {
+			if (!success)
+				this_->clear();
+		} catch (...) {
+		}
 	} BOOST_SCOPE_EXIT_END
 
 	indexMandatoryDirectory(directory, 0, -1, 1000, &_resCampaign);
