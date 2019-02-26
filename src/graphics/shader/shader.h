@@ -198,10 +198,10 @@ public:
 
 	ShaderObject();
 
-	uint32 usageCount;
-	uint32 id;  // ID unique to a shader within its type (i.e unique across vertex shaders, or unique across fragment shaders). 0 is an invalid id.
-	GLuint glid;  // Defaults to zero if not compiled.
-	ShaderType type;  // Type of shader (typically vertex or fragment).
+	uint32 usageCount { 0 };
+	uint32 id { 0 };  // ID unique to a shader within its type (i.e unique across vertex shaders, or unique across fragment shaders). 0 is an invalid id.
+	GLuint glid { 0 };  // Defaults to zero if not compiled.
+	ShaderType type { SHADER_VERTEX };  // Type of shader (typically vertex or fragment).
 	Common::UString shaderString;
 
 	std::vector<ShaderObject::ShaderObjectVariable> variablesSelf;
@@ -217,13 +217,13 @@ class ShaderProgram : public GLContainer {
 public:
 	ShaderProgram();
 
-	ShaderObject *vertexObject;  // Vertex shader.
-	ShaderObject *fragmentObject;  // Fragment shader.
+	ShaderObject *vertexObject { nullptr };  // Vertex shader.
+	ShaderObject *fragmentObject { nullptr };  // Fragment shader.
 	std::vector<GLint> vertexVariableLocations;
 	std::vector<GLint> fragmentVariableLocations;
-	uint64 id;  // Set to (vertex.id << 32) | fragment.id
-	GLuint glid;
-	uint32 usageCount;
+	uint64 id { 0 };  // Set to (vertex.id << 32) | fragment.id
+	GLuint glid { 0 };
+	uint32 usageCount { 0 };
 
 	void bindAttribute(ShaderVertexAttrib attrib, const Common::UString &name) {
 		glBindAttribLocation(glid, (GLuint)(attrib), name.c_str());
