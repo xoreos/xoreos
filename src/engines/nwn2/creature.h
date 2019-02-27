@@ -38,6 +38,7 @@
 
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/object.h"
+#include "src/engines/nwn2/inventory.h"
 #include "src/engines/nwn2/feats.h"
 
 namespace Engines {
@@ -46,7 +47,7 @@ namespace NWN2 {
 
 class PersonalReputation;
 
-class Creature : public Object {
+class Creature : public Object, public Inventory {
 public:
 	/** Create a dummy creature instance. Not playable as it is.*/
 	Creature();

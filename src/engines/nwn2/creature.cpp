@@ -46,6 +46,7 @@
 #include "src/engines/nwn2/module.h"
 #include "src/engines/nwn2/area.h"
 #include "src/engines/nwn2/creature.h"
+#include "src/engines/nwn2/inventory.h"
 #include "src/engines/nwn2/faction.h"
 #include "src/engines/nwn2/cursor.h"
 
@@ -55,11 +56,12 @@ namespace Engines {
 
 namespace NWN2 {
 
-Creature::Creature() : Object(kObjectTypeCreature) {
+Creature::Creature() : Object(kObjectTypeCreature), Inventory() {
 	init();
 }
 
-Creature::Creature(const Aurora::GFF3Struct &creature) : Object(kObjectTypeCreature) {
+Creature::Creature(const Aurora::GFF3Struct &creature) :
+	Object(kObjectTypeCreature), Inventory(creature) {
 	init();
 
 	load(creature);
@@ -100,6 +102,7 @@ void Creature::init() {
 	_isInterruptable = false;
 	_isNoPermanentDeath = false;
 	_isSelectableWhenDead = false;
+	_container = true; // Creatures always have an inventory
 
 	_hitDice = 0;
 

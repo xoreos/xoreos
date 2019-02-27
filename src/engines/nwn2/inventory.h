@@ -35,6 +35,7 @@ class Item;
 
 class Inventory {
 public:
+	Inventory();
 	Inventory(const Aurora::GFF3Struct &inventory);
 	~Inventory();
 

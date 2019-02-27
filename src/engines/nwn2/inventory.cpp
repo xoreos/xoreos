@@ -33,6 +33,9 @@ namespace Engines {
 
 namespace NWN2 {
 
+Inventory::Inventory() {
+}
+
 Inventory::Inventory(const Aurora::GFF3Struct &inventory) {
 
 	load(inventory);

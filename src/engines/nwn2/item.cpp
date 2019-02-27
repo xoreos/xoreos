@@ -30,13 +30,15 @@
 
 #include "src/engines/aurora/util.h"
 
+#include "src/engines/nwn2/inventory.h"
 #include "src/engines/nwn2/item.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
-Item::Item(const Aurora::GFF3Struct &item) : Object(kObjectTypeItem),
+Item::Item(const Aurora::GFF3Struct &item) :
+	Object(kObjectTypeItem), Inventory(item),
 	_stackSize(1), _droppable(true), _identified(true), _pickpocketable(true) {
 
 	load(item);
@@ -168,6 +170,7 @@ void Item::loadProperties(const Aurora::GFF3Struct &gff) {
 	_droppable = gff.getBool("Dropable", _droppable);
 	_identified = gff.getBool("Identified", _identified);
 	_pickpocketable = gff.getBool("Pickpocketable", _pickpocketable);
+	_container = gff.getBool("Container", _container);
 }
 
 } // End of namespace NWN2

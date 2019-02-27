@@ -708,7 +708,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  567, "AmbientSoundSetDayVolume"            , 0                                                },
 	{  568, "AmbientSoundSetNightVolume"          , 0                                                },
 	{  569, "MusicBackgroundGetBattleTrack"       , 0                                                },
-	{  570, "GetHasInventory"                     , 0                                                },
+	{  570, "GetHasInventory"                     , &Functions::getHasInventory                      },
 	{  571, "GetStrRefSoundDuration"              , 0                                                },
 	{  572, "AddToParty"                          , 0                                                },
 	{  573, "RemoveFromParty"                     , 0                                                },

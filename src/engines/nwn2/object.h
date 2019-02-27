@@ -95,6 +95,8 @@ public:
 
 	bool isClickable() const; ///< Can the player click the object?
 
+	bool getHasInventory() const; ///< Can the object have an inventory?
+
 	// Object/Object interactions
 
 	/** Return the area this object is currently in. */
@@ -177,6 +179,8 @@ protected:
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
 	bool _listen; ///< Is the object listening?
+
+	bool _container; ///< Can the object hold an inventory of items?
 
 	std::list<uint32> _ids; ///< The object's model IDs.
 
