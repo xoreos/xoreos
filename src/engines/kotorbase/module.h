@@ -106,6 +106,8 @@ public:
 	/** Return the fade quad. */
 	Graphics::Aurora::FadeQuad &getFadeQuad();
 
+	void removeObject(Object &object);
+
 	// Interact with the current module
 
 	/** Show the ingame main menu. */
@@ -381,8 +383,6 @@ private:
 
 	void updateMinimap();
 	void updateSoundListener();
-
-	void resetSelection();
 };
 
 } // End of namespace KotORBase

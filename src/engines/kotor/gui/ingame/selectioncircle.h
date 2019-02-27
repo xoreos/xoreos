@@ -31,18 +31,33 @@ namespace Engines {
 
 namespace KotOR {
 
+const float kSelectionCircleSize = 64.0f;
+
+class Situated;
+
 class SelectionCircle {
 public:
 	SelectionCircle();
 
+	// Basic visuals
+
 	void show();
 	void hide();
 
+
 	void setPosition(float x, float y);
+	void setHovered(bool hovered);
+	void setTarget(bool target);
+
+	void moveTo(KotORBase::Situated *situated, float &sX, float &sY);
 
 private:
-	// TODO: Add more circles and dynamically switch between them.
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _inactive;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _hoveredQuad;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _targetQuad;
+
+	bool _hovered { false }; ///< Is this selection circle being hovered over?
+	bool _target { false }; ///< Is the object below this selection circle the target?
+	bool _visible { false };
 };
 
 } // End of namespace KotOR

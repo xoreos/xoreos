@@ -72,13 +72,27 @@ void IngameGUI::setPartyMember1(KotORBase::Creature *UNUSED(creature)) {
 void IngameGUI::setPartyMember2(KotORBase::Creature *UNUSED(creature)) {
 }
 
-void IngameGUI::showSelection(KotORBase::Object *UNUSED(object)) {
+KotORBase::Object *IngameGUI::getHoveredObject() const {
+	return 0;
+}
+
+KotORBase::Object *IngameGUI::getTargetObject() const {
+	return 0;
+}
+
+void IngameGUI::setHoveredObject(KotORBase::Object *UNUSED(object)) {
+}
+
+void IngameGUI::setTargetObject(KotORBase::Object *UNUSED(object)) {
+}
+
+void IngameGUI::updateSelection() {
 }
 
 void IngameGUI::hideSelection() {
 }
 
-void IngameGUI::updateSelection() {
+void IngameGUI::resetSelection() {
 }
 
 void IngameGUI::addEvent(const Events::Event &event) {

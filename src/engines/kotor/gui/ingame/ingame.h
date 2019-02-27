@@ -33,7 +33,6 @@
 #include "src/engines/kotorbase/gui/ingame.h"
 
 #include "src/engines/kotor/gui/ingame/hud.h"
-#include "src/engines/kotor/gui/ingame/selectioncircle.h"
 
 namespace Engines {
 
@@ -68,18 +67,23 @@ public:
 	void setPartyMember2(KotORBase::Creature *creature);
 
 	// Selection handling
-	void showSelection(KotORBase::Object *object);
-	void hideSelection();
+
+	KotORBase::Object *getHoveredObject() const;
+	KotORBase::Object *getTargetObject() const;
+
+	void setHoveredObject(KotORBase::Object *object);
+	void setTargetObject(KotORBase::Object *object);
+
 	void updateSelection();
+	void hideSelection();
+	void resetSelection();
+
 
 	void addEvent(const Events::Event &event);
 	void processEventQueue();
 
 private:
 	Common::ScopedPtr<HUD> _hud;
-	Common::ScopedPtr<SelectionCircle> _selectionCircle;
-
-	KotORBase::Object *_selected;
 };
 
 } // End of namespace KotOR

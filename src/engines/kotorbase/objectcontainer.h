@@ -64,14 +64,14 @@ private:
 class ObjectContainer : public ::Aurora::NWScript::ObjectContainer {
 public:
 	ObjectContainer();
-	~ObjectContainer();
+	virtual ~ObjectContainer();
 
 	void clearObjects();
 
 	/** Add an object to this container. */
 	void addObject(Object &object);
 	/** Remove an object from this container. */
-	void removeObject(Object &object);
+	virtual void removeObject(Object &object);
 
 	/** Return the first object of this type. */
 	::Aurora::NWScript::Object *getFirstObjectByType(ObjectType type) const;

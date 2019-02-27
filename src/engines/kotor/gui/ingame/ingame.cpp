@@ -22,8 +22,6 @@
  *  The ingame GUI.
  */
 
-#include "src/engines/kotorbase/situated.h"
-
 #include "src/engines/kotor/gui/ingame/ingame.h"
 
 namespace Engines {
@@ -32,9 +30,6 @@ namespace KotOR {
 
 IngameGUI::IngameGUI(KotORBase::Module &module, Console *console) {
 	_hud.reset(new HUD(module, console));
-	_selectionCircle.reset(new SelectionCircle());
-
-	_selected = 0;
 }
 
 void IngameGUI::show() {
@@ -88,57 +83,32 @@ void IngameGUI::setPartyMember2(KotORBase::Creature *creature) {
 	_hud->setPartyMember2(creature);
 }
 
-void IngameGUI::showSelection(KotORBase::Object *object) {
-	if (!object)
-		return;
-
-	if (object == _selected)
-		return;
-
-	KotORBase::Situated *situated = KotORBase::ObjectContainer::toSituated(object);
-	if (!situated) // TODO: Creature selection
-		return;
-
-	float x, y, z;
-	situated->getTooltipAnchor(x, y, z);
-
-	float sX, sY, sZ;
-	GfxMan.project(x, y, z, sX, sY, sZ);
-
-	_selectionCircle->setPosition(sX, sY);
-	_selectionCircle->show();
-
-	_hud->updateObjectInformation(object, sX, sY);
-	_hud->showObjectInformation(object);
-
-	_selected = object;
+KotORBase::Object *IngameGUI::getHoveredObject() const {
+	return _hud->getHoveredObject();
 }
 
-void IngameGUI::hideSelection() {
-	_selectionCircle->hide();
-	_hud->hideObjectInformation();
+KotORBase::Object *IngameGUI::getTargetObject() const {
+	return _hud->getTargetObject();
+}
 
-	_selected = 0;
+void IngameGUI::setHoveredObject(KotORBase::Object *object) {
+	_hud->setHoveredObject(object);
+}
+
+void IngameGUI::setTargetObject(KotORBase::Object *object) {
+	_hud->setTargetObject(object);
 }
 
 void IngameGUI::updateSelection() {
-	if (!_selected)
-		return;
+	_hud->updateSelection();
+}
 
-	KotORBase::Situated *situated = KotORBase::ObjectContainer::toSituated(_selected);
-	if (!situated) // TODO: Creature selection
-		return;
+void IngameGUI::hideSelection() {
+	_hud->hideSelection();
+}
 
-	float x, y, z;
-	situated->getTooltipAnchor(x, y, z);
-
-	float sX, sY, sZ;
-	GfxMan.project(x, y, z, sX, sY, sZ);
-
-	_selectionCircle->show();
-	_selectionCircle->setPosition(sX, sY);
-
-	_hud->updateObjectInformation(situated, sX, sY);
+void IngameGUI::resetSelection() {
+	_hud->resetSelection();
 }
 
 void IngameGUI::addEvent(const Events::Event &event) {

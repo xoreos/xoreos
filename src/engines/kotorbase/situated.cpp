@@ -118,6 +118,14 @@ const Common::UString &Situated::getModelName() const {
 	return _modelName;
 }
 
+const std::vector<int> Situated::getPossibleActions() const {
+	std::vector<int> actions;
+	if (_locked)
+		actions.push_back(kActionOpenLock);
+
+	return actions;
+}
+
 void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 

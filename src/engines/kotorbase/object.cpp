@@ -104,6 +104,10 @@ void Object::setRoom(const Room *room) {
 	_room = room;
 }
 
+const std::vector<int> Object::getPossibleActions() const {
+	return std::vector<int>();
+}
+
 bool Object::isStatic() const {
 	return _static;
 }

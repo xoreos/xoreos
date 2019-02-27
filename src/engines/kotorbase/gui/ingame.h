@@ -57,14 +57,22 @@ public:
 	virtual void showContainer(Inventory &inv) = 0;
 
 	// Party handling.
-	virtual void setPartyLeader(KotORBase::Creature *creature) = 0;
-	virtual void setPartyMember1(KotORBase::Creature *creature) = 0;
-	virtual void setPartyMember2(KotORBase::Creature *creature) = 0;
+	virtual void setPartyLeader(Creature *creature) = 0;
+	virtual void setPartyMember1(Creature *creature) = 0;
+	virtual void setPartyMember2(Creature *creature) = 0;
 
 	// Selection handling
-	virtual void showSelection(KotORBase::Object *object) = 0;
-	virtual void hideSelection() = 0;
+
+	virtual Object *getHoveredObject() const = 0;
+	virtual Object *getTargetObject() const = 0;
+
+	virtual void setHoveredObject(Object *object) = 0;
+	virtual void setTargetObject(Object *object) = 0;
+
 	virtual void updateSelection() = 0;
+	virtual void hideSelection() = 0;
+	virtual void resetSelection() = 0;
+
 
 	virtual void addEvent(const Events::Event &event) = 0;
 	virtual void processEventQueue() = 0;

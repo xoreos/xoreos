@@ -67,9 +67,17 @@ public:
 	void setPartyMember2(KotORBase::Creature *creature);
 
 	// Selection handling
-	void showSelection(KotORBase::Object *object);
-	void hideSelection();
+
+	KotORBase::Object *getHoveredObject() const;
+	KotORBase::Object *getTargetObject() const;
+
+	void setHoveredObject(KotORBase::Object *object);
+	void setTargetObject(KotORBase::Object *object);
+
 	void updateSelection();
+	void hideSelection();
+	void resetSelection();
+
 
 	void addEvent(const Events::Event &event);
 	void processEventQueue();

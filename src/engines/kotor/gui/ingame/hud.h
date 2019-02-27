@@ -34,6 +34,7 @@
 #include "src/engines/kotor/gui/ingame/container.h"
 #include "src/engines/kotor/gui/ingame/menu.h"
 #include "src/engines/kotor/gui/ingame/minimap.h"
+#include "src/engines/kotor/gui/ingame/selectioncircle.h"
 
 namespace Engines {
 
@@ -65,14 +66,24 @@ public:
 	void setPartyMember1(KotORBase::Creature *creature);
 	void setPartyMember2(KotORBase::Creature *creature);
 
-	void showObjectInformation(KotORBase::Object *object);
-	void updateObjectInformation(KotORBase::Object *object, float x, float y);
-	void hideObjectInformation();
+	// Selection handling
+
+	KotORBase::Object *getHoveredObject() const;
+	KotORBase::Object *getTargetObject() const;
+
+	void setHoveredObject(KotORBase::Object *object);
+	void setTargetObject(KotORBase::Object *object);
+
+	void updateSelection();
+	void hideSelection();
+	void resetSelection();
 
 private:
 	KotORBase::Module *_module;
 	Menu _menu;
 	Common::ScopedPtr<ContainerMenu> _container;
+	Common::ScopedPtr<SelectionCircle> _hoveredCircle;
+	Common::ScopedPtr<SelectionCircle> _targetCircle;
 
 	Common::ScopedPtr<Minimap> _minimap;
 	Odyssey::WidgetLabel *_minimapPointer;
@@ -83,14 +94,28 @@ private:
 	Odyssey::WidgetLabel       *_objectNameBackground;
 	Odyssey::WidgetProgressbar *_objectHealth;
 	Odyssey::WidgetLabel       *_objectHealthBackground;
+	Odyssey::WidgetButton      *_firstTargetButton { nullptr };
+	Odyssey::WidgetButton      *_secondTargetButton { nullptr };
+	Odyssey::WidgetButton      *_thirdTargetButton { nullptr };
 
+	KotORBase::Object *_hoveredObject { nullptr };
+	KotORBase::Object *_targetObject { nullptr };
+
+
+	void getTargetButtonSize(float &width, float &height) const;
+	float getTargetButtonsDistance() const;
 
 	void update(int width, int height);
 
 	void initWidget(Widget &widget);
 	void setPortrait(uint8 n, bool visible, const Common::UString &portrait = "");
+	void positionTargetButtons(float originX, float originY);
 
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
+
+	void showTargetInformation(KotORBase::Object *object);
+	void hideTargetInformation();
+	void updateTargetInformation(KotORBase::Object *object, float x, float y);
 
 protected:
 	virtual void callbackActive(Widget &widget);

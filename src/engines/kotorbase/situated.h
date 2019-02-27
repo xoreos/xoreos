@@ -64,6 +64,10 @@ public:
 	/** Get the model name. */
 	const Common::UString &getModelName() const;
 
+	// Interactive properties
+
+	const std::vector<int> getPossibleActions() const;
+
 	// State
 
 	/** Is the situated object open? */

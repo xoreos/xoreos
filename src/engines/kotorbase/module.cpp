@@ -194,6 +194,16 @@ Graphics::Aurora::FadeQuad &Module::getFadeQuad() {
 	return *_fade;
 }
 
+void Module::removeObject(Object &object) {
+	if (_ingame->getHoveredObject() == &object)
+		_ingame->setHoveredObject(0);
+
+	if (_ingame->getTargetObject() == &object)
+		_ingame->setTargetObject(0);
+
+	ObjectContainer::removeObject(object);
+}
+
 bool Module::isLoaded() const {
 	return _hasModule && _area && _pc;
 }
@@ -337,6 +347,8 @@ void Module::loadTexturePack() {
 }
 
 void Module::unload(bool completeUnload) {
+	_ingame->resetSelection();
+
 	GfxMan.pauseAnimations();
 
 	leaveArea();
@@ -514,6 +526,12 @@ void Module::leaveArea() {
 }
 
 void Module::clickObject(Object *object) {
+	Object *currentTarget = _ingame->getTargetObject();
+	if (currentTarget != object) {
+		_ingame->setTargetObject(object);
+		return;
+	}
+
 	Creature *creature = ObjectContainer::toCreature(object);
 	if (creature && !creature->getConversation().empty()) {
 		startConversation(creature->getConversation(), creature);
@@ -534,7 +552,6 @@ void Module::clickObject(Object *object) {
 
 			_ingame->hideSelection();
 			_ingame->showContainer(placeable->getInventory());
-			resetSelection();
 
 			placeable->close(_pc);
 			placeable->runScript(kScriptDisturbed, placeable, _pc);
@@ -545,11 +562,11 @@ void Module::clickObject(Object *object) {
 }
 
 void Module::enterObject(Object *object) {
-	_ingame->showSelection(object);
+	_ingame->setHoveredObject(object);
 }
 
 void Module::leaveObject(Object *UNUSED(object)) {
-	_ingame->hideSelection();
+	_ingame->setHoveredObject(0);
 }
 
 void Module::addEvent(const Events::Event &event) {
@@ -646,7 +663,6 @@ void Module::handleEvents() {
 			_dialog->hide();
 			_ingame->show();
 			_inDialog = false;
-			resetSelection();
 		}
 	} else {
 		_area->processEventQueue();
@@ -667,15 +683,6 @@ void Module::updateSoundListener() {
 	SoundMan.setListenerPosition(position[0], position[1], position[2]);
 	const float *orientation = CameraMan.getOrientation();
 	SoundMan.setListenerOrientation(orientation[0], orientation[1], orientation[2], 0.0f, 1.0f, 0.0f);
-}
-
-void Module::resetSelection() {
-	GfxMan.lockFrame();
-
-	_ingame->showSelection(_area->getActiveObject());
-	NotificationMan.cameraMoved();
-
-	GfxMan.unlockFrame();
 }
 
 void Module::handleActions() {
@@ -803,7 +810,6 @@ void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
 		_dialog->show();
 	} else {
 		_ingame->show();
-		resetSelection();
 	}
 
 	int npc1 = config.forceNPC1;

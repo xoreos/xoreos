@@ -80,6 +80,8 @@ public:
 
 	// Interactive properties
 
+	virtual const std::vector<int> getPossibleActions() const;
+
 	/** Is the object static (not manipulable at all)? */
 	bool isStatic() const;
 	/** Can the object be used by the PC? */

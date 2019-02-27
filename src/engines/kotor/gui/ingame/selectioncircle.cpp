@@ -22,26 +22,78 @@
  *  The circle visible when selecting objects
  */
 
+#include "src/engines/kotorbase/objectcontainer.h"
+#include "src/engines/kotorbase/situated.h"
+
 #include "src/engines/kotor/gui/ingame/selectioncircle.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-SelectionCircle::SelectionCircle() : _inactive(new Graphics::Aurora::GUIQuad("friendlyreticle", 0.0f, 0.0f, 64.0f, 64.0f)) {
-
+SelectionCircle::SelectionCircle() :
+		_hoveredQuad(new Graphics::Aurora::GUIQuad("friendlyreticle", 0.0f, 0.0f, kSelectionCircleSize, kSelectionCircleSize)),
+		_targetQuad(new Graphics::Aurora::GUIQuad("friendlyreticle2", 0.0f, 0.0f, kSelectionCircleSize, kSelectionCircleSize)) {
 }
 
 void SelectionCircle::show() {
-	_inactive->show();
+	if (_target)
+		_targetQuad->show();
+
+	if (_hovered)
+		_hoveredQuad->show();
+
+	_visible = true;
 }
 
 void SelectionCircle::hide() {
-	_inactive->hide();
+	_hoveredQuad->hide();
+	_targetQuad->hide();
+	_visible = false;
 }
 
 void SelectionCircle::setPosition(float x, float y) {
-	_inactive->setPosition(x - 32, y - 32);
+	float halfSize = kSelectionCircleSize / 2.0f;
+	_hoveredQuad->setPosition(x - halfSize, y - halfSize, -FLT_MIN);
+	_targetQuad->setPosition(x - halfSize, y - halfSize, -100.0f);
+}
+
+void SelectionCircle::setHovered(bool hovered) {
+	if (_hovered == hovered)
+		return;
+
+	_hovered = hovered;
+
+	if (_visible) {
+		if (_hovered)
+			_hoveredQuad->show();
+		else
+			_hoveredQuad->hide();
+	}
+}
+
+void SelectionCircle::setTarget(bool target) {
+	if (_target == target)
+		return;
+
+	_target = target;
+
+	if (_visible) {
+		if (_target)
+			_targetQuad->show();
+		else
+			_targetQuad->hide();
+	}
+}
+
+void SelectionCircle::moveTo(KotORBase::Situated *situated, float &sX, float &sY) {
+	float x, y, z;
+	situated->getTooltipAnchor(x, y, z);
+
+	float _;
+	GfxMan.project(x, y, z, sX, sY, _);
+
+	setPosition(sX, sY);
 }
 
 } // End of namespace KotOR
