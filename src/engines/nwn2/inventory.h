@@ -39,12 +39,17 @@ public:
 	Inventory(const Aurora::GFF3Struct &inventory);
 	~Inventory();
 
+	Item *getFirstItemInInventory();
+	Item *getNextItemInInventory();
+
 private:
 
 	typedef std::map<uint16, Item *> ItemSlotMap;
 
 	ItemSlotMap equippedItems;
 	ItemSlotMap inventoryItems;
+
+	uint32 _lastRetrieved; ///< Index of last retrieved item.
 
 	/** Convert a bit flag to an equipment slot. */
 	InventorySlot getSlotFromBitFlag(uint32 bitFlag) const;

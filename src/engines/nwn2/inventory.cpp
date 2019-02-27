@@ -22,6 +22,8 @@
  *  An inventory in a Neverwinter Nights 2 object.
  */
 
+#include <iterator>
+
 #include "src/common/error.h"
 
 #include "src/aurora/gff3file.h"
@@ -33,7 +35,7 @@ namespace Engines {
 
 namespace NWN2 {
 
-Inventory::Inventory() {
+Inventory::Inventory() : _lastRetrieved(UINT32_MAX) {
 }
 
 Inventory::Inventory(const Aurora::GFF3Struct &inventory) {
@@ -43,6 +45,42 @@ Inventory::Inventory(const Aurora::GFF3Struct &inventory) {
 
 Inventory::~Inventory() {
 	clear();
+}
+
+/** Return the first item in the inventory. */
+Item *Inventory::getFirstItemInInventory() {
+	_lastRetrieved = 0;
+
+	if (!equippedItems.empty()) {
+		return equippedItems.begin()->second;
+	} else if (!inventoryItems.empty()) {
+		return inventoryItems.begin()->second;
+	}
+	return 0;
+}
+
+/** Return the next item in the inventory. */
+Item *Inventory::getNextItemInInventory() {
+	// Find the matching item
+	const size_t equipSize = equippedItems.size();
+	_lastRetrieved++;
+	if (_lastRetrieved < equipSize) {
+		std::map<uint16, Item *>::const_iterator item = equippedItems.begin();
+		std::advance(item, _lastRetrieved);
+		return item->second;
+	} else {
+		const size_t inventorySize = inventoryItems.size();
+		if (_lastRetrieved < equipSize + inventorySize) {
+			// TODO: Check for an item with nested inventory (Ex.: magic bag)
+			std::map<uint16, Item *>::const_iterator item = inventoryItems.begin();
+			std::advance(item, _lastRetrieved - equipSize);
+			return item->second;
+		}
+	}
+
+	// End of the inventory
+	_lastRetrieved = UINT32_MAX;
+	return 0;
 }
 
 void Inventory::clear() {
@@ -132,7 +170,7 @@ void Inventory::load(const Aurora::GFF3Struct &inventory) {
 		const Aurora::GFF3List &itemList = inventory.getList("ItemList");
 		for (Aurora::GFF3List::const_iterator it = itemList.begin(); it != itemList.end(); ++it) {
 			const Aurora::GFF3Struct &item = **it;
-			uint16 slot = item.getID();
+			uint16 slot = item.getUint("Repos_Index");
 
 			// TODO: Find an empty inventory slot instead
 			if (inventoryItems.find(slot) != inventoryItems.end())
