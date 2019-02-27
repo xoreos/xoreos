@@ -26,6 +26,7 @@
 
 #include "tests/engines/nwn2/creature.h"
 #include "tests/engines/nwn2/creature2.h"
+#include "tests/engines/nwn2/creature3.h"
 
 #include "src/common/memreadstream.h"
 #include "src/common/scopedptr.h"
@@ -35,6 +36,7 @@
 
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/types.h"
+#include "src/engines/nwn2/item.h"
 
 static const float kEpsilon = 1e-5f;
 
@@ -158,4 +160,26 @@ GTEST_TEST(NWN2Creature, creature2) {
 	EXPECT_TRUE(cr->hasFeat(1857)) << "Feat: Trapfinding";
 	EXPECT_TRUE(cr->hasFeat(1870)) << "Feat: Fire Genasi Resistance";
 	EXPECT_TRUE(cr->hasFeat(1874)) << "Feat: Fire Genasi Reach to the Blaze";
+}
+
+GTEST_TEST(NWN2Creature, inventory) {
+	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataCreature3));
+	if (!stream)
+		throw Common::Exception("No test data available");
+	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('R', 'O', 'S', ' ')));
+
+	// Load the PC
+	const Aurora::GFF3Struct &top = gff->getTopLevel();
+	Common::ScopedPtr<Engines::NWN2::Creature> cr(new Engines::NWN2::Creature(top));
+
+	EXPECT_STREQ(cr->getTag().c_str(), "elanee");
+	EXPECT_STREQ(cr->getFirstItemInInventory()->getTag().c_str(), "NW_WBLMCL002");
+	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_IT_SPARSCR204");
+	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_WSPSC001");
+	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "X2_IT_SPDVSCR001");
+	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_WMGWN005");
+	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_IT_SPARSCR202");
+	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_IT_SPDVSCR203");
+	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "x2_nash_boot");
+	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_WSWSC001");
 }
