@@ -311,6 +311,9 @@ private:
 
 	void setItemIcon     (Aurora::NWScript::FunctionContext &ctx);
 	void setItemStackSize(Aurora::NWScript::FunctionContext &ctx);
+
+	void getFirstItemInInventory(Aurora::NWScript::FunctionContext &ctx);
+	void getNextItemInInventory (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Creatures, functions_creature.cpp

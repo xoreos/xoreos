@@ -147,6 +147,20 @@ void Functions::setItemStackSize(Aurora::NWScript::FunctionContext &ctx) {
 	}
 }
 
+void Functions::getFirstItemInInventory(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item && item->getHasInventory()) {
+		ctx.getReturn() = item->getFirstItemInInventory();
+	}
+}
+
+void Functions::getNextItemInInventory(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item && item->getHasInventory()) {
+		ctx.getReturn() = item->getNextItemInInventory();
+	}
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines
