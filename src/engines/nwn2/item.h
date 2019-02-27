@@ -27,12 +27,13 @@
 
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/object.h"
+#include "src/engines/nwn2/inventory.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
-class Item : public Object {
+class Item : public Object, public Inventory {
 public:
 	Item(const Aurora::GFF3Struct &item);
 	~Item();

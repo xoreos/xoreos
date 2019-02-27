@@ -290,6 +290,8 @@ private:
 	// '---
 
 	// .--- Items and inventory, functions_inventory.cpp
+	void getHasInventory      (Aurora::NWScript::FunctionContext &ctx);
+
 	void getDroppableFlag     (Aurora::NWScript::FunctionContext &ctx);
 	void getIdentified        (Aurora::NWScript::FunctionContext &ctx);
 	void getItemCursedFlag    (Aurora::NWScript::FunctionContext &ctx);

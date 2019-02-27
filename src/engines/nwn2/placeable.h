@@ -31,12 +31,13 @@
 
 #include "src/engines/nwn2/situated.h"
 #include "src/engines/nwn2/trap.h"
+#include "src/engines/nwn2/inventory.h"
 
 namespace Engines {
 
 namespace NWN2 {
 
-class Placeable : public Situated, public Trap {
+class Placeable : public Situated, public Trap, public Inventory {
 public:
 	/** The state of a placeable. */
 	enum State {

@@ -36,6 +36,11 @@ namespace Engines {
 
 namespace NWN2 {
 
+void Functions::getHasInventory(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
+	ctx.getReturn() = object && object->getHasInventory();
+}
+
 void Functions::getDroppableFlag(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	ctx.getReturn() = item && item->getDroppableFlag();

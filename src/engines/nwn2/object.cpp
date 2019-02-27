@@ -58,7 +58,7 @@ namespace NWN2 {
 
 Object::Object(ObjectType type) : _type(type), _faction(2),
 	_soundSet(Aurora::kFieldIDInvalid), _static(true), _usable(true),
-	_listen(false), _area(0) {
+	_listen(false), _container(false), _area(0) {
 	_id = Common::generateIDNumber();
 	ObjectMan.registerObject(this);
 
@@ -119,6 +119,10 @@ bool Object::isUsable() const {
 
 bool Object::isClickable() const {
 	return !_static && _usable;
+}
+
+bool Object::getHasInventory() const {
+	return _container;
 }
 
 const std::list<uint32> &Object::getIDs() const {

@@ -38,6 +38,7 @@
 #include "src/engines/nwn2/trap.h"
 #include "src/engines/nwn2/module.h"
 #include "src/engines/nwn2/area.h"
+#include "src/engines/nwn2/inventory.h"
 #include "src/engines/nwn2/cursor.h"
 
 namespace Engines {
@@ -45,7 +46,7 @@ namespace Engines {
 namespace NWN2 {
 
 Placeable::Placeable(const Aurora::GFF3Struct &placeable) :
-	Situated(kObjectTypePlaceable), Trap(placeable),
+	Situated(kObjectTypePlaceable), Trap(placeable), Inventory(placeable),
 	_state(kStateDefault), _defAction(kDefActionAutomatic),
 	_hasInventory(false) {
 
@@ -121,6 +122,8 @@ void Placeable::loadObject(const Aurora::GFF3Struct &gff) {
 	_defAction = (DefAction) gff.getUint("DefAction", (uint) _defAction);
 
 	_hasInventory = gff.getBool("HasInventory", _hasInventory);
+
+	_container = gff.getBool("HasInventory", _container);
 
 	// Faction
 
