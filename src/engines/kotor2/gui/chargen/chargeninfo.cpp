@@ -23,6 +23,7 @@
  */
 
 #include "src/common/strutil.h"
+#include "src/common/random.h"
 
 #include "src/aurora/ltrfile.h"
 
@@ -43,13 +44,13 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleConsular() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderMale;
 	info->_class = KotORBase::kClassJediConsular;
-	info->_skin = KotORBase::Skin(std::rand() % KotORBase::kSkinMAX);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, KotORBase::kSkinMAX));
 	switch (info->_skin) {
 		case KotORBase::kSkinH:
-			info->_face = std::rand() % 2;
+			info->_face = RNG.getNext(0, 2);
 			break;
 		default:
-			info->_face = std::rand() % 5;
+			info->_face = RNG.getNext(0, 5);
 			break;
 	}
 
@@ -65,13 +66,13 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleConsular() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderFemale;
 	info->_class = KotORBase::kClassJediConsular;
-	info->_skin = KotORBase::Skin(std::rand() % KotORBase::kSkinMAX);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, KotORBase::kSkinMAX));
 	switch (info->_skin) {
 		case KotORBase::kSkinH:
-			info->_face = std::rand() % 2;
+			info->_face = RNG.getNext(0, 2);
 			break;
 		default:
-			info->_face = std::rand() % 5;
+			info->_face = RNG.getNext(0, 5);
 			break;
 	}
 
@@ -87,13 +88,13 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleGuardian() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderMale;
 	info->_class = KotORBase::kClassJediGuardian;
-	info->_skin = KotORBase::Skin(std::rand() % KotORBase::kSkinMAX);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, KotORBase::kSkinMAX));
 	switch (info->_skin) {
 		case KotORBase::kSkinH:
-			info->_face = std::rand() % 2;
+			info->_face = RNG.getNext(0, 2);
 			break;
 		default:
-			info->_face = std::rand() % 5;
+			info->_face = RNG.getNext(0, 5);
 			break;
 	}
 
@@ -109,13 +110,13 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleGuardian() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderFemale;
 	info->_class = KotORBase::kClassJediGuardian;
-	info->_skin = KotORBase::Skin(std::rand() % KotORBase::kSkinMAX);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, KotORBase::kSkinMAX));
 	switch (info->_skin) {
 		case KotORBase::kSkinH:
-			info->_face = std::rand() % 2;
+			info->_face = RNG.getNext(0, 2);
 			break;
 		default:
-			info->_face = std::rand() % 5;
+			info->_face = RNG.getNext(0, 5);
 			break;
 	}
 
@@ -131,13 +132,13 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleSentinel() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderMale;
 	info->_class = KotORBase::kClassJediSentinel;
-	info->_skin = KotORBase::Skin(std::rand() % KotORBase::kSkinMAX);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, KotORBase::kSkinMAX));
 	switch (info->_skin) {
 		case KotORBase::kSkinH:
-			info->_face = std::rand() % 2;
+			info->_face = RNG.getNext(0, 2);
 			break;
 		default:
-			info->_face = std::rand() % 5;
+			info->_face = RNG.getNext(0, 5);
 			break;
 	}
 
@@ -153,13 +154,13 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleSentinel() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderFemale;
 	info->_class = KotORBase::kClassJediSentinel;
-	info->_skin = KotORBase::Skin(std::rand() % KotORBase::kSkinMAX);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, KotORBase::kSkinMAX));
 	switch (info->_skin) {
 		case KotORBase::kSkinH:
-			info->_face = std::rand() % 2;
+			info->_face = RNG.getNext(0, 2);
 			break;
 		default:
-			info->_face = std::rand() % 5;
+			info->_face = RNG.getNext(0, 5);
 			break;
 	}
 

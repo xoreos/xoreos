@@ -23,6 +23,7 @@
  */
 
 #include "src/common/maths.h"
+#include "src/common/random.h"
 
 #include "src/graphics/aurora/animation.h"
 #include "src/graphics/aurora/animationchannel.h"
@@ -194,7 +195,7 @@ void AnimationChannel::playDefaultAnimationInternal() {
 }
 
 Animation *AnimationChannel::selectDefaultAnimation() {
-	uint8 pick = std::rand() % 100;
+	uint8 pick = RNG.getNext(0, 100);
 	for (DefaultAnimations::const_iterator a = _defaultAnimations.begin();
 			a != _defaultAnimations.end(); ++a) {
 		if (pick < a->probability)

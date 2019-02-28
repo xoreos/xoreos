@@ -28,6 +28,7 @@
 #include <boost/bind.hpp>
 
 #include "src/common/util.h"
+#include "src/common/random.h"
 
 #include "src/aurora/nwscript/functionman.h"
 #include "src/aurora/nwscript/util.h"
@@ -112,7 +113,7 @@ int32 Functions::getRandom(int min, int max, int32 n) {
 	int32 r = 0;
 
 	while (n-- > 0)
-		r += std::rand() % (max - min + 1) + min;
+		r += RNG.getNext(min, max + 1);
 
 	return r;
 }

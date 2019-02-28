@@ -27,6 +27,7 @@
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/strutil.h"
+#include "src/common/random.h"
 
 #include "src/aurora/resman.h"
 
@@ -111,7 +112,7 @@ void AreaLayout::updateCamera() {
 		uint camPointCount = roomProps->getUint("CamPointCount", 0);
 		if (camPointCount > 0) {
 			// Choose one at random.
-			int selectedCamPoint = std::rand() % camPointCount;
+			int selectedCamPoint = RNG.getNext(0, camPointCount);
 			Common::UString camPoint = roomProps->getString(Common::UString::format("CamPoint%u", selectedCamPoint), "");
 
 			std::vector<Common::UString> camPos;

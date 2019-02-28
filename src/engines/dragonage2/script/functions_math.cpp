@@ -24,6 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/maths.h"
+#include "src/common/random.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
 
@@ -78,11 +79,11 @@ void Functions::sqrt(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::random(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = std::rand() % ctx.getParams()[0].getInt();
+	ctx.getReturn() = RNG.getNext(0, ctx.getParams()[0].getInt());
 }
 
 void Functions::randomFloat(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = (float)std::rand() / (float)RAND_MAX;
+	ctx.getReturn() = RNG.getNext(0.0f, 1.0f);
 }
 
 void Functions::intToFloat(Aurora::NWScript::FunctionContext &ctx) {

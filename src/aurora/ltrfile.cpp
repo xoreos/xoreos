@@ -23,6 +23,7 @@
  */
 
 #include "src/common/strutil.h"
+#include "src/common/random.h"
 
 #include "src/aurora/ltrfile.h"
 #include "src/aurora/resman.h"
@@ -62,7 +63,7 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 				static_cast<int>(maxLetters));
 
 	// Get the first three letters.
-	probability = static_cast<float>(std::rand())/RAND_MAX;
+	probability = RNG.getNext(0.0f, 1.0f);
 	for (int i = 0; i < _letterCount; ++i) {
 		if (_singleLetters.start[i] > probability) {
 			// Make the first letter upper case.
@@ -72,7 +73,7 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 		}
 	}
 
-	probability = static_cast<float>(std::rand())/RAND_MAX;
+	probability = RNG.getNext(0.0f, 1.0f);
 	for (int i = 0; i < _letterCount; ++i) {
 		if (_doubleLetters[firstLetterIndex].start[i] > probability) {
 			name += _alphabet[i];
@@ -81,7 +82,7 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 		}
 	}
 
-	probability = static_cast<float>(std::rand())/RAND_MAX;
+	probability = RNG.getNext(0.0f, 1.0f);
 	for (int i = 0; i < _letterCount; ++i) {
 		if (_tripleLetters[firstLetterIndex][secondLetterIndex].start[i] > probability) {
 			name += _alphabet[i];
@@ -92,10 +93,10 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 	}
 
 	// Generate as much letters as max letters minus start letters minus end letters plus one are given.
-	const size_t length = (maxLetters > 4) ? (std::rand() % (maxLetters - 3)) : 0;
+	const size_t length = (maxLetters > 4) ? RNG.getNext(0, maxLetters - 3) : 0;
 
 	for (size_t i = 0; i < length; ++i) {
-		probability = static_cast<float>(std::rand())/RAND_MAX;
+		probability = RNG.getNext(0.0f, 1.0f);
 		for (int j = 0; j < _letterCount; ++j) {
 			if (_tripleLetters[firstLetterIndex][secondLetterIndex].mid[j] > probability) {
 				name += _alphabet[j];
@@ -107,7 +108,7 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 	}
 
 	// Append end letter.
-	probability = static_cast<float>(std::rand())/RAND_MAX;
+	probability = RNG.getNext(0.0f, 1.0f);
 	for (int j = 0; j < _letterCount; ++j) {
 		if (_tripleLetters[firstLetterIndex][secondLetterIndex].end[j] > probability) {
 			name += _alphabet[j];

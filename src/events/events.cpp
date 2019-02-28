@@ -88,8 +88,6 @@ void EventsManager::init() {
 
 	SDL_RegisterEvents(1);
 
-	std::srand(getTimestamp());
-
 	// Forcing enableTextInput to be disabled requires _textInputCounter = 1 to not underrun the counter.
 	_textInputCounter = 1;
 	enableTextInput(false);

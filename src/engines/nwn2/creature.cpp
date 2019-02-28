@@ -29,6 +29,7 @@
 #include "src/common/maths.h"
 #include "src/common/configman.h"
 #include "src/common/readfile.h"
+#include "src/common/random.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/gff3file.h"
@@ -306,7 +307,7 @@ bool Creature::getIsSkillSuccessful(uint32 skill, int DC) {
 		return false;
 
 	// Simulate a d20 roll
-	int32 roll = std::rand() % 20 + 1; // TODO: Seed randomized?
+	int32 roll = RNG.getNext(1, 21); // TODO: Seed randomized?
 
 	// Make a skill check vs the DC
 	bool result = !(roll + getSkillRank(skill) < DC);

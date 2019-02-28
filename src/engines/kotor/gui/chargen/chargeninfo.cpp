@@ -23,6 +23,7 @@
  */
 
 #include "src/common/strutil.h"
+#include "src/common/random.h"
 
 #include "src/aurora/ltrfile.h"
 
@@ -43,8 +44,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleSoldier() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderMale;
 	info->_class = KotORBase::kClassSoldier;
-	info->_face = std::rand() % 5;
-	info->_skin = KotORBase::Skin(std::rand() % 3);
+	info->_face = RNG.getNext(0, 5);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, 3));
 
 	Aurora::LTRFile humanMale("humanm");
 	Aurora::LTRFile humanLast("humanl");
@@ -58,8 +59,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleScout() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderMale;
 	info->_class = KotORBase::kClassScout;
-	info->_face = std::rand() % 5;
-	info->_skin = KotORBase::Skin(std::rand() % 3);
+	info->_face = RNG.getNext(0, 5);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, 3));
 
 	Aurora::LTRFile humanMale("humanm");
 	Aurora::LTRFile humanLast("humanl");
@@ -73,8 +74,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleScoundrel() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderMale;
 	info->_class = KotORBase::kClassScoundrel;
-	info->_face = std::rand() % 5;
-	info->_skin = KotORBase::Skin(std::rand() % 3);
+	info->_face = RNG.getNext(0, 5);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, 3));
 
 	Aurora::LTRFile humanMale("humanm");
 	Aurora::LTRFile humanLast("humanl");
@@ -88,8 +89,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleSoldier() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderFemale;
 	info->_class = KotORBase::kClassSoldier;
-	info->_face = std::rand() % 5;
-	info->_skin = KotORBase::Skin(std::rand() % 3);
+	info->_face = RNG.getNext(0, 5);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, 3));
 
 	Aurora::LTRFile humanFemale("humanf");
 	Aurora::LTRFile humanLast("humanl");
@@ -103,8 +104,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleScout() {
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderFemale;
 	info->_class = KotORBase::kClassScout;
-	info->_face = std::rand() % 5;
-	info->_skin = KotORBase::Skin(std::rand() % 3);
+	info->_face = RNG.getNext(0, 5);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, 3));
 
 	Aurora::LTRFile humanFemale("humanf");
 	Aurora::LTRFile humanLast("humanl");
@@ -118,8 +119,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleScoundrel() 
 	CharacterGenerationInfo *info = new CharacterGenerationInfo();
 	info->_gender = KotORBase::kGenderFemale;
 	info->_class = KotORBase::kClassScoundrel;
-	info->_face = std::rand() % 5;
-	info->_skin = KotORBase::Skin(std::rand() % 3);
+	info->_face = RNG.getNext(0, 5);
+	info->_skin = KotORBase::Skin(RNG.getNext(0, 3));
 
 	Aurora::LTRFile humanFemale("humanf");
 	Aurora::LTRFile humanLast("humanl");

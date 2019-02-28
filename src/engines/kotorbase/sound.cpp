@@ -24,6 +24,7 @@
 
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
+#include "src/common/random.h"
 
 #include "src/sound/sound.h"
 
@@ -61,7 +62,7 @@ SoundObject::SoundObject(const Aurora::GFF3Struct &sound) {
 	// TODO: Investigate how kotor handles randomness of sounds.
 	Common::UString soundFile = _soundFiles[0];
 	if (_random)
-		soundFile = _soundFiles[std::rand() % _soundFiles.size()];
+		soundFile = _soundFiles[RNG.getNext(0, _soundFiles.size())];
 
 	Common::SeekableReadStream *soundStream = ResMan.getResource(Aurora::kResourceSound, soundFile);
 

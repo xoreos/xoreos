@@ -29,6 +29,7 @@
 #include "src/common/scopedptr.h"
 #include "src/common/maths.h"
 #include "src/common/readstream.h"
+#include "src/common/random.h"
 
 #include "src/events/events.h"
 
@@ -63,14 +64,14 @@ public:
 
 		_startTime  = EventMan.getTimestamp();
 		_lastTime   = _startTime;
-		_timeRotate = _startTime - (std::rand() % 10000);
+		_timeRotate = _startTime - RNG.getNext(0, 10000);
 
 		_curZoom = 0.8f;
 
-		_curFade  = (std::rand() % 1000) / 1000.0f;
+		_curFade  = RNG.getNext(0, 1000) / 1000.0f;
 		_fadeStep = 0.001f;
 
-		_rotateSpeed = 40 + ((std::rand() % 3000) / 100.0f);
+		_rotateSpeed = 40 + (RNG.getNext(0, 3000) / 100.0f);
 	}
 
 	~NewGameFog() {
@@ -89,9 +90,9 @@ public:
 		_curZoom += ((curTime - _lastTime) / 3000.0f) * _curZoom;
 
 		if (_curFade >= 1.0f)
-			_fadeStep = -0.0005f - (std::rand() % 100) / 100000.0f;
+			_fadeStep = -0.0005f - RNG.getNext(0, 100) / 100000.0f;
 		if (_curFade <= 0.0f)
-			_fadeStep =  0.0005f + (std::rand() % 100) / 100000.0f;
+			_fadeStep =  0.0005f + RNG.getNext(0, 100) / 100000.0f;
 
 		_curFade += (curTime - _lastTime) * _fadeStep;
 		if (_curFade < 0.0f)
@@ -124,9 +125,9 @@ public:
 		_curZoom += ((curTime - _lastTime) / 3000.0f) * _curZoom;
 
 		if (_curFade >= 1.0f)
-			_fadeStep = -0.0005f - (std::rand() % 100) / 100000.0f;
+			_fadeStep = -0.0005f - RNG.getNext(0, 100) / 100000.0f;
 		if (_curFade <= 0.0f)
-			_fadeStep =  0.0005f + (std::rand() % 100) / 100000.0f;
+			_fadeStep =  0.0005f + RNG.getNext(0, 100) / 100000.0f;
 
 		_curFade += (curTime - _lastTime) * _fadeStep;
 		if (_curFade < 0.0f)

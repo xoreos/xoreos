@@ -30,6 +30,7 @@
 #include "src/common/writefile.h"
 #include "src/common/configman.h"
 #include "src/common/debug.h"
+#include "src/common/random.h"
 
 #include "src/aurora/util.h"
 #include "src/aurora/resman.h"
@@ -99,7 +100,7 @@ Sound::ChannelHandle playSound(const Common::UString &sound, Sound::SoundType so
 		SoundMan.setChannelGain(channel, volume);
 
 		if (pitchVariance) {
-			const float pitch = 1.0f + ((((std::rand() % 1001) / 1000.0f) / 5.0f) - 0.1f);
+			const float pitch = 1.0f + (((RNG.getNext(0, 1001) / 1000.0f) / 5.0f) - 0.1f);
 
 			SoundMan.setChannelPitch(channel, pitch);
 		}
