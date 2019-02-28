@@ -362,7 +362,6 @@ private:
 
 	// Party
 
-	void addPartyMember(int npc, Creature *creature);
 	void onPartyLeaderChanged();
 	void updateCurrentPartyGUI();
 

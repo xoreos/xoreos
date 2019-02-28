@@ -73,7 +73,19 @@ void PartyController::clearCurrentParty() {
 }
 
 void PartyController::addPartyMember(int npc, Creature *creature) {
+	if (!_party.empty()) {
+		Creature *partyLeader = getPartyLeader();
+		float x, y, z;
+		partyLeader->getPosition(x, y, z);
+		creature->setPosition(x, y, z);
+	}
+
 	_party.push_back(std::make_pair(npc, creature));
+
+	if (npc != -1) {
+		_module->getCurrentArea()->addCreature(creature);
+		creature->show();
+	}
 }
 
 void PartyController::setPartyLeader(int npc) {

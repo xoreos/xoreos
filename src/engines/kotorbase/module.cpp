@@ -303,7 +303,7 @@ void Module::loadParty() {
 				continue;
 
 			Creature *creature = createCreature(templ);
-			addPartyMember(npc, creature);
+			_partyController.addPartyMember(npc, creature);
 		}
 	}
 
@@ -840,12 +840,12 @@ void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
 
 	if (npc1 != -1) {
 		Creature *creature = createCreature(config.slotTemplate[npc1]);
-		addPartyMember(npc1, creature);
+		_partyController.addPartyMember(npc1, creature);
 	}
 
 	if (npc2 != -1) {
 		Creature *creature = createCreature(config.slotTemplate[npc2]);
-		addPartyMember(npc2, creature);
+		_partyController.addPartyMember(npc2, creature);
 	}
 
 	updateCurrentPartyGUI();
@@ -1080,19 +1080,6 @@ void Module::setupSatelliteCamera() {
 
 void Module::stopCameraMovement() {
 	SatelliteCam.clearInput();
-}
-
-void Module::addPartyMember(int npc, Creature *creature) {
-	Creature *partyLeader = _partyController.getPartyLeader();
-
-	float x, y, z;
-	partyLeader->getPosition(x, y, z);
-	creature->setPosition(x, y, z);
-
-	_area->addCreature(creature);
-	_partyController.addPartyMember(npc, creature);
-
-	creature->show();
 }
 
 void Module::onPartyLeaderChanged() {
