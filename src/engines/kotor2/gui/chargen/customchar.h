@@ -25,16 +25,17 @@
 #ifndef ENGINES_KOTOR2_GUI_CHARGEN_CUSTOMCHAR_H
 #define ENGINES_KOTOR2_GUI_CHARGEN_CUSTOMCHAR_H
 
-#include "src/engines/kotor2/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
+
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class CustomCharPanel : public GUI {
+class CustomCharPanel : public KotORBase::GUI {
 public:
-	CustomCharPanel(CharacterGeneration* chargen, Console *console = 0);
+	CustomCharPanel(CharacterGeneration *chargen, Console *console = 0);
 
 private:
 	void callbackActive(Widget &widget);

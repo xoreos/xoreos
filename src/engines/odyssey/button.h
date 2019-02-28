@@ -45,6 +45,15 @@ public:
 
 	virtual void load(const Aurora::GFF3Struct &gff);
 
+	// Basic visuals
+
+	void show();
+	void hide();
+
+	// Positioning
+
+	void setPosition(float x, float y, float z);
+
 	// Highlighting
 
 	/** Set if the button should be pulsing continuously. */
@@ -62,6 +71,12 @@ public:
 	void leave();
 	void mouseUp(uint8 state, float x, float y);
 
+	// Icon
+
+	const Common::UString &getIcon() const;
+
+	void setIcon(const Common::UString &icon);
+
 	// Sound
 
 	/** Set if the button should not play sound on hover. */
@@ -75,6 +90,9 @@ private:
 	Sound::ChannelHandle _sound;
 
 	bool _hovered;
+
+	Common::UString _icon;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _iconQuad;
 
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 };

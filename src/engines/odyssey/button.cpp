@@ -22,6 +22,8 @@
  *  Button widget for the Odyssey engine.
  */
 
+#include "src/graphics/aurora/textureman.h"
+
 #include "src/sound/sound.h"
 
 #include "src/engines/aurora/util.h"
@@ -50,6 +52,42 @@ void WidgetButton::load(const Aurora::GFF3Struct &gff) {
 	highlightable = getQuadHighlightableComponent();
 	if (highlightable)
 		setDefaultHighlighting(highlightable);
+}
+
+void WidgetButton::show() {
+	if (isVisible())
+		return;
+
+	Widget::show();
+
+	if (_iconQuad)
+		_iconQuad->show();
+}
+
+void WidgetButton::hide() {
+	if (!isVisible())
+		return;
+
+	Widget::hide();
+
+	if (_iconQuad)
+		_iconQuad->hide();
+}
+
+void WidgetButton::setPosition(float x, float y, float z) {
+	float oX, oY, oZ;
+	getPosition(oX, oY, oZ);
+
+	float dx = x - oX;
+	float dy = y - oY;
+	float dz = z - oZ;
+
+	Widget::setPosition(x, y, z);
+
+	if (_iconQuad) {
+		_iconQuad->getPosition(x, y, z);
+		_iconQuad->setPosition(x + dx, y + dy, z + dz);
+	}
 }
 
 void WidgetButton::setPermanentHighlight(bool permanentHighlight) {
@@ -109,6 +147,40 @@ void WidgetButton::mouseUp(uint8 UNUSED(state), float UNUSED(x), float UNUSED(y)
 
 	playSound("gui_actuse", Sound::kSoundTypeSFX);
 	setActive(true);
+}
+
+const Common::UString &WidgetButton::getIcon() const {
+	return _icon;
+}
+
+void WidgetButton::setIcon(const Common::UString &icon) {
+	if (_icon == icon)
+		return;
+
+	_icon = icon;
+
+	if (icon.empty()) {
+		if (_iconQuad) {
+			_iconQuad->hide();
+			_iconQuad.reset();
+		}
+		return;
+	}
+
+	Graphics::Aurora::TextureHandle textureHandle = TextureMan.get(icon);
+	Graphics::Aurora::Texture &texture = textureHandle.getTexture();
+
+	_iconQuad.reset(new Graphics::Aurora::GUIQuad(
+			textureHandle,
+			0.0f, 0.0f, texture.getWidth(), texture.getHeight()));
+
+	float x, y, z;
+	getPosition(x, y, z);
+
+	_iconQuad->setPosition(x, y + texture.getHeight() / 2.0f, z - 1.0f);
+
+	if (isVisible())
+		_iconQuad->show();
 }
 
 void WidgetButton::setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable) {

@@ -19,10 +19,11 @@
  */
 
 /** @file
- *  The ingame GUI.
+ *  In-game GUI for Star Wars: Knights of the Old Republic.
  */
 
 #include "src/engines/kotor/gui/ingame/ingame.h"
+#include "src/engines/kotor/gui/ingame/hud.h"
 
 namespace Engines {
 
@@ -30,93 +31,6 @@ namespace KotOR {
 
 IngameGUI::IngameGUI(KotORBase::Module &module, Console *console) {
 	_hud.reset(new HUD(module, console));
-}
-
-void IngameGUI::show() {
-	_hud->show();
-}
-
-void IngameGUI::hide() {
-	_hud->hide();
-}
-
-void IngameGUI::setMinimap(const Common::UString &map, int northAxis,
-                           float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
-                           float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y) {
-
-	_hud->setMinimap(map, northAxis, worldPt1X, worldPt1Y, worldPt2X, worldPt2Y, mapPt1X, mapPt1Y, mapPt2X, mapPt2Y);
-}
-
-void IngameGUI::setPosition(float x, float y) {
-	_hud->setPosition(x, y);
-}
-
-void IngameGUI::setRotation(float angle) {
-	_hud->setRotation(angle);
-}
-
-void IngameGUI::setReturnStrref(uint32 id) {
-	_hud->setReturnStrref(id);
-}
-
-void IngameGUI::setReturnQueryStrref(uint32 id) {
-	_hud->setReturnQueryStrref(id);
-}
-
-void IngameGUI::setReturnEnabled(bool enabled) {
-	_hud->setReturnEnabled(enabled);
-}
-
-void IngameGUI::showContainer(KotORBase::Inventory &inv) {
-	_hud->showContainer(inv);
-}
-
-void IngameGUI::setPartyLeader(KotORBase::Creature *creature) {
-	_hud->setPartyLeader(creature);
-}
-
-void IngameGUI::setPartyMember1(KotORBase::Creature *creature) {
-	_hud->setPartyMember1(creature);
-}
-
-void IngameGUI::setPartyMember2(KotORBase::Creature *creature) {
-	_hud->setPartyMember2(creature);
-}
-
-KotORBase::Object *IngameGUI::getHoveredObject() const {
-	return _hud->getHoveredObject();
-}
-
-KotORBase::Object *IngameGUI::getTargetObject() const {
-	return _hud->getTargetObject();
-}
-
-void IngameGUI::setHoveredObject(KotORBase::Object *object) {
-	_hud->setHoveredObject(object);
-}
-
-void IngameGUI::setTargetObject(KotORBase::Object *object) {
-	_hud->setTargetObject(object);
-}
-
-void IngameGUI::updateSelection() {
-	_hud->updateSelection();
-}
-
-void IngameGUI::hideSelection() {
-	_hud->hideSelection();
-}
-
-void IngameGUI::resetSelection() {
-	_hud->resetSelection();
-}
-
-void IngameGUI::addEvent(const Events::Event &event) {
-	_hud->addEvent(event);
-}
-
-void IngameGUI::processEventQueue() {
-	_hud->processEventQueue();
 }
 
 } // End of namespace KotOR

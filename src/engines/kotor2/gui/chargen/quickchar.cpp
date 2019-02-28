@@ -30,7 +30,10 @@ namespace Engines {
 
 namespace KotOR2 {
 
-QuickCharPanel::QuickCharPanel(CharacterGeneration *chargen, Console *console) : GUI(console), _chargenMenu(chargen) {
+QuickCharPanel::QuickCharPanel(CharacterGeneration *chargen, Console *console) :
+		KotORBase::GUI(console),
+		_chargenMenu(chargen) {
+
 	load("quickpnl_p");
 
 	getButton("BTN_STEPNAME1")->setDisableHoverSound(true);

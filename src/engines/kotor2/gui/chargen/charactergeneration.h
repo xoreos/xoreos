@@ -29,7 +29,7 @@
 
 #include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotor2/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor2/gui/chargen/chargenbase.h"
 #include "src/engines/kotor2/gui/chargen/chargeninfo.h"
@@ -38,7 +38,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-class CharacterGeneration : public GUI {
+class CharacterGeneration : public KotORBase::GUI {
 public:
 	CharacterGeneration(KotORBase::Module *module,
 	                    CharacterGenerationInfo *info,

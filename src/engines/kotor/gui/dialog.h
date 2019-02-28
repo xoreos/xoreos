@@ -36,12 +36,7 @@ public:
 	DialogGUI(KotORBase::Module &module);
 
 protected:
-	void makeLookAtPC(const Common::UString &tag);
-	void playDefaultAnimations(const Common::UString &tag);
-	void playTalkAnimations(const Common::UString &tag);
-
-private:
-	KotORBase::Module &_module;
+	void getTextColor(float &r, float &g, float &b) const;
 };
 
 } // End of namespace KotOR

@@ -48,14 +48,10 @@ namespace Engines {
 
 namespace KotORBase {
 
-DialogGUI::DialogGUI(bool k2) :
-		_kotor2(k2),
+DialogGUI::DialogGUI(Module &module) :
+		_module(module),
 		_isActive(false),
 		_frame(new Graphics::Aurora::KotORDialogFrame()) {
-
-	load(k2 ? "dialog_p" : "dialog");
-
-	update(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
 void DialogGUI::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
@@ -135,6 +131,9 @@ void DialogGUI::callbackKeyInput(const Events::Key &key,
 	}
 }
 
+void DialogGUI::preprocessEntry(Common::UString &UNUSED(text)) {
+}
+
 void DialogGUI::update(int width, int height) {
 	const int w = width;
 	const float hh = height / 2.0f;
@@ -157,14 +156,11 @@ void DialogGUI::update(int width, int height) {
 	lbReplies->setSoundHoverItem("gui_actscroll");
 	lbReplies->setSoundClickItem("gui_actuse");
 
-	// Dialog entries in KotOR and KotOR II have invalid text color in
-	// GUI files. Override it with appropriate color for each game.
-	if (_kotor2)
-		lblMessage->setTextColor(0.101961f, 0.698039f, 0.549020f, 1.0f);
-	else {
-		lblMessage->setTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
-		lbReplies->setItemTextColor(0.0f, 0.648438f, 0.968750f, 1.0f);
-	}
+	float r, g, b;
+	getTextColor(r, g, b);
+
+	lblMessage->setTextColor(r, g, b, 1.0f);
+	lbReplies->setItemTextColor(r, g, b, 1.0f);
 
 	lbReplies->createItemWidgets(9);
 }
@@ -186,8 +182,7 @@ void DialogGUI::refresh() {
 	Odyssey::WidgetLabel *lblMessage = getLabel("LBL_MESSAGE");
 
 	text = curEntry->text.getString();
-	if (_kotor2 && !ConfigMan.getBool("showdevnotes", false))
-		eraseDeveloperNotes(text);
+	preprocessEntry(text);
 
 	if (curEntry->speaker.empty())
 		_curSpeaker = _owner;
@@ -213,8 +208,7 @@ void DialogGUI::refresh() {
 
 		text = reply->text.getString();
 
-		if (_kotor2 && !ConfigMan.getBool("showdevnotes", false))
-			eraseDeveloperNotes(text);
+		preprocessEntry(text);
 		if (text.empty())
 			text = "[CONTINUE]";
 
@@ -264,18 +258,51 @@ void DialogGUI::pickReply(int index) {
 		refresh();
 }
 
-void DialogGUI::eraseDeveloperNotes(Common::UString &str) {
-	while (true) {
-		Common::UString::iterator obit = str.findFirst('{');
-		if (obit == str.end())
-			return;
+void DialogGUI::makeLookAtPC(const Common::UString &tag) {
+	Creature *pc = _module.getPC();
+	if (!pc)
+		return;
 
-		Common::UString::iterator cbit = str.findFirst('}');
-		if (cbit == str.end())
-			return;
+	Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	if (!o)
+		return;
 
-		str.erase(obit, ++cbit);
-	}
+	// Only creatures should orient themselves to the pc.
+	Creature *creature = KotORBase::ObjectContainer::toCreature(o);
+	if (creature)
+		creature->makeLookAt(pc);
+
+	pc->makeLookAt(o);
+
+	float x, y, z, a;
+	pc->getOrientation(x, y, z, a);
+	SatelliteCam.setYaw(Common::deg2rad(a - 15.0f));
+}
+
+void DialogGUI::playDefaultAnimations(const Common::UString &tag) {
+	Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	if (!o)
+		return;
+
+	Creature *creature = ObjectContainer::toCreature(o);
+	if (!creature)
+		return;
+
+	creature->playDefaultHeadAnimation();
+	creature->playDefaultAnimation();
+}
+
+void DialogGUI::playTalkAnimations(const Common::UString &tag) {
+	Object *o = _module.getCurrentArea()->getObjectByTag(tag);
+	if (!o)
+		return;
+
+	Creature *creature = ObjectContainer::toCreature(o);
+	if (!creature)
+		return;
+
+	creature->playAnimation("tlknorm", true, -1.0f);
+	creature->playHeadAnimation("talk", true, -1.0f, 0.25f);
 }
 
 void DialogGUI::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight), int newWidth, int newHeight) {

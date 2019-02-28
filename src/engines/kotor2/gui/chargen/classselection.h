@@ -30,7 +30,7 @@
 
 #include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotor2/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 #include "src/engines/kotor2/gui/chargen/chargeninfo.h"
@@ -39,7 +39,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-class ClassSelection : public GUI {
+class ClassSelection : public KotORBase::GUI {
 public:
 	ClassSelection(KotORBase::Module *module, Engines::Console *console = 0);
 	~ClassSelection();

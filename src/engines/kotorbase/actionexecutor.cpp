@@ -50,6 +50,9 @@ void ActionExecutor::executeActions(Creature &creature, Area &area, float dt) {
 		case kActionFollowLeader:
 			executeFollowLeader(creature, area, *action, dt);
 			break;
+		case kActionOpenLock:
+			executeOpenLock(creature, area, *action, dt);
+			break;
 		default:
 			warning("TODO: Handle action %u", (uint)action->type);
 			break;
@@ -68,6 +71,14 @@ void ActionExecutor::executeFollowLeader(Creature &creature, Area &area, const A
 	float x, y, z;
 	area._module->getPartyLeader()->getPosition(x, y, z);
 	moveTo(creature, area, x, y, 1.0f, dt);
+}
+
+void ActionExecutor::executeOpenLock(Creature &creature, Area &area, const Action &action, float dt) {
+	float x, y, _;
+	action.object->getPosition(x, y, _);
+
+	if (moveTo(creature, area, x, y, 1.0f, dt))
+		creature.dequeueAction();
 }
 
 bool ActionExecutor::moveTo(Creature &creature, Area &area, float x, float y, float range, float dt) {
@@ -99,6 +110,12 @@ bool ActionExecutor::moveTo(Creature &creature, Area &area, float x, float y, fl
 	if (haveMovement) {
 		creature.playAnimation(run ? "run" : "walk", false, -1.0f);
 		creature.setPosition(newX, newY, z);
+
+		if (&creature == area._module->getPartyLeader())
+			area._module->movedPartyLeader();
+		else
+			area.notifyObjectMoved(creature);
+
 	} else {
 		creature.playDefaultAnimation();
 	}

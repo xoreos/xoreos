@@ -38,6 +38,7 @@ public:
 	static void executeActions(Creature &creature, Area &area, float dt);
 	static void executeMoveToPoint(Creature &creature, Area &area, const Action &action, float dt);
 	static void executeFollowLeader(Creature &creature, Area &area, const Action &action, float dt);
+	static void executeOpenLock(Creature &creature, Area &area, const Action &action, float dt);
 
 private:
 	/**

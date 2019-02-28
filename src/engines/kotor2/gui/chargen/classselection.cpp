@@ -32,7 +32,9 @@ namespace Engines {
 
 namespace KotOR2 {
 
-ClassSelection::ClassSelection(KotORBase::Module *module, Console *console) : GUI(console) {
+ClassSelection::ClassSelection(KotORBase::Module *module, Console *console) :
+		KotORBase::GUI(console) {
+
 	load("classsel_p");
 
 	_module = module;

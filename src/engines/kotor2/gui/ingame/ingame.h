@@ -19,19 +19,13 @@
  */
 
 /** @file
- *  The ingame GUI.
+ *  In-game GUI for Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
 #ifndef ENGINES_KOTOR2_GUI_INGAME_INGAME_H
 #define ENGINES_KOTOR2_GUI_INGAME_INGAME_H
 
-#include "src/engines/aurora/console.h"
-
-#include "src/engines/kotorbase/module.h"
-
 #include "src/engines/kotorbase/gui/ingame.h"
-
-#include "src/engines/kotor2/gui/ingame/hud.h"
 
 namespace Engines {
 
@@ -40,50 +34,6 @@ namespace KotOR2 {
 class IngameGUI : public KotORBase::IngameGUI {
 public:
 	IngameGUI(KotORBase::Module &module, ::Engines::Console *console = 0);
-
-	void show(); ///< Show all ingame elements.
-	void hide(); ///< Hide all ingame elements.
-
-	/** Set the minimap with the specified id and both scaling points. */
-	void setMinimap(const Common::UString &map, int northAxis,
-	                float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
-	                float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y);
-
-	/** Set the position for the minimap. */
-	void setPosition(float x, float y);
-	/** Set the rotation for the minimap arrow. */
-	void setRotation(float angle);
-
-	void setReturnStrref(uint32 id);
-	void setReturnQueryStrref(uint32 id);
-	void setReturnEnabled(bool enabled);
-
-	// Container inventory handling
-	void showContainer(KotORBase::Inventory &inv);
-
-	// Party handling.
-	void setPartyLeader(KotORBase::Creature *creature);
-	void setPartyMember1(KotORBase::Creature *creature);
-	void setPartyMember2(KotORBase::Creature *creature);
-
-	// Selection handling
-
-	KotORBase::Object *getHoveredObject() const;
-	KotORBase::Object *getTargetObject() const;
-
-	void setHoveredObject(KotORBase::Object *object);
-	void setTargetObject(KotORBase::Object *object);
-
-	void updateSelection();
-	void hideSelection();
-	void resetSelection();
-
-
-	void addEvent(const Events::Event &event);
-	void processEventQueue();
-
-private:
-	Common::ScopedPtr<HUD> _hud;
 };
 
 } // End of namespace KotOR

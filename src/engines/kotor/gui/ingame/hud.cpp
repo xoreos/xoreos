@@ -19,25 +19,18 @@
  */
 
 /** @file
- *  The ingame HUD.
+ *  In-game HUD for Star Wars: Knights of the Old Republic.
  */
-
-#include <set>
 
 #include "src/common/strutil.h"
 
 #include "src/aurora/resman.h"
 
-#include "src/graphics/windowman.h"
-#include "src/graphics/graphics.h"
-
 #include "src/engines/odyssey/label.h"
 #include "src/engines/odyssey/progressbar.h"
-#include "src/engines/odyssey/button.h"
 
-#include "src/engines/kotorbase/situated.h"
-
-#include "src/engines/kotor/creature.h"
+#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/creature.h"
 
 #include "src/engines/kotor/gui/ingame/hud.h"
 
@@ -197,26 +190,14 @@ static const Resolution kResolution[] = {
 };
 
 HUD::HUD(KotORBase::Module &module, Engines::Console *console) :
-		KotORBase::GUI(console),
-		_module(&module),
-		_menu(module, console),
-		_hoveredCircle(new SelectionCircle()),
-		_targetCircle(new SelectionCircle()) {
-
-	_hoveredCircle->setHovered(true);
-	_targetCircle->setTarget(true);
+		KotORBase::HUD(module, console),
+		_menu(module, console) {
 
 	update(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 
 	_minimapPointer = getLabel("LBL_ARROW");
 
-	_objectName = getLabel("LBL_NAME");
-	_objectNameBackground = getLabel("LBL_NAMEBG");
-	_objectHealth = getProgressbar("PB_HEALTH");
-	_objectHealthBackground = getLabel("LBL_HEALTHBG");
-	_firstTargetButton = getButton("BTN_TARGET0");
-	_secondTargetButton = getButton("BTN_TARGET1");
-	_thirdTargetButton = getButton("BTN_TARGET2");
+	init();
 }
 
 void HUD::setReturnStrref(uint32 id) {
@@ -272,7 +253,7 @@ void HUD::showContainer(KotORBase::Inventory &inv) {
 	_container->fillFromInventory(inv);
 
 	if (sub(*_container, kStartCodeNone, true, false) == 1) {
-		KotORBase::Inventory &partyInventory = _module->getPC()->getInventory();
+		KotORBase::Inventory &partyInventory = _module.getPC()->getInventory();
 
 		const std::map<Common::UString, KotORBase::Inventory::ItemGroup> &items = inv.getItems();
 		for (std::map<Common::UString, KotORBase::Inventory::ItemGroup>::const_iterator i = items.begin();
@@ -316,24 +297,6 @@ void HUD::setPortrait(uint8 n, bool visible, const Common::UString &portrait) {
 	}
 }
 
-void HUD::positionTargetButtons(float originX, float originY) {
-	if (!_firstTargetButton || !_secondTargetButton || !_thirdTargetButton)
-		return;
-
-	float dist = getTargetButtonsDistance();
-
-	float width, _;
-	getTargetButtonSize(width, _);
-	float halfWidth = width / 2.0f;
-
-	float halfSelectionSize = kSelectionCircleSize / 2.0f;
-	float y = originY + halfSelectionSize + 1.0f;
-
-	_firstTargetButton->setPosition(originX - dist - halfWidth, y, -FLT_MAX);
-	_secondTargetButton->setPosition(originX - halfWidth, y, -FLT_MAX);
-	_thirdTargetButton->setPosition(originX + dist - halfWidth, y, -FLT_MAX);
-}
-
 void HUD::setPartyLeader(KotORBase::Creature *creature) {
 	setPortrait(1, creature != 0, creature ? creature->getPortrait() : "");
 }
@@ -344,188 +307,6 @@ void HUD::setPartyMember1(KotORBase::Creature *creature) {
 
 void HUD::setPartyMember2(KotORBase::Creature *creature) {
 	setPortrait(2, creature != 0, creature ? creature->getPortrait() : "");
-}
-
-KotORBase::Object *HUD::getHoveredObject() const {
-	return _hoveredObject;
-}
-
-KotORBase::Object *HUD::getTargetObject() const {
-	return _targetObject;
-}
-
-void HUD::setHoveredObject(KotORBase::Object *object) {
-	_hoveredObject = object;
-}
-
-void HUD::setTargetObject(KotORBase::Object *object) {
-	_targetObject = object;
-}
-
-void HUD::updateSelection() {
-	if (_targetObject) {
-		_targetCircle->setHovered(_hoveredObject == _targetObject);
-
-		KotORBase::Situated *situated = KotORBase::ObjectContainer::toSituated(_targetObject);
-		if (situated) {
-			float sX, sY;
-			_targetCircle->moveTo(situated, sX, sY);
-			_targetCircle->show();
-			updateTargetInformation(_targetObject, sX, sY);
-			showTargetInformation(_targetObject);
-		} else {
-			_targetCircle->hide();
-			hideTargetInformation();
-		}
-	} else {
-		_targetCircle->hide();
-		hideTargetInformation();
-	}
-
-	if (_hoveredObject && (_hoveredObject != _targetObject)) {
-		KotORBase::Situated *situated = KotORBase::ObjectContainer::toSituated(_hoveredObject);
-		if (situated) {
-			float _, __;
-			_hoveredCircle->moveTo(situated, _, __);
-			_hoveredCircle->show();
-		} else {
-			_hoveredCircle->hide();
-		}
-	} else {
-		_hoveredCircle->hide();
-	}
-}
-
-void HUD::hideSelection() {
-	_hoveredCircle->hide();
-	_targetCircle->hide();
-	hideTargetInformation();
-}
-
-void HUD::resetSelection() {
-	_hoveredObject = nullptr;
-	_targetObject = nullptr;
-}
-
-void HUD::showTargetInformation(KotORBase::Object *object) {
-	if (_objectNameBackground) {
-		_objectNameBackground->setInvisible(false);
-		_objectNameBackground->show();
-	}
-	if (_objectName) {
-		_objectName->setInvisible(false);
-		_objectName->show();
-		_objectName->setText(object->getName());
-	}
-
-	if (_objectHealthBackground) {
-		_objectHealthBackground->setInvisible(false);
-		_objectHealthBackground->show();
-	}
-	if (_objectHealth) {
-		_objectHealth->setInvisible(false);
-		_objectHealth->show();
-	}
-
-	std::vector<int> possibleActions = object->getPossibleActions();
-	if (possibleActions.empty())
-		return;
-
-	if (_firstTargetButton) {
-		_firstTargetButton->setInvisible(false);
-		_firstTargetButton->show();
-	}
-	if (_secondTargetButton) {
-		_secondTargetButton->setInvisible(false);
-		_secondTargetButton->show();
-	}
-	if (_thirdTargetButton) {
-		_thirdTargetButton->setInvisible(false);
-		_thirdTargetButton->show();
-	}
-}
-
-void HUD::hideTargetInformation() {
-	if (_objectNameBackground) {
-		_objectNameBackground->setInvisible(true);
-		_objectNameBackground->hide();
-	}
-	if (_objectName) {
-		_objectName->setInvisible(true);
-		_objectName->hide();
-	}
-
-	if (_objectHealthBackground) {
-		_objectHealthBackground->setInvisible(true);
-		_objectHealthBackground->hide();
-	}
-	if (_objectHealth) {
-		_objectHealth->setInvisible(true);
-		_objectHealth->hide();
-	}
-
-	if (_firstTargetButton) {
-		_firstTargetButton->setInvisible(true);
-		_firstTargetButton->hide();
-	}
-	if (_secondTargetButton) {
-		_secondTargetButton->setInvisible(true);
-		_secondTargetButton->hide();
-	}
-	if (_thirdTargetButton) {
-		_thirdTargetButton->setInvisible(true);
-		_thirdTargetButton->hide();
-	}
-}
-
-void HUD::updateTargetInformation(KotORBase::Object *object, float x, float y) {
-	float halfSelectionSize = kSelectionCircleSize / 2.0f;
-	float elementY = y + halfSelectionSize + 1.0f;
-
-	std::vector<int> possibleActions = object->getPossibleActions();
-	if (!possibleActions.empty()) {
-		float _, targetBtnHeight;
-		getTargetButtonSize(_, targetBtnHeight);
-		elementY += targetBtnHeight + 1.0f;
-	}
-
-	if (_objectHealthBackground)
-		_objectHealthBackground->setPosition(x - 100, elementY, -FLT_MAX);
-	if (_objectHealth) {
-		_objectHealth->setPosition(x - 100, elementY, -FLT_MAX);
-
-		_objectHealth->setMaxValue(object->getMaxHitPoints());
-		_objectHealth->setCurrentValue(object->getCurrentHitPoints());
-	}
-
-	elementY += _objectHealth->getHeight() + 1.0f;
-
-	if (_objectNameBackground)
-		_objectNameBackground->setPosition(x - 100, elementY, -100);
-	if (_objectName)
-		_objectName->setPosition(x - 100, elementY, -FLT_MAX);
-
-	if (!possibleActions.empty())
-		positionTargetButtons(x, y);
-}
-
-void HUD::getTargetButtonSize(float &width, float &height) const {
-	if (!_firstTargetButton)
-		return;
-
-	width = _firstTargetButton->getWidth();
-	height = _firstTargetButton->getHeight();
-}
-
-float HUD::getTargetButtonsDistance() const {
-	if (!_firstTargetButton || !_secondTargetButton)
-		throw Common::Exception("HUD::getTargetButtonsDistance(): Buttons not initialized");
-
-	float x1, x2, _, __;
-	_firstTargetButton->getPosition(x1, _, __);
-	_secondTargetButton->getPosition(x2, _, __);
-
-	return x2 - x1;
 }
 
 void HUD::update(int width, int height) {
@@ -625,26 +406,21 @@ void HUD::initWidget(Engines::Widget &widget) {
 }
 
 void HUD::callbackActive(Widget &widget) {
-	if (widget.getTag() == "BTN_TARGET0") {
+	KotORBase::HUD::callbackActive(widget);
+
+	if (widget.getTag().beginsWith("BTN_TARGET"))
 		return;
-	}
-	if (widget.getTag() == "BTN_TARGET1") {
-		return;
-	}
-	if (widget.getTag() == "BTN_TARGET2") {
-		return;
-	}
 
 	if (widget.getTag() == "LBL_CHAR1") {
-		_module->setPartyLeaderByIndex(0);
+		_module.setPartyLeaderByIndex(0);
 		return;
 	}
 	if (widget.getTag() == "LBL_CHAR2") {
-		_module->setPartyLeaderByIndex(2);
+		_module.setPartyLeaderByIndex(2);
 		return;
 	}
 	if (widget.getTag() == "LBL_CHAR3") {
-		_module->setPartyLeaderByIndex(1);
+		_module.setPartyLeaderByIndex(1);
 		return;
 	}
 

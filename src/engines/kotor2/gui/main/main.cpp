@@ -34,6 +34,8 @@
 
 #include "src/engines/kotorbase/module.h"
 
+#include "src/engines/kotor2/gui/gui.h"
+
 #include "src/engines/kotor2/gui/main/main.h"
 #include "src/engines/kotor2/gui/chargen/classselection.h"
 
@@ -42,7 +44,7 @@ namespace Engines {
 namespace KotOR2 {
 
 MainMenu::MainMenu(KotORBase::Module &module, ::Engines::Console *console) :
-		GUI(console),
+		KotORBase::GUI(console),
 		_module(&module) {
 
 	load("mainmenu8x6_p");
@@ -54,7 +56,7 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::initWidget(Widget &widget) {
-	GUI::initWidget(widget);
+	KotOR2::initWidget(widget);
 
 	// ...BioWare...
 	if (widget.getTag() == "LBL_GAMELOGO") {

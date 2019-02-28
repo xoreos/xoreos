@@ -28,6 +28,8 @@
 
 #include "src/engines/kotor2/creature.h"
 
+#include "src/engines/kotor2/gui/gui.h"
+
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 #include "src/engines/kotor2/gui/chargen/quickorcustom.h"
 #include "src/engines/kotor2/gui/chargen/quickchar.h"
@@ -42,7 +44,7 @@ namespace KotOR2 {
 CharacterGeneration::CharacterGeneration(KotORBase::Module *module,
                                          CharacterGenerationInfo *info,
                                          Engines::Console *console) :
-		GUI(console),
+		KotORBase::GUI(console),
 		_module(module),
 		_chargenInfo(info),
 		_step(0) {

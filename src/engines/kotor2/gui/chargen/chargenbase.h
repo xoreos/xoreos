@@ -27,13 +27,13 @@
 
 #include "src/engines/kotorbase/gui/chargeninfo.h"
 
-#include "src/engines/kotor2/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class CharacterGenerationBaseMenu : public GUI {
+class CharacterGenerationBaseMenu : public KotORBase::GUI {
 public:
 	CharacterGenerationBaseMenu(KotORBase::CharacterGenerationInfo &info, ::Engines::Console *console = 0);
 

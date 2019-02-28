@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  A KotOR2 GUI.
+ *  GUI utility functions for Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
 #include "src/graphics/windowman.h"
@@ -32,10 +32,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-GUI::GUI(::Engines::Console *console) : KotORBase::GUI(console) {
-}
-
-void GUI::initWidget(Widget &widget) {
+void initWidget(Engines::Widget &widget) {
 	Odyssey::Widget &kotorWidget = static_cast<Odyssey::Widget &>(widget);
 
 	float wWidth = WindowMan.getWindowWidth();
