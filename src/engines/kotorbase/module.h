@@ -376,10 +376,10 @@ private:
 	void leaveArea();
 
 	void handleEvents();
-
 	void handleActions();
 	void handleHeartbeat();
 
+	void initMinimap();
 	void updateMinimap();
 	void updateSoundListener();
 };

@@ -150,24 +150,7 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 		throw e;
 	}
 
-	int northAxis;
-	float mapPt1X, mapPt1Y, mapPt2X, mapPt2Y;
-	float worldPt1X, worldPt1Y, worldPt2X, worldPt2Y;
-
-	northAxis = _area->getNorthAxis();
-	_area->getMapPoint1(mapPt1X, mapPt1Y);
-	_area->getMapPoint2(mapPt2X, mapPt2Y);
-	_area->getWorldPoint1(worldPt1X, worldPt1Y);
-	_area->getWorldPoint2(worldPt2X, worldPt2Y);
-
-	Common::UString mapId;
-	if (_module.contains('_'))
-		mapId = _module.substr(++_module.findFirst("_"), _module.end());
-	else
-		mapId = _module.substr(_module.getPosition(3), _module.end());
-	_ingame->setMinimap(mapId, northAxis,
-	                    worldPt1X, worldPt1Y, worldPt2X, worldPt2Y,
-	                    mapPt1X, mapPt1Y, mapPt2X, mapPt2Y);
+	initMinimap();
 
 	_newModule.clear();
 
@@ -668,6 +651,29 @@ void Module::handleEvents() {
 		_area->processEventQueue();
 		_ingame->processEventQueue();
 	}
+}
+
+void Module::initMinimap() {
+	int northAxis = _area->getNorthAxis();
+
+	float mapPt1X, mapPt1Y, mapPt2X, mapPt2Y;
+	_area->getMapPoint1(mapPt1X, mapPt1Y);
+	_area->getMapPoint2(mapPt2X, mapPt2Y);
+
+	float worldPt1X, worldPt1Y, worldPt2X, worldPt2Y;
+	_area->getWorldPoint1(worldPt1X, worldPt1Y);
+	_area->getWorldPoint2(worldPt2X, worldPt2Y);
+
+	Common::UString mapId;
+
+	if (_module.contains('_'))
+		mapId = _module.substr(++_module.findFirst("_"), _module.end());
+	else
+		mapId = _module.substr(_module.getPosition(3), _module.end());
+
+	_ingame->setMinimap(mapId, northAxis,
+	                    worldPt1X, worldPt1Y, worldPt2X, worldPt2Y,
+	                    mapPt1X, mapPt1Y, mapPt2X, mapPt2Y);
 }
 
 void Module::updateMinimap() {
