@@ -19,14 +19,12 @@
  */
 
 /** @file
- *  The ingame HUD.
+ *  In-game HUD for Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
-
-#include "src/graphics/windowman.h"
 
 #include "src/engines/aurora/widget.h"
 
-#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotor2/gui/gui.h"
 
 #include "src/engines/kotor2/gui/ingame/hud.h"
 
@@ -34,12 +32,15 @@ namespace Engines {
 
 namespace KotOR2 {
 
-HUD::HUD(KotORBase::Module &UNUSED(module), ::Engines::Console *console) : GUI(console) {
+HUD::HUD(KotORBase::Module &module, ::Engines::Console *console) :
+		KotORBase::HUD(module, console) {
+
 	load("mipc28x6_p");
+	init();
 }
 
 void HUD::initWidget(Widget &widget) {
-	Engines::KotOR2::GUI::initWidget(widget);
+	KotOR2::initWidget(widget);
 
 	// Don't know what these two are doing, but they spawn over the complete screen blocking the 3d picking.
 	if (widget.getTag() == "LBL_MAP")

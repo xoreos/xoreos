@@ -19,17 +19,17 @@
  */
 
 /** @file
- *  The circle visible when selecting objects
+ *  Selection circle for KotOR games.
  */
 
 #include "src/engines/kotorbase/objectcontainer.h"
 #include "src/engines/kotorbase/situated.h"
 
-#include "src/engines/kotor/gui/ingame/selectioncircle.h"
+#include "src/engines/kotorbase/gui/selectioncircle.h"
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 SelectionCircle::SelectionCircle() :
 		_hoveredQuad(new Graphics::Aurora::GUIQuad("friendlyreticle", 0.0f, 0.0f, kSelectionCircleSize, kSelectionCircleSize)),
@@ -86,7 +86,7 @@ void SelectionCircle::setTarget(bool target) {
 	}
 }
 
-void SelectionCircle::moveTo(KotORBase::Situated *situated, float &sX, float &sY) {
+void SelectionCircle::moveTo(Situated *situated, float &sX, float &sY) {
 	float x, y, z;
 	situated->getTooltipAnchor(x, y, z);
 
@@ -96,6 +96,6 @@ void SelectionCircle::moveTo(KotORBase::Situated *situated, float &sX, float &sY
 	setPosition(sX, sY);
 }
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines

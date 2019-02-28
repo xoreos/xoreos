@@ -19,17 +19,17 @@
  */
 
 /** @file
- *  The circle visible when selecting objects
+ *  Selection circle for KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_GUI_INGAME_SELECTIONCIRCLE_H
-#define ENGINES_KOTOR_GUI_INGAME_SELECTIONCIRCLE_H
+#ifndef ENGINES_KOTORBASE_GUI_SELECTIONCIRCLE_H
+#define ENGINES_KOTORBASE_GUI_SELECTIONCIRCLE_H
 
 #include "src/graphics/aurora/guiquad.h"
 
 namespace Engines {
 
-namespace KotOR {
+namespace KotORBase {
 
 const float kSelectionCircleSize = 64.0f;
 
@@ -49,7 +49,7 @@ public:
 	void setHovered(bool hovered);
 	void setTarget(bool target);
 
-	void moveTo(KotORBase::Situated *situated, float &sX, float &sY);
+	void moveTo(Situated *situated, float &sX, float &sY);
 
 private:
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _hoveredQuad;
@@ -60,8 +60,8 @@ private:
 	bool _visible { false };
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_INGAME_SELECTIONCIRCLE_H
+#endif // ENGINES_KOTORBASE_GUI_SELECTIONCIRCLE_H

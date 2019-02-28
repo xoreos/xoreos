@@ -19,25 +19,19 @@
  */
 
 /** @file
- *  A KotOR2 GUI.
+ *  GUI utility functions for Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
 #ifndef ENGINES_KOTOR2_GUI_GUI_H
 #define ENGINES_KOTOR2_GUI_GUI_H
 
-#include "src/engines/kotorbase/gui/gui.h"
-
 namespace Engines {
+
+class Widget;
 
 namespace KotOR2 {
 
-class GUI : public KotORBase::GUI {
-public:
-	GUI(::Engines::Console *console);
-
-protected:
-	virtual void initWidget(Widget &widget);
-};
+void initWidget(Widget &widget);
 
 } // End of namespace KotOR2
 

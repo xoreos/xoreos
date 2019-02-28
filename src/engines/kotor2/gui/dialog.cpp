@@ -19,19 +19,12 @@
  */
 
 /** @file
- *  Conversation/cutscene GUI for Star Wars: Knights of the Old
- *  Republic II: The Sith Lords.
+ *  Dialog GUI for Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
-#include "src/common/maths.h"
+#include "src/common/configman.h"
 
-#include "src/sound/sound.h"
-
-#include "src/engines/aurora/satellitecamera.h"
-
-#include "src/engines/kotorbase/creature.h"
-#include "src/engines/kotorbase/module.h"
-#include "src/engines/kotorbase/area.h"
+#include "src/graphics/windowman.h"
 
 #include "src/engines/kotor2/gui/dialog.h"
 
@@ -39,52 +32,32 @@ namespace Engines {
 
 namespace KotOR2 {
 
-DialogGUI::DialogGUI(KotORBase::Module &module) :
-		KotORBase::DialogGUI(true),
-		_module(module) {
+DialogGUI::DialogGUI(KotORBase::Module &module) : KotORBase::DialogGUI(module) {
+	load("dialog_p");
+	update(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
 }
 
-void DialogGUI::makeLookAtPC(const Common::UString &tag) {
-	KotORBase::Creature *pc = _module.getPC();
-	if (!pc)
-		return;
-
-	KotORBase::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
-	if (!o)
-		return;
-
-	o->makeLookAt(pc);
-	pc->makeLookAt(o);
-
-	float x, y, z, a;
-	pc->getOrientation(x, y, z, a);
-	SatelliteCam.setYaw(Common::deg2rad(a - 15.0f));
+void DialogGUI::getTextColor(float &r, float &g, float &b) const {
+	r = 0.101961f;
+	g = 0.698039f;
+	b = 0.549020f;
 }
 
-void DialogGUI::playDefaultAnimations(const Common::UString &tag) {
-	KotORBase::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
-	if (!o)
+void DialogGUI::preprocessEntry(Common::UString &text) {
+	if (ConfigMan.getBool("showdevnotes", false))
 		return;
 
-	KotORBase::Creature *creature = KotORBase::ObjectContainer::toCreature(o);
-	if (!creature)
-		return;
+	while (true) {
+		Common::UString::iterator obit = text.findFirst('{');
+		if (obit == text.end())
+			return;
 
-	creature->playDefaultHeadAnimation();
-	creature->playDefaultAnimation();
-}
+		Common::UString::iterator cbit = text.findFirst('}');
+		if (cbit == text.end())
+			return;
 
-void DialogGUI::playTalkAnimations(const Common::UString &tag) {
-	KotORBase::Object *o = _module.getCurrentArea()->getObjectByTag(tag);
-	if (!o)
-		return;
-
-	KotORBase::Creature *creature = KotORBase::ObjectContainer::toCreature(o);
-	if (!creature)
-		return;
-
-	creature->playAnimation("tlknorm", true, -1.0f);
-	creature->playHeadAnimation("talk", true, -1.0f, 0.25f);
+		text.erase(obit, ++cbit);
+	}
 }
 
 } // End of namespace KotOR2

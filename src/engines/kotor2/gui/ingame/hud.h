@@ -19,19 +19,19 @@
  */
 
 /** @file
- *  The ingame HUD.
+ *  In-game HUD for Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
 #ifndef ENGINES_KOTOR2_GUI_INGAME_HUD_H
 #define ENGINES_KOTOR2_GUI_INGAME_HUD_H
 
-#include "src/engines/kotor2/gui/gui.h"
+#include "src/engines/kotorbase/gui/hud.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class HUD : public GUI {
+class HUD : public KotORBase::HUD {
 public:
 	HUD(KotORBase::Module &module, ::Engines::Console *console = 0);
 

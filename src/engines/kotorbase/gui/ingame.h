@@ -19,13 +19,14 @@
  */
 
 /** @file
- *  Abstract in-game GUI for KotOR games.
+ *  Base in-game GUI for KotOR games.
  */
 
 #ifndef ENGINES_KOTORBASE_GUI_INGAME_H
 #define ENGINES_KOTORBASE_GUI_INGAME_H
 
 #include "src/engines/kotorbase/gui/gui.h"
+#include "src/engines/kotorbase/gui/hud.h"
 
 namespace Engines {
 
@@ -37,45 +38,57 @@ class Object;
 
 class IngameGUI : public KotORBase::GUI {
 public:
-	virtual ~IngameGUI();
+	// Basic visuals
+
+	void show();
+	void hide();
+
+	// Minimap
 
 	/** Set the minimap with the specified id and both scaling points. */
-	virtual void setMinimap(const Common::UString &map, int northAxis,
-	                        float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
-	                        float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y) = 0;
+	void setMinimap(const Common::UString &map, int northAxis,
+	                float worldPt1X, float worldPt1Y, float worldPt2X, float worldPt2Y,
+	                float mapPt1X, float mapPt1Y, float mapPt2X, float mapPt2Y);
 
 	/** Set the position for the minimap. */
-	virtual void setPosition(float x, float y) = 0;
+	void setPosition(float x, float y);
 	/** Set the rotation for the minimap arrow. */
-	virtual void setRotation(float angle) = 0;
+	void setRotation(float angle);
 
-	virtual void setReturnStrref(uint32 id) = 0;
-	virtual void setReturnQueryStrref(uint32 id) = 0;
-	virtual void setReturnEnabled(bool enabled) = 0;
+	// Return to hideout
 
-	// Container inventory handling
-	virtual void showContainer(Inventory &inv) = 0;
+	void setReturnStrref(uint32 id);
+	void setReturnQueryStrref(uint32 id);
+	void setReturnEnabled(bool enabled);
 
-	// Party handling.
-	virtual void setPartyLeader(Creature *creature) = 0;
-	virtual void setPartyMember1(Creature *creature) = 0;
-	virtual void setPartyMember2(Creature *creature) = 0;
+	// Container
+
+	void showContainer(Inventory &inv);
+
+	// Party management
+
+	void setPartyLeader(Creature *creature);
+	void setPartyMember1(Creature *creature);
+	void setPartyMember2(Creature *creature);
 
 	// Selection handling
 
-	virtual Object *getHoveredObject() const = 0;
-	virtual Object *getTargetObject() const = 0;
+	Object *getHoveredObject() const;
+	Object *getTargetObject() const;
 
-	virtual void setHoveredObject(Object *object) = 0;
-	virtual void setTargetObject(Object *object) = 0;
+	void setHoveredObject(Object *object);
+	void setTargetObject(Object *object);
+	
+	void resetSelection();
+	void updateSelection();
+	void hideSelection();
 
-	virtual void updateSelection() = 0;
-	virtual void hideSelection() = 0;
-	virtual void resetSelection() = 0;
 
+	void addEvent(const Events::Event &event);
+	void processEventQueue();
 
-	virtual void addEvent(const Events::Event &event) = 0;
-	virtual void processEventQueue() = 0;
+protected:
+	Common::ScopedPtr<HUD> _hud;
 };
 
 } // End of namespace KotORBase

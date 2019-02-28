@@ -31,7 +31,7 @@ namespace Engines {
 
 namespace KotOR2 {
 
-class QuickCharPanel : public GUI {
+class QuickCharPanel : public KotORBase::GUI {
 public:
 	QuickCharPanel(CharacterGeneration* chargen, Console *console = 0);
 

@@ -60,7 +60,11 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFF3Struct &s, Widget *p) {
 }
 
 
-GUI::GUI(::Engines::Console *console) : ::Engines::GUI(console), _widgetZ(0), _guiHeight(0.0f), _guiWidth(0.0f) {
+GUI::GUI(::Engines::Console *console) :
+		::Engines::GUI(console),
+		_widgetZ(0),
+		_guiHeight(0.0f),
+		_guiWidth(0.0f) {
 }
 
 GUI::~GUI() {

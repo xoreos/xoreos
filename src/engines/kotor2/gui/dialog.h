@@ -19,8 +19,7 @@
  */
 
 /** @file
- *  Conversation/cutscene GUI for Star Wars: Knights of the Old
- *  Republic II: The Sith Lords.
+ *  Dialog GUI for Star Wars: Knights of the Old Republic II - The Sith Lords.
  */
 
 #ifndef ENGINES_KOTOR2_GUI_DIALOG_H
@@ -30,10 +29,6 @@
 
 namespace Engines {
 
-namespace KotORBase {
-	class Module;
-}
-
 namespace KotOR2 {
 
 class DialogGUI : public KotORBase::DialogGUI {
@@ -41,12 +36,9 @@ public:
 	DialogGUI(KotORBase::Module &module);
 
 protected:
-	void makeLookAtPC(const Common::UString &tag);
-	void playDefaultAnimations(const Common::UString &tag);
-	void playTalkAnimations(const Common::UString &tag);
+	void getTextColor(float &r, float &g, float &b) const;
 
-private:
-	KotORBase::Module &_module;
+	void preprocessEntry(Common::UString &text);
 };
 
 } // End of namespace KotOR2

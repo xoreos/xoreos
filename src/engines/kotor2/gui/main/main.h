@@ -27,13 +27,13 @@
 
 #include "src/engines/kotorbase/module.h"
 
-#include "src/engines/kotor2/gui/gui.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotOR2 {
 
-class MainMenu : public GUI {
+class MainMenu : public KotORBase::GUI {
 public:
 	MainMenu(KotORBase::Module &module, ::Engines::Console *console = 0);
 	~MainMenu();

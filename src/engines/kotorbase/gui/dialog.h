@@ -48,24 +48,33 @@ class Module;
 
 class DialogGUI : public GUI, Events::Notifyable {
 public:
-	DialogGUI(bool k2);
+	DialogGUI(Module &module);
 
-	void startConversation(const Common::UString &name, Aurora::NWScript::Object *owner = 0);
-	bool isConversationActive() const;
+	// Basic visuals
 
 	void show();
 	void hide();
+
+	// Conversation
+
+	bool isConversationActive() const;
+
+	void startConversation(const Common::UString &name, Aurora::NWScript::Object *owner = 0);
+
 
 	void callbackActive(Widget &widget);
 	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
 
 protected:
-	virtual void makeLookAtPC(const Common::UString &tag) = 0;
-	virtual void playDefaultAnimations(const Common::UString &tag) = 0;
-	virtual void playTalkAnimations(const Common::UString &tag) = 0;
+	virtual void getTextColor(float &r, float &g, float &b) const = 0;
+
+	virtual void preprocessEntry(Common::UString &text);
+
+	/** Updates the gui when a resize occurs or it is created. */
+	void update(int width, int height);
 
 private:
-	bool _kotor2;
+	Module &_module;
 	bool _isActive;
 	Common::ScopedPtr<Graphics::Aurora::KotORDialogFrame> _frame;
 	Common::ScopedPtr<Aurora::DLGFile> _dlg;
@@ -75,18 +84,14 @@ private:
 	Common::UString _owner;
 	Common::UString _curSpeaker;
 
-	/** Updates the gui when a resize occurs or it is created. */
-	void update(int width, int height);
-
 	void refresh();
 	void playSounds();
 	void stopSounds();
 	void pickReply(int index);
 
-	/** Some dialog entries in KotOR 2 contain developer notes in
-	 *  curly braces. Erase those.
-	 */
-	void eraseDeveloperNotes(Common::UString &str);
+	void makeLookAtPC(const Common::UString &tag);
+	void playDefaultAnimations(const Common::UString &tag);
+	void playTalkAnimations(const Common::UString &tag);
 
 	void notifyResized(int oldWidth, int oldHeight, int newWidth, int newHeight);
 };
