@@ -32,7 +32,6 @@
 #include "src/sound/sound.h"
 
 #include "src/engines/aurora/util.h"
-#include "src/engines/aurora/satellitecamera.h"
 
 #include "src/engines/odyssey/label.h"
 #include "src/engines/odyssey/listbox.h"
@@ -276,7 +275,7 @@ void DialogGUI::makeLookAtPC(const Common::UString &tag) {
 
 	float x, y, z, a;
 	pc->getOrientation(x, y, z, a);
-	SatelliteCam.setYaw(Common::deg2rad(a - 15.0f));
+	_module.setCameraYaw(Common::deg2rad(a - 15.0f));
 }
 
 void DialogGUI::playDefaultAnimations(const Common::UString &tag) {

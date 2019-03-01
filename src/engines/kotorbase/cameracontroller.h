@@ -19,50 +19,58 @@
  */
 
 /** @file
- *  Engine utility class for camera handling where camera rotates around PC.
+ *  Handles camera movement in KotOR games.
  */
 
-#ifndef ENGINES_AURORA_SATELLITECAMERA_H
-#define ENGINES_AURORA_SATELLITECAMERA_H
+#ifndef ENGINES_KOTORBASE_CAMERACONTROLLER_H
+#define ENGINES_KOTORBASE_CAMERACONTROLLER_H
 
 #include "glm/vec3.hpp"
-
-#include "src/common/singleton.h"
 
 #include "src/events/types.h"
 
 namespace Engines {
 
-class SatelliteCamera : public Common::Singleton<SatelliteCamera> {
-public:
-	SatelliteCamera();
+namespace KotORBase {
 
-	void setTarget(float x, float y, float z);
-	void setDistance(float value);
-	void setPitch(float value);
-	void setHeight(float value);
-	void setYaw(float value);
+class Module;
+
+class CameraController {
+public:
+	CameraController(Module *module);
+
+	// Flying camera
+
+	bool isFlyCamera() const;
+
+	void toggleFlyCamera();
+
 
 	float getYaw() const;
 
-	bool handleCameraInput(const Events::Event &e);
-	void update(float dt);
-	void clearInput();
+	void setYaw(float value);
+
+	void updateTarget();
+	void updateCameraStyle();
+	bool handleEvent(const Events::Event &e);
+	void processMovement(float frameTime);
+	void stopMovement();
+
 private:
+	Module *_module;
+	bool _flycam { false };
 	glm::vec3 _target;
-	float _distance;
-	float _yaw;
-	float _pitch;
-	float _pitchSin;
-	float _pitchCos;
-	float _height;
-	bool _leftBtnPressed;
-	bool _rightBtnPressed;
-	bool _dirty;
+	float _distance { 0.0f };
+	float _yaw { 0.0f };
+	float _pitch { 0.0f };
+	float _height { 0.0f };
+	bool _clockwiseMovementWanted { false };
+	bool _counterClockwiseMovementWanted { false };
+	bool _dirty { false };
 };
+
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 
-#define SatelliteCam ::Engines::SatelliteCamera::instance()
-
-#endif // ENGINES_AURORA_SATELLITECAMERA_H
+#endif // ENGINES_KOTORBASE_CAMERACONTROLLER_H

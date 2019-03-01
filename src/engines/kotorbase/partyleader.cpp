@@ -24,8 +24,6 @@
 
 #include "src/common/maths.h"
 
-#include "src/engines/aurora/satellitecamera.h"
-
 #include "src/engines/kotorbase/partyleader.h"
 #include "src/engines/kotorbase/module.h"
 #include "src/engines/kotorbase/creature.h"
@@ -91,7 +89,7 @@ bool PartyLeaderController::processMovement(float frameTime) {
 
 	float x, y, _;
 	partyLeader->getPosition(x, y, _);
-	float yaw = SatelliteCam.getYaw();
+	float yaw = _module->getCameraYaw();
 	float newX, newY;
 	float moveRate = partyLeader->getRunRate();
 

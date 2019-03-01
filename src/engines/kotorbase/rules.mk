@@ -47,6 +47,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/partyleader.h \
     src/engines/kotorbase/partycontroller.h \
     src/engines/kotorbase/creaturesearch.h \
+    src/engines/kotorbase/cameracontroller.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
@@ -73,6 +74,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/partyleader.cpp \
     src/engines/kotorbase/partycontroller.cpp \
     src/engines/kotorbase/creaturesearch.cpp \
+    src/engines/kotorbase/cameracontroller.cpp \
     $(EMPTY)
 
 include src/engines/kotorbase/script/rules.mk
