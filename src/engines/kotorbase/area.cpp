@@ -609,6 +609,10 @@ void Area::toggleWalkmesh() {
 	_localPathfinding->showWalkmesh(!_walkmeshInvisible);
 }
 
+bool Area::rayTest(const glm::vec3 &orig, const glm::vec3 &dest, glm::vec3 &intersect) const {
+	return _pathfinding->findIntersection(orig.x, orig.y, orig.z, dest.x, dest.y, dest.z, intersect);
+}
+
 void Area::toggleTriggers() {
 	_triggersVisible = !_triggersVisible;
 	for (std::vector<Trigger *>::const_iterator it = _triggers.begin();
