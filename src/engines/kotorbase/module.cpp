@@ -331,6 +331,7 @@ void Module::loadTexturePack() {
 
 void Module::unload(bool completeUnload) {
 	_ingame->resetSelection();
+	_ingame->hideSelection();
 
 	GfxMan.pauseAnimations();
 

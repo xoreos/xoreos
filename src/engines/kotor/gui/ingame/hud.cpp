@@ -424,6 +424,7 @@ void HUD::callbackActive(Widget &widget) {
 		return;
 	}
 
+	hideSelection();
 	_menu.showMenu(widget.getTag());
 	sub(_menu);
 }
