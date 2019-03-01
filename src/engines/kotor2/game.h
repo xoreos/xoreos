@@ -56,13 +56,15 @@ public:
 	void run();
 
 	/** Return a list of all modules. */
-	static void getModules(std::vector<Common::UString> &modules);
-
+	const std::vector<Common::UString> &getModules() const;
+	/** Does this module exist? */
+	bool hasModule(const Common::UString &module) const override;
 
 private:
 	KotOR2Engine *_engine;
 
 	Common::ScopedPtr<Functions> _functions;
+	std::vector<Common::UString> _modules;
 
 	Aurora::Platform _platform;
 
@@ -70,6 +72,8 @@ private:
 
 	Sound::ChannelHandle _menuMusic;
 
+
+	void collectModules();
 
 	void stopMenuMusic();
 	void playMenuMusic(Common::UString music = "");

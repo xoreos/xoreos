@@ -56,6 +56,17 @@ void Functions::getIsConversationActive(Aurora::NWScript::FunctionContext &ctx) 
 	ctx.getReturn() = _game->getModule().isConversationActive();
 }
 
+void Functions::startNewModule(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString mod = ctx.getParams()[0].getString();
+
+	if (!_game->hasModule(mod)) {
+		warning("Can't start module \"%s\": No such module", mod.c_str());
+		return;
+	}
+
+	_game->getModule().load(mod);
+}
+
 void Functions::setGlobalFadeOut(Aurora::NWScript::FunctionContext &ctx) {
 	float wait = ctx.getParams()[0].getFloat();
 	float run = ctx.getParams()[1].getFloat();

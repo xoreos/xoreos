@@ -27,6 +27,10 @@
 
 #include "src/common/scopedptr.h"
 
+namespace Common {
+	class UString;
+}
+
 namespace Engines {
 
 namespace KotORBase {
@@ -35,8 +39,13 @@ class Module;
 
 class Game {
 public:
+	virtual ~Game() = default;
+
 	/** Return the module context. */
 	KotORBase::Module &getModule();
+
+	/** Does this module exist? */
+	virtual bool hasModule(const Common::UString &module) const = 0;
 
 protected:
 	Common::ScopedPtr<KotORBase::Module> _module;

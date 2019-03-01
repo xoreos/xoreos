@@ -58,6 +58,7 @@ Game::Game(KotOREngine &engine, ::Engines::Console &console, const Version &game
 	_engine(&engine), _gameVersion(&gameVersion), _console(&console) {
 
 	_functions.reset(new Functions(*this));
+	collectModules();
 }
 
 Game::~Game() {
@@ -151,8 +152,8 @@ void Game::mainMenu() {
 	_console->enableCommand("exitmodule");
 }
 
-void Game::getModules(std::vector<Common::UString> &modules) {
-	modules.clear();
+void Game::collectModules() {
+	_modules.clear();
 
 	Common::UString moduleDir = ConfigMan.getString("KOTOR_moduleDir");
 	if (moduleDir.empty())
@@ -169,10 +170,22 @@ void Game::getModules(std::vector<Common::UString> &modules) {
 		file = Common::FilePath::getStem(file);
 		file.truncate(file.size() - Common::UString("_s").size());
 
-		modules.push_back(file);
+		_modules.push_back(file);
 	}
 
-	std::sort(modules.begin(), modules.end(), Common::UString::iless());
+	std::sort(_modules.begin(), _modules.end(), Common::UString::iless());
+}
+
+const std::vector<Common::UString> &Game::getModules() const {
+	return _modules;
+}
+
+bool Game::hasModule(const Common::UString &module) const {
+	auto found = std::find_if(_modules.begin(), _modules.end(), [&](const Common::UString &x) {
+		return x.equalsIgnoreCase(module);
+	});
+
+	return found != _modules.end();
 }
 
 } // End of namespace KotOR

@@ -627,7 +627,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 506, "SetLockHeadFollowInDialog"           , 0                                                },
 	{ 507, "CutsceneMove"                        , 0                                                },
 	{ 508, "EnableVideoEffect"                   , 0                                                },
-	{ 509, "StartNewModule"                      , 0                                                },
+	{ 509, "StartNewModule"                      , &Functions::startNewModule                       },
 	{ 510, "DisableVideoEffect"                  , 0                                                },
 	{ 511, "GetWeaponRanged"                     , 0                                                },
 	{ 512, "DoSinglePlayerAutoSave"              , 0                                                },

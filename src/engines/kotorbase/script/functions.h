@@ -166,6 +166,8 @@ protected:
 	void getPCSpeaker(Aurora::NWScript::FunctionContext &ctx);
 	void getIsConversationActive(Aurora::NWScript::FunctionContext &ctx);
 
+	void startNewModule(Aurora::NWScript::FunctionContext &ctx);
+
 	void setGlobalFadeOut(Aurora::NWScript::FunctionContext &ctx);
 	void setGlobalFadeIn(Aurora::NWScript::FunctionContext &ctx);
 	void setReturnStrref(Aurora::NWScript::FunctionContext &ctx);

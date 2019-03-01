@@ -95,7 +95,7 @@ void Console::updateCaches() {
 }
 
 void Console::updateModules() {
-	Game::getModules(_modules);
+	_modules = _engine->getGame().getModules();
 
 	setArguments("loadmodule", _modules);
 }
@@ -137,12 +137,10 @@ void Console::cmdLoadModule(const CommandLine &cl) {
 		return;
 	}
 
-	for (std::vector<Common::UString>::iterator m = _modules.begin(); m != _modules.end(); ++m) {
-		if (m->equalsIgnoreCase(cl.args)) {
-			hide();
-			_engine->getGame().getModule().load(cl.args);
-			return;
-		}
+	if (_engine->getGame().hasModule(cl.args)) {
+		hide();
+		_engine->getGame().getModule().load(cl.args);
+		return;
 	}
 
 	printf("No such module \"%s\"", cl.args.c_str());
