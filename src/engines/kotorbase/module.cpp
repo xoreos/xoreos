@@ -51,7 +51,6 @@
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/console.h"
 #include "src/engines/aurora/flycamera.h"
-#include "src/engines/aurora/satellitecamera.h"
 
 #include "src/engines/kotorbase/creature.h"
 #include "src/engines/kotorbase/placeable.h"
@@ -88,12 +87,12 @@ Module::Module(::Engines::Console &console) :
 		_exit(false),
 		_entryLocationType(kObjectTypeAll),
 		_fade(new Graphics::Aurora::FadeQuad()),
-		_flyCamEnabled(false),
+		_partyLeaderController(this),
+		_partyController(this),
+		_cameraController(this),
 		_prevTimestamp(0),
 		_frameTime(0),
 		_inDialog(false),
-		_partyLeaderController(this),
-		_partyController(this),
 		_runScriptVar(-1),
 		_soloMode(false),
 		_lastHeartbeatTimestamp(0) {
@@ -253,6 +252,7 @@ void Module::loadIFO() {
 
 void Module::loadArea() {
 	_area.reset(new Area(*this, _ifo.getEntryArea()));
+	_cameraController.updateCameraStyle();
 }
 
 void Module::loadPC() {
@@ -538,7 +538,7 @@ void Module::clickObject(Object *object) {
 	Placeable *placeable = ObjectContainer::toPlaceable(object);
 	if (placeable) {
 		if (placeable->hasInventory()) {
-			stopCameraMovement();
+			_cameraController.stopMovement();
 			_partyLeaderController.stopMovement();
 
 			_ingame->hideSelection();
@@ -584,9 +584,9 @@ void Module::processEventQueue() {
 	GfxMan.lockFrame();
 
 	_area->processCreaturesActions(_frameTime);
+	_cameraController.processMovement(_frameTime);
 
-	if (!_flyCamEnabled) {
-		SatelliteCam.update(_frameTime);
+	if (!_cameraController.isFlyCamera()) {
 		_partyLeaderController.processMovement(_frameTime);
 		updateMinimap();
 	}
@@ -625,26 +625,17 @@ void Module::handleEvents() {
 			}
 		}
 
-		_partyLeaderController.handleEvent(*event);
+		if (_partyLeaderController.handleEvent(*event))
+			continue;
 
-		// Camera
-		if (!_console->isVisible()) {
-			if (_flyCamEnabled) {
-				if (FlyCam.handleCameraInput(*event))
-					continue;
-			}
-			else if (SatelliteCam.handleCameraInput(*event))
-				continue;
-		}
+		if (_cameraController.handleEvent(*event))
+			continue;
 
 		_area->addEvent(*event);
 		_ingame->addEvent(*event);
 	}
 
 	_eventQueue.clear();
-
-	if (_flyCamEnabled)
-		CameraMan.update();
 
 	if (_inDialog) {
 		_dialog->processEventQueue();
@@ -687,7 +678,7 @@ void Module::updateMinimap() {
 	_partyController.getPartyLeader()->getPosition(x, y, _);
 
 	_ingame->setPosition(x, y);
-	_ingame->setRotation(Common::rad2deg(SatelliteCam.getYaw()));
+	_ingame->setRotation(Common::rad2deg(_cameraController.getYaw()));
 }
 
 void Module::updateSoundListener() {
@@ -764,7 +755,7 @@ void Module::movedPartyLeader() {
 	_area->evaluateTriggers(x, y);
 	_area->notifyPartyLeaderMoved();
 
-	setupSatelliteCamera();
+	_cameraController.updateTarget();
 }
 
 Creature *Module::getPartyLeader() const {
@@ -986,8 +977,8 @@ Common::UString Module::getName(const Common::UString &module, const Common::USt
 }
 
 void Module::toggleFlyCamera() {
-	_flyCamEnabled = !_flyCamEnabled;
-	if (_flyCamEnabled && ConfigMan.getBool("flycamallrooms"))
+	_cameraController.toggleFlyCamera();
+	if (_cameraController.isFlyCamera() && ConfigMan.getBool("flycamallrooms"))
 		_area->showAllRooms();
 }
 
@@ -1031,7 +1022,7 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 	_dialog->startConversation(finalName, owner);
 
 	if (_dialog->isConversationActive()) {
-		stopCameraMovement();
+		_cameraController.stopMovement();
 		_partyLeaderController.stopMovement();
 
 		_ingame->hide();
@@ -1056,6 +1047,14 @@ void Module::playAnimationOnActiveObject(const Common::UString &baseAnim,
 		else
 			creature->playHeadAnimation(headAnim, true, -1.0f, 0.25f);
 	}
+}
+
+float Module::getCameraYaw() const {
+	return _cameraController.getYaw();
+}
+
+void Module::setCameraYaw(float yaw) {
+	_cameraController.setYaw(yaw);
 }
 
 void Module::addItemToActiveObject(const Common::UString &item, int count) {
@@ -1086,26 +1085,8 @@ void Module::addItemToActiveObject(const Common::UString &item, int count) {
 		inv->removeItem(item, -count);
 }
 
-void Module::setupSatelliteCamera() {
-	float x, y, z, hookHeight, distance, pitch, height;
-	Creature *partyLeader = _partyController.getPartyLeader();
-	partyLeader->getPosition(x, y, z);
-	hookHeight = partyLeader->getCameraHeight();
-	_area->getCameraStyle(distance, pitch, height);
-
-	SatelliteCam.setTarget(x, y, z + hookHeight);
-	SatelliteCam.setDistance(distance);
-	SatelliteCam.setPitch(pitch);
-	SatelliteCam.setHeight(height);
-	SatelliteCam.update(0.0f);
-}
-
-void Module::stopCameraMovement() {
-	SatelliteCam.clearInput();
-}
-
 void Module::onPartyLeaderChanged() {
-	setupSatelliteCamera();
+	_cameraController.updateTarget();
 	updateCurrentPartyGUI();
 }
 

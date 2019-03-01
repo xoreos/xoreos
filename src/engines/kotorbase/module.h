@@ -46,6 +46,7 @@
 #include "src/engines/kotorbase/savedgame.h"
 #include "src/engines/kotorbase/partyleader.h"
 #include "src/engines/kotorbase/partycontroller.h"
+#include "src/engines/kotorbase/cameracontroller.h"
 
 #include "src/engines/kotorbase/gui/ingame.h"
 #include "src/engines/kotorbase/gui/dialog.h"
@@ -226,6 +227,12 @@ public:
 
 	virtual KotORBase::CharacterGenerationInfo *createCharGenInfo(const CharacterGenerationInfo &info) const = 0;
 
+	// Camera
+
+	float getCameraYaw() const;
+
+	void setCameraYaw(float yaw);
+
 
 	void addItemToActiveObject(const Common::UString &item, int count);
 	void toggleFlyCamera();
@@ -302,12 +309,13 @@ private:
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
 
-	bool _flyCamEnabled;
+	PartyLeaderController _partyLeaderController;
+	PartyController _partyController;
+	CameraController _cameraController;
+
 	uint32 _prevTimestamp;
 	float _frameTime;
 	bool _inDialog;
-	PartyLeaderController _partyLeaderController;
-	PartyController _partyController;
 	int _runScriptVar;
 	bool _soloMode;
 	uint32 _lastHeartbeatTimestamp;
@@ -354,11 +362,6 @@ private:
 
 	/** Actually replace the currently running module. */
 	void replaceModule();
-
-	// Camera handling
-
-	void setupSatelliteCamera();
-	void stopCameraMovement();
 
 	// Party
 
