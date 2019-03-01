@@ -40,6 +40,7 @@ namespace Engines {
 namespace KotORBase {
 
 class Room;
+class Location;
 
 class Object : public Aurora::NWScript::Object, public ScriptContainer {
 public:
@@ -108,6 +109,9 @@ public:
 	void makeLookAt(float x, float y);
 	/** Make the object look at the specified object. */
 	void makeLookAt(Object *target);
+
+	/** Create a Location out of the object's area, position and orientation. */
+	Location getLocation() const;
 
 	// Hit points
 

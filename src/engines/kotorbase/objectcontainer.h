@@ -47,6 +47,7 @@ class Placeable;
 class Door;
 class Creature;
 class SoundObject;
+class Location;
 
 /** A class able to sort objects by distance to a target object. */
 class ObjectDistanceSort {
@@ -91,6 +92,8 @@ public:
 	static Creature    *toPC         (Aurora::NWScript::Object *object);
 	static SoundObject *toSoundObject(Aurora::NWScript::Object *object);
 	static Creature    *toPartyMember(Aurora::NWScript::Object *object);
+
+	static Location *toLocation(Aurora::NWScript::EngineType *engineType);
 
 private:
 	typedef std::list<Object *> ObjectList;

@@ -33,6 +33,7 @@
 #include "src/engines/aurora/util.h"
 
 #include "src/engines/kotorbase/object.h"
+#include "src/engines/kotorbase/location.h"
 
 namespace Engines {
 
@@ -159,6 +160,19 @@ void Object::makeLookAt(float x, float y) {
 
 void Object::makeLookAt(Object *target) {
 	makeLookAt(target->_position[0], target->_position[1]);
+}
+
+Location Object::getLocation() const {
+	// TODO: Object::getLocation(): Area
+	// TODO: Object::getLocation(): Facing
+
+	Location location;
+
+	location.setArea(nullptr);
+	location.setPosition(_position[0], _position[1], _position[2]);
+	location.setFacing(0.0f);
+
+	return location;
 }
 
 int Object::getMaxHitPoints() {

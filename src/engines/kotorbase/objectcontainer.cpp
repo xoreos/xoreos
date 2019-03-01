@@ -35,6 +35,7 @@
 #include "src/engines/kotorbase/objectcontainer.h"
 #include "src/engines/kotorbase/module.h"
 #include "src/engines/kotorbase/area.h"
+#include "src/engines/kotorbase/location.h"
 
 namespace Engines {
 
@@ -172,6 +173,10 @@ Creature *ObjectContainer::toPartyMember(Aurora::NWScript::Object *object) {
 		return 0;
 
 	return partyMember;
+}
+
+Location *ObjectContainer::toLocation(Aurora::NWScript::EngineType *engineType) {
+	return dynamic_cast<Location *>(engineType);
 }
 
 } // End of namespace KotORBase

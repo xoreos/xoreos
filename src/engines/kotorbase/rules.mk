@@ -36,6 +36,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/module.h \
     src/engines/kotorbase/trigger.h \
     src/engines/kotorbase/waypoint.h \
+    src/engines/kotorbase/location.h \
     src/engines/kotorbase/sound.h \
     src/engines/kotorbase/area.h \
     src/engines/kotorbase/objectcontainer.h \
@@ -63,6 +64,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/module.cpp \
     src/engines/kotorbase/trigger.cpp \
     src/engines/kotorbase/waypoint.cpp \
+    src/engines/kotorbase/location.cpp \
     src/engines/kotorbase/sound.cpp \
     src/engines/kotorbase/area.cpp \
     src/engines/kotorbase/objectcontainer.cpp \
