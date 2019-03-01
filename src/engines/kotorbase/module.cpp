@@ -585,9 +585,7 @@ void Module::processEventQueue() {
 	}
 
 	updateSoundListener();
-
-	if (!_inDialog)
-		_ingame->updateSelection();
+	updateSelection();
 
 	GfxMan.unlockFrame();
 }
@@ -690,6 +688,13 @@ void Module::updateSoundListener() {
 	SoundMan.setListenerPosition(position[0], position[1], position[2]);
 	const float *orientation = CameraMan.getOrientation();
 	SoundMan.setListenerOrientation(orientation[0], orientation[1], orientation[2], 0.0f, 1.0f, 0.0f);
+}
+
+void Module::updateSelection() {
+	if (_inDialog)
+		return;
+
+	_ingame->updateSelection();
 }
 
 void Module::handleActions() {

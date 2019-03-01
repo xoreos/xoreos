@@ -365,6 +365,11 @@ private:
 	void onPartyLeaderChanged();
 	void updateCurrentPartyGUI();
 
+	// Minimap
+
+	void initMinimap();
+	void updateMinimap();
+
 
 	bool getObjectLocation(const Common::UString &object, ObjectType location,
 	                       float &entryX, float &entryY, float &entryZ, float &entryAngle);
@@ -379,9 +384,8 @@ private:
 	void handleActions();
 	void handleHeartbeat();
 
-	void initMinimap();
-	void updateMinimap();
 	void updateSoundListener();
+	void updateSelection();
 };
 
 } // End of namespace KotORBase
