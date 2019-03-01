@@ -63,12 +63,6 @@ namespace Engines {
 
 namespace KotORBase {
 
-Area::CameraStyle::CameraStyle() :
-		distance(0.0f),
-		pitch(0.0f),
-		height(0.0f) {
-}
-
 Area::Area(Module &module, const Common::UString &resRef) :
 		Object(kObjectTypeArea),
 		_module(&module),
@@ -355,6 +349,7 @@ void Area::loadCameraStyle(uint32 id) {
 	_cameraStyle.distance = row.getFloat("distance");
 	_cameraStyle.pitch = row.getFloat("pitch");
 	_cameraStyle.height = row.getFloat("height");
+	_cameraStyle.viewAngle = row.getFloat("viewangle");
 }
 
 void Area::loadGIT(const Aurora::GFF3Struct &git) {
@@ -716,10 +711,8 @@ void Area::notifyPartyLeaderMoved() {
 	GfxMan.resumeAnimations();
 }
 
-void Area::getCameraStyle(float &distance, float &pitch, float &height) const {
-	distance = _cameraStyle.distance;
-	pitch = _cameraStyle.pitch;
-	height = _cameraStyle.height;
+const Area::CameraStyle &Area::getCameraStyle() const {
+	return _cameraStyle;
 }
 
 const std::vector<Common::UString> &Area::getRoomsVisibleFrom(const Common::UString &room) const {

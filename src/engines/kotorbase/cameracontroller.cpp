@@ -70,7 +70,14 @@ void CameraController::updateTarget() {
 }
 
 void CameraController::updateCameraStyle() {
-	_module->getCurrentArea()->getCameraStyle(_distance, _pitch, _height);
+	const Area::CameraStyle &style = _module->getCurrentArea()->getCameraStyle();
+
+	_distance = style.distance;
+	_pitch = style.pitch;
+	_height = style.height;
+
+	GfxMan.setPerspective(style.viewAngle, 0.1f, 10000.0f);
+
 	_dirty = true;
 }
 

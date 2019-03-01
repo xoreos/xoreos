@@ -167,8 +167,6 @@ void KotOREngine::init() {
 	progress.step("Initializing internal game config");
 	initGameConfig();
 
-	GfxMan.setPerspective(55.0, 0.1, 10000.0);
-
 	progress.step("Successfully initialized the engine");
 }
 

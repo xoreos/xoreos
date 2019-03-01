@@ -144,13 +144,23 @@ public:
 	void addToObjectMap(Object *object);
 	void removeObject(Object *object);
 
+	// Camera style
+
+	struct CameraStyle {
+		float distance { 0.0f };
+		float pitch { 0.0f };
+		float height { 0.0f };
+		float viewAngle { 0.0f };
+	};
+
+	const CameraStyle &getCameraStyle() const;
+
 
 	void showAllRooms();
 
 	void notifyObjectMoved(Object &o);
 	void notifyPartyLeaderMoved();
 
-	void getCameraStyle(float &distance, float &pitch, float &height) const;
 	const std::vector<Common::UString> &getRoomsVisibleFrom(const Common::UString &room) const;
 	Object *getActiveObject();
 
@@ -160,14 +170,6 @@ protected:
 	void notifyCameraMoved();
 
 private:
-	struct CameraStyle {
-		float distance;
-		float pitch;
-		float height;
-
-		CameraStyle();
-	};
-
 	typedef Common::PtrList<Room> RoomList;
 
 	typedef Common::PtrList<Object> ObjectList;
