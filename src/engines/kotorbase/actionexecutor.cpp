@@ -31,6 +31,8 @@
 #include "src/engines/kotorbase/actionexecutor.h"
 #include "src/engines/kotorbase/area.h"
 #include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/door.h"
+#include "src/engines/kotorbase/placeable.h"
 
 static const float kWalkDistance = 2.0f;
 
@@ -77,8 +79,40 @@ void ActionExecutor::executeOpenLock(Creature &creature, Area &area, const Actio
 	float x, y, _;
 	action.object->getPosition(x, y, _);
 
-	if (moveTo(creature, area, x, y, 1.0f, dt))
-		creature.dequeueAction();
+	bool locReached = isLocationReached(creature, x, y, 1.0f);
+	if (!locReached) {
+		moveTo(creature, area, x, y, 1.0f, dt);
+		return;
+	}
+
+	creature.dequeueAction();
+
+	Door *door = dynamic_cast<Door *>(action.object);
+	if (door) {
+		creature.playAnimation("unlockdr", false);
+		if (door) {
+			door->unlock(&creature);
+		}
+	} else {
+		Placeable *placeable = dynamic_cast<Placeable *>(action.object);
+		if (placeable) {
+			creature.playAnimation("unlockcntr", false);
+			placeable->unlock(&creature);
+		} else {
+			warning("Cannot unlock an object that is not a door or a placeable");
+			return;
+		}
+	}
+}
+
+bool ActionExecutor::isLocationReached(Creature &creature, float x, float y, float range) {
+	float oX, oY, _;
+	creature.getPosition(oX, oY, _);
+
+	float dx = x - oX;
+	float dy = y - oY;
+
+	return dx * dx + dy * dy <= range * range;
 }
 
 bool ActionExecutor::moveTo(Creature &creature, Area &area, float x, float y, float range, float dt) {

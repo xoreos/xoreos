@@ -41,6 +41,9 @@ public:
 	static void executeOpenLock(Creature &creature, Area &area, const Action &action, float dt);
 
 private:
+	/** Get if a specified creature has reached a specified location. */
+	static bool isLocationReached(Creature &creature, float x, float y, float range);
+
 	/**
 	 * Move the creature towards a point. Returns true if the point is
 	 * within the specified range, false otherwise.
