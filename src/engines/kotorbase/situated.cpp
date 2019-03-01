@@ -130,6 +130,12 @@ const std::vector<int> Situated::getPossibleActions() const {
 	return actions;
 }
 
+void Situated::setUsable(bool usable) {
+	_usable = usable;
+	if (_model)
+		_model->setClickable(isClickable());
+}
+
 void Situated::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
 	// General properties
 

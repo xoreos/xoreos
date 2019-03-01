@@ -184,6 +184,7 @@ bool Door::open(Object *opener) {
 
 	playSound(_soundOpened);
 	runScript(kScriptOpen, this, opener);
+	setUsable(false);
 
 	_state = kStateOpened1;
 
@@ -201,6 +202,7 @@ bool Door::close(Object *closer) {
 
 	playSound(_soundClosed);
 	runScript(kScriptClosed, this, closer);
+	setUsable(true);
 
 	_state = kStateClosed;
 

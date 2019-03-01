@@ -68,6 +68,8 @@ public:
 
 	const std::vector<int> getPossibleActions() const;
 
+	void setUsable(bool usable);
+
 	// State
 
 	/** Is the situated object open? */
