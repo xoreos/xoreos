@@ -162,7 +162,7 @@ void Console::cmdPlayMusic(const CommandLine &cl) {
 }
 
 void Console::cmdFlyCam(const CommandLine &UNUSED(cl)) {
-	_engine->getGame().getModule().toggleFreeRoamCamera();
+	_engine->getGame().getModule().toggleFlyCamera();
 }
 
 void Console::cmdShowWalkmesh(const CommandLine &UNUSED(cl)) {

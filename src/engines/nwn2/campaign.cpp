@@ -43,7 +43,7 @@
 
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/console.h"
-#include "src/engines/aurora/freeroamcamera.h"
+#include "src/engines/aurora/flycamera.h"
 
 #include "src/engines/nwn2/campaign.h"
 #include "src/engines/nwn2/module.h"
@@ -285,7 +285,7 @@ void Campaign::handleEvents() {
 		}
 
 		// Camera
-		if (FreeRoamCam.handleCameraInput(*event))
+		if (FlyCam.handleCameraInput(*event))
 			continue;
 
 		_module->addEvent(*event);

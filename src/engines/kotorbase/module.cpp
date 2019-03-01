@@ -50,7 +50,7 @@
 #include "src/engines/aurora/util.h"
 #include "src/engines/aurora/resources.h"
 #include "src/engines/aurora/console.h"
-#include "src/engines/aurora/freeroamcamera.h"
+#include "src/engines/aurora/flycamera.h"
 #include "src/engines/aurora/satellitecamera.h"
 
 #include "src/engines/kotorbase/creature.h"
@@ -87,7 +87,7 @@ Module::Module(::Engines::Console &console) :
 		_exit(false),
 		_entryLocationType(kObjectTypeAll),
 		_fade(new Graphics::Aurora::FadeQuad()),
-		_freeCamEnabled(false),
+		_flyCamEnabled(false),
 		_prevTimestamp(0),
 		_frameTime(0),
 		_inDialog(false),
@@ -577,7 +577,7 @@ void Module::processEventQueue() {
 
 	_area->processCreaturesActions(_frameTime);
 
-	if (!_freeCamEnabled) {
+	if (!_flyCamEnabled) {
 		SatelliteCam.update(_frameTime);
 		_partyLeaderController.processMovement(_frameTime);
 		updateMinimap();
@@ -623,8 +623,8 @@ void Module::handleEvents() {
 
 		// Camera
 		if (!_console->isVisible()) {
-			if (_freeCamEnabled) {
-				if (FreeRoamCam.handleCameraInput(*event))
+			if (_flyCamEnabled) {
+				if (FlyCam.handleCameraInput(*event))
 					continue;
 			}
 			else if (SatelliteCam.handleCameraInput(*event))
@@ -637,7 +637,7 @@ void Module::handleEvents() {
 
 	_eventQueue.clear();
 
-	if (_freeCamEnabled)
+	if (_flyCamEnabled)
 		CameraMan.update();
 
 	if (_inDialog) {
@@ -969,9 +969,9 @@ Common::UString Module::getName(const Common::UString &module, const Common::USt
 	return "";
 }
 
-void Module::toggleFreeRoamCamera() {
-	_freeCamEnabled = !_freeCamEnabled;
-	if (_freeCamEnabled && ConfigMan.getBool("flycamallrooms"))
+void Module::toggleFlyCamera() {
+	_flyCamEnabled = !_flyCamEnabled;
+	if (_flyCamEnabled && ConfigMan.getBool("flycamallrooms"))
 		_area->showAllRooms();
 }
 
