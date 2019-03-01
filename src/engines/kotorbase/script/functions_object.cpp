@@ -34,6 +34,7 @@
 #include "src/engines/kotorbase/placeable.h"
 #include "src/engines/kotorbase/module.h"
 #include "src/engines/kotorbase/objectcontainer.h"
+#include "src/engines/kotorbase/location.h"
 #include "src/engines/kotorbase/area.h"
 #include "src/engines/kotorbase/game.h"
 #include "src/engines/kotorbase/creature.h"
@@ -156,6 +157,14 @@ void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::getArea(Aurora::NWScript::FunctionContext &ctx) {
 	// TODO: return current area of the specified object
 	ctx.getReturn() = _game->getModule().getCurrentArea();
+}
+
+void Functions::getLocation(Aurora::NWScript::FunctionContext &ctx) {
+	const Object *object = ObjectContainer::toObject(ctx.getParams()[0].getObject());
+	if (!object)
+		return;
+
+	ctx.getReturn() = object->getLocation();
 }
 
 void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {

@@ -183,9 +183,11 @@ protected:
 	void getMinOneHP(Aurora::NWScript::FunctionContext &ctx);
 	void getCurrentHitPoints(Aurora::NWScript::FunctionContext &ctx);
 	void getMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
-	void getArea(Aurora::NWScript::FunctionContext &ctx);
 	void getItemInSlot(Aurora::NWScript::FunctionContext &ctx);
 	void getNearestCreature(Aurora::NWScript::FunctionContext &ctx);
+
+	void getArea    (Aurora::NWScript::FunctionContext &ctx);
+	void getLocation(Aurora::NWScript::FunctionContext &ctx);
 
 	void setMinOneHP(Aurora::NWScript::FunctionContext &ctx);
 	void setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
