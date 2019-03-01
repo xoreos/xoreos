@@ -94,6 +94,10 @@ bool Situated::isLocked() const {
 	return _locked;
 }
 
+bool Situated::isKeyRequired() const {
+	return _keyRequired;
+}
+
 void Situated::setLocked(bool locked) {
 	_locked = locked;
 }
@@ -120,7 +124,7 @@ const Common::UString &Situated::getModelName() const {
 
 const std::vector<int> Situated::getPossibleActions() const {
 	std::vector<int> actions;
-	if (_locked)
+	if (_locked && !_keyRequired)
 		actions.push_back(kActionOpenLock);
 
 	return actions;
@@ -206,6 +210,9 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	// Locked
 	_locked = gff.getBool("Locked", _locked);
+
+	// Key required
+	_keyRequired = gff.getBool("KeyRequired", _keyRequired);
 
 	// Conversation
 	_conversation = gff.getString("Conversation", _conversation);

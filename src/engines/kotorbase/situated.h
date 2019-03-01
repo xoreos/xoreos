@@ -74,6 +74,8 @@ public:
 	virtual bool isOpen() const = 0;
 	/** Is the situated object locked? */
 	bool isLocked() const;
+	/** Is a key required to unlock this situated object? */
+	bool isKeyRequired() const;
 
 	/** Lock/Unlock the situated object. */
 	virtual void setLocked(bool locked);
@@ -103,6 +105,7 @@ protected:
 	uint32 _soundAppType; ///< The index within the situated sounds 2DA.
 
 	bool _locked; ///< Is the situated object locked?
+	bool _keyRequired { false };
 
 	Common::UString _soundOpened;    ///< The sound the object makes when opened.
 	Common::UString _soundClosed;    ///< The sound the object makes when closed.
