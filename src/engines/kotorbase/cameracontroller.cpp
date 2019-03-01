@@ -133,6 +133,14 @@ void CameraController::processMovement(float frameTime) {
 		float y = _target.y - _distance * cos(_yaw);
 		float z = _target.z + _height;
 
+		glm::vec3 camera(x, y, z);
+		glm::vec3 intersection;
+		if (_module->getCurrentArea()->rayTest(_target, camera, intersection)) {
+			x = intersection.x;
+			y = intersection.y;
+			z = intersection.z;
+		}
+
 		CameraMan.setPosition(x, y, z);
 		CameraMan.setOrientation(_pitch, 0.0f, Common::rad2deg(_yaw));
 		CameraMan.update();

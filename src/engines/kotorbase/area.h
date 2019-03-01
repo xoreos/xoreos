@@ -128,6 +128,7 @@ public:
 	float evaluateElevation(float x, float y);
 	bool walkable(const glm::vec3 &orig, const glm::vec3 &dest) const;
 	void toggleWalkmesh();
+	bool rayTest(const glm::vec3 &orig, const glm::vec3 &dest, glm::vec3 &intersect) const;
 
 	// Triggers
 
