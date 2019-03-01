@@ -68,6 +68,8 @@ public:
 	bool activate(Object *opener);
 	/** The user object deactivates this placeable. */
 	bool deactivate(Object *closer);
+	/** The unlocker object unlocks this placeable. */
+	bool unlock(Object *unlocker);
 
 	// Inventory
 

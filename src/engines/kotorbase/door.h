@@ -64,6 +64,8 @@ public:
 	bool open(Object *opener);
 	/** The closer object closes this door. */
 	bool close(Object *closer);
+	/** The unlocker object unlocks this door. */
+	bool unlock(Object *unlocker);
 
 	// Object/cursor interactions
 

@@ -209,6 +209,16 @@ bool Door::close(Object *closer) {
 	return true;
 }
 
+bool Door::unlock(Object *unlocker) {
+	if (_locked) {
+		_locked = false;
+		open(unlocker);
+		return true;
+	}
+
+	return false;
+}
+
 } // End of namespace KotORBase
 
 } // End of namespace Engines

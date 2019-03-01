@@ -240,6 +240,15 @@ bool Placeable::deactivate(Object *user) {
 	return true;
 }
 
+bool Placeable::unlock(Object *UNUSED(unlocker)) {
+	if (_locked) {
+		_locked = false;
+		return true;
+	}
+
+	return false;
+}
+
 bool Placeable::hasInventory() {
 	return _hasInventory;
 }
