@@ -45,8 +45,7 @@ HUD::HUD(Module &module, Console *console) :
 
 	_hoveredCircle->setHovered(true);
 	_targetCircle->setTarget(true);
-
-	_targetActionMap[0] = _targetActionMap[1] = _targetActionMap[2] = kActionInvalid;
+	clearTargetButtonActions();
 }
 
 void HUD::setMinimap(const Common::UString &UNUSED(map), int UNUSED(northAxis),
@@ -94,7 +93,11 @@ void HUD::setHoveredObject(Object *object) {
 }
 
 void HUD::setTargetObject(Object *object) {
+	if (_targetObject == object)
+		return;
+
 	_targetObject = object;
+	_targetDirty = true;
 }
 
 void HUD::resetSelection() {
@@ -157,7 +160,7 @@ void HUD::callbackActive(Widget &widget) {
 		return;
 	}
 	if (widget.getTag() == "BTN_TARGET1") {
-		if (_targetActionMap[1] == kActionOpenLock) {
+		if (_targetButtonActions[1] == kActionOpenLock) {
 			Action action(kActionOpenLock);
 			action.object = _targetObject;
 			_module.getPartyLeader()->enqueueAction(action);
@@ -188,7 +191,7 @@ float HUD::getTargetButtonsDistance() const {
 	return x2 - x1;
 }
 
-void HUD::positionTargetButtons(float originX, float originY) {
+void HUD::updateTargetButtons(float originX, float originY) {
 	if (!_firstTargetButton || !_secondTargetButton || !_thirdTargetButton)
 		return;
 
@@ -204,25 +207,60 @@ void HUD::positionTargetButtons(float originX, float originY) {
 	_firstTargetButton->setPosition(originX - dist - halfWidth, y, -100.0f);
 	_secondTargetButton->setPosition(originX - halfWidth, y, -100.0f);
 	_thirdTargetButton->setPosition(originX + dist - halfWidth, y, -100.0f);
+
+	if (_targetDirty) {
+		_firstTargetButton->setIcon("");
+		_secondTargetButton->setIcon((_targetButtonActions[1] == kActionOpenLock) ? "isk_security" : "");
+		_thirdTargetButton->setIcon("");
+	}
 }
 
-void HUD::updateTargetActions() {
-	_targetActionMap[0] = _targetActionMap[1] = _targetActionMap[2] = kActionInvalid;
+void HUD::showTargetButtons() {
+	if (_firstTargetButton) {
+		_firstTargetButton->setInvisible(false);
+		_firstTargetButton->show();
+	}
+	if (_secondTargetButton) {
+		_secondTargetButton->setInvisible(false);
+		_secondTargetButton->show();
+	}
+	if (_thirdTargetButton) {
+		_thirdTargetButton->setInvisible(false);
+		_thirdTargetButton->show();
+	}
+}
 
+void HUD::hideTargetButtons() {
+	if (_firstTargetButton) {
+		_firstTargetButton->setInvisible(true);
+		_firstTargetButton->hide();
+	}
+	if (_secondTargetButton) {
+		_secondTargetButton->setInvisible(true);
+		_secondTargetButton->hide();
+	}
+	if (_thirdTargetButton) {
+		_thirdTargetButton->setInvisible(true);
+		_thirdTargetButton->hide();
+	}
+}
+
+void HUD::clearTargetButtonActions() {
+	for (int i = 0; i < 3; ++i) {
+		_targetButtonActions[i] = kActionInvalid;
+	}
+}
+
+void HUD::fillTargetButtonActions() {
 	for (int action : _targetObject->getPossibleActions()) {
 		switch (action) {
 			case kActionOpenLock:
-				_targetActionMap[1] = kActionOpenLock;
+				_targetButtonActions[1] = kActionOpenLock;
 				break;
 			default:
 				break;
 		}
 	}
-
-	if (_targetActionMap[1] == kActionOpenLock)
-		_secondTargetButton->setIcon("isk_security");
-	else
-		_secondTargetButton->setIcon("");
 }
 
 void HUD::showTargetInformation(Object *object) {
@@ -244,29 +282,22 @@ void HUD::showTargetInformation(Object *object) {
 		_targetHealth->setInvisible(false);
 		_targetHealth->show();
 	}
-
-	if (object->getPossibleActions().empty())
-		return;
-
-	if (_firstTargetButton) {
-		_firstTargetButton->setInvisible(false);
-		_firstTargetButton->show();
-	}
-	if (_secondTargetButton) {
-		_secondTargetButton->setInvisible(false);
-		_secondTargetButton->show();
-	}
-	if (_thirdTargetButton) {
-		_thirdTargetButton->setInvisible(false);
-		_thirdTargetButton->show();
-	}
 }
 
 void HUD::updateTargetInformation(KotORBase::Object *object, float x, float y) {
+	if (_targetDirty) {
+		clearTargetButtonActions();
+		fillTargetButtonActions();
+	}
+
+	bool hasActions = (_targetButtonActions[0] != kActionInvalid) ||
+	                  (_targetButtonActions[1] != kActionInvalid) ||
+	                  (_targetButtonActions[2] != kActionInvalid);
+
 	float halfSelectionSize = kSelectionCircleSize / 2.0f;
 	float elementY = y + halfSelectionSize + 1.0f;
 
-	if (!object->getPossibleActions().empty()) {
+	if (hasActions) {
 		float _, targetBtnHeight = 0.0f;
 		getTargetButtonSize(_, targetBtnHeight);
 		elementY += targetBtnHeight + 1.0f;
@@ -290,8 +321,14 @@ void HUD::updateTargetInformation(KotORBase::Object *object, float x, float y) {
 	if (_targetName)
 		_targetName->setPosition(x - 100, elementY, -FLT_MAX);
 
-	positionTargetButtons(x, y);
-	updateTargetActions();
+	if (hasActions) {
+		updateTargetButtons(x, y);
+		showTargetButtons();
+	} else {
+		hideTargetButtons();
+	}
+
+	_targetDirty = false;
 }
 
 void HUD::hideTargetInformation() {
@@ -313,18 +350,7 @@ void HUD::hideTargetInformation() {
 		_targetHealth->hide();
 	}
 
-	if (_firstTargetButton) {
-		_firstTargetButton->setInvisible(true);
-		_firstTargetButton->hide();
-	}
-	if (_secondTargetButton) {
-		_secondTargetButton->setInvisible(true);
-		_secondTargetButton->hide();
-	}
-	if (_thirdTargetButton) {
-		_thirdTargetButton->setInvisible(true);
-		_thirdTargetButton->hide();
-	}
+	hideTargetButtons();
 }
 
 } // End of namespace KotORBase

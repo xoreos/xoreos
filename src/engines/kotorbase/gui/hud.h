@@ -96,6 +96,7 @@ private:
 
 	Object *_targetObject { nullptr };
 	Common::ScopedPtr<SelectionCircle> _targetCircle;
+	bool _targetDirty { false };
 
 	// Widgets for showing target information
 
@@ -108,15 +109,21 @@ private:
 	Odyssey::WidgetButton      *_thirdTargetButton { nullptr };
 
 
-	ActionType _targetActionMap[3];
+	ActionType _targetButtonActions[3];
 
 	// Target buttons
 
 	void getTargetButtonSize(float &width, float &height) const;
 	float getTargetButtonsDistance() const;
 
-	void positionTargetButtons(float originX, float originY);
-	void updateTargetActions();
+	void updateTargetButtons(float originX, float originY);
+	void showTargetButtons();
+	void hideTargetButtons();
+
+	// Target button actions
+
+	void clearTargetButtonActions();
+	void fillTargetButtonActions();
 
 	// Target information
 
