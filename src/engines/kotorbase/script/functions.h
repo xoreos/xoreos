@@ -189,6 +189,8 @@ protected:
 	void getArea    (Aurora::NWScript::FunctionContext &ctx);
 	void getLocation(Aurora::NWScript::FunctionContext &ctx);
 
+	void jumpToLocation(Aurora::NWScript::FunctionContext &ctx);
+
 	void setMinOneHP(Aurora::NWScript::FunctionContext &ctx);
 	void setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
 

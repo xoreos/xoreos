@@ -167,6 +167,18 @@ void Functions::getLocation(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = object->getLocation();
 }
 
+void Functions::jumpToLocation(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = ObjectContainer::toObject(ctx.getCaller());
+	Location *moveTo = ObjectContainer::toLocation(ctx.getParams()[0].getEngineType());
+
+	if (!object || !moveTo)
+		return;
+
+	float x, y, z;
+	moveTo->getPosition(x, y, z);
+	object->setPosition(x, y, z);
+}
+
 void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = 0;
 
