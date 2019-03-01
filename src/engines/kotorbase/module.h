@@ -188,7 +188,7 @@ public:
 	void enter();
 	/** Leave the running module, quitting it. */
 	void leave();
-	/** Open the inventory of a container. */
+	/** Click an object with the mouse. */
 	void clickObject(Object *object);
 	/** Enter an object with the mouse. */
 	void enterObject(Object *object);

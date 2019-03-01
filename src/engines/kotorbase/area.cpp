@@ -562,7 +562,6 @@ void Area::click(int x, int y) {
 	if (!o)
 		return;
 
-	o->click(_module->getPC());
 	_module->clickObject(o);
 }
 

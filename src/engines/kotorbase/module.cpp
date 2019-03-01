@@ -57,6 +57,7 @@
 #include "src/engines/kotorbase/placeable.h"
 #include "src/engines/kotorbase/module.h"
 #include "src/engines/kotorbase/area.h"
+#include "src/engines/kotorbase/door.h"
 
 #include "src/engines/kotorbase/gui/partyselection.h"
 
@@ -515,6 +516,12 @@ void Module::clickObject(Object *object) {
 		_ingame->setTargetObject(object);
 		return;
 	}
+
+	object->click(getPartyLeader());
+
+	Door *door = ObjectContainer::toDoor(object);
+	if (door && !door->isUsable())
+		_ingame->setTargetObject(nullptr);
 
 	Creature *creature = ObjectContainer::toCreature(object);
 	if (creature && !creature->getConversation().empty()) {
