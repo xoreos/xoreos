@@ -759,6 +759,9 @@ Creature *Module::getPartyLeader() const {
 }
 
 Creature *Module::getPartyMemberByIndex(int index) const {
+	if (index >= static_cast<int>(_partyController.getPartyMemberCount()))
+		return nullptr;
+
 	return _partyController.getPartyMemberByIndex(index).second;
 }
 

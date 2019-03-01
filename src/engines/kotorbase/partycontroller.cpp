@@ -47,7 +47,7 @@ Creature *PartyController::getPartyLeader() const {
 
 const std::pair<int, Creature *> &PartyController::getPartyMemberByIndex(int index) const {
 	if (index >= static_cast<int>(_party.size()))
-		throw Common::Exception("PartyController::getPartyMember(): Invalid index");
+		throw Common::Exception("PartyController::getPartyMember(): Invalid index \"%d\"", index);
 
 	return _party[index];
 }
