@@ -19,18 +19,18 @@
  */
 
 /** @file
- *  Engine utility class for free-roam camera handling.
+ *  Engine utility class for flying camera handling.
  */
 
 #include "src/graphics/camera.h"
 
-#include "src/engines/aurora/freeroamcamera.h"
+#include "src/engines/aurora/flycamera.h"
 
-DECLARE_SINGLETON(Engines::FreeRoamCamera)
+DECLARE_SINGLETON(Engines::FlyCamera)
 
 namespace Engines {
 
-bool FreeRoamCamera::handleCameraInput(const Events::Event &e) {
+bool FlyCamera::handleCameraInput(const Events::Event &e) {
 	if      (e.type == Events::kEventKeyDown)
 		return handleCameraKeyboardInput(e);
 	else if (e.type == Events::kEventMouseMove)
@@ -39,7 +39,7 @@ bool FreeRoamCamera::handleCameraInput(const Events::Event &e) {
 	return false;
 }
 
-bool FreeRoamCamera::handleCameraKeyboardInput(const Events::Event &e) {
+bool FlyCamera::handleCameraKeyboardInput(const Events::Event &e) {
 	float multiplier = 1.0f;
 	if (e.key.keysym.mod & KMOD_SHIFT)
 		multiplier = 5.0f;
@@ -82,7 +82,7 @@ bool FreeRoamCamera::handleCameraKeyboardInput(const Events::Event &e) {
 	return true;
 }
 
-bool FreeRoamCamera::handleCameraMouseInput(const Events::Event &e) {
+bool FlyCamera::handleCameraMouseInput(const Events::Event &e) {
 	// Holding down the middle mouse button enables free look.
 	if (e.motion.state & SDL_BUTTON(2))
 		CameraMan.turn(-0.5f * e.motion.yrel, 0.0f, -0.5f * e.motion.xrel);

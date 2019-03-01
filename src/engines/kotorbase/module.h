@@ -228,7 +228,7 @@ public:
 
 
 	void addItemToActiveObject(const Common::UString &item, int count);
-	void toggleFreeRoamCamera();
+	void toggleFlyCamera();
 	void toggleWalkmesh();
 	void toggleTriggers();
 
@@ -302,7 +302,7 @@ private:
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
 
-	bool _freeCamEnabled;
+	bool _flyCamEnabled;
 	uint32 _prevTimestamp;
 	float _frameTime;
 	bool _inDialog;

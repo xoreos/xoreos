@@ -19,11 +19,11 @@
  */
 
 /** @file
- *  Engine utility class for free-roam camera handling.
+ *  Engine utility class for flying camera handling.
  */
 
-#ifndef ENGINES_AURORA_FREEROAMCAMERA_H
-#define ENGINES_AURORA_FREEROAMCAMERA_H
+#ifndef ENGINES_AURORA_FLYCAMERA_H
+#define ENGINES_AURORA_FLYCAMERA_H
 
 #include "src/common/singleton.h"
 
@@ -31,9 +31,10 @@
 
 namespace Engines {
 
-class FreeRoamCamera : public Common::Singleton<FreeRoamCamera> {
+class FlyCamera : public Common::Singleton<FlyCamera> {
 public:
 	bool handleCameraInput(const Events::Event &e);
+
 private:
 	bool handleCameraKeyboardInput(const Events::Event &e);
 	bool handleCameraMouseInput(const Events::Event &e);
@@ -41,6 +42,6 @@ private:
 
 } // End of namespace Engines
 
-#define FreeRoamCam ::Engines::FreeRoamCamera::instance()
+#define FlyCam Engines::FlyCamera::instance()
 
-#endif // ENGINES_AURORA_FREEROAMCAMERA_H
+#endif // ENGINES_AURORA_FLYCAMERA_H
