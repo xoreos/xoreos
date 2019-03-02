@@ -267,10 +267,6 @@ find_package(OpenAL REQUIRED)
 include_directories(${OPENAL_INCLUDE_DIR})
 list(APPEND XOREOS_LIBRARIES ${OPENAL_LIBRARY})
 
-find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIR})
-list(APPEND XOREOS_LIBRARIES ${OPENGL_LIBRARIES})
-
 find_package(Freetype REQUIRED)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 link_directories(${FREETYPE_LIBRARY_DIRS})
@@ -386,6 +382,10 @@ else()
 endif()
 include_directories(${GLEW_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${GLEW_LIBRARIES})
+
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIR})
+list(APPEND XOREOS_LIBRARIES ${OPENGL_LIBRARIES})
 
 # pthreads, for our unit tests
 if(NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "MinGW")
