@@ -42,7 +42,6 @@ src_video_libvideo_la_SOURCES += \
     $(EMPTY)
 
 src_video_libvideo_la_LIBADD = \
-    src/video/aurora/libaurora.la \
     src/video/codecs/libcodecs.la \
     $(EMPTY)
 

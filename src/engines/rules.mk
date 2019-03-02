@@ -36,9 +36,9 @@ src_engines_libengines_la_SOURCES += \
     $(EMPTY)
 
 src_engines_libengines_la_LIBADD = \
-    src/engines/aurora/libaurora.la \
-    src/engines/odyssey/libodyssey.la \
     src/engines/kotorbase/libkotorbase.la \
+    src/engines/odyssey/libodyssey.la \
+    src/engines/aurora/libaurora.la \
     $(EMPTY)
 
 # Subdirectories

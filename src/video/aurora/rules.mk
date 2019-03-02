@@ -19,13 +19,10 @@
 
 # Aurora-specific video-related support classes.
 
-noinst_LTLIBRARIES += src/video/aurora/libaurora.la
-src_video_aurora_libaurora_la_SOURCES =
-
-src_video_aurora_libaurora_la_SOURCES += \
+src_video_libvideo_la_SOURCES += \
     src/video/aurora/videoplayer.h \
     $(EMPTY)
 
-src_video_aurora_libaurora_la_SOURCES += \
+src_video_libvideo_la_SOURCES += \
     src/video/aurora/videoplayer.cpp \
     $(EMPTY)
