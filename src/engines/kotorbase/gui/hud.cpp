@@ -30,6 +30,7 @@
 #include "src/engines/kotorbase/object.h"
 #include "src/engines/kotorbase/module.h"
 #include "src/engines/kotorbase/creature.h"
+#include "src/engines/kotorbase/door.h"
 
 #include "src/engines/kotorbase/gui/hud.h"
 
@@ -106,37 +107,8 @@ void HUD::resetSelection() {
 }
 
 void HUD::updateSelection() {
-	if (_targetObject) {
-		_targetCircle->setHovered(_hoveredObject == _targetObject);
-
-		Situated *situated = ObjectContainer::toSituated(_targetObject);
-		if (situated) {
-			float sX, sY;
-			_targetCircle->moveTo(situated, sX, sY);
-			_targetCircle->show();
-			updateTargetInformation(_targetObject, sX, sY);
-			showTargetInformation(_targetObject);
-		} else {
-			_targetCircle->hide();
-			hideTargetInformation();
-		}
-	} else {
-		_targetCircle->hide();
-		hideTargetInformation();
-	}
-
-	if (_hoveredObject && (_hoveredObject != _targetObject)) {
-		Situated *situated = ObjectContainer::toSituated(_hoveredObject);
-		if (situated) {
-			float _, __;
-			_hoveredCircle->moveTo(situated, _, __);
-			_hoveredCircle->show();
-		} else {
-			_hoveredCircle->hide();
-		}
-	} else {
-		_hoveredCircle->hide();
-	}
+	updateTargetObject();
+	updateHoveredObject();
 }
 
 void HUD::hideSelection() {
@@ -169,6 +141,56 @@ void HUD::callbackActive(Widget &widget) {
 	}
 	if (widget.getTag() == "BTN_TARGET2") {
 		return;
+	}
+}
+
+void HUD::updateTargetObject() {
+	if (_targetObject) {
+		Door *door = ObjectContainer::toDoor(_targetObject);
+		if (door && !door->isUsable())
+			_targetObject = nullptr;
+	}
+
+	if (!_targetObject) {
+		_targetCircle->hide();
+		hideTargetInformation();
+		return;
+	}
+
+	_targetCircle->setHovered(_hoveredObject == _targetObject);
+
+	Situated *situated = ObjectContainer::toSituated(_targetObject);
+	if (situated) {
+		float sX, sY;
+		_targetCircle->moveTo(situated, sX, sY);
+		_targetCircle->show();
+		updateTargetInformation(_targetObject, sX, sY);
+		showTargetInformation(_targetObject);
+	} else {
+		_targetCircle->hide();
+		hideTargetInformation();
+	}
+}
+
+void HUD::updateHoveredObject() {
+	if (_hoveredObject) {
+		Door *door = ObjectContainer::toDoor(_hoveredObject);
+		if (door && !door->isUsable())
+			_hoveredObject = nullptr;
+	}
+
+	if (!_hoveredObject || (_hoveredObject == _targetObject)) {
+		_hoveredCircle->hide();
+		return;
+	}
+
+	Situated *situated = ObjectContainer::toSituated(_hoveredObject);
+	if (situated) {
+		float _, __;
+		_hoveredCircle->moveTo(situated, _, __);
+		_hoveredCircle->show();
+	} else {
+		_hoveredCircle->hide();
 	}
 }
 

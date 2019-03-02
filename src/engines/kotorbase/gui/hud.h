@@ -111,6 +111,9 @@ private:
 
 	ActionType _targetButtonActions[3];
 
+	void updateTargetObject();
+	void updateHoveredObject();
+
 	// Target buttons
 
 	void getTargetButtonSize(float &width, float &height) const;
