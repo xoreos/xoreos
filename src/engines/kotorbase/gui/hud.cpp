@@ -311,9 +311,9 @@ void HUD::updateTargetInformation(KotORBase::Object *object, float x, float y) {
 
 		_targetHealth->setMaxValue(object->getMaxHitPoints());
 		_targetHealth->setCurrentValue(object->getCurrentHitPoints());
-	}
 
-	elementY += _targetHealth->getHeight() + 1.0f;
+		elementY += _targetHealth->getHeight() + 1.0f;
+	}
 
 	if (_targetNameBackground)
 		_targetNameBackground->setPosition(x - 100, elementY, -100);
