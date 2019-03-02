@@ -66,7 +66,6 @@ src_graphics_libgraphics_la_SOURCES += \
 
 src_graphics_libgraphics_la_LIBADD = \
     src/graphics/images/libimages.la \
-    src/graphics/aurora/libaurora.la \
     src/graphics/shader/libshader.la \
     src/graphics/mesh/libmesh.la \
     src/graphics/render/librender.la \

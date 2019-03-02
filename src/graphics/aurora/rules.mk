@@ -19,10 +19,7 @@
 
 # Aurora-specific graphics-related loaders.
 
-noinst_LTLIBRARIES += src/graphics/aurora/libaurora.la
-src_graphics_aurora_libaurora_la_SOURCES =
-
-src_graphics_aurora_libaurora_la_SOURCES += \
+src_graphics_libgraphics_la_SOURCES += \
     src/graphics/aurora/types.h \
     src/graphics/aurora/texture.h \
     src/graphics/aurora/texturehandle.h \
@@ -65,7 +62,7 @@ src_graphics_aurora_libaurora_la_SOURCES += \
     src/graphics/aurora/line.h \
     $(EMPTY)
 
-src_graphics_aurora_libaurora_la_SOURCES += \
+src_graphics_libgraphics_la_SOURCES += \
     src/graphics/aurora/texture.cpp \
     src/graphics/aurora/texturehandle.cpp \
     src/graphics/aurora/textureman.cpp \
