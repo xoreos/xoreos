@@ -157,7 +157,10 @@ if(CMAKE_HOST_WIN32)
     endforeach(d)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNINGS}")
-    link_libraries(winmm.lib imm32.lib mincore.lib version.lib)
+    link_libraries(winmm.lib imm32.lib version.lib)
+    if((${CMAKE_SYSTEM_VERSION} VERSION_EQUAL 6.2) OR (${CMAKE_SYSTEM_VERSION} VERSION_GREATER 6.2))
+      link_libraries(mincore.lib)
+    endif()
   endif()
 endif()
 
