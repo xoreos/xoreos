@@ -49,7 +49,7 @@ private:
 	ItemSlotMap equippedItems;
 	ItemSlotMap inventoryItems;
 
-	uint32 _lastRetrieved; ///< Index of last retrieved item.
+	uint32 _lastRetrieved { UINT32_MAX }; ///< Index of last retrieved item.
 
 	/** Convert a bit flag to an equipment slot. */
 	InventorySlot getSlotFromBitFlag(uint32 bitFlag) const;
