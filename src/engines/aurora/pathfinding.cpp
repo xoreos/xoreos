@@ -272,8 +272,8 @@ void Pathfinding::getVerticesTunnel(std::vector<uint32> &facePath, std::vector<g
 		}
 	}
 	if (tunnel.size() != tunnelLeftRight.size()) {
-		warning("Possible error in tunnel parity (base tunnel size %zu and left/right tunnel size %zu",
-		        tunnel.size(), tunnelLeftRight.size());
+		warning("Possible error in tunnel parity (base tunnel size %u and left/right tunnel size %u",
+		        (uint) tunnel.size(), (uint) tunnelLeftRight.size());
 	}
 }
 
