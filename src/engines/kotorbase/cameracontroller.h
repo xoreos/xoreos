@@ -53,6 +53,7 @@ public:
 	void updateTarget();
 	void updateCameraStyle();
 	bool handleEvent(const Events::Event &e);
+	void processRotation(float frameTime);
 	void processMovement(float frameTime);
 	void stopMovement();
 
@@ -67,6 +68,18 @@ private:
 	bool _clockwiseMovementWanted { false };
 	bool _counterClockwiseMovementWanted { false };
 	bool _dirty { false };
+
+	// Obstacles
+
+	bool _obstacleExists { false };
+	float _obstacleDistance { 0.0f };
+	float _actualDistance { 0.0f };
+
+
+	inline glm::vec3 getCameraPosition(float distance) const;
+
+	inline bool shouldMoveClockwise() const;
+	inline bool shouldMoveCounterClockwise() const;
 };
 
 } // End of namespace KotORBase

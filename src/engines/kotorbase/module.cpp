@@ -584,13 +584,12 @@ void Module::processEventQueue() {
 	GfxMan.lockFrame();
 
 	_area->processCreaturesActions(_frameTime);
-	_cameraController.processMovement(_frameTime);
+	_cameraController.processRotation(_frameTime);
 
-	if (!_cameraController.isFlyCamera()) {
+	if (!_cameraController.isFlyCamera())
 		_partyLeaderController.processMovement(_frameTime);
-		updateMinimap();
-	}
 
+	_cameraController.processMovement(_frameTime);
 	updateSoundListener();
 	updateSelection();
 
@@ -756,6 +755,7 @@ void Module::movedPartyLeader() {
 	_area->notifyPartyLeaderMoved();
 
 	_cameraController.updateTarget();
+	updateMinimap();
 }
 
 Creature *Module::getPartyLeader() const {
@@ -1087,6 +1087,7 @@ void Module::addItemToActiveObject(const Common::UString &item, int count) {
 
 void Module::onPartyLeaderChanged() {
 	_cameraController.updateTarget();
+	updateMinimap();
 	updateCurrentPartyGUI();
 }
 

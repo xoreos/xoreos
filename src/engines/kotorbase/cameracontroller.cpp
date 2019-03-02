@@ -37,7 +37,8 @@ namespace Engines {
 
 namespace KotORBase {
 
-static const float kRotationSpeed = M_PI / 2.f;
+static const float kRotationSpeed = M_PI / 2.0f;
+static const float kMovementSpeed = M_PI / 2.0f;
 
 CameraController::CameraController(Module *module) : _module(module) {
 }
@@ -79,6 +80,7 @@ void CameraController::updateCameraStyle() {
 	GfxMan.setPerspective(style.viewAngle, 0.1f, 10000.0f);
 
 	_dirty = true;
+	_actualDistance = _distance;
 }
 
 bool CameraController::handleEvent(const Events::Event &e) {
@@ -118,47 +120,77 @@ bool CameraController::handleEvent(const Events::Event &e) {
 	}
 }
 
+void CameraController::processRotation(float frameTime) {
+	if (_flycam)
+		return;
+
+	if (shouldMoveClockwise()) {
+		_yaw -= kRotationSpeed * frameTime;
+		_yaw = fmodf(_yaw, 2.0f * M_PI);
+	} else if (shouldMoveCounterClockwise()) {
+		_yaw += kRotationSpeed * frameTime;
+		_yaw = fmodf(_yaw, 2.0f * M_PI);
+	}
+
+	CameraMan.setOrientation(_pitch, 0.0f, Common::rad2deg(_yaw));
+}
+
 void CameraController::processMovement(float frameTime) {
 	if (_flycam) {
 		CameraMan.update();
 		return;
 	}
 
-	bool moveClockwise = _clockwiseMovementWanted && !_counterClockwiseMovementWanted;
-	bool moveCounterClockwise = _counterClockwiseMovementWanted && !_clockwiseMovementWanted;
+	glm::vec3 expectedPosition = getCameraPosition(_distance);
+	float expectedDistance = glm::distance(_target, expectedPosition);
 
-	if (moveClockwise) {
-		_yaw -= kRotationSpeed * frameTime;
-		_yaw = fmodf(_yaw, 2.0f * M_PI);
-	} else if (moveCounterClockwise) {
-		_yaw += kRotationSpeed * frameTime;
-		_yaw = fmodf(_yaw, 2.0f * M_PI);
-	}
-
-	if (moveClockwise || moveCounterClockwise || _dirty) {
-		float x = _target.x + _distance * sin(_yaw);
-		float y = _target.y - _distance * cos(_yaw);
-		float z = _target.z + _height;
-
-		glm::vec3 camera(x, y, z);
-		glm::vec3 intersection;
-		if (_module->getCurrentArea()->rayTest(_target, camera, intersection)) {
-			x = intersection.x;
-			y = intersection.y;
-			z = intersection.z;
+	if (shouldMoveClockwise() || shouldMoveCounterClockwise() || _dirty) {
+		glm::vec3 obstacle;
+		if (_module->getCurrentArea()->rayTest(_target, expectedPosition, obstacle)) {
+			_obstacleExists = true;
+			_obstacleDistance = glm::distance(_target, obstacle);
+		} else {
+			_obstacleExists = false;
 		}
-
-		CameraMan.setPosition(x, y, z);
-		CameraMan.setOrientation(_pitch, 0.0f, Common::rad2deg(_yaw));
-		CameraMan.update();
-
 		_dirty = false;
 	}
+
+	float delta = kMovementSpeed * frameTime;
+
+	if (_obstacleExists) {
+		if (_actualDistance >= _obstacleDistance) {
+			_actualDistance = _obstacleDistance;
+		} else if (_actualDistance + delta <= _obstacleDistance) {
+			_actualDistance += delta;
+		}
+	} else if (_actualDistance + delta <= expectedDistance) {
+		_actualDistance += delta;
+	}
+
+	glm::vec3 actualPosition = getCameraPosition(_actualDistance);
+	CameraMan.setPosition(actualPosition.x, actualPosition.y, actualPosition.z);
+	CameraMan.update();
 }
 
 void CameraController::stopMovement() {
 	_clockwiseMovementWanted = false;
 	_counterClockwiseMovementWanted = false;
+}
+
+glm::vec3 CameraController::getCameraPosition(float distance) const {
+	glm::vec3 position;
+	position.x = _target.x + distance * sin(_yaw);
+	position.y = _target.y - distance * cos(_yaw);
+	position.z = _target.z + _height;
+	return position;
+}
+
+bool CameraController::shouldMoveClockwise() const {
+	return _clockwiseMovementWanted && !_counterClockwiseMovementWanted;
+}
+
+bool CameraController::shouldMoveCounterClockwise() const {
+	return _counterClockwiseMovementWanted && !_clockwiseMovementWanted;
 }
 
 } // End of namespace KotORBase
