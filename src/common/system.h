@@ -63,8 +63,35 @@
 	#include <cstdio>
 	#include <cstdlib>
 
-	#define snprintf c99_snprintf
-	#define vsnprintf c99_vsnprintf
+	#define FORCEINLINE __forceinline
+	#define PLUGIN_EXPORT __declspec(dllexport)
+
+	#if _MSC_VER < 1900
+		#define snprintf c99_snprintf
+		#define vsnprintf c99_vsnprintf
+
+		static FORCEINLINE int c99_vsnprintf(char *str, size_t size, const char *format, va_list ap) {
+			int count = -1;
+
+			if (size != 0)
+				count = _vsnprintf_s(str, size, _TRUNCATE, format, ap);
+			if (count == -1)
+				count = _vscprintf(format, ap);
+
+			return count;
+		}
+
+		static FORCEINLINE int c99_snprintf(char *str, size_t size, const char *format, ...) {
+			int count;
+			va_list ap;
+
+			va_start(ap, format);
+			count = c99_vsnprintf(str, size, format, ap);
+			va_end(ap);
+
+			return count;
+		}
+	#endif
 
 	#ifndef HAVE_STRTOLL
 		#define strtoll _strtoi64
@@ -79,31 +106,6 @@
 	#if !defined(XOREOS_LITTLE_ENDIAN) && !defined(XOREOS_BIG_ENDIAN)
 		#define XOREOS_LITTLE_ENDIAN 1
 	#endif
-
-	#define FORCEINLINE __forceinline
-	#define PLUGIN_EXPORT __declspec(dllexport)
-
-	static FORCEINLINE int c99_vsnprintf(char *str, size_t size, const char *format, va_list ap) {
-		int count = -1;
-
-		if (size != 0)
-			count = _vsnprintf_s(str, size, _TRUNCATE, format, ap);
-		if (count == -1)
-			count = _vscprintf(format, ap);
-
-		return count;
-	}
-
-	static FORCEINLINE int c99_snprintf(char *str, size_t size, const char *format, ...) {
-		int count;
-		va_list ap;
-
-		va_start(ap, format);
-		count = c99_vsnprintf(str, size, format, ap);
-		va_end(ap);
-
-		return count;
-	}
 
 	#ifndef WIN32
 		#define WIN32
