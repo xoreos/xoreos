@@ -64,6 +64,7 @@ install:
   - cmake -E chdir libs/%LIBFAAD% bash -c "%CONFIGURE_CMD% &>/dev/null"
   - cmake -E chdir libs/%LIBFAAD% bash -c "%INSTALL_CMD% DESTDIR=%LIBFAAD_DESTDIR% &>/dev/null"
 
+  - vcpkg update
   - vcpkg install zlib:x86-windows
   - vcpkg install bzip2:x86-windows
   - vcpkg install libpng:x86-windows
