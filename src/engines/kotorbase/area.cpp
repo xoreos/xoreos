@@ -241,13 +241,26 @@ void Area::show() {
 
 	GfxMan.lockFrame();
 
+	std::set<Common::UString> visibleRooms(getRoomsVisibleByPartyLeader());
+
 	// Show rooms
-	for (RoomList::iterator r = _rooms.begin(); r != _rooms.end(); ++r)
-		(*r)->show();
+	for (auto &r : _rooms) {
+		if (visibleRooms.find(r->getResRef()) != visibleRooms.end())
+			r->show();
+	}
 
 	// Show objects
-	for (ObjectList::iterator o = _objects.begin(); o != _objects.end(); ++o)
-		(*o)->show();
+	for (auto &o : _objects) {
+		Door *door = ObjectContainer::toDoor(o);
+		if (door) {
+			door->show();
+			continue;
+		}
+
+		const Room *room = o->getRoom();
+		if (room && room->isVisible())
+			o->show();
+	}
 
 	// Show walkmesh
 	_pathfinding->showWalkmesh(!_walkmeshInvisible);
@@ -665,47 +678,53 @@ void Area::notifyObjectMoved(Object &o) {
 void Area::notifyPartyLeaderMoved() {
 	Creature *partyLeader = _module->getPartyLeader();
 
-	const Room *prevLeaderRoom = partyLeader->getRoom();
+	const Room *prevRoom = partyLeader->getRoom();
 	notifyObjectMoved(*partyLeader);
-	const Room *leaderRoom = partyLeader->getRoom();
+	const Room *currentRoom = partyLeader->getRoom();
 
-	if (prevLeaderRoom == leaderRoom)
-		return;
+	if (currentRoom != prevRoom)
+		updateRoomsVisiblity();
+}
 
-	std::vector<Common::UString> visRooms;
-	if (leaderRoom) {
-		visRooms.push_back(leaderRoom->getResRef());
+std::set<Common::UString> Area::getRoomsVisibleByPartyLeader() const {
+	Creature *partyLeader = _module->getPartyLeader();
+	Common::UString currentRoom = partyLeader->getRoom()->getResRef();
 
-		const std::vector<Common::UString> va = _vis.getVisibilityArray(leaderRoom->getResRef());
-		for (std::vector<Common::UString>::const_iterator v = va.begin();
-				v != va.end(); ++v) {
-			Common::UString lcResRef(v->toLower());
-			if (std::find(visRooms.begin(), visRooms.end(), lcResRef) == visRooms.end())
-				visRooms.push_back(lcResRef);
-		}
+	std::set<Common::UString> rooms { currentRoom };
+
+	for (auto &resRef : getRoomsVisibleFrom(currentRoom)) {
+		Common::UString lcResRef(resRef.toLower());
+		if (rooms.find(lcResRef) == rooms.end())
+			rooms.insert(lcResRef);
 	}
+
+	return rooms;
+}
+
+void Area::updateRoomsVisiblity() {
+	std::set<Common::UString> visibleRooms(getRoomsVisibleByPartyLeader());
 
 	GfxMan.pauseAnimations();
 
-	for (RoomList::iterator r = _rooms.begin();
-			r != _rooms.end(); ++r) {
-		bool visible = std::find(visRooms.begin(), visRooms.end(), (*r)->getResRef()) != visRooms.end();
-		if (visible) {
-			if (!(*r)->isVisible())
-				(*r)->show();
-		} else if ((*r)->isVisible())
-			(*r)->hide();
+	for (auto &r : _rooms) {
+		bool shouldBeVisible = visibleRooms.find(r->getResRef()) != visibleRooms.end();
+		bool visible = r->isVisible();
+
+		if (visible && !shouldBeVisible)
+			r->hide();
+		else if (shouldBeVisible && !visible)
+			r->show();
 	}
 
-	for (ObjectList::iterator o = _objects.begin();
-			o != _objects.end(); ++o) {
-		const Room *objRoom = (*o)->getRoom();
-		bool visible = objRoom && objRoom->isVisible();
-		if (visible) {
-			if (!(*o)->isVisible())
-				(*o)->show();
-		} else if ((*o)->isVisible())
-			(*o)->hideSoft();
+	for (auto &o : _objects) {
+		const Room *room = o->getRoom();
+		bool shouldBeVisible = room && room->isVisible();
+		bool visible = o->isVisible();
+
+		if (visible && !shouldBeVisible)
+			o->hideSoft();
+		else if (shouldBeVisible && !visible)
+			o->show();
 	}
 
 	GfxMan.resumeAnimations();

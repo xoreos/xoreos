@@ -28,6 +28,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <set>
 
 #include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
@@ -155,13 +156,16 @@ public:
 
 	const CameraStyle &getCameraStyle() const;
 
+	// Room visiblity
+
+	const std::vector<Common::UString> &getRoomsVisibleFrom(const Common::UString &room) const;
+	std::set<Common::UString> getRoomsVisibleByPartyLeader() const;
 
 	void showAllRooms();
-
 	void notifyObjectMoved(Object &o);
 	void notifyPartyLeaderMoved();
 
-	const std::vector<Common::UString> &getRoomsVisibleFrom(const Common::UString &room) const;
+
 	Object *getActiveObject();
 
 	void processCreaturesActions(float dt);
@@ -273,6 +277,9 @@ private:
 	void checkActive(int x = -1, int y = -1);
 	void highlightAll(bool enabled);
 	void click(int x, int y);
+
+
+	void updateRoomsVisiblity();
 
 
 	friend class Console;
