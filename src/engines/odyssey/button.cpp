@@ -55,7 +55,7 @@ void WidgetButton::load(const Aurora::GFF3Struct &gff) {
 }
 
 void WidgetButton::show() {
-	if (isVisible())
+	if (isInvisible())
 		return;
 
 	Widget::show();
