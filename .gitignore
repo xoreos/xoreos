@@ -91,6 +91,7 @@ Makefile.in
 /tests/aurora/test_*
 /tests/images/test_*
 /tests/engines/test_*
+/tests/engines/nwn2/test_*
 
 # Unix binary
 /src/xoreos
