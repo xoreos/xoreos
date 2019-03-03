@@ -41,7 +41,7 @@ public:
 	// .--- Object
 	void show();
 	void hide();
-	void hideSoft();
+	void notifyNotSeen();
 	bool isVisible() const;
 	// '---
 

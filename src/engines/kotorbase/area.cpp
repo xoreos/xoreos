@@ -722,7 +722,7 @@ void Area::updateRoomsVisiblity() {
 		bool visible = o->isVisible();
 
 		if (visible && !shouldBeVisible)
-			o->hideSoft();
+			o->notifyNotSeen();
 		else if (shouldBeVisible && !visible)
 			o->show();
 	}

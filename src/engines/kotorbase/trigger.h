@@ -43,7 +43,7 @@ public:
 
 	void show();
 	void hide();
-	void hideSoft();
+	void notifyNotSeen();
 
 protected:
 	void load(const Aurora::GFF3Struct &gff);

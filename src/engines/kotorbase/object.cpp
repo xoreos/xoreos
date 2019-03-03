@@ -81,7 +81,7 @@ void Object::show() {
 void Object::hide() {
 }
 
-void Object::hideSoft() {
+void Object::notifyNotSeen() {
 	hide();
 }
 

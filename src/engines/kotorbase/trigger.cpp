@@ -48,7 +48,7 @@ void Trigger::hide() {
 	Renderable::hide();
 }
 
-void Trigger::hideSoft() {
+void Trigger::notifyNotSeen() {
 }
 
 bool Trigger::isVisible() const {

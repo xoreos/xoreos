@@ -50,7 +50,7 @@ void Trigger::hide() {
 	Renderable::hide();
 }
 
-void Trigger::hideSoft() {
+void Trigger::notifyNotSeen() {
 }
 
 void Trigger::createTrap(uint8 trapType, uint32 faction,

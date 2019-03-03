@@ -62,8 +62,8 @@ public:
 	virtual void show();
 	/** Hide the object's model(s). */
 	virtual void hide();
-	/** Hide the object's model(s) if applicable. */
-	virtual void hideSoft();
+	/** Notify the object that it is no longer seen. */
+	virtual void notifyNotSeen();
 
 	// Basic properties
 

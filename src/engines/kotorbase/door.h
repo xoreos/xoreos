@@ -52,8 +52,8 @@ public:
 
 	/** Hide the door's model. */
 	void hide();
-	/** Hide the door's model if applicable. */
-	void hideSoft();
+	/** Notify the object that it is no longer seen. */
+	void notifyNotSeen();
 
 	// Basic properties
 

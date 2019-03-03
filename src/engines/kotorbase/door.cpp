@@ -117,7 +117,7 @@ void Door::hide() {
 	Situated::hide();
 }
 
-void Door::hideSoft() {
+void Door::notifyNotSeen() {
 }
 
 void Door::enter() {
