@@ -268,6 +268,15 @@ enum Perception {
 	kPerceptionSeen               = 7
 };
 
+enum WeaponWield {
+	kWeaponWieldBaton  = 1,
+	kWeaponWieldSword  = 2,
+	kWeaponWieldStaff  = 3,
+	kWeaponWieldPistol = 4,
+	kWeaponWieldRifle  = 5,
+	kWeaponWieldHeavy  = 6
+};
+
 } // End of namespace KotORBase
 
 } // End of namespace Engines

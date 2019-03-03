@@ -57,6 +57,11 @@ bool PartyLeaderController::handleEvent(const Events::Event &e) {
 			} else if (e.key.keysym.scancode == SDL_SCANCODE_S) {
 				_backwardMovementWanted = (e.type == Events::kEventKeyDown);
 				return true;
+			} else if ((e.key.keysym.scancode == SDL_SCANCODE_X) && (e.type == Events::kEventKeyUp)) {
+				if (!_moving)
+					_module->getPartyLeader()->playDrawWeaponAnimation();
+
+				return true;
 			}
 			return false;
 
