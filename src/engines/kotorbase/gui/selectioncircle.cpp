@@ -23,7 +23,7 @@
  */
 
 #include "src/engines/kotorbase/objectcontainer.h"
-#include "src/engines/kotorbase/situated.h"
+#include "src/engines/kotorbase/object.h"
 
 #include "src/engines/kotorbase/gui/selectioncircle.h"
 
@@ -86,9 +86,9 @@ void SelectionCircle::setTarget(bool target) {
 	}
 }
 
-void SelectionCircle::moveTo(Situated *situated, float &sX, float &sY) {
+void SelectionCircle::moveTo(Object *object, float &sX, float &sY) {
 	float x, y, z;
-	situated->getTooltipAnchor(x, y, z);
+	object->getTooltipAnchor(x, y, z);
 
 	float _;
 	GfxMan.project(x, y, z, sX, sY, _);

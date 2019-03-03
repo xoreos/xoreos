@@ -692,6 +692,15 @@ void Creature::playAnimation(const Common::UString &anim, bool restart, float le
 		_model->playAnimation(anim, restart, length, speed);
 }
 
+void Creature::getTooltipAnchor(float &x, float &y, float &z) const {
+	if (!_model) {
+		Object::getTooltipAnchor(x, y, z);
+		return;
+	}
+
+	_model->getTooltipAnchor(x, y, z);
+}
+
 void Creature::playHeadAnimation(const Common::UString &anim, bool restart, float length, float speed) {
 	if (!_model)
 		return;

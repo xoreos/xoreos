@@ -155,6 +155,10 @@ public:
 	                           float length = 0.0f,
 	                           float speed = 1.0f);
 
+	// Tooltip
+
+	virtual void getTooltipAnchor(float &x, float &y, float &z) const;
+
 protected:
 	ObjectType _type; ///< The object's type.
 

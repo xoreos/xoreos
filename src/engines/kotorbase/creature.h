@@ -175,6 +175,10 @@ public:
 	/** Remove the current action from the action queue of this creature. */
 	void dequeueAction();
 
+	// Tooltip
+
+	void getTooltipAnchor(float &x, float &y, float &z) const;
+
 protected:
 	// Parts of a creature's body.
 	struct PartModels {

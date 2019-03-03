@@ -161,6 +161,11 @@ bool Door::click(Object *triggerer) {
 }
 
 void Door::getTooltipAnchor(float &x, float &y, float &z) const {
+	if (!_model) {
+		Situated::getTooltipAnchor(x, y, z);
+		return;
+	}
+
 	_model->getAbsolutePosition(x, y, z);
 	z += _model->getDepth() / 2;
 }

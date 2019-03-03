@@ -80,7 +80,7 @@ public:
 
 	// Tooltip
 
-	virtual void getTooltipAnchor(float &x, float &y, float &z) const;
+	void getTooltipAnchor(float &x, float &y, float &z) const;
 
 protected:
 	/** Load door-specific properties. */
