@@ -1029,7 +1029,7 @@ void Module::playAnimationOnActiveObject(const Common::UString &baseAnim,
                                          const Common::UString &headAnim) {
 	Object *o = _area->getActiveObject();
 	if (!o)
-		return;
+		o = getPartyLeader();
 
 	o->playAnimation(baseAnim, true, -1.0f);
 
