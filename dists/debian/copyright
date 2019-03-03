@@ -165,27 +165,27 @@ Files: m4/ax_check_freetype2.m4
 Copyright: 2018 Sven Hesse <drmccoy@drmccoy.de>
 License: CC0-1.0
 
-Files: glew/*.h
-       glew/*.c
+Files: external/glew/*.h
+       external/glew/*.c
 Copyright: 2008-2017 Nigel Stewart <nigels[]users sourceforge net>
            2002-2008 Milan Ikits <milan.ikits@ieee.org>
            2002-2008 Marcelo E. Magallon <mmagallo@debian.org>
            2002 Lev Povalahev
 License: BSD-3-clause
 
-Files: lua/*.h
-       lua/*.c
+Files: external/lua/*.h
+       external/lua/*.c
 Copyright: 1994-2008 Lua.org, PUC-Rio
 License: Expat
 
-Files: toluapp/*.h
-       toluapp/*.c
+Files: external/toluapp/*.h
+       external/toluapp/*.c
 Copyright: 2003 Waldemar Celes, TeCGraf/PUC-Rio
            2009 Ariel Manzur
 License: Expat
 
-Files: utf8cpp/utf8.h
-       utf8cpp/utf8/*.h
+Files: external/utf8cpp/utf8.h
+       external/utf8cpp/utf8/*.h
 Copyright: 2006 Nemanja Trifunovic
 License: BSL-1.0
  Permission is hereby granted, free of charge, to any person or organization
@@ -210,14 +210,14 @@ License: BSL-1.0
  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
 
-Files: glm/*.hpp
-       glm/detail/*.hpp
-       glm/detail/*.inl
-       glm/gtc/*.hpp
-       glm/gtc/*.inl
-       glm/gtx/*.hpp
-       glm/gtx/*.inl
-       glm/simd/*.h
+Files: external/glm/*.hpp
+       external/glm/detail/*.hpp
+       external/glm/detail/*.inl
+       external/glm/gtc/*.hpp
+       external/glm/gtc/*.inl
+       external/glm/gtx/*.hpp
+       external/glm/gtx/*.inl
+       external/glm/simd/*.h
 Copyright: 2005-2016 G-Truc Creation
 License: Expat
 

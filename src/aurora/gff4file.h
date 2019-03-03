@@ -28,7 +28,7 @@
 #include <vector>
 #include <map>
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include <boost/noncopyable.hpp>
 

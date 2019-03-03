@@ -22,7 +22,7 @@
  *  A reference to a Lua function.
  */
 
-#include "lua/lauxlib.h"
+#include "external/lua/lauxlib.h"
 
 #include "src/common/error.h"
 

@@ -22,7 +22,7 @@
  *  A reference to a Lua table.
  */
 
-#include "toluapp/tolua++.h"
+#include "external/toluapp/tolua++.h"
 
 #include "src/common/error.h"
 #include "src/common/util.h"

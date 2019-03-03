@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_AURORA_SUBSCENEQUAD_H
 #define GRAPHICS_AURORA_SUBSCENEQUAD_H
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/graphics/guielement.h"
 

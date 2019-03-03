@@ -29,7 +29,7 @@
 #include <list>
 #include <map>
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/common/ustring.h"
 #include "src/common/boundingbox.h"

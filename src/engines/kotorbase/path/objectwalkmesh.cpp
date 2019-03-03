@@ -22,8 +22,8 @@
  *  WalkmeshObject implementation for KotOR games.
  */
 
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 #include "src/common/util.h"
 #include "src/common/maths.h"

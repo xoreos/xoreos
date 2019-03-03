@@ -22,7 +22,7 @@
  *  Shader surface, responsible for tracking data relating to a vertex shader.
  */
 
-#include "glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 #include "src/graphics/graphics.h"
 

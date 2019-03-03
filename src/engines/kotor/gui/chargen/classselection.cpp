@@ -22,8 +22,8 @@
  *  The class selection menu.
  */
 
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/aurora/talkman.h"
 

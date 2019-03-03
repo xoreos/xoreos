@@ -24,7 +24,7 @@
 
 #include <algorithm>
 
-#include "glm/gtx/intersect.hpp"
+#include "external/glm/gtx/intersect.hpp"
 
 #include "src/common/util.h"
 #include "src/common/maths.h"

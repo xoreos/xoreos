@@ -24,7 +24,7 @@
 
 #include <cassert>
 
-#include "glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 #include "src/graphics/render/renderqueue.h"
 #include "src/common/util.h"

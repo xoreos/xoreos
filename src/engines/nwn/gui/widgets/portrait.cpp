@@ -28,7 +28,7 @@
 #include "src/common/maths.h"
 #include "src/common/ustring.h"
 
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/graphics/graphics.h"
 

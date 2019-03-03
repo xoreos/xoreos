@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_CHARGEN_CLASSSELECTION_H
 #define ENGINES_KOTOR_GUI_CHARGEN_CLASSSELECTION_H
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/graphics/aurora/subscenequad.h"
 

@@ -28,7 +28,7 @@
 #include <boost/variant.hpp>
 #include <boost/optional.hpp>
 
-#include "glm/glm.hpp"
+#include "external/glm/glm.hpp"
 
 #include "src/common/scopedptr.h"
 #include "src/common/ustring.h"

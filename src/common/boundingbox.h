@@ -25,7 +25,7 @@
 #ifndef COMMON_BOUNDINGBOX_H
 #define COMMON_BOUNDINGBOX_H
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 namespace Common {
 

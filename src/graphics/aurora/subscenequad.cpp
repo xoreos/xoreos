@@ -24,7 +24,7 @@
 
 #include <algorithm>
 
-#include "glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 #include "src/common/maths.h"
 

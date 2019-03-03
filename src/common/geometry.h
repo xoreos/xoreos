@@ -25,9 +25,9 @@
 #ifndef COMMON_GEOMETRY_H
 #define COMMON_GEOMETRY_H
 
-#include "glm/vec2.hpp"
-#include "glm/vec3.hpp"
-#include "glm/geometric.hpp"
+#include "external/glm/vec2.hpp"
+#include "external/glm/vec3.hpp"
+#include "external/glm/geometric.hpp"
 
 #include "src/common/types.h"
 #include "src/common/maths.h"

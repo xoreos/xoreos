@@ -93,8 +93,9 @@ glew
    features and extensions. To minimize dependencies on "uncommon" libraries,
    xoreos completely includes the glew code, one of its suggested use methods.
    glew is licensed under the Modified BSD License, the Mesa 3-D License
-   (MIT License), and the Khronos License (MIT License). For the full license
-   text, see glew/LICENSE.txt or <http://glew.sourceforge.net/credits.html>.
+   (MIT License), and the Khronos License (MIT License). For the full
+   license text, see external/glew/LICENSE.txt or
+   <http://glew.sourceforge.net/credits.html>.
 
 lua
 ***
@@ -102,7 +103,7 @@ lua
    to handle scripts from The Witcher. To minimize dependencies on "uncommon"
    libraries, xoreos completely includes the lua 5.0.3 code. Lua is licensed
    under the terms of the MIT license. For the full license text, see
-   lua/COPYRIGHT or <https://www.lua.org/license.html>.
+   external/lua/COPYRIGHT or <https://www.lua.org/license.html>.
 
 tolua++
 *******
@@ -110,22 +111,24 @@ tolua++
    scripts from The Witcher. To minimize dependencies on "uncommon" libraries,
    xoreos completely includes the toluapp 1.0.92 library code. tolua++ is
    licensed under the terms of the MIT license. For the full license text,
-   see toluapp/COPYRIGHT or <https://opensource.org/licenses/MIT>.
+   see external/toluapp/COPYRIGHT or <https://opensource.org/licenses/MIT>.
 
 UTF-8 CPP
 *********
    xoreos uses the lightweight header-only UTF-8 CPP library
    (<http://utfcpp.sourceforge.net/>) for handling UTF-8 encoded strings.
-   UTF-8 CPP is licensed under the Boost Software License. See utf8cpp/utf8.h
-   or <https://www.boost.org/users/license.html> for details.
+   UTF-8 CPP is licensed under the Boost Software License. See
+   external/utf8cpp/utf8.h or <https://www.boost.org/users/license.html>
+   for details.
 
 GLM
 ***
    xoreos uses the header-only C++ mathematics library for graphics software
    OpenGL Mathematics (GLM) (<https://glm.g-truc.net/>), completely including
-   the GLM headers. GLM can be distributed and/or modified under the terms of
-   either a) The Happy Bunny License, or b) the MIT License. For the full
-   license text, see glm/copying.txt or <https://glm.g-truc.net/copying.txt>.
+   the GLM headers. GLM can be distributed and/or modified under the terms
+   of either a) The Happy Bunny License, or b) the MIT License. For the
+   full license text, see external/glm/copying.txt or
+   <https://glm.g-truc.net/copying.txt>.
 
 ScummVM code
 ************

@@ -28,7 +28,7 @@
 
 #include <boost/bind.hpp>
 
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/common/util.h"
 #include "src/common/strutil.h"

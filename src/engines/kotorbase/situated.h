@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTORBASE_SITUATED_H
 #define ENGINES_KOTORBASE_SITUATED_H
 
-#include "glm/vec3.hpp"
+#include "external/glm/vec3.hpp"
 
 #include "src/common/scopedptr.h"
 

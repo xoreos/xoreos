@@ -25,7 +25,7 @@
 // TODO: Make dialog boxes resizeable and/or repositionable?
 // TODO: Actually, in the original, the dialog boxes do resize themselves up to a point...
 
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/common/util.h"
 #include "src/common/configman.h"

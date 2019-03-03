@@ -86,14 +86,7 @@ include dists/rules.mk
 include man/rules.mk
 include doc/rules.mk
 
-include glew/rules.mk
-
-include utf8cpp/rules.mk
-
-include lua/rules.mk
-include toluapp/rules.mk
-
-include glm/rules.mk
+include external/rules.mk
 
 include src/rules.mk
 

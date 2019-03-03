@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_AURORA_CUBE_H
 #define GRAPHICS_AURORA_CUBE_H
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/graphics/types.h"
 #include "src/graphics/glcontainer.h"

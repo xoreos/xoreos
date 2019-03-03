@@ -27,7 +27,7 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/common/ustring.h"
 

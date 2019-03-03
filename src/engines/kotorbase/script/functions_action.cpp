@@ -22,7 +22,7 @@
  *  Star Wars: Knights of the Old Republic engine functions assigning actions to objects.
  */
 
-#include "glm/geometric.hpp"
+#include "external/glm/geometric.hpp"
 
 #include "src/common/error.h"
 

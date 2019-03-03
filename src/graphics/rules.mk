@@ -72,7 +72,7 @@ src_graphics_libgraphics_la_LIBADD = \
     $(EMPTY)
 
 if INTERNAL_GLEW
-src_graphics_libgraphics_la_LIBADD += glew/libglew.la
+src_graphics_libgraphics_la_LIBADD += external/glew/libglew.la
 endif
 
 # Subdirectories

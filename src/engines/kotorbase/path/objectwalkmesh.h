@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTORBASE_PATH_OBJECTWALKMESH_H
 #define ENGINES_KOTORBASE_PATH_OBJECTWALKMESH_H
 
-#include "glm/vec2.hpp"
+#include "external/glm/vec2.hpp"
 
 #include "src/aurora/types.h"
 

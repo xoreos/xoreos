@@ -29,9 +29,9 @@
 #include <list>
 #include <map>
 
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
-#include "glm/mat4x4.hpp"
+#include "external/glm/vec3.hpp"
+#include "external/glm/vec4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/aurora/nitrofile.h"
 

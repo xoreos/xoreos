@@ -34,7 +34,7 @@
 #include "src/common/types.h"
 #include "src/common/system.h"
 
-#include "utf8cpp/utf8.h"
+#include "external/utf8cpp/utf8.h"
 
 namespace Common {
 

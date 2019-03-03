@@ -32,7 +32,7 @@
 
 #include <boost/unordered_set.hpp>
 
-#include "glm/glm.hpp"
+#include "external/glm/glm.hpp"
 
 #include "src/common/system.h"
 #include "src/common/error.h"

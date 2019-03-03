@@ -24,7 +24,7 @@
 
 #include <cstdlib>
 
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/common/scopedptr.h"
 #include "src/common/maths.h"

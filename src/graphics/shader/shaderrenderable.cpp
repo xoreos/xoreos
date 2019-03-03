@@ -22,7 +22,7 @@
  *  Shader renderable, a class for easier managing of a collection of items (surface, material, mesh) to render with.
  */
 
-#include "glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 #include "src/graphics/shader/shaderrenderable.h"
 

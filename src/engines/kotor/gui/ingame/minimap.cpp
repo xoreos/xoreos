@@ -22,9 +22,9 @@
  *  The ingame minimap.
  */
 
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/mat4x4.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/common/util.h"
 

@@ -22,8 +22,8 @@
  *  Base class for local pathfinding.
  */
 
-#include "glm/gtx/intersect.hpp"
-#include "glm/gtx/transform.hpp"
+#include "external/glm/gtx/intersect.hpp"
+#include "external/glm/gtx/transform.hpp"
 
 #include "src/common/util.h"
 #include "src/common/error.h"

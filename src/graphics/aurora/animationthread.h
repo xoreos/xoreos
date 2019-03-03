@@ -29,8 +29,8 @@
 
 #include <boost/atomic.hpp>
 
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
+#include "external/glm/vec3.hpp"
+#include "external/glm/vec4.hpp"
 
 #include "src/common/mutex.h"
 #include "src/common/thread.h"

@@ -23,7 +23,7 @@
  *  Mostly stubs at the moment.
  */
 
-#include "glm/vec3.hpp"
+#include "external/glm/vec3.hpp"
 
 #include "src/common/error.h"
 #include "src/common/util.h"

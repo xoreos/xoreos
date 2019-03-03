@@ -22,9 +22,9 @@
  *  Lua script manager.
  */
 
-#include "lua/lualib.h"
+#include "external/lua/lualib.h"
 
-#include "toluapp/tolua++.h"
+#include "external/toluapp/tolua++.h"
 
 #include "src/common/error.h"
 #include "src/common/util.h"

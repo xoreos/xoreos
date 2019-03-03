@@ -30,7 +30,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "glm/glm.hpp"
+#include "external/glm/glm.hpp"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/locstring.h"

@@ -22,8 +22,8 @@
  *  Creature action executor for KotOR games.
  */
 
-#include "glm/vec3.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "external/glm/vec3.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 #include "src/common/maths.h"
 

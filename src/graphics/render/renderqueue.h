@@ -25,8 +25,8 @@
 #ifndef GRAPHICS_RENDER_RENDERQUEUE_H
 #define GRAPHICS_RENDER_RENDERQUEUE_H
 
-#include "glm/vec3.hpp"
-#include "glm/mat4x4.hpp"
+#include "external/glm/vec3.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/graphics/graphics.h"
 #include "src/graphics/shader/shaderrenderable.h"

@@ -22,8 +22,8 @@
  *  Unit tests for the BoundingBox class.
  */
 
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include "gtest/gtest.h"
 

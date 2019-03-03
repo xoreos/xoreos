@@ -22,8 +22,8 @@
  *  Generic trigger.
  */
 
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtx/intersect.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
+#include "external/glm/gtx/intersect.hpp"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/resman.h"

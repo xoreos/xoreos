@@ -30,7 +30,7 @@
 #include <vector>
 #include <list>
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"

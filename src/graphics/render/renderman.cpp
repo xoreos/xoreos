@@ -22,7 +22,7 @@
  *  Render queue manager.
  */
 
-#include "glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 #include "src/graphics/render/renderman.h"
 

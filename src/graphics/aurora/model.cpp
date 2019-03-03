@@ -30,9 +30,9 @@ START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_timer.h>
 STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtx/matrix_interpolation.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtx/matrix_interpolation.hpp"
 
 #include "src/common/readstream.h"
 #include "src/common/debug.h"

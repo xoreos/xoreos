@@ -22,8 +22,8 @@
  *  An animation to be applied to a model.
  */
 
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/common/readstream.h"
 #include "src/common/debug.h"

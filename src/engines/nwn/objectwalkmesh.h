@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_OBJECTWALKMESH_H
 #define ENGINES_NWN_OBJECTWALKMESH_H
 
-#include "glm/vec2.hpp"
+#include "external/glm/vec2.hpp"
 
 #include "src/engines/aurora/objectwalkmesh.h"
 

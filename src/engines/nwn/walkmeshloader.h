@@ -27,7 +27,7 @@
 #ifndef ENGINES_NWN_WALKMESHLOADER_H
 #define ENGINES_NWN_WALKMESHLOADER_H
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/aurora/types.h"
 #include "src/common/ustring.h"

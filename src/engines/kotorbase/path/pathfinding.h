@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTORBASE_PATH_PATHFINDING_H
 #define ENGINES_KOTORBASE_PATH_PATHFINDING_H
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/aurora/types.h"
 

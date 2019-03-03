@@ -374,12 +374,12 @@ if(NOT GLEW_FOUND)
   message(STATUS "Using internal GLEW library")
 
   add_definitions(-DGLEW_STATIC)
-  set(GLEW_LIBRARIES glew)
+  set(GLEW_LIBRARIES external_glew)
 
   add_definitions(-DXOREOS_INTERNAL_GLEW)
   set(INTERNAL_GLEW 1)
 
-  parse_automake(glew/rules.mk)
+  parse_automake(external/glew/rules.mk)
 else()
   message(STATUS "Using external GLEW library")
 endif()
@@ -401,11 +401,11 @@ if(CMAKE_USE_PTHREADS_INIT)
 endif()
 
 # use our own version of lua, as we will have to support the Witcher lua scripts
-parse_automake(lua/rules.mk)
-list(APPEND XOREOS_LIBRARIES lua)
+parse_automake(external/lua/rules.mk)
+list(APPEND XOREOS_LIBRARIES external_lua)
 
-parse_automake(toluapp/rules.mk)
-list(APPEND XOREOS_LIBRARIES toluapp)
+parse_automake(external/toluapp/rules.mk)
+list(APPEND XOREOS_LIBRARIES external_toluapp)
 
 
 function(add_engine ENGINE_NAME ENGINE_FULLNAME ENGINE_DEPS)

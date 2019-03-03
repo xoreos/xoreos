@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "glm/vec2.hpp"
+#include "external/glm/vec2.hpp"
 
 #include "src/common/ustring.h"
 

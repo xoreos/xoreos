@@ -33,7 +33,7 @@
 #include "src/graphics/shader/surfaceman.h"
 #include "src/graphics/mesh/meshman.h"
 
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 namespace Graphics {
 

@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "glm/vec3.hpp"
+#include "external/glm/vec3.hpp"
 
 #include "src/common/boundingbox.h"
 

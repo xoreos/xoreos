@@ -25,7 +25,7 @@
 #ifndef AURORA_LUA_TYPES_H
 #define AURORA_LUA_TYPES_H
 
-#include "lua/lua.h"
+#include "external/lua/lua.h"
 
 #include <vector>
 

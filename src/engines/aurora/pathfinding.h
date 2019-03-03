@@ -25,7 +25,7 @@
 #ifndef ENGINES_PATHFINDING_H
 #define ENGINES_PATHFINDING_H
 
-#include "glm/vec3.hpp"
+#include "external/glm/vec3.hpp"
 
 #include "src/common/ustring.h"
 

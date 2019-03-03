@@ -22,7 +22,7 @@
  *  A bounding box.
  */
 
-#include "glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/common/boundingbox.h"
 #include "src/common/util.h"

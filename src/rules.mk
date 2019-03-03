@@ -79,8 +79,8 @@ src_xoreos_LDADD += \
     src/aurora/libaurora.la \
     src/common/libcommon.la \
     src/version/libversion.la \
-    lua/liblua.la \
-    toluapp/libtoluapp.la \
+    external/lua/liblua.la \
+    external/toluapp/libtoluapp.la \
     $(LDADD) \
     $(EMPTY)
 

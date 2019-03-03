@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_SHADER_SHADERSURFACE_H
 #define GRAPHICS_SHADER_SHADERSURFACE_H
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/graphics/shader/shader.h"
 

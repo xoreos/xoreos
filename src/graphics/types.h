@@ -35,7 +35,7 @@ STOP_IGNORE_IMPLICIT_FALLTHROUGH
 #include "src/common/types.h"
 
 #ifdef XOREOS_INTERNAL_GLEW
-	#include "glew/glew.h"
+	#include "external/glew/glew.h"
 #else
 	#include <GL/glew.h>
 #endif

@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTORBASE_ACTION_H
 #define ENGINES_KOTORBASE_ACTION_H
 
-#include "glm/vec3.hpp"
+#include "external/glm/vec3.hpp"
 
 #include "src/engines/kotorbase/types.h"
 

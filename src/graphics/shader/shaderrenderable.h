@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_SHADER_SHADERRENDERABLE_H
 #define GRAPHICS_SHADER_SHADERRENDERABLE_H
 
-#include "glm/mat4x4.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/graphics/shader/shader.h"
 #include "src/graphics/shader/shadermaterial.h"

@@ -26,7 +26,7 @@
  * (<https://home.comcast.net/~cchargin/kotor/mdl_info.html>).
  */
 
-#include "glm/gtc/type_ptr.hpp"
+#include "external/glm/gtc/type_ptr.hpp"
 
 #include "src/common/error.h"
 #include "src/common/maths.h"

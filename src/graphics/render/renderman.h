@@ -25,8 +25,8 @@
 #ifndef GRAPHICS_RENDER_RENDERMANAGER_H
 #define GRAPHICS_RENDER_RENDERMANAGER_H
 
-#include "glm/vec3.hpp"
-#include "glm/mat4x4.hpp"
+#include "external/glm/vec3.hpp"
+#include "external/glm/mat4x4.hpp"
 
 #include "src/graphics/render/renderqueue.h"
 

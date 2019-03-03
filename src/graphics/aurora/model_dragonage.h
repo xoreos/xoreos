@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_AURORA_MODEL_DRAGONAGE_H
 #define GRAPHICS_AURORA_MODEL_DRAGONAGE_H
 
-#include "glm/vec4.hpp"
+#include "external/glm/vec4.hpp"
 
 #include "src/aurora/types.h"
 
