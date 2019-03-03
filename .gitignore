@@ -47,9 +47,13 @@ Makefile.in
 /lua/rules.mk.cmake
 /toluapp/rules.mk.cmake
 /src/rules.mk.cmake
+/doc/rules.mk.cmake
+/man/rules.mk.cmake
+/external/*/rules.mk.cmake
 /bin/
 /tests/rules.mk.cmake
 /CTestTestfile.cmake
+/CMakeUninstall.cmake
 /Testing/
 
 # Eclipse project files
