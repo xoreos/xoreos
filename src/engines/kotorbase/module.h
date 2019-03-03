@@ -157,6 +157,8 @@ public:
 	void showPartySelectionGUI(int forceNPC1, int forceNPC2);
 	/** Add a NPC to the list of available party members using a template. */
 	void addAvailableNPCByTemplate(int npc, const Common::UString &templ);
+	/** Notify the module that the party leader has changed. */
+	void notifyPartyLeaderChanged();
 
 	// GUI management
 
@@ -365,7 +367,6 @@ private:
 
 	// Party
 
-	void onPartyLeaderChanged();
 	void updateCurrentPartyGUI();
 
 	// Minimap

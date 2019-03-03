@@ -30,6 +30,8 @@
 
 #include "src/common/ustring.h"
 
+#include "src/events/types.h"
+
 namespace Engines {
 
 namespace KotORBase {
@@ -78,12 +80,15 @@ public:
 	void addAvailableNPCByTemplate(int npc, const Common::UString &templ);
 
 
+	bool handleEvent(const Events::Event &e);
 	void raiseHeartbeatEvent();
 
 private:
 	Module *_module;
 	std::vector<std::pair<int, Creature *>> _party;
 	std::map<int, Common::UString> _availableParty;
+
+	void leftShiftPartyMembers();
 };
 
 } // End of namespace KotORBase

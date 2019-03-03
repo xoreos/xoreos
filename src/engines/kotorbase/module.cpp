@@ -619,6 +619,9 @@ void Module::handleEvents() {
 			}
 		}
 
+		if (_partyController.handleEvent(*event))
+			continue;
+
 		if (_partyLeaderController.handleEvent(*event))
 			continue;
 
@@ -778,15 +781,10 @@ bool Module::isSoloMode() const {
 
 void Module::setPartyLeader(int npc) {
 	_partyController.setPartyLeader(npc);
-	onPartyLeaderChanged();
 }
 
 void Module::setPartyLeaderByIndex(int index) {
-	if (index == 0)
-		return;
-
 	_partyController.setPartyLeaderByIndex(index);
-	onPartyLeaderChanged();
 }
 
 void Module::showPartySelectionGUI(int forceNPC1, int forceNPC2) {
@@ -1080,7 +1078,7 @@ void Module::addItemToActiveObject(const Common::UString &item, int count) {
 		inv->removeItem(item, -count);
 }
 
-void Module::onPartyLeaderChanged() {
+void Module::notifyPartyLeaderChanged() {
 	_cameraController.updateTarget();
 	updateMinimap();
 	updateCurrentPartyGUI();
