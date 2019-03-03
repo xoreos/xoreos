@@ -31,6 +31,7 @@
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 #include "src/aurora/gff3file.h"
+#include "src/aurora/locstring.h"
 
 #include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/model.h"
@@ -285,7 +286,18 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	_tag = gff.getString("Tag", _tag);
 
 	// Name
-	_name = gff.getString("LocName", _name);
+
+	Aurora::LocString firstName;
+	gff.getLocString("FirstName", firstName);
+	Aurora::LocString lastName;
+	gff.getLocString("LastName", lastName);
+
+	if (!firstName.empty()) {
+		_name = firstName.getString();
+		if (!lastName.empty())
+			_name += " " + lastName.getString();
+	}
+
 
 	// Description
 	_description = gff.getString("Description", _description);
