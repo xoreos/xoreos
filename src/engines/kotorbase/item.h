@@ -38,6 +38,8 @@ public:
 	// Basic properties
 
 	const Common::UString &getName() const;
+	WeaponWield getWeaponWield() const;
+
 	bool isSlotEquipable(InventorySlot slot) const;
 
 	// Visual properties
@@ -51,6 +53,7 @@ private:
 	int _baseItem;
 	Common::UString _itemClass;
 	int32 _equipableSlotsMask;
+	WeaponWield _weaponWield;
 
 	int _modelVariation;
 	int _bodyVariation;

@@ -687,6 +687,39 @@ void Creature::playDefaultHeadAnimation() {
 		headChannel->playDefaultAnimation();
 }
 
+void Creature::playDrawWeaponAnimation() {
+	if (!_model)
+		return;
+
+	Item *item = _equipment[kInventorySlotRightWeapon];
+	if (!item)
+		return;
+
+	switch (item->getWeaponWield()) {
+		case kWeaponWieldBaton:
+			_model->playAnimation("g1w1");
+			break;
+		case kWeaponWieldSword:
+			_model->playAnimation("g2w1");
+			break;
+		case kWeaponWieldStaff:
+			_model->playAnimation("g3w1");
+			break;
+		case kWeaponWieldPistol:
+			_model->playAnimation("g5w1");
+			break;
+		case kWeaponWieldHeavy:
+			_model->playAnimation("g6w1");
+			break;
+		case kWeaponWieldRifle:
+			_model->playAnimation("g7w1");
+			break;
+		default:
+			// TODO: two swords (g4w1)
+			break;
+	}
+}
+
 void Creature::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
 	if (_model)
 		_model->playAnimation(anim, restart, length, speed);

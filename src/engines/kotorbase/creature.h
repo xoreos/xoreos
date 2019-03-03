@@ -152,6 +152,7 @@ public:
 
 	void playDefaultAnimation();
 	void playDefaultHeadAnimation();
+	void playDrawWeaponAnimation();
 
 	void playAnimation(const Common::UString &anim,
 	                   bool restart = true,

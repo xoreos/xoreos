@@ -49,6 +49,7 @@ void Item::load(const Aurora::GFF3Struct &gff) {
 	const Aurora::TwoDARow &twoDA = TwoDAReg.get2DA("baseitems").getRow(_baseItem);
 	_equipableSlotsMask = twoDA.getInt("equipableslots");
 	_itemClass = twoDA.getString("itemclass");
+	_weaponWield = static_cast<WeaponWield>(twoDA.getInt("weaponwield"));
 
 	// Model, body and texture variations
 	_modelVariation = gff.getSint("ModelVariation");
@@ -58,6 +59,10 @@ void Item::load(const Aurora::GFF3Struct &gff) {
 
 const Common::UString &Item::getName() const {
 	return _name;
+}
+
+WeaponWield Item::getWeaponWield() const {
+	return _weaponWield;
 }
 
 bool Item::isSlotEquipable(InventorySlot slot) const {
