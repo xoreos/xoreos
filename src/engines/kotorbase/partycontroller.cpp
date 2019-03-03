@@ -106,14 +106,22 @@ void PartyController::setPartyLeader(int npc) {
 }
 
 void PartyController::setPartyLeaderByIndex(int index) {
-	std::pair<int, Creature *> tmp = _party[0];
-	_party[0] = _party[index];
-	_party[index] = tmp;
+	if (index == 0)
+		return;
 
-	_party[0].second->setUsable(false);
-	_party[0].second->clearAllActions();
+	std::pair<int, Creature *> prevLeader = _party[0];
+	for (int i = 0; i < index; ++i) {
+		leftShiftPartyMembers();
+	}
+	std::pair<int, Creature *> nextLeader = _party[0];
 
-	_party[index].second->setUsable(true);
+	prevLeader.second->setUsable(true);
+
+	nextLeader.second->setUsable(false);
+	nextLeader.second->clearAllActions();
+	nextLeader.second->playDefaultAnimation();
+
+	_module->notifyPartyLeaderChanged();
 }
 
 const Common::UString &PartyController::getAvailableNPCTemplate(int npc) const {
@@ -140,10 +148,36 @@ void PartyController::addAvailableNPCByTemplate(int npc, const Common::UString &
 	_availableParty.insert(std::make_pair(npc, templ));
 }
 
+bool PartyController::handleEvent(const Events::Event &e) {
+	switch (e.type) {
+		case Events::kEventKeyDown:
+		case Events::kEventKeyUp:
+			if (e.key.keysym.sym == Events::kKeyTab) {
+				if (!_party.empty() && (e.type == Events::kEventKeyUp))
+					setPartyLeaderByIndex(1);
+
+				return true;
+			}
+			return false;
+
+		default:
+			return false;
+	}
+}
+
 void PartyController::raiseHeartbeatEvent() {
 	for (auto partyMember : _party) {
 		partyMember.second->runScript("k_ai_master", partyMember.second, _module->getCurrentArea());
 	}
+}
+
+void PartyController::leftShiftPartyMembers() {
+	std::pair<int, Creature *> prevLeader = _party[0];
+	size_t partySize = _party.size();
+	for (int i = 0; i < static_cast<int>(partySize - 1); ++i) {
+		_party[i] = _party[i + 1];
+	}
+	_party[partySize - 1] = prevLeader;
 }
 
 } // End of namespace KotORBase

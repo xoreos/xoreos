@@ -507,11 +507,11 @@ void Area::processEventQueue() {
 				checkActive(e->button.x, e->button.y);
 				click(e->button.x, e->button.y);
 			}
-		} else if (e->type == Events::kEventKeyDown) { // Holding down TAB
-			if (e->key.keysym.sym == SDLK_TAB)
+		} else if (e->type == Events::kEventKeyDown) { // Holding down Left Shift
+			if (e->key.keysym.sym == SDLK_LSHIFT)
 				highlightAll(true);
-		} else if (e->type == Events::kEventKeyUp) {   // Releasing TAB
-			if (e->key.keysym.sym == SDLK_TAB)
+		} else if (e->type == Events::kEventKeyUp) {   // Releasing Left Shift
+			if (e->key.keysym.sym == SDLK_LSHIFT)
 				highlightAll(false);
 		}
 	}
