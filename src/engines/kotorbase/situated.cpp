@@ -87,6 +87,11 @@ void Situated::playAnimation(const Common::UString &anim, bool restart, float le
 }
 
 void Situated::getTooltipAnchor(float &x, float &y, float &z) const {
+	if (!_model) {
+		Object::getTooltipAnchor(x, y, z);
+		return;
+	}
+
 	_model->getTooltipAnchor(x, y, z);
 }
 

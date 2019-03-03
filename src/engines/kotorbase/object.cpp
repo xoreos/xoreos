@@ -230,6 +230,10 @@ void Object::playSound(const Common::UString &sound, bool pitchVariance) {
 void Object::playAnimation(const Common::UString &UNUSED(anim), bool UNUSED(restart), float UNUSED(length), float UNUSED(speed)) {
 }
 
+void Object::getTooltipAnchor(float &x, float &y, float &z) const {
+	getPosition(x, y, z);
+}
+
 } // End of namespace KotORBase
 
 } // End of namespace Engines

@@ -159,17 +159,13 @@ void HUD::updateTargetObject() {
 
 	_targetCircle->setHovered(_hoveredObject == _targetObject);
 
-	Situated *situated = ObjectContainer::toSituated(_targetObject);
-	if (situated) {
-		float sX, sY;
-		_targetCircle->moveTo(situated, sX, sY);
-		_targetCircle->show();
-		updateTargetInformation(_targetObject, sX, sY);
-		showTargetInformation(_targetObject);
-	} else {
-		_targetCircle->hide();
-		hideTargetInformation();
-	}
+	float sX, sY;
+
+	_targetCircle->moveTo(_targetObject, sX, sY);
+	_targetCircle->show();
+
+	updateTargetInformation(_targetObject, sX, sY);
+	showTargetInformation(_targetObject);
 }
 
 void HUD::updateHoveredObject() {
@@ -184,14 +180,9 @@ void HUD::updateHoveredObject() {
 		return;
 	}
 
-	Situated *situated = ObjectContainer::toSituated(_hoveredObject);
-	if (situated) {
-		float _, __;
-		_hoveredCircle->moveTo(situated, _, __);
-		_hoveredCircle->show();
-	} else {
-		_hoveredCircle->hide();
-	}
+	float _, __;
+	_hoveredCircle->moveTo(_hoveredObject, _, __);
+	_hoveredCircle->show();
 }
 
 void HUD::getTargetButtonSize(float &width, float &height) const {
@@ -285,7 +276,7 @@ void HUD::fillTargetButtonActions() {
 	}
 }
 
-void HUD::showTargetInformation(Object *object) {
+void HUD::showTargetInformation(Object *UNUSED(object)) {
 	if (_targetNameBackground) {
 		_targetNameBackground->setInvisible(false);
 		_targetNameBackground->show();
@@ -293,7 +284,6 @@ void HUD::showTargetInformation(Object *object) {
 	if (_targetName) {
 		_targetName->setInvisible(false);
 		_targetName->show();
-		_targetName->setText(object->getName());
 	}
 
 	if (_targetHealthBackground) {
@@ -340,8 +330,10 @@ void HUD::updateTargetInformation(KotORBase::Object *object, float x, float y) {
 	if (_targetNameBackground)
 		_targetNameBackground->setPosition(x - 100, elementY, -100);
 
-	if (_targetName)
+	if (_targetName) {
 		_targetName->setPosition(x - 100, elementY, -FLT_MAX);
+		_targetName->setText(object->getName());
+	}
 
 	if (hasActions) {
 		updateTargetButtons(x, y);

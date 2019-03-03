@@ -33,7 +33,7 @@ namespace KotORBase {
 
 const float kSelectionCircleSize = 64.0f;
 
-class Situated;
+class Object;
 
 class SelectionCircle {
 public:
@@ -49,7 +49,7 @@ public:
 	void setHovered(bool hovered);
 	void setTarget(bool target);
 
-	void moveTo(Situated *situated, float &sX, float &sY);
+	void moveTo(Object *object, float &sX, float &sY);
 
 private:
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _hoveredQuad;
