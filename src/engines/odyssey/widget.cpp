@@ -263,7 +263,8 @@ void Widget::setHighlight(bool highlight) {
 	if (highlight) {
 		if (_highlight) {
 			_quad->hide();
-			_highlight->show();
+			if (isVisible())
+				_highlight->show();
 		} else {
 			Graphics::Aurora::Highlightable *highlightable = getTextHighlightableComponent();
 			if (highlightable && highlightable->isHighlightable()) {
@@ -283,7 +284,8 @@ void Widget::setHighlight(bool highlight) {
 		}
 	} else {
 		if (_highlight) {
-			_quad->show();
+			if (isVisible())
+				_quad->show();
 			_highlight->hide();
 		} else {
 			Graphics::Aurora::Highlightable *highlightable = getTextHighlightableComponent();
