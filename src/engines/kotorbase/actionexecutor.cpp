@@ -123,10 +123,8 @@ bool ActionExecutor::moveTo(Creature &creature, Area &area, float x, float y, fl
 	glm::vec2 diff = glm::vec2(x, y) - origin;
 	float dist = glm::length(diff);
 
-	if (dist <= range) {
-		creature.playDefaultAnimation();
+	if (dist <= range)
 		return true;
-	}
 
 	creature.makeLookAt(x, y);
 
@@ -149,6 +147,14 @@ bool ActionExecutor::moveTo(Creature &creature, Area &area, float x, float y, fl
 			area._module->movedPartyLeader();
 		else
 			area.notifyObjectMoved(creature);
+
+		diff = glm::vec2(x, y) - glm::vec2(newX, newY);
+		dist = glm::length(diff);
+
+		if (dist <= range) {
+			creature.playDefaultAnimation();
+			return true;
+		}
 
 	} else {
 		creature.playDefaultAnimation();
