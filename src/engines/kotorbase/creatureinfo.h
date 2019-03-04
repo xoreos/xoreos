@@ -27,6 +27,7 @@
 #include "src/common/types.h"
 
 #include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/inventory.h"
 
 namespace Aurora {
 	class GFF3Struct;
@@ -98,10 +99,28 @@ public:
 
 	void setSkillRank(Skill skill, uint32 rank);
 
+	// Inventory
+
+	Inventory &getInventory();
+
+	void addInventoryItem(const Common::UString &tag, int count = 1);
+	void removeInventoryItem(const Common::UString &tag, int count = 1);
+
+	// Equipment
+
+	const Common::UString &getEquippedItem(InventorySlot slot) const;
+
+	bool isInventorySlotEquipped(InventorySlot slot) const;
+
+	void equipItem(const Common::UString &tag, InventorySlot slot);
+	void unequipInventorySlot(InventorySlot slot);
+
 private:
 	std::vector<ClassLevel> _levels;
 	Abilities _abilities;
 	Skills _skills;
+	Inventory _inventory;
+	std::map<InventorySlot, Common::UString> _equipment;
 
 	void loadClassLevels(const Aurora::GFF3Struct &gff);
 	void loadSkills(const Aurora::GFF3Struct &gff);

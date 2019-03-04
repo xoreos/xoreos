@@ -25,6 +25,7 @@
 #include <algorithm>
 
 #include "src/common/util.h"
+#include "src/common/error.h"
 
 #include "src/aurora/gff3file.h"
 
@@ -93,6 +94,8 @@ CreatureInfo &CreatureInfo::operator=(const CreatureInfo &other) {
 	_levels = other._levels;
 	_skills = other._skills;
 	_abilities = other._abilities;
+	_inventory = other._inventory;
+	_equipment = other._equipment;
 
 	return *this;
 }
@@ -261,6 +264,41 @@ void CreatureInfo::loadAbilities(const Aurora::GFF3Struct &gff) {
 	_abilities.intelligence = gff.getUint("Int");
 	_abilities.wisdom       = gff.getUint("Wis");
 	_abilities.charisma     = gff.getUint("Cha");
+}
+
+Inventory &CreatureInfo::getInventory() {
+	return _inventory;
+}
+
+void CreatureInfo::addInventoryItem(const Common::UString &tag, int count) {
+	_inventory.addItem(tag, count);
+}
+
+void CreatureInfo::removeInventoryItem(const Common::UString &tag, int count) {
+	_inventory.removeItem(tag, count);
+}
+
+const Common::UString &CreatureInfo::getEquippedItem(InventorySlot slot) const {
+	auto it = _equipment.find(slot);
+	if (it == _equipment.end())
+		throw Common::Exception("CreatureInfo::getEquippedItem(): Inventory slot \"%d\" is empty", slot);
+
+	return it->second;
+}
+
+bool CreatureInfo::isInventorySlotEquipped(InventorySlot slot) const {
+	return _equipment.find(slot) != _equipment.end();
+}
+
+void CreatureInfo::equipItem(const Common::UString &tag, InventorySlot slot) {
+	if (_equipment.find(slot) != _equipment.end())
+		throw Common::Exception("CreatureInfo::equipItem(): Inventory slot \"%d\" is not empty", slot);
+
+	_equipment.insert(std::make_pair(slot, tag));
+}
+
+void CreatureInfo::unequipInventorySlot(InventorySlot slot) {
+	_equipment.erase(slot);
 }
 
 } // End of namespace KotORBase

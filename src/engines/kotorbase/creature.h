@@ -218,7 +218,6 @@ private:
 
 	Common::UString _conversation;
 
-	Inventory _inventory;
 	Common::PtrMap<InventorySlot, Item> _equipment;
 
 	std::queue<Action> _actions;

@@ -35,9 +35,16 @@ namespace KotORBase {
 
 class Inventory {
 public:
+	Inventory &operator=(const Inventory &other);
+
 	struct ItemGroup {
 		Common::UString tag;
 		int count;
+
+		ItemGroup();
+		ItemGroup(const ItemGroup &other);
+
+		ItemGroup &operator=(const ItemGroup &other);
 	};
 
 	const std::map<Common::UString, ItemGroup> &getItems() const;

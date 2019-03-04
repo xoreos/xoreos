@@ -417,9 +417,8 @@ void Creature::changeBody() {
 	uint32 state = 'a';
 	uint8 textureVariation = 1;
 
-	Common::PtrMap<InventorySlot, Item>::const_iterator i = _equipment.find(kInventorySlotBody);
-	if (i != _equipment.end()) {
-		Item *item = i->second;
+	if (_info.isInventorySlotEquipped(kInventorySlotBody)) {
+		Item *item = _equipment[kInventorySlotBody];
 		state += item->getBodyVariation() - 1;
 		textureVariation = item->getTextureVariation();
 	}
@@ -456,9 +455,8 @@ void Creature::changeWeapon(InventorySlot slot) {
 
 	Graphics::Aurora::Model *weaponModel = 0;
 
-	Common::PtrMap<InventorySlot, Item>::const_iterator i = _equipment.find(slot);
-	if (i != _equipment.end()) {
-		Item *item = i->second;
+	if (_info.isInventorySlotEquipped(slot)) {
+		Item *item = _equipment[slot];
 		weaponModel = loadModelObject(item->getModelName());
 	}
 
@@ -567,21 +565,25 @@ float Creature::getCameraHeight() const {
 }
 
 void Creature::equipItem(Common::UString tag, InventorySlot slot) {
-	Common::PtrMap<InventorySlot, Item>::iterator i = _equipment.find(slot);
-	if (i != _equipment.end()) {
-		_inventory.addItem(i->second->getTag());
-		_equipment.erase(i);
+	if (_info.isInventorySlotEquipped(slot)) {
+		Common::UString equippedItem = _info.getEquippedItem(slot);
+		_info.unequipInventorySlot(slot);
+		_info.addInventoryItem(equippedItem);
+		_equipment.erase(slot);
 	}
+
 	if (!tag.empty()) {
-		_inventory.removeItem(tag);
 		try {
 			Item *item = new Item(tag);
-			_equipment.insert(std::pair<InventorySlot, Item *>(slot, item));
+			_info.removeInventoryItem(tag);
+			_info.equipItem(tag, slot);
+			_equipment.insert(std::make_pair(slot, item));
 		} catch (Common::Exception &e) {
-			e.add("Failed to load item: %s", tag.c_str());
+			e.add("Failed to load item \"%s\"", tag.c_str());
 			Common::printException(e, "WARNING: ");
 		}
 	}
+
 	switch (slot) {
 		case kInventorySlotBody:
 			changeBody();
@@ -596,12 +598,14 @@ void Creature::equipItem(Common::UString tag, InventorySlot slot) {
 }
 
 Inventory &Creature::getInventory() {
-	return _inventory;
+	return _info.getInventory();
 }
 
 Item *Creature::getEquipedItem(InventorySlot slot) const {
-	Common::PtrMap<InventorySlot, Item>::const_iterator i = _equipment.find(slot);
-	return i == _equipment.end() ? 0 : i->second;
+	if (!_info.isInventorySlotEquipped(slot))
+		return nullptr;
+
+	return _equipment.find(slot)->second;
 }
 
 void Creature::playDefaultAnimation() {
@@ -627,13 +631,10 @@ void Creature::playDefaultHeadAnimation() {
 }
 
 void Creature::playDrawWeaponAnimation() {
-	if (!_model)
+	if (!_model || !_info.isInventorySlotEquipped(kInventorySlotRightWeapon))
 		return;
 
 	Item *item = _equipment[kInventorySlotRightWeapon];
-	if (!item)
-		return;
-
 	switch (item->getWeaponWield()) {
 		case kWeaponWieldBaton:
 			_model->playAnimation("g1w1");

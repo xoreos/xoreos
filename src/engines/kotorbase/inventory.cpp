@@ -28,6 +28,25 @@ namespace Engines {
 
 namespace KotORBase {
 
+Inventory::ItemGroup::ItemGroup() {
+}
+
+Inventory::ItemGroup::ItemGroup(const ItemGroup &other) {
+	operator=(other);
+}
+
+Inventory::ItemGroup &Inventory::ItemGroup::operator=(const ItemGroup &other) {
+	tag = other.tag;
+	count = other.count;
+
+	return *this;
+}
+
+Inventory &Inventory::operator=(const Inventory &other) {
+	_items = other._items;
+	return *this;
+}
+
 void Inventory::addItem(const Common::UString &tag, int count) {
 	if (tag.empty())
 		return;
