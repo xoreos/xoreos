@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN2_INVENTORY_H
 #define ENGINES_NWN2_INVENTORY_H
 
+#include <vector>
+
 #include "src/engines/nwn2/types.h"
 
 namespace Engines {
@@ -42,19 +44,28 @@ public:
 	Item *getFirstItemInInventory();
 	Item *getNextItemInInventory();
 
+	/** Add a new item to the inventory using the blueprint template. */
+	Item *createItem(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
+
 private:
 
-	typedef std::map<uint16, Item *> ItemSlotMap;
+	typedef std::vector<Item *> ItemSlots;
 
-	ItemSlotMap equippedItems;
-	ItemSlotMap inventoryItems;
+	ItemSlots equippedItems;
+	ItemSlots inventoryItems;
 
-	uint32 _lastRetrieved { UINT32_MAX }; ///< Index of last retrieved item.
+	uint16 _lastRetrieved { UINT16_MAX }; ///< Index of last retrieved item.
+
+	/** Insert item in the slot. */
+	void insertItem(Item *item, uint16 slot = 0);
+
+	/** Get the first empty inventory slot. */
+	uint16 getFirstEmptySlot() const;
 
 	/** Convert a bit flag to an equipment slot. */
 	InventorySlot getSlotFromBitFlag(uint32 bitFlag) const;
 
-	/** Delete all items in inventory then clear the map. */
+	/** Delete all items in inventory then clear the maps. */
 	void clear();
 
 	/** Load from an item list. */

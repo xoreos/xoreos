@@ -79,6 +79,9 @@ public:
 	                const Common::UString &disarm,
 	                const Common::UString &triggered);
 
+	/** Create an item in the creature's inventory. */
+	Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
+
 	/** The opener object opens this placeable. */
 	bool open(Object *opener);
 	/** The closer object closes this placeable. */

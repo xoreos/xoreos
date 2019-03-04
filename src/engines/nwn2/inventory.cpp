@@ -23,6 +23,7 @@
  */
 
 #include <iterator>
+#include <vector>
 
 #include "src/common/error.h"
 
@@ -49,56 +50,132 @@ Inventory::~Inventory() {
 
 /** Return the first item in the inventory. */
 Item *Inventory::getFirstItemInInventory() {
-	_lastRetrieved = 0;
+	uint16 equipSize = (uint16) kInventorySlotMax;
 
-	if (!equippedItems.empty()) {
-		return equippedItems.begin()->second;
-	} else if (!inventoryItems.empty()) {
-		return inventoryItems.begin()->second;
+	// Cycle through equipped items
+	_lastRetrieved = 0;
+	for (std::vector<Item *>::const_iterator item = equippedItems.begin(); item != equippedItems.end(); ++item) {
+		if (*item != nullptr)
+			return *item;
+
+		// Stay in bounds
+		if (++_lastRetrieved >= equipSize)
+			break;
 	}
-	return 0;
+
+	// Cycle through the inventory
+	_lastRetrieved = equipSize;
+	for (std::vector<Item *>::const_iterator item = inventoryItems.begin(); item != inventoryItems.end(); ++item) {
+		if (*item != nullptr)
+			return *item;
+
+		_lastRetrieved++;
+	}
+
+	return nullptr;
 }
 
 /** Return the next item in the inventory. */
 Item *Inventory::getNextItemInInventory() {
-	// Find the matching item
-	const size_t equipSize = equippedItems.size();
+	// Check for the end of inventory
+	if (_lastRetrieved == UINT16_MAX)
+		return nullptr;
+
+	// Increment the counter
 	_lastRetrieved++;
+
+	// Cycle through the remaining equipped items
+	const uint16 equipSize = (uint16) kInventorySlotMax;
 	if (_lastRetrieved < equipSize) {
-		std::map<uint16, Item *>::const_iterator item = equippedItems.begin();
+		std::vector<Item *>::const_iterator item = equippedItems.begin();
 		std::advance(item, _lastRetrieved);
-		return item->second;
-	} else {
-		const size_t inventorySize = inventoryItems.size();
-		if (_lastRetrieved < equipSize + inventorySize) {
-			// TODO: Check for an item with nested inventory (Ex.: magic bag)
-			std::map<uint16, Item *>::const_iterator item = inventoryItems.begin();
-			std::advance(item, _lastRetrieved - equipSize);
-			return item->second;
+		for (; item != equippedItems.end(); item++) {
+			if (*item != nullptr)
+				return *item;
+
+			// Stay in bounds
+			if(++_lastRetrieved >= equipSize)
+				break;
+		}
+	}
+
+	// Cycle through the remaining inventory
+	const size_t inventorySize = inventoryItems.size();
+	if (_lastRetrieved < equipSize + inventorySize) {
+		// TODO: Check for an item with nested inventory (Ex.: magic bag)
+		std::vector<Item *>::const_iterator item = inventoryItems.begin();
+		std::advance(item, _lastRetrieved - equipSize);
+		for (; item != inventoryItems.end(); item++)
+			if (*item != nullptr) {
+				return *item;
+			_lastRetrieved++;
 		}
 	}
 
 	// End of the inventory
-	_lastRetrieved = UINT32_MAX;
-	return 0;
+	_lastRetrieved = UINT16_MAX;
+	return nullptr;
+}
+
+Item *Inventory::createItem(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+	if (blueprint.empty() || stackSize == 0)
+		return nullptr;
+
+	// Create and insert the item
+	Item *item = new Item(blueprint, stackSize, tag);
+	insertItem(item);
+	return item;
+}
+
+void Inventory::insertItem(Item *item, uint16 slot) {
+	if (item == nullptr)
+		return;
+
+	// Determine the maximum slot to be occupied
+	size_t max = inventoryItems.size();
+	if (slot > max)
+		max = slot;
+
+	// Make sure there's enough space allocated
+	if (max + 2 > inventoryItems.capacity())
+		inventoryItems.resize(max + 8, nullptr); // Add a full row
+
+	// Find an empty inventory slot
+	if (inventoryItems[slot] != nullptr)
+		slot = getFirstEmptySlot();
+
+	// Insert the item pointer
+	inventoryItems[slot] = item;
 }
 
 void Inventory::clear() {
-	std::map<uint16, Item *>::iterator item;
-
 	// Purge all equipped item instances
-	for (item = equippedItems.begin(); item != equippedItems.end(); ++item)
-		if (item->second)
-			delete(item->second);
+	for (std::vector<Item *>::iterator item = equippedItems.begin(); item != equippedItems.end(); ++item)
+		if (*item)
+			delete *item;
 
 	// Purge all inventory item instances
-	for (item = inventoryItems.begin(); item != inventoryItems.end(); ++item)
-		if (item->second)
-			delete(item->second);
+	for (std::vector<Item *>::iterator item = inventoryItems.begin(); item != inventoryItems.end(); ++item)
+		if (*item)
+			delete *item;
 
 	// Clear the maps
 	equippedItems.clear();
 	inventoryItems.clear();
+}
+
+uint16 Inventory::getFirstEmptySlot() const {
+	// Look for the first open slot
+	uint16 slot = 0;
+
+	for (std::vector<Item *>::const_iterator item = inventoryItems.begin(); item != inventoryItems.end(); ++item) {
+		if (*item == nullptr)
+			return slot;
+		slot++;
+	}
+
+	// Failsafe
+	return slot;
 }
 
 InventorySlot Inventory::getSlotFromBitFlag(uint32 bitFlag) const {
@@ -171,17 +248,17 @@ void Inventory::load(const Aurora::GFF3Struct &inventory) {
 		for (Aurora::GFF3List::const_iterator it = itemList.begin(); it != itemList.end(); ++it) {
 			const Aurora::GFF3Struct &item = **it;
 			uint16 slot = item.getUint("Repos_Index");
-
-			// TODO: Find an empty inventory slot instead
-			if (inventoryItems.find(slot) != inventoryItems.end())
-				throw Common::Exception("Inventory slot already occupied: %d", slot);
-
-			inventoryItems[slot] = new Item(item);
+			insertItem(new Item(item), slot);
 		}
 	}
 
 	// Load equipped items (creature only)
 	if (inventory.hasField("Equip_ItemList")) {
+		// Allocate space for all slots
+		size_t capacity = equippedItems.capacity();
+		if (capacity < (size_t) kInventorySlotMax)
+			equippedItems.resize((size_t) kInventorySlotMax, nullptr);
+
 		const Aurora::GFF3List &itemList = inventory.getList("Equip_ItemList");
 		for (Aurora::GFF3List::const_iterator it = itemList.begin(); it != itemList.end(); ++it) {
 			const Aurora::GFF3Struct &item = **it;
@@ -189,11 +266,13 @@ void Inventory::load(const Aurora::GFF3Struct &inventory) {
 			// Slot number is given by the struct id bit flag
 			uint16 slot = getSlotFromBitFlag(item.getID());
 
-			// TODO: Move item to general inventory instead
-			if (equippedItems.find(slot) != equippedItems.end())
-				throw Common::Exception("Equip slot already occupied: %d", slot);
-
-			equippedItems[slot] = new Item(item);
+			// Check for an open equipment slot
+			if (slot < (uint16) kInventorySlotMax && equippedItems[slot] == nullptr) {
+				equippedItems[slot] = new Item(item);
+			} else {
+				// Move to the general inventory instead
+				insertItem(new Item(item));
+			}
 		}
 	}
 }

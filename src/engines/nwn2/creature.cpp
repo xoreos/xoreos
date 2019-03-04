@@ -297,6 +297,10 @@ void Creature::setLootable(bool lootable) {
 	_isLootable = lootable;
 }
 
+Item *Creature::createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+	return createItem(blueprint, stackSize, tag);
+}
+
 /**
  * Perform a skill check against the DC.
  *

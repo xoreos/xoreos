@@ -161,6 +161,19 @@ void Functions::getNextItemInInventory(Aurora::NWScript::FunctionContext &ctx) {
 	}
 }
 
+void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 1));
+	if (item && item->getHasInventory()) {
+		const Common::UString &blueprint = ctx.getParams()[0].getString();
+		if (blueprint.empty())
+			return;
+
+		int stackSize = ctx.getParams()[2].getInt();
+		const Common::UString &tag = ctx.getParams()[3].getString();
+		ctx.getReturn() = item->createItemOnObject(blueprint, stackSize, tag);
+	}
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines

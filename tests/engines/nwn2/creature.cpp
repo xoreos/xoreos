@@ -173,13 +173,58 @@ GTEST_TEST(NWN2Creature, inventory) {
 	Common::ScopedPtr<Engines::NWN2::Creature> cr(new Engines::NWN2::Creature(top));
 
 	EXPECT_STREQ(cr->getTag().c_str(), "elanee");
-	EXPECT_STREQ(cr->getFirstItemInInventory()->getTag().c_str(), "NW_WBLMCL002");
-	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_IT_SPARSCR204");
-	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_WSPSC001");
-	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "X2_IT_SPDVSCR001");
-	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_WMGWN005");
-	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_IT_SPARSCR202");
-	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_IT_SPDVSCR203");
-	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "x2_nash_boot");
-	EXPECT_STREQ(cr->getNextItemInInventory()->getTag().c_str(),  "NW_WSWSC001");
+
+	Engines::NWN2::Item *item = cr->getFirstItemInInventory();
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(), "NW_WBLMCL002");
+	}
+
+	item = cr->getNextItemInInventory();
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(),  "NW_IT_SPARSCR204");
+	}
+
+	item = cr->getNextItemInInventory();
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(),  "NW_WSPSC001");
+	}
+
+	item = cr->getNextItemInInventory();
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(),  "X2_IT_SPDVSCR001");
+	}
+
+	item = cr->getNextItemInInventory();
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(),  "NW_WMGWN005");
+	}
+
+	item = cr->getNextItemInInventory();
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(),  "NW_IT_SPARSCR202");
+	}
+
+	item = cr->getNextItemInInventory();
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(),  "NW_IT_SPDVSCR203");
+	}
+
+	item = cr->getNextItemInInventory();
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(),  "x2_nash_boot");
+	}
+
+	item = cr->getNextItemInInventory();
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(),  "NW_WSWSC001");
+	}
 }

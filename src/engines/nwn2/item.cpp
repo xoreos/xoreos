@@ -44,6 +44,12 @@ Item::Item(const Aurora::GFF3Struct &item) :
 	load(item);
 }
 
+Item::Item(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) :
+	Object(kObjectTypeItem), Inventory() {
+
+	load(blueprint, stackSize, tag);
+}
+
 Item::~Item() {
 }
 
@@ -123,13 +129,24 @@ void Item::setItemIcon(uint32 icon) {
 }
 
 void Item::setItemStackSize(uint16 stackSize) {
-	// Check if the value is in the allowed range
-	const Aurora::TwoDARow &row = TwoDAReg.get2DA("baseitems").getRow((size_t) _baseItem);
-	uint32 maxStack = (uint32) row.getInt("Stacking");
-	if (stackSize == 0 || stackSize > maxStack)
+	if (stackSize == 0)
 		return;
 
-	_stackSize = stackSize;
+	// Constrain stack to be no more than allowed by the baseitem
+	uint16 maxStack = getMaxStackSize();
+	_stackSize = (stackSize > maxStack) ? maxStack : stackSize;
+}
+
+uint16 Item::getMaxStackSize() const {
+	const Aurora::TwoDARow &row = TwoDAReg.get2DA("baseitems").getRow((size_t) _baseItem);
+	return (uint16) row.getInt("Stacking");
+}
+
+Item *Item::createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+	if (!getHasInventory())
+		return 0;
+
+	return createItem(blueprint, stackSize, tag);
 }
 
 void Item::load(const Aurora::GFF3Struct &item) {
@@ -137,9 +154,23 @@ void Item::load(const Aurora::GFF3Struct &item) {
 
 	Common::ScopedPtr<Aurora::GFF3File> uti;
 	if (!temp.empty())
-		uti.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'I', ' ')));
+		uti.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' ')));
 
 	load(item, uti ? &uti->getTopLevel() : 0);
+}
+
+void Item::load(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+	Common::ScopedPtr<Aurora::GFF3File> uti;
+	uti.reset(loadOptionalGFF3(blueprint, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' ')));
+	if (!uti)
+		return;
+
+	loadProperties(uti->getTopLevel());
+
+	// Apply the input arguments
+	setItemStackSize(stackSize);
+	if (!tag.empty())
+		_tag = tag;
 }
 
 void Item::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {

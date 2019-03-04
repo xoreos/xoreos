@@ -54,6 +54,7 @@ namespace Engines {
 namespace NWN2 {
 
 class Area;
+class Item;
 
 /** An object within a NWN2 area. */
 class Object : public Aurora::NWScript::Object, public NWN2::ScriptContainer {
@@ -96,6 +97,8 @@ public:
 	bool isClickable() const; ///< Can the player click the object?
 
 	bool getHasInventory() const; ///< Can the object have an inventory?
+
+	virtual Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
 
 	// Object/Object interactions
 
