@@ -159,26 +159,15 @@ Gender Creature::getGender() const {
 }
 
 int Creature::getLevel(const Class &c) const {
-	for (size_t i = 0; i < _levels.size(); ++i) {
-		if (_levels[i].characterClass == c)
-			return _levels[i].level;
-	}
-
-	return 0;
+	return _info.getClassLevel(c);
 }
 
 int Creature::getLevelByPosition(int position) const {
-	if (_levels.size() >= static_cast<unsigned int>(position + 1))
-		return _levels[position].level;
-
-	return 0;
+	return _info.getLevelByPosition(position);
 }
 
 Class Creature::getClassByPosition(int position) const {
-	if (_levels.size() >= static_cast<unsigned int>(position + 1))
-		return _levels[position].characterClass;
-
-	return kClassInvalid;
+	return _info.getClassByPosition(position);
 }
 
 Race Creature::getRace() const {
@@ -198,29 +187,11 @@ float Creature::getRunRate() const {
 }
 
 int Creature::getSkillRank(Skill skill) {
-	if (skill > _skills.size())
-		return -1;
-
-	return _skills[skill];
+	return _info.getSkillRank(skill);
 }
 
 int Creature::getAbilityScore(Ability ability) {
-	switch (ability) {
-		case kAbilityStrength:
-			return _strength;
-		case kAbilityDexterity:
-			return _dexterity;
-		case kAbilityConstitution:
-			return _constitution;
-		case kAbilityIntelligence:
-			return _intelligence;
-		case kAbilityWisdom:
-			return _wisdom;
-		case kAbilityCharisma:
-			return _charisma;
-		default:
-			return 0;
-	}
+	return _info.getAbilityScore(ability);
 }
 
 void Creature::setPosition(float x, float y, float z) {
@@ -330,36 +301,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	_minOneHitPoint = gff.getBool("Min1HP", _minOneHitPoint);
 
-	// Class Levels
-	if (gff.hasField("ClassList")) {
-		Aurora::GFF3List classList = gff.getList("ClassList");
-		for (Aurora::GFF3List::const_iterator iter = classList.begin(); iter != classList.end(); iter++) {
-			const Aurora::GFF3Struct &charClass = **iter;
-
-			ClassLevel classLevel;
-			classLevel.characterClass = Class(charClass.getSint("Class"));
-			classLevel.level = charClass.getSint("ClassLevel");
-
-			_levels.push_back(classLevel);
-		}
-	}
-
-	// Skills
-	if (gff.hasField("SkillList")) {
-		Aurora::GFF3List skillList = gff.getList("SkillList");
-		for (Aurora::GFF3List::const_iterator iter = skillList.begin(); iter != skillList.end(); iter++) {
-			const Aurora::GFF3Struct &skill = **iter;
-			_skills.push_back(skill.getUint("Rank"));
-		}
-	}
-
-	// Abilities
-	_strength     = gff.getUint("Str");
-	_dexterity    = gff.getUint("Dex");
-	_constitution = gff.getUint("Con");
-	_intelligence = gff.getUint("Int");
-	_wisdom       = gff.getUint("Wis");
-	_charisma     = gff.getUint("Cha");
+	_info = CreatureInfo(gff);
 
 	// Scripts
 	readScripts(gff);
@@ -563,10 +505,7 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 			throw Common::Exception("Unknown gender");
 	}
 
-	// set the specific class to level 1
-	_levels.resize(1);
-	_levels[0].level = 1;
-	_levels[0].characterClass = info.getClass();
+	_info = CreatureInfo(info);
 
 	// TODO generate skills for pc
 
