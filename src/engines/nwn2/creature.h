@@ -140,6 +140,9 @@ public:
 	void setPlotFlag(bool plotFlag);
 	void setLootable(bool lootable);
 
+	/** Create an item in the creature's inventory. */
+	Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
+
 	// Reputation
 
 	uint8 getReputation(Object *source) const;

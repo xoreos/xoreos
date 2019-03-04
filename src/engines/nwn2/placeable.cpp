@@ -208,6 +208,12 @@ void Placeable::createTrap(uint8 trapType, uint32 faction,
 		setScript(kScriptTrapTriggered, triggered);
 }
 
+Item *Placeable::createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
+	if (!getHasInventory())
+		return 0;
+
+	return createItem(blueprint, stackSize, tag);
+}
 
 bool Placeable::click(Object *triggerer) {
 	// If the placeable is locked, just play the appropriate sound and bail

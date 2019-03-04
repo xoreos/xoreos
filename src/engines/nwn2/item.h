@@ -36,6 +36,7 @@ namespace NWN2 {
 class Item : public Object, public Inventory {
 public:
 	Item(const Aurora::GFF3Struct &item);
+	Item(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
 	~Item();
 
 	bool getDroppableFlag() const;
@@ -55,9 +56,13 @@ public:
 	ItemType getBaseItemType() const;
 	uint32 getItemIcon() const;
 	uint16 getItemStackSize() const;
+	uint16 getMaxStackSize() const;
 
 	void setItemIcon(uint32 icon);
 	void setItemStackSize(uint16 stackSize);
+
+	/** Create an item in the creature's inventory. */
+	Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
 
 private:
 	uint32 _icon;       ///< Icon number for inventory UI.
@@ -75,6 +80,7 @@ private:
 
 	/* Load from an item instance. */
 	void load(const Aurora::GFF3Struct &item);
+	void load(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
 	void loadProperties(const Aurora::GFF3Struct &gff);
 };

@@ -47,6 +47,7 @@
 #include "src/engines/nwn2/object.h"
 #include "src/engines/nwn2/area.h"
 #include "src/engines/nwn2/module.h"
+#include "src/engines/nwn2/item.h"
 #include "src/engines/nwn2/faction.h"
 
 static const uint8 kRepEnemyMax  = 10; // Maximum reputation for an enemy
@@ -174,6 +175,11 @@ void Object::setOrientation(float x, float y, float z, float angle) {
 	_orientation[1] = y;
 	_orientation[2] = z;
 	_orientation[3] = angle;
+}
+
+Item *Object::createItemOnObject(const Common::UString &UNUSED(blueprint),
+	uint16 UNUSED(stackSize), const Common::UString &UNUSED(tag)) {
+	return 0;
 }
 
 void Object::enter() {
