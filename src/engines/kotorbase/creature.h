@@ -39,6 +39,7 @@
 #include "src/engines/kotorbase/object.h"
 #include "src/engines/kotorbase/inventory.h"
 #include "src/engines/kotorbase/action.h"
+#include "src/engines/kotorbase/creatureinfo.h"
 
 namespace Engines {
 
@@ -200,11 +201,6 @@ protected:
 	void loadMovementRate(const Common::UString &name);
 
 private:
-	struct ClassLevel {
-		Class characterClass;
-		int level;
-	};
-
 	bool _isPC; ///< Is the creature a PC?
 
 	uint32 _appearance; ///< The creature's general appearance.
@@ -212,23 +208,13 @@ private:
 	Race _race; ///< The race of the creature.
 	SubRace _subRace; ///< The subrace of the creature.
 
-	std::vector<ClassLevel> _levels; ///< The levels of the creature.
-
 	Common::UString _modelType;
 	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
 	Graphics::Aurora::Model *_headModel; ///< The creature's head model.
 	bool _visible;
 	bool _commandable;
 
-	// Abilities
-	unsigned int _strength { 0 };
-	unsigned int _dexterity { 0 };
-	unsigned int _constitution { 0 };
-	unsigned int _intelligence { 0 };
-	unsigned int _wisdom { 0 };
-	unsigned int _charisma { 0 };
-
-	std::vector<uint32> _skills; ///< The skill levels of the creature
+	CreatureInfo _info;
 
 	Common::UString _conversation;
 
