@@ -86,14 +86,15 @@ void SelectionCircle::setTarget(bool target) {
 	}
 }
 
-void SelectionCircle::moveTo(Object *object, float &sX, float &sY) {
+bool SelectionCircle::moveTo(Object *object, float &sX, float &sY) {
 	float x, y, z;
 	object->getTooltipAnchor(x, y, z);
 
-	float _;
-	GfxMan.project(x, y, z, sX, sY, _);
-
+	float sZ;
+	GfxMan.project(x, y, z, sX, sY, sZ);
 	setPosition(sX, sY);
+
+	return (sZ >= 0.0f) && (sZ <= 1.0f);
 }
 
 } // End of namespace KotORBase

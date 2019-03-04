@@ -160,12 +160,15 @@ void HUD::updateTargetObject() {
 	_targetCircle->setHovered(_hoveredObject == _targetObject);
 
 	float sX, sY;
-
-	_targetCircle->moveTo(_targetObject, sX, sY);
-	_targetCircle->show();
-
-	updateTargetInformation(_targetObject, sX, sY);
-	showTargetInformation(_targetObject);
+	bool onScreen = _targetCircle->moveTo(_targetObject, sX, sY);
+	if (onScreen) {
+		_targetCircle->show();
+		updateTargetInformation(_targetObject, sX, sY);
+		showTargetInformation(_targetObject);
+	} else {
+		_targetCircle->hide();
+		hideTargetInformation();
+	}
 }
 
 void HUD::updateHoveredObject() {
@@ -181,8 +184,12 @@ void HUD::updateHoveredObject() {
 	}
 
 	float _, __;
-	_hoveredCircle->moveTo(_hoveredObject, _, __);
-	_hoveredCircle->show();
+	bool onScreen = _hoveredCircle->moveTo(_hoveredObject, _, __);
+
+	if (onScreen)
+		_hoveredCircle->show();
+	else
+		_hoveredCircle->hide();
 }
 
 void HUD::getTargetButtonSize(float &width, float &height) const {

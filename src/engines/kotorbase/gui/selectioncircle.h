@@ -49,7 +49,8 @@ public:
 	void setHovered(bool hovered);
 	void setTarget(bool target);
 
-	void moveTo(Object *object, float &sX, float &sY);
+	/** Move this selection circle to a specified object. Returns true if it is on screen. */
+	bool moveTo(Object *object, float &sX, float &sY);
 
 private:
 	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _hoveredQuad;
