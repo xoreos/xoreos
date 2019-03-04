@@ -126,10 +126,12 @@ Common::UString Creature::getHeadMeshString(KotORBase::Gender gender, KotORBase:
 			throw Common::Exception("Invalid skin");
 	}
 
-	if (faceId >= 10)
-		head += Common::composeString(transformFaceId(gender, skin, faceId));
+	uint32 transformedFaceId = transformFaceId(gender, skin, faceId);
+
+	if (transformedFaceId >= 10)
+		head += Common::composeString(transformedFaceId);
 	else
-		head += "0" + Common::composeString(transformFaceId(gender, skin, faceId));
+		head += "0" + Common::composeString(transformedFaceId);
 
 	return head;
 }
