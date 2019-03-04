@@ -293,7 +293,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  152, "SetLocalLocation"                    , 0                                                },
 	{  153, "GetLocalLocation"                    , 0                                                },
 	{  154, "EffectSleep"                         , 0                                                },
-	{  155, "GetItemInSlot"                       , 0                                                },
+	{  155, "GetItemInSlot"                       , &Functions::getItemInSlot                        },
 	{  156, "EffectCharmed"                       , 0                                                },
 	{  157, "EffectConfused"                      , 0                                                },
 	{  158, "EffectFrightened"                    , 0                                                },

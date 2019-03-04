@@ -28,6 +28,7 @@
 
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/objectcontainer.h"
+#include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/item.h"
 
 #include "src/engines/nwn2/script/functions.h"
@@ -159,6 +160,12 @@ void Functions::getNextItemInInventory(Aurora::NWScript::FunctionContext &ctx) {
 	if (item && item->getHasInventory()) {
 		ctx.getReturn() = item->getNextItemInInventory();
 	}
+}
+
+void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
+	int slot = ctx.getParams()[1].getInt();
+	ctx.getReturn() = (creature) ? creature->getItemInSlot((InventorySlot) slot) : 0;
 }
 
 void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {

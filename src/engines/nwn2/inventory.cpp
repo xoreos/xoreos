@@ -117,6 +117,11 @@ Item *Inventory::getNextItemInInventory() {
 	return nullptr;
 }
 
+/** Return the item in a slot. */
+Item *Inventory::getItemInSlot(InventorySlot slot) const {
+	return (slot < kInventorySlotMax) ? equippedItems[(uint16) slot] : nullptr;
+}
+
 Item *Inventory::createItem(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
 	if (blueprint.empty() || stackSize == 0)
 		return nullptr;
