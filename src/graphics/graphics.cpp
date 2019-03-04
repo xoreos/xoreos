@@ -106,6 +106,10 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 
 	_takeScreenshot = false;
 
+	_takeImage = false;
+	_takeImageWithGUI = false;
+	_takeImageWithCursor = false;
+
 	_renderableID = 0;
 
 	_hasAbandoned = false;
@@ -811,6 +815,19 @@ void GraphicsManager::takeScreenshot() {
 	unlockFrame();
 }
 
+std::future<Surface> GraphicsManager::takeImage(bool withGUI, bool withCursor) {
+	lockFrame();
+
+	_takeImage = true;
+	_takeImageWithGUI = withGUI;
+	_takeImageWithCursor = withCursor;
+	_imageSurface = std::promise<Surface>();
+
+	unlockFrame();
+
+	return _imageSurface.get_future();
+}
+
 Renderable *GraphicsManager::getGUIObjectAt(float x, float y) const {
 	if (QueueMan.isQueueEmpty(kQueueVisibleGUIFrontObject))
 		return 0;
@@ -1246,6 +1263,50 @@ void GraphicsManager::renderScene() {
 	}
 
 	endScene();
+
+	if (_takeImage) {
+		beginScene();
+
+		if (_rendererExperimental) {
+			if (_takeImageWithGUI)
+				renderGUIBackShader();
+			renderWorldShader();
+			if (_takeImageWithGUI) {
+				renderGUIFrontShader();
+				renderGUIConsoleShader();
+			}
+			if (_takeImageWithCursor)
+				renderCursorShader();
+		} else {
+			if (_takeImageWithGUI)
+				renderGUIBack();
+			renderWorld();
+			if (_takeImageWithGUI) {
+				renderGUIFront();
+				renderGUIConsole();
+			}
+			if (_takeImageWithCursor)
+				renderCursor();
+		}
+
+		if (_fsaa > 0)
+			glDisable(GL_MULTISAMPLE_ARB);
+
+		Surface surface(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
+		glReadPixels(
+				0,
+				0,
+				WindowMan.getWindowWidth(),
+				WindowMan.getWindowHeight(),
+				GL_BGRA,
+				GL_UNSIGNED_BYTE,
+				surface.getData()
+		);
+
+		_imageSurface.set_value(surface);
+
+		_takeImage = false;
+	}
 
 	_frameEndSignal.store(true, boost::memory_order_release);
 }

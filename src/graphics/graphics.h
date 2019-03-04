@@ -29,6 +29,7 @@
 
 #include <vector>
 #include <list>
+#include <future>
 
 #include "external/glm/mat4x4.hpp"
 
@@ -42,6 +43,8 @@
 #include "src/graphics/windowman.h"
 
 #include "src/graphics/aurora/animationthread.h"
+
+#include "src/graphics/images/surface.h"
 
 #include "src/events/notifyable.h"
 
@@ -113,6 +116,8 @@ public:
 
 	/** Take a screenshot. */
 	void takeScreenshot();
+	/** Take an image. */
+	std::future<Surface> takeImage(bool withGUI = true, bool withCursor = true);
 
 	/** Map the given world coordinates onto screen coordinates. */
 	bool project(float x, float y, float z, float &sX, float &sY, float &sZ);
@@ -236,6 +241,11 @@ private:
 	Cursor     *_cursor;       ///< The current cursor.
 
 	bool _takeScreenshot; ///< Should screenshot be taken?
+
+	bool _takeImage;           ///< Should an image be taken?
+	bool _takeImageWithGUI;    ///< Should the GUI be hidden in the image?
+	bool _takeImageWithCursor; ///< Should the Cursor be hidden in the image?
+	std::promise<Surface> _imageSurface;
 
 	uint32 _renderableID;             ///< The last ID given to a renderable.
 	Common::Mutex _renderableIDMutex; ///< The mutex to govern renderable ID creation.
