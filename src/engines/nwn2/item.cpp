@@ -113,6 +113,10 @@ uint16 Item::getItemStackSize() const {
 	return _stackSize;
 }
 
+uint8 Item::getItemCharges() const {
+	return _charges;
+}
+
 void Item::setItemIcon(uint32 icon) {
 	// Check if the icon is in range
 	const Aurora::TwoDAFile &icons = TwoDAReg.get2DA("nwn2_icons");
@@ -135,6 +139,16 @@ void Item::setItemStackSize(uint16 stackSize) {
 	// Constrain stack to be no more than allowed by the baseitem
 	uint16 maxStack = getMaxStackSize();
 	_stackSize = (stackSize > maxStack) ? maxStack : stackSize;
+}
+
+void Item::setItemCharges(uint8 charges) {
+	const Aurora::TwoDARow &row = TwoDAReg.get2DA("baseitems").getRow((size_t) _baseItem);
+	uint8 maxCharges = (uint8) row.getInt("ChargesStarting");
+	if (maxCharges == 0)
+		return;
+
+	// TODO: Destroy item if 'charges' is zero and 'maxCharges' > 0
+	_charges = (charges > maxCharges) ? maxCharges : charges;
 }
 
 uint16 Item::getMaxStackSize() const {
@@ -193,6 +207,7 @@ void Item::loadProperties(const Aurora::GFF3Struct &gff) {
 	_modifyCost = gff.getSint("ModifyCost", _modifyCost);
 	_baseItem = (ItemType) gff.getUint("BaseItem", (uint) _baseItem);
 	_stackSize = gff.getUint("StackSize", _stackSize);
+	_charges = gff.getUint("Charges", _charges);
 
 	// Booleans
 	_plot = gff.getBool("Plot", _plot);

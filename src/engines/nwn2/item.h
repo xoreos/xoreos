@@ -57,9 +57,11 @@ public:
 	uint32 getItemIcon() const;
 	uint16 getItemStackSize() const;
 	uint16 getMaxStackSize() const;
+	uint8 getItemCharges() const;
 
 	void setItemIcon(uint32 icon);
 	void setItemStackSize(uint16 stackSize);
+	void setItemCharges(uint8 charges);
 
 	/** Create an item in the creature's inventory. */
 	Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
@@ -69,6 +71,7 @@ private:
 	uint32 _cost;       ///< Base price in gp.
 	int32 _modifyCost;  ///< Adjustment to price in gp.
 	uint16 _stackSize;  ///< Stack size.
+	uint8 _charges;     ///< Number of charges.
 	ItemType _baseItem; ///< Base item type.
 
 	bool _plot;           ///< Is this a plot item?
