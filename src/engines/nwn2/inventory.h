@@ -43,6 +43,7 @@ public:
 
 	Item *getFirstItemInInventory();
 	Item *getNextItemInInventory();
+	Item *getItemInSlot(InventorySlot slot) const;
 
 	/** Add a new item to the inventory using the blueprint template. */
 	Item *createItem(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);

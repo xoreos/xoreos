@@ -227,4 +227,10 @@ GTEST_TEST(NWN2Creature, inventory) {
 	if (item != nullptr) {
 		EXPECT_STREQ(item->getTag().c_str(),  "NW_WSWSC001");
 	}
+
+	item = cr->getItemInSlot(Engines::NWN2::kInventorySlotRightHand);
+	EXPECT_TRUE(item != nullptr);
+	if (item != nullptr) {
+		EXPECT_STREQ(item->getTag().c_str(),  "NW_WBLMCL002");
+	}
 }
