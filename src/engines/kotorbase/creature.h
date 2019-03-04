@@ -61,10 +61,10 @@ public:
 
 	// Character generation
 
-	/** Create a fake player character creature for testing purposes. */
-	void createFakePC();
-	/** Create a player character creature from a character info class. */
-	void createPC(const CharacterGenerationInfo &info);
+	/** Initialize this creature as a fake player character for testing purposes. */
+	void initAsFakePC();
+	/** Initialize this creature as a player character from a specified info class. */
+	void initAsPC(const CharacterGenerationInfo &chargenInfo, const CreatureInfo &info);
 
 	// Basic visuals
 
@@ -96,6 +96,8 @@ public:
 	float getRunRate() const;
 	/** Get id of the conversation with this creature. */
 	const Common::UString &getConversation() const;
+	/** Get abstract information of this creature. */
+	const CreatureInfo &getCreatureInfo() const;
 
 	/** Is the creature a player character? */
 	bool isPC() const;
@@ -239,10 +241,13 @@ private:
 	void loadBody(PartModels &parts);
 	void loadHead(PartModels &parts);
 
-	void changeBody();
-	void changeWeapon(InventorySlot slot);
+	void loadEquippedModel();
+	void attachWeaponModel(InventorySlot slot);
 
 	void setDefaultAnimations();
+
+	void reloadEquipment();
+	bool addItemToEquipment(const Common::UString &tag, InventorySlot slot);
 };
 
 } // End of namespace KotORBase

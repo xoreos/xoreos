@@ -47,6 +47,7 @@
 #include "src/engines/kotorbase/partyleader.h"
 #include "src/engines/kotorbase/partycontroller.h"
 #include "src/engines/kotorbase/cameracontroller.h"
+#include "src/engines/kotorbase/creatureinfo.h"
 
 #include "src/engines/kotorbase/gui/ingame.h"
 #include "src/engines/kotorbase/gui/dialog.h"
@@ -290,6 +291,7 @@ private:
 	Aurora::IFOFile _ifo; ///< The current module's IFO.
 
 	Common::ScopedPtr<CharacterGenerationInfo> _chargenInfo; ///< Character generation information.
+	CreatureInfo _pcInfo; ///< Abstract player character information.
 	Creature *_pc; ///< The player character.
 
 	int _currentTexturePack; ///< The current texture pack.

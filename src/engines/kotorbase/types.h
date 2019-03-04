@@ -203,6 +203,7 @@ enum InventorySlot {
 	kInventorySlotRightWeapon2 = 18,
 	kInventorySlotLeftWeapon2  = 19,
 
+	kInventorySlotMAX          = 20,
 	kInventorySlotInvalid      = 255
 };
 

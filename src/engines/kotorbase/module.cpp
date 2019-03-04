@@ -167,6 +167,7 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
 
 void Module::usePC(const CharacterGenerationInfo &info) {
 	_chargenInfo.reset(createCharGenInfo(info));
+	_pcInfo = CreatureInfo(info);
 }
 
 Creature *Module::getPC() {
@@ -263,9 +264,9 @@ void Module::loadPC() {
 	_pc = createCreature();
 
 	if (_chargenInfo)
-		_pc->createPC(*_chargenInfo.get());
+		_pc->initAsPC(*_chargenInfo.get(), _pcInfo);
 	else
-		_pc->createFakePC();
+		_pc->initAsFakePC();
 
 	_area->addCreature(_pc);
 }
@@ -337,6 +338,11 @@ void Module::loadTexturePack() {
 void Module::unload(bool completeUnload) {
 	_ingame->resetSelection();
 	_ingame->hideSelection();
+
+	if (_pc) {
+		_pcInfo = _pc->getCreatureInfo();
+		_pc = nullptr;
+	}
 
 	GfxMan.pauseAnimations();
 

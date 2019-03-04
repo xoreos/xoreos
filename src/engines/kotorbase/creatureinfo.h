@@ -22,6 +22,9 @@
  *  Abstract creature information in KotOR games.
  */
 
+#ifndef ENGINES_KOTORBASE_CREATUREINFO_H
+#define ENGINES_KOTORBASE_CREATUREINFO_H
+
 #include <vector>
 
 #include "src/common/types.h"
@@ -130,3 +133,5 @@ private:
 } // End of namespace KotORBase
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTORBASE_CREATUREINFO_H
