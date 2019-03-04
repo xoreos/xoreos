@@ -132,6 +132,12 @@ void Functions::getNumStackedItems(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = (int) item->getItemStackSize();
 }
 
+void Functions::getItemCharges(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item)
+		ctx.getReturn() = (int) item->getItemCharges();
+}
+
 void Functions::setItemIcon(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	if (item) {
@@ -145,6 +151,14 @@ void Functions::setItemStackSize(Aurora::NWScript::FunctionContext &ctx) {
 	if (item) {
 		const uint16 stackSize = (uint16)(ctx.getParams()[1].getInt());
 		item->setItemStackSize(stackSize);
+	}
+}
+
+void Functions::setItemCharges(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item) {
+		const uint8 charges = (uint8)(ctx.getParams()[1].getInt());
+		item->setItemCharges(charges);
 	}
 }
 

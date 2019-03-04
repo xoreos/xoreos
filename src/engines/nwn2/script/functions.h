@@ -308,9 +308,11 @@ private:
 	void getItemIcon       (Aurora::NWScript::FunctionContext &ctx);
 	void getItemStackSize  (Aurora::NWScript::FunctionContext &ctx);
 	void getNumStackedItems(Aurora::NWScript::FunctionContext &ctx);
+	void getItemCharges    (Aurora::NWScript::FunctionContext &ctx);
 
 	void setItemIcon     (Aurora::NWScript::FunctionContext &ctx);
 	void setItemStackSize(Aurora::NWScript::FunctionContext &ctx);
+	void setItemCharges  (Aurora::NWScript::FunctionContext &ctx);
 
 	void getFirstItemInInventory(Aurora::NWScript::FunctionContext &ctx);
 	void getNextItemInInventory (Aurora::NWScript::FunctionContext &ctx);
