@@ -135,6 +135,7 @@ void HUD::callbackActive(Widget &widget) {
 		if (_targetButtonActions[1] == kActionOpenLock) {
 			Action action(kActionOpenLock);
 			action.object = _targetObject;
+			action.range = 1.0f;
 			_module.getPartyLeader()->enqueueAction(action);
 		}
 		return;

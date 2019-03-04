@@ -781,9 +781,13 @@ Creature *Area::getNearestCreature(const Object *target, int UNUSED(nth), const 
 }
 
 void Area::processCreaturesActions(float dt) {
-	for (std::vector<Creature *>::iterator c = _creatures.begin();
-			c != _creatures.end(); ++c) {
-		ActionExecutor::executeActions(**c, *this, dt);
+	ActionExecutor::ExecutionContext ctx;
+	ctx.area = this;
+	ctx.frameTime = dt;
+
+	for (auto &c : _creatures) {
+		ctx.creature = c;
+		ActionExecutor::executeActions(ctx);
 	}
 }
 

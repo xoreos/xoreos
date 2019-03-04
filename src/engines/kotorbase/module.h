@@ -235,6 +235,11 @@ public:
 
 	void setCameraYaw(float yaw);
 
+	// Delayed object interactions
+
+	void delayConversation(const Common::UString &name, Aurora::NWScript::Object *owner = nullptr);
+	void delayContainer(Placeable *placeable);
+
 
 	void addItemToActiveObject(const Common::UString &item, int count);
 	void toggleFlyCamera();
@@ -306,6 +311,18 @@ private:
 
 	std::map<Common::UString, bool> _globalBooleans;
 	std::map<Common::UString, int> _globalNumbers;
+
+	// Delayed object interactions
+
+	struct DelayedConversation {
+		Common::UString name;
+		Aurora::NWScript::Object *owner;
+
+		DelayedConversation(const Common::UString &name, Aurora::NWScript::Object *owner = nullptr);
+	};
+
+	Common::ScopedPtr<DelayedConversation> _delayedConversation;
+	Placeable *_delayedContainer { nullptr };
 
 
 	EventQueue  _eventQueue;
@@ -390,6 +407,9 @@ private:
 
 	void updateSoundListener();
 	void updateSelection();
+
+	void handleDelayedInteractions();
+	void openContainer(Placeable *placeable);
 };
 
 } // End of namespace KotORBase

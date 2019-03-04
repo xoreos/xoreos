@@ -35,20 +35,28 @@ class Creature;
 
 class ActionExecutor {
 public:
-	static void executeActions(Creature &creature, Area &area, float dt);
-	static void executeMoveToPoint(Creature &creature, Area &area, const Action &action, float dt);
-	static void executeFollowLeader(Creature &creature, Area &area, const Action &action, float dt);
-	static void executeOpenLock(Creature &creature, Area &area, const Action &action, float dt);
+	struct ExecutionContext {
+		Creature *creature { nullptr };
+		Area *area { nullptr };
+		float frameTime { 0.0f };
+	};
+
+	static void executeActions(const ExecutionContext &ctx);
 
 private:
-	/** Get if a specified creature has reached a specified location. */
-	static bool isLocationReached(Creature &creature, float x, float y, float range);
+	/** Get if the current creature has reached a specified location. */
+	static bool isLocationReached(const glm::vec2 &location, float range, const ExecutionContext &ctx);
+
+	static void executeMoveToPoint(const Action &action, const ExecutionContext &ctx);
+	static void executeFollowLeader(const Action &action, const ExecutionContext &ctx);
+	static void executeOpenLock(const Action &action, const ExecutionContext &ctx);
+	static void executeUseObject(const Action &action, const ExecutionContext &ctx);
 
 	/**
-	 * Move the creature towards a point. Returns true if the point is
-	 * within the specified range, false otherwise.
+	 * Move the current creature towards a specified location. Returns
+	 * true if location is within a specified range.
 	 */
-	static bool moveTo(Creature &creature, Area &area, float x, float y, float range, float dt);
+	static bool moveTo(const glm::vec2 &location, float range, const ExecutionContext &ctx);
 };
 
 } // End of namespace KotORBase

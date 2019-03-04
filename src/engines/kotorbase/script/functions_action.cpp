@@ -125,6 +125,7 @@ void Functions::actionFollowLeader(Aurora::NWScript::FunctionContext &ctx) {
 		throw Common::Exception("Functions::actionFollowLeader(): Invalid caller");
 
 	Action action(kActionFollowLeader);
+	action.range = 1.0f;
 	caller->enqueueAction(action);
 }
 

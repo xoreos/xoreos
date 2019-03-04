@@ -75,6 +75,11 @@ bool Module::Action::operator<(const Action &s) const {
 	return timestamp < s.timestamp;
 }
 
+Module::DelayedConversation::DelayedConversation(const Common::UString &_name, Aurora::NWScript::Object *_owner) :
+		name(_name),
+		owner(_owner) {
+}
+
 
 Module::Module(::Engines::Console &console) :
 		Object(kObjectTypeModule),
@@ -516,35 +521,13 @@ void Module::clickObject(Object *object) {
 		return;
 	}
 
-	object->click(getPartyLeader());
+	KotORBase::Action action(kActionUseObject);
+	action.object = object;
+	action.range = 1.0f;
 
-	Creature *creature = ObjectContainer::toCreature(object);
-	if (creature && !creature->getConversation().empty()) {
-		startConversation(creature->getConversation(), creature);
-		return;
-	}
-
-	Situated *situated = ObjectContainer::toSituated(object);
-	if (situated && !situated->getConversation().empty()) {
-		startConversation(situated->getConversation(), situated);
-		return;
-	}
-
-	Placeable *placeable = ObjectContainer::toPlaceable(object);
-	if (placeable) {
-		if (placeable->hasInventory()) {
-			_cameraController.stopMovement();
-			_partyLeaderController.stopMovement();
-
-			_ingame->hideSelection();
-			_ingame->showContainer(placeable->getInventory());
-
-			placeable->close(_pc);
-			placeable->runScript(kScriptDisturbed, placeable, _pc);
-
-			_prevTimestamp = EventMan.getTimestamp();
-		}
-	}
+	Creature *partyLeader = getPartyLeader();
+	partyLeader->clearAllActions();
+	partyLeader->enqueueAction(action);
 }
 
 void Module::enterObject(Object *object) {
@@ -589,6 +572,8 @@ void Module::processEventQueue() {
 	updateSelection();
 
 	GfxMan.unlockFrame();
+
+	handleDelayedInteractions();
 }
 
 void Module::handleEvents() {
@@ -690,6 +675,30 @@ void Module::updateSelection() {
 		return;
 
 	_ingame->updateSelection();
+}
+
+void Module::handleDelayedInteractions() {
+	if (_delayedContainer) {
+		openContainer(_delayedContainer);
+		_delayedContainer = nullptr;
+	}
+	if (_delayedConversation) {
+		startConversation(_delayedConversation->name, _delayedConversation->owner);
+		_delayedConversation.reset();
+	}
+}
+
+void Module::openContainer(Placeable *placeable) {
+	_cameraController.stopMovement();
+	_partyLeaderController.stopMovement();
+
+	_ingame->hideSelection();
+	_ingame->showContainer(placeable->getInventory());
+
+	placeable->close(_pc);
+	placeable->runScript(kScriptDisturbed, placeable, _pc);
+
+	_prevTimestamp = EventMan.getTimestamp();
 }
 
 void Module::handleActions() {
@@ -1022,6 +1031,8 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 		_ingame->hideSelection();
 		_dialog->show();
 		_inDialog = true;
+
+		_prevTimestamp = EventMan.getTimestamp();
 	}
 }
 
@@ -1048,6 +1059,14 @@ float Module::getCameraYaw() const {
 
 void Module::setCameraYaw(float yaw) {
 	_cameraController.setYaw(yaw);
+}
+
+void Module::delayConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
+	_delayedConversation.reset(new DelayedConversation(name, owner));
+}
+
+void Module::delayContainer(Placeable *placeable) {
+	_delayedContainer = placeable;
 }
 
 void Module::addItemToActiveObject(const Common::UString &item, int count) {

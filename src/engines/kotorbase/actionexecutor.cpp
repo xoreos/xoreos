@@ -40,20 +40,23 @@ namespace Engines {
 
 namespace KotORBase {
 
-void ActionExecutor::executeActions(Creature &creature, Area &area, float dt) {
-	const Action *action = creature.getCurrentAction();
+void ActionExecutor::executeActions(const ExecutionContext &ctx) {
+	const Action *action = ctx.creature->getCurrentAction();
 	if (!action)
 		return;
 
 	switch (action->type) {
 		case kActionMoveToPoint:
-			executeMoveToPoint(creature, area, *action, dt);
+			executeMoveToPoint(*action, ctx);
 			break;
 		case kActionFollowLeader:
-			executeFollowLeader(creature, area, *action, dt);
+			executeFollowLeader(*action, ctx);
 			break;
 		case kActionOpenLock:
-			executeOpenLock(creature, area, *action, dt);
+			executeOpenLock(*action, ctx);
+			break;
+		case kActionUseObject:
+			executeUseObject(*action, ctx);
 			break;
 		default:
 			warning("TODO: Handle action %u", (uint)action->type);
@@ -61,103 +64,154 @@ void ActionExecutor::executeActions(Creature &creature, Area &area, float dt) {
 	}
 }
 
-void ActionExecutor::executeMoveToPoint(Creature &creature, Area &area, const Action &action, float dt) {
-	float x = action.location.x;
-	float y = action.location.y;
-
-	if (moveTo(creature, area, x, y, action.range, dt))
-		creature.dequeueAction();
+void ActionExecutor::executeMoveToPoint(const Action &action, const ExecutionContext &ctx) {
+	if (moveTo(action.location, action.range, ctx))
+		ctx.creature->dequeueAction();
 }
 
-void ActionExecutor::executeFollowLeader(Creature &creature, Area &area, const Action &UNUSED(action), float dt) {
-	float x, y, z;
-	area._module->getPartyLeader()->getPosition(x, y, z);
-	moveTo(creature, area, x, y, 1.0f, dt);
+void ActionExecutor::executeFollowLeader(const Action &action, const ExecutionContext &ctx) {
+	Creature *partyLeader = ctx.area->_module->getPartyLeader();
+
+	float x, y, _;
+	partyLeader->getPosition(x, y, _);
+
+	moveTo(glm::vec2(x, y), action.range, ctx);
 }
 
-void ActionExecutor::executeOpenLock(Creature &creature, Area &area, const Action &action, float dt) {
+void ActionExecutor::executeOpenLock(const Action &action, const ExecutionContext &ctx) {
 	float x, y, _;
 	action.object->getPosition(x, y, _);
+	glm::vec2 location(x, y);
 
-	bool locReached = isLocationReached(creature, x, y, 1.0f);
+	bool locReached = isLocationReached(location, action.range, ctx);
 	if (!locReached) {
-		moveTo(creature, area, x, y, 1.0f, dt);
+		moveTo(location, action.range, ctx);
 		return;
 	}
 
-	creature.dequeueAction();
+	ctx.creature->dequeueAction();
+
+	if (ctx.creature != ctx.area->_module->getPartyLeader()) {
+		warning("ActionExecutor::executeOpenLock(): Creature is not the party leader");
+		return;
+	}
 
 	Door *door = dynamic_cast<Door *>(action.object);
 	if (door) {
-		creature.playAnimation("unlockdr", false);
-		if (door) {
-			door->unlock(&creature);
-		}
-	} else {
-		Placeable *placeable = dynamic_cast<Placeable *>(action.object);
-		if (placeable) {
-			creature.playAnimation("unlockcntr", false);
-			placeable->unlock(&creature);
-		} else {
-			warning("Cannot unlock an object that is not a door or a placeable");
-			return;
-		}
+		ctx.creature->playAnimation("unlockdr", false);
+		door->unlock(ctx.creature);
+		return;
+	}
+
+	Placeable *placeable = dynamic_cast<Placeable *>(action.object);
+	if (placeable) {
+		ctx.creature->playAnimation("unlockcntr", false);
+		placeable->unlock(ctx.creature);
+		return;
+	}
+
+	warning("Cannot unlock an object that is not a door or a placeable");
+}
+
+void ActionExecutor::executeUseObject(const Action &action, const ExecutionContext &ctx) {
+	float x, y, _;
+	action.object->getPosition(x, y, _);
+	glm::vec2 location(x, y);
+
+	bool locReached = isLocationReached(location, action.range, ctx);
+	if (!locReached) {
+		moveTo(location, action.range, ctx);
+		return;
+	}
+
+	ctx.creature->dequeueAction();
+
+	Module *module = ctx.area->_module;
+
+	if (ctx.creature != module->getPartyLeader()) {
+		warning("ActionExecutor::executeUseObject(): Creature is not the party leader");
+		return;
+	}
+
+	action.object->click(module->getPartyLeader());
+
+	Creature *creatureObject = ObjectContainer::toCreature(action.object);
+	if (creatureObject) {
+		const Common::UString conversation = creatureObject->getConversation();
+		if (!conversation.empty())
+			module->delayConversation(conversation, creatureObject);
+
+		return;
+	}
+
+	Placeable *placeable = ObjectContainer::toPlaceable(action.object);
+	if (placeable) {
+		if (placeable->hasInventory())
+			module->delayContainer(placeable);
+
+		return;
+	}
+
+	Situated *situated = ObjectContainer::toSituated(action.object);
+	if (situated) {
+		const Common::UString conversation = situated->getConversation();
+		if (!conversation.empty())
+			module->delayConversation(conversation, situated);
+
+		return;
 	}
 }
 
-bool ActionExecutor::isLocationReached(Creature &creature, float x, float y, float range) {
-	float oX, oY, _;
-	creature.getPosition(oX, oY, _);
-
-	float dx = x - oX;
-	float dy = y - oY;
-
-	return dx * dx + dy * dy <= range * range;
+bool ActionExecutor::isLocationReached(const glm::vec2 &location, float range, const ExecutionContext &ctx) {
+	float x, y, _;
+	ctx.creature->getPosition(x, y, _);
+	return glm::distance(glm::vec2(x, y), location) <= range;
 }
 
-bool ActionExecutor::moveTo(Creature &creature, Area &area, float x, float y, float range, float dt) {
-	float oX, oY, oZ;
-	creature.getPosition(oX, oY, oZ);
-
-	glm::vec2 origin(oX, oY);
-	glm::vec2 diff = glm::vec2(x, y) - origin;
-	float dist = glm::length(diff);
-
-	if (dist <= range)
+bool ActionExecutor::moveTo(const glm::vec2 &location, float range, const ExecutionContext &ctx) {
+	if (isLocationReached(location, range, ctx))
 		return true;
 
-	creature.makeLookAt(x, y);
+	ctx.creature->makeLookAt(location.x, location.y);
 
-	bool run = dist > kWalkDistance;
-	float moveRate = run ? creature.getRunRate() : creature.getWalkRate();
+	float oX, oY, oZ;
+	ctx.creature->getPosition(oX, oY, oZ);
+	glm::vec2 origin(oX, oY);
+
+	glm::vec2 diff = location - origin;
 	glm::vec2 dir = glm::normalize(diff);
-	float newX = origin.x + moveRate * dir.x * dt;
-	float newY = origin.y + moveRate * dir.y * dt;
-	float z = area.evaluateElevation(newX, newY);
+
+	float dist = glm::length(diff);
+	bool run = dist > kWalkDistance;
+	float moveRate = run ? ctx.creature->getRunRate() : ctx.creature->getWalkRate();
+
+	float x = origin.x + moveRate * dir.x * ctx.frameTime;
+	float y = origin.y + moveRate * dir.y * ctx.frameTime;
+	float z = ctx.area->evaluateElevation(x, y);
 
 	bool haveMovement = (z != FLT_MIN) &&
-	                     area.walkable(glm::vec3(oX, oY, oZ + 0.1f),
-	                                   glm::vec3(newX, newY, z + 0.1f));
+	                     ctx.area->walkable(glm::vec3(oX, oY, oZ + 0.1f),
+	                                        glm::vec3(x, y, z + 0.1f));
 
 	if (haveMovement) {
-		creature.playAnimation(run ? "run" : "walk", false, -1.0f);
-		creature.setPosition(newX, newY, z);
+		ctx.creature->playAnimation(run ? "run" : "walk", false, -1.0f);
+		ctx.creature->setPosition(x, y, z);
 
-		if (&creature == area._module->getPartyLeader())
-			area._module->movedPartyLeader();
+		if (ctx.creature == ctx.area->_module->getPartyLeader())
+			ctx.area->_module->movedPartyLeader();
 		else
-			area.notifyObjectMoved(creature);
+			ctx.area->notifyObjectMoved(*ctx.creature);
 
-		diff = glm::vec2(x, y) - glm::vec2(newX, newY);
+		diff = location - glm::vec2(x, y);
 		dist = glm::length(diff);
 
 		if (dist <= range) {
-			creature.playDefaultAnimation();
+			ctx.creature->playDefaultAnimation();
 			return true;
 		}
 
 	} else {
-		creature.playDefaultAnimation();
+		ctx.creature->playDefaultAnimation();
 	}
 
 	return false;
