@@ -413,7 +413,7 @@ void Creature::loadMovementRate(const Common::UString &name) {
 	_runRate = speed.getFloat("runrate");
 }
 
-void Creature::changeBody() {
+void Creature::loadEquippedModel() {
 	uint32 state = 'a';
 	uint8 textureVariation = 1;
 
@@ -426,14 +426,16 @@ void Creature::changeBody() {
 	PartModels parts;
 	getPartModelsPC(parts, state, textureVariation);
 
+	_portrait = parts.portrait;
+
 	loadBody(parts);
 	loadHead(parts);
 
 	if (!_model)
 		return;
 
-	changeWeapon(kInventorySlotLeftWeapon);
-	changeWeapon(kInventorySlotRightWeapon);
+	attachWeaponModel(kInventorySlotLeftWeapon);
+	attachWeaponModel(kInventorySlotRightWeapon);
 
 	setDefaultAnimations();
 
@@ -450,7 +452,7 @@ void Creature::changeBody() {
 	}
 }
 
-void Creature::changeWeapon(InventorySlot slot) {
+void Creature::attachWeaponModel(InventorySlot slot) {
 	assert((slot == kInventorySlotLeftWeapon) || (slot == kInventorySlotRightWeapon));
 
 	Graphics::Aurora::Model *weaponModel = 0;
@@ -478,22 +480,22 @@ void Creature::changeWeapon(InventorySlot slot) {
 	GfxMan.unlockFrame();
 }
 
-void Creature::createFakePC() {
+void Creature::initAsFakePC() {
 	_name = "Fakoo McFakeston";
 	_tag  = Common::UString::format("[PC: %s]", _name.c_str());
 
 	_isPC = true;
 }
 
-void Creature::createPC(const CharacterGenerationInfo &info) {
-	_name = info.getName();
+void Creature::initAsPC(const CharacterGenerationInfo &chargenInfo, const CreatureInfo &info) {
+	_name = chargenInfo.getName();
 	_usable = false;
 	_isPC = true;
 
 	_race = kRaceHuman;
 	_subRace = kSubRaceNone;
 
-	_gender = info.getGender();
+	_gender = chargenInfo.getGender();
 
 	switch (_gender) {
 		case kGenderMale:
@@ -503,22 +505,13 @@ void Creature::createPC(const CharacterGenerationInfo &info) {
 			throw Common::Exception("Unknown gender");
 	}
 
-	_info = CreatureInfo(info);
+	_info = info;
 
-	// TODO generate skills for pc
+	_skin = chargenInfo.getSkin();
+	_face = chargenInfo.getFace();
 
-	_skin = info.getSkin();
-	_face = info.getFace();
-
-	PartModels parts;
-	getPartModelsPC(parts, 'a', 1);
-
-	_portrait = parts.portrait;
-
-	loadBody(parts);
-	loadHead(parts);
-
-	setDefaultAnimations();
+	reloadEquipment();
+	loadEquippedModel();
 }
 
 void Creature::enter() {
@@ -551,6 +544,10 @@ const Common::UString &Creature::getConversation() const {
 	return _conversation;
 }
 
+const CreatureInfo &Creature::getCreatureInfo() const {
+	return _info;
+}
+
 float Creature::getCameraHeight() const {
 	float height = 1.8f;
 	if (_model) {
@@ -572,25 +569,18 @@ void Creature::equipItem(Common::UString tag, InventorySlot slot) {
 		_equipment.erase(slot);
 	}
 
-	if (!tag.empty()) {
-		try {
-			Item *item = new Item(tag);
-			_info.removeInventoryItem(tag);
-			_info.equipItem(tag, slot);
-			_equipment.insert(std::make_pair(slot, item));
-		} catch (Common::Exception &e) {
-			e.add("Failed to load item \"%s\"", tag.c_str());
-			Common::printException(e, "WARNING: ");
-		}
+	if (!tag.empty() && addItemToEquipment(tag, slot)) {
+		_info.removeInventoryItem(tag);
+		_info.equipItem(tag, slot);
 	}
 
 	switch (slot) {
 		case kInventorySlotBody:
-			changeBody();
+			loadEquippedModel();
 			break;
 		case kInventorySlotLeftWeapon:
 		case kInventorySlotRightWeapon:
-			changeWeapon(slot);
+			attachWeaponModel(slot);
 			break;
 		default:
 			break;
@@ -718,6 +708,26 @@ void Creature::setDefaultAnimations() {
 		_model->addDefaultAnimation("cpause1", 100);
 	else
 		_model->addDefaultAnimation("pause1", 100);
+}
+
+void Creature::reloadEquipment() {
+	for (int i = static_cast<int>(kInventorySlotHead); i < static_cast<int>(kInventorySlotMAX); ++i) {
+		InventorySlot slot = InventorySlot(i);
+		if (_info.isInventorySlotEquipped(slot))
+			addItemToEquipment(_info.getEquippedItem(slot), slot);
+	}
+}
+
+bool Creature::addItemToEquipment(const Common::UString &tag, InventorySlot slot) {
+	try {
+		Item *item = new Item(tag);
+		_equipment.insert(std::make_pair(slot, item));
+		return true;
+	} catch (Common::Exception &e) {
+		e.add("Failed to load item \"%s\"", tag.c_str());
+		Common::printException(e, "WARNING: ");
+		return false;
+	}
 }
 
 } // End of namespace KotORBase
