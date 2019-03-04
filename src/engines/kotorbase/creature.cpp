@@ -708,14 +708,11 @@ void Creature::playDrawWeaponAnimation() {
 		case kWeaponWieldPistol:
 			_model->playAnimation("g5w1");
 			break;
-		case kWeaponWieldHeavy:
-			_model->playAnimation("g6w1");
-			break;
 		case kWeaponWieldRifle:
 			_model->playAnimation("g7w1");
 			break;
 		default:
-			// TODO: two swords (g4w1)
+			// TODO: two swords (g4w1) and two pistols (g6w1)
 			break;
 	}
 }
