@@ -144,21 +144,19 @@ void ActionExecutor::executeUseObject(const Action &action, const ExecutionConte
 		return;
 	}
 
-	Placeable *placeable = ObjectContainer::toPlaceable(action.object);
-	if (placeable) {
-		if (placeable->hasInventory())
-			module->delayContainer(placeable);
-
-		return;
-	}
-
 	Situated *situated = ObjectContainer::toSituated(action.object);
 	if (situated) {
 		const Common::UString conversation = situated->getConversation();
-		if (!conversation.empty())
+		if (!conversation.empty()) {
 			module->delayConversation(conversation, situated);
+			return;
+		}
 
-		return;
+		Placeable *placeable = ObjectContainer::toPlaceable(action.object);
+		if (placeable && placeable->hasInventory()) {
+			module->delayContainer(placeable);
+			return;
+		}
 	}
 }
 
