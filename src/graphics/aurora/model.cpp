@@ -656,6 +656,12 @@ void Model::render(RenderPass pass) {
 		glPushMatrix();
 		(*n)->render(pass);
 		glPopMatrix();
+
+		if (!_staticParentsNodes.empty()) {
+			glPushMatrix();
+			(*n)->renderStaticParents(pass);
+			glPopMatrix();
+		}
 	}
 
 	// Reset the first texture units
@@ -823,6 +829,19 @@ void Model::finalize() {
 	c->second->playDefaultAnimation();
 
 	createAbsolutePosition();
+}
+
+bool Model::isStaticParentsNode(const Common::UString &name) const {
+	return _staticParentsNodes.find(name) != _staticParentsNodes.end();
+}
+
+void Model::registerStaticParentsNode(ModelNode *node) {
+	if (isStaticParentsNode(node->_name)) {
+		warning("Node \"%s\" is already registered as a node with static parents", node->_name.c_str());
+		return;
+	}
+
+	_staticParentsNodes.insert(std::make_pair(node->_name, node));
 }
 
 void Model::createStateNamesList(std::list<Common::UString> *stateNames) {

@@ -88,14 +88,10 @@ public:
 	void getRotation(float &x, float &y, float &z) const;
 	/** Get the orientation of the node. */
 	void getOrientation(float &x, float &y, float &z, float &a) const;
-
 	/** Get the position of the node after translate/rotate. */
 	void getAbsolutePosition(float &x, float &y, float &z) const;
-
 	/** Get the position of the node after translate/rotate. */
 	glm::mat4 getAbsolutePosition() const;
-
-	uint16 getNodeNumber() const;
 
 	/** Set the position of the node. */
 	void setPosition(float x, float y, float z);
@@ -108,6 +104,9 @@ public:
 	void move  (float x, float y, float z);
 	/** Rotate the node, relative to its current rotation. */
 	void rotate(float x, float y, float z);
+
+
+	uint16 getNodeNumber() const;
 
 	/** Set textures to the node. */
 	void setTextures(const std::vector<Common::UString> &textures);
@@ -289,6 +288,7 @@ protected:
 	void createAbsoluteBound(Common::BoundingBox parentPosition);
 
 	void render(RenderPass pass);
+	void renderStaticParents(RenderPass pass);
 	void drawSkeleton(const glm::mat4 &parent, bool showInvisible);
 
 	/** Calculate the transform used for rendering. */
@@ -309,6 +309,9 @@ protected:
 	TextureHandle *getTextures(uint32 &count);
 	TextureHandle *getEnvironmentMap(EnvironmentMapMode &mode);
 
+	glm::vec3 getBasePosition() const;
+	glm::quat getBaseOrientation() const;
+
 	void setMaterial(Shader::ShaderMaterial *material);
 	virtual void buildMaterial();
 
@@ -324,6 +327,7 @@ private:
 
 	void orderChildren();
 
+	void renderInternal(RenderPass pass);
 	void renderGeometry(Mesh &mesh);
 	void renderGeometryNormal(Mesh &mesh);
 	void renderGeometryEnvMappedUnder(Mesh &mesh);

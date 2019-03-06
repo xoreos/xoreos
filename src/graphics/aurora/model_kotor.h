@@ -93,6 +93,10 @@ private:
 	/** Map bone indices to model node references for better peformance. */
 	void makeBoneNodeMap();
 
+	void finalize();
+	void handleDefectiveNodes();
+	void handleNodeIfDefective(const Common::UString &node);
+
 	friend class ModelNode_KotOR;
 };
 

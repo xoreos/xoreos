@@ -663,6 +663,9 @@ bool ModelNode::renderableMesh(Mesh *mesh) {
 }
 
 void ModelNode::render(RenderPass pass) {
+	if (_model->isStaticParentsNode(_name))
+		return;
+
 	// Apply the node's transformation
 
 	glTranslatef(_position[0], _position[1], _position[2]);
@@ -674,6 +677,44 @@ void ModelNode::render(RenderPass pass) {
 
 	glScalef(_scale[0], _scale[1], _scale[2]);
 
+	renderInternal(pass);
+
+	if (_attachedModel) {
+		glPushMatrix();
+		_attachedModel->render(pass);
+		glPopMatrix();
+	}
+
+	// Render the node's children
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+		glPushMatrix();
+		(*c)->render(pass);
+		glPopMatrix();
+	}
+}
+
+void ModelNode::renderStaticParents(RenderPass pass) {
+	glm::vec3 position(getBasePosition());
+	glm::quat rotation(getBaseOrientation());
+
+	glTranslatef(position.x, position.y, position.z);
+
+	float angle = Common::rad2deg(acosf(rotation.w) * 2.0f);
+	glRotatef(angle, rotation.x, rotation.y, rotation.z);
+
+	glScalef(_scale[0], _scale[1], _scale[2]);
+
+	if (_model->isStaticParentsNode(_name))
+		renderInternal(pass);
+
+	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
+		glPushMatrix();
+		(*c)->renderStaticParents(pass);
+		glPopMatrix();
+	}
+}
+
+void ModelNode::renderInternal(RenderPass pass) {
 	Mesh *mesh = _mesh;
 	bool doRender = _render;
 	if (!_model->getState().empty() && !renderableMesh(mesh)) {
@@ -699,19 +740,6 @@ void ModelNode::render(RenderPass pass) {
 
 	if (shouldRender)
 		renderGeometry(*mesh);
-
-	if (_attachedModel) {
-		glPushMatrix();
-		_attachedModel->render(pass);
-		glPopMatrix();
-	}
-
-	// Render the node's children
-	for (std::list<ModelNode *>::iterator c = _children.begin(); c != _children.end(); ++c) {
-		glPushMatrix();
-		(*c)->render(pass);
-		glPopMatrix();
-	}
 }
 
 void ModelNode::calcRenderTransform(const glm::mat4 &parentTransform) {
@@ -1032,6 +1060,24 @@ TextureHandle *ModelNode::getEnvironmentMap(EnvironmentMapMode &mode) {
 	}
 
 	return rval;
+}
+
+glm::vec3 ModelNode::getBasePosition() const {
+	if (_positionFrames.empty())
+		return glm::vec3();
+
+	const PositionKeyFrame &frame = _positionFrames[0];
+
+	return glm::vec3(frame.x, frame.y, frame.z);
+}
+
+glm::quat ModelNode::getBaseOrientation() const {
+	if (_orientationFrames.empty())
+		return glm::quat();
+
+	const QuaternionKeyFrame &frame = _orientationFrames[0];
+
+	return glm::quat(frame.q, frame.x, frame.y, frame.z);
 }
 
 void ModelNode::buildMaterial() {

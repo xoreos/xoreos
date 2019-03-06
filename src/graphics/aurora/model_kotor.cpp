@@ -430,6 +430,28 @@ void Model_KotOR::makeBoneNodeMap() {
 	}
 }
 
+void Model_KotOR::finalize() {
+	Model::finalize();
+	handleDefectiveNodes();
+}
+
+void Model_KotOR::handleDefectiveNodes() {
+	handleNodeIfDefective("head");
+	handleNodeIfDefective("tongue");
+	handleNodeIfDefective("tongie");
+}
+
+void Model_KotOR::handleNodeIfDefective(const Common::UString &name) {
+	if (!hasNode(name))
+		return;
+
+	ModelNode *node = getNode(name);
+	ModelNode *rootNode = _currentState->rootNodes.front();
+
+	if (node->getParent() != rootNode)
+		registerStaticParentsNode(node);
+}
+
 
 ModelNode_KotOR::ModelNode_KotOR(Model &model) :
 	ModelNode(model) {

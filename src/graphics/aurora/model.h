@@ -250,6 +250,8 @@ protected:
 	bool _skinned;
 	bool _positionRelative;
 
+	std::map<Common::UString, ModelNode *> _staticParentsNodes;
+
 
 	// Rendering
 	void queueDrawBound();
@@ -261,9 +263,15 @@ protected:
 	/** Get the animation from its name. */
 	Animation *getAnimation(const Common::UString &anim);
 
+	// Nodes with static parents
+
+	bool isStaticParentsNode(const Common::UString &name) const;
+
+	void registerStaticParentsNode(ModelNode *node);
+
 
 	/** Finalize the loading procedure. */
-	void finalize();
+	virtual void finalize();
 
 
 	// GLContainer
