@@ -45,6 +45,10 @@ public:
 
 	bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const;
 	bool in(glm::vec2 &point) const;
+	bool in(const glm::vec3 &start, const glm::vec3 &end) const;
+
+	bool findIntersection(const glm::vec3 &start, const glm::vec3 &end,
+	                      glm::vec3 &intersect) const;
 
 	const std::vector<float> &getVertices() const;
 	const std::vector<uint32> &getFaces() const;
@@ -52,8 +56,8 @@ public:
 private:
 	void computeMinMax();
 
-	glm::vec2 _min;
-	glm::vec2 _max;
+	glm::vec3 _min;
+	glm::vec3 _max;
 
 	std::vector<float>  _vertices;
 	std::vector<uint32> _faces;

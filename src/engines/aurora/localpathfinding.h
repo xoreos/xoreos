@@ -55,6 +55,7 @@ public:
 	/** State if the point, in the XY plane, is walkable. */
 	bool walkable(glm::vec3 point);
 
+	bool findIntersection(const glm::vec3 &start, const glm::vec3 &end, glm::vec3 &intersect) const;
 	bool buildWalkmeshAround(std::vector<glm::vec3> &path, float halfWidth = 0.f);
 	bool findPathTo(std::vector<glm::vec3> &path);
 	void addStaticObjects(ObjectWalkmesh *objectWalkmesh);

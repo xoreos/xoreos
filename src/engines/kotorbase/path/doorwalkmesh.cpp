@@ -49,6 +49,14 @@ bool DoorWalkmesh::in(glm::vec2 &point) const {
 	return ObjectWalkmesh::in(point);
 }
 
+bool DoorWalkmesh::findIntersection(const glm::vec3 &start, const glm::vec3 &end,
+                      glm::vec3 &intersect) const {
+	if (_door->isOpen())
+		return false;
+
+	return ObjectWalkmesh::findIntersection(start, end, intersect);
+}
+
 const std::vector<float> &DoorWalkmesh::getVertices() const {
 	if (_door->isOpen())
 		return _noVertices;

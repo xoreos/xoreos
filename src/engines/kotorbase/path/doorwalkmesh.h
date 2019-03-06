@@ -42,6 +42,8 @@ public:
 
 	bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const;
 	bool in(glm::vec2 &point) const;
+	bool findIntersection(const glm::vec3 &start, const glm::vec3 &end,
+	                      glm::vec3 &intersect) const;
 
 private:
 	Door *_door;

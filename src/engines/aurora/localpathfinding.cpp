@@ -99,6 +99,28 @@ bool LocalPathfinding::walkable(glm::vec3 point) {
 	return Pathfinding::walkable(toVirtualPlan(point));
 }
 
+bool LocalPathfinding::findIntersection(const glm::vec3 &start, const glm::vec3 &end,
+                                        glm::vec3 &intersect) const {
+	glm::vec3 objIntersect;
+	float distance = FLT_MAX;
+	for (auto o = _staticObjects.begin(); o != _staticObjects.end(); ++o) {
+		if (!(*o)->findIntersection(start, end, objIntersect))
+			continue;
+
+		if (glm::distance(start, objIntersect) >= distance)
+			continue;
+
+		distance = glm::distance(start, objIntersect);
+		intersect = objIntersect;
+	}
+
+	if (distance < FLT_MAX)
+		return true;
+
+	return _globalPathfinding->findIntersection(start.x, start.y, start.z, end.x, end.y, end.z,
+	                                            intersect);
+}
+
 bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float halfWidth) {
 	if (path.size() < 2)
 		return false;

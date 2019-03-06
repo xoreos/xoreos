@@ -617,7 +617,7 @@ void Area::toggleWalkmesh() {
 }
 
 bool Area::rayTest(const glm::vec3 &orig, const glm::vec3 &dest, glm::vec3 &intersect) const {
-	return _pathfinding->findIntersection(orig.x, orig.y, orig.z, dest.x, dest.y, dest.z, intersect);
+	return _localPathfinding->findIntersection(orig, dest, intersect);
 }
 
 void Area::toggleTriggers() {

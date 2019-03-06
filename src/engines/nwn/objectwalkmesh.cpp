@@ -22,6 +22,8 @@
  *  WalkmeshObject implementation for NWN.
  */
 
+#include "external/glm/gtx/intersect.hpp"
+
 #include "src/common/geometry.h"
 #include "src/common/maths.h"
 #include "src/common/util.h"
@@ -59,6 +61,76 @@ bool ObjectWalkmesh::in(glm::vec2 &minBox, glm::vec2 &maxBox) const {
 	return Common::intersectBoxes3D(_min, _max, minBox, maxBox);
 }
 
+bool ObjectWalkmesh::in(const glm::vec3 &start, const glm::vec3 &end) const {
+	glm::vec3 segment = end - start;
+
+	// Avoid division by zero.
+	for (uint8 i = 0; i < 3; ++i) {
+		if (fabs(segment[i]) < 0.00001f)
+			segment[i] = 0.00001f;
+	}
+
+	const float t1 = (_min.x - start.x) / segment.x;
+	const float t2 = (_max.x - start.x) / segment.x;
+	const float t3 = (_min.y - start.y) / segment.y;
+	const float t4 = (_max.y - start.y) / segment.y;
+	const float t5 = (_min.z - start.z) / segment.z;
+	const float t6 = (_max.z - start.z) / segment.z;
+
+	const float tmin = fmaxf(fmaxf(fminf(t1, t2), fminf(t3, t4)), fminf(t5, t6));
+	const float tmax = fminf(fminf(fmaxf(t1, t2), fmaxf(t3, t4)), fmaxf(t5, t6));
+
+	// if tmax < 0, ray is intersecting box
+	// but entire box is behing it's origin.
+	if (tmax < 0)
+		return false;
+
+	// if tmin > tmax, ray doesn't intersect box.
+	if (tmin > tmax)
+		return false;
+
+	// If tmin > 1 the segment is before the box.
+	if (tmin > 1)
+		return false;
+
+	return true;
+}
+
+bool ObjectWalkmesh::findIntersection(const glm::vec3 &start, const glm::vec3 &end,
+                                      glm::vec3 &intersect) const {
+	if (!in(start, end))
+		return false;
+
+	float distance = FLT_MAX;
+	glm::vec3 test;
+	const glm::vec3 dir = glm::normalize(end - start);
+	for (size_t f = 0; f < _faces.size() / 3; ++f) {
+		const glm::vec3 vertA(_vertices[_faces[f * 3] * 3],
+		        _vertices[_faces[f * 3] * 3 + 1],
+		        _vertices[_faces[f * 3] * 3 + 2]);
+		const glm::vec3 vertB(_vertices[_faces[f * 3 + 1] * 3],
+		        _vertices[_faces[f * 3 + 1] * 3 + 1],
+		        _vertices[_faces[f * 3 + 1] * 3 + 2]);
+		const glm::vec3 vertC(_vertices[_faces[f * 3 + 2] * 3],
+		        _vertices[_faces[f * 3 + 2] * 3 + 1],
+		        _vertices[_faces[f * 3 + 2] * 3 + 2]);
+		if (!glm::intersectRayTriangle(start, dir, vertA, vertB, vertC, test))
+			continue;
+
+		test = start + dir * test[2];
+		if (glm::distance(start, test) >= distance)
+			continue;
+
+		distance = glm::distance(start, test);
+		intersect = test;
+	}
+
+	if (distance == FLT_MAX)
+		return false;
+
+	return true;
+}
+
 bool ObjectWalkmesh::in(glm::vec2 &point) const {
 	if (!Common::intersectBoxPoint2D(_min, _max, point))
 		return false;
@@ -89,8 +161,10 @@ const std::vector<uint32> &ObjectWalkmesh::getFaces() const {
 void ObjectWalkmesh::computeMinMax() {
 	_min[0] = FLT_MAX;
 	_min[1] = FLT_MAX;
+	_min[2] = FLT_MAX;
 	_max[0] = FLT_MIN;
 	_max[1] = FLT_MIN;
+	_max[2] = FLT_MIN;
 
 	for (size_t v = 0; v < _vertices.size() / 3; ++v) {
 		// x coordinate.
@@ -99,6 +173,9 @@ void ObjectWalkmesh::computeMinMax() {
 		// y coordinate.
 		_min[1] = MIN(_vertices[v * 3 + 1], _min[1]);
 		_max[1] = MAX(_vertices[v * 3 + 1], _max[1]);
+		// z coordinate.
+		_min[2] = MIN(_vertices[v * 3 + 2], _min[2]);
+		_max[2] = MAX(_vertices[v * 3 + 2], _max[2]);
 	}
 }
 
