@@ -387,7 +387,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  246, "GetLastSpell"                        , 0                                                },
 	{  247, "GetUserDefinedEventNumber"           , 0                                                },
 	{  248, "GetSpellId"                          , 0                                                },
-	{  249, "RandomName"                          , 0                                                },
+	{  249, "RandomName"                          , &Functions::randomName                           },
 	{  250, "EffectPoison"                        , 0                                                },
 	{  251, "EffectDisease"                       , 0                                                },
 	{  252, "EffectSilence"                       , 0                                                },
