@@ -30,6 +30,8 @@
 #include "src/common/util.h"
 #include "src/common/random.h"
 
+#include "src/aurora/ltrfile.h"
+
 #include "src/aurora/nwscript/functionman.h"
 #include "src/aurora/nwscript/util.h"
 
@@ -110,6 +112,12 @@ int32 Functions::getRandom(int min, int max, int32 n) {
 		r += RNG.getNext(min, max + 1);
 
 	return r;
+}
+
+void Functions::randomName(Aurora::NWScript::FunctionContext &ctx) {
+	// Use 'names.LTR' for generic names
+	Aurora::LTRFile namesFile("names");
+	ctx.getReturn() = namesFile.generateRandomName(14);
 }
 
 Common::UString Functions::formatFloat(float f, int width, int decimals) {

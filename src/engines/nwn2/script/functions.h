@@ -83,6 +83,8 @@ private:
 
 	static int32 getRandom(int min, int max, int32 n = 1);
 
+	void randomName(Aurora::NWScript::FunctionContext &ctx);
+
 	static Common::UString formatFloat(float f, int width = 18, int decimals = 9);
 
 	static Aurora::NWScript::Object *getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n);
