@@ -121,43 +121,6 @@ std::FILE *Platform::openFile(const UString &fileName, FileMode mode) {
 // .--- Windows utility functions ---.
 #if defined(WIN32)
 
-enum WindowsVersion {
-	kWindowsVersionUnknown = 0x00000000,
-	kWindowsVersion2000    = 0x00050000,
-	kWindowsVersionXP      = 0x00050001,
-	kWindowsVersionXPProf  = 0x00050002,
-	kWindowsVersionVista   = 0x00060000,
-	kWindowsVersion7       = 0x00060001,
-	kWindowsVersion8       = 0x00060002,
-	kWindowsVersion8_1     = 0x00060003,
-	kWindowsVersion10      = 0x000A0000
-};
-
-static bool isWindowsVersionOrGreater(uint16 majorVersion, uint16 minorVersion) {
-	OSVERSIONINFOEX osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
-
-	DWORDLONG condition =
-		VerSetConditionMask(VerSetConditionMask(
-			0, VER_MAJORVERSION, VER_GREATER_EQUAL),
-			   VER_MINORVERSION, VER_GREATER_EQUAL);
-
-	osvi.dwMajorVersion = majorVersion;
-	osvi.dwMinorVersion = minorVersion;
-
-	return VerifyVersionInfo(&osvi, VER_MAJORVERSION | VER_MINORVERSION, condition) != 0;
-}
-
-static WindowsVersion getWindowsVersion() {
-	static const int16 kWindowsVersionMax = 20;
-
-	for (int16 i = kWindowsVersionMax; i >= 0; i--)
-		for (int16 j = 5; j >= 0; j--)
-			if (isWindowsVersionOrGreater(i, j))
-				return (WindowsVersion) ((i << 16) + j);
-
-	return kWindowsVersionUnknown;
-}
-
 static inline UString getWindowsVariable(const wchar_t *variable) {
 	DWORD length = GetEnvironmentVariableW(variable, 0, 0);
 	if (!length)
@@ -209,20 +172,16 @@ UString Platform::getConfigDirectory() {
 #if defined(WIN32)
 	// Windows: $APPDATA/xoreos/ or $USERPROFILE/xoreos/ or ./
 
-	const WindowsVersion windowsVersion = getWindowsVersion();
+	// Try the Application Data directory
+	directory = getWindowsVariable(L"APPDATA");
+	if (!directory.empty())
+		directory += "\\xoreos";
 
-	if (windowsVersion >= kWindowsVersion2000) {
-		// Try the Application Data directory
-		directory = getWindowsVariable(L"APPDATA");
+	// Try the User Profile directory
+	if (directory.empty()) {
+		directory = getWindowsVariable(L"USERPROFILE");
 		if (!directory.empty())
 			directory += "\\xoreos";
-
-		// Try the User Profile directory
-		if (directory.empty()) {
-			directory = getWindowsVariable(L"USERPROFILE");
-			if (!directory.empty())
-				directory += "\\xoreos";
-		}
 	}
 
 	// If all else fails (or the Windows version is too low), use the current directory
