@@ -112,6 +112,9 @@ private:
 
 	void random(Aurora::NWScript::FunctionContext &ctx);
 
+	void feetToMeters(Aurora::NWScript::FunctionContext &ctx);
+	void yardsToMeters(Aurora::NWScript::FunctionContext &ctx);
+
 	void d2  (Aurora::NWScript::FunctionContext &ctx);
 	void d3  (Aurora::NWScript::FunctionContext &ctx);
 	void d4  (Aurora::NWScript::FunctionContext &ctx);
