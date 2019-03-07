@@ -122,6 +122,10 @@ bool Object::isClickable() const {
 	return !_static && _usable;
 }
 
+void Object::setUsable(const bool usable) {
+	_usable = usable;
+}
+
 bool Object::getHasInventory() const {
 	return _container;
 }

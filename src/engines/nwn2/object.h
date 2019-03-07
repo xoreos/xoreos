@@ -98,6 +98,8 @@ public:
 
 	bool getHasInventory() const; ///< Can the object have an inventory?
 
+	void setUsable(const bool usable); ///< Set the usable state.
+
 	virtual Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
 
 	// Object/Object interactions

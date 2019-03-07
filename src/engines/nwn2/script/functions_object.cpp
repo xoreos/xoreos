@@ -574,6 +574,19 @@ void Functions::jumpToObject(Aurora::NWScript::FunctionContext &ctx) {
 	jumpTo(object, moveTo->getArea(), x, y, z);
 }
 
+void Functions::getUseableFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Placeable *placeable = NWN2::ObjectContainer::toPlaceable(ctx.getCaller());
+	ctx.getReturn() = (placeable) ? placeable->isUsable() : 0;
+}
+
+void Functions::setUseableFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Placeable *placeable = NWN2::ObjectContainer::toPlaceable(ctx.getCaller());
+	if (placeable) {
+		const bool usable = ctx.getParams()[1].getInt() != 0;
+		placeable->setUsable(usable);
+	}
+}
+
 void Functions::setAssociateListenPatterns(Aurora::NWScript::FunctionContext &ctx) {
 	NWN2::Object *target = NWN2::ObjectContainer::toObject(getParamObject(ctx, 0));
 	if (!target) {
