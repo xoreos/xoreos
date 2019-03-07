@@ -125,6 +125,14 @@ void Functions::floatToInt(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (int32) ctx.getParams()[0].getFloat();
 }
 
+void Functions::feetToMeters(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0.3048f * ctx.getParams()[0].getFloat();
+}
+
+void Functions::yardsToMeters(Aurora::NWScript::FunctionContext &ctx) {
+	ctx.getReturn() = 0.9144f * ctx.getParams()[0].getFloat();
+}
+
 void Functions::vector(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn().setVector(ctx.getParams()[0].getFloat(),
 	                          ctx.getParams()[1].getFloat(),
