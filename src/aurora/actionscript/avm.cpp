@@ -61,6 +61,13 @@ AVM::AVM() {
 	_variables["TextField"].asObject()->setMember("prototype", ObjectPtr(new TextField()));
 
 	_variables["_root"].asObject()->setMember("gotoAndPlay", new NativeFunction(boost::bind(&AVM::gotoAndPlay, this, _1), false, false, false, false));
+
+	_variables["flash"] = ObjectPtr(new Object());
+	_variables["flash"].asObject()->setMember("external", ObjectPtr(new Object()));
+	_variables["flash"].asObject()->getMember("external").asObject()->setMember("ExternalInterface", ObjectPtr(new Object()));
+	_variables["flash"].asObject()
+		->getMember("external").asObject()->getMember("ExternalInterface").asObject()
+		->setMember("call", new NativeFunction(boost::bind(&AVM::call, this, _1), false, false, false, false));
 }
 
 void AVM::setRegisterClassFunction(RegisterClassFunction registerClass) {
@@ -176,6 +183,16 @@ void AVM::setReturnValue(Variable returnValue) {
 
 Variable AVM::getReturnValue() {
 	return _returnValue;
+}
+
+Variable AVM::call(AVM &avm) {
+	Variable name = avm.getRegister(1);
+	if (!name.isString())
+		throw Common::Exception("AVM::registerClass(): name is not a string");
+
+	info("TODO: ExternalInterface.call(%s,...)", name.asString().c_str());
+
+	return Variable();
 }
 
 Variable AVM::registerClass(AVM &avm) {

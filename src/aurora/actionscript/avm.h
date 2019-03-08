@@ -85,6 +85,7 @@ public:
 	Variable getReturnValue();
 
 private:
+	Variable call(AVM &avm);
 	Variable registerClass(AVM &avm);
 	Variable gotoAndPlay(AVM &avm);
 
