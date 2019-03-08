@@ -188,6 +188,8 @@ bool Variable::operator!() {
 			return !_value.number;
 		case kTypeBoolean:
 			return !_value.boolean;
+		case kTypeObject:
+			return (_value.object->getSlots().empty() && !isFunction()) || (!_value.object->getSlots().empty() && isFunction());
 		default:
 			return true;
 	}
