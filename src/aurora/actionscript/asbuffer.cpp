@@ -479,6 +479,10 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 		// TODO: Add super variable
 		counter += 1;
 	}
+	if (function->getPreloadGlobalFlag()) {
+		avm.storeRegister(avm.getVariable("_global"), counter);
+		counter += 1;
+	}
 
 	if (function->hasRegisterIds()) {
 		for (size_t i = 0; i < arguments.size(); ++i) {
@@ -612,7 +616,8 @@ void ASBuffer::actionDefineFunction2() {
 							registerCount,
 							preloadThisFlag,
 							preloadSuperFlag,
-							preloadRootFlag
+							preloadRootFlag,
+							preloadGlobalFlag
 					)
 			)
 	);
@@ -778,7 +783,7 @@ void ASBuffer::actionDefineFunction() {
 	}
 
 	uint16 codeSize = _script->readUint16LE();
-	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize), _constants, std::vector<uint8>(), 0, false, false, false)));
+	_stack.push(ObjectPtr(new ScriptedFunction(_script->readStream(codeSize), _constants, std::vector<uint8>(), 0, false, false, false, false)));
 
 	_seeked = codeSize;
 

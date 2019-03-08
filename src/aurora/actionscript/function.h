@@ -42,7 +42,14 @@ typedef boost::shared_ptr<Function> FunctionPtr;
 
 class Function : public Object {
 public:
-	Function(std::vector<uint8> parameterIds, uint8 numRegisters, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag);
+	Function(
+		std::vector<uint8> parameterIds,
+		uint8 numRegisters,
+		bool preloadThisFlag,
+		bool preloadSuperFlag,
+		bool preloadRootFlag,
+		bool preloadGlobalFlag
+	);
 
 	bool hasRegisterIds();
 	uint8 getRegisterId(size_t n);
@@ -52,6 +59,7 @@ public:
 	bool getPreloadThisFlag();
 	bool getPreloadSuperFlag();
 	bool getPreloadRootFlag();
+	bool getPreloadGlobalFlag();
 
 	virtual Variable operator()(AVM &avm) = 0;
 
@@ -63,6 +71,7 @@ private:
 	bool _preloadThisFlag;
 	bool _preloadSuperFlag;
 	bool _preloadRootFlag;
+	bool _preloadGlobalFlag;
 };
 
 class ScriptedFunction : public Function {
@@ -74,7 +83,8 @@ public:
 			uint8 numRegisters,
 			bool preloadThisFlag,
 			bool preloadSuperFlag,
-			bool preloadRootFlag
+			bool preloadRootFlag,
+			bool preloadGlobalFlag
 	);
 	~ScriptedFunction();
 
@@ -87,7 +97,7 @@ private:
 
 class NativeFunction : public Function {
 public:
-	NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag);
+	NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag, bool preloadGlobalFlag);
 
 	Variable operator()(AVM &avm);
 

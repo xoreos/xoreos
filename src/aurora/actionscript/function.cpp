@@ -28,8 +28,10 @@ namespace Aurora {
 
 namespace ActionScript {
 
-Function::Function(std::vector<uint8> parameterIds, uint8 numRegisters, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag) :
-	_parameterIds(parameterIds), _numRegisters(numRegisters), _preloadThisFlag(preloadThisFlag), _preloadSuperFlag(preloadSuperFlag), _preloadRootFlag(preloadRootFlag) {
+Function::Function(std::vector<uint8> parameterIds, uint8 numRegisters,
+		bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag, bool preloadGlobalFlag) :
+	_parameterIds(parameterIds), _numRegisters(numRegisters), _preloadThisFlag(preloadThisFlag),
+	_preloadSuperFlag(preloadSuperFlag), _preloadRootFlag(preloadRootFlag), _preloadGlobalFlag(preloadGlobalFlag) {
 }
 
 bool Function::hasRegisterIds() {
@@ -56,10 +58,16 @@ bool Function::getPreloadRootFlag() {
 	return _preloadRootFlag;
 }
 
+bool Function::getPreloadGlobalFlag() {
+	return _preloadGlobalFlag;
+}
+
 ScriptedFunction::ScriptedFunction(Common::SeekableReadStream *as, std::vector<Common::UString> constants,
                                    std::vector<uint8> parameterIds, uint8 numRegisters,
-                                   bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag) :
-	Function(parameterIds, numRegisters, preloadThisFlag, preloadSuperFlag, preloadRootFlag), _stream(as), _buffer(as) {
+                                   bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag,
+                                   bool preloadGlobalFlag) :
+	Function(parameterIds, numRegisters, preloadThisFlag, preloadSuperFlag, preloadRootFlag, preloadGlobalFlag),
+	_stream(as), _buffer(as) {
 	_buffer.setConstantPool(constants);
 }
 
@@ -72,15 +80,15 @@ Variable ScriptedFunction::operator()(AVM &avm) {
 	return avm.getReturnValue();
 }
 
-NativeFunction::NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag)
-	: Function(std::vector<uint8>(), 0, preloadThisFlag, preloadSuperFlag, preloadRootFlag), _function(function) {
+NativeFunction::NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag, bool preloadGlobalFlag)
+	: Function(std::vector<uint8>(), 0, preloadThisFlag, preloadSuperFlag, preloadRootFlag, preloadGlobalFlag), _function(function) {
 }
 
 Variable NativeFunction::operator()(AVM &avm) {
 	return _function(avm);
 }
 
-DummyFunction::DummyFunction() : Function(std::vector<uint8>(), 0, false, false, false) {
+DummyFunction::DummyFunction() : Function(std::vector<uint8>(), 0, false, false, false, false) {
 
 }
 
