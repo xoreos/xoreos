@@ -97,7 +97,7 @@ public:
 	/** Get id of the conversation with this creature. */
 	const Common::UString &getConversation() const;
 	/** Get abstract information of this creature. */
-	const CreatureInfo &getCreatureInfo() const;
+	CreatureInfo &getCreatureInfo();
 
 	/** Is the creature a player character? */
 	bool isPC() const;
@@ -149,7 +149,8 @@ public:
 	Inventory &getInventory();
 	Item *getEquipedItem(InventorySlot slot) const;
 
-	void equipItem(Common::UString tag, InventorySlot slot);
+	void equipItem(Common::UString tag, InventorySlot slot, bool updateModel = true);
+	void equipItem(Common::UString tag, InventorySlot slot, CreatureInfo &invOwner, bool updateModel = true);
 
 	// Animation
 
@@ -235,9 +236,10 @@ private:
 
 	void loadProperties(const Aurora::GFF3Struct &gff);
 	void loadPortrait(const Aurora::GFF3Struct &gff);
-	void loadAppearance();
+	void loadEquipment(const Aurora::GFF3Struct &gff);
 
-	void getPartModels(PartModels &parts, uint32 state = 'a');
+	void getModelState(uint32 &state, uint8 &textureVariation);
+	void getPartModels(PartModels &parts, uint32 state, uint8 textureVariation);
 	void loadBody(PartModels &parts);
 	void loadHead(PartModels &parts);
 
