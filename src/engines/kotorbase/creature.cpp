@@ -224,6 +224,8 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 }
 
 void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {
+	_info = CreatureInfo(instance);
+
 	// General properties
 
 	if (blueprint)
@@ -236,7 +238,7 @@ void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	if (_appearance == Aurora::kFieldIDInvalid)
 		throw Common::Exception("Creature without an appearance");
 
-	loadAppearance();
+	loadEquippedModel();
 
 	// Position
 
@@ -276,6 +278,9 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Portrait
 	loadPortrait(gff);
 
+	// Equipment
+	loadEquipment(gff);
+
 	// Appearance
 	_appearance = gff.getUint("Appearance_Type", _appearance);
 
@@ -301,8 +306,6 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 
 	_minOneHitPoint = gff.getBool("Min1HP", _minOneHitPoint);
 
-	_info = CreatureInfo(gff);
-
 	// Scripts
 	readScripts(gff);
 
@@ -326,35 +329,36 @@ void Creature::loadPortrait(const Aurora::GFF3Struct &gff) {
 	_portrait = gff.getString("Portrait", _portrait);
 }
 
-void Creature::loadAppearance() {
-	PartModels parts;
-
-	getPartModels(parts);
-
-	if ((_modelType == "P") || parts.body.empty()) {
-		warning("TODO: Model \"%s\": ModelType \"%s\" (\"%s\")",
-		        _tag.c_str(), _modelType.c_str(), parts.body.c_str());
+void Creature::loadEquipment(const Aurora::GFF3Struct &gff) {
+	if (!gff.hasField("Equip_ItemList"))
 		return;
+
+	for (const auto &i : gff.getList("Equip_ItemList")) {
+		InventorySlot slot = InventorySlot(static_cast<int>(std::log2f(i->getID())));
+		Common::UString tag = i->getString("EquippedRes");
+		equipItem(tag, slot, false);
 	}
-
-	loadBody(parts);
-	loadHead(parts);
-
-	setDefaultAnimations();
 }
 
-void Creature::getPartModels(PartModels &parts, uint32 state) {
+void Creature::getModelState(uint32 &state, uint8 &textureVariation) {
+	state = 'a';
+	textureVariation = 1;
+
+	if (_info.isInventorySlotEquipped(kInventorySlotBody)) {
+		Item *item = _equipment[kInventorySlotBody];
+		state += item->getBodyVariation() - 1;
+		textureVariation = item->getTextureVariation();
+	}
+}
+
+void Creature::getPartModels(PartModels &parts, uint32 state, uint8 textureVariation) {
 	const Aurora::TwoDARow &appearance = TwoDAReg.get2DA("appearance").getRow(_appearance);
 
 	_modelType = appearance.getString("modeltype");
 
-	// TODO: load state based on character equipment
-	if (appearance.getString("label").beginsWith("Party_"))
-		state = 'b';
-
 	if (_modelType == "B") {
 		parts.body = appearance.getString(Common::UString("model") + state);
-		parts.bodyTexture = appearance.getString(Common::UString("tex") + state) + "01";
+		parts.bodyTexture = appearance.getString(Common::UString("tex") + state) + Common::UString::format("%02u", textureVariation);
 	} else {
 		parts.body = appearance.getString("race");
 		parts.bodyTexture = appearance.getString("racetex");
@@ -414,19 +418,23 @@ void Creature::loadMovementRate(const Common::UString &name) {
 }
 
 void Creature::loadEquippedModel() {
-	uint32 state = 'a';
-	uint8 textureVariation = 1;
-
-	if (_info.isInventorySlotEquipped(kInventorySlotBody)) {
-		Item *item = _equipment[kInventorySlotBody];
-		state += item->getBodyVariation() - 1;
-		textureVariation = item->getTextureVariation();
-	}
+	uint32 state;
+	uint8 textureVariation;
+	getModelState(state, textureVariation);
 
 	PartModels parts;
-	getPartModelsPC(parts, state, textureVariation);
+	if (_isPC) {
+		getPartModelsPC(parts, state, textureVariation);
+		_portrait = parts.portrait;
+	} else {
+		getPartModels(parts, state, textureVariation);
+		if ((_modelType == "P") || parts.body.empty()) {
+			warning("TODO: Model \"%s\": ModelType \"%s\" (\"%s\")",
+			        _tag.c_str(), _modelType.c_str(), parts.body.c_str());
 
-	_portrait = parts.portrait;
+			return;
+		}
+	}
 
 	loadBody(parts);
 	loadHead(parts);
@@ -544,7 +552,7 @@ const Common::UString &Creature::getConversation() const {
 	return _conversation;
 }
 
-const CreatureInfo &Creature::getCreatureInfo() const {
+CreatureInfo &Creature::getCreatureInfo() {
 	return _info;
 }
 
@@ -561,18 +569,25 @@ float Creature::getCameraHeight() const {
 	return height;
 }
 
-void Creature::equipItem(Common::UString tag, InventorySlot slot) {
+void Creature::equipItem(Common::UString tag, InventorySlot slot, bool updateModel) {
+	equipItem(tag, slot, _info, updateModel);
+}
+
+void Creature::equipItem(Common::UString tag, InventorySlot slot, CreatureInfo &invOwner, bool updateModel) {
 	if (_info.isInventorySlotEquipped(slot)) {
 		Common::UString equippedItem = _info.getEquippedItem(slot);
 		_info.unequipInventorySlot(slot);
-		_info.addInventoryItem(equippedItem);
+		invOwner.addInventoryItem(equippedItem);
 		_equipment.erase(slot);
 	}
 
 	if (!tag.empty() && addItemToEquipment(tag, slot)) {
-		_info.removeInventoryItem(tag);
+		invOwner.removeInventoryItem(tag);
 		_info.equipItem(tag, slot);
 	}
+
+	if (!updateModel)
+		return;
 
 	switch (slot) {
 		case kInventorySlotBody:

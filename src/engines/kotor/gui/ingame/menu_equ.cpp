@@ -140,8 +140,9 @@ void MenuEquipment::callbackActive(Widget &widget) {
 			Common::UString itemTag = selectedIndex > 0 ? _visibleItems[selectedIndex - 1] : "";
 
 			KotORBase::Creature *pc = _module->getPC();
-			pc->equipItem(itemTag, _selectedSlot);
-			_module->getCurrentArea()->addToObjectMap(pc);
+			KotORBase::Creature *partyLeader = _module->getPartyLeader();
+			partyLeader->equipItem(itemTag, _selectedSlot, pc->getCreatureInfo());
+			_module->getCurrentArea()->addToObjectMap(partyLeader);
 
 			fillEquipedItems();
 			fillEquipableItemsList();
@@ -205,7 +206,7 @@ void MenuEquipment::fillEquipedItems() {
 }
 
 Common::UString MenuEquipment::getEquipedItemIcon(KotORBase::InventorySlot slot) const {
-	KotORBase::Item *item = _module->getPC()->getEquipedItem(slot);
+	KotORBase::Item *item = _module->getPartyLeader()->getEquipedItem(slot);
 	return item ? item->getIcon() : "";
 }
 
