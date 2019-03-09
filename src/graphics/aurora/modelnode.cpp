@@ -563,13 +563,24 @@ void ModelNode::renderGeometry(ModelNode::Mesh &mesh) {
 }
 
 void ModelNode::renderGeometryNormal(Mesh &mesh) {
+	bool specialBlending = false;
+
 	for (size_t t = 0; t < mesh.data->textures.size(); t++) {
 		TextureMan.activeTexture(t);
 		TextureMan.set(mesh.data->textures[t]);
+
+		if (!mesh.data->textures[t].empty()) {
+			const Graphics::Aurora::Texture &texture = mesh.data->textures[t].getTexture();
+			if (!texture.hasAlpha() && (texture.getTXI().getFeatures().blending == TXI::kBlendingAdditive))
+				specialBlending = true;
+		}
 	}
 
 	if (mesh.data->textures.empty())
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	if (specialBlending)
+		glBlendFunc(GL_SRC_COLOR, GL_ONE);
 
 	mesh.data->rawMesh->renderImmediate();
 
@@ -580,6 +591,8 @@ void ModelNode::renderGeometryNormal(Mesh &mesh) {
 
 	if (mesh.data->textures.empty())
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ModelNode::renderGeometryEnvMappedUnder(Mesh &mesh) {
