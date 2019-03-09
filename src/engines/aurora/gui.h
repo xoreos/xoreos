@@ -50,6 +50,8 @@ public:
 	GUI(Console *console = 0);
 	virtual ~GUI();
 
+	bool isVisible() const { return _visible; }
+
 	virtual void show(); ///< Show the GUI.
 	virtual void hide(); ///< Hide the GUI.
 
@@ -75,6 +77,8 @@ protected:
 	uint32 _returnCode; ///< The GUI's return code.
 
 	GUI *_sub; ///< The currently running sub GUI.
+
+	bool _visible { false };
 
 
 	/** Add a widget. */

@@ -74,6 +74,8 @@ void GUI::show() {
 		(*iter)->show();
 	}
 
+	_visible = true;
+
 	GfxMan.unlockFrame();
 }
 
@@ -87,6 +89,8 @@ void GUI::hide() {
 	for (std::list<GUI *>::iterator iter = _childGUIs.begin(); iter != _childGUIs.end(); ++iter) {
 		(*iter)->hide();
 	}
+
+	_visible = false;
 
 	GfxMan.unlockFrame();
 }

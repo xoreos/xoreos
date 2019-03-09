@@ -44,8 +44,7 @@ namespace Engines {
 namespace KotOR {
 
 MenuEquipment::MenuEquipment(KotORBase::Module &module, Console *console) :
-		KotORBase::GUI(console),
-		_module(&module),
+		KotORBase::MenuBase(module, console),
 		_selectedSlot(KotORBase::kInventorySlotBody),
 		_slotFixated(false) {
 
@@ -76,7 +75,10 @@ MenuEquipment::MenuEquipment(KotORBase::Module &module, Console *console) :
 	}
 }
 
-void MenuEquipment::refresh() {
+void MenuEquipment::update() {
+	MenuBase::update();
+	updatePartyLeader("LBL_PORTRAIT");
+
 	fillEquipedItems();
 	fillEquipableItemsList();
 }
@@ -161,6 +163,8 @@ void MenuEquipment::callbackActive(Widget &widget) {
 			return;
 		}
 	}
+
+	MenuBase::callbackActive(widget);
 }
 
 void MenuEquipment::callbackKeyInput(const Events::Key &key, const Events::EventType &type) {

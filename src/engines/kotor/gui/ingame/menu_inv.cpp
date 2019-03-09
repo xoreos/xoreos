@@ -24,14 +24,26 @@
 
 #include "src/engines/aurora/widget.h"
 
+#include "src/engines/odyssey/label.h"
+
+#include "src/engines/kotorbase/module.h"
+#include "src/engines/kotorbase/creature.h"
+
 #include "src/engines/kotor/gui/ingame/menu_inv.h"
 
 namespace Engines {
 
 namespace KotOR {
 
-MenuInventory::MenuInventory(Console *console) : KotORBase::GUI(console) {
+MenuInventory::MenuInventory(KotORBase::Module &module, Console *console) :
+		KotORBase::MenuBase(module, console) {
+
 	load("inventory");
+}
+
+void MenuInventory::update() {
+	MenuBase::update();
+	updatePartyLeader("LBL_PORT");
 }
 
 void MenuInventory::callbackActive(Widget &widget) {
@@ -39,6 +51,8 @@ void MenuInventory::callbackActive(Widget &widget) {
 		_returnCode = 1;
 		return;
 	}
+
+	MenuBase::callbackActive(widget);
 }
 
 } // End of namespace KotOR

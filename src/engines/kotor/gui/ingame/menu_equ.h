@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_MENU_EQU_H
 #define ENGINES_KOTOR_GUI_INGAME_MENU_EQU_H
 
-#include "src/engines/kotorbase/gui/gui.h"
+#include "src/engines/kotorbase/gui/menubase.h"
 
 namespace Engines {
 
@@ -41,11 +41,11 @@ namespace KotORBase {
 
 namespace KotOR {
 
-class MenuEquipment : public KotORBase::GUI {
+class MenuEquipment : public KotORBase::MenuBase {
 public:
 	MenuEquipment(KotORBase::Module &module, ::Engines::Console *console = 0);
 
-	void refresh();
+	void update();
 
 	void show();
 	void hide();
@@ -56,7 +56,6 @@ protected:
 	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
 
 private:
-	KotORBase::Module *_module;
 	KotORBase::InventorySlot _selectedSlot;
 	bool _slotFixated;
 	std::vector<Common::UString> _visibleItems;

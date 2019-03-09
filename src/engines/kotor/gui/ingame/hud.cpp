@@ -280,7 +280,7 @@ void HUD::setPortrait(uint8 n, bool visible, const Common::UString &portrait) {
 	if (vitals)
 		vitals->setInvisible(!visible);
 
-	if (visible) {
+	if (visible && _visible) {
 		if (labelBack)
 			labelBack->show();
 		if (labelChar)

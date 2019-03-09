@@ -25,15 +25,21 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_MENU_CHAR_H
 #define ENGINES_KOTOR_GUI_INGAME_MENU_CHAR_H
 
-#include "src/engines/kotorbase/gui/gui.h"
+#include "src/engines/kotorbase/gui/menubase.h"
 
 namespace Engines {
 
+namespace KotORBase {
+	class Module;
+}
+
 namespace KotOR {
 
-class MenuCharacter : public KotORBase::GUI {
+class MenuCharacter : public KotORBase::MenuBase {
 public:
-	MenuCharacter(::Engines::Console *console = 0);
+	MenuCharacter(KotORBase::Module &module, ::Engines::Console *console = 0);
+
+	void update();
 
 protected:
 	void callbackActive(Widget &widget);
