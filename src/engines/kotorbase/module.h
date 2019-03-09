@@ -202,6 +202,8 @@ public:
 	void addEvent(const Events::Event &event);
 	/** Process the current event queue. */
 	void processEventQueue();
+	/** Update timestamp of the previous rendered frame. */
+	void updateFrameTimestamp();
 
 	// Saved games
 

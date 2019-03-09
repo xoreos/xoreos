@@ -427,6 +427,7 @@ void HUD::callbackActive(Widget &widget) {
 	hideSelection();
 	_menu.showMenu(widget.getTag());
 	sub(_menu);
+	_module.updateFrameTimestamp();
 }
 
 void HUD::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight), int newWidth, int newHeight) {
