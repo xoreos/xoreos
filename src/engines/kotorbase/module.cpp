@@ -582,6 +582,10 @@ void Module::processEventQueue() {
 	handleDelayedInteractions();
 }
 
+void Module::updateFrameTimestamp() {
+	_prevTimestamp = EventMan.getTimestamp();
+}
+
 void Module::handleEvents() {
 	for (EventQueue::const_iterator event = _eventQueue.begin(); event != _eventQueue.end(); ++event) {
 		// Handle console
@@ -704,7 +708,7 @@ void Module::openContainer(Placeable *placeable) {
 	placeable->close(_pc);
 	placeable->runScript(kScriptDisturbed, placeable, _pc);
 
-	_prevTimestamp = EventMan.getTimestamp();
+	updateFrameTimestamp();
 }
 
 void Module::handleActions() {
@@ -1038,7 +1042,7 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 		_dialog->show();
 		_inDialog = true;
 
-		_prevTimestamp = EventMan.getTimestamp();
+		updateFrameTimestamp();
 	}
 }
 
