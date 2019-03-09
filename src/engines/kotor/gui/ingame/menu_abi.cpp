@@ -30,8 +30,15 @@ namespace Engines {
 
 namespace KotOR {
 
-MenuAbilities::MenuAbilities(Console *console) : KotORBase::GUI(console) {
+MenuAbilities::MenuAbilities(KotORBase::Module &module, Console *console) :
+		KotORBase::MenuBase(module, console) {
+
 	load("abilities");
+}
+
+void MenuAbilities::update() {
+	MenuBase::update();
+	updatePartyLeader("LBL_PORTRAIT");
 }
 
 void MenuAbilities::callbackActive(Widget &widget) {
@@ -39,6 +46,8 @@ void MenuAbilities::callbackActive(Widget &widget) {
 		_returnCode = 1;
 		return;
 	}
+
+	MenuBase::callbackActive(widget);
 }
 
 } // End of namespace KotOR

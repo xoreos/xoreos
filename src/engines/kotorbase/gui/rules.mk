@@ -30,6 +30,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/gui/loadscreen.h \
     src/engines/kotorbase/gui/selectioncircle.h \
     src/engines/kotorbase/gui/hud.h \
+    src/engines/kotorbase/gui/menubase.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
@@ -43,4 +44,5 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/gui/loadscreen.cpp \
     src/engines/kotorbase/gui/selectioncircle.cpp \
     src/engines/kotorbase/gui/hud.cpp \
+    src/engines/kotorbase/gui/menubase.cpp \
     $(EMPTY)

@@ -19,34 +19,40 @@
  */
 
 /** @file
- *  The ingame abilities menu.
+ *  Common base for in-game menus in KotOR games.
  */
 
-#ifndef ENGINES_KOTOR_GUI_INGAME_MENU_ABI_H
-#define ENGINES_KOTOR_GUI_INGAME_MENU_ABI_H
+#ifndef ENGINES_KOTORBASE_GUI_MENUBASE_H
+#define ENGINES_KOTORBASE_GUI_MENUBASE_H
 
-#include "src/engines/kotorbase/gui/menubase.h"
+#include "src/engines/kotorbase/gui/gui.h"
 
 namespace Engines {
 
 namespace KotORBase {
-	class Module;
-}
 
-namespace KotOR {
+class Module;
 
-class MenuAbilities : public KotORBase::MenuBase {
+class MenuBase : public GUI {
 public:
-	MenuAbilities(KotORBase::Module &module, ::Engines::Console *console = 0);
+	MenuBase(Module &module, Console *console = nullptr);
+	virtual ~MenuBase();
 
-	void update();
+	virtual void update();
 
 protected:
-	void callbackActive(Widget &widget);
+	Module *_module;
+
+	virtual void callbackActive(Widget &widget);
+
+	void updatePartyLeader(const Common::UString &widgetTag);
+
+private:
+	void updatePartyMember(int index);
 };
 
-} // End of namespace KotOR
+} // End of namespace KotORBase
 
 } // End of namespace Engines
 
-#endif // ENGINES_KOTOR_GUI_INGAME_MENU_ABI_H
+#endif // ENGINES_KOTORBASE_GUI_MENUBASE_H

@@ -71,9 +71,9 @@ Menu::Menu(KotORBase::Module &module, Console *console) :
 	}
 
 	_menu[kMenuTypeEquipment].menu.reset(new MenuEquipment(_module, console));
-	_menu[kMenuTypeInventory].menu.reset(new MenuInventory(console));
-	_menu[kMenuTypeCharacter].menu.reset(new MenuCharacter(console));
-	_menu[kMenuTypeAbilities].menu.reset(new MenuAbilities(console));
+	_menu[kMenuTypeInventory].menu.reset(new MenuInventory(_module, console));
+	_menu[kMenuTypeCharacter].menu.reset(new MenuCharacter(_module, console));
+	_menu[kMenuTypeAbilities].menu.reset(new MenuAbilities(_module, console));
 	_menu[kMenuTypeMessages].menu.reset(new MenuMessages(console));
 	_menu[kMenuTypeJournal].menu.reset(new MenuJournal(console));
 	_menu[kMenuTypeMap].menu.reset(new MenuMap(console));
@@ -98,11 +98,9 @@ void Menu::setReturnEnabled(bool enabled) {
 void Menu::showMenu(MenuType type) {
 	assert((type >= 0) && (type < kMenuTypeMAX));
 
-	if (type == kMenuTypeEquipment) {
-		MenuEquipment *equipment = dynamic_cast<MenuEquipment *>(_menu[type].menu.get());
-		if (equipment)
-			equipment->refresh();
-	}
+	KotORBase::MenuBase *menuBase = dynamic_cast<KotORBase::MenuBase *>(_menu[type].menu.get());
+	if (menuBase)
+		menuBase->update();
 
 	if (_currentMenu == &_menu[type])
 		return;
