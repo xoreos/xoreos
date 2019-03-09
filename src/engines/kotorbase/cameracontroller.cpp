@@ -38,7 +38,7 @@ namespace Engines {
 namespace KotORBase {
 
 static const float kRotationSpeed = M_PI / 2.0f;
-static const float kMovementSpeed = M_PI / 2.0f;
+static const float kMovementSpeed = 2.0f * M_PI;
 
 CameraController::CameraController(Module *module) : _module(module) {
 }
