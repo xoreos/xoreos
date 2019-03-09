@@ -27,6 +27,7 @@
 
 #include "external/glm/gtc/type_ptr.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtx/matrix_decompose.hpp"
 
 #include "src/common/util.h"
 #include "src/common/maths.h"
@@ -158,6 +159,41 @@ void ModelNode::setParent(ModelNode *parent) {
 	}
 }
 
+void ModelNode::reparentTo(ModelNode *parent) {
+	if (_parent == parent)
+		return;
+
+	if (_parent)
+		_parent->_children.remove(this);
+
+	if (!parent)
+		return;
+
+	glm::mat4 transform;
+
+	std::vector<const ModelNode *> oldToNew(getPath(_parent, parent));
+	for (std::vector<const ModelNode *>::reverse_iterator n = oldToNew.rbegin(); n != oldToNew.rend(); ++n) {
+		transform *= (*n)->_localTransform;
+	}
+
+	transform *= _parent->_localTransform * _localTransform;
+
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::vec3 translation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+	glm::decompose(transform, scale, rotation, translation, skew, perspective);
+
+	setBasePosition(translation);
+	setBaseOrientation(rotation);
+
+	parent->_children.push_back(this);
+
+	_level = parent->_level + 1;
+	_parent = parent;
+}
+
 std::list<ModelNode *> &ModelNode::getChildren() {
 	return _children;
 }
@@ -266,6 +302,72 @@ void ModelNode::move(float x, float y, float z) {
 
 void ModelNode::rotate(float x, float y, float z) {
 	setRotation(_rotation[0] + x, _rotation[1] + y, _rotation[2] + z);
+}
+
+glm::vec3 ModelNode::getBasePosition() const {
+	if (_positionFrames.empty())
+		return glm::vec3();
+
+	const PositionKeyFrame &pos = _positionFrames[0];
+
+	return glm::vec3(pos.x, pos.y, pos.z);
+}
+
+glm::quat ModelNode::getBaseOrientation() const {
+	if (_orientationFrames.empty())
+		return glm::quat();
+
+	const QuaternionKeyFrame &ori = _orientationFrames[0];
+
+	return glm::quat(ori.q, ori.x, ori.y, ori.z);
+}
+
+bool ModelNode::hasPositionFrames() const {
+	return !_positionFrames.empty();
+}
+
+bool ModelNode::hasOrientationFrames() const {
+	return !_orientationFrames.empty();
+}
+
+void ModelNode::setBasePosition(const glm::vec3 &pos) {
+	_position[0] = pos.x;
+	_position[1] = pos.y;
+	_position[2] = pos.z;
+
+	_positionBuffer[0] = pos.x;
+	_positionBuffer[1] = pos.y;
+	_positionBuffer[2] = pos.z;
+
+	if (_positionFrames.empty()) {
+		_positionFrames.push_back(PositionKeyFrame { 0.0f, pos.x, pos.y, pos.z });
+		return;
+	}
+
+	PositionKeyFrame &frame = _positionFrames[0];
+	frame.x = pos.x;
+	frame.y = pos.y;
+	frame.z = pos.z;
+}
+
+void ModelNode::setBaseOrientation(const glm::quat &ori) {
+	_orientation[0] = ori.x;
+	_orientation[1] = ori.y;
+	_orientation[2] = ori.z;
+	_orientation[3] = Common::rad2deg(acosf(ori.w) * 2.0f);
+
+	std::memcpy(_orientationBuffer, _orientation, 4 * sizeof(float));
+
+	if (_orientationFrames.empty()) {
+		_orientationFrames.push_back(QuaternionKeyFrame { 0.0f, ori.x, ori.y, ori.z, ori.w });
+		return;
+	}
+
+	QuaternionKeyFrame &frame = _orientationFrames[0];
+	frame.x = ori.x;
+	frame.y = ori.y;
+	frame.z = ori.z;
+	frame.q = ori.w;
 }
 
 void ModelNode::inheritPosition(ModelNode &node) const {
@@ -913,67 +1015,113 @@ void ModelNode::flushBuffers() {
 	}
 }
 
-void ModelNode::computeBindPose() {
-	std::vector<ModelNode *> nodeChain;
-	for (ModelNode *node = this; node; node = node->_parent) {
-		nodeChain.push_back(node);
-	}
-
-	_bindPose = glm::mat4();
-
-	for (std::vector<ModelNode *>::reverse_iterator n = nodeChain.rbegin();
-			n != nodeChain.rend();
-			++n) {
-		const ModelNode *node = *n;
-
-		if (node->_positionFrames.size() > 0) {
-			const PositionKeyFrame &pos = node->_positionFrames[0];
-			_bindPose = glm::translate(_bindPose, glm::vec3(pos.x, pos.y, pos.z));
-		}
-
-		if (node->_orientationFrames.size() > 0) {
-			const QuaternionKeyFrame &ori = node->_orientationFrames[0];
-			if (ori.x != 0 || ori.y != 0 || ori.z != 0)
-				_bindPose = glm::rotate(_bindPose,
-						acosf(ori.q) * 2.0f,
-						glm::vec3(ori.x, ori.y, ori.z));
-		}
-	}
-
-	_invBindPose = glm::inverse(_bindPose);
+int ModelNode::getBoneCount() const {
+	return _mesh->skin->boneMappingCount;
 }
 
-void ModelNode::computeAbsoluteTransform() {
-	std::vector<ModelNode *> nodeChain;
-	for (ModelNode *node = this; node; node = node->_parent) {
-		nodeChain.push_back(node);
+int ModelNode::getBoneIndexByNodeNumber(int nodeNumber) const {
+	return static_cast<int>(_mesh->skin->boneMapping[nodeNumber]);
+}
+
+ModelNode *ModelNode::getBoneNode(int index) {
+	return _mesh->skin->boneNodeMap[index];
+}
+
+const std::vector<float> &ModelNode::getInitialVertexCoords() const {
+	return _mesh->data->initialVertexCoords;
+}
+
+const std::vector<float> &ModelNode::getBoneIndices() const {
+	return _mesh->skin->boneMappingId;
+}
+
+const std::vector<float> &ModelNode::getBoneWeights() const {
+	return _mesh->skin->boneWeights;
+}
+
+std::vector<float> &ModelNode::getVertexCoordsBuffer() {
+	return _vertexCoordsBuffer;
+}
+
+bool ModelNode::hasSkinNode() const {
+	return _mesh && _mesh->skin;
+}
+
+void ModelNode::computeTransforms() {
+	computeLocalBaseTransform();
+	computeLocalTransform();
+
+	if (_parent) {
+		_absoluteBaseTransform = _parent->_absoluteBaseTransform * _localBaseTransform;
+		_absoluteTransform = _parent->_absoluteTransform * _localTransform;
+	} else {
+		_absoluteBaseTransform = _localBaseTransform;
+		_absoluteTransform = _localTransform;
 	}
 
-	_absoluteTransform = glm::mat4();
+	_boneTransform = _absoluteTransform * _absoluteBaseTransformInv;
+	_absoluteBaseTransformInv = glm::inverse(_absoluteBaseTransform);
+	_absoluteTransformInv = glm::inverse(_absoluteTransform);
 
-	for (std::vector<ModelNode *>::reverse_iterator n = nodeChain.rbegin();
-			n != nodeChain.rend();
-			++n) {
-		const ModelNode *node = *n;
-
-		_absoluteTransform = glm::translate(_absoluteTransform,
-				glm::vec3(node->_positionBuffer[0],
-				          node->_positionBuffer[1],
-				          node->_positionBuffer[2]));
-
-		if (node->_orientationBuffer[0] != 0 ||
-				node->_orientationBuffer[1] != 0 ||
-				node->_orientationBuffer[2] != 0)
-			_absoluteTransform = glm::rotate(_absoluteTransform,
-					Common::deg2rad(node->_orientationBuffer[3]),
-					glm::vec3(node->_orientationBuffer[0],
-					          node->_orientationBuffer[1],
-					          node->_orientationBuffer[2]));
+	for (const auto &n : _children) {
+		n->computeTransforms();
 	}
 }
 
-void ModelNode::computeBoneTransform() {
-	_boneTransform = _absoluteTransform * _invBindPose;
+void ModelNode::computeLocalBaseTransform() {
+	_localBaseTransform = glm::mat4();
+
+	if (_positionFrames.size() > 0) {
+		const PositionKeyFrame &pos = _positionFrames[0];
+		_localBaseTransform = glm::translate(_localBaseTransform, glm::vec3(pos.x, pos.y, pos.z));
+	}
+
+	if (_orientationFrames.size() > 0) {
+		const QuaternionKeyFrame &ori = _orientationFrames[0];
+		if ((ori.x != 0.0f) || (ori.y != 0.0f) || (ori.z != 0.0f)) {
+			_localBaseTransform = glm::rotate(
+					_localBaseTransform,
+					acosf(ori.q) * 2.0f,
+					glm::vec3(ori.x, ori.y, ori.z));
+		}
+	}
+
+	_localBaseTransformInv = glm::inverse(_localBaseTransform);
+}
+
+void ModelNode::computeLocalTransform() {
+	_localTransform = glm::mat4();
+
+	_localTransform = glm::translate(
+			_localTransform,
+			glm::vec3(_positionBuffer[0], _positionBuffer[1], _positionBuffer[2]));
+
+	if     ((_orientationBuffer[0] != 0.0f) ||
+			(_orientationBuffer[1] != 0.0f) ||
+			(_orientationBuffer[2] != 0.0f)) {
+
+		_localTransform = glm::rotate(
+				_localTransform,
+				Common::deg2rad(_orientationBuffer[3]),
+				glm::vec3(_orientationBuffer[0], _orientationBuffer[1], _orientationBuffer[2]));
+	}
+
+	_localTransformInv = glm::inverse(_localTransform);
+}
+
+std::vector<const ModelNode *> ModelNode::getPath(const ModelNode *from, const ModelNode *to) const {
+	std::vector<const ModelNode *> path;
+	for (const ModelNode *node = from->_parent; node && (node != to); node = node->_parent) {
+		if (node->_level == 0)
+			return std::vector<const ModelNode *>();
+
+		path.push_back(node);
+	}
+	return path;
+}
+
+void ModelNode::notifyVertexCoordsBuffered() {
+	_vertexCoordsBuffered = true;
 }
 
 ModelNode::Mesh *ModelNode::getMesh() const {

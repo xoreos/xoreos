@@ -67,18 +67,19 @@ public:
 	ModelNode(Model &model);
 	virtual ~ModelNode();
 
+	// Basic properties
+
 	/** Get the node's name. */
 	const Common::UString &getName() const;
 
-	float getWidth () const; ///< Get the width of the node's bounding box.
-	float getHeight() const; ///< Get the height of the node's bounding box.
-	float getDepth () const; ///< Get the depth of the node's bounding box.
+	// Bounding box
 
-	/** Should the node never be rendered at all? */
-	void setInvisible(bool invisible);
-
-	/** Change the environment map on this model node. */
-	void setEnvironmentMap(const Common::UString &environmentMap = "");
+	/** Get the width of the node's bounding box. */
+	float getWidth () const;
+	/** Get the height of the node's bounding box. */
+	float getHeight() const;
+	/** Get the depth of the node's bounding box. */
+	float getDepth () const;
 
 	// Positioning
 
@@ -88,14 +89,10 @@ public:
 	void getRotation(float &x, float &y, float &z) const;
 	/** Get the orientation of the node. */
 	void getOrientation(float &x, float &y, float &z, float &a) const;
-
 	/** Get the position of the node after translate/rotate. */
 	void getAbsolutePosition(float &x, float &y, float &z) const;
-
 	/** Get the position of the node after translate/rotate. */
 	glm::mat4 getAbsolutePosition() const;
-
-	uint16 getNodeNumber() const;
 
 	/** Set the position of the node. */
 	void setPosition(float x, float y, float z);
@@ -109,25 +106,61 @@ public:
 	/** Rotate the node, relative to its current rotation. */
 	void rotate(float x, float y, float z);
 
-	/** Set textures to the node. */
-	void setTextures(const std::vector<Common::UString> &textures);
+	// Animation
 
-	const glm::mat4 &getBindPose() const { return _bindPose; }
+	glm::vec3 getBasePosition() const;
+	glm::quat getBaseOrientation() const;
+
+	bool hasPositionFrames() const;
+	bool hasOrientationFrames() const;
+
+	void setBasePosition(const glm::vec3 &pos);
+	void setBaseOrientation(const glm::quat &ori);
+
+	// Skeletal animation
+
+	int getBoneCount() const;
+	int getBoneIndexByNodeNumber(int nodeNumber) const;
+	ModelNode *getBoneNode(int index);
+	const std::vector<float> &getInitialVertexCoords() const;
+	const std::vector<float> &getBoneIndices() const;
+	const std::vector<float> &getBoneWeights() const;
+	std::vector<float> &getVertexCoordsBuffer();
+
+	bool hasSkinNode() const;
+	void notifyVertexCoordsBuffered();
+
+	// Transformation matrices
+
+	const glm::mat4 &getLocalBaseTransform() const { return _localBaseTransform; }
+	const glm::mat4 &getLocalTransform() const { return _localTransform; }
+	const glm::mat4 &getAbsoluteBaseTransform() const { return _absoluteBaseTransform; }
+	const glm::mat4 &getAbsoluteTransform() const { return _absoluteTransform; }
 	const glm::mat4 &getBoneTransform() const { return _boneTransform; }
+	const glm::mat4 &getAbsoluteBaseTransformInverse() const { return _absoluteBaseTransformInv; }
 
-	void computeBindPose();
-	void computeAbsoluteTransform();
-	void computeBoneTransform();
+	void computeTransforms();
 
-	/** Get the alpha (transparency) of the node. */
-	float getAlpha();
-
-	/** Set the alpha (transparency) of the node. */
-	void setAlpha(float alpha, bool isRecursive = true);
+	// Scale
 
 	float getScaleX() { return _scale[0]; }
 	float getScaleY() { return _scale[1]; }
 	float getScaleZ() { return _scale[2]; }
+
+
+	/** Get the alpha (transparency) of the node. */
+	float getAlpha();
+	/** Get the node number. */
+	uint16 getNodeNumber() const;
+
+	/** Change the environment map on this model node. */
+	void setEnvironmentMap(const Common::UString &environmentMap = "");
+	/** Should the node never be rendered at all? */
+	void setInvisible(bool invisible);
+	/** Set textures to the node. */
+	void setTextures(const std::vector<Common::UString> &textures);
+	/** Set the alpha (transparency) of the node. */
+	void setAlpha(float alpha, bool isRecursive = true);
 
 	/** The way the environment map is applied to a model node. */
 	enum EnvironmentMapMode {
@@ -261,21 +294,29 @@ protected:
 
 	uint16 _nodeNumber;
 
-	// .--- Skeletal animation
-	glm::mat4 _bindPose;          ///< Node's bind pose matrix.
-	glm::mat4 _invBindPose;       ///< Inverse of a node's bind pose matrix.
-	glm::mat4 _absoluteTransform; ///< Node's absolute transformation matrix.
-	glm::mat4 _boneTransform;     ///< Node's bone transformation matrix.
-	// '---
+	// Transformation matrices for skeletal animation
 
-	// .--- Node position and geometry buffers
+	glm::mat4 _localBaseTransform;    ///< Base transformation matrix of this node in local space.
+	glm::mat4 _absoluteBaseTransform; ///< Base transformation matrix of this node in the absolute space.
+	glm::mat4 _localTransform;        ///< Transformation matrix of this node in local space.
+	glm::mat4 _absoluteTransform;     ///< Transformation matrix of this node in the absolute space.
+
+	glm::mat4 _boneTransform;
+
+	glm::mat4 _localBaseTransformInv;
+	glm::mat4 _absoluteBaseTransformInv;
+	glm::mat4 _localTransformInv;
+	glm::mat4 _absoluteTransformInv;
+
+	// Position and geometry buffers
+
 	float _positionBuffer[3];
 	bool _positionBuffered;
 	float _orientationBuffer[4];
 	bool _orientationBuffered;
 	std::vector<float> _vertexCoordsBuffer;
 	bool _vertexCoordsBuffered;
-	// '---
+
 
 	Shader::ShaderMaterial *_material;
 	Shader::ShaderRenderable *_shaderRenderable;
@@ -331,6 +372,11 @@ private:
 
 	static bool renderableMesh(Mesh *mesh);
 
+	void computeLocalBaseTransform();
+	void computeLocalTransform();
+
+	std::vector<const ModelNode *> getPath(const ModelNode *from, const ModelNode *to) const;
+
 public:
 	// General helpers
 
@@ -338,6 +384,7 @@ public:
 	const ModelNode *getParent() const; ///< Get the node's parent.
 
 	void setParent(ModelNode *parent); ///< Set the node's parent.
+	void reparentTo(ModelNode *parent);
 
 	std::list<ModelNode *> &getChildren(); ///< Get the node's children.
 

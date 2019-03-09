@@ -87,14 +87,22 @@ void Animation::update(Model *model,
 			continue;
 
 		// Update position and orientation based on time
-		if (!animNode->_positionFrames.empty())
-			interpolatePosition(animNode, target, nextFrame, scale, model->_positionRelative);
-		if (!animNode->_orientationFrames.empty())
-			interpolateOrientation(animNode, target, nextFrame);
-	}
+		if (!animNode->_positionFrames.empty()) {
+			glm::vec3 pos(interpolatePosition(animNode, nextFrame));
 
-	if (model->_skinned)
-		updateSkinnedModel(model);
+			if (model->arePositionFramesRelative())
+				pos += target->getBasePosition();
+
+			pos *= scale;
+
+			target->setBufferedPosition(pos.x, pos.y, pos.z);
+		}
+
+		if (!animNode->_orientationFrames.empty()) {
+			glm::quat ori(interpolateOrientation(animNode, nextFrame));
+			target->setBufferedOrientation(ori.x, ori.y, ori.z, Common::rad2deg(acosf(ori.w) * 2.0f));
+		}
+	}
 }
 
 void Animation::addAnimNode(AnimNode *node) {
@@ -145,25 +153,11 @@ static void normQuaternion(float  xIn , float  yIn , float  zIn , float  qIn,
 	qOut = qIn / magnitude;
 }
 
-void Animation::interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale,
-                                    bool relative) const {
-	float dx = 0;
-	float dy = 0;
-	float dz = 0;
-	if (relative) {
-		const PositionKeyFrame &pos = target->_positionFrames[0];
-		dx = pos.x;
-		dy = pos.y;
-		dz = pos.z;
-	}
-
+glm::vec3 Animation::interpolatePosition(ModelNode *animNode, float time) const {
 	// If only one keyframe, don't interpolate, just set the only position
 	if (animNode->_positionFrames.size() == 1) {
 		const PositionKeyFrame &pos = animNode->_positionFrames[0];
-		target->setBufferedPosition((dx + pos.x) * scale,
-		                            (dy + pos.y) * scale,
-		                            (dz + pos.z) * scale);
-		return;
+		return glm::vec3(pos.x, pos.y, pos.z);
 	}
 
 	size_t lastFrame = 0;
@@ -176,12 +170,8 @@ void Animation::interpolatePosition(ModelNode *animNode, ModelNode *target, floa
 	}
 
 	const PositionKeyFrame &last = animNode->_positionFrames[lastFrame];
-	if (lastFrame + 1 >= animNode->_positionFrames.size() || last.time >= time) {
-		target->setBufferedPosition((dx + last.x) * scale,
-		                            (dy + last.y) * scale,
-		                            (dz + last.z) * scale);
-		return;
-	}
+	if (lastFrame + 1 >= animNode->_positionFrames.size() || last.time >= time)
+		return glm::vec3(last.x, last.y, last.z);
 
 	const PositionKeyFrame &next = animNode->_positionFrames[lastFrame + 1];
 
@@ -190,17 +180,14 @@ void Animation::interpolatePosition(ModelNode *animNode, ModelNode *target, floa
 	const float y = f * next.y + (1.0f - f) * last.y;
 	const float z = f * next.z + (1.0f - f) * last.z;
 
-	target->setBufferedPosition((dx + x) * scale,
-	                            (dy + y) * scale,
-	                            (dz + z) * scale);
+	return glm::vec3(x, y, z);
 }
 
-void Animation::interpolateOrientation(ModelNode *animNode, ModelNode *target, float time) const {
+glm::quat Animation::interpolateOrientation(ModelNode *animNode, float time) const {
 	// If only one keyframe, don't interpolate just set the only orientation
 	if (animNode->_orientationFrames.size() == 1) {
 		const QuaternionKeyFrame &ori = animNode->_orientationFrames[0];
-		target->setBufferedOrientation(ori.x, ori.y, ori.z, Common::rad2deg(acos(ori.q) * 2.0));
-		return;
+		return glm::quat(ori.q, ori.x, ori.y, ori.z);
 	}
 
 	size_t lastFrame = 0;
@@ -214,8 +201,7 @@ void Animation::interpolateOrientation(ModelNode *animNode, ModelNode *target, f
 
 	const QuaternionKeyFrame &last = animNode->_orientationFrames[lastFrame];
 	if (lastFrame + 1 >= animNode->_orientationFrames.size() || last.time >= time) {
-		target->setBufferedOrientation(last.x, last.y, last.z, Common::rad2deg(acos(last.q) * 2.0));
-		return;
+		return glm::quat(last.q, last.x, last.y, last.z);
 	}
 
 	const QuaternionKeyFrame &next = animNode->_orientationFrames[lastFrame + 1];
@@ -235,115 +221,7 @@ void Animation::interpolateOrientation(ModelNode *animNode, ModelNode *target, f
 	// Normalize the result for slightly better results
 	normQuaternion(x, y, z, q, x, y, z, q);
 
-	target->setBufferedOrientation(x, y, z, Common::rad2deg(acos(q) * 2.0));
-}
-
-static void multiply(const float *v, const glm::mat4 &m, float *rv) {
-	rv[0]   = v[0] * m[0][0] + v[1] * m[1][0] + v[2] * m[2][0] + m[3][0];
-	rv[1]   = v[0] * m[0][1] + v[1] * m[1][1] + v[2] * m[2][1] + m[3][1];
-	rv[2]   = v[0] * m[0][2] + v[1] * m[1][2] + v[2] * m[2][2] + m[3][2];
-	float w = v[0] * m[0][3] + v[1] * m[1][3] + v[2] * m[2][3] + m[3][3];
-	rv[0] /= w;
-	rv[1] /= w;
-	rv[2] /= w;
-}
-
-void Animation::updateSkinnedModel(Model *model) {
-	const std::list<ModelNode *> &nodes = model->getNodes();
-	for (std::list<ModelNode *>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
-		ModelNode *node = *it;
-		if (!node->_mesh || !node->_mesh->skin)
-			continue;
-
-		/**
-		 * TODO: Handmaiden model in KotOR 2 has a node that is different from
-		 * all the others in that it's parent is a bone. Because of this it has
-		 * transformations applied twice to it: by the renderer and by the skeletal
-		 * animation routine. This should probably be handled the other way.
-		 */
-		if (node->_parent && node->_parent->_name.stricmp("f_jaw_g") == 0)
-			continue;
-
-		fillBoneTransformsOfModelNode(node);
-
-		if (!GfxMan.isRendererExperimental()) {
-			ModelNode::MeshData *meshData = node->_mesh->data;
-			VertexBuffer &vertexBuffer = *(meshData->rawMesh->getVertexBuffer());
-			uint32 vertexCount = vertexBuffer.getCount();
-			float *initialVertexData = meshData->initialVertexCoords.data();
-
-			std::vector<float> &vertexCoordsBuffer = node->_vertexCoordsBuffer;
-			vertexCoordsBuffer.resize(3 * vertexCount);
-			float *vertexData = vertexCoordsBuffer.data();
-
-			for (uint32 i = 0; i < vertexCount; ++i) {
-				applyBoneTransformsToVertex(node, initialVertexData, i, vertexData);
-				vertexData += 3;
-				initialVertexData += 3;
-			}
-
-			node->_vertexCoordsBuffered = true;
-		}
-	}
-
-	for (std::map<Common::UString, Model *>::iterator m = model->_attachedModels.begin();
-			m != model->_attachedModels.end(); ++m) {
-		Model *attachedModel = m->second;
-		if (attachedModel->_skinned)
-			updateSkinnedModel(attachedModel);
-	}
-}
-
-void Animation::fillBoneTransformsOfModelNode(const ModelNode *node) {
-	const Graphics::Aurora::ModelNode::Skin *skin = node->_mesh->skin;
-	std::vector<float> &boneTransforms = node->_mesh->data->rawMesh->getBoneTransforms();
-	float *boneTransformsData = boneTransforms.data();
-
-	for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
-		int index = static_cast<int>(skin->boneMapping[i]);
-		if (index != -1) {
-			ModelNode *boneNode = skin->boneNodeMap[index];
-			boneNode->computeAbsoluteTransform();
-			boneNode->computeBoneTransform();
-
-			memcpy(boneTransformsData + 16 * index,
-			       glm::value_ptr(boneNode->getBoneTransform()),
-			       16 * sizeof(float));
-		}
-	}
-}
-
-inline void Animation::applyBoneTransformsToVertex(
-		const ModelNode *node,
-		const float *initialVertexData,
-		int vertexIndex,
-		float *vertexData) {
-
-	vertexData[0] = 0;
-	vertexData[1] = 0;
-	vertexData[2] = 0;
-
-	const ModelNode::Skin *skin = node->_mesh->skin;
-	int offset = 4 * vertexIndex;
-	const float *boneWeights = skin->boneWeights.data() + offset;
-	const float *boneMappingId = skin->boneMappingId.data() + offset;
-
-	for (uint8 j = 0; j < 4; ++j) {
-		int index = static_cast<int>(boneMappingId[j]);
-		if (index != -1) {
-			float r[3];
-			float t[3];
-			const glm::mat4 &boneTransform = skin->boneNodeMap[index]->_boneTransform;
-
-			multiply(initialVertexData, node->_bindPose, r);
-			multiply(r, boneTransform, t);
-			multiply(t, node->_invBindPose, r);
-
-			vertexData[0] += r[0] * boneWeights[j];
-			vertexData[1] += r[1] * boneWeights[j];
-			vertexData[2] += r[2] * boneWeights[j];
-		}
-	}
+	return glm::quat(q, x, y, z);
 }
 
 } // End of namespace Aurora

@@ -50,7 +50,7 @@ class AnimNode;
 class Animation {
 public:
 	Animation();
-	~Animation();
+	virtual ~Animation();
 
 	/** Get the animation's name. */
 	const Common::UString &getName() const;
@@ -63,7 +63,7 @@ public:
 	void setTransTime(float transtime);
 
 	/** Update the model position and orientation */
-	void update(Model *model, float lastFrame, float nextFrame, const std::vector<ModelNode *> &modelNodeMap);
+	virtual void update(Model *model, float lastFrame, float nextFrame, const std::vector<ModelNode *> &modelNodeMap);
 
 	// Nodes
 
@@ -92,19 +92,8 @@ protected:
 	float _length;
 	float _transtime;
 
-private:
-	void interpolatePosition(ModelNode *animNode, ModelNode *target, float time, float scale,
-	                         bool relative) const;
-	void interpolateOrientation(ModelNode *animNode, ModelNode *target, float time) const;
-
-	void updateSkinnedModel(Model *model);
-	void fillBoneTransformsOfModelNode(const ModelNode *node);
-
-	inline void applyBoneTransformsToVertex(
-			const ModelNode *node,
-			const float *initialVertexData,
-			int vertexIndex,
-			float *vertexData);
+	glm::vec3 interpolatePosition(ModelNode *animNode, float time) const;
+	glm::quat interpolateOrientation(ModelNode *animNode, float time) const;
 };
 
 } // End of namespace Aurora

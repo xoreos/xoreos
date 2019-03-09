@@ -65,28 +65,26 @@ public:
 	Model(ModelType type = kModelTypeObject);
 	~Model();
 
+	// Basic visuals
+
 	void show();
 	void hide();
 
-	ModelType getType() const; ///< Return the model's type.
+	// Basic properties
 
+	/** Return the model's type. */
+	ModelType getType() const;
 	/** Get the model's name. */
 	const Common::UString &getName() const;
 
-	float getWidth () const; ///< Get the width of the model's bounding box.
-	float getHeight() const; ///< Get the height of the model's bounding box.
-	float getDepth () const; ///< Get the depth of the model's bounding box.
+	// Bounding box
 
-	/** Should a bounding box be drawn around this model? */
-	void drawBound(bool enabled);
-	/** Should a skeleton showing the nodes and their relation be drawn inside the model? */
-	void drawSkeleton(bool enabled, bool showInvisible);
-
-	/** Change the environment map on this model. */
-	void setEnvironmentMap(const Common::UString &environmentMap = "");
-
-	/** Set the flag if the model has skinned animations. */
-	void setSkinned(bool skinned);
+	/** Get the width of the model's bounding box. */
+	float getWidth () const;
+	/** Get the height of the model's bounding box. */
+	float getHeight() const;
+	/** Get the depth of the model's bounding box. */
+	float getDepth () const;
 
 	/** Is that point within the model's bounding box? */
 	bool isIn(float x, float y) const;
@@ -94,7 +92,6 @@ public:
 	bool isIn(float x, float y, float z) const;
 	/** Does the line from x1.y1.z1 to x2.y2.z2 intersect with model's bounding box? */
 	bool isIn(float x1, float y1, float z1, float x2, float y2, float z2) const;
-
 
 	// Positioning
 
@@ -104,7 +101,6 @@ public:
 	void getOrientation(float &x, float &y, float &z, float &angle) const;
 	/** Get the current position of the model. */
 	void getPosition(float &x, float &y, float &z) const;
-
 	/** Get the position of the node after translate/rotate. */
 	void getAbsolutePosition(float &x, float &y, float &z) const;
 
@@ -134,7 +130,6 @@ public:
 	/** Return the name of the current state. */
 	const Common::UString &getState() const;
 
-
 	// Nodes
 
 	/** Does the specified node exist in the current state? */
@@ -154,22 +149,26 @@ public:
 	const ModelNode *getNode(uint16 nodeNumber) const;
 
 	/** Get all nodes in the current state. */
-	const std::list<ModelNode *> &getNodes();
-
-	/** Add another model as a child to the named node. */
-	void attachModel(const Common::UString &nodeName, Model *model);
+	const std::vector<ModelNode *> &getNodes();
 
 	// Animation
 
-	/** Does this model have this named animation? */
-	bool hasAnimation(const Common::UString &anim) const;
-
 	/** Determine what animation scaling applies. */
 	float getAnimationScale(const Common::UString &anim);
-
-	void addAnimationChannel(AnimationChannelName name);
+	/** Get a specified animation channel by name. */
 	AnimationChannel *getAnimationChannel(AnimationChannelName name);
 
+	/** Does this model have this named animation? */
+	bool hasAnimation(const Common::UString &anim) const;
+	/** Are position frames in animations relative to the node's base position? */
+	bool arePositionFramesRelative() const;
+	/** Does the model have skin nodes? */
+	bool hasSkinNodes() const;
+
+	/** Notify the model that it has skin nodes. */
+	void notifyHasSkinNodes();
+
+	void addAnimationChannel(AnimationChannelName name);
 	void clearDefaultAnimations();
 	void addDefaultAnimation(const Common::UString &anim, uint8 probability);
 	void playDefaultAnimation();
@@ -179,22 +178,38 @@ public:
 	                   float length = 0.0f,
 	                   float speed = 1.0f);
 
+	/** Compute transformation matrices of model nodes. */
+	void computeNodeTransforms();
 
 	// Renderable
+
 	void calculateDistance();
 	void render(RenderPass pass);
 	void renderImmediate(const glm::mat4 &parentTransform);
 	void queueRender(const glm::mat4 &parentTransform);
 	void advanceTime(float dt);
 
-	/** Apply buffered changes to model nodes position and geometry. */
-	void flushNodeBuffers();
+	// Attached models
 
+	std::map<Common::UString, Model *> &getAttachedModels();
 	Model *getAttachedModel(const Common::UString &node);
 
+	/** Add another model as a child to the named node. */
+	void attachModel(const Common::UString &nodeName, Model *model);
+
+
+	/** Change the environment map on this model. */
+	void setEnvironmentMap(const Common::UString &environmentMap = "");
+
+	/** Should a bounding box be drawn around this model? */
+	void drawBound(bool enabled);
+	/** Should a skeleton showing the nodes and their relation be drawn inside the model? */
+	void drawSkeleton(bool enabled, bool showInvisible);
+	/** Apply buffered changes to position and geometry of the model nodes. */
+	void flushNodeBuffers();
 
 protected:
-	typedef std::list<ModelNode *> NodeList;
+	typedef std::vector<ModelNode *> NodeList;
 	typedef std::map<Common::UString, ModelNode *, Common::UString::iless> NodeMap;
 	typedef std::map<Common::UString, Animation *, Common::UString::iless> AnimationMap;
 	typedef std::map<AnimationChannelName, AnimationChannel *> AnimationChannelMap;
@@ -247,7 +262,7 @@ protected:
 	/** The model's box after translate/rotate. */
 	Common::BoundingBox _absoluteBoundBox;
 
-	bool _skinned;
+	bool _hasSkinNodes;
 	bool _positionRelative;
 
 

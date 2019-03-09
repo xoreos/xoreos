@@ -58,16 +58,16 @@ namespace Graphics {
 
 namespace Aurora {
 
-Model::Model(ModelType type)
-		: Renderable((RenderableType) type),
-		  _type(type),
-		  _superModel(0),
-		  _currentState(0),
-		  _skinned(false),
-		  _positionRelative(false),
-		  _drawBound(false),
-		  _drawSkeleton(false),
-		  _drawSkeletonInvisible(false) {
+Model::Model(ModelType type) :
+		Renderable((RenderableType) type),
+		_type(type),
+		_superModel(0),
+		_currentState(0),
+		_hasSkinNodes(false),
+		_positionRelative(false),
+		_drawBound(false),
+		_drawSkeleton(false),
+		_drawSkeletonInvisible(false) {
 
 	_scale   [0] = 1.0f; _scale   [1] = 1.0f; _scale   [2] = 1.0f;
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
@@ -444,7 +444,7 @@ const ModelNode *Model::getNode(const Common::UString &stateName, const Common::
 
 ModelNode *Model::getNode(uint16 nodeNumber) {
 	if (_currentState) {
-		const std::list<ModelNode *> &nodes = _currentState->nodeList;
+		const NodeList &nodes = _currentState->nodeList;
 		for (NodeList::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
 			ModelNode *node = *it;
 			if (node->getNodeNumber() == nodeNumber) {
@@ -457,7 +457,7 @@ ModelNode *Model::getNode(uint16 nodeNumber) {
 
 const ModelNode *Model::getNode(uint16 nodeNumber) const {
 	if (_currentState) {
-		const std::list<ModelNode *> &nodes = _currentState->nodeList;
+		const NodeList &nodes = _currentState->nodeList;
 		for (NodeList::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
 			ModelNode *node = *it;
 			if (node->getNodeNumber() == nodeNumber) {
@@ -468,8 +468,8 @@ const ModelNode *Model::getNode(uint16 nodeNumber) const {
 	return 0;
 }
 
-static std::list<ModelNode *> kEmptyNodeList;
-const std::list<ModelNode *> &Model::getNodes() {
+static std::vector<ModelNode *> kEmptyNodeList;
+const std::vector<ModelNode *> &Model::getNodes() {
 	if (!_currentState)
 		return kEmptyNodeList;
 
@@ -510,6 +510,10 @@ Animation *Model::getAnimation(const Common::UString &anim) {
 
 bool Model::hasAnimation(const Common::UString &anim) const {
 	return _animationMap.find(anim) != _animationMap.end();
+}
+
+bool Model::arePositionFramesRelative() const {
+	return _positionRelative;
 }
 
 float Model::getAnimationScale(const Common::UString &anim) {
@@ -564,6 +568,12 @@ void Model::playAnimation(const Common::UString &anim, bool restart, float lengt
 	channel->playAnimation(anim, restart, length, speed);
 }
 
+void Model::computeNodeTransforms() {
+	for (const auto &n : _currentState->rootNodes) {
+		n->computeTransforms();
+	}
+}
+
 void Model::calculateDistance() {
 	if (_type == kModelTypeGUIFront) {
 		_distance = _position[2];
@@ -610,13 +620,21 @@ void Model::flushNodeBuffers() {
 	}
 }
 
+std::map<Common::UString, Model *> &Model::getAttachedModels() {
+	return _attachedModels;
+}
+
 Model *Model::getAttachedModel(const Common::UString &node) {
 	std::map<Common::UString, Model *>::iterator m = _attachedModels.find(node);
 	return m == _attachedModels.end() ? 0 : m->second;
 }
 
-void Model::setSkinned(bool skinned) {
-	_skinned = skinned;
+bool Model::hasSkinNodes() const {
+	return _hasSkinNodes;
+}
+
+void Model::notifyHasSkinNodes() {
+	_hasSkinNodes = true;
 }
 
 void Model::manageAnimations(float dt) {

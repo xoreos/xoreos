@@ -42,6 +42,7 @@
 #include "src/graphics/aurora/animnode.h"
 #include "src/graphics/aurora/textureman.h"
 #include "src/graphics/aurora/texture.h"
+#include "src/graphics/aurora/skeletalanimation.h"
 
 #include "src/graphics/shader/materialman.h"
 #include "src/graphics/shader/surfaceman.h"
@@ -165,8 +166,11 @@ Model_KotOR::Model_KotOR(const Common::UString &name, bool kotor2, bool xbox, Mo
 
 	load(ctx);
 
-	if (_skinned)
-		makeBoneNodeMap();
+	if (_hasSkinNodes) {
+		fillBoneNodeMap();
+		computeNodeTransforms();
+		reparentHeadNodes();
+	}
 
 	loadSuperModel(modelCache, kotor2, xbox);
 
@@ -307,7 +311,7 @@ bool Model_KotOR::readAnim(ParserContext &ctx, uint32 offset) {
 	ctx.mdl->seek(ctx.offModelData + nodeHeadPointer);
 	rootNode->load(ctx);
 
-	Animation *anim = new Animation();
+	Animation *anim = new SkeletalAnimation(4);
 
 	anim->setName(ctx.state->name);
 	anim->setLength(animLength);
@@ -394,40 +398,44 @@ void Model_KotOR::addState(ParserContext &ctx) {
 	ctx.nodes.clear();
 }
 
-void Model_KotOR::makeBoneNodeMap() {
-	const NodeList &nodes = getNodes();
-	for (NodeList::const_iterator n = nodes.begin();
-			n != nodes.end(); ++n) {
-		ModelNode *node = *n;
-		node->computeBindPose();
-
-		ModelNode::Mesh *mesh = node->getMesh();
+void Model_KotOR::fillBoneNodeMap() {
+	for (const auto &n : getNodes()) {
+		ModelNode::Mesh *mesh = n->getMesh();
 		if (mesh && mesh->skin) {
 			ModelNode::Skin *skin = mesh->skin;
-			skin->boneNodeMap.resize(skin->boneMappingCount);
 
-			std::vector<float> &boneTransforms = mesh->data->rawMesh->getBoneTransforms();
-			boneTransforms.resize(16 * skin->boneMappingCount);
-			float *boneData = boneTransforms.data();
+			skin->boneNodeMap.resize(skin->boneMappingCount);
+			std::fill(skin->boneNodeMap.begin(), skin->boneNodeMap.end(), nullptr);
+
+			const NodeList &nodes = getNodes();
 
 			for (uint16 i = 0; i < skin->boneMappingCount; ++i) {
 				int index = static_cast<int>(skin->boneMapping[i]);
 				if (index != -1) {
-					ModelNode *boneNode = getNode(i);
-
-					boneNode->computeBindPose();
-					boneNode->computeAbsoluteTransform();
-					boneNode->computeBoneTransform();
-
-					memcpy(boneData + 16 * index,
-					       glm::value_ptr(boneNode->getBoneTransform()),
-					       16 * sizeof(float));
-
+					ModelNode *boneNode = nodes[i];
 					skin->boneNodeMap[index] = boneNode;
 				}
 			}
+
+			if (GfxMan.isRendererExperimental()) {
+				std::vector<float> &boneTransforms = mesh->data->rawMesh->getBoneTransforms();
+				boneTransforms.resize(16 * skin->boneMappingCount);
+				std::fill(boneTransforms.begin(), boneTransforms.end(), 0.0f);
+			}
 		}
 	}
+}
+
+void Model_KotOR::reparentHeadNodes() {
+	ModelNode *root = _currentState->rootNodes[0];
+
+	ModelNode *head = getNode("head");
+	if (head && (head->getParent() != root))
+		head->reparentTo(root);
+
+	ModelNode *tongue = getNode("tongue");
+	if (tongue && (tongue->getParent() != root))
+		tongue->reparentTo(root);
 }
 
 
@@ -513,7 +521,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 
 	if (ctx.flags & kNodeFlagHasSkin) {
 		readSkin(ctx);
-		_model->setSkinned(true);
+		_model->notifyHasSkinNodes();
 	}
 
 	if (ctx.flags & kNodeFlagHasAnim) {
@@ -835,7 +843,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_mesh->data = new MeshData();
 	_mesh->data->envMapMode = kModeEnvironmentBlendedOver;
 	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
-	_mesh->data->rawMesh->setBindPosePtr(&_bindPose);
+	_mesh->data->rawMesh->setBindPosePtr(&_absoluteBaseTransform);
 
 	uint32 endPos = ctx.mdl->pos();
 
