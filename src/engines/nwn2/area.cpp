@@ -495,8 +495,8 @@ void Area::loadTileModels() {
 		t->model->setOrientation(0.0f, 0.0f, 1.0f, rotation);
 
 		// Rotate static floors back
-		const std::list<Graphics::Aurora::ModelNode *> &nodes = t->model->getNodes();
-		for (std::list<Graphics::Aurora::ModelNode *>::const_iterator n = nodes.begin(); n != nodes.end(); ++n) {
+		const std::vector<Graphics::Aurora::ModelNode *> &nodes = t->model->getNodes();
+		for (std::vector<Graphics::Aurora::ModelNode *>::const_iterator n = nodes.begin(); n != nodes.end(); ++n) {
 			if (t->metaTile || !(*n)->getName().endsWith("_F"))
 				continue;
 

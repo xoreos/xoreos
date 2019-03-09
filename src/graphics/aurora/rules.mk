@@ -60,6 +60,7 @@ src_graphics_libgraphics_la_SOURCES += \
     src/graphics/aurora/walkmesh.h \
     src/graphics/aurora/animationchannel.h \
     src/graphics/aurora/line.h \
+    src/graphics/aurora/skeletalanimation.h \
     $(EMPTY)
 
 src_graphics_libgraphics_la_SOURCES += \
@@ -102,4 +103,5 @@ src_graphics_libgraphics_la_SOURCES += \
     src/graphics/aurora/walkmesh.cpp \
     src/graphics/aurora/animationchannel.cpp \
     src/graphics/aurora/line.cpp \
+    src/graphics/aurora/skeletalanimation.cpp \
     $(EMPTY)

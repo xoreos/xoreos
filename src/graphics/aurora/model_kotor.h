@@ -90,8 +90,10 @@ private:
 			const std::vector<uint32> &offsets, uint32 offset,
 			std::vector<Common::UString> &strings);
 
-	/** Map bone indices to model node references for better peformance. */
-	void makeBoneNodeMap();
+	/** Map bone indices to model nodes for optimization. */
+	void fillBoneNodeMap();
+	/** Certain head models in KotOR 2 contain nodes that are children to a bone rather than a root node. */
+	void reparentHeadNodes();
 
 	friend class ModelNode_KotOR;
 };
