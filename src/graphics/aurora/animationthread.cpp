@@ -37,21 +37,21 @@ namespace Graphics {
 
 namespace Aurora {
 
-AnimationThread::PoolModel::PoolModel(Model *m)
-		: model(m),
-		  lastChanged(0),
-		  skippedCount(0) {
+AnimationThread::PoolModel::PoolModel(Model *m) :
+		model(m),
+		lastChanged(0),
+		skippedCount(0) {
 }
 
-AnimationThread::AnimationThread()
-		: _paused(true),
-		  _flushing(false),
-		  _modelsSem(1),
-		  _registerSem(1) {
+AnimationThread::AnimationThread() :
+		_paused(true),
+		_modelsSem(1),
+		_registerSem(1) {
 }
 
 void AnimationThread::pause() {
 	_paused.store(true);
+	skipFlush();
 	_modelsSem.lock();
 	_modelsSem.unlock();
 }
@@ -74,6 +74,7 @@ void AnimationThread::unregisterModel(Model *model) {
 	if (_paused.load())
 		unregisterModelInternal(model);
 	else {
+		skipFlush();
 		_modelsSem.lock();
 		unregisterModelInternal(model);
 		_modelsSem.unlock();
@@ -81,17 +82,19 @@ void AnimationThread::unregisterModel(Model *model) {
 }
 
 void AnimationThread::flush() {
-	_flushing.store(true);
-	_modelsSem.lock();
+	if (_flushing.load() == kFlushReady)
+		_flushing.store(kFlushRequested);
 
-	for (ModelList::iterator m = _models.begin();
-			m != _models.end();
-			++m) {
-		m->model->flushNodeBuffers();
+	if (_flushing.load() != kFlushGranted)
+		return; // Fine, we can do it next frame or so.
+
+	_flushing.store(kFlushInProgress);
+
+	for (auto &m : _models) {
+		m.second.model->flushNodeBuffers();
 	}
 
-	_modelsSem.unlock();
-	_flushing.store(false);
+	_flushing.store(kFlushReady);
 }
 
 void AnimationThread::threadMethod() {
@@ -121,32 +124,29 @@ void AnimationThread::threadMethod() {
 			continue;
 		}
 
-		for (ModelList::iterator m = _models.begin();
-				m != _models.end();
-				++m) {
+		for (auto &m : _models) {
 			if (EventMan.quitRequested() || _paused.load())
 				break;
 
-			if (m->skippedCount < getNumIterationsToSkip(m->model)) {
-				++m->skippedCount;
+			if (m.second.skippedCount < getNumIterationsToSkip(m.second.model)) {
+				++m.second.skippedCount;
 				continue;
 			} else
-				m->skippedCount = 0;
+				m.second.skippedCount = 0;
 
-			if (_flushing.load()) {
-				_modelsSem.unlock();
-				while (_flushing.load()) // Spin until flushing is complete
-					;
-				_modelsSem.lock();
+			if (_flushing.load() == kFlushRequested) {
+				_flushing.store(kFlushGranted);
+				while (_flushing.load() != kFlushReady)
+					; // Spin until flushing is complete
 			}
 
 			uint32 now = EventMan.getTimestamp();
 			float dt = 0;
-			if (m->lastChanged > 0)
-				dt = (now - m->lastChanged) / 1000.f;
-			m->lastChanged = now;
+			if (m.second.lastChanged > 0)
+				dt = (now - m.second.lastChanged) / 1000.f;
+			m.second.lastChanged = now;
 
-			m->model->manageAnimations(dt);
+			m.second.model->manageAnimations(dt);
 		}
 
 		_modelsSem.unlock();
@@ -156,21 +156,15 @@ void AnimationThread::threadMethod() {
 }
 
 void AnimationThread::registerModelInternal(Model *model) {
-	for (ModelList::iterator m = _models.begin(); m != _models.end(); ++m) {
-		if (m->model == model)
-			return;
-	}
-	_models.push_back(PoolModel(model));
+	ModelMap::iterator it = _models.find(model->getID());
+	if (it != _models.end())
+		return;
+
+	_models.insert(std::make_pair(model->getID(), PoolModel(model)));
 }
 
 void AnimationThread::unregisterModelInternal(Model *model) {
-	ModelList::iterator m;
-	for (m = _models.begin(); m != _models.end(); ++m) {
-		if (m->model == model)
-			break;
-	}
-	if (m != _models.end())
-		_models.erase(m);
+	_models.erase(model->getID());
 }
 
 uint8 AnimationThread::getNumIterationsToSkip(Model *model) const {
@@ -181,6 +175,11 @@ uint8 AnimationThread::getNumIterationsToSkip(Model *model) const {
 
 	float dist = glm::distance(glm::make_vec3(campos), glm::vec3(x, y, z));
 	return roundf(dist) / 8;
+}
+
+void AnimationThread::skipFlush() {
+	if (_flushing.load() == kFlushGranted)
+		_flushing.store(kFlushReady);
 }
 
 } // End of namespace Aurora

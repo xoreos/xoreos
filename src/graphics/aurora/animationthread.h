@@ -25,6 +25,7 @@
 #ifndef GRAPHICS_AURORA_ANIMATIONTHREAD_H
 #define GRAPHICS_AURORA_ANIMATIONTHREAD_H
 
+#include <map>
 #include <queue>
 
 #include <boost/atomic.hpp>
@@ -44,18 +45,27 @@ class Model;
 class AnimationThread : public Common::Thread {
 public:
 	AnimationThread();
+
 	void pause();
 	void resume();
 
-	// .--- Processing pool
+	// Processing pool
+
 	/** Add a model to the processing pool. */
 	void registerModel(Model *model);
 	/** Remove a model from the processing pool. */
 	void unregisterModel(Model *model);
-	/** Apply changes to position and geometry of all models in the processing pool. */
+	/** Apply buffered changes to all models in the processing pool. */
 	void flush();
-	// '---
+
 private:
+	enum FlushStatus {
+		kFlushReady,
+		kFlushRequested,
+		kFlushGranted,
+		kFlushInProgress
+	};
+
 	struct PoolModel {
 		Model *model;
 		uint32 lastChanged;
@@ -64,22 +74,26 @@ private:
 		PoolModel(Model *m);
 	};
 
-	typedef std::list<PoolModel> ModelList;
+	typedef std::map<uint32, PoolModel> ModelMap;
 	typedef std::queue<Model *> ModelQueue;
 
-	ModelList _models;
+	ModelMap _models;
 	ModelQueue _registerQueue;
+	ModelQueue _unregisterQueue;
 
 	boost::atomic<bool> _paused;
-	boost::atomic<bool> _flushing;
+	boost::atomic<FlushStatus> _flushing { kFlushReady };
 
-	Common::Semaphore _modelsSem;   ///< Semaphore protecting access to the model list.
+	Common::Semaphore _modelsSem;   ///< Semaphore protecting access to the model map.
 	Common::Semaphore _registerSem; ///< Semaphore protecting access to the registration queue.
 
 	void threadMethod();
 	void registerModelInternal(Model *model);
 	void unregisterModelInternal(Model *model);
 	uint8 getNumIterationsToSkip(Model *model) const;
+
+	/** Skip a pending flush to avoid a deadlock. */
+	void skipFlush();
 };
 
 } // End of namespace Aurora
