@@ -219,22 +219,27 @@ void MenuEquipment::fillEquipableItemsList() {
 
 	_visibleItems.clear();
 
-	const std::map<Common::UString, KotORBase::Inventory::ItemGroup> &invItems = inv.getItems();
-	for (std::map<Common::UString, KotORBase::Inventory::ItemGroup>::const_iterator i = invItems.begin();
-			i != invItems.end(); ++i) {
+	for (const auto &i : inv.getItems()) {
 		try {
-			KotORBase::Item item(i->second.tag);
+			KotORBase::Item item(i.second.tag);
 			if (!item.isSlotEquipable(_selectedSlot))
 				continue;
+
+			if (_selectedSlot == KotORBase::kInventorySlotLeftWeapon) {
+				KotORBase::Creature *partyLeader = _module->getPartyLeader();
+				KotORBase::Item *rightWeapon = partyLeader->getEquipedItem(KotORBase::kInventorySlotRightWeapon);
+				if (!rightWeapon || (item.getWeaponWield() != rightWeapon->getWeaponWield()))
+					continue;
+			}
 
 			lbItems->addItem(Common::UString::format("%s|%s|%u",
 			                                         item.getName().c_str(),
 			                                         item.getIcon().c_str(),
-			                                         i->second.count));
+			                                         i.second.count));
 
-			_visibleItems.push_back(i->second.tag);
+			_visibleItems.push_back(i.second.tag);
 		} catch (Common::Exception &e) {
-			e.add("Failed to load item %s", i->second.tag.c_str());
+			e.add("Failed to load item \"%s\"", i.second.tag.c_str());
 			Common::printException(e, "WARNING: ");
 		}
 	}
