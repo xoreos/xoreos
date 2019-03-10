@@ -22,6 +22,8 @@
  *  Base in-game HUD for KotOR games.
  */
 
+#include "src/graphics/aurora/cursorman.h"
+
 #include "src/engines/odyssey/button.h"
 #include "src/engines/odyssey/label.h"
 #include "src/engines/odyssey/progressbar.h"
@@ -91,6 +93,13 @@ Object *HUD::getTargetObject() const {
 
 void HUD::setHoveredObject(Object *object) {
 	_hoveredObject = object;
+
+	if (!object || (object != _targetObject)) {
+		CursorMan.set();
+		return;
+	}
+
+	setCursorToTarget();
 }
 
 void HUD::setTargetObject(Object *object) {
@@ -99,6 +108,8 @@ void HUD::setTargetObject(Object *object) {
 
 	_targetObject = object;
 	_targetDirty = true;
+
+	setCursorToTarget();
 }
 
 void HUD::resetSelection() {
@@ -191,6 +202,19 @@ void HUD::updateHoveredObject() {
 		_hoveredCircle->show();
 	else
 		_hoveredCircle->hide();
+}
+
+void HUD::setCursorToTarget() {
+	if (!_targetObject) {
+		CursorMan.set();
+		return;
+	}
+
+	const Common::UString &cursor = _targetObject->getCursor();
+	if (!cursor.empty())
+		CursorMan.setGroup(cursor);
+	else
+		CursorMan.set();
 }
 
 void HUD::getTargetButtonSize(float &width, float &height) const {

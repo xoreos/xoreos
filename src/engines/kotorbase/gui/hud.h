@@ -113,6 +113,7 @@ private:
 
 	void updateTargetObject();
 	void updateHoveredObject();
+	void setCursorToTarget();
 
 	// Target buttons
 

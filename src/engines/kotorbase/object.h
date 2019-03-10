@@ -131,6 +131,8 @@ public:
 
 	// Object/Cursor interactions
 
+	virtual const Common::UString &getCursor() const;
+
 	/** The cursor entered the object. */
 	virtual void enter();
 	/** The cursor left the object. */

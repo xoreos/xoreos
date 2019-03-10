@@ -108,14 +108,9 @@ void Placeable::loadAppearance() {
 	_soundAppType = twoda.getRow(_appearanceID).getInt("SoundAppType");
 }
 
-void Placeable::enter() {
-	CursorMan.setGroup("use");
-	highlight(true);
-}
-
-void Placeable::leave() {
-	CursorMan.set();
-	highlight(false);
+const Common::UString &Placeable::getCursor() const {
+	static Common::UString cursor("use");
+	return cursor;
 }
 
 void Placeable::highlight(bool enabled) {

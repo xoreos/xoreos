@@ -78,10 +78,8 @@ public:
 
 	// Object/cursor interactions
 
-	/** The cursor entered the placeable. */
-	void enter();
-	/** The cursor left the placeable. */
-	void leave();
+	const Common::UString &getCursor() const;
+
 	/** (Un)Highlight the placeable. */
 	void highlight(bool enabled);
 	/** The placeable was clicked. */

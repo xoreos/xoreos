@@ -135,10 +135,8 @@ public:
 
 	// Object/Cursor interactions
 
-	/** The cursor entered the creature. */
-	void enter();
-	/** The cursor left the creature. */
-	void leave();
+	const Common::UString &getCursor() const;
+
 	/** (Un)Highlight the creature. */
 	void highlight(bool enabled);
 	/** The creature was clicked. */
