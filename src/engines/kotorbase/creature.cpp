@@ -639,26 +639,43 @@ void Creature::playDrawWeaponAnimation() {
 	if (!_model || !_info.isInventorySlotEquipped(kInventorySlotRightWeapon))
 		return;
 
-	Item *item = _equipment[kInventorySlotRightWeapon];
-	switch (item->getWeaponWield()) {
-		case kWeaponWieldBaton:
-			_model->playAnimation("g1w1");
-			break;
-		case kWeaponWieldSword:
-			_model->playAnimation("g2w1");
-			break;
-		case kWeaponWieldStaff:
-			_model->playAnimation("g3w1");
-			break;
-		case kWeaponWieldPistol:
-			_model->playAnimation("g5w1");
-			break;
-		case kWeaponWieldRifle:
-			_model->playAnimation("g7w1");
-			break;
-		default:
-			// TODO: two swords (g4w1) and two pistols (g6w1)
-			break;
+	Item *rightWeapon = _equipment[kInventorySlotRightWeapon];
+	Item *leftWeapon = _equipment[kInventorySlotLeftWeapon];
+
+	if (rightWeapon && !leftWeapon) {
+		switch (rightWeapon->getWeaponWield()) {
+			case kWeaponWieldBaton:
+				_model->playAnimation("g1w1");
+				break;
+			case kWeaponWieldSword:
+				_model->playAnimation("g2w1");
+				break;
+			case kWeaponWieldStaff:
+				_model->playAnimation("g3w1");
+				break;
+			case kWeaponWieldPistol:
+				_model->playAnimation("g5w1");
+				break;
+			case kWeaponWieldRifle:
+				_model->playAnimation("g7w1");
+				break;
+			default:
+				break;
+		}
+		return;
+	}
+
+	if (rightWeapon && leftWeapon) {
+		switch (rightWeapon->getWeaponWield()) {
+			case kWeaponWieldSword:
+				_model->playAnimation("g4w1");
+				break;
+			case kWeaponWieldPistol:
+				_model->playAnimation("g6w1");
+				break;
+			default:
+				break;
+		}
 	}
 }
 
