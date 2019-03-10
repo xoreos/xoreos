@@ -196,24 +196,6 @@ void Creature::getPartModelsPC(PartModels &parts, uint32 state, uint8 textureVar
 	parts.bodyTexture = getBodyTextureString(_gender, _skin, charClass, state);
 	parts.head = getHeadMeshString(_gender, _skin, _face);
 
-	switch (state) {
-		case 'a':
-		case 'b':
-			break;
-		default:
-			switch (_gender) {
-				case KotORBase::kGenderMale:
-					parts.body += "l";
-					break;
-				case KotORBase::kGenderFemale:
-					parts.body += "s";
-					break;
-				default:
-					return;
-			}
-			break;
-	}
-
 	parts.portrait = "po_" + parts.head;
 	parts.portrait.replaceAll("0", "");
 	parts.bodyTexture += Common::UString::format("%02u", textureVariation);
