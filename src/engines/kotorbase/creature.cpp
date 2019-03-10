@@ -635,11 +635,11 @@ void Creature::playDefaultHeadAnimation() {
 }
 
 void Creature::playDrawWeaponAnimation() {
-	if (!_model || !_info.isInventorySlotEquipped(kInventorySlotRightWeapon))
+	if (!_model)
 		return;
 
-	Item *rightWeapon = _equipment[kInventorySlotRightWeapon];
-	Item *leftWeapon = _equipment[kInventorySlotLeftWeapon];
+	Item *rightWeapon = _info.isInventorySlotEquipped(kInventorySlotRightWeapon) ? _equipment[kInventorySlotRightWeapon] : nullptr;
+	Item *leftWeapon = _info.isInventorySlotEquipped(kInventorySlotLeftWeapon) ? _equipment[kInventorySlotLeftWeapon] : nullptr;
 
 	if (rightWeapon && !leftWeapon) {
 		switch (rightWeapon->getWeaponWield()) {
