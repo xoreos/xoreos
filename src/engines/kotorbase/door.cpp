@@ -35,7 +35,6 @@
 #include "src/aurora/2dareg.h"
 
 #include "src/graphics/aurora/model.h"
-#include "src/graphics/aurora/cursorman.h"
 
 #include "src/engines/aurora/util.h"
 
@@ -120,14 +119,9 @@ void Door::hide() {
 void Door::notifyNotSeen() {
 }
 
-void Door::enter() {
-	CursorMan.setGroup("door");
-	highlight(true);
-}
-
-void Door::leave() {
-	CursorMan.set();
-	highlight(false);
+const Common::UString &Door::getCursor() const {
+	static Common::UString cursor("door");
+	return cursor;
 }
 
 void Door::highlight(bool enabled) {

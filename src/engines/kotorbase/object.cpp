@@ -202,6 +202,11 @@ void Object::setMinOneHitPoints(bool enabled) {
 	_minOneHitPoint = enabled;
 }
 
+const Common::UString &Object::getCursor() const {
+	static Common::UString cursor("");
+	return cursor;
+}
+
 void Object::enter() {
 }
 

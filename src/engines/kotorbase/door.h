@@ -69,10 +69,8 @@ public:
 
 	// Object/cursor interactions
 
-	/** The cursor entered the door. */
-	void enter();
-	/** The cursor left the door. */
-	void leave();
+	const Common::UString &getCursor() const;
+
 	/** (Un)Highlight the door. */
 	void highlight(bool enabled);
 	/** The door was clicked. */
