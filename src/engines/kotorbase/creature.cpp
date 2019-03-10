@@ -384,7 +384,10 @@ void Creature::loadBody(PartModels &parts) {
 	if (parts.body.stricmp("P_BastilaBB") == 0)
 		parts.body = "P_BastilaBB02";
 
+	GfxMan.lockFrame();
 	_model.reset(loadModelObject(parts.body, parts.bodyTexture));
+	GfxMan.unlockFrame();
+
 	if (!_model)
 		return;
 
@@ -406,7 +409,9 @@ void Creature::loadHead(PartModels &parts) {
 	if (!_headModel)
 		return;
 
+	GfxMan.lockFrame();
 	_model->attachModel("headhook", _headModel);
+	GfxMan.unlockFrame();
 }
 
 void Creature::loadMovementRate(const Common::UString &name) {
