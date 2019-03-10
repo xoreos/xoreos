@@ -340,6 +340,101 @@ enum CClass {
 	kCClassWarlock   = 39,
 };
 
+// 'itempropdef.2da' rows
+enum ItemPropertyType {
+	kItemPropertyAbilityBonus                        =  0,
+	kItemPropertyACBonus                                 ,
+	kItemPropertyACBonusVsAlignmentGroup                 ,
+	kItemPropertyACBonusVsDamageType                     ,
+	kItemPropertyACBonusVsRacialGroup                    ,
+	kItemPropertyACBonusVsSpecificAlignment              ,
+	kItemPropertyEnhancementBonus                        ,
+	kItemPropertyEnhancementBonusVsAlignmentGroup        ,
+	kItemPropertyEnhancementBonusVsRacialGroup           ,
+	kItemPropertyEnhancementBonusVsSpecificAlignment     ,
+	kItemPropertyDecreasedEnhancementModifier            ,
+	kItemPropertyBaseItemWeightReduction                 ,
+	kItemPropertyBonusFeat                               ,
+	kItemPropertyBonusSpellSlotOfLevelN                  ,
+	kItemPropertyBoomerang                               , // Not used
+	kItemPropertyCastSpell                               ,
+	kItemPropertyDamageBonus                             ,
+	kItemPropertyDamageBonusVsAlignmentGroup             ,
+	kItemPropertyDamageBonusVsRacialGroup                ,
+	kItemPropertyDamageBonusVsSpecificAlignment          ,
+	kItemPropertyImmunityDamageType                      ,
+	kItemPropertyDecreasedDamage                         ,
+	kItemPropertyDancingScimitar                         , // Deprecated
+	kItemPropertyDamageResistance                        ,
+	kItemPropertyDamageVulnerability                     ,
+	kItemPropertyDancing                                 , // Not used
+	kItemPropertyDarkvision                              ,
+	kItemPropertyDecreasedAbilityScore                   ,
+	kItemPropertyDecreasedAC                             ,
+	kItemPropertyDecreasedSkillModifier                  ,
+	kItemPropertyDoubleStack                             , // Not used
+	kItemPropertyBonusSlots                              , // Not used
+	kItemPropertyEnhancedContainerReducedWeight          ,
+	kItemPropertyExtraMeleeDamageType                    ,
+	kItemPropertyExtraRangedDamageType                   ,
+	kItemPropertyHaste                                   ,
+	kItemPropertyHolyAvenger                             ,
+	kItemPropertyImmunityMiscellaneous                   ,
+	kItemPropertyImprovedEvasion                         ,
+	kItemPropertySpellResistance                         ,
+	kItemPropertySavingThrowBonus                        ,
+	kItemPropertySavingThrowBonusSpecific                ,
+	// Unassigned
+	kItemPropertyKeen                                = 43,
+	kItemPropertyLight                                   ,
+	kItemPropertyMighty                                  ,
+	kItemPropertyMindBlank                               ,
+	kItemPropertyNoDamage                                ,
+	kItemPropertyOnHitProperties                         ,
+	kItemPropertyDecreasedSavingThrows                   ,
+	kItemPropertyDecreasedSavingThrowsSpecific           ,
+	kItemPropertyRegeneration                            ,
+	kItemPropertySkillBonus                              ,
+	kItemPropertyImmunitySpecificSpell                   ,
+	kItemPropertyImmunitySpellSchool                     ,
+	kItemPropertyThievesTools                            ,
+	kItemPropertyAttackBonus                             ,
+	kItemPropertyAttackBonusVsAlignmentGroup             ,
+	kItemPropertyAttackBonusVsRacialGroup                ,
+	kItemPropertyAttackBonusVsSpecificAlignment          ,
+	kItemPropertyDecreasedAttackModifier                 ,
+	kItemPropertyUnlimitedAmmunition                     ,
+	kItemPropertyUseLimitationAlignmentGroup             ,
+	kItemPropertyUseLimitationClass                      ,
+	kItemPropertyUseLimitationRacialType                 ,
+	kItemPropertyUseLimitationSpecificAlignment          ,
+	kItemPropertyBonusHitpoints                          ,
+	kItemPropertyRegenerationVampiric                    ,
+	kItemPropertyVorpalBlade                             , // Not used
+	kItemPropertyWounding                                , // Not used
+	kItemPropertyTrap                                    ,
+	kItemPropertyTrueSeeing                              ,
+	kItemPropertyOnMonsterHit                            ,
+	kItemPropertyTurnResistance                          ,
+	kItemPropertyMassiveCriticals                        ,
+	kItemPropertyFreedomOfMovement                       ,
+	kItemPropertyPoison                                  ,
+	kItemPropertyMonsterDamage                           ,
+	kItemPropertyImmunitySpellsByLevel                   ,
+	kItemPropertySpecialWalk                             ,
+	kItemPropertyHealersKit                              ,
+	kItemPropertyWeightIncrease                          ,
+	kItemPropertyOnHitCastSpell                          ,
+	kItemPropertyVisualEffect                            ,
+	kItemPropertyArcaneSpellFailure                      ,
+	kItemPropertyArrowCatching                           , // Not used
+	kItemPropertyBashing                                 , // Not used
+	kItemPropertyAnimated                                , // Not used
+	kItemPropertyWild                                    , // Not used
+	kItemPropertyEtherealness                            , // Not used
+	kItemPropertyDamageReduction                         ,
+};
+
 // iprp_damagetypes.2da rows
 enum Damage {
 	kDamageBludgeon = 0,

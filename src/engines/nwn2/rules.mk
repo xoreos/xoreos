@@ -48,6 +48,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/faction.h \
     src/engines/nwn2/roster.h \
     src/engines/nwn2/item.h \
+    src/engines/nwn2/itemproperty.h \
     src/engines/nwn2/inventory.h \
     $(EMPTY)
 
@@ -77,6 +78,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/faction.cpp \
     src/engines/nwn2/roster.cpp \
     src/engines/nwn2/item.cpp \
+    src/engines/nwn2/itemproperty.cpp \
     src/engines/nwn2/inventory.cpp \
     $(EMPTY)
 

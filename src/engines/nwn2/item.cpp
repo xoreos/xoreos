@@ -32,6 +32,7 @@
 
 #include "src/engines/nwn2/inventory.h"
 #include "src/engines/nwn2/item.h"
+#include "src/engines/nwn2/itemproperty.h"
 
 namespace Engines {
 
@@ -217,6 +218,26 @@ void Item::loadProperties(const Aurora::GFF3Struct &gff) {
 	_identified = gff.getBool("Identified", _identified);
 	_pickpocketable = gff.getBool("Pickpocketable", _pickpocketable);
 	_container = gff.getBool("Container", _container);
+
+	// Item properties
+	loadItemProperties(gff);
+}
+
+void Item::loadItemProperties(const Aurora::GFF3Struct &gff) {
+	if (!gff.hasField("PropertiesList"))
+		return;
+
+	_itemProperties.clear();
+
+	const Aurora::GFF3List &iprp = gff.getList("PropertiesList");
+	const size_t count = iprp.size();
+	if (count > 0) {
+		_itemProperties.reserve(count);
+		for (Aurora::GFF3List::const_iterator it = iprp.begin(); it != iprp.end(); ++it) {
+			ItemProperty iprop(**it);
+			_itemProperties.push_back(iprop);
+		}
+	}
 }
 
 } // End of namespace NWN2

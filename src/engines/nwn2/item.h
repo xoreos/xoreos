@@ -25,6 +25,8 @@
 #ifndef ENGINES_NWN2_ITEM_H
 #define ENGINES_NWN2_ITEM_H
 
+#include <vector>
+
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/object.h"
 #include "src/engines/nwn2/inventory.h"
@@ -32,6 +34,8 @@
 namespace Engines {
 
 namespace NWN2 {
+
+class ItemProperty;
 
 class Item : public Object, public Inventory {
 public:
@@ -67,6 +71,8 @@ public:
 	Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
 
 private:
+	typedef std::vector<ItemProperty> ItemProperties;
+
 	uint32 _icon;       ///< Icon number for inventory UI.
 	uint32 _cost;       ///< Base price in gp.
 	int32 _modifyCost;  ///< Adjustment to price in gp.
@@ -81,11 +87,14 @@ private:
 	bool _identified;     ///< Have the item's properties been identified?
 	bool _pickpocketable; ///< Can the item be pick-pocketed?
 
+	ItemProperties _itemProperties; ///< The item's properties.
+
 	/* Load from an item instance. */
 	void load(const Aurora::GFF3Struct &item);
 	void load(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
 	void loadProperties(const Aurora::GFF3Struct &gff);
+	void loadItemProperties(const Aurora::GFF3Struct &gff);
 };
 
 } // End of namespace NWN2
