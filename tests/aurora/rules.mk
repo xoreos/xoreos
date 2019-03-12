@@ -184,3 +184,8 @@ check_PROGRAMS                                 += tests/aurora/test_thewitchersa
 tests_aurora_test_thewitchersavewriter_SOURCES  = tests/aurora/thewitchersavewriter.cpp
 tests_aurora_test_thewitchersavewriter_LDADD    = $(aurora_LIBS)
 tests_aurora_test_thewitchersavewriter_CXXFLAGS = $(test_CXXFLAGS)
+
+check_PROGRAMS                     += tests/aurora/test_xmlfixer
+tests_aurora_test_xmlfixer_SOURCES  = tests/aurora/xmlfixer.cpp
+tests_aurora_test_xmlfixer_LDADD    = $(aurora_LIBS)
+tests_aurora_test_xmlfixer_CXXFLAGS = $(test_CXXFLAGS)

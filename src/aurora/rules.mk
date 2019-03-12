@@ -70,6 +70,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/thewitchersavewriter.h \
     src/aurora/sacfile.h \
     src/aurora/gfxfile.h \
+    src/aurora/xmlfixer.h \
     $(EMPTY)
 
 src_aurora_libaurora_la_SOURCES += \
@@ -116,6 +117,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/thewitchersavewriter.cpp \
     src/aurora/sacfile.cpp \
     src/aurora/gfxfile.cpp \
+    src/aurora/xmlfixer.cpp \
     $(EMPTY)
 
 textureatlasfile_source = \
