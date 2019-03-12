@@ -25,13 +25,14 @@
 #ifndef GRAPHICS_AURORA_ANIMATIONTHREAD_H
 #define GRAPHICS_AURORA_ANIMATIONTHREAD_H
 
+#include <map>
 #include <queue>
 #include <atomic>
+#include <mutex>
 
 #include "external/glm/vec3.hpp"
 #include "external/glm/vec4.hpp"
 
-#include "src/common/mutex.h"
 #include "src/common/thread.h"
 
 namespace Graphics {
@@ -43,41 +44,63 @@ class Model;
 class AnimationThread : public Common::Thread {
 public:
 	AnimationThread();
+
 	void pause();
 	void resume();
 
-	// .--- Processing pool
+	// Processing pool
+
 	/** Add a model to the processing pool. */
 	void registerModel(Model *model);
 	/** Remove a model from the processing pool. */
 	void unregisterModel(Model *model);
-	/** Apply changes to position and geometry of all models in the processing pool. */
+	/** Apply buffered changes to all models in the processing pool. */
 	void flush();
-	// '---
+
 private:
+	enum FlushStatus {
+		kFlushReady,
+		kFlushRequested,
+		kFlushGranted,
+		kFlushInProgress
+	};
+
 	struct PoolModel {
 		Model *model;
-		uint32 lastChanged;
-		uint8 skippedCount; ///< Number of skipped loop iterations.
+		uint32 lastChanged { 0 };
+		uint8 skippedCount { 0 }; ///< Number of skipped loop iterations.
 
 		PoolModel(Model *m);
 	};
 
-	typedef std::list<PoolModel> ModelList;
+	typedef std::map<uint32, PoolModel> ModelMap;
 	typedef std::queue<Model *> ModelQueue;
 
-	ModelList _models;
+	ModelMap _models;
 	ModelQueue _registerQueue;
+	ModelQueue _unregisterQueue;
 
-	std::atomic<bool> _paused;
-	std::atomic<bool> _flushing;
+	std::atomic<bool> _paused { true };
+	std::atomic<FlushStatus> _flushing { kFlushReady };
 
-	Common::Semaphore _modelsSem;   ///< Semaphore protecting access to the model list.
-	Common::Semaphore _registerSem; ///< Semaphore protecting access to the registration queue.
+	std::mutex _modelsMutex;   ///< Mutex protecting access to the model map.
+	std::mutex _registerMutex; ///< Mutex protecting access to the registration queue.
 
-	void threadMethod();
+	// Model registration
+
+	void registerQueuedModels();
 	void registerModelInternal(Model *model);
 	void unregisterModelInternal(Model *model);
+
+	// Flushing
+
+	/** Grant flush if requested and wait until in finishes. */
+	void handleFlush();
+	/** Skip a pending flush to avoid a deadlock. */
+	void skipFlush();
+
+
+	void threadMethod();
 	uint8 getNumIterationsToSkip(Model *model) const;
 };
 
