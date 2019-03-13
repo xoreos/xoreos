@@ -707,7 +707,7 @@ bool GraphicsManager::unproject(float x, float y,
 
 void GraphicsManager::lockFrame() {
 	// Increase the lock counter and make sure we don't overflow
-	const uint32 lock = _frameLock.fetch_add(1, boost::memory_order_acquire);
+	const uint32 lock = _frameLock.fetch_add(1, std::memory_order_acquire);
 	assert(lock != 0xFFFFFFFF);
 
 	/* Wait for the frame to end, because the caller doesn't want to do
@@ -722,13 +722,13 @@ void GraphicsManager::lockFrame() {
 	if (Common::isMainThread() || EventMan.quitRequested() || (lock > 0))
 		return;
 
-	_frameEndSignal.store(false, boost::memory_order_release);
-	while (!_frameEndSignal.load(boost::memory_order_acquire));
+	_frameEndSignal.store(false, std::memory_order_release);
+	while (!_frameEndSignal.load(std::memory_order_acquire));
 }
 
 void GraphicsManager::unlockFrame() {
 	// Decrease the lock counter and make sure we don't underflow
-	const uint32 lock = _frameLock.fetch_sub(1, boost::memory_order_release);
+	const uint32 lock = _frameLock.fetch_sub(1, std::memory_order_release);
 	assert(lock != 0);
 }
 
@@ -1218,8 +1218,8 @@ void GraphicsManager::renderScene() {
 
 	cleanupAbandoned();
 
-	if (EventMan.quitRequested() || (_frameLock.load(boost::memory_order_acquire) > 0)) {
-		_frameEndSignal.store(true, boost::memory_order_release);
+	if (EventMan.quitRequested() || (_frameLock.load(std::memory_order_acquire) > 0)) {
+		_frameEndSignal.store(true, std::memory_order_release);
 
 		return;
 	}
@@ -1247,7 +1247,7 @@ void GraphicsManager::renderScene() {
 
 	endScene();
 
-	_frameEndSignal.store(true, boost::memory_order_release);
+	_frameEndSignal.store(true, std::memory_order_release);
 }
 
 const glm::mat4 &GraphicsManager::getProjectionMatrix() const {

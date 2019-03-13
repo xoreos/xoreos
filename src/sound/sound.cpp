@@ -899,7 +899,7 @@ void SoundManager::freeChannel(size_t channel) {
 }
 
 void SoundManager::threadMethod() {
-	while (!_killThread.load(boost::memory_order_relaxed)) {
+	while (!_killThread.load(std::memory_order_relaxed)) {
 		update();
 		_needUpdate.wait(100);
 	}

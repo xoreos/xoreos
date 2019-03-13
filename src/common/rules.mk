@@ -58,7 +58,6 @@ src_common_libcommon_la_SOURCES += \
     src/common/platform.h \
     src/common/debugman.h \
     src/common/debug.h \
-    src/common/atomic.h \
     src/common/uuid.h \
     src/common/datetime.h \
     src/common/readstream.h \
