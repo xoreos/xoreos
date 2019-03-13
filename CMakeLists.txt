@@ -395,7 +395,7 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 list(APPEND XOREOS_LIBRARIES ${OPENGL_LIBRARIES})
 
-# pthreads, for our unit tests
+# pthreads
 if(NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "MinGW")
   find_package(Threads)
 endif()
@@ -403,6 +403,7 @@ endif()
 set(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT})
 if(CMAKE_USE_PTHREADS_INIT)
   set(PTHREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
+  list(APPEND XOREOS_LIBRARIES ${PTHREAD_LIBS})
 endif()
 
 # use our own version of lua, as we will have to support the Witcher lua scripts

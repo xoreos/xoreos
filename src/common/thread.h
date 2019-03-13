@@ -27,15 +27,11 @@
 #ifndef COMMON_THREAD_H
 #define COMMON_THREAD_H
 
-#include "src/common/atomic.h"
-
-#include "src/common/fallthrough.h"
-START_IGNORE_IMPLICIT_FALLTHROUGH
-#include <SDL_thread.h>
-STOP_IGNORE_IMPLICIT_FALLTHROUGH
+#include <thread>
 
 #include <boost/noncopyable.hpp>
 
+#include "src/common/atomic.h"
 #include "src/common/ustring.h"
 
 namespace Common {
@@ -53,7 +49,7 @@ protected:
 	boost::atomic<bool> _killThread;
 
 private:
-	SDL_Thread *_thread;
+	std::thread _thread;
 	Common::UString _name;
 
 	boost::atomic<bool> _threadRunning;
