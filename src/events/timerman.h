@@ -31,12 +31,12 @@ START_IGNORE_IMPLICIT_FALLTHROUGH
 STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 #include <list>
+#include <mutex>
 
 #include <boost/function.hpp>
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 
 #include "src/events/types.h"
 
@@ -76,7 +76,7 @@ public:
 	void removeTimer(TimerHandle &handle);
 
 private:
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 	std::list<TimerID> _timers;
 

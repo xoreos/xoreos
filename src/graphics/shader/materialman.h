@@ -29,7 +29,6 @@
 
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 
 #include "src/graphics/shader/shadermaterial.h"
 

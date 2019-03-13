@@ -37,13 +37,14 @@
 
 #include <list>
 #include <map>
+#include <mutex>
+#include <condition_variable>
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
 #include "src/common/disposableptr.h"
 #include "src/common/singleton.h"
 #include "src/common/thread.h"
-#include "src/common/mutex.h"
 #include "src/common/ustring.h"
 
 #include "src/sound/types.h"
@@ -237,10 +238,11 @@ private:
 
 	uint32 _curID; ///< The ID the next sound will get.
 
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 	/** Condition to signal that an update is needed. */
-	Common::Condition _needUpdate;
+	std::condition_variable_any _needUpdate;
+	std::recursive_mutex _needUpdateMutex;
 
 	ALCdevice *_dev;
 	ALCcontext *_ctx;

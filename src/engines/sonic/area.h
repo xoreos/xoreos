@@ -27,12 +27,12 @@
 
 #include <list>
 #include <map>
+#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
 #include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
-#include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
 
@@ -145,7 +145,7 @@ private:
 
 	bool _highlightAll;
 
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 
 	// Loading helpers

@@ -27,8 +27,7 @@
 
 #include <list>
 #include <vector>
-
-#include "src/common/mutex.h"
+#include <mutex>
 
 namespace Graphics {
 
@@ -92,7 +91,7 @@ private:
 	float _animationLoopTime; ///< The time the current loop of the current animation has played.
 	DefaultAnimations _defaultAnimations;
 	std::vector<ModelNode *> _modelNodeMap;
-	Common::Semaphore _manageSem;
+	std::recursive_mutex _manageMutex;
 
 	void playDefaultAnimationInternal();
 	Animation *selectDefaultAnimation();

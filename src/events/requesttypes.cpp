@@ -30,9 +30,7 @@
 
 namespace Events {
 
-Request::Request(ITCEvent type) : _type(type), _dispatched(false), _garbage(false),
-	_hasReply(0) {
-
+Request::Request(ITCEvent type) : _type(type), _dispatched(false), _garbage(false) {
 	create();
 }
 
@@ -55,7 +53,7 @@ void Request::create() {
 }
 
 void Request::signalReply() {
-	_hasReply.unlock();
+	_hasReply.notify_one();
 }
 
 void Request::copyToReply() {

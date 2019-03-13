@@ -48,9 +48,9 @@
  */
 
 #include <queue>
+#include <mutex>
 
 #include "src/common/error.h"
-#include "src/common/mutex.h"
 
 #include "src/sound/audiostream.h"
 
@@ -179,7 +179,7 @@ private:
 	 * A mutex to avoid access problems (causing e.g. corruption of
 	 * the linked list) in thread aware environments.
 	 */
-	mutable Common::Mutex _mutex;
+	mutable std::recursive_mutex _mutex;
 
 	/**
 	 * The queue of audio streams.
@@ -196,11 +196,11 @@ public:
 	virtual int getChannels() const { return _channels; }
 	virtual int getRate() const { return _rate; }
 	virtual bool endOfData() const {
-		Common::StackLock lock(_mutex);
+		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		return _queue.empty();
 	}
 	virtual bool endOfStream() const {
-		Common::StackLock lock(_mutex);
+		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		return _finished && _queue.empty();
 	}
 
@@ -208,17 +208,17 @@ public:
 	virtual void queueAudioStream(AudioStream *stream, bool disposeAfterUse);
 
 	virtual void finish() {
-		Common::StackLock lock(_mutex);
+		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		_finished = true;
 	}
 
 	virtual bool isFinished() const {
-		Common::StackLock lock(_mutex);
+		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		return _finished;
 	}
 
 	size_t numQueuedStreams() const {
-		Common::StackLock lock(_mutex);
+		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		return _queue.size();
 	}
 };
@@ -239,12 +239,12 @@ void QueuingAudioStreamImpl::queueAudioStream(AudioStream *stream, bool disposeA
 	if ((stream->getRate() != getRate()) || (stream->getChannels() != getChannels()))
 		throw Common::Exception("QueuingAudioStreamImpl::queueAudioStream(): stream has mismatched parameters");
 
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	_queue.push(StreamHolder(stream, disposeAfterUse));
 }
 
 size_t QueuingAudioStreamImpl::readBuffer(int16 *buffer, const size_t numSamples) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	size_t samplesDecoded = 0;
 
 	while (samplesDecoded < numSamples && !_queue.empty()) {

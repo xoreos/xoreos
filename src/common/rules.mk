@@ -45,7 +45,6 @@ src_common_libcommon_la_SOURCES += \
     src/common/mdct.h \
     src/common/threads.h \
     src/common/thread.h \
-    src/common/mutex.h \
     src/common/ustring.h \
     src/common/hash.h \
     src/common/md5.h \
@@ -102,7 +101,6 @@ src_common_libcommon_la_SOURCES += \
     src/common/mdct.cpp \
     src/common/threads.cpp \
     src/common/thread.cpp \
-    src/common/mutex.cpp \
     src/common/ustring.cpp \
     src/common/md5.cpp \
     src/common/blowfish.cpp \

@@ -28,11 +28,11 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <mutex>
 
 #include "src/common/ptrlist.h"
 #include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
-#include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/locstring.h"
@@ -125,7 +125,7 @@ private:
 
 	bool _highlightAll; ///< Are we currently highlighting all objects?
 
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 
 	void load(const Common::UString &resRef, const Common::UString &env, const Common::UString &rim);

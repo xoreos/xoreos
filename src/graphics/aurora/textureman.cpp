@@ -88,7 +88,7 @@ TextureManager::~TextureManager() {
 }
 
 void TextureManager::clear() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_bogusTextures.clear();
 
@@ -103,7 +103,7 @@ void TextureManager::clear() {
 }
 
 void TextureManager::addBogusTexture(const Common::UString &name) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_bogusTextures.insert(name);
 }
@@ -113,7 +113,7 @@ void TextureManager::setDeswizzleSBM(bool deswizzle) {
 }
 
 bool TextureManager::hasTexture(const Common::UString &name) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (_bogusTextures.find(name) != _bogusTextures.end())
 		return true;
@@ -124,7 +124,7 @@ bool TextureManager::hasTexture(const Common::UString &name) {
 }
 
 TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (_bogusTextures.find(name) != _bogusTextures.end()) {
 		delete texture;
@@ -150,7 +150,7 @@ TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
 }
 
 TextureHandle TextureManager::get(Common::UString name) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (_bogusTextures.find(name) != _bogusTextures.end())
 		return TextureHandle();
@@ -176,7 +176,7 @@ TextureHandle TextureManager::get(Common::UString name) {
 }
 
 TextureHandle TextureManager::getIfExist(const Common::UString &name) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (_bogusTextures.find(name) != _bogusTextures.end())
 		return TextureHandle();
@@ -189,14 +189,14 @@ TextureHandle TextureManager::getIfExist(const Common::UString &name) {
 }
 
 void TextureManager::startRecordNewTextures() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_newTextureNames.clear();
 	_recordNewTextures = true;
 }
 
 void TextureManager::stopRecordNewTextures(std::list<Common::UString> &newTextures) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_newTextureNames.swap(newTextures);
 
@@ -205,7 +205,7 @@ void TextureManager::stopRecordNewTextures(std::list<Common::UString> &newTextur
 }
 
 void TextureManager::assign(TextureHandle &texture, const TextureHandle &from) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	texture._empty = from._empty;
 	texture._it    = from._it;
@@ -215,7 +215,7 @@ void TextureManager::assign(TextureHandle &texture, const TextureHandle &from) {
 }
 
 void TextureManager::release(TextureHandle &texture) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (!texture._empty && (texture._it != _textures.end())) {
 		if (--texture._it->second->referenceCount == 0) {
@@ -229,7 +229,7 @@ void TextureManager::release(TextureHandle &texture) {
 }
 
 void TextureManager::reloadAll() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	GfxMan.lockFrame();
 

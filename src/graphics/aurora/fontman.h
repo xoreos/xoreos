@@ -26,10 +26,10 @@
 #define GRAPHICS_AURORA_FONTMAN_H
 
 #include <map>
+#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/aurora/fonthandle.h"
@@ -84,7 +84,7 @@ private:
 
 	FontMap _fonts;
 
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 	Common::UString getAliasName(const Common::UString &name);
 	Common::UString getIndexName(Common::UString name, int height);

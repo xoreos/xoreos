@@ -28,13 +28,13 @@
 #include <vector>
 #include <list>
 #include <atomic>
+#include <mutex>
 
 #include "external/glm/mat4x4.hpp"
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/types.h"
@@ -237,14 +237,14 @@ private:
 	bool _takeScreenshot; ///< Should screenshot be taken?
 
 	uint32 _renderableID;             ///< The last ID given to a renderable.
-	Common::Mutex _renderableIDMutex; ///< The mutex to govern renderable ID creation.
+	std::recursive_mutex _renderableIDMutex; ///< The mutex to govern renderable ID creation.
 
 	bool _hasAbandoned; ///< Do we have abandoned textures/lists?
 
 	std::vector<TextureID> _abandonTextures; ///< Abandoned textures.
 	std::list<ListID>      _abandonLists;    ///< Abandoned lists.
 
-	Common::Mutex _abandonMutex; ///< A mutex protecting abandoned structures.
+	std::recursive_mutex _abandonMutex; ///< A mutex protecting abandoned structures.
 
 	Aurora::AnimationThread _animationThread;
 

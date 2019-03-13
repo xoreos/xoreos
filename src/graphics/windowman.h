@@ -25,8 +25,9 @@
 #ifndef GRAPHICS_WINDOWMAN_H
 #define GRAPHICS_WINDOWMAN_H
 
+#include <mutex>
+
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/types.h"
@@ -119,7 +120,7 @@ private:
 	SDL_Window *_window; ///< The OpenGL hardware surface.
 	SDL_GLContext _glContext;
 
-	Common::Mutex _cursorMutex;    ///< A mutex locked for the cursor.
+	std::recursive_mutex _cursorMutex;    ///< A mutex locked for the cursor.
 	CursorState _cursorState;      ///< What to do with the cursor.
 
 	uint32 windowFlags();

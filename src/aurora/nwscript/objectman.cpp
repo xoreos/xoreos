@@ -32,7 +32,7 @@ namespace Aurora {
 namespace NWScript {
 
 void ObjectManager::registerObject(Object *object) {
-	Common::StackLock lock(_objMutex);
+	std::lock_guard<std::recursive_mutex> lock(_objMutex);
 
 	uint32 id = object->getID();
 	if (_objects.find(id) == _objects.end())
@@ -40,13 +40,13 @@ void ObjectManager::registerObject(Object *object) {
 }
 
 void ObjectManager::unregisterObject(Object *object) {
-	Common::StackLock lock(_objMutex);
+	std::lock_guard<std::recursive_mutex> lock(_objMutex);
 
 	_objects.erase(object->getID());
 }
 
 Object *ObjectManager::findObject(uint32 id) {
-	Common::StackLock lock(_objMutex);
+	std::lock_guard<std::recursive_mutex> lock(_objMutex);
 
 	std::map<uint32, Object *>::iterator it = _objects.find(id);
 	if (it == _objects.end())

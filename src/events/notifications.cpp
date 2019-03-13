@@ -39,7 +39,7 @@ void NotificationManager::init() {
 }
 
 std::list<Notifyable *>::iterator NotificationManager::registerNotifyable(Notifyable &notifyable) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_notifyables.push_back(&notifyable);
 
@@ -47,20 +47,20 @@ std::list<Notifyable *>::iterator NotificationManager::registerNotifyable(Notify
 }
 
 void NotificationManager::unregisterNotifyable(const std::list<Notifyable *>::iterator &it) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_notifyables.erase(it);
 }
 
 void NotificationManager::resized(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	for (std::list<Notifyable *>::iterator it = _notifyables.begin(); it != _notifyables.end(); ++it)
 		(*it)->notifyResized(oldWidth, oldHeight, newWidth, newHeight);
 }
 
 void NotificationManager::cameraMoved() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	for (std::list<Notifyable *>::iterator it = _notifyables.begin(); it != _notifyables.end(); ++it)
 		(*it)->notifyCameraMoved();

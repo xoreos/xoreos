@@ -25,8 +25,10 @@
 #ifndef EVENTS_REQUESTTYPES_H
 #define EVENTS_REQUESTTYPES_H
 
+#include <mutex>
+#include <condition_variable>
+
 #include "src/common/types.h"
-#include "src/common/mutex.h"
 
 #include "src/events/types.h"
 
@@ -62,7 +64,8 @@ private:
 	bool _dispatched; ///< Was the request dispatched?
 	bool _garbage;
 
-	Common::Semaphore _hasReply; ///< Do we have a reply?
+	std::condition_variable_any _hasReply; ///< Do we have a reply?
+	std::recursive_mutex _hasReplyMutex;
 
 	Event _event; ///< The actual event.
 

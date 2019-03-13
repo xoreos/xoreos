@@ -53,7 +53,7 @@ void RequestManager::deinit() {
 }
 
 void RequestManager::dispatch(RequestID request) {
-	Common::StackLock lock(_mutexUse);
+	std::lock_guard<std::recursive_mutex> lock(_mutexUse);
 
 	if ((*request)->_dispatched)
 		// We are already waiting for an answer
@@ -86,7 +86,8 @@ void RequestManager::waitReply(RequestID request) {
 	_mutexUse.unlock();
 
 	// Wait for a reply
-	(*request)->_hasReply.lock();
+	std::unique_lock<std::recursive_mutex> lock((*request)->_hasReplyMutex);
+	(*request)->_hasReply.wait(lock);
 
 	// Got a reply
 
@@ -104,7 +105,7 @@ void RequestManager::waitReply(RequestID request) {
 }
 
 void RequestManager::forget(RequestID request) {
-	Common::StackLock lock(_mutexUse);
+	std::lock_guard<std::recursive_mutex> lock(_mutexUse);
 
 	(*request)->setGarbage();
 }
@@ -142,7 +143,7 @@ RequestID RequestManager::destroy(Graphics::GLContainer &glContainer) {
 }
 
 RequestID RequestManager::newRequest(ITCEvent type) {
-	Common::StackLock lock(_mutexUse);
+	std::lock_guard<std::recursive_mutex> lock(_mutexUse);
 
 	_requests.push_back(new Request(type));
 
@@ -158,7 +159,7 @@ void RequestManager::callInMainThread(const MainThreadCallerFunctor &caller) {
 }
 
 void RequestManager::clearList() {
-	Common::StackLock lock(_mutexUse);
+	std::lock_guard<std::recursive_mutex> lock(_mutexUse);
 
 	_requests.clear();
 }
@@ -168,7 +169,7 @@ static bool requestIsGarbage(const Request * const request) {
 }
 
 void RequestManager::collectGarbage() {
-	Common::StackLock lock(_mutexUse);
+	std::lock_guard<std::recursive_mutex> lock(_mutexUse);
 
 	_requests.remove_if(requestIsGarbage);
 }

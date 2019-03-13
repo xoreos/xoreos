@@ -34,16 +34,15 @@ namespace Graphics {
 
 namespace Aurora {
 
-AnimationChannel::AnimationChannel(Model *model)
-		: _model(model),
-		  _currentAnimation(0),
-		  _nextAnimation(0),
-		  _animationSpeed(1.0f),
-		  _animationLength(1.0f),
-		  _animationTime(0.0f),
-		  _animationLoopLength(1.0f),
-		  _animationLoopTime(0.0f),
-		  _manageSem(true) {
+AnimationChannel::AnimationChannel(Model *model) :
+		_model(model),
+		_currentAnimation(0),
+		_nextAnimation(0),
+		_animationSpeed(1.0f),
+		_animationLength(1.0f),
+		_animationTime(0.0f),
+		_animationLoopLength(1.0f),
+		_animationLoopTime(0.0f) {
 }
 
 void AnimationChannel::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
@@ -54,7 +53,7 @@ void AnimationChannel::playAnimation(const Common::UString &anim, bool restart, 
 	if (length == 0.0f)
 		length = animation->getLength() / speed;
 
-	_manageSem.lock();
+	_manageMutex.lock();
 
 	_animationSpeed = speed;
 	_animationLength = length;
@@ -64,7 +63,7 @@ void AnimationChannel::playAnimation(const Common::UString &anim, bool restart, 
 	if (restart || _currentAnimation != animation)
 		_nextAnimation = animation;
 
-	_manageSem.unlock();
+	_manageMutex.unlock();
 }
 
 void AnimationChannel::playAnimationCount(const Common::UString &anim, bool restart, int32 loopCount) {
@@ -80,9 +79,9 @@ void AnimationChannel::playAnimationCount(const Common::UString &anim, bool rest
 }
 
 void AnimationChannel::clearDefaultAnimations() {
-	_manageSem.lock();
+	_manageMutex.lock();
 	_defaultAnimations.clear();
-	_manageSem.unlock();
+	_manageMutex.unlock();
 }
 
 void AnimationChannel::addDefaultAnimation(const Common::UString &anim, uint8 probability) {
@@ -94,19 +93,19 @@ void AnimationChannel::addDefaultAnimation(const Common::UString &anim, uint8 pr
 	da.animation = animation;
 	da.probability = probability;
 
-	_manageSem.lock();
+	_manageMutex.lock();
 	_defaultAnimations.push_back(da);
-	_manageSem.unlock();
+	_manageMutex.unlock();
 }
 
 void AnimationChannel::playDefaultAnimation() {
-	_manageSem.lock();
+	_manageMutex.lock();
 	playDefaultAnimationInternal();
-	_manageSem.unlock();
+	_manageMutex.unlock();
 }
 
 void AnimationChannel::manageAnimations(float dt) {
-	_manageSem.lock();
+	_manageMutex.lock();
 
 	float lastFrame = _animationLoopTime;
 	float nextFrame = _animationLoopTime + _animationSpeed * dt;
@@ -126,7 +125,7 @@ void AnimationChannel::manageAnimations(float dt) {
 	}
 
 	if (!_currentAnimation) {
-		_manageSem.unlock();
+		_manageMutex.unlock();
 		return;
 	}
 
@@ -136,7 +135,7 @@ void AnimationChannel::manageAnimations(float dt) {
 
 		_animationTime += dt;
 		_animationLoopTime = _animationLoopLength;
-		_manageSem.unlock();
+		_manageMutex.unlock();
 		return;
 	}
 
@@ -150,7 +149,7 @@ void AnimationChannel::manageAnimations(float dt) {
 			_currentAnimation->update(_model, 0.0f, 0.0f, _modelNodeMap);
 
 		_model->createBound();
-		_manageSem.unlock();
+		_manageMutex.unlock();
 		return;
 	}
 
@@ -173,7 +172,7 @@ void AnimationChannel::manageAnimations(float dt) {
 	if (nextFrame == 0.0f)
 		_model->createBound();
 
-	_manageSem.unlock();
+	_manageMutex.unlock();
 }
 
 void AnimationChannel::playDefaultAnimationInternal() {

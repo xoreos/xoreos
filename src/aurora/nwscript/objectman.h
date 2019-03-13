@@ -26,10 +26,10 @@
 #define AURORA_NWSCRIPT_OBJECTMAN_H
 
 #include <map>
+#include <mutex>
 
 #include "src/common/singleton.h"
 #include "src/common/types.h"
-#include "src/common/mutex.h"
 
 namespace Aurora {
 
@@ -45,7 +45,7 @@ public:
 	Object *findObject(uint32 id);
 
 private:
-	Common::Mutex _objMutex;
+	std::recursive_mutex _objMutex;
 	std::map<uint32, Object *> _objects;
 };
 

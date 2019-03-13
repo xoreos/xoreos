@@ -27,11 +27,12 @@
 
 #include <list>
 #include <vector>
+#include <mutex>
+#include <condition_variable>
 
 #include "src/common/types.h"
 #include "src/common/ptrvector.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 
 #include "src/events/types.h"
 #include "src/events/joystick.h"
@@ -169,12 +170,13 @@ private:
 	Joysticks _joysticks;
 
 	EventQueue _eventQueue;
-	Common::Mutex _eventQueueMutex;
+	std::recursive_mutex _eventQueueMutex;
 
 	size_t _queueSize;
 
 	bool _fullQueue;
-	Common::Condition _queueProcessed;
+	std::condition_variable_any _queueProcessed;
+	std::recursive_mutex _queueProcessedMutex;
 
 	bool _repeat;
 	uint _repeatCounter;

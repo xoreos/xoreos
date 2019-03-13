@@ -37,7 +37,6 @@
 
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 
 namespace Graphics {
 

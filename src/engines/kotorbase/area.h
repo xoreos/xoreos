@@ -29,10 +29,10 @@
 #include <list>
 #include <map>
 #include <set>
+#include <mutex>
 
 #include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
-#include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/lytfile.h"
@@ -226,7 +226,7 @@ private:
 
 	std::list<Events::Event> _eventQueue; ///< The event queue.
 
-	Common::Mutex _mutex; ///< Mutex securing access to the area.
+	std::recursive_mutex _mutex; ///< Mutex securing access to the area.
 
 	// Triggers
 

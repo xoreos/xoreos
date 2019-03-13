@@ -83,8 +83,8 @@ private:
 	std::atomic<bool> _paused { true };
 	std::atomic<FlushStatus> _flushing { kFlushReady };
 
-	std::mutex _modelsMutex;   ///< Mutex protecting access to the model map.
-	std::mutex _registerMutex; ///< Mutex protecting access to the registration queue.
+	std::recursive_mutex _modelsMutex;   ///< Mutex protecting access to the model map.
+	std::recursive_mutex _registerMutex; ///< Mutex protecting access to the registration queue.
 
 	// Model registration
 

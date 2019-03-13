@@ -26,10 +26,10 @@
 #define EVENTS_NOTIFICATIONS_H
 
 #include <list>
+#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 
 #include "src/events/types.h"
 
@@ -59,7 +59,7 @@ public:
 	void cameraMoved();
 
 private:
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 	std::list<Notifyable *> _notifyables;
 

@@ -110,7 +110,7 @@ void EventsManager::reset() {
 	if (!_ready)
 		return;
 
-	Common::StackLock lock(_eventQueueMutex);
+	std::lock_guard<std::recursive_mutex> lock(_eventQueueMutex);
 
 	// Clear the SDL event queue
 	while (SDL_PollEvent(0));
@@ -216,7 +216,7 @@ bool EventsManager::parseITC(const Event &event) {
 void EventsManager::processEvents() {
 	Common::enforceMainThread();
 
-	Common::StackLock lock(_eventQueueMutex);
+	std::lock_guard<std::recursive_mutex> lock(_eventQueueMutex);
 
 	Event event;
 	while (SDL_PollEvent(&event)) {
@@ -245,13 +245,13 @@ void EventsManager::processEvents() {
 }
 
 void EventsManager::flushEvents() {
-	Common::StackLock lock(_eventQueueMutex);
+	std::lock_guard<std::recursive_mutex> lock(_eventQueueMutex);
 
 	_eventQueue.clear();
 }
 
 bool EventsManager::pollEvent(Event &event) {
-	Common::StackLock lock(_eventQueueMutex);
+	std::lock_guard<std::recursive_mutex> lock(_eventQueueMutex);
 
 	if (_eventQueue.empty())
 		return false;
@@ -264,11 +264,12 @@ bool EventsManager::pollEvent(Event &event) {
 }
 
 bool EventsManager::pushEvent(Event &event) {
-	if (_queueSize >= 50)
-		if (!Common::isMainThread())
-			_queueProcessed.wait(100);
+	if ((_queueSize >= 50) && !Common::isMainThread()) {
+		std::unique_lock<std::recursive_mutex> lock(_queueProcessedMutex);
+		_queueProcessed.wait_for(lock, std::chrono::duration<int, std::milli>(100));
+	}
 
-	Common::StackLock lock(_eventQueueMutex);
+	std::lock_guard<std::recursive_mutex> lock(_eventQueueMutex);
 
 	int result = SDL_PushEvent(&event);
 	_queueSize++;
@@ -349,7 +350,7 @@ void EventsManager::runMainLoop() {
 		// (Pre)Process all events
 		processEvents();
 
-		_queueProcessed.signal();
+		_queueProcessed.notify_one();
 
 		// Render a frame
 		GfxMan.renderScene();

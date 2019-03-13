@@ -26,11 +26,11 @@
 #define ENGINES_NWN_GUI_WIDGETS_TOOLTIP_H
 
 #include <vector>
+#include <mutex>
 
 #include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
-#include "src/common/mutex.h"
 
 #include "src/graphics/aurora/types.h"
 
@@ -139,7 +139,7 @@ private:
 	bool _needCamera;
 	bool _detectEdge;
 
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 
 	void getSize(float &width, float &height);

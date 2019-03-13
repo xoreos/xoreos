@@ -26,11 +26,11 @@
 #define GRAPHICS_AURORA_CURSORMAN_H
 
 #include <map>
+#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 
 namespace Graphics {
 
@@ -113,7 +113,7 @@ private:
 
 	Cursor *_currentCursor;
 
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 
 	Cursor *find(Common::UString &group, Common::UString &state, bool def = false) const;

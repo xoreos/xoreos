@@ -27,12 +27,12 @@
 
 #include <list>
 #include <map>
+#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
 #include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
-#include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/locstring.h"
@@ -149,7 +149,7 @@ private:
 
 	std::list<Events::Event> _eventQueue; ///< The event queue.
 
-	Common::Mutex _mutex; ///< Mutex securing access to the area.
+	std::recursive_mutex _mutex; ///< Mutex securing access to the area.
 
 
 	// Loading helpers

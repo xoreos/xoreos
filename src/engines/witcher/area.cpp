@@ -388,7 +388,7 @@ void Area::checkActive(int x, int y) {
 	if (_highlightAll)
 		return;
 
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if ((x < 0) || (y < 0))
 		CursorMan.getPosition(x, y);
@@ -397,7 +397,7 @@ void Area::checkActive(int x, int y) {
 }
 
 void Area::click(int x, int y) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	Engines::Witcher::Object *o = getObjectAt(x, y);
 	if (!o)

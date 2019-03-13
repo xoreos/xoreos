@@ -50,12 +50,12 @@
 #include <cassert>
 #include <cstring>
 #include <queue>
+#include <mutex>
 
 #include <vorbis/vorbisfile.h>
 
 #include "src/common/scopedptr.h"
 #include "src/common/disposableptr.h"
-#include "src/common/mutex.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 
@@ -283,7 +283,7 @@ private:
 	ogg_packet _packet;
 	bool _init;
 
-	mutable Common::Mutex _mutex;
+	mutable std::recursive_mutex _mutex;
 	std::queue<Common::SeekableReadStream *> _queue;
 	bool _finished;
 	bool _hasData;
@@ -441,7 +441,7 @@ size_t PacketizedVorbisStream::readBuffer(int16 *buffer, const size_t numSamples
 		int decSamples = vorbis_synthesis_pcmout(&_dspState, &pcm);
 		if (decSamples <= 0) {
 			// No more samples
-			Common::StackLock lock(_mutex);
+			std::lock_guard<std::recursive_mutex> lock(_mutex);
 			_hasData = false;
 
 			// If the queue is empty, we can do nothing else
@@ -488,28 +488,28 @@ size_t PacketizedVorbisStream::readBuffer(int16 *buffer, const size_t numSamples
 }
 
 bool PacketizedVorbisStream::endOfData() const {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	return !_hasData && _queue.empty();
 }
 
 bool PacketizedVorbisStream::endOfStream() const {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	return _finished && endOfData();
 }
 
 void PacketizedVorbisStream::queuePacket(Common::SeekableReadStream *packet) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	assert(!_finished);
 	_queue.push(packet);
 }
 
 void PacketizedVorbisStream::finish() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	_finished = true;
 }
 
 bool PacketizedVorbisStream::isFinished() const {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	return _finished;
 }
 
