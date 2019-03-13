@@ -57,6 +57,7 @@ private:
 		std::list<ModelNode_KotOR *> nodes;
 
 		Common::UString texture;
+		std::vector<Common::UString> textures;
 
 		bool kotor2;
 		bool xbox;
@@ -68,7 +69,9 @@ private:
 
 		uint32 mdxStructSize;
 		uint16 vertexCount;
+		uint16 textureCount;
 		uint32 offNodeData;
+		uint32 offVertsCoords;
 		uint16 flags;
 
 		ParserContext(const Common::UString &name, const Common::UString &t, bool k2, bool x);
@@ -117,6 +120,7 @@ private:
 	                               uint16 dataIndex, std::vector<float> &dataFloat, std::vector<uint32> &dataInt);
 	void readMesh(Model_KotOR::ParserContext &ctx);
 	void readSkin(Model_KotOR::ParserContext &ctx);
+	void readSaber(Model_KotOR::ParserContext &ctx);
 };
 
 } // End of namespace Aurora

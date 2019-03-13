@@ -63,6 +63,7 @@ static const int kNodeFlagHasSkin      = 0x0040;
 static const int kNodeFlagHasAnim      = 0x0080;
 static const int kNodeFlagHasDangly    = 0x0100;
 static const int kNodeFlagHasAABB      = 0x0200;
+static const int kNodeFlagHasSaber     = 0x0800;
 
 static const uint32 kControllerTypePosition             = 8;
 static const uint32 kControllerTypeOrientation          = 20;
@@ -489,7 +490,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	readNodeControllers(ctx, ctx.offModelData + controllerKeyOffset,
 	                    controllerKeyCount, controllerDataFloat, controllerDataInt);
 
-	if ((ctx.flags & 0xFC00) != 0)
+	if ((ctx.flags & 0xF400) != 0)
 		throw Common::Exception("Unknown node flags %04X", ctx.flags);
 
 	if (ctx.flags & kNodeFlagHasLight) {
@@ -529,6 +530,10 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	if (ctx.flags & kNodeFlagHasAABB) {
 		// TODO: AABB
 		ctx.mdl->skip(0x4);
+	}
+
+	if (ctx.flags & kNodeFlagHasSaber) {
+		readSaber(ctx);
 	}
 
 	for (std::vector<uint32>::const_iterator child = children.begin(); child != children.end(); ++child) {
@@ -776,10 +781,9 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	_mesh->hasTransparencyHint = true;
 	_mesh->transparencyHint    = (transparencyHint != 0);
 
-	std::vector<Common::UString> textures;
-
-	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32));
-	textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32));
+	ctx.textures.clear();
+	ctx.textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32));
+	ctx.textures.push_back(Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32));
 
 	ctx.mdl->skip(24); // Unknown
 
@@ -810,7 +814,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 	ctx.mdl->skip(24); // Unknown
 
 	ctx.vertexCount  = ctx.mdl->readUint16LE();
-	uint16 textureCount = ctx.mdl->readUint16LE();
+	ctx.textureCount = ctx.mdl->readUint16LE();
 
 	ctx.mdl->skip(2);
 
@@ -825,8 +829,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 		ctx.mdl->skip(8);
 
 	ctx.offNodeData = ctx.mdl->readUint32LE();
-
-	ctx.mdl->skip(4);
+	ctx.offVertsCoords = ctx.mdl->readUint32LE();
 
 	if ((offOffVertsCount < 1) || (ctx.vertexCount == 0) || (facesCount == 0))
 		return;
@@ -839,16 +842,16 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 
 	uint32 endPos = ctx.mdl->pos();
 
-	if (textureCount > 2) {
-		warning("Model_KotOR::readMesh(): textureCount > 2 (%d)", textureCount);
-		textureCount = 2;
+	if (ctx.textureCount > 2) {
+		warning("Model_KotOR::readMesh(): textureCount > 2 (%d)", ctx.textureCount);
+		ctx.textureCount = 2;
 	}
 
-	if ((textureCount > 0) && !ctx.texture.empty())
-		textures[0] = ctx.texture;
+	if ((ctx.textureCount > 0) && !ctx.texture.empty())
+		ctx.textures[0] = ctx.texture;
 
-	textures.resize(textureCount);
-	loadTextures(textures);
+	ctx.textures.resize(ctx.textureCount);
+	loadTextures(ctx.textures);
 
 
 	// Read vertices (interleaved)
@@ -863,7 +866,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 		vertexDecl.push_back(VertexAttrib(VBONEINDICES, 4, GL_FLOAT));
 	}
 
-	for (uint t = 0; t < textureCount; t++)
+	for (uint t = 0; t < ctx.textureCount; t++)
 		vertexDecl.push_back(VertexAttrib(VTCOORD + t, 2, GL_FLOAT));
 
 	_mesh->data->rawMesh->getVertexBuffer()->setVertexDeclInterleave(ctx.vertexCount, vertexDecl);
@@ -894,7 +897,7 @@ void ModelNode_KotOR::readMesh(Model_KotOR::ParserContext &ctx) {
 			v += 8;
 
 		// TexCoords
-		for (uint16 t = 0; t < textureCount; t++) {
+		for (uint16 t = 0; t < ctx.textureCount; t++) {
 			if (offUV[t] != 0xFFFFFFFF) {
 				ctx.mdx->seek(ctx.offNodeData + i * ctx.mdxStructSize + offUV[t]);
 				*v++ = ctx.mdx->readIEEEFloatLE();
@@ -990,6 +993,125 @@ void ModelNode_KotOR::readSkin(Model_KotOR::ParserContext &ctx) {
 		// Skip textures coordinates
 		vertexData += 2 * _mesh->data->textures.size();
 	}
+}
+
+void ModelNode_KotOR::readSaber(Model_KotOR::ParserContext &ctx) {
+	if (ctx.textureCount == 0)
+		return;
+
+	// Load special saber data
+
+	uint32 offVertsCoords2 = ctx.mdl->readUint32LE();
+	uint32 offTexCoords = ctx.mdl->readUint32LE();
+	uint32 offSaberData = ctx.mdl->readUint32LE();
+
+	std::vector<glm::vec3> saberVerts;
+	saberVerts.resize(ctx.vertexCount);
+
+	ctx.mdl->seek(ctx.offModelData + ctx.offVertsCoords);
+
+	for (int i = 0; i < static_cast<int>(ctx.vertexCount); ++i) {
+		float x = ctx.mdl->readIEEEFloatLE();
+		float y = ctx.mdl->readIEEEFloatLE();
+		float z = ctx.mdl->readIEEEFloatLE();
+		saberVerts[i] = glm::vec3(x, y, z);
+	}
+
+	std::vector<glm::vec2> saberTexCoords;
+	saberTexCoords.resize(ctx.vertexCount);
+
+	ctx.mdl->seek(ctx.offModelData + offTexCoords);
+
+	for (int i = 0; i < static_cast<int>(ctx.vertexCount); ++i) {
+		float u = ctx.mdl->readIEEEFloatLE();
+		float v = ctx.mdl->readIEEEFloatLE();
+		saberTexCoords[i] = glm::vec2(u, v);
+	}
+
+	// Prepare our data structures
+
+	_render = _mesh->render;
+	_mesh->data = new MeshData();
+	_mesh->data->envMapMode = kModeEnvironmentBlendedOver;
+	_mesh->data->rawMesh = new Graphics::Mesh::Mesh();
+
+	loadTextures(ctx.textures);
+
+	VertexDecl vertexDecl;
+	vertexDecl.push_back(VertexAttrib(VPOSITION, 3, GL_FLOAT));
+	vertexDecl.push_back(VertexAttrib(VTCOORD + 0, 2, GL_FLOAT));
+
+	VertexBuffer *vertexBuffer = _mesh->data->rawMesh->getVertexBuffer();
+	vertexBuffer->setVertexDeclLinear(16, vertexDecl);
+	float *vertexData = static_cast<float *>(vertexBuffer->getData());
+
+	std::vector<float> &initialVertexCoords = _mesh->data->initialVertexCoords;
+	initialVertexCoords.resize(16 * 3);
+	std::fill(initialVertexCoords.begin(), initialVertexCoords.end(), 0.0f);
+	float *initialVertexData = initialVertexCoords.data();
+
+	// Convert saber data as seen in MDLops
+
+	glm::vec3 bladeWidth = saberVerts[4] - saberVerts[0];
+
+	for (int i = 0; i < 4; ++i) {
+		*vertexData++ = saberVerts[i].x;
+		*vertexData++ = saberVerts[i].y;
+		*vertexData++ = saberVerts[i].z;
+	}
+
+	for (int i = 0; i < 4; ++i) {
+		glm::vec3 temp(saberVerts[i] + bladeWidth);
+		*vertexData++ = temp.x;
+		*vertexData++ = temp.y;
+		*vertexData++ = temp.z;
+	}
+
+	for (int i = 88; i < 92; ++i) {
+		*vertexData++ = saberVerts[i].x;
+		*vertexData++ = saberVerts[i].y;
+		*vertexData++ = saberVerts[i].z;
+	}
+
+	for (int i = 88; i < 92; ++i) {
+		glm::vec3 temp(saberVerts[i] + bladeWidth);
+		*vertexData++ = temp.x;
+		*vertexData++ = temp.y;
+		*vertexData++ = temp.z;
+	}
+
+	std::memcpy(initialVertexData, vertexBuffer->getData(), 16 * 3 * sizeof(float));
+
+	for (int i = 0; i < 8; ++i) {
+		*vertexData++ = saberTexCoords[i].x;
+		*vertexData++ = saberTexCoords[i].y;
+	}
+
+	for (int i = 88; i < 96; ++i) {
+		*vertexData++ = saberTexCoords[i].x;
+		*vertexData++ = saberTexCoords[i].y;
+	}
+
+	IndexBuffer *indexBuffer = _mesh->data->rawMesh->getIndexBuffer();
+	indexBuffer->setSize(96, sizeof(uint16), GL_UNSIGNED_SHORT);
+	uint16 *indexData = static_cast<uint16 *>(indexBuffer->getData());
+
+	static uint16 indices[] = {
+		5, 4, 0, 1, 5, 4, 0, 0,
+		0, 1, 5, 1, 0, 1, 5, 0,
+		13, 8, 12, 1, 13, 8, 12, 0,
+		8, 13, 9, 1, 8, 13, 9, 0,
+		6, 5, 1, 1, 6, 5, 1, 0,
+		1, 2, 6, 1, 1, 2, 6, 0,
+		10, 9, 13, 1, 10, 9, 13, 0,
+		13, 14, 10, 1, 13, 14, 10, 0,
+		3, 6, 2, 1, 3, 6, 2, 0,
+		6, 3, 7, 1, 6, 3, 7, 0,
+		15, 11, 14, 1, 15, 11, 14, 0,
+		10, 14, 11, 1, 10, 14, 11, 0
+	};
+
+	std::memcpy(indexData, indices, 96 * sizeof(uint16));
 }
 
 } // End of namespace Aurora
