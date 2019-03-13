@@ -765,7 +765,7 @@ void GraphicsManager::recalculateObjectDistances() {
 }
 
 uint32 GraphicsManager::createRenderableID() {
-	Common::StackLock lock(_renderableIDMutex);
+	std::lock_guard<std::recursive_mutex> lock(_renderableIDMutex);
 
 	return ++_renderableID;
 }
@@ -774,7 +774,7 @@ void GraphicsManager::abandon(TextureID *ids, uint32 count) {
 	if (count == 0)
 		return;
 
-	Common::StackLock lock(_abandonMutex);
+	std::lock_guard<std::recursive_mutex> lock(_abandonMutex);
 
 	_abandonTextures.reserve(_abandonTextures.size() + count);
 	while (count-- > 0)
@@ -787,7 +787,7 @@ void GraphicsManager::abandon(ListID ids, uint32 count) {
 	if (count == 0)
 		return;
 
-	Common::StackLock lock(_abandonMutex);
+	std::lock_guard<std::recursive_mutex> lock(_abandonMutex);
 
 	while (count-- > 0)
 		_abandonLists.push_back(ids++);
@@ -1340,7 +1340,7 @@ void GraphicsManager::cleanupAbandoned() {
 	if (!_hasAbandoned)
 		return;
 
-	Common::StackLock lock(_abandonMutex);
+	std::lock_guard<std::recursive_mutex> lock(_abandonMutex);
 
 	if (!_abandonTextures.empty())
 		glDeleteTextures(_abandonTextures.size(), &_abandonTextures[0]);

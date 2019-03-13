@@ -41,7 +41,7 @@ ObjectContainer::~ObjectContainer() {
 }
 
 void ObjectContainer::clearObjects() {
-	Common::StackLock stackLock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_objects.clear();
 	_objectsByID.clear();
@@ -49,7 +49,7 @@ void ObjectContainer::clearObjects() {
 }
 
 void ObjectContainer::addObject(Object &object) {
-	Common::StackLock stackLock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	assert(std::find(_objects.begin(), _objects.end(), &object) == _objects.end());
 
@@ -59,7 +59,7 @@ void ObjectContainer::addObject(Object &object) {
 }
 
 void ObjectContainer::removeObject(Object &object) {
-	Common::StackLock stackLock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_objects.remove(&object);
 	_objectsByID.erase(object.getID());

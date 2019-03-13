@@ -26,10 +26,10 @@
 #define GRAPHICS_QUEUEMAN_H
 
 #include <list>
+#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 
 #include "src/graphics/types.h"
 
@@ -56,7 +56,7 @@ public:
 	void clearAllQueues();
 
 private:
-	Common::Mutex _queueMutex[kQueueMAX];
+	std::recursive_mutex _queueMutex[kQueueMAX];
 	std::list<Queueable *> _queue[kQueueMAX];
 
 	std::list<Queueable *>::iterator addToQueue(QueueType queue, Queueable &q);

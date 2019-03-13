@@ -27,10 +27,10 @@
 
 #include <set>
 #include <list>
+#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/aurora/texturehandle.h"
@@ -108,7 +108,7 @@ private:
 
 	std::set<Common::UString> _bogusTextures;
 
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 	bool _recordNewTextures;
 	std::list<Common::UString> _newTextureNames;

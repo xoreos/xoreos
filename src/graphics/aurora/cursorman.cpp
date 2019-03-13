@@ -62,7 +62,7 @@ const Common::UString &CursorManager::getCurrentState() const {
 }
 
 void CursorManager::clear() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	reset();
 
@@ -82,7 +82,7 @@ void CursorManager::clear() {
 bool CursorManager::add(const Common::UString &name, const Common::UString &group,
                         const Common::UString &state, int hotspotX, int hotspotY) {
 
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	try {
 		Common::ScopedPtr<Cursor> cursor(new Cursor(name, hotspotX, hotspotY));
@@ -113,14 +113,14 @@ bool CursorManager::add(const Common::UString &name, const Common::UString &grou
 }
 
 void CursorManager::setDefault(const Common::UString &group, const Common::UString &state) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_defaultGroup = group;
 	_defaultState = state;
 }
 
 void CursorManager::reset() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_currentGroup.clear();
 	_currentState.clear();
@@ -131,25 +131,25 @@ void CursorManager::reset() {
 }
 
 void CursorManager::set() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	set(_defaultGroup, _defaultState);
 }
 
 void CursorManager::setGroup(const Common::UString &group) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	set(group, _defaultState);
 }
 
 void CursorManager::setState(const Common::UString &state) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	set(_defaultGroup, state);
 }
 
 void CursorManager::set(const Common::UString &group, const Common::UString &state) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_currentGroup = group;
 	_currentState = state;
@@ -184,7 +184,7 @@ void CursorManager::fromScreenCoordinates(float sX, float sY, int &x, int &y) {
 }
 
 void CursorManager::hideCursor() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_hidden = true;
 
@@ -192,7 +192,7 @@ void CursorManager::hideCursor() {
 }
 
 void CursorManager::showCursor() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_hidden = false;
 

@@ -63,10 +63,10 @@
 
 #include <vector>
 #include <map>
+#include <mutex>
 
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
-#include "src/common/mutex.h"
 
 #include "src/graphics/texture.h"
 
@@ -283,8 +283,8 @@ private:
 	std::map<Common::UString, Shader::ShaderObject *> _shaderObjectMap;
 	std::vector<Shader::ShaderProgram *> _shaderProgramArray;
 
-	Common::Mutex _shaderMutex;
-	Common::Mutex _programMutex;
+	std::recursive_mutex _shaderMutex;
+	std::recursive_mutex _programMutex;
 };
 
 } // End of namespace Shader

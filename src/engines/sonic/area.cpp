@@ -322,7 +322,7 @@ void Area::checkActive() {
 	if (_highlightAll)
 		return;
 
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	int x, y;
 	CursorMan.getPosition(x, y);

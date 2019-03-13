@@ -28,7 +28,6 @@
 #include <vector>
 
 #include "src/common/ustring.h"
-#include "src/common/mutex.h"
 
 #include "src/graphics/graphics.h"
 #include "src/graphics/glcontainer.h"

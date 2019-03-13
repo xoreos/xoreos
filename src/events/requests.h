@@ -105,7 +105,7 @@ public:
 	static void destroy();
 
 private:
-	Common::Mutex _mutexUse; ///< The mutex locking the use of the manager.
+	std::recursive_mutex _mutexUse; ///< The mutex locking the use of the manager.
 
 	RequestList _requests; ///< All currently active requests.
 

@@ -50,7 +50,7 @@ void TimerManager::init() {
 }
 
 void TimerManager::addTimer(uint32 interval, TimerHandle &handle, const TimerFunc &func) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	removeTimer(handle);
 
@@ -75,7 +75,7 @@ void TimerManager::addTimer(uint32 interval, TimerHandle &handle, const TimerFun
 }
 
 void TimerManager::removeTimer(TimerHandle &handle) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (handle._empty)
 		return;

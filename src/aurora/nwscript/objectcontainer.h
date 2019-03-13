@@ -27,8 +27,7 @@
 
 #include <list>
 #include <map>
-
-#include "src/common/mutex.h"
+#include <mutex>
 
 #include "src/aurora/nwscript/object.h"
 
@@ -133,7 +132,7 @@ private:
 	typedef SearchList::type ObjectList;
 	typedef SearchTagMap::type ObjectTagMap;
 
-	Common::Mutex _mutex;
+	std::recursive_mutex _mutex;
 
 	ObjectList   _objects;
 	ObjectIDMap  _objectsByID;

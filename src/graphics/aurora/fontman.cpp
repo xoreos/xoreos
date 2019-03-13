@@ -48,7 +48,7 @@ FontManager::~FontManager() {
 }
 
 void FontManager::clear() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_fonts.clear();
 
@@ -57,19 +57,19 @@ void FontManager::clear() {
 }
 
 void FontManager::setFormat(FontFormat format) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_format = format;
 }
 
 void FontManager::addAlias(const Common::UString &alias, const Common::UString &realName) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	_aliases[alias] = realName;
 }
 
 bool FontManager::hasFont(const Common::UString &name, int height) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	FontMap::const_iterator font = _fonts.find(getIndexName(name, height));
 
@@ -77,7 +77,7 @@ bool FontManager::hasFont(const Common::UString &name, int height) {
 }
 
 FontHandle FontManager::add(Font *font, const Common::UString &name) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	Common::ScopedPtr<ManagedFont> managedFont(new ManagedFont(font));
 
@@ -96,7 +96,7 @@ FontHandle FontManager::get(const Common::UString &name, int height) {
 }
 
 FontHandle FontManager::get(FontFormat format, const Common::UString &name, int height) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	Common::UString aliasName = getAliasName(name);
 	Common::UString indexName = getIndexName(name, height);
@@ -116,7 +116,7 @@ FontHandle FontManager::get(FontFormat format, const Common::UString &name, int 
 }
 
 FontHandle FontManager::getIfExist(const Common::UString &name, int height) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	FontMap::iterator font = _fonts.find(getIndexName(name, height));
 	if (font != _fonts.end())
@@ -145,7 +145,7 @@ Common::UString FontManager::getIndexName(Common::UString name, int height) {
 }
 
 void FontManager::assign(FontHandle &font, const FontHandle &from) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	font._empty = from._empty;
 	font._it    = from._it;
@@ -155,7 +155,7 @@ void FontManager::assign(FontHandle &font, const FontHandle &from) {
 }
 
 void FontManager::release(FontHandle &font) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (!font._empty && (font._it != _fonts.end()))
 		if (--font._it->second->referenceCount == 0)

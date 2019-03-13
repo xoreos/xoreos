@@ -50,7 +50,7 @@ void QueueManager::unlockQueue(QueueType queue) {
 }
 
 bool QueueManager::isQueueEmpty(QueueType queue) {
-	Common::StackLock lock(_queueMutex[queue]);
+	std::lock_guard<std::recursive_mutex> lock(_queueMutex[queue]);
 
 	return _queue[queue].empty();
 }

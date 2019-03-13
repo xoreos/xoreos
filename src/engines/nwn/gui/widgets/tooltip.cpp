@@ -171,7 +171,7 @@ void Tooltip::updatePosition() {
 	if (_empty)
 		return;
 
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	float pX, pY, pZ;
 	if (!getParentPosition(pX, pY, pZ)) {
@@ -273,7 +273,7 @@ void Tooltip::show(uint32 delay, uint32 timeOut) {
 }
 
 void Tooltip::hide() {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (!_visible)
 		return;
@@ -454,13 +454,13 @@ void Tooltip::doHide() {
 }
 
 uint32 Tooltip::doShow(uint32 UNUSED(oldInterval)) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	doShow();
 	return 0;
 }
 
 uint32 Tooltip::doHide(uint32 UNUSED(oldInterval)) {
-	Common::StackLock lock(_mutex);
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	if (!_visible)
 		return 0;

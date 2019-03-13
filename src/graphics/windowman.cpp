@@ -379,7 +379,7 @@ void WindowManager::handleCursorSwitch() {
 	if (_cursorState == kCursorStateStay)
 		return;
 
-	Common::StackLock lock(_cursorMutex);
+	std::lock_guard<std::recursive_mutex> lock(_cursorMutex);
 
 	if      (_cursorState == kCursorStateSwitchOn)
 		SDL_ShowCursor(SDL_ENABLE);
@@ -394,7 +394,7 @@ void WindowManager::toggleMouseGrab() {
 }
 
 void WindowManager::showCursor(bool show) {
-	Common::StackLock lock(_cursorMutex);
+	std::lock_guard<std::recursive_mutex> lock(_cursorMutex);
 
 	_cursorState = show ? kCursorStateSwitchOn : kCursorStateSwitchOff;
 }
