@@ -65,9 +65,9 @@ void SkeletalAnimation::updateModel(Model *model, float time) {
 		const std::vector<float> &vertsIn = n->getInitialVertexCoords();
 		const std::vector<float> &boneIndices = n->getBoneIndices();
 		const std::vector<float> &boneWeights = n->getBoneWeights();
-		std::vector<float> &vertsOut = n->getVertexCoordsBuffer();
+		VertexBuffer *vertexBuffer = n->getMesh()->data->rawMesh->getVertexBuffer();
 
-		transform(n, vertsIn, boneIndices, boneWeights, vertsOut);
+		transform(n, vertsIn, boneIndices, boneWeights, vertexBuffer);
 
 		n->notifyVertexCoordsBuffered();
 	}
@@ -97,35 +97,45 @@ void SkeletalAnimation::transform(ModelNode *node,
                                   const std::vector<float> &vertsIn,
                                   const std::vector<float> &boneIndices,
                                   const std::vector<float> &boneWeights,
-                                  std::vector<float> &vertsOut) {
+                                  VertexBuffer *vertexBuffer) {
 
 	const int vertexCount = static_cast<int>(vertsIn.size()) / 3;
-	vertsOut.resize(3 * vertexCount);
-	std::fill(vertsOut.begin(), vertsOut.end(), 0.0f);
+	const float *vertsInData = vertsIn.data();
+
+	const float *boneIndicesData = boneIndices.data();
+	const float *boneWeightsData = boneWeights.data();
+	const int boneStride = _bonesPerVertex;
+
+	float *bufferData = static_cast<float *>(vertexBuffer->getData());
+	const int bufferStride = static_cast<int>(vertexBuffer->getVertexDecl()[0].stride) / sizeof(float);
 
 	for (int i = 0; i < vertexCount; ++i) {
-		const int vertexOffset = i * 3;
-		const int boneOffset = i * _bonesPerVertex;
-		const float *vertsInData = vertsIn.data() + vertexOffset;
-		float *vertsOutData = vertsOut.data() + vertexOffset;
+		bufferData[0] = 0.0f;
+		bufferData[1] = 0.0f;
+		bufferData[2] = 0.0f;
 
 		for (int j = 0; j < _bonesPerVertex; ++j) {
-			const int boneIndex = static_cast<int>(boneIndices[boneOffset + j]);
+			const int boneIndex = static_cast<int>(boneIndicesData[j]);
 			if (boneIndex == -1)
 				continue;
 
 			const glm::mat4 &boneTransform = node->getBoneNode(boneIndex)->getBoneTransform();
-			const float boneWeight = boneWeights[boneOffset + j];
+			const float boneWeight = boneWeightsData[j];
 			float v0[3], v1[3];
 
 			multiply(vertsInData, node->getAbsoluteBaseTransform(), v0);
 			multiply(v0, boneTransform, v1);
 			multiply(v1, node->getAbsoluteBaseTransformInverse(), v0);
 
-			vertsOutData[0] += v0[0] * boneWeight;
-			vertsOutData[1] += v0[1] * boneWeight;
-			vertsOutData[2] += v0[2] * boneWeight;
+			bufferData[0] += v0[0] * boneWeight;
+			bufferData[1] += v0[1] * boneWeight;
+			bufferData[2] += v0[2] * boneWeight;
 		}
+
+		vertsInData += 3;
+		boneIndicesData += boneStride;
+		boneWeightsData += boneStride;
+		bufferData += bufferStride;
 	}
 }
 

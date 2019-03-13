@@ -83,21 +83,20 @@ ModelNode::MaterialConfiguration::MaterialConfiguration() :
 		materialFlags(0) {
 }
 
-ModelNode::ModelNode(Model &model)
-		: _model(&model),
-		  _parent(0),
-		  _attachedModel(0),
-		  _level(0),
-		  _alpha(1.0f),
-		  _render(false),
-		  _dirtyRender(true),
-		  _dirtyMesh(false),
-		  _mesh(0),
-		  _rootStateNode(0),
-		  _nodeNumber(0),
-		  _positionBuffered(false),
-		  _orientationBuffered(false),
-		  _vertexCoordsBuffered(false) {
+ModelNode::ModelNode(Model &model) :
+		_model(&model),
+		_parent(0),
+		_attachedModel(0),
+		_level(0),
+		_alpha(1.0f),
+		_render(false),
+		_dirtyRender(true),
+		_mesh(0),
+		_rootStateNode(0),
+		_nodeNumber(0),
+		_positionBuffered(false),
+		_orientationBuffered(false),
+		_vertexCoordsBuffered(false) {
 
 	_position[0] = 0.0f; _position[1] = 0.0f; _position[2] = 0.0f;
 	_rotation[0] = 0.0f; _rotation[1] = 0.0f; _rotation[2] = 0.0f;
@@ -799,11 +798,6 @@ void ModelNode::render(RenderPass pass) {
 		}
 	}
 
-	if (_dirtyMesh) {
-		_mesh->data->rawMesh->getVertexBuffer()->updateGL();
-		_dirtyMesh = false;
-	}
-
 	// Render the node's geometry
 
 	bool isTransparent = mesh && mesh->isTransparent;
@@ -1010,21 +1004,9 @@ void ModelNode::flushBuffers() {
 		_orientationBuffered = false;
 	}
 
-	if (_vertexCoordsBuffered && !GfxMan.isRendererExperimental()) {
-		const float *vcb = &_vertexCoordsBuffer[0];
-		VertexBuffer &vb = *(_mesh->data->rawMesh->getVertexBuffer());
-		int vertexCount = vb.getCount();
-		int stride = vb.getSize() / sizeof(float);
-		float *v = reinterpret_cast<float *>(vb.getData());
-		for (int i = 0; i < vertexCount; ++i) {
-			v[0] = vcb[0];
-			v[1] = vcb[1];
-			v[2] = vcb[2];
-			v += stride;
-			vcb += 3;
-		}
+	if (_vertexCoordsBuffered) {
+		_mesh->data->rawMesh->getVertexBuffer()->updateGL();
 		_vertexCoordsBuffered = false;
-		_dirtyMesh = true;
 	}
 }
 
@@ -1050,10 +1032,6 @@ const std::vector<float> &ModelNode::getBoneIndices() const {
 
 const std::vector<float> &ModelNode::getBoneWeights() const {
 	return _mesh->skin->boneWeights;
-}
-
-std::vector<float> &ModelNode::getVertexCoordsBuffer() {
-	return _vertexCoordsBuffer;
 }
 
 bool ModelNode::hasSkinNode() const {

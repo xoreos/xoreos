@@ -125,7 +125,6 @@ public:
 	const std::vector<float> &getInitialVertexCoords() const;
 	const std::vector<float> &getBoneIndices() const;
 	const std::vector<float> &getBoneWeights() const;
-	std::vector<float> &getVertexCoordsBuffer();
 
 	bool hasSkinNode() const;
 	void notifyVertexCoordsBuffered();
@@ -284,7 +283,6 @@ protected:
 
 	bool _render; ///< Render the node?
 	bool _dirtyRender; ///< Rendering information needs updating.
-	bool _dirtyMesh;  ///< Mesh data needs updating.
 
 	Mesh *_mesh;
 	ModelNode *_rootStateNode;
@@ -314,7 +312,6 @@ protected:
 	bool _positionBuffered;
 	float _orientationBuffer[4];
 	bool _orientationBuffered;
-	std::vector<float> _vertexCoordsBuffer;
 	bool _vertexCoordsBuffered;
 
 

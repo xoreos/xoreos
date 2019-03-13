@@ -36,6 +36,8 @@
 
 namespace Graphics {
 
+class VertexBuffer;
+
 namespace Aurora {
 
 class SkeletalAnimation : public Animation {
@@ -55,17 +57,17 @@ private:
 
 	/** Transform vertex coordinates.
 	 *
-	 *  @param node        Model node whose vertices are being transformed.
-	 *  @param vertsIn     Input array of vertex coordinates.
-	 *  @param boneIndices Array of bone indices.
-	 *  @param boneWeights Array of bone weights.
-	 *  @param vertsOut    Output array of vertex coordinates.
+	 *  @param node         Model node whose vertices are being transformed.
+	 *  @param vertsIn      Input array of vertex coordinates.
+	 *  @param boneIndices  Array of bone indices.
+	 *  @param boneWeights  Array of bone weights.
+	 *  @param vertexBuffer Vertex buffer to receive transformed vertex coordinates.
 	 */
 	void transform(ModelNode *node,
 	               const std::vector<float> &vertsIn,
 	               const std::vector<float> &boneIndices,
 	               const std::vector<float> &boneWeights,
-	               std::vector<float> &vertsOut);
+	               VertexBuffer *vertexBuffer);
 
 	/** Multiply a specified vector by a specified matrix. */
 	static void multiply(const float *v, const glm::mat4 &m, float *vOut);
