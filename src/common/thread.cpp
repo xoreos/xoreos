@@ -44,7 +44,7 @@ Thread::~Thread() {
 }
 
 bool Thread::createThread(const UString &name) {
-	if (_threadRunning.load(boost::memory_order_relaxed)) {
+	if (_threadRunning.load(std::memory_order_relaxed)) {
 		if (_name == name) {
 			warning("Thread::createThread(): Thread \"%s\" already running", _name.c_str());
 			return true;
@@ -67,7 +67,7 @@ bool Thread::createThread(const UString &name) {
 }
 
 bool Thread::destroyThread() {
-	if (!_threadRunning.load(boost::memory_order_seq_cst)) {
+	if (!_threadRunning.load(std::memory_order_seq_cst)) {
 		if (_thread.joinable())
 			_thread.join();
 
@@ -75,15 +75,15 @@ bool Thread::destroyThread() {
 	}
 
 	// Signal the thread that it should die
-	_killThread.store(true, boost::memory_order_seq_cst);
+	_killThread.store(true, std::memory_order_seq_cst);
 
 	// Wait a whole second for the thread to finish on its own
-	for (int i = 0; _threadRunning.load(boost::memory_order_seq_cst) && (i < 100); i++)
+	for (int i = 0; _threadRunning.load(std::memory_order_seq_cst) && (i < 100); i++)
 		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 
-	_killThread.store(false, boost::memory_order_seq_cst);
+	_killThread.store(false, std::memory_order_seq_cst);
 
-	const bool stillRunning = _threadRunning.load(boost::memory_order_seq_cst);
+	const bool stillRunning = _threadRunning.load(std::memory_order_seq_cst);
 
 	/* Clean up the thread if it's not still running. If the thread is still running,
 	 * this would block, potentially indefinitely, so we leak instead in that case.
@@ -107,13 +107,13 @@ int Thread::threadHelper(void *obj) {
 	Thread *thread = static_cast<Thread *>(obj);
 
 	// The thread is running.
-	thread->_threadRunning.store(true, boost::memory_order_relaxed);
+	thread->_threadRunning.store(true, std::memory_order_relaxed);
 
 	// Run the thread
 	thread->threadMethod();
 
 	// Thread thread is not running.
-	thread->_threadRunning.store(false, boost::memory_order_relaxed);
+	thread->_threadRunning.store(false, std::memory_order_relaxed);
 
 	return 0;
 }

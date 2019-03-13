@@ -25,10 +25,9 @@
 #ifndef GRAPHICS_GRAPHICS_H
 #define GRAPHICS_GRAPHICS_H
 
-#include "src/common/atomic.h"
-
 #include <vector>
 #include <list>
+#include <atomic>
 
 #include "external/glm/mat4x4.hpp"
 
@@ -230,8 +229,8 @@ private:
 	glm::mat4 _modelview;      ///< Our base modelview matrix (i.e camera view).
 	glm::mat4 _modelviewInv;   ///< The inverse of our modelview matrix.
 
-	boost::atomic<uint32> _frameLock;
-	boost::atomic<bool>   _frameEndSignal;
+	std::atomic<uint32> _frameLock;
+	std::atomic<bool>   _frameEndSignal;
 
 	Cursor     *_cursor;       ///< The current cursor.
 

@@ -26,8 +26,7 @@
 #define GRAPHICS_AURORA_ANIMATIONTHREAD_H
 
 #include <queue>
-
-#include <boost/atomic.hpp>
+#include <atomic>
 
 #include "external/glm/vec3.hpp"
 #include "external/glm/vec4.hpp"
@@ -70,8 +69,8 @@ private:
 	ModelList _models;
 	ModelQueue _registerQueue;
 
-	boost::atomic<bool> _paused;
-	boost::atomic<bool> _flushing;
+	std::atomic<bool> _paused;
+	std::atomic<bool> _flushing;
 
 	Common::Semaphore _modelsSem;   ///< Semaphore protecting access to the model list.
 	Common::Semaphore _registerSem; ///< Semaphore protecting access to the registration queue.

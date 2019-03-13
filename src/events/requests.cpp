@@ -174,7 +174,7 @@ void RequestManager::collectGarbage() {
 }
 
 void RequestManager::threadMethod() {
-	while (!_killThread.load(boost::memory_order_relaxed)) {
+	while (!_killThread.load(std::memory_order_relaxed)) {
 		collectGarbage();
 		EventMan.delay(100);
 	}

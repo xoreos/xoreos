@@ -22,9 +22,8 @@
  *  Utility functions for generating unique IDs.
  */
 
-#include "src/common/atomic.h"
-
 #include <sstream>
+#include <atomic>
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -42,9 +41,9 @@ UString generateIDRandomString() {
 	return ss.str();
 }
 
-static boost::atomic<uint32> idNumber(1);
+static std::atomic<uint32> idNumber(1);
 uint32 generateIDNumber() {
-	return idNumber.fetch_add(1, boost::memory_order_relaxed);
+	return idNumber.fetch_add(1, std::memory_order_relaxed);
 }
 
 static UString uint64ToString(uint64 i) {
@@ -61,9 +60,9 @@ static UString uint64ToString(uint64 i) {
 	return str;
 }
 
-static boost::atomic<uint64> idNumberString(1);
+static std::atomic<uint64> idNumberString(1);
 UString generateIDNumberString() {
-	return uint64ToString(idNumberString.fetch_add(1, boost::memory_order_relaxed));
+	return uint64ToString(idNumberString.fetch_add(1, std::memory_order_relaxed));
 }
 
 } // End of namespace Common

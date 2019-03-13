@@ -33,7 +33,7 @@ BuildRequires:  libogg-devel, SDL2-devel, libxml2-devel, lzma-devel, glew-devel
 BuildRequires:  libtool, gettext
 
 # Boost dependencies.
-BuildRequires:  boost-devel, boost-system, boost-filesystem, boost-atomic,
+BuildRequires:  boost-devel, boost-system, boost-filesystem,
 BuildRequires:  boost-regex, boost-locale, boost-date-time
 
 # Isolated; these are rpmfusion-free dependencies.

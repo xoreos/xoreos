@@ -95,7 +95,7 @@ void AnimationThread::flush() {
 }
 
 void AnimationThread::threadMethod() {
-	while (!_killThread.load(boost::memory_order_relaxed)) {
+	while (!_killThread.load(std::memory_order_relaxed)) {
 		if (EventMan.quitRequested())
 			break;
 

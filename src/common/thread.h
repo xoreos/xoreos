@@ -28,10 +28,10 @@
 #define COMMON_THREAD_H
 
 #include <thread>
+#include <atomic>
 
 #include <boost/noncopyable.hpp>
 
-#include "src/common/atomic.h"
 #include "src/common/ustring.h"
 
 namespace Common {
@@ -46,13 +46,13 @@ public:
 	bool destroyThread();
 
 protected:
-	boost::atomic<bool> _killThread;
+	std::atomic<bool> _killThread;
 
 private:
 	std::thread _thread;
 	Common::UString _name;
 
-	boost::atomic<bool> _threadRunning;
+	std::atomic<bool> _threadRunning;
 
 	virtual void threadMethod() = 0;
 
