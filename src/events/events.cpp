@@ -136,7 +136,7 @@ bool EventsManager::isQueueFull() const {
 
 void EventsManager::delay(uint32 ms) {
 	if (!_quitRequested)
-		SDL_Delay(ms);
+		std::this_thread::sleep_for(std::chrono::duration<uint32, std::milli>(ms));
 }
 
 uint32 EventsManager::getTimestamp() const {

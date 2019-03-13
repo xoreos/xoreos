@@ -25,18 +25,14 @@
  */
 
 #include <cassert>
-
-#include "src/common/fallthrough.h"
-START_IGNORE_IMPLICIT_FALLTHROUGH
-#include <SDL_thread.h>
-STOP_IGNORE_IMPLICIT_FALLTHROUGH
+#include <thread>
 
 #include "src/common/types.h"
 #include "src/common/error.h"
 #include "src/common/threads.h"
 
-static bool   threadsInited = false;
-static SDL_threadID threadsMainID;
+static bool            threadsInited = false;
+static std::thread::id threadsMainID;
 
 namespace Common {
 
@@ -44,7 +40,7 @@ void initThreads() {
 	assert(!threadsInited);
 
 	threadsInited = true;
-	threadsMainID = SDL_ThreadID();
+	threadsMainID = std::this_thread::get_id();
 }
 
 bool initedThreads() {
@@ -54,7 +50,7 @@ bool initedThreads() {
 bool isMainThread() {
 	assert(threadsInited);
 
-	return SDL_ThreadID() == threadsMainID;
+	return std::this_thread::get_id() == threadsMainID;
 }
 
 void enforceMainThread() {

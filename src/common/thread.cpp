@@ -24,6 +24,8 @@
  *  See also threads.h for the global threading system helpers.
  */
 
+#include <system_error>
+
 #include "src/common/fallthrough.h"
 START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_timer.h>
@@ -34,7 +36,7 @@ STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 namespace Common {
 
-Thread::Thread() : _killThread(false), _thread(0), _threadRunning(false) {
+Thread::Thread() : _killThread(false), _threadRunning(false) {
 }
 
 Thread::~Thread() {
@@ -55,16 +57,19 @@ bool Thread::createThread(const UString &name) {
 	_name = name;
 
 	// Try to create the thread
-	if (!(_thread = SDL_CreateThread(threadHelper, _name.empty() ? 0 : _name.c_str(), static_cast<void *>(this))))
+	try {
+		_thread = std::thread(threadHelper, static_cast<void *>(this));
+	} catch (const std::system_error &) {
 		return false;
+	}
 
 	return true;
 }
 
 bool Thread::destroyThread() {
 	if (!_threadRunning.load(boost::memory_order_seq_cst)) {
-		SDL_WaitThread(_thread, 0);
-		_thread = 0;
+		if (_thread.joinable())
+			_thread.join();
 
 		return true;
 	}
@@ -74,7 +79,7 @@ bool Thread::destroyThread() {
 
 	// Wait a whole second for the thread to finish on its own
 	for (int i = 0; _threadRunning.load(boost::memory_order_seq_cst) && (i < 100); i++)
-		SDL_Delay(10);
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 
 	_killThread.store(false, boost::memory_order_seq_cst);
 
@@ -82,16 +87,11 @@ bool Thread::destroyThread() {
 
 	/* Clean up the thread if it's not still running. If the thread is still running,
 	 * this would block, potentially indefinitely, so we leak instead in that case.
-	 *
-	 * We could use SDL_DetachThread() instead, but:
-	 * - This only means that thread resources will be released once the thread
-	 *   ends. We waited for a whole second, so it might just not.
-	 * - SDL_DetachThread() was added in SDL 2.0.2, so we'd need to bump the
-	 *   minimum SDL version from 2.0.0 to 2.0.2. Not worth it for this case, IMHO. */
+	 */
 	if (!stillRunning)
-		SDL_WaitThread(_thread, 0);
-
-	_thread = 0;
+		_thread.join();
+	else
+		_thread.detach();
 
 	/* TODO:: If we get threads that we start and stop multiple times within the runtime
 	 *        of xoreos, we might need to do something more aggressive here, like throw. */
