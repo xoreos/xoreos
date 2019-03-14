@@ -25,6 +25,8 @@
 #include "src/common/error.h"
 
 #include "src/aurora/gff3file.h"
+#include "src/aurora/2dafile.h"
+#include "src/aurora/2dareg.h"
 
 #include "src/engines/nwn2/itemproperty.h"
 
@@ -37,9 +39,9 @@ ItemProperty::ItemProperty(const Aurora::GFF3Struct &itemProperty) {
 	load(itemProperty);
 }
 
-ItemProperty::ItemProperty(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1Value) {
+ItemProperty::ItemProperty(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1Value, uint8 costValue) {
 
-	load(type, subtype, param1, param1Value);
+	load(type, subtype, param1, param1Value, costValue);
 }
 
 ItemProperty::~ItemProperty() {
@@ -65,6 +67,14 @@ uint8 ItemProperty::getItemPropertyParam1Value() const {
 	return _param1Value;
 }
 
+uint8 ItemProperty::getItemPropertyCostTable() const {
+	return _costTable;
+}
+
+uint8 ItemProperty::getItemPropertyCostTableValue() const {
+	return _costValue;
+}
+
 void ItemProperty::load(const Aurora::GFF3Struct &gff) {
 
 	_type = (ItemPropertyType) gff.getUint("PropertyName");
@@ -75,12 +85,22 @@ void ItemProperty::load(const Aurora::GFF3Struct &gff) {
 	_costValue = gff.getUint("CostValue");
 }
 
-void ItemProperty::load(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1Value) {
+void ItemProperty::load(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1Value, uint8 costValue) {
 
 	_type = type;
 	_subtype = subtype;
 	_param1 = param1;
 	_param1Value = param1Value;
+	_costValue = costValue;
+
+	// Load the cost table row from the 2da data
+	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("itempropdef");
+	const size_t count = twoDA.getRowCount();
+	if (_type >= count)
+		return;
+
+	const Aurora::TwoDARow &row = twoDA.getRow(_type);
+	_costTable = row.getInt("CostTableResRef");
 }
 
 } // End of namespace NWN2

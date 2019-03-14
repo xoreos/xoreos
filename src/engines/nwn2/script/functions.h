@@ -334,10 +334,12 @@ private:
 	// '---
 
 	// .--- Item properties, functions_itemproperty.cpp
-	void getItemPropertyType       (Aurora::NWScript::FunctionContext &ctx);
-	void getItemPropertySubType    (Aurora::NWScript::FunctionContext &ctx);
-	void getItemPropertyParam1     (Aurora::NWScript::FunctionContext &ctx);
-	void getItemPropertyParam1Value(Aurora::NWScript::FunctionContext &ctx);
+	void getItemPropertyType          (Aurora::NWScript::FunctionContext &ctx);
+	void getItemPropertySubType       (Aurora::NWScript::FunctionContext &ctx);
+	void getItemPropertyParam1        (Aurora::NWScript::FunctionContext &ctx);
+	void getItemPropertyParam1Value   (Aurora::NWScript::FunctionContext &ctx);
+	void getItemPropertyCostTable     (Aurora::NWScript::FunctionContext &ctx);
+	void getItemPropertyCostTableValue(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Creatures, functions_creature.cpp

@@ -191,6 +191,8 @@ GTEST_TEST(NWN2Creature, inventory) {
 			EXPECT_EQ(prop->getItemPropertySubType(), 0);
 			EXPECT_EQ(prop->getItemPropertyParam1(), 255);
 			EXPECT_EQ(prop->getItemPropertyParam1Value(), 255);
+			EXPECT_EQ(prop->getItemPropertyCostTable(), 2);
+			EXPECT_EQ(prop->getItemPropertyCostTableValue(), 1);
 		}
 	}
 
@@ -207,12 +209,16 @@ GTEST_TEST(NWN2Creature, inventory) {
 		if (prop1) {
 			EXPECT_EQ(prop1->getItemPropertyType(), 15);
 			EXPECT_EQ(prop1->getItemPropertySubType(), 281);
+			EXPECT_EQ(prop1->getItemPropertyCostTable(), 3);
+			EXPECT_EQ(prop1->getItemPropertyCostTableValue(), 1);
 		}
 		Engines::NWN2::ItemProperty *prop2 = item->getNextItemProperty();
 		EXPECT_TRUE(prop2 != nullptr);
 		if (prop2) {
 			EXPECT_EQ(prop2->getItemPropertyType(), 63);
 			EXPECT_EQ(prop2->getItemPropertySubType(), 1);
+			EXPECT_EQ(prop2->getItemPropertyCostTable(), 0);
+			EXPECT_EQ(prop2->getItemPropertyCostTableValue(), 0);
 		}
 		Engines::NWN2::ItemProperty *prop3 = item->getNextItemProperty();
 		EXPECT_TRUE(prop3 != nullptr);
