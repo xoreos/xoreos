@@ -536,7 +536,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  395, "GetXP"                               , &Functions::getXP                                },
 	{  396, "IntToHexString"                      , &Functions::intToHexString                       },
 	{  397, "GetBaseItemType"                     , &Functions::getBaseItemType                      },
-	{  398, "GetItemHasItemProperty"              , 0                                                },
+	{  398, "GetItemHasItemProperty"              , &Functions::getItemHasItemProperty               },
 	{  399, "ActionEquipMostDamagingMelee"        , 0                                                },
 	{  400, "ActionEquipMostDamagingRanged"       , 0                                                },
 	{  401, "GetItemACValue"                      , 0                                                },

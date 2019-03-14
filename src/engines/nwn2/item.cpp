@@ -22,6 +22,8 @@
  *  An item in a Neverwinter Nights 2 area.
  */
 
+#include <algorithm>
+
 #include "src/common/scopedptr.h"
 
 #include "src/aurora/gff3file.h"
@@ -81,6 +83,14 @@ ItemProperty *Item::getNextItemProperty() {
 	// Reach the end of the list
 	_lastRetrieved = SIZE_MAX;
 	return nullptr;
+}
+
+bool Item::getItemHasItemProperty(ItemPropertyType property) const {
+	auto it = std::find_if(_itemProperties.begin(), _itemProperties.end(), [&](const ItemProperty &x) {
+		return x.getItemPropertyType() == property;
+	});
+
+	return it != _itemProperties.end();
 }
 
 bool Item::getDroppableFlag() const {
