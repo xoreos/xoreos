@@ -60,6 +60,18 @@ void Functions::getItemPropertyParam1Value(Aurora::NWScript::FunctionContext &ct
 		ctx.getReturn() = prop->getItemPropertyParam1Value();
 }
 
+void Functions::getItemPropertyCostTable(Aurora::NWScript::FunctionContext &ctx) {
+	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
+	if (prop)
+		ctx.getReturn() = prop->getItemPropertyCostTable();
+}
+
+void Functions::getItemPropertyCostTableValue(Aurora::NWScript::FunctionContext &ctx) {
+	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
+	if (prop)
+		ctx.getReturn() = prop->getItemPropertyCostTableValue();
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines

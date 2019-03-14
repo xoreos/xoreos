@@ -36,7 +36,7 @@ namespace NWN2 {
 class ItemProperty : public Aurora::NWScript::EngineType {
 public:
 	ItemProperty(const Aurora::GFF3Struct &itemProperty);
-	ItemProperty(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1value);
+	ItemProperty(ItemPropertyType type, uint16 subtype, uint8 param1 = 255, uint8 param1value = 255, uint8 costValue = 0);
 	ItemProperty(const ItemProperty *itemProperty);
 	~ItemProperty();
 
@@ -51,6 +51,10 @@ public:
 	uint8 getItemPropertyParam1() const;
 	/** Return the item property param1 value. */
 	uint8 getItemPropertyParam1Value() const;
+	/** Return the cost table. */
+	uint8 getItemPropertyCostTable() const;
+	/** Return the cost value. */
+	uint8 getItemPropertyCostTableValue() const;
 
 private:
 	ItemPropertyType _type; ///< Index into 'itempropdef.2da'.
@@ -62,7 +66,7 @@ private:
 
 	/** Load an item property. */
 	void load(const Aurora::GFF3Struct &gff);
-	void load(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1Value);
+	void load(ItemPropertyType type, uint16 subtype, uint8 param1 = 255, uint8 param1Value = 255, uint8 costValue = 0);
 };
 
 } // End of namespace NWN2
