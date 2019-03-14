@@ -54,6 +54,35 @@ Item::Item(const Common::UString &blueprint, uint16 stackSize, const Common::USt
 Item::~Item() {
 }
 
+ItemProperty *Item::getFirstItemProperty() {
+	_lastRetrieved = 0;
+
+	if (_itemProperties.empty()) {
+		_lastRetrieved = SIZE_MAX;
+		return nullptr;
+	}
+
+	// Return the item property
+	return &(_itemProperties.front());
+}
+
+ItemProperty *Item::getNextItemProperty() {
+	// Check for the end of inventory
+	if (_lastRetrieved == SIZE_MAX)
+		return nullptr;
+
+	// Increment the counter
+	_lastRetrieved++;
+
+	// Retrieve the matching property
+	if (_lastRetrieved < _itemProperties.size())
+		return &(_itemProperties[_lastRetrieved]);
+
+	// Reach the end of the list
+	_lastRetrieved = SIZE_MAX;
+	return nullptr;
+}
+
 bool Item::getDroppableFlag() const {
 	return _droppable;
 }

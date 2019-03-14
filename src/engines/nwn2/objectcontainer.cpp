@@ -35,6 +35,7 @@
 #include "src/engines/nwn2/door.h"
 #include "src/engines/nwn2/trigger.h"
 #include "src/engines/nwn2/item.h"
+#include "src/engines/nwn2/itemproperty.h"
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/location.h"
 
@@ -174,6 +175,10 @@ Creature *ObjectContainer::toPC(Aurora::NWScript::Object *object) {
 
 Location *ObjectContainer::toLocation(Aurora::NWScript::EngineType *engineType) {
 	return dynamic_cast<Location *>(engineType);
+}
+
+ItemProperty *ObjectContainer::toItemProperty(Aurora::NWScript::EngineType *engineType) {
+	return dynamic_cast<ItemProperty *>(engineType);
 }
 
 } // End of namespace NWN2

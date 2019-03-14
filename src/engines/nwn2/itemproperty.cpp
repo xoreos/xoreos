@@ -22,6 +22,8 @@
  *  A property on a Neverwinter Nights 2 item.
  */
 
+#include "src/common/error.h"
+
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/nwn2/itemproperty.h"

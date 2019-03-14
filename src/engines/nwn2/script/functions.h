@@ -326,7 +326,14 @@ private:
 	void getNextItemInInventory (Aurora::NWScript::FunctionContext &ctx);
 	void getItemInSlot          (Aurora::NWScript::FunctionContext &ctx);
 
+	void getFirstItemProperty(Aurora::NWScript::FunctionContext &ctx);
+	void getNextItemProperty (Aurora::NWScript::FunctionContext &ctx);
+
 	void createItemOnObject(Aurora::NWScript::FunctionContext &ctx);
+	// '---
+
+	// .--- Item properties, functions_itemproperty.cpp
+	void getItemPropertyType(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Creatures, functions_creature.cpp

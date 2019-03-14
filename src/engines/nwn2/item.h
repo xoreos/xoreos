@@ -43,6 +43,9 @@ public:
 	Item(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
 	~Item();
 
+	ItemProperty *getFirstItemProperty();
+	ItemProperty *getNextItemProperty();
+
 	bool getDroppableFlag() const;
 	bool getIdentified() const;
 	bool getItemCursedFlag() const;
@@ -72,6 +75,8 @@ public:
 
 private:
 	typedef std::vector<ItemProperty> ItemProperties;
+
+	size_t _lastRetrieved { SIZE_MAX }; ///< Index of last retrieved item property.
 
 	uint32 _icon;       ///< Icon number for inventory UI.
 	uint32 _cost;       ///< Base price in gp.
