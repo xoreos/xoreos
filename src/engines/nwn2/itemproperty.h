@@ -37,6 +37,7 @@ class ItemProperty : public Aurora::NWScript::EngineType {
 public:
 	ItemProperty(const Aurora::GFF3Struct &itemProperty);
 	ItemProperty(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1value);
+	ItemProperty(const ItemProperty *itemProperty);
 	~ItemProperty();
 
 	/** Clone factory method. */

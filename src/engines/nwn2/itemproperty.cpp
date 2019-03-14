@@ -22,6 +22,8 @@
  *  A property on a Neverwinter Nights 2 item.
  */
 
+#include "src/common/error.h"
+
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/nwn2/itemproperty.h"
@@ -37,6 +39,17 @@ ItemProperty::ItemProperty(const Aurora::GFF3Struct &itemProperty) {
 
 ItemProperty::ItemProperty(ItemPropertyType type, uint16 subtype, uint8 param1, uint8 param1Value) {
 
+	load(type, subtype, param1, param1Value);
+}
+
+ItemProperty::ItemProperty(const ItemProperty *itemProperty) {
+	if (itemProperty == nullptr)
+		throw Common::Exception("Invalid ItemProperty instance");
+
+	ItemPropertyType type = itemProperty->getItemPropertyType();
+	uint16 subtype = 0;
+	uint8 param1 = 0;
+	uint8 param1Value = 0;
 	load(type, subtype, param1, param1Value);
 }
 

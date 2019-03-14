@@ -22,6 +22,8 @@
  *  Unit tests for NWN2 creature objects.
  */
 
+#include <memory>
+
 #include "gtest/gtest.h"
 
 #include "tests/engines/nwn2/creature.h"
@@ -37,6 +39,7 @@
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/item.h"
+#include "src/engines/nwn2/itemproperty.h"
 
 static const float kEpsilon = 1e-5f;
 
@@ -178,12 +181,36 @@ GTEST_TEST(NWN2Creature, inventory) {
 	EXPECT_TRUE(item != nullptr);
 	if (item != nullptr) {
 		EXPECT_STREQ(item->getTag().c_str(), "NW_WBLMCL002");
+
+		// Get the first item property
+		Engines::NWN2::ItemProperty *prop = item->getFirstItemProperty();
+		EXPECT_TRUE(prop != nullptr);
+		if (prop) {
+			EXPECT_EQ(prop->getItemPropertyType(), 6);
+		}
 	}
 
 	item = cr->getNextItemInInventory();
 	EXPECT_TRUE(item != nullptr);
 	if (item != nullptr) {
 		EXPECT_STREQ(item->getTag().c_str(),  "NW_IT_SPARSCR204");
+
+		// Check the item properties
+		Engines::NWN2::ItemProperty *prop1 = item->getFirstItemProperty();
+		EXPECT_TRUE(prop1 != nullptr);
+		if (prop1) {
+			EXPECT_EQ(prop1->getItemPropertyType(), 15);
+		}
+		Engines::NWN2::ItemProperty *prop2 = item->getNextItemProperty();
+		EXPECT_TRUE(prop2 != nullptr);
+		if (prop2) {
+			EXPECT_EQ(prop2->getItemPropertyType(), 63);
+		}
+		Engines::NWN2::ItemProperty *prop3 = item->getNextItemProperty();
+		EXPECT_TRUE(prop3 != nullptr);
+		if (prop3) {
+			EXPECT_EQ(prop3->getItemPropertyType(), 63);
+		}
 	}
 
 	item = cr->getNextItemInInventory();

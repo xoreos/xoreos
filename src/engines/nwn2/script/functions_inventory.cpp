@@ -30,6 +30,7 @@
 #include "src/engines/nwn2/objectcontainer.h"
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/item.h"
+#include "src/engines/nwn2/itemproperty.h"
 
 #include "src/engines/nwn2/script/functions.h"
 
@@ -180,6 +181,32 @@ void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {
 	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 0));
 	int slot = ctx.getParams()[1].getInt();
 	ctx.getReturn() = (creature) ? creature->getItemInSlot((InventorySlot) slot) : 0;
+}
+
+void Functions::getFirstItemProperty(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (!item)
+		return;
+
+	ItemProperty *firstIP = item->getFirstItemProperty();
+	if (!firstIP)
+		return;
+
+	ItemProperty iprop(firstIP);
+	ctx.getReturn() = iprop;
+}
+
+void Functions::getNextItemProperty(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (!item)
+		return;
+
+	ItemProperty *nextIP = item->getNextItemProperty();
+	if (!nextIP)
+		return;
+
+	ItemProperty iprop(nextIP);
+	ctx.getReturn() = iprop;
 }
 
 void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {

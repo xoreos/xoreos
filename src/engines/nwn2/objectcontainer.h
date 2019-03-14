@@ -49,6 +49,7 @@ class Trigger;
 class Creature;
 class Location;
 class Item;
+class ItemProperty;
 
 /** A class able to sort objects by distance to a target object. */
 class ObjectDistanceSort {
@@ -94,7 +95,8 @@ public:
 	static Creature  *toCreature (Aurora::NWScript::Object *object);
 	static Creature  *toPC       (Aurora::NWScript::Object *object);
 
-	static Location *toLocation(Aurora::NWScript::EngineType *engineType);
+	static Location     *toLocation    (Aurora::NWScript::EngineType *engineType);
+	static ItemProperty *toItemProperty(Aurora::NWScript::EngineType *engineType);
 
 private:
 	typedef std::list<NWN2::Object *> ObjectList;
