@@ -55,6 +55,8 @@ public:
 	uint8 getItemPropertyCostTable() const;
 	/** Return the cost value. */
 	uint8 getItemPropertyCostTableValue() const;
+	/** Return true if this item property is valid. */
+	bool getIsItemPropertyValid() const;
 
 private:
 	ItemPropertyType _type; ///< Index into 'itempropdef.2da'.

@@ -87,6 +87,38 @@ uint8 ItemProperty::getItemPropertyCostTableValue() const {
 	return _costValue;
 }
 
+bool ItemProperty::getIsItemPropertyValid() const {
+	// Load the item properties row
+	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("itempropdef");
+	const size_t count = twoDA.getRowCount();
+	if (_type >= count)
+		return false;
+
+	// Check the item type
+	const Aurora::TwoDARow &row = twoDA.getRow(_type);
+	Common::UString name = row.getString("Name");
+	if (name.empty() || name.equalsIgnoreCase("padding"))
+		return false;
+
+	// Check the subtype
+	Common::UString subTypeResRef = row.getString("SubTypeResRef");
+	if (!subTypeResRef.empty()) {
+		const Aurora::TwoDAFile &twoDAsubType = TwoDAReg.get2DA(subTypeResRef);
+		const size_t subTypeCount = twoDAsubType.getRowCount();
+		if (_subtype >= subTypeCount)
+			return false;
+
+		// "Name" column seems common to these tables
+		const Aurora::TwoDARow &rowSubType = twoDA.getRow(_subtype);
+		Common::UString nameSubTyle = rowSubType.getString("Name");
+		if (name.empty())
+			return false;
+	}
+
+	// TODO: Check the param1 data and price tables
+	return true;
+}
+
 void ItemProperty::load(const Aurora::GFF3Struct &gff) {
 
 	_type = (ItemPropertyType) gff.getUint("PropertyName");
