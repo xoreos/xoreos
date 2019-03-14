@@ -53,6 +53,18 @@ ItemPropertyType ItemProperty::getItemPropertyType() const {
 	return _type;
 }
 
+uint16 ItemProperty::getItemPropertySubType() const {
+	return _subtype;
+}
+
+uint8 ItemProperty::getItemPropertyParam1() const {
+	return _param1;
+}
+
+uint8 ItemProperty::getItemPropertyParam1Value() const {
+	return _param1Value;
+}
+
 void ItemProperty::load(const Aurora::GFF3Struct &gff) {
 
 	_type = (ItemPropertyType) gff.getUint("PropertyName");

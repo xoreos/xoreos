@@ -44,6 +44,12 @@ public:
 
 	/** Return the item property type. */
 	ItemPropertyType getItemPropertyType() const;
+	/** Return the item property subtype. */
+	uint16 getItemPropertySubType() const;
+	/** Return the item property param1 number. */
+	uint8 getItemPropertyParam1() const;
+	/** Return the item property param1 value. */
+	uint8 getItemPropertyParam1Value() const;
 
 private:
 	ItemPropertyType _type; ///< Index into 'itempropdef.2da'.
