@@ -749,7 +749,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{  608, "SetItemCharges"                      , &Functions::setItemCharges                       },
 	{  609, "AddItemProperty"                     , 0                                                },
 	{  610, "RemoveItemProperty"                  , 0                                                },
-	{  611, "GetIsItemPropertyValid"              , 0                                                },
+	{  611, "GetIsItemPropertyValid"              , &Functions::getIsItemPropertyValid               },
 	{  612, "GetFirstItemProperty"                , &Functions::getFirstItemProperty                 },
 	{  613, "GetNextItemProperty"                 , &Functions::getNextItemProperty                  },
 	{  614, "GetItemPropertyType"                 , &Functions::getItemPropertyType                  },

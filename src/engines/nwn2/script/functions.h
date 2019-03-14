@@ -340,6 +340,7 @@ private:
 	void getItemPropertyParam1Value   (Aurora::NWScript::FunctionContext &ctx);
 	void getItemPropertyCostTable     (Aurora::NWScript::FunctionContext &ctx);
 	void getItemPropertyCostTableValue(Aurora::NWScript::FunctionContext &ctx);
+	void getIsItemPropertyValid       (Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- Creatures, functions_creature.cpp
