@@ -47,9 +47,9 @@ ItemProperty::ItemProperty(const ItemProperty *itemProperty) {
 		throw Common::Exception("Invalid ItemProperty instance");
 
 	ItemPropertyType type = itemProperty->getItemPropertyType();
-	uint16 subtype = 0;
-	uint8 param1 = 0;
-	uint8 param1Value = 0;
+	uint16 subtype = itemProperty->getItemPropertySubType();
+	uint8 param1 = itemProperty->getItemPropertyParam1();
+	uint8 param1Value = itemProperty->getItemPropertyParam1Value();
 	load(type, subtype, param1, param1Value);
 }
 
@@ -62,6 +62,18 @@ ItemProperty *ItemProperty::clone() const {
 
 ItemPropertyType ItemProperty::getItemPropertyType() const {
 	return _type;
+}
+
+uint16 ItemProperty::getItemPropertySubType() const {
+	return _subtype;
+}
+
+uint8 ItemProperty::getItemPropertyParam1() const {
+	return _param1;
+}
+
+uint8 ItemProperty::getItemPropertyParam1Value() const {
+	return _param1Value;
 }
 
 void ItemProperty::load(const Aurora::GFF3Struct &gff) {

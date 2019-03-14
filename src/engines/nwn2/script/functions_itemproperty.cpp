@@ -42,6 +42,24 @@ void Functions::getItemPropertyType(Aurora::NWScript::FunctionContext &ctx) {
 		ctx.getReturn() = prop->getItemPropertyType();
 }
 
+void Functions::getItemPropertySubType(Aurora::NWScript::FunctionContext &ctx) {
+	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
+	if (prop)
+		ctx.getReturn() = prop->getItemPropertySubType();
+}
+
+void Functions::getItemPropertyParam1(Aurora::NWScript::FunctionContext &ctx) {
+	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
+	if (prop)
+		ctx.getReturn() = prop->getItemPropertyParam1();
+}
+
+void Functions::getItemPropertyParam1Value(Aurora::NWScript::FunctionContext &ctx) {
+	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
+	if (prop)
+		ctx.getReturn() = prop->getItemPropertyParam1Value();
+}
+
 } // End of namespace NWN2
 
 } // End of namespace Engines
