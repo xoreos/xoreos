@@ -209,6 +209,16 @@ void Functions::getNextItemProperty(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = iprop;
 }
 
+void Functions::getItemHasItemProperty(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (!item)
+		return;
+
+	const ItemPropertyType type = (ItemPropertyType)(ctx.getParams()[1].getInt());
+	ctx.getReturn() = (int) item->getItemHasItemProperty(type);
+}
+
+
 void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 1));
 	if (item && item->getHasInventory()) {

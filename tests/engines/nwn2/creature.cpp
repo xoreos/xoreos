@@ -184,6 +184,7 @@ GTEST_TEST(NWN2Creature, inventory) {
 
 		// Get the first item property
 		Engines::NWN2::ItemProperty *prop = item->getFirstItemProperty();
+		EXPECT_TRUE(item->getItemHasItemProperty(Engines::NWN2::kItemPropertyEnhancementBonus));
 		EXPECT_TRUE(prop != nullptr);
 		if (prop) {
 			EXPECT_EQ(prop->getItemPropertyType(), 6);
@@ -200,6 +201,8 @@ GTEST_TEST(NWN2Creature, inventory) {
 
 		// Check the item properties
 		Engines::NWN2::ItemProperty *prop1 = item->getFirstItemProperty();
+		EXPECT_TRUE(item->getItemHasItemProperty(Engines::NWN2::kItemPropertyCastSpell));
+		EXPECT_TRUE(item->getItemHasItemProperty(Engines::NWN2::kItemPropertyUseLimitationClass));
 		EXPECT_TRUE(prop1 != nullptr);
 		if (prop1) {
 			EXPECT_EQ(prop1->getItemPropertyType(), 15);

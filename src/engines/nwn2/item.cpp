@@ -83,6 +83,19 @@ ItemProperty *Item::getNextItemProperty() {
 	return nullptr;
 }
 
+bool Item::getItemHasItemProperty(ItemPropertyType property) const {
+	if (_itemProperties.empty())
+		return false;
+
+	// Cycle through the item properties looking for a match
+	for (size_t i = 0; i < _itemProperties.size(); i++)
+		if (_itemProperties[i].getItemPropertyType() == property)
+			return true;
+
+	// No match found
+	return false;
+}
+
 bool Item::getDroppableFlag() const {
 	return _droppable;
 }

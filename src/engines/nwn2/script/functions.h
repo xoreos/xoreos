@@ -326,8 +326,9 @@ private:
 	void getNextItemInInventory (Aurora::NWScript::FunctionContext &ctx);
 	void getItemInSlot          (Aurora::NWScript::FunctionContext &ctx);
 
-	void getFirstItemProperty(Aurora::NWScript::FunctionContext &ctx);
-	void getNextItemProperty (Aurora::NWScript::FunctionContext &ctx);
+	void getFirstItemProperty  (Aurora::NWScript::FunctionContext &ctx);
+	void getNextItemProperty   (Aurora::NWScript::FunctionContext &ctx);
+	void getItemHasItemProperty(Aurora::NWScript::FunctionContext &ctx);
 
 	void createItemOnObject(Aurora::NWScript::FunctionContext &ctx);
 	// '---

@@ -73,6 +73,9 @@ public:
 	/** Create an item in the creature's inventory. */
 	Item *createItemOnObject(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag);
 
+	/** Get if the item has a property of the type. */
+	bool getItemHasItemProperty(ItemPropertyType property) const;
+
 private:
 	typedef std::vector<ItemProperty> ItemProperties;
 
