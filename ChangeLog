@@ -4,7 +4,10 @@ Someday, ????-??-?? (Version 0.0.6)
 		- Made some library dependencies optional,
 		  disabling xoreos features
 	- COMMON:
-		- Cleaned up threading
+		- Cleaned up threading, now using C++11 threads
+		- Changed random numbers to use C++11 features
+		  instead of std::rand()
+		- Changed atomics to use C++11 atomics instead of Boost
 	- GRAPHICS:
 		- Added support for swizzled SBM images
 		- Added a work-in-progress shader-based renderer
@@ -29,20 +32,28 @@ Someday, ????-??-?? (Version 0.0.6)
 	- ENGINES:
 		- All engines now store objects in containers as an ID instead
 		  of as direct pointers
-		- KOTOR:
+		- NWN:
+			- Implemented pathfinding, not yet hooked up
+		- KOTOR/KOTOR2:
+			- Restructured code to unify these two games more
 			- Changed key input to use scancodes
 			- Restructured config options
 			- Implemented changing texture packs
 			- Partially implemented the action queue
 			- Partially implemented party selection
 			- Partially implemented ingame GUI scaling
+			- Partially implemented unlocking doors
+			- Made the camera bounce back from walls
+			- Added object tooltips
+			- Implemented correct object targetting behaviour
+			- Implemented object heartbeat scripts
+			- Implemented lightsaber loading
+		- KOTOR:
 			- Added Malak to the main menu
 			- Added support for the (extracted) Android version
 		- KOTOR2:
-			- Changed key input to use scancodes
-			- Restructured config options
-			- Implemented changing texture packs
-			- Partially implemented ingame GUI scaling
+			- Added ability to skip the prologue
+			- Added moving the PC out of the Kolto tank
 		- JADE:
 			- Fixed TLK encodings for non-English version
 			- Added support for the (extracted) Android version
@@ -50,14 +61,24 @@ Someday, ????-??-?? (Version 0.0.6)
 			- Added area background music
 		- NWN2:
 			- Filled in the object classes some more
+			- Implemented more NWScript engine functions
+			- Added cursors
+			- Partially implemented the party roster
+			- Added traps and triggers, trapped doors and
+			  trapped placeables
+			- Added items and item properties
 		- DRAGONAGE:
 			- Added a probe for the Xbox 360 version
+			- Fixed resource loading on Windows
 		- DRAGONAGE2:
 			- Partially implemented area transitions
+			- Fixed resource loading on Windows
 		- WITCHER:
 			- Stubbed more Lua methods
 	- TESTS
 		- Started adding engine-level unit tests
+	- MISC
+		- Moved third-party code into external/
 
 Tuesday, 2018-07-03 (Version 0.0.5)
 	- DOCS:
