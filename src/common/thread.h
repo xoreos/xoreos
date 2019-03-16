@@ -50,6 +50,13 @@ public:
 	bool createThread(const UString &name = "");
 	bool destroyThread();
 
+	/**
+	 * Set the name of the thread, if available on the platform.
+	 * Otherwise, a no-op. If the name is longer than the platform
+	 * supports, it is truncated to fit.
+	 */
+	static void setCurrentThreadName(const Common::UString &name);
+
 protected:
 	std::atomic<bool> _killThread;
 
