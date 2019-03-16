@@ -50,7 +50,6 @@
 #include <cassert>
 #include <cstring>
 #include <queue>
-#include <mutex>
 
 #include <vorbis/vorbisfile.h>
 
@@ -58,6 +57,7 @@
 #include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
+#include "src/common/mutex.h"
 
 #include "src/sound/audiostream.h"
 

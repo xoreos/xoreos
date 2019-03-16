@@ -26,10 +26,10 @@
 #define AURORA_NWSCRIPT_OBJECTMAN_H
 
 #include <map>
-#include <mutex>
 
 #include "src/common/singleton.h"
 #include "src/common/types.h"
+#include "src/common/mutex.h"
 
 namespace Aurora {
 

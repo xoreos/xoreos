@@ -19,48 +19,18 @@
  */
 
 /** @file
- *  Threading system helpers.
- *
- *  See also class Thread in thread.h.
+ *  Helper header to include C++11 mutexes and friends.
  */
 
-#include <cassert>
+#ifndef COMMON_MUTEX_H
+#define COMMON_MUTEX_H
 
 #if defined(__MINGW32__ ) && !defined(_GLIBCXX_HAS_GTHREADS)
-	#include "external/mingw-std-threads/mingw.thread.h"
+	#include "external/mingw-std-threads/mingw.mutex.h"
+	#include "external/mingw-std-threads/mingw.condition_variable.h"
 #else
-	#include <thread>
+	#include <mutex>
+	#include <condition_variable>
 #endif
 
-#include "src/common/types.h"
-#include "src/common/error.h"
-#include "src/common/threads.h"
-
-static bool            threadsInited = false;
-static std::thread::id threadsMainID;
-
-namespace Common {
-
-void initThreads() {
-	assert(!threadsInited);
-
-	threadsInited = true;
-	threadsMainID = std::this_thread::get_id();
-}
-
-bool initedThreads() {
-	return threadsInited;
-}
-
-bool isMainThread() {
-	assert(threadsInited);
-
-	return std::this_thread::get_id() == threadsMainID;
-}
-
-void enforceMainThread() {
-	if (!isMainThread())
-		throw Exception("Unsafe function called in non-main thread");
-}
-
-} // End of namespace Common
+#endif // COMMON_MUTEX_H

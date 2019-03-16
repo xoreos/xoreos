@@ -27,10 +27,10 @@
 
 #include <list>
 #include <map>
-#include <mutex>
 
 #include "src/common/scopedptr.h"
 #include "src/common/ptrlist.h"
+#include "src/common/mutex.h"
 
 #include "src/sound/types.h"
 

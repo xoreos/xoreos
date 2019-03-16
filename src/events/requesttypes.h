@@ -25,10 +25,8 @@
 #ifndef EVENTS_REQUESTTYPES_H
 #define EVENTS_REQUESTTYPES_H
 
-#include <mutex>
-#include <condition_variable>
-
 #include "src/common/types.h"
+#include "src/common/mutex.h"
 
 #include "src/events/types.h"
 

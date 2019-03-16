@@ -28,7 +28,6 @@
 #include <vector>
 #include <list>
 #include <atomic>
-#include <mutex>
 
 #include "external/glm/mat4x4.hpp"
 
@@ -36,6 +35,7 @@
 #include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/graphics/types.h"
 #include "src/graphics/windowman.h"

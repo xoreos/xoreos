@@ -27,7 +27,8 @@
 
 #include <list>
 #include <map>
-#include <mutex>
+
+#include "src/common/mutex.h"
 
 #include "src/aurora/nwscript/object.h"
 

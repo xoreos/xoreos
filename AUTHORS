@@ -121,6 +121,15 @@ UTF-8 CPP
    external/utf8cpp/utf8.h or <https://www.boost.org/users/license.html>
    for details.
 
+mingw-std-threads
+*****************
+   xoreos uses and includes the header-only mingw-std-threads library
+   (<https://github.com/meganz/mingw-std-threads/>) as an alternative to
+   libwinpthread for C++11 std::thread in MinGW builds. mingw-std-threads
+   is licensed under the terms of the 2-clause BSD license. For the full
+   text, see external/mingw-std-threads/LICENSE or
+   <https://github.com/meganz/mingw-std-threads/blob/master/LICENSE>.
+
 GLM
 ***
    xoreos uses the header-only C++ mathematics library for graphics software
