@@ -221,6 +221,20 @@ Files: external/glm/*.hpp
 Copyright: 2005-2016 G-Truc Creation
 License: Expat
 
+Files: external/mingw-std-threads/mingw.mutex.h
+       external/mingw-std-threads/mingw.thread.h
+       external/mingw-std-threads/mingw.condition_variable.h
+Copyright: 2013-2016 Mega Limited
+License: BSD-2-clause
+
+Files: external/mingw-std-threads/mingw.shared_mutex.h
+Copyright: 2017 Nathaniel J. McClatchey
+License: BSD-2-clause
+
+Files: external/mingw-std-threads/mingw.future.h
+Copyright: 2018 Nathaniel J. McClatchey
+License: BSD-2-clause
+
 Files: src/common/system.h
        src/common/endianness.h
        src/common/util.h
@@ -553,6 +567,31 @@ Comment:
  This license also known as "MIT/X11 (BSD like)" or "MIT" however FSF
  consider "MIT" labelling ambiguous and copyright-format specification
  recommend to label such license as "Expat".
+
+License: BSD-2-clause
+ All rights reserved.
+ .
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are
+ met:
+ .
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 License: BSD-3-clause
  Redistribution and use in source and binary forms, with or without
