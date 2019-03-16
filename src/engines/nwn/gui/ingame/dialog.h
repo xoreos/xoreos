@@ -42,6 +42,11 @@
 
 #include "src/engines/nwn/gui/gui.h"
 
+// Windows...
+#ifdef DialogBox
+	#undef DialogBox
+#endif
+
 namespace Common {
 	class UString;
 }
