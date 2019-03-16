@@ -88,6 +88,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/geometry.h \
     src/common/aabbnode.h \
     src/common/random.h \
+    src/common/mutex.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \

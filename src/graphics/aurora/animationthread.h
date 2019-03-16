@@ -28,12 +28,12 @@
 #include <map>
 #include <queue>
 #include <atomic>
-#include <mutex>
 
 #include "external/glm/vec3.hpp"
 #include "external/glm/vec4.hpp"
 
 #include "src/common/thread.h"
+#include "src/common/mutex.h"
 
 namespace Graphics {
 

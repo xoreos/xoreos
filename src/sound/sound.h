@@ -37,8 +37,6 @@
 
 #include <list>
 #include <map>
-#include <mutex>
-#include <condition_variable>
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
@@ -46,6 +44,7 @@
 #include "src/common/singleton.h"
 #include "src/common/thread.h"
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/sound/types.h"
 

@@ -27,11 +27,11 @@
 
 #include <set>
 #include <list>
-#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/graphics/aurora/texturehandle.h"
 

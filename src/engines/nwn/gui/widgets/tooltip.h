@@ -26,11 +26,11 @@
 #define ENGINES_NWN_GUI_WIDGETS_TOOLTIP_H
 
 #include <vector>
-#include <mutex>
 
 #include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/graphics/aurora/types.h"
 

@@ -27,12 +27,11 @@
 
 #include <list>
 #include <vector>
-#include <mutex>
-#include <condition_variable>
 
 #include "src/common/types.h"
 #include "src/common/ptrvector.h"
 #include "src/common/singleton.h"
+#include "src/common/mutex.h"
 
 #include "src/events/types.h"
 #include "src/events/joystick.h"

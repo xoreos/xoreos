@@ -28,12 +28,12 @@
 #include <vector>
 #include <list>
 #include <map>
-#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
 #include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
 

@@ -27,7 +27,12 @@
 #ifndef COMMON_THREAD_H
 #define COMMON_THREAD_H
 
-#include <thread>
+#if defined(__MINGW32__ ) && !defined(_GLIBCXX_HAS_GTHREADS)
+	#include "external/mingw-std-threads/mingw.thread.h"
+#else
+	#include <thread>
+#endif
+
 #include <atomic>
 
 #include <boost/noncopyable.hpp>

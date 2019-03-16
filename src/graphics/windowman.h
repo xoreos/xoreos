@@ -25,10 +25,9 @@
 #ifndef GRAPHICS_WINDOWMAN_H
 #define GRAPHICS_WINDOWMAN_H
 
-#include <mutex>
-
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/graphics/types.h"
 

@@ -27,7 +27,8 @@
 
 #include <list>
 #include <vector>
-#include <mutex>
+
+#include "src/common/mutex.h"
 
 namespace Graphics {
 

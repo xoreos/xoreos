@@ -18,41 +18,19 @@
  * along with xoreos. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /** @file
-  *  NWScript object manager.
-  */
+/** @file
+ *  Helper header to include C++11 mutexes and friends.
+ */
 
-#ifndef AURORA_NWSCRIPT_OBJECTMAN_H
-#define AURORA_NWSCRIPT_OBJECTMAN_H
+#ifndef COMMON_MUTEX_H
+#define COMMON_MUTEX_H
 
-#include <map>
+#if defined(__MINGW32__ ) && !defined(_GLIBCXX_HAS_GTHREADS)
+	#include "external/mingw-std-threads/mingw.mutex.h"
+	#include "external/mingw-std-threads/mingw.condition_variable.h"
+#else
+	#include <mutex>
+	#include <condition_variable>
+#endif
 
-#include "src/common/singleton.h"
-#include "src/common/types.h"
-#include "src/common/mutex.h"
-
-namespace Aurora {
-
-namespace NWScript {
-
-class Object;
-
-class ObjectManager : public Common::Singleton<ObjectManager> {
-public:
-	void registerObject(Object *object);
-	void unregisterObject(Object *object);
-
-	Object *findObject(uint32 id);
-
-private:
-	std::recursive_mutex _objMutex;
-	std::map<uint32, Object *> _objects;
-};
-
-} // End of namespace NWScript
-
-} // End of namespace Aurora
-
-#define ObjectMan Aurora::NWScript::ObjectManager::instance()
-
-#endif // AURORA_NWSCRIPT_OBJECTMAN_H
+#endif // COMMON_MUTEX_H

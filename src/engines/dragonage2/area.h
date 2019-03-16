@@ -28,11 +28,11 @@
 #include <vector>
 #include <list>
 #include <map>
-#include <mutex>
 
 #include "src/common/ptrlist.h"
 #include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/locstring.h"

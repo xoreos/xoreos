@@ -63,10 +63,10 @@
 
 #include <vector>
 #include <map>
-#include <mutex>
 
 #include "src/common/ustring.h"
 #include "src/common/singleton.h"
+#include "src/common/mutex.h"
 
 #include "src/graphics/texture.h"
 

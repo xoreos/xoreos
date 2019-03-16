@@ -48,9 +48,9 @@
  */
 
 #include <queue>
-#include <mutex>
 
 #include "src/common/error.h"
+#include "src/common/mutex.h"
 
 #include "src/sound/audiostream.h"
 

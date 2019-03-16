@@ -26,11 +26,11 @@
 #define GRAPHICS_AURORA_FONTMAN_H
 
 #include <map>
-#include <mutex>
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
+#include "src/common/mutex.h"
 
 #include "src/graphics/aurora/fonthandle.h"
 
