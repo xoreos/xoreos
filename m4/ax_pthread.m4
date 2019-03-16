@@ -479,6 +479,16 @@ if test "x$ax_pthread_ok" = "xyes"; then
         fi
 fi
 
+case "$target" in
+    *mingw*)
+        AC_CHECK_LIB(winpthread, nanosleep, has_winpthread=true, has_winpthread=false)
+        if test "x$has_winpthread" = xtrue; then
+            PTHREAD_LIBS="$PTHREAD_LIBS -lwinpthread"
+        fi
+        ;;
+    *)
+esac;
+
 test -n "$PTHREAD_CC" || PTHREAD_CC="$CC"
 
 AC_SUBST([PTHREAD_LIBS])
