@@ -35,57 +35,59 @@ namespace Graphics {
 
 namespace Aurora {
 
+const int kPauseDuration = 10;
+const int kYieldDuration = 10;
+
 AnimationThread::PoolModel::PoolModel(Model *m) : model(m) {
 }
 
-AnimationThread::AnimationThread() {
-}
-
 void AnimationThread::pause() {
-	_paused.store(true, std::memory_order_seq_cst);
-	skipFlush();
-	_modelsMutex.lock();
-	_modelsMutex.unlock();
+	PauseStatus expected = kPauseResumed;
+	if (!_pause.compare_exchange_strong(expected, kPauseRequested, std::memory_order_seq_cst))
+		return;
+
+	std::lock_guard<std::recursive_mutex> lock(_modelsMutex);
 }
 
 void AnimationThread::resume() {
-	_paused.store(false, std::memory_order_seq_cst);
+	_pause.store(kPauseResumed, std::memory_order_seq_cst);
 }
 
 void AnimationThread::registerModel(Model *model) {
-	if (_paused.load(std::memory_order_seq_cst))
+	if (_pause.load(std::memory_order_seq_cst) == kPausePaused) {
 		registerModelInternal(model);
-	else {
-		_registerMutex.lock();
+	} else {
+		std::lock_guard<std::recursive_mutex> lock(_registerMutex);
 		_registerQueue.push(model);
-		_registerMutex.unlock();
 	}
 }
 
 void AnimationThread::unregisterModel(Model *model) {
-	if (_paused.load(std::memory_order_seq_cst))
+	if (_pause.load(std::memory_order_seq_cst) == kPausePaused) {
 		unregisterModelInternal(model);
-	else {
-		skipFlush();
-		_modelsMutex.lock();
+	} else {
+		_yield.store(true, std::memory_order_seq_cst);
+		std::lock_guard<std::recursive_mutex> lock(_modelsMutex);
 		unregisterModelInternal(model);
-		_modelsMutex.unlock();
 	}
 }
 
 void AnimationThread::flush() {
 	FlushStatus expected = kFlushReady;
-	_flushing.compare_exchange_strong(expected, kFlushRequested, std::memory_order_seq_cst);
+	if (!_flush.compare_exchange_strong(expected, kFlushRequested, std::memory_order_seq_cst))
+		return;
 
-	expected = kFlushGranted;
-	if (!_flushing.compare_exchange_strong(expected, kFlushInProgress, std::memory_order_seq_cst))
-		return; // Fine, we can do it next frame or so.
+	bool inProgress = false;
+	while (!inProgress && (_pause.load(std::memory_order_seq_cst) != kPausePaused)) {
+		expected = kFlushGranted;
+		inProgress = _flush.compare_exchange_strong(expected, kFlushInProgress, std::memory_order_seq_cst);
+	}
 
 	for (auto &m : _models) {
 		m.second.model->flushNodeBuffers();
 	}
 
-	_flushing.store(kFlushReady, std::memory_order_seq_cst);
+	_flush.store(kFlushReady, std::memory_order_seq_cst);
 }
 
 void AnimationThread::threadMethod() {
@@ -93,23 +95,22 @@ void AnimationThread::threadMethod() {
 		if (EventMan.quitRequested())
 			break;
 
-		if (_paused.load(std::memory_order_seq_cst)) {
-			EventMan.delay(100);
+		if (handlePause())
 			continue;
-		}
 
-		_modelsMutex.lock();
+		handleYield();
+
+		std::lock_guard<std::recursive_mutex> lock(_modelsMutex);
 
 		registerQueuedModels();
 
 		if (_models.empty()) {
-			_modelsMutex.unlock();
 			EventMan.delay(100);
 			continue;
 		}
 
 		for (auto &m : _models) {
-			if (EventMan.quitRequested() || _paused.load(std::memory_order_seq_cst))
+			if (EventMan.quitRequested() || (_pause.load(std::memory_order_seq_cst) == kPausePaused))
 				break;
 
 			if (m.second.skippedCount < getNumIterationsToSkip(m.second.model)) {
@@ -130,20 +131,17 @@ void AnimationThread::threadMethod() {
 
 			m.second.model->manageAnimations(dt);
 		}
-
-		_modelsMutex.unlock();
-
-		EventMan.delay(10);
 	}
 }
 
 void AnimationThread::registerQueuedModels() {
-	if (_registerMutex.try_lock()) {
-		while (!_registerQueue.empty()) {
-			registerModelInternal(_registerQueue.front());
-			_registerQueue.pop();
-		}
-		_registerMutex.unlock();
+	std::unique_lock<std::recursive_mutex> lock(_registerMutex, std::try_to_lock);
+	if (!lock.owns_lock())
+		return;
+
+	while (!_registerQueue.empty()) {
+		registerModelInternal(_registerQueue.front());
+		_registerQueue.pop();
 	}
 }
 
@@ -169,17 +167,33 @@ uint8 AnimationThread::getNumIterationsToSkip(Model *model) const {
 	return roundf(dist) / 8.0f;
 }
 
-void AnimationThread::handleFlush() {
-	FlushStatus expected = kFlushRequested;
-	if (_flushing.compare_exchange_strong(expected, kFlushGranted, std::memory_order_seq_cst)) {
-		while (_flushing.load(std::memory_order_seq_cst) != kFlushReady)
-			; // Spin until flushing is finished
+bool AnimationThread::handlePause() {
+	if (_pause.load(std::memory_order_seq_cst) == kPausePaused) {
+		EventMan.delay(kPauseDuration);
+		return true;
 	}
+
+	PauseStatus expected = kPauseRequested;
+	if (_pause.compare_exchange_strong(expected, kPausePaused, std::memory_order_seq_cst)) {
+		EventMan.delay(kPauseDuration);
+		return true;
+	}
+
+	return false;
 }
 
-void AnimationThread::skipFlush() {
-	if (_flushing.load(std::memory_order_seq_cst) != kFlushInProgress)
-		_flushing.store(kFlushReady, std::memory_order_seq_cst);
+void AnimationThread::handleYield() {
+	bool expected = true;
+	if (_yield.compare_exchange_strong(expected, false, std::memory_order_seq_cst))
+		EventMan.delay(kYieldDuration);
+}
+
+void AnimationThread::handleFlush() {
+	FlushStatus expected = kFlushRequested;
+	if (_flush.compare_exchange_strong(expected, kFlushGranted, std::memory_order_seq_cst)) {
+		while (_flush.load(std::memory_order_seq_cst) != kFlushReady)
+			; // Spin until flushing is finished
+	}
 }
 
 } // End of namespace Aurora

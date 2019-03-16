@@ -43,8 +43,6 @@ class Model;
 
 class AnimationThread : public Common::Thread {
 public:
-	AnimationThread();
-
 	void pause();
 	void resume();
 
@@ -58,6 +56,12 @@ public:
 	void flush();
 
 private:
+	enum PauseStatus {
+		kPauseResumed,
+		kPauseRequested,
+		kPausePaused
+	};
+
 	enum FlushStatus {
 		kFlushReady,
 		kFlushRequested,
@@ -78,10 +82,10 @@ private:
 
 	ModelMap _models;
 	ModelQueue _registerQueue;
-	ModelQueue _unregisterQueue;
 
-	std::atomic<bool> _paused { true };
-	std::atomic<FlushStatus> _flushing { kFlushReady };
+	std::atomic_bool         _yield { false };
+	std::atomic<PauseStatus> _pause { kPauseResumed };
+	std::atomic<FlushStatus> _flush { kFlushReady };
 
 	std::recursive_mutex _modelsMutex;   ///< Mutex protecting access to the model map.
 	std::recursive_mutex _registerMutex; ///< Mutex protecting access to the registration queue.
@@ -92,16 +96,12 @@ private:
 	void registerModelInternal(Model *model);
 	void unregisterModelInternal(Model *model);
 
-	// Flushing
-
-	/** Grant flush if requested and wait until in finishes. */
-	void handleFlush();
-	/** Skip a pending flush to avoid a deadlock. */
-	void skipFlush();
-
 
 	void threadMethod();
 	uint8 getNumIterationsToSkip(Model *model) const;
+	bool handlePause();
+	void handleYield();
+	void handleFlush();
 };
 
 } // End of namespace Aurora
