@@ -25,9 +25,7 @@
 #ifndef ENGINES_KOTOR2_CONSOLE_H
 #define ENGINES_KOTOR2_CONSOLE_H
 
-#include <vector>
-
-#include "src/engines/aurora/console.h"
+#include "src/engines/kotorbase/console.h"
 
 namespace Engines {
 
@@ -35,40 +33,12 @@ namespace KotOR2 {
 
 class KotOR2Engine;
 
-class Console : public ::Engines::Console {
+class Console : public KotORBase::Console {
 public:
 	Console(KotOR2Engine &engine);
-	~Console();
-
 
 private:
-	KotOR2Engine *_engine;
-
-	// Caches
-	std::vector<Common::UString> _modules; ///< All known modules.
-	std::vector<Common::UString> _music;   ///< All known music resources.
-
-	size_t _maxSizeMusic;
-
-
-	// Updating the caches
-	void updateCaches();
-	void updateModules();
-	void updateMusic();
-
-	// The commands
-	void cmdExitModule          (const CommandLine &cl);
-	void cmdListModules         (const CommandLine &cl);
-	void cmdLoadModule          (const CommandLine &cl);
-	void cmdListMusic           (const CommandLine &cl);
-	void cmdStopMusic           (const CommandLine &cl);
-	void cmdPlayMusic           (const CommandLine &cl);
-	void cmdFlyCam              (const CommandLine &cl);
-	void cmdShowWalkmesh        (const CommandLine &cl);
-	void cmdShowTriggers        (const CommandLine &cl);
-	void cmdGetPCRoom           (const CommandLine &cl);
-	void cmdListRoomsVisibleFrom(const CommandLine &cl);
-	void cmdPlayAnim            (const CommandLine &cl);
+	const Common::UString &getModuleDirOptionName() const override;
 };
 
 } // End of namespace KotOR2

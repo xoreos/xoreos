@@ -25,12 +25,6 @@
 #ifndef ENGINES_KOTOR_GAME_H
 #define ENGINES_KOTOR_GAME_H
 
-#include <vector>
-
-#include "src/common/ustring.h"
-
-#include "src/sound/types.h"
-
 #include "src/engines/kotorbase/game.h"
 
 namespace Engines {
@@ -40,45 +34,29 @@ class Console;
 namespace KotOR {
 
 class KotOREngine;
-
 class Functions;
-
 class Version;
 
 class Game : public KotORBase::Game {
 public:
-	Game(KotOREngine &engine, ::Engines::Console &console, const Version &gameVersion);
+	Game(KotOREngine &engine, Engines::Console &console, const Version &gameVersion);
 	~Game();
 
-	/** Overwrite all currently playing music. */
-	void playMusic(const Common::UString &music = "");
-	/** Force all currently playing music stopped. */
-	void stopMusic();
-
-	void run();
-
-	/** Return a list of all modules. */
-	const std::vector<Common::UString> &getModules() const;
 	/** Does this module exist? */
 	bool hasModule(const Common::UString &module) const override;
+
+	void run() override;
 
 private:
 	KotOREngine *_engine;
 
-	Common::ScopedPtr<Functions> _functions;
-	std::vector<Common::UString> _modules;
+	std::unique_ptr<Functions> _functions;
 
 	const Version *_gameVersion;
 
-	::Engines::Console *_console;
-
-	Sound::ChannelHandle _menuMusic;
-
+	const Common::UString &getDefaultMenuMusic() const override;
 
 	void collectModules();
-
-	void stopMenuMusic();
-	void playMenuMusic(Common::UString music = "");
 
 	void mainMenu();
 	void runModule();

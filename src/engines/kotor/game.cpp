@@ -54,8 +54,10 @@ namespace Engines {
 
 namespace KotOR {
 
-Game::Game(KotOREngine &engine, ::Engines::Console &console, const Version &gameVersion) :
-	_engine(&engine), _gameVersion(&gameVersion), _console(&console) {
+Game::Game(KotOREngine &engine, Engines::Console &console, const Version &gameVersion) :
+		KotORBase::Game(console),
+		_engine(&engine),
+		_gameVersion(&gameVersion) {
 
 	_functions.reset(new Functions(*this));
 	collectModules();
@@ -99,41 +101,6 @@ void Game::runModule() {
 	_module->clear();
 }
 
-void Game::playMenuMusic(Common::UString music) {
-	stopMenuMusic();
-
-	if (music.empty())
-		music = "mus_theme_cult";
-
-	_menuMusic = playSound(music, Sound::kSoundTypeMusic, true);
-}
-
-void Game::stopMenuMusic() {
-	SoundMan.stopChannel(_menuMusic);
-}
-
-void Game::playMusic(const Common::UString &music) {
-	if (_module && _module->isRunning()) {
-		KotORBase::Area *area = _module->getCurrentArea();
-		if (area)
-			area->playAmbientMusic(music);
-
-		return;
-	}
-
-	playMenuMusic(music);
-}
-
-void Game::stopMusic() {
-	stopMenuMusic();
-
-	if (_module && _module->isRunning()) {
-		KotORBase::Area *area = _module->getCurrentArea();
-		if (area)
-			area->stopAmbientMusic();
-	}
-}
-
 void Game::mainMenu() {
 	EventMan.flushEvents();
 
@@ -150,6 +117,11 @@ void Game::mainMenu() {
 
 	_console->enableCommand("loadmodule");
 	_console->enableCommand("exitmodule");
+}
+
+const Common::UString &Game::getDefaultMenuMusic() const {
+	static Common::UString music("mus_theme_cult");
+	return music;
 }
 
 void Game::collectModules() {
@@ -174,10 +146,6 @@ void Game::collectModules() {
 	}
 
 	std::sort(_modules.begin(), _modules.end(), Common::UString::iless());
-}
-
-const std::vector<Common::UString> &Game::getModules() const {
-	return _modules;
 }
 
 bool Game::hasModule(const Common::UString &module) const {

@@ -50,6 +50,8 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/creaturesearch.h \
     src/engines/kotorbase/cameracontroller.h \
     src/engines/kotorbase/creatureinfo.h \
+    src/engines/kotorbase/engine.h \
+    src/engines/kotorbase/console.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
@@ -79,6 +81,8 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/creaturesearch.cpp \
     src/engines/kotorbase/cameracontroller.cpp \
     src/engines/kotorbase/creatureinfo.cpp \
+    src/engines/kotorbase/engine.cpp \
+    src/engines/kotorbase/console.cpp \
     $(EMPTY)
 
 include src/engines/kotorbase/script/rules.mk

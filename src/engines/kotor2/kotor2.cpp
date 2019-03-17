@@ -108,12 +108,6 @@ bool KotOR2Engine::changeLanguage() {
 	return true;
 }
 
-Game &KotOR2Engine::getGame() {
-	assert(_game);
-
-	return *_game;
-}
-
 void KotOR2Engine::run() {
 	init();
 	if (EventMan.quitRequested())

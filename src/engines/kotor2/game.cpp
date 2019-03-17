@@ -52,8 +52,10 @@ namespace Engines {
 
 namespace KotOR2 {
 
-Game::Game(KotOR2Engine &engine, ::Engines::Console &console, Aurora::Platform platform) :
-	_engine(&engine), _platform(platform), _console(&console) {
+Game::Game(KotOR2Engine &engine, Engines::Console &console, Aurora::Platform platform) :
+		KotORBase::Game(console),
+		_engine(&engine),
+		_platform(platform) {
 
 	_functions.reset(new Functions(*this));
 	collectModules();
@@ -97,41 +99,6 @@ void Game::runModule() {
 	_module->clear();
 }
 
-void Game::playMenuMusic(Common::UString music) {
-	stopMenuMusic();
-
-	if (music.empty())
-		music = "mus_sion";
-
-	_menuMusic = playSound(music, Sound::kSoundTypeMusic, true);
-}
-
-void Game::stopMenuMusic() {
-	SoundMan.stopChannel(_menuMusic);
-}
-
-void Game::playMusic(const Common::UString &music) {
-	if (_module && _module->isRunning()) {
-		KotORBase::Area *area = _module->getCurrentArea();
-		if (area)
-			area->playAmbientMusic(music);
-
-		return;
-	}
-
-	playMenuMusic(music);
-}
-
-void Game::stopMusic() {
-	stopMenuMusic();
-
-	if (_module && _module->isRunning()) {
-		KotORBase::Area *area = _module->getCurrentArea();
-		if (area)
-			area->stopAmbientMusic();
-	}
-}
-
 void Game::mainMenu() {
 	EventMan.flushEvents();
 
@@ -146,6 +113,11 @@ void Game::mainMenu() {
 
 	_console->enableCommand("loadmodule");
 	_console->enableCommand("exitmodule");
+}
+
+const Common::UString &Game::getDefaultMenuMusic() const {
+	static Common::UString music("mus_sion");
+	return music;
 }
 
 void Game::collectModules() {
@@ -170,10 +142,6 @@ void Game::collectModules() {
 	}
 
 	std::sort(_modules.begin(), _modules.end(), Common::UString::iless());
-}
-
-const std::vector<Common::UString> &Game::getModules() const {
-	return _modules;
 }
 
 bool Game::hasModule(const Common::UString &module) const {

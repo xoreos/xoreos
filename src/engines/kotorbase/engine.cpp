@@ -19,51 +19,20 @@
  */
 
 /** @file
- *  The context handling the gameplay in Star Wars: Knights of the Old Republic II - The Sith Lords.
+ *  Base engine for KotOR games.
  */
 
-#ifndef ENGINES_KOTOR2_GAME_H
-#define ENGINES_KOTOR2_GAME_H
-
-#include "src/engines/kotorbase/game.h"
+#include "src/engines/kotorbase/engine.h"
 
 namespace Engines {
 
-class Console;
+namespace KotORBase {
 
-namespace KotOR2 {
+Game &KotOREngine::getGame() {
+	assert(_game);
+	return *_game.get();
+}
 
-class KotOR2Engine;
-
-class Functions;
-
-class Game : public KotORBase::Game {
-public:
-	Game(KotOR2Engine &engine, Engines::Console &console, Aurora::Platform platform);
-	~Game();
-
-	/** Does this module exist? */
-	bool hasModule(const Common::UString &module) const override;
-
-	void run() override;
-
-private:
-	KotOR2Engine *_engine;
-
-	std::unique_ptr<Functions> _functions;
-
-	Aurora::Platform _platform;
-
-	const Common::UString &getDefaultMenuMusic() const override;
-
-	void collectModules();
-
-	void mainMenu();
-	void runModule();
-};
-
-} // End of namespace KotOR2
+} // End of namespace KotORBase
 
 } // End of namespace Engines
-
-#endif // ENGINES_KOTOR2_GAME_H

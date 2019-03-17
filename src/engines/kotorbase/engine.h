@@ -19,65 +19,32 @@
  */
 
 /** @file
- *  The context handling the gameplay in KotOR games.
+ *  Base engine for KotOR games.
  */
 
-#include <cassert>
+#ifndef ENGINES_KOTORBASE_ENGINE_H
+#define ENGINES_KOTORBASE_ENGINE_H
 
-#include "src/sound/sound.h"
+#include <memory>
 
-#include "src/engines/aurora/util.h"
+#include "src/engines/engine.h"
 
 #include "src/engines/kotorbase/game.h"
-#include "src/engines/kotorbase/area.h"
 
 namespace Engines {
 
 namespace KotORBase {
 
-Game::Game(Engines::Console &console) : _console(&console) {
-}
+class KotOREngine : public Engines::Engine {
+public:
+	Game &getGame();
 
-void Game::playMusic(const Common::UString &music) {
-	if (_module && _module->isRunning()) {
-		KotORBase::Area *area = _module->getCurrentArea();
-		if (area)
-			area->playAmbientMusic(music);
-
-		return;
-	}
-
-	playMenuMusic(music);
-}
-
-void Game::stopMusic() {
-	stopMenuMusic();
-
-	if (_module && _module->isRunning()) {
-		KotORBase::Area *area = _module->getCurrentArea();
-		if (area)
-			area->stopAmbientMusic();
-	}
-}
-
-void Game::playMenuMusic(Common::UString music) {
-	stopMenuMusic();
-
-	if (music.empty())
-		music = getDefaultMenuMusic();
-
-	_menuMusic = playSound(music, Sound::kSoundTypeMusic, true);
-}
-
-void Game::stopMenuMusic() {
-	SoundMan.stopChannel(_menuMusic);
-}
-
-Module &Game::getModule() {
-	assert(_module);
-	return *_module;
-}
+protected:
+	std::unique_ptr<Game> _game;
+};
 
 } // End of namespace KotORBase
 
 } // End of namespace Engines
+
+#endif // ENGINES_KOTORBASE_ENGINE_H

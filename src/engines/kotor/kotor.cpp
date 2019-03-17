@@ -104,12 +104,6 @@ bool KotOREngine::changeLanguage() {
 	return true;
 }
 
-Game &KotOREngine::getGame() {
-	assert(_game);
-
-	return *_game;
-}
-
 void KotOREngine::run() {
 	init();
 	if (EventMan.quitRequested())

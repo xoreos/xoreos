@@ -25,11 +25,9 @@
 #ifndef ENGINES_KOTOR_KOTOR_H
 #define ENGINES_KOTOR_KOTOR_H
 
-#include "src/common/scopedptr.h"
-
 #include "src/aurora/types.h"
 
-#include "src/engines/engine.h"
+#include "src/engines/kotorbase/engine.h"
 
 namespace Engines {
 
@@ -40,7 +38,7 @@ namespace KotOR {
 class Version;
 class Game;
 
-class KotOREngine : public Engines::Engine {
+class KotOREngine : public KotORBase::KotOREngine {
 public:
 	KotOREngine();
 	~KotOREngine();
@@ -52,22 +50,17 @@ public:
 	bool getLanguage(Aurora::Language &language) const;
 	bool changeLanguage();
 
-	/** Return the context running the actual game. */
-	Game &getGame();
-
 
 protected:
 	void run();
 
 
 private:
-	Common::ScopedPtr<Version> _version;
+	std::unique_ptr<Version> _version;
 
 	Aurora::Language _language;
 
 	bool _hasLiveKey;
-
-	Common::ScopedPtr<Game> _game;
 
 
 	bool hasYavin4Module() const;

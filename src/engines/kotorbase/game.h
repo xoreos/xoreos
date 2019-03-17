@@ -25,30 +25,57 @@
 #ifndef ENGINES_KOTORBASE_GAME_H
 #define ENGINES_KOTORBASE_GAME_H
 
-#include "src/common/scopedptr.h"
+#include <vector>
+#include <memory>
 
-namespace Common {
-	class UString;
-}
+#include "src/common/ustring.h"
+
+#include "src/sound/types.h"
+
+#include "src/engines/kotorbase/module.h"
 
 namespace Engines {
 
-namespace KotORBase {
+class Console;
 
-class Module;
+namespace KotORBase {
 
 class Game {
 public:
+	Game(Engines::Console &console);
 	virtual ~Game() = default;
+
+	// Modules
+
+	/** Return a list of all modules. */
+	const std::vector<Common::UString> &getModules() const { return _modules; }
+	/** Does this module exist? */
+	virtual bool hasModule(const Common::UString &module) const = 0;
+
+	// Music
+
+	/** Overwrite all currently playing music. */
+	void playMusic(const Common::UString &music = "");
+	/** Force all currently playing music stopped. */
+	void stopMusic();
+
 
 	/** Return the module context. */
 	KotORBase::Module &getModule();
 
-	/** Does this module exist? */
-	virtual bool hasModule(const Common::UString &module) const = 0;
+	virtual void run() = 0;
 
 protected:
-	Common::ScopedPtr<KotORBase::Module> _module;
+	Console *_console;
+	std::unique_ptr<KotORBase::Module> _module;
+	std::vector<Common::UString> _modules;
+	Sound::ChannelHandle _menuMusic;
+
+	virtual const Common::UString &getDefaultMenuMusic() const = 0;
+
+private:
+	void stopMenuMusic();
+	void playMenuMusic(Common::UString music = "");
 };
 
 } // End of namespace KotORBase
