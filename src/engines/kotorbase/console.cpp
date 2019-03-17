@@ -74,6 +74,10 @@ Console::Console(KotOREngine &engine) :
 			"Usage: playanim <base> [<head>]\nPlay the specified animations on the active object");
 	registerCommand("additem"             , boost::bind(&Console::cmdAddItem             , this, _1),
 			"Usage: additem <item> [<count>]\nAdd the specified item to the active object");
+	registerCommand("getactiveobject"     , boost::bind(&Console::cmdGetActiveObject     , this, _1),
+			"Usage: getactiveobject\nGet a tag of the active object");
+	registerCommand("actionmovetoobject"  , boost::bind(&Console::cmdActionMoveToObject  , this, _1),
+			"Usage: actionmovetoobject <target> [<range>]\nMake the active creature move to a specified object");
 }
 
 void Console::updateCaches() {
@@ -203,6 +207,55 @@ void Console::cmdAddItem(const CommandLine &cl) {
 		Common::parseString(args[1], count);
 
 	_engine->getGame().getModule().addItemToActiveObject(args[0], count);
+}
+
+void Console::cmdGetActiveObject(const CommandLine &UNUSED(cl)) {
+	Area *area = _engine->getGame().getModule().getCurrentArea();
+	Object *object = area->getActiveObject();
+
+	if (!object) {
+		print("No object active");
+		return;
+	}
+
+	printf("Active object: %s", object->getTag().c_str());
+}
+
+void Console::cmdActionMoveToObject(const CommandLine &cl) {
+	if (cl.args.empty()) {
+		printCommandHelp(cl.cmd);
+		return;
+	}
+
+	std::vector<Common::UString> args;
+	Common::UString::split(cl.args, ' ', args);
+	float range = 1.0f;
+
+	if (args.size() > 1)
+		Common::parseString(args[1], range);
+
+	Area *area = _engine->getGame().getModule().getCurrentArea();
+
+	Creature *creature = ObjectContainer::toCreature(area->getActiveObject());
+	if (!creature) {
+		print("Active object is not a creature");
+		return;
+	}
+
+	Object *object = area->getObjectByTag(args[0]);
+	if (!object) {
+		printf("Object with tag \"%s\" not found", args[0].c_str());
+		return;
+	}
+
+	float x, y, z;
+	object->getPosition(x, y, z);
+
+	Action action(kActionMoveToPoint);
+	action.location = glm::vec3(x, y, z);
+	action.range = range;
+	creature->clearAllActions();
+	creature->enqueueAction(action);
 }
 
 } // End of namespace KotORBase

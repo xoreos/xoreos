@@ -69,6 +69,8 @@ private:
 	void cmdListRoomsVisibleFrom(const CommandLine &cl);
 	void cmdPlayAnim            (const CommandLine &cl);
 	void cmdAddItem             (const CommandLine &cl);
+	void cmdGetActiveObject     (const CommandLine &cl);
+	void cmdActionMoveToObject  (const CommandLine &cl);
 };
 
 } // End of namespace KotORBase
