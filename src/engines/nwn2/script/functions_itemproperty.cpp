@@ -38,38 +38,62 @@ namespace NWN2 {
 
 void Functions::getItemPropertyType(Aurora::NWScript::FunctionContext &ctx) {
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
-	if (prop)
-		ctx.getReturn() = prop->getItemPropertyType();
+	ctx.getReturn() = (prop) ? prop->getItemPropertyType() : -1;
 }
 
 void Functions::getItemPropertySubType(Aurora::NWScript::FunctionContext &ctx) {
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
-	if (prop)
-		ctx.getReturn() = prop->getItemPropertySubType();
+	int result = -1;
+	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
+		const uint16 subType = prop->getItemPropertySubType();
+		if (subType != UINT16_MAX)
+			result = (int) subType;
+	}
+	ctx.getReturn() = result;
 }
 
 void Functions::getItemPropertyParam1(Aurora::NWScript::FunctionContext &ctx) {
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
-	if (prop)
-		ctx.getReturn() = prop->getItemPropertyParam1();
+	int result = -1;
+	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
+		const uint8 param1 = prop->getItemPropertyParam1();
+		if (param1 != UINT8_MAX)
+			result = (int) param1;
+	}
+	ctx.getReturn() = result;
 }
 
 void Functions::getItemPropertyParam1Value(Aurora::NWScript::FunctionContext &ctx) {
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
-	if (prop)
-		ctx.getReturn() = prop->getItemPropertyParam1Value();
+	int result = -1;
+	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
+		const uint8 param1Value = prop->getItemPropertyParam1Value();
+		if (param1Value != UINT8_MAX)
+			result = (int) param1Value;
+	}
+	ctx.getReturn() = result;
 }
 
 void Functions::getItemPropertyCostTable(Aurora::NWScript::FunctionContext &ctx) {
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
-	if (prop)
-		ctx.getReturn() = prop->getItemPropertyCostTable();
+	int result = -1;
+	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
+		const uint8 costTable = prop->getItemPropertyCostTable();
+		if (costTable != UINT8_MAX)
+			result = (int) costTable;
+	}
+	ctx.getReturn() = result;
 }
 
 void Functions::getItemPropertyCostTableValue(Aurora::NWScript::FunctionContext &ctx) {
 	ItemProperty *prop = NWN2::ObjectContainer::toItemProperty(ctx.getParams()[0].getEngineType());
-	if (prop)
-		ctx.getReturn() = prop->getItemPropertyCostTableValue();
+	int result = -1;
+	if (prop && prop->getItemPropertyType() != kItemPropertyInvalid) {
+		const uint8 costTableValue = prop->getItemPropertyCostTableValue();
+		if (costTableValue != UINT8_MAX)
+			result = (int) costTableValue;
+	}
+	ctx.getReturn() = result;
 }
 
 void Functions::getIsItemPropertyValid(Aurora::NWScript::FunctionContext &ctx) {
