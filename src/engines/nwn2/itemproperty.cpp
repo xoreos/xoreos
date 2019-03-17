@@ -76,10 +76,14 @@ uint8 ItemProperty::getItemPropertyCostTableValue() const {
 }
 
 bool ItemProperty::getIsItemPropertyValid() const {
+	// Check if marked invalid
+	if (_type == kItemPropertyInvalid || _type >= kItemPropertyMAX)
+		return false;
+
 	// Load the item properties row
 	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("itempropdef");
 	const size_t count = twoDA.getRowCount();
-	if (_type >= count)
+	if (count <= static_cast<size_t>(_type))
 		return false;
 
 	// Check the item type
@@ -128,7 +132,7 @@ void ItemProperty::load(ItemPropertyType type, uint16 subtype, uint8 param1, uin
 	// Load the cost table row from the 2da data
 	const Aurora::TwoDAFile &twoDA = TwoDAReg.get2DA("itempropdef");
 	const size_t count = twoDA.getRowCount();
-	if (_type >= count)
+	if (count <= static_cast<size_t>(_type))
 		return;
 
 	const Aurora::TwoDARow &row = twoDA.getRow(_type);

@@ -185,27 +185,31 @@ void Functions::getItemInSlot(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::getFirstItemProperty(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
-	if (!item)
-		return;
+	if (item) {
+		ItemProperty *firstIP = item->getFirstItemProperty();
+		if (firstIP) {
+			ItemProperty prop(*firstIP);
+			ctx.getReturn() = prop;
+			return;
+		}
+	}
 
-	ItemProperty *firstIP = item->getFirstItemProperty();
-	if (!firstIP)
-		return;
-
-	ItemProperty iprop(*firstIP);
+	ItemProperty iprop(kItemPropertyInvalid, 0);
 	ctx.getReturn() = iprop;
 }
 
 void Functions::getNextItemProperty(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
-	if (!item)
-		return;
+	if (item) {
+		ItemProperty *nextIP = item->getNextItemProperty();
+		if (nextIP) {
+			ItemProperty prop(*nextIP);
+			ctx.getReturn() = prop;
+			return;
+		}
+	}
 
-	ItemProperty *nextIP = item->getNextItemProperty();
-	if (!nextIP)
-		return;
-
-	ItemProperty iprop(*nextIP);
+	ItemProperty iprop(kItemPropertyInvalid, 0);
 	ctx.getReturn() = iprop;
 }
 

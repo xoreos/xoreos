@@ -342,6 +342,7 @@ enum CClass {
 
 // 'itempropdef.2da' rows
 enum ItemPropertyType {
+	kItemPropertyInvalid                             = -1,
 	kItemPropertyAbilityBonus                        =  0,
 	kItemPropertyACBonus                                 ,
 	kItemPropertyACBonusVsAlignmentGroup                 ,
@@ -418,7 +419,7 @@ enum ItemPropertyType {
 	kItemPropertyTurnResistance                          ,
 	kItemPropertyMassiveCriticals                        ,
 	kItemPropertyFreedomOfMovement                       ,
-	kItemPropertyPoison                                  ,
+	kItemPropertyPoison                                  , // Not implemented
 	kItemPropertyMonsterDamage                           ,
 	kItemPropertyImmunitySpellsByLevel                   ,
 	kItemPropertySpecialWalk                             ,
@@ -433,6 +434,7 @@ enum ItemPropertyType {
 	kItemPropertyWild                                    , // Not used
 	kItemPropertyEtherealness                            , // Not used
 	kItemPropertyDamageReduction                         ,
+	kItemPropertyMAX
 };
 
 // iprp_damagetypes.2da rows
