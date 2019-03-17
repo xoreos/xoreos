@@ -32,6 +32,7 @@
 #include "src/aurora/2dareg.h"
 #include "src/aurora/gff3file.h"
 #include "src/aurora/locstring.h"
+#include "src/aurora/resman.h"
 
 #include "src/graphics/aurora/modelnode.h"
 #include "src/graphics/aurora/model.h"
@@ -358,6 +359,11 @@ void Creature::getPartModels(PartModels &parts, uint32 state, uint8 textureVaria
 	if (_modelType == "B") {
 		parts.body = appearance.getString(Common::UString("model") + state);
 		parts.bodyTexture = appearance.getString(Common::UString("tex") + state) + Common::UString::format("%02u", textureVariation);
+
+		// Fall back to a default texture variation
+		if (!ResMan.hasResource(parts.bodyTexture))
+			parts.bodyTexture = appearance.getString(Common::UString("tex") + state) + "01";
+
 	} else {
 		parts.body = appearance.getString("race");
 		parts.bodyTexture = appearance.getString("racetex");
