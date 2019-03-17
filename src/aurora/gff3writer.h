@@ -55,6 +55,39 @@ public:
 	void write(Common::WriteStream &stream);
 
 private:
+	/** A special struct type for representing void data. */
+	struct VoidData {
+		Common::ScopedArray<byte> data;
+		uint32 size;
+
+		VoidData() : size(0) {
+		}
+
+		VoidData(const VoidData &voidData) : data(new byte[voidData.size]), size(voidData.size) {
+			std::memcpy(data.get(), voidData.data.get(), voidData.size);
+		}
+
+		VoidData &operator=(const VoidData &rhs) {
+			data.reset(new byte[rhs.size]);
+			std::memcpy(data.get(), rhs.data.get(), rhs.size);
+			return *this;
+		}
+
+		bool operator==(const VoidData &rhs) const {
+			if (size != rhs.size)
+				return false;
+
+			return std::memcmp(data.get(), rhs.data.get(), size) == 0;
+		}
+
+		bool operator<(const VoidData &rhs) const {
+			if (size != rhs.size)
+				return size < rhs.size;
+			else
+				return std::memcmp(data.get(), rhs.data.get(), size) < 0;
+		}
+	};
+
 	/** An implementation for a field. */
 	struct Field : boost::noncopyable {
 		GFF3Struct::FieldType type;
@@ -75,8 +108,7 @@ private:
 
 		LocString locStringValue;
 
-		Common::ScopedArray<byte> voidData;
-		uint32 voidSize;
+		VoidData voidValue;
 	};
 
 	typedef boost::shared_ptr<Field> FieldPtr;
