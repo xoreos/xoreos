@@ -473,13 +473,6 @@ void Creature::loadEquippedModel() {
 void Creature::attachWeaponModel(InventorySlot slot) {
 	assert((slot == kInventorySlotLeftWeapon) || (slot == kInventorySlotRightWeapon));
 
-	Graphics::Aurora::Model *weaponModel = 0;
-
-	if (_info.isInventorySlotEquipped(slot)) {
-		Item *item = _equipment[slot];
-		weaponModel = loadModelObject(item->getModelName());
-	}
-
 	Common::UString hookNode;
 
 	switch (slot) {
@@ -491,6 +484,20 @@ void Creature::attachWeaponModel(InventorySlot slot) {
 			break;
 		default:
 			throw Common::Exception("Unsupported equip slot");
+	}
+
+	if (!_model->hasNode(hookNode)) {
+		warning("Creature::attachWeaponModel(): Model \"%s\" does not have node \"%s\"",
+		        _model->getName().c_str(), hookNode.c_str());
+
+		return;
+	}
+
+	Graphics::Aurora::Model *weaponModel = 0;
+
+	if (_info.isInventorySlotEquipped(slot)) {
+		Item *item = _equipment[slot];
+		weaponModel = loadModelObject(item->getModelName());
 	}
 
 	GfxMan.lockFrame();
