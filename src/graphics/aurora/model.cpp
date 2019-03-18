@@ -478,21 +478,22 @@ const std::vector<ModelNode *> &Model::getNodes() {
 
 void Model::attachModel(const Common::UString &nodeName, Model *model) {
 	ModelNode *node = getNode(nodeName);
-	if (node) {
-		std::map<Common::UString, Model *>::iterator m = _attachedModels.find(nodeName);
-		if (m != _attachedModels.end()) {
-			const Model *prevModel = m->second;
-			_attachedModels.erase(m);
-			delete prevModel;
-		}
+	if (!node)
+		return;
 
-		node->_attachedModel = model;
-
-		if (model)
-			_attachedModels.insert(std::pair<Common::UString, Model *>(nodeName, model));
-
-		createBound();
+	std::map<Common::UString, Model *>::iterator m = _attachedModels.find(nodeName);
+	if (m != _attachedModels.end()) {
+		const Model *prevModel = m->second;
+		_attachedModels.erase(m);
+		delete prevModel;
 	}
+
+	node->_attachedModel = model;
+
+	if (model)
+		_attachedModels.insert(std::pair<Common::UString, Model *>(nodeName, model));
+
+	createBound();
 }
 
 Animation *Model::getAnimation(const Common::UString &anim) {
