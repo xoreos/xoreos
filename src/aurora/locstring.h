@@ -95,6 +95,11 @@ public:
 	/** Write the LocString to a write stream. */
 	void writeLocString(Common::WriteStream &stream, bool withNullTerminate = false) const;
 
+	/** Equality operator for list search. */
+	bool operator==(const LocString &rhs) const;
+	/** Relational operator for map find. */
+	bool operator<(const LocString &rhs) const;
+
 private:
 	typedef std::map<uint32, Common::UString> StringMap;
 
