@@ -40,6 +40,7 @@
 #include "src/common/threads.h"
 #include "src/common/debugman.h"
 #include "src/common/configman.h"
+#include "src/common/random.h"
 #ifdef ENABLE_XML
 #include "src/common/xml.h"
 #endif
@@ -50,21 +51,37 @@
 #include "src/aurora/talkman.h"
 #include "src/aurora/util.h"
 
+#include "src/aurora/nwscript/objectman.h"
+#include "src/aurora/nwscript/functionman.h"
+
 #include "src/graphics/queueman.h"
 #include "src/graphics/graphics.h"
+#include "src/graphics/camera.h"
+#include "src/graphics/windowman.h"
+#include "src/graphics/yuv_to_rgb.h"
+
+#include "src/graphics/aurora/textureman.h"
+#include "src/graphics/aurora/cursorman.h"
+#include "src/graphics/aurora/fontman.h"
+
+#include "src/graphics/mesh/meshman.h"
+
+#include "src/graphics/shader/surfaceman.h"
+#include "src/graphics/shader/materialman.h"
+#include "src/graphics/shader/shader.h"
 
 #include "src/sound/sound.h"
 
 #include "src/events/requests.h"
 #include "src/events/events.h"
 #include "src/events/timerman.h"
+#include "src/events/notifications.h"
 
 #include "src/engines/enginemanager.h"
 #include "src/engines/gamethread.h"
 
-#include "src/graphics/aurora/textureman.h"
-#include "src/graphics/aurora/cursorman.h"
-#include "src/graphics/aurora/fontman.h"
+#include "src/engines/aurora/tokenman.h"
+#include "src/engines/aurora/flycamera.h"
 
 static void initPlatform();
 static void initConfig();
@@ -328,7 +345,12 @@ static void deinit() {
 	Aurora::ResourceManager::destroy();
 	Aurora::FileTypeManager::destroy();
 
+	Aurora::NWScript::ObjectManager::destroy();
+	Aurora::NWScript::FunctionManager::destroy();
+
 	Engines::EngineManager::destroy();
+	Engines::TokenManager::destroy();
+	Engines::FlyCamera::destroy();
 
 	Events::EventsManager::destroy();
 	Events::RequestManager::destroy();
@@ -338,7 +360,19 @@ static void deinit() {
 
 	Graphics::GraphicsManager::destroy();
 	Graphics::QueueManager::destroy();
+	Graphics::CameraManager::destroy();
+	Graphics::WindowManager::destroy();
+	Graphics::YUVToRGBManager::destroy();
+
+	Graphics::Mesh::MeshManager::destroy();
+
+	Graphics::Shader::SurfaceManager::destroy();
+	Graphics::Shader::MaterialManager::destroy();
+	Graphics::Shader::ShaderManager::destroy();
+
+	Events::NotificationManager::destroy();
 
 	Common::DebugManager::destroy();
 	Common::ConfigManager::destroy();
+	Common::Random::destroy();
 }
