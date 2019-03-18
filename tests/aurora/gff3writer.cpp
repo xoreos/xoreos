@@ -232,3 +232,115 @@ GTEST_TEST(GFF3Writer, WriteNestedStructs) {
 
 	delete writeStream;
 }
+
+GTEST_TEST(GFF3Writer, WriteEquivalentValues) {
+	Aurora::GFF3Writer writer(MKTAG('G', 'F', 'F', ' '));
+	Aurora::GFF3WriterStructPtr strct = writer.getTopLevel();
+
+	strct->addUint64("FieldUint64_1", 230194124);
+	strct->addUint64("FieldUint64_2", 230194124);
+
+	strct->addSint64("FieldSint64_1", -32);
+	strct->addSint64("FieldSint64_2", -32);
+
+	strct->addDouble("FieldDouble_1", 0.75);
+	strct->addDouble("FieldDouble_2", 0.75);
+	strct->addDouble("FieldDouble_3", 0.75);
+
+	strct->addExoString("FieldExoString_1", "Hello World :)");
+	strct->addExoString("FieldExoString_2", "Hello World :)");
+	strct->addExoString("FieldExoString_3", "Hello World :)");
+
+	Aurora::LocString locString;
+	locString.setString(Aurora::kLanguageEnglish, Aurora::kLanguageGenderMale, "Localized Test String");
+	locString.setString(Aurora::kLanguageGerman, Aurora::kLanguageGenderMale, "Lokalisierter Test String");
+
+	strct->addLocString("FieldLocString_1", locString);
+	strct->addLocString("FieldLocString_2", locString);
+
+	writer.getTopLevel()->addVoid("FieldVoid_1", reinterpret_cast<const byte *>("![DATA]!"), 8);
+	writer.getTopLevel()->addVoid("FieldVoid_2", reinterpret_cast<const byte *>("![DATA]!"), 8);
+
+	writer.getTopLevel()->addVector("FieldVector_1", glm::vec3(0.0f, -13.5f, 42.75f));
+	writer.getTopLevel()->addVector("FieldVector_2", glm::vec3(0.0f, -13.5f, 42.75f));
+
+	writer.getTopLevel()->addOrientation("FieldOrient_1", glm::vec4(0.0f, -13.5f, 42.75f, 51.875f));
+	writer.getTopLevel()->addOrientation("FieldOrient_2", glm::vec4(0.0f, -13.5f, 42.75f, 51.875f));
+
+	Common::MemoryWriteStreamDynamic *writeStream = new Common::MemoryWriteStreamDynamic(true);
+	writer.write(*writeStream);
+
+	Aurora::GFF3File gff(new Common::MemoryReadStream(writeStream->getData(), writeStream->size()));
+
+	EXPECT_EQ(gff.getID(), MKTAG('G', 'F', 'F', ' '));
+	EXPECT_EQ(gff.getVersion(), MKTAG('V', '3', '.', '2'));
+
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldUint64_1"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldUint64_2"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldSint64_1"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldSint64_2"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldDouble_1"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldDouble_2"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldDouble_3"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldExoString_1"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldExoString_2"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldExoString_3"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldLocString_1"));
+	EXPECT_TRUE(gff.getTopLevel().hasField("FieldLocString_2"));
+
+	EXPECT_EQ(gff.getTopLevel().getUint("FieldUint64_1"), 230194124);
+	EXPECT_EQ(gff.getTopLevel().getUint("FieldUint64_2"), 230194124);
+	EXPECT_EQ(gff.getTopLevel().getSint("FieldSint64_1"), -32);
+	EXPECT_EQ(gff.getTopLevel().getSint("FieldSint64_2"), -32);
+	EXPECT_EQ(gff.getTopLevel().getDouble("FieldDouble_1"), 0.75);
+	EXPECT_EQ(gff.getTopLevel().getDouble("FieldDouble_2"), 0.75);
+	EXPECT_EQ(gff.getTopLevel().getDouble("FieldDouble_3"), 0.75);
+	EXPECT_EQ(gff.getTopLevel().getString("FieldExoString_1"), "Hello World :)");
+	EXPECT_EQ(gff.getTopLevel().getString("FieldExoString_2"), "Hello World :)");
+	EXPECT_EQ(gff.getTopLevel().getString("FieldExoString_3"), "Hello World :)");
+
+	Aurora::LocString loc1, loc2;
+	EXPECT_TRUE(gff.getTopLevel().getLocString("FieldLocString_1", loc1));
+	EXPECT_TRUE(gff.getTopLevel().getLocString("FieldLocString_2", loc2));
+	EXPECT_EQ(loc1, locString);
+	EXPECT_EQ(loc2, locString);
+
+	Common::SeekableReadStream *data1 = gff.getTopLevel().getData("FieldVoid_1");
+	Common::SeekableReadStream *data2 = gff.getTopLevel().getData("FieldVoid_2");
+	char voidData[8];
+	data1->read(voidData, 8);
+	EXPECT_STREQ(Common::UString(voidData, 8).c_str(), "![DATA]!");
+	data2->read(voidData, 8);
+	EXPECT_STREQ(Common::UString(voidData, 8).c_str(), "![DATA]!");
+	delete data1;
+	delete data2;
+
+	float x, y, z, w;
+	x = 0.0f; y = 0.0f; z = 0.0f;
+	gff.getTopLevel().getVector("FieldVector_1", x, y, z);
+	EXPECT_EQ(x, 0.0f);
+	EXPECT_EQ(y, -13.5f);
+	EXPECT_EQ(z, 42.75f);
+
+	x = 0.0f; y = 0.0f; z = 0.0f;
+	gff.getTopLevel().getVector("FieldVector_2", x, y, z);
+	EXPECT_EQ(x, 0.0f);
+	EXPECT_EQ(y, -13.5f);
+	EXPECT_EQ(z, 42.75f);
+
+	x = 0.0f; y = 0.0f; z = 0.0f; w = 0.0f;
+	gff.getTopLevel().getOrientation("FieldOrient_1", x, y, z, w);
+	EXPECT_EQ(x, 0.0f);
+	EXPECT_EQ(y, -13.5f);
+	EXPECT_EQ(z, 42.75f);
+	EXPECT_EQ(w, 51.875f);
+
+	x = 0.0f; y = 0.0f; z = 0.0f; w = 0.0f;
+	gff.getTopLevel().getOrientation("FieldOrient_2", x, y, z, w);
+	EXPECT_EQ(x, 0.0f);
+	EXPECT_EQ(y, -13.5f);
+	EXPECT_EQ(z, 42.75f);
+	EXPECT_EQ(w, 51.875f);
+
+	delete writeStream;
+}
