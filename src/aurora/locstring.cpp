@@ -200,4 +200,26 @@ void LocString::writeLocString(Common::WriteStream &stream, bool withNullTermina
 	}
 }
 
+bool LocString::operator==(const LocString &rhs) const {
+	return _id == rhs._id && _strings == rhs._strings;
+}
+
+bool LocString::operator<(const LocString &rhs) const {
+	if (_id != rhs._id)
+		return _id < rhs._id;
+
+	if (_strings.size() != rhs._strings.size())
+		return _strings.size() < rhs._strings.size();
+
+	size_t lhs_size = 0, rhs_size = 0;
+	for (const auto &string : _strings) {
+		lhs_size += string.second.size();
+	}
+	for (const auto &string : rhs._strings) {
+		rhs_size += string.second.size();
+	}
+
+	return lhs_size < rhs_size;
+}
+
 } // End of namespace Aurora
