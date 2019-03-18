@@ -42,6 +42,13 @@ GFF3WriterStructPtr GFF3Writer::getTopLevel() {
 }
 
 void GFF3Writer::write(Common::WriteStream &stream) {
+	// Extract all individual values of the fields.
+	std::list<Value> individualValues;
+	for (const auto &field : _fields) {
+		if (std::find(individualValues.begin(), individualValues.end(), field->value) == individualValues.end())
+			individualValues.push_back(field->value);
+	}
+
 	stream.writeUint32BE(_id);
 	stream.writeUint32BE(_version);
 
@@ -58,8 +65,9 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 	uint32 fieldDataCount = 0;
 
 	// Count the total size of field data
-	for (size_t i = 0; i < _fields.size(); ++i)
-		fieldDataCount += getFieldDataSize(_fields[i]);
+	for (const auto &value : individualValues) {
+		fieldDataCount += getFieldDataSize(value);
+	}
 
 	uint32 fieldIndicesOffset = fieldDataOffset + fieldDataCount;
 	uint32 fieldIndicesCount = 0;
@@ -121,52 +129,65 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 	// Write fields
 	size_t fieldDataIndex = 0;
 	size_t listDataIndex = 0;
+
+	// Maps for checking for already existing values
+	std::map<Value, size_t> valueIndices;
+
 	for (size_t i = 0; i < _fields.size(); ++i) {
 		FieldPtr field = _fields[i];
-		stream.writeUint32LE(field->type);
+		stream.writeUint32LE(field->value.type);
 		stream.writeUint32LE(field->labelIndex);
 
 		/* Determine if this field has simple values (less equal 32 bit) which are written in the field
 		 * or complex values, bigger than 32bit like strings written in the field data section. */
 		const bool simple =
-			field->type == GFF3Struct::kFieldTypeByte ||
-			field->type == GFF3Struct::kFieldTypeChar ||
-			field->type == GFF3Struct::kFieldTypeUint16 ||
-			field->type == GFF3Struct::kFieldTypeUint32 ||
-			field->type == GFF3Struct::kFieldTypeStruct ||
-			field->type == GFF3Struct::kFieldTypeSint16 ||
-			field->type == GFF3Struct::kFieldTypeSint32 ||
-			field->type == GFF3Struct::kFieldTypeFloat ||
-			field->type == GFF3Struct::kFieldTypeList;
+			field->value.type == GFF3Struct::kFieldTypeByte ||
+			field->value.type == GFF3Struct::kFieldTypeChar ||
+			field->value.type == GFF3Struct::kFieldTypeUint16 ||
+			field->value.type == GFF3Struct::kFieldTypeUint32 ||
+			field->value.type == GFF3Struct::kFieldTypeStruct ||
+			field->value.type == GFF3Struct::kFieldTypeSint16 ||
+			field->value.type == GFF3Struct::kFieldTypeSint32 ||
+			field->value.type == GFF3Struct::kFieldTypeFloat ||
+			field->value.type == GFF3Struct::kFieldTypeList;
 
 		if (simple) {
 			// If the values are simple (less equal 4 bytes) write them to the field
-			switch (field->type) {
+			switch (field->value.type) {
 				case GFF3Struct::kFieldTypeByte:
 				case GFF3Struct::kFieldTypeUint16:
 				case GFF3Struct::kFieldTypeUint32:
 				case GFF3Struct::kFieldTypeStruct:
-					stream.writeUint32LE(field->uint32Value);
+					stream.writeUint32LE(boost::get<uint32>(field->value.data));
 					break;
 				case GFF3Struct::kFieldTypeList:
 					stream.writeUint32LE(listDataIndex * 4);
-					listDataIndex += 1 + _lists[field->uint32Value]->getSize();
+					listDataIndex += 1 + _lists[boost::get<uint32>(field->value.data)]->getSize();
 					break;
 				case GFF3Struct::kFieldTypeChar:
 				case GFF3Struct::kFieldTypeSint16:
 				case GFF3Struct::kFieldTypeSint32:
-					stream.writeSint32LE(field->int32Value);
+					stream.writeSint32LE(boost::get<int32>(field->value.data));
 					break;
 				case GFF3Struct::kFieldTypeFloat:
-					stream.writeIEEEFloatLE(field->floatValue);
+					stream.writeIEEEFloatLE(boost::get<float>(field->value.data));
 					break;
 				default:
 					throw Common::Exception("Invalid Field type");
 			}
 		} else {
 			// If the values are complex (greater then 4 bytes) write the index to the field data
-			stream.writeUint32LE(fieldDataIndex);
-			fieldDataIndex += getFieldDataSize(field);
+
+			size_t index = 0;
+			if (valueIndices.find(field->value) == valueIndices.end()) {
+				index = fieldDataIndex;
+				fieldDataIndex += getFieldDataSize(field->value);
+				valueIndices[field->value] = index;
+			} else {
+				index = valueIndices[field->value];
+			}
+
+			stream.writeUint32LE(index);
 		}
 	}
 
@@ -178,50 +199,49 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 	}
 
 	// Write field data
-	for (size_t i = 0; i < _fields.size(); ++i) {
-		FieldPtr field = _fields[i];
-		switch (field->type) {
+	for (const auto &value : individualValues) {
+		switch (value.type) {
 			case GFF3Struct::kFieldTypeUint64:
-				stream.writeUint64LE(field->uint64Value);
+				stream.writeUint64LE(boost::get<uint64>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeSint64:
-				stream.writeSint64LE(field->int64Value);
+				stream.writeSint64LE(boost::get<int64>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeDouble:
-				stream.writeIEEEDoubleLE(field->doubleValue);
+				stream.writeIEEEDoubleLE(boost::get<double>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeStrRef:
 				stream.writeUint32LE(4);
-				stream.writeUint32LE(field->uint32Value);
+				stream.writeUint32LE(boost::get<uint32>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeResRef:
-				stream.writeByte(MIN<byte>(16, field->stringValue.size()));
-				stream.write(field->stringValue.c_str(), MIN<size_t>(field->stringValue.size(), 16));
+				stream.writeByte(MIN<byte>(16, boost::get<Common::UString>(value.data).size()));
+				stream.write(boost::get<Common::UString>(value.data).c_str(), MIN<size_t>(boost::get<Common::UString>(value.data).size(), 16));
 				break;
 			case GFF3Struct::kFieldTypeExoString:
-				stream.writeUint32LE(static_cast<uint32>(field->stringValue.size()));
-				stream.writeString(field->stringValue);
+				stream.writeUint32LE(static_cast<uint32>(boost::get<Common::UString>(value.data).size()));
+				stream.writeString(boost::get<Common::UString>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeLocString:
-				stream.writeUint32LE(field->locStringValue.getWrittenSize() + 8);
-				stream.writeUint32LE(field->locStringValue.getID());
-				stream.writeUint32LE(field->locStringValue.getNumStrings());
-				field->locStringValue.writeLocString(stream);
+				stream.writeUint32LE(boost::get<LocString>(value.data).getWrittenSize() + 8);
+				stream.writeUint32LE(boost::get<LocString>(value.data).getID());
+				stream.writeUint32LE(boost::get<LocString>(value.data).getNumStrings());
+				boost::get<LocString>(value.data).writeLocString(stream);
 				break;
 			case GFF3Struct::kFieldTypeVoid:
-				stream.writeUint32LE(static_cast<uint32>(field->voidSize));
-				stream.write(field->voidData.get(), field->voidSize);
+				stream.writeUint32LE(static_cast<uint32>(boost::get<VoidData>(value.data).size));
+				stream.write(boost::get<VoidData>(value.data).data.get(), boost::get<VoidData>(value.data).size);
 				break;
 			case GFF3Struct::kFieldTypeVector:
-				stream.writeIEEEFloatLE(field->vectorValue.x);
-				stream.writeIEEEFloatLE(field->vectorValue.y);
-				stream.writeIEEEFloatLE(field->vectorValue.z);
+				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.x);
+				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.y);
+				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.z);
 				break;
 			case GFF3Struct::kFieldTypeOrientation:
-				stream.writeIEEEFloatLE(field->vectorValue.x);
-				stream.writeIEEEFloatLE(field->vectorValue.y);
-				stream.writeIEEEFloatLE(field->vectorValue.z);
-				stream.writeIEEEFloatLE(field->vectorValue.w);
+				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.x);
+				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.y);
+				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.z);
+				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.w);
 				break;
 			default:
 				break;
@@ -259,25 +279,25 @@ uint32 GFF3Writer::addLabel(const Common::UString &label) {
 	}
 }
 
-uint32 GFF3Writer::getFieldDataSize(FieldPtr field) {
-	switch (field->type) {
+uint32 GFF3Writer::getFieldDataSize(Value value) {
+	switch (value.type) {
 		case GFF3Struct::kFieldTypeUint64:
 		case GFF3Struct::kFieldTypeSint64:
 		case GFF3Struct::kFieldTypeStrRef:
 		case GFF3Struct::kFieldTypeDouble:
 			return 8;
 		case GFF3Struct::kFieldTypeExoString:
-			return 4 + field->stringValue.size();
+			return 4 + boost::get<Common::UString>(value.data).size();
 		case GFF3Struct::kFieldTypeLocString:
-			return 12 + field->locStringValue.getWrittenSize();
+			return 12 + boost::get<LocString>(value.data).getWrittenSize();
 		case GFF3Struct::kFieldTypeResRef:
-			return 1 + field->stringValue.size();
+			return 1 + boost::get<Common::UString>(value.data).size();
 		case GFF3Struct::kFieldTypeVector:
 			return 12;
 		case GFF3Struct::kFieldTypeOrientation:
 			return 16;
 		case GFF3Struct::kFieldTypeVoid:
-			return 4 + field->voidSize;
+			return 4 + boost::get<VoidData>(value.data).size;
 		default:
 			return 0;
 	}
@@ -289,7 +309,7 @@ size_t GFF3Writer::createField(GFF3Struct::FieldType type, const Common::UString
 
 	// Create field
 	GFF3Writer::FieldPtr field = boost::make_shared<Field>();
-	field->type = type;
+	field->value.type = type;
 	field->labelIndex = addLabel(label);
 	_fields.push_back(field);
 
@@ -304,8 +324,8 @@ GFF3WriterStructPtr GFF3WriterList::addStruct(const Common::UString &label) {
 	// Create a field index
 	_strcts.push_back(_parent->_structs.size());
 	GFF3Writer::FieldPtr field = boost::make_shared<GFF3Writer::Field>();
-	field->type = GFF3Struct::kFieldTypeStruct;
-	field->uint32Value = static_cast<uint32>(_parent->_structs.size());
+	field->value.type = GFF3Struct::kFieldTypeStruct;
+	field->value.data = static_cast<uint32>(_parent->_structs.size());
 
 	// Add the label
 	field->labelIndex = _parent->addLabel(label);
@@ -342,8 +362,8 @@ GFF3WriterStructPtr GFF3WriterStruct::addStruct(const Common::UString &label) {
 	// Create a field index
 	_fieldIndices.push_back(_parent->_fields.size());
 	GFF3Writer::FieldPtr field = boost::make_shared<GFF3Writer::Field>();
-	field->type = GFF3Struct::kFieldTypeStruct;
-	field->uint32Value = static_cast<uint32>(_parent->_structs.size());
+	field->value.type = GFF3Struct::kFieldTypeStruct;
+	field->value.data = static_cast<uint32>(_parent->_structs.size());
 
 	// Add the label
 	field->labelIndex = _parent->addLabel(label);
@@ -364,8 +384,8 @@ GFF3WriterListPtr GFF3WriterStruct::addList(const Common::UString &label) {
 	// Create a field index
 	_fieldIndices.push_back(_parent->_fields.size());
 	GFF3Writer::FieldPtr field = boost::make_shared<GFF3Writer::Field>();
-	field->type = GFF3Struct::kFieldTypeList;
-	field->uint32Value = static_cast<uint32>(_parent->_lists.size());
+	field->value.type = GFF3Struct::kFieldTypeList;
+	field->value.data = static_cast<uint32>(_parent->_lists.size());
 
 	// Add the label
 	field->labelIndex = _parent->addLabel(label);
@@ -380,74 +400,78 @@ GFF3WriterListPtr GFF3WriterStruct::addList(const Common::UString &label) {
 }
 
 void GFF3WriterStruct::addByte(const Common::UString &label, byte value) {
-	createField(GFF3Struct::kFieldTypeByte, label)->uint32Value = value;
+	createField(GFF3Struct::kFieldTypeByte, label)->value.data = static_cast<uint32>(value);
 }
 
 void GFF3WriterStruct::addChar(const Common::UString &label, char value) {
-	createField(GFF3Struct::kFieldTypeChar, label)->int32Value = value;
+	createField(GFF3Struct::kFieldTypeChar, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addFloat(const Common::UString &label, float value) {
-	createField(GFF3Struct::kFieldTypeFloat, label)->floatValue = value;
+	createField(GFF3Struct::kFieldTypeFloat, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addDouble(const Common::UString &label, double value) {
-	createField(GFF3Struct::kFieldTypeDouble, label)->doubleValue = value;
+	createField(GFF3Struct::kFieldTypeDouble, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addUint16(const Common::UString &label, uint16 value) {
-	createField(GFF3Struct::kFieldTypeUint16, label)->uint32Value = value;
+	createField(GFF3Struct::kFieldTypeUint16, label)->value.data = static_cast<uint32>(value);
 }
 
 void GFF3WriterStruct::addUint32(const Common::UString &label, uint32 value) {
-	createField(GFF3Struct::kFieldTypeUint32, label)->uint32Value = value;
+	createField(GFF3Struct::kFieldTypeUint32, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addUint64(const Common::UString &label, uint64 value) {
-	createField(GFF3Struct::kFieldTypeUint64, label)->uint64Value = value;
+	createField(GFF3Struct::kFieldTypeUint64, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addSint16(const Common::UString &label, int16 value) {
-	createField(GFF3Struct::kFieldTypeSint16, label)->int32Value = value;
+	createField(GFF3Struct::kFieldTypeSint16, label)->value.data = static_cast<int32>(value);
 }
 
 void GFF3WriterStruct::addSint32(const Common::UString &label, int32 value) {
-	createField(GFF3Struct::kFieldTypeSint32, label)->int32Value = value;
+	createField(GFF3Struct::kFieldTypeSint32, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addSint64(const Common::UString &label, int64 value) {
-	createField(GFF3Struct::kFieldTypeSint64, label)->int64Value = value;
+	createField(GFF3Struct::kFieldTypeSint64, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addExoString(const Common::UString &label, const Common::UString &value) {
-	createField(GFF3Struct::kFieldTypeExoString, label)->stringValue = value;
+	createField(GFF3Struct::kFieldTypeExoString, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addStrRef(const Common::UString &label, uint32 value) {
-	createField(GFF3Struct::kFieldTypeStrRef, label)->uint32Value = value;
+	createField(GFF3Struct::kFieldTypeStrRef, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addResRef(const Common::UString &label, const Common::UString &value) {
-	createField(GFF3Struct::kFieldTypeResRef, label)->stringValue = value;
+	createField(GFF3Struct::kFieldTypeResRef, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addVoid(const Common::UString &label, const byte *data, uint32 size) {
 	GFF3Writer::FieldPtr field = createField(GFF3Struct::kFieldTypeVoid, label);
-	field->voidData.reset(new byte[size]);
-	field->voidSize = size;
-	memcpy(field->voidData.get(), data, size);
+
+	GFF3Writer::VoidData voiddata;
+	voiddata.data.reset(new byte[size]);
+	voiddata.size = size;
+	memcpy(voiddata.data.get(), data, size);
+
+	field->value.data = voiddata;
 }
 
 void GFF3WriterStruct::addVector(const Common::UString &label, glm::vec3 value) {
-	createField(GFF3Struct::kFieldTypeVector, label)->vectorValue = glm::vec4(value, 0.0f);
+	createField(GFF3Struct::kFieldTypeVector, label)->value.data = glm::vec4(value, 0.0f);
 }
 
 void GFF3WriterStruct::addOrientation(const Common::UString &label, glm::vec4 value) {
-	createField(GFF3Struct::kFieldTypeOrientation, label)->vectorValue = value;
+	createField(GFF3Struct::kFieldTypeOrientation, label)->value.data = value;
 }
 
 void GFF3WriterStruct::addLocString(const Common::UString &label, const LocString &value) {
-	createField(GFF3Struct::kFieldTypeLocString, label)->locStringValue = value;
+	createField(GFF3Struct::kFieldTypeLocString, label)->value.data = value;
 }
 
 GFF3Writer::FieldPtr GFF3WriterStruct::createField(GFF3Struct::FieldType type, const Common::UString &label) {
