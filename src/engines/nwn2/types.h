@@ -559,6 +559,28 @@ static const uint32 kRaceInvalid    =  28;
 static const uint32 kSubRaceInvalid = 255;
 static const uint32 kClassInvalid   = 255;
 
+// ItemProperty modifier range limits
+static const uint8  kMaxAbilityBonus   = 12;
+static const uint8  kMaxAbilityPenalty = 10;
+static const uint8  kMaxACBonus        = 20;
+static const uint8  kMaxACPenalty      =  5;
+static const uint16 kMaxAttackBonus    = 20;
+static const uint8  kMaxAttackPenalty  =  5;
+static const uint8  kMaxDamagePenalty  =  5;
+static const uint16 kMaxDamageType     =  2;
+static const uint8  kMaxEnhanceBonus   = 20;
+static const uint16 kMaxEnhancePenalty =  5;
+static const uint8  kMaxHealersKit     = 12;
+static const uint8  kMaxRangeStrMod    = 20;
+static const uint8  kMaxRegeneration   = 20;
+static const uint8  kMaxSaveBonus      = 20;
+static const uint8  kMaxSavePenalty    = 20;
+static const uint8  kMaxSkillBonus     = 50;
+static const uint8  kMaxSkillPenalty   = 10;
+static const uint8  kMaxSpellLevel     =  9;
+static const uint8  kMaxThievesTools   = 12;
+static const uint8  kMaxTurnResist     = 50;
+
 Alignment getAlignmentLawChaos(uint8 lawChaos);
 Alignment getAlignmentGoodEvil(uint8 goodEvil);
 
