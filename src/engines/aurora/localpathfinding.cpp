@@ -269,13 +269,13 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 			const uint32 vertexID = xVert + yVert * (_gridWidth + 1);
 			const glm::vec3 vertex = fromVirtualPlan(glm::vec3(_xMin + _cellSize * xVert,
 			                                                   _yMin + _cellSize * yVert,
-			                                                   height));
+			                                                   0.f));
 			// x position of the vertex.
 			_vertices[3 * vertexID] = vertex[0];
 			// y position of the vertex.
 			_vertices[3 * vertexID + 1] = vertex[1];
 			// z position of the vertex.
-			_vertices[3 * vertexID + 2] = vertex[2];
+			_vertices[3 * vertexID + 2] = height;
 		}
 	}
 
