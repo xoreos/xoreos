@@ -62,6 +62,11 @@ Module::Module(::Engines::Console &console) : Object(kObjectTypeModule), _consol
 
 }
 
+Module::Module() : Object(kObjectTypeModule), _console(nullptr), _hasModule(false),
+	_running(false), _exit(false), _pc(0), _currentArea(0), _ranPCSpawn(false) {
+
+}
+
 Module::~Module() {
 	try {
 		clear();
@@ -174,7 +179,8 @@ void Module::replaceModule() {
 	if (_newModule.empty())
 		return;
 
-	_console->hide();
+	if (_console)
+		_console->hide();
 
 	assert(_pc);
 
@@ -223,7 +229,10 @@ void Module::enter(Creature &pc, bool isNewCampaign) {
 
 	_pc->loadModel();
 
-	_console->printf("Entering module \"%s\" with character \"%s\"", _name.c_str(), _pc->getName().c_str());
+	if (_console)
+		_console->printf("Entering module \"%s\" with character \"%s\"", _name.c_str(), _pc->getName().c_str());
+	else
+		status("Entering module \"%s\" with character \"%s\"", _name.c_str(), _pc->getName().c_str());
 
 	runScript(kScriptModuleLoad , this, _pc);
 	runScript(kScriptModuleStart, this, _pc);
@@ -317,8 +326,12 @@ void Module::enterArea() {
 
 	EventMan.flushEvents();
 
-	_console->printf("Entering area \"%s\" (\"%s\", \"%s\")", _currentArea->getResRef().c_str(),
-			_currentArea->getName().c_str(), _currentArea->getDisplayName().c_str());
+	if (_console)
+		_console->printf("Entering area \"%s\" (\"%s\", \"%s\")", _currentArea->getResRef().c_str(),
+				 _currentArea->getName().c_str(), _currentArea->getDisplayName().c_str());
+	else
+		status("Entering area \"%s\" (\"%s\", \"%s\")", _currentArea->getResRef().c_str(),
+		       _currentArea->getName().c_str(), _currentArea->getDisplayName().c_str());
 }
 
 void Module::handleEvents() {

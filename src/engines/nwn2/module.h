@@ -58,6 +58,7 @@ class Roster;
 class Module : public NWN2::Object, public NWN2::ObjectContainer {
 public:
 	Module(::Engines::Console &console);
+	Module();
 	~Module();
 
 	// .--- Module management

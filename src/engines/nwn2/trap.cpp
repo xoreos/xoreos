@@ -354,8 +354,11 @@ void Trap::triggeredTrap() {
 
 /** Load the trap information from the struct */
 void Trap::load(const Aurora::GFF3Struct &gff) {
-	// Initialize using the 'traps.2da' information
-	createTrapBaseType(gff.getUint("TrapType", _trapType));
+	try {
+		// Initialize using the 'traps.2da' information
+		createTrapBaseType(gff.getUint("TrapType", _trapType));
+	} catch (...) {
+	}
 
 	_isTrapActive = true; // Default for a trigger trap
 	_isTrap = gff.getBool("TrapFlag", _isTrap);
