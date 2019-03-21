@@ -90,13 +90,17 @@ void Door::loadObject(const Aurora::GFF3Struct &gff) {
 }
 
 void Door::loadAppearance() {
-	if (_appearanceID == 0) {
-		if (_genericType == Aurora::kFieldIDInvalid)
-			_invisible = true;
-		else
-			loadAppearance(TwoDAReg.get2DA("genericdoors"), _genericType);
-	} else
-		loadAppearance(TwoDAReg.get2DA("doortypes"), _appearanceID);
+	try {
+		if (_appearanceID == 0) {
+			if (_genericType == Aurora::kFieldIDInvalid)
+				_invisible = true;
+			else
+				loadAppearance(TwoDAReg.get2DA("genericdoors"), _genericType);
+		} else
+			loadAppearance(TwoDAReg.get2DA("doortypes"), _appearanceID);
+	} catch (...) {
+		_invisible = true;
+	}
 
 	// Invisible doors have no model and are always open
 	if (_invisible) {

@@ -37,6 +37,11 @@ tests_engines_nwn2_test_creature_SOURCES  = tests/engines/nwn2/creature.cpp
 tests_engines_nwn2_test_creature_LDADD    = $(nwn2_LIBS)
 tests_engines_nwn2_test_creature_CXXFLAGS = $(test_CXXFLAGS)
 
+check_PROGRAMS                           += tests/engines/nwn2/test_door
+tests_engines_nwn2_test_door_SOURCES      = tests/engines/nwn2/door.cpp
+tests_engines_nwn2_test_door_LDADD        = $(nwn2_LIBS)
+tests_engines_nwn2_test_door_CXXFLAGS     = $(test_CXXFLAGS)
+
 check_PROGRAMS                           += tests/engines/nwn2/test_roster
 tests_engines_nwn2_test_roster_SOURCES    = tests/engines/nwn2/roster.cpp
 tests_engines_nwn2_test_roster_LDADD      = $(nwn2_LIBS)
