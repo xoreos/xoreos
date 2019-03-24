@@ -38,6 +38,20 @@ public:
 	Store(const Aurora::GFF3Struct &store);
 	~Store();
 
+	/** Get the charge for identifying an item. */
+	int32 getStoreIdentifyCost() const;
+	/** Get the amount of gold the store has. */
+	int32 getStoreGold() const;
+	/** Get the maximum amount the store will pay for an item. */
+	int32 getStoreMaximumBuyPrice() const;
+
+	/** Set the charge for identifying an item. */
+	void setStoreIdentifyCost(int32 identify);
+	/** Set the amount of gold the store has. */
+	void setStoreGold(int32 gold);
+	/** Set the maximum amount the store will pay for an item. */
+	void setStoreMaximumBuyPrice(int32 max);
+
 private:
 	int32  _identifyPrice; ///< Charge for identifying items.
 	int32  _storeGold;     ///< How many gp the store has available.

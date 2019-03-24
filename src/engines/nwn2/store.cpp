@@ -42,6 +42,33 @@ Store::Store(const Aurora::GFF3Struct &store) : Object(kObjectTypeStore) {
 Store::~Store() {
 }
 
+int32 Store::getStoreIdentifyCost() const {
+	return _identifyPrice;
+}
+
+int32 Store::getStoreGold() const {
+	return _storeGold;
+}
+
+int32 Store::getStoreMaximumBuyPrice() const {
+	return _maxBuyPrice;
+}
+
+void Store::setStoreIdentifyCost(int32 identify) {
+	// -1 indicates store will not identify items
+	_identifyPrice = (identify < 0) ? -1 : identify;
+}
+
+void Store::setStoreGold(int32 gold) {
+	// -1 indicates it is not using gold
+	_storeGold = (gold < 0) ? -1 : gold;
+}
+
+void Store::setStoreMaximumBuyPrice(int32 max) {
+	// -1 indicates price unlimited
+	_maxBuyPrice  = (max < 0) ? -1 : max;
+}
+
 void Store::load(const Aurora::GFF3Struct &store) {
 	Common::UString temp = store.getString("TemplateResRef");
 
