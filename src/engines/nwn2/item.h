@@ -52,6 +52,7 @@ public:
 	bool getPickpocketableFlag() const;
 	bool getPlotFlag() const;
 	bool getStolenFlag() const;
+	bool getInfinite() const;
 
 	void setDroppableFlag(bool droppable);
 	void setIdentified(bool identified);
@@ -59,6 +60,7 @@ public:
 	void setPickpocketableFlag(bool pickpocketable);
 	void setPlotFlag(bool plotFlag);
 	void setStolenFlag(bool stolen);
+	void setInfinite(bool infinite);
 
 	ItemType getBaseItemType() const;
 	uint32 getItemIcon() const;
@@ -94,6 +96,7 @@ private:
 	bool _droppable;      ///< Is the item dropped as loot?
 	bool _identified;     ///< Have the item's properties been identified?
 	bool _pickpocketable; ///< Can the item be pick-pocketed?
+	bool _infinite;       ///< Is a store item available in infinite supply?
 
 	ItemProperties _itemProperties; ///< The item's properties.
 

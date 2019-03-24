@@ -42,7 +42,7 @@ namespace NWN2 {
 
 Item::Item(const Aurora::GFF3Struct &item) :
 	Object(kObjectTypeItem), Inventory(item),
-	_stackSize(1), _droppable(true), _identified(true), _pickpocketable(true) {
+	_stackSize(1), _droppable(true), _identified(true), _pickpocketable(true), _infinite(false) {
 
 	load(item);
 }
@@ -117,6 +117,10 @@ bool Item::getStolenFlag() const {
 	return _stolen;
 }
 
+bool Item::getInfinite() const {
+	return _infinite;
+}
+
 void Item::setDroppableFlag(bool droppable) {
 	_droppable = droppable;
 }
@@ -139,6 +143,10 @@ void Item::setPlotFlag(bool plotFlag) {
 
 void Item::setStolenFlag(bool stolen) {
 	_stolen = stolen;
+}
+
+void Item::setInfinite(bool infinite) {
+	_infinite = infinite;
 }
 
 ItemType Item::getBaseItemType() const {
@@ -257,6 +265,7 @@ void Item::loadProperties(const Aurora::GFF3Struct &gff) {
 	_identified = gff.getBool("Identified", _identified);
 	_pickpocketable = gff.getBool("Pickpocketable", _pickpocketable);
 	_container = gff.getBool("Container", _container);
+	_infinite = gff.getBool("Infinite", _infinite);
 
 	// Item properties
 	loadItemProperties(gff);
