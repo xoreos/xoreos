@@ -57,7 +57,7 @@ void ObjectWalkmesh::load(const Common::UString &resRef, float orientation[4], f
 	computeMinMax();
 }
 
-bool ObjectWalkmesh::in(glm::vec2 &minBox, glm::vec2 &maxBox) const {
+bool ObjectWalkmesh::in(const glm::vec2 &minBox, const glm::vec2 &maxBox) const {
 	return Common::intersectBoxes3D(_min, _max, minBox, maxBox);
 }
 
@@ -131,7 +131,7 @@ bool ObjectWalkmesh::findIntersection(const glm::vec3 &start, const glm::vec3 &e
 	return true;
 }
 
-bool ObjectWalkmesh::in(glm::vec2 &point) const {
+bool ObjectWalkmesh::in(const glm::vec2 &point) const {
 	if (!Common::intersectBoxPoint2D(_min, _max, point))
 		return false;
 

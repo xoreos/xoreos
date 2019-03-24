@@ -40,8 +40,8 @@ public:
 	virtual void load(const Common::UString &resRef,
 	                  float orientation[4], float position[3]) = 0;
 
-	virtual bool in(glm::vec2 &minBox, glm::vec2 &maxBox) const = 0;
-	virtual bool in(glm::vec2 &point) const = 0;
+	virtual bool in(const glm::vec2 &minBox, const glm::vec2 &maxBox) const = 0;
+	virtual bool in(const glm::vec2 &point) const = 0;
 	virtual bool findIntersection(const glm::vec3 &start, const glm::vec3 &end,
 	                              glm::vec3 &intersect) const = 0;
 	virtual const std::vector<float> &getVertices() const = 0;
