@@ -35,6 +35,7 @@ namespace Engines {
 namespace NWN2 {
 
 class Inventory;
+class Item;
 
 class Store : public Object {
 public:
@@ -56,6 +57,11 @@ public:
 	/** Set the maximum amount the store will pay for an item. */
 	void setStoreMaximumBuyPrice(int32 max);
 
+	/** Get first item in inventory array. */
+	Item *getFirstItemInInventory();
+	/** Get next item in inventory array. */
+	Item *getNextItemInInventory();
+
 private:
 	typedef std::vector<uint8> BaseItemTypes;
 
@@ -64,6 +70,9 @@ private:
 	static const InventoryType kInventoryTypes = 5; ///< Number of store tabs.
 
 	std::unique_ptr<Inventory> _inventory[kInventoryTypes]; ///< Items for sale.
+
+	/** Index of last inventory array member queried to retrieve an item. */
+	InventoryType _lastQueried { kInventoryTypes };
 
 	// The _willOnlyBuy list is ignored unless _willNotBuy is empty
 	BaseItemTypes _willNotBuy;  ///< Base item types the store will not buy.

@@ -71,6 +71,50 @@ void Store::setStoreMaximumBuyPrice(int32 max) {
 	_maxBuyPrice  = (max < 0) ? -1 : max;
 }
 
+Item *Store::getFirstItemInInventory() {
+	// Cycle through the inventory types
+	for (InventoryType it = 0; it < kInventoryTypes; it++)
+		if (_inventory[it] != nullptr) {
+			// Retrieve the first item in this inventory
+			Item *item = _inventory[it]->getFirstItemInInventory();
+			if (item != nullptr) {
+				_lastQueried = it;
+				return item;
+			}
+		}
+
+	// Reached end of inventory
+	_lastQueried = kInventoryTypes;
+	return nullptr;
+}
+
+Item *Store::getNextItemInInventory() {
+	if (_lastQueried >= kInventoryTypes)
+		return nullptr;
+
+	// Check the last queried inventory for another item
+	if (_inventory[_lastQueried] != nullptr) {
+		Item *nextItem = _inventory[_lastQueried]->getNextItemInInventory();
+		if (nextItem != nullptr)
+			return nextItem;
+	}
+
+	// Cycle through the remaining inventory types
+	for (InventoryType it = _lastQueried + 1; it < kInventoryTypes; it++)
+		if (_inventory[it] != nullptr) {
+			// Retrieve the first item in this inventory
+			Item *item = _inventory[it]->getFirstItemInInventory();
+			if (item != nullptr) {
+				_lastQueried = it;
+				return item;
+			}
+		}
+
+	// Reached end of inventory
+	_lastQueried = kInventoryTypes;
+	return nullptr;
+}
+
 void Store::load(const Aurora::GFF3Struct &store) {
 	Common::UString temp = store.getString("TemplateResRef");
 
