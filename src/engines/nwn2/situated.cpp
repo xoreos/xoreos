@@ -151,6 +151,10 @@ const Common::UString &Situated::getLockKeyTag() const {
 	return _keyTag;
 }
 
+const Common::UString &Situated::getKeyRequiredFeedbackMessage() const {
+	return _keyFeedback;
+}
+
 void Situated::setLocked(bool locked) {
 	_locked = locked;
 }
@@ -177,6 +181,10 @@ void Situated::setLockUnlockDC(uint8 unlockDC) {
 
 void Situated::setLockKeyTag(const Common::UString &keyTag) {
 	_keyTag = keyTag;
+}
+
+void Situated::setKeyRequiredFeedbackMessage(const Common::UString &feedback) {
+	_keyFeedback = feedback;
 }
 
 int32 Situated::getCurrentHP() const {

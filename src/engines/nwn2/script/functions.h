@@ -290,6 +290,9 @@ private:
 	void setLockLockDC     (Aurora::NWScript::FunctionContext &ctx);
 	void setLockUnlockDC   (Aurora::NWScript::FunctionContext &ctx);
 
+	void getKeyRequiredFeedbackMessage(Aurora::NWScript::FunctionContext &ctx);
+	void setKeyRequiredFeedbackMessage(Aurora::NWScript::FunctionContext &ctx);
+
 	void getIsOpen(Aurora::NWScript::FunctionContext &ctx);
 
 	void getLastOpenedBy(Aurora::NWScript::FunctionContext &ctx);
@@ -305,12 +308,14 @@ private:
 	void getItemCursedFlag    (Aurora::NWScript::FunctionContext &ctx);
 	void getPickpocketableFlag(Aurora::NWScript::FunctionContext &ctx);
 	void getStolenFlag        (Aurora::NWScript::FunctionContext &ctx);
+	void getInfiniteFlag      (Aurora::NWScript::FunctionContext &ctx);
 
 	void setDroppableFlag     (Aurora::NWScript::FunctionContext &ctx);
 	void setIdentified        (Aurora::NWScript::FunctionContext &ctx);
 	void setItemCursedFlag    (Aurora::NWScript::FunctionContext &ctx);
 	void setPickpocketableFlag(Aurora::NWScript::FunctionContext &ctx);
 	void setStolenFlag        (Aurora::NWScript::FunctionContext &ctx);
+	void setInfiniteFlag      (Aurora::NWScript::FunctionContext &ctx);
 
 	void getBaseItemType   (Aurora::NWScript::FunctionContext &ctx);
 	void getItemIcon       (Aurora::NWScript::FunctionContext &ctx);
