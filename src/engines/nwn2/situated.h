@@ -71,6 +71,11 @@ public:
 	/** Set the tag of the key to unlock the situated object. */
 	virtual void setLockKeyTag(const Common::UString &keyTag);
 
+	/** Get the message shown when trying to use without the required key. */
+	const Common::UString &getKeyRequiredFeedbackMessage() const;
+	/** Set the message shown when trying to use without the required key. */
+	void setKeyRequiredFeedbackMessage(const Common::UString &feedback);
+
 	/** Return the current HP this situated object has. */
 	int32 getCurrentHP() const;
 	/** Return the max HP this situated object can have. */

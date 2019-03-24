@@ -69,6 +69,11 @@ void Functions::getStolenFlag(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = item && item->getStolenFlag();
 }
 
+void Functions::getInfiniteFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	ctx.getReturn() = item && item->getInfinite();
+}
+
 void Functions::setDroppableFlag(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	if (item) {
@@ -106,6 +111,14 @@ void Functions::setStolenFlag(Aurora::NWScript::FunctionContext &ctx) {
 	if (item) {
 		const bool stolen = ctx.getParams()[1].getInt() != 0;
 		item->setStolenFlag(stolen);
+	}
+}
+
+void Functions::setInfiniteFlag(Aurora::NWScript::FunctionContext &ctx) {
+	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
+	if (item) {
+		const bool infinite = ctx.getParams()[1].getInt() != 0;
+		item->setInfinite(infinite);
 	}
 }
 

@@ -70,6 +70,12 @@ void Functions::getLockUnlockDC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = situated ? situated->getLockUnlockDC() : 0;
 }
 
+void Functions::getKeyRequiredFeedbackMessage(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+
+	ctx.getReturn() = situated ? situated->getKeyRequiredFeedbackMessage() : Common::UString("");
+}
+
 void Functions::setLocked(Aurora::NWScript::FunctionContext &ctx) {
 	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
 	if (situated)
@@ -104,6 +110,12 @@ void Functions::setLockUnlockDC(Aurora::NWScript::FunctionContext &ctx) {
 	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
 	if (situated)
 		situated->setLockUnlockDC(ctx.getParams()[1].getInt());
+}
+
+void Functions::setKeyRequiredFeedbackMessage(Aurora::NWScript::FunctionContext &ctx) {
+	Situated *situated = NWN2::ObjectContainer::toSituated(getParamObject(ctx, 0));
+	if (situated)
+		situated->setKeyRequiredFeedbackMessage(ctx.getParams()[1].getString());
 }
 
 void Functions::getIsOpen(Aurora::NWScript::FunctionContext &ctx) {
