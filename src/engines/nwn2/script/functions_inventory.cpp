@@ -29,6 +29,7 @@
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/objectcontainer.h"
 #include "src/engines/nwn2/creature.h"
+#include "src/engines/nwn2/store.h"
 #include "src/engines/nwn2/item.h"
 #include "src/engines/nwn2/itemproperty.h"
 
@@ -163,10 +164,53 @@ void Functions::setItemCharges(Aurora::NWScript::FunctionContext &ctx) {
 	}
 }
 
+void Functions::getStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx) {
+	Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
+	ctx.getReturn() = (store) ? store->getStoreIdentifyCost() : -2;
+}
+
+void Functions::getStoreGold(Aurora::NWScript::FunctionContext &ctx) {
+	Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
+	ctx.getReturn() = (store) ? store->getStoreGold() : -2;
+}
+
+void Functions::getStoreMaxBuyPrice(Aurora::NWScript::FunctionContext &ctx) {
+	Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
+	ctx.getReturn() = (store) ? store->getStoreMaximumBuyPrice() : -2;
+}
+
+void Functions::setStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx) {
+	Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
+	if (store) {
+		const int32 identify = (uint8)(ctx.getParams()[1].getInt());
+		store->setStoreIdentifyCost(identify);
+	}
+}
+
+void Functions::setStoreGold(Aurora::NWScript::FunctionContext &ctx) {
+	Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
+	if (store) {
+		const int32 gold = (uint8)(ctx.getParams()[1].getInt());
+		store->setStoreGold(gold);
+	}
+}
+
+void Functions::setStoreMaxBuyPrice(Aurora::NWScript::FunctionContext &ctx) {
+	Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
+	if (store) {
+		const int32 max = (uint8)(ctx.getParams()[1].getInt());
+		store->setStoreMaximumBuyPrice(max);
+	}
+}
+
 void Functions::getFirstItemInInventory(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	if (item && item->getHasInventory()) {
 		ctx.getReturn() = item->getFirstItemInInventory();
+	} else {
+		Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
+		if (store)
+			ctx.getReturn() = store->getFirstItemInInventory();
 	}
 }
 
@@ -174,6 +218,10 @@ void Functions::getNextItemInInventory(Aurora::NWScript::FunctionContext &ctx) {
 	Item *item = NWN2::ObjectContainer::toItem(getParamObject(ctx, 0));
 	if (item && item->getHasInventory()) {
 		ctx.getReturn() = item->getNextItemInInventory();
+	} else {
+		Store *store = NWN2::ObjectContainer::toStore(getParamObject(ctx, 0));
+		if (store)
+			ctx.getReturn() = store->getNextItemInInventory();
 	}
 }
 

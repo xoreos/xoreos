@@ -48,6 +48,7 @@ class Door;
 class Trigger;
 class Creature;
 class Location;
+class Store;
 class Item;
 class ItemProperty;
 
@@ -91,6 +92,7 @@ public:
 	static Placeable *toPlaceable(Aurora::NWScript::Object *object);
 	static Door      *toDoor     (Aurora::NWScript::Object *object);
 	static Trigger   *toTrigger  (Aurora::NWScript::Object *object);
+	static Store     *toStore    (Aurora::NWScript::Object *object);
 	static Item      *toItem     (Aurora::NWScript::Object *object);
 	static Creature  *toCreature (Aurora::NWScript::Object *object);
 	static Creature  *toPC       (Aurora::NWScript::Object *object);

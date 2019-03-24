@@ -322,6 +322,14 @@ private:
 	void setItemStackSize(Aurora::NWScript::FunctionContext &ctx);
 	void setItemCharges  (Aurora::NWScript::FunctionContext &ctx);
 
+	void getStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx);
+	void getStoreGold        (Aurora::NWScript::FunctionContext &ctx);
+	void getStoreMaxBuyPrice (Aurora::NWScript::FunctionContext &ctx);
+
+	void setStoreIdentifyCost(Aurora::NWScript::FunctionContext &ctx);
+	void setStoreGold        (Aurora::NWScript::FunctionContext &ctx);
+	void setStoreMaxBuyPrice (Aurora::NWScript::FunctionContext &ctx);
+
 	void getFirstItemInInventory(Aurora::NWScript::FunctionContext &ctx);
 	void getNextItemInInventory (Aurora::NWScript::FunctionContext &ctx);
 	void getItemInSlot          (Aurora::NWScript::FunctionContext &ctx);
