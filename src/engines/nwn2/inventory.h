@@ -55,13 +55,13 @@ private:
 	ItemSlots equippedItems;
 	ItemSlots inventoryItems;
 
-	uint16 _lastRetrieved { UINT16_MAX }; ///< Index of last retrieved item.
+	size_t _lastRetrieved { SIZE_MAX }; ///< Index of last retrieved item.
 
 	/** Insert item in the slot. */
-	void insertItem(Item *item, uint16 slot = 0);
+	void insertItem(Item *item, size_t slot = 0);
 
-	/** Get the first empty inventory slot. */
-	uint16 getFirstEmptySlot() const;
+	/** Find the next inventory item starting at the last retrieved. */
+	Item *getNextRetrieved();
 
 	/** Convert a bit flag to an equipment slot. */
 	InventorySlot getSlotFromBitFlag(uint32 bitFlag) const;

@@ -24,6 +24,7 @@
 
 #include <iterator>
 #include <vector>
+#include <algorithm>
 
 #include "src/common/error.h"
 
@@ -50,76 +51,75 @@ Inventory::~Inventory() {
 
 /** Return the first item in the inventory. */
 Item *Inventory::getFirstItemInInventory() {
-	uint16 equipSize = (uint16) kInventorySlotMax;
-
-	// Cycle through equipped items
+	// Set to start of inventory
 	_lastRetrieved = 0;
-	for (std::vector<Item *>::const_iterator item = equippedItems.begin(); item != equippedItems.end(); ++item) {
-		if (*item != nullptr)
-			return *item;
-
-		// Stay in bounds
-		if (++_lastRetrieved >= equipSize)
-			break;
-	}
-
-	// Cycle through the inventory
-	_lastRetrieved = equipSize;
-	for (std::vector<Item *>::const_iterator item = inventoryItems.begin(); item != inventoryItems.end(); ++item) {
-		if (*item != nullptr)
-			return *item;
-
-		_lastRetrieved++;
-	}
-
-	return nullptr;
+	return getNextRetrieved();
 }
 
 /** Return the next item in the inventory. */
 Item *Inventory::getNextItemInInventory() {
-	// Check for the end of inventory
-	if (_lastRetrieved == UINT16_MAX)
+	if (_lastRetrieved == SIZE_MAX)
 		return nullptr;
 
-	// Increment the counter
+	// Set to next slot
 	_lastRetrieved++;
+	return getNextRetrieved();
+}
 
-	// Cycle through the remaining equipped items
-	const uint16 equipSize = (uint16) kInventorySlotMax;
-	if (_lastRetrieved < equipSize) {
-		std::vector<Item *>::const_iterator item = equippedItems.begin();
-		std::advance(item, _lastRetrieved);
-		for (; item != equippedItems.end(); item++) {
-			if (*item != nullptr)
-				return *item;
+Item *Inventory::getNextRetrieved() {
+	static const size_t kEquipSize = (size_t) kInventorySlotMax;
 
-			// Stay in bounds
-			if(++_lastRetrieved >= equipSize)
-				break;
+	// Check if _lastRetrieved is in the equipment range
+	if (_lastRetrieved < kEquipSize) {
+		// Set the iterator
+		std::vector<Item *>::iterator start1 = equippedItems.begin();
+		if (_lastRetrieved > 0)
+			std::advance(start1, _lastRetrieved);
+
+		// Search for a non-null item beginning at offset
+		std::vector<Item *>::iterator equip = std::find_if(start1, equippedItems.end(), [](Item *i1) {
+			return i1 != nullptr;
+		});
+
+		// Check for success
+		if (equip != equippedItems.end()) {
+			// Only return if in bounds
+			_lastRetrieved = std::distance(equippedItems.begin(), equip);
+			if (_lastRetrieved < kEquipSize)
+				return *equip;
+		}
+
+		// Fall through to the inventory
+		_lastRetrieved = kEquipSize;
+	}
+
+	// Check if _lastRetrieved is in the inventory range
+	if (_lastRetrieved < kEquipSize + inventoryItems.size()) {
+		// Set the iterator
+		std::vector<Item *>::iterator start2 = inventoryItems.begin();
+		if (_lastRetrieved > kEquipSize)
+			std::advance(start2, _lastRetrieved - kEquipSize);
+
+		// Search for a non-null item beginning at offset
+		std::vector<Item *>::iterator item = std::find_if(start2, inventoryItems.end(), [](Item *i2) {
+			return i2 != nullptr;
+		});
+
+		// Check for success
+		if (item != inventoryItems.end()) {
+			_lastRetrieved = std::distance(inventoryItems.begin(), item) + kEquipSize;
+			return *item;
 		}
 	}
 
-	// Cycle through the remaining inventory
-	const size_t inventorySize = inventoryItems.size();
-	if (_lastRetrieved < equipSize + inventorySize) {
-		// TODO: Check for an item with nested inventory (Ex.: magic bag)
-		std::vector<Item *>::const_iterator item = inventoryItems.begin();
-		std::advance(item, _lastRetrieved - equipSize);
-		for (; item != inventoryItems.end(); item++)
-			if (*item != nullptr) {
-				return *item;
-			_lastRetrieved++;
-		}
-	}
-
-	// End of the inventory
-	_lastRetrieved = UINT16_MAX;
+	// Reached end of the inventory
+	_lastRetrieved = SIZE_MAX;
 	return nullptr;
 }
 
 /** Return the item in a slot. */
 Item *Inventory::getItemInSlot(InventorySlot slot) const {
-	return (slot < kInventorySlotMax) ? equippedItems[(uint16) slot] : nullptr;
+	return (slot < kInventorySlotMax) ? equippedItems[(size_t) slot] : nullptr;
 }
 
 Item *Inventory::createItem(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
@@ -132,22 +132,21 @@ Item *Inventory::createItem(const Common::UString &blueprint, uint16 stackSize, 
 	return item;
 }
 
-void Inventory::insertItem(Item *item, uint16 slot) {
+void Inventory::insertItem(Item *item, size_t slot) {
 	if (item == nullptr)
 		return;
 
-	// Determine the maximum slot to be occupied
-	size_t max = inventoryItems.size();
-	if (slot > max)
-		max = slot;
+	// If slot is in existing range, check if already occupied
+	const size_t max = inventoryItems.size();
+	if (slot < max && inventoryItems[slot] != nullptr) {
+		// Find an empty inventory slot
+		std::vector<Item *>::iterator it = std::find(inventoryItems.begin(), inventoryItems.end(), nullptr);
+		slot = (it != inventoryItems.end()) ? std::distance(inventoryItems.begin(), it) : max;
+	}
 
 	// Make sure there's enough space allocated
-	if (max + 2 > inventoryItems.capacity())
-		inventoryItems.resize(max + 8, nullptr); // Add a full row
-
-	// Find an empty inventory slot
-	if (inventoryItems[slot] != nullptr)
-		slot = getFirstEmptySlot();
+	if (slot >= max)
+		inventoryItems.resize(slot + 1, nullptr);
 
 	// Insert the item pointer
 	inventoryItems[slot] = item;
@@ -167,20 +166,6 @@ void Inventory::clear() {
 	// Clear the maps
 	equippedItems.clear();
 	inventoryItems.clear();
-}
-
-uint16 Inventory::getFirstEmptySlot() const {
-	// Look for the first open slot
-	uint16 slot = 0;
-
-	for (std::vector<Item *>::const_iterator item = inventoryItems.begin(); item != inventoryItems.end(); ++item) {
-		if (*item == nullptr)
-			return slot;
-		slot++;
-	}
-
-	// Failsafe
-	return slot;
 }
 
 InventorySlot Inventory::getSlotFromBitFlag(uint32 bitFlag) const {
@@ -252,7 +237,7 @@ void Inventory::load(const Aurora::GFF3Struct &inventory) {
 		const Aurora::GFF3List &itemList = inventory.getList("ItemList");
 		for (Aurora::GFF3List::const_iterator it = itemList.begin(); it != itemList.end(); ++it) {
 			const Aurora::GFF3Struct &item = **it;
-			uint16 slot = item.getUint("Repos_Index");
+			size_t slot = item.getUint("Repos_Index");
 			insertItem(new Item(item), slot);
 		}
 	}
@@ -269,10 +254,10 @@ void Inventory::load(const Aurora::GFF3Struct &inventory) {
 			const Aurora::GFF3Struct &item = **it;
 
 			// Slot number is given by the struct id bit flag
-			uint16 slot = getSlotFromBitFlag(item.getID());
+			size_t slot = getSlotFromBitFlag(item.getID());
 
 			// Check for an open equipment slot
-			if (slot < (uint16) kInventorySlotMax && equippedItems[slot] == nullptr) {
+			if (slot < (size_t) kInventorySlotMax && equippedItems[slot] == nullptr) {
 				equippedItems[slot] = new Item(item);
 			} else {
 				// Move to the general inventory instead
