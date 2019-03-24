@@ -25,12 +25,16 @@
 #ifndef ENGINES_NWN2_STORE_H
 #define ENGINES_NWN2_STORE_H
 
+#include <memory>
+
 #include "src/engines/nwn2/types.h"
 #include "src/engines/nwn2/object.h"
 
 namespace Engines {
 
 namespace NWN2 {
+
+class Inventory;
 
 class Store : public Object {
 public:
@@ -53,6 +57,18 @@ public:
 	void setStoreMaximumBuyPrice(int32 max);
 
 private:
+	typedef std::vector<uint8> BaseItemTypes;
+
+	typedef uint32 InventoryType;
+
+	static const InventoryType kInventoryTypes = 5; ///< Number of store tabs.
+
+	std::unique_ptr<Inventory> _inventory[kInventoryTypes]; ///< Items for sale.
+
+	// The _willOnlyBuy list is ignored unless _willNotBuy is empty
+	BaseItemTypes _willNotBuy;  ///< Base item types the store will not buy.
+	BaseItemTypes _willOnlyBuy; ///< Base item types the store will only buy.
+
 	int32  _identifyPrice; ///< Charge for identifying items.
 	int32  _storeGold;     ///< How many gp the store has available.
 	int32  _maxBuyPrice;   ///< The maximum amount this store will pay for an item.
@@ -68,6 +84,8 @@ private:
 
 	/** Load general store properties. */
 	void loadProperties(const Aurora::GFF3Struct &gff);
+	/** Load BaseItemTypes list. */
+	void loadBaseItemTypes(const Aurora::GFF3Struct &gff, const Common::UString field, BaseItemTypes &types);
 };
 
 } // End of namespace NWN2

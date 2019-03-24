@@ -23,11 +23,13 @@
  */
 
 #include "src/common/maths.h"
+#include "src/common/error.h"
 
 #include "src/aurora/gff3file.h"
 
 #include "src/engines/aurora/util.h"
 
+#include "src/engines/nwn2/inventory.h"
 #include "src/engines/nwn2/store.h"
 
 namespace Engines {
@@ -113,9 +115,38 @@ void Store::loadProperties(const Aurora::GFF3Struct &gff) {
 	_bmMarkDown = gff.getUint("BM_MarkDown", _bmMarkDown);
 	_blackMarket = gff.getBool("BlackMarket", _blackMarket);
 
+	// Inventory
+	const Aurora::GFF3List &sLists = gff.getList("StoreList");
+	for (Aurora::GFF3List::const_iterator s = sLists.begin(); s != sLists.end(); ++s) {
+		InventoryType id = (*s)->getID();
+		if (id < kInventoryTypes)
+			_inventory[id].reset(new Inventory(**s));
+		else
+			throw Common::Exception("Invalid store inventory type '%d' for tag \"%s\"", id, _tag.c_str());
+	}
+
+	// Load base item types
+	loadBaseItemTypes(gff, "WillNotBuy", _willNotBuy);
+	loadBaseItemTypes(gff, "WillOnlyBuy", _willOnlyBuy);
+
 	// Scripts and variables
 	readScripts(gff);
 	readVarTable(gff);
+}
+
+void Store::loadBaseItemTypes(const Aurora::GFF3Struct &gff, const Common::UString field, BaseItemTypes &types) {
+	if (!gff.hasField(field))
+		return;
+
+	const Aurora::GFF3List &list = gff.getList(field);
+	for (Aurora::GFF3List::const_iterator b = list.begin(); b != list.end(); ++b) {
+		// Make the default value be an error condition
+		int32 baseItem = (*b)->getSint("BaseItem", -1);
+		if (baseItem >= 0 && baseItem <= UINT8_MAX)
+			types.push_back(static_cast<uint8>(baseItem));
+		else
+			throw Common::Exception("Invalid BaseItem type '%d'", baseItem);
+	}
 }
 
 } // End of namespace NWN2

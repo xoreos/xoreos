@@ -234,6 +234,7 @@ private:
 	void loadEnvironment(const Aurora::GFF3List &list);
 	void loadDoors      (const Aurora::GFF3List &list);
 	void loadCreatures  (const Aurora::GFF3List &list);
+	void loadStores     (const Aurora::GFF3List &list);
 
 	// Model loading/unloading helpers
 

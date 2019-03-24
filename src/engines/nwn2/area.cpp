@@ -51,6 +51,7 @@
 #include "src/engines/nwn2/door.h"
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/faction.h"
+#include "src/engines/nwn2/store.h"
 
 namespace Engines {
 
@@ -358,6 +359,10 @@ void Area::loadGIT(const Aurora::GFF3Struct &git) {
 	// Creatures
 	if (git.hasField("Creature List"))
 		loadCreatures(git.getList("Creature List"));
+
+	// Stores
+	if (git.hasField("StoreList"))
+		loadStores(git.getList("StoreList"));
 }
 
 void Area::loadProperties(const Aurora::GFF3Struct &props) {
@@ -556,6 +561,14 @@ void Area::loadCreatures(const Aurora::GFF3List &list) {
 		Creature *creature = new Creature(**c);
 
 		loadObject(*creature);
+	}
+}
+
+void Area::loadStores(const Aurora::GFF3List &list) {
+	for (Aurora::GFF3List::const_iterator s = list.begin(); s != list.end(); ++s) {
+		Store *store = new Store(**s);
+
+		loadObject(*store);
 	}
 }
 
