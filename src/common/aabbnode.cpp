@@ -208,7 +208,23 @@ void AABBNode::getNodes(float x, float y, std::vector<AABBNode *> &nodes) {
 	_rightChild->getNodes(x, y, nodes);
 }
 
-void AABBNode::getNodesInAABox2D(glm::vec2 min, glm::vec2 max, std::vector<AABBNode *> &nodes) {
+void AABBNode::getNodesInAABox(glm::vec3 min, glm::vec3 max, std::vector<AABBNode *> &nodes) {
+	const glm::vec3 cMin(_min[0], _min[1], _min[2]);
+	const glm::vec3 cMax(_max[0], _max[1], _max[2]);
+
+	if (!intersectBoxes3D(min, max, cMin, cMax))
+		return;
+
+	if (!hasChildren()) {
+		nodes.push_back(this);
+		return;
+	}
+
+	_leftChild->getNodesInAABox(min, max, nodes);
+	_rightChild->getNodesInAABox(min, max, nodes);
+}
+
+void AABBNode::getNodesInAABox(glm::vec2 min, glm::vec2 max, std::vector<AABBNode *> &nodes) {
 	const glm::vec2 cMin(_min[0], _min[1]);
 	const glm::vec2 cMax(_max[0], _max[1]);
 
@@ -220,8 +236,8 @@ void AABBNode::getNodesInAABox2D(glm::vec2 min, glm::vec2 max, std::vector<AABBN
 		return;
 	}
 
-	_leftChild->getNodesInAABox2D(min, max, nodes);
-	_rightChild->getNodesInAABox2D(min, max, nodes);
+	_leftChild->getNodesInAABox(min, max, nodes);
+	_rightChild->getNodesInAABox(min, max, nodes);
 }
 
 void AABBNode::getNodesInSegment(glm::vec3 start, glm::vec3 end, std::vector<AABBNode *> &nodes) {

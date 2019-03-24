@@ -224,7 +224,7 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	_faceProperty.resize(_facesCount, 1);
 
 	// Adjust drawing height.
-	const float height = _globalPathfinding->getHeight(_xCenter, _yCenter, true) + 0.05;
+	const float walkmeshHeight = _globalPathfinding->getHeight(_xCenter, _yCenter, true) + 0.05;
 	_walkmeshDrawing->setAdjustedHeight(0.15);
 
 	// Rasterize unwalkable faces from the walkmesh into the grid.
@@ -234,10 +234,12 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	                                                _yMin + _cellSize * _gridHeight));
 	glm::vec2 lTInReal = fromVirtualPlan(glm::vec2(_xMin, _yMin + _cellSize * _gridHeight));
 	glm::vec2 rBInReal = fromVirtualPlan(glm::vec2(_xMin + _cellSize * _gridWidth, _yMin));
-	_trueMin = glm::vec2(MIN(MIN(MIN(minInReal[0], maxInReal[0]), lTInReal[0]), rBInReal[0]),
-	        MIN(MIN(MIN(minInReal[1], maxInReal[1]), lTInReal[1]), rBInReal[1]));
-	_trueMax = glm::vec2(MAX(MAX(MAX(minInReal[0], maxInReal[0]), lTInReal[0]), rBInReal[0]),
-	        MAX(MAX(MAX(minInReal[1], maxInReal[1]), lTInReal[1]), rBInReal[1]));
+	_trueMin = glm::vec3(MIN(MIN(MIN(minInReal[0], maxInReal[0]), lTInReal[0]), rBInReal[0]),
+	        MIN(MIN(MIN(minInReal[1], maxInReal[1]), lTInReal[1]), rBInReal[1]),
+	        walkmeshHeight - 0.1f);
+	_trueMax = glm::vec3(MAX(MAX(MAX(minInReal[0], maxInReal[0]), lTInReal[0]), rBInReal[0]),
+	        MAX(MAX(MAX(minInReal[1], maxInReal[1]), lTInReal[1]), rBInReal[1]),
+	        walkmeshHeight + 0.2f);
 	for (uint8 c = 0; c < 2; ++c) {
 		_trueMin[c] -= halfWidth;
 		_trueMax[c] += halfWidth;
@@ -245,7 +247,7 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 
 	for (size_t n = 0; n < _globalPathfinding->_AABBTrees.size(); ++n) {
 		if (_globalPathfinding->_AABBTrees[n])
-			_globalPathfinding->_AABBTrees[n]->getNodesInAABox2D(_trueMin, _trueMax, nodes);
+			_globalPathfinding->_AABBTrees[n]->getNodesInAABox(_trueMin, _trueMax, nodes);
 	}
 
 	std::vector<glm::vec3> vertices;
@@ -275,7 +277,7 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 			// y position of the vertex.
 			_vertices[3 * vertexID + 1] = vertex[1];
 			// z position of the vertex.
-			_vertices[3 * vertexID + 2] = height;
+			_vertices[3 * vertexID + 2] = walkmeshHeight;
 		}
 	}
 

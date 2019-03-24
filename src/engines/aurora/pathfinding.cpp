@@ -301,7 +301,7 @@ bool Pathfinding::walkableAASquare(glm::vec3 center, float halfWidth) {
 	std::vector<Common::AABBNode *> nodesIn;
 	for (std::vector<Common::AABBNode *>::iterator n = _AABBTrees.begin(); n != _AABBTrees.end(); ++n) {
 		if (*n)
-			(*n)->getNodesInAABox2D(min, max, nodesIn);
+			(*n)->getNodesInAABox(min, max, nodesIn);
 	}
 
 	std::vector<glm::vec3> vertices;

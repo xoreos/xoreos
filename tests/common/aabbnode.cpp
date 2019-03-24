@@ -123,17 +123,25 @@ GTEST_TEST(AABBNode, getNodes) {
 	ASSERT_TRUE(nodes.empty());
 }
 
-GTEST_TEST(AABBNode, getNodesInAABox2D) {
+GTEST_TEST(AABBNode, getNodesInAABox) {
 	float min[3] = {0.f, 0.f, 0.f};
 	float max[3] = {1.f, 2.f, 0.f};
 	Common::AABBNode a = Common::AABBNode(min, max);
 
 	std::vector<Common::AABBNode *> nodes;
-	a.getNodesInAABox2D(glm::vec3(0.5, 0.5, 0), glm::vec3(1.5, 1.5, 0), nodes);
+	a.getNodesInAABox(glm::vec3(0.5, 0.5, 0), glm::vec3(1.5, 1.5, 0), nodes);
 	ASSERT_TRUE(nodes.size() == 1);
 
 	nodes.clear();
-	a.getNodesInAABox2D(glm::vec3(2.5, 2.5, 0), glm::vec3(3.5, 3.5, 0), nodes);
+	a.getNodesInAABox(glm::vec2(0.5, 0.5), glm::vec2(1.5, 1.5), nodes);
+	ASSERT_TRUE(nodes.size() == 1);
+
+	nodes.clear();
+	a.getNodesInAABox(glm::vec3(2.5, 2.5, 0), glm::vec3(3.5, 3.5, 0), nodes);
+	ASSERT_TRUE(nodes.empty());
+
+	nodes.clear();
+	a.getNodesInAABox(glm::vec2(2.5, 2.5), glm::vec2(3.5, 3.5), nodes);
 	ASSERT_TRUE(nodes.empty());
 }
 

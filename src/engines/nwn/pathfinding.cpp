@@ -432,7 +432,7 @@ bool Pathfinding::faceInTileWalkable(uint32 tile, uint32 face) const {
 Pathfinding::Face Pathfinding::cutFaceAt(bool isAtGoodMax, Tile &tileToCut, Tile &tileGood,
                                          Face &faceToCut, Face &faceGood) {
 	// Get center of the face to be cut for AABB.
-	glm::vec3 center(0.f, 0.f, 0.f);
+	glm::vec2 center(0.f, 0.f);
 	std::vector<glm::vec3> vertices;
 	for (uint32 v = 0; v < 3; ++v) {
 		vertices.push_back(faceToCut.vert[v]);
@@ -593,7 +593,7 @@ Pathfinding::Face Pathfinding::cutFaceAt(bool isAtGoodMax, Tile &tileToCut, Tile
 
 	// Get AABB from cut face.
 	std::vector<Common::AABBNode *> nodes;
-	_AABBTrees[tileToCut.tileId]->getNodesInAABox2D(center - 0.2f, center + 0.2f, nodes);
+	_AABBTrees[tileToCut.tileId]->getNodesInAABox(center - 0.2f, center + 0.2f, nodes);
 	Common::AABBNode *parentNode = 0;
 	for (std::vector<Common::AABBNode *>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
 		if ((uint32) (*it)->getProperty() == faceToCut.faceId) {

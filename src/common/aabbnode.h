@@ -70,7 +70,9 @@ public:
 	/** Get the nodes at a given point in the XY plane. */
 	void getNodes(float x, float y, std::vector<AABBNode *> &nodes);
 	/** Get the nodes that intersect a given axis-align box. */
-	void getNodesInAABox2D(glm::vec2 min, glm::vec2 max, std::vector<AABBNode *> &nodes);
+	void getNodesInAABox(glm::vec3 min, glm::vec3 max, std::vector<AABBNode *> &nodes);
+	/** Get the nodes that intersect a given axis-align box in the xy plan. */
+	void getNodesInAABox(glm::vec2 min, glm::vec2 max, std::vector<AABBNode *> &nodes);
 	/** Get the nodes that intersect a given segment in the XY plane. */
 	void getNodesInSegment(glm::vec3 start, glm::vec3 end, std::vector<AABBNode *> &nodes);
 	/** Get the property of the AABB. */

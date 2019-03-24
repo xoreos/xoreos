@@ -89,8 +89,8 @@ private:
 
 	Common::PtrList<ObjectWalkmesh> _staticObjects;
 
-	glm::vec2 _trueMin;
-	glm::vec2 _trueMax;
+	glm::vec3 _trueMin;
+	glm::vec3 _trueMax;
 	uint32 _gridWidth;
 	uint32 _gridHeight;
 	uint32 _endFace;
