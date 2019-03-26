@@ -47,6 +47,7 @@
 #include "src/engines/nwn2/creature.h"
 #include "src/engines/nwn2/faction.h"
 #include "src/engines/nwn2/roster.h"
+#include "src/engines/nwn2/journal.h"
 
 namespace Engines {
 
@@ -206,6 +207,7 @@ void Module::enter(Creature &pc, bool isNewCampaign) {
 		loadAreas();
 		loadFactions();
 		loadRoster();
+		loadJournal();
 
 	} catch (Common::Exception &e) {
 		e.add("Can't initialize module \"%s\"", _name.c_str());
@@ -365,6 +367,7 @@ void Module::unload() {
 	unloadAreas();
 	unloadFactions();
 	unloadRoster();
+	unloadJournal();
 	unloadHAKs();
 	unloadTLK();
 	unloadModule();
@@ -424,6 +427,25 @@ void Module::loadRoster() {
 	_roster.reset(new Roster());
 }
 
+void Module::loadJournal() {
+	if (_campaignJournal) {
+		// Copy the campaign journal
+		_moduleJournal.reset(new Journal(*_campaignJournal));
+	} else {
+		// Load the module journal
+		std::unique_ptr<Aurora::GFF3File> jrl;
+		jrl.reset(loadOptionalGFF3("module", Aurora::kFileTypeJRL, MKTAG('J', 'R', 'L', ' ')));
+		if (jrl) {
+			const Aurora::GFF3Struct &top = jrl->getTopLevel();
+			_moduleJournal.reset(new Journal(top));
+		}
+	}
+}
+
+void Module::loadCampaignJournal(const Aurora::GFF3Struct &journal) {
+	_campaignJournal.reset(new Journal(journal));
+}
+
 void Module::loadAreas() {
 	status("Loading areas...");
 
@@ -469,6 +491,10 @@ void Module::unloadFactions() {
 
 void Module::unloadRoster() {
 	_roster.reset();
+}
+
+void Module::unloadJournal() {
+	_moduleJournal.reset();
 }
 
 void Module::movePC(const Common::UString &area) {

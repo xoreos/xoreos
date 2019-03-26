@@ -202,6 +202,14 @@ void Campaign::loadCampaignResource(const Common::UString &campaign) {
 	_name        = gff->getTopLevel().getString("DisplayName");
 	_description = gff->getTopLevel().getString("Description");
 
+	try {
+		// Load the campaign journal into the module
+		gff.reset(new Aurora::GFF3File("module", Aurora::kFileTypeJRL, MKTAG('J', 'R', 'L', ' ')));
+		if (_module)
+			_module->loadCampaignJournal(gff->getTopLevel());
+	} catch (...) {
+	}
+
 	success = true;
 }
 

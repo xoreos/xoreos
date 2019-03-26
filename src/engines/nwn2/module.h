@@ -36,6 +36,7 @@
 #include "src/common/changeid.h"
 
 #include "src/aurora/ifofile.h"
+#include "src/aurora/gff3file.h"
 
 #include "src/aurora/nwscript/objectref.h"
 
@@ -54,6 +55,7 @@ class Area;
 class Creature;
 class Factions;
 class Roster;
+class Journal;
 
 class Module : public NWN2::Object, public NWN2::ObjectContainer {
 public:
@@ -87,6 +89,8 @@ public:
 	Factions &getFactions();
 	/** Return the module's roster. */
 	Roster &getRoster();
+	/** Load the campaign journal. */
+	void loadCampaignJournal(const Aurora::GFF3Struct &gff);
 	// '---
 
 	void delayScript(const Common::UString &script,
@@ -184,6 +188,9 @@ private:
 	Common::ScopedPtr<Factions> _factions; ///< The factions in the current module.
 	Common::ScopedPtr<Roster>   _roster;   ///< The roster for the current module.
 
+	std::unique_ptr<Journal> _moduleJournal;   ///< The current module's journal.
+	std::unique_ptr<Journal> _campaignJournal; ///< The campaign journal.
+
 	bool _ranPCSpawn; ///< Did we run the PC spawn script?
 
 	Common::UString _newModule; ///< The module we should change to.
@@ -202,6 +209,7 @@ private:
 	void unloadAreas();       ///< Unload the areas.
 	void unloadFactions();    ///< Unload the factions.
 	void unloadRoster();      ///< Unload the roster.
+	void unloadJournal();     ///< Unload the journal.
 	// '---
 
 	// .--- Loading
@@ -213,6 +221,7 @@ private:
 	void loadAreas();       ///< Load the areas.
 	void loadFactions();    ///< Load the factions.
 	void loadRoster();      ///< Load the roster.
+	void loadJournal();     ///< Load the journal.
 	// '---
 
 	void enterArea(); ///< Enter a new area.
