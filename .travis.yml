@@ -92,6 +92,7 @@ addons:
     - libvpx-dev
     - libgl1
     - libgl-dev
+    - libcairo2-dev
   homebrew:
     packages:
     - ninja
@@ -106,6 +107,7 @@ addons:
     - libvorbis
     - xvid
     - libvpx
+    - cairo
   coverity_scan:
     build_script_url: https://raw.githubusercontent.com/$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/.travis_coverity.sh
     project:
