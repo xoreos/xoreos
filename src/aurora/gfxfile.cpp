@@ -636,7 +636,7 @@ void GFXFile::readDefineFont() {
 
 	font.glyphs = glyphs;
 
-	_characters.insert(std::make_pair(fontId, GFXCharacter::createFont(fontId, GFXCharacter::Font())));
+	_characters.insert(std::make_pair(fontId, GFXCharacter::createFont(fontId, font)));
 }
 
 void GFXFile::readDefineEditText() {
