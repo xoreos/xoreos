@@ -218,6 +218,7 @@ public:
 		boost::optional<uint16_t> fontAscent;
 		boost::optional<uint16_t> fontDescent;
 		boost::optional<int16_t> fontLeading;
+		boost::optional<std::vector<int16_t>> advanceTable;
 	};
 
 	/**

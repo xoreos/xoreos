@@ -616,6 +616,8 @@ void GFXFile::readDefineFont() {
 
 			kerningCodes[i].adjustment = _gfx->readSint16LE();
 		}
+
+		font.advanceTable = advance;
 	}
 
 	font.kerningCodes = kerningCodes;
