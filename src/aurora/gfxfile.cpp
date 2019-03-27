@@ -1048,10 +1048,10 @@ std::vector<GFXCharacter::ShapeRecord> GFXFile::readShape(byte version, bool wit
 				else
 					record.straightEdge.deltaY = 0;
 			} else {
-				record.curvedEdge.controlDeltaX = read2ComplementValue(bitStream, numBits + 2);
-				record.curvedEdge.controlDeltaY = read2ComplementValue(bitStream, numBits + 2);
-				record.curvedEdge.anchorDeltaX = read2ComplementValue(bitStream, numBits + 2);
-				record.curvedEdge.anchorDeltaY = read2ComplementValue(bitStream, numBits + 2);
+				record.curvedEdge.controlDeltaX = read2ComplementValue(bitStream, numBits + 2) / 20;
+				record.curvedEdge.controlDeltaY = read2ComplementValue(bitStream, numBits + 2) / 20;
+				record.curvedEdge.anchorDeltaX = read2ComplementValue(bitStream, numBits + 2) / 20;
+				record.curvedEdge.anchorDeltaY = read2ComplementValue(bitStream, numBits + 2) / 20;
 			}
 		} else {
 			const bool stateNewStyles = bitStream.getBit() == 1;
