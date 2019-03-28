@@ -89,6 +89,8 @@ public:
 	Factions &getFactions();
 	/** Return the module's roster. */
 	Roster &getRoster();
+	/** Return the module's journal. */
+	Journal &getJournal();
 	/** Load the campaign journal. */
 	void loadCampaignJournal(const Aurora::GFF3Struct &gff);
 	// '---

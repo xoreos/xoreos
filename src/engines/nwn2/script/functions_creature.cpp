@@ -167,6 +167,45 @@ void Functions::getIsCreatureDisarmable(Aurora::NWScript::FunctionContext &ctx) 
 	ctx.getReturn() = creature && creature->getIsCreatureDisarmable();
 }
 
+void Functions::addJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 2));
+	if (creature) {
+		/*
+		 * TODO:
+		 *  - process bAllPartyMembers and bAllPlayers parameters
+		 *  - set a local int variable on the creature(s):
+		 *      name  = "NW_JOURNAL_ENTRY" + sPlotID
+		 *      value = nState
+		 */
+		const Common::UString &plotID = ctx.getParams()[0].getString();
+		const uint32 state = ctx.getParams()[1].getInt();
+		bool override = (ctx.getParams()[5].getInt() != 0);
+		creature->addJournalQuestEntry(plotID, state, override);
+	}
+}
+
+void Functions::removeJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 1));
+	if (creature) {
+		/*
+		 * TODO:
+		 *  - process bAllPartyMembers and bAllPlayers parameters
+		 *  - delete a local int variable from the creature(s):
+		 *      name  = "NW_JOURNAL_ENTRY" + sPlotID
+		 */
+		const Common::UString &plotID = ctx.getParams()[0].getString();
+		creature->removeJournalQuestEntry(plotID);
+	}
+}
+
+void Functions::getJournalEntry(Aurora::NWScript::FunctionContext &ctx) {
+	Creature *creature = NWN2::ObjectContainer::toCreature(getParamObject(ctx, 1));
+	if (creature) {
+		const Common::UString &plotID = ctx.getParams()[0].getString();
+		ctx.getReturn() = static_cast<int32>(creature->getJournalEntry(plotID));
+	}
+}
+
 void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = NWN2::ObjectContainer::toPC(getParamObject(ctx, 0)) != 0;
 }

@@ -93,6 +93,10 @@ Roster &Module::getRoster() {
 	return *_roster;
 }
 
+Journal &Module::getJournal() {
+	return *_moduleJournal;
+}
+
 Creature *Module::getPC() {
 	return _pc;
 }

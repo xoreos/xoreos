@@ -196,6 +196,8 @@ private:
 
 	void getFirstPC(Aurora::NWScript::FunctionContext &ctx);
 	void getNextPC(Aurora::NWScript::FunctionContext &ctx);
+
+	void getJournalQuestExperience(Aurora::NWScript::FunctionContext &ctx);
 	// '---
 
 	// .--- General object functions, functions_object.cpp
@@ -455,6 +457,10 @@ private:
 	void setImmortal(Aurora::NWScript::FunctionContext &ctx);
 	void setPlotFlag(Aurora::NWScript::FunctionContext &ctx);
 	void setLootable(Aurora::NWScript::FunctionContext &ctx);
+
+	void addJournalQuestEntry   (Aurora::NWScript::FunctionContext &ctx);
+	void removeJournalQuestEntry(Aurora::NWScript::FunctionContext &ctx);
+	void getJournalEntry        (Aurora::NWScript::FunctionContext &ctx);
 
 	void getIsPC(Aurora::NWScript::FunctionContext &ctx);
 	void getIsDM(Aurora::NWScript::FunctionContext &ctx);

@@ -301,6 +301,45 @@ Item *Creature::createItemOnObject(const Common::UString &blueprint, uint16 stac
 	return createItem(blueprint, stackSize, tag);
 }
 
+void Creature::addJournalQuestEntry(const Common::UString &plotID, uint32 state, bool override) {
+	auto category = std::find_if(_questStates.begin(), _questStates.end(), [&](const QuestState &qs) {
+		return qs.plotID == plotID;
+	});
+
+	// TODO: Post a quest update message for the player
+
+	if (category != _questStates.end()) {
+		// Update the state
+		if (override || category->state < state)
+			category->state = state;
+	} else {
+		QuestState qstate;
+
+		qstate.plotID = plotID;
+		qstate.state = state;
+
+		// Add quest entry to the vector
+		_questStates.push_back(qstate);
+	}
+}
+
+void Creature::removeJournalQuestEntry(const Common::UString &plotID) {
+	auto category = std::find_if(_questStates.begin(), _questStates.end(), [&](const QuestState &qs) {
+		return qs.plotID == plotID;
+	});
+
+	if (category != _questStates.end())
+		_questStates.erase(category);
+}
+
+uint32 Creature::getJournalEntry(const Common::UString &plotID) {
+	auto category = std::find_if(_questStates.begin(), _questStates.end(), [&](const QuestState &qs) {
+		return qs.plotID == plotID;
+	});
+
+	return (category != _questStates.end()) ? category->state : 0;
+}
+
 /**
  * Perform a skill check against the DC.
  *
@@ -607,6 +646,8 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Scripts and variables
 	readScripts(gff);
 	readVarTable(gff);
+
+	// TODO: Load the journal entry settings from int variables: "NW_JOURNAL_ENTRY" + sPlotID
 }
 
 void Creature::loadClasses(const Aurora::GFF3Struct &gff,

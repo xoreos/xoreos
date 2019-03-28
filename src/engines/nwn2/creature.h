@@ -147,6 +147,13 @@ public:
 
 	uint8 getReputation(Object *source) const;
 
+	/** Add a journal quest entry. */
+	void addJournalQuestEntry(const Common::UString &plotID, uint32 state, bool override);
+	/** Remove a journal quest entry. */
+	void removeJournalQuestEntry(const Common::UString &plotID);
+	/** Return the state of a journal quest entry. */
+	uint32 getJournalEntry(const Common::UString &plotID);
+
 	// Positioning
 
 	/** Set the creature's position. */
@@ -186,6 +193,12 @@ private:
 		uint8  ability;          ///< Ability to increase
 		uint8  hitDice;          ///< Hit Dice for the class
 		uint8  ranks[kSkillMAX]; ///< Rank increases
+	};
+
+	/** A quest status. */
+	struct QuestState {
+		Common::UString plotID; ///< Journal category identifier.
+		uint32 state;           ///< Journal entry id.
 	};
 
 	Common::UString _firstName; ///< The creature's first name.
@@ -230,6 +243,7 @@ private:
 	uint8 _lawChaos; ///< The creature's law/chaos value (0-100).
 
 	Common::ScopedPtr<PersonalReputation> _personalRep; ///< The creature's reputation tracker.
+	std::vector<QuestState> _questStates;               ///< Status of the creature's quests.
 
 	uint32 _appearanceID; ///< The creature's general appearance.
 

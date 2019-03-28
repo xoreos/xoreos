@@ -28,6 +28,7 @@
 
 #include "src/engines/nwn2/game.h"
 #include "src/engines/nwn2/module.h"
+#include "src/engines/nwn2/journal.h"
 #include "src/engines/nwn2/location.h"
 #include "src/engines/nwn2/objectcontainer.h"
 
@@ -87,6 +88,11 @@ void Functions::getFirstPC(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::getNextPC(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = (Aurora::NWScript::Object *) 0;
+}
+
+void Functions::getJournalQuestExperience(Aurora::NWScript::FunctionContext &ctx) {
+	const Common::UString &plotID = ctx.getParams()[0].getString();
+	ctx.getReturn() = static_cast<int32>(_game->getModule().getJournal().getJournalQuestExperience(plotID));
 }
 
 } // End of namespace NWN2
