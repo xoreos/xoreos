@@ -159,23 +159,23 @@ void ModelNode::setParent(ModelNode *parent) {
 }
 
 void ModelNode::reparentTo(ModelNode *parent) {
-	if (_parent == parent)
-		return;
-
-	if (_parent)
-		_parent->_children.remove(this);
-
-	if (!parent)
+	if (!parent || _parent == parent)
 		return;
 
 	glm::mat4 transform;
 
-	std::vector<const ModelNode *> oldToNew(getPath(_parent, parent));
-	for (std::vector<const ModelNode *>::reverse_iterator n = oldToNew.rbegin(); n != oldToNew.rend(); ++n) {
-		transform *= (*n)->_localTransform;
+	if (_parent) {
+		_parent->_children.remove(this);
+
+		std::vector<const ModelNode *> oldToNew(getPath(_parent, parent));
+		for (std::vector<const ModelNode *>::reverse_iterator n = oldToNew.rbegin(); n != oldToNew.rend(); ++n) {
+			transform *= (*n)->_localTransform;
+		}
+
+		transform *= _parent->_localTransform;
 	}
 
-	transform *= _parent->_localTransform * _localTransform;
+	transform *= _localTransform;
 
 	glm::vec3 scale;
 	glm::quat rotation;
@@ -1101,6 +1101,9 @@ void ModelNode::computeLocalTransform() {
 }
 
 std::vector<const ModelNode *> ModelNode::getPath(const ModelNode *from, const ModelNode *to) const {
+	if (!from || !to)
+		return std::vector<const ModelNode *>();
+
 	std::vector<const ModelNode *> path;
 	for (const ModelNode *node = from->_parent; node && (node != to); node = node->_parent) {
 		if (node->_level == 0)
