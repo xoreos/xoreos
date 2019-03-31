@@ -69,7 +69,7 @@ void MenuBase::updatePartyMember(int index) {
 	Odyssey::WidgetButton *btnChange = getButton("BTN_CHANGE" + Common::composeString(index));
 	KotORBase::Creature *partyMember = _module->getPartyMemberByIndex(index);
 	if (partyMember) {
-		Common::UString texture = partyMember ? partyMember->getPortrait() : "";
+		Common::UString texture = partyMember->getPortrait();
 		btnChange->setInvisible(false);
 		btnChange->setFill(texture);
 		btnChange->setHighlight(texture);
