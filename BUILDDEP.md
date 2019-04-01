@@ -31,3 +31,4 @@ Build-time library dependencies
 
 - libxvidcore (>= 1.2.2)
 - libvpx (>= 1.6.0)
+- libcairo (>= 1.8)
