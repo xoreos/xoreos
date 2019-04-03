@@ -28,7 +28,8 @@ URL:            https://xoreos.org/
 Source0:        https://github.com/xoreos/xoreos/releases/download/%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  zlib-devel, freetype-devel, openal-soft-devel, libvorbis-devel,
-BuildRequires:  libogg-devel, SDL2-devel, libxml2-devel, lzma-devel, glew-devel
+BuildRequires:  libogg-devel, SDL2-devel, libxml2-devel, lzma-devel, glew-devel,
+BuildRequires:  cairo-devel
 
 BuildRequires:  libtool, gettext
 
