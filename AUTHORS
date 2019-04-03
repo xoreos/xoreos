@@ -213,3 +213,4 @@ Libraries
    - libfaad <http://www.audiocoding.com/faad2.html>
    - libxvidcore <https://www.xvid.com/>
    - libvpx <https://www.webmproject.org/code/>
+   - libcairo <https://www.cairographics.org/>
