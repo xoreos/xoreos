@@ -177,7 +177,11 @@ void WidgetButton::setIcon(const Common::UString &icon) {
 	float x, y, z;
 	getPosition(x, y, z);
 
-	_iconQuad->setPosition(x, y + texture.getHeight() / 2.0f, z - 1.0f);
+	_iconQuad->setPosition(
+		x + getWidth() / 2.0f - texture.getWidth() / 2.0f,
+		y + getHeight() / 2.0f - texture.getHeight() / 2.0f,
+		z - 1.0f
+	);
 
 	if (isVisible())
 		_iconQuad->show();
