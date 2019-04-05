@@ -32,6 +32,7 @@
 
 #include "src/engines/kotorbase/gui/gui.h"
 
+#include "src/engines/kotor2/gui/gui.h"
 #include "src/engines/kotor2/gui/chargen/charactergeneration.h"
 #include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 
@@ -45,6 +46,8 @@ public:
 	~ClassSelection();
 
 protected:
+	void initWidget(Widget &widget) override;
+
 	void callbackRun();
 	void callbackActive(Widget &widget);
 
