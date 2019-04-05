@@ -165,6 +165,10 @@ void ClassSelection::callbackActive(Widget &widget) {
 	}
 }
 
+void ClassSelection::initWidget(Widget &widget) {
+	KotOR2::initWidget(widget);
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
