@@ -29,6 +29,8 @@
 
 #include "src/engines/kotorbase/gui/gui.h"
 
+#include "src/engines/kotor2/gui/gui.h"
+
 namespace Engines {
 
 namespace KotOR2 {
@@ -43,6 +45,8 @@ protected:
 	KotORBase::CharacterGenerationInfo &_info;
 
 	void accept();
+
+	void initWidget(Widget &widget) override;
 
 private:
 	bool _accepted;
