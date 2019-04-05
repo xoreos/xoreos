@@ -57,6 +57,9 @@ public:
 
 	void start();
 
+protected:
+	void initWidget(Widget &widget) override;
+
 private:
 	KotORBase::Module *_module;
 
