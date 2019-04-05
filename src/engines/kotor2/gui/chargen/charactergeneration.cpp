@@ -148,6 +148,10 @@ void CharacterGeneration::start() {
 	_returnCode = 2;
 }
 
+void CharacterGeneration::initWidget(Widget &widget) {
+	KotOR2::initWidget(widget);
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
