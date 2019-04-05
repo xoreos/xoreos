@@ -52,6 +52,10 @@ void QuickOrCustomPanel::callbackActive(Widget &widget) {
 	}
 }
 
+void QuickOrCustomPanel::initWidget(Widget &widget) {
+	KotOR2::initWidget(widget);
+}
+
 } // End of namespace KotOR2
 
 } // End of namespace Engines
