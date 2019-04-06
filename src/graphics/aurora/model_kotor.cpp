@@ -507,8 +507,7 @@ void ModelNode_KotOR::load(Model_KotOR::ParserContext &ctx) {
 	}
 
 	if (ctx.flags & kNodeFlagHasEmitter) {
-		// TODO: Emitter
-		ctx.mdl->skip(0xD8);
+		readEmitter(ctx);
 	}
 
 	if (ctx.flags & kNodeFlagHasReference) {
@@ -1120,6 +1119,24 @@ void ModelNode_KotOR::readSaber(Model_KotOR::ParserContext &ctx) {
 	};
 
 	std::memcpy(indexData, indices, 96 * sizeof(uint16));
+}
+
+void ModelNode_KotOR::readEmitter(Model_KotOR::ParserContext &ctx) {
+	// TODO: Add values for unknown fields
+	ctx.mdl->skip(20); // Unknown
+
+	uint32 xGrid = ctx.mdl->readUint32LE();
+	uint32 yGrid = ctx.mdl->readUint32LE();
+
+	ctx.mdl->skip(4); // Unknown
+
+	// TODO: The padding bytes are not necessarily zero, maybe they are specific parameters for the specified mode?
+	Common::UString update  = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	Common::UString render  = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	Common::UString blend   = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 32);
+	Common::UString texture = Common::readStringFixed(*ctx.mdl, Common::kEncodingASCII, 64);
+
+	ctx.mdl->skip(24); // Unknown
 }
 
 } // End of namespace Aurora

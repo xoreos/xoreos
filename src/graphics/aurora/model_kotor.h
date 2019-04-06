@@ -123,6 +123,7 @@ private:
 	void readMesh(Model_KotOR::ParserContext &ctx);
 	void readSkin(Model_KotOR::ParserContext &ctx);
 	void readSaber(Model_KotOR::ParserContext &ctx);
+	void readEmitter(Model_KotOR::ParserContext &ctx);
 };
 
 } // End of namespace Aurora
