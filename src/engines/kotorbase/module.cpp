@@ -133,7 +133,11 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
                         ObjectType entryLocationType) {
 	_ingame->hide();
 
-	Common::ScopedPtr<KotORBase::LoadScreen> loadScreen(createLoadScreen(module));
+	Common::ScopedPtr<KotORBase::LoadScreen> loadScreen;
+	if (module.endsWith("mg"))
+		loadScreen.reset(createLoadScreen("swoop"));
+	else
+		loadScreen.reset(createLoadScreen(module));
 	loadScreen->show();
 
 	unload(false);
