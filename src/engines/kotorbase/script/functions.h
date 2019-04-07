@@ -289,6 +289,13 @@ protected:
 	void eventUserDefined(Aurora::NWScript::FunctionContext &ctx);
 	void getUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx);
 
+	// Time, functions_time.cpp
+
+	void getTimeHour(Aurora::NWScript::FunctionContext &ctx);
+	void getTimeMinute(Aurora::NWScript::FunctionContext &ctx);
+	void getTimeSecond(Aurora::NWScript::FunctionContext &ctx);
+	void getTimeMillisecond(Aurora::NWScript::FunctionContext &ctx);
+
 private:
 	Game *_game;
 	Event *_lastEvent;
