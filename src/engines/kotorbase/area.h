@@ -33,6 +33,7 @@
 #include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
+#include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/lytfile.h"
@@ -165,6 +166,11 @@ public:
 	void notifyObjectMoved(Object &o);
 	void notifyPartyLeaderMoved();
 
+	// Minigame
+
+	bool isMinigame();
+	const Aurora::GFF3Struct& getMinigame();
+
 
 	Object *getActiveObject();
 
@@ -179,6 +185,7 @@ private:
 	typedef Common::PtrList<Object> ObjectList;
 	typedef std::map<uint32, Object *> ObjectMap;
 
+	Common::ScopedPtr<Aurora::GFF3File> _are;
 
 	Module *_module; ///< The module this area is in.
 

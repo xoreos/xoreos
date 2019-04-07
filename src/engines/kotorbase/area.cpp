@@ -109,8 +109,8 @@ void Area::load() {
 
 	loadRooms();
 
-	Aurora::GFF3File are(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
-	loadARE(are.getTopLevel());
+	_are.reset(new Aurora::GFF3File(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' ')));
+	loadARE(_are->getTopLevel());
 
 	Aurora::GFF3File git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
 	loadGIT(git.getTopLevel());
@@ -684,6 +684,14 @@ void Area::notifyPartyLeaderMoved() {
 
 	if (currentRoom != prevRoom)
 		updateRoomsVisiblity();
+}
+
+bool Area::isMinigame() {
+	return _are->getTopLevel().hasField("MiniGame");
+}
+
+const Aurora::GFF3Struct &Area::getMinigame() {
+	return _are->getTopLevel().getStruct("MiniGame");
 }
 
 std::set<Common::UString> Area::getRoomsVisibleByPartyLeader() const {
