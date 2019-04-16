@@ -29,6 +29,8 @@
 
 #include "src/graphics/guielement.h"
 
+#include "src/graphics/shader/shaderrenderable.h"
+
 #include "src/graphics/aurora/texturehandle.h"
 
 #include "src/engines/nwn/gui/widgets/nwnwidget.h"
@@ -69,6 +71,8 @@ public:
 	void calculateDistance();
 	void render(Graphics::RenderPass pass);
 
+	void renderImmediate(const glm::mat4 &parentTransform);
+
 private:
 	struct Quad {
 		float vX[4], vY[4];
@@ -82,6 +86,17 @@ private:
 	float _z;
 
 	float _length;
+
+	Common::ScopedPtr<Graphics::Shader::ShaderSurface> _surface;
+	Common::ScopedPtr<Graphics::Shader::ShaderMaterial> _material;
+	Common::ScopedPtr<Graphics::Shader::ShaderRenderable> _renderable;
+	glm::mat4 _textureMatrix;     ///< Binding matrix, set prior to rendering.
+	glm::mat4 _textureMatrixBar;  ///< Cached texture matrix for the scroll bar.
+	glm::mat4 _textureMatrixCapA; ///< Cached texture matrix for the scroll cap (top/left)
+	glm::mat4 _textureMatrixCapB; ///< Cached texture matrix for the scroll cap (bottom/right)
+	glm::mat4 _scrollMatrixBar;   ///< Relative transformation matrix for the bar.
+	glm::mat4 _scrollMatrixCapA;  ///< Relative transformation matrix (Captain America).
+	glm::mat4 _scrollMatrixCapB;  ///< Relative transformation matrix (cap bottom/right).
 
 	std::vector<Quad> _quads;
 
