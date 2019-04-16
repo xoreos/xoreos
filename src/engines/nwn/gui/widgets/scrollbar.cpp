@@ -28,8 +28,11 @@
 #include "src/graphics/graphics.h"
 
 #include "src/graphics/aurora/textureman.h"
+#include "src/graphics/mesh/meshman.h"
 
 #include "src/engines/nwn/gui/widgets/scrollbar.h"
+
+#include "external/glm/gtc/matrix_transform.hpp"
 
 namespace Engines {
 
@@ -39,6 +42,20 @@ Scrollbar::Scrollbar(Type type) : Graphics::GUIElement(Graphics::GUIElement::kGU
 	_type(type), _x(0.0f), _y(0.0f), _z(0.0f) {
 	_texture = TextureMan.get("gui_scrollbar");
 
+	if (GfxMan.isRendererExperimental()) {
+		_surface.reset(new Graphics::Shader::ShaderSurface(
+				ShaderMan.getShaderObject("default/textureMatrix.vert", Graphics::Shader::SHADER_VERTEX), "portrait"));
+		_surface->setVariableExternal("_uv0Matrix", &_textureMatrix);
+
+		_material.reset(new Graphics::Shader::ShaderMaterial(
+				ShaderMan.getShaderObject("default/texture.frag", Graphics::Shader::SHADER_FRAGMENT), "portrait"));
+		Graphics::Shader::ShaderSampler *sampler;
+		sampler = (Graphics::Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
+		sampler->handle = _texture;
+
+		_renderable.reset(new Graphics::Shader::ShaderRenderable(
+				_surface.get(), _material.get(), MeshMan.getMesh("defaultMeshQuad")));
+	}
 	setLength(16.0f);
 }
 
@@ -128,9 +145,48 @@ void Scrollbar::render(Graphics::RenderPass pass) {
 	glEnd();
 }
 
+void Scrollbar::renderImmediate(const glm::mat4 &parentTransform)
+{
+	glm::mat4 tform;
+	tform = glm::translate(glm::mat4(), glm::vec3(roundf(_x), roundf(_y), _z));
+
+	// CapA (top or left, depending on scrollbar orientation).
+	_textureMatrix = _textureMatrixCapA;
+	_renderable->renderImmediate(parentTransform * tform * _scrollMatrixCapA);
+
+	// Render the scrollbar itself.
+	_textureMatrix = _textureMatrixBar;
+	_renderable->renderImmediate(parentTransform * tform * _scrollMatrixBar);
+
+	// CapB (bottom or right, depending on scrollbar orientation).
+	_textureMatrix = _textureMatrixCapB;
+	_renderable->renderImmediate(parentTransform * tform * _scrollMatrixCapB);
+}
+
 void Scrollbar::createH() {
 	// Number of 16 pixel wide quads
 	int n = ceilf(_length / 16.0f);
+
+	_textureMatrixBar = glm::mat4();
+	_textureMatrixBar = glm::scale(_textureMatrixBar, glm::vec3(10.0f/16.0f, (_length - 4.0f) / 16.0f, 1.0f));
+	_textureMatrixBar = glm::translate(_textureMatrixBar, glm::vec3((3.0f/16.0f), 0.0f, 0.0f));
+
+	_textureMatrixCapA = glm::mat4();
+	_textureMatrixCapA = glm::translate(_textureMatrixCapA, glm::vec3(3.0f/16.0f, 14.0f/16.0f, 0.0f));
+	_textureMatrixCapA = glm::scale(_textureMatrixCapA, glm::vec3(10.0f/16.0f, 2.0f/16.0f, 1.0f));
+
+	_textureMatrixCapB = glm::mat4();
+	_textureMatrixCapB = glm::translate(_textureMatrixCapB, glm::vec3(3.0f/16.0f, 0.0f, 0.0f));
+	_textureMatrixCapB = glm::scale(_textureMatrixCapB, glm::vec3(10.0f/16.0f, 2.0f/16.0f, 1.0f));
+
+	_scrollMatrixBar = glm::translate(glm::mat4(), glm::vec3(2.0f, 0.0f, 0.0f));
+	_scrollMatrixBar = glm::scale(_scrollMatrixBar, glm::vec3(_length - 4.0f, 10.0f, 1.0f));
+
+	_scrollMatrixCapA = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f));
+	_scrollMatrixCapA = glm::scale(_scrollMatrixCapA, glm::vec3(2.0f, 10.0f, 1.0f));
+
+	_scrollMatrixCapB = glm::translate(glm::mat4(), glm::vec3(_length - 2.0f, 0.0f, 0.0f));
+	_scrollMatrixCapB = glm::scale(_scrollMatrixCapB, glm::vec3(2.0f, 10.0f, 1.0f));
 
 	float x = 0.0f;
 	float y = 0.0f;
@@ -187,6 +243,27 @@ void Scrollbar::createH() {
 void Scrollbar::createV() {
 	// Number of 16 pixel wide quads
 	int n = ceilf(_length / 16.0f);
+
+	_textureMatrixBar = glm::rotate(glm::mat4(), Common::deg2rad(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	_textureMatrixBar = glm::scale(_textureMatrixBar, glm::vec3(10.0f/16.0f, (_length - 4.0f) / 16.0f, 1.0f));
+	_textureMatrixBar = glm::translate(_textureMatrixBar, glm::vec3(3.0f/16.0f, 0.0f, 0.0f));
+
+	_textureMatrixCapA = glm::mat4();
+	_textureMatrixCapA = glm::translate(_textureMatrixCapA, glm::vec3(3.0f/16.0f, 14.0f/16.0f, 0.0f));
+	_textureMatrixCapA = glm::scale(_textureMatrixCapA, glm::vec3(10.0f/16.0f, 2.0f/16.0f, 1.0f));
+
+	_textureMatrixCapB = glm::mat4();
+	_textureMatrixCapB = glm::translate(_textureMatrixCapB, glm::vec3(3.0f/16.0f, 0.0f, 0.0f));
+	_textureMatrixCapB = glm::scale(_textureMatrixCapB, glm::vec3(10.0f/16.0f, 2.0f/16.0f, 1.0f));
+
+	_scrollMatrixBar = glm::translate(glm::mat4(), glm::vec3(0.0f, 2.0f, 0.0f));
+	_scrollMatrixBar = glm::scale(_scrollMatrixBar, glm::vec3(10.0f, _length - 4.0f, 1.0f));
+
+	_scrollMatrixCapA = glm::translate(glm::mat4(), glm::vec3(0.0f, _length - 2.0f, 0.0f));
+	_scrollMatrixCapA = glm::scale(_scrollMatrixCapA, glm::vec3(10.0f, 2.0f, 1.0f));
+
+	_scrollMatrixCapB = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, 0.0f));
+	_scrollMatrixCapB = glm::scale(_scrollMatrixCapB, glm::vec3(10.0f, 2.0f, 1.0f));
 
 	float x = 0.0f;
 	float y = 0.0f;
