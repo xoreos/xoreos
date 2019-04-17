@@ -228,6 +228,9 @@ void Situated::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Conversation
 	_conversation = gff.getString("Conversation", _conversation);
 
+	// Faction
+	_faction = Faction(gff.getUint("FactionID"));
+
 	// Scripts
 	readScripts(gff, false);
 }
