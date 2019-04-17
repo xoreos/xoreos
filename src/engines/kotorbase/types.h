@@ -164,6 +164,32 @@ enum SubRace {
 	kSubRaceWookie
 };
 
+enum Faction {
+	kFactionInvalid = -1,
+
+	kFactionHostile1 = 1,
+	kFactionFriendly1,
+	kFactionHostile2,
+	kFactionFriendly2,
+	kFactionNeutral,
+	kFactionInsane,
+	kFactionPTatTuskan,
+	kFactionGlbXor,
+	kFactionSurrender1,
+	kFactionSurrender2,
+	kFactionPredator,
+	kFactionPrey,
+	kFactionEndarSpire,
+	kFactionRancor,
+	kFactionGizka1,
+	kFactionGizka2,
+
+	// Kotor 2 related factions.
+	kFactionSelfLoathing = 21,
+	kFactionOneOnOne,
+	kFactionPartyPuppet
+};
+
 enum Skill {
 	kSkillComputerUse = 0,
 	kSkillDemolitions,
