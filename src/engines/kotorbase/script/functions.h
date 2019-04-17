@@ -194,6 +194,9 @@ protected:
 	void setMinOneHP(Aurora::NWScript::FunctionContext &ctx);
 	void setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
 
+	void getStandardFaction(Aurora::NWScript::FunctionContext &ctx);
+	void changeToStandardFaction(Aurora::NWScript::FunctionContext &ctx);
+
 	void createItemOnObject(Aurora::NWScript::FunctionContext &ctx);
 	void destroyObject(Aurora::NWScript::FunctionContext &ctx);
 
