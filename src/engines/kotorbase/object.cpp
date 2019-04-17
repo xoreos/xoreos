@@ -44,6 +44,7 @@ Object::Object(ObjectType type) :
 		_room(0),
 		_static(false),
 		_usable(true),
+		_faction(kFactionInvalid),
 		_currentHitPoints(0),
 		_maxHitPoints(0),
 		_minOneHitPoint(false) {
@@ -200,6 +201,14 @@ void Object::setCurrentHitPoints(int hitpoints) {
 
 void Object::setMinOneHitPoints(bool enabled) {
 	_minOneHitPoint = enabled;
+}
+
+Faction Object::getFaction() const {
+	return _faction;
+}
+
+void Object::setFaction(Faction faction) {
+	_faction = faction;
 }
 
 const Common::UString &Object::getCursor() const {
