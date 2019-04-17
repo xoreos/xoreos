@@ -129,6 +129,13 @@ public:
 	/** Set if the object has a minimum of one hp. */
 	void setMinOneHitPoints(bool enabled);
 
+	// Faction
+
+	/** Get the faction this object belongs to. */
+	Faction getFaction() const;
+	/** Set the faction of this object. */
+	void setFaction(Faction faction);
+
 	// Object/Cursor interactions
 
 	virtual const Common::UString &getCursor() const;
@@ -173,6 +180,8 @@ protected:
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
+
+	Faction _faction; ///< To which faction does this object belong to.
 
 	int _currentHitPoints; ///< The current hitpoints of the object.
 	int _maxHitPoints;     ///< The maximum hitpoints of the object.
