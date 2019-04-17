@@ -134,6 +134,25 @@ void Functions::setMaxHitPoints(Aurora::NWScript::FunctionContext &ctx) {
 	kotorObject->setMaxHitPoints(maxHitPoints);
 }
 
+void Functions::getStandardFaction(Aurora::NWScript::FunctionContext &ctx) {
+	const Object *object = ObjectContainer::toObject(ctx.getParams()[0].getObject());
+
+	if (!object)
+		ctx.getReturn() = kFactionInvalid;
+	else
+		ctx.getReturn() = object->getFaction();
+}
+
+void Functions::changeToStandardFaction(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = ObjectContainer::toObject(ctx.getParams()[0].getObject());
+	int faction = ctx.getParams()[1].getInt();
+
+	if (!object)
+		throw Common::Exception("Functions::changeToStandardFaction(): Invalid object");
+
+	object->setFaction(Faction(faction));
+}
+
 void Functions::createItemOnObject(Aurora::NWScript::FunctionContext &ctx) {
 	const Common::UString &itemTag = ctx.getParams()[0].getString();
 	Aurora::NWScript::Object *object = ctx.getParams()[1].getObject();
