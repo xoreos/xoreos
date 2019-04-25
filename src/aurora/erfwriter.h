@@ -35,9 +35,8 @@ namespace Aurora {
 class ERFWriter {
 public:
 	enum Version {
-		kERFVersion10
-
-		// TODO: Add other versions
+		kERFVersion10,
+		kERFVersion20
 	};
 
 	/** Create an ERF writer by writing the header to the stream and reserve fileCount
@@ -58,6 +57,8 @@ public:
 
 private:
 	Common::SeekableWriteStream &_stream;
+
+	const Version _version;
 
 	uint32 _currentFileCount;
 	uint32 _fileCount;
