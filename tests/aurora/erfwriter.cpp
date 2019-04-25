@@ -538,3 +538,100 @@ GTEST_TEST(ERFWriter, WriteMultipleFiles) {
 	delete readStream2;
 	delete readStream3;
 }
+
+GTEST_TEST(ERFWriter, WriteEmptyV20) {
+	Common::MemoryWriteStreamDynamic writeStream;
+	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 0, writeStream, Aurora::ERFWriter::kERFVersion20);
+
+	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+
+	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
+	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
+	EXPECT_EQ(erf.getResources().size(), 0);
+}
+
+GTEST_TEST(ERFWriter, WriteFileV20) {
+	Common::MemoryReadStream dataStream(kFileData, true);
+	const size_t kFileDataSize = dataStream.size();
+
+	Common::MemoryWriteStreamDynamic writeStream;
+	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 1, writeStream, Aurora::ERFWriter::kERFVersion20);
+	erfWriter.add("ozymandias", Aurora::kFileTypeTXT, dataStream);
+
+	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+
+	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
+	EXPECT_EQ(erf.getDescription().getString(), "");
+	EXPECT_EQ(erf.getResources().size(), 1);
+
+	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeTXT), 0);
+	EXPECT_EQ(erf.findResource("ozymandias", Aurora::kFileTypeBMP), 0xFFFFFFFF);
+
+	Common::SeekableReadStream *readStream = erf.getResource(0);
+	ASSERT_EQ(readStream->size(), kFileDataSize);
+
+	Common::ScopedArray<byte> fileData(new byte[readStream->size()]);
+	readStream->read(fileData.get(), readStream->size());
+
+	for (size_t i = 0; i < kFileDataSize; ++i) {
+		EXPECT_EQ(fileData[i], kFileData[i]);
+	}
+
+	delete readStream;
+}
+
+GTEST_TEST(ERFWriter, WriteMultipleFilesV20) {
+	Common::MemoryReadStream dataStream1(kFileData, true);
+	const size_t kFileDataSize = dataStream1.size();
+
+	const size_t kLogoDataSize = sizeof(kLogoData);
+	Common::MemoryReadStream dataStream2(kLogoData, kLogoDataSize);
+
+	Common::MemoryWriteStreamDynamic writeStream;
+	Aurora::ERFWriter erfWriter(MKTAG('E', 'R', 'F', ' '), 3, writeStream, Aurora::ERFWriter::kERFVersion20);
+	erfWriter.add("ozymandias_1", Aurora::kFileTypeTXT, dataStream1);
+	dataStream1.seek(0);
+	erfWriter.add("ozymandias_2", Aurora::kFileTypeTXT, dataStream1);
+	erfWriter.add("logo", Aurora::kFileTypeBMP, dataStream2);
+
+	const Aurora::ERFFile erf(new Common::MemoryReadStream(writeStream.getData(), writeStream.size(), true));
+
+	EXPECT_EQ(erf.getID(), MKTAG('E', 'R', 'F', ' '));
+	EXPECT_STREQ(erf.getDescription().getString().c_str(), "");
+	EXPECT_EQ(erf.getResources().size(), 3);
+
+	EXPECT_EQ(erf.findResource("ozymandias_1", Aurora::kFileTypeTXT), 0);
+	EXPECT_EQ(erf.findResource("ozymandias_1", Aurora::kFileTypeBMP), 0xFFFFFFFF);
+	EXPECT_EQ(erf.findResource("ozymandias_2", Aurora::kFileTypeTXT), 1);
+	EXPECT_EQ(erf.findResource("ozymandias_2", Aurora::kFileTypeBMP), 0xFFFFFFFF);
+	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeBMP), 2);
+	EXPECT_EQ(erf.findResource("logo", Aurora::kFileTypeTXT), 0xFFFFFFFF);
+
+	Common::SeekableReadStream *readStream1 = erf.getResource(0);
+	ASSERT_EQ(readStream1->size(), kFileDataSize);
+	Common::SeekableReadStream *readStream2 = erf.getResource(1);
+	ASSERT_EQ(readStream2->size(), kFileDataSize);
+	Common::SeekableReadStream *readStream3 = erf.getResource(2);
+	ASSERT_EQ(readStream3->size(), kLogoDataSize);
+
+	Common::ScopedArray<byte> fileData1(new byte[readStream1->size()]);
+	readStream1->read(fileData1.get(), readStream1->size());
+	Common::ScopedArray<byte> fileData2(new byte[readStream2->size()]);
+	readStream2->read(fileData2.get(), readStream2->size());
+	Common::ScopedArray<byte> fileData3(new byte[readStream3->size()]);
+	readStream3->read(fileData3.get(), readStream3->size());
+
+	for (size_t i = 0; i < kFileDataSize; ++i) {
+		EXPECT_EQ(fileData1[i], kFileData[i]);
+	}
+	for (size_t i = 0; i < kFileDataSize; ++i) {
+		EXPECT_EQ(fileData2[i], kFileData[i]);
+	}
+	for (size_t i = 0; i < kLogoDataSize; ++i) {
+		EXPECT_EQ(fileData3[i], kLogoData[i]);
+	}
+
+	delete readStream1;
+	delete readStream2;
+	delete readStream3;
+}
