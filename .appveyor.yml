@@ -83,7 +83,7 @@ build_script:
   - cmake -Bbuild -H. -G"%CMAKE_GENERATOR%"
           -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
           -DBOOST_LIBRARYDIR=%BOOST_LIBRARYDIR%
-          -DSDL2_LIBRARY=%VCPKG_LIB_DIR%/SDL2.lib -DSDL2_INCLUDE_DIR=%VCPKG_INC_DIR%/SDL2
+          -DSDL2_LIBRARY=%VCPKG_LIB_DIR%/SDL2.lib
   - cmake --build build
   - copy /y %BOOST_ROOT%\lib32-msvc-14.0\*.dll build\bin\Debug
   - copy /y %VCPKG_BIN_DIR%\*.dll build\bin\Debug
