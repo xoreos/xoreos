@@ -25,7 +25,7 @@
 # SDL2_FOUND - True if SDL2 found.
 
 if(WIN32)
-  find_path(SDL2_INCLUDE_DIR SDL.h $ENV{PROGRAMFILES}/SDL2/include DOC "The directory where SDL.h resides")
+  find_path(SDL2_INCLUDE_DIR SDL.h $ENV{PROGRAMFILES}/SDL2/include PATH_SUFFIXES SDL2 DOC "The directory where SDL.h resides")
   find_library(SDL2_LIBRARY NAMES SDL2 PATHS $ENV{PROGRAMFILES}/SDL2/lib DOC "The SDL2 library")
 
 else(WIN32)
