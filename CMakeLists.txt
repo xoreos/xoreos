@@ -261,7 +261,7 @@ find_package(ZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIRS})
 list(APPEND XOREOS_LIBRARIES ${ZLIB_LIBRARIES})
 
-find_package(Boost COMPONENTS system filesystem regex date_time locale REQUIRED)
+find_package(Boost COMPONENTS system filesystem date_time locale REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
