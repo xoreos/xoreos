@@ -22,8 +22,9 @@
  *  A list of files.
  */
 
+#include <regex>
+
 #include <boost/filesystem.hpp>
-#include <boost/regex.hpp>
 
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
@@ -165,16 +166,16 @@ bool FileList::getSubList(const UString &str, bool caseInsensitive, FileList &su
 }
 
 bool FileList::getSubListGlob(const UString &glob, bool caseInsensitive, FileList &subList) const {
-	boost::regex::flag_type type = boost::regex::perl;
+	std::regex::flag_type type = std::regex_constants::ECMAScript;
 	if (caseInsensitive)
-		type |= boost::regex::icase;
-	boost::regex expression(glob.c_str(), type);
+		type |= std::regex::icase;
+	std::regex expression(glob.c_str(), type);
 
 	bool foundMatch = false;
 
 	// Iterate through the whole list, adding the matches to the sub list
 	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it)
-		if (boost::regex_match(it->c_str(), expression)) {
+		if (std::regex_match(it->c_str(), expression)) {
 			subList._files.push_back(*it);
 			foundMatch = true;
 		}
@@ -205,14 +206,14 @@ UString FileList::findFirst(const UString &str, bool caseInsensitive) const {
 }
 
 UString FileList::findFirstGlob(const UString &glob, bool caseInsensitive) const {
-	boost::regex::flag_type type = boost::regex::perl;
+	std::regex::flag_type type = std::regex_constants::ECMAScript;
 	if (caseInsensitive)
-		type |= boost::regex::icase;
-	boost::regex expression(glob.c_str(), type);
+		type |= std::regex::icase;
+	std::regex expression(glob.c_str(), type);
 
 	// Iterate through the whole list, adding the matches to the sub list
 	for (Files::const_iterator it = _files.begin(); it != _files.end(); ++it)
-		if (boost::regex_match(it->c_str(), expression))
+		if (std::regex_match(it->c_str(), expression))
 			return *it;
 
 	return "";
