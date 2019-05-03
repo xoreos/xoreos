@@ -23,10 +23,10 @@
  */
 
 #include <list>
+#include <regex>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/regex.hpp>
 
 #include "src/common/filepath.h"
 #include "src/common/util.h"
@@ -119,11 +119,12 @@ bool FilePath::isPOSIXAbsolute(const UString &p) {
 }
 
 static path convertToSlash(const path &p) {
-	const boost::regex bSlash("\\\\");
+	const std::regex bSlash("\\\\");
 	const std::string fSlash("/");
-	const boost::match_flag_type flags(boost::match_default | boost::format_sed);
+	const std::regex_constants::match_flag_type flags(
+			std::regex_constants::match_default | std::regex_constants::format_sed);
 
-	return path(boost::regex_replace(p.string(), bSlash, fSlash, flags));
+	return path(std::regex_replace(p.string(), bSlash, fSlash, flags));
 }
 
 UString FilePath::absolutize(const UString &p) {
@@ -352,10 +353,15 @@ bool FilePath::createDirectories(const UString &path) {
 }
 
 UString FilePath::escapeStringLiteral(const UString &str) {
-	const boost::regex esc("[\\^\\.\\$\\|\\(\\)\\[\\]\\*\\+\\?\\/\\\\]");
+	const std::regex esc("[\\^\\.\\$\\|\\(\\)\\[\\]\\*\\+\\?\\/\\\\]");
 	const std::string  rep("\\\\\\1&");
 
-	return boost::regex_replace(std::string(str.c_str()), esc, rep, boost::match_default | boost::format_sed);
+	return std::regex_replace(
+			std::string(str.c_str()),
+			esc,
+			rep,
+			std::regex_constants::match_default | std::regex_constants::format_sed
+	);
 }
 
 UString FilePath::getHumanReadableSize(size_t size) {
