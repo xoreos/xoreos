@@ -354,14 +354,9 @@ bool FilePath::createDirectories(const UString &path) {
 
 UString FilePath::escapeStringLiteral(const UString &str) {
 	const std::regex esc("[\\^\\.\\$\\|\\(\\)\\[\\]\\*\\+\\?\\/\\\\]");
-	const std::string  rep("\\\\\\1&");
+	const std::string rep("\\$&");
 
-	return std::regex_replace(
-			std::string(str.c_str()),
-			esc,
-			rep,
-			std::regex_constants::match_default | std::regex_constants::format_sed
-	);
+	return std::regex_replace(std::string(str.c_str()), esc, rep);
 }
 
 UString FilePath::getHumanReadableSize(size_t size) {
