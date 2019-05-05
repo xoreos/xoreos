@@ -26,14 +26,9 @@
 #include "src/aurora/nwscript/object.h"
 #include "src/aurora/nwscript/objectman.h"
 
-#include "src/aurora/types.h"
-
 namespace Aurora {
 
 namespace NWScript {
-
-ObjectReference::ObjectReference() : _id(kObjectIDInvalid) {
-}
 
 ObjectReference::ObjectReference(const Object *object) : _id(object ? object->getID() : kObjectIDInvalid) {
 }
@@ -47,11 +42,6 @@ Object *ObjectReference::operator*() const {
 		return 0;
 
 	return ObjectMan.findObject(_id);
-}
-
-ObjectReference &ObjectReference::operator=(const ObjectReference &objref) {
-	_id = objref._id;
-	return *this;
 }
 
 ObjectReference &ObjectReference::operator=(const Object *object) {

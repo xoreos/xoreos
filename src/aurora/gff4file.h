@@ -351,20 +351,20 @@ public:
 private:
 	/** A field in the GFF4 struct. */
 	struct Field {
-		uint32    label;  ///< A numerical label of the field.
-		FieldType type;   ///< Type of the field.
-		uint32    offset; ///< Offset into the GFF4 data.
+		uint32    label { 0 };             ///< A numerical label of the field.
+		FieldType type { kFieldTypeNone }; ///< Type of the field.
+		uint32    offset { 0xFFFFFFFF };   ///< Offset into the GFF4 data.
 
-		bool isList;      ///< Is this field a singular item or a list?
-		bool isReference; ///< Is this field a reference (pointer) to another field?
-		bool isGeneric;   ///< Is this field found in a generic?
+		bool isList { false };      ///< Is this field a singular item or a list?
+		bool isReference { false }; ///< Is this field a reference (pointer) to another field?
+		bool isGeneric { false };   ///< Is this field found in a generic?
 
-		uint16   structIndex; ///< Index of the field's struct type (if kFieldTypeStruct).
-		GFF4List structs;     ///< List of GFF4Struct (if kFieldTypeStruct).
+		uint16   structIndex { 0 }; ///< Index of the field's struct type (if kFieldTypeStruct).
+		GFF4List structs;           ///< List of GFF4Struct (if kFieldTypeStruct).
 
-		Field();
+		Field() = default;
 		Field(uint32 l, uint16 t, uint16 f, uint32 o, bool g = false);
-		~Field();
+		~Field() = default;
 	};
 
 	typedef std::map<uint32, Field> FieldMap;

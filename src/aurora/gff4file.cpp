@@ -325,11 +325,6 @@ Common::UString GFF4File::getSharedString(uint32 i) const {
 }
 
 
-GFF4Struct::Field::Field() : label(0), type(kFieldTypeNone), offset(0xFFFFFFFF),
-	isList(false), isReference(false), isGeneric(false), structIndex(0) {
-
-}
-
 GFF4Struct::Field::Field(uint32 l, uint16 t, uint16 f, uint32 o, bool g) :
 	label(l), offset(o), isGeneric(g) {
 
@@ -365,9 +360,6 @@ GFF4Struct::Field::Field(uint32 l, uint16 t, uint16 f, uint32 o, bool g) :
 	if (!supportedConfig)
 		throw Common::Exception("GFF4: TODO: Field type %d, isList %d, isReference %d",
 		                        (int) type, isList, isReference);
-}
-
-GFF4Struct::Field::~Field() {
 }
 
 

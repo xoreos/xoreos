@@ -30,12 +30,6 @@ namespace Aurora {
 
 namespace NWScript {
 
-VariableContainer::VariableContainer() {
-}
-
-VariableContainer::~VariableContainer() {
-}
-
 bool VariableContainer::hasVariable(const Common::UString &var) const {
 	return _variables.find(var) != _variables.end();
 }

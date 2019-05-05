@@ -28,6 +28,8 @@
 #include "src/common/types.h"
 #include "src/common/ustring.h"
 
+#include "src/aurora/types.h"
+
 namespace Aurora {
 
 namespace NWScript {
@@ -36,20 +38,21 @@ class Object;
 
 class ObjectReference {
 public:
-	ObjectReference();
+	ObjectReference() = default;
 	ObjectReference(const Object *object);
+	~ObjectReference() = default;
 
 	uint32 getId() const;
 
 	Object *operator*() const;
 
-	ObjectReference &operator=(const ObjectReference &objref);
+	ObjectReference &operator=(const ObjectReference &objref) = default;
 	ObjectReference &operator=(const Object *object);
 
 	bool operator==(const ObjectReference &objref);
 
 private:
-	uint32 _id;
+	uint32 _id { kObjectIDInvalid };
 };
 
 } // End of namespace NWScript

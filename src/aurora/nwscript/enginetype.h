@@ -31,8 +31,8 @@ namespace NWScript {
 
 class EngineType {
 public:
-	EngineType() { }
-	virtual ~EngineType() { }
+	EngineType() = default;
+	virtual ~EngineType() = default;
 
 	/** Clone factory method. */
 	virtual EngineType *clone() const = 0;
