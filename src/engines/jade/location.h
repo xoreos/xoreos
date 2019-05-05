@@ -35,8 +35,8 @@ class Area;
 
 class Location : public Aurora::NWScript::EngineType {
 public:
-	Location();
-	~Location();
+	Location() = default;
+	~Location() = default;
 
 	/** Clone factory method. */
 	Location *clone() const;
@@ -57,10 +57,10 @@ public:
 	void setFacing(float facing);
 
 private:
-	Area *_area; ///< The location's area.
+	Area *_area { nullptr }; ///< The location's area.
 
-	float _position[3]; ///< The location's position.
-	float _facing;      ///< The location's orientation.
+	float _position[3] { 0.0f, 0.0f, 0.0f }; ///< The location's position.
+	float _facing { 0.0f };                  ///< The location's orientation.
 };
 
 } // End of namespace Jade
