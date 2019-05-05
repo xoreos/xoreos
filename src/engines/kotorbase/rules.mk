@@ -72,7 +72,6 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/area.cpp \
     src/engines/kotorbase/objectcontainer.cpp \
     src/engines/kotorbase/module.cpp \
-    src/engines/kotorbase/partyconfig.cpp \
     src/engines/kotorbase/actionexecutor.cpp \
     src/engines/kotorbase/savedgame.cpp \
     src/engines/kotorbase/game.cpp \

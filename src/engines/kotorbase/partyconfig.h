@@ -25,8 +25,6 @@
 #ifndef ENGINES_KOTORBASE_PARTYCONFIG_H
 #define ENGINES_KOTORBASE_PARTYCONFIG_H
 
-#include <vector>
-
 #include "src/common/ustring.h"
 
 namespace Engines {
@@ -35,13 +33,13 @@ namespace KotORBase {
 
 struct PartyConfiguration {
 	Common::UString slotTemplate[10];
-	bool slotSelected[10];
-	int forceNPC1;
-	int forceNPC2;
-	bool canCancel;
+	bool slotSelected[10] { false, false, false, false, false, false, false, false, false, false };
+	int forceNPC1 { -1 };
+	int forceNPC2 { -1 };
+	bool canCancel { true };
 
-	PartyConfiguration();
-	PartyConfiguration(const PartyConfiguration &config);
+	PartyConfiguration() = default;
+	PartyConfiguration(const PartyConfiguration &config) = default;
 };
 
 } // End of namespace KotORBase
