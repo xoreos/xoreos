@@ -36,9 +36,6 @@ Event::Event(EventType type,
 
 }
 
-Event::~Event() {
-}
-
 Event *Event::clone() const {
 	return new Event(*this);
 }
