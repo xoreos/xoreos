@@ -34,9 +34,6 @@ BoundingBox::BoundingBox() {
 	clear();
 }
 
-BoundingBox::~BoundingBox() {
-}
-
 void BoundingBox::clear() {
 	_empty    = true;
 	_absolute = true;

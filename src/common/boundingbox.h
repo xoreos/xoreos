@@ -33,7 +33,7 @@ namespace Common {
 class BoundingBox {
 public:
 	BoundingBox();
-	~BoundingBox();
+	~BoundingBox() = default;
 
 	void clear();
 

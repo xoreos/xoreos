@@ -55,11 +55,11 @@ namespace Common {
 /** A simple rational class that holds fractions. */
 class Rational {
 public:
-	Rational();
+	Rational() = default;
 	Rational(int num);
 	Rational(int num, int denom);
 
-	Rational &operator=(const Rational &right);
+	Rational &operator=(const Rational &right) = default;
 	Rational &operator=(int right);
 
 	Rational &operator+=(const Rational &right);
@@ -108,8 +108,8 @@ public:
 	int getDenominator() const { return _denom; }
 
 private:
-	int _num;
-	int _denom;
+	int _num { 1 };
+	int _denom { 1 };
 
 	void cancel();
 };

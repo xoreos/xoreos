@@ -37,11 +37,11 @@ class StackException : public std::exception {
 public:
 	typedef std::stack<UString> Stack;
 
-	StackException();
+	StackException() = default;
 	StackException(const char *s, ...) GCC_PRINTF(2, 3);
-	StackException(const StackException &e);
+	StackException(const StackException &e) = default;
 	StackException(const std::exception &e);
-	~StackException() throw();
+	~StackException() = default;
 
 	void add(const char *s, ...) GCC_PRINTF(2, 3);
 	void add(const std::exception &e);

@@ -31,9 +31,6 @@
 
 namespace Common {
 
-StackException::StackException() {
-}
-
 StackException::StackException(const char *s, ...) {
 	char buf[STRINGBUFLEN];
 	va_list va;
@@ -45,14 +42,8 @@ StackException::StackException(const char *s, ...) {
 	_stack.push(buf);
 }
 
-StackException::StackException(const StackException &e) : _stack(e._stack) {
-}
-
 StackException::StackException(const std::exception &e) {
 	add(e);
-}
-
-StackException::~StackException() throw() {
 }
 
 void StackException::add(const char *s, ...) {

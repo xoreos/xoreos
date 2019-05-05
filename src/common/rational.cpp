@@ -53,14 +53,7 @@
 
 namespace Common {
 
-Rational::Rational() {
-	_num   = 1;
-	_denom = 1;
-}
-
-Rational::Rational(int num) {
-	_num   = num;
-	_denom = 1;
+Rational::Rational(int num) : _num(num) {
 }
 
 Rational::Rational(int num, int denom) {
@@ -86,13 +79,6 @@ void Rational::cancel() {
 
 	_num   /= gcd;
 	_denom /= gcd;
-}
-
-Rational &Rational::operator=(const Rational &right) {
-	_num   = right._num;
-	_denom = right._denom;
-
-	return *this;
 }
 
 Rational &Rational::operator=(int right) {
