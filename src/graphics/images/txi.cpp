@@ -36,73 +36,8 @@ static const char * const kBlendings[] = { "default", "additive", "punchthrough"
 
 namespace Graphics {
 
-TXI::Features::Features() {
-	alphaMean           = 0.0f;
-	arturoHeight        = 0;
-	arturoWidth         = 0;
-	baselineHeight      = 0.0f;
-	blending            = kBlendingDefault;
-	bumpMapScaling      = 0.0f;
-	canDownsample       = true;
-	caretIndent         = 0.0f;
-	channelScale        = 0;
-	channelTranslate    = 0;
-	clamp               = 0;
-	codepage            = 0;
-	cols                = 0;
-	compressTexture     = false;
-	cube                = false;
-	dbMapping           = 0;
-	decal               = false;
-	defaultBPP          = 0;
-	defaultHeight       = 0;
-	defaultWidth        = 0;
-	distort             = 0;
-	distortAngle        = 0;
-	distortionAmplitude = 0;
-	downsampleFactor    = 0;
-	downsampleMax       = 0;
-	downsampleMin       = 0;
-	fileRange           = 0;
-	filter              = true;
-	fontHeight          = 0.0f;
-	fontWidth           = 0.0f;
-	fps                 = 0;
-	isBumpMap           = false;
-	isDoubleByte        = false;
-	isLightMap          = false;
-	maxSizeHQ           = 0;
-	maxSizeLQ           = 0;
-	minSizeHQ           = 0;
-	minSizeLQ           = 0;
-	mipMap              = true;
-	numChars            = 0;
-	numCharsPerSheet    = 0;
-	numX                = 0;
-	numY                = 0;
-	onDemand            = false;
-	priority            = 0.0f;
-	rows                = 0;
-	spacingB            = 0.0f;
-	spacingR            = 0.0f;
-	speed               = 0;
-	temporary           = false;
-	textureWidth        = 0.0f;
-	unique              = false;
-	waterHeight         = 0;
-	waterWidth          = 0;
-	xBoxDownsample      = 0;
-}
-
-
-TXI::TXI() : _empty(true), _mode(kModeNormal), _curCoords(0) {
-}
-
-TXI::TXI(Common::SeekableReadStream &stream) : _empty(false), _mode(kModeNormal), _curCoords(0) {
+TXI::TXI(Common::SeekableReadStream &stream) : _empty(false) {
 	load(stream);
-}
-
-TXI::~TXI() {
 }
 
 bool TXI::empty() const {
