@@ -122,6 +122,9 @@ if test "x$with_warnings" = "xyes"; then
 
 	dnl Extra warnings valid for C++
 	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wnon-virtual-dtor])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wdeprecated-copy])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wdeprecated-copy-dtor])
+	AX_CHECK_COMPILER_FLAGS_VAR([C++], [WARN], [-Wredundant-move])
 fi
 
 dnl Disable warnings about hiding virtual functions from a base class. We don't care

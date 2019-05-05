@@ -105,6 +105,9 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 
   # Extra warnings valid for C++
   set_check_compiler_flag_cxx("-Wnon-virtual-dtor")
+  set_check_compiler_flag_cxx("-Wdeprecated-copy")
+  set_check_compiler_flag_cxx("-Wdeprecated-copy-dtor")
+  set_check_compiler_flag_cxx("-Wredundant-move")
 
   # Disable warnings about hiding virtual functions from a base class. We don't care
   set_check_compiler_flag_cxx("-Woverloaded-virtual" "-Wno-overloaded-virtual")
