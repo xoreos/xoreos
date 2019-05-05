@@ -44,9 +44,6 @@ ItemProperty::ItemProperty(ItemPropertyType type, uint16 subtype, uint8 param1, 
 	load(type, subtype, param1, param1Value, costValue);
 }
 
-ItemProperty::~ItemProperty() {
-}
-
 ItemProperty *ItemProperty::clone() const {
 	return new ItemProperty(*this);
 }

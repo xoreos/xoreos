@@ -28,15 +28,6 @@ namespace Engines {
 
 namespace NWN2 {
 
-Location::Location() : _area(0), _facing(0.0f) {
-	_position[0] = 0.0f;
-	_position[1] = 0.0f;
-	_position[2] = 0.0f;
-}
-
-Location::~Location() {
-}
-
 Location *Location::clone() const {
 	return new Location(*this);
 }
