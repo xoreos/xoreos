@@ -52,6 +52,8 @@ public:
 	void show();
 	void hide();
 
+	void setProgressFill(const Common::UString &fill);
+
 	// Positioning
 
 	void setPosition(float x, float y, float z);
