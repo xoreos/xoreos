@@ -351,6 +351,10 @@ void HUD::updateTargetInformation(KotORBase::Object *object, float x, float y) {
 		_targetHealthBackground->setPosition(x - 100, elementY, -FLT_MAX);
 
 	if (_targetHealth) {
+		if (object->isEnemy())
+			_targetHealth->setProgressFill("redfill");
+		else
+			_targetHealth->setProgressFill("bluefill");
 		_targetHealth->setPosition(x - 100, elementY, -FLT_MAX);
 
 		_targetHealth->setMaxValue(object->getMaxHitPoints());
