@@ -32,8 +32,12 @@ namespace Engines {
 namespace KotORBase {
 
 SelectionCircle::SelectionCircle() :
-		_hoveredQuad(new Graphics::Aurora::GUIQuad("friendlyreticle", 0.0f, 0.0f, kSelectionCircleSize, kSelectionCircleSize)),
-		_targetQuad(new Graphics::Aurora::GUIQuad("friendlyreticle2", 0.0f, 0.0f, kSelectionCircleSize, kSelectionCircleSize)) {
+		_hoveredQuad(nullptr),
+		_targetQuad(nullptr),
+		_hoveredQuadFriendly(new Graphics::Aurora::GUIQuad("friendlyreticle", 0.0f, 0.0f, kSelectionCircleSize, kSelectionCircleSize)),
+		_hoveredQuadHostile(new Graphics::Aurora::GUIQuad("hostilereticle", 0.0f, 0.0f, kSelectionCircleSize, kSelectionCircleSize)),
+		_targetQuadFriendly(new Graphics::Aurora::GUIQuad("friendlyreticle2", 0.0f, 0.0f, kSelectionCircleSize, kSelectionCircleSize)),
+		_targetQuadHostile(new Graphics::Aurora::GUIQuad("hostilereticle2", 0.0f, 0.0f, kSelectionCircleSize, kSelectionCircleSize)) {
 }
 
 void SelectionCircle::show() {
@@ -47,8 +51,10 @@ void SelectionCircle::show() {
 }
 
 void SelectionCircle::hide() {
-	_hoveredQuad->hide();
-	_targetQuad->hide();
+	if (_hoveredQuad)
+		_hoveredQuad->hide();
+	if (_targetQuad)
+		_targetQuad->hide();
 	_visible = false;
 }
 
@@ -87,6 +93,28 @@ void SelectionCircle::setTarget(bool target) {
 }
 
 bool SelectionCircle::moveTo(Object *object, float &sX, float &sY) {
+	Graphics::Aurora::GUIQuad *lastQuad = _hoveredQuad;
+	if (object->isEnemy())
+		_hoveredQuad = _hoveredQuadHostile.get();
+	else
+		_hoveredQuad = _hoveredQuadFriendly.get();
+
+	if (lastQuad && lastQuad != _hoveredQuad) {
+		lastQuad->hide();
+		_hoveredQuad->show();
+	}
+
+	lastQuad = _targetQuad;
+	if (object->isEnemy())
+		_targetQuad = _targetQuadHostile.get();
+	else
+		_targetQuad = _targetQuadFriendly.get();
+
+	if (lastQuad && lastQuad != _targetQuad && lastQuad->isVisible()) {
+		lastQuad->hide();
+		_hoveredQuad->show();
+	}
+
 	float x, y, z;
 	object->getTooltipAnchor(x, y, z);
 

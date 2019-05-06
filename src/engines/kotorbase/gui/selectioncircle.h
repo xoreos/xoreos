@@ -53,8 +53,11 @@ public:
 	bool moveTo(Object *object, float &sX, float &sY);
 
 private:
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _hoveredQuad;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _targetQuad;
+	Graphics::Aurora::GUIQuad *_hoveredQuad;
+	Graphics::Aurora::GUIQuad *_targetQuad;
+
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _hoveredQuadFriendly, _hoveredQuadHostile;
+	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _targetQuadFriendly, _targetQuadHostile;
 
 	bool _hovered { false }; ///< Is this selection circle being hovered over?
 	bool _target { false }; ///< Is the object below this selection circle the target?
