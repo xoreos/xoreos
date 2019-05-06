@@ -136,6 +136,9 @@ public:
 	/** Set the faction of this object. */
 	void setFaction(Faction faction);
 
+	/** Is this object considered to be an enemy? */
+	bool isEnemy() const;
+
 	// Object/Cursor interactions
 
 	virtual const Common::UString &getCursor() const;

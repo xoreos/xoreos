@@ -211,6 +211,14 @@ void Object::setFaction(Faction faction) {
 	_faction = faction;
 }
 
+bool Object::isEnemy() const {
+	return
+		_faction == kFactionHostile1 ||
+		_faction == kFactionHostile2
+		// TODO: Probably more factions can be considered an enemy.
+	;
+}
+
 const Common::UString &Object::getCursor() const {
 	static Common::UString cursor("");
 	return cursor;
