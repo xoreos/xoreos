@@ -112,6 +112,16 @@ int WidgetProgressbar::getMaxValue() const {
 	return _maxValue;
 }
 
+void WidgetProgressbar::setProgressFill(const Common::UString &fill) {
+	_progress->hide();
+	float x, y, z;
+	_progress->getPosition(x, y, z);
+	_progress.reset(new Graphics::Aurora::GUIQuad(fill, 0.0f, 0.0f, getWidth(), getHeight()));
+	_progress->setPosition(x, y, z);
+	update();
+	_progress->show();
+}
+
 void WidgetProgressbar::update() {
 	if (_horizontal) {
 		if ((_maxValue <= 0) || (_curValue >= _maxValue))
