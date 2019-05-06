@@ -363,6 +363,10 @@ void HUD::updateTargetInformation(KotORBase::Object *object, float x, float y) {
 		_targetNameBackground->setPosition(x - 100, elementY, -100);
 
 	if (_targetName) {
+		if (object->isEnemy())
+			_targetName->setTextColor(0.745098039f, 0.105882353f, 0.0f, 1.0f);
+		else
+			_targetName->setTextColor(0.321569f, 0.462745f, 0.917647f, 1.0f);
 		_targetName->setPosition(x - 100, elementY, -FLT_MAX);
 		_targetName->setText(object->getName());
 	}
