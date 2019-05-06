@@ -307,7 +307,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	_minOneHitPoint = gff.getBool("Min1HP", _minOneHitPoint);
 
 	// Faction
-	_faction = Faction(gff.getUint("FactionID"));
+	_faction = Faction(gff.getUint("FactionID", _faction));
 
 	// Scripts
 	readScripts(gff);
