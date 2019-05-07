@@ -42,6 +42,8 @@ public:
 	// Renderable
 	void render(RenderPass pass);
 
+	void renderImmediate(const glm::mat4 &parentTransform);
+
 private:
 	uint32 _fps;
 
