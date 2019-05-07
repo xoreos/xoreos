@@ -63,6 +63,18 @@ void FPS::render(RenderPass pass) {
 	Text::render(pass);
 }
 
+void FPS::renderImmediate(const glm::mat4 &parentTransform) {
+	uint32 fps = GfxMan.getFPS();
+
+	if (fps != _fps) {
+		_fps = fps;
+
+		setText(Common::UString::format("%d fps", _fps));
+	}
+
+	Text::renderImmediate(parentTransform);
+}
+
 void FPS::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight), int newWidth, int newHeight) {
 	float posX = -(newWidth  / 2.0f);
 	float posY = -(newHeight / 2.0f);
