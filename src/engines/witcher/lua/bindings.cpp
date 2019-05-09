@@ -142,11 +142,17 @@ void LuaBindings::registerBindings() {
 	LuaScriptMan.endRegister();
 }
 
+CAuroraSettingsData g_auroraSettings;
+
 int LuaBindings::luaGetAuroraSettings(lua_State *state) {
 	assert(state);
 
 	unimplementedFunction("getAuroraSettings");
-	return pushFakeObject(*state, CAuroraSettings::getLuaType());
+
+	Aurora::Lua::Stack stack(*state);
+	stack.pushUserType<CAuroraSettingsData>(g_auroraSettings, CAuroraSettings::getLuaType());
+
+	return 1;
 }
 
 int LuaBindings::luaGetCurrentCameraSettings(lua_State *state) {
