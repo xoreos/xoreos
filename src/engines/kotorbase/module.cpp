@@ -1030,6 +1030,10 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 		Creature *creature = ObjectContainer::toCreature(owner);
 		if (creature)
 			finalName = creature->getConversation();
+
+		Situated *situated = ObjectContainer::toSituated(owner);
+		if (situated)
+			finalName = situated->getConversation();
 	}
 
 	if (finalName.empty())
