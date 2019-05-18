@@ -420,6 +420,12 @@ list(APPEND XOREOS_LIBRARIES external_lua)
 parse_automake(external/toluapp/rules.mk)
 list(APPEND XOREOS_LIBRARIES external_toluapp)
 
+# use our own version of imgui.
+parse_automake(external/imgui/rules.mk)
+list(APPEND XOREOS_LIBRARIES external_imgui)
+
+# use the opengl3 imgui renderer with glew.
+add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLEW)
 
 function(add_engine ENGINE_NAME ENGINE_FULLNAME ENGINE_DEPS)
   option(ENABLE_${ENGINE_NAME} "Enable building with support for ${ENGINE_FULLNAME}" ON)
