@@ -26,6 +26,9 @@
 
 #include <functional>
 
+#include "external/imgui/imgui.h"
+#include "external/imgui/imgui_impl_sdl.h"
+
 #include "src/common/error.h"
 #include "src/common/configman.h"
 #include "src/common/threads.h"
@@ -83,6 +86,8 @@ void WindowManager::init() {
 }
 
 void WindowManager::deinit() {
+	ImGui_ImplSDL2_Shutdown();
+
 	SDL_Quit();
 }
 
@@ -135,6 +140,8 @@ bool WindowManager::initRender(RenderType type, bool useDebug, int fsaa) {
 	SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &currentFsaa);
 	status("OpenGL version: %i.%i", majorVersion, minorVersion);
 	status("FSAA level    : %ix", currentFsaa);
+
+	ImGui_ImplSDL2_InitForOpenGL(_window, SDL_GL_GetCurrentContext());
 
 	return true;
 }
@@ -367,6 +374,8 @@ void WindowManager::setCursorPosition(int x, int y) {
 }
 
 void WindowManager::beginScene() {
+	ImGui_ImplSDL2_NewFrame(_window);
+
 	// Switch cursor on/off
 	handleCursorSwitch();
 }
