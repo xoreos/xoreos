@@ -44,6 +44,7 @@ src_graphics_libgraphics_la_SOURCES += \
     src/graphics/indexbuffer.h \
     src/graphics/vertexbuffer.h \
     src/graphics/imguiwrapper.h \
+    src/graphics/imguidemo.h \
     $(EMPTY)
 
 src_graphics_libgraphics_la_SOURCES += \
@@ -64,6 +65,7 @@ src_graphics_libgraphics_la_SOURCES += \
     src/graphics/indexbuffer.cpp \
     src/graphics/vertexbuffer.cpp \
     src/graphics/imguiwrapper.cpp \
+    src/graphics/imguidemo.cpp \
     $(EMPTY)
 
 src_graphics_libgraphics_la_LIBADD = \
