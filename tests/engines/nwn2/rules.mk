@@ -30,6 +30,7 @@ nwn2_LIBS = \
     src/aurora/libaurora.la \
     src/common/libcommon.la \
     tests/version/libversion.la \
+    external/imgui/libimgui.la \
     $(LDADD)
 
 noinst_HEADERS += tests/engines/nwn2/creature.h tests/engines/nwn2/creature2.h tests/engines/nwn2/creature3.h

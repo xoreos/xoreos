@@ -200,6 +200,10 @@ fi
 dnl Force compiling against the internal GLEW library
 AC_ARG_ENABLE([external-glew], [AS_HELP_STRING([--disable-external-glew], [Do not check for an external GLEW library and always compile against the internal GLEW library @<:@default=no@:>@])], [], [enable_external_glew=yes])
 
+dnl Force imgui to use GLEW instead of GL3W
+IMGUI_CFLAGS="-DIMGUI_IMPL_OPENGL_LOADER_GLEW"
+AC_SUBST(IMGUI_CFLAGS)
+
 dnl Disable optional external libraries
 AC_ARG_ENABLE([vorbis], [AS_HELP_STRING([--disable-vorbis], [Disable building with Vorbis support @<:@default=no@:>@])], [], [enable_vorbis=yes])
 AC_ARG_ENABLE([mad], [AS_HELP_STRING([--disable-mad], [Disable building with MP3 support @<:@default=no@:>@])], [], [enable_mad=yes])

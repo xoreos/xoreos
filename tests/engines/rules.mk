@@ -27,6 +27,7 @@ engines_LIBS = \
     src/common/libcommon.la \
     src/events/libevents.la \
     tests/version/libversion.la \
+    external/imgui/libimgui.la \
     $(LDADD)
 
 check_PROGRAMS                     += tests/engines/test_trigger

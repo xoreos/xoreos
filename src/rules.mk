@@ -81,6 +81,7 @@ src_xoreos_LDADD += \
     src/version/libversion.la \
     external/lua/liblua.la \
     external/toluapp/libtoluapp.la \
+    external/imgui/libimgui.la \
     $(LDADD) \
     $(EMPTY)
 
