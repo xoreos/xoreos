@@ -30,6 +30,11 @@
 #include "external/glm/gtc/type_ptr.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
 
+#include "external/imgui/imgui.h"
+#include "external/imgui/imgui_freetype.h"
+#include "external/imgui/imgui_impl_opengl2.h"
+#include "external/imgui/imgui_impl_opengl3.h"
+
 #include "src/version/version.h"
 
 #include "src/common/util.h"
@@ -131,8 +136,27 @@ void GraphicsManager::init() {
 
 	_rendererExperimental = ConfigMan.getBool("rendernew", false);
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+
+	ImGui::GetIO().Fonts->AddFontDefault();
+	ImGuiFreeType::BuildFontAtlas(ImGui::GetIO().Fonts);
+
 	if (!setupSDLGL())
 		throw Common::Exception("Failed initializing the OpenGL renderer");
+
+	switch (_renderType) {
+		case WindowManager::kOpenGL21:
+		case WindowManager::kOpenGL21Core:
+			ImGui_ImplOpenGL2_Init();
+			break;
+		case WindowManager::kOpenGL32Compat:
+			ImGui_ImplOpenGL3_Init();
+			break;
+		default:
+			warning("Invalid Render system, ImGui will be disabled");
+	}
 
 	// Try to change the FSAA settings to the config value
 	if (_fsaa != ConfigMan.getInt("fsaa"))
@@ -163,6 +187,16 @@ void GraphicsManager::init() {
 
 void GraphicsManager::deinit() {
 	Common::enforceMainThread();
+
+	switch (_renderType) {
+		case WindowManager::kOpenGL21:
+		case WindowManager::kOpenGL21Core:
+			ImGui_ImplOpenGL2_Shutdown();
+			break;
+		case WindowManager::kOpenGL32Compat:
+			ImGui_ImplOpenGL3_Shutdown();
+			break;
+	}
 
 	if (!_ready)
 		return;
@@ -964,7 +998,19 @@ void GraphicsManager::buildNewTextures() {
 }
 
 void GraphicsManager::beginScene() {
+	switch (_renderType) {
+		case WindowManager::kOpenGL21:
+		case WindowManager::kOpenGL21Core:
+			ImGui_ImplOpenGL2_NewFrame();
+			break;
+		case WindowManager::kOpenGL32Compat:
+			ImGui_ImplOpenGL3_NewFrame();
+			break;
+	}
+
 	WindowMan.beginScene();
+
+	ImGui::NewFrame();
 
 	if (_fsaa > 0)
 		glEnable(GL_MULTISAMPLE_ARB);
@@ -1115,6 +1161,23 @@ bool GraphicsManager::renderGUI(ScalingType scalingType, QueueType guiQueue, boo
 	if (disableDepthMask)
 		glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
+	return true;
+}
+
+bool GraphicsManager::renderImGui() {
+	ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+	ImGui::Render();
+
+	switch (_renderType) {
+		case WindowManager::kOpenGL21:
+		case WindowManager::kOpenGL21Core:
+			ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+			break;
+		case WindowManager::kOpenGL32Compat:
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			break;
+	}
+
 	return true;
 }
 
@@ -1274,6 +1337,7 @@ void GraphicsManager::renderScene() {
 	beginScene();
 
 	if (playVideo()) {
+		renderImGui();
 		endScene();
 		return;
 	}
@@ -1283,12 +1347,14 @@ void GraphicsManager::renderScene() {
 		renderWorldShader();
 		renderGUIFrontShader();
 		renderGUIConsoleShader();
+		renderImGui();
 		renderCursorShader();
 	} else {
 		renderGUIBack();
 		renderWorld();
 		renderGUIFront();
 		renderGUIConsole();
+		renderImGui();
 		renderCursor();
 	}
 

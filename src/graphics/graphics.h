@@ -280,6 +280,7 @@ private:
 	bool renderGUIBack();
 	bool renderGUIConsole();
 	bool renderGUI(ScalingType scalingType, QueueType guiQueue, bool disableDepthMask);
+	bool renderImGui();
 	bool renderCursor();
 
 	bool renderWorldShader();
