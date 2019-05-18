@@ -197,6 +197,10 @@ fi
 dnl Force compiling against the internal GLEW library
 AC_ARG_ENABLE([external-glew], [AS_HELP_STRING([--disable-external-glew], [Do not check for an external GLEW library and always compile against the internal GLEW library @<:@default=no@:>@])], [], [enable_external_glew=yes])
 
+dnl Force imgui to use GLEW instead of GL3W
+IMGUI_CFLAGS="-DIMGUI_IMPL_OPENGL_LOADER_GLEW"
+AC_SUBST(IMGUI_CFLAGS)
+
 dnl Disable optional external libraries
 AC_ARG_ENABLE([vorbis], [AS_HELP_STRING([--disable-vorbis], [Disable building with Vorbis support @<:@default=no@:>@])], [], [enable_vorbis=yes])
 AC_ARG_ENABLE([mad], [AS_HELP_STRING([--disable-mad], [Disable building with MP3 support @<:@default=no@:>@])], [], [enable_mad=yes])
@@ -254,13 +258,12 @@ if test "x$enable_external_glew" = "xyes"; then
 else
 	AC_MSG_NOTICE([using internal GLEW library])
 
-	GLEW_CFLAGS="-DGLEW_NO_GLU -DGLEW_STATIC"
+	GLEW_CFLAGS="-DGLEW_NO_GLU -DGLEW_STATIC -DXOREOS_INTERNAL_GLEW"
 	GLEW_LIBS=""
 
 	AC_SUBST(GLEW_CFLAGS)
 	AC_SUBST(GLEW_LIBS)
 
-	AC_DEFINE([XOREOS_INTERNAL_GLEW], 1, [Defined to 1 if we are using our internal GLEW sources])
 	AM_CONDITIONAL(INTERNAL_GLEW, true)
 fi
 
