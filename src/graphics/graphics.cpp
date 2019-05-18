@@ -1337,6 +1337,7 @@ void GraphicsManager::renderScene() {
 	beginScene();
 
 	if (playVideo()) {
+		renderGUIConsole();
 		renderImGui();
 		endScene();
 		return;
