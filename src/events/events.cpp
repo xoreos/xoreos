@@ -24,6 +24,10 @@
 
 #include <cstdlib>
 
+#include "external/imgui/imgui.h"
+#include "external/imgui/imgui_freetype.h"
+#include "external/imgui/imgui_impl_sdl.h"
+
 #include "src/common/fallthrough.h"
 START_IGNORE_IMPLICIT_FALLTHROUGH
 #include <SDL_timer.h>
@@ -93,6 +97,10 @@ void EventsManager::init() {
 	enableTextInput(false);
 
 	_repeatCounter = 0;
+
+	ImGuiIO &io = ImGui::GetIO();
+	io.WantCaptureKeyboard = true;
+	io.WantCaptureMouse = true;
 }
 
 void EventsManager::deinit() {
@@ -220,6 +228,9 @@ void EventsManager::processEvents() {
 
 	Event event;
 	while (SDL_PollEvent(&event)) {
+		// Check for ImGui commands.
+		ImGui_ImplSDL2_ProcessEvent(&event);
+
 		// Check repeated event.
 		if (((event.type == kEventKeyDown) || (event.type == kEventKeyUp)) &&
 				event.key.repeat && !_repeat)
