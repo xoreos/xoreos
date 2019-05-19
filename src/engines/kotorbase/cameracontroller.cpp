@@ -167,6 +167,9 @@ void CameraController::processMovement(float frameTime) {
 		_actualDistance += delta;
 	}
 
+	// TODO: 3.5 is only an assumption for the max distance
+	_actualDistance = MIN(_actualDistance, 3.5f);
+
 	glm::vec3 actualPosition = getCameraPosition(_actualDistance);
 	CameraMan.setPosition(actualPosition.x, actualPosition.y, actualPosition.z);
 	CameraMan.update();
