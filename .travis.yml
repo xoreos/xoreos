@@ -65,9 +65,9 @@ before_install:
 script:
   # autotools build system: ./autogen.sh && ./configure && make && make check
   - if eval [ $is_notcoverity_autot ]; then ./autogen.sh; fi
-  - if eval [ $is_notcoverity_autot ]; then ./configure || cat config.log; fi
+  - if eval [ $is_notcoverity_autot ]; then ./configure || (cat config.log; exit 1); fi
   - if eval [ $is_notcoverity_autot ]; then make -j4; fi
-  - if eval [ $is_notcoverity_autot ]; then echo "" > test-suite.log; make -j4 check || cat test-suite.log; fi
+  - if eval [ $is_notcoverity_autot ]; then echo "" > test-suite.log; make -j4 check || (cat test-suite.log; exit 1); fi
   # CMake build system: cmake -G Ninja . && cmake --build . && cmake --build . --target check
   - if eval [ $is_notcoverity_cmake ]; then cmake -G Ninja .; fi
   - if eval [ $is_notcoverity_cmake ]; then cmake --build .; fi
