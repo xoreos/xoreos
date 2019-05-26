@@ -50,7 +50,7 @@ public:
 	 */
 	ERFWriter(uint32 id, uint32 fileCount, Common::SeekableWriteStream &stream,
 	          Version version = kERFVersion10, LocString description = LocString());
-	~ERFWriter();
+	~ERFWriter() = default;
 
 	/** Add a new stream to this archive to be packed. */
 	void add(const Common::UString &resRef, FileType resType, Common::ReadStream &stream);
@@ -60,11 +60,11 @@ private:
 
 	const Version _version;
 
-	uint32 _currentFileCount;
-	uint32 _fileCount;
-	uint32 _offsetToResourceData;
-	uint32 _keyTableOffset;
-	uint32 _resourceTableOffset;
+	uint32 _currentFileCount { 0 };
+	uint32 _fileCount { 0 };
+	uint32 _offsetToResourceData { 0 };
+	uint32 _keyTableOffset { 0 };
+	uint32 _resourceTableOffset { 0 };
 };
 
 } // End of namespace Aurora

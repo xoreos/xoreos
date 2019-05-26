@@ -31,8 +31,9 @@ namespace Aurora {
 
 static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
 
-ERFWriter::ERFWriter(uint32 id, uint32 fileCount, Common::SeekableWriteStream &stream, Version version,
-                     LocString description) : _stream(stream), _version(version), _currentFileCount(0), _fileCount(fileCount) {
+ERFWriter::ERFWriter(uint32 id, uint32 fileCount, Common::SeekableWriteStream &stream, Version version, LocString description) :
+		_stream(stream), _version(version), _fileCount(fileCount) {
+
 	switch (_version) {
 		case kERFVersion10: {
 			stream.writeUint32BE(id);
@@ -115,9 +116,6 @@ ERFWriter::ERFWriter(uint32 id, uint32 fileCount, Common::SeekableWriteStream &s
 		default:
 			throw Common::Exception("Unsupported ERF version");
 	}
-}
-
-ERFWriter::~ERFWriter() {
 }
 
 void ERFWriter::add(const Common::UString &resRef, FileType resType, Common::ReadStream &stream) {
