@@ -11,7 +11,6 @@ Build-time library dependencies
   - Boost.StringAlgo
   - Boost.System
   - Boost.Filesystem
-  - Boost.Regex
   - Boost.Unordered
   - Boost.Hash
   - Boost.Date_Time
