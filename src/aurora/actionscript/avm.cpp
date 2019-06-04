@@ -34,6 +34,7 @@
 #include "src/aurora/actionscript/string.h"
 #include "src/aurora/actionscript/movieclip.h"
 #include "src/aurora/actionscript/textfield.h"
+#include "src/aurora/actionscript/stage.h"
 
 namespace Aurora {
 
@@ -60,6 +61,10 @@ AVM::AVM() {
 	_variables["TextField"] = ObjectPtr(new DummyFunction());
 	_variables["TextField"].asObject()->setMember("prototype", ObjectPtr(new TextField()));
 
+	_stage = new Stage();
+	_variables["Stage"] = ObjectPtr(_stage);
+
+
 	_variables["_root"].asObject()->setMember("gotoAndPlay", new NativeFunction(boost::bind(&AVM::gotoAndPlay, this, _1), false, false, false, false));
 
 	_variables["flash"] = ObjectPtr(new Object());
@@ -68,6 +73,10 @@ AVM::AVM() {
 	_variables["flash"].asObject()
 		->getMember("external").asObject()->getMember("ExternalInterface").asObject()
 		->setMember("call", new NativeFunction(boost::bind(&AVM::call, this, _1), false, false, false, false));
+}
+
+void AVM::setStageSize(unsigned int width, unsigned int height) {
+	_stage->setSize(width, height);
 }
 
 void AVM::setRegisterClassFunction(RegisterClassFunction registerClass) {
