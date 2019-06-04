@@ -466,13 +466,13 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 
 	avm.pushRegisters(function->getNumRegisters());
 
-	if (function->getPreloadRootFlag()) {
-		avm.storeRegister(avm.getVariable("_root"), counter);
-		counter += 1;
-	}
 	if (function->getPreloadThisFlag()) {
 		prevThis = avm.getRegister(counter);
 		avm.storeRegister(object, counter);
+		counter += 1;
+	}
+	if (function->getPreloadRootFlag()) {
+		avm.storeRegister(avm.getVariable("_root"), counter);
 		counter += 1;
 	}
 	if (function->getPreloadSuperFlag()) {
