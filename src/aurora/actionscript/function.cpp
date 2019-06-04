@@ -81,7 +81,7 @@ Variable ScriptedFunction::operator()(AVM &avm) {
 }
 
 NativeFunction::NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag, bool preloadGlobalFlag)
-	: Function(std::vector<uint8>(), 0, preloadThisFlag, preloadSuperFlag, preloadRootFlag, preloadGlobalFlag), _function(function) {
+	: Function(std::vector<uint8>(), 255, preloadThisFlag, preloadSuperFlag, preloadRootFlag, preloadGlobalFlag), _function(function) {
 }
 
 Variable NativeFunction::operator()(AVM &avm) {
