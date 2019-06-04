@@ -38,6 +38,8 @@ namespace Aurora {
 
 namespace ActionScript {
 
+class Stage;
+
 /** Function for receiving fscommand(). */
 typedef boost::function<Variable(const Common::UString &, const Common::UString &)> FSCommandFunction;
 
@@ -48,6 +50,9 @@ typedef boost::function<void (const Common::UString &, ObjectPtr)> RegisterClass
 class AVM {
 public:
 	AVM();
+
+	/** Set the stage size. */
+	void setStageSize(unsigned int width, unsigned int height);
 
 	/** Set a callback for the Object.registerClass() function. */
 	void setRegisterClassFunction(RegisterClassFunction);
@@ -97,6 +102,7 @@ private:
 
 	bool _stopFlag;
 	Variable _returnValue;
+	Stage *_stage;
 };
 
 } // End of namespace ActionScript

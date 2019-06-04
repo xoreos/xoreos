@@ -52,7 +52,7 @@ public:
 
 	std::vector<Common::UString> getSlots() const;
 
-	bool hasMember(const Common::UString &id) const;
+	virtual bool hasMember(const Common::UString &id) const;
 
 	virtual Variable getMember(const Variable &id);
 	virtual void setMember(const Variable &id, const Variable &value);
