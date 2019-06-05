@@ -60,6 +60,8 @@ public:
 
 	~Variable();
 
+	Type getType() const;
+
 	bool isUndefined() const;
 	bool isObject() const;
 	bool isString() const;

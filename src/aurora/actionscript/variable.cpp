@@ -97,6 +97,13 @@ Variable::Variable(const Variable &variable) {
 Variable::~Variable() {
 }
 
+Type Variable::getType() const {
+	if (isObject() && !isFunction() && (!_value.object.get() || asObject()->getSlots().empty()))
+		return kTypeNull;
+
+	return _type;
+}
+
 bool Variable::isUndefined() const {
 	return _type == kTypeUndefined;
 }
