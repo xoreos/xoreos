@@ -80,6 +80,7 @@ private:
 	void actionIncrement();
 	void actionCallMethod(AVM &avm);
 	void actionEnumerate2();
+	void actionGreater();
 	void actionExtends();
 	void actionGetURL(AVM &avm);
 	void actionStoreRegister(AVM &avm);
