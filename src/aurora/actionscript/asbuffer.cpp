@@ -71,6 +71,7 @@ enum Opcodes {
 	kActionCallMethod      = 0x52,
 	kActionEnumerate2      = 0x55,
 	kActionStrictEquals    = 0x66,
+	kActionGreater         = 0x67,
 	kActionExtends         = 0x69,
 	kActionGetURL          = 0x83,
 	kActionStoreRegister   = 0x87,
@@ -141,6 +142,7 @@ void ASBuffer::execute(AVM &avm) {
 			case kActionIncrement:       actionIncrement(); break;
 			case kActionCallMethod:      actionCallMethod(avm); break;
 			case kActionEnumerate2:      actionEnumerate2(); break;
+			case kActionGreater:         actionGreater(); break;
 			case kActionExtends:         actionExtends(); break;
 			case kActionGetURL:          actionGetURL(avm); break;
 			case kActionStoreRegister:   actionStoreRegister(avm); break;
@@ -524,6 +526,17 @@ void ASBuffer::actionEnumerate2() {
 	}
 
 	debugC(kDebugActionScript, 1, "actionEnumerate2");
+}
+
+void ASBuffer::actionGreater() {
+	const Variable &a = _stack.top();
+	_stack.pop();
+	const Variable &b = _stack.top();
+	_stack.pop();
+
+	_stack.push(a < b);
+
+	debugC(kDebugActionScript, 1, "actionGreater");
 }
 
 void ASBuffer::actionExtends() {
