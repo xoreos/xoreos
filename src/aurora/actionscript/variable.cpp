@@ -125,7 +125,7 @@ bool Variable::isFunction() const {
 }
 
 double Variable::asNumber() const {
-	switch (_type) {
+	switch (getType()) {
 		case kTypeNumber:
 			return _value.number;
 		case kTypeBoolean:
@@ -136,7 +136,7 @@ double Variable::asNumber() const {
 }
 
 ObjectPtr Variable::asObject() {
-	if (_type == kTypeUndefined) {
+	if (getType() == kTypeUndefined) {
 		_type = kTypeObject;
 		_value.object = ObjectPtr(new Object());
 	}
@@ -148,7 +148,7 @@ ObjectPtr Variable::asObject() const {
 }
 
 const Common::UString Variable::asString() const {
-	switch (_type) {
+	switch (getType()) {
 		case kTypeNumber:
 			return Common::composeString(_value.number);
 		case kTypeString:
@@ -159,11 +159,11 @@ const Common::UString Variable::asString() const {
 }
 
 bool Variable::asBoolean() const {
-	if (_type == kTypeNumber)
+	if (getType() == kTypeNumber)
 		return _value.number != 0;
-	else if (_type == kTypeBoolean)
+	else if (getType() == kTypeBoolean)
 		return _value.boolean;
-	else if (_type == kTypeObject)
+	else if (getType() == kTypeObject)
 		return static_cast<bool>(_value.object.get());
 	else
 		return false;
@@ -190,7 +190,7 @@ void Variable::operator=(Variable v) {
 }
 
 bool Variable::operator!() const {
-	switch (_type) {
+	switch (getType()) {
 		case kTypeNumber:
 			return !_value.number;
 		case kTypeBoolean:
@@ -203,26 +203,26 @@ bool Variable::operator!() const {
 }
 
 Variable Variable::operator&&(Variable v) const {
-	if (v._type == kTypeNumber && _type == kTypeNumber)
+	if (v.getType() == kTypeNumber && getType() == kTypeNumber)
 		return v.asNumber() && asNumber();
 	else
 		return false;
 }
 
 Variable Variable::operator||(Variable v) const {
-	if (v._type == kTypeNumber && _type == kTypeNumber)
+	if (v.getType() == kTypeNumber && getType() == kTypeNumber)
 		return v.asNumber() || asNumber();
 	else
 		return false;
 }
 
 Variable Variable::operator==(Variable v) const {
-	if (_type != v._type)
+	if (getType() != v.getType())
 		return false;
 
-	switch (_type) {
+	switch (getType()) {
 		case kTypeNull:
-			return v._type == kTypeNull;
+			return true;
 		case kTypeNumber:
 			return v._value.number == _value.number;
 		default:
@@ -231,23 +231,23 @@ Variable Variable::operator==(Variable v) const {
 }
 
 Variable Variable::operator<(Aurora::ActionScript::Variable v) const {
-	if (v._type == kTypeNumber && _type == kTypeNumber)
+	if (v.getType() == kTypeNumber && getType() == kTypeNumber)
 		return asNumber() < v.asNumber();
 	else
 		return false;
 }
 
 Variable Variable::operator-(Variable v) const {
-	if (v._type == kTypeNumber && _type == kTypeNumber)
+	if (v.getType() == kTypeNumber && getType() == kTypeNumber)
 		return asNumber() - v.asNumber();
 	else
 		return 0.0;
 }
 
 Variable Variable::operator+(Variable v) const {
-	if (v._type == kTypeNumber && _type == kTypeNumber)
+	if (v.getType() == kTypeNumber && getType() == kTypeNumber)
 		return asNumber() + v.asNumber();
-	else if (v._type == kTypeString || _type == kTypeString)
+	else if (v.getType() == kTypeString || getType() == kTypeString)
 		return asString() + v.asString();
 	else
 		return 0.0;
