@@ -76,17 +76,17 @@ public:
 
 	void operator=(Variable v);
 
-	bool operator!();
-	Variable operator&&(Variable v);
-	Variable operator||(Variable v);
+	bool operator!() const;
+	Variable operator&&(Variable v) const ;
+	Variable operator||(Variable v) const;
 
-	Variable operator==(Variable v);
-	Variable operator<(Variable v);
+	Variable operator==(Variable v) const;
+	Variable operator<(Variable v) const;
 
-	Variable operator-(Variable v);
-	Variable operator+(Variable v);
-	Variable operator*(Variable v);
-	Variable operator/(Variable v);
+	Variable operator-(Variable v) const;
+	Variable operator+(Variable v) const;
+	Variable operator*(Variable v) const;
+	Variable operator/(Variable v) const;
 
 	Variable operator++();
 

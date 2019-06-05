@@ -182,7 +182,7 @@ void Variable::operator=(Variable v) {
 	}
 }
 
-bool Variable::operator!() {
+bool Variable::operator!() const {
 	switch (_type) {
 		case kTypeNumber:
 			return !_value.number;
@@ -195,21 +195,21 @@ bool Variable::operator!() {
 	}
 }
 
-Variable Variable::operator&&(Variable v) {
+Variable Variable::operator&&(Variable v) const {
 	if (v._type == kTypeNumber && _type == kTypeNumber)
 		return v.asNumber() && asNumber();
 	else
 		return false;
 }
 
-Variable Variable::operator||(Variable v) {
+Variable Variable::operator||(Variable v) const {
 	if (v._type == kTypeNumber && _type == kTypeNumber)
 		return v.asNumber() || asNumber();
 	else
 		return false;
 }
 
-Variable Variable::operator==(Variable v) {
+Variable Variable::operator==(Variable v) const {
 	if (_type != v._type)
 		return false;
 
@@ -223,21 +223,21 @@ Variable Variable::operator==(Variable v) {
 	}
 }
 
-Variable Variable::operator<(Aurora::ActionScript::Variable v) {
+Variable Variable::operator<(Aurora::ActionScript::Variable v) const {
 	if (v._type == kTypeNumber && _type == kTypeNumber)
 		return asNumber() < v.asNumber();
 	else
 		return false;
 }
 
-Variable Variable::operator-(Variable v) {
+Variable Variable::operator-(Variable v) const {
 	if (v._type == kTypeNumber && _type == kTypeNumber)
 		return asNumber() - v.asNumber();
 	else
 		return 0.0;
 }
 
-Variable Variable::operator+(Variable v) {
+Variable Variable::operator+(Variable v) const {
 	if (v._type == kTypeNumber && _type == kTypeNumber)
 		return asNumber() + v.asNumber();
 	else if (v._type == kTypeString || _type == kTypeString)
@@ -246,11 +246,11 @@ Variable Variable::operator+(Variable v) {
 		return 0.0;
 }
 
-Variable Variable::operator*(Variable v) {
+Variable Variable::operator*(Variable v) const {
 	return asNumber() * v.asNumber();
 }
 
-Variable Variable::operator/(Variable v) {
+Variable Variable::operator/(Variable v) const {
 	return asNumber() / v.asNumber();
 }
 
