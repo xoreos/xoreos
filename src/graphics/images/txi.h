@@ -76,7 +76,7 @@ public:
 		uint8 defaultBPP { 0 };
 		uint16 defaultHeight { 0 };
 		uint16 defaultWidth { 0 };
-		uint8 distort { 0 };
+		float distort { 0.0f };
 		uint8 distortAngle { 0 };
 		float distortionAmplitude { 0.0f };
 		uint8 downsampleFactor { 0 };
