@@ -78,7 +78,7 @@ public:
 		uint16 defaultWidth { 0 };
 		uint8 distort { 0 };
 		uint8 distortAngle { 0 };
-		uint8 distortionAmplitude { 0 };
+		float distortionAmplitude { 0.0f };
 		uint8 downsampleFactor { 0 };
 		uint8 downsampleMax { 0 };
 		uint8 downsampleMin { 0 };
