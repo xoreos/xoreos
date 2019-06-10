@@ -51,7 +51,7 @@ void TXI::load(Common::SeekableReadStream &stream) {
 		Common::UString line = Common::readStringLine(stream, Common::kEncodingASCII);
 
 		if (line.empty())
-			break;
+			continue;
 
 		if (_mode == kModeUpperLeftCoords) {
 			std::sscanf(line.c_str(), "%f %f %f",
