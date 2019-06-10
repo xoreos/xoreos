@@ -87,7 +87,7 @@ public:
 		bool filter { true };
 		float fontHeight { 0.0f };
 		float fontWidth { 0.0f };
-		uint8 fps { 0 };
+		float fps { 0.0f };
 		bool isBumpMap { false };
 		bool isDoubleByte { false };
 		bool isLightMap { false };

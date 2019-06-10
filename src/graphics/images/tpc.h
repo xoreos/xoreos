@@ -45,13 +45,19 @@ public:
 	~TPC();
 
 private:
+	bool _isAnimated;
+
 	// Loading helpers
 	void load(Common::SeekableReadStream &tpc);
 	void readHeader(Common::SeekableReadStream &tpc, byte &encoding);
 	void readData(Common::SeekableReadStream &tpc, byte encoding);
 	void readTXI(Common::SeekableReadStream &tpc);
 
+	uint32 getMinDataSize(bool uncompressed, byte encoding);
+	PixelFormatRaw getPixelFormat(bool uncompressed, byte encoding);
+
 	bool checkCubeMap(uint32 &width, uint32 &height);
+	bool checkAnimated(uint32 &width, uint32 &height, uint32 &dataSize);
 	void fixupCubeMap();
 
 	static void deSwizzle(byte *dst, const byte *src, uint32 width, uint32 height);
