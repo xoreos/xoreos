@@ -106,7 +106,7 @@ public:
 		uint8 rows { 0 };
 		float spacingB { 0.0f };
 		float spacingR { 0.0f };
-		uint8 speed { 0 };
+		float speed { 0.0f };
 		bool temporary { false };
 		float textureWidth { 0.0f };
 		bool unique { false };
