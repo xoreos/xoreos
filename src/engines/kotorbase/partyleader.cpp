@@ -40,9 +40,12 @@ PartyLeaderController::PartyLeaderController(Module *module) :
 		_moving(false) {
 }
 
-void PartyLeaderController::stopMovement() {
+void PartyLeaderController::clearUserInput() {
 	_forwardMovementWanted = false;
 	_backwardMovementWanted = false;
+}
+
+void PartyLeaderController::stopMovement() {
 	_module->getPartyLeader()->playDefaultAnimation();
 	_moving = false;
 }

@@ -116,10 +116,10 @@ void PartyController::setPartyLeaderByIndex(int index) {
 	std::pair<int, Creature *> nextLeader = _party[0];
 
 	prevLeader.second->setUsable(true);
+	prevLeader.second->playDefaultAnimation();
 
 	nextLeader.second->setUsable(false);
 	nextLeader.second->clearAllActions();
-	nextLeader.second->playDefaultAnimation();
 
 	_module->notifyPartyLeaderChanged();
 }

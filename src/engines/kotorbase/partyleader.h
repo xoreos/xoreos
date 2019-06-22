@@ -37,6 +37,7 @@ class PartyLeaderController {
 public:
 	PartyLeaderController(Module *module);
 
+	void clearUserInput();
 	void stopMovement();
 	bool handleEvent(const Events::Event &e);
 	bool processMovement(float frameTime);

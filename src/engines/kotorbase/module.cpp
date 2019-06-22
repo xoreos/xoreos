@@ -704,6 +704,7 @@ void Module::handleDelayedInteractions() {
 
 void Module::openContainer(Placeable *placeable) {
 	_cameraController.stopMovement();
+	_partyLeaderController.clearUserInput();
 	_partyLeaderController.stopMovement();
 
 	_ingame->hideSelection();
@@ -1043,6 +1044,7 @@ void Module::startConversation(const Common::UString &name, Aurora::NWScript::Ob
 
 	if (_dialog->isConversationActive()) {
 		_cameraController.stopMovement();
+		_partyLeaderController.clearUserInput();
 		_partyLeaderController.stopMovement();
 
 		_ingame->hide();
@@ -1116,6 +1118,7 @@ void Module::addItemToActiveObject(const Common::UString &item, int count) {
 }
 
 void Module::notifyPartyLeaderChanged() {
+	_partyLeaderController.stopMovement();
 	_cameraController.updateTarget();
 	updateMinimap();
 	updateCurrentPartyGUI();
