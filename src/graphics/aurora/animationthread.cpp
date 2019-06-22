@@ -36,7 +36,7 @@ namespace Graphics {
 namespace Aurora {
 
 const int kPauseDuration = 10;
-const int kYieldDuration = 10;
+const int kYieldDuration = 1;
 
 AnimationThread::PoolModel::PoolModel(Model *m) : model(m) {
 }
@@ -66,7 +66,6 @@ void AnimationThread::unregisterModel(Model *model) {
 	if (_pause.load(std::memory_order_seq_cst) == kPausePaused) {
 		unregisterModelInternal(model);
 	} else {
-		_yield.store(true, std::memory_order_seq_cst);
 		std::lock_guard<std::recursive_mutex> lock(_modelsMutex);
 		unregisterModelInternal(model);
 	}
@@ -98,7 +97,7 @@ void AnimationThread::threadMethod() {
 		if (handlePause())
 			continue;
 
-		handleYield();
+		EventMan.delay(kYieldDuration);
 
 		std::lock_guard<std::recursive_mutex> lock(_modelsMutex);
 
@@ -180,12 +179,6 @@ bool AnimationThread::handlePause() {
 	}
 
 	return false;
-}
-
-void AnimationThread::handleYield() {
-	bool expected = true;
-	if (_yield.compare_exchange_strong(expected, false, std::memory_order_seq_cst))
-		EventMan.delay(kYieldDuration);
 }
 
 void AnimationThread::handleFlush() {

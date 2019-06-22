@@ -83,7 +83,6 @@ private:
 	ModelMap _models;
 	ModelQueue _registerQueue;
 
-	std::atomic_bool         _yield { false };
 	std::atomic<PauseStatus> _pause { kPauseResumed };
 	std::atomic<FlushStatus> _flush { kFlushReady };
 
@@ -100,7 +99,6 @@ private:
 	void threadMethod();
 	uint8 getNumIterationsToSkip(Model *model) const;
 	bool handlePause();
-	void handleYield();
 	void handleFlush();
 };
 
