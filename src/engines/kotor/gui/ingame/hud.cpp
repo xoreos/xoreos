@@ -424,10 +424,12 @@ void HUD::callbackActive(Widget &widget) {
 		return;
 	}
 
-	hideSelection();
-	_menu.showMenu(widget.getTag());
-	sub(_menu);
-	_module.updateFrameTimestamp();
+	if (_menu.isMenuImplemented(widget.getTag())) {
+		hideSelection();
+		_menu.showMenu(widget.getTag());
+		sub(_menu);
+		_module.updateFrameTimestamp();
+	}
 }
 
 void HUD::notifyResized(int UNUSED(oldWidth), int UNUSED(oldHeight), int newWidth, int newHeight) {

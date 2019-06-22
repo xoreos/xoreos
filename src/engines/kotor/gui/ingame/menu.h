@@ -57,6 +57,7 @@ public:
 	/** Set the return button enabled/disabled. */
 	void setReturnEnabled(bool);
 
+	bool isMenuImplemented(const Common::UString& tag);
 	void showMenu(const Common::UString &tag);
 
 private:
@@ -93,7 +94,7 @@ private:
 	Common::ScopedPtr<SaveLoadMenu> _menuLoad;
 	Common::ScopedPtr<SaveLoadMenu> _menuSave;
 
-
+	MenuType getMenuTypeByButtonTag(const Common::UString &tag);
 	void showMenu(MenuType type);
 };
 

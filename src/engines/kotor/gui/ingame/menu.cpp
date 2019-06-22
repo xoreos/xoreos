@@ -138,13 +138,23 @@ void Menu::callbackRun() {
 	}
 }
 
-void Menu::showMenu(const Common::UString &tag) {
+bool Menu::isMenuImplemented(const Common::UString &tag) {
+	return getMenuTypeByButtonTag(tag) != kMenuTypeMAX;
+}
+
+Menu::MenuType Menu::getMenuTypeByButtonTag(const Common::UString &tag) {
 	for (size_t i = 0; i < kMenuTypeMAX; i++) {
-		if (_menu[i].button && _menu[i].button->getTag() == tag) {
-			showMenu(static_cast<MenuType>(i));
-			return;
-		}
+		if (_menu[i].button && (_menu[i].button->getTag() == tag))
+			return static_cast<MenuType>(i);
 	}
+
+	return kMenuTypeMAX;
+}
+
+void Menu::showMenu(const Common::UString &tag) {
+	MenuType menuType = getMenuTypeByButtonTag(tag);
+	if (menuType != kMenuTypeMAX)
+		showMenu(menuType);
 }
 
 void Menu::callbackActive(Widget &widget) {
