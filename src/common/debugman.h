@@ -56,8 +56,8 @@ enum DebugChannel {
 	kDebugEngineSound   , ///< "ESound", engine sound.
 	kDebugEngineVideo   , ///< "EVideo", engine video.
 	kDebugEngineEvents  , ///< "EEvents", engine events.
-	kDebugEngineScripts , ///< "EScripts", engine scripts.
 	kDebugEngineLogic   , ///< "ELogic", engine game logic.
+	kDebugEngineScripts , ///< "EScripts", engine scripts.
 
 	kDebugActionScript, ///< "GActionScript", actionscript interpreter
 
