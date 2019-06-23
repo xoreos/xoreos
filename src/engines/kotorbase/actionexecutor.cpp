@@ -92,14 +92,14 @@ void ActionExecutor::executeOpenLock(const Action &action, const ExecutionContex
 		return;
 	}
 
-	Door *door = dynamic_cast<Door *>(action.object);
+	Door *door = ObjectContainer::toDoor(action.object);
 	if (door) {
 		ctx.creature->playAnimation("unlockdr", false);
 		door->unlock(ctx.creature);
 		return;
 	}
 
-	Placeable *placeable = dynamic_cast<Placeable *>(action.object);
+	Placeable *placeable = ObjectContainer::toPlaceable(action.object);
 	if (placeable) {
 		ctx.creature->playAnimation("unlockcntr", false);
 		placeable->unlock(ctx.creature);
