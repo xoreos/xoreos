@@ -147,6 +147,7 @@ public:
 
 	Inventory &getInventory();
 	Item *getEquipedItem(InventorySlot slot) const;
+	float getMaxAttackRange() const;
 
 	void equipItem(Common::UString tag, InventorySlot slot, bool updateModel = true);
 	void equipItem(Common::UString tag, InventorySlot slot, CreatureInfo &invOwner, bool updateModel = true);
@@ -156,6 +157,7 @@ public:
 	void playDefaultAnimation();
 	void playDefaultHeadAnimation();
 	void playDrawWeaponAnimation();
+	void playAttackAnimation();
 
 	void playAnimation(const Common::UString &anim,
 	                   bool restart = true,

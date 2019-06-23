@@ -531,7 +531,9 @@ void Module::clickObject(Object *object) {
 		return;
 	}
 
-	KotORBase::Action action(kActionUseObject);
+	bool targetEnemy = currentTarget->isEnemy();
+
+	KotORBase::Action action(targetEnemy ? kActionAttackObject : kActionUseObject);
 	action.object = object;
 	action.range = 1.0f;
 

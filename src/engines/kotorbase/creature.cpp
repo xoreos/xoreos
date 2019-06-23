@@ -546,8 +546,10 @@ void Creature::initAsPC(const CharacterGenerationInfo &chargenInfo, const Creatu
 }
 
 const Common::UString &Creature::getCursor() const {
-	static Common::UString cursor("talk");
-	return cursor;
+	static Common::UString talkCursor("talk");
+	static Common::UString killCursor("kill");
+
+	return isEnemy() ? killCursor : talkCursor;
 }
 
 void Creature::highlight(bool enabled) {
@@ -631,6 +633,14 @@ Item *Creature::getEquipedItem(InventorySlot slot) const {
 	return _equipment.find(slot)->second;
 }
 
+float Creature::getMaxAttackRange() const {
+	const Item *rightWeapon = getEquipedItem(kInventorySlotRightWeapon);
+	if (rightWeapon && rightWeapon->isRangedWeapon())
+		return rightWeapon->getMaxAttackRange();
+
+	return 1.0f;
+}
+
 void Creature::playDefaultAnimation() {
 	if (_model)
 		_model->playDefaultAnimation();
@@ -657,8 +667,8 @@ void Creature::playDrawWeaponAnimation() {
 	if (!_model)
 		return;
 
-	Item *rightWeapon = _info.isInventorySlotEquipped(kInventorySlotRightWeapon) ? _equipment[kInventorySlotRightWeapon] : nullptr;
-	Item *leftWeapon = _info.isInventorySlotEquipped(kInventorySlotLeftWeapon) ? _equipment[kInventorySlotLeftWeapon] : nullptr;
+	const Item *rightWeapon = getEquipedItem(kInventorySlotRightWeapon);
+	const Item *leftWeapon = getEquipedItem(kInventorySlotLeftWeapon);
 
 	if (rightWeapon && !leftWeapon) {
 		switch (rightWeapon->getWeaponWield()) {
@@ -695,6 +705,53 @@ void Creature::playDrawWeaponAnimation() {
 				break;
 		}
 	}
+}
+
+void Creature::playAttackAnimation() {
+	if (!_model)
+		return;
+
+	const Item *rightWeapon = getEquipedItem(kInventorySlotRightWeapon);
+	const Item *leftWeapon = getEquipedItem(kInventorySlotLeftWeapon);
+
+	if (rightWeapon && !leftWeapon) {
+		switch (rightWeapon->getWeaponWield()) {
+			case kWeaponWieldBaton:
+				_model->playAnimation("g1a1");
+				break;
+			case kWeaponWieldSword:
+				_model->playAnimation("g2a1");
+				break;
+			case kWeaponWieldStaff:
+				_model->playAnimation("g3a1");
+				break;
+			case kWeaponWieldPistol:
+				_model->playAnimation("b5a1");
+				break;
+			case kWeaponWieldRifle:
+				_model->playAnimation("b7a1");
+				break;
+			default:
+				break;
+		}
+		return;
+	}
+
+	if (rightWeapon && leftWeapon) {
+		switch (rightWeapon->getWeaponWield()) {
+			case kWeaponWieldSword:
+				_model->playAnimation("g4a1");
+				break;
+			case kWeaponWieldPistol:
+				_model->playAnimation("b6a1");
+				break;
+			default:
+				break;
+		}
+		return;
+	}
+
+	_model->playAnimation("g8a1");
 }
 
 void Creature::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
