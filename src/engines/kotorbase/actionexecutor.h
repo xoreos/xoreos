@@ -41,7 +41,7 @@ public:
 		float frameTime { 0.0f };
 	};
 
-	static void executeActions(const ExecutionContext &ctx);
+	static void execute(const Action &action, const ExecutionContext &ctx);
 
 private:
 	/** Get if the current creature has reached a specified location. */
