@@ -173,11 +173,11 @@ public:
 	const Action *getCurrentAction() const;
 
 	/** Clear all actions of this creature. */
-	void clearAllActions();
+	void clearActions();
 	/** Add action to the action queue of this creature. */
-	void enqueueAction(const Action &action);
+	void addAction(const Action &action);
 	/** Remove the current action from the action queue of this creature. */
-	void dequeueAction();
+	void popAction();
 
 	// Tooltip
 

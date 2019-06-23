@@ -254,8 +254,9 @@ void Console::cmdActionMoveToObject(const CommandLine &cl) {
 	Action action(kActionMoveToPoint);
 	action.location = glm::vec3(x, y, z);
 	action.range = range;
-	creature->clearAllActions();
-	creature->enqueueAction(action);
+
+	creature->clearActions();
+	creature->addAction(action);
 }
 
 } // End of namespace KotORBase

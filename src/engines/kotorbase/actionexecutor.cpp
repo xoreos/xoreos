@@ -66,7 +66,7 @@ void ActionExecutor::executeActions(const ExecutionContext &ctx) {
 
 void ActionExecutor::executeMoveToPoint(const Action &action, const ExecutionContext &ctx) {
 	if (moveTo(action.location, action.range, ctx))
-		ctx.creature->dequeueAction();
+		ctx.creature->popAction();
 }
 
 void ActionExecutor::executeFollowLeader(const Action &action, const ExecutionContext &ctx) {
@@ -89,7 +89,7 @@ void ActionExecutor::executeOpenLock(const Action &action, const ExecutionContex
 		return;
 	}
 
-	ctx.creature->dequeueAction();
+	ctx.creature->popAction();
 
 	if (ctx.creature != ctx.area->_module->getPartyLeader()) {
 		warning("ActionExecutor::executeOpenLock(): Creature is not the party leader");
@@ -124,7 +124,7 @@ void ActionExecutor::executeUseObject(const Action &action, const ExecutionConte
 		return;
 	}
 
-	ctx.creature->dequeueAction();
+	ctx.creature->popAction();
 
 	Module *module = ctx.area->_module;
 
