@@ -40,26 +40,22 @@ namespace Engines {
 
 namespace KotORBase {
 
-void ActionExecutor::executeActions(const ExecutionContext &ctx) {
-	const Action *action = ctx.creature->getCurrentAction();
-	if (!action)
-		return;
-
-	switch (action->type) {
+void ActionExecutor::execute(const Action &action, const ExecutionContext &ctx) {
+	switch (action.type) {
 		case kActionMoveToPoint:
-			executeMoveToPoint(*action, ctx);
+			executeMoveToPoint(action, ctx);
 			break;
 		case kActionFollowLeader:
-			executeFollowLeader(*action, ctx);
+			executeFollowLeader(action, ctx);
 			break;
 		case kActionOpenLock:
-			executeOpenLock(*action, ctx);
+			executeOpenLock(action, ctx);
 			break;
 		case kActionUseObject:
-			executeUseObject(*action, ctx);
+			executeUseObject(action, ctx);
 			break;
 		default:
-			warning("TODO: Handle action %u", (uint)action->type);
+			warning("TODO: Handle action %u", (uint)action.type);
 			break;
 	}
 }

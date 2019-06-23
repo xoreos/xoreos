@@ -794,8 +794,12 @@ void Area::processCreaturesActions(float dt) {
 	ctx.frameTime = dt;
 
 	for (auto &c : _creatures) {
+		const Action *action = c->getCurrentAction();
+		if (!action)
+			continue;
+
 		ctx.creature = c;
-		ActionExecutor::executeActions(ctx);
+		ActionExecutor::execute(*action, ctx);
 	}
 }
 
