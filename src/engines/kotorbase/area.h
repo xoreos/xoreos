@@ -287,6 +287,7 @@ private:
 
 
 	void updateRoomsVisiblity();
+	void updatePerception(Creature &subject);
 
 
 	friend class Console;

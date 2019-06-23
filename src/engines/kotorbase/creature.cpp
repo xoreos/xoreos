@@ -22,11 +22,14 @@
  *  Creature within an area in KotOR games.
  */
 
+#include "external/glm/gtc/type_ptr.hpp"
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/strutil.h"
+#include "src/common/debug.h"
 
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -706,6 +709,59 @@ void Creature::getTooltipAnchor(float &x, float &y, float &z) const {
 	}
 
 	_model->getTooltipAnchor(x, y, z);
+}
+
+void Creature::updatePerception(Creature &object) {
+	const float kPerceptionRange = 16.0f;
+
+	float distance = glm::distance(
+		glm::make_vec3(_position),
+		glm::make_vec3(object._position));
+
+	if (distance <= kPerceptionRange) {
+		handleObjectSeen(object);
+		handleObjectHeard(object);
+
+		object.handleObjectSeen(*this);
+		object.handleObjectHeard(*this);
+
+	} else {
+		handleObjectVanished(object);
+		handleObjectInaudible(object);
+
+		object.handleObjectVanished(*this);
+		object.handleObjectInaudible(*this);
+	}
+}
+
+void Creature::handleObjectSeen(Object &object) {
+	bool inserted = _seenObjects.insert(&object).second;
+	if (inserted)
+		debugC(
+			Common::DebugChannel::kDebugEngineLogic,
+			1,
+			"Subject \"%s\" have seen object \"%s\"",
+			_tag.c_str(),
+			object.getTag().c_str());
+}
+
+void Creature::handleObjectVanished(Object &object) {
+	size_t countErased = _seenObjects.erase(&object);
+	if (countErased != 0)
+		debugC(
+			Common::DebugChannel::kDebugEngineLogic,
+			1,
+			"Object \"%s\" have vanished from subject \"%s\"",
+			object.getTag().c_str(),
+			_tag.c_str());
+}
+
+void Creature::handleObjectHeard(Object &object) {
+	_heardObjects.insert(&object);
+}
+
+void Creature::handleObjectInaudible(Object &object) {
+	_heardObjects.erase(&object);
 }
 
 void Creature::playHeadAnimation(const Common::UString &anim, bool restart, float length, float speed) {
