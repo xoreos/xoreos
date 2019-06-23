@@ -99,7 +99,7 @@ Module::Module(::Engines::Console &console) :
 		_inDialog(false),
 		_runScriptVar(-1),
 		_soloMode(false),
-		_lastHeartbeatTimestamp(0) {
+		_round(this) {
 
 	loadSurfaceTypes();
 }
@@ -567,7 +567,8 @@ void Module::processEventQueue() {
 
 	handleEvents();
 	handleActions();
-	handleHeartbeat();
+
+	_round.update();
 
 	GfxMan.lockFrame();
 
@@ -730,17 +731,6 @@ void Module::handleActions() {
 			                           action->owner, action->triggerer);
 
 		_delayedActions.erase(action);
-	}
-}
-
-void Module::handleHeartbeat() {
-	const int kHeartbeatInterval = 6000; // ms
-
-	uint32 now = EventMan.getTimestamp();
-	if (now >= _lastHeartbeatTimestamp + kHeartbeatInterval) {
-		_runScriptVar = 2001;
-		_partyController.raiseHeartbeatEvent();
-		_lastHeartbeatTimestamp = now;
 	}
 }
 
