@@ -116,7 +116,8 @@ void Functions::actionMoveToObject(Aurora::NWScript::FunctionContext &ctx) {
 	Action action(kActionMoveToPoint);
 	action.range = range;
 	action.location = glm::vec3(x, y, z);
-	caller->enqueueAction(action);
+
+	caller->addAction(action);
 }
 
 void Functions::actionFollowLeader(Aurora::NWScript::FunctionContext &ctx) {
@@ -126,7 +127,8 @@ void Functions::actionFollowLeader(Aurora::NWScript::FunctionContext &ctx) {
 
 	Action action(kActionFollowLeader);
 	action.range = 1.0f;
-	caller->enqueueAction(action);
+
+	caller->addAction(action);
 }
 
 void Functions::clearAllActions(Aurora::NWScript::FunctionContext &ctx) {
@@ -134,7 +136,7 @@ void Functions::clearAllActions(Aurora::NWScript::FunctionContext &ctx) {
 	if (!caller)
 		caller = _game->getModule().getPartyLeader();
 
-	caller->clearAllActions();
+	caller->clearActions();
 }
 
 } // End of namespace KotORBase

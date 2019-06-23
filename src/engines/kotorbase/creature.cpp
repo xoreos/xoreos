@@ -729,15 +729,15 @@ const Action *Creature::getCurrentAction() const {
 	return _actions.getCurrent();
 }
 
-void Creature::clearAllActions() {
+void Creature::clearActions() {
 	_actions.clear();
 }
 
-void Creature::enqueueAction(const Action &action) {
+void Creature::addAction(const Action &action) {
 	_actions.add(action);
 }
 
-void Creature::dequeueAction() {
+void Creature::popAction() {
 	_actions.pop();
 }
 

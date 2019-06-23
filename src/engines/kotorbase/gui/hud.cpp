@@ -147,7 +147,8 @@ void HUD::callbackActive(Widget &widget) {
 			Action action(kActionOpenLock);
 			action.object = _targetObject;
 			action.range = 1.0f;
-			_module.getPartyLeader()->enqueueAction(action);
+
+			_module.getPartyLeader()->addAction(action);
 		}
 		return;
 	}

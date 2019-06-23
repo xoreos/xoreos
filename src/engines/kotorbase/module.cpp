@@ -536,8 +536,8 @@ void Module::clickObject(Object *object) {
 	action.range = 1.0f;
 
 	Creature *partyLeader = getPartyLeader();
-	partyLeader->clearAllActions();
-	partyLeader->enqueueAction(action);
+	partyLeader->clearActions();
+	partyLeader->addAction(action);
 }
 
 void Module::enterObject(Object *object) {

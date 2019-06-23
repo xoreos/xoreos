@@ -119,7 +119,7 @@ void PartyController::setPartyLeaderByIndex(int index) {
 	prevLeader.second->playDefaultAnimation();
 
 	nextLeader.second->setUsable(false);
-	nextLeader.second->clearAllActions();
+	nextLeader.second->clearActions();
 
 	_module->notifyPartyLeaderChanged();
 }

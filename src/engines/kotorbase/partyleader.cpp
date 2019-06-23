@@ -95,7 +95,7 @@ bool PartyLeaderController::processMovement(float frameTime) {
 		return false;
 	}
 
-	partyLeader->clearAllActions();
+	partyLeader->clearActions();
 
 	float x, y, _;
 	partyLeader->getPosition(x, y, _);
