@@ -670,9 +670,21 @@ void Area::showAllRooms() {
 }
 
 void Area::notifyObjectMoved(Object &o) {
-	float x, y, z;
-	o.getPosition(x, y, z);
+	float x, y, _;
+	o.getPosition(x, y, _);
 	o.setRoom(_pathfinding->getRoomAt(x, y));
+
+	if (o.getType() == kObjectTypeCreature)
+		updatePerception((Creature &)o);
+}
+
+void Area::updatePerception(Creature &subject) {
+	for (auto object : _creatures) {
+		if (object == &subject)
+			continue;
+
+		subject.updatePerception(*object);
+	}
 }
 
 void Area::notifyPartyLeaderMoved() {

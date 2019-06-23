@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTORBASE_CREATURE_H
 #define ENGINES_KOTORBASE_CREATURE_H
 
-#include <queue>
+#include <set>
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
@@ -183,6 +183,10 @@ public:
 
 	void getTooltipAnchor(float &x, float &y, float &z) const;
 
+	// Perception
+
+	void updatePerception(Creature &object);
+
 protected:
 	// Parts of a creature's body.
 	struct PartModels {
@@ -203,6 +207,12 @@ protected:
 	void loadMovementRate(const Common::UString &name);
 
 private:
+	// Perception
+
+	std::set<Object *> _seenObjects;
+	std::set<Object *> _heardObjects;
+
+
 	bool _isPC; ///< Is the creature a PC?
 
 	uint32 _appearance; ///< The creature's general appearance.
@@ -226,6 +236,14 @@ private:
 
 	float _walkRate;
 	float _runRate;
+
+
+	// Perception
+
+	void handleObjectSeen(Object &object);
+	void handleObjectVanished(Object &object);
+	void handleObjectHeard(Object &object);
+	void handleObjectInaudible(Object &object);
 
 
 	void init();
