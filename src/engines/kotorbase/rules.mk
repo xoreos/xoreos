@@ -53,6 +53,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/engine.h \
     src/engines/kotorbase/console.h \
     src/engines/kotorbase/actionqueue.h \
+    src/engines/kotorbase/round.h \
     $(EMPTY)
 
 src_engines_kotorbase_libkotorbase_la_SOURCES += \
@@ -84,6 +85,7 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/engine.cpp \
     src/engines/kotorbase/console.cpp \
     src/engines/kotorbase/actionqueue.cpp \
+    src/engines/kotorbase/round.cpp \
     $(EMPTY)
 
 include src/engines/kotorbase/script/rules.mk

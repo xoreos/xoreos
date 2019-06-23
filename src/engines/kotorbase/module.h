@@ -48,6 +48,7 @@
 #include "src/engines/kotorbase/partycontroller.h"
 #include "src/engines/kotorbase/cameracontroller.h"
 #include "src/engines/kotorbase/creatureinfo.h"
+#include "src/engines/kotorbase/round.h"
 
 #include "src/engines/kotorbase/gui/ingame.h"
 #include "src/engines/kotorbase/gui/dialog.h"
@@ -282,6 +283,28 @@ private:
 	typedef std::list<Events::Event> EventQueue;
 	typedef std::multiset<Action> ActionQueue;
 
+	// Global values
+
+	std::map<Common::UString, bool> _globalBooleans;
+	std::map<Common::UString, int> _globalNumbers;
+
+	// Delayed object interactions
+
+	struct DelayedConversation {
+		Common::UString name;
+		Aurora::NWScript::Object *owner;
+
+		DelayedConversation(const Common::UString &name, Aurora::NWScript::Object *owner = nullptr);
+	};
+
+	Common::ScopedPtr<DelayedConversation> _delayedConversation;
+	Placeable *_delayedContainer { nullptr };
+
+	// Surface types
+
+	/** A map between surface type and whether it is walkable. */
+	std::vector<bool> _walkableSurfaces;
+
 
 	::Engines::Console *_console;
 
@@ -311,24 +334,6 @@ private:
 
 	Common::ScopedPtr<Graphics::Aurora::FadeQuad> _fade;
 
-	// Global values
-
-	std::map<Common::UString, bool> _globalBooleans;
-	std::map<Common::UString, int> _globalNumbers;
-
-	// Delayed object interactions
-
-	struct DelayedConversation {
-		Common::UString name;
-		Aurora::NWScript::Object *owner;
-
-		DelayedConversation(const Common::UString &name, Aurora::NWScript::Object *owner = nullptr);
-	};
-
-	Common::ScopedPtr<DelayedConversation> _delayedConversation;
-	Placeable *_delayedContainer { nullptr };
-
-
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;
 
@@ -341,13 +346,7 @@ private:
 	bool _inDialog;
 	int _runScriptVar;
 	bool _soloMode;
-	uint32 _lastHeartbeatTimestamp;
-
-
-	// Surface types
-
-	/** A map between surface type and whether it is walkable. */
-	std::vector<bool> _walkableSurfaces;
+	Round _round;
 
 	// Unloading
 
@@ -407,13 +406,15 @@ private:
 
 	void handleEvents();
 	void handleActions();
-	void handleHeartbeat();
 
 	void updateSoundListener();
 	void updateSelection();
 
 	void handleDelayedInteractions();
 	void openContainer(Placeable *placeable);
+
+
+	friend class Round;
 };
 
 } // End of namespace KotORBase
