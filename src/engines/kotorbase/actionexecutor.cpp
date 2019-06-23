@@ -77,13 +77,9 @@ void ActionExecutor::executeFollowLeader(const Action &action, const ExecutionCo
 void ActionExecutor::executeOpenLock(const Action &action, const ExecutionContext &ctx) {
 	float x, y, _;
 	action.object->getPosition(x, y, _);
-	glm::vec2 location(x, y);
 
-	bool locReached = isLocationReached(location, action.range, ctx);
-	if (!locReached) {
-		moveTo(location, action.range, ctx);
+	if (!moveTo(glm::vec2(x, y), action.range, ctx))
 		return;
-	}
 
 	ctx.creature->popAction();
 
@@ -112,13 +108,9 @@ void ActionExecutor::executeOpenLock(const Action &action, const ExecutionContex
 void ActionExecutor::executeUseObject(const Action &action, const ExecutionContext &ctx) {
 	float x, y, _;
 	action.object->getPosition(x, y, _);
-	glm::vec2 location(x, y);
 
-	bool locReached = isLocationReached(location, action.range, ctx);
-	if (!locReached) {
-		moveTo(location, action.range, ctx);
+	if (!moveTo(glm::vec2(x, y), action.range, ctx))
 		return;
-	}
 
 	ctx.creature->popAction();
 
