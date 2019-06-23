@@ -726,18 +726,15 @@ void Creature::playHeadAnimation(const Common::UString &anim, bool restart, floa
 }
 
 const Action *Creature::getCurrentAction() const {
-	if (_actions.empty())
-		return 0;
-
-	return &_actions.front();
+	return _actions.getCurrent();
 }
 
 void Creature::clearAllActions() {
-	_actions = std::queue<Action>();
+	_actions.clear();
 }
 
 void Creature::enqueueAction(const Action &action) {
-	_actions.push(action);
+	_actions.add(action);
 }
 
 void Creature::dequeueAction() {

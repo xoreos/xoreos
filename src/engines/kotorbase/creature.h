@@ -40,6 +40,7 @@
 #include "src/engines/kotorbase/inventory.h"
 #include "src/engines/kotorbase/action.h"
 #include "src/engines/kotorbase/creatureinfo.h"
+#include "src/engines/kotorbase/actionqueue.h"
 
 namespace Engines {
 
@@ -221,7 +222,7 @@ private:
 
 	Common::PtrMap<InventorySlot, Item> _equipment;
 
-	std::queue<Action> _actions;
+	ActionQueue _actions;
 
 	float _walkRate;
 	float _runRate;
