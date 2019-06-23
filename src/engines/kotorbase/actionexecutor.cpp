@@ -54,6 +54,9 @@ void ActionExecutor::execute(const Action &action, const ExecutionContext &ctx) 
 		case kActionUseObject:
 			executeUseObject(action, ctx);
 			break;
+		case kActionAttackObject:
+			executeAttackObject(action, ctx);
+			break;
 		default:
 			warning("TODO: Handle action %u", (uint)action.type);
 			break;
@@ -146,6 +149,17 @@ void ActionExecutor::executeUseObject(const Action &action, const ExecutionConte
 			return;
 		}
 	}
+}
+
+void ActionExecutor::executeAttackObject(const Action &action, const ExecutionContext &ctx) {
+	float x, y, _;
+	action.object->getPosition(x, y, _);
+
+	if (!moveTo(glm::vec2(x, y), ctx.creature->getMaxAttackRange(), ctx))
+		return;
+
+	ctx.creature->popAction();
+	ctx.creature->playAttackAnimation();
 }
 
 bool ActionExecutor::isLocationReached(const glm::vec2 &location, float range, const ExecutionContext &ctx) {

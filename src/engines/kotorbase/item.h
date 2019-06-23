@@ -39,8 +39,10 @@ public:
 
 	const Common::UString &getName() const;
 	WeaponWield getWeaponWield() const;
+	float getMaxAttackRange() const;
 
 	bool isSlotEquipable(InventorySlot slot) const;
+	bool isRangedWeapon() const;
 
 	// Visual properties
 
@@ -54,6 +56,8 @@ private:
 	Common::UString _itemClass;
 	int32 _equipableSlotsMask;
 	WeaponWield _weaponWield;
+	bool _rangedWeapon;
+	float _maxAttackRange;
 
 	int _modelVariation;
 	int _bodyVariation;
