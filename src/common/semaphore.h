@@ -19,46 +19,39 @@
  */
 
 /** @file
- *  Inter-thread request event types.
+ *  Thread semaphore class.
  */
 
-#include "src/common/error.h"
-#include "src/common/util.h"
+#ifndef COMMON_SEMAPHORE_H
+#define COMMON_SEMAPHORE_H
 
-#include "src/events/requesttypes.h"
-#include "src/events/events.h"
+#include "src/common/fallthrough.h"
+START_IGNORE_IMPLICIT_FALLTHROUGH
+#include <SDL_thread.h>
+STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
-namespace Events {
+#include <boost/noncopyable.hpp>
 
-Request::Request(ITCEvent type) : _type(type), _dispatched(false), _garbage(false),
-	_hasReply(0) {
+#include "src/common/types.h"
 
-	create();
-}
+namespace Common {
 
-Request::~Request() {
-}
+/** A semaphore . */
+class Semaphore : boost::noncopyable {
+public:
+	Semaphore(uint value = 0);
+	~Semaphore();
 
-bool Request::isGarbage() const {
-	// Only "really" garbage if it hasn't got a pending answer
-	return _garbage && !_dispatched;
-}
+	bool lock(uint32 timeout = 0);
+	bool lockTry();
+	void unlock();
 
-void Request::setGarbage() {
-	_garbage = true;
-}
+	uint32 getValue();
 
-void Request::create() {
-	_event.type       = kEventITC;
-	_event.user.code  = (int) _type;
-	_event.user.data1 = static_cast<void *>(this);
-}
+private:
+	SDL_sem *_semaphore;
+};
 
-void Request::signalReply() {
-	_hasReply.unlock();
-}
+} // End of namespace Common
 
-void Request::copyToReply() {
-}
-
-} // End of namespace Events
+#endif // COMMON_SEMAPHORE_H

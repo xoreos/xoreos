@@ -27,6 +27,7 @@
 
 #include "src/common/types.h"
 #include "src/common/mutex.h"
+#include "src/common/semaphore.h"
 
 #include "src/events/types.h"
 
@@ -62,8 +63,7 @@ private:
 	bool _dispatched; ///< Was the request dispatched?
 	bool _garbage;
 
-	std::condition_variable_any _hasReply; ///< Do we have a reply?
-	std::recursive_mutex _hasReplyMutex;
+	Common::Semaphore _hasReply; ///< Do we have a reply?
 
 	Event _event; ///< The actual event.
 

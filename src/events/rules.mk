@@ -43,3 +43,7 @@ src_events_libevents_la_SOURCES += \
     src/events/joystick.cpp \
     src/events/gamecontroller.cpp \
     $(EMPTY)
+
+src_events_libevents_la_LIBADD = \
+    src/common/libcommon.la \
+    $(EMPTY)

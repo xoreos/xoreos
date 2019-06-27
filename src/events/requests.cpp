@@ -86,8 +86,7 @@ void RequestManager::waitReply(RequestID request) {
 	_mutexUse.unlock();
 
 	// Wait for a reply
-	std::unique_lock<std::recursive_mutex> lock((*request)->_hasReplyMutex);
-	(*request)->_hasReply.wait(lock);
+	(*request)->_hasReply.lock();
 
 	// Got a reply
 

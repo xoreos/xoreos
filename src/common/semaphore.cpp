@@ -19,46 +19,42 @@
  */
 
 /** @file
- *  Inter-thread request event types.
+ *  Thread semaphore class.
  */
 
-#include "src/common/error.h"
-#include "src/common/util.h"
+#include "src/common/semaphore.h"
 
-#include "src/events/requesttypes.h"
-#include "src/events/events.h"
+namespace Common {
 
-namespace Events {
-
-Request::Request(ITCEvent type) : _type(type), _dispatched(false), _garbage(false),
-	_hasReply(0) {
-
-	create();
+Semaphore::Semaphore(uint value) {
+	_semaphore = SDL_CreateSemaphore(value);
 }
 
-Request::~Request() {
+Semaphore::~Semaphore() {
+	SDL_DestroySemaphore(_semaphore);
 }
 
-bool Request::isGarbage() const {
-	// Only "really" garbage if it hasn't got a pending answer
-	return _garbage && !_dispatched;
+bool Semaphore::lock(uint32 timeout) {
+	int ret;
+
+	if (timeout == 0)
+		ret = SDL_SemWait(_semaphore);
+	else
+		ret = SDL_SemWaitTimeout(_semaphore, timeout);
+
+	return ret == 0;
 }
 
-void Request::setGarbage() {
-	_garbage = true;
+bool Semaphore::lockTry() {
+	return SDL_SemTryWait(_semaphore) == 0;
 }
 
-void Request::create() {
-	_event.type       = kEventITC;
-	_event.user.code  = (int) _type;
-	_event.user.data1 = static_cast<void *>(this);
+void Semaphore::unlock() {
+	SDL_SemPost(_semaphore);
 }
 
-void Request::signalReply() {
-	_hasReply.unlock();
+uint32 Semaphore::getValue() {
+	return SDL_SemValue(_semaphore);
 }
 
-void Request::copyToReply() {
-}
-
-} // End of namespace Events
+} // End of namespace Common

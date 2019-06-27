@@ -89,6 +89,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/aabbnode.h \
     src/common/random.h \
     src/common/mutex.h \
+    src/common/semaphore.h \
     $(EMPTY)
 
 src_common_libcommon_la_SOURCES += \
@@ -140,6 +141,7 @@ src_common_libcommon_la_SOURCES += \
     src/common/timestamp.cpp \
     src/common/aabbnode.cpp \
     src/common/random.cpp \
+    src/common/semaphore.cpp \
     $(EMPTY)
 
 lzma_sources = \
