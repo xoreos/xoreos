@@ -116,6 +116,34 @@ not an abbreviation of "Operating System".
 xOreOs is right out.
 
 
+Why are you using cairo for for shape rendering? Why not another lightweight engine like NanoVG?
+------------------------------------------------------------------------------------------------
+
+The problem with most lightweight engines nowadays is, that they solely rely on
+a render system like OpenGL or Vulkan to render all of the shapes at every draw
+call, while cairo is the only library I found so far, which offers the ability
+to "prerender" shapes and cache them on the GPU. Since most of the shapes (well,
+pretty much all of them) used in both dragon age games are static, meaning, they
+are created only one time and then never changed again, it makes no sense
+hooking the shape rendering into the render path and render shapes with 100 or
+more render calls in every frame. Furthermore shape rendering libraries like
+NanoVG didn't offer a way to cache generated shapes to prevent exactly this.
+
+Another reason problem resulting from lightweight libraries using OpenGL or
+Vulkan as their rendering backend is their fixation on a specific set of render
+systems. Through this we would have to integrate the library into our render
+path and almost certainly become locked to the render systems the library uses,
+meaning, if we decide to add a render system, which is not supported by the
+library it will become difficult up to impossible to add it. Furthermore if you
+want to use NanoVG, it requires you to specify the render system at compile time
+which means, the application could only be compiled against one specific system.
+
+Apart from that, there are multiple other smaller reasons for excluding most
+other render systems out there like messy build systems (Skia), abandoned code
+(Anti Grain Geometry) or bad documentation and other things which are not
+necessary but make working with cairo way simpler, like custom user fonts.
+
+
 Have you tried using Ogre3D as your 3D engine?
 ----------------------------------------------
 
