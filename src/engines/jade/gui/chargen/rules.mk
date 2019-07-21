@@ -20,9 +20,11 @@
 # Character generation in Jade Empire.
 
 src_engines_jade_libjade_la_SOURCES += \
+    src/engines/jade/gui/chargen/charactergenerationbase.h \
     src/engines/jade/gui/chargen/characterinfo.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
+    src/engines/jade/gui/chargen/charactergenerationbase.cpp \
     src/engines/jade/gui/chargen/characterinfo.cpp \
     $(EMPTY)
