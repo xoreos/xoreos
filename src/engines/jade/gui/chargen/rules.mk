@@ -24,6 +24,7 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/chargen/characterinfo.h \
     src/engines/jade/gui/chargen/charactername.h \
     src/engines/jade/gui/chargen/characterselection.h \
+    src/engines/jade/gui/chargen/charactersummary.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
@@ -31,4 +32,5 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/chargen/characterinfo.cpp \
     src/engines/jade/gui/chargen/charactername.cpp \
     src/engines/jade/gui/chargen/characterselection.cpp \
+    src/engines/jade/gui/chargen/charactersummary.cpp \
     $(EMPTY)
