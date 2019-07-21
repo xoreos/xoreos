@@ -43,6 +43,7 @@
 
 #include "src/engines/jade/gui/main/main.h"
 #include "src/engines/jade/gui/main/options.h"
+#include "src/engines/jade/gui/chargen/characterselection.h"
 
 namespace Engines {
 
@@ -110,13 +111,10 @@ void MainMenu::callbackActive(Widget &widget) {
 	}
 
 	if (widget.getTag() == "ListBoxButtons_ITEM_0") {
-		try {
-			_module->load("j01_town");
-			_returnCode = 1;
-		} catch (...) {
-			Common::exceptionDispatcherWarning();
-			return;
-		}
+		CharacterGeneration characterSelection(_module);
+		uint32 returnCode = sub(characterSelection);
+		if (returnCode == 2)
+			_returnCode = returnCode;
 		return;
 	}
 
