@@ -23,10 +23,12 @@ src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/chargen/charactergenerationbase.h \
     src/engines/jade/gui/chargen/characterinfo.h \
     src/engines/jade/gui/chargen/charactername.h \
+    src/engines/jade/gui/chargen/characterselection.h \
     $(EMPTY)
 
 src_engines_jade_libjade_la_SOURCES += \
     src/engines/jade/gui/chargen/charactergenerationbase.cpp \
     src/engines/jade/gui/chargen/characterinfo.cpp \
     src/engines/jade/gui/chargen/charactername.cpp \
+    src/engines/jade/gui/chargen/characterselection.cpp \
     $(EMPTY)
