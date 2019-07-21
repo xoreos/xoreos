@@ -48,6 +48,7 @@ namespace Jade {
 
 class Area;
 class Creature;
+class CharacterInfo;
 
 /** A Jade module. */
 class Module : public Jade::ObjectContainer {
@@ -68,6 +69,8 @@ public:
 	void load(const Common::UString &module);
 	/** Use this character as the player character. */
 	void usePC(Creature *pc);
+	/** Use the given character information to generate a character as pc. */
+	void usePC(const CharacterInfo &info);
 	/** Exit the currently running module. */
 	void exit();
 	// '---

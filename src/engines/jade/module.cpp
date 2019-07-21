@@ -37,6 +37,7 @@
 #include "src/engines/jade/module.h"
 #include "src/engines/jade/area.h"
 #include "src/engines/jade/creature.h"
+#include "src/engines/jade/gui/chargen/characterinfo.h"
 
 namespace Engines {
 
@@ -100,6 +101,15 @@ void Module::usePC(Creature *pc) {
 	unloadPC();
 
 	_pc.reset(pc);
+
+	addObject(*_pc);
+}
+
+void Module::usePC(const CharacterInfo &info) {
+	unloadPC();
+
+	_pc.reset(new Creature());
+	_pc->createPC(info);
 
 	addObject(*_pc);
 }
