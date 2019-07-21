@@ -60,7 +60,7 @@ GUI::WidgetContext::WidgetContext(const Aurora::GFF3Struct &s, Widget *p) {
 }
 
 
-GUI::GUI(::Engines::Console *console) : ::Engines::GUI(console), _widgetZ(0), _guiHeight(0.0f), _guiWidth(0.0f) {
+GUI::GUI(::Engines::Console *console) : ::Engines::GUI(console), _widgetZ(0), _guiHeight(480.0f), _guiWidth(640.0f) {
 }
 
 GUI::~GUI() {
@@ -85,7 +85,7 @@ void GUI::convertToXoreos(float &x, float &y, const float widgetHeight) const {
 
 void GUI::convertToGUI(float &x, float &y, const float widgetHeight) const {
 	x = x + (_guiWidth / 2.0f);
-	y = widgetHeight + (-1.0f * (y - (_guiHeight / 2.0f)));
+	y = widgetHeight + (y - (_guiHeight / 2.0f));
 }
 
 Common::UString GUI::getName() const {
@@ -123,16 +123,21 @@ void GUI::loadWidget(const Aurora::GFF3Struct &strct, Widget *parent) {
 
 	createWidget(ctx);
 
-	if (_guiWidth  <= 0.0f)
-		_guiWidth  = ctx.widget->getWidth();
-	if (_guiHeight <= 0.0f)
-		_guiHeight = ctx.widget->getHeight();
-
 	float wX, wY, wZ;
 	ctx.widget->getPosition(wX, wY, wZ);
 
 	convertToXoreos(wX, wY, ctx.widget->getHeight());
 	wZ = _widgetZ + wZ;
+
+	if (parent) {
+		float pX, pY, pZ;
+		parent->getPosition(pX, pY, pZ);
+
+		convertToGUI(pX, pY, parent->getHeight());
+
+		wX += pX;
+		wY += pY;
+	}
 
 	ctx.widget->setPosition(wX, wY, wZ);
 
