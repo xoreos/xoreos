@@ -34,6 +34,7 @@
 #include "src/graphics/aurora/types.h"
 
 #include "src/engines/jade/object.h"
+#include "src/engines/jade/gui/chargen/characterinfo.h"
 
 namespace Engines {
 
@@ -49,6 +50,8 @@ public:
 
 	/** Create a fake player character creature for testing purposes. */
 	void createFakePC();
+	/** Create a player character from the given info from the character generation. */
+	void createPC(const CharacterInfo &info);
 
 	// Basic visuals
 

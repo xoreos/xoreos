@@ -199,6 +199,15 @@ void Creature::createFakePC() {
 	_isPC = true;
 }
 
+void Creature::createPC(const CharacterInfo &info) {
+	_appearance = info.getAppearance();
+	_name = info.getName();
+
+	loadAppearance();
+
+	_isPC = true;
+}
+
 void Creature::enter() {
 	highlight(true);
 }
