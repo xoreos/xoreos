@@ -529,9 +529,9 @@ void ASBuffer::actionEnumerate2() {
 }
 
 void ASBuffer::actionGreater() {
-	const Variable &a = _stack.top();
+	const Variable a = _stack.top();
 	_stack.pop();
-	const Variable &b = _stack.top();
+	const Variable b = _stack.top();
 	_stack.pop();
 
 	_stack.push(a < b);
