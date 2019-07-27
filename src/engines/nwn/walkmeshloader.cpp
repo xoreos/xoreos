@@ -74,7 +74,7 @@ void WalkmeshLoader::load(::Aurora::FileType fileType, const Common::UString &na
 
 	_sameVertex.clear();
 	bool axisRotation = true;
-	float localPosition[3];
+	float localPosition[3] = { 0.0f, 0.0f, 0.0f };
 	uint32 startVertex = vertices.size() / 3;
 	Common::UString currentNode = "";
 	bool goodNode = filterNode.empty();
