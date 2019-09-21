@@ -794,23 +794,17 @@ void Creature::updatePerception(Creature &object) {
 void Creature::handleObjectSeen(Object &object) {
 	bool inserted = _seenObjects.insert(&object).second;
 	if (inserted)
-		debugC(
-			Common::DebugChannel::kDebugEngineLogic,
-			1,
-			"Subject \"%s\" have seen object \"%s\"",
-			_tag.c_str(),
-			object.getTag().c_str());
+		debugC(Common::kDebugEngineLogic, 2,
+			"Creature \"%s\" have seen \"%s\"",
+			_tag.c_str(), object.getTag().c_str());
 }
 
 void Creature::handleObjectVanished(Object &object) {
 	size_t countErased = _seenObjects.erase(&object);
 	if (countErased != 0)
-		debugC(
-			Common::DebugChannel::kDebugEngineLogic,
-			1,
-			"Object \"%s\" have vanished from subject \"%s\"",
-			object.getTag().c_str(),
-			_tag.c_str());
+		debugC(Common::kDebugEngineLogic, 2,
+			"Object \"%s\" have vanished from \"%s\"",
+			object.getTag().c_str(), _tag.c_str());
 }
 
 void Creature::handleObjectHeard(Object &object) {
