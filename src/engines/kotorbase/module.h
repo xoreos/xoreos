@@ -249,6 +249,7 @@ public:
 	void toggleFlyCamera();
 	void toggleWalkmesh();
 	void toggleTriggers();
+	int getNextCombatRound() const;
 
 protected:
 	Common::ScopedPtr<IngameGUI> _ingame; ///< The ingame GUI.
@@ -340,13 +341,13 @@ private:
 	PartyLeaderController _partyLeaderController;
 	PartyController _partyController;
 	CameraController _cameraController;
+	RoundController _roundController;
 
 	uint32 _prevTimestamp;
 	float _frameTime;
 	bool _inDialog;
 	int _runScriptVar;
 	bool _soloMode;
-	Round _round;
 
 	// Unloading
 
@@ -413,8 +414,11 @@ private:
 	void handleDelayedInteractions();
 	void openContainer(Placeable *placeable);
 
+	void notifyCombatRoundBegan(int round);
+	void notifyCombatRoundEnded(int round);
 
-	friend class Round;
+
+	friend class RoundController;
 };
 
 } // End of namespace KotORBase

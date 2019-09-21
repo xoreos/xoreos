@@ -159,7 +159,7 @@ void ActionExecutor::executeAttackObject(const Action &action, const ExecutionCo
 		return;
 
 	ctx.creature->popAction();
-	ctx.creature->playAttackAnimation();
+	ctx.creature->startCombat(action.object, ctx.area->_module->getNextCombatRound());
 }
 
 bool ActionExecutor::isLocationReached(const glm::vec2 &location, float range, const ExecutionContext &ctx) {

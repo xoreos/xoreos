@@ -22,6 +22,8 @@
  *  Object within an area in KotOR games.
  */
 
+#include "external/glm/geometric.hpp"
+
 #include "src/common/uuid.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
@@ -174,6 +176,12 @@ Location Object::getLocation() const {
 	location.setFacing(0.0f);
 
 	return location;
+}
+
+float Object::getDistanceTo(const Object *other) const {
+	glm::vec2 origin(_position[0], _position[1]);
+	glm::vec2 target(other->_position[0], other->_position[1]);
+	return glm::length(target - origin);
 }
 
 int Object::getMaxHitPoints() {

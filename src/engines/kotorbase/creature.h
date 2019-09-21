@@ -158,6 +158,7 @@ public:
 	void playDefaultHeadAnimation();
 	void playDrawWeaponAnimation();
 	void playAttackAnimation();
+	void playDodgeAnimation();
 
 	void playAnimation(const Common::UString &anim,
 	                   bool restart = true,
@@ -189,6 +190,18 @@ public:
 
 	void updatePerception(Creature &object);
 
+	// Combat
+
+	bool isInCombat() const;
+	Object *getAttackTarget() const;
+	int getAttackRound() const;
+	Object *getAttemptedAttackTarget() const;
+
+	void setAttemptedAttackTarget(Object *target);
+
+	void startCombat(Object *target, int round);
+	void cancelCombat();
+
 protected:
 	// Parts of a creature's body.
 	struct PartModels {
@@ -213,6 +226,13 @@ private:
 
 	std::set<Object *> _seenObjects;
 	std::set<Object *> _heardObjects;
+
+	// Combat
+
+	bool _inCombat { false };
+	Object *_attackTarget { nullptr };
+	int _attackRound { 0 };
+	Object *_attemptedAttackTarget { nullptr };
 
 
 	bool _isPC; ///< Is the creature a PC?
@@ -269,6 +289,8 @@ private:
 
 	void reloadEquipment();
 	bool addItemToEquipment(const Common::UString &tag, InventorySlot slot);
+
+	int getWeaponAnimationNumber() const;
 };
 
 } // End of namespace KotORBase

@@ -141,6 +141,7 @@ public:
 
 	Object *getObjectByTag(const Common::UString &tag);
 	Creature *getNearestCreature(const Object *target, int nth, const CreatureSearchCriteria &criteria) const;
+	const std::vector<Creature *> &getCreatures() const;
 
 	void addCreature(Creature *creature);
 	void addToObjectMap(Object *object);

@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Game round handler for KotOR games.
+ *  Round controller for KotOR games.
  */
 
 #include "src/common/util.h"
@@ -33,24 +33,55 @@ namespace Engines {
 
 namespace KotORBase {
 
-const int kRoundLength = 6000; // ms
+const int kCombatRoundLength = 3000; // ms
+const int kRoundLength = 2 * kCombatRoundLength; // ms
 
-Round::Round(Module *module) : _module(module) {
+RoundController::RoundController(Module *module) :
+		_module(module),
+		_startTimestamp(EventMan.getTimestamp()),
+		_combatRound(0) {
 }
 
-void Round::update() {
-	uint32 now = EventMan.getTimestamp();
-	if (_startTimestamp + kRoundLength < now) {
-		_startTimestamp = now;
-		onStart();
+int RoundController::getNextCombatRound() const {
+	return _combatRound ? 0 : 1;
+}
+
+void RoundController::update() {
+	switch (_combatRound) {
+		case 0:
+			if (hasTimePassed(kCombatRoundLength)) {
+				raiseCombatRoundEnded();
+				_combatRound++;
+				raiseCombatRoundBegan();
+			}
+			break;
+		case 1:
+			if (hasTimePassed(kRoundLength)) {
+				raiseCombatRoundEnded();
+				_startTimestamp = EventMan.getTimestamp();
+				_combatRound = 0;
+				raiseCombatRoundBegan();
+				raiseHeartbeat();
+			}
+			break;
+		default:
+			break;
 	}
 }
 
-void Round::onStart() {
-	raiseHeartbeat();
+inline bool RoundController::hasTimePassed(int ms) {
+	return EventMan.getTimestamp() > _startTimestamp + ms;
 }
 
-void Round::raiseHeartbeat() {
+inline void RoundController::raiseCombatRoundEnded() {
+	_module->notifyCombatRoundEnded(_combatRound);
+}
+
+inline void RoundController::raiseCombatRoundBegan() {
+	_module->notifyCombatRoundBegan(_combatRound);
+}
+
+void RoundController::raiseHeartbeat() {
 	_module->_runScriptVar = 2001;
 	_module->_partyController.raiseHeartbeatEvent();
 }

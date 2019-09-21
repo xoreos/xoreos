@@ -113,6 +113,8 @@ public:
 	/** Create a Location out of the object's area, position and orientation. */
 	Location getLocation() const;
 
+	float getDistanceTo(const Object *other) const;
+
 	// Hit points
 
 	/** Get the maximum hit points for the objects. */
