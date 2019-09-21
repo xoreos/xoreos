@@ -800,6 +800,10 @@ Creature *Area::getNearestCreature(const Object *target, int UNUSED(nth), const 
 	return result;
 }
 
+const std::vector<Creature *> &Area::getCreatures() const {
+	return _creatures;
+}
+
 void Area::processCreaturesActions(float dt) {
 	ActionExecutor::ExecutionContext ctx;
 	ctx.area = this;

@@ -30,6 +30,7 @@
 #include "src/common/filepath.h"
 #include "src/common/filelist.h"
 #include "src/common/configman.h"
+#include "src/common/debug.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/rimfile.h"
@@ -94,12 +95,12 @@ Module::Module(::Engines::Console &console) :
 		_partyLeaderController(this),
 		_partyController(this),
 		_cameraController(this),
+		_roundController(this),
 		_prevTimestamp(0),
 		_frameTime(0),
 		_inDialog(false),
 		_runScriptVar(-1),
-		_soloMode(false),
-		_round(this) {
+		_soloMode(false) {
 
 	loadSurfaceTypes();
 }
@@ -570,7 +571,7 @@ void Module::processEventQueue() {
 	handleEvents();
 	handleActions();
 
-	_round.update();
+	_roundController.update();
 
 	GfxMan.lockFrame();
 
@@ -717,6 +718,54 @@ void Module::openContainer(Placeable *placeable) {
 	placeable->runScript(kScriptDisturbed, placeable, _pc);
 
 	updateFrameTimestamp();
+}
+
+void Module::notifyCombatRoundBegan(int round) {
+	for (auto c : _area->getCreatures()) {
+		if (!c->isInCombat() || c->getAttackRound() != round)
+			continue;
+
+		Object *target = c->getAttackTarget();
+		if (!target || c->getDistanceTo(target) > c->getMaxAttackRange())
+			continue;
+
+		c->setAttemptedAttackTarget(target);
+		c->makeLookAt(target);
+		c->playAttackAnimation();
+
+		Creature *targetCreature = ObjectContainer::toCreature(target);
+		if (targetCreature) {
+			targetCreature->makeLookAt(c);
+			targetCreature->playDodgeAnimation();
+		}
+	}
+}
+
+void Module::notifyCombatRoundEnded(int round) {
+	for (auto c : _area->getCreatures()) {
+		if (!c->isInCombat())
+			continue;
+
+		Object *target = c->getAttemptedAttackTarget();
+		if (!target)
+			continue;
+
+		int hp = target->getCurrentHitPoints() - 1;
+		int minHp = target->getMinOneHitPoints() ? 1 : 0;
+
+		if (hp <= minHp) {
+			hp = minHp;
+			c->cancelCombat();
+		}
+
+		target->setCurrentHitPoints(hp);
+
+		debugC(Common::kDebugEngineLogic, 1,
+			"Object \"%s\" was hit by \"%s\" during combat round %d, has %d HP",
+			target->getName().c_str(), c->getName().c_str(), round, hp);
+
+		c->setAttemptedAttackTarget(nullptr);
+	}
 }
 
 void Module::handleActions() {
@@ -997,6 +1046,10 @@ void Module::toggleWalkmesh() {
 
 void Module::toggleTriggers() {
 	_area->toggleTriggers();
+}
+
+int Module::getNextCombatRound() const {
+	return _roundController.getNextCombatRound();
 }
 
 void Module::loadSavedGame(SavedGame *save) {

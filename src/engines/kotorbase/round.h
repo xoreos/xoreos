@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Game round handler for KotOR games.
+ *  Round controller for KotOR games.
  */
 
 #ifndef ENGINES_KOTORBASE_ROUND_H
@@ -31,17 +31,22 @@ namespace KotORBase {
 
 class Module;
 
-class Round {
+class RoundController {
 public:
-	Round(Module *module);
+	RoundController(Module *module);
+
+	int getNextCombatRound() const;
 
 	void update();
 
 private:
 	Module *_module;
-	uint32 _startTimestamp { 0 };
+	uint32 _startTimestamp;
+	int _combatRound;
 
-	void onStart();
+	bool hasTimePassed(int ms);
+	void raiseCombatRoundEnded();
+	void raiseCombatRoundBegan();
 	void raiseHeartbeat();
 };
 

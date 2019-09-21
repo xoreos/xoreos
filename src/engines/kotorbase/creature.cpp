@@ -754,6 +754,15 @@ void Creature::playAttackAnimation() {
 	_model->playAnimation("g8a1");
 }
 
+void Creature::playDodgeAnimation() {
+	if (!_model)
+		return;
+
+	int number = getWeaponAnimationNumber();
+	if (number != -1)
+		_model->playAnimation(Common::UString::format("g%dg1", number));
+}
+
 void Creature::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {
 	if (_model)
 		_model->playAnimation(anim, restart, length, speed);
@@ -789,6 +798,36 @@ void Creature::updatePerception(Creature &object) {
 		object.handleObjectVanished(*this);
 		object.handleObjectInaudible(*this);
 	}
+}
+
+bool Creature::isInCombat() const {
+	return _inCombat;
+}
+
+Object *Creature::getAttackTarget() const {
+	return _attackTarget;
+}
+
+int Creature::getAttackRound() const {
+	return _attackRound;
+}
+
+Object *Creature::getAttemptedAttackTarget() const {
+	return _attemptedAttackTarget;
+}
+
+void Creature::setAttemptedAttackTarget(Object *target) {
+	_attemptedAttackTarget = target;
+}
+
+void Creature::startCombat(Object *target, int round) {
+	_inCombat = true;
+	_attackTarget = target;
+	_attackRound = round;
+}
+
+void Creature::cancelCombat() {
+	_inCombat = false;
 }
 
 void Creature::handleObjectSeen(Object &object) {
@@ -876,6 +915,41 @@ bool Creature::addItemToEquipment(const Common::UString &tag, InventorySlot slot
 		Common::printException(e, "WARNING: ");
 		return false;
 	}
+}
+
+int Creature::getWeaponAnimationNumber() const {
+	const Item *rightWeapon = getEquipedItem(kInventorySlotRightWeapon);
+	const Item *leftWeapon = getEquipedItem(kInventorySlotLeftWeapon);
+
+	if (rightWeapon && !leftWeapon) {
+		switch (rightWeapon->getWeaponWield()) {
+			case kWeaponWieldBaton:
+				return 1;
+			case kWeaponWieldSword:
+				return 2;
+			case kWeaponWieldStaff:
+				return 3;
+			case kWeaponWieldPistol:
+				return 5;
+			case kWeaponWieldRifle:
+				return 7;
+			default:
+				return -1;
+		}
+	}
+
+	if (rightWeapon && leftWeapon) {
+		switch (rightWeapon->getWeaponWield()) {
+			case kWeaponWieldSword:
+				return 4;
+			case kWeaponWieldPistol:
+				return 6;
+			default:
+				return -1;
+		}
+	}
+
+	return 8;
 }
 
 } // End of namespace KotORBase
