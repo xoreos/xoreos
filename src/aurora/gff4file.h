@@ -116,9 +116,9 @@ public:
 
 private:
 	enum Platform {
-		kPlatformPC      = MKTAG('P', 'C', ' ', ' '),
-		kPlatformPS3     = MKTAG('P', 'S', '3', ' '),
-		kPlatformXbox360 = MKTAG('X', '3', '6', '0')
+		kGFF4PlatformPC      = MKTAG('P', 'C', ' ', ' '),
+		kGFF4PlatformPS3     = MKTAG('P', 'S', '3', ' '),
+		kGFF4PlatformXbox360 = MKTAG('X', '3', '6', '0')
 	};
 
 	/** A GFF4 header. */

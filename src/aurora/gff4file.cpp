@@ -72,7 +72,7 @@ void GFF4File::Header::read(Common::SeekableReadStream &gff4, uint32 version) {
 }
 
 bool GFF4File::Header::isBigEndian() const {
-	return (platformID == kPlatformPS3) || (platformID == kPlatformXbox360);
+	return (platformID == kGFF4PlatformPS3) || (platformID == kGFF4PlatformXbox360);
 }
 
 
