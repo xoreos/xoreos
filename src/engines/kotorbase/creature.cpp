@@ -30,6 +30,7 @@
 #include "src/common/ustring.h"
 #include "src/common/strutil.h"
 #include "src/common/debug.h"
+#include "src/common/random.h"
 
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -848,6 +849,33 @@ void Creature::cancelCombat() {
 	_inCombat = false;
 }
 
+void Creature::executeAttack(Object *target) {
+	const Item *leftWeapon = getEquipedItem(kInventorySlotLeftWeapon);
+	const Item *rightWeapon = getEquipedItem(kInventorySlotRightWeapon);
+	int damage;
+
+	if (rightWeapon && leftWeapon)
+		damage = computeWeaponDamage(leftWeapon) + computeWeaponDamage(rightWeapon);
+	else if (rightWeapon)
+		damage = computeWeaponDamage(rightWeapon);
+	else
+		damage = 1 + _info.getAbilityModifier(kAbilityStrength);
+
+	int hp = target->getCurrentHitPoints() - damage;
+	int minHp = target->getMinOneHitPoints() ? 1 : 0;
+
+	if (hp <= minHp) {
+		hp = minHp;
+		cancelCombat();
+	}
+
+	target->setCurrentHitPoints(hp);
+
+	debugC(Common::kDebugEngineLogic, 1,
+	       "Object \"%s\" was hit by \"%s\", has %d/%d HP",
+	       target->getTag().c_str(), _tag.c_str(), hp, target->getMaxHitPoints());
+}
+
 void Creature::handleObjectSeen(Object &object) {
 	bool inserted = _seenObjects.insert(&object).second;
 	if (inserted)
@@ -968,6 +996,18 @@ int Creature::getWeaponAnimationNumber() const {
 	}
 
 	return 8;
+}
+
+int Creature::computeWeaponDamage(const Item *weapon) const {
+	int result = 0;
+	Ability ability = weapon->isRangedWeapon() ? kAbilityDexterity : kAbilityStrength;
+	int mod = _info.getAbilityModifier(ability);
+
+	for (int i = 0; i < weapon->getNumDice(); ++i) {
+		result += RNG.getNext(1, weapon->getDieToRoll() + 1);
+	}
+
+	return result + mod;
 }
 
 } // End of namespace KotORBase

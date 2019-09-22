@@ -80,6 +80,7 @@ public:
 	};
 
 	int getAbilityScore(Ability ability) const;
+	int getAbilityModifier(Ability ability) const;
 
 	void setAbilityScore(Ability ability, uint32 score);
 
