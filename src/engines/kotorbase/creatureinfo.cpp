@@ -152,6 +152,35 @@ int CreatureInfo::getAbilityScore(Ability ability) const {
 	}
 }
 
+int CreatureInfo::getAbilityModifier(Ability ability) const {
+	int score;
+
+	switch (ability) {
+		case kAbilityStrength:
+			score = _abilities.strength;
+			break;
+		case kAbilityDexterity:
+			score = _abilities.dexterity;
+			break;
+		case kAbilityConstitution:
+			score = _abilities.constitution;
+			break;
+		case kAbilityIntelligence:
+			score = _abilities.intelligence;
+			break;
+		case kAbilityWisdom:
+			score = _abilities.wisdom;
+			break;
+		case kAbilityCharisma:
+			score = _abilities.charisma;
+			break;
+		default:
+			return -1;
+	}
+
+	return (score - 10) / 2;
+}
+
 void CreatureInfo::setAbilityScore(Ability ability, uint32 score) {
 	switch (ability) {
 		case kAbilityStrength:

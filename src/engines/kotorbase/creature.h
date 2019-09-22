@@ -201,6 +201,7 @@ public:
 
 	void startCombat(Object *target, int round);
 	void cancelCombat();
+	void executeAttack(Object *target);
 
 protected:
 	// Parts of a creature's body.
@@ -292,6 +293,7 @@ private:
 	bool addItemToEquipment(const Common::UString &tag, InventorySlot slot);
 
 	int getWeaponAnimationNumber() const;
+	int computeWeaponDamage(const Item *weapon) const;
 };
 
 } // End of namespace KotORBase

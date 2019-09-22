@@ -721,7 +721,7 @@ void Module::openContainer(Placeable *placeable) {
 }
 
 void Module::notifyCombatRoundBegan(int round) {
-	for (auto c : _area->getCreatures()) {
+	for (auto &c : _area->getCreatures()) {
 		if (!c->isInCombat() || c->getAttackRound() != round)
 			continue;
 
@@ -741,8 +741,8 @@ void Module::notifyCombatRoundBegan(int round) {
 	}
 }
 
-void Module::notifyCombatRoundEnded(int round) {
-	for (auto c : _area->getCreatures()) {
+void Module::notifyCombatRoundEnded(int UNUSED(round)) {
+	for (auto &c : _area->getCreatures()) {
 		if (!c->isInCombat())
 			continue;
 
@@ -750,20 +750,7 @@ void Module::notifyCombatRoundEnded(int round) {
 		if (!target)
 			continue;
 
-		int hp = target->getCurrentHitPoints() - 1;
-		int minHp = target->getMinOneHitPoints() ? 1 : 0;
-
-		if (hp <= minHp) {
-			hp = minHp;
-			c->cancelCombat();
-		}
-
-		target->setCurrentHitPoints(hp);
-
-		debugC(Common::kDebugEngineLogic, 1,
-			"Object \"%s\" was hit by \"%s\" during combat round %d, has %d HP",
-			target->getName().c_str(), c->getName().c_str(), round, hp);
-
+		c->executeAttack(target);
 		c->setAttemptedAttackTarget(nullptr);
 	}
 }
