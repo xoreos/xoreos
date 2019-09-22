@@ -233,8 +233,8 @@ void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	// General properties
 
 	if (blueprint)
-		loadProperties(*blueprint); // Blueprint
-	loadProperties(instance);    // Instance
+		loadProperties(*blueprint);  // Blueprint
+	loadProperties(instance, false); // Instance
 
 
 	// Appearance
@@ -258,7 +258,7 @@ void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 	setOrientation(0.0f, 0.0f, 1.0f, -Common::rad2deg(atan2(bearingX, bearingY)));
 }
 
-void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
+void Creature::loadProperties(const Aurora::GFF3Struct &gff, bool clearScripts) {
 	// Tag
 	_tag = gff.getString("Tag", _tag);
 
@@ -317,7 +317,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	_faction = Faction(gff.getUint("FactionID", _faction));
 
 	// Scripts
-	readScripts(gff);
+	readScripts(gff, clearScripts);
 
 	_conversation = gff.getString("Conversation", _conversation);
 }
@@ -887,13 +887,15 @@ bool Creature::isDead() const {
 	return _dead;
 }
 
-void Creature::handleDeath() {
-	if (_currentHitPoints <= 0) {
+bool Creature::handleDeath() {
+	if (!_dead && _currentHitPoints <= 0) {
 		_dead = true;
 		_model->clearDefaultAnimations();
 		_model->addDefaultAnimation("dead", 100);
 		_model->playAnimation("die", false);
+		return true;
 	}
+	return false;
 }
 
 void Creature::handleObjectSeen(Object &object) {

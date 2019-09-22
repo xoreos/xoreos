@@ -119,6 +119,7 @@ public:
 	// Scripting
 
 	int getRunScriptVar() const;
+	int getUserDefinedEventNumber() const;
 
 	void setRunScriptVar(int runScriptVar);
 
@@ -126,6 +127,8 @@ public:
 	                 const Aurora::NWScript::ScriptState &state,
 	                 Aurora::NWScript::Object *owner, Aurora::NWScript::Object *triggerer,
 	                 uint32 delay);
+
+	void signalUserDefinedEvent(Object *owner, int number);
 
 	// Party transitions
 
@@ -348,6 +351,7 @@ private:
 	bool _inDialog;
 	int _runScriptVar;
 	bool _soloMode;
+	int _userDefinedEventNumber { 0 };
 
 	// Unloading
 

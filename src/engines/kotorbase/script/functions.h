@@ -301,7 +301,6 @@ protected:
 
 private:
 	Game *_game;
-	Event *_lastEvent;
 };
 
 } // End of namespace KotOR

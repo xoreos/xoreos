@@ -46,9 +46,7 @@ namespace Engines {
 
 namespace KotORBase {
 
-Functions::Functions(Game &game) :
-		_game(&game),
-		_lastEvent(0) {
+Functions::Functions(Game &game) : _game(&game) {
 }
 
 Functions::~Functions() {

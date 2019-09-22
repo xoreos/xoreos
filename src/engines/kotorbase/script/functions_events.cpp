@@ -47,8 +47,10 @@ void Functions::signalEvent(Aurora::NWScript::FunctionContext &ctx) {
 
 	switch (e->getType()) {
 		case kEventUserDefined:
-			_lastEvent = e;
-			object->runScript(kScriptUserdefined, object);
+			_game->getModule().signalUserDefinedEvent(object, e->getUserDefinedNumber());
+			break;
+		default:
+			warning("Functions::signalEvent(): Event type \"%d\" not implemented", e->getType());
 			break;
 	}
 }
@@ -60,8 +62,7 @@ void Functions::eventUserDefined(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::getUserDefinedEventNumber(Aurora::NWScript::FunctionContext &ctx) {
-	if (_lastEvent && _lastEvent->getType() == kEventUserDefined)
-		ctx.getReturn() = _lastEvent->getUserDefinedNumber();
+	ctx.getReturn() = _game->getModule().getUserDefinedEventNumber();
 }
 
 } // End of namespace KotORBase

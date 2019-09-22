@@ -207,7 +207,8 @@ public:
 
 	bool isDead() const override;
 
-	void handleDeath();
+	/** Handle creature's death. Return true if changed from alive to dead. */
+	bool handleDeath();
 
 protected:
 	// Parts of a creature's body.
@@ -282,7 +283,7 @@ private:
 	void load(const Aurora::GFF3Struct &creature);
 	void load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint);
 
-	void loadProperties(const Aurora::GFF3Struct &gff);
+	void loadProperties(const Aurora::GFF3Struct &gff, bool clearScripts = true);
 	void loadPortrait(const Aurora::GFF3Struct &gff);
 	void loadEquipment(const Aurora::GFF3Struct &gff);
 	void loadAbilities(const Aurora::GFF3Struct &gff);
