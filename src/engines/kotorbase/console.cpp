@@ -78,6 +78,8 @@ Console::Console(KotOREngine &engine) :
 			"Usage: getactiveobject\nGet a tag of the active object");
 	registerCommand("actionmovetoobject"  , boost::bind(&Console::cmdActionMoveToObject  , this, _1),
 			"Usage: actionmovetoobject <target> [<range>]\nMake the active creature move to a specified object");
+	registerCommand("describe"            , boost::bind(&Console::cmdDescribe            , this, _1),
+			"Usage: describe\nDescribe the active object or the party leader");
 }
 
 void Console::updateCaches() {
@@ -257,6 +259,35 @@ void Console::cmdActionMoveToObject(const CommandLine &cl) {
 
 	creature->clearActions();
 	creature->addAction(action);
+}
+
+void Console::cmdDescribe(const CommandLine &UNUSED(cl)) {
+	Object *object = _engine->getGame().getModule().getCurrentArea()->getActiveObject();
+	if (!object) {
+		object = _engine->getGame().getModule().getPartyLeader();
+		if (!object)
+			return;
+	}
+	Creature *creature = ObjectContainer::toCreature(object);
+	if (creature) {
+		printf("name=\"%s\" tag=\"%s\" temp=\"%s\" hp=%u maxhp=%u str=%u dex=%u con=%u int=%u wis=%u cha=%u",
+		       creature->getName().c_str(),
+		       creature->getTag().c_str(),
+		       creature->getTemplateResRef().c_str(),
+		       creature->getCurrentHitPoints(),
+		       creature->getMaxHitPoints(),
+		       creature->getAbilityScore(kAbilityStrength),
+		       creature->getAbilityScore(kAbilityDexterity),
+		       creature->getAbilityScore(kAbilityConstitution),
+		       creature->getAbilityScore(kAbilityIntelligence),
+		       creature->getAbilityScore(kAbilityWisdom),
+		       creature->getAbilityScore(kAbilityCharisma));
+	} else {
+		printf("name=\"%s\" tag=\"%s\" temp=\"%s\"",
+		       object->getName().c_str(),
+		       object->getTag().c_str(),
+		       object->getTemplateResRef().c_str());
+	}
 }
 
 } // End of namespace KotORBase
