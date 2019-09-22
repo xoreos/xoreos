@@ -203,6 +203,12 @@ public:
 	void cancelCombat();
 	void executeAttack(Object *target);
 
+	// Death
+
+	bool isDead() const override;
+
+	void handleDeath();
+
 protected:
 	// Parts of a creature's body.
 	struct PartModels {
@@ -259,6 +265,8 @@ private:
 
 	float _walkRate;
 	float _runRate;
+
+	bool _dead { false };
 
 
 	// Perception

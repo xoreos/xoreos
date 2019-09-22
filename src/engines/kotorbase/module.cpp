@@ -532,9 +532,9 @@ void Module::clickObject(Object *object) {
 		return;
 	}
 
-	bool targetEnemy = currentTarget->isEnemy();
+	bool attack = currentTarget->isEnemy() && !currentTarget->isDead();
 
-	KotORBase::Action action(targetEnemy ? kActionAttackObject : kActionUseObject);
+	KotORBase::Action action(attack ? kActionAttackObject : kActionUseObject);
 	action.object = object;
 	action.range = 1.0f;
 
@@ -572,6 +572,7 @@ void Module::processEventQueue() {
 	handleActions();
 
 	_roundController.update();
+	_area->handleCreaturesDeath();
 
 	GfxMan.lockFrame();
 
@@ -722,7 +723,7 @@ void Module::openContainer(Placeable *placeable) {
 
 void Module::notifyCombatRoundBegan(int round) {
 	for (auto &c : _area->getCreatures()) {
-		if (!c->isInCombat() || c->getAttackRound() != round)
+		if (c->isDead() || !c->isInCombat() || c->getAttackRound() != round)
 			continue;
 
 		Object *target = c->getAttackTarget();
@@ -743,7 +744,7 @@ void Module::notifyCombatRoundBegan(int round) {
 
 void Module::notifyCombatRoundEnded(int UNUSED(round)) {
 	for (auto &c : _area->getCreatures()) {
-		if (!c->isInCombat())
+		if (c->isDead() || !c->isInCombat())
 			continue;
 
 		Object *target = c->getAttemptedAttackTarget();

@@ -679,8 +679,8 @@ void Area::notifyObjectMoved(Object &o) {
 }
 
 void Area::updatePerception(Creature &subject) {
-	for (auto object : _creatures) {
-		if (object == &subject)
+	for (auto &object : _creatures) {
+		if (object == &subject || object->isDead())
 			continue;
 
 		subject.updatePerception(*object);
@@ -782,7 +782,7 @@ Creature *Area::getNearestCreature(const Object *target, int UNUSED(nth), const 
 	glm::vec3 targetPosition(x, y, z);
 
 	for (auto c = _creatures.begin(); c != _creatures.end(); ++c) {
-		if (*c == target)
+		if (*c == target || (*c)->isDead())
 			continue;
 
 		if (!(*c)->matchSearchCriteria(target, criteria))
@@ -810,12 +810,22 @@ void Area::processCreaturesActions(float dt) {
 	ctx.frameTime = dt;
 
 	for (auto &c : _creatures) {
+		if (c->isDead())
+			continue;
+
 		const Action *action = c->getCurrentAction();
 		if (!action)
 			continue;
 
 		ctx.creature = c;
 		ActionExecutor::execute(*action, ctx);
+	}
+}
+
+void Area::handleCreaturesDeath() {
+	for (auto &c : _creatures) {
+		if (!c->isDead())
+			c->handleDeath();
 	}
 }
 

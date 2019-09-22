@@ -175,6 +175,9 @@ public:
 
 	virtual void getTooltipAnchor(float &x, float &y, float &z) const;
 
+
+	virtual bool isDead() const;
+
 protected:
 	Common::UString _templateResRef;
 	ObjectType _type; ///< The object's type.
