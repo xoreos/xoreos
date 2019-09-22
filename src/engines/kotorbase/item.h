@@ -40,6 +40,8 @@ public:
 	const Common::UString &getName() const;
 	WeaponWield getWeaponWield() const;
 	float getMaxAttackRange() const;
+	int getNumDice() const;
+	int getDieToRoll() const;
 
 	bool isSlotEquipable(InventorySlot slot) const;
 	bool isRangedWeapon() const;
@@ -58,6 +60,8 @@ private:
 	WeaponWield _weaponWield;
 	bool _rangedWeapon;
 	float _maxAttackRange;
+	int _numDice;
+	int _dieToRoll;
 
 	int _modelVariation;
 	int _bodyVariation;
