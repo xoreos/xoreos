@@ -67,6 +67,8 @@ public:
 
 	// Basic properties
 
+	/** Return the object's template resource name. */
+	const Common::UString &getTemplateResRef() const;
 	/** Return the object's name. */
 	const Common::UString &getName() const;
 	/** Return the object's description. */
@@ -174,6 +176,7 @@ public:
 	virtual void getTooltipAnchor(float &x, float &y, float &z) const;
 
 protected:
+	Common::UString _templateResRef;
 	ObjectType _type; ///< The object's type.
 
 	std::list<uint32> _ids; ///< The object's model IDs.

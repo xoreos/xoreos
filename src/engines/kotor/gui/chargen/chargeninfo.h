@@ -45,6 +45,9 @@ public:
 	static CharacterGenerationInfo *createRandomFemaleScoundrel();
 
 	Common::UString getPortrait() const;
+
+private:
+	void loadAbilities();
 };
 
 } // End of namespace KotOR

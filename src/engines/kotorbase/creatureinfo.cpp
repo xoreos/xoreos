@@ -88,6 +88,7 @@ CreatureInfo::CreatureInfo(const CharacterGenerationInfo &info) {
 	_levels.resize(1);
 	_levels[0].characterClass = info.getClass();
 	_levels[0].level = 1;
+	_abilities = info.getAbilities();
 }
 
 CreatureInfo &CreatureInfo::operator=(const CreatureInfo &other) {

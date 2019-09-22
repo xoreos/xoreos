@@ -37,11 +37,11 @@ namespace Engines {
 namespace KotORBase {
 
 SoundObject::SoundObject(const Aurora::GFF3Struct &sound) {
-	Common::UString temp = sound.getString("TemplateResRef");
+	_templateResRef = sound.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> uts;
-	if (!temp.empty())
-		uts.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTS, MKTAG('U', 'T', 'S', ' ')));
+	if (!_templateResRef.empty())
+		uts.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTS, MKTAG('U', 'T', 'S', ' ')));
 
 	if (!uts)
 		throw Common::Exception("Sound \"%s\" has no blueprint", _tag.c_str());

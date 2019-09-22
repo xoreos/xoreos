@@ -28,6 +28,7 @@
 #include "src/common/ustring.h"
 
 #include "src/engines/kotorbase/types.h"
+#include "src/engines/kotorbase/creatureinfo.h"
 
 namespace Engines {
 
@@ -52,6 +53,8 @@ public:
 	Class getClass() const;
 	/** Get the gender of the character. */
 	Gender getGender() const;
+	/** Get abilities of the character. */
+	const CreatureInfo::Abilities &getAbilities() const;
 
 	/** Set the name of the Character. */
 	void setName(const Common::UString &name);
@@ -65,6 +68,7 @@ protected:
 	Gender _gender;
 	Skin _skin;
 	uint8 _face;
+	CreatureInfo::Abilities _abilities;
 
 	Common::UString _name;
 

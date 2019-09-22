@@ -26,6 +26,10 @@
 #include "src/common/random.h"
 
 #include "src/aurora/ltrfile.h"
+#include "src/aurora/2dareg.h"
+#include "src/aurora/2dafile.h"
+
+#include "src/engines/kotorbase/types.h"
 
 #include "src/engines/kotor2/gui/chargen/chargeninfo.h"
 
@@ -59,6 +63,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleConsular() {
 
 	info->_name = humanMale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
 
+	info->loadAbilities();
+
 	return info;
 }
 
@@ -80,6 +86,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleConsular() {
 	Aurora::LTRFile humanLast("humanl");
 
 	info->_name = humanFemale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
+
+	info->loadAbilities();
 
 	return info;
 }
@@ -103,6 +111,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleGuardian() {
 
 	info->_name = humanMale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
 
+	info->loadAbilities();
+
 	return info;
 }
 
@@ -124,6 +134,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleGuardian() {
 	Aurora::LTRFile humanLast("humanl");
 
 	info->_name = humanFemale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
+
+	info->loadAbilities();
 
 	return info;
 }
@@ -147,6 +159,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomMaleSentinel() {
 
 	info->_name = humanMale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
 
+	info->loadAbilities();
+
 	return info;
 }
 
@@ -168,6 +182,8 @@ CharacterGenerationInfo *CharacterGenerationInfo::createRandomFemaleSentinel() {
 	Aurora::LTRFile humanLast("humanl");
 
 	info->_name = humanFemale.generateRandomName(8) + " " + humanLast.generateRandomName(8);
+
+	info->loadAbilities();
 
 	return info;
 }
@@ -265,6 +281,34 @@ Common::UString CharacterGenerationInfo::getPortrait() const {
 	}
 
 	return portrait;
+}
+
+void CharacterGenerationInfo::loadAbilities() {
+	const Aurora::TwoDAFile &classes = TwoDAReg.get2DA("classes");
+	Common::UString label;
+
+	switch (_class) {
+		case KotORBase::kClassJediGuardian:
+			label = "JediGuardian";
+			break;
+		case KotORBase::kClassJediConsular:
+			label = "JediConsular";
+			break;
+		case KotORBase::kClassJediSentinel:
+			label = "JediSentinel";
+			break;
+		default:
+			return;
+	}
+
+	const Aurora::TwoDARow &row = classes.getRow("label", label);
+
+	_abilities.strength = row.getInt("str");
+	_abilities.dexterity = row.getInt("dex");
+	_abilities.constitution = row.getInt("con");
+	_abilities.wisdom = row.getInt("wis");
+	_abilities.intelligence = row.getInt("int");
+	_abilities.charisma = row.getInt("cha");
 }
 
 } // End of namespace KotOR2

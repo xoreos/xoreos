@@ -48,6 +48,10 @@ Gender CharacterGenerationInfo::getGender() const {
 	return _gender;
 }
 
+const CreatureInfo::Abilities &CharacterGenerationInfo::getAbilities() const {
+	return _abilities;
+}
+
 void CharacterGenerationInfo::setName(const Common::UString &name) {
 	_name = name;
 }

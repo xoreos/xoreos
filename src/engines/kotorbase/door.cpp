@@ -57,11 +57,11 @@ Door::Door(Module &module, const Aurora::GFF3Struct &door) :
 }
 
 void Door::load(const Aurora::GFF3Struct &door) {
-	Common::UString temp = door.getString("TemplateResRef");
+	_templateResRef = door.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> utd;
-	if (!temp.empty())
-		utd.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' ')));
+	if (!_templateResRef.empty())
+		utd.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' ')));
 
 	Situated::load(door, utd ? &utd->getTopLevel() : 0);
 
