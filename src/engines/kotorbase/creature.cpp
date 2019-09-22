@@ -560,6 +560,9 @@ void Creature::initAsPC(const CharacterGenerationInfo &chargenInfo, const Creatu
 	_skin = chargenInfo.getSkin();
 	_face = chargenInfo.getFace();
 
+	_minOneHitPoint = true;
+	_currentHitPoints = _maxHitPoints = 1;
+
 	reloadEquipment();
 	loadEquippedModel();
 }
@@ -567,8 +570,12 @@ void Creature::initAsPC(const CharacterGenerationInfo &chargenInfo, const Creatu
 const Common::UString &Creature::getCursor() const {
 	static Common::UString talkCursor("talk");
 	static Common::UString killCursor("kill");
+	static Common::UString useCursor("use");
 
-	return isEnemy() ? killCursor : talkCursor;
+	if (!isEnemy())
+		return talkCursor;
+
+	return isDead() ? useCursor : killCursor;
 }
 
 void Creature::highlight(bool enabled) {
@@ -874,6 +881,19 @@ void Creature::executeAttack(Object *target) {
 	debugC(Common::kDebugEngineLogic, 1,
 	       "Object \"%s\" was hit by \"%s\", has %d/%d HP",
 	       target->getTag().c_str(), _tag.c_str(), hp, target->getMaxHitPoints());
+}
+
+bool Creature::isDead() const {
+	return _dead;
+}
+
+void Creature::handleDeath() {
+	if (_currentHitPoints <= 0) {
+		_dead = true;
+		_model->clearDefaultAnimations();
+		_model->addDefaultAnimation("dead", 100);
+		_model->playAnimation("die", false);
+	}
 }
 
 void Creature::handleObjectSeen(Object &object) {

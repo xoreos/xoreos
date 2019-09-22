@@ -176,6 +176,7 @@ public:
 	Object *getActiveObject();
 
 	void processCreaturesActions(float dt);
+	void handleCreaturesDeath();
 
 protected:
 	void notifyCameraMoved();

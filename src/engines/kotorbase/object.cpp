@@ -268,6 +268,10 @@ void Object::getTooltipAnchor(float &x, float &y, float &z) const {
 	getPosition(x, y, z);
 }
 
+bool Object::isDead() const {
+	return false;
+}
+
 } // End of namespace KotORBase
 
 } // End of namespace Engines
