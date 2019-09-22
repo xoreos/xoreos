@@ -276,6 +276,7 @@ private:
 	void loadProperties(const Aurora::GFF3Struct &gff);
 	void loadPortrait(const Aurora::GFF3Struct &gff);
 	void loadEquipment(const Aurora::GFF3Struct &gff);
+	void loadAbilities(const Aurora::GFF3Struct &gff);
 
 	void getModelState(uint32 &state, uint8 &textureVariation);
 	void getPartModels(PartModels &parts, uint32 state, uint8 textureVariation);

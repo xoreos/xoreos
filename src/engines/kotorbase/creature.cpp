@@ -214,11 +214,11 @@ void Creature::setOrientation(float x, float y, float z, float angle) {
 }
 
 void Creature::load(const Aurora::GFF3Struct &creature) {
-	Common::UString temp = creature.getString("TemplateResRef");
+	_templateResRef = creature.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> utc;
-	if (!temp.empty())
-		utc.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' ')));
+	if (!_templateResRef.empty())
+		utc.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' ')));
 
 	load(creature, utc ? &utc->getTopLevel() : 0);
 
@@ -284,6 +284,9 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	// Equipment
 	loadEquipment(gff);
 
+	// Abilities
+	loadAbilities(gff);
+
 	// Appearance
 	_appearance = gff.getUint("Appearance_Type", _appearance);
 
@@ -344,6 +347,21 @@ void Creature::loadEquipment(const Aurora::GFF3Struct &gff) {
 		Common::UString tag = i->getString("EquippedRes");
 		equipItem(tag, slot, false);
 	}
+}
+
+void Creature::loadAbilities(const Aurora::GFF3Struct &gff) {
+	if (gff.hasField("Str"))
+		_info.setAbilityScore(kAbilityStrength, gff.getUint("Str"));
+	if (gff.hasField("Dex"))
+		_info.setAbilityScore(kAbilityDexterity, gff.getUint("Dex"));
+	if (gff.hasField("Con"))
+		_info.setAbilityScore(kAbilityConstitution, gff.getUint("Con"));
+	if (gff.hasField("Int"))
+		_info.setAbilityScore(kAbilityIntelligence, gff.getUint("Int"));
+	if (gff.hasField("Wis"))
+		_info.setAbilityScore(kAbilityWisdom, gff.getUint("Wis"));
+	if (gff.hasField("Cha"))
+		_info.setAbilityScore(kAbilityCharisma, gff.getUint("Cha"));
 }
 
 void Creature::getModelState(uint32 &state, uint8 &textureVariation) {

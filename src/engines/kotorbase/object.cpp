@@ -88,6 +88,10 @@ void Object::notifyNotSeen() {
 	hide();
 }
 
+const Common::UString &Object::getTemplateResRef() const {
+	return _templateResRef;
+}
+
 const Common::UString &Object::getName() const {
 	return _name;
 }

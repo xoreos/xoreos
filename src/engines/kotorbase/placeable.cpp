@@ -53,11 +53,11 @@ Placeable::Placeable(const Aurora::GFF3Struct &placeable) :
 }
 
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
-	Common::UString temp = placeable.getString("TemplateResRef");
+	_templateResRef = placeable.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> utp;
-	if (!temp.empty())
-		utp.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
+	if (!_templateResRef.empty())
+		utp.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 
 	Situated::load(placeable, utp ? &utp->getTopLevel() : 0);
 

@@ -56,16 +56,16 @@ bool Trigger::isVisible() const {
 }
 
 void Trigger::load(const Aurora::GFF3Struct &gff) {
-	Common::UString temp = gff.getString("TemplateResRef");
+	_templateResRef = gff.getString("TemplateResRef");
 
 	Common::ScopedPtr<Aurora::GFF3File> utt;
-	if (!temp.empty())
-		utt.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTT, MKTAG('U', 'T', 'T', ' ')));
+	if (!_templateResRef.empty())
+		utt.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTT, MKTAG('U', 'T', 'T', ' ')));
 
 	loadBlueprint(utt->getTopLevel());
 
 	if (!utt)
-		warning("Trigger \"%s\" has no blueprint", temp.c_str());
+		warning("Trigger \"%s\" has no blueprint", _templateResRef.c_str());
 
 	float x, y, z;
 	x = (float)gff.getDouble("XPosition");
