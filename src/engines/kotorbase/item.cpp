@@ -52,6 +52,8 @@ void Item::load(const Aurora::GFF3Struct &gff) {
 	_weaponWield = static_cast<WeaponWield>(twoDA.getInt("weaponwield"));
 	_rangedWeapon = twoDA.getInt("rangedweapon");
 	_maxAttackRange = twoDA.getFloat("maxattackrange");
+	_numDice = twoDA.getInt("numdice");
+	_dieToRoll = twoDA.getInt("dietoroll");
 
 	// Model, body and texture variations
 	_modelVariation = gff.getSint("ModelVariation");
@@ -69,6 +71,14 @@ WeaponWield Item::getWeaponWield() const {
 
 float Item::getMaxAttackRange() const {
 	return _maxAttackRange;
+}
+
+int Item::getNumDice() const {
+	return _numDice;
+}
+
+int Item::getDieToRoll() const {
+	return _dieToRoll;
 }
 
 bool Item::isSlotEquipable(InventorySlot slot) const {
