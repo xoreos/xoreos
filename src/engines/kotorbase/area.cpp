@@ -824,8 +824,8 @@ void Area::processCreaturesActions(float dt) {
 
 void Area::handleCreaturesDeath() {
 	for (auto &c : _creatures) {
-		if (!c->isDead())
-			c->handleDeath();
+		if (c->handleDeath())
+			_module->signalUserDefinedEvent(c, 1007);
 	}
 }
 

@@ -966,6 +966,10 @@ int Module::getRunScriptVar() const {
 	return _runScriptVar;
 }
 
+int Module::getUserDefinedEventNumber() const {
+	return _userDefinedEventNumber;
+}
+
 void Module::setRunScriptVar(int runScriptVar) {
 	_runScriptVar = runScriptVar;
 }
@@ -984,6 +988,11 @@ void Module::delayScript(const Common::UString &script,
 	action.timestamp = EventMan.getTimestamp() + delay;
 
 	_delayedActions.insert(action);
+}
+
+void Module::signalUserDefinedEvent(Object *owner, int number) {
+	_userDefinedEventNumber = number;
+	owner->runScript(kScriptUserdefined, owner);
 }
 
 Common::UString Module::getName(const Common::UString &module, const Common::UString &moduleDirOptionName) {
