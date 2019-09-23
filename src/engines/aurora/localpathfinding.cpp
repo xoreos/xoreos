@@ -236,10 +236,10 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 	glm::vec2 rBInReal = fromVirtualPlan(glm::vec2(_xMin + _cellSize * _gridWidth, _yMin));
 	_trueMin = glm::vec3(MIN(MIN(MIN(minInReal[0], maxInReal[0]), lTInReal[0]), rBInReal[0]),
 	        MIN(MIN(MIN(minInReal[1], maxInReal[1]), lTInReal[1]), rBInReal[1]),
-	        walkmeshHeight - 0.1f);
+	        walkmeshHeight - 0.8f);
 	_trueMax = glm::vec3(MAX(MAX(MAX(minInReal[0], maxInReal[0]), lTInReal[0]), rBInReal[0]),
 	        MAX(MAX(MAX(minInReal[1], maxInReal[1]), lTInReal[1]), rBInReal[1]),
-	        walkmeshHeight + 0.2f);
+	        walkmeshHeight + 0.8f);
 	for (uint8 c = 0; c < 2; ++c) {
 		_trueMin[c] -= halfWidth;
 		_trueMax[c] += halfWidth;
@@ -256,7 +256,11 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 		if (_globalPathfinding->faceWalkable(face))
 			continue;
 
-		_globalPathfinding->getVertices(face, vertices);
+		_globalPathfinding->getVertices(face, vertices, false);
+		if (!Common::intersectBoxTriangle3D(_trueMin, _trueMax,
+		                                    vertices[0], vertices[1], vertices[2]))
+			continue;
+
 		// Translate to virtual plan.
 		for (auto &v : vertices) {
 			v = toVirtualPlan(v);
