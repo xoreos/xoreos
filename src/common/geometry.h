@@ -25,12 +25,16 @@
 #ifndef COMMON_GEOMETRY_H
 #define COMMON_GEOMETRY_H
 
+#include <vector>
+
 #include "external/glm/vec2.hpp"
 #include "external/glm/vec3.hpp"
 #include "external/glm/geometric.hpp"
+#include "external/glm/gtx/normal.hpp"
 
 #include "src/common/types.h"
 #include "src/common/maths.h"
+#include "src/common/util.h"
 
 namespace Common {
 
@@ -192,6 +196,65 @@ static inline bool intersectBoxSegment2D(const glm::vec2 &minBox, const glm::vec
 		return true;
 
 	return false;
+}
+
+static inline bool intersectBoxTriangle3D(const glm::vec3 &min, const glm::vec3 &max,
+                                          const glm::vec3 &vertA, const glm::vec3 &vertB,
+                                          const glm::vec3 &vertC) {
+	// Use the separating axis theorem.
+	float triangleMin;
+	float triangleMax;
+	float boxMin, boxMax;
+
+	auto projectOnAxis = [] (std::vector<glm::vec3> &points, const glm::vec3 &axis,
+	                         float &minV, float &maxV) -> void {
+		minV = FLT_MAX;
+		maxV = -FLT_MAX;
+		for (auto p = points.begin(); p != points.end(); ++p) {
+			const float val = glm::dot(*p, axis);
+			if (val < minV)
+				minV = val;
+			if (val > maxV)
+				maxV = val;
+		}
+	};
+
+	// Test the box normals (x, y and z-axis).
+	std::vector<glm::vec3> boxNormals = {glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f),
+	                                     glm::vec3(0.f, 0.f, 1.f)};
+	std::vector<glm::vec3> triangle = {vertA, vertB, vertC};
+	std::vector<glm::vec3> box = {min, max};
+
+	for (uint8 i = 0; i < 3; ++i) {
+		projectOnAxis(triangle, boxNormals[i], triangleMin, triangleMax);
+		if (triangleMax < min[i] || triangleMin > max[i])
+			return false;
+	}
+
+	// Test the triangle normal
+	const glm::vec3 triangleNormal = glm::triangleNormal(vertA, vertB, vertC);
+	const float triangleOffset = glm::dot(triangleNormal, vertA);
+
+	projectOnAxis(box, triangleNormal, boxMin, boxMax);
+	if (boxMax < triangleOffset || boxMin > triangleOffset)
+		return false;
+
+	// Test the nine edge cross-products.
+	std::vector<glm::vec3> triangleEdges = {vertA - vertB, vertB - vertC, vertC - vertA};
+
+	for (uint8 i = 0; i < 3; ++i) {
+		for (uint8 j = 0; j < 3; ++j)	{
+			// The box normals are the same as it's edge tangents.
+			const glm::vec3 axis = glm::cross(triangleEdges[i], boxNormals[j]);
+			projectOnAxis(box, axis, boxMin, boxMax);
+			projectOnAxis(triangle, axis, triangleMin, triangleMax);
+			if (boxMax < triangleMin || boxMin > triangleMax)
+				return false;
+		}
+	}
+
+	// No separating axis found.
+	return true;
 }
 
 static inline bool intersectTrianglePoint2D(const glm::vec2 &point,

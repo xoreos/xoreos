@@ -65,6 +65,18 @@ GTEST_TEST(Geometry, intersectBoxSegment2D) {
 	ASSERT_TRUE(Common::intersectBoxSegment2D(pA, pB, pB, pD));
 }
 
+GTEST_TEST(Geometry, intersectBoxTriangle3D) {
+	glm::vec3 vA(12.f, 9.f, 9.f);
+	glm::vec3 vB(9.f, 12.f, 9.f);
+	glm::vec3 vC(19.f, 19.f,20.f);
+	glm::vec3 vD(0.f, 0.f, 0.f);
+	glm::vec3 min(-10.f, -10.f, -10.f);
+	glm::vec3 max(10.f, 10.f, 10.f);
+	ASSERT_FALSE(Common::intersectBoxTriangle3D(min, max, vA, vB, vC));
+	ASSERT_TRUE(Common::intersectBoxTriangle3D(min, max, vA, vD, vC));
+	ASSERT_TRUE(Common::intersectBoxTriangle3D(min, max, max, max, vC));
+}
+
 GTEST_TEST(Geometry, intersectSegmentPoint2D) {
 	ASSERT_TRUE(Common::intersectSegmentPoint2D(pA, pD, pB));
 	ASSERT_FALSE(Common::intersectSegmentPoint2D(pC, pB, pA));
