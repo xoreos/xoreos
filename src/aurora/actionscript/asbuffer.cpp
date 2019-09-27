@@ -703,7 +703,14 @@ void ASBuffer::actionPush(AVM &avm) {
 				break;
 			}
 			case 6: {
-				double doubleValue = _script->readIEEEDoubleLE();
+				// Double values are weird encoded.
+				uint32 value[2];
+				value[1] = _script->readUint32LE();
+				value[0] = _script->readUint32LE();
+
+				double doubleValue;
+				memcpy(&doubleValue, value, 8);
+
 				_stack.push(doubleValue);
 				debugC(kDebugActionScript, 1, "actionPush %f", doubleValue);
 				length -= 8;
