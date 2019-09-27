@@ -89,13 +89,21 @@ void Object::setMember(const Common::UString &id, Function *function) {
 }
 
 Variable Object::call(const Common::UString &function, AVM &avm, const std::vector<Variable> &arguments) {
-	if (!hasMember(function))
-		throw Common::Exception("object has no member %s", function.c_str());
-
-	if (!getMember(function).isFunction())
-		throw Common::Exception("%s is no method", function.c_str());
-
 	Function *f = reinterpret_cast<Function *>(getMember(function).asObject().get());
+
+	if (!function.empty()) {
+		if (!hasMember(function))
+			throw Common::Exception("object has no member %s", function.c_str());
+
+		if (!getMember(function).isFunction())
+			throw Common::Exception("%s is no method", function.c_str());
+
+		f = reinterpret_cast<Function *>(getMember(function).asObject().get());
+	} else {
+		f = dynamic_cast<Function *>(this);
+		if (!f)
+			throw Common::Exception("Object is no function");
+	}
 
 	byte counter = 1;
 	if (f->getPreloadRootFlag()) {
