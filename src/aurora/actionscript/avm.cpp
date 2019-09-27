@@ -137,6 +137,17 @@ Variable AVM::getVariable(const Common::UString &name) {
 	}
 }
 
+Variable AVM::callFunction(const Common::UString &name, const std::vector<Variable> &arguments) {
+	std::map<Common::UString, StaticFunction>::const_iterator iter = _functions.find(name);
+
+	if (iter == _functions.end()) {
+		warning("Function %s does not exist", name.c_str());
+		return Variable();
+	}
+
+	return (*iter).second(arguments);
+}
+
 Variable AVM::createNewObject(const Common::UString &name, std::vector<Variable> arguments) {
 	Variable variable = getVariable(name);
 

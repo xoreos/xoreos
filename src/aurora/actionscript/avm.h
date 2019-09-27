@@ -46,6 +46,9 @@ typedef boost::function<Variable(const Common::UString &, const Common::UString 
 /** Function for registering classes for widgets. */
 typedef boost::function<void (const Common::UString &, ObjectPtr)> RegisterClassFunction;
 
+/** Prototype for ActionScript static functions. */
+typedef boost::function<Variable(std::vector<Variable>)> StaticFunction;
+
 /** The Action script virtual machine (AVM). */
 class AVM {
 public:
@@ -80,6 +83,9 @@ public:
 	void setVariable(const Common::UString &name, Variable value);
 	Variable getVariable(const Common::UString &name);
 
+	/** Call a specific static function. */
+	Variable callFunction(const Common::UString &name, const std::vector<Variable> &arguments);
+
 	Variable createNewObject(const Common::UString &name,
 	                         std::vector<Variable> arguments = std::vector<Variable>());
 
@@ -99,6 +105,7 @@ private:
 
 	std::vector<std::stack<Variable>> _registers;
 	std::map<Common::UString, Variable> _variables;
+	std::map<Common::UString, StaticFunction> _functions;
 
 	bool _stopFlag;
 	Variable _returnValue;
