@@ -27,7 +27,7 @@
 
 #include <stack>
 
-#include <boost/function.hpp>
+#include <functional>
 
 #include "src/common/ustring.h"
 
@@ -41,13 +41,13 @@ namespace ActionScript {
 class Stage;
 
 /** Function for receiving fscommand(). */
-typedef boost::function<Variable(const Common::UString &, const Common::UString &)> FSCommandFunction;
+typedef std::function<Variable(const Common::UString &, const Common::UString &)> FSCommandFunction;
 
 /** Function for registering classes for widgets. */
-typedef boost::function<void (const Common::UString &, ObjectPtr)> RegisterClassFunction;
+typedef std::function<void (const Common::UString &, ObjectPtr)> RegisterClassFunction;
 
 /** Prototype for ActionScript static functions. */
-typedef boost::function<Variable(std::vector<Variable>)> StaticFunction;
+typedef std::function<Variable(std::vector<Variable>)> StaticFunction;
 
 /** The Action script virtual machine (AVM). */
 class AVM {

@@ -50,7 +50,7 @@ AVM::AVM() {
 	_variables["_global"] = ObjectPtr(new Object());
 	_variables["_root"] = ObjectPtr(new Object());
 	_variables["Object"] = ObjectPtr(new DummyFunction());
-	_variables["Object"].asObject()->setMember("registerClass", new NativeFunction(boost::bind(&AVM::registerClass, this, _1), false, false, false, false));
+	_variables["Object"].asObject()->setMember("registerClass", new NativeFunction(std::bind(&AVM::registerClass, this, std::placeholders::_1), false, false, false, false));
 	_variables["Object"].asObject()->setMember("prototype", ObjectPtr(new Object()));
 	_variables["Array"] = ObjectPtr(new DummyFunction());
 	_variables["Array"].asObject()->setMember("prototype", ObjectPtr(new Array()));
@@ -65,14 +65,14 @@ AVM::AVM() {
 	_variables["Stage"] = ObjectPtr(_stage);
 
 
-	_variables["_root"].asObject()->setMember("gotoAndPlay", new NativeFunction(boost::bind(&AVM::gotoAndPlay, this, _1), false, false, false, false));
+	_variables["_root"].asObject()->setMember("gotoAndPlay", new NativeFunction(std::bind(&AVM::gotoAndPlay, this, std::placeholders::_1), false, false, false, false));
 
 	_variables["flash"] = ObjectPtr(new Object());
 	_variables["flash"].asObject()->setMember("external", ObjectPtr(new Object()));
 	_variables["flash"].asObject()->getMember("external").asObject()->setMember("ExternalInterface", ObjectPtr(new Object()));
 	_variables["flash"].asObject()
 		->getMember("external").asObject()->getMember("ExternalInterface").asObject()
-		->setMember("call", new NativeFunction(boost::bind(&AVM::call, this, _1), false, false, false, false));
+		->setMember("call", new NativeFunction(std::bind(&AVM::call, this, std::placeholders::_1), false, false, false, false));
 }
 
 void AVM::setStageSize(unsigned int width, unsigned int height) {
