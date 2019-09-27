@@ -51,6 +51,7 @@ public:
 	Variable(const char *value);
 	Variable(Object *value);
 	Variable(double value);
+	Variable(int value);
 	Variable(unsigned int value);
 	Variable(unsigned long value);
 	Variable(bool value);
