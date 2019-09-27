@@ -57,6 +57,10 @@ Variable::Variable(double value) : _type(kTypeNumber) {
 	_value.number = value;
 }
 
+Variable::Variable(int value) : _type(kTypeNumber) {
+	_value.number = value;
+}
+
 Variable::Variable(unsigned int value) : _type(kTypeNumber) {
 	_value.number = value;
 }
