@@ -128,7 +128,7 @@ void ASBuffer::execute(AVM &avm) {
 			case kActionSetVariable:     actionSetVariable(avm); break;
 			case kActionTrace:           actionTrace(); break;
 			case kActionDefineLocal:     actionDefineLocal(avm); break;
-			case kActionCallFunction:    actionCallFunction(); break;
+			case kActionCallFunction:    actionCallFunction(avm); break;
 			case kActionReturn:          actionReturn(avm); break;
 			case kActionNewObject:       actionNewObject(avm); break;
 			case kActionInitArray:       actionInitArray(); break;
@@ -295,8 +295,26 @@ void ASBuffer::actionDefineLocal(AVM &avm) {
 	debugC(kDebugActionScript, 1, "actionDefineLocal");
 }
 
-void ASBuffer::actionCallFunction() {
-	// TODO
+void ASBuffer::actionCallFunction(AVM &avm) {
+	const Variable name = _stack.top();
+	_stack.pop();
+	const Variable numArgs = _stack.top();
+	_stack.pop();
+
+	std::vector<Variable> arguments;
+	arguments.resize(numArgs.asNumber());
+	for (int i = 0; i < numArgs.asNumber(); ++i) {
+		arguments[i] = _stack.top();
+		_stack.pop();
+	}
+
+	if (!name.isString())
+		throw Common::Exception("actionCallFunction: name is not a string!");
+
+	if (!numArgs.isNumber())
+		throw Common::Exception("actionCallFunction: numArgs is not a numper!");
+
+	_stack.push(avm.callFunction(name.asString(), arguments));
 
 	debugC(kDebugActionScript, 1, "actionCallFunction");
 }

@@ -66,7 +66,7 @@ private:
 	void actionSetVariable(AVM &avm);
 	void actionTrace();
 	void actionDefineLocal(AVM &avm);
-	void actionCallFunction();
+	void actionCallFunction(AVM &avm);
 	void actionReturn(AVM &avm);
 	void actionNewObject(AVM &avm);
 	void actionInitArray();
