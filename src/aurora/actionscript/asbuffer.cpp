@@ -717,9 +717,9 @@ void ASBuffer::actionPush(AVM &avm) {
 				break;
 			}
 			case 7: {
-				unsigned int uintValue = _script->readUint32LE();
-				_stack.push(uintValue);
-				debugC(kDebugActionScript, 1, "actionPush %u", uintValue);
+				int intValue = _script->readSint32LE();
+				_stack.push(intValue);
+				debugC(kDebugActionScript, 1, "actionPush %d", intValue);
 				length -= 4;
 				break;
 			}
