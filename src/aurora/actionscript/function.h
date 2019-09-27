@@ -26,8 +26,7 @@
 #define AURORA_ACTIONSCRIPT_FUNCTION_H
 
 #include <vector>
-
-#include <boost/function.hpp>
+#include <functional>
 
 #include "src/aurora/actionscript/variable.h"
 #include "src/aurora/actionscript/asbuffer.h"
@@ -102,7 +101,7 @@ public:
 	Variable operator()(AVM &avm);
 
 private:
-	boost::function<Variable(AVM &)> _function;
+	std::function<Variable(AVM &)> _function;
 };
 
 class DummyFunction : public Function {
