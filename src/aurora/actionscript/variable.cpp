@@ -222,6 +222,7 @@ Variable Variable::operator==(Variable v) const {
 
 	switch (getType()) {
 		case kTypeNull:
+		case kTypeUndefined:
 			return true;
 		case kTypeNumber:
 			return v._value.number == _value.number;
