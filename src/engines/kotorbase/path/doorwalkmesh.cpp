@@ -35,14 +35,14 @@ DoorWalkmesh::DoorWalkmesh(Door *door) :
 		_door(door) {
 }
 
-bool DoorWalkmesh::in(glm::vec2 &minBox, glm::vec2 &maxBox) const {
+bool DoorWalkmesh::in(const glm::vec2 &minBox, const glm::vec2 &maxBox) const {
 	if (_door->isOpen())
 		return false;
 
 	return ObjectWalkmesh::in(minBox, maxBox);
 }
 
-bool DoorWalkmesh::in(glm::vec2 &point) const {
+bool DoorWalkmesh::in(const glm::vec2 &point) const {
 	if (_door->isOpen())
 		return false;
 
