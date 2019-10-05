@@ -185,6 +185,7 @@ protected:
 	void getMaxHitPoints(Aurora::NWScript::FunctionContext &ctx);
 	void getItemInSlot(Aurora::NWScript::FunctionContext &ctx);
 	void getNearestCreature(Aurora::NWScript::FunctionContext &ctx);
+	void getTag(Aurora::NWScript::FunctionContext &ctx);
 
 	void getArea    (Aurora::NWScript::FunctionContext &ctx);
 	void getLocation(Aurora::NWScript::FunctionContext &ctx);

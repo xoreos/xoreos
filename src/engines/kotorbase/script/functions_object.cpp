@@ -232,6 +232,14 @@ void Functions::getNearestCreature(Aurora::NWScript::FunctionContext &ctx) {
 	ctx.getReturn() = _game->getModule().getCurrentArea()->getNearestCreature(target, nth, criteria);
 }
 
+void Functions::getTag(Aurora::NWScript::FunctionContext &ctx) {
+	Object *object = ObjectContainer::toObject(ctx.getParams()[0].getObject());
+	if (!object)
+		throw Common::Exception("Functions::getTag() parameter is not an object");
+
+	ctx.getReturn() = object->getTag();
+}
+
 void Functions::destroyObject(Aurora::NWScript::FunctionContext &ctx) {
 	Object *object = ObjectContainer::toObject(ctx.getParams()[0].getObject());
 	if (object)
