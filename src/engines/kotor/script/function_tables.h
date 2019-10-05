@@ -286,7 +286,7 @@ const Functions::FunctionPointer Functions::kFunctionPointers[] = {
 	{ 165, "EffectMovementSpeedIncrease"         , 0                                                },
 	{ 166, "GetHitDice"                          , 0                                                },
 	{ 167, "ActionForceFollowObject"             , 0                                                },
-	{ 168, "GetTag"                              , 0                                                },
+	{ 168, "GetTag"                              , &Functions::getTag                               },
 	{ 169, "ResistForce"                         , 0                                                },
 	{ 170, "GetEffectType"                       , 0                                                },
 	{ 171, "EffectAreaOfEffect"                  , 0                                                },
