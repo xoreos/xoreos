@@ -260,7 +260,7 @@ void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct
 
 void Creature::loadProperties(const Aurora::GFF3Struct &gff, bool clearScripts) {
 	// Tag
-	_tag = gff.getString("Tag", _tag);
+	_tag = gff.getString("Tag", _tag).toLower();
 
 	// Name
 
