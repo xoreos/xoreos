@@ -60,6 +60,10 @@ std::vector<int> PartyController::getPartyMembers() const {
 	return partyMembers;
 }
 
+int PartyController::getPartyLeaderID() const {
+	return _party[0].first;
+}
+
 bool PartyController::isObjectPartyMember(Creature *object) const {
 	for (auto partyMember : _party) {
 		if (partyMember.second == object)

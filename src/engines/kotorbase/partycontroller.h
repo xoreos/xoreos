@@ -53,6 +53,8 @@ public:
 	const std::pair<int, Creature *> &getPartyMemberByIndex(int index) const;
 	/** Get a list of the party members. */
 	std::vector<int> getPartyMembers() const;
+	/** Get the current party leader id. */
+	int getPartyLeaderID() const;
 
 	/** Is a specified creature a party member? */
 	bool isObjectPartyMember(Creature *creature) const;
