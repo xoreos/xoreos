@@ -61,6 +61,8 @@ public:
 	void clearCurrentParty();
 	/** Add a creature to the party. */
 	void addPartyMember(int npc, Creature *creature);
+	/** Remove a member from the party. */
+	void removePartyMember(int npc);
 	/** Set which party member should be the controlled character. */
 	void setPartyLeader(int npc);
 	/** Set which party member should be the controlled character. */

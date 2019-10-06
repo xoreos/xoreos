@@ -88,6 +88,14 @@ void PartyController::addPartyMember(int npc, Creature *creature) {
 	}
 }
 
+void PartyController::removePartyMember(int npc) {
+	const auto memberFinder = [=](const std::pair<int, Creature *> &member){
+		return member.first == npc;
+	};
+
+	_party.erase(std::find_if(_party.begin(), _party.end(), memberFinder));
+}
+
 void PartyController::setPartyLeader(int npc) {
 	int index = -1;
 
