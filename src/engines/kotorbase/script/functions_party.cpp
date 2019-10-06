@@ -91,6 +91,11 @@ void Functions::addAvailableNPCByTemplate(Aurora::NWScript::FunctionContext &ctx
 	_game->getModule().addAvailableNPCByTemplate(slot, templ);
 }
 
+void Functions::switchPlayerCharacter(Aurora::NWScript::FunctionContext &ctx) {
+	const int slot = ctx.getParams()[0].getInt();
+	_game->getModule().switchPC(slot);
+}
+
 void Functions::setPartyLeader(Aurora::NWScript::FunctionContext &ctx) {
 	int npc = ctx.getParams()[0].getInt();
 	_game->getModule().setPartyLeader(npc);
