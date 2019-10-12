@@ -53,11 +53,7 @@ namespace NWScript {
 //       - Camera: "CameraModel", "CameraAngle", "CameraID", "CamVidEffect", "FadeType"
 // TODO: KotOR2:
 //       - "Emotion", "FacialAnim"
-//       - 2 scripts, with params:
-//         "Script{,2}"; "ActionParam[1-5]{,b}", "ActionParamStr{A,B}"
-//       - 2 active test scripts, with params and bool operators (not, and/or)
-//         "Active{,2}"; "Param[1-5]{,b}", "ParamStr{A,B}"
-//         "Not{,2}", "Logic"
+//       - "Logic"
 
 class DLGFile : boost::noncopyable {
 public:
@@ -110,17 +106,25 @@ public:
 	const Line *getOneLiner() const;
 
 private:
+	/** A script used by an entry or a link. */
+	struct Script {
+		Common::UString name;            ///< Name of the script.
+		std::vector<int> parameters;         ///< Parameter to call the script with.
+		Common::UString parameterString; ///< String parameter to call the script with.
+		bool negate;                     ///< Negation of the scripts result.
+	};
+
 	/** A link to a reply. */
 	struct Link {
-		uint32 index;           ///< Index into the entries/replies.
-		Common::UString active; ///< Script that determines if this link is active.
+		uint32 index;            ///< Index into the entries/replies.
+		Script active1, active2; ///< Scripts that determine if this link is active.
 	};
 
 	/** A dialog entry. */
 	struct Entry {
 		bool isPC; ///< Is this a PC or NPC line?
 
-		Common::UString script; ///< Script to run when speaking this entry.
+		Script script1, script2; ///< Scripts to run when speaking this entry.
 
 		Line line; ///< The line's contents.
 
@@ -133,8 +137,8 @@ private:
 	uint32 _delayEntry; ///< Number of seconds to wait before showing each entry.
 	uint32 _delayReply; ///< Number of seconds to wait before showing each reply.
 
-	Common::UString _convAbort; ///< Script to run when the conversation was aborted.
-	Common::UString _convEnd;   ///< Script to run when the conversation ended normally.
+	Script _convAbort; ///< Script to run when the conversation was aborted.
+	Script _convEnd;   ///< Script to run when the conversation ended normally.
 
 	bool _noZoomIn; ///< Starting the conversation does not zoom the camera onto the speaker.
 
@@ -162,7 +166,7 @@ private:
 	bool evaluateReplies(const std::vector<Link> &entries,
 	                     std::vector<const Line *> &active);
 
-	bool runScript(const Common::UString &script) const;
+	bool runScript(const Script &script) const;
 };
 
 } // End of namespace Aurora

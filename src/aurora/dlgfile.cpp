@@ -28,6 +28,7 @@
 
 #include <cassert>
 
+#include "src/common/strutil.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
@@ -91,7 +92,8 @@ void DLGFile::startConversation() {
 	if (evaluateEntries(_entriesStart, _currentEntry)) {
 		evaluateReplies(_currentEntry->replies, _currentReplies);
 
-		runScript(_currentEntry->script);
+		runScript(_currentEntry->script1);
+		runScript(_currentEntry->script2);
 	}
 
 	_ended = false;
@@ -114,7 +116,8 @@ void DLGFile::pickReply(uint32 id) {
 		return;
 
 	if ((id == kEndLine) || ((_currentEntry == _entriesNPC.end()))) {
-		runScript(_convEnd);
+		runScript(_currentEntry->script1);
+		runScript(_currentEntry->script2);
 
 		_ended = true;
 		return;
@@ -125,12 +128,14 @@ void DLGFile::pickReply(uint32 id) {
 	_currentEntry = _entriesPC.begin() + id;
 	_currentReplies.clear();
 
-	runScript(_currentEntry->script);
+	runScript(_currentEntry->script1);
+	runScript(_currentEntry->script2);
 
 	if (evaluateEntries(_currentEntry->replies, _currentEntry)) {
 		evaluateReplies(_currentEntry->replies, _currentReplies);
 
-		runScript(_currentEntry->script);
+		runScript(_currentEntry->script1);
+		runScript(_currentEntry->script2);
 	} else {
 		runScript(_convEnd);
 		_ended = true;
@@ -153,7 +158,7 @@ const DLGFile::Line *DLGFile::getOneLiner() const {
 	     e != _entriesStart.end(); ++e) {
 
 		std::vector<Entry>::const_iterator line = _entriesNPC.begin() + e->index;
-		if (!line->replies.empty() || !runScript(e->active))
+		if (!line->replies.empty() || !runScript(line->script1) || !runScript(line->script2))
 			continue;
 
 		return &line->line;
@@ -168,8 +173,10 @@ void DLGFile::load(const GFF3Struct &dlg) {
 	_delayEntry = dlg.getUint("DelayEntry", 0);
 	_delayReply = dlg.getUint("DelayReply", 0);
 
-	_convAbort = dlg.getString("EndConverAbort");
-	_convEnd   = dlg.getString("EndConversation");
+	_convAbort.name = dlg.getString("EndConverAbort");
+	_convAbort.negate = false;
+	_convEnd.name   = dlg.getString("EndConversation");
+	_convEnd.negate = false;
 
 	_noZoomIn = !dlg.getBool("PreventZoomIn", true);
 
@@ -218,7 +225,18 @@ void DLGFile::readLinks(const GFF3List &list, std::vector<Link> &links) {
 }
 
 void DLGFile::readEntry(const GFF3Struct &gff, Entry &entry) {
-	entry.script = gff.getString("Script");
+	entry.script1.name = gff.getString("Script");
+	entry.script2.name = gff.getString("Script2");
+
+	entry.script1.parameters.resize(5);
+	entry.script2.parameters.resize(5);
+	for (int i = 0; i < 5; ++i) {
+		entry.script1.parameters[i] = gff.getSint("ActionParam" + Common::composeString(i + 1));
+		entry.script2.parameters[i] = gff.getSint("ActionParam" + Common::composeString(i + 1) + "b");
+	}
+
+	entry.script1.parameterString = gff.getString("ActionParamStrA");
+	entry.script2.parameterString = gff.getString("ActionParamStrB");
 
 	entry.line.speaker = gff.getString("Speaker");
 
@@ -251,7 +269,21 @@ void DLGFile::readEntry(const GFF3Struct &gff, Entry &entry) {
 
 void DLGFile::readLink(const GFF3Struct &gff, Link &link) {
 	link.index  = gff.getUint("Index", 0xFFFFFFFF);
-	link.active = gff.getString("Active");
+	link.active1.name = gff.getString("Active");
+	link.active2.name = gff.getString("Active2");
+
+	link.active1.parameters.resize(5);
+	link.active2.parameters.resize(5);
+	for (int i = 0; i < 5; ++i) {
+		link.active1.parameters[i] = gff.getSint("Param" + Common::composeString(i + 1));
+		link.active2.parameters[i] = gff.getSint("Param" + Common::composeString(i + 1) + "b");
+	}
+
+	link.active1.parameterString = gff.getString("ParamStrA");
+	link.active2.parameterString = gff.getString("ParamStrB");
+
+	link.active1.negate = gff.getBool("Not", false);
+	link.active2.negate = gff.getBool("Not2", false);
 }
 
 bool DLGFile::evaluateEntries(const std::vector<Link> &entries,
@@ -260,7 +292,7 @@ bool DLGFile::evaluateEntries(const std::vector<Link> &entries,
 	active = _entriesNPC.end();
 
 	for (std::vector<Link>::const_iterator e = entries.begin(); e != entries.end(); ++e) {
-		if (!runScript(e->active))
+		if (!runScript(e->active1) || !runScript(e->active2))
 			continue;
 
 		assert(e->index < _entriesNPC.size());
@@ -279,7 +311,7 @@ bool DLGFile::evaluateReplies(const std::vector<Link> &entries,
 
 	active.reserve(entries.size());
 	for (std::vector<Link>::const_iterator e = entries.begin(); e != entries.end(); ++e) {
-		if (!runScript(e->active))
+		if (!runScript(e->active1) || !runScript(e->active2))
 			continue;
 
 		assert(e->index < _entriesPC.size());
@@ -290,23 +322,26 @@ bool DLGFile::evaluateReplies(const std::vector<Link> &entries,
 	return !active.empty();
 }
 
-bool DLGFile::runScript(const Common::UString &script) const {
-	if (script.empty())
+bool DLGFile::runScript(const Script &script) const {
+	if (script.name.empty())
 		return true;
 
 	try {
-		NWScript::NCSFile ncs(script);
+		NWScript::NCSFile ncs(script.name);
+
+		ncs.setParameters(script.parameters);
+		ncs.setParameterString(script.parameterString);
 
 		const NWScript::Variable &retVal = ncs.run(_owner);
 		if (retVal.getType() == NWScript::kTypeInt)
-			return retVal.getInt() != 0;
+			return script.negate ? (retVal.getInt() == 0) : (retVal.getInt() != 0);
 		if (retVal.getType() == NWScript::kTypeFloat)
-			return retVal.getFloat() != 0.0f;
+			return script.negate ? (retVal.getFloat() == 0.0f) : (retVal.getFloat() != 0.0f);
 
 		return true;
 
 	} catch (...) {
-		Common::exceptionDispatcherWarning("Failed running dialog script \"%s\"", script.c_str());
+		Common::exceptionDispatcherWarning("Failed running dialog script \"%s\"", script.name.c_str());
 		return false;
 	}
 
