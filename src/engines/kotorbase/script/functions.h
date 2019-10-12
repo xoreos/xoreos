@@ -300,6 +300,11 @@ protected:
 	void getTimeSecond(Aurora::NWScript::FunctionContext &ctx);
 	void getTimeMillisecond(Aurora::NWScript::FunctionContext &ctx);
 
+	// Parameters, functions_parameters.cpp
+
+	void getScriptParameter(Aurora::NWScript::FunctionContext &ctx);
+	void getScriptStringParameter(Aurora::NWScript::FunctionContext &ctx);
+
 private:
 	Game *_game;
 };

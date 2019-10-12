@@ -43,4 +43,5 @@ src_engines_kotorbase_libkotorbase_la_SOURCES += \
     src/engines/kotorbase/script/functions_sound.cpp \
     src/engines/kotorbase/script/functions_string.cpp \
     src/engines/kotorbase/script/functions_time.cpp \
+    src/engines/kotorbase/script/functions_parameters.cpp \
     $(EMPTY)
