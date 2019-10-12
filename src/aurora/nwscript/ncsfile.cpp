@@ -303,6 +303,25 @@ void NCSFile::setEnvironment(const VariableContainer &env) {
 	_env = env;
 }
 
+void NCSFile::setParameters(std::vector<int> parameters) {
+	_parameters = parameters;
+}
+
+int NCSFile::getParameter(size_t index) const {
+	if (_parameters.size() >= index)
+		return 0;
+
+	return _parameters[index];
+}
+
+void NCSFile::setParameterString(const Common::UString &parameterString) {
+	_parameterString = parameterString;
+}
+
+const Common::UString &NCSFile::getParameterString() const {
+	return _parameterString;
+}
+
 ScriptState NCSFile::getEmptyState() {
 	ScriptState state;
 

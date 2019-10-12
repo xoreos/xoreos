@@ -113,6 +113,18 @@ public:
 	                    const ObjectReference owner = ObjectReference(),
 	                    const ObjectReference triggerer = ObjectReference());
 
+	// KotOR2's parameter handling
+
+	/** Set the parameters of the script. */
+	void setParameters(std::vector<int> parameters);
+	/** Get a specific parameter of the script. */
+	int getParameter(size_t index) const;
+
+	/** Set the string parameter. */
+	void setParameterString(const Common::UString &parameterString);
+	/** Get the string parameter. */
+	const Common::UString &getParameterString() const;
+
 	static ScriptState getEmptyState();
 
 private:
@@ -165,6 +177,9 @@ private:
 	};
 
 	Common::UString _name;
+
+	std::vector<int> _parameters;
+	Common::UString _parameterString;
 
 	NCSStack _stack;
 	Common::ScopedPtr<Common::SeekableReadStream> _script;
