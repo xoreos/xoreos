@@ -10,18 +10,24 @@ os:
   - linux
   - osx
 
+arch:
+  - amd64
+  - arm64
+
 env:
   global:
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "oYIV1EmOvP2ruIxyCTPuGuqUsUzTxxu3P+IdlQZgV6aXaBxtFCuoQaLVMOlnx8xSI2V4mb5I/wK5fAtgUAomzDHQmaBNSbJc3xBTy2xgckup60ehKtFqf+ifm+AYcLQQgLtMUDmLNNcJIKUGPZ8GYwjNfWKt3VGuLHV+UFiRuQI="
-    - coverity_scan_run_condition='\( "$CC" = "gcc" \) -a \( $USECMAKE -eq 1 \) -a \( "$TRAVIS_OS_NAME" = "linux" \)'
+    - coverity_scan_run_condition='\( "$CC" = "gcc" \) -a \( $USECMAKE -eq 1 \) -a \( "$TRAVIS_OS_NAME" = "linux" \) -a \( "$(uname -i)" = "x86_64" \)'
     - coverity_scan_script_test_mode=false
     # Various conditions where the Travis CI scripts should behave differently
     - is_coverity_branch='\( "$TRAVIS_BRANCH" = "coverity_scan" \)'
     - is_valid_config='\( ! '"$is_coverity_branch"' \) -o \( '"$coverity_scan_run_condition"' \)'
     - is_valid_osx='\( "$TRAVIS_OS_NAME" = "osx" \) -a \( '"$is_valid_config"' \)'
     - is_valid_linux='\( "$TRAVIS_OS_NAME" = "linux" \) -a \( '"$is_valid_config"' \)'
+    - is_amd64='\( "$(uname -i)" = "x86_64" \)'
+    - is_arm64='\( "$(uname -i)" = "aarch64" \)'
     - is_notcoverity_autot='\( ! '"$is_coverity_branch"' \) -a \( $USECMAKE -eq 0 \)'
     - is_notcoverity_cmake='\( ! '"$is_coverity_branch"' \) -a \( $USECMAKE -eq 1 \)'
   matrix:
@@ -40,6 +46,9 @@ matrix:
     # This gives us two builds on macOS: autotools+clang, CMake+clang
     - compiler: gcc
       os: osx
+    # Do not compile for arm64 on osx yet.
+    - arch: arm64
+      os: osx
 
 before_install:
   # Installing macOS dependencies, using brew
@@ -55,8 +64,10 @@ before_install:
   # 1) We add the Bionic repos, and upgrade the libc, gcc and binutils
   # 2) We remove libgl1-mesa-glx and libgl1-mesa-dev, because Ubuntu moved the packages around
   # 3) We install our library dependencies
-  - if eval [ $is_valid_linux ]; then echo "yes" | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu bionic main universe restricted multiverse"; fi
-  - if eval [ $is_valid_linux ]; then echo "yes" | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu bionic-updates main universe restricted multiverse"; fi
+  - if eval [ $is_valid_linux -a $is_amd64 ]; then echo "yes" | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu bionic main universe restricted multiverse"; fi
+  - if eval [ $is_valid_linux -a $is_amd64 ]; then echo "yes" | sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu bionic-updates main universe restricted multiverse"; fi
+  - if eval [ $is_valid_linux -a $is_arm64 ]; then echo "yes" | sudo add-apt-repository "deb http://ports.ubuntu.com/ubuntu-ports bionic main universe restricted multiverse"; fi
+  - if eval [ $is_valid_linux -a $is_arm64 ]; then echo "yes" | sudo add-apt-repository "deb http://ports.ubuntu.com/ubuntu-ports bionic-updates main universe restricted multiverse"; fi
   - if eval [ $is_valid_linux ]; then sudo apt-get update -qq; fi
   - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 install build-essential libcurl4 make autoconf automake libtool dpkg dpkg-dev gcc g++ libc6-dev libc6 binutils binutils-dev; fi
   - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 remove libgl1-mesa-glx libgl1-mesa-dev; fi
