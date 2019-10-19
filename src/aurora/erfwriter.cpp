@@ -24,6 +24,11 @@
 
 #include <ctime>
 
+#include <memory>
+
+#include "src/common/deflate.h"
+#include "src/common/memwritestream.h"
+
 #include "src/aurora/erfwriter.h"
 #include "src/aurora/util.h"
 
@@ -31,94 +36,28 @@ namespace Aurora {
 
 static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
 
-ERFWriter::ERFWriter(uint32 id, uint32 fileCount, Common::SeekableWriteStream &stream, Version version, LocString description) :
-		_stream(stream), _version(version), _fileCount(fileCount) {
+ERFWriter::ERFWriter(uint32 id, uint32 fileCount, Common::SeekableWriteStream &stream, Version version, Compression compression, LocString description) :
+		_stream(stream), _version(version), _compression(compression), _fileCount(fileCount) {
 
 	switch (_version) {
-		case kERFVersion10: {
-			stream.writeUint32BE(id);
-			stream.writeUint32BE(kVersion10);
-
-			// Write Header
-			stream.writeUint32LE(description.getNumStrings()); // Language count
-			stream.writeUint32LE(description.getWrittenSize()); // Localized string size
-
-			stream.writeUint32LE(_fileCount); // Entry Count
-
-			// The size of the ERF header, which is immediately followed by the LocString table
-			static const uint32 kLocStringTableOffset = 160;
-
-			_keyTableOffset = kLocStringTableOffset + description.getWrittenSize();
-			_resourceTableOffset = _keyTableOffset + _fileCount * 24;
-
-			stream.writeUint32LE(kLocStringTableOffset); // LocString offset
-			stream.writeUint32LE(_keyTableOffset); // Key List offset
-			stream.writeUint32LE(_resourceTableOffset); // Resource offset
-
-			// Write the creation time of the file
-			std::time_t now = std::time(0);
-			std::tm *timepoint = std::localtime(&now);
-			stream.writeUint32LE(timepoint->tm_year);
-			stream.writeUint32LE(timepoint->tm_yday);
-
-			// Write the description string reference
-			if (description.getNumStrings())
-				stream.writeUint32LE(description.getID());
-			else
-				stream.writeUint32LE(0);
-
-			// Write 116 bytes of reserved header data
-			stream.writeZeros(116);
-
-			// Write the Localized string table
-			description.writeLocString(stream);
-
-			// Write the empty key list
-			stream.writeZeros(_fileCount * 24);
-
-			// The offset to the resource table plus the size of the source table
-			_offsetToResourceData = _resourceTableOffset + 8 * _fileCount;
-
-			// Write the empty resource list
-			stream.writeZeros(8 * _fileCount);
-
+		case kERFVersion10:
+			initV10(id, description);
 			break;
-		}
 
-		case kERFVersion20: {
-			// Write magic id and version.
-			Common::writeString(stream, "ERF V2.0", Common::kEncodingUTF16LE, false);
-
-			// Write entry count.
-			stream.writeUint32LE(_fileCount);
-
-			// Write the creation time of the file
-			std::time_t now = std::time(0);
-			std::tm *timepoint = std::localtime(&now);
-			stream.writeUint32LE(timepoint->tm_year);
-			stream.writeUint32LE(timepoint->tm_yday);
-
-			// Write unknown 0xFFFFFFFF value.
-			stream.writeUint32LE(0xFFFFFFFF);
-
-			// The offset to the resource table.
-			_resourceTableOffset = stream.pos();
-
-			// Write empty table of contents.
-			stream.writeZeros(72 * _fileCount);
-
-			// The offset to the resource data.
-			_offsetToResourceData = stream.pos();
-
+		case kERFVersion20:
+			initV20();
 			break;
-		}
+
+		case kERFVersion22:
+			initV22(compression);
+			break;
 
 		default:
 			throw Common::Exception("Unsupported ERF version");
 	}
 }
 
-void ERFWriter::add(const Common::UString &resRef, FileType resType, Common::ReadStream &stream) {
+void ERFWriter::add(const Common::UString &resRef, FileType resType, Common::SeekableReadStream &stream) {
 	if (_currentFileCount == _fileCount)
 		throw Common::Exception("More files added than expected");
 
@@ -132,52 +71,224 @@ void ERFWriter::add(const Common::UString &resRef, FileType resType, Common::Rea
 		resType = kFileTypeRES;
 
 	switch (_version) {
-		case kERFVersion10: {
-			// Write the key table entry
-			_stream.seek(_keyTableOffset + _currentFileCount * 24);
+		case kERFVersion10:
+			addV10(resRef, resType, stream);
+			break;
 
-			_stream.write(resRef.c_str(), MIN<size_t>(resRef.size(), 16));
-			_stream.writeZeros(16 - MIN<size_t>(resRef.size(), 16));
-			_stream.writeUint32LE(_currentFileCount);
-			_stream.writeUint16LE(resType);
-			_stream.writeUint16LE(0); // Unused
+		case kERFVersion20:
+			addV20(resRef, resType, stream);
+			break;
 
-			// Write the actual resource data
-			_stream.seek(_offsetToResourceData);
-			const size_t size = _stream.writeStream(stream);
+		case kERFVersion22:
+			addV22(resRef, resType, stream);
+			break;
+	}
+}
 
-			// Write the resource table entry
-			_stream.seek(_resourceTableOffset + _currentFileCount * 8);
+void ERFWriter::initV10(uint32 id, LocString description) {
+	_stream.writeUint32BE(id);
+	_stream.writeUint32BE(kVersion10);
 
-			_stream.writeUint32LE(_offsetToResourceData);
-			_stream.writeUint32LE(size);
+	// Write Header
+	_stream.writeUint32LE(description.getNumStrings()); // Language count
+	_stream.writeUint32LE(description.getWrittenSize()); // Localized string size
 
-			// Advance data offset and file count
-			_offsetToResourceData += size;
-			_currentFileCount += 1;
+	_stream.writeUint32LE(_fileCount); // Entry Count
 
+	// The size of the ERF header, which is immediately followed by the LocString table
+	static const uint32 kLocStringTableOffset = 160;
+
+	_keyTableOffset = kLocStringTableOffset + description.getWrittenSize();
+	_resourceTableOffset = _keyTableOffset + _fileCount * 24;
+
+	_stream.writeUint32LE(kLocStringTableOffset); // LocString offset
+	_stream.writeUint32LE(_keyTableOffset); // Key List offset
+	_stream.writeUint32LE(_resourceTableOffset); // Resource offset
+
+	// Write the creation time of the file
+	std::time_t now = std::time(0);
+	std::tm *timepoint = std::localtime(&now);
+	_stream.writeUint32LE(timepoint->tm_year);
+	_stream.writeUint32LE(timepoint->tm_yday);
+
+	// Write the description string reference
+	if (description.getNumStrings())
+		_stream.writeUint32LE(description.getID());
+	else
+		_stream.writeUint32LE(0);
+
+	// Write 116 bytes of reserved header data
+	_stream.writeZeros(116);
+
+	// Write the Localized string table
+	description.writeLocString(_stream);
+
+	// Write the empty key list
+	_stream.writeZeros(_fileCount * 24);
+
+	// The offset to the resource table plus the size of the source table
+	_offsetToResourceData = _resourceTableOffset + 8 * _fileCount;
+
+	// Write the empty resource list
+	_stream.writeZeros(8 * _fileCount);
+}
+
+void ERFWriter::initV20() {
+	// Write magic id and version.
+	Common::writeString(_stream, "ERF V2.0", Common::kEncodingUTF16LE, false);
+
+	// Write entry count.
+	_stream.writeUint32LE(_fileCount);
+
+	// Write the creation time of the file
+	std::time_t now = std::time(0);
+	std::tm *timepoint = std::localtime(&now);
+	_stream.writeUint32LE(timepoint->tm_year);
+	_stream.writeUint32LE(timepoint->tm_yday);
+
+	// Write unknown 0xFFFFFFFF value.
+	_stream.writeUint32LE(0xFFFFFFFF);
+
+	// The offset to the resource table.
+	_resourceTableOffset = _stream.pos();
+
+	// Write empty table of contents.
+	_stream.writeZeros(72 * _fileCount);
+
+	// The offset to the resource data.
+	_offsetToResourceData = _stream.pos();
+}
+
+void ERFWriter::addV10(const Common::UString &resRef, FileType resType, Common::SeekableReadStream &stream) {
+	// Write the key table entry
+	_stream.seek(_keyTableOffset + _currentFileCount * 24);
+
+	_stream.write(resRef.c_str(), MIN<size_t>(resRef.size(), 16));
+	_stream.writeZeros(16 - MIN<size_t>(resRef.size(), 16));
+	_stream.writeUint32LE(_currentFileCount);
+	_stream.writeUint16LE(resType);
+	_stream.writeUint16LE(0); // Unused
+
+	// Write the actual resource data
+	_stream.seek(_offsetToResourceData);
+	const size_t size = _stream.writeStream(stream);
+
+	// Write the resource table entry
+	_stream.seek(_resourceTableOffset + _currentFileCount * 8);
+
+	_stream.writeUint32LE(_offsetToResourceData);
+	_stream.writeUint32LE(size);
+
+	// Advance data offset and file count
+	_offsetToResourceData += size;
+	_currentFileCount += 1;
+}
+
+void ERFWriter::initV22(ERFWriter::Compression compression) {
+// Write magic id and version.
+	Common::writeString(_stream, "ERF V2.2", Common::kEncodingUTF16LE, false);
+
+	// Write entry count.
+	_stream.writeUint32LE(_fileCount);
+
+	// Write the creation time of the file.
+	std::time_t now = std::time(0);
+	std::tm *timepoint = std::localtime(&now);
+	_stream.writeUint32LE(timepoint->tm_year);
+	_stream.writeUint32LE(timepoint->tm_yday);
+
+	// Write unknown 0xFFFFFFFF value
+	_stream.writeUint32BE(0xFFFFFFFF);
+
+	// Create and write the flags.
+	uint32 flags = 0;
+
+	uint32 compressionFlags = 0;
+	switch (compression) {
+		case kCompressionBiowareZlib:
+			compressionFlags |= 0x20000000;
+			break;
+		case kCompressionHeaderlessZlib:
+			compressionFlags |= 0xE0000000;
+			break;
+		default:
+			break;
+	}
+
+	flags |= compressionFlags;
+
+	_stream.writeUint32LE(flags);
+
+	// Write password and module id.
+	_stream.writeUint32LE(0);
+	_stream.writeZeros(16);
+
+	// The offset to the resource table.
+	_resourceTableOffset = _stream.pos();
+
+	// Write empty table of contents.
+	_stream.writeZeros(76 * _fileCount);
+
+	// The offset to the resource data.
+	_offsetToResourceData = _stream.pos();
+}
+
+void ERFWriter::addV20(const Common::UString &resRef, FileType resType, Common::SeekableReadStream &stream) {
+	// Write the resource data
+	_stream.seek(_offsetToResourceData);
+	const size_t size = _stream.writeStream(stream);
+
+	// Write the resource table entry.
+	_stream.seek(_resourceTableOffset + _currentFileCount * 72);
+
+	Common::writeStringFixed(_stream, TypeMan.addFileType(resRef, resType), Common::kEncodingUTF16LE, 64);
+	_stream.writeUint32LE(_offsetToResourceData);
+	_stream.writeUint32LE(size);
+
+	// Advance offset and file count.
+	_offsetToResourceData += size;
+	_currentFileCount += 1;
+}
+
+void ERFWriter::addV22(const Common::UString &resRef, FileType resType, Common::SeekableReadStream &stream) {
+	// Write the resource data
+	_stream.seek(_offsetToResourceData);
+
+	size_t uncompressedSize = stream.size();
+	size_t size = 0;
+
+	switch (_compression) {
+		case kCompressionNone: {
+			size = _stream.writeStream(stream);
 			break;
 		}
-
-		case kERFVersion20: {
-			// Write the resource data
-			_stream.seek(_offsetToResourceData);
-			const size_t size = _stream.writeStream(stream);
-
-			// Write the resource table entry.
-			_stream.seek(_resourceTableOffset + _currentFileCount * 72);
-
-			Common::writeStringFixed(_stream, TypeMan.addFileType(resRef, resType), Common::kEncodingUTF16LE, 64);
-			_stream.writeUint32LE(_offsetToResourceData);
-			_stream.writeUint32LE(size);
-
-			// Advance offset and file count.
-			_offsetToResourceData += size;
-			_currentFileCount += 1;
-
+		case kCompressionBiowareZlib: {
+			std::unique_ptr<Common::SeekableReadStream> compressedStream(
+					Common::compressDeflate(stream, uncompressedSize, Common::kWindowBitsMaxRaw));
+			_stream.writeByte(static_cast<uint>(Common::kWindowBitsMax) << 4);
+			size = _stream.writeStream(*compressedStream);
+			size += 1;
+			break;
+		}
+		case kCompressionHeaderlessZlib: {
+			std::unique_ptr<Common::SeekableReadStream> compressedStream(
+					Common::compressDeflate(stream, uncompressedSize, Common::kWindowBitsMaxRaw));
+			size = _stream.writeStream(*compressedStream);
 			break;
 		}
 	}
+
+	// Write the resource table entry.
+	_stream.seek(_resourceTableOffset + _currentFileCount * 76);
+
+	Common::writeStringFixed(_stream, TypeMan.addFileType(resRef, resType), Common::kEncodingUTF16LE, 64);
+	_stream.writeUint32LE(_offsetToResourceData);
+	_stream.writeUint32LE(size);
+	_stream.writeUint32LE(uncompressedSize);
+
+	// Advance offset and file count.
+	_offsetToResourceData += size;
+	_currentFileCount += 1;
 }
 
 } // End of namespace Aurora

@@ -36,7 +36,14 @@ class ERFWriter {
 public:
 	enum Version {
 		kERFVersion10,
-		kERFVersion20
+		kERFVersion20,
+		kERFVersion22
+	};
+
+	enum Compression {
+		kCompressionNone,
+		kCompressionBiowareZlib,
+		kCompressionHeaderlessZlib
 	};
 
 	/** Create an ERF writer by writing the header to the stream and reserve fileCount
@@ -46,19 +53,30 @@ public:
 	 *  @param fileCount The number of files which should be contained in the archive.
 	 *  @param stream The write stream in which the archive should be written.
 	 *  @param version The ERF version to write
+	 *  @param compression The compression which has to be applied to every file.
 	 *  @param description The LocString, that should be used for the description.
 	 */
 	ERFWriter(uint32 id, uint32 fileCount, Common::SeekableWriteStream &stream,
-	          Version version = kERFVersion10, LocString description = LocString());
+	          Version version = kERFVersion10, Compression compression = kCompressionNone,
+	          LocString description = LocString());
 	~ERFWriter() = default;
 
 	/** Add a new stream to this archive to be packed. */
-	void add(const Common::UString &resRef, FileType resType, Common::ReadStream &stream);
+	void add(const Common::UString &resRef, FileType resType, Common::SeekableReadStream &stream);
 
 private:
+	void initV10(uint32 id, LocString description);
+	void initV20();
+	void initV22(Compression compression);
+
+	void addV10(const Common::UString &resRef, FileType resType, Common::SeekableReadStream &stream);
+	void addV20(const Common::UString &resRef, FileType resType, Common::SeekableReadStream &stream);
+	void addV22(const Common::UString &resRef, FileType resType, Common::SeekableReadStream &stream);
+
 	Common::SeekableWriteStream &_stream;
 
 	const Version _version;
+	const Compression _compression;
 
 	uint32 _currentFileCount { 0 };
 	uint32 _fileCount { 0 };
