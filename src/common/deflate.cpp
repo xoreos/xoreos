@@ -46,7 +46,7 @@ static void setZStreamInput(z_stream &strm, size_t size, const byte *data) {
 	strm.next_in  = const_cast<byte *>(data);
 }
 
-static void initZStream(z_stream &strm, int windowBits, size_t size, const byte *data) {
+static void initInflateZStream(z_stream &strm, int windowBits, size_t size, const byte *data) {
 	/* Initialize the zlib data stream for decompression with our input data. */
 
 	strm.zalloc   = Z_NULL;
@@ -60,6 +60,28 @@ static void initZStream(z_stream &strm, int windowBits, size_t size, const byte 
 		throw Exception("Could not initialize zlib inflate: %s (%d)", zError(zResult), zResult);
 }
 
+static void initDeflateZStream(z_stream &strm, int windowBits, size_t size, const byte *data) {
+	/* Initialize the zlib data stream for compression with our input data. */
+
+	strm.zalloc   = Z_NULL;
+	strm.zfree    = Z_NULL;
+	strm.opaque   = Z_NULL;
+
+	setZStreamInput(strm, size, data);
+
+	int zResult = deflateInit2(
+			&strm,
+			Z_BEST_COMPRESSION,
+			Z_DEFLATED,
+			windowBits,
+			9,
+			Z_DEFAULT_STRATEGY
+	);
+
+	if (zResult != Z_OK)
+		throw Exception("Could not initialize zlib deflate: %s (%d)", zError(zResult), zResult);
+}
+
 byte *decompressDeflate(const byte *data, size_t inputSize,
                         size_t outputSize, int windowBits) {
 
@@ -70,7 +92,7 @@ byte *decompressDeflate(const byte *data, size_t inputSize,
 			inflateEnd(&strm);
 	} BOOST_SCOPE_EXIT_END
 
-	initZStream(strm, windowBits, inputSize, data);
+	initInflateZStream(strm, windowBits, inputSize, data);
 
 	// Set the output data pointer and size
 	strm.avail_out = outputSize;
@@ -100,7 +122,7 @@ byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, siz
 			inflateEnd(&strm);
 	} BOOST_SCOPE_EXIT_END
 
-	initZStream(strm, windowBits, inputSize, data);
+	initInflateZStream(strm, windowBits, inputSize, data);
 
 	Common::PtrVector<byte, Common::DeallocatorArray> buffers;
 
@@ -159,7 +181,7 @@ size_t decompressDeflateChunk(SeekableReadStream &input, int windowBits,
 			inflateEnd(&strm);
 	} BOOST_SCOPE_EXIT_END
 
-	initZStream(strm, windowBits, 0, 0);
+	initInflateZStream(strm, windowBits, 0, 0);
 
 	strm.avail_out = outputSize;
 	strm.next_out  = output;
@@ -195,6 +217,54 @@ size_t decompressDeflateChunk(SeekableReadStream &input, int windowBits,
 	input.seek(- static_cast<ptrdiff_t>(strm.avail_in), SeekableReadStream::kOriginCurrent);
 
 	return strm.total_out;
+}
+
+byte *compressDeflate(const byte *data, size_t inputSize, size_t &outputSize, int windowBits, unsigned int frameSize) {
+	z_stream strm;
+	BOOST_SCOPE_EXIT( (&strm) ) {
+		deflateEnd(&strm);
+	} BOOST_SCOPE_EXIT_END
+
+	initDeflateZStream(strm, windowBits, inputSize, data);
+
+	Common::PtrVector<byte, Common::DeallocatorArray> buffers;
+
+	int zResult = 0;
+	do {
+		buffers.push_back(new byte[frameSize]);
+
+		// Set the output data pointer and size
+		strm.avail_out = frameSize;
+		strm.next_out = buffers.back();
+
+		// Compress.
+		zResult = deflate(&strm, Z_FINISH);
+		if (zResult != Z_STREAM_END && zResult != Z_OK)
+			throw Exception("Failed to deflate: %s (%d)", zError(zResult), zResult);
+	} while (strm.avail_in != 0);
+
+	ScopedArray<byte> compressedData(new byte[strm.total_out]);
+	for (size_t i = 0; i < buffers.size(); ++i) {
+		if (i == buffers.size() - 1)
+			std::memcpy(compressedData.get() + i * frameSize, buffers[i], strm.total_out % frameSize);
+		else
+			std::memcpy(compressedData.get() + i * frameSize, buffers[i], frameSize);
+	}
+
+	outputSize = strm.total_out;
+
+	return compressedData.release();
+}
+
+SeekableReadStream *compressDeflate(ReadStream &input, size_t inputSize, int windowBits, unsigned int frameSize) {
+	ScopedArray<byte> uncompressedData(new byte[inputSize]);
+	if (input.read(uncompressedData.get(), inputSize) != inputSize)
+		throw Exception(kReadError);
+
+	size_t size = 0;
+	byte *decompressedData = compressDeflate(uncompressedData.get(), inputSize, size, windowBits, frameSize);
+
+	return new MemoryReadStream(decompressedData, size, true);
 }
 
 } // End of namespace Common

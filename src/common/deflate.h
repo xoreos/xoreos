@@ -117,6 +117,33 @@ SeekableReadStream *decompressDeflateWithoutOutputSize(ReadStream &input, size_t
 size_t decompressDeflateChunk(SeekableReadStream &input, int windowBits, byte *output, size_t outputSize,
                               unsigned int frameSize = 4096);
 
+/** Compress (deflate) using zlib's DEFLATE algorithm.
+ *
+ *  @param input      The input data to compress.
+ *  @param inputSize  The size of the input data.
+ *  @param windowBits The base two logarithm of the window size (the size of
+ *                    the history buffer). See the zlib documentation on
+ *                    deflateInit2() for details.
+ *  @param frameSize  The size of a frame for reading from the input stream.
+ *  @return A stream of compressed data.
+ */
+SeekableReadStream *compressDeflate(ReadStream &input, size_t inputSize, int windowBits,
+                                    unsigned int frameSize = 4096);
+
+/** Compress (deflate) using zlib's DEFLATE algorithm.
+ *
+ *  @param data       A pointer to the data to compress.
+ *  @param inputSize  The size of the input data.
+ *  @param outputSize A reference to the size of the output data.
+ *  @param windowBits The base two logarithm of the window size (the size of
+ *                    the history buffer). See the zlib documentation on
+ *                    deflateInit2() for details.
+ *  @param frameSize  The size of a frame for reading from the input stream.
+ *  @return A stream of compressed data.
+ */
+byte *compressDeflate(const byte *data, size_t inputSize, size_t &outputSize, int windowBits,
+                      unsigned int frameSize = 4096);
+
 } // End of namespace Common
 
 #endif // COMMON_DEFLATE_H
