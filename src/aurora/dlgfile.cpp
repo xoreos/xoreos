@@ -116,8 +116,7 @@ void DLGFile::pickReply(uint32 id) {
 		return;
 
 	if ((id == kEndLine) || ((_currentEntry == _entriesNPC.end()))) {
-		runScript(_currentEntry->script1);
-		runScript(_currentEntry->script2);
+		runScript(_convEnd);
 
 		_ended = true;
 		return;
