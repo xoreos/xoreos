@@ -58,6 +58,12 @@
 	#error No endianness defined
 #endif
 
+// Compatibility with non-clang compilers
+// https://www.boost.org/doc/libs/1_61_0/boost/endian/detail/intrinsic.hpp
+#ifndef __has_builtin
+	#define __has_builtin(x) 0
+#endif
+
 #define SWAP_CONSTANT_64(a) \
 	((uint64)((((a) >> 56) & 0x000000FF) | \
 	          (((a) >> 40) & 0x0000FF00) | \
@@ -79,7 +85,8 @@
 	          (((a) <<  8) & 0xFF00) ))
 
 // Test for GCC >= 4.3.0 as this version added the bswap builtin
-#if defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
+#if (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))) || \
+	(defined(__clang__) && __has_builtin(__builtin_bswap32) && __has_builtin(__builtin_bswap64))
 
 	FORCEINLINE uint64 SWAP_BYTES_64(uint64 a) {
 		return __builtin_bswap64(a);
@@ -125,9 +132,27 @@
 
 #endif
 
-static inline uint16 SWAP_BYTES_16(const uint16 a) {
-	return (a >> 8) | (a << 8);
-}
+// Test for gcc 4.8 or greater and clang with bswap16 support
+#if (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8))) || \
+	(defined(__clang__) && __has_builtin(__builtin_bswap16))
+
+	FORCEINLINE uint16 SWAP_BYTES_16(const uint16 a) {
+		return __builtin_bswap16(a);
+	}
+
+#elif defined(_MSC_VER) && _MSC_VER >= 1300
+
+	FORCEINLINE uint16 SWAP_BYTES_16(const uint16 a) {
+		return _byteswap_ushort(a);
+	}
+
+#else
+
+	static inline uint16 SWAP_BYTES_16(const uint16 a) {
+		return (a >> 8) | (a << 8);
+	}
+
+#endif
 
 /**
  * A wrapper macro used around four character constants, like 'DATA', to
