@@ -38,6 +38,7 @@ src_engines_libengines_la_SOURCES += \
 src_engines_libengines_la_LIBADD = \
     src/engines/kotorbase/libkotorbase.la \
     src/engines/odyssey/libodyssey.la \
+    src/engines/eclipse/libeclipse.la \
     src/engines/aurora/libaurora.la \
     $(EMPTY)
 
@@ -45,6 +46,7 @@ src_engines_libengines_la_LIBADD = \
 
 include src/engines/aurora/rules.mk
 include src/engines/odyssey/rules.mk
+include src/engines/eclipse/rules.mk
 include src/engines/kotorbase/rules.mk
 if ENABLE_NWN
 include src/engines/nwn/rules.mk
