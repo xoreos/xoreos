@@ -39,6 +39,7 @@ src_aurora_actionscript_libactionscript_la_SOURCES += \
 src_aurora_actionscript_libactionscript_la_SOURCES += \
     src/aurora/actionscript/asbuffer.cpp \
     src/aurora/actionscript/avm.cpp \
+    src/aurora/actionscript/avm_interval.cpp \
     src/aurora/actionscript/function.cpp \
     src/aurora/actionscript/object.cpp \
     src/aurora/actionscript/variable.cpp \

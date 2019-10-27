@@ -73,6 +73,9 @@ AVM::AVM() : _handler(0) {
 	_variables["flash"].asObject()
 		->getMember("external").asObject()->getMember("ExternalInterface").asObject()
 		->setMember("call", new NativeFunction(std::bind(&AVM::call, this, std::placeholders::_1), false, false, false, false));
+
+	_functions["setInterval"] = std::bind(&AVM::setInterval, this, std::placeholders::_1);
+	_functions["clearInterval"] = std::bind(&AVM::clearInterval, this, std::placeholders::_1);
 }
 
 void AVM::setStageSize(unsigned int width, unsigned int height) {

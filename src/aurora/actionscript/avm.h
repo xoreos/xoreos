@@ -138,7 +138,11 @@ private:
 	Variable registerClass(AVM &avm);
 	Variable gotoAndPlay(AVM &avm);
 
+	Variable setInterval(const std::vector<Variable> arguments);
+	Variable clearInterval(const std::vector<Variable> arguments);
+
 	RegisterClassFunction _registerClass;
+
 	FSCommandFunction _fscommand;
 
 	ExternalHandler *_handler; ///< A wrapper around common platform functionalities.
