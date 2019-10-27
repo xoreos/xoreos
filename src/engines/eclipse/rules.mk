@@ -23,7 +23,9 @@ noinst_LTLIBRARIES += src/engines/eclipse/libeclipse.la
 src_engines_eclipse_libeclipse_la_SOURCES =
 
 src_engines_eclipse_libeclipse_la_SOURCES += \
+    src/engines/eclipse/externalhandler.h \
     $(EMPTY)
 
 src_engines_eclipse_libeclipse_la_SOURCES += \
+    src/engines/eclipse/externalhandler.cpp \
     $(EMPTY)
