@@ -65,6 +65,7 @@ private:
 	void actionGetVariable(AVM &avm);
 	void actionSetVariable(AVM &avm);
 	void actionTrace();
+	void actionGetTime(AVM &avm);
 	void actionDefineLocal(AVM &avm);
 	void actionCallFunction(AVM &avm);
 	void actionReturn(AVM &avm);

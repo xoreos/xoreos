@@ -55,6 +55,7 @@ enum Opcodes {
 	kActionGetVariable     = 0x1C,
 	kActionSetVariable     = 0x1D,
 	kActionTrace           = 0x26,
+	kActionGetTime         = 0x34,
 	kActionDefineLocal     = 0x3C,
 	kActionCallFunction    = 0x3D,
 	kActionReturn          = 0x3E,
@@ -127,6 +128,7 @@ void ASBuffer::execute(AVM &avm) {
 			case kActionGetVariable:     actionGetVariable(avm); break;
 			case kActionSetVariable:     actionSetVariable(avm); break;
 			case kActionTrace:           actionTrace(); break;
+			case kActionGetTime:         actionGetTime(avm); break;
 			case kActionDefineLocal:     actionDefineLocal(avm); break;
 			case kActionCallFunction:    actionCallFunction(avm); break;
 			case kActionReturn:          actionReturn(avm); break;
@@ -278,6 +280,12 @@ void ASBuffer::actionTrace() {
 	warning("ActionScript: %s", "Trace");
 
 	debugC(kDebugActionScript, 1, "actionTrace");
+}
+
+void ASBuffer::actionGetTime(AVM &avm) {
+	_stack.push(avm.getTime());
+
+	debugC(kDebugActionScript, 1, "actionGetTime");
 }
 
 void ASBuffer::actionDefineLocal(AVM &avm) {
