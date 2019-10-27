@@ -40,7 +40,7 @@ namespace Aurora {
 
 namespace ActionScript {
 
-AVM::AVM() {
+AVM::AVM() : _handler(0) {
 	_registers.resize(256);
 	for (size_t i = 0; i < _registers.size(); ++i)
 		_registers[i].push(Variable());
@@ -85,6 +85,10 @@ void AVM::setRegisterClassFunction(RegisterClassFunction registerClass) {
 
 void AVM::setFSCommandCallback(FSCommandFunction fscommand) {
 	_fscommand = fscommand;
+}
+
+void AVM::setExternalInterface(ExternalHandler *handler) {
+	_handler = handler;
 }
 
 void AVM::pushRegisters(uint8 n) {

@@ -92,6 +92,9 @@ public:
 	/** Set a callback for the fscommand() function. */
 	void setFSCommandCallback(FSCommandFunction);
 
+	/** Set the ExternalHandler for this AVM. */
+	void setExternalInterface(ExternalHandler *handler);
+
 	/** fscommand is used for communicating with the host program. It is one of
 	 *  Scaleforms ways for sending messages from the actionscript code to the
 	 *  c++ program.
@@ -132,6 +135,8 @@ private:
 
 	RegisterClassFunction _registerClass;
 	FSCommandFunction _fscommand;
+
+	ExternalHandler *_handler; ///< A wrapper around common platform functionalities.
 
 	std::vector<std::stack<Variable>> _registers;
 	std::map<Common::UString, Variable> _variables;
