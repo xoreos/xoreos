@@ -125,6 +125,11 @@ public:
 	void setStopFlag();
 	bool getStopFlag();
 
+	/** Start the timer. */
+	void startTime();
+	/** Get the current running AVM time. */
+	uint32 getTime();
+
 	void setReturnValue(Variable returnValue = Variable());
 	Variable getReturnValue();
 
@@ -142,6 +147,7 @@ private:
 	std::map<Common::UString, Variable> _variables;
 	std::map<Common::UString, StaticFunction> _functions;
 
+	uint32 _startTime; ///< The elapsed since the start of the avm and the call to startTime()
 	bool _stopFlag;
 	Variable _returnValue;
 	Stage *_stage;

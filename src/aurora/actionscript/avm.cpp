@@ -201,6 +201,20 @@ bool AVM::getStopFlag() {
 	return tmp;
 }
 
+void AVM::startTime() {
+	if (!_handler)
+		return;
+
+	_startTime = _handler->getTime();
+}
+
+uint32 AVM::getTime() {
+	if (!_handler)
+		return 0;
+
+	return _handler->getTime() - _startTime;
+}
+
 void AVM::setReturnValue(Variable returnValue) {
 	_returnValue = returnValue;
 }
