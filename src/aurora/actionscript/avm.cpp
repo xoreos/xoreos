@@ -241,6 +241,9 @@ Variable AVM::gotoAndPlay(AVM &avm) {
 	return Variable();
 }
 
+ExternalHandler::~ExternalHandler() {
+
+}
 } // End of namespace ActionScript
 
 } // End of namespace Aurora

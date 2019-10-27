@@ -49,6 +49,36 @@ typedef std::function<void (const Common::UString &, ObjectPtr)> RegisterClassFu
 /** Prototype for ActionScript static functions. */
 typedef std::function<Variable(std::vector<Variable>)> StaticFunction;
 
+/** Function type for ActionScript interval functions. */
+typedef std::function<void()> IntervalFunction;
+
+/** An abstract base class for handling external things. */
+class ExternalHandler {
+public:
+	virtual ~ExternalHandler();
+
+	/** Set a specific function to be called in regular intevals
+	 *  specified in milliseconds.
+	 *
+	 *  @param interval The interval in milliseconds between the call of the function
+	 *  @param fun The function that should be called in
+	 *  @return The id of the interval to have the ability to later stop it
+	 */
+	virtual uint32 setInterval(double interval, IntervalFunction fun) = 0;
+
+	/** Stop a running interval function.
+	 *
+	 *  @param id the id of the function to stop.
+	 */
+	virtual void clearInterval(uint32 id) = 0;
+
+	/** Get the elapsed time after the program start.
+	 *
+	 *  @return the elapsed time since the program started.
+	 */
+	virtual uint32 getTime() = 0;
+};
+
 /** The Action script virtual machine (AVM). */
 class AVM {
 public:
