@@ -118,7 +118,13 @@ public:
 		std::vector<Coords> lowerRightCoords;
 	};
 
-	TXI() = default;
+	/* For "obscure" reasons, clang < 3.9.0 needs this to be a user-provided
+	 * default constructor here, otherwise code that instantiates a default-
+	 * constructed const TXI fails to compile.
+	 *
+	 * See https://stackoverflow.com/a/47368753 for details.
+	 */
+	TXI() { }
 	TXI(Common::SeekableReadStream &stream);
 	~TXI() = default;
 
