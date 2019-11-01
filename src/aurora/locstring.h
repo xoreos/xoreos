@@ -42,7 +42,13 @@ namespace Aurora {
 /** A localized string. */
 class LocString {
 public:
-	LocString() = default;
+	/* For "obscure" reasons, clang < 3.9.0 needs this to be a user-provided
+	 * default constructor here, otherwise code that instantiates a default-
+	 * constructed const LocString fails to compile.
+	 *
+	 * See https://stackoverflow.com/a/47368753 for details.
+	 */
+	LocString() { }
 	~LocString() = default;
 
 	void clear();
