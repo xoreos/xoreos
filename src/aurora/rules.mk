@@ -71,6 +71,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/sacfile.h \
     src/aurora/gfxfile.h \
     src/aurora/xmlfixer.h \
+    src/aurora/oodle.h \
     $(EMPTY)
 
 src_aurora_libaurora_la_SOURCES += \
@@ -118,6 +119,7 @@ src_aurora_libaurora_la_SOURCES += \
     src/aurora/sacfile.cpp \
     src/aurora/gfxfile.cpp \
     src/aurora/xmlfixer.cpp \
+    src/aurora/oodle.cpp \
     $(EMPTY)
 
 textureatlasfile_source = \
