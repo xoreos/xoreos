@@ -25,6 +25,12 @@
 #ifndef VIDEO_CODECS_VPX_H
 #define VIDEO_CODECS_VPX_H
 
+#ifdef HAVE_CONFIG_H
+	#include "config.h"
+#endif
+
+#ifdef ENABLE_VPX
+
 namespace Video {
 
 class Codec;
@@ -45,4 +51,7 @@ Codec *makeVP9Decoder();
 
 } // End of namespace Video
 
-#endif
+
+#endif // ENABLE_VPX
+
+#endif // VIDEO_CODECS_VPX_H
