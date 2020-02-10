@@ -25,6 +25,8 @@
 #ifndef VIDEO_MATROSKA_H
 #define VIDEO_MATROSKA_H
 
+#include <map>
+
 #include "src/video/decoder.h"
 
 namespace Common {
