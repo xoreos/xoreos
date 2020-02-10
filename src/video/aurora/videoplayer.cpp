@@ -33,6 +33,7 @@
 #include "src/video/decoder.h"
 #include "src/video/actimagine.h"
 #include "src/video/bink.h"
+#include "src/video/matroska.h"
 #include "src/video/quicktime.h"
 #include "src/video/xmv.h"
 
@@ -75,6 +76,9 @@ void VideoPlayer::load(const Common::UString &name) {
 			break;
 		case ::Aurora::kFileTypeVX:
 			_video.reset(new ActimagineDecoder(video.release()));
+			break;
+		case ::Aurora::kFileTypeWBM:
+			_video.reset(new Matroska(video.release()));
 			break;
 		default:
 			break;
