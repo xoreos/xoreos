@@ -30,6 +30,7 @@ src_video_libvideo_la_SOURCES += \
     src/video/quicktime.h \
     src/video/xmv.h \
     src/video/actimagine.h \
+    src/video/matroska.h \
     $(EMPTY)
 
 src_video_libvideo_la_SOURCES += \
@@ -39,6 +40,7 @@ src_video_libvideo_la_SOURCES += \
     src/video/quicktime.cpp \
     src/video/xmv.cpp \
     src/video/actimagine.cpp \
+    src/video/matroska.cpp \
     $(EMPTY)
 
 src_video_libvideo_la_LIBADD = \
