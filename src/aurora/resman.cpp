@@ -154,6 +154,7 @@ ResourceManager::ResourceManager() : _hasSmall(false),
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeMOV);
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeXMV);
 	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeVX);
+	_resourceTypeTypes[kResourceVideo].push_back(kFileTypeWBM);
 
 	_resourceTypeTypes[kResourceSound].push_back(kFileTypeWAV);
 	_resourceTypeTypes[kResourceSound].push_back(kFileTypeOGG);

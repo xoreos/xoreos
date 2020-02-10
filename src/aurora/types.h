@@ -387,7 +387,10 @@ enum FileType {
 	kFileTypeWND            = 30001,
 
 	// Our own types
-	kFileTypeXEOSITEX       = 40000  ///< Intermediate texture.
+	kFileTypeXEOSITEX       = 40000, ///< Intermediate texture.
+
+	// Found in the updated Neverwinter Nights
+	kFileTypeWBM            = 41000  ///< Video, WebM.
 };
 
 enum GameID {
