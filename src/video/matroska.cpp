@@ -87,6 +87,8 @@ enum EBMLID {
 
 	kMatroskaIDCluster = 0x1F43B675,
 	kMatroskaIDTimeCode = 0xE7,
+	kMatroskaIDBlockGroup = 0xA0,
+	kMatroskaIDBlock = 0xA1,
 	kMatroskaIDSimpleBlock = 0xA3
 };
 
@@ -750,8 +752,14 @@ void Matroska::findNextPacket(uint64 trackNumber, TrackStatus& status) {
 			uint64 size = readElementSize(*_fd);
 			uint64 endPos = _fd->pos() + size;
 
-			// Skip anything that's not a simple block
-			if (id != kMatroskaIDSimpleBlock) {
+			// Block group, should contain one block, so nest into it
+			if (id == kMatroskaIDBlockGroup) {
+				id = readElementID(*_fd);
+				readElementSize(*_fd);
+			}
+
+			// Skip anything that's not a block or simple block
+			if ((id != kMatroskaIDBlock) && (id != kMatroskaIDSimpleBlock)) {
 				_fd->seek(endPos);
 				status.curPos = endPos;
 				continue;
