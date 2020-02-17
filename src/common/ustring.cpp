@@ -259,6 +259,10 @@ const char *UString::c_str() const {
 	return _string.c_str();
 }
 
+const std::string &UString::toString() const {
+	return _string;
+}
+
 UString::iterator UString::begin() const {
 	return iterator(_string.begin(), _string.begin(), _string.end());
 }
