@@ -65,7 +65,7 @@ void playVideo(const Common::UString &video) {
 	SoundMan.setTypeGain(Sound::kSoundTypeVoice, 0.0f);
 
 	try {
-		Video::Aurora::VideoPlayer videoPlayer(video);
+		Video::Aurora::VideoPlayer videoPlayer(video.toString());
 
 		debugC(Common::kDebugEngineVideo, 1, "Playing video \"%s\"", video.c_str());
 

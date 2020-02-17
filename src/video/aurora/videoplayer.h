@@ -26,10 +26,7 @@
 #define VIDEO_AURORA_VIDEOPLAYER_H
 
 #include <memory>
-
-namespace Common {
-	class UString;
-}
+#include <string>
 
 namespace Video {
 
@@ -40,7 +37,7 @@ namespace Aurora {
 /** A video player. */
 class VideoPlayer {
 public:
-	VideoPlayer(const Common::UString &video);
+	VideoPlayer(const std::string &video);
 	~VideoPlayer();
 
 	void play();
@@ -48,7 +45,7 @@ public:
 private:
 	std::unique_ptr<VideoDecoder> _video;
 
-	void load(const Common::UString &name);
+	void load(const std::string &name);
 };
 
 } // End of namespace Aurora
