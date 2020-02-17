@@ -178,8 +178,7 @@ void readEBMLEntry(uint64_t &value, Common::SeekableReadStream &stream, uint64_t
 	}
 }
 
-template<typename T>
-void readEBMLString(T &value, Common::SeekableReadStream &stream) {
+void readEBMLEntry(std::string &value, Common::SeekableReadStream &stream, uint64_t UNUSED(filePos)) {
 	// Max 16MB for strings
 	if (stream.size() > 0x1000000)
 		throw Common::Exception("Invalid EBML string size %u", (uint)stream.size());
@@ -189,17 +188,9 @@ void readEBMLString(T &value, Common::SeekableReadStream &stream) {
 	stream.read(array.get(), stream.size());
 
 	// Treat the whole thing as a string
-	value = T(array.get(), stream.size());
+	value = std::string(array.get(), stream.size());
 
 	// TODO: May need to check for NUL character
-}
-
-void readEBMLEntry(std::string &value, Common::SeekableReadStream &stream, uint64_t UNUSED(filePos)) {
-	readEBMLString(value, stream);
-}
-
-void readEBMLEntry(Common::UString &value, Common::SeekableReadStream &stream, uint64_t UNUSED(filePos)) {
-	readEBMLString(value, stream);
 }
 
 void readEBMLEntry(double &value, Common::SeekableReadStream &stream, uint64_t UNUSED(filePos)) {
@@ -431,8 +422,8 @@ void readEBMLEntry(MatroskaSeekHead &seekHead, Common::SeekableReadStream &strea
 struct MatroskaInfo {
 	uint64_t timeCodeScale;
 	double duration;
-	Common::UString muxingApp;
-	Common::UString writingApp;
+	std::string muxingApp;
+	std::string writingApp;
 };
 
 void readEBMLEntry(MatroskaInfo &info, Common::SeekableReadStream &stream, uint64_t filePos) {

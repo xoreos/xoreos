@@ -718,7 +718,7 @@ bool QuickTimeDecoder::AudioSampleDesc::isAudioCodecSupported() const {
 		return true;
 
 	if (_codecTag == MKTAG('m', 'p', '4', 'a')) {
-		Common::UString audioType;
+		std::string audioType;
 
 		switch (_objectTypeMP4) {
 		case 0x40:
@@ -785,7 +785,7 @@ void QuickTimeDecoder::VideoSampleDesc::initCodec() {
 	_videoCodec.reset();
 
 	if (_codecTag == MKTAG('m', 'p', '4', 'v')) {
-		Common::UString videoType;
+		std::string videoType;
 
 		// Parse the object type
 		switch (_objectTypeMP4) {

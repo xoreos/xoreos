@@ -26,7 +26,6 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/ustring.h"
 #include "src/common/readstream.h"
 #include "src/common/debug.h"
 
@@ -48,14 +47,14 @@ namespace Video {
 
 namespace Aurora {
 
-VideoPlayer::VideoPlayer(const Common::UString &video) {
+VideoPlayer::VideoPlayer(const std::string &video) {
 	load(video);
 }
 
 VideoPlayer::~VideoPlayer() {
 }
 
-void VideoPlayer::load(const Common::UString &name) {
+void VideoPlayer::load(const std::string &name) {
 	::Aurora::FileType type;
 
 	std::unique_ptr<Common::SeekableReadStream>
