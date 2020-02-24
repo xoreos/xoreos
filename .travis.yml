@@ -71,7 +71,7 @@ before_install:
   - if eval [ $is_valid_linux ]; then sudo apt-get update -qq; fi
   - if eval [ $is_valid_linux -a $is_arm64 ]; then echo "yes" | sudo apt-get -y remove udev; fi
   - if eval [ $is_valid_linux -a $is_arm64 ]; then echo "yes" | sudo apt-get -y autoremove; fi
-  - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 install build-essential libcurl4 make autoconf automake libtool dpkg dpkg-dev gcc g++ libc6-dev libc6 binutils binutils-dev; fi
+  - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 install build-essential libcurl4 make autoconf automake cmake libtool dpkg dpkg-dev gcc g++ libc6-dev libc6 binutils binutils-dev; fi
   - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 remove libgl1-mesa-glx libgl1-mesa-dev; fi
   - if eval [ $is_valid_linux ]; then sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -o APT::Force-LoopBreak=1 install ninja-build libboost-all-dev libsdl2-dev libopenal-dev libfreetype6-dev libmad0-dev libfaad-dev libvorbis-dev libxvidcore-dev libvpx-dev libgl1 libgl-dev zlib1g-dev liblzma-dev libxml2-dev; fi
 
