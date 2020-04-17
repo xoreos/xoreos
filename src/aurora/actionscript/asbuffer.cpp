@@ -482,23 +482,34 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 	}
 
 	Function *function;
+	bool superFunction = false;
 	if (name.empty()) {
 		function = dynamic_cast<Function *>(object.get());
 	} else {
 		function = dynamic_cast<Function *>(object->getMember(name).asObject().get());
+		if (!function) {
+			function = dynamic_cast<Function *>(object->getMember("prototype").asObject()->getMember(name).asObject().get());
+
+			if (function)
+				superFunction = true;
+		}
 	}
 
 	if (!function)
 		throw Common::Exception("Object is not a function");
 
 	byte counter = 1;
-	Variable prevThis;
+
+	// Since this is the first variable to initialize, it can only be at register 1
+	Variable currentThis = avm.getRegister(1);
 
 	avm.pushRegisters(function->getNumRegisters());
 
 	if (function->getPreloadThisFlag()) {
-		prevThis = avm.getRegister(counter);
-		avm.storeRegister(object, counter);
+		if (name.empty() || superFunction)
+			avm.storeRegister(currentThis, counter);
+		else
+			avm.storeRegister(object, counter);
 		counter += 1;
 	}
 	if (function->getPreloadRootFlag()) {
@@ -506,7 +517,7 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 		counter += 1;
 	}
 	if (function->getPreloadSuperFlag()) {
-		// TODO: Add super variable
+		avm.storeRegister(object->getMember("prototype").asObject()->getMember("constructor"), counter);
 		counter += 1;
 	}
 	if (function->getPreloadGlobalFlag()) {
@@ -529,8 +540,8 @@ void ASBuffer::actionCallMethod(AVM &avm) {
 	_stack.push((*function)(avm));
 	avm.setReturnValue(Variable());
 
-	if (!prevThis.isUndefined())
-		avm.storeRegister(prevThis, 1);
+	if (!currentThis.isUndefined())
+		avm.storeRegister(currentThis, 1);
 
 	avm.popRegisters(function->getNumRegisters());
 
