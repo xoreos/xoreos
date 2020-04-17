@@ -105,6 +105,8 @@ Variable Object::call(const Common::UString &function, AVM &avm, const std::vect
 			throw Common::Exception("Object is no function");
 	}
 
+	avm.pushRegisters(f->getNumRegisters());
+
 	byte counter = 1;
 	if (f->getPreloadRootFlag()) {
 		avm.storeRegister(avm.getVariable("_root"), counter);
@@ -123,6 +125,9 @@ Variable Object::call(const Common::UString &function, AVM &avm, const std::vect
 
 	avm.setReturnValue();
 	(*f)(avm);
+
+	avm.popRegisters(f->getNumRegisters());
+
 	return avm.getReturnValue();
 }
 
