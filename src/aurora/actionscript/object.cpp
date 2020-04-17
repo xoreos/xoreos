@@ -118,6 +118,11 @@ Variable Object::call(const Common::UString &function, AVM &avm, const std::vect
 		counter += 1;
 	}
 
+	if (f->getPreloadSuperFlag()) {
+		avm.storeRegister(getMember("constructor"), counter);
+		counter += 1;
+	}
+
 	for (size_t i = 0; i < arguments.size(); ++i) {
 		avm.storeRegister(arguments[i], counter);
 		counter += 1;
