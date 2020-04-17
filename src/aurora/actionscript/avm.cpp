@@ -168,6 +168,8 @@ Variable AVM::createNewObject(const Common::UString &name, std::vector<Variable>
 	if (!constructor)
 		throw Common::Exception("Constructor is not a function");
 
+	pushRegisters(constructor->getNumRegisters());
+
 	byte counter = 1;
 	if (constructor->getPreloadRootFlag()) {
 		storeRegister(_variables["_root"], counter);
@@ -188,6 +190,8 @@ Variable AVM::createNewObject(const Common::UString &name, std::vector<Variable>
 	}
 
 	(*constructor)(*this);
+
+	popRegisters(constructor->getNumRegisters());
 
 	return Variable(newObject);
 }
