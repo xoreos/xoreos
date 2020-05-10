@@ -10,6 +10,8 @@ os:
   - linux
   - osx
 
+osx_image: xcode11.4
+
 arch:
   - amd64
   - arm64
@@ -51,9 +53,6 @@ matrix:
       os: osx
 
 before_install:
-  # Installing macOS dependencies, using brew
-  - if eval [ $is_valid_osx ]; then brew update; fi
-  - if eval [ $is_valid_osx ]; then brew install sdl2 openal-soft freetype mad faad2 libvorbis xvid libvpx zlib xz libxml2 ninja; fi
   # Installing Linux dependencies, using apt-get
   #
   # Here, we're also installing a new gcc, for C++11 support.
@@ -87,6 +86,20 @@ script:
   - if eval [ $is_notcoverity_cmake ]; then cmake --build . --target check; fi
 
 addons:
+  homebrew:
+    packages:
+    - ninja
+    - zlib
+    - xz
+    - libxml2
+    - sdl2
+    - openal-soft
+    - freetype
+    - mad
+    - faad2
+    - libvorbis
+    - xvid
+    - libvpx
   coverity_scan:
     build_script_url: https://raw.githubusercontent.com/$TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/.travis_coverity.sh
     project:
