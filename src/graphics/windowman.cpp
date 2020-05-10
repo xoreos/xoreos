@@ -24,7 +24,7 @@
 
 #include <cstring>
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/common/error.h"
 #include "src/common/configman.h"
@@ -150,7 +150,7 @@ void WindowManager::setFullScreen(bool fullScreen) {
 
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&WindowManager::setFullScreen, this, fullScreen));
+		Events::MainThreadFunctor<void> functor(std::bind(&WindowManager::setFullScreen, this, fullScreen));
 
 		return RequestMan.callInMainThread(functor);
 	}
@@ -197,7 +197,7 @@ void WindowManager::setWindowSize(int width, int height) {
 
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&WindowManager::setWindowSize, this, width, height));
+		Events::MainThreadFunctor<void> functor(std::bind(&WindowManager::setWindowSize, this, width, height));
 
 		return RequestMan.callInMainThread(functor);
 	}
@@ -347,7 +347,7 @@ void WindowManager::setGamma(float gamma) {
 
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&WindowManager::setGamma, this, gamma));
+		Events::MainThreadFunctor<void> functor(std::bind(&WindowManager::setGamma, this, gamma));
 
 		return RequestMan.callInMainThread(functor);
 	}

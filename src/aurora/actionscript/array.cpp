@@ -22,7 +22,7 @@
  *  Implementation for an actionscript Array class.
  */
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/aurora/actionscript/array.h"
 
@@ -46,8 +46,8 @@ static Variable as_pop(AVM &avm) {
 }
 
 Array::Array(const std::list<Variable> &values) : _values(values) {
-	setMember("push", new NativeFunction(boost::bind(as_push, _1), true, false, false, false));
-	setMember("pop", new NativeFunction(boost::bind(as_pop, _1), true, false, false, false));
+	setMember("push", new NativeFunction(std::bind(as_push, std::placeholders::_1), true, false, false, false));
+	setMember("pop", new NativeFunction(std::bind(as_pop, std::placeholders::_1), true, false, false, false));
 }
 
 size_t Array::length() const {

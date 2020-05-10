@@ -26,8 +26,7 @@
 #define EVENTS_REQUESTS_H
 
 #include <list>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/common/types.h"
 #include "src/common/ptrlist.h"
@@ -86,7 +85,7 @@ public:
 
 	/** Call this function in the main thread. */
 	template<typename T> T callInMainThread(const MainThreadFunctor<T> &f) {
-		MainThreadCallerFunctor caller(boost::bind(&MainThreadFunctor<T>::operator(), f));
+		MainThreadCallerFunctor caller(std::bind(&MainThreadFunctor<T>::operator(), f));
 
 		callInMainThread(caller);
 		if (!f.getError().empty()) {

@@ -23,8 +23,7 @@
  */
 
 #include <algorithm>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/common/ustring.h"
 #include "src/common/util.h"
@@ -49,11 +48,11 @@ Console::Console(JadeEngine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
 	_engine(&engine) {
 
-	registerCommand("exitmodule" , boost::bind(&Console::cmdExitModule , this, _1),
+	registerCommand("exitmodule" , std::bind(&Console::cmdExitModule , this, std::placeholders::_1),
 			"Usage: exitmodule\nExit the module, returning to the main menu");
-	registerCommand("listmodules", boost::bind(&Console::cmdListModules, this, _1),
+	registerCommand("listmodules", std::bind(&Console::cmdListModules, this, std::placeholders::_1),
 			"Usage: listmodules\nList all modules");
-	registerCommand("loadmodule" , boost::bind(&Console::cmdLoadModule , this, _1),
+	registerCommand("loadmodule" , std::bind(&Console::cmdLoadModule , this, std::placeholders::_1),
 			"Usage: loadmodule <module>\nLoad and enter the specified module");
 }
 

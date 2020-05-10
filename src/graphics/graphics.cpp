@@ -25,7 +25,7 @@
 #include <cassert>
 #include <cstring>
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "external/glm/gtc/type_ptr.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
@@ -210,7 +210,7 @@ uint32 GraphicsManager::getFPS() const {
 bool GraphicsManager::setFSAA(int level) {
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<bool> functor(boost::bind(&GraphicsManager::setFSAA, this, level));
+		Events::MainThreadFunctor<bool> functor(std::bind(&GraphicsManager::setFSAA, this, level));
 
 		return RequestMan.callInMainThread(functor);
 	}
@@ -429,7 +429,7 @@ void GraphicsManager::setupViewMatrices() {
 void GraphicsManager::setCullFace(bool enabled, GLenum mode) {
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setCullFace, this, enabled, mode));
+		Events::MainThreadFunctor<void> functor(std::bind(&GraphicsManager::setCullFace, this, enabled, mode));
 
 		return RequestMan.callInMainThread(functor);
 	}
@@ -467,7 +467,7 @@ void GraphicsManager::setGUISize(int guiWidth, int guiHeight) {
 void GraphicsManager::setPerspective(float viewAngle, float clipNear, float clipFar) {
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setPerspective, this, viewAngle, clipNear, clipFar));
+		Events::MainThreadFunctor<void> functor(std::bind(&GraphicsManager::setPerspective, this, viewAngle, clipNear, clipFar));
 
 		return RequestMan.callInMainThread(functor);
 	}
@@ -526,7 +526,7 @@ void GraphicsManager::perspective(float fovy, float aspect, float zNear, float z
 void GraphicsManager::setOrthogonal(float clipNear, float clipFar) {
 	// Force calling it from the main thread
 	if (!Common::isMainThread()) {
-		Events::MainThreadFunctor<void> functor(boost::bind(&GraphicsManager::setOrthogonal, this, clipNear, clipFar));
+		Events::MainThreadFunctor<void> functor(std::bind(&GraphicsManager::setOrthogonal, this, clipNear, clipFar));
 
 		return RequestMan.callInMainThread(functor);
 	}

@@ -22,7 +22,7 @@
  *  The loading screen gui
  */
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/engines/odyssey/progressbar.h"
 
@@ -41,7 +41,7 @@ void LoadScreen::setLoadingProgress(unsigned int progress) {
 }
 
 LoadingProgressFunc LoadScreen::getLoadingProgressFunc() {
-	return boost::bind(&LoadScreen::setLoadingProgress, this, _1);
+	return std::bind(&LoadScreen::setLoadingProgress, this, std::placeholders::_1);
 }
 
 } // End of namespace KotORBase

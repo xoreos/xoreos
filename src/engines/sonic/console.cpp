@@ -22,7 +22,7 @@
  *  Sonic Chronicles: The Dark Brotherhood (debug) console.
  */
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/common/ustring.h"
 #include "src/common/strutil.h"
@@ -47,9 +47,9 @@ Console::Console(SonicEngine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 10),
 	_engine(&engine) {
 
-	registerCommand("listareas", boost::bind(&Console::cmdListAreas, this, _1),
+	registerCommand("listareas", std::bind(&Console::cmdListAreas, this, std::placeholders::_1),
 			"Usage: listareas\nList all areas");
-	registerCommand("gotoarea" , boost::bind(&Console::cmdGotoArea , this, _1),
+	registerCommand("gotoarea" , std::bind(&Console::cmdGotoArea , this, std::placeholders::_1),
 			"Usage: gotoarea <area>\nMove to a specific area");
 }
 

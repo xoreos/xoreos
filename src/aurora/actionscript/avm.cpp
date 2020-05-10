@@ -22,7 +22,7 @@
  *  Context for executing ActionScript.
  */
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/common/error.h"
 #include "src/common/util.h"

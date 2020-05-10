@@ -25,8 +25,6 @@
 #include <cassert>
 #include <cstdlib>
 
-#include <boost/bind.hpp>
-
 #include "src/common/util.h"
 #include "src/common/random.h"
 

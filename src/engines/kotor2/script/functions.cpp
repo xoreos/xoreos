@@ -22,7 +22,7 @@
  *  Star Wars: Knights of the Old Republic II - The Sith Lords engine functions.
  */
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/common/util.h"
 
@@ -78,7 +78,7 @@ void Functions::registerFunctions() {
 
 		const funcPtr f = fPtr.func ? fPtr.func : &Functions::unimplementedFunction;
 
-		FunctionMan.registerFunction(fPtr.name, id, boost::bind(f, this, _1), signature, defaults);
+		FunctionMan.registerFunction(fPtr.name, id, std::bind(f, this, std::placeholders::_1), signature, defaults);
 	}
 }
 

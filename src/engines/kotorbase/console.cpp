@@ -22,7 +22,7 @@
  *  Base debug console for KotOR games.
  */
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
@@ -47,38 +47,38 @@ Console::Console(KotOREngine &engine) :
 		_engine(&engine),
 		_maxSizeMusic(0) {
 
-	registerCommand("exitmodule"          , boost::bind(&Console::cmdExitModule          , this, _1),
+	registerCommand("exitmodule"          , std::bind(&Console::cmdExitModule          , this, std::placeholders::_1),
 			"Usage: exitmodule\nExit the module, returning to the main menu");
-	registerCommand("listmodules"         , boost::bind(&Console::cmdListModules         , this, _1),
+	registerCommand("listmodules"         , std::bind(&Console::cmdListModules         , this, std::placeholders::_1),
 			"Usage: listmodules\nList all modules");
-	registerCommand("loadmodule"          , boost::bind(&Console::cmdLoadModule          , this, _1),
+	registerCommand("loadmodule"          , std::bind(&Console::cmdLoadModule          , this, std::placeholders::_1),
 			"Usage: loadmodule <module>\nLoad and enter the specified module");
-	registerCommand("listmusic"           , boost::bind(&Console::cmdListMusic           , this, _1),
+	registerCommand("listmusic"           , std::bind(&Console::cmdListMusic           , this, std::placeholders::_1),
 			"Usage: listmusic\nList all available music resources");
-	registerCommand("stopmusic"           , boost::bind(&Console::cmdStopMusic           , this, _1),
+	registerCommand("stopmusic"           , std::bind(&Console::cmdStopMusic           , this, std::placeholders::_1),
 			"Usage: stopmusic\nStop the currently playing music resource");
-	registerCommand("playmusic"           , boost::bind(&Console::cmdPlayMusic           , this, _1),
+	registerCommand("playmusic"           , std::bind(&Console::cmdPlayMusic           , this, std::placeholders::_1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
-	registerCommand("flycam"              , boost::bind(&Console::cmdFlyCam              , this, _1),
+	registerCommand("flycam"              , std::bind(&Console::cmdFlyCam              , this, std::placeholders::_1),
 			"Usage: flycam\nToggle free roam camera mode");
-	registerCommand("showwalkmesh"        , boost::bind(&Console::cmdShowWalkmesh        , this, _1),
+	registerCommand("showwalkmesh"        , std::bind(&Console::cmdShowWalkmesh        , this, std::placeholders::_1),
 			"Usage: showwalkmesh\nToggle walkmesh display");
-	registerCommand("showtriggers"        , boost::bind(&Console::cmdShowTriggers        , this, _1),
+	registerCommand("showtriggers"        , std::bind(&Console::cmdShowTriggers        , this, std::placeholders::_1),
 			"Usage: showtriggers\nToggle triggers display");
-	registerCommand("getpcroom"           , boost::bind(&Console::cmdGetPCRoom           , this, _1),
+	registerCommand("getpcroom"           , std::bind(&Console::cmdGetPCRoom           , this, std::placeholders::_1),
 			"Usage: getpcroom\nGet a room PC is in");
-	registerCommand("listroomsvisiblefrom", boost::bind(&Console::cmdListRoomsVisibleFrom, this, _1),
+	registerCommand("listroomsvisiblefrom", std::bind(&Console::cmdListRoomsVisibleFrom, this, std::placeholders::_1),
 			"Usage: listroomsvisiblefrom <room>\nList rooms that are visible from the specified room");
-	registerCommand("playanim"            , boost::bind(&Console::cmdPlayAnim            , this, _1),
+	registerCommand("playanim"            , std::bind(&Console::cmdPlayAnim            , this, std::placeholders::_1),
 			"Usage: playanim <base> [<head>]\nPlay the specified animations on the active object");
-	registerCommand("additem"             , boost::bind(&Console::cmdAddItem             , this, _1),
+	registerCommand("additem"             , std::bind(&Console::cmdAddItem             , this, std::placeholders::_1),
 			"Usage: additem <item> [<count>]\nAdd the specified item to the active object");
-	registerCommand("getactiveobject"     , boost::bind(&Console::cmdGetActiveObject     , this, _1),
+	registerCommand("getactiveobject"     , std::bind(&Console::cmdGetActiveObject     , this, std::placeholders::_1),
 			"Usage: getactiveobject\nGet a tag of the active object");
-	registerCommand("actionmovetoobject"  , boost::bind(&Console::cmdActionMoveToObject  , this, _1),
+	registerCommand("actionmovetoobject"  , std::bind(&Console::cmdActionMoveToObject  , this, std::placeholders::_1),
 			"Usage: actionmovetoobject <target> [<range>]\nMake the active creature move to a specified object");
-	registerCommand("describe"            , boost::bind(&Console::cmdDescribe            , this, _1),
+	registerCommand("describe"            , std::bind(&Console::cmdDescribe            , this, std::placeholders::_1),
 			"Usage: describe\nDescribe the active object or the party leader");
 }
 

@@ -22,8 +22,6 @@
  *  The loading screen gui
  */
 
-#include <boost/bind.hpp>
-
 #include "src/aurora/2dareg.h"
 #include "src/aurora/talkman.h"
 

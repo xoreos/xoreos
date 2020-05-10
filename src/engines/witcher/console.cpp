@@ -23,8 +23,7 @@
  */
 
 #include <algorithm>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/common/ustring.h"
 #include "src/common/util.h"
@@ -53,27 +52,27 @@ Console::Console(WitcherEngine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
 	_engine(&engine), _maxSizeMusic(0) {
 
-	registerCommand("listmusic"    , boost::bind(&Console::cmdListMusic    , this, _1),
+	registerCommand("listmusic"    , std::bind(&Console::cmdListMusic    , this, std::placeholders::_1),
 			"Usage: listmusic\nList all available music resources");
-	registerCommand("stopmusic"    , boost::bind(&Console::cmdStopMusic    , this, _1),
+	registerCommand("stopmusic"    , std::bind(&Console::cmdStopMusic    , this, std::placeholders::_1),
 			"Usage: stopmusic\nStop the currently playing music resource");
-	registerCommand("playmusic"    , boost::bind(&Console::cmdPlayMusic    , this, _1),
+	registerCommand("playmusic"    , std::bind(&Console::cmdPlayMusic    , this, std::placeholders::_1),
 			"Usage: playmusic [<music>]\nPlay the specified music resource. "
 			"If none was specified, play the default area music.");
-	registerCommand("move"         , boost::bind(&Console::cmdMove         , this, _1),
+	registerCommand("move"         , std::bind(&Console::cmdMove         , this, std::placeholders::_1),
 			"Usage: move <x> <y> <z>\nMove to this position in the current area");
-	registerCommand("listareas"    , boost::bind(&Console::cmdListAreas    , this, _1),
+	registerCommand("listareas"    , std::bind(&Console::cmdListAreas    , this, std::placeholders::_1),
 			"Usage: listareas\nList all areas in the current module");
-	registerCommand("gotoarea"     , boost::bind(&Console::cmdGotoArea     , this, _1),
+	registerCommand("gotoarea"     , std::bind(&Console::cmdGotoArea     , this, std::placeholders::_1),
 			"Usage: gotoarea <area>\nMove to a specific area");
-	registerCommand("listcampaigns", boost::bind(&Console::cmdListCampaigns, this, _1),
+	registerCommand("listcampaigns", std::bind(&Console::cmdListCampaigns, this, std::placeholders::_1),
 			"Usage: listcampaigns\nList all campaigns");
-	registerCommand("loadcampaign" , boost::bind(&Console::cmdLoadCampaign , this, _1),
+	registerCommand("loadcampaign" , std::bind(&Console::cmdLoadCampaign , this, std::placeholders::_1),
 			"Usage: loadcampaign <campaign>\nLoads a campaign, "
 			"replacing the currently running one");
-	registerCommand("listmodules"  , boost::bind(&Console::cmdListModules  , this, _1),
+	registerCommand("listmodules"  , std::bind(&Console::cmdListModules  , this, std::placeholders::_1),
 			"Usage: listmodules\nList all modules");
-	registerCommand("loadmodule"   , boost::bind(&Console::cmdLoadModule   , this, _1),
+	registerCommand("loadmodule"   , std::bind(&Console::cmdLoadModule   , this, std::placeholders::_1),
 			"Usage: loadmodule <module>\nLoads a module, "
 			"replacing the currently running one");
 }

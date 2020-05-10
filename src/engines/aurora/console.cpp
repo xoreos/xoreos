@@ -26,7 +26,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "external/glm/gtc/matrix_transform.hpp"
 
@@ -767,52 +767,52 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 
 	_readLine->historyIgnoreDups(true);
 
-	registerCommand("help"       , boost::bind(&Console::cmdHelp       , this, _1),
+	registerCommand("help"       , std::bind(&Console::cmdHelp       , this, std::placeholders::_1),
 			"Usage: help [<command>]\nPrint help text");
-	registerCommand("clear"      , boost::bind(&Console::cmdClear      , this, _1),
+	registerCommand("clear"      , std::bind(&Console::cmdClear      , this, std::placeholders::_1),
 			"Usage: clear\nClear the console window");
-	registerCommand("close"      , boost::bind(&Console::cmdClose      , this, _1),
+	registerCommand("close"      , std::bind(&Console::cmdClose      , this, std::placeholders::_1),
 			"Usage: close\nClose the console window, returning to the game");
-	registerCommand("quit"       , boost::bind(&Console::cmdQuit    , this, _1),
+	registerCommand("quit"       , std::bind(&Console::cmdQuit    , this, std::placeholders::_1),
 			"Usage: quit\nQuit xoreos entirely");
-	registerCommand("dumpreslist", boost::bind(&Console::cmdDumpResList, this, _1),
+	registerCommand("dumpreslist", std::bind(&Console::cmdDumpResList, this, std::placeholders::_1),
 			"Usage: dumpreslist <file>\nDump the current list of resources to file");
-	registerCommand("dumpres"    , boost::bind(&Console::cmdDumpRes    , this, _1),
+	registerCommand("dumpres"    , std::bind(&Console::cmdDumpRes    , this, std::placeholders::_1),
 			"Usage: dumpres <resource>\nDump a resource to file");
-	registerCommand("dumptga"    , boost::bind(&Console::cmdDumpTGA    , this, _1),
+	registerCommand("dumptga"    , std::bind(&Console::cmdDumpTGA    , this, std::placeholders::_1),
 			"Usage: dumptga <resource>\nDump an image resource into a TGA");
-	registerCommand("dump2da"    , boost::bind(&Console::cmdDump2DA    , this, _1),
+	registerCommand("dump2da"    , std::bind(&Console::cmdDump2DA    , this, std::placeholders::_1),
 			"Usage: dump2da <2da>\nDump a 2DA to file");
-	registerCommand("dumpall2da" , boost::bind(&Console::cmdDumpAll2DA , this, _1),
+	registerCommand("dumpall2da" , std::bind(&Console::cmdDumpAll2DA , this, std::placeholders::_1),
 			"Usage: dumpall2da\nDump all 2DA to file");
-	registerCommand("listvideos" , boost::bind(&Console::cmdListVideos , this, _1),
+	registerCommand("listvideos" , std::bind(&Console::cmdListVideos , this, std::placeholders::_1),
 			"Usage: listvideos\nList all available videos");
-	registerCommand("playvideo"  , boost::bind(&Console::cmdPlayVideo  , this, _1),
+	registerCommand("playvideo"  , std::bind(&Console::cmdPlayVideo  , this, std::placeholders::_1),
 			"Usage: playvideo <video>\nPlay the specified video");
-	registerCommand("listsounds" , boost::bind(&Console::cmdListSounds , this, _1),
+	registerCommand("listsounds" , std::bind(&Console::cmdListSounds , this, std::placeholders::_1),
 			"Usage: listsounds\nList all available sounds");
-	registerCommand("playsound"  , boost::bind(&Console::cmdPlaySound  , this, _1),
+	registerCommand("playsound"  , std::bind(&Console::cmdPlaySound  , this, std::placeholders::_1),
 			"Usage: playsound <sound>\nPlay the specified sound");
-	registerCommand("silence"    , boost::bind(&Console::cmdSilence    , this, _1),
+	registerCommand("silence"    , std::bind(&Console::cmdSilence    , this, std::placeholders::_1),
 			"Usage: silence\nStop all playing sounds and music");
-	registerCommand("getoption"  , boost::bind(&Console::cmdGetOption  , this, _1),
+	registerCommand("getoption"  , std::bind(&Console::cmdGetOption  , this, std::placeholders::_1),
 			"Usage: getoption <option>\nPrint the value of a config options");
-	registerCommand("setoption"  , boost::bind(&Console::cmdSetOption  , this, _1),
+	registerCommand("setoption"  , std::bind(&Console::cmdSetOption  , this, std::placeholders::_1),
 			"Usage: setoption <option> <value>\nSet the value of a config option for this session");
-	registerCommand("showfps"    , boost::bind(&Console::cmdShowFPS    , this, _1),
+	registerCommand("showfps"    , std::bind(&Console::cmdShowFPS    , this, std::placeholders::_1),
 			"Usage: showfps <true/false>\nShow/Hide the frames-per-second display");
-	registerCommand("listlangs"  , boost::bind(&Console::cmdListLangs  , this, _1),
+	registerCommand("listlangs"  , std::bind(&Console::cmdListLangs  , this, std::placeholders::_1),
 			"Usage: listlangs\nLists all languages supported by this game version");
-	registerCommand("getlang"    , boost::bind(&Console::cmdGetLang    , this, _1),
+	registerCommand("getlang"    , std::bind(&Console::cmdGetLang    , this, std::placeholders::_1),
 			"Usage: getlang\nPrint the current language settings");
-	registerCommand("setlang"    , boost::bind(&Console::cmdSetLang    , this, _1),
+	registerCommand("setlang"    , std::bind(&Console::cmdSetLang    , this, std::placeholders::_1),
 			"Usage: setlang <language>\n       setlang <language_text> <language_voice>\n"
 			"Change the game's current language");
-	registerCommand("getstring"  , boost::bind(&Console::cmdGetString  , this, _1),
+	registerCommand("getstring"  , std::bind(&Console::cmdGetString  , this, std::placeholders::_1),
 			"Usage: getstring <strref>\nGet a string from the talk manager and print it");
-	registerCommand("getcamera"  , boost::bind(&Console::cmdGetCamera  , this, _1),
+	registerCommand("getcamera"  , std::bind(&Console::cmdGetCamera  , this, std::placeholders::_1),
 			"Usage: getcamera\nPrint the current camera position and orientation");
-	registerCommand("setcamera"  , boost::bind(&Console::cmdSetCamera  , this, _1),
+	registerCommand("setcamera"  , std::bind(&Console::cmdSetCamera  , this, std::placeholders::_1),
 			"Usage: setcamera <posX> <posY> <posZ> [<orientX> <orientY> <orientZ>]\n"
 			"Set the camera position (and orientation)");
 

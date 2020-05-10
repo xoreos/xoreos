@@ -23,8 +23,7 @@
  */
 
 #include <algorithm>
-
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/graphics/aurora/types.h"
 
@@ -43,13 +42,13 @@ Console::Console(DragonAge2Engine &engine) :
 	::Engines::Console(engine, Graphics::Aurora::kSystemFontMono, 13),
 	_engine(&engine) {
 
-	registerCommand("listareas"    , boost::bind(&Console::cmdListAreas     , this, _1),
+	registerCommand("listareas"    , std::bind(&Console::cmdListAreas    , this, std::placeholders::_1),
 			"Usage: listareas\nList all areas in the current campaign");
-	registerCommand("loadarea"     , boost::bind(&Console::cmdLoadArea     , this, _1),
+	registerCommand("loadarea"     , std::bind(&Console::cmdLoadArea     , this, std::placeholders::_1),
 			"Usage: loadarea <name>\nLoad and show a specific area in the current campaign");
-	registerCommand("listcampaigns", boost::bind(&Console::cmdListCampaigns, this, _1),
+	registerCommand("listcampaigns", std::bind(&Console::cmdListCampaigns, this, std::placeholders::_1),
 			"Usage: listcampaigns\nList all playable campaigns");
-	registerCommand("loadcampaign" , boost::bind(&Console::cmdLoadCampaign , this, _1),
+	registerCommand("loadcampaign" , std::bind(&Console::cmdLoadCampaign , this, std::placeholders::_1),
 			"Usage: loadcampaign <name>\nLoad and run a specific campaign");
 }
 

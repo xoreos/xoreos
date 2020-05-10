@@ -22,7 +22,7 @@
  *  A tooltip.
  */
 
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "src/common/util.h"
 #include "src/common/configman.h"
@@ -267,9 +267,11 @@ void Tooltip::show(uint32 delay, uint32 timeOut) {
 		doShow(0);
 
 	if (delay   != 0)
-		TimerMan.addTimer(delay          , _timerShow, boost::bind(&Tooltip::doShow, this, _1));
+		TimerMan.addTimer(delay          , _timerShow,
+		                  std::bind(static_cast<uint32(Tooltip::*)(uint32)>(&Tooltip::doShow), this, std::placeholders::_1));
 	if (timeOut != 0)
-		TimerMan.addTimer(delay + timeOut, _timerHide, boost::bind(&Tooltip::doHide, this, _1));
+		TimerMan.addTimer(delay + timeOut, _timerHide,
+		                  std::bind(static_cast<uint32(Tooltip::*)(uint32)>(&Tooltip::doHide), this, std::placeholders::_1));
 }
 
 void Tooltip::hide() {
