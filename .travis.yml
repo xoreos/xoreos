@@ -103,11 +103,6 @@ addons:
     branch_pattern: coverity_scan
 
 notifications:
-  email:
-    recipients:
-      - ndbrandes@gmail.com
-    on_success: change
-    on_failure: always
   irc:
     channels:
       - secure: "Q7G5gmVRO67LIAhic4NoeiPRtygiOqjEfPZMIHqgTcpd1OkD8u/Sv9zhfYORfCIqKX1TruL6to6O/4q0HdjQ4NL4GfiNB0iYc+JCinmg80ekPLjjxBIvHmrsvz8onTAmxyYFacXM0YNurCMVvuD0F/yUaiTWwVcRY7PId8T8KPk="
