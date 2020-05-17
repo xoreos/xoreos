@@ -22,6 +22,8 @@
  *  An NWScript object container.
  */
 
+#include <cassert>
+
 #include <algorithm>
 
 #include "src/common/error.h"

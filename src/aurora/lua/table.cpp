@@ -22,6 +22,8 @@
  *  A reference to a Lua table.
  */
 
+#include <cassert>
+
 #include "external/toluapp/tolua++.h"
 
 #include "src/common/error.h"

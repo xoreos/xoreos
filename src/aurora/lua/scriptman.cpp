@@ -22,6 +22,8 @@
  *  Lua script manager.
  */
 
+#include <cassert>
+
 #include "external/lua/lualib.h"
 
 #include "external/toluapp/tolua++.h"

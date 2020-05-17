@@ -22,6 +22,8 @@
  *  Lua variable.
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 
 #include "src/aurora/lua/variable.h"

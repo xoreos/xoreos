@@ -23,6 +23,8 @@
  * A loader class for texture atlas XML files for Dragon Age: Origins and Dragon Age 2.
  */
 
+#include <cassert>
+
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
 #include "src/common/xml.h"

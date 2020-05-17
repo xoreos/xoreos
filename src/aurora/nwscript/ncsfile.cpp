@@ -28,6 +28,8 @@
  * a mirror (<https://github.com/xoreos/xoreos-docs>).
  */
 
+#include <cassert>
+
 #include <boost/make_shared.hpp>
 
 #include "src/common/util.h"

@@ -22,6 +22,8 @@
  *  NWScript variable.
  */
 
+#include <cassert>
+
 #include <boost/make_shared.hpp>
 
 #include "src/common/error.h"

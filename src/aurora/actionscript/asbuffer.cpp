@@ -22,6 +22,8 @@
  *  Buffer for handling actionscript byte code.
  */
 
+#include <cassert>
+
 #include "src/common/bitstream.h"
 #include "src/common/memreadstream.h"
 #include "src/common/debug.h"

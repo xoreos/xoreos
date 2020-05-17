@@ -22,6 +22,8 @@
  *  Handling TheWitcherSave Archives.
  */
 
+#include <cassert>
+
 #include "src/aurora/thewitchersavefile.h"
 #include "src/aurora/util.h"
 

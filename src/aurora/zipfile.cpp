@@ -22,6 +22,8 @@
  *  A ZIP archive.
  */
 
+#include <cassert>
+
 #include "src/common/zipfile.h"
 #include "src/common/filepath.h"
 

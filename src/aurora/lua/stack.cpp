@@ -22,6 +22,8 @@
  *  A Lua stack wrapper.
  */
 
+#include <cassert>
+
 #include "external/toluapp/tolua++.h"
 
 #include "src/common/error.h"

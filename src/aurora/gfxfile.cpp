@@ -22,6 +22,8 @@
  *  GFX files are used for the dragonage and dragonage2 guis.
  */
 
+#include <cassert>
+
 #include "src/common/filepath.h"
 #include "src/common/deflate.h"
 #include "src/common/ustring.h"

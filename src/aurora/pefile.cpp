@@ -22,6 +22,8 @@
  *  A portable executable archive.
  */
 
+#include <cassert>
+
 #include "src/common/ptrvector.h"
 #include "src/common/error.h"
 #include "src/common/pe_exe.h"
