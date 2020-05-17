@@ -58,6 +58,9 @@ and 64-bit x86 architectures.
 Or, if you're running Arch Linux, you can install xoreos directly from the
 [AUR](https://aur.archlinux.org/packages/xoreos/).
 
+Or, if you're running Gentoo Linux, you can install xoreos directly from our
+[overlay](https://github.com/xoreos/gentoo-overlay).
+
 Lastly, you can compile xoreos yourself; either from a release source package,
 found on our [downloads page](https://xoreos.org/downloads/index.html), or a
 fresh [repository](https://github.com/xoreos/xoreos) checkout. For details
