@@ -22,6 +22,8 @@
  *  Testing implementation for the VideoDecoder interface.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 
 #include "src/graphics/images/surface.h"
