@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include <algorithm>
+
 #include "external/toluapp/tolua++.h"
 
 #include "src/common/error.h"
