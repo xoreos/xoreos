@@ -22,6 +22,7 @@
  *  Utility templates and functions for working with strings and streams.
  */
 
+#include <cassert>
 #include <cctype>
 #include <climits>
 #include <cerrno>

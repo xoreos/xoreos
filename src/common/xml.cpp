@@ -22,6 +22,7 @@
  *  XML parsing helpers, using libxml2.
  */
 
+#include <cassert>
 #include <cstdarg>
 #include <cstdio>
 

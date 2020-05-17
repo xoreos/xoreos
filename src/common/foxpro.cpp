@@ -22,6 +22,7 @@
  *  A database in FoxPro format.
  */
 
+#include <cassert>
 #include <cstring>
 #include <cstdio>
 

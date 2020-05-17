@@ -47,6 +47,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <cassert>
+
 #include "src/common/algorithm.h"
 #include "src/common/error.h"
 #include "src/common/rational.h"
