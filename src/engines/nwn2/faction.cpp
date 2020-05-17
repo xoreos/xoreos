@@ -22,6 +22,8 @@
  *  A factions array in a Neverwinter Nights 2 module.
  */
 
+#include <cassert>
+
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"

@@ -22,6 +22,8 @@
  *  Base engine for KotOR games.
  */
 
+#include <cassert>
+
 #include "src/engines/kotorbase/engine.h"
 
 namespace Engines {

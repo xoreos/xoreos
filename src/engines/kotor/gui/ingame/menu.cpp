@@ -22,6 +22,8 @@
  *  The ingame menu.
  */
 
+#include <cassert>
+
 #include "src/graphics/graphics.h"
 
 #include "src/engines/odyssey/button.h"

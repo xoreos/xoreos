@@ -22,6 +22,8 @@
  *  Star Wars: Knights of the Old Republic II - The Sith Lords engine functions.
  */
 
+#include <cassert>
+
 #include <functional>
 
 #include "src/common/util.h"

@@ -22,6 +22,8 @@
  *  Collection of inventory items in KotOR games.
  */
 
+#include <cassert>
+
 #include "src/engines/kotorbase/inventory.h"
 
 namespace Engines {

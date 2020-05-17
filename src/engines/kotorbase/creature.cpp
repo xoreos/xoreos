@@ -22,6 +22,8 @@
  *  Creature within an area in KotOR games.
  */
 
+#include <cassert>
+
 #include "external/glm/gtc/type_ptr.hpp"
 
 #include "src/common/util.h"

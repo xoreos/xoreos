@@ -23,6 +23,8 @@
  *  Mostly stubs at the moment.
  */
 
+#include <cassert>
+
 #include "external/glm/vec3.hpp"
 
 #include "src/common/error.h"

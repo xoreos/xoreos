@@ -22,6 +22,8 @@
  *  The domain chooser for clerc in CharGen.
  */
 
+#include <cassert>
+
 #include "src/common/strutil.h"
 
 #include "src/aurora/talkman.h"

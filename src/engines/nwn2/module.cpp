@@ -22,6 +22,8 @@
  *  The context needed to run a Neverwinter Nights 2 module.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"

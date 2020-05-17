@@ -22,6 +22,8 @@
  *  An object in a Neverwinter Nights 2 area.
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/uuid.h"

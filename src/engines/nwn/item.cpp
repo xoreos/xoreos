@@ -22,6 +22,8 @@
  *  An inventory item in Neverwinter Nights.
  */
 
+#include <cassert>
+
 #include "src/common/error.h"
 #include "src/common/maths.h"
 #include "src/common/util.h"

@@ -23,6 +23,8 @@
  *  Pathfinding for NWN.
  */
 
+#include <cassert>
+
 #include <algorithm>
 
 #include "src/common/ustring.h"

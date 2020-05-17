@@ -22,6 +22,8 @@
  *  The context needed to run a The Witcher module.
  */
 
+#include <cassert>
+
 #include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"

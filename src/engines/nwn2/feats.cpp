@@ -22,6 +22,8 @@
  *  Feats for a Neverwinter Nights 2 creature.
  */
 
+#include <cassert>
+
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
 

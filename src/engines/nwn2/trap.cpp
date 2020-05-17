@@ -22,6 +22,8 @@
  *  A trap on a Neverwinter Nights 2 door, placeable, or trigger.
  */
 
+#include <cassert>
+
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"

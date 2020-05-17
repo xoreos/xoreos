@@ -22,6 +22,8 @@
  *  Generic trigger.
  */
 
+#include <cassert>
+
 #include "external/glm/gtc/type_ptr.hpp"
 #include "external/glm/gtx/intersect.hpp"
 

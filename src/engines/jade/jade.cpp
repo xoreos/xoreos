@@ -22,6 +22,8 @@
  *  Engine class handling Jade Empire
  */
 
+#include <cassert>
+
 #include "src/common/util.h"
 #include "src/common/filelist.h"
 #include "src/common/filepath.h"
