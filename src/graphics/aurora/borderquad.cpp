@@ -23,6 +23,7 @@
  * A quad for generating borders.
  */
 
+#include <cassert>
 #include <cfloat>
 
 #include "src/graphics/aurora/textureman.h"

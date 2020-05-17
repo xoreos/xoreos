@@ -22,6 +22,7 @@
  *  TPC (BioWare's own texture format) loading.
  */
 
+#include <cassert>
 #include <cstring>
 
 #include "src/common/scopedptr.h"
