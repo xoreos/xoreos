@@ -26,8 +26,7 @@
 #define COMMON_STRWORDMAP_H
 
 #include <map>
-
-#include <boost/unordered/unordered_map.hpp>
+#include <unordered_map>
 
 #include "src/common/ustring.h"
 
@@ -36,8 +35,8 @@ namespace Common {
 typedef std::map<UString, UString> StringMap;
 typedef std::map<UString, UString, UString::iless> StringIMap;
 
-typedef boost::unordered_map<UString, UString, hashUStringCaseSensitive> StringHashMap;
-typedef boost::unordered_map<UString, UString, hashUStringCaseInsensitive> StringHashIMap;
+typedef std::unordered_map<UString, UString, hashUStringCaseSensitive, equalsUStringSensitive> StringHashMap;
+typedef std::unordered_map<UString, UString, hashUStringCaseInsensitive, equalsUStringInsensitive> StringHashIMap;
 
 /** A map to quickly match strings from a list. */
 class StringListMap {
@@ -66,7 +65,7 @@ public:
 private:
 	bool _onlyFirstWord;
 
-	typedef boost::unordered_map<UString, size_t, hashUStringCaseInsensitive> StrMap;
+	typedef std::unordered_map<UString, size_t, hashUStringCaseInsensitive, equalsUStringInsensitive> StrMap;
 
 	StrMap _map;
 

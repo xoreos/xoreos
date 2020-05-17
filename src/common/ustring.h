@@ -240,6 +240,18 @@ struct hashUStringCaseInsensitive {
 	}
 };
 
+struct equalsUStringSensitive {
+	bool operator()(const UString &str1, const UString &str2) const {
+		return str1.equals(str2);
+	}
+};
+
+struct equalsUStringInsensitive {
+	bool operator()(const UString &str1, const UString &str2) const {
+		return str1.equalsIgnoreCase(str2);
+	}
+};
+
 } // End of namespace Common
 
 #endif // COMMON_USTRING_H
