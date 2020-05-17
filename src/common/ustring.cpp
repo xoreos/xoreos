@@ -25,6 +25,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cctype>
+#include <cstring>
 
 #include <boost/algorithm/string/replace.hpp>
 
