@@ -245,9 +245,9 @@ bool LocalPathfinding::buildWalkmeshAround(std::vector<glm::vec3> &path, float h
 		_trueMax[c] += halfWidth;
 	}
 
-	for (size_t n = 0; n < _globalPathfinding->_AABBTrees.size(); ++n) {
-		if (_globalPathfinding->_AABBTrees[n])
-			_globalPathfinding->_AABBTrees[n]->getNodesInAABox(_trueMin, _trueMax, nodes);
+	for (size_t n = 0; n < _globalPathfinding->_aabbTrees.size(); ++n) {
+		if (_globalPathfinding->_aabbTrees[n])
+			_globalPathfinding->_aabbTrees[n]->getNodesInAABox(_trueMin, _trueMax, nodes);
 	}
 
 	std::vector<glm::vec3> vertices;

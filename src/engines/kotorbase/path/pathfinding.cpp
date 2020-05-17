@@ -53,7 +53,7 @@ void Pathfinding::addRoom(Room *room) {
 	_adjRooms.push_back(adjRooms);
 
 	Common::AABBNode *rootNode = _walkmeshLoader.getAABB();
-	_AABBTrees.push_back(rootNode);
+	_aabbTrees.push_back(rootNode);
 	_rooms.push_back(room);
 }
 
@@ -113,11 +113,11 @@ uint32 Pathfinding::getFaceFromEdge(uint32 edge, uint32 room) const {
 }
 
 Room *Pathfinding::getRoomAt(float x, float y) const {
-	for (size_t n = 0; n < _AABBTrees.size(); ++n) {
-		if (!_AABBTrees[n])
+	for (size_t n = 0; n < _aabbTrees.size(); ++n) {
+		if (!_aabbTrees[n])
 			continue;
 
-		if (!_AABBTrees[n]->isIn(x, y))
+		if (!_aabbTrees[n]->isIn(x, y))
 			continue;
 
 		return _rooms[n];

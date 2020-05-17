@@ -136,7 +136,7 @@ protected:
 	std::vector<uint32> _adjFaces;     ///< The adjacent faces in the walkmesh.
 	std::vector<uint32> _faceProperty; ///< The property of each faces. Usually used to state the walkability.
 
-	std::vector<Common::AABBNode *> _AABBTrees; ///< The set of AABB trees in the walkmesh.
+	std::vector<Common::AABBNode *> _aabbTrees; ///< The set of AABB trees in the walkmesh.
 	bool _pathVisible;
 	bool _walkmeshVisible;
 

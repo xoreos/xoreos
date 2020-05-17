@@ -69,21 +69,21 @@ void Pathfinding::addTile(const Common::UString &wokFile, float *orientation, fl
 	tile.adjFaces.resize(tile.faces.size(), UINT32_MAX);
 	_tiles.push_back(tile);
 
-	_AABBTrees.push_back(_walkmeshLoader->getAABB());
+	_aabbTrees.push_back(_walkmeshLoader->getAABB());
 
 	// Find Adjacent tiles.
 	glm::vec3 leftMax(position[0] - 5.f, position[1] + 5.f, 0.f);
 	glm::vec3 bottomMax(position[0] + 5.f, position[1] - 5.f, 0.f);
 
-	for (size_t n = 0; n < _AABBTrees.size(); ++n) {
+	for (size_t n = 0; n < _aabbTrees.size(); ++n) {
 		float x, y, z;
-		_AABBTrees[n]->getMax(x, y, z);
+		_aabbTrees[n]->getMax(x, y, z);
 		if (fabs(x - leftMax[0]) < 4.f && fabs(y - leftMax[1]) < 4.f) {
-			connectTiles(n, _AABBTrees.size() - 1, false, x);
+			connectTiles(n, _aabbTrees.size() - 1, false, x);
 			continue;
 		}
 		if (fabs(x - bottomMax[0]) < 4.f && fabs(y - bottomMax[1]) < 4.f) {
-			connectTiles(n, _AABBTrees.size() - 1, true, y);
+			connectTiles(n, _aabbTrees.size() - 1, true, y);
 			continue;
 		}
 	}
@@ -119,7 +119,7 @@ void Pathfinding::finalize() {
 		_faceProperty.insert(_faceProperty.end(), _tiles[t].facesProperty.begin(), _tiles[t].facesProperty.end());
 
 		// Adjust AABB.
-		_AABBTrees[t]->adjustChildrenProperty(prevFacesCount);
+		_aabbTrees[t]->adjustChildrenProperty(prevFacesCount);
 	}
 
 	// Set adjacencies between tiles.
@@ -593,7 +593,7 @@ Pathfinding::Face Pathfinding::cutFaceAt(bool isAtGoodMax, Tile &tileToCut, Tile
 
 	// Get AABB from cut face.
 	std::vector<Common::AABBNode *> nodes;
-	_AABBTrees[tileToCut.tileId]->getNodesInAABox(center - 0.2f, center + 0.2f, nodes);
+	_aabbTrees[tileToCut.tileId]->getNodesInAABox(center - 0.2f, center + 0.2f, nodes);
 	Common::AABBNode *parentNode = 0;
 	for (std::vector<Common::AABBNode *>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
 		if ((uint32) (*it)->getProperty() == faceToCut.faceId) {

@@ -52,7 +52,7 @@ Pathfinding::Pathfinding(std::vector<bool> walkableProperties, uint32 polygonEdg
 Pathfinding::~Pathfinding() {
 	delete _pathDrawing;
 	delete _walkmeshDrawing;
-	for (auto it = _AABBTrees.begin(); it != _AABBTrees.end(); ++it)
+	for (auto it = _aabbTrees.begin(); it != _aabbTrees.end(); ++it)
 		delete *it;
 
 	delete _aStarAlgorithm;
@@ -299,7 +299,7 @@ bool Pathfinding::walkableAASquare(glm::vec3 center, float halfWidth) {
 	glm::vec2 max(center[0] + halfWidth, center[1] + halfWidth);
 
 	std::vector<Common::AABBNode *> nodesIn;
-	for (std::vector<Common::AABBNode *>::iterator n = _AABBTrees.begin(); n != _AABBTrees.end(); ++n) {
+	for (std::vector<Common::AABBNode *>::iterator n = _aabbTrees.begin(); n != _aabbTrees.end(); ++n) {
 		if (*n)
 			(*n)->getNodesInAABox(min, max, nodesIn);
 	}
@@ -328,7 +328,7 @@ bool Pathfinding::walkableAASquare(glm::vec3 center, float halfWidth) {
 bool Pathfinding::walkableSegment(glm::vec3 start, glm::vec3 end) {
 	std::vector<Common::AABBNode *> nodesIn;
 
-	for (std::vector<Common::AABBNode *>::iterator n = _AABBTrees.begin(); n != _AABBTrees.end(); ++n) {
+	for (std::vector<Common::AABBNode *>::iterator n = _aabbTrees.begin(); n != _aabbTrees.end(); ++n) {
 		if (*n)
 			(*n)->getNodesInSegment(start, end, nodesIn);
 	}
@@ -382,7 +382,7 @@ float Pathfinding::getHeight(float x, float y, bool onlyWalkable) const {
 }
 
 uint32 Pathfinding::findFace(float x, float y, bool onlyWalkable) {
-	for (std::vector<Common::AABBNode *>::iterator it = _AABBTrees.begin(); it != _AABBTrees.end(); ++it) {
+	for (std::vector<Common::AABBNode *>::iterator it = _aabbTrees.begin(); it != _aabbTrees.end(); ++it) {
 		if (*it == 0)
 			continue;
 
@@ -409,15 +409,15 @@ uint32 Pathfinding::findFace(float x, float y, bool onlyWalkable) {
 
 bool Pathfinding::findIntersection(float x1, float y1, float z1, float x2, float y2, float z2,
                                    glm::vec3 &intersect, bool onlyWalkable) const {
-	for (size_t it = 0; it < _AABBTrees.size(); ++it) {
-		if (_AABBTrees[it] == 0)
+	for (size_t it = 0; it < _aabbTrees.size(); ++it) {
+		if (_aabbTrees[it] == 0)
 			continue;
 
-		if (!_AABBTrees[it]->isIn(x1, y1, z1, x2, y2, z2))
+		if (!_aabbTrees[it]->isIn(x1, y1, z1, x2, y2, z2))
 			continue;
 
 		std::vector<Common::AABBNode *> nodes;
-		_AABBTrees[it]->getNodes(x1, y1, z1, x2, y2, z2, nodes);
+		_aabbTrees[it]->getNodes(x1, y1, z1, x2, y2, z2, nodes);
 		for (uint n = 0; n < nodes.size(); ++n) {
 			uint32 face = nodes[n]->getProperty();
 			if (!inFace(face, glm::vec3(x1, y1, z1), glm::vec3(x2, y2, z2), intersect))
