@@ -22,6 +22,7 @@
  *  Texture information.
  */
 
+#include <cstring>
 #include <cstdio>
 
 #include "src/common/error.h"
