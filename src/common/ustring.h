@@ -29,8 +29,6 @@
 #include <sstream>
 #include <vector>
 
-#include <boost/functional/hash.hpp>
-
 #include "src/common/types.h"
 #include "src/common/system.h"
 
@@ -222,10 +220,10 @@ static inline UString operator+(const char *left, const UString &right) {
 
 struct hashUStringCaseSensitive {
 	size_t operator()(const UString &str) const {
-		size_t seed = 0;
+		size_t seed = 5381;
 
 		for (UString::iterator it = str.begin(); it != str.end(); ++it)
-			boost::hash_combine<uint32>(seed, *it);
+			seed = ((seed << 5) + seed) + *it;
 
 		return seed;
 	}
@@ -233,10 +231,10 @@ struct hashUStringCaseSensitive {
 
 struct hashUStringCaseInsensitive {
 	size_t operator()(const UString &str) const {
-		size_t seed = 0;
+		size_t seed = 5381;
 
 		for (UString::iterator it = str.begin(); it != str.end(); ++it)
-			boost::hash_combine<uint32>(seed, UString::toLower(*it));
+			seed = ((seed << 5) + seed) + UString::toLower(*it);
 
 		return seed;
 	}
