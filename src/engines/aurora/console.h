@@ -28,9 +28,9 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <functional>
 
 #include <boost/noncopyable.hpp>
-#include <boost/function.hpp>
 
 #include "src/common/types.h"
 #include "src/common/scopedptr.h"
@@ -225,7 +225,7 @@ protected:
 		Common::UString args;
 	};
 
-	typedef boost::function<void (const CommandLine &cl)> CommandCallback;
+	typedef std::function<void (const CommandLine &cl)> CommandCallback;
 
 
 	void printException(Common::Exception &e, const Common::UString &prefix = "ERROR: ");

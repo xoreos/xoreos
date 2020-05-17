@@ -96,7 +96,7 @@ private:
 
 class NativeFunction : public Function {
 public:
-	NativeFunction(boost::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag, bool preloadGlobalFlag);
+	NativeFunction(std::function<Variable(AVM &)> function, bool preloadThisFlag, bool preloadSuperFlag, bool preloadRootFlag, bool preloadGlobalFlag);
 
 	Variable operator()(AVM &avm);
 

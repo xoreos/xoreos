@@ -31,8 +31,7 @@ START_IGNORE_IMPLICIT_FALLTHROUGH
 STOP_IGNORE_IMPLICIT_FALLTHROUGH
 
 #include <list>
-
-#include <boost/function.hpp>
+#include <functional>
 
 #include "src/common/types.h"
 #include "src/common/singleton.h"
@@ -47,7 +46,7 @@ namespace Events {
  *  Its argument is the current calling interval.
  *  The return value is the new interval. 0 means the timer is stopped.
  */
-typedef boost::function<uint32 (uint32)> TimerFunc;
+typedef std::function<uint32 (uint32)> TimerFunc;
 
 class TimerID;
 class TimerHandle;

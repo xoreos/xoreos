@@ -25,7 +25,7 @@
 #ifndef ENGINES_ODYSSEY_LISTBOX_H
 #define ENGINES_ODYSSEY_LISTBOX_H
 
-#include "boost/function.hpp"
+#include <functional>
 
 #include "src/engines/odyssey/widget.h"
 
@@ -36,7 +36,7 @@ namespace Odyssey {
 class WidgetProtoItem;
 class WidgetScrollbar;
 
-typedef boost::function<WidgetProtoItem *(GUI &gui, const Common::UString &tag)> ItemWidgetFactoryFunc;
+typedef std::function<WidgetProtoItem *(GUI &gui, const Common::UString &tag)> ItemWidgetFactoryFunc;
 
 class WidgetListBox : public Widget {
 public:

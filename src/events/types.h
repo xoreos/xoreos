@@ -26,10 +26,10 @@
 #define EVENTS_TYPES_H
 
 #include <stdexcept>
+#include <functional>
 
 #include "src/common/error.h"
 
-#include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include "src/common/fallthrough.h"
@@ -358,12 +358,12 @@ enum ControllerButton {
 /** A functor for a function that needs to be called in the main thread. */
 template<typename T> struct MainThreadFunctor {
 private:
-	boost::function<T ()> func;
+	std::function<T ()> func;
 	boost::shared_ptr<T> retVal;
 	boost::shared_ptr<Common::Exception> error;
 
 public:
-	MainThreadFunctor(const boost::function<T ()> &f) : func(f), retVal(new T), error(new Common::Exception) { }
+	MainThreadFunctor(const std::function<T ()> &f) : func(f), retVal(new T), error(new Common::Exception) { }
 	void operator()() const {
 		try {
 			*retVal = func();
@@ -383,11 +383,11 @@ public:
 /** Template specialization for a MainThreadFunctor returning void. */
 template<> struct MainThreadFunctor<void> {
 private:
-	boost::function<void ()> func;
+	std::function<void ()> func;
 	boost::shared_ptr<Common::Exception> error;
 
 public:
-	MainThreadFunctor(const boost::function<void ()> &f) : func(f), error(new Common::Exception) { }
+	MainThreadFunctor(const std::function<void ()> &f) : func(f), error(new Common::Exception) { }
 	void operator()() const {
 		try {
 			func();
@@ -404,7 +404,7 @@ public:
 	const Common::Exception &getError() const { return *error; }
 };
 
-typedef boost::function<void ()> MainThreadCallerFunctor;
+typedef std::function<void ()> MainThreadCallerFunctor;
 
 } // End of namespace Events
 

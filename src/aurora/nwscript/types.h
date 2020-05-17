@@ -26,8 +26,7 @@
 #define AURORA_NWSCRIPT_TYPES_H
 
 #include <vector>
-
-#include <boost/function.hpp>
+#include <functional>
 
 namespace Aurora {
 
@@ -53,7 +52,7 @@ typedef std::vector<Type> Signature;
 
 typedef std::vector<class Variable> Parameters;
 
-typedef boost::function<void (class FunctionContext &ctx)> Function;
+typedef std::function<void (class FunctionContext &ctx)> Function;
 
 } // End of namespace NWScript
 

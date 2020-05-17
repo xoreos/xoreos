@@ -28,7 +28,6 @@
 #include <stack>
 
 #include <boost/any.hpp>
-#include <boost/function.hpp>
 
 #include "src/common/readstream.h"
 #include "src/common/scopedptr.h"

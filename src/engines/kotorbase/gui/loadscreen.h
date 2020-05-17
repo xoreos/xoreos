@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTORBASE_GUI_LOADSCREEN_H
 #define ENGINES_KOTORBASE_GUI_LOADSCREEN_H
 
-#include <boost/function.hpp>
+#include <functional>
 
 #include "src/common/thread.h"
 
@@ -37,7 +37,7 @@ namespace Engines {
 
 namespace KotORBase {
 
-typedef boost::function<void(unsigned int)> LoadingProgressFunc;
+typedef std::function<void(unsigned int)> LoadingProgressFunc;
 
 class LoadScreen : public GUI {
 public:
