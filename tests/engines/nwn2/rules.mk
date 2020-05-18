@@ -32,20 +32,28 @@ nwn2_LIBS = \
     tests/version/libversion.la \
     $(LDADD)
 
+noinst_HEADERS += tests/engines/nwn2/creature.h tests/engines/nwn2/creature2.h tests/engines/nwn2/creature3.h
+
 check_PROGRAMS                           += tests/engines/nwn2/test_creature
 tests_engines_nwn2_test_creature_SOURCES  = tests/engines/nwn2/creature.cpp
 tests_engines_nwn2_test_creature_LDADD    = $(nwn2_LIBS)
 tests_engines_nwn2_test_creature_CXXFLAGS = $(test_CXXFLAGS)
+
+noinst_HEADERS += tests/engines/nwn2/door.h
 
 check_PROGRAMS                           += tests/engines/nwn2/test_door
 tests_engines_nwn2_test_door_SOURCES      = tests/engines/nwn2/door.cpp
 tests_engines_nwn2_test_door_LDADD        = $(nwn2_LIBS)
 tests_engines_nwn2_test_door_CXXFLAGS     = $(test_CXXFLAGS)
 
+noinst_HEADERS += tests/engines/nwn2/roster.h
+
 check_PROGRAMS                           += tests/engines/nwn2/test_roster
 tests_engines_nwn2_test_roster_SOURCES    = tests/engines/nwn2/roster.cpp
 tests_engines_nwn2_test_roster_LDADD      = $(nwn2_LIBS)
 tests_engines_nwn2_test_roster_CXXFLAGS   = $(test_CXXFLAGS)
+
+noinst_HEADERS += tests/engines/nwn2/waypoint.h
 
 check_PROGRAMS                           += tests/engines/nwn2/test_waypoint
 tests_engines_nwn2_test_waypoint_SOURCES  = tests/engines/nwn2/waypoint.cpp

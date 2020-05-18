@@ -147,6 +147,7 @@ src_common_libcommon_la_SOURCES += \
 lzma_sources = \
     src/common/lzma.cpp \
     src/common/lzma.h \
+    src/common/rect.h \
     $(EMPTY)
 
 if ENABLE_LZMA

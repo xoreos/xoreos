@@ -33,6 +33,7 @@ src_engines_nwn2_libnwn2_la_SOURCES += \
     src/engines/nwn2/game.h \
     src/engines/nwn2/campaign.h \
     src/engines/nwn2/objectcontainer.h \
+    src/engines/nwn2/cursor.h \
     src/engines/nwn2/module.h \
     src/engines/nwn2/area.h \
     src/engines/nwn2/location.h \

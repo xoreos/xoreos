@@ -44,6 +44,7 @@ EXTRA_DIST += \
     cmake/FindSDL2.cmake \
     cmake/FindVorbis.cmake \
     cmake/FindXviD.cmake \
+    cmake/FindVPX.cmake \
     cmake/SetCheckCompilerFlag.cmake \
     cmake/toolchain/i686-windows-mingw.cmake \
     cmake/toolchain/x86_64-windows-mingw.cmake \
