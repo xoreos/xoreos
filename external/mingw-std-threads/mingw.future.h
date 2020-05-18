@@ -34,6 +34,17 @@
 #include "mingw.mutex.h"
 #include "mingw.condition_variable.h"
 
+#if (defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
+#pragma message "The Windows API that MinGW-w32 provides is not fully compatible\
+ with Microsoft's API. We'll try to work around this, but we can make no\
+ guarantees. This problem does not exist in MinGW-w64."
+#include <windows.h>    //  No further granularity can be expected.
+#else
+#include <synchapi.h>
+#include <handleapi.h>
+#include <processthreadsapi.h>
+#endif
+
 //  Note:
 //    std::shared_ptr is the natural choice for this. However, a custom
 //  implementation removes the need to keep a control block separate from the
@@ -473,17 +484,14 @@ class promise : mingw_stdthread::detail::FutureBase
   {
     if (valid() && !(mState->mType.load(std::memory_order_relaxed) & kSetFlag))
     {
-      try {
-        throw future_error(future_errc::broken_promise);
-      } catch (...) {
-        set_exception(std::current_exception());
-      }
+      set_exception(std::make_exception_ptr(future_error(future_errc::broken_promise)));
     }
   }
 /// \bug Might throw more exceptions than specified by the standard...
 //  Need OS support for this...
   void make_ready_at_thread_exit (void)
   {
+    static constexpr DWORD kInfinite = 0xffffffffl;
 //  Need to turn the pseudohandle from GetCurrentThread() into a true handle...
     HANDLE thread_handle;
     BOOL success = DuplicateHandle(GetCurrentProcess(),
@@ -508,7 +516,7 @@ class promise : mingw_stdthread::detail::FutureBase
           }
           ptr->get_condition_variable().notify_all();
 //  Wait for the original thread to die.
-          WaitForSingleObject(thread_handle, INFINITE);
+          WaitForSingleObject(thread_handle, kInfinite);
           CloseHandle(thread_handle);
 
           {

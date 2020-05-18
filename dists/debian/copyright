@@ -235,6 +235,10 @@ Files: external/mingw-std-threads/mingw.future.h
 Copyright: 2018 Nathaniel J. McClatchey
 License: BSD-2-clause
 
+Files: external/mingw-std-threads/mingw.invoke.h
+Copyright: 2018-2019 Nathaniel J. McClatchey
+License: BSD-2-clause
+
 Files: src/common/system.h
        src/common/endianness.h
        src/common/util.h

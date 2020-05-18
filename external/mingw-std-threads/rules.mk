@@ -25,6 +25,7 @@ noinst_HEADERS += \
     external/mingw-std-threads/mingw.mutex.h \
     external/mingw-std-threads/mingw.shared_mutex.h \
     external/mingw-std-threads/mingw.thread.h \
+    external/mingw-std-threads/mingw.invoke.h \
     $(EMPTY)
 
 EXTRA_DIST += \

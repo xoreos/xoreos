@@ -18,6 +18,23 @@ This is a header-only library. To use, just include the corresponding `mingw.xxx
 
 For example, `#include "mingw.thread.h"` replaces `#include <thread>`.
 
+A `CMakeLists.txt` has also been provided. You can add it to your project by using `add_subdirectory()`, and then this library can be added as your targets' dependency by using `target_link_libraries(YOUR_TARGET PRIVATE mingw_stdthreads)`. By default it just adds a include path, allowing you to include headers using angle brackets (for example `#include <mingw.thread.h>`). But you can also provide options to let it generate "std-like" headers (see next paragraph).
+
+Using "std-like" headers
+------------------------
+
+Probably you don't really want to replace all your includes from `#include <header>` to `#include "mingw.header.h"`. So if you are using GCC or clang, here are some ways to make you happy :)
+
+With CMake, you just need to turn on the option `MINGW_STDTHREADS_GENERATE_STDHEADERS` before adding mingw-stdthreads, something like this:
+```CMake
+option(MINGW_STDTHREADS_GENERATE_STDHEADERS "" ON)
+add_subdirectory(mingw_stdthreads)
+target_link_libraries(${TARGET} PRIVATE mingw_stdthreads)
+```
+When CMake generates project files, headers named in the "standard header" way will be generated and added to your include path. Then you can avoid stuffs like `mingw.thread.h`, and keep using `#include <thread>` like always. In addition, `MINGW_STDTHREADS_GENERATED_STDHEADERS` will be defined, you can use this macro to check if those generated headers are actually available.
+
+If you aren't using CMake, you can use one of the three scripts inside [utility_scripts](utility_scripts) directory to manually generate those "std-like" headers. Note that this requires Microsoft Power Shell, so if you are cross-compiling, you would need to install Power Shell.
+
 Compatibility
 -------------
 
