@@ -213,12 +213,14 @@ License: BSL-1.0
 Files: external/glm/*.hpp
        external/glm/detail/*.hpp
        external/glm/detail/*.inl
+       external/glm/ext/*.hpp
+       external/glm/ext/*.inl
        external/glm/gtc/*.hpp
        external/glm/gtc/*.inl
        external/glm/gtx/*.hpp
        external/glm/gtx/*.inl
        external/glm/simd/*.h
-Copyright: 2005-2016 G-Truc Creation
+Copyright: 2005-2020 G-Truc Creation
 License: Expat
 
 Files: external/mingw-std-threads/mingw.mutex.h

@@ -6,16 +6,16 @@
 /// @defgroup gtc_reciprocal GLM_GTC_reciprocal
 /// @ingroup gtc
 ///
-/// @brief Define secant, cosecant and cotangent functions.
+/// Include <glm/gtc/reciprocal.hpp> to use the features of this extension.
 ///
-/// <glm/gtc/reciprocal.hpp> need to be included to use these features.
+/// Define secant, cosecant and cotangent functions.
 
 #pragma once
 
 // Dependencies
 #include "../detail/setup.hpp"
 
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
+#if GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
 #	pragma message("GLM: GLM_GTC_reciprocal extension included")
 #endif
 
@@ -30,7 +30,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType sec(genType angle);
 
 	/// Cosecant function.
@@ -39,7 +39,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType csc(genType angle);
 
 	/// Cotangent function.
@@ -48,7 +48,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType cot(genType angle);
 
 	/// Inverse secant function.
@@ -57,7 +57,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType asec(genType x);
 
 	/// Inverse cosecant function.
@@ -66,7 +66,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType acsc(genType x);
 
 	/// Inverse cotangent function.
@@ -75,7 +75,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType acot(genType x);
 
 	/// Secant hyperbolic function.
@@ -83,7 +83,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType sech(genType angle);
 
 	/// Cosecant hyperbolic function.
@@ -91,7 +91,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType csch(genType angle);
 
 	/// Cotangent hyperbolic function.
@@ -99,7 +99,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType coth(genType angle);
 
 	/// Inverse secant hyperbolic function.
@@ -108,7 +108,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType asech(genType x);
 
 	/// Inverse cosecant hyperbolic function.
@@ -117,7 +117,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType acsch(genType x);
 
 	/// Inverse cotangent hyperbolic function.
@@ -126,7 +126,7 @@ namespace glm
 	/// @tparam genType Floating-point scalar or vector types.
 	///
 	/// @see gtc_reciprocal
-	template <typename genType>
+	template<typename genType>
 	GLM_FUNC_DECL genType acoth(genType x);
 
 	/// @}

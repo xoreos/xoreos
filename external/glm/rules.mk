@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# GLM (OpenGL Mathematics) 0.9.8.5 (<https://glm.g-truc.net/>)
+# GLM (OpenGL Mathematics) 0.9.9.8 (<https://glm.g-truc.net/>)
 
 noinst_HEADERS += \
     external/glm/common.hpp \
@@ -53,6 +53,7 @@ EXTRA_DIST += \
 # Subdirectories
 
 include external/glm/detail/rules.mk
+include external/glm/ext/rules.mk
 include external/glm/gtc/rules.mk
 include external/glm/gtx/rules.mk
 include external/glm/simd/rules.mk

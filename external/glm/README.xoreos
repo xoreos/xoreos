@@ -1,9 +1,9 @@
-This is GLM 0.9.8.5 source package. This file will list changes applied to
+This is GLM 0.9.9.8 source package. This file will list changes applied to
 it:
 
 # Changes
 
 - Modified include files to silence compiler warnings about variable
   shadowing
-- Fixed GCC version detection for GCC 7.3+
 - Silenced a compiler warning about if-branches being identical
+- Fix glm::axisAngle() which was broken with glm commit 26b3e3ed7

@@ -1,6 +1,3 @@
-/// @ref core
-/// @file glm/detail/func_integer_simd.inl
-
 #include "../simd/integer.h"
 
 #if GLM_ARCH & GLM_ARCH_SSE2_BIT
@@ -8,14 +5,14 @@
 namespace glm{
 namespace detail
 {
-	template <glm::precision P>
-	struct compute_bitfieldReverseStep<uint32, P, tvec4, true, true>
+	template<qualifier Q>
+	struct compute_bitfieldReverseStep<4, uint, Q, true, true>
 	{
-		GLM_FUNC_QUALIFIER static tvec4<uint32, P> call(tvec4<uint32, P> const & v, uint32 Mask, uint32 Shift)
+		GLM_FUNC_QUALIFIER static vec<4, uint, Q> call(vec<4, uint, Q> const& v, uint Mask, uint Shift)
 		{
 			__m128i const set0 = v.data;
 
-			__m128i const set1 = _mm_set1_epi32(Mask);
+			__m128i const set1 = _mm_set1_epi32(static_cast<int>(Mask));
 			__m128i const and1 = _mm_and_si128(set0, set1);
 			__m128i const sft1 = _mm_slli_epi32(and1, Shift);
 
@@ -29,14 +26,14 @@ namespace detail
 		}
 	};
 
-	template <glm::precision P>
-	struct compute_bitfieldBitCountStep<uint32, P, tvec4, true, true>
+	template<qualifier Q>
+	struct compute_bitfieldBitCountStep<4, uint, Q, true, true>
 	{
-		GLM_FUNC_QUALIFIER static tvec4<uint32, P> call(tvec4<uint32, P> const & v, uint32 Mask, uint32 Shift)
+		GLM_FUNC_QUALIFIER static vec<4, uint, Q> call(vec<4, uint, Q> const& v, uint Mask, uint Shift)
 		{
 			__m128i const set0 = v.data;
 
-			__m128i const set1 = _mm_set1_epi32(Mask);
+			__m128i const set1 = _mm_set1_epi32(static_cast<int>(Mask));
 			__m128i const and0 = _mm_and_si128(set0, set1);
 			__m128i const sft0 = _mm_slli_epi32(set0, Shift);
 			__m128i const and1 = _mm_and_si128(sft0, set1);
@@ -48,15 +45,15 @@ namespace detail
 }//namespace detail
 
 #	if GLM_ARCH & GLM_ARCH_AVX_BIT
-	template <>
-	GLM_FUNC_QUALIFIER int bitCount(uint32 x)
+	template<>
+	GLM_FUNC_QUALIFIER int bitCount(uint x)
 	{
 		return _mm_popcnt_u32(x);
 	}
 
 #	if(GLM_MODEL == GLM_MODEL_64)
-	template <>
-	GLM_FUNC_QUALIFIER int bitCount(uint64 x)
+	template<>
+	GLM_FUNC_QUALIFIER int bitCount(detail::uint64 x)
 	{
 		return static_cast<int>(_mm_popcnt_u64(x));
 	}

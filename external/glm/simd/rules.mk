@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with xoreos. If not, see <http://www.gnu.org/licenses/>.
 
-# GLM (OpenGL Mathematics) 0.9.8.5 (<https://glm.g-truc.net/>)
+# GLM (OpenGL Mathematics) 0.9.9.8 (<https://glm.g-truc.net/>)
 
 noinst_HEADERS += \
     external/glm/simd/common.h \
@@ -25,6 +25,7 @@ noinst_HEADERS += \
     external/glm/simd/geometric.h \
     external/glm/simd/integer.h \
     external/glm/simd/matrix.h \
+    external/glm/simd/neon.h \
     external/glm/simd/packing.h \
     external/glm/simd/platform.h \
     external/glm/simd/trigonometric.h \

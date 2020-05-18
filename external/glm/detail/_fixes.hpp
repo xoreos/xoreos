@@ -1,6 +1,3 @@
-/// @ref core
-/// @file glm/detail/_fixes.hpp
-
 #include <cmath>
 
 //! Workaround for compatibility with other libraries
@@ -27,3 +24,4 @@
 #ifdef log2
 #undef log2
 #endif
+
