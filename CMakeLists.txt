@@ -374,6 +374,7 @@ else(ICONV_SECOND_ARGUMENT_IS_CONST)
   add_definitions(-DICONV_CONST=)
 endif(ICONV_SECOND_ARGUMENT_IS_CONST)
 
+add_definitions(-DGLM_FORCE_CTOR_INIT)
 add_definitions(-DGLEW_NO_GLU)
 
 set(GLEW_FOUND 0)

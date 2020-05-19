@@ -245,6 +245,10 @@ fi
 
 AC_SUBST(BOOST_UUID_WINCRYPT)
 
+dnl Force default initializations in glm
+GLM_FORCE_CTOR_INIT="-DGLM_FORCE_CTOR_INIT"
+AC_SUBST(GLM_FORCE_CTOR_INIT)
+
 dnl GLEW
 if test "x$enable_external_glew" = "xyes"; then
 	AX_CHECK_GLEW( , [enable_external_glew=no])
