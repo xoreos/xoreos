@@ -28,6 +28,8 @@
 #include <list>
 #include <map>
 
+#include "external/glm/ext/quaternion_float.hpp"
+
 #include "src/common/ustring.h"
 #include "src/common/boundingbox.h"
 

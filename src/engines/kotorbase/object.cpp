@@ -22,6 +22,7 @@
  *  Object within an area in KotOR games.
  */
 
+#include "external/glm/vec2.hpp"
 #include "external/glm/geometric.hpp"
 
 #include "src/common/uuid.h"
