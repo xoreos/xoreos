@@ -548,11 +548,13 @@ bool Pathfinding::inFace(uint32 faceID, glm::vec3 lineStart, glm::vec3 lineEnd, 
 	getVertices(faceID, vertices, false);
 
 	glm::vec3 direction = glm::normalize(lineEnd - lineStart);
+	glm::vec2 baryPosition;
+	float distance;
 	if (glm::intersectRayTriangle(lineStart, direction,
 	                              vertices[0], vertices[1], vertices[2],
-	                              intersect)) {
+	                              baryPosition, distance)) {
 		// Barycentric coordonate to cartesian.
-		intersect = lineStart + direction * intersect[2];
+		intersect = lineStart + direction * distance;
 		return true;
 	}
 

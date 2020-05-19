@@ -133,7 +133,8 @@ bool ObjectWalkmesh::findIntersection(const glm::vec3 &start, const glm::vec3 &e
 		return false;
 
 	float distance = FLT_MAX;
-	glm::vec3 test;
+	glm::vec2 testPosition;
+	float testDistance;
 	const glm::vec3 dir = glm::normalize(end - start);
 	for (size_t f = 0; f < _faces.size() / 3; ++f) {
 		const glm::vec3 vertA(_vertices[_faces[f * 3] * 3],
@@ -145,10 +146,10 @@ bool ObjectWalkmesh::findIntersection(const glm::vec3 &start, const glm::vec3 &e
 		const glm::vec3 vertC(_vertices[_faces[f * 3 + 2] * 3],
 		        _vertices[_faces[f * 3 + 2] * 3 + 1],
 		        _vertices[_faces[f * 3 + 2] * 3 + 2]);
-		if (!glm::intersectRayTriangle(start, dir, vertA, vertB, vertC, test))
+		if (!glm::intersectRayTriangle(start, dir, vertA, vertB, vertC, testPosition, testDistance))
 			continue;
 
-		test = start + dir * test[2];
+		glm::vec3 test = start + dir * testDistance;
 		if (glm::distance(start, test) >= distance)
 			continue;
 
