@@ -1,13 +1,11 @@
 Someday, ????-??-?? (Version 0.0.6)
 	- BUILD:
 		- Opened xoreos up for C++11
+		- Replaced a few Boost libraries with C++11 features
 		- Made some library dependencies optional,
 		  disabling xoreos features
 	- COMMON:
 		- Cleaned up threading, now using C++11 threads
-		- Changed random numbers to use C++11 features
-		  instead of std::rand()
-		- Changed atomics to use C++11 atomics instead of Boost
 	- GRAPHICS:
 		- Added support for swizzled SBM images
 		- Added a work-in-progress shader-based renderer
@@ -27,6 +25,7 @@ Someday, ????-??-?? (Version 0.0.6)
 		- Added preliminary support for Wwise SoundBanks
 	- VIDEO:
 		- Reorganized video decoding
+		- Implemented WebM (Matroska + VPx) decoding
 	- EVENTS:
 		- Added partial game controller support
 	- ENGINES:
@@ -48,17 +47,21 @@ Someday, ????-??-?? (Version 0.0.6)
 			- Implemented correct object targetting behaviour
 			- Implemented object heartbeat scripts
 			- Implemented lightsaber loading
+			- Implemented pathfinding
+			- Partially implemented the tutorial gameplay
 		- KOTOR:
 			- Added Malak to the main menu
 			- Added support for the (extracted) Android version
 		- KOTOR2:
 			- Added ability to skip the prologue
 			- Added moving the PC out of the Kolto tank
+			- Implemented GUI scaling
 		- JADE:
 			- Fixed TLK encodings for non-English version
 			- Added support for the (extracted) Android version
 			- Fixed font rendering in the Xbox version
 			- Added area background music
+			- Partially implemented the character generation menu
 		- NWN2:
 			- Filled in the object classes some more
 			- Implemented more NWScript engine functions
@@ -67,6 +70,7 @@ Someday, ????-??-?? (Version 0.0.6)
 			- Added traps and triggers, trapped doors and
 			  trapped placeables
 			- Added items and item properties
+			- Added inventories and stores
 		- DRAGONAGE:
 			- Added a probe for the Xbox 360 version
 			- Fixed resource loading on Windows
