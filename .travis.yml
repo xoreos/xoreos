@@ -30,12 +30,12 @@ env:
     - is_arm64='\( "$(uname -i)" = "aarch64" \)'
     - is_notcoverity_autot='\( ! '"$is_coverity_branch"' \) -a \( $USECMAKE -eq 0 \)'
     - is_notcoverity_cmake='\( ! '"$is_coverity_branch"' \) -a \( $USECMAKE -eq 1 \)'
-  matrix:
+  jobs:
     # Let's test both our autoconf and CMake build systems
     - USECMAKE=0
     - USECMAKE=1
 
-matrix:
+jobs:
   exclude:
     # On Linux, we only need to test one compiler with both autools and CMake.
     # This gives us three builds on Linux: autotools+gcc, autotools+clang, CMake+gcc
