@@ -45,8 +45,6 @@ AVM::AVM() : _handler(0) {
 	for (size_t i = 0; i < _registers.size(); ++i)
 		_registers[i].push(Variable());
 
-	_stopFlag = false;
-
 	_variables["_global"] = ObjectPtr(new Object());
 	_variables["_root"] = ObjectPtr(new Object());
 	_variables["Object"] = ObjectPtr(new DummyFunction());

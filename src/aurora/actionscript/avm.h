@@ -151,10 +151,10 @@ private:
 	std::map<Common::UString, Variable> _variables;
 	std::map<Common::UString, StaticFunction> _functions;
 
-	uint32 _startTime; ///< The elapsed since the start of the avm and the call to startTime()
-	bool _stopFlag;
+	uint32 _startTime { 0 }; ///< The elapsed since the start of the avm and the call to startTime()
+	bool _stopFlag { false };
 	Variable _returnValue;
-	Stage *_stage;
+	Stage *_stage { 0 };
 };
 
 } // End of namespace ActionScript
