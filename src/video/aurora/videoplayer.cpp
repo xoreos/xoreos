@@ -96,7 +96,10 @@ void VideoPlayer::play() {
 	_video->start();
 
 	BOOST_SCOPE_EXIT( (&_video) ) {
-		_video->abort();
+		try {
+			_video->abort();
+		} catch (...) {
+		}
 	} BOOST_SCOPE_EXIT_END
 
 	uint32 width = _video->getWidth();
