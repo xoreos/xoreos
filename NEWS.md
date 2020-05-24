@@ -1,3 +1,31 @@
+Changes in xoreos version 0.0.6
+===============================
+
+The tutorial in Knights of the Old Republic is now partially playable: the PC
+can collect their belongings, put on their gear, let Trask open the first door,
+open the second door and engage in mock combat.
+
+Knights of the Old Republic II now lets you skip the prologue, showing off a bit
+of the intro.
+
+Jade Empire now has background music and a preliminary character generation
+menu.
+
+And as always, this release includes a ton of code quality changes, bug fixes
+and initial implementations that are user-invisible for now. These include:
+- Partial implementations of ActionScript and Scaleform GFx for Dragon Age menus
+- Partial implementations of XACT WaveBanks and SoundBanks for Jade Empire
+- Partial implementations of FMOD SampleBanks and Events for Dragon Age: Origins
+- Partial implementations of Wwise SoundBanks for Dragon Age II
+- WebM (Matroska + VPx) support for the Enhanced Edition of Neverwinter Nights
+- Support for big-endian GFF4 files found in console ports
+- Support for resource files found in mobile ports
+- Support for more Neverwinter Nights 2 structures
+
+In an attempt to modernize a bit, xoreos now requires a C++11-capable compiler.
+This should hopefully not be a huge problem.
+
+
 Changes in xoreos version 0.0.5
 ===============================
 
