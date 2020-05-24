@@ -70,13 +70,13 @@ void TheWitcherSaveFile::load() {
 
 	_tws->skip(8); // Unknown data, possibly zero only
 
-	if (_tws->readUint32BE() == 0xEE7C4A60)
+	if (_tws->readUint32LE() != 0xEE7C4A60)
 		throw Common::Exception("TheWitcherSaveFile::load() Invalid value, should be 0xEE7C4A60");
-	if (_tws->readUint32BE() == 0x459E4568)
+	if (_tws->readUint32LE() != 0x459E4568)
 		throw Common::Exception("TheWitcherSaveFile::load() Invalid value, should be 0x459E4568");
-	if (_tws->readUint32BE() == 0x10D3DBBD)
+	if (_tws->readUint32LE() != 0x10D3DBBD)
 		throw Common::Exception("TheWitcherSaveFile::load() Invalid value, should be 0x10D3DBBD");
-	if (_tws->readUint32BE() == 0x1CBCF20B)
+	if (_tws->readUint32LE() != 0x1CBCF20B)
 		throw Common::Exception("TheWitcherSaveFile::load() Invalid value, should be 0x1CBCF20B");
 
 	Common::UString lightningStorm = Common::readStringFixed(*_tws, Common::kEncodingUTF16LE, 2048);
