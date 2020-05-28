@@ -77,6 +77,8 @@ public:
 	void setString(Language language, LanguageGender gender, const Common::UString &str);
 	/** Set the string of that language (for all genders). */
 	void setString(Language language, const Common::UString &str);
+	/** Set the string of that language (with a raw language ID). */
+	void setStringRawLanguageID(uint32 language, const Common::UString &str);
 
 	/** Get the string the StrRef points to. */
 	const Common::UString &getStrRefString() const;

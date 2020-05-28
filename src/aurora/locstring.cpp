@@ -95,6 +95,10 @@ void LocString::setString(Language language, const Common::UString &str) {
 	setString(language, kLanguageGenderFemale, str);
 }
 
+void LocString::setStringRawLanguageID(uint32 language, const Common::UString &str) {
+	return setString(language, str);
+}
+
 void LocString::setString(uint32 languageID, const Common::UString &str) {
 	_strings[languageID] = str;
 }
