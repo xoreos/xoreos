@@ -33,6 +33,33 @@
 
 namespace Aurora {
 
+GFF3Writer::VoidData::VoidData(Common::SeekableReadStream *stream) {
+	data.reset(stream);
+	data->seek(0);
+}
+
+GFF3Writer::VoidData::VoidData(const byte *bytes, size_t size) {
+	Common::MemoryWriteStreamDynamic dyn(true, size);
+
+	dyn.write(bytes, size);
+	dyn.setDisposable(false);
+
+	data.reset(new Common::MemoryReadStream(dyn.getData(), size, true));
+}
+
+GFF3Writer::VoidData &GFF3Writer::VoidData::operator=(const VoidData &rhs) {
+	data.reset();
+
+	if (!rhs.data)
+		return *this;
+
+	data.reset(rhs.data->readStream(rhs.data->size()));
+	rhs.data->seek(0);
+
+	return *this;
+}
+
+
 GFF3Writer::GFF3Writer(uint32 id, uint32 version) : _id(id), _version(version) {
 	_structs.push_back(boost::make_shared<GFF3WriterStruct>(this));
 }
@@ -215,12 +242,35 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 				stream.writeUint32LE(boost::get<uint32>(value.data));
 				break;
 			case GFF3Struct::kFieldTypeResRef:
-				stream.writeByte(MIN<byte>(16, boost::get<Common::UString>(value.data).size()));
-				stream.write(boost::get<Common::UString>(value.data).c_str(), MIN<size_t>(boost::get<Common::UString>(value.data).size(), 16));
+				if (value.isRaw) {
+					const VoidData &voidData = boost::get<VoidData>(value.data);
+
+					stream.writeByte(MIN<byte>(16, static_cast<uint32>(voidData.data->size())));
+					stream.writeStream(*voidData.data, 16);
+					voidData.data->seek(0);
+
+				} else {
+					const Common::UString &string = boost::get<Common::UString>(value.data);
+
+					stream.writeByte(MIN<byte>(16, string.size()));
+					stream.write(string.c_str(), MIN<size_t>(string.size(), 16));
+				}
+
 				break;
 			case GFF3Struct::kFieldTypeExoString:
-				stream.writeUint32LE(static_cast<uint32>(boost::get<Common::UString>(value.data).size()));
-				stream.writeString(boost::get<Common::UString>(value.data));
+				if (value.isRaw) {
+					const VoidData &voidData = boost::get<VoidData>(value.data);
+
+					stream.writeUint32LE(static_cast<uint32>(voidData.data->size()));
+					stream.writeStream(*voidData.data);
+					voidData.data->seek(0);
+
+				} else {
+					const Common::UString &string = boost::get<Common::UString>(value.data);
+
+					stream.writeUint32LE(static_cast<uint32>(string.size()));
+					stream.writeString(string);
+				}
 				break;
 			case GFF3Struct::kFieldTypeLocString:
 				stream.writeUint32LE(boost::get<LocString>(value.data).getWrittenSize() + 8);
@@ -229,8 +279,9 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 				boost::get<LocString>(value.data).writeLocString(stream);
 				break;
 			case GFF3Struct::kFieldTypeVoid:
-				stream.writeUint32LE(static_cast<uint32>(boost::get<VoidData>(value.data).size));
-				stream.write(boost::get<VoidData>(value.data).data.get(), boost::get<VoidData>(value.data).size);
+				stream.writeUint32LE(static_cast<uint32>(boost::get<VoidData>(value.data).data->size()));
+				stream.writeStream(*boost::get<VoidData>(value.data).data);
+				boost::get<VoidData>(value.data).data->seek(0);
 				break;
 			case GFF3Struct::kFieldTypeVector:
 				stream.writeIEEEFloatLE(boost::get<Vector4>(value.data).vec.x);
@@ -287,17 +338,23 @@ uint32 GFF3Writer::getFieldDataSize(Value value) {
 		case GFF3Struct::kFieldTypeDouble:
 			return 8;
 		case GFF3Struct::kFieldTypeExoString:
-			return 4 + boost::get<Common::UString>(value.data).size();
+			if (value.isRaw)
+				return 4 + boost::get<VoidData>(value.data).data->size();
+			else
+				return 4 + boost::get<Common::UString>(value.data).size();
 		case GFF3Struct::kFieldTypeLocString:
 			return 12 + boost::get<LocString>(value.data).getWrittenSize();
 		case GFF3Struct::kFieldTypeResRef:
-			return 1 + boost::get<Common::UString>(value.data).size();
+			if (value.isRaw)
+				return 1 + boost::get<VoidData>(value.data).data->size();
+			else
+				return 1 + boost::get<Common::UString>(value.data).size();
 		case GFF3Struct::kFieldTypeVector:
 			return 12;
 		case GFF3Struct::kFieldTypeOrientation:
 			return 16;
 		case GFF3Struct::kFieldTypeVoid:
-			return 4 + boost::get<VoidData>(value.data).size;
+			return 4 + boost::get<VoidData>(value.data).data->size();
 		default:
 			return 0;
 	}
@@ -451,6 +508,13 @@ void GFF3WriterStruct::addExoString(const Common::UString &label, const Common::
 	createField(GFF3Struct::kFieldTypeExoString, label)->value.data = value;
 }
 
+void GFF3WriterStruct::addExoString(const Common::UString &label, Common::SeekableReadStream *value) {
+	GFF3Writer::FieldPtr field = createField(GFF3Struct::kFieldTypeExoString, label);
+
+	field->value.data = GFF3Writer::VoidData(value);
+	field->value.isRaw = true;
+}
+
 void GFF3WriterStruct::addStrRef(const Common::UString &label, uint32 value) {
 	createField(GFF3Struct::kFieldTypeStrRef, label)->value.data = value;
 }
@@ -459,15 +523,18 @@ void GFF3WriterStruct::addResRef(const Common::UString &label, const Common::USt
 	createField(GFF3Struct::kFieldTypeResRef, label)->value.data = value;
 }
 
+void GFF3WriterStruct::addResRef(const Common::UString &label, Common::SeekableReadStream *value) {
+	GFF3Writer::FieldPtr field = createField(GFF3Struct::kFieldTypeResRef, label);
+
+	field->value.data = GFF3Writer::VoidData(value);
+	field->value.isRaw = true;
+}
+
 void GFF3WriterStruct::addVoid(const Common::UString &label, const byte *data, uint32 size) {
 	GFF3Writer::FieldPtr field = createField(GFF3Struct::kFieldTypeVoid, label);
 
-	GFF3Writer::VoidData voiddata;
-	voiddata.data.reset(new byte[size]);
-	voiddata.size = size;
-	memcpy(voiddata.data.get(), data, size);
-
-	field->value.data = voiddata;
+	field->value.data = GFF3Writer::VoidData(data, size);
+	field->value.isRaw = true;
 }
 
 void GFF3WriterStruct::addVector(const Common::UString &label, glm::vec3 value) {
