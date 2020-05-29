@@ -215,9 +215,9 @@ public:
 	GFF3WriterListPtr addList(const Common::UString &label);
 
 	/** Add a new byte. */
-	void addByte(const Common::UString &label, byte value);
+	void addByte(const Common::UString &label, uint8 value);
 	/** Add a new char. */
-	void addChar(const Common::UString &label, char value);
+	void addChar(const Common::UString &label, int8 value);
 	/** Add a new float. */
 	void addFloat(const Common::UString &label, float value);
 	/** Add a new double. */
