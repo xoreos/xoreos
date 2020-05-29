@@ -174,15 +174,20 @@ void LocString::readLocString(Common::SeekableReadStream &stream) {
 	readLocString(stream, id, count);
 }
 
+static Common::SeekableReadStream *convertString(const Common::UString &str, uint32 languageID, bool terminateString) {
+	Common::Encoding encoding = LangMan.getEncodingLocString(LangMan.getLanguageGendered(languageID));
+	if (encoding == Common::kEncodingInvalid)
+		encoding = Common::kEncodingASCII;
+
+	return Common::convertString(str, encoding, terminateString);
+}
+
 uint32 LocString::getWrittenSize(bool withNullTerminate) const {
 	uint32 size = 0;
 	for (StringMap::const_iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
-		size += (*iter).second.size();
+		Common::ScopedPtr<Common::SeekableReadStream> str(convertString(iter->second, iter->first, withNullTerminate));
 
-		if (withNullTerminate)
-			size += 1;
-
-		size += 8;
+		size += str->size() + 8;
 	}
 
 	return size;
@@ -190,11 +195,11 @@ uint32 LocString::getWrittenSize(bool withNullTerminate) const {
 
 void LocString::writeLocString(Common::WriteStream &stream, bool withNullTerminate) const {
 	for (StringMap::const_iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
-		stream.writeUint32LE((*iter).first);
-		stream.writeUint32LE((*iter).second.size());
-		stream.write((*iter).second.c_str(), (*iter).second.size());
-		if (withNullTerminate)
-			stream.writeByte(0);
+		Common::ScopedPtr<Common::SeekableReadStream> str(convertString(iter->second, iter->first, withNullTerminate));
+
+		stream.writeUint32LE(iter->first);
+		stream.writeUint32LE(str->size());
+		stream.writeStream(*str);
 	}
 }
 
