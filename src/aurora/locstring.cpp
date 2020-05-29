@@ -203,21 +203,29 @@ bool LocString::operator==(const LocString &rhs) const {
 }
 
 bool LocString::operator<(const LocString &rhs) const {
-	if (_id != rhs._id)
-		return _id < rhs._id;
+	if (_id < rhs._id)
+		return true;
+	if (_id > rhs._id)
+		return false;
 
-	if (_strings.size() != rhs._strings.size())
-		return _strings.size() < rhs._strings.size();
+	if (_strings.size() < rhs._strings.size())
+		return true;
+	if (_strings.size() > rhs._strings.size())
+		return false;
 
-	size_t lhs_size = 0, rhs_size = 0;
-	for (const auto &string : _strings) {
-		lhs_size += string.second.size();
+	for (auto lhsStr = _strings.begin(), rhsStr = rhs._strings.begin(); lhsStr != _strings.end() && rhsStr != rhs._strings.end(); ++lhsStr, ++rhsStr) {
+		if (lhsStr->first < rhsStr->first)
+			return true;
+		if (lhsStr->first > rhsStr->first)
+			return false;
+
+		if (lhsStr->second < rhsStr->second)
+			return true;
+		if (lhsStr->second > rhsStr->second)
+			return false;
 	}
-	for (const auto &string : rhs._strings) {
-		rhs_size += string.second.size();
-	}
 
-	return lhs_size < rhs_size;
+	return false;
 }
 
 } // End of namespace Aurora
