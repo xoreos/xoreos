@@ -108,6 +108,9 @@ public:
 		if (((size_t) encoding) >= kEncodingMAX)
 			throw Exception("Invalid encoding %d", encoding);
 
+		if (encoding == kEncodingASCII)
+			return clean7bitASCII(str, terminate);
+
 		return convert(_contextTo[encoding], str, kEncodingGrowthTo[encoding],
 		               terminate ? kTerminatorLength[encoding] : 0);
 	}
@@ -169,6 +172,20 @@ private:
 			return 0;
 
 		while (termSize-- > 0)
+			dataOut[size++] = '\0';
+
+		return new MemoryReadStream(dataOut.release(), size, true);
+	}
+
+	MemoryReadStream *clean7bitASCII(const UString &str, bool terminate) {
+		ScopedArray<byte> dataOut(new byte[str.size() + (terminate ? 1 : 0)]);
+
+		size_t size = 0;
+		for (UString::iterator c = str.begin(); c != str.end(); ++c)
+			if (UString::isASCII(*c))
+				dataOut[size++] = *c;
+
+		if (terminate)
 			dataOut[size++] = '\0';
 
 		return new MemoryReadStream(dataOut.release(), size, true);
