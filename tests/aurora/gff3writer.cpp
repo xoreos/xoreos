@@ -74,6 +74,8 @@ GTEST_TEST(GFF3Writer, WriteMultipleEmptyStructs) {
 }
 
 GTEST_TEST(GFF3Writer, WriteSingleStruct) {
+	static const byte vData[8] = { '!', '[', 'D', 'A', 'T', 'A', ']', '!' };
+
 	LangMan.addLanguage(Aurora::kLanguageEnglish, 0, Common::kEncodingASCII);
 	LangMan.addLanguage(Aurora::kLanguageGerman, 1, Common::kEncodingASCII);
 
@@ -91,7 +93,7 @@ GTEST_TEST(GFF3Writer, WriteSingleStruct) {
 	writer.getTopLevel()->addExoString("FieldExoString", "NiceString");
 	writer.getTopLevel()->addStrRef("FieldStrRef", 20);
 	writer.getTopLevel()->addResRef("FieldResRef", "file.txt");
-	writer.getTopLevel()->addVoid("FieldVoid", reinterpret_cast<const byte *>("![DATA]!"), 8);
+	writer.getTopLevel()->addVoid("FieldVoid", new Common::MemoryReadStream(vData));
 	writer.getTopLevel()->addVector("FieldVector", glm::vec3(1.0f, 2.0f, 2.5f));
 	writer.getTopLevel()->addOrientation("FieldOrientation", glm::vec4(1.0f, 4.0f, 2.5f, 1.5f));
 
@@ -234,6 +236,8 @@ GTEST_TEST(GFF3Writer, WriteNestedStructs) {
 }
 
 GTEST_TEST(GFF3Writer, WriteEquivalentValues) {
+	static const byte vData[8] = { '!', '[', 'D', 'A', 'T', 'A', ']', '!' };
+
 	Aurora::GFF3Writer writer(MKTAG('G', 'F', 'F', ' '));
 	Aurora::GFF3WriterStructPtr strct = writer.getTopLevel();
 
@@ -258,8 +262,8 @@ GTEST_TEST(GFF3Writer, WriteEquivalentValues) {
 	strct->addLocString("FieldLocString_1", locString);
 	strct->addLocString("FieldLocString_2", locString);
 
-	writer.getTopLevel()->addVoid("FieldVoid_1", reinterpret_cast<const byte *>("![DATA]!"), 8);
-	writer.getTopLevel()->addVoid("FieldVoid_2", reinterpret_cast<const byte *>("![DATA]!"), 8);
+	writer.getTopLevel()->addVoid("FieldVoid_1", new Common::MemoryReadStream(vData));
+	writer.getTopLevel()->addVoid("FieldVoid_2", new Common::MemoryReadStream(vData));
 
 	writer.getTopLevel()->addVector("FieldVector_1", glm::vec3(0.0f, -13.5f, 42.75f));
 	writer.getTopLevel()->addVector("FieldVector_2", glm::vec3(0.0f, -13.5f, 42.75f));

@@ -87,7 +87,6 @@ private:
 		VoidData() { }
 
 		VoidData(Common::SeekableReadStream *stream);
-		VoidData(const byte *bytes, size_t size);
 
 		VoidData(const VoidData &voidData) { *this = voidData; }
 
@@ -246,7 +245,7 @@ public:
 	/** Add a new Resource reference. */
 	void addResRef(const Common::UString &label, Common::SeekableReadStream *value);
 	/** Add new void data. Data will be copied. */
-	void addVoid(const Common::UString &label, const byte *data, uint32 size);
+	void addVoid(const Common::UString &label, Common::SeekableReadStream *value);
 	/** Add a new Vector. */
 	void addVector(const Common::UString &label, glm::vec3 value);
 	/** Add a new Orientation. */

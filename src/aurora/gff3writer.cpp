@@ -38,15 +38,6 @@ GFF3Writer::VoidData::VoidData(Common::SeekableReadStream *stream) {
 	data->seek(0);
 }
 
-GFF3Writer::VoidData::VoidData(const byte *bytes, size_t size) {
-	Common::MemoryWriteStreamDynamic dyn(true, size);
-
-	dyn.write(bytes, size);
-	dyn.setDisposable(false);
-
-	data.reset(new Common::MemoryReadStream(dyn.getData(), size, true));
-}
-
 GFF3Writer::VoidData &GFF3Writer::VoidData::operator=(const VoidData &rhs) {
 	data.reset();
 
@@ -530,10 +521,10 @@ void GFF3WriterStruct::addResRef(const Common::UString &label, Common::SeekableR
 	field->value.isRaw = true;
 }
 
-void GFF3WriterStruct::addVoid(const Common::UString &label, const byte *data, uint32 size) {
+void GFF3WriterStruct::addVoid(const Common::UString &label, Common::SeekableReadStream *value) {
 	GFF3Writer::FieldPtr field = createField(GFF3Struct::kFieldTypeVoid, label);
 
-	field->value.data = GFF3Writer::VoidData(data, size);
+	field->value.data = GFF3Writer::VoidData(value);
 	field->value.isRaw = true;
 }
 
