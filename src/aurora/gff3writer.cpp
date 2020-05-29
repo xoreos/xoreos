@@ -245,15 +245,15 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 				if (value.isRaw) {
 					const VoidData &voidData = boost::get<VoidData>(value.data);
 
-					stream.writeByte(MIN<byte>(16, static_cast<uint32>(voidData.data->size())));
-					stream.writeStream(*voidData.data, 16);
+					stream.writeByte(MIN<size_t>(255, static_cast<uint32>(voidData.data->size())));
+					stream.writeStream(*voidData.data, 255);
 					voidData.data->seek(0);
 
 				} else {
 					const Common::UString &string = boost::get<Common::UString>(value.data);
 
-					stream.writeByte(MIN<byte>(16, string.size()));
-					stream.write(string.c_str(), MIN<size_t>(string.size(), 16));
+					stream.writeByte(MIN<size_t>(255, string.size()));
+					stream.write(string.c_str(), MIN<size_t>(string.size(), 255));
 				}
 
 				break;
@@ -346,9 +346,9 @@ uint32 GFF3Writer::getFieldDataSize(Value value) {
 			return 12 + boost::get<LocString>(value.data).getWrittenSize();
 		case GFF3Struct::kFieldTypeResRef:
 			if (value.isRaw)
-				return 1 + boost::get<VoidData>(value.data).data->size();
+				return 1 + MIN<size_t>(255, boost::get<VoidData>(value.data).data->size());
 			else
-				return 1 + boost::get<Common::UString>(value.data).size();
+				return 1 + MIN<size_t>(255, boost::get<Common::UString>(value.data).size());
 		case GFF3Struct::kFieldTypeVector:
 			return 12;
 		case GFF3Struct::kFieldTypeOrientation:
