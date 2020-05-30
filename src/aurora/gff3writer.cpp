@@ -22,6 +22,8 @@
  *  Writer for writing version V3.2/V3.3 of BioWare's GFFs (generic file format).
  */
 
+#include <cstring>
+
 #include <algorithm>
 
 #include <boost/make_shared.hpp>
@@ -259,7 +261,7 @@ void GFF3Writer::write(Common::WriteStream &stream) {
 				} else {
 					const Common::UString &string = boost::get<Common::UString>(value.data);
 
-					stream.writeUint32LE(static_cast<uint32_t>(string.size()));
+					stream.writeUint32LE(static_cast<uint32_t>(std::strlen(string.c_str())));
 					stream.writeString(string);
 				}
 				break;
@@ -332,7 +334,7 @@ uint32_t GFF3Writer::getFieldDataSize(Value value) {
 			if (value.isRaw)
 				return 4 + boost::get<VoidData>(value.data).data->size();
 			else
-				return 4 + boost::get<Common::UString>(value.data).size();
+				return 4 + std::strlen(boost::get<Common::UString>(value.data).c_str());
 		case GFF3Struct::kFieldTypeLocString:
 			return 12 + boost::get<LocString>(value.data).getWrittenSize();
 		case GFF3Struct::kFieldTypeResRef:
