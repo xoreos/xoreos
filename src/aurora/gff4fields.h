@@ -541,6 +541,10 @@ enum GFF4FieldNames {
 	kGFF4CutsceneShadowRadius                            =   5020,
 	kGFF4CutsceneLightOcclusion                          =   5021,
 
+	kGFF4CutscenePlotGuid                                =   5231,
+	kGFF4CutscenePlotFlag                                =   5232,
+	kGFF4CutscenePlotTest                                =   5233,
+
 	kGFF4CutsceneHenchmanTag                             =   5050,
 	kGFF4CutsceneHenchmanActions                         =   5051,
 
