@@ -99,7 +99,7 @@ void WalkmeshLoader::load(::Aurora::FileType fileType, const Common::UString &na
 		} else if (line[0] == "orientation") {
 			float ori[4];
 			readFloats(line, ori, 4, 1);
-			if (abs(ori[3]) > 0.01) {
+			if (std::abs(ori[3]) > 0.01) {
 				rotation = glm::rotate(rotation, ori[3],
 				                       glm::vec3(ori[0], ori[1], ori[2]));
 			}
