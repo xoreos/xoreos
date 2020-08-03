@@ -30,6 +30,7 @@ Source0:        https://github.com/xoreos/xoreos/releases/download/%{version}/%{
 BuildRequires:  gcc-c++, make
 BuildRequires:  zlib-devel, freetype-devel, openal-soft-devel, libvorbis-devel,
 BuildRequires:  libogg-devel, SDL2-devel, libxml2-devel, xz-devel, glew-devel
+BuildRequires:  libvpx-devel
 
 BuildRequires:  libtool, gettext
 
