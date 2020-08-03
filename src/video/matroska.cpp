@@ -168,7 +168,7 @@ enum EBMLParseMode {
 
 void readEBMLEntry(uint64 &value, Common::SeekableReadStream &stream, uint64 UNUSED(filePos)) {
 	if (stream.size() > sizeof(uint64))
-		throw Common::Exception("Invalid EBML integer size %zu", stream.size());
+		throw Common::Exception("Invalid EBML integer size %u", (uint)stream.size());
 
 	value = 0;
 
@@ -182,7 +182,7 @@ template<typename T>
 void readEBMLString(T &value, Common::SeekableReadStream &stream) {
 	// Max 16MB for strings
 	if (stream.size() > 0x1000000)
-		throw Common::Exception("Invalid EBML string size %zu", stream.size());
+		throw Common::Exception("Invalid EBML string size %u", (uint)stream.size());
 
 	// Read in the entire stream
 	Common::ScopedArray<char> array(new char[stream.size()]);
@@ -215,13 +215,13 @@ void readEBMLEntry(double &value, Common::SeekableReadStream &stream, uint64 UNU
 		value = stream.readIEEEDoubleBE();
 		break;
 	default:
-		throw Common::Exception("Invalid EBML double size %zu", stream.size());
+		throw Common::Exception("Invalid EBML double size %u", (int)stream.size());
 	}
 }
 
 void readEBMLEntry(std::shared_ptr<Common::SeekableReadStream> &value, Common::SeekableReadStream &stream, uint64 UNUSED(filePos)) {
 	if (stream.size() > 0x10000000)
-		throw Common::Exception("Invalid EBML binary size %zu", stream.size());
+		throw Common::Exception("Invalid EBML binary size %u", (int)stream.size());
 
 	value.reset(stream.readStream(stream.size()));
 }
