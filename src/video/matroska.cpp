@@ -587,11 +587,11 @@ void Matroska::load() {
 
 	// Validate the header
 	if (header.version > kEBMLVersion)
-		throw Common::Exception("Unhandled EBML version: %" PRIu64, header.version);
+		throw Common::Exception("Unhandled EBML version: %u", (uint)header.version);
 	if (header.maxSizeLength > sizeof(uint64))
-		throw Common::Exception("Unhandled EBML max size: %" PRIu64, header.maxSizeLength);
+		throw Common::Exception("Unhandled EBML max size: %u", (uint)header.maxSizeLength);
 	if (header.maxIDLength > sizeof(uint32))
-		throw Common::Exception("Unhandled EBML ID length: %" PRIu64, header.maxIDLength);
+		throw Common::Exception("Unhandled EBML ID length: %u", (uint)header.maxIDLength);
 	if (!isValidDocType(header.docType))
 		throw Common::Exception("Unhandled EBML doc type: %s", header.docType.c_str());
 
@@ -618,7 +618,7 @@ void Matroska::load() {
 
 		// Validate the width/height
 		if (entry.video.pixelWidth == 0 || entry.video.pixelHeight == 0)
-			throw Common::Exception("Invalid Matroska video dimensions: %" PRIu64 "x%" PRIu64, entry.video.pixelWidth, entry.video.pixelHeight);
+			throw Common::Exception("Invalid Matroska video dimensions: %ux%u", (uint)entry.video.pixelWidth, (uint)entry.video.pixelHeight);
 
 		// Create the video track and initialize the codec
 		videoTrack = new MatroskaVideoTrack(entry.trackNumber, entry.video.pixelWidth, entry.video.pixelHeight, entry.defaultDuration);
@@ -646,7 +646,7 @@ void Matroska::load() {
 		try {
 			addTrack(new MatroskaAudioTrack(entry.trackNumber, entry.audio.channels, entry.audio.samplingFrequency, entry.codecID, entry.codecPrivate.get()));
 		} catch (const Common::Exception &ex) {
-			warning("Failed to create audio track %" PRIu64 ": %s", entry.trackNumber, ex.what());
+			warning("Failed to create audio track %u: %s", (uint)entry.trackNumber, ex.what());
 		}
 		break;
 	}
