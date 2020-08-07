@@ -210,7 +210,7 @@ void Thread::setCurrentThreadName(const Common::UString &name) {
 		FreeLibrary(kernel32);
 	} BOOST_SCOPE_EXIT_END;
 
-	typedef HRESULT (*SetThreadDescriptionFunc)(HANDLE hThread, PCWSTR lpThreadDescription);
+	typedef HRESULT (WINAPI *SetThreadDescriptionFunc)(HANDLE hThread, PCWSTR lpThreadDescription);
 	SetThreadDescriptionFunc func = (SetThreadDescriptionFunc)GetProcAddress(kernel32, "SetThreadDescription");
 	if (!func)
 		return;
