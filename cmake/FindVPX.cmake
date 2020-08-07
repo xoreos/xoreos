@@ -20,13 +20,13 @@
 # Try to find vpx library and include path.
 # Once done this will define
 #
-# VPX_INCLUDE_DIRS - where to find vorbis/vorbisfile.h, etc.
+# VPX_INCLUDE_DIRS - where to find vpx/vpx_decoder.h, etc.
 # VPX_LIBRARIES - List of libraries when using libvorbisfile.
 # VPX_FOUND - True if libvorbisfile found.
 
 if(WIN32)
     find_path(VPX_INCLUDE_DIR vpx/vpx_decoder.h $ENV{PROGRAMFILES}/vpx/include DOC "The directory where vpx/vpx_decoder.h resides")
-    find_library(VPX_LIBRARY NAMES vpx PATHS $ENV{PROGRAMFILES}/vpx/lib DOC "The libvpx library")
+    find_library(VPX_LIBRARY NAMES vpx vpxmd PATHS $ENV{PROGRAMFILES}/vpx/lib DOC "The libvpx library")
 
 else(WIN32)
     find_path(VPX_INCLUDE_DIR vpx/vpx_decoder.h DOC "The directory where vpx/vpx_decoder.h resides")

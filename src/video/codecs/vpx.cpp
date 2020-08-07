@@ -22,6 +22,8 @@
  *  VP8/VP9 codec class.
  */
 
+#include <algorithm>
+
 #include <vpx/vpx_decoder.h>
 #include <vpx/vp8dx.h>
 
