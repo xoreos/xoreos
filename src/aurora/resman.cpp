@@ -251,7 +251,7 @@ void ResourceManager::registerDataBase(const Common::UString &path) {
 		_baseArchive = base;
 
 		indexResourceFile(_baseArchive, 1);
-		indexArchive     (_baseArchive, 1);
+		indexArchive(Common::FilePath::getFile(_baseArchive), 1);
 
 	} else
 		throw Common::Exception("No such file or directory \"%s\"", path.c_str());
