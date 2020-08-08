@@ -276,7 +276,7 @@ else
 fi
 
 dnl Graphic libraries
-AX_CHECK_SDL2(2000, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
+AX_CHECK_SDL2(2004, , AC_MSG_ERROR([SDL2 (>= 2.0.0) is required and could not be found!]))
 AX_CHECK_GL( , AC_MSG_ERROR([OpenGL is required and could not be found!]))
 AX_CHECK_FT2([11.0.5], , AC_MSG_ERROR([FreeType2 (>= 11.0.5) is required and could not be found!]))
 if test "x$enable_xvidcore" = "xyes"; then

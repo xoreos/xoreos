@@ -18,7 +18,7 @@ Build-time library dependencies
   - Boost.Locale
 
 - OpenGL (>= 2.1)
-- SDL2 (>= 2.0.0)
+- SDL2 (>= 2.0.4)
 - FreeType 2 (>= 2.4.0 (libtool number >= 11.0.5))
 
 - OpenAL Soft (>= 1.12)
