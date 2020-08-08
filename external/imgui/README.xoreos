@@ -5,3 +5,4 @@ Changes:
 ========
 
 - Optionally use our internal GLEW code in the OpenGL 3 path
+- Shut up another compiler warning in the freetype code
