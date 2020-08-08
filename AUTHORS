@@ -139,6 +139,13 @@ GLM
    full license text, see external/glm/copying.txt or
    <https://glm.g-truc.net/copying.txt>.
 
+Dear ImGui
+***********
+   xoreos uses the bloat-free graphical user interface library Dear ImGui
+   (<https://github.com/ocornut/imgui>), licensed under the terms of the
+   MIT license. For the full license text, see external/imgui/LICENSE.txt or
+   (<https://github.com/ocornut/imgui/blob/master/LICENSE.txt>).
+
 ScummVM code
 ************
    xoreos uses some ScummVM (<https://scummvm.org/>) code, most prominently the

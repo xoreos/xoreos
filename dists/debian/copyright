@@ -223,6 +223,11 @@ Files: external/glm/*.hpp
 Copyright: 2005-2020 G-Truc Creation
 License: Expat
 
+Files: external/imgui/*.h
+       external/imgui/*.cpp
+Copyright: 2014-2020 Omar Cornut
+License: Expat
+
 Files: external/mingw-std-threads/mingw.mutex.h
        external/mingw-std-threads/mingw.thread.h
        external/mingw-std-threads/mingw.condition_variable.h
