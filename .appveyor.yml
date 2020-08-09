@@ -1,4 +1,4 @@
-version: 0.0.5+AppVeyor.{build}
+version: 0.0.6+AppVeyor.{build}
 os: Visual Studio 2015
 clone_depth: 1
 
