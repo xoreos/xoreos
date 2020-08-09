@@ -61,6 +61,9 @@ public:
 	void setPartyMember2(KotORBase::Creature *creature);
 
 protected:
+	void reset();
+	void init();
+
 	void callbackActive(Widget &widget);
 
 private:
@@ -68,7 +71,7 @@ private:
 	Common::ScopedPtr<ContainerMenu> _container;
 
 	Common::ScopedPtr<Minimap> _minimap;
-	Odyssey::WidgetLabel *_minimapPointer;
+	Odyssey::WidgetLabel *_minimapPointer { nullptr };
 
 	void update(int width, int height);
 	void initWidget(Widget &widget);

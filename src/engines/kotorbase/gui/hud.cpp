@@ -128,6 +128,25 @@ void HUD::hideSelection() {
 	hideTargetInformation();
 }
 
+void HUD::reset() {
+	hideSelection();
+	resetSelection();
+	_hoveredCircle->setHovered(true);
+	_targetCircle->setTarget(true);
+
+	clearTargetButtonActions();
+
+	_targetDirty = false;
+
+	_targetName = nullptr;
+	_targetNameBackground = nullptr;
+	_targetHealth = nullptr;
+	_targetHealthBackground = nullptr;
+	_firstTargetButton = nullptr;
+	_secondTargetButton = nullptr;
+	_thirdTargetButton = nullptr;
+}
+
 void HUD::init() {
 	_targetName = getLabel("LBL_NAME");
 	_targetNameBackground = getLabel("LBL_NAMEBG");

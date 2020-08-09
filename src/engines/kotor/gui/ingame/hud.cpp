@@ -194,10 +194,16 @@ HUD::HUD(KotORBase::Module &module, Engines::Console *console) :
 		_menu(module, console) {
 
 	update(WindowMan.getWindowWidth(), WindowMan.getWindowHeight());
+}
 
+void HUD::reset() {
+	_minimapPointer = nullptr;
+	KotORBase::HUD::reset();
+}
+
+void HUD::init() {
 	_minimapPointer = getLabel("LBL_ARROW");
-
-	init();
+	KotORBase::HUD::init();
 }
 
 void HUD::setReturnStrref(uint32 id) {
@@ -337,7 +343,9 @@ void HUD::update(int width, int height) {
 		scale = true;
 	}
 
+	reset();
 	load(foundRes->gui);
+	init();
 
 	// Make all the widgets invisible and scale them if needed.
 	for (size_t i = 0; i < ARRAYSIZE(kKnownWidgets); i++) {

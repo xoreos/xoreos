@@ -83,6 +83,7 @@ public:
 protected:
 	Module &_module;
 
+	void reset();
 	void init();
 	virtual void callbackActive(Widget &widget);
 
