@@ -48,7 +48,7 @@ void WidgetProgressbar::load(const Aurora::GFF3Struct &gff) {
 		const Aurora::GFF3Struct &progress = gff.getStruct("PROGRESS");
 		const Common::UString fill = progress.getString("FILL");
 
-		_progress.reset(new Graphics::Aurora::GUIQuad(fill, 0.0f, 0.0f, getWidth(), getHeight()));
+		_progress = std::make_unique<Graphics::Aurora::GUIQuad>(fill, 0.0f, 0.0f, getWidth(), getHeight());
 
 		float x, y, z;
 		getPosition(x, y, z);
@@ -116,7 +116,7 @@ void WidgetProgressbar::setProgressFill(const Common::UString &fill) {
 	_progress->hide();
 	float x, y, z;
 	_progress->getPosition(x, y, z);
-	_progress.reset(new Graphics::Aurora::GUIQuad(fill, 0.0f, 0.0f, getWidth(), getHeight()));
+	_progress = std::make_unique<Graphics::Aurora::GUIQuad>(fill, 0.0f, 0.0f, getWidth(), getHeight());
 	_progress->setPosition(x, y, z);
 	update();
 	_progress->show();

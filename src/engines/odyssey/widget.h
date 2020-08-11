@@ -195,10 +195,10 @@ protected:
 
 	bool _wrapped;
 
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad>           _quad;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad>           _highlight;
-	Common::ScopedPtr<Graphics::Aurora::HighlightableText> _text;
-	Common::ScopedPtr<Graphics::Aurora::BorderQuad>        _border;
+	std::unique_ptr<Graphics::Aurora::GUIQuad>           _quad;
+	std::unique_ptr<Graphics::Aurora::GUIQuad>           _highlight;
+	std::unique_ptr<Graphics::Aurora::HighlightableText> _text;
+	std::unique_ptr<Graphics::Aurora::BorderQuad>        _border;
 
 	Graphics::Aurora::SubSceneQuad *_subScene;
 

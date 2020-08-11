@@ -92,7 +92,7 @@ private:
 	bool _hovered;
 
 	Common::UString _icon;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _iconQuad;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _iconQuad;
 
 	void setDefaultHighlighting(Graphics::Aurora::Highlightable *highlightable);
 };

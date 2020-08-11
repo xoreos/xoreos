@@ -50,10 +50,10 @@ void WidgetScrollbar::load(const Aurora::GFF3Struct &gff) {
 			Graphics::Aurora::TextureHandle arrowTex = TextureMan.get(dir.getString("IMAGE"));
 			_arrowHeight = arrowTex.getTexture().getHeight();
 
-			_upArrow.reset(new Graphics::Aurora::GUIQuad(arrowTex, 0.0f, 0.0f, _width, _arrowHeight));
+			_upArrow = std::make_unique<Graphics::Aurora::GUIQuad>(arrowTex, 0.0f, 0.0f, _width, _arrowHeight);
 			_upArrow->setPosition(x, y + _height - _arrowHeight, 0.0f);
 
-			_downArrow.reset(new Graphics::Aurora::GUIQuad(arrowTex, 0.0f, 0.0f, _width, _arrowHeight, 0.0f, 1.0f, 1.0f, 0.0f));
+			_downArrow = std::make_unique<Graphics::Aurora::GUIQuad>(arrowTex, 0.0f, 0.0f, _width, _arrowHeight, 0.0f, 1.0f, 1.0f, 0.0f);
 			_downArrow->setPosition(x, y, 0.0f);
 		}
 	}
@@ -61,10 +61,7 @@ void WidgetScrollbar::load(const Aurora::GFF3Struct &gff) {
 	if (gff.hasField("THUMB")) {
 		const Aurora::GFF3Struct &thumb = gff.getStruct("THUMB");
 
-		_thumb.reset(new Graphics::Aurora::GUIQuad(thumb.getString("IMAGE"), 0.0f, 0.0f,
-				_width - 2 * _borderDimension,
-				_height - 2 * (_borderDimension + _arrowHeight)));
-
+		_thumb = std::make_unique<Graphics::Aurora::GUIQuad>(thumb.getString("IMAGE"), 0.0f, 0.0f, _width - 2 * _borderDimension, _height - 2 * (_borderDimension + _arrowHeight));
 		_thumb->setPosition(x + _borderDimension, y + _arrowHeight + _borderDimension, 0.0f);
 	}
 

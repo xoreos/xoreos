@@ -170,9 +170,7 @@ void WidgetButton::setIcon(const Common::UString &icon) {
 	Graphics::Aurora::TextureHandle textureHandle = TextureMan.get(icon);
 	Graphics::Aurora::Texture &texture = textureHandle.getTexture();
 
-	_iconQuad.reset(new Graphics::Aurora::GUIQuad(
-			textureHandle,
-			0.0f, 0.0f, texture.getWidth(), texture.getHeight()));
+	_iconQuad = std::make_unique<Graphics::Aurora::GUIQuad>(textureHandle, 0.0f, 0.0f, texture.getWidth(), texture.getHeight());
 
 	float x, y, z;
 	getPosition(x, y, z);

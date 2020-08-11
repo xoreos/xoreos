@@ -22,6 +22,8 @@
  *  Common base for the Odyssey engine widgets.
  */
 
+#include "src/common/util.h"
+
 #include "src/aurora/gff3file.h"
 #include "src/aurora/talkman.h"
 
@@ -87,31 +89,27 @@ void Widget::load(const Aurora::GFF3Struct &gff) {
 	Hilight hilight = createHilight(gff);
 
 	if (!hilight.fill.empty()) {
-		_highlight.reset(new Graphics::Aurora::GUIQuad(hilight.fill, 0, 0, extend.w, extend.h));
+		_highlight = std::make_unique<Graphics::Aurora::GUIQuad>(hilight.fill, 0, 0, extend.w, extend.h);
 		_highlight->setPosition(extend.x, extend.y, 0.0f);
 		_highlight->setTag(getTag());
 		_highlight->setClickable(true);
 	}
 
 	if (!border.edge.empty() && !border.corner.empty()) {
-		_border.reset(new Graphics::Aurora::BorderQuad(border.edge, border.corner, 0.0f, 0.0f, extend.w, extend.h, border.dimension));
+		_border = std::make_unique<Graphics::Aurora::BorderQuad>(border.edge, border.corner, 0.0f, 0.0f, extend.w, extend.h, border.dimension);
 		_border->setPosition(extend.x, extend.y, 0.0f);
 		_border->setColor(border.r, border.g, border.b);
 		if (!border.fill.empty()) {
-			_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f,
-			                                                       extend.w - 2 * border.dimension,
-			                                                       extend.h - 2 * border.dimension));
+			_quad = std::make_unique<Graphics::Aurora::HighlightableGUIQuad>(border.fill, 0.0f, 0.0f, extend.w - 2 * border.dimension, extend.h - 2 * border.dimension);
 		} else {
-			_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f,
-			                                          extend.w - 2 * border.dimension,
-			                                          extend.h - 2 * border.dimension));
+			_quad = std::make_unique<Graphics::Aurora::GUIQuad>(border.fill, 0.0f, 0.0f, extend.w - 2 * border.dimension, extend.h - 2 * border.dimension);
 		}
 		_quad->setPosition(extend.x + border.dimension, extend.y + border.dimension, 0.0f);
 	} else {
 		if (!border.fill.empty()) {
-			_quad.reset(new Graphics::Aurora::HighlightableGUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
+			_quad = std::make_unique<Graphics::Aurora::HighlightableGUIQuad>(border.fill, 0.0f, 0.0f, extend.w, extend.h);
 		} else {
-			_quad.reset(new Graphics::Aurora::GUIQuad(border.fill, 0.0f, 0.0f, extend.w, extend.h));
+			_quad = std::make_unique<Graphics::Aurora::GUIQuad>(border.fill, 0.0f, 0.0f, extend.w, extend.h);
 		}
 		_quad->setPosition(extend.x, extend.y, 0.0f);
 	}
@@ -137,8 +135,7 @@ void Widget::load(const Aurora::GFF3Struct &gff) {
 			tH = fontHeight;
 			tY = extend.y - (fontHeight - extend.h);
 		}
-		_text.reset(new Graphics::Aurora::HighlightableText(font, extend.w, tH,
-		            text.text, text.r, text.g, text.b, 1.0f, text.halign, text.valign));
+		_text = std::make_unique<Graphics::Aurora::HighlightableText>(font, extend.w, tH, text.text, text.r, text.g, text.b, 1.0f, text.halign, text.valign);
 
 		_text->setPosition(extend.x, tY, -1.0f);
 		_text->setTag(getTag());
@@ -175,7 +172,7 @@ void Widget::setFill(const Common::UString &fill) {
 		float x, y, z;
 		getPosition(x, y, z);
 
-		_quad.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width - 2 * _borderDimension, _height - 2 * _borderDimension));
+		_quad = std::make_unique<Graphics::Aurora::GUIQuad>("", 0.0f, 0.0f, _width - 2 * _borderDimension, _height - 2 * _borderDimension);
 		_quad->setPosition(x + _borderDimension, y + _borderDimension, z);
 		_quad->setTag(getTag());
 		_quad->setClickable(true);
@@ -241,7 +238,7 @@ void Widget::setHighlight(const Common::UString &hilight) {
 		float x, y, z;
 		getPosition(x, y, z);
 
-		_highlight.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, _width - 2 * _borderDimension, _height - 2 * _borderDimension));
+		_highlight = std::make_unique<Graphics::Aurora::GUIQuad>("", 0.0f, 0.0f, _width - 2 * _borderDimension, _height - 2 * _borderDimension);
 		_highlight->setPosition(x + _borderDimension, y + _borderDimension, z);
 		_highlight->setTag(getTag());
 		_highlight->setClickable(true);
@@ -314,7 +311,7 @@ void Widget::createText(const Common::UString &font, const Common::UString &str)
 	const float width  = f.getFont().getWidth(str);
 	const float height = f.getFont().getHeight();
 
-	_text.reset(new Graphics::Aurora::HighlightableText(f, width, height, str));
+	_text = std::make_unique<Graphics::Aurora::HighlightableText>(f, width, height, str);
 
 	_text->setTag(getTag());
 	_text->setClickable(true);

@@ -22,6 +22,7 @@
  *  List box widget for the Odyssey engine.
  */
 
+#include "src/common/util.h"
 #include "src/common/strutil.h"
 
 #include "src/aurora/gff3file.h"

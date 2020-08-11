@@ -40,7 +40,7 @@ WidgetPanel::WidgetPanel(GUI &gui,
 
 	Engines::Widget::setPosition(x, y, 0.0f);
 
-	_quad.reset(new Graphics::Aurora::GUIQuad(texture, 0.0f, 0.0f, w, h));
+	_quad = std::make_unique<Graphics::Aurora::GUIQuad>(texture, 0.0f, 0.0f, w, h);
 	_quad->setPosition(x, y, 0.0f);
 }
 

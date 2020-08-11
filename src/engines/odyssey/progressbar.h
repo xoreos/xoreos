@@ -25,7 +25,7 @@
 #ifndef ENGINES_ODYSSEY_PROGRESSBAR_H
 #define ENGINES_ODYSSEY_PROGRESSBAR_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/odyssey/widget.h"
 
@@ -59,7 +59,7 @@ public:
 	void setPosition(float x, float y, float z);
 
 private:
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _progress;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _progress;
 
 	int _maxValue;
 	int _curValue;

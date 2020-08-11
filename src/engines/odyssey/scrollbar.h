@@ -25,7 +25,7 @@
 #ifndef ENGINES_ODYSSEY_SCROLLBAR_H
 #define ENGINES_ODYSSEY_SCROLLBAR_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/graphics/aurora/guiquad.h"
 
@@ -56,9 +56,9 @@ public:
 	void setHeight(float height);
 
 private:
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _upArrow;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _downArrow;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _thumb;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _upArrow;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _downArrow;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _thumb;
 
 	float _arrowHeight;
 };
