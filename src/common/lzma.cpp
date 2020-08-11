@@ -26,10 +26,11 @@
 #include "src/common/types.h"
 #include <lzma.h>
 
+#include <memory>
+
 #include <boost/scope_exit.hpp>
 
 #include "src/common/lzma.h"
-#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 
@@ -95,7 +96,7 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, boo
 	if ((lzmaRet = lzma_raw_decoder(&strm, filters)) != LZMA_OK)
 		throw Exception("Failed to create raw LZMA1 decoder: %d", (int) lzmaRet);
 
-	ScopedArray<byte> outputData(new byte[outputSize]);
+	std::unique_ptr<byte[]> outputData = std::make_unique<byte[]>(outputSize);
 
 	strm.next_in   = data;
 	strm.avail_in  = inputSize;
@@ -121,7 +122,7 @@ byte *decompressLZMA1(const byte *data, size_t inputSize, size_t outputSize, boo
 }
 
 SeekableReadStream *decompressLZMA1(ReadStream &input, size_t inputSize, size_t outputSize, bool noEndMarker) {
-	ScopedArray<byte> inputData(new byte[inputSize]);
+	std::unique_ptr<byte[]> inputData = std::make_unique<byte[]>(inputSize);
 	if (input.read(inputData.get(), inputSize) != inputSize)
 		throw Exception(kReadError);
 

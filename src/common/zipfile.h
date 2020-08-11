@@ -28,10 +28,11 @@
 #include <list>
 #include <vector>
 
+#include <memory>
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 namespace Common {
@@ -70,7 +71,7 @@ private:
 
 	typedef std::vector<IFile> IFileList;
 
-	ScopedPtr<SeekableReadStream> _zip;
+	std::unique_ptr<SeekableReadStream> _zip;
 
 	/** External list of file names and types. */
 	FileList _files;

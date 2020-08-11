@@ -53,10 +53,11 @@
 #ifndef COMMON_FFT_H
 #define COMMON_FFT_H
 
+#include <memory>
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -84,10 +85,10 @@ private:
 	int  _bits;
 	bool _inverse;
 
-	ScopedArray<uint16> _revTab;
+	std::unique_ptr<uint16[]> _revTab;
 
-	ScopedArray<Complex> _expTab;
-	ScopedArray<Complex> _tmpBuf;
+	std::unique_ptr<Complex[]> _expTab;
+	std::unique_ptr<Complex[]> _tmpBuf;
 
 	static int splitRadixPermutation(int i, int n, bool inverse);
 };

@@ -65,9 +65,9 @@ FFT::FFT(int bits, bool inverse) : _bits(bits), _inverse(inverse) {
 
 	int n = 1 << bits;
 
-	_tmpBuf.reset(new Complex[n]);
-	_expTab.reset(new Complex[n / 2]);
-	_revTab.reset(new uint16[n]);
+	_tmpBuf = std::make_unique<Complex[]>(n);
+	_expTab = std::make_unique<Complex[]>(n / 2);
+	_revTab = std::make_unique<uint16[]>(n);
 
 	for (int i = 0; i < n; i++)
 		_revTab[-splitRadixPermutation(i, n, _inverse) & (n - 1)] = i;

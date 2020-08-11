@@ -221,7 +221,7 @@ void Thread::setCurrentThreadName(const Common::UString &name) {
 		return;
 
 	// Now do the actual conversion.
-	std::unique_ptr<wchar_t[]> buffer(new wchar_t[result + 1]);
+	std::unique_ptr<wchar_t[]> buffer = std::make_unique<wchar_t[]>(result + 1);
 	MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name.c_str(), name.size(), buffer.get(), result);
 	buffer[result] = L'\0';
 

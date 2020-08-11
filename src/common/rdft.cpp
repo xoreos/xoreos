@@ -64,7 +64,7 @@ RDFT::RDFT(int bits, TransformType trans) : _bits(bits) {
 	_inverse        = trans == IDFT_C2R || trans == DFT_C2R;
 	_signConvention = trans == IDFT_R2C || trans == DFT_C2R ? 1 : -1;
 
-	_fft.reset(new FFT(bits - 1, trans == IDFT_C2R || trans == IDFT_R2C));
+	_fft = std::make_unique<FFT>(bits - 1, trans == IDFT_C2R || trans == IDFT_R2C);
 
 	int n = 1 << bits;
 

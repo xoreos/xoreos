@@ -39,12 +39,13 @@
 #include <cassert>
 #include <cstdlib>
 
+#include <memory>
+
 #include <boost/locale.hpp>
 #include <boost/filesystem/path.hpp>
 
 #include "src/common/platform.h"
 #include "src/common/error.h"
-#include "src/common/scopedptr.h"
 #include "src/common/encoding.h"
 #include "src/common/filepath.h"
 
@@ -127,7 +128,7 @@ static inline UString getWindowsVariable(const wchar_t *variable) {
 		return "";
 
 	const size_t size = length * sizeof(wchar_t);
-	ScopedArray<byte> data(new byte[size]);
+	std::unique_ptr<byte[]> data = std::make_unique<byte[]>(size);
 
 	DWORD newLength = GetEnvironmentVariableW(variable, reinterpret_cast<wchar_t *>(data.get()), length);
 	if (!newLength || (newLength > length))

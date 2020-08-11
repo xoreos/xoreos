@@ -25,8 +25,9 @@
 #ifndef COMMON_HASH_H
 #define COMMON_HASH_H
 
+#include <memory>
+
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/encoding.h"
 #include "src/common/memreadstream.h"
@@ -60,7 +61,7 @@ static inline uint32 hashStringDJB2(const UString &string) {
 static inline uint32 hashStringDJB2(const UString &string, Encoding encoding) {
 	uint32 hash = 5381;
 
-	ScopedPtr<SeekableReadStream> data(convertString(string, encoding, false));
+	std::unique_ptr<SeekableReadStream> data(convertString(string, encoding, false));
 	if (!data)
 		return hash;
 
@@ -89,7 +90,7 @@ static inline uint32 hashStringFNV32(const UString &string) {
 static inline uint32 hashStringFNV32(const UString &string, Encoding encoding) {
 	uint32 hash = 0x811C9DC5;
 
-	ScopedPtr<SeekableReadStream> data(convertString(string, encoding, false));
+	std::unique_ptr<SeekableReadStream> data(convertString(string, encoding, false));
 	if (!data)
 		return hash;
 
@@ -118,7 +119,7 @@ static inline uint64 hashStringFNV64(const UString &string) {
 static inline uint64 hashStringFNV64(const UString &string, Encoding encoding) {
 	uint64 hash = 0xCBF29CE484222325LL;
 
-	ScopedPtr<SeekableReadStream> data(convertString(string, encoding, false));
+	std::unique_ptr<SeekableReadStream> data(convertString(string, encoding, false));
 	if (!data)
 		return hash;
 
@@ -202,7 +203,7 @@ static inline uint32 hashStringCRC32(const UString &string) {
 static inline uint32 hashStringCRC32(const UString &string, Encoding encoding) {
 	uint32 hash = 0xFFFFFFFF;
 
-	ScopedPtr<SeekableReadStream> data(convertString(string, encoding, false));
+	std::unique_ptr<SeekableReadStream> data(convertString(string, encoding, false));
 	if (!data)
 		return hash;
 

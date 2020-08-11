@@ -24,9 +24,10 @@
 
 #include <cassert>
 
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/scopedptr.h"
 #include "src/common/memreadstream.h"
 #include "src/common/blowfish.h"
 
@@ -345,7 +346,7 @@ MemoryReadStream *blowfishEBC(SeekableReadStream &input, const std::vector<byte>
 	// Round up to the next multiple of the block size
 	const size_t outputSize = ((inputSize + kBlockSize - 1) / kBlockSize) * kBlockSize;
 
-	ScopedArray<byte> output(new byte[outputSize]);
+	std::unique_ptr<byte[]> output = std::make_unique<byte[]>(outputSize);
 
 	byte buffer[kBlockSize];
 	byte *data = output.get();

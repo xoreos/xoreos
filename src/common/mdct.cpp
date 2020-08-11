@@ -58,12 +58,12 @@ namespace Common {
 MDCT::MDCT(int bits, bool inverse, double scale) : _bits(bits) {
 	_size = 1 << bits;
 
-	_fft.reset(new FFT(_bits - 2, inverse));
+	_fft = std::make_unique<FFT>(_bits - 2, inverse);
 
 	const int size2 = _size >> 1;
 	const int size4 = _size >> 2;
 
-	_tCos.reset(new float[size2]);
+	_tCos = std::make_unique<float[]>(size2);
 	_tSin = _tCos.get() + size4;
 
 	const double theta = 1.0 / 8.0 + (scale < 0 ? size4 : 0);

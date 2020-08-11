@@ -27,12 +27,12 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
-#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -139,7 +139,7 @@ private:
 	std::map<UString, Section> _sections;
 
 
-	ScopedPtr<SeekableReadStream> _exe;
+	std::unique_ptr<SeekableReadStream> _exe;
 
 	PEResourceID _curType;
 	PEResourceID _curName;

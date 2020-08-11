@@ -26,9 +26,10 @@
 #include <cstring>
 #include <cstdio>
 
+#include <memory>
+
 #include "src/common/foxpro.h"
 #include "src/common/error.h"
-#include "src/common/scopedptr.h"
 #include "src/common/encoding.h"
 #include "src/common/memreadstream.h"
 #include "src/common/writestream.h"
@@ -484,7 +485,7 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
 	size_t dataSize = size;
 
 	// Read the data
-	ScopedArray<byte> data(new byte[size]);
+	std::unique_ptr<byte[]> data = std::make_unique<byte[]>(size);
 	byte *dataPtr = data.get();
 
 	while (size > 0) {

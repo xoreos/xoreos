@@ -26,9 +26,10 @@
 
 #include <cassert>
 
+#include <memory>
+
 #include "src/common/error.h"
 #include "src/common/encoding.h"
-#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 #include "src/common/writestream.h"
 #include "src/common/strutil.h"
@@ -283,7 +284,7 @@ void ConfigFile::clear() {
 void ConfigFile::load(SeekableReadStream &stream) {
 	UString comment;
 
-	ScopedPtr<ConfigDomain> domain;
+	std::unique_ptr<ConfigDomain> domain;
 
 	int lineNumber = 0;
 	int domainLineNumber = 0;
@@ -311,7 +312,7 @@ void ConfigFile::load(SeekableReadStream &stream) {
 				                domainName.c_str(), lineNumber);
 
 			// Create the new domain
-			domain.reset(new ConfigDomain(domainName));
+			domain = std::make_unique<ConfigDomain>(domainName);
 
 			domain->_prologue = comment;
 			domain->_comment  = lineComment;

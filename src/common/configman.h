@@ -27,9 +27,10 @@
 #ifndef COMMON_CONFIGMAN_H
 #define COMMON_CONFIGMAN_H
 
+#include <memory>
+
 #include "src/common/types.h"
 #include "src/common/error.h"
-#include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
 
@@ -150,12 +151,12 @@ private:
 
 	bool _changed;
 
-	ScopedPtr<ConfigFile> _config; ///< The actual config.
+	std::unique_ptr<ConfigFile> _config; ///< The actual config.
 
-	ScopedPtr<ConfigDomain> _domainDefaultApp;  ///< Application defaults domain.
-	ScopedPtr<ConfigDomain> _domainDefaultGame; ///< Game defaults domain.
-	ScopedPtr<ConfigDomain> _domainCommandline; ///< Command line domain.
-	ScopedPtr<ConfigDomain> _domainGameTemp;    ///< Temporary game settings domain.
+	std::unique_ptr<ConfigDomain> _domainDefaultApp;  ///< Application defaults domain.
+	std::unique_ptr<ConfigDomain> _domainDefaultGame; ///< Game defaults domain.
+	std::unique_ptr<ConfigDomain> _domainCommandline; ///< Command line domain.
+	std::unique_ptr<ConfigDomain> _domainGameTemp;    ///< Temporary game settings domain.
 
 	ConfigDomain *_domainApp;  ///< Application domain, pointer into the config file.
 	ConfigDomain *_domainGame; ///< Game domain, pointer into the config file.

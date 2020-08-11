@@ -40,8 +40,8 @@ namespace Common {
 const char *ConfigManager::kDomainApp = "xoreos";
 
 ConfigManager::ConfigManager() : _changed(false), _domainApp(0), _domainGame(0) {
-	_domainDefaultApp.reset(new ConfigDomain("appDefault"));
-	_domainCommandline.reset(new ConfigDomain("commandline"));
+	_domainDefaultApp = std::make_unique<ConfigDomain>("appDefault");
+	_domainCommandline = std::make_unique<ConfigDomain>("commandline");
 }
 
 ConfigManager::~ConfigManager() {
@@ -59,13 +59,13 @@ void ConfigManager::clear() {
 
 	_domainGameTemp.reset();
 	_domainDefaultGame.reset();
-	_domainDefaultApp.reset(new ConfigDomain("appDefault"));
+	_domainDefaultApp = std::make_unique<ConfigDomain>("appDefault");
 
 	_config.reset();
 }
 
 void ConfigManager::clearCommandline() {
-	_domainCommandline.reset(new ConfigDomain("commandline"));
+	_domainCommandline = std::make_unique<ConfigDomain>("commandline");
 }
 
 bool ConfigManager::fileExists() const {
@@ -104,7 +104,7 @@ bool ConfigManager::load() {
 void ConfigManager::load(SeekableReadStream &stream) {
 	clear();
 
-	_config.reset(new ConfigFile);
+	_config = std::make_unique<ConfigFile>();
 	_config->load(stream);
 
 	// Get the application domain
@@ -153,7 +153,7 @@ void ConfigManager::save(WriteStream &stream, bool clearChanged) {
 void ConfigManager::create() {
 	clear();
 
-	_config.reset(new ConfigFile);
+	_config = std::make_unique<ConfigFile>();
 
 	_domainApp = _config->addDomain(kDomainApp);
 }
@@ -259,9 +259,9 @@ bool ConfigManager::setGame(const UString &gameID) {
 		return false;
 
 	// Create a new defaults domain for the game too
-	_domainDefaultGame.reset(new ConfigDomain("gameDefault"));
+	_domainDefaultGame = std::make_unique<ConfigDomain>("gameDefault");
 	// And a temporary settings domain too
-	_domainGameTemp.reset(new ConfigDomain("gameTemp"));
+	_domainGameTemp = std::make_unique<ConfigDomain>("gameTemp");
 
 	return true;
 }

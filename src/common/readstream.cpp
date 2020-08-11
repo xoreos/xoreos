@@ -49,10 +49,11 @@
 
 #include <cassert>
 
+#include <memory>
+
 #include "src/common/readstream.h"
 #include "src/common/memreadstream.h"
 #include "src/common/error.h"
-#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -65,7 +66,7 @@ ReadStream::~ReadStream() {
 }
 
 MemoryReadStream *ReadStream::readStream(size_t dataSize) {
-	ScopedArray<byte> buf(new byte[dataSize]);
+	std::unique_ptr<byte[]> buf = std::make_unique<byte[]>(dataSize);
 
 	if (read(buf.get(), dataSize) != dataSize)
 		throw Exception(kReadError);

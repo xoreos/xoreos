@@ -53,10 +53,11 @@
 #ifndef COMMON_DCT_H
 #define COMMON_DCT_H
 
+#include <memory>
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -83,9 +84,9 @@ private:
 
 	const float *_tCos;
 
-	ScopedPtr<RDFT> _rdft;
+	std::unique_ptr<RDFT> _rdft;
 
-	ScopedArray<float> _csc2;
+	std::unique_ptr<float[]> _csc2;
 
 	void calcDCTI  (float *data);
 	void calcDCTII (float *data);

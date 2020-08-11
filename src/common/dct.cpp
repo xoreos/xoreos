@@ -62,9 +62,9 @@ DCT::DCT(int bits, TransformType trans) : _bits(bits), _trans(trans) {
 
 	_tCos = getCosineTable(_bits + 2);
 
-	_csc2.reset(new float[n / 2]);
+	_csc2 = std::make_unique<float[]>(n / 2);
 
-	_rdft.reset(new RDFT(_bits, (_trans == DCT_III) ? RDFT::IDFT_C2R : RDFT::DFT_R2C));
+	_rdft = std::make_unique<RDFT>(_bits, (_trans == DCT_III) ? RDFT::IDFT_C2R : RDFT::DFT_R2C);
 
 	for (int i = 0; i < (n / 2); i++)
 		_csc2[i] = 0.5 / sin((M_PI / (2 * n) * (2 * i + 1)));

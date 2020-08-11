@@ -51,10 +51,11 @@
 #ifndef COMMON_RDFT_H
 #define COMMON_RDFT_H
 
+#include <memory>
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 namespace Common {
 
@@ -83,7 +84,7 @@ private:
 	const float *_tSin;
 	const float *_tCos;
 
-	ScopedPtr<FFT> _fft;
+	std::unique_ptr<FFT> _fft;
 };
 
 } // End of namespace Common
