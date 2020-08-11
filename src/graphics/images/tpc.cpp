@@ -234,7 +234,7 @@ void TPC::readHeader(Common::SeekableReadStream &tpc, byte &encoding) {
 
 			fullDataSize -= mipMap->size;
 
-			_mipMaps.push_back(mipMap.release());
+			_mipMaps.emplace_back(mipMap.release());
 
 			layerWidth  >>= 1;
 			layerHeight >>= 1;

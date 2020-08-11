@@ -81,8 +81,8 @@ void CBGT::readPalettes(ReadContext &ctx) {
 		while (size > 0) {
 			const uint32_t paletteSize = MIN<size_t>(512, size);
 
-			ctx.palettes.push_back(new byte[768]);
-			byte *palette = ctx.palettes.back();
+			ctx.palettes.emplace_back(std::make_unique<byte[]>(768));
+			byte *palette = ctx.palettes.back().get();
 
 			const uint32_t colorCount = (paletteSize / 2) * 3;
 			for (uint32_t i = 0; i < colorCount; i += 3) {
@@ -177,14 +177,14 @@ void CBGT::readCells(ReadContext &ctx) {
 			if (offset < 0x4000)
 				break;
 
-			ctx.cells.push_back(0);
+			ctx.cells.emplace_back(nullptr);
 			if (size == 0)
 				continue;
 
 			size_t pos = ctx.cbgt->pos();
 
 			Common::SeekableSubReadStream cellData(ctx.cbgt, offset, offset + size);
-			ctx.cells.back() = Aurora::Small::decompress(cellData);
+			ctx.cells.back().reset(Aurora::Small::decompress(cellData));
 
 			if (ctx.cells.back()->size() != 4096)
 				throw Common::Exception("Invalid size for cell %u: %u", (uint)i, (uint)ctx.cells.back()->size());
@@ -216,7 +216,7 @@ void CBGT::createImage(uint32_t width, uint32_t height) {
 	_formatRaw = kPixelFormatRGBA8;
 	_dataType  = kPixelDataType8;
 
-	_mipMaps.push_back(new MipMap);
+	_mipMaps.emplace_back(std::make_unique<MipMap>(this));
 	_mipMaps.back()->width  = width;
 	_mipMaps.back()->height = height;
 	_mipMaps.back()->size   = width * height * 4;
@@ -256,14 +256,14 @@ void CBGT::drawImage(ReadContext &ctx) {
 
 	byte *data = _mipMaps.back()->data.get();
 	for (size_t i = 0; i < ctx.cells.size(); i++) {
-		Common::SeekableReadStream *cell = ctx.cells[i];
+		Common::SeekableReadStream *cell = ctx.cells[i].get();
 		if (!cell)
 			continue;
 
 		const uint32_t xC = i % cellsX;
 		const uint32_t yC = i / cellsX;
 
-		const byte *palette = ctx.palettes[ctx.paletteIndices[i]];
+		const byte *palette = ctx.palettes[ctx.paletteIndices[i]].get();
 		const bool is0Transp = (palette[0] == 0xF8) && (palette[1] == 0x00) && (palette[2] == 0xF8);
 
 		// Pixel position of this cell within the big image

@@ -128,12 +128,12 @@ void TGA::readHeader(Common::SeekableReadStream &tga, ImageType &imageType, byte
 
 	height /= _layerCount;
 
-	_mipMaps.resize(_layerCount, 0);
+	_mipMaps.reserve(_layerCount);
 	for (size_t i = 0; i < _layerCount; i++) {
-		_mipMaps[i] = new MipMap(this);
+		_mipMaps.emplace_back(std::make_unique<MipMap>(this));
 
-		_mipMaps[i]->width  = width;
-		_mipMaps[i]->height = height;
+		_mipMaps.back()->width  = width;
+		_mipMaps.back()->height = height;
 	}
 
 	// Bits per pixel

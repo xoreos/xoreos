@@ -31,7 +31,6 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
-#include "src/common/ptrvector.h"
 
 #include "src/graphics/types.h"
 
@@ -49,17 +48,18 @@ class ImageDecoder : boost::noncopyable {
 public:
 	/** A mip map. */
 	struct MipMap {
-		int      width;  ///< The mip map's width.
-		int      height; ///< The mip map's height.
-		uint32_t size;   ///< The mip map's size in bytes.
+		int      width  { 0 }; ///< The mip map's width.
+		int      height { 0 }; ///< The mip map's height.
+		uint32_t size   { 0 }; ///< The mip map's size in bytes.
 
 		std::unique_ptr<byte[]> data; ///< The mip map's data.
 
-		const ImageDecoder *image; ///< The image the mip map belongs to.
+		const ImageDecoder *image { nullptr }; ///< The image the mip map belongs to.
 
-		MipMap(const ImageDecoder *i = 0);
+		MipMap() = default;
+		MipMap(const ImageDecoder *i = nullptr);
 		MipMap(const MipMap &mipMap, const ImageDecoder *i = 0);
-		~MipMap();
+		~MipMap() = default;
 
 		void swap(MipMap &right);
 
@@ -114,7 +114,7 @@ public:
 	bool dumpTGA(const Common::UString &fileName) const;
 
 protected:
-	typedef Common::PtrVector<MipMap> MipMaps;
+	typedef std::vector<std::unique_ptr<MipMap>> MipMaps;
 
 	bool _compressed;
 	bool _hasAlpha;

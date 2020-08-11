@@ -40,7 +40,7 @@ Surface::Surface(int width, int height) {
 	_formatRaw  = kPixelFormatRGBA8;
 	_dataType   = kPixelDataType8;
 
-	_mipMaps.push_back(new MipMap(this));
+	_mipMaps.emplace_back(std::make_unique<MipMap>(this));
 
 	_mipMaps[0]->width  = width;
 	_mipMaps[0]->height = height;

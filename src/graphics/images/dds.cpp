@@ -122,7 +122,7 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds, DataType &dataType
 
 	_mipMaps.reserve(mipMapCount);
 	for (uint32_t i = 0; i < mipMapCount; i++) {
-		std::unique_ptr<MipMap> mipMap = std::make_unique<MipMap>();
+		std::unique_ptr<MipMap> mipMap = std::make_unique<MipMap>(this);
 
 		mipMap->width  = MAX<uint32_t>(width , 1);
 		mipMap->height = MAX<uint32_t>(height, 1);
@@ -132,7 +132,7 @@ void DDS::readStandardHeader(Common::SeekableReadStream &dds, DataType &dataType
 		width  >>= 1;
 		height >>= 1;
 
-		_mipMaps.push_back(mipMap.release());
+		_mipMaps.emplace_back(mipMap.release());
 	}
 
 }
@@ -201,7 +201,7 @@ void DDS::readBioWareHeader(Common::SeekableReadStream &dds, DataType &dataType)
 
 		fullDataSize -= mipMap->size;
 
-		_mipMaps.push_back(mipMap.release());
+		_mipMaps.emplace_back(mipMap.release());
 
 		width  >>= 1;
 		height >>= 1;

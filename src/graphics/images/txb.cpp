@@ -156,7 +156,7 @@ void TXB::readHeader(Common::SeekableReadStream &txb, byte &encoding, uint32_t &
 		mipMap->height = height;
 		mipMap->size   = getTXBDataSize(encoding, _formatRaw, width, height);
 
-		_mipMaps.push_back(mipMap.release());
+		_mipMaps.emplace_back(mipMap.release());
 
 		if (width  > 1) width  >>= 1;
 		if (height > 1) height >>= 1;

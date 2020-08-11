@@ -88,7 +88,7 @@ void NBFS::readImage(Common::SeekableReadStream &nbfs, const byte *palette,
 	_formatRaw = kPixelFormatRGBA8;
 	_dataType  = kPixelDataType8;
 
-	_mipMaps.push_back(new MipMap);
+	_mipMaps.emplace_back(std::make_unique<MipMap>(this));
 
 	_mipMaps.back()->width  = width;
 	_mipMaps.back()->height = height;

@@ -256,8 +256,8 @@ void TTFFont::renderUnbind() const {
 }
 
 void TTFFont::rebuildPages() {
-	for (std::vector<Page *>::iterator p = _pages.begin(); p != _pages.end(); ++p)
-		(*p)->rebuild();
+	for (auto &page : _pages)
+		page->rebuild();
 }
 
 void TTFFont::addChar(uint32_t c) {
@@ -275,7 +275,7 @@ void TTFFont::addChar(uint32_t c) {
 			return;
 
 		if (_pages.empty()) {
-			_pages.push_back(new Page);
+			_pages.emplace_back(std::make_unique<Page>());
 			_pages.back()->heightLeft -= _height;
 		}
 
@@ -294,7 +294,7 @@ void TTFFont::addChar(uint32_t c) {
 			} else {
 				// Create a new page
 
-				_pages.push_back(new Page);
+				_pages.emplace_back(std::make_unique<Page>());
 				_pages.back()->heightLeft -= _height;
 			}
 

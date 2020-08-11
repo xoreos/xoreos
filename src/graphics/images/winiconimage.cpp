@@ -144,7 +144,7 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 	_format    = kPixelFormatBGRA;
 	_formatRaw = kPixelFormatRGBA8;
 
-	_mipMaps.push_back(new MipMap(this));
+	_mipMaps.emplace_back(std::make_unique<MipMap>(this));
 
 	_mipMaps[0]->width  = width;
 	_mipMaps[0]->height = height;

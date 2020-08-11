@@ -39,7 +39,7 @@
 
 namespace Graphics {
 
-ImageDecoder::MipMap::MipMap(const ImageDecoder *i) : width(0), height(0), size(0), image(i) {
+ImageDecoder::MipMap::MipMap(const ImageDecoder *i) : image(i) {
 }
 
 ImageDecoder::MipMap::MipMap(const MipMap &mipMap, const ImageDecoder *i) :
@@ -48,9 +48,6 @@ ImageDecoder::MipMap::MipMap(const MipMap &mipMap, const ImageDecoder *i) :
 	data = std::make_unique<byte[]>(size);
 
 	std::memcpy(data.get(), mipMap.data.get(), size);
-}
-
-ImageDecoder::MipMap::~MipMap() {
 }
 
 void ImageDecoder::MipMap::swap(MipMap &right) {
@@ -157,7 +154,7 @@ ImageDecoder &ImageDecoder::operator=(const ImageDecoder &image) {
 	_mipMaps.reserve(image._mipMaps.size());
 
 	for (MipMaps::const_iterator m = image._mipMaps.begin(); m != image._mipMaps.end(); ++m)
-		_mipMaps.push_back(new MipMap(**m));
+		_mipMaps.emplace_back(std::make_unique<MipMap>(**m, this));
 
 	return *this;
 }

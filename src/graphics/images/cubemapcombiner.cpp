@@ -90,7 +90,7 @@ CubeMapCombiner::CubeMapCombiner(ImageDecoder *(&sides)[6]) {
 		for (size_t mipMap = 0; mipMap < mipMapCount; mipMap++) {
 			const size_t index = layer * mipMapCount + mipMap;
 
-			_mipMaps[index] = new MipMap(sides[layer]->getMipMap(mipMap), this);
+			_mipMaps[index] = std::make_unique<MipMap>(sides[layer]->getMipMap(mipMap), this);
 		}
 	}
 }

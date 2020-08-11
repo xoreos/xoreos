@@ -26,8 +26,7 @@
 #define GRAPHICS_IMAGES_CBGT_H
 
 #include <vector>
-
-#include "src/common/ptrvector.h"
+#include <memory>
 
 #include "src/graphics/images/decoder.h"
 
@@ -61,9 +60,9 @@ public:
 	~CBGT();
 
 private:
-	typedef Common::PtrVector<byte, Common::DeallocatorArray> Palettes;
+	typedef std::vector<std::unique_ptr<byte[]>> Palettes;
 	typedef std::vector<size_t> PaletteIndices;
-	typedef Common::PtrVector<Common::SeekableReadStream> Cells;
+	typedef std::vector<std::unique_ptr<Common::SeekableReadStream>> Cells;
 
 	struct ReadContext {
 		Common::SeekableReadStream *cbgt;

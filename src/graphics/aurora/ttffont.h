@@ -30,7 +30,6 @@
 #include <memory>
 
 #include "src/common/types.h"
-#include "src/common/ptrvector.h"
 
 #include "src/graphics/font.h"
 
@@ -105,7 +104,7 @@ private:
 
 	std::unique_ptr<TTFRenderer> _ttf;
 
-	Common::PtrVector<Page> _pages;
+	std::vector<std::unique_ptr<Page>> _pages;
 	std::map<uint32_t, Char> _chars;
 
 	std::map<uint32_t, Char>::const_iterator _missingChar;
