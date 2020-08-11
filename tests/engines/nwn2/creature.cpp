@@ -31,7 +31,6 @@
 #include "tests/engines/nwn2/creature3.h"
 
 #include "src/common/memreadstream.h"
-#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 
 #include "src/aurora/gff3file.h"
@@ -44,10 +43,10 @@
 static const float kEpsilon = 1e-5f;
 
 GTEST_TEST(NWN2Creature, creature1) {
-	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataCreature1));
+	std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataCreature1);
 	if (!stream)
 		throw Common::Exception("No test data available");
-	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('G', 'I', 'T', ' ')));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('G', 'I', 'T', ' '));
 
 	// Get the creature list
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
@@ -56,7 +55,7 @@ GTEST_TEST(NWN2Creature, creature1) {
 
 	// Get the creature data
 	Aurora::GFF3List::const_iterator it = crlist.begin();
-	Common::ScopedPtr<Engines::NWN2::Creature> cr(new Engines::NWN2::Creature(**it));
+	std::unique_ptr<Engines::NWN2::Creature> cr = std::make_unique<Engines::NWN2::Creature>(**it);
 
 	EXPECT_STREQ(cr->getTag().c_str(), "c_halforc");
 	EXPECT_STREQ(cr->getFirstName().c_str(), "[???]"); // Should be "Orcus"
@@ -110,14 +109,14 @@ GTEST_TEST(NWN2Creature, creature1) {
 }
 
 GTEST_TEST(NWN2Creature, creature2) {
-	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataCreature2));
+	std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataCreature2);
 	if (!stream)
 		throw Common::Exception("No test data available");
-	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('B', 'I', 'C', ' ')));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('B', 'I', 'C', ' '));
 
 	// Load the PC
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
-	Common::ScopedPtr<Engines::NWN2::Creature> cr(new Engines::NWN2::Creature(top));
+	std::unique_ptr<Engines::NWN2::Creature> cr = std::make_unique<Engines::NWN2::Creature>(top);
 
 	EXPECT_EQ(cr->getRace(), 21);
 	EXPECT_EQ(cr->getSubRace(), 20);
@@ -166,14 +165,14 @@ GTEST_TEST(NWN2Creature, creature2) {
 }
 
 GTEST_TEST(NWN2Creature, inventory) {
-	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataCreature3));
+	std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataCreature3);
 	if (!stream)
 		throw Common::Exception("No test data available");
-	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('R', 'O', 'S', ' ')));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('R', 'O', 'S', ' '));
 
 	// Load the PC
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
-	Common::ScopedPtr<Engines::NWN2::Creature> cr(new Engines::NWN2::Creature(top));
+	std::unique_ptr<Engines::NWN2::Creature> cr = std::make_unique<Engines::NWN2::Creature>(top);
 
 	EXPECT_STREQ(cr->getTag().c_str(), "elanee");
 

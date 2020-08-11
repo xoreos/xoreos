@@ -39,10 +39,10 @@
 class TestRoster : public Engines::NWN2::Roster {
 public:
 	TestRoster() {
-		Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataRoster));
+		std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataRoster);
 		if (!stream)
 			throw Common::Exception("No test data available");
-		Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('R', 'S', 'T', ' ')));
+		std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('R', 'S', 'T', ' '));
 		const Aurora::GFF3Struct &top = gff->getTopLevel();
 
 		// Insert the roster members
@@ -58,7 +58,7 @@ public:
  */
 
 GTEST_TEST(NWN2Roster, rosterNames) {
-	std::unique_ptr<TestRoster> roster(new TestRoster);
+	std::unique_ptr<TestRoster> roster = std::make_unique<TestRoster>();
 
 	EXPECT_STREQ(roster->getFirstRosterMember().c_str(), "ammon_jerro");
 	EXPECT_STREQ(roster->getNextRosterMember().c_str(),  "bishop");
@@ -82,7 +82,7 @@ GTEST_TEST(NWN2Roster, rosterNames) {
  * Test the roster member settings in the ROSTER.rst file data.
  */
 GTEST_TEST(NWN2Roster, rosterSettings) {
-	std::unique_ptr<TestRoster> roster(new TestRoster);
+	std::unique_ptr<TestRoster> roster = std::make_unique<TestRoster>();
 
 	EXPECT_TRUE(roster->getIsRosterMemberAvailable("ammon_jerro"));
 	EXPECT_FALSE(roster->getIsRosterMemberAvailable("khelgar"));
@@ -96,7 +96,7 @@ GTEST_TEST(NWN2Roster, rosterSettings) {
  * Test the Roster class 'set' calls.
  */
 GTEST_TEST(NWN2Roster, rosterSetCalls) {
-	std::unique_ptr<Engines::NWN2::Roster> roster(new Engines::NWN2::Roster);
+	std::unique_ptr<Engines::NWN2::Roster> roster = std::make_unique<Engines::NWN2::Roster>();
 
 	// Bypass the ResMan resource check by inserting "[GTEST]" at the template start
 	EXPECT_TRUE(roster->addRosterMemberByTemplate("adam_ant", "[GTEST]n_aldanon"));
@@ -126,7 +126,7 @@ GTEST_TEST(NWN2Roster, rosterSetCalls) {
  */
 
 GTEST_TEST(NWN2Roster, rosterLimit) {
-	std::unique_ptr<TestRoster> roster(new TestRoster);
+	std::unique_ptr<TestRoster> roster = std::make_unique<TestRoster>();
 
 	EXPECT_EQ(roster->getRosterNPCPartyLimit(), 3);
 	roster->setRosterNPCPartyLimit(6);

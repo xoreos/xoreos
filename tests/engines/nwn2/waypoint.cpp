@@ -22,12 +22,13 @@
  *  Unit tests for NWN2 waypoint objects.
  */
 
+#include <memory>
+
 #include "gtest/gtest.h"
 
 #include "tests/engines/nwn2/waypoint.h"
 
 #include "src/common/memreadstream.h"
-#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 
 #include "src/aurora/gff3file.h"
@@ -37,10 +38,10 @@
 static const float kEpsilon = 1e-5f;
 
 Engines::NWN2::Waypoint *getWaypoint(const unsigned int index) {
-	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataWaypoint));
+	std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataWaypoint);
 	if (!stream)
 		throw Common::Exception("No test data available");
-	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('G', 'I', 'T', ' ')));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('G', 'I', 'T', ' '));
 
 	// Get the waypoint list
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
@@ -69,7 +70,7 @@ Engines::NWN2::Waypoint *getWaypoint(const unsigned int index) {
  */
 
 GTEST_TEST(NWN2Waypoint, mapnote1) {
-	Common::ScopedPtr<Engines::NWN2::Waypoint> wp(getWaypoint(0));
+	std::unique_ptr<Engines::NWN2::Waypoint> wp(getWaypoint(0));
 	float x, y, z, angle;
 
 	EXPECT_STREQ(wp->getTag().c_str(), "mapnote1");
@@ -99,7 +100,7 @@ GTEST_TEST(NWN2Waypoint, mapnote1) {
  */
 
 GTEST_TEST(NWN2Waypoint, waypoint1) {
-	Common::ScopedPtr<Engines::NWN2::Waypoint> wp(getWaypoint(1));
+	std::unique_ptr<Engines::NWN2::Waypoint> wp(getWaypoint(1));
 	float x, y, z, angle;
 
 	EXPECT_STREQ(wp->getTag().c_str(), "waypoint1");

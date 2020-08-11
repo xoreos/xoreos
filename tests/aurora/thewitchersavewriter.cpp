@@ -434,7 +434,7 @@ GTEST_TEST(TheWitcherSaveWriter, WriteFile) {
 	Common::SeekableReadStream *readStream = tws.getResource(0);
 	ASSERT_EQ(readStream->size(), kFileDataSize);
 
-	Common::ScopedArray<byte> fileData(new byte[readStream->size()]);
+	std::unique_ptr<byte[]> fileData = std::make_unique<byte[]>(readStream->size());
 	readStream->read(fileData.get(), readStream->size());
 
 	for (size_t i = 0; i < kFileDataSize; ++i) {
@@ -478,11 +478,11 @@ GTEST_TEST(TheWitcherSaveWriter, WriteMultipleFiles) {
 	Common::SeekableReadStream *readStream3 = tws.getResource(2);
 	ASSERT_EQ(readStream3->size(), kLogoDataSize);
 
-	Common::ScopedArray<byte> fileData1(new byte[readStream1->size()]);
+	std::unique_ptr<byte[]> fileData1 = std::make_unique<byte[]>(readStream1->size());
 	readStream1->read(fileData1.get(), readStream1->size());
-	Common::ScopedArray<byte> fileData2(new byte[readStream2->size()]);
+	std::unique_ptr<byte[]> fileData2 = std::make_unique<byte[]>(readStream2->size());
 	readStream2->read(fileData2.get(), readStream2->size());
-	Common::ScopedArray<byte> fileData3(new byte[readStream3->size()]);
+	std::unique_ptr<byte[]> fileData3 = std::make_unique<byte[]>(readStream3->size());
 	readStream3->read(fileData3.get(), readStream3->size());
 
 	for (size_t i = 0; i < kFileDataSize; ++i) {

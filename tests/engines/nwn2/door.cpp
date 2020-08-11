@@ -22,12 +22,13 @@
  *  Unit tests for NWN2 door objects.
  */
 
+#include <memory>
+
 #include "gtest/gtest.h"
 
 #include "tests/engines/nwn2/door.h"
 
 #include "src/common/memreadstream.h"
-#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 
 #include "src/aurora/gff3file.h"
@@ -40,10 +41,10 @@
 static const float kEpsilon = 1e-5f;
 
 Engines::NWN2::Door *getDoor(const unsigned int index) {
-	Common::ScopedPtr<Common::MemoryReadStream> stream(new Common::MemoryReadStream(kDataDoor));
+	std::unique_ptr<Common::MemoryReadStream> stream = std::make_unique<Common::MemoryReadStream>(kDataDoor);
 	if (!stream)
 		throw Common::Exception("No test data available");
-	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('G', 'I', 'T', ' ')));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('G', 'I', 'T', ' '));
 
 	// Get the door list
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
@@ -55,7 +56,7 @@ Engines::NWN2::Door *getDoor(const unsigned int index) {
 	Aurora::GFF3List::const_iterator it = doorList.begin();
 	it += index;
 
-	std::unique_ptr<Engines::NWN2::Module> module(new Engines::NWN2::Module());
+	std::unique_ptr<Engines::NWN2::Module> module = std::make_unique<Engines::NWN2::Module>();
 	return new Engines::NWN2::Door(*module, **it);
 }
 
