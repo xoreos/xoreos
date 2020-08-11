@@ -112,7 +112,7 @@ void Module::loadArea() {
 		return;
 	}
 
-	_area.reset(new Area(*this, (uint32)_newArea));
+	_area = std::make_unique<Area>(*this, (uint32)_newArea);
 
 	_area->enter();
 	_area->show();

@@ -80,7 +80,7 @@ void Game::run() {
 	if (!showChapter1())
 		return;
 
-	_module.reset(new Module(*_console));
+	_module = std::make_unique<Module>(*_console);
 
 	runModule();
 

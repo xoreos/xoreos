@@ -25,8 +25,8 @@
 #include <cstdarg>
 
 #include <vector>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
@@ -54,7 +54,7 @@ Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Comm
 	if (!handle.empty())
 		return handle;
 
-	Common::ScopedPtr<Common::SeekableReadStream> nclrStream(ResMan.getResource(nclr, ::Aurora::kFileTypeNCLR));
+	std::unique_ptr<Common::SeekableReadStream> nclrStream(ResMan.getResource(nclr, ::Aurora::kFileTypeNCLR));
 	if (!nclrStream)
 		throw Common::Exception("No such NCLR \"%s\"", nclr.c_str());
 
@@ -76,7 +76,7 @@ Graphics::Aurora::TextureHandle loadNCGR(const Common::UString &name, const Comm
 
 	va_end(va);
 
-	Common::ScopedPtr<Graphics::NCGR> image(new Graphics::NCGR(ncgrs, width, height, *nclrStream));
+	std::unique_ptr<Graphics::NCGR> image = std::make_unique<Graphics::NCGR>(ncgrs, width, height, *nclrStream);
 
 	Graphics::Aurora::Texture *texture = Graphics::Aurora::Texture::create(image.get());
 	image.release();

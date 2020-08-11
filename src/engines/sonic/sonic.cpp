@@ -60,7 +60,7 @@ namespace Engines {
 namespace Sonic {
 
 SonicEngine::SonicEngine() : _language(Aurora::kLanguageInvalid) {
-	_console.reset(new Console(*this));
+	_console = std::make_unique<Console>(*this);
 }
 
 SonicEngine::~SonicEngine() {
@@ -176,7 +176,7 @@ void SonicEngine::run() {
 	CursorMan.set();
 	CursorMan.showCursor();
 
-	_game.reset(new Game(*this, *_console));
+	_game = std::make_unique<Game>(*this, *_console);
 	_game->run();
 
 	deinit();

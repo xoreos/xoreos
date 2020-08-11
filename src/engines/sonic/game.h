@@ -25,7 +25,7 @@
 #ifndef ENGINES_SONIC_GAME_H
 #define ENGINES_SONIC_GAME_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/graphics/aurora/fonthandle.h"
 
@@ -51,7 +51,7 @@ public:
 private:
 	SonicEngine *_engine;
 
-	Common::ScopedPtr<Module> _module;
+	std::unique_ptr<Module> _module;
 
 	::Engines::Console *_console;
 

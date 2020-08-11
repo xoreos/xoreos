@@ -22,7 +22,8 @@
  *  The scrolling background image panel in Sonic Chronicles: The Dark Brotherhood.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/ustring.h"
 #include "src/common/error.h"
@@ -94,19 +95,19 @@ void AreaBackground::render(Graphics::RenderPass pass) {
 
 void AreaBackground::loadTexture(const Common::UString &name) {
 	try {
-		Common::ScopedPtr<Common::SeekableReadStream> cbgt(ResMan.getResource(name, Aurora::kFileTypeCBGT));
+		std::unique_ptr<Common::SeekableReadStream> cbgt(ResMan.getResource(name, Aurora::kFileTypeCBGT));
 		if (!cbgt)
 			throw Common::Exception("No such CBGT");
 
-		Common::ScopedPtr<Common::SeekableReadStream> pal(ResMan.getResource(name, Aurora::kFileTypePAL));
+		std::unique_ptr<Common::SeekableReadStream> pal(ResMan.getResource(name, Aurora::kFileTypePAL));
 		if (!pal)
 			throw Common::Exception("No such PAL");
 
-		Common::ScopedPtr<Common::SeekableReadStream> twoda(ResMan.getResource(name, Aurora::kFileType2DA));
+		std::unique_ptr<Common::SeekableReadStream> twoda(ResMan.getResource(name, Aurora::kFileType2DA));
 		if (!twoda)
 			throw Common::Exception("No such 2DA");
 
-		Common::ScopedPtr<Graphics::CBGT> image(new Graphics::CBGT(*cbgt, *pal, *twoda));
+		std::unique_ptr<Graphics::CBGT> image = std::make_unique<Graphics::CBGT>(*cbgt, *pal, *twoda);
 
 		_texture = TextureMan.add(Graphics::Aurora::Texture::create(image.get(), Aurora::kFileTypeCBGT), name);
 		image.release();

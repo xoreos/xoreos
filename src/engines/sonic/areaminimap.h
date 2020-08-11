@@ -25,7 +25,7 @@
 #ifndef ENGINES_SONIC_AREAMINIMAP_H
 #define ENGINES_SONIC_AREAMINIMAP_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 namespace Common {
 	class UString;
@@ -50,7 +50,7 @@ public:
 	void hide();
 
 private:
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _miniMap;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _miniMap;
 
 	void loadMiniMap(const Common::UString &name);
 };

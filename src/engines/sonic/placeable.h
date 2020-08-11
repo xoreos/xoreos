@@ -25,7 +25,8 @@
 #ifndef ENGINES_SONIC_PLACEABLE_H
 #define ENGINES_SONIC_PLACEABLE_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/changeid.h"
 
 #include "src/aurora/types.h"
@@ -68,7 +69,7 @@ protected:
 	/** The resource change created by indexing the model's texture. */
 	Common::ChangeID _modelTexture;
 	/** The placeable's model. */
-	Common::ScopedPtr<Graphics::Aurora::Model> _model;
+	std::unique_ptr<Graphics::Aurora::Model> _model;
 
 	uint32 _placeableID;  ///< The placeable's identifer from GFF.
 	uint32 _typeID;       ///< The placeable's type.

@@ -61,23 +61,22 @@ void AreaMiniMap::hide() {
 
 void AreaMiniMap::loadMiniMap(const Common::UString &name) {
 	try {
-		Common::ScopedPtr<Common::SeekableReadStream> nbfs(ResMan.getResource(name, Aurora::kFileTypeNBFS));
+		std::unique_ptr<Common::SeekableReadStream> nbfs(ResMan.getResource(name, Aurora::kFileTypeNBFS));
 		if (!nbfs)
 			throw Common::Exception("No such NBFS");
 
-		Common::ScopedPtr<Common::SeekableReadStream> nbfp(ResMan.getResource(name, Aurora::kFileTypeNBFP));
+		std::unique_ptr<Common::SeekableReadStream> nbfp(ResMan.getResource(name, Aurora::kFileTypeNBFP));
 		if (!nbfp)
 			throw Common::Exception("No such NBFP");
 
-		Common::ScopedPtr<Graphics::NBFS> image(new Graphics::NBFS(*nbfs, *nbfp, kScreenWidth, kScreenHeight));
+		std::unique_ptr<Graphics::NBFS> image = std::make_unique<Graphics::NBFS>(*nbfs, *nbfp, kScreenWidth, kScreenHeight);
 
 		Graphics::Aurora::TextureHandle texture =
 			TextureMan.add(Graphics::Aurora::Texture::create(image.get(), Aurora::kFileTypeNBFS), name);
 
 		image.release();
 
-		_miniMap.reset(new Graphics::Aurora::GUIQuad(texture, 0.0f, 0.0f, kScreenWidth, kScreenHeight,
-		                                             0.0f, 1.0f, 1.0f, 0.0f));
+		_miniMap = std::make_unique<Graphics::Aurora::GUIQuad>(texture, 0.0f, 0.0f, kScreenWidth, kScreenHeight, 0.0f, 1.0f, 1.0f, 0.0f);
 		_miniMap->setPosition(kTopScreenX, kTopScreenY, 0.0f);
 
 	} catch (Common::Exception &e) {

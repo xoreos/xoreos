@@ -256,7 +256,7 @@ void Area::loadDefinition() {
 }
 
 void Area::loadBackground() {
-	_bgPanel.reset(new AreaBackground(_background));
+	_bgPanel = std::make_unique<AreaBackground>(_background);
 
 	if ((_bgPanel->getImageWidth() != _width) || (_bgPanel->getImageHeight() != _height))
 		throw Common::Exception("Background and area dimensions don't match (%ux%u vs. %ux%u)",
@@ -265,7 +265,7 @@ void Area::loadBackground() {
 
 void Area::loadMiniMap() {
 	if (!_miniMap.empty())
-		_mmPanel.reset(new AreaMiniMap(_miniMap));
+		_mmPanel = std::make_unique<AreaMiniMap>(_miniMap);
 }
 
 void Area::loadLayout() {
