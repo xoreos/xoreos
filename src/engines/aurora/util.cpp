@@ -24,7 +24,8 @@
 
 #include <cstdlib>
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/writefile.h"
@@ -206,7 +207,7 @@ bool dumpStream(Common::SeekableReadStream &stream, const Common::UString &fileN
 }
 
 bool dumpResource(const Common::UString &name, Aurora::FileType type, const Common::UString &file) {
-	Common::ScopedPtr<Common::SeekableReadStream> res(ResMan.getResource(name, type));
+	std::unique_ptr<Common::SeekableReadStream> res(ResMan.getResource(name, type));
 	if (!res)
 		return false;
 
@@ -221,7 +222,7 @@ bool dumpResource(const Common::UString &name, const Common::UString &file) {
 
 bool dumpTGA(const Common::UString &name, const Common::UString &file) {
 	try {
-		Common::ScopedPtr<Graphics::ImageDecoder> image(Graphics::Aurora::Texture::loadImage(name));
+		std::unique_ptr<Graphics::ImageDecoder> image(Graphics::Aurora::Texture::loadImage(name));
 
 		return image->dumpTGA(file.empty() ? (name + ".tga") : file);
 	} catch (...) {
@@ -231,7 +232,7 @@ bool dumpTGA(const Common::UString &name, const Common::UString &file) {
 }
 
 bool dump2DA(const Common::UString &name, const Common::UString &file) {
-	Common::ScopedPtr<Common::SeekableReadStream> twoDAFile(ResMan.getResource(name, Aurora::kFileType2DA));
+	std::unique_ptr<Common::SeekableReadStream> twoDAFile(ResMan.getResource(name, Aurora::kFileType2DA));
 	if (!twoDAFile)
 		return false;
 

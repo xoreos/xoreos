@@ -55,11 +55,11 @@ LoadProgress::LoadProgress(size_t steps) : _steps(steps), _currentStep(0),
 	float width = WindowMan.getWindowWidth();
 	float height = font.getFont().getHeight();
 
-	_description.reset(new Graphics::Aurora::Text(font, width, height, "",          1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignBottom));
-	_barUpper.reset   (new Graphics::Aurora::Text(font, width, height, barUpperStr, 1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignBottom));
-	_barLower.reset   (new Graphics::Aurora::Text(font, width, height, barLowerStr, 1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignTop));
-	_progressbar.reset(new Graphics::Aurora::Text(font, width, height, barStr,      1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignMiddle));
-	_percent.reset    (new Graphics::Aurora::Text(font, width, height, "",          1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignTop));
+	_description = std::make_unique<Graphics::Aurora::Text>(font, width, height, "",          1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignBottom);
+	_barUpper    = std::make_unique<Graphics::Aurora::Text>(font, width, height, barUpperStr, 1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignBottom);
+	_barLower    = std::make_unique<Graphics::Aurora::Text>(font, width, height, barLowerStr, 1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignTop);
+	_progressbar = std::make_unique<Graphics::Aurora::Text>(font, width, height, barStr,      1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignMiddle);
+	_percent     = std::make_unique<Graphics::Aurora::Text>(font, width, height, "",          1.0f, 1.0f, 1.0f, 1.0f, Graphics::Aurora::kHAlignCenter, Graphics::Aurora::kVAlignTop);
 
 	_description->setPosition(left,  height);
 	_percent    ->setPosition(left, -height);

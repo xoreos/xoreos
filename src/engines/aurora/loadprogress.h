@@ -25,9 +25,10 @@
 #ifndef ENGINES_AURORA_LOADPROGRESS_H
 #define ENGINES_AURORA_LOADPROGRESS_H
 
+#include <memory>
+
 #include <boost/noncopyable.hpp>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 namespace Graphics {
@@ -73,15 +74,15 @@ private:
 	uint32 _startTime; ///< The timestamp the first step happened.
 
 	/** The text containing the description of the current step. */
-	Common::ScopedPtr<Graphics::Aurora::Text> _description;
+	std::unique_ptr<Graphics::Aurora::Text> _description;
 
 	// The progress bar, in three parts
-	Common::ScopedPtr<Graphics::Aurora::Text> _barUpper;    ///< The upper border of the progress bar.
-	Common::ScopedPtr<Graphics::Aurora::Text> _barLower;    ///< The lower border of the progress bar.
-	Common::ScopedPtr<Graphics::Aurora::Text> _progressbar; ///< The actual progress bar.
+	std::unique_ptr<Graphics::Aurora::Text> _barUpper;    ///< The upper border of the progress bar.
+	std::unique_ptr<Graphics::Aurora::Text> _barLower;    ///< The lower border of the progress bar.
+	std::unique_ptr<Graphics::Aurora::Text> _progressbar; ///< The actual progress bar.
 
 	/** The text containing the current percentage of done-ness. */
-	Common::ScopedPtr<Graphics::Aurora::Text> _percent;
+	std::unique_ptr<Graphics::Aurora::Text> _percent;
 
 
 	static Common::UString createProgressbar(size_t length, double filled);

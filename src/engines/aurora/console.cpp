@@ -90,17 +90,17 @@ ConsoleWindow::ConsoleWindow(const Common::UString &font, size_t lines, size_t h
 	_lineHeight = _font.getFont().getHeight() + _font.getFont().getLineSpacing();
 	_height     = floorf(lines * _lineHeight);
 
-	_prompt.reset(new Graphics::Aurora::Text(Graphics::GUIElement::kGUIElementConsole, _font, _font.getFont().getLineWidth(kPrompt), _lineHeight, kPrompt));
-	_input.reset (new Graphics::Aurora::Text(Graphics::GUIElement::kGUIElementConsole, _font, WindowMan.getWindowWidth() - _font.getFont().getLineWidth(kPrompt), _lineHeight, ""));
+	_prompt = std::make_unique<Graphics::Aurora::Text>(Graphics::GUIElement::kGUIElementConsole, _font, _font.getFont().getLineWidth(kPrompt), _lineHeight, kPrompt);
+	_input  = std::make_unique<Graphics::Aurora::Text>(Graphics::GUIElement::kGUIElementConsole, _font, WindowMan.getWindowWidth() - _font.getFont().getLineWidth(kPrompt), _lineHeight, "");
 
 	_prompt->disableColorTokens(true);
 	_input->disableColorTokens(true);
 
 	const float cursorHeight = _font.getFont().getHeight();
-	_cursor.reset(new Graphics::Aurora::GUIQuad(Graphics::GUIElement::kGUIElementConsole, "", 0.0f, 1.0f, 0.0f, cursorHeight));
+	_cursor = std::make_unique<Graphics::Aurora::GUIQuad>(Graphics::GUIElement::kGUIElementConsole, "", 0.0f, 1.0f, 0.0f, cursorHeight);
 	_cursor->setXOR(true);
 
-	_highlight.reset(new Graphics::Aurora::GUIQuad(Graphics::GUIElement::kGUIElementConsole, "", 0.0f, 0.0f, 0.0f, cursorHeight));
+	_highlight = std::make_unique<Graphics::Aurora::GUIQuad>(Graphics::GUIElement::kGUIElementConsole, "", 0.0f, 0.0f, 0.0f, cursorHeight);
 	_highlight->setColor(1.0f, 1.0f, 1.0f, 0.0f);
 	_highlight->setXOR(true);
 
@@ -762,8 +762,8 @@ Console::Console(Engine &engine, const Common::UString &font, int fontHeight) :
 	_lastClickButton(0), _lastClickTime(0), _lastClickX(0), _lastClickY(0),
 	_maxSizeVideos(0), _maxSizeSounds(0) {
 
-	_readLine.reset(new Common::ReadLine(kCommandHistorySize));
-	_console.reset(new ConsoleWindow(font, kConsoleLines, kConsoleHistory, fontHeight));
+	_readLine = std::make_unique<Common::ReadLine>(kCommandHistorySize);
+	_console = std::make_unique<ConsoleWindow>(font, kConsoleLines, kConsoleHistory, fontHeight);
 
 	_readLine->historyIgnoreDups(true);
 

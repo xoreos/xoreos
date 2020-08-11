@@ -24,7 +24,8 @@
 
 #include <cassert>
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
@@ -94,7 +95,7 @@ private:
 	Common::UString _target;
 
 	const EngineProbe *_probe;
-	Common::ScopedPtr<Engine> _engine;
+	std::unique_ptr<Engine> _engine;
 
 	bool probe(const Common::FileList &rootFiles, const std::list<const EngineProbe *> &probes);
 	bool probe(Common::SeekableReadStream &stream, const std::list<const EngineProbe *> &probes);
@@ -231,7 +232,7 @@ void GameInstanceEngine::run() {
 GameInstance *EngineManager::probeGame(const Common::UString &target,
                                        const std::list<const EngineProbe *> &probes) const {
 
-	Common::ScopedPtr<GameInstanceEngine> game(new GameInstanceEngine(target));
+	std::unique_ptr<GameInstanceEngine> game = std::make_unique<GameInstanceEngine>(target);
 	if (game->probe(probes))
 		return game.release();
 

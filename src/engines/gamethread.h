@@ -26,8 +26,8 @@
 #define ENGINES_GAMETHREAD_H
 
 #include <list>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/thread.h"
 
 namespace Engines {
@@ -46,7 +46,7 @@ public:
 	void run();
 
 private:
-	Common::ScopedPtr<GameInstance> _game;
+	std::unique_ptr<GameInstance> _game;
 
 	void threadMethod();
 };

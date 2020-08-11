@@ -93,7 +93,7 @@ void Engine::showFPS() {
 
 	if        ( show && !_fps) {
 
-		_fps.reset(new Graphics::Aurora::FPS(FontMan.get(Graphics::Aurora::kSystemFontMono, 13)));
+		_fps = std::make_unique<Graphics::Aurora::FPS>(FontMan.get(Graphics::Aurora::kSystemFontMono, 13));
 		_fps->show();
 
 	} else if (!show &&  _fps) {

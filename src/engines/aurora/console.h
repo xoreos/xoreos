@@ -29,11 +29,11 @@
 #include <list>
 #include <map>
 #include <functional>
+#include <memory>
 
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/writefile.h"
@@ -128,9 +128,9 @@ public:
 private:
 	Graphics::Aurora::FontHandle _font;
 
-	Common::ScopedPtr<Graphics::Aurora::Text>    _prompt;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _cursor;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _highlight;
+	std::unique_ptr<Graphics::Aurora::Text>    _prompt;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _cursor;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _highlight;
 
 	size_t _historySizeMax;
 	size_t _historySizeCurrent;
@@ -139,7 +139,7 @@ private:
 	size_t _historyStart;
 
 	std::vector<Graphics::Aurora::Text *> _lines;
-	Common::ScopedPtr<Graphics::Aurora::Text> _input;
+	std::unique_ptr<Graphics::Aurora::Text> _input;
 
 
 	Common::UString _inputText;
@@ -264,8 +264,8 @@ private:
 	bool _neverShown;
 	bool _visible;
 
-	Common::ScopedPtr<Common::ReadLine> _readLine;
-	Common::ScopedPtr<ConsoleWindow> _console;
+	std::unique_ptr<Common::ReadLine> _readLine;
+	std::unique_ptr<ConsoleWindow> _console;
 
 	CommandMap _commands;
 
