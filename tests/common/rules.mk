@@ -30,11 +30,6 @@ tests_common_test_util_SOURCES  = tests/common/util.cpp
 tests_common_test_util_LDADD    = $(common_LIBS)
 tests_common_test_util_CXXFLAGS = $(test_CXXFLAGS)
 
-check_PROGRAMS                      += tests/common/test_scopedptr
-tests_common_test_scopedptr_SOURCES  = tests/common/scopedptr.cpp
-tests_common_test_scopedptr_LDADD    = $(common_LIBS)
-tests_common_test_scopedptr_CXXFLAGS = $(test_CXXFLAGS)
-
 check_PROGRAMS                          += tests/common/test_disposableptr
 tests_common_test_disposableptr_SOURCES  = tests/common/disposableptr.cpp
 tests_common_test_disposableptr_LDADD    = $(common_LIBS)
