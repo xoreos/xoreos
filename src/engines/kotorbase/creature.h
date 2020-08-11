@@ -28,7 +28,7 @@
 #include <set>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/ustring.h"
 #include "src/common/ptrmap.h"
 
@@ -251,7 +251,7 @@ private:
 	SubRace _subRace; ///< The subrace of the creature.
 
 	Common::UString _modelType;
-	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
+	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The creature's model.
 	Graphics::Aurora::Model *_headModel; ///< The creature's head model.
 	bool _visible;
 	bool _commandable;

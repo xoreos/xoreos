@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTORBASE_SAVEDGAME_H
 #define ENGINES_KOTORBASE_SAVEDGAME_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/ustring.h"
 
 #include "src/aurora/erffile.h"

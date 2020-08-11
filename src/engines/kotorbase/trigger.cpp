@@ -22,6 +22,8 @@
  *  Trigger within an area in KotOR games.
  */
 
+#include "src/common/endianness.h"
+
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
@@ -58,7 +60,7 @@ bool Trigger::isVisible() const {
 void Trigger::load(const Aurora::GFF3Struct &gff) {
 	_templateResRef = gff.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utt;
+	std::unique_ptr<Aurora::GFF3File> utt;
 	if (!_templateResRef.empty())
 		utt.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTT, MKTAG('U', 'T', 'T', ' ')));
 

@@ -22,7 +22,7 @@
  *  Waypoint within an area in KotOR games.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/util.h"
 #include "src/common/maths.h"
 
@@ -51,7 +51,7 @@ Waypoint::~Waypoint() {
 void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 	_templateResRef = waypoint.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utw;
+	std::unique_ptr<Aurora::GFF3File> utw;
 	if (!_templateResRef.empty())
 		utw.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' ')));
 

@@ -48,9 +48,9 @@ public:
 	void setWidth(float width);
 
 private:
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _icon;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _iconFrame;
-	Common::ScopedPtr<Graphics::Aurora::Text>    _countText;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _icon;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _iconFrame;
+	std::unique_ptr<Graphics::Aurora::Text>    _countText;
 };
 
 } // End of namespace KotORBase

@@ -68,10 +68,10 @@ void WidgetInventoryItem::load(const Aurora::GFF3Struct &gff) {
 
 	Graphics::Aurora::TextureHandle tex = TextureMan.get("lbl_hex");
 	float frameSize = tex.getTexture().getHeight();
-	_iconFrame.reset(new Graphics::Aurora::GUIQuad(tex, 0.0f, 0.0f, frameSize, frameSize));
+	_iconFrame = std::make_unique<Graphics::Aurora::GUIQuad>(tex, 0.0f, 0.0f, frameSize, frameSize);
 	_iconFrame->setPosition(x, y + (_height - frameSize) / 2.0f, 0.0f);
 
-	_icon.reset(new Graphics::Aurora::GUIQuad("", 0.0f, 0.0f, frameSize, frameSize));
+	_icon = std::make_unique<Graphics::Aurora::GUIQuad>("", 0.0f, 0.0f, frameSize, frameSize);
 	_icon->setPosition(x, y + (_height - frameSize) / 2.0f, 0.0f);
 
 	if (_border) {
@@ -98,10 +98,7 @@ void WidgetInventoryItem::load(const Aurora::GFF3Struct &gff) {
 		float r, g, b, a;
 		_text->getColor(r, g, b, a);
 
-		_countText.reset(new Graphics::Aurora::Text(FontMan.get("fnt_d16x16"),
-		                 "", r, g, b, a,
-		                 Graphics::Aurora::kHAlignRight,
-		                 Graphics::Aurora::kVAlignBottom));
+		_countText = std::make_unique<Graphics::Aurora::Text>(FontMan.get("fnt_d16x16"), "", r, g, b, a, Graphics::Aurora::kHAlignRight, Graphics::Aurora::kVAlignBottom);
 
 		_countText->setPosition(x - 4.0f, y + (_height - frameSize) / 2.0f - 2.0f, 0.0f);
 		_countText->setSize(frameSize, frameSize);

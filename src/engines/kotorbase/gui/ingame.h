@@ -88,7 +88,7 @@ public:
 	void processEventQueue();
 
 protected:
-	Common::ScopedPtr<HUD> _hud;
+	std::unique_ptr<HUD> _hud;
 };
 
 } // End of namespace KotORBase

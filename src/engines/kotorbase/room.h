@@ -26,7 +26,7 @@
 #define ENGINES_KOTORBASE_ROOM_H
 
 #include "src/common/ustring.h"
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/graphics/aurora/model.h"
 
@@ -47,7 +47,7 @@ public:
 
 private:
 	Common::UString _resRef;
-	Common::ScopedPtr<Graphics::Aurora::Model> _model;
+	std::unique_ptr<Graphics::Aurora::Model> _model;
 
 	void load(const Common::UString &resRef, float x, float y, float z);
 };

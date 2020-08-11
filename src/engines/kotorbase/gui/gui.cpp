@@ -117,7 +117,7 @@ void GUI::load(const Common::UString &resref) {
 	_name = ResMan.hasResource("lti_" + resref, Aurora::kFileTypeGUI) ? _name = "lti_" + resref : resref;
 
 	try {
-		_gff.reset(new Aurora::GFF3File(_name, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' ')));
+		_gff = std::make_unique<Aurora::GFF3File>(_name, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '));
 
 		loadWidget(_gff->getTopLevel(), 0);
 
@@ -303,7 +303,7 @@ Odyssey::WidgetListBox *GUI::getListBox(const Common::UString &tag, bool vital) 
 
 void GUI::addBackground(const Common::UString &background, bool front) {
 	if (!_background)
-		_background.reset(new GUIBackground(background, front));
+		_background = std::make_unique<GUIBackground>(background, front);
 	else
 		_background->setType(background);
 }

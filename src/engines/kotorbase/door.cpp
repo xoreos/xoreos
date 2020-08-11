@@ -25,7 +25,7 @@
 #include "external/glm/gtc/type_ptr.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
@@ -59,7 +59,7 @@ Door::Door(Module &module, const Aurora::GFF3Struct &door) :
 void Door::load(const Aurora::GFF3Struct &door) {
 	_templateResRef = door.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utd;
+	std::unique_ptr<Aurora::GFF3File> utd;
 	if (!_templateResRef.empty())
 		utd.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' ')));
 

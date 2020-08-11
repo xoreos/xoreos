@@ -22,6 +22,7 @@
  *  Party selection GUI for KotOR games.
  */
 
+#include "src/common/endianness.h"
 #include "src/common/strutil.h"
 
 #include "src/aurora/2dareg.h"
@@ -114,7 +115,7 @@ void PartySelectionGUI::callbackActive(Widget &widget) {
 }
 
 const Common::UString PartySelectionGUI::getPortrait(const Common::UString &templ) {
-	Common::ScopedPtr<Aurora::GFF3File> utc(loadOptionalGFF3(templ,
+	std::unique_ptr<Aurora::GFF3File> utc(loadOptionalGFF3(templ,
 	                                                         Aurora::kFileTypeUTC,
 	                                                         MKTAG('U', 'T', 'C', ' ')));
 

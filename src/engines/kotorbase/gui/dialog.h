@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTORBASE_GUI_DIALOG_H
 #define ENGINES_KOTORBASE_GUI_DIALOG_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/ustring.h"
 
 #include "src/aurora/dlgfile.h"
@@ -76,11 +76,11 @@ protected:
 private:
 	Module &_module;
 	bool _isActive;
-	Common::ScopedPtr<Graphics::Aurora::KotORDialogFrame> _frame;
-	Common::ScopedPtr<Aurora::DLGFile> _dlg;
+	std::unique_ptr<Graphics::Aurora::KotORDialogFrame> _frame;
+	std::unique_ptr<Aurora::DLGFile> _dlg;
 	std::vector<uint32> _replyIds;
-	Common::ScopedPtr<Sound::ChannelHandle> _voice;
-	Common::ScopedPtr<Sound::ChannelHandle> _sound;
+	std::unique_ptr<Sound::ChannelHandle> _voice;
+	std::unique_ptr<Sound::ChannelHandle> _sound;
 	Common::UString _owner;
 	Common::UString _curSpeaker;
 

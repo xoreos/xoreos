@@ -28,7 +28,7 @@
 #include <list>
 #include <set>
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 #include "src/common/configman.h"
@@ -255,9 +255,9 @@ public:
 	int getNextCombatRound() const;
 
 protected:
-	Common::ScopedPtr<IngameGUI> _ingame; ///< The ingame GUI.
-	Common::ScopedPtr<DialogGUI> _dialog; ///< Conversation/cutscene GUI.
-	Common::ScopedPtr<PartySelectionGUI> _partySelection; ///< The party selection GUI.
+	std::unique_ptr<IngameGUI> _ingame; ///< The ingame GUI.
+	std::unique_ptr<DialogGUI> _dialog; ///< Conversation/cutscene GUI.
+	std::unique_ptr<PartySelectionGUI> _partySelection; ///< The party selection GUI.
 
 	// Object creation
 
@@ -301,7 +301,7 @@ private:
 		DelayedConversation(const Common::UString &name, Aurora::NWScript::Object *owner = nullptr);
 	};
 
-	Common::ScopedPtr<DelayedConversation> _delayedConversation;
+	std::unique_ptr<DelayedConversation> _delayedConversation;
 	Placeable *_delayedContainer { nullptr };
 
 	// Surface types
@@ -319,7 +319,7 @@ private:
 
 	Aurora::IFOFile _ifo; ///< The current module's IFO.
 
-	Common::ScopedPtr<CharacterGenerationInfo> _chargenInfo; ///< Character generation information.
+	std::unique_ptr<CharacterGenerationInfo> _chargenInfo; ///< Character generation information.
 	CreatureInfo _pcInfo; ///< Abstract player character information.
 	Creature *_pc; ///< The player character.
 
@@ -334,9 +334,9 @@ private:
 	Common::UString _entryLocation; ///< The tag of the object in the start location for this module.
 	ObjectType      _entryLocationType; ///< The type(s) of the object in the start location for this module.
 
-	Common::ScopedPtr<Area> _area; ///< The current module's area.
+	std::unique_ptr<Area> _area; ///< The current module's area.
 
-	Common::ScopedPtr<Graphics::Aurora::FadeQuad> _fade;
+	std::unique_ptr<Graphics::Aurora::FadeQuad> _fade;
 
 	EventQueue  _eventQueue;
 	ActionQueue _delayedActions;

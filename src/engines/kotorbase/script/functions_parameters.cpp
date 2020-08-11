@@ -22,7 +22,7 @@
  *  Functions for script parameters.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/aurora/nwscript/ncsfile.h"
 #include "src/aurora/nwscript/functioncontext.h"

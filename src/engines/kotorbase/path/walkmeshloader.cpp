@@ -22,7 +22,9 @@
  *  Walkmesh loader class for KotOR games.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
+#include "src/common/endianness.h"
 #include "src/common/aabbnode.h"
 
 #include "src/aurora/resman.h"
@@ -50,7 +52,7 @@ void WalkmeshLoader::load(Aurora::FileType fileType,
 	_pathfinding = pathfinding;
 	_node = 0;
 	_walkableFaces.clear();
-	Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource(resRef, fileType));
+	std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(resRef, fileType));
 
 	if (!stream) {
 		warning("Walkmesh file not found: %s", resRef.c_str());

@@ -91,12 +91,12 @@ private:
 	// Hovered object
 
 	Object *_hoveredObject { nullptr };
-	Common::ScopedPtr<SelectionCircle> _hoveredCircle;
+	std::unique_ptr<SelectionCircle> _hoveredCircle;
 
 	// Target object
 
 	Object *_targetObject { nullptr };
-	Common::ScopedPtr<SelectionCircle> _targetCircle;
+	std::unique_ptr<SelectionCircle> _targetCircle;
 	bool _targetDirty { false };
 
 	// Widgets for showing target information

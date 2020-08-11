@@ -55,7 +55,7 @@ DialogGUI::DialogGUI(Module &module) :
 
 void DialogGUI::startConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
 	try {
-		_dlg.reset(new Aurora::DLGFile(name, owner));
+		_dlg = std::make_unique<Aurora::DLGFile>(name, owner);
 		_dlg->startConversation();
 		_owner = owner ? owner->getTag() : "";
 		refresh();
@@ -221,12 +221,10 @@ void DialogGUI::playSounds() {
 	const Aurora::DLGFile::Line *entry = _dlg->getCurrentEntry();
 
 	if (!entry->voice.empty())
-		_voice.reset(new Sound::ChannelHandle(
-				::Engines::playSound(entry->voice, Sound::kSoundTypeVoice)));
+		_voice = std::make_unique<Sound::ChannelHandle>(::Engines::playSound(entry->voice, Sound::kSoundTypeVoice));
 
 	if (!entry->sound.empty())
-		_sound.reset(new Sound::ChannelHandle(
-				::Engines::playSound(entry->sound, Sound::kSoundTypeSFX)));
+		_sound = std::make_unique<Sound::ChannelHandle>(::Engines::playSound(entry->sound, Sound::kSoundTypeSFX));
 }
 
 void DialogGUI::stopSounds() {

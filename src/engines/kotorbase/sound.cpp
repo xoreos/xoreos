@@ -22,9 +22,11 @@
  *  In-game sound within an area in KotOR games.
  */
 
+#include "src/common/endianness.h"
+#include "src/common/random.h"
+
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
-#include "src/common/random.h"
 
 #include "src/sound/sound.h"
 
@@ -39,7 +41,7 @@ namespace KotORBase {
 SoundObject::SoundObject(const Aurora::GFF3Struct &sound) {
 	_templateResRef = sound.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> uts;
+	std::unique_ptr<Aurora::GFF3File> uts;
 	if (!_templateResRef.empty())
 		uts.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTS, MKTAG('U', 'T', 'S', ' ')));
 

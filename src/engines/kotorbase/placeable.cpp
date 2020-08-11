@@ -25,7 +25,7 @@
 #include "external/glm/gtc/type_ptr.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/util.h"
 #include "src/common/maths.h"
 
@@ -55,7 +55,7 @@ Placeable::Placeable(const Aurora::GFF3Struct &placeable) :
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	_templateResRef = placeable.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utp;
+	std::unique_ptr<Aurora::GFF3File> utp;
 	if (!_templateResRef.empty())
 		utp.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 

@@ -134,7 +134,7 @@ void Module::loadModule(const Common::UString &module, const Common::UString &en
                         ObjectType entryLocationType) {
 	_ingame->hide();
 
-	Common::ScopedPtr<KotORBase::LoadScreen> loadScreen;
+	std::unique_ptr<KotORBase::LoadScreen> loadScreen;
 	if (module.endsWith("mg"))
 		loadScreen.reset(createLoadScreen("swoop"));
 	else
@@ -261,7 +261,7 @@ void Module::loadIFO() {
 }
 
 void Module::loadArea() {
-	_area.reset(new Area(*this, _ifo.getEntryArea()));
+	_area = std::make_unique<Area>(*this, _ifo.getEntryArea());
 	_cameraController.updateCameraStyle();
 }
 
@@ -458,7 +458,7 @@ bool Module::getObjectLocation(const Common::UString &object, ObjectType locatio
 	if (object.empty())
 		return false;
 
-	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(findObjectsByTag(object));
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(findObjectsByTag(object));
 
 
 	Object *kotorObject = 0;
@@ -1051,7 +1051,7 @@ int Module::getNextCombatRound() const {
 
 void Module::loadSavedGame(SavedGame *save) {
 	try {
-		Common::ScopedPtr<CharacterGenerationInfo> info(save->createCharGenInfo());
+		std::unique_ptr<CharacterGenerationInfo> info(save->createCharGenInfo());
 		usePC(*info.get());
 		load(save->getModuleName());
 	} catch (...) {
@@ -1124,7 +1124,7 @@ void Module::setCameraYaw(float yaw) {
 }
 
 void Module::delayConversation(const Common::UString &name, Aurora::NWScript::Object *owner) {
-	_delayedConversation.reset(new DelayedConversation(name, owner));
+	_delayedConversation = std::make_unique<DelayedConversation>(name, owner);
 }
 
 void Module::delayContainer(Placeable *placeable) {

@@ -22,7 +22,7 @@
  *  The context holding an area in KotOR games.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -109,7 +109,7 @@ void Area::load() {
 
 	loadRooms();
 
-	_are.reset(new Aurora::GFF3File(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' ')));
+	_are = std::make_unique<Aurora::GFF3File>(_resRef, Aurora::kFileTypeARE, MKTAG('A', 'R', 'E', ' '));
 	loadARE(_are->getTopLevel());
 
 	Aurora::GFF3File git(_resRef, Aurora::kFileTypeGIT, MKTAG('G', 'I', 'T', ' '));
@@ -304,7 +304,7 @@ void Area::hide() {
 
 void Area::loadLYT() {
 	try {
-		Common::ScopedPtr<Common::SeekableReadStream> lyt(ResMan.getResource(_resRef, Aurora::kFileTypeLYT));
+		std::unique_ptr<Common::SeekableReadStream> lyt(ResMan.getResource(_resRef, Aurora::kFileTypeLYT));
 		if (!lyt)
 			throw Common::Exception("No such LYT");
 
@@ -318,7 +318,7 @@ void Area::loadLYT() {
 
 void Area::loadVIS() {
 	try {
-		Common::ScopedPtr<Common::SeekableReadStream> vis(ResMan.getResource(_resRef, Aurora::kFileTypeVIS));
+		std::unique_ptr<Common::SeekableReadStream> vis(ResMan.getResource(_resRef, Aurora::kFileTypeVIS));
 		if (!vis)
 			throw Common::Exception("No such VIS");
 

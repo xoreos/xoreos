@@ -22,8 +22,9 @@
  *  Star Wars: Knights of the Old Republic engine functions handling the party.
  */
 
+#include <memory>
+
 #include "src/common/util.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
 

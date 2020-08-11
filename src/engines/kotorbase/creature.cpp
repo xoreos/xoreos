@@ -65,7 +65,7 @@ Creature::Creature(const Common::UString &resRef) :
 
 	init();
 
-	Common::ScopedPtr<Aurora::GFF3File> utc(loadOptionalGFF3(resRef, Aurora::kFileTypeUTC));
+	std::unique_ptr<Aurora::GFF3File> utc(loadOptionalGFF3(resRef, Aurora::kFileTypeUTC));
 	if (!utc)
 		throw Common::Exception("Creature \"%s\" has no blueprint", resRef.c_str());
 
@@ -219,7 +219,7 @@ void Creature::setOrientation(float x, float y, float z, float angle) {
 void Creature::load(const Aurora::GFF3Struct &creature) {
 	_templateResRef = creature.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utc;
+	std::unique_ptr<Aurora::GFF3File> utc;
 	if (!_templateResRef.empty())
 		utc.reset(loadOptionalGFF3(_templateResRef, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' ')));
 

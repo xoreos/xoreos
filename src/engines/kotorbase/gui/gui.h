@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTORBASE_GUI_GUI_H
 #define ENGINES_KOTORBASE_GUI_GUI_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/aurora/types.h"
 #include "src/aurora/gff3file.h"
@@ -132,9 +132,9 @@ private:
 	float _guiHeight;
 	float _guiWidth;
 
-	Common::ScopedPtr<GUIBackground> _background;
+	std::unique_ptr<GUIBackground> _background;
 
-	Common::ScopedPtr<Aurora::GFF3File> _gff;
+	std::unique_ptr<Aurora::GFF3File> _gff;
 
 	Common::UString _name;
 

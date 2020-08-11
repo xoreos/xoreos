@@ -56,8 +56,8 @@ private:
 	Graphics::Aurora::GUIQuad *_hoveredQuad;
 	Graphics::Aurora::GUIQuad *_targetQuad;
 
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _hoveredQuadFriendly, _hoveredQuadHostile;
-	Common::ScopedPtr<Graphics::Aurora::GUIQuad> _targetQuadFriendly, _targetQuadHostile;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _hoveredQuadFriendly, _hoveredQuadHostile;
+	std::unique_ptr<Graphics::Aurora::GUIQuad> _targetQuadFriendly, _targetQuadHostile;
 
 	bool _hovered { false }; ///< Is this selection circle being hovered over?
 	bool _target { false }; ///< Is the object below this selection circle the target?
