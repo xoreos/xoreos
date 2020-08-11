@@ -28,7 +28,6 @@
 #include <vector>
 
 #include "src/common/ustring.h"
-#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 #include "src/aurora/aurorafile.h"
@@ -56,17 +55,19 @@ private:
 	void load(Common::SeekableReadStream &stream);
 
 	struct LetterSet {
-		Common::ScopedArray<float> start;
-		Common::ScopedArray<float> mid;
-		Common::ScopedArray<float> end;
+		std::vector<float> start;
+		std::vector<float> mid;
+		std::vector<float> end;
 	};
 
-	Common::ScopedArray<char> _alphabet;
-	uint8 _letterCount;
+	std::vector<char> _alphabet;
+	size_t _letterCount;
 
-	LetterSet                                            _singleLetters;
-	Common::ScopedArray<LetterSet>                       _doubleLetters;
-	Common::ScopedArray<Common::ScopedArray<LetterSet> > _tripleLetters;
+	LetterSet                           _singleLetters;
+	std::vector<LetterSet>              _doubleLetters;
+	std::vector<std::vector<LetterSet>> _trippleLetters;
+
+	static void readLetterSet(LetterSet &letters, size_t count, Common::SeekableReadStream &stream);
 };
 
 } // End of namespace Aurora

@@ -32,13 +32,14 @@ static const uint32 kLTRID     = MKTAG('L', 'T', 'R', ' ');
 static const uint32 kVersion10 = MKTAG('V', '1', '.', '0');
 
 // TODO: Check for non-latin language alphabets
-static const char *kLetters28 = "abcdefghijklmnopqrstuvwxyz'-";
-static const char *kLetters26 = "abcdefghijklmnopqrstuvwxyz";
+static const std::vector<char> kLetters28 = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','\'','-' };
+static const std::vector<char> kLetters26 = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z' };
 
 namespace Aurora {
 
 LTRFile::LTRFile(const Common::UString &ltr) {
-	Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource(ltr, kFileTypeLTR));
+	std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(ltr, kFileTypeLTR));
+
 	load(*stream);
 }
 
@@ -54,27 +55,25 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 	// TODO: There is a lot of data yet unused in the letter files.
 	Common::UString name;
 	float probability;
-	int firstLetterIndex = 0;
-	int secondLetterIndex = 0;
+	size_t firstLetterIndex = 0;
+	size_t secondLetterIndex = 0;
 
 	if (maxLetters < 4)
-		throw Common::Exception(
-				"Invalid maximal letters. A name has to be at least 4 letters, %i given",
-				static_cast<int>(maxLetters));
+		throw Common::Exception("Invalid maximal letters. A name has to be at least 4 letters, %u given", (uint)maxLetters);
 
 	// Get the first three letters.
 	probability = RNG.getNext(0.0f, 1.0f);
-	for (int i = 0; i < _letterCount; ++i) {
+	for (size_t i = 0; i < _letterCount; ++i) {
 		if (_singleLetters.start[i] > probability) {
 			// Make the first letter upper case.
-			name += Common::UString::toUpper(static_cast<uint32>(_alphabet[i]));
+			name += Common::UString::toUpper(static_cast<unsigned char>(_alphabet[i]));
 			firstLetterIndex = i;
 			break;
 		}
 	}
 
 	probability = RNG.getNext(0.0f, 1.0f);
-	for (int i = 0; i < _letterCount; ++i) {
+	for (size_t i = 0; i < _letterCount; ++i) {
 		if (_doubleLetters[firstLetterIndex].start[i] > probability) {
 			name += _alphabet[i];
 			secondLetterIndex = i;
@@ -83,8 +82,8 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 	}
 
 	probability = RNG.getNext(0.0f, 1.0f);
-	for (int i = 0; i < _letterCount; ++i) {
-		if (_tripleLetters[firstLetterIndex][secondLetterIndex].start[i] > probability) {
+	for (size_t i = 0; i < _letterCount; ++i) {
+		if (_trippleLetters[firstLetterIndex][secondLetterIndex].start[i] > probability) {
 			name += _alphabet[i];
 			firstLetterIndex = secondLetterIndex;
 			secondLetterIndex = i;
@@ -97,8 +96,8 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 
 	for (size_t i = 0; i < length; ++i) {
 		probability = RNG.getNext(0.0f, 1.0f);
-		for (int j = 0; j < _letterCount; ++j) {
-			if (_tripleLetters[firstLetterIndex][secondLetterIndex].mid[j] > probability) {
+		for (size_t j = 0; j < _letterCount; ++j) {
+			if (_trippleLetters[firstLetterIndex][secondLetterIndex].mid[j] > probability) {
 				name += _alphabet[j];
 				firstLetterIndex = secondLetterIndex;
 				secondLetterIndex = j;
@@ -109,14 +108,28 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 
 	// Append end letter.
 	probability = RNG.getNext(0.0f, 1.0f);
-	for (int j = 0; j < _letterCount; ++j) {
-		if (_tripleLetters[firstLetterIndex][secondLetterIndex].end[j] > probability) {
+	for (size_t j = 0; j < _letterCount; ++j) {
+		if (_trippleLetters[firstLetterIndex][secondLetterIndex].end[j] > probability) {
 			name += _alphabet[j];
 			break;
 		}
 	}
 
 	return name;
+}
+
+void LTRFile::readLetterSet(LetterSet &letters, size_t count, Common::SeekableReadStream &stream) {
+	letters.start.resize(count);
+	for (size_t i = 0; i < count; ++i)
+		letters.start[i] = stream.readIEEEFloatLE();
+
+	letters.mid.resize(count);
+	for (size_t i = 0; i < count; ++i)
+		letters.mid[i] = stream.readIEEEFloatLE();
+
+	letters.end.resize(count);
+	for (size_t i = 0; i < count; ++i)
+		letters.end[i] = stream.readIEEEFloatLE();
 }
 
 void LTRFile::load(Common::SeekableReadStream &stream) {
@@ -131,54 +144,26 @@ void LTRFile::load(Common::SeekableReadStream &stream) {
 	_letterCount = stream.readByte();
 	switch (_letterCount) {
 		case 26:
-			_alphabet.reset(new char[26]);
-			memcpy(_alphabet.get(), kLetters26, 26);
+			_alphabet = kLetters26;
 			break;
 		case 28:
-			_alphabet.reset(new char[28]);
-			memcpy(_alphabet.get(), kLetters28, 28);
+			_alphabet = kLetters28;
 			break;
 		default:
-			throw Common::Exception("Unsupported Letter count %i", _letterCount);
+			throw Common::Exception("Unsupported Letter count %u", (uint)_letterCount);
 	}
 
-	_singleLetters.start.reset(new float[_letterCount]);
-	_singleLetters.mid.reset(new float[_letterCount]);
-	_singleLetters.end.reset(new float[_letterCount]);
-	for (int i = 0; i < _letterCount; ++i)
-		_singleLetters.start[i] = stream.readIEEEFloatLE();
-	for (int i = 0; i < _letterCount; ++i)
-		_singleLetters.mid[i] = stream.readIEEEFloatLE();
-	for (int i = 0; i < _letterCount; ++i)
-		_singleLetters.end[i] = stream.readIEEEFloatLE();
+	readLetterSet(_singleLetters, _letterCount, stream);
 
-	_doubleLetters.reset(new LetterSet[_letterCount]);
-	for (int i = 0; i < _letterCount; ++i) {
-		_doubleLetters[i].start.reset(new float[_letterCount]);
-		_doubleLetters[i].mid.reset(new float[_letterCount]);
-		_doubleLetters[i].end.reset(new float[_letterCount]);
-		for (int j = 0; j < _letterCount; ++j)
-			_doubleLetters[i].start[j] = stream.readIEEEFloatLE();
-		for (int j = 0; j < _letterCount; ++j)
-			_doubleLetters[i].mid[j] = stream.readIEEEFloatLE();
-		for (int j = 0; j < _letterCount; ++j)
-			_doubleLetters[i].end[j] = stream.readIEEEFloatLE();
-	}
+	_doubleLetters.resize(_letterCount);
+	for (auto &letters : _doubleLetters)
+		readLetterSet(letters, _letterCount, stream);
 
-	_tripleLetters.reset(new Common::ScopedArray<LetterSet>[_letterCount]);
-	for (int i = 0; i < _letterCount; ++i) {
-		_tripleLetters[i].reset(new LetterSet[_letterCount]);
-		for (int j = 0; j < _letterCount; ++j) {
-			_tripleLetters[i][j].start.reset(new float[_letterCount]);
-			_tripleLetters[i][j].mid.reset(new float[_letterCount]);
-			_tripleLetters[i][j].end.reset(new float[_letterCount]);
-			for (int k = 0; k < _letterCount; ++k)
-				_tripleLetters[i][j].start[k] = stream.readIEEEFloatLE();
-			for (int k = 0; k < _letterCount; ++k)
-				_tripleLetters[i][j].mid[k] = stream.readIEEEFloatLE();
-			for (int k = 0; k < _letterCount; ++k)
-				_tripleLetters[i][j].end[k] = stream.readIEEEFloatLE();
-		}
+	_trippleLetters.resize(_letterCount);
+	for (auto &letters2 : _trippleLetters) {
+		letters2.resize(_letterCount);
+		for (auto &letters : letters2)
+			readLetterSet(letters, _letterCount, stream);
 	}
 }
 
