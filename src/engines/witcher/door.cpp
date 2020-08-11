@@ -22,7 +22,8 @@
  *  A door in a The Witcher area.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 
 #include "src/aurora/gff3file.h"
@@ -51,7 +52,7 @@ Door::~Door() {
 void Door::load(const Aurora::GFF3Struct &door) {
 	Common::UString temp = door.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utd;
+	std::unique_ptr<Aurora::GFF3File> utd;
 	if (!temp.empty())
 		utd.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' ')));
 

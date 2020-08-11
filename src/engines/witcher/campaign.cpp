@@ -52,7 +52,7 @@ namespace Witcher {
 Campaign::Campaign(::Engines::Console &console) : _console(&console),
 	_hasCampaign(false), _running(false), _exit(true), _newCampaignStandalone(false) {
 
-	_module.reset(new Module(*_console));
+	_module = std::make_unique<Module>(*_console);
 }
 
 Campaign::~Campaign() {
@@ -224,7 +224,7 @@ void Campaign::usePC(const Common::UString &utc) {
 		throw Common::Exception("Tried to load an empty PC");
 
 	try {
-		_pc.reset(new Creature(utc));
+		_pc = std::make_unique<Creature>(utc);
 	} catch (Common::Exception &e) {
 		e.add("Can't load PC \"%s\"", utc.c_str());
 		throw e;

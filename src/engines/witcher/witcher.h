@@ -26,8 +26,8 @@
 #define ENGINES_WITCHER_WITCHER_H
 
 #include <list>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
 
@@ -71,7 +71,7 @@ private:
 	std::list<Common::ChangeID> _languageResources;
 	Common::ChangeID _languageTLK;
 
-	Common::ScopedPtr<Game> _game;
+	std::unique_ptr<Game> _game;
 
 
 	void init();

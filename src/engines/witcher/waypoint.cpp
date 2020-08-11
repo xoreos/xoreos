@@ -49,7 +49,7 @@ Waypoint::~Waypoint() {
 void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 	Common::UString temp = waypoint.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utw;
+	std::unique_ptr<Aurora::GFF3File> utw;
 	if (!temp.empty())
 		utw.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' ')));
 

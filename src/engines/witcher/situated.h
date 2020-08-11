@@ -25,7 +25,7 @@
 #ifndef ENGINES_WITCHER_SITUATED_H
 #define ENGINES_WITCHER_SITUATED_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/aurora/types.h"
 
@@ -89,7 +89,7 @@ protected:
 	Object *_lastClosedBy; ///< The object that last closed this situated object.
 	Object *_lastUsedBy;   ///< The object that last used this situated object.
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The situated object's model.
+	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The situated object's model.
 
 
 	Situated(ObjectType type);

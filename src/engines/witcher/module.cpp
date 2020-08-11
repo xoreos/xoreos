@@ -24,7 +24,8 @@
 
 #include <cassert>
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -218,7 +219,7 @@ bool Module::getObjectLocation(const Common::UString &object, Common::UString &a
 	if (object.empty())
 		return false;
 
-	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(findObjectsByTag(object));
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(findObjectsByTag(object));
 
 	Witcher::Object *witcherObject = 0;
 	while (!witcherObject && search->get()) {

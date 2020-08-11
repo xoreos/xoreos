@@ -22,7 +22,8 @@
  *  A placeable object in a The Witcher area.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 
 #include "src/aurora/gff3file.h"
@@ -49,7 +50,7 @@ Placeable::~Placeable() {
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	Common::UString temp = placeable.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utp;
+	std::unique_ptr<Aurora::GFF3File> utp;
 	if (!temp.empty())
 		utp.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 

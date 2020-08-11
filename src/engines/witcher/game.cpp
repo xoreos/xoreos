@@ -51,8 +51,8 @@ namespace Engines {
 namespace Witcher {
 
 Game::Game(WitcherEngine &engine, ::Engines::Console &console) : _engine(&engine), _console(&console) {
-	_functions.reset(new Functions(*this));
-	_bindings.reset(new LuaBindings());
+	_functions = std::make_unique<Functions>(*this);
+	_bindings = std::make_unique<LuaBindings>();
 }
 
 Game::~Game() {
@@ -71,7 +71,7 @@ Module &Game::getModule() {
 }
 
 void Game::run() {
-	_campaign.reset(new Campaign(*_console));
+	_campaign = std::make_unique<Campaign>(*_console);
 
 	// Don't know what are this file for. Seems to be some internal scripts.
 	// They are absent in game resources.

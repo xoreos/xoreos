@@ -59,7 +59,7 @@ namespace Witcher {
 WitcherEngine::WitcherEngine() :
 	_languageText(Aurora::kLanguageInvalid), _languageVoice(Aurora::kLanguageInvalid) {
 
-	_console.reset(new Console(*this));
+	_console = std::make_unique<Console>(*this);
 }
 
 WitcherEngine::~WitcherEngine() {
@@ -152,7 +152,7 @@ void WitcherEngine::run() {
 
 	CursorMan.showCursor();
 
-	_game.reset(new Game(*this, *_console));
+	_game = std::make_unique<Game>(*this, *_console);
 	_game->run();
 
 	deinit();

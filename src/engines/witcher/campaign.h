@@ -26,8 +26,8 @@
 #define ENGINES_WITCHER_CAMPAIGN_H
 
 #include <list>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/locstring.h"
@@ -126,10 +126,10 @@ private:
 	Common::UString _startModule;
 
 	/** The current module of the current campaign. */
-	Common::ScopedPtr<Module> _module;
+	std::unique_ptr<Module> _module;
 
 	/** The player character we use. */
-	Common::ScopedPtr<Creature> _pc;
+	std::unique_ptr<Creature> _pc;
 
 	/** The campaign we should change to. */
 	Common::UString _newCampaign;

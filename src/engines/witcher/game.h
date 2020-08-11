@@ -26,9 +26,9 @@
 #define ENGINES_WITCHER_GAME_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/ustring.h"
-#include "src/common/scopedptr.h"
 
 #include "src/sound/types.h"
 
@@ -75,10 +75,10 @@ public:
 private:
 	WitcherEngine *_engine;
 
-	Common::ScopedPtr<Campaign> _campaign;
+	std::unique_ptr<Campaign> _campaign;
 
-	Common::ScopedPtr<Functions>   _functions;
-	Common::ScopedPtr<LuaBindings> _bindings;
+	std::unique_ptr<Functions>   _functions;
+	std::unique_ptr<LuaBindings> _bindings;
 
 	::Engines::Console *_console;
 

@@ -27,9 +27,9 @@
 
 #include <list>
 #include <map>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrlist.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
@@ -137,7 +137,7 @@ private:
 	Sound::ChannelHandle _ambientMusic; ///< Sound handle of the currently playing music.
 
 	Common::UString _modelName; ///< Name of area geometry ("tile") model.
-	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The actual area geometry model.
+	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The actual area geometry model.
 
 	ObjectList _objects;   ///< List of all objects in the area.
 	ObjectMap  _objectMap; ///< Map of all non-static objects in the area.
