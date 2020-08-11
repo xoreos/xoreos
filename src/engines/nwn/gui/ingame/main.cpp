@@ -59,13 +59,12 @@ IngameMainMenu::IngameMainMenu(const Version &gameVersion, ::Engines::Console *c
 	// TODO: Save character
 	getWidget("SaveCharButton", true)->setDisabled(true);
 
-	_game.reset    (new OptionsGameMenu    (false, _console));
-	_video.reset   (new OptionsVideoMenu   (false, _console));
-	_sound.reset   (new OptionsSoundMenu   (false, _console));
-	_controls.reset(new OptionsControlsMenu(false, _console));
+	_game     = std::make_unique<OptionsGameMenu    >(false, _console);
+	_video    = std::make_unique<OptionsVideoMenu   >(false, _console);
+	_sound    = std::make_unique<OptionsSoundMenu   >(false, _console);
+	_controls = std::make_unique<OptionsControlsMenu>(false, _console);
 
-	_quitPrompt.reset(new OKCancelDialog(TalkMan.getString(10308),
-	                                     TalkMan.getString(8274), TalkMan.getString(8275)));
+	_quitPrompt = std::make_unique<OKCancelDialog>(TalkMan.getString(10308), TalkMan.getString(8274), TalkMan.getString(8275));
 }
 
 IngameMainMenu::~IngameMainMenu() {

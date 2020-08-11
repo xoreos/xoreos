@@ -26,9 +26,9 @@
 #define ENGINES_NWN_GUI_INGAME_INGAME_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 
 #include "src/events/types.h"
@@ -87,13 +87,13 @@ public:
 private:
 	Module *_module;
 
-	Common::ScopedPtr<IngameMainMenu> _main; ///< The ingame main menu.
+	std::unique_ptr<IngameMainMenu> _main; ///< The ingame main menu.
 
-	Common::ScopedPtr<Quickbar>  _quickbar;  ///< The quick bar.
-	Common::ScopedPtr<Quickchat> _quickchat; ///< The quick chat.
-	Common::ScopedPtr<Compass>   _compass;   ///< The compass.
+	std::unique_ptr<Quickbar>  _quickbar;  ///< The quick bar.
+	std::unique_ptr<Quickchat> _quickchat; ///< The quick chat.
+	std::unique_ptr<Compass>   _compass;   ///< The compass.
 
-	Common::ScopedPtr<Dialog> _dialog; ///< The current dialog.
+	std::unique_ptr<Dialog> _dialog; ///< The current dialog.
 
 	/** The time the compass was changed last. */
 	uint32 _lastCompassChange;

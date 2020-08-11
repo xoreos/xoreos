@@ -22,7 +22,8 @@
  *  A tileset in Neverwinter Nights.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/error.h"
 #include "src/common/configfile.h"
 #include "src/common/readstream.h"
@@ -38,7 +39,7 @@ namespace Engines {
 namespace NWN {
 
 Tileset::Tileset(const Common::UString &resRef) {
-	Common::ScopedPtr<Common::SeekableReadStream> setFile(ResMan.getResource(resRef, Aurora::kFileTypeSET));
+	std::unique_ptr<Common::SeekableReadStream> setFile(ResMan.getResource(resRef, Aurora::kFileTypeSET));
 	if (!setFile)
 		throw Common::Exception("No such tileset \"%s\"", resRef.c_str());
 

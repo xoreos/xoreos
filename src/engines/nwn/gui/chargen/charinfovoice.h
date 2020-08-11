@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CCHARINFO_H
 #define ENGINES_NWN_GUI_CHARGEN_CCHARINFO_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
@@ -49,7 +49,7 @@ public:
 
 private:
 	Common::UString _title;
-	Common::ScopedPtr<Aurora::SSFFile> _soundSet;
+	std::unique_ptr<Aurora::SSFFile> _soundSet;
 	size_t _currentSound;
 	uint32 _soundSetID;
 

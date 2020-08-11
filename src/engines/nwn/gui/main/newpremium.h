@@ -26,8 +26,8 @@
 #define ENGINES_NWN_GUI_MAIN_NEWPREMIUM_H
 
 #include <vector>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/aurora/types.h"
@@ -63,8 +63,8 @@ protected:
 	bool deactivate();
 
 private:
-	Common::ScopedPtr<Graphics::Aurora::Model> _button;
-	Common::ScopedPtr<Graphics::Aurora::Text>  _text;
+	std::unique_ptr<Graphics::Aurora::Model> _button;
+	std::unique_ptr<Graphics::Aurora::Text>  _text;
 
 	float _spacing;
 };

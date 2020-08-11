@@ -134,7 +134,7 @@ public:
 
 
 Legal::Legal() {
-	_billboard.reset(new FadeModel("load_legal"));
+	_billboard = std::make_unique<FadeModel>("load_legal");
 
 	_billboard->setPosition(0.0f, 0.0f, -1000.0f);
 	_billboard->setTag("Legal");

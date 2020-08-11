@@ -57,7 +57,7 @@ namespace NWN {
 Game::Game(NWNEngine &engine, ::Engines::Console &console, const Version &version) :
 	_engine(&engine), _console(&console), _version(&version) {
 
-	_functions.reset(new Functions(*this));
+	_functions = std::make_unique<Functions>(*this);
 }
 
 Game::~Game() {
@@ -76,7 +76,7 @@ Module &Game::getModule() {
 void Game::run() {
 	bool first = true;
 
-	_module.reset(new Module(*_console, *_version));
+	_module = std::make_unique<Module>(*_console, *_version);
 
 	while (!EventMan.quitRequested()) {
 		mainMenu(first, first);

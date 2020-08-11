@@ -242,7 +242,7 @@ bool Situated::createTooltip(Tooltip::Type type) {
 		return false;
 
 	if (!_tooltip) {
-		_tooltip.reset(new Tooltip(type, *_model));
+		_tooltip = std::make_unique<Tooltip>(type, *_model);
 
 		_tooltip->setAlign(0.5f);
 		_tooltip->setPortrait(_portrait);

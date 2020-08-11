@@ -27,9 +27,9 @@
 
 #include <vector>
 #include <list>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
@@ -386,7 +386,7 @@ private:
 	/** Is the creature commandable (has a modifiable action queue)? */
 	bool _isCommandable;
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
+	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The creature's model.
 
 
 	/** Init the creature. */

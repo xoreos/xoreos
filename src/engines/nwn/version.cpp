@@ -23,8 +23,8 @@
  */
 
 #include <algorithm>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/readfile.h"
 #include "src/common/filelist.h"
@@ -148,7 +148,7 @@ bool Version::detect(const Common::UString &directory) {
 // from the VERSIONINFO resource. They're UTF-16LE strings.
 bool Version::detectWindows(const Common::UString &directory) {
 	size_t size;
-	Common::ScopedArray<byte> binary(readFile(directory, "/nwmain.exe", size));
+	std::unique_ptr<byte[]> binary(readFile(directory, "/nwmain.exe", size));
 	if (!binary)
 		return false;
 
@@ -228,7 +228,7 @@ bool Version::detectMacOSX(const Common::UString &directory) {
 		return false;
 
 	size_t size;
-	Common::ScopedArray<byte> binary(readFile(appDir, "Neverwinter Nights", size));
+	std::unique_ptr<byte[]> binary(readFile(appDir, "Neverwinter Nights", size));
 	if (!binary)
 		return false;
 
@@ -282,7 +282,7 @@ bool Version::detectMacOSX(const Common::UString &directory) {
 // follow the name "Neverwinter Nights", each field separated by a 0-byte.
 bool Version::detectLinux(const Common::UString &directory) {
 	size_t size;
-	Common::ScopedArray<byte> binary(readFile(directory, "/nwmain", size));
+	std::unique_ptr<byte[]> binary(readFile(directory, "/nwmain", size));
 	if (!binary)
 		return false;
 
@@ -347,7 +347,7 @@ byte *Version::readFile(const Common::UString &path, size_t &size) {
 
 	size = file.size();
 
-	Common::ScopedArray<byte> buffer(new byte[size]);
+	std::unique_ptr<byte[]> buffer = std::make_unique<byte[]>(size);
 	if (file.read(buffer.get(), size) != size)
 		return 0;
 

@@ -107,11 +107,11 @@ private:
 	Quad _qPortrait;
 	std::vector<Quad> _qBorder;
 
-	Common::ScopedPtr<Graphics::Shader::ShaderSurface> _surface;
-	Common::ScopedPtr<Graphics::Shader::ShaderMaterial> _material;
-	Common::ScopedPtr<Graphics::Shader::ShaderMaterial> _borderMaterial;
-	Common::ScopedPtr<Graphics::Shader::ShaderRenderable> _renderable;
-	Common::ScopedPtr<Graphics::Shader::ShaderRenderable> _borderRenderable;
+	std::unique_ptr<Graphics::Shader::ShaderSurface> _surface;
+	std::unique_ptr<Graphics::Shader::ShaderMaterial> _material;
+	std::unique_ptr<Graphics::Shader::ShaderMaterial> _borderMaterial;
+	std::unique_ptr<Graphics::Shader::ShaderRenderable> _renderable;
+	std::unique_ptr<Graphics::Shader::ShaderRenderable> _borderRenderable;
 
 	void setSize();
 	void createBorder();

@@ -26,8 +26,7 @@
 #define ENGINES_NWN_GUI_CHARGEN_CHARATTRIBUTES_H
 
 #include <vector>
-
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
@@ -63,7 +62,7 @@ private:
 	std::vector<uint8> _attrAdjust;
 	std::vector<WidgetLabel *> _labelAttributes;
 
-	Common::ScopedPtr<ButtonsGroup> _attrButtons;
+	std::unique_ptr<ButtonsGroup> _attrButtons;
 
 	uint8 _pointLeft;
 };

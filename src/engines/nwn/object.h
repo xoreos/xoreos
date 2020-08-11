@@ -26,9 +26,9 @@
 #define ENGINES_NWN_OBJECT_H
 
 #include <list>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/nwscript/object.h"
@@ -170,7 +170,7 @@ protected:
 	Common::UString _conversation; ///< The object's default conversation.
 
 	uint32 _soundSet; ///< The object's sound set, as an index into soundset.2da.
-	Common::ScopedPtr<Aurora::SSFFile> _ssf; ///< The object's sound set.
+	std::unique_ptr<Aurora::SSFFile> _ssf; ///< The object's sound set.
 
 	bool _static; ///< Is the object static?
 	bool _usable; ///< Is the object usable?
@@ -186,7 +186,7 @@ protected:
 
 	Sound::ChannelHandle _sound; ///< The currently playing object sound.
 
-	Common::ScopedPtr<Tooltip> _tooltip; ///< The tooltip displayed over the object.
+	std::unique_ptr<Tooltip> _tooltip; ///< The tooltip displayed over the object.
 
 
 	/** Load the object's sound set. */

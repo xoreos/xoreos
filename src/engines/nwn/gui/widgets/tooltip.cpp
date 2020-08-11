@@ -128,7 +128,7 @@ void Tooltip::setPortrait(const Common::UString &image) {
 	if (_portrait)
 		_portrait->setPortrait(image);
 	else
-		_portrait.reset(new Portrait(image, Portrait::kSizeTiny, 1.0f));
+		_portrait = std::make_unique<Portrait>(image, Portrait::kSizeTiny, 1.0f);
 
 	redoLayout();
 }

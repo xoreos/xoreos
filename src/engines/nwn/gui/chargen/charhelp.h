@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARHELP_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARHELP_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/gui.h"
 
@@ -45,7 +45,7 @@ public:
 private:
 	void callbackActive(Widget &widget);
 
-	Common::ScopedPtr<PortraitWidget> _icon;
+	std::unique_ptr<PortraitWidget> _icon;
 };
 
 } // End of namespace NWN

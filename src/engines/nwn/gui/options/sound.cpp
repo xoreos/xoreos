@@ -81,7 +81,7 @@ OptionsSoundMenu::OptionsSoundMenu(bool isMain, ::Engines::Console *console) : G
 	if (soundHeadphones)
 		soundHeadphones->setDisabled(true);
 
-	_advanced.reset(new OptionsSoundAdvancedMenu(isMain, _console));
+	_advanced = std::make_unique<OptionsSoundAdvancedMenu>(isMain, _console);
 }
 
 void OptionsSoundMenu::show() {

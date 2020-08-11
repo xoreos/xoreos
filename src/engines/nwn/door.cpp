@@ -56,7 +56,7 @@ Door::~Door() {
 void Door::load(const Aurora::GFF3Struct &door) {
 	const Common::UString temp = door.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utd;
+	std::unique_ptr<Aurora::GFF3File> utd;
 	if (!temp.empty())
 		utd.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTD, MKTAG('U', 'T', 'D', ' '), true));
 

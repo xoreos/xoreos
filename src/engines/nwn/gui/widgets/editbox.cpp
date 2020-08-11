@@ -58,7 +58,7 @@ void WidgetEditBox::hide() {
 
 void WidgetEditBox::setTitle(const Common::UString &font, const Common::UString &title) {
 	if (!_title)
-		_title.reset(new Graphics::Aurora::Text(FontMan.get(font), title));
+		_title = std::make_unique<Graphics::Aurora::Text>(FontMan.get(font), title);
 
 	_title->set(title);
 

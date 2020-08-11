@@ -23,6 +23,8 @@
  *  Class that reads a WalkmeshLoader file.
  */
 
+#include <memory>
+
 #include "external/glm/mat4x4.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
 
@@ -31,7 +33,6 @@
 #include "src/common/strutil.h"
 #include "src/common/aabbnode.h"
 #include "src/common/maths.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/resman.h"
 
@@ -52,13 +53,13 @@ void WalkmeshLoader::load(::Aurora::FileType fileType, const Common::UString &na
                           float orientation[4], float position[3],
                           std::vector<float> &vertices, std::vector<uint32> &faces,
                           std::vector<uint32> &facesProperty, const Common::UString &filterNode) {
-	Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource(name, fileType));
+	std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(name, fileType));
 	if (!stream)
 		return;
 
 	stream->seek(0);
 
-	Common::ScopedPtr<Common::StreamTokenizer> tokenize(new Common::StreamTokenizer(Common::StreamTokenizer::kRuleIgnoreAll));
+	std::unique_ptr<Common::StreamTokenizer> tokenize = std::make_unique<Common::StreamTokenizer>(Common::StreamTokenizer::kRuleIgnoreAll);
 	tokenize->addSeparator(' ');
 	tokenize->addChunkEnd('\n');
 	tokenize->addIgnore('\r');

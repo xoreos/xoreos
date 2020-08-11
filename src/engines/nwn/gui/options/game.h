@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_OPTIONS_GAME_H
 #define ENGINES_NWN_GUI_OPTIONS_GAME_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/gui.h"
 
@@ -50,8 +50,8 @@ protected:
 private:
 	int _difficulty;
 
-	Common::ScopedPtr<GUI> _gorepass;
-	Common::ScopedPtr<GUI> _feedback;
+	std::unique_ptr<GUI> _gorepass;
+	std::unique_ptr<GUI> _feedback;
 
 	void updateDifficulty(int difficulty);
 

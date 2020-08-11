@@ -128,10 +128,10 @@ WidgetListItemButton::WidgetListItemButton(::Engines::GUI &gui, const Common::US
 	WidgetListItemBaseButton(gui, button, 1.0f, soundClick),
 	_isRight(true), _isMovable(false), _moveButtonRight(0), _moveButtonLeft(0) {
 
-	_text.reset(new Graphics::Aurora::Text(FontMan.get("fnt_galahad14"), text));
+	_text = std::make_unique<Graphics::Aurora::Text>(FontMan.get("fnt_galahad14"), text);
 
 	if (!icon.empty())
-		_icon.reset(new Portrait(icon, Portrait::kSizeIcon));
+		_icon = std::make_unique<Portrait>(icon, Portrait::kSizeIcon);
 
 	if (otherButtons & kHelpButton)
 		_helpButton.reset(loadModelGUI("ctl_cg_btn_help"));

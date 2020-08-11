@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_WIDGETLISTITEMBUTTON_H
 #define ENGINES_NWN_GUI_WIDGETS_WIDGETLISTITEMBUTTON_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/sound/sound.h"
 
@@ -61,7 +61,7 @@ protected:
 	bool activate();
 	bool deactivate();
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _button;
+	std::unique_ptr<Graphics::Aurora::Model> _button;
 
 private:
 	float _spacing;
@@ -104,13 +104,13 @@ public:
 protected:
 	virtual void callbackHelp();
 
-	Common::ScopedPtr<Graphics::Aurora::Text> _text;
-	Common::ScopedPtr<Portrait> _icon;
+	std::unique_ptr<Graphics::Aurora::Text> _text;
+	std::unique_ptr<Portrait> _icon;
 
 	bool _isRight;
 	bool _isMovable;
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _helpButton;
+	std::unique_ptr<Graphics::Aurora::Model> _helpButton;
 
 	WidgetButton *_moveButtonRight;
 	WidgetButton *_moveButtonLeft;

@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_MAIN_NEW_H
 #define ENGINES_NWN_GUI_MAIN_NEW_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/gui.h"
 
@@ -51,7 +51,7 @@ private:
 
 	GUI *_charType;
 
-	Common::ScopedPtr<GUI> _modules;
+	std::unique_ptr<GUI> _modules;
 
 	void loadModule(const Common::UString &module);
 };

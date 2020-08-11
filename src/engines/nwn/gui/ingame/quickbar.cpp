@@ -136,7 +136,7 @@ void Quickbar::callbackActive(Widget &UNUSED(widget)) {
 }
 
 void Quickbar::getSlotSize() {
-	Common::ScopedPtr<Graphics::Aurora::Model> _model(loadModelGUI("qb_but67"));
+	std::unique_ptr<Graphics::Aurora::Model> _model(loadModelGUI("qb_but67"));
 
 	_slotWidth  = floorf(_model->getWidth());
 	_slotHeight = floorf(_model->getHeight());

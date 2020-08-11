@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_CHARGEN_CHARALIGNMENT_H
 #define ENGINES_NWN_GUI_CHARGEN_CHARALIGNMENT_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
 
@@ -52,7 +52,7 @@ protected:
 	void getAlignment();
 
 private:
-	Common::ScopedPtr<ButtonsGroup> _buttons;
+	std::unique_ptr<ButtonsGroup> _buttons;
 
 	uint8 _goodness;
 	uint8 _lawfulness;

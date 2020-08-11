@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_WIDGETS_NWNWIDGETWITHCAPTION_H
 #define ENGINES_NWN_GUI_WIDGETS_NWNWIDGETWITHCAPTION_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/graphics/aurora/types.h"
 
@@ -70,7 +70,7 @@ public:
 	void setDisabled(bool disabled);
 
 protected:
-	Common::ScopedPtr<Graphics::Aurora::Text> _caption;
+	std::unique_ptr<Graphics::Aurora::Text> _caption;
 
 	float _r;
 	float _g;

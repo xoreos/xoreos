@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_MAIN_MAIN_H
 #define ENGINES_NWN_GUI_MAIN_MAIN_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/gui.h"
 
@@ -53,11 +53,11 @@ private:
 
 	bool _hasXP;
 
-	Common::ScopedPtr<GUI> _charType;
+	std::unique_ptr<GUI> _charType;
 
-	Common::ScopedPtr<GUI> _new;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
+	std::unique_ptr<GUI> _new;
+	std::unique_ptr<GUI> _movies;
+	std::unique_ptr<GUI> _options;
 
 	void createNew();
 	void createMovies();

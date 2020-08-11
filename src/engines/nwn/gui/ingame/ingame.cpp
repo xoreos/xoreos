@@ -44,11 +44,11 @@ namespace NWN {
 IngameGUI::IngameGUI(Module &module, ::Engines::Console *console) :
 	_module(&module), _lastCompassChange(0) {
 
-	_main.reset(new IngameMainMenu(_module->getGameVersion(), console));
+	_main = std::make_unique<IngameMainMenu>(_module->getGameVersion(), console);
 
-	_quickbar.reset (new Quickbar);
-	_quickchat.reset(new Quickchat(_quickbar->getHeight() - 3.0f));
-	_compass.reset  (new Compass(_quickbar->getHeight() + _quickchat->getHeight() - 6.0f));
+	_quickbar  = std::make_unique<Quickbar>();
+	_quickchat = std::make_unique<Quickchat>(_quickbar->getHeight() - 3.0f);
+	_compass   = std::make_unique<Compass>(_quickbar->getHeight() + _quickchat->getHeight() - 6.0f);
 
 	_party.push_back(new PartyLeader(module));
 
@@ -183,7 +183,7 @@ bool IngameGUI::startConversation(const Common::UString &conv,
 		return true;
 
 	try {
-		_dialog.reset(new Dialog(conv, pc, obj, *_module, playHello));
+		_dialog = std::make_unique<Dialog>(conv, pc, obj, *_module, playHello);
 
 		_dialog->show();
 	} catch (...) {

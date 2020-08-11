@@ -447,7 +447,7 @@ void Area::loadTileset() {
 		throw Common::Exception("Area \"%s\" has no tileset", _resRef.c_str());
 
 	try {
-		_tileset.reset(new Tileset(_tilesetName));
+		_tileset = std::make_unique<Tileset>(_tilesetName);
 	} catch (Common::Exception &e) {
 		e.add("Failed loading tileset \"%s\"", _resRef.c_str());
 		throw;

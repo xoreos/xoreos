@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_MAIN_NEWCAMP_H
 #define ENGINES_NWN_GUI_MAIN_NEWCAMP_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/gui.h"
 
@@ -49,11 +49,11 @@ private:
 
 	GUI *_charType;
 
-	Common::ScopedPtr<GUI> _base;
-	Common::ScopedPtr<GUI> _xp1;
-	Common::ScopedPtr<GUI> _xp2;
-	Common::ScopedPtr<GUI> _modules;
-	Common::ScopedPtr<GUI> _premium;
+	std::unique_ptr<GUI> _base;
+	std::unique_ptr<GUI> _xp1;
+	std::unique_ptr<GUI> _xp2;
+	std::unique_ptr<GUI> _modules;
+	std::unique_ptr<GUI> _premium;
 };
 
 } // End of namespace NWN

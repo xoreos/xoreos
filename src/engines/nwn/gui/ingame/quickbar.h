@@ -25,8 +25,9 @@
 #ifndef ENGINES_NWN_GUI_INGAME_QUICKBAR_H
 #define ENGINES_NWN_GUI_INGAME_QUICKBAR_H
 
+#include <memory>
+
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 #include "src/events/notifyable.h"
 
@@ -57,7 +58,7 @@ public:
 	void setTag(const Common::UString &tag);
 
 private:
-	Common::ScopedPtr<Graphics::Aurora::Model> _model;
+	std::unique_ptr<Graphics::Aurora::Model> _model;
 
 	size_t _buttonNumber;
 };

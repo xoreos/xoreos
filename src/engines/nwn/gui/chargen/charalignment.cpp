@@ -48,7 +48,7 @@ CharAlignment::CharAlignment(CharGenChoices &choices, ::Engines::Console *consol
 	getEditBox("HelpEdit", true)->setTitle("fnt_galahad14", TalkMan.getString(111));
 	getEditBox("HelpEdit", true)->setText("fnt_galahad14", TalkMan.getString(458));
 
-	_buttons.reset(new ButtonsGroup(getEditBox("HelpEdit", true)));
+	_buttons = std::make_unique<ButtonsGroup>(getEditBox("HelpEdit", true));
 
 	uint textID  = 448;
 

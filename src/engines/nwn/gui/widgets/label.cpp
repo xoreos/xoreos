@@ -21,6 +21,9 @@
 /** @file
  *  A NWN label widget.
  */
+
+#include "src/common/util.h"
+
 #include "src/graphics/font.h"
 
 #include "src/graphics/aurora/fontman.h"

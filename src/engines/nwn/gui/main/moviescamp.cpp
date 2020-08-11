@@ -49,7 +49,7 @@ MoviesCampMenu::MoviesCampMenu(::Engines::Console *console) : GUI(console) {
 	if (button)
 		button->setDisabled(true);
 
-	_base.reset(new MoviesBaseMenu(_console));
+	_base = std::make_unique<MoviesBaseMenu>(_console);
 }
 
 MoviesCampMenu::~MoviesCampMenu() {

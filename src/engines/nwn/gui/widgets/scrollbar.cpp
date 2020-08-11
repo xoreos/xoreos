@@ -44,18 +44,15 @@ Scrollbar::Scrollbar(Type type) : Graphics::GUIElement(Graphics::GUIElement::kGU
 	_texture = TextureMan.get("gui_scrollbar");
 
 	if (GfxMan.isRendererExperimental()) {
-		_surface.reset(new Graphics::Shader::ShaderSurface(
-				ShaderMan.getShaderObject("default/textureMatrix.vert", Graphics::Shader::SHADER_VERTEX), "portrait"));
+		_surface = std::make_unique<Graphics::Shader::ShaderSurface>(ShaderMan.getShaderObject("default/textureMatrix.vert", Graphics::Shader::SHADER_VERTEX), "portrait");
 		_surface->setVariableExternal("_uv0Matrix", &_textureMatrix);
 
-		_material.reset(new Graphics::Shader::ShaderMaterial(
-				ShaderMan.getShaderObject("default/texture.frag", Graphics::Shader::SHADER_FRAGMENT), "portrait"));
+		_material = std::make_unique<Graphics::Shader::ShaderMaterial>(ShaderMan.getShaderObject("default/texture.frag", Graphics::Shader::SHADER_FRAGMENT), "portrait");
 		Graphics::Shader::ShaderSampler *sampler;
 		sampler = (Graphics::Shader::ShaderSampler *)(_material->getVariableData("sampler_0_id"));
 		sampler->handle = _texture;
 
-		_renderable.reset(new Graphics::Shader::ShaderRenderable(
-				_surface.get(), _material.get(), MeshMan.getMesh("defaultMeshQuad")));
+		_renderable = std::make_unique<Graphics::Shader::ShaderRenderable>(_surface.get(), _material.get(), MeshMan.getMesh("defaultMeshQuad"));
 	}
 	setLength(16.0f);
 }

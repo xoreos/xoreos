@@ -87,9 +87,9 @@ private:
 
 	float _length;
 
-	Common::ScopedPtr<Graphics::Shader::ShaderSurface> _surface;
-	Common::ScopedPtr<Graphics::Shader::ShaderMaterial> _material;
-	Common::ScopedPtr<Graphics::Shader::ShaderRenderable> _renderable;
+	std::unique_ptr<Graphics::Shader::ShaderSurface> _surface;
+	std::unique_ptr<Graphics::Shader::ShaderMaterial> _material;
+	std::unique_ptr<Graphics::Shader::ShaderRenderable> _renderable;
 	glm::mat4 _textureMatrix;     ///< Binding matrix, set prior to rendering.
 	glm::mat4 _textureMatrixBar;  ///< Cached texture matrix for the scroll bar.
 	glm::mat4 _textureMatrixCapA; ///< Cached texture matrix for the scroll cap (top/left)

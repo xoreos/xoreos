@@ -26,8 +26,7 @@
 #define ENGINES_NWN_GUI_MAIN_CHARPREMADE_H
 
 #include <vector>
-
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/aurora/types.h"
 
@@ -57,9 +56,9 @@ public:
 	void setPosition(float x, float y, float z);
 
 private:
-	Common::ScopedPtr<Graphics::Aurora::Text> _textName;
-	Common::ScopedPtr<Graphics::Aurora::Text> _textClass;
-	Common::ScopedPtr<Portrait> _portrait;
+	std::unique_ptr<Graphics::Aurora::Text> _textName;
+	std::unique_ptr<Graphics::Aurora::Text> _textClass;
+	std::unique_ptr<Portrait> _portrait;
 };
 
 /** The NWN character creator. */
@@ -92,7 +91,7 @@ private:
 
 	Module *_module;
 
-	Common::ScopedPtr<GUI> _charGen;
+	std::unique_ptr<GUI> _charGen;
 
 	std::vector<Character> _characters;
 

@@ -46,7 +46,7 @@ NewMenu::NewMenu(Module &module, GUI &charType, ::Engines::Console *console) : G
 		getWidget("OtherButton", true)->setInvisible(true);
 
 	if (!_hasXP)
-		_modules.reset(new NewModuleMenu(*_module, *_charType, _console));
+		_modules = std::make_unique<NewModuleMenu>(*_module, *_charType, _console);
 }
 
 NewMenu::~NewMenu() {

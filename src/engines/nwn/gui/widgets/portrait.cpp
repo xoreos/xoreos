@@ -56,21 +56,16 @@ Portrait::Portrait(const Common::UString &name, Size size,
 	assert((_size >= kSizeHuge) && (_size < kSizeMAX));
 
 	if (GfxMan.isRendererExperimental()) {
-		_surface.reset(new Graphics::Shader::ShaderSurface(
-				ShaderMan.getShaderObject("default/textureMatrix.vert", Graphics::Shader::SHADER_VERTEX), "portrait"));
+		_surface = std::make_unique<Graphics::Shader::ShaderSurface>(ShaderMan.getShaderObject("default/textureMatrix.vert", Graphics::Shader::SHADER_VERTEX), "portrait");
 
-		_material.reset(new Graphics::Shader::ShaderMaterial(
-				ShaderMan.getShaderObject("default/texture.frag", Graphics::Shader::SHADER_FRAGMENT), "portrait"));
+		_material = std::make_unique<Graphics::Shader::ShaderMaterial>(ShaderMan.getShaderObject("default/texture.frag", Graphics::Shader::SHADER_FRAGMENT), "portrait");
 
 		// Sampler should be changed when the portrait texture is changed.
-		_renderable.reset(new Graphics::Shader::ShaderRenderable(
-				_surface.get(), _material.get(), MeshMan.getMesh("defaultMeshQuad")));
+		_renderable = std::make_unique<Graphics::Shader::ShaderRenderable>(_surface.get(), _material.get(), MeshMan.getMesh("defaultMeshQuad"));
 
-		_borderMaterial.reset(new Graphics::Shader::ShaderMaterial(
-				ShaderMan.getShaderObject("default/colour.frag", Graphics::Shader::SHADER_FRAGMENT), "portraitborder"));
+		_borderMaterial = std::make_unique<Graphics::Shader::ShaderMaterial>(ShaderMan.getShaderObject("default/colour.frag", Graphics::Shader::SHADER_FRAGMENT), "portraitborder");
 
-		_borderRenderable.reset(new Graphics::Shader::ShaderRenderable(
-				SurfaceMan.getSurface("defaultSurface"), _borderMaterial.get(), MeshMan.getMesh("defaultMeshQuad")));
+		_borderRenderable = std::make_unique<Graphics::Shader::ShaderRenderable>(SurfaceMan.getSurface("defaultSurface"), _borderMaterial.get(), MeshMan.getMesh("defaultMeshQuad"));
 	}
 
 	setSize();

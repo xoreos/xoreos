@@ -81,8 +81,8 @@ CharFeats::CharFeats(CharGenChoices &choices, ::Engines::Console *console) : Cha
 	_normalFeats = 0;
 	_bonusFeats = 0;
 
-	_featHelp.reset(new CharHelp("cg_featinfo", console));
-	_featsPopup.reset(new CharFeatsPopup(console));
+	_featHelp = std::make_unique<CharHelp>("cg_featinfo", console);
+	_featsPopup = std::make_unique<CharFeatsPopup>(console);
 
 	_availListBox = getListBox("AvailBox", true);
 	_knownListBox = getListBox("KnownBox", true);

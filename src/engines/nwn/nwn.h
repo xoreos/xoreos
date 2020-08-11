@@ -26,8 +26,7 @@
 #define ENGINES_NWN_NWN_H
 
 #include <vector>
-
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/aurora/types.h"
 
@@ -63,7 +62,7 @@ protected:
 
 
 private:
-	Common::ScopedPtr<Version> _version;
+	std::unique_ptr<Version> _version;
 
 	Aurora::Language _language;
 
@@ -71,7 +70,7 @@ private:
 	bool _hasXP2; // Hordes of the Underdark (HotU)
 	bool _hasXP3; // Kingmaker (resources also included in the final 1.69 patch)
 
-	Common::ScopedPtr<Game> _game;
+	std::unique_ptr<Game> _game;
 
 
 	void init();

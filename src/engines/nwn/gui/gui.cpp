@@ -22,8 +22,9 @@
  *  A NWN GUI.
  */
 
+#include <memory>
+
 #include "src/common/endianness.h"
-#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/util.h"
 
@@ -78,7 +79,7 @@ void GUI::load(const Common::UString &resref) {
 	_name = resref;
 
 	try {
-		Common::ScopedPtr<Aurora::GFF3File>
+		std::unique_ptr<Aurora::GFF3File>
 			gff(new Aurora::GFF3File(resref, Aurora::kFileTypeGUI, MKTAG('G', 'U', 'I', ' '), true));
 
 		loadWidget(gff->getTopLevel(), 0);

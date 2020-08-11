@@ -62,7 +62,7 @@ void Item::load(const Aurora::GFF3Struct &item) {
 	if (temp.empty())
 		temp = item.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> uti;
+	std::unique_ptr<Aurora::GFF3File> uti;
 	if (!temp.empty())
 		uti.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' '), true));
 

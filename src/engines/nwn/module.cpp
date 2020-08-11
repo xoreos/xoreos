@@ -107,7 +107,7 @@ Module::Module(::Engines::Console &console, const Version &gameVersion) : Object
 	_console(&console), _gameVersion(&gameVersion), _hasModule(false),
 	_running(false), _currentTexturePack(-1), _exit(false), _currentArea(0) {
 
-	_ingameGUI.reset(new IngameGUI(*this, _console));
+	_ingameGUI = std::make_unique<IngameGUI>(*this, _console);
 }
 
 Module::~Module() {
@@ -274,7 +274,7 @@ void Module::usePC(const Common::UString &bic, bool local) {
 		throw Common::Exception("Tried to load an empty PC");
 
 	try {
-		_pc.reset(new Creature(bic, local));
+		_pc = std::make_unique<Creature>(bic, local);
 	} catch (Common::Exception &e) {
 		e.add("Can't load PC \"%s\"", bic.c_str());
 		throw e;

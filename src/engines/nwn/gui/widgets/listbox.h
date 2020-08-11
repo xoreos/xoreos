@@ -26,9 +26,9 @@
 #define ENGINES_NWN_GUI_WIDGETS_LISTBOX_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 #include "src/graphics/aurora/types.h"
 
@@ -103,7 +103,7 @@ protected:
 	bool deactivate();
 
 private:
-	Common::ScopedPtr<Graphics::Aurora::Text> _text;
+	std::unique_ptr<Graphics::Aurora::Text> _text;
 
 	float _uR, _uG, _uB, _uA;
 	float _sR, _sG, _sB, _sA;

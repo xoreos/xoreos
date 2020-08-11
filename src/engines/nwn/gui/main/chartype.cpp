@@ -36,8 +36,8 @@ CharTypeMenu::CharTypeMenu(Module &module, ::Engines::Console *console) : GUI(co
 
 	load("pre_chartype");
 
-	_charGen.reset    (new CharGenMenu    (*_module, _console));
-	_charPremade.reset(new CharPremadeMenu(*_module, _console));
+	_charGen     = std::make_unique<CharGenMenu    >(*_module, _console);
+	_charPremade = std::make_unique<CharPremadeMenu>(*_module, _console);
 }
 
 CharTypeMenu::~CharTypeMenu() {

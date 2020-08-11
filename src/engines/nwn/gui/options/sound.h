@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN_GUI_OPTIONS_SOUND_H
 #define ENGINES_NWN_GUI_OPTIONS_SOUND_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/sound/types.h"
 
@@ -48,7 +48,7 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	Common::ScopedPtr<GUI> _advanced;
+	std::unique_ptr<GUI> _advanced;
 
 	double _volMusic;
 	double _volSFX;

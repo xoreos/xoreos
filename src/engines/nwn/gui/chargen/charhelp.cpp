@@ -38,7 +38,7 @@ CharHelp::CharHelp(const Common::UString &GUIResRef, ::Engines::Console *console
 
 	setPosition(0, 0, -220);
 
-	_icon.reset(new PortraitWidget(*this, "FeatIcon", "", Portrait::kSizeIcon));
+	_icon = std::make_unique<PortraitWidget>(*this, "FeatIcon", "", Portrait::kSizeIcon);
 
 	float pX, pY, pZ;
 	getEditBox("EditBox", true)->getPosition(pX, pY, pZ);

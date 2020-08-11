@@ -57,9 +57,9 @@ WidgetListItemCharacter::WidgetListItemCharacter(::Engines::GUI &gui, const Comm
                                                  WidgetListItemBaseButton(gui, "ctl_pre_btn_char",
                                                                           spacing) {
 
-	_portrait.reset (new Portrait(portrait, Portrait::kSizeTiny, 1.0f));
-	_textName.reset (new Graphics::Aurora::Text(FontMan.get(font), name));
-	_textClass.reset(new Graphics::Aurora::Text(FontMan.get(font), classes));
+	_portrait  = std::make_unique<Portrait>(portrait, Portrait::kSizeTiny, 1.0f);
+	_textName  = std::make_unique<Graphics::Aurora::Text>(FontMan.get(font), name);
+	_textClass = std::make_unique<Graphics::Aurora::Text>(FontMan.get(font), classes);
 }
 
 WidgetListItemCharacter::~WidgetListItemCharacter() {
@@ -125,7 +125,7 @@ CharPremadeMenu::CharPremadeMenu(Module &module, ::Engines::Console *console) : 
 	// TODO: Delete character
 	getWidget("DeleteCharButton", true)->setDisabled(true);
 
-	_charGen.reset(new CharGenMenu(*_module, _console));
+	_charGen = std::make_unique<CharGenMenu>(*_module, _console);
 }
 
 CharPremadeMenu::~CharPremadeMenu() {

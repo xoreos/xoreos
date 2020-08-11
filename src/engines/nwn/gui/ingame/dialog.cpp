@@ -95,10 +95,9 @@ DialogBox::DialogBox(float width, float height) :
 		ConfigMan.getBool("largefonts") ? "fnt_dialog_big16" : "fnt_dialog16x16";
 	_font = FontMan.get(fontName);
 
-	_portrait.reset(new Portrait("", Portrait::kSizeMedium));
+	_portrait = std::make_unique<Portrait>("", Portrait::kSizeMedium);
 
-	_name.reset(new Graphics::Aurora::Text(FontMan.get("fnt_galahad14"), " ",
-	                                       kLightBlueR, kLightBlueG, kLightBlueB));
+	_name = std::make_unique<Graphics::Aurora::Text>(FontMan.get("fnt_galahad14"), " ", kLightBlueR, kLightBlueG, kLightBlueB);
 
 	_highlightedReply = _replyLines.end();
 	_pickedReply      = _replies.end();
@@ -588,10 +587,10 @@ Dialog::Dialog(const Common::UString &conv, Creature &pc, Object &obj,
 
 	_object->setPCSpeaker(&pc);
 
-	_dlg.reset(new Aurora::DLGFile(conv, _object, true));
+	_dlg = std::make_unique<Aurora::DLGFile>(conv, _object, true);
 	_dlg->startConversation();
 
-	_dlgBox.reset(new DialogBox(kDialogWidth, kDialogHeight));
+	_dlgBox = std::make_unique<DialogBox>(kDialogWidth, kDialogHeight);
 
 	updateBox();
 	playSound(playHello);

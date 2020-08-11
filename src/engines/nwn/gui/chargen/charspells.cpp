@@ -78,7 +78,7 @@ CharSpells::CharSpells(CharGenChoices &choices, Console *console) : CharGenBase(
 	_currentSpellLevel = SIZE_MAX;
 	_abilityLimit = 0;
 
-	_spellHelp.reset(new CharHelp("cg_spellinfo", console));
+	_spellHelp = std::make_unique<CharHelp>("cg_spellinfo", console);
 
 	_availListBox = getListBox("AvailBox", true);
 	_availListBox->setMode(WidgetListBox::kModeSelectable);

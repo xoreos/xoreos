@@ -54,11 +54,11 @@ NewCampMenu::NewCampMenu(Module &module, GUI &charType, ::Engines::Console *cons
 	if (button)
 		button->setDisabled(!Game::hasPremiumModules());
 
-	_base.reset   (new NewMenu       (*_module, *_charType, _console));
-	_xp1.reset    (new NewXP1Menu    (*_module, *_charType, _console));
-	_xp2.reset    (new NewXP2Menu    (*_module, *_charType, _console));
-	_modules.reset(new NewModuleMenu (*_module, *_charType, _console));
-	_premium.reset(new NewPremiumMenu(*_module, *_charType, _console));
+	_base    = std::make_unique<NewMenu       >(*_module, *_charType, _console);
+	_xp1     = std::make_unique<NewXP1Menu    >(*_module, *_charType, _console);
+	_xp2     = std::make_unique<NewXP2Menu    >(*_module, *_charType, _console);
+	_modules = std::make_unique<NewModuleMenu >(*_module, *_charType, _console);
+	_premium = std::make_unique<NewPremiumMenu>(*_module, *_charType, _console);
 }
 
 NewCampMenu::~NewCampMenu() {

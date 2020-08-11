@@ -26,8 +26,8 @@
 #define ENGINES_NWN_GUI_WIDGETS_TOOLTIP_H
 
 #include <vector>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
@@ -112,9 +112,9 @@ private:
 	bool _showBubble;
 	bool _showPortrait;
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _bubble;
+	std::unique_ptr<Graphics::Aurora::Model> _bubble;
 
-	Common::ScopedPtr<Portrait> _portrait;
+	std::unique_ptr<Portrait> _portrait;
 
 	std::vector<Line> _lines;
 	Common::PtrVector<Graphics::Aurora::Text> _texts;

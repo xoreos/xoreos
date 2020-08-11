@@ -681,7 +681,7 @@ void Creature::unloadModel() {
 }
 
 void Creature::loadCharacter(const Common::UString &bic, bool local) {
-	Common::ScopedPtr<Aurora::GFF3File> gff(openPC(bic, local));
+	std::unique_ptr<Aurora::GFF3File> gff(openPC(bic, local));
 
 	load(gff->getTopLevel(), 0);
 
@@ -699,7 +699,7 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 void Creature::load(const Aurora::GFF3Struct &creature) {
 	const Common::UString temp = creature.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utc;
+	std::unique_ptr<Aurora::GFF3File> utc;
 	if (!temp.empty())
 		utc.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' '), true));
 
@@ -1109,7 +1109,7 @@ bool Creature::createTooltip(Tooltip::Type type) {
 		return false;
 
 	if (!_tooltip) {
-		_tooltip.reset(new Tooltip(type, *_model));
+		_tooltip = std::make_unique<Tooltip>(type, *_model);
 
 		_tooltip->setAlign(0.5f);
 		_tooltip->setPortrait(_portrait);
@@ -1153,7 +1153,7 @@ void Creature::getPCListInfo(const Common::UString &bic, bool local,
                              Common::UString &portrait) {
 
 
-	Common::ScopedPtr<Aurora::GFF3File> gff(openPC(bic, local));
+	std::unique_ptr<Aurora::GFF3File> gff(openPC(bic, local));
 
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
 

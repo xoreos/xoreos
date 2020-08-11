@@ -63,8 +63,8 @@ OptionsGameMenu::OptionsGameMenu(bool isMain, ::Engines::Console *console) : GUI
 	// TODO: Violence level
 	getWidget("ViolenceSlider", true)->setDisabled(true);
 
-	_gorepass.reset(new OptionsGorePasswordMenu(isMain, _console));
-	_feedback.reset(new OptionsFeedbackMenu    (isMain, _console));
+	_gorepass = std::make_unique<OptionsGorePasswordMenu>(isMain, _console);
+	_feedback = std::make_unique<OptionsFeedbackMenu    >(isMain, _console);
 }
 
 OptionsGameMenu::~OptionsGameMenu() {

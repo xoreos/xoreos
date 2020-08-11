@@ -42,7 +42,7 @@ namespace NWN {
 WidgetListItemVoice::WidgetListItemVoice(::Engines::GUI &gui, const Common::UString &title, const Common::UString &soundSet, uint16 soundSetID) :
     WidgetListItemButton(gui, "ctl_cg_btn_snds", title, "", kNoButton), _soundSetID(soundSetID) {
 
-	_soundSet.reset(new Aurora::SSFFile(soundSet));
+	_soundSet = std::make_unique<Aurora::SSFFile>(soundSet);
 	_currentSound = SIZE_MAX;
 }
 

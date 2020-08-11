@@ -58,7 +58,7 @@ void CharAppearance::reset() {
 void CharAppearance::callbackActive(Widget& widget) {
 	if (widget.getTag() == "OkButton") {
 		if (!_charInfo)
-			_charInfo.reset(new CharInfoVoice(*_choices, _console));
+			_charInfo = std::make_unique<CharInfoVoice>(*_choices, _console);
 
 		if (sub(*_charInfo, 0, false) == 1) {
 			reset();

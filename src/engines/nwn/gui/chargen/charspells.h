@@ -26,8 +26,7 @@
 #define ENGINES_NWN_GUI_CHARGEN_CHARSPELLS_H
 
 #include <vector>
-
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/nwn/gui/widgets/listitembutton.h"
 #include "src/engines/nwn/gui/chargen/chargenbase.h"
@@ -80,7 +79,7 @@ private:
 	void updateRemainLabel();
 	void setRecommendedSpells();
 
-	Common::ScopedPtr<CharHelp> _spellHelp;
+	std::unique_ptr<CharHelp> _spellHelp;
 
 	WidgetListBox  *_availListBox;
 	WidgetListBox  *_knownListBox;

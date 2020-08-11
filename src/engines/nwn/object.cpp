@@ -200,7 +200,7 @@ void Object::loadSSF() {
 		return;
 
 	try {
-		_ssf.reset(new Aurora::SSFFile(ssfFile));
+		_ssf = std::make_unique<Aurora::SSFFile>(ssfFile);
 	} catch (...) {
 		Common::exceptionDispatcherWarning("Failed to load SSF \"%s\" (object \"%s\")",
 		                                   ssfFile.c_str(), _tag.c_str());

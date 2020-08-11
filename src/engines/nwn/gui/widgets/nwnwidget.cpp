@@ -81,7 +81,7 @@ void NWNWidget::createTooltip() {
 	if (_tooltip)
 		return;
 
-	_tooltip.reset(new Tooltip(Tooltip::kTypeHelp, *this));
+	_tooltip = std::make_unique<Tooltip>(Tooltip::kTypeHelp, *this);
 	_tooltip->setAlign(0.5f);
 }
 

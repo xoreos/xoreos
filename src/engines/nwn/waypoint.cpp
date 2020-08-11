@@ -22,7 +22,8 @@
  *  A waypoint in a Neverwinter Nights area.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 
@@ -49,7 +50,7 @@ Waypoint::~Waypoint() {
 void Waypoint::load(const Aurora::GFF3Struct &waypoint) {
 	Common::UString temp = waypoint.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utw;
+	std::unique_ptr<Aurora::GFF3File> utw;
 	if (!temp.empty())
 		utw.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTW, MKTAG('U', 'T', 'W', ' '), true));
 

@@ -68,7 +68,7 @@ MainMenu::MainMenu(Module &module, ::Engines::Console *console) : GUI(console),
 	getWidget("LoadButton" , true)->setDisabled(true);
 	getWidget("MultiButton", true)->setDisabled(true);
 
-	_charType.reset(new CharTypeMenu(*_module, _console));
+	_charType = std::make_unique<CharTypeMenu>(*_module, _console);
 }
 
 MainMenu::~MainMenu() {
@@ -80,10 +80,10 @@ void MainMenu::createNew() {
 
 	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection game menu
-		_new.reset(new NewCampMenu(*_module, *_charType, _console));
+		_new = std::make_unique<NewCampMenu>(*_module, *_charType, _console);
 	else
 		// If not, create the base game menu
-		_new.reset(new NewMenu(*_module, *_charType, _console));
+		_new = std::make_unique<NewMenu>(*_module, *_charType, _console);
 }
 
 void MainMenu::createMovies() {
@@ -92,17 +92,17 @@ void MainMenu::createMovies() {
 
 	if (_hasXP)
 		// If we have at least an expansion, create the campaign selection movies menu
-		_movies.reset(new MoviesCampMenu(_console));
+		_movies = std::make_unique<MoviesCampMenu>(_console);
 	else
 		// If not, create the base game movies menu
-		_movies.reset(new MoviesBaseMenu(_console));
+		_movies = std::make_unique<MoviesBaseMenu>(_console);
 }
 
 void MainMenu::createOptions() {
 	if (_options)
 		return;
 
-	_options.reset(new OptionsMenu(_module->getGameVersion(), _console));
+	_options = std::make_unique<OptionsMenu>(_module->getGameVersion(), _console);
 }
 
 void MainMenu::show() {

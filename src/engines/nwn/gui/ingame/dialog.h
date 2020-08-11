@@ -26,8 +26,8 @@
 #define ENGINES_NWN_GUI_INGAME_DIALOG_H
 
 #include <list>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ptrlist.h"
 
 #include "src/events/types.h"
@@ -162,9 +162,9 @@ private:
 	float _z; ///< The box's Z position.
 
 	/** The current speaker's portrait. */
-	Common::ScopedPtr<Portrait> _portrait;
+	std::unique_ptr<Portrait> _portrait;
 	/** The current speaker's name. */
-	Common::ScopedPtr<Graphics::Aurora::Text> _name;
+	std::unique_ptr<Graphics::Aurora::Text> _name;
 
 	/** The dialog font. */
 	Graphics::Aurora::FontHandle _font;
@@ -227,9 +227,9 @@ private:
 
 	Module *_module; ///< The module this dialog is in.
 
-	Common::ScopedPtr<DialogBox> _dlgBox; ///< The actual dialog box.
+	std::unique_ptr<DialogBox> _dlgBox; ///< The actual dialog box.
 
-	Common::ScopedPtr<Aurora::DLGFile> _dlg; ///< The conversation file.
+	std::unique_ptr<Aurora::DLGFile> _dlg; ///< The conversation file.
 
 	std::list<Events::Event> _eventQueue; ///< The event queue.
 

@@ -60,7 +60,7 @@ namespace NWN {
 NWNEngine::NWNEngine() : _language(Aurora::kLanguageInvalid),
 	_hasXP1(false), _hasXP2(false), _hasXP3(false) {
 
-	_console.reset(new Console(*this));
+	_console = std::make_unique<Console>(*this);
 }
 
 NWNEngine::~NWNEngine() {
@@ -127,7 +127,7 @@ void NWNEngine::run() {
 
 	CursorMan.showCursor();
 
-	_game.reset(new Game(*this, *_console, *_version));
+	_game = std::make_unique<Game>(*this, *_console, *_version);
 	_game->run();
 
 	deinit();
@@ -174,7 +174,7 @@ void NWNEngine::init() {
 }
 
 void NWNEngine::detectVersion() {
-	_version.reset(new Version(_platform));
+	_version = std::make_unique<Version>(_platform);
 
 	if (_version->detect(_target)) {
 		status("This is Neverwinter Nights %s v%s",

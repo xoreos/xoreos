@@ -49,10 +49,10 @@ OptionsMenu::OptionsMenu(const Version &gameVersion, ::Engines::Console *console
 	backdrop->setPosition(0.0f, 0.0f, 100.0f);
 	addWidget(backdrop);
 
-	_game.reset    (new OptionsGameMenu    (true, _console));
-	_video.reset   (new OptionsVideoMenu   (true, _console));
-	_sound.reset   (new OptionsSoundMenu   (true, _console));
-	_controls.reset(new OptionsControlsMenu(true, _console));
+	_game     = std::make_unique<OptionsGameMenu    >(true, _console);
+	_video    = std::make_unique<OptionsVideoMenu   >(true, _console);
+	_sound    = std::make_unique<OptionsSoundMenu   >(true, _console);
+	_controls = std::make_unique<OptionsControlsMenu>(true, _console);
 }
 
 OptionsMenu::~OptionsMenu() {

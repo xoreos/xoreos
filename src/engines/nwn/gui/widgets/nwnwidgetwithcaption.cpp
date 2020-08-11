@@ -65,7 +65,7 @@ void NWNWidgetWithCaption::hide() {
 void NWNWidgetWithCaption::initCaption(const Common::UString &font, const Common::UString &text,
                                        float r, float g, float b, float a, float halign, float valign) {
 
-	_caption.reset(new Graphics::Aurora::Text(FontMan.get(font), getWidth(), getHeight(), text, r, g, b, a, halign, valign));
+	_caption = std::make_unique<Graphics::Aurora::Text>(FontMan.get(font), getWidth(), getHeight(), text, r, g, b, a, halign, valign);
 	_caption->setTag(getTag() + "#Caption");
 
 	float x, y, z;

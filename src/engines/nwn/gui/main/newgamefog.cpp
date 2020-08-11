@@ -24,9 +24,10 @@
 
 #include <cstdlib>
 
+#include <memory>
+
 #include "external/glm/gtc/matrix_transform.hpp"
 
-#include "src/common/scopedptr.h"
 #include "src/common/maths.h"
 #include "src/common/readstream.h"
 #include "src/common/random.h"
@@ -149,7 +150,7 @@ public:
 
 
 static Graphics::Aurora::Model *createNewGameFog() {
-	Common::ScopedPtr<Graphics::Aurora::Model> model(new NewGameFog("pnl_fog"));
+	std::unique_ptr<Graphics::Aurora::Model> model = std::make_unique<NewGameFog>("pnl_fog");
 
 	model->setPosition(0.0f, 0.0f, 100.0f);
 
