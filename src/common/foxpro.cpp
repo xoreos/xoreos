@@ -185,8 +185,8 @@ void FoxPro::loadMemos(SeekableReadStream &fpt) {
 	fpt.skip(504); // Unused
 
 	while (!fpt.eos()) {
-		_memos.push_back(new byte[_memoBlockSize]);
-		byte *data = _memos.back();
+		_memos.emplace_back(std::make_unique<byte[]>(_memoBlockSize));
+		byte *data = _memos.back().get();
 
 		fpt.read(data, _memoBlockSize);
 	}
@@ -303,7 +303,7 @@ void FoxPro::saveMemos(WriteStream &fpt) const {
 		fpt.writeUint32BE(0x00000000);
 
 	for (size_t i = 0; i < _memos.size(); i++)
-		fpt.write(_memos[i], _memoBlockSize);
+		fpt.write(_memos[i].get(), _memoBlockSize);
 }
 
 void FoxPro::getLastUpdate(uint16_t &lastUpdateYear, uint8_t &lastUpdateMonth, uint8_t &lastUpdateDay) const {
@@ -474,8 +474,8 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
 	if (block >= _memos.size())
 		throw Exception("Memo block #%u >= memo block count %u", (uint)block, (uint)_memos.size());
 
-	size_t type = READ_BE_UINT32(_memos[block] + 0);
-	size_t size = READ_BE_UINT32(_memos[block] + 4);
+	size_t type = READ_BE_UINT32(_memos[block].get() + 0);
+	size_t size = READ_BE_UINT32(_memos[block].get() + 4);
 
 	if ((type != 0x00) && (type != 0x01) && (type != 0x02))
 		throw Exception("Memo type unknown (%u)", (uint)type);
@@ -494,7 +494,7 @@ SeekableReadStream *FoxPro::getMemo(const Record &record, size_t field) const {
 
 		size_t n = MIN<size_t>(size, _memoBlockSize - (first ? 8 : 0));
 
-		std::memcpy(dataPtr, _memos[block] + (first ? 8 : 0), n);
+		std::memcpy(dataPtr, _memos[block].get() + (first ? 8 : 0), n);
 
 		dataPtr += n;
 		size    -= n;
@@ -870,25 +870,25 @@ void FoxPro::setMemo(size_t record, size_t field, SeekableReadStream *value) {
 	size_t size = value->size();
 
 	size_t block = _memos.size();
-	_memos.push_back(new byte[_memoBlockSize]);
+	_memos.emplace_back(std::make_unique<byte[]>(_memoBlockSize));
 
 	size_t startBlock = block + 1;
 
-	WRITE_BE_UINT32(_memos[block]    , 1);
-	WRITE_BE_UINT32(_memos[block] + 4, size);
+	WRITE_BE_UINT32(_memos[block].get()    , 1);
+	WRITE_BE_UINT32(_memos[block].get() + 4, size);
 
 	bool first = true;
 	while (size > 0) {
 		size_t n = MIN<size_t>(size, _memoBlockSize - (first ? 8 : 0));
 
-		if (value->read(_memos[block] + (first ? 8 : 0), n) != n)
+		if (value->read(_memos[block].get() + (first ? 8 : 0), n) != n)
 			throw Exception(kReadError);
 
 		size  -= n;
 		block += 1;
 
 		if (size > 0)
-			_memos.push_back(new byte[_memoBlockSize]);
+			_memos.emplace_back(std::make_unique<byte[]>(_memoBlockSize));
 
 		first = false;
 	}

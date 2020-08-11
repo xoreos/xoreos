@@ -29,7 +29,6 @@
 
 #include "src/common/types.h"
 #include "src/common/ptrlist.h"
-#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 namespace Common {
@@ -140,7 +139,7 @@ private:
 	PtrList<byte, DeallocatorArray> _pool;
 
 	uint16_t _memoBlockSize;
-	PtrVector<byte, DeallocatorArray> _memos;
+	std::vector<std::unique_ptr<byte[]>> _memos;
 
 	// Loading helpers
 	void loadHeader (SeekableReadStream &dbf, uint32_t &recordSize, uint32_t &recordCount,

@@ -24,6 +24,7 @@
 
 #include <cstddef>
 
+#include <vector>
 #include <memory>
 
 #include <zlib.h>
@@ -32,7 +33,6 @@
 
 #include "src/common/deflate.h"
 #include "src/common/error.h"
-#include "src/common/ptrvector.h"
 #include "src/common/memreadstream.h"
 
 namespace Common {
@@ -127,15 +127,15 @@ byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, siz
 
 	initInflateZStream(strm, windowBits, inputSize, data);
 
-	Common::PtrVector<byte, Common::DeallocatorArray> buffers;
+	std::vector<std::unique_ptr<byte[]>> buffers;
 
 	int zResult = 0;
 	do {
-		buffers.push_back(new byte[frameSize]);
+		buffers.emplace_back(std::make_unique<byte[]>(frameSize));
 
 		// Set the output data pointer and size
 		strm.avail_out = frameSize;
-		strm.next_out = buffers.back();
+		strm.next_out = buffers.back().get();
 
 		// Decompress. Z_SYNC_FLUSH, because we want to decompress partwise.
 		zResult = inflate(&strm, Z_SYNC_FLUSH);
@@ -146,7 +146,7 @@ byte *decompressDeflateWithoutOutputSize(const byte *data, size_t inputSize, siz
 
 	std::unique_ptr<byte[]> decompressedData = std::make_unique<byte[]>(strm.total_out);
 	for (size_t i = 0, size = strm.total_out; i < buffers.size(); ++i, size -= frameSize)
-		std::memcpy(decompressedData.get() + i * frameSize, buffers[i], MIN<size_t>(size, frameSize));
+		std::memcpy(decompressedData.get() + i * frameSize, buffers[i].get(), MIN<size_t>(size, frameSize));
 
 	outputSize = strm.total_out;
 	return decompressedData.release();
@@ -230,15 +230,15 @@ byte *compressDeflate(const byte *data, size_t inputSize, size_t &outputSize, in
 
 	initDeflateZStream(strm, windowBits, inputSize, data);
 
-	Common::PtrVector<byte, Common::DeallocatorArray> buffers;
+	std::vector<std::unique_ptr<byte[]>> buffers;
 
 	int zResult = 0;
 	do {
-		buffers.push_back(new byte[frameSize]);
+		buffers.emplace_back(std::make_unique<byte[]>(frameSize));
 
 		// Set the output data pointer and size
 		strm.avail_out = frameSize;
-		strm.next_out = buffers.back();
+		strm.next_out = buffers.back().get();
 
 		// Compress.
 		zResult = deflate(&strm, Z_FINISH);
@@ -249,9 +249,9 @@ byte *compressDeflate(const byte *data, size_t inputSize, size_t &outputSize, in
 	std::unique_ptr<byte[]> compressedData = std::make_unique<byte[]>(strm.total_out);
 	for (size_t i = 0; i < buffers.size(); ++i) {
 		if (i == buffers.size() - 1)
-			std::memcpy(compressedData.get() + i * frameSize, buffers[i], strm.total_out % frameSize);
+			std::memcpy(compressedData.get() + i * frameSize, buffers[i].get(), strm.total_out % frameSize);
 		else
-			std::memcpy(compressedData.get() + i * frameSize, buffers[i], frameSize);
+			std::memcpy(compressedData.get() + i * frameSize, buffers[i].get(), frameSize);
 	}
 
 	outputSize = strm.total_out;
