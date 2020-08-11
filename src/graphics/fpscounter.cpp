@@ -35,7 +35,7 @@ namespace Graphics {
 FPSCounter::FPSCounter(size_t secs) : _seconds(secs) {
 	assert(_seconds > 0);
 
-	_frames.reset(new uint32[_seconds]);
+	_frames = std::make_unique<uint32[]>(_seconds);
 
 	reset();
 }

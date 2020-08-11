@@ -28,8 +28,9 @@
 #include <cassert>
 #include <cstring>
 
+#include <memory>
+
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
@@ -99,7 +100,7 @@ static inline void flipHorizontally(byte *data, int width, int height, int bpp) 
 	const size_t halfWidth = width / 2;
 	const size_t pitch     = bpp * width;
 
-	Common::ScopedArray<byte> buffer(new byte[bpp]);
+	std::unique_ptr<byte[]> buffer = std::make_unique<byte[]>(bpp);
 
 	while (height-- > 0) {
 		byte *dataStart = data;
@@ -128,7 +129,7 @@ static inline void flipVertically(byte *data, int width, int height, int bpp) {
 	byte *dataStart = data;
 	byte *dataEnd   = data + (pitch * height) - pitch;
 
-	Common::ScopedArray<byte> buffer(new byte[pitch]);
+	std::unique_ptr<byte[]> buffer = std::make_unique<byte[]>(pitch);
 
 	size_t halfHeight = height / 2;
 	while (halfHeight--) {

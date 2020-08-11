@@ -25,12 +25,13 @@
 #ifndef GRAPHICS_TTF_H
 #define GRAPHICS_TTF_H
 
+#include <memory>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 namespace Graphics {
@@ -61,7 +62,7 @@ private:
 	FT_Library _library;
 	FT_Face _face;
 
-	Common::ScopedArray<byte> _fileBuffer;
+	std::unique_ptr<byte[]> _fileBuffer;
 
 	int _width, _height;
 	int _ascent, _descent;

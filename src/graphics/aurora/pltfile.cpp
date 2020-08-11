@@ -124,8 +124,8 @@ void PLTFile::load(Common::SeekableReadStream &plt) {
 
 	size_t size = width * height;
 
-	_dataImage.reset(new uint8[size]);
-	_dataLayers.reset(new uint8[size]);
+	_dataImage  = std::make_unique<uint8[]>(size);
+	_dataLayers = std::make_unique<uint8[]>(size);
 
 	uint8 *image = _dataImage.get();
 	uint8 *layer = _dataLayers.get();
@@ -181,7 +181,7 @@ ImageDecoder *PLTFile::getLayerPalette(uint32 layer, uint8 row) {
 	assert(layer < kLayerMAX);
 
 	// TODO: We may want to cache these somehow...
-	Common::ScopedPtr<ImageDecoder> palette(loadImage(kPalettes[layer]));
+	std::unique_ptr<ImageDecoder> palette(loadImage(kPalettes[layer]));
 
 	if (palette->getFormat() != kPixelFormatBGRA)
 		throw Common::Exception("Invalid format (%d)", palette->getFormat());
@@ -203,7 +203,7 @@ ImageDecoder *PLTFile::getLayerPalette(uint32 layer, uint8 row) {
 void PLTFile::getColorRows(byte rows[4 * 256 * kLayerMAX], const uint8 colors[kLayerMAX]) {
 	for (size_t i = 0; i < kLayerMAX; i++, rows += 4 * 256) {
 		try {
-			Common::ScopedPtr<ImageDecoder> palette(getLayerPalette(i, colors[i]));
+			std::unique_ptr<ImageDecoder> palette(getLayerPalette(i, colors[i]));
 
 			// The images have their origin at the bottom left, so we flip the color row
 			const uint8 row = palette->getMipMap(0).height - 1 - colors[i];

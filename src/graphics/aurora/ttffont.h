@@ -27,9 +27,9 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 
 #include "src/graphics/font.h"
@@ -103,7 +103,7 @@ private:
 	};
 
 
-	Common::ScopedPtr<TTFRenderer> _ttf;
+	std::unique_ptr<TTFRenderer> _ttf;
 
 	Common::PtrVector<Page> _pages;
 	std::map<uint32, Char> _chars;

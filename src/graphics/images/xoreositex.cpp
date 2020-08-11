@@ -102,7 +102,7 @@ void XEOSITEX::readMipMaps(Common::SeekableReadStream &xeositex) {
 		_mipMaps[i]->height = xeositex.readUint32LE();
 		_mipMaps[i]->size   = xeositex.readUint32LE();
 
-		_mipMaps[i]->data.reset(new byte[_mipMaps[i]->size]);
+		_mipMaps[i]->data = std::make_unique<byte[]>(_mipMaps[i]->size);
 
 		if (xeositex.read(_mipMaps[i]->data.get(), _mipMaps[i]->size) != _mipMaps[i]->size)
 			throw Common::Exception(Common::kReadError);

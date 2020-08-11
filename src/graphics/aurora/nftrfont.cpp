@@ -51,7 +51,8 @@
 #include <cassert>
 #include <cstring>
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/ustring.h"
@@ -91,7 +92,7 @@ NFTRFont::NFTRFont(Common::SeekableReadStream *nftr, bool invertPalette) :
 
 	assert(nftr);
 
-	Common::ScopedPtr<Common::SeekableSubReadStreamEndian> nftrEndian(open(nftr));
+	std::unique_ptr<Common::SeekableSubReadStreamEndian> nftrEndian(open(nftr));
 
 	load(*nftrEndian);
 }
@@ -103,7 +104,7 @@ NFTRFont::NFTRFont(const Common::UString &name, bool invertPalette) :
 	if (!nftr)
 		throw Common::Exception("No such font \"%s\"", name.c_str());
 
-	Common::ScopedPtr<Common::SeekableSubReadStreamEndian> nftrEndian(open(nftr));
+	std::unique_ptr<Common::SeekableSubReadStreamEndian> nftrEndian(open(nftr));
 
 	load(*nftrEndian);
 }

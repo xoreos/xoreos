@@ -22,7 +22,8 @@
  *  Decoding Windows icon and cursor files (.ICO and .CUR).
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 #include "src/common/error.h"
@@ -130,13 +131,13 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 		cur.read(palette, 256 * 4);
 
 	// The XOR map
-	Common::ScopedArray<byte> xorMap(new byte[pitch * height]);
+	std::unique_ptr<byte[]> xorMap = std::make_unique<byte[]>(pitch * height);
 	if (cur.read(xorMap.get(), pitch * height) != (pitch * height))
 		throw Common::Exception(Common::kReadError);
 
 	// The AND map
 	const uint32 andWidth = (width + 7) / 8;
-	Common::ScopedArray<byte> andMap(new byte[andWidth * height]);
+	std::unique_ptr<byte[]> andMap = std::make_unique<byte[]>(andWidth * height);
 	if (cur.read(andMap.get(), andWidth * height) != (andWidth * height))
 		throw Common::Exception(Common::kReadError);
 
@@ -149,7 +150,7 @@ void WinIconImage::readData(Common::SeekableReadStream &cur) {
 	_mipMaps[0]->height = height;
 	_mipMaps[0]->size   = width * height * 4;
 
-	_mipMaps[0]->data.reset(new byte[_mipMaps[0]->size]);
+	_mipMaps[0]->data = std::make_unique<byte[]>(_mipMaps[0]->size);
 
 	const byte *xorSrc = xorMap.get();
 	      byte *dst    = _mipMaps[0]->data.get();

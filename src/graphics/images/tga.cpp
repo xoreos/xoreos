@@ -185,7 +185,7 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 			else if (_format == kPixelFormatBGRA)
 				_mipMaps[i]->size *= 4;
 
-			_mipMaps[i]->data.reset(new byte[_mipMaps[i]->size]);
+			_mipMaps[i]->data = std::make_unique<byte[]>(_mipMaps[i]->size);
 
 			if (imageType == kImageTypeTrueColor) {
 				if (pixelDepth == 16) {
@@ -213,7 +213,7 @@ void TGA::readData(Common::SeekableReadStream &tga, ImageType imageType, byte pi
 			}
 		} else if (imageType == kImageTypeBW) {
 			_mipMaps[i]->size = _mipMaps[i]->width * _mipMaps[i]->height * 4;
-			_mipMaps[i]->data.reset(new byte[_mipMaps[i]->size]);
+			_mipMaps[i]->data = std::make_unique<byte[]>(_mipMaps[i]->size);
 
 			byte  *data  = _mipMaps[i]->data.get();
 			uint32 count = _mipMaps[i]->width * _mipMaps[i]->height;

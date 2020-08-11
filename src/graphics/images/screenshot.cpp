@@ -22,7 +22,8 @@
  *  Screenshot writing.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/ustring.h"
 #include "src/common/writefile.h"
 #include "src/common/filepath.h"
@@ -121,7 +122,7 @@ bool takeScreenshot() {
 	if ((m_viewport[2] <= 0) || (m_viewport[3] <= 0))
 		return false;
 
-	Common::ScopedArray<byte> screen(new byte[3 * m_viewport[2] * m_viewport[3]]);
+	std::unique_ptr<byte[]> screen = std::make_unique<byte[]>(3 * m_viewport[2] * m_viewport[3]);
 
 	glReadPixels(0, 0, m_viewport[2], m_viewport[3], GL_BGR, GL_UNSIGNED_BYTE, screen.get());
 	const bool success = writeBMP(filename, screen.get(), m_viewport[2], m_viewport[3]);

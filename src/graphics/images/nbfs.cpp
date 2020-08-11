@@ -24,7 +24,8 @@
 
 #include <cstring>
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -55,7 +56,7 @@ void NBFS::load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nb
 		if (nbfp.size() > 512)
 			throw Common::Exception("Too much palette data (%u bytes)", (uint)nbfp.size());
 
-		Common::ScopedArray<const byte> palette(readPalette(nbfp));
+		std::unique_ptr<const byte[]> palette(readPalette(nbfp));
 		readImage(nbfs, palette.get(), width, height);
 
 	} catch (Common::Exception &e) {
@@ -65,7 +66,7 @@ void NBFS::load(Common::SeekableReadStream &nbfs, Common::SeekableReadStream &nb
 }
 
 const byte *NBFS::readPalette(Common::SeekableReadStream &nbfp) {
-	Common::ScopedArray<byte> palette(new byte[768]);
+	std::unique_ptr<byte[]> palette = std::make_unique<byte[]>(768);
 	std::memset(palette.get(), 0, 768);
 
 	const size_t count = MIN<size_t>(nbfp.size() / 2, 256) * 3;
@@ -93,7 +94,7 @@ void NBFS::readImage(Common::SeekableReadStream &nbfs, const byte *palette,
 	_mipMaps.back()->height = height;
 	_mipMaps.back()->size   = width * height * 4;
 
-	_mipMaps.back()->data.reset(new byte[_mipMaps.back()->size]);
+	_mipMaps.back()->data = std::make_unique<byte[]>(_mipMaps.back()->size);
 
 	bool is0Transp = (palette[0] == 0xF8) && (palette[1] == 0x00) && (palette[2] == 0xF8);
 

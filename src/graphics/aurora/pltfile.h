@@ -25,7 +25,7 @@
 #ifndef GRAPHICS_AURORA_PLTFILE_H
 #define GRAPHICS_AURORA_PLTFILE_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/aurora/aurorafile.h"
 
@@ -69,8 +69,8 @@ private:
 
 	Surface *_surface;
 
-	Common::ScopedArray<uint8> _dataImage;
-	Common::ScopedArray<uint8> _dataLayers;
+	std::unique_ptr<uint8[]> _dataImage;
+	std::unique_ptr<uint8[]> _dataLayers;
 
 	uint8 _colors[kLayerMAX];
 

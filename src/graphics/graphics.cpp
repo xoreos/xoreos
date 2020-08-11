@@ -103,7 +103,7 @@ GraphicsManager::GraphicsManager() : Events::Notifyable() {
 	_guiWidth = 800;
 	_guiHeight = 600;
 
-	_fpsCounter.reset(new FPSCounter(3));
+	_fpsCounter = std::make_unique<FPSCounter>(3);
 
 	_frameLock.store(0);
 

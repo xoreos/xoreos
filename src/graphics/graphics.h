@@ -28,11 +28,11 @@
 #include <vector>
 #include <list>
 #include <atomic>
+#include <memory>
 
 #include "external/glm/mat4x4.hpp"
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/singleton.h"
 #include "src/common/ustring.h"
 #include "src/common/mutex.h"
@@ -216,7 +216,7 @@ private:
 	int _guiHeight;
 	int _guiWidth;
 
-	Common::ScopedPtr<FPSCounter> _fpsCounter; ///< Counts the current frames per seconds value.
+	std::unique_ptr<FPSCounter> _fpsCounter; ///< Counts the current frames per seconds value.
 
 	uint32 _lastSampled; ///< Timestamp used to advance animations.
 

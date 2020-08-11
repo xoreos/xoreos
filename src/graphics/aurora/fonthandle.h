@@ -26,9 +26,9 @@
 #define GRAPHICS_AURORA_FONTHANDLE_H
 
 #include <map>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 
@@ -40,7 +40,7 @@ namespace Aurora {
 
 /** A managed font, storing how often it's referenced. */
 struct ManagedFont {
-	Common::ScopedPtr<Font> font;
+	std::unique_ptr<Font> font;
 	uint32 referenceCount;
 
 	ManagedFont(Font *f);

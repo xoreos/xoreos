@@ -69,7 +69,7 @@ void SBM::readData(Common::SeekableReadStream &sbm, bool deswizzle) {
 	_mipMaps[0]->height = NEXTPOWER2((uint32) rowCount * 32);
 	_mipMaps[0]->size   = _mipMaps[0]->width * _mipMaps[0]->height * 4;
 
-	_mipMaps[0]->data.reset(new byte[_mipMaps[0]->size]);
+	_mipMaps[0]->data = std::make_unique<byte[]>(_mipMaps[0]->size);
 
 	// SBM data consists of character sized 32 * 32 pixels, with 2 bits per pixel.
 	// 4 characters each are on top of each other, occupying the same x/y

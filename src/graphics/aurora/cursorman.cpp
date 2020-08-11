@@ -22,7 +22,8 @@
  *  The Aurora cursor manager.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 
@@ -85,7 +86,7 @@ bool CursorManager::add(const Common::UString &name, const Common::UString &grou
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 
 	try {
-		Common::ScopedPtr<Cursor> cursor(new Cursor(name, hotspotX, hotspotY));
+		std::unique_ptr<Cursor> cursor = std::make_unique<Cursor>(name, hotspotX, hotspotY);
 
 		CursorMap::iterator g = _cursors.find(group);
 		if (g == _cursors.end()) {

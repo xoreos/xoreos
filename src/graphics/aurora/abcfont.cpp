@@ -22,7 +22,8 @@
  *  An ABC/SBM font, as used by Jade Empire.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/ustring.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -127,7 +128,7 @@ void ABCFont::renderUnbind() const {
 }
 
 void ABCFont::load(const Common::UString &name) {
-	Common::ScopedPtr<Common::SeekableReadStream> abc(ResMan.getResource(name, ::Aurora::kFileTypeABC));
+	std::unique_ptr<Common::SeekableReadStream> abc(ResMan.getResource(name, ::Aurora::kFileTypeABC));
 	if (!abc)
 		throw Common::Exception("No such font \"%s\"", name.c_str());
 

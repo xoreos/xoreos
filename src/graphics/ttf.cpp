@@ -59,7 +59,7 @@ TTFRenderer::TTFRenderer(Common::SeekableReadStream &ttfFile, int height) :
 	} BOOST_SCOPE_EXIT_END
 
 	const size_t size = ttfFile.size();
-	_fileBuffer.reset(new uint8[size]);
+	_fileBuffer = std::make_unique<uint8[]>(size);
 
 	if (ttfFile.read(_fileBuffer.get(), size) != size)
 		throw Common::Exception(Common::kReadError);

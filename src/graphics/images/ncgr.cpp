@@ -261,7 +261,7 @@ void NCGR::draw(ReadContext &ctx) {
 	_mipMaps.back()->height = imageHeight;
 	_mipMaps.back()->size   = imageWidth * imageHeight * 4;
 
-	_mipMaps.back()->data.reset(new byte[_mipMaps.back()->size]);
+	_mipMaps.back()->data = std::make_unique<byte[]>(_mipMaps.back()->size);
 	byte *data = _mipMaps.back()->data.get();
 
 	const bool is0Transp = (ctx.pal[0] == 0xF8) && (ctx.pal[1] == 0x00) && (ctx.pal[2] == 0xF8);

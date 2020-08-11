@@ -24,7 +24,8 @@
 
 #include <cstdio>
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/error.h"
 #include "src/common/ustring.h"
 #include "src/common/writefile.h"
@@ -90,7 +91,7 @@ static void writeMipMap(Common::WriteStream &stream, const ImageDecoder::MipMap 
 }
 
 void dumpTGA(const Common::UString &fileName, const ImageDecoder *image) {
-	Common::ScopedPtr<Common::WriteStream> file(new Common::WriteFile(fileName));
+	std::unique_ptr<Common::WriteStream> file = std::make_unique<Common::WriteFile>(fileName);
 
 	dumpTGA(*file, image);
 }

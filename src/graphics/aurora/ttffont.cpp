@@ -85,9 +85,9 @@ TTFFont::~TTFFont() {
 }
 
 void TTFFont::load(Common::SeekableReadStream *ttf, int height) {
-	Common::ScopedPtr<Common::SeekableReadStream> ttfStream(ttf);
+	std::unique_ptr<Common::SeekableReadStream> ttfStream(ttf);
 
-	_ttf.reset(new TTFRenderer(*ttfStream, height));
+	_ttf = std::make_unique<TTFRenderer>(*ttfStream, height);
 
 	_height = _ttf->getHeight();
 	if (_height > kPageHeight)

@@ -22,7 +22,8 @@
  *  A cursor as used in the Aurora engines.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -82,7 +83,7 @@ void Cursor::render() {
 void Cursor::load() {
 	::Aurora::FileType type;
 
-	Common::ScopedPtr<Common::SeekableReadStream>
+	std::unique_ptr<Common::SeekableReadStream>
 		img(ResMan.getResource(::Aurora::kResourceCursor, _name, &type));
 	if (!img)
 		throw Common::Exception("No such cursor resource \"%s\"", _name.c_str());
@@ -90,15 +91,15 @@ void Cursor::load() {
 	_hotspotX = 0;
 	_hotspotY = 0;
 
-	Common::ScopedPtr<ImageDecoder> image;
+	std::unique_ptr<ImageDecoder> image;
 
 	// Loading the different image formats
 	if      (type == ::Aurora::kFileTypeTGA)
-		image.reset(new TGA(*img));
+		image = std::make_unique<TGA>(*img);
 	else if (type == ::Aurora::kFileTypeDDS)
-		image.reset(new DDS(*img));
+		image = std::make_unique<DDS>(*img);
 	else if (type == ::Aurora::kFileTypeCUR) {
-		Common::ScopedPtr<WinIconImage> cursor(new WinIconImage(*img));
+		std::unique_ptr<WinIconImage> cursor = std::make_unique<WinIconImage>(*img);
 
 		if (_hotspotX < 0)
 			_hotspotX = cursor->getHotspotX();

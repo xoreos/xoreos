@@ -25,6 +25,8 @@
 #include <cassert>
 #include <cstring>
 
+#include "src/common/maths.h"
+
 #include "src/graphics/images/surface.h"
 
 namespace Graphics {
@@ -44,7 +46,7 @@ Surface::Surface(int width, int height) {
 	_mipMaps[0]->height = height;
 	_mipMaps[0]->size   = _mipMaps[0]->width * _mipMaps[0]->height * 4;
 
-	_mipMaps[0]->data.reset(new byte[_mipMaps[0]->size]);
+	_mipMaps[0]->data = std::make_unique<byte[]>(_mipMaps[0]->size);
 }
 
 Surface::~Surface() {
@@ -88,13 +90,13 @@ void Surface::resize(unsigned int newWidth, unsigned int newHeight) {
 	unsigned int oldWidth = _mipMaps[0]->width;
 	unsigned int oldHeight = _mipMaps[0]->height;
 
-	Common::ScopedArray<byte> oldData(_mipMaps[0]->data.release());
+	std::unique_ptr<byte[]> oldData(_mipMaps[0]->data.release());
 
 	_mipMaps[0]->width = newWidth;
 	_mipMaps[0]->height = newHeight;
 	_mipMaps[0]->size   = _mipMaps[0]->width * _mipMaps[0]->height * 4;
 
-	_mipMaps[0]->data.reset(new byte[_mipMaps[0]->size]);
+	_mipMaps[0]->data = std::make_unique<byte[]>(_mipMaps[0]->size);
 
 	double xRatio = static_cast<double>(oldWidth) / static_cast<double>(newWidth);
 	double yRatio = static_cast<double>(oldHeight) / static_cast<double>(newHeight);

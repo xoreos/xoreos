@@ -27,8 +27,7 @@
 #define GRAPHICS_IMAGES_NCGR_H
 
 #include <vector>
-
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/aurora/nitrofile.h"
 
@@ -85,7 +84,7 @@ private:
 		uint32 width;  ///< Width of the NCGR grid, in NCGR.
 		uint32 height; ///< Height of the NCGR grid, in NCGR.
 
-		Common::ScopedArray<const byte> pal;
+		std::unique_ptr<const byte[]> pal;
 
 		std::vector<NCGRFile> ncgrs;
 	};

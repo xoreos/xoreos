@@ -25,8 +25,9 @@
 #ifndef GRAPHICS_FPSCOUNTER_H
 #define GRAPHICS_FPSCOUNTER_H
 
+#include <memory>
+
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 namespace Graphics {
 
@@ -56,7 +57,7 @@ private:
 
 	uint32 _fps; ///< The current FPS value.
 
-	Common::ScopedArray<uint32> _frames; ///< All frame counters.
+	std::unique_ptr<uint32[]> _frames; ///< All frame counters.
 
 	void calculateFPS(); ///< Calculate the average FPS value.
 };

@@ -185,7 +185,7 @@ const YUVToRGBLookup *YUVToRGBManager::getLookup(LuminanceScale scale) {
 	if (_lookup && _lookup->getScale() == scale)
 		return _lookup.get();
 
-	_lookup.reset(new YUVToRGBLookup(scale));
+	_lookup = std::make_unique<YUVToRGBLookup>(scale);
 	return _lookup.get();
 }
 

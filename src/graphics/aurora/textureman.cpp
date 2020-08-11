@@ -22,7 +22,8 @@
  *  The Aurora texture manager.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/uuid.h"
@@ -134,7 +135,7 @@ TextureHandle TextureManager::add(Texture *texture, Common::UString name) {
 	if (name.empty())
 		name = Common::generateIDRandomString();
 
-	Common::ScopedPtr<ManagedTexture> managedTexture(new ManagedTexture(texture));
+	std::unique_ptr<ManagedTexture> managedTexture = std::make_unique<ManagedTexture>(texture);
 
 	std::pair<TextureMap::iterator, bool> result = _textures.insert(std::make_pair(name, managedTexture.get()));
 	if (!result.second)
