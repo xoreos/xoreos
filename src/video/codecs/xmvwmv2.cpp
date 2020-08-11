@@ -250,12 +250,12 @@ void XMVWMV2Codec::init() {
 
 
 	// Color planes
-	_curPlanes[0].reset(new byte[_lumaWidth   * _lumaHeight  ]);
-	_curPlanes[1].reset(new byte[_chromaWidth * _chromaHeight]);
-	_curPlanes[2].reset(new byte[_chromaWidth * _chromaHeight]);
-	_oldPlanes[0].reset(new byte[_lumaWidth   * _lumaHeight  ]);
-	_oldPlanes[1].reset(new byte[_chromaWidth * _chromaHeight]);
-	_oldPlanes[2].reset(new byte[_chromaWidth * _chromaHeight]);
+	_curPlanes[0] = std::make_unique<byte[]>(_lumaWidth   * _lumaHeight  );
+	_curPlanes[1] = std::make_unique<byte[]>(_chromaWidth * _chromaHeight);
+	_curPlanes[2] = std::make_unique<byte[]>(_chromaWidth * _chromaHeight);
+	_oldPlanes[0] = std::make_unique<byte[]>(_lumaWidth   * _lumaHeight  );
+	_oldPlanes[1] = std::make_unique<byte[]>(_chromaWidth * _chromaHeight);
+	_oldPlanes[2] = std::make_unique<byte[]>(_chromaWidth * _chromaHeight);
 
 	std::memset(_curPlanes[0].get(), 0, _lumaWidth   * _lumaHeight  );
 	std::memset(_curPlanes[1].get(), 0, _chromaWidth * _chromaHeight);
@@ -266,25 +266,25 @@ void XMVWMV2Codec::init() {
 
 
 	// Coded block pattern
-	_cbp.reset(new CBP[_mbCountWidth + 1]); // +1 border for the start of the row
+	_cbp = std::make_unique<CBP[]>(_mbCountWidth + 1); // +1 border for the start of the row
 
-	_huffCBP[0].reset(new Common::Huffman(wmv2HuffmanIMB));
-	_huffCBP[1].reset(new Common::Huffman(wmv2HuffmanPMB[0]));
-	_huffCBP[2].reset(new Common::Huffman(wmv2HuffmanPMB[1]));
-	_huffCBP[3].reset(new Common::Huffman(wmv2HuffmanPMB[2]));
+	_huffCBP[0] = std::make_unique<Common::Huffman>(wmv2HuffmanIMB);
+	_huffCBP[1] = std::make_unique<Common::Huffman>(wmv2HuffmanPMB[0]);
+	_huffCBP[2] = std::make_unique<Common::Huffman>(wmv2HuffmanPMB[1]);
+	_huffCBP[3] = std::make_unique<Common::Huffman>(wmv2HuffmanPMB[2]);
 
 
 	// DC Huffman decoders
-	_huffDC[0][0].reset(new Common::Huffman(wmv2HuffmanDC[0][0]));
-	_huffDC[0][1].reset(new Common::Huffman(wmv2HuffmanDC[0][1]));
-	_huffDC[1][0].reset(new Common::Huffman(wmv2HuffmanDC[1][0]));
-	_huffDC[1][1].reset(new Common::Huffman(wmv2HuffmanDC[1][1]));
+	_huffDC[0][0] = std::make_unique<Common::Huffman>(wmv2HuffmanDC[0][0]);
+	_huffDC[0][1] = std::make_unique<Common::Huffman>(wmv2HuffmanDC[0][1]);
+	_huffDC[1][0] = std::make_unique<Common::Huffman>(wmv2HuffmanDC[1][0]);
+	_huffDC[1][1] = std::make_unique<Common::Huffman>(wmv2HuffmanDC[1][1]);
 
 
 	// AC predictors
-	_predAC[0].reset(new int32[_lumaWidth]);
-	_predAC[1].reset(new int32[_chromaWidth]);
-	_predAC[2].reset(new int32[_chromaWidth]);
+	_predAC[0] = std::make_unique<int32[]>(_lumaWidth);
+	_predAC[1] = std::make_unique<int32[]>(_chromaWidth);
+	_predAC[2] = std::make_unique<int32[]>(_chromaWidth);
 
 
 	// AC decoders
@@ -293,7 +293,7 @@ void XMVWMV2Codec::init() {
 			const WMV2ACCoefficientTable *params = &wmv2AC[i][j];
 
 			_decoderAC[i][j].parameters = params;
-			_decoderAC[i][j].huffman.reset(new Common::Huffman(params->huffman));
+			_decoderAC[i][j].huffman = std::make_unique<Common::Huffman>(params->huffman);
 		}
 	}
 
@@ -302,7 +302,7 @@ void XMVWMV2Codec::init() {
 		const WMV2MVTable *params = &wmv2MV[i];
 
 		_decoderMV[i].parameters = params;
-		_decoderMV[i].huffman.reset(new Common::Huffman(params->huffman));
+		_decoderMV[i].huffman = std::make_unique<Common::Huffman>(params->huffman);
 	}
 }
 

@@ -586,7 +586,7 @@ void Bink::BinkVideoTrack::initBundles() {
 	uint32 blocks = bw * bh;
 
 	for (int i = 0; i < kSourceMAX; i++) {
-		_bundles[i].data.reset(new byte[blocks * 64]);
+		_bundles[i].data = std::make_unique<byte[]>(blocks * 64);
 		_bundles[i].dataEnd = _bundles[i].data.get() + blocks * 64;
 	}
 
@@ -611,7 +611,7 @@ void Bink::BinkVideoTrack::initBundles() {
 
 void Bink::BinkVideoTrack::initHuffman() {
 	for (int i = 0; i < 16; i++)
-		_huffman[i].reset(new Common::Huffman(binkHuffmanLengths[i][15], 16, binkHuffmanCodes[i], binkHuffmanLengths[i]));
+		_huffman[i] = std::make_unique<Common::Huffman>(binkHuffmanLengths[i][15], 16, binkHuffmanCodes[i], binkHuffmanLengths[i]);
 }
 
 byte Bink::BinkVideoTrack::getHuffmanSymbol(VideoFrame &video, Huffman &huffman) {
@@ -1368,7 +1368,7 @@ void Bink::BinkAudioTrack::decodeAudio(Common::SeekableReadStream& bink, const s
 		int outSize = _info.frameLen * _info.channels;
 
 		while (bits.pos() < bits.size()) {
-			Common::ScopedArray<int16> out(new int16[outSize]);
+			std::unique_ptr<int16[]> out = std::make_unique<int16[]>(outSize);
 			memset(out.get(), 0, outSize * 2);
 
 			audioBlock(bits, out.get());
@@ -1611,14 +1611,14 @@ Bink::BinkVideoTrack::BinkVideoTrack(uint32 width, uint32 height, uint32 frameCo
 	width  = _width  + 32;
 	height = _height + 32;
 
-	_curPlanes[0].reset(new byte[ width       *  height      ]); // Y
-	_curPlanes[1].reset(new byte[(width >> 1) * (height >> 1)]); // U, 1/4 resolution
-	_curPlanes[2].reset(new byte[(width >> 1) * (height >> 1)]); // V, 1/4 resolution
-	_curPlanes[3].reset(new byte[ width       *  height      ]); // A
-	_oldPlanes[0].reset(new byte[ width       *  height      ]); // Y
-	_oldPlanes[1].reset(new byte[(width >> 1) * (height >> 1)]); // U, 1/4 resolution
-	_oldPlanes[2].reset(new byte[(width >> 1) * (height >> 1)]); // V, 1/4 resolution
-	_oldPlanes[3].reset(new byte[ width       *  height      ]); // A
+	_curPlanes[0] = std::make_unique<byte[]>( width       *  height      ); // Y
+	_curPlanes[1] = std::make_unique<byte[]>((width >> 1) * (height >> 1)); // U, 1/4 resolution
+	_curPlanes[2] = std::make_unique<byte[]>((width >> 1) * (height >> 1)); // V, 1/4 resolution
+	_curPlanes[3] = std::make_unique<byte[]>( width       *  height      ); // A
+	_oldPlanes[0] = std::make_unique<byte[]>( width       *  height      ); // Y
+	_oldPlanes[1] = std::make_unique<byte[]>((width >> 1) * (height >> 1)); // U, 1/4 resolution
+	_oldPlanes[2] = std::make_unique<byte[]>((width >> 1) * (height >> 1)); // V, 1/4 resolution
+	_oldPlanes[3] = std::make_unique<byte[]>( width       *  height      ); // A
 
 	// Initialize the video with solid green
 	std::memset(_curPlanes[0].get(),   0,  width       *  height      );

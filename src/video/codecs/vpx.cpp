@@ -23,6 +23,7 @@
  */
 
 #include <algorithm>
+#include <memory>
 
 #include <vpx/vpx_decoder.h>
 #include <vpx/vp8dx.h>
@@ -31,7 +32,6 @@
 #undef UNUSED
 
 #include "src/common/readstream.h"
-#include "src/common/scopedptr.h"
 #include "src/graphics/yuv_to_rgb.h"
 #include "src/graphics/images/surface.h"
 #include "src/video/codecs/codec.h"
@@ -89,7 +89,7 @@ void VPXDecoder::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStr
 		return;
 
 	// Read all the data from the stream
-	Common::ScopedArray<byte> data(new byte[dataStream.size()]);
+	std::unique_ptr<byte[]> data = std::make_unique<byte[]>(dataStream.size());
 	dataStream.read(data.get(), dataStream.size());
 
 	// Perform the actual decode
@@ -127,7 +127,7 @@ void VPXDecoder::decodeFrame(Graphics::Surface &surface, Common::SeekableReadStr
 }
 
 Codec *makeVP8Decoder() {
-	Common::ScopedPtr<VPXDecoder> decoder(new VPXDecoder());
+	std::unique_ptr<VPXDecoder> decoder = std::make_unique<VPXDecoder>();
 	if (!decoder->init(&vpx_codec_vp8_dx_algo))
 		return 0;
 
@@ -135,7 +135,7 @@ Codec *makeVP8Decoder() {
 }
 
 Codec *makeVP9Decoder() {
-	Common::ScopedPtr<VPXDecoder> decoder(new VPXDecoder());
+	std::unique_ptr<VPXDecoder> decoder = std::make_unique<VPXDecoder>();
 	if (!decoder->init(&vpx_codec_vp9_dx_algo))
 		return 0;
 

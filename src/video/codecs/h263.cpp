@@ -24,9 +24,10 @@
 
 #include <cstring>
 
+#include <memory>
+
 #include <xvid.h>
 
-#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
 #include "src/common/types.h"
@@ -98,7 +99,7 @@ void H263Codec::decodeInternal(Common::SeekableReadStream &dataStream, Graphics:
 	//       alternatively do the YUV->BGRA conversion ourselves. We chose the latter.
 
 	size_t dataSize = dataStream.size();
-	Common::ScopedArray<byte> data(new byte[dataSize]);
+	std::unique_ptr<byte[]> data = std::make_unique<byte[]>(dataSize);
 	dataStream.read(data.get(), dataSize);
 
 	xvid_dec_frame_t xvid_dec_frame;

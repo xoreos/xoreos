@@ -58,7 +58,7 @@ VideoPlayer::~VideoPlayer() {
 void VideoPlayer::load(const Common::UString &name) {
 	::Aurora::FileType type;
 
-	Common::ScopedPtr<Common::SeekableReadStream>
+	std::unique_ptr<Common::SeekableReadStream>
 		video(ResMan.getResource(::Aurora::kResourceVideo, name, &type));
 	if (!video)
 		throw Common::Exception("No such video resource \"%s\"", name.c_str());
@@ -66,19 +66,19 @@ void VideoPlayer::load(const Common::UString &name) {
 	// Loading the different video formats
 	switch (type) {
 		case ::Aurora::kFileTypeBIK:
-			_video.reset(new Bink(video.release()));
+			_video = std::make_unique<Bink>(video.release());
 			break;
 		case ::Aurora::kFileTypeMOV:
-			_video.reset(new QuickTimeDecoder(video.release()));
+			_video = std::make_unique<QuickTimeDecoder>(video.release());
 			break;
 		case ::Aurora::kFileTypeXMV:
-			_video.reset(new XboxMediaVideo(video.release()));
+			_video = std::make_unique<XboxMediaVideo>(video.release());
 			break;
 		case ::Aurora::kFileTypeVX:
-			_video.reset(new ActimagineDecoder(video.release()));
+			_video = std::make_unique<ActimagineDecoder>(video.release());
 			break;
 		case ::Aurora::kFileTypeWBM:
-			_video.reset(new Matroska(video.release()));
+			_video = std::make_unique<Matroska>(video.release());
 			break;
 		default:
 			break;

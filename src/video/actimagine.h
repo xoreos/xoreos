@@ -25,8 +25,9 @@
 #ifndef VIDEO_ACTIMAGINE_H
 #define VIDEO_ACTIMAGINE_H
 
+#include <memory>
+
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 #include "src/video/decoder.h"
 
@@ -90,7 +91,7 @@ private:
 		uint32 dataOffset;
 	};
 
-	Common::ScopedPtr<Common::SeekableReadStream> _vx;
+	std::unique_ptr<Common::SeekableReadStream> _vx;
 
 	std::vector<KeyFrame> _keyFrames;
 

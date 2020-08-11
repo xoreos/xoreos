@@ -50,8 +50,9 @@
 #ifndef VIDEO_CODECS_XMVWMV2_H
 #define VIDEO_CODECS_XMVWMV2_H
 
+#include <memory>
+
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 #include "src/video/codecs/codec.h"
 
@@ -97,13 +98,13 @@ private:
 
 	/** Decoders for DCT AC coefficients. */
 	struct ACDecoder {
-		Common::ScopedPtr<Common::Huffman> huffman;
+		std::unique_ptr<Common::Huffman> huffman;
 		const WMV2ACCoefficientTable *parameters;
 	};
 
 	/** Decoder for motion vectors. */
 	struct MVDecoder {
-		Common::ScopedPtr<Common::Huffman> huffman;
+		std::unique_ptr<Common::Huffman> huffman;
 		const WMV2MVTable *parameters;
 	};
 
@@ -188,8 +189,8 @@ private:
 
 	// Color planes
 
-	Common::ScopedArray<byte> _curPlanes[3]; ///< The 3 color planes, YUV, current frame.
-	Common::ScopedArray<byte> _oldPlanes[3]; ///< The 3 color planes, YUV, last frame.
+	std::unique_ptr<byte[]> _curPlanes[3]; ///< The 3 color planes, YUV, current frame.
+	std::unique_ptr<byte[]> _oldPlanes[3]; ///< The 3 color planes, YUV, last frame.
 
 	// Decoder flags
 
@@ -204,17 +205,17 @@ private:
 
 	// CBP
 
-	Common::ScopedArray<CBP>           _cbp;        ///< Coded block pattern, previous row.
-	Common::ScopedPtr<Common::Huffman> _huffCBP[4]; ///< Huffman codes for coded block pattern.
+	std::unique_ptr<CBP[]>           _cbp;        ///< Coded block pattern, previous row.
+	std::unique_ptr<Common::Huffman> _huffCBP[4]; ///< Huffman codes for coded block pattern.
 
 	// DCT DC coefficients
 
 	/** Huffman code for DCT DC coefficients, [luma/chroma][low/high motion]. */
-	Common::ScopedPtr<Common::Huffman> _huffDC[2][2];
+	std::unique_ptr<Common::Huffman> _huffDC[2][2];
 
 	// DCT AC coefficients
 
-	Common::ScopedArray<int32> _predAC[3]; ///< AC predictors, previous row.
+	std::unique_ptr<int32[]> _predAC[3]; ///< AC predictors, previous row.
 
 	/** Decoders for DCT AC coefficients [luma/chroma][low motion/high motion/MPEG4]. */
 	ACDecoder _decoderAC[2][3];

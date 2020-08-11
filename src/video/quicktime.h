@@ -56,10 +56,10 @@
 #define VIDEO_QUICKTIME_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
 #include "src/common/ptrvector.h"
-#include "src/common/scopedptr.h"
 #include "src/common/timestamp.h"
 
 #include "src/sound/audiostream.h"
@@ -91,7 +91,7 @@ protected:
 
 private:
 	// This is the file handle from which data is read from. It can be the actual file handle or a decompressed stream.
-	Common::ScopedPtr<Common::SeekableReadStream> _fd;
+	std::unique_ptr<Common::SeekableReadStream> _fd;
 
 	struct Atom {
 		uint32 type;
@@ -124,7 +124,7 @@ private:
 
 		uint32 getCodecTag() const { return _codecTag; }
 
-		Common::ScopedPtr<Common::SeekableReadStream> _extraData;
+		std::unique_ptr<Common::SeekableReadStream> _extraData;
 		byte _objectTypeMP4;
 
 	protected:
@@ -158,8 +158,8 @@ private:
 		uint16 _bitsPerSample;
 		char _codecName[32];
 		uint16 _colorTableId;
-		Common::ScopedArray<byte> _palette;
-		Common::ScopedPtr<Codec> _videoCodec;
+		std::unique_ptr<byte[]> _palette;
+		std::unique_ptr<Codec> _videoCodec;
 	};
 
 	enum CodecType {
@@ -172,16 +172,16 @@ private:
 		QuickTimeTrack();
 
 		uint32 chunkCount;
-		Common::ScopedArray<uint32> chunkOffsets;
+		std::unique_ptr<uint32[]> chunkOffsets;
 		int timeToSampleCount;
-		Common::ScopedArray<TimeToSampleEntry> timeToSample;
+		std::unique_ptr<TimeToSampleEntry[]> timeToSample;
 		uint32 sampleToChunkCount;
-		Common::ScopedArray<SampleToChunkEntry> sampleToChunk;
+		std::unique_ptr<SampleToChunkEntry[]> sampleToChunk;
 		uint32 sampleSize;
 		uint32 sampleCount;
-		Common::ScopedArray<uint32> sampleSizes;
+		std::unique_ptr<uint32[]> sampleSizes;
 		uint32 keyframeCount;
-		Common::ScopedArray<uint32> keyframes;
+		std::unique_ptr<uint32[]> keyframes;
 		int32 timeScale;
 
 		uint16 width;
@@ -218,7 +218,7 @@ private:
 		Common::Timestamp _curMediaPos;
 		uint32 _samplesQueued;
 		bool _skipAACPrimer;
-		Common::ScopedPtr<Sound::PacketizedAudioStream> _stream;
+		std::unique_ptr<Sound::PacketizedAudioStream> _stream;
 
 		Common::SeekableReadStream *readAudioChunk(uint chunk);
 		bool isOldDemuxing() const;

@@ -26,12 +26,12 @@
 #define VIDEO_DECODER_H
 
 #include <vector>
+#include <memory>
 
 #include <boost/shared_ptr.hpp>
 
 #include "src/common/types.h"
 #include "src/common/rational.h"
-#include "src/common/scopedptr.h"
 #include "src/common/timestamp.h"
 
 #include "src/graphics/types.h"
@@ -390,7 +390,7 @@ protected:
 
 	bool _needCopy; ///< Is new frame content available that needs to by copied?
 
-	Common::ScopedPtr<Graphics::Surface> _surface; ///< The video's surface.
+	std::unique_ptr<Graphics::Surface> _surface; ///< The video's surface.
 
 	/**
 	 * Create a surface for video of these dimensions.

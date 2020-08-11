@@ -72,10 +72,10 @@
 #define VIDEO_BINK_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
 #include "src/common/rational.h"
-#include "src/common/scopedptr.h"
 
 #include "src/video/decoder.h"
 
@@ -162,7 +162,7 @@ private:
 		~VideoFrame();
 	};
 
-	Common::ScopedPtr<Common::SeekableReadStream> _bink;
+	std::unique_ptr<Common::SeekableReadStream> _bink;
 
 	std::vector<AudioInfo> _audioTracks; ///< All audio tracks.
 	std::vector<VideoFrame> _frames;      ///< All video frames.
@@ -256,7 +256,7 @@ private:
 
 			Huffman huffman; ///< Huffman codebook.
 
-			Common::ScopedArray<byte> data; ///< Buffer for decoded symbols.
+			std::unique_ptr<byte[]> data; ///< Buffer for decoded symbols.
 
 			byte *dataEnd; ///< Pointer to the data end end.
 			byte *curDec;  ///< Pointer to the data that wasn't yet decoded.
@@ -280,15 +280,15 @@ private:
 
 		Bundle _bundles[kSourceMAX]; ///< Bundles for decoding all data types.
 
-		Common::ScopedPtr<Common::Huffman> _huffman[16]; ///< The 16 Huffman codebooks used in Bink decoding.
+		std::unique_ptr<Common::Huffman> _huffman[16]; ///< The 16 Huffman codebooks used in Bink decoding.
 
 		/** Huffman codebooks to use for decoding high nibbles in color data types. */
 		Huffman _colHighHuffman[16];
 		/** Value of the last decoded high nibble in color data types. */
 		int _colLastVal;
 
-		Common::ScopedArray<byte> _curPlanes[4]; ///< The 4 color planes, YUVA, current frame.
-		Common::ScopedArray<byte> _oldPlanes[4]; ///< The 4 color planes, YUVA, last frame.
+		std::unique_ptr<byte[]> _curPlanes[4]; ///< The 4 color planes, YUVA, current frame.
+		std::unique_ptr<byte[]> _oldPlanes[4]; ///< The 4 color planes, YUVA, last frame.
 
 		/** Initialize the bundles. */
 		void initBundles();

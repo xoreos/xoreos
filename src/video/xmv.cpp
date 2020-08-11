@@ -363,7 +363,7 @@ bool XboxMediaVideo::XMVVideoTrack::decodeFrame(Graphics::Surface &surface, Comm
 }
 
 void XboxMediaVideo::XMVVideoTrack::initCodec(Common::SeekableReadStream &extraData) {
-	_videoCodec.reset(new XMVWMV2Codec(_width, _height, extraData));
+	_videoCodec = std::make_unique<XMVWMV2Codec>(_width, _height, extraData);
 }
 
 Common::Timestamp XboxMediaVideo::XMVVideoTrack::getNextFrameStartTime() const {

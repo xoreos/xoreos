@@ -26,8 +26,7 @@
 #define VIDEO_XMV_H
 
 #include <vector>
-
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/video/decoder.h"
 
@@ -86,7 +85,7 @@ private:
 		bool _finished;
 
 		/** The video codec. */
-		Common::ScopedPtr<Codec> _videoCodec;
+		std::unique_ptr<Codec> _videoCodec;
 	};
 
 	/** An XMV audio track. */
@@ -106,7 +105,7 @@ private:
 
 	private:
 		AudioInfo _info;
-		Common::ScopedPtr<Sound::PacketizedAudioStream> _audioStream;
+		std::unique_ptr<Sound::PacketizedAudioStream> _audioStream;
 		Sound::PacketizedAudioStream *createStream() const;
 	};
 
@@ -123,8 +122,8 @@ private:
 		Sound::AudioStream *getAudioStream() const;
 
 	private:
-		Common::ScopedPtr<XMVAudioTrack> _realTracks[3];
-		Common::ScopedPtr<Sound::AudioStream> _interleaved;
+		std::unique_ptr<XMVAudioTrack> _realTracks[3];
+		std::unique_ptr<Sound::AudioStream> _interleaved;
 	};
 
 	/** A video packet. */
@@ -169,7 +168,7 @@ private:
 		std::vector<PacketAudio> audio;
 	};
 
-	Common::ScopedPtr<Common::SeekableReadStream> _xmv;
+	std::unique_ptr<Common::SeekableReadStream> _xmv;
 
 	/** The current video track. */
 	XMVVideoTrack *_videoTrack;

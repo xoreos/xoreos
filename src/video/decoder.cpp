@@ -80,7 +80,7 @@ void VideoDecoder::initVideo() {
 	_textureWidth  = ((float) width ) / ((float) realWidth );
 	_textureHeight = ((float) height) / ((float) realHeight);
 
-	_surface.reset(new Graphics::Surface(realWidth, realHeight));
+	_surface = std::make_unique<Graphics::Surface>(realWidth, realHeight);
 
 	_surface->fill(0, 0, 0, 0);
 

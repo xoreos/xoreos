@@ -185,7 +185,7 @@ void readEBMLString(T &value, Common::SeekableReadStream &stream) {
 		throw Common::Exception("Invalid EBML string size %u", (uint)stream.size());
 
 	// Read in the entire stream
-	Common::ScopedArray<char> array(new char[stream.size()]);
+	std::unique_ptr<char[]> array = std::make_unique<char[]>(stream.size());
 	stream.read(array.get(), stream.size());
 
 	// Treat the whole thing as a string

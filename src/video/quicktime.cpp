@@ -156,7 +156,7 @@ void QuickTimeDecoder::load() {
 
 QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *track, uint32 format) {
 	if (track->codecType == CODEC_TYPE_VIDEO) {
-		Common::ScopedPtr<VideoSampleDesc> entry(new VideoSampleDesc(track, format));
+		std::unique_ptr<VideoSampleDesc> entry = std::make_unique<VideoSampleDesc>(track, format);
 
 		_fd->readUint16BE(); // version
 		_fd->readUint16BE(); // revision level
@@ -199,7 +199,7 @@ QuickTimeDecoder::SampleDesc *QuickTimeDecoder::readSampleDesc(QuickTimeTrack *t
 
 		return entry.release();
 	} else if (track->codecType == CODEC_TYPE_AUDIO) {
-		Common::ScopedPtr<AudioSampleDesc> entry(new AudioSampleDesc(track, format));
+		std::unique_ptr<AudioSampleDesc> entry = std::make_unique<AudioSampleDesc>(track, format);
 
 		uint16 stsdVersion = _fd->readUint16BE();
 		_fd->readUint16BE(); // revision level
@@ -524,7 +524,7 @@ int QuickTimeDecoder::readSTSC(Atom UNUSED(atom)) {
 
 	track->sampleToChunkCount = _fd->readUint32BE();
 
-	track->sampleToChunk.reset(new SampleToChunkEntry[track->sampleToChunkCount]);
+	track->sampleToChunk = std::make_unique<SampleToChunkEntry[]>(track->sampleToChunkCount);
 
 	if (!track->sampleToChunk)
 		return -1;
@@ -546,7 +546,7 @@ int QuickTimeDecoder::readSTSS(Atom UNUSED(atom)) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	track->keyframeCount = _fd->readUint32BE();
-	track->keyframes.reset(new uint32[track->keyframeCount]);
+	track->keyframes = std::make_unique<uint32[]>(track->keyframeCount);
 
 	if (!track->keyframes)
 		return -1;
@@ -569,7 +569,7 @@ int QuickTimeDecoder::readSTSZ(Atom UNUSED(atom)) {
 	if (track->sampleSize)
 		return 0; // there isn't any table following
 
-	track->sampleSizes.reset(new uint32[track->sampleCount]);
+	track->sampleSizes = std::make_unique<uint32[]>(track->sampleCount);
 
 	if (!track->sampleSizes)
 		return -1;
@@ -588,7 +588,7 @@ int QuickTimeDecoder::readSTTS(Atom UNUSED(atom)) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	track->timeToSampleCount = _fd->readUint32BE();
-	track->timeToSample.reset(new TimeToSampleEntry[track->timeToSampleCount]);
+	track->timeToSample = std::make_unique<TimeToSampleEntry[]>(track->timeToSampleCount);
 
 	for (int32 i = 0; i < track->timeToSampleCount; i++) {
 		track->timeToSample[i].count = _fd->readUint32BE();
@@ -609,7 +609,7 @@ int QuickTimeDecoder::readSTCO(Atom UNUSED(atom)) {
 	_fd->readByte(); _fd->readByte(); _fd->readByte(); // flags
 
 	track->chunkCount = _fd->readUint32BE();
-	track->chunkOffsets.reset(new uint32[track->chunkCount]);
+	track->chunkOffsets = std::make_unique<uint32[]>(track->chunkCount);
 
 	if (!track->chunkOffsets)
 		return -1;
@@ -842,7 +842,7 @@ void QuickTimeDecoder::QuickTimeAudioTrack::queueAudio(const Common::Timestamp &
 
 	do {
 		// Normal audio
-		Common::ScopedPtr<Common::SeekableReadStream> stream(readAudioChunk(_curChunk));
+		std::unique_ptr<Common::SeekableReadStream> stream(readAudioChunk(_curChunk));
 		Common::Timestamp chunkLength = getChunkLength(_curChunk, _skipAACPrimer);
 		_skipAACPrimer = false;
 		_curChunk++;
@@ -862,7 +862,7 @@ bool QuickTimeDecoder::QuickTimeAudioTrack::isOldDemuxing() const {
 
 Common::SeekableReadStream *QuickTimeDecoder::QuickTimeAudioTrack::readAudioChunk(uint chunk) {
 	AudioSampleDesc *entry = (AudioSampleDesc *)_parentTrack->sampleDescs[0];
-	Common::ScopedPtr<Common::MemoryWriteStreamDynamic> wStream(new Common::MemoryWriteStreamDynamic());
+	std::unique_ptr<Common::MemoryWriteStreamDynamic> wStream = std::make_unique<Common::MemoryWriteStreamDynamic>();
 
 	_decoder->_fd->seek(_parentTrack->chunkOffsets[chunk]);
 
@@ -889,7 +889,7 @@ Common::SeekableReadStream *QuickTimeDecoder::QuickTimeAudioTrack::readAudioChun
 			}
 
 			// Now, we read in the data for this data and output it
-			Common::ScopedArray<byte> data(new byte[size]);
+			std::unique_ptr<byte[]> data = std::make_unique<byte[]>(size);
 			_decoder->_fd->read(data.get(), size);
 			wStream->write(data.get(), size);
 			sampleCount -= samples;
@@ -906,7 +906,7 @@ Common::SeekableReadStream *QuickTimeDecoder::QuickTimeAudioTrack::readAudioChun
 			uint32 size = (_parentTrack->sampleSize != 0) ? _parentTrack->sampleSize : _parentTrack->sampleSizes[i + startSample];
 
 			// Now, we read in the data for this data and output it
-			Common::ScopedArray<byte> data(new byte[size]);
+			std::unique_ptr<byte[]> data = std::make_unique<byte[]>(size);
 			_decoder->_fd->read(data.get(), size);
 			wStream->write(data.get(), size);
 		}
@@ -998,7 +998,7 @@ bool QuickTimeDecoder::VideoTrackHandler::decodeNextFrame(Graphics::Surface &sur
 
 	// Get the next packet
 	uint32 descId;
-	Common::ScopedPtr<Common::SeekableReadStream> frameData(getNextFramePacket(descId));
+	std::unique_ptr<Common::SeekableReadStream> frameData(getNextFramePacket(descId));
 
 	if (!frameData || !descId || descId > _parent->sampleDescs.size())
 		return false;
