@@ -230,7 +230,7 @@ void HUD::setMinimap(const Common::UString &map, int northAxis,
 
 	GfxMan.lockFrame();
 
-	_minimap.reset(new Minimap(map, northAxis, mapPt1X, mapPt1Y, mapPt2X, mapPt2Y, worldPt1X, worldPt1Y, worldPt2X, worldPt2Y));
+	_minimap = std::make_unique<Minimap>(map, northAxis, mapPt1X, mapPt1Y, mapPt2X, mapPt2Y, worldPt1X, worldPt1Y, worldPt2X, worldPt2Y);
 	mapView->setSubScene(_minimap.get());
 
 	GfxMan.unlockFrame();
@@ -255,7 +255,7 @@ void HUD::setRotation(float angle) {
 }
 
 void HUD::showContainer(KotORBase::Inventory &inv) {
-	_container.reset(new ContainerMenu());
+	_container = std::make_unique<ContainerMenu>();
 	_container->fillFromInventory(inv);
 
 	if (sub(*_container, kStartCodeNone, true, false) == 1) {

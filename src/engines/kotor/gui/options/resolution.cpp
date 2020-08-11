@@ -22,9 +22,10 @@
  *  The graphics resolution menu.
  */
 
-#include "src/common/configman.h"
+#include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/ustring.h"
+#include "src/common/configman.h"
 
 #include "src/graphics/windowman.h"
 #include "src/graphics/resolution.h"

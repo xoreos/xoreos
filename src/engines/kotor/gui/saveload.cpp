@@ -170,7 +170,7 @@ void SaveLoadMenu::addSavedGameItems(Odyssey::WidgetListBox *listBox) {
 void SaveLoadMenu::tryLoadGame(const Common::UString &dir) {
 	try {
 		hide();
-		Common::ScopedPtr<KotORBase::SavedGame> save(new SavedGame(dir, true));
+		std::unique_ptr<KotORBase::SavedGame> save = std::make_unique<SavedGame>(dir, true);
 		_module->loadSavedGame(save.get());
 		GfxMan.lockFrame();
 		_returnCode = 2;

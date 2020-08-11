@@ -47,11 +47,11 @@ OptionsMenu::OptionsMenu(const Version &gameVersion, ::Engines::Console *console
 
 	addBackground(KotORBase::kBackgroundTypeMenu);
 
-	_gameplay.reset(new OptionsGameplayMenu(_console));
-	_feedback.reset(new OptionsFeedbackMenu(_console));
-	_autopause.reset(new OptionsAutoPauseMenu(_console));
-	_graphics.reset(new OptionsGraphicsMenu(_console));
-	_sound.reset(new OptionsSoundMenu(_console));
+	_gameplay = std::make_unique<OptionsGameplayMenu>(_console);
+	_feedback = std::make_unique<OptionsFeedbackMenu>(_console);
+	_autopause = std::make_unique<OptionsAutoPauseMenu>(_console);
+	_graphics = std::make_unique<OptionsGraphicsMenu>(_console);
+	_sound = std::make_unique<OptionsSoundMenu>(_console);
 
 	Common::UString versionString = Common::UString(::Version::getProjectNameVersion());
 

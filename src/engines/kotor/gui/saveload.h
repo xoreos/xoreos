@@ -26,8 +26,7 @@
 #define ENGINES_KOTOR_GUI_SAVELOAD_H
 
 #include <vector>
-
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/aurora/console.h"
 

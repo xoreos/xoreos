@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_MAIN_MAIN_H
 #define ENGINES_KOTOR_GUI_MAIN_MAIN_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/graphics/aurora/subscenequad.h"
 
@@ -55,13 +55,13 @@ private:
 	KotORBase::Module *_module;
 	const Version *_gameVersion;
 
-	Common::ScopedPtr<Graphics::Aurora::SubSceneQuad> _malakScene;
-	Common::ScopedPtr<Graphics::Aurora::Model> _malakModel;
+	std::unique_ptr<Graphics::Aurora::SubSceneQuad> _malakScene;
+	std::unique_ptr<Graphics::Aurora::Model> _malakModel;
 
-	Common::ScopedPtr<GUI> _classSelection;
-	Common::ScopedPtr<GUI> _movies;
-	Common::ScopedPtr<GUI> _options;
-	Common::ScopedPtr<GUI> _loadGame;
+	std::unique_ptr<GUI> _classSelection;
+	std::unique_ptr<GUI> _movies;
+	std::unique_ptr<GUI> _options;
+	std::unique_ptr<GUI> _loadGame;
 
 	Sound::ChannelHandle _menuMusic;
 

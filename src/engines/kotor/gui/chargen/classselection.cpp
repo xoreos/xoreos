@@ -142,7 +142,7 @@ ClassSelectionMenu::~ClassSelectionMenu() {
 }
 
 void ClassSelectionMenu::createCharacterGeneration(CharacterGenerationInfo *info) {
-	_charGen.reset(new CharacterGenerationMenu(_module, info));
+	_charGen = std::make_unique<CharacterGenerationMenu>(_module, info);
 }
 
 void ClassSelectionMenu::callbackRun() {

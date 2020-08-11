@@ -41,8 +41,8 @@ OptionsGraphicsMenu::OptionsGraphicsMenu(::Engines::Console *console) : KotORBas
 
 	addBackground(KotORBase::kBackgroundTypeMenu);
 
-	_advanced.reset(new OptionsGraphicsAdvancedMenu(_console));
-	_resolution.reset(new OptionsResolutionMenu(_console));
+	_advanced = std::make_unique<OptionsGraphicsAdvancedMenu>(_console);
+	_resolution = std::make_unique<OptionsResolutionMenu>(_console);
 
 	// Hardcoded, the gui file returns incorrect values
 	getCheckBox("CB_SHADOWS", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);

@@ -36,7 +36,7 @@ OptionsSoundMenu::OptionsSoundMenu(::Engines::Console *console) : KotORBase::GUI
 
 	addBackground(KotORBase::kBackgroundTypeMenu);
 
-	_advanced.reset(new OptionsSoundAdvancedMenu(_console));
+	_advanced = std::make_unique<OptionsSoundAdvancedMenu>(_console);
 }
 
 OptionsSoundMenu::~OptionsSoundMenu() {

@@ -23,8 +23,8 @@
  */
 
 #include <algorithm>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/readfile.h"
 #include "src/common/filelist.h"
@@ -160,7 +160,7 @@ bool Version::detectWindows(const Common::UString &directory) {
 	};
 
 	size_t size;
-	Common::ScopedArray<byte> binary(readFile(directory, "/swkotor.exe", size));
+	std::unique_ptr<byte[]> binary(readFile(directory, "/swkotor.exe", size));
 	if (!binary)
 		return false;
 
@@ -252,7 +252,7 @@ bool Version::detectMacOSX(const Common::UString &directory) {
 		return false;
 
 	size_t size;
-	Common::ScopedArray<byte> binary(readFile(appDir, "XKOTOR", size));
+	std::unique_ptr<byte[]> binary(readFile(appDir, "XKOTOR", size));
 	if (!binary)
 		binary.reset(readFile(appDir, "Knights of the Old Republic", size));
 	if (!binary)
@@ -319,7 +319,7 @@ bool Version::detectXbox(const Common::UString &directory) {
 	};
 
 	size_t size;
-	Common::ScopedArray<byte> binary(readFile(directory, "/default.xbe", size));
+	std::unique_ptr<byte[]> binary(readFile(directory, "/default.xbe", size));
 	if (!binary)
 		return false;
 
@@ -386,7 +386,7 @@ byte *Version::readFile(const Common::UString &path, size_t &size) {
 
 	size = file.size();
 
-	Common::ScopedArray<byte> buffer(new byte[size]);
+	std::unique_ptr<byte[]> buffer = std::make_unique<byte[]>(size);
 	if (file.read(buffer.get(), size) != size)
 		return 0;
 

@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
 #define ENGINES_KOTOR_GUI_MAIN_OPTIONS_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/graphics/aurora/highlightable.h"
 
@@ -48,11 +48,11 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	Common::ScopedPtr<KotORBase::GUI> _gameplay;
-	Common::ScopedPtr<KotORBase::GUI> _feedback;
-	Common::ScopedPtr<KotORBase::GUI> _autopause;
-	Common::ScopedPtr<KotORBase::GUI> _graphics;
-	Common::ScopedPtr<KotORBase::GUI> _sound;
+	std::unique_ptr<KotORBase::GUI> _gameplay;
+	std::unique_ptr<KotORBase::GUI> _feedback;
+	std::unique_ptr<KotORBase::GUI> _autopause;
+	std::unique_ptr<KotORBase::GUI> _graphics;
+	std::unique_ptr<KotORBase::GUI> _sound;
 };
 
 } // End of namespace KotOR

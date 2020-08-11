@@ -63,17 +63,17 @@ public:
 private:
 	KotORBase::Module *_module;
 	CharacterGenerationInfo *_pc;
-	Common::ScopedPtr<Graphics::Aurora::Model> _pcModel;
+	std::unique_ptr<Graphics::Aurora::Model> _pcModel;
 
 	int _step;
 
-	Common::ScopedPtr<GUI> _quickOrCustom;
-	Common::ScopedPtr<GUI> _quickChar;
-	Common::ScopedPtr<GUI> _customChar;
+	std::unique_ptr<GUI> _quickOrCustom;
+	std::unique_ptr<GUI> _quickChar;
+	std::unique_ptr<GUI> _customChar;
 
-	Common::ScopedPtr<CharacterGenerationBaseMenu> _charGenMenu;
+	std::unique_ptr<CharacterGenerationBaseMenu> _charGenMenu;
 
-	Common::ScopedPtr<Graphics::Aurora::SubSceneQuad> _charSubScene;
+	std::unique_ptr<Graphics::Aurora::SubSceneQuad> _charSubScene;
 
 	void callbackKeyInput(const Events::Key &key, const Events::EventType &type);
 };

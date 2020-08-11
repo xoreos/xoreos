@@ -46,8 +46,8 @@ OptionsGameplayMenu::OptionsGameplayMenu(::Engines::Console *console) : KotORBas
 
 	addBackground(KotORBase::kBackgroundTypeMenu);
 
-	_mousesettings.reset(new OptionsMouseSettingsMenu(_console));
-	_keyboardconfiguration.reset(new OptionsKeyboardConfigurationMenu(_console));
+	_mousesettings = std::make_unique<OptionsMouseSettingsMenu>(_console);
+	_keyboardconfiguration = std::make_unique<OptionsKeyboardConfigurationMenu>(_console);
 
 	// Hardcoded, the gui file returns 1.0, 1.0, 1.0, 1.0
 	getButton("BTN_DIFFLEFT", true)->setColor(0.0f, 0.658824f, 0.980392f, 1.0f);

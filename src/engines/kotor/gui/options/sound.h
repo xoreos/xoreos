@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_SOUND_H
 #define ENGINES_KOTOR_GUI_OPTIONS_SOUND_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/kotorbase/gui/gui.h"
 
@@ -42,7 +42,7 @@ protected:
 	void callbackActive(Widget &widget);
 
 private:
-	Common::ScopedPtr<KotORBase::GUI> _advanced;
+	std::unique_ptr<KotORBase::GUI> _advanced;
 };
 
 } // End of namespace KotOR

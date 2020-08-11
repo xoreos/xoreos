@@ -57,7 +57,7 @@ namespace KotOR {
 
 KotOREngine::KotOREngine() : _language(Aurora::kLanguageInvalid), _hasLiveKey(false) {
 
-	_console.reset(new Console(*this));
+	_console = std::make_unique<Console>(*this);
 }
 
 KotOREngine::~KotOREngine() {
@@ -118,7 +118,7 @@ void KotOREngine::run() {
 
 	CursorMan.showCursor();
 
-	_game.reset(new Game(*this, *_console, *_version));
+	_game = std::make_unique<Game>(*this, *_console, *_version);
 	_game->run();
 
 	deinit();
@@ -165,7 +165,7 @@ void KotOREngine::init() {
 }
 
 void KotOREngine::detectVersion() {
-	_version.reset(new Version(_platform));
+	_version = std::make_unique<Version>(_platform);
 
 	if (_version->detect(_target)) {
 		status("This is Star Wars: Knights of the Old Republic %s v%s",

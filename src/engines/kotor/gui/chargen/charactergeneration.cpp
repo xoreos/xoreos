@@ -22,12 +22,13 @@
  *  The primary character generation menu.
  */
 
+#include <memory>
+
 #include "external/glm/mat4x4.hpp"
 #include "external/glm/gtc/type_ptr.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
 
 #include "src/common/util.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/talkman.h"
 
@@ -159,7 +160,7 @@ void CharacterGenerationMenu::showQuickOrCustom() {
 
 	_step = 0;
 
-	_quickOrCustom.reset(new QuickOrCustomPanel(this));
+	_quickOrCustom = std::make_unique<QuickOrCustomPanel>(this);
 	addChild(_quickOrCustom.get());
 }
 
@@ -169,7 +170,7 @@ void CharacterGenerationMenu::showQuick() {
 	if (_customChar)
 		removeChild(_customChar.get());
 
-	_quickChar.reset(new QuickCharPanel(this));
+	_quickChar = std::make_unique<QuickCharPanel>(this);
 	addChild(_quickChar.get());
 }
 
@@ -179,7 +180,7 @@ void CharacterGenerationMenu::showCustom() {
 	if (_quickChar)
 		removeChild(_quickChar.get());
 
-	_customChar.reset(new CustomCharPanel(this));
+	_customChar = std::make_unique<CustomCharPanel>(this);
 	addChild(_customChar.get());
 }
 
@@ -187,7 +188,7 @@ void CharacterGenerationMenu::showPortrait() {
 	// Operate on a copy of the character object
 	CharacterGenerationInfo info = *_pc;
 
-	_charGenMenu.reset(new CharacterGenerationPortraitMenu(info));
+	_charGenMenu = std::make_unique<CharacterGenerationPortraitMenu>(info);
 
 	sub(*_charGenMenu);
 	if (_charGenMenu->isAccepted()) {
@@ -197,7 +198,7 @@ void CharacterGenerationMenu::showPortrait() {
 		if (lblPortrait)
 			lblPortrait->setFill(_pc->getPortrait());
 
-		Common::ScopedPtr<Graphics::Aurora::Model> head(Creature::createHeadModel(_pc));
+		std::unique_ptr<Graphics::Aurora::Model> head(Creature::createHeadModel(_pc));
 		if (head) {
 			GfxMan.lockFrame();
 			_pcModel->attachModel("headhook", head.release());
@@ -213,7 +214,7 @@ void CharacterGenerationMenu::showName() {
 	// Operate on a copy of the character object
 	CharacterGenerationInfo info = *_pc;
 
-	_charGenMenu.reset(new CharacterGenerationNameMenu(info));
+	_charGenMenu = std::make_unique<CharacterGenerationNameMenu>(info);
 
 	sub(*_charGenMenu);
 	if (_charGenMenu->isAccepted()) {

@@ -170,11 +170,11 @@ Common::UString Creature::getHeadMeshString(KotORBase::Gender gender, KotORBase:
 
 Graphics::Aurora::Model *Creature::createModel(const CharacterGenerationInfo *info) {
 	Common::UString bodyString = getBodyMeshString(info->getGender(), info->getClass());
-	Common::ScopedPtr<Graphics::Aurora::Model> body(loadModelObject(bodyString, ""));
+	std::unique_ptr<Graphics::Aurora::Model> body(loadModelObject(bodyString, ""));
 	if (!body)
 		return 0;
 
-	Common::ScopedPtr<Graphics::Aurora::Model> head(createHeadModel(info));
+	std::unique_ptr<Graphics::Aurora::Model> head(createHeadModel(info));
 	if (head)
 		body->attachModel("headhook", head.release());
 
@@ -183,7 +183,7 @@ Graphics::Aurora::Model *Creature::createModel(const CharacterGenerationInfo *in
 
 Graphics::Aurora::Model *Creature::createHeadModel(const CharacterGenerationInfo *info) {
 	Common::UString headString = getHeadMeshString(info->getGender(), info->getSkin(), info->getFace());
-	Common::ScopedPtr<Graphics::Aurora::Model> head(loadModelObject(headString, ""));
+	std::unique_ptr<Graphics::Aurora::Model> head(loadModelObject(headString, ""));
 	if (!head)
 		return 0;
 

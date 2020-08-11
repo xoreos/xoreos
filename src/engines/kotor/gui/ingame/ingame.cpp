@@ -30,7 +30,7 @@ namespace Engines {
 namespace KotOR {
 
 IngameGUI::IngameGUI(KotORBase::Module &module, Console *console) {
-	_hud.reset(new HUD(module, console));
+	_hud = std::make_unique<HUD>(module, console);
 }
 
 } // End of namespace KotOR

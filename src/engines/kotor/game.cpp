@@ -59,7 +59,7 @@ Game::Game(KotOREngine &engine, Engines::Console &console, const Version &gameVe
 		_engine(&engine),
 		_gameVersion(&gameVersion) {
 
-	_functions.reset(new Functions(*this));
+	_functions = std::make_unique<Functions>(*this);
 	collectModules();
 }
 
@@ -67,7 +67,7 @@ Game::~Game() {
 }
 
 void Game::run() {
-	_module.reset(new Module(*_console));
+	_module = std::make_unique<Module>(*_console);
 
 	while (!EventMan.quitRequested()) {
 		mainMenu();

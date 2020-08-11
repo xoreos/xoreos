@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_GAMEPLAY_H
 #define ENGINES_KOTOR_GUI_OPTIONS_GAMEPLAY_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/kotorbase/gui/gui.h"
 
@@ -51,8 +51,8 @@ private:
 	bool _reverseMinigameY;
 	bool _combatMovement;
 
-	Common::ScopedPtr<KotORBase::GUI> _mousesettings;
-	Common::ScopedPtr<KotORBase::GUI> _keyboardconfiguration;
+	std::unique_ptr<KotORBase::GUI> _mousesettings;
+	std::unique_ptr<KotORBase::GUI> _keyboardconfiguration;
 
 	void setDefault();
 	void readConfig();

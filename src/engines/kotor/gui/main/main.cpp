@@ -74,7 +74,7 @@ MainMenu::MainMenu(const Version &gameVersion, KotORBase::Module &module, ::Engi
 
 	startMainMusic();
 
-	_malakScene.reset(new Graphics::Aurora::SubSceneQuad);
+	_malakScene = std::make_unique<Graphics::Aurora::SubSceneQuad>();
 
 	_malakModel.reset(loadModelObject("mainmenu"));
 
@@ -105,7 +105,7 @@ void MainMenu::createClassSelection() {
 	_module->loadTexturePack();
 
 	// Create the class selection menu
-	_classSelection.reset(new ClassSelectionMenu(_module, _console));
+	_classSelection = std::make_unique<ClassSelectionMenu>(_module, _console);
 
 	loadScreen.hide();
 	show();
@@ -116,7 +116,7 @@ void MainMenu::createMovies() {
 		return;
 
 	// Create the movies menu
-	_movies.reset(new MoviesMenu(_console));
+	_movies = std::make_unique<MoviesMenu>(_console);
 }
 
 void MainMenu::createOptions() {
@@ -124,7 +124,7 @@ void MainMenu::createOptions() {
 		return;
 
 	// Create the options menu
-	_options.reset(new OptionsMenu(*_gameVersion, _console));
+	_options = std::make_unique<OptionsMenu>(*_gameVersion, _console);
 
 }
 
@@ -133,7 +133,7 @@ void MainMenu::createLoadGame() {
 		return;
 
 	// Create the load game menu
-	_loadGame.reset(new SaveLoadMenu(*_module, _console));
+	_loadGame = std::make_unique<SaveLoadMenu>(*_module, _console);
 }
 
 void MainMenu::startMainMusic() {

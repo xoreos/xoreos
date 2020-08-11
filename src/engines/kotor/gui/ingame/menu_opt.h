@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_INGAME_MENU_OPT_H
 #define ENGINES_KOTOR_GUI_INGAME_MENU_OPT_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/kotorbase/gui/gui.h"
 

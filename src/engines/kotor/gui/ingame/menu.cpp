@@ -72,17 +72,17 @@ Menu::Menu(KotORBase::Module &module, Console *console) :
 		}
 	}
 
-	_menu[kMenuTypeEquipment].menu.reset(new MenuEquipment(_module, console));
-	_menu[kMenuTypeInventory].menu.reset(new MenuInventory(_module, console));
-	_menu[kMenuTypeCharacter].menu.reset(new MenuCharacter(_module, console));
-	_menu[kMenuTypeAbilities].menu.reset(new MenuAbilities(_module, console));
-	_menu[kMenuTypeMessages].menu.reset(new MenuMessages(console));
-	_menu[kMenuTypeJournal].menu.reset(new MenuJournal(console));
-	_menu[kMenuTypeMap].menu.reset(new MenuMap(console));
-	_menu[kMenuTypeOptions].menu.reset(new MenuOptions(console));
+	_menu[kMenuTypeEquipment].menu = std::make_unique<MenuEquipment>(_module, console);
+	_menu[kMenuTypeInventory].menu = std::make_unique<MenuInventory>(_module, console);
+	_menu[kMenuTypeCharacter].menu = std::make_unique<MenuCharacter>(_module, console);
+	_menu[kMenuTypeAbilities].menu = std::make_unique<MenuAbilities>(_module, console);
+	_menu[kMenuTypeMessages].menu = std::make_unique<MenuMessages>(console);
+	_menu[kMenuTypeJournal].menu = std::make_unique<MenuJournal>(console);
+	_menu[kMenuTypeMap].menu = std::make_unique<MenuMap>(console);
+	_menu[kMenuTypeOptions].menu = std::make_unique<MenuOptions>(console);
 
-	_menuLoad.reset(new SaveLoadMenu(module, console, kSaveLoadMenuTypeLoad, true));
-	_menuSave.reset(new SaveLoadMenu(module, console, kSaveLoadMenuTypeSave, true));
+	_menuLoad = std::make_unique<SaveLoadMenu>(module, console, kSaveLoadMenuTypeLoad, true);
+	_menuSave = std::make_unique<SaveLoadMenu>(module, console, kSaveLoadMenuTypeSave, true);
 }
 
 void Menu::setReturnStrref(uint32 id) {

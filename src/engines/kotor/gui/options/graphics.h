@@ -25,7 +25,7 @@
 #ifndef ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
 #define ENGINES_KOTOR_GUI_OPTIONS_GRAPHICS_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/engines/kotorbase/gui/gui.h"
 
@@ -47,8 +47,8 @@ private:
 	bool _shadows;
 	bool _grass;
 
-	Common::ScopedPtr<KotORBase::GUI> _resolution;
-	Common::ScopedPtr<KotORBase::GUI> _advanced;
+	std::unique_ptr<KotORBase::GUI> _resolution;
+	std::unique_ptr<KotORBase::GUI> _advanced;
 
 	void setDefault();
 	void readConfig();

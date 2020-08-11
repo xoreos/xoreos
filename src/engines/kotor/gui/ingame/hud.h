@@ -68,9 +68,9 @@ protected:
 
 private:
 	Menu _menu;
-	Common::ScopedPtr<ContainerMenu> _container;
+	std::unique_ptr<ContainerMenu> _container;
 
-	Common::ScopedPtr<Minimap> _minimap;
+	std::unique_ptr<Minimap> _minimap;
 	Odyssey::WidgetLabel *_minimapPointer { nullptr };
 
 	void update(int width, int height);

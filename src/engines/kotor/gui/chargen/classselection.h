@@ -48,7 +48,7 @@ public:
 	virtual ~ClassSelectionMenu();
 
 private:
-	Common::ScopedPtr<KotORBase::GUI> _charGen;
+	std::unique_ptr<KotORBase::GUI> _charGen;
 
 	Graphics::Aurora::SubSceneQuad _maleSoldierSubScene;
 	Graphics::Aurora::SubSceneQuad _maleScoutSubScene;
@@ -82,19 +82,19 @@ private:
 	Common::UString _scoutMaleTitle;
 	Common::UString _scoutFemaleTitle;
 
-	Common::ScopedPtr<CharacterGenerationInfo> _maleSoldier;
-	Common::ScopedPtr<CharacterGenerationInfo> _maleScout;
-	Common::ScopedPtr<CharacterGenerationInfo> _maleScoundrel;
-	Common::ScopedPtr<CharacterGenerationInfo> _femaleSoldier;
-	Common::ScopedPtr<CharacterGenerationInfo> _femaleScout;
-	Common::ScopedPtr<CharacterGenerationInfo> _femaleScoundrel;
+	std::unique_ptr<CharacterGenerationInfo> _maleSoldier;
+	std::unique_ptr<CharacterGenerationInfo> _maleScout;
+	std::unique_ptr<CharacterGenerationInfo> _maleScoundrel;
+	std::unique_ptr<CharacterGenerationInfo> _femaleSoldier;
+	std::unique_ptr<CharacterGenerationInfo> _femaleScout;
+	std::unique_ptr<CharacterGenerationInfo> _femaleScoundrel;
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _maleSoldierModel;
-	Common::ScopedPtr<Graphics::Aurora::Model> _maleScoutModel;
-	Common::ScopedPtr<Graphics::Aurora::Model> _maleScoundrelModel;
-	Common::ScopedPtr<Graphics::Aurora::Model> _femaleSoldierModel;
-	Common::ScopedPtr<Graphics::Aurora::Model> _femaleScoutModel;
-	Common::ScopedPtr<Graphics::Aurora::Model> _femaleScoundrelModel;
+	std::unique_ptr<Graphics::Aurora::Model> _maleSoldierModel;
+	std::unique_ptr<Graphics::Aurora::Model> _maleScoutModel;
+	std::unique_ptr<Graphics::Aurora::Model> _maleScoundrelModel;
+	std::unique_ptr<Graphics::Aurora::Model> _femaleSoldierModel;
+	std::unique_ptr<Graphics::Aurora::Model> _femaleScoutModel;
+	std::unique_ptr<Graphics::Aurora::Model> _femaleScoundrelModel;
 
 	void createCharacterGeneration(CharacterGenerationInfo *);
 

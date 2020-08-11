@@ -78,7 +78,7 @@ private:
 		Odyssey::WidgetProtoItem *protoItem;
 		Odyssey::WidgetButton *button;
 
-		Common::ScopedPtr<KotORBase::GUI> menu;
+		std::unique_ptr<KotORBase::GUI> menu;
 
 		SubMenu() : protoItem(0), button(0) { }
 	};
@@ -91,8 +91,8 @@ private:
 	SubMenu _menu[kMenuTypeMAX];
 	SubMenu *_currentMenu;
 
-	Common::ScopedPtr<SaveLoadMenu> _menuLoad;
-	Common::ScopedPtr<SaveLoadMenu> _menuSave;
+	std::unique_ptr<SaveLoadMenu> _menuLoad;
+	std::unique_ptr<SaveLoadMenu> _menuSave;
 
 	MenuType getMenuTypeByButtonTag(const Common::UString &tag);
 	void showMenu(MenuType type);
