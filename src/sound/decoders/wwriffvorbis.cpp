@@ -54,6 +54,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <memory>
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
@@ -62,7 +64,6 @@
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
-#include "src/common/scopedptr.h"
 #include "src/common/disposableptr.h"
 #include "src/common/bitstream.h"
 #include "src/common/bitstreamwriter.h"
@@ -327,7 +328,7 @@ public:
 	uint64 getLength() const;
 
 private:
-	Common::ScopedPtr<Sound::PacketizedAudioStream> _vorbis;
+	std::unique_ptr<Sound::PacketizedAudioStream> _vorbis;
 
 	Common::DisposablePtr<Common::SeekableReadStream> _inStream;
 	Common::DisposablePtr<Common::SeekableReadStream> _codebooks;
@@ -359,7 +360,7 @@ private:
 	uint32 _loopStart;
 	uint32 _loopEnd;
 
-	Common::ScopedArray<bool> _modeBlockFlags;
+	std::unique_ptr<bool[]> _modeBlockFlags;
 	size_t _modeBits;
 
 	bool _end;
@@ -446,9 +447,9 @@ bool WwRIFFVorbisStream::endOfData() const {
 bool WwRIFFVorbisStream::rewind() {
 	_end = false;
 
-	Common::ScopedPtr<Common::SeekableReadStream> headerIdentification(generateHeaderIdentification());
-	Common::ScopedPtr<Common::SeekableReadStream> headerComment(generateHeaderComment());
-	Common::ScopedPtr<Common::SeekableReadStream> headerSetup(generateHeaderSetup());
+	std::unique_ptr<Common::SeekableReadStream> headerIdentification(generateHeaderIdentification());
+	std::unique_ptr<Common::SeekableReadStream> headerComment(generateHeaderComment());
+	std::unique_ptr<Common::SeekableReadStream> headerSetup(generateHeaderSetup());
 
 #ifdef ENABLE_VORBIS
 	_vorbis.reset(Sound::makePacketizedVorbisStream(*headerIdentification, *headerComment, *headerSetup));
@@ -475,7 +476,7 @@ size_t WwRIFFVorbisStream::readBuffer(int16 *buffer, const size_t numSamples) {
 		samples += gotSamples;
 
 		if (gotSamples < needSamples) {
-			Common::ScopedPtr<Common::SeekableReadStream> packet(createPacket());
+			std::unique_ptr<Common::SeekableReadStream> packet(createPacket());
 			if (!packet) {
 				_end = true;
 				break;
@@ -782,7 +783,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 			const size_t floor1Partitions = in.getBits(5);
 			bits.putBits(floor1Partitions, 5);
 
-			Common::ScopedArray<uint8> floor1PartitionClassList(new uint8[floor1Partitions]);
+			std::unique_ptr<uint8[]> floor1PartitionClassList = std::make_unique<uint8[]>(floor1Partitions);
 			uint8 maxClass = 0;
 
 			for (size_t j = 0; j < floor1Partitions; j++) {
@@ -792,7 +793,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 				maxClass = MAX(maxClass, floor1PartitionClassList[j]);
 			}
 
-			Common::ScopedArray<uint8> floor1ClassDimensionsList(new uint8[maxClass + 1]);
+			std::unique_ptr<uint8[]> floor1ClassDimensionsList = std::make_unique<uint8[]>(maxClass + 1);
 			for (size_t j = 0; j <= maxClass; j++) {
 				floor1ClassDimensionsList[j] = in.getBits(3) + 1;
 				bits.putBits(floor1ClassDimensionsList[j] - 1, 3);
@@ -860,7 +861,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 				throw Common::Exception("WwRIFFVorbisStream::generateHeaderSetup(): "
 				                        "Invalid residue classbook");
 
-			Common::ScopedArray<uint16> residueCascade(new uint16[residueClassifications]);
+			std::unique_ptr<uint16[]> residueCascade = std::make_unique<uint16[]>(residueClassifications);
 			for (size_t j = 0; j < residueClassifications; j++) {
 				const uint8 lowBits = in.getBits(3);
 				bits.putBits(lowBits, 3);
@@ -967,7 +968,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::generateHeaderSetup() {
 		const size_t modeCount = in.getBits(6) + 1;
 		bits.putBits(modeCount - 1, 6);
 
-		_modeBlockFlags.reset(new bool[modeCount]);
+		_modeBlockFlags = std::make_unique<bool[]>(modeCount);
 		_modeBits = Common::intLog2(modeCount - 1) + 1;
 
 		for (size_t i = 0; i < modeCount; i++) {
@@ -1024,7 +1025,7 @@ Common::SeekableReadStream *WwRIFFVorbisStream::createPacket() {
 	_currentOffset = packetPayloadOffset;
 	_inStream->seek(_currentOffset);
 
-	Common::ScopedPtr<Common::SeekableReadStream> packetStream(_inStream->readStream(size));
+	std::unique_ptr<Common::SeekableReadStream> packetStream(_inStream->readStream(size));
 
 	_currentOffset = nextOffset;
 

@@ -33,7 +33,7 @@ namespace Sound {
 static const uint32 kFEVID = MKTAG('F', 'E', 'V', '1');
 
 FMODEventFile::FMODEventFile(const Common::UString &resRef) {
-	Common::ScopedPtr<Common::SeekableReadStream> fev(ResMan.getResource(resRef, Aurora::kFileTypeFEV));
+	std::unique_ptr<Common::SeekableReadStream> fev(ResMan.getResource(resRef, Aurora::kFileTypeFEV));
 
 	if (!fev)
 		throw Common::Exception("FMODEventFile::FMODEventFile(): Resource %s not found", resRef.c_str());

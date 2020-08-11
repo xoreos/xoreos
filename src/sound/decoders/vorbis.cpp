@@ -51,9 +51,10 @@
 #include <cstring>
 #include <queue>
 
+#include <memory>
+
 #include <vorbis/vorbisfile.h>
 
-#include "src/common/scopedptr.h"
 #include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
@@ -322,7 +323,7 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) 
 	stream.read(initialBytes, sizeof(initialBytes));
 
 	size_t headerSizes[3];
-	Common::ScopedArray<byte> headers[3];
+	std::unique_ptr<byte[]> headers[3];
 
 	if (stream.size() >= 6 && READ_BE_UINT16(initialBytes) == 30) {
 		stream.seek(0);
@@ -335,7 +336,7 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) 
 				return false;
 			}
 
-			headers[i].reset(new byte[headerSizes[i]]);
+			headers[i] = std::make_unique<byte[]>(headerSizes[i]);
 			stream.read(headers[i].get(), headerSizes[i]);
 		}
 	} else if (initialBytes[0] == 2 && stream.size() < 0x7FFFFE00) {
@@ -364,7 +365,7 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) 
 		stream.seek(offset);
 
 		for (int i = 0; i < 3; i++) {
-			headers[i].reset(new byte[headerSizes[i]]);
+			headers[i] = std::make_unique<byte[]>(headerSizes[i]);
 			stream.read(headers[i].get(), headerSizes[i]);
 		}
 	} else {
@@ -393,13 +394,13 @@ bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) 
 
 bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &packet1, Common::SeekableReadStream &packet2, Common::SeekableReadStream &packet3) {
 	int headerSizes[3];
-	Common::ScopedArray<byte> headers[3];
+	std::unique_ptr<byte[]> headers[3];
 
 #define READ_WHOLE_STREAM(x) \
 	do { \
 		Common::SeekableReadStream &packet = packet##x; \
 		headerSizes[x - 1] = packet.size(); \
-		headers[x - 1].reset(new byte[headerSizes[x - 1]]); \
+		headers[x - 1] = std::make_unique<byte[]>(headerSizes[x - 1]); \
 		packet.read(headers[x - 1].get(), headerSizes[x - 1]); \
 	} while (0)
 
@@ -449,9 +450,9 @@ size_t PacketizedVorbisStream::readBuffer(int16 *buffer, const size_t numSamples
 				return samples;
 
 			// Feed the next packet into the beast
-			Common::ScopedPtr<Common::SeekableReadStream> stream(_queue.front());
+			std::unique_ptr<Common::SeekableReadStream> stream(_queue.front());
 			_queue.pop();
-			Common::ScopedArray<byte> data(new byte[stream->size()]);
+			std::unique_ptr<byte[]> data = std::make_unique<byte[]>(stream->size());
 			stream->read(data.get(), stream->size());
 
 			// Synthesize!
@@ -514,7 +515,7 @@ bool PacketizedVorbisStream::isFinished() const {
 }
 
 RewindableAudioStream *makeVorbisStream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	Common::ScopedPtr<RewindableAudioStream> s(new VorbisStream(stream, disposeAfterUse));
+	std::unique_ptr<RewindableAudioStream> s = std::make_unique<VorbisStream>(stream, disposeAfterUse);
 	if (s && s->endOfData())
 		return 0;
 
@@ -522,7 +523,7 @@ RewindableAudioStream *makeVorbisStream(Common::SeekableReadStream *stream, bool
 }
 
 PacketizedAudioStream *makePacketizedVorbisStream(Common::SeekableReadStream &extraData) {
-	Common::ScopedPtr<PacketizedVorbisStream> stream(new PacketizedVorbisStream());
+	std::unique_ptr<PacketizedVorbisStream> stream = std::make_unique<PacketizedVorbisStream>();
 	if (!stream->parseExtraData(extraData))
 		return 0;
 
@@ -530,7 +531,7 @@ PacketizedAudioStream *makePacketizedVorbisStream(Common::SeekableReadStream &ex
 }
 
 PacketizedAudioStream *makePacketizedVorbisStream(Common::SeekableReadStream &packet1, Common::SeekableReadStream &packet2, Common::SeekableReadStream &packet3) {
-	Common::ScopedPtr<PacketizedVorbisStream> stream(new PacketizedVorbisStream());
+	std::unique_ptr<PacketizedVorbisStream> stream = std::make_unique<PacketizedVorbisStream>();
 	if (!stream->parseExtraData(packet1, packet2, packet3))
 		return 0;
 

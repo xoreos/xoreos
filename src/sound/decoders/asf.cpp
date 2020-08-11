@@ -47,7 +47,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/error.h"
@@ -153,7 +154,7 @@ private:
 
 	size_t _rewindPos;
 	uint64 _curPacket;
-	Common::ScopedPtr<PacketizedAudioStream> _curAudioStream;
+	std::unique_ptr<PacketizedAudioStream> _curAudioStream;
 	byte _curSequenceNumber;
 
 	// Header object variables
@@ -169,7 +170,7 @@ private:
 	uint32 _bitRate;
 	uint16 _blockAlign;
 	uint16 _bitsPerCodedSample;
-	Common::ScopedPtr<Common::SeekableReadStream> _extraData;
+	std::unique_ptr<Common::SeekableReadStream> _extraData;
 };
 
 ASFStream::Packet::Packet() {
@@ -418,7 +419,7 @@ PacketizedAudioStream *ASFStream::createAudioStream() {
 }
 
 void ASFStream::feedAudioData() {
-	Common::ScopedPtr<Packet> packet(readPacket());
+	std::unique_ptr<Packet> packet(readPacket());
 
 	// TODO
 	if (packet->segments.size() != 1)

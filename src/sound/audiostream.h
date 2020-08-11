@@ -50,12 +50,13 @@
 #ifndef SOUND_AUDIOSTREAM_H
 #define SOUND_AUDIOSTREAM_H
 
+#include <memory>
+
 #include <boost/noncopyable.hpp>
 
 #include "src/common/util.h"
 #include "src/common/types.h"
 #include "src/common/disposableptr.h"
-#include "src/common/scopedptr.h"
 
 namespace Common {
 class SeekableReadStream;
@@ -324,7 +325,7 @@ protected:
 private:
 	int _rate;
 	int _channels;
-	Common::ScopedPtr<QueuingAudioStream> _stream;
+	std::unique_ptr<QueuingAudioStream> _stream;
 };
 
 } // End of namespace Sound

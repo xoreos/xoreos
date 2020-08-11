@@ -52,6 +52,7 @@
 #include <cstring>
 
 #include <vector>
+#include <memory>
 
 #include "src/common/util.h"
 #include "src/common/debug.h"
@@ -63,7 +64,6 @@
 #include "src/common/bitstream.h"
 #include "src/common/huffman.h"
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 
 #include "src/sound/audiostream.h"
@@ -179,27 +179,27 @@ private:
 	int    _exponentHighSizes[kBlockNBSizes];
 	int    _exponentHighBands[kBlockNBSizes][kHighBandSizeMax];
 
-	Common::ScopedPtr<Common::Huffman> _coefHuffman[2]; ///< Coefficients Huffman codes.
+	std::unique_ptr<Common::Huffman> _coefHuffman[2]; ///< Coefficients Huffman codes.
 
 	const WMACoefHuffmanParam *_coefHuffmanParam[2]; ///< Params for coef Huffman codes.
 
-	Common::ScopedArray<uint16> _coefHuffmanRunTable[2];   ///< Run table for the coef Huffman.
-	Common::ScopedArray<float>  _coefHuffmanLevelTable[2]; ///< Level table for the coef Huffman.
-	Common::ScopedArray<uint16> _coefHuffmanIntTable[2];   ///< Int table for the coef Huffman.
+	std::unique_ptr<uint16[]> _coefHuffmanRunTable[2];   ///< Run table for the coef Huffman.
+	std::unique_ptr<float[]>  _coefHuffmanLevelTable[2]; ///< Level table for the coef Huffman.
+	std::unique_ptr<uint16[]> _coefHuffmanIntTable[2];   ///< Int table for the coef Huffman.
 
 	// Noise
 	float _noiseMult;                 ///< Noise multiplier.
 	float _noiseTable[kNoiseTabSize]; ///< Noise table.
 	int   _noiseIndex;
 
-	Common::ScopedPtr<Common::Huffman> _hgainHuffman; ///< Perceptual noise Huffman code.
+	std::unique_ptr<Common::Huffman> _hgainHuffman; ///< Perceptual noise Huffman code.
 
 	// Exponents
 	int   _exponentsBSize[kChannelsMax];
 	float _exponents[kChannelsMax][kBlockSizeMax];
 	float _maxExponent[kChannelsMax];
 
-	Common::ScopedPtr<Common::Huffman> _expHuffman; ///< Exponents Huffman code.
+	std::unique_ptr<Common::Huffman> _expHuffman; ///< Exponents Huffman code.
 
 	// Coded values in high bands
 	bool _highBandCoded [kChannelsMax][kHighBandSizeMax];
@@ -229,7 +229,7 @@ private:
 	float _frameOut[kChannelsMax][kBlockSizeMax * 2];
 
 	// Backing stream for PacketizedAudioStream
-	Common::ScopedPtr<QueuingAudioStream> _audStream;
+	std::unique_ptr<QueuingAudioStream> _audStream;
 
 	// Init helpers
 
@@ -247,9 +247,9 @@ private:
 	void initMDCT();
 	void initExponents();
 
-	Common::Huffman *initCoefHuffman(Common::ScopedArray<uint16> &runTable,
-	                                 Common::ScopedArray<float>  &levelTable,
-	                                 Common::ScopedArray<uint16> &intTable,
+	Common::Huffman *initCoefHuffman(std::unique_ptr<uint16[]> &runTable,
+	                                 std::unique_ptr<float[]>  &levelTable,
+	                                 std::unique_ptr<uint16[]> &intTable,
 	                                 const WMACoefHuffmanParam &params);
 	void initLSPToCurve();
 
@@ -642,7 +642,7 @@ void WMACodec::initNoise() {
 		_noiseTable[i] = (float)((int)seed) * norm;
 	}
 
-	_hgainHuffman.reset(new Common::Huffman(0, ARRAYSIZE(hgainHuffCodes), hgainHuffCodes, hgainHuffBits));
+	_hgainHuffman = std::make_unique<Common::Huffman>(0, ARRAYSIZE(hgainHuffCodes), hgainHuffCodes, hgainHuffBits);
 }
 
 void WMACodec::initCoefHuffman(float bps) {
@@ -678,24 +678,24 @@ void WMACodec::initMDCT() {
 
 void WMACodec::initExponents() {
 	if (_useExpHuffman)
-		_expHuffman.reset(new Common::Huffman(0, ARRAYSIZE(scaleHuffCodes), scaleHuffCodes, scaleHuffBits));
+		_expHuffman = std::make_unique<Common::Huffman>(0, ARRAYSIZE(scaleHuffCodes), scaleHuffCodes, scaleHuffBits);
 	else
 		initLSPToCurve();
 }
 
-Common::Huffman *WMACodec::initCoefHuffman(Common::ScopedArray<uint16> &runTable,
-                                           Common::ScopedArray<float>  &levelTable,
-                                           Common::ScopedArray<uint16> &intTable,
+Common::Huffman *WMACodec::initCoefHuffman(std::unique_ptr<uint16[]> &runTable,
+                                           std::unique_ptr<float[]>  &levelTable,
+                                           std::unique_ptr<uint16[]> &intTable,
                                            const WMACoefHuffmanParam &params) {
 
 	Common::Huffman *huffman =
 		new Common::Huffman(0, params.n, params.huffCodes, params.huffBits);
 
-	runTable.reset  (new uint16[params.n]);
-	levelTable.reset(new  float[params.n]);
-	intTable.reset  (new uint16[params.n]);
+	runTable   = std::make_unique<uint16[]>(params.n);
+	levelTable = std::make_unique< float[]>(params.n);
+	intTable   = std::make_unique<uint16[]>(params.n);
 
-	Common::ScopedArray<uint16> iLevelTable(new uint16[params.n]);
+	std::unique_ptr<uint16[]> iLevelTable = std::make_unique<uint16[]>(params.n);
 
 	int i = 2;
 	int level = 1;
@@ -769,7 +769,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 	Common::BitStream8MSB bits(data);
 
 	int outputDataSize = 0;
-	Common::ScopedArray<int16> outputData;
+	std::unique_ptr<int16[]> outputData;
 
 	_curFrame = 0;
 
@@ -797,7 +797,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 
 		// PCM output data
 		outputDataSize = frameCount * _channels * _frameLen;
-		outputData.reset(new int16[outputDataSize]);
+		outputData = std::make_unique<int16[]>(outputDataSize);
 
 		std::memset(outputData.get(), 0, outputDataSize * 2);
 
@@ -871,7 +871,7 @@ Common::SeekableReadStream *WMACodec::decodeSuperFrame(Common::SeekableReadStrea
 
 		// PCM output data
 		outputDataSize = _channels * _frameLen;
-		outputData.reset(new int16[outputDataSize]);
+		outputData = std::make_unique<int16[]>(outputDataSize);
 
 		std::memset(outputData.get(), 0, outputDataSize * 2);
 
@@ -1717,7 +1717,7 @@ uint32 WMACodec::getLargeVal(Common::BitStream &bits) {
 }
 
 void WMACodec::queuePacket(Common::SeekableReadStream *data) {
-	Common::ScopedPtr<Common::SeekableReadStream> capture(data);
+	std::unique_ptr<Common::SeekableReadStream> capture(data);
 	AudioStream* stream = decodeFrame(*data);
 	if (stream)
 		_audStream->queueAudioStream(stream);

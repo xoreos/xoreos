@@ -347,7 +347,7 @@ ChannelHandle SoundManager::playAudioStream(AudioStream *audStream, SoundType ty
 
 	const TypeList::iterator typeEndIt = _types[type].list.end();
 
-	_channels[handle.channel].reset(new Channel(handle.id, handle.channel, type, typeEndIt, audStream, disposeAfterUse));
+	_channels[handle.channel] = std::make_unique<Channel>(handle.id, handle.channel, type, typeEndIt, audStream, disposeAfterUse);
 	Channel &channel = *_channels[handle.channel];
 
 	if (!channel.stream)
@@ -698,7 +698,7 @@ bool SoundManager::fillBuffer(const Channel &channel, ALuint alBuffer,
 	// Read in the required amount of samples
 	size_t numSamples = kOpenALBufferSize / 2;
 
-	Common::ScopedArray<byte> buffer(new byte[kOpenALBufferSize]);
+	std::unique_ptr<byte[]> buffer = std::make_unique<byte[]>(kOpenALBufferSize);
 	std::memset(buffer.get(), 0, kOpenALBufferSize);
 
 	numSamples = stream->readBuffer(reinterpret_cast<int16 *>(buffer.get()), numSamples);

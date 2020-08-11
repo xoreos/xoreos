@@ -24,11 +24,12 @@
 
 #include <cstring>
 
+#include <memory>
+
 #include <neaacdec.h>
 
 #include <boost/scoped_array.hpp>
 
-#include "src/common/scopedptr.h"
 #include "src/common/disposableptr.h"
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
@@ -63,7 +64,7 @@ private:
 	unsigned long _rate;
 
 	// Backing stream for PacketizedAudioStream
-	Common::ScopedPtr<QueuingAudioStream> _audStream;
+	std::unique_ptr<QueuingAudioStream> _audStream;
 
 	AudioStream *decodeFrame(Common::SeekableReadStream &stream);
 };
@@ -80,7 +81,7 @@ AACDecoder::AACDecoder(Common::SeekableReadStream &extraData) {
 
 	// Copy the extra data to a buffer
 	extraData.seek(0);
-	Common::ScopedArray<byte> extraDataBuf(new byte[extraData.size()]);
+	std::unique_ptr<byte[]> extraDataBuf = std::make_unique<byte[]>(extraData.size());
 	extraData.read(extraDataBuf.get(), extraData.size());
 
 	// Initialize with our extra data
@@ -133,7 +134,7 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 }
 
 void AACDecoder::queuePacket(Common::SeekableReadStream *data) {
-	Common::ScopedPtr<Common::SeekableReadStream> capture(data);
+	std::unique_ptr<Common::SeekableReadStream> capture(data);
 	_audStream->queueAudioStream(decodeFrame(*data));
 }
 

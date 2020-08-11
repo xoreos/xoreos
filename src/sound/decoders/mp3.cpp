@@ -50,9 +50,10 @@
 #include <cassert>
 #include <cstring>
 
+#include <memory>
+
 #include <mad.h>
 
-#include "src/common/scopedptr.h"
 #include "src/common/disposableptr.h"
 #include "src/common/util.h"
 #include "src/common/readstream.h"
@@ -351,7 +352,7 @@ size_t MP3Stream::readBuffer(int16 *buffer, const size_t numSamples) {
 }
 
 RewindableAudioStream *makeMP3Stream(Common::SeekableReadStream *stream, bool disposeAfterUse) {
-	Common::ScopedPtr<RewindableAudioStream> s(new MP3Stream(stream, disposeAfterUse));
+	std::unique_ptr<RewindableAudioStream> s = std::make_unique<MP3Stream>(stream, disposeAfterUse);
 	if (s && s->endOfData())
 		return 0;
 
