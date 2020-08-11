@@ -102,7 +102,7 @@ bool Placeable::click(Object *triggerer) {
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	_resRef = placeable.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utp;
+	std::unique_ptr<Aurora::GFF3File> utp;
 	if (!_resRef.empty())
 		utp.reset(loadOptionalGFF3(_resRef, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 

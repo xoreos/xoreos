@@ -25,7 +25,8 @@
 #ifndef ENGINES_DRAGONAGE_DRAGONAGE_H
 #define ENGINES_DRAGONAGE_DRAGONAGE_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -70,7 +71,7 @@ private:
 	ChangeList _resources;
 	ChangeList _languageTLK;
 
-	Common::ScopedPtr<Game> _game;
+	std::unique_ptr<Game> _game;
 
 
 	void init();

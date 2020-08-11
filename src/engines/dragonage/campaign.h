@@ -28,8 +28,8 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
@@ -148,7 +148,7 @@ private:
 
 	std::vector<Common::UString> _packages;
 
-	Common::ScopedPtr<RIMNode> _rimRoot;
+	std::unique_ptr<RIMNode> _rimRoot;
 	AreaMap _areaMap;
 
 	std::vector<Common::UString> _areas;
@@ -162,7 +162,7 @@ private:
 	Creature *_pc;
 
 	Common::UString _newArea; ///< The new area to enter.
-	Common::ScopedPtr<Area> _currentArea; ///< The current area.
+	std::unique_ptr<Area> _currentArea; ///< The current area.
 
 	EventQueue _eventQueue;
 

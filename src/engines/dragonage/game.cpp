@@ -48,7 +48,7 @@ namespace DragonAge {
 Game::Game(DragonAgeEngine &engine, ::Engines::Console &console) :
 	_engine(&engine), _console(&console) {
 
-	_functions.reset(new Functions(*this));
+	_functions = std::make_unique<Functions>(*this);
 }
 
 Game::~Game() {
@@ -61,7 +61,7 @@ Campaigns &Game::getCampaigns() {
 }
 
 void Game::run() {
-	_campaigns.reset(new Campaigns(*_console, *this));
+	_campaigns = std::make_unique<Campaigns>(*_console, *this);
 
 	while (!EventMan.quitRequested()) {
 		runCampaigns();

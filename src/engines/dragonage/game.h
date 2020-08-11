@@ -26,8 +26,7 @@
 #define ENGINES_DRAGONAGE_GAME_H
 
 #include <vector>
-
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/aurora/language.h"
 
@@ -78,8 +77,8 @@ public:
 private:
 	DragonAgeEngine *_engine;
 
-	Common::ScopedPtr<Campaigns> _campaigns;
-	Common::ScopedPtr<Functions> _functions;
+	std::unique_ptr<Campaigns> _campaigns;
+	std::unique_ptr<Functions> _functions;
 
 	::Engines::Console *_console;
 

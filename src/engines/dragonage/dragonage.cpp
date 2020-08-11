@@ -51,7 +51,7 @@ namespace Engines {
 namespace DragonAge {
 
 DragonAgeEngine::DragonAgeEngine() : _language(Aurora::kLanguageInvalid) {
-	_console.reset(new Console(*this));
+	_console = std::make_unique<Console>(*this);
 }
 
 DragonAgeEngine::~DragonAgeEngine() {
@@ -152,7 +152,7 @@ void DragonAgeEngine::run() {
 
 	CursorMan.showCursor();
 
-	_game.reset(new Game(*this, *_console));
+	_game = std::make_unique<Game>(*this, *_console);
 	_game->run();
 
 	deinit();

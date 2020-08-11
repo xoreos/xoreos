@@ -22,9 +22,10 @@
  *  Dragon Age: Origins engine functions messing with objects.
  */
 
+#include <memory>
+
 #include <boost/make_shared.hpp>
 
-#include "src/common/scopedptr.h"
 #include "src/common/util.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
@@ -286,7 +287,7 @@ void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	int nth = ctx.getParams()[1].getInt();
 
-	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(campaign->findObjectsByTag(tag));
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(campaign->findObjectsByTag(tag));
 	while (nth-- > 0)
 		search->next();
 
@@ -324,7 +325,7 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	if (count == 0)
 		return;
 
-	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(campaign->findObjects());
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(campaign->findObjects());
 	Aurora::NWScript::Object *object = 0;
 
 	std::list<Object *> objects;
@@ -384,7 +385,7 @@ void Functions::getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 	if (count == 0)
 		return;
 
-	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(campaign->findObjectsByTag(tag));
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(campaign->findObjectsByTag(tag));
 	Aurora::NWScript::Object       *object = 0;
 
 	std::list<Object *> objects;
@@ -430,7 +431,7 @@ void Functions::UT_getNearestObjectByTag(Aurora::NWScript::FunctionContext &ctx)
 		return;
 	}
 
-	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(campaign->findObjectsByTag(tag));
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(campaign->findObjectsByTag(tag));
 	Aurora::NWScript::Object *object = 0;
 
 	std::list<Object *> objects;

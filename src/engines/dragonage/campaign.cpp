@@ -22,7 +22,8 @@
  *  The context holding a Dragon Age: Origins campaign.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/error.h"
@@ -179,7 +180,7 @@ void Campaign::readCIFStatic(const Common::UString &path) {
 }
 
 Campaign::RIMNode *Campaign::readRIMs(const GFF4Struct &node, const RIMNode *parent) {
-	Common::ScopedPtr<RIMNode> rim(new RIMNode(parent));
+	std::unique_ptr<RIMNode> rim = std::make_unique<RIMNode>(parent);
 
 	// General node information
 	rim->tag  = node.getString(kGFF4RimTreeNodeTag);
@@ -464,7 +465,7 @@ void Campaign::loadArea() {
 	if (area == _areaMap.end())
 		throw Common::Exception("Area \"%s\" does not exist in this campaign", _newArea.c_str());
 
-	_currentArea.reset(new Area(*this, area->second->area, area->second->environment, area->second->rim));
+	_currentArea = std::make_unique<Area>(*this, area->second->area, area->second->environment, area->second->rim);
 }
 
 bool Campaign::changeArea() {
