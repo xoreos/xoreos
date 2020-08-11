@@ -28,7 +28,7 @@
 #include <list>
 #include <map>
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/ptrlist.h"
 #include "src/common/mutex.h"
 
@@ -98,7 +98,7 @@ private:
 
 	Module *_module; ///< The module this area is in.
 
-	Common::ScopedPtr<Sound::XACTSoundBank> _musicBank;
+	std::unique_ptr<Sound::XACTSoundBank> _musicBank;
 	Sound::ChannelHandle _music;
 
 	int32 _ambientMusicState;

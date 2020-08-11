@@ -108,7 +108,7 @@ void Module::usePC(Creature *pc) {
 void Module::usePC(const CharacterInfo &info) {
 	unloadPC();
 
-	_pc.reset(new Creature());
+	_pc = std::make_unique<Creature>();
 	_pc->createPC(info);
 
 	addObject(*_pc);
@@ -145,7 +145,7 @@ void Module::load() {
 }
 
 void Module::loadArea() {
-	_area.reset(new Area(*this, _module));
+	_area = std::make_unique<Area>(*this, _module);
 }
 
 void Module::unload(bool completeUnload) {

@@ -25,7 +25,8 @@
 #ifndef ENGINES_JADE_JADE_H
 #define ENGINES_JADE_JADE_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -63,7 +64,7 @@ protected:
 private:
 	Aurora::Language _language;
 
-	Common::ScopedPtr<Game> _game;
+	std::unique_ptr<Game> _game;
 
 
 	void init();

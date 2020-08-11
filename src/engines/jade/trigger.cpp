@@ -22,7 +22,7 @@
  *  A trigger in a Jade Empire area.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/maths.h"
@@ -83,7 +83,7 @@ void Trigger::load(const Aurora::GFF3Struct &trigger) {
 
 	if (!temp.empty()) {
 		try {
-			Common::ScopedPtr<Aurora::GFF3File>
+			std::unique_ptr<Aurora::GFF3File>
 				trg(new Aurora::GFF3File(temp, Aurora::kFileTypeTRG, MKTAG('T', 'R', 'G', ' ')));
 
 			loadBlueprint(trg->getTopLevel());

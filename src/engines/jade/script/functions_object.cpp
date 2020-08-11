@@ -22,7 +22,7 @@
  *  Jade Empire engine functions messing with objects.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/util.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
@@ -204,7 +204,7 @@ void Functions::getObjectByTag(Aurora::NWScript::FunctionContext &ctx) {
 
 	int nth = ctx.getParams()[1].getInt();
 
-	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
 	while (nth-- > 0)
 		search->next();
 
@@ -218,7 +218,7 @@ void Functions::getWaypointByTag(Aurora::NWScript::FunctionContext &ctx) {
 	if (tag.empty())
 		return;
 
-	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjectsByTag(tag));
 	Aurora::NWScript::Object *object = 0;
 
 	while ((object = search->next())) {
@@ -243,7 +243,7 @@ void Functions::getNearestObject(Aurora::NWScript::FunctionContext &ctx) {
 	// We want the nth nearest object
 	size_t nth  = MAX<int32>(ctx.getParams()[2].getInt() - 1, 0);
 
-	Common::ScopedPtr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjects());
+	std::unique_ptr<Aurora::NWScript::ObjectSearch> search(_game->getModule().findObjects());
 	Aurora::NWScript::Object *object = 0;
 
 	std::list<Object *> objects;

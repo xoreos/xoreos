@@ -54,7 +54,7 @@ namespace Jade {
 Game::Game(JadeEngine &engine, ::Engines::Console &console, Aurora::Platform platform) :
 	_engine(&engine), _platform(platform), _console(&console) {
 
-	_functions.reset(new Functions(*this));
+	_functions = std::make_unique<Functions>(*this);
 }
 
 Game::~Game() {
@@ -73,7 +73,7 @@ void Game::run() {
 		Common::exceptionDispatcherWarning();
 	}
 
-	_module.reset(new Module(*_console));
+	_module = std::make_unique<Module>(*_console);
 
 	while (!EventMan.quitRequested()) {
 		mainMenu();
@@ -84,7 +84,7 @@ void Game::run() {
 }
 
 void Game::runModule() {
-	Common::ScopedPtr<Creature> fakePC(new Creature);
+	std::unique_ptr<Creature> fakePC = std::make_unique<Creature>();
 	fakePC->createFakePC();
 
 	_module->usePC(fakePC.release());

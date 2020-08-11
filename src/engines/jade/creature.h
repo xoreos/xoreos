@@ -26,7 +26,7 @@
 #define ENGINES_JADE_CREATURE_H
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -87,7 +87,7 @@ private:
 	uint32 _appearance; ///< The creature's general appearance.
 	uint32 _headType;   ///< The creature's type of head if separate from the model.
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The creature's model.
+	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The creature's model.
 
 
 	void load(const Aurora::GFF3Struct &creature);

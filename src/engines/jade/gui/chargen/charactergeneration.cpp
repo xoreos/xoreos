@@ -45,9 +45,9 @@ CharacterGeneration::CharacterGeneration(Module *module) : _module(module), _cus
 	labelBorder->setWidth(250.0f);
 	labelBorder->setHeight(480.0f);
 
-	_selection.reset(new CharacterSelection(*this, _info));
-	_name.reset(new CharacterName(*this, _info));
-	_summary.reset(new CharacterSummary(*this, _info));
+	_selection = std::make_unique<CharacterSelection>(*this, _info);
+	_name = std::make_unique<CharacterName>(*this, _info);
+	_summary = std::make_unique<CharacterSummary>(*this, _info);
 
 	addChild(_selection.get());
 	_current = _selection.get();

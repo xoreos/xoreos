@@ -140,7 +140,7 @@ void MainMenu::addBackground() {
 }
 
 void MainMenu::createOptions() {
-	_options.reset(new OptionsMenu());
+	_options = std::make_unique<OptionsMenu>();
 }
 
 } // End of namespace Jade

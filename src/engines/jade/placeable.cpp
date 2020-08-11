@@ -66,7 +66,7 @@ void Placeable::load(const Aurora::GFF3Struct &placeable) {
 
 	if (!_resRef.empty()) {
 		try {
-			Common::ScopedPtr<Aurora::GFF3File>
+			std::unique_ptr<Aurora::GFF3File>
 				pla(new Aurora::GFF3File(_resRef, Aurora::kFileTypePLA, MKTAG('P', 'L', 'A', ' ')));
 
 			loadBlueprint(pla->getTopLevel());
@@ -135,7 +135,7 @@ void Placeable::loadInstance(const Aurora::GFF3Struct &gff) {
 	_state = gff.getSint("State");
 
 	Common::UString fsmName = gff.getString("FSM");
-	_fsm.reset(new Aurora::GFF3File(fsmName, Aurora::kFileTypeFSM, MKTAG('F', 'S', 'M', ' ')));
+	_fsm = std::make_unique<Aurora::GFF3File>(fsmName, Aurora::kFileTypeFSM, MKTAG('F', 'S', 'M', ' '));
 }
 
 void Placeable::loadAppearance() {

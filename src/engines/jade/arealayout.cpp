@@ -170,7 +170,7 @@ void AreaLayout::loadResources() {
 
 void AreaLayout::loadLYT() {
 	try {
-		Common::ScopedPtr<Common::SeekableReadStream> lyt(ResMan.getResource(_layout, Aurora::kFileTypeLYT));
+		std::unique_ptr<Common::SeekableReadStream> lyt(ResMan.getResource(_layout, Aurora::kFileTypeLYT));
 		if (!lyt)
 			throw Common::Exception("No such LYT");
 
@@ -184,7 +184,7 @@ void AreaLayout::loadLYT() {
 
 void AreaLayout::loadVIS() {
 	try {
-		Common::ScopedPtr<Common::SeekableReadStream> vis(ResMan.getResource(_layout, Aurora::kFileTypeVIS));
+		std::unique_ptr<Common::SeekableReadStream> vis(ResMan.getResource(_layout, Aurora::kFileTypeVIS));
 		if (!vis)
 			throw Common::Exception("No such VIS");
 
@@ -198,7 +198,7 @@ void AreaLayout::loadVIS() {
 
 void AreaLayout::loadART() {
 	try {
-		Common::ScopedPtr<Common::SeekableReadStream> art(ResMan.getResource(_layout, Aurora::kFileTypeART));
+		std::unique_ptr<Common::SeekableReadStream> art(ResMan.getResource(_layout, Aurora::kFileTypeART));
 		if (!art)
 			throw Common::Exception("No such ART");
 

@@ -25,7 +25,7 @@
 #ifndef ENGINES_JADE_ROOM_H
 #define ENGINES_JADE_ROOM_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 #include "src/common/changeid.h"
 
 #include "src/graphics/aurora/types.h"
@@ -51,7 +51,7 @@ private:
 
 	const Common::UString &_resRef;
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _model;
+	std::unique_ptr<Graphics::Aurora::Model> _model;
 
 	bool _walkable;
 

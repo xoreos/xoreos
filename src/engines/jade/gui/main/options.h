@@ -52,11 +52,11 @@ private:
 	void createGameInfoOptions();
 	void createControlOptions();
 
-	Common::ScopedPtr<GUI> _audioOptions;
-	Common::ScopedPtr<GUI> _videoOptions;
-	Common::ScopedPtr<GUI> _difficultyOptions;
-	Common::ScopedPtr<GUI> _gameInfoOptions;
-	Common::ScopedPtr<GUI> _controlOptions;
+	std::unique_ptr<GUI> _audioOptions;
+	std::unique_ptr<GUI> _videoOptions;
+	std::unique_ptr<GUI> _difficultyOptions;
+	std::unique_ptr<GUI> _gameInfoOptions;
+	std::unique_ptr<GUI> _controlOptions;
 
 	Odyssey::WidgetProtoItem *_audioOptionsButton;
 	Odyssey::WidgetProtoItem *_videoOptionsButton;

@@ -64,7 +64,7 @@ namespace Engines {
 namespace Jade {
 
 JadeEngine::JadeEngine() : _language(Aurora::kLanguageInvalid) {
-	_console.reset(new Console(*this));
+	_console = std::make_unique<Console>(*this);
 }
 
 JadeEngine::~JadeEngine() {
@@ -168,7 +168,7 @@ void JadeEngine::run() {
 
 	CursorMan.showCursor();
 
-	_game.reset(new Game(*this, *_console, _platform));
+	_game = std::make_unique<Game>(*this, *_console, _platform);
 	_game->run();
 
 	deinit();

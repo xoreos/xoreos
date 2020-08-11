@@ -96,7 +96,7 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 
 	if (!temp.empty()) {
 		try {
-			Common::ScopedPtr<Aurora::GFF3File>
+			std::unique_ptr<Aurora::GFF3File>
 				cre(new Aurora::GFF3File(temp, Aurora::kFileTypeCRE, MKTAG('C', 'R', 'E', ' ')));
 
 			loadBlueprint(cre->getTopLevel());

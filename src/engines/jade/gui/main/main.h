@@ -51,7 +51,7 @@ private:
 
 	AreaLayout *_background;
 
-	Common::ScopedPtr<GUI> _options;
+	std::unique_ptr<GUI> _options;
 
 	void createOptions();
 };

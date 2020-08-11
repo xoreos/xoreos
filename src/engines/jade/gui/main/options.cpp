@@ -87,23 +87,23 @@ OptionsMenu::OptionsMenu(Console *console) : GUI(console) {
 }
 
 void OptionsMenu::createAudioOptions() {
-	_audioOptions.reset(new AudioOptionsMenu(_console));
+	_audioOptions = std::make_unique<AudioOptionsMenu>(_console);
 }
 
 void OptionsMenu::createVideoOptions() {
-	_videoOptions.reset(new VideoOptionsMenu(_console));
+	_videoOptions = std::make_unique<VideoOptionsMenu>(_console);
 }
 
 void OptionsMenu::createDifficultyOptions() {
-	_difficultyOptions.reset(new DifficultyOptionsMenu(_console));
+	_difficultyOptions = std::make_unique<DifficultyOptionsMenu>(_console);
 }
 
 void OptionsMenu::createGameInfoOptions() {
-	_gameInfoOptions.reset(new GameInfoOptionsMenu(_console));
+	_gameInfoOptions = std::make_unique<GameInfoOptionsMenu>(_console);
 }
 
 void OptionsMenu::createControlOptions() {
-	_controlOptions.reset(new ControlOptionsMenu(_console));
+	_controlOptions = std::make_unique<ControlOptionsMenu>(_console);
 }
 
 void OptionsMenu::callbackRun() {
