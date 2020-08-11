@@ -50,7 +50,7 @@ private:
 	void startChargenMusic();
 	void stopMusic();
 
-	Common::ScopedPtr<GUI> _classSelection;
+	std::unique_ptr<GUI> _classSelection;
 
 	Sound::ChannelHandle _menuMusic;
 

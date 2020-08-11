@@ -55,7 +55,7 @@ namespace Engines {
 namespace KotOR2 {
 
 KotOR2Engine::KotOR2Engine() : _language(Aurora::kLanguageInvalid) {
-	_console.reset(new Console(*this));
+	_console = std::make_unique<Console>(*this);
 }
 
 KotOR2Engine::~KotOR2Engine() {
@@ -122,7 +122,7 @@ void KotOR2Engine::run() {
 
 	CursorMan.showCursor();
 
-	_game.reset(new Game(*this, *_console, _platform));
+	_game = std::make_unique<Game>(*this, *_console, _platform);
 	_game->run();
 
 	deinit();

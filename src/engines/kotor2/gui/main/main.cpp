@@ -85,7 +85,7 @@ void MainMenu::initWidget(Widget &widget) {
 
 void MainMenu::createClassSelection() {
 	if (!_classSelection)
-		_classSelection.reset(new ClassSelection(_module));
+		_classSelection = std::make_unique<ClassSelection>(_module);
 }
 
 void MainMenu::startMainMusic() {

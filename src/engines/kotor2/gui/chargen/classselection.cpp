@@ -117,42 +117,42 @@ void ClassSelection::callbackRun() {
 
 void ClassSelection::callbackActive(Widget &widget) {
 	if (widget.getTag() == "BTN_SEL1") {
-		_chargen.reset(new CharacterGeneration(_module, _consularMaleInfo));
+		_chargen = std::make_unique<CharacterGeneration>(_module, _consularMaleInfo);
 		if (sub(*_chargen) == 2) {
 			_returnCode = 2;
 		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL2") {
-		_chargen.reset(new CharacterGeneration(_module, _guardianMaleInfo));
+		_chargen = std::make_unique<CharacterGeneration>(_module, _guardianMaleInfo);
 		if (sub(*_chargen) == 2) {
 			_returnCode = 2;
 		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL3") {
-		_chargen.reset(new CharacterGeneration(_module, _sentinelMaleInfo));
+		_chargen = std::make_unique<CharacterGeneration>(_module, _sentinelMaleInfo);
 		if (sub(*_chargen) == 2) {
 			_returnCode = 2;
 		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL4") {
-		_chargen.reset(new CharacterGeneration(_module, _sentinelFemaleInfo));
+		_chargen = std::make_unique<CharacterGeneration>(_module, _sentinelFemaleInfo);
 		if (sub(*_chargen) == 2) {
 			_returnCode = 2;
 		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL5") {
-		_chargen.reset(new CharacterGeneration(_module, _guardianFemaleInfo));
+		_chargen = std::make_unique<CharacterGeneration>(_module, _guardianFemaleInfo);
 		if (sub(*_chargen) == 2) {
 			_returnCode = 2;
 		}
 		return;
 	}
 	if (widget.getTag() == "BTN_SEL6") {
-		_chargen.reset(new CharacterGeneration(_module, _consularFemaleInfo));
+		_chargen = std::make_unique<CharacterGeneration>(_module, _consularFemaleInfo);
 		if (sub(*_chargen) == 2) {
 			_returnCode = 2;
 		}

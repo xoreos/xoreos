@@ -39,9 +39,9 @@ namespace Engines {
 namespace KotOR2 {
 
 Module::Module(::Engines::Console &console) : KotORBase::Module(console) {
-	_ingame.reset(new IngameGUI(*this));
-	_dialog.reset(new DialogGUI(*this));
-	_partySelection.reset(new PartySelectionGUI());
+	_ingame = std::make_unique<IngameGUI>(*this);
+	_dialog = std::make_unique<DialogGUI>(*this);
+	_partySelection = std::make_unique<PartySelectionGUI>();
 
 	loadTexturePack();
 }

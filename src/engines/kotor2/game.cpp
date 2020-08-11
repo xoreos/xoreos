@@ -57,7 +57,7 @@ Game::Game(KotOR2Engine &engine, Engines::Console &console, Aurora::Platform pla
 		_engine(&engine),
 		_platform(platform) {
 
-	_functions.reset(new Functions(*this));
+	_functions = std::make_unique<Functions>(*this);
 	collectModules();
 }
 
@@ -65,7 +65,7 @@ Game::~Game() {
 }
 
 void Game::run() {
-	_module.reset(new Module(*_console));
+	_module = std::make_unique<Module>(*_console);
 
 	while (!EventMan.quitRequested()) {
 		mainMenu();

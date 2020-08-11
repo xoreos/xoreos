@@ -79,28 +79,28 @@ void CharacterGeneration::showQuickOrCustom() {
 	if (_customCharPanel)
 		removeChild(_customCharPanel.get());
 
-	_quickOrCustomPanel.reset(new QuickOrCustomPanel(this));
+	_quickOrCustomPanel = std::make_unique<QuickOrCustomPanel>(this);
 	addChild(_quickOrCustomPanel.get());
 }
 
 void CharacterGeneration::showQuickChar() {
 	removeChild(_quickOrCustomPanel.get());
 
-	_quickCharPanel.reset(new QuickCharPanel(this));
+	_quickCharPanel = std::make_unique<QuickCharPanel>(this);
 	addChild(_quickCharPanel.get());
 }
 
 void CharacterGeneration::showCustomChar() {
 	removeChild(_quickOrCustomPanel.get());
 
-	_customCharPanel.reset(new CustomCharPanel(this));
+	_customCharPanel = std::make_unique<CustomCharPanel>(this);
 	addChild(_customCharPanel.get());
 }
 
 void CharacterGeneration::showName() {
 	CharacterGenerationInfo info = *_chargenInfo;
 
-	_charGenMenu.reset(new CharacterGenerationNameMenu(info));
+	_charGenMenu = std::make_unique<CharacterGenerationNameMenu>(info);
 	sub(*_charGenMenu, kStartCodeNone, true, false);
 
 	if (_charGenMenu->isAccepted()) {
@@ -113,7 +113,7 @@ void CharacterGeneration::showName() {
 void CharacterGeneration::showPortrait() {
 	CharacterGenerationInfo info = *_chargenInfo;
 
-	_charGenMenu.reset(new CharacterGenerationPortraitMenu(info));
+	_charGenMenu = std::make_unique<CharacterGenerationPortraitMenu>(info);
 	sub(*_charGenMenu);
 
 	if (_charGenMenu->isAccepted()) {

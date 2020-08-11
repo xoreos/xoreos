@@ -67,11 +67,11 @@ private:
 
 	int _step;
 
-	Common::ScopedPtr<GUI> _quickOrCustomPanel;
-	Common::ScopedPtr<GUI> _quickCharPanel;
-	Common::ScopedPtr<GUI> _customCharPanel;
+	std::unique_ptr<GUI> _quickOrCustomPanel;
+	std::unique_ptr<GUI> _quickCharPanel;
+	std::unique_ptr<GUI> _customCharPanel;
 
-	Common::ScopedPtr<CharacterGenerationBaseMenu> _charGenMenu;
+	std::unique_ptr<CharacterGenerationBaseMenu> _charGenMenu;
 };
 
 } // End of namespace KotOR2

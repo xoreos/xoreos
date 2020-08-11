@@ -54,7 +54,7 @@ protected:
 private:
 	KotORBase::Module *_module;
 
-	Common::ScopedPtr<CharacterGeneration> _chargen;
+	std::unique_ptr<CharacterGeneration> _chargen;
 
 	CharacterGenerationInfo *_consularMaleInfo;
 	CharacterGenerationInfo *_sentinelMaleInfo;
