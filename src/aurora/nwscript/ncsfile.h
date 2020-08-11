@@ -27,9 +27,9 @@
 
 #include <vector>
 #include <stack>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/aurorafile.h"
@@ -182,7 +182,7 @@ private:
 	Common::UString _parameterString;
 
 	NCSStack _stack;
-	Common::ScopedPtr<Common::SeekableReadStream> _script;
+	std::unique_ptr<Common::SeekableReadStream> _script;
 
 	Variable _return;
 

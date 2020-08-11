@@ -102,7 +102,7 @@ void IFOFile::load(Common::SeekableReadStream *stream, bool repairNWNPremium) {
 	unload();
 
 	assert(stream);
-	_gff.reset(new GFF3File(stream, MKTAG('I', 'F', 'O', ' '), repairNWNPremium));
+	_gff = std::make_unique<GFF3File>(stream, MKTAG('I', 'F', 'O', ' '), repairNWNPremium);
 
 	const GFF3Struct &ifoTop = _gff->getTopLevel();
 
@@ -129,7 +129,7 @@ void IFOFile::load(Common::SeekableReadStream *stream, bool repairNWNPremium) {
 
 	// ID
 	const size_t idSize = _isSave ? 32 : 16;
-	Common::ScopedPtr<Common::SeekableReadStream> id(ifoTop.getData("Mod_ID"));
+	std::unique_ptr<Common::SeekableReadStream> id(ifoTop.getData("Mod_ID"));
 
 	if (id && (id->read(_id, idSize) != idSize))
 		throw Common::Exception("Can't read MOD ID");

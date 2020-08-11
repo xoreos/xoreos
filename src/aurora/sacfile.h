@@ -44,7 +44,7 @@ public:
 
 private:
 	Common::UString _levelFile;
-	Common::ScopedPtr<Common::SeekableReadStream> _stream;
+	std::unique_ptr<Common::SeekableReadStream> _stream;
 
 	Common::SeekableReadStream *load(Common::SeekableReadStream *stream);
 };

@@ -37,7 +37,7 @@ namespace Aurora {
 PEFile::PEFile(Common::SeekableReadStream *exe, const std::vector<Common::UString> &remap) {
 	assert(exe);
 
-	_peFile.reset(new Common::PEResources(exe));
+	_peFile = std::make_unique<Common::PEResources>(exe);
 
 	load(remap);
 }
@@ -58,7 +58,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoC
 
 	switch (iter->type) {
 		case kFileTypeBMP: {
-			Common::ScopedPtr<Common::SeekableReadStream> stream(_peFile->getResource(Common::kPEBitmap, _peIDs.at(index)));
+			std::unique_ptr<Common::SeekableReadStream> stream(_peFile->getResource(Common::kPEBitmap, _peIDs.at(index)));
 
 			Common::MemoryWriteStreamDynamic bmp(true);
 			bmp.writeByte('B');
@@ -77,7 +77,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32 index, bool UNUSED(tryNoC
 			// Convert from the PE cursor group/cursor format to the standalone
 			// cursor format.
 
-			Common::ScopedPtr<Common::SeekableReadStream>
+			std::unique_ptr<Common::SeekableReadStream>
 					cursorGroup(_peFile->getResource(Common::kPEGroupCursor, _peIDs[index]));
 
 			if (!cursorGroup)

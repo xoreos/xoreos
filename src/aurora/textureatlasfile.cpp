@@ -37,7 +37,7 @@
 namespace Aurora {
 
 TextureAtlasFile::TextureAtlasFile(Common::UString name) {
-	Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource(name, kFileTypeXML));
+	std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(name, kFileTypeXML));
 	load(*stream);
 }
 

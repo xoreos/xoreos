@@ -28,9 +28,10 @@
 
 #include <cassert>
 
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/error.h"
-#include "src/common/scopedptr.h"
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/readstream.h"
@@ -232,7 +233,7 @@ void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda,
 	const size_t columnCount = _headers.size();
 
 	while (!twoda.eos()) {
-		Common::ScopedPtr<TwoDARow> row(new TwoDARow(*this));
+		std::unique_ptr<TwoDARow> row(new TwoDARow(*this));
 
 		/* Skip the first token, which is the row index, possibly indented.
 		 * The row index is implicit in the data and its use in the 2DA
@@ -303,7 +304,7 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 	const size_t rowCount    = _rows.size();
 	const size_t cellCount   = columnCount * rowCount;
 
-	Common::ScopedArray<uint32> offsets(new uint32[cellCount]);
+	std::unique_ptr<uint32[]> offsets = std::make_unique<uint32[]>(cellCount);
 
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 

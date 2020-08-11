@@ -167,8 +167,7 @@ void GFF4File::loadHeader(uint32 type) {
 	_header.read(*_origStream, _version);
 
 	const size_t pos = _origStream->pos();
-	_stream.reset(new Common::SeekableSubReadStreamEndian(_origStream.get(), 0, _origStream->size(),
-	                                                      _header.isBigEndian(), false));
+	_stream = std::make_unique<Common::SeekableSubReadStreamEndian>(_origStream.get(), 0, _origStream->size(), _header.isBigEndian(), false);
 	_stream->seek(pos);
 
 	if ((type != 0xFFFFFFFF) && (_header.type != type))

@@ -25,8 +25,9 @@
 #ifndef AURORA_ZIPFILE_H
 #define AURORA_ZIPFILE_H
 
+#include <memory>
+
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/archive.h"
@@ -56,7 +57,7 @@ public:
 
 private:
 	/** The actual zip file. */
-	Common::ScopedPtr<Common::ZipFile> _zipFile;
+	std::unique_ptr<Common::ZipFile> _zipFile;
 
 	/** External list of resource names and types. */
 	ResourceList _resources;

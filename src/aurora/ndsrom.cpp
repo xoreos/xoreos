@@ -39,7 +39,7 @@
 namespace Aurora {
 
 NDSFile::NDSFile(const Common::UString &fileName) {
-	_nds.reset(new Common::ReadFile(fileName));
+	_nds = std::make_unique<Common::ReadFile>(fileName);
 
 	load(*_nds);
 }

@@ -350,7 +350,7 @@ void decompress(uint32 csize, uint8 *cbuf, uint32 step1, uint32 step2, uint32 ds
 	uint8 *dptr    = dbuf;
 
 	for (size_t i = 0; i < 3; ++i) {
-		auto dic = std::unique_ptr<Dictionary>(new Dictionary(params[i]));
+		std::unique_ptr<Dictionary> dic = std::make_unique<Dictionary>(params[i]);
 
 		while (dptr < dbuf + steps[i]) {
 			dptr += dic->decompressBlock(dec, dptr);
@@ -359,7 +359,7 @@ void decompress(uint32 csize, uint8 *cbuf, uint32 step1, uint32 step2, uint32 ds
 }
 
 Common::ReadStream *decompressOodle1(byte *data, size_t compressedSize, size_t decompressedSize, uint32 stop0, uint32 stop1) {
-	std::unique_ptr<byte[]> decompressedData(new byte[decompressedSize]);
+	std::unique_ptr<byte[]> decompressedData = std::make_unique<byte[]>(decompressedSize);
 
 	std::memset(decompressedData.get(), 0, decompressedSize);
 

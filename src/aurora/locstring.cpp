@@ -26,8 +26,9 @@
  * (<https://github.com/xoreos/xoreos-docs/tree/master/specs/bioware>)
  */
 
+#include <memory>
+
 #include "src/common/util.h"
-#include "src/common/scopedptr.h"
 #include "src/common/memreadstream.h"
 #include "src/common/encoding.h"
 
@@ -146,8 +147,8 @@ void LocString::readString(uint32 languageID, Common::SeekableReadStream &stream
 
 	s.first->second = "[???]";
 
-	Common::ScopedPtr<Common::MemoryReadStream> data(stream.readStream(length));
-	Common::ScopedPtr<Common::MemoryReadStream> parsed(LangMan.preParseColorCodes(*data));
+	std::unique_ptr<Common::MemoryReadStream> data(stream.readStream(length));
+	std::unique_ptr<Common::MemoryReadStream> parsed(LangMan.preParseColorCodes(*data));
 
 	Common::Encoding encoding = LangMan.getEncodingLocString(LangMan.getLanguageGendered(languageID));
 	if (encoding != Common::kEncodingInvalid)
@@ -185,7 +186,7 @@ static Common::SeekableReadStream *convertString(const Common::UString &str, uin
 uint32 LocString::getWrittenSize(bool withNullTerminate) const {
 	uint32 size = 0;
 	for (StringMap::const_iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
-		Common::ScopedPtr<Common::SeekableReadStream> str(convertString(iter->second, iter->first, withNullTerminate));
+		std::unique_ptr<Common::SeekableReadStream> str(convertString(iter->second, iter->first, withNullTerminate));
 
 		size += str->size() + 8;
 	}
@@ -195,7 +196,7 @@ uint32 LocString::getWrittenSize(bool withNullTerminate) const {
 
 void LocString::writeLocString(Common::WriteStream &stream, bool withNullTerminate) const {
 	for (StringMap::const_iterator iter = _strings.begin(); iter != _strings.end() ; iter++) {
-		Common::ScopedPtr<Common::SeekableReadStream> str(convertString(iter->second, iter->first, withNullTerminate));
+		std::unique_ptr<Common::SeekableReadStream> str(convertString(iter->second, iter->first, withNullTerminate));
 
 		stream.writeUint32LE(iter->first);
 		stream.writeUint32LE(str->size());

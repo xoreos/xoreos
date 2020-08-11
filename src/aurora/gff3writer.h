@@ -82,7 +82,7 @@ private:
 
 	/** A special struct type for representing void data. */
 	struct VoidData {
-		Common::ScopedPtr<Common::SeekableReadStream> data;
+		std::unique_ptr<Common::SeekableReadStream> data;
 
 		VoidData() { }
 

@@ -25,12 +25,13 @@
 #ifndef AURORA_GFXFILE_H
 #define AURORA_GFXFILE_H
 
+#include <memory>
+
 #include <boost/variant.hpp>
 #include <boost/optional.hpp>
 
 #include "external/glm/glm.hpp"
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 #include "src/common/readstream.h"
 #include "src/common/rect.h"
@@ -380,7 +381,7 @@ private:
 	std::vector<GFXControl> _controlTags;
 
 	/** The read stream of this gfx file. */
-	Common::ScopedPtr<Common::SeekableReadStream> _gfx;
+	std::unique_ptr<Common::SeekableReadStream> _gfx;
 
 	/** The standard bounds of the ui in this file. */
 	Common::Rect _frameSize;

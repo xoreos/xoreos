@@ -31,8 +31,9 @@
  * The second one *always* takes over the original SeekableReadStream.
  */
 
+#include <memory>
+
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 #include "src/aurora/nitrofile.h"
@@ -59,7 +60,7 @@ Common::SeekableSubReadStreamEndian *NitroFile::open(Common::SeekableReadStream 
 }
 
 Common::SeekableSubReadStreamEndian *NitroFile::open(Common::SeekableReadStream *stream) {
-	Common::ScopedPtr<Common::SeekableReadStream> nitroStream(stream);
+	std::unique_ptr<Common::SeekableReadStream> nitroStream(stream);
 
 	const size_t begin = nitroStream->pos();
 	const size_t end   = nitroStream->size();

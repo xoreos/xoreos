@@ -54,7 +54,7 @@ void OBBFile::load(Common::SeekableReadStream &obb) {
 	try {
 		/* Extract the resource index and read the resource list out of it. */
 
-		Common::ScopedPtr<Common::SeekableReadStream> obbIndex(getIndex(obb));
+		std::unique_ptr<Common::SeekableReadStream> obbIndex(getIndex(obb));
 		readResList(*obbIndex);
 
 	} catch (Common::Exception &e) {
@@ -193,7 +193,7 @@ Common::SeekableReadStream *OBBFile::getResource(uint32 index, bool UNUSED(tryNo
 
 	_obb->seek(res.offset);
 
-	Common::ScopedArray<byte> data(new byte[res.uncompressedSize]);
+	std::unique_ptr<byte[]> data = std::make_unique<byte[]>(res.uncompressedSize);
 
 	size_t offset = 0;
 	size_t bytesLeft = res.uncompressedSize;

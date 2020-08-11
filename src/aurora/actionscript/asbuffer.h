@@ -26,11 +26,11 @@
 #define AURORA_ACTIONSCRIPT_ASBUFFER_H
 
 #include <stack>
+#include <memory>
 
 #include <boost/any.hpp>
 
 #include "src/common/readstream.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/actionscript/avm.h"
 #include "src/aurora/actionscript/object.h"

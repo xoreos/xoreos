@@ -27,9 +27,9 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -77,7 +77,7 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
-	Common::ScopedPtr<Common::SeekableReadStream> _herf;
+	std::unique_ptr<Common::SeekableReadStream> _herf;
 
 	/** External list of resource names and types. */
 	ResourceList _resources;

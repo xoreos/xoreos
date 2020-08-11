@@ -210,7 +210,7 @@ void ERFFile::verifyPasswordDigest() {
 			buffer[i] = i;
 
 		Common::MemoryReadStream bufferStream(buffer);
-		Common::ScopedPtr<Common::SeekableReadStream>
+		std::unique_ptr<Common::SeekableReadStream>
 			bufferEncrypted(Common::encryptBlowfishEBC(bufferStream, _password));
 
 		if (!Common::compareMD5Digest(*bufferEncrypted, _header.passwordDigest))
@@ -225,7 +225,7 @@ void ERFFile::verifyPasswordDigest() {
 bool ERFFile::decryptNWNPremiumHeader(Common::SeekableReadStream &erf, ERFHeader &header,
                                       const std::vector<byte> &password) {
 
-	Common::ScopedPtr<Common::SeekableReadStream>
+	std::unique_ptr<Common::SeekableReadStream>
 		decryptERF(decrypt(erf, erf.pos(), 152, kEncryptionBlowfishNWN, password));
 
 	readV11Header(*decryptERF, header);
@@ -418,7 +418,7 @@ void ERFFile::readV30Header(Common::SeekableReadStream &erf, ERFHeader &header, 
 	if (erf.read(&header.passwordDigest[0], Common::kMD5Length) != Common::kMD5Length)
 		throw Common::Exception(Common::kReadError);
 
-	header.stringTable.reset(new char[header.stringTableSize]);
+	header.stringTable = std::make_unique<char[]>(header.stringTableSize);
 	if (erf.read(header.stringTable.get(), header.stringTableSize) != header.stringTableSize) {
 		header.clearStringTable();
 		throw Common::Exception("Failed to read ERF string table");
@@ -746,7 +746,7 @@ Common::MemoryReadStream *ERFFile::decrypt(Common::SeekableReadStream *cryptStre
 
 	assert(cryptStream);
 
-	Common::ScopedPtr<Common::SeekableReadStream> stream(cryptStream);
+	std::unique_ptr<Common::SeekableReadStream> stream(cryptStream);
 
 	return decrypt(*stream, encryption, password);
 }
@@ -766,7 +766,7 @@ Common::SeekableReadStream *ERFFile::decrypt(Common::SeekableReadStream &erf, si
 Common::SeekableReadStream *ERFFile::decompress(Common::MemoryReadStream *packedStream,
                                                 uint32 unpackedSize) const {
 
-	Common::ScopedPtr<Common::MemoryReadStream> stream(packedStream);
+	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
 
 	switch (_header.compression) {
 		case kCompressionNone:
@@ -798,7 +798,7 @@ Common::SeekableReadStream *ERFFile::decompressBiowareZlib(Common::MemoryReadStr
 
 	assert(packedStream);
 
-	Common::ScopedPtr<Common::MemoryReadStream> stream(packedStream);
+	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
 
 	const byte * const compressedData = stream->getData();
 	const uint32 packedSize = stream->size();
@@ -813,7 +813,7 @@ Common::SeekableReadStream *ERFFile::decompressHeaderlessZlib(Common::MemoryRead
 
 	assert(packedStream);
 
-	Common::ScopedPtr<Common::MemoryReadStream> stream(packedStream);
+	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
 
 	const byte * const compressedData = stream->getData();
 	const uint32 packedSize = stream->size();
@@ -828,7 +828,7 @@ Common::SeekableReadStream *ERFFile::decompressStandardZlib(Common::MemoryReadSt
 
 	assert(packedStream);
 
-	Common::ScopedPtr<Common::MemoryReadStream> stream(packedStream);
+	std::unique_ptr<Common::MemoryReadStream> stream(packedStream);
 
 	const byte * const compressedData = stream->getData();
 	const uint32 packedSize = stream->size();

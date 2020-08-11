@@ -718,7 +718,7 @@ void GFXFile::readDefineEditText() {
 void GFXFile::readInitAction(ActionScript::AVM &avm) {
 	_gfx->skip(2); // Sprite Id
 
-	Common::ScopedPtr<ActionScript::ASBuffer> buffer(readAction());
+	std::unique_ptr<ActionScript::ASBuffer> buffer(readAction());
 	try {
 		buffer->run(avm);
 	} catch (Common::Exception &e) {

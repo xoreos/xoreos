@@ -26,9 +26,9 @@
 #define AURORA_ERFFILE_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -177,8 +177,8 @@ private:
 
 		bool   isNWNPremium;     ///< Is this a Neverwinter Nights premium module?
 
-		Common::ScopedArray<char> stringTable; ///< String table used for hashed ERFs.
-		uint32 stringTableSize;                ///< Size of the string table.
+		std::unique_ptr<char[]> stringTable; ///< String table used for hashed ERFs.
+		uint32 stringTableSize;              ///< Size of the string table.
 
 		uint32 moduleID;         ///< ID of the module this ERF belongs to.
 
@@ -206,7 +206,7 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
-	Common::ScopedPtr<Common::SeekableReadStream> _erf;
+	std::unique_ptr<Common::SeekableReadStream> _erf;
 
 	ERFHeader _header;
 

@@ -60,6 +60,8 @@ class GDAFile;
  */
 class TwoDARow : boost::noncopyable {
 public:
+	~TwoDARow();
+
 	/** Return the contents of a cell as a string. */
 	const Common::UString &getString(size_t column) const;
 	/** Return the contents of a cell as a string. */
@@ -86,7 +88,6 @@ private:
 	std::vector<Common::UString> _data;
 
 	TwoDARow(TwoDAFile &parent);
-	~TwoDARow();
 
 	const Common::UString &getCell(size_t n) const;
 

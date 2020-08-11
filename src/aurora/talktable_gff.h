@@ -26,9 +26,9 @@
 #define AURORA_TALKTABLE_GFF_H
 
 #include <map>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 
@@ -83,7 +83,7 @@ private:
 	typedef Common::PtrMap<uint32, Entry> Entries;
 
 
-	Common::ScopedPtr<GFF4File> _gff;
+	std::unique_ptr<GFF4File> _gff;
 
 	mutable Entries _entries;
 

@@ -26,9 +26,9 @@
 #define AURORA_NDSROM_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -82,7 +82,7 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
-	Common::ScopedPtr<Common::SeekableReadStream> _nds;
+	std::unique_ptr<Common::SeekableReadStream> _nds;
 
 	Common::UString _title;
 	Common::UString _code;

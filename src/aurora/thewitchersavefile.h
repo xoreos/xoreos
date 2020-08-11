@@ -63,7 +63,7 @@ private:
 		uint32 length;
 	};
 
-	Common::ScopedPtr<Common::SeekableReadStream> _tws;
+	std::unique_ptr<Common::SeekableReadStream> _tws;
 
 	Common::UString _areaName;
 

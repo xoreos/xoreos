@@ -26,9 +26,9 @@
 #define AURORA_RIMFILE_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/archive.h"
@@ -82,7 +82,7 @@ private:
 
 	typedef std::vector<IResource> IResourceList;
 
-	Common::ScopedPtr<Common::SeekableReadStream> _rim;
+	std::unique_ptr<Common::SeekableReadStream> _rim;
 
 	/** External list of resource names and types. */
 	ResourceList _resources;

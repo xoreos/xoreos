@@ -27,11 +27,11 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
@@ -122,7 +122,7 @@ private:
 	typedef std::vector<GFF3List> ListArray;
 
 
-	Common::ScopedPtr<Common::SeekableReadStream> _stream;
+	std::unique_ptr<Common::SeekableReadStream> _stream;
 
 	Header _header; ///< The GFF3's header.
 

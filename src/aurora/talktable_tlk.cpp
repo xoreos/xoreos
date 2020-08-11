@@ -126,8 +126,8 @@ void TalkTable_TLK::readString(Entry &entry) const {
 	if (length == 0)
 		return;
 
-	Common::ScopedPtr<Common::MemoryReadStream> data(_tlk->readStream(length));
-	Common::ScopedPtr<Common::MemoryReadStream> parsed(LangMan.preParseColorCodes(*data));
+	std::unique_ptr<Common::MemoryReadStream> data(_tlk->readStream(length));
+	std::unique_ptr<Common::MemoryReadStream> parsed(LangMan.preParseColorCodes(*data));
 
 	if (_encoding != Common::kEncodingInvalid)
 		entry.text = Common::readString(*parsed, _encoding);

@@ -272,7 +272,7 @@ void NSBTXFile::getPalette(ReadContext &ctx) const {
 	if (!palette)
 		throw Common::Exception("Couldn't find a palette for texture \"%s\"", ctx.texture->name.c_str());
 
-	Common::ScopedArray<byte> palData(new byte[size]);
+	std::unique_ptr<byte[]> palData = std::make_unique<byte[]>(size);
 	memset(palData.get(), 0, size);
 
 	ctx.nsbtx->seek(palette->offset);

@@ -26,9 +26,9 @@
 #define AURORA_TALKTABLE_TLK_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/aurorafile.h"
@@ -98,7 +98,7 @@ private:
 	typedef std::vector<Entry> Entries;
 
 
-	Common::ScopedPtr<Common::SeekableReadStream> _tlk;
+	std::unique_ptr<Common::SeekableReadStream> _tlk;
 
 	uint32 _languageID;
 

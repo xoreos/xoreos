@@ -26,9 +26,9 @@
 #define AURORA_PEFILE_H
 
 #include <vector>
+#include <memory>
 
 #include "src/common/types.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -56,7 +56,7 @@ public:
 
 private:
 	/** The actual exe. */
-	Common::ScopedPtr<Common::PEResources> _peFile;
+	std::unique_ptr<Common::PEResources> _peFile;
 
 	/** External list of resource names and types. */
 	ResourceList _resources;

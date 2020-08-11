@@ -22,8 +22,9 @@
  *  The global 2DA registry.
  */
 
+#include <memory>
+
 #include "src/common/error.h"
-#include "src/common/scopedptr.h"
 #include "src/common/readstream.h"
 
 #include "src/aurora/2dareg.h"
@@ -145,15 +146,15 @@ void TwoDARegistry::removeGDA(const Common::UString &name) {
 }
 
 TwoDAFile *TwoDARegistry::load2DA(const Common::UString &name) {
-	Common::ScopedPtr<Common::SeekableReadStream> twodaFile;
-	Common::ScopedPtr<TwoDAFile> twoda;
+	std::unique_ptr<Common::SeekableReadStream> twodaFile;
+	std::unique_ptr<TwoDAFile> twoda;
 
 	try {
 		twodaFile.reset(ResMan.getResource(name, kFileType2DA));
 		if (!twodaFile)
 			throw Common::Exception("No such 2DA");
 
-		twoda.reset(new TwoDAFile(*twodaFile));
+		twoda = std::make_unique<TwoDAFile>(*twodaFile);
 
 	} catch (Common::Exception &e) {
 		e.add("Failed loading 2DA \"%s\"", name.c_str());
@@ -164,15 +165,15 @@ TwoDAFile *TwoDARegistry::load2DA(const Common::UString &name) {
 }
 
 GDAFile *TwoDARegistry::loadGDA(const Common::UString &name) {
-	Common::ScopedPtr<Common::SeekableReadStream> gdaFile;
-	Common::ScopedPtr<GDAFile> gda;
+	std::unique_ptr<Common::SeekableReadStream> gdaFile;
+	std::unique_ptr<GDAFile> gda;
 
 	try {
 		gdaFile.reset(ResMan.getResource(name, kFileTypeGDA));
 		if (!gdaFile)
 			throw Common::Exception("No such GDA");
 
-		gda.reset(new GDAFile(gdaFile.release()));
+		gda = std::make_unique<GDAFile>(gdaFile.release());
 
 	} catch (Common::Exception &e) {
 		e.add("Failed loading GDA \"%s\"", name.c_str());
@@ -193,7 +194,7 @@ GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
 	std::list<ResourceManager::ResourceID> gdas;
 	ResMan.getAvailableResources(kFileTypeGDA, gdas);
 
-	Common::ScopedPtr<GDAFile> gda;
+	std::unique_ptr<GDAFile> gda;
 
 	try {
 		for (std::list<ResourceManager::ResourceID>::const_iterator g = gdas.begin(); g != gdas.end(); ++g) {
@@ -203,13 +204,13 @@ GDAFile *TwoDARegistry::loadMGDA(Common::UString prefix) {
 
 			// Load the GDA
 
-			Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource(g->name, kFileTypeGDA));
+			std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(g->name, kFileTypeGDA));
 			if (!stream)
 				throw Common::Exception("No such GDA \"%s\"", g->name.c_str());
 
 			// If this is the first GDA, plain load it. Otherwise, merge it into the first one
 			if (!gda)
-				gda.reset(new GDAFile(stream.release()));
+				gda = std::make_unique<GDAFile>(stream.release());
 			else
 				gda->add(stream.release());
 		}

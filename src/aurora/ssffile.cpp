@@ -28,7 +28,8 @@
 
 #include <cassert>
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/readstream.h"
 #include "src/common/writestream.h"
 #include "src/common/writefile.h"
@@ -58,7 +59,7 @@ SSFFile::SSFFile(Common::SeekableReadStream &ssf) {
 }
 
 SSFFile::SSFFile(const Common::UString &ssf) {
-	Common::ScopedPtr<Common::SeekableReadStream> res(ResMan.getResource(ssf, kFileTypeSSF));
+	std::unique_ptr<Common::SeekableReadStream> res(ResMan.getResource(ssf, kFileTypeSSF));
 	if (!res)
 		throw Common::Exception("No such SSF \"%s\"", ssf.c_str());
 

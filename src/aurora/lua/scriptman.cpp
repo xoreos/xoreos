@@ -24,13 +24,14 @@
 
 #include <cassert>
 
+#include <memory>
+
 #include "external/lua/lualib.h"
 
 #include "external/toluapp/tolua++.h"
 
 #include "src/common/error.h"
 #include "src/common/util.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/resman.h"
 #include "src/aurora/util.h"
@@ -88,13 +89,13 @@ void ScriptManager::executeFile(const Common::UString &path) {
 		return;
 	}
 
-	Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource(path, kFileTypeLUC));
+	std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource(path, kFileTypeLUC));
 	if (!stream) {
 		const Common::UString fileName = TypeMan.setFileType(path, kFileTypeLUC);
 		throw Common::Exception("No such LUC \"%s\"", fileName.c_str());
 	}
 
-	Common::ScopedPtr<Common::MemoryReadStream> memStream(stream->readStream(stream->size()));
+	std::unique_ptr<Common::MemoryReadStream> memStream(stream->readStream(stream->size()));
 	const char *data = reinterpret_cast<const char *>(memStream->getData());
 	const int dataSize = memStream->size();
 

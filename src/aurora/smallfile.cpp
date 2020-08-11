@@ -24,7 +24,8 @@
 
 #include <cassert>
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/error.h"
 #include "src/common/memreadstream.h"
 #include "src/common/memwritestream.h"
@@ -182,7 +183,7 @@ size_t getOccurrenceLength(const byte *newPtr, size_t newLength,
  * and <https://code.google.com/p/dsdecmp/>.
  */
 static void compress10(Common::ReadStream &in, Common::WriteStream &small, uint32 size) {
-	Common::ScopedArray<byte> inBuffer(new byte[size]);
+	std::unique_ptr<byte[]> inBuffer = std::make_unique<byte[]>(size);
 	if (in.read(inBuffer.get(), size) != size)
 		throw Common::Exception(Common::kReadError);
 
@@ -268,7 +269,7 @@ void Small::decompress(Common::ReadStream &small, Common::WriteStream &out) {
 }
 
 Common::SeekableReadStream *Small::decompress(Common::SeekableReadStream *small) {
-	Common::ScopedPtr<Common::SeekableReadStream> in(small);
+	std::unique_ptr<Common::SeekableReadStream> in(small);
 
 	assert(in);
 
@@ -312,7 +313,7 @@ Common::SeekableReadStream *Small::decompress(Common::ReadStream &small) {
 }
 
 Common::SeekableReadStream *Small::decompress(Common::ReadStream *small) {
-	Common::ScopedPtr<Common::ReadStream> in(small);
+	std::unique_ptr<Common::ReadStream> in(small);
 
 	assert(in);
 	return decompress(*in);

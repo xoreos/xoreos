@@ -24,10 +24,11 @@
 
 #include <cassert>
 
+#include <memory>
+
 #include <boost/scope_exit.hpp>
 
 #include "src/common/util.h"
-#include "src/common/scopedptr.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 #include "src/common/filepath.h"
@@ -317,38 +318,38 @@ void ResourceManager::indexArchive(const Common::UString &file, uint32 priority,
 
 	Common::SeekableReadStream *archiveStream = openArchiveStream(*knownArchive);
 
-	Common::ScopedPtr<Archive> archive;
+	std::unique_ptr<Archive> archive;
 	switch (knownArchive->type) {
 		case kArchiveKEY:
 			indexKEY(archiveStream, priority, change);
 			break;
 
 		case kArchiveNDS:
-			archive.reset(new NDSFile(archiveStream));
+			archive = std::make_unique<NDSFile>(archiveStream);
 			break;
 
 		case kArchiveHERF:
-			archive.reset(new HERFFile(archiveStream));
+			archive = std::make_unique<HERFFile>(archiveStream);
 			break;
 
 		case kArchiveERF:
-			archive.reset(new ERFFile(archiveStream, password));
+			archive = std::make_unique<ERFFile>(archiveStream, password);
 			break;
 
 		case kArchiveRIM:
-			archive.reset(new RIMFile(archiveStream));
+			archive = std::make_unique<RIMFile>(archiveStream);
 			break;
 
 		case kArchiveZIP:
-			archive.reset(new ZIPFile(archiveStream));
+			archive = std::make_unique<ZIPFile>(archiveStream);
 			break;
 
 		case kArchiveEXE:
-			archive.reset(new PEFile(archiveStream, _cursorRemap));
+			archive = std::make_unique<PEFile>(archiveStream, _cursorRemap);
 			break;
 
 		case kArchiveNSBTX:
-			archive.reset(new NSBTXFile(archiveStream));
+			archive = std::make_unique<NSBTXFile>(archiveStream);
 			break;
 
 		default:
@@ -380,7 +381,7 @@ uint32 ResourceManager::openKEYBIFs(Common::SeekableReadStream *keyStream,
 		}
 	} BOOST_SCOPE_EXIT_END
 
-	Common::ScopedPtr<Common::SeekableReadStream> stream(keyStream);
+	std::unique_ptr<Common::SeekableReadStream> stream(keyStream);
 	KEYFile key(*keyStream);
 
 	const KEYFile::BIFList &keyBIFs = key.getBIFs();

@@ -25,8 +25,9 @@
 #include <cassert>
 #include <cstring>
 
+#include <memory>
+
 #include "src/common/util.h"
-#include "src/common/scopedptr.h"
 #include "src/common/ptrvector.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
@@ -46,7 +47,7 @@ struct ReadContext {
 	uint32 width;
 	uint32 height;
 
-	Common::ScopedArray<uint16> depth;
+	std::unique_ptr<uint16[]> depth;
 
 	ReadContext(Common::SeekableReadStream &c, uint32 w, uint32 h) :
 		cdpth(&c), width(w), height(h) {
@@ -78,7 +79,7 @@ const uint16 *CDPTH::load(Common::SeekableReadStream &cdpth, uint32 width, uint3
 }
 
 const uint16 *CDPTH::load(Common::SeekableReadStream *cdpth, uint32 width, uint32 height) {
-	Common::ScopedPtr<Common::SeekableReadStream> stream(cdpth);
+	std::unique_ptr<Common::SeekableReadStream> stream(cdpth);
 
 	assert(stream);
 	return load(*stream, width, height);
@@ -138,7 +139,7 @@ static void checkConsistency(ReadContext &ctx) {
 static void createDepth(ReadContext &ctx) {
 	/* Create the actual depth data, which is made up of 64x64 pixel cells. */
 
-	ctx.depth.reset(new uint16[ctx.width * ctx.height]);
+	ctx.depth = std::make_unique<uint16[]>(ctx.width * ctx.height);
 	std::memset(ctx.depth.get(), 0xFF, ctx.width * ctx.height * sizeof(uint16));
 
 	const uint32 cellWidth  = 64;
