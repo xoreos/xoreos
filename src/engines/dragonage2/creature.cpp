@@ -22,7 +22,8 @@
  *  A creature in a Dragon Age II area.
  */
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/strutil.h"
 #include "src/common/maths.h"
@@ -151,7 +152,7 @@ bool Creature::click(Object *triggerer) {
 void Creature::load(const GFF3Struct &creature) {
 	_resRef = creature.getString("TemplateResRef");
 
-	Common::ScopedPtr<GFF3File> utc;
+	std::unique_ptr<GFF3File> utc;
 	if (!_resRef.empty())
 		utc.reset(loadOptionalGFF3(_resRef, Aurora::kFileTypeUTC, kUTCID));
 

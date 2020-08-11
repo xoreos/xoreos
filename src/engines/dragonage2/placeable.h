@@ -25,7 +25,8 @@
 #ifndef ENGINES_DRAGONAGE2_PLACEABLE_H
 #define ENGINES_DRAGONAGE2_PLACEABLE_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -72,7 +73,7 @@ private:
 	/** The placeable's appearance; index into the Placeables MGDA. */
 	uint32 _appearanceID;
 
-	Common::ScopedPtr<Graphics::Aurora::Model> _model; ///< The placeable's model.
+	std::unique_ptr<Graphics::Aurora::Model> _model; ///< The placeable's model.
 
 
 	void load(const Aurora::GFF3Struct &placeable);
