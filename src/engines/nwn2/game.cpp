@@ -49,7 +49,7 @@ namespace NWN2 {
 Game::Game(NWN2Engine &engine, ::Engines::Console &console) :
 	_engine(&engine), _console(&console) {
 
-	_functions.reset(new Functions(*this));
+	_functions = std::make_unique<Functions>(*this);
 }
 
 Game::~Game() {
@@ -72,7 +72,7 @@ int32 Game::getGameDifficulty() {
 }
 
 void Game::run() {
-	_campaign.reset(new Campaign(*_console));
+	_campaign = std::make_unique<Campaign>(*_console);
 
 	while (!EventMan.quitRequested()) {
 		runCampaign();

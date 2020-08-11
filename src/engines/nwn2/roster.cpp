@@ -24,6 +24,8 @@
 
 #include <algorithm>
 
+#include "src/common/endianness.h"
+
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
@@ -172,7 +174,7 @@ Common::UString Roster::getPartyBio() {
 
 /** Load roster from the saved 'ROSTER.rst' file, if any. */
 void Roster::load() {
-	Common::ScopedPtr<Aurora::GFF3File> gff(loadOptionalGFF3("ROSTER", Aurora::kFileTypeRST, MKTAG('R', 'S', 'T', ' ')));
+	std::unique_ptr<Aurora::GFF3File> gff(loadOptionalGFF3("ROSTER", Aurora::kFileTypeRST, MKTAG('R', 'S', 'T', ' ')));
 	if (!gff)
 		return;
 

@@ -25,7 +25,7 @@
 #ifndef ENGINES_NWN2_DOOR_H
 #define ENGINES_NWN2_DOOR_H
 
-#include "src/common/scopedptr.h"
+#include <memory>
 
 #include "src/aurora/types.h"
 

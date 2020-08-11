@@ -24,7 +24,8 @@
 
 #include <cassert>
 
-#include "src/common/scopedptr.h"
+#include <memory>
+
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/configman.h"
@@ -110,7 +111,7 @@ void Creature::init() {
 	_goodEvil = 0;
 	_lawChaos = 0;
 
-	_personalRep.reset(new PersonalReputation());
+	_personalRep = std::make_unique<PersonalReputation>();
 
 	_appearanceID = Aurora::kFieldIDInvalid;
 
@@ -480,7 +481,7 @@ void Creature::unloadModel() {
 void Creature::load(const Aurora::GFF3Struct &creature) {
 	Common::UString temp = creature.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utc;
+	std::unique_ptr<Aurora::GFF3File> utc;
 	if (!temp.empty())
 		utc.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTC, MKTAG('U', 'T', 'C', ' ')));
 
@@ -488,7 +489,7 @@ void Creature::load(const Aurora::GFF3Struct &creature) {
 }
 
 void Creature::loadCharacter(const Common::UString &bic, bool local) {
-	Common::ScopedPtr<Aurora::GFF3File> gff(openPC(bic, local));
+	std::unique_ptr<Aurora::GFF3File> gff(openPC(bic, local));
 
 	load(gff->getTopLevel(), 0);
 
@@ -588,7 +589,7 @@ void Creature::loadProperties(const Aurora::GFF3Struct &gff) {
 	loadClasses(gff, _classes, _hitDice);
 
 	// Levels and/or feats
-	_feats.reset(new Feats());
+	_feats = std::make_unique<Feats>();
 	if (gff.hasField("LvlStatList")) {
 		// Player characters have individual level stats
 		loadLevelStats(gff, _levels, _feats);
@@ -674,7 +675,7 @@ void Creature::loadClasses(const Aurora::GFF3Struct &gff,
 
 void Creature::loadLevelStats(const Aurora::GFF3Struct &gff,
                               std::vector<LevelStats> &levelStats,
-                              Common::ScopedPtr<Feats> &feats) {
+                              std::unique_ptr<Feats> &feats) {
 
 	if (!gff.hasField("LvlStatList"))
 		return;
@@ -728,7 +729,7 @@ void Creature::loadSkills(const Aurora::GFF3Struct &gff,
 }
 
 void Creature::loadFeats(const Aurora::GFF3Struct &gff,
-                         Common::ScopedPtr<Feats> &feats,
+                         std::unique_ptr<Feats> &feats,
                          uint32 level) {
 
 	if (!gff.hasField("FeatList"))

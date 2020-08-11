@@ -426,30 +426,30 @@ void Module::unloadHAKs() {
 
 void Module::loadFactions() {
 	// TODO: Load factions from module's 'repute.fac' file
-	_factions.reset(new Factions());
+	_factions = std::make_unique<Factions>();
 }
 
 void Module::loadRoster() {
-	_roster.reset(new Roster());
+	_roster = std::make_unique<Roster>();
 }
 
 void Module::loadJournal() {
 	if (_campaignJournal) {
 		// Copy the campaign journal
-		_moduleJournal.reset(new Journal(*_campaignJournal));
+		_moduleJournal = std::make_unique<Journal>(*_campaignJournal);
 	} else {
 		// Load the module journal
 		std::unique_ptr<Aurora::GFF3File> jrl;
 		jrl.reset(loadOptionalGFF3("module", Aurora::kFileTypeJRL, MKTAG('J', 'R', 'L', ' ')));
 		if (jrl) {
 			const Aurora::GFF3Struct &top = jrl->getTopLevel();
-			_moduleJournal.reset(new Journal(top));
+			_moduleJournal = std::make_unique<Journal>(top);
 		}
 	}
 }
 
 void Module::loadCampaignJournal(const Aurora::GFF3Struct &journal) {
-	_campaignJournal.reset(new Journal(journal));
+	_campaignJournal = std::make_unique<Journal>(journal);
 }
 
 void Module::loadAreas() {

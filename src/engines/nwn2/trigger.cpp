@@ -22,6 +22,8 @@
  *  Trigger in a Neverwinter Nights 2 area.
  */
 
+#include "src/common/endianness.h"
+
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
 
@@ -71,7 +73,7 @@ bool Trigger::isVisible() const {
 void Trigger::load(const Aurora::GFF3Struct &gff) {
 	Common::UString temp = gff.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utt;
+	std::unique_ptr<Aurora::GFF3File> utt;
 	if (!temp.empty())
 		utt.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTT, MKTAG('U', 'T', 'T', ' ')));
 

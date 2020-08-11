@@ -23,8 +23,9 @@
  */
 
 #include <algorithm>
+#include <memory>
 
-#include "src/common/scopedptr.h"
+#include "src/common/endianness.h"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
@@ -214,7 +215,7 @@ Item *Item::createItemOnObject(const Common::UString &blueprint, uint16 stackSiz
 void Item::load(const Aurora::GFF3Struct &item) {
 	Common::UString temp = item.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> uti;
+	std::unique_ptr<Aurora::GFF3File> uti;
 	if (!temp.empty())
 		uti.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' ')));
 
@@ -222,7 +223,7 @@ void Item::load(const Aurora::GFF3Struct &item) {
 }
 
 void Item::load(const Common::UString &blueprint, uint16 stackSize, const Common::UString &tag) {
-	Common::ScopedPtr<Aurora::GFF3File> uti;
+	std::unique_ptr<Aurora::GFF3File> uti;
 	uti.reset(loadOptionalGFF3(blueprint, Aurora::kFileTypeUTI, MKTAG('U', 'T', 'I', ' ')));
 	if (!uti)
 		return;

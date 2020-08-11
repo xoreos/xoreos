@@ -60,7 +60,7 @@ namespace NWN2 {
 NWN2Engine::NWN2Engine() : _language(Aurora::kLanguageInvalid),
 	_hasXP1(false), _hasXP2(false), _hasXP3(false) {
 
-	_console.reset(new Console(*this));
+	_console = std::make_unique<Console>(*this);
 }
 
 NWN2Engine::~NWN2Engine() {
@@ -127,7 +127,7 @@ void NWN2Engine::run() {
 
 	CursorMan.showCursor();
 
-	_game.reset(new Game(*this, *_console));
+	_game = std::make_unique<Game>(*this, *_console);
 	_game->run();
 
 	deinit();

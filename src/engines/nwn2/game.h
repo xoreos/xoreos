@@ -26,8 +26,8 @@
 #define ENGINES_NWN2_GAME_H
 
 #include <vector>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ustring.h"
 
 #include "src/sound/types.h"
@@ -75,8 +75,8 @@ public:
 private:
 	NWN2Engine *_engine;
 
-	Common::ScopedPtr<Campaign>  _campaign;
-	Common::ScopedPtr<Functions> _functions;
+	std::unique_ptr<Campaign>  _campaign;
+	std::unique_ptr<Functions> _functions;
 
 	::Engines::Console *_console;
 

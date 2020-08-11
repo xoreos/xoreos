@@ -29,8 +29,8 @@
 #include <list>
 #include <map>
 #include <set>
+#include <memory>
 
-#include "src/common/scopedptr.h"
 #include "src/common/ptrmap.h"
 #include "src/common/ustring.h"
 #include "src/common/changeid.h"
@@ -187,8 +187,8 @@ private:
 	Common::UString _newArea;     ///< The new area to enter.
 	Area           *_currentArea; ///< The current area.
 
-	Common::ScopedPtr<Factions> _factions; ///< The factions in the current module.
-	Common::ScopedPtr<Roster>   _roster;   ///< The roster for the current module.
+	std::unique_ptr<Factions> _factions; ///< The factions in the current module.
+	std::unique_ptr<Roster>   _roster;   ///< The roster for the current module.
 
 	std::unique_ptr<Journal> _moduleJournal;   ///< The current module's journal.
 	std::unique_ptr<Journal> _campaignJournal; ///< The campaign journal.

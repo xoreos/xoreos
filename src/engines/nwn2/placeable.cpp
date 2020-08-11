@@ -22,8 +22,9 @@
  *  A placeable object in a Neverwinter Nights 2 area.
  */
 
+#include <memory>
+
 #include "src/common/util.h"
-#include "src/common/scopedptr.h"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
@@ -59,7 +60,7 @@ Placeable::~Placeable() {
 void Placeable::load(const Aurora::GFF3Struct &placeable) {
 	Common::UString temp = placeable.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utp;
+	std::unique_ptr<Aurora::GFF3File> utp;
 	if (!temp.empty())
 		utp.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTP, MKTAG('U', 'T', 'P', ' ')));
 

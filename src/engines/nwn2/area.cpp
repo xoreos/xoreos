@@ -397,7 +397,7 @@ void Area::loadProperties(const Aurora::GFF3Struct &props) {
 
 void Area::loadTerrain() {
 	try {
-		_terrain.reset(new TRXFile(_resRef));
+		_terrain = std::make_unique<TRXFile>(_resRef);
 	} catch (...) {
 		Common::exceptionDispatcherWarning();
 	}

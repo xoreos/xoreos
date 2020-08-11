@@ -231,7 +231,7 @@ private:
 
 	std::vector<Class>  _classes;    ///< The creature's classes.
 	std::vector<LevelStats> _levels; ///< Level data for the creature.
-	Common::ScopedPtr<Feats> _feats; ///< The creature's feats.
+	std::unique_ptr<Feats> _feats; ///< The creature's feats.
 
 	uint8 _ranks[kSkillMAX]; ///< Total skill ranks across levels.
 
@@ -242,7 +242,7 @@ private:
 	uint8 _goodEvil; ///< The creature's good/evil value (0-100).
 	uint8 _lawChaos; ///< The creature's law/chaos value (0-100).
 
-	Common::ScopedPtr<PersonalReputation> _personalRep; ///< The creature's reputation tracker.
+	std::unique_ptr<PersonalReputation> _personalRep; ///< The creature's reputation tracker.
 	std::vector<QuestState> _questStates;               ///< Status of the creature's quests.
 
 	uint32 _appearanceID; ///< The creature's general appearance.
@@ -280,7 +280,7 @@ private:
 	/** Load the level stats for the creature. */
 	static void loadLevelStats(const Aurora::GFF3Struct &gff,
 	                           std::vector<LevelStats> &levelStats,
-	                           Common::ScopedPtr<Feats> &feats);
+	                           std::unique_ptr<Feats> &feats);
 
 	/** Load the creature's skill ranks. */
 	static void loadSkills(const Aurora::GFF3Struct &gff,
@@ -288,7 +288,7 @@ private:
 
 	/** Load the creature's feats. */
 	static void loadFeats(const Aurora::GFF3Struct &gff,
-	                      Common::ScopedPtr<Feats> &feats,
+	                      std::unique_ptr<Feats> &feats,
 	                      uint32 level = 0);
 
 	/** Load the listening patterns. */

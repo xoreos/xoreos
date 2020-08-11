@@ -24,6 +24,8 @@
 
 #include <cassert>
 
+#include "src/common/endianness.h"
+
 #include "src/aurora/types.h"
 #include "src/aurora/resman.h"
 #include "src/aurora/gff3file.h"
@@ -176,11 +178,11 @@ Common::UString Factions::getFactionName(uint32 faction) {
 
 /** Load factions from the 'repute.FAC' file. */
 void Factions::loadFac() {
-	Common::ScopedPtr<Common::SeekableReadStream> stream(ResMan.getResource("repute", Aurora::kFileTypeFAC));
+	std::unique_ptr<Common::SeekableReadStream> stream(ResMan.getResource("repute", Aurora::kFileTypeFAC));
 	if (!stream)
 		throw Common::Exception("No repute.FAC available");
 
-	Common::ScopedPtr<Aurora::GFF3File> gff(new Aurora::GFF3File(stream.release(), MKTAG('F', 'A', 'C', ' ')));
+	std::unique_ptr<Aurora::GFF3File> gff = std::make_unique<Aurora::GFF3File>(stream.release(), MKTAG('F', 'A', 'C', ' '));
 	const Aurora::GFF3Struct &top = gff->getTopLevel();
 
 	// Insert the factions

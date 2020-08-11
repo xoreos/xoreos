@@ -56,7 +56,7 @@ namespace NWN2 {
 Campaign::Campaign(::Engines::Console &console) : _console(&console),
 	_hasCampaign(false), _running(false), _exit(true), _newCampaignStandalone(false) {
 
-	_module.reset(new Module(*_console));
+	_module = std::make_unique<Module>(*_console);
 }
 
 Campaign::~Campaign() {
@@ -153,7 +153,7 @@ void Campaign::usePC(const Common::UString &bic, bool local) {
 		throw Common::Exception("Tried to load an empty PC");
 
 	try {
-		_pc.reset(new Creature(bic, local));
+		_pc = std::make_unique<Creature>(bic, local);
 	} catch (Common::Exception &e) {
 		e.add("Can't load PC \"%s\"", bic.c_str());
 		throw e;
@@ -182,9 +182,9 @@ void Campaign::loadCampaignResource(const Common::UString &campaign) {
 
 	indexMandatoryDirectory(directory, 0, -1, 1000, &_resCampaign);
 
-	Common::ScopedPtr<Aurora::GFF3File> gff;
+	std::unique_ptr<Aurora::GFF3File> gff;
 	try {
-		gff.reset(new Aurora::GFF3File("campaign", Aurora::kFileTypeCAM, MKTAG('C', 'A', 'M', ' ')));
+		gff = std::make_unique<Aurora::GFF3File>("campaign", Aurora::kFileTypeCAM, MKTAG('C', 'A', 'M', ' '));
 	} catch (Common::Exception &e) {
 		e.add("Failed to load campaign information file");
 		throw;
@@ -204,7 +204,7 @@ void Campaign::loadCampaignResource(const Common::UString &campaign) {
 
 	try {
 		// Load the campaign journal into the module
-		gff.reset(new Aurora::GFF3File("module", Aurora::kFileTypeJRL, MKTAG('J', 'R', 'L', ' ')));
+		gff = std::make_unique<Aurora::GFF3File>("module", Aurora::kFileTypeJRL, MKTAG('J', 'R', 'L', ' '));
 		if (_module)
 			_module->loadCampaignJournal(gff->getTopLevel());
 	} catch (...) {

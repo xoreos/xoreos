@@ -22,6 +22,7 @@
  *  A store in a Neverwinter Nights 2 area.
  */
 
+#include "src/common/endianness.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
 
@@ -118,7 +119,7 @@ Item *Store::getNextItemInInventory() {
 void Store::load(const Aurora::GFF3Struct &store) {
 	Common::UString temp = store.getString("TemplateResRef");
 
-	Common::ScopedPtr<Aurora::GFF3File> utm;
+	std::unique_ptr<Aurora::GFF3File> utm;
 	if (!temp.empty())
 		utm.reset(loadOptionalGFF3(temp, Aurora::kFileTypeUTM, MKTAG('U', 'T', 'M', ' ')));
 
@@ -164,7 +165,7 @@ void Store::loadProperties(const Aurora::GFF3Struct &gff) {
 	for (Aurora::GFF3List::const_iterator s = sLists.begin(); s != sLists.end(); ++s) {
 		InventoryType id = (*s)->getID();
 		if (id < kInventoryTypes)
-			_inventory[id].reset(new Inventory(**s));
+			_inventory[id] = std::make_unique<Inventory>(**s);
 		else
 			throw Common::Exception("Invalid store inventory type '%d' for tag \"%s\"", id, _tag.c_str());
 	}
