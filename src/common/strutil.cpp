@@ -26,6 +26,7 @@
 #include <cctype>
 #include <climits>
 #include <cerrno>
+#include <cstdarg>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
