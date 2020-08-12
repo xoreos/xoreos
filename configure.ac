@@ -76,6 +76,9 @@ AC_CHECK_FUNCS([strtoll])
 AC_CHECK_FUNCS([strtoull])
 AC_CHECK_FUNCS([strtof])
 
+dnl Check for strcasecmp
+AC_CHECK_FUNCS([strcasecmp])
+
 dnl Check for -ggdb support
 AX_CHECK_COMPILER_FLAGS_VAR([C++], [GGDB], [-ggdb])
 
