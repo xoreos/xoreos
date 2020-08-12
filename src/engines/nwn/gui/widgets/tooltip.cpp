@@ -26,6 +26,7 @@
 
 #include "src/common/util.h"
 #include "src/common/configman.h"
+#include "src/common/string.h"
 
 #include "src/graphics/graphics.h"
 #include "src/graphics/font.h"
@@ -535,7 +536,7 @@ Common::UString Tooltip::getBubbleModel(uint32_t lines, float width) {
 	} else
 		modelWidth = 300;
 
-	return Common::UString::format("pnl_bubble%d_%d", modelLines, modelWidth);
+	return Common::String::format("pnl_bubble%d_%d", modelLines, modelWidth);
 }
 
 uint32_t Tooltip::getDefaultDelay() {

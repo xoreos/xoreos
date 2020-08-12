@@ -258,7 +258,7 @@ void SonicEngine::unloadLanguageFiles() {
 }
 
 void SonicEngine::loadLanguageFiles(LoadProgress &progress, Aurora::Language language) {
-	progress.step(Common::UString::format("Indexing language files (%s)",
+	progress.step(Common::String::format("Indexing language files (%s)",
 				LangMan.getLanguageName(language).c_str()));
 
 	loadLanguageFiles(language);

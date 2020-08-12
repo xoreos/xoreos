@@ -29,6 +29,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/string.h"
 #include "src/common/ustring.h"
 
 #include "src/graphics/graphics.h"
@@ -420,7 +421,7 @@ void WidgetListBox::add(WidgetListItem *item, bool noTag) {
 	item->_itemNumber = _items.size();
 
 	if (!noTag)
-		item->setTag(Common::UString::format("%s#Item%d", getTag().c_str(), (int)_items.size()));
+		item->setTag(Common::String::format("%s#Item%d", getTag().c_str(), (int)_items.size()));
 
 	for (std::vector<WidgetListItem *>::iterator i = _items.begin(); i != _items.end(); ++i) {
 		(*i)->addGroupMember(*item);

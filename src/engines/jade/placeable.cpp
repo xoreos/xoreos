@@ -23,6 +23,7 @@
  */
 
 #include "src/common/error.h"
+#include "src/common/string.h"
 #include "src/common/util.h"
 
 #include "src/aurora/gff3file.h"
@@ -221,10 +222,10 @@ int32_t Placeable::nextState(const Common::UString &input) {
 
 	const Aurora::GFF3Struct &inputs = top.getStruct("InputNames");
 	for (int i = 0;i < inputCount; i++) {
-		const Common::UString &inputKey = Common::UString::format("I%i", i);
+		const Common::UString &inputKey = Common::String::format("I%i", i);
 		const Common::UString &inputValue = inputs.getString(inputKey);
 		if (input == inputValue) {
-			const Common::UString &transKey = Common::UString::format("S%i_I%i", _state, i);
+			const Common::UString &transKey = Common::String::format("S%i_I%i", _state, i);
 			return trans.getSint(transKey);
 		}
 	}

@@ -142,7 +142,7 @@ void PEFile::load(const std::vector<Common::UString> &remap) {
 
 		uint32_t id = it->getID();
 		if (id >= remap.size() || id <= 0)
-			res.name = Common::UString::format("cursor%d", id);
+			res.name = Common::String::format("cursor%d", id);
 		else
 			res.name = remap[id - 1];
 
@@ -160,7 +160,7 @@ void PEFile::load(const std::vector<Common::UString> &remap) {
 
 		uint32_t id = it->getID();
 		if (id >= remap.size())
-			res.name = Common::UString::format("bitmap%d", id);
+			res.name = Common::String::format("bitmap%d", id);
 		else
 			res.name = remap[id];
 

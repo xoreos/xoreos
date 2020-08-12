@@ -23,6 +23,7 @@
  */
 
 #include "src/common/util.h"
+#include "src/common/string.h"
 #include "src/common/strutil.h"
 
 #include "src/aurora/gff3file.h"
@@ -127,7 +128,7 @@ void WidgetListBox::createItemWidgets(uint32_t count) {
 		return;
 
 	for (uint32_t i = 0; i < count; ++i) {
-		Common::UString tag = Common::UString::format("%s_ITEM_%u", _tag.c_str(), i);
+		Common::UString tag = Common::String::format("%s_ITEM_%u", _tag.c_str(), i);
 		WidgetProtoItem *item = createItemWidget(tag);
 		item->load(*_protoItem);
 

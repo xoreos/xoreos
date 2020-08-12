@@ -130,7 +130,7 @@ void GUIBackground::update() {
 }
 
 bool GUIBackground::tryBackground(int width, int height) {
-	Common::UString name = Common::UString::format("%ux%u%s", width, height, _type.c_str());
+	Common::UString name = Common::String::format("%ux%u%s", width, height, _type.c_str());
 	if (ResMan.hasResource(name, Aurora::kResourceImage)) {
 		_texture = TextureMan.get(name);
 

@@ -113,7 +113,7 @@ void AreaLayout::updateCamera() {
 		if (camPointCount > 0) {
 			// Choose one at random.
 			int selectedCamPoint = RNG.getNext(0, camPointCount);
-			Common::UString camPoint = roomProps->getString(Common::UString::format("CamPoint%u", selectedCamPoint), "");
+			Common::UString camPoint = roomProps->getString(Common::String::format("CamPoint%u", selectedCamPoint), "");
 
 			std::vector<Common::UString> camPos;
 			Common::UString::split(camPoint, ' ', camPos);

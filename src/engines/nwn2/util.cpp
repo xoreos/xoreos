@@ -22,6 +22,7 @@
  *  Neverwinter Nights 2 utility functions.
  */
 
+#include "src/common/string.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/gff3file.h"
@@ -43,7 +44,7 @@ bool readTint(const Aurora::GFF3Struct &gff, float t[3][4]) {
 	const Aurora::GFF3Struct &tint = tintable.getStruct("Tint");
 
 	for (int i = 0; i < 3; i++) {
-		Common::UString index = Common::UString::format("%d", i + 1);
+		Common::UString index = Common::String::format("%d", i + 1);
 		if (!tint.hasField(index))
 			continue;
 

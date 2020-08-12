@@ -26,6 +26,7 @@
 #include "src/common/ustring.h"
 #include "src/common/debug.h"
 #include "src/common/error.h"
+#include "src/common/string.h"
 #include "src/common/strutil.h"
 #include "src/common/datetime.h"
 
@@ -86,7 +87,7 @@ void Functions::printString(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
-	ctx.getReturn() = Common::UString::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
+	ctx.getReturn() = Common::String::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
 	                                          static_cast<void *>(object));
 
 	status("Witcher: %s", ctx.getReturn().getString().c_str());
@@ -95,7 +96,7 @@ void Functions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::objectToString(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
-	ctx.getReturn() = Common::UString::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
+	ctx.getReturn() = Common::String::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
 	                                          static_cast<void *>(object));
 }
 
@@ -105,7 +106,7 @@ void Functions::printVector(Aurora::NWScript::FunctionContext &ctx) {
 
 	const bool prepend = ctx.getParams()[1].getInt() != 0;
 
-	ctx.getReturn() = Common::UString::format("%s%f, %f, %f", prepend ? "PRINTVECTOR:" : "", x, y, z);
+	ctx.getReturn() = Common::String::format("%s%f, %f, %f", prepend ? "PRINTVECTOR:" : "", x, y, z);
 
 	status("Witcher: %s", ctx.getReturn().getString().c_str());
 }
@@ -123,7 +124,7 @@ void Functions::floatToString(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::intToHexString(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = Common::UString::format("0x%08x", (uint32_t) ctx.getParams()[0].getInt());
+	ctx.getReturn() = Common::String::format("0x%08x", (uint32_t) ctx.getParams()[0].getInt());
 }
 
 void Functions::stringToInt(Aurora::NWScript::FunctionContext &ctx) {

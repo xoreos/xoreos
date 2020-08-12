@@ -728,17 +728,6 @@ UString UString::substr(iterator from, iterator to) const {
 	return sub;
 }
 
-UString UString::format(const char *s, ...) {
-	char buf[STRINGBUFLEN];
-	va_list va;
-
-	va_start(va, s);
-	vsnprintf(buf, STRINGBUFLEN, s, va);
-	va_end(va);
-
-	return UString(buf);
-}
-
 size_t UString::split(const UString &text, uint32_t delim, std::vector<UString> &texts) {
 	size_t length = 0;
 

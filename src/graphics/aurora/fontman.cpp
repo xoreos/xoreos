@@ -25,6 +25,7 @@
 #include <memory>
 
 #include "src/common/error.h"
+#include "src/common/string.h"
 #include "src/common/systemfonts.h"
 
 #include "src/graphics/aurora/fontman.h"
@@ -137,7 +138,7 @@ Common::UString FontManager::getIndexName(Common::UString name, int height) {
 		return name;
 
 	// If we have been given a height, the font is indexed with the height
-	return Common::UString::format("%s-%d", name.c_str(), height);
+	return Common::String::format("%s-%d", name.c_str(), height);
 }
 
 void FontManager::assign(FontHandle &font, const FontHandle &from) {

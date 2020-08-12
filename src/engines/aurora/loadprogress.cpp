@@ -24,6 +24,7 @@
 
 #include <cassert>
 
+#include "src/common/string.h"
 #include "src/common/util.h"
 
 #include "src/graphics/graphics.h"
@@ -91,12 +92,12 @@ void LoadProgress::step(const Common::UString &description) {
 	const int    percentage  = (int) (_currentAmount * 100.0f);
 	const uint32_t timeElapsed = timeNow - _startTime;
 
-	const Common::UString timeStr = Common::UString::format("(%.2fs)", timeElapsed / 1000.0);
+	const Common::UString timeStr = Common::String::format("(%.2fs)", timeElapsed / 1000.0);
 
 	// Update the text
 	{
 		// Create string representing the percentage of done-ness and progress bar
-		const Common::UString percentStr = Common::UString::format("%d%%", percentage);
+		const Common::UString percentStr = Common::String::format("%d%%", percentage);
 		const Common::UString barStr     = createProgressbar(kBarLength, _currentAmount);
 
 		GfxMan.lockFrame();

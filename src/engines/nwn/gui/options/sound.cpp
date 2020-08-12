@@ -23,6 +23,7 @@
  */
 
 #include "src/common/configman.h"
+#include "src/common/string.h"
 
 #include "src/sound/sound.h"
 
@@ -168,7 +169,7 @@ void OptionsSoundMenu::updateVolume(double volume, Sound::SoundType type,
 	SoundMan.setTypeGain(type, volume);
 
 	if (!label.empty())
-		getLabel(label, true)->setText(Common::UString::format("%.0f%%", volume * 100.0f));
+		getLabel(label, true)->setText(Common::String::format("%.0f%%", volume * 100.0f));
 }
 
 void OptionsSoundMenu::adoptChanges() {

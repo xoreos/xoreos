@@ -211,7 +211,7 @@ void DialogGUI::refresh() {
 		if (text.empty())
 			text = "[CONTINUE]";
 
-		text = Common::UString::format("%d. %s", index++, text.c_str());
+		text = Common::String::format("%d. %s", index++, text.c_str());
 		lbReplies->addItem(text);
 	}
 	lbReplies->refreshItemWidgets();

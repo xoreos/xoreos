@@ -24,6 +24,7 @@
 
 #include "src/common/system.h"
 #include "src/common/error.h"
+#include "src/common/string.h"
 
 #include "src/graphics/graphics.h"
 
@@ -64,7 +65,7 @@ QuickbarButton::QuickbarButton(::Engines::GUI &gui, size_t n) : NWNWidget(gui, "
 	if (invisible)
 		invisible->setInvisible(true);
 
-	NWNWidget::setTag(Common::UString::format("Quickbar%u", (uint)_buttonNumber));
+	NWNWidget::setTag(Common::String::format("Quickbar%u", (uint)_buttonNumber));
 	_model->setTag(NWNWidget::getTag());
 
 }

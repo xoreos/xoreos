@@ -487,12 +487,6 @@ GTEST_TEST(UString, substr) {
 	EXPECT_STREQ(str.substr(it, str.end()).c_str(), "Barfoo");
 }
 
-GTEST_TEST(UString, format) {
-	const Common::UString str = Common::UString::format("%s|%s|%d", "Foo", "Bar", 23);
-
-	EXPECT_STREQ(str.c_str(), "Foo|Bar|23");
-}
-
 GTEST_TEST(UString, splitVector) {
 	const Common::UString str("Foobar Barfoo Quux");
 

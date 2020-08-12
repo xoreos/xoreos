@@ -705,7 +705,7 @@ void ModelNode_Jade::readMaterialTextures(uint32_t materialID, std::vector<Commo
 		return;
 	}
 
-	Common::UString mabFile = Common::UString::format("%d", materialID);
+	Common::UString mabFile = Common::String::format("%d", materialID);
 	Common::SeekableReadStream *mab = ResMan.getResource(mabFile, ::Aurora::kFileTypeMAB);
 	if (!mab) {
 		textures.clear();

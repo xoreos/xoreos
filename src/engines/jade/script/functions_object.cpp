@@ -23,6 +23,8 @@
  */
 
 #include <memory>
+
+#include "src/common/string.h"
 #include "src/common/util.h"
 
 #include "src/aurora/nwscript/functioncontext.h"
@@ -65,70 +67,70 @@ void Functions::getIsPC(Aurora::NWScript::FunctionContext &ctx) {
 
 void Functions::getLocalInt(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_INT_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_INT_%i", ctx.getParams()[1].getInt());
 	if (object)
 		ctx.getReturn() = object->getVariable(varName, kTypeInt).getInt();
 }
 
 void Functions::getLocalBool(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_BOOL_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_BOOL_%i", ctx.getParams()[1].getInt());
 	if (object)
 		ctx.getReturn() = object->getVariable(varName, kTypeInt).getInt() != 0;
 }
 
 void Functions::getLocalFloat(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_FLOAT_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_FLOAT_%i", ctx.getParams()[1].getInt());
 	if (object)
 		ctx.getReturn() = object->getVariable(varName, kTypeFloat).getFloat();
 }
 
 void Functions::getLocalString(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_STRING_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_STRING_%i", ctx.getParams()[1].getInt());
 	if (object)
 		ctx.getReturn() = object->getVariable(varName, kTypeString).getString();
 }
 
 void Functions::getLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_OBJECT_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_OBJECT_%i", ctx.getParams()[1].getInt());
 	if (object)
 		ctx.getReturn() = object->getVariable(varName, kTypeObject).getObject();
 }
 
 void Functions::setLocalInt(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_INT_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_INT_%i", ctx.getParams()[1].getInt());
 	if (object)
 		object->setVariable(varName, ctx.getParams()[2].getInt());
 }
 
 void Functions::setLocalBool(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_BOOL_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_BOOL_%i", ctx.getParams()[1].getInt());
 	if (object)
 		object->setVariable(varName, ctx.getParams()[2].getInt() != 0);
 }
 
 void Functions::setLocalFloat(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_FLOAT_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_FLOAT_%i", ctx.getParams()[1].getInt());
 	if (object)
 		object->setVariable(varName, ctx.getParams()[2].getFloat());
 }
 
 void Functions::setLocalString(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_STRING_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_STRING_%i", ctx.getParams()[1].getInt());
 	if (object)
 		object->setVariable(varName, ctx.getParams()[2].getString());
 }
 
 void Functions::setLocalObject(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = getParamObject(ctx, 0);
-	Common::UString varName = Common::UString::format("LOCAL_OBJECT_%i", ctx.getParams()[1].getInt());
+	Common::UString varName = Common::String::format("LOCAL_OBJECT_%i", ctx.getParams()[1].getInt());
 	if (object)
 		object->setVariable(varName, ctx.getParams()[2].getObject());
 }

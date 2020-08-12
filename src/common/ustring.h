@@ -180,9 +180,6 @@ public:
 
 	UString substr(iterator from, iterator to) const;
 
-	/** Print formatted data into an UString object, similar to sprintf(). */
-	static UString format(const char *s, ...) GCC_PRINTF(1, 2);
-
 	static size_t split(const UString &text, uint32_t delim, std::vector<UString> &texts);
 
 	static void splitTextTokens(const UString &text, std::vector<UString> &tokens);

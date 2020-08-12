@@ -25,6 +25,7 @@
 #include <functional>
 
 #include "src/common/ustring.h"
+#include "src/common/string.h"
 #include "src/common/strutil.h"
 
 #include "src/aurora/gdafile.h"
@@ -73,7 +74,7 @@ void Console::updateAreas() {
 		if (areas.getInt(i, "Name") > 0) {
 			_areas.insert(i);
 
-			areaIDs.push_back(Common::UString::format("%u", (uint)i));
+			areaIDs.push_back(Common::String::format("%u", (uint)i));
 		}
 	}
 

@@ -26,6 +26,7 @@
 
 #include "src/common/serializationstream.h"
 #include "src/common/encoding.h"
+#include "src/common/string.h"
 
 namespace Common {
 
@@ -95,7 +96,7 @@ static UString toHexString(T value) {
 		const uint nV = (v >> (bits - 4)) & 0xF;
 		v <<= 4;
 
-		str += Common::UString::format("%X", nV);
+		str += Common::String::format("%X", nV);
 	}
 
 	return str;

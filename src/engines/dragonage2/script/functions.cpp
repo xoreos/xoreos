@@ -27,6 +27,7 @@
 
 #include <functional>
 
+#include "src/common/string.h"
 #include "src/common/util.h"
 
 #include "src/aurora/nwscript/functionman.h"
@@ -95,7 +96,7 @@ void Functions::unimplementedFunction(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 Common::UString Functions::formatFloat(float f, int width, int decimals) {
-	return Common::UString::format("%*.*f", width, decimals, f);
+	return Common::String::format("%*.*f", width, decimals, f);
 }
 
 Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n) {

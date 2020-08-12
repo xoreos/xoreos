@@ -25,6 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/configman.h"
+#include "src/common/string.h"
 
 #include "src/aurora/talkman.h"
 
@@ -155,7 +156,7 @@ void OptionsVideoAdvancedMenu::updateFSAALabel(int n) {
 	else if (n == 2)
 		text = TalkMan.getString(67542);
 	else
-		text = Common::UString::format("%dx %s", 1 << n, TalkMan.getString(67538).c_str());
+		text = Common::String::format("%dx %s", 1 << n, TalkMan.getString(67538).c_str());
 
 	getLabel("AntialiasLabel", true)->setText(text);
 }

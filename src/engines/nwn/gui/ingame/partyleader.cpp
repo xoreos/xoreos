@@ -22,6 +22,7 @@
  *  The NWN ingame party leader panel.
  */
 
+#include "src/common/string.h"
 #include "src/common/util.h"
 
 #include "src/aurora/talkman.h"
@@ -163,7 +164,7 @@ void PartyLeader::callbackActive(Widget &widget) {
 
 void PartyLeader::updatePortraitTooltip() {
 	Common::UString tooltip =
-		Common::UString::format("%s %d/%d\n%s",
+		Common::String::format("%s %d/%d\n%s",
 				_name.c_str(), _currentHP, _maxHP, _area.c_str());
 
 	_portrait->setTooltip(tooltip);
