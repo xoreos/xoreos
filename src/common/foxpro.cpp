@@ -520,7 +520,7 @@ void FoxPro::deleteRecord(size_t record) {
 
 void FoxPro::checkName(const UString &name) {
 	for (UString::iterator c = name.begin(); c != name.end(); ++c)
-		if (!UString::isASCII(*c))
+		if (!Common::String::isASCII(*c))
 			throw Common::Exception("FoxPro field names need to be in unextended ASCII");
 }
 

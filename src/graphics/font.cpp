@@ -117,7 +117,7 @@ float Font::split(const Common::UString &line, std::vector<Common::UString> &lin
 			if (c == '\r')
 				continue;
 
-			if (((c == '\n') || Common::UString::isSpace(c)) && !currentWord.empty()) {
+			if (((c == '\n') || Common::String::isSpace(c)) && !currentWord.empty()) {
 				// We can break and there's already something in the word buffer
 
 				if ((lineLength + wordLength) > maxWidth) {

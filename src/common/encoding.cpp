@@ -182,7 +182,7 @@ private:
 
 		size_t size = 0;
 		for (UString::iterator c = str.begin(); c != str.end(); ++c)
-			if (UString::isASCII(*c))
+			if (String::isASCII(*c))
 				dataOut[size++] = *c;
 
 		if (terminate)

@@ -199,8 +199,8 @@ int UString::stricmp(const UString &str) const {
 		UString::iterator it1 = begin();
 		UString::iterator it2 = str.begin();
 		for (; (it1 != end()) && (it2 != str.end()); ++it1, ++it2) {
-			const uint32_t c1 = toLower(*it1);
-			const uint32_t c2 = toLower(*it2);
+			const uint32_t c1 = String::toLower(*it1);
+			const uint32_t c2 = String::toLower(*it2);
 
 			if (c1 < c2)
 				return -1;
@@ -383,7 +383,7 @@ void UString::trim() {
 	iterator itEnd = --end();
 	for (; itEnd != begin(); --itEnd) {
 		uint32_t c = *itEnd;
-		if (!isSpace(c) && (c != '\0')) {
+		if (!String::isSpace(c) && (c != '\0')) {
 			++itEnd;
 			break;
 		}
@@ -391,14 +391,14 @@ void UString::trim() {
 
 	if (itEnd == begin()) {
 		uint32_t c = *itEnd;
-		if (!isSpace(c) && (c != '\0'))
+		if (!String::isSpace(c) && (c != '\0'))
 			++itEnd;
 	}
 
 	// Find the first non-space
 	iterator itStart = begin();
 	for (; itStart != itEnd; ++itStart)
-		if (!isSpace(*itStart))
+		if (!String::isSpace(*itStart))
 			break;
 
 	_string = std::string(itStart.base(), itEnd.base());
@@ -413,7 +413,7 @@ void UString::trimLeft() {
 	// Find the first non-space
 	iterator itStart = begin();
 	for (; itStart != end(); ++itStart)
-		if (!isSpace(*itStart))
+		if (!String::isSpace(*itStart))
 			break;
 
 	_string = std::string(itStart.base(), end().base());
@@ -429,7 +429,7 @@ void UString::trimRight() {
 	iterator itEnd = --end();
 	for (; itEnd != begin(); --itEnd) {
 		uint32_t c = *itEnd;
-		if (!isSpace(c) && (c != '\0')) {
+		if (!String::isSpace(c) && (c != '\0')) {
 			++itEnd;
 			break;
 		}
@@ -437,7 +437,7 @@ void UString::trimRight() {
 
 	if (itEnd == begin()) {
 		uint32_t c = *itEnd;
-		if (!isSpace(c) && (c != '\0'))
+		if (!String::isSpace(c) && (c != '\0'))
 			++itEnd;
 	}
 
@@ -496,7 +496,7 @@ UString UString::toLower() const {
 
 	str._string.reserve(_string.size());
 	for (iterator it = begin(); it != end(); ++it)
-		str += toLower(*it);
+		str += String::toLower(*it);
 
 	return str;
 }
@@ -506,7 +506,7 @@ UString UString::toUpper() const {
 
 	str._string.reserve(_string.size());
 	for (iterator it = begin(); it != end(); ++it)
-		str += toUpper(*it);
+		str += String::toUpper(*it);
 
 	return str;
 }
@@ -763,49 +763,6 @@ void UString::recalculateSize() {
 		Exception e(se);
 		throw e;
 	}
-}
-
-// NOTE: If we ever need uppercase<->lowercase mappings for non-ASCII
-//       characters: http://www.unicode.org/reports/tr21/tr21-5.html
-
-uint32_t UString::toLower(uint32_t c) {
-	if (!isASCII(c))
-		// We don't know how to lowercase that
-		return c;
-
-	return std::tolower(c);
-}
-
-uint32_t UString::toUpper(uint32_t c) {
-	if (!isASCII(c))
-		// We don't know how to uppercase that
-		return c;
-
-	return std::toupper(c);
-}
-
-bool UString::isASCII(uint32_t c) {
-	return (c & 0xFFFFFF80) == 0;
-}
-
-bool UString::isSpace(uint32_t c) {
-	return isASCII(c) && std::isspace(c);
-}
-
-bool UString::isDigit(uint32_t c) {
-	return isASCII(c) && std::isdigit(c);
-}
-
-bool UString::isAlpha(uint32_t c) {
-	return isASCII(c) && std::isalpha(c);
-}
-
-bool UString::isAlNum(uint32_t c) {
-	return isASCII(c) && std::isalnum(c);
-}
-
-bool UString::isCntrl(uint32_t c) {
-	return isASCII(c) && std::iscntrl(c);
 }
 
 uint32_t UString::fromUTF16(uint16_t c) {

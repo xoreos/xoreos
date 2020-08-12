@@ -520,28 +520,6 @@ GTEST_TEST(UString, splitTextTokens) {
 	EXPECT_STREQ(tokens[8].c_str(), "quux<token5");
 }
 
-GTEST_TEST(UString, charClasses) {
-	EXPECT_TRUE (Common::UString::isASCII('F'));
-	EXPECT_FALSE(Common::UString::isASCII(0xF6));
-
-	EXPECT_TRUE (Common::UString::isSpace(' '));
-	EXPECT_FALSE(Common::UString::isSpace('x'));
-
-	EXPECT_TRUE (Common::UString::isDigit('0'));
-	EXPECT_FALSE(Common::UString::isDigit('x'));
-
-	EXPECT_TRUE (Common::UString::isAlpha('x'));
-	EXPECT_FALSE(Common::UString::isAlpha('.'));
-	EXPECT_FALSE(Common::UString::isAlpha('0'));
-
-	EXPECT_TRUE (Common::UString::isAlNum('x'));
-	EXPECT_TRUE (Common::UString::isAlNum('0'));
-	EXPECT_FALSE(Common::UString::isAlNum('.'));
-
-	EXPECT_TRUE (Common::UString::isCntrl(0x10));
-	EXPECT_FALSE(Common::UString::isCntrl('x'));
-}
-
 GTEST_TEST(UString, fromUTF16) {
 	EXPECT_EQ(Common::UString::fromUTF16(0x00F6), 0xF6);
 }

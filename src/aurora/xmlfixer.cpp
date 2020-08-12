@@ -102,7 +102,7 @@ Common::UString XMLFixer::fixXMLElement(const Common::UString &element) {
 		Common::UString name, value = segment;
 		if (!segment.empty()) {
 			for (Common::UString::iterator it2 = --segment.end(); it2 != segment.begin(); --it2) {
-				if (Common::UString::isSpace(*it2)) {
+				if (Common::String::isSpace(*it2)) {
 					segment.split(it2, value, name, true);
 					break;
 				}
@@ -272,7 +272,7 @@ void XMLFixer::splitNewElement(Common::UString &value, Common::UString &tail) {
 				return;
 			}
 
-			if (!Common::UString::isSpace(*it2)) {
+			if (!Common::String::isSpace(*it2)) {
 				// Not a new element
 				it1 = it2;
 
