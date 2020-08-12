@@ -31,3 +31,25 @@ GTEST_TEST(String, format) {
 
 	EXPECT_STREQ(str.c_str(), "Foo|Bar|23");
 }
+
+GTEST_TEST(String, charClasses) {
+	EXPECT_TRUE (Common::String::isASCII('F'));
+	EXPECT_FALSE(Common::String::isASCII(0xF6));
+
+	EXPECT_TRUE (Common::String::isSpace(' '));
+	EXPECT_FALSE(Common::String::isSpace('x'));
+
+	EXPECT_TRUE (Common::String::isDigit('0'));
+	EXPECT_FALSE(Common::String::isDigit('x'));
+
+	EXPECT_TRUE (Common::String::isAlpha('x'));
+	EXPECT_FALSE(Common::String::isAlpha('.'));
+	EXPECT_FALSE(Common::String::isAlpha('0'));
+
+	EXPECT_TRUE (Common::String::isAlNum('x'));
+	EXPECT_TRUE (Common::String::isAlNum('0'));
+	EXPECT_FALSE(Common::String::isAlNum('.'));
+
+	EXPECT_TRUE (Common::String::isCntrl(0x10));
+	EXPECT_FALSE(Common::String::isCntrl('x'));
+}

@@ -27,6 +27,8 @@
 
 #include <string>
 
+#include <boost/type_traits/make_unsigned.hpp>
+
 #include "src/common/system.h"
 
 namespace Common {
@@ -37,6 +39,69 @@ std::string format(const char *format, ...) GCC_PRINTF(1, 2);
 
 /** Print formatted data into a std::string object, similar to vsprintf(). */
 std::string formatV(const char *format, va_list args) GCC_PRINTF(1, 0);
+
+/** The function type used by the ctype class functions. */
+typedef int (*CTypeFunction)(int);
+
+/** Is the character an ASCII character? */
+template<typename T>
+inline bool isASCII(T c) {
+	typedef typename boost::make_unsigned<T>::type UnsignedType;
+	UnsignedType u = static_cast<UnsignedType>(c);
+	return (u & ~static_cast<UnsignedType>(0x7F)) == 0;
+}
+
+/** Internal function for implementing ctype function wrappers. */
+template<typename T, CTypeFunction func>
+inline bool ctypeWrapper(T c) {
+	return isASCII(c) && func(static_cast<unsigned char>(c));
+}
+
+/** Is the character an ASCII space character? */
+template<typename T>
+inline bool isSpace(T c) {
+	return ctypeWrapper<T, std::isspace>(c);
+}
+
+/** Is the character an ASCII digit character? */
+template<typename T>
+inline bool isDigit(T c) {
+	return ctypeWrapper<T, std::isdigit>(c);
+}
+
+/** Is the character an ASCII alphabetic character? */
+template<typename T>
+inline bool isAlpha(T c) {
+	return ctypeWrapper<T, std::isalpha>(c);
+}
+
+/** Is the character an ASCII alphanumeric character? */
+template<typename T>
+inline bool isAlNum(T c) {
+	return ctypeWrapper<T, std::isalnum>(c);
+}
+
+/** Is the character an ASCII control character? */
+template<typename T>
+inline bool isCntrl(T c) {
+	return ctypeWrapper<T, std::iscntrl>(c);
+}
+
+/** Convert an ASCII character to its lowercase equivalent. */
+template<typename T>
+inline T toLower(T c) {
+	// NOTE: If we ever need uppercase<->lowercase mappings for non-ASCII
+	//       characters: http://www.unicode.org/reports/tr21/tr21-5.html
+	return isASCII(c) ? std::tolower(c) : c;
+}
+
+/** Convert an ASCII character to its uppercase equivalent. */
+template<typename T>
+inline T toUpper(T c) {
+	// NOTE: If we ever need uppercase<->lowercase mappings for non-ASCII
+	//       characters: http://www.unicode.org/reports/tr21/tr21-5.html
+	return isASCII(c) ? std::toupper(c) : c;
+}
 
 } // End of namespace String
 } // End of namespace Common
