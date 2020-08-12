@@ -519,7 +519,7 @@ Common::UString ConsoleWindow::getHighlight() const {
 	ptrdiff_t end   = _highlightX + _highlightLength;
 
 	if (start > end)
-		SWAP(start, end);
+		std::swap(start, end);
 
 	Common::UString line;
 	if (_highlightY == 0) {

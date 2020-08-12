@@ -447,7 +447,7 @@ void XACTSoundBank_ASCII::load(Common::SeekableReadStream &xsb) {
 					variation.weightMax = variation.weightMin;
 
 				if (variation.weightMin > variation.weightMax)
-					SWAP(variation.weightMin, variation.weightMax);
+					std::swap(variation.weightMin, variation.weightMax);
 
 			} else {
 				variation.weightMin = i * weightPerVar;

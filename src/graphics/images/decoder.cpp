@@ -54,10 +54,10 @@ ImageDecoder::MipMap::~MipMap() {
 }
 
 void ImageDecoder::MipMap::swap(MipMap &right) {
-	SWAP(width , right.width );
-	SWAP(height, right.height);
-	SWAP(size  , right.size  );
-	SWAP(image , right.image );
+	std::swap(width , right.width );
+	std::swap(height, right.height);
+	std::swap(size  , right.size  );
+	std::swap(image , right.image );
 
 	data.swap(right.data);
 }

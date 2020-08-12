@@ -104,7 +104,7 @@ void XACTSoundBank_Binary::readCueVarations(Common::SeekableReadStream &xsb, Cue
 		variation.weightMax = CLIP<size_t>(xsb.readUint16LE(), kWeightMinimum, kWeightMaximum);
 
 		if (variation.weightMin > variation.weightMax)
-			SWAP(variation.weightMin, variation.weightMax);
+			std::swap(variation.weightMin, variation.weightMax);
 	}
 }
 
@@ -148,7 +148,7 @@ void XACTSoundBank_Binary::addWaveVariation(Track &track, uint32 indices,
 	wave.weightMax = CLIP<size_t>(weightMax, kWeightMinimum, kWeightMaximum);
 
 	if (wave.weightMin > wave.weightMax)
-		SWAP(wave.weightMin, wave.weightMax);
+		std::swap(wave.weightMin, wave.weightMax);
 }
 
 void XACTSoundBank_Binary::readWaveBanks(Common::SeekableReadStream &xsb, uint32 offset, uint32 count) {

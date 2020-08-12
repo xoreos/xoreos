@@ -250,10 +250,10 @@ static void blowfishEnc(BlowfishContext &ctx, uint32 &xl, uint32 &xr) {
 		xl = xl ^ ctx.P[i];
 		xr = F(ctx, xl) ^ xr;
 
-		SWAP(xl, xr);
+		std::swap(xl, xr);
 	}
 
-	SWAP(xl, xr);
+	std::swap(xl, xr);
 
 	xr = xr ^ ctx.P[kRoundCount];
 	xl = xl ^ ctx.P[kRoundCount + 1];
@@ -264,10 +264,10 @@ static void blowfishDec(BlowfishContext &ctx, uint32 &xl, uint32 &xr) {
 		xl = xl ^ ctx.P[i];
 		xr = F(ctx, xl) ^ xr;
 
-		SWAP(xl, xr);
+		std::swap(xl, xr);
 	}
 
-	SWAP(xl, xr);
+	std::swap(xl, xr);
 
 	xr = xr ^ ctx.P[1];
 	xl = xl ^ ctx.P[0];

@@ -49,7 +49,7 @@ bool LocString::empty() const {
 }
 
 void LocString::swap(LocString &str) {
-	SWAP(_id, str._id);
+	std::swap(_id, str._id);
 
 	_strings.swap(str._strings);
 }

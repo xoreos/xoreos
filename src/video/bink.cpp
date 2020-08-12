@@ -409,7 +409,7 @@ void Bink::BinkVideoTrack::readHuffman(VideoFrame &video, Huffman &huffman) {
 		for (int j = 0; j < 16; j += (size << 1))
 			mergeHuffmanSymbols(video, out + j, in + j, size);
 
-		SWAP(in, out);
+		std::swap(in, out);
 	}
 
 	std::memcpy(huffman.symbols, in, 16);

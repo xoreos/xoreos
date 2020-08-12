@@ -84,14 +84,6 @@ GTEST_TEST(Util, MAXDouble) {
 	EXPECT_EQ(MAX<double>(-23.0, 23.0),  23.0);
 }
 
-GTEST_TEST(Util, SWAP) {
-	int a = -5, b = 5;
-	SWAP(a, b);
-
-	EXPECT_EQ(a,  5);
-	EXPECT_EQ(b, -5);
-}
-
 GTEST_TEST(Util, ISPOWER2) {
 	EXPECT_TRUE(ISPOWER2( 2));
 	EXPECT_TRUE(ISPOWER2( 4));

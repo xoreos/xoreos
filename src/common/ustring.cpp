@@ -239,7 +239,7 @@ bool UString::lessIgnoreCase(const UString &str) const {
 void UString::swap(UString &str) {
 	_string.swap(str._string);
 
-	SWAP(_size, str._size);
+	std::swap(_size, str._size);
 }
 
 void UString::clear() {

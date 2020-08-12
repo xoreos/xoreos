@@ -72,11 +72,6 @@ template<typename T> inline T MAX (T a, T b) { return (a>b)  ? a :  b; }
 template<typename T> inline T CLIP (T v, T amin, T amax)
 	{ if (v < amin) return amin; else if (v > amax) return amax; else return v; }
 
-/**
- * Template method which swaps the values of its two parameters.
- */
-template<typename T> inline void SWAP(T &a, T &b) { T tmp = a; a = b; b = tmp; }
-
 /** Is this integer value a power of 2? */
 template<typename T> inline bool ISPOWER2(T x) { return x && !(x & (x - 1)); }
 

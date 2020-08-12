@@ -97,7 +97,7 @@ void FFT::permute(Complex *z) {
 		int k = _revTab[j];
 
 		if (k < j)
-			SWAP(z[k], z[j]);
+			std::swap(z[k], z[j]);
 	}
 }
 
