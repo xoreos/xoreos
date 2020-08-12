@@ -27,6 +27,7 @@
 #include "src/common/ustring.h"
 #include "src/common/memreadstream.h"
 #include "src/common/memwritestream.h"
+#include "src/common/string.h"
 
 #include "src/aurora/language.h"
 #include "src/aurora/language_strings.h"
@@ -328,7 +329,7 @@ Common::MemoryReadStream *LanguageManager::preParseColorCodes(Common::SeekableRe
 
 		if (state == 5) {
 			if (b == '>') {
-				Common::UString c = Common::UString::format("<c%02X%02X%02X%02X>",
+				Common::UString c = Common::String::format("<c%02X%02X%02X%02X>",
 				                    (uint8_t) color[0], (uint8_t) color[1], (uint8_t) color[2], (uint8_t) 0xFF);
 
 				output.writeString(c);

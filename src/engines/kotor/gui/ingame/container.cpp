@@ -63,7 +63,7 @@ void ContainerMenu::fillFromInventory(const KotORBase::Inventory &inv) {
 			i != invItems.end(); ++i) {
 		try {
 			KotORBase::Item item(i->second.tag);
-			lbItems->addItem(Common::UString::format("%s|%s|%u",
+			lbItems->addItem(Common::String::format("%s|%s|%u",
 			                                         item.getName().c_str(),
 			                                         item.getIcon().c_str(),
 			                                         i->second.count));

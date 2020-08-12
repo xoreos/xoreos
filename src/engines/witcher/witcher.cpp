@@ -81,8 +81,8 @@ bool WitcherEngine::detectLanguages(Aurora::GameID UNUSED(game), const Common::U
 		for (size_t i = 0; i < Aurora::kLanguageMAX; i++) {
 			const uint32_t langID = LangMan.getLanguageID((Aurora::Language) i);
 
-			const Common::UString voiceKey = Common::UString::format("lang_%d.key"  , langID);
-			const Common::UString textKey  = Common::UString::format("dialog_%d.tlk", langID);
+			const Common::UString voiceKey = Common::String::format("lang_%d.key"  , langID);
+			const Common::UString textKey  = Common::String::format("dialog_%d.tlk", langID);
 
 			if (files.contains(voiceKey, true))
 				languagesVoice.push_back((Aurora::Language) i);
@@ -291,7 +291,7 @@ void WitcherEngine::unloadLanguageFiles() {
 void WitcherEngine::loadLanguageFiles(LoadProgress &progress,
 		Aurora::Language langText, Aurora::Language langVoice) {
 
-	progress.step(Common::UString::format("Indexing language files (%s text + %s voices)",
+	progress.step(Common::String::format("Indexing language files (%s text + %s voices)",
 				LangMan.getLanguageName(langText).c_str(), LangMan.getLanguageName(langVoice).c_str()));
 
 	loadLanguageFiles(langText, langVoice);
@@ -304,20 +304,20 @@ void WitcherEngine::loadLanguageFiles(Aurora::Language langText, Aurora::Languag
 	Common::UString archive;
 
 	_languageResources.push_back(Common::ChangeID());
-	archive = Common::UString::format("lang_%d.key", LangMan.getLanguageID(langVoice));
+	archive = Common::String::format("lang_%d.key", LangMan.getLanguageID(langVoice));
 	indexMandatoryArchive(archive, 100, &_languageResources.back());
 
 	// Voices for the first premium module (The Price of Neutrality)
 	_languageResources.push_back(Common::ChangeID());
-	archive = Common::UString::format("M1_%d.key", LangMan.getLanguageID(langVoice));
+	archive = Common::String::format("M1_%d.key", LangMan.getLanguageID(langVoice));
 	indexOptionalArchive(archive, 101, &_languageResources.back());
 
 	// Voices for the second premium module (Side Effects)
 	_languageResources.push_back(Common::ChangeID());
-	archive = Common::UString::format("M2_%d.key", LangMan.getLanguageID(langVoice));
+	archive = Common::String::format("M2_%d.key", LangMan.getLanguageID(langVoice));
 	indexOptionalArchive(archive, 102, &_languageResources.back());
 
-	archive = Common::UString::format("dialog_%d", LangMan.getLanguageID(langText));
+	archive = Common::String::format("dialog_%d", LangMan.getLanguageID(langText));
 	TalkMan.addTable(archive, "", false, 0, &_languageTLK);
 }
 

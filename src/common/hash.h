@@ -31,6 +31,7 @@
 #include "src/common/ustring.h"
 #include "src/common/encoding.h"
 #include "src/common/memreadstream.h"
+#include "src/common/string.h"
 
 namespace Common {
 
@@ -260,7 +261,7 @@ static inline uint64_t hashString(const UString &string, HashAlgo algo, Encoding
 }
 
 static inline UString formatHash(uint64_t hash) {
-	return UString::format("0x%04X%04X%04X%04X",
+	return String::format("0x%04X%04X%04X%04X",
 			(uint) ((hash >> 48) & 0xFFFF),
 			(uint) ((hash >> 32) & 0xFFFF),
 			(uint) ((hash >> 16) & 0xFFFF),

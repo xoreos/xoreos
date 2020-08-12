@@ -1072,7 +1072,7 @@ void ResourceManager::dumpResourcesList(const Common::UString &fileName) const {
 		const uint32_t         size = getResourceSize(res);
 
 		const Common::UString line =
-			Common::UString::format("%32s%4s | %s | %12d\n", name.c_str(), ext.c_str(),
+			Common::String::format("%32s%4s | %s | %12d\n", name.c_str(), ext.c_str(),
                                Common::formatHash(hash).c_str(), size);
 
 		file.writeString(line);

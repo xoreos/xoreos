@@ -385,7 +385,7 @@ void Creature::getPartModels(PartModels &parts, uint32_t state, uint8_t textureV
 
 	if (_modelType == "B") {
 		parts.body = appearance.getString(Common::UString("model") + state);
-		parts.bodyTexture = appearance.getString(Common::UString("tex") + state) + Common::UString::format("%02u", textureVariation);
+		parts.bodyTexture = appearance.getString(Common::UString("tex") + state) + Common::String::format("%02u", textureVariation);
 
 		// Fall back to a default texture variation
 		if (!ResMan.hasResource(parts.bodyTexture))
@@ -534,7 +534,7 @@ void Creature::attachWeaponModel(InventorySlot slot) {
 
 void Creature::initAsFakePC() {
 	_name = "Fakoo McFakeston";
-	_tag  = Common::UString::format("[PC: %s]", _name.c_str());
+	_tag  = Common::String::format("[PC: %s]", _name.c_str());
 
 	_isPC = true;
 }
@@ -788,7 +788,7 @@ void Creature::playDodgeAnimation() {
 
 	int number = getWeaponAnimationNumber();
 	if (number != -1)
-		_model->playAnimation(Common::UString::format("g%dg1", number));
+		_model->playAnimation(Common::String::format("g%dg1", number));
 }
 
 void Creature::playAnimation(const Common::UString &anim, bool restart, float length, float speed) {

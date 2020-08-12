@@ -335,7 +335,7 @@ bool ConsoleWindow::setRedirect(Common::UString redirect) {
 	redirect = Common::FilePath::getUserDataFile(redirect);
 	if (!_redirect.open(redirect)) {
 		Common::UString error =
-			Common::UString::format("Failed opening file \"%s\" for writing.", redirect.c_str());
+			Common::String::format("Failed opening file \"%s\" for writing.", redirect.c_str());
 
 		print(error);
 		return false;
@@ -1560,7 +1560,7 @@ void Console::printList(const std::vector<Common::UString> &list, size_t maxSize
 	// Print a message when we cut items
 	if (linesCut > 0) {
 		Common::UString cutMsg =
-			Common::UString::format("(%u items cut due to history overflow)", (uint)linesCut);
+			Common::String::format("(%u items cut due to history overflow)", (uint)linesCut);
 
 		print(cutMsg);
 	}

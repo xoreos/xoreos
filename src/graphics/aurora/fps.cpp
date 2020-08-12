@@ -22,6 +22,7 @@
  *  A text object displaying the current FPS.
  */
 
+#include "src/common/string.h"
 #include "src/common/system.h"
 #include "src/common/ustring.h"
 
@@ -57,7 +58,7 @@ void FPS::render(RenderPass pass) {
 	if (fps != _fps) {
 		_fps = fps;
 
-		setText(Common::UString::format("%d fps", _fps));
+		setText(Common::String::format("%d fps", _fps));
 	}
 
 	Text::render(pass);
@@ -69,7 +70,7 @@ void FPS::renderImmediate(const glm::mat4 &parentTransform) {
 	if (fps != _fps) {
 		_fps = fps;
 
-		setText(Common::UString::format("%d fps", _fps));
+		setText(Common::String::format("%d fps", _fps));
 	}
 
 	Text::renderImmediate(parentTransform);

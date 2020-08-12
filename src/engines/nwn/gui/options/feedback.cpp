@@ -24,6 +24,7 @@
 
 #include "src/common/util.h"
 #include "src/common/configman.h"
+#include "src/common/string.h"
 
 #include "src/aurora/talkman.h"
 
@@ -129,7 +130,7 @@ void OptionsFeedbackMenu::updateTooltipDelay(uint32_t UNUSED(tooltipDelay)) {
 
 	const Common::UString secString   = TalkMan.getString(kStringSec);
 	const Common::UString ttDelayText =
-		Common::UString::format("%3.1f %s", ttDelay, secString.c_str());
+		Common::String::format("%3.1f %s", ttDelay, secString.c_str());
 
 	ttDelayLabel.setText(ttDelayText);
 }

@@ -33,6 +33,7 @@
 #include "src/common/error.h"
 #include "src/common/encoding.h"
 #include "src/common/platform.h"
+#include "src/common/string.h"
 
 // boost-filesystem stuff
 using boost::filesystem::path;
@@ -370,7 +371,7 @@ UString FilePath::getHumanReadableSize(size_t size) {
 		s /= 1024;
 	}
 
-	return UString::format("%.2lf%s", s, sizes[n]);
+	return String::format("%.2lf%s", s, sizes[n]);
 }
 
 UString FilePath::getHomeDirectory() {

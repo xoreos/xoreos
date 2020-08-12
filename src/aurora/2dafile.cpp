@@ -32,6 +32,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/string.h"
 #include "src/common/strutil.h"
 #include "src/common/encoding.h"
 #include "src/common/readstream.h"
@@ -349,7 +350,7 @@ void TwoDAFile::load(const GDAFile &gda) {
 		for (size_t i = 0; i < gda.getColumnCount(); i++) {
 			const char *headerString = findGDAHeader(headers[i].hash);
 
-			_headers[i] = headerString ? headerString : Common::UString::format("[%u]", headers[i].hash);
+			_headers[i] = headerString ? headerString : Common::String::format("[%u]", headers[i].hash);
 		}
 
 		_rows.resize(gda.getRowCount());
@@ -368,15 +369,15 @@ void TwoDAFile::load(const GDAFile &gda) {
 							break;
 
 						case GDAFile::kTypeInt:
-							_rows[i]->_data[j] = Common::UString::format("%d", (int) row->getSint(headers[j].field));
+							_rows[i]->_data[j] = Common::String::format("%d", (int) row->getSint(headers[j].field));
 							break;
 
 						case GDAFile::kTypeFloat:
-							_rows[i]->_data[j] = Common::UString::format("%f", row->getDouble(headers[j].field));
+							_rows[i]->_data[j] = Common::String::format("%f", row->getDouble(headers[j].field));
 							break;
 
 						case GDAFile::kTypeBool:
-							_rows[i]->_data[j] = Common::UString::format("%u", (uint) row->getUint(headers[j].field));
+							_rows[i]->_data[j] = Common::String::format("%u", (uint) row->getUint(headers[j].field));
 							break;
 
 						default:
@@ -446,7 +447,7 @@ void TwoDAFile::writeASCII(Common::WriteStream &out) const {
 
 	out.writeString("2DA V2.0\n");
 	if (!_defaultString.empty())
-		out.writeString(Common::UString::format("DEFAULT: %s", _defaultString.c_str()));
+		out.writeString(Common::String::format("DEFAULT: %s", _defaultString.c_str()));
 	out.writeByte('\n');
 
 	// Calculate column lengths
@@ -454,7 +455,7 @@ void TwoDAFile::writeASCII(Common::WriteStream &out) const {
 	std::vector<size_t> colLength;
 	colLength.resize(_headers.size() + 1, 0);
 
-	const Common::UString maxRow = Common::UString::format("%d", (int)_rows.size() - 1);
+	const Common::UString maxRow = Common::String::format("%d", (int)_rows.size() - 1);
 	colLength[0] = maxRow.size();
 
 	for (size_t i = 0; i < _headers.size(); i++)
@@ -471,28 +472,28 @@ void TwoDAFile::writeASCII(Common::WriteStream &out) const {
 
 	// Write column headers
 
-	out.writeString(Common::UString::format("%-*s", (int)colLength[0], ""));
+	out.writeString(Common::String::format("%-*s", (int)colLength[0], ""));
 
 	for (size_t i = 0; i < _headers.size(); i++)
-		out.writeString(Common::UString::format(" %-*s", (int)colLength[i + 1], _headers[i].c_str()));
+		out.writeString(Common::String::format(" %-*s", (int)colLength[i + 1], _headers[i].c_str()));
 
 	out.writeByte('\n');
 
 	// Write array
 
 	for (size_t i = 0; i < _rows.size(); i++) {
-		out.writeString(Common::UString::format("%*u", (int)colLength[0], (uint)i));
+		out.writeString(Common::String::format("%*u", (int)colLength[0], (uint)i));
 
 		for (size_t j = 0; j < _rows[i]->_data.size(); j++) {
 			const bool needQuote = _rows[i]->_data[j].contains(' ');
 
 			Common::UString cellString;
 			if (needQuote)
-				cellString = Common::UString::format("\"%s\"", _rows[i]->_data[j].c_str());
+				cellString = Common::String::format("\"%s\"", _rows[i]->_data[j].c_str());
 			else
 				cellString = _rows[i]->_data[j];
 
-			out.writeString(Common::UString::format(" %-*s", (int)colLength[j + 1], cellString.c_str()));
+			out.writeString(Common::String::format(" %-*s", (int)colLength[j + 1], cellString.c_str()));
 
 		}
 

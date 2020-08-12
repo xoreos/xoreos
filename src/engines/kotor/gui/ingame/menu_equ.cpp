@@ -232,7 +232,7 @@ void MenuEquipment::fillEquipableItemsList() {
 					continue;
 			}
 
-			lbItems->addItem(Common::UString::format("%s|%s|%u",
+			lbItems->addItem(Common::String::format("%s|%s|%u",
 			                                         item.getName().c_str(),
 			                                         item.getIcon().c_str(),
 			                                         i.second.count));

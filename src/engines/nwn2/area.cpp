@@ -25,6 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/error.h"
 #include "src/common/configman.h"
+#include "src/common/string.h"
 
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
@@ -440,7 +441,7 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 		Common::UString tileType = tiles.getRow(tile.tileID).getString("Tile_Type");
 		int             tileVar  = t.getUint("Variation") + 1;
 
-		tile.modelName = Common::UString::format("tl_%s_%s_%02d", tileSet.c_str(), tileType.c_str(), tileVar);
+		tile.modelName = Common::String::format("tl_%s_%s_%02d", tileSet.c_str(), tileType.c_str(), tileVar);
 	} else {
 		// "Meta tile". Spreads over the space of several normal tiles
 
@@ -449,7 +450,7 @@ void Area::loadTile(const Aurora::GFF3Struct &t, Tile &tile) {
 		Common::UString tileSet = metatiles.getRow(tile.tileID).getString("TileSet");
 		Common::UString name    = metatiles.getRow(tile.tileID).getString("Name");
 
-		tile.modelName = Common::UString::format("tl_%s_%s", tileSet.c_str(), name.c_str());
+		tile.modelName = Common::String::format("tl_%s_%s", tileSet.c_str(), name.c_str());
 	}
 }
 

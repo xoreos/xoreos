@@ -25,6 +25,7 @@
 #include "src/common/util.h"
 #include "src/common/maths.h"
 #include "src/common/error.h"
+#include "src/common/string.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/2dafile.h"
@@ -194,7 +195,7 @@ void Creature::loadHead() {
 
 void Creature::createFakePC() {
 	_name = "Fakoo McFakeston";
-	_tag  = Common::UString::format("[PC: %s]", _name.c_str());
+	_tag  = Common::String::format("[PC: %s]", _name.c_str());
 
 	_isPC = true;
 }

@@ -27,6 +27,7 @@
 #include <cassert>
 
 #include "src/common/configman.h"
+#include "src/common/string.h"
 #include "src/common/strutil.h"
 #include "src/common/readfile.h"
 #include "src/common/writefile.h"
@@ -205,7 +206,7 @@ UString ConfigManager::createGameID(const UString &path) {
 		return target;
 
 	for (uint32_t i = 0; i < 65536; i++) {
-		UString targetNumbered = UString::format("%s_%d", target.c_str(), i);
+		UString targetNumbered = String::format("%s_%d", target.c_str(), i);
 
 		if (!_config->hasDomain(targetNumbered))
 			return targetNumbered;

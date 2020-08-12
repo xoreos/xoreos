@@ -29,6 +29,7 @@
 
 #include "src/common/util.h"
 #include "src/common/configman.h"
+#include "src/common/string.h"
 
 #include "src/aurora/talkman.h"
 #include "src/aurora/ssffile.h"
@@ -361,7 +362,7 @@ void DialogBox::finishReplies() {
 		_replyLines.push_back(ReplyLine(r));
 
 		_replyLines.back().count =
-			new Graphics::Aurora::Text(_font, Common::UString::format("%d. ", ++_replyCount),
+			new Graphics::Aurora::Text(_font, Common::String::format("%d. ", ++_replyCount),
 			                           kLightBlueR, kLightBlueG, kLightBlueB);
 
 		_replyCountWidth = MAX(_replyCountWidth, _replyLines.back().count->getWidth());

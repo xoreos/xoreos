@@ -31,6 +31,7 @@
 #include "src/common/configman.h"
 #include "src/common/readfile.h"
 #include "src/common/random.h"
+#include "src/common/string.h"
 
 #include "src/aurora/types.h"
 #include "src/aurora/gff3file.h"
@@ -377,7 +378,7 @@ bool Creature::loadArmorModel(const Common::UString &body,
 	Common::UString armorPrefix = armorVisual.getString("Prefix");
 
 	Common::UString modelFile;
-	modelFile = Common::UString::format("%s_%s_%s%02d",
+	modelFile = Common::String::format("%s_%s_%s%02d",
 	                                     body.c_str(), armorPrefix.c_str(), armor.c_str(), variation + 1);
 
 	Graphics::Aurora::Model *model = loadModelObject(modelFile);
@@ -396,7 +397,7 @@ bool Creature::loadHeadModel(uint8_t appearance) {
 		return false;
 
 	Common::UString modelFile;
-	modelFile = Common::UString::format("%s%02d", head.c_str(), appearance);
+	modelFile = Common::String::format("%s%02d", head.c_str(), appearance);
 
 	Graphics::Aurora::Model *model = loadModelObject(modelFile);
 	if (model)
@@ -414,7 +415,7 @@ bool Creature::loadHairModel(uint8_t appearance) {
 		return false;
 
 	Common::UString modelFile;
-	modelFile = Common::UString::format("%s%02d", hair.c_str(), appearance);
+	modelFile = Common::String::format("%s%02d", hair.c_str(), appearance);
 
 	Graphics::Aurora::Model *model = loadModelObject(modelFile);
 	if (model)
@@ -500,7 +501,7 @@ void Creature::loadCharacter(const Common::UString &bic, bool local) {
 	// Set the PC tag to something recognizable for now.
 	// Let's hope no script depends on it being "".
 
-	_tag = Common::UString::format("[PC: %s]", _name.c_str());
+	_tag = Common::String::format("[PC: %s]", _name.c_str());
 }
 
 void Creature::load(const Aurora::GFF3Struct &instance, const Aurora::GFF3Struct *blueprint) {

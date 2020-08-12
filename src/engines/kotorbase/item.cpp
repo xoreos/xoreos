@@ -22,6 +22,8 @@
  *  Inventory item in KotOR games.
  */
 
+#include "src/common/string.h"
+
 #include "src/aurora/gff3file.h"
 #include "src/aurora/2dafile.h"
 #include "src/aurora/2dareg.h"
@@ -104,11 +106,11 @@ const Common::UString Item::getIcon() const {
 	int variation = (_modelVariation == 0) ? _textureVariation : _modelVariation;
 	if (variation == 0)
 		variation = 1;
-	return Common::UString::format("i%s_%03d", _itemClass.c_str(), variation);
+	return Common::String::format("i%s_%03d", _itemClass.c_str(), variation);
 }
 
 const Common::UString Item::getModelName() const {
-	return Common::UString::format("%s_%03d", _itemClass.c_str(), _modelVariation);
+	return Common::String::format("%s_%03d", _itemClass.c_str(), _modelVariation);
 }
 
 } // End of namespace KotORBase

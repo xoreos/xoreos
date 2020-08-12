@@ -843,7 +843,7 @@ Common::UString GFF4Struct::getString(Common::SeekableSubReadStreamEndian &data,
 	} catch (...) {
 	}
 
-	return Common::UString::format("GFF4: Invalid string encoding (0x%08X)", (uint) offset);
+	return Common::String::format("GFF4: Invalid string encoding (0x%08X)", (uint) offset);
 }
 
 Common::UString GFF4Struct::getString(Common::SeekableSubReadStreamEndian &data, Common::Encoding encoding,

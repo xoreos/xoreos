@@ -85,7 +85,7 @@ int32_t Functions::getRandom(int min, int max, int32_t n) {
 }
 
 Common::UString Functions::formatFloat(float f, int width, int decimals) {
-	return Common::UString::format("%*.*f", width, decimals, f);
+	return Common::String::format("%*.*f", width, decimals, f);
 }
 
 Aurora::NWScript::Object *Functions::getParamObject(const Aurora::NWScript::FunctionContext &ctx, size_t n) {

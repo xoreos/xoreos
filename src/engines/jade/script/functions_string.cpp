@@ -26,6 +26,7 @@
 #include "src/common/ustring.h"
 #include "src/common/debug.h"
 #include "src/common/error.h"
+#include "src/common/string.h"
 #include "src/common/strutil.h"
 #include "src/common/datetime.h"
 
@@ -92,7 +93,7 @@ void Functions::printObject(Aurora::NWScript::FunctionContext &ctx) {
 void Functions::objectToString(Aurora::NWScript::FunctionContext &ctx) {
 	Aurora::NWScript::Object *object = ctx.getParams()[0].getObject();
 
-	ctx.getReturn() = Common::UString::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
+	ctx.getReturn() = Common::String::format("object<%s,%p)", Aurora::NWScript::formatTag(object).c_str(),
 	                                          static_cast<void *>(object));
 }
 
@@ -118,7 +119,7 @@ void Functions::floatToString(Aurora::NWScript::FunctionContext &ctx) {
 }
 
 void Functions::intToHexString(Aurora::NWScript::FunctionContext &ctx) {
-	ctx.getReturn() = Common::UString::format("0x%08x", (uint32_t) ctx.getParams()[0].getInt());
+	ctx.getReturn() = Common::String::format("0x%08x", (uint32_t) ctx.getParams()[0].getInt());
 }
 
 void Functions::stringToInt(Aurora::NWScript::FunctionContext &ctx) {
@@ -247,7 +248,7 @@ void Functions::setCustomToken(Aurora::NWScript::FunctionContext &ctx) {
 	int32_t tokenNumber = ctx.getParams()[0].getInt();
 	const Common::UString &tokenValue = ctx.getParams()[1].getString();
 
-	const Common::UString tokenName = Common::UString::format("<CUSTOM%d>", tokenNumber);
+	const Common::UString tokenName = Common::String::format("<CUSTOM%d>", tokenNumber);
 
 	TokenMan.set(tokenName, tokenValue);
 }

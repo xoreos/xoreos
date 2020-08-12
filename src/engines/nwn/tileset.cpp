@@ -97,7 +97,7 @@ void Tileset::loadGeneral(const Common::ConfigDomain &general) {
 }
 
 void Tileset::loadTile(const Common::ConfigFile &set, uint i, Tile &tile) {
-	Common::UString domainName = Common::UString::format("TILE%u", i);
+	Common::UString domainName = Common::String::format("TILE%u", i);
 	const Common::ConfigDomain *domain = set.getDomain(domainName);
 	if (!domain)
 		throw Common::Exception("Tileset has no \"%s\" domain", domainName.c_str());

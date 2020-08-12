@@ -26,6 +26,7 @@
 
 #include "src/common/util.h"
 #include "src/common/error.h"
+#include "src/common/string.h"
 
 #include "src/events/requests.h"
 
@@ -209,7 +210,7 @@ void CharPremadeMenu::initCharacterList() {
 
 		ch.displayName = ch.name;
 		if (ch.number > 0)
-			ch.displayName += Common::UString::format(" (%u)", ch.number);
+			ch.displayName += Common::String::format(" (%u)", ch.number);
 	}
 
 	std::sort(_characters.begin(), _characters.end());
