@@ -236,7 +236,7 @@ void Functions::charToInt(Aurora::NWScript::FunctionContext &ctx) {
 	if (!str.empty())
 		c = *str.begin();
 
-	if (!Common::UString::isASCII(c))
+	if (!Common::String::isASCII(c))
 		c = 0;
 
 	ctx.getReturn() = (int32_t) c;

@@ -66,7 +66,7 @@ Common::UString LTRFile::generateRandomName(size_t maxLetters) const {
 	for (size_t i = 0; i < _letterCount; ++i) {
 		if (_singleLetters.start[i] > probability) {
 			// Make the first letter upper case.
-			name += Common::UString::toUpper(static_cast<unsigned char>(_alphabet[i]));
+			name += Common::String::toUpper(_alphabet[i]);
 			firstLetterIndex = i;
 			break;
 		}

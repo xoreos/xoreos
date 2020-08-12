@@ -265,7 +265,7 @@ bool ConfigFile::isValidName(const UString &name) {
 	for (UString::iterator it = name.begin(); it != name.end(); ++it) {
 		uint32_t c = *it;
 
-		if (UString::isASCII(c) &&
+		if (Common::String::isASCII(c) &&
 				(!isalnum(c) && (c != '-') && (c != '_') && (c != '.') && (c != ' ')))
 			return false;
 	}

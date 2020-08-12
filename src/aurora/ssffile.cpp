@@ -243,7 +243,7 @@ size_t SSFFile::getMaxSoundFileLen() const {
 bool SSFFile::existNonASCIISoundFile() const {
 	for (SoundSet::const_iterator s = _sounds.begin(); s != _sounds.end(); ++s)
 		for (Common::UString::iterator c = s->soundFile.begin(); c != s->soundFile.end(); ++c)
-			if (!Common::UString::isASCII(*c))
+			if (!Common::String::isASCII(*c))
 				return true;
 
 	return false;

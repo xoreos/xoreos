@@ -195,7 +195,7 @@ UString ConfigManager::createGameID(const UString &path) {
 	for (UString::iterator s = canonicalStem.begin(); s != canonicalStem.end(); ++s) {
 		uint32_t c = *s;
 
-		if (UString::isAlNum(c))
+		if (Common::String::isAlNum(c))
 			target += c;
 	}
 

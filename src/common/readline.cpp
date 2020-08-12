@@ -562,7 +562,7 @@ bool ReadLine::isWordCharacter(uint32_t c, bool onlySpace) {
 	if (onlySpace)
 		return c != ' ';
 
-	return !UString::isASCII(c) || UString::isAlNum(c);
+	return !String::isASCII(c) || String::isAlNum(c);
 }
 
 size_t ReadLine::findLastWordStart(bool onlySpace) const {

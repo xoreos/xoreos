@@ -324,7 +324,7 @@ Common::UString EventsManager::getTextInput(const Event &event) {
 		uint32_t sym = event.key.keysym.sym;
 
 		// Mask out control characters
-		if ((sym & SDLK_SCANCODE_MASK) || Common::UString::isCntrl(sym))
+		if ((sym & SDLK_SCANCODE_MASK) || Common::String::isCntrl(sym))
 			return "";
 
 		// Interpret this KeySym as an Unicode codepoint
