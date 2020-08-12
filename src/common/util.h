@@ -121,9 +121,12 @@ template<> inline float MAX(float a, float b) { return fmaxf(a, b); }
 #endif
 
 /**
- * Macro which determines the number of entries in a fixed size array.
+ * Determine the number of entries in a fixed size array.
  */
-#define ARRAYSIZE(x) (sizeof(x) / sizeof(x[0]))
+template<typename T, std::size_t N>
+constexpr std::size_t ARRAYSIZE(const T (&)[N]) {
+	return N;
+}
 
 /** Print a warning message to both stderr and the global
  *  log file (if a global log file has been opened).
