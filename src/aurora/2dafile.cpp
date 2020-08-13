@@ -28,7 +28,7 @@
 
 #include <cassert>
 
-#include <memory>
+#include <utility>
 
 #include "src/common/util.h"
 #include "src/common/error.h"
@@ -252,7 +252,7 @@ void TwoDAFile::readRows2a(Common::SeekableReadStream &twoda,
 		if (count == 0)
 			continue;
 
-		_rows.push_back(row.release());
+		_rows.emplace_back(std::move(row));
 	}
 }
 
@@ -281,7 +281,7 @@ void TwoDAFile::skipRowNames2b(Common::SeekableReadStream &twoda) {
 	 */
 
 	const uint32_t rowCount = twoda.readUint32LE();
-	_rows.resize(rowCount, 0);
+	_rows.resize(rowCount);
 
 	Common::StreamTokenizer tokenize(Common::StreamTokenizer::kRuleHeed);
 
@@ -318,7 +318,7 @@ void TwoDAFile::readRows2b(Common::SeekableReadStream &twoda) {
 	const size_t dataOffset = twoda.pos();
 
 	for (size_t i = 0; i < rowCount; i++) {
-		_rows[i] = new TwoDARow(*this);
+		_rows[i].reset(new TwoDARow(*this));
 
 		_rows[i]->_data.resize(columnCount);
 
@@ -352,11 +352,11 @@ void TwoDAFile::load(const GDAFile &gda) {
 			_headers[i] = headerString ? headerString : Common::UString::format("[%u]", headers[i].hash);
 		}
 
-		_rows.resize(gda.getRowCount(), 0);
+		_rows.resize(gda.getRowCount());
 		for (size_t i = 0; i < gda.getRowCount(); i++) {
 			const GFF4Struct *row = gda.getRow(i);
 
-			_rows[i] = new TwoDARow(*this);
+			_rows[i].reset(new TwoDARow(*this));
 			_rows[i]->_data.resize(gda.getColumnCount());
 
 			for (size_t j = 0; j < gda.getColumnCount(); j++) {
@@ -424,7 +424,7 @@ const TwoDARow &TwoDAFile::getRow(size_t row) const {
 		// No such row
 		return _emptyRow;
 
-	return *_rows[row];
+	return *_rows[row].get();
 }
 
 const TwoDARow &TwoDAFile::getRow(const Common::UString &header, const Common::UString &value) const {
@@ -432,9 +432,9 @@ const TwoDARow &TwoDAFile::getRow(const Common::UString &header, const Common::U
 	if (columnIndex == kFieldIDInvalid)
 		return _emptyRow;
 
-	for (std::vector<TwoDARow *>::const_iterator row = _rows.begin(); row != _rows.end(); ++row) {
-		if ((*row)->getString(columnIndex).equalsIgnoreCase(value))
-			return **row;
+	for (auto &row : _rows) {
+		if (row->getString(columnIndex).equalsIgnoreCase(value))
+			return *row.get();
 	}
 
 	// No such row

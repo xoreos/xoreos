@@ -32,7 +32,6 @@
 #include <boost/noncopyable.hpp>
 
 #include "src/common/types.h"
-#include "src/common/ptrvector.h"
 #include "src/common/ustring.h"
 
 #include "src/aurora/types.h"
@@ -118,7 +117,7 @@ private:
 		void read(Common::SeekableReadStream &gff3);
 	};
 
-	typedef Common::PtrVector<GFF3Struct> StructArray;
+	typedef std::vector<std::unique_ptr<GFF3Struct>> StructArray;
 	typedef std::vector<GFF3List> ListArray;
 
 
@@ -269,7 +268,6 @@ private:
 
 	// .--- Loader
 	GFF3Struct(const GFF3File &parent, uint32_t offset);
-	~GFF3Struct();
 
 	void load(uint32_t offset);
 
@@ -289,9 +287,6 @@ private:
 	// '---
 
 	friend class GFF3File;
-
-	template<typename T>
-	friend void Common::DeallocatorDefault::destroy(T *);
 };
 
 } // End of namespace Aurora

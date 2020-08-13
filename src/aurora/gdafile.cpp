@@ -274,7 +274,7 @@ GDAFile::Type GDAFile::identifyType(const Columns &columns, const Row &rows, siz
 
 void GDAFile::load(Common::SeekableReadStream *gda) {
 	try {
-		_gff4s.push_back(new GFF4File(gda, kG2DAID));
+		_gff4s.emplace_back(std::make_unique<GFF4File>(gda, kG2DAID));
 
 		const uint32_t version = _gff4s.back()->getTypeVersion();
 		if ((version != kVersion01) && (version != kVersion02))
@@ -306,7 +306,7 @@ void GDAFile::load(Common::SeekableReadStream *gda) {
 
 void GDAFile::add(Common::SeekableReadStream *gda) {
 	try {
-		_gff4s.push_back(new GFF4File(gda, kG2DAID));
+		_gff4s.emplace_back(std::make_unique<GFF4File>(gda, kG2DAID));
 
 		const uint32_t version = _gff4s.back()->getTypeVersion();
 		if ((version != kVersion01) && (version != kVersion02))

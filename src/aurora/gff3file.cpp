@@ -185,7 +185,7 @@ void GFF3File::loadStructs() {
 
 	_structs.reserve(_header.structCount);
 	for (uint32_t i = 0; i < _header.structCount; i++)
-		_structs.push_back(new GFF3Struct(*this, _header.structOffset + i * kStructSize));
+		_structs.emplace_back(new GFF3Struct(*this, _header.structOffset + i * kStructSize));
 }
 
 void GFF3File::loadLists() {
@@ -243,7 +243,7 @@ void GFF3File::loadLists() {
 				throw Common::Exception("GFF3: List struct index out of range (%u >= %u)",
 				                        (uint) structIndex, (uint) _structs.size());
 
-			_lists[listIndex][j] = _structs[structIndex];
+			_lists[listIndex][j] = _structs[structIndex].get();
 		}
 	}
 }
@@ -254,7 +254,7 @@ const GFF3Struct &GFF3File::getStruct(uint32_t i) const {
 	if (i >= _structs.size())
 		throw Common::Exception("GFF3: Struct index out of range (%u >= %u)", i, (uint) _structs.size());
 
-	return *_structs[i];
+	return *_structs[i].get();
 }
 
 const GFF3List &GFF3File::getList(uint32_t i) const {
@@ -303,9 +303,6 @@ GFF3Struct::Field::Field(FieldType t, uint32_t d) : type(t), data(d) {
 
 GFF3Struct::GFF3Struct(const GFF3File &parent, uint32_t offset) : _parent(&parent) {
 	load(offset);
-}
-
-GFF3Struct::~GFF3Struct() {
 }
 
 uint32_t GFF3Struct::getID() const {

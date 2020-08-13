@@ -24,7 +24,6 @@
 
 #include <cassert>
 
-#include "src/common/ptrvector.h"
 #include "src/common/error.h"
 #include "src/common/pe_exe.h"
 #include "src/common/memreadstream.h"
@@ -94,7 +93,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32_t index, bool UNUSED(tryN
 			out.writeUint16LE(cursorCount);
 
 
-			Common::PtrVector<Common::SeekableReadStream> cursorStreams;
+			std::vector<std::unique_ptr<Common::SeekableReadStream>> cursorStreams;
 			cursorStreams.resize(cursorCount);
 
 			uint32_t startOffset = 6 + cursorCount * 16;
@@ -109,7 +108,7 @@ Common::SeekableReadStream *PEFile::getResource(uint32_t index, bool UNUSED(tryN
 				cursorGroup->readUint32LE();                    // data size
 				uint16_t id = cursorGroup->readUint16LE();
 
-				cursorStreams[i] = _peFile->getResource(Common::kPECursor, id);
+				cursorStreams[i].reset(_peFile->getResource(Common::kPECursor, id));
 				if (!cursorStreams[i])
 					throw Common::Exception("Could not get cursor resource %d", id);
 

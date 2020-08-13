@@ -25,6 +25,7 @@
 #ifndef AURORA_2DAFILE_H
 #define AURORA_2DAFILE_H
 
+#include <memory>
 #include <vector>
 #include <map>
 
@@ -32,7 +33,6 @@
 
 #include "src/common/types.h"
 #include "src/common/ustring.h"
-#include "src/common/ptrvector.h"
 
 #include "src/aurora/aurorafile.h"
 
@@ -92,9 +92,6 @@ private:
 	const Common::UString &getCell(size_t n) const;
 
 	friend class TwoDAFile;
-
-	template<typename T>
-	friend void Common::DeallocatorDefault::destroy(T *);
 };
 
 /** Class to hold the two-dimensional array of a 2DA file.
@@ -174,7 +171,7 @@ private:
 	HeaderMap _headerMap;
 
 	TwoDARow _emptyRow;
-	Common::PtrVector<TwoDARow> _rows;
+	std::vector<std::unique_ptr<TwoDARow>> _rows;
 
 	// Loading helpers
 	void load(Common::SeekableReadStream &twoda);

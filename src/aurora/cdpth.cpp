@@ -25,10 +25,10 @@
 #include <cassert>
 #include <cstring>
 
+#include <vector>
 #include <memory>
 
 #include "src/common/util.h"
-#include "src/common/ptrvector.h"
 #include "src/common/error.h"
 #include "src/common/readstream.h"
 
@@ -37,7 +37,7 @@
 
 namespace Aurora {
 
-typedef Common::PtrVector<Common::SeekableReadStream> Cells;
+typedef std::vector<std::unique_ptr<Common::SeekableReadStream>> Cells;
 
 struct ReadContext {
 	Common::SeekableReadStream *cdpth;
@@ -107,14 +107,14 @@ static void readCells(ReadContext &ctx) {
 			if (offset < 0x4000)
 				break;
 
-			ctx.cells.push_back(0);
+			ctx.cells.emplace_back(nullptr);
 			if (size == 0)
 				continue;
 
 			const size_t pos = ctx.cdpth->pos();
 
 			Common::SeekableSubReadStream cellData(ctx.cdpth, offset, offset + size);
-			ctx.cells.back() = Aurora::Small::decompress(cellData);
+			ctx.cells.back().reset(Aurora::Small::decompress(cellData));
 
 			if (ctx.cells.back()->size() != 8192)
 				throw Common::Exception("Invalid size for cell %u: %u", (uint)i, (uint)ctx.cells.back()->size());
@@ -148,7 +148,7 @@ static void createDepth(ReadContext &ctx) {
 
 	uint16_t *data = ctx.depth.get();
 	for (size_t i = 0; i < ctx.cells.size(); i++) {
-		Common::SeekableReadStream *cell = ctx.cells[i];
+		Common::SeekableReadStream *cell = ctx.cells[i].get();
 		if (!cell)
 			continue;
 
