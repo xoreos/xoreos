@@ -53,3 +53,7 @@ GTEST_TEST(String, charClasses) {
 	EXPECT_TRUE (Common::String::isCntrl(0x10));
 	EXPECT_FALSE(Common::String::isCntrl('x'));
 }
+
+GTEST_TEST(String, fromUTF16) {
+	EXPECT_EQ(Common::String::fromUTF16(0x00F6), 0xF6);
+}
