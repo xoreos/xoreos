@@ -29,6 +29,8 @@
 
 #include "src/common/string.h"
 
+#include "external/utf8cpp/utf8.h"
+
 namespace Common {
 namespace String {
 
@@ -64,6 +66,12 @@ std::string formatV(const char *format, va_list args) {
 
 	va_end(copy);
 	return result;
+}
+
+uint32_t fromUTF16(uint16_t c) {
+	std::string utf8result;
+	utf8::utf16to8(&c, &c + 1, std::back_inserter(utf8result));
+	return *utf8::iterator<std::string::const_iterator>(utf8result.begin(), utf8result.begin(), utf8result.end());
 }
 
 } // End of namespace String

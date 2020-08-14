@@ -25,6 +25,8 @@
 #ifndef XOREOS_COMMON_STRING_H
 #define XOREOS_COMMON_STRING_H
 
+#include <cstdint>
+
 #include <string>
 
 #include <boost/type_traits/make_unsigned.hpp>
@@ -102,6 +104,9 @@ inline T toUpper(T c) {
 	//       characters: http://www.unicode.org/reports/tr21/tr21-5.html
 	return isASCII(c) ? std::toupper(c) : c;
 }
+
+/** Get a UTF-32 codepoint from a UTF-16 character. */
+uint32_t fromUTF16(uint16_t c);
 
 } // End of namespace String
 } // End of namespace Common
