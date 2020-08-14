@@ -185,8 +185,6 @@ public:
 
 	static void splitTextTokens(const UString &text, std::vector<UString> &tokens);
 
-	static uint32_t fromUTF16(uint16_t c);
-
 private:
 	std::string _string; ///< Internal string holding the actual data.
 

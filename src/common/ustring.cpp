@@ -765,17 +765,4 @@ void UString::recalculateSize() {
 	}
 }
 
-uint32_t UString::fromUTF16(uint16_t c) {
-	std::string utf8result;
-
-	try {
-		utf8::utf16to8(&c, &c + 1, std::back_inserter(utf8result));
-	} catch (const std::exception &se) {
-		Exception e(se);
-		throw e;
-	}
-
-	return *iterator(utf8result.begin(), utf8result.begin(), utf8result.end());
-}
-
 } // End of namespace Common
