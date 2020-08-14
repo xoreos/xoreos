@@ -520,10 +520,6 @@ GTEST_TEST(UString, splitTextTokens) {
 	EXPECT_STREQ(tokens[8].c_str(), "quux<token5");
 }
 
-GTEST_TEST(UString, fromUTF16) {
-	EXPECT_EQ(Common::UString::fromUTF16(0x00F6), 0xF6);
-}
-
 GTEST_TEST(UString, append) {
 	Common::UString str("Foobar");
 

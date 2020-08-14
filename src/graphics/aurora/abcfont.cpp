@@ -189,7 +189,7 @@ void ABCFont::load(const Common::UString &name) {
 		}
 
 		calcCharVertices(c);
-		_extended.insert(std::make_pair(Common::UString::fromUTF16((uint16_t) i), c));
+		_extended.insert(std::make_pair(Common::String::fromUTF16((uint16_t) i), c));
 	}
 }
 
