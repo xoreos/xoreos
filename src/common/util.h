@@ -161,7 +161,7 @@ void info(const char *s, ...) GCC_PRINTF(1, 2);
  *  Additionally, the program will immediately quit with
  *  return code 1.
  */
-void NORETURN_PRE error(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
+[[noreturn]] void error(const char *s, ...) GCC_PRINTF(1, 2);
 
 /** Convert a uint32 holding the bit pattern of a 32-bit IEEE 754 single
  *  precision floating point value into a real, native float.

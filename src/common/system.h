@@ -54,7 +54,6 @@
 	#include "config.h"
 #endif
 
-#include "src/common/noreturn.h"
 #include "src/common/fallthrough.h"
 
 #if defined(_MSC_VER)

@@ -67,7 +67,7 @@ static void seterrorobj (lua_State *L, int errcode, StkId oldtop) {
 }
 
 
-void luaD_throw (lua_State *L, int errcode) {
+[[noreturn]] void luaD_throw (lua_State *L, int errcode) {
   if (L->errorJmp) {
     L->errorJmp->status = errcode;
     longjmp(L->errorJmp->b, 1);

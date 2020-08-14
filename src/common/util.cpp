@@ -83,7 +83,7 @@ void info(const char *s, ...) {
 	DebugMan.logString("\n");
 }
 
-void NORETURN_PRE error(const char *s, ...) {
+[[noreturn]] void error(const char *s, ...) {
 	char buf[STRINGBUFLEN];
 	va_list va;
 
