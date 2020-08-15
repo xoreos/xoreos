@@ -23,6 +23,7 @@
  */
 
 #include <cstdio>
+#include <cstring>
 
 #include "src/common/util.h"
 #include "src/common/error.h"
@@ -97,7 +98,7 @@ void WidgetListItemCharacter::setPosition(float x, float y, float z) {
 }
 
 bool CharPremadeMenu::Character::operator<(const Character &c) const {
-	int cmp = name.strcmp(c.name);
+	int cmp = std::strcmp(name.c_str(), c.name.c_str());
 
 	if (cmp < 0)
 		return true;
