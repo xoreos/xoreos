@@ -108,6 +108,12 @@ inline T toUpper(T c) {
 /** Get a UTF-32 codepoint from a UTF-16 character. */
 uint32_t fromUTF16(uint16_t c);
 
+/** Perform a case-insensitive comparison. */
+int compareIgnoreCase(const std::string &left, const std::string &right);
+
+/** Perform a case-insensitive comparison. */
+int compareIgnoreCase(const char *left, const char *right);
+
 } // End of namespace String
 } // End of namespace Common
 

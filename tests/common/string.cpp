@@ -57,3 +57,33 @@ GTEST_TEST(String, charClasses) {
 GTEST_TEST(String, fromUTF16) {
 	EXPECT_EQ(Common::String::fromUTF16(0x00F6), 0xF6);
 }
+
+GTEST_TEST(String, compareIgnoreCase) {
+	struct TestCase {
+		const char *left;
+		const char *right;
+		int result;
+	};
+
+	static const TestCase testCases[] = {
+		{ "abc", "def", -1 },
+		{ "def", "abc", 1 },
+		{ "ABC", "def", -1 },
+		{ "abc", "DEF", -1 },
+		{ "QED", "qed", 0 },
+		{ "de", "defg", -1 },
+		{ "defg", "de", 1 }
+	};
+
+	for (const TestCase &testCase : testCases) {
+		int result = Common::String::compareIgnoreCase(testCase.left, testCase.right);
+
+		if (testCase.result == 0) {
+			EXPECT_EQ(result, 0);
+		} else if (testCase.result < 0) {
+			EXPECT_TRUE(result < 0);
+		} else {
+			EXPECT_TRUE(result > 0);
+		}
+	}
+}
