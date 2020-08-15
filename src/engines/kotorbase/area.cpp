@@ -761,7 +761,7 @@ Object *Area::getActiveObject() {
 
 Object *Area::getObjectByTag(const Common::UString &tag) {
 	for (auto &object : _objects)
-		if (object->getTag().stricmp(tag) == 0)
+		if (tag.equalsIgnoreCase(object->getTag()))
 			return object.get();
 
 	return nullptr;

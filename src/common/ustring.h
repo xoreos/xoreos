@@ -97,9 +97,6 @@ public:
 	UString &operator+=(const char *str);
 	UString &operator+=(uint32_t c);
 
-	int strcmp(const UString &str) const;
-	int stricmp(const UString &str) const;
-
 	bool equals(const UString &str) const;
 	bool equalsIgnoreCase(const UString &str) const;
 

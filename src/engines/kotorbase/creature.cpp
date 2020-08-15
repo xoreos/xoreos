@@ -414,7 +414,7 @@ void Creature::getPartModels(PartModels &parts, uint32_t state, uint8_t textureV
 void Creature::loadBody(PartModels &parts) {
 	// Model "P_BastilaBB" has broken animations. Replace it with the
 	// correct one.
-	if (parts.body.stricmp("P_BastilaBB") == 0)
+	if (Common::String::equalsIgnoreCase(parts.body.c_str(), "P_BastilaBB"))
 		parts.body = "P_BastilaBB02";
 
 	GfxMan.lockFrame();
