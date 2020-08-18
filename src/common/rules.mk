@@ -29,9 +29,6 @@ src_common_libcommon_la_SOURCES += \
     src/common/endianness.h \
     src/common/deallocator.h \
     src/common/disposableptr.h \
-    src/common/ptrlist.h \
-    src/common/ptrvector.h \
-    src/common/ptrmap.h \
     src/common/singleton.h \
     src/common/maths.h \
     src/common/sinetables.h \

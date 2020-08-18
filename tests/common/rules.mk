@@ -35,21 +35,6 @@ tests_common_test_disposableptr_SOURCES  = tests/common/disposableptr.cpp
 tests_common_test_disposableptr_LDADD    = $(common_LIBS)
 tests_common_test_disposableptr_CXXFLAGS = $(test_CXXFLAGS)
 
-check_PROGRAMS                    += tests/common/test_ptrlist
-tests_common_test_ptrlist_SOURCES  = tests/common/ptrlist.cpp
-tests_common_test_ptrlist_LDADD    = $(common_LIBS)
-tests_common_test_ptrlist_CXXFLAGS = $(test_CXXFLAGS)
-
-check_PROGRAMS                      += tests/common/test_ptrvector
-tests_common_test_ptrvector_SOURCES  = tests/common/ptrvector.cpp
-tests_common_test_ptrvector_LDADD    = $(common_LIBS)
-tests_common_test_ptrvector_CXXFLAGS = $(test_CXXFLAGS)
-
-check_PROGRAMS                   += tests/common/test_ptrmap
-tests_common_test_ptrmap_SOURCES  = tests/common/ptrmap.cpp
-tests_common_test_ptrmap_LDADD    = $(common_LIBS)
-tests_common_test_ptrmap_CXXFLAGS = $(test_CXXFLAGS)
-
 check_PROGRAMS                    += tests/common/test_ustring
 tests_common_test_ustring_SOURCES  = tests/common/ustring.cpp
 tests_common_test_ustring_LDADD    = $(common_LIBS)
